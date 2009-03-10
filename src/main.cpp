@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,12 +40,7 @@
 
 using namespace Global;
 
-BaseGui * basegui_instance = 0;
-
 void myMessageOutput( QtMsgType type, const char *msg ) {
-	static QStringList saved_lines;
-	static QString orig_line;
-	static QString line2;
 	static QRegExp rx_log;
 
 	if (pref) {
@@ -55,55 +50,36 @@ void myMessageOutput( QtMsgType type, const char *msg ) {
 		rx_log.setPattern(".*");
 	}
 
-	line2.clear();
-
-	orig_line = QString::fromUtf8(msg);
+	QString line = "["+ QTime::currentTime().toString() + "] " + 
+                   QString::fromUtf8(msg);
 
 	switch ( type ) {
 		case QtDebugMsg:
-			if (rx_log.indexIn(orig_line) > -1) {
+			if (rx_log.indexIn(line) > -1) {
 				#ifndef NO_DEBUG_ON_CONSOLE
-				fprintf( stderr, "Debug: %s\n", orig_line.toLocal8Bit().data() );
+				fprintf( stderr, "Debug: %s\n", line.toLocal8Bit().data() );
 				#endif
-				line2 = orig_line;
+				Helper::addLog( line );
 			}
 			break;
 		case QtWarningMsg:
 			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Warning: %s\n", orig_line.toLocal8Bit().data() );
+			fprintf( stderr, "Warning: %s\n", line.toLocal8Bit().data() );
 			#endif
-			line2 = "WARNING: " + orig_line;
+			Helper::addLog( "WARNING: " + line );
 			break;
 		case QtFatalMsg:
 			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Fatal: %s\n", orig_line.toLocal8Bit().data() );
+			fprintf( stderr, "Fatal: %s\n", line.toLocal8Bit().data() );
 			#endif
-			line2 = "FATAL: " + orig_line;
+			Helper::addLog( "FATAL: " + line );
 			abort();                    // deliberately core dump
 		case QtCriticalMsg:
 			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Critical: %s\n", orig_line.toLocal8Bit().data() );
+			fprintf( stderr, "Critical: %s\n", line.toLocal8Bit().data() );
 			#endif
-			line2 = "CRITICAL: " + orig_line;
+			Helper::addLog( "CRITICAL: " + line );
 			break;
-	}
-
-	if (line2.isEmpty()) return;
-
-	line2 = "["+ QTime::currentTime().toString() +"] "+ line2;
-
-	if (basegui_instance) {
-		if (!saved_lines.isEmpty()) {
-			// Send saved lines first
-			for (int n=0; n < saved_lines.count(); n++) {
-				basegui_instance->recordSmplayerLog(saved_lines[n]);
-			}
-			saved_lines.clear();
-		}
-		basegui_instance->recordSmplayerLog(line2);
-	} else {
-		// GUI is not created yet, save lines for later
-		saved_lines.append(line2);
 	}
 }
 
@@ -149,7 +125,6 @@ public:
 int main( int argc, char ** argv ) 
 {
 	MyApplication a( argc, argv );
-	a.setQuitOnLastWindowClosed(false);
 	//a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
 
 	// Sets the config path
@@ -250,7 +225,6 @@ int main( int argc, char ** argv )
 		return c;
 	}
 
-	basegui_instance = smplayer->gui();
 	a.connect(smplayer->gui(), SIGNAL(quitSolicited()), &a, SLOT(quit()));
 	smplayer->start();
 
@@ -264,7 +238,6 @@ int main( int argc, char ** argv )
 
 	int r = a.exec();
 
-	basegui_instance = 0;
 	delete smplayer;
 
 	return r;

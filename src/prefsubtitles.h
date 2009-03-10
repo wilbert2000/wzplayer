@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include "ui_prefsubtitles.h"
 #include "prefwidget.h"
+#include "config.h"
 
 class Preferences;
 class Encodings;
@@ -81,14 +82,19 @@ protected:
 	void setUseFontASS(bool v);
 	bool useFontASS();
 
+#if !USE_ASS_STYLES
+	void setAssColor( unsigned int color );
+	unsigned int assColor();
+
+	void setAssBorderColor( unsigned int color );
+	unsigned int assBorderColor();
+
+	void setAssStyles(QString styles);
+	QString assStyles();
+#endif
+
 	void setAssLineSpacing(int spacing);
 	int assLineSpacing();
-
-	void setForceAssStyles(bool b);
-	bool forceAssStyles();
-
-	void setCustomizedAssStyle(QString style) { forced_ass_style = style; };
-	QString customizedAssStyle() { return forced_ass_style; };
 
 	void setFontFuzziness(int n);
 	int fontFuzziness();
@@ -96,21 +102,18 @@ protected:
 	void setSubtitlesOnScreenshots(bool b);
 	bool subtitlesOnScreenshots();
 
-	void setFreetypeSupport(bool b);
-	bool freetypeSupport();
-
 protected slots:
 	void on_ass_subs_button_toggled(bool b);
-	void on_ass_customize_button_clicked();
-	void on_freetype_check_toggled(bool b);
+
+#if USE_ASS_STYLES
 	void checkBorderStyleCombo( int index );
+#endif
 
 protected:
 	virtual void retranslateStrings();
 
 private:
 	Encodings * encodings;
-	QString forced_ass_style;
 };
 
 #endif

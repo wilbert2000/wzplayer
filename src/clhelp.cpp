@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ QString CLHelp::formatHelp(QString parameter, QString help, bool html) {
 QString CLHelp::help(bool html) {
 	QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
 
-	QString options = QString("%1 [-minigui] [-defaultgui] [-mpcgui] [-config-path %2] "
+	QString options = QString("%1 [-minigui] [-defaultgui] [-config-path %2] "
                         "[-send-action %3] [-actions %4] "
                         "[-close-at-end] [-no-close-at-end] [-fullscreen] [-no-fullscreen] "
                         "[-sub %5] "
@@ -112,9 +112,6 @@ QString CLHelp::help(bool html) {
 #endif
 	s += formatHelp( "-minigui", QObject::tr(
 		"opens the mini gui instead of the default one."), html );
-
-	s += formatHelp( "-mpcgui", QObject::tr(
-		"opens the mpc gui."), html );
 
 	s += formatHelp( "-defaultgui", QObject::tr(
 		"opens the default gui."), html );

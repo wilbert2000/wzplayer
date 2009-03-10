@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,8 +37,18 @@ public:
 
 	static QString timeForJumps(int secs);
 
+	// Give a name for config (group name) based on filename
+	static QString filenameForPref(const QString & filename);
+
 	// Give a name for config (group name) based on dvd id
-	/* static QString dvdForPref(const QString & dvd_id, int title); */
+	static QString dvdForPref(const QString & dvd_id, int title);
+
+	//! Adds a line to the log
+	static void addLog(QString s);
+
+	//! Returns the log (the debugging messages)
+	static QString log();
+
 
 #ifdef Q_OS_WIN
 	static QString shortPathName(QString long_path);
@@ -52,6 +62,9 @@ public:
 	//! Change filenames like "C:/Program Files/" to "C:\Program Files\"
 	static QString changeSlashes(QString filename);
 
+	static QString dvdSplitFolder(QString dvd_url);
+	static int dvdSplitTitle(QString dvd_url);
+
 	static bool directoryContainsDVD(QString directory);
 
 	//! Returns an int with the version number of Qt at run-time.
@@ -63,6 +76,9 @@ public:
 	static QString equalizerListToString(AudioEqualizerList values);
 
 	static QStringList searchForConsecutiveFiles(const QString & initial_file);
+
+private:
+	static QString logs;
 };
 
 #endif

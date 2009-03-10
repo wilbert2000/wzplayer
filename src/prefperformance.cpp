@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ void PrefPerformance::createHelp() {
 	setWhatsThis(priority_combo, tr("Priority"), 
 		tr("Set process priority for mplayer according to the predefined "
            "priorities available under Windows.<br>"
-           "<b>Warning:</b> Using realtime priority can cause system lockup."));
+           "<b>WARNING:</b> Using realtime priority can cause system lockup."));
 #endif
 
 	setWhatsThis(framedrop_check, tr("Allow frame drop"),

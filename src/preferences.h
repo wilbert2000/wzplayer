@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,20 +23,15 @@
 /* Global settings */
 
 #include <QString>
-#include <QStringList>
 #include <QSize>
 #include "config.h"
 #include "audioequalizerlist.h"
 #include "assstyles.h"
 
-class Recents;
-class URLHistory;
-
 class Preferences {
 
 public:
 	enum OSD { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
-	enum OnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
 	enum Resize { Never = 0, Always = 1, Afterload = 2 };
 	enum Priority { Realtime = 0, High = 1, AboveNormal = 2, Normal = 3,
                     BelowNormal = 4, Idle = 5 };
@@ -84,7 +79,6 @@ public:
 	bool use_soft_video_eq;
 	bool use_slices;
 	int autoq; 	//!< Postprocessing quality
-	bool add_blackborders_on_fullscreen;
 
 	// Audio
 	bool use_soft_vol;
@@ -99,8 +93,6 @@ public:
 	bool loop; 	//!< Loop. If true repeat the file
 	int osd;
 
-	QString file_settings_method; //!< Method to be used for saving file settings
-
 
     /* ***************
        Drives (CD/DVD)
@@ -114,10 +106,6 @@ public:
 #endif
 
 	int vcd_initial_title;
-
-#if DVDNAV_SUPPORT
-	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:
-#endif
 
 
     /* ***********
@@ -162,6 +150,11 @@ public:
 	bool autoload_sub;
 
 	bool use_ass_subtitles;
+#if !USE_ASS_STYLES
+	unsigned int ass_color;
+	unsigned int ass_border_color;
+	QString ass_styles;
+#endif
 	int ass_line_spacing;
 
 	bool use_closed_caption_subs;
@@ -174,13 +167,10 @@ public:
 	OptionState use_new_sub_commands; 
 	OptionState change_sub_scale_should_restart;
 
+#if USE_ASS_STYLES
 	// ASS styles
 	AssStyles ass_styles;
-	bool force_ass_styles; // Use ass styles even for ass files
-	QString user_forced_ass_style; //!< Specifies a style defined by the user to be used with -ass-force-style
-
-	//! If false, options requiring freetype won't be used
-	bool freetype_support;
+#endif
 
 
     /* ********
@@ -218,7 +208,13 @@ public:
 
 #if REPAINT_BACKGROUND_OPTION
 	//! If true, mplayerlayer erases its background
-	bool repaint_video_background; 
+	bool always_clear_video_background; 
+#endif
+
+	//! Make configurable some of the mplayerprocess regular expressions
+	QString rx_endoffile;
+#if !CHECK_VIDEO_CODEC_FOR_NO_VIDEO
+	QString rx_novideo;
 #endif
 
 	//! If true it will autoload edl files with the same name of the file
@@ -241,9 +237,7 @@ public:
 	//! in mplayer svn r27665.
 	bool use_pausing_keep_force;
 
-	OptionState use_correct_pts; //!< Pass -correct-pts to mplayer
-
-	QString actions_to_run; //!< List of actions to run every time a video loads.
+	bool use_correct_pts; //!< Pass -correct-pts to mplayer
 
 
 	/* *********
@@ -253,7 +247,7 @@ public:
 	bool fullscreen;
 	bool start_in_fullscreen;
 	bool compact_mode;
-	OnTop stay_on_top;
+	bool stay_on_top;
 	int size_factor;
 
 	int resize_method; 	//!< Mainwindow resize method
@@ -272,6 +266,8 @@ public:
 	QString mouse_xbutton1_click_function;
 	QString mouse_xbutton2_click_function;
 	int wheel_function;
+
+	int recents_max_items; 	//!< Max items in recent's list
 
 	// Configurable seeking
 	int seeking1; // By default 10s
@@ -335,6 +331,7 @@ public:
        *********** */
 
 	QString latest_dir; //!< Directory of the latest file loaded
+	QString last_url;
 	QString last_dvd_directory;
 
 
@@ -343,7 +340,9 @@ public:
        ************** */
 
 	double initial_sub_scale;
+#if SCALE_ASS_SUBS
 	double initial_sub_scale_ass;
+#endif
 	int initial_volume;
 	int initial_contrast;
 	int initial_brightness;
@@ -366,7 +365,6 @@ public:
 	int initial_deinterlace;
 
 	int initial_audio_channels;
-	int initial_stereo_mode;
 
 	int initial_audio_track;
 	int initial_subtitle_track;
@@ -404,14 +402,6 @@ public:
 #ifndef Q_OS_WIN
 	bool bypass_window_manager;
 #endif
-
-
-    /* *******
-       History
-       ******* */
-
-	Recents * history_recents;
-	URLHistory * history_urls;
 };
 
 #endif

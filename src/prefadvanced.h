@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 #include "ui_prefadvanced.h"
 #include "prefwidget.h"
-#include "preferences.h"
+#include "config.h"
 
 class Preferences;
 
@@ -43,7 +43,7 @@ public:
     void getData(Preferences * pref);
 
 #if REPAINT_BACKGROUND_OPTION
-	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; };
+	bool clearingBackgroundChanged() { return clearing_background_changed; };
 #endif
 	bool monitorAspectChanged() { return monitor_aspect_changed; };
 #if USE_COLORKEY
@@ -58,8 +58,8 @@ protected:
 	QString monitorAspect();
 
 #if REPAINT_BACKGROUND_OPTION
-	void setRepaintVideoBackground(bool b);
-	bool repaintVideoBackground();
+	void setClearBackground(bool b);
+	bool clearBackground();
 #endif
 
 	void setUseMplayerWindow(bool v);
@@ -89,11 +89,8 @@ protected:
 	void setUseIdx(bool);
 	bool useIdx();
 
-	void setUseCorrectPts(Preferences::OptionState value);
-	Preferences::OptionState useCorrectPts();
-
-	void setActionsToRun(QString actions);
-	QString actionsToRun();
+	void setUseCorrectPts(bool b);
+	bool useCorrectPts();
 
 	// Log options
 	void setLogMplayer(bool b);
@@ -111,6 +108,15 @@ protected:
     void setMplayerLogName(QString filter);
     QString mplayerLogName();
 
+	// MPlayer language
+	void setEndOfFileText(QString t);
+	QString endOfFileText();
+
+#if !CHECK_VIDEO_CODEC_FOR_NO_VIDEO
+	void setNoVideoText(QString t);
+	QString noVideoText();
+#endif
+
 protected:
 	virtual void retranslateStrings();
 
@@ -119,7 +125,7 @@ protected slots:
 
 private:
 #if REPAINT_BACKGROUND_OPTION
-	bool repaint_video_background_changed;
+	bool clearing_background_changed;
 #endif
 	bool monitor_aspect_changed;
 #if USE_COLORKEY

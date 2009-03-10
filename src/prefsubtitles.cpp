@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "filedialog.h"
 #include "languages.h"
 
-#include <QInputDialog>
+#include <QColorDialog>
 
 PrefSubtitles::PrefSubtitles(QWidget * parent, Qt::WindowFlags f)
 	: PrefWidget(parent, f )
@@ -37,8 +37,14 @@ PrefSubtitles::PrefSubtitles(QWidget * parent, Qt::WindowFlags f)
 	ttf_font_edit->setOptions(QFileDialog::DontUseNativeDialog);
 #endif
 
+#if USE_ASS_STYLES
 	connect( style_border_style_combo, SIGNAL(currentIndexChanged(int)),
              this, SLOT(checkBorderStyleCombo(int)) );
+
+	simple_styles_container->hide();
+#else
+	styles_container->hide();
+#endif
 
 	retranslateStrings();
 }
@@ -94,6 +100,7 @@ void PrefSubtitles::retranslateStrings() {
 	ttf_font_edit->setCaption(tr("Choose a ttf file"));
 	ttf_font_edit->setFilter(tr("Truetype Fonts") + " (*.ttf)");
 
+#if USE_ASS_STYLES
 	// Ass styles
 	int alignment_item = style_alignment_combo->currentIndex();
 	style_alignment_combo->clear();
@@ -115,6 +122,8 @@ void PrefSubtitles::retranslateStrings() {
 	style_border_style_combo->addItem(tr("Opaque box", "border style"), 3);
 	style_border_style_combo->setCurrentIndex(borderstyle_item);
 
+#endif
+
 	createHelp();
 }
 
@@ -131,17 +140,21 @@ void PrefSubtitles::setData(Preferences * pref) {
 	setUseEnca( pref->use_enca );
 	setEncaLang( pref->enca_lang );
 	setUseFontASS( pref->use_ass_subtitles );
+#if !USE_ASS_STYLES
+	setAssColor( pref->ass_color );
+	setAssBorderColor( pref->ass_border_color );
+	setAssStyles( pref->ass_styles );
+#endif
 	setAssLineSpacing( pref->ass_line_spacing );
 	setSubPos( pref->initial_sub_pos );
 	setSubtitlesOnScreenshots( pref->subtitles_on_screenshots );
-	setFreetypeSupport( pref->freetype_support );
 
+#if USE_ASS_STYLES
 	// Load ass styles
 	style_font_combo->setCurrentText(pref->ass_styles.fontname);
 	style_size_spin->setValue(pref->ass_styles.fontsize);
 	style_text_color_button->setColor(pref->ass_styles.primarycolor);
-	style_border_color_button->setColor(pref->ass_styles.outlinecolor);
-	style_shadow_color_button->setColor(pref->ass_styles.backcolor);
+	style_border_color_button->setColor(pref->ass_styles.backcolor);
 	style_bold_check->setChecked(pref->ass_styles.bold);
 	style_italic_check->setChecked(pref->ass_styles.italic);
 	style_alignment_combo->setCurrentIndex(style_alignment_combo->findData(pref->ass_styles.halignment));
@@ -152,9 +165,7 @@ void PrefSubtitles::setData(Preferences * pref) {
 	style_marginl_spin->setValue(pref->ass_styles.marginl);
 	style_marginr_spin->setValue(pref->ass_styles.marginr);
 	style_marginv_spin->setValue(pref->ass_styles.marginv);
-
-	setForceAssStyles(pref->force_ass_styles);
-	setCustomizedAssStyle(pref->user_forced_ass_style);
+#endif
 }
 
 void PrefSubtitles::getData(Preferences * pref) {
@@ -172,17 +183,21 @@ void PrefSubtitles::getData(Preferences * pref) {
 	TEST_AND_SET(pref->use_enca, useEnca());
 	TEST_AND_SET(pref->enca_lang, encaLang());
 	TEST_AND_SET(pref->use_ass_subtitles, useFontASS());
+#if !USE_ASS_STYLES
+	TEST_AND_SET(pref->ass_color, assColor());
+	TEST_AND_SET(pref->ass_border_color, assBorderColor());
+	TEST_AND_SET(pref->ass_styles, assStyles());
+#endif
 	TEST_AND_SET(pref->ass_line_spacing, assLineSpacing());
 	pref->initial_sub_pos = subPos();
 	TEST_AND_SET(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
-	TEST_AND_SET(pref->freetype_support, freetypeSupport());
 
+#if USE_ASS_STYLES
 	// Save ass styles
 	TEST_AND_SET(pref->ass_styles.fontname, style_font_combo->currentText());
 	TEST_AND_SET(pref->ass_styles.fontsize, style_size_spin->value());
 	TEST_AND_SET(pref->ass_styles.primarycolor, style_text_color_button->color().rgb());
-	TEST_AND_SET(pref->ass_styles.outlinecolor, style_border_color_button->color().rgb());
-	TEST_AND_SET(pref->ass_styles.backcolor, style_shadow_color_button->color().rgb());
+	TEST_AND_SET(pref->ass_styles.backcolor, style_border_color_button->color().rgb());
 	TEST_AND_SET(pref->ass_styles.bold, style_bold_check->isChecked());
 	TEST_AND_SET(pref->ass_styles.italic, style_italic_check->isChecked());
 	TEST_AND_SET(pref->ass_styles.halignment, style_alignment_combo->itemData(style_alignment_combo->currentIndex()).toInt());
@@ -195,11 +210,10 @@ void PrefSubtitles::getData(Preferences * pref) {
 	TEST_AND_SET(pref->ass_styles.marginv, style_marginv_spin->value());
 
 	pref->ass_styles.exportStyles( Paths::subtitleStyleFile() );
-
-	TEST_AND_SET(pref->force_ass_styles, forceAssStyles());
-	TEST_AND_SET(pref->user_forced_ass_style, customizedAssStyle());
+#endif
 }
 
+#if USE_ASS_STYLES
 void PrefSubtitles::checkBorderStyleCombo( int index ) {
 	bool b = (index == 0);
 	style_outline_spin->setEnabled(b);
@@ -207,7 +221,7 @@ void PrefSubtitles::checkBorderStyleCombo( int index ) {
 	style_outline_label->setEnabled(b);
 	style_shadow_label->setEnabled(b);
 }
-
+#endif
 
 void PrefSubtitles::setFontName(QString font_name) {
 	fontCombo->setCurrentText(font_name);
@@ -312,6 +326,32 @@ bool PrefSubtitles::useFontASS() {
 	return ass_subs_button->isChecked();
 }
 
+#if !USE_ASS_STYLES
+void PrefSubtitles::setAssColor( unsigned int color ) {
+	colorButton->setColor(color);
+}
+
+unsigned int PrefSubtitles::assColor() {
+	return colorButton->color().rgb();
+}
+
+void PrefSubtitles::setAssBorderColor( unsigned int color ) {
+	borderButton->setColor(color);
+}
+
+unsigned int PrefSubtitles::assBorderColor() {
+	return borderButton->color().rgb();
+}
+
+void PrefSubtitles::setAssStyles(QString styles) {
+	ass_styles_edit->setText(styles);
+}
+
+QString PrefSubtitles::assStyles() {
+	return ass_styles_edit->text();
+}
+#endif
+
 void PrefSubtitles::setFontFuzziness(int n) {
 	font_autoload_combo->setCurrentIndex(n);
 }
@@ -336,73 +376,11 @@ int PrefSubtitles::assLineSpacing() {
 	return ass_line_spacing_spin->value();
 }
 
-void PrefSubtitles::setForceAssStyles(bool b) {
-	force_ass_styles->setChecked(b);
-}
-
-bool PrefSubtitles::forceAssStyles() {
-	return force_ass_styles->isChecked();
-}
-
 void PrefSubtitles::on_ass_subs_button_toggled(bool b) {
 	if (b) 
 		stackedWidget->setCurrentIndex(1);
 	 else 
 		stackedWidget->setCurrentIndex(0);
-}
-
-void PrefSubtitles::on_ass_customize_button_clicked() {
-	bool ok;
-
-	QString edit = forced_ass_style;
-
-	// A copy with the current values in the dialog
-	AssStyles ass_styles;
-	ass_styles.fontname = style_font_combo->currentText();
-	ass_styles.fontsize = style_size_spin->value();
-	ass_styles.primarycolor = style_text_color_button->color().rgb();
-	ass_styles.outlinecolor = style_border_color_button->color().rgb();
-	ass_styles.backcolor = style_shadow_color_button->color().rgb();
-	ass_styles.bold = style_bold_check->isChecked();
-	ass_styles.italic = style_italic_check->isChecked();
-	ass_styles.halignment = style_alignment_combo->itemData(style_alignment_combo->currentIndex()).toInt();
-	ass_styles.valignment = style_valignment_combo->currentIndex();
-	ass_styles.borderstyle = style_border_style_combo->itemData(style_border_style_combo->currentIndex()).toInt();
-	ass_styles.outline = style_outline_spin->value();
-	ass_styles.shadow = style_shadow_spin->value();
-	ass_styles.marginl = style_marginl_spin->value();
-	ass_styles.marginr = style_marginr_spin->value();
-	ass_styles.marginv = style_marginv_spin->value();
-
-	if (edit.isEmpty()) {
-		edit = ass_styles.toString();
-	}
-
-	QString s = QInputDialog::getText(this, tr("Customize SSA/ASS style"),
-                                      tr("Here you can enter your customized SSA/ASS style.") +"<br>"+
-                                      tr("Clear the edit line to disable the customized style."), 
-                                      QLineEdit::Normal, 
-                                      edit, &ok );
-	if (ok) {
-		if (s == ass_styles.toString()) s.clear(); // Clear string if it wasn't changed by the user
-		setCustomizedAssStyle(s);
-	}
-}
-
-void PrefSubtitles::setFreetypeSupport(bool b) {
-	freetype_check->setChecked(b);
-}
-
-bool PrefSubtitles::freetypeSupport() {
-	return freetype_check->isChecked();
-}
-
-void PrefSubtitles::on_freetype_check_toggled(bool b) {
-	qDebug("PrefSubtitles:on_freetype_check_toggled: %d", b);
-	if (!b) {
-		ass_subs_button->setChecked(false);
-		normal_subs_button->setChecked(true);
-	}
 }
 
 void PrefSubtitles::createHelp() {
@@ -437,13 +415,7 @@ void PrefSubtitles::createHelp() {
 	setWhatsThis(subtitles_on_screeshots_check, 
         tr("Include subtitles on screenshots"), 
         tr("If this option is checked, the subtitles will appear in the "
-           "screenshots. <b>Note:</b> it may cause some troubles sometimes." ) );
-
-	setWhatsThis(freetype_check, tr("Freetype support"), 
-		tr("You should normally not disable this option. Do it only if your "
-           "MPlayer is compiled without freetype support. "
-           "<b>Disabling this option could make that subtitles won't work "
-           "at all!</b>") );
+           "screenshots. Note: it may cause some troubles sometimes." ) );
 
 	addSectionTitle(tr("Font"));
 
@@ -490,6 +462,20 @@ void PrefSubtitles::createHelp() {
 
 	addSectionTitle(tr("SSA/ASS subtitles"));
 
+#if !USE_ASS_STYLES
+	setWhatsThis(colorButton, tr("Text color"), 
+        tr("Select the color for the text of the subtitles.") );
+
+	setWhatsThis(borderButton, tr("Border color"), 
+        tr("Select the color for the border of the subtitles.") );
+
+	setWhatsThis(ass_styles_edit, tr("SSA/ASS styles"), 
+		tr("Here you can override styles for SSA/ASS subtitles. "
+           "It can be also used for fine-tuning the rendering of SRT and SUB "
+           "subtitles by the SSA/ASS library. "
+           "Example: <b>Bold=1,Outline=2,Shadow=4</b>"));
+#endif
+
 	setWhatsThis(ass_font_scale_spin, tr("Default scale"),
 		tr("This option specifies the default font scale for SSA/ASS "
            "subtitles which will be used for new opened files.") +"<br>"+
@@ -499,10 +485,7 @@ void PrefSubtitles::createHelp() {
 		tr("This specifies the spacing that will be used to separate "
            "multiple lines. It can have negative values.") );
 
-	setWhatsThis(styles_container, tr("SSA/ASS style"), 
-		tr("The following options allows you to define the style to "
-           "be used for non-styled subtitles (srt, sub...).") );
-       
+#if USE_ASS_STYLES
 	setWhatsThis(style_font_combo, tr("Font"), 
 		tr("Select the font for the subtitles.") );
 
@@ -520,9 +503,6 @@ void PrefSubtitles::createHelp() {
 
 	setWhatsThis(style_border_color_button, tr("Border color"), 
         tr("Select the color for the border of the subtitles.") );
-
-	setWhatsThis(style_shadow_color_button, tr("Shadow color"), 
-        tr("This color will be used for the shadow of the subtitles.") );
 
 	setWhatsThis(style_marginl_spin, tr("Left margin"), 
         tr("Specifies the left margin in pixels.") );
@@ -553,9 +533,7 @@ void PrefSubtitles::createHelp() {
         tr("If border style is set to <i>outline</i>, this option specifies "
            "the depth of the drop shadow behind the text in pixels.") );
 
-	setWhatsThis(force_ass_styles, tr("Apply style to ass files too"), 
-        tr("If this option is checked, the style defined above will be "
-           "applied to ass subtitles too.") );
+#endif
 }
 
 #include "moc_prefsubtitles.cpp"

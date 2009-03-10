@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,11 +51,37 @@ public:
 };
 #endif
 
-/*
+
+QString Helper::logs;
+
+QString Helper::filenameForPref(const QString & filename) {
+	QString s = filename;
+	s = s.replace('/', '_');
+	s = s.replace('\\', '_');
+	s = s.replace(':', '_');
+	s = s.replace('.', '_');
+	s = s.replace(' ', '_');
+
+	QFileInfo fi(filename);
+	if (fi.exists()) {
+		s += "_" + QString::number( fi.size() );
+	}
+
+	return s;	
+}
+
 QString Helper::dvdForPref(const QString & dvd_id, int title) {
 	return  QString("DVD_%1_%2").arg(dvd_id).arg(title);
 }
-*/
+
+
+void Helper::addLog(QString s) {
+	logs += s + "\n";
+}
+
+QString Helper::log() { 
+	return logs; 
+}
 
 QString Helper::formatTime(int secs) {
 	int t = secs;
@@ -142,6 +168,27 @@ QString Helper::changeSlashes(QString filename) {
 	else
 		return filename;
 }
+
+QString Helper::dvdSplitFolder(QString dvd_url) {
+	qDebug("Helper::dvdSplitFolder: '%s'", dvd_url.toUtf8().data());
+	QRegExp s("^dvd://(\\d+):(.*)", Qt::CaseInsensitive);
+	if (s.indexIn(dvd_url)!=-1) {
+		return s.cap(2);
+	} else {
+		return QString::null;
+	}
+}
+
+int Helper::dvdSplitTitle(QString dvd_url) {
+	qDebug("Helper::dvdSplitTitle: '%s'", dvd_url.toUtf8().data());
+	QRegExp s("^dvd://(\\d+)(.*)", Qt::CaseInsensitive);
+	if (s.indexIn(dvd_url)!=-1) {
+		return s.cap(1).toInt();
+	} else {
+		return -1;
+	}
+}
+
 
 bool Helper::directoryContainsDVD(QString directory) {
 	//qDebug("Helper::directoryContainsDVD: '%s'", directory.latin1());

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 #include "myprocess.h"
 #include "mediadata.h"
 #include "config.h"
-
-#define NOTIFY_SUB_CHANGES 1
-#define NOTIFY_AUDIO_CHANGES 1
 
 class QStringList;
 
@@ -62,33 +59,18 @@ signals:
 	void receivedConnectingToMessage(QString);
 	void receivedResolvingMessage(QString);
 	void receivedScreenshot(QString);
-	void receivedUpdatingFontCache();
 
 	void receivedStreamTitleAndUrl(QString,QString);
 
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
 
-#if NOTIFY_SUB_CHANGES
-	//! Emitted if a new subtitle has been added or an old one changed
-	void subtitleInfoChanged(const SubTracks &);
-
-	//! Emitted when subtitle info has been received but there wasn't anything new
-	void subtitleInfoReceivedAgain(const SubTracks &);
-#endif
-#if NOTIFY_AUDIO_CHANGES
-	//! Emitted if a new audio track been added or an old one changed
-    void audioInfoChanged(const Tracks &);
-#endif
-
-#if DVDNAV_SUPPORT
-	void receivedDVDTitle(int);
-	void receivedDuration(double);
-#endif
-
 protected slots:
 	void parseLine(QByteArray ba);
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 	void gotError(QProcess::ProcessError);
+
+protected:
+	void init_rx();
 
 private:
 	bool notified_mplayer_is_running;
@@ -100,16 +82,9 @@ private:
 
 	int mplayer_svn;
 
-#if NOTIFY_SUB_CHANGES
-	SubTracks subs;
-
-	bool subtitle_info_received;
-	bool subtitle_info_changed;
-#endif
-
-#if NOTIFY_AUDIO_CHANGES
-	Tracks audios;
-	bool audio_info_changed;
+#if NOTIFY_AUDIO_SUB_CHANGES
+	bool audio_tracks_changed;
+	bool subtitle_tracks_changed;
 #endif
 
 #if GENERIC_CHAPTER_SUPPORT

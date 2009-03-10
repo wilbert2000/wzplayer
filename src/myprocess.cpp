@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,9 +51,6 @@ MyProcess::MyProcess(QObject * parent) : QProcess(parent)
 
 	connect(this, SIGNAL(finished(int, QProcess::ExitStatus)), 
             this, SLOT(procFinished()) ); 
-
-	// Test splitArguments
-	//QStringList l = MyProcess::splitArguments("-opt 1 hello \"56 67\" wssx -ios");
 }
 
 void MyProcess::clearArguments() {
@@ -169,33 +166,6 @@ void MyProcess::procFinished() {
 
 	temp_file.close();
 #endif
-}
-
-QStringList MyProcess::splitArguments(const QString & args) {
-	qDebug("MyProcess::splitArguments: '%s'", args.toUtf8().constData());
-
-	QStringList l;
-
-	bool opened_quote = false;
-	int init_pos = 0;
-	for (int n = 0; n < args.length(); n++) {
-		if ((args[n] == QChar(' ')) && (!opened_quote)) {
-			l.append(args.mid(init_pos, n - init_pos));
-			init_pos = n+1;
-		}
-		else
-		if (args[n] == QChar('\"')) opened_quote = !opened_quote;
-
-		if (n == args.length()-1) {
-			l.append(args.mid(init_pos, (n - init_pos)+1));
-		}
-	}
-
-	for (int n = 0; n < l.count(); n++) {
-		qDebug("MyProcess::splitArguments: arg: %d '%s'", n, l[n].toUtf8().constData());
-	}
-
-	return l;
 }
 
 #include "moc_myprocess.cpp"

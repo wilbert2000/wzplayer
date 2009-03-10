@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include "paths.h"
 #include "config.h"
 #include "languages.h"
-#include "recents.h"
 
 #include <QDir>
 #include <QStyleFactory>
@@ -153,7 +152,6 @@ void PrefInterface::retranslateStrings() {
 	gui_combo->clear();
 	gui_combo->addItem( tr("Default GUI"), "DefaultGUI");
 	gui_combo->addItem( tr("Mini GUI"), "MiniGUI");
-	gui_combo->addItem( tr("Mpc GUI"), "MpcGUI");
 	gui_combo->setCurrentIndex(gui_index);
 
 	floating_width_label->setNum(floating_width_slider->value());
@@ -171,7 +169,7 @@ void PrefInterface::setData(Preferences * pref) {
 	setUseSingleInstance(pref->use_single_instance);
 	setServerPort(pref->connection_port);
 	setUseAutoPort(pref->use_autoport);
-	setRecentsMaxItems(pref->history_recents->maxItems());
+	setRecentsMaxItems(pref->recents_max_items);
 
 	setSeeking1(pref->seeking1);
 	setSeeking2(pref->seeking2);
@@ -230,8 +228,8 @@ void PrefInterface::getData(Preferences * pref) {
 		port_changed = true;
 	}
 
-	if (pref->history_recents->maxItems() != recentsMaxItems()) {
-		pref->history_recents->setMaxItems( recentsMaxItems() );
+	if (pref->recents_max_items != recentsMaxItems()) {
+		pref->recents_max_items = recentsMaxItems();
 		recents_changed = true;
 	}
 
@@ -584,7 +582,7 @@ void PrefInterface::createHelp() {
 
 	setWhatsThis(floating_compact_check, tr("Display in compact mode too"),
 		tr("If this option is enabled, the floating control will appear "
-           "in compact mode too. <b>Warning:</b> the floating control has not been "
+           "in compact mode too. Warning: the floating control has not been "
            "designed for compact mode and it might not work properly.") );
 
 #ifndef Q_OS_WIN

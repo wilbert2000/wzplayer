@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 #include "global.h"
 #include "paths.h"
 #include "mediasettings.h"
-#include "recents.h"
-#include "urlhistory.h"
 
 #include <QSettings>
 #include <QFileInfo>
@@ -32,9 +30,6 @@
 using namespace Global;
 
 Preferences::Preferences() {
-	history_recents = new Recents;
-	history_urls = new URLHistory;
-
 	reset();
 
 #ifndef NO_USE_INI_FILES
@@ -46,12 +41,18 @@ Preferences::~Preferences() {
 #ifndef NO_USE_INI_FILES
 	save();
 #endif
-
-	delete history_recents;
-	delete history_urls;
 }
 
 void Preferences::reset() {
+
+	/*
+	QFileInfo fi(mplayer_bin);
+	if (fi.exists()) {
+		mplayer_bin = fi.absFilePath();
+		qDebug("mplayer_bin: '%s'", mplayer_bin.toUtf8().data());
+	}
+	*/
+
     /* *******
        General
        ******* */
@@ -64,6 +65,13 @@ void Preferences::reset() {
 
 	vo = ""; 
 	ao = "";
+
+	// On Windows Vista set vo to gl:yuv=2:force-pbo:ati-hack as default
+#ifdef Q_OS_WIN
+	if (QSysInfo::WindowsVersion == QSysInfo::WV_VISTA) {
+		vo = "gl:yuv=2:force-pbo:ati-hack,";
+	}
+#endif
 
 	screenshot_directory="";
 #ifndef PORTABLE_APP
@@ -84,10 +92,9 @@ void Preferences::reset() {
 	use_soft_video_eq = false;
 	use_slices = true;
 	autoq = 6;
-	add_blackborders_on_fullscreen = false;
 
-	use_soft_vol = true;
-	softvol_max = 110; // 110 = default value in mplayer
+	use_soft_vol = false;
+    softvol_max = 110; // 110 = default value in mplayer
 	use_scaletempo = Detect;
 	dont_change_volume = false;
 	use_hwac3 = false;
@@ -96,8 +103,6 @@ void Preferences::reset() {
 
 	loop = false;
 	osd = None;
-
-	file_settings_method = "hash"; // Possible values: normal & hash
 
 
     /* ***************
@@ -118,10 +123,6 @@ void Preferences::reset() {
 #endif
 
 	vcd_initial_title = 2; // Most VCD's start at title #2
-
-#if DVDNAV_SUPPORT
-	use_dvdnav = false;
-#endif
 
 
     /* ***********
@@ -166,7 +167,17 @@ void Preferences::reset() {
 	subfuzziness = 1;
 	autoload_sub = true;
 
+#ifdef Q_OS_WIN
+	use_ass_subtitles = false;
+#else
 	use_ass_subtitles = true;
+#endif
+#if !USE_ASS_STYLES
+	ass_color = 0xFFFF00;
+    ass_border_color = 0x000000;
+	//ass_styles = "Bold=1,Outline=2,Shadow=2";
+	ass_styles = "";
+#endif
 	ass_line_spacing = 0;
 
 	use_closed_caption_subs = false;
@@ -177,14 +188,11 @@ void Preferences::reset() {
 	use_new_sub_commands = Detect;
 	change_sub_scale_should_restart = Detect;
 
+#if USE_ASS_STYLES
 	// ASS styles
 	// Nothing to do, default values are given in
 	// AssStyles constructor
-
-	force_ass_styles = false;
-	user_forced_ass_style.clear();
-
-	freetype_support = true;
+#endif
 
 
     /* ********
@@ -220,11 +228,12 @@ void Preferences::reset() {
 
 #if REPAINT_BACKGROUND_OPTION
 	// "Repaint video background" in the preferences dialog
-	#ifndef Q_OS_WIN
-	repaint_video_background = false;
-	#else
-	repaint_video_background = true;
-	#endif
+	always_clear_video_background = true;
+#endif
+
+	rx_endoffile = "Exiting... \\(End of file\\)";
+#if !CHECK_VIDEO_CODEC_FOR_NO_VIDEO
+	rx_novideo = "Video: no video";
 #endif
 
 	use_edl_files = true;
@@ -237,9 +246,7 @@ void Preferences::reset() {
 
 	use_pausing_keep_force = true;
 
-	use_correct_pts = Detect;
-
-	actions_to_run = "";
+	use_correct_pts = false;
 
 
     /* *********
@@ -249,7 +256,7 @@ void Preferences::reset() {
 	fullscreen = false;
 	start_in_fullscreen = false;
 	compact_mode = false;
-	stay_on_top = NeverOnTop;
+	stay_on_top = false;
 	size_factor = 100; // 100%
 
 	resize_method = Always;
@@ -261,17 +268,15 @@ void Preferences::reset() {
 	show_frame_counter = FALSE;
 	show_motion_vectors = false;
 
-#if DVDNAV_SUPPORT
-	mouse_left_click_function = "dvdnav_mouse";
-#else
 	mouse_left_click_function = "";
-#endif
 	mouse_right_click_function = "show_context_menu";
 	mouse_double_click_function = "fullscreen";
 	mouse_middle_click_function = "mute";
 	mouse_xbutton1_click_function = "";
 	mouse_xbutton2_click_function = "";
 	wheel_function = Seeking;
+
+	recents_max_items = 10;
 
 	seeking1 = 10;
 	seeking2 = 60;
@@ -330,6 +335,7 @@ void Preferences::reset() {
        *********** */
 
 	latest_dir = QDir::homePath();
+	last_url="";
 	last_dvd_directory="";
 
 
@@ -338,7 +344,9 @@ void Preferences::reset() {
        ************** */
 
 	initial_sub_scale = 5;
+#if SCALE_ASS_SUBS
 	initial_sub_scale_ass = 1;
+#endif
 	initial_volume = 40;
 	initial_contrast = 0;
 	initial_brightness = 0;
@@ -357,7 +365,6 @@ void Preferences::reset() {
 	initial_deinterlace = MediaSettings::NoDeinterlace;
 
 	initial_audio_channels = MediaSettings::ChDefault;
-	initial_stereo_mode = MediaSettings::Stereo;
 
 	initial_audio_track = 1;
 	initial_subtitle_track = 1;
@@ -398,14 +405,6 @@ void Preferences::reset() {
 #ifndef Q_OS_WIN
 	bypass_window_manager = true;
 #endif
-
-
-    /* *******
-       History
-       ******* */
-
-	history_recents->clear();
-	history_urls->clear();
 }
 
 #ifndef NO_USE_INI_FILES
@@ -439,7 +438,6 @@ void Preferences::save() {
 	set->setValue("use_soft_video_eq", use_soft_video_eq);
 	set->setValue("use_slices", use_slices );
 	set->setValue("autoq", autoq);
-	set->setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
 
 	set->setValue("use_soft_vol", use_soft_vol);
 	set->setValue("softvol_max", softvol_max);
@@ -451,8 +449,6 @@ void Preferences::save() {
 
 	set->setValue("loop", loop);
 	set->setValue("osd", osd);
-
-	set->setValue("file_settings_method", file_settings_method);
 
 	set->endGroup(); // general
 
@@ -471,10 +467,6 @@ void Preferences::save() {
 #endif
 
 	set->setValue("vcd_initial_title", vcd_initial_title);
-
-#if DVDNAV_SUPPORT
-	set->setValue("use_dvdnav", use_dvdnav);
-#endif
 
 	set->endGroup(); // drives
 
@@ -528,6 +520,11 @@ void Preferences::save() {
 	set->setValue("autoload_sub", autoload_sub);
 
 	set->setValue("use_ass_subtitles", use_ass_subtitles);
+#if !USE_ASS_STYLES
+	set->setValue("ass_color", (int) ass_color);
+	set->setValue("ass_border_color", (int) ass_border_color);
+	set->setValue("ass_styles", ass_styles);
+#endif
 	set->setValue("ass_line_spacing", ass_line_spacing);
 	set->setValue("use_closed_caption_subs", use_closed_caption_subs);
 	set->setValue("use_forced_subs_only", use_forced_subs_only);
@@ -537,12 +534,10 @@ void Preferences::save() {
 	set->setValue("use_new_sub_commands", use_new_sub_commands);
 	set->setValue("change_sub_scale_should_restart", change_sub_scale_should_restart);
 
+#if USE_ASS_STYLES
 	// ASS styles
 	ass_styles.save(set);
-	set->setValue("force_ass_styles", force_ass_styles);
-	set->setValue("user_forced_ass_style", user_forced_ass_style);
-
-	set->setValue("freetype_support", freetype_support);
+#endif
 
 	set->endGroup(); // subtitles
 
@@ -581,7 +576,12 @@ void Preferences::save() {
     //mplayer log autosaving end
 
 #if REPAINT_BACKGROUND_OPTION
-	set->setValue("repaint_video_background", repaint_video_background);
+	set->setValue("always_clear_video_background", always_clear_video_background);
+#endif
+
+	set->setValue("rx_endoffile", rx_endoffile);
+#if !CHECK_VIDEO_CODEC_FOR_NO_VIDEO
+	set->setValue("rx_novideo", rx_novideo);
 #endif
 
 	set->setValue("use_edl_files", use_edl_files);
@@ -594,9 +594,7 @@ void Preferences::save() {
 
 	set->setValue("use_pausing_keep_force", use_pausing_keep_force);
 
-	set->setValue("correct_pts", use_correct_pts);
-
-	set->setValue("actions_to_run", actions_to_run);
+	set->setValue("use_correct_pts", use_correct_pts);
 
 	set->endGroup(); // advanced
 
@@ -611,7 +609,7 @@ void Preferences::save() {
 	set->setValue("start_in_fullscreen", start_in_fullscreen);
 
 	set->setValue("compact_mode", compact_mode);
-	set->setValue("stay_on_top", (int) stay_on_top);
+	set->setValue("stay_on_top", stay_on_top);
 	set->setValue("size_factor", size_factor);
 	set->setValue("resize_method", resize_method);
 
@@ -629,6 +627,8 @@ void Preferences::save() {
 	set->setValue("mouse_xbutton1_click_function", mouse_xbutton1_click_function);
 	set->setValue("mouse_xbutton2_click_function", mouse_xbutton2_click_function);
 	set->setValue("wheel_function", wheel_function);
+
+	set->setValue("recents_max_items", recents_max_items);
 
 	set->setValue("seeking1", seeking1);
 	set->setValue("seeking2", seeking2);
@@ -685,6 +685,7 @@ void Preferences::save() {
 
 	set->beginGroup( "directories");
 	set->setValue("latest_dir", latest_dir);
+	set->setValue("last_url", last_url);
 	set->setValue("last_dvd_directory", last_dvd_directory);
 	set->endGroup(); // directories
 
@@ -696,7 +697,9 @@ void Preferences::save() {
 	set->beginGroup( "defaults");
 
 	set->setValue("initial_sub_scale", initial_sub_scale);
+#if SCALE_ASS_SUBS
 	set->setValue("initial_sub_scale_ass", initial_sub_scale_ass);
+#endif
 	set->setValue("initial_volume", initial_volume);
 	set->setValue("initial_contrast", initial_contrast);
 	set->setValue("initial_brightness", initial_brightness);
@@ -715,7 +718,6 @@ void Preferences::save() {
 	set->setValue("initial_deinterlace", initial_deinterlace);
 
 	set->setValue("initial_audio_channels", initial_audio_channels);
-	set->setValue("initial_stereo_mode", initial_stereo_mode);
 
 	set->setValue("initial_audio_track", initial_audio_track);
 	set->setValue("initial_subtitle_track", initial_subtitle_track);
@@ -759,18 +761,6 @@ void Preferences::save() {
 #endif
 	set->endGroup(); // floating_control
 
-
-    /* *******
-       History
-       ******* */
-
-	set->beginGroup("history");
-	set->setValue("recents", history_recents->toStringList());
-	set->setValue("recents/max_items", history_recents->maxItems());
-	set->setValue("urls", history_urls->toStringList());
-	set->setValue("urls/max_items", history_urls->maxItems());
-	set->endGroup(); // history
-
 	set->sync();
 }
 
@@ -804,7 +794,6 @@ void Preferences::load() {
 	use_soft_video_eq = set->value("use_soft_video_eq", use_soft_video_eq).toBool();
 	use_slices = set->value("use_slices", use_slices ).toBool();
 	autoq = set->value("autoq", autoq).toInt();
-	add_blackborders_on_fullscreen = set->value("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen).toBool();
 
 	use_soft_vol = set->value("use_soft_vol", use_soft_vol).toBool();
 	softvol_max = set->value("softvol_max", softvol_max).toInt();
@@ -816,8 +805,6 @@ void Preferences::load() {
 
 	loop = set->value("loop", loop).toBool();
 	osd = set->value("osd", osd).toInt();
-
-	file_settings_method = set->value("file_settings_method", file_settings_method).toString();
 
 	set->endGroup(); // general
 
@@ -836,10 +823,6 @@ void Preferences::load() {
 #endif
 
 	vcd_initial_title = set->value("vcd_initial_title", vcd_initial_title ).toInt();
-
-#if DVDNAV_SUPPORT
-	use_dvdnav = set->value("use_dvdnav", use_dvdnav).toBool();
-#endif
 
 	set->endGroup(); // drives
 
@@ -893,6 +876,11 @@ void Preferences::load() {
 	autoload_sub = set->value("autoload_sub", autoload_sub).toBool();
 
 	use_ass_subtitles = set->value("use_ass_subtitles", use_ass_subtitles).toBool();
+#if !USE_ASS_STYLES
+	ass_color = set->value("ass_color", ass_color).toInt();
+	ass_border_color = set->value("ass_border_color", ass_border_color).toInt();
+	ass_styles = set->value("ass_styles", ass_styles).toString();
+#endif
 	ass_line_spacing = set->value("ass_line_spacing", ass_line_spacing).toInt();
 
 	use_closed_caption_subs = set->value("use_closed_caption_subs", use_closed_caption_subs).toBool();
@@ -903,12 +891,10 @@ void Preferences::load() {
 	use_new_sub_commands = (OptionState) set->value("use_new_sub_commands", use_new_sub_commands).toInt();
 	change_sub_scale_should_restart = (OptionState) set->value("change_sub_scale_should_restart", change_sub_scale_should_restart).toInt();
 
+#if USE_ASS_STYLES
 	// ASS styles
 	ass_styles.load(set);
-	force_ass_styles = set->value("force_ass_styles", force_ass_styles).toBool();
-	user_forced_ass_style = set->value("user_forced_ass_style", user_forced_ass_style).toString();
-
-	freetype_support = set->value("freetype_support", freetype_support).toBool();
+#endif
 
 	set->endGroup(); // subtitles
 
@@ -952,7 +938,12 @@ void Preferences::load() {
     //mplayer log autosaving end
 
 #if REPAINT_BACKGROUND_OPTION
-	repaint_video_background = set->value("repaint_video_background", repaint_video_background).toBool();
+	always_clear_video_background = set->value("always_clear_video_background", always_clear_video_background).toBool();
+#endif
+
+	rx_endoffile = set->value("rx_endoffile", rx_endoffile).toString();
+#if !CHECK_VIDEO_CODEC_FOR_NO_VIDEO
+	rx_novideo = set->value("rx_novideo", rx_novideo).toString();
 #endif
 
 	use_edl_files = set->value("use_edl_files", use_edl_files).toBool();
@@ -963,9 +954,7 @@ void Preferences::load() {
 
 	use_pausing_keep_force = set->value("use_pausing_keep_force", use_pausing_keep_force).toBool();
 
-	use_correct_pts = (OptionState) set->value("correct_pts", use_correct_pts).toInt();
-
-	actions_to_run = set->value("actions_to_run", actions_to_run).toString();
+	use_correct_pts = set->value("use_correct_pts", use_correct_pts).toBool();
 
 	set->endGroup(); // advanced
 
@@ -980,7 +969,7 @@ void Preferences::load() {
 	start_in_fullscreen = set->value("start_in_fullscreen", start_in_fullscreen).toBool();
 
 	compact_mode = set->value("compact_mode", compact_mode).toBool();
-	stay_on_top = (Preferences::OnTop) set->value("stay_on_top", (int) stay_on_top).toInt();
+	stay_on_top = set->value("stay_on_top", stay_on_top).toBool();
 	size_factor = set->value("size_factor", size_factor).toInt();
 	resize_method = set->value("resize_method", resize_method).toInt();
 
@@ -998,6 +987,8 @@ void Preferences::load() {
 	mouse_xbutton1_click_function = set->value("mouse_xbutton1_click_function", mouse_xbutton1_click_function).toString();
 	mouse_xbutton2_click_function = set->value("mouse_xbutton2_click_function", mouse_xbutton2_click_function).toString();
 	wheel_function = set->value("wheel_function", wheel_function).toInt();
+
+	recents_max_items = set->value("recents_max_items", recents_max_items).toInt();
 
 	seeking1 = set->value("seeking1", seeking1).toInt();
 	seeking2 = set->value("seeking2", seeking2).toInt();
@@ -1054,6 +1045,7 @@ void Preferences::load() {
 
 	set->beginGroup( "directories");
 	latest_dir = set->value("latest_dir", latest_dir).toString();
+	last_url = set->value("last_url", last_url).toString();
 	last_dvd_directory = set->value("last_dvd_directory", last_dvd_directory).toString();
 	set->endGroup(); // directories
 
@@ -1065,7 +1057,9 @@ void Preferences::load() {
 	set->beginGroup( "defaults");
 
 	initial_sub_scale = set->value("initial_sub_scale", initial_sub_scale).toDouble();
+#if SCALE_ASS_SUBS
 	initial_sub_scale_ass = set->value("initial_sub_scale_ass", initial_sub_scale_ass).toDouble();
+#endif
 	initial_volume = set->value("initial_volume", initial_volume).toInt();
 	initial_contrast = set->value("initial_contrast", initial_contrast).toInt();
 	initial_brightness = set->value("initial_brightness", initial_brightness).toInt();
@@ -1084,7 +1078,6 @@ void Preferences::load() {
 	initial_deinterlace = set->value("initial_deinterlace", initial_deinterlace).toInt();
 
 	initial_audio_channels = set->value("initial_audio_channels", initial_audio_channels).toInt();
-	initial_stereo_mode = set->value("initial_stereo_mode", initial_stereo_mode).toInt();
 
 	initial_audio_track = set->value("initial_audio_track", initial_audio_track).toInt();
 	initial_subtitle_track = set->value("initial_subtitle_track", initial_subtitle_track).toInt();
@@ -1128,17 +1121,13 @@ void Preferences::load() {
 #endif
 	set->endGroup(); // floating_control
 
-
-    /* *******
-       History
-       ******* */
-
-	set->beginGroup("history");
-	history_recents->fromStringList( set->value("recents", history_recents->toStringList()).toStringList() );
-	history_recents->setMaxItems( set->value("recents/max_items", history_recents->maxItems()).toInt() );;
-	history_urls->fromStringList( set->value("urls", history_urls->toStringList()).toStringList() );
-	history_urls->setMaxItems( set->value("urls/max_items", history_urls->maxItems()).toInt() );;
-	set->endGroup(); // history
+	/*
+	QFileInfo fi(mplayer_bin);
+	if (fi.exists()) {
+		mplayer_bin = fi.absFilePath();
+		qDebug("mplayer_bin: '%s'", mplayer_bin.toUtf8().data());
+	}
+	*/
 }
 
 #endif // NO_USE_INI_FILES

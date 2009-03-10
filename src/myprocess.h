@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@ public:
 
 	void start();				//!< Start the process
 	bool isRunning();			//!< Return true if the process is running
-
-	static QStringList splitArguments(const QString & args);
 
 signals:
 	//! Emitted when there's a line available

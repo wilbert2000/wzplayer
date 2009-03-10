@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,7 +51,9 @@ void MediaSettings::reset() {
 	audio_delay=0;
 	sub_pos = pref->initial_sub_pos; // 100% by default
 	sub_scale = pref->initial_sub_scale; 
+#if SCALE_ASS_SUBS
 	sub_scale_ass = pref->initial_sub_scale_ass;
+#endif
 
 	brightness = pref->initial_brightness;
 	contrast = pref->initial_contrast;
@@ -87,7 +89,7 @@ void MediaSettings::reset() {
 	volnorm_filter = pref->initial_volnorm;
 
 	audio_use_channels = pref->initial_audio_channels; //ChDefault; // (0)
-	stereo_mode = pref->initial_stereo_mode; //Stereo; // (0)
+	stereo_mode = Stereo; // (0)
 
 	panscan_factor = pref->initial_panscan_factor; // 1.0;
 
@@ -119,48 +121,6 @@ double MediaSettings::win_aspect() {
 	return (double) win_width / win_height;
 }
 
-
-#if NEW_ASPECT_CODE
-double MediaSettings::aspectToNum(Aspect aspect) {
-	double asp;
-
-	switch (aspect) {
-		case MediaSettings::AspectNone: asp = 0; break;
-		case MediaSettings::Aspect43: asp = (double) 4 / 3; break;
-		case MediaSettings::Aspect169: asp = (double) 16 / 9; break;
-		case MediaSettings::Aspect149: asp = (double) 14 / 9; break;
-		case MediaSettings::Aspect1610: asp = (double) 16 / 10; break;
-		case MediaSettings::Aspect54: asp = (double) 5 / 4; break;
-		case MediaSettings::Aspect235: asp = 2.35; break;
-		case MediaSettings::Aspect11: asp = 1; break;
-		case MediaSettings::AspectAuto: asp = win_aspect(); break;
-		default: asp = win_aspect(); 
-                 qWarning("MediaSettings::aspectToNum: invalid aspect: %d", aspect);
-	}
-
-	return asp;
-}
-
-QString MediaSettings::aspectToString(Aspect aspect) {
-	QString asp_name;
-
-	switch (aspect) {
-		case MediaSettings::AspectNone: asp_name = QObject::tr("disabled", "aspect_ratio"); break;
-		case MediaSettings::Aspect43: asp_name = "4:3"; break;
-		case MediaSettings::Aspect169: asp_name = "16:9"; break;
-		case MediaSettings::Aspect149: asp_name = "14:9"; break;
-		case MediaSettings::Aspect1610: asp_name = "16:10"; break;
-		case MediaSettings::Aspect54: asp_name = "5:4"; break;
-		case MediaSettings::Aspect235: asp_name = "2.35:1"; break;
-		case MediaSettings::Aspect11: asp_name = "1:1"; break;
-		case MediaSettings::AspectAuto: asp_name = QObject::tr("auto", "aspect_ratio"); break;
-		default: asp_name = QObject::tr("unknown", "aspect_ratio");
-	}
-
-	return asp_name;
-}
-#endif
-
 void MediaSettings::list() {
 	qDebug("MediaSettings::list");
 
@@ -182,7 +142,9 @@ void MediaSettings::list() {
 	qDebug("  audio_delay: %d", sub_delay);
 	qDebug("  sub_pos: %d", sub_pos);
 	qDebug("  sub_scale: %f", sub_scale);
+#if SCALE_ASS_SUBS
 	qDebug("  sub_scale_ass: %f", sub_scale_ass);
+#endif
 
 	qDebug("  brightness: %d", brightness);
 	qDebug("  contrast: %d", contrast);
@@ -257,7 +219,7 @@ void MediaSettings::save(QSettings * set) {
 	set->setValue( "current_chapter_id", current_chapter_id );
 	set->setValue( "current_angle_id", current_angle_id );
 
-	set->setValue( "aspect_ratio", aspect_ratio_id );
+	set->setValue( "aspect_ratio_id", aspect_ratio_id );
 	//set->setValue( "fullscreen", fullscreen );
 	set->setValue( "volume", volume );
 	set->setValue( "mute", mute );
@@ -267,7 +229,9 @@ void MediaSettings::save(QSettings * set) {
 	set->setValue( "audio_delay", audio_delay);
 	set->setValue( "sub_pos", sub_pos);
 	set->setValue( "sub_scale", sub_scale);
+#if SCALE_ASS_SUBS
 	set->setValue( "sub_scale_ass", sub_scale_ass);
+#endif
 
 	set->setValue( "brightness", brightness);
 	set->setValue( "contrast", contrast);
@@ -345,7 +309,7 @@ void MediaSettings::load(QSettings * set) {
 	current_chapter_id = set->value( "current_chapter_id", current_chapter_id ).toInt();
 	current_angle_id = set->value( "current_angle_id", current_angle_id ).toInt();
 
-	aspect_ratio_id = set->value( "aspect_ratio", aspect_ratio_id ).toInt();
+	aspect_ratio_id = set->value( "aspect_ratio_id", aspect_ratio_id ).toInt();
 	//fullscreen = set->value( "fullscreen", fullscreen ).toBool();
 	volume = set->value( "volume", volume ).toInt();
 	mute = set->value( "mute", mute ).toBool();
@@ -355,7 +319,9 @@ void MediaSettings::load(QSettings * set) {
 	audio_delay = set->value( "audio_delay", audio_delay).toInt();
 	sub_pos = set->value( "sub_pos", sub_pos).toInt();
 	sub_scale = set->value( "sub_scale", sub_scale).toDouble();
+#if SCALE_ASS_SUBS
 	sub_scale_ass = set->value( "sub_scale_ass", sub_scale_ass).toDouble();
+#endif
 
 	brightness = set->value( "brightness", brightness).toInt();
 	contrast = set->value( "contrast", contrast).toInt();

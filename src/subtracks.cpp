@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -159,10 +159,8 @@ bool SubTracks::changeFilename( SubData::Type t, int ID, QString filename ) {
 	return true;
 }
 
-SubTracks::ParseResult SubTracks::parse(QString text) {
-	qDebug("SubTracks::parse: '%s'", text.toUtf8().data());
-
-	ParseResult result = SubtitleUnchanged;
+void SubTracks::process(QString text) {
+	qDebug("SubTracks::process: '%s'", text.toUtf8().data());
 
 	QRegExp rx_subtitle("^ID_(SUBTITLE|FILE_SUB|VOBSUB)_ID=(\\d+)");
 	QRegExp rx_sid("^ID_(SID|VSID)_(\\d+)_(LANG|NAME)=(.*)");
@@ -180,11 +178,9 @@ SubTracks::ParseResult SubTracks::parse(QString text) {
 			t = SubData::Sub;
 
 		if (find(t, ID) > -1) {
-			qWarning("SubTracks::parse: subtitle type: %d, ID: %d already exists!", t, ID);
+			qWarning("SubTracks::process: subtitle type: %d, ID: %d already exists!", t, ID);
 		} else {
 			add(t,ID);
-
-			result = SubtitleAdded;
 		}	
 	}
 	else
@@ -198,15 +194,13 @@ SubTracks::ParseResult SubTracks::parse(QString text) {
 		if (type == "VSID") t = SubData::Vob;
 
 		if (find(t, ID) == -1) {
-			qWarning("SubTracks::parse: subtitle type: %d, ID: %d doesn't exist!", t, ID);
+			qWarning("SubTracks::process: subtitle type: %d, ID: %d doesn't exist!", t, ID);
 		} else {
 			if (attr=="NAME")
 				changeName(t,ID, value);
 			else
 				changeLang(t,ID, value);
-
-			result = SubtitleChanged;
-		}
+		}	
 	}
 	else
 	if (rx_subtitle_file.indexIn(text) > -1) {
@@ -215,13 +209,9 @@ SubTracks::ParseResult SubTracks::parse(QString text) {
 			int last = subs.count() -1;
 			if (subs[last].type() == SubData::File) {
 				subs[last].setFilename( file );
-
-				result = SubtitleChanged;
 			}
 		}
 	}
-
-	return result;
 }
 
 /*

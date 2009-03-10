@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -80,8 +80,6 @@ typedef QList <SubData> SubList;
 class SubTracks
 {
 public:
-	enum ParseResult { SubtitleUnchanged = 0, SubtitleAdded = 1, SubtitleChanged = 2 };
-
 	SubTracks();
 	~SubTracks();
 
@@ -102,8 +100,7 @@ public:
 	int findLang(QString expr);
 	int selectOne(QString preferred_lang, int default_sub=0);
 
-	//! Parses a line from mplayer output with subtitle info
-	ParseResult parse(QString text);
+	void process(QString text);
 
 	void list();
 	void listNames();
