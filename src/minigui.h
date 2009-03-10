@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,11 +22,10 @@
 #include "baseguiplus.h"
 #include "guiconfig.h"
 
-#define USE_VOLUME_BAR 1
+#define USE_VOLUME_BAR 0
 
 class TimeSliderAction;
 class VolumeSliderAction;
-class TimeLabelAction;
 class FloatingWidget;
 class QToolBar;
 
@@ -37,10 +36,6 @@ class MiniGui : public BaseGuiPlus
 public:
 	MiniGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~MiniGui();
-
-#if USE_MINIMUMSIZE
-	virtual QSize minimumSizeHint () const;
-#endif
 
 protected slots:
 	void showFloatingControl(QPoint p);
@@ -77,7 +72,9 @@ protected:
 #if USE_VOLUME_BAR
 	VolumeSliderAction * volumeslider_action;
 #endif
-	TimeLabelAction * time_label_action;
+
+	int floating_control_width; // In percentage
+	bool floating_control_animated;
 };
 
 #endif

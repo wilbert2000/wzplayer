@@ -9,19 +9,16 @@ set OUTPUT_DIR=smplayer-build
 set SMPLAYER_DIR=svn\smplayer\trunk
 set SMPLAYER_THEMES_DIR=svn\smplayer-themes\trunk
 
-set QT_DIR=c:\Qt\4.4.2
-set QXT_DIR=c:\libqxt
+set QT_DIR=c:\Qt\4.3.3
 set MINGW_DIR=c:\MinGW
 
 mkdir %OUTPUT_DIR%
 
 copy %SMPLAYER_DIR%\src\release\smplayer.exe %OUTPUT_DIR%
-copy %SMPLAYER_DIR%\dxlist\release\dxlist.exe %OUTPUT_DIR%
 copy %SMPLAYER_DIR%\*.txt %OUTPUT_DIR%
 copy %QT_DIR%\bin\QtCore4.dll %OUTPUT_DIR%
 copy %QT_DIR%\bin\QtGui4.dll %OUTPUT_DIR%
 copy %QT_DIR%\bin\QtNetwork4.dll %OUTPUT_DIR%
-copy %QT_DIR%\bin\QtXml4.dll %OUTPUT_DIR%
 copy %MINGW_DIR%\bin\mingwm10.dll %OUTPUT_DIR%
 
 rem translations
@@ -45,7 +42,4 @@ svn export --force %SMPLAYER_DIR%\docs %OUTPUT_DIR%\docs
 
 rem themes
 svn export --force %SMPLAYER_THEMES_DIR%\themes %OUTPUT_DIR%\themes
-
-rem libqxt
-copy %QXT_DIR%\lib\QxtCore.dll %OUTPUT_DIR%
 

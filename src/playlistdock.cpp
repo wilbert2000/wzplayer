@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,35 +17,38 @@
 */
 
 #include "playlistdock.h"
-#include <QCloseEvent>
 
 PlaylistDock::PlaylistDock(QWidget * parent, Qt::WindowFlags flags)
 	: QDockWidget(parent, flags)
 {
 	//setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
-	setAcceptDrops(true); // Fix for Qt 4.4, otherwise the playlist doesn't accept drops...
 }
 
 PlaylistDock::~PlaylistDock() {
 }
 
-void PlaylistDock::closeEvent( QCloseEvent * e ) {
+void PlaylistDock::closeEvent( QCloseEvent * /*event*/ ) {
 	qDebug("PlaylistDock::closeEvent");
 	emit closed();
-	e->accept();
 }
 
-#if QT_VERSION < 0x040300
 void PlaylistDock::showEvent( QShowEvent * /* event */ ) {
-	qDebug("PlaylistDock::showEvent");
-	emit visibilityChanged(true);
+	qDebug("PlaylistDock::showEvent: isFloating: %d", isFloating() );
+
+	if (!isFloating()) {
+		qDebug(" docked");
+		emit docked();
+	}
 }
 
 void PlaylistDock::hideEvent( QHideEvent * /* event */ ) {
-	qDebug("PlaylistDock::hideEvent");
-	emit visibilityChanged(false);
+	qDebug("PlaylistDock::hideEvent: isFloating: %d", isFloating() );
+
+	if (!isFloating()) {
+		qDebug(" undocked");
+		emit undocked();
+	}
 }
-#endif
 
 
 #include "moc_playlistdock.cpp"

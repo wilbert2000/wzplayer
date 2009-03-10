@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -78,7 +78,6 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 #else
 	automatically_get_info = true;
 #endif
-	play_files_from_start = true;
 
 	modified = false;
 
@@ -90,7 +89,7 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	createActions();
 	createToolbar();
 
-	connect( core, SIGNAL(mediaFinished()), this, SLOT(playNext()), Qt::QueuedConnection );
+	connect( core, SIGNAL(mediaFinished()), this, SLOT(playNext()) );
 	connect( core, SIGNAL(mediaLoaded()), this, SLOT(getMediaInfo()) );
 
 	QVBoxLayout *layout = new QVBoxLayout;
@@ -112,7 +111,6 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 #endif
 
 	setAcceptDrops(true);
-	setAttribute(Qt::WA_NoMousePropagation);
 
 	// Random seed
 	QTime t;
@@ -140,7 +138,6 @@ void Playlist::setModified(bool mod) {
 
 void Playlist::createTable() {
 	listView = new MyTableWidget( 0, COL_TIME + 1, this);
-	listView->setObjectName("playlist_table");
 	listView->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 	listView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	listView->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -154,7 +151,7 @@ void Playlist::createTable() {
 	listView->horizontalHeader()->setResizeMode(COL_TIME, QHeaderView::ResizeToContents);
 	listView->horizontalHeader()->setResizeMode(COL_PLAY, QHeaderView::ResizeToContents);
 	*/
-	listView->setIconSize( Images::icon("ok").size() );
+	listView->setIconSize( Images::icon("ok_small").size() );
 
 #if DRAG_ITEMS
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -338,8 +335,6 @@ void Playlist::list() {
 }
 
 void Playlist::updateView() {
-	qDebug("Playlist::updateView");
-
 	listView->setRowCount( pl.count() );
 
 	//QString number;
@@ -352,12 +347,12 @@ void Playlist::updateView() {
 		time = Helper::formatTime( (int) pl[n].duration() );
 		
 		//listView->setText(n, COL_POS, number);
-		qDebug("Playlist::updateView: name: '%s'", name.toUtf8().data());
+		qDebug("name: '%s'", name.toUtf8().data());
 		listView->setText(n, COL_NAME, name);
 		listView->setText(n, COL_TIME, time);
 
 		if (pl[n].played()) {
-			listView->setIcon(n, COL_PLAY, Images::icon("ok") );
+			listView->setIcon(n, COL_PLAY, Images::icon("ok_small") );
 		} else {
 			listView->setIcon(n, COL_PLAY, QPixmap() );
 		}
@@ -427,18 +422,11 @@ void Playlist::addItem(QString filename, QString name, double duration) {
 	#endif
 
 	// Test if already is in the list
-	bool exists = false;
-	for ( int n = 0; n < pl.count(); n++) {
-		if ( pl[n].filename() == filename ) {
-			exists = true;
-			int last_item =  pl.count()-1;
-			pl.move(n, last_item);
-			qDebug("Playlist::addItem: item already in list (%d), moved to %d", n, last_item);
-			if (current_item > -1) {
-				if (current_item > n) current_item--;
-				else
-				if (current_item == n) current_item = last_item;
-			}
+	bool exists = FALSE;
+	PlaylistItemList::iterator it;
+	for ( it = pl.begin(); it != pl.end(); ++it ) {
+		if ( (*it).filename() == filename ) {
+			exists = TRUE;
 			break;
 		}
 	}
@@ -446,8 +434,7 @@ void Playlist::addItem(QString filename, QString name, double duration) {
 	if (!exists) {
 		if (name.isEmpty()) {
 			QFileInfo fi(filename);
-			// Let's see if it looks like a file (no dvd://1 or something)
-			if (filename.indexOf(QRegExp("^.*://.*")) == -1) {
+			if (fi.exists()) {
 				// Local file
 				name = fi.fileName(); //fi.baseName(TRUE);
 			} else {
@@ -458,7 +445,7 @@ void Playlist::addItem(QString filename, QString name, double duration) {
 		pl.append( PlaylistItem(filename, name, duration) );
 		//setModified( true ); // Better set the modified on a higher level
 	} else {
-		qDebug("Playlist::addItem: item not added, already in the list");
+		qDebug(" Not added. File already in the list");
 	}
 }
 
@@ -780,7 +767,7 @@ void Playlist::playItem( int n ) {
 	qDebug("Playlist::playItem: %d (count:%d)", n, pl.count());
 
 	if ( (n >= pl.count()) || (n < 0) ) {
-		qDebug("Playlist::playItem: out of range");
+		qDebug(" out of range");
 		emit playlistEnded();
 		return;
 	}
@@ -793,10 +780,7 @@ void Playlist::playItem( int n ) {
 	if (!filename.isEmpty()) {
 		//pl[n].setPlayed(TRUE);
 		setCurrentItem(n);
-		if (play_files_from_start) 
-			core->open(filename, 0);
-		else
-			core->open(filename);
+		core->open(filename, 0);
 	}
 
 }
@@ -826,11 +810,7 @@ void Playlist::playNext() {
 
 void Playlist::playPrev() {
 	qDebug("Playlist::playPrev");
-	if (current_item > 0) {
-		playItem( current_item-1 );
-	} else {
-		if (pl.count() > 1) playItem( pl.count() -1 );
-	}
+	playItem( current_item-1 );
 }
 
 void Playlist::getMediaInfo() {
@@ -918,8 +898,8 @@ void Playlist::addFiles(QStringList files, AutoGetInfo auto_get_info) {
 		if ( (get_info) && (QFile::exists((*it))) ) {
 			data = InfoProvider::getInfo( (*it) );
 			addItem( (*it), data.displayName(), data.duration );
-			//updateView();
-			//qApp->processEvents();
+			updateView();
+			qApp->processEvents();
 		} else {
 			addItem( (*it), "", 0 );
 		}
@@ -927,10 +907,9 @@ void Playlist::addFiles(QStringList files, AutoGetInfo auto_get_info) {
     	addItem( (*it), "", 0 );
 #endif
 
-		if (QFile::exists(*it)) {
-			latest_dir = QFileInfo((*it)).absolutePath();
-		}
-
+		// FIXME: set latest_dir only if the file is a local file,
+        // to avoid that dvd:, vcd: and so on will be used.
+		/* latest_dir = QFileInfo((*it)).dirPath(TRUE); */
         ++it;
     }
 #if USE_INFOPROVIDER
@@ -938,7 +917,7 @@ void Playlist::addFiles(QStringList files, AutoGetInfo auto_get_info) {
 #endif
 	updateView();
 
-	qDebug( "Playlist::addFiles: latest_dir: '%s'", latest_dir.toUtf8().constData() );
+	qDebug( " * latest_dir: '%s'", latest_dir.toUtf8().data() );
 }
 
 void Playlist::addFile(QString file, AutoGetInfo auto_get_info) {
@@ -1157,13 +1136,11 @@ void Playlist::editPreferences() {
 	d.setDirectoryRecursion(recursive_add_directory);
 	d.setAutoGetInfo(automatically_get_info);
 	d.setSavePlaylistOnExit(save_playlist_in_config);
-	d.setPlayFilesFromStart(play_files_from_start);
 
 	if (d.exec() == QDialog::Accepted) {
 		recursive_add_directory = d.directoryRecursion();
 		automatically_get_info = d.autoGetInfo();
 		save_playlist_in_config = d.savePlaylistOnExit();
-		play_files_from_start = d.playFilesFromStart();
 	}
 }
 
@@ -1246,11 +1223,11 @@ void Playlist::saveSettings() {
 	set->setValue( "auto_get_info", automatically_get_info );
 	set->setValue( "recursive_add_directory", recursive_add_directory );
 	set->setValue( "save_playlist_in_config", save_playlist_in_config );
-	set->setValue( "play_files_from_start", play_files_from_start );
 
-#if !DOCK_PLAYLIST
-	set->setValue( "size", size() );
-#endif
+//#if !DOCK_PLAYLIST
+	set->setValue( "window_width", size().width() );
+	set->setValue( "window_height", size().height() );
+//#endif
 	set->setValue( "latest_dir", latest_dir );
 
 	set->endGroup();
@@ -1285,11 +1262,13 @@ void Playlist::loadSettings() {
 	automatically_get_info = set->value( "auto_get_info", automatically_get_info ).toBool();
 	recursive_add_directory = set->value( "recursive_add_directory", recursive_add_directory ).toBool();
 	save_playlist_in_config = set->value( "save_playlist_in_config", save_playlist_in_config ).toBool();
-	play_files_from_start = set->value( "play_files_from_start", play_files_from_start ).toBool();
 
-#if !DOCK_PLAYLIST
-	resize( set->value("size", size()).toSize() );
-#endif
+//#if !DOCK_PLAYLIST
+	QSize s;
+	s.setWidth( set->value( "window_width", size().width() ).toInt() );
+	s.setHeight( set->value( "window_height", size().height() ).toInt() );
+	resize( s );
+//#endif
 
 	latest_dir = set->value( "latest_dir", latest_dir ).toString();
 

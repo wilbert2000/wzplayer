@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,10 +20,8 @@
 #include "prefinterface.h"
 #include "images.h"
 #include "preferences.h"
-#include "paths.h"
+#include "helper.h"
 #include "config.h"
-#include "languages.h"
-#include "recents.h"
 
 #include <QDir>
 #include <QStyleFactory>
@@ -48,14 +46,14 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 	iconset_combo->addItem( "Default" );
 
 	// User
-	QDir icon_dir = Paths::configPath() + "/themes";
+	QDir icon_dir = Helper::appHomePath() + "/themes";
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n=0; n < iconsets.count(); n++) {
 		iconset_combo->addItem( iconsets[n] );
 	}
 	// Global
-	icon_dir = Paths::themesPath();
+	icon_dir = Helper::themesPath();
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n=0; n < iconsets.count(); n++) {
@@ -66,10 +64,6 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 
 	connect(single_instance_check, SIGNAL(toggled(bool)), 
             this, SLOT(changeInstanceImages()));
-
-#ifdef Q_OS_WIN
-	floating_bypass_wm_check->hide();
-#endif
 
 	retranslateStrings();
 }
@@ -87,10 +81,40 @@ QPixmap PrefInterface::sectionIcon() {
 }
 
 void PrefInterface::createLanguageCombo() {
-	QMap <QString,QString> m = Languages::translations();
+	QMap <QString,QString> m;
+	m["bg"] = tr("Bulgarian");
+	m["ca"] = tr("Catalan");
+	m["cs"] = tr("Czech");
+	m["de"] = tr("German");
+	m["el_GR"] = tr("Greek");
+	m["en_US"] = tr("English");
+	m["es"] = tr("Spanish");
+	m["eu"] = tr("Basque");
+	m["fi"] = tr("Finnish");
+	m["fr"] = tr("French");
+	m["gl"] = tr("Galician");
+	m["hu"] = tr("Hungarian");
+	m["it"] = tr("Italian");
+	m["ja"] = tr("Japanese");
+	m["ka"] = tr("Georgian");
+	m["ko"] = tr("Korean");
+	m["mk"] = tr("Macedonian");
+	m["nl"] = tr("Dutch");
+	m["pl"] = tr("Polish");
+	m["pt_BR"] = tr("Portuguese - Brazil");
+	m["pt_PT"] = tr("Portuguese - Portugal");
+	m["ro_RO"] = tr("Romanian");
+	m["ru_RU"] = tr("Russian");
+	m["sk"] = tr("Slovak");
+	m["sr"] = tr("Serbian");
+	m["sv"] = tr("Swedish");
+	m["tr"] = tr("Turkish");
+	m["uk_UA"] = tr("Ukrainian");
+	m["zh_CN"] = tr("Simplified-Chinese");
+	m["zh_TW"] = tr("Traditional Chinese");
 
 	// Language combo
-	QDir translation_dir = Paths::translationPath();
+	QDir translation_dir = Helper::translationPath();
 	QStringList languages = translation_dir.entryList( QStringList() << "*.qm");
 	QRegExp rx_lang("smplayer_(.*)\\.qm");
 	language_combo->clear();
@@ -149,16 +173,6 @@ void PrefInterface::retranslateStrings() {
 	style_combo->setItemText( 0, tr("Default") );
 #endif
 
-	int gui_index = gui_combo->currentIndex();
-	gui_combo->clear();
-	gui_combo->addItem( tr("Default GUI"), "DefaultGUI");
-	gui_combo->addItem( tr("Mini GUI"), "MiniGUI");
-	gui_combo->addItem( tr("Mpc GUI"), "MpcGUI");
-	gui_combo->setCurrentIndex(gui_index);
-
-	floating_width_label->setNum(floating_width_slider->value());
-	floating_margin_label->setNum(floating_margin_slider->value());
-
 	createHelp();
 }
 
@@ -170,8 +184,7 @@ void PrefInterface::setData(Preferences * pref) {
 	setSaveSize( pref->save_window_size_on_exit );
 	setUseSingleInstance(pref->use_single_instance);
 	setServerPort(pref->connection_port);
-	setUseAutoPort(pref->use_autoport);
-	setRecentsMaxItems(pref->history_recents->maxItems());
+	setRecentsMaxItems(pref->recents_max_items);
 
 	setSeeking1(pref->seeking1);
 	setSeeking2(pref->seeking2);
@@ -184,16 +197,6 @@ void PrefInterface::setData(Preferences * pref) {
 
 #if STYLE_SWITCHING
 	setStyle( pref->style );
-#endif
-
-	setGUI(pref->gui);
-
-	setFloatingAnimated(pref->floating_control_animated);
-	setFloatingWidth(pref->floating_control_width);
-	setFloatingMargin(pref->floating_control_margin);
-	setDisplayFloatingInCompactMode(pref->floating_display_in_compact_mode);
-#ifndef Q_OS_WIN
-	setFloatingBypassWindowManager(pref->bypass_window_manager);
 #endif
 }
 
@@ -225,13 +228,8 @@ void PrefInterface::getData(Preferences * pref) {
 		port_changed = true;
 	}
 
-	if (pref->use_autoport != useAutoPort()) {
-		pref->use_autoport = useAutoPort();
-		port_changed = true;
-	}
-
-	if (pref->history_recents->maxItems() != recentsMaxItems()) {
-		pref->history_recents->setMaxItems( recentsMaxItems() );
+	if (pref->recents_max_items != recentsMaxItems()) {
+		pref->recents_max_items = recentsMaxItems();
 		recents_changed = true;
 	}
 
@@ -249,16 +247,6 @@ void PrefInterface::getData(Preferences * pref) {
         pref->style = style();
 		style_changed = true;
 	}
-#endif
-
-	pref->gui = GUI();
-
-	pref->floating_control_animated = floatingAnimated();
-	pref->floating_control_width = floatingWidth();
-	pref->floating_control_margin = floatingMargin();
-	pref->floating_display_in_compact_mode = displayFloatingInCompactMode();
-#ifndef Q_OS_WIN
-	pref->bypass_window_manager = floatingBypassWindowManager();
 #endif
 }
 
@@ -327,16 +315,6 @@ QString PrefInterface::style() {
 		return style_combo->currentText();
 }
 
-void PrefInterface::setGUI(QString gui_name) {
-	int i = gui_combo->findData(gui_name);
-	if (i < 0) i=0;
-	gui_combo->setCurrentIndex(i);
-}
-
-QString PrefInterface::GUI() {
-	return gui_combo->itemData(gui_combo->currentIndex()).toString();
-}
-
 void PrefInterface::setUseSingleInstance(bool b) {
 	single_instance_check->setChecked(b);
 	//singleInstanceButtonToggled(b);
@@ -352,15 +330,6 @@ void PrefInterface::setServerPort(int port) {
 
 int PrefInterface::serverPort() {
 	return server_port_spin->value();
-}
-
-void PrefInterface::setUseAutoPort(bool b) {
-	automatic_port_button->setChecked(b);
-	manual_port_button->setChecked(!b);
-}
-
-bool PrefInterface::useAutoPort() {
-	return automatic_port_button->isChecked();
 }
 
 void PrefInterface::setRecentsMaxItems(int n) {
@@ -444,49 +413,6 @@ void PrefInterface::changeInstanceImages() {
 		instances_icon->setPixmap( Images::icon("instance2") );
 }
 
-// Floating tab
-void PrefInterface::setFloatingAnimated(bool b) {
-	floating_animated_check->setChecked(b);
-}
-
-bool PrefInterface::floatingAnimated() {
-	return floating_animated_check->isChecked();
-}
-
-void PrefInterface::setFloatingWidth(int percentage) {
-	floating_width_slider->setValue(percentage);
-}
-
-int PrefInterface::floatingWidth() {
-	return floating_width_slider->value();
-}
-
-void PrefInterface::setFloatingMargin(int pixels) {
-	floating_margin_slider->setValue(pixels);
-}
-
-int PrefInterface::floatingMargin() {
-	return floating_margin_slider->value();
-}
-
-void PrefInterface::setDisplayFloatingInCompactMode(bool b) {
-	floating_compact_check->setChecked(b);
-}
-
-bool PrefInterface::displayFloatingInCompactMode() {
-	return floating_compact_check->isChecked();
-}
-
-#ifndef Q_OS_WIN
-void PrefInterface::setFloatingBypassWindowManager(bool b) {
-	floating_bypass_wm_check->setChecked(b);
-}
-
-bool PrefInterface::floatingBypassWindowManager() {
-	return floating_bypass_wm_check->isChecked();
-}
-#endif
-
 void PrefInterface::createHelp() {
 	clearHelp();
 
@@ -513,16 +439,6 @@ void PrefInterface::createHelp() {
 
 	setWhatsThis(style_combo, tr("Style"),
         tr("Select the style you prefer for the application.") );
-
-	setWhatsThis(gui_combo, tr("GUI"),
-        tr("Select the GUI you prefer for the application. Currently "
-           "there are two available: Default GUI and Mini GUI.<br>"
-           "The <b>Default GUI</b> provides the traditional GUI, with the "
-           "toolbar and control bar. The <b>Mini GUI</b> provides a "
-           "more simple GUI, without toolbar and a control bar with few "
-           "buttons.<br>"
-           "<b>Note:</b> this option will take effect the next "
-           "time you run SMPlayer.") );
 
 	setWhatsThis(changeFontButton, tr("Default font"),
         tr("You can change here the application's font.") );
@@ -555,44 +471,10 @@ void PrefInterface::createHelp() {
         tr("Check this option if you want to use an already running instance "
            "of SMPlayer when opening other files.") );
 
-	setWhatsThis(automatic_port_button, tr("Automatic port"),
-        tr("SMPlayer needs to listen to a port to receive commands from other "
-           "instances. If you select this option, a port will be "
-           "automatically chosen.") );
-
-	setWhatsThis(server_port_spin, tr("Manual port"),
+	setWhatsThis(server_port_spin, tr("Port"),
         tr("SMPlayer needs to listen to a port to receive commands from other "
            "instances. You can change the port in case the default one is "
            "used by another application.") );
-
-	manual_port_button->setWhatsThis( server_port_spin->whatsThis() );
-
-	addSectionTitle(tr("Floating control"));
-
-	setWhatsThis(floating_animated_check, tr("Animated"),
-		tr("If this option is enabled, the floating control will appear "
-           "with an animation.") );
-
-	setWhatsThis(floating_width_slider, tr("Width"),
-		tr("Specifies the width of the control (as a percentage).") );
-
-	setWhatsThis(floating_margin_slider, tr("Margin"),
-		tr("This option sets the number of pixels that the floating control "
-           "will be away from the bottom of the screen. Useful when the "
-           "screen is a TV, as the overscan might prevent the control to be "
-           "visible.") );
-
-	setWhatsThis(floating_compact_check, tr("Display in compact mode too"),
-		tr("If this option is enabled, the floating control will appear "
-           "in compact mode too. <b>Warning:</b> the floating control has not been "
-           "designed for compact mode and it might not work properly.") );
-
-#ifndef Q_OS_WIN
-	setWhatsThis(floating_bypass_wm_check, tr("Bypass window manager"),
-		tr("If this option is checked, the control is displayed bypassing the "
-           "window manager. Disable this option if the floating control "
-           "doesn't work well with your window manager.") );
-#endif
 }
 
 #include "moc_prefinterface.cpp"

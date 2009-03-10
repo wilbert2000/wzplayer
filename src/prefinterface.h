@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -63,9 +63,6 @@ protected:
 	void setSaveSize(bool b);
 	bool saveSize();
 
-	void setGUI(QString gui_name);
-	QString GUI();
-
 	void setStyle(QString style);
 	QString style();
 
@@ -74,9 +71,6 @@ protected:
 
 	void setServerPort(int port);
 	int serverPort();
-
-	void setUseAutoPort(bool b);
-	bool useAutoPort();
 
 	void setRecentsMaxItems(int n);
 	int recentsMaxItems();
@@ -98,24 +92,6 @@ protected:
 
 	void setDefaultFont(QString font_desc);
 	QString defaultFont();
-
-	// Floating tab
-	void setFloatingAnimated(bool b);
-	bool floatingAnimated();
-
-	void setFloatingWidth(int percentage);
-	int floatingWidth();
-
-	void setFloatingMargin(int pixels);
-	int floatingMargin();
-
-	void setDisplayFloatingInCompactMode(bool b);
-	bool displayFloatingInCompactMode();
-
-#ifndef Q_OS_WIN
-	void setFloatingBypassWindowManager(bool b);
-	bool floatingBypassWindowManager();
-#endif
 
 protected slots:
 	void on_changeFontButton_clicked();

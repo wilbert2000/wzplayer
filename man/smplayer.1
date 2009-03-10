@@ -4,21 +4,17 @@
 SMPlayer \- GUI frontend for MPlayer
 .SH SYNOPSIS
 .B smplayer
-.I [\fI-minigui\fR] [\fI-defaultgui\fR] [\fI-ini-path directory\fR] [\fI-send-action action_name\fR]
+.I [\fI-mini\fR] [\fI-ini-path directory\fR] [\fI-send-action action_name\fR]
 [\fI-actions action_list\fR] [\fI\-close\-at\-end\fR] [\fI\-no\-close\-at\-end\fR] [\fI\-fullscreen\fR]
-[\fI\-no\-fullscreen\fR] [\fI\-sub subtitle_file\fR] [\fI\-add\-to\-playlist\fR] [\fI\-help|\-\-help|\-h|\-?\fR] 
-[\fI[\-playlist] media\fR]
+[\fI\-no\-fullscreen\fR] [\fI\-add\-to\-playlist\fR] [\fI\-help|\-\-help|\-h|\-?\fR] [\fI[\-playlist] media\fR]
 [\fI[\-playlist] media\fR]...
 .SH DESCRIPTION
 .TP
 SMPlayer is a GUI media player based on Qt 4, using \fBmplayer\fR(1) as its backend.
 .SH OPTIONS
 .TP
-.B \-minigui
+.B \-mini
 Open the mini GUI instead of the default one.
-.TP
-.B \-defaultgui
-Open the default gui.
 .TP
 .B \-ini\-path
 Specify the directory for the configuration file (smplayer.ini).
@@ -50,9 +46,6 @@ Play the video in fullscreen mode.
 .TP
 .B \-no\-fullscreen
 Play the video in window mode.
-.TP
-.B \-sub
-Specify the subtitle file to be loaded.
 .TP
 .B \-help
 Show the help message and then exit.

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,9 +22,6 @@
 #include "myaction.h"
 #include "mplayerwindow.h"
 #include "global.h"
-#include "helper.h"
-#include "toolbareditor.h"
-#include "desktopinfo.h"
 
 #include <QToolBar>
 #include <QStatusBar>
@@ -32,7 +29,9 @@
 using namespace Global;
 
 MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
-	: BaseGuiPlus( parent, flags )
+	: BaseGuiPlus( parent, flags ), 
+		floating_control_width(80),
+		floating_control_animated(true)
 {
 	createActions();
 	createControlWidget();
@@ -67,12 +66,6 @@ void MiniGui::createActions() {
 	volumeslider_action = createVolumeSliderAction(this);
 	volumeslider_action->disable();
 #endif
-
-	time_label_action = new TimeLabelAction(this);
-	time_label_action->setObjectName("timelabel_action");
-
-	connect( this, SIGNAL(timeChanged(QString)),
-             time_label_action, SLOT(setText(QString)) );
 }
 
 
@@ -83,7 +76,6 @@ void MiniGui::createControlWidget() {
 	controlwidget->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, controlwidget);
 
-#if !USE_CONFIGURABLE_TOOLBARS
 	controlwidget->addAction(playOrPauseAct);
 	controlwidget->addAction(stopAct);
 	controlwidget->addSeparator();
@@ -96,14 +88,12 @@ void MiniGui::createControlWidget() {
 	controlwidget->addAction(volumeslider_action);
 #endif
 
-#endif // USE_CONFIGURABLE_TOOLBARS
 }
 
 void MiniGui::createFloatingControl() {
 	// Floating control
 	floating_control = new FloatingWidget(this);
 
-#if !USE_CONFIGURABLE_TOOLBARS
 	floating_control->toolbar()->addAction(playOrPauseAct);
 	floating_control->toolbar()->addAction(stopAct);
 	floating_control->toolbar()->addSeparator();
@@ -116,7 +106,6 @@ void MiniGui::createFloatingControl() {
 #endif
 
 	floating_control->adjustSize();
-#endif // USE_CONFIGURABLE_TOOLBARS
 }
 
 void MiniGui::retranslateStrings() {
@@ -179,13 +168,8 @@ void MiniGui::aboutToExitCompactMode() {
 }
 
 void MiniGui::showFloatingControl(QPoint /*p*/) {
-#ifndef Q_OS_WIN
-	floating_control->setBypassWindowManager(pref->bypass_window_manager);
-#endif
-	floating_control->setAnimated( pref->floating_control_animated );
-	floating_control->setMargin(pref->floating_control_margin);
-	floating_control->showOver(panel, 
-                               pref->floating_control_width, 
+	floating_control->setAnimated( floating_control_animated );
+	floating_control->showOver(panel, floating_control_width, 
                                FloatingWidget::Bottom);
 }
 
@@ -193,33 +177,15 @@ void MiniGui::hideFloatingControl() {
 	floating_control->hide();
 }
 
-#if USE_MINIMUMSIZE
-QSize MiniGui::minimumSizeHint() const {
-	return QSize(controlwidget->sizeHint().width(), 0);
-}
-#endif
-
+#define TOOLBARS_VERSION 2
 
 void MiniGui::saveConfig() {
 	QSettings * set = settings;
 
 	set->beginGroup( "mini_gui");
-
-	if (pref->save_window_size_on_exit) {
-		qDebug("MiniGui::saveConfig: w: %d h: %d", width(), height());
-		set->setValue( "pos", pos() );
-		set->setValue( "size", size() );
-	}
-
-	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
-
-#if USE_CONFIGURABLE_TOOLBARS
-	set->beginGroup( "actions" );
-	set->setValue("controlwidget", ToolbarEditor::save(controlwidget) );
-	set->setValue("floating_control", ToolbarEditor::save(floating_control->toolbar()) );
-	set->endGroup();
-#endif
-
+	set->setValue( "toolbars_state", saveState(TOOLBARS_VERSION) );
+	set->setValue("floating_control_width", floating_control_width);
+	set->setValue("floating_control_animated", floating_control_animated);
 	set->endGroup();
 }
 
@@ -227,48 +193,9 @@ void MiniGui::loadConfig() {
 	QSettings * set = settings;
 
 	set->beginGroup( "mini_gui");
-
-	if (pref->save_window_size_on_exit) {
-		QPoint p = set->value("pos", pos()).toPoint();
-		QSize s = set->value("size", size()).toSize();
-
-		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
-		}
-
-		move(p);
-		resize(s);
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("MiniGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
-	}
-
-#if USE_CONFIGURABLE_TOOLBARS
-	QList<QAction *> actions_list = findChildren<QAction *>();
-	QStringList controlwidget_actions;
-	controlwidget_actions << "play_or_pause" << "stop" << "separator" << "timeslider_action" << "separator"
-                          << "fullscreen" << "mute" << "volumeslider_action";
-
-	QStringList floatingcontrol_actions;
-	floatingcontrol_actions << "play_or_pause" << "stop" << "separator" << "timeslider_action" << "separator"
-                            << "fullscreen" << "mute";
-#if USE_VOLUME_BAR
-	floatingcontrol_actions << "volumeslider_action";
-#endif
-
-	floatingcontrol_actions << "separator" << "timelabel_action";
-
-	set->beginGroup( "actions" );
-	ToolbarEditor::load(controlwidget, set->value("controlwidget", controlwidget_actions).toStringList(), actions_list );
-	ToolbarEditor::load(floating_control->toolbar(), set->value("floating_control", floatingcontrol_actions).toStringList(), actions_list );
-	floating_control->adjustSize();
-	set->endGroup();
-#endif
-
-	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
-
+	restoreState( set->value( "toolbars_state" ).toByteArray(), TOOLBARS_VERSION );
+	floating_control_width = set->value("floating_control_width", floating_control_width).toInt();
+	floating_control_animated = set->value("floating_control_animated", floating_control_animated).toBool();
 	set->endGroup();
 }
 

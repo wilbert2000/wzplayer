@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,13 +44,18 @@
 // MINI_ARROW_BUTTONS
 // if set to 1, the GUI will use a popup menu for arrow buttons
 
-#define MINI_ARROW_BUTTONS 1
+#define MINI_ARROW_BUTTONS 0
 
 
 // ALLOW_CHANGE_STYLESHEET
 // if 1, the app stylesheet can be changed
 
 #define ALLOW_CHANGE_STYLESHEET 1
+
+
+// New code to resize the main window
+
+#define NEW_RESIZE_CODE 1
 
 
 // Allow to use multiple shortcuts for actions
@@ -72,20 +77,6 @@
 // a mp3 song.
 
 #define USE_INFOPROVIDER 1
-
-
-// USE_CONFIGURABLE_TOOLBARS
-// if 1, the toolbars (and controlbars) are saved to the config file
-// so the user can modify them.
-
-#define USE_CONFIGURABLE_TOOLBARS 1
-
-
-// USE_DOCK_TOPLEVEL_EVENT
-// if 1, the topLevelChanged from QDockWidget will be use to know
-// if the playlist has been docked or undocked
-
-#define USE_DOCK_TOPLEVEL_EVENT 0
 
 
 #endif

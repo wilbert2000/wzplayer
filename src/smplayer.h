@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class SMPlayer : public QObject
 public:
 	enum ExitCode { ErrorArgument = -3, NoAction = -2, NoRunningInstance = -1, NoError = 0, NoExit = 1 };
 
-	SMPlayer(const QString & config_path = QString::null, QObject * parent = 0);
+	SMPlayer(const QString & ini_path = QString::null, QObject * parent = 0);
 	~SMPlayer();
 
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
@@ -40,17 +40,14 @@ public:
 	void start();
 
 private:
-#ifndef PORTABLE_APP
-	void createConfigDirectory();
-#endif
+	void createHomeDirectory();
 	void showInfo();
 
 	BaseGui * main_window;
 
     QStringList files_to_play;
-    QString subtitle_file;
     QString actions_list; //!< Actions to be run on startup
-	QString gui_to_use;
+	bool use_minigui;
 };
 
 #endif

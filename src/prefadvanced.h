@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 #include "ui_prefadvanced.h"
 #include "prefwidget.h"
-#include "preferences.h"
+#include "config.h"
 
 class Preferences;
 
@@ -42,9 +42,7 @@ public:
     // Apply changes
     void getData(Preferences * pref);
 
-#if REPAINT_BACKGROUND_OPTION
-	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; };
-#endif
+	bool clearingBackgroundChanged() { return clearing_background_changed; };
 	bool monitorAspectChanged() { return monitor_aspect_changed; };
 #if USE_COLORKEY
 	bool colorkeyChanged() { return colorkey_changed; };
@@ -57,10 +55,8 @@ protected:
 	void setMonitorAspect(QString asp);
 	QString monitorAspect();
 
-#if REPAINT_BACKGROUND_OPTION
-	void setRepaintVideoBackground(bool b);
-	bool repaintVideoBackground();
-#endif
+	void setClearBackground(bool b);
+	bool clearBackground();
 
 	void setUseMplayerWindow(bool v);
 	bool useMplayerWindow();
@@ -83,18 +79,6 @@ protected:
 	unsigned int colorKey();
 #endif
 
-	void setPreferIpv4(bool b);
-	bool preferIpv4();
-
-	void setUseIdx(bool);
-	bool useIdx();
-
-	void setUseCorrectPts(Preferences::OptionState value);
-	Preferences::OptionState useCorrectPts();
-
-	void setActionsToRun(QString actions);
-	QString actionsToRun();
-
 	// Log options
 	void setLogMplayer(bool b);
 	bool logMplayer();
@@ -111,6 +95,13 @@ protected:
     void setMplayerLogName(QString filter);
     QString mplayerLogName();
 
+	// MPlayer language
+	void setEndOfFileText(QString t);
+	QString endOfFileText();
+
+	void setNoVideoText(QString t);
+	QString noVideoText();
+
 protected:
 	virtual void retranslateStrings();
 
@@ -118,9 +109,7 @@ protected slots:
 	void on_changeButton_clicked();
 
 private:
-#if REPAINT_BACKGROUND_OPTION
-	bool repaint_video_background_changed;
-#endif
+	bool clearing_background_changed;
 	bool monitor_aspect_changed;
 #if USE_COLORKEY
 	bool colorkey_changed;

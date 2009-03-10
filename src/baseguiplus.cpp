@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@
 
 #include <QMenu>
 #include <QCloseEvent>
-#include <QApplication>
-#include <QDesktopWidget>
 
 #if DOCK_PLAYLIST
 #include <QDockWidget>
@@ -41,21 +39,11 @@
 using namespace Global;
 
 BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags )
-	: BaseGui( parent, flags )
+	: BaseGui( parent, flags ),
+		mainwindow_visible(true),
+		//infowindow_visible(false),
+		trayicon_playlist_was_visible(false)
 {
-	// Initialize variables
-	mainwindow_visible = true;
-	//infowindow_visible = false;
-	trayicon_playlist_was_visible = false;
-	widgets_size = 0;
-#if DOCK_PLAYLIST
-	fullscreen_playlist_was_visible = false;
-	fullscreen_playlist_was_floating = false;
-	compact_playlist_was_visible = false;
-	ignore_playlist_events = false;
-#endif
-
-
 	mainwindow_pos = pos();
 
 	tray = new QSystemTrayIcon( Images::icon("logo", 22), this );
@@ -77,7 +65,6 @@ BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags )
 	showAllAct = new MyAction(this, "restore/hide");
 	connect( showAllAct, SIGNAL(triggered()),
              this, SLOT(toggleShowAll()) );
-
 
 	context_menu = new QMenu(this);
 	context_menu->addAction(showAllAct);
@@ -119,16 +106,11 @@ BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags )
 	playlistdock->setFloating(true); // Floating by default
 
 	connect( playlistdock, SIGNAL(closed()), this, SLOT(playlistClosed()) );
-#if USE_DOCK_TOPLEVEL_EVENT
-	connect( playlistdock, SIGNAL(topLevelChanged(bool)), 
-             this, SLOT(dockTopLevelChanged(bool)) );
-#else
-	connect( playlistdock, SIGNAL(visibilityChanged(bool)), 
-             this, SLOT(dockVisibilityChanged(bool)) );
-#endif // USE_DOCK_TOPLEVEL_EVENT
+	connect( playlistdock, SIGNAL(docked()), this, SLOT(stretchWindow()) );
+	connect( playlistdock, SIGNAL(undocked()), this, SLOT(shrinkWindow()) );
 
 	ignore_playlist_events = false;
-#endif // DOCK_PLAYLIST
+#endif
 
 	retranslateStrings();
 
@@ -214,15 +196,6 @@ void BaseGuiPlus::saveConfig() {
 	set->setValue( "show_tray_icon", showTrayAct->isChecked() );
 	set->setValue( "mainwindow_visible", isVisible() );
 
-	set->setValue( "trayicon_playlist_was_visible", trayicon_playlist_was_visible );
-	set->setValue( "widgets_size", widgets_size );
-#if DOCK_PLAYLIST
-	set->setValue( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible );
-	set->setValue( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating );
-	set->setValue( "compact_playlist_was_visible", compact_playlist_was_visible );
-	set->setValue( "ignore_playlist_events", ignore_playlist_events );
-#endif
-
 /*
 #if DOCK_PLAYLIST
 	set->setValue( "playlist_and_toolbars_state", saveState() );
@@ -244,15 +217,6 @@ void BaseGuiPlus::loadConfig() {
 	//tray->setVisible( show_tray_icon );
 
 	mainwindow_visible = set->value("mainwindow_visible", true).toBool();
-
-	trayicon_playlist_was_visible = set->value( "trayicon_playlist_was_visible", trayicon_playlist_was_visible ).toBool();
-	widgets_size = set->value( "widgets_size", widgets_size ).toInt();
-#if DOCK_PLAYLIST
-	fullscreen_playlist_was_visible = set->value( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible ).toBool();
-	fullscreen_playlist_was_floating = set->value( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating ).toBool();
-	compact_playlist_was_visible = set->value( "compact_playlist_was_visible", compact_playlist_was_visible ).toBool();
-	ignore_playlist_events = set->value( "ignore_playlist_events", ignore_playlist_events ).toBool();
-#endif
 
 /*
 #if DOCK_PLAYLIST
@@ -369,24 +333,14 @@ void BaseGuiPlus::aboutToEnterFullscreen() {
 	BaseGui::aboutToEnterFullscreen();
 
 #if DOCK_PLAYLIST
-	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
-
-	int playlist_screen = QApplication::desktop()->screenNumber(playlistdock);
-	int mainwindow_screen = QApplication::desktop()->screenNumber(this);
-	qDebug("BaseGuiPlus::aboutToEnterFullscreen: mainwindow screen: %d, playlist screen: %d", mainwindow_screen, playlist_screen);
-
 	fullscreen_playlist_was_visible = playlistdock->isVisible();
 	fullscreen_playlist_was_floating = playlistdock->isFloating();
-
+	//showPlaylistAct->setEnabled(false);
 	ignore_playlist_events = true;
-
-	// Hide the playlist if it's in the same screen as the main window
-	if ((playlist_screen == mainwindow_screen) /* || 
-        (!fullscreen_playlist_was_floating) */ ) 
-	{
-		playlistdock->setFloating(true);
-		playlistdock->hide();
-	}
+	playlistdock->setFloating(true);
+	playlistdock->hide();
+	//showPlaylistAct->setChecked(false);
+	//playlist_state = saveState();
 #endif
 }
 
@@ -396,46 +350,29 @@ void BaseGuiPlus::aboutToExitFullscreen() {
 	BaseGui::aboutToExitFullscreen();
 
 #if DOCK_PLAYLIST
-	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea | 
-                                  Qt::BottomDockWidgetArea
-                                  #if PLAYLIST_ON_SIDES
-                                  | Qt::LeftDockWidgetArea | 
-                                  Qt::RightDockWidgetArea
-                                  #endif
-                                  );
-
 	if (fullscreen_playlist_was_visible) {
 		playlistdock->show();
 	}
 	playlistdock->setFloating( fullscreen_playlist_was_floating );
+	//restoreState( playlist_state );
 	ignore_playlist_events = false;
+	//showPlaylistAct->setEnabled(true);
 #endif
 }
 
 void BaseGuiPlus::aboutToEnterCompactMode() {
+	BaseGui::aboutToEnterCompactMode();
+
 #if DOCK_PLAYLIST
 	compact_playlist_was_visible = (playlistdock->isVisible() && 
                                     !playlistdock->isFloating());
 	if (compact_playlist_was_visible)
 		playlistdock->hide();
 #endif
-
-    widgets_size = height() - panel->height();
-    qDebug("BaseGuiPlus::aboutToEnterCompactMode: widgets_size: %d", widgets_size);
-
-	BaseGui::aboutToEnterCompactMode();
-
-	if (pref->resize_method == Preferences::Always) {
-		resize( width(), height() - widgets_size );
-	}
 }
 
 void BaseGuiPlus::aboutToExitCompactMode() {
 	BaseGui::aboutToExitCompactMode();
-
-	if (pref->resize_method == Preferences::Always) {
-		resize( width(), height() + widgets_size );
-	}
 
 #if DOCK_PLAYLIST
 	if (compact_playlist_was_visible)
@@ -445,54 +382,18 @@ void BaseGuiPlus::aboutToExitCompactMode() {
 
 #if DOCK_PLAYLIST
 void BaseGuiPlus::showPlaylist(bool b) {
-	qDebug("BaseGuiPlus::showPlaylist: %d", b);
-	qDebug("BaseGuiPlus::showPlaylist (before): playlist visible: %d", playlistdock->isVisible());
-	qDebug("BaseGuiPlus::showPlaylist (before): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("BaseGuiPlus::showPlaylist (before): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
-
 	if ( !b ) {
 		playlistdock->hide();
 	} else {
 		exitFullscreenIfNeeded();
 		playlistdock->show();
-
-		// Check if playlist is outside of the screen
-		if (playlistdock->isFloating()) {
-			if (!DesktopInfo::isInsideScreen(playlistdock)) {
-				qWarning("BaseGuiPlus::showPlaylist: playlist is outside of the screen");
-				playlistdock->move(0,0);
-			}
-		}
 	}
 	//updateWidgets();
-
-	qDebug("BaseGuiPlus::showPlaylist (after): playlist visible: %d", playlistdock->isVisible());
-	qDebug("BaseGuiPlus::showPlaylist (after): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("BaseGuiPlus::showPlaylist (after): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
-
 }
 
 void BaseGuiPlus::playlistClosed() {
 	showPlaylistAct->setChecked(false);
 }
-
-#if !USE_DOCK_TOPLEVEL_EVENT
-void BaseGuiPlus::dockVisibilityChanged(bool visible) {
-	qDebug("BaseGuiPlus::dockVisibilityChanged: %d", visible);
-
-	if (!playlistdock->isFloating()) {
-		if (!visible) shrinkWindow(); else stretchWindow();
-	}
-}
-
-#else
-
-void BaseGuiPlus::dockTopLevelChanged(bool floating) {
-	qDebug("BaseGuiPlus::dockTopLevelChanged: %d", floating);
-
-	if (floating) shrinkWindow(); else stretchWindow();
-}
-#endif
 
 void BaseGuiPlus::stretchWindow() {
 	qDebug("BaseGuiPlus::stretchWindow");
@@ -559,21 +460,12 @@ void BaseGuiPlus::shrinkWindow() {
 // Convenience functions intended for other GUI's
 TimeSliderAction * BaseGuiPlus::createTimeSliderAction(QWidget * parent) {
 	TimeSliderAction * timeslider_action = new TimeSliderAction( parent );
-	timeslider_action->setObjectName("timeslider_action");
-
-#ifdef SEEKBAR_RESOLUTION
-	connect( timeslider_action, SIGNAL( posChanged(int) ), 
-             core, SLOT(goToPosition(int)) );
-	connect( core, SIGNAL(positionChanged(int)), 
-             timeslider_action, SLOT(setPos(int)) );
-#else
 	connect( timeslider_action, SIGNAL( posChanged(int) ), 
              core, SLOT(goToPos(int)) );
-	connect( core, SIGNAL(posChanged(int)), 
-             timeslider_action, SLOT(setPos(int)) );
-#endif
 	connect( timeslider_action, SIGNAL( draggingPos(int) ), 
              this, SLOT(displayGotoTime(int)) );
+	connect( core, SIGNAL(posChanged(int)), 
+             timeslider_action, SLOT(setPos(int)) );
 #if ENABLE_DELAYED_DRAGGING
 	timeslider_action->setDragDelay( pref->time_slider_drag_delay );
 
@@ -588,8 +480,6 @@ TimeSliderAction * BaseGuiPlus::createTimeSliderAction(QWidget * parent) {
 
 VolumeSliderAction * BaseGuiPlus::createVolumeSliderAction(QWidget * parent) {
 	VolumeSliderAction * volumeslider_action = new VolumeSliderAction(parent);
-	volumeslider_action->setObjectName("volumeslider_action");
-
 	connect( volumeslider_action, SIGNAL( valueChanged(int) ), 
              core, SLOT( setVolume(int) ) );
 	connect( core, SIGNAL(volumeChanged(int)),

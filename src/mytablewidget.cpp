@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 #include "mytablewidget.h"
 #include <QTableWidgetItem>
 
-#define BE_VERBOSE 0
-
 MyTableWidget::MyTableWidget( QWidget * parent ) : QTableWidget(parent) 
 {
 }
@@ -30,49 +28,31 @@ MyTableWidget::MyTableWidget( int rows, int columns, QWidget * parent )
 {
 }
 
-QTableWidgetItem * MyTableWidget::getItem(int row, int column, bool * existed ) {
-#if BE_VERBOSE
-	qDebug("MyTableWidget::getItem: %d, %d", row, column);
-#endif
+QTableWidgetItem * MyTableWidget::getItem(int row, int column ) {
 	QTableWidgetItem * i = item(row, column);
-	if (existed != 0) *existed = (i!=0); // Returns if the item already existed or not
 	if (i != 0) return i; else return createItem(column);
 }
 
 QTableWidgetItem * MyTableWidget::createItem(int /*col*/) {
-#if BE_VERBOSE
-	qDebug("MyTableWidget::createItem");
-#endif
 	QTableWidgetItem * i = new QTableWidgetItem();
 	i->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
 	return i;
 }
 
 void MyTableWidget::setText(int row, int column, const QString & text ) {
-#if BE_VERBOSE
-	qDebug("MyTableWidget::setText: %d, %d", row, column);
-#endif
-	bool existed;
-	QTableWidgetItem * i = getItem(row, column, &existed);
+	QTableWidgetItem * i = getItem(row, column);
 	i->setText(text);
-	if (!existed) setItem(row, column, i);
+	setItem(row, column, i);
 }
 
 QString MyTableWidget::text(int row, int column) {
-#if BE_VERBOSE
-	qDebug("MyTableWidget::text: %d, %d", row, column);
-#endif
 	return getItem(row, column)->text();
 }
 
 void MyTableWidget::setIcon(int row, int column, const QIcon & icon ) {
-#if BE_VERBOSE
-	qDebug("MyTableWidget::setIcon %d, %d", row, column);
-#endif
-	bool existed;
-	QTableWidgetItem * i = getItem(row, column, &existed);
+	QTableWidgetItem * i = getItem(row, column);
 	i->setIcon(icon);
-	if (!existed) setItem(row, column, i);
+	setItem(row, column, i);
 }
 
 QIcon MyTableWidget::icon(int row, int column) {
