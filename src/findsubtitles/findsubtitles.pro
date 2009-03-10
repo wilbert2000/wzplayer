@@ -12,18 +12,16 @@ HEADERS += simplehttp.h \
            osparser.h \
            ../filechooser.h \
            ../languages.h \
-           findsubtitlesconfigdialog.h \
            findsubtitleswindow.h
 
 SOURCES += simplehttp.cpp \
            osparser.cpp \
            ../filechooser.cpp \
            ../languages.cpp \
-           findsubtitlesconfigdialog.cpp \
            findsubtitleswindow.cpp \
            main.cpp
 
-FORMS += ../filechooser.ui findsubtitleswindow.ui findsubtitlesconfigdialog.ui
+FORMS += ../filechooser.ui findsubtitleswindow.ui
 
 DEFINES += NO_SMPLAYER_SUPPORT DOWNLOAD_SUBS
 

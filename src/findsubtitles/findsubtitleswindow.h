@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #define _FINDSUBTITLESWINDOW_H_
 
 #include "ui_findsubtitleswindow.h"
-#include <QNetworkProxy>
 
 class SimpleHttp;
 class QStandardItemModel;
@@ -28,7 +27,6 @@ class QSortFilterProxyModel;
 class QModelIndex;
 class QMenu;
 class QAction;
-class QSettings;
 
 #ifdef DOWNLOAD_SUBS
 class FileDownloader;
@@ -44,28 +42,15 @@ public:
 	FindSubtitlesWindow( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 	~FindSubtitlesWindow();
 
-	QString language();
-#ifdef DOWNLOAD_SUBS
-	bool includeLangOnFilename() { return include_lang_on_filename; };
-#endif
-
-	void setSettings(QSettings * settings);
-	QSettings * settings() { return set; };
-
 public slots:
 	void setMovie(QString filename);
-	void setLanguage(const QString & lang);
 	void refresh();
 	void download();
 	void copyLink();
-#ifdef DOWNLOAD_SUBS
-	void setIncludeLangOnFilename(bool b) { include_lang_on_filename = b; };
-#endif
-
-protected slots:
 	void applyFilter(const QString & filter);
 	void applyCurrentFilter();
 
+protected slots:
 	void showError(QString error);
 	void connecting(QString host);
 	void updateDataReadProgress(int done, int total);
@@ -84,17 +69,9 @@ protected slots:
 	void archiveDownloaded(const QByteArray & buffer);
 #endif
 
-	void on_configure_button_clicked();
-
 protected:
 	virtual void retranslateStrings();
 	virtual void changeEvent(QEvent * event);
-
-	void setProxy(QNetworkProxy proxy);
-	void setupProxy();
-
-	void saveSettings();
-	void loadSettings();
 
 #ifdef DOWNLOAD_SUBS
 signals:
@@ -117,18 +94,7 @@ protected:
 
 #ifdef DOWNLOAD_SUBS
 	FileDownloader * file_downloader;
-	bool include_lang_on_filename;
 #endif
-
-	// Proxy
-	bool use_proxy;
-	int proxy_type;
-	QString proxy_host;
-	int proxy_port;
-	QString proxy_username;
-	QString proxy_password;
-
-	QSettings * set;
 };
 
 #endif

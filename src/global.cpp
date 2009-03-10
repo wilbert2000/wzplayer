@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "constants.h"
 #include <QSettings>
 #include "translator.h"
-#include "paths.h"
+#include "helper.h"
 #include <QApplication>
 #include <QFile>
 
@@ -35,26 +35,42 @@ Translator * Global::translator = 0;
 
 using namespace Global;
 
-void Global::global_init(const QString & config_path) {
+void Global::global_init(const QString & ini_path) {
 	qDebug("global_init");
 
 	// Translator
 	translator = new Translator();
 
 	// settings
-	if (!config_path.isEmpty()) {
-		Paths::setConfigPath(config_path);
-	}
-
-	if (Paths::iniPath().isEmpty()) {
+	Helper::setIniPath(ini_path);
+	if (Helper::iniPath().isEmpty()) {
 		settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
     	                         QString(COMPANY), QString(PROGRAM) );
 	} else {
-		QString filename = Paths::iniPath() + "/smplayer.ini";
+		QString filename = Helper::iniPath() + "/smplayer.ini";
 		settings = new QSettings( filename, QSettings::IniFormat );
 		qDebug("global_init: config file: '%s'", filename.toUtf8().data());
 
 	}
+
+	/*
+	if (!ini_path.isEmpty()) {
+		QString file = ini_path + "/smplayer.ini";
+		settings = new QSettings( file, QSettings::IniFormat );
+		qDebug("global_init: config file: '%s'", file.toUtf8().data());
+	}
+	else 
+	if (QFile::exists(Helper::appHomePath())) {
+		QString file = Helper::appHomePath() + "/smplayer.ini";
+		settings = new QSettings( file, QSettings::IniFormat );
+		qDebug("global_init: config file: '%s'", file.toUtf8().data());
+	}
+	else
+	{
+		settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
+    	                         QString(COMPANY), QString(PROGRAM) );
+	}
+	*/
 
 	// Preferences
 	pref = new Preferences();

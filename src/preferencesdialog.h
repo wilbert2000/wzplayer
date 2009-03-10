@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,7 +55,6 @@ public:
 	PreferencesDialog( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 	~PreferencesDialog();
 
-	PrefGeneral * mod_general() { return page_general; };
 	PrefInterface * mod_interface() { return page_interface; };
 	PrefInput * mod_input() { return page_input; };
 	PrefAdvanced * mod_advanced() { return page_advanced; };

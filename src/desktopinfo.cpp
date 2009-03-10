@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,10 +40,3 @@ double DesktopInfo::desktop_aspectRatio(QWidget *w) {
     return  (double) s.width() / s.height() ;
 }
 
-bool DesktopInfo::isInsideScreen(QWidget *w) {
-	QDesktopWidget * dw = QApplication::desktop();
-	QRect r = dw->screenGeometry(w);
-
-	qDebug("DesktopInfo::isInsideScreen: geometry of screen: x:%d y:%d w:%d h:%d", r.x(), r.y(), r.width(), r.height() );
-	return r.contains(w->pos());
-}

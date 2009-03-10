@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #include "mplayerwindow.h"
 #include "global.h"
 #include "desktopinfo.h"
-#include "colorutils.h"
+#include "helper.h"
 
 #ifndef MINILIB
 #include "images.h"
@@ -33,30 +33,18 @@
 #include <QPixmap>
 #include <QPainter>
 
-#if DELAYED_RESIZE
-#include <QTimer>
-#endif
-
 Screen::Screen(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f ) 
 {
 	setMouseTracking(TRUE);
 	setFocusPolicy( Qt::NoFocus );
 	setMinimumSize( QSize(0,0) );
 
-#if NEW_MOUSE_CHECK_POS
-	mouse_last_position = QPoint(0,0);
-#else
 	cursor_pos = QPoint(0,0);
 	last_cursor_pos = QPoint(0,0);
-#endif
 
 	QTimer *timer = new QTimer(this);
 	connect( timer, SIGNAL(timeout()), this, SLOT(checkMousePos()) );
-#if NEW_MOUSE_CHECK_POS
-	timer->start(500);
-#else
 	timer->start(2000);
-#endif
 
 	// Change attributes
 	setAttribute(Qt::WA_NoSystemBackground);
@@ -77,19 +65,7 @@ void Screen::paintEvent( QPaintEvent * e ) {
 	//painter.fillRect( e->rect(), QColor(255,0,0) );
 }
 
-#if NEW_MOUSE_CHECK_POS
-void Screen::checkMousePos() {
-	//qDebug("Screen::checkMousePos");
-	QPoint pos = mapFromGlobal(QCursor::pos());
 
-	if (mouse_last_position != pos) {
-		setCursor(QCursor(Qt::ArrowCursor));
-	} else {
-		setCursor(QCursor(Qt::BlankCursor));
-	}
-	mouse_last_position = pos;
-}
-#else
 void Screen::checkMousePos() {
 	//qDebug("Screen::checkMousePos");
 	
@@ -114,7 +90,6 @@ void Screen::mouseMoveEvent( QMouseEvent * e ) {
 		setCursor(QCursor(Qt::ArrowCursor));
 	}
 }
-#endif
 
 /* ---------------------------------------------------------------------- */
 
@@ -122,7 +97,7 @@ MplayerLayer::MplayerLayer(QWidget* parent, Qt::WindowFlags f)
 	: Screen(parent, f) 
 {
 #if REPAINT_BACKGROUND_OPTION
-	repaint_background = true;
+	allow_clearing = true;
 #endif
 	playing = false;
 }
@@ -131,14 +106,14 @@ MplayerLayer::~MplayerLayer() {
 }
 
 #if REPAINT_BACKGROUND_OPTION
-void MplayerLayer::setRepaintBackground(bool b) {
-	qDebug("MplayerLayer::setRepaintBackground: %d", b);
-	repaint_background = b;
+void MplayerLayer::allowClearingBackground(bool b) {
+	qDebug("MplayerLayer::allowClearingBackground: %d", b);
+	allow_clearing = b;
 }
 
 void MplayerLayer::paintEvent( QPaintEvent * e ) {
 	//qDebug("MplayerLayer::paintEvent: allow_clearing: %d", allow_clearing);
-	if (repaint_background || !playing) {
+	if (allow_clearing || !playing) {
 		//qDebug("MplayerLayer::paintEvent: painting");
 		Screen::paintEvent(e);
 	}
@@ -167,7 +142,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	zoom_factor = 1.0;
 
 	setAutoFillBackground(true);
-	ColorUtils::setBackgroundColor( this, QColor(0,0,0) );
+	Helper::setBackgroundColor( this, QColor(0,0,0) );
 
 	mplayerlayer = new MplayerLayer( this );
 	mplayerlayer->setAutoFillBackground(TRUE);
@@ -179,7 +154,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 #else
 	logo->setAttribute(Qt::WA_PaintOnScreen); // Fixes the problem if compiled with Qt < 4.4
 #endif
-	ColorUtils::setBackgroundColor( logo, QColor(0,0,0) );
+	Helper::setBackgroundColor( logo, QColor(0,0,0) );
 
 	QVBoxLayout * mplayerlayerLayout = new QVBoxLayout( mplayerlayer );
 	mplayerlayerLayout->addWidget( logo, 0, Qt::AlignHCenter | Qt::AlignVCenter );
@@ -194,13 +169,6 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	mplayerlayer->installEventFilter(this);
 	//logo->installEventFilter(this);
 
-#if DELAYED_RESIZE
-	resize_timer = new QTimer(this);
-	resize_timer->setSingleShot(true);
-	resize_timer->setInterval(50);
-	connect( resize_timer, SIGNAL(timeout()), this, SLOT(resizeLater()) );
-#endif
-
 	retranslateStrings();
 }
 
@@ -209,7 +177,7 @@ MplayerWindow::~MplayerWindow() {
 
 #if USE_COLORKEY
 void MplayerWindow::setColorKey( QColor c ) {
-	ColorUtils::setBackgroundColor( mplayerlayer, c );
+	Helper::setBackgroundColor( mplayerlayer, c );
 }
 #endif
 
@@ -246,26 +214,13 @@ void MplayerWindow::resizeEvent( QResizeEvent * /* e */)
    /*qDebug("MplayerWindow::resizeEvent: %d, %d",
 	   e->size().width(), e->size().height() );*/
 
-#if !DELAYED_RESIZE
-	offset_x = 0;
-	offset_y = 0;
-
-    updateVideoWindow();
-	setZoom(zoom_factor);
-#else
-	resize_timer->start();
-#endif
-}
-
-#if DELAYED_RESIZE
-void MplayerWindow::resizeLater() {
 	offset_x = 0;
 	offset_y = 0;
 
     updateVideoWindow();
 	setZoom(zoom_factor);
 }
-#endif
+
 
 void MplayerWindow::setMonitorAspect(double asp) {
 	monitoraspect = asp;
@@ -395,6 +350,8 @@ bool MplayerWindow::eventFilter( QObject * /*watched*/, QEvent * event ) {
          (event->type() == QEvent::MouseButtonRelease) ) 
 	{
 		QMouseEvent *mouse_event = static_cast<QMouseEvent *>(event);
+		mouse_position = mouse_event->pos();
+		//qDebug("pos: %d %d", mouse_position.x(), mouse_position.y());
 
 		if (event->type() == QEvent::MouseMove) {
 			emit mouseMoved(mouse_event->pos());

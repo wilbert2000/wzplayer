@@ -7,8 +7,8 @@ QT += network xml
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += findsubtitles videopreview mpcgui
-DEPENDPATH += findsubtitles videopreview mpcgui
+INCLUDEPATH += findsubtitles
+DEPENDPATH += findsubtitles
 
 #DEFINES += USE_QXT
 
@@ -20,14 +20,11 @@ HEADERS += guiconfig.h \
 	svn_revision.h \
 	version.h \
 	global.h \
-	paths.h \
 	helper.h \
-	colorutils.h \
 	translator.h \
 	subtracks.h \
 	tracks.h \
 	titletracks.h \
-	discname.h \
 	extensions.h \
 	desktopinfo.h \
 	myprocess.h \
@@ -38,16 +35,11 @@ HEADERS += guiconfig.h \
 	mediadata.h \
 	audioequalizerlist.h \
 	mediasettings.h \
-	assstyles.h \
 	preferences.h \
-	filesettingsbase.h \
-	filesettings.h \
-	filesettingshash.cpp \
 	images.h \
 	inforeader.h \
 	deviceinfo.h \
 	recents.h \
-	urlhistory.h \
 	core.h \
 	logwindow.h \
 	infofile.h \
@@ -93,10 +85,7 @@ HEADERS += guiconfig.h \
 	timedialog.h \
 	findsubtitles/simplehttp.h \
 	findsubtitles/osparser.h \
-	findsubtitles/findsubtitlesconfigdialog.h \
 	findsubtitles/findsubtitleswindow.h \
-	videopreview/videopreview.h \
-	videopreview/videopreviewconfigdialog.h \
 	basegui.h \
 	baseguiplus.h \
 	floatingwidget.h \
@@ -104,22 +93,17 @@ HEADERS += guiconfig.h \
 	toolbareditor.h \
 	defaultgui.h \
 	minigui.h \
-	mpcgui/mpcgui.h \
-	mpcgui/mpcstyles.h \
 	smplayer.h \
 	clhelp.h
 
 
 SOURCES	+= version.cpp \
 	global.cpp \
-	paths.cpp \
 	helper.cpp \
-	colorutils.cpp \
 	translator.cpp \
 	subtracks.cpp \
 	tracks.cpp \
 	titletracks.cpp \
-	discname.cpp \
 	extensions.cpp \
 	desktopinfo.cpp \
 	myprocess.cpp \
@@ -129,16 +113,11 @@ SOURCES	+= version.cpp \
 	mplayerwindow.cpp \
 	mediadata.cpp \
 	mediasettings.cpp \
-	assstyles.cpp \
 	preferences.cpp \
-	filesettingsbase.cpp \
-	filesettings.cpp \
-	filesettingshash.cpp \
 	images.cpp \
 	inforeader.cpp \
 	deviceinfo.cpp \
 	recents.cpp \
-	urlhistory.cpp \
 	core.cpp \
 	logwindow.cpp \
 	infofile.cpp \
@@ -184,10 +163,7 @@ SOURCES	+= version.cpp \
 	timedialog.cpp \
 	findsubtitles/simplehttp.cpp \
 	findsubtitles/osparser.cpp \
-	findsubtitles/findsubtitlesconfigdialog.cpp \
 	findsubtitles/findsubtitleswindow.cpp \
-	videopreview/videopreview.cpp \
-	videopreview/videopreviewconfigdialog.cpp \
 	basegui.cpp \
 	baseguiplus.cpp \
 	floatingwidget.cpp \
@@ -195,8 +171,6 @@ SOURCES	+= version.cpp \
 	toolbareditor.cpp \
 	defaultgui.cpp \
 	minigui.cpp \
-	mpcgui/mpcgui.cpp \
-	mpcgui/mpcstyles.cpp \
 	clhelp.cpp \
 	smplayer.cpp \
 	main.cpp
@@ -214,8 +188,7 @@ FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         prefplaylist.ui \
         about.ui inputmplayerversion.ui errordialog.ui timedialog.ui \
         playlistpreferences.ui filechooser.ui \
-        findsubtitles/findsubtitleswindow.ui findsubtitles/findsubtitlesconfigdialog.ui \
-        videopreview/videopreviewconfigdialog.ui
+        findsubtitles/findsubtitleswindow.ui
 
 TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
                translations/smplayer_sk.ts translations/smplayer_it.ts \
@@ -276,6 +249,7 @@ unix {
 	DEFINES += DATA_PATH=$(DATA_PATH)
 	DEFINES += DOC_PATH=$(DOC_PATH)
 	DEFINES += TRANSLATION_PATH=$(TRANSLATION_PATH)
+	DEFINES += CONF_PATH=$(CONF_PATH)
 	DEFINES += THEMES_PATH=$(THEMES_PATH)
 	DEFINES += SHORTCUTS_PATH=$(SHORTCUTS_PATH)
 	#DEFINES += NO_DEBUG_ON_CONSOLE
@@ -295,11 +269,8 @@ unix {
 }
 
 win32 {
-	#DEFINES += SCREENSAVER_OFF
-	contains( DEFINES, SCREENSAVER_OFF ) {
-		HEADERS += screensaver.h
-		SOURCES += screensaver.cpp
-	}
+	HEADERS += screensaver.h
+	SOURCES += screensaver.cpp
 
 	!contains( DEFINES, PORTABLE_APP ) {
 		DEFINES += USE_ASSOCIATIONS

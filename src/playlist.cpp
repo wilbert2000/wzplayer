@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	createActions();
 	createToolbar();
 
-	connect( core, SIGNAL(mediaFinished()), this, SLOT(playNext()), Qt::QueuedConnection );
+	connect( core, SIGNAL(mediaFinished()), this, SLOT(playNext()) );
 	connect( core, SIGNAL(mediaLoaded()), this, SLOT(getMediaInfo()) );
 
 	QVBoxLayout *layout = new QVBoxLayout;
@@ -154,7 +154,7 @@ void Playlist::createTable() {
 	listView->horizontalHeader()->setResizeMode(COL_TIME, QHeaderView::ResizeToContents);
 	listView->horizontalHeader()->setResizeMode(COL_PLAY, QHeaderView::ResizeToContents);
 	*/
-	listView->setIconSize( Images::icon("ok").size() );
+	listView->setIconSize( Images::icon("ok_small").size() );
 
 #if DRAG_ITEMS
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -357,7 +357,7 @@ void Playlist::updateView() {
 		listView->setText(n, COL_TIME, time);
 
 		if (pl[n].played()) {
-			listView->setIcon(n, COL_PLAY, Images::icon("ok") );
+			listView->setIcon(n, COL_PLAY, Images::icon("ok_small") );
 		} else {
 			listView->setIcon(n, COL_PLAY, QPixmap() );
 		}
@@ -427,18 +427,11 @@ void Playlist::addItem(QString filename, QString name, double duration) {
 	#endif
 
 	// Test if already is in the list
-	bool exists = false;
-	for ( int n = 0; n < pl.count(); n++) {
-		if ( pl[n].filename() == filename ) {
-			exists = true;
-			int last_item =  pl.count()-1;
-			pl.move(n, last_item);
-			qDebug("Playlist::addItem: item already in list (%d), moved to %d", n, last_item);
-			if (current_item > -1) {
-				if (current_item > n) current_item--;
-				else
-				if (current_item == n) current_item = last_item;
-			}
+	bool exists = FALSE;
+	PlaylistItemList::iterator it;
+	for ( it = pl.begin(); it != pl.end(); ++it ) {
+		if ( (*it).filename() == filename ) {
+			exists = TRUE;
 			break;
 		}
 	}
@@ -446,8 +439,7 @@ void Playlist::addItem(QString filename, QString name, double duration) {
 	if (!exists) {
 		if (name.isEmpty()) {
 			QFileInfo fi(filename);
-			// Let's see if it looks like a file (no dvd://1 or something)
-			if (filename.indexOf(QRegExp("^.*://.*")) == -1) {
+			if (fi.exists()) {
 				// Local file
 				name = fi.fileName(); //fi.baseName(TRUE);
 			} else {
@@ -458,7 +450,7 @@ void Playlist::addItem(QString filename, QString name, double duration) {
 		pl.append( PlaylistItem(filename, name, duration) );
 		//setModified( true ); // Better set the modified on a higher level
 	} else {
-		qDebug("Playlist::addItem: item not added, already in the list");
+		qDebug(" Not added. File already in the list");
 	}
 }
 

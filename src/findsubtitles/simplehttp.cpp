@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ void SimpleHttp::download(const QString & url) {
 
 	QUrl u(url);
 	setHost( u.host() );
-	http_get_id = get( u.path() );
+	get( u.path() );
 
 	emit connecting(u.host());
 }
@@ -57,10 +57,8 @@ void SimpleHttp::readResponseHeader(const QHttpResponseHeader &responseHeader) {
 	}
 }
 
-void SimpleHttp::httpRequestFinished(int request_id, bool error) {
-	qDebug("SimpleHttp::httpRequestFinished: %d, %d", request_id, error);
-
-    if (request_id != http_get_id) return;
+void SimpleHttp::httpRequestFinished(int id, bool error) {
+	qDebug("SimpleHttp::httpRequestFinished: %d, %d", id, error);
 
 	downloaded_text += readAll();
 

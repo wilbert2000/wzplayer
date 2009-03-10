@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 */
 
 #include "selectcolorbutton.h"
-#include "colorutils.h"
+#include "helper.h"
 #include <QColorDialog>
 
 #ifdef Q_OS_WIN
@@ -48,16 +48,16 @@ void SelectColorButton::setColor(QColor c) {
 	ignore_change_event = true;
 	
 	if ((current_style.startsWith("windowsxp")) || (current_style.startsWith("windowsvista"))) {
-		setStyleSheet( "border-width: 1px; border-style: solid; border-color: #000000; background: #" + ColorUtils::colorToRRGGBB(_color.rgb()) + ";");
+		setStyleSheet( "border-width: 1px; border-style: solid; border-color: #000000; background: #" + Helper::colorToRRGGBB(_color.rgb()) + ";");
 	} else {
 		setStyleSheet("");
-		ColorUtils::setBackgroundColor( this, _color );
+		Helper::setBackgroundColor( this, _color );
 	}
 		
 	ignore_change_event = false;
 #else
 	//setAutoFillBackground(true);
-	ColorUtils::setBackgroundColor( this, _color );
+	Helper::setBackgroundColor( this, _color );
 #endif
 }
 

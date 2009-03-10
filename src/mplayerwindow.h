@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,13 +35,10 @@
 class QWidget;
 class QLabel;
 class QKeyEvent;
-class QTimer;
 
 #define ZOOM_STEP 0.05
 #define ZOOM_MIN 0.5
 
-#define DELAYED_RESIZE 0
-#define NEW_MOUSE_CHECK_POS 1
 
 //! Screen is a widget that hides the mouse cursor after some seconds if not moved.
 
@@ -54,20 +51,14 @@ public:
 	~Screen();
 
 protected:
-#if !NEW_MOUSE_CHECK_POS
 	virtual void mouseMoveEvent( QMouseEvent * e );
-#endif
 	virtual void paintEvent ( QPaintEvent * e );
 
 protected slots:
 	virtual void checkMousePos();
 
 private:
-#if NEW_MOUSE_CHECK_POS
-	QPoint mouse_last_position;
-#else
 	QPoint cursor_pos, last_cursor_pos;
-#endif
 };
 
 //! MplayerLayer can be instructed to not delete the background.
@@ -83,10 +74,10 @@ public:
 #if REPAINT_BACKGROUND_OPTION
 	//! If b is true, the background of the widget will be repainted as usual.
 	/*! Otherwise the background will not repainted when a video is playing. */
-	void setRepaintBackground(bool b);
+	void allowClearingBackground(bool b);
 
 	//! Return true if repainting the background is allowed.
-	bool repaintBackground() { return repaint_background; };
+	bool isClearingBackgroundAllowed() { return allow_clearing; };
 #endif
 
 public slots:
@@ -103,7 +94,7 @@ protected:
 
 private:
 #if REPAINT_BACKGROUND_OPTION
-	bool repaint_background;
+	bool allow_clearing;
 #endif
 	bool playing;
 };
@@ -142,6 +133,8 @@ public:
 	void allowVideoMovement(bool b) { allow_video_movement = b; };
 	bool isVideoMovementAllowed() { return allow_video_movement; };
 
+	QPoint mousePosition() { return mouse_position; };
+
 	virtual QSize sizeHint () const;
 	virtual QSize minimumSizeHint() const;
 
@@ -154,11 +147,6 @@ public slots:
 	void moveDown();
 	void incZoom();
 	void decZoom();
-
-#if DELAYED_RESIZE
-protected slots:
-	void resizeLater();
-#endif
 
 protected:
 	virtual void retranslateStrings();
@@ -202,9 +190,7 @@ protected:
 
 	bool allow_video_movement;
 
-#if DELAYED_RESIZE
-	QTimer * resize_timer;
-#endif
+	QPoint mouse_position;
 };
 
 

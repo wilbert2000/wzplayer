@@ -1,80 +1,10 @@
-Version 0.6.7.
-
-Most important changes since 0.6.6:
-
-* Added experimental (and uncomplete) support for dvd menus. Requires a mplayer
-  build compiled with dvdnav support. Please read dvdmenus.txt to know how
-  to enable it.
-* Now loading an external subtitle file doesn't require to restart the mplayer
-  process (except for idx/sub subtitles).
-* (Playlist) When a file is added to the playlist, if it was already in the 
-  list, it's moved to the end of the list.
-* Options for mplayer: finally spaces in arguments between quotes are handled 
-  properly.
-* Added two options (in the audio and subtitle menus) to allow the user to 
-  enter the audio and subtitle delay (in milliseconds).
-* (ASS subtitles) The outline and shadow options now accept values with 
-  decimals.
-* (ASS subtitles) Possibility to change the color of the border and shadow.
-* Now the default value for the "correct pts" option is auto.
-* (Windows) Now the screensaver is allowed to turn on if the file is paused 
-  or it's an audio file.
-* (Windows) The direct3d video output is now the default for Windows Vista.
-
-
-Version 0.6.6.
-
-Most important changes since 0.6.5:
-
-* Added an option to generate a preview (thumbnails) of the video.
-* Added a new gui (mpcgui, a media player classic clone) developed by 
-  Matthias Petri.
-* Added some auto zoom options, to display the video without black borders.
-* Implemented a new (and optional) method to save the file settings.
-  This method uses an ini file per each played file. It's faster than the old
-  one.
-* Added a new option in Preferences->Video: add black borders on
-  fullscreen. If this option is enabled, black borders will be added to
-  the image in fullscreen mode. This allows subtitles to be displayed on
-  the black borders.
-* Increased the resolution of the seekbar. Allows a more accurate seeking.
-* Added 3 modes for the stay on top option: always, never and while playing.
-* Added a history to the open URL dialog.
-* Added new action to cycle through all aspect ratios. Assigned by default to 
-  key "A".
-* It's possible to run some specified actions every time a file is loaded.
-* Possibility to set up a proxy for internet connections (used for subtitle
-  downloading).
-
-
-Version 0.6.5.
-
-Most important changes since 0.6.4:
-
-* The subtitles when using the SSA/ASS library can now be further
-  customized. It's possible to select the font, size, colors, bold,
-  italic, outline, shadow... 
-* (Linux) Now smplayer tries to follow the XDG Base Directory
-  Specification for the config files. That means the now the configuration
-  files will be saved under the directory $XDG_CONFIG_HOME/smplayer (or 
-  $HOME/.config/smplayer if $XDG_CONFIG_HOME is not defined). 
-  If you want to keep your preferences, copy or move the files from 
-  $HOME/.smplayer to the new location.
-* Added some options in Preferences->Interface to configure the floating 
-  control.
-* The commandline option -ini-path has been removed and replaced with
-  -config-path, which specifies the directory where smplayer will store
-  its data (not only smplayer.ini).
-
-
 Version 0.6.4.
 
 Most important changes since 0.6.3:
 
  * Now the dialog to find subtitles can also download the subtitle file and 
    load it in smplayer automatically.
- * (Linux) The black screen problem when using Compiz should really be fixed 
-   now.
+ * (Linux) The black screen problem when using Compiz should really fixed now.
  * Added support for encoding autodetection for subtitle files. Requires a 
    mplayer compiled with enca support.
  * (Linux) Now it's possible to choose the audio device to be used with alsa 

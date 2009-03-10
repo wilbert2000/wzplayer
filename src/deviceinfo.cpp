@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -90,36 +90,6 @@ DeviceList DeviceInfo::alsaDevices() {
 		}
 	} else {
 		qDebug("DeviceInfo::alsaDevices: could not start aplay, error %d", p.error());
-	}
-
-	return l;
-}
-
-DeviceList DeviceInfo::xvAdaptors() {
-	qDebug("DeviceInfo::xvAdaptors");
-
-	DeviceList l;
-	QRegExp rx_device("^.*Adaptor #([0-9]+): \"(.*)\"");
-
-	QProcess p;
-	p.setProcessChannelMode( QProcess::MergedChannels );
-	p.setEnvironment( QProcess::systemEnvironment() << "LC_ALL=C" );
-	p.start("xvinfo");
-
-	if (p.waitForFinished()) {
-		QByteArray line;
-		while (p.canReadLine()) {
-			line = p.readLine();
-			qDebug("DeviceInfo::xvAdaptors: '%s'", line.constData());
-			if ( rx_device.indexIn(line) > -1 ) {
-				QString id = rx_device.cap(1);
-				QString desc = rx_device.cap(2);
-				qDebug("DeviceInfo::xvAdaptors: found adaptor: '%s' '%s'", id.toUtf8().constData(), desc.toUtf8().constData());
-				l.append( DeviceData(id, desc) );
-			}
-		}
-	} else {
-		qDebug("DeviceInfo::xvAdaptors: could not start xvinfo, error %d", p.error());
 	}
 
 	return l;

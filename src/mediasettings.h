@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@ class MediaSettings {
 public:
 	enum Denoise { NoDenoise = 0, DenoiseNormal = 1, DenoiseSoft = 2 };
 #if NEW_ASPECT_CODE
-	enum Aspect { AspectAuto = 1, Aspect43 = 2, Aspect54 = 3, Aspect149 = 4,
-                  Aspect169 = 5, Aspect1610 = 6, Aspect235 = 7, Aspect11 = 8, 
+	enum Aspect { AspectAuto = 1, Aspect43 = 2, Aspect169 = 3, Aspect235 = 4,
+                  Aspect149 = 8, Aspect1610 = 9, Aspect54 = 10, Aspect11 = 12, 
                   AspectNone = 0 };
 #else
 	enum Aspect { AspectAuto = 1, Aspect43 = 2, Aspect169 = 3, Aspect235 = 4,
@@ -91,7 +91,9 @@ public:
 	// Subtitles position (0-100)
 	int sub_pos;
 	double sub_scale;
+#if SCALE_ASS_SUBS
 	double sub_scale_ass;
+#endif
 
 	double speed; // Speed of playback: 1.0 = normal speed
 
@@ -160,11 +162,6 @@ public:
     int win_height;
     double win_aspect();
 
-#if NEW_ASPECT_CODE
-	//! Returns the aspect as a double. Returns 0 if aspect == AspectNone.
-	double aspectToNum(Aspect aspect);
-	static QString aspectToString(Aspect aspect);
-#endif
 
 	void list();
 

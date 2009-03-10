@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -73,20 +73,6 @@ void LogWindow::setHtml(QString text) {
 
 QString LogWindow::html() {
 	return browser->toHtml();
-}
-
-void LogWindow::clear() {
-	browser->clear();
-}
-
-void LogWindow::appendText(QString text) {
-	browser->moveCursor(QTextCursor::End);
-	browser->insertPlainText(text);
-}
-
-void LogWindow::appendHtml(QString text) {
-	browser->moveCursor(QTextCursor::End);
-	browser->insertHtml(text);
 }
 
 void LogWindow::on_copyButton_clicked() {

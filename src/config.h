@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,11 +51,15 @@
 #define ENABLE_DELAYED_DRAGGING 1
 
 
-// SEEKBAR_RESOLUTION
-// if SEEKBAR_RESOLUTION is defined, it specified the
-// maximum value of the time slider
+// SCALE_ASS_SUBS
+// MPlayer r25843 adds the possibility to change the
+// size of the subtitles, when using -ass, with the
+// sub_scale slave command. Unfortunately this require
+// a different code, which also makes the size of the
+// subtitles to be very different when using -ass or not.
+// Setting SCALE_ASS_SUBS to 1 activates this code.
 
-#define SEEKBAR_RESOLUTION 1000
+#define SCALE_ASS_SUBS 1
 
 
 // SMART_DVD_CHAPTERS
@@ -77,15 +81,7 @@
 // if 1, the audio track will be initialized later once the file
 // has begun to play
 
-#define DELAYED_AUDIO_SETUP_ON_STARTUP 0
-
-
-// CHECK_VIDEO_CODEC_FOR_NO_VIDEO
-// if 1, the video codec will be checked to decide if the file
-// has video or not. If it's empty it has no video.
-// If 0, it will check for the line "Video: no video"
-
-#define CHECK_VIDEO_CODEC_FOR_NO_VIDEO 1
+#define DELAYED_AUDIO_SETUP_ON_STARTUP 1
 
 
 // Just for testing, possibility to disable the use of the colorkey
@@ -107,16 +103,10 @@
 #define GENERIC_CHAPTER_SUPPORT 1
 
 
-// DVDNAV_SUPPORT
-// if 1, smplayer will be compiled with support for mplayer's dvdnav
-
-#define DVDNAV_SUPPORT 1
-
-
 // Adds or not the "Repaint the background of the video window" option.
-//#ifndef Q_OS_WIN
+#ifndef Q_OS_WIN
 #define REPAINT_BACKGROUND_OPTION 1
-//#endif
+#endif
 
 
 // Enables/disables the use of -adapter
@@ -133,5 +123,11 @@
 #define REPORT_OLD_MPLAYER 1
 #endif
 
+
+// NOTIFY_AUDIO_SUB_CHANGES
+// if set to 1, mplayerprocess will notify changes in the audio and
+// subtitle tracks that happen during playback. It doesn't work yet!!!
+
+#define NOTIFY_AUDIO_SUB_CHANGES 0
 
 #endif

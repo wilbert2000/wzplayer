@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include "smplayer.h"
 #include "global.h"
 #include "helper.h"
-#include "paths.h"
 
 #include <stdio.h>
 
@@ -40,12 +39,7 @@
 
 using namespace Global;
 
-BaseGui * basegui_instance = 0;
-
 void myMessageOutput( QtMsgType type, const char *msg ) {
-	static QStringList saved_lines;
-	static QString orig_line;
-	static QString line2;
 	static QRegExp rx_log;
 
 	if (pref) {
@@ -55,55 +49,36 @@ void myMessageOutput( QtMsgType type, const char *msg ) {
 		rx_log.setPattern(".*");
 	}
 
-	line2.clear();
-
-	orig_line = QString::fromUtf8(msg);
+	QString line = "["+ QTime::currentTime().toString() + "] " + 
+                   QString::fromUtf8(msg);
 
 	switch ( type ) {
 		case QtDebugMsg:
-			if (rx_log.indexIn(orig_line) > -1) {
+			if (rx_log.indexIn(line) > -1) {
 				#ifndef NO_DEBUG_ON_CONSOLE
-				fprintf( stderr, "Debug: %s\n", orig_line.toLocal8Bit().data() );
+				fprintf( stderr, "Debug: %s\n", line.toLocal8Bit().data() );
 				#endif
-				line2 = orig_line;
+				Helper::addLog( line );
 			}
 			break;
 		case QtWarningMsg:
 			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Warning: %s\n", orig_line.toLocal8Bit().data() );
+			fprintf( stderr, "Warning: %s\n", line.toLocal8Bit().data() );
 			#endif
-			line2 = "WARNING: " + orig_line;
+			Helper::addLog( "WARNING: " + line );
 			break;
 		case QtFatalMsg:
 			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Fatal: %s\n", orig_line.toLocal8Bit().data() );
+			fprintf( stderr, "Fatal: %s\n", line.toLocal8Bit().data() );
 			#endif
-			line2 = "FATAL: " + orig_line;
+			Helper::addLog( "FATAL: " + line );
 			abort();                    // deliberately core dump
 		case QtCriticalMsg:
 			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Critical: %s\n", orig_line.toLocal8Bit().data() );
+			fprintf( stderr, "Critical: %s\n", line.toLocal8Bit().data() );
 			#endif
-			line2 = "CRITICAL: " + orig_line;
+			Helper::addLog( "CRITICAL: " + line );
 			break;
-	}
-
-	if (line2.isEmpty()) return;
-
-	line2 = "["+ QTime::currentTime().toString() +"] "+ line2;
-
-	if (basegui_instance) {
-		if (!saved_lines.isEmpty()) {
-			// Send saved lines first
-			for (int n=0; n < saved_lines.count(); n++) {
-				basegui_instance->recordSmplayerLog(saved_lines[n]);
-			}
-			saved_lines.clear();
-		}
-		basegui_instance->recordSmplayerLog(line2);
-	} else {
-		// GUI is not created yet, save lines for later
-		saved_lines.append(line2);
 	}
 }
 
@@ -149,34 +124,31 @@ public:
 int main( int argc, char ** argv ) 
 {
 	MyApplication a( argc, argv );
-	a.setQuitOnLastWindowClosed(false);
 	//a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
 
-	// Sets the config path
-	QString config_path;
+	// Sets the ini_path
+	QString ini_path;
 
 #ifdef PORTABLE_APP
-	config_path = a.applicationDirPath();
+	ini_path = a.applicationDirPath();
 #else
-	// If a smplayer.ini exists in the app path, will use that path
-	// for the config file by default
 	if (QFile::exists( a.applicationDirPath() + "/smplayer.ini" ) ) {
-		config_path = a.applicationDirPath();
-		qDebug("main: using existing %s", QString(config_path + "/smplayer.ini").toUtf8().data());
-	}
+        ini_path = a.applicationDirPath();
+        qDebug("main: using existing %s", QString(ini_path + "/smplayer.ini").toUtf8().data());
+    }
 #endif
 
 	QStringList args = a.arguments();
-	int pos = args.indexOf("-config-path");
+	int pos = args.indexOf("-ini-path");
 	if ( pos != -1) {
 		if (pos+1 < args.count()) {
 			pos++;
-			config_path = args[pos];
+			ini_path = args[pos];
 			// Delete from list
 			args.removeAt(pos);
 			args.removeAt(pos-1);
 		} else {
-			printf("Error: expected parameter for -config-path\r\n");
+			printf("Error: expected parameter for -ini-path\r\n");
 			return SMPlayer::ErrorArgument;
 		}
 	}
@@ -185,9 +157,9 @@ int main( int argc, char ** argv )
 
 #if USE_LOCKS
 	//setIniPath will be set later in global_init, but we need it here
-	if (!config_path.isEmpty()) Paths::setConfigPath(config_path);
+	Helper::setIniPath(ini_path);
 
-	QString lock_file = Paths::iniPath() + "/smplayer_init.lock";
+	QString lock_file = Helper::iniPath() + "/smplayer_init.lock";
 	qDebug("main: lock_file: %s", lock_file.toUtf8().data());
 
 #if USE_QXT_LOCKS
@@ -237,7 +209,7 @@ int main( int argc, char ** argv )
 #endif // USE_QXT_LOCKS
 #endif // USE_LOCKS
 
-	SMPlayer * smplayer = new SMPlayer(config_path);
+	SMPlayer * smplayer = new SMPlayer(ini_path);
 	SMPlayer::ExitCode c = smplayer->processArgs( args );
 	if (c != SMPlayer::NoExit) {
 #if USE_LOCKS
@@ -250,7 +222,6 @@ int main( int argc, char ** argv )
 		return c;
 	}
 
-	basegui_instance = smplayer->gui();
 	a.connect(smplayer->gui(), SIGNAL(quitSolicited()), &a, SLOT(quit()));
 	smplayer->start();
 
@@ -264,7 +235,6 @@ int main( int argc, char ** argv )
 
 	int r = a.exec();
 
-	basegui_instance = 0;
 	delete smplayer;
 
 	return r;

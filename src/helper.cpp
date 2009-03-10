@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,14 +21,19 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QColor>
+#include <QRegExp>
 #include <QDir>
 #include <QTextCodec>
 #include <QWidget>
+#include <QLocale>
 #include "config.h"
+
+#include <QLibraryInfo>
 
 #ifdef Q_OS_WIN
 #include <windows.h> // For the screensaver stuff
 #endif
+
 
 #if EXTERNAL_SLEEP
 #include <unistd.h>
@@ -51,11 +56,168 @@ public:
 };
 #endif
 
-/*
+
+QString Helper::logs;
+QString Helper::app_path;
+QString Helper::ini_path;
+
+void Helper::setAppPath(QString path) {
+	app_path = path;
+}
+
+QString Helper::appPath() {
+	return app_path;
+}
+
+QString Helper::dataPath() {
+#ifdef DATA_PATH
+	QString path = QString(DATA_PATH);
+	if (!path.isEmpty())
+		return path;
+	else
+		return appPath();
+#else
+	return appPath();
+#endif
+}
+
+QString Helper::translationPath() {
+#ifdef TRANSLATION_PATH
+	QString path = QString(TRANSLATION_PATH);
+	if (!path.isEmpty())
+		return path;
+	else
+		return appPath() + "/translations";
+#else
+	return appPath() + "/translations";
+#endif
+}
+
+QString Helper::docPath() {
+#ifdef DOC_PATH
+	QString path = QString(DOC_PATH);
+	if (!path.isEmpty())
+		return path;
+	else
+		return appPath() + "/docs";
+#else
+	return appPath() + "/docs";
+#endif
+}
+
+QString Helper::confPath() {
+#ifdef CONF_PATH
+	QString path = QString(CONF_PATH);
+	if (!path.isEmpty())
+		return path;
+	else
+		return appPath();
+#else
+	return appPath();
+#endif
+}
+
+QString Helper::themesPath() {
+#ifdef THEMES_PATH
+	QString path = QString(THEMES_PATH);
+	if (!path.isEmpty())
+		return path;
+	else
+		return appPath() + "/themes";
+#else
+	return appPath() + "/themes";
+#endif
+}
+
+QString Helper::shortcutsPath() {
+#ifdef SHORTCUTS_PATH
+	QString path = QString(SHORTCUTS_PATH);
+	if (!path.isEmpty())
+		return path;
+	else
+		return appPath() + "/shortcuts";
+#else
+	return appPath() + "/shortcuts";
+#endif
+}
+
+QString Helper::qtTranslationPath() {
+	return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+}
+
+QString Helper::doc(QString file, QString locale) {
+	if (locale.isEmpty()) {
+		locale = QLocale::system().name();
+	}
+
+	QString f = docPath() + "/" + locale + "/" + file;
+	qDebug("Helper:doc: checking '%s'", f.toUtf8().data());
+	if (QFile::exists(f)) return f;
+
+	if (locale.indexOf(QRegExp("_[A-Z]+")) != -1) {
+		locale.replace(QRegExp("_[A-Z]+"), "");
+		f = docPath() + "/" + locale + "/" + file;
+		qDebug("Helper:doc: checking '%s'", f.toUtf8().data());
+		if (QFile::exists(f)) return f;
+	}
+
+	f = docPath() + "/en/" + file;
+	return f;
+}
+
+QString Helper::appHomePath() {
+	return QDir::homePath() + "/.smplayer";
+}
+
+void Helper::setIniPath(QString path) {
+	ini_path = path;
+}
+
+QString Helper::iniPath() {
+	if (!ini_path.isEmpty()) {
+		return ini_path;
+	} else {
+		if (QFile::exists(appHomePath())) return appHomePath();
+	}
+	return "";
+}
+
+QString Helper::subtitleStyleFile() {
+#ifdef PORTABLE_APP
+	return appPath() + "/styles.ass";
+#else
+	return appHomePath() + "/styles.ass";
+#endif
+}
+
+QString Helper::filenameForPref(const QString & filename) {
+	QString s = filename;
+	s = s.replace('/', '_');
+	s = s.replace('\\', '_');
+	s = s.replace(':', '_');
+	s = s.replace('.', '_');
+	s = s.replace(' ', '_');
+
+	QFileInfo fi(filename);
+	if (fi.exists()) {
+		s += "_" + QString::number( fi.size() );
+	}
+
+	return s;	
+}
+
 QString Helper::dvdForPref(const QString & dvd_id, int title) {
 	return  QString("DVD_%1_%2").arg(dvd_id).arg(title);
 }
-*/
+
+
+void Helper::addLog(QString s) {
+	logs += s + "\n";
+}
+
+QString Helper::log() { 
+	return logs; 
+}
 
 QString Helper::formatTime(int secs) {
 	int t = secs;
@@ -135,6 +297,42 @@ void Helper::msleep(int ms) {
 #endif
 }
 
+QString Helper::colorToRRGGBBAA(unsigned int color) {
+	QColor c;
+	c.setRgb( color );
+
+	QString s;
+	return s.sprintf("%02x%02x%02x00", c.red(), c.green(), c.blue() );
+}
+
+QString Helper::colorToRRGGBB(unsigned int color) {
+	QColor c;
+	c.setRgb( color );
+
+	QString s;
+	return s.sprintf("%02x%02x%02x", c.red(), c.green(), c.blue() );
+}
+
+QString Helper::colorToRGB(unsigned int color) {
+	QColor c;
+	c.setRgb( color );
+
+	QString s;
+	return s.sprintf("0x%02x%02x%02x", c.blue(), c.green(), c.red() );
+}
+
+void Helper::setForegroundColor(QWidget * w, const QColor & color) {
+	QPalette p = w->palette(); 
+	p.setColor(w->foregroundRole(), color); 
+	w->setPalette(p);
+}
+
+void Helper::setBackgroundColor(QWidget * w, const QColor & color) {
+	QPalette p = w->palette(); 
+	p.setColor(w->backgroundRole(), color); 
+	w->setPalette(p);
+}
+
 QString Helper::changeSlashes(QString filename) {
 	// Only change if file exists (it's a local file)
 	if (QFileInfo(filename).exists())
@@ -142,6 +340,27 @@ QString Helper::changeSlashes(QString filename) {
 	else
 		return filename;
 }
+
+QString Helper::dvdSplitFolder(QString dvd_url) {
+	qDebug("Helper::dvdSplitFolder: '%s'", dvd_url.toUtf8().data());
+	QRegExp s("^dvd://(\\d+):(.*)", Qt::CaseInsensitive);
+	if (s.indexIn(dvd_url)!=-1) {
+		return s.cap(2);
+	} else {
+		return QString::null;
+	}
+}
+
+int Helper::dvdSplitTitle(QString dvd_url) {
+	qDebug("Helper::dvdSplitTitle: '%s'", dvd_url.toUtf8().data());
+	QRegExp s("^dvd://(\\d+)(.*)", Qt::CaseInsensitive);
+	if (s.indexIn(dvd_url)!=-1) {
+		return s.cap(1).toInt();
+	} else {
+		return -1;
+	}
+}
+
 
 bool Helper::directoryContainsDVD(QString directory) {
 	//qDebug("Helper::directoryContainsDVD: '%s'", directory.latin1());
@@ -156,6 +375,15 @@ bool Helper::directoryContainsDVD(QString directory) {
 
 	return valid;
 }
+
+#if COLOR_OUTPUT_SUPPORT
+QString Helper::stripColorsTags(QString s) {
+    QRegExp rx_console_colors("\033\\[\\d\\d?;\\d\\d?m");
+    int removePos = rx_console_colors.lastIndexIn(s);
+    removePos += rx_console_colors.matchedLength();
+    return s.remove(0, removePos);
+}
+#endif
 
 int Helper::qtVersion() {
 	QRegExp rx("(\\d+)\\.(\\d+)\\.(\\d+)");

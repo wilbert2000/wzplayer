@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,14 +42,6 @@ FileDownloader::FileDownloader(QWidget *parent) : QProgressDialog(parent)
 FileDownloader::~FileDownloader() {
 	//qDebug("FileDownloader::~FileDownloader");
 	delete http;
-}
-
-void FileDownloader::setProxy(QNetworkProxy proxy) {
-	http->abort();
-	http->setProxy(proxy);
-
-	qDebug("FileDownloader::setProxy: host: '%s' port: %d type: %d",
-           proxy.hostName().toUtf8().constData(), proxy.port(), proxy.type());
 }
 
 void FileDownloader::download(QUrl url) {

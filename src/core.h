@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,25 +23,15 @@
 #include <QProcess> // For QProcess::ProcessError
 #include "mediadata.h"
 #include "mediasettings.h"
-#include "mplayerprocess.h"
 #include "config.h"
 
-#define NEW_SETTINGS_MANAGEMENT 1
-
-#ifndef NO_USE_INI_FILES
-#if NEW_SETTINGS_MANAGEMENT
-class FileSettingsBase;
-#endif
-#endif
 
 class MplayerProcess;
 class MplayerWindow;
 class QSettings;
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 class WinScreenSaver;
-#endif
 #endif
 
 class Core : public QObject
@@ -56,6 +46,8 @@ public:
 
     MediaData mdat;
 	MediaSettings mset;
+
+    QString mplayer_log;
 
 	//! Return the current state
 	State state() { return _state; };
@@ -107,11 +99,7 @@ public slots:
 	//! Reopens the file (no restart)
 	void reload();
 
-#ifdef SEEKBAR_RESOLUTION
-    void goToPosition( int value );
-#else
     void goToPos( int perc );
-#endif
     void goToSec( double sec );
 
 	void toggleRepeat();
@@ -197,11 +185,9 @@ public slots:
 	void incSaturation();
 	void decSaturation();
 
-	void setSubDelay(int delay);
 	void incSubDelay();
 	void decSubDelay();
 
-	void setAudioDelay(int delay);
 	void incAudioDelay();
 	void decAudioDelay();
 
@@ -246,9 +232,6 @@ public slots:
 	void nextChapter();
 	void changeAngle(int);
 	void changeAspectRatio(int);
-#if NEW_ASPECT_CODE
-	void nextAspectRatio();
-#endif
 	void changeOSD(int);
 	void nextOSD();
 
@@ -265,28 +248,12 @@ public slots:
 	void incPanscan();
 	void decPanscan();
 	void resetPanscan();
-	void autoPanscan();
-	void autoPanscanFromLetterbox(double video_aspect);
-	void autoPanscanFor169();
-	void autoPanscanFor235();
 
 	void changeUseAss(bool);
 	void toggleClosedCaption(bool);
 	void toggleForcedSubsOnly(bool);
 
 	void visualizeMotionVectors(bool);
-
-#if DVDNAV_SUPPORT
-	// dvdnav buttons
-	void dvdnavUp();
-	void dvdnavDown();
-	void dvdnavLeft();
-	void dvdnavRight();
-	void dvdnavMenu();
-	void dvdnavSelect();
-	void dvdnavPrev();
-	void dvdnavMouse();
-#endif
 
     // Pass a command to mplayer by stdin:
     void tellmp(const QString & command);
@@ -297,10 +264,6 @@ public:
 	static int firstChapter();
 #if !GENERIC_CHAPTER_SUPPORT
 	static int dvdFirstChapter();
-#endif
-
-#ifndef NO_USE_INI_FILES
-	void changeFileSettingsMethod(QString method);
 #endif
 
 protected:
@@ -320,11 +283,13 @@ protected slots:
     void processFinished();
 	void fileReachedEnd();
     
+	void updateLog(QString line);
+
 	void displayMessage(QString text);
 	void displayScreenshotName(QString filename);
-	void displayUpdatingFontCache();
 
 	void streamTitleAndUrlChanged(QString,QString);
+	void autosaveMplayerLog();
 	
 	void watchState(Core::State state);
 
@@ -335,19 +300,6 @@ protected slots:
 
 #if DELAYED_AUDIO_SETUP_ON_STARTUP
 	void initAudioTrack();
-#endif
-#if NOTIFY_AUDIO_CHANGES
-	void initAudioTrack(const Tracks &);
-#endif
-#if NOTIFY_SUB_CHANGES
-	void initSubtitleTrack(const SubTracks &);
-	void setSubtitleTrackAgain(const SubTracks &);
-#endif
-#if DVDNAV_SUPPORT
-	void dvdTitleChanged(int);
-	void durationChanged(double);
-	void askForInfo();
-	void dvdnavUpdateMousePos(QPoint);
 #endif
 
 protected:
@@ -360,18 +312,18 @@ protected:
 	void stopMplayer();
 
 #ifndef NO_USE_INI_FILES
-	#if !NEW_SETTINGS_MANAGEMENT
 	bool checkHaveSettingsSaved(QString filename);
-	void loadMediaInfo(QString filename);
-	#endif
 	void saveMediaInfo();
+	void loadMediaInfo(QString filename);
 #endif
 
     void initializeMenus();
 	void updateWidgets();
 
+#if SCALE_ASS_SUBS
 	//! Returns true if changing the subscale requires to restart mplayer
 	bool subscale_need_restart();
+#endif
 
 signals:
 	void aboutToStartPlaying(); // Signal emited just before to start mplayer
@@ -387,18 +339,11 @@ signals:
 	void videoEqualizerNeedsUpdate();
 	void audioEqualizerNeedsUpdate();
 	void showTime(double sec);
-#ifdef SEEKBAR_RESOLUTION
-	void positionChanged(int); // To connect a slider
-#else
 	void posChanged(int); // To connect a slider
-#endif
 	void showFrame(int frame);
 	void needResize(int w, int h);
 	void noVideo();
 	void volumeChanged(int);
-#if NOTIFY_AUDIO_CHANGES
-	void audioTracksChanged();
-#endif
 
 	//! MPlayer started but finished with exit code != 0
 	void mplayerFinishedWithError(int exitCode);
@@ -409,25 +354,16 @@ signals:
 	// Resend signal from mplayerprocess:
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
 
-	//! A new line from the mplayer output is available
-	void logLineAvailable(QString);
-
 protected:
     MplayerProcess * proc;
     MplayerWindow * mplayerwindow;
 
 #ifndef NO_USE_INI_FILES
-	#if NEW_SETTINGS_MANAGEMENT
-	FileSettingsBase * file_settings;
-	#else
 	QSettings * file_settings;
-	#endif
 #endif
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 	WinScreenSaver * win_screensaver;
-#endif
 #endif
     
 private:
