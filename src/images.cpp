@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include "images.h"
 #include "global.h"
 #include "preferences.h"
-#include "paths.h"
+#include "helper.h"
 
 #include <QFile>
 
@@ -39,35 +39,13 @@ QString Images::filename(const QString & name, bool png) {
 	return filename;
 }
 
-QString Images::file(const QString & icon_name) {
-	bool ok = false;
-	QString filename;
-
-	if (!pref->iconset.isEmpty()) {
-		filename = Paths::configPath() + "/themes/" + pref->iconset + "/" +  icon_name;
-		if (!QFile::exists(filename)) {
-			filename = Paths::themesPath() + "/" + pref->iconset + "/" +  icon_name;
-		}
-
-		ok = (QFile::exists(filename));
-	}
-
-	if (!ok) {
-		filename = ":/icons-png/" + icon_name;
-	}
-
-	qDebug("Images::file: icon_name: '%s', filename: '%s'", icon_name.toUtf8().constData(), filename.toUtf8().constData());
-
-	return filename;
-}
-
 QPixmap Images::loadIcon(const QString & icon_name) {
 	QPixmap p;
 
 	if (!pref->iconset.isEmpty()) {
-		QString filename = Paths::configPath() + "/themes/" + pref->iconset + "/" +  icon_name;
+		QString filename = Helper::appHomePath() + "/themes/" + pref->iconset + "/" +  icon_name;
 		if (!QFile::exists(filename)) {
-			filename = Paths::themesPath() + "/" + pref->iconset + "/" +  icon_name;
+			filename = Helper::themesPath() + "/" + pref->iconset + "/" +  icon_name;
 		}
 		//qDebug("Images::loadIcon: filename: '%s'", filename.toUtf8().data());
 

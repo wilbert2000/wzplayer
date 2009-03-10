@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 
 #include "defaultgui.h"
 #include "helper.h"
-#include "colorutils.h"
 #include "core.h"
 #include "global.h"
 #include "widgetactions.h"
@@ -28,7 +27,6 @@
 #include "images.h"
 #include "floatingwidget.h"
 #include "toolbareditor.h"
-#include "desktopinfo.h"
 
 #if DOCK_PLAYLIST
 #include "playlistdock.h"
@@ -355,12 +353,12 @@ void DefaultGui::createStatusBar() {
 
 	statusBar()->setAutoFillBackground(TRUE);
 
-	ColorUtils::setBackgroundColor( statusBar(), QColor(0,0,0) );
-	ColorUtils::setForegroundColor( statusBar(), QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( time_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( time_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( frame_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( frame_display, QColor(255,255,255) );
+	Helper::setBackgroundColor( statusBar(), QColor(0,0,0) );
+	Helper::setForegroundColor( statusBar(), QColor(255,255,255) );
+	Helper::setBackgroundColor( time_display, QColor(0,0,0) );
+	Helper::setForegroundColor( time_display, QColor(255,255,255) );
+	Helper::setBackgroundColor( frame_display, QColor(0,0,0) );
+	Helper::setForegroundColor( frame_display, QColor(255,255,255) );
 	statusBar()->setSizeGripEnabled(FALSE);
 
     statusBar()->showMessage( tr("Welcome to SMPlayer") );
@@ -485,9 +483,6 @@ void DefaultGui::showFloatingControl(QPoint /*p*/) {
 #if CONTROLWIDGET_OVER_VIDEO
 	floating_control->setAnimated( pref->floating_control_animated );
 	floating_control->setMargin(pref->floating_control_margin);
-#ifndef Q_OS_WIN
-	floating_control->setBypassWindowManager(pref->bypass_window_manager);
-#endif
 	floating_control->showOver(panel, pref->floating_control_width);
 #else
 	if (!controlwidget->isVisible()) {
@@ -604,11 +599,6 @@ void DefaultGui::loadConfig() {
 
 		move(p);
 		resize(s);
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
 	}
 
 #if USE_CONFIGURABLE_TOOLBARS

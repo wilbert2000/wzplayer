@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,9 +50,6 @@ public slots:
 	void setAnimated(bool b) { _animated = b; };
 	void setAutoHide(bool b);
 	void setMargin(int margin) { _margin = margin; };
-#ifndef Q_OS_WIN
-	void setBypassWindowManager(bool b);
-#endif
 
 protected:
 	QToolBar * tb;

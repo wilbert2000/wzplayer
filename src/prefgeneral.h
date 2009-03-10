@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,15 +22,7 @@
 #include "ui_prefgeneral.h"
 #include "prefwidget.h"
 #include "inforeader.h"
-#include "deviceinfo.h"
 #include "preferences.h"
-
-#ifdef Q_OS_WIN
-#define USE_DSOUND_DEVICES 1
-#else
-#define USE_ALSA_DEVICES 1
-#define USE_XV_ADAPTORS 1
-#endif
 
 class PrefGeneral : public PrefWidget, public Ui::PrefGeneral
 {
@@ -51,10 +43,10 @@ public:
 	// Apply changes
 	void getData(Preferences * pref);
 
-    bool fileSettingsMethodChanged() { return filesettings_method_changed; };
-
 protected:
 	virtual void createHelp();
+
+	void setDrivers(InfoList vo_list, InfoList ao_list);
 
 	// Tab General
 	void setMplayerPath( QString path );
@@ -74,9 +66,6 @@ protected:
 
 	void setRememberTimePos(bool b);
 	bool rememberTimePos();
-
-	void setFileSettingsMethod(QString method);
-	QString fileSettingsMethod();
 
 	void setAudioLang(QString lang);
 	QString audioLang();
@@ -106,9 +95,6 @@ protected:
 	void setDisableScreensaver(bool b);
 	bool disableScreensaver();
 
-	void setBlackbordersOnFullscreen(bool b);
-	bool blackbordersOnFullscreen();
-
 	void setAutoq(int n);
 	int autoq();
 
@@ -129,9 +115,6 @@ protected:
 
 	void setInitialDeinterlace(int ID);
 	int initialDeinterlace();
-
-	void setInitialZoom(double v);
-	double initialZoom();
 
 	void setDirectRendering(bool b);
 	bool directRendering();
@@ -167,24 +150,6 @@ protected slots:
 
 protected:
 	virtual void retranslateStrings();
-	void updateDriverCombos();
-
-	InfoList vo_list;
-	InfoList ao_list;
-	
-#if USE_DSOUND_DEVICES
-	DeviceList dsound_devices;
-#endif
-
-#if USE_ALSA_DEVICES
-	DeviceList alsa_devices;
-#endif
-#if USE_XV_ADAPTORS
-	DeviceList xv_adaptors;
-#endif
-
-private:
-	bool filesettings_method_changed;
 };
 
 #endif

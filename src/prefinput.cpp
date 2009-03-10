@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 #include "prefinput.h"
 #include "images.h"
 #include "preferences.h"
-#include "config.h"
+
 #include "guiconfig.h"
 
 PrefInput::PrefInput(QWidget * parent, Qt::WindowFlags f)
@@ -68,9 +68,7 @@ void PrefInput::createMouseCombos() {
 	left_click_combo->addItem( tr("Fullscreen"), "fullscreen" );
 	left_click_combo->addItem( tr("Compact"), "compact" );
 	left_click_combo->addItem( tr("Screenshot"), "screenshot" );
-	left_click_combo->addItem( tr("Always on top"), "on_top_always" );
-	left_click_combo->addItem( tr("Never on top"), "on_top_never" );
-	left_click_combo->addItem( tr("On top while playing"), "on_top_while_playing" );
+	left_click_combo->addItem( tr("On top"), "on_top" );
 	left_click_combo->addItem( tr("Mute"), "mute" );
 	left_click_combo->addItem( tr("OSD - Next level"), "next_osd" );
 	left_click_combo->addItem( tr("Playlist"), "show_playlist" );
@@ -80,19 +78,8 @@ void PrefInput::createMouseCombos() {
 	left_click_combo->addItem( tr("Frame counter"), "frame_counter" );
 	left_click_combo->addItem( tr("Preferences"), "show_preferences" );
 	left_click_combo->addItem( tr("Double size"), "toggle_double_size" );
-	left_click_combo->addItem( tr("Show video equalizer"), "video_equalizer" );
-	left_click_combo->addItem( tr("Show audio equalizer"), "audio_equalizer" );
+	left_click_combo->addItem( tr("Show equalizer"), "equalizer" );
 	left_click_combo->addItem( tr("Show context menu"), "show_context_menu" );
-#if DVDNAV_SUPPORT
-	left_click_combo->addItem( tr("Activate option under mouse in DVD menus"), "dvdnav_mouse" );
-	left_click_combo->addItem( tr("Return to main DVD menu"), "dvdnav_menu" );
-	left_click_combo->addItem( tr("Return to previous menu in DVD menus"), "dvdnav_prev" );
-	left_click_combo->addItem( tr("Move cursor up in DVD menus"), "dvdnav_up" );
-	left_click_combo->addItem( tr("Move cursor down in DVD menus"), "dvdnav_down" );
-	left_click_combo->addItem( tr("Move cursor left in DVD menus"), "dvdnav_left" );
-	left_click_combo->addItem( tr("Move cursor right in DVD menus"), "dvdnav_right" );
-	left_click_combo->addItem( tr("Activate highlighted option in DVD menus"), "dvdnav_select" );
-#endif
 
 	// Copy to other combos
 	for (int n=0; n < left_click_combo->count(); n++) {
@@ -282,12 +269,6 @@ void PrefInput::createHelp() {
 
 	setWhatsThis(middle_click_combo, tr("Middle click"),
 		tr("Select the action for middle click on the mouse.") );
-
-	setWhatsThis(xbutton1_click_combo, tr("X Button 1"),
-		tr("Select the action for the X button 1.") );
-
-	setWhatsThis(xbutton2_click_combo, tr("X Button 2"),
-		tr("Select the action for the X button 2.") );
 
 	setWhatsThis(wheel_function_combo, tr("Wheel function"),
 		tr("Select the action for the mouse wheel.") );

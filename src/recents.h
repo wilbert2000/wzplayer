@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,32 +20,34 @@
 #define _RECENTS_H_
 
 #include <QStringList>
+#include <QObject>
 
-class Recents
+class Recents : public QObject
 {
+	Q_OBJECT
 
 public:
-	Recents();
-	virtual ~Recents();
+	Recents(QObject* parent = 0);
+	~Recents();
 
-	virtual void clear();
+	void add(QString s);
+	int count();
+	QString item(int n);
 
-	virtual void addItem(QString s);
-	virtual QString item(int n);
+	void setMaxItems(int n) { max_items = n; };
+	int maxItems() { return max_items; };
 
-	virtual int count();
+	void save();
+	void load();
 
-	virtual void setMaxItems(int n_items);
-	virtual int maxItems() { return max_items; };
+	void list();
 
-	virtual void fromStringList(QStringList list);
-	virtual QStringList toStringList();
+public slots:
+	void clear();
 
-	virtual void list();
-
-protected:
-	int max_items;
+private:
 	QStringList l;
+	int max_items;
 };
 
 #endif

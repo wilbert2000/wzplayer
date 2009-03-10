@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ signals:
 #endif
 
 protected:
-	virtual void closeEvent( QCloseEvent * e );
+	virtual void closeEvent( QCloseEvent * event );
 #if QT_VERSION < 0x040300
 	virtual void showEvent ( QShowEvent * event );
 	virtual void hideEvent ( QHideEvent * event );

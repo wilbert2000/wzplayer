@@ -1,66 +1,55 @@
-TEMPLATE = app
-LANGUAGE = C++
+TEMPLATE	= app
+LANGUAGE	= C++
 
-CONFIG += qt warn_on release
+CONFIG	+= qt warn_on release
 
 QT += network xml
+#QT +=  opengl 
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += findsubtitles videopreview mpcgui
-DEPENDPATH += findsubtitles videopreview mpcgui
+INCLUDEPATH += corelib findsubtitles
+DEPENDPATH += corelib findsubtitles
 
 #DEFINES += USE_QXT
 
-DEFINES += DOWNLOAD_SUBS
-
-HEADERS += guiconfig.h \
-	config.h \
-	constants.h \
+HEADERS	+= guiconfig.h \
+    corelib/config.h \
+	corelib/constants.h \
 	svn_revision.h \
 	version.h \
-	global.h \
-	paths.h \
-	helper.h \
-	colorutils.h \
+	corelib/global.h \
+	corelib/helper.h \
 	translator.h \
-	subtracks.h \
-	tracks.h \
-	titletracks.h \
-	discname.h \
+	corelib/subtracks.h \
+	corelib/trackdata.h \
+	corelib/tracks.h \
 	extensions.h \
-	desktopinfo.h \
-	myprocess.h \
-	mplayerversion.h \
-	mplayerprocess.h \
-	infoprovider.h \
-	mplayerwindow.h \
-	mediadata.h \
-	audioequalizerlist.h \
-	mediasettings.h \
-	assstyles.h \
-	preferences.h \
-	filesettingsbase.h \
-	filesettings.h \
-	filesettingshash.cpp \
+	corelib/desktopinfo.h \
+	corelib/myprocess.h \
+	corelib/mplayerversion.h \
+	corelib/mplayerprocess.h \
+    corelib/infoprovider.h \
+	corelib/mplayerwindow.h \
+	corelib/mediadata.h \
+	corelib/audioequalizerlist.h \
+	corelib/mediasettings.h \
+	corelib/preferences.h \
 	images.h \
 	inforeader.h \
-	deviceinfo.h \
 	recents.h \
-	urlhistory.h \
-	core.h \
+	corelib/core.h \
 	logwindow.h \
 	infofile.h \
 	seekwidget.h \
 	mytablewidget.h \
 	shortcutgetter.h \
 	actionseditor.h \
-	filechooser.h \
+    filechooser.h \
 	preferencesdialog.h \
 	mycombobox.h \
 	tristatecombo.h \
-	languages.h \
-	selectcolorbutton.h \
+    languages.h \
 	prefwidget.h \
 	prefgeneral.h \
 	prefdrives.h \
@@ -69,7 +58,6 @@ HEADERS += guiconfig.h \
 	prefinput.h \
 	prefsubtitles.h \
 	prefadvanced.h \
-	prefplaylist.h \
 	filepropertiesdialog.h \
 	playlist.h \
 	playlistpreferences.h \
@@ -78,7 +66,7 @@ HEADERS += guiconfig.h \
 	eqslider.h \
 	videoequalizer.h \
 	audioequalizer.h \
-	myslider.h \
+    myslider.h \
 	timeslider.h \
 	inputdvddirectory.h \
 	inputurl.h \
@@ -89,14 +77,11 @@ HEADERS += guiconfig.h \
 	filedialog.h \
 	inputmplayerversion.h \
 	about.h \
-	errordialog.h \
-	timedialog.h \
-	findsubtitles/simplehttp.h \
-	findsubtitles/osparser.h \
-	findsubtitles/findsubtitlesconfigdialog.h \
-	findsubtitles/findsubtitleswindow.h \
-	videopreview/videopreview.h \
-	videopreview/videopreviewconfigdialog.h \
+    errordialog.h \
+    timedialog.h \
+    findsubtitles/simplehttp.h \
+    findsubtitles/osparser.h \
+    findsubtitles/findsubtitleswindow.h \
 	basegui.h \
 	baseguiplus.h \
 	floatingwidget.h \
@@ -104,54 +89,42 @@ HEADERS += guiconfig.h \
 	toolbareditor.h \
 	defaultgui.h \
 	minigui.h \
-	mpcgui/mpcgui.h \
-	mpcgui/mpcstyles.h \
 	smplayer.h \
 	clhelp.h
 
 
 SOURCES	+= version.cpp \
-	global.cpp \
-	paths.cpp \
-	helper.cpp \
-	colorutils.cpp \
+	corelib/global.cpp \
+	corelib/helper.cpp \
 	translator.cpp \
-	subtracks.cpp \
-	tracks.cpp \
-	titletracks.cpp \
-	discname.cpp \
+	corelib/subtracks.cpp \
+	corelib/trackdata.cpp \
+	corelib/tracks.cpp \
 	extensions.cpp \
-	desktopinfo.cpp \
-	myprocess.cpp \
-	mplayerversion.cpp \
-	mplayerprocess.cpp \
-	infoprovider.cpp \
-	mplayerwindow.cpp \
-	mediadata.cpp \
-	mediasettings.cpp \
-	assstyles.cpp \
-	preferences.cpp \
-	filesettingsbase.cpp \
-	filesettings.cpp \
-	filesettingshash.cpp \
+	corelib/desktopinfo.cpp \
+	corelib/myprocess.cpp \
+	corelib/mplayerversion.cpp \
+	corelib/mplayerprocess.cpp \
+    corelib/infoprovider.cpp \
+	corelib/mplayerwindow.cpp \
+	corelib/mediadata.cpp \
+	corelib/mediasettings.cpp \
+	corelib/preferences.cpp \
 	images.cpp \
 	inforeader.cpp \
-	deviceinfo.cpp \
 	recents.cpp \
-	urlhistory.cpp \
-	core.cpp \
+	corelib/core.cpp \
 	logwindow.cpp \
 	infofile.cpp \
 	seekwidget.cpp \
 	mytablewidget.cpp \
 	shortcutgetter.cpp \
 	actionseditor.cpp \
-	filechooser.cpp \
+    filechooser.cpp \
 	preferencesdialog.cpp \
 	mycombobox.cpp \
 	tristatecombo.cpp \
-	languages.cpp \
-	selectcolorbutton.cpp \
+    languages.cpp \
 	prefwidget.cpp \
 	prefgeneral.cpp \
 	prefdrives.cpp \
@@ -160,7 +133,6 @@ SOURCES	+= version.cpp \
 	prefinput.cpp \
 	prefsubtitles.cpp \
 	prefadvanced.cpp \
-	prefplaylist.cpp \
 	filepropertiesdialog.cpp \
 	playlist.cpp \
 	playlistpreferences.cpp \
@@ -169,7 +141,7 @@ SOURCES	+= version.cpp \
 	eqslider.cpp \
 	videoequalizer.cpp \
 	audioequalizer.cpp \
-	myslider.cpp \
+    myslider.cpp \
 	timeslider.cpp \
 	inputdvddirectory.cpp \
 	inputurl.cpp \
@@ -180,14 +152,11 @@ SOURCES	+= version.cpp \
 	filedialog.cpp \
 	inputmplayerversion.cpp \
 	about.cpp \
-	errordialog.cpp \
-	timedialog.cpp \
-	findsubtitles/simplehttp.cpp \
-	findsubtitles/osparser.cpp \
-	findsubtitles/findsubtitlesconfigdialog.cpp \
-	findsubtitles/findsubtitleswindow.cpp \
-	videopreview/videopreview.cpp \
-	videopreview/videopreviewconfigdialog.cpp \
+    errordialog.cpp \
+    timedialog.cpp \
+    findsubtitles/simplehttp.cpp \
+    findsubtitles/osparser.cpp \
+    findsubtitles/findsubtitleswindow.cpp \
 	basegui.cpp \
 	baseguiplus.cpp \
 	floatingwidget.cpp \
@@ -195,8 +164,6 @@ SOURCES	+= version.cpp \
 	toolbareditor.cpp \
 	defaultgui.cpp \
 	minigui.cpp \
-	mpcgui/mpcgui.cpp \
-	mpcgui/mpcstyles.cpp \
 	clhelp.cpp \
 	smplayer.cpp \
 	main.cpp
@@ -211,11 +178,9 @@ FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui inputurl.ui \
         preferencesdialog.ui prefgeneral.ui prefdrives.ui prefinterface.ui \
         prefperformance.ui prefinput.ui prefsubtitles.ui prefadvanced.ui \
-        prefplaylist.ui \
         about.ui inputmplayerversion.ui errordialog.ui timedialog.ui \
         playlistpreferences.ui filechooser.ui \
-        findsubtitles/findsubtitleswindow.ui findsubtitles/findsubtitlesconfigdialog.ui \
-        videopreview/videopreviewconfigdialog.ui
+        findsubtitles/findsubtitleswindow.ui
 
 TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
                translations/smplayer_sk.ts translations/smplayer_it.ts \
@@ -232,82 +197,46 @@ TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
                translations/smplayer_fi.ts translations/smplayer_ko.ts \
                translations/smplayer_mk.ts translations/smplayer_eu.ts \
                translations/smplayer_ca.ts translations/smplayer_sl_SI.ts \
-               translations/smplayer_ar_SY.ts translations/smplayer_ku.ts \
-               translations/smplayer_gl.ts
-
-contains( DEFINES, DOWNLOAD_SUBS ) {
-	INCLUDEPATH += findsubtitles/filedownloader findsubtitles/quazip
-	DEPENDPATH += findsubtitles/filedownloader findsubtitles/quazip
-
-	HEADERS += filedownloader.h subchooserdialog.h
-	SOURCES += filedownloader.cpp subchooserdialog.cpp
-
-	FORMS += subchooserdialog.ui
-
-	HEADERS += crypt.h \
-	           ioapi.h \
-	           quazip.h \
-	           quazipfile.h \
-	           quazipfileinfo.h \
-	           quazipnewinfo.h \
-	           unzip.h \
-	           zip.h
-
-	SOURCES += ioapi.c \
-	           quazip.cpp \
-	           quazipfile.cpp \
-	           quazipnewinfo.cpp \
-	           unzip.c \
-	           zip.c
-
-	LIBS += -lz
-	
-	win32 {
-		INCLUDEPATH += c:\development\zlib-1.2.3
-		LIBS += -Lc:\development\zlib-1.2.3
-	}
-}
+               translations/smplayer_ar_SY.ts translations/smplayer_ku.ts
 
 unix {
-	UI_DIR = .ui
-	MOC_DIR = .moc
-	OBJECTS_DIR = .obj
+  UI_DIR = .ui
+  MOC_DIR = .moc
+  OBJECTS_DIR = .obj
 
-	DEFINES += DATA_PATH=$(DATA_PATH)
-	DEFINES += DOC_PATH=$(DOC_PATH)
-	DEFINES += TRANSLATION_PATH=$(TRANSLATION_PATH)
-	DEFINES += THEMES_PATH=$(THEMES_PATH)
-	DEFINES += SHORTCUTS_PATH=$(SHORTCUTS_PATH)
-	#DEFINES += NO_DEBUG_ON_CONSOLE
+  DEFINES += DATA_PATH=$(DATA_PATH)
+  DEFINES += DOC_PATH=$(DOC_PATH)
+  DEFINES += TRANSLATION_PATH=$(TRANSLATION_PATH)
+  DEFINES += CONF_PATH=$(CONF_PATH)
+  DEFINES += THEMES_PATH=$(THEMES_PATH)
+  DEFINES += SHORTCUTS_PATH=$(SHORTCUTS_PATH)
+  #DEFINES += NO_DEBUG_ON_CONSOLE
 
-	#DEFINES += KDE_SUPPORT
-	#INCLUDEPATH += /opt/kde3/include/
-	#LIBS += -lkio -L/opt/kde3/lib/
+  #DEFINES += KDE_SUPPORT
+  #INCLUDEPATH += /opt/kde3/include/
+  #LIBS += -lkio -L/opt/kde3/lib/
 
-	#contains( DEFINES, KDE_SUPPORT) {
-	# HEADERS += mysystemtrayicon.h
-	# SOURCES += mysystemtrayicon.cpp
-	#}
+  #contains( DEFINES, KDE_SUPPORT) {
+  #	HEADERS += mysystemtrayicon.h
+  #	SOURCES += mysystemtrayicon.cpp
+  #}
 
-	#HEADERS += prefassociations.h winfileassoc.h
-	#SOURCES += prefassociations.cpp winfileassoc.cpp
-	#FORMS += prefassociations.ui
+  #HEADERS += 	prefassociations.h winfileassoc.h
+  #SOURCES += 	prefassociations.cpp winfileassoc.cpp
+  #FORMS += prefassociations.ui
 }
 
 win32 {
-	#DEFINES += SCREENSAVER_OFF
-	contains( DEFINES, SCREENSAVER_OFF ) {
-		HEADERS += screensaver.h
-		SOURCES += screensaver.cpp
-	}
+	HEADERS += corelib/screensaver.h
+	SOURCES += corelib/screensaver.cpp
 
 	!contains( DEFINES, PORTABLE_APP ) {
 		DEFINES += USE_ASSOCIATIONS
 	}
 	
 	contains( DEFINES, USE_ASSOCIATIONS ) {
-		HEADERS += prefassociations.h winfileassoc.h
-		SOURCES += prefassociations.cpp winfileassoc.cpp
+		HEADERS += 	prefassociations.h winfileassoc.h
+		SOURCES += 	prefassociations.cpp winfileassoc.cpp
 		FORMS += prefassociations.ui
 	}
 
