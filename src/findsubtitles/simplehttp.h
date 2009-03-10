@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,11 +41,10 @@ signals:
 
 protected slots:
 	void readResponseHeader(const QHttpResponseHeader &responseHeader);
-	void httpRequestFinished(int request_id, bool error);
+	void httpRequestFinished(int id, bool error);
 
 protected:
 	QByteArray downloaded_text;
-	int http_get_id;
 };
 
 #endif

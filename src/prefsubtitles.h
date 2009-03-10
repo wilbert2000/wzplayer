@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,26 +69,20 @@ protected:
 	void setFontEncoding(QString s);
 	QString fontEncoding();
 
-	void setUseEnca(bool v);
-	bool useEnca();
-
-	void setEncaLang(QString s);
-	QString encaLang();
-
 	void setSubPos(int pos);
 	int subPos();
 
 	void setUseFontASS(bool v);
 	bool useFontASS();
 
-	void setAssLineSpacing(int spacing);
-	int assLineSpacing();
+	void setAssColor( unsigned int color );
+	unsigned int assColor();
 
-	void setForceAssStyles(bool b);
-	bool forceAssStyles();
+	void setAssBorderColor( unsigned int color );
+	unsigned int assBorderColor();
 
-	void setCustomizedAssStyle(QString style) { forced_ass_style = style; };
-	QString customizedAssStyle() { return forced_ass_style; };
+	void setAssStyles(QString styles);
+	QString assStyles();
 
 	void setFontFuzziness(int n);
 	int fontFuzziness();
@@ -96,21 +90,16 @@ protected:
 	void setSubtitlesOnScreenshots(bool b);
 	bool subtitlesOnScreenshots();
 
-	void setFreetypeSupport(bool b);
-	bool freetypeSupport();
-
-protected slots:
-	void on_ass_subs_button_toggled(bool b);
-	void on_ass_customize_button_clicked();
-	void on_freetype_check_toggled(bool b);
-	void checkBorderStyleCombo( int index );
-
 protected:
 	virtual void retranslateStrings();
 
+protected slots:
+	void on_colorButton_clicked();
+	void on_borderButton_clicked();
+
 private:
 	Encodings * encodings;
-	QString forced_ass_style;
+	unsigned int ass_color, ass_border_color;
 };
 
 #endif

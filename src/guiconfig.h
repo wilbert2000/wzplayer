@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -53,6 +53,11 @@
 #define ALLOW_CHANGE_STYLESHEET 1
 
 
+// New code to resize the main window
+
+#define NEW_RESIZE_CODE 1
+
+
 // Allow to use multiple shortcuts for actions
 
 #define USE_MULTIPLE_SHORTCUTS 1
@@ -72,6 +77,13 @@
 // a mp3 song.
 
 #define USE_INFOPROVIDER 1
+
+
+// USE_MINIMUMSIZE
+// if 1, the main window will not be smaller than the control widget 
+// size hint.
+
+#define USE_MINIMUMSIZE 1
 
 
 // USE_CONFIGURABLE_TOOLBARS

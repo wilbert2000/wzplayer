@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "prefadvanced.h"
 #include "images.h"
 #include "preferences.h"
+#include "config.h"
 #include <QColorDialog>
 
 PrefAdvanced::PrefAdvanced(QWidget * parent, Qt::WindowFlags f)
@@ -37,16 +38,29 @@ PrefAdvanced::PrefAdvanced(QWidget * parent, Qt::WindowFlags f)
 	changeButton->hide();
 #endif
 
-#if !REPAINT_BACKGROUND_OPTION
-	repaint_video_background_check->hide();
-#endif
-
 	// Monitor aspect
 	monitoraspect_combo->addItem("Auto");
 	monitoraspect_combo->addItem("4:3");
 	monitoraspect_combo->addItem("16:9");
 	monitoraspect_combo->addItem("5:4");
 	monitoraspect_combo->addItem("16:10");
+
+	// MPlayer language combos.
+    endoffile_combo->addItem( "Exiting... \\(End of file\\)" ); // English
+    endoffile_combo->addItem( "Saliendo... \\(Fin de archivo\\.\\)" ); // Spanish
+    endoffile_combo->addItem( "Beenden... \\(Dateiende erreicht\\)" ); // German
+    endoffile_combo->addItem( "Sortie... \\(Fin du fichier\\)" ); // French
+    endoffile_combo->addItem( "In uscita... \\(Fine del file\\)" ); // Italian
+    endoffile_combo->addItem( QString::fromUtf8("Wychodzę... \\(Koniec pliku\\)") ); // Polish
+    endoffile_combo->addItem( QString::fromUtf8("Выходим... \\(Конец файла\\)") ); // Russian
+
+    novideo_combo->addItem( "Video: no video" ); // English
+    novideo_combo->addItem( QString::fromUtf8("Vídeo: no hay video") ); // Spanish
+    novideo_combo->addItem( "Video: kein Video" ); // German
+    novideo_combo->addItem( QString::fromUtf8("Vidéo : pas de vidéo") ); // French
+    novideo_combo->addItem( "Video: nessun video" ); // Italian
+    novideo_combo->addItem( "Wideo: brak obrazu" ); // Polish
+    novideo_combo->addItem( QString::fromUtf8("Видео: нет видео") ); // Russian
 
 	retranslateStrings();
 }
@@ -76,10 +90,8 @@ void PrefAdvanced::retranslateStrings() {
 
 void PrefAdvanced::setData(Preferences * pref) {
 	setMonitorAspect( pref->monitor_aspect );
-
-#if REPAINT_BACKGROUND_OPTION	
-	setRepaintVideoBackground( pref->repaint_video_background );
-#endif
+	
+	setClearBackground( pref->always_clear_video_background );
 	setUseMplayerWindow( pref->use_mplayer_window );
 	setMplayerAdditionalArguments( pref->mplayer_additional_options );
 	setMplayerAdditionalVideoFilters( pref->mplayer_additional_video_filters );
@@ -87,10 +99,6 @@ void PrefAdvanced::setData(Preferences * pref) {
 #if USE_COLORKEY
 	setColorKey( pref->color_key );
 #endif
-	setPreferIpv4( pref->prefer_ipv4 );
-	setUseIdx( pref->use_idx );
-	setUseCorrectPts( pref->use_correct_pts );
-	setActionsToRun( pref->actions_to_run );
 
 	setLogMplayer( pref->log_mplayer );
 	setLogSmplayer( pref->log_smplayer );
@@ -99,24 +107,19 @@ void PrefAdvanced::setData(Preferences * pref) {
     setSaveMplayerLog( pref->autosave_mplayer_log );
     setMplayerLogName( pref->mplayer_log_saveto );
 
+	setEndOfFileText( pref->rx_endoffile );
+	setNoVideoText( pref->rx_novideo );
+
 	setUseShortNames( pref->use_short_pathnames );
 }
 
 void PrefAdvanced::getData(Preferences * pref) {
 	requires_restart = false;
-
-#if REPAINT_BACKGROUND_OPTION
-	repaint_video_background_changed = false;
-#endif
-
+	clearing_background_changed = false;
 	monitor_aspect_changed = false;
 #if USE_COLORKEY
 	colorkey_changed = false;
 #endif
-	pref->prefer_ipv4 = preferIpv4();
-	TEST_AND_SET(pref->use_idx, useIdx());
-	TEST_AND_SET(pref->use_correct_pts, useCorrectPts());
-	pref->actions_to_run = actionsToRun();
 
 	if (pref->monitor_aspect != monitorAspect()) {
 		pref->monitor_aspect = monitorAspect();
@@ -124,12 +127,10 @@ void PrefAdvanced::getData(Preferences * pref) {
 		requires_restart = true;
 	}
 
-#if REPAINT_BACKGROUND_OPTION
-	if (pref->repaint_video_background != repaintVideoBackground()) {
-		pref->repaint_video_background = repaintVideoBackground();
-		repaint_video_background_changed = true;
+	if (pref->always_clear_video_background != clearBackground()) {
+		pref->always_clear_video_background = clearBackground();
+		clearing_background_changed = true;
     }
-#endif
 
 	TEST_AND_SET(pref->use_mplayer_window, useMplayerWindow());
 	TEST_AND_SET(pref->mplayer_additional_options, mplayerAdditionalArguments());
@@ -147,6 +148,9 @@ void PrefAdvanced::getData(Preferences * pref) {
 	pref->log_filter = logFilter();
     pref->autosave_mplayer_log = saveMplayerLog();
     pref->mplayer_log_saveto = mplayerLogName();
+
+	TEST_AND_SET(pref->rx_endoffile, endOfFileText());
+	TEST_AND_SET(pref->rx_novideo, noVideoText());
 
 	pref->use_short_pathnames = useShortNames();
 }
@@ -166,15 +170,13 @@ QString PrefAdvanced::monitorAspect() {
 		return monitoraspect_combo->currentText();
 }
 
-#if REPAINT_BACKGROUND_OPTION
-void PrefAdvanced::setRepaintVideoBackground(bool b) {
-	repaint_video_background_check->setChecked(b);
+void PrefAdvanced::setClearBackground(bool b) {
+	clear_background_check->setChecked(b);
 }
 
-bool PrefAdvanced::repaintVideoBackground() {
-	return repaint_video_background_check->isChecked();
+bool PrefAdvanced::clearBackground() {
+	return clear_background_check->isChecked();
 }
-#endif
 
 void PrefAdvanced::setUseMplayerWindow(bool v) {
 	mplayer_use_window_check->setChecked(v);
@@ -239,41 +241,6 @@ unsigned int PrefAdvanced::colorKey() {
 }
 #endif
 
-void PrefAdvanced::setPreferIpv4(bool b) {
-	if (b) 
-		ipv4_button->setChecked(true);
-	else 
-		ipv6_button->setChecked(true);
-}
-
-bool PrefAdvanced::preferIpv4() {
-	return ipv4_button->isChecked();
-}
-
-void PrefAdvanced::setUseIdx(bool b) {
-	idx_check->setChecked(b);
-}
-
-bool PrefAdvanced::useIdx() {
-	return idx_check->isChecked();
-}
-
-void PrefAdvanced::setUseCorrectPts(Preferences::OptionState value) {
-	correct_pts_combo->setState(value);
-}
-
-Preferences::OptionState PrefAdvanced::useCorrectPts() {
-	return correct_pts_combo->state();
-}
-
-void PrefAdvanced::setActionsToRun(QString actions) {
-	actions_to_run_edit->setText(actions);
-}
-
-QString PrefAdvanced::actionsToRun() {
-	return actions_to_run_edit->text();
-}
-
 void PrefAdvanced::on_changeButton_clicked() {
 	//bool ok;
 	//int color = colorkey_view->text().toUInt(&ok, 16);
@@ -328,6 +295,23 @@ QString PrefAdvanced::mplayerLogName() {
 }
 
 
+// MPlayer language page
+void PrefAdvanced::setEndOfFileText(QString t) {
+	endoffile_combo->setCurrentText(t);
+}
+
+QString PrefAdvanced::endOfFileText() {
+	return endoffile_combo->currentText();
+}
+
+void PrefAdvanced::setNoVideoText(QString t) {
+	novideo_combo->setCurrentText(t);
+}
+
+QString PrefAdvanced::noVideoText() {
+	return novideo_combo->currentText();
+}
+
 void PrefAdvanced::createHelp() {
 	clearHelp();
 
@@ -335,6 +319,35 @@ void PrefAdvanced::createHelp() {
 
 	setWhatsThis(monitoraspect_combo, tr("Monitor aspect"),
         tr("Select the aspect ratio of your monitor.") );
+
+	setWhatsThis(log_smplayer_check, tr("Log SMPlayer output"),
+		tr("If this option is checked, smplayer will store the debugging "
+           "messages that smplayer outputs "
+           "(you can see the log in <b>Options->View logs->smplayer</b>). "
+           "This information can be very useful for the developer in case "
+           "you find a bug." ) );
+
+	setWhatsThis(log_mplayer_check, tr("Log MPlayer output"),
+		tr("If checked, smplayer will store the output of mplayer "
+           "(you can see it in <b>Options->View logs->mplayer</b>). "
+           "In case of problems this log can contain important information, "
+           "so it's recommended to keep this option checked.") );
+
+	setWhatsThis(log_mplayer_save_check, tr("Autosave MPlayer log"),
+		tr("If this option is checked, the MPlayer log will be saved to the "
+           "specified file every time a new file starts to play. "
+           "It's intended for external applications, so they can get "
+           "info about the file you're playing.") );
+
+	setWhatsThis(log_mplayer_save_name, tr("Autosave MPlayer log filename"),
+ 		tr("Enter here the path and filename that will be used to save the "
+           "MPlayer log.") );
+
+	setWhatsThis(log_filter_edit, tr("Filter for SMPlayer logs"),
+		tr("This option allows to filter the smplayer messages that will "
+           "be stored in the log. Here you can write any regular expression.<br>"
+           "For instance: <i>^Core::.*</i> will display only the lines "
+           "starting with <i>Core::</i>") );
 
 	setWhatsThis(mplayer_use_window_check, tr("Run MPlayer in its own window"),
         tr("If you check this option, the MPlayer video window won't be "
@@ -344,22 +357,10 @@ void PrefAdvanced::createHelp() {
            "probably won't work as expected when the MPlayer window has the "
            "focus.") );
 
-	setWhatsThis(idx_check, tr("Rebuild index if needed"),
-		tr("Rebuilds index of files if no index was found, allowing seeking. "
-		   "Useful with broken/incomplete downloads, or badly created files. "
-           "This option only works if the underlying media supports "
-           "seeking (i.e. not with stdin, pipe, etc).<br> "
-           "<b>Note:</b> the creation of the index may take some time.") );
-
-	setWhatsThis(correct_pts_combo, tr("Correct pts"),
-		tr("Switches MPlayer to an experimental mode where timestamps for "
-           "video frames are calculated differently and video filters which "
-           "add new frames or modify timestamps of existing ones are "
-           "supported. The more accurate timestamps can be visible for "
-           "example when playing subtitles timed to scene changes with the "
-           "SSA/ASS library enabled. Without correct pts the subtitle timing "
-           "will typically be off by some frames. This option does not work "
-           "correctly with some demuxers and codecs.") );
+	setWhatsThis(clear_background_check, 
+        tr("Repaint the background of the video window"),
+		tr("Checking this option may reduce flickering, but it also might "
+           "produce that the video won't be displayed properly.") );
 
 #ifdef Q_OS_WIN
 	setWhatsThis(shortnames_check, tr("Pass short filenames (8+3) to MPlayer"),
@@ -369,31 +370,12 @@ void PrefAdvanced::createHelp() {
            "and thus it will able to open them.") );
 #endif
 
-#if REPAINT_BACKGROUND_OPTION
-	setWhatsThis(repaint_video_background_check, 
-        tr("Repaint the background of the video window"),
-		tr("Checking this option may reduce flickering, but it also might "
-           "produce that the video won't be displayed properly.") );
-#endif
-
 #if USE_COLORKEY
 	setWhatsThis(colorkey_view, tr("Colorkey"),
         tr("If you see parts of the video over any other window, you can "
            "change the colorkey to fix it. Try to select a color close to "
            "black.") );
 #endif
-
-	setWhatsThis(actions_to_run_edit, tr("Actions list"),
-		tr("Here you can specify a list of <i>actions</i> which will be "
-           "run every time a file is opened. You'll find all available "
-           "actions in the key shortcut editor in the <b>Keyboard and mouse</b> "
-           "section. The actions must be separated by spaces. Checkable "
-           "actions can be followed by <i>true</i> or <i>false</i> to "
-           "enable or disable the action.") +"<br>"+
-		tr("Example:") +" <i>auto_zoom compact true</i><br>" +
-		tr("Limitation: the actions are run only when a file is opened and "
-           "not when the mplayer process is restarted (e.g. you select an "
-           "audio or video filter).") );
 
 	addSectionTitle(tr("Options for MPlayer"));
 
@@ -409,45 +391,13 @@ void PrefAdvanced::createHelp() {
         tr("Here you can add audio filters for MPlayer. Write them separated "
            "by commas. Don't use spaces!") );
 
-	addSectionTitle(tr("Network"));
+	addSectionTitle(tr("MPlayer language"));
 
-	setWhatsThis(ipv4_button, tr("IPv4"),
-		tr("Use IPv4 on network connections. Falls back on IPv6 automatically."));
+	setWhatsThis(endoffile_combo, tr("End of file"),
+        tr("Select or type a regular expression for 'End of file'") );
 
-	setWhatsThis(ipv6_button, tr("IPv6"),
-		tr("Use IPv6 on network connections. Falls back on IPv4 automatically."));
-
-	addSectionTitle(tr("Logs"));
-
-	setWhatsThis(log_smplayer_check, tr("Log SMPlayer output"),
-		tr("If this option is checked, SMPlayer will store the debugging "
-           "messages that SMPlayer outputs "
-           "(you can see the log in <b>Options -> View logs -> SMPlayer</b>). "
-           "This information can be very useful for the developer in case "
-           "you find a bug." ) );
-
-	setWhatsThis(log_mplayer_check, tr("Log MPlayer output"),
-		tr("If checked, SMPlayer will store the output of MPlayer "
-           "(you can see it in <b>Options -> View logs -> MPlayer</b>). "
-           "In case of problems this log can contain important information, "
-           "so it's recommended to keep this option checked.") );
-
-	setWhatsThis(log_mplayer_save_check, tr("Autosave MPlayer log"),
-		tr("If this option is checked, the MPlayer log will be saved to the "
-           "specified file every time a new file starts to play. "
-           "It's intended for external applications, so they can get "
-           "info about the file you're playing.") );
-
-	setWhatsThis(log_mplayer_save_name, tr("Autosave MPlayer log filename"),
- 		tr("Enter here the path and filename that will be used to save the "
-           "MPlayer log.") );
-
-	setWhatsThis(log_filter_edit, tr("Filter for SMPlayer logs"),
-		tr("This option allows to filter the SMPlayer messages that will "
-           "be stored in the log. Here you can write any regular expression.<br>"
-           "For instance: <i>^Core::.*</i> will display only the lines "
-           "starting with <i>Core::</i>") );
-
+	setWhatsThis(novideo_combo, tr("No video"),
+        tr("Select or type a regular expression for 'No video'") );
 }
 
 #include "moc_prefadvanced.cpp"

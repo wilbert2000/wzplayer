@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include "global.h"
 #include "helper.h"
 #include "toolbareditor.h"
-#include "desktopinfo.h"
 
 #include <QToolBar>
 #include <QStatusBar>
@@ -32,7 +31,9 @@
 using namespace Global;
 
 MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
-	: BaseGuiPlus( parent, flags )
+	: BaseGuiPlus( parent, flags ), 
+		floating_control_width(80),
+		floating_control_animated(true)
 {
 	createActions();
 	createControlWidget();
@@ -179,13 +180,8 @@ void MiniGui::aboutToExitCompactMode() {
 }
 
 void MiniGui::showFloatingControl(QPoint /*p*/) {
-#ifndef Q_OS_WIN
-	floating_control->setBypassWindowManager(pref->bypass_window_manager);
-#endif
-	floating_control->setAnimated( pref->floating_control_animated );
-	floating_control->setMargin(pref->floating_control_margin);
-	floating_control->showOver(panel, 
-                               pref->floating_control_width, 
+	floating_control->setAnimated( floating_control_animated );
+	floating_control->showOver(panel, floating_control_width, 
                                FloatingWidget::Bottom);
 }
 
@@ -204,14 +200,9 @@ void MiniGui::saveConfig() {
 	QSettings * set = settings;
 
 	set->beginGroup( "mini_gui");
-
-	if (pref->save_window_size_on_exit) {
-		qDebug("MiniGui::saveConfig: w: %d h: %d", width(), height());
-		set->setValue( "pos", pos() );
-		set->setValue( "size", size() );
-	}
-
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
+	set->setValue("floating_control_width", floating_control_width);
+	set->setValue("floating_control_animated", floating_control_animated);
 
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
@@ -227,23 +218,9 @@ void MiniGui::loadConfig() {
 	QSettings * set = settings;
 
 	set->beginGroup( "mini_gui");
-
-	if (pref->save_window_size_on_exit) {
-		QPoint p = set->value("pos", pos()).toPoint();
-		QSize s = set->value("size", size()).toSize();
-
-		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
-		}
-
-		move(p);
-		resize(s);
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("MiniGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
-	}
+	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	floating_control_width = set->value("floating_control_width", floating_control_width).toInt();
+	floating_control_animated = set->value("floating_control_animated", floating_control_animated).toBool();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	QList<QAction *> actions_list = findChildren<QAction *>();
@@ -266,8 +243,6 @@ void MiniGui::loadConfig() {
 	floating_control->adjustSize();
 	set->endGroup();
 #endif
-
-	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 
 	set->endGroup();
 }

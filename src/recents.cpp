@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,37 +17,49 @@
 */
 
 #include "recents.h"
+#include "global.h"
+#include <QSettings>
 
-Recents::Recents()
+using namespace Global;
+
+Recents::Recents(QObject* parent) : QObject(parent) 
 {
 	l.clear();
 	max_items = 10;
+	load();
 }
 
 Recents::~Recents() {
+	save();
 }
 
 void Recents::clear() {
 	l.clear();
 }
 
-int Recents::count() {
-	return l.count();
-}
+void Recents::add(QString s) {
+	qDebug("Recents::add: '%s'", s.toUtf8().data());
 
-void Recents::setMaxItems(int n_items) {
-	max_items = n_items;
-	fromStringList(l);
-}
+	/*
+	QStringList::iterator it = l.find(s);
+	if (it != l.end()) l.erase(it);
+	l.prepend(s);
 
-void Recents::addItem(QString s) {
-	qDebug("Recents::addItem: '%s'", s.toUtf8().data());
+	if (l.count() > max_items) l.erase(l.fromLast());
+	*/
 
 	int pos = l.indexOf(s);
 	if (pos != -1) l.removeAt(pos);
 	l.prepend(s);
 
 	if (l.count() > max_items) l.removeLast();
+
+	//qDebug(" * current list:");
+	//list();
+}
+
+int Recents::count() {
+	return l.count();
 }
 
 QString Recents::item(int n) {
@@ -57,25 +69,52 @@ QString Recents::item(int n) {
 void Recents::list() {
 	qDebug("Recents::list");
 
-	for (int n=0; n < l.count(); n++) {
-		qDebug(" * item %d: '%s'", n, l[n].toUtf8().constData() );
+	for (int n=0; n < count(); n++) {
+		qDebug(" * item %d: '%s'", n, item(n).toUtf8().data() );
 	}
 }
 
-void Recents::fromStringList(QStringList list) {
+void Recents::save() {
+	qDebug("Recents::save");
+
+	QSettings * set = settings;
+
+	/*
+	set->beginGroup( "recent_files");
+
+	set->writeEntry( "items", count() );
+	for (int n=0; n < count(); n++) {
+		set->writeEntry("entry_" + QString::number(n), item(n) );
+	}
+	*/
+
+	set->beginGroup( "recent_files");
+	set->setValue( "files", l );
+
+	set->endGroup();
+}
+
+void Recents::load() {
+	qDebug("Recents::load");
+
 	l.clear();
 
-	int max = list.count();
-	if (max_items < max) max = max_items;
+	QSettings * set = settings;
 
-	//qDebug("max_items: %d, count: %d max: %d", max_items, l.count(), max);
+	/*
+	set->beginGroup( "recent_files");
 
-	for (int n = 0; n < max; n++) {
-		l.append( list[n] );
+	int num_entries = set->readNumEntry( "items", 0 );
+	for (int n=0; n < num_entries; n++) {
+		QString s = set->readEntry("entry_" + QString::number(n), "" );
+		if (!s.isEmpty()) l.append( s );
 	}
+	*/
+
+	set->beginGroup( "recent_files");
+	l = set->value( "files" ).toStringList();
+
+	set->endGroup();
 }
 
-QStringList Recents::toStringList() {
-	return l;
-}
-
+#include "moc_recents.cpp"

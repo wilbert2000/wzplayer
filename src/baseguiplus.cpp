@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -369,8 +369,6 @@ void BaseGuiPlus::aboutToEnterFullscreen() {
 	BaseGui::aboutToEnterFullscreen();
 
 #if DOCK_PLAYLIST
-	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
-
 	int playlist_screen = QApplication::desktop()->screenNumber(playlistdock);
 	int mainwindow_screen = QApplication::desktop()->screenNumber(this);
 	qDebug("BaseGuiPlus::aboutToEnterFullscreen: mainwindow screen: %d, playlist screen: %d", mainwindow_screen, playlist_screen);
@@ -396,14 +394,6 @@ void BaseGuiPlus::aboutToExitFullscreen() {
 	BaseGui::aboutToExitFullscreen();
 
 #if DOCK_PLAYLIST
-	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea | 
-                                  Qt::BottomDockWidgetArea
-                                  #if PLAYLIST_ON_SIDES
-                                  | Qt::LeftDockWidgetArea | 
-                                  Qt::RightDockWidgetArea
-                                  #endif
-                                  );
-
 	if (fullscreen_playlist_was_visible) {
 		playlistdock->show();
 	}
@@ -445,31 +435,13 @@ void BaseGuiPlus::aboutToExitCompactMode() {
 
 #if DOCK_PLAYLIST
 void BaseGuiPlus::showPlaylist(bool b) {
-	qDebug("BaseGuiPlus::showPlaylist: %d", b);
-	qDebug("BaseGuiPlus::showPlaylist (before): playlist visible: %d", playlistdock->isVisible());
-	qDebug("BaseGuiPlus::showPlaylist (before): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("BaseGuiPlus::showPlaylist (before): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
-
 	if ( !b ) {
 		playlistdock->hide();
 	} else {
 		exitFullscreenIfNeeded();
 		playlistdock->show();
-
-		// Check if playlist is outside of the screen
-		if (playlistdock->isFloating()) {
-			if (!DesktopInfo::isInsideScreen(playlistdock)) {
-				qWarning("BaseGuiPlus::showPlaylist: playlist is outside of the screen");
-				playlistdock->move(0,0);
-			}
-		}
 	}
 	//updateWidgets();
-
-	qDebug("BaseGuiPlus::showPlaylist (after): playlist visible: %d", playlistdock->isVisible());
-	qDebug("BaseGuiPlus::showPlaylist (after): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("BaseGuiPlus::showPlaylist (after): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
-
 }
 
 void BaseGuiPlus::playlistClosed() {
@@ -561,19 +533,12 @@ TimeSliderAction * BaseGuiPlus::createTimeSliderAction(QWidget * parent) {
 	TimeSliderAction * timeslider_action = new TimeSliderAction( parent );
 	timeslider_action->setObjectName("timeslider_action");
 
-#ifdef SEEKBAR_RESOLUTION
-	connect( timeslider_action, SIGNAL( posChanged(int) ), 
-             core, SLOT(goToPosition(int)) );
-	connect( core, SIGNAL(positionChanged(int)), 
-             timeslider_action, SLOT(setPos(int)) );
-#else
 	connect( timeslider_action, SIGNAL( posChanged(int) ), 
              core, SLOT(goToPos(int)) );
-	connect( core, SIGNAL(posChanged(int)), 
-             timeslider_action, SLOT(setPos(int)) );
-#endif
 	connect( timeslider_action, SIGNAL( draggingPos(int) ), 
              this, SLOT(displayGotoTime(int)) );
+	connect( core, SIGNAL(posChanged(int)), 
+             timeslider_action, SLOT(setPos(int)) );
 #if ENABLE_DELAYED_DRAGGING
 	timeslider_action->setDragDelay( pref->time_slider_drag_delay );
 

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 #define USE_SVN_VERSIONS 0
 
-#define VERSION "0.6.7 (SVN r2831)"
+#define VERSION "0.6.2 (SVN r1661)"
 
 #if USE_SVN_VERSIONS
 #include "svn_revision.h"

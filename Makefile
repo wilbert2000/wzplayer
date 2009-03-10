@@ -7,6 +7,7 @@ CONF_PREFIX=$(PREFIX)
 DATA_PATH=$(PREFIX)/share/smplayer
 DOC_PATH=$(PREFIX)/share/doc/packages/smplayer
 TRANSLATION_PATH=$(PREFIX)/share/smplayer/translations
+CONF_PATH=$(CONF_PREFIX)/etc/smplayer
 THEMES_PATH=$(PREFIX)/share/smplayer/themes
 SHORTCUTS_PATH=$(PREFIX)/share/smplayer/shortcuts
 
@@ -20,7 +21,7 @@ KDE_APPLNK=$(KDE_PREFIX)/share/applications/
 QMAKE=qmake
 LRELEASE=lrelease
 
-DEFS=DATA_PATH=\\\"$(DATA_PATH)\\\" \
+DEFS=DATA_PATH=\\\"$(DATA_PATH)\\\" CONF_PATH=\\\"$(CONF_PATH)\\\" \
      TRANSLATION_PATH=\\\"$(TRANSLATION_PATH)\\\" \
      DOC_PATH=\\\"$(DOC_PATH)\\\" THEMES_PATH=\\\"$(THEMES_PATH)\\\" \
      SHORTCUTS_PATH=\\\"$(SHORTCUTS_PATH)\\\"
@@ -39,18 +40,19 @@ QMAKE_OPTS=DEFINES+=KDE_SUPPORT INCLUDEPATH+=$(KDE_INCLUDE_PATH) \
 
 endif
 
-.PHONY : src/smplayer
-
-smplayer: src/smplayer
-	cd src && $(LRELEASE) smplayer.pro
-
 src/smplayer:
 	./get_svn_revision.sh
-	+cd src && $(QMAKE) $(QMAKE_OPTS) && $(DEFS) make
+	cd src && $(QMAKE) $(QMAKE_OPTS) && $(DEFS) make
+	cd src && $(LRELEASE) smplayer.pro
 
 clean:
-	cd src && make distclean
+	cd src && make clean
+	-rm src/smplayer
 	-rm src/translations/smplayer_*.qm
+	-rm src/Makefile
+#	cd getrev && $(QMAKE) && make clean
+#	-rm getrev/getrev
+#	-rm getrev/Makefile
 
 install: src/smplayer
 	-install -d $(DESTDIR)$(PREFIX)/bin/
@@ -81,31 +83,21 @@ install: src/smplayer
 	install -m 644 smplayer_enqueue.desktop $(DESTDIR)$(KDE_APPLNK)
 	-install -d $(DESTDIR)$(PREFIX)/share/man/man1/
 	install -m 644 man/smplayer.1 $(DESTDIR)$(PREFIX)/share/man/man1/
-	gzip -9 -f $(DESTDIR)$(PREFIX)/share/man/man1/smplayer.1
+	gzip -9 $(DESTDIR)$(PREFIX)/share/man/man1/smplayer.1
 
 uninstall:
-	-rm -f $(PREFIX)/bin/smplayer
-	-rm -f $(DATA_PATH)/input.conf
-	-rm -f $(TRANSLATION_PATH)/*.qm
-	-rm -f $(DOC_PATH)/Changelog
-	-rm -f $(DOC_PATH)/*.txt
-	-rm -f $(SHORTCUTS_PATH)/*.keys
-	-rm -f $(KDE_ICONS)/64x64/apps/smplayer.png
-	-rm -f $(KDE_ICONS)/32x32/apps/smplayer.png
-	-rm -f $(KDE_ICONS)/22x22/apps/smplayer.png
-	-rm -f $(KDE_ICONS)/16x16/apps/smplayer.png
-	-rm -f $(KDE_APPLNK)/smplayer.desktop
-	-rm -f $(PREFIX)/share/man/man1/smplayer.1.gz
-	-rmdir $(SHORTCUTS_PATH)/
+	-rm $(PREFIX)/bin/smplayer
+	-rm $(DATA_PATH)/input.conf
+	-rm $(TRANSLATION_PATH)/*.qm
+	-rm $(DOC_PATH)/Changelog
+	-rm $(DOC_PATH)/*.txt
+	-rm $(SHORTCUTS_PATH)/*.keys
+	-rm $(KDE_ICONS)/64x64/apps/smplayer.png
+	-rm $(KDE_ICONS)/32x32/apps/smplayer.png
+	-rm $(KDE_ICONS)/22x22/apps/smplayer.png
+	-rm $(KDE_ICONS)/16x16/apps/smplayer.png
+	-rm $(KDE_APPLNK)/smplayer.desktop
+	-rm $(PREFIX)/share/man/man1/smplayer.1.gz
 	-rmdir $(TRANSLATION_PATH)/
-#	-for file in docs/*/*; do \
-#	    rm -f $(DOC_PATH)/$${file/docs/}; \
-#	done;
-#	-for file in docs/*; do \
-#	    rmdir $(DOC_PATH)/$${file/docs/}; \
-#	done;
-	-(cd docs && find -iname '*.html') | (cd $(DESTDIR)$(DOC_PATH) && xargs rm)
-	-(cd docs && find -type d -name '??') | (cd $(DESTDIR)$(DOC_PATH) && xargs rmdir)
 	-rmdir $(DOC_PATH)/
 	-rmdir $(DATA_PATH)/
-

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public:
 	MyTableWidget ( QWidget * parent = 0 );
 	MyTableWidget ( int rows, int columns, QWidget * parent = 0 );
 
-	QTableWidgetItem * getItem(int row, int column, bool * existed = 0 );
+	QTableWidgetItem * getItem(int row, int column );
 
 	void setText(int row, int column, const QString & text );
 	QString text(int row, int column);

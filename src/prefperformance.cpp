@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ void PrefPerformance::setData(Preferences * pref) {
 	setFastChapterSeeking( pref->fast_chapter_change );
 #endif
 	setFastAudioSwitching( pref->fast_audio_change );
-	setThreads( pref->threads );
+	setUseIdx( pref->use_idx );
 }
 
 void PrefPerformance::getData(Preferences * pref) {
@@ -110,7 +110,7 @@ void PrefPerformance::getData(Preferences * pref) {
 	TEST_AND_SET(pref->fast_chapter_change, fastChapterSeeking());
 #endif
 	pref->fast_audio_change = fastAudioSwitching();
-	TEST_AND_SET(pref->threads, threads());
+	TEST_AND_SET(pref->use_idx, useIdx());
 }
 
 void PrefPerformance::setCacheForFiles(int n) {
@@ -219,12 +219,12 @@ Preferences::OptionState PrefPerformance::fastAudioSwitching() {
 	return fast_audio_combo->state();
 }
 
-void PrefPerformance::setThreads(int v) {
-	threads_spin->setValue(v);
+void PrefPerformance::setUseIdx(bool b) {
+	idx_check->setChecked(b);
 }
 
-int PrefPerformance::threads() {
-	return threads_spin->value();
+bool PrefPerformance::useIdx() {
+	return idx_check->isChecked();
 }
 
 void PrefPerformance::createHelp() {
@@ -237,7 +237,7 @@ void PrefPerformance::createHelp() {
 	setWhatsThis(priority_combo, tr("Priority"), 
 		tr("Set process priority for mplayer according to the predefined "
            "priorities available under Windows.<br>"
-           "<b>Warning:</b> Using realtime priority can cause system lockup."));
+           "<b>WARNING:</b> Using realtime priority can cause system lockup."));
 #endif
 
 	setWhatsThis(framedrop_check, tr("Allow frame drop"),
@@ -246,10 +246,6 @@ void PrefPerformance::createHelp() {
 	setWhatsThis(hardframedrop_check, tr("Allow hard frame drop"),
 		tr("More intense frame dropping (breaks decoding). "
            "Leads to image distortion!") );
-
-	setWhatsThis(threads_spin, tr("Threads for decoding"),
-		tr("Sets the number of threads to use for decoding. Only for "
-           "MPEG-1/2 and H.264") );
 
 	setWhatsThis(loopfilter_combo, tr("Skip loop filter"),
 		tr("This option allows to skips the loop filter (AKA deblocking) "
@@ -285,6 +281,13 @@ void PrefPerformance::createHelp() {
 		tr("If checked, it will try the fastest method to seek to chapters "
            "but it might not work with some discs.") );
 #endif
+
+	setWhatsThis(idx_check, tr("Create index if needed"),
+		tr("Rebuilds index of files if no index was found, allowing seeking. "
+		   "Useful with broken/incomplete downloads, or badly created files. "
+           "This option only works if the underlying media supports "
+           "seeking (i.e. not with stdin, pipe, etc).<br> "
+           "Note: the creation of the index may take some time.") );
 
 	addSectionTitle(tr("Cache"));
 

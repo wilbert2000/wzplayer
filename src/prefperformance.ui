@@ -5,24 +5,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>454</width>
-    <height>591</height>
+    <width>410</width>
+    <height>484</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>0</number>
+   </property>
    <property name="spacing" >
-    <number>6</number>
-   </property>
-   <property name="leftMargin" >
-    <number>0</number>
-   </property>
-   <property name="topMargin" >
-    <number>0</number>
-   </property>
-   <property name="rightMargin" >
-    <number>0</number>
-   </property>
-   <property name="bottomMargin" >
     <number>0</number>
    </property>
    <item>
@@ -35,20 +26,11 @@
        <string>&amp;Performance</string>
       </attribute>
       <layout class="QVBoxLayout" >
+       <property name="margin" >
+        <number>9</number>
+       </property>
        <property name="spacing" >
         <number>6</number>
-       </property>
-       <property name="leftMargin" >
-        <number>9</number>
-       </property>
-       <property name="topMargin" >
-        <number>9</number>
-       </property>
-       <property name="rightMargin" >
-        <number>9</number>
-       </property>
-       <property name="bottomMargin" >
-        <number>9</number>
        </property>
        <item>
         <widget class="QGroupBox" name="priority_group" >
@@ -56,20 +38,11 @@
           <string>Priority</string>
          </property>
          <layout class="QVBoxLayout" >
+          <property name="margin" >
+           <number>9</number>
+          </property>
           <property name="spacing" >
            <number>6</number>
-          </property>
-          <property name="leftMargin" >
-           <number>9</number>
-          </property>
-          <property name="topMargin" >
-           <number>9</number>
-          </property>
-          <property name="rightMargin" >
-           <number>9</number>
-          </property>
-          <property name="bottomMargin" >
-           <number>9</number>
           </property>
           <item>
            <widget class="QLabel" name="priority_intro_label" >
@@ -83,20 +56,11 @@
           </item>
           <item>
            <layout class="QHBoxLayout" >
+            <property name="margin" >
+             <number>0</number>
+            </property>
             <property name="spacing" >
              <number>6</number>
-            </property>
-            <property name="leftMargin" >
-             <number>0</number>
-            </property>
-            <property name="topMargin" >
-             <number>0</number>
-            </property>
-            <property name="rightMargin" >
-             <number>0</number>
-            </property>
-            <property name="bottomMargin" >
-             <number>0</number>
             </property>
             <item>
              <widget class="QLabel" name="priority_label" >
@@ -181,80 +145,16 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="spacing" >
-          <number>6</number>
-         </property>
-         <property name="leftMargin" >
-          <number>0</number>
-         </property>
-         <property name="topMargin" >
-          <number>0</number>
-         </property>
-         <property name="rightMargin" >
-          <number>0</number>
-         </property>
-         <property name="bottomMargin" >
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_13" >
-           <property name="text" >
-            <string>&amp;Threads for decoding (MPEG-1/2 and H.264 only):</string>
-           </property>
-           <property name="buddy" >
-            <cstring>threads_spin</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="threads_spin" >
-           <property name="minimum" >
-            <number>1</number>
-           </property>
-           <property name="maximum" >
-            <number>8</number>
-           </property>
-           <property name="value" >
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation" >
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" >
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="QGroupBox" name="groupBox" >
          <property name="title" >
           <string>H.264</string>
          </property>
          <layout class="QHBoxLayout" >
+          <property name="margin" >
+           <number>9</number>
+          </property>
           <property name="spacing" >
            <number>6</number>
-          </property>
-          <property name="leftMargin" >
-           <number>9</number>
-          </property>
-          <property name="topMargin" >
-           <number>9</number>
-          </property>
-          <property name="rightMargin" >
-           <number>9</number>
-          </property>
-          <property name="bottomMargin" >
-           <number>9</number>
           </property>
           <item>
            <widget class="QLabel" name="label_8" >
@@ -291,20 +191,11 @@
           <string>Synchronization</string>
          </property>
          <layout class="QHBoxLayout" >
+          <property name="margin" >
+           <number>9</number>
+          </property>
           <property name="spacing" >
            <number>6</number>
-          </property>
-          <property name="leftMargin" >
-           <number>9</number>
-          </property>
-          <property name="topMargin" >
-           <number>9</number>
-          </property>
-          <property name="rightMargin" >
-           <number>9</number>
-          </property>
-          <property name="bottomMargin" >
-           <number>9</number>
           </property>
           <item>
            <widget class="QCheckBox" name="autosync_check" >
@@ -315,20 +206,11 @@
           </item>
           <item>
            <layout class="QHBoxLayout" >
+            <property name="margin" >
+             <number>0</number>
+            </property>
             <property name="spacing" >
              <number>6</number>
-            </property>
-            <property name="leftMargin" >
-             <number>0</number>
-            </property>
-            <property name="topMargin" >
-             <number>0</number>
-            </property>
-            <property name="rightMargin" >
-             <number>0</number>
-            </property>
-            <property name="bottomMargin" >
-             <number>0</number>
             </property>
             <item>
              <spacer>
@@ -370,11 +252,11 @@
               <property name="enabled" >
                <bool>false</bool>
               </property>
-              <property name="minimum" >
-               <number>1</number>
-              </property>
               <property name="maximum" >
                <number>1000</number>
+              </property>
+              <property name="minimum" >
+               <number>1</number>
               </property>
              </widget>
             </item>
@@ -385,20 +267,11 @@
        </item>
        <item>
         <layout class="QHBoxLayout" >
+         <property name="margin" >
+          <number>0</number>
+         </property>
          <property name="spacing" >
           <number>6</number>
-         </property>
-         <property name="leftMargin" >
-          <number>0</number>
-         </property>
-         <property name="topMargin" >
-          <number>0</number>
-         </property>
-         <property name="rightMargin" >
-          <number>0</number>
-         </property>
-         <property name="bottomMargin" >
-          <number>0</number>
          </property>
          <item>
           <widget class="QLabel" name="label" >
@@ -436,6 +309,20 @@
         </widget>
        </item>
        <item>
+        <widget class="Line" name="line" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="idx_check" >
+         <property name="text" >
+          <string>C&amp;reate index if needed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer>
          <property name="orientation" >
           <enum>Qt::Vertical</enum>
@@ -455,22 +342,10 @@
        <string>&amp;Cache</string>
       </attribute>
       <layout class="QGridLayout" >
-       <property name="leftMargin" >
+       <property name="margin" >
         <number>9</number>
        </property>
-       <property name="topMargin" >
-        <number>9</number>
-       </property>
-       <property name="rightMargin" >
-        <number>9</number>
-       </property>
-       <property name="bottomMargin" >
-        <number>9</number>
-       </property>
-       <property name="horizontalSpacing" >
-        <number>6</number>
-       </property>
-       <property name="verticalSpacing" >
+       <property name="spacing" >
         <number>6</number>
        </property>
        <item row="5" column="2" >
@@ -510,7 +385,7 @@
        <item row="3" column="1" >
         <widget class="QSpinBox" name="cache_dvds_spin" >
          <property name="maximum" >
-          <number>100000</number>
+          <number>10000</number>
          </property>
         </widget>
        </item>
@@ -590,14 +465,14 @@
        <item row="1" column="1" >
         <widget class="QSpinBox" name="cache_files_spin" >
          <property name="maximum" >
-          <number>100000</number>
+          <number>10000</number>
          </property>
         </widget>
        </item>
        <item row="2" column="1" >
         <widget class="QSpinBox" name="cache_streams_spin" >
          <property name="maximum" >
-          <number>100000</number>
+          <number>10000</number>
          </property>
         </widget>
        </item>
@@ -627,7 +502,7 @@
        <item row="4" column="1" >
         <widget class="QSpinBox" name="cache_cds_spin" >
          <property name="maximum" >
-          <number>100000</number>
+          <number>10000</number>
          </property>
         </widget>
        </item>
@@ -654,7 +529,7 @@
        <item row="5" column="1" >
         <widget class="QSpinBox" name="cache_vcds_spin" >
          <property name="maximum" >
-          <number>100000</number>
+          <number>10000</number>
          </property>
         </widget>
        </item>
@@ -699,12 +574,12 @@
   <tabstop>priority_combo</tabstop>
   <tabstop>framedrop_check</tabstop>
   <tabstop>hardframedrop_check</tabstop>
-  <tabstop>threads_spin</tabstop>
   <tabstop>loopfilter_combo</tabstop>
   <tabstop>autosync_check</tabstop>
   <tabstop>autosync_spin</tabstop>
   <tabstop>fast_audio_combo</tabstop>
   <tabstop>fast_chapter_check</tabstop>
+  <tabstop>idx_check</tabstop>
   <tabstop>cache_files_spin</tabstop>
   <tabstop>cache_streams_spin</tabstop>
   <tabstop>cache_dvds_spin</tabstop>

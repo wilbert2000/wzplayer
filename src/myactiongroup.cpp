@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ void MyActionGroup::setChecked(int ID) {
 
 	QList <QAction *> l = actions();
 	for (int n=0; n < l.count(); n++) {
-		if ( (!l[n]->isSeparator()) && (l[n]->data().toInt() == ID) ) {
+		if (l[n]->data().toInt() == ID) {
 			l[n]->setChecked(true);
 			return;
 		}

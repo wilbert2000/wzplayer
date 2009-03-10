@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 
 #include "defaultgui.h"
 #include "helper.h"
-#include "colorutils.h"
 #include "core.h"
 #include "global.h"
 #include "widgetactions.h"
@@ -28,11 +27,6 @@
 #include "images.h"
 #include "floatingwidget.h"
 #include "toolbareditor.h"
-#include "desktopinfo.h"
-
-#if DOCK_PLAYLIST
-#include "playlistdock.h"
-#endif
 
 #include <QMenu>
 #include <QToolBar>
@@ -46,7 +40,9 @@
 using namespace Global;
 
 DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
-	: BaseGuiPlus( parent, flags )
+	: BaseGuiPlus( parent, flags ),
+		floating_control_width(100), //%
+		floating_control_animated(true)
 {
 	createStatusBar();
 
@@ -355,12 +351,12 @@ void DefaultGui::createStatusBar() {
 
 	statusBar()->setAutoFillBackground(TRUE);
 
-	ColorUtils::setBackgroundColor( statusBar(), QColor(0,0,0) );
-	ColorUtils::setForegroundColor( statusBar(), QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( time_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( time_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( frame_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( frame_display, QColor(255,255,255) );
+	Helper::setBackgroundColor( statusBar(), QColor(0,0,0) );
+	Helper::setForegroundColor( statusBar(), QColor(255,255,255) );
+	Helper::setBackgroundColor( time_display, QColor(0,0,0) );
+	Helper::setForegroundColor( time_display, QColor(255,255,255) );
+	Helper::setBackgroundColor( frame_display, QColor(0,0,0) );
+	Helper::setForegroundColor( frame_display, QColor(255,255,255) );
 	statusBar()->setSizeGripEnabled(FALSE);
 
     statusBar()->showMessage( tr("Welcome to SMPlayer") );
@@ -483,12 +479,8 @@ void DefaultGui::showFloatingControl(QPoint /*p*/) {
 	qDebug("DefaultGui::showFloatingControl");
 
 #if CONTROLWIDGET_OVER_VIDEO
-	floating_control->setAnimated( pref->floating_control_animated );
-	floating_control->setMargin(pref->floating_control_margin);
-#ifndef Q_OS_WIN
-	floating_control->setBypassWindowManager(pref->bypass_window_manager);
-#endif
-	floating_control->showOver(panel, pref->floating_control_width);
+	floating_control->setAnimated( floating_control_animated );
+	floating_control->showOver(panel, floating_control_width);
 #else
 	if (!controlwidget->isVisible()) {
 		controlwidget->show();
@@ -557,6 +549,9 @@ void DefaultGui::saveConfig() {
 
 	set->beginGroup( "default_gui");
 
+	set->setValue("floating_control_width", floating_control_width );
+	set->setValue("floating_control_animated", floating_control_animated);
+
 	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
 	set->setValue("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible);
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
@@ -589,6 +584,9 @@ void DefaultGui::loadConfig() {
 
 	set->beginGroup( "default_gui");
 
+	floating_control_width = set->value( "floating_control_width", floating_control_width ).toInt();
+	floating_control_animated = set->value("floating_control_animated", floating_control_animated).toBool();
+
 	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
 	fullscreen_toolbar2_was_visible = set->value("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible).toBool();
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
@@ -599,16 +597,11 @@ void DefaultGui::loadConfig() {
 		QSize s = set->value("size", size()).toSize();
 
 		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
+			s = QSize(580, 440);
 		}
 
 		move(p);
 		resize(s);
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
 	}
 
 #if USE_CONFIGURABLE_TOOLBARS
@@ -670,13 +663,7 @@ void DefaultGui::loadConfig() {
 #endif
 
 	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
-
-#if DOCK_PLAYLIST
-	qDebug("DefaultGui::loadConfig: playlist visible: %d", playlistdock->isVisible());
-	qDebug("DefaultGui::loadConfig: playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("DefaultGui::loadConfig: playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
-#endif
-
+	
 	set->endGroup();
 		
 	updateWidgets();
