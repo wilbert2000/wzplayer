@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <QRegExp>
 #include <QDir>
 #include <QLocale>
+#include <QNetworkProxy>
 
 using namespace Global;
 
@@ -65,6 +66,13 @@ void Preferences::reset() {
 	vo = ""; 
 	ao = "";
 
+	// On Windows Vista set vo to gl:yuv=2:force-pbo:ati-hack as default
+#ifdef Q_OS_WIN
+	if (QSysInfo::WindowsVersion == QSysInfo::WV_VISTA) {
+		vo = "gl:yuv=2:force-pbo:ati-hack,";
+	}
+#endif
+
 	screenshot_directory="";
 #ifndef PORTABLE_APP
 	if (QFile::exists(Paths::configPath() + "/screenshots")) {
@@ -86,8 +94,8 @@ void Preferences::reset() {
 	autoq = 6;
 	add_blackborders_on_fullscreen = false;
 
-	use_soft_vol = true;
-	softvol_max = 110; // 110 = default value in mplayer
+	use_soft_vol = false;
+    softvol_max = 110; // 110 = default value in mplayer
 	use_scaletempo = Detect;
 	dont_change_volume = false;
 	use_hwac3 = false;
@@ -97,7 +105,7 @@ void Preferences::reset() {
 	loop = false;
 	osd = None;
 
-	file_settings_method = "hash"; // Possible values: normal & hash
+	file_settings_method = "normal"; // Possible values: normal & hash
 
 
     /* ***************
@@ -118,10 +126,6 @@ void Preferences::reset() {
 #endif
 
 	vcd_initial_title = 2; // Most VCD's start at title #2
-
-#if DVDNAV_SUPPORT
-	use_dvdnav = false;
-#endif
 
 
     /* ***********
@@ -166,7 +170,12 @@ void Preferences::reset() {
 	subfuzziness = 1;
 	autoload_sub = true;
 
+#ifdef Q_OS_WIN
+	use_ass_subtitles = false;
+#else
 	use_ass_subtitles = true;
+#endif
+
 	ass_line_spacing = 0;
 
 	use_closed_caption_subs = false;
@@ -180,9 +189,6 @@ void Preferences::reset() {
 	// ASS styles
 	// Nothing to do, default values are given in
 	// AssStyles constructor
-
-	force_ass_styles = false;
-	user_forced_ass_style.clear();
 
 	freetype_support = true;
 
@@ -237,7 +243,7 @@ void Preferences::reset() {
 
 	use_pausing_keep_force = true;
 
-	use_correct_pts = Detect;
+	use_correct_pts = false;
 
 	actions_to_run = "";
 
@@ -261,11 +267,7 @@ void Preferences::reset() {
 	show_frame_counter = FALSE;
 	show_motion_vectors = false;
 
-#if DVDNAV_SUPPORT
-	mouse_left_click_function = "dvdnav_mouse";
-#else
 	mouse_left_click_function = "";
-#endif
 	mouse_right_click_function = "show_context_menu";
 	mouse_double_click_function = "fullscreen";
 	mouse_middle_click_function = "mute";
@@ -400,6 +402,18 @@ void Preferences::reset() {
 #endif
 
 
+    /* *****
+       Proxy
+       ***** */
+
+	use_proxy = false;
+	proxy_type = QNetworkProxy::HttpProxy;
+	proxy_host = "";
+	proxy_port = 0;
+	proxy_username = "";
+	proxy_password = "";
+
+
     /* *******
        History
        ******* */
@@ -472,10 +486,6 @@ void Preferences::save() {
 
 	set->setValue("vcd_initial_title", vcd_initial_title);
 
-#if DVDNAV_SUPPORT
-	set->setValue("use_dvdnav", use_dvdnav);
-#endif
-
 	set->endGroup(); // drives
 
 
@@ -539,8 +549,6 @@ void Preferences::save() {
 
 	// ASS styles
 	ass_styles.save(set);
-	set->setValue("force_ass_styles", force_ass_styles);
-	set->setValue("user_forced_ass_style", user_forced_ass_style);
 
 	set->setValue("freetype_support", freetype_support);
 
@@ -594,7 +602,7 @@ void Preferences::save() {
 
 	set->setValue("use_pausing_keep_force", use_pausing_keep_force);
 
-	set->setValue("correct_pts", use_correct_pts);
+	set->setValue("use_correct_pts", use_correct_pts);
 
 	set->setValue("actions_to_run", actions_to_run);
 
@@ -760,6 +768,20 @@ void Preferences::save() {
 	set->endGroup(); // floating_control
 
 
+    /* *****
+       Proxy
+       ***** */
+
+	set->beginGroup("proxy");
+	set->setValue("use_proxy", use_proxy);
+	set->setValue("proxy_type", proxy_type);
+	set->setValue("host", proxy_host);
+	set->setValue("port", proxy_port);
+	set->setValue("username", proxy_username);
+	set->setValue("password", proxy_password);
+	set->endGroup(); // proxy
+
+
     /* *******
        History
        ******* */
@@ -837,10 +859,6 @@ void Preferences::load() {
 
 	vcd_initial_title = set->value("vcd_initial_title", vcd_initial_title ).toInt();
 
-#if DVDNAV_SUPPORT
-	use_dvdnav = set->value("use_dvdnav", use_dvdnav).toBool();
-#endif
-
 	set->endGroup(); // drives
 
 
@@ -905,8 +923,6 @@ void Preferences::load() {
 
 	// ASS styles
 	ass_styles.load(set);
-	force_ass_styles = set->value("force_ass_styles", force_ass_styles).toBool();
-	user_forced_ass_style = set->value("user_forced_ass_style", user_forced_ass_style).toString();
 
 	freetype_support = set->value("freetype_support", freetype_support).toBool();
 
@@ -963,7 +979,7 @@ void Preferences::load() {
 
 	use_pausing_keep_force = set->value("use_pausing_keep_force", use_pausing_keep_force).toBool();
 
-	use_correct_pts = (OptionState) set->value("correct_pts", use_correct_pts).toInt();
+	use_correct_pts = set->value("use_correct_pts", use_correct_pts).toBool();
 
 	actions_to_run = set->value("actions_to_run", actions_to_run).toString();
 
@@ -1127,6 +1143,20 @@ void Preferences::load() {
 	bypass_window_manager = set->value("bypass_window_manager", bypass_window_manager).toBool();
 #endif
 	set->endGroup(); // floating_control
+
+
+    /* *****
+       Proxy
+       ***** */
+
+	set->beginGroup("proxy");
+	use_proxy = set->value("use_proxy", use_proxy).toBool();
+	proxy_type = set->value("proxy_type", proxy_type).toInt();
+	proxy_host = set->value("host", proxy_host).toString();
+	proxy_port = set->value("port", proxy_port).toInt();
+	proxy_username = set->value("username", proxy_username).toString();
+	proxy_password = set->value("password", proxy_password).toString();
+	set->endGroup(); // proxy
 
 
     /* *******

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 */
 
 #include "findsubtitleswindow.h"
-#include "findsubtitlesconfigdialog.h"
 #include "simplehttp.h"
 #include "osparser.h"
 #include "languages.h"
@@ -145,16 +144,6 @@ FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
 	retranslateStrings();
 
 	language_filter->setCurrentIndex(0);
-
-	// Proxy
-	use_proxy = false;
-	proxy_type = QNetworkProxy::HttpProxy;
-	proxy_host = "";
-	proxy_port = 0;
-	proxy_username = "";
-	proxy_password = "";
-
-	setupProxy();
 }
 
 FindSubtitlesWindow::~FindSubtitlesWindow() {
@@ -164,7 +153,6 @@ FindSubtitlesWindow::~FindSubtitlesWindow() {
 void FindSubtitlesWindow::setSettings(QSettings * settings) {
 	set = settings;
 	loadSettings();
-	setupProxy();
 }
 
 void FindSubtitlesWindow::setProxy(QNetworkProxy proxy) {
@@ -573,52 +561,6 @@ bool FindSubtitlesWindow::extractFile(QuaZip & zip, const QString & filename, co
 
 #endif
 
-void FindSubtitlesWindow::on_configure_button_clicked() {
-	qDebug("FindSubtitlesWindow::on_configure_button_clicked");
-
-	FindSubtitlesConfigDialog d(this);
-
-	d.setUseProxy( use_proxy );
-	d.setProxyHostname( proxy_host );
-	d.setProxyPort( proxy_port );
-	d.setProxyUsername( proxy_username );
-	d.setProxyPassword( proxy_password );
-	d.setProxyType( proxy_type );
-
-	if (d.exec() == QDialog::Accepted) {
-		use_proxy = d.useProxy();
-		proxy_host = d.proxyHostname();
-		proxy_port = d.proxyPort();
-		proxy_username = d.proxyUsername();
-		proxy_password = d.proxyPassword();
-		proxy_type = d.proxyType();
-
-		setupProxy();
-	}
-}
-
-void FindSubtitlesWindow::setupProxy() {
-	QNetworkProxy proxy;
-
-	if ( (use_proxy) && (!proxy_host.isEmpty()) ) {
-		proxy.setType((QNetworkProxy::ProxyType) proxy_type);
-		proxy.setHostName(proxy_host);
-		proxy.setPort(proxy_port);
-		if ( (!proxy_username.isEmpty()) && (!proxy_password.isEmpty()) ) {
-			proxy.setUser(proxy_username);
-			proxy.setPassword(proxy_password);
-		}
-		qDebug("FindSubtitlesWindow::userProxy: using proxy: host: %s, port: %d, type: %d", 
-               proxy_host.toUtf8().constData(), proxy_port, proxy_type);
-	} else {
-		// No proxy
-		proxy.setType(QNetworkProxy::NoProxy);
-		qDebug("FindSubtitlesDialog::userProxy: no proxy");
-	}
-
-	setProxy(proxy);
-}
-
 void FindSubtitlesWindow::saveSettings() {
 	qDebug("FindSubtitlesWindow::saveSettings");
 
@@ -628,12 +570,6 @@ void FindSubtitlesWindow::saveSettings() {
 #ifdef DOWNLOAD_SUBS
 	set->setValue("include_lang_on_filename", includeLangOnFilename());
 #endif
-	set->setValue("proxy/use_proxy", use_proxy);
-	set->setValue("proxy/type", proxy_type);
-	set->setValue("proxy/host", proxy_host);
-	set->setValue("proxy/port", proxy_port);
-	set->setValue("proxy/username", proxy_username);
-	set->setValue("proxy/password", proxy_password);
 
 	set->endGroup();
 }
@@ -647,12 +583,6 @@ void FindSubtitlesWindow::loadSettings() {
 #ifdef DOWNLOAD_SUBS
 	setIncludeLangOnFilename( set->value("include_lang_on_filename", includeLangOnFilename()).toBool() );
 #endif
-	use_proxy = set->value("proxy/use_proxy", use_proxy).toBool();
-	proxy_type = set->value("proxy/type", proxy_type).toInt();
-	proxy_host = set->value("proxy/host", proxy_host).toString();
-	proxy_port = set->value("proxy/port", proxy_port).toInt();
-	proxy_username = set->value("proxy/username", proxy_username).toString();
-	proxy_password = set->value("proxy/password", proxy_password).toString();
 
 	set->endGroup();
 }

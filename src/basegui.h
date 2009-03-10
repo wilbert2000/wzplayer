@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ public:
 
 public slots:
 	virtual void open(QString file); // Generic open, autodetect type.
-	virtual void openFile();
+    virtual void openFile();
 	virtual void openFile(QString file);
 	virtual void openFiles(QStringList files);
 	virtual void openURL();
@@ -93,10 +93,10 @@ public slots:
 	virtual void helpFAQ();
 	virtual void helpCLOptions();
 	virtual void helpTips();
-	virtual void helpAbout();
+    virtual void helpAbout();
 	virtual void helpAboutQt();
 
-	virtual void loadSub();
+    virtual void loadSub();
 	virtual void loadAudioFile(); // Load external audio file
 
 	void setInitialSubtitle(const QString & subtitle_file);
@@ -113,17 +113,15 @@ public slots:
 	virtual void showAudioEqualizer();
 	virtual void showAudioEqualizer(bool b);
 	virtual void showMplayerLog();
-	virtual void showLog();
+    virtual void showLog();
 	virtual void showPreferencesDialog();
 	virtual void showFilePropertiesDialog();
 
 	virtual void showGotoDialog();
-	virtual void showSubDelayDialog();
-	virtual void showAudioDelayDialog();
 
 	virtual void exitFullscreen();
 	virtual void toggleFullscreen();
-	virtual void toggleFullscreen(bool);
+    virtual void toggleFullscreen(bool);
 
 	virtual void toggleCompactMode();
 	virtual void toggleCompactMode(bool);
@@ -131,7 +129,6 @@ public slots:
 	void setStayOnTop(bool b);
 	virtual void changeStayOnTop(int);
 	virtual void checkStayOnTop(Core::State);
-	void toggleStayOnTop();
 
 	virtual void toggleFrameCounter();
 	virtual void toggleFrameCounter(bool);
@@ -151,11 +148,11 @@ protected slots:
 	virtual void exitFullscreenIfNeeded();
 	virtual void playlistHasFinished();
 
-	virtual void displayState(Core::State state);
+    virtual void displayState(Core::State state);
 	virtual void displayMessage(QString message);
 	virtual void gotCurrentTime(double);
 
-	virtual void initializeMenus();
+    virtual void initializeMenus();
 	virtual void updateWidgets();
 	virtual void updateVideoEqualizer();
 	virtual void updateAudioEqualizer();
@@ -302,6 +299,9 @@ protected:
 	void configureDiscDevices();
 	/* virtual void closeEvent( QCloseEvent * e ); */
 
+	//! Returns a proxy created from the user's preferences
+	QNetworkProxy userProxy();
+
 protected:
 	virtual void wheelEvent( QWheelEvent * e ) ;
 
@@ -372,7 +372,6 @@ protected:
 	MyAction * incVolumeAct;
 	MyAction * decAudioDelayAct;
 	MyAction * incAudioDelayAct;
-	MyAction * audioDelayAct; // Ask for delay
 	MyAction * extrastereoAct;
 	MyAction * karaokeAct;
 	MyAction * volnormAct;
@@ -384,7 +383,6 @@ protected:
 	MyAction * unloadSubsAct;
 	MyAction * decSubDelayAct;
 	MyAction * incSubDelayAct;
-	MyAction * subDelayAct; // Ask for delay
 	MyAction * decSubPosAct;
 	MyAction * incSubPosAct;
 	MyAction * incSubStepAct;
@@ -409,7 +407,7 @@ protected:
 	// Menu Help
 	MyAction * showFAQAct;
 	MyAction * showCLOptionsAct; // Command line options
-	MyAction * showTipsAct;
+    MyAction * showTipsAct;
 	MyAction * aboutQtAct;
 	MyAction * aboutThisAct;
 
@@ -526,7 +524,6 @@ protected:
 	MyAction * onTopAlwaysAct;
 	MyAction * onTopNeverAct;
 	MyAction * onTopWhilePlayingAct;
-	MyAction * toggleStayOnTopAct;
 
 #if USE_ADAPTER
 	// Screen Group
@@ -568,13 +565,13 @@ protected:
 
 	// MENUS
 	QMenu *openMenu;
-	QMenu *playMenu;
-	QMenu *videoMenu;
-	QMenu *audioMenu;
-	QMenu *subtitlesMenu;
-	QMenu *browseMenu;
-	QMenu *optionsMenu;
-	QMenu *helpMenu;
+    QMenu *playMenu;
+    QMenu *videoMenu;
+    QMenu *audioMenu;
+    QMenu *subtitlesMenu;
+    QMenu *browseMenu;
+    QMenu *optionsMenu;
+    QMenu *helpMenu;
 
 	QMenu * subtitlestrack_menu;
 	QMenu * videotrack_menu;
@@ -603,9 +600,9 @@ protected:
 
 	QMenu * popup;
 	QMenu * recentfiles_menu;
-
-	LogWindow * mplayer_log_window;
-	LogWindow * smplayer_log_window;
+    
+    LogWindow * mplayer_log_window;
+    LogWindow * smplayer_log_window;
 	LogWindow * clhelp_window;
 
 	PreferencesDialog *pref_dialog;
@@ -617,7 +614,7 @@ protected:
 	VideoPreview * video_preview;
 
 	Core * core;
-	MplayerWindow *mplayerwindow;
+    MplayerWindow *mplayerwindow;
 
 	MyServer * server;
 

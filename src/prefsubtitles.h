@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -84,12 +84,6 @@ protected:
 	void setAssLineSpacing(int spacing);
 	int assLineSpacing();
 
-	void setForceAssStyles(bool b);
-	bool forceAssStyles();
-
-	void setCustomizedAssStyle(QString style) { forced_ass_style = style; };
-	QString customizedAssStyle() { return forced_ass_style; };
-
 	void setFontFuzziness(int n);
 	int fontFuzziness();
 
@@ -101,7 +95,6 @@ protected:
 
 protected slots:
 	void on_ass_subs_button_toggled(bool b);
-	void on_ass_customize_button_clicked();
 	void on_freetype_check_toggled(bool b);
 	void checkBorderStyleCombo( int index );
 
@@ -110,7 +103,6 @@ protected:
 
 private:
 	Encodings * encodings;
-	QString forced_ass_style;
 };
 
 #endif

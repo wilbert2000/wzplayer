@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 #include "ui_prefadvanced.h"
 #include "prefwidget.h"
-#include "preferences.h"
+#include "config.h"
 
 class Preferences;
 
@@ -49,6 +49,8 @@ public:
 #if USE_COLORKEY
 	bool colorkeyChanged() { return colorkey_changed; };
 #endif
+
+	bool proxyChanged() { return proxy_changed; };
 
 protected:
 	virtual void createHelp();
@@ -89,8 +91,8 @@ protected:
 	void setUseIdx(bool);
 	bool useIdx();
 
-	void setUseCorrectPts(Preferences::OptionState value);
-	Preferences::OptionState useCorrectPts();
+	void setUseCorrectPts(bool b);
+	bool useCorrectPts();
 
 	void setActionsToRun(QString actions);
 	QString actionsToRun();
@@ -111,6 +113,25 @@ protected:
     void setMplayerLogName(QString filter);
     QString mplayerLogName();
 
+	// Proxy
+	void setUseProxy(bool b);
+	bool useProxy();
+
+	void setProxyHostname(QString host);
+	QString proxyHostname();
+
+	void setProxyPort(int port);
+	int proxyPort();
+
+	void setProxyUsername(QString username);
+	QString proxyUsername();
+
+	void setProxyPassword(QString password);
+	QString proxyPassword();
+
+	void setProxyType(int type);
+	int proxyType();
+
 protected:
 	virtual void retranslateStrings();
 
@@ -125,6 +146,7 @@ private:
 #if USE_COLORKEY
 	bool colorkey_changed;
 #endif
+	bool proxy_changed;
 };
 
 #endif

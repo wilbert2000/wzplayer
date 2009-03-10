@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,9 +19,8 @@
 #include "infofile.h"
 #include <QFileInfo>
 #include <QCoreApplication>
-#include "discname.h"
+#include "helper.h"
 #include "constants.h"
-#include "images.h"
 
 
 InfoFile::InfoFile() {
@@ -50,11 +49,10 @@ QString InfoFile::getInfo(MediaData md) {
 		case TYPE_STREAM : 	icon = "type_url.png"; break;
 		default 		: 	icon = "type_unknown.png";
 	}
-	icon = "<img src=\"" + Images::file(icon) + "\"> ";
+	icon = "<img src=\":/icons-png/" + icon + "\"> ";
 
 	if (md.type == TYPE_DVD) {
-		DiscData disc_data = DiscName::split(md.filename);
-		s += title( icon + disc_data.protocol + "://" + QString::number(disc_data.title) );
+		s += title( icon + "dvd://" + QString::number(Helper::dvdSplitTitle(md.filename) ) );
 	} else {
 		s += title( icon + md.displayName() );
 	}
@@ -178,7 +176,7 @@ QString InfoFile::getInfo(MediaData md) {
 		s += closePar();
 	}
 
-	return "<html><body bgcolor=\"white\"><font color=\"black\">"+ s + "</font></body></html>";
+	return s;
 }
 
 QString InfoFile::title(QString text) {
@@ -197,9 +195,9 @@ QString InfoFile::closePar() {
 
 QString InfoFile::openItem() {
 	if (row % 2 == 1)
-		return "<tr bgcolor=\"lavender\">";
+		return "<tr bgcolor=\"#c4daf4\">";
 	else
-		return "<tr bgcolor=\"powderblue\">";
+		return "<tr bgcolor=\"#ffffc6\">";
 }
 
 QString InfoFile::closeItem() {

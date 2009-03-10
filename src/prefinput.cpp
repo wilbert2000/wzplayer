@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -84,14 +84,7 @@ void PrefInput::createMouseCombos() {
 	left_click_combo->addItem( tr("Show audio equalizer"), "audio_equalizer" );
 	left_click_combo->addItem( tr("Show context menu"), "show_context_menu" );
 #if DVDNAV_SUPPORT
-	left_click_combo->addItem( tr("Activate option under mouse in DVD menus"), "dvdnav_mouse" );
-	left_click_combo->addItem( tr("Return to main DVD menu"), "dvdnav_menu" );
-	left_click_combo->addItem( tr("Return to previous menu in DVD menus"), "dvdnav_prev" );
-	left_click_combo->addItem( tr("Move cursor up in DVD menus"), "dvdnav_up" );
-	left_click_combo->addItem( tr("Move cursor down in DVD menus"), "dvdnav_down" );
-	left_click_combo->addItem( tr("Move cursor left in DVD menus"), "dvdnav_left" );
-	left_click_combo->addItem( tr("Move cursor right in DVD menus"), "dvdnav_right" );
-	left_click_combo->addItem( tr("Activate highlighted option in DVD menus"), "dvdnav_select" );
+	left_click_combo->addItem( tr("Activate option in DVD menus"), "dvdnav_mouse" );
 #endif
 
 	// Copy to other combos

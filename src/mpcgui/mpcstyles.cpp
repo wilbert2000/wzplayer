@@ -1,4 +1,4 @@
-/*  Mpcgui for SMPlayer.
+/*  smplayer, GUI front-end for mplayer.
     Copyright (C) 2008 matt_ <matt@endboss.org>
 
     This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,14 +34,11 @@
 #include "mplayerversion.h"
 #include "constants.h"
 #include "colorutils.h"
-#include "discname.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h> // To change app priority
 #include <QSysInfo> // To get Windows version
-#ifdef SCREENSAVER_OFF
 #include "screensaver.h"
-#endif
 #endif
 
 #ifndef NO_USE_INI_FILES
@@ -165,16 +162,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	connect( proc, SIGNAL(audioInfoChanged(const Tracks &)), 
              this, SLOT(initAudioTrack(const Tracks &)), Qt::QueuedConnection );
 #endif
-#if DVDNAV_SUPPORT
-	connect( proc, SIGNAL(receivedDVDTitle(int)), 
-             this, SLOT(dvdTitleChanged(int)), Qt::QueuedConnection );
-	connect( proc, SIGNAL(receivedDuration(double)), 
-             this, SLOT(durationChanged(double)), Qt::QueuedConnection );
-
-	QTimer * ask_timer = new QTimer(this);
-	connect( ask_timer, SIGNAL(timeout()), this, SLOT(askForInfo()) );
-	ask_timer->start(5000);
-#endif
 	
 	connect( this, SIGNAL(stateChanged(Core::State)), 
 	         this, SLOT(watchState(Core::State)) );
@@ -188,10 +175,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	// Mplayerwindow
 	connect( this, SIGNAL(aboutToStartPlaying()),
              mplayerwindow->videoLayer(), SLOT(playingStarted()) );
-#if DVDNAV_SUPPORT
-	connect( mplayerwindow, SIGNAL(mouseMoved(QPoint)), 
-             this, SLOT(dvdnavUpdateMousePos(QPoint)) );
-#endif
 
 #if REPAINT_BACKGROUND_OPTION
 	mplayerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
@@ -199,14 +182,8 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	mplayerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 	// Windows screensaver
 	win_screensaver = new WinScreenSaver();
-#endif
-#endif
-
-#if DISCNAME_TEST
-	DiscName::test();
 #endif
 }
 
@@ -225,9 +202,7 @@ Core::~Core() {
 #endif
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 	delete win_screensaver;
-#endif
 #endif
 }
 
@@ -379,11 +354,7 @@ void Core::open(QString file, int seek) {
 
 	if ( (fi.exists()) && (fi.suffix().toLower()=="iso") ) {
 		qDebug("Core::open: * identified as a dvd iso");
-#if DVDNAV_SUPPORT
-		openDVD( DiscName::joinDVD(0, file, pref->use_dvdnav) );
-#else
-		openDVD( DiscName::joinDVD(1, file, false) );
-#endif
+		openDVD("dvd://1:" + file);
 	}
 	else
 	if ( (fi.exists()) && (!fi.isDir()) ) {
@@ -400,18 +371,14 @@ void Core::open(QString file, int seek) {
 		file = QFileInfo(file).absoluteFilePath();
 		if (Helper::directoryContainsDVD(file)) {
 			qDebug("Core::open: * directory contains a dvd");
-#if DVDNAV_SUPPORT
-			openDVD( DiscName::joinDVD(1, file, pref->use_dvdnav) );
-#else
-			openDVD( DiscName::joinDVD(1, file, false) );
-#endif
+			openDVD("dvd://1:"+ file);
 		} else {
 			qDebug("Core::open: * directory doesn't contain a dvd");
 			qDebug("Core::open:   opening nothing");
 		}
 	}
 	else 
-	if ((file.toLower().startsWith("dvd:")) || (file.toLower().startsWith("dvdnav:"))) {
+	if (file.toLower().startsWith("dvd:")) {
 		qDebug("Core::open: * identified as dvd");
 		openDVD(file);
 		/*
@@ -474,33 +441,11 @@ void Core::openFile(QString filename, int seek) {
 
 
 void Core::loadSub(const QString & sub ) {
-    if ( (!sub.isEmpty()) && (QFile::exists(sub)) ) {
-#if NOTIFY_SUB_CHANGES
-		mset.external_subtitles = sub;
-		just_loaded_external_subs = true;
-
-		QFileInfo fi(sub);
-		if (fi.suffix().toLower() != "idx") {
-			QString sub_file = sub;
-			#ifdef Q_OS_WIN
-			if (pref->use_short_pathnames) {
-				sub_file = Helper::shortPathName(sub);
-				// For some reason it seems it's necessary to change the path separator to unix style
-				// otherwise mplayer fails to load it
-				sub_file = sub_file.replace("\\","/");
-			}
-			#endif
-			tellmp( "sub_load \""+ sub_file +"\"" );
-		} else {
-			restartPlay();
-		}
-#else
+    if ( !sub.isEmpty() ) {
+		//tellmp( "sub_load " + sub );
 		mset.external_subtitles = sub;
 		just_loaded_external_subs = true;
 		restartPlay();
-#endif
-	} else {
-		qWarning("Core::loadSub: file '%s' is not valid", sub.toUtf8().constData());
 	}
 }
 
@@ -641,9 +586,8 @@ void Core::openDVD(QString dvd_url) {
 	qDebug("Core::openDVD: '%s'", dvd_url.toUtf8().data());
 
 	//Checks
-	DiscData disc_data = DiscName::split(dvd_url);
-	QString folder = disc_data.device;
-	int title = disc_data.title;
+	QString folder = Helper::dvdSplitFolder(dvd_url);
+	int title = Helper::dvdSplitTitle(dvd_url);
 
 	if (title == -1) {
 		qWarning("Core::openDVD: title invalid, not playing dvd");
@@ -1124,12 +1068,10 @@ void Core::processFinished()
     qDebug("Core::processFinished");
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 	// Restores the Windows screensaver
 	if (pref->disable_screensaver) {
 		win_screensaver->restore();
 	}
-#endif
 #endif
 
 	qDebug("Core::processFinished: we_are_restarting: %d", we_are_restarting);
@@ -1195,12 +1137,10 @@ void Core::startMplayer( QString file, double seek ) {
     } 
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 	// Disable the Windows screensaver
 	if (pref->disable_screensaver) {
 		win_screensaver->disable();
 	}
-#endif
 #endif
 
 	bool is_mkv = (QFileInfo(file).suffix().toLower() == "mkv");
@@ -1209,12 +1149,20 @@ void Core::startMplayer( QString file, double seek ) {
 	QString dvd_folder;
 	int dvd_title = -1;
 	if (mdat.type==TYPE_DVD) {
-		DiscData disc_data = DiscName::split(file);
-		dvd_folder = disc_data.device;
+		dvd_folder = Helper::dvdSplitFolder(file);
 		if (dvd_folder.isEmpty()) dvd_folder = pref->dvd_device;
-		dvd_title = disc_data.title;
-		file = disc_data.protocol + "://";
-		if (dvd_title > 0) file += QString::number(dvd_title);
+		// Remove trailing "/"
+		if (dvd_folder.endsWith("/")) {
+#ifdef Q_OS_WIN
+			QRegExp r("^[A-Z]:/$");
+			int pos = r.indexIn(dvd_folder);
+			qDebug("Core::startMplayer: drive check: '%s': regexp: %d", dvd_folder.toUtf8().data(), pos);
+			if (pos == -1)
+#endif
+				dvd_folder = dvd_folder.remove( dvd_folder.length()-1, 1);
+		}
+		dvd_title = Helper::dvdSplitTitle(file);
+		file = "dvd://" + QString::number(dvd_title);
 	}
 
 	// URL
@@ -1251,8 +1199,6 @@ void Core::startMplayer( QString file, double seek ) {
 		// No mplayer fullscreen mode
 		proc->addArgument("-nofs");
 	}
-
-	proc->addArgument("-nomouseinput");
 
 	// Demuxer and audio and video codecs:
 	if (!mset.forced_demuxer.isEmpty()) {
@@ -1333,11 +1279,8 @@ void Core::startMplayer( QString file, double seek ) {
 	} else {
 		proc->addArgument("-vo");
 #ifdef Q_OS_WIN
-		if (QSysInfo::WindowsVersion == QSysInfo::WV_VISTA) {
-			proc->addArgument("direct3d,");
-		} else {
-			proc->addArgument("directx,");
-		}
+		// On Windows Vista, the default vo is already set in preferences.cpp
+		proc->addArgument("directx,");
 #else
 		proc->addArgument("xv,");
 #endif
@@ -1361,11 +1304,7 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 #endif
 
-#ifndef Q_OS_WIN
-	if (pref->vo.startsWith("x11")) {
-		proc->addArgument( "-zoom");
-	}
-#endif
+	proc->addArgument( "-zoom");
 	proc->addArgument("-nokeepaspect");
 
 	// Performance options
@@ -1477,26 +1416,16 @@ void Core::startMplayer( QString file, double seek ) {
 		proc->addArgument( "-ass-font-scale");
 		proc->addArgument( QString::number(mset.sub_scale_ass) );
 
-		if (!pref->force_ass_styles) {
-			// Load the styles.ass file
-			if (!QFile::exists(Paths::subtitleStyleFile())) {
-				// If file doesn't exist, create it
-				pref->ass_styles.exportStyles(Paths::subtitleStyleFile());
-			}
-			if (QFile::exists(Paths::subtitleStyleFile())) {
-				proc->addArgument("-ass-styles");
-				proc->addArgument( Paths::subtitleStyleFile() );
-			} else {
-				qWarning("Core::startMplayer: '%s' doesn't exist", Paths::subtitleStyleFile().toUtf8().constData());
-			}
+		// Load the styles.ass file
+		if (!QFile::exists(Paths::subtitleStyleFile())) {
+			// If file doesn't exist, create it
+			pref->ass_styles.exportStyles(Paths::subtitleStyleFile());
+		}
+		if (QFile::exists(Paths::subtitleStyleFile())) {
+			proc->addArgument("-ass-styles");
+			proc->addArgument( Paths::subtitleStyleFile() );
 		} else {
-			// Force styles for ass subtitles too
-			proc->addArgument("-ass-force-style");
-			if (!pref->user_forced_ass_style.isEmpty()) {
-				proc->addArgument(pref->user_forced_ass_style);
-			} else {
-				proc->addArgument(pref->ass_styles.toString());
-			}
+			qWarning("Core::startMplayer: '%s' doesn't exist", Paths::subtitleStyleFile().toUtf8().constData());
 		}
 		// Use the same font for OSD
 		if (!pref->ass_styles.fontname.isEmpty()) {
@@ -1504,15 +1433,7 @@ void Core::startMplayer( QString file, double seek ) {
 			proc->addArgument("-font");
 			proc->addArgument( pref->ass_styles.fontname );
 		}
-		// Set the size of OSD
-		if (pref->freetype_support) {
-			proc->addArgument("-subfont-autoscale");
-			proc->addArgument("0");
-			proc->addArgument("-subfont-osd-scale");
-			proc->addArgument(QString::number(pref->ass_styles.fontsize));
-			proc->addArgument("-subfont-text-scale"); // Old versions (like 1.0rc2) need this
-			proc->addArgument(QString::number(pref->ass_styles.fontsize));
-		}
+
 	} else {
 		// NO ASS:
 		if (pref->freetype_support) proc->addArgument("-noass");
@@ -1571,11 +1492,8 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 
 	if (mset.current_audio_id != MediaSettings::NoneSelected) {
-		// Workaround for MPlayer bug #1321 (http://bugzilla.mplayerhq.hu/show_bug.cgi?id=1321)
-		if (mdat.audios.numItems() != 1) {
-			proc->addArgument("-aid");
-			proc->addArgument( QString::number( mset.current_audio_id ) );
-		}
+		proc->addArgument("-aid");
+		proc->addArgument( QString::number( mset.current_audio_id ) );
 	}
 
 	if (!initial_subtitle.isEmpty()) {
@@ -1707,15 +1625,11 @@ void Core::startMplayer( QString file, double seek ) {
 
 	int cache = 0;
 	switch (mdat.type) {
-		case TYPE_FILE	 	: cache = pref->cache_for_files; break;
-		case TYPE_DVD 		: cache = pref->cache_for_dvds; 
-#if DVDNAV_SUPPORT
-							  if (file.startsWith("dvdnav:")) cache = 0;
-#endif
-		                      break;
-		case TYPE_STREAM 	: cache = pref->cache_for_streams; break;
-		case TYPE_VCD 		: cache = pref->cache_for_vcds; break;
-		case TYPE_AUDIO_CD	: cache = pref->cache_for_audiocds; break;
+		case TYPE_FILE : cache = pref->cache_for_files; break;
+		case TYPE_DVD : cache = pref->cache_for_dvds; break;
+		case TYPE_STREAM : cache = pref->cache_for_streams; break;
+		case TYPE_VCD : cache = pref->cache_for_vcds; break;
+		case TYPE_AUDIO_CD : cache = pref->cache_for_audiocds; break;
 		default: cache = 0;
 	}
 
@@ -1752,19 +1666,17 @@ void Core::startMplayer( QString file, double seek ) {
 		}
 	}
 
-	if (pref->use_correct_pts != Preferences::Detect) {
-		if (pref->use_correct_pts == Preferences::Enabled) {
-			proc->addArgument("-correct-pts");
-		} else {
-			if (pref->mplayer_detected_version > 0) {
-				if (MplayerVersion::isMplayerAtLeast(26842)) {
-					proc->addArgument("-nocorrect-pts");
-				} else {
-					proc->addArgument("-no-correct-pts");
-				}
+	if (pref->use_correct_pts) {
+		proc->addArgument("-correct-pts");
+	} else {
+		if (pref->mplayer_detected_version > 0) {
+			if (MplayerVersion::isMplayerAtLeast(26842)) {
+				proc->addArgument("-nocorrect-pts");
 			} else {
-				qDebug("Core::startMplayer: unknown version of mplayer, not passing -no(-)correct-pts");
+				proc->addArgument("-no-correct-pts");
 			}
+		} else {
+			qDebug("Core::startMplayer: unknown version of mplayer, not passing -no(-)correct-pts");
 		}
 	}
 
@@ -2035,7 +1947,7 @@ void Core::startMplayer( QString file, double seek ) {
 	// Additional options supplied by the user
 	// File
 	if (!mset.mplayer_additional_options.isEmpty()) {
-		QStringList args = MyProcess::splitArguments(mset.mplayer_additional_options);
+		QStringList args = mset.mplayer_additional_options.split(" ");
         QStringList::Iterator it = args.begin();
         while( it != args.end() ) {
  			proc->addArgument( (*it) );
@@ -2044,7 +1956,7 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 	// Global
 	if (!pref->mplayer_additional_options.isEmpty()) {
-		QStringList args = MyProcess::splitArguments(pref->mplayer_additional_options);
+		QStringList args = pref->mplayer_additional_options.split(" ");
         QStringList::Iterator it = args.begin();
         while( it != args.end() ) {
  			proc->addArgument( (*it) );
@@ -2589,36 +2501,32 @@ void Core::decVolume() {
 	setVolume(mset.volume-4);
 }
 
-void Core::setSubDelay(int delay) {
-	qDebug("Core::setSubDelay: %d", delay);
-	mset.sub_delay = delay;
-	tellmp("sub_delay " + QString::number( (double) mset.sub_delay/1000 ) +" 1");
-}
-
 void Core::incSubDelay() {
 	qDebug("Core::incSubDelay");
-	setSubDelay(mset.sub_delay + 100);
+
+	mset.sub_delay += 100;
+	tellmp("sub_delay " + QString::number( (double) mset.sub_delay/1000 ) +" 1");
 }
 
 void Core::decSubDelay() {
 	qDebug("Core::decSubDelay");
-	setSubDelay(mset.sub_delay - 100);
-}
 
-void Core::setAudioDelay(int delay) {
-	qDebug("Core::setAudioDelay: %d", delay);
-	mset.audio_delay = delay;
-	tellmp("audio_delay " + QString::number( (double) mset.audio_delay/1000 ) +" 1");
+	mset.sub_delay -= 100;
+	tellmp("sub_delay " + QString::number( (double) mset.sub_delay/1000 ) +" 1");
 }
 
 void Core::incAudioDelay() {
 	qDebug("Core::incAudioDelay");
-	setAudioDelay(mset.audio_delay + 100);
+
+	mset.audio_delay += 100;
+	tellmp("audio_delay " + QString::number( (double) mset.audio_delay/1000 ) +" 1");
 }
 
 void Core::decAudioDelay() {
 	qDebug("Core::decAudioDelay");
-	setAudioDelay(mset.audio_delay - 100);
+
+	mset.audio_delay -= 100;
+	tellmp("audio_delay " + QString::number( (double) mset.audio_delay/1000 ) +" 1");
 }
 
 void Core::incSubPos() {
@@ -3026,19 +2934,12 @@ void Core::changeTitle(int ID) {
 	}
 	else
 	if (mdat.type == TYPE_DVD) {
-#if DVDNAV_SUPPORT
-		if (mdat.filename.startsWith("dvdnav:")) {
-			tellmp("switch_title " + QString::number(ID));
-		} else {
-#endif
-			DiscData disc_data = DiscName::split(mdat.filename);
-			disc_data.title = ID;
-			QString dvd_url = DiscName::join(disc_data);
+		QString dvd_url = "dvd://" + QString::number(ID);
+		QString folder = Helper::dvdSplitFolder(mdat.filename);
+		if (!folder.isEmpty()) dvd_url += ":" + folder;
 
-			openDVD( DiscName::join(disc_data) );
-#if DVDNAV_SUPPORT
-		}
-#endif
+		openDVD(dvd_url);
+		//openDVD( ID );
 	}
 }
 
@@ -3532,11 +3433,10 @@ void Core::dvdnavPrev() {
 void Core::dvdnavMouse() {
 	qDebug("Core::dvdnavMouse");
 
-	if ((state() == Playing) && (mdat.filename.startsWith("dvdnav:"))) {
-		//QPoint p = mplayerwindow->videoLayer()->mapFromGlobal(QCursor::pos());
-		//tellmp(QString("set_mouse_pos %1 %2").arg(p.x()).arg(p.y()));
-		tellmp("dvdnav mouse");
-	}
+	QPoint p = mplayerwindow->videoLayer()->mapFromGlobal(QCursor::pos());
+
+	tellmp(QString("set_mouse_pos %1 %2").arg(p.x()).arg(p.y()));
+	tellmp("dvdnav mouse");
 }
 #endif
 
@@ -3778,16 +3678,6 @@ void Core::initSubtitleTrack(const SubTracks & subs) {
 		qDebug("Core::initSubtitleTrack: just_loaded_external_subs: true");
 		restore_subs = false;
 		just_loaded_external_subs = false;
-		
-		QFileInfo fi(mset.external_subtitles);
-		if (fi.suffix().toLower() != "idx") {
-			// The loaded subtitle file is the last one, so
-			// try to select that one.
-			if (mdat.subs.numItems() > 0) {
-				changeSubtitle( mdat.subs.numItems()-1 );
-				goto end;
-			}
-		}
 	}
 
 	if (!restore_subs) {
@@ -3826,39 +3716,13 @@ void Core::initSubtitleTrack(const SubTracks & subs) {
 			}
 		}
 	}
-end:
+	
 	updateWidgets();
 }
 
 void Core::setSubtitleTrackAgain(const SubTracks &) {
 	qDebug("Core::setSubtitleTrackAgain");
 	changeSubtitle( mset.current_sub_id );
-}
-#endif
-
-#if DVDNAV_SUPPORT
-void Core::dvdTitleChanged(int title) {
-	qDebug("Core::dvdTitleChanged: %d", title);
-}
-
-void Core::durationChanged(double length) {
-	qDebug("Core::durationChanged: %f", length);
-	mdat.duration = length;
-}
-
-void Core::askForInfo() {
-	if ((state() == Playing) && (mdat.filename.startsWith("dvdnav:"))) {
-		tellmp( pausing_prefix() + " get_property length");
-	}
-}
-
-void Core::dvdnavUpdateMousePos(QPoint pos) {
-	if ((state() == Playing) && (mdat.filename.startsWith("dvdnav:"))) {
-		if (mplayerwindow->videoLayer()->underMouse()) {
-			QPoint p = mplayerwindow->videoLayer()->mapFromParent(pos);
-			tellmp(QString("set_mouse_pos %1 %2").arg(p.x()).arg(p.y()));
-		}
-	}
 }
 #endif
 

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,9 +39,7 @@ class MplayerWindow;
 class QSettings;
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 class WinScreenSaver;
-#endif
 #endif
 
 class Core : public QObject
@@ -197,11 +195,9 @@ public slots:
 	void incSaturation();
 	void decSaturation();
 
-	void setSubDelay(int delay);
 	void incSubDelay();
 	void decSubDelay();
 
-	void setAudioDelay(int delay);
 	void incAudioDelay();
 	void decAudioDelay();
 
@@ -343,12 +339,6 @@ protected slots:
 	void initSubtitleTrack(const SubTracks &);
 	void setSubtitleTrackAgain(const SubTracks &);
 #endif
-#if DVDNAV_SUPPORT
-	void dvdTitleChanged(int);
-	void durationChanged(double);
-	void askForInfo();
-	void dvdnavUpdateMousePos(QPoint);
-#endif
 
 protected:
 	void playNewFile(QString file, int seek=-1);
@@ -396,7 +386,7 @@ signals:
 	void needResize(int w, int h);
 	void noVideo();
 	void volumeChanged(int);
-#if NOTIFY_AUDIO_CHANGES
+#if NOTIFY_SUB_CHANGES
 	void audioTracksChanged();
 #endif
 
@@ -425,9 +415,7 @@ protected:
 #endif
 
 #ifdef Q_OS_WIN
-#ifdef SCREENSAVER_OFF
 	WinScreenSaver * win_screensaver;
-#endif
 #endif
     
 private:

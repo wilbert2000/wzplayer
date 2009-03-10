@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,8 +31,7 @@ InputURL::InputURL( QWidget* parent, Qt::WindowFlags f )
 		tr("If this option is checked, the URL will be treated as a playlist: "
         "it will be opened as text and will play the URLs in it.") );
 
-	connect(url_edit, SIGNAL(editTextChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-	connect(url_edit, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)));
+	connect(url_edit, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged()));
 	connect(playlist_check, SIGNAL(stateChanged(int)), this, SLOT(playlistChanged(int)));
 }
 
@@ -59,23 +58,11 @@ bool InputURL::isPlaylist() {
 	return playlist_check->isChecked();
 }
 
-void InputURL::indexChanged(int) {
-	qDebug("InputURL::indexChanged");
+void InputURL::indexChanged(void) {
 	int pos = url_edit->currentIndex();
 	if (url_edit->itemText(pos) == url_edit->currentText()) {
 		playlist_check->setChecked( url_edit->itemData(pos).toBool() );
 	}
-}
-
-void InputURL::textChanged(const QString & new_text) {
-	qDebug("InputURL::textChanged");
-	QString s = new_text.trimmed();
-	if (s != new_text) {
-		url_edit->setEditText(s);
-		return;
-	}
-	QRegExp rx("\\.ram$|\\.asx$|\\.m3u$", Qt::CaseInsensitive);
-	setPlaylist( (rx.indexIn(s) != -1) );
 }
 
 void InputURL::playlistChanged(int state) {

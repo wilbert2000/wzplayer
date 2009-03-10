@@ -27,7 +27,6 @@ HEADERS += guiconfig.h \
 	subtracks.h \
 	tracks.h \
 	titletracks.h \
-	discname.h \
 	extensions.h \
 	desktopinfo.h \
 	myprocess.h \
@@ -93,7 +92,6 @@ HEADERS += guiconfig.h \
 	timedialog.h \
 	findsubtitles/simplehttp.h \
 	findsubtitles/osparser.h \
-	findsubtitles/findsubtitlesconfigdialog.h \
 	findsubtitles/findsubtitleswindow.h \
 	videopreview/videopreview.h \
 	videopreview/videopreviewconfigdialog.h \
@@ -119,7 +117,6 @@ SOURCES	+= version.cpp \
 	subtracks.cpp \
 	tracks.cpp \
 	titletracks.cpp \
-	discname.cpp \
 	extensions.cpp \
 	desktopinfo.cpp \
 	myprocess.cpp \
@@ -184,7 +181,6 @@ SOURCES	+= version.cpp \
 	timedialog.cpp \
 	findsubtitles/simplehttp.cpp \
 	findsubtitles/osparser.cpp \
-	findsubtitles/findsubtitlesconfigdialog.cpp \
 	findsubtitles/findsubtitleswindow.cpp \
 	videopreview/videopreview.cpp \
 	videopreview/videopreviewconfigdialog.cpp \
@@ -214,7 +210,7 @@ FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         prefplaylist.ui \
         about.ui inputmplayerversion.ui errordialog.ui timedialog.ui \
         playlistpreferences.ui filechooser.ui \
-        findsubtitles/findsubtitleswindow.ui findsubtitles/findsubtitlesconfigdialog.ui \
+        findsubtitles/findsubtitleswindow.ui \
         videopreview/videopreviewconfigdialog.ui
 
 TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
@@ -295,11 +291,8 @@ unix {
 }
 
 win32 {
-	#DEFINES += SCREENSAVER_OFF
-	contains( DEFINES, SCREENSAVER_OFF ) {
-		HEADERS += screensaver.h
-		SOURCES += screensaver.cpp
-	}
+	HEADERS += screensaver.h
+	SOURCES += screensaver.cpp
 
 	!contains( DEFINES, PORTABLE_APP ) {
 		DEFINES += USE_ASSOCIATIONS

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -78,11 +78,6 @@ signals:
 #if NOTIFY_AUDIO_CHANGES
 	//! Emitted if a new audio track been added or an old one changed
     void audioInfoChanged(const Tracks &);
-#endif
-
-#if DVDNAV_SUPPORT
-	void receivedDVDTitle(int);
-	void receivedDuration(double);
 #endif
 
 protected slots:

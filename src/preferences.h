@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -115,10 +115,6 @@ public:
 
 	int vcd_initial_title;
 
-#if DVDNAV_SUPPORT
-	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:
-#endif
-
 
     /* ***********
        Performance
@@ -176,8 +172,6 @@ public:
 
 	// ASS styles
 	AssStyles ass_styles;
-	bool force_ass_styles; // Use ass styles even for ass files
-	QString user_forced_ass_style; //!< Specifies a style defined by the user to be used with -ass-force-style
 
 	//! If false, options requiring freetype won't be used
 	bool freetype_support;
@@ -241,7 +235,7 @@ public:
 	//! in mplayer svn r27665.
 	bool use_pausing_keep_force;
 
-	OptionState use_correct_pts; //!< Pass -correct-pts to mplayer
+	bool use_correct_pts; //!< Pass -correct-pts to mplayer
 
 	QString actions_to_run; //!< List of actions to run every time a video loads.
 
@@ -404,6 +398,18 @@ public:
 #ifndef Q_OS_WIN
 	bool bypass_window_manager;
 #endif
+
+
+    /* *****
+       Proxy
+       ***** */
+
+	bool use_proxy;
+	int proxy_type;
+	QString proxy_host;
+	int proxy_port;
+	QString proxy_username;
+	QString proxy_password;
 
 
     /* *******

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QDesktopServices>
-#include <QInputDialog>
 
 #include <cmath>
 
@@ -49,7 +48,6 @@
 #include "translator.h"
 #include "images.h"
 #include "preferences.h"
-#include "discname.h"
 #include "timeslider.h"
 #include "logwindow.h"
 #include "playlist.h"
@@ -519,10 +517,6 @@ void BaseGui::createActions() {
 	connect( incAudioDelayAct, SIGNAL(triggered()),
              core, SLOT(incAudioDelay()) );
 
-	audioDelayAct = new MyAction( this, "audio_delay" );
-	connect( audioDelayAct, SIGNAL(triggered()),
-             this, SLOT(showAudioDelayDialog()) );
-
 	loadAudioAct = new MyAction( this, "load_audio_file" );
 	connect( loadAudioAct, SIGNAL(triggered()),
              this, SLOT(loadAudioFile()) );
@@ -565,10 +559,6 @@ void BaseGui::createActions() {
 	incSubDelayAct = new MyAction( Qt::Key_X, this, "inc_sub_delay" );
 	connect( incSubDelayAct, SIGNAL(triggered()),
              core, SLOT(incSubDelay()) );
-
-	subDelayAct = new MyAction( this, "sub_delay" );
-	connect( subDelayAct, SIGNAL(triggered()),
-             this, SLOT(showSubDelayDialog()) );
 
 	decSubPosAct = new MyAction( Qt::Key_R, this, "dec_sub_pos" );
 	connect( decSubPosAct, SIGNAL(triggered()),
@@ -900,10 +890,6 @@ void BaseGui::createActions() {
 	connect( onTopActionGroup , SIGNAL(activated(int)),
              this, SLOT(changeStayOnTop(int)) );
 
-	toggleStayOnTopAct = new MyAction( this, "toggle_stay_on_top");
-	connect( toggleStayOnTopAct, SIGNAL(triggered()), this, SLOT(toggleStayOnTop()) );
-
-
 #if USE_ADAPTER
 	screenGroup = new MyActionGroup(this);
 	screenDefaultAct = new MyActionGroupItem(this, screenGroup, "screen_default", -1);
@@ -1037,7 +1023,6 @@ void BaseGui::setActionsEnabled(bool b) {
 	incVolumeAct->setEnabled(b);
 	decAudioDelayAct->setEnabled(b);
 	incAudioDelayAct->setEnabled(b);
-	audioDelayAct->setEnabled(b);
 	extrastereoAct->setEnabled(b);
 	karaokeAct->setEnabled(b);
 	volnormAct->setEnabled(b);
@@ -1049,7 +1034,6 @@ void BaseGui::setActionsEnabled(bool b) {
 	//unloadSubsAct->setEnabled(b);
 	decSubDelayAct->setEnabled(b);
 	incSubDelayAct->setEnabled(b);
-	subDelayAct->setEnabled(b);
 	decSubPosAct->setEnabled(b);
 	incSubPosAct->setEnabled(b);
 	incSubStepAct->setEnabled(b);
@@ -1091,17 +1075,6 @@ void BaseGui::setActionsEnabled(bool b) {
 	autoZoom169Act->setEnabled(b);
 	autoZoom235Act->setEnabled(b);
 
-#if DVDNAV_SUPPORT
-	dvdnavUpAct->setEnabled(b);
-	dvdnavDownAct->setEnabled(b);
-	dvdnavLeftAct->setEnabled(b);
-	dvdnavRightAct->setEnabled(b);
-	dvdnavMenuAct->setEnabled(b);
-	dvdnavSelectAct->setEnabled(b);
-	dvdnavPrevAct->setEnabled(b);
-	dvdnavMouseAct->setEnabled(b);
-#endif
-
 	// Groups
 	denoiseGroup->setActionsEnabled(b);
 	sizeGroup->setActionsEnabled(b);
@@ -1139,7 +1112,6 @@ void BaseGui::enableActionsOnPlaying() {
 		incVolumeAct->setEnabled(false);
 		decAudioDelayAct->setEnabled(false);
 		incAudioDelayAct->setEnabled(false);
-		audioDelayAct->setEnabled(false);
 		extrastereoAct->setEnabled(false);
 		karaokeAct->setEnabled(false);
 		volnormAct->setEnabled(false);
@@ -1188,19 +1160,6 @@ void BaseGui::enableActionsOnPlaying() {
 
 #if USE_ADAPTER
 	screenGroup->setActionsEnabled(pref->vo.startsWith(OVERLAY_VO));
-#endif
-
-#if DVDNAV_SUPPORT
-	if (!core->mdat.filename.startsWith("dvdnav:")) {
-		dvdnavUpAct->setEnabled(false);
-		dvdnavDownAct->setEnabled(false);
-		dvdnavLeftAct->setEnabled(false);
-		dvdnavRightAct->setEnabled(false);
-		dvdnavMenuAct->setEnabled(false);
-		dvdnavSelectAct->setEnabled(false);
-		dvdnavPrevAct->setEnabled(false);
-		dvdnavMouseAct->setEnabled(false);
-	}
 #endif
 }
 
@@ -1306,7 +1265,6 @@ void BaseGui::retranslateStrings() {
 	incVolumeAct->change( Images::icon("audio_up"), tr("Volume &+") );
 	decAudioDelayAct->change( Images::icon("delay_down"), tr("&Delay -") );
 	incAudioDelayAct->change( Images::icon("delay_up"), tr("D&elay +") );
-	audioDelayAct->change( Images::icon("audio_delay"), tr("Set dela&y...") );
 	loadAudioAct->change( Images::icon("open"), tr("&Load external file...") );
 	unloadAudioAct->change( Images::icon("unload"), tr("U&nload") );
 
@@ -1320,7 +1278,6 @@ void BaseGui::retranslateStrings() {
 	unloadSubsAct->change( Images::icon("unload"), tr("U&nload") );
 	decSubDelayAct->change( Images::icon("delay_down"), tr("Delay &-") );
 	incSubDelayAct->change( Images::icon("delay_up"), tr("Delay &+") );
-	subDelayAct->change( Images::icon("sub_delay"), tr("Se&t delay...") );
 	decSubPosAct->change( Images::icon("sub_up"), tr("&Up") );
 	incSubPosAct->change( Images::icon("sub_down"), tr("&Down") );
 	decSubScaleAct->change( Images::icon("dec_sub_scale"), tr("S&ize -") );
@@ -1399,7 +1356,7 @@ void BaseGui::retranslateStrings() {
 	resetAudioEqualizerAct->change( tr("Reset audio equalizer") );
 	showContextMenuAct->change( tr("Show context menu") );
 #if NEW_ASPECT_CODE
-	nextAspectAct->change( Images::icon("next_aspect"), tr("Next aspect ratio") );
+	nextAspectAct->change( tr("Next aspect ratio") );
 #endif
 
 	// Action groups
@@ -1513,7 +1470,6 @@ void BaseGui::retranslateStrings() {
 	onTopAlwaysAct->change( tr("&Always") );
 	onTopNeverAct->change( tr("&Never") );
 	onTopWhilePlayingAct->change( tr("While &playing") );
-	toggleStayOnTopAct->change( tr("Toggle stay on top") );
 
 #if USE_ADAPTER
 	screenDefaultAct->change( tr("&Default") );
@@ -1554,17 +1510,6 @@ void BaseGui::retranslateStrings() {
 
 	angles_menu->menuAction()->setText( tr("&Angle") );
 	angles_menu->menuAction()->setIcon( Images::icon("angle") );
-
-#if DVDNAV_SUPPORT
-	dvdnavUpAct->change(Images::icon("dvdnav_up"), tr("DVD menu, move up"));
-	dvdnavDownAct->change(Images::icon("dvdnav_down"), tr("DVD menu, move down"));
-	dvdnavLeftAct->change(Images::icon("dvdnav_left"), tr("DVD menu, move left"));
-	dvdnavRightAct->change(Images::icon("dvdnav_right"), tr("DVD menu, move right"));
-	dvdnavMenuAct->change(Images::icon("dvdnav_menu"), tr("DVD &menu"));
-	dvdnavSelectAct->change(Images::icon("dvdnav_select"), tr("DVD menu, select option"));
-	dvdnavPrevAct->change(Images::icon("dvdnav_prev"), tr("DVD &previous menu"));
-	dvdnavMouseAct->change(Images::icon("dvdnav_mouse"), tr("DVD menu, mouse click"));
-#endif
 
 	// Menu Options
 	osd_menu->menuAction()->setText( tr("&OSD") );
@@ -1657,7 +1602,7 @@ void BaseGui::createCore() {
 
 	connect( core, SIGNAL(mediaLoaded()),
              this, SLOT(enableActionsOnPlaying()) );
-#if NOTIFY_AUDIO_CHANGES
+#if NOTIFY_SUB_CHANGES
 	connect( core, SIGNAL(audioTracksChanged()),
              this, SLOT(enableActionsOnPlaying()) );
 #endif
@@ -2041,8 +1986,6 @@ void BaseGui::createMenus() {
 	audioMenu->addSeparator();
 	audioMenu->addAction(decAudioDelayAct);
 	audioMenu->addAction(incAudioDelayAct);
-	audioMenu->addSeparator();
-	audioMenu->addAction(audioDelayAct);
 
 
 	// SUBTITLES MENU
@@ -2056,8 +1999,6 @@ void BaseGui::createMenus() {
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubDelayAct);
 	subtitlesMenu->addAction(incSubDelayAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(subDelayAct);
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubPosAct);
 	subtitlesMenu->addAction(incSubPosAct);
@@ -2091,12 +2032,6 @@ void BaseGui::createMenus() {
 	angles_menu = new QMenu(this);
 
 	browseMenu->addMenu(angles_menu);
-
-#if DVDNAV_SUPPORT
-	browseMenu->addSeparator();
-	browseMenu->addAction(dvdnavMenuAct);
-	browseMenu->addAction(dvdnavPrevAct);
-#endif
 
 	// OPTIONS MENU
 	optionsMenu->addAction(showPropertiesAct);
@@ -2308,6 +2243,10 @@ void BaseGui::applyNewPreferences() {
 		mplayerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 	}
 
+	if (advanced->proxyChanged()) {
+		if (find_subs_dialog) find_subs_dialog->setProxy( userProxy() );
+	}
+
 	if (need_update_language) {
 		translator->load(pref->language);
 	}
@@ -2450,16 +2389,12 @@ void BaseGui::newMediaLoaded() {
 
 	// If a VCD, Audio CD or DVD, add items to playlist
 	bool is_disc = ( (core->mdat.type == TYPE_VCD) || (core->mdat.type == TYPE_DVD) || (core->mdat.type == TYPE_AUDIO_CD) );
-#if DVDNAV_SUPPORT
-	// Don't add the list of titles if using dvdnav
-	if ((core->mdat.type == TYPE_DVD) && (core->mdat.filename.startsWith("dvdnav:"))) is_disc = false;
-#endif
 	if (pref->auto_add_to_playlist && is_disc)
 	{
 		int first_title = 1;
 		if (core->mdat.type == TYPE_VCD) first_title = pref->vcd_initial_title;
 
-		QString type = "dvd"; // FIXME: support dvdnav
+		QString type = "dvd";
 		if (core->mdat.type == TYPE_VCD) type="vcd";
 		else
 		if (core->mdat.type == TYPE_AUDIO_CD) type="cdda";
@@ -2470,13 +2405,12 @@ void BaseGui::newMediaLoaded() {
 			QString s;
 			QString folder;
 			if (core->mdat.type == TYPE_DVD) {
-				DiscData disc_data = DiscName::split(core->mdat.filename);
-				folder = disc_data.device;
+				folder = Helper::dvdSplitFolder( core->mdat.filename );
 			}
 			for (int n=0; n < core->mdat.titles.numItems(); n++) {
 				s = type + "://" + QString::number(core->mdat.titles.itemAt(n).ID());
 				if ( !folder.isEmpty() ) {
-					s += "/" + folder; // FIXME: dvd names are not created as they should
+					s += ":" + folder;
 				}
 				l.append(s);
 			}
@@ -2664,13 +2598,8 @@ void BaseGui::initializeMenus() {
 
 	// Angles
 	angleGroup->clear(true);
-	int n_angles = 0;
 	if (core->mset.current_angle_id > 0) {
-		int i = core->mdat.titles.find(core->mset.current_angle_id);
-		if (i > -1) n_angles = core->mdat.titles.itemAt(i).angles();
-	}
-	if (n_angles > 0) {
-		for (n=1; n <= n_angles; n++) {
+		for (n=1; n <= core->mdat.titles.item(core->mset.current_title_id).angles(); n++) {
 			QAction *a = new QAction(angleGroup);
 			a->setCheckable(true);
 			a->setText( QString::number(n) );
@@ -2886,7 +2815,6 @@ void BaseGui::updateWidgets() {
 
 	decSubDelayAct->setEnabled(e);
 	incSubDelayAct->setEnabled(e);
-	subDelayAct->setEnabled(e);
 	decSubPosAct->setEnabled(e);
 	incSubPosAct->setEnabled(e);
 	decSubScaleAct->setEnabled(e);
@@ -3166,11 +3094,7 @@ void BaseGui::openDVD() {
 		configureDiscDevices();
 	} else {
 		if (playlist->maybeSave()) {
-#if DVDNAV_SUPPORT
-			core->openDVD( DiscName::joinDVD(pref->use_dvdnav ? 0: 1, pref->dvd_device, pref->use_dvdnav) );
-#else
-			core->openDVD( DiscName::joinDVD(1, pref->dvd_device, false) );
-#endif
+			core->openDVD("dvd://1");
 		}
 	}
 }
@@ -3192,12 +3116,9 @@ void BaseGui::openDVDFromFolder() {
 }
 
 void BaseGui::openDVDFromFolder(QString directory) {
+	//core->openDVD(TRUE, directory);
 	pref->last_dvd_directory = directory;
-#if DVDNAV_SUPPORT
-	core->openDVD( DiscName::joinDVD(pref->use_dvdnav ? 0: 1, directory, pref->use_dvdnav) );
-#else
-	core->openDVD( DiscName::joinDVD(1, directory, false) );
-#endif
+	core->openDVD( "dvd://1:" + directory);
 }
 
 void BaseGui::openDirectory() {
@@ -3297,32 +3218,10 @@ void BaseGui::helpAboutQt() {
 
 void BaseGui::showGotoDialog() {
 	TimeDialog d(this);
-	d.setLabel(tr("&Jump to:"));
-	d.setWindowTitle(tr("SMPlayer - Seek"));
 	d.setMaximumTime( (int) core->mdat.duration);
 	d.setTime( (int) core->mset.current_sec);
 	if (d.exec() == QDialog::Accepted) {
 		core->goToSec( d.time() );
-	}
-}
-
-void BaseGui::showAudioDelayDialog() {
-	bool ok;
-	int delay = QInputDialog::getInteger(this, tr("SMPlayer - Audio delay"),
-                                         tr("Audio delay (in milliseconds):"), core->mset.audio_delay, 
-                                         -3600000, 3600000, 1, &ok);
-	if (ok) {
-		core->setAudioDelay(delay);
-	}
-}
-
-void BaseGui::showSubDelayDialog() {
-	bool ok;
-	int delay = QInputDialog::getInteger(this, tr("SMPlayer - Subtitle delay"),
-                                         tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay, 
-                                         -3600000, 3600000, 1, &ok);
-	if (ok) {
-		core->setSubDelay(delay);
 	}
 }
 
@@ -3405,8 +3304,6 @@ void BaseGui::toggleFullscreen(bool b) {
 	{
 		core->restart();
 	}
-
-	setFocus(); // Fixes bug #2493415
 }
 
 
@@ -3965,8 +3862,8 @@ void BaseGui::setStayOnTop(bool b) {
 
 void BaseGui::changeStayOnTop(int stay_on_top) {
 	switch (stay_on_top) {
-		case Preferences::AlwaysOnTop : setStayOnTop(true); break;
-		case Preferences::NeverOnTop  : setStayOnTop(false); break;
+		case Preferences::Always : setStayOnTop(true); break;
+		case Preferences::Never  : setStayOnTop(false); break;
 		case Preferences::WhilePlayingOnTop : setStayOnTop((core->state() == Core::Playing)); break;
 	}
 
@@ -3979,14 +3876,6 @@ void BaseGui::checkStayOnTop(Core::State state) {
     if ((!pref->fullscreen) && (pref->stay_on_top == Preferences::WhilePlayingOnTop)) {
 		setStayOnTop((state == Core::Playing));
 	}
-}
-
-void BaseGui::toggleStayOnTop() {
-	if (pref->stay_on_top == Preferences::AlwaysOnTop) 
-		changeStayOnTop(Preferences::NeverOnTop);
-	else
-	if (pref->stay_on_top == Preferences::NeverOnTop) 
-		changeStayOnTop(Preferences::AlwaysOnTop);
 }
 
 // Called when a new window (equalizer, preferences..) is opened.
@@ -4175,9 +4064,10 @@ void BaseGui::showFindSubtitlesDialog() {
 	qDebug("BaseGui::showFindSubtitlesDialog");
 
 	if (!find_subs_dialog) {
-		find_subs_dialog = new FindSubtitlesWindow(this, Qt::Window | Qt::WindowMinMaxButtonsHint);
+		find_subs_dialog = new FindSubtitlesWindow(0, Qt::Window | Qt::WindowMinMaxButtonsHint);
 		find_subs_dialog->setSettings(Global::settings);
 		find_subs_dialog->setWindowIcon(windowIcon());
+		find_subs_dialog->setProxy( userProxy() );
 #if DOWNLOAD_SUBS
 		connect(find_subs_dialog, SIGNAL(subtitleDownloaded(const QString &)),
                 core, SLOT(loadSub(const QString &)));
@@ -4198,7 +4088,7 @@ void BaseGui::showVideoPreviewDialog() {
 	qDebug("BaseGui::showVideoPreviewDialog");
 
 	if (video_preview == 0) {
-		video_preview = new VideoPreview( pref->mplayer_bin, this );
+		video_preview = new VideoPreview( pref->mplayer_bin, 0 );
 		video_preview->setSettings(Global::settings);
 	}
 
@@ -4208,11 +4098,20 @@ void BaseGui::showVideoPreviewDialog() {
 		// DVD
 		if (core->mdat.type==TYPE_DVD) {
 			QString file = core->mdat.filename;
-			DiscData disc_data = DiscName::split(file);
-			QString dvd_folder = disc_data.device;
+			QString dvd_folder = Helper::dvdSplitFolder(file);
 			if (dvd_folder.isEmpty()) dvd_folder = pref->dvd_device;
-			int dvd_title = disc_data.title;
-			file = disc_data.protocol + "://" + QString::number(dvd_title);
+			// Remove trailing "/"
+			if (dvd_folder.endsWith("/")) {
+#ifdef Q_OS_WIN
+				QRegExp r("^[A-Z]:/$");
+				int pos = r.indexIn(dvd_folder);
+				qDebug("BaseGui::showVideoPreviewDialog: drive check: '%s': regexp: %d", dvd_folder.toUtf8().data(), pos);
+				if (pos == -1)
+#endif
+					dvd_folder = dvd_folder.remove( dvd_folder.length()-1, 1);
+			}
+			int dvd_title = Helper::dvdSplitTitle(file);
+			file = "dvd://" + QString::number(dvd_title);
 
 			video_preview->setVideoFile(file);
 			video_preview->setDVDDevice(dvd_folder);
@@ -4223,10 +4122,30 @@ void BaseGui::showVideoPreviewDialog() {
 
 	video_preview->setMplayerPath(pref->mplayer_bin);
 
-	if ( (video_preview->showConfigDialog(this)) && (video_preview->createThumbnails()) ) {
+	if ( (video_preview->showConfigDialog()) && (video_preview->createThumbnails()) ) {
 		video_preview->show();
 		video_preview->adjustWindowSize();
 	}
+}
+
+QNetworkProxy BaseGui::userProxy() {
+	QNetworkProxy proxy;
+	if ( (pref->use_proxy) && (!pref->proxy_host.isEmpty()) ) {
+		proxy.setType((QNetworkProxy::ProxyType) pref->proxy_type);
+		proxy.setHostName(pref->proxy_host);
+		proxy.setPort(pref->proxy_port);
+		if ( (!pref->proxy_username.isEmpty()) && (!pref->proxy_password.isEmpty()) ) {
+			proxy.setUser(pref->proxy_username);
+			proxy.setPassword(pref->proxy_password);
+		}
+		qDebug("BaseGui::userProxy: using proxy: host: %s, port: %d, type: %d", 
+               pref->proxy_host.toUtf8().constData(), pref->proxy_port, pref->proxy_type);
+	} else {
+		// No proxy
+		proxy.setType(QNetworkProxy::NoProxy);
+		qDebug("BaseGui::userProxy: no proxy");
+	}
+	return proxy;
 }
 
 // Language change stuff
@@ -4245,11 +4164,7 @@ bool BaseGui::winEvent ( MSG * m, long * result ) {
 	if (m->message==WM_SYSCOMMAND) {
 		if ((m->wParam & 0xFFF0)==SC_SCREENSAVE || (m->wParam & 0xFFF0)==SC_MONITORPOWER) {
 			qDebug("BaseGui::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
-			qDebug("BaseGui::winEvent: disable_screensaver: %d", pref->disable_screensaver);
-			qDebug("BaseGui::winEvent: playing: %d", core->state()==Core::Playing);
-			qDebug("BaseGui::winEvent: video: %d", !core->mdat.novideo);
-			
-			if ((pref->disable_screensaver) && (core->state()==Core::Playing) && (!core->mdat.novideo)) {
+			if ((pref->disable_screensaver) && (core->state()==Core::Playing)) {
 				qDebug("BaseGui::winEvent: not allowing screensaver");
 				(*result) = 0;
 				return true;

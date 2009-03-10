@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "filedialog.h"
 #include "languages.h"
 
-#include <QInputDialog>
+#include <QColorDialog>
 
 PrefSubtitles::PrefSubtitles(QWidget * parent, Qt::WindowFlags f)
 	: PrefWidget(parent, f )
@@ -140,8 +140,7 @@ void PrefSubtitles::setData(Preferences * pref) {
 	style_font_combo->setCurrentText(pref->ass_styles.fontname);
 	style_size_spin->setValue(pref->ass_styles.fontsize);
 	style_text_color_button->setColor(pref->ass_styles.primarycolor);
-	style_border_color_button->setColor(pref->ass_styles.outlinecolor);
-	style_shadow_color_button->setColor(pref->ass_styles.backcolor);
+	style_border_color_button->setColor(pref->ass_styles.backcolor);
 	style_bold_check->setChecked(pref->ass_styles.bold);
 	style_italic_check->setChecked(pref->ass_styles.italic);
 	style_alignment_combo->setCurrentIndex(style_alignment_combo->findData(pref->ass_styles.halignment));
@@ -152,9 +151,6 @@ void PrefSubtitles::setData(Preferences * pref) {
 	style_marginl_spin->setValue(pref->ass_styles.marginl);
 	style_marginr_spin->setValue(pref->ass_styles.marginr);
 	style_marginv_spin->setValue(pref->ass_styles.marginv);
-
-	setForceAssStyles(pref->force_ass_styles);
-	setCustomizedAssStyle(pref->user_forced_ass_style);
 }
 
 void PrefSubtitles::getData(Preferences * pref) {
@@ -181,8 +177,7 @@ void PrefSubtitles::getData(Preferences * pref) {
 	TEST_AND_SET(pref->ass_styles.fontname, style_font_combo->currentText());
 	TEST_AND_SET(pref->ass_styles.fontsize, style_size_spin->value());
 	TEST_AND_SET(pref->ass_styles.primarycolor, style_text_color_button->color().rgb());
-	TEST_AND_SET(pref->ass_styles.outlinecolor, style_border_color_button->color().rgb());
-	TEST_AND_SET(pref->ass_styles.backcolor, style_shadow_color_button->color().rgb());
+	TEST_AND_SET(pref->ass_styles.backcolor, style_border_color_button->color().rgb());
 	TEST_AND_SET(pref->ass_styles.bold, style_bold_check->isChecked());
 	TEST_AND_SET(pref->ass_styles.italic, style_italic_check->isChecked());
 	TEST_AND_SET(pref->ass_styles.halignment, style_alignment_combo->itemData(style_alignment_combo->currentIndex()).toInt());
@@ -195,9 +190,6 @@ void PrefSubtitles::getData(Preferences * pref) {
 	TEST_AND_SET(pref->ass_styles.marginv, style_marginv_spin->value());
 
 	pref->ass_styles.exportStyles( Paths::subtitleStyleFile() );
-
-	TEST_AND_SET(pref->force_ass_styles, forceAssStyles());
-	TEST_AND_SET(pref->user_forced_ass_style, customizedAssStyle());
 }
 
 void PrefSubtitles::checkBorderStyleCombo( int index ) {
@@ -336,57 +328,11 @@ int PrefSubtitles::assLineSpacing() {
 	return ass_line_spacing_spin->value();
 }
 
-void PrefSubtitles::setForceAssStyles(bool b) {
-	force_ass_styles->setChecked(b);
-}
-
-bool PrefSubtitles::forceAssStyles() {
-	return force_ass_styles->isChecked();
-}
-
 void PrefSubtitles::on_ass_subs_button_toggled(bool b) {
 	if (b) 
 		stackedWidget->setCurrentIndex(1);
 	 else 
 		stackedWidget->setCurrentIndex(0);
-}
-
-void PrefSubtitles::on_ass_customize_button_clicked() {
-	bool ok;
-
-	QString edit = forced_ass_style;
-
-	// A copy with the current values in the dialog
-	AssStyles ass_styles;
-	ass_styles.fontname = style_font_combo->currentText();
-	ass_styles.fontsize = style_size_spin->value();
-	ass_styles.primarycolor = style_text_color_button->color().rgb();
-	ass_styles.outlinecolor = style_border_color_button->color().rgb();
-	ass_styles.backcolor = style_shadow_color_button->color().rgb();
-	ass_styles.bold = style_bold_check->isChecked();
-	ass_styles.italic = style_italic_check->isChecked();
-	ass_styles.halignment = style_alignment_combo->itemData(style_alignment_combo->currentIndex()).toInt();
-	ass_styles.valignment = style_valignment_combo->currentIndex();
-	ass_styles.borderstyle = style_border_style_combo->itemData(style_border_style_combo->currentIndex()).toInt();
-	ass_styles.outline = style_outline_spin->value();
-	ass_styles.shadow = style_shadow_spin->value();
-	ass_styles.marginl = style_marginl_spin->value();
-	ass_styles.marginr = style_marginr_spin->value();
-	ass_styles.marginv = style_marginv_spin->value();
-
-	if (edit.isEmpty()) {
-		edit = ass_styles.toString();
-	}
-
-	QString s = QInputDialog::getText(this, tr("Customize SSA/ASS style"),
-                                      tr("Here you can enter your customized SSA/ASS style.") +"<br>"+
-                                      tr("Clear the edit line to disable the customized style."), 
-                                      QLineEdit::Normal, 
-                                      edit, &ok );
-	if (ok) {
-		if (s == ass_styles.toString()) s.clear(); // Clear string if it wasn't changed by the user
-		setCustomizedAssStyle(s);
-	}
 }
 
 void PrefSubtitles::setFreetypeSupport(bool b) {
@@ -499,10 +445,6 @@ void PrefSubtitles::createHelp() {
 		tr("This specifies the spacing that will be used to separate "
            "multiple lines. It can have negative values.") );
 
-	setWhatsThis(styles_container, tr("SSA/ASS style"), 
-		tr("The following options allows you to define the style to "
-           "be used for non-styled subtitles (srt, sub...).") );
-       
 	setWhatsThis(style_font_combo, tr("Font"), 
 		tr("Select the font for the subtitles.") );
 
@@ -520,9 +462,6 @@ void PrefSubtitles::createHelp() {
 
 	setWhatsThis(style_border_color_button, tr("Border color"), 
         tr("Select the color for the border of the subtitles.") );
-
-	setWhatsThis(style_shadow_color_button, tr("Shadow color"), 
-        tr("This color will be used for the shadow of the subtitles.") );
 
 	setWhatsThis(style_marginl_spin, tr("Left margin"), 
         tr("Specifies the left margin in pixels.") );
@@ -552,10 +491,6 @@ void PrefSubtitles::createHelp() {
 	setWhatsThis(style_shadow_spin, tr("Shadow"), 
         tr("If border style is set to <i>outline</i>, this option specifies "
            "the depth of the drop shadow behind the text in pixels.") );
-
-	setWhatsThis(force_ass_styles, tr("Apply style to ass files too"), 
-        tr("If this option is checked, the style defined above will be "
-           "applied to ass subtitles too.") );
 }
 
 #include "moc_prefsubtitles.cpp"

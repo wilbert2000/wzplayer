@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -110,7 +110,9 @@
 // DVDNAV_SUPPORT
 // if 1, smplayer will be compiled with support for mplayer's dvdnav
 
+#ifndef Q_OS_WIN
 #define DVDNAV_SUPPORT 1
+#endif
 
 
 // Adds or not the "Repaint the background of the video window" option.

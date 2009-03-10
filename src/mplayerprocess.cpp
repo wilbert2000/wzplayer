@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -114,16 +114,13 @@ static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 static QRegExp rx_mkvchapters("\\[mkv\\] Chapter (\\d+) from");
 static QRegExp rx_aspect2("^Movie-Aspect is ([0-9,.]+):1");
 static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
-#if DVDNAV_SUPPORT
-static QRegExp rx_dvdnav_switch_title("^DVDNAV, switched to title: (\\d+)");
-static QRegExp rx_dvdnav_length("^ANS_length=(.*)");
-#endif
  
 // VCD
 static QRegExp rx_vcd("^ID_VCD_TRACK_(\\d+)_MSF=(.*)");
 
 // Audio CD
 static QRegExp rx_cdda("^ID_CDDA_TRACK_(\\d+)_MSF=(.*)");
+
 
 //Subtitles
 static QRegExp rx_subtitle("^ID_(SUBTITLE|FILE_SUB|VOBSUB)_ID=(\\d+)");
@@ -236,9 +233,6 @@ void MplayerProcess::parseLine(QByteArray ba) {
 	else {
 		// Emulates mplayer version in Ubuntu:
 		//if (line.startsWith("MPlayer 1.0rc1")) line = "MPlayer 2:1.0~rc1-0ubuntu13.1 (C) 2000-2006 MPlayer Team";
-
-		// Emulates unknown version
-		//if (line.startsWith("MPlayer SVN")) line = "MPlayer lalksklsjjakksja";
 
 		emit lineAvailable(line);
 
@@ -366,22 +360,6 @@ void MplayerProcess::parseLine(QByteArray ba) {
 						audios.addLang(ID, lang);
 					}
 				}
-			}
-		}
-#endif
-
-#if DVDNAV_SUPPORT
-		if (rx_dvdnav_switch_title.indexIn(line) > -1) {
-			int title = rx_dvdnav_switch_title.cap(1).toInt();
-			qDebug("MplayerProcess::parseLine: dvd title: %d", title);
-			emit receivedDVDTitle(title);
-		}
-		if (rx_dvdnav_length.indexIn(line) > -1) {
-			double length = rx_dvdnav_length.cap(1).toDouble();
-			qDebug("MplayerProcess::parseLine: length: %f", length);
-			if (length != md.duration) {
-				md.duration = length;
-				emit receivedDuration(length);
 			}
 		}
 #endif

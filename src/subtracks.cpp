@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -159,7 +159,7 @@ bool SubTracks::changeFilename( SubData::Type t, int ID, QString filename ) {
 	return true;
 }
 
-SubTracks::ParseResult SubTracks::parse(QString text) {
+int SubTracks::parse(QString text) {
 	qDebug("SubTracks::parse: '%s'", text.toUtf8().data());
 
 	ParseResult result = SubtitleUnchanged;

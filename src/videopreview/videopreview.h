@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ class VideoPreview : public QWidget
 public:
 	enum ExtractFormat { JPEG = 1, PNG = 2 };
 
-	VideoPreview(QString mplayer_path, QWidget * parent = 0);
+	VideoPreview(QString mplayer_path, QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~VideoPreview();
 
 	void setMplayerPath(QString mplayer_path);
@@ -95,7 +95,7 @@ public:
 
 	bool createThumbnails();
 
-	bool showConfigDialog(QWidget * parent);
+	bool showConfigDialog();
 
 	void setSettings(QSettings * settings);
 	QSettings * settings() { return set; };
@@ -157,7 +157,6 @@ protected:
 	} run;
 
 	QString last_directory;
-	bool save_last_directory;
 	QString error_message;
 };
 

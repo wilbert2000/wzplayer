@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 */
 
 #include "videopreviewconfigdialog.h"
-#include <QImageReader>
 
 VideoPreviewConfigDialog::VideoPreviewConfigDialog( QWidget* parent, Qt::WindowFlags f )
 	: QDialog(parent, f)
@@ -35,10 +34,8 @@ VideoPreviewConfigDialog::VideoPreviewConfigDialog( QWidget* parent, Qt::WindowF
 	aspect_ratio_combo->addItem("16:9", (double) 16/9);
 	aspect_ratio_combo->addItem("2.35:1", 2.35);
 
+	format_combo->addItem("jpg", VideoPreview::JPEG);
 	format_combo->addItem("png", VideoPreview::PNG);
-	if (QImageReader::supportedImageFormats().contains("jpg")) {
-		format_combo->addItem("jpg", VideoPreview::JPEG);
-	}
 
 	filename_edit->setWhatsThis( tr("The preview will be created for the video you specify here.") );
 	dvd_device_edit->setWhatsThis( tr("Enter here the DVD device or a folder with a DVD image.") );
@@ -134,14 +131,6 @@ void VideoPreviewConfigDialog::setFormat(VideoPreview::ExtractFormat format) {
 VideoPreview::ExtractFormat VideoPreviewConfigDialog::format() {
 	int idx = format_combo->currentIndex();
 	return (VideoPreview::ExtractFormat) format_combo->itemData(idx).toInt();
-}
-
-void VideoPreviewConfigDialog::setSaveLastDirectory(bool b) {
-	save_last_directory_check->setChecked(b);
-}
-
-bool VideoPreviewConfigDialog::saveLastDirectory() {
-	return save_last_directory_check->isChecked();
 }
 
 void VideoPreviewConfigDialog::filenameChanged(const QString & text) {

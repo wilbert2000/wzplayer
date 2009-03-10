@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,14 +47,6 @@ void TimeDialog::setMaximumTime( int seconds ) {
 int TimeDialog::maximumTime() {
 	QTime t;
 	return t.secsTo(time_edit->maximumTime());
-}
-
-void TimeDialog::setLabel(const QString & label) {
-	time_label->setText(label);
-}
-
-QString TimeDialog::label() {
-	return time_label->text();
 }
 
 #include "moc_timedialog.cpp"

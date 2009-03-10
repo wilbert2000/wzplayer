@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ int main( int argc, char ** argv )
 	*/
 	//vp.setAspectRatio( 2.35 );
 
-	if ( (vp.showConfigDialog(&vp)) && (vp.createThumbnails()) ) {
+	if ( (vp.showConfigDialog()) && (vp.createThumbnails()) ) {
 		vp.show();
 		vp.adjustWindowSize();
 		return a.exec();
