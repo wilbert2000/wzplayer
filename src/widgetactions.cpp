@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
 */
 
 #include "widgetactions.h"
-#include "colorutils.h"
-#include <QLabel>
 
 #if MINI_ARROW_BUTTONS
 #include <QToolButton>
@@ -27,8 +25,6 @@
 MyWidgetAction::MyWidgetAction( QWidget * parent )
 	: QWidgetAction(parent)
 {
-	custom_style = 0;
-	custom_stylesheet = "";
 }
 
 MyWidgetAction::~MyWidgetAction() {
@@ -67,9 +63,7 @@ void TimeSliderAction::setPos(int v) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		TimeSlider *s = (TimeSlider*) l[n];
-		bool was_blocked= s->blockSignals(true);
 		s->setPos(v);
-		s->blockSignals(was_blocked);
 	}
 }
 
@@ -103,9 +97,6 @@ QWidget * TimeSliderAction::createWidget ( QWidget * parent ) {
 	TimeSlider *t = new TimeSlider(parent);
 	t->setEnabled( isEnabled() );
 
-	if (custom_style) t->setStyle(custom_style);
-	if (!custom_stylesheet.isEmpty()) t->setStyleSheet(custom_stylesheet);
-
 	connect( t,    SIGNAL(posChanged(int)), 
              this, SIGNAL(posChanged(int)) );
 	connect( t,    SIGNAL(draggingPos(int)),
@@ -124,7 +115,6 @@ QWidget * TimeSliderAction::createWidget ( QWidget * parent ) {
 VolumeSliderAction::VolumeSliderAction( QWidget * parent )
 	: MyWidgetAction(parent)
 {
-	tick_position = QSlider::TicksBelow;
 }
 
 VolumeSliderAction::~VolumeSliderAction() {
@@ -134,9 +124,7 @@ void VolumeSliderAction::setValue(int v) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		MySlider *s = (MySlider*) l[n];
-		bool was_blocked = s->blockSignals(true);
 		s->setValue(v);
-		s->blockSignals(was_blocked);
 	}
 }
 
@@ -150,73 +138,24 @@ int VolumeSliderAction::value() {
 	}
 }
 
-void VolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
-	// For new widgets
-	tick_position = position; 
-
-	// Propagate changes to all existing widgets
-	QList<QWidget *> l = createdWidgets();
-	for (int n=0; n < l.count(); n++) {
-		MySlider *s = (MySlider*) l[n];
-		s->setTickPosition(tick_position);
-	}
-}
-
 QWidget * VolumeSliderAction::createWidget ( QWidget * parent ) {
 	MySlider *t = new MySlider(parent);
-
-	if (custom_style) t->setStyle(custom_style);
-	if (!custom_stylesheet.isEmpty()) t->setStyleSheet(custom_stylesheet);
-	if (fixed_size.isValid()) t->setFixedSize(fixed_size);
-
 	t->setMinimum(0);
 	t->setMaximum(100);
 	t->setValue(50);
 	t->setOrientation( Qt::Horizontal );
 	t->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
 	t->setFocusPolicy( Qt::NoFocus );
-	t->setTickPosition( tick_position );
+	t->setTickPosition( QSlider::TicksBelow );
 	t->setTickInterval( 10 );
 	t->setSingleStep( 1 );
 	t->setPageStep( 10 );
 	t->setToolTip( tr("Volume") );
 	t->setEnabled( isEnabled() );
-	t->setAttribute(Qt::WA_NoMousePropagation);
 
 	connect( t,    SIGNAL(valueChanged(int)), 
              this, SIGNAL(valueChanged(int)) );
 	return t;
-}
-
-
-TimeLabelAction::TimeLabelAction( QWidget * parent )
-	: MyWidgetAction(parent)
-{
-}
-
-TimeLabelAction::~TimeLabelAction() {
-}
-
-void TimeLabelAction::setText(QString s) {
-	_text = s;
-	emit newText(s);
-}
-
-QWidget * TimeLabelAction::createWidget ( QWidget * parent ) {
-	QLabel * time_label = new QLabel(parent);
-    time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    time_label->setAutoFillBackground(true);
-
-    ColorUtils::setBackgroundColor( time_label, QColor(0,0,0) );
-    ColorUtils::setForegroundColor( time_label, QColor(255,255,255) );
-    time_label->setText( "00:00:00 / 00:00:00" );
-    time_label->setFrameShape( QFrame::Panel );
-    time_label->setFrameShadow( QFrame::Sunken );
-
-	connect( this, SIGNAL(newText(QString)), 
-             time_label, SLOT(setText(QString)) );
-
-	return time_label;
 }
 
 #if MINI_ARROW_BUTTONS
@@ -231,7 +170,7 @@ SeekingButton::~SeekingButton() {
 
 QWidget * SeekingButton::createWidget( QWidget * parent ) {
 	QToolButton * button = new QToolButton(parent);
-	button->setPopupMode(QToolButton::MenuButtonPopup);
+	button->setPopupMode(QToolButton::DelayedPopup);
 
 	if (_actions.count() > 0 ) {
 		button->setDefaultAction( _actions[0] );

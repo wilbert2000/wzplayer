@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ QString CLHelp::formatText(QString s, int col) {
 		}
 
 		while ((pos < col) && (pos != -1)) {
-			last = pos;
-			pos = s.indexOf(" ", pos+1);
+		last = pos;
+		pos = s.indexOf(" ", pos+1);
 		}
 
 		res = res + s.left(last) + "\n";
@@ -83,17 +83,15 @@ QString CLHelp::formatHelp(QString parameter, QString help, bool html) {
 QString CLHelp::help(bool html) {
 	QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
 
-	QString options = QString("%1 [-minigui] [-defaultgui] [-mpcgui] [-config-path %2] "
+	QString options = QString("%1 [-minigui] [-defaultgui] [-ini-path %2] "
                         "[-send-action %3] [-actions %4] "
                         "[-close-at-end] [-no-close-at-end] [-fullscreen] [-no-fullscreen] "
-                        "[-sub %5] "
                         "[-add-to-playlist] [-help|--help|-h|-?] "
-                        "[[-playlist] %6] [[-playlist] %6]...")
+                        "[[-playlist] %5] [[-playlist] %5]...")
                         .arg(app_name)
                         .arg(QObject::tr("directory"))
                         .arg(QObject::tr("action_name"))
                         .arg(QObject::tr("action_list"))
-                        .arg(QObject::tr("subtitle_file"))
                         .arg(QObject::tr("media"));
 
 	QString s;
@@ -113,15 +111,12 @@ QString CLHelp::help(bool html) {
 	s += formatHelp( "-minigui", QObject::tr(
 		"opens the mini gui instead of the default one."), html );
 
-	s += formatHelp( "-mpcgui", QObject::tr(
-		"opens the mpc gui."), html );
-
 	s += formatHelp( "-defaultgui", QObject::tr(
 		"opens the default gui."), html );
 
-	s += formatHelp( "-config-path", QObject::tr(
-		"specifies the directory where smplayer will store its configuration "
-        "files (smplayer.ini, smplayer_files.ini...)"), html );
+	s += formatHelp( "-ini-path", QObject::tr(
+		"specifies the directory for the configuration file "
+        "(smplayer.ini)."), html );
 
 	s += formatHelp( "-send-action", QObject::tr(
 		"tries to make a connection to another running instance "
@@ -149,9 +144,6 @@ QString CLHelp::help(bool html) {
 
 	s += formatHelp( "-no-fullscreen", QObject::tr(
 		"the video will be played in window mode."), html );
-
-	s += formatHelp( "-sub", QObject::tr(
-		"specifies the subtitle file to be loaded for the first video."), html );
 
 	s += formatHelp( "-help", QObject::tr(
 		"will show this message and then will exit."), html );

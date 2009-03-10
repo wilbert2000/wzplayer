@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -64,14 +64,6 @@ void PlaylistPreferences::setSavePlaylistOnExit(bool b) {
 
 bool PlaylistPreferences::savePlaylistOnExit() {
 	return autosave_on_exit_check->isChecked();
-}
-
-void PlaylistPreferences::setPlayFilesFromStart(bool b) {
-	play_from_start_check->setChecked(b);
-}
-
-bool PlaylistPreferences::playFilesFromStart() {
-	return play_from_start_check->isChecked();
 }
 
 QSize PlaylistPreferences::sizeHint () const {

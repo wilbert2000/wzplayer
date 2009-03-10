@@ -9,6 +9,9 @@
     <height>31</height>
    </rect>
   </property>
+  <property name="windowIcon" >
+   <iconset/>
+  </property>
   <layout class="QHBoxLayout" >
    <property name="margin" >
     <number>0</number>
@@ -68,6 +71,7 @@
   </layout>
  </widget>
  <layoutdefault spacing="0" margin="0" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <resources/>
  <connections/>
 </ui>

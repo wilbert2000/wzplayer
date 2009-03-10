@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,8 @@
 
 FloatingWidget::FloatingWidget( QWidget * parent )
 	: QWidget( parent, Qt::Window | Qt::FramelessWindowHint |
-                       Qt::WindowStaysOnTopHint )
+                       Qt::WindowStaysOnTopHint |
+                       Qt::X11BypassWindowManagerHint )
 {
 	setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Minimum );
 
@@ -37,40 +38,14 @@ FloatingWidget::FloatingWidget( QWidget * parent )
 
 	setLayout(layout);
 
-	_margin = 0;
 	_animated = false;
 	animation_timer = new QTimer(this);
 	animation_timer->setInterval(2);
 	connect( animation_timer, SIGNAL(timeout()), this, SLOT(animate()) );
-
-	connect( &auto_hide_timer, SIGNAL(timeout()), 
-             this, SLOT(checkUnderMouse()) );
-	setAutoHide(true);
 }
 
 FloatingWidget::~FloatingWidget() {
 }
-
-#ifndef Q_OS_WIN
-void FloatingWidget::setBypassWindowManager(bool b) {
-	if (b) {
-		setWindowFlags(windowFlags() | Qt::X11BypassWindowManagerHint);
-	}
-	else {
-		setWindowFlags(windowFlags() & ~Qt::X11BypassWindowManagerHint);
-	}
-}
-#endif
-
-void FloatingWidget::setAutoHide(bool b) { 
-	auto_hide = b;
-
-	if (b) 
-		auto_hide_timer.start(5000);
-	else
-		auto_hide_timer.stop();
-}
-
 
 void FloatingWidget::showOver(QWidget * widget, int size, Place place) {
 	qDebug("FloatingWidget::showOver");
@@ -84,9 +59,9 @@ void FloatingWidget::showOver(QWidget * widget, int size, Place place) {
 	int x = (widget->width() - width() ) / 2;
 	int y;
 	if (place == Top) 
-		y = 0 + _margin;
+		y = 0;
 	else
-		y = widget->height() - height() - _margin;
+		y = widget->height() - height();
 
 	QPoint p = widget->mapToGlobal(QPoint(x, y));
 
@@ -125,13 +100,6 @@ void FloatingWidget::animate() {
 	} else {
 		if (current_movement == Upward) current_y--; else current_y++;
 		move(x(), current_y);
-	}
-}
-
-void FloatingWidget::checkUnderMouse() {
-	if (auto_hide) {
-		//qDebug("FloatingWidget::checkUnderMouse");
-		if ((isVisible()) && (!underMouse())) hide();
 	}
 }
 

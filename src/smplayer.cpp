@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,9 +19,8 @@
 #include "smplayer.h"
 #include "defaultgui.h"
 #include "minigui.h"
-#include "mpcgui.h"
 #include "global.h"
-#include "paths.h"
+#include "helper.h"
 #include "translator.h"
 #include "version.h"
 #include "constants.h"
@@ -34,27 +33,23 @@
 #include <stdio.h>
 
 #ifdef Q_OS_WIN
-#if USE_ASSOCIATIONS
 #include "extensions.h"
 #include "winfileassoc.h"	//required for Uninstall
-#endif
 #endif
 
 
 using namespace Global;
 
-SMPlayer::SMPlayer(const QString & config_path, QObject * parent )
+SMPlayer::SMPlayer(const QString & ini_path, QObject * parent )
 	: QObject(parent) 
 {
 	main_window = 0;
 	gui_to_use = "DefaultGui";
 
-    Paths::setAppPath( qApp->applicationDirPath() );
+    Helper::setAppPath( qApp->applicationDirPath() );
 
-#ifndef PORTABLE_APP
-	if (config_path.isEmpty()) createConfigDirectory();
-#endif
-	global_init(config_path);
+	if (ini_path.isEmpty())	createHomeDirectory();
+	global_init(ini_path);
 
 	// Application translations
 	translator->load( pref->language );
@@ -68,18 +63,15 @@ SMPlayer::~SMPlayer() {
 
 BaseGui * SMPlayer::gui() {
 	if (main_window == 0) {
-		// Changes to app path, so smplayer can find a relative mplayer path
-		QDir::setCurrent(Paths::appPath());
-		qDebug("SMPlayer::gui: changed working directory to app path");
-		qDebug("SMPlayer::gui: current directory: %s", QDir::currentPath().toUtf8().data());
-		
 		if (gui_to_use.toLower() == "minigui") 
 			main_window = new MiniGui(0);
-		else 
-		if (gui_to_use.toLower() == "mpcgui")
-			main_window = new MpcGui(0);
 		else
 			main_window = new DefaultGui(0);
+
+		// Changes to app path, so smplayer can find a relative mplayer path
+		QDir::setCurrent(Helper::appPath());
+		qDebug("SMPlayer::gui: changed working directory to app path");
+		qDebug("SMPlayer::gui: current directory: %s", QDir::currentPath().toUtf8().data());
 	}
 	return main_window;
 }
@@ -103,7 +95,6 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 
 #ifdef Q_OS_WIN
 	if (args.contains("-uninstall")){
-#if USE_ASSOCIATIONS
 		//Called by uninstaller. Will restore old associations.
 		WinFileAssoc RegAssoc; 
 		Extensions exts; 
@@ -111,7 +102,6 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		RegAssoc.GetRegisteredExtensions(exts.multimedia(), regExts); 
 		RegAssoc.RestoreFileAssociations(regExts); 
 		printf("Restored associations\n");
-#endif
 		return NoError; 
 	}
 #endif
@@ -135,21 +125,6 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 				actions_list = args[n];
 			} else {
 				printf("Error: expected parameter for -actions\r\n");
-				return ErrorArgument;
-			}
-		}
-		else
-		if (argument == "-sub") {
-			if (n+1 < args.count()) {
-				n++;
-				QString file = args[n];
-				if (QFile::exists(file)) {
-					subtitle_file = QFileInfo(file).absoluteFilePath();
-				} else {
-					printf("Error: file '%s' doesn't exists\r\n", file.toUtf8().constData());
-				}
-			} else {
-				printf("Error: expected parameter for -sub\r\n");
 				return ErrorArgument;
 			}
 		}
@@ -188,10 +163,6 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			gui_to_use = "MiniGui";
 		}
 		else
-		if (argument == "-mpcgui") {
-			gui_to_use = "MpcGui";
-		}
-		else
 		if (argument == "-defaultgui") {
 			gui_to_use = "DefaultGui";
 		}
@@ -221,13 +192,8 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 
 	if (pref->use_single_instance) {
 		// Single instance
-		int port = pref->connection_port;
-		if (pref->use_autoport) port = pref->autoport;
-
-		MyClient *c = new MyClient(port);
+		MyClient *c = new MyClient(pref->connection_port);
 		//c->setTimeOut(1000);
-		qDebug("SMPlayer::processArgs: trying to connect to port %d", port);
-
 		if (c->openConnection()) {
 			qDebug("SMPlayer::processArgs: found another instance");
 
@@ -278,35 +244,24 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 
 void SMPlayer::start() {
 	if (!gui()->startHidden() || !files_to_play.isEmpty() ) gui()->show();
-	if (!files_to_play.isEmpty()) {
-		if (!subtitle_file.isEmpty()) gui()->setInitialSubtitle(subtitle_file);
-		gui()->openFiles(files_to_play);
-	}
+	if (!files_to_play.isEmpty()) gui()->openFiles(files_to_play);
 
-	if (!actions_list.isEmpty()) {
-		if (files_to_play.isEmpty()) {
-			gui()->runActions(actions_list);
-		} else {
-			gui()->runActionsLater(actions_list);
-		}
-	}
+	if (!actions_list.isEmpty()) gui()->runActions(actions_list);
 }
 
-#ifndef PORTABLE_APP
-void SMPlayer::createConfigDirectory() {
-	// Create smplayer config directory
-	if (!QFile::exists(Paths::configPath())) {
+void SMPlayer::createHomeDirectory() {
+	// Create smplayer home directories
+	if (!QFile::exists(Helper::appHomePath())) {
 		QDir d;
-		if (!d.mkdir(Paths::configPath())) {
-			qWarning("SMPlayer::createConfigDirectory: can't create %s", Paths::configPath().toUtf8().data());
+		if (!d.mkdir(Helper::appHomePath())) {
+			qWarning("SMPlayer::createHomeDirectory: can't create %s", Helper::appHomePath().toUtf8().data());
 		}
-		QString s = Paths::configPath() + "/screenshots";
+		QString s = Helper::appHomePath() + "/screenshots";
 		if (!d.mkdir(s)) {
 			qWarning("SMPlayer::createHomeDirectory: can't create %s", s.toUtf8().data());
 		}
 	}
 }
-#endif
 
 void SMPlayer::showInfo() {
 	QString s = QObject::tr("This is SMPlayer v. %1 running on %2")
@@ -324,16 +279,15 @@ void SMPlayer::showInfo() {
 
 	printf("%s\n", s.toLocal8Bit().data() );
 	qDebug("%s", s.toUtf8().data() );
-	qDebug("Compiled with Qt v. %s, using %s", QT_VERSION_STR, qVersion());
+	qDebug("Qt v. " QT_VERSION_STR);
 
-	qDebug(" * application path: '%s'", Paths::appPath().toUtf8().data());
-	qDebug(" * data path: '%s'", Paths::dataPath().toUtf8().data());
-	qDebug(" * translation path: '%s'", Paths::translationPath().toUtf8().data());
-	qDebug(" * doc path: '%s'", Paths::docPath().toUtf8().data());
-	qDebug(" * themes path: '%s'", Paths::themesPath().toUtf8().data());
-	qDebug(" * shortcuts path: '%s'", Paths::shortcutsPath().toUtf8().data());
-	qDebug(" * config path: '%s'", Paths::configPath().toUtf8().data());
-	qDebug(" * ini path: '%s'", Paths::iniPath().toUtf8().data());
-	qDebug(" * file for subtitles' styles: '%s'", Paths::subtitleStyleFile().toUtf8().data());
+	qDebug(" * application path: '%s'", Helper::appPath().toUtf8().data());
+	qDebug(" * data path: '%s'", Helper::dataPath().toUtf8().data());
+	qDebug(" * translation path: '%s'", Helper::translationPath().toUtf8().data());
+	qDebug(" * doc path: '%s'", Helper::docPath().toUtf8().data());
+	qDebug(" * themes path: '%s'", Helper::themesPath().toUtf8().data());
+	qDebug(" * shortcuts path: '%s'", Helper::shortcutsPath().toUtf8().data());
+	qDebug(" * smplayer home path: '%s'", Helper::appHomePath().toUtf8().data());
+	qDebug(" * ini path: '%s'", Helper::iniPath().toUtf8().data());
 	qDebug(" * current path: '%s'", QDir::currentPath().toUtf8().data());
 }

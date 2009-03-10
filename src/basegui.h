@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #define _BASEGUI_H_
 
 #include <QMainWindow>
-#include <QNetworkProxy>
 #include "mediadata.h"
 #include "mediasettings.h"
 #include "preferences.h"
@@ -41,11 +40,9 @@ class MplayerWindow;
 class QLabel;
 class FilePropertiesDialog;
 class VideoEqualizer;
-class AudioEqualizer;
-class FindSubtitlesWindow;
-class VideoPreview;
 class Playlist;
 
+class Recents;
 class MyAction;
 class MyActionGroup;
 
@@ -69,15 +66,9 @@ public:
 	//! true or false.
 	void runActions(QString actions);
 
-	//! Execute all the actions after the video has started to play
-	void runActionsLater(QString actions) { pending_actions_to_run = actions; };
-
-	//! Saves the line from the smplayer output
-	void recordSmplayerLog(QString line);
-
 public slots:
 	virtual void open(QString file); // Generic open, autodetect type.
-	virtual void openFile();
+    virtual void openFile();
 	virtual void openFile(QString file);
 	virtual void openFiles(QStringList files);
 	virtual void openURL();
@@ -92,46 +83,32 @@ public slots:
 
 	virtual void helpFAQ();
 	virtual void helpCLOptions();
-	virtual void helpTips();
-	virtual void helpAbout();
+    virtual void helpAbout();
 	virtual void helpAboutQt();
 
-	virtual void loadSub();
+    virtual void loadSub();
 	virtual void loadAudioFile(); // Load external audio file
-
-	void setInitialSubtitle(const QString & subtitle_file);
-
-	virtual void showFindSubtitlesDialog();
-	virtual void openUploadSubtitlesPage(); //turbos
-
-	virtual void showVideoPreviewDialog();
 
 	virtual void showPlaylist();
 	virtual void showPlaylist(bool b);
-	virtual void showVideoEqualizer();
-	virtual void showVideoEqualizer(bool b);
-	virtual void showAudioEqualizer();
-	virtual void showAudioEqualizer(bool b);
+	virtual void showEqualizer();
+	virtual void showEqualizer(bool b);
 	virtual void showMplayerLog();
-	virtual void showLog();
+    virtual void showLog();
 	virtual void showPreferencesDialog();
 	virtual void showFilePropertiesDialog();
 
 	virtual void showGotoDialog();
-	virtual void showSubDelayDialog();
-	virtual void showAudioDelayDialog();
 
 	virtual void exitFullscreen();
 	virtual void toggleFullscreen();
-	virtual void toggleFullscreen(bool);
+    virtual void toggleFullscreen(bool);
 
 	virtual void toggleCompactMode();
 	virtual void toggleCompactMode(bool);
 
-	void setStayOnTop(bool b);
-	virtual void changeStayOnTop(int);
-	virtual void checkStayOnTop(Core::State);
-	void toggleStayOnTop();
+	virtual void toggleStayOnTop();
+	virtual void toggleStayOnTop(bool);
 
 	virtual void toggleFrameCounter();
 	virtual void toggleFrameCounter(bool);
@@ -151,24 +128,16 @@ protected slots:
 	virtual void exitFullscreenIfNeeded();
 	virtual void playlistHasFinished();
 
-	virtual void displayState(Core::State state);
+    virtual void displayState(Core::State state);
 	virtual void displayMessage(QString message);
 	virtual void gotCurrentTime(double);
 
-	virtual void initializeMenus();
+    virtual void initializeMenus();
 	virtual void updateWidgets();
-	virtual void updateVideoEqualizer();
-	virtual void updateAudioEqualizer();
+	virtual void updateEqualizer();
 
 	virtual void newMediaLoaded();
 	virtual void updateMediaInfo();
-
-	void checkPendingActionsToRun();
-
-#if REPORT_OLD_MPLAYER
-	void checkMplayerVersion();
-	void displayWarningAboutOldMplayer();
-#endif
 
 #if AUTODISABLE_ACTIONS
 	virtual void enableActionsOnPlaying();
@@ -234,19 +203,14 @@ protected slots:
 	virtual void changeStyleSheet(QString style);
 #endif
 
+#if NEW_RESIZE_CODE
+	void calculateDiff(); //!< Updates diff_size
+#endif
+
 #ifdef Q_OS_WIN
 	/* Disable screensaver by event */
 	void clear_just_stopped();
 #endif
-
-	//! Clears the mplayer log
-	void clearMplayerLog();
-
-	//! Saves the line from the mplayer output
-	void recordMplayerLog(QString line);
-
-	//! Saves the mplayer log to a file every time a file is loaded
-	void autosaveMplayerLog();
 
 signals:
 	void frameChanged(int);
@@ -286,7 +250,6 @@ protected:
 	void createCore();
 	void createMplayerWindow();
 	void createVideoEqualizer();
-	void createAudioEqualizer();
 	void createPlaylist();
 	void createPanel();
 	void createPreferencesDialog();
@@ -340,21 +303,16 @@ protected:
 	MyAction * normalSpeedAct;
 	MyAction * halveSpeedAct;
 	MyAction * doubleSpeedAct;
-	MyAction * decSpeed10Act;
-	MyAction * incSpeed10Act;
-	MyAction * decSpeed4Act;
-	MyAction * incSpeed4Act;
-	MyAction * decSpeed1Act;
-	MyAction * incSpeed1Act;
+	MyAction * decSpeedAct;
+	MyAction * incSpeedAct;
 
 	// Menu Video
 	MyAction * fullscreenAct;
 	MyAction * compactAct;
-	MyAction * videoEqualizerAct;
+	MyAction * equalizerAct;
 	MyAction * screenshotAct;
-	MyAction * videoPreviewAct;
+	MyAction * onTopAct;
 	MyAction * flipAct;
-	MyAction * mirrorAct;
 	MyAction * postProcessingAct;
 	MyAction * phaseAct;
 	MyAction * deblockAct;
@@ -366,13 +324,11 @@ protected:
 	MyAction * upscaleAct;
 
 	// Menu Audio
-	MyAction * audioEqualizerAct;
 	MyAction * muteAct;
 	MyAction * decVolumeAct;
 	MyAction * incVolumeAct;
 	MyAction * decAudioDelayAct;
 	MyAction * incAudioDelayAct;
-	MyAction * audioDelayAct; // Ask for delay
 	MyAction * extrastereoAct;
 	MyAction * karaokeAct;
 	MyAction * volnormAct;
@@ -384,7 +340,6 @@ protected:
 	MyAction * unloadSubsAct;
 	MyAction * decSubDelayAct;
 	MyAction * incSubDelayAct;
-	MyAction * subDelayAct; // Ask for delay
 	MyAction * decSubPosAct;
 	MyAction * incSubPosAct;
 	MyAction * incSubStepAct;
@@ -394,8 +349,6 @@ protected:
 	MyAction * useAssAct;
 	MyAction * useClosedCaptionAct;
 	MyAction * useForcedSubsOnlyAct;
-	MyAction * showFindSubtitlesDialogAct;
-	MyAction * openUploadSubtitlesPageAct;//turbos  
 
 	// Menu Options
 	MyAction * showPlaylistAct;
@@ -408,8 +361,7 @@ protected:
 
 	// Menu Help
 	MyAction * showFAQAct;
-	MyAction * showCLOptionsAct; // Command line options
-	MyAction * showTipsAct;
+	MyAction * showCLOptions; // Command line options
 	MyAction * aboutQtAct;
 	MyAction * aboutThisAct;
 
@@ -434,18 +386,13 @@ protected:
 	MyAction * incSaturationAct;
 	MyAction * decGammaAct;
 	MyAction * incGammaAct;
-	MyAction * nextVideoAct;
 	MyAction * nextAudioAct;
 	MyAction * nextSubtitleAct;
 	MyAction * nextChapterAct;
 	MyAction * prevChapterAct;
 	MyAction * doubleSizeAct;
 	MyAction * resetVideoEqualizerAct;
-	MyAction * resetAudioEqualizerAct;
 	MyAction * showContextMenuAct;
-#if NEW_ASPECT_CODE
-	MyAction * nextAspectAct;
-#endif
 
 	// Moving and zoom
 	MyAction * moveUpAct;
@@ -455,9 +402,6 @@ protected:
 	MyAction * incZoomAct;
 	MyAction * decZoomAct;
 	MyAction * resetZoomAct;
-	MyAction * autoZoomAct;
-	MyAction * autoZoom169Act;
-	MyAction * autoZoom235Act;
 
 	// OSD Action Group 
 	MyActionGroup * osdGroup;
@@ -496,10 +440,6 @@ protected:
 	// Aspect Action Group
 	MyActionGroup * aspectGroup;
 	MyAction * aspectDetectAct;
-#if NEW_ASPECT_CODE
-	MyAction * aspectNoneAct;
-	MyAction * aspect11Act; // 1:1
-#endif
 	MyAction * aspect43Act;
 	MyAction * aspect54Act;
 	MyAction * aspect149Act;
@@ -521,19 +461,6 @@ protected:
 	MyAction * rotateCounterclockwiseAct;
 	MyAction * rotateCounterclockwiseFlipAct;
 
-	// Menu StayOnTop
-	MyActionGroup * onTopActionGroup;
-	MyAction * onTopAlwaysAct;
-	MyAction * onTopNeverAct;
-	MyAction * onTopWhilePlayingAct;
-	MyAction * toggleStayOnTopAct;
-
-#if USE_ADAPTER
-	// Screen Group
-	MyActionGroup * screenGroup;
-	MyAction * screenDefaultAct;
-#endif
-
 	// Audio Channels Action Group
 	MyActionGroup * channelsGroup;
 	/* MyAction * channelsDefaultAct; */
@@ -548,36 +475,24 @@ protected:
 	MyAction * rightChannelAct;
 
 	// Other groups
-	MyActionGroup * videoTrackGroup;
 	MyActionGroup * audioTrackGroup;
 	MyActionGroup * subtitleTrackGroup;
 	MyActionGroup * titleGroup;
 	MyActionGroup * angleGroup;
 	MyActionGroup * chapterGroup;
 
-#if DVDNAV_SUPPORT
-	MyAction * dvdnavUpAct;
-	MyAction * dvdnavDownAct;
-	MyAction * dvdnavLeftAct;
-	MyAction * dvdnavRightAct;
-	MyAction * dvdnavMenuAct;
-	MyAction * dvdnavSelectAct;
-	MyAction * dvdnavPrevAct;
-	MyAction * dvdnavMouseAct;
-#endif
 
 	// MENUS
 	QMenu *openMenu;
-	QMenu *playMenu;
-	QMenu *videoMenu;
-	QMenu *audioMenu;
-	QMenu *subtitlesMenu;
-	QMenu *browseMenu;
-	QMenu *optionsMenu;
-	QMenu *helpMenu;
+    QMenu *playMenu;
+    QMenu *videoMenu;
+    QMenu *audioMenu;
+    QMenu *subtitlesMenu;
+    QMenu *browseMenu;
+    QMenu *optionsMenu;
+    QMenu *helpMenu;
 
 	QMenu * subtitlestrack_menu;
-	QMenu * videotrack_menu;
 	QMenu * audiotrack_menu;
 	QMenu * titles_menu;
 	QMenu * chapters_menu;
@@ -596,34 +511,27 @@ protected:
 	QMenu * logs_menu;
 	QMenu * panscan_menu;
 	QMenu * rotate_menu;
-	QMenu * ontop_menu;
-#if USE_ADAPTER
-	QMenu * screen_menu;
-#endif
 
 	QMenu * popup;
 	QMenu * recentfiles_menu;
-
-	LogWindow * mplayer_log_window;
-	LogWindow * smplayer_log_window;
+    
+    LogWindow * mplayer_log_window;
+    LogWindow * smplayer_log_window;
 	LogWindow * clhelp_window;
 
 	PreferencesDialog *pref_dialog;
 	FilePropertiesDialog *file_dialog;
 	Playlist * playlist;
-	VideoEqualizer * video_equalizer;
-	AudioEqualizer * audio_equalizer;
-	FindSubtitlesWindow * find_subs_dialog;
-	VideoPreview * video_preview;
+	VideoEqualizer * equalizer;
 
 	Core * core;
-	MplayerWindow *mplayerwindow;
+    MplayerWindow *mplayerwindow;
+
+	Recents * recents;
 
 	MyServer * server;
 
 	QStringList actions_list;
-
-	QString pending_actions_to_run;
 
 private:
 	QString default_style;
@@ -637,15 +545,15 @@ private:
 	QSize win_size;
 	bool was_maximized;
 
+#if NEW_RESIZE_CODE
+	QSize diff_size;	//!< Main window size - panel size
+#endif
+
 #ifdef Q_OS_WIN
 	/* Disable screensaver by event */
 	bool just_stopped;
 #endif
 
-	QString mplayer_log;
-	QString smplayer_log;
-
-	bool ignore_show_hide_events;
 };
     
 #endif

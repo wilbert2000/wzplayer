@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -58,10 +58,7 @@ PrefAssociations::PrefAssociations(QWidget * parent, Qt::WindowFlags f)
 	for (int n=0; n < e.multimedia().count(); n++) {
 		addItem( e.multimedia()[n] );
 	}
-	// Add the playlist extensions
-	for (int n=0; n < e.playlist().count(); n++) {
-		addItem( e.playlist()[n] );
-	}
+
 	retranslateStrings();
 }
 

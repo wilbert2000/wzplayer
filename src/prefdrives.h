@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include "ui_prefdrives.h"
 #include "prefwidget.h"
-#include "config.h"
 
 class Preferences;
 
@@ -50,11 +49,6 @@ protected:
 
 	void setCDRomDevice( QString dir );
 	QString cdromDevice();
-
-#if DVDNAV_SUPPORT
-	void setUseDVDNav(bool b);
-	bool useDVDNav();
-#endif
 
 protected:
 	virtual void retranslateStrings();

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -73,12 +73,6 @@ protected slots:
 #if DOCK_PLAYLIST
 	virtual void showPlaylist(bool b);
 	void playlistClosed();
-
-#if !USE_DOCK_TOPLEVEL_EVENT
-	void dockVisibilityChanged(bool visible);
-#else
-	void dockTopLevelChanged(bool floating);
-#endif
 
 	void stretchWindow();
 	void shrinkWindow();

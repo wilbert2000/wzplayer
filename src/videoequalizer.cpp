@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,10 @@
 #include "global.h"
 #include <QLayout>
 #include <QPushButton>
-#include <QMessageBox>
+/*
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+*/
 
 using namespace Global;
 
@@ -66,7 +69,7 @@ VideoEqualizer::~VideoEqualizer() {
 }
 
 void VideoEqualizer::retranslateStrings() {
-	setWindowTitle( tr("Video Equalizer") );
+	setWindowTitle( tr("Equalizer") );
 	setWindowIcon( Images::icon("logo") );
 
 	contrast->setLabel( tr("Contrast") );
@@ -114,10 +117,6 @@ void VideoEqualizer::setDefaults() {
 	pref->initial_hue = hue->value();
 	pref->initial_saturation = saturation->value();
 	pref->initial_gamma = gamma->value();
-
-	QMessageBox::information(this, tr("Information"), 
-                             tr("The current values have been stored to be "
-                                "used as default.") );
 }
 
 void VideoEqualizer::hideEvent( QHideEvent * ) {

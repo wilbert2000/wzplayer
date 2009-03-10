@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,12 +54,6 @@ protected:
 	void setCacheForDVDs(int n);
 	int cacheForDVDs();
 
-	void setCacheForAudioCDs(int n);
-	int cacheForAudioCDs();
-
-	void setCacheForVCDs(int n);
-	int cacheForVCDs();
-
 	void setPriority(int n);
 	int priority();
 
@@ -86,8 +80,8 @@ protected:
 	void setFastAudioSwitching(Preferences::OptionState value);
 	Preferences::OptionState fastAudioSwitching();
 
-	void setThreads(int v);
-	int threads();
+	void setUseIdx(bool);
+	bool useIdx();
 
 protected:
 	virtual void retranslateStrings();

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
+    Copyright (C) 2006-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@
 #include "config.h"
 #include "guiconfig.h"
 
-class QStyle;
-
 class MyWidgetAction : public QWidgetAction
 {
 	Q_OBJECT
@@ -34,24 +32,13 @@ public:
 	MyWidgetAction( QWidget * parent );
 	~MyWidgetAction();
 
-	void setCustomStyle(QStyle * style) { custom_style = style; };
-	QStyle * customStyle() { return custom_style; };
-
-	void setStyleSheet(QString style) { custom_stylesheet = style; };
-	QString styleSheet() { return custom_stylesheet; };
-
 public slots:
 	virtual void enable(); 	// setEnabled in QAction is not virtual :(
 	virtual void disable();
 
 protected:
 	virtual void propagate_enabled(bool);
-
-protected:
-	QStyle * custom_style;
-	QString custom_stylesheet;
 };
-
 
 class TimeSliderAction : public MyWidgetAction 
 {
@@ -92,12 +79,6 @@ public:
 	VolumeSliderAction( QWidget * parent );
 	~VolumeSliderAction();
 
-	void setFixedSize(QSize size) { fixed_size = size; };
-	QSize fixedSize() { return fixed_size; };
-
-	void setTickPosition(QSlider::TickPosition position);
-	QSlider::TickPosition tickPosition() { return tick_position; };
-
 public slots:
 	virtual void setValue(int);
 	virtual int value();
@@ -107,34 +88,6 @@ signals:
 
 protected:
 	virtual QWidget * createWidget ( QWidget * parent );
-
-private:
-	QSize fixed_size;
-	QSlider::TickPosition tick_position;
-};
-
-
-class TimeLabelAction : public MyWidgetAction 
-{
-	Q_OBJECT
-
-public:
-	TimeLabelAction( QWidget * parent );
-	~TimeLabelAction();
-
-	virtual QString text() { return _text; };
-
-public slots:
-	virtual void setText(QString s);
-
-signals:
-	void newText(QString s);
-
-protected:
-	virtual QWidget * createWidget ( QWidget * parent );
-
-private:
-	QString _text;
 };
 
 
