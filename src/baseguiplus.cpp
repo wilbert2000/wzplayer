@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,9 +23,7 @@
 #include "images.h"
 #include "playlist.h"
 
-#ifdef Q_OS_WIN
-#include "favorites.h"
-#else
+#ifndef Q_OS_WIN
 #include "tvlist.h"
 #endif
 
@@ -46,8 +44,8 @@
 
 using namespace Global;
 
-BaseGuiPlus::BaseGuiPlus( bool use_server, QWidget * parent, Qt::WindowFlags flags)
-	: BaseGui( use_server, parent, flags )
+BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags )
+	: BaseGui( parent, flags )
 {
 	// Initialize variables
 	mainwindow_visible = true;
@@ -70,7 +68,7 @@ BaseGuiPlus::BaseGuiPlus( bool use_server, QWidget * parent, Qt::WindowFlags fla
 	connect( tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), 
              this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
-	quitAct = new MyAction(QKeySequence("Ctrl+Q"), this, "quit");
+	quitAct = new MyAction(this, "quit");
     connect( quitAct, SIGNAL(triggered()), this, SLOT(quit()) );
 	openMenu->addAction(quitAct);
 
@@ -78,14 +76,7 @@ BaseGuiPlus::BaseGuiPlus( bool use_server, QWidget * parent, Qt::WindowFlags fla
 	showTrayAct->setCheckable(true);
 	connect( showTrayAct, SIGNAL(toggled(bool)),
              tray, SLOT(setVisible(bool)) );
-
-#ifndef Q_OS_OS2
 	optionsMenu->addAction(showTrayAct);
-#else
-	trayAvailable();
-	connect( optionsMenu, SIGNAL(aboutToShow()),
-             this, SLOT(trayAvailable()) );
-#endif
 
 	showAllAct = new MyAction(this, "restore/hide");
 	connect( showAllAct, SIGNAL(triggered()),
@@ -100,10 +91,9 @@ BaseGuiPlus::BaseGuiPlus( bool use_server, QWidget * parent, Qt::WindowFlags fla
 	context_menu->addAction(openDirectoryAct);
 	context_menu->addAction(openDVDAct);
 	context_menu->addAction(openURLAct);
-	context_menu->addMenu(favorites);
 #ifndef Q_OS_WIN
-	context_menu->addMenu(tvlist);
-	context_menu->addMenu(radiolist);
+	context_menu->addMenu(tvlist->menu());
+	context_menu->addMenu(radiolist->menu());
 #endif
 	context_menu->addSeparator();
 	context_menu->addAction(playOrPauseAct);
@@ -158,7 +148,7 @@ BaseGuiPlus::~BaseGuiPlus() {
 }
 
 bool BaseGuiPlus::startHidden() {
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	return false;
 #else
 	if ( (!showTrayAct->isChecked()) || (mainwindow_visible) ) 
@@ -615,17 +605,5 @@ VolumeSliderAction * BaseGuiPlus::createVolumeSliderAction(QWidget * parent) {
 
 	return volumeslider_action;
 }
-
-#ifdef Q_OS_OS2
-// we test if xcenter is available at all. if not disable the tray action. this is possible when xcenter is not opened or crashed
-void BaseGuiPlus::trayAvailable() {
-	if (!tray->isSystemTrayAvailable()) {
-			optionsMenu->removeAction(showTrayAct);
-	}
-	else {
-		optionsMenu->addAction(showTrayAct);
-	}
-}
-#endif
 
 #include "moc_baseguiplus.cpp"

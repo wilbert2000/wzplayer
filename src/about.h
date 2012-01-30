@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@
 #include "ui_about.h"
 
 #include <QDialog>
-
-class QUrl;
 
 //! Shows the about smplayer dialog
 
@@ -53,9 +51,6 @@ protected:
 
 	//! Return a formatted string with the contributor and what he did
 	QString contr(const QString & author, const QString & thing);
-
-protected slots:
-	void openLink(const QUrl & link);
 };
 
 #endif

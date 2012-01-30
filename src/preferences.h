@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ public:
 	int autoq; 	//!< Postprocessing quality
 	bool add_blackborders_on_fullscreen;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	bool turn_screensaver_off;
 	bool avoid_screensaver;
 #else
@@ -97,14 +97,7 @@ public:
 #endif
 
 #ifndef Q_OS_WIN
-	struct VDPAU_settings {
-		bool ffh264vdpau;
-		bool ffmpeg12vdpau;
-		bool ffwmv3vdpau;
-		bool ffvc1vdpau;
-		bool ffodivxvdpau;
-		bool disable_video_filters;
-	} vdpau;
+	bool disable_video_filters_with_vdpau;
 #endif
 
 	// Audio
@@ -176,10 +169,6 @@ public:
 	int cache_for_audiocds;
 	int cache_for_tv;
 
-#if YOUTUBE_SUPPORT
-	int yt_quality;
-#endif
-
 
 	/* *********
 	   Subtitles
@@ -198,6 +187,7 @@ public:
 	bool use_ass_subtitles;
 	int ass_line_spacing;
 
+	bool use_closed_caption_subs;
 	bool use_forced_subs_only;
 
 	bool sub_visibility;
@@ -287,9 +277,6 @@ public:
 
 	QString actions_to_run; //!< List of actions to run every time a video loads.
 
-	//! Show file tag in window title
-	bool show_tag_in_window_title;
-
 
 	/* *********
 	   GUI stuff
@@ -306,6 +293,7 @@ public:
 #if STYLE_SWITCHING
 	QString style; 	//!< SMPlayer look
 #endif
+	bool show_motion_vectors;
 
 	// Function of mouse buttons:
 	QString mouse_left_click_function;
@@ -335,7 +323,6 @@ public:
 	//! percentage (with fractions) instead of time.
 	bool relative_seeking;  
 #endif
-	bool precise_seeking; //! Enable precise_seeking (only available with mplayer2)
 
 	QString language;
 	QString iconset;
@@ -444,9 +431,6 @@ public:
 	//! Version of mplayer supplied by the user which will be used if
 	//! the version can't be parsed from mplayer output
 	int mplayer_user_supplied_version;
-
-	bool mplayer_is_mplayer2; //! True if the detected version is mplayer2
-	QString mplayer2_detected_version;
 
 
     /* *********

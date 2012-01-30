@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,33 +18,76 @@
 
 #include "inputurl.h"
 #include "images.h"
-#include "mylineedit.h"
 
 InputURL::InputURL( QWidget* parent, Qt::WindowFlags f ) 
 	: QDialog(parent, f)
 {
 	setupUi(this);
 
-	setMinimumSize( QSize(500,140) );
-	setMaximumSize( QSize(600,170) );
-	//layout()->setSizeConstraint(QLayout::SetFixedSize);
-
-	url_icon->setPixmap( Images::icon("url_big", 48) );
+	url_icon->setPixmap( Images::icon("url_big") );
 	url_edit->setFocus();
 
-	MyLineEdit * edit = new MyLineEdit(this);
-	url_edit->setLineEdit(edit);
+	playlist_check->setWhatsThis( 
+		tr("If this option is checked, the URL will be treated as a playlist: "
+        "it will be opened as text and will play the URLs in it.") );
+
+	connect(url_edit, SIGNAL(editTextChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+	connect(url_edit, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChanged(int)));
+	connect(playlist_check, SIGNAL(stateChanged(int)), this, SLOT(playlistChanged(int)));
 }
 
 InputURL::~InputURL() {
 }
 
-void InputURL::setURL(QString url) {
-	url_edit->addItem(url);
+void InputURL::setURL(QString url, bool is_playlist) {
+	url_edit->addItem(url, is_playlist);
 }
 
 QString InputURL::url() {
 	return url_edit->currentText().trimmed();
+}
+
+void InputURL::setPlaylist(bool b) {
+	playlist_check->setChecked(b);
+	/*
+	int pos = url_edit->currentIndex();
+	url_edit->setItemData(pos, b);
+	*/
+}
+
+bool InputURL::isPlaylist() {
+	return playlist_check->isChecked();
+}
+
+void InputURL::indexChanged(int) {
+	qDebug("InputURL::indexChanged");
+	int pos = url_edit->currentIndex();
+	if (url_edit->itemText(pos) == url_edit->currentText()) {
+		playlist_check->setChecked( url_edit->itemData(pos).toBool() );
+	}
+}
+
+void InputURL::textChanged(const QString & new_text) {
+	qDebug("InputURL::textChanged");
+	QString s = new_text.trimmed();
+	/*
+	if (s != new_text) {
+		url_edit->setEditText(s);
+		return;
+	}
+	*/
+	QRegExp rx("\\.ram$|\\.asx$|\\.m3u$|\\.pls$", Qt::CaseInsensitive);
+	setPlaylist( (rx.indexIn(s) != -1) );
+}
+
+void InputURL::playlistChanged(int state) {
+	/*
+	int pos = url_edit->currentIndex();
+	if (url_edit->itemText(pos) == url_edit->currentText()) {
+		bool is_playlist = (state == Qt::Checked);
+		url_edit->setItemIcon( pos, is_playlist ? Images::icon("playlist") : QIcon() );
+	}
+	*/
 }
 
 #include "moc_inputurl.cpp"

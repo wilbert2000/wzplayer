@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,25 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include "screensaver.h"
 #include <Qt>
 #include <QSysInfo>
-#ifndef Q_OS_OS2
 #include <windows.h>
-#endif
-#include "screensaver.h"
 
 WinScreenSaver::WinScreenSaver() {
-#ifndef Q_OS_OS2
 	lowpower = poweroff = screensaver = 0;
-#else
-	SSaver = new QLibrary("SSCORE");
-	SSaver->load();
-	SSCore_TempDisable = SSCore_TempEnable = NULL;
-	if (SSaver->isLoaded()) {
-		SSCore_TempDisable = (FuncPtr) SSaver->resolve("SSCore_TempDisable");
-		SSCore_TempEnable = (FuncPtr) SSaver->resolve("SSCore_TempEnable");
-	}
-#endif
 	state_saved = false;
 	modified = false;
 	
@@ -43,16 +31,12 @@ WinScreenSaver::WinScreenSaver() {
 
 WinScreenSaver::~WinScreenSaver() {
 	restoreState();
-#ifdef Q_OS_OS2
-	unload();
-#endif
 }
 
 void WinScreenSaver::retrieveState() {
 	qDebug("WinScreenSaver::retrieveState");
 	
 	if (!state_saved) {
-#ifndef Q_OS_OS2
 		if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
 			// Not supported on Windows Vista
 			SystemParametersInfo(SPI_GETLOWPOWERTIMEOUT, 0, &lowpower, 0);
@@ -62,10 +46,6 @@ void WinScreenSaver::retrieveState() {
 		state_saved = true;
 		
 		qDebug("WinScreenSaver::retrieveState: lowpower: %d, poweroff: %d, screensaver: %d", lowpower, poweroff, screensaver);
-#else
-		state_saved = true;
-		qDebug("WinScreensaver::retrieveState: init done %s", SSCore_TempDisable ?"succesfully":"failed");
-#endif
 	} else {
 		qDebug("WinScreenSaver::retrieveState: state already saved previously, doing nothing");
 	}
@@ -78,7 +58,6 @@ void WinScreenSaver::restoreState() {
 	}
 	
 	if (state_saved) {
-#ifndef Q_OS_OS2
 		if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
 			// Not supported on Windows Vista
 			SystemParametersInfo(SPI_SETLOWPOWERTIMEOUT, lowpower, NULL, 0);
@@ -87,41 +66,20 @@ void WinScreenSaver::restoreState() {
 		SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, screensaver, NULL, 0);
 		
 		qDebug("WinScreenSaver::restoreState: lowpower: %d, poweroff: %d, screensaver: %d", lowpower, poweroff, screensaver);
-#else
-		if (SSCore_TempEnable) {
-			SSCore_TempEnable();
-		}
-		qDebug("WinScreenSaver::restoreState done");
-#endif
 	} else {
 		qWarning("WinScreenSaver::restoreState: no data, doing nothing");
 	}
 }
-
-#ifdef Q_OS_OS2
-void WinScreenSaver::unload() {
-	if (SSaver->isLoaded()) {
-		SSaver->unload();
-		delete SSaver;
-	}
-}
-#endif
 	
 void WinScreenSaver::disable() {
 	qDebug("WinScreenSaver::disable");
 
-#ifndef Q_OS_OS2
 	if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
 		// Not supported on Windows Vista
 		SystemParametersInfo(SPI_SETLOWPOWERTIMEOUT, 0, NULL, 0);
 		SystemParametersInfo(SPI_SETPOWEROFFTIMEOUT, 0, NULL, 0);
 	}
 	SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, 0, NULL, 0);
-#else
-	if (SSCore_TempDisable) {
-		SSCore_TempDisable();
-	}
-#endif
 
 	modified = true;
 }

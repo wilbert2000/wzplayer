@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,10 +51,9 @@ Extensions::Extensions()
            << "bin" << "iso" << "vob"
            << "mkv" << "nsv" << "ram" << "flv"
            << "rm" << "swf"
-           << "ts" << "rmvb" << "dvr-ms" << "m2t" << "m2ts" << "rec"
-           << "f4v" << "hdmov" << "webm" << "vp8" ;
+           << "ts" << "rmvb" << "dvr-ms" << "m2t" << "m2ts" << "rec";
 
-	_audio << "mp3" << "ogg" << "wav" << "wma" <<  "ac3" << "ra" << "ape" << "flac" << "thd";
+	_audio << "mp3" << "ogg" << "wav" << "wma" <<  "ac3" << "ra" << "ape" << "flac";
 
 	_subtitles << "srt" << "sub" << "ssa" << "ass" << "idx" << "txt" << "smi"
                << "rt" << "utf" << "aqt";

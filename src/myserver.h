@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -45,21 +45,11 @@ public:
     QStringList actionsList() { return actions_list; };
 
 signals:
-	void receivedPlayItem(int);
-	void receivedRemoveItem(int);
-	void receivedMoveItem(int, int);
 	void receivedOpen(QString);
 	void receivedOpenFiles(QStringList);
 	void receivedAddFiles(QStringList);
 	void receivedFunction(QString);
 	void receivedLoadSubtitle(QString);
-	void receivedViewPlaylist(QString*);
-	void receivedViewStatus(QString*);
-	void receivedViewClipInfo(QString*);
-	void receivedSeek(double);
-	void receivedGetChecked(QString, QString*);
-	void receivedGetVolume(int*);
-	void receivedSetVolume(int);
 
 protected slots:
 	void readData();
@@ -99,15 +89,6 @@ public:
     QStringList actionsList() { return actions_list; };
 
 signals:
-	//! Emitted when the client requests that a certain file in the playlist is played.
-	void receivedPlayItem(int);
-
-	//! Emitted when the client requests that a certain file in the playlist is removed.
-	void receivedRemoveItem(int);
-
-	//! Emitted when the client requests that a certain file in the playlist is moved.
-	void receivedMoveItem(int, int);
-
 	//! Emitted when the client request to open a new file.
 	void receivedOpen(QString);
 
@@ -122,26 +103,6 @@ signals:
 
 	//! Emitted when the client requests to load an external subtitle file.
 	void receivedLoadSubtitle(QString);
-
-	//! Emitted when the client requests the current playlist
-	//output is tab seperated, with each line containing filename, name, duration (sec)
-	void receivedViewPlaylist(QString*);
-
-	//! Emitted when the client requests the current status
-	void receivedViewStatus(QString*);
-
-	//! Emitted when the client requests a seek to the specified second
-	void receivedSeek(double);
-
-	//! Emitted when the client requests the clip info for the current track
-	void receivedViewClipInfo(QString*);
-
-	//! Emitted when the client request the state of a checkable action
-	void receivedGetChecked(QString, QString*);
-
-	//! Emitted when the client requests the current volume (be changed).
-	void receivedGetVolume(int*);
-	void receivedSetVolume(int);
 
 protected slots:
 	void newConnection_slot();

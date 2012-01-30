@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ VideoPreviewConfigDialog::VideoPreviewConfigDialog( QWidget* parent, Qt::WindowF
 {
 	setupUi(this);
 
-	connect(filename_edit, SIGNAL(textChanged(const QString &)),
+	connect(filename_edit->lineEdit(), SIGNAL(textChanged(const QString &)),
             this, SLOT(filenameChanged(const QString &)) );
 
 	dvd_device_label->setVisible(false);

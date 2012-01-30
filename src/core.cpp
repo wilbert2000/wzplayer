@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #include <QFileInfo>
 #include <QRegExp>
 #include <QTextStream>
-#include <QUrl>
 
 #include <cmath>
 
@@ -38,11 +37,9 @@
 #include "discname.h"
 #include "filters.h"
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef Q_OS_WIN
 #include <windows.h> // To change app priority
 #include <QSysInfo> // To get Windows version
-#endif
 #ifdef SCREENSAVER_OFF
 #include "screensaver.h"
 #endif
@@ -52,10 +49,6 @@
 #include "filesettings.h"
 #include "filesettingshash.h"
 #include "tvsettings.h"
-#endif
-
-#if YOUTUBE_SUPPORT
-#include "retrieveyoutubeurl.h"
 #endif
 
 using namespace Global;
@@ -203,8 +196,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	connect( this, SIGNAL(stateChanged(Core::State)), 
 	         this, SLOT(watchState(Core::State)) );
 
-	connect( this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()) );
-
 	connect( proc, SIGNAL(error(QProcess::ProcessError)), 
              this, SIGNAL(mplayerFailed(QProcess::ProcessError)) );
 
@@ -229,23 +220,15 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 #endif
 	mplayerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 
-#if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 #ifdef SCREENSAVER_OFF
-	// Windows or OS2 screensaver
+	// Windows screensaver
 	win_screensaver = new WinScreenSaver();
 #endif
 #endif
 
 #if DISCNAME_TEST
 	DiscName::test();
-#endif
-
-#if YOUTUBE_SUPPORT
-	yt = new RetrieveYoutubeUrl(this);
-	connect(yt, SIGNAL(gotPreferredUrl(const QString &)), this, SLOT(openYT(const QString &)));
-	connect(yt, SIGNAL(connecting(QString)), this, SLOT(connectingToYT(QString)));
-	connect(yt, SIGNAL(downloadFailed(QString)), this, SLOT(YTFailed(QString)));
-	connect(yt, SIGNAL(gotEmptyList()), this, SLOT(YTNoVideoUrl()));
 #endif
 }
 
@@ -264,14 +247,10 @@ Core::~Core() {
 	delete tv_settings;
 #endif
 
-#if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 #ifdef SCREENSAVER_OFF
 	delete win_screensaver;
 #endif
-#endif
-
-#if YOUTUBE_SUPPORT
-	delete yt;
 #endif
 }
 
@@ -382,11 +361,6 @@ void Core::displayTextOnOSD(QString text, int duration, int level, QString prefi
 void Core::open(QString file, int seek) {
 	qDebug("Core::open: '%s'", file.toUtf8().data());
 
-	if (file.startsWith("file:")) {
-		file = QUrl(file).toLocalFile();
-		qDebug("Core::open: converting url to local file: %s", file.toUtf8().constData());
-	}
-
 	QFileInfo fi(file);
 
 	if ( (fi.exists()) && (fi.suffix().toLower()=="iso") ) {
@@ -489,25 +463,6 @@ void Core::openFile(QString filename, int seek) {
 	}
 }
 
-#if YOUTUBE_SUPPORT
-void Core::openYT(const QString & url) {
-	qDebug("Core::openYT: %s", url.toUtf8().constData());
-	openStream(url);
-	yt->close();
-}
-
-void Core::connectingToYT(QString host) {
-	emit showMessage( tr("Connecting to %1").arg(host) );
-}
-
-void Core::YTFailed(QString /*error*/) {
-	emit showMessage( tr("Unable to retrieve youtube page") );
-}
-
-void Core::YTNoVideoUrl() {
-	emit showMessage( tr("Unable to locate the url of the video") );
-}
-#endif
 
 void Core::loadSub(const QString & sub ) {
     if ( (!sub.isEmpty()) && (QFile::exists(sub)) ) {
@@ -782,15 +737,6 @@ void Core::openTV(QString channel_id) {
 void Core::openStream(QString name) {
 	qDebug("Core::openStream: '%s'", name.toUtf8().data());
 
-#if YOUTUBE_SUPPORT
-	if (name.startsWith("http://www.youtube.com/watch?v=")) {
-		qDebug("Core::openStream: youtube url detected");
-		yt->setPreferredQuality( (RetrieveYoutubeUrl::Quality) pref->yt_quality );
-		yt->fetchPage(name);
-		return;
-	}
-#endif
-
 	if (proc->isRunning()) {
 		stopMplayer();
 		we_are_restarting = false;
@@ -896,7 +842,7 @@ void Core::initPlaying(int seek) {
 
 	/* updateWidgets(); */
 
-	mplayerwindow->hideLogo();
+	mplayerwindow->showLogo(FALSE);
 
 	if (proc->isRunning()) {
 		stopMplayer();
@@ -904,15 +850,6 @@ void Core::initPlaying(int seek) {
 
 	int start_sec = (int) mset.current_sec;
 	if (seek > -1) start_sec = seek;
-
-#if YOUTUBE_SUPPORT
-	// Avoid to pass to mplayer the youtube page url
-	if (mdat.type == TYPE_STREAM) {
-		if (mdat.filename == yt->origUrl()) {
-			mdat.filename = yt->latestPreferredUrl();
-		}
-	}
-#endif
 
 	startMplayer( mdat.filename, start_sec );
 }
@@ -1024,16 +961,6 @@ void Core::finishRestart() {
 		mdat.audio_codec = proc->mediaData().audio_codec;
 		mdat.demuxer = proc->mediaData().demuxer;
 	}
-
-#if YOUTUBE_SUPPORT
-	// Change the real url with the youtube page url and set the title
-	if (mdat.type == TYPE_STREAM) {
-		if (mdat.filename == yt->latestPreferredUrl()) {
-			mdat.filename = yt->origUrl();
-			mdat.stream_title = yt->urlTitle();
-		}
-	}
-#endif
 
 #if !NOTIFY_SUB_CHANGES
 	// Subtitles
@@ -1255,9 +1182,9 @@ void Core::processFinished()
 {
     qDebug("Core::processFinished");
 
-#if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 #ifdef SCREENSAVER_OFF
-	// Restores the Windows or OS2 screensaver
+	// Restores the Windows screensaver
 	if (pref->turn_screensaver_off) {
 		win_screensaver->enable();
 	}
@@ -1314,12 +1241,12 @@ void Core::goToPosition(int value) {
 
 void Core::goToPos(double perc) {
 	qDebug("Core::goToPos: per: %f", perc);
-	tellmp( seek_cmd(perc, 1) );
+	tellmp( "seek " + QString::number(perc) + " 1");
 }
 #else
 void Core::goToPos(int perc) {
 	qDebug("Core::goToPos: per: %d", perc);
-	tellmp( seek_cmd(perc, 1) );
+	tellmp( "seek " + QString::number(perc) + " 1");
 }
 #endif
 
@@ -1335,19 +1262,11 @@ void Core::startMplayer( QString file, double seek ) {
 	if (proc->isRunning()) {
 		qWarning("Core::startMplayer: MPlayer still running!");
 		return;
-    }
+    } 
 
-#if YOUTUBE_SUPPORT
-	// Stop any pending request
-	qDebug("Core::startMplayer: yt state: %d", yt->state());	
-	if (yt->state() != QHttp::Unconnected) {
-		//yt->abort(); /* Make the app to crash, don't know why */
-	}
-#endif
-
-#if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 #ifdef SCREENSAVER_OFF
-	// Disable the Windows or OS2 screensaver
+	// Disable the Windows screensaver
 	if (pref->turn_screensaver_off) {
 		win_screensaver->disable();
 	}
@@ -1368,21 +1287,9 @@ void Core::startMplayer( QString file, double seek ) {
 		if (dvd_title > 0) file += QString::number(dvd_title);
 	}
 
-	// Check URL playlist
-	bool url_is_playlist = false;
-	if (file.endsWith("|playlist")) {
-		url_is_playlist = true;
-		file = file.remove("|playlist");
-	} else {
-		QUrl url(file);
-		qDebug("Core::startMplayer: checking if stream is a playlist");
-		qDebug("Core::startMplayer: url path: '%s'", url.path().toUtf8().constData());
-
-		QRegExp rx("\\.ram$|\\.asx$|\\.m3u$|\\.pls$", Qt::CaseInsensitive);
-		url_is_playlist = (rx.indexIn(url.path()) != -1);
-	}
-	qDebug("Core::startMplayer: url_is_playlist: %d", url_is_playlist);
-
+	// URL
+	bool url_is_playlist = file.endsWith(IS_PLAYLIST_TAG);
+	if (url_is_playlist) file = file.remove( QRegExp(IS_PLAYLIST_TAG_RX) );
 
 	bool screenshot_enabled = ( (pref->use_screenshot) && 
                                 (!pref->screenshot_directory.isEmpty()) && 
@@ -1442,18 +1349,9 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 #ifndef Q_OS_WIN
 	else {
-		/* if (pref->vo.startsWith("x11")) { */ // My card doesn't support vdpau, I use x11 to test
 		if (pref->vo.startsWith("vdpau")) {
-			QString c;
-			if (pref->vdpau.ffh264vdpau) c += "ffh264vdpau,";
-			if (pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
-			if (pref->vdpau.ffwmv3vdpau) c += "ffwmv3vdpau,";
-			if (pref->vdpau.ffvc1vdpau) c += "ffvc1vdpau,";
-			if (pref->vdpau.ffodivxvdpau) c += "ffodivxvdpau,";
-			if (!c.isEmpty()) {
-				proc->addArgument("-vc");
-				proc->addArgument(c);
-			}
+			proc->addArgument("-vc");
+			proc->addArgument("ffh264vdpau,ffmpeg12vdpau,ffwmv3vdpau,ffvc1vdpau,");
 		}
 #endif	
 		else {
@@ -1480,6 +1378,11 @@ void Core::startMplayer( QString file, double seek ) {
 	{
 		if (!lavdopts.isEmpty()) lavdopts += ":";
 		lavdopts += "skiploopfilter=all";
+	}
+
+	if (pref->show_motion_vectors) {
+		if (!lavdopts.isEmpty()) lavdopts += ":";
+		lavdopts += "vismv=7";
 	}
 
 	if (pref->threads > 1) {
@@ -1548,7 +1451,7 @@ void Core::startMplayer( QString file, double seek ) {
 		proc->addArgument( pref->ao );
 	}
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+#ifndef Q_OS_WIN
 	if (pref->vo.startsWith("x11")) {
 		proc->addArgument( "-zoom");
 	}
@@ -1612,7 +1515,7 @@ void Core::startMplayer( QString file, double seek ) {
 		proc->addArgument("-nodouble");
 	}
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+#ifndef Q_OS_WIN
 	if (!pref->use_mplayer_window) {
 		proc->addArgument( "-input" );
 		if (MplayerVersion::isMplayerAtLeast(29058)) {
@@ -1633,16 +1536,11 @@ void Core::startMplayer( QString file, double seek ) {
 
 	if (!pref->use_mplayer_window) {
 		proc->addArgument("-wid");
-#if defined(Q_OS_OS2)
-		#define WINIDFROMHWND(hwnd) ( ( hwnd ) - 0x80000000UL )
-		proc->addArgument( QString::number( WINIDFROMHWND( (int) mplayerwindow->videoLayer()->winId() ) ));
-#else
 		proc->addArgument( QString::number( (int) mplayerwindow->videoLayer()->winId() ) );
-#endif
 
 #if USE_COLORKEY
-		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		if ((pref->vo.startsWith("directx")) || (pref->vo.startsWith("kva")) || (pref->vo.isEmpty())) {
+		#ifdef Q_OS_WIN
+		if ((pref->vo.startsWith("directx")) || (pref->vo.isEmpty())) {
 			proc->addArgument("-colorkey");
 			//proc->addArgument( "0x"+QString::number(pref->color_key, 16) );
 			proc->addArgument( ColorUtils::colorToRGB(pref->color_key) );
@@ -1650,7 +1548,7 @@ void Core::startMplayer( QString file, double seek ) {
 		#endif
 			qDebug("Core::startMplayer: * not using -colorkey for %s", pref->vo.toUtf8().data());
 			qDebug("Core::startMplayer: * report if you can't see the video"); 
-		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+		#ifdef Q_OS_WIN
 		}
 		#endif
 #endif
@@ -1700,13 +1598,11 @@ void Core::startMplayer( QString file, double seek ) {
 			}
 		}
 		// Use the same font for OSD
-#if !defined(Q_OS_OS2)
 		if (!pref->ass_styles.fontname.isEmpty()) {
 			proc->addArgument("-fontconfig");
 			proc->addArgument("-font");
 			proc->addArgument( pref->ass_styles.fontname );
 		}
-#endif
 		// Set the size of OSD
 		if (pref->freetype_support) {
 			proc->addArgument("-subfont-autoscale");
@@ -1719,13 +1615,13 @@ void Core::startMplayer( QString file, double seek ) {
 	} else {
 		// NO ASS:
 		if (pref->freetype_support) proc->addArgument("-noass");
-#if !defined(Q_OS_OS2)
+
 		if ( (pref->use_fontconfig) && (!pref->font_name.isEmpty()) ) {
 			proc->addArgument("-fontconfig");
 			proc->addArgument("-font");
 			proc->addArgument( pref->font_name );
 		}
-#endif
+
 		if ( (!pref->use_fontconfig) && (!pref->font_file.isEmpty()) ) {
 			proc->addArgument("-font");
 			proc->addArgument( pref->font_file );
@@ -1760,11 +1656,8 @@ void Core::startMplayer( QString file, double seek ) {
 		}
 	}
 
-	if (mset.closed_caption_channel > 0) {
+	if (pref->use_closed_caption_subs) {
 		proc->addArgument("-subcc");
-		if (MplayerVersion::isMplayerAtLeast(32607)) {
-			proc->addArgument( QString::number( mset.closed_caption_channel ) );
-		}
 	}
 
 	if (pref->use_forced_subs_only) {
@@ -2011,8 +1904,8 @@ void Core::startMplayer( QString file, double seek ) {
 	bool force_noslices = false;
 
 #ifndef Q_OS_WIN
-	if ((pref->vdpau.disable_video_filters) && (pref->vo.startsWith("vdpau"))) {
-		qDebug("Core::startMplayer: using vdpau, video filters are ignored");
+	if ((pref->disable_video_filters_with_vdpau) && (pref->vo.startsWith("vdpau"))) {
+		qDebug("Core::startMplayer: vdpau doesn't allow any video filter. All have been removed.");
 		goto end_video_filters;
 	}
 #endif
@@ -2341,24 +2234,15 @@ void Core::goToSec( double sec ) {
 
     if (sec < 0) sec = 0;
     if (sec > mdat.duration ) sec = mdat.duration - 20;
-    tellmp( seek_cmd(sec, 2) );
+    tellmp("seek " + QString::number(sec) + " 2");
 }
 
 
 void Core::seek(int secs) {
 	qDebug("Core::seek: %d", secs);
 	if ( (proc->isRunning()) && (secs!=0) ) {
-		tellmp( seek_cmd(secs, 0) );
+		tellmp("seek " + QString::number(secs) + " 0");
 	}
-}
-
-QString Core::seek_cmd(double secs, int mode) {
-	QString s = QString("seek %1 %2").arg(secs).arg(mode);
-	if (MplayerVersion::isMplayer2()) {
-		//hr-seek
-		if (pref->precise_seeking) s += " 1"; else s += " -1";
-	}
-	return s;
 }
 
 void Core::sforward() {
@@ -2533,12 +2417,7 @@ void Core::toggleKaraoke(bool b) {
 	qDebug("Core::toggleKaraoke: %d", b);
 	if (b != mset.karaoke_filter) {
 		mset.karaoke_filter = b;
-		if (MplayerVersion::isMplayerAtLeast(31030)) {
-			// Change filter without restarting
-			if (b) tellmp("af_add karaoke"); else tellmp("af_del karaoke");
-		} else {
-			restartPlay();
-		}
+		restartPlay();
 	}
 }
 
@@ -2550,12 +2429,7 @@ void Core::toggleExtrastereo(bool b) {
 	qDebug("Core::toggleExtrastereo: %d", b);
 	if (b != mset.extrastereo_filter) {
 		mset.extrastereo_filter = b;
-		if (MplayerVersion::isMplayerAtLeast(31030)) {
-			// Change filter without restarting
-			if (b) tellmp("af_add extrastereo"); else tellmp("af_del extrastereo");
-		} else {
-			restartPlay();
-		}
+		restartPlay();
 	}
 }
 
@@ -2567,13 +2441,7 @@ void Core::toggleVolnorm(bool b) {
 	qDebug("Core::toggleVolnorm: %d", b);
 	if (b != mset.volnorm_filter) {
 		mset.volnorm_filter = b;
-		if (MplayerVersion::isMplayerAtLeast(31030)) {
-			// Change filter without restarting
-			QString f = pref->filters->item("volnorm").filter();
-			if (b) tellmp("af_add " + f); else tellmp("af_del volnorm");
-		} else {
-			restartPlay();
-		}
+		restartPlay();
 	}
 }
 
@@ -3047,10 +2915,7 @@ void Core::setAudioEqualizer(AudioEqualizerList values, bool restart) {
 	mset.audio_equalizer = values;
 
 	if (!restart) {
-		const char *command = "af_cmdline equalizer ";
-		if (!MplayerVersion::isMplayerAtLeast(32505))
-			command = "af_eq_set_bands ";
-		tellmp( command + Helper::equalizerListToString(values) );
+		tellmp( "af_eq_set_bands " + Helper::equalizerListToString(values) );
 	} else {
 		restartPlay();
 	}
@@ -3787,7 +3652,7 @@ void Core::decPanscan() {
 #endif
 
 void Core::showFilenameOnOSD() {
-	tellmp("osd_show_property_text \"${filename}\" 5000 0");
+	tellmp("osd_show_property_text \"${filename}\" 3000 0");
 }
 
 void Core::toggleDeinterlace() {
@@ -3805,6 +3670,15 @@ void Core::changeUseAss(bool b) {
 	}
 }
 
+void Core::toggleClosedCaption(bool b) {
+	qDebug("Core::toggleClosedCaption: %d", b);
+
+	if (pref->use_closed_caption_subs != b) {
+		pref->use_closed_caption_subs = b;
+		if (proc->isRunning()) restartPlay();
+	}
+}
+
 void Core::toggleForcedSubsOnly(bool b) {
 	qDebug("Core::toggleForcedSubsOnly: %d", b);
 
@@ -3817,29 +3691,14 @@ void Core::toggleForcedSubsOnly(bool b) {
 	}
 }
 
-void Core::changeClosedCaptionChannel(int c) {
-	qDebug("Core::changeClosedCaptionChannel: %d", c);
-	if (c != mset.closed_caption_channel) {
-		mset.closed_caption_channel = c;
+void Core::visualizeMotionVectors(bool b) {
+	qDebug("Core::visualizeMotionVectors: %d", b);
+
+	if (pref->show_motion_vectors != b) {
+		pref->show_motion_vectors = b;
 		if (proc->isRunning()) restartPlay();
 	}
 }
-
-/*
-void Core::nextClosedCaptionChannel() {
-	int c = mset.closed_caption_channel;
-	c++;
-	if (c > 4) c = 0;
-	changeClosedCaptionChannel(c);
-}
-
-void Core::prevClosedCaptionChannel() {
-	int c = mset.closed_caption_channel;
-	c--;
-	if (c < 0) c = 4;
-	changeClosedCaptionChannel(c);
-}
-*/
 
 #if DVDNAV_SUPPORT
 // dvdnav buttons
@@ -3903,10 +3762,6 @@ void Core::displayScreenshotName(QString filename) {
 	//QString text = tr("Screenshot saved as %1").arg(filename);
 	QString text = QString("Screenshot saved as %1").arg(filename);
 
-	if (MplayerVersion::isMplayer2()) {
-		displayTextOnOSD(text, 3000, 1, "");
-	}
-	else
 	if (MplayerVersion::isMplayerAtLeast(27665)) {
 		displayTextOnOSD(text, 3000, 1, "pausing_keep_force");
 	}
@@ -3990,11 +3845,6 @@ void Core::streamTitleAndUrlChanged(QString title, QString url) {
 	mdat.stream_title = title;
 	mdat.stream_url = url;
 	emit mediaInfoChanged();
-}
-
-void Core::sendMediaInfo() {
-	qDebug("Core::sendMediaInfo");
-	emit mediaPlaying(mdat.filename, mdat.displayName(pref->show_tag_in_window_title));
 }
 
 //!  Called when the state changes
@@ -4251,10 +4101,6 @@ void Core::dvdTitleIsMovie() {
 QString Core::pausing_prefix() {
 	qDebug("Core::pausing_prefix");
 
-	if (MplayerVersion::isMplayer2()) {
-		return QString::null;
-	}
-	else
 	if ( (pref->use_pausing_keep_force) && 
          (MplayerVersion::isMplayerAtLeast(27665)) ) 
 	{

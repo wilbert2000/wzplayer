@@ -1,5 +1,5 @@
     SMPlayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2007-2008 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,10 +49,6 @@ Third-party:
    license: GPL (see src/findsubtitles/quazip/COPYING.readme for details)
    This library also includes code by Gilles Vollant, with the same
    license as zlib. See src/findsubtitles/quazip/zip.h for details.
-
- * QtLockedFile from Qt Solutions.
-   url: http://qt.gitorious.org/qt-solutions
-   license: BSD (see src/qtlockedfile/qtlockedfile.h)
 
 I took some icons from:
 

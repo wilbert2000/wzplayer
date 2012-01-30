@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ QString PrefPlaylist::sectionName() {
 }
 
 QPixmap PrefPlaylist::sectionIcon() {
-    return Images::icon("playlist", 22);
+    return Images::icon("playlist");
 }
 
 void PrefPlaylist::retranslateStrings() {
@@ -73,37 +73,6 @@ bool PrefPlaylist::addConsecutiveFiles() {
 	return add_consecutive_files_check->isChecked();
 }
 
-void PrefPlaylist::setDirectoryRecursion(bool b) {
-	recursive_check->setChecked(b);
-}
-
-bool PrefPlaylist::directoryRecursion() {
-	return recursive_check->isChecked();
-}
-
-void PrefPlaylist::setAutoGetInfo(bool b) {
-	getinfo_check->setChecked(b);
-}
-
-bool PrefPlaylist::autoGetInfo() {
-	return getinfo_check->isChecked();
-}
-
-void PrefPlaylist::setSavePlaylistOnExit(bool b) {
-	autosave_on_exit_check->setChecked(b);
-}
-
-bool PrefPlaylist::savePlaylistOnExit() {
-	return autosave_on_exit_check->isChecked();
-}
-
-void PrefPlaylist::setPlayFilesFromStart(bool b) {
-	play_from_start_check->setChecked(b);
-}
-
-bool PrefPlaylist::playFilesFromStart() {
-	return play_from_start_check->isChecked();
-}
 
 void PrefPlaylist::createHelp() {
 	clearHelp();
@@ -118,19 +87,6 @@ void PrefPlaylist::createHelp() {
 		tr("If this option is enabled, SMPlayer will look for consecutive "
            "files (e.g. video_1.avi, video_2.avi...) and if found, they'll be "
            "added to the playlist.") );
-
-	setWhatsThis(recursive_check, tr("Add files in directories recursively"),
-		tr("Check this option if you want that adding a directory will also "
-        "add the files in subdirectories recursively. Otherwise only the "
-        "files in the selected directory will be added."));
-
-	setWhatsThis(getinfo_check, tr("Add info automatically about files added"), 
-		tr("Check this option to inquire the files to be added to the playlist "
-        "for some info. That allows to show the title name (if available) and "
-        "length of the files. Otherwise this info won't be available until "
-        "the file is actually played. Beware: this option can be slow, "
-        "specially if you add many files."));
-
 }
 
 #include "moc_prefplaylist.cpp"

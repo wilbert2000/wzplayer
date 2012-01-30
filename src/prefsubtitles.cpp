@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ QString PrefSubtitles::sectionName() {
 }
 
 QPixmap PrefSubtitles::sectionIcon() {
-    return Images::icon("pref_subtitles", 22);
+    return Images::icon("pref_subtitles");
 }
 
 
@@ -463,11 +463,7 @@ void PrefSubtitles::createHelp() {
 #ifdef Q_OS_WIN
         .arg("<i>C:\\Windows\\Fonts\\</i>")
 #else
-#ifdef Q_OS_OS2
-        .arg("<i>C:\\PSFONTS</i>")
-#else
         .arg("<i>/usr/X11R6/lib/X11/fonts/truetype/</i>")
-#endif
 #endif
         );
 

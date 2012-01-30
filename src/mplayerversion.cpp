@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,24 +24,17 @@
 
 using namespace Global;
 
-QString MplayerVersion::mplayer2_version;
-bool MplayerVersion::is_mplayer2 = false;
-
 int MplayerVersion::mplayerVersion(QString string) {
 	//static QRegExp rx_mplayer_revision("^MPlayer (\\S+)-SVN-r(\\d+)-(.*)");
 	static QRegExp rx_mplayer_revision("^MPlayer (.*)[-\\.]r(\\d+)(.*)");
 	static QRegExp rx_mplayer_version("^MPlayer ([a-z,0-9,.]+)-(.*)");
 	static QRegExp rx_mplayer_git("^MPlayer GIT(.*)", Qt::CaseInsensitive);
-	static QRegExp rx_mplayer_version_final("1.0rc([0-9])");
-	static QRegExp rx_mplayer2_version("^MPlayer2 (.*) \\(C\\).*");
 #ifndef Q_OS_WIN
 	static QRegExp rx_mplayer_version_ubuntu("^MPlayer (\\d):(\\d)\\.(\\d)~(.*)");
 	static QRegExp rx_mplayer_version_mandriva("^MPlayer ([a-z0-9\\.]+)-\\d+\\.([a-z0-9]+)\\.[\\d\\.]+[a-z]+[\\d\\.]+-(.*)");
 #endif
 
 	int mplayer_svn = 0;
-	mplayer2_version = QString::null;
-	is_mplayer2 = false;
 
 #ifdef Q_OS_WIN
 	// Hack to recognize mplayer 1.0rc2 from CCCP:
@@ -83,34 +76,16 @@ int MplayerVersion::mplayerVersion(QString string) {
 		QString version = rx_mplayer_version.cap(1);
 		qDebug("MplayerVersion::mplayerVersion: MPlayer version found: %s", version.toUtf8().data());
 		mplayer_svn = 0;
-
-		if (version == "1.0rc4") mplayer_svn = MPLAYER_1_0_RC4_SVN;
-		else
 		if (version == "1.0rc3") mplayer_svn = MPLAYER_1_0_RC3_SVN;
 		else
 		if (version == "1.0rc2") mplayer_svn = MPLAYER_1_0_RC2_SVN;
 		else
 		if (version == "1.0rc1") mplayer_svn = MPLAYER_1_0_RC1_SVN;
-		else
-		if(rx_mplayer_version_final.indexIn(version) > -1 && rx_mplayer_version_final.cap(1).toInt() > 3)
-			mplayer_svn = MPLAYER_1_0_RC3_SVN; //version is > 1.0rc3, so treat as 1.0rc3 since support for later versions is not yet implemented
-
-		else
-			qWarning("MplayerVersion::mplayerVersion: unknown MPlayer version");
-
-	}
-	else
-	if (rx_mplayer2_version.indexIn(string) > -1) {
-		mplayer2_version = rx_mplayer2_version.cap(1);
-		qDebug("MplayerVersion::mplayerVersion: MPlayer2 version found: %s", mplayer2_version.toUtf8().data());
-		is_mplayer2 = true;
-		mplayer_svn = MPLAYER_1_0_RC4_SVN; // simulates mplayer 1.0rc4
+		else qWarning("MplayerVersion::mplayerVersion: unknown MPlayer version");
 	}
 
 	if (pref) {
 		pref->mplayer_detected_version = mplayer_svn;
-		pref->mplayer_is_mplayer2 = is_mplayer2;
-		pref->mplayer2_detected_version = mplayer2_version;
 	}
 
 	return mplayer_svn;
@@ -163,7 +138,6 @@ QString MplayerVersion::toString(int svn_revision) {
 		case MPLAYER_1_0_RC1_SVN: version = QString("1.0rc1"); break;
 		case MPLAYER_1_0_RC2_SVN: version = QString("1.0rc2"); break;
 		case MPLAYER_1_0_RC3_SVN: version = QString("1.0rc3"); break;
-		case MPLAYER_1_0_RC4_SVN: version = QString("1.0rc4"); break;
 		default : version =  QString("SVN r%1").arg(svn_revision);
 	}
 

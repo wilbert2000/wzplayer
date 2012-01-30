@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ QString PrefAdvanced::sectionName() {
 }
 
 QPixmap PrefAdvanced::sectionIcon() {
-    return Images::icon("pref_advanced", 22);
+    return Images::icon("pref_advanced");
 }
 
 
@@ -92,7 +92,6 @@ void PrefAdvanced::setData(Preferences * pref) {
 	setUseIdx( pref->use_idx );
 	setUseCorrectPts( pref->use_correct_pts );
 	setActionsToRun( pref->actions_to_run );
-	setShowTagInTitle( pref->show_tag_in_window_title );
 
 	setLogMplayer( pref->log_mplayer );
 	setMplayerLogVerbose( pref->verbose_log );
@@ -122,8 +121,6 @@ void PrefAdvanced::getData(Preferences * pref) {
 	TEST_AND_SET(pref->use_idx, useIdx());
 	TEST_AND_SET(pref->use_correct_pts, useCorrectPts());
 	pref->actions_to_run = actionsToRun();
-	//TEST_AND_SET(pref->show_tag_in_window_title, showTagInTitle());
-	pref->show_tag_in_window_title = showTagInTitle(); // TODO: detect change and apply
 
 	if (pref->monitor_aspect != monitorAspect()) {
 		pref->monitor_aspect = monitorAspect();
@@ -284,14 +281,6 @@ QString PrefAdvanced::actionsToRun() {
 	return actions_to_run_edit->text();
 }
 
-void PrefAdvanced::setShowTagInTitle(bool b) {
-	show_tag_in_title_check->setChecked(b);
-}
-
-bool PrefAdvanced::showTagInTitle() {
-	return show_tag_in_title_check->isChecked();
-}
-
 void PrefAdvanced::on_changeButton_clicked() {
 	//bool ok;
 	//int color = colorkey_view->text().toUInt(&ok, 16);
@@ -428,11 +417,6 @@ void PrefAdvanced::createHelp() {
 		tr("Limitation: the actions are run only when a file is opened and "
            "not when the mplayer process is restarted (e.g. you select an "
            "audio or video filter).") );
-
-	setWhatsThis(show_tag_in_title_check, tr("Show tag info in window title"),
-		tr("If this option is enabled, information from tags will be "
-		   "shown in window title. "
-           "Otherwise only the filename will be shown.") );
 
 	addSectionTitle(tr("Options for MPlayer"));
 

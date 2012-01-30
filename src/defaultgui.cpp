@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,12 +43,10 @@
 #include <QToolButton>
 #include <QMenuBar>
 
-#define TOOLBAR_VERSION 1
-
 using namespace Global;
 
-DefaultGui::DefaultGui( bool use_server, QWidget * parent, Qt::WindowFlags flags )
-	: BaseGuiPlus( use_server, parent, flags )
+DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
+	: BaseGuiPlus( parent, flags )
 {
 	createStatusBar();
 
@@ -350,8 +348,8 @@ void DefaultGui::createFloatingControl() {
 
 #endif // USE_CONFIGURABLE_TOOLBARS
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	// To make work the ESC key (exit fullscreen) and Ctrl-X (close) in Windows and OS2
+#ifdef Q_OS_WIN
+	// To make work the ESC key (exit fullscreen) and Ctrl-X (close) in Windows
 	floating_control->addAction(exitFullscreenAct);
 	floating_control->addAction(exitAct);
 #endif
@@ -642,7 +640,6 @@ void DefaultGui::saveConfig() {
 	set->setValue("controlwidget", ToolbarEditor::save(controlwidget) );
 	set->setValue("controlwidget_mini", ToolbarEditor::save(controlwidget_mini) );
 	set->setValue("floating_control", ToolbarEditor::save(floating_control->toolbar()) );
-	set->setValue("toolbar1_version", TOOLBAR_VERSION);
 	set->endGroup();
 #endif
 
@@ -684,7 +681,7 @@ void DefaultGui::loadConfig() {
 #if USE_CONFIGURABLE_TOOLBARS
 	QList<QAction *> actions_list = findChildren<QAction *>();
 	QStringList toolbar1_actions;
-	toolbar1_actions << "open_file" << "open_dvd" << "open_url" << "favorites_menu" << "separator" << "compact" << "fullscreen"
+	toolbar1_actions << "open_file" << "open_dvd" << "open_url" << "separator" << "compact" << "fullscreen"
                      << "separator" << "screenshot" << "separator" << "show_file_properties" << "show_playlist" 
                      << "show_preferences" << "separator" << "play_prev" << "play_next";
 
@@ -731,13 +728,7 @@ void DefaultGui::loadConfig() {
 	floatingcontrol_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action" << "separator" << "timelabel_action";
 
 	set->beginGroup( "actions" );
-	int toolbar_version = set->value("toolbar1_version", 0).toInt();
-	if (toolbar_version >= TOOLBAR_VERSION) {
-		ToolbarEditor::load(toolbar1, set->value("toolbar1", toolbar1_actions).toStringList(), actions_list );
-	} else {
-		qDebug("DefaultGui::loadConfig: toolbar too old, loading default one");
-		ToolbarEditor::load(toolbar1, toolbar1_actions, actions_list );
-	}
+	ToolbarEditor::load(toolbar1, set->value("toolbar1", toolbar1_actions).toStringList(), actions_list );
 	ToolbarEditor::load(controlwidget, set->value("controlwidget", controlwidget_actions).toStringList(), actions_list );
 	ToolbarEditor::load(controlwidget_mini, set->value("controlwidget_mini", controlwidget_mini_actions).toStringList(), actions_list );
 	ToolbarEditor::load(floating_control->toolbar(), set->value("floating_control", floatingcontrol_actions).toStringList(), actions_list );

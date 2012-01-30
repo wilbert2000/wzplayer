@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,22 +34,11 @@ SimpleHttp::~SimpleHttp() {
 }
 
 void SimpleHttp::download(const QString & url) {
-	qDebug("SimpleHttp::download: %s", url.toLatin1().constData());
-
 	downloaded_text.clear();
 
 	QUrl u(url);
 	setHost( u.host() );
-
-	/*
-	qDebug("u.path: %s", u.path().toLatin1().constData());
-	qDebug("u.query: %s", u.encodedQuery().constData());
-	*/
-
-	QString p = u.path();
-	if (!u.encodedQuery().isEmpty()) p += "?" + u.encodedQuery();
-
-	http_get_id = get( p );
+	http_get_id = get( u.path() );
 
 	emit connecting(u.host());
 }
@@ -83,9 +72,7 @@ void SimpleHttp::httpRequestFinished(int request_id, bool error) {
 
 	downloaded_text += readAll();
 
-	//qDebug("downloaded_text: '%s'", downloaded_text.constData());
-
-	if ((!error) && (!downloaded_text.isEmpty())) {
+	if (!downloaded_text.isEmpty()) {
 		emit downloadFinished(downloaded_text);
 	}
 }

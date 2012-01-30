@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -75,7 +75,6 @@ public:
 	void list();
 	int count();
 	bool isEmpty();
-	QString print(QString seperator);
 
 	bool isModified() { return modified; };
 
@@ -93,10 +92,6 @@ public slots:
 
 	virtual void removeSelected();
 	virtual void removeAll();
-	virtual void remove(int);
-
-	virtual void moveItemUp(int);
-	virtual void moveItemDown(int);
 
 	virtual void addCurrentFile();
 	virtual void addFiles();
@@ -111,9 +106,7 @@ public slots:
 	// Adds a directory, maybe with recursion (depends on user config)
 	virtual void addDirectory(QString dir);
 
-	// EDIT BY NEO -->
-	virtual void sortBy(int section);
-	// <--
+	void editPreferences();
 
 	virtual bool maybeSave();
     virtual void load();
@@ -128,20 +121,6 @@ public slots:
 	virtual void getMediaInfo();
 
 	void setModified(bool);
-
-	// Preferences
-	void setDirectoryRecursion(bool b) { recursive_add_directory = b; };
-	void setAutoGetInfo(bool b) { automatically_get_info = b; };
-	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; };
-	void setPlayFilesFromStart(bool b) { play_files_from_start = b; };
-
-public:
-	bool directoryRecursion() { return recursive_add_directory; };
-	bool autoGetInfo() { return automatically_get_info; };
-	bool savePlaylistOnExit() { return save_playlist_in_config; };
-	bool playFilesFromStart() { return play_files_from_start; };
-
-	QList<PlaylistItem> playlist(){return pl;};
 
 /*
 public:
@@ -160,9 +139,6 @@ protected:
 	void clearPlayedTag();
 	int chooseRandomItem();
 	void swapItems(int item1, int item2 );
-	// EDIT BY NEO -->
-	void sortBy(int section, bool revert, int count);
-	// <--
 	QString lastDir();
 
 protected slots:
@@ -219,6 +195,7 @@ protected:
 	MyAction * nextAct;
 	MyAction * repeatAct;
 	MyAction * shuffleAct;
+	MyAction * preferencesAct;
 
 	MyAction * moveUpAct;
 	MyAction * moveDownAct;

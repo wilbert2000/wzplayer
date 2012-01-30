@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2010 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include "paths.h"
 #include "translator.h"
 #include "version.h"
-#include "config.h"
+#include "constants.h"
 #include "myclient.h"
 #include "clhelp.h"
 
@@ -51,7 +51,6 @@ SMPlayer::SMPlayer(const QString & config_path, QObject * parent )
 
 	close_at_end = -1; // Not set
 	start_in_fullscreen = -1; // Not set
-	use_control_server = true;
 
 	move_gui = false;
 	resize_gui = false;
@@ -81,12 +80,12 @@ BaseGui * SMPlayer::gui() {
 		qDebug("SMPlayer::gui: current directory: %s", QDir::currentPath().toUtf8().data());
 		
 		if (gui_to_use.toLower() == "minigui") 
-			main_window = new MiniGui(use_control_server, 0);
+			main_window = new MiniGui(0);
 		else 
 		if (gui_to_use.toLower() == "mpcgui")
-			main_window = new MpcGui(use_control_server, 0);
+			main_window = new MpcGui(0);
 		else
-			main_window = new DefaultGui(use_control_server, 0);
+			main_window = new DefaultGui(0);
 
 		if (move_gui) {
 			qDebug("SMPlayer::gui: moving main window to %d %d", gui_position.x(), gui_position.y());
@@ -116,6 +115,8 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 
 	if (!pref->gui.isEmpty()) gui_to_use = pref->gui;
 	bool add_to_playlist = false;
+
+	bool is_playlist = false;
 
 #ifdef Q_OS_WIN
 	if (args.contains("-uninstall")){
@@ -198,6 +199,10 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			}
 		}
 		else
+		if (argument == "-playlist") {
+			is_playlist = true;
+		}
+		else
 		if ((argument == "--help") || (argument == "-help") ||
             (argument == "-h") || (argument == "-?") ) 
 		{
@@ -220,10 +225,6 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			start_in_fullscreen = 0;
 		}
 		else
-		if (argument == "-disable-server") {
-			use_control_server = false;
-		}
-		else
 		if (argument == "-add-to-playlist") {
 			add_to_playlist = true;
 		}
@@ -243,6 +244,10 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			// File
 			if (QFile::exists( argument )) {
 				argument = QFileInfo(argument).absoluteFilePath();
+			}
+			if (is_playlist) {
+				argument = argument + IS_PLAYLIST_TAG;
+				is_playlist = false;
 			}
 			files_to_play.append( argument );
 		}
@@ -375,11 +380,7 @@ void SMPlayer::showInfo() {
 #ifdef Q_OS_WIN
            .arg("Windows ("+win_ver+")")
 #else
-#ifdef Q_OS_OS2
-           .arg("eCS (OS/2)")
-#else
 		   .arg("Other OS")
-#endif
 #endif
 #endif
            ;
