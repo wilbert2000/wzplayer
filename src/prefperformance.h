@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -88,11 +88,6 @@ protected:
 
 	void setCoreavcUsage(bool b);
 	bool coreavcUsage();
-
-#if YOUTUBE_SUPPORT
-	void setYTQuality(int q);
-	int YTQuality();
-#endif
 
 protected:
 	virtual void retranslateStrings();

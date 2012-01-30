@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ void Translator::load(QString locale) {
 	QString trans_path = Paths::translationPath();
 	QString qt_trans_path = Paths::qtTranslationPath();
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	// In windows and OS2 try to load the qt translation from the app path, as
+#ifdef Q_OS_WIN
+	// In windows try to load the qt translation from the app path, as
     // most users won't have Qt installed.
 	loadCatalog(qt_trans, "qt", locale, trans_path );
 #else

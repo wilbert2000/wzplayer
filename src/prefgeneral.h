@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,10 +30,6 @@
 #else
 #define USE_ALSA_DEVICES 1
 #define USE_XV_ADAPTORS 1
-#endif
-
-#ifdef Q_OS_OS2
-#define MPLAYER_KAI_VERSION 30994
 #endif
 
 class PrefGeneral : public PrefWidget, public Ui::PrefGeneral
@@ -110,7 +106,7 @@ protected:
 	void setStartInFullscreen(bool b);
 	bool startInFullscreen();
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	void setAvoidScreensaver(bool b);
 	bool avoidScreensaver();
 	
@@ -185,10 +181,6 @@ protected slots:
 	void vo_combo_changed(int);
 	void ao_combo_changed(int);
 
-#ifndef Q_OS_WIN
-	void on_vdpau_button_clicked();
-#endif
-
 protected:
 	virtual void retranslateStrings();
 	void updateDriverCombos();
@@ -209,11 +201,6 @@ protected:
 
 private:
 	bool filesettings_method_changed;
-
-#ifndef Q_OS_WIN
-	struct Preferences::VDPAU_settings vdpau;
-#endif
-
 };
 
 #endif

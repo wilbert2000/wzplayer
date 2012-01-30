@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@
 #include "colorutils.h"
 
 using namespace Global;
-
-#define TOO_CHAPTERS_WORKAROUND
 
 MplayerProcess::MplayerProcess(QObject * parent) : MyProcess(parent) 
 {
@@ -80,74 +78,17 @@ bool MplayerProcess::start() {
 #endif
 
 	MyProcess::start();
-
-#if !defined(Q_OS_OS2)
 	return waitForStarted();
-#else
-	bool r = waitForStarted();
-	if (r) {
-		pidMP = QProcess::pid();
-		qDebug("MPlayer PID %i", pidMP);
-		MPpipeOpen();
-	}
-	return r;
-#endif
 }
 
 void MplayerProcess::writeToStdin(QString text) {
 	if (isRunning()) {
 		//qDebug("MplayerProcess::writeToStdin");
-#if !defined(Q_OS_OS2)
 		write( text.toLocal8Bit() + "\n");
-#else
-		MPpipeWrite( text.toLocal8Bit() + "\n");
-#endif
 	} else {
 		qWarning("MplayerProcess::writeToStdin: process not running");
 	}
-#ifdef Q_OS_OS2
-	if (text == "quit" || text == "quit\n") {
-		MPpipeClose();
-	}
-#endif
 }
-
-#ifdef Q_OS_OS2
-void MplayerProcess::MPpipeOpen() {
-	char szPipeName[ 100 ];
-	sprintf( szPipeName, "\\PIPE\\MPLAYER\\%x", pidMP );
-	DosCreateNPipe( szPipeName, &hpipe, NP_ACCESS_DUPLEX, 1, 1024, 1024, 0 );
-}
-
-void MplayerProcess::MPpipeClose( void ) {
-	DosClose( hpipe );
-}
-
-void MplayerProcess::MPpipeWrite( const QByteArray text ) {
-	// MPlayer quitted ?
-	if ( !isRunning() )
-		return;
-
-// as things could hang when pipe communication is done direct here, i do a seperate thread for it
-	pipeThread = new PipeThread(text, hpipe);
-    
-	pipeThread->start();
-	while (!pipeThread->isRunning() && !pipeThread->isFinished()) {
-		qDebug("we sleep");
-		DosSleep(10);
-	}
-// we wait for max 2 seconds for the thread to be ended (we to this with max 20 loops)
-	int count = 0;
-	while (!pipeThread->wait(100) && count < 20) {
-		count ++;
-	}
-	if (count >= 20) {
-		pipeThread->terminate();
-		qDebug("pipe communication terminated");
-	}
-	delete pipeThread;
-}
-#endif
 
 static QRegExp rx_av("^[AV]: *([0-9,:.-]+)");
 static QRegExp rx_frame("^[AV]:.* (\\d+)\\/.\\d+");// [0-9,.]+");
@@ -173,7 +114,6 @@ static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 static QRegExp rx_mkvchapters("\\[mkv\\] Chapter (\\d+) from");
 static QRegExp rx_aspect2("^Movie-Aspect is ([0-9,.]+):1");
 static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
-static QRegExp rx_scanning_font("Scanning file");
 #if DVDNAV_SUPPORT
 static QRegExp rx_dvdnav_switch_title("^DVDNAV, switched to title: (\\d+)");
 static QRegExp rx_dvdnav_length("^ANS_length=(.*)");
@@ -214,8 +154,7 @@ static QRegExp rx_clip_copyright("^ copyright: (.*)", Qt::CaseInsensitive);
 static QRegExp rx_clip_comment("^ comment: (.*)", Qt::CaseInsensitive);
 static QRegExp rx_clip_software("^ software: (.*)", Qt::CaseInsensitive);
 
-static QRegExp rx_stream_title("^.* StreamTitle='(.*)';");
-static QRegExp rx_stream_title_and_url("^.* StreamTitle='(.*)';StreamUrl='(.*)';");
+static QRegExp rx_stream_title("^.* StreamTitle='(.*)';StreamUrl='(.*)';");
 
 
 void MplayerProcess::parseLine(QByteArray ba) {
@@ -373,30 +312,22 @@ void MplayerProcess::parseLine(QByteArray ba) {
 		}
 
 		// Stream title
-		if (rx_stream_title_and_url.indexIn(line) > -1) {
-			QString s = rx_stream_title_and_url.cap(1);
-			QString url = rx_stream_title_and_url.cap(2);
+		if (rx_stream_title.indexIn(line) > -1) {
+			QString s = rx_stream_title.cap(1);
+			QString url = rx_stream_title.cap(2);
 			qDebug("MplayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
 			qDebug("MplayerProcess::parseLine: stream_url: '%s'", url.toUtf8().data());
 			md.stream_title = s;
 			md.stream_url = url;
 			emit receivedStreamTitleAndUrl( s, url );
 		}
-		else
-		if (rx_stream_title.indexIn(line) > -1) {
-			QString s = rx_stream_title.cap(1);
-			qDebug("MplayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
-			md.stream_title = s;
-			emit receivedStreamTitle( s );
-		}
 
 #if NOTIFY_SUB_CHANGES
 		// Subtitles
 		if ((rx_subtitle.indexIn(line) > -1) || (rx_sid.indexIn(line) > -1) || (rx_subtitle_file.indexIn(line) > -1)) {
 			int r = subs.parse(line);
-			//qDebug("MplayerProcess::parseLine: result of parse: %d", r);
 			subtitle_info_received = true;
-			if ((r == SubTracks::SubtitleAdded) || (r == SubTracks::SubtitleChanged)) subtitle_info_changed = true;
+			subtitle_info_changed = ((r == SubTracks::SubtitleAdded) || (r == SubTracks::SubtitleChanged));
 		}
 #endif
 
@@ -474,7 +405,7 @@ void MplayerProcess::parseLine(QByteArray ba) {
 			return;
 		}
 
-		if ( (mplayer_svn == -1) && ((line.startsWith("MPlayer ")) || (line.startsWith("MPlayer2 "))) ) {
+		if ( (mplayer_svn == -1) && (line.startsWith("MPlayer ")) ) {
 			mplayer_svn = MplayerVersion::mplayerVersion(line);
 			qDebug("MplayerProcess::parseLine: MPlayer SVN: %d", mplayer_svn);
 			if (mplayer_svn <= 0) {
@@ -738,10 +669,6 @@ void MplayerProcess::parseLine(QByteArray ba) {
 			emit receivedUpdatingFontCache();
 		}
 		else
-		if (rx_scanning_font.indexIn(line) > -1) {
-			emit receivedScanningFont(line);
-		}
-		else
 
 		// Catch starting message
 		/*
@@ -846,13 +773,6 @@ void MplayerProcess::parseLine(QByteArray ba) {
 			else
 			if (tag == "ID_CHAPTERS") {
 				md.chapters = value.toInt();
-				#ifdef TOO_CHAPTERS_WORKAROUND
-				if (md.chapters > 1000) {
-					qDebug("MplayerProcess::parseLine: warning too many chapters: %d", md.chapters);
-					qDebug("                           chapters will be ignored"); 
-					md.chapters = 0;
-				}
-				#endif
 			}
 			else
 			if (tag == "ID_DVD_CURRENT_TITLE") {
@@ -876,32 +796,5 @@ void MplayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStat
 void MplayerProcess::gotError(QProcess::ProcessError error) {
 	qDebug("MplayerProcess::gotError: %d", (int) error);
 }
-
-#ifdef Q_OS_OS2
-PipeThread::PipeThread(const QByteArray t, const HPIPE pipe) {
-	text = t;
-	hpipe = pipe;
-}
-
-PipeThread::~PipeThread() {
-}
-
-void PipeThread::run() {
-	ULONG cbActual;
-	APIRET rc = NO_ERROR; 
-
-	rc = DosConnectNPipe( hpipe );
-	if (rc != NO_ERROR) 
-		return;
-
-//	qDebug("pipe connected");    
-	DosWrite( hpipe, text.data(), strlen( text.data() ), &cbActual );
-
-	// Wait for ACK
-	DosRead( hpipe, &cbActual, sizeof( ULONG ), &cbActual );
-	DosDisConnectNPipe( hpipe );
-	return;
-}
-#endif
 
 #include "moc_mplayerprocess.cpp"

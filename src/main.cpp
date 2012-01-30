@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,18 +27,20 @@
 
 #include <stdio.h>
 
-#if USE_QTLOCKEDFILE
 #define USE_LOCKS 1
 #if USE_LOCKS
-#include "qtlockedfile/qtlockedfile.h"
-#endif
+#ifdef USE_QXT
+#define USE_QXT_LOCKS 1
+#endif // USE_QXT
+#endif // USE_LOCKS
+
+#if USE_LOCKS && USE_QXT_LOCKS
+#include <QxtFileLock>
 #endif
 
 using namespace Global;
 
 BaseGui * basegui_instance = 0;
-
-QFile output_log;
 
 void myMessageOutput( QtMsgType type, const char *msg ) {
 	static QStringList saved_lines;
@@ -103,24 +105,37 @@ void myMessageOutput( QtMsgType type, const char *msg ) {
 		// GUI is not created yet, save lines for later
 		saved_lines.append(line2);
 	}
-
-	if (pref) {
-		if (pref->save_smplayer_log) {
-			// Save log to file
-			if (!output_log.isOpen()) {
-				// FIXME: the config path may not be initialized if USE_LOCKS is not defined
-				output_log.setFileName( Paths::configPath() + "/smplayer_log.txt" );
-				output_log.open(QIODevice::WriteOnly);
-			}
-			if (output_log.isOpen()) {
-				QString l = line2 + "\r\n";
-				output_log.write(l.toUtf8().constData());
-				output_log.flush();
-			}
-		}
-	}
 }
 
+#if USE_LOCKS
+#if USE_QXT_LOCKS
+bool create_lock(QFile * f, QxtFileLock * lock) {
+	bool success = false;
+	if (f->open(QIODevice::ReadWrite)) {
+	 	if (lock->lock()) {
+			f->write("smplayer lock file");
+			success = true;
+		}
+	}
+	if (!success) f->close();
+	return success;
+}
+
+void clean_lock(QFile * f, QxtFileLock * lock) {
+	qDebug("main: clean_lock: %s", f->fileName().toUtf8().data());
+	lock->unlock();
+	f->close();
+	f->remove();
+}
+#else
+void remove_lock(QString lock_file) {
+	if (QFile::exists(lock_file)) {
+		qDebug("main: remove_lock: %s", lock_file.toUtf8().data());
+		QFile::remove(lock_file);
+	}
+}
+#endif
+#endif
 
 class MyApplication : public QApplication
 {
@@ -136,11 +151,6 @@ int main( int argc, char ** argv )
 	MyApplication a( argc, argv );
 	a.setQuitOnLastWindowClosed(false);
 	//a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
-
-#if QT_VERSION >= 0x040400
-	// Enable icons in menus
-	QCoreApplication::setAttribute(Qt::AA_DontShowIconsInMenus, false);
-#endif
 
 	// Sets the config path
 	QString config_path;
@@ -180,10 +190,11 @@ int main( int argc, char ** argv )
 	QString lock_file = Paths::iniPath() + "/smplayer_init.lock";
 	qDebug("main: lock_file: %s", lock_file.toUtf8().data());
 
-	QtLockedFile lk(lock_file);
-	lk.open(QFile::ReadWrite);
+#if USE_QXT_LOCKS
+	QFile f(lock_file);
+	QxtFileLock write_lock(&f, 0x10, 30, QxtFileLock::WriteLock);
 
-	bool lock_ok = lk.lock(QtLockedFile::WriteLock, false);
+	bool lock_ok = create_lock(&f, &write_lock);
 
 	if (!lock_ok) {
 		//lock failed
@@ -193,20 +204,48 @@ int main( int argc, char ** argv )
 		int n = 100;
 		while ( n > 0) {
 			Helper::msleep(100); // wait 100 ms
-
-			if (lk.lock(QtLockedFile::WriteLock, false)) break;
+			//if (!QFile::exists(lock_file)) break;
+			if (create_lock(&f, &write_lock)) break;
 			n--;
 			if ((n % 10) == 0) qDebug("main: waiting %d...", n);
 		}
 		// Continue startup
 	}
+#else
+	if (QFile::exists(lock_file)) {
+		qDebug("main: %s exists, waiting...", lock_file.toUtf8().data());
+		// Wait 10 secs max.
+		int n = 100;
+		while ( n > 0) {
+			Helper::msleep(100); // wait 100 ms
+			if (!QFile::exists(lock_file)) break;
+			n--;
+			if ((n % 10) == 0) qDebug("main: waiting %d...", n);
+		}
+		remove_lock(lock_file);
+	} else {
+		// Create lock file
+		QFile f(lock_file);
+		if (f.open(QIODevice::WriteOnly)) {
+			f.write("smplayer lock file");
+			f.close();
+		} else {
+			qWarning("main: can't open %s for writing", lock_file.toUtf8().data());
+		}
+		
+	}
+#endif // USE_QXT_LOCKS
 #endif // USE_LOCKS
 
 	SMPlayer * smplayer = new SMPlayer(config_path);
 	SMPlayer::ExitCode c = smplayer->processArgs( args );
 	if (c != SMPlayer::NoExit) {
 #if USE_LOCKS
-		lk.unlock();
+#if USE_QXT_LOCKS
+		clean_lock(&f, &write_lock);
+#else
+		remove_lock(lock_file);
+#endif
 #endif
 		return c;
 	}
@@ -216,16 +255,17 @@ int main( int argc, char ** argv )
 	smplayer->start();
 
 #if USE_LOCKS
-	bool success = lk.unlock();
-	qDebug("Unlocking: %d", success);
+#if USE_QXT_LOCKS
+	clean_lock(&f, &write_lock);
+#else
+	remove_lock(lock_file);
+#endif
 #endif
 
 	int r = a.exec();
 
 	basegui_instance = 0;
 	delete smplayer;
-
-	if (output_log.isOpen()) output_log.close();
 
 	return r;
 }

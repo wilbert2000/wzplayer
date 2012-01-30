@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -216,7 +216,6 @@ QMap<QString,QString> Languages::translations() {
 	m["bg"] = tr("Bulgarian");
 	m["ca"] = tr("Catalan");
 	m["cs"] = tr("Czech");
-	m["da"] = tr("Danish");
 	m["de"] = tr("German");
 	m["el_GR"] = tr("Greek");
 	m["en_US"] = tr("English");
@@ -226,14 +225,12 @@ QMap<QString,QString> Languages::translations() {
 	m["fi"] = tr("Finnish");
 	m["fr"] = tr("French");
 	m["gl"] = tr("Galician");
-	m["hr"] = tr("Croatian");
 	m["hu"] = tr("Hungarian");
 	m["it"] = tr("Italian");
 	m["ja"] = tr("Japanese");
 	m["ka"] = tr("Georgian");
 	m["ko"] = tr("Korean");
 	m["ku"] = tr("Kurdish");
-	m["lt"] = tr("Lithuanian");
 	m["mk"] = tr("Macedonian");
 	m["nl"] = tr("Dutch");
 	m["pl"] = tr("Polish");
@@ -257,7 +254,7 @@ QMap<QString,QString> Languages::translations() {
 QMap<QString,QString> Languages::encodings() {
 	QMap<QString,QString> l;
 
-	l["UTF-16"] = tr("Unicode");
+	l["Unicode"] = tr("Unicode");
 	l["UTF-8"] = tr("UTF-8");
 	l["ISO-8859-1"] = tr("Western European Languages");
 	l["ISO-8859-15"] = tr("Western European Languages with Euro");
@@ -281,7 +278,6 @@ QMap<QString,QString> Languages::encodings() {
 	l["CP1251"] = tr( "Cyrillic Windows");
 	l["CP1250"] = tr( "Slavic/Central European Windows");
 	l["CP1256"] = tr( "Arabic Windows");
-	l["CP1253"] = tr("Modern Greek Windows");
 
 	return l;
 }

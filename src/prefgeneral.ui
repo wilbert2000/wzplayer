@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>486</width>
-    <height>554</height>
+    <height>503</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" >
@@ -250,13 +250,6 @@
          </item>
          <item>
           <widget class="QLineEdit" name="vo_user_defined_edit" />
-         </item>
-         <item>
-          <widget class="QPushButton" name="vdpau_button" >
-           <property name="text" >
-            <string>Configu&amp;re...</string>
-           </property>
-          </widget>
          </item>
          <item>
           <spacer>
@@ -1270,7 +1263,6 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>pause_if_hidden_check</tabstop>
   <tabstop>vo_combo</tabstop>
   <tabstop>vo_user_defined_edit</tabstop>
-  <tabstop>vdpau_button</tabstop>
   <tabstop>postprocessing_check</tabstop>
   <tabstop>autoq_spin</tabstop>
   <tabstop>deinterlace_combo</tabstop>

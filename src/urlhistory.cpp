@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 */
 
 #include "urlhistory.h"
+#include "constants.h"
 
 URLHistory::URLHistory() : Recents() 
 {
@@ -26,13 +27,16 @@ URLHistory::URLHistory() : Recents()
 URLHistory::~URLHistory() {
 }
 
-void URLHistory::addUrl(QString url) {
+void URLHistory::addUrl(QString url, bool is_playlist) {
 	qDebug("Recents::addItem: '%s'", url.toUtf8().data());
 
 	// Delete duplicates
 	QStringList::iterator iterator = l.begin();
 	while (iterator != l.end()) {
 		QString s = (*iterator);
+		if (isPlaylist(s)) {
+			s = s.remove( QRegExp(IS_PLAYLIST_TAG_RX) );
+		}
 		if (s == url) 
 			iterator = l.erase(iterator);
 		else
@@ -40,13 +44,29 @@ void URLHistory::addUrl(QString url) {
 	}
 
 	// Add new item to list
+	if (is_playlist) url = url + IS_PLAYLIST_TAG;
 	l.prepend(url);
 
 	if (l.count() > max_items) l.removeLast();
 }
 
+void URLHistory::addUrl(QString url) {
+	bool is_playlist = isPlaylist(url);
+	if (is_playlist) url = url.remove( QRegExp(IS_PLAYLIST_TAG_RX) );
+	addUrl(url, is_playlist);
+}
+
 QString URLHistory::url(int n) {
 	QString s = l[n];
+	if (isPlaylist(n)) s = s.remove( QRegExp(IS_PLAYLIST_TAG_RX) );
 	return s;
+}
+
+bool URLHistory::isPlaylist(int n) {
+	return isPlaylist(l[n]);
+}
+
+bool URLHistory::isPlaylist(QString url) {
+	return url.endsWith(IS_PLAYLIST_TAG);
 }
 

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -61,8 +61,6 @@ PrefAssociations::PrefAssociations(QWidget * parent, Qt::WindowFlags f)
 		addItem( e.playlist()[n] );
 	}
 	retranslateStrings();
-
-	something_changed = false;
 }
 
 PrefAssociations::~PrefAssociations()
@@ -75,8 +73,6 @@ void PrefAssociations::selectAllClicked(bool)
 	for (int k = 0; k < listWidget->count(); k++)
 		listWidget->item(k)->setCheckState(Qt::Checked);
 	listWidget->setFocus(); 
-
-	something_changed = true;
 }
 
 void PrefAssociations::selectNoneClicked(bool)
@@ -85,14 +81,10 @@ void PrefAssociations::selectNoneClicked(bool)
 	for (int k = 0; k < listWidget->count(); k++)
 		listWidget->item(k)->setCheckState(Qt::Unchecked);
 	listWidget->setFocus(); 
-
-	something_changed = true;
 }
 
 void PrefAssociations::listItemClicked(QListWidgetItem* item)
 {
-	qDebug("PrefAssociations::listItemClicked");
-	
 	if (!(item->flags() & Qt::ItemIsEnabled))
 		return; 
 
@@ -108,8 +100,6 @@ void PrefAssociations::listItemClicked(QListWidgetItem* item)
 	}
 
 	//else - clicked on the checkbox itself, do nothing
-	
-	something_changed = true;
 }
 
 void PrefAssociations::listItemPressed(QListWidgetItem* item)
@@ -177,9 +167,6 @@ int PrefAssociations::ProcessAssociations(QStringList& current, QStringList& old
 
 void PrefAssociations::getData(Preferences *)
 {
-	qDebug("PrefAssociations::getData: something_changed: %d", something_changed);
-	if (!something_changed) return;
-	
 	QStringList extensions; 
 
 	for (int k = 0; k < listWidget->count(); k++)
@@ -199,8 +186,6 @@ void PrefAssociations::getData(Preferences *)
 	}
 	
 	refreshList(); //Useless when OK is pressed... How to detect if apply or ok is pressed ?
-
-	something_changed = false;
 }
 
 QString PrefAssociations::sectionName() {
@@ -208,7 +193,7 @@ QString PrefAssociations::sectionName() {
 }
 
 QPixmap PrefAssociations::sectionIcon() {
-	return Images::icon("pref_associations", 22);
+	return Images::icon("pref_associations");
 }
 
 void PrefAssociations::retranslateStrings() {

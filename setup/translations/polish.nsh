@@ -1,99 +1,38 @@
-﻿;Language: Polish (1045)
-;Polish language strings for the Windows SMPlayer NSIS installer.
-;
-;Save file as UTF-8 w/ BOM
-;
-
-!insertmacro LANGFILE "Polish" "Polski"
+;;
+;;  polish.nsh
+;;
+;;  Polish language strings for the Windows SMPlayer NSIS installer.
+;;  Save file with ANSI encoding
+;;
+;;  Author: 
+;;
 
 ; Startup
-${LangFileString} Installer_Is_Running "Instalator już jest uruchomiony."
-${LangFileString} Installer_No_Admin "Do instalacji tego programu wymagane są uprawnienia administratora."
-${LangFileString} SMPlayer_Is_Running "An instance of SMPlayer is running. Please exit SMPlayer and try again."
+LangString SMPLAYER_INSTALLER_IS_RUNNING ${LANG_POLISH} "The installer is already running."
+LangString SMPLAYER_INSTALLER_UNSUPPORTED_OS ${LANG_POLISH} "Unsupported operating system.$\n$(^Name) requires at least Windows 2000 and may not work correctly on your system.$\nDo you really want to continue with the installation?"
+LangString SMPLAYER_INSTALLER_NO_ADMIN ${LANG_POLISH} "You must be logged in as an administrator when installing this program."
+LangString SMPLAYER_INSTALLER_PREV_VERSION ${LANG_POLISH} "SMPlayer has already been installed.$\nDo you want to remove the previous version before installing $(^Name)?"
 
 ; Components Page
-${LangFileString} ShortcutGroupTitle "Skróty"
-${LangFileString} MPlayerGroupTitle "Komponenty MPlayera"
-
-${LangFileString} Section_SMPlayer "SMPlayer (wymagane)"
-${LangFileString} Section_SMPlayer_Desc "SMPlayer, biblioteki współdzielone, dokumentacja."
-
-${LangFileString} Section_DesktopShortcut "Pulpit"
-${LangFileString} Section_DesktopShortcut_Desc "Tworzy skrót do programu na pulpicie."
-
-${LangFileString} Section_StartMenu "Menu Start"
-${LangFileString} Section_StartMenu_Desc "Tworzy skrót do programu w Menu Start."
-
-${LangFileString} Section_MPlayer "MPlayer (wymagane)"
-!ifdef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "MPlayer; wymagany do odtwarzania filmów."
-!else ifndef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "MPlayer; wymagany do odtwarzania filmów. (Wymagane połączenie z internetem)"
-!endif
-
-${LangFileString} Section_MPlayerCodecs "Kodeki"
-!ifdef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "Opcjonalne kodeki do MPlayera."
-!else ifndef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "Opcjonalne kodeki do MPlayera. (Wymagane połączenie z internetem)"
-!endif
-
-${LangFileString} Section_MEncoder_Desc "Jest to prosty koder (kompresor) filmów, zaprojektowany do kodowania filmów otwieralnych MPlayerem do innych obsługiwanych formatów"
-${LangFileString} Section_IconThemes "Zestawy Ikon"
-${LangFileString} Section_IconThemes_Desc "Dodatkowe zestawy ikon do SMPlayera."
-
-${LangFileString} Section_Translations "Tłumaczenia"
-${LangFileString} Section_Translations_Desc "Tłumaczenia na inne języki."
-
-${LangFileString} MPlayer_Codec_Msg "Paczka z kodekami dodaje wsparcie dla kodeków, które nie są jeszcze natywnie wspierane, np. nowsze warianty RealVideo, oraz wiele mniej znanych formatów.$\nProszę mieć na uwadze, że paczka nie jest wymagana do odtworzenia popularnych formatów, takich jak DVD, MPEG-1/2/4, itp."
-
-; Upgrade/Reinstall Page
-${LangFileString} Reinstall_Header_Text "Wybierz typ instalacji"
-${LangFileString} Reinstall_Header_SubText "Select Overwrite or Uninstall mode."
-
-${LangFileString} Reinstall_Msg1 "Posiadasz już zainstalowaną wersję SMPlayera w folderze:"
-${LangFileString} Reinstall_Msg2 "Wybierz co mam dalej zrobić:"
-${LangFileString} Reinstall_Overwrite "Nadpisz ($Inst_Type) istniejącą instalację"
-${LangFileString} Reinstall_Uninstall "Odinstaluj (usuń) istniejącą instalację"
-${LangFileString} Reinstall_Msg3_1 "Kliknij Start, gdy będziesz gotów."
-${LangFileString} Reinstall_Msg3_2 "Kliknij Dalej, gdy będziesz gotów."
-${LangFileString} Reinstall_Msg3_3 "Kliknij Odinstaluj, gdy będziesz gotów."
-${LangFileString} Reinstall_Msg4 "Zmiana Ustawień Instalacji"
-
-${LangFileString} Type_Reinstall "zainstaluj ponownie"
-${LangFileString} Type_Downgrade "zrób downgrade"
-${LangFileString} Type_Upgrade "aktualizuj"
-
-${LangFileString} StartBtn "Start"
+LangString MPLAYER_CODEC_INFORMATION ${LANG_POLISH} "The binary codec packages add support for codecs that are not yet implemented natively, like newer RealVideo variants and a lot of uncommon formats.$\nNote that they are not necessary to play most common formats like DVDs, MPEG-1/2/4, etc."
 
 ; MPlayer Section
-${LangFileString} MPlayer_DL_Msg "Pobieram MPlayera..."
-${LangFileString} MPlayer_DL_Retry "Instalacja MPlayera nie powiodła się. Ponowić próbę?"
-${LangFileString} MPlayer_DL_Failed "Nie udało się pobrać MPlayera: '$R0'."
-${LangFileString} MPlayer_Inst_Failed "Nie udało się zainstalować MPlayera. Bez MPlayera odtwarzanie filmów nie jest możliwe."
+LangString MPLAYER_IS_INSTALLED ${LANG_POLISH} "MPlayer is already installed. Re-Download?"
+LangString MPLAYER_IS_DOWNLOADING ${LANG_POLISH} "Downloading MPlayer..."
+LangString MPLAYER_DL_FAILED ${LANG_POLISH} "Failed to download MPlayer:"
+LangString MPLAYER_INST_FAILED ${LANG_POLISH} "Failed to install MPlayer. MPlayer is required for playback."
 
 ; Codecs Section
-${LangFileString} Codecs_DL_Msg "Pobieram kodeki do MPlayera..."
-${LangFileString} Codecs_DL_Retry "Instalacja Kodeków MPlayera nie powiodła się. Ponowić próbę?"
-${LangFileString} Codecs_DL_Failed "Nie udało się pobrać Kodeków MPlayera: '$R0'."
-${LangFileString} Codecs_Inst_Failed "Nie udało się zainstalować Kodeków MPlayera."
+LangString CODECS_IS_INSTALLED ${LANG_POLISH} "MPlayer codecs are already installed. Re-Download?"
+LangString CODECS_IS_DOWNLOADING ${LANG_POLISH} "Downloading MPlayer codecs..."
+LangString CODECS_DL_FAILED ${LANG_POLISH} "Failed to download MPlayer codecs:"
+LangString CODECS_INST_FAILED ${LANG_POLISH} "Failed to install MPlayer codecs."
 
 ; Version information
-${LangFileString} VerInfo_DL_Msg "Pobieram informacje o wersji..."
-${LangFileString} VerInfo_DL_Failed "Nie udało się pobrać informacji o wersji: '$R0'. Użyta zostanie wersja domyślna."
+LangString VERINFO_IS_DOWNLOADING ${LANG_POLISH} "Downloading version information..."
+LangString VERINFO_DL_FAILED ${LANG_POLISH} "Failed to download version info:"
+LangString VERINFO_IS_MISSING ${LANG_POLISH} "Version file missing version information. Setup will use a default version."
 
 ; Uninstaller
-${LangFileString} Uninstaller_No_Admin "Aplikacja może być usunięta tylko przez osobe z uprawnieniami Administratora."
-${LangFileString} Uninstaller_Aborted "Usuwanie anulowane przez użytkownika."
-${LangFileString} Uninstaller_NotInstalled "Wygląda na to, że SMPlayer nie został zainstalowany w katalogu '$INSTDIR'.$\r$\nKontynuować mimo to (nie zalecane)?"
-
-; Vista & Later Default Programs Registration
-${LangFileString} Application_Description "SMPlayer jest graficzną nakładką programu MPlayer, z prostymi funkcjami, takimi jak odtwarzanie wideo, DVD i VCD oraz z bardziej zaawansowanymi funkcjami np: obsługa filtrów MPlayera i wiele innych."
-
-; Misc
-${LangFileString} Info_Del_Files "Usuwanie Plików..."
-${LangFileString} Info_Del_Registry "Usuwanie Kluczy Rejestru..."
-${LangFileString} Info_Del_Shortcuts "Usuwanie Skrótów..."
-${LangFileString} Info_Rest_Assoc "Przywracanie skojarzeń plików..."
-${LangFileString} Info_RollBack "Rolling back changes..."
-${LangFileString} Info_Files_Extract "Wypakowywanie plików..."
+LangString UNINSTALL_NO_ADMIN ${LANG_POLISH} "This installation can only be uninstalled by a user with administrator privileges."
+LangString SMPLAYER_NOT_INSTALLED ${LANG_POLISH} "It does not appear that SMPlayer is installed in the directory '$INSTDIR'.$\r$\nContinue anyway (not recommended)?"

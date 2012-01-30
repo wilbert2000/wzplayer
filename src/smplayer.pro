@@ -7,10 +7,10 @@ QT += network xml
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += findsubtitles videopreview mpcgui youtube
-DEPENDPATH += findsubtitles videopreview mpcgui youtube
+INCLUDEPATH += findsubtitles videopreview mpcgui
+DEPENDPATH += findsubtitles videopreview mpcgui
 
-DEFINES += USE_QTLOCKEDFILE
+#DEFINES += USE_QXT
 
 DEFINES += DOWNLOAD_SUBS
 
@@ -50,7 +50,6 @@ HEADERS += guiconfig.h \
 	deviceinfo.h \
 	recents.h \
 	urlhistory.h \
-	youtube/retrieveyoutubeurl.h \
 	core.h \
 	logwindow.h \
 	infofile.h \
@@ -59,10 +58,7 @@ HEADERS += guiconfig.h \
 	shortcutgetter.h \
 	actionseditor.h \
 	filechooser.h \
-	vdpauproperties.h \
 	preferencesdialog.h \
-	lineedit_with_icon.h \
-	mylineedit.h \
 	mycombobox.h \
 	tristatecombo.h \
 	languages.h \
@@ -79,6 +75,7 @@ HEADERS += guiconfig.h \
 	preftv.h \
 	filepropertiesdialog.h \
 	playlist.h \
+	playlistpreferences.h \
 	playlistdock.h \
 	verticaltext.h \
 	eqslider.h \
@@ -150,7 +147,6 @@ SOURCES	+= version.cpp \
 	deviceinfo.cpp \
 	recents.cpp \
 	urlhistory.cpp \
-	youtube/retrieveyoutubeurl.cpp \
 	core.cpp \
 	logwindow.cpp \
 	infofile.cpp \
@@ -159,10 +155,7 @@ SOURCES	+= version.cpp \
 	shortcutgetter.cpp \
 	actionseditor.cpp \
 	filechooser.cpp \
-	vdpauproperties.cpp \
 	preferencesdialog.cpp \
-	lineedit_with_icon.cpp \
-	mylineedit.cpp \
 	mycombobox.cpp \
 	tristatecombo.cpp \
 	languages.cpp \
@@ -179,6 +172,7 @@ SOURCES	+= version.cpp \
 	preftv.cpp \
 	filepropertiesdialog.cpp \
 	playlist.cpp \
+	playlistpreferences.cpp \
 	playlistdock.cpp \
 	verticaltext.cpp \
 	eqslider.cpp \
@@ -219,19 +213,19 @@ SOURCES	+= version.cpp \
 	smplayer.cpp \
 	main.cpp
 
-contains(DEFINES, USE_QTLOCKEDFILE) {
-	HEADERS += qtlockedfile/qtlockedfile.h
-	SOURCES += qtlockedfile/qtlockedfile.cpp
-	unix:SOURCES += qtlockedfile/qtlockedfile_unix.cpp
-	win32:SOURCES += qtlockedfile/qtlockedfile_win.cpp
+#libqxt
+contains(DEFINES, USE_QXT) {
+	CONFIG  += qxt
+	QXT     += core
 }
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
-        eqslider.ui seekwidget.ui inputurl.ui vdpauproperties.ui \
+        eqslider.ui seekwidget.ui inputurl.ui \
         preferencesdialog.ui prefgeneral.ui prefdrives.ui prefinterface.ui \
         prefperformance.ui prefinput.ui prefsubtitles.ui prefadvanced.ui \
         prefplaylist.ui preftv.ui favoriteeditor.ui \
         about.ui inputmplayerversion.ui errordialog.ui timedialog.ui \
+        playlistpreferences.ui filechooser.ui \
         findsubtitles/findsubtitleswindow.ui findsubtitles/findsubtitlesconfigdialog.ui \
         videopreview/videopreviewconfigdialog.ui
 
@@ -252,8 +246,7 @@ TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
                translations/smplayer_ca.ts translations/smplayer_sl_SI.ts \
                translations/smplayer_ar_SY.ts translations/smplayer_ku.ts \
                translations/smplayer_gl.ts translations/smplayer_vi_VN.ts \
-               translations/smplayer_et.ts translations/smplayer_lt.ts \
-               translations/smplayer_da.ts translations/smplayer_hr.ts
+               translations/smplayer_et.ts
 
 contains( DEFINES, DOWNLOAD_SUBS ) {
 	INCLUDEPATH += findsubtitles/filedownloader findsubtitles/quazip
@@ -283,8 +276,8 @@ contains( DEFINES, DOWNLOAD_SUBS ) {
 	LIBS += -lz
 	
 	win32 {
-		INCLUDEPATH += c:\\development\\zlib-1.2.3
-		LIBS += -Lc:\\development\\zlib-1.2.3
+		INCLUDEPATH += c:\development\zlib-1.2.3
+		LIBS += -Lc:\development\zlib-1.2.3
 	}
 }
 
@@ -344,12 +337,3 @@ win32 {
 #	}
 }
 
-os2 {
-	DEFINES += SCREENSAVER_OFF
-	INCLUDEPATH += .
-	contains( DEFINES, SCREENSAVER_OFF ) {
-		HEADERS += screensaver.h
-		SOURCES += screensaver.cpp
-	}
-	RC_FILE = smplayer_os2.rc
-}

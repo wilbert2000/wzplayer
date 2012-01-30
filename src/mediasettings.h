@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -90,8 +90,6 @@ public:
 	double sub_scale;
 	double sub_scale_ass;
 
-	int closed_caption_channel; // 0 = disabled
-
 	double speed; // Speed of playback: 1.0 = normal speed
 
 	int current_deinterlacer;
@@ -114,19 +112,11 @@ public:
 	int audio_use_channels;
 	int stereo_mode;
 
-	double zoom_factor; // mplayerwindow zoom
-
-#if USE_MPLAYER_PANSCAN
-	double panscan_factor;
-#endif
+	double panscan_factor; // mplayerwindow zoom
 
 	int rotate;
 	bool flip; //!< Flip image
 	bool mirror; //!< Mirrors the image on the Y axis.
-
-	bool loop; //!< Loop. If true repeat the file
-	int A_marker;
-	int B_marker;
 
 	// This a property of the video and it should be
     // in mediadata, but we have to save it to preserve 

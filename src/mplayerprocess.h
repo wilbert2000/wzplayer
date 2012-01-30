@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,28 +24,8 @@
 #include "mediadata.h"
 #include "config.h"
 
-#ifdef Q_OS_OS2
-#include <QThread>
-#include <qt_os2.h>
-#endif
-
 #define NOTIFY_SUB_CHANGES 1
 #define NOTIFY_AUDIO_CHANGES 1
-
-#ifdef Q_OS_OS2
-class PipeThread : public QThread
-{
-public:
-	PipeThread(const QByteArray t, const HPIPE pipe);
-	~PipeThread();
-	void run();
-
-private:
-	HPIPE hpipe;
-	QByteArray text;
-};
-#endif
-
 
 class QStringList;
 
@@ -83,9 +63,7 @@ signals:
 	void receivedResolvingMessage(QString);
 	void receivedScreenshot(QString);
 	void receivedUpdatingFontCache();
-	void receivedScanningFont(QString);
 
-	void receivedStreamTitle(QString);
 	void receivedStreamTitleAndUrl(QString,QString);
 
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
@@ -114,12 +92,6 @@ protected slots:
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 	void gotError(QProcess::ProcessError);
 
-#if defined(Q_OS_OS2)
-	void MPpipeOpen();
-	void MPpipeClose();
-	void MPpipeWrite(const QByteArray text);
-#endif
-
 private:
 	bool notified_mplayer_is_running;
 	bool received_end_of_file;
@@ -127,12 +99,6 @@ private:
 	MediaData md;
 
 	int last_sub_id;
-
-#if defined(Q_OS_OS2) 
-	PipeThread *pipeThread;       
-	HPIPE hpipe;
-	PID pidMP;
-#endif
 
 	int mplayer_svn;
 

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,10 +27,18 @@ public:
 	URLHistory();
 	virtual ~URLHistory();
 
+	virtual void addUrl(QString url, bool is_playlist);
+
+	//! Adds an URL, autodetects if it's a playlist
 	virtual void addUrl(QString url);
 
-	//! Returns the URL
+	//! Returns the URL, without the playlist tag
 	virtual QString url(int n);
+
+	//! Returns if the item at pos n is a playlist
+	virtual bool isPlaylist(int n);
+
+	static bool isPlaylist(QString url);
 };
 
 #endif

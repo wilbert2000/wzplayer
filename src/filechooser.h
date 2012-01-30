@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,12 +19,10 @@
 #ifndef _FILECHOOSER_H_
 #define _FILECHOOSER_H_
 
-#include "lineedit_with_icon.h"
+#include "ui_filechooser.h"
 #include <QFileDialog>
 
-class QToolButton;
-
-class FileChooser : public LineEditWithIcon
+class FileChooser : public QWidget, public Ui::FileChooser
 {
     Q_OBJECT
 	Q_PROPERTY(QString text READ text WRITE setText)
@@ -39,12 +37,17 @@ public:
     FileChooser( QWidget* parent = 0 );
     ~FileChooser();
 
+	QLineEdit * lineEdit();
+	QToolButton * toolButton();
+
+	QString text() const;
 	QString caption() const { return _caption; };
 	QString filter() const { return _filter; };
 	DialogType dialogType() const { return _type; };
 	QFileDialog::Options options() const { return _options; };
 
 public slots:
+	void setText(const QString & text);
 	void setCaption(const QString & caption) { _caption = caption; };
 	void setFilter(const QString & filter) { _filter = filter; };
 	void setDialogType( DialogType type) { _type = type; };
@@ -53,19 +56,14 @@ public slots:
 signals:
 	void fileChanged(QString file);
 
-protected:
-	virtual void setupButton();
-
 protected slots:
-	virtual void openFileDialog();
+	virtual void on_button_clicked();
 
 protected:
 	QString _caption;
 	QString _filter;
 	DialogType _type;
 	QFileDialog::Options _options;
-
-	static QString last_dir;
 };
 
 #endif

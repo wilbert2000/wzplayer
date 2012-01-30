@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,10 +35,6 @@ TVList::TVList(bool check_channels_conf, Services services, QString filename, QW
 }
 
 TVList::~TVList() {
-}
-
-Favorites * TVList::createNewObject(QString filename, QWidget * parent) {
-	return new TVList(false, TV, filename, parent);
 }
 
 #ifndef Q_OS_WIN
@@ -94,7 +90,6 @@ void TVList::edit() {
 	e.setDialogIcon( Images::icon("open_tv") );
 
 	e.setData(f_list);
-	e.setStorePath( QFileInfo(_filename).absolutePath() );
 
 	if (e.exec() == QDialog::Accepted) {
 		f_list = e.data();

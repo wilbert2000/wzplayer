@@ -45,7 +45,7 @@ src/smplayer:
 	cd src && $(LRELEASE) smplayer.pro
 
 clean:
-	if [ -f src/Makefile ]; then cd src && make distclean; fi
+	cd src && make distclean
 	-rm src/translations/smplayer_*.qm
 
 install: src/smplayer

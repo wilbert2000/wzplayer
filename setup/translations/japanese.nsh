@@ -1,100 +1,38 @@
-﻿;Language: Japanese (1041)
-;Japanese language strings for the Windows SMPlayer NSIS installer.
-;
-;Save file as UTF-8 w/ BOM
-;
-
-!insertmacro LANGFILE "Japanese" "日本語"
+;;
+;;  japanese.nsh
+;;
+;;  Japanese language strings for the Windows SMPlayer NSIS installer.
+;;  Save file with ANSI encoding
+;;
+;;  Author:
+;;
 
 ; Startup
-${LangFileString} Installer_Is_Running "インストーラーは既に実行中です。"
-${LangFileString} Installer_No_Admin "このプログラムのインストール時には管理者としてログインする必要があります。"
-${LangFileString} SMPlayer_Is_Running "An instance of SMPlayer is running. Please exit SMPlayer and try again."
+LangString SMPLAYER_INSTALLER_IS_RUNNING ${LANG_JAPANESE} "The installer is already running."
+LangString SMPLAYER_INSTALLER_UNSUPPORTED_OS ${LANG_JAPANESE} "Unsupported operating system.$\n$(^Name) requires at least Windows 2000 and may not work correctly on your system.$\nDo you really want to continue with the installation?"
+LangString SMPLAYER_INSTALLER_NO_ADMIN ${LANG_JAPANESE} "You must be logged in as an administrator when installing this program."
+LangString SMPLAYER_INSTALLER_PREV_VERSION ${LANG_JAPANESE} "SMPlayer has already been installed.$\nDo you want to remove the previous version before installing $(^Name)?"
 
 ; Components Page
-${LangFileString} ShortcutGroupTitle "ショートカット"
-${LangFileString} MPlayerGroupTitle "MPlayer コンポーネント"
-
-${LangFileString} Section_SMPlayer "SMPlayer (必須)"
-${LangFileString} Section_SMPlayer_Desc "SMPlayer、共有ライブラリ、およびドキュメントです。"
-
-${LangFileString} Section_DesktopShortcut "デスクトップ"
-${LangFileString} Section_DesktopShortcut_Desc "デスクトップに SMPlayer へのショートカットを作成します。"
-
-${LangFileString} Section_StartMenu "スタートメニュー"
-${LangFileString} Section_StartMenu_Desc "SMPlayer の [スタート] メニュー エントリを作成します。"
-
-${LangFileString} Section_MPlayer "MPlayer (必須)"
-!ifdef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "再生のために必要な MPlayer です。"
-!else ifndef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "再生のために必要な MPlayer です。(インストールにはインターネット接続が必要です)"
-!endif
-
-${LangFileString} Section_MPlayerCodecs "バイナリ コーデック"
-!ifdef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "MPlayer のオプション コーデックです。"
-!else ifndef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "MPlayer のオプション コーデックです。(インストールにはインターネット接続が必要です)"
-!endif
-
-${LangFileString} Section_MEncoder_Desc "A companion program to MPlayer that can be used to encode or transform supported audio or video streams."
-
-${LangFileString} Section_IconThemes "アイコン テーマ"
-${LangFileString} Section_IconThemes_Desc "SMPlayer の追加アイコン テーマです。"
-
-${LangFileString} Section_Translations "ローカライズ"
-${LangFileString} Section_Translations_Desc "非英語のローカライズです。"
-
-${LangFileString} MPlayer_Codec_Msg "バイナリ コーデック パッケージは新しい RealVideo 派生や多くの希少なフォーマットなど、まだ自然には実装されていないコーデックへのサポートを追加します。$\nDVD、MPEG-1/2/4などの最も一般的なフォーマットの再生には必要でないことにご注意ください。"
-
-; Upgrade/Reinstall Page
-${LangFileString} Reinstall_Header_Text "Select Install Type"
-${LangFileString} Reinstall_Header_SubText "Select Overwrite or Uninstall mode."
-
-${LangFileString} Reinstall_Msg1 "You have an existing installation of SMPlayer in the following folder:"
-${LangFileString} Reinstall_Msg2 "Please select how to proceed:"
-${LangFileString} Reinstall_Overwrite "Overwrite ($Inst_Type) the existing installation"
-${LangFileString} Reinstall_Uninstall "Uninstall (remove) the existing installation"
-${LangFileString} Reinstall_Msg3_1 "Click Start when ready to proceed."
-${LangFileString} Reinstall_Msg3_2 "Click Next when ready to proceed."
-${LangFileString} Reinstall_Msg3_3 "Click Uninstall when ready to proceed."
-${LangFileString} Reinstall_Msg4 "Change Installation Settings"
-
-${LangFileString} Type_Reinstall "reinstall"
-${LangFileString} Type_Downgrade "downgrade"
-${LangFileString} Type_Upgrade "upgrade"
-
-${LangFileString} StartBtn "スタート"
+LangString MPLAYER_CODEC_INFORMATION ${LANG_JAPANESE} "The binary codec packages add support for codecs that are not yet implemented natively, like newer RealVideo variants and a lot of uncommon formats.$\nNote that they are not necessary to play most common formats like DVDs, MPEG-1/2/4, etc."
 
 ; MPlayer Section
-${LangFileString} MPlayer_DL_Msg "MPlayer をダウンロードしています..."
-${LangFileString} MPlayer_DL_Retry "MPlayer は正常にインストールされませんでした。再試行しますか?"
-${LangFileString} MPlayer_DL_Failed "MPlayer のダウンロードに失敗しました: '$R0'。"
-${LangFileString} MPlayer_Inst_Failed "MPlayer のインストールに失敗しました。MPlayer は再生に必要です。"
+LangString MPLAYER_IS_INSTALLED ${LANG_JAPANESE} "MPlayer is already installed. Re-Download?"
+LangString MPLAYER_IS_DOWNLOADING ${LANG_JAPANESE} "Downloading MPlayer..."
+LangString MPLAYER_DL_FAILED ${LANG_JAPANESE} "Failed to download MPlayer:"
+LangString MPLAYER_INST_FAILED ${LANG_JAPANESE} "Failed to install MPlayer. MPlayer is required for playback."
 
 ; Codecs Section
-${LangFileString} Codecs_DL_Msg "MPlayer コーデックをダウンロードしています..."
-${LangFileString} Codecs_DL_Retry "MPlayer コーデックは正常にインストールされませんでした。再試行しますか?"
-${LangFileString} Codecs_DL_Failed "MPlayer コーデックのダウンロードに失敗しました: '$R0'。"
-${LangFileString} Codecs_Inst_Failed "MPlayer コーデックのインストールに失敗しました。"
+LangString CODECS_IS_INSTALLED ${LANG_JAPANESE} "MPlayer codecs are already installed. Re-Download?"
+LangString CODECS_IS_DOWNLOADING ${LANG_JAPANESE} "Downloading MPlayer codecs..."
+LangString CODECS_DL_FAILED ${LANG_JAPANESE} "Failed to download MPlayer codecs:"
+LangString CODECS_INST_FAILED ${LANG_JAPANESE} "Failed to install MPlayer codecs."
 
 ; Version information
-${LangFileString} VerInfo_DL_Msg "バージョン情報をダウンロードしています..."
-${LangFileString} VerInfo_DL_Failed "バージョン情報のダウンロードに失敗しました: '$R0'。既定のバージョンを使用しています。"
+LangString VERINFO_IS_DOWNLOADING ${LANG_JAPANESE} "Downloading version information..."
+LangString VERINFO_DL_FAILED ${LANG_JAPANESE} "Failed to download version info:"
+LangString VERINFO_IS_MISSING ${LANG_JAPANESE} "Version file missing version information. Setup will use a default version."
 
 ; Uninstaller
-${LangFileString} Uninstaller_No_Admin "このインストールは管理者特権のあるユーザーによってのみアンインストールできます。"
-${LangFileString} Uninstaller_Aborted "アンインストールはユーザーによって注視されました。"
-${LangFileString} Uninstaller_NotInstalled "ディレクトリ '$INSTDIR' に SMPlayer がインストールされているように見えません。$\r$\nこのまま続行しますか (推奨されません)?"
-
-; Vista & Later Default Programs Registration
-${LangFileString} Application_Description "SMPlayer はビデオ、DVD、VCD の再生のような基本的な機能から MPlayer フィルター、edl リストなどへのサポートのような高度な機能まで、MPlayer の完全なフロントエンドです。"
-
-; Misc
-${LangFileString} Info_Del_Files "Deleting Files..."
-${LangFileString} Info_Del_Registry "Deleting Registry Keys..."
-${LangFileString} Info_Del_Shortcuts "Deleting Shortcuts..."
-${LangFileString} Info_Rest_Assoc "Restoring file associations..."
-${LangFileString} Info_RollBack "Rolling back changes..."
-${LangFileString} Info_Files_Extract "Extracting files..."
+LangString UNINSTALL_NO_ADMIN ${LANG_JAPANESE} "This installation can only be uninstalled by a user with administrator privileges."
+LangString SMPLAYER_NOT_INSTALLED ${LANG_JAPANESE} "It does not appear that SMPlayer is installed in the directory '$INSTDIR'.$\r$\nContinue anyway (not recommended)?"

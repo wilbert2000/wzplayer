@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,12 +42,6 @@
 #include <QBuffer>
 #endif
 
-//#define NO_SMPLAYER_SUPPORT
-
-#ifndef NO_SMPLAYER_SUPPORT
-#include "images.h"
-#endif
-
 #define COL_LANG 0
 #define COL_NAME 1
 #define COL_FORMAT 2
@@ -62,13 +56,13 @@ FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
 
 	set = 0; // settings
 
-	subtitles_for_label->setBuddy(file_chooser);
+	subtitles_for_label->setBuddy(file_chooser->lineEdit());
 
 	progress->hide();
 
 	connect( file_chooser, SIGNAL(fileChanged(QString)),
              this, SLOT(setMovie(QString)) );
-	connect( file_chooser, SIGNAL(textChanged(const QString &)),
+	connect( file_chooser->lineEdit(), SIGNAL(textChanged(const QString &)),
              this, SLOT(updateRefreshButton()) );
 
 	connect( refresh_button, SIGNAL(clicked()),
@@ -128,7 +122,7 @@ FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
 	include_lang_on_filename = true;
 
 	file_downloader = new FileDownloader(this);
-        file_downloader->setModal(false);
+	file_downloader->setModal(true);
 	connect( file_downloader, SIGNAL(downloadFailed(QString)),
              this, SLOT(showError(QString)), Qt::QueuedConnection );
 	connect( file_downloader, SIGNAL(downloadFinished(const QByteArray &)),
@@ -218,16 +212,6 @@ void FindSubtitlesWindow::retranslateStrings() {
 	// Actions
 	downloadAct->setText( tr("&Download") );
 	copyLinkAct->setText( tr("&Copy link to clipboard") );
-
-	// Icons
-#ifndef NO_SMPLAYER_SUPPORT
-	download_button->setIcon( Images::icon("download") );
-	configure_button->setIcon( Images::icon("prefs") );
-	refresh_button->setIcon( Images::icon("refresh") );
-
-	downloadAct->setIcon( Images::icon("download") );
-	copyLinkAct->setIcon( Images::icon("copy") );
-#endif
 }
 
 void FindSubtitlesWindow::setMovie(QString filename) {

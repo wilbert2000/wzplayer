@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,10 +30,6 @@
 #include <QDir>
 #include <QLocale>
 
-#if YOUTUBE_SUPPORT
-#include "retrieveyoutubeurl.h"
-#endif
-
 using namespace Global;
 
 Preferences::Preferences() {
@@ -63,7 +59,7 @@ void Preferences::reset() {
        General
        ******* */
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	mplayer_bin= "mplayer/mplayer.exe";
 #else
 	mplayer_bin = "mplayer";
@@ -96,20 +92,11 @@ void Preferences::reset() {
 	autoq = 6;
 	add_blackborders_on_fullscreen = false;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	turn_screensaver_off = false;
 	avoid_screensaver = true;
 #else
 	disable_screensaver = true;
-#endif
-
-#ifndef Q_OS_WIN
-	vdpau.ffh264vdpau = true;
-	vdpau.ffmpeg12vdpau = true;
-	vdpau.ffwmv3vdpau = true;
-	vdpau.ffvc1vdpau = true;
-	vdpau.ffodivxvdpau = false;
-	vdpau.disable_video_filters = true;
 #endif
 
 	use_soft_vol = true;
@@ -128,8 +115,8 @@ void Preferences::reset() {
 	use_mc = false;
 	mc_value = 0;
 
+	loop = false;
 	osd = Seek;
-	osd_delay = 2200;
 
 	file_settings_method = "hash"; // Possible values: normal & hash
 
@@ -177,16 +164,12 @@ void Preferences::reset() {
 
 	threads = 1;
 
-	cache_for_files = 0;
+	cache_for_files = 2000;
 	cache_for_streams = 1000;
 	cache_for_dvds = 0; // not recommended to use cache for dvds
 	cache_for_vcds = 1000;
 	cache_for_audiocds = 1000;
 	cache_for_tv = 3000;
-
-#if YOUTUBE_SUPPORT
-	yt_quality = RetrieveYoutubeUrl::MP4_360p;
-#endif
 
 
     /* *********
@@ -206,6 +189,7 @@ void Preferences::reset() {
 	use_ass_subtitles = true;
 	ass_line_spacing = 0;
 
+	use_closed_caption_subs = false;
 	use_forced_subs_only = false;
 
 	sub_visibility = true;
@@ -214,8 +198,6 @@ void Preferences::reset() {
 
 	use_new_sub_commands = Detect;
 	change_sub_scale_should_restart = Detect;
-
-	fast_load_sub = true;
 
 	// ASS styles
 	// Nothing to do, default values are given in
@@ -256,7 +238,6 @@ void Preferences::reset() {
 	log_smplayer = true;
 	log_filter = ".*";
 	verbose_log = false;
-	save_smplayer_log = false;
 
     //mplayer log autosaving
     autosave_mplayer_log = false;
@@ -286,8 +267,6 @@ void Preferences::reset() {
 
 	actions_to_run = "";
 
-	show_tag_in_window_title = true;
-
 
     /* *********
        GUI stuff
@@ -305,6 +284,8 @@ void Preferences::reset() {
 	style="";
 #endif
 
+	show_frame_counter = FALSE;
+	show_motion_vectors = false;
 
 #if DVDNAV_SUPPORT
 	mouse_left_click_function = "dvdnav_mouse";
@@ -318,7 +299,6 @@ void Preferences::reset() {
 	mouse_xbutton2_click_function = "";
 	wheel_function = Seeking;
 	wheel_function_cycle = Seeking | Volume | Zoom | ChangeSpeed;
-	wheel_function_seeking_reverse = false;
 
 	seeking1 = 10;
 	seeking2 = 60;
@@ -329,17 +309,13 @@ void Preferences::reset() {
 #if ENABLE_DELAYED_DRAGGING
 	time_slider_drag_delay = 100;
 #endif
-#if SEEKBAR_RESOLUTION
-	relative_seeking = false;
-#endif
-	precise_seeking = true;
 
 	language = "";
 	iconset = "";
 
 	balloon_count = 5;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	restore_pos_after_fullscreen = true;
 #else
 	restore_pos_after_fullscreen = false;
@@ -409,7 +385,7 @@ void Preferences::reset() {
 
 	initial_audio_equalizer << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0;
 
-	initial_zoom_factor = 1.0;
+	initial_panscan_factor = 1.0;
 	initial_sub_pos = 100; // 100%
 
 	initial_postprocessing = false;
@@ -430,8 +406,6 @@ void Preferences::reset() {
 
 	mplayer_detected_version = -1; //None version parsed yet
 	mplayer_user_supplied_version = -1;
-	mplayer_is_mplayer2 = false;
-	mplayer2_detected_version = QString::null;
 
 
     /* *********
@@ -493,7 +467,7 @@ void Preferences::save() {
 
 	set->setValue("mplayer_bin", mplayer_bin);
 	set->setValue("driver/vo", vo);
-	set->setValue("driver/audio_output", ao);
+	set->setValue("driver/ao", ao);
 
 	set->setValue("use_screenshot", use_screenshot);
 	set->setValue("screenshot_directory", screenshot_directory);
@@ -511,20 +485,11 @@ void Preferences::save() {
 	set->setValue("autoq", autoq);
 	set->setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	set->setValue("turn_screensaver_off", turn_screensaver_off);
 	set->setValue("avoid_screensaver", avoid_screensaver);
 #else
 	set->setValue("disable_screensaver", disable_screensaver);
-#endif
-
-#ifndef Q_OS_WIN
-	set->setValue("vdpau_ffh264vdpau", vdpau.ffh264vdpau);
-	set->setValue("vdpau_ffmpeg12vdpau", vdpau.ffmpeg12vdpau);
-	set->setValue("vdpau_ffwmv3vdpau", vdpau.ffwmv3vdpau);
-	set->setValue("vdpau_ffvc1vdpau", vdpau.ffvc1vdpau);
-	set->setValue("vdpau_ffodivxvdpau", vdpau.ffodivxvdpau);
-	set->setValue("vdpau_disable_video_filters", vdpau.disable_video_filters);
 #endif
 
 	set->setValue("use_soft_vol", use_soft_vol);
@@ -543,8 +508,8 @@ void Preferences::save() {
 	set->setValue("use_mc", use_mc);
 	set->setValue("mc_value", mc_value);
 
+	set->setValue("loop", loop);
 	set->setValue("osd", osd);
-	set->setValue("osd_delay", osd_delay);
 
 	set->setValue("file_settings_method", file_settings_method);
 
@@ -600,10 +565,6 @@ void Preferences::save() {
 	set->setValue("cache_for_audiocds", cache_for_audiocds);
 	set->setValue("cache_for_tv", cache_for_tv);
 
-#if YOUTUBE_SUPPORT
-	set->setValue("youtube_quality", yt_quality);
-#endif
-
 	set->endGroup(); // performance
 
 
@@ -626,6 +587,7 @@ void Preferences::save() {
 
 	set->setValue("use_ass_subtitles", use_ass_subtitles);
 	set->setValue("ass_line_spacing", ass_line_spacing);
+	set->setValue("use_closed_caption_subs", use_closed_caption_subs);
 	set->setValue("use_forced_subs_only", use_forced_subs_only);
 
 	set->setValue("sub_visibility", sub_visibility);
@@ -634,8 +596,6 @@ void Preferences::save() {
 
 	set->setValue("use_new_sub_commands", use_new_sub_commands);
 	set->setValue("change_sub_scale_should_restart", change_sub_scale_should_restart);
-
-	set->setValue("fast_load_sub", fast_load_sub);
 
 	// ASS styles
 	ass_styles.save(set);
@@ -675,7 +635,6 @@ void Preferences::save() {
 	set->setValue("log_smplayer", log_smplayer);
 	set->setValue("log_filter", log_filter);
 	set->setValue("verbose_log", verbose_log);
-	set->setValue("save_smplayer_log", save_smplayer_log);
 
     //mplayer log autosaving
     set->setValue("autosave_mplayer_log", autosave_mplayer_log);
@@ -700,8 +659,6 @@ void Preferences::save() {
 
 	set->setValue("actions_to_run", actions_to_run);
 
-	set->setValue("show_tag_in_window_title", show_tag_in_window_title);
-
 	set->endGroup(); // advanced
 
 
@@ -723,6 +680,9 @@ void Preferences::save() {
 	set->setValue("style", style);
 #endif
 
+	set->setValue("show_frame_counter", show_frame_counter);
+	set->setValue("show_motion_vectors", show_motion_vectors);
+
 	set->setValue("mouse_left_click_function", mouse_left_click_function);
 	set->setValue("mouse_right_click_function", mouse_right_click_function);
 	set->setValue("mouse_double_click_function", mouse_double_click_function);
@@ -731,7 +691,6 @@ void Preferences::save() {
 	set->setValue("mouse_xbutton2_click_function", mouse_xbutton2_click_function);
 	set->setValue("mouse_wheel_function", wheel_function);
 	set->setValue("wheel_function_cycle", (int) wheel_function_cycle);
-	set->setValue("wheel_function_seeking_reverse", wheel_function_seeking_reverse);
 
 	set->setValue("seeking1", seeking1);
 	set->setValue("seeking2", seeking2);
@@ -742,10 +701,6 @@ void Preferences::save() {
 #if ENABLE_DELAYED_DRAGGING
 	set->setValue("time_slider_drag_delay", time_slider_drag_delay);
 #endif
-#if SEEKBAR_RESOLUTION
-	set->setValue("relative_seeking", relative_seeking);
-#endif
-	set->setValue("precise_seeking", precise_seeking);
 
 	set->setValue("language", language);
 	set->setValue("iconset", iconset);
@@ -824,7 +779,7 @@ void Preferences::save() {
 
 	set->setValue("initial_audio_equalizer", initial_audio_equalizer);
 
-	set->setValue("initial_zoom_factor", initial_zoom_factor);
+	set->setValue("initial_panscan_factor", initial_panscan_factor);
 	set->setValue("initial_sub_pos", initial_sub_pos);
 
 	set->setValue("initial_volnorm", initial_volnorm);
@@ -848,8 +803,6 @@ void Preferences::save() {
 	set->beginGroup( "mplayer_info");
 	set->setValue("mplayer_detected_version", mplayer_detected_version);
 	set->setValue("mplayer_user_supplied_version", mplayer_user_supplied_version);
-	set->setValue("is_mplayer2", mplayer_is_mplayer2);
-	set->setValue("mplayer2_detected_version", mplayer2_detected_version);
 	set->endGroup(); // mplayer_info
 
 
@@ -916,7 +869,7 @@ void Preferences::load() {
 
 	mplayer_bin = set->value("mplayer_bin", mplayer_bin).toString();
 	vo = set->value("driver/vo", vo).toString();
-	ao = set->value("driver/audio_output", ao).toString();
+	ao = set->value("driver/ao", ao).toString();
 
 	use_screenshot = set->value("use_screenshot", use_screenshot).toBool();
 	screenshot_directory = set->value("screenshot_directory", screenshot_directory).toString();
@@ -935,20 +888,11 @@ void Preferences::load() {
 	autoq = set->value("autoq", autoq).toInt();
 	add_blackborders_on_fullscreen = set->value("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen).toBool();
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	turn_screensaver_off = set->value("turn_screensaver_off", turn_screensaver_off).toBool();
 	avoid_screensaver = set->value("avoid_screensaver", avoid_screensaver).toBool();
 #else
 	disable_screensaver = set->value("disable_screensaver", disable_screensaver).toBool();
-#endif
-
-#ifndef Q_OS_WIN
-	vdpau.ffh264vdpau = set->value("vdpau_ffh264vdpau", vdpau.ffh264vdpau).toBool();
-	vdpau.ffmpeg12vdpau = set->value("vdpau_ffmpeg12vdpau", vdpau.ffmpeg12vdpau).toBool();
-	vdpau.ffwmv3vdpau = set->value("vdpau_ffwmv3vdpau", vdpau.ffwmv3vdpau).toBool();
-	vdpau.ffvc1vdpau = set->value("vdpau_ffvc1vdpau", vdpau.ffvc1vdpau).toBool();
-	vdpau.ffodivxvdpau = set->value("vdpau_ffodivxvdpau", vdpau.ffodivxvdpau).toBool();
-	vdpau.disable_video_filters = set->value("vdpau_disable_video_filters", vdpau.disable_video_filters).toBool();
 #endif
 
 	use_soft_vol = set->value("use_soft_vol", use_soft_vol).toBool();
@@ -967,8 +911,8 @@ void Preferences::load() {
 	use_mc = set->value("use_mc", use_mc).toBool();
 	mc_value = set->value("mc_value", mc_value).toDouble();
 
+	loop = set->value("loop", loop).toBool();
 	osd = set->value("osd", osd).toInt();
-	osd_delay = set->value("osd_delay", osd_delay).toInt();
 
 	file_settings_method = set->value("file_settings_method", file_settings_method).toString();
 
@@ -1024,10 +968,6 @@ void Preferences::load() {
 	cache_for_audiocds = set->value("cache_for_audiocds", cache_for_audiocds).toInt();
 	cache_for_tv = set->value("cache_for_tv", cache_for_tv).toInt();
 
-#if YOUTUBE_SUPPORT
-	yt_quality = set->value("youtube_quality", yt_quality).toInt();
-#endif
-
 	set->endGroup(); // performance
 
 
@@ -1051,6 +991,7 @@ void Preferences::load() {
 	use_ass_subtitles = set->value("use_ass_subtitles", use_ass_subtitles).toBool();
 	ass_line_spacing = set->value("ass_line_spacing", ass_line_spacing).toInt();
 
+	use_closed_caption_subs = set->value("use_closed_caption_subs", use_closed_caption_subs).toBool();
 	use_forced_subs_only = set->value("use_forced_subs_only", use_forced_subs_only).toBool();
 
 	sub_visibility = set->value("sub_visibility", sub_visibility).toBool();
@@ -1059,8 +1000,6 @@ void Preferences::load() {
 
 	use_new_sub_commands = (OptionState) set->value("use_new_sub_commands", use_new_sub_commands).toInt();
 	change_sub_scale_should_restart = (OptionState) set->value("change_sub_scale_should_restart", change_sub_scale_should_restart).toInt();
-
-	fast_load_sub = set->value("fast_load_sub", fast_load_sub).toBool();
 
 	// ASS styles
 	ass_styles.load(set);
@@ -1105,7 +1044,6 @@ void Preferences::load() {
 	log_smplayer = set->value("log_smplayer", log_smplayer).toBool();
 	log_filter = set->value("log_filter", log_filter).toString();
 	verbose_log = set->value("verbose_log", verbose_log).toBool();
-	save_smplayer_log = set->value("save_smplayer_log", save_smplayer_log).toBool();
 
     //mplayer log autosaving
     autosave_mplayer_log = set->value("autosave_mplayer_log", autosave_mplayer_log).toBool();
@@ -1128,8 +1066,6 @@ void Preferences::load() {
 
 	actions_to_run = set->value("actions_to_run", actions_to_run).toString();
 
-	show_tag_in_window_title = set->value("show_tag_in_window_title", show_tag_in_window_title).toBool();
-
 	set->endGroup(); // advanced
 
 
@@ -1151,6 +1087,9 @@ void Preferences::load() {
 	style = set->value("style", style).toString();
 #endif
 
+	show_frame_counter = set->value("show_frame_counter", show_frame_counter).toBool();
+	show_motion_vectors = set->value("show_motion_vectors", show_motion_vectors).toBool();
+
 	mouse_left_click_function = set->value("mouse_left_click_function", mouse_left_click_function).toString();
 	mouse_right_click_function = set->value("mouse_right_click_function", mouse_right_click_function).toString();
 	mouse_double_click_function = set->value("mouse_double_click_function", mouse_double_click_function).toString();
@@ -1160,7 +1099,6 @@ void Preferences::load() {
 	wheel_function = set->value("mouse_wheel_function", wheel_function).toInt();
 	int wheel_function_cycle_int = set->value("wheel_function_cycle", (int) wheel_function_cycle).toInt();
 	wheel_function_cycle = QFlags<Preferences::WheelFunctions> (QFlag(wheel_function_cycle_int));
-	wheel_function_seeking_reverse = set->value("wheel_function_seeking_reverse", wheel_function_seeking_reverse).toBool();
 
 	seeking1 = set->value("seeking1", seeking1).toInt();
 	seeking2 = set->value("seeking2", seeking2).toInt();
@@ -1171,10 +1109,6 @@ void Preferences::load() {
 #if ENABLE_DELAYED_DRAGGING
 	time_slider_drag_delay = set->value("time_slider_drag_delay", time_slider_drag_delay).toInt();
 #endif
-#if SEEKBAR_RESOLUTION
-	relative_seeking = set->value("relative_seeking", relative_seeking).toBool();
-#endif
-	precise_seeking = set->value("precise_seeking", precise_seeking).toBool();
 
 	language = set->value("language", language).toString();
 	iconset= set->value("iconset", iconset).toString();
@@ -1254,7 +1188,7 @@ void Preferences::load() {
 
 	initial_audio_equalizer = set->value("initial_audio_equalizer", initial_audio_equalizer).toList();
 
-	initial_zoom_factor = set->value("initial_zoom_factor", initial_zoom_factor).toDouble();
+	initial_panscan_factor = set->value("initial_panscan_factor", initial_panscan_factor).toDouble();
 	initial_sub_pos = set->value("initial_sub_pos", initial_sub_pos).toInt();
 
 	initial_volnorm = set->value("initial_volnorm", initial_volnorm).toBool();
@@ -1278,9 +1212,6 @@ void Preferences::load() {
 	set->beginGroup( "mplayer_info");
 	mplayer_detected_version = set->value("mplayer_detected_version", mplayer_detected_version).toInt();
 	mplayer_user_supplied_version = set->value("mplayer_user_supplied_version", mplayer_user_supplied_version).toInt();
-	mplayer_is_mplayer2 = set->value("is_mplayer2", mplayer_is_mplayer2).toBool();
-	mplayer2_detected_version = set->value("mplayer2_detected_version", mplayer2_detected_version).toString();
-
 	set->endGroup(); // mplayer_info
 
 
@@ -1316,13 +1247,10 @@ void Preferences::load() {
        ******* */
 
 	set->beginGroup("history");
-
-	history_recents->setMaxItems( set->value("recents/max_items", history_recents->maxItems()).toInt() );
 	history_recents->fromStringList( set->value("recents", history_recents->toStringList()).toStringList() );
-
-	history_urls->setMaxItems( set->value("urls/max_items", history_urls->maxItems()).toInt() );
+	history_recents->setMaxItems( set->value("recents/max_items", history_recents->maxItems()).toInt() );;
 	history_urls->fromStringList( set->value("urls", history_urls->toStringList()).toStringList() );
-
+	history_urls->setMaxItems( set->value("urls/max_items", history_urls->maxItems()).toInt() );;
 	set->endGroup(); // history
 
 

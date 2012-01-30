@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,12 +43,10 @@
 #include <QToolButton>
 #include <QMenuBar>
 
-#define TOOLBAR_VERSION 1
-
 using namespace Global;
 
-DefaultGui::DefaultGui( bool use_server, QWidget * parent, Qt::WindowFlags flags )
-	: BaseGuiPlus( use_server, parent, flags )
+DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
+	: BaseGuiPlus( parent, flags )
 {
 	createStatusBar();
 
@@ -56,10 +54,6 @@ DefaultGui::DefaultGui( bool use_server, QWidget * parent, Qt::WindowFlags flags
              this, SLOT(displayTime(QString)) );
     connect( this, SIGNAL(frameChanged(int)),
              this, SLOT(displayFrame(int)) );
-	connect( this, SIGNAL(ABMarkersChanged(int,int)),
-             this, SLOT(displayABSection(int,int)) );
-	connect( this, SIGNAL(videoInfoChanged(int,int,double)),
-             this, SLOT(displayVideoInfo(int,int,double)) );
 
 	connect( this, SIGNAL(cursorNearBottom(QPoint)), 
              this, SLOT(showFloatingControl(QPoint)) );
@@ -125,17 +119,6 @@ void DefaultGui::createActions() {
 	forwardbutton_action = new SeekingButton(forward_actions, this);
 	forwardbutton_action->setObjectName("forwardbutton_action");
 #endif
-
-	// Statusbar
-	viewVideoInfoAct = new MyAction(this, "toggle_video_info" );
-	viewVideoInfoAct->setCheckable(true);
-	connect( viewVideoInfoAct, SIGNAL(toggled(bool)),
-             video_info_display, SLOT(setVisible(bool)) );
-
-	viewFrameCounterAct = new MyAction( this, "toggle_frame_counter" );
-	viewFrameCounterAct->setCheckable( true );
-	connect( viewFrameCounterAct, SIGNAL(toggled(bool)),
-             frame_display, SLOT(setVisible(bool)) );
 }
 
 #if AUTODISABLE_ACTIONS
@@ -162,12 +145,6 @@ void DefaultGui::createMenus() {
 	toolbar_menu->addAction(toolbar2->toggleViewAction());
 	optionsMenu->addSeparator();
 	optionsMenu->addMenu(toolbar_menu);
-
-	statusbar_menu = new QMenu(this);
-	statusbar_menu->addAction(viewVideoInfoAct);
-	statusbar_menu->addAction(viewFrameCounterAct);
-
-	optionsMenu->addMenu(statusbar_menu);
 }
 
 QMenu * DefaultGui::createPopupMenu() {
@@ -350,8 +327,8 @@ void DefaultGui::createFloatingControl() {
 
 #endif // USE_CONFIGURABLE_TOOLBARS
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	// To make work the ESC key (exit fullscreen) and Ctrl-X (close) in Windows and OS2
+#ifdef Q_OS_WIN
+	// To make work the ESC key (exit fullscreen) and Ctrl-X (close) in Windows
 	floating_control->addAction(exitFullscreenAct);
 	floating_control->addAction(exitAct);
 #endif
@@ -376,16 +353,6 @@ void DefaultGui::createStatusBar() {
 	frame_display->setText("88888888");
 	frame_display->setMinimumSize(frame_display->sizeHint());
 
-	ab_section_display = new QLabel( statusBar() );
-	ab_section_display->setAlignment(Qt::AlignRight);
-	ab_section_display->setFrameShape(QFrame::NoFrame);
-//	ab_section_display->setText("A:0:00:00 B:0:00:00");
-//	ab_section_display->setMinimumSize(ab_section_display->sizeHint());
-
-	video_info_display = new QLabel( statusBar() );
-	video_info_display->setAlignment(Qt::AlignRight);
-	video_info_display->setFrameShape(QFrame::NoFrame);
-
 	statusBar()->setAutoFillBackground(TRUE);
 
 	ColorUtils::setBackgroundColor( statusBar(), QColor(0,0,0) );
@@ -394,14 +361,7 @@ void DefaultGui::createStatusBar() {
 	ColorUtils::setForegroundColor( time_display, QColor(255,255,255) );
 	ColorUtils::setBackgroundColor( frame_display, QColor(0,0,0) );
 	ColorUtils::setForegroundColor( frame_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( ab_section_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( ab_section_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( video_info_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( video_info_display, QColor(255,255,255) );
 	statusBar()->setSizeGripEnabled(FALSE);
-
-	statusBar()->addPermanentWidget( video_info_display );
-	statusBar()->addPermanentWidget( ab_section_display );
 
     statusBar()->showMessage( tr("Welcome to SMPlayer") );
 	statusBar()->addPermanentWidget( frame_display, 0 );
@@ -412,8 +372,6 @@ void DefaultGui::createStatusBar() {
 
 	time_display->show();
 	frame_display->hide();
-	ab_section_display->show();
-	video_info_display->hide();
 }
 
 void DefaultGui::retranslateStrings() {
@@ -421,9 +379,6 @@ void DefaultGui::retranslateStrings() {
 
 	toolbar_menu->menuAction()->setText( tr("&Toolbars") );
 	toolbar_menu->menuAction()->setIcon( Images::icon("toolbars") );
-
-	statusbar_menu->menuAction()->setText( tr("Status&bar") );
-	statusbar_menu->menuAction()->setIcon( Images::icon("statusbar") );
 
 	toolbar1->setWindowTitle( tr("&Main toolbar") );
 	toolbar1->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
@@ -433,9 +388,6 @@ void DefaultGui::retranslateStrings() {
 
 	select_audio->setText( tr("Audio") );
 	select_subtitle->setText( tr("Subtitle") );
-
-	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info") );
-	viewFrameCounterAct->change( Images::icon("frame_counter"), tr("&Frame counter") );
 }
 
 
@@ -450,28 +402,13 @@ void DefaultGui::displayFrame(int frame) {
 	}
 }
 
-void DefaultGui::displayABSection(int secs_a, int secs_b) {
-	QString s;
-	if (secs_a > -1) s = tr("A:%1").arg(Helper::formatTime(secs_a));
-
-	if (secs_b > -1) {
-		if (!s.isEmpty()) s += " ";
-		s += tr("B:%1").arg(Helper::formatTime(secs_b));
-	}
-
-	ab_section_display->setText( s );
-
-	ab_section_display->setShown( !s.isEmpty() );
-}
-
-void DefaultGui::displayVideoInfo(int width, int height, double fps) {
-	video_info_display->setText(tr("%1x%2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
-}
-
 void DefaultGui::updateWidgets() {
 	qDebug("DefaultGui::updateWidgets");
 
 	BaseGuiPlus::updateWidgets();
+
+	// Frame counter
+	frame_display->setVisible( pref->show_frame_counter );
 
 	panel->setFocus();
 }
@@ -620,9 +557,6 @@ void DefaultGui::saveConfig() {
 
 	set->beginGroup( "default_gui");
 
-	set->setValue("video_info", viewVideoInfoAct->isChecked());
-	set->setValue("frame_counter", viewFrameCounterAct->isChecked());
-
 	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
 	set->setValue("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible);
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
@@ -642,7 +576,6 @@ void DefaultGui::saveConfig() {
 	set->setValue("controlwidget", ToolbarEditor::save(controlwidget) );
 	set->setValue("controlwidget_mini", ToolbarEditor::save(controlwidget_mini) );
 	set->setValue("floating_control", ToolbarEditor::save(floating_control->toolbar()) );
-	set->setValue("toolbar1_version", TOOLBAR_VERSION);
 	set->endGroup();
 #endif
 
@@ -655,9 +588,6 @@ void DefaultGui::loadConfig() {
 	QSettings * set = settings;
 
 	set->beginGroup( "default_gui");
-
-	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
-	viewFrameCounterAct->setChecked(set->value("frame_counter", false).toBool());
 
 	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
 	fullscreen_toolbar2_was_visible = set->value("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible).toBool();
@@ -684,7 +614,7 @@ void DefaultGui::loadConfig() {
 #if USE_CONFIGURABLE_TOOLBARS
 	QList<QAction *> actions_list = findChildren<QAction *>();
 	QStringList toolbar1_actions;
-	toolbar1_actions << "open_file" << "open_dvd" << "open_url" << "favorites_menu" << "separator" << "compact" << "fullscreen"
+	toolbar1_actions << "open_file" << "open_dvd" << "open_url" << "separator" << "compact" << "fullscreen"
                      << "separator" << "screenshot" << "separator" << "show_file_properties" << "show_playlist" 
                      << "show_preferences" << "separator" << "play_prev" << "play_next";
 
@@ -731,13 +661,7 @@ void DefaultGui::loadConfig() {
 	floatingcontrol_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action" << "separator" << "timelabel_action";
 
 	set->beginGroup( "actions" );
-	int toolbar_version = set->value("toolbar1_version", 0).toInt();
-	if (toolbar_version >= TOOLBAR_VERSION) {
-		ToolbarEditor::load(toolbar1, set->value("toolbar1", toolbar1_actions).toStringList(), actions_list );
-	} else {
-		qDebug("DefaultGui::loadConfig: toolbar too old, loading default one");
-		ToolbarEditor::load(toolbar1, toolbar1_actions, actions_list );
-	}
+	ToolbarEditor::load(toolbar1, set->value("toolbar1", toolbar1_actions).toStringList(), actions_list );
 	ToolbarEditor::load(controlwidget, set->value("controlwidget", controlwidget_actions).toStringList(), actions_list );
 	ToolbarEditor::load(controlwidget_mini, set->value("controlwidget_mini", controlwidget_mini_actions).toStringList(), actions_list );
 	ToolbarEditor::load(floating_control->toolbar(), set->value("floating_control", floatingcontrol_actions).toStringList(), actions_list );

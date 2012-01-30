@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ QString Paths::qtTranslationPath() {
 	return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
 }
 
-QString Paths::doc(QString file, QString locale, bool english_fallback) {
+QString Paths::doc(QString file, QString locale) {
 	if (locale.isEmpty()) {
 		locale = QLocale::system().name();
 	}
@@ -118,12 +118,8 @@ QString Paths::doc(QString file, QString locale, bool english_fallback) {
 		if (QFile::exists(f)) return f;
 	}
 
-	if (english_fallback) {
-		f = docPath() + "/en/" + file;
-		return f;
-	}
-
-	return QString::null;
+	f = docPath() + "/en/" + file;
+	return f;
 }
 
 void Paths::setConfigPath(QString path) {
@@ -137,7 +133,7 @@ QString Paths::configPath() {
 #ifdef PORTABLE_APP
 		return appPath();
 #else
-		#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+		#ifndef Q_OS_WIN
 		const char * XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
 		if (XDG_CONFIG_HOME!=NULL) {
 			qDebug("Paths::configPath: XDG_CONFIG_HOME: %s", XDG_CONFIG_HOME);

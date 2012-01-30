@@ -1,100 +1,38 @@
-﻿;Language: Russian (1049)
-;Russian language strings for the Windows SMPlayer NSIS installer.
-;
-;Save file as UTF-8 w/ BOM
-;
-
-!insertmacro LANGFILE "Russian" "Русский"
+;;
+;;  russian.nsh
+;;
+;;  Russian language strings for the Windows SMPlayer NSIS installer.
+;;  Save file with ANSI encoding
+;;
+;;  Author: 
+;;
 
 ; Startup
-${LangFileString} Installer_Is_Running "Программа установки уже запущена."
-${LangFileString} Installer_No_Admin "You must be logged in as an administrator when installing this program."
-${LangFileString} SMPlayer_Is_Running "An instance of SMPlayer is running. Please exit SMPlayer and try again."
+LangString SMPLAYER_INSTALLER_IS_RUNNING ${LANG_RUSSIAN} "The installer is already running."
+LangString SMPLAYER_INSTALLER_UNSUPPORTED_OS ${LANG_RUSSIAN} "Unsupported operating system.$\n$(^Name) requires at least Windows 2000 and may not work correctly on your system.$\nDo you really want to continue with the installation?"
+LangString SMPLAYER_INSTALLER_NO_ADMIN ${LANG_RUSSIAN} "You must be logged in as an administrator when installing this program."
+LangString SMPLAYER_INSTALLER_PREV_VERSION ${LANG_RUSSIAN} "SMPlayer has already been installed.$\nDo you want to remove the previous version before installing $(^Name)?"
 
 ; Components Page
-${LangFileString} ShortcutGroupTitle "Shortcuts"
-${LangFileString} MPlayerGroupTitle "MPlayer Components"
-
-${LangFileString} Section_SMPlayer "SMPlayer (required)"
-${LangFileString} Section_SMPlayer_Desc "SMPlayer, shared libraries, and documentation."
-
-${LangFileString} Section_DesktopShortcut "Desktop"
-${LangFileString} Section_DesktopShortcut_Desc "Creates a shortcut to SMPlayer on the desktop."
-
-${LangFileString} Section_StartMenu "Start Menu"
-${LangFileString} Section_StartMenu_Desc "Create a Start Menu entry for SMPlayer."
-
-${LangFileString} Section_MPlayer "MPlayer (required)"
-!ifdef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "MPlayer; required for playback."
-!else ifndef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "MPlayer; required for playback. (Internet Connection required for installation)"
-!endif
-
-${LangFileString} Section_MPlayerCodecs "Binary Codecs"
-!ifdef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "Optional codecs for MPlayer."
-!else ifndef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "Optional codecs for MPlayer. (Internet Connection required for installation)"
-!endif
-
-${LangFileString} Section_MEncoder_Desc "A companion program to MPlayer that can be used to encode or transform supported audio or video streams."
-
-${LangFileString} Section_IconThemes "Icon Themes"
-${LangFileString} Section_IconThemes_Desc "Additional icon themes for SMPlayer."
-
-${LangFileString} Section_Translations "Languages"
-${LangFileString} Section_Translations_Desc "Non-English language files for SMPlayer."
-
-${LangFileString} MPlayer_Codec_Msg "Пакеты с бинарными кодеками добавляют поддержку кодеков, не встроенных в mplayer, например, RealVideo и других нестандартных форматов.$\nОбратите внимание, что эти кодеки не нужны для воспроизведения большинства обычных форматов вроде DVD, MPEG-1/2/4 и т.п."
-
-; Upgrade/Reinstall Page
-${LangFileString} Reinstall_Header_Text "Select Install Type"
-${LangFileString} Reinstall_Header_SubText "Select Overwrite or Uninstall mode."
-
-${LangFileString} Reinstall_Msg1 "You have an existing installation of SMPlayer in the following folder:"
-${LangFileString} Reinstall_Msg2 "Please select how to proceed:"
-${LangFileString} Reinstall_Overwrite "Overwrite ($Inst_Type) the existing installation"
-${LangFileString} Reinstall_Uninstall "Uninstall (remove) the existing installation"
-${LangFileString} Reinstall_Msg3_1 "Click Start when ready to proceed."
-${LangFileString} Reinstall_Msg3_2 "Click Next when ready to proceed."
-${LangFileString} Reinstall_Msg3_3 "Click Uninstall when ready to proceed."
-${LangFileString} Reinstall_Msg4 "Change Installation Settings"
-
-${LangFileString} Type_Reinstall "reinstall"
-${LangFileString} Type_Downgrade "downgrade"
-${LangFileString} Type_Upgrade "upgrade"
-
-${LangFileString} StartBtn "Start"
+LangString MPLAYER_CODEC_INFORMATION ${LANG_RUSSIAN} "The binary codec packages add support for codecs that are not yet implemented natively, like newer RealVideo variants and a lot of uncommon formats.$\nNote that they are not necessary to play most common formats like DVDs, MPEG-1/2/4, etc."
 
 ; MPlayer Section
-${LangFileString} MPlayer_DL_Msg "Загрузка MPlayer..."
-${LangFileString} MPlayer_DL_Retry "MPlayer was not successfully installed. Retry?"
-${LangFileString} MPlayer_DL_Failed "Не удалось загрузить MPlayer: '$R0'."
-${LangFileString} MPlayer_Inst_Failed "Ошибка при установке MPlayer. MPlayer требуется для воспроизведения."
+LangString MPLAYER_IS_INSTALLED ${LANG_RUSSIAN} "MPlayer is already installed. Re-Download?"
+LangString MPLAYER_IS_DOWNLOADING ${LANG_RUSSIAN} "Downloading MPlayer..."
+LangString MPLAYER_DL_FAILED ${LANG_RUSSIAN} "Failed to download MPlayer:"
+LangString MPLAYER_INST_FAILED ${LANG_RUSSIAN} "Failed to install MPlayer. MPlayer is required for playback."
 
 ; Codecs Section
-${LangFileString} Codecs_DL_Msg "Загрузка бинарных кодеков для MPlayer..."
-${LangFileString} Codecs_DL_Retry "MPlayer codecs were not successfully installed. Retry?"
-${LangFileString} Codecs_DL_Failed "Не удалось загрузить бинарные кодеки для MPlayer: '$R0'."
-${LangFileString} Codecs_Inst_Failed "Ошибка при установке бинарных кодеков для MPlayer."
+LangString CODECS_IS_INSTALLED ${LANG_RUSSIAN} "MPlayer codecs are already installed. Re-Download?"
+LangString CODECS_IS_DOWNLOADING ${LANG_RUSSIAN} "Downloading MPlayer codecs..."
+LangString CODECS_DL_FAILED ${LANG_RUSSIAN} "Failed to download MPlayer codecs:"
+LangString CODECS_INST_FAILED ${LANG_RUSSIAN} "Failed to install MPlayer codecs."
 
 ; Version information
-${LangFileString} VerInfo_DL_Msg "Загрузка информации о версии..."
-${LangFileString} VerInfo_DL_Failed "Не удалось загрузить информацию о версии: '$R0'. Using a default version."
+LangString VERINFO_IS_DOWNLOADING ${LANG_RUSSIAN} "Downloading version information..."
+LangString VERINFO_DL_FAILED ${LANG_RUSSIAN} "Failed to download version info:"
+LangString VERINFO_IS_MISSING ${LANG_RUSSIAN} "Version file missing version information. Setup will use a default version."
 
 ; Uninstaller
-${LangFileString} Uninstaller_No_Admin "This installation can only be uninstalled by a user with administrator privileges."
-${LangFileString} Uninstaller_Aborted "Удаление прервано пользователем."
-${LangFileString} Uninstaller_NotInstalled "Не похоже, что SMPlayer установлен в каталог '$INSTDIR'.$\r$\nПродолжить всё равно (не рекомендуется)?"
-
-; Vista & Later Default Programs Registration
-${LangFileString} Application_Description "SMPlayer - полноценная оболочка для MPlayer, начиная от базовых функций вроде воспроизведения видеофайлов, DVD, VCD и заканчивая более продвинутыми вроде поддержки фильтров MPlayer, списков и т.д."
-
-; Misc
-${LangFileString} Info_Del_Files "Deleting Files..."
-${LangFileString} Info_Del_Registry "Deleting Registry Keys..."
-${LangFileString} Info_Del_Shortcuts "Deleting Shortcuts..."
-${LangFileString} Info_Rest_Assoc "Restoring file associations..."
-${LangFileString} Info_RollBack "Rolling back changes..."
-${LangFileString} Info_Files_Extract "Extracting files..."
+LangString UNINSTALL_NO_ADMIN ${LANG_RUSSIAN} "This installation can only be uninstalled by a user with administrator privileges."
+LangString SMPLAYER_NOT_INSTALLED ${LANG_RUSSIAN} "It does not appear that SMPlayer is installed in the directory '$INSTDIR'.$\r$\nContinue anyway (not recommended)?"

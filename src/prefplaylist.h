@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,19 +40,6 @@ public:
 
     // Apply changes
     void getData(Preferences * pref);
-
-
-	void setDirectoryRecursion(bool b);
-	bool directoryRecursion();
-
-	void setAutoGetInfo(bool b);
-	bool autoGetInfo();
-
-	void setSavePlaylistOnExit(bool b);
-	bool savePlaylistOnExit();
-
-	void setPlayFilesFromStart(bool b);
-	bool playFilesFromStart();
 
 protected:
 	virtual void createHelp();

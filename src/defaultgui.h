@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ class TimeSliderAction;
 class VolumeSliderAction;
 class FloatingWidget;
 class TimeLabelAction;
-class MyAction;
 
 #if MINI_ARROW_BUTTONS
 class SeekingButton;
@@ -43,7 +42,7 @@ class DefaultGui : public BaseGuiPlus
 	Q_OBJECT
 
 public:
-	DefaultGui( bool use_server, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	DefaultGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~DefaultGui();
 
 #if USE_MINIMUMSIZE
@@ -80,8 +79,6 @@ protected slots:
 	virtual void updateWidgets();
 	virtual void displayTime(QString text);
 	virtual void displayFrame(int frame);
-	virtual void displayABSection(int secs_a, int secs_b);
-	virtual void displayVideoInfo(int width, int height, double fps);
 
 	virtual void showFloatingControl(QPoint p);
 	virtual void showFloatingMenu(QPoint p);
@@ -96,8 +93,6 @@ protected slots:
 protected:
 	QLabel * time_display;
 	QLabel * frame_display;
-	QLabel * ab_section_display;
-	QLabel * video_info_display;
 
 	QToolBar * controlwidget;
 	QToolBar * controlwidget_mini;
@@ -119,11 +114,7 @@ protected:
 	FloatingWidget * floating_control;
 	TimeLabelAction * time_label_action;
 
-	MyAction * viewFrameCounterAct;
-	MyAction * viewVideoInfoAct;
-
 	QMenu * toolbar_menu;
-	QMenu * statusbar_menu;
 
 	int last_second;
 

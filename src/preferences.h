@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -89,22 +89,11 @@ public:
 	int autoq; 	//!< Postprocessing quality
 	bool add_blackborders_on_fullscreen;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	bool turn_screensaver_off;
 	bool avoid_screensaver;
 #else
 	bool disable_screensaver;
-#endif
-
-#ifndef Q_OS_WIN
-	struct VDPAU_settings {
-		bool ffh264vdpau;
-		bool ffmpeg12vdpau;
-		bool ffwmv3vdpau;
-		bool ffvc1vdpau;
-		bool ffodivxvdpau;
-		bool disable_video_filters;
-	} vdpau;
 #endif
 
 	// Audio
@@ -127,8 +116,8 @@ public:
 	double mc_value;
 
 	// Misc
+	bool loop; 	//!< Loop. If true repeat the file
 	int osd;
-	int osd_delay; //<! Delay in ms to show the OSD.
 
 	QString file_settings_method; //!< Method to be used for saving file settings
 
@@ -176,10 +165,6 @@ public:
 	int cache_for_audiocds;
 	int cache_for_tv;
 
-#if YOUTUBE_SUPPORT
-	int yt_quality;
-#endif
-
 
 	/* *********
 	   Subtitles
@@ -198,6 +183,7 @@ public:
 	bool use_ass_subtitles;
 	int ass_line_spacing;
 
+	bool use_closed_caption_subs;
 	bool use_forced_subs_only;
 
 	bool sub_visibility;
@@ -208,11 +194,6 @@ public:
 	//! instead of sub_select
 	OptionState use_new_sub_commands; 
 	OptionState change_sub_scale_should_restart;
-
-	//! If true, loading an external subtitle will be done
-	//! by using the sub_load slave command. Otherwise
-	//! mplayer will be restarted.
-	bool fast_load_sub;
 
 	// ASS styles
 	AssStyles ass_styles;
@@ -251,7 +232,6 @@ public:
 	bool log_smplayer;
 	QString log_filter;
 	bool verbose_log;
-	bool save_smplayer_log;
 
     //mplayer log autosaving
     bool autosave_mplayer_log;
@@ -287,9 +267,6 @@ public:
 
 	QString actions_to_run; //!< List of actions to run every time a video loads.
 
-	//! Show file tag in window title
-	bool show_tag_in_window_title;
-
 
 	/* *********
 	   GUI stuff
@@ -306,6 +283,8 @@ public:
 #if STYLE_SWITCHING
 	QString style; 	//!< SMPlayer look
 #endif
+	bool show_frame_counter;
+	bool show_motion_vectors;
 
 	// Function of mouse buttons:
 	QString mouse_left_click_function;
@@ -318,7 +297,6 @@ public:
 
 	QFlags<WheelFunctions> wheel_function_cycle;
 
-	bool wheel_function_seeking_reverse;
 
 	// Configurable seeking
 	int seeking1; // By default 10s
@@ -330,12 +308,6 @@ public:
 #if ENABLE_DELAYED_DRAGGING	
 	int time_slider_drag_delay;
 #endif
-#if SEEKBAR_RESOLUTION
-	//! If true, seeking will be done using a
-	//! percentage (with fractions) instead of time.
-	bool relative_seeking;  
-#endif
-	bool precise_seeking; //! Enable precise_seeking (only available with mplayer2)
 
 	QString language;
 	QString iconset;
@@ -416,8 +388,8 @@ public:
 
 	AudioEqualizerList initial_audio_equalizer;
 
-	//! Default value for zoom (1.0 = no zoom)
-	double initial_zoom_factor;
+	//! Default value for panscan (1.0 = no zoom)
+	double initial_panscan_factor;
 
 	//! Default value for position of subtitles on screen
 	//! 100 = 100% at the bottom
@@ -444,9 +416,6 @@ public:
 	//! Version of mplayer supplied by the user which will be used if
 	//! the version can't be parsed from mplayer output
 	int mplayer_user_supplied_version;
-
-	bool mplayer_is_mplayer2; //! True if the detected version is mplayer2
-	QString mplayer2_detected_version;
 
 
     /* *********

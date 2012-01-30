@@ -1,100 +1,38 @@
-Ôªø;Language: Hungarian (1038)
-;Hungarian language strings for the Windows SMPlayer NSIS installer.
-;
-;Save file as UTF-8 w/ BOM
-;
-
-!insertmacro LANGFILE "Hungarian" "Magyar"
+;;
+;;  hungarian.nsh
+;;
+;;  Hungarian language strings for the Windows SMPlayer NSIS installer.
+;;  Save file with ANSI encoding
+;;
+;;  Author: 
+;;
 
 ; Startup
-${LangFileString} Installer_Is_Running "A telep√≠t≈ë m√°r fut."
-${LangFileString} Installer_No_Admin "Rendszergazdak√©nt kell bejelentkeznie a program telep√≠t√©s√©hez."
-${LangFileString} SMPlayer_Is_Running "An instance of SMPlayer is running. Please exit SMPlayer and try again."
+LangString SMPLAYER_INSTALLER_IS_RUNNING ${LANG_HUNGARIAN} "A telepÌto m·r fut."
+LangString SMPLAYER_INSTALLER_UNSUPPORTED_OS ${LANG_HUNGARIAN} "Nem t·mogatott oper·ciÛs rendszer.$\n$(^Name) legal·bb Windows 2000-et igÈnyel Ès lehet hogy nem fog megfeleloen mukˆdni a rendszerÈn.$\nBiztosan folytatni akarja a telepÌtÈst?"
+LangString SMPLAYER_INSTALLER_NO_ADMIN ${LANG_HUNGARIAN} "RendszergazdakÈnt kell bejelentkeznie a program telepÌtÈsÈhez."
+LangString SMPLAYER_INSTALLER_PREV_VERSION ${LANG_HUNGARIAN} "Az SMPlayer m·r telepÌtve van.$\nEl akarja t·volÌtani az elozo verziÛt $(^Name) telepÌtÈse elott?"
 
 ; Components Page
-${LangFileString} ShortcutGroupTitle "Shortcuts"
-${LangFileString} MPlayerGroupTitle "MPlayer Components"
-
-${LangFileString} Section_SMPlayer "SMPlayer (required)"
-${LangFileString} Section_SMPlayer_Desc "SMPlayer, shared libraries, and documentation."
-
-${LangFileString} Section_DesktopShortcut "Desktop"
-${LangFileString} Section_DesktopShortcut_Desc "Creates a shortcut to SMPlayer on the desktop."
-
-${LangFileString} Section_StartMenu "Start Menu"
-${LangFileString} Section_StartMenu_Desc "Create a Start Menu entry for SMPlayer."
-
-${LangFileString} Section_MPlayer "MPlayer (required)"
-!ifdef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "MPlayer; required for playback."
-!else ifndef WITH_MPLAYER
-${LangFileString} Section_MPlayer_Desc "MPlayer; required for playback. (Internet Connection required for installation)"
-!endif
-
-${LangFileString} Section_MPlayerCodecs "Binary Codecs"
-!ifdef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "Optional codecs for MPlayer."
-!else ifndef WITH_CODECS
-${LangFileString} Section_MPlayerCodecs_Desc "Optional codecs for MPlayer. (Internet Connection required for installation)"
-!endif
-
-${LangFileString} Section_MEncoder_Desc "A companion program to MPlayer that can be used to encode or transform supported audio or video streams."
-
-${LangFileString} Section_IconThemes "Icon Themes"
-${LangFileString} Section_IconThemes_Desc "Additional icon themes for SMPlayer."
-
-${LangFileString} Section_Translations "Languages"
-${LangFileString} Section_Translations_Desc "Non-English language files for SMPlayer."
-
-${LangFileString} MPlayer_Codec_Msg "A bin√°ris kodek csomagok t√°mogat√°st ny√∫jtanak nat√≠van m√©g nem t√°mogatott kodekekhez, mint pl. az √∫jabb RealVideo vari√°nsok √©s sok ritka form√°tum.$\nNem sz√ºks√©gesek a legt√∂bb gyakori form√°tum lej√°tsz√°s√°hoz, mint a DVD-k, MPEG-1/2/4, stb."
-
-; Upgrade/Reinstall Page
-${LangFileString} Reinstall_Header_Text "Select Install Type"
-${LangFileString} Reinstall_Header_SubText "Select Overwrite or Uninstall mode."
-
-${LangFileString} Reinstall_Msg1 "You have an existing installation of SMPlayer in the following folder:"
-${LangFileString} Reinstall_Msg2 "Please select how to proceed:"
-${LangFileString} Reinstall_Overwrite "Overwrite ($Inst_Type) the existing installation"
-${LangFileString} Reinstall_Uninstall "Uninstall (remove) the existing installation"
-${LangFileString} Reinstall_Msg3_1 "Click Start when ready to proceed."
-${LangFileString} Reinstall_Msg3_2 "Click Next when ready to proceed."
-${LangFileString} Reinstall_Msg3_3 "Click Uninstall when ready to proceed."
-${LangFileString} Reinstall_Msg4 "Change Installation Settings"
-
-${LangFileString} Type_Reinstall "reinstall"
-${LangFileString} Type_Downgrade "downgrade"
-${LangFileString} Type_Upgrade "upgrade"
-
-${LangFileString} StartBtn "Start"
+LangString MPLAYER_CODEC_INFORMATION ${LANG_HUNGARIAN} "A bin·ris kodek csomagok t·mogat·st ny˙jtanak natÌvan mÈg nem t·mogatott kodekekhez, mint pl. az ˙jabb RealVideo vari·nsok Ès sok ritka form·tum.$\nNem sz¸ksÈgesek a legtˆbb gyakori form·tum lej·tsz·s·hoz, mint a DVD-k, MPEG-1/2/4, stb."
 
 ; MPlayer Section
-${LangFileString} MPlayer_DL_Msg "Az MPlayer let√∂lt√©se..."
-${LangFileString} MPlayer_DL_Retry "Az MPlayer telep√≠t√©se nem siker√ºlt. √öjra pr√≥b√°ljam?"
-${LangFileString} MPlayer_DL_Failed "Az MPlayer let√∂lt√©se nem siker√ºlt: '$R0'."
-${LangFileString} MPlayer_Inst_Failed "Az MPlayer telep√≠t√©se nem siker√ºlt. Az MPlayerre sz√ºks√©g van a lej√°tsz√°shoz."
+LangString MPLAYER_IS_INSTALLED ${LANG_HUNGARIAN} "Az MPlayer m·r telepÌtve van. ⁄jra letˆltsem?"
+LangString MPLAYER_IS_DOWNLOADING ${LANG_HUNGARIAN} "Az MPlayer letˆltÈse..."
+LangString MPLAYER_DL_FAILED ${LANG_HUNGARIAN} "Az MPlayer letˆltÈse nem siker¸lt:"
+LangString MPLAYER_INST_FAILED ${LANG_HUNGARIAN} "Az MPlayer telepÌtÈse nem siker¸lt. Az MPlayerre sz¸ksÈg van a lej·tsz·shoz."
 
 ; Codecs Section
-${LangFileString} Codecs_DL_Msg "MPlayer kodekek let√∂lt√©se..."
-${LangFileString} Codecs_DL_Retry "Az MPlayer kodekek telep√≠t√©se nem siker√ºlt. √öjra pr√≥b√°ljam?"
-${LangFileString} Codecs_DL_Failed "Az MPlayer kodekek let√∂lt√©se nem siker√ºlt: '$R0'."
-${LangFileString} Codecs_Inst_Failed "Az MPlayer kodekek telep√≠t√©se nem siker√ºlt."
+LangString CODECS_IS_INSTALLED ${LANG_HUNGARIAN} "Az MPlayer kodekek m·r telepÌtve vannak. ⁄jra letˆltsem?"
+LangString CODECS_IS_DOWNLOADING ${LANG_HUNGARIAN} "MPlayer kodekek letˆltÈse..."
+LangString CODECS_DL_FAILED ${LANG_HUNGARIAN} "Az MPlayer kodekek letˆltÈse nem siker¸lt:"
+LangString CODECS_INST_FAILED ${LANG_HUNGARIAN} "Az MPlayer kodekek telepÌtÈse nem siker¸lt."
 
 ; Version information
-${LangFileString} VerInfo_DL_Msg "Verzi√≥ inform√°ci√≥ let√∂lt√©se..."
-${LangFileString} VerInfo_DL_Failed "Verzi√≥ inform√°ci√≥ let√∂lt√©se nem siker√ºlt: '$R0'. Alap√©rtelmezett verzi√≥ haszn√°lata."
+LangString VERINFO_IS_DOWNLOADING ${LANG_HUNGARIAN} "VerziÛ inform·ciÛ letˆltÈse..."
+LangString VERINFO_DL_FAILED ${LANG_HUNGARIAN} "VerziÛ inform·ciÛ letˆltÈse nem siker¸lt:"
+LangString VERINFO_IS_MISSING ${LANG_HUNGARIAN} "A verziÛ f·jlbÛl hi·nyzik a verziÛ inform·ciÛ. A telepÌtı egy alapÈrtelmezett verziÛt fog haszn·lni."
 
 ; Uninstaller
-${LangFileString} Uninstaller_No_Admin "A program elt√°vol√≠t√°s√°hoz rendszergazda jogosults√°g sz√ºks√©ges."
-${LangFileString} Uninstaller_Aborted "Az elt√°vol√≠t√°st a felhaszn√°l√≥ megszak√≠totta."
-${LangFileString} Uninstaller_NotInstalled "Nem √∫gy n√©z ki, mint ha az SMPlayer ebbe a k√∂nyvt√°rba lett volna telep√≠tve: '$INSTDIR'.$\r$\nM√©gis folytassam (nem aj√°nlott)?"
-
-; Vista & Later Default Programs Registration
-${LangFileString} Application_Description "Az SMPlayer egy komplett fel√ºlet az MPlayerhez, mindent t√°mogat az alap funkci√≥kt√≥l kezdve, mint a vide√≥k, DVDk, VCDk lej√°tsz√°sa, halad√≥ funkci√≥kig, mint az MPlayer sz≈±r≈ëk, edl list√°k √©s m√©g sok m√°s."
-
-; Misc
-${LangFileString} Info_Del_Files "Deleting Files..."
-${LangFileString} Info_Del_Registry "Deleting Registry Keys..."
-${LangFileString} Info_Del_Shortcuts "Deleting Shortcuts..."
-${LangFileString} Info_Rest_Assoc "Restoring file associations..."
-${LangFileString} Info_RollBack "Rolling back changes..."
-${LangFileString} Info_Files_Extract "Extracting files..."
+LangString UNINSTALL_NO_ADMIN ${LANG_HUNGARIAN} "A telepÌtÈs elt·volÌt·shoz rendszergazdai jogosults·gok sz¸ksÈgesek."
+LangString SMPLAYER_NOT_INSTALLED ${LANG_HUNGARIAN} "Nem ˙gy nÈz ki, mintha az SMPlayer ebbe a kˆnyvt·rba lett volna telepÌtve: '$INSTDIR'.$\r$\nMÈgis folytassam (nem aj·nlott)?"

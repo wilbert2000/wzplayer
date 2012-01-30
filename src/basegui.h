@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -52,7 +52,6 @@ class MyActionGroup;
 class PreferencesDialog;
 class MyServer;
 
-class Favorites;
 class TVList;
 
 class BaseGui : public QMainWindow
@@ -60,7 +59,7 @@ class BaseGui : public QMainWindow
     Q_OBJECT
     
 public:
-    BaseGui( bool use_server, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+    BaseGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~BaseGui();
 
 	/* Return true if the window shouldn't show on startup */
@@ -82,7 +81,6 @@ public slots:
 	virtual void openFile();
 	virtual void openFile(QString file);
 	virtual void openFiles(QStringList files);
-	virtual void openFavorite(QString file);
 	virtual void openURL();
 	virtual void openURL(QString url);
 	virtual void openVCD();
@@ -95,8 +93,7 @@ public slots:
 
 	virtual void helpFAQ();
 	virtual void helpCLOptions();
-	virtual void helpCheckUpdates();
-	virtual void helpDonate();
+	virtual void helpTips();
 	virtual void helpAbout();
 	virtual void helpAboutQt();
 
@@ -137,12 +134,8 @@ public slots:
 	virtual void checkStayOnTop(Core::State);
 	void toggleStayOnTop();
 
-	void setForceCloseOnFinish(int n) { arg_close_on_finish = n; };
-	int forceCloseOnFinish() { return arg_close_on_finish; };
-
-	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; };
-	int forceStartInFullscreen() { return arg_start_in_fullscreen; };
-
+	virtual void toggleFrameCounter();
+	virtual void toggleFrameCounter(bool);
 
 protected slots:
 	virtual void closeWindow();
@@ -226,19 +219,10 @@ protected slots:
 
 	// Single instance stuff
 	// Another instance request open a file
-	virtual void remoteOpen(QString);
-	virtual void remoteOpenFiles(QStringList);
-	virtual void remoteAddFiles(QStringList);
-	virtual void remoteLoadSubtitle(QString);
-	virtual void remotePlayItem(int);
-	virtual void remoteRemoveItem(int);
-	virtual void remoteMoveItem(int, int);
-	virtual void remoteViewPlaylist(QString*);
-	virtual void remoteViewStatus(QString*);
-	virtual void remoteViewClipInfo(QString*);
-	virtual void remoteSeek(double);
-	virtual void remoteGetChecked(QString, QString*);
-	virtual void remoteGetVolume(int*);
+	virtual void remoteOpen(QString file);
+	virtual void remoteOpenFiles(QStringList files);
+	virtual void remoteAddFiles(QStringList files);
+	virtual void remoteLoadSubtitle(QString file);
 
 	//! Called when core can't parse the mplayer version and there's no
 	//! version supplied by the user
@@ -253,7 +237,7 @@ protected slots:
 	virtual void changeStyleSheet(QString style);
 #endif
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	/* Disable screensaver by event */
 	void clear_just_stopped();
 #endif
@@ -269,8 +253,6 @@ protected slots:
 
 signals:
 	void frameChanged(int);
-	void ABMarkersChanged(int secs_a, int secs_b);
-	void videoInfoChanged(int width, int height, double fps);
 	void timeChanged(QString time_ready_to_print);
 
 	void cursorNearTop(QPoint);
@@ -355,9 +337,6 @@ protected:
 	MyAction * forward2Act;
 	MyAction * forward3Act;
 	MyAction * repeatAct;
-	MyAction * setAMarkerAct;
-	MyAction * setBMarkerAct;
-	MyAction * clearABMarkersAct;
 	MyAction * gotoAct;
 
 	// Menu Speed
@@ -415,6 +394,7 @@ protected:
 	MyAction * incSubScaleAct;
 	MyAction * decSubScaleAct;
 	MyAction * useAssAct;
+	MyAction * useClosedCaptionAct;
 	MyAction * useForcedSubsOnlyAct;
 	MyAction * subVisibilityAct;
 	MyAction * showFindSubtitlesDialogAct;
@@ -423,6 +403,8 @@ protected:
 	// Menu Options
 	MyAction * showPlaylistAct;
 	MyAction * showPropertiesAct;
+	MyAction * frameCounterAct;
+	MyAction * motionVectorsAct;
 	MyAction * showPreferencesAct;
 	MyAction * showLogMplayerAct;
 	MyAction * showLogSmplayerAct;
@@ -430,8 +412,7 @@ protected:
 	// Menu Help
 	MyAction * showFAQAct;
 	MyAction * showCLOptionsAct; // Command line options
-	MyAction * showCheckUpdatesAct;
-	MyAction * donateAct;
+	MyAction * showTipsAct;
 	MyAction * aboutQtAct;
 	MyAction * aboutThisAct;
 
@@ -468,9 +449,6 @@ protected:
 	MyAction * nextAspectAct;
 	MyAction * nextWheelFunctionAct;
 
-	MyAction * showFilenameAct;
-	MyAction * toggleDeinterlaceAct;
-
 	// Moving and zoom
 	MyAction * moveUpAct;
 	MyAction * moveDownAct;
@@ -482,11 +460,6 @@ protected:
 	MyAction * autoZoomAct;
 	MyAction * autoZoom169Act;
 	MyAction * autoZoom235Act;
-
-#if USE_MPLAYER_PANSCAN
-	MyAction * incPanscanAct;
-	MyAction * decPanscanAct;
-#endif
 
 	// OSD Action Group 
 	MyActionGroup * osdGroup;
@@ -557,15 +530,6 @@ protected:
 	MyAction * screenDefaultAct;
 #endif
 
-	// Closed Captions Group
-	MyActionGroup * ccGroup;
-	MyAction * ccNoneAct;
-	MyAction * ccChannel1Act;
-	MyAction * ccChannel2Act;
-	MyAction * ccChannel3Act;
-	MyAction * ccChannel4Act;
-
-
 	// Audio Channels Action Group
 	MyActionGroup * channelsGroup;
 	/* MyAction * channelsDefaultAct; */
@@ -611,7 +575,6 @@ protected:
 	QMenu *optionsMenu;
 	QMenu *helpMenu;
 
-	QMenu * disc_menu;
 	QMenu * subtitlestrack_menu;
 #if PROGRAM_SWITCH
 	QMenu * programtrack_menu;
@@ -630,17 +593,15 @@ protected:
 	QMenu * stereomode_menu;
 
 	QMenu * speed_menu;
-	QMenu * ab_menu; // A-B menu
 	QMenu * videofilter_menu;
 	QMenu * audiofilter_menu;
 	QMenu * logs_menu;
-	QMenu * zoom_menu;
+	QMenu * panscan_menu;
 	QMenu * rotate_menu;
 	QMenu * ontop_menu;
 #if USE_ADAPTER
 	QMenu * screen_menu;
 #endif
-	QMenu * closed_captions_menu;
 
 	QMenu * popup;
 	QMenu * recentfiles_menu;
@@ -662,19 +623,12 @@ protected:
 
 	MyServer * server;
 
-	Favorites * favorites;
-
 	TVList * tvlist;
 	TVList * radiolist;
 
 	QStringList actions_list;
 
 	QString pending_actions_to_run;
-
-	// Force settings from command line
-	int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
-	int arg_start_in_fullscreen; // -1 = not set, 1 = true, 0 = false
-	bool use_control_server;
 
 private:
 	QString default_style;
@@ -688,7 +642,7 @@ private:
 	QSize win_size;
 	bool was_maximized;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 	/* Disable screensaver by event */
 	bool just_stopped;
 #endif

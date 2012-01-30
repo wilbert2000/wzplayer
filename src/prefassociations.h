@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -64,9 +64,6 @@ public slots:
 	void selectNoneClicked(bool); 
 	void listItemClicked(QListWidgetItem* item); 
 	void listItemPressed(QListWidgetItem* item); 
-	
-protected:
-	bool something_changed;
 };
 
 #endif

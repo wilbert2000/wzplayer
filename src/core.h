@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,14 +34,10 @@ class MplayerProcess;
 class MplayerWindow;
 class QSettings;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 #ifdef SCREENSAVER_OFF
 class WinScreenSaver;
 #endif
-#endif
-
-#if YOUTUBE_SUPPORT
-class RetrieveYoutubeUrl;
 #endif
 
 class Core : public QObject
@@ -84,10 +80,6 @@ public slots:
 	void openAudioCD(int title = -1);
 	void openTV(QString channel_id);
 
-#if YOUTUBE_SUPPORT
-	void openYT(const QString & url);
-#endif
-
 	void loadSub(const QString & sub);
 	void unloadSub();
 
@@ -115,19 +107,10 @@ public slots:
 
 #ifdef SEEKBAR_RESOLUTION
     void goToPosition( int value );
-    void goToPos( double perc );
 #else
     void goToPos( int perc );
 #endif
     void goToSec( double sec );
-
-	void setAMarker(); //!< Set A marker to current sec
-	void setAMarker(int sec);
-
-	void setBMarker(); //!< Set B marker to current sec
-	void setBMarker(int sec);
-
-	void clearABMarkers();
 
 	void toggleRepeat();
 	void toggleRepeat(bool b);
@@ -272,7 +255,7 @@ public slots:
 
 	void changeSize(int); // Size of the window
 	void toggleDoubleSize();
-	void changeZoom(double); // Zoom on mplayerwindow
+	void changePanscan(double); // Zoom on mplayerwindow
 
 	void changeRotate(int r);
 
@@ -280,31 +263,19 @@ public slots:
 	void changeAdapter(int n);
 #endif
 
-	void incZoom();
-	void decZoom();
-	void resetZoom();
-	void autoZoom();
-	void autoZoomFromLetterbox(double video_aspect);
-	void autoZoomFor169();
-	void autoZoomFor235();
-
-#if USE_MPLAYER_PANSCAN
-	void changePanscan(double);
 	void incPanscan();
 	void decPanscan();
-#endif
-
-	void showFilenameOnOSD();
-	void toggleDeinterlace();
+	void resetPanscan();
+	void autoPanscan();
+	void autoPanscanFromLetterbox(double video_aspect);
+	void autoPanscanFor169();
+	void autoPanscanFor235();
 
 	void changeUseAss(bool);
+	void toggleClosedCaption(bool);
 	void toggleForcedSubsOnly(bool);
 
-	void changeClosedCaptionChannel(int);
-	/*
-	void nextClosedCaptionChannel();
-	void prevClosedCaptionChannel();
-	*/
+	void visualizeMotionVectors(bool);
 
 #if DVDNAV_SUPPORT
 	// dvdnav buttons
@@ -321,10 +292,6 @@ public slots:
     // Pass a command to mplayer by stdin:
     void tellmp(const QString & command);
 
-	//! Wrapper for the osd_show_text slave command
-	void displayTextOnOSD(QString text, int duration = 3000, int level = 1, 
-                          QString prefix = QString::null);
-
 public:
 	//! Returns the number of the first chapter in 
 	//! files. In some versions of mplayer is 0, in others 1
@@ -340,7 +307,6 @@ public:
 protected:
 	//! Returns the prefix to keep pausing on slave commands
 	QString pausing_prefix();
-	QString seek_cmd(double secs, int mode);
 
 protected slots:
     void changeCurrentSec(double sec);
@@ -359,11 +325,7 @@ protected slots:
 	void displayScreenshotName(QString filename);
 	void displayUpdatingFontCache();
 
-	void streamTitleChanged(QString);
 	void streamTitleAndUrlChanged(QString,QString);
-
-	// Catches mediaInfoChanged and sends mediaPlaying signal
-	void sendMediaInfo();
 	
 	void watchState(Core::State state);
 
@@ -393,12 +355,6 @@ protected slots:
 
 	void initializeOSD();
 
-#if YOUTUBE_SUPPORT
-	void connectingToYT(QString host);
-	void YTFailed(QString error);
-	void YTNoVideoUrl();
-#endif
-
 protected:
 	void playNewFile(QString file, int seek=-1);
 	void restartPlay();
@@ -422,8 +378,6 @@ signals:
 	void aboutToStartPlaying(); // Signal emited just before to start mplayer
 	void mediaLoaded();
 	void mediaInfoChanged();
-	//! Sends the filename and title of the stream playing in this moment
-	void mediaPlaying(const QString & filename, const QString & title);
     void stateChanged(Core::State state);
 	void mediaStartPlay();
 	void mediaFinished(); // Media has arrived to the end.
@@ -440,7 +394,6 @@ signals:
 	void posChanged(int); // To connect a slider
 #endif
 	void showFrame(int frame);
-	void ABMarkersChanged(int secs_a, int secs_b);
 	void needResize(int w, int h);
 	void noVideo();
 	void volumeChanged(int);
@@ -469,14 +422,10 @@ protected:
 	FileSettingsBase * tv_settings;
 #endif
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef Q_OS_WIN
 #ifdef SCREENSAVER_OFF
 	WinScreenSaver * win_screensaver;
 #endif
-#endif
-
-#if YOUTUBE_SUPPORT
-	RetrieveYoutubeUrl * yt;
 #endif
     
 private:

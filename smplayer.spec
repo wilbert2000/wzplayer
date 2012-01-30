@@ -1,5 +1,5 @@
 %define name    smplayer
-%define version 0.7.0
+%define version 0.6.8
 %define release rvm
 
 %define is_mandrake %(test -e /etc/mandrake-release && echo 1 || echo 0)
@@ -30,7 +30,7 @@ Release:        %{release}
 
 Source0:        %{name}-%{version}.tar.bz2
 
-Packager:       Ricardo Villalba <rvm@users.sourceforge.net>
+Packager:       Ricardo Villalba <rvm@escomposlinux.org>
 Distribution:   %{distr}
 BuildRoot:      %{_tmppath}/%{name}-buildroot
 Autoreqprov:    On
@@ -62,9 +62,9 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Wed May 7 2008 iSage
  - adapted for some distros
-* Sun May 20 2007 Ricardo Villalba <rvm@users.sourceforge.net>
+* Sun May 20 2007 Ricardo Villalba <rvm@escomposlinux.org>
   - use DESTDIR in make install
-* Sat May 5 2007 Ricardo Villalba <rvm@users.sourceforge.net>
+* Sat May 5 2007 Ricardo Villalba <rvm@escomposlinux.org>
   - fixed some typos
-* Mon Feb 12 2007 Ricardo Villalba <rvm@users.sourceforge.net>
+* Mon Feb 12 2007 Ricardo Villalba <rvm@escomposlinux.org>
   - first spec file

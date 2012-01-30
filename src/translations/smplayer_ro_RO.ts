@@ -3,152 +3,152 @@
 <context>
     <name>About</name>
     <message>
-        <location filename="../about.cpp" line="58"/>
+        <location filename="../about.cpp" line="53"/>
         <source>Version: %1</source>
         <translation>Versiunea: %1</translation>
     </message>
     <message>
         <location filename="../about.cpp" line="90"/>
         <source>This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.</source>
-        <translation type="obsolete">Acest program este un produs de tip &quot;free software&quot;: poate fi redistribuit și/sau modificat respectând termenii licenței GNU GPL și publicată de către fundația &apos;Free Software Foundation&quot;; fie versiunea 2 a licenței fie (la alegere) orice versiune ulterioară.</translation>
+        <translation>Acest program este un produs de tip &quot;free software&quot;: poate fi redistribuit și/sau modificat respectând termenii licenței GNU GPL și publicată de către fundația &apos;Free Software Foundation&quot;; fie versiunea 2 a licenței fie (la alegere) orice versiune ulterioară.</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="134"/>
+        <location filename="../about.cpp" line="153"/>
         <source>The following people have contributed with translations:</source>
         <translation>Următorii oameni au contribuit cu traduceri:</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="139"/>
+        <location filename="../about.cpp" line="158"/>
         <source>German</source>
         <translation>Germană</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="140"/>
+        <location filename="../about.cpp" line="159"/>
         <source>Slovak</source>
         <translation>Slovacă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="141"/>
+        <location filename="../about.cpp" line="160"/>
         <source>Italian</source>
         <translation>Italiană</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="144"/>
+        <location filename="../about.cpp" line="161"/>
         <source>French</source>
         <translation>Franceză</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="213"/>
+        <location filename="../about.cpp" line="224"/>
         <source>%1, %2 and %3</source>
         <translation>%1, %2 şi %3</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="148"/>
+        <location filename="../about.cpp" line="165"/>
         <source>Simplified-Chinese</source>
         <translation>Chineză-simplificată</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="151"/>
+        <location filename="../about.cpp" line="166"/>
         <source>Russian</source>
         <translation>Rusă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="212"/>
+        <location filename="../about.cpp" line="223"/>
         <source>%1 and %2</source>
         <translation>%1 şi %2</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="152"/>
+        <location filename="../about.cpp" line="167"/>
         <source>Hungarian</source>
         <translation>Maghiară</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="155"/>
+        <location filename="../about.cpp" line="170"/>
         <source>Polish</source>
         <translation>Poloneză</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="159"/>
+        <location filename="../about.cpp" line="173"/>
         <source>Japanese</source>
         <translation>Japoneză</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="160"/>
+        <location filename="../about.cpp" line="174"/>
         <source>Dutch</source>
         <translation>Olandeză</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="164"/>
+        <location filename="../about.cpp" line="178"/>
         <source>Ukrainian</source>
         <translation>Ucraineană</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="167"/>
+        <location filename="../about.cpp" line="181"/>
         <source>Portuguese - Brazil</source>
         <translation>Portugheză - Brazilia</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="168"/>
+        <location filename="../about.cpp" line="182"/>
         <source>Georgian</source>
         <translation>Georgiană</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="169"/>
+        <location filename="../about.cpp" line="183"/>
         <source>Czech</source>
         <translation>Cehă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="172"/>
+        <location filename="../about.cpp" line="186"/>
         <source>Bulgarian</source>
         <translation>Bulgară</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="173"/>
+        <location filename="../about.cpp" line="187"/>
         <source>Turkish</source>
         <translation>Turcă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="174"/>
+        <location filename="../about.cpp" line="188"/>
         <source>Swedish</source>
         <translation>Suedeză</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="175"/>
+        <location filename="../about.cpp" line="189"/>
         <source>Serbian</source>
         <translation>Sârbă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="176"/>
+        <location filename="../about.cpp" line="190"/>
         <source>Traditional Chinese</source>
         <translation>Chineză Tradiţională</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="177"/>
+        <location filename="../about.cpp" line="191"/>
         <source>Romanian</source>
         <translation>Română</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="178"/>
+        <location filename="../about.cpp" line="192"/>
         <source>Portuguese - Portugal</source>
         <translation>Portugheză - Portugalia</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="181"/>
+        <location filename="../about.cpp" line="195"/>
         <source>Greek</source>
         <translation>Greacă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="182"/>
+        <location filename="../about.cpp" line="196"/>
         <source>Finnish</source>
         <translation>Finlandeză</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="235"/>
+        <location filename="../about.cpp" line="246"/>
         <source>&lt;b&gt;%1&lt;/b&gt;: %2</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;: %2</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="256"/>
+        <location filename="../about.cpp" line="267"/>
         <source>&lt;b&gt;%1&lt;/b&gt; (%2)</source>
         <translation>&lt;b&gt;%1&lt;/b&gt; (%2)</translation>
     </message>
@@ -183,89 +183,89 @@
         <translation>&amp;Licență</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="65"/>
+        <location filename="../about.cpp" line="60"/>
         <source>Visit our web for updates:</source>
         <translation>Vizitați situl nostru web pentru actualizări:</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="68"/>
+        <location filename="../about.cpp" line="64"/>
         <source>Get help in our forum:</source>
         <translation>Obțineți ajutor pe forumul nostru:</translation>
     </message>
     <message>
         <location filename="../about.cpp" line="66"/>
         <source>You can support SMPlayer by making a donation.</source>
-        <translation type="obsolete">Puteți susţine SMPlayer făcând o donație.</translation>
+        <translation>Puteți susţine SMPlayer făcând o donație.</translation>
     </message>
     <message>
         <location filename="../about.cpp" line="67"/>
         <source>More info</source>
-        <translation type="obsolete">Informații suplimentare</translation>
+        <translation>Informații suplimentare</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="183"/>
+        <location filename="../about.cpp" line="197"/>
         <source>Korean</source>
         <translation>Coreană</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="184"/>
+        <location filename="../about.cpp" line="198"/>
         <source>Macedonian</source>
         <translation>Macedoneană</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="185"/>
+        <location filename="../about.cpp" line="199"/>
         <source>Basque</source>
         <translation>Bască</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="51"/>
+        <location filename="../about.cpp" line="48"/>
         <source>Using MPlayer %1</source>
         <translation>Se folosește MPlayer r%1</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="186"/>
+        <location filename="../about.cpp" line="200"/>
         <source>Catalan</source>
         <translation>Catalană</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="60"/>
+        <location filename="../about.cpp" line="55"/>
         <source>Portable Edition</source>
         <translation>Ediția Portabilă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="63"/>
+        <location filename="../about.cpp" line="58"/>
         <source>Using Qt %1 (compiled with Qt %2)</source>
         <translation>S-a folosit Qt %1 (compilat cu Qt %2)</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="187"/>
+        <location filename="../about.cpp" line="201"/>
         <source>Slovenian</source>
         <translation>Slovenă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="188"/>
+        <location filename="../about.cpp" line="202"/>
         <source>Arabic</source>
         <translation>Arabă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="189"/>
+        <location filename="../about.cpp" line="203"/>
         <source>Kurdish</source>
         <translation>Kurdă</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="190"/>
+        <location filename="../about.cpp" line="204"/>
         <source>Galician</source>
         <translation>Galițiană</translation>
     </message>
     <message>
         <location filename="../about.cpp" line="99"/>
         <source>The following people have contributed with patches (see the changelog for details):</source>
-        <translation type="obsolete">Persoanele următoare au contribuit la corectarea și îmbunătățirea programului (consultați jurnalul modificărilor pentru detalii):</translation>
+        <translation>Persoanele următoare au contribuit la corectarea și îmbunătățirea programului (consultați jurnalul modificărilor pentru detalii):</translation>
     </message>
     <message>
         <location filename="../about.cpp" line="118"/>
         <source>If there&apos;s any omission, please report.</source>
-        <translation type="obsolete">Dacă există omisiuni, vă rugăm să anunțați.</translation>
+        <translation>Dacă există omisiuni, vă rugăm să anunțați.</translation>
     </message>
     <message>
         <location filename="../about.cpp" line="96"/>
@@ -273,69 +273,24 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="214"/>
+        <location filename="../about.cpp" line="225"/>
         <source>%1, %2, %3 and %4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="215"/>
+        <location filename="../about.cpp" line="226"/>
         <source>%1, %2, %3, %4 and %5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="191"/>
+        <location filename="../about.cpp" line="205"/>
         <source>Vietnamese</source>
         <translation type="unfinished">Vietnameză</translation>
     </message>
     <message>
-        <location filename="../about.cpp" line="192"/>
+        <location filename="../about.cpp" line="206"/>
         <source>Estonian</source>
         <translation type="unfinished">Estoniană</translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="193"/>
-        <source>Lithuanian</source>
-        <translation type="unfinished">Lituaniană</translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="194"/>
-        <source>Danish</source>
-        <translation type="unfinished">Daneză</translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="195"/>
-        <source>Croatian</source>
-        <translation type="unfinished">Croată</translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="49"/>
-        <source>Using MPlayer2 %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="71"/>
-        <source>SMPlayer uses the award-winning MPlayer as playback engine. See %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="82"/>
-        <source>Read the entire license</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="88"/>
-        <source>Read a translation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="97"/>
-        <source>Packages for Windows created by %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../about.cpp" line="99"/>
-        <source>Many other people contributed with patches. See the Changelog for details.</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -508,1280 +463,1225 @@ Do you want to overwrite?</source>
 <context>
     <name>BaseGui</name>
     <message>
-        <location filename="../basegui.cpp" line="1889"/>
+        <location filename="../basegui.cpp" line="1667"/>
         <source>SMPlayer - mplayer log</source>
         <translation>Jurnal SMPlayer - mplayer</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1890"/>
+        <location filename="../basegui.cpp" line="1668"/>
         <source>SMPlayer - smplayer log</source>
         <translation>Jurnal SMPlayer - smplayer</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1699"/>
+        <location filename="../basegui.cpp" line="1494"/>
         <source>&amp;Open</source>
         <translation>&amp;Deschide</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1700"/>
+        <location filename="../basegui.cpp" line="1495"/>
         <source>&amp;Play</source>
         <translation>Re&amp;dare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1701"/>
+        <location filename="../basegui.cpp" line="1496"/>
         <source>&amp;Video</source>
         <translation>&amp;Video</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1702"/>
+        <location filename="../basegui.cpp" line="1497"/>
         <source>&amp;Audio</source>
         <translation>&amp;Audio</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1703"/>
+        <location filename="../basegui.cpp" line="1498"/>
         <source>&amp;Subtitles</source>
         <translation>&amp;Subtitrare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1704"/>
+        <location filename="../basegui.cpp" line="1499"/>
         <source>&amp;Browse</source>
         <translation>&amp;Navigare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1705"/>
+        <location filename="../basegui.cpp" line="1500"/>
         <source>Op&amp;tions</source>
         <translation>Opți&amp;uni</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1706"/>
+        <location filename="../basegui.cpp" line="1501"/>
         <source>&amp;Help</source>
         <translation>&amp;Ajutor</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1474"/>
+        <location filename="../basegui.cpp" line="1293"/>
         <source>&amp;File...</source>
         <translation>&amp;Fișier...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1475"/>
+        <location filename="../basegui.cpp" line="1294"/>
         <source>D&amp;irectory...</source>
         <translation>D&amp;irector...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1476"/>
+        <location filename="../basegui.cpp" line="1295"/>
         <source>&amp;Playlist...</source>
         <translation>&amp;Listă de titluri...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1479"/>
+        <location filename="../basegui.cpp" line="1298"/>
         <source>&amp;DVD from drive</source>
         <translation>Citire &amp;DVD din DVDROM</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1480"/>
+        <location filename="../basegui.cpp" line="1299"/>
         <source>D&amp;VD from folder...</source>
         <translation>Citire D&amp;VD din fișier...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1481"/>
+        <location filename="../basegui.cpp" line="1300"/>
         <source>&amp;URL...</source>
         <translation>&amp;URL...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1722"/>
+        <location filename="../basegui.cpp" line="1517"/>
         <source>&amp;Clear</source>
         <translation>Ș&amp;tergere listă</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1720"/>
+        <location filename="../basegui.cpp" line="1515"/>
         <source>&amp;Recent files</source>
         <translation>Fișiere deschise &amp;recent</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1505"/>
+        <location filename="../basegui.cpp" line="1315"/>
         <source>P&amp;lay</source>
         <translation>Re&amp;dare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1511"/>
+        <location filename="../basegui.cpp" line="1321"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pauză</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1512"/>
+        <location filename="../basegui.cpp" line="1322"/>
         <source>&amp;Stop</source>
         <translation>&amp;Stop</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1513"/>
+        <location filename="../basegui.cpp" line="1323"/>
         <source>&amp;Frame step</source>
         <translation>&amp;Frecvență cadre</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1534"/>
+        <location filename="../basegui.cpp" line="1339"/>
         <source>&amp;Normal speed</source>
         <translation>Viteză &amp;Normală</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1535"/>
+        <location filename="../basegui.cpp" line="1340"/>
         <source>&amp;Halve speed</source>
         <translation>R&amp;elanti</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1536"/>
+        <location filename="../basegui.cpp" line="1341"/>
         <source>&amp;Double speed</source>
         <translation>Viteză D&amp;ublă</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1537"/>
+        <location filename="../basegui.cpp" line="1342"/>
         <source>Speed &amp;-10%</source>
         <translation>Viteză &amp;-10%</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1538"/>
+        <location filename="../basegui.cpp" line="1343"/>
         <source>Speed &amp;+10%</source>
         <translation>Viteză &amp;+10%</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1738"/>
+        <location filename="../basegui.cpp" line="1526"/>
         <source>Sp&amp;eed</source>
         <translation>Vit&amp;eză</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1529"/>
+        <location filename="../basegui.cpp" line="1335"/>
         <source>&amp;Repeat</source>
         <translation>&amp;Repetare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1545"/>
+        <location filename="../basegui.cpp" line="1350"/>
         <source>&amp;Fullscreen</source>
         <translation>&amp;Fullscreen</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1546"/>
+        <location filename="../basegui.cpp" line="1351"/>
         <source>&amp;Compact mode</source>
         <translation>Mod &amp;Compact</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1748"/>
+        <location filename="../basegui.cpp" line="1533"/>
         <source>Si&amp;ze</source>
         <translation>&amp;Dimensiune</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1594"/>
+        <location filename="../basegui.cpp" line="1502"/>
         <source>4:3 &amp;Letterbox</source>
         <translation type="obsolete">4:3 &amp;Compact</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1594"/>
+        <location filename="../basegui.cpp" line="1503"/>
         <source>16:9 L&amp;etterbox</source>
         <translation type="obsolete">16:9  _C&amp;ompact</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1594"/>
+        <location filename="../basegui.cpp" line="1504"/>
         <source>4:3 &amp;Panscan</source>
         <translation type="obsolete">4:3 &amp;Panscan</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1594"/>
+        <location filename="../basegui.cpp" line="1505"/>
         <source>4:3 &amp;to 16:9</source>
         <translation type="obsolete">4:3 î&amp;n 16:9</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1758"/>
+        <location filename="../basegui.cpp" line="1539"/>
         <source>&amp;Aspect ratio</source>
         <translation>Raport &amp;aspect</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="2995"/>
+        <location filename="../basegui.cpp" line="2697"/>
         <source>&amp;None</source>
         <translation>Fă&amp;ră</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1796"/>
+        <location filename="../basegui.cpp" line="1577"/>
         <source>&amp;Lowpass5</source>
         <translation>&amp;Lowpass5</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1799"/>
+        <location filename="../basegui.cpp" line="1580"/>
         <source>Linear &amp;Blend</source>
         <translation>Amestec &amp;Liniar</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1761"/>
+        <location filename="../basegui.cpp" line="1542"/>
         <source>&amp;Deinterlace</source>
         <translation>&amp;Deîntrețesere</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1571"/>
+        <location filename="../basegui.cpp" line="1373"/>
         <source>&amp;Postprocessing</source>
         <translation>&amp;Postprocesare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1572"/>
+        <location filename="../basegui.cpp" line="1374"/>
         <source>&amp;Autodetect phase</source>
         <translation>&amp;Autodetectare fază</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1573"/>
+        <location filename="../basegui.cpp" line="1375"/>
         <source>&amp;Deblock</source>
         <translation>&amp;Filtru buclă</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1574"/>
+        <location filename="../basegui.cpp" line="1376"/>
         <source>De&amp;ring</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1575"/>
+        <location filename="../basegui.cpp" line="1377"/>
         <source>Add n&amp;oise</source>
         <translation>Adăugare &amp;zgomot</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1764"/>
+        <location filename="../basegui.cpp" line="1545"/>
         <source>F&amp;ilters</source>
         <translation>F&amp;iltre</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1547"/>
+        <location filename="../basegui.cpp" line="1352"/>
         <source>&amp;Equalizer</source>
         <translation>&amp;Egalizor</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1548"/>
+        <location filename="../basegui.cpp" line="1353"/>
         <source>&amp;Screenshot</source>
         <translation>&amp;Captură_ecran</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1770"/>
+        <location filename="../basegui.cpp" line="1551"/>
         <source>S&amp;tay on top</source>
         <translation>&amp;Fixat deasupra</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1593"/>
+        <location filename="../basegui.cpp" line="1395"/>
         <source>&amp;Extrastereo</source>
         <translation>&amp;Extrastereo</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1594"/>
+        <location filename="../basegui.cpp" line="1396"/>
         <source>&amp;Karaoke</source>
         <translation>&amp;Karaoke</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1825"/>
+        <location filename="../basegui.cpp" line="1606"/>
         <source>&amp;Filters</source>
         <translation>&amp;Filtre</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1839"/>
+        <location filename="../basegui.cpp" line="1620"/>
         <source>&amp;Stereo</source>
         <translation>&amp;Stereo</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1836"/>
+        <location filename="../basegui.cpp" line="1617"/>
         <source>&amp;4.0 Surround</source>
         <translation>&amp;4.0 Surround</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1837"/>
+        <location filename="../basegui.cpp" line="1618"/>
         <source>&amp;5.1 Surround</source>
         <translation>&amp;5.1 Surround</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1828"/>
+        <location filename="../basegui.cpp" line="1609"/>
         <source>&amp;Channels</source>
         <translation>&amp;Canale</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1840"/>
+        <location filename="../basegui.cpp" line="1621"/>
         <source>&amp;Left channel</source>
         <translation>Canal &amp;Stânga</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1841"/>
+        <location filename="../basegui.cpp" line="1622"/>
         <source>&amp;Right channel</source>
         <translation>Canal &amp;Dreapta</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1831"/>
+        <location filename="../basegui.cpp" line="1612"/>
         <source>&amp;Stereo mode</source>
         <translation>Mod &amp;Stereo</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1583"/>
+        <location filename="../basegui.cpp" line="1385"/>
         <source>&amp;Mute</source>
         <translation>&amp;Mute</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1584"/>
+        <location filename="../basegui.cpp" line="1386"/>
         <source>Volume &amp;-</source>
         <translation>Volum &amp;-</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1585"/>
+        <location filename="../basegui.cpp" line="1387"/>
         <source>Volume &amp;+</source>
         <translation>Volum &amp;+</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1586"/>
+        <location filename="../basegui.cpp" line="1388"/>
         <source>&amp;Delay -</source>
         <translation>Întâ&amp;rziere -</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1587"/>
+        <location filename="../basegui.cpp" line="1389"/>
         <source>D&amp;elay +</source>
         <translation>Întâr&amp;ziere +</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1844"/>
+        <location filename="../basegui.cpp" line="1625"/>
         <source>&amp;Select</source>
         <translation>&amp;Selectare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1598"/>
+        <location filename="../basegui.cpp" line="1400"/>
         <source>&amp;Load...</source>
         <translation>Î&amp;ncărcare...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1600"/>
+        <location filename="../basegui.cpp" line="1402"/>
         <source>Delay &amp;-</source>
         <translation>Întârziere &amp;-</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1601"/>
+        <location filename="../basegui.cpp" line="1403"/>
         <source>Delay &amp;+</source>
         <translation>Întârziere &amp;+</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1603"/>
+        <location filename="../basegui.cpp" line="1405"/>
         <source>&amp;Up</source>
         <translation>&amp;Sus</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1604"/>
+        <location filename="../basegui.cpp" line="1406"/>
         <source>&amp;Down</source>
         <translation>&amp;Jos</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1851"/>
+        <location filename="../basegui.cpp" line="1629"/>
         <source>&amp;Title</source>
         <translation>&amp;Titlu</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1854"/>
+        <location filename="../basegui.cpp" line="1632"/>
         <source>&amp;Chapter</source>
         <translation>&amp;Capitol</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1857"/>
+        <location filename="../basegui.cpp" line="1635"/>
         <source>&amp;Angle</source>
         <translation>&amp;Unghi</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1626"/>
+        <location filename="../basegui.cpp" line="1423"/>
         <source>&amp;Playlist</source>
         <translation>&amp;Listă titluri</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1480"/>
+        <location filename="../basegui.cpp" line="1426"/>
         <source>&amp;Show frame counter</source>
-        <translation type="obsolete">&amp;Arată contor cadre</translation>
+        <translation>&amp;Arată contor cadre</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1793"/>
+        <location filename="../basegui.cpp" line="1574"/>
         <source>&amp;Disabled</source>
         <translation>&amp;Inactivat</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1639"/>
+        <location filename="../basegui.cpp" line="1477"/>
         <source>&amp;Seek bar</source>
         <translation type="obsolete">&amp;Bară căutare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1639"/>
+        <location filename="../basegui.cpp" line="1478"/>
         <source>&amp;Time</source>
         <translation type="obsolete">&amp;Durată</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1639"/>
+        <location filename="../basegui.cpp" line="1479"/>
         <source>Time + T&amp;otal time</source>
         <translation type="obsolete">D&amp;urată + Durată totală</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1878"/>
+        <location filename="../basegui.cpp" line="1656"/>
         <source>&amp;OSD</source>
         <translation>&amp;OSD</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1881"/>
+        <location filename="../basegui.cpp" line="1659"/>
         <source>&amp;View logs</source>
         <translation>&amp;Arhivă jurnale</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1628"/>
+        <location filename="../basegui.cpp" line="1427"/>
         <source>P&amp;references</source>
         <translation>P&amp;referințe</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1639"/>
+        <location filename="../basegui.cpp" line="1437"/>
         <source>About &amp;Qt</source>
         <translation>Despre &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1640"/>
+        <location filename="../basegui.cpp" line="1438"/>
         <source>About &amp;SMPlayer</source>
         <translation>Despre &amp;SMPlayer</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3160"/>
+        <location filename="../basegui.cpp" line="2862"/>
         <source>&lt;empty&gt;</source>
         <translation>&lt;gol&gt;</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3524"/>
+        <location filename="../basegui.cpp" line="3226"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3715"/>
+        <location filename="../basegui.cpp" line="3417"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3526"/>
+        <location filename="../basegui.cpp" line="3228"/>
         <source>Playlists</source>
         <translation>Liste_titluri</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3716"/>
+        <location filename="../basegui.cpp" line="3418"/>
         <source>All files</source>
         <translation>Toate fișierele</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3713"/>
+        <location filename="../basegui.cpp" line="3415"/>
         <source>Choose a file</source>
         <translation>Alegere fișier</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3574"/>
+        <location filename="../basegui.cpp" line="3276"/>
         <source>SMPlayer - Information</source>
         <translation>SMPlayer - Informații</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3577"/>
+        <location filename="../basegui.cpp" line="3279"/>
         <source>The CDROM / DVD drives are not configured yet.
 The configuration dialog will be shown now, so you can do it.</source>
         <translation>Driverele pentru CDROM/DVD nu sunt configurate încă.
 O fereastră de dialog va fi afișată pentru a putea face configurarea.</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3658"/>
+        <location filename="../basegui.cpp" line="3360"/>
         <source>Choose a directory</source>
         <translation>Alegere director</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3694"/>
+        <location filename="../basegui.cpp" line="3396"/>
         <source>Subtitles</source>
         <translation>Subtitrări</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3757"/>
+        <location filename="../basegui.cpp" line="3448"/>
         <source>About Qt</source>
         <translation>Despre Qt</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4229"/>
+        <location filename="../basegui.cpp" line="3903"/>
         <source>Playing %1</source>
         <translation>Redare %1</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4230"/>
+        <location filename="../basegui.cpp" line="3904"/>
         <source>Pause</source>
         <translation>Pauză</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4231"/>
+        <location filename="../basegui.cpp" line="3905"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1515"/>
+        <location filename="../basegui.cpp" line="1325"/>
         <source>Play / Pause</source>
         <translation>Redare / Pauză</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1521"/>
+        <location filename="../basegui.cpp" line="1331"/>
         <source>Pause / Frame step</source>
         <translation>Pauză / Pas cadre</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1599"/>
+        <location filename="../basegui.cpp" line="1401"/>
         <source>U&amp;nload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1477"/>
+        <location filename="../basegui.cpp" line="1296"/>
         <source>V&amp;CD</source>
         <translation>V&amp;CD</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1482"/>
+        <location filename="../basegui.cpp" line="1301"/>
         <source>C&amp;lose</source>
         <translation>Înch&amp;ide fereastra</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1627"/>
+        <location filename="../basegui.cpp" line="1424"/>
         <source>View &amp;info and properties...</source>
         <translation>Consultați &amp;informații și proprietăți...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1554"/>
+        <location filename="../basegui.cpp" line="1361"/>
         <source>Zoom &amp;-</source>
         <translation>Zoom &amp;-</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1555"/>
+        <location filename="../basegui.cpp" line="1362"/>
         <source>Zoom &amp;+</source>
         <translation>Zoom &amp;+</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1556"/>
+        <location filename="../basegui.cpp" line="1363"/>
         <source>&amp;Reset</source>
         <translation>&amp;Resetare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1560"/>
+        <location filename="../basegui.cpp" line="1367"/>
         <source>Move &amp;left</source>
         <translation>Deplasare la &amp;stânga</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1561"/>
+        <location filename="../basegui.cpp" line="1368"/>
         <source>Move &amp;right</source>
         <translation>Deplasare la &amp;dreapta</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1562"/>
+        <location filename="../basegui.cpp" line="1369"/>
         <source>Move &amp;up</source>
         <translation>Deplasare în s&amp;us</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1563"/>
+        <location filename="../basegui.cpp" line="1370"/>
         <source>Move &amp;down</source>
         <translation>Deplasare în &amp;jos</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1608"/>
+        <location filename="../basegui.cpp" line="1536"/>
+        <source>&amp;Pan &amp;&amp; scan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../basegui.cpp" line="1410"/>
         <source>&amp;Previous line in subtitles</source>
         <translation>&amp;Linia anterioară a subtitrării</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1610"/>
+        <location filename="../basegui.cpp" line="1412"/>
         <source>N&amp;ext line in subtitles</source>
         <translation>&amp;Următoarea linie a subtitrării</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1904"/>
+        <location filename="../basegui.cpp" line="1682"/>
         <source>-%1</source>
         <translation>-%1</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1908"/>
+        <location filename="../basegui.cpp" line="1686"/>
         <source>+%1</source>
         <translation>+%1</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1658"/>
+        <location filename="../basegui.cpp" line="1456"/>
         <source>Dec volume (2)</source>
         <translation>Reducere volum (2)</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1659"/>
+        <location filename="../basegui.cpp" line="1457"/>
         <source>Inc volume (2)</source>
         <translation>Creștere volum (2)</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1662"/>
+        <location filename="../basegui.cpp" line="1460"/>
         <source>Exit fullscreen</source>
         <translation>Ieșire mod fullscreen</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1664"/>
+        <location filename="../basegui.cpp" line="1462"/>
         <source>OSD - Next level</source>
         <translation>OSD - Nivel următor</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1665"/>
+        <location filename="../basegui.cpp" line="1463"/>
         <source>Dec contrast</source>
         <translation>Reducere contrast</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1666"/>
+        <location filename="../basegui.cpp" line="1464"/>
         <source>Inc contrast</source>
         <translation>Creștere contrast</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1667"/>
+        <location filename="../basegui.cpp" line="1465"/>
         <source>Dec brightness</source>
         <translation>Reducere strălucire</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1668"/>
+        <location filename="../basegui.cpp" line="1466"/>
         <source>Inc brightness</source>
         <translation>Creștere strălucire</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1669"/>
+        <location filename="../basegui.cpp" line="1467"/>
         <source>Dec hue</source>
         <translation>Reducere culoare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1670"/>
+        <location filename="../basegui.cpp" line="1468"/>
         <source>Inc hue</source>
         <translation>Creştere culoare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1671"/>
+        <location filename="../basegui.cpp" line="1469"/>
         <source>Dec saturation</source>
         <translation>Reducere saturație</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1673"/>
+        <location filename="../basegui.cpp" line="1471"/>
         <source>Dec gamma</source>
         <translation>Reducere gamma</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1676"/>
+        <location filename="../basegui.cpp" line="1474"/>
         <source>Next audio</source>
         <translation>Coloana sonoră următoare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1677"/>
+        <location filename="../basegui.cpp" line="1475"/>
         <source>Next subtitle</source>
         <translation>Următoarea subtitrare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1678"/>
+        <location filename="../basegui.cpp" line="1476"/>
         <source>Next chapter</source>
         <translation>Capitol următor</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1679"/>
+        <location filename="../basegui.cpp" line="1477"/>
         <source>Previous chapter</source>
         <translation>Capitol anterior</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1672"/>
+        <location filename="../basegui.cpp" line="1470"/>
         <source>Inc saturation</source>
         <translation>Creștere saturație</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1674"/>
+        <location filename="../basegui.cpp" line="1472"/>
         <source>Inc gamma</source>
         <translation>Creștere gamma</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1589"/>
+        <location filename="../basegui.cpp" line="1391"/>
         <source>&amp;Load external file...</source>
         <translation>Î&amp;ncărcare fișier extern...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1800"/>
+        <location filename="../basegui.cpp" line="1581"/>
         <source>&amp;Kerndeint</source>
         <translation>&amp;Kerndeint</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1797"/>
+        <location filename="../basegui.cpp" line="1578"/>
         <source>&amp;Yadif (normal)</source>
         <translation>&amp;Yadif (normal)</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1798"/>
+        <location filename="../basegui.cpp" line="1579"/>
         <source>Y&amp;adif (double framerate)</source>
         <translation>Y&amp;adif (frecvență cadre dublă)</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1643"/>
+        <location filename="../basegui.cpp" line="1441"/>
         <source>&amp;Next</source>
         <translation>&amp;Următorul</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1644"/>
+        <location filename="../basegui.cpp" line="1442"/>
         <source>Pre&amp;vious</source>
         <translation>A&amp;nteriorul</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1595"/>
+        <location filename="../basegui.cpp" line="1397"/>
         <source>Volume &amp;normalization</source>
         <translation>&amp;Normalizare volum</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1478"/>
+        <location filename="../basegui.cpp" line="1297"/>
         <source>&amp;Audio CD</source>
         <translation>CD &amp;Audio</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1803"/>
+        <location filename="../basegui.cpp" line="1584"/>
         <source>Denoise nor&amp;mal</source>
         <translation>Înlăturare zgomot - nor&amp;mal</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1804"/>
+        <location filename="../basegui.cpp" line="1585"/>
         <source>Denoise &amp;soft</source>
         <translation>Înlăturare zgomot - &amp;ușor</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1802"/>
+        <location filename="../basegui.cpp" line="1583"/>
         <source>Denoise o&amp;ff</source>
         <translation>Înlăturare zgomot - inac&amp;tivat</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1611"/>
+        <location filename="../basegui.cpp" line="1413"/>
         <source>Use SSA/&amp;ASS library</source>
         <translation>Utilizează biblioteca SSA/&amp;ASS</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1470"/>
+        <location filename="../basegui.cpp" line="1356"/>
         <source>Flip i&amp;mage</source>
-        <translation type="obsolete">I&amp;magine răsturnată</translation>
+        <translation>I&amp;magine răsturnată</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1680"/>
+        <location filename="../basegui.cpp" line="1478"/>
         <source>&amp;Toggle double size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1605"/>
+        <location filename="../basegui.cpp" line="1407"/>
         <source>S&amp;ize -</source>
         <translation>D&amp;imensiune -</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1606"/>
+        <location filename="../basegui.cpp" line="1408"/>
         <source>Si&amp;ze +</source>
         <translation>Di&amp;mensiune +</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1576"/>
+        <location filename="../basegui.cpp" line="1378"/>
         <source>Add &amp;black borders</source>
         <translation>Adăugare &amp;benzi negre</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1577"/>
+        <location filename="../basegui.cpp" line="1379"/>
         <source>Soft&amp;ware scaling</source>
         <translation>Scalare Soft&amp;ware</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1635"/>
+        <location filename="../basegui.cpp" line="1434"/>
         <source>&amp;FAQ</source>
         <translation>&amp;FAQ</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1412"/>
+        <location filename="../basegui.cpp" line="1359"/>
         <source>Visualize &amp;motion vectors</source>
-        <translation type="obsolete">Vizualizare vectori de &amp;mișcare</translation>
+        <translation>Vizualizare vectori de &amp;mișcare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1636"/>
+        <location filename="../basegui.cpp" line="1435"/>
         <source>&amp;Command line options</source>
         <translation>Opțiuni linie de &amp;comandă</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3731"/>
+        <location filename="../basegui.cpp" line="3433"/>
         <source>SMPlayer command line options</source>
         <translation>Opțiuni linie de comandă pentru SMPlayer</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1472"/>
+        <location filename="../basegui.cpp" line="1414"/>
         <source>Enable &amp;closed caption</source>
-        <translation type="obsolete">Activare subtitrare pentru &amp;handicap auditiv</translation>
+        <translation>Activare subtitrare pentru &amp;handicap auditiv</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1612"/>
+        <location filename="../basegui.cpp" line="1415"/>
         <source>&amp;Forced subtitles only</source>
         <translation>Doar subtitrarea &amp;forțată</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1681"/>
+        <location filename="../basegui.cpp" line="1479"/>
         <source>Reset video equalizer</source>
         <translation>Refacere valori implicite egalizor video</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4616"/>
+        <location filename="../basegui.cpp" line="4298"/>
         <source>MPlayer has finished unexpectedly.</source>
         <translation>MPlayer s-a închis inexplicabil.</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4617"/>
+        <location filename="../basegui.cpp" line="4299"/>
         <source>Exit code: %1</source>
         <translation>Cod de eroare: %1</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4634"/>
+        <location filename="../basegui.cpp" line="4316"/>
         <source>MPlayer failed to start.</source>
         <translation>MPlayer nu a putut porni.</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4635"/>
+        <location filename="../basegui.cpp" line="4317"/>
         <source>Please check the MPlayer path in preferences.</source>
         <translation>Verificați calea pentru MPlayer în Preferințe.</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4637"/>
+        <location filename="../basegui.cpp" line="4319"/>
         <source>MPlayer has crashed.</source>
         <translation>MPlayer s-a oprit.</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4638"/>
+        <location filename="../basegui.cpp" line="4320"/>
         <source>See the log for more info.</source>
         <translation>Pentru mai multe informații consulați jurnalul.</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1767"/>
+        <location filename="../basegui.cpp" line="1548"/>
         <source>&amp;Rotate</source>
         <translation>&amp;Rotire</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1806"/>
+        <location filename="../basegui.cpp" line="1587"/>
         <source>&amp;Off</source>
         <translation>&amp;Oprit</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1807"/>
+        <location filename="../basegui.cpp" line="1588"/>
         <source>&amp;Rotate by 90 degrees clockwise and flip</source>
         <translation>&amp;Rotire 90 de grade în sensul acelor de ceas, cu întoarcere</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1808"/>
+        <location filename="../basegui.cpp" line="1589"/>
         <source>Rotate by 90 degrees &amp;clockwise</source>
         <translation>Rotire 90 de grade în sensul acelor de &amp;ceas</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1809"/>
+        <location filename="../basegui.cpp" line="1590"/>
         <source>Rotate by 90 degrees counterclock&amp;wise</source>
         <translation>Rotire 90 de grade în sens &amp;trigonometric</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1810"/>
+        <location filename="../basegui.cpp" line="1591"/>
         <source>Rotate by 90 degrees counterclockwise and &amp;flip</source>
         <translation>Rotire 90 de grade în sens trigonometric cu î&amp;ntoarcere</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1531"/>
+        <location filename="../basegui.cpp" line="1336"/>
         <source>&amp;Jump to...</source>
         <translation>Sal&amp;t la ...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1683"/>
+        <location filename="../basegui.cpp" line="1481"/>
         <source>Show context menu</source>
         <translation>Afișare meniu contextual</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3523"/>
+        <location filename="../basegui.cpp" line="3225"/>
         <source>Multimedia</source>
         <translation>Multimedia</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1580"/>
+        <location filename="../basegui.cpp" line="1382"/>
         <source>E&amp;qualizer</source>
         <translation>E&amp;galizor grafic</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1682"/>
+        <location filename="../basegui.cpp" line="1480"/>
         <source>Reset audio equalizer</source>
         <translation>Resetarea egalizorului audio</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1616"/>
+        <location filename="../basegui.cpp" line="1419"/>
         <source>Find subtitles on &amp;OpenSubtitles.org...</source>
         <translation>Căutarea subtitrărilor în paginile &amp;OpenSubtitles.org...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1617"/>
+        <location filename="../basegui.cpp" line="1420"/>
         <source>Upload su&amp;btitles to OpenSubtitles.org...</source>
         <translation>Transmiteți su&amp;btitrări către OpenSubtitles.org...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1637"/>
+        <location filename="../basegui.cpp" line="1436"/>
         <source>&amp;Tips</source>
-        <translation type="obsolete">&amp;Sfaturi practice</translation>
+        <translation>&amp;Sfaturi practice</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1783"/>
+        <location filename="../basegui.cpp" line="1564"/>
         <source>&amp;Auto</source>
         <translation>&amp;Auto</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1539"/>
+        <location filename="../basegui.cpp" line="1344"/>
         <source>Speed -&amp;4%</source>
         <translation>Viteză -&amp;4%</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1540"/>
+        <location filename="../basegui.cpp" line="1345"/>
         <source>&amp;Speed +4%</source>
         <translation>&amp;Viteză +4%</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1541"/>
+        <location filename="../basegui.cpp" line="1346"/>
         <source>Speed -&amp;1%</source>
         <translation>Viteză -&amp;1%</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1542"/>
+        <location filename="../basegui.cpp" line="1347"/>
         <source>S&amp;peed +1%</source>
         <translation>Vite&amp;ză +1%</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1774"/>
+        <location filename="../basegui.cpp" line="1555"/>
         <source>Scree&amp;n</source>
         <translation>Ecra&amp;n</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1818"/>
+        <location filename="../basegui.cpp" line="1599"/>
         <source>&amp;Default</source>
         <translation>&amp;Implicit</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1552"/>
+        <location filename="../basegui.cpp" line="1357"/>
         <source>Mirr&amp;or image</source>
         <translation>Imagine în &amp;oglindă</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1675"/>
+        <location filename="../basegui.cpp" line="1473"/>
         <source>Next video</source>
         <translation>Următorul fișier video</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1745"/>
+        <location filename="../basegui.cpp" line="1530"/>
         <source>&amp;Track</source>
         <comment>video</comment>
         <translation>Fișier &amp;video</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1822"/>
+        <location filename="../basegui.cpp" line="1603"/>
         <source>&amp;Track</source>
         <comment>audio</comment>
         <translation>C&amp;oloană_sonoră</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4051"/>
+        <location filename="../basegui.cpp" line="3733"/>
         <source>Warning - Using old MPlayer</source>
         <translation>Atenționare - Acum folosiți o versiune MPlayer veche</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4055"/>
+        <location filename="../basegui.cpp" line="3737"/>
         <source>The version of MPlayer (%1) installed on your system is obsolete. SMPlayer can&apos;t work well with it: some options won&apos;t work, subtitle selection may fail...</source>
         <translation>Versiunea pentru MPlayer (%1) pe care o aveți instalată în sistem este depășită. SMPlayer nu poate funcționa bine cu această versiune: unele opțiuni nu vor funcționa, selectarea subtitrărikor poate eșua...</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4058"/>
+        <location filename="../basegui.cpp" line="3740"/>
         <source>Please, update your MPlayer.</source>
         <translation>Actualizați versiunea pentru MPlayer.</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4059"/>
+        <location filename="../basegui.cpp" line="3741"/>
         <source>(This warning won&apos;t be displayed anymore)</source>
         <translation>(Această atenționare nu va mai fi afișată)</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1684"/>
+        <location filename="../basegui.cpp" line="1482"/>
         <source>Next aspect ratio</source>
         <translation>Următorul format imagine</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1557"/>
+        <location filename="../basegui.cpp" line="1364"/>
         <source>&amp;Auto zoom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1558"/>
+        <location filename="../basegui.cpp" line="1365"/>
         <source>Zoom for &amp;16:9</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1559"/>
+        <location filename="../basegui.cpp" line="1366"/>
         <source>Zoom for &amp;2.35:1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1550"/>
+        <location filename="../basegui.cpp" line="1355"/>
         <source>Pre&amp;view...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1812"/>
+        <location filename="../basegui.cpp" line="1593"/>
         <source>&amp;Always</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1813"/>
+        <location filename="../basegui.cpp" line="1594"/>
         <source>&amp;Never</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1814"/>
+        <location filename="../basegui.cpp" line="1595"/>
         <source>While &amp;playing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1871"/>
+        <location filename="../basegui.cpp" line="1649"/>
         <source>DVD &amp;menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1873"/>
+        <location filename="../basegui.cpp" line="1651"/>
         <source>DVD &amp;previous menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1867"/>
+        <location filename="../basegui.cpp" line="1645"/>
         <source>DVD menu, move up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1868"/>
+        <location filename="../basegui.cpp" line="1646"/>
         <source>DVD menu, move down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1869"/>
+        <location filename="../basegui.cpp" line="1647"/>
         <source>DVD menu, move left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1870"/>
+        <location filename="../basegui.cpp" line="1648"/>
         <source>DVD menu, move right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1872"/>
+        <location filename="../basegui.cpp" line="1650"/>
         <source>DVD menu, select option</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1874"/>
+        <location filename="../basegui.cpp" line="1652"/>
         <source>DVD menu, mouse click</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1588"/>
+        <location filename="../basegui.cpp" line="1390"/>
         <source>Set dela&amp;y...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1602"/>
+        <location filename="../basegui.cpp" line="1404"/>
         <source>Se&amp;t delay...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3762"/>
+        <location filename="../basegui.cpp" line="3453"/>
         <source>&amp;Jump to:</source>
         <translation type="unfinished">&amp;Salt la:</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3763"/>
+        <location filename="../basegui.cpp" line="3454"/>
         <source>SMPlayer - Seek</source>
         <translation type="unfinished">SMPlayer - Derulare</translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3773"/>
+        <location filename="../basegui.cpp" line="3464"/>
         <source>SMPlayer - Audio delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3774"/>
+        <location filename="../basegui.cpp" line="3465"/>
         <source>Audio delay (in milliseconds):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3783"/>
+        <location filename="../basegui.cpp" line="3474"/>
         <source>SMPlayer - Subtitle delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="3784"/>
+        <location filename="../basegui.cpp" line="3475"/>
         <source>Subtitle delay (in milliseconds):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1815"/>
+        <location filename="../basegui.cpp" line="1596"/>
         <source>Toggle stay on top</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="4351"/>
+        <location filename="../basegui.cpp" line="4032"/>
         <source>Jump to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1549"/>
+        <location filename="../basegui.cpp" line="1354"/>
         <source>Start/stop takin&amp;g screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1614"/>
+        <location filename="../basegui.cpp" line="1417"/>
         <source>Subtitle &amp;visibility</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1685"/>
+        <location filename="../basegui.cpp" line="1483"/>
         <source>Next wheel function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1861"/>
+        <location filename="../basegui.cpp" line="1639"/>
         <source>P&amp;rogram</source>
         <comment>program</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1731"/>
+        <location filename="../basegui.cpp" line="1305"/>
+        <source>&amp;Edit...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../basegui.cpp" line="1308"/>
+        <source>Next TV channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../basegui.cpp" line="1309"/>
+        <source>Previous TV channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../basegui.cpp" line="1310"/>
+        <source>Next radio channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../basegui.cpp" line="1311"/>
+        <source>Previous radio channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../basegui.cpp" line="1519"/>
         <source>&amp;TV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1734"/>
+        <location filename="../basegui.cpp" line="1522"/>
         <source>Radi&amp;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1692"/>
+        <location filename="../basegui.cpp" line="1307"/>
+        <source>&amp;Jump...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../basegui.cpp" line="1487"/>
         <source>Subtitles onl&amp;y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1693"/>
+        <location filename="../basegui.cpp" line="1488"/>
         <source>Volume + &amp;Seek</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1694"/>
+        <location filename="../basegui.cpp" line="1489"/>
         <source>Volume + Seek + &amp;Timer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../basegui.cpp" line="1695"/>
+        <location filename="../basegui.cpp" line="1490"/>
         <source>Volume + Seek + Timer + T&amp;otal time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1431"/>
-        <source>Video filters are disabled when using vdpau</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1551"/>
-        <source>Fli&amp;p image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1755"/>
-        <source>Zoo&amp;m</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1687"/>
-        <source>Show filename on OSD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1526"/>
-        <source>Set &amp;A marker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1527"/>
-        <source>Set &amp;B marker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1528"/>
-        <source>&amp;Clear A-B markers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1741"/>
-        <source>&amp;A-B section</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1688"/>
-        <source>Toggle deinterlacing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1638"/>
-        <source>&amp;Donate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1847"/>
-        <source>&amp;Closed captions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="3743"/>
-        <source>Donate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="3744"/>
-        <source>If you like SMPlayer, a really good way to support it is by sending a donation, even the smallest one is highly appreciated.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="3745"/>
-        <source>You can send your donation using %1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="3745"/>
-        <source>this form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1724"/>
-        <source>&amp;Disc</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1728"/>
-        <source>F&amp;avorites</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../basegui.cpp" line="1637"/>
-        <source>Check for &amp;updates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>BaseGuiPlus</name>
     <message>
-        <location filename="../baseguiplus.cpp" line="188"/>
+        <location filename="../baseguiplus.cpp" line="178"/>
         <source>SMPlayer is still running here</source>
         <translation>SMPlayer încă funcționează de aici</translation>
     </message>
     <message>
-        <location filename="../baseguiplus.cpp" line="209"/>
+        <location filename="../baseguiplus.cpp" line="199"/>
         <source>S&amp;how icon in system tray</source>
         <translation>A&amp;fișează iconiță în system tray</translation>
     </message>
     <message>
-        <location filename="../baseguiplus.cpp" line="220"/>
+        <location filename="../baseguiplus.cpp" line="210"/>
         <source>&amp;Hide</source>
         <translation>&amp;Ascunde</translation>
     </message>
     <message>
-        <location filename="../baseguiplus.cpp" line="222"/>
+        <location filename="../baseguiplus.cpp" line="212"/>
         <source>&amp;Restore</source>
         <translation>&amp;Restaurare_fereastră</translation>
     </message>
     <message>
-        <location filename="../baseguiplus.cpp" line="208"/>
+        <location filename="../baseguiplus.cpp" line="198"/>
         <source>&amp;Quit</source>
         <translation>Î&amp;nchide program</translation>
     </message>
     <message>
-        <location filename="../baseguiplus.cpp" line="214"/>
+        <location filename="../baseguiplus.cpp" line="204"/>
         <source>Playlist</source>
         <translation>Listă_Titluri</translation>
     </message>
@@ -1789,203 +1689,132 @@ O fereastră de dialog va fi afișată pentru a putea face configurarea.</transl
 <context>
     <name>Core</name>
     <message>
-        <location filename="../core.cpp" line="2683"/>
+        <location filename="../core.cpp" line="2465"/>
         <source>Brightness: %1</source>
         <translation>Luminozitate: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2698"/>
+        <location filename="../core.cpp" line="2480"/>
         <source>Contrast: %1</source>
         <translation>Contrast: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2712"/>
+        <location filename="../core.cpp" line="2494"/>
         <source>Gamma: %1</source>
         <translation>Gamma: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2726"/>
+        <location filename="../core.cpp" line="2508"/>
         <source>Hue: %1</source>
         <translation>Culoare: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2740"/>
+        <location filename="../core.cpp" line="2522"/>
         <source>Saturation: %1</source>
         <translation>Saturație: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2869"/>
+        <location filename="../core.cpp" line="2651"/>
         <source>Volume: %1</source>
         <translation>Volum: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3682"/>
+        <location filename="../core.cpp" line="3461"/>
         <source>Zoom: %1</source>
         <translation>Zoom: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2997"/>
+        <location filename="../core.cpp" line="2779"/>
         <source>Font scale: %1</source>
         <translation>Mărime caractere: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3553"/>
+        <location filename="../core.cpp" line="3332"/>
         <source>Aspect ratio: %1</source>
         <translation>Format imagine: %1</translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3925"/>
+        <location filename="../core.cpp" line="3663"/>
         <source>Updating the font cache. This may take some seconds...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2911"/>
+        <location filename="../core.cpp" line="2693"/>
         <source>Subtitle delay: %1 ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2928"/>
+        <location filename="../core.cpp" line="2710"/>
         <source>Audio delay: %1 ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="2794"/>
+        <location filename="../core.cpp" line="2576"/>
         <source>Speed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3040"/>
+        <location filename="../core.cpp" line="2822"/>
         <source>Subtitles on</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3042"/>
+        <location filename="../core.cpp" line="2824"/>
         <source>Subtitles off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3600"/>
+        <location filename="../core.cpp" line="3379"/>
         <source>Mouse wheel seeks now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3603"/>
+        <location filename="../core.cpp" line="3382"/>
         <source>Mouse wheel changes volume now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3606"/>
+        <location filename="../core.cpp" line="3385"/>
         <source>Mouse wheel changes zoom level now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core.cpp" line="3609"/>
+        <location filename="../core.cpp" line="3388"/>
         <source>Mouse wheel changes speed now</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="1237"/>
-        <source>Screenshot NOT taken, folder not configured</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="1250"/>
-        <source>Screenshots NOT taken, folder not configured</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="2438"/>
-        <source>&quot;A&quot; marker set to %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="2455"/>
-        <source>&quot;B&quot; marker set to %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="2470"/>
-        <source>A-B markers cleared</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="500"/>
-        <source>Connecting to %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="504"/>
-        <source>Unable to retrieve youtube page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core.cpp" line="508"/>
-        <source>Unable to locate the url of the video</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DefaultGui</name>
     <message>
-        <location filename="../defaultgui.cpp" line="406"/>
+        <location filename="../defaultgui.cpp" line="366"/>
         <source>Welcome to SMPlayer</source>
         <translation>Bun venit la SMPlayer</translation>
     </message>
     <message>
-        <location filename="../defaultgui.cpp" line="434"/>
+        <location filename="../defaultgui.cpp" line="389"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../defaultgui.cpp" line="435"/>
+        <location filename="../defaultgui.cpp" line="390"/>
         <source>Subtitle</source>
         <translation>Subtitrare</translation>
     </message>
     <message>
-        <location filename="../defaultgui.cpp" line="428"/>
+        <location filename="../defaultgui.cpp" line="383"/>
         <source>&amp;Main toolbar</source>
         <translation>&amp;Bară_principală  unelte</translation>
     </message>
     <message>
-        <location filename="../defaultgui.cpp" line="431"/>
+        <location filename="../defaultgui.cpp" line="386"/>
         <source>&amp;Language toolbar</source>
         <translation>Bară_unelte &amp;limbă</translation>
     </message>
     <message>
-        <location filename="../defaultgui.cpp" line="422"/>
+        <location filename="../defaultgui.cpp" line="380"/>
         <source>&amp;Toolbars</source>
         <translation>B&amp;are de unelte</translation>
-    </message>
-    <message>
-        <location filename="../defaultgui.cpp" line="455"/>
-        <source>A:%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../defaultgui.cpp" line="459"/>
-        <source>B:%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../defaultgui.cpp" line="425"/>
-        <source>Status&amp;bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../defaultgui.cpp" line="437"/>
-        <source>&amp;Video info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../defaultgui.cpp" line="438"/>
-        <source>&amp;Frame counter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../defaultgui.cpp" line="468"/>
-        <source>%1x%2 %3 fps</source>
-        <comment>width + height + fps</comment>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2027,22 +1856,22 @@ O fereastră de dialog va fi afișată pentru a putea face configurarea.</transl
 <context>
     <name>FavoriteEditor</name>
     <message>
-        <location filename="../favoriteeditor.cpp" line="93"/>
+        <location filename="../favoriteeditor.cpp" line="35"/>
         <source>Icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.cpp" line="93"/>
+        <location filename="../favoriteeditor.cpp" line="35"/>
         <source>Name</source>
         <translation type="unfinished">Nume</translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.cpp" line="93"/>
+        <location filename="../favoriteeditor.cpp" line="35"/>
         <source>Media</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.cpp" line="106"/>
+        <location filename="../favoriteeditor.cpp" line="45"/>
         <source>Favorite editor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2052,17 +1881,17 @@ O fereastră de dialog va fi afișată pentru a putea face configurarea.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.cpp" line="110"/>
+        <location filename="../favoriteeditor.cpp" line="49"/>
         <source>You can edit, delete, sort or add new items. Double click on a cell to edit its contents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.cpp" line="340"/>
+        <location filename="../favoriteeditor.cpp" line="222"/>
         <source>Select an icon file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.cpp" line="342"/>
+        <location filename="../favoriteeditor.cpp" line="224"/>
         <source>Images</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2072,79 +1901,41 @@ O fereastră de dialog va fi afișată pentru a putea face configurarea.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../favoriteeditor.ui" line="51"/>
+        <source>&amp;New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../favoriteeditor.ui" line="71"/>
         <source>D&amp;elete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.ui" line="105"/>
+        <location filename="../favoriteeditor.ui" line="78"/>
         <source>Delete &amp;all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.ui" line="78"/>
+        <location filename="../favoriteeditor.ui" line="98"/>
         <source>&amp;Up</source>
         <translation type="unfinished">&amp;Sus</translation>
     </message>
     <message>
-        <location filename="../favoriteeditor.ui" line="112"/>
+        <location filename="../favoriteeditor.ui" line="105"/>
         <source>&amp;Down</source>
         <translation type="unfinished">&amp;Jos</translation>
-    </message>
-    <message>
-        <location filename="../favoriteeditor.ui" line="51"/>
-        <source>&amp;New item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../favoriteeditor.ui" line="85"/>
-        <source>New &amp;submenu</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Favorites</name>
     <message>
-        <location filename="../favorites.cpp" line="348"/>
+        <location filename="../favorites.cpp" line="254"/>
         <source>Jump to item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../favorites.cpp" line="349"/>
+        <location filename="../favorites.cpp" line="255"/>
         <source>Enter the number of the item in the list to jump:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../favorites.cpp" line="89"/>
-        <source>&amp;Edit...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../favorites.cpp" line="90"/>
-        <source>&amp;Jump...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../favorites.cpp" line="91"/>
-        <source>&amp;Next</source>
-        <translation type="unfinished">&amp;Următorul</translation>
-    </message>
-    <message>
-        <location filename="../favorites.cpp" line="92"/>
-        <source>&amp;Previous</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../favorites.cpp" line="93"/>
-        <source>&amp;Add current media</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FileChooser</name>
-    <message>
-        <location filename="../filechooser.cpp" line="54"/>
-        <source>Click to select a file or folder</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2386,42 +2177,42 @@ Se folosesc aceleași reguli ca pentru filtrele video.Exemplu: resample=44100:0:
 <context>
     <name>FindSubtitlesWindow</name>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="192"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="186"/>
         <source>Language</source>
         <translation>Limbă</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="192"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="186"/>
         <source>Name</source>
         <translation>Nume</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="193"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="187"/>
         <source>Format</source>
         <translation>Format</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="193"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="187"/>
         <source>Files</source>
         <translation>Fișiere</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="193"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="187"/>
         <source>Date</source>
         <translation>Data</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="193"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="187"/>
         <source>Uploaded by</source>
         <translation>Încărcat de către</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="209"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="203"/>
         <source>All</source>
         <translation>Toate</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="215"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="209"/>
         <source>Close</source>
         <translation>Închide</translation>
     </message>
@@ -2431,42 +2222,42 @@ Se folosesc aceleași reguli ca pentru filtrele video.Exemplu: resample=44100:0:
         <translation>&amp;Descărcare</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="220"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="214"/>
         <source>&amp;Copy link to clipboard</source>
         <translation>&amp;Copiere legătură pe clipboard</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="301"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="285"/>
         <source>Error</source>
         <translation>Eroare</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="303"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="287"/>
         <source>Download failed: %1.</source>
         <translation>Descărcare eșuată: %1.</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="307"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="291"/>
         <source>Connecting to %1...</source>
         <translation>Conectare la %1...</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="313"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="297"/>
         <source>Downloading...</source>
         <translation>Se descarcă...</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="321"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="305"/>
         <source>Done.</source>
         <translation>Operație terminată.</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="367"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="351"/>
         <source>%1 files available</source>
         <translation>%1 fișiere disponibile</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="376"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="360"/>
         <source>Failed to parse the received data.</source>
         <translation>Transferul datelor recepționate a eșuat.</translation>
     </message>
@@ -2491,12 +2282,12 @@ Se folosesc aceleași reguli ca pentru filtrele video.Exemplu: resample=44100:0:
         <translation>&amp;Reîncărcare</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="521"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="505"/>
         <source>Subtitle saved as %1</source>
         <translation>Subtitrare salvată ca %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="544"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="528"/>
         <source>%1 subtitle(s) extracted</source>
         <translation>
             <numerusform>%1 subtitrări extrase</numerusform>
@@ -2504,22 +2295,22 @@ Se folosesc aceleași reguli ca pentru filtrele video.Exemplu: resample=44100:0:
         </translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="558"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="542"/>
         <source>Overwrite?</source>
         <translation>Scrieți peste?</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="559"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="543"/>
         <source>The file %1 already exits, overwrite?</source>
         <translation>Fișierul %1 există, scrieți peste el?</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="476"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="460"/>
         <source>Error saving file</source>
         <translation>Eroare la salvarea fișierului</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="479"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="463"/>
         <source>It wasn&apos;t possible to save the downloaded
 file in folder %1
 Please check the permissions of that folder.</source>
@@ -2528,12 +2319,12 @@ descărcat în directorul %1
 Verificați permisiunile acelui director.</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="470"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="454"/>
         <source>Download failed</source>
         <translation>Descărcare eșuată</translation>
     </message>
     <message>
-        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="454"/>
+        <location filename="../findsubtitles/findsubtitleswindow.cpp" line="438"/>
         <source>Temporary file %1</source>
         <translation>Fișier  %1 temporar</translation>
     </message>
@@ -2546,199 +2337,199 @@ Verificați permisiunile acelui director.</translation>
 <context>
     <name>InfoFile</name>
     <message>
-        <location filename="../infofile.cpp" line="62"/>
+        <location filename="../infofile.cpp" line="63"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="66"/>
+        <location filename="../infofile.cpp" line="67"/>
         <source>Size</source>
         <translation>Dimensiune</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="66"/>
+        <location filename="../infofile.cpp" line="67"/>
         <source>%1 KB (%2 MB)</source>
         <translation>%1 KB (%2 MB)</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="70"/>
+        <location filename="../infofile.cpp" line="74"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="72"/>
+        <location filename="../infofile.cpp" line="76"/>
         <source>Length</source>
         <translation>Durată</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="73"/>
+        <location filename="../infofile.cpp" line="77"/>
         <source>Demuxer</source>
         <translation>Demuxer</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="149"/>
+        <location filename="../infofile.cpp" line="153"/>
         <source>Name</source>
         <translation>Nume</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="79"/>
+        <location filename="../infofile.cpp" line="83"/>
         <source>Artist</source>
         <translation>Artist</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="80"/>
+        <location filename="../infofile.cpp" line="84"/>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="81"/>
+        <location filename="../infofile.cpp" line="85"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="82"/>
+        <location filename="../infofile.cpp" line="86"/>
         <source>Genre</source>
         <translation>Gen </translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="83"/>
+        <location filename="../infofile.cpp" line="87"/>
         <source>Date</source>
         <translation>Dată</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="84"/>
+        <location filename="../infofile.cpp" line="88"/>
         <source>Track</source>
         <translation>Coloană sonoră</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="85"/>
+        <location filename="../infofile.cpp" line="89"/>
         <source>Copyright</source>
         <translation>Licență</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="86"/>
+        <location filename="../infofile.cpp" line="90"/>
         <source>Comment</source>
         <translation>Comentariu</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="87"/>
+        <location filename="../infofile.cpp" line="91"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="92"/>
+        <location filename="../infofile.cpp" line="96"/>
         <source>Clip info</source>
         <translation>Informații Clip</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="99"/>
+        <location filename="../infofile.cpp" line="103"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="100"/>
+        <location filename="../infofile.cpp" line="104"/>
         <source>Resolution</source>
         <translation>Rezoluție</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="101"/>
+        <location filename="../infofile.cpp" line="105"/>
         <source>Aspect ratio</source>
         <translation>Raport aspect</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="111"/>
+        <location filename="../infofile.cpp" line="115"/>
         <source>Format</source>
         <translation>Format</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="112"/>
+        <location filename="../infofile.cpp" line="116"/>
         <source>Bitrate</source>
         <translation>Viteză_transfer</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="112"/>
+        <location filename="../infofile.cpp" line="116"/>
         <source>%1 kbps</source>
         <translation>%1 kbps</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="104"/>
+        <location filename="../infofile.cpp" line="108"/>
         <source>Frames per second</source>
         <translation>Cadre pe secundă</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="115"/>
+        <location filename="../infofile.cpp" line="119"/>
         <source>Selected codec</source>
         <translation>Codec-ul selectat</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="110"/>
+        <location filename="../infofile.cpp" line="114"/>
         <source>Initial Audio Stream</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="113"/>
+        <location filename="../infofile.cpp" line="117"/>
         <source>Rate</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="113"/>
+        <location filename="../infofile.cpp" line="117"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="114"/>
+        <location filename="../infofile.cpp" line="118"/>
         <source>Channels</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="120"/>
+        <location filename="../infofile.cpp" line="124"/>
         <source>Audio Streams</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="149"/>
+        <location filename="../infofile.cpp" line="153"/>
         <source>Language</source>
         <translation>Limbă</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="164"/>
+        <location filename="../infofile.cpp" line="168"/>
         <source>empty</source>
         <translation>gol</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="144"/>
+        <location filename="../infofile.cpp" line="148"/>
         <source>Subtitles</source>
         <translation>Subtitrări</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="148"/>
+        <location filename="../infofile.cpp" line="152"/>
         <source>Type</source>
         <translation>Tipul</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="150"/>
+        <location filename="../infofile.cpp" line="154"/>
         <source>ID</source>
         <comment>Info for translators: this is a identification code</comment>
         <translation>Cod Identificare</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="147"/>
+        <location filename="../infofile.cpp" line="151"/>
         <source>#</source>
         <comment>Info for translators: this is a abbreviation for number</comment>
         <translation>Nr.</translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="88"/>
+        <location filename="../infofile.cpp" line="92"/>
         <source>Stream title</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="89"/>
+        <location filename="../infofile.cpp" line="93"/>
         <source>Stream URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../infofile.cpp" line="65"/>
+        <location filename="../infofile.cpp" line="66"/>
         <source>File</source>
         <translation>Fișier</translation>
     </message>
@@ -2799,7 +2590,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>1.0rc2</translation>
     </message>
     <message>
-        <location filename="../inputmplayerversion.ui" line="118"/>
+        <location filename="../inputmplayerversion.ui" line="105"/>
         <source>Greater than 1.0rc2</source>
         <translation type="obsolete">Mai nouă decât 1.0rc2</translation>
     </message>
@@ -2817,19 +2608,19 @@ Verificați permisiunile acelui director.</translation>
         <translation>SMPlayer - Introduceți URL</translation>
     </message>
     <message>
-        <location filename="../inputurl.ui" line="64"/>
+        <location filename="../inputurl.ui" line="80"/>
         <source>&amp;URL:</source>
         <translation>&amp;UR:</translation>
     </message>
     <message>
         <location filename="../inputurl.ui" line="46"/>
         <source>It&apos;s a &amp;playlist</source>
-        <translation type="obsolete">Este o &amp;listă de titluri</translation>
+        <translation>Este o &amp;listă de titluri</translation>
     </message>
     <message>
         <location filename="../inputurl.cpp" line="32"/>
         <source>If this option is checked, the URL will be treated as a playlist: it will be opened as text and will play the URLs in it.</source>
-        <translation type="obsolete">Dacă această opțiune este selectată atunci URL va fi tratat ca o listă de titluri: va fi deschis ca text și va reda adresele URL din listă.</translation>
+        <translation>Dacă această opțiune este selectată atunci URL va fi tratat ca o listă de titluri: va fi deschis ca text și va reda adresele URL din listă.</translation>
     </message>
 </context>
 <context>
@@ -2855,7 +2646,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Amharică</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="268"/>
+        <location filename="../languages.cpp" line="265"/>
         <source>Arabic</source>
         <translation>Arabă</translation>
     </message>
@@ -2930,22 +2721,22 @@ Verificați permisiunile acelui director.</translation>
         <translation>Galeză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="219"/>
+        <location filename="../languages.cpp" line="54"/>
         <source>Danish</source>
         <translation>Daneză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="220"/>
+        <location filename="../languages.cpp" line="219"/>
         <source>German</source>
         <translation>Germană</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="221"/>
+        <location filename="../languages.cpp" line="220"/>
         <source>Greek</source>
         <translation>Greacă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="222"/>
+        <location filename="../languages.cpp" line="221"/>
         <source>English</source>
         <translation>Engleză</translation>
     </message>
@@ -2955,17 +2746,17 @@ Verificați permisiunile acelui director.</translation>
         <translation>Esperanto</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="223"/>
+        <location filename="../languages.cpp" line="222"/>
         <source>Spanish</source>
         <translation>Spaniolă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="224"/>
+        <location filename="../languages.cpp" line="223"/>
         <source>Estonian</source>
         <translation>Estoniană</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="225"/>
+        <location filename="../languages.cpp" line="224"/>
         <source>Basque</source>
         <translation>Bască</translation>
     </message>
@@ -2975,7 +2766,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Farsi</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="226"/>
+        <location filename="../languages.cpp" line="225"/>
         <source>Finnish</source>
         <translation>Finlandeză</translation>
     </message>
@@ -2985,7 +2776,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Faroeză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="227"/>
+        <location filename="../languages.cpp" line="226"/>
         <source>French</source>
         <translation>Franceză</translation>
     </message>
@@ -3000,7 +2791,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Irlandeză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="228"/>
+        <location filename="../languages.cpp" line="227"/>
         <source>Galician</source>
         <translation>Galițiană</translation>
     </message>
@@ -3030,12 +2821,12 @@ Verificați permisiunile acelui director.</translation>
         <translation>Hindusă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="229"/>
+        <location filename="../languages.cpp" line="82"/>
         <source>Croatian</source>
         <translation>Croată</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="230"/>
+        <location filename="../languages.cpp" line="228"/>
         <source>Hungarian</source>
         <translation>Maghiară</translation>
     </message>
@@ -3065,7 +2856,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Islandeză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="231"/>
+        <location filename="../languages.cpp" line="229"/>
         <source>Italian</source>
         <translation>Italiană</translation>
     </message>
@@ -3075,7 +2866,7 @@ Verificați permisiunile acelui director.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="232"/>
+        <location filename="../languages.cpp" line="230"/>
         <source>Japanese</source>
         <translation>Japoneză</translation>
     </message>
@@ -3085,7 +2876,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Javaneză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="233"/>
+        <location filename="../languages.cpp" line="231"/>
         <source>Georgian</source>
         <translation>Georgiană</translation>
     </message>
@@ -3105,7 +2896,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Kanadeză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="234"/>
+        <location filename="../languages.cpp" line="232"/>
         <source>Korean</source>
         <translation>Coreană</translation>
     </message>
@@ -3115,7 +2906,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Kashmiriană</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="235"/>
+        <location filename="../languages.cpp" line="233"/>
         <source>Kurdish</source>
         <translation>Kurdă</translation>
     </message>
@@ -3135,7 +2926,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Lingala</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="236"/>
+        <location filename="../languages.cpp" line="121"/>
         <source>Lithuanian</source>
         <translation>Lituaniană</translation>
     </message>
@@ -3155,7 +2946,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Maori</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="237"/>
+        <location filename="../languages.cpp" line="234"/>
         <source>Macedonian</source>
         <translation>Macedoneană</translation>
     </message>
@@ -3205,7 +2996,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Nepaleză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="238"/>
+        <location filename="../languages.cpp" line="235"/>
         <source>Dutch</source>
         <translation>Olandeză</translation>
     </message>
@@ -3225,7 +3016,7 @@ Verificați permisiunile acelui director.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="239"/>
+        <location filename="../languages.cpp" line="236"/>
         <source>Polish</source>
         <translation>Poloneză</translation>
     </message>
@@ -3240,12 +3031,12 @@ Verificați permisiunile acelui director.</translation>
         <translation>Quechua</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="242"/>
+        <location filename="../languages.cpp" line="239"/>
         <source>Romanian</source>
         <translation>Română</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="274"/>
+        <location filename="../languages.cpp" line="271"/>
         <source>Russian</source>
         <translation>Rusă</translation>
     </message>
@@ -3265,12 +3056,12 @@ Verificați permisiunile acelui director.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="244"/>
+        <location filename="../languages.cpp" line="241"/>
         <source>Slovak</source>
         <translation>Slovacă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="245"/>
+        <location filename="../languages.cpp" line="242"/>
         <source>Slovenian</source>
         <translation>Slovenă</translation>
     </message>
@@ -3295,7 +3086,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Albaneză</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="246"/>
+        <location filename="../languages.cpp" line="243"/>
         <source>Serbian</source>
         <translation>Sârbă</translation>
     </message>
@@ -3305,7 +3096,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Sundaneză (Basa Sunda)</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="247"/>
+        <location filename="../languages.cpp" line="244"/>
         <source>Swedish</source>
         <translation>Suedeză</translation>
     </message>
@@ -3355,7 +3146,7 @@ Verificați permisiunile acelui director.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="270"/>
+        <location filename="../languages.cpp" line="267"/>
         <source>Turkish</source>
         <translation>Turcă</translation>
     </message>
@@ -3380,7 +3171,7 @@ Verificați permisiunile acelui director.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="249"/>
+        <location filename="../languages.cpp" line="246"/>
         <source>Ukrainian</source>
         <translation>Ucraineană</translation>
     </message>
@@ -3395,7 +3186,7 @@ Verificați permisiunile acelui director.</translation>
         <translation>Uzbecă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="250"/>
+        <location filename="../languages.cpp" line="247"/>
         <source>Vietnamese</source>
         <translation>Vietnameză</translation>
     </message>
@@ -3435,127 +3226,127 @@ Verificați permisiunile acelui director.</translation>
         <translation>Zulu</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="240"/>
+        <location filename="../languages.cpp" line="237"/>
         <source>Portuguese - Brazil</source>
         <translation>Portugheză - Brazilia</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="241"/>
+        <location filename="../languages.cpp" line="238"/>
         <source>Portuguese - Portugal</source>
         <translation>Portugheză - Portugalia</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="251"/>
+        <location filename="../languages.cpp" line="248"/>
         <source>Simplified-Chinese</source>
         <translation>Chineză simplificată</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="252"/>
+        <location filename="../languages.cpp" line="249"/>
         <source>Traditional Chinese</source>
         <translation>Chineză tradițională</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="260"/>
+        <location filename="../languages.cpp" line="257"/>
         <source>Unicode</source>
         <translation>Unicod</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="261"/>
+        <location filename="../languages.cpp" line="258"/>
         <source>UTF-8</source>
         <translation>UTF-8</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="262"/>
+        <location filename="../languages.cpp" line="259"/>
         <source>Western European Languages</source>
         <translation>Limbi Vest Europene</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="263"/>
+        <location filename="../languages.cpp" line="260"/>
         <source>Western European Languages with Euro</source>
         <translation>Limbi Vest Europene cu Euro</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="264"/>
+        <location filename="../languages.cpp" line="261"/>
         <source>Slavic/Central European Languages</source>
         <translation>Limbi Slave/Central Europene</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="265"/>
+        <location filename="../languages.cpp" line="262"/>
         <source>Esperanto, Galician, Maltese, Turkish</source>
         <translation>Esperanto, Galițiană, Malteză, Turcă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="266"/>
+        <location filename="../languages.cpp" line="263"/>
         <source>Old Baltic charset</source>
         <translation>Caractere Vechi Baltice</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="267"/>
+        <location filename="../languages.cpp" line="264"/>
         <source>Cyrillic</source>
         <translation>Alfabet Chirilic</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="269"/>
+        <location filename="../languages.cpp" line="266"/>
         <source>Modern Greek</source>
         <translation>Greacă Modernă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="271"/>
+        <location filename="../languages.cpp" line="268"/>
         <source>Baltic</source>
         <translation>Baltică</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="272"/>
+        <location filename="../languages.cpp" line="269"/>
         <source>Celtic</source>
         <translation>Celtă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="273"/>
+        <location filename="../languages.cpp" line="270"/>
         <source>Hebrew charsets</source>
         <translation>Alfabet Ebraic</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="275"/>
+        <location filename="../languages.cpp" line="272"/>
         <source>Ukrainian, Belarusian</source>
         <translation>Ucraineană, Belarusă</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="276"/>
+        <location filename="../languages.cpp" line="273"/>
         <source>Simplified Chinese charset</source>
         <translation>Alfabet Chinez Simplificat</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="277"/>
+        <location filename="../languages.cpp" line="274"/>
         <source>Traditional Chinese charset</source>
         <translation>Alfabet Chinez Tradițional</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="278"/>
+        <location filename="../languages.cpp" line="275"/>
         <source>Japanese charsets</source>
         <translation>Alfabet Japonez</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="279"/>
+        <location filename="../languages.cpp" line="276"/>
         <source>Korean charset</source>
         <translation>Alfabet Corean</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="280"/>
+        <location filename="../languages.cpp" line="277"/>
         <source>Thai charset</source>
         <translation>Alfabet Tailandez</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="281"/>
+        <location filename="../languages.cpp" line="278"/>
         <source>Cyrillic Windows</source>
         <translation>Alfabet Chirilic Windows</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="282"/>
+        <location filename="../languages.cpp" line="279"/>
         <source>Slavic/Central European Windows</source>
         <translation>Alfabet Slavon/Central European Windows</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="283"/>
+        <location filename="../languages.cpp" line="280"/>
         <source>Arabic Windows</source>
         <translation>Alfabet Arab Windows</translation>
     </message>
@@ -3874,11 +3665,6 @@ Verificați permisiunile acelui director.</translation>
         <source>Walloon</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../languages.cpp" line="284"/>
-        <source>Modern Greek Windows</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>LogWindow</name>
@@ -3972,176 +3758,171 @@ Se dorește suprascrierea lui?</translation>
 <context>
     <name>Playlist</name>
     <message>
-        <location filename="../playlist.cpp" line="281"/>
+        <location filename="../playlist.cpp" line="287"/>
         <source>Name</source>
         <translation>Nume</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="281"/>
+        <location filename="../playlist.cpp" line="287"/>
         <source>Length</source>
         <translation>Durată</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="286"/>
+        <location filename="../playlist.cpp" line="292"/>
         <source>&amp;Play</source>
         <translation>&amp;Redare</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="317"/>
+        <location filename="../playlist.cpp" line="325"/>
         <source>&amp;Edit</source>
         <translation>&amp;Editare</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="824"/>
+        <location filename="../playlist.cpp" line="718"/>
         <source>Playlists</source>
         <translation>Liste_Titluri</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="804"/>
+        <location filename="../playlist.cpp" line="698"/>
         <source>Choose a file</source>
         <translation>Alegere fișier</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="822"/>
+        <location filename="../playlist.cpp" line="716"/>
         <source>Choose a filename</source>
         <translation>Alegere nume fișier</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="833"/>
+        <location filename="../playlist.cpp" line="727"/>
         <source>Confirm overwrite?</source>
         <translation>Confirmați suprascrierea?</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="835"/>
+        <location filename="../playlist.cpp" line="729"/>
         <source>The file %1 already exists.
 Do you want to overwrite?</source>
         <translation>Fișierul %1 există.
 Doriți suprascrierea?</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="1021"/>
+        <location filename="../playlist.cpp" line="913"/>
         <source>All files</source>
         <translation>Toate fișierele</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="1018"/>
+        <location filename="../playlist.cpp" line="911"/>
         <source>Select one or more files to open</source>
         <translation>Selectați unul sau mai multe fișiere pentru a le deschide</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="1074"/>
+        <location filename="../playlist.cpp" line="966"/>
         <source>Choose a directory</source>
         <translation>Alegere director</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="1274"/>
+        <location filename="../playlist.cpp" line="1154"/>
         <source>Edit name</source>
         <translation>Editare nume</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="1275"/>
+        <location filename="../playlist.cpp" line="1155"/>
         <source>Type the name that will be displayed in the playlist for this file:</source>
         <translation>Tastați numele care va fi afișat în Listă pentru acest fișier:</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="283"/>
+        <location filename="../playlist.cpp" line="289"/>
         <source>&amp;Load</source>
         <translation>Î&amp;ncărcare</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="284"/>
+        <location filename="../playlist.cpp" line="290"/>
         <source>&amp;Save</source>
         <translation>&amp;Salvare</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="288"/>
+        <location filename="../playlist.cpp" line="294"/>
         <source>&amp;Next</source>
         <translation>&amp;Următorul</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="289"/>
+        <location filename="../playlist.cpp" line="295"/>
         <source>Pre&amp;vious</source>
         <translation>Ant&amp;eriorul</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="301"/>
+        <location filename="../playlist.cpp" line="307"/>
         <source>Move &amp;up</source>
         <translation>Mutare în s&amp;us</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="302"/>
+        <location filename="../playlist.cpp" line="308"/>
         <source>Move &amp;down</source>
         <translation>Mutare în &amp;jos</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="304"/>
+        <location filename="../playlist.cpp" line="310"/>
         <source>&amp;Repeat</source>
         <translation>&amp;Repetare</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="305"/>
+        <location filename="../playlist.cpp" line="311"/>
         <source>S&amp;huffle</source>
         <translation>A&amp;leator</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="308"/>
+        <location filename="../playlist.cpp" line="316"/>
         <source>Add &amp;current file</source>
         <translation>Adăugare fișier &amp;curent</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="309"/>
+        <location filename="../playlist.cpp" line="317"/>
         <source>Add &amp;file(s)</source>
         <translation>Adăugare &amp;fișier(e)</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="310"/>
+        <location filename="../playlist.cpp" line="318"/>
         <source>Add &amp;directory</source>
         <translation>Adăugare &amp;director</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="313"/>
+        <location filename="../playlist.cpp" line="321"/>
         <source>Remove &amp;selected</source>
         <translation>Ștergeți &amp;selecția</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="314"/>
+        <location filename="../playlist.cpp" line="322"/>
         <source>Remove &amp;all</source>
         <translation>Ştergeţi &amp;tot</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="327"/>
+        <location filename="../playlist.cpp" line="335"/>
         <source>SMPlayer - Playlist</source>
         <translation>SMPlayer - Listă _titluri</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="321"/>
+        <location filename="../playlist.cpp" line="329"/>
         <source>Add...</source>
         <translation>Adăugare...</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="323"/>
+        <location filename="../playlist.cpp" line="331"/>
         <source>Remove...</source>
         <translation>Înlăturare...</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="859"/>
+        <location filename="../playlist.cpp" line="753"/>
         <source>Playlist modified</source>
         <translation>Listă_titluri modificată</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="860"/>
+        <location filename="../playlist.cpp" line="754"/>
         <source>There are unsaved changes, do you want to save the playlist?</source>
         <translation>Există modificări nesalvate, doriți să salvați lista?</translation>
     </message>
     <message>
-        <location filename="../playlist.cpp" line="317"/>
+        <location filename="../playlist.cpp" line="313"/>
         <source>Preferences</source>
-        <translation type="obsolete">Opțiuni Preferate</translation>
-    </message>
-    <message>
-        <location filename="../playlist.cpp" line="1020"/>
-        <source>Multimedia</source>
-        <translation type="unfinished">Multimedia</translation>
+        <translation>Opțiuni Preferate</translation>
     </message>
 </context>
 <context>
@@ -4149,48 +3930,48 @@ Doriți suprascrierea?</translation>
     <message>
         <location filename="../playlistpreferences.ui" line="13"/>
         <source>Playlist - Preferences</source>
-        <translation type="obsolete">Listă de titluri - Opțiuni preferate</translation>
+        <translation>Listă de titluri - Opțiuni preferate</translation>
     </message>
     <message>
-        <location filename="../playlistpreferences.cpp" line="30"/>
+        <location filename="../playlistpreferences.cpp" line="32"/>
         <source>Check this option if you want that adding a directory will also add the files in subdirectories recursively. Otherwise only the files in the selected directory will be added.</source>
-        <translation type="obsolete">Selectați această opțiune dacă doriți ca prin adăugarea unui director să se adauge recursiv și fișierele și subdirectoarele conținute. Dacă nu este selectată această opțiune se vor adăuga doar fișierle din directorul selectat.</translation>
+        <translation>Selectați această opțiune dacă doriți ca prin adăugarea unui director să se adauge recursiv și fișierele și subdirectoarele conținute. Dacă nu este selectată această opțiune se vor adăuga doar fișierle din directorul selectat.</translation>
     </message>
     <message>
         <location filename="../playlistpreferences.ui" line="32"/>
         <source>&amp;Add files in directories recursively</source>
-        <translation type="obsolete">&amp;Adăugarea recursivă a fișerelor din directoare</translation>
+        <translation>&amp;Adăugarea recursivă a fișerelor din directoare</translation>
     </message>
     <message>
-        <location filename="../playlistpreferences.cpp" line="35"/>
+        <location filename="../playlistpreferences.cpp" line="39"/>
         <source>Check this option to inquire the files to be added to the playlist for some info. That allows to show the title name (if available) and length of the files. Otherwise this info won&apos;t be available until the file is actually played. Beware: this option can be slow, specially if you add many files.</source>
-        <translation type="obsolete">Selectați această opțiune dacă doriți să se caute informații despre titlurile pe care doriți să le adăugați în lista de titluri. Aceasta permite afișarea numele (dacă este disponibil) și lungimea fișierelor. Dacă nu este selectată opțiunea aceste informații nu vor fi accesibile decât atunci când este redat fișierul respectiv. Atenționare: această opțiune poate fi de durată, mai ales dacă adăugați multe fișiere.</translation>
+        <translation>Selectați această opțiune dacă doriți să se caute informații despre titlurile pe care doriți să le adăugați în lista de titluri. Aceasta permite afișarea numele (dacă este disponibil) și lungimea fișierelor. Dacă nu este selectată opțiunea aceste informații nu vor fi accesibile decât atunci când este redat fișierul respectiv. Atenționare: această opțiune poate fi de durată, mai ales dacă adăugați multe fișiere.</translation>
     </message>
     <message>
         <location filename="../playlistpreferences.ui" line="39"/>
         <source>Automatically get &amp;info about files added</source>
-        <translation type="obsolete">Achiziționare automată de &amp;informații despre fișierele adăugate</translation>
+        <translation>Achiziționare automată de &amp;informații despre fișierele adăugate</translation>
     </message>
     <message>
         <location filename="../playlistpreferences.ui" line="46"/>
         <source>&amp;Save copy of playlist on exit</source>
-        <translation type="obsolete">&amp;Salvează o copie a listei la închiderea programului</translation>
+        <translation>&amp;Salvează o copie a listei la închiderea programului</translation>
     </message>
     <message>
         <location filename="../playlistpreferences.ui" line="25"/>
         <source>&amp;Play files from start</source>
-        <translation type="obsolete">&amp;Redare fișiere de la început</translation>
+        <translation>&amp;Redare fișiere de la început</translation>
     </message>
 </context>
 <context>
     <name>PrefAdvanced</name>
     <message>
-        <location filename="../prefadvanced.cpp" line="368"/>
+        <location filename="../prefadvanced.cpp" line="344"/>
         <source>Advanced</source>
         <translation>Opțiuni_avansate</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="73"/>
+        <location filename="../prefadvanced.cpp" line="72"/>
         <source>Auto</source>
         <translation>Automat</translation>
     </message>
@@ -4205,7 +3986,7 @@ Doriți suprascrierea?</translation>
         <translation>Iconiță</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="332"/>
+        <location filename="../prefadvanced.ui" line="325"/>
         <source>Here you can pass extra options to MPlayer.
 Write them separated by spaces.
 Example: -flip -nosound</source>
@@ -4214,7 +3995,7 @@ Opțiunile se vor scrie separate de spații.
 Exemplu: -flip -nosound</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="401"/>
+        <location filename="../prefadvanced.ui" line="394"/>
         <source>You can also pass additional video filters.
 Separate them with &quot;,&quot;. Do not use spaces!
 Example: scale=512:-2,eq2=1.1</source>
@@ -4223,34 +4004,34 @@ Opțiunile se vor separa prin &quot;,&quot; (virgulă).Nu se utilizează spații
 Exemplu: scale=512:-2,eq2=1.1</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="470"/>
+        <location filename="../prefadvanced.ui" line="463"/>
         <source>And finally audio filters. Same rule as for video filters.
 Example: resample=44100:0:0,volnorm</source>
         <translation>Filtre audio.Se folosesc aceleași reguli ca la filtrele video.
 Exemplu: resample=44100:0:0,volnorm</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="472"/>
+        <location filename="../prefadvanced.cpp" line="439"/>
         <source>Log MPlayer output</source>
         <translation>Înscrie în jurnal datele furnizate de MPlayer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="461"/>
+        <location filename="../prefadvanced.cpp" line="432"/>
         <source>Log SMPlayer output</source>
         <translation>Înscrie în jurnal datele furnizate de SMPlayer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="732"/>
+        <location filename="../prefadvanced.ui" line="681"/>
         <source>This option is mainly intended for debugging the application.</source>
         <translation>Această opțiune se adresează în principal depanării aplicației.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="410"/>
+        <location filename="../prefadvanced.cpp" line="386"/>
         <source>Checking this option may reduce flickering, but it also might produce that the video won&apos;t be displayed properly.</source>
         <translation>Selectarea acestei opțiuni va reduce tremurul imaginii, dar, totodată poate produce afișarea incorectă a fișierului video.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="488"/>
+        <location filename="../prefadvanced.cpp" line="455"/>
         <source>Filter for SMPlayer logs</source>
         <translation>Filtrare date înscrise în jurnalul SMPlayer</translation>
     </message>
@@ -4265,17 +4046,17 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>&amp;Rulează MPlayer în fereastra proprie</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="364"/>
+        <location filename="../prefadvanced.ui" line="357"/>
         <source>&amp;Options:</source>
         <translation>&amp;Opțiuni:</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="433"/>
+        <location filename="../prefadvanced.ui" line="426"/>
         <source>V&amp;ideo filters:</source>
         <translation>Filtre V&amp;ideo:</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="501"/>
+        <location filename="../prefadvanced.ui" line="494"/>
         <source>Audio &amp;filters:</source>
         <translation>&amp;Filtre audio:</translation>
     </message>
@@ -4285,12 +4066,12 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>&amp;Cod_Culoare:</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="597"/>
+        <location filename="../prefadvanced.ui" line="590"/>
         <source>Log &amp;SMPlayer output</source>
         <translation>Înscrie în jurnal datele furnizate de &amp;SMPlayer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="742"/>
+        <location filename="../prefadvanced.ui" line="691"/>
         <source>&amp;Filter for SMPlayer logs:</source>
         <translation>&amp;Filtrare date înscrise în jurnalul SMPlayer:</translation>
     </message>
@@ -4300,52 +4081,52 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>M&amp;odificare...</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="459"/>
+        <location filename="../prefadvanced.cpp" line="430"/>
         <source>Logs</source>
         <translation>Arhivă jurnale</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="648"/>
+        <location filename="../prefadvanced.ui" line="597"/>
         <source>Log MPlayer &amp;output</source>
         <translation>Jurnal MPlayer &amp;ieșire</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="311"/>
+        <location filename="../prefadvanced.ui" line="304"/>
         <source>Options for MP&amp;layer</source>
         <translation>Opțiuni pentru MP&amp;layer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="478"/>
+        <location filename="../prefadvanced.cpp" line="445"/>
         <source>Autosave MPlayer log</source>
         <translation>Salvare automată jurnal MPlayer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="482"/>
+        <location filename="../prefadvanced.cpp" line="449"/>
         <source>If this option is checked, the MPlayer log will be saved to the specified file every time a new file starts to play. It&apos;s intended for external applications, so they can get info about the file you&apos;re playing.</source>
         <translation>Dacă va fi selectată această opțiune, jurnalul MPlayer va fi salvat în fișierul specificat de fiecare dată când se redă un nou fișier media. Este destinat aplicațiilor externe, astfel încât aceste programe să poată obține informații despre fișierele media pe care le redați.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="484"/>
+        <location filename="../prefadvanced.cpp" line="451"/>
         <source>Autosave MPlayer log filename</source>
         <translation>Nume fișier jurnal MPlayer salvare automată</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="486"/>
+        <location filename="../prefadvanced.cpp" line="453"/>
         <source>Enter here the path and filename that will be used to save the MPlayer log.</source>
         <translation>Introduceți calea și numele fișierului care va fi folosit pentru salvarea jurnalului MPlayer.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="696"/>
+        <location filename="../prefadvanced.ui" line="645"/>
         <source>A&amp;utosave MPlayer log to file</source>
         <translation>Salvare a&amp;utomată jurnal MPlayer în fișier</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="399"/>
+        <location filename="../prefadvanced.cpp" line="375"/>
         <source>Pass short filenames (8+3) to MPlayer</source>
         <translation>Transmite nume scurte de fișier (8+3) către MPlayer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="403"/>
+        <location filename="../prefadvanced.cpp" line="379"/>
         <source>Currently MPlayer can&apos;t open filenames which contains characters outside the local codepage. Checking this option will make SMPlayer to pass to MPlayer the short version of the filenames, and thus it will able to open them.</source>
         <translation>Versiunea curentă de MPlayer nu poate deschide fișiere al căror nume conține un număr mare de caractere. Bifând această opțiune va face ca SMPlayer să transmită către MPlayer versiunea scurtă a numelor fișierelor și astfel va fi posibil să le deschidă.</translation>
     </message>
@@ -4355,72 +4136,72 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>&amp;Transmite nume scurte de fișier (8+3) către MPlayer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="370"/>
+        <location filename="../prefadvanced.cpp" line="346"/>
         <source>Monitor aspect</source>
         <translation>Aspect monitor</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="371"/>
+        <location filename="../prefadvanced.cpp" line="347"/>
         <source>Select the aspect ratio of your monitor.</source>
         <translation>Selectați dimensiunile monitorului.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="373"/>
+        <location filename="../prefadvanced.cpp" line="349"/>
         <source>Run MPlayer in its own window</source>
         <translation>Rulează MPlayer în fereastra proprie</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="379"/>
+        <location filename="../prefadvanced.cpp" line="355"/>
         <source>If you check this option, the MPlayer video window won&apos;t be embedded in SMPlayer&apos;s main window but instead it will use its own window. Note that mouse and keyboard events will be handled directly by MPlayer, that means key shortcuts and mouse clicks probably won&apos;t work as expected when the MPlayer window has the focus.</source>
         <translation>Dacă selectați această opțiune, fereastra video MPlayer nu va fi încastrată în fereastra principală SMPlayer ci se va folosi fereastra proprie. De observat că mausul și tastatura vor fi interpretate direct de MPlayer, aceasta înseamnă că tastele de acces rapid și acțiunile mausului nu vor funcționa ca atunci când fereastra SMPlayer era activă.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="414"/>
+        <location filename="../prefadvanced.cpp" line="390"/>
         <source>Colorkey</source>
         <translation>cheie de culoare</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="417"/>
+        <location filename="../prefadvanced.cpp" line="393"/>
         <source>If you see parts of the video over any other window, you can change the colorkey to fix it. Try to select a color close to black.</source>
         <translation>Dacă observați porțiuni din video suprapuse peste oricare alte ferestre, puteți modifica cheia de culoare pentru a îndrepta acest lucru. Încercați să selectați o culoare apropiată de negru.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="437"/>
+        <location filename="../prefadvanced.cpp" line="408"/>
         <source>Options for MPlayer</source>
         <translation>Opțiuni pentru MPlayer</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="439"/>
+        <location filename="../prefadvanced.cpp" line="410"/>
         <source>Options</source>
         <translation>Opțiuni</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="441"/>
+        <location filename="../prefadvanced.cpp" line="412"/>
         <source>Here you can type options for MPlayer. Write them separated by spaces.</source>
         <translation>Aici puteți introduce opțiunile pentru MPlayer. Scrieți-le separate de spații.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="443"/>
+        <location filename="../prefadvanced.cpp" line="414"/>
         <source>Video filters</source>
         <translation>Filtre video</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="445"/>
+        <location filename="../prefadvanced.cpp" line="416"/>
         <source>Here you can add video filters for MPlayer. Write them separated by commas. Don&apos;t use spaces!</source>
         <translation>Aici puteți adăuga filtre video pentru MPlayer. Scrieți-le separate de virgulă. Nu utilizați spații!</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="447"/>
+        <location filename="../prefadvanced.cpp" line="418"/>
         <source>Audio filters</source>
         <translation>Filtre audio</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="449"/>
+        <location filename="../prefadvanced.cpp" line="420"/>
         <source>Here you can add audio filters for MPlayer. Write them separated by commas. Don&apos;t use spaces!</source>
         <translation>Aici puteți adăuga filtre audio pentru MPlayer. Scrieți-le separate de virgulă. Nu utilizați spații!</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="408"/>
+        <location filename="../prefadvanced.cpp" line="384"/>
         <source>Repaint the background of the video window</source>
         <translation>Refacerea culorii de fond a ferestrei de redare</translation>
     </message>
@@ -4430,47 +4211,47 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>Refacerea culorii de fon&amp;d a ferestrei de redare</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="453"/>
+        <location filename="../prefadvanced.cpp" line="424"/>
         <source>IPv4</source>
         <translation>IPv4</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="454"/>
+        <location filename="../prefadvanced.cpp" line="425"/>
         <source>Use IPv4 on network connections. Falls back on IPv6 automatically.</source>
         <translation>Se va folosi protocolul IPv4 pentru conectarea în rețea. Dacă nu este corect se va folosi implicit protocolul  IPv6.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="456"/>
+        <location filename="../prefadvanced.cpp" line="427"/>
         <source>IPv6</source>
         <translation>IPv6</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="457"/>
+        <location filename="../prefadvanced.cpp" line="428"/>
         <source>Use IPv6 on network connections. Falls back on IPv4 automatically.</source>
         <translation>Se va folosi protocolul IPv6 pentru conectarea în rețea. Dacă nu este corect se va folosi implicit protocolul  IPv4.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="539"/>
+        <location filename="../prefadvanced.ui" line="532"/>
         <source>Network Connection</source>
         <translation>Conexiune rețea</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="560"/>
+        <location filename="../prefadvanced.ui" line="553"/>
         <source>IPv&amp;4</source>
         <translation>IPv&amp;4</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="567"/>
+        <location filename="../prefadvanced.ui" line="560"/>
         <source>IPv&amp;6</source>
         <translation>IPv&amp;6</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="591"/>
+        <location filename="../prefadvanced.ui" line="584"/>
         <source>Lo&amp;gs</source>
         <translation>&amp;Jurnale</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="381"/>
+        <location filename="../prefadvanced.cpp" line="357"/>
         <source>Rebuild index if needed</source>
         <translation>Refacere index dacă este necesar</translation>
     </message>
@@ -4480,47 +4261,47 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>Refacere &amp;index dacă este necesar</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="466"/>
+        <location filename="../prefadvanced.cpp" line="437"/>
         <source>If this option is checked, SMPlayer will store the debugging messages that SMPlayer outputs (you can see the log in &lt;b&gt;Options -&gt; View logs -&gt; SMPlayer&lt;/b&gt;). This information can be very useful for the developer in case you find a bug.</source>
         <translation>Dacă este selectată această opțiune, SMPlayer va stoca mesajele de depanare (puteți vedea jurnalul în  &lt;b&gt;Opțiuni -&gt; Afișare jurnale -&gt; SMPlayer&lt;/b&gt;). Aceste informații pot fi foarte utile dezvoltatorilor, în caz că descoperiți o eroare de programare.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="476"/>
+        <location filename="../prefadvanced.cpp" line="443"/>
         <source>If checked, SMPlayer will store the output of MPlayer (you can see it in &lt;b&gt;Options -&gt; View logs -&gt; MPlayer&lt;/b&gt;). In case of problems this log can contain important information, so it&apos;s recommended to keep this option checked.</source>
         <translation>Dacă este selectată această opțiune, SMPlayer va stoca mesajele pe care le emite MPlayer (puteți consulta jurnalul la &lt;b&gt;Opțiuni -&gt; Afișare jurnale -&gt; MPlayer&lt;/b&gt;). În cazul unor probleme acest jurnal poate conține informații importante, prin urmare, este recomandat să păstrați această opțiune selectată.</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="492"/>
+        <location filename="../prefadvanced.cpp" line="459"/>
         <source>This option allows to filter the SMPlayer messages that will be stored in the log. Here you can write any regular expression.&lt;br&gt;For instance: &lt;i&gt;^Core::.*&lt;/i&gt; will display only the lines starting with &lt;i&gt;Core::&lt;/i&gt;</source>
         <translation>Această vă permite să selectați mesajele SMPlayer care vor fi stocate în jurnal. Aici puteți scrie orice tip de expresie regulată. &lt;br&gt;De exemplu: &lt;i&gt;^Core::.*&lt;/i&gt; va afișa doar liniile care încep cu &lt;i&gt;Core::&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="388"/>
+        <location filename="../prefadvanced.cpp" line="364"/>
         <source>Correct pts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="396"/>
+        <location filename="../prefadvanced.cpp" line="372"/>
         <source>Switches MPlayer to an experimental mode where timestamps for video frames are calculated differently and video filters which add new frames or modify timestamps of existing ones are supported. The more accurate timestamps can be visible for example when playing subtitles timed to scene changes with the SSA/ASS library enabled. Without correct pts the subtitle timing will typically be off by some frames. This option does not work correctly with some demuxers and codecs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="420"/>
+        <location filename="../prefadvanced.cpp" line="396"/>
         <source>Actions list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="426"/>
+        <location filename="../prefadvanced.cpp" line="402"/>
         <source>Here you can specify a list of &lt;i&gt;actions&lt;/i&gt; which will be run every time a file is opened. You&apos;ll find all available actions in the key shortcut editor in the &lt;b&gt;Keyboard and mouse&lt;/b&gt; section. The actions must be separated by spaces. Checkable actions can be followed by &lt;i&gt;true&lt;/i&gt; or &lt;i&gt;false&lt;/i&gt; to enable or disable the action.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="430"/>
+        <location filename="../prefadvanced.cpp" line="406"/>
         <source>Limitation: the actions are run only when a file is opened and not when the mplayer process is restarted (e.g. you select an audio or video filter).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="451"/>
+        <location filename="../prefadvanced.cpp" line="422"/>
         <source>Network</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4530,17 +4311,17 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="533"/>
+        <location filename="../prefadvanced.ui" line="526"/>
         <source>&amp;Network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="427"/>
+        <location filename="../prefadvanced.cpp" line="403"/>
         <source>Example:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.cpp" line="386"/>
+        <location filename="../prefadvanced.cpp" line="362"/>
         <source>Rebuilds index of files if no index was found, allowing seeking. Useful with broken/incomplete downloads, or badly created files. This option only works if the underlying media supports seeking (i.e. not with stdin, pipe, etc).&lt;br&gt; &lt;b&gt;Note:&lt;/b&gt; the creation of the index may take some time.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4550,75 +4331,45 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefadvanced.ui" line="689"/>
-        <source>&amp;Verbose</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefadvanced.cpp" line="468"/>
-        <source>Save SMPlayer log to file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefadvanced.cpp" line="470"/>
-        <source>If this option is checked, the SMPlayer log wil be recorded to %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../prefadvanced.ui" line="638"/>
-        <source>Sa&amp;ve SMPlayer log to a file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefadvanced.cpp" line="432"/>
-        <source>Show tag info in window title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefadvanced.cpp" line="435"/>
-        <source>If this option is enabled, information from tags will be shown in window title. Otherwise only the filename will be shown.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefadvanced.ui" line="287"/>
-        <source>Show tag in&amp;fo in window title</source>
+        <source>&amp;Verbose</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PrefAssociations</name>
     <message>
-        <location filename="../prefassociations.cpp" line="196"/>
+        <location filename="../prefassociations.cpp" line="183"/>
         <source>Warning</source>
         <translation>Atenționare</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="198"/>
+        <location filename="../prefassociations.cpp" line="185"/>
         <source>Not all files could be associated. Please check your security permissions and retry.</source>
         <translation>Nu toate fișierele pot fi asociate. Verificați permisiunile de securitate și încercați din nou.</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="207"/>
+        <location filename="../prefassociations.cpp" line="192"/>
         <source>File Types</source>
         <translation>Tipuri Fișiere</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="224"/>
+        <location filename="../prefassociations.cpp" line="209"/>
         <source>Select all</source>
         <translation>Toate Selectate</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="225"/>
+        <location filename="../prefassociations.cpp" line="210"/>
         <source>Check all file types in the list</source>
         <translation>Bifarea tuturor tipurilor de fișiere din listă</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="228"/>
+        <location filename="../prefassociations.cpp" line="213"/>
         <source>Uncheck all file types in the list</source>
         <translation>Debifarea tuturor tipurilor de fișiere din listă</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="230"/>
+        <location filename="../prefassociations.cpp" line="215"/>
         <source>List of file types</source>
         <translation>Lista tipurilor de fișiere</translation>
     </message>
@@ -4643,17 +4394,17 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>Niciunul Selectat</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="235"/>
+        <location filename="../prefassociations.cpp" line="220"/>
         <source>Check the media file extensions you would like SMPlayer to handle. When you click Apply, the checked files will be associated with SMPlayer. If you uncheck a media type, the file association will be restored.</source>
         <translation>Bifați fișierele media pe care doriți să le manipuleze SMPlayer. După ce apăsați butonul Validare, fișierele bifate vor fi asociate cu SMPlayer. Dacă debifați un tip de fișier media, se va reface asocierea implicită a fișierului.</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="227"/>
+        <location filename="../prefassociations.cpp" line="212"/>
         <source>Select none</source>
         <translation>Niciunul Selectat</translation>
     </message>
     <message>
-        <location filename="../prefassociations.cpp" line="235"/>
+        <location filename="../prefassociations.cpp" line="220"/>
         <source> &lt;b&gt;Note:&lt;/b&gt; (Restoration doesn&apos;t work on Windows Vista).</source>
         <translation>(sp)&lt;b&gt;Notă:&lt;/b&gt;(Restaurarea nu funcționează pentru Windows Vista).</translation>
     </message>
@@ -4671,22 +4422,22 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>Iconiță</translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="185"/>
+        <location filename="../prefdrives.cpp" line="179"/>
         <source>CD device</source>
         <translation>Dispozitiv CD</translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="187"/>
+        <location filename="../prefdrives.cpp" line="181"/>
         <source>Choose your CDROM device. It will be used to play VCDs and Audio CDs.</source>
         <translation>Alegeți dispozitivul CDROM. Acesta va fi folosit pentru redarea VCD și CD Audio.</translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="189"/>
+        <location filename="../prefdrives.cpp" line="183"/>
         <source>DVD device</source>
         <translation>Dispozitiv DVD</translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="190"/>
+        <location filename="../prefdrives.cpp" line="184"/>
         <source>Choose your DVD device. It will be used to play DVDs.</source>
         <translation>Alegere dispozitiv DVD. Acesta va fi folosit pentru redarea DVD.</translation>
     </message>
@@ -4706,27 +4457,27 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>SMPlayer nu alege implicit orice dispozitiv CDROM sau DVDROM. Așa că înainte de a reda efectiv un CD sau DVD trebuie să selectați dispozitivele pe care doriți să le utilizați ( poate fi același dispozitiv ).</translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="193"/>
+        <location filename="../prefdrives.cpp" line="187"/>
         <source>Enable DVD menus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="196"/>
+        <location filename="../prefdrives.cpp" line="190"/>
         <source>If this option is checked, smplayer will play DVDs using dvdnav. Requires a recent version of mplayer compiled with dvdnav support.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="197"/>
+        <location filename="../prefdrives.cpp" line="191"/>
         <source>&lt;b&gt;Note 1&lt;/b&gt;: cache will be disabled, this can affect performance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="199"/>
+        <location filename="../prefdrives.cpp" line="193"/>
         <source>&lt;b&gt;Note 2&lt;/b&gt;: you may want to assign the action &quot;activate option in DVD menus&quot; to one of the mouse buttons.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefdrives.cpp" line="201"/>
+        <location filename="../prefdrives.cpp" line="195"/>
         <source>&lt;b&gt;Note 3&lt;/b&gt;: this feature is under development, expect a lot of issues with it.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4744,7 +4495,7 @@ Exemplu: resample=44100:0:0,volnorm</translation>
 <context>
     <name>PrefGeneral</name>
     <message>
-        <location filename="../prefgeneral.cpp" line="835"/>
+        <location filename="../prefgeneral.cpp" line="755"/>
         <source>General</source>
         <translation>Opțiuni_Generale</translation>
     </message>
@@ -4754,7 +4505,7 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>Opțiuni_&amp;Generale</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="35"/>
+        <location filename="../prefgeneral.ui" line="41"/>
         <source>Paths</source>
         <translation type="obsolete">Selectare căi</translation>
     </message>
@@ -4764,162 +4515,162 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>Reglaje media</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1050"/>
+        <location filename="../prefgeneral.cpp" line="948"/>
         <source>Preferred audio and subtitles</source>
         <translation>Opțiuni preferate pentru sonor și subtitrări</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="883"/>
+        <location filename="../prefgeneral.cpp" line="803"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="945"/>
+        <location filename="../prefgeneral.cpp" line="853"/>
         <source>Start videos in fullscreen</source>
         <translation>Redare fișier video în mod fullscreen</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="971"/>
+        <location filename="../prefgeneral.cpp" line="879"/>
         <source>Disable screensaver</source>
         <translation>Dezactivare economizor ecran</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="978"/>
+        <location filename="../prefgeneral.cpp" line="886"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1003"/>
+        <location filename="../prefgeneral.cpp" line="903"/>
         <source>AC3/DTS pass-through S/PDIF</source>
         <translation>AC3/DTS direcționat către S/PDIF</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="123"/>
+        <location filename="../prefgeneral.cpp" line="118"/>
         <source>Select the mplayer executable</source>
         <translation>Selectare executabil mplayer</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="125"/>
+        <location filename="../prefgeneral.cpp" line="120"/>
         <source>Executables</source>
         <translation>Executabile</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="127"/>
+        <location filename="../prefgeneral.cpp" line="122"/>
         <source>All files</source>
         <translation>Toate fișierele</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="129"/>
+        <location filename="../prefgeneral.cpp" line="124"/>
         <source>Select a directory</source>
         <translation>Selectare director</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="837"/>
+        <location filename="../prefgeneral.cpp" line="757"/>
         <source>MPlayer executable</source>
         <translation>Executabil MPlayer</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="868"/>
+        <location filename="../prefgeneral.cpp" line="788"/>
         <source>Screenshots folder</source>
         <translation>Director capturi de ecran</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="885"/>
+        <location filename="../prefgeneral.cpp" line="805"/>
         <source>Video output driver</source>
         <translation>Driver ieșire video</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="980"/>
+        <location filename="../prefgeneral.cpp" line="888"/>
         <source>Audio output driver</source>
         <translation>Driver ieșire audio</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="982"/>
+        <location filename="../prefgeneral.cpp" line="890"/>
         <source>Select the audio output driver.</source>
         <translation>Selectare driver ieșire audio.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="845"/>
+        <location filename="../prefgeneral.cpp" line="765"/>
         <source>Remember settings</source>
         <translation>Memorare reglaje</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1052"/>
+        <location filename="../prefgeneral.cpp" line="950"/>
         <source>Preferred audio language</source>
         <translation>Limbă preferată coloană sonoră</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1062"/>
+        <location filename="../prefgeneral.cpp" line="960"/>
         <source>Preferred subtitle language</source>
         <translation>Limbă preferată pentru subtitrări</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="923"/>
+        <location filename="../prefgeneral.cpp" line="831"/>
         <source>Software video equalizer</source>
         <translation>Egalizor video software</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="927"/>
+        <location filename="../prefgeneral.cpp" line="835"/>
         <source>You can check this option if video equalizer is not supported by your graphic card or the selected video output driver.&lt;br&gt;&lt;b&gt;Note:&lt;/b&gt; this option can be incompatible with some video output drivers.</source>
         <translation>Se poate selecta această opțiune dacă egalizorul video nu este suportat de placa grafică sau de driverul de ieșire video.&lt;br&gt;&lt;b&gt;Atenție:&lt;/b&gt; această opțiune poate fi incompatibilă cu unele drivere de ieșire video.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="947"/>
+        <location filename="../prefgeneral.cpp" line="855"/>
         <source>If this option is checked, all videos will start to play in fullscreen mode.</source>
         <translation>Selectarea acestei opțiuni va indica redarea fișierelor video în mod fullscreen.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1029"/>
+        <location filename="../prefgeneral.cpp" line="927"/>
         <source>Software volume control</source>
         <translation>Control volum software</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1031"/>
+        <location filename="../prefgeneral.cpp" line="929"/>
         <source>Check this option to use the software mixer, instead of using the sound card mixer.</source>
         <translation>Selectați aceasta opțiune pentru a folosi mixerul software, în locul mixerului plăcii de sunet.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="909"/>
+        <location filename="../prefgeneral.cpp" line="817"/>
         <source>Postprocessing quality</source>
         <translation>Calitate posprocesare</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="912"/>
+        <location filename="../prefgeneral.cpp" line="820"/>
         <source>Dynamically changes the level of postprocessing depending on the available spare CPU time. The number you specify will be the maximum level used. Usually you can use some big number.</source>
         <translation>Modificarea dinamică a nivelului postprocesării funcție de încărcarea CPU. Numărul specificat  va reprezenta valoarea maximă a nivelului folosit.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="847"/>
+        <location filename="../prefgeneral.cpp" line="859"/>
         <source>Change volume</source>
         <translation type="obsolete">Modificare volum</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="847"/>
+        <location filename="../prefgeneral.cpp" line="862"/>
         <source>If checked, SMPlayer will remember the volume for every file and will restore it when played again. For new files the default volume will be used.</source>
         <translation type="obsolete">Dacă este selectată această opțiune atunci SMPlayer va memora nivelul volumului pentru toate fișierele redate și va folosi aceste valori când fișierele respective vor fi redate din nou. Pentru fișiere noi se va utiliza valoarea implicită a volumului.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="847"/>
+        <location filename="../prefgeneral.ui" line="949"/>
         <source>0</source>
         <translation type="obsolete">0</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="847"/>
+        <location filename="../prefgeneral.ui" line="803"/>
         <source>&amp;Change volume on every file</source>
         <translation type="obsolete">&amp;Modifică volumul pentru fiecare fișier</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="847"/>
+        <location filename="../prefgeneral.ui" line="62"/>
         <source>Select the &amp;MPlayer executable:</source>
         <translation type="obsolete">Selectarea executabilului &amp;MPlayer:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="847"/>
+        <location filename="../prefgeneral.ui" line="78"/>
         <source>&amp;Folder for storing screenshots:</source>
         <translation type="obsolete">&amp;Director pentru stocarea capturilor de ecran:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="1084"/>
+        <location filename="../prefgeneral.ui" line="1077"/>
         <source>&amp;Audio:</source>
         <translation>&amp;Audio:</translation>
     </message>
@@ -4929,107 +4680,107 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>Memorare &amp;reglaje pentru toate tipurile de fișiere (coloană sonoră, subtitrare...)</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="1103"/>
+        <location filename="../prefgeneral.ui" line="1096"/>
         <source>Su&amp;btitles:</source>
         <translation>Su&amp;btitrări:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="329"/>
+        <location filename="../prefgeneral.ui" line="322"/>
         <source>&amp;Quality:</source>
         <translation>Ca&amp;litatea:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="503"/>
+        <location filename="../prefgeneral.ui" line="496"/>
         <source>Start videos in &amp;fullscreen</source>
         <translation>Redare video în mod &amp;fullscreen</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="517"/>
+        <location filename="../prefgeneral.ui" line="510"/>
         <source>Disable &amp;screensaver</source>
         <translation>Dezactivare e&amp;conomizor ecran</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="517"/>
+        <location filename="../prefgeneral.ui" line="920"/>
         <source>&amp;Default volume:</source>
         <translation type="obsolete">&amp;Volum implicit:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="779"/>
+        <location filename="../prefgeneral.ui" line="772"/>
         <source>Use s&amp;oftware volume control</source>
         <translation>Folosire control volum prin s&amp;oftware</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="802"/>
+        <location filename="../prefgeneral.ui" line="795"/>
         <source>Ma&amp;x. Amplification:</source>
         <translation>Valoare ma&amp;ximă amplificare:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="633"/>
+        <location filename="../prefgeneral.ui" line="626"/>
         <source>&amp;AC3/DTS pass-through S/PDIF</source>
         <translation>&amp;AC3/DTS direcţionat către S/PDIF</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="929"/>
+        <location filename="../prefgeneral.cpp" line="837"/>
         <source>Direct rendering</source>
         <translation>Randare directă</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="934"/>
+        <location filename="../prefgeneral.cpp" line="842"/>
         <source>Double buffering</source>
         <translation>Mărime dublă buffer</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="469"/>
+        <location filename="../prefgeneral.ui" line="462"/>
         <source>D&amp;irect rendering</source>
         <translation>Randare d&amp;irectă</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="476"/>
+        <location filename="../prefgeneral.ui" line="469"/>
         <source>Dou&amp;ble buffering</source>
         <translation>Mărime du&amp;blă buffer</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="937"/>
+        <location filename="../prefgeneral.cpp" line="845"/>
         <source>Double buffering fixes flicker by storing two frames in memory, and displaying one while decoding another. If disabled it can affect OSD negatively, but often removes OSD flickering.</source>
         <translation>Alocarea unei mărimi duble pentru buffer va înlătura efectul de clipire a imaginii prin stocarea a două cadre în memorie și va afișa una în timp ce cealaltă este decodată. Dacă nu este selectată această opțiune se poate înfluența în mod negativ OSD (afișarea mesajelor pe imagine), dar de cele mai multe ori înlătură efectul de clipire a acestor mesaje.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="309"/>
+        <location filename="../prefgeneral.ui" line="302"/>
         <source>&amp;Enable postprocessing by default</source>
         <translation>&amp;Activare implicită postprocesare</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="830"/>
+        <location filename="../prefgeneral.ui" line="823"/>
         <source>Volume &amp;normalization by default</source>
         <translation>&amp;Normalizare implicită volum</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="873"/>
+        <location filename="../prefgeneral.cpp" line="793"/>
         <source>Close when finished</source>
         <translation>Închide după terminare</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="875"/>
+        <location filename="../prefgeneral.cpp" line="795"/>
         <source>If this option is checked, the main window will be automatically closed when the current file/playlist finishes.</source>
         <translation>Dacă această opțiune este selectată, fereastra principală se va închide automat după redarea fișierului/listei de titluri.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="95"/>
+        <location filename="../prefgeneral.cpp" line="90"/>
         <source>2 (Stereo)</source>
         <translation>2 (Stereo)</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="96"/>
+        <location filename="../prefgeneral.cpp" line="91"/>
         <source>4 (4.0 Surround)</source>
         <translation>4 (4.0 Surround)</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="97"/>
+        <location filename="../prefgeneral.cpp" line="92"/>
         <source>6 (5.1 Surround)</source>
         <translation>6 (5.1 Surround)</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="657"/>
+        <location filename="../prefgeneral.ui" line="650"/>
         <source>C&amp;hannels by default:</source>
         <translation>C&amp;anale implicite:</translation>
     </message>
@@ -5039,134 +4790,134 @@ Exemplu: resample=44100:0:0,volnorm</translation>
         <translation>&amp;Pauză la minimizare</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="877"/>
+        <location filename="../prefgeneral.cpp" line="797"/>
         <source>Pause when minimized</source>
         <translation>Pauză la minimizare</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="906"/>
+        <location filename="../prefgeneral.cpp" line="814"/>
         <source>Enable postprocessing by default</source>
         <translation>Activare  postprocesare implicită</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1033"/>
+        <location filename="../prefgeneral.cpp" line="931"/>
         <source>Max. Amplification</source>
         <translation>Amplificare maximă</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1040"/>
+        <location filename="../prefgeneral.cpp" line="938"/>
         <source>Volume normalization by default</source>
         <translation>Normalizare implicită volum</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1041"/>
+        <location filename="../prefgeneral.cpp" line="939"/>
         <source>Maximizes the volume without distorting the sound.</source>
         <translation>Mărire  volumul fără a distorsiona sunetul.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="970"/>
+        <location filename="../prefgeneral.cpp" line="869"/>
         <source>Default volume</source>
         <translation type="obsolete">Volum implicit</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="970"/>
+        <location filename="../prefgeneral.cpp" line="870"/>
         <source>Sets the initial volume that new files will use.</source>
         <translation type="obsolete">Stabilire volum inițial folosit pentru noile fișiere.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1008"/>
+        <location filename="../prefgeneral.cpp" line="906"/>
         <source>Channels by default</source>
         <translation>Canale implicite</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1038"/>
+        <location filename="../prefgeneral.cpp" line="936"/>
         <source>Sets the maximum amplification level in percent (default: 110). A value of 200 will allow you to adjust the volume up to a maximum of double the current level. With values below 100 the initial volume (which is 100%) will be above the maximum, which e.g. the OSD cannot display correctly.</source>
         <translation>Stabilirea nivelului maxim de amplificare în procente (implicit: 110). O valoare de 200 vă va permite ajustarea volumului până la o valoare maximă egală cu dublul valorii curente. Pentru o valoare sub 100 volumul inițial (care este 100%) va fi peste valoarea maximă, iar în acest caz, de exemplu, OSD nu îl va afișa corect.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="963"/>
+        <location filename="../prefgeneral.cpp" line="904"/>
         <source>Uses hardware AC3 passthrough</source>
-        <translation type="obsolete">Utilizare procesare AC3 hardware</translation>
+        <translation>Utilizare procesare AC3 hardware</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="907"/>
+        <location filename="../prefgeneral.cpp" line="815"/>
         <source>Postprocessing will be used by default on new opened files.</source>
         <translation>Postprocesarea va fi utilizată implicit pentru noile fișiere.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1072"/>
+        <location filename="../prefgeneral.cpp" line="970"/>
         <source>Audio track</source>
         <translation>Coloană sonoră</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1076"/>
+        <location filename="../prefgeneral.cpp" line="974"/>
         <source>Specifies the default audio track which will be used when playing new files. If the track doesn&apos;t exist, the first one will be used. &lt;br&gt;&lt;b&gt;Note:&lt;/b&gt; the &lt;i&gt;&quot;preferred audio language&quot;&lt;/i&gt; has preference over this option.</source>
         <translation>Specifică coloana sonoră implicită ce va fi folosită la redarea fișierelor nou încărcate. Dacă nu există coloana sonoră selectată va fi folosită prima coloană sonoră disponibilă. &lt;br&gt;&lt;b&gt;Notă:&lt;/b&gt; &lt;i&gt; &quot;limba preferată coloană sonoră&quot;&lt;/i&gt; va fi preferată în detrimentul acestei opțiuni.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1078"/>
+        <location filename="../prefgeneral.cpp" line="976"/>
         <source>Subtitle track</source>
         <translation>Pistă subtitrări</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1082"/>
+        <location filename="../prefgeneral.cpp" line="980"/>
         <source>Specifies the default subtitle track which will be used when playing new files. If the track doesn&apos;t exist, the first one will be used. &lt;br&gt;&lt;b&gt;Note:&lt;/b&gt; the &lt;i&gt;&quot;preferred subtitle language&quot;&lt;/i&gt; has preference over this option.</source>
         <translation>Specifică pista cu subtitrarea implicită ce va fi folosită când se vor reda fișiere noi. Dacă pista nu există, va fi folosită prima pistă disponibilă. &lt;br&gt; &lt;b&gt;Notă:&lt;/b&gt; opțiunea &lt;i&gt; &quot; limba preferată pentru subtitrare&quot; &lt;/i&gt; va fi preferată în detrimentul acestei opțiuni.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="1224"/>
+        <location filename="../prefgeneral.ui" line="1217"/>
         <source>Or choose a track number:</source>
         <translation>Sau alegeți un număr de pistă:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="1165"/>
+        <location filename="../prefgeneral.ui" line="1158"/>
         <source>Audi&amp;o:</source>
         <translation>C&amp;oloană Sonoră:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="1119"/>
+        <location filename="../prefgeneral.ui" line="1112"/>
         <source>Preferred language:</source>
         <translation>Limbă preferată:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="990"/>
+        <location filename="../prefgeneral.ui" line="983"/>
         <source>Preferre&amp;d audio and subtitles</source>
         <translation>Opțiuni prefera&amp;te pentru sonor și subtitrări</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="1178"/>
+        <location filename="../prefgeneral.ui" line="1171"/>
         <source>&amp;Subtitle:</source>
         <translation>&amp;Subtitrare:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="139"/>
+        <location filename="../prefgeneral.cpp" line="134"/>
         <source>Here you can type your preferred language for the audio and subtitle streams. When a media with multiple audio or subtitle streams is found, SMPlayer will try to use your preferred language. This only will work with media that offer info about the language of audio and subtitle streams, like DVDs or mkv files.&lt;br&gt;These fields accept regular expressions. Example: &lt;b&gt;es|esp|spa&lt;/b&gt; will select the track if it matches with &lt;i&gt;es&lt;/i&gt;, &lt;i&gt;esp&lt;/i&gt; or &lt;i&gt;spa&lt;/i&gt;.</source>
         <translation>Aici se poate tasta limba preferată pentru subtitrare și pentru coloana sonoră. Când un fișier mediea cu multiple coloane sonore și subtitrări este găsit, SMPlayer va încerca să folosească limba dumneavoastră preferată. Această opțiune funcționează doar cu acele fișiere media care oferă informații despre limba coloanei sonore și a subtitrării, precum DVD-urile sau fișierele în format mkv.&lt;br&gt;Aceste căsuțe acceptă expresii obișnuite. Exemplu: &lt;b&gt;es|esp|spa&lt;/b&gt; va selecta pista care corespunde cu &lt;i&gt;es&lt;/i&gt;, &lt;i&gt;esp&lt;/i&gt; sau &lt;i&gt;spa&lt;/i&gt;.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="1011"/>
+        <location filename="../prefgeneral.ui" line="1004"/>
         <source>&lt;Here it goes an explanation text&gt;
 For translators: don&apos;t translate this text, it will be replaced with another one at runtime.</source>
         <translation>&lt;Here it goes an explanation text&gt;
 </translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="702"/>
+        <location filename="../prefgeneral.ui" line="695"/>
         <source>High speed &amp;playback without altering pitch</source>
         <translation>&amp;Redare rapidă fără alterarea timbrului sunetului</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1019"/>
+        <location filename="../prefgeneral.cpp" line="917"/>
         <source>High speed playback without altering pitch</source>
         <translation>Redare rapidă fără alterarea timbrului sunetului</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1021"/>
+        <location filename="../prefgeneral.cpp" line="919"/>
         <source>Allows to change the playback speed without altering pitch. Requires at least MPlayer dev-SVN-r24924.</source>
         <translation>Vă permite modificarea vitezei de redare fără a altera timbrul sunetului. Opțiunea are nevoie de MPlayer versiunea dev-svn-r24924.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="949"/>
+        <location filename="../prefgeneral.cpp" line="864"/>
         <source>Change volume just before playing</source>
         <translation type="obsolete">Modfificare volum înainte de redare</translation>
     </message>
@@ -5176,67 +4927,67 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>&amp;Video</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="462"/>
+        <location filename="../prefgeneral.ui" line="455"/>
         <source>Use s&amp;oftware video equalizer</source>
         <translation>Utilizare egalizor video s&amp;oftware</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="561"/>
+        <location filename="../prefgeneral.ui" line="554"/>
         <source>A&amp;udio</source>
         <translation>A&amp;udio</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="737"/>
+        <location filename="../prefgeneral.ui" line="730"/>
         <source>Volume</source>
         <translation>Volum</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="101"/>
+        <location filename="../prefgeneral.cpp" line="96"/>
         <source>None</source>
         <translation>Nimic</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="102"/>
+        <location filename="../prefgeneral.cpp" line="97"/>
         <source>Lowpass5</source>
         <translation>Lowpass5</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="103"/>
+        <location filename="../prefgeneral.cpp" line="98"/>
         <source>Yadif (normal)</source>
         <translation>Yadif (normal)</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="104"/>
+        <location filename="../prefgeneral.cpp" line="99"/>
         <source>Yadif (double framerate)</source>
         <translation>Yadif (frecfență cadre dublă)</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="105"/>
+        <location filename="../prefgeneral.cpp" line="100"/>
         <source>Linear Blend</source>
         <translation>Amestec liniar</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="106"/>
+        <location filename="../prefgeneral.cpp" line="101"/>
         <source>Kerndeint</source>
         <translation>Kerndeint</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="105"/>
+        <location filename="../prefgeneral.ui" line="364"/>
         <source>Dei&amp;nterlace by default:</source>
         <translation type="obsolete">Deî&amp;ntrețesere implicită:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="914"/>
+        <location filename="../prefgeneral.cpp" line="822"/>
         <source>Deinterlace by default</source>
         <translation>Deîntrețesere implicită</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="916"/>
+        <location filename="../prefgeneral.cpp" line="824"/>
         <source>Select the deinterlace filter that you want to be used for new videos opened.</source>
         <translation>Selectați filtrul de deîntrețesere pe care doriți să îl folosiți pentru fișierele video deschise în viitor.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="850"/>
+        <location filename="../prefgeneral.cpp" line="770"/>
         <source>Remember time position</source>
         <translation>Memorarea timpului scurs</translation>
     </message>
@@ -5246,37 +4997,37 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Memorarea &amp;timpului scurs</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="101"/>
+        <location filename="../prefgeneral.ui" line="846"/>
         <source>Change volume just before p&amp;laying</source>
         <translation type="obsolete">Modificarea vo&amp;lumului chiar înainte de redare</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1000"/>
+        <location filename="../prefgeneral.cpp" line="900"/>
         <source>Enable the audio equalizer</source>
         <translation>Activare egalizor audio</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1001"/>
+        <location filename="../prefgeneral.cpp" line="901"/>
         <source>Check this option if you want to use the audio equalizer.</source>
         <translation>Bifați această opțiune dacă doriți să utilizați egalizorul audio.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="626"/>
+        <location filename="../prefgeneral.ui" line="619"/>
         <source>&amp;Enable the audio equalizer</source>
         <translation>Activare &amp;egalizor audio</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="939"/>
+        <location filename="../prefgeneral.cpp" line="847"/>
         <source>Draw video using slices</source>
         <translation>Creare imagine din benzi</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="943"/>
+        <location filename="../prefgeneral.cpp" line="851"/>
         <source>Enable/disable drawing video by 16-pixel height slices/bands. If disabled, the whole frame is drawn in a single run. May be faster or slower, depending on video card and available cache. It has effect only with libmpeg2 and libavcodec codecs.</source>
         <translation>Activează/dezactivează crearea imaginii din benzi late de 16 pixeli. Dacă este dezactivată opțiunea, întregul cadru este creat dintr-o singură mișcare. Poate fi mai rapid sau mai lent funcție de placa video și de câtă memorie cache este disponibilă. Are efect doar cu codecurile libmpeg2 și libavcodec.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="483"/>
+        <location filename="../prefgeneral.ui" line="476"/>
         <source>Dra&amp;w video using slices</source>
         <translation>C&amp;reare imagine din benzi</translation>
     </message>
@@ -5286,142 +5037,142 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>În&amp;chide după încheierea redării</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="362"/>
+        <location filename="../prefgeneral.cpp" line="323"/>
         <source>fast</source>
         <translation>repede</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="358"/>
+        <location filename="../prefgeneral.cpp" line="319"/>
         <source>slow</source>
         <translation>lent</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="363"/>
+        <location filename="../prefgeneral.cpp" line="324"/>
         <source>fast - ATI cards</source>
         <translation>repede - plăci ATI</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="409"/>
+        <location filename="../prefgeneral.cpp" line="364"/>
         <source>User defined...</source>
         <translation>Definit de utilizator...</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="919"/>
+        <location filename="../prefgeneral.cpp" line="827"/>
         <source>Default zoom</source>
         <translation>Mărire implicită</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="921"/>
+        <location filename="../prefgeneral.cpp" line="829"/>
         <source>This option sets the default zoom which will be used for new videos.</source>
         <translation>Această opțiune configurează nivelul implicit de mărire ce va fi folosit la redarea fișierelor video viitoare.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="408"/>
+        <location filename="../prefgeneral.ui" line="401"/>
         <source>Default &amp;zoom:</source>
         <translation>&amp;Mărire implicită:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="841"/>
+        <location filename="../prefgeneral.cpp" line="761"/>
         <source>Here you must specify the mplayer executable that SMPlayer will use.&lt;br&gt;SMPlayer requires at least MPlayer 1.0rc1 (although a recent revision from SVN is highly recommended).</source>
         <translation>Aici trebuie să precizați versiunea executabilului pentru mplayer pe care îl va folosi SMPlayer. &lt;br&gt;SMPlayer are nevoie de cel puțin versiunea 1.0rc1 pentru MPlayer (dar o versiune mai nouă este mult mai recomandată).</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="843"/>
+        <location filename="../prefgeneral.cpp" line="763"/>
         <source>If this setting is wrong, SMPlayer won&apos;t be able to play anything!</source>
         <translation>Dacă această opțiune este aleasă greșit, SMPlayer nu va putea reda nimic!</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="785"/>
+        <location filename="../prefgeneral.cpp" line="692"/>
         <source>Here you can specify a folder where the screenshots taken by SMPlayer will be stored. If this field is empty the screenshot feature will be disabled.</source>
         <translation type="obsolete">Aici puteți preciza directorul în care vor fi stocate capturile de ecran realizate cu SMPlayer. Dacă acest câmp este gol, funcția de captură de ecran nu va fi activă.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="887"/>
+        <location filename="../prefgeneral.cpp" line="807"/>
         <source>Select the video output driver. %1 provides the best performance.</source>
         <translation>Selectați driverul de ieșie video. %1 asigură cele mai bune performanțe.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="993"/>
+        <location filename="../prefgeneral.cpp" line="894"/>
         <source>%1 is the recommended one. Try to avoid %2 and %3, they are slow and can have an impact on performance.</source>
         <translation>%1 este opțiunea recomandată. Încercați să evitați alegerea opțiunilor %2 și %3, acestea sunt lente și pot avea impact negativ asupra performanțelor.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="848"/>
+        <location filename="../prefgeneral.cpp" line="768"/>
         <source>Usually SMPlayer will remember the settings for each file you play (audio track selected, volume, filters...). Disable this option if you don&apos;t like this feature.</source>
         <translation>Implicit SMPlayer va reține opțiunile alese pentru fiecare fișier multimedia pe care îl redați (pista audio selectată, volumul, filtrele, ...). Dezactivați această opțiune, dacă nu vă place această caracteristică.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="880"/>
+        <location filename="../prefgeneral.cpp" line="800"/>
         <source>If this option is enabled, the file will be paused when the main window is hidden. When the window is restored, playback will be resumed.</source>
         <translation>Dacă este selectată această opțiune, se va face pauză în redarea fișierului când fereastra principală a programului este ascunsă. La restaurarea ferestrei redarea fișierului va fi reluată.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="974"/>
+        <location filename="../prefgeneral.cpp" line="882"/>
         <source>Check this option to disable the screensaver while playing.&lt;br&gt;The screensaver will enabled again when play finishes.</source>
         <translation>Selectați această opțiune pentru a dezactiva economizorul de ecran când se redă un fișier multimedia. &lt;br&gt;Economizorul de ecran se va activa din nou după ce se va termina redarea fișierului.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1060"/>
+        <location filename="../prefgeneral.cpp" line="958"/>
         <source>Here you can type your preferred language for the audio streams. When a media with multiple audio streams is found, SMPlayer will try to use your preferred language.&lt;br&gt;This only will work with media that offer info about the language of the audio streams, like DVDs or mkv files.&lt;br&gt;This field accepts regular expressions. Example: &lt;b&gt;es|esp|spa&lt;/b&gt; will select the audio track if it matches with &lt;i&gt;es&lt;/i&gt;, &lt;i&gt;esp&lt;/i&gt; or &lt;i&gt;spa&lt;/i&gt;.</source>
         <translation>Aici puteți selecta limba preferată pentru coloana sonoră. Când este găsit un fișier multimedia care conține mai multe coloane sonore, SMPlayer va încerca să folosească limba preferată.&lt;br&gt;Această optiune este valabilă doar pentru fișiere multimedia care oferă informații despre limba coloanelor sonore, precum DVD-urile sau fișierele în format mkv.&lt;br&gt;Câmpul acceptă expresii regulate. Exemplu: expresia &lt;b&gt;es|esp|spa&lt;/b&gt; va determina alegerea coloanei sonore care corespunde abrevierilor &lt;i&gt;es&lt;/i&gt;, &lt;i&gt;esp&lt;/i&gt; sau &lt;i&gt;spa&lt;/i&gt;.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1070"/>
+        <location filename="../prefgeneral.cpp" line="968"/>
         <source>Here you can type your preferred language for the subtitle stream. When a media with multiple subtitle streams is found, SMPlayer will try to use your preferred language.&lt;br&gt;This only will work with media that offer info about the language of the subtitle streams, like DVDs or mkv files.&lt;br&gt;This field accepts regular expressions. Example: &lt;b&gt;es|esp|spa&lt;/b&gt; will select the subtitle stream if it matches with &lt;i&gt;es&lt;/i&gt;, &lt;i&gt;esp&lt;/i&gt; or &lt;i&gt;spa&lt;/i&gt;.</source>
         <translation>Aici puteți selecta limba preferată pentru subtitrare. Când este găsit un fișier multimedia care oferă fisiere de subtitrare în mai multe limbi, SMPlayer va încerca să folosească limba preferată.&lt;br&gt;Această opțiune nu funcționează decât cu fișierele multimedia care oferă informații despre fișierele cu subtitrări, precum DVD-uri sau fișiere mkv.&lt;br&gt;Acest câmp acceptă expresii regulate. Exemplu: expresia &lt;b&gt;es|esp|spa&lt;/b&gt; va determina selectarea subtitrării care corespunde abrevierilor &lt;i&gt;es&lt;/i&gt;, &lt;i&gt;esp&lt;/i&gt; sau &lt;i&gt;spa&lt;/i&gt;.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="569"/>
+        <location filename="../prefgeneral.ui" line="562"/>
         <source>Ou&amp;tput driver:</source>
         <translation>D&amp;river ieșire:</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="569"/>
+        <location filename="../prefgeneral.cpp" line="867"/>
         <source>If this option is checked the initial volume will be set just before playback starts. This avoids a loud volume on startup. Requires at least MPlayer SVN r27872.</source>
         <translation type="obsolete">Dacă este selectată această opțiune volumul inițial va fi selectat chiar înainte de a începe redarea. Astfel se evită redarea la volum mare la început. Opțiunea aceasta are nevoie cel puțin de versiunea MPlayer SVN r27872.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="949"/>
+        <location filename="../prefgeneral.cpp" line="857"/>
         <source>Add black borders on fullscreen</source>
         <translation>Adăugare benzi negre în mod fullscreen</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="952"/>
+        <location filename="../prefgeneral.cpp" line="860"/>
         <source>If this option is enabled, black borders will be added to the image in fullscreen mode. This allows subtitles to be displayed on the black borders.</source>
         <translation>Dacă este selectată această opțiune, se vor adăuga niște benzi negre la imagine în modul de afișare fullscreen. Astfel se permite afișarea subtitrării pe benzile negre.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="510"/>
+        <location filename="../prefgeneral.ui" line="503"/>
         <source>&amp;Add black borders on fullscreen</source>
         <translation>&amp;Adăugare benzi negre în mod fullscreen</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="111"/>
+        <location filename="../prefgeneral.cpp" line="106"/>
         <source>one ini file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="112"/>
+        <location filename="../prefgeneral.cpp" line="107"/>
         <source>multiple ini files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="855"/>
+        <location filename="../prefgeneral.cpp" line="775"/>
         <source>Method to store the file settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="857"/>
+        <location filename="../prefgeneral.cpp" line="777"/>
         <source>This option allows to change the way the file settings would be stored. The following options are available:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="859"/>
+        <location filename="../prefgeneral.cpp" line="779"/>
         <source>&lt;b&gt;one ini file&lt;/b&gt;: the settings for all played files will be saved in a single ini file (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="862"/>
+        <location filename="../prefgeneral.cpp" line="782"/>
         <source>The latter method could be faster if there is info for a lot of files.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5431,37 +5182,37 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="861"/>
+        <location filename="../prefgeneral.cpp" line="781"/>
         <source>&lt;b&gt;multiple ini files&lt;/b&gt;: one ini file will be used for each played file. Those ini files will be saved in the folder %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="853"/>
+        <location filename="../prefgeneral.cpp" line="773"/>
         <source>If you check this option, SMPlayer will remember the last position of the file when you open it again. This option works only with regular files (not with DVDs, CDs, URLs...).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="932"/>
+        <location filename="../prefgeneral.cpp" line="840"/>
         <source>If checked, turns on direct rendering (not supported by all codecs and video outputs)&lt;br&gt;&lt;b&gt;Warning:&lt;/b&gt; May cause OSD/SUB corruption!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1017"/>
+        <location filename="../prefgeneral.cpp" line="915"/>
         <source>Requests the number of playback channels. MPlayer asks the decoder to decode the audio into as many channels as specified. Then it is up to the decoder to fulfill the requirement. This is usually only important when playing videos with AC3 audio (like DVDs). In that case liba52 does the decoding by default and correctly downmixes the audio into the requested number of channels. &lt;b&gt;Note&lt;/b&gt;: This option is honored by codecs (AC3 only), filters (surround) and audio output drivers (OSS at least).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="864"/>
+        <location filename="../prefgeneral.cpp" line="784"/>
         <source>Enable screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="866"/>
+        <location filename="../prefgeneral.cpp" line="786"/>
         <source>You can use this option to enable or disable the possibility to take screenshots.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="871"/>
+        <location filename="../prefgeneral.cpp" line="791"/>
         <source>Here you can specify a folder where the screenshots taken by SMPlayer will be stored. If the folder is not valid the screenshot feature will be disabled.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5486,153 +5237,113 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1023"/>
+        <location filename="../prefgeneral.cpp" line="921"/>
         <source>Global volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1026"/>
+        <location filename="../prefgeneral.cpp" line="924"/>
         <source>If this option is checked, the same volume will be used for all files you play. If the option is not checked each file uses its own volume.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1027"/>
+        <location filename="../prefgeneral.cpp" line="925"/>
         <source>This option also applies for the mute control.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="755"/>
+        <location filename="../prefgeneral.ui" line="748"/>
         <source>Glo&amp;bal volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="958"/>
+        <location filename="../prefgeneral.cpp" line="866"/>
         <source>Switch screensaver off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="962"/>
+        <location filename="../prefgeneral.cpp" line="870"/>
         <source>This option switches the screensaver off just before starting to play a file and switches it on when playback finishes. If this option is enabled, the screensaver won&apos;t appear even if playing audio files or when a file is paused.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="964"/>
+        <location filename="../prefgeneral.cpp" line="872"/>
         <source>Avoid screensaver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="969"/>
+        <location filename="../prefgeneral.cpp" line="877"/>
         <source>When this option is checked, SMPlayer will try to prevent the screensaver to be shown when playing a video file. The screensaver will be allowed to be shown if playing an audio file or in pause mode. This option only works if the SMPlayer window is in the foreground.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="524"/>
+        <location filename="../prefgeneral.ui" line="517"/>
         <source>Screensaver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="530"/>
+        <location filename="../prefgeneral.ui" line="523"/>
         <source>Swit&amp;ch screensaver off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="537"/>
+        <location filename="../prefgeneral.ui" line="530"/>
         <source>Avoid &amp;screensaver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1043"/>
+        <location filename="../prefgeneral.cpp" line="941"/>
         <source>Audio/video auto synchronization</source>
         <translation type="unfinished">Sincronizare automată Audio/Video</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1045"/>
+        <location filename="../prefgeneral.cpp" line="943"/>
         <source>Gradually adjusts the A/V sync based on audio delay measurements.</source>
         <translation type="unfinished">Ajustare graduală a sincronizării A/V prin măsurarea întârzierii audio.</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1047"/>
+        <location filename="../prefgeneral.cpp" line="945"/>
         <source>A-V sync correction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="1048"/>
+        <location filename="../prefgeneral.cpp" line="946"/>
         <source>Maximum A-V sync correction per frame (in seconds)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="840"/>
+        <location filename="../prefgeneral.ui" line="833"/>
         <source>Synchronization</source>
         <translation type="unfinished">Sincronizare</translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="860"/>
+        <location filename="../prefgeneral.ui" line="853"/>
         <source>Audio/video auto &amp;synchronization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="886"/>
+        <location filename="../prefgeneral.ui" line="879"/>
         <source>&amp;Factor:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="922"/>
+        <location filename="../prefgeneral.ui" line="915"/>
         <source>A-V sync &amp;correction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="945"/>
+        <location filename="../prefgeneral.ui" line="938"/>
         <source>&amp;Max. correction:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.cpp" line="917"/>
+        <location filename="../prefgeneral.cpp" line="825"/>
         <source>&lt;b&gt;Note:&lt;/b&gt; This option won&apos;t be used for TV channels.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefgeneral.ui" line="371"/>
+        <location filename="../prefgeneral.ui" line="364"/>
         <source>Dei&amp;nterlace by default (except for TV):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.cpp" line="1004"/>
-        <source>Uses hardware AC3 passthrough.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.cpp" line="1006"/>
-        <source>&lt;b&gt;Note:&lt;/b&gt; none of the audio filters will be used when this option is enabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.cpp" line="337"/>
-        <source>snap mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.cpp" line="338"/>
-        <source>slower dive mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.cpp" line="388"/>
-        <source>uniaud mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.cpp" line="389"/>
-        <source>dart mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.cpp" line="986"/>
-        <source>%1 is the recommended one. %2 is only available on older MPlayer (before version %3)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefgeneral.ui" line="257"/>
-        <source>Configu&amp;re...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5669,17 +5380,17 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Funcții butoane:</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="342"/>
+        <location filename="../prefinput.cpp" line="332"/>
         <source>Media seeking</source>
         <translation>Căutare media</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="345"/>
+        <location filename="../prefinput.cpp" line="335"/>
         <source>Volume control</source>
         <translation>Control volum</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="348"/>
+        <location filename="../prefinput.cpp" line="338"/>
         <source>Zoom video</source>
         <translation>Zoom video</translation>
     </message>
@@ -5709,42 +5420,42 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Funcții &amp;rotiță:</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="309"/>
+        <location filename="../prefinput.cpp" line="299"/>
         <source>Shortcut editor</source>
         <translation>Editor acces rapid</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="318"/>
+        <location filename="../prefinput.cpp" line="308"/>
         <source>This table allows you to change the key shortcuts of most available actions. Double click or press enter on a item, or press the &lt;b&gt;Change shortcut&lt;/b&gt; button to enter in the &lt;i&gt;Modify shortcut&lt;/i&gt; dialog. There are two ways to change a shortcut: if the &lt;b&gt;Capture&lt;/b&gt; button is on then just press the new key or combination of keys that you want to assign for the action (unfortunately this doesn&apos;t work for all keys). If the &lt;b&gt;Capture&lt;/b&gt; button is off then you could enter the full name of the key.</source>
         <translation>Acest tabel vă permite modificarea tastelor de acces rapid pentru cele mai multe dintre acțiunile disponibile. Efectuați dublu clic sau apăsați tasta Enter pe un articol, sau apăsați butonul &lt;b&gt;Modificare acces rapid ...&lt;/b&gt; pentru a intra în meniul dialog &lt;i&gt;Modificare taste de acces rapid&lt;/i&gt;. Sunt două modalități de schimbare a tastelor de acces rapid: dacă butonul &lt;b&gt;Captură&lt;/b&gt; este activ atunci apăsați noua combinație de taste pe care doriți să o desemnați pentru acțiunea  selectată (din nefericire această posibilitate nu este funcțională pentru toate tastele). Dacă butonul &lt;b&gt;Captură &lt;/b&gt; nu este activ atunci ați putea introduce numele întreg al tastei.</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="322"/>
+        <location filename="../prefinput.cpp" line="312"/>
         <source>Left click</source>
         <translation>Clic stânga</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="323"/>
+        <location filename="../prefinput.cpp" line="313"/>
         <source>Select the action for left click on the mouse.</source>
         <translation>Selectare acțiune pentru clic stânga cu mausul.</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="325"/>
+        <location filename="../prefinput.cpp" line="315"/>
         <source>Double click</source>
         <translation>Dublu clic</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="326"/>
+        <location filename="../prefinput.cpp" line="316"/>
         <source>Select the action for double click on the mouse.</source>
         <translation>Selectare acțiune pentru dublu clic cu mausul.</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="337"/>
+        <location filename="../prefinput.cpp" line="327"/>
         <source>Wheel function</source>
         <translation>Funcție rotiță</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="338"/>
+        <location filename="../prefinput.cpp" line="328"/>
         <source>Select the action for the mouse wheel.</source>
         <translation>Selectare acțiune pentru rotiță maus.</translation>
     </message>
@@ -5829,7 +5540,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Nici o funcție</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="351"/>
+        <location filename="../prefinput.cpp" line="341"/>
         <source>Change speed</source>
         <translation>Modificare viteză</translation>
     </message>
@@ -5839,22 +5550,22 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Viteză Normală</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="307"/>
+        <location filename="../prefinput.cpp" line="297"/>
         <source>Keyboard</source>
         <translation>Tastatură</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="320"/>
+        <location filename="../prefinput.cpp" line="310"/>
         <source>Mouse</source>
         <translation>Maus</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="328"/>
+        <location filename="../prefinput.cpp" line="318"/>
         <source>Middle click</source>
         <translation>Clic buton mijloc</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="329"/>
+        <location filename="../prefinput.cpp" line="319"/>
         <source>Select the action for middle click on the mouse.</source>
         <translation>Selectați acțiunea pentru apăsarea butonului de mijloc al mausului.</translation>
     </message>
@@ -5914,7 +5625,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Afișare meniu contextual</translation>
     </message>
     <message>
-        <location filename="../prefinput.ui" line="450"/>
+        <location filename="../prefinput.ui" line="443"/>
         <source>&amp;Right click</source>
         <translation>Clic d&amp;reapta maus</translation>
     </message>
@@ -5929,22 +5640,22 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Mai încet</translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="331"/>
+        <location filename="../prefinput.cpp" line="321"/>
         <source>X Button 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="332"/>
+        <location filename="../prefinput.cpp" line="322"/>
         <source>Select the action for the X button 1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="334"/>
+        <location filename="../prefinput.cpp" line="324"/>
         <source>X Button 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="335"/>
+        <location filename="../prefinput.cpp" line="325"/>
         <source>Select the action for the X button 2.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6019,90 +5730,75 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.ui" line="512"/>
+        <location filename="../prefinput.ui" line="505"/>
         <source>Media &amp;seeking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.ui" line="526"/>
+        <location filename="../prefinput.ui" line="519"/>
         <source>&amp;Zoom video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.ui" line="519"/>
+        <location filename="../prefinput.ui" line="512"/>
         <source>&amp;Volume control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.ui" line="533"/>
+        <location filename="../prefinput.ui" line="526"/>
         <source>&amp;Change speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="340"/>
+        <location filename="../prefinput.cpp" line="330"/>
         <source>Mouse wheel functions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="343"/>
+        <location filename="../prefinput.cpp" line="333"/>
         <source>Check it to enable seeking as one function.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="346"/>
+        <location filename="../prefinput.cpp" line="336"/>
         <source>Check it to enable changing volume as one function.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="349"/>
+        <location filename="../prefinput.cpp" line="339"/>
         <source>Check it to enable zooming as one function.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.cpp" line="352"/>
+        <location filename="../prefinput.cpp" line="342"/>
         <source>Check it to enable changing speed as one function.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.ui" line="490"/>
+        <location filename="../prefinput.ui" line="483"/>
         <source>M&amp;ouse wheel functions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinput.ui" line="502"/>
+        <location filename="../prefinput.ui" line="495"/>
         <source>Select the actions that should be cycled through when using the &quot;Change function of wheel&quot; option.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinput.cpp" line="354"/>
-        <source>Reverse mouse wheel seeking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinput.cpp" line="355"/>
-        <source>Check it to seek in the opposite direction.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinput.ui" line="431"/>
-        <source>R&amp;everse wheel media seeking</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PrefInterface</name>
     <message>
-        <location filename="../prefinterface.cpp" line="536"/>
+        <location filename="../prefinterface.cpp" line="493"/>
         <source>Interface</source>
         <translation>Interfață</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="99"/>
+        <location filename="../prefinterface.cpp" line="97"/>
         <source>&lt;Autodetect&gt;</source>
         <translation>&lt;Autodetectare&gt;</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="151"/>
+        <location filename="../prefinterface.cpp" line="149"/>
         <source>Default</source>
         <translation>Valori implicite</translation>
     </message>
@@ -6112,7 +5808,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>&amp;Interfață</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="576"/>
+        <location filename="../prefinterface.cpp" line="530"/>
         <source>Seeking</source>
         <translation>Căutare</translation>
     </message>
@@ -6132,67 +5828,67 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Numai la încăcarea unui fișier video nou</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="168"/>
+        <location filename="../prefinterface.ui" line="161"/>
         <source>Recent files</source>
         <translation>Fișiere recente</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="554"/>
+        <location filename="../prefinterface.cpp" line="508"/>
         <source>Language</source>
         <translation>Limbă</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="555"/>
+        <location filename="../prefinterface.cpp" line="509"/>
         <source>Here you can change the language of the application.</source>
         <translation>Aici puteți modifica limba pentru aplicație.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="607"/>
+        <location filename="../prefinterface.cpp" line="551"/>
         <source>Instances</source>
         <translation>Sesiuni</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="126"/>
+        <location filename="../prefinterface.cpp" line="124"/>
         <source>&amp;Short jump</source>
         <translation>&amp;Salt scurt</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="127"/>
+        <location filename="../prefinterface.cpp" line="125"/>
         <source>&amp;Medium jump</source>
         <translation>Salt &amp;mediu</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="128"/>
+        <location filename="../prefinterface.cpp" line="126"/>
         <source>&amp;Long jump</source>
         <translation>Salt &amp;lung</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="129"/>
+        <location filename="../prefinterface.cpp" line="127"/>
         <source>Mouse &amp;wheel jump</source>
         <translation>Salt cu &amp;rotiță maus</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="714"/>
+        <location filename="../prefinterface.ui" line="683"/>
         <source>&amp;Use only one running instance of SMPlayer</source>
         <translation>Folosește o sing&amp;ură sesiune pornită pentru SMPlayer</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="189"/>
+        <location filename="../prefinterface.ui" line="182"/>
         <source>Ma&amp;x. items</source>
         <translation>Ma&amp;ximum de articole</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="320"/>
+        <location filename="../prefinterface.ui" line="313"/>
         <source>St&amp;yle:</source>
         <translation>St&amp;il:</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="274"/>
+        <location filename="../prefinterface.ui" line="267"/>
         <source>Ico&amp;n set:</source>
         <translation>Set iconi&amp;țe:</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="261"/>
+        <location filename="../prefinterface.ui" line="254"/>
         <source>L&amp;anguage:</source>
         <translation>Lim&amp;bă:</translation>
     </message>
@@ -6212,385 +5908,330 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>M&amp;emorare poziție și mărime</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="434"/>
+        <location filename="../prefinterface.ui" line="427"/>
         <source>Default font:</source>
         <translation>Caractere implicite:</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="448"/>
+        <location filename="../prefinterface.ui" line="441"/>
         <source>&amp;Change...</source>
         <translation>&amp;Modificare...</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="551"/>
+        <location filename="../prefinterface.ui" line="575"/>
         <source>&amp;Behaviour of time slider:</source>
         <translation>&amp;Comportament reglaj timp:</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="568"/>
+        <location filename="../prefinterface.ui" line="592"/>
         <source>Seek to position while dragging</source>
         <translation>Căutare până la poziție când se face tragere</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="573"/>
+        <location filename="../prefinterface.ui" line="597"/>
         <source>Seek to position when released</source>
         <translation>Căutare până la poziție când se eliberează mausul</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="690"/>
+        <location filename="../prefinterface.ui" line="659"/>
         <source>TextLabel</source>
         <translation>Etichetă_Text</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="471"/>
+        <location filename="../prefinterface.ui" line="464"/>
         <source>&amp;Seeking</source>
         <translation>&amp;Căutare</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="608"/>
-        <source>&amp;Absolute seeking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../prefinterface.ui" line="621"/>
-        <source>&amp;Relative seeking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.ui" line="652"/>
         <source>Ins&amp;tances</source>
         <translation>&amp;Sesiuni</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="538"/>
+        <location filename="../prefinterface.cpp" line="495"/>
         <source>Autoresize</source>
         <translation>Redimensionare automată</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="540"/>
+        <location filename="../prefinterface.cpp" line="497"/>
         <source>The main window can be resized automatically. Select the option you prefer.</source>
         <translation>Fereastra principală poate fi redimensionată automat. Selectați opțiunea preferată.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="542"/>
+        <location filename="../prefinterface.cpp" line="499"/>
         <source>Remember position and size</source>
         <translation>Memorează poziția și dimensiunea</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="544"/>
+        <location filename="../prefinterface.cpp" line="501"/>
         <source>If you check this option, the position and size of the main window will be saved and restored when you run SMPlayer again.</source>
         <translation>Dacă selectați această opțiune, poziția și dimensiunea ferestrei principale vor fi salvate și restaurate când porniți din nou SMPlayer.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="552"/>
+        <location filename="../prefinterface.cpp" line="506"/>
         <source>Select the maximum number of items that will be shown in the &lt;b&gt;Open-&gt;Recent files&lt;/b&gt; submenu. If you set it to 0 that menu won&apos;t be shown at all.</source>
         <translation>Selectați numărul maxim de linii ce vor fi afișate în submeniul &lt;b&gt;Deschide-&gt;Fișiere deschise recent&lt;/b&gt;. Dacă selectați 0 atunci meniul nu va fi deloc afișat.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="557"/>
+        <location filename="../prefinterface.cpp" line="511"/>
         <source>Icon set</source>
         <translation>Set iconițe</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="558"/>
+        <location filename="../prefinterface.cpp" line="512"/>
         <source>Select the icon set you prefer for the application.</source>
         <translation>Selectați setul de iconițe preferat pentru aplicație.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="560"/>
+        <location filename="../prefinterface.cpp" line="514"/>
         <source>Style</source>
         <translation>Stil</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="561"/>
+        <location filename="../prefinterface.cpp" line="515"/>
         <source>Select the style you prefer for the application.</source>
         <translation>Selectați stilul preferat pentru aplicație.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="573"/>
+        <location filename="../prefinterface.cpp" line="527"/>
         <source>Default font</source>
         <translation>Caractere implicite</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="574"/>
+        <location filename="../prefinterface.cpp" line="528"/>
         <source>You can change here the application&apos;s font.</source>
         <translation>Aici puteți selecta caracterele folosite de aplicație.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="578"/>
+        <location filename="../prefinterface.cpp" line="532"/>
         <source>Short jump</source>
         <translation>Salt scurt</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="588"/>
+        <location filename="../prefinterface.cpp" line="542"/>
         <source>Select the time that should be go forward or backward when you choose the %1 action.</source>
         <translation>Seletați intervalul de timp pentru derulare înainte sau înapoi când alegeți acțiunea %1 .</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="580"/>
+        <location filename="../prefinterface.cpp" line="534"/>
         <source>short jump</source>
         <translation>salt scurt</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="582"/>
+        <location filename="../prefinterface.cpp" line="536"/>
         <source>Medium jump</source>
         <translation>Salt mediu</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="584"/>
+        <location filename="../prefinterface.cpp" line="538"/>
         <source>medium jump</source>
         <translation>salt mediu</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="586"/>
+        <location filename="../prefinterface.cpp" line="540"/>
         <source>Long jump</source>
         <translation>Salt lung</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="588"/>
+        <location filename="../prefinterface.cpp" line="542"/>
         <source>long jump</source>
         <translation>salt lung</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="590"/>
+        <location filename="../prefinterface.cpp" line="544"/>
         <source>Mouse wheel jump</source>
         <translation>Salt cu rotiță mouse</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="592"/>
+        <location filename="../prefinterface.cpp" line="546"/>
         <source>Select the time that should be go forward or backward when you move the mouse wheel.</source>
         <translation>Seletați intervalul de timp pentru derulare înainte sau înapoi când acționați rotița mausului.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="594"/>
+        <location filename="../prefinterface.cpp" line="548"/>
         <source>Behaviour of time slider</source>
         <translation>Comportament reglaj timp</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="595"/>
+        <location filename="../prefinterface.cpp" line="549"/>
         <source>Select what to do when dragging the time slider.</source>
         <translation>Selectați ce se întâmplă când acționați potențiometrul linar al reglajului de timp.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="596"/>
-        <source>Seeking method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.cpp" line="600"/>
-        <source>Sets the method to be used when seeking with the slider. Absolute seeking may be a little bit more accurate, while relative seeking may work better with files with a wrong length.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.cpp" line="610"/>
+        <location filename="../prefinterface.cpp" line="554"/>
         <source>Use only one running instance of SMPlayer</source>
         <translation>Foloseşte o singură sesiune pornită pentru SMPlayer</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="612"/>
+        <location filename="../prefinterface.cpp" line="556"/>
         <source>Check this option if you want to use an already running instance of SMPlayer when opening other files.</source>
         <translation>Selectați această opțiune dacă doriți să folosiți o sesiune deja deschisă a lui SMPlayer când deschideți și alte fișiere.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="622"/>
+        <location filename="../prefinterface.cpp" line="566"/>
         <source>SMPlayer needs to listen to a port to receive commands from other instances. You can change the port in case the default one is used by another application.</source>
         <translation>SMPlayer are nevoie să asculte un anume port pentru a recepționa comenzi de la alte sesiuni. Puteți schimba portul în cazul în care cel implicit este utilizat de altă aplicație.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="156"/>
+        <location filename="../prefinterface.cpp" line="154"/>
         <source>Default GUI</source>
         <translation>Interfață grafică implicită</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="157"/>
+        <location filename="../prefinterface.cpp" line="155"/>
         <source>Mini GUI</source>
         <translation>Interfață grafică redusă</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="563"/>
+        <location filename="../prefinterface.cpp" line="517"/>
         <source>GUI</source>
         <translation>Interfață grafică</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="571"/>
+        <location filename="../prefinterface.cpp" line="525"/>
         <source>Select the GUI you prefer for the application. Currently there are two available: Default GUI and Mini GUI.&lt;br&gt;The &lt;b&gt;Default GUI&lt;/b&gt; provides the traditional GUI, with the toolbar and control bar. The &lt;b&gt;Mini GUI&lt;/b&gt; provides a more simple GUI, without toolbar and a control bar with few buttons.&lt;br&gt;&lt;b&gt;Note:&lt;/b&gt; this option will take effect the next time you run SMPlayer.</source>
         <translation>Selectați interfața grafică pe care o preferați pentru SMPlayer. În acest moment există două tipuri: „Interfața grafică implicită” și „Interfața grafică redusă”.&lt;br&gt; &lt;b&gt;Interfața grafică implicită&lt;/b&gt; este o interfață grafică obișnuită, cu bare de unelete și de control. &lt;b&gt;Interfața grafică redusă&lt;/b&gt; este u interfață grafică mai simplă, fără bară de unelte și cu mai puține butoane în bara de control.&lt;br&gt;&lt;b&gt;Notă:&lt;/b&gt;După alegerea opțiunii dorite trebuie să reporniți aplicația SMPlayer pentru ca modificările să se facă simțite.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="369"/>
+        <location filename="../prefinterface.ui" line="362"/>
         <source>&amp;GUI</source>
         <translation>&amp;Interfață grafică</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="614"/>
+        <location filename="../prefinterface.cpp" line="558"/>
         <source>Automatic port</source>
         <translation>Detectare automată port</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="617"/>
+        <location filename="../prefinterface.cpp" line="561"/>
         <source>SMPlayer needs to listen to a port to receive commands from other instances. If you select this option, a port will be automatically chosen.</source>
         <translation>SMPlayer are nevoie să asculte un anume port pentru a recepționa comenzi de la alte sesiuni. Dacă selectați această opțiune portul va fi ales automat.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="619"/>
+        <location filename="../prefinterface.cpp" line="563"/>
         <source>Manual port</source>
         <translation>Detectare manuală port</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="724"/>
+        <location filename="../prefinterface.ui" line="693"/>
         <source>Port to listen</source>
         <translation>Portul de ascultat</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="745"/>
+        <location filename="../prefinterface.ui" line="714"/>
         <source>&amp;Automatic</source>
         <translation>&amp;Automat</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="769"/>
+        <location filename="../prefinterface.ui" line="738"/>
         <source>&amp;Manual</source>
         <translation>&amp;Manual</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="626"/>
+        <location filename="../prefinterface.cpp" line="570"/>
         <source>Floating control</source>
         <translation>Butoane de control pe imagine</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="628"/>
+        <location filename="../prefinterface.cpp" line="572"/>
         <source>Animated</source>
         <translation>Animație</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="630"/>
+        <location filename="../prefinterface.cpp" line="574"/>
         <source>If this option is enabled, the floating control will appear with an animation.</source>
         <translation>Dacă este activată această opțiune, butoanele de control de pe imagine vor apărea animate.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="632"/>
+        <location filename="../prefinterface.cpp" line="576"/>
         <source>Width</source>
         <translation>Lățime</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="633"/>
+        <location filename="../prefinterface.cpp" line="577"/>
         <source>Specifies the width of the control (as a percentage).</source>
         <translation>Specifică lățimea butoanelor de control de pe imagine (în procente).</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="635"/>
+        <location filename="../prefinterface.cpp" line="579"/>
         <source>Margin</source>
         <translation>Margine</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="639"/>
+        <location filename="../prefinterface.cpp" line="583"/>
         <source>This option sets the number of pixels that the floating control will be away from the bottom of the screen. Useful when the screen is a TV, as the overscan might prevent the control to be visible.</source>
         <translation>Această opțiune stabilește distanța butoanelor de control de pe imagine față de margine inferioară a ecranului, în număr de pixeli. Această opțiune este utilă mai ales atunci când ecranul este un televizor, pentru că în acest caz butoanele nu vor fi vizibile fără stabilirea unei valori adecvate pentru această opțiune.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="641"/>
+        <location filename="../prefinterface.cpp" line="585"/>
         <source>Display in compact mode too</source>
         <translation>Afișare și în mod compact</translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="647"/>
+        <location filename="../prefinterface.cpp" line="591"/>
         <source>Bypass window manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="650"/>
+        <location filename="../prefinterface.cpp" line="594"/>
         <source>If this option is checked, the control is displayed bypassing the window manager. Disable this option if the floating control doesn&apos;t work well with your window manager.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="825"/>
+        <location filename="../prefinterface.ui" line="794"/>
         <source>&amp;Floating control</source>
         <translation>&amp;Butoane de control pe imagine</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="831"/>
+        <location filename="../prefinterface.ui" line="800"/>
         <source>The floating control appears in fullscreen mode when the mouse is moved to the bottom of the screen.</source>
         <translation>Butoanele de control de pe imagine apar în mod fullscreen când mausul este mișcat în partea inferioară a ercranului.</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="841"/>
+        <location filename="../prefinterface.ui" line="810"/>
         <source>&amp;Animated</source>
         <translation>&amp;Animație</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="850"/>
+        <location filename="../prefinterface.ui" line="819"/>
         <source>&amp;Width:</source>
         <translation>&amp;Lățime:</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="909"/>
+        <location filename="../prefinterface.ui" line="878"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="883"/>
+        <location filename="../prefinterface.ui" line="852"/>
         <source>&amp;Margin:</source>
         <translation>&amp;Margine:</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="918"/>
+        <location filename="../prefinterface.ui" line="887"/>
         <source>Display in &amp;compact mode too</source>
         <translation>Afișare și în mod &amp;compact</translation>
     </message>
     <message>
-        <location filename="../prefinterface.ui" line="925"/>
+        <location filename="../prefinterface.ui" line="894"/>
         <source>&amp;Bypass window manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="644"/>
+        <location filename="../prefinterface.cpp" line="588"/>
         <source>If this option is enabled, the floating control will appear in compact mode too. &lt;b&gt;Warning:&lt;/b&gt; the floating control has not been designed for compact mode and it might not work properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefinterface.cpp" line="158"/>
+        <location filename="../prefinterface.cpp" line="156"/>
         <source>Mpc GUI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.cpp" line="546"/>
-        <source>Hide video window when playing audio files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.cpp" line="547"/>
-        <source>If this option is enabled the video window will be hidden when playing audio files.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.ui" line="143"/>
-        <source>&amp;Hide video window when playing audio files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.cpp" line="602"/>
-        <source>Precise seeking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.cpp" line="604"/>
-        <source>If this option is enabled, seeks are more accurate but they can be a little bit slower. May not work with some video formats.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.cpp" line="605"/>
-        <source>Note: this option only works with MPlayer2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefinterface.ui" line="644"/>
-        <source>&amp;Precise seeking</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PrefPerformance</name>
     <message>
-        <location filename="../prefperformance.cpp" line="277"/>
+        <location filename="../prefperformance.cpp" line="233"/>
         <source>Performance</source>
         <translation>Caracteristici</translation>
     </message>
@@ -6600,338 +6241,323 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>&amp;Caracteristici</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="41"/>
+        <location filename="../prefperformance.ui" line="56"/>
         <source>Priority</source>
         <translation>Prioritate</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="62"/>
+        <location filename="../prefperformance.ui" line="77"/>
         <source>Select the priority for the MPlayer process.</source>
         <translation>Selectare priorități pentru procesele MPlayer.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="103"/>
+        <location filename="../prefperformance.ui" line="118"/>
         <source>realtime</source>
         <translation>timp_real</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="108"/>
+        <location filename="../prefperformance.ui" line="123"/>
         <source>high</source>
         <translation>înaltă</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="113"/>
+        <location filename="../prefperformance.ui" line="128"/>
         <source>abovenormal</source>
         <translation>peste_normal</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="118"/>
+        <location filename="../prefperformance.ui" line="133"/>
         <source>normal</source>
         <translation>normal</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="123"/>
+        <location filename="../prefperformance.ui" line="138"/>
         <source>belownormal</source>
         <translation>sub_normal</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="128"/>
+        <location filename="../prefperformance.ui" line="143"/>
         <source>idle</source>
         <translation>inactiv</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="337"/>
+        <location filename="../prefperformance.cpp" line="288"/>
         <source>Cache</source>
         <translation>Cache</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="608"/>
+        <location filename="../prefperformance.ui" line="586"/>
         <source>KB</source>
         <translation>KB</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="396"/>
+        <location filename="../prefperformance.ui" line="374"/>
         <source>Setting a cache may improve performance on slow media</source>
         <translation>Setarea cache-ului poate îmbunătății performanțele pentru fișiere media lente</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="287"/>
+        <location filename="../prefperformance.cpp" line="243"/>
         <source>Allow frame drop</source>
         <translation>Permite programului să renunțe la unele cadre</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="243"/>
+        <location filename="../prefperformance.ui" line="302"/>
         <source>Synchronization</source>
         <translation type="obsolete">Sincronizare</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="243"/>
+        <location filename="../prefperformance.cpp" line="283"/>
         <source>Audio/video auto synchronization</source>
         <translation type="obsolete">Sincronizare automată Audio/Video</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="317"/>
+        <location filename="../prefperformance.cpp" line="273"/>
         <source>Fast audio track switching</source>
         <translation>Comutare rapidă a coloanei sonore</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="327"/>
+        <location filename="../prefperformance.cpp" line="283"/>
         <source>Fast seek to chapters in dvds</source>
         <translation>Căutare rapidă a capitolelor în dvd</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="288"/>
+        <location filename="../prefperformance.cpp" line="244"/>
         <source>Skip displaying some frames to maintain A/V sync on slow systems.</source>
         <translation>Se sare peste afișarea unor cadre pentru a menține sincronizarea A/V pe sisteme lente.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="290"/>
+        <location filename="../prefperformance.cpp" line="246"/>
         <source>Allow hard frame drop</source>
         <translation>Permite programului să renunțe la mai multe cadre</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="292"/>
+        <location filename="../prefperformance.cpp" line="248"/>
         <source>More intense frame dropping (breaks decoding). Leads to image distortion!</source>
         <translation>Omiterea mai multor cadre (strică decodarea). Conduce la distorsionarea imaginii!</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="247"/>
+        <location filename="../prefperformance.cpp" line="285"/>
         <source>Gradually adjusts the A/V sync based on audio delay measurements.</source>
         <translation type="obsolete">Ajustare graduală a sincronizării A/V prin măsurarea întârzierii audio.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="89"/>
+        <location filename="../prefperformance.ui" line="104"/>
         <source>Priorit&amp;y:</source>
         <translation>Pri&amp;oritate:</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="157"/>
+        <location filename="../prefperformance.ui" line="172"/>
         <source>&amp;Allow frame drop</source>
         <translation>&amp;Permite renunțarea la unele cadre</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="164"/>
+        <location filename="../prefperformance.ui" line="179"/>
         <source>Allow &amp;hard frame drop (can lead to image distortion)</source>
         <translation>P&amp;ermite renunțarea la mai multe cadre (poate duce la imagini distorsionate)</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="179"/>
+        <location filename="../prefperformance.ui" line="323"/>
         <source>Audio/&amp;video auto synchronization</source>
         <translation type="obsolete">Sincronizare automată Audio/&amp;Video</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="179"/>
+        <location filename="../prefperformance.ui" line="366"/>
         <source>Fact&amp;or:</source>
         <translation type="obsolete">Fact&amp;or:</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="304"/>
+        <location filename="../prefperformance.ui" line="319"/>
         <source>&amp;Fast audio track switching</source>
         <translation>&amp;Comutare rapidă a coloanei sonore</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="332"/>
+        <location filename="../prefperformance.ui" line="347"/>
         <source>Fast &amp;seek to chapters in dvds</source>
         <translation>Cău&amp;tare rapidă a capitolelor în dvd</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="329"/>
+        <location filename="../prefperformance.cpp" line="285"/>
         <source>If checked, it will try the fastest method to seek to chapters but it might not work with some discs.</source>
         <translation>Dacă este selectată această opţiune, programul va încerca să aplice cea mai rapidă metodă de căutare a capitolelor, dar pentru anumite discuri poate să nu funcționeze.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="301"/>
+        <location filename="../prefperformance.cpp" line="257"/>
         <source>Skip loop filter</source>
         <translation>Omitere filtru buclă</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="226"/>
+        <location filename="../prefperformance.ui" line="241"/>
         <source>H.264</source>
         <translation>H.264</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="324"/>
+        <location filename="../prefperformance.cpp" line="280"/>
         <source>Possible values:&lt;br&gt; &lt;b&gt;Yes&lt;/b&gt;: it will try the fastest method to switch the audio track (it might not work with some formats).&lt;br&gt; &lt;b&gt;No&lt;/b&gt;: the MPlayer process will be restarted whenever you change the audio track.&lt;br&gt; &lt;b&gt;Auto&lt;/b&gt;: SMPlayer will decide what to do according to the MPlayer version.</source>
         <translation>Valori posibile:&lt;br&gt; &lt;b&gt;Yes&lt;/b&gt;: va încerca metoada cea mai rapidă pentru comutarea pistelor audio (este posibil să nu funcționeze pentru anumite formate), &lt;br&gt; &lt;b&gt;No&lt;/b&gt;: procesul MPlayer va fi repornit de câte ori schimbați pista audio, &lt;br&gt; &lt;b&gt;Auto &lt;/b&gt;: SMPlayer va decide cum va proceda, funcție de versiunea MPlayer.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="339"/>
+        <location filename="../prefperformance.cpp" line="290"/>
         <source>Cache for files</source>
         <translation>Cache pentru fișiere</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="341"/>
+        <location filename="../prefperformance.cpp" line="292"/>
         <source>This option specifies how much memory (in kBytes) to use when precaching a file.</source>
         <translation>Această opțiune stabilește câtă memorie (în kBytes) se va folosi la încărcarea unui fișier în cache.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="343"/>
+        <location filename="../prefperformance.cpp" line="294"/>
         <source>Cache for streams</source>
         <translation>Cache pentru URL</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="345"/>
+        <location filename="../prefperformance.cpp" line="296"/>
         <source>This option specifies how much memory (in kBytes) to use when precaching a URL.</source>
         <translation>Această opțiune stabilește câtă memorie (în kBytes) se va folosi pentru cache la redarea unui fișier video de pe internet.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="347"/>
+        <location filename="../prefperformance.cpp" line="298"/>
         <source>Cache for DVDs</source>
         <translation>Cache pentru DVD</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="350"/>
+        <location filename="../prefperformance.cpp" line="301"/>
         <source>This option specifies how much memory (in kBytes) to use when precaching a DVD.&lt;br&gt;&lt;b&gt;Warning:&lt;/b&gt; Seeking might not work properly (including chapter switching) when using a cache for DVDs.</source>
         <translation>Această opțiune stabilește câtă memorie (în kBytes) se va folosii la încărcarea în cache a DVD-urilor.&lt;br&gt;&lt;b&gt;Atenţie:&lt;/b&gt;Este posibil ca funcția de căutare să nu mai funcționeze corect (inclusiv căutarea capitolelor) când se folosește încărcarea în cache a DVD-urilor.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="390"/>
+        <location filename="../prefperformance.ui" line="368"/>
         <source>&amp;Cache</source>
         <translation>&amp;Cache</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="480"/>
+        <location filename="../prefperformance.ui" line="458"/>
         <source>Cache for &amp;DVDs:</source>
         <translation>Cache pentru &amp;DVD:</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="406"/>
+        <location filename="../prefperformance.ui" line="384"/>
         <source>Cache for &amp;local files:</source>
         <translation>Cache pentru fișiere &amp;locale:</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="443"/>
+        <location filename="../prefperformance.ui" line="421"/>
         <source>Cache for &amp;streams:</source>
         <translation>Cache pentru &amp;streams (URL):</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="89"/>
+        <location filename="../prefperformance.cpp" line="64"/>
         <source>Enabled</source>
         <translation>Activat</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="90"/>
+        <location filename="../prefperformance.cpp" line="65"/>
         <source>Skip (always)</source>
         <translation>Omitere (întotdeauna)</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="91"/>
+        <location filename="../prefperformance.cpp" line="66"/>
         <source>Skip only on HD videos</source>
         <translation>Omitere doar pentru video HD</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="249"/>
+        <location filename="../prefperformance.ui" line="264"/>
         <source>Loop &amp;filter</source>
         <translation>&amp;Filtru buclă</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="308"/>
+        <location filename="../prefperformance.cpp" line="264"/>
         <source>This option allows to skips the loop filter (AKA deblocking) during H.264 decoding. Since the filtered frame is supposed to be used as reference for decoding dependent frames this has a worse effect on quality than not doing deblocking on e.g. MPEG-2 video. But at least for high bitrate HDTV this provides a big speedup with no visible quality loss.</source>
         <translation>Această opțiune permite omiterea filtrului buclă (cunoscut și sub numele deblocking) în timpul decodării H.264. Deoarece cadrele filtrate cu acest filtru se presupune că sunt luate ca referință pentru decodarea cadrelor dependente, eliminarea filtrului are un efect de înrăutățire a calității, față de cazul în care nu se folosește deblocking de exemplu pentru fișiere video de tip MPEG-2. Dar cel puțin pentru fișierele video de tip HDTV această procedură oferă o îmbunătățire vizibilă a vitezei fără pierderi de calitate vizibile.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="309"/>
+        <location filename="../prefperformance.cpp" line="265"/>
         <source>Possible values:</source>
         <translation>Valori posibile:</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="310"/>
+        <location filename="../prefperformance.cpp" line="266"/>
         <source>&lt;b&gt;Enabled&lt;/b&gt;: the loop filter is not skipped</source>
         <translation>&lt;b&gt;Activat&lt;/b&gt;: filtrul buclă nu se omite</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="312"/>
+        <location filename="../prefperformance.cpp" line="268"/>
         <source>&lt;b&gt;Skip (always)&lt;/b&gt;: the loop filter is skipped no matter the resolution of the video</source>
         <translation>&lt;b&gt;Omitere (întotdeauna)&lt;/b&gt;: filtrul buclă este omis indiferent de rezoluția fișierului video</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="315"/>
+        <location filename="../prefperformance.cpp" line="271"/>
         <source>&lt;b&gt;Skip only on HD videos&lt;/b&gt;: the loop filter will be skipped only on videos which height is %1 or greater.</source>
         <translation>&lt;b&gt;Omitere doar pentru video HD&lt;/b&gt;: filtrul buclă se va omite doar pentru fișierele video definiție este %1 sau mai mare.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="352"/>
+        <location filename="../prefperformance.cpp" line="303"/>
         <source>Cache for audio CDs</source>
         <translation>Cache pentru CD-uri audio</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="354"/>
+        <location filename="../prefperformance.cpp" line="305"/>
         <source>This option specifies how much memory (in kBytes) to use when precaching an audio CD.</source>
         <translation>Această opțiune stabilește câtă memorie (în kBytes) se va folosi la pre-încărcarea unui CD în cache.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="517"/>
+        <location filename="../prefperformance.ui" line="495"/>
         <source>Cache for &amp;audio CDs:</source>
         <translation>C&amp;ache pentru CD-uri audio:</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="356"/>
+        <location filename="../prefperformance.cpp" line="307"/>
         <source>Cache for VCDs</source>
         <translation>Cache pentru VCD</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="358"/>
+        <location filename="../prefperformance.cpp" line="309"/>
         <source>This option specifies how much memory (in kBytes) to use when precaching a VCD.</source>
         <translation>Această opțiune stabilește câtă memorie (în kBytes) se va folosi la pre-încărcarea unui VCD în cache.</translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="554"/>
+        <location filename="../prefperformance.ui" line="532"/>
         <source>Cache for &amp;VCDs:</source>
         <translation>Cache pentru &amp;VCD:</translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="294"/>
+        <location filename="../prefperformance.cpp" line="250"/>
         <source>Threads for decoding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="296"/>
+        <location filename="../prefperformance.cpp" line="252"/>
         <source>Sets the number of threads to use for decoding. Only for MPEG-1/2 and H.264</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="188"/>
+        <location filename="../prefperformance.ui" line="203"/>
         <source>&amp;Threads for decoding (MPEG-1/2 and H.264 only):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="284"/>
+        <location filename="../prefperformance.cpp" line="240"/>
         <source>Set process priority for mplayer according to the predefined priorities available under Windows.&lt;br&gt;&lt;b&gt;Warning:&lt;/b&gt; Using realtime priority can cause system lockup.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="298"/>
+        <location filename="../prefperformance.cpp" line="254"/>
         <source>Use CoreAVC if no other codec specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefperformance.cpp" line="299"/>
+        <location filename="../prefperformance.cpp" line="255"/>
         <source>Try to use non-free CoreAVC codec with no other codec is specified and non-VDPAU video output selected. Requires MPlayer build with CoreAVC support.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="277"/>
+        <location filename="../prefperformance.ui" line="292"/>
         <source>&amp;Use CoreAVC if no other codec specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefperformance.ui" line="591"/>
+        <location filename="../prefperformance.ui" line="569"/>
         <source>Cache for &amp;TV:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefperformance.cpp" line="333"/>
-        <source>Youtube quality</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefperformance.cpp" line="334"/>
-        <source>Select the preferred quality for youtube videos.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefperformance.ui" line="348"/>
-        <source>Youtube &amp;quality</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6943,22 +6569,22 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Listă redare</translation>
     </message>
     <message>
-        <location filename="../prefplaylist.cpp" line="111"/>
+        <location filename="../prefplaylist.cpp" line="80"/>
         <source>Automatically add files to playlist</source>
         <translation>Adăugare automată a fișierelor la lista de redare</translation>
     </message>
     <message>
-        <location filename="../prefplaylist.cpp" line="115"/>
+        <location filename="../prefplaylist.cpp" line="84"/>
         <source>If this option is enabled, every time a file is opened, SMPlayer will first clear the playlist and then add the file to it. In case of DVDs, CDs and VCDs, all titles in the disc will be added to the playlist.</source>
         <translation>Dacă este selectată aceasta opțiune, de fiecare dată când este deschis un fișier, SMPlayer va șterge lista de redare si va adăuga fișierul deschis la listă. În cazul DVD-urilor, CD-urilor și VCD-urilor se vor adăuga toate titlurile de pe disc la lista de redare.</translation>
     </message>
     <message>
-        <location filename="../prefplaylist.cpp" line="117"/>
+        <location filename="../prefplaylist.cpp" line="86"/>
         <source>Add consecutive files</source>
         <translation>Adăugarea fișierelor consecutive</translation>
     </message>
     <message>
-        <location filename="../prefplaylist.cpp" line="120"/>
+        <location filename="../prefplaylist.cpp" line="89"/>
         <source>If this option is enabled, SMPlayer will look for consecutive files (e.g. video_1.avi, video_2.avi...) and if found, they&apos;ll be added to the playlist.</source>
         <translation>Dacă este selectată aceasta opțiune, SMPlayer va căuta fișiere multimedia consecutive (de exemplu video_1.avi, video_2.avi...) și dacă sunt găsite, acestea vor fi adăugate la lista de redare.</translation>
     </message>
@@ -6976,46 +6602,6 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <location filename="../prefplaylist.ui" line="72"/>
         <source>Add &amp;consecutive files</source>
         <translation>Adăugarea fișierelor &amp;consecutive</translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.cpp" line="122"/>
-        <source>Add files in directories recursively</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.cpp" line="125"/>
-        <source>Check this option if you want that adding a directory will also add the files in subdirectories recursively. Otherwise only the files in the selected directory will be added.</source>
-        <translation type="unfinished">Selectați această opțiune dacă doriți ca prin adăugarea unui director să se adauge recursiv și fișierele și subdirectoarele conținute. Dacă nu este selectată această opțiune se vor adăuga doar fișierle din directorul selectat.</translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.cpp" line="127"/>
-        <source>Add info automatically about files added</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.cpp" line="132"/>
-        <source>Check this option to inquire the files to be added to the playlist for some info. That allows to show the title name (if available) and length of the files. Otherwise this info won&apos;t be available until the file is actually played. Beware: this option can be slow, specially if you add many files.</source>
-        <translation type="unfinished">Selectați această opțiune dacă doriți să se caute informații despre titlurile pe care doriți să le adăugați în lista de titluri. Aceasta permite afișarea numele (dacă este disponibil) și lungimea fișierelor. Dacă nu este selectată opțiunea aceste informații nu vor fi accesibile decât atunci când este redat fișierul respectiv. Atenționare: această opțiune poate fi de durată, mai ales dacă adăugați multe fișiere.</translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.ui" line="94"/>
-        <source>P&amp;lay files from start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.ui" line="101"/>
-        <source>Add files in directories &amp;recursively</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.ui" line="108"/>
-        <source>Get &amp;info automatically about files added (slow)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../prefplaylist.ui" line="115"/>
-        <source>&amp;Save copy of playlist on exit</source>
-        <translation type="unfinished">&amp;Salvează o copie a listei la închiderea programului</translation>
     </message>
 </context>
 <context>
@@ -7126,12 +6712,12 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Proporțională cu diagonala filmului</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="490"/>
+        <location filename="../prefsubtitles.cpp" line="486"/>
         <source>Subtitle position</source>
         <translation>Poziție subtitrare</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="493"/>
+        <location filename="../prefsubtitles.cpp" line="489"/>
         <source>This option specifies the position of the subtitles over the video window. &lt;i&gt;100&lt;/i&gt; means the bottom, while &lt;i&gt;0&lt;/i&gt; means the top.</source>
         <translation>Această opțiune specifică poziția subtitrării pe ecran. &lt;i&gt;100&lt;/i&gt; reprezintă partea de jos, în timp ce &lt;i&gt;0&lt;/i&gt; reprezintă partea de sus a ecranului.</translation>
     </message>
@@ -7186,37 +6772,37 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Caractere TTF</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="474"/>
+        <location filename="../prefsubtitles.cpp" line="470"/>
         <source>System font</source>
         <translation>Caractere sistem</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="476"/>
+        <location filename="../prefsubtitles.cpp" line="472"/>
         <source>Here you can select a system font to be used for the subtitles and OSD. &lt;b&gt;Note:&lt;/b&gt; requires a MPlayer with fontconfig support.</source>
         <translation>Aici puteți selecta un set de caractere ale sistemului pentru a le folosi pentru subtitrări și pentru afișajul de pe ecran (OSD). &lt;b&gt;De reținut:&lt;/b&gt; este nevoie de o versiune MPlayer care să ofere suport pentru configurarea caracterelor.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="478"/>
+        <location filename="../prefsubtitles.cpp" line="474"/>
         <source>Autoscale</source>
         <translation>Autoscalare</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="522"/>
+        <location filename="../prefsubtitles.cpp" line="518"/>
         <source>Text color</source>
         <translation>Culoare text</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="523"/>
+        <location filename="../prefsubtitles.cpp" line="519"/>
         <source>Select the color for the text of the subtitles.</source>
         <translation>Selectați culoarea textului folosit pentru subtitrare.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="525"/>
+        <location filename="../prefsubtitles.cpp" line="521"/>
         <source>Border color</source>
         <translation>Culoare bandă</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="526"/>
+        <location filename="../prefsubtitles.cpp" line="522"/>
         <source>Select the color for the border of the subtitles.</source>
         <translation>Selectați culoarea benzii pe care este scrisă subtitrarea.</translation>
     </message>
@@ -7231,7 +6817,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation> Dacă există una sau mai multe subtitrări disponibile, una dintre ele va fi selectată automat, de regulă aceasta este prima, dar dacă una din ele corespunde preferințelor utilizatorului referitoare la limba subtitrării atunci va fi folosită aceasta. </translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="479"/>
+        <location filename="../prefsubtitles.cpp" line="475"/>
         <source>Select the subtitle autoscaling method.</source>
         <translation>Selectați metoda de autoscalare a subtitrării.</translation>
     </message>
@@ -7276,102 +6862,102 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Aici puteți selecta un caracter de tip ttf pentru a fi folosit pentru subtitrare. De regulă veți găsi multe caractere în format ttf în %1</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="552"/>
+        <location filename="../prefsubtitles.cpp" line="548"/>
         <source>Outline</source>
         <translation>Contur</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="511"/>
+        <location filename="../prefsubtitles.cpp" line="507"/>
         <source>Select the font for the subtitles.</source>
         <translation>Seletați caracterele pentru subtitrări.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="514"/>
+        <location filename="../prefsubtitles.cpp" line="510"/>
         <source>The size in pixels.</source>
         <translation>Dimensiunea în pixeli.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="516"/>
+        <location filename="../prefsubtitles.cpp" line="512"/>
         <source>Bold</source>
         <translation>Aldine</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="517"/>
+        <location filename="../prefsubtitles.cpp" line="513"/>
         <source>If checked, the text will be displayed in &lt;b&gt;bold&lt;/b&gt;.</source>
         <translation>Dacă este selectată aceasta opțiune textul va fi afișat cu &lt;b&gt;aldine&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="519"/>
+        <location filename="../prefsubtitles.cpp" line="515"/>
         <source>Italic</source>
         <translation>Italice</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="520"/>
+        <location filename="../prefsubtitles.cpp" line="516"/>
         <source>If checked, the text will be displayed in &lt;i&gt;italic&lt;/i&gt;.</source>
         <translation>Dacă este selectată aceasta opțiune textul va fi afișat cu &lt;b&gt;italice&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="531"/>
+        <location filename="../prefsubtitles.cpp" line="527"/>
         <source>Left margin</source>
         <translation>Limita stânga</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="532"/>
+        <location filename="../prefsubtitles.cpp" line="528"/>
         <source>Specifies the left margin in pixels.</source>
         <translation>Specifică limita din stânga în pixeli.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="534"/>
+        <location filename="../prefsubtitles.cpp" line="530"/>
         <source>Right margin</source>
         <translation>Limita dreapta</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="535"/>
+        <location filename="../prefsubtitles.cpp" line="531"/>
         <source>Specifies the right margin in pixels.</source>
         <translation>Specifică limita din dreapta în pixeli.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="537"/>
+        <location filename="../prefsubtitles.cpp" line="533"/>
         <source>Vertical margin</source>
         <translation>Limita verticală</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="538"/>
+        <location filename="../prefsubtitles.cpp" line="534"/>
         <source>Specifies the vertical margin in pixels.</source>
         <translation>Specifică limita pe verticală în pixeli.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="540"/>
+        <location filename="../prefsubtitles.cpp" line="536"/>
         <source>Horizontal alignment</source>
         <translation>Aliniere pe orizontală</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="542"/>
+        <location filename="../prefsubtitles.cpp" line="538"/>
         <source>Specifies the horizontal alignment. Possible values are left, centered and right.</source>
         <translation>Specifică alinierea pe orizontală. Valorile posibile sunt stânga, centru și dreapta.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="544"/>
+        <location filename="../prefsubtitles.cpp" line="540"/>
         <source>Vertical alignment</source>
         <translation>Aliniere pe verticală</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="546"/>
+        <location filename="../prefsubtitles.cpp" line="542"/>
         <source>Specifies the vertical alignment. Possible values: bottom, middle and top.</source>
         <translation>Specifică alinierea pe verticală. Valorile posibile sunt jos, mijloc și sus.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="548"/>
+        <location filename="../prefsubtitles.cpp" line="544"/>
         <source>Border style</source>
         <translation>Stil chenar</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="550"/>
+        <location filename="../prefsubtitles.cpp" line="546"/>
         <source>Specifies the border style. Possible values: outline and opaque box.</source>
         <translation>Specifică stilul chenarului. Valorile posibile sunt contur și bandă opacă.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="556"/>
+        <location filename="../prefsubtitles.cpp" line="552"/>
         <source>Shadow</source>
         <translation>Umbră</translation>
     </message>
@@ -7456,7 +7042,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>&amp;Umbră:</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="508"/>
+        <location filename="../prefsubtitles.cpp" line="504"/>
         <source>The following options allows you to define the style to be used for non-styled subtitles (srt, sub...).</source>
         <translation>Următoarele opțiuni vă permit să definiți stillul pentru subtitrările fără stil (srt, sub, ...).</translation>
     </message>
@@ -7509,12 +7095,12 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Bandă opacă</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="554"/>
+        <location filename="../prefsubtitles.cpp" line="550"/>
         <source>If border style is set to &lt;i&gt;outline&lt;/i&gt;, this option specifies the width of the outline around the text in pixels.</source>
         <translation>Dacă stilul selectat este &lt;i&gt;contur&lt;/i&gt;, atunci această opțiune specifică lățimea conturului din jurul textului, în pixeli.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="558"/>
+        <location filename="../prefsubtitles.cpp" line="554"/>
         <source>If border style is set to &lt;i&gt;outline&lt;/i&gt;, this option specifies the depth of the drop shadow behind the text in pixels.</source>
         <translation>Dacă stilul selectat este &lt;i&gt;contur&lt;/i&gt;, atunci această opțiune specifică nivelul de umbrire din spatele textului, în pixeli.</translation>
     </message>
@@ -7539,37 +7125,37 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Subtitrare normală</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="483"/>
+        <location filename="../prefsubtitles.cpp" line="479"/>
         <source>This option does NOT change the size of the subtitles in the current video. To do so, use the options &lt;i&gt;Size+&lt;/i&gt; and &lt;i&gt;Size-&lt;/i&gt; in the subtitles menu.</source>
         <translation>Această opțiune NU modifică mărimea subtitrării pentru fișierul video curent. Pentru a realiza acest lucru folosiți opțiunile &lt;i&gt;Dimensiune+&lt;/i&gt; și &lt;i&gt;Dimensiune-&lt;/i&gt; din meniul subtitrări.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="497"/>
+        <location filename="../prefsubtitles.cpp" line="493"/>
         <source>Default scale</source>
         <translation>Mărime implicită</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="487"/>
+        <location filename="../prefsubtitles.cpp" line="483"/>
         <source>This option specifies the default font scale for normal subtitles which will be used for new opened files.</source>
         <translation>Această opțiune specifică mărimea implicită pentru caracterele subtitrărilor normale, ce va fi folosită pentru fișierele nou deschise.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="495"/>
+        <location filename="../prefsubtitles.cpp" line="491"/>
         <source>SSA/ASS subtitles</source>
         <translation>Subtitrări SSA/ASS</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="499"/>
+        <location filename="../prefsubtitles.cpp" line="495"/>
         <source>This option specifies the default font scale for SSA/ASS subtitles which will be used for new opened files.</source>
         <translation>Această opțiune specifică scara implicită pentru caracterele subtitrărilor SSA/ASS, ce va fi folosită pentru fișierele nou deschise.</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="502"/>
+        <location filename="../prefsubtitles.cpp" line="498"/>
         <source>Line spacing</source>
         <translation>Separare linii</translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="504"/>
+        <location filename="../prefsubtitles.cpp" line="500"/>
         <source>This specifies the spacing that will be used to separate multiple lines. It can have negative values.</source>
         <translation>Această opțiune specifică modul de separare folosit în cazul liniilor multiple. Poate lua valori negative.</translation>
     </message>
@@ -7644,17 +7230,17 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="506"/>
+        <location filename="../prefsubtitles.cpp" line="502"/>
         <source>SSA/ASS style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="528"/>
+        <location filename="../prefsubtitles.cpp" line="524"/>
         <source>Shadow color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="529"/>
+        <location filename="../prefsubtitles.cpp" line="525"/>
         <source>This color will be used for the shadow of the subtitles.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7669,12 +7255,12 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="560"/>
+        <location filename="../prefsubtitles.cpp" line="556"/>
         <source>Apply style to ass files too</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../prefsubtitles.cpp" line="562"/>
+        <location filename="../prefsubtitles.cpp" line="558"/>
         <source>If this option is checked, the style defined above will be applied to ass subtitles too.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7760,27 +7346,27 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
 <context>
     <name>PreferencesDialog</name>
     <message>
-        <location filename="../preferencesdialog.cpp" line="130"/>
+        <location filename="../preferencesdialog.cpp" line="129"/>
         <source>SMPlayer - Help</source>
         <translation>Ajutor - SMPlayer</translation>
     </message>
     <message>
-        <location filename="../preferencesdialog.cpp" line="134"/>
+        <location filename="../preferencesdialog.cpp" line="133"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../preferencesdialog.cpp" line="135"/>
+        <location filename="../preferencesdialog.cpp" line="134"/>
         <source>Cancel</source>
         <translation>Renunţare</translation>
     </message>
     <message>
-        <location filename="../preferencesdialog.cpp" line="136"/>
+        <location filename="../preferencesdialog.cpp" line="135"/>
         <source>Apply</source>
         <translation>Validare</translation>
     </message>
     <message>
-        <location filename="../preferencesdialog.cpp" line="137"/>
+        <location filename="../preferencesdialog.cpp" line="136"/>
         <source>Help</source>
         <translation>Ajutor</translation>
     </message>
@@ -7793,7 +7379,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../smplayer.cpp" line="371"/>
+        <location filename="../smplayer.cpp" line="380"/>
         <source>This is SMPlayer v. %1 running on %2</source>
         <translation>Acesta este SMPlayer v. %1 rulând pe %2</translation>
     </message>
@@ -7818,7 +7404,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>listă_acţiuni este o enumerare de acţiuni (comenzi) separate de spaţii. Comenzile vor fi executate imediat după încărcarea fişierului media (dacă există vreunul) în aceeaşi ordine în care au fost scrise. Pentru comenzile ce pot fi bifate se pot pune ca parametrii true sau false. Exemplu: -actions &quot;fullscreen compact true&quot;. Ghilimelele sunt necesare în cazul în care scrieţi mai mult de o acţiune (comandă).</translation>
     </message>
     <message>
-        <location filename="../clhelp.cpp" line="176"/>
+        <location filename="../clhelp.cpp" line="172"/>
         <source>media</source>
         <translation>tip_media</translation>
     </message>
@@ -7860,7 +7446,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
     <message>
         <location filename="../clhelp.cpp" line="178"/>
         <source>&apos;media&apos; is any kind of file that SMPlayer can open. It can be a local file, a DVD (e.g. dvd://1), an Internet stream (e.g. mms://....) or a local playlist in format m3u or pls. If the -playlist option is used, that means that SMPlayer will pass the -playlist option to MPlayer, so MPlayer will handle the playlist, not SMPlayer.</source>
-        <translation type="obsolete">&apos;media&apos; reprezintă orice tip de fișier pe care SMPlayer îl poate deschide. Poate fi un fișier local, un DVD (ex. dvd://1), o transmisie de internet (ex. mms://...) sau o listă de titluri locală în format m3u sau pls. Dacă este folosită opțiunea -playlist înseamnă că SMPlayer va transfera opțiunea -playlist către MPlayer, astfel MPlayer va gestiona lista de titluri și nu SMPlayer.</translation>
+        <translation>&apos;media&apos; reprezintă orice tip de fișier pe care SMPlayer îl poate deschide. Poate fi un fișier local, un DVD (ex. dvd://1), o transmisie de internet (ex. mms://...) sau o listă de titluri locală în format m3u sau pls. Dacă este folosită opțiunea -playlist înseamnă că SMPlayer va transfera opțiunea -playlist către MPlayer, astfel MPlayer va gestiona lista de titluri și nu SMPlayer.</translation>
     </message>
     <message>
         <location filename="../clhelp.cpp" line="106"/>
@@ -7924,19 +7510,19 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>specifică directorul în care smplayer va memora fișierele sale de configurare (smplayer.ini, smplayer_files.ini...)</translation>
     </message>
     <message>
-        <location filename="../mediasettings.cpp" line="155"/>
+        <location filename="../mediasettings.cpp" line="145"/>
         <source>disabled</source>
         <comment>aspect_ratio</comment>
         <translation type="unfinished">dezactivat</translation>
     </message>
     <message>
-        <location filename="../mediasettings.cpp" line="165"/>
+        <location filename="../mediasettings.cpp" line="155"/>
         <source>auto</source>
         <comment>aspect_ratio</comment>
         <translation type="unfinished">automat</translation>
     </message>
     <message>
-        <location filename="../mediasettings.cpp" line="166"/>
+        <location filename="../mediasettings.cpp" line="156"/>
         <source>unknown</source>
         <comment>aspect_ratio</comment>
         <translation type="unfinished"></translation>
@@ -7964,16 +7550,6 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
     <message>
         <location filename="../clhelp.cpp" line="161"/>
         <source>specifies the size of the main window.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../clhelp.cpp" line="179"/>
-        <source>&apos;media&apos; is any kind of file that SMPlayer can open. It can be a local file, a DVD (e.g. dvd://1), an Internet stream (e.g. mms://....) or a local playlist in format m3u or pls.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../clhelp.cpp" line="174"/>
-        <source>Disables the server used to communicate with other instances. This disables too the possibility to use a single instance.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8052,12 +7628,12 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
 <context>
     <name>TVList</name>
     <message>
-        <location filename="../tvlist.cpp" line="92"/>
+        <location filename="../tvlist.cpp" line="88"/>
         <source>Channel editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tvlist.cpp" line="93"/>
+        <location filename="../tvlist.cpp" line="89"/>
         <source>TV/Radio list</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8065,7 +7641,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
 <context>
     <name>TimeDialog</name>
     <message>
-        <location filename="../tvlist.cpp" line="89"/>
+        <location filename="../timedialog.ui" line="13"/>
         <source>SMPlayer - Seek</source>
         <translation type="obsolete">SMPlayer - Derulare</translation>
     </message>
@@ -8091,49 +7667,6 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <location filename="../tristatecombo.cpp" line="36"/>
         <source>No</source>
         <translation>Nu</translation>
-    </message>
-</context>
-<context>
-    <name>VDPAUProperties</name>
-    <message>
-        <location filename="../vdpauproperties.ui" line="13"/>
-        <source>VDPAU Properties</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../vdpauproperties.ui" line="19"/>
-        <source>Select the vdpau codecs to use. Not all of them may work.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../vdpauproperties.ui" line="29"/>
-        <source>ffh&amp;264vdpau</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../vdpauproperties.ui" line="36"/>
-        <source>ff&amp;mpeg12vdpau</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../vdpauproperties.ui" line="43"/>
-        <source>ff&amp;wmv3vdpau</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../vdpauproperties.ui" line="50"/>
-        <source>ff&amp;vc1vdpau</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../vdpauproperties.ui" line="57"/>
-        <source>ffodiv&amp;xvdpau</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../vdpauproperties.ui" line="71"/>
-        <source>&amp;Disable software video filters</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8385,7 +7918,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../videopreview/videopreviewconfigdialog.ui" line="199"/>
+        <location filename="../videopreview/videopreviewconfigdialog.ui" line="195"/>
         <source>&amp;Maximum width:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8440,7 +7973,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../videopreview/videopreviewconfigdialog.ui" line="249"/>
+        <location filename="../videopreview/videopreviewconfigdialog.ui" line="245"/>
         <source>&amp;Extract frames as</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8455,7 +7988,7 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../videopreview/videopreviewconfigdialog.ui" line="290"/>
+        <location filename="../videopreview/videopreviewconfigdialog.ui" line="286"/>
         <source>Remember folder used to &amp;save the preview</source>
         <translation type="unfinished"></translation>
     </message>

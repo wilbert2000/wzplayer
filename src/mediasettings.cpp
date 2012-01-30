@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2009 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,8 +56,6 @@ void MediaSettings::reset() {
 	sub_scale = pref->initial_sub_scale; 
 	sub_scale_ass = pref->initial_sub_scale_ass;
 
-	closed_caption_channel = 0; // disabled
-
 	brightness = pref->initial_brightness;
 	contrast = pref->initial_contrast;
 	gamma = pref->initial_gamma;
@@ -88,21 +86,13 @@ void MediaSettings::reset() {
 	audio_use_channels = pref->initial_audio_channels; //ChDefault; // (0)
 	stereo_mode = pref->initial_stereo_mode; //Stereo; // (0)
 
-	zoom_factor = pref->initial_zoom_factor; // 1.0;
-
-#if USE_MPLAYER_PANSCAN
-	panscan_factor = 0;
-#endif
+	panscan_factor = pref->initial_panscan_factor; // 1.0;
 
 	starting_time = -1; // Not set yet.
 
 	rotate = NoRotate;
 	flip = false;
 	mirror = false;
-
-	loop = false;
-	A_marker = -1;
-	B_marker = -1;
 
 	is264andHD = false;
 
@@ -195,8 +185,6 @@ void MediaSettings::list() {
 	qDebug("  sub_scale: %f", sub_scale);
 	qDebug("  sub_scale_ass: %f", sub_scale_ass);
 
-	qDebug("  closed_caption_channel: %d", closed_caption_channel);
-
 	qDebug("  brightness: %d", brightness);
 	qDebug("  contrast: %d", contrast);
 	qDebug("  gamma: %d", gamma);
@@ -224,19 +212,11 @@ void MediaSettings::list() {
 	qDebug("  audio_use_channels: %d", audio_use_channels);
 	qDebug("  stereo_mode: %d", stereo_mode);
 
-	qDebug("  zoom_factor: %f", zoom_factor);
-
-#if USE_MPLAYER_PANSCAN
-	qDebug("  panscan_factor: %f", zoom_factor);
-#endif
+	qDebug("  panscan_factor: %f", panscan_factor);
 
 	qDebug("  rotate: %d", rotate);
 	qDebug("  flip: %d", flip);
 	qDebug("  mirror: %d", mirror);
-
-	qDebug("  loop: %d", loop);
-	qDebug("  A_marker: %d", A_marker);
-	qDebug("  B_marker: %d", B_marker);
 
 	qDebug("  forced_demuxer: '%s'", forced_demuxer.toUtf8().data());
 	qDebug("  forced_video_codec: '%s'", forced_video_codec.toUtf8().data());
@@ -289,8 +269,6 @@ void MediaSettings::save(QSettings * set) {
 	set->setValue( "sub_scale", sub_scale);
 	set->setValue( "sub_scale_ass", sub_scale_ass);
 
-	set->setValue( "closed_caption_channel", closed_caption_channel);
-
 	set->setValue( "brightness", brightness);
 	set->setValue( "contrast", contrast);
 	set->setValue( "gamma", gamma);
@@ -320,19 +298,11 @@ void MediaSettings::save(QSettings * set) {
 	set->setValue( "audio_use_channels", audio_use_channels);
 	set->setValue( "stereo_mode", stereo_mode);
 
-	set->setValue( "zoom_factor", zoom_factor);
-
-#if USE_MPLAYER_PANSCAN
-	set->setValue( "panscan_factor", zoom_factor);
-#endif
+	set->setValue( "panscan_factor", panscan_factor);
 
 	set->setValue( "rotate", rotate );
 	set->setValue( "flip", flip);
 	set->setValue( "mirror", mirror);
-
-	set->setValue( "loop", loop);
-	set->setValue( "A_marker", A_marker);
-	set->setValue( "B_marker", B_marker);
 
 	set->setValue( "forced_demuxer", forced_demuxer);
 	set->setValue( "forced_video_codec", forced_video_codec);
@@ -386,8 +356,6 @@ void MediaSettings::load(QSettings * set) {
 	sub_scale = set->value( "sub_scale", sub_scale).toDouble();
 	sub_scale_ass = set->value( "sub_scale_ass", sub_scale_ass).toDouble();
 
-	closed_caption_channel = set->value( "closed_caption_channel", closed_caption_channel).toInt();
-
 	brightness = set->value( "brightness", brightness).toInt();
 	contrast = set->value( "contrast", contrast).toInt();
 	gamma = set->value( "gamma", gamma).toInt();
@@ -417,19 +385,11 @@ void MediaSettings::load(QSettings * set) {
 	audio_use_channels = set->value( "audio_use_channels", audio_use_channels).toInt();
 	stereo_mode = set->value( "stereo_mode", stereo_mode).toInt();
 
-	zoom_factor = set->value( "zoom_factor", zoom_factor).toDouble();
-
-#if USE_MPLAYER_PANSCAN
 	panscan_factor = set->value( "panscan_factor", panscan_factor).toDouble();
-#endif
 
 	rotate = set->value( "rotate", rotate).toInt();
 	flip = set->value( "flip", flip).toBool();
 	mirror = set->value( "mirror", mirror).toBool();
-
-	loop = set->value( "loop", loop).toBool();
-	A_marker = set->value( "A_marker", A_marker).toInt();
-	B_marker = set->value( "B_marker", B_marker).toInt();
 
 	forced_demuxer = set->value( "forced_demuxer", forced_demuxer).toString();
 	forced_video_codec = set->value( "forced_video_codec", forced_video_codec).toString();
