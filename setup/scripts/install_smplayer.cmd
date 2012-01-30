@@ -15,6 +15,7 @@ set SMPLAYER_THEMES_DIR=svn\smplayer-themes
 set MINGW_DIR=C:\MinGW
 set MPLAYER_DIR=mplayer
 set QT_DIR=C:\Qt\%QTVER%
+set QXT_DIR=C:\development\libqxt
 
 echo.
 echo ######      SMPlayer, QT libs      #######
@@ -37,6 +38,11 @@ mkdir %OUTPUT_DIR%\imageformats
 copy %QT_DIR%\plugins\imageformats\qjpeg4.dll %OUTPUT_DIR%\imageformats\
 
 echo.
+echo ######           Libqxt            #######
+echo.
+copy %QXT_DIR%\lib\QxtCore.dll %OUTPUT_DIR%
+
+echo.
 echo ######        Translations         #######
 echo.
 
@@ -46,7 +52,12 @@ copy %SMPLAYER_DIR%\src\translations\*.qm %OUTPUT_DIR%\translations
 echo.
 echo ######       Qt Translations       #######
 echo.
-copy %QT_DIR%\translations\*.qm %OUTPUT_DIR%\translations
+copy %QT_DIR%\translations\qt_de.qm %OUTPUT_DIR%\translations
+copy %QT_DIR%\translations\qt_es.qm %OUTPUT_DIR%\translations
+copy %QT_DIR%\translations\qt_ru.qm %OUTPUT_DIR%\translations
+copy %QT_DIR%\translations\qt_sk.qm %OUTPUT_DIR%\translations
+copy %QT_DIR%\translations\qt_sv.qm %OUTPUT_DIR%\translations
+copy %QT_DIR%\translations\qt_zh_CN.qm %OUTPUT_DIR%\translations
 
 echo.
 echo ######         Shortcuts           #######
