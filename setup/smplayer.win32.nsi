@@ -207,7 +207,6 @@
   !insertmacro MUI_LANGUAGE "English"
   !insertmacro MUI_LANGUAGE "Basque"
   !insertmacro MUI_LANGUAGE "Catalan"
-  !insertmacro MUI_LANGUAGE "Croatian"
   !insertmacro MUI_LANGUAGE "Czech"
   !insertmacro MUI_LANGUAGE "Danish"
   !insertmacro MUI_LANGUAGE "Dutch"
@@ -234,7 +233,6 @@
   !insertmacro LANGFILE_INCLUDE "translations\english.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\basque.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\catalan.nsh"
-  !insertmacro LANGFILE_INCLUDE "translations\croatian.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\czech.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\danish.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\dutch.nsh"
@@ -265,7 +263,6 @@
 
   !insertmacro MUI_RESERVEFILE_LANGDLL
   ReserveFile "${NSISDIR}\Plugins\UserInfo.dll"
-  ReserveFile "FindProcDLL.dll"
 
 ;--------------------------------
 ;Installer Sections
@@ -278,14 +275,16 @@ Section $(Section_SMPlayer) SecSMPlayer
 
   ${If} $Reinstall_Uninstall == 1
 
+    ReadRegStr $R0 HKLM ${SMPLAYER_REG_KEY} "Path"
+
     ${If} $Reinstall_UninstallButton_State == 1
-      Exec '"$SMPlayer_Path\uninst.exe" /X'
+      Exec '"$R0\uninst.exe" /X'
       Quit
     ${ElseIf} $Reinstall_OverwriteButton_State == 1
-      ${If} "$INSTDIR" == "$SMPlayer_Path"
-        ExecWait '"$SMPlayer_Path\uninst.exe" /S /R _?=$SMPlayer_Path'
+      ${If} "$INSTDIR" == "$R0"
+        ExecWait '"$R0\uninst.exe" /S /R _?=$R0'
       ${Else}
-        ExecWait '"$SMPlayer_Path\uninst.exe" /S /R'
+        ExecWait '"$R0\uninst.exe" /S /R'
       ${EndIf}
     ${EndIf}
 
@@ -339,7 +338,6 @@ SectionGroup $(ShortcutGroupTitle)
     !insertmacro MUI_STARTMENU_WRITE_BEGIN SMP_SMenu
       CreateDirectory "$SMPROGRAMS\$SMPlayer_StartMenuFolder"
       CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer.lnk" "$INSTDIR\smplayer.exe"
-      CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMTube.lnk" "$INSTDIR\smtube.exe"
       WriteINIStr    "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer on the Web.url" "InternetShortcut" "URL" "http://smplayer.sf.net"
       CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\Uninstall SMPlayer.lnk" "$INSTDIR\${SMPLAYER_UNINST_EXE}"
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -378,8 +376,8 @@ SectionGroup $(MPlayerGroupTitle)
     retry_mplayer:
 
     DetailPrint $(MPlayer_DL_Msg)
-    inetc::get /CONNECTTIMEOUT 15000 /RESUME "" /BANNER $(MPlayer_DL_Msg) /CAPTION $(MPlayer_DL_Msg) \"http://downloads.sourceforge.net/smplayer/$MPlayer_Version.7z?big_mirror=0" \
-    "$PLUGINSDIR\$MPlayer_Version.7z" /END
+    inetc::get /timeout 30000 /resume "" /banner $(MPlayer_DL_Msg) /caption $(MPlayer_DL_Msg) "http://downloads.sourceforge.net/smplayer/$MPlayer_Version.7z?big_mirror=0" \
+    "$PLUGINSDIR\$MPlayer_Version.7z" /end
     Pop $R0
     StrCmp $R0 OK 0 check_mplayer
 
@@ -425,9 +423,8 @@ SectionGroup $(MPlayerGroupTitle)
     retry_codecs:
 
     DetailPrint $(Codecs_DL_Msg)
-    inetc::get /CONNECTTIMEOUT 15000 /RESUME "" /BANNER $(Codecs_DL_Msg) /CAPTION $(Codecs_DL_Msg) \
-    "http://www.mplayerhq.hu/MPlayer/releases/codecs/$Codec_Version.zip" \
-    "$PLUGINSDIR\$Codec_Version.zip" /END
+    inetc::get /timeout 30000 /resume "" /banner $(Codecs_DL_Msg) /caption $(Codecs_DL_Msg) "http://www.mplayerhq.hu/MPlayer/releases/codecs/$Codec_Version.zip" \
+    "$PLUGINSDIR\$Codec_Version.zip" /end
     Pop $R0
     StrCmp $R0 OK 0 check_codecs
 
@@ -470,12 +467,196 @@ ${MementoSectionEnd}
 
 ;--------------------------------
 ;Translations
-${MementoSection} $(Section_Translations) SecTranslations
+SectionGroup $(Section_Translations) SecTranslations
 
-  SetOutPath "$INSTDIR\translations"
-  File /r "smplayer-build\translations\*.*"
+  Section "English" SecLang_ENUS
+    SectionIn RO
 
-${MementoSectionEnd}
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_en_US.qm"
+  SectionEnd
+
+  ${MementoSection} "العربية" SecLang_ARSY
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ar_SY.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "български" SecLang_BG
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_bg.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Català" SecLang_CA
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ca.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Čeština" SecLang_CS
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_cs.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Dansk" SecLang_DA
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_da.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Deutsch" SecLang_DE
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_de.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Ελληνικά" SecLang_ELGR
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_el_GR.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Español" SecLang_ES
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_es.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Eesti Keel" SecLang_ET
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_et.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Euskara" SecLang_EU
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_eu.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Suomi" SecLang_FI
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_fi.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Français" SecLang_FR
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_fr.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Galego" SecLang_GL
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_gl.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Magyar" SecLang_HU
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_hu.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Italiano" SecLang_IT
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_it.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "日本語" SecLang_JA
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ja.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "ქართული" SecLang_KA
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ka.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "한국어" SecLang_KO
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ko.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "كوردی" SecLang_KU
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ku.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Lietuvių" SecLang_LT
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_lt.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Mакедонски" SecLang_MK
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_mk.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Nederlands" SecLang_NL
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_nl.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Polski" SecLang_PL
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_pl.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Português" SecLang_PT
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_pt.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Português (Brasil)" SecLang_PTBR
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_pt_BR.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Română" SecLang_roRO
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ro_RO.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Pусский" SecLang_ruRU
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_ru_RU.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Slovenčina" SecLang_SK
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_sk.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Slovenščina" SecLang_SLSI
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_sl_SI.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Cрпски" SecLang_SR
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_sr.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Svenska" SecLang_SV
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_sv.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Türkçe" SecLang_TR
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_tr.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Yкраїнська" SecLang_UKUA
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_uk_UA.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "Tiếng Việt" SecLang_VIVN
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_vi_VN.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "简化字" SecLang_ZHCN
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_zh_CN.qm"
+  ${MementoSectionEnd}
+
+  ${MementoSection} "漢語(繁體)" SecLang_ZHTW
+    SetOutPath "$INSTDIR\translations"
+    File /r "smplayer-build\translations\smplayer_zh_TW.qm"
+  ${MementoSectionEnd}
+
+SectionGroupEnd
 
 ;--------------------------------
 ;Install/Uninstall information
@@ -594,7 +775,6 @@ ${MementoSectionDone}
   SetShellVarContext all
   Delete "$DESKTOP\SMPlayer.lnk"
   Delete "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer.lnk"
-  Delete "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMTube.lnk"
   Delete "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer on the Web.url"
   Delete "$SMPROGRAMS\$SMPlayer_StartMenuFolder\Uninstall SMPlayer.lnk"
   RMDir "$SMPROGRAMS\$SMPlayer_StartMenuFolder"
@@ -614,10 +794,8 @@ ${MementoSectionDone}
   Delete "$INSTDIR\*.txt"
   Delete "$INSTDIR\libgcc_s_dw2-1.dll"
   Delete "$INSTDIR\mingwm10.dll"
-  Delete "$INSTDIR\zlib1.dll"
   Delete "$INSTDIR\Q*.dll"
   Delete "$INSTDIR\smplayer.exe"
-  Delete "$INSTDIR\smtube.exe"
   Delete "$INSTDIR\dxlist.exe"
 
   ;Delete registry keys
@@ -633,23 +811,6 @@ ${MementoSectionDone}
 
   SetDetailsPrint both
 !macroend
-
-;--------------------------------
-;Shared functions
-
-!macro RunCheckMacro UN
-Function ${UN}RunCheck
-
-  retry_runcheck:
-  FindProcDLL::FindProc "smplayer.exe"
-  IntCmp $R0 1 0 +3
-    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION $(SMPlayer_Is_Running) /SD IDCANCEL IDRETRY retry_runcheck
-    Abort
-
-FunctionEnd
-!macroend
-!insertmacro RunCheckMacro ""
-!insertmacro RunCheckMacro "un."
 
 ;--------------------------------
 ;Installer functions
@@ -668,13 +829,10 @@ Function .onInit
     MessageBox MB_OK|MB_ICONEXCLAMATION $(Installer_Is_Running)
     Abort
 
-  ;Check if SMPlayer is running
-  Call RunCheck
+  ;Check for admin on older OSes
+  Call CheckUserRights
 
-  ;Check for admin on < Vista
-  UserInfo::GetAccountType
-  Pop $R0
-  ${If} $R0 != "admin"
+  ${If} $Is_Admin == 0
     MessageBox MB_OK|MB_ICONSTOP $(Installer_No_Admin)
     Abort
   ${EndIf}
@@ -699,7 +857,7 @@ FunctionEnd
 Function .onInstFailed
 
   SetDetailsPrint textonly
-  DetailPrint $(Info_RollBack)
+  DetailPrint "Rolling back changes..."
   SetDetailsPrint listonly
 
   !insertmacro MacroRemoveSMPlayer
@@ -711,13 +869,8 @@ FunctionEnd
 
 Function CheckPreviousVersion
 
-  ClearErrors
   ReadRegStr $Previous_Version HKLM "${SMPLAYER_REG_KEY}" "Version"
   ReadRegStr $SMPlayer_Path HKLM "${SMPLAYER_REG_KEY}" "Path"
-
-  ${IfNot} ${Errors}
-    StrCpy $Reinstall_Uninstall 1
-  ${EndIf}
 
   /* $Previous_Version_State Assignments:
   $Previous_Version_State=0  This installer is the same version as the installed copy
@@ -735,11 +888,35 @@ Function CheckPreviousVersion
 
 FunctionEnd
 
+Function CheckUserRights
+
+  ClearErrors
+  UserInfo::GetName
+  ${If} ${Errors}
+    StrCpy $Is_Admin 1
+    Return
+  ${EndIf}
+
+  Pop $UserName
+  UserInfo::GetAccountType
+  Pop $R0
+  ${Switch} $R0
+    ${Case} "Admin"
+    ${Case} "Power"
+      StrCpy $Is_Admin 1
+      ${Break}
+    ${Default}
+      StrCpy $Is_Admin 0
+      ${Break}
+  ${EndSwitch}
+
+FunctionEnd
+
 Function GetVerInfo
 
   IfFileExists "$PLUGINSDIR\version-info" end_dl_ver_info 0
     DetailPrint $(VerInfo_DL_Msg)
-    inetc::get /CONNECTTIMEOUT 15000 /SILENT ${VERSION_FILE_URL} "$PLUGINSDIR\version-info" /END
+    inetc::get /timeout 30000 /resume "" /silent ${VERSION_FILE_URL} "$PLUGINSDIR\version-info" /end
     Pop $R0
     StrCmp $R0 OK +2
       DetailPrint $(VerInfo_DL_Failed)
@@ -765,7 +942,8 @@ FunctionEnd
 
 Function PageReinstall
 
-  ${If} $Reinstall_Uninstall != 1
+  ${If} $Previous_Version == ""
+  ${OrIf} $SMPlayer_Path == ""
     Abort
   ${EndIf}
 
@@ -806,6 +984,8 @@ Function PageReinstall
   ${NSD_OnClick} $Reinstall_ChgSettings PageReinstallUpdate
 
   Call PageReinstallUpdate
+
+  StrCpy $Reinstall_Uninstall 1
 
   nsDialogs::Show
 
@@ -939,22 +1119,43 @@ SectionEnd
 
 Function un.onInit
 
-  ;Check for admin on < Vista
-  UserInfo::GetAccountType
-  Pop $R0
-  ${If} $R0 != "admin"
+  ;Check for admin (mimic old Inno Setup behavior)
+  Call un.CheckUserRights
+
+  ${If} $Is_Admin == 0
     MessageBox MB_OK|MB_ICONSTOP $(Uninstaller_No_Admin)
     Abort
   ${EndIf}
-
-  ;Check if SMPlayer is running
-  Call un.RunCheck
 
   ;Gets start menu folder name
   !insertmacro MUI_STARTMENU_GETFOLDER "SMP_SMenu" $SMPlayer_StartMenuFolder
 
   ;Get the stored language preference
   !insertmacro MUI_UNGETLANGUAGE
+
+FunctionEnd
+
+Function un.CheckUserRights
+
+  ClearErrors
+  UserInfo::GetName
+  ${If} ${Errors}
+    StrCpy $Is_Admin 1
+    Return
+  ${EndIf}
+
+  Pop $UserName
+  UserInfo::GetAccountType
+  Pop $R0
+  ${Switch} $R0
+    ${Case} "Admin"
+    ${Case} "Power"
+      StrCpy $Is_Admin 1
+      ${Break}
+    ${Default}
+      StrCpy $Is_Admin 0
+      ${Break}
+  ${EndSwitch}
 
 FunctionEnd
 

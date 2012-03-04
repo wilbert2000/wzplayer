@@ -7,10 +7,10 @@ QT += network xml
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += findsubtitles videopreview mpcgui youtube
-DEPENDPATH += findsubtitles videopreview mpcgui youtube
+INCLUDEPATH += findsubtitles videopreview mpcgui
+DEPENDPATH += findsubtitles videopreview mpcgui
 
-DEFINES += USE_QTLOCKEDFILE
+#DEFINES += USE_QXT
 
 DEFINES += DOWNLOAD_SUBS
 
@@ -50,7 +50,6 @@ HEADERS += guiconfig.h \
 	deviceinfo.h \
 	recents.h \
 	urlhistory.h \
-	youtube/retrieveyoutubeurl.h \
 	core.h \
 	logwindow.h \
 	infofile.h \
@@ -61,8 +60,6 @@ HEADERS += guiconfig.h \
 	filechooser.h \
 	vdpauproperties.h \
 	preferencesdialog.h \
-	lineedit_with_icon.h \
-	mylineedit.h \
 	mycombobox.h \
 	tristatecombo.h \
 	languages.h \
@@ -150,7 +147,6 @@ SOURCES	+= version.cpp \
 	deviceinfo.cpp \
 	recents.cpp \
 	urlhistory.cpp \
-	youtube/retrieveyoutubeurl.cpp \
 	core.cpp \
 	logwindow.cpp \
 	infofile.cpp \
@@ -161,8 +157,6 @@ SOURCES	+= version.cpp \
 	filechooser.cpp \
 	vdpauproperties.cpp \
 	preferencesdialog.cpp \
-	lineedit_with_icon.cpp \
-	mylineedit.cpp \
 	mycombobox.cpp \
 	tristatecombo.cpp \
 	languages.cpp \
@@ -219,11 +213,10 @@ SOURCES	+= version.cpp \
 	smplayer.cpp \
 	main.cpp
 
-contains(DEFINES, USE_QTLOCKEDFILE) {
-	HEADERS += qtlockedfile/qtlockedfile.h
-	SOURCES += qtlockedfile/qtlockedfile.cpp
-	unix:SOURCES += qtlockedfile/qtlockedfile_unix.cpp
-	win32:SOURCES += qtlockedfile/qtlockedfile_win.cpp
+#libqxt
+contains(DEFINES, USE_QXT) {
+	CONFIG  += qxt
+	QXT     += core
 }
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
@@ -232,6 +225,7 @@ FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         prefperformance.ui prefinput.ui prefsubtitles.ui prefadvanced.ui \
         prefplaylist.ui preftv.ui favoriteeditor.ui \
         about.ui inputmplayerversion.ui errordialog.ui timedialog.ui \
+        filechooser.ui \
         findsubtitles/findsubtitleswindow.ui findsubtitles/findsubtitlesconfigdialog.ui \
         videopreview/videopreviewconfigdialog.ui
 
@@ -253,7 +247,7 @@ TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
                translations/smplayer_ar_SY.ts translations/smplayer_ku.ts \
                translations/smplayer_gl.ts translations/smplayer_vi_VN.ts \
                translations/smplayer_et.ts translations/smplayer_lt.ts \
-               translations/smplayer_da.ts translations/smplayer_hr.ts
+               translations/smplayer_da.ts
 
 contains( DEFINES, DOWNLOAD_SUBS ) {
 	INCLUDEPATH += findsubtitles/filedownloader findsubtitles/quazip
@@ -283,8 +277,8 @@ contains( DEFINES, DOWNLOAD_SUBS ) {
 	LIBS += -lz
 	
 	win32 {
-		INCLUDEPATH += ..\\zlib-1.2.6
-		LIBS += -L..\\zlib-1.2.6
+		INCLUDEPATH += c:\development\zlib-1.2.3
+		LIBS += -Lc:\development\zlib-1.2.3
 	}
 }
 

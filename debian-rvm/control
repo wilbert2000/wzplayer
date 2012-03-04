@@ -1,7 +1,7 @@
 Source: smplayer
 Section: graphics
 Priority: extra
-Maintainer: Ricardo Villalba <rvm@users.sourceforge.net>
+Maintainer: Ricardo Villalba <rvm@escomposlinux.org>
 Build-Depends: debhelper (>= 5), libqt4-dev, zlib1g-dev
 Standards-Version: 3.7.2
 
@@ -9,7 +9,7 @@ Package: smplayer
 Architecture: any
 Pre-Depends: dpkg (>= 1.14.12ubuntu3)
 Depends: ${shlibs:Depends}, mplayer | mplayer-nogui | mplayer-mt
-Recommends: smplayer-themes, smtube, alsa-utils, x11-utils
+Recommends: smplayer-themes, alsa-utils, x11-utils
 Replaces: smplayer-translations
 Provides: smplayer-translations
 Description: A great front-end for MPlayer

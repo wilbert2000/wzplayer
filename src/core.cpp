@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -52,10 +52,6 @@
 #include "filesettings.h"
 #include "filesettingshash.h"
 #include "tvsettings.h"
-#endif
-
-#if YOUTUBE_SUPPORT
-#include "retrieveyoutubeurl.h"
 #endif
 
 using namespace Global;
@@ -203,8 +199,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	connect( this, SIGNAL(stateChanged(Core::State)), 
 	         this, SLOT(watchState(Core::State)) );
 
-	connect( this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()) );
-
 	connect( proc, SIGNAL(error(QProcess::ProcessError)), 
              this, SIGNAL(mplayerFailed(QProcess::ProcessError)) );
 
@@ -239,14 +233,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 #if DISCNAME_TEST
 	DiscName::test();
 #endif
-
-#if YOUTUBE_SUPPORT
-	yt = new RetrieveYoutubeUrl(this);
-	connect(yt, SIGNAL(gotPreferredUrl(const QString &)), this, SLOT(openYT(const QString &)));
-	connect(yt, SIGNAL(connecting(QString)), this, SLOT(connectingToYT(QString)));
-	connect(yt, SIGNAL(downloadFailed(QString)), this, SLOT(YTFailed(QString)));
-	connect(yt, SIGNAL(gotEmptyList()), this, SLOT(YTNoVideoUrl()));
-#endif
 }
 
 
@@ -268,10 +254,6 @@ Core::~Core() {
 #ifdef SCREENSAVER_OFF
 	delete win_screensaver;
 #endif
-#endif
-
-#if YOUTUBE_SUPPORT
-	delete yt;
 #endif
 }
 
@@ -489,25 +471,6 @@ void Core::openFile(QString filename, int seek) {
 	}
 }
 
-#if YOUTUBE_SUPPORT
-void Core::openYT(const QString & url) {
-	qDebug("Core::openYT: %s", url.toUtf8().constData());
-	openStream(url);
-	yt->close();
-}
-
-void Core::connectingToYT(QString host) {
-	emit showMessage( tr("Connecting to %1").arg(host) );
-}
-
-void Core::YTFailed(QString /*error*/) {
-	emit showMessage( tr("Unable to retrieve youtube page") );
-}
-
-void Core::YTNoVideoUrl() {
-	emit showMessage( tr("Unable to locate the url of the video") );
-}
-#endif
 
 void Core::loadSub(const QString & sub ) {
     if ( (!sub.isEmpty()) && (QFile::exists(sub)) ) {
@@ -782,17 +745,6 @@ void Core::openTV(QString channel_id) {
 void Core::openStream(QString name) {
 	qDebug("Core::openStream: '%s'", name.toUtf8().data());
 
-#if YOUTUBE_SUPPORT
-	if (name.contains("youtube.com/watch", Qt::CaseInsensitive)) {
-		qDebug("Core::openStream: youtube url detected");
-		if (name.startsWith("www.youtube.com")) name = "http://" + name;
-		if (name.startsWith("youtube.com")) name = "http://www." + name;
-		yt->setPreferredQuality( (RetrieveYoutubeUrl::Quality) pref->yt_quality );
-		yt->fetchPage(name);
-		return;
-	}
-#endif
-
 	if (proc->isRunning()) {
 		stopMplayer();
 		we_are_restarting = false;
@@ -898,7 +850,7 @@ void Core::initPlaying(int seek) {
 
 	/* updateWidgets(); */
 
-	mplayerwindow->hideLogo();
+	mplayerwindow->showLogo(FALSE);
 
 	if (proc->isRunning()) {
 		stopMplayer();
@@ -906,15 +858,6 @@ void Core::initPlaying(int seek) {
 
 	int start_sec = (int) mset.current_sec;
 	if (seek > -1) start_sec = seek;
-
-#if YOUTUBE_SUPPORT
-	// Avoid to pass to mplayer the youtube page url
-	if (mdat.type == TYPE_STREAM) {
-		if (mdat.filename == yt->origUrl()) {
-			mdat.filename = yt->latestPreferredUrl();
-		}
-	}
-#endif
 
 	startMplayer( mdat.filename, start_sec );
 }
@@ -1026,16 +969,6 @@ void Core::finishRestart() {
 		mdat.audio_codec = proc->mediaData().audio_codec;
 		mdat.demuxer = proc->mediaData().demuxer;
 	}
-
-#if YOUTUBE_SUPPORT
-	// Change the real url with the youtube page url and set the title
-	if (mdat.type == TYPE_STREAM) {
-		if (mdat.filename == yt->latestPreferredUrl()) {
-			mdat.filename = yt->origUrl();
-			mdat.stream_title = yt->urlTitle();
-		}
-	}
-#endif
 
 #if !NOTIFY_SUB_CHANGES
 	// Subtitles
@@ -1316,12 +1249,12 @@ void Core::goToPosition(int value) {
 
 void Core::goToPos(double perc) {
 	qDebug("Core::goToPos: per: %f", perc);
-	tellmp( seek_cmd(perc, 1) );
+	tellmp( "seek " + QString::number(perc) + " 1");
 }
 #else
 void Core::goToPos(int perc) {
 	qDebug("Core::goToPos: per: %d", perc);
-	tellmp( seek_cmd(perc, 1) );
+	tellmp( "seek " + QString::number(perc) + " 1");
 }
 #endif
 
@@ -1337,15 +1270,7 @@ void Core::startMplayer( QString file, double seek ) {
 	if (proc->isRunning()) {
 		qWarning("Core::startMplayer: MPlayer still running!");
 		return;
-    }
-
-#if YOUTUBE_SUPPORT
-	// Stop any pending request
-	qDebug("Core::startMplayer: yt state: %d", yt->state());	
-	if (yt->state() != QHttp::Unconnected) {
-		//yt->abort(); /* Make the app to crash, don't know why */
-	}
-#endif
+    } 
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -1370,21 +1295,9 @@ void Core::startMplayer( QString file, double seek ) {
 		if (dvd_title > 0) file += QString::number(dvd_title);
 	}
 
-	// Check URL playlist
-	bool url_is_playlist = false;
-	if (file.endsWith("|playlist")) {
-		url_is_playlist = true;
-		file = file.remove("|playlist");
-	} else {
-		QUrl url(file);
-		qDebug("Core::startMplayer: checking if stream is a playlist");
-		qDebug("Core::startMplayer: url path: '%s'", url.path().toUtf8().constData());
-
-		QRegExp rx("\\.ram$|\\.asx$|\\.m3u$|\\.pls$", Qt::CaseInsensitive);
-		url_is_playlist = (rx.indexIn(url.path()) != -1);
-	}
-	qDebug("Core::startMplayer: url_is_playlist: %d", url_is_playlist);
-
+	// URL
+	bool url_is_playlist = file.endsWith(IS_PLAYLIST_TAG);
+	if (url_is_playlist) file = file.remove( QRegExp(IS_PLAYLIST_TAG_RX) );
 
 	bool screenshot_enabled = ( (pref->use_screenshot) && 
                                 (!pref->screenshot_directory.isEmpty()) && 
@@ -1639,7 +1552,7 @@ void Core::startMplayer( QString file, double seek ) {
 		#define WINIDFROMHWND(hwnd) ( ( hwnd ) - 0x80000000UL )
 		proc->addArgument( QString::number( WINIDFROMHWND( (int) mplayerwindow->videoLayer()->winId() ) ));
 #else
-		proc->addArgument( QString::number( (qint64) mplayerwindow->videoLayer()->winId() ) );
+		proc->addArgument( QString::number( (int) mplayerwindow->videoLayer()->winId() ) );
 #endif
 
 #if USE_COLORKEY
@@ -2343,24 +2256,15 @@ void Core::goToSec( double sec ) {
 
     if (sec < 0) sec = 0;
     if (sec > mdat.duration ) sec = mdat.duration - 20;
-    tellmp( seek_cmd(sec, 2) );
+    tellmp("seek " + QString::number(sec) + " 2");
 }
 
 
 void Core::seek(int secs) {
 	qDebug("Core::seek: %d", secs);
 	if ( (proc->isRunning()) && (secs!=0) ) {
-		tellmp( seek_cmd(secs, 0) );
+		tellmp("seek " + QString::number(secs) + " 0");
 	}
-}
-
-QString Core::seek_cmd(double secs, int mode) {
-	QString s = QString("seek %1 %2").arg(secs).arg(mode);
-	if (MplayerVersion::isMplayer2()) {
-		//hr-seek
-		if (pref->precise_seeking) s += " 1"; else s += " -1";
-	}
-	return s;
 }
 
 void Core::sforward() {
@@ -3905,10 +3809,6 @@ void Core::displayScreenshotName(QString filename) {
 	//QString text = tr("Screenshot saved as %1").arg(filename);
 	QString text = QString("Screenshot saved as %1").arg(filename);
 
-	if (MplayerVersion::isMplayer2()) {
-		displayTextOnOSD(text, 3000, 1, "");
-	}
-	else
 	if (MplayerVersion::isMplayerAtLeast(27665)) {
 		displayTextOnOSD(text, 3000, 1, "pausing_keep_force");
 	}
@@ -3992,11 +3892,6 @@ void Core::streamTitleAndUrlChanged(QString title, QString url) {
 	mdat.stream_title = title;
 	mdat.stream_url = url;
 	emit mediaInfoChanged();
-}
-
-void Core::sendMediaInfo() {
-	qDebug("Core::sendMediaInfo");
-	emit mediaPlaying(mdat.filename, mdat.displayName(pref->show_tag_in_window_title));
 }
 
 //!  Called when the state changes
@@ -4253,10 +4148,6 @@ void Core::dvdTitleIsMovie() {
 QString Core::pausing_prefix() {
 	qDebug("Core::pausing_prefix");
 
-	if (MplayerVersion::isMplayer2()) {
-		return QString::null;
-	}
-	else
 	if ( (pref->use_pausing_keep_force) && 
          (MplayerVersion::isMplayerAtLeast(27665)) ) 
 	{

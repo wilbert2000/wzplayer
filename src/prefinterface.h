@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,9 +46,6 @@ public:
 	bool recentsChanged() { return recents_changed; };
 	bool styleChanged() { return style_changed; };
 	bool serverPortChanged() { return port_changed; };
-
-	void setSingleInstanceTabEnabled(bool b);
-	bool singleInstanceTabEnabled();
 
 protected:
 	virtual void createHelp();
@@ -102,14 +99,8 @@ protected:
 	void setRelativeSeeking(bool);
 	bool relativeSeeking();
 
-	void setPreciseSeeking(bool);
-	bool preciseSeeking();
-
 	void setDefaultFont(QString font_desc);
 	QString defaultFont();
-
-	void setHideVideoOnAudioFiles(bool b);
-	bool hideVideoOnAudioFiles();
 
 	// Floating tab
 	void setFloatingAnimated(bool b);

@@ -1,4 +1,4 @@
-﻿;Language: Spanish (1034)
+;Language: Spanish (1034)
 ;Spanish language strings for the Windows SMPlayer NSIS installer.
 ;
 ;Save file as UTF-8 w/ BOM
@@ -9,7 +9,6 @@
 ; Startup
 ${LangFileString} Installer_Is_Running "La instalación ya se está ejecutando."
 ${LangFileString} Installer_No_Admin "Debes tener permisos de administrador para instalar este programa."
-${LangFileString} SMPlayer_Is_Running "An instance of SMPlayer is running. Please exit SMPlayer and try again."
 
 ; Components Page
 ${LangFileString} ShortcutGroupTitle "Accesos"
@@ -96,5 +95,4 @@ ${LangFileString} Info_Del_Files "Borrando ficheros..."
 ${LangFileString} Info_Del_Registry "Borrando claves del registro..."
 ${LangFileString} Info_Del_Shortcuts "Borrande accesos..."
 ${LangFileString} Info_Rest_Assoc "Restaurando asociaciones de ficheros..."
-${LangFileString} Info_RollBack "Rolling back changes..."
 ${LangFileString} Info_Files_Extract "Extrayendo ficheros..."

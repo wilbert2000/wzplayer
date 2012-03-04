@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,18 +21,10 @@
 #include <QTimer>
 #include <QHBoxLayout>
 
-#ifndef OLD_ANIMATION
-#include <QPropertyAnimation>
-#endif
-
 FloatingWidget::FloatingWidget( QWidget * parent )
 	: QWidget( parent, Qt::Window | Qt::FramelessWindowHint |
                        Qt::WindowStaysOnTopHint )
 {
-#ifndef OLD_ANIMATION
-	animation = 0;
-#endif
-
 	setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Minimum );
 
 	tb = new QToolBar;
@@ -47,20 +39,16 @@ FloatingWidget::FloatingWidget( QWidget * parent )
 
 	_margin = 0;
 	_animated = false;
-#ifdef OLD_ANIMATION
 	animation_timer = new QTimer(this);
 	animation_timer->setInterval(2);
 	connect( animation_timer, SIGNAL(timeout()), this, SLOT(animate()) );
-#endif
+
 	connect( &auto_hide_timer, SIGNAL(timeout()), 
              this, SLOT(checkUnderMouse()) );
 	setAutoHide(true);
 }
 
 FloatingWidget::~FloatingWidget() {
-#ifndef OLD_ANIMATION
-	if (animation) delete animation;
-#endif
 }
 
 #ifndef Q_OS_WIN
@@ -116,24 +104,6 @@ void FloatingWidget::showOver(QWidget * widget, int size, Place place) {
 }
 
 void FloatingWidget::showAnimated(QPoint final_position, Movement movement) {
-#ifndef OLD_ANIMATION
-	show();
-	if (!animation) {
-		animation = new QPropertyAnimation(this, "pos");
-	}
-	animation->setDuration(300);
-	animation->setEasingCurve(QEasingCurve::OutBounce);
-	animation->setEndValue(final_position);
-	QPoint initial_position = final_position;
-	if (movement == Upward) {
-		initial_position.setY( initial_position.y() + height() );
-	} else {
-		initial_position.setY( initial_position.y() - height() );
-	}
-	animation->setStartValue(initial_position);
-
-	animation->start();
-#else
 	current_movement = movement;
 	final_y = final_position.y();
 
@@ -147,10 +117,8 @@ void FloatingWidget::showAnimated(QPoint final_position, Movement movement) {
 	show();
 
 	animation_timer->start();
-#endif
 }
 
-#ifdef OLD_ANIMATION
 void FloatingWidget::animate() {
 	if (current_y == final_y) {
 		animation_timer->stop();
@@ -159,7 +127,6 @@ void FloatingWidget::animate() {
 		move(x(), current_y);
 	}
 }
-#endif
 
 void FloatingWidget::checkUnderMouse() {
 	if (auto_hide) {

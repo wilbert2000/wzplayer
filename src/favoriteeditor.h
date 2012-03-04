@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,17 +44,12 @@ public:
 	void setDialogIcon( const QPixmap & icon );
 	const QPixmap * dialogIcon() const;
 
-	//! The editor will give a filename to subentries (submenus), using this path.
-	void setStorePath(const QString & path) { store_path = path; }
-	QString storePath() { return store_path; }
-
 protected slots:
 	void on_up_button_clicked();
 	void on_down_button_clicked();
 	void on_delete_button_clicked();
 	void on_delete_all_button_clicked();
 	void on_add_button_clicked();
-	void on_add_submenu_button_clicked();
 
 	void edit_icon( int row, int column ); 
 
@@ -65,8 +60,7 @@ protected:
 	void updateTitleLabel();
 
 	QString caption_text, intro_text;
-	static QString last_dir;
-	QString store_path;
+	QString last_dir;
 };
 
 #endif

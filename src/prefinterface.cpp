@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,8 +28,6 @@
 #include <QDir>
 #include <QStyleFactory>
 #include <QFontDialog>
-
-#define SINGLE_INSTANCE_TAB 2
 
 PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 	: PrefWidget(parent, f )
@@ -85,7 +83,7 @@ QString PrefInterface::sectionName() {
 }
 
 QPixmap PrefInterface::sectionIcon() {
-    return Images::icon("pref_gui", 22);
+    return Images::icon("pref_gui");
 }
 
 void PrefInterface::createLanguageCombo() {
@@ -182,11 +180,8 @@ void PrefInterface::setData(Preferences * pref) {
 
 	setUpdateWhileDragging(pref->update_while_seeking);
 	setRelativeSeeking(pref->relative_seeking);
-	setPreciseSeeking(pref->precise_seeking);
 
 	setDefaultFont(pref->default_font);
-
-	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
 
 #if STYLE_SWITCHING
 	setStyle( pref->style );
@@ -248,11 +243,8 @@ void PrefInterface::getData(Preferences * pref) {
 
 	pref->update_while_seeking = updateWhileDragging();
 	pref->relative_seeking= relativeSeeking();
-	pref->precise_seeking = preciseSeeking();
 
 	pref->default_font = defaultFont();
-
-	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
 
 #if STYLE_SWITCHING
     if ( pref->style != style() ) {
@@ -373,14 +365,6 @@ bool PrefInterface::useAutoPort() {
 	return automatic_port_button->isChecked();
 }
 
-void PrefInterface::setSingleInstanceTabEnabled(bool b) {
-	tabWidget->setTabEnabled(SINGLE_INSTANCE_TAB, b);
-}
-
-bool PrefInterface::singleInstanceTabEnabled() {
-	return tabWidget->isTabEnabled(SINGLE_INSTANCE_TAB);
-}
-
 void PrefInterface::setRecentsMaxItems(int n) {
 	recents_max_items_spin->setValue(n);
 }
@@ -441,14 +425,6 @@ bool PrefInterface::relativeSeeking() {
 	return relative_seeking_button->isChecked();
 }
 
-void PrefInterface::setPreciseSeeking(bool b) {
-	precise_seeking_check->setChecked(b);
-}
-
-bool PrefInterface::preciseSeeking() {
-	return precise_seeking_check->isChecked();
-}
-
 void PrefInterface::setDefaultFont(QString font_desc) {
 	default_font_edit->setText(font_desc);
 }
@@ -477,14 +453,6 @@ void PrefInterface::changeInstanceImages() {
 		instances_icon->setPixmap( Images::icon("instance1") );
 	else
 		instances_icon->setPixmap( Images::icon("instance2") );
-}
-
-void PrefInterface::setHideVideoOnAudioFiles(bool b) {
-	hide_video_window_on_audio_check->setChecked(b);
-}
-
-bool PrefInterface::hideVideoOnAudioFiles() {
-	return hide_video_window_on_audio_check->isChecked();
 }
 
 // Floating tab
@@ -543,9 +511,6 @@ void PrefInterface::createHelp() {
         tr("If you check this option, the position and size of the main "
            "window will be saved and restored when you run SMPlayer again.") );
 
-	setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
-        tr("If this option is enabled the video window will be hidden when playing audio files.") );
-
 	setWhatsThis(recents_max_items_spin, tr("Recent files"),
         tr("Select the maximum number of items that will be shown in the "
            "<b>Open->Recent files</b> submenu. If you set it to 0 that "
@@ -598,11 +563,6 @@ void PrefInterface::createHelp() {
 		tr("Sets the method to be used when seeking with the slider. "
            "Absolute seeking may be a little bit more accurate, while "
            "relative seeking may work better with files with a wrong length.") );
-
-	setWhatsThis(precise_seeking_check, tr("Precise seeking"),
-		tr("If this option is enabled, seeks are more accurate but they "
-           "can be a little bit slower. May not work with some video formats.") +"<br>"+
-		tr("Note: this option only works with MPlayer2") );
 
 	addSectionTitle(tr("Instances"));
 

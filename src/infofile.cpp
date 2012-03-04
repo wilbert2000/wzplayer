@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include <QFileInfo>
 #include <QCoreApplication>
 #include "discname.h"
+#include "constants.h"
 #include "images.h"
 
 
@@ -67,6 +68,9 @@ QString InfoFile::getInfo(MediaData md) {
                                   .arg(fi.size()/1048576) );
 	} else {
 		QString url = md.filename;
+		if (url.endsWith(IS_PLAYLIST_TAG)) {
+			url = url.remove( QRegExp(IS_PLAYLIST_TAG_RX) );
+		}
 		s += addItem( tr("URL"), url );
 	}
 	s += addItem( tr("Length"), Helper::formatTime((int)md.duration) );

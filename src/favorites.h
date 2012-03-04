@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,71 +19,61 @@
 #ifndef _FAVORITES_H_
 #define _FAVORITES_H_
 
-#include <QMenu>
+#include <QObject>
 #include <QString>
 #include <QList>
 
+class QMenu;
 class QAction;
 class QWidget;
 
 class Favorite 
 {
 public:
-	Favorite() { is_subentry = false; }
-	Favorite(QString name, QString file, QString icon = QString::null, bool subentry = false) 
-	{ 
-		_name = name; _file = file; _icon = icon; is_subentry = subentry;
-	};
+	Favorite() {}
+	Favorite(QString name, QString file, QString icon = QString::null) { _name = name; _file = file; _icon = icon; };
 	virtual ~Favorite() {};
 
 	void setName(QString name) { _name = name; };
 	void setFile(QString file) { _file = file; };
 	void setIcon(QString file) { _icon = file; };
-	void setSubentry(bool b) { is_subentry = b; }
 
 	QString name() { return _name; };
 	QString file() { return _file; }
 	QString icon() { return _icon; };
-	bool isSubentry() { return is_subentry; };
 
 protected:
 	QString _name, _file, _icon;
-	bool is_subentry; // Not a favorite file, but a new favorite list
 };
 
 typedef QList<Favorite> FavoriteList;
 
-class Favorites : public QMenu
+class Favorites : public QObject
 {
 	Q_OBJECT
 public:
 	Favorites(QString filename, QWidget * parent = 0);
 	~Favorites();
 
+	QMenu * menu();
 	QAction * editAct() { return edit_act; };
 	QAction * jumpAct() { return jump_act; };
 	QAction * nextAct() { return next_act; };
 	QAction * previousAct() { return previous_act; };
-	QAction * addCurrentAct() { return add_current_act; };
 
 public slots:
 	void next();
 	void previous();
 
-	void getCurrentMedia(const QString & filename, const QString & title);
-
 signals:
 	void activated(QString filemane);
-	//! Signal to resend the data to child
-	void sendCurrentMedia(const QString & filename, const QString & title);
 
 protected:
-	virtual void save();
-	virtual void load();
-	virtual void updateMenu();
-	virtual void populateMenu();
-	virtual Favorites * createNewObject(QString filename, QWidget * parent);
-	void delete_children();
+	void save();
+	void load();
+	void createMenu();
+	void updateMenu();
+	void populateMenu();
 
 	int findFile(QString filename);
 
@@ -94,20 +84,15 @@ protected slots:
 	void triggered_slot(QAction * action);
 	virtual void edit();
 	virtual void jump();
-	virtual void addCurrentPlaying(); // Adds to menu current (or last played) file
-
-protected:
-    virtual void retranslateStrings();
-    virtual void changeEvent(QEvent * event);
 
 protected:
 	FavoriteList f_list;
 	QString _filename;
+	QMenu * _menu;
 	QAction * edit_act;
 	QAction * jump_act;
 	QAction * next_act;
 	QAction * previous_act;
-	QAction * add_current_act;
 
 	QWidget * parent_widget;
 
@@ -116,11 +101,6 @@ protected:
 
 	// Last item selected in the jump dialog
 	int last_item;
-
-	QString received_file_playing;
-	QString received_title;
-
-	QList<Favorites*> child;
 };
 
 #endif

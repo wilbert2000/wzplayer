@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ QString PrefGeneral::sectionName() {
 }
 
 QPixmap PrefGeneral::sectionIcon() {
-	return Images::icon("pref_general", 22);
+	return Images::icon("pref_general");
 }
 
 void PrefGeneral::retranslateStrings() {

@@ -10,7 +10,6 @@ DEPENDPATH += ..
 
 HEADERS += simplehttp.h \
            osparser.h \
-           ../lineedit_with_icon.h \
            ../filechooser.h \
            ../languages.h \
            findsubtitlesconfigdialog.h \
@@ -18,14 +17,13 @@ HEADERS += simplehttp.h \
 
 SOURCES += simplehttp.cpp \
            osparser.cpp \
-           ../lineedit_with_icon.cpp \
            ../filechooser.cpp \
            ../languages.cpp \
            findsubtitlesconfigdialog.cpp \
            findsubtitleswindow.cpp \
            main.cpp
 
-FORMS += findsubtitleswindow.ui findsubtitlesconfigdialog.ui
+FORMS += ../filechooser.ui findsubtitleswindow.ui findsubtitlesconfigdialog.ui
 
 DEFINES += NO_SMPLAYER_SUPPORT DOWNLOAD_SUBS
 

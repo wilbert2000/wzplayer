@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,12 +56,12 @@ void FileDownloader::setProxy(QNetworkProxy proxy) {
 void FileDownloader::download(QUrl url) {
 	QHttp::ConnectionMode mode = url.scheme().toLower() == "https" ? QHttp::ConnectionModeHttps : QHttp::ConnectionModeHttp;
 	http->setHost(url.host(), mode, url.port() == -1 ? 0 : url.port());
-
+    
 	if (!url.userName().isEmpty())
 		http->setUser(url.userName(), url.password());
 
 	http_request_aborted = false;
-	http_get_id = http->get(url.path());
+        http_get_id = http->get(url.path());
 
 	setLabelText(tr("Downloading %1").arg(url.toString()));
 }

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -87,8 +87,6 @@ QPixmap Images::icon(QString name, int size, bool png) {
 	}
 
 	QString icon_name = Images::filename(name,png);
-
-	//qDebug("%s", icon_name.toUtf8().constData());
 
 	QPixmap p = Images::loadIcon( icon_name );
 	bool ok = !p.isNull();

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #define MPLAYER_1_0_RC1_SVN 20372
 #define MPLAYER_1_0_RC2_SVN 24722
 #define MPLAYER_1_0_RC3_SVN 31272
-#define MPLAYER_1_0_RC4_SVN 33472
 
 class MplayerVersion {
 public:
@@ -38,13 +37,7 @@ public:
 
 	static bool isMplayerAtLeast(int svn_revision);
 
-	static bool isMplayer2() { return is_mplayer2; };
-
 	static QString toString(int mplayer_svn);
-
-protected:
-	static QString mplayer2_version;
-	static bool is_mplayer2; 
 };
 
 #endif

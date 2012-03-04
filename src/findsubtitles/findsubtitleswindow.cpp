@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -62,13 +62,13 @@ FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
 
 	set = 0; // settings
 
-	subtitles_for_label->setBuddy(file_chooser);
+	subtitles_for_label->setBuddy(file_chooser->lineEdit());
 
 	progress->hide();
 
 	connect( file_chooser, SIGNAL(fileChanged(QString)),
              this, SLOT(setMovie(QString)) );
-	connect( file_chooser, SIGNAL(textChanged(const QString &)),
+	connect( file_chooser->lineEdit(), SIGNAL(textChanged(const QString &)),
              this, SLOT(updateRefreshButton()) );
 
 	connect( refresh_button, SIGNAL(clicked()),
@@ -151,9 +151,6 @@ FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
 	retranslateStrings();
 
 	language_filter->setCurrentIndex(0);
-
-	// Opensubtitles server
-	os_server = "http://www.opensubtitles.org";
 
 	// Proxy
 	use_proxy = false;
@@ -247,7 +244,7 @@ void FindSubtitlesWindow::setMovie(QString filename) {
 	if (hash.isEmpty()) {
 		qWarning("FindSubtitlesWindow::setMovie: hash invalid. Doing nothing.");
 	} else {
-		QString link = os_server + "/search/sublanguageid-all/moviehash-" + hash + "/simplexml";
+		QString link = "http://www.opensubtitles.org/search/sublanguageid-all/moviehash-" + hash + "/simplexml";
 		qDebug("FindSubtitlesWindow::setMovie: link: '%s'", link.toLatin1().constData());
 		downloader->download(link);
 		last_file = filename;
@@ -603,7 +600,6 @@ void FindSubtitlesWindow::on_configure_button_clicked() {
 
 	FindSubtitlesConfigDialog d(this);
 
-	d.setServer( os_server );
 	d.setUseProxy( use_proxy );
 	d.setProxyHostname( proxy_host );
 	d.setProxyPort( proxy_port );
@@ -612,7 +608,6 @@ void FindSubtitlesWindow::on_configure_button_clicked() {
 	d.setProxyType( proxy_type );
 
 	if (d.exec() == QDialog::Accepted) {
-		os_server = d.server();
 		use_proxy = d.useProxy();
 		proxy_host = d.proxyHostname();
 		proxy_port = d.proxyPort();
@@ -651,7 +646,6 @@ void FindSubtitlesWindow::saveSettings() {
 
 	set->beginGroup("findsubtitles");
 
-	set->setValue("server", os_server);
 	set->setValue("language", language());
 #ifdef DOWNLOAD_SUBS
 	set->setValue("include_lang_on_filename", includeLangOnFilename());
@@ -671,7 +665,6 @@ void FindSubtitlesWindow::loadSettings() {
 
 	set->beginGroup("findsubtitles");
 
-	os_server = set->value("server", os_server).toString();
 	setLanguage( set->value("language", language()).toString() );
 #ifdef DOWNLOAD_SUBS
 	setIncludeLangOnFilename( set->value("include_lang_on_filename", includeLangOnFilename()).toBool() );

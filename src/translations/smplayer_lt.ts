@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="lt_LT">
 <context>
     <name>About</name>
     <message>
         <source>Version: %1</source>
         <translation>Versija: %1</translation>
+    </message>
+    <message>
+        <source>This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.</source>
+        <translation>Tai nemokama programinė įranga. Vadovaudamiesi antra ar vėlesne (savo nuožiūra) GNU General Public License, publikuota Free Software Foundation, jūs galite platinti ir/arba keisti šią programinę įrangą.</translation>
     </message>
     <message>
         <source>The following people have contributed with translations:</source>
@@ -152,6 +156,14 @@
         <translation>Gaukite pagalbą mūsų forume:</translation>
     </message>
     <message>
+        <source>You can support SMPlayer by making a donation.</source>
+        <translation type="obsolete">Jūs galite palaikyti „SMPlayer“ paaukodami.</translation>
+    </message>
+    <message>
+        <source>More info</source>
+        <translation type="obsolete">Daugiau informacijos</translation>
+    </message>
+    <message>
         <source>Korean</source>
         <translation>Korėjiečių</translation>
     </message>
@@ -196,6 +208,14 @@
         <translation>Galisų</translation>
     </message>
     <message>
+        <source>The following people have contributed with patches (see the changelog for details):</source>
+        <translation>Šie žmonės prisidėjo savo pataisymais (detaliau žr. pakeitimų sąrašą):</translation>
+    </message>
+    <message>
+        <source>If there&apos;s any omission, please report.</source>
+        <translation>Jei ką nors praleidome - praneškite.</translation>
+    </message>
+    <message>
         <source>SMPlayer logo by %1</source>
         <translation>„SMPlayer“ logotipą sukūrė %1</translation>
     </message>
@@ -222,34 +242,6 @@
     <message>
         <source>Danish</source>
         <translation>Danų</translation>
-    </message>
-    <message>
-        <source>Croatian</source>
-        <translation>Kroatų</translation>
-    </message>
-    <message>
-        <source>Using MPlayer2 %1</source>
-        <translation>Naudojama MPlayer2 %1</translation>
-    </message>
-    <message>
-        <source>SMPlayer uses the award-winning MPlayer as playback engine. See %1</source>
-        <translation>SMPlayer naudoja pasižymėjusį MPlayer kaip atkūrimo variklį. Pažiūrėkite %1</translation>
-    </message>
-    <message>
-        <source>Read the entire license</source>
-        <translation>Skaityti visą licenciją</translation>
-    </message>
-    <message>
-        <source>Read a translation</source>
-        <translation>Skaityti vertimą</translation>
-    </message>
-    <message>
-        <source>Packages for Windows created by %1</source>
-        <translation>Paketus Windows sukūrė %1</translation>
-    </message>
-    <message>
-        <source>Many other people contributed with patches. See the Changelog for details.</source>
-        <translation>Daug kitų žmonių prisidėjo su savo pataisymais. Smulkiau galite pažiūrėti keitimų žurnale.</translation>
     </message>
 </context>
 <context>
@@ -675,6 +667,10 @@ Norite perrašyti?</translation>
         <translation>&amp;Grojaraštis</translation>
     </message>
     <message>
+        <source>&amp;Show frame counter</source>
+        <translation type="obsolete">&amp;Rodyti kadrų skaitiklį</translation>
+    </message>
+    <message>
         <source>&amp;Disabled</source>
         <translation>&amp;Išjungta</translation>
     </message>
@@ -829,10 +825,6 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
         <translation>Patildyti (2)</translation>
     </message>
     <message>
-        <source>&amp;YouTube browser</source>
-        <translation>&amp;YouTube naršyklė</translation>
-    </message>
-    <message>
         <source>Inc volume (2)</source>
         <translation>Pagarsinti (2)</translation>
     </message>
@@ -891,14 +883,6 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
     <message>
         <source>Previous chapter</source>
         <translation>Ankstesnis skyrius</translation>
-    </message>
-    <message>
-        <source>An error happened - SMPlayer</source>
-        <translation>Įvyko klaida - SMPlayer</translation>
-    </message>
-    <message>
-        <source>The YouTube Browser couldn&apos;t be launched</source>
-        <translation>YouTube naršyklės paleisti nepavyko</translation>
     </message>
     <message>
         <source>Inc saturation</source>
@@ -981,12 +965,20 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
         <translation>&amp;DUK</translation>
     </message>
     <message>
+        <source>Visualize &amp;motion vectors</source>
+        <translation type="obsolete">Vizualizuoti &amp;judesio vektorius</translation>
+    </message>
+    <message>
         <source>&amp;Command line options</source>
         <translation>&amp;Komandinės eilutės nuostatos</translation>
     </message>
     <message>
         <source>SMPlayer command line options</source>
         <translation>„SMPlayer“ komandinės eilutės nuostatos</translation>
+    </message>
+    <message>
+        <source>Enable &amp;closed caption</source>
+        <translation type="obsolete">Įjungti paslėptus sub&amp;titrus</translation>
     </message>
     <message>
         <source>&amp;Forced subtitles only</source>
@@ -1071,6 +1063,10 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
     <message>
         <source>Upload su&amp;btitles to OpenSubtitles.org...</source>
         <translation>Įkelti su&amp;btitrus į OpenSubtitles.org tinklalapį...</translation>
+    </message>
+    <message>
+        <source>&amp;Tips</source>
+        <translation>Pa&amp;tarimai</translation>
     </message>
     <message>
         <source>&amp;Auto</source>
@@ -1256,12 +1252,36 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
         <translation>P&amp;rograma</translation>
     </message>
     <message>
+        <source>&amp;Edit...</source>
+        <translation>R&amp;edaguoti...</translation>
+    </message>
+    <message>
+        <source>Next TV channel</source>
+        <translation>Kitas TV kanalas</translation>
+    </message>
+    <message>
+        <source>Previous TV channel</source>
+        <translation>Ankstesnis TV kanalas</translation>
+    </message>
+    <message>
+        <source>Next radio channel</source>
+        <translation>Kitas radijo kanalas</translation>
+    </message>
+    <message>
+        <source>Previous radio channel</source>
+        <translation>Ankstesnis radijo kanalas</translation>
+    </message>
+    <message>
         <source>&amp;TV</source>
         <translation>&amp;TV</translation>
     </message>
     <message>
         <source>Radi&amp;o</source>
         <translation>&amp;Radijas</translation>
+    </message>
+    <message>
+        <source>&amp;Jump...</source>
+        <translation>&amp;Peršokti...</translation>
     </message>
     <message>
         <source>Subtitles onl&amp;y</source>
@@ -1338,18 +1358,6 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
     <message>
         <source>this form</source>
         <translation>šią formą</translation>
-    </message>
-    <message>
-        <source>&amp;Disc</source>
-        <translation>&amp;Diskas</translation>
-    </message>
-    <message>
-        <source>F&amp;avorites</source>
-        <translation>&amp;Mėgstami</translation>
-    </message>
-    <message>
-        <source>Check for &amp;updates</source>
-        <translation>&amp;Ieškoti atnaujinimų</translation>
     </message>
 </context>
 <context>
@@ -1477,18 +1485,6 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
         <source>A-B markers cleared</source>
         <translation>A-B žymės išvalytos</translation>
     </message>
-    <message>
-        <source>Connecting to %1</source>
-        <translation>Jungiamasi prie %1</translation>
-    </message>
-    <message>
-        <source>Unable to retrieve youtube page</source>
-        <translation>Nepavyko gauti youtube puslapio</translation>
-    </message>
-    <message>
-        <source>Unable to locate the url of the video</source>
-        <translation>Nepavyko rasti video url</translation>
-    </message>
 </context>
 <context>
     <name>DefaultGui</name>
@@ -1611,6 +1607,10 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
         <translation>piktograma</translation>
     </message>
     <message>
+        <source>&amp;New</source>
+        <translation>&amp;Nauja</translation>
+    </message>
+    <message>
         <source>D&amp;elete</source>
         <translation>Ša&amp;linti</translation>
     </message>
@@ -1626,14 +1626,6 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
         <source>&amp;Down</source>
         <translation>&amp;Žemyn</translation>
     </message>
-    <message>
-        <source>&amp;New item</source>
-        <translation>&amp;Naujas elementas</translation>
-    </message>
-    <message>
-        <source>New &amp;submenu</source>
-        <translation>Naujas &amp;submeniu</translation>
-    </message>
 </context>
 <context>
     <name>Favorites</name>
@@ -1644,33 +1636,6 @@ Bus atvertas konfigūravimo dialogas - galite sukonfigūruoti dabar.</translatio
     <message>
         <source>Enter the number of the item in the list to jump:</source>
         <translation>Įveskite elemento numerį, iš sąrašo, į kurį norite peršokti:</translation>
-    </message>
-    <message>
-        <source>&amp;Edit...</source>
-        <translation>&amp;Keisti...</translation>
-    </message>
-    <message>
-        <source>&amp;Jump...</source>
-        <translation>&amp;Peršokti...</translation>
-    </message>
-    <message>
-        <source>&amp;Next</source>
-        <translation>&amp;Kitas</translation>
-    </message>
-    <message>
-        <source>&amp;Previous</source>
-        <translation>&amp;Ankstesnis</translation>
-    </message>
-    <message>
-        <source>&amp;Add current media</source>
-        <translation>&amp;Pridėti esamą failą</translation>
-    </message>
-</context>
-<context>
-    <name>FileChooser</name>
-    <message>
-        <source>Click to select a file or folder</source>
-        <translation>Paspauskit norėdami pasirinkti failą ar aplanką</translation>
     </message>
 </context>
 <context>
@@ -1839,14 +1804,6 @@ Pavyzdžiui: resample=44100:0:0,volnorm</translation>
         <translation>Papildomos nuostatos</translation>
     </message>
     <message>
-        <source>Server</source>
-        <translation>Serveris</translation>
-    </message>
-    <message>
-        <source>&amp;Opensubtitles server:</source>
-        <translation>&amp;Opensubtitles serveris:</translation>
-    </message>
-    <message>
         <source>Proxy</source>
         <translation>Tarpinis serveris</translation>
     </message>
@@ -1965,12 +1922,9 @@ Pavyzdžiui: resample=44100:0:0,volnorm</translation>
         <source>Subtitle saved as %1</source>
         <translation>Subtitrai išsaugoti kaip %1</translation>
     </message>
-    <message numerus="yes">
+    <message>
         <source>%1 subtitle(s) extracted</source>
-        <translation type="unfinished">
-            <numerusform>
-            </numerusform>
-        </translation>
+        <translation>%1 subtitrai išgauti</translation>
     </message>
     <message>
         <source>Overwrite?</source>
@@ -2225,6 +2179,14 @@ Patikrinkite prieigos teises.</translation>
     <message>
         <source>&amp;URL:</source>
         <translation>&amp;URL:</translation>
+    </message>
+    <message>
+        <source>It&apos;s a &amp;playlist</source>
+        <translation>Tai yra &amp;grojaraštis</translation>
+    </message>
+    <message>
+        <source>If this option is checked, the URL will be treated as a playlist: it will be opened as text and will play the URLs in it.</source>
+        <translation>Jei pažymėta, URL bus suprastas kaip grojaraštis: jis bus atidarytas kaip tekstas ir bus atkuriami adresai iš jo.</translation>
     </message>
 </context>
 <context>
@@ -2965,9 +2927,9 @@ Patikrinkite prieigos teises.</translation>
         <source>Marshallese</source>
         <translation>Maršaliečių</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>Bokmål</source>
-        <translation>Norvegų (Bokmål)</translation>
+        <translation>Norvegų bokmål</translation>
     </message>
     <message>
         <source>Ndebele</source>
@@ -3053,9 +3015,9 @@ Patikrinkite prieigos teises.</translation>
         <source>Venda</source>
         <translation>Vendų</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>Volapük</source>
-        <translation>Volapük</translation>
+        <translation>Volapiukas</translation>
     </message>
     <message>
         <source>Walloon</source>
@@ -3273,8 +3235,43 @@ Norite perrašyti?</translation>
         <translation>Yra neišsaugotų pakeitimų, išsaugoti grojaraštį?</translation>
     </message>
     <message>
+        <source>Preferences</source>
+        <translation type="obsolete">Nuostatos</translation>
+    </message>
+    <message>
         <source>Multimedia</source>
         <translation>Daugialypė terpė</translation>
+    </message>
+</context>
+<context>
+    <name>PlaylistPreferences</name>
+    <message>
+        <source>Playlist - Preferences</source>
+        <translation type="obsolete">Grojaraščio - nuostatos</translation>
+    </message>
+    <message>
+        <source>Check this option if you want that adding a directory will also add the files in subdirectories recursively. Otherwise only the files in the selected directory will be added.</source>
+        <translation type="obsolete">Pažymėkite, jei norite kad pridedant katalogą būtų pridėti ir jo pakatalogiai. Priešingu atveju bus pridėti  failai tik iš pažymėto katalogo.</translation>
+    </message>
+    <message>
+        <source>&amp;Add files in directories recursively</source>
+        <translation type="obsolete">Pridėti f&amp;ailus ir iš pokatalogių</translation>
+    </message>
+    <message>
+        <source>Check this option to inquire the files to be added to the playlist for some info. That allows to show the title name (if available) and length of the files. Otherwise this info won&apos;t be available until the file is actually played. Beware: this option can be slow, specially if you add many files.</source>
+        <translation type="obsolete">Pažymėkite, jei norite į grojaraštį pridėti papildomą informaciją iš failų. Tai leidžia rodyti failo pavadinimą ir trukmę. Priešingu atveju ši informacija bus prieinama tik pradėjus atkurti failą. Atsargiai - ši nuostata gali sulėtinti darbą, ypač jei įkeliama daug failų.</translation>
+    </message>
+    <message>
+        <source>Automatically get &amp;info about files added</source>
+        <translation type="obsolete">Automatiškai gauti &amp;informaciją apie pridėtus failus</translation>
+    </message>
+    <message>
+        <source>&amp;Save copy of playlist on exit</source>
+        <translation type="obsolete">Iš&amp;saugoti grojaraščio kopiją baigiant darbą</translation>
+    </message>
+    <message>
+        <source>&amp;Play files from start</source>
+        <translation type="obsolete">Atkurti failus nuo &amp;pradžios</translation>
     </message>
 </context>
 <context>
@@ -4348,6 +4345,18 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Pašalinti „šukas“ &amp;neklausiant (išskyrus TV):</translation>
     </message>
     <message>
+        <source>Disable video filters when using vdpau</source>
+        <translation type="obsolete">Išjungia video filtrus naudojant vdpau</translation>
+    </message>
+    <message>
+        <source>Usually video filters won&apos;t work when using vdpau as video output driver, so it&apos;s wise to keep this option checked.</source>
+        <translation type="obsolete">Naudojant vdpau kaip video išvesties tvarkyklę, paprastai video filtrai neveikia, todėl būtų protinga šią parinktį palikti įjungtą.</translation>
+    </message>
+    <message>
+        <source>Disable video filters when using vd&amp;pau</source>
+        <translation type="obsolete">Išjungia video filtrus naudojant vd&amp;pau</translation>
+    </message>
+    <message>
         <source>Uses hardware AC3 passthrough.</source>
         <translation>Naudoti aparatinį AC3.</translation>
     </message>
@@ -5113,34 +5122,6 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <source>Mpc GUI</source>
         <translation>Mpc naudotojo sąsaja</translation>
     </message>
-    <message>
-        <source>Hide video window when playing audio files</source>
-        <translation>Grojant audio failus, slėpti video langą</translation>
-    </message>
-    <message>
-        <source>If this option is enabled the video window will be hidden when playing audio files.</source>
-        <translation>Jei ši pasirinktis įjungta, atkuriant audio failus video langas bus slepiamas.</translation>
-    </message>
-    <message>
-        <source>&amp;Hide video window when playing audio files</source>
-        <translation>&amp;Grojant audio failus, slėpti video langą</translation>
-    </message>
-    <message>
-        <source>Precise seeking</source>
-        <translation>Tikslus prasukimas</translation>
-    </message>
-    <message>
-        <source>If this option is enabled, seeks are more accurate but they can be a little bit slower. May not work with some video formats.</source>
-        <translation>Jei ši pasirinktis įgalinta, prasukimai yra tikslesni, bet gali būti lėtesni. Su kai kuriais video formatais gali neveikti.</translation>
-    </message>
-    <message>
-        <source>Note: this option only works with MPlayer2</source>
-        <translation>Pastaba: ši parinktis veikia tik su MPlayer2</translation>
-    </message>
-    <message>
-        <source>&amp;Precise seeking</source>
-        <translation>&amp;Tikslus prasukimas</translation>
-    </message>
 </context>
 <context>
     <name>PrefPerformance</name>
@@ -5387,18 +5368,6 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
     <message>
         <source>Cache for &amp;TV:</source>
         <translation>&amp;TV podėlis:</translation>
-    </message>
-    <message>
-        <source>Youtube quality</source>
-        <translation>Youtube kokybė</translation>
-    </message>
-    <message>
-        <source>Select the preferred quality for youtube videos.</source>
-        <translation>Pasirinkite youtube vaizdelių kokybę.</translation>
-    </message>
-    <message>
-        <source>Youtube &amp;quality</source>
-        <translation>Youtube &amp;kokybė</translation>
     </message>
 </context>
 <context>
@@ -6144,6 +6113,10 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <translation>Atstato senas asociacijas ir išvalo registrą.</translation>
     </message>
     <message>
+        <source>&apos;media&apos; is any kind of file that SMPlayer can open. It can be a local file, a DVD (e.g. dvd://1), an Internet stream (e.g. mms://....) or a local playlist in format m3u or pls. If the -playlist option is used, that means that SMPlayer will pass the -playlist option to MPlayer, so MPlayer will handle the playlist, not SMPlayer.</source>
+        <translation>„media“ yra bet kokios rūšies failas, kurį gali atverti SMPlayer.Tai gali būti vietinis failas, DVD (t.y. dvd://1), internetinis srautas (t.y. mms://....) ar lokalus m3u ar pls formato grojaraštis. Jei naudojama parinktis&lt;i&gt;-playlist&lt;/i&gt;, tai reiškia, kad SMPlayer ją perduos MPlayer ir ją priims jis, o ne SMPlayer.</translation>
+    </message>
+    <message>
         <source>Usage:</source>
         <translation>Naudojimas:</translation>
     </message>
@@ -6171,17 +6144,13 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <source>specifies the subtitle file to be loaded for the first video.</source>
         <translation>nurodomas subtitrų failas, kuris bus įkeltas pirmam video.</translation>
     </message>
-    <message numerus="yes">
-        <source>%n second(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n sekundė(-ės)</numerusform>
-        </translation>
+    <message>
+        <source>%1 second(s)</source>
+        <translation>%1 sekundės(-ė)</translation>
     </message>
-    <message numerus="yes">
-        <source>%n minute(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n minutė(-ės)</numerusform>
-        </translation>
+    <message>
+        <source>%1 minute(s)</source>
+        <translation>%1 minutės(-ė)</translation>
     </message>
     <message>
         <source>%1 and %2</source>
@@ -6226,20 +6195,12 @@ For translators: don&apos;t translate this text, it will be replaced with anothe
         <source>specifies the size of the main window.</source>
         <translation>nurodo pagrindinio lango dydį.</translation>
     </message>
-    <message>
-        <source>&apos;media&apos; is any kind of file that SMPlayer can open. It can be a local file, a DVD (e.g. dvd://1), an Internet stream (e.g. mms://....) or a local playlist in format m3u or pls.</source>
-        <translation>„media“ yra betkokios rūšies failas kurį SMPlayer gali atverti. Tai gali būti vietinis failas pvz. DVD (dvd://1), interneto srautas (pvz. mms://....) arba vietinis grojaraštis, m3u ar pls formatu.</translation>
-    </message>
-    <message>
-        <source>Disables the server used to communicate with other instances. This disables too the possibility to use a single instance.</source>
-        <translation>Išjungia serverį skirtą bendrauti su kitomis kopijomis. Taipogi tai išjungia galimybę naudoti tik vieną kopiją.</translation>
-    </message>
 </context>
 <context>
     <name>QuaZipFile</name>
     <message>
         <source>ZIP/UNZIP API error %1</source>
-        <translation>ZIP/UNZIP API klaida %1</translation>
+        <translation>IP/UNZIP API klaida %1</translation>
     </message>
 </context>
 <context>

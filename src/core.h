@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,10 +38,6 @@ class QSettings;
 #ifdef SCREENSAVER_OFF
 class WinScreenSaver;
 #endif
-#endif
-
-#if YOUTUBE_SUPPORT
-class RetrieveYoutubeUrl;
 #endif
 
 class Core : public QObject
@@ -83,10 +79,6 @@ public slots:
 	void openVCD(int title = -1);
 	void openAudioCD(int title = -1);
 	void openTV(QString channel_id);
-
-#if YOUTUBE_SUPPORT
-	void openYT(const QString & url);
-#endif
 
 	void loadSub(const QString & sub);
 	void unloadSub();
@@ -340,7 +332,6 @@ public:
 protected:
 	//! Returns the prefix to keep pausing on slave commands
 	QString pausing_prefix();
-	QString seek_cmd(double secs, int mode);
 
 protected slots:
     void changeCurrentSec(double sec);
@@ -361,9 +352,6 @@ protected slots:
 
 	void streamTitleChanged(QString);
 	void streamTitleAndUrlChanged(QString,QString);
-
-	// Catches mediaInfoChanged and sends mediaPlaying signal
-	void sendMediaInfo();
 	
 	void watchState(Core::State state);
 
@@ -393,12 +381,6 @@ protected slots:
 
 	void initializeOSD();
 
-#if YOUTUBE_SUPPORT
-	void connectingToYT(QString host);
-	void YTFailed(QString error);
-	void YTNoVideoUrl();
-#endif
-
 protected:
 	void playNewFile(QString file, int seek=-1);
 	void restartPlay();
@@ -422,8 +404,6 @@ signals:
 	void aboutToStartPlaying(); // Signal emited just before to start mplayer
 	void mediaLoaded();
 	void mediaInfoChanged();
-	//! Sends the filename and title of the stream playing in this moment
-	void mediaPlaying(const QString & filename, const QString & title);
     void stateChanged(Core::State state);
 	void mediaStartPlay();
 	void mediaFinished(); // Media has arrived to the end.
@@ -473,10 +453,6 @@ protected:
 #ifdef SCREENSAVER_OFF
 	WinScreenSaver * win_screensaver;
 #endif
-#endif
-
-#if YOUTUBE_SUPPORT
-	RetrieveYoutubeUrl * yt;
 #endif
     
 private:

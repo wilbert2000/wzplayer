@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,14 +40,6 @@ FindSubtitlesConfigDialog::FindSubtitlesConfigDialog( QWidget* parent, Qt::Windo
 }
 
 FindSubtitlesConfigDialog::~FindSubtitlesConfigDialog() {
-}
-
-void FindSubtitlesConfigDialog::setServer(QString server) {
-	server_edit->setText(server);
-}
-
-QString FindSubtitlesConfigDialog::server() {
-	return server_edit->text();
 }
 
 void FindSubtitlesConfigDialog::setUseProxy(bool b) {

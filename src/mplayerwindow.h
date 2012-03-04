@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -135,6 +135,8 @@ public:
     MplayerWindow( QWidget* parent = 0, Qt::WindowFlags f = 0);
     ~MplayerWindow();
     
+	void showLogo( bool b);
+
 	MplayerLayer * videoLayer() { return mplayerlayer; };
 
 	void setResolution( int w, int h);
@@ -164,10 +166,6 @@ public:
 	virtual bool eventFilter( QObject * watched, QEvent * event );
 
 public slots:
-	void setLogoVisible(bool b);
-	void showLogo() { setLogoVisible(true); };
-	void hideLogo() { setLogoVisible(false); };
-
 	void moveLeft();
 	void moveRight();
 	void moveUp();

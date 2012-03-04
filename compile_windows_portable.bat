@@ -1,12 +1,10 @@
 cd getrev
 qmake
 mingw32-make 
-cd ..
-getrev\release\getrev.exe > src\svn_revision.h
 
-cd zlib-1.2.6
-mingw32-make -fwin32\makefile.gcc
 cd ..
+
+getrev\release\getrev.exe > src\svn_revision.h
 
 cd src
 lrelease smplayer.pro

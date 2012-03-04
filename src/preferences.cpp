@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,14 +29,6 @@
 #include <QRegExp>
 #include <QDir>
 #include <QLocale>
-
-#if QT_VERSION >= 0x040400
-#include <QDesktopServices>
-#endif
-
-#if YOUTUBE_SUPPORT
-#include "retrieveyoutubeurl.h"
-#endif
 
 using namespace Global;
 
@@ -81,12 +73,9 @@ void Preferences::reset() {
 #ifdef PORTABLE_APP
 	screenshot_directory= "./screenshots";
 #else
-	#if QT_VERSION < 0x040400
-	QString default_screenshot_path = Paths::configPath() + "/screenshots";
-	if (QFile::exists(default_screenshot_path)) {
-		screenshot_directory = default_screenshot_path;
+	if (QFile::exists(Paths::configPath() + "/screenshots")) {
+		screenshot_directory = Paths::configPath() + "/screenshots";
 	}
-	#endif
 #endif
 
 	dont_remember_media_settings = false;
@@ -190,10 +179,6 @@ void Preferences::reset() {
 	cache_for_vcds = 1000;
 	cache_for_audiocds = 1000;
 	cache_for_tv = 3000;
-
-#if YOUTUBE_SUPPORT
-	yt_quality = RetrieveYoutubeUrl::MP4_360p;
-#endif
 
 
     /* *********
@@ -339,7 +324,6 @@ void Preferences::reset() {
 #if SEEKBAR_RESOLUTION
 	relative_seeking = false;
 #endif
-	precise_seeking = true;
 
 	language = "";
 	iconset = "";
@@ -437,15 +421,19 @@ void Preferences::reset() {
 
 	mplayer_detected_version = -1; //None version parsed yet
 	mplayer_user_supplied_version = -1;
-	mplayer_is_mplayer2 = false;
-	mplayer2_detected_version = QString::null;
 
 
     /* *********
        Instances
        ********* */
 
+#ifdef Q_OS_WIN
+	// Some people reported smplayer doesn't start with this option enabled
+	// So now it's disabled by default on Windows
+	use_single_instance = false; 
+#else
 	use_single_instance = true;
+#endif
 	use_autoport = true;
 	connection_port = 8000;
 	autoport = 0;
@@ -497,11 +485,7 @@ void Preferences::save() {
 	set->setValue("driver/audio_output", ao);
 
 	set->setValue("use_screenshot", use_screenshot);
-	#if QT_VERSION >= 0x040400
-	set->setValue("screenshot_folder", screenshot_directory);
-	#else
 	set->setValue("screenshot_directory", screenshot_directory);
-	#endif
 
 	set->setValue("dont_remember_media_settings", dont_remember_media_settings);
 	set->setValue("dont_remember_time_pos", dont_remember_time_pos);
@@ -604,10 +588,6 @@ void Preferences::save() {
 	set->setValue("cache_for_vcds", cache_for_vcds);
 	set->setValue("cache_for_audiocds", cache_for_audiocds);
 	set->setValue("cache_for_tv", cache_for_tv);
-
-#if YOUTUBE_SUPPORT
-	set->setValue("youtube_quality", yt_quality);
-#endif
 
 	set->endGroup(); // performance
 
@@ -750,7 +730,6 @@ void Preferences::save() {
 #if SEEKBAR_RESOLUTION
 	set->setValue("relative_seeking", relative_seeking);
 #endif
-	set->setValue("precise_seeking", precise_seeking);
 
 	set->setValue("language", language);
 	set->setValue("iconset", iconset);
@@ -853,8 +832,6 @@ void Preferences::save() {
 	set->beginGroup( "mplayer_info");
 	set->setValue("mplayer_detected_version", mplayer_detected_version);
 	set->setValue("mplayer_user_supplied_version", mplayer_user_supplied_version);
-	set->setValue("is_mplayer2", mplayer_is_mplayer2);
-	set->setValue("mplayer2_detected_version", mplayer2_detected_version);
 	set->endGroup(); // mplayer_info
 
 
@@ -863,7 +840,7 @@ void Preferences::save() {
        ********* */
 
 	set->beginGroup("instances");
-	set->setValue("single_instance_enabled", use_single_instance);
+	set->setValue("use_single_instance", use_single_instance);
 	set->setValue("connection_port", connection_port);
 	set->setValue("use_autoport", use_autoport);
 	set->setValue("temp/autoport", autoport);
@@ -924,12 +901,7 @@ void Preferences::load() {
 	ao = set->value("driver/audio_output", ao).toString();
 
 	use_screenshot = set->value("use_screenshot", use_screenshot).toBool();
-	#if QT_VERSION >= 0x040400
-	screenshot_directory = set->value("screenshot_folder", screenshot_directory).toString();
-	setupScreenshotFolder();
-	#else
 	screenshot_directory = set->value("screenshot_directory", screenshot_directory).toString();
-	#endif
 
 	dont_remember_media_settings = set->value("dont_remember_media_settings", dont_remember_media_settings).toBool();
 	dont_remember_time_pos = set->value("dont_remember_time_pos", dont_remember_time_pos).toBool();
@@ -1033,10 +1005,6 @@ void Preferences::load() {
 	cache_for_vcds = set->value("cache_for_vcds", cache_for_vcds).toInt();
 	cache_for_audiocds = set->value("cache_for_audiocds", cache_for_audiocds).toInt();
 	cache_for_tv = set->value("cache_for_tv", cache_for_tv).toInt();
-
-#if YOUTUBE_SUPPORT
-	yt_quality = set->value("youtube_quality", yt_quality).toInt();
-#endif
 
 	set->endGroup(); // performance
 
@@ -1184,7 +1152,6 @@ void Preferences::load() {
 #if SEEKBAR_RESOLUTION
 	relative_seeking = set->value("relative_seeking", relative_seeking).toBool();
 #endif
-	precise_seeking = set->value("precise_seeking", precise_seeking).toBool();
 
 	language = set->value("language", language).toString();
 	iconset= set->value("iconset", iconset).toString();
@@ -1288,9 +1255,6 @@ void Preferences::load() {
 	set->beginGroup( "mplayer_info");
 	mplayer_detected_version = set->value("mplayer_detected_version", mplayer_detected_version).toInt();
 	mplayer_user_supplied_version = set->value("mplayer_user_supplied_version", mplayer_user_supplied_version).toInt();
-	mplayer_is_mplayer2 = set->value("is_mplayer2", mplayer_is_mplayer2).toBool();
-	mplayer2_detected_version = set->value("mplayer2_detected_version", mplayer2_detected_version).toString();
-
 	set->endGroup(); // mplayer_info
 
 
@@ -1299,7 +1263,7 @@ void Preferences::load() {
        ********* */
 
 	set->beginGroup("instances");
-	use_single_instance = set->value("single_instance_enabled", use_single_instance).toBool();
+	use_single_instance = set->value("use_single_instance", use_single_instance).toBool();
 	connection_port = set->value("connection_port", connection_port).toInt();
 	use_autoport = set->value("use_autoport", use_autoport).toBool();
 	autoport = set->value("temp/autoport", autoport).toInt();
@@ -1366,29 +1330,4 @@ double Preferences::monitor_aspect_double() {
         qDebug(" monitor_aspect set to 0");
 		return 0;
 	}
-}
-
-void Preferences::setupScreenshotFolder() {
-#if QT_VERSION >= 0x040400
-	if (screenshot_directory.isEmpty()) {
-		QString pdir = QDesktopServices::storageLocation(QDesktopServices::PicturesLocation);
-		if (pdir.isEmpty()) pdir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-		if (pdir.isEmpty()) pdir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-		if (pdir.isEmpty()) pdir = "/tmp";
-		if (!QFile::exists(pdir)) {
-			qWarning("Preferences::setupScreenshotFolder: folder '%s' does not exist. Using /tmp as fallback", pdir.toUtf8().constData());
-			pdir = "/tmp";
-		}
-		QString default_screenshot_path = pdir + "/smplayer_screenshots";
-		if (!QFile::exists(default_screenshot_path)) {
-			qDebug("Preferences::setupScreenshotFolder: creating '%s'", default_screenshot_path.toUtf8().constData());
-			if (!QDir().mkdir(default_screenshot_path)) {
-				qWarning("Preferences::setupScreenshotFolder: failed to create '%s'", default_screenshot_path.toUtf8().constData());
-			}
-		}
-		if (QFile::exists(default_screenshot_path)) {
-			screenshot_directory = default_screenshot_path;
-		}
-	}
-#endif
 }

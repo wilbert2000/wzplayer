@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -74,13 +74,13 @@ QString Helper::timeForJumps(int secs) {
 	int seconds = secs % 60;
 
 	if (minutes==0) {
-		return QObject::tr("%n second(s)", "", seconds);
+		return QObject::tr("%1 second(s)", "", seconds).arg(seconds);
 	} else {
 		if (seconds==0) 
-			return QObject::tr("%n minute(s)", "", minutes);
+			return QObject::tr("%1 minute(s)", "", minutes).arg(minutes);
 		else {
-			QString m = QObject::tr("%n minute(s)", "", minutes);
-			QString s = QObject::tr("%n second(s)", "", seconds);
+			QString m = QObject::tr("%1 minute(s)", "", minutes).arg(minutes);
+			QString s = QObject::tr("%1 second(s)", "", seconds).arg(seconds);
 			return QObject::tr("%1 and %2").arg(m).arg(s);
 		}
 	}

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2011 Ricardo Villalba <rvm@escomposlinux.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@ public:
 #endif
 
 	double monitor_aspect_double();
-	void setupScreenshotFolder();
 
 
 
@@ -176,10 +175,6 @@ public:
 	int cache_for_vcds;
 	int cache_for_audiocds;
 	int cache_for_tv;
-
-#if YOUTUBE_SUPPORT
-	int yt_quality;
-#endif
 
 
 	/* *********
@@ -336,7 +331,6 @@ public:
 	//! percentage (with fractions) instead of time.
 	bool relative_seeking;  
 #endif
-	bool precise_seeking; //! Enable precise_seeking (only available with mplayer2)
 
 	QString language;
 	QString iconset;
@@ -445,9 +439,6 @@ public:
 	//! Version of mplayer supplied by the user which will be used if
 	//! the version can't be parsed from mplayer output
 	int mplayer_user_supplied_version;
-
-	bool mplayer_is_mplayer2; //! True if the detected version is mplayer2
-	QString mplayer2_detected_version;
 
 
     /* *********
