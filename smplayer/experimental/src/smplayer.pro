@@ -7,8 +7,8 @@ QT += network xml
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += findsubtitles videopreview mpcgui youtube
-DEPENDPATH += findsubtitles videopreview mpcgui youtube
+INCLUDEPATH += findsubtitles videopreview mpcgui youtube qtsingleapplication
+DEPENDPATH += findsubtitles videopreview mpcgui youtube qtsingleapplication
 
 DEFINES += DOWNLOAD_SUBS
 
@@ -212,6 +212,10 @@ SOURCES	+= version.cpp \
 	clhelp.cpp \
 	smplayer.cpp \
 	main.cpp
+
+# qtsingleapplication
+SOURCES += qtsingleapplication.cpp qtlocalpeer.cpp
+HEADERS += qtsingleapplication.h qtlocalpeer.h
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui inputurl.ui vdpauproperties.ui \

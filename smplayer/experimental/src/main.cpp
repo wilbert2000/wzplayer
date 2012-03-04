@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QApplication>
+#include "QtSingleApplication"
 #include <QFile>
 #include <QTime>
 #include <QDir>
@@ -116,10 +116,10 @@ void myMessageOutput( QtMsgType type, const char *msg ) {
 }
 
 
-class MyApplication : public QApplication
+class MyApplication : public QtSingleApplication
 {
 public:
-	MyApplication ( int & argc, char ** argv ) : QApplication(argc, argv) {};
+	MyApplication ( int & argc, char ** argv ) : QtSingleApplication(argc, argv) {};
 	virtual void commitData ( QSessionManager & /*manager*/ ) {
 		// Nothing to do, let the application to close
 	}
@@ -128,6 +128,11 @@ public:
 int main( int argc, char ** argv ) 
 {
 	MyApplication a( argc, argv );
+	if (a.isRunning()) { 
+		qDebug("Another instance is running. Exiting.");
+		return 0;
+	}
+
 	a.setQuitOnLastWindowClosed(false);
 	//a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
 
