@@ -225,20 +225,7 @@ protected slots:
 	virtual void checkMousePos( QPoint );
 
 	// Single instance stuff
-	// Another instance request open a file
-	virtual void remoteOpen(QString);
-	virtual void remoteOpenFiles(QStringList);
-	virtual void remoteAddFiles(QStringList);
-	virtual void remoteLoadSubtitle(QString);
-	virtual void remotePlayItem(int);
-	virtual void remoteRemoveItem(int);
-	virtual void remoteMoveItem(int, int);
-	virtual void remoteViewPlaylist(QString*);
-	virtual void remoteViewStatus(QString*);
-	virtual void remoteViewClipInfo(QString*);
-	virtual void remoteSeek(double);
-	virtual void remoteGetChecked(QString, QString*);
-	virtual void remoteGetVolume(int*);
+	/* Deleted */
 
 	//! Called when core can't parse the mplayer version and there's no
 	//! version supplied by the user
