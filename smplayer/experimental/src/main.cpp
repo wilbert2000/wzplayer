@@ -28,13 +28,6 @@
 
 #include <stdio.h>
 
-#if USE_QTLOCKEDFILE
-#define USE_LOCKS 1
-#if USE_LOCKS
-#include "qtlockedfile/qtlockedfile.h"
-#endif
-#endif
-
 using namespace Global;
 
 BaseGui * basegui_instance = 0;
@@ -172,56 +165,17 @@ int main( int argc, char ** argv )
 		}
 	}
 
-    qInstallMsgHandler( myMessageOutput );
-
-#if USE_LOCKS
-	//setIniPath will be set later in global_init, but we need it here
-	if (!config_path.isEmpty()) Paths::setConfigPath(config_path);
-
-	QString lock_file = Paths::iniPath() + "/smplayer_init.lock";
-	qDebug("main: lock_file: %s", lock_file.toUtf8().data());
-
-	QtLockedFile lk(lock_file);
-	lk.open(QFile::ReadWrite);
-
-	if (QDir().exists(Paths::iniPath())) {
-		bool lock_ok = lk.lock(QtLockedFile::WriteLock, false);
-
-		if (!lock_ok) {
-			//lock failed
-			qDebug("main: lock failed");
-
-			// Wait 10 secs max.
-			int n = 100;
-			while ( n > 0) {
-				Helper::msleep(100); // wait 100 ms
-
-				if (lk.lock(QtLockedFile::WriteLock, false)) break;
-				n--;
-				if ((n % 10) == 0) qDebug("main: waiting %d...", n);
-			}
-			// Continue startup
-		}
-	}
-#endif // USE_LOCKS
+//    qInstallMsgHandler( myMessageOutput );
 
 	SMPlayer * smplayer = new SMPlayer(config_path);
 	SMPlayer::ExitCode c = smplayer->processArgs( args );
 	if (c != SMPlayer::NoExit) {
-#if USE_LOCKS
-		lk.unlock();
-#endif
 		return c;
 	}
 
 	basegui_instance = smplayer->gui();
 	a.connect(smplayer->gui(), SIGNAL(quitSolicited()), &a, SLOT(quit()));
 	smplayer->start();
-
-#if USE_LOCKS
-	bool success = lk.unlock();
-	qDebug("Unlocking: %d", success);
-#endif
 
 	int r = a.exec();
 

@@ -1,7 +1,7 @@
 TEMPLATE = app
 LANGUAGE = C++
 
-CONFIG += qt warn_on release
+CONFIG += qt warn_on debug
 
 QT += network xml
 
@@ -9,8 +9,6 @@ RESOURCES = icons.qrc
 
 INCLUDEPATH += findsubtitles videopreview mpcgui youtube
 DEPENDPATH += findsubtitles videopreview mpcgui youtube
-
-DEFINES += USE_QTLOCKEDFILE
 
 DEFINES += DOWNLOAD_SUBS
 
@@ -218,13 +216,6 @@ SOURCES	+= version.cpp \
 	clhelp.cpp \
 	smplayer.cpp \
 	main.cpp
-
-contains(DEFINES, USE_QTLOCKEDFILE) {
-	HEADERS += qtlockedfile/qtlockedfile.h
-	SOURCES += qtlockedfile/qtlockedfile.cpp
-	unix:SOURCES += qtlockedfile/qtlockedfile_unix.cpp
-	win32:SOURCES += qtlockedfile/qtlockedfile_win.cpp
-}
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui inputurl.ui vdpauproperties.ui \
