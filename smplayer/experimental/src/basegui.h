@@ -50,7 +50,6 @@ class MyAction;
 class MyActionGroup;
 
 class PreferencesDialog;
-class MyServer;
 
 class Favorites;
 class TVList;
@@ -60,7 +59,7 @@ class BaseGui : public QMainWindow
     Q_OBJECT
     
 public:
-    BaseGui( bool use_server, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+    BaseGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~BaseGui();
 
 	/* Return true if the window shouldn't show on startup */
@@ -662,8 +661,6 @@ protected:
 	Core * core;
 	MplayerWindow *mplayerwindow;
 
-	MyServer * server;
-
 	Favorites * favorites;
 
 	TVList * tvlist;
@@ -676,7 +673,6 @@ protected:
 	// Force settings from command line
 	int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 	int arg_start_in_fullscreen; // -1 = not set, 1 = true, 0 = false
-	bool use_control_server;
 
 private:
 	QString default_style;

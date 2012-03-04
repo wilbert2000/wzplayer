@@ -25,7 +25,6 @@
 #include "translator.h"
 #include "version.h"
 #include "config.h"
-#include "myclient.h"
 #include "clhelp.h"
 
 #include <QDir>
@@ -52,7 +51,6 @@ SMPlayer::SMPlayer(const QString & config_path, QObject * parent )
 
 	close_at_end = -1; // Not set
 	start_in_fullscreen = -1; // Not set
-	use_control_server = true;
 
 	move_gui = false;
 	resize_gui = false;
@@ -82,12 +80,12 @@ BaseGui * SMPlayer::gui() {
 		qDebug("SMPlayer::gui: current directory: %s", QDir::currentPath().toUtf8().data());
 		
 		if (gui_to_use.toLower() == "minigui") 
-			main_window = new MiniGui(use_control_server, 0);
+			main_window = new MiniGui(0);
 		else 
 		if (gui_to_use.toLower() == "mpcgui")
-			main_window = new MpcGui(use_control_server, 0);
+			main_window = new MpcGui(0);
 		else
-			main_window = new DefaultGui(use_control_server, 0);
+			main_window = new DefaultGui(0);
 
 		if (move_gui) {
 			qDebug("SMPlayer::gui: moving main window to %d %d", gui_position.x(), gui_position.y());
@@ -221,10 +219,6 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			start_in_fullscreen = 0;
 		}
 		else
-		if (argument == "-disable-server") {
-			use_control_server = false;
-		}
-		else
 		if (argument == "-add-to-playlist") {
 			add_to_playlist = true;
 		}
@@ -265,54 +259,11 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		qDebug("SMPlayer::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
 	}
 
-
+/*
 	if (pref->use_single_instance) {
 		// Single instance
-		int port = pref->connection_port;
-		if (pref->use_autoport) port = pref->autoport;
-
-		MyClient *c = new MyClient(port);
-		//c->setTimeOut(1000);
-		qDebug("SMPlayer::processArgs: trying to connect to port %d", port);
-
-		if (c->openConnection()) {
-			qDebug("SMPlayer::processArgs: found another instance");
-
-			if (!action.isEmpty()) {
-				if (c->sendAction(action)) {
-					qDebug("SMPlayer::processArgs: action passed successfully to the running instance");
-				} else {
-					printf("Error: action couldn't be passed to the running instance");
-					return NoAction;
-				}
-			}
-			else {
-				if (!subtitle_file.isEmpty()) {
-					if (c->sendSubtitleFile(subtitle_file)) {
-						qDebug("SMPlayer::processArgs: subtitle file sent successfully to the running instance");
-					} else {
-						qDebug("SMPlayer::processArgs: subtitle file couldn't be sent to another instance");
-					}
-				}
-
-				if (!files_to_play.isEmpty()) {
-					if (c->sendFiles(files_to_play, add_to_playlist)) {
-						qDebug("SMPlayer::processArgs: files sent successfully to the running instance");
-		    	        qDebug("SMPlayer::processArgs: exiting.");
-					} else {
-						qDebug("SMPlayer::processArgs: files couldn't be sent to another instance");
-					}
-				}
-			}
-			c->closeConnection();
-			return NoError;
-		} else {
-			if (!action.isEmpty()) {
-				printf("Error: no running instance found\r\n");
-				return NoRunningInstance;
-			}
-		}
 	}
+*/
 
 	if (!pref->default_font.isEmpty()) {
 		QFont f;

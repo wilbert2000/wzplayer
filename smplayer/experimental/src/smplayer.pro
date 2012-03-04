@@ -88,8 +88,6 @@ HEADERS += guiconfig.h \
 	inputurl.h \
 	myaction.h \
 	myactiongroup.h \
-	myserver.h \
-	myclient.h \
 	filedialog.h \
 	inputmplayerversion.h \
 	about.h \
@@ -188,8 +186,6 @@ SOURCES	+= version.cpp \
 	inputurl.cpp \
 	myaction.cpp \
 	myactiongroup.cpp \
-	myserver.cpp \
-	myclient.cpp \
 	filedialog.cpp \
 	inputmplayerversion.cpp \
 	about.cpp \
