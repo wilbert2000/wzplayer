@@ -2510,9 +2510,6 @@ void BaseGui::showPreferencesDialog() {
 	pl->setSavePlaylistOnExit(playlist->savePlaylistOnExit());
 	pl->setPlayFilesFromStart(playlist->playFilesFromStart());
 
-	PrefInterface * pi = pref_dialog->mod_interface();
-	pi->setSingleInstanceTabEnabled( false ); /* use_control_server */
-
 	pref_dialog->show();
 }
 

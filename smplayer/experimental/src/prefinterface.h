@@ -45,10 +45,6 @@ public:
 	bool iconsetChanged() { return iconset_changed; };
 	bool recentsChanged() { return recents_changed; };
 	bool styleChanged() { return style_changed; };
-	bool serverPortChanged() { return port_changed; };
-
-	void setSingleInstanceTabEnabled(bool b);
-	bool singleInstanceTabEnabled();
 
 protected:
 	virtual void createHelp();
@@ -74,12 +70,6 @@ protected:
 
 	void setUseSingleInstance(bool b);
 	bool useSingleInstance();
-
-	void setServerPort(int port);
-	int serverPort();
-
-	void setUseAutoPort(bool b);
-	bool useAutoPort();
 
 	void setRecentsMaxItems(int n);
 	int recentsMaxItems();
@@ -141,7 +131,6 @@ private:
 	bool iconset_changed;
 	bool recents_changed;
 	bool style_changed;
-	bool port_changed;
 };
 
 #endif

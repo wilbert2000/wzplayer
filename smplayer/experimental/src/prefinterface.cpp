@@ -29,7 +29,6 @@
 #include <QStyleFactory>
 #include <QFontDialog>
 
-#define SINGLE_INSTANCE_TAB 2
 
 PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 	: PrefWidget(parent, f )
@@ -171,8 +170,6 @@ void PrefInterface::setData(Preferences * pref) {
 	setResizeMethod( pref->resize_method );
 	setSaveSize( pref->save_window_size_on_exit );
 	setUseSingleInstance(pref->use_single_instance);
-	setServerPort(pref->connection_port);
-	setUseAutoPort(pref->use_autoport);
 	setRecentsMaxItems(pref->history_recents->maxItems());
 
 	setSeeking1(pref->seeking1);
@@ -208,7 +205,6 @@ void PrefInterface::getData(Preferences * pref) {
 	language_changed = false;
 	iconset_changed = false;
 	recents_changed = false;
-	port_changed = false;
 	style_changed = false;
 
 	if (pref->language != language()) {
@@ -226,15 +222,6 @@ void PrefInterface::getData(Preferences * pref) {
 	pref->save_window_size_on_exit = saveSize();
 
 	pref->use_single_instance = useSingleInstance();
-	if (pref->connection_port != serverPort()) {
-		pref->connection_port = serverPort();
-		port_changed = true;
-	}
-
-	if (pref->use_autoport != useAutoPort()) {
-		pref->use_autoport = useAutoPort();
-		port_changed = true;
-	}
 
 	if (pref->history_recents->maxItems() != recentsMaxItems()) {
 		pref->history_recents->setMaxItems( recentsMaxItems() );
@@ -354,31 +341,6 @@ void PrefInterface::setUseSingleInstance(bool b) {
 
 bool PrefInterface::useSingleInstance() {
 	return single_instance_check->isChecked();
-}
-
-void PrefInterface::setServerPort(int port) {
-	server_port_spin->setValue(port);
-}
-
-int PrefInterface::serverPort() {
-	return server_port_spin->value();
-}
-
-void PrefInterface::setUseAutoPort(bool b) {
-	automatic_port_button->setChecked(b);
-	manual_port_button->setChecked(!b);
-}
-
-bool PrefInterface::useAutoPort() {
-	return automatic_port_button->isChecked();
-}
-
-void PrefInterface::setSingleInstanceTabEnabled(bool b) {
-	tabWidget->setTabEnabled(SINGLE_INSTANCE_TAB, b);
-}
-
-bool PrefInterface::singleInstanceTabEnabled() {
-	return tabWidget->isTabEnabled(SINGLE_INSTANCE_TAB);
 }
 
 void PrefInterface::setRecentsMaxItems(int n) {
@@ -610,18 +572,6 @@ void PrefInterface::createHelp() {
         tr("Use only one running instance of SMPlayer"),
         tr("Check this option if you want to use an already running instance "
            "of SMPlayer when opening other files.") );
-
-	setWhatsThis(automatic_port_button, tr("Automatic port"),
-        tr("SMPlayer needs to listen to a port to receive commands from other "
-           "instances. If you select this option, a port will be "
-           "automatically chosen.") );
-
-	setWhatsThis(server_port_spin, tr("Manual port"),
-        tr("SMPlayer needs to listen to a port to receive commands from other "
-           "instances. You can change the port in case the default one is "
-           "used by another application.") );
-
-	manual_port_button->setWhatsThis( server_port_spin->whatsThis() );
 
 	addSectionTitle(tr("Floating control"));
 

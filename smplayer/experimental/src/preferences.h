@@ -455,9 +455,6 @@ public:
        ********* */
 
 	bool use_single_instance;
-	int connection_port; // Manual port
-	bool use_autoport;
-	int autoport; // Port automatically chosen by Qt
 
 
     /* ****************
