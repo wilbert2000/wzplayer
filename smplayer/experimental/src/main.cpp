@@ -128,10 +128,12 @@ public:
 int main( int argc, char ** argv ) 
 {
 	MyApplication a( argc, argv );
+	/*
 	if (a.isRunning()) { 
 		qDebug("Another instance is running. Exiting.");
 		return 0;
 	}
+	*/
 
 	a.setQuitOnLastWindowClosed(false);
 	//a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
@@ -180,6 +182,9 @@ int main( int argc, char ** argv )
 
 	basegui_instance = smplayer->gui();
 	a.connect(smplayer->gui(), SIGNAL(quitSolicited()), &a, SLOT(quit()));
+	a.connect(&a, SIGNAL(messageReceived(const QString&)),
+              smplayer->gui(), SLOT(handleMessageFromOtherInstances(const QString&)));
+	a.setActivationWindow(smplayer->gui());
 	smplayer->start();
 
 	int r = a.exec();

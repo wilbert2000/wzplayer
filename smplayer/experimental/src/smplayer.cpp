@@ -28,7 +28,7 @@
 #include "clhelp.h"
 
 #include <QDir>
-#include <QApplication>
+#include "QtSingleApplication"
 #include <QUrl>
 
 #include <stdio.h>
@@ -259,11 +259,19 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		qDebug("SMPlayer::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
 	}
 
-/*
 	if (pref->use_single_instance) {
 		// Single instance
+		QtSingleApplication * a = static_cast<QtSingleApplication*>(qApp);
+		if (a->isRunning()) {
+			a->sendMessage("Hello");
+
+			if (!files_to_play.isEmpty()) {
+				a->sendMessage("open_file " + files_to_play[0]);
+			}
+
+			return NoError;
+		}
 	}
-*/
 
 	if (!pref->default_font.isEmpty()) {
 		QFont f;

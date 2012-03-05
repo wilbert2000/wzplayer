@@ -199,6 +199,15 @@ void BaseGui::initializeGui() {
 	/* Deleted */
 }
 
+void BaseGui::handleMessageFromOtherInstances(const QString& message) {
+	qDebug("BaseGui::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
+
+	if (message.startsWith("open_file ")) {
+		QString file = message.mid(QString("open_file ").length());
+		qDebug("file: '%s'", file.toUtf8().constData());
+		open(file);
+	}
+}
 
 BaseGui::~BaseGui() {
 	delete core; // delete before mplayerwindow, otherwise, segfault...
