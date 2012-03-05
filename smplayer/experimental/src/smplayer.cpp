@@ -266,7 +266,8 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			a->sendMessage("Hello");
 
 			if (!files_to_play.isEmpty()) {
-				a->sendMessage("open_file " + files_to_play[0]);
+				/* a->sendMessage("open_file " + files_to_play[0]); */
+				a->sendMessage("open_files " + files_to_play.join(","));
 			}
 
 			return NoError;

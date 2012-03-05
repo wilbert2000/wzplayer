@@ -206,6 +206,15 @@ void BaseGui::handleMessageFromOtherInstances(const QString& message) {
 		QString file = message.mid(QString("open_file ").length());
 		qDebug("file: '%s'", file.toUtf8().constData());
 		open(file);
+	} 
+	else
+	if (message.startsWith("open_files ")) {
+		QString files = message.mid(QString("open_files ").length());
+		QStringList file_list = files.split(",");
+		for (int n=0; n< file_list.count(); n++) {
+			qDebug("file %d: '%s'", n, file_list[n].toUtf8().constData());
+		}
+		openFiles(file_list);
 	}
 }
 
