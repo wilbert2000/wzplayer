@@ -210,11 +210,20 @@ void BaseGui::handleMessageFromOtherInstances(const QString& message) {
 	else
 	if (message.startsWith("open_files ")) {
 		QString files = message.mid(QString("open_files ").length());
-		QStringList file_list = files.split(",");
+		QStringList file_list = files.split(" <<sep>> ");
 		for (int n=0; n< file_list.count(); n++) {
 			qDebug("file %d: '%s'", n, file_list[n].toUtf8().constData());
 		}
 		openFiles(file_list);
+	}
+	else
+	if (message.startsWith("add_to_playlist ")) {
+		QString files = message.mid(QString("add_to_playlist ").length());
+		QStringList file_list = files.split(" <<sep>> ");
+		for (int n=0; n< file_list.count(); n++) {
+			qDebug("file %d: '%s'", n, file_list[n].toUtf8().constData());
+		}
+		playlist->addFiles(file_list);
 	}
 }
 
