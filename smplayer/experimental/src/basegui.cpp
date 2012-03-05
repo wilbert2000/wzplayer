@@ -202,33 +202,37 @@ void BaseGui::initializeGui() {
 void BaseGui::handleMessageFromOtherInstances(const QString& message) {
 	qDebug("BaseGui::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
 
-	if (message.startsWith("open_file ")) {
-		QString file = message.mid(QString("open_file ").length());
-		qDebug("file: '%s'", file.toUtf8().constData());
-		open(file);
-	} 
-	else
-	if (message.startsWith("open_files ")) {
-		QString files = message.mid(QString("open_files ").length());
-		QStringList file_list = files.split(" <<sep>> ");
-		for (int n=0; n< file_list.count(); n++) {
-			qDebug("file %d: '%s'", n, file_list[n].toUtf8().constData());
+	int pos = message.indexOf(' ');
+	if (pos > -1) {
+		QString command = message.left(pos);
+		QString arg = message.mid(pos+1);
+		qDebug("command: '%s'", command.toUtf8().constData());
+		qDebug("arg: '%s'", arg.toUtf8().constData());
+
+		if (command == "open_file") {
+			open(arg);
+		} 
+		else
+		if (command == "open_files") {
+			QStringList file_list = arg.split(" <<sep>> ");
+			openFiles(file_list);
 		}
-		openFiles(file_list);
-	}
-	else
-	if (message.startsWith("add_to_playlist ")) {
-		QString files = message.mid(QString("add_to_playlist ").length());
-		QStringList file_list = files.split(" <<sep>> ");
-		for (int n=0; n< file_list.count(); n++) {
-			qDebug("file %d: '%s'", n, file_list[n].toUtf8().constData());
+		else
+		if (command == "add_to_playlist") {
+			QStringList file_list = arg.split(" <<sep>> ");
+			playlist->addFiles(file_list);
 		}
-		playlist->addFiles(file_list);
-	}
-	else
-	if (message.startsWith("action ")) {
-		QString action = message.mid(QString("action ").length());
-		processFunction(action);
+		else
+		if (command == "action") {
+			processFunction(arg);
+		}
+		else
+		if (command == "load_sub") {
+			setInitialSubtitle(arg); 
+			if (core->state() != Core::Stopped) {
+				core->loadSub(arg);
+			}
+		}
 	}
 }
 

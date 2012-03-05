@@ -268,12 +268,17 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			if (!action.isEmpty()) {
 				a->sendMessage("action " + action);
 			}
-			else
-			if (!files_to_play.isEmpty()) {
-				/* a->sendMessage("open_file " + files_to_play[0]); */
-				QString command = "open_files";
-				if (add_to_playlist) command = "add_to_playlist";
-				a->sendMessage(command +" "+ files_to_play.join(" <<sep>> "));
+			else {
+				if (!subtitle_file.isEmpty()) {
+					a->sendMessage("load_sub " + subtitle_file);
+				}
+
+				if (!files_to_play.isEmpty()) {
+					/* a->sendMessage("open_file " + files_to_play[0]); */
+					QString command = "open_files";
+					if (add_to_playlist) command = "add_to_playlist";
+					a->sendMessage(command +" "+ files_to_play.join(" <<sep>> "));
+				}
 			}
 
 			return NoError;
