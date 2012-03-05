@@ -225,6 +225,11 @@ void BaseGui::handleMessageFromOtherInstances(const QString& message) {
 		}
 		playlist->addFiles(file_list);
 	}
+	else
+	if (message.startsWith("action ")) {
+		QString action = message.mid(QString("action ").length());
+		processFunction(action);
+	}
 }
 
 BaseGui::~BaseGui() {

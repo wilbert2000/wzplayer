@@ -265,6 +265,10 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		if (a->isRunning()) {
 			a->sendMessage("Hello");
 
+			if (!action.isEmpty()) {
+				a->sendMessage("action " + action);
+			}
+			else
 			if (!files_to_play.isEmpty()) {
 				/* a->sendMessage("open_file " + files_to_play[0]); */
 				QString command = "open_files";
