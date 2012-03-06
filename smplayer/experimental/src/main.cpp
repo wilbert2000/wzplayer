@@ -179,7 +179,7 @@ int main( int argc, char ** argv )
 		}
 	}
 
-//    qInstallMsgHandler( myMessageOutput );
+    qInstallMsgHandler( myMessageOutput );
 
 	SMPlayer * smplayer = new SMPlayer(config_path);
 	SMPlayer::ExitCode c = smplayer->processArgs( args );
