@@ -46,7 +46,10 @@ class Playlist;
 #ifdef FIND_SUBTITLES
 class FindSubtitlesWindow;
 #endif
+
+#ifdef VIDEOPREVIEW
 class VideoPreview;
+#endif
 
 
 class MyAction;
@@ -112,7 +115,10 @@ public slots:
 	virtual void openUploadSubtitlesPage(); //turbos
 #endif
 
+#ifdef VIDEOPREVIEW
 	virtual void showVideoPreviewDialog();
+#endif
+
 	virtual void showTubeBrowser();
 
 	virtual void showPlaylist();
@@ -371,7 +377,9 @@ protected:
 	MyAction * videoEqualizerAct;
 	MyAction * screenshotAct;
 	MyAction * screenshotsAct;
+#ifdef VIDEOPREVIEW
 	MyAction * videoPreviewAct;
+#endif
 	MyAction * flipAct;
 	MyAction * mirrorAct;
 	MyAction * postProcessingAct;
@@ -654,7 +662,9 @@ protected:
 #ifdef FIND_SUBTITLES
 	FindSubtitlesWindow * find_subs_dialog;
 #endif
+#ifdef VIDEOPREVIEW
 	VideoPreview * video_preview;
+#endif
 
 	Core * core;
 	MplayerWindow *mplayerwindow;

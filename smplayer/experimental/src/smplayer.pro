@@ -2,20 +2,21 @@ TEMPLATE = app
 LANGUAGE = C++
 
 CONFIG += qt warn_on
-CONFIG += release
-#CONFIG += debug
+#CONFIG += release
+CONFIG += debug
 
 QT += network xml
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += videopreview mpcgui
-DEPENDPATH += videopreview mpcgui
+INCLUDEPATH += mpcgui
+DEPENDPATH += mpcgui
 
 DEFINES += EXPERIMENTAL
 DEFINES += FIND_SUBTITLES
 DEFINES += YOUTUBE_SUPPORT
 DEFINES += SINGLE_INSTANCE
+DEFINES += VIDEOPREVIEW
 
 HEADERS += guiconfig.h \
 	config.h \
@@ -99,8 +100,6 @@ HEADERS += guiconfig.h \
 	about.h \
 	errordialog.h \
 	timedialog.h \
-	videopreview/videopreview.h \
-	videopreview/videopreviewconfigdialog.h \
 	favorites.h \
 	tvlist.h \
 	favoriteeditor.h \
@@ -194,8 +193,6 @@ SOURCES	+= version.cpp \
 	about.cpp \
 	errordialog.cpp \
 	timedialog.cpp \
-	videopreview/videopreview.cpp \
-	videopreview/videopreviewconfigdialog.cpp \
 	favorites.cpp \
 	tvlist.cpp \
 	favoriteeditor.cpp \
@@ -217,35 +214,15 @@ FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         preferencesdialog.ui prefgeneral.ui prefdrives.ui prefinterface.ui \
         prefperformance.ui prefinput.ui prefsubtitles.ui prefadvanced.ui \
         prefplaylist.ui preftv.ui favoriteeditor.ui \
-        about.ui inputmplayerversion.ui errordialog.ui timedialog.ui \
-        videopreview/videopreviewconfigdialog.ui
-
-TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
-               translations/smplayer_sk.ts translations/smplayer_it.ts \
-               translations/smplayer_fr.ts translations/smplayer_zh_CN.ts \
-               translations/smplayer_ru_RU.ts translations/smplayer_hu.ts \
-               translations/smplayer_en_US.ts translations/smplayer_pl.ts \
-               translations/smplayer_ja.ts translations/smplayer_nl.ts \
-               translations/smplayer_uk_UA.ts translations/smplayer_pt_BR.ts \
-               translations/smplayer_ka.ts translations/smplayer_cs.ts \
-               translations/smplayer_bg.ts translations/smplayer_tr.ts \
-               translations/smplayer_sv.ts translations/smplayer_sr.ts \
-               translations/smplayer_zh_TW.ts translations/smplayer_ro_RO.ts \
-               translations/smplayer_pt.ts translations/smplayer_el_GR.ts \
-               translations/smplayer_fi.ts translations/smplayer_ko.ts \
-               translations/smplayer_mk.ts translations/smplayer_eu.ts \
-               translations/smplayer_ca.ts translations/smplayer_sl_SI.ts \
-               translations/smplayer_ar_SY.ts translations/smplayer_ku.ts \
-               translations/smplayer_gl.ts translations/smplayer_vi_VN.ts \
-               translations/smplayer_et.ts translations/smplayer_lt.ts \
-               translations/smplayer_da.ts translations/smplayer_hr.ts
+        about.ui inputmplayerversion.ui errordialog.ui timedialog.ui
 
 # qtsingleapplication
 contains( DEFINES, SINGLE_INSTANCE ) {
-	SOURCES += qtsingleapplication.cpp qtlocalpeer.cpp
-	HEADERS += qtsingleapplication.h qtlocalpeer.h
 	INCLUDEPATH += qtsingleapplication
 	DEPENDPATH += qtsingleapplication
+
+	SOURCES += qtsingleapplication.cpp qtlocalpeer.cpp
+	HEADERS += qtsingleapplication.h qtlocalpeer.h
 }
 
 # Find subtitles dialog
@@ -301,6 +278,17 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 
 	HEADERS += retrieveyoutubeurl.h
 	SOURCES += retrieveyoutubeurl.cpp
+}
+
+# Videopreview
+contains( DEFINES, VIDEOPREVIEW ) {
+	INCLUDEPATH += videopreview
+	DEPENDPATH += videopreview
+
+	HEADERS += videopreview.h videopreviewconfigdialog.h
+	SOURCES += videopreview.cpp videopreviewconfigdialog.cpp
+
+	FORMS += videopreviewconfigdialog.ui
 }
 
 unix {
@@ -368,3 +356,24 @@ os2 {
 	}
 	RC_FILE = smplayer_os2.rc
 }
+
+
+TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
+               translations/smplayer_sk.ts translations/smplayer_it.ts \
+               translations/smplayer_fr.ts translations/smplayer_zh_CN.ts \
+               translations/smplayer_ru_RU.ts translations/smplayer_hu.ts \
+               translations/smplayer_en_US.ts translations/smplayer_pl.ts \
+               translations/smplayer_ja.ts translations/smplayer_nl.ts \
+               translations/smplayer_uk_UA.ts translations/smplayer_pt_BR.ts \
+               translations/smplayer_ka.ts translations/smplayer_cs.ts \
+               translations/smplayer_bg.ts translations/smplayer_tr.ts \
+               translations/smplayer_sv.ts translations/smplayer_sr.ts \
+               translations/smplayer_zh_TW.ts translations/smplayer_ro_RO.ts \
+               translations/smplayer_pt.ts translations/smplayer_el_GR.ts \
+               translations/smplayer_fi.ts translations/smplayer_ko.ts \
+               translations/smplayer_mk.ts translations/smplayer_eu.ts \
+               translations/smplayer_ca.ts translations/smplayer_sl_SI.ts \
+               translations/smplayer_ar_SY.ts translations/smplayer_ku.ts \
+               translations/smplayer_gl.ts translations/smplayer_vi_VN.ts \
+               translations/smplayer_et.ts translations/smplayer_lt.ts \
+               translations/smplayer_da.ts translations/smplayer_hr.ts

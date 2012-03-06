@@ -71,7 +71,10 @@
 #ifdef FIND_SUBTITLES
 #include "findsubtitleswindow.h"
 #endif
+
+#ifdef VIDEOPREVIEW
 #include "videopreview.h"
+#endif
 
 #include "config.h"
 #include "actionseditor.h"
@@ -126,7 +129,9 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 #ifdef FIND_SUBTITLES
 	find_subs_dialog = 0;
 #endif
+#ifdef VIDEOPREVIEW
 	video_preview = 0;
+#endif
 
 	// Create objects:
 	createPanel();
@@ -266,9 +271,11 @@ BaseGui::~BaseGui() {
 	}
 #endif
 
+#ifdef VIDEOPREVIEW
 	if (video_preview) {
 		delete video_preview;
 	}
+#endif
 }
 
 void BaseGui::createActions() {
@@ -498,9 +505,11 @@ void BaseGui::createActions() {
 	connect( screenshotsAct, SIGNAL(triggered()),
              core, SLOT(screenshots()) );
 
+#ifdef VIDEOPREVIEW
 	videoPreviewAct = new MyAction( this, "video_preview" );
 	connect( videoPreviewAct, SIGNAL(triggered()),
              this, SLOT(showVideoPreviewDialog()) );
+#endif
 
 	flipAct = new MyAction( this, "flip" );
 	flipAct->setCheckable( true );
@@ -1423,7 +1432,9 @@ void BaseGui::retranslateStrings() {
 	videoEqualizerAct->change( Images::icon("equalizer"), tr("&Equalizer") );
 	screenshotAct->change( Images::icon("screenshot"), tr("&Screenshot") );
 	screenshotsAct->change( Images::icon("screenshots"), tr("Start/stop takin&g screenshots") );
+#ifdef VIDEOPREVIEW
 	videoPreviewAct->change( Images::icon("video_preview"), tr("Pre&view...") );
+#endif
 	flipAct->change( Images::icon("flip"), tr("Fli&p image") );
 	mirrorAct->change( Images::icon("mirror"), tr("Mirr&or image") );
 
@@ -2230,8 +2241,10 @@ void BaseGui::createMenus() {
 
 	videoMenu->addMenu(ontop_menu);
 
+#ifdef VIDEOPREVIEW
 	videoMenu->addSeparator();
 	videoMenu->addAction(videoPreviewAct);
+#endif
 
 
     // AUDIO MENU
@@ -4532,6 +4545,7 @@ void BaseGui::openUploadSubtitlesPage() {
 }
 #endif
 
+#ifdef VIDEOPREVIEW
 void BaseGui::showVideoPreviewDialog() {
 	qDebug("BaseGui::showVideoPreviewDialog");
 
@@ -4566,6 +4580,7 @@ void BaseGui::showVideoPreviewDialog() {
 		video_preview->adjustWindowSize();
 	}
 }
+#endif
 
 void BaseGui::showTubeBrowser() {
 	qDebug("BaseGui::showTubeBrowser");
