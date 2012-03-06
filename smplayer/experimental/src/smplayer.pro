@@ -10,6 +10,7 @@ RESOURCES = icons.qrc
 INCLUDEPATH += findsubtitles videopreview mpcgui youtube
 DEPENDPATH += findsubtitles videopreview mpcgui youtube
 
+DEFINES += EXPERIMENTAL
 DEFINES += DOWNLOAD_SUBS
 DEFINES += SINGLE_INSTANCE
 
