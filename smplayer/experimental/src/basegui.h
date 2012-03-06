@@ -225,7 +225,9 @@ protected slots:
 	virtual void checkMousePos( QPoint );
 
 	// Single instance stuff
+#ifdef SINGLE_INSTANCE
 	void handleMessageFromOtherInstances(const QString& message);
+#endif
 
 	//! Called when core can't parse the mplayer version and there's no
 	//! version supplied by the user

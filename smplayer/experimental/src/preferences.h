@@ -453,8 +453,9 @@ public:
     /* *********
        Instances
        ********* */
-
+#ifdef SINGLE_INSTANCE
 	bool use_single_instance;
+#endif
 
 
     /* ****************

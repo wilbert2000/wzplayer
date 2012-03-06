@@ -444,8 +444,9 @@ void Preferences::reset() {
     /* *********
        Instances
        ********* */
-
+#ifdef SINGLE_INSTANCE
 	use_single_instance = true;
+#endif
 
 
     /* ****************
@@ -858,10 +859,11 @@ void Preferences::save() {
     /* *********
        Instances
        ********* */
-
+#ifdef SINGLE_INSTANCE
 	set->beginGroup("instances");
 	set->setValue("single_instance_enabled", use_single_instance);
 	set->endGroup(); // instances
+#endif
 
 
     /* ****************
@@ -1291,10 +1293,11 @@ void Preferences::load() {
     /* *********
        Instances
        ********* */
-
+#ifdef SINGLE_INSTANCE
 	set->beginGroup("instances");
 	use_single_instance = set->value("single_instance_enabled", use_single_instance).toBool();
 	set->endGroup(); // instances
+#endif
 
 
     /* ****************

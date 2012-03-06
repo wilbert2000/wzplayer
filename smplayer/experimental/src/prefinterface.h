@@ -68,8 +68,10 @@ protected:
 	void setStyle(QString style);
 	QString style();
 
+#ifdef SINGLE_INSTANCE
 	void setUseSingleInstance(bool b);
 	bool useSingleInstance();
+#endif
 
 	void setRecentsMaxItems(int n);
 	int recentsMaxItems();
@@ -121,7 +123,9 @@ protected:
 
 protected slots:
 	void on_changeFontButton_clicked();
+#ifdef SINGLE_INSTANCE
 	void changeInstanceImages();
+#endif
 
 protected:
 	virtual void retranslateStrings();

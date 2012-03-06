@@ -16,7 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#ifdef SINGLE_INSTANCE
 #include "QtSingleApplication"
+#define APPLICATION_PARENT QtSingleApplication
+#else
+#include <QApplication>
+#define APPLICATION_PARENT QApplication
+#endif
+
 #include <QFile>
 #include <QTime>
 #include <QDir>
@@ -116,10 +123,10 @@ void myMessageOutput( QtMsgType type, const char *msg ) {
 }
 
 
-class MyApplication : public QtSingleApplication
+class MyApplication : public APPLICATION_PARENT
 {
 public:
-	MyApplication ( int & argc, char ** argv ) : QtSingleApplication(argc, argv) {};
+	MyApplication ( int & argc, char ** argv ) : APPLICATION_PARENT(argc, argv) {};
 	virtual void commitData ( QSessionManager & /*manager*/ ) {
 		// Nothing to do, let the application to close
 	}
@@ -182,9 +189,11 @@ int main( int argc, char ** argv )
 
 	basegui_instance = smplayer->gui();
 	a.connect(smplayer->gui(), SIGNAL(quitSolicited()), &a, SLOT(quit()));
+#if SINGLE_INSTANCE
 	a.connect(&a, SIGNAL(messageReceived(const QString&)),
               smplayer->gui(), SLOT(handleMessageFromOtherInstances(const QString&)));
 	a.setActivationWindow(smplayer->gui());
+#endif
 	smplayer->start();
 
 	int r = a.exec();

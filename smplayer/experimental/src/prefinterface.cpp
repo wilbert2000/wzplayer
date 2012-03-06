@@ -29,6 +29,7 @@
 #include <QStyleFactory>
 #include <QFontDialog>
 
+#define SINGLE_INSTANCE_TAB 2
 
 PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 	: PrefWidget(parent, f )
@@ -65,8 +66,12 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 		}
 	}
 
+#ifdef SINGLE_INSTANCE
 	connect(single_instance_check, SIGNAL(toggled(bool)), 
             this, SLOT(changeInstanceImages()));
+#else
+	tabWidget->setTabEnabled(SINGLE_INSTANCE_TAB, false);
+#endif
 
 #ifdef Q_OS_WIN
 	floating_bypass_wm_check->hide();
@@ -119,7 +124,9 @@ void PrefInterface::retranslateStrings() {
 	resize_window_icon->setPixmap( Images::icon("resize_window") );
 	/* volume_icon->setPixmap( Images::icon("speaker") ); */
 
+#ifdef SINGLE_INSTANCE
 	changeInstanceImages();
+#endif
 
 	// Seek widgets
 	seek1->setLabel( tr("&Short jump") );
@@ -169,7 +176,9 @@ void PrefInterface::setData(Preferences * pref) {
 
 	setResizeMethod( pref->resize_method );
 	setSaveSize( pref->save_window_size_on_exit );
+#ifdef SINGLE_INSTANCE
 	setUseSingleInstance(pref->use_single_instance);
+#endif
 	setRecentsMaxItems(pref->history_recents->maxItems());
 
 	setSeeking1(pref->seeking1);
@@ -221,7 +230,9 @@ void PrefInterface::getData(Preferences * pref) {
 	pref->resize_method = resizeMethod();
 	pref->save_window_size_on_exit = saveSize();
 
+#ifdef SINGLE_INSTANCE
 	pref->use_single_instance = useSingleInstance();
+#endif
 
 	if (pref->history_recents->maxItems() != recentsMaxItems()) {
 		pref->history_recents->setMaxItems( recentsMaxItems() );
@@ -334,6 +345,7 @@ QString PrefInterface::GUI() {
 	return gui_combo->itemData(gui_combo->currentIndex()).toString();
 }
 
+#ifdef SINGLE_INSTANCE
 void PrefInterface::setUseSingleInstance(bool b) {
 	single_instance_check->setChecked(b);
 	//singleInstanceButtonToggled(b);
@@ -342,6 +354,7 @@ void PrefInterface::setUseSingleInstance(bool b) {
 bool PrefInterface::useSingleInstance() {
 	return single_instance_check->isChecked();
 }
+#endif
 
 void PrefInterface::setRecentsMaxItems(int n) {
 	recents_max_items_spin->setValue(n);
@@ -434,12 +447,14 @@ void PrefInterface::on_changeFontButton_clicked() {
 	}
 }
 
+#ifdef SINGLE_INSTANCE
 void PrefInterface::changeInstanceImages() {
 	if (single_instance_check->isChecked())
 		instances_icon->setPixmap( Images::icon("instance1") );
 	else
 		instances_icon->setPixmap( Images::icon("instance2") );
 }
+#endif
 
 void PrefInterface::setHideVideoOnAudioFiles(bool b) {
 	hide_video_window_on_audio_check->setChecked(b);
@@ -566,12 +581,14 @@ void PrefInterface::createHelp() {
            "can be a little bit slower. May not work with some video formats.") +"<br>"+
 		tr("Note: this option only works with MPlayer2") );
 
+#ifdef SINGLE_INSTANCE
 	addSectionTitle(tr("Instances"));
 
 	setWhatsThis(single_instance_check, 
         tr("Use only one running instance of SMPlayer"),
         tr("Check this option if you want to use an already running instance "
            "of SMPlayer when opening other files.") );
+#endif
 
 	addSectionTitle(tr("Floating control"));
 

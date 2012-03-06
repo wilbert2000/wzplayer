@@ -28,8 +28,13 @@
 #include "clhelp.h"
 
 #include <QDir>
-#include "QtSingleApplication"
 #include <QUrl>
+
+#ifdef SINGLE_INSTANCE
+#include "QtSingleApplication"
+#else
+#include <QApplication>
+#endif
 
 #include <stdio.h>
 
@@ -259,6 +264,7 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		qDebug("SMPlayer::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
 	}
 
+#ifdef SINGLE_INSTANCE
 	if (pref->use_single_instance) {
 		// Single instance
 		QtSingleApplication * a = static_cast<QtSingleApplication*>(qApp);
@@ -284,6 +290,7 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 			return NoError;
 		}
 	}
+#endif
 
 	if (!pref->default_font.isEmpty()) {
 		QFont f;

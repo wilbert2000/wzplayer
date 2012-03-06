@@ -199,6 +199,7 @@ void BaseGui::initializeGui() {
 	/* Deleted */
 }
 
+#ifdef SINGLE_INSTANCE
 void BaseGui::handleMessageFromOtherInstances(const QString& message) {
 	qDebug("BaseGui::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
 
@@ -235,6 +236,7 @@ void BaseGui::handleMessageFromOtherInstances(const QString& message) {
 		}
 	}
 }
+#endif
 
 BaseGui::~BaseGui() {
 	delete core; // delete before mplayerwindow, otherwise, segfault...
