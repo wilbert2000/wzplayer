@@ -16,34 +16,36 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _OSPARSER_H_
-#define _OSPARSER_H_
+#include "filehash.h"
+#include <QFile>
+#include <QDataStream>
 
-#include <QObject>
-#include <QByteArray>
-#include <QList>
-#include <QDomDocument>
+// From the patch by Kamil Dziobek turbos11(at)gmail.com
+// (c) Kamil Dziobek turbos11(at)gmail.com | BSD or GPL or public domain
+QString FileHash::calculateHash(QString filename) {
+	QFile file(filename);
 
-class OSSubtitle {
-public:
-	QString movie, releasename, link, iso639, language, date;
-	QString format, comments, detail, rating, files, user;
-};
+	if (!file.exists()) {
+		qWarning("OSParser:calculateHash: error hashing file. File doesn't exist.");
+		return QString();
+	}
 
-class OSParser {
+	file.open(QIODevice::ReadOnly);
+	QDataStream in(&file);
+	in.setByteOrder(QDataStream::LittleEndian);
+	quint64 size=file.size ();
+	quint64 hash=size; 
+	quint64 a;
+	for(int i = 0; i < 8192; i++) {
+		in >> a ; hash += a;
+	};
+	file.seek(size-65536);
+	for(int i = 0; i < 8192; i++) {
+		in >> a ; hash += a;
+	};
 
-public:
-	OSParser();
-	~OSParser();
+	QString hexhash = QString("%1").arg(hash, 16, 16, QChar('0'));
 
-	bool parseXml(QByteArray text);
-
-	QList<OSSubtitle> subtitleList() { return s_list; };
-
-protected:
-	QDomDocument dom_document;
-	QList <OSSubtitle> s_list;
-};
-
-#endif
+	return hexhash;
+}
 

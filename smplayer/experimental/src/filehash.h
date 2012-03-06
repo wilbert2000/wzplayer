@@ -16,33 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _OSPARSER_H_
-#define _OSPARSER_H_
+#ifndef FILEHASH_H
+#define FILEHASH_H
 
-#include <QObject>
-#include <QByteArray>
-#include <QList>
-#include <QDomDocument>
+#include <QString>
 
-class OSSubtitle {
+class FileHash
+{
 public:
-	QString movie, releasename, link, iso639, language, date;
-	QString format, comments, detail, rating, files, user;
-};
 
-class OSParser {
-
-public:
-	OSParser();
-	~OSParser();
-
-	bool parseXml(QByteArray text);
-
-	QList<OSSubtitle> subtitleList() { return s_list; };
-
-protected:
-	QDomDocument dom_document;
-	QList <OSSubtitle> s_list;
+	static QString calculateHash(QString filename);
 };
 
 #endif

@@ -42,9 +42,12 @@ class QLabel;
 class FilePropertiesDialog;
 class VideoEqualizer;
 class AudioEqualizer;
-class FindSubtitlesWindow;
-class VideoPreview;
 class Playlist;
+#ifdef FIND_SUBTITLES
+class FindSubtitlesWindow;
+#endif
+class VideoPreview;
+
 
 class MyAction;
 class MyActionGroup;
@@ -104,8 +107,10 @@ public slots:
 
 	void setInitialSubtitle(const QString & subtitle_file);
 
+#ifdef FIND_SUBTITLES
 	virtual void showFindSubtitlesDialog();
 	virtual void openUploadSubtitlesPage(); //turbos
+#endif
 
 	virtual void showVideoPreviewDialog();
 	virtual void showTubeBrowser();
@@ -406,8 +411,10 @@ protected:
 	MyAction * useAssAct;
 	MyAction * useForcedSubsOnlyAct;
 	MyAction * subVisibilityAct;
+#ifdef FIND_SUBTITLES
 	MyAction * showFindSubtitlesDialogAct;
 	MyAction * openUploadSubtitlesPageAct;//turbos  
+#endif
 
 	// Menu Options
 	MyAction * showPlaylistAct;
@@ -644,7 +651,9 @@ protected:
 	Playlist * playlist;
 	VideoEqualizer * video_equalizer;
 	AudioEqualizer * audio_equalizer;
+#ifdef FIND_SUBTITLES
 	FindSubtitlesWindow * find_subs_dialog;
+#endif
 	VideoPreview * video_preview;
 
 	Core * core;

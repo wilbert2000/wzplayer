@@ -66,9 +66,12 @@
 #include "errordialog.h"
 #include "timedialog.h"
 #include "clhelp.h"
-#include "findsubtitleswindow.h"
-#include "videopreview.h"
 #include "mplayerversion.h"
+
+#ifdef FIND_SUBTITLES
+#include "findsubtitleswindow.h"
+#endif
+#include "videopreview.h"
 
 #include "config.h"
 #include "actionseditor.h"
@@ -120,7 +123,9 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 	pref_dialog = 0;
 	file_dialog = 0;
 	clhelp_window = 0;
+#ifdef FIND_SUBTITLES
 	find_subs_dialog = 0;
+#endif
 	video_preview = 0;
 
 	// Create objects:
@@ -254,10 +259,12 @@ BaseGui::~BaseGui() {
 	}
 //#endif
 
+#ifdef FIND_SUBTITLES
 	if (find_subs_dialog) {
 		delete find_subs_dialog;
 		find_subs_dialog = 0; // Necessary?
 	}
+#endif
 
 	if (video_preview) {
 		delete video_preview;
@@ -666,6 +673,7 @@ void BaseGui::createActions() {
 	subVisibilityAct->setCheckable(true);
 	connect( subVisibilityAct, SIGNAL(toggled(bool)), core, SLOT(changeSubVisibility(bool)) );
 
+#ifdef FIND_SUBTITLES
 	showFindSubtitlesDialogAct = new MyAction( this, "show_find_sub_dialog" );
 	connect( showFindSubtitlesDialogAct, SIGNAL(triggered()), 
              this, SLOT(showFindSubtitlesDialog()) );
@@ -673,7 +681,7 @@ void BaseGui::createActions() {
 	openUploadSubtitlesPageAct = new MyAction( this, "upload_subtitles" );		//turbos
 	connect( openUploadSubtitlesPageAct, SIGNAL(triggered()),					//turbos
              this, SLOT(openUploadSubtitlesPage()) );							//turbos
-
+#endif
 
 	// Menu Options
 	showPlaylistAct = new MyAction( QKeySequence("Ctrl+L"), this, "show_playlist" );
@@ -1481,8 +1489,10 @@ void BaseGui::retranslateStrings() {
 
 	subVisibilityAct->change( Images::icon("sub_visibility"), tr("Subtitle &visibility") );
 
+#ifdef FIND_SUBTITLES
 	showFindSubtitlesDialogAct->change( Images::icon("download_subs"), tr("Find subtitles on &OpenSubtitles.org...") );
 	openUploadSubtitlesPageAct->change( Images::icon("upload_subs"), tr("Upload su&btitles to OpenSubtitles.org...") );
+#endif
 
 	ccNoneAct->change( tr("&Off") );
 	ccChannel1Act->change( "&1" );
@@ -2310,9 +2320,11 @@ void BaseGui::createMenus() {
 	subtitlesMenu->addAction(subVisibilityAct);
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(useAssAct);
+#ifdef FIND_SUBTITLES
 	subtitlesMenu->addSeparator(); //turbos
 	subtitlesMenu->addAction(showFindSubtitlesDialogAct);
 	subtitlesMenu->addAction(openUploadSubtitlesPageAct); //turbos
+#endif
 
 	// BROWSE MENU
 	// Titles submenu
@@ -4495,6 +4507,7 @@ void BaseGui::showErrorFromMplayer(QProcess::ProcessError e) {
 }
 
 
+#ifdef FIND_SUBTITLES
 void BaseGui::showFindSubtitlesDialog() {
 	qDebug("BaseGui::showFindSubtitlesDialog");
 
@@ -4517,6 +4530,7 @@ void BaseGui::openUploadSubtitlesPage() {
 	//QDesktopServices::openUrl( QUrl("http://www.opensubtitles.com/upload") );
 	QDesktopServices::openUrl( QUrl("http://www.opensubtitles.org/uploadjava") );
 }
+#endif
 
 void BaseGui::showVideoPreviewDialog() {
 	qDebug("BaseGui::showVideoPreviewDialog");

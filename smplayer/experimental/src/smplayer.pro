@@ -1,17 +1,19 @@
 TEMPLATE = app
 LANGUAGE = C++
 
-CONFIG += qt warn_on release
+CONFIG += qt warn_on
+CONFIG += release
+#CONFIG += debug
 
 QT += network xml
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += findsubtitles videopreview mpcgui
-DEPENDPATH += findsubtitles videopreview mpcgui
+INCLUDEPATH += videopreview mpcgui
+DEPENDPATH += videopreview mpcgui
 
 DEFINES += EXPERIMENTAL
-DEFINES += DOWNLOAD_SUBS
+DEFINES += FIND_SUBTITLES
 DEFINES += YOUTUBE_SUPPORT
 DEFINES += SINGLE_INSTANCE
 
@@ -45,6 +47,7 @@ HEADERS += guiconfig.h \
 	filesettingsbase.h \
 	filesettings.h \
 	filesettingshash.h \
+	filehash.h \
 	tvsettings.h \
 	images.h \
 	inforeader.h \
@@ -67,6 +70,7 @@ HEADERS += guiconfig.h \
 	tristatecombo.h \
 	languages.h \
 	selectcolorbutton.h \
+	simplehttp.h \
 	prefwidget.h \
 	prefgeneral.h \
 	prefdrives.h \
@@ -95,10 +99,6 @@ HEADERS += guiconfig.h \
 	about.h \
 	errordialog.h \
 	timedialog.h \
-	findsubtitles/simplehttp.h \
-	findsubtitles/osparser.h \
-	findsubtitles/findsubtitlesconfigdialog.h \
-	findsubtitles/findsubtitleswindow.h \
 	videopreview/videopreview.h \
 	videopreview/videopreviewconfigdialog.h \
 	favorites.h \
@@ -142,6 +142,7 @@ SOURCES	+= version.cpp \
 	filesettingsbase.cpp \
 	filesettings.cpp \
 	filesettingshash.cpp \
+	filehash.cpp \
 	tvsettings.cpp \
 	images.cpp \
 	inforeader.cpp \
@@ -164,6 +165,7 @@ SOURCES	+= version.cpp \
 	tristatecombo.cpp \
 	languages.cpp \
 	selectcolorbutton.cpp \
+	simplehttp.cpp \
 	prefwidget.cpp \
 	prefgeneral.cpp \
 	prefdrives.cpp \
@@ -192,10 +194,6 @@ SOURCES	+= version.cpp \
 	about.cpp \
 	errordialog.cpp \
 	timedialog.cpp \
-	findsubtitles/simplehttp.cpp \
-	findsubtitles/osparser.cpp \
-	findsubtitles/findsubtitlesconfigdialog.cpp \
-	findsubtitles/findsubtitleswindow.cpp \
 	videopreview/videopreview.cpp \
 	videopreview/videopreviewconfigdialog.cpp \
 	favorites.cpp \
@@ -220,7 +218,6 @@ FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         prefperformance.ui prefinput.ui prefsubtitles.ui prefadvanced.ui \
         prefplaylist.ui preftv.ui favoriteeditor.ui \
         about.ui inputmplayerversion.ui errordialog.ui timedialog.ui \
-        findsubtitles/findsubtitleswindow.ui findsubtitles/findsubtitlesconfigdialog.ui \
         videopreview/videopreviewconfigdialog.ui
 
 TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
@@ -249,6 +246,18 @@ contains( DEFINES, SINGLE_INSTANCE ) {
 	HEADERS += qtsingleapplication.h qtlocalpeer.h
 	INCLUDEPATH += qtsingleapplication
 	DEPENDPATH += qtsingleapplication
+}
+
+# Find subtitles dialog
+contains( DEFINES, FIND_SUBTITLES ) {
+	DEFINES += DOWNLOAD_SUBS
+
+	INCLUDEPATH += findsubtitles
+	DEPENDPATH += findsubtitles
+
+	HEADERS += osparser.h findsubtitlesconfigdialog.h findsubtitleswindow.h
+	SOURCES += osparser.cpp findsubtitlesconfigdialog.cpp findsubtitleswindow.cpp
+	FORMS += findsubtitleswindow.ui findsubtitlesconfigdialog.ui
 }
 
 # Download subtitles
@@ -287,8 +296,8 @@ contains( DEFINES, DOWNLOAD_SUBS ) {
 
 # Youtube support
 contains( DEFINES, YOUTUBE_SUPPORT ) {
-	INCLUDEPATH += findsubtitles youtube
-	DEPENDPATH += findsubtitles youtube
+	INCLUDEPATH += youtube
+	DEPENDPATH += youtube
 
 	HEADERS += retrieveyoutubeurl.h
 	SOURCES += retrieveyoutubeurl.cpp
