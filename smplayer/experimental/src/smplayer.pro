@@ -2,8 +2,8 @@ TEMPLATE = app
 LANGUAGE = C++
 
 CONFIG += qt warn_on
-#CONFIG += release
-CONFIG += debug
+CONFIG += release
+#CONFIG += debug
 
 QT += network xml
 
@@ -302,19 +302,6 @@ unix {
 	DEFINES += THEMES_PATH=$(THEMES_PATH)
 	DEFINES += SHORTCUTS_PATH=$(SHORTCUTS_PATH)
 	#DEFINES += NO_DEBUG_ON_CONSOLE
-
-	#DEFINES += KDE_SUPPORT
-	#INCLUDEPATH += /opt/kde3/include/
-	#LIBS += -lkio -L/opt/kde3/lib/
-
-	#contains( DEFINES, KDE_SUPPORT) {
-	# HEADERS += mysystemtrayicon.h
-	# SOURCES += mysystemtrayicon.cpp
-	#}
-
-	#HEADERS += prefassociations.h winfileassoc.h
-	#SOURCES += prefassociations.cpp winfileassoc.cpp
-	#FORMS += prefassociations.ui
 }
 
 win32 {
