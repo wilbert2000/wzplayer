@@ -7,11 +7,12 @@ QT += network xml
 
 RESOURCES = icons.qrc
 
-INCLUDEPATH += findsubtitles videopreview mpcgui youtube
-DEPENDPATH += findsubtitles videopreview mpcgui youtube
+INCLUDEPATH += findsubtitles videopreview mpcgui
+DEPENDPATH += findsubtitles videopreview mpcgui
 
 DEFINES += EXPERIMENTAL
 DEFINES += DOWNLOAD_SUBS
+DEFINES += YOUTUBE_SUPPORT
 DEFINES += SINGLE_INSTANCE
 
 HEADERS += guiconfig.h \
@@ -50,7 +51,6 @@ HEADERS += guiconfig.h \
 	deviceinfo.h \
 	recents.h \
 	urlhistory.h \
-	youtube/retrieveyoutubeurl.h \
 	core.h \
 	logwindow.h \
 	infofile.h \
@@ -148,7 +148,6 @@ SOURCES	+= version.cpp \
 	deviceinfo.cpp \
 	recents.cpp \
 	urlhistory.cpp \
-	youtube/retrieveyoutubeurl.cpp \
 	core.cpp \
 	logwindow.cpp \
 	infofile.cpp \
@@ -215,14 +214,6 @@ SOURCES	+= version.cpp \
 	smplayer.cpp \
 	main.cpp
 
-# qtsingleapplication
-contains( DEFINES, SINGLE_INSTANCE ) {
-	SOURCES += qtsingleapplication.cpp qtlocalpeer.cpp
-	HEADERS += qtsingleapplication.h qtlocalpeer.h
-	INCLUDEPATH += qtsingleapplication
-	DEPENDPATH += qtsingleapplication
-}
-
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui inputurl.ui vdpauproperties.ui \
         preferencesdialog.ui prefgeneral.ui prefdrives.ui prefinterface.ui \
@@ -252,6 +243,15 @@ TRANSLATIONS = translations/smplayer_es.ts translations/smplayer_de.ts \
                translations/smplayer_et.ts translations/smplayer_lt.ts \
                translations/smplayer_da.ts translations/smplayer_hr.ts
 
+# qtsingleapplication
+contains( DEFINES, SINGLE_INSTANCE ) {
+	SOURCES += qtsingleapplication.cpp qtlocalpeer.cpp
+	HEADERS += qtsingleapplication.h qtlocalpeer.h
+	INCLUDEPATH += qtsingleapplication
+	DEPENDPATH += qtsingleapplication
+}
+
+# Download subtitles
 contains( DEFINES, DOWNLOAD_SUBS ) {
 	INCLUDEPATH += findsubtitles/filedownloader findsubtitles/quazip
 	DEPENDPATH += findsubtitles/filedownloader findsubtitles/quazip
@@ -283,6 +283,15 @@ contains( DEFINES, DOWNLOAD_SUBS ) {
 		INCLUDEPATH += ..\\zlib-1.2.6
 		LIBS += -L..\\zlib-1.2.6
 	}
+}
+
+# Youtube support
+contains( DEFINES, YOUTUBE_SUPPORT ) {
+	INCLUDEPATH += findsubtitles youtube
+	DEPENDPATH += findsubtitles youtube
+
+	HEADERS += retrieveyoutubeurl.h
+	SOURCES += retrieveyoutubeurl.cpp
 }
 
 unix {
