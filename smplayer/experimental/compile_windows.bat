@@ -1,7 +1,6 @@
-cd getrev
-call getrev.cmd
+call getrev\getrev.cmd
 
-cd ..\zlib-1.2.6
+cd zlib-1.2.6
 mingw32-make -fwin32\makefile.gcc
 cd ..
 
