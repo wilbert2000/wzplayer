@@ -20,7 +20,7 @@ echo Compiling SVN Revision: %REVISION%
 echo.
 
 :: Use "Fake SED"
-call fsed.cmd $WCREV$ %REVISION% svn_revision.h.in>..\src\svn_revision.h
+call getrev\fsed.cmd $WCREV$ %REVISION% getrev\svn_revision.h.in>src\svn_revision.h
 
 :: Use GNU SED Win32
 :: sed s:\$WCREV\$:%REVISION%: svn_revision.h.in>..\src\svn_revision.h
