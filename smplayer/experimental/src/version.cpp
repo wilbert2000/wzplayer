@@ -17,19 +17,8 @@
 */
 
 #include "version.h"
-
-#define USE_SVN_VERSIONS 1
-
-#define VERSION "0.7.1"
-
-#if USE_SVN_VERSIONS
 #include "svn_revision.h"
-#endif
 
 QString smplayerVersion() {
-#if USE_SVN_VERSIONS
-	return QString(QString(VERSION) + "+" + QString(SVN_REVISION));
-#else
-	return QString(VERSION);
-#endif
+  return QString(QString(SMPLAYER_VERSION));
 }

@@ -1,10 +1,7 @@
 cd getrev
-qmake
-mingw32-make 
-cd ..
-getrev\release\getrev.exe > src\svn_revision.h
+call getrev.cmd
 
-cd zlib-1.2.6
+cd ..\zlib-1.2.6
 mingw32-make -fwin32\makefile.gcc
 cd ..
 

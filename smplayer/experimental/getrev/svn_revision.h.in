@@ -1,0 +1,54 @@
+/*  smplayer, GUI front-end for mplayer.
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+/*  Do not edit src/svn_revision.h, this file will be overwritten when starting
+    the build process. Instead edit getrev/svn_revision.h.in.
+*/
+
+#ifndef _SVN_REVISION_H_
+#define _SVN_REVISION_H_
+
+#define STR1(x) #x
+#define STR(x) STR1(x)
+
+#define USE_SVN_VERSION 1
+#define SVN_REVISION $WCREV$
+
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 7
+#define VERSION_BUILD 1
+#if USE_SVN_VERSION
+#define VERSION_REVISION SVN_REVISION
+#else
+#define VERSION_REVISION 0
+#endif
+
+// SMPlayer
+#if USE_SVN_VERSION && VERSION_REVISION != 0
+#define SMPLAYER_VERSION            STR(VERSION_MAJOR) "." STR(VERSION_MINOR) "." STR(VERSION_BUILD) "+SVN-r" STR(VERSION_REVISION)
+#elif USE_SVN_VERSION && VERSION_REVISION == 0
+#define SMPLAYER_VERSION            STR(VERSION_MAJOR) "." STR(VERSION_MINOR) "." STR(VERSION_BUILD) "+SVN-rUNKNOWN"
+#elif !USE_SVN_VERSION
+#define SMPLAYER_VERSION            STR(VERSION_MAJOR) "." STR(VERSION_MINOR) "." STR(VERSION_BUILD)
+#endif
+
+// Windows Resource File
+#define SMPLAYER_FILEVERSION        VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD, VERSION_REVISION
+#define SMPLAYER_PRODVERSION        STR(VERSION_MAJOR) "." STR(VERSION_MINOR) "." STR(VERSION_BUILD) "." STR(VERSION_REVISION) "\0"
+
+#endif

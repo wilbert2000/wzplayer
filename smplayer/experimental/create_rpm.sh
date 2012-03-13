@@ -3,7 +3,10 @@
 ./get_svn_revision.sh
 
 SVN_REVISION=`cat svn_revision | sed -e 's/SVN-/svn_/g'`
-SMPVERSION=`cat src/version.cpp | grep "#define VERSION " | sed -e 's/#define VERSION "//g' -e 's/ /_/g' -e 's/"$//g'`
+VERSION_MAJOR=`LC_ALL=C cat src/svn_revision.h 2> /dev/null | grep '#define VERSION_MAJOR' | cut -f3 -d' '`
+VERSION_MINOR=`LC_ALL=C cat src/svn_revision.h 2> /dev/null | grep '#define VERSION_MINOR' | cut -f3 -d' '`
+VERSION_BUILD=`LC_ALL=C cat src/svn_revision.h 2> /dev/null | grep '#define VERSION_BUILD' | cut -f3 -d' '`
+SMPVERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_BUILD
 
 svn export . /tmp/smplayer-${SMPVERSION}_${SVN_REVISION}
 CURDIR=`pwd`
