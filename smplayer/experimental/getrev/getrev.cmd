@@ -4,7 +4,7 @@
 :: otherwise it overwrites the variable with a weird result.
 set REVISION=
 
-for /F "tokens=2 skip=4" %%G in ('svn info --revision HEAD') do ^
+for /F "tokens=2 skip=5" %%G in ('svn info') do ^
 if not defined REVISION set REVISION=%%G
 
 :: Set to 0 if unknown (no svn or working copy)
