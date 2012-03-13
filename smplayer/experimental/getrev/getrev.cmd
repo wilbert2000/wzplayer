@@ -1,26 +1,22 @@
 @echo off
 
-:: Undefine for mulitple runs. For some reason you have to use 'if not defined REVISION'
-:: otherwise it overwrites the variable with a weird result.
-set REVISION=
+:: Undefine for mulitple runs
+set Revision=
+for /f "tokens=2" %%G IN ('svn info ^| find "Revision: "') do set /a Revision=%%G
 
-for /F "tokens=2 skip=5" %%G in ('svn info') do ^
-if not defined REVISION set REVISION=%%G
-
-:: Set to 0 if unknown (no svn or working copy)
 if "%REVISION%"=="" (
   set REVISION=0
 )
 
-if "%REVISION%"=="0" (
+if "%Revision%"=="0" (
 echo Unknown SVN revision. SVN missing in PATH or not a working copy.
 ) else (
-echo Compiling SVN Revision: %REVISION%
+echo SVN Revision: %Revision%
 )
 echo.
 
 :: Use "Fake SED"
-call getrev\fsed.cmd $WCREV$ %REVISION% getrev\svn_revision.h.in>src\svn_revision.h
+call getrev\fsed.cmd $WCREV$ %Revision% getrev\svn_revision.h.in>src\svn_revision.h
 
 :: Use GNU SED Win32
-:: sed s:\$WCREV\$:%REVISION%: svn_revision.h.in>..\src\svn_revision.h
+:: sed s:\$WCREV\$:%Revision%: getrev\svn_revision.h.in>src\svn_revision.h
