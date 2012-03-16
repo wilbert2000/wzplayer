@@ -33,7 +33,6 @@ class QSettings;
 class MediaSettings {
 
 public:
-	enum Denoise { NoDenoise = 0, DenoiseNormal = 1, DenoiseSoft = 2 };
 	enum Aspect { AspectAuto = 1, Aspect43 = 2, Aspect54 = 3, Aspect149 = 4,
                   Aspect169 = 5, Aspect1610 = 6, Aspect235 = 7, Aspect11 = 8, 
                   Aspect32 = 9, Aspect1410 = 10, 
@@ -96,20 +95,9 @@ public:
 
 	int current_deinterlacer;
 
-	bool add_letterbox;
-
 	// Filters in menu
-	bool phase_filter;
-	int current_denoiser;
-	bool deblock_filter;
-	bool dering_filter;
-	bool gradfun_filter;
-	bool blur_filter;
-	bool sharpen_filter;
-	bool noise_filter;
-	bool postprocessing_filter;
-	bool upscaling_filter; //!< Software scaling
 
+	// Audio filters
 	bool karaoke_filter;
 	bool extrastereo_filter;
 	bool volnorm_filter;

@@ -2020,11 +2020,6 @@ void Core::startMplayer( QString file, double seek ) {
 #endif
 
 	// Video filters:
-	// Phase
-	if (mset.phase_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument( "phase=A" );
-	}
 
 	// Deinterlace
 	if (mset.current_deinterlacer != MediaSettings::NoDeinterlace) {
@@ -2038,70 +2033,7 @@ void Core::startMplayer( QString file, double seek ) {
 		}
 	}
 
-	// Denoise
-	if (mset.current_denoiser != MediaSettings::NoDenoise) {
-		proc->addArgument("-vf-add");
-		if (mset.current_denoiser==MediaSettings::DenoiseSoft) {
-			proc->addArgument( pref->filters->item("denoise_soft").filter() );
-		} else {
-			proc->addArgument( pref->filters->item("denoise_normal").filter() );
-		}
-	}
-
-	// Deblock
-	if (mset.deblock_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument( pref->filters->item("deblock").filter() );
-	}
-
-	// Dering
-	if (mset.dering_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument( "pp=dr" );
-	}
-
-	// Gradfun
-	if (mset.gradfun_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument( pref->filters->item("gradfun").filter() );
-	}
-
-	// Blur
-	if (mset.blur_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument( pref->filters->item("blur").filter() );
-	}
-
-	// Sharpen
-	if (mset.sharpen_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument( pref->filters->item("sharpen").filter() );
-	}
-
-	// Upscale
-	if (mset.upscaling_filter) {
-		int width = DesktopInfo::desktop_size(mplayerwindow).width();
-		proc->addArgument("-sws");
-		proc->addArgument("9");
-		proc->addArgument("-vf-add");
-		proc->addArgument("scale="+QString::number(width)+":-2");
-	}
-
-	// Addnoise
-	if (mset.noise_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument( pref->filters->item("noise").filter() );
-	}
-
-	// Postprocessing
-	if (mset.postprocessing_filter) {
-		proc->addArgument("-vf-add");
-		proc->addArgument("pp");
-		proc->addArgument("-autoq");
-		proc->addArgument( QString::number(pref->autoq) );
-	}
-
-
+/*
 	// Letterbox (expand)
 	if ((mset.add_letterbox) || (pref->fullscreen && pref->add_blackborders_on_fullscreen)) {
 		proc->addArgument("-vf-add");
@@ -2112,6 +2044,7 @@ void Core::startMplayer( QString file, double seek ) {
 		// it will be harmless in mplayer. 
 		// Anyway, if you know a proper way to fix the problem, please tell me.
 	}
+*/
 
 	// Software equalizer
 	if ( (pref->use_soft_video_eq) ) {
@@ -2615,117 +2548,8 @@ void Core::setStereoMode(int mode) {
 
 
 // Video filters
-void Core::toggleAutophase() {
-	toggleAutophase( !mset.phase_filter );
-}
+// ...
 
-void Core::toggleAutophase( bool b ) {
-	qDebug("Core::toggleAutophase: %d", b);
-	if ( b != mset.phase_filter) {
-		mset.phase_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::toggleDeblock() {
-	toggleDeblock( !mset.deblock_filter );
-}
-
-void Core::toggleDeblock(bool b) {
-	qDebug("Core::toggleDeblock: %d", b);
-	if ( b != mset.deblock_filter ) {
-		mset.deblock_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::toggleDering() {
-	toggleDering( !mset.dering_filter );
-}
-
-void Core::toggleDering(bool b) {
-	qDebug("Core::toggleDering: %d", b);
-	if ( b != mset.dering_filter) {
-		mset.dering_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::toggleGradfun() {
-	toggleGradfun( !mset.gradfun_filter );
-}
-
-void Core::toggleGradfun(bool b) {
-	qDebug("Core::toggleGradfun: %d", b);
-	if ( b != mset.gradfun_filter) {
-		mset.gradfun_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::toggleBlur() {
-	toggleBlur( !mset.blur_filter );
-}
-
-void Core::toggleBlur(bool b) {
-	qDebug("Core::toggleBlur: %d", b);
-	if ( b != mset.blur_filter) {
-		mset.blur_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::toggleSharpen() {
-	toggleSharpen( !mset.sharpen_filter );
-}
-
-void Core::toggleSharpen(bool b) {
-	qDebug("Core::toggleSharpen: %d", b);
-	if ( b != mset.sharpen_filter) {
-		mset.sharpen_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::toggleNoise() {
-	toggleNoise( !mset.noise_filter );
-}
-
-void Core::toggleNoise(bool b) {
-	qDebug("Core::toggleNoise: %d", b);
-	if ( b!= mset.noise_filter ) {
-		mset.noise_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::togglePostprocessing() {
-	togglePostprocessing( !mset.postprocessing_filter );
-}
-
-void Core::togglePostprocessing(bool b) {
-	qDebug("Core::togglePostprocessing: %d", b);
-	if ( b != mset.postprocessing_filter ) {
-		mset.postprocessing_filter = b;
-		restartPlay();
-	}
-}
-
-void Core::changeDenoise(int id) {
-	qDebug( "Core::changeDenoise: %d", id );
-	if (id != mset.current_denoiser) {
-		mset.current_denoiser = id;
-		restartPlay();
-	}
-}
-
-void Core::changeUpscale(bool b) {
-	qDebug( "Core::changeUpscale: %d", b );
-	if (mset.upscaling_filter != b) {
-		mset.upscaling_filter = b;
-		restartPlay();
-	}
-}
 
 void Core::setBrightness(int value) {
 	qDebug("Core::setBrightness: %d", value);
@@ -3666,15 +3490,6 @@ void Core::nextWheelFunction() {
 		break;
 	}
 	displayMessage(m);
-}
-
-void Core::changeLetterbox(bool b) {
-	qDebug("Core::changeLetterbox: %d", b);
-
-	if (mset.add_letterbox != b) {
-		mset.add_letterbox = b;
-		restartPlay();
-	}
 }
 
 void Core::changeOSD(int v) {
