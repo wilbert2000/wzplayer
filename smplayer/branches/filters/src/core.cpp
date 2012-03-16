@@ -87,7 +87,8 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	tv_settings = new TVSettings(Paths::iniPath());
 #endif
 
-    proc = new MplayerProcess(this);
+	proc = new MplayerProcess(this);
+	filters = new Filters(this);
 
 	// Do this the first
 	connect( proc, SIGNAL(processExited()),
@@ -139,10 +140,10 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 
 	connect( proc, SIGNAL(receivedUpdatingFontCache()),
              this, SLOT(displayUpdatingFontCache()) );
-	
+
 	connect( proc, SIGNAL(receivedScanningFont(QString)),
 			 this, SLOT(displayMessage(QString)) );
-	
+
 	connect( proc, SIGNAL(receivedWindowResolution(int,int)),
              this, SLOT(gotWindowResolution(int,int)) );
 
@@ -273,6 +274,8 @@ Core::~Core() {
 #ifdef YOUTUBE_SUPPORT
 	delete yt;
 #endif
+
+	delete filters;
 }
 
 #ifndef NO_USE_INI_FILES 
@@ -2147,7 +2150,7 @@ end_video_filters:
 
 	if (mset.volnorm_filter) {
 		if (!af.isEmpty()) af += ",";
-		af += pref->filters->item("volnorm").filter();
+		af += filters->item("volnorm").filter();
 	}
 
 	bool use_scaletempo = (pref->use_scaletempo == Preferences::Enabled);
@@ -2522,7 +2525,7 @@ void Core::toggleVolnorm(bool b) {
 		mset.volnorm_filter = b;
 		if (MplayerVersion::isMplayerAtLeast(31030)) {
 			// Change filter without restarting
-			QString f = pref->filters->item("volnorm").filter();
+			QString f = filters->item("volnorm").filter();
 			if (b) tellmp("af_add " + f); else tellmp("af_del volnorm");
 		} else {
 			restartPlay();
