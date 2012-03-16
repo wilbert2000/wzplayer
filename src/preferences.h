@@ -31,7 +31,6 @@
 
 class Recents;
 class URLHistory;
-class Filters;
 
 class Preferences {
 
@@ -478,11 +477,6 @@ public:
 	Recents * history_recents;
 	URLHistory * history_urls;
 
-
-    /* *******
-       Filters
-       ******* */
-	Filters * filters;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(Preferences::WheelFunctions)
 

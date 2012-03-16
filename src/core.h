@@ -32,6 +32,7 @@ class FileSettingsBase;
 
 class MplayerProcess;
 class MplayerWindow;
+class Filters;
 class QSettings;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -449,8 +450,9 @@ signals:
 	void logLineAvailable(QString);
 
 protected:
-    MplayerProcess * proc;
-    MplayerWindow * mplayerwindow;
+	MplayerProcess * proc;
+	MplayerWindow * mplayerwindow;
+	Filters * filters;
 
 #ifndef NO_USE_INI_FILES
 	FileSettingsBase * file_settings;
