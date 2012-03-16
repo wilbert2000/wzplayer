@@ -26,28 +26,41 @@
 #include <QMap>
 
 class QSettings;
+class QWidget;
+class QAction;
 
 class Filter {
 public:
-	Filter() {};
-	Filter(QString tr_name, QString name, QString options = QString::null) { _tr_name = tr_name; _name = name; _options = options; };
+	Filter() { _enabled = false; }
+	Filter(QString tr_name, QString name, QString options = QString::null, QString group = QString::null)
+	{ 
+		_tr_name = tr_name;
+		_name = name;
+		_options = options;
+		_group = group;
+	};
 
 	void setTrName(QString tr_name) { _tr_name = tr_name; };
 	void setName(QString name) { _name = name; };
 	void setOptions(QString options) { _options = options; };
+	void setGroup(QString group) { _group = group; }
+	void setEnabled(bool b) { _enabled = b; }
 
 	QString trName() const { return _tr_name; };
 	QString name() const { return _name; };
 	QString options() const { return _options; };
+	QString group() const { return _group; }
+	bool enabled() const { return _enabled; }
 
 	QString filter() {
 		QString s = name();
-		if (!options().isEmpty()) s += "="+options();
+		if (!options().isEmpty()) s += "=" + options();
 		return s;
 	}
 
 protected:
-	QString _tr_name, _name, _options;
+	QString _tr_name, _name, _options, _group;
+	bool _enabled;
 };
 
 typedef QMap<QString,Filter> FilterMap;
@@ -58,17 +71,20 @@ class Filters : public QObject {
 public:
 	Filters(QObject * parent = 0);
 
-	void init();
-
 	Filter item(const QString & key);
 
 	void setFilters(FilterMap filters) { list = filters; };
 	FilterMap filters() { return list; };
 
+	QList<QAction *> createActions(QWidget * parent);
+
 	void save(QSettings *set);
 	void load(QSettings *set);
 
 protected:
+	void init();
+
+	QList<QAction *> actions;
 	FilterMap list;
 };
 

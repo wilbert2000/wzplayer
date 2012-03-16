@@ -97,6 +97,7 @@
 #include "constants.h"
 
 #include "extensions.h"
+#include "filters.h"
 
 #ifdef Q_OS_WIN
 #include "deviceinfo.h"
@@ -2124,6 +2125,11 @@ void BaseGui::createMenus() {
 	// Video filter submenu
 	videofilter_menu = new QMenu(this);
 	videofilter_menu->menuAction()->setObjectName("videofilter_menu");
+	{
+		QList<QAction *> video_filter_actions = core->videoFilters()->createActions(this);
+		QAction * a;
+		foreach( a, video_filter_actions) videofilter_menu->addAction(a);
+	}
 
 	videoMenu->addMenu(videofilter_menu);
 
