@@ -382,16 +382,6 @@ protected:
 #endif
 	MyAction * flipAct;
 	MyAction * mirrorAct;
-	MyAction * postProcessingAct;
-	MyAction * phaseAct;
-	MyAction * deblockAct;
-	MyAction * deringAct;
-	MyAction * gradfunAct;
-	MyAction * blurAct;
-	MyAction * sharpenAct;
-	MyAction * addNoiseAct;
-	MyAction * addLetterboxAct;
-	MyAction * upscaleAct;
 
 	// Menu Audio
 	MyAction * audioEqualizerAct;
@@ -502,12 +492,6 @@ protected:
 	MyAction * osdSeekAct;
 	MyAction * osdTimerAct;
 	MyAction * osdTotalAct;
-
-	// Denoise Action Group
-	MyActionGroup * denoiseGroup;
-	MyAction * denoiseNoneAct;
-	MyAction * denoiseNormalAct;
-	MyAction * denoiseSoftAct;
 
 	// Window Size Action Group
 	MyActionGroup * sizeGroup;

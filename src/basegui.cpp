@@ -523,56 +523,7 @@ void BaseGui::createActions() {
 
 
 	// Submenu filter
-	postProcessingAct = new MyAction( this, "postprocessing" );
-	postProcessingAct->setCheckable( true );
-	connect( postProcessingAct, SIGNAL(toggled(bool)),
-             core, SLOT(togglePostprocessing(bool)) );
-
-	phaseAct = new MyAction( this, "autodetect_phase" );
-	phaseAct->setCheckable( true );
-	connect( phaseAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleAutophase(bool)) );
-
-	deblockAct = new MyAction( this, "deblock" );
-	deblockAct->setCheckable( true );
-	connect( deblockAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleDeblock(bool)) );
-
-	deringAct = new MyAction( this, "dering" );
-	deringAct->setCheckable( true );
-	connect( deringAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleDering(bool)) );
-
-	gradfunAct = new MyAction( this, "gradfun" );
-	gradfunAct->setCheckable( true );
-	connect( gradfunAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleGradfun(bool)) );
-
-	blurAct = new MyAction( this, "blur" );
-	blurAct->setCheckable( true );
-	connect( blurAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleBlur(bool)) );
-
-	sharpenAct = new MyAction( this, "sharpen" );
-	sharpenAct->setCheckable( true );
-	connect( sharpenAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleSharpen(bool)) );
-
-	addNoiseAct = new MyAction( this, "add_noise" );
-	addNoiseAct->setCheckable( true );
-	connect( addNoiseAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleNoise(bool)) );
-
-	addLetterboxAct = new MyAction( this, "add_letterbox" );
-	addLetterboxAct->setCheckable( true );
-	connect( addLetterboxAct, SIGNAL(toggled(bool)),
-             core, SLOT(changeLetterbox(bool)) );
-
-	upscaleAct = new MyAction( this, "upscaling" );
-	upscaleAct->setCheckable( true );
-	connect( upscaleAct, SIGNAL(toggled(bool)),
-             core, SLOT(changeUpscale(bool)) );
-
+	// ....
 
 	// Menu Audio
 	audioEqualizerAct = new MyAction( this, "audio_equalizer" );
@@ -906,13 +857,6 @@ void BaseGui::createActions() {
 	osdTotalAct = new MyActionGroupItem(this, osdGroup, "osd_total", Preferences::SeekTimerTotal);
 	connect( osdGroup, SIGNAL(activated(int)), core, SLOT(changeOSD(int)) );
 
-	// Denoise
-	denoiseGroup = new MyActionGroup(this);
-	denoiseNoneAct = new MyActionGroupItem(this, denoiseGroup, "denoise_none", MediaSettings::NoDenoise);
-	denoiseNormalAct = new MyActionGroupItem(this, denoiseGroup, "denoise_normal", MediaSettings::DenoiseNormal);
-	denoiseSoftAct = new MyActionGroupItem(this, denoiseGroup, "denoise_soft", MediaSettings::DenoiseSoft);
-	connect( denoiseGroup, SIGNAL(activated(int)), core, SLOT(changeDenoise(int)) );
-
 	// Video size
 	sizeGroup = new MyActionGroup(this);
 	size50 = new MyActionGroupItem(this, sizeGroup, "5&0%", "size_50", 50);
@@ -1137,16 +1081,6 @@ void BaseGui::setActionsEnabled(bool b) {
 	screenshotsAct->setEnabled(b);
 	flipAct->setEnabled(b);
 	mirrorAct->setEnabled(b);
-	postProcessingAct->setEnabled(b);
-	phaseAct->setEnabled(b);
-	deblockAct->setEnabled(b);
-	deringAct->setEnabled(b);
-	gradfunAct->setEnabled(b);
-	blurAct->setEnabled(b);
-	sharpenAct->setEnabled(b);
-	addNoiseAct->setEnabled(b);
-	addLetterboxAct->setEnabled(b);
-	upscaleAct->setEnabled(b);
 
 	// Menu Audio
 	audioEqualizerAct->setEnabled(b);
@@ -1221,7 +1155,6 @@ void BaseGui::setActionsEnabled(bool b) {
 #endif
 
 	// Groups
-	denoiseGroup->setActionsEnabled(b);
 	sizeGroup->setActionsEnabled(b);
 	deinterlaceGroup->setActionsEnabled(b);
 	aspectGroup->setActionsEnabled(b);
@@ -1277,16 +1210,6 @@ void BaseGui::enableActionsOnPlaying() {
 		screenshotsAct->setEnabled(false);
 		flipAct->setEnabled(false);
 		mirrorAct->setEnabled(false);
-		postProcessingAct->setEnabled(false);
-		phaseAct->setEnabled(false);
-		deblockAct->setEnabled(false);
-		deringAct->setEnabled(false);
-		gradfunAct->setEnabled(false);
-		blurAct->setEnabled(false);
-		sharpenAct->setEnabled(false);
-		addNoiseAct->setEnabled(false);
-		addLetterboxAct->setEnabled(false);
-		upscaleAct->setEnabled(false);
 		doubleSizeAct->setEnabled(false);
 
 		// Moving and zoom
@@ -1301,7 +1224,6 @@ void BaseGui::enableActionsOnPlaying() {
 		autoZoom169Act->setEnabled(false);
 		autoZoom235Act->setEnabled(false);
 
-		denoiseGroup->setActionsEnabled(false);
 		sizeGroup->setActionsEnabled(false);
 		deinterlaceGroup->setActionsEnabled(false);
 		aspectGroup->setActionsEnabled(false);
@@ -1322,21 +1244,8 @@ void BaseGui::enableActionsOnPlaying() {
 		screenshotsAct->setEnabled(false);
 		flipAct->setEnabled(false);
 		mirrorAct->setEnabled(false);
-		postProcessingAct->setEnabled(false);
-		phaseAct->setEnabled(false);
-		deblockAct->setEnabled(false);
-		deringAct->setEnabled(false);
-		gradfunAct->setEnabled(false);
-		blurAct->setEnabled(false);
-		sharpenAct->setEnabled(false);
-		addNoiseAct->setEnabled(false);
-		addLetterboxAct->setEnabled(false);
-		upscaleAct->setEnabled(false);
-
 		deinterlaceGroup->setActionsEnabled(false);
 		rotateGroup->setActionsEnabled(false);
-		denoiseGroup->setActionsEnabled(false);
-
 		displayMessage( tr("Video filters are disabled when using vdpau") );
 	}
 #endif
@@ -1479,16 +1388,7 @@ void BaseGui::retranslateStrings() {
 #endif
 
 	// Submenu Filters
-	postProcessingAct->change( tr("&Postprocessing") );
-	phaseAct->change( tr("&Autodetect phase") );
-	deblockAct->change( tr("&Deblock") );
-	deringAct->change( tr("De&ring") );
-	gradfunAct->change( tr("Debanding (&gradfun)") );
-	blurAct->change( tr("B&lur") );
-	sharpenAct->change( tr("S&harpen") );
-	addNoiseAct->change( tr("Add n&oise") );
-	addLetterboxAct->change( Images::icon("letterbox"), tr("Add &black borders") );
-	upscaleAct->change( Images::icon("upscaling"), tr("Soft&ware scaling") );
+	// ....
 
 	// Menu Audio
 	audioEqualizerAct->change( Images::icon("audio_equalizer"), tr("E&qualizer") );
@@ -1715,10 +1615,6 @@ void BaseGui::retranslateStrings() {
 	deinterlaceYadif1Act->change( tr("Y&adif (double framerate)") );
 	deinterlaceLBAct->change( tr("Linear &Blend") );
 	deinterlaceKernAct->change( tr("&Kerndeint") );
-
-	denoiseNoneAct->change( tr("Denoise o&ff") );
-	denoiseNormalAct->change( tr("Denoise nor&mal") );
-	denoiseSoftAct->change( tr("Denoise &soft") );
 
 	rotateNoneAct->change( tr("&Off") );
 	rotateClockwiseFlipAct->change( tr("&Rotate by 90 degrees clockwise and flip") );
@@ -2228,18 +2124,6 @@ void BaseGui::createMenus() {
 	// Video filter submenu
 	videofilter_menu = new QMenu(this);
 	videofilter_menu->menuAction()->setObjectName("videofilter_menu");
-	videofilter_menu->addAction(postProcessingAct);
-	videofilter_menu->addAction(deblockAct);
-	videofilter_menu->addAction(deringAct);
-	videofilter_menu->addAction(gradfunAct);
-	videofilter_menu->addAction(blurAct);
-	videofilter_menu->addAction(sharpenAct);
-	videofilter_menu->addAction(addNoiseAct);
-	videofilter_menu->addAction(addLetterboxAct);
-	videofilter_menu->addAction(upscaleAct);
-	videofilter_menu->addAction(phaseAct);
-	videofilter_menu->addSeparator();
-	videofilter_menu->addActions(denoiseGroup->actions());
 
 	videoMenu->addMenu(videofilter_menu);
 
@@ -3134,40 +3018,6 @@ void BaseGui::updateWidgets() {
 	// Video size menu
 	sizeGroup->setChecked( pref->size_factor );
 
-	// Auto phase
-	phaseAct->setChecked( core->mset.phase_filter );
-
-	// Deblock
-	deblockAct->setChecked( core->mset.deblock_filter );
-
-	// Dering
-	deringAct->setChecked( core->mset.dering_filter );
-
-	// Gradfun
-	gradfunAct->setChecked( core->mset.gradfun_filter );
-
-	// Blur
-	blurAct->setChecked( core->mset.blur_filter );
-
-	// Sharpen
-	sharpenAct->setChecked( core->mset.sharpen_filter );
-
-	// Add noise
-	addNoiseAct->setChecked( core->mset.noise_filter );
-
-	// Letterbox
-	addLetterboxAct->setChecked( core->mset.add_letterbox );
-
-	// Upscaling
-	upscaleAct->setChecked( core->mset.upscaling_filter );
-
-
-	// Postprocessing
-	postProcessingAct->setChecked( core->mset.postprocessing_filter );
-
-	// Denoise submenu
-	denoiseGroup->setChecked( core->mset.current_denoiser );
-
 	/*
 	// Fullscreen button
 	fullscreenbutton->setOn(pref->fullscreen); 
@@ -3776,13 +3626,13 @@ void BaseGui::toggleFullscreen(bool b) {
 	}
 
 	updateWidgets();
-
+/*
 	if ((pref->add_blackborders_on_fullscreen) && 
         (!core->mset.add_letterbox)) 
 	{
 		core->restart();
 	}
-
+*/
 	setFocus(); // Fixes bug #2493415
 }
 

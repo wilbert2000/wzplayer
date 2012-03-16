@@ -150,25 +150,7 @@ public slots:
 	void setStereoMode(int mode);
 
 	// Video filters
-	void toggleAutophase();
-	void toggleAutophase(bool b);
-	void toggleDeblock();
-	void toggleDeblock(bool b);
-	void toggleDering();
-	void toggleDering(bool b);
-	void toggleGradfun();
-	void toggleGradfun(bool b);
-	void toggleBlur();
-	void toggleBlur(bool b);
-	void toggleSharpen();
-	void toggleSharpen(bool b);
-	void toggleNoise();
-	void toggleNoise(bool b);
-	void togglePostprocessing();
-	void togglePostprocessing(bool b);
-	void changeDenoise(int);
-	void changeLetterbox(bool);
-	void changeUpscale(bool);
+	// ...
 
 	void seek(int secs);
 	void sforward(); 	// + 10 seconds
