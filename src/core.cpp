@@ -88,7 +88,7 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 #endif
 
 	proc = new MplayerProcess(this);
-	filters = new Filters(this);
+	video_filters = new Filters(this);
 
 	// Do this the first
 	connect( proc, SIGNAL(processExited()),
@@ -275,7 +275,7 @@ Core::~Core() {
 	delete yt;
 #endif
 
-	delete filters;
+	delete video_filters;
 }
 
 #ifndef NO_USE_INI_FILES 
@@ -2150,7 +2150,7 @@ end_video_filters:
 
 	if (mset.volnorm_filter) {
 		if (!af.isEmpty()) af += ",";
-		af += filters->item("volnorm").filter();
+		af += video_filters->item("volnorm").filter();
 	}
 
 	bool use_scaletempo = (pref->use_scaletempo == Preferences::Enabled);
@@ -2525,7 +2525,7 @@ void Core::toggleVolnorm(bool b) {
 		mset.volnorm_filter = b;
 		if (MplayerVersion::isMplayerAtLeast(31030)) {
 			// Change filter without restarting
-			QString f = filters->item("volnorm").filter();
+			QString f = video_filters->item("volnorm").filter(); // FIXME
 			if (b) tellmp("af_add " + f); else tellmp("af_del volnorm");
 		} else {
 			restartPlay();

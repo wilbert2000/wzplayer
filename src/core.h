@@ -52,11 +52,13 @@ class Core : public QObject
 public:
 	enum State { Stopped = 0, Playing = 1, Paused = 2 };
 
-    Core( MplayerWindow *mpw, QWidget* parent = 0 );
-    ~Core();
+	Core( MplayerWindow *mpw, QWidget* parent = 0 );
+	~Core();
 
-    MediaData mdat;
+	MediaData mdat;
 	MediaSettings mset;
+
+	Filters * videoFilters() { return video_filters; }
 
 	//! Return the current state
 	State state() { return _state; };
@@ -452,7 +454,7 @@ signals:
 protected:
 	MplayerProcess * proc;
 	MplayerWindow * mplayerwindow;
-	Filters * filters;
+	Filters * video_filters;
 
 #ifndef NO_USE_INI_FILES
 	FileSettingsBase * file_settings;

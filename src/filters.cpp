@@ -18,6 +18,8 @@
 
 #include "filters.h"
 #include <QSettings>
+#include <QWidget>
+#include <QAction>
 
 Filters::Filters(QObject * parent) : QObject(parent) 
 {
@@ -42,6 +44,21 @@ void Filters::init() {
 
 Filter Filters::item(const QString & key) {
 	return list[key];
+}
+
+QList<QAction *> Filters::createActions(QWidget * parent) {
+	actions.clear();
+
+	QMap<QString, Filter>::iterator i;
+	for (i = list.begin(); i != list.end(); ++i) {
+		//set->setValue(i.key(), i.value().options());
+		QAction * a = new QAction( i.value().trName(), parent );
+		a->setObjectName(i.value().name());
+		a->setCheckable(true);
+		actions.push_back(a);
+	}
+
+	return actions;
 }
 
 void Filters::save(QSettings *set) {
