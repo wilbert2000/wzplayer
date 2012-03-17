@@ -2127,6 +2127,13 @@ void BaseGui::createMenus() {
 	videofilter_menu->menuAction()->setObjectName("videofilter_menu");
 	{
 		QList<QAction *> video_filter_actions = core->videoFilters()->createActions(this);
+		/*
+		QList<QActionGroup *> action_groups = core->videoFilters()->actionGroups();
+		QActionGroup * ag = 0;
+		foreach( ag, action_groups) {
+			if (ag) videofilter_menu->addActions(ag->actions());
+		}
+		*/
 		QAction * a;
 		foreach( a, video_filter_actions) {
 			videofilter_menu->addAction(a);
