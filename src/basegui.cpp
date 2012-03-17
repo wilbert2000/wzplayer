@@ -2128,7 +2128,10 @@ void BaseGui::createMenus() {
 	{
 		QList<QAction *> video_filter_actions = core->videoFilters()->createActions(this);
 		QAction * a;
-		foreach( a, video_filter_actions) videofilter_menu->addAction(a);
+		foreach( a, video_filter_actions) {
+			videofilter_menu->addAction(a);
+			connect(a, SIGNAL(triggered()), this, SLOT(filterTriggered()));
+		}
 	}
 
 	videoMenu->addMenu(videofilter_menu);
@@ -4114,6 +4117,13 @@ void BaseGui::hidePanel() {
 		// Disable compact mode
 		//compactAct->setEnabled(false);
 	}
+}
+
+void BaseGui::filterTriggered() {
+	QAction * a = qobject_cast<QAction*>(sender());
+	QString name = a->objectName();
+	qDebug("BaseGui::filterTriggered: %s", name.toUtf8().constData());
+	core->changeVideoFilter( name, a->isChecked() );
 }
 
 void BaseGui::displayGotoTime(int t) {

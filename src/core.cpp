@@ -2023,6 +2023,13 @@ void Core::startMplayer( QString file, double seek ) {
 #endif
 
 	// Video filters:
+	{
+		QString f = video_filters->filtersToString();
+		if (!f.isEmpty()) {
+			proc->addArgument("-vf-add");
+			proc->addArgument(f);
+		}
+	}
 
 	// Deinterlace
 	if (mset.current_deinterlacer != MediaSettings::NoDeinterlace) {
@@ -2150,7 +2157,7 @@ end_video_filters:
 
 	if (mset.volnorm_filter) {
 		if (!af.isEmpty()) af += ",";
-		af += video_filters->item("volnorm").filter();
+		af += video_filters->item("volnorm")->filter();
 	}
 
 	bool use_scaletempo = (pref->use_scaletempo == Preferences::Enabled);
@@ -2525,7 +2532,7 @@ void Core::toggleVolnorm(bool b) {
 		mset.volnorm_filter = b;
 		if (MplayerVersion::isMplayerAtLeast(31030)) {
 			// Change filter without restarting
-			QString f = video_filters->item("volnorm").filter(); // FIXME
+			QString f = video_filters->item("volnorm")->filter(); // FIXME
 			if (b) tellmp("af_add " + f); else tellmp("af_del volnorm");
 		} else {
 			restartPlay();
@@ -2551,8 +2558,12 @@ void Core::setStereoMode(int mode) {
 
 
 // Video filters
-// ...
-
+void Core::changeVideoFilter(const QString & filter_name, bool activate) {
+	qDebug("Core::changeVideoFilter: %s, %d", filter_name.toUtf8().constData(), activate);
+	video_filters->item(filter_name)->setEnabled(activate);
+	qDebug("filter: '%s'", video_filters->filtersToString().toUtf8().constData());
+	restartPlay();
+}
 
 void Core::setBrightness(int value) {
 	qDebug("Core::setBrightness: %d", value);
