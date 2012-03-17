@@ -2560,7 +2560,7 @@ void Core::setStereoMode(int mode) {
 // Video filters
 void Core::changeVideoFilter(const QString & filter_name, bool activate) {
 	qDebug("Core::changeVideoFilter: %s, %d", filter_name.toUtf8().constData(), activate);
-	video_filters->item(filter_name)->setEnabled(activate);
+	video_filters->setEnabled(filter_name, activate);
 	qDebug("filter: '%s'", video_filters->filtersToString().toUtf8().constData());
 	restartPlay();
 }

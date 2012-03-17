@@ -28,6 +28,7 @@
 class QSettings;
 class QWidget;
 class QAction;
+class QActionGroup;
 
 class Filter {
 public:
@@ -79,7 +80,10 @@ public:
 
 	QString filtersToString();
 
+	void setEnabled(const QString & filter_name, bool enable);
+
 	QList<QAction *> createActions(QWidget * parent);
+	QList <QActionGroup*> actionGroups();
 
 	void save(QSettings *set);
 	void load(QSettings *set);
@@ -89,6 +93,7 @@ protected:
 
 	QList<QAction *> actions;
 	FilterMap list;
+	QMap<QString, QActionGroup*> groups;
 };
 
 #endif

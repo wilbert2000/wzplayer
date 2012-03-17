@@ -20,6 +20,7 @@
 #include <QSettings>
 #include <QWidget>
 #include <QAction>
+#include <QActionGroup>
 
 Filters::Filters(QObject * parent) : QObject(parent) 
 {
@@ -33,8 +34,9 @@ void Filters::init() {
 	list["noise"] = Filter(tr("add noise"), "noise", "9ah:5ah");
 	list["deblock"] = Filter(tr("deblock"), "pp", "vb/hb");
 	list["gradfun"] = Filter(tr("gradfun"), "gradfun");
-	list["denoise_normal"] = Filter(tr("normal denoise"), "hqdn3d");
-	list["denoise_soft"] = Filter(tr("soft denoise"), "hqdn3d", "2:1:2");
+	list["denoise_off"] = Filter(tr("denoise off"), "", "", "denoise");
+	list["denoise_normal"] = Filter(tr("normal denoise"), "hqdn3d", "", "denoise");
+	list["denoise_soft"] = Filter(tr("soft denoise"), "hqdn3d", "2:1:2", "denoise");
 	list["blur"] = Filter(tr("blur"), "unsharp", "lc:-1.5");
 	list["sharpen"] = Filter(tr("sharpen"), "unsharp", "lc:1.5");
 
@@ -55,10 +57,32 @@ QList<QAction *> Filters::createActions(QWidget * parent) {
 		QAction * a = new QAction( i.value().trName(), parent );
 		a->setObjectName(i.key());
 		a->setCheckable(true);
+
 		actions.push_back(a);
+
+		QString group_name = i.value().group();
+		if (!group_name.isEmpty()) {
+			QActionGroup *ag = groups[group_name];
+			if (ag == 0) {
+				ag = new QActionGroup(parent);
+				//ag->setExclusive(false);
+				groups[group_name] = ag;
+			}
+			ag->addAction(a);
+		}
 	}
 
 	return actions;
+}
+
+QList <QActionGroup*> Filters::actionGroups() {
+	QList <QActionGroup*> g;
+
+	QMap<QString, QActionGroup *>::iterator i;
+	for (i = groups.begin(); i != groups.end(); ++i) {
+		g.push_back(i.value());
+	}
+	return g;
 }
 
 QString Filters::filtersToString() {
@@ -71,6 +95,19 @@ QString Filters::filtersToString() {
 		}
 	}
 	return s;
+}
+
+void Filters::setEnabled(const QString & filter_name, bool enable) {
+	list[filter_name].setEnabled(enable);
+	QString group = list[filter_name].group();
+
+	// Disable filters in the same group
+	if (!group.isEmpty()) {
+		QMap<QString, Filter>::iterator i;
+		for (i = list.begin(); i != list.end(); ++i) {
+			if ((i.key() != filter_name) && (i.value().group() == group)) i.value().setEnabled(false);
+		}
+	}
 }
 
 void Filters::save(QSettings *set) {
