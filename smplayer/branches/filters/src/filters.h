@@ -38,6 +38,7 @@ public:
 		_name = name;
 		_options = options;
 		_group = group;
+		_enabled = false;
 	};
 
 	void setTrName(QString tr_name) { _tr_name = tr_name; };
@@ -71,10 +72,12 @@ class Filters : public QObject {
 public:
 	Filters(QObject * parent = 0);
 
-	Filter item(const QString & key);
+	Filter * item(const QString & key);
 
 	void setFilters(FilterMap filters) { list = filters; };
 	FilterMap filters() { return list; };
+
+	QString filtersToString();
 
 	QList<QAction *> createActions(QWidget * parent);
 

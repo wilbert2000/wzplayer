@@ -42,8 +42,8 @@ void Filters::init() {
 	list["volnorm"] = Filter(tr("volume normalization"), "volnorm", "1");
 }
 
-Filter Filters::item(const QString & key) {
-	return list[key];
+Filter * Filters::item(const QString & key) {
+	return &list[key];
 }
 
 QList<QAction *> Filters::createActions(QWidget * parent) {
@@ -53,12 +53,24 @@ QList<QAction *> Filters::createActions(QWidget * parent) {
 	for (i = list.begin(); i != list.end(); ++i) {
 		//set->setValue(i.key(), i.value().options());
 		QAction * a = new QAction( i.value().trName(), parent );
-		a->setObjectName(i.value().name());
+		a->setObjectName(i.key());
 		a->setCheckable(true);
 		actions.push_back(a);
 	}
 
 	return actions;
+}
+
+QString Filters::filtersToString() {
+	QString s;
+	QMap<QString, Filter>::iterator i;
+	for (i = list.begin(); i != list.end(); ++i) {
+		if (i.value().enabled()) {
+			if (!s.isEmpty()) s += ",";
+			s += i.value().filter();
+		}
+	}
+	return s;
 }
 
 void Filters::save(QSettings *set) {

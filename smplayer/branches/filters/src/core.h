@@ -153,7 +153,7 @@ public slots:
 	void setStereoMode(int mode);
 
 	// Video filters
-	// ...
+	void changeVideoFilter(const QString & filter_name, bool activate);
 
 	void seek(int secs);
 	void sforward(); 	// + 10 seconds
