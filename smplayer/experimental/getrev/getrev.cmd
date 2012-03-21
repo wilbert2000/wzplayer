@@ -4,6 +4,7 @@
 set Revision=
 for /f "tokens=2" %%G IN ('svn info ^| find "Revision: "') do set /a Revision=%%G
 
+:: Set to 0 if unknown (no svn or working copy)
 if "%REVISION%"=="" (
   set REVISION=0
 )
