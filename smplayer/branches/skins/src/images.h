@@ -36,6 +36,10 @@ public:
 	//! Returns the filename of the icon
 	static QString file(const QString & icon_name);
 
+	static QString styleSheet();
+	static QString styleSheetSample();
+	static QString themesDirectory();
+
 private:
 	//! Return the filename for the icon
 	static QString filename(const QString & name, bool png);

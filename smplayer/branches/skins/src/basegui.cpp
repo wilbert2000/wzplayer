@@ -4482,6 +4482,7 @@ void BaseGui::changeStyleSheet(QString style) {
 		qApp->setStyleSheet("");
 	} 
 	else {
+		/*
 		QString qss_file = Paths::configPath() + "/themes/" + pref->iconset +"/style.qss";
 		//qDebug("BaseGui::changeStyleSheet: '%s'", qss_file.toUtf8().data());
 		if (!QFile::exists(qss_file)) {
@@ -4493,6 +4494,18 @@ void BaseGui::changeStyleSheet(QString style) {
 		} else {
 			qApp->setStyleSheet("");
 		}
+		*/
+		
+		//Need to change current directory for relative url in css to work
+		QString qss = Images::styleSheetSample();
+		qss += Images::styleSheet();
+		QDir current = QDir::current();
+		QString td = Images::themesDirectory();
+		QString relativePath = current.relativeFilePath(td);
+		qss.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)", Qt::CaseSensitive, QRegExp::RegExp2),
+							QString("url(%1\\1)").arg(relativePath + "/"));
+		qDebug("qss: %s", qss.toLatin1().constData());
+		qApp->setStyleSheet(qss);
 	}
 }
 #endif

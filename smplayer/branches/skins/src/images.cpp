@@ -138,3 +138,39 @@ QPixmap Images::flippedIcon(QString name, int size, bool png) {
 	p = flip(&p);
 	return p;
 }
+
+QString Images::styleSheet(){
+	QString filename;
+	filename = themesDirectory() + "/style.qss";
+	QFile file(filename);
+	if (file.exists()) {
+		file.open(QFile::ReadOnly | QFile::Text);
+		QString css = QString::fromUtf8(file.readAll().constData());
+		return css;
+	}
+	else
+		return "";
+}
+
+QString Images::themesDirectory(){
+	QString skin = pref->iconset;
+	QString dirname;
+	if (!skin.isEmpty()) {
+		dirname = Paths::configPath() + "/themes/" + skin;
+		if (!QFile::exists(dirname)) {
+			dirname = Paths::themesPath() + "/" + skin ;
+		}
+	}
+	return dirname;
+}
+
+QString Images::styleSheetSample() {
+	QFile file(":/Control/main.css");
+	if (file.exists()) {
+		file.open(QFile::ReadOnly | QFile::Text);
+		QString css = QString::fromUtf8(file.readAll().constData());
+		return css;
+	}
+	else
+		return QString();
+}
