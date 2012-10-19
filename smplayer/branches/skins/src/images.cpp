@@ -141,7 +141,7 @@ QPixmap Images::flippedIcon(QString name, int size, bool png) {
 
 QString Images::styleSheet(){
 	QString filename;
-	filename = themesDirectory() + "/style.qss";
+	filename = themesDirectory() + "/main.css";
 	QFile file(filename);
 	if (file.exists()) {
 		file.open(QFile::ReadOnly | QFile::Text);

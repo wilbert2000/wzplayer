@@ -213,7 +213,8 @@ QMenu * DefaultGui::createPopupMenu() {
 
 void DefaultGui::createMainToolBars() {
 	toolbar1 = new EditableToolbar( this );
-	toolbar1->setObjectName("toolbar1");
+	//toolbar1->setObjectName("toolbar1");
+	toolbar1->setObjectName("toolbar");
 	//toolbar1->setMovable(false);
 	addToolBar(Qt::TopToolBarArea, toolbar1);
 #if USE_CONFIGURABLE_TOOLBARS

@@ -1422,6 +1422,19 @@ void BaseGui::retranslateStrings() {
 
 	pauseAct->change( Images::icon("pause"), tr("&Pause"));
 	stopAct->change( Images::icon("stop"), tr("&Stop") );
+	// TEST
+	{
+		QPixmap pix = Images::icon("button-stop");
+		QIcon icon;
+		int w = pix.width();
+		int h = pix.height();
+		icon.addPixmap(pix.copy(0, 0, w, h/4 ), QIcon::Normal, QIcon::Off);
+		//icon.setPixmap(pix.copy(0, h/4, w, h/4 ), MyIcon::MouseOver, MyIcon::Off);
+		//icon.setPixmap(pix.copy(0, h/2, w, h/4 ), MyIcon::MouseDown, MyIcon::Off);
+		icon.addPixmap(pix.copy(0, 3*h/4, w, h/4 ), QIcon::Disabled, QIcon::Off);
+		stopAct->setIcon( icon );
+	}
+
 	frameStepAct->change( Images::icon("frame_step"), tr("&Frame step") );
 
 	playOrPauseAct->change( tr("Play / Pause") );
@@ -4497,8 +4510,11 @@ void BaseGui::changeStyleSheet(QString style) {
 		*/
 		
 		//Need to change current directory for relative url in css to work
+		/*
 		QString qss = Images::styleSheetSample();
 		qss += Images::styleSheet();
+		*/
+		QString qss = Images::styleSheet();
 		QDir current = QDir::current();
 		QString td = Images::themesDirectory();
 		QString relativePath = current.relativeFilePath(td);
