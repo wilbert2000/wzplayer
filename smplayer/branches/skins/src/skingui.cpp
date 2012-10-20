@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "defaultgui.h"
+#include "skingui.h"
 #include "helper.h"
 #include "colorutils.h"
 #include "core.h"
@@ -46,7 +46,7 @@
 
 using namespace Global;
 
-DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
+SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	: BaseGuiPlus( parent, flags )
 {
 	createStatusBar();
@@ -101,21 +101,21 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
 	}
 }
 
-DefaultGui::~DefaultGui() {
+SkinGui::~SkinGui() {
 	saveConfig();
 }
 
 /*
-void DefaultGui::closeEvent( QCloseEvent * ) {
-	qDebug("DefaultGui::closeEvent");
+void SkinGui::closeEvent( QCloseEvent * ) {
+	qDebug("SkinGui::closeEvent");
 
 	//BaseGuiPlus::closeEvent(e);
 	qDebug("w: %d h: %d", width(), height() );
 }
 */
 
-void DefaultGui::createActions() {
-	qDebug("DefaultGui::createActions");
+void SkinGui::createActions() {
+	qDebug("SkinGui::createActions");
 
 	timeslider_action = createTimeSliderAction(this);
 	timeslider_action->disable();
@@ -159,16 +159,16 @@ void DefaultGui::createActions() {
 }
 
 #if AUTODISABLE_ACTIONS
-void DefaultGui::enableActionsOnPlaying() {
-	qDebug("DefaultGui::enableActionsOnPlaying");
+void SkinGui::enableActionsOnPlaying() {
+	qDebug("SkinGui::enableActionsOnPlaying");
 	BaseGuiPlus::enableActionsOnPlaying();
 
 	timeslider_action->enable();
 	volumeslider_action->enable();
 }
 
-void DefaultGui::disableActionsOnStop() {
-	qDebug("DefaultGui::disableActionsOnStop");
+void SkinGui::disableActionsOnStop() {
+	qDebug("SkinGui::disableActionsOnStop");
 	BaseGuiPlus::disableActionsOnStop();
 
 	timeslider_action->disable();
@@ -176,7 +176,7 @@ void DefaultGui::disableActionsOnStop() {
 }
 #endif // AUTODISABLE_ACTIONS
 
-void DefaultGui::createMenus() {
+void SkinGui::createMenus() {
 	toolbar_menu = new QMenu(this);
 	toolbar_menu->addAction(toolbar1->toggleViewAction());
 	toolbar_menu->addAction(toolbar2->toggleViewAction());
@@ -197,7 +197,7 @@ void DefaultGui::createMenus() {
 	optionsMenu->addMenu(statusbar_menu);
 }
 
-QMenu * DefaultGui::createPopupMenu() {
+QMenu * SkinGui::createPopupMenu() {
 	QMenu * m = new QMenu(this);
 #if USE_CONFIGURABLE_TOOLBARS
 	m->addAction(editToolbar1Act);
@@ -211,9 +211,10 @@ QMenu * DefaultGui::createPopupMenu() {
 	return m;
 }
 
-void DefaultGui::createMainToolBars() {
+void SkinGui::createMainToolBars() {
 	toolbar1 = new EditableToolbar( this );
-	toolbar1->setObjectName("toolbar1");
+	//toolbar1->setObjectName("toolbar1");
+	toolbar1->setObjectName("toolbar");
 	//toolbar1->setMovable(false);
 	addToolBar(Qt::TopToolBarArea, toolbar1);
 #if USE_CONFIGURABLE_TOOLBARS
@@ -274,8 +275,8 @@ void DefaultGui::createMainToolBars() {
 }
 
 
-void DefaultGui::createControlWidgetMini() {
-	qDebug("DefaultGui::createControlWidgetMini");
+void SkinGui::createControlWidgetMini() {
+	qDebug("SkinGui::createControlWidgetMini");
 
 	controlwidget_mini = new EditableToolbar( this );
 	controlwidget_mini->setObjectName("controlwidget_mini");
@@ -310,8 +311,8 @@ void DefaultGui::createControlWidgetMini() {
 	controlwidget_mini->hide();
 }
 
-void DefaultGui::createControlWidget() {
-	qDebug("DefaultGui::createControlWidget");
+void SkinGui::createControlWidget() {
+	qDebug("SkinGui::createControlWidget");
 
 	controlwidget = new EditableToolbar( this );
 	controlwidget->setObjectName("controlwidget");
@@ -374,7 +375,7 @@ void DefaultGui::createControlWidget() {
 	*/
 }
 
-void DefaultGui::createFloatingControl() {
+void SkinGui::createFloatingControl() {
 	// Floating control
 	floating_control = new FloatingWidget(this);
 
@@ -437,8 +438,8 @@ void DefaultGui::createFloatingControl() {
 #endif
 }
 
-void DefaultGui::createStatusBar() {
-	qDebug("DefaultGui::createStatusBar");
+void SkinGui::createStatusBar() {
+	qDebug("SkinGui::createStatusBar");
 
 	time_display = new QLabel( statusBar() );
 	time_display->setObjectName("time_display");
@@ -496,7 +497,7 @@ void DefaultGui::createStatusBar() {
 	video_info_display->hide();
 }
 
-void DefaultGui::retranslateStrings() {
+void SkinGui::retranslateStrings() {
 	BaseGuiPlus::retranslateStrings();
 
 	toolbar_menu->menuAction()->setText( tr("&Toolbars") );
@@ -526,18 +527,18 @@ void DefaultGui::retranslateStrings() {
 }
 
 
-void DefaultGui::displayTime(QString text) {
+void SkinGui::displayTime(QString text) {
 	time_display->setText( text );
 	time_label_action->setText(text);
 }
 
-void DefaultGui::displayFrame(int frame) {
+void SkinGui::displayFrame(int frame) {
 	if (frame_display->isVisible()) {
 		frame_display->setNum( frame );
 	}
 }
 
-void DefaultGui::displayABSection(int secs_a, int secs_b) {
+void SkinGui::displayABSection(int secs_a, int secs_b) {
 	QString s;
 	if (secs_a > -1) s = tr("A:%1").arg(Helper::formatTime(secs_a));
 
@@ -551,20 +552,20 @@ void DefaultGui::displayABSection(int secs_a, int secs_b) {
 	ab_section_display->setShown( !s.isEmpty() );
 }
 
-void DefaultGui::displayVideoInfo(int width, int height, double fps) {
+void SkinGui::displayVideoInfo(int width, int height, double fps) {
 	video_info_display->setText(tr("%1x%2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
 }
 
-void DefaultGui::updateWidgets() {
-	qDebug("DefaultGui::updateWidgets");
+void SkinGui::updateWidgets() {
+	qDebug("SkinGui::updateWidgets");
 
 	BaseGuiPlus::updateWidgets();
 
 	panel->setFocus();
 }
 
-void DefaultGui::aboutToEnterFullscreen() {
-	qDebug("DefaultGui::aboutToEnterFullscreen");
+void SkinGui::aboutToEnterFullscreen() {
+	qDebug("SkinGui::aboutToEnterFullscreen");
 
 	BaseGuiPlus::aboutToEnterFullscreen();
 
@@ -582,8 +583,8 @@ void DefaultGui::aboutToEnterFullscreen() {
 	}
 }
 
-void DefaultGui::aboutToExitFullscreen() {
-	qDebug("DefaultGui::aboutToExitFullscreen");
+void SkinGui::aboutToExitFullscreen() {
+	qDebug("SkinGui::aboutToExitFullscreen");
 
 	BaseGuiPlus::aboutToExitFullscreen();
 
@@ -599,7 +600,7 @@ void DefaultGui::aboutToExitFullscreen() {
 	}
 }
 
-void DefaultGui::aboutToEnterCompactMode() {
+void SkinGui::aboutToEnterCompactMode() {
 
 	BaseGuiPlus::aboutToEnterCompactMode();
 
@@ -615,7 +616,7 @@ void DefaultGui::aboutToEnterCompactMode() {
 	toolbar2->hide();
 }
 
-void DefaultGui::aboutToExitCompactMode() {
+void SkinGui::aboutToExitCompactMode() {
 	BaseGuiPlus::aboutToExitCompactMode();
 
 	//menuBar()->show();
@@ -629,8 +630,8 @@ void DefaultGui::aboutToExitCompactMode() {
 	resizeEvent( new QResizeEvent( size(), size() ) );
 }
 
-void DefaultGui::showFloatingControl(QPoint /*p*/) {
-	qDebug("DefaultGui::showFloatingControl");
+void SkinGui::showFloatingControl(QPoint /*p*/) {
+	qDebug("SkinGui::showFloatingControl");
 
 #if CONTROLWIDGET_OVER_VIDEO
 	if ((pref->compact_mode) && (!pref->fullscreen)) {
@@ -650,17 +651,17 @@ void DefaultGui::showFloatingControl(QPoint /*p*/) {
 #endif
 }
 
-void DefaultGui::showFloatingMenu(QPoint /*p*/) {
+void SkinGui::showFloatingMenu(QPoint /*p*/) {
 #if !CONTROLWIDGET_OVER_VIDEO
-	qDebug("DefaultGui::showFloatingMenu");
+	qDebug("SkinGui::showFloatingMenu");
 
 	if (!menuBar()->isVisible())
 		menuBar()->show();
 #endif
 }
 
-void DefaultGui::hideFloatingControls() {
-	qDebug("DefaultGui::hideFloatingControls");
+void SkinGui::hideFloatingControls() {
+	qDebug("SkinGui::hideFloatingControls");
 
 #if CONTROLWIDGET_OVER_VIDEO
 	floating_control->hide();
@@ -673,7 +674,7 @@ void DefaultGui::hideFloatingControls() {
 #endif
 }
 
-void DefaultGui::resizeEvent( QResizeEvent * ) {
+void SkinGui::resizeEvent( QResizeEvent * ) {
 	/*
 	qDebug("defaultGui::resizeEvent");
 	qDebug(" controlwidget width: %d", controlwidget->width() );
@@ -698,18 +699,18 @@ void DefaultGui::resizeEvent( QResizeEvent * ) {
 }
 
 #if USE_MINIMUMSIZE
-QSize DefaultGui::minimumSizeHint() const {
+QSize SkinGui::minimumSizeHint() const {
 	return QSize(controlwidget_mini->sizeHint().width(), 0);
 }
 #endif
 
 
-void DefaultGui::saveConfig() {
-	qDebug("DefaultGui::saveConfig");
+void SkinGui::saveConfig() {
+	qDebug("SkinGui::saveConfig");
 
 	QSettings * set = settings;
 
-	set->beginGroup( "default_gui");
+	set->beginGroup( "skin_gui");
 
 	set->setValue("video_info", viewVideoInfoAct->isChecked());
 	set->setValue("frame_counter", viewFrameCounterAct->isChecked());
@@ -720,7 +721,7 @@ void DefaultGui::saveConfig() {
 	set->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
 
 	if (pref->save_window_size_on_exit) {
-		qDebug("DefaultGui::saveConfig: w: %d h: %d", width(), height());
+		qDebug("SkinGui::saveConfig: w: %d h: %d", width(), height());
 		set->setValue( "pos", pos() );
 		set->setValue( "size", size() );
 	}
@@ -740,12 +741,12 @@ void DefaultGui::saveConfig() {
 	set->endGroup();
 }
 
-void DefaultGui::loadConfig() {
-	qDebug("DefaultGui::loadConfig");
+void SkinGui::loadConfig() {
+	qDebug("SkinGui::loadConfig");
 
 	QSettings * set = settings;
 
-	set->beginGroup( "default_gui");
+	set->beginGroup( "skin_gui");
 
 	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
 	viewFrameCounterAct->setChecked(set->value("frame_counter", false).toBool());
@@ -768,7 +769,7 @@ void DefaultGui::loadConfig() {
 
 		if (!DesktopInfo::isInsideScreen(this)) {
 			move(0,0);
-			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
+			qWarning("SkinGui::loadConfig: window is outside of the screen, moved to 0x0");
 		}
 	}
 
@@ -778,7 +779,7 @@ void DefaultGui::loadConfig() {
 	if (toolbar_version >= TOOLBAR_VERSION) {
 		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
-		qDebug("DefaultGui::loadConfig: toolbar too old, loading default one");
+		qDebug("SkinGui::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
@@ -791,9 +792,9 @@ void DefaultGui::loadConfig() {
 	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 
 #if DOCK_PLAYLIST
-	qDebug("DefaultGui::loadConfig: playlist visible: %d", playlistdock->isVisible());
-	qDebug("DefaultGui::loadConfig: playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("DefaultGui::loadConfig: playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
+	qDebug("SkinGui::loadConfig: playlist visible: %d", playlistdock->isVisible());
+	qDebug("SkinGui::loadConfig: playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
+	qDebug("SkinGui::loadConfig: playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
 #endif
 
 	set->endGroup();
@@ -801,4 +802,4 @@ void DefaultGui::loadConfig() {
 	updateWidgets();
 }
 
-#include "moc_defaultgui.cpp"
+#include "moc_skingui.cpp"

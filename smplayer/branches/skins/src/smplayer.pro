@@ -123,6 +123,7 @@ HEADERS += guiconfig.h \
 	toolbareditor.h \
 	editabletoolbar.h \
 	defaultgui.h \
+	skingui.h \
 	minigui.h \
 	mpcgui/mpcgui.h \
 	mpcgui/mpcstyles.h \
@@ -219,6 +220,7 @@ SOURCES	+= version.cpp \
 	toolbareditor.cpp \
 	editabletoolbar.cpp \
 	defaultgui.cpp \
+	skingui.cpp \
 	minigui.cpp \
 	mpcgui/mpcgui.cpp \
 	mpcgui/mpcstyles.cpp \

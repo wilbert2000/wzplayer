@@ -163,6 +163,7 @@ void PrefInterface::retranslateStrings() {
 	gui_combo->addItem( tr("Default GUI"), "DefaultGUI");
 	gui_combo->addItem( tr("Mini GUI"), "MiniGUI");
 	gui_combo->addItem( tr("Mpc GUI"), "MpcGUI");
+	gui_combo->addItem( tr("Skin GUI"), "SkinGUI");
 	gui_combo->setCurrentIndex(gui_index);
 
 	floating_width_label->setNum(floating_width_slider->value());
