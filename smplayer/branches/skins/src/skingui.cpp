@@ -524,6 +524,13 @@ void SkinGui::retranslateStrings() {
 	editControl2Act->change( tr("Edit m&ini control bar") );
 	editFloatingControlAct->change( tr("Edit &floating control") );
 #endif
+
+	// Change icons of buttons
+	stopAct->setIcon( Images::multiIcon("button-stop", "stop") );
+	playOrPauseAct->setIcon( Images::multiIcon("button-play-pause", "play_pause") );
+	rewind1Act->setIcon( Images::multiIcon("button-rewind", "rewind10s") );
+	forward1Act->setIcon( Images::multiIcon("button-fastforward", "forward10s") );
+	fullscreenAct->setIcon( Images::multiIcon("button-fullscreen", "fullscreen") );
 }
 
 

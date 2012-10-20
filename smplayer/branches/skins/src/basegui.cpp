@@ -1421,12 +1421,12 @@ void BaseGui::retranslateStrings() {
 		playAct->setIcon( Images::flippedIcon("play") );
 
 	pauseAct->change( Images::icon("pause"), tr("&Pause"));
-	stopAct->change( Images::multiIcon("button-stop", "stop"), tr("&Stop") );
+	stopAct->change( Images::icon("stop"), tr("&Stop") );
 	frameStepAct->change( Images::icon("frame_step"), tr("&Frame step") );
 
 	playOrPauseAct->change( tr("Play / Pause") );
 	if (qApp->isLeftToRight()) 
-		playOrPauseAct->setIcon( Images::multiIcon("button-play-pause", "play_pause") );
+		playOrPauseAct->setIcon( Images::icon("play_pause") );
 	else
 		playOrPauseAct->setIcon( Images::flippedIcon("play_pause") );
 
@@ -1454,7 +1454,7 @@ void BaseGui::retranslateStrings() {
 	incSpeed1Act->change( tr("S&peed +1%") );
 
 	// Menu Video
-	fullscreenAct->change( Images::multiIcon("button-fullscreen", "fullscreen"), tr("&Fullscreen") );
+	fullscreenAct->change( Images::icon("fullscreen"), tr("&Fullscreen") );
 	compactAct->change( Images::icon("compact"), tr("&Compact mode") );
 	videoEqualizerAct->change( Images::icon("equalizer"), tr("&Equalizer") );
 	screenshotAct->change( Images::icon("screenshot"), tr("&Screenshot") );
@@ -1842,11 +1842,11 @@ void BaseGui::setJumpTexts() {
 	forward3Act->change( tr("+%1").arg(Helper::timeForJumps(pref->seeking3)) );
 
 	if (qApp->isLeftToRight()) {
-		rewind1Act->setIcon( Images::multiIcon("button-rewind", "rewind10s") );
+		rewind1Act->setIcon( Images::icon("rewind10s") );
 		rewind2Act->setIcon( Images::icon("rewind1m") );
 		rewind3Act->setIcon( Images::icon("rewind10m") );
 
-		forward1Act->setIcon( Images::multiIcon("button-fastforward", "forward10s") );
+		forward1Act->setIcon( Images::icon("forward10s") );
 		forward2Act->setIcon( Images::icon("forward1m") );
 		forward3Act->setIcon( Images::icon("forward10m") );
 	} else {
