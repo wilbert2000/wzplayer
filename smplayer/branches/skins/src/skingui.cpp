@@ -298,18 +298,8 @@ void SkinGui::createControlWidget() {
 
 #if USE_CONFIGURABLE_TOOLBARS
 	QStringList controlwidget_actions;
-	controlwidget_actions << "play" << "pause_and_frame_step" << "stop" << "separator";
-	#if MINI_ARROW_BUTTONS
-	controlwidget_actions << "rewindbutton_action";
-	#else
-	controlwidget_actions << "rewind3" << "rewind2" << "rewind1";
-	#endif
+	controlwidget_actions << "halve_speed" << "play_prev" << "play_or_pause" << "stop" << "play_next" << "double_speed";
 	controlwidget_actions << "timeslider_action";
-	#if MINI_ARROW_BUTTONS
-	controlwidget_actions << "forwardbutton_action";
-	#else
-	controlwidget_actions << "forward1" << "forward2" << "forward3";
-	#endif
 	controlwidget_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action";
 	controlwidget->setDefaultActions(controlwidget_actions);
 #else
@@ -494,12 +484,33 @@ void SkinGui::retranslateStrings() {
 	editFloatingControlAct->change( tr("Edit &floating control") );
 #endif
 
+	changeIcons();
+}
+
+void SkinGui::changeIcons() {
 	// Change icons of buttons
 	stopAct->setIcon( Images::multiIcon("button-stop", "stop") );
-	playOrPauseAct->setIcon( Images::multiIcon("button-play-pause", "play_pause") );
-	rewind1Act->setIcon( Images::multiIcon("button-rewind", "rewind10s") );
-	forward1Act->setIcon( Images::multiIcon("button-fastforward", "forward10s") );
+	/* playOrPauseAct->setIcon( Images::multiIcon("button-play-pause", "play_pause") ); */
+	halveSpeedAct->setIcon( Images::multiIcon("button-rewind", "") );
+	doubleSpeedAct->setIcon( Images::multiIcon("button-fastforward", "") );
+	playNextAct->setIcon( Images::multiIcon("button-next", "next") );
+	playPrevAct->setIcon( Images::multiIcon("button-previous", "previous") );
 	fullscreenAct->setIcon( Images::multiIcon("button-fullscreen", "fullscreen") );
+
+	QIcon icon;
+	QPixmap pix = Images::icon("button-play-pause");
+	int w = pix.width();
+	int h = pix.height();
+	icon.addPixmap(pix.copy(0, 0, w/2, h/4 ), QIcon::Normal, QIcon::Off);
+	//icon2.setPixmap(pix.copy(0, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::Off);
+	//icon2.setPixmap(pix.copy(0, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::Off);
+	icon.addPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), QIcon::Disabled, QIcon::Off);
+
+	icon.addPixmap(pix.copy(w/2, 0, w/2, h/4 ), QIcon::Normal, QIcon::On);
+	//icon2.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::On);
+	//icon2.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::On);
+	icon.addPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), QIcon::Disabled, QIcon::On);
+	playOrPauseAct->setIcon(icon);
 }
 
 
