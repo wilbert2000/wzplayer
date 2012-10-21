@@ -104,10 +104,6 @@ protected:
 	EditableToolbar * controlwidget_mini;
 
 	EditableToolbar * toolbar1;
-	QToolBar * toolbar2;
-
-	QPushButton * select_audio;
-	QPushButton * select_subtitle;
 
 	TimeSliderAction * timeslider_action;
 	VolumeSliderAction * volumeslider_action;
@@ -136,9 +132,7 @@ protected:
 	int last_second;
 
 	bool fullscreen_toolbar1_was_visible;
-	bool fullscreen_toolbar2_was_visible;
 	bool compact_toolbar1_was_visible;
-	bool compact_toolbar2_was_visible;
 };
 
 #endif

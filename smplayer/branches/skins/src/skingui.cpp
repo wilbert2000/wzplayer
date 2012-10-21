@@ -97,7 +97,6 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	if (pref->compact_mode) {
 		controlwidget->hide();
 		toolbar1->hide();
-		toolbar2->hide();
 	}
 }
 
@@ -179,7 +178,6 @@ void SkinGui::disableActionsOnStop() {
 void SkinGui::createMenus() {
 	toolbar_menu = new QMenu(this);
 	toolbar_menu->addAction(toolbar1->toggleViewAction());
-	toolbar_menu->addAction(toolbar2->toggleViewAction());
 #if USE_CONFIGURABLE_TOOLBARS
 	toolbar_menu->addSeparator();
 	toolbar_menu->addAction(editToolbar1Act);
@@ -206,7 +204,6 @@ QMenu * SkinGui::createPopupMenu() {
 	m->addAction(editFloatingControlAct);
 #else
 	m->addAction(toolbar1->toggleViewAction());
-	m->addAction(toolbar2->toggleViewAction());
 #endif
 	return m;
 }
@@ -245,33 +242,11 @@ void SkinGui::createMainToolBars() {
 	//toolbar1->addAction(volumeslider_action);
 #endif
 
-	toolbar2 = new QToolBar( this );
-	toolbar2->setObjectName("toolbar2");
-	//toolbar2->setMovable(false);
-	addToolBar(Qt::TopToolBarArea, toolbar2);
-
-	select_audio = new QPushButton( this );
-	select_audio->setMenu( audiotrack_menu );
-	toolbar2->addWidget(select_audio);
-
-	select_subtitle = new QPushButton( this );
-	select_subtitle->setMenu( subtitlestrack_menu );
-	toolbar2->addWidget(select_subtitle);
-
-	/*
-	toolbar1->show();
-	toolbar2->show();
-	*/
-
 	// Modify toolbars' actions
 	QAction *tba;
 	tba = toolbar1->toggleViewAction();
 	tba->setObjectName("show_main_toolbar");
 	tba->setShortcut(Qt::Key_F5);
-
-	tba = toolbar2->toggleViewAction();
-	tba->setObjectName("show_language_toolbar");
-	tba->setShortcut(Qt::Key_F6);
 }
 
 
@@ -509,12 +484,6 @@ void SkinGui::retranslateStrings() {
 	toolbar1->setWindowTitle( tr("&Main toolbar") );
 	toolbar1->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 
-	toolbar2->setWindowTitle( tr("&Language toolbar") );
-	toolbar2->toggleViewAction()->setIcon(Images::icon("lang_toolbar"));
-
-	select_audio->setText( tr("Audio") );
-	select_subtitle->setText( tr("Subtitle") );
-
 	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info") );
 	viewFrameCounterAct->change( Images::icon("frame_counter"), tr("&Frame counter") );
 
@@ -578,7 +547,6 @@ void SkinGui::aboutToEnterFullscreen() {
 
 	// Save visibility of toolbars
 	fullscreen_toolbar1_was_visible = toolbar1->isVisible();
-	fullscreen_toolbar2_was_visible = toolbar2->isVisible();
 
 	if (!pref->compact_mode) {
 		//menuBar()->hide();
@@ -586,7 +554,6 @@ void SkinGui::aboutToEnterFullscreen() {
 		controlwidget->hide();
 		controlwidget_mini->hide();
 		toolbar1->hide();
-		toolbar2->hide();
 	}
 }
 
@@ -603,7 +570,6 @@ void SkinGui::aboutToExitFullscreen() {
 		controlwidget->show();
 
 		toolbar1->setVisible( fullscreen_toolbar1_was_visible );
-		toolbar2->setVisible( fullscreen_toolbar2_was_visible );
 	}
 }
 
@@ -613,14 +579,12 @@ void SkinGui::aboutToEnterCompactMode() {
 
 	// Save visibility of toolbars
 	compact_toolbar1_was_visible = toolbar1->isVisible();
-	compact_toolbar2_was_visible = toolbar2->isVisible();
 
 	//menuBar()->hide();
 	//statusBar()->hide();
 	controlwidget->hide();
 	controlwidget_mini->hide();
 	toolbar1->hide();
-	toolbar2->hide();
 }
 
 void SkinGui::aboutToExitCompactMode() {
@@ -631,7 +595,6 @@ void SkinGui::aboutToExitCompactMode() {
 	controlwidget->show();
 
 	toolbar1->setVisible( compact_toolbar1_was_visible );
-	toolbar2->setVisible( compact_toolbar2_was_visible );
 
 	// Recheck size of controlwidget
 	resizeEvent( new QResizeEvent( size(), size() ) );
@@ -723,9 +686,7 @@ void SkinGui::saveConfig() {
 	set->setValue("frame_counter", viewFrameCounterAct->isChecked());
 
 	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
-	set->setValue("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible);
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
-	set->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
 
 	if (pref->save_window_size_on_exit) {
 		qDebug("SkinGui::saveConfig: w: %d h: %d", width(), height());
@@ -759,9 +720,7 @@ void SkinGui::loadConfig() {
 	viewFrameCounterAct->setChecked(set->value("frame_counter", false).toBool());
 
 	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
-	fullscreen_toolbar2_was_visible = set->value("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible).toBool();
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
-	compact_toolbar2_was_visible = set->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
 
 	if (pref->save_window_size_on_exit) {
 		QPoint p = set->value("pos", pos()).toPoint();
