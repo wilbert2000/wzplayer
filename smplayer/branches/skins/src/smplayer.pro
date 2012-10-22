@@ -16,8 +16,7 @@ DEFINES += EXPERIMENTAL
 #DEFINES += SINGLE_INSTANCE
 #DEFINES += FIND_SUBTITLES
 #DEFINES += VIDEOPREVIEW
-#DEFINES += YOUTUBE_SUPPORT
-#DEFINES += TOOLBAR_EDITOR
+DEFINES += YOUTUBE_SUPPORT
 DEFINES += GUI_CHANGE_ON_RUNTIME
 #DEFINES += LOG_MPLAYER
 #DEFINES += LOG_SMPLAYER
@@ -304,8 +303,8 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 contains( DEFINES, SKINS ) {
 	INCLUDEPATH += skingui
 	DEPENDPATH += skingui
-	HEADERS += myicon.h mybutton.h skingui.h
-	SOURCES += myicon.cpp mybutton.cpp skingui.cpp
+	HEADERS += myicon.h mybutton.h panelseeker.h skingui.h
+	SOURCES += myicon.cpp mybutton.cpp panelseeker.cpp skingui.cpp
 }
 
 # Videopreview
