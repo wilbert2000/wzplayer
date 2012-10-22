@@ -302,6 +302,8 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 
 # Skins support
 contains( DEFINES, SKINS ) {
+	INCLUDEPATH += skingui
+	DEPENDPATH += skingui
 	HEADERS += myicon.h mybutton.h skingui.h
 	SOURCES += myicon.cpp mybutton.cpp skingui.cpp
 }
