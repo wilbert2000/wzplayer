@@ -12,15 +12,16 @@ RESOURCES = icons.qrc
 INCLUDEPATH += mpcgui
 DEPENDPATH += mpcgui
 
-#DEFINES += EXPERIMENTAL
-DEFINES += SINGLE_INSTANCE
-DEFINES += FIND_SUBTITLES
-DEFINES += VIDEOPREVIEW
-DEFINES += YOUTUBE_SUPPORT
-DEFINES += TOOLBAR_EDITOR
+DEFINES += EXPERIMENTAL
+#DEFINES += SINGLE_INSTANCE
+#DEFINES += FIND_SUBTITLES
+#DEFINES += VIDEOPREVIEW
+#DEFINES += YOUTUBE_SUPPORT
+#DEFINES += TOOLBAR_EDITOR
 DEFINES += GUI_CHANGE_ON_RUNTIME
-DEFINES += LOG_MPLAYER
-DEFINES += LOG_SMPLAYER
+#DEFINES += LOG_MPLAYER
+#DEFINES += LOG_SMPLAYER
+DEFINES += SKINS
 
 # Disable SINGLE_INSTANCE if Qt < 4.4
 contains( DEFINES, SINGLE_INSTANCE ) {
@@ -123,7 +124,6 @@ HEADERS += guiconfig.h \
 	toolbareditor.h \
 	editabletoolbar.h \
 	defaultgui.h \
-	skingui.h \
 	minigui.h \
 	mpcgui/mpcgui.h \
 	mpcgui/mpcstyles.h \
@@ -220,7 +220,6 @@ SOURCES	+= version.cpp \
 	toolbareditor.cpp \
 	editabletoolbar.cpp \
 	defaultgui.cpp \
-	skingui.cpp \
 	minigui.cpp \
 	mpcgui/mpcgui.cpp \
 	mpcgui/mpcstyles.cpp \
@@ -299,6 +298,12 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 
 	HEADERS += retrieveyoutubeurl.h
 	SOURCES += retrieveyoutubeurl.cpp
+}
+
+# Skins support
+contains( DEFINES, SKINS ) {
+	HEADERS += skingui.h
+	SOURCES += skingui.cpp
 }
 
 # Videopreview
