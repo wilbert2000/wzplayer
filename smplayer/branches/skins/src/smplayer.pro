@@ -302,8 +302,8 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 
 # Skins support
 contains( DEFINES, SKINS ) {
-	HEADERS += skingui.h
-	SOURCES += skingui.cpp
+	HEADERS += myicon.h mybutton.h skingui.h
+	SOURCES += myicon.cpp mybutton.cpp skingui.cpp
 }
 
 # Videopreview
