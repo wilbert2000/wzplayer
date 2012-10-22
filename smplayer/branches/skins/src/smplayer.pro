@@ -303,8 +303,10 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 contains( DEFINES, SKINS ) {
 	INCLUDEPATH += skingui
 	DEPENDPATH += skingui
-	HEADERS += myicon.h mybutton.h panelseeker.h skingui.h
-	SOURCES += myicon.cpp mybutton.cpp panelseeker.cpp skingui.cpp
+
+	HEADERS += myicon.h mybutton.h panelseeker.h playcontrol.h mediapanel.h qpropertysetter.h skingui.h
+	SOURCES += myicon.cpp mybutton.cpp panelseeker.cpp playcontrol.cpp mediapanel.cpp qpropertysetter.cpp skingui.cpp
+	FORMS += mediapanel.ui
 }
 
 # Videopreview
