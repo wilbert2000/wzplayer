@@ -166,6 +166,9 @@ void VolumeSliderAction::setValue(int v) {
 		MySlider *s = (MySlider*) l[n];
 		bool was_blocked = s->blockSignals(true);
 		s->setValue(v);
+#ifdef SKINS
+		emit setValueCalled(v);
+#endif
 		s->blockSignals(was_blocked);
 	}
 }
@@ -191,6 +194,12 @@ void VolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 		s->setTickPosition(tick_position);
 	}
 }
+
+#ifdef SKINS
+void VolumeSliderAction::emitValueChanged(int value) {
+	emit valueChanged(value);
+}
+#endif
 
 QWidget * VolumeSliderAction::createWidget ( QWidget * parent ) {
 	MySlider *t = new MySlider(parent);

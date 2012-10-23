@@ -117,9 +117,15 @@ public:
 public slots:
 	virtual void setValue(int);
 	virtual int value();
+#ifdef SKINS
+	void emitValueChanged(int value);
+#endif
 
 signals:
 	void valueChanged(int value);
+#ifdef SKINS
+	void setValueCalled(int);
+#endif
 
 protected:
 	virtual QWidget * createWidget ( QWidget * parent );
