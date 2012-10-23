@@ -34,6 +34,7 @@ class VolumeSliderAction;
 class FloatingWidget;
 class TimeLabelAction;
 class MyAction;
+class MediaBarPanel;
 
 #if MINI_ARROW_BUTTONS
 class SeekingButton;
@@ -101,7 +102,7 @@ protected:
 	QLabel * ab_section_display;
 	QLabel * video_info_display;
 
-	EditableToolbar * controlwidget;
+	MediaBarPanel* mediaBarPanel;
 	EditableToolbar * controlwidget_mini;
 
 	EditableToolbar * toolbar1;

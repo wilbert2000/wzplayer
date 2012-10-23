@@ -55,6 +55,7 @@ void IconSetter::removeInstance()
 
 void IconSetter::setActionIcon(QPixmap pixmap )
 {
+#if 0
     for(int n = 0; n < 10; ++n )
     {
         QIcon icon;
@@ -89,6 +90,7 @@ void IconSetter::setActionIcon(QPixmap pixmap )
         case 7: action = showPreferencesAct;
                 ICON_ADD(icon, "preferences")
                 break;
+		/*
         case 8:
                 action = youtubeAct;
                 ICON_ADD(icon, "youtube-16")
@@ -97,9 +99,11 @@ void IconSetter::setActionIcon(QPixmap pixmap )
                 action = shoutcastAct;
                 ICON_ADD(icon, "shoutcast")
                 break;
+		*/
         }
-        action->setIcon(icon);
+        if (action) action->setIcon(icon);
     }
+#endif
 }
 
 void IconSetter::buttonIcon(int buttonNo, QPixmap pix )
