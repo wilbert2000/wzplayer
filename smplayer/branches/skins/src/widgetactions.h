@@ -60,10 +60,18 @@ class TimeSliderAction : public MyWidgetAction
 public:
 	TimeSliderAction( QWidget * parent );
 	~TimeSliderAction();
+#ifdef SKINS
+	void setDuration(int d) { duration = d ;}
+	bool eventFilter(QObject *o, QEvent *e);
+#endif
 
 public slots:
 	virtual void setPos(int);
 	virtual int pos();
+#ifdef SKINS
+	void setDraggingPosExternal(int value);
+	void setPosChangedExternal(int value);
+#endif
 #if ENABLE_DELAYED_DRAGGING
 	void setDragDelay(int);
 	int dragDelay();
@@ -72,9 +80,17 @@ private:
 	int drag_delay;
 #endif
 
+#ifdef SKINS
+private:
+	int duration;
+#endif
+
 signals:
 	void posChanged(int value);
 	void draggingPos(int value);
+#ifdef SKINS
+	void posChangedExternal(int value);
+#endif
 #if ENABLE_DELAYED_DRAGGING
 	void delayedDraggingPos(int);
 #endif

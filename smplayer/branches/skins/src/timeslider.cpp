@@ -142,5 +142,11 @@ void TimeSlider::wheelEvent( QWheelEvent * e ) {
 	e->ignore();
 }
 
+#ifdef SKINS
+qreal TimeSlider::valueForPos(int pos) {
+	qreal value = (qreal)( pos - 5 ) * maximum() /(width() - 12);
+	return value;
+}
+#endif
 
 #include "moc_timeslider.cpp"

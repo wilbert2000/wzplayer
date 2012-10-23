@@ -29,6 +29,9 @@ class TimeSlider : public MySlider
 public:
 	TimeSlider( QWidget * parent );
 	~TimeSlider();
+#ifdef SKINS
+	qreal valueForPos( int pos );
+#endif
 
 public slots:
 	virtual void setPos(int); // Don't use setValue!

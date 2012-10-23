@@ -24,6 +24,12 @@
 #include <QToolButton>
 #endif
 
+#ifdef SKINS
+#include <QHelpEvent>
+#include <QToolTip>
+#include "helper.h"
+#endif
+
 MyWidgetAction::MyWidgetAction( QWidget * parent )
 	: QWidgetAction(parent)
 {
@@ -82,6 +88,30 @@ int TimeSliderAction::pos() {
 		return -1;
 	}
 }
+
+#ifdef SKINS
+void TimeSliderAction::setDraggingPosExternal(int value) {
+	emit draggingPos(value);
+}
+
+void TimeSliderAction::setPosChangedExternal(int value) {
+	emit posChanged(value);
+}
+
+bool TimeSliderAction::eventFilter(QObject *o, QEvent *e) {
+	if (createdWidgets().contains(static_cast<QWidget*>(o)) && e->type() == QEvent::ToolTip) {
+		TimeSlider* slider = static_cast<TimeSlider*>(o);
+		QHelpEvent *helpEvent = static_cast<QHelpEvent *>(e);
+		qreal value = slider->valueForPos(helpEvent->pos().x())* duration/slider->maximum();
+		if (value >=0 && value <= duration) {
+			QToolTip::showText(helpEvent->globalPos(),Helper::formatTime(value), slider);
+		} else {
+			QToolTip::hideText();
+		}
+	}
+	return false;
+}
+#endif
 
 #if ENABLE_DELAYED_DRAGGING
 void TimeSliderAction::setDragDelay(int d) {
