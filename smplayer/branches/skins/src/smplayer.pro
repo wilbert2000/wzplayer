@@ -306,10 +306,10 @@ contains( DEFINES, SKINS ) {
 
 	HEADERS += myicon.h mybutton.h panelseeker.h playcontrol.h \
                mediapanel.h volumecontrolpanel.h mediabarpanel.h \
-               qpropertysetter.h skingui.h
+               qpropertysetter.h actiontools.h skingui.h
 	SOURCES += myicon.cpp mybutton.cpp panelseeker.cpp playcontrol.cpp \
                mediapanel.cpp volumecontrolpanel.cpp mediabarpanel.cpp \
-               qpropertysetter.cpp skingui.cpp
+               qpropertysetter.cpp actiontools.cpp skingui.cpp
 	FORMS += mediapanel.ui mediabarpanel.ui
 }
 

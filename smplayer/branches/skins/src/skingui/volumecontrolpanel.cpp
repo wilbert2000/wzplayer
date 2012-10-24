@@ -22,6 +22,7 @@
 #include <QEvent>
 #include "widgetactions.h"
 #include "myaction.h"
+#include "actiontools.h"
 
 VolumeControlPanel::VolumeControlPanel(QWidget *parent) :
     QWidget(parent)
@@ -90,16 +91,17 @@ void VolumeControlPanel::setButtonIcons( MyButton* button, QPixmap pix)
 
 void VolumeControlPanel::setActionCollection(QList<QAction*> actions)
 {
-    volumeSliderAction = static_cast<VolumeSliderAction*>(actions.at(0));
-    connect(volumeSliderAction, SIGNAL(setValueCalled(int)), this, SLOT(setVolume(int)));
-    connect(volumeBar, SIGNAL(valueChanged(int)), volumeSliderAction, SLOT(emitValueChanged(int)));    
-    volumeSliderAction->installEventFilter(this);
-    volumeBar->setEnabled(true);
-    MyAction* playlistAct = static_cast<MyAction*>(actions.at(1));
-    MyAction* fullscreenAct = static_cast<MyAction*>(actions.at(2));
-    playlistButton->setAction(playlistAct);
-    fullscreenButton->setAction(fullscreenAct);
-    equalizerButton->setAction(static_cast<MyAction*>(actions.at(3)));
+	ActionTools::findAction("aaa", actions);
+	volumeSliderAction = static_cast<VolumeSliderAction*>( ActionTools::findAction("volumeslider_action", actions) );
+	if (volumeSliderAction) {
+		connect(volumeSliderAction, SIGNAL(setValueCalled(int)), this, SLOT(setVolume(int)));
+		connect(volumeBar, SIGNAL(valueChanged(int)), volumeSliderAction, SLOT(emitValueChanged(int)));    
+		volumeSliderAction->installEventFilter(this);
+		volumeBar->setEnabled(true);
+	}
+    ActionTools::setActionToButton(playlistButton, "show_playlist", actions);
+    ActionTools::setActionToButton(fullscreenButton, "fullscreen", actions);
+    ActionTools::setActionToButton(equalizerButton, "video_equalizer", actions);
 }
 
 void VolumeControlPanel::setVolume(int value)

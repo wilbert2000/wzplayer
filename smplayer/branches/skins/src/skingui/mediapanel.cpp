@@ -30,6 +30,7 @@
 #include "widgetactions.h"
 #include "core.h"
 #include "config.h"
+#include "actiontools.h"
 
 
 MediaPanel::MediaPanel(QWidget *parent)
@@ -115,16 +116,16 @@ void MediaPanel::setRepeatIcon(MyIcon icon)
 
 void MediaPanel::setActionCollection(QList<QAction *>actions)
 {
-    timeSlider = static_cast<TimeSliderAction*>(actions.at(0));
-    connect(timeSlider, SIGNAL(posChangedExternal(int)), seeker, SLOT(setSliderValue(int)));
-    connect(seeker, SIGNAL(sliderMoved(int)), timeSlider, SLOT(setDraggingPosExternal(int)));
-    connect(seeker, SIGNAL(valueChanged(int)), timeSlider, SLOT(setPosChangedExternal(int)));
+	ActionTools::findAction("aaa", actions);
+	timeSlider = static_cast<TimeSliderAction*>( ActionTools::findAction("timeslider_action", actions) );
+	if (timeSlider) {
+		connect(timeSlider, SIGNAL(posChangedExternal(int)), seeker, SLOT(setSliderValue(int)));
+		connect(seeker, SIGNAL(sliderMoved(int)), timeSlider, SLOT(setDraggingPosExternal(int)));
+		connect(seeker, SIGNAL(valueChanged(int)), timeSlider, SLOT(setPosChangedExternal(int)));
+	}
 
-    MyAction* shuffleAct = static_cast<MyAction*>(actions.at(1));
-    MyAction* repeatAct = static_cast<MyAction*>(actions.at(2));
-
-    shuffleButton->setAction(shuffleAct);
-    repeatButton->setAction(repeatAct);
+	ActionTools::setActionToButton(shuffleButton, "pl_shuffle", actions);
+	ActionTools::setActionToButton(repeatButton, "pl_repeat", actions);
 }
 
 void MediaPanel::setMplayerState(int state)

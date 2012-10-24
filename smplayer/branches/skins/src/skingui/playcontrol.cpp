@@ -19,7 +19,7 @@
 #include "playcontrol.h"
 #include <QResizeEvent>
 #include "myaction.h"
-
+#include "actiontools.h"
 
 PlayControl::PlayControl(QWidget *parent) :
     QWidget(parent), playOrPause(true)
@@ -147,13 +147,18 @@ void PlayControl::updateWidths()
 
 void PlayControl::setActionCollection(QList<QAction *> actions)
 {
-    backwardButton->setAction(static_cast<MyAction*>(actions.at(0)));
-    previousButton->setAction(static_cast<MyAction*>(actions.at(1)));
-    playPauseButton->setAction(static_cast<MyAction*>(actions.at(2)));
-    stopButton->setAction(static_cast<MyAction*>(actions.at(3)));
-    recordButton->setAction(static_cast<MyAction*>(actions.at(4)));
-    nextButton->setAction(static_cast<MyAction*>(actions.at(5)));
-    forwardButton->setAction(static_cast<MyAction*>(actions.at(6)));
+	/*
+	MyAction *a = static_cast<MyAction*>(actions.at(2));
+	qDebug("*** action: %s", a->objectName().toLatin1().constData());
+	*/
+
+	ActionTools::setActionToButton(backwardButton, "halve_speed", actions);
+	ActionTools::setActionToButton(previousButton, "play_prev", actions);
+	ActionTools::setActionToButton(playPauseButton, "play_or_pause", actions);
+	ActionTools::setActionToButton(stopButton, "stop", actions);
+	ActionTools::setActionToButton(recordButton, "record", actions);
+	ActionTools::setActionToButton(nextButton, "play_next", actions);
+	ActionTools::setActionToButton(forwardButton, "double_speed", actions);
 }
 
 bool PlayControl::eventFilter(QObject *watched, QEvent *event)

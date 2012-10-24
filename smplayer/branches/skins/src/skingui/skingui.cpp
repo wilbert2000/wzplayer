@@ -295,7 +295,7 @@ void SkinGui::createControlWidget() {
 	panel->layout()->addWidget(mediaBarPanel);
 	QList<QAction*> actions;
 	//actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << recordAct << playNextAct << doubleSpeedAct;
-	actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << stopAct << playNextAct << doubleSpeedAct;
+	actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << playNextAct << doubleSpeedAct;
 	mediaBarPanel->setPlayControlActionCollection(actions);
 	actions.clear();
 	//actions << timeslider_action << shuffleAct << repeatPlaylistAct;
