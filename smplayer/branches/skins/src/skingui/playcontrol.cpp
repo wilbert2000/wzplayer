@@ -152,13 +152,13 @@ void PlayControl::setActionCollection(QList<QAction *> actions)
 	qDebug("*** action: %s", a->objectName().toLatin1().constData());
 	*/
 
-	ActionTools::setActionToButton(backwardButton, "halve_speed", actions);
-	ActionTools::setActionToButton(previousButton, "play_prev", actions);
-	ActionTools::setActionToButton(playPauseButton, "play_or_pause", actions);
-	ActionTools::setActionToButton(stopButton, "stop", actions);
-	ActionTools::setActionToButton(recordButton, "record", actions);
-	ActionTools::setActionToButton(nextButton, "play_next", actions);
-	ActionTools::setActionToButton(forwardButton, "double_speed", actions);
+	SETACTIONTOBUTTON(backwardButton, "halve_speed");
+	SETACTIONTOBUTTON(previousButton, "play_prev");
+	SETACTIONTOBUTTON(playPauseButton, "play_or_pause");
+	SETACTIONTOBUTTON(stopButton, "stop");
+	SETACTIONTOBUTTON(recordButton, "record");
+	SETACTIONTOBUTTON(nextButton, "play_next");
+	SETACTIONTOBUTTON(forwardButton, "double_speed");
 }
 
 bool PlayControl::eventFilter(QObject *watched, QEvent *event)

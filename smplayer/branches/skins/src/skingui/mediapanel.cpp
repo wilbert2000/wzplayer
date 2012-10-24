@@ -124,8 +124,8 @@ void MediaPanel::setActionCollection(QList<QAction *>actions)
 		connect(seeker, SIGNAL(valueChanged(int)), timeSlider, SLOT(setPosChangedExternal(int)));
 	}
 
-	ActionTools::setActionToButton(shuffleButton, "pl_shuffle", actions);
-	ActionTools::setActionToButton(repeatButton, "pl_repeat", actions);
+	SETACTIONTOBUTTON(shuffleButton, "pl_shuffle");
+	SETACTIONTOBUTTON(repeatButton, "pl_repeat");
 }
 
 void MediaPanel::setMplayerState(int state)

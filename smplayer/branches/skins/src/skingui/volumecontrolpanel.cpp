@@ -99,9 +99,9 @@ void VolumeControlPanel::setActionCollection(QList<QAction*> actions)
 		volumeSliderAction->installEventFilter(this);
 		volumeBar->setEnabled(true);
 	}
-    ActionTools::setActionToButton(playlistButton, "show_playlist", actions);
-    ActionTools::setActionToButton(fullscreenButton, "fullscreen", actions);
-    ActionTools::setActionToButton(equalizerButton, "video_equalizer", actions);
+    SETACTIONTOBUTTON(playlistButton, "show_playlist");
+    SETACTIONTOBUTTON(fullscreenButton, "fullscreen");
+    SETACTIONTOBUTTON(equalizerButton, "video_equalizer");
 }
 
 void VolumeControlPanel::setVolume(int value)

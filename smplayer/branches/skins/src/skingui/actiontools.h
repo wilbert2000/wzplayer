@@ -23,6 +23,8 @@
 #include <QAction>
 #include <QList>
 
+#define SETACTIONTOBUTTON(button, name) { ActionTools::setActionToButton(button, name, actions); }
+
 class ActionTools {
 
 public:
