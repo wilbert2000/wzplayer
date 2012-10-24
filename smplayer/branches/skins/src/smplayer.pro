@@ -362,9 +362,9 @@ win32 {
 	
 	RC_FILE = smplayer.rc
 	DEFINES += NO_DEBUG_ON_CONSOLE
-#	debug {
-#		CONFIG += console
-#	}
+	debug {
+		CONFIG += console
+	}
 }
 
 os2 {

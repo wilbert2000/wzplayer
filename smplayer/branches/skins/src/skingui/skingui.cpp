@@ -306,6 +306,14 @@ void SkinGui::createControlWidget() {
 	//actions << volumeslider_action << showPlaylistAct << fullscreenAct << equalizerAct;
 	actions << volumeslider_action << showPlaylistAct << fullscreenAct << videoEqualizerAct;
 	mediaBarPanel->setVolumeControlActionCollection(actions);
+
+	actions.clear();
+	actions << openFileAct << openDirectoryAct << openDVDAct << openURLAct << screenshotAct << showPropertiesAct;
+#ifdef FIND_SUBTITLES
+	actions << showFindSubtitlesDialogAct;
+#endif
+	actions << showPreferencesAct;
+	mediaBarPanel->setToolbarActionCollection(actions);
 }
 
 void SkinGui::createFloatingControl() {

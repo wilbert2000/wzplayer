@@ -1,5 +1,6 @@
-/*  umplayer, GUI front-end for mplayer.
-    Copyright (C) 2010 Ori Rejwan
+/*  smplayer, GUI front-end for mplayer.
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    umplayer, Copyright (C) 2010 Ori Rejwan
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,16 +55,6 @@ public:
     static IconSetter* instance();
     static void removeInstance();
     ~IconSetter() {}
-    MyAction* openFileAct;
-    MyAction* openDirectoryAct;
-    MyAction* openDVDAct;
-    MyAction* openURLAct;
-    MyAction* screenshotAct;
-    MyAction* showPropertiesAct;
-    MyAction* showFindSubtitlesDialogAct;
-    MyAction* showPreferencesAct;
-    MyAction* youtubeAct;
-    MyAction* shoutcastAct;
     PlayControl* playControl;
     MediaPanel* mediaPanel;
 
@@ -106,11 +97,8 @@ public:
     void setLogoSplashIcon(QPixmap icon) { logoSplashPix = icon; }
     void setLogoIcon(QPixmap icon) { logoPix = icon; }
 
-
-
-
-
-
+	void setToolbarActions(QList<QAction *>actions) { toolbar_actions = actions; }
+	QList<QAction *> toolbarActions() { return toolbar_actions; }
 
 
 private:    
@@ -124,11 +112,7 @@ private:
     QPixmap logoPix;
     QPixmap logoSplashPix;
     QPixmap logoBgPix;
-
-signals:
-
-public slots:
-
+	QList<QAction *> toolbar_actions;
 };
 
 #endif // QPROPERTYSETTER_H

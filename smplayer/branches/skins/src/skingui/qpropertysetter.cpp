@@ -1,5 +1,6 @@
-/*  umplayer, GUI front-end for mplayer.
-    Copyright (C) 2010 Ori Rejwan
+/*  smplayer, GUI front-end for mplayer.
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    umplayer, Copyright (C) 2010 Ori Rejwan
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
 #include "qpropertysetter.h"
 #include "myicon.h"
 #include "images.h"
+#include "actiontools.h"
 
 
 #define ICON_ADD(icon, png) { icon.addPixmap(Images::icon(png, 16), QIcon::Normal, QIcon::Off); \
@@ -55,7 +57,6 @@ void IconSetter::removeInstance()
 
 void IconSetter::setActionIcon(QPixmap pixmap )
 {
-#if 0
     for(int n = 0; n < 10; ++n )
     {
         QIcon icon;
@@ -64,46 +65,36 @@ void IconSetter::setActionIcon(QPixmap pixmap )
         icon.addPixmap(pixmap.copy(n*24, 48, 24, 24), QIcon::Selected, QIcon::Off);
         icon.addPixmap(pixmap.copy(n*24, 72, 24, 24), QIcon::Disabled, QIcon::Off);
         QAction * action = 0;
+		ActionTools::findAction("aaa", toolbar_actions);
         switch(n)
         {
-        case 0: action = openFileAct;
-                ICON_ADD(icon, "file")
+        case 0: action = ActionTools::findAction("open_file", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-        case 1: action = openDirectoryAct;
-                ICON_ADD(icon, "folder")
+        case 1: action = ActionTools::findAction("open_directory", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-        case 2: action = openDVDAct;
-                ICON_ADD(icon, "dvd_drive")
+        case 2: action = ActionTools::findAction("open_dvd", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-        case 3: action = openURLAct;
-                ICON_ADD(icon, "url")
+        case 3: action = ActionTools::findAction("open_url", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-        case 4: action = screenshotAct;
-                ICON_ADD(icon, "screenshot")
+        case 4: action = ActionTools::findAction("screenshot", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-        case 5: action = showPropertiesAct;
-                ICON_ADD(icon, "info")
+        case 5: action = ActionTools::findAction("show_file_properties", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-        case 6: action = showFindSubtitlesDialogAct;
-                ICON_ADD(icon, "download_subs")
+        case 6: action = ActionTools::findAction("show_find_sub_dialog", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-        case 7: action = showPreferencesAct;
-                ICON_ADD(icon, "preferences")
+        case 7: action = ActionTools::findAction("show_preferences", toolbar_actions);
+				if (action) ICON_ADD(icon, "file")
                 break;
-		/*
-        case 8:
-                action = youtubeAct;
-                ICON_ADD(icon, "youtube-16")
-                break;
-        case 9:
-                action = shoutcastAct;
-                ICON_ADD(icon, "shoutcast")
-                break;
-		*/
         }
         if (action) action->setIcon(icon);
     }
-#endif
 }
 
 void IconSetter::buttonIcon(int buttonNo, QPixmap pix )

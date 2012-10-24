@@ -71,6 +71,10 @@ void MediaBarPanel::changeEvent(QEvent *e)
     }
 }
 
+void MediaBarPanel::setToolbarActionCollection(QList<QAction *>actions) {
+	IconSetter::instance()->setToolbarActions(actions);
+}
+
 void MediaBarPanel::setPlayControlActionCollection(QList<QAction *>actions)
 {
     playControlPanel->setActionCollection(actions);

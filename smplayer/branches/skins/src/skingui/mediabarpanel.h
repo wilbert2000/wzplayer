@@ -42,6 +42,7 @@ public:
     void setPlayControlActionCollection(QList<QAction*> actions);
     void setMediaPanelActionCollection(QList<QAction*> actions);
     void setVolumeControlActionCollection(QList<QAction*> actions);
+	void setToolbarActionCollection(QList<QAction *>actions);
     void setCore(Core* c);
     void setRecordAvailable(bool av);
 
