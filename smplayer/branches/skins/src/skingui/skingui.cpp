@@ -30,6 +30,7 @@
 #include "desktopinfo.h"
 #include "editabletoolbar.h"
 #include "mediabarpanel.h"
+#include "actionseditor.h"
 
 #if DOCK_PLAYLIST
 #include "playlistdock.h"
@@ -295,15 +296,21 @@ void SkinGui::createControlWidget() {
 	mediaBarPanel->setObjectName("mediabar-panel");
 	mediaBarPanel->setCore(core);
 	panel->layout()->addWidget(mediaBarPanel);
+
 	QList<QAction*> actions;
 	//actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << recordAct << playNextAct << doubleSpeedAct;
 	actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << playNextAct << doubleSpeedAct;
 	mediaBarPanel->setPlayControlActionCollection(actions);
+
 	actions.clear();
 	//actions << timeslider_action << shuffleAct << repeatPlaylistAct;
-	actions << stopAct << stopAct;
+	QAction * shuffleAct = ActionsEditor::findAction(playlist, "pl_shuffle");
+	QAction * repeatPlaylistAct = ActionsEditor::findAction(playlist, "pl_repeat");
+	if (shuffleAct) actions << shuffleAct;
+	if (repeatPlaylistAct) actions << repeatPlaylistAct;
 	mediaBarPanel->setMediaPanelActionCollection(actions);
 	connect(core, SIGNAL(stateChanged(Core::State)), mediaBarPanel, SLOT(setMplayerState(Core::State)));
+
 	actions.clear();
 	//actions << volumeslider_action << showPlaylistAct << fullscreenAct << equalizerAct;
 	actions << volumeslider_action << showPlaylistAct << fullscreenAct << videoEqualizerAct;
