@@ -23,9 +23,6 @@
 #include "mybutton.h"
 #include "panelseeker.h"
 
-
-class VolumeSliderAction;
-
 class VolumeControlPanel : public QWidget
 {
 Q_OBJECT
@@ -45,7 +42,6 @@ private:
     MyButton* playlistButton;
     MyButton* equalizerButton;
     PanelSeeker* volumeBar;
-    VolumeSliderAction* volumeSliderAction;
     void setButtonIcons( MyButton* button, QPixmap pix);
 
 public:
@@ -68,7 +64,7 @@ public:
     void setVolumebarProgressPix(QPixmap pix) { volumeBar->setProgressIcon(pix);}
     void setVolumeKnobPix(QPixmap pix) { volumeBar->setKnobIcon(pix); }
     void setActionCollection(QList<QAction*> actions);
-    bool eventFilter(QObject *watched, QEvent *event);
+    /* bool eventFilter(QObject *watched, QEvent *event); */
 
 signals:
 	void volumeChanged(int);

@@ -91,14 +91,9 @@ void VolumeControlPanel::setButtonIcons( MyButton* button, QPixmap pix)
 
 void VolumeControlPanel::setActionCollection(QList<QAction*> actions)
 {
-	ActionTools::findAction("aaa", actions);
-	volumeSliderAction = static_cast<VolumeSliderAction*>( ActionTools::findAction("volumeslider_action", actions) );
-	if (volumeSliderAction) {
-		connect(volumeSliderAction, SIGNAL(setValueCalled(int)), this, SLOT(setVolume(int)));
-		connect(volumeBar, SIGNAL(valueChanged(int)), volumeSliderAction, SLOT(emitValueChanged(int)));    
-		volumeSliderAction->installEventFilter(this);
-		volumeBar->setEnabled(true);
-	}
+	//ActionTools::findAction("aaa", actions);
+	volumeBar->setEnabled(true);
+	/* volumeSliderAction->installEventFilter(this); */
     SETACTIONTOBUTTON(playlistButton, "show_playlist");
     SETACTIONTOBUTTON(fullscreenButton, "fullscreen");
     SETACTIONTOBUTTON(equalizerButton, "video_equalizer");
@@ -109,6 +104,7 @@ void VolumeControlPanel::setVolume(int value)
     volumeBar->setSliderValue(value);
 }
 
+/*
 bool VolumeControlPanel::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == volumeSliderAction && event->type() == QEvent::EnabledChange)
@@ -117,5 +113,6 @@ bool VolumeControlPanel::eventFilter(QObject *watched, QEvent *event)
     }
     return false;
 }
+*/
 
 #include "moc_volumecontrolpanel.cpp"

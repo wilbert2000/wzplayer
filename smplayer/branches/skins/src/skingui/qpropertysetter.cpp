@@ -65,7 +65,7 @@ void IconSetter::setActionIcon(QPixmap pixmap )
         icon.addPixmap(pixmap.copy(n*24, 48, 24, 24), QIcon::Selected, QIcon::Off);
         icon.addPixmap(pixmap.copy(n*24, 72, 24, 24), QIcon::Disabled, QIcon::Off);
         QAction * action = 0;
-		ActionTools::findAction("aaa", toolbar_actions);
+		//ActionTools::findAction("aaa", toolbar_actions);
         switch(n)
         {
         case 0: action = ActionTools::findAction("open_file", toolbar_actions);

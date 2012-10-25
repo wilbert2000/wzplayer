@@ -118,14 +118,7 @@ void MediaPanel::setRepeatIcon(MyIcon icon)
 
 void MediaPanel::setActionCollection(QList<QAction *>actions)
 {
-	ActionTools::findAction("aaa", actions);
-	timeSlider = static_cast<TimeSliderAction*>( ActionTools::findAction("timeslider_action", actions) );
-	if (timeSlider) {
-		connect(timeSlider, SIGNAL(posChangedExternal(int)), seeker, SLOT(setSliderValue(int)));
-		connect(seeker, SIGNAL(sliderMoved(int)), timeSlider, SLOT(setDraggingPosExternal(int)));
-		connect(seeker, SIGNAL(valueChanged(int)), timeSlider, SLOT(setPosChangedExternal(int)));
-	}
-
+	//ActionTools::findAction("aaa", actions);
 	SETACTIONTOBUTTON(shuffleButton, "pl_shuffle");
 	SETACTIONTOBUTTON(repeatButton, "pl_repeat");
 }

@@ -301,7 +301,7 @@ void SkinGui::createControlWidget() {
 	mediaBarPanel->setPlayControlActionCollection(actions);
 	actions.clear();
 	//actions << timeslider_action << shuffleAct << repeatPlaylistAct;
-	actions << timeslider_action << stopAct << stopAct;
+	actions << stopAct << stopAct;
 	mediaBarPanel->setMediaPanelActionCollection(actions);
 	connect(core, SIGNAL(stateChanged(Core::State)), mediaBarPanel, SLOT(setMplayerState(Core::State)));
 	actions.clear();

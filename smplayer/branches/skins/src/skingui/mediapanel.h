@@ -28,8 +28,6 @@
 #include "mybutton.h"
 #include "panelseeker.h"
 
-class TimeSliderAction;
-
 class ScrollingLabel : public QWidget
 {
     Q_OBJECT
@@ -104,7 +102,6 @@ private:
     MyButton* shuffleButton;
     QLabel* elapsedLabel;
     QLabel* totalLabel;
-    TimeSliderAction* timeSlider;
     QString originalTitle;
     QTimer* timer;    
     int duration;
