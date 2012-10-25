@@ -316,6 +316,9 @@ void SkinGui::createControlWidget() {
 #endif
 	actions << showPreferencesAct;
 	mediaBarPanel->setToolbarActionCollection(actions);
+
+	connect(mediaBarPanel, SIGNAL(volumeChanged(int)), core, SLOT(setVolume(int)));
+	connect(core, SIGNAL(volumeChanged(int)), mediaBarPanel, SLOT(setVolume(int)));
 }
 
 void SkinGui::createFloatingControl() {

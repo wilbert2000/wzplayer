@@ -69,7 +69,7 @@ VolumeControlPanel::VolumeControlPanel(QWidget *parent) :
     connect(muteButton, SIGNAL(clicked()), this, SLOT(setVolumeMin()));
     connect(maxButton, SIGNAL(clicked()), this, SLOT(setVolumeMax()));
 
-
+	connect(volumeBar, SIGNAL(valueChanged(int)), this, SIGNAL(volumeChanged(int)));
 }
 
 void VolumeControlPanel::setButtonIcons( MyButton* button, QPixmap pix)

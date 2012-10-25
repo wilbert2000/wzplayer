@@ -52,6 +52,7 @@ MediaBarPanel::MediaBarPanel(QWidget *parent) :
     layout->addWidget(volumeControlPanel);            
     setLayout(layout);
 
+	connect(volumeControlPanel, SIGNAL(volumeChanged(int)), this, SIGNAL(volumeChanged(int)));
 }
 
 MediaBarPanel::~MediaBarPanel()
@@ -137,6 +138,10 @@ void MediaBarPanel::setRecordAvailable(bool av)
 void MediaBarPanel::setBuffering()
 {
     mediaPanel->setBuffering(true);
+}
+
+void MediaBarPanel::setVolume(int v) { 
+	volumeControlPanel->setVolume(v); 
 }
 
 #include "moc_mediabarpanel.cpp"

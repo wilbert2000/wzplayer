@@ -70,15 +70,13 @@ public:
     void setActionCollection(QList<QAction*> actions);
     bool eventFilter(QObject *watched, QEvent *event);
 
-
 signals:
+	void volumeChanged(int);
 
 public slots:
     void setVolumeMax() { volumeBar->setValue( volumeBar->maximum()); }
     void setVolumeMin() { volumeBar->setValue( volumeBar->minimum()); }
     void setVolume(int value);
-
-
 };
 
 #endif // VOLUMECONTROLPANEL_H

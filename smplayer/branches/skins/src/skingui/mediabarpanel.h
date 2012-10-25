@@ -34,8 +34,10 @@ class PlayControl;
 class MediaPanel;
 class VolumeControlPanel;
 class MyAction;
+
 class MediaBarPanel : public QWidget {
     Q_OBJECT
+
 public:
     MediaBarPanel(QWidget *parent = 0);
     ~MediaBarPanel();
@@ -56,7 +58,6 @@ private:
     VolumeControlPanel* volumeControlPanel;
     Core* core;
 
-
     // Play Control
 public slots:
     void setMplayerState(Core::State state);
@@ -66,9 +67,10 @@ public slots:
     void displayMessage(QString status);
     void displayPermanentMessage(QString status);
     void setBuffering();
+	void setVolume(int v);
 
-
-
+signals:
+	void volumeChanged(int);
 };
 
 #endif // MEDIABARPANEL_H
