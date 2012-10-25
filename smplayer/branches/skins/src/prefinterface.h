@@ -21,6 +21,7 @@
 
 #include "ui_prefinterface.h"
 #include "prefwidget.h"
+#include "config.h"
 
 class Preferences;
 

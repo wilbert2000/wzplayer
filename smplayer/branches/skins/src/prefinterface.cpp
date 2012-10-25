@@ -21,7 +21,6 @@
 #include "images.h"
 #include "preferences.h"
 #include "paths.h"
-#include "config.h"
 #include "languages.h"
 #include "recents.h"
 #include "urlhistory.h"
