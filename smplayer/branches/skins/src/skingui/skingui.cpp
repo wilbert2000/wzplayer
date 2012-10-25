@@ -438,6 +438,8 @@ void SkinGui::createStatusBar() {
 	frame_display->hide();
 	ab_section_display->show();
 	video_info_display->hide();
+
+	statusBar()->hide();
 }
 
 void SkinGui::retranslateStrings() {
