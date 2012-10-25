@@ -272,7 +272,7 @@ ScrollingLabel::ScrollingLabel(QWidget* parent )
     timerId = -1;
     textRect = QRect();
     setAttribute(Qt::WA_StyledBackground, true);
-    setText("UMPlayer");
+    setText("SMPlayer");
 }
 
 void ScrollingLabel::resizeEvent(QResizeEvent *)
