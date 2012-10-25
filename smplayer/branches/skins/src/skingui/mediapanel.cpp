@@ -85,6 +85,8 @@ MediaPanel::MediaPanel(QWidget *parent)
         timer->setInterval(2000);
         connect(timer, SIGNAL(timeout()), this, SLOT(reverseStatus()));
         //mediaLabel->setText("Blue Blue my love is blue. Blue is my love, since I am without you.");
+
+	connect(seeker, SIGNAL(valueChanged(int)), this, SIGNAL(seekerChanged(int)));
 }
 
 MediaPanel::~MediaPanel()
@@ -188,6 +190,10 @@ void MediaPanel::setBuffering(bool enable)
     {        
         seeker->setState(PanelSeeker::Buffering, false);
     }
+}
+
+void MediaPanel::setSeeker(int v) {
+	seeker->setSliderValue(v);
 }
 
 bool MediaPanel::eventFilter(QObject *o, QEvent *e)

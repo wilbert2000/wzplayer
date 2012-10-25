@@ -53,6 +53,7 @@ MediaBarPanel::MediaBarPanel(QWidget *parent) :
     setLayout(layout);
 
 	connect(volumeControlPanel, SIGNAL(volumeChanged(int)), this, SIGNAL(volumeChanged(int)));
+	connect(mediaPanel, SIGNAL(seekerChanged(int)), this, SIGNAL(seekerChanged(int)));
 }
 
 MediaBarPanel::~MediaBarPanel()
@@ -142,6 +143,10 @@ void MediaBarPanel::setBuffering()
 
 void MediaBarPanel::setVolume(int v) { 
 	volumeControlPanel->setVolume(v); 
+}
+
+void MediaBarPanel::setSeeker(int v) {
+	mediaPanel->setSeeker(v);
 }
 
 #include "moc_mediabarpanel.cpp"

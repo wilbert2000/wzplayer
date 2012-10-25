@@ -68,9 +68,11 @@ public slots:
     void displayPermanentMessage(QString status);
     void setBuffering();
 	void setVolume(int v);
+	void setSeeker(int v);
 
 signals:
 	void volumeChanged(int);
+	void seekerChanged(int);
 };
 
 #endif // MEDIABARPANEL_H

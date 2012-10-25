@@ -1,3 +1,23 @@
+/*  smplayer, GUI front-end for mplayer.
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
+    umplayer, Copyright (C) 2010 Ori Rejwan
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+
 #ifndef MEDIAPANEL_H
 #define MEDIAPANEL_H
 
@@ -9,6 +29,7 @@
 #include "panelseeker.h"
 
 class TimeSliderAction;
+
 class ScrollingLabel : public QWidget
 {
     Q_OBJECT
@@ -19,7 +40,6 @@ public:
     QString text() { return mText; }
     void setText( QString text);
 
-
 private:
     QString mText;
     void updateLabel();
@@ -28,12 +48,12 @@ private:
     QRect textRect;
     static const int gap = 10;        
 
-
 protected:
     void paintEvent(QPaintEvent *);
     void changeEvent(QEvent *);
     void resizeEvent(QResizeEvent *);
     QSize sizeHint() const;
+
 private slots:
     void timerEvent(QTimerEvent *);
 };
@@ -70,6 +90,9 @@ public:
     void setBuffering(bool enable);
     bool eventFilter(QObject *object, QEvent *event);
 
+public slots:
+	void setSeeker(int v);
+
 private:
     Ui::MediaPanelClass ui;
     QPixmap leftBackground;
@@ -85,17 +108,18 @@ private:
     QString originalTitle;
     QTimer* timer;    
     int duration;
+
 private slots:
     void reverseStatus();
 
 protected:
     void paintEvent(QPaintEvent *);
 
+signals:
+	void seekerChanged(int);
+
 public:
     friend class IconSetter;
 };
-
-
-
 
 #endif // MEDIAPANEL_H
