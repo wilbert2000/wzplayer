@@ -320,8 +320,13 @@ void SkinGui::createControlWidget() {
 	connect(mediaBarPanel, SIGNAL(volumeChanged(int)), core, SLOT(setVolume(int)));
 	connect(core, SIGNAL(volumeChanged(int)), mediaBarPanel, SLOT(setVolume(int)));
 
+#ifdef SEEKBAR_RESOLUTION
 	connect(mediaBarPanel, SIGNAL(seekerChanged(int)), core, SLOT(goToPosition(int)));
 	connect(core, SIGNAL(positionChanged(int)), mediaBarPanel, SLOT(setSeeker(int)));
+#else
+	connect(mediaBarPanel, SIGNAL(seekerChanged(int)), core, SLOT(goToPos(int)));
+	connect(core, SIGNAL(posChanged(int)),mediaBarPanel, SLOT(setSeeker(int)));
+#endif
 }
 
 void SkinGui::createFloatingControl() {

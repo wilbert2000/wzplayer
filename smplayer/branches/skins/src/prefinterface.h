@@ -90,7 +90,9 @@ protected:
 	void setUpdateWhileDragging(bool);
 	bool updateWhileDragging();
 
+#ifdef SEEKBAR_RESOLUTION
 	void setRelativeSeeking(bool);
+#endif
 	bool relativeSeeking();
 
 	void setPreciseSeeking(bool);
