@@ -557,7 +557,7 @@ void SkinGui::aboutToExitFullscreen() {
 
 	if (!pref->compact_mode) {
 		//menuBar()->show();
-		//statusBar()->show();
+		statusBar()->hide();
 		mediaBarPanel->show();
 		toolbar1->setVisible( fullscreen_toolbar1_was_visible );
 	}
@@ -581,7 +581,7 @@ void SkinGui::aboutToExitCompactMode() {
 	BaseGuiPlus::aboutToExitCompactMode();
 
 	//menuBar()->show();
-	//statusBar()->show();
+	statusBar()->hide();
 	mediaBarPanel->show();
 	toolbar1->setVisible( compact_toolbar1_was_visible );
 
