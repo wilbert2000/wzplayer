@@ -46,6 +46,8 @@
 
 #define TOOLBAR_VERSION 1
 
+#undef CONTROLWIDGET_OVER_VIDEO
+
 using namespace Global;
 
 SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
