@@ -54,16 +54,8 @@ using namespace Global;
 SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	: BaseGuiPlus( parent, flags )
 {
-	createStatusBar();
-
 	connect( this, SIGNAL(timeChanged(QString)),
              this, SLOT(displayTime(QString)) );
-    connect( this, SIGNAL(frameChanged(int)),
-             this, SLOT(displayFrame(int)) );
-	connect( this, SIGNAL(ABMarkersChanged(int,int)),
-             this, SLOT(displayABSection(int,int)) );
-	connect( this, SIGNAL(videoInfoChanged(int,int,double)),
-             this, SLOT(displayVideoInfo(int,int,double)) );
 
 	connect( this, SIGNAL(cursorNearBottom(QPoint)), 
              this, SLOT(showFloatingControl(QPoint)) );
@@ -96,6 +88,8 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 		mediaBarPanel->hide();
 		toolbar1->hide();
 	}
+
+	statusBar()->hide();
 }
 
 SkinGui::~SkinGui() {
@@ -127,21 +121,8 @@ void SkinGui::createActions() {
 	forwardbutton_action->setObjectName("forwardbutton_action");
 #endif
 
-	// Statusbar
-	viewVideoInfoAct = new MyAction(this, "toggle_video_info" );
-	viewVideoInfoAct->setCheckable(true);
-	connect( viewVideoInfoAct, SIGNAL(toggled(bool)),
-             video_info_display, SLOT(setVisible(bool)) );
-
-	viewFrameCounterAct = new MyAction( this, "toggle_frame_counter" );
-	viewFrameCounterAct->setCheckable( true );
-	connect( viewFrameCounterAct, SIGNAL(toggled(bool)),
-             frame_display, SLOT(setVisible(bool)) );
-
 #if USE_CONFIGURABLE_TOOLBARS
 	editToolbar1Act = new MyAction( this, "edit_main_toolbar" );
-	editControl1Act = new MyAction( this, "edit_control1" );
-	editControl2Act = new MyAction( this, "edit_control2" );
 	editFloatingControlAct = new MyAction( this, "edit_floating_control" );
 #endif
 }
@@ -176,26 +157,16 @@ void SkinGui::createMenus() {
 #if USE_CONFIGURABLE_TOOLBARS
 	toolbar_menu->addSeparator();
 	toolbar_menu->addAction(editToolbar1Act);
-	toolbar_menu->addAction(editControl1Act);
-	toolbar_menu->addAction(editControl2Act);
 	toolbar_menu->addAction(editFloatingControlAct);
 #endif
 	optionsMenu->addSeparator();
 	optionsMenu->addMenu(toolbar_menu);
-
-	statusbar_menu = new QMenu(this);
-	statusbar_menu->addAction(viewVideoInfoAct);
-	statusbar_menu->addAction(viewFrameCounterAct);
-
-	optionsMenu->addMenu(statusbar_menu);
 }
 
 QMenu * SkinGui::createPopupMenu() {
 	QMenu * m = new QMenu(this);
 #if USE_CONFIGURABLE_TOOLBARS
 	m->addAction(editToolbar1Act);
-	m->addAction(editControl1Act);
-	m->addAction(editControl2Act);
 	m->addAction(editFloatingControlAct);
 #else
 	m->addAction(toolbar1->toggleViewAction());
@@ -351,117 +322,23 @@ void SkinGui::createFloatingControl() {
 #endif
 }
 
-void SkinGui::createStatusBar() {
-	qDebug("SkinGui::createStatusBar");
-
-	time_display = new QLabel( statusBar() );
-	time_display->setObjectName("time_display");
-	time_display->setAlignment(Qt::AlignRight);
-	time_display->setFrameShape(QFrame::NoFrame);
-	time_display->setText(" 88:88:88 / 88:88:88 ");
-	time_display->setMinimumSize(time_display->sizeHint());
-
-	frame_display = new QLabel( statusBar() );
-	frame_display->setObjectName("frame_display");
-	frame_display->setAlignment(Qt::AlignRight);
-	frame_display->setFrameShape(QFrame::NoFrame);
-	frame_display->setText("88888888");
-	frame_display->setMinimumSize(frame_display->sizeHint());
-
-	ab_section_display = new QLabel( statusBar() );
-	ab_section_display->setObjectName("ab_section_display");
-	ab_section_display->setAlignment(Qt::AlignRight);
-	ab_section_display->setFrameShape(QFrame::NoFrame);
-//	ab_section_display->setText("A:0:00:00 B:0:00:00");
-//	ab_section_display->setMinimumSize(ab_section_display->sizeHint());
-
-	video_info_display = new QLabel( statusBar() );
-	video_info_display->setObjectName("video_info_display");
-	video_info_display->setAlignment(Qt::AlignRight);
-	video_info_display->setFrameShape(QFrame::NoFrame);
-
-	statusBar()->setAutoFillBackground(TRUE);
-
-	ColorUtils::setBackgroundColor( statusBar(), QColor(0,0,0) );
-	ColorUtils::setForegroundColor( statusBar(), QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( time_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( time_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( frame_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( frame_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( ab_section_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( ab_section_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( video_info_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( video_info_display, QColor(255,255,255) );
-	statusBar()->setSizeGripEnabled(FALSE);
-
-	statusBar()->addPermanentWidget( video_info_display );
-	statusBar()->addPermanentWidget( ab_section_display );
-
-    statusBar()->showMessage( tr("Welcome to SMPlayer") );
-	statusBar()->addPermanentWidget( frame_display, 0 );
-	frame_display->setText( "0" );
-
-    statusBar()->addPermanentWidget( time_display, 0 );
-	time_display->setText(" 00:00:00 / 00:00:00 ");
-
-	time_display->show();
-	frame_display->hide();
-	ab_section_display->show();
-	video_info_display->hide();
-
-	statusBar()->hide();
-}
-
 void SkinGui::retranslateStrings() {
 	BaseGuiPlus::retranslateStrings();
 
 	toolbar_menu->menuAction()->setText( tr("&Toolbars") );
 	toolbar_menu->menuAction()->setIcon( Images::icon("toolbars") );
 
-	statusbar_menu->menuAction()->setText( tr("Status&bar") );
-	statusbar_menu->menuAction()->setIcon( Images::icon("statusbar") );
-
 	toolbar1->setWindowTitle( tr("&Main toolbar") );
 	toolbar1->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 
-	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info") );
-	viewFrameCounterAct->change( Images::icon("frame_counter"), tr("&Frame counter") );
-
 #if USE_CONFIGURABLE_TOOLBARS
 	editToolbar1Act->change( tr("Edit main &toolbar") );
-	editControl1Act->change( tr("Edit &control bar") );
-	editControl2Act->change( tr("Edit m&ini control bar") );
 	editFloatingControlAct->change( tr("Edit &floating control") );
 #endif
 }
 
 void SkinGui::displayTime(QString text) {
-	time_display->setText( text );
 	time_label_action->setText(text);
-}
-
-void SkinGui::displayFrame(int frame) {
-	if (frame_display->isVisible()) {
-		frame_display->setNum( frame );
-	}
-}
-
-void SkinGui::displayABSection(int secs_a, int secs_b) {
-	QString s;
-	if (secs_a > -1) s = tr("A:%1").arg(Helper::formatTime(secs_a));
-
-	if (secs_b > -1) {
-		if (!s.isEmpty()) s += " ";
-		s += tr("B:%1").arg(Helper::formatTime(secs_b));
-	}
-
-	ab_section_display->setText( s );
-
-	ab_section_display->setShown( !s.isEmpty() );
-}
-
-void SkinGui::displayVideoInfo(int width, int height, double fps) {
-	video_info_display->setText(tr("%1x%2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
 }
 
 void SkinGui::updateWidgets() {
@@ -573,9 +450,6 @@ void SkinGui::saveConfig() {
 
 	set->beginGroup( "skin_gui");
 
-	set->setValue("video_info", viewVideoInfoAct->isChecked());
-	set->setValue("frame_counter", viewFrameCounterAct->isChecked());
-
 	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
 
@@ -604,9 +478,6 @@ void SkinGui::loadConfig() {
 	QSettings * set = settings;
 
 	set->beginGroup( "skin_gui");
-
-	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
-	viewFrameCounterAct->setChecked(set->value("frame_counter", false).toBool());
 
 	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();

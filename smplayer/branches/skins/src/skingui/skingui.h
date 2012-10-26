@@ -55,7 +55,6 @@ protected:
 	virtual void retranslateStrings();
 	virtual QMenu * createPopupMenu();
 
-	void createStatusBar();
 	void createMainToolBars();
 	void createControlWidget();
 	void createFloatingControl();
@@ -73,9 +72,6 @@ protected:
 protected slots:
 	virtual void updateWidgets();
 	virtual void displayTime(QString text);
-	virtual void displayFrame(int frame);
-	virtual void displayABSection(int secs_a, int secs_b);
-	virtual void displayVideoInfo(int width, int height, double fps);
 
 	virtual void showFloatingControl(QPoint p);
 	virtual void showFloatingMenu(QPoint p);
@@ -88,11 +84,6 @@ protected slots:
 #endif
 
 protected:
-	QLabel * time_display;
-	QLabel * frame_display;
-	QLabel * ab_section_display;
-	QLabel * video_info_display;
-
 	MediaBarPanel* mediaBarPanel;
 
 	EditableToolbar * toolbar1;
@@ -108,18 +99,12 @@ protected:
 	FloatingWidget * floating_control;
 	TimeLabelAction * time_label_action;
 
-	MyAction * viewFrameCounterAct;
-	MyAction * viewVideoInfoAct;
-
 #if USE_CONFIGURABLE_TOOLBARS
 	MyAction * editToolbar1Act;
-	MyAction * editControl1Act;
-	MyAction * editControl2Act;
 	MyAction * editFloatingControlAct;
 #endif
 
 	QMenu * toolbar_menu;
-	QMenu * statusbar_menu;
 
 	int last_second;
 
