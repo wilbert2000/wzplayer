@@ -30,6 +30,14 @@ contains( DEFINES, SINGLE_INSTANCE ) {
 	}
 }
 
+# Disable SKINS if Qt < 4.4
+contains( DEFINES, SKINS ) {
+	contains(QT_VERSION, ^4\\.[0-3]\\..*) {
+		message("SKINS requires Qt > 4.3. Disabled.")
+		DEFINES -= SKINS
+	}
+}
+
 HEADERS += guiconfig.h \
 	config.h \
 	constants.h \
