@@ -74,16 +74,13 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 
 	createActions();
 	createMainToolBars();
-    createControlWidget();
-    createControlWidgetMini();
+	createControlWidget();
 	createFloatingControl();
 	createMenus();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	connect( editToolbar1Act, SIGNAL(triggered()),
              toolbar1, SLOT(edit()) );
-	connect( editControl2Act, SIGNAL(triggered()),
-             controlwidget_mini, SLOT(edit()) );
 	floating_control->toolbar()->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()),
              floating_control->toolbar(), SLOT(edit()) );
@@ -252,42 +249,6 @@ void SkinGui::createMainToolBars() {
 	tba->setShortcut(Qt::Key_F5);
 }
 
-
-void SkinGui::createControlWidgetMini() {
-	qDebug("SkinGui::createControlWidgetMini");
-
-	controlwidget_mini = new EditableToolbar( this );
-	controlwidget_mini->setObjectName("controlwidget_mini");
-	//controlwidget_mini->setResizeEnabled(false);
-	controlwidget_mini->setMovable(false);
-	//addDockWindow(controlwidget_mini, Qt::DockBottom );
-	addToolBar(Qt::BottomToolBarArea, controlwidget_mini);
-
-#if USE_CONFIGURABLE_TOOLBARS
-	QStringList controlwidget_mini_actions;
-	controlwidget_mini_actions << "play_or_pause" << "stop" << "separator" << "rewind1" << "timeslider_action" 
-                               << "forward1" << "separator" << "mute" << "volumeslider_action";
-	controlwidget_mini->setDefaultActions(controlwidget_mini_actions);
-#else
-	controlwidget_mini->addAction(playOrPauseAct);
-	controlwidget_mini->addAction(stopAct);
-	controlwidget_mini->addSeparator();
-
-	controlwidget_mini->addAction(rewind1Act);
-
-	controlwidget_mini->addAction(timeslider_action);
-
-	controlwidget_mini->addAction(forward1Act);
-
-	controlwidget_mini->addSeparator();
-
-	controlwidget_mini->addAction(muteAct );
-
-	controlwidget_mini->addAction(volumeslider_action);
-#endif // USE_CONFIGURABLE_TOOLBARS
-
-	controlwidget_mini->hide();
-}
 
 void SkinGui::createControlWidget() {
 	qDebug("SkinGui::createControlWidget");
@@ -561,7 +522,6 @@ void SkinGui::aboutToEnterFullscreen() {
 		//menuBar()->hide();
 		//statusBar()->hide();
 		mediaBarPanel->hide();
-		controlwidget_mini->hide();
 		toolbar1->hide();
 	}
 }
@@ -591,7 +551,6 @@ void SkinGui::aboutToEnterCompactMode() {
 	//menuBar()->hide();
 	//statusBar()->hide();
 	mediaBarPanel->hide();
-	controlwidget_mini->hide();
 	toolbar1->hide();
 }
 
@@ -677,13 +636,6 @@ void SkinGui::resizeEvent( QResizeEvent * ) {
 	*/
 }
 
-#if USE_MINIMUMSIZE
-QSize SkinGui::minimumSizeHint() const {
-	return QSize(controlwidget_mini->sizeHint().width(), 0);
-}
-#endif
-
-
 void SkinGui::saveConfig() {
 	qDebug("SkinGui::saveConfig");
 
@@ -708,7 +660,6 @@ void SkinGui::saveConfig() {
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
 	set->setValue("toolbar1", toolbar1->actionsToStringList() );
-	set->setValue("controlwidget_mini", controlwidget_mini->actionsToStringList() );
 	set->setValue("floating_control", floating_control->toolbar()->actionsToStringList() );
 	set->setValue("toolbar1_version", TOOLBAR_VERSION);
 	set->endGroup();
@@ -756,9 +707,8 @@ void SkinGui::loadConfig() {
 		qDebug("SkinGui::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
-	controlwidget_mini->setActionsFromStringList( set->value("controlwidget_mini", controlwidget_mini->defaultActions()).toStringList() );
 	floating_control->toolbar()->setActionsFromStringList( set->value("floating_control", floating_control->toolbar()->defaultActions()).toStringList() );
-    floating_control->adjustSize();
+	floating_control->adjustSize();
 	set->endGroup();
 #endif
 

@@ -48,10 +48,6 @@ public:
 	SkinGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~SkinGui();
 
-#if USE_MINIMUMSIZE
-	virtual QSize minimumSizeHint () const;
-#endif
-
 public slots:
 	//virtual void showPlaylist(bool b);
 
@@ -62,7 +58,6 @@ protected:
 	void createStatusBar();
 	void createMainToolBars();
 	void createControlWidget();
-	void createControlWidgetMini();
 	void createFloatingControl();
 	void createActions();
 	void createMenus();
@@ -103,7 +98,6 @@ protected:
 	QLabel * video_info_display;
 
 	MediaBarPanel* mediaBarPanel;
-	EditableToolbar * controlwidget_mini;
 
 	EditableToolbar * toolbar1;
 
