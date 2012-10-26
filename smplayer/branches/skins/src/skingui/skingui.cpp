@@ -225,7 +225,7 @@ void SkinGui::createMainToolBars() {
 	QStringList toolbar1_actions;
 	toolbar1_actions << "open_file" << "open_url" << "favorites_menu" << "separator"
                      << "screenshot" << "separator" << "show_file_properties" 
-                     << "show_find_sub_dialog" << "show_preferences";
+                     << "show_find_sub_dialog" << "show_tube_browser" << "show_preferences";
 	toolbar1->setDefaultActions(toolbar1_actions);
 #else
 	toolbar1->addAction(openFileAct);
