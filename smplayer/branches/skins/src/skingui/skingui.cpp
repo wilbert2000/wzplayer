@@ -89,8 +89,6 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
              floating_control->toolbar(), SLOT(edit()) );
 #endif
 
-	menuBar()->setObjectName("menubar");
-
 	retranslateStrings();
 
 	loadConfig();
@@ -179,6 +177,12 @@ void SkinGui::disableActionsOnStop() {
 #endif // AUTODISABLE_ACTIONS
 
 void SkinGui::createMenus() {
+	menuBar()->setObjectName("menubar");
+	QFont font = menuBar()->font();
+	font.setPixelSize(11);
+	menuBar()->setFont(font);
+	menuBar()->setFixedHeight(21);
+
 	toolbar_menu = new QMenu(this);
 	toolbar_menu->addAction(toolbar1->toggleViewAction());
 #if USE_CONFIGURABLE_TOOLBARS
@@ -213,9 +217,9 @@ QMenu * SkinGui::createPopupMenu() {
 
 void SkinGui::createMainToolBars() {
 	toolbar1 = new EditableToolbar( this );
-	//toolbar1->setObjectName("toolbar1");
 	toolbar1->setObjectName("toolbar");
-	//toolbar1->setMovable(false);
+	toolbar1->setMovable(false);
+	toolbar1->setFixedHeight(35);
 	addToolBar(Qt::TopToolBarArea, toolbar1);
 #if USE_CONFIGURABLE_TOOLBARS
 	QStringList toolbar1_actions;
