@@ -57,6 +57,12 @@ void IconSetter::removeInstance()
 
 void IconSetter::setActionIcon(QPixmap pixmap )
 {
+#if 0
+//#define SAVE_ICONS 1
+#define SAVE(name) { QPixmap p = pixmap.copy(n*24, 0, 24, 24); \
+                     QString s = "/tmp/" name ".png"; \
+                     p.save(s); }
+
     for(int n = 0; n < 10; ++n )
     {
         QIcon icon;
@@ -70,31 +76,56 @@ void IconSetter::setActionIcon(QPixmap pixmap )
         {
         case 0: action = ActionTools::findAction("open_file", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("open")
+				#endif
                 break;
         case 1: action = ActionTools::findAction("open_directory", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("open_folder")
+				#endif
                 break;
         case 2: action = ActionTools::findAction("open_dvd", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("dvd")
+				#endif
                 break;
         case 3: action = ActionTools::findAction("open_url", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("url")
+				#endif
                 break;
         case 4: action = ActionTools::findAction("screenshot", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("screenshot")
+				#endif
                 break;
         case 5: action = ActionTools::findAction("show_file_properties", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("info")
+				#endif
                 break;
         case 6: action = ActionTools::findAction("show_find_sub_dialog", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("download_subs")
+				#endif
                 break;
         case 7: action = ActionTools::findAction("show_preferences", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
+				#if SAVE_ICONS
+				SAVE("prefs")
+				#endif
                 break;
         }
         if (action) action->setIcon(icon);
     }
+#endif
 }
 
 void IconSetter::buttonIcon(int buttonNo, QPixmap pix )
