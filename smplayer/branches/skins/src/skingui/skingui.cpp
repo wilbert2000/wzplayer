@@ -44,6 +44,8 @@
 #include <QToolButton>
 #include <QMenuBar>
 #include <QLayout>
+#include <QApplication>
+#include <QDir>
 
 #define TOOLBAR_VERSION 1
 
@@ -92,10 +94,28 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	}
 
 	statusBar()->hide();
+
+	changeStyleSheet(pref->iconset);
 }
 
 SkinGui::~SkinGui() {
 	saveConfig();
+}
+
+void SkinGui::changeStyleSheet(QString style) {
+	if (style.isEmpty())  {
+		qApp->setStyleSheet("");
+	} 
+	else {
+		QString qss = Images::styleSheet();
+		QDir current = QDir::current();
+		QString td = Images::themesDirectory();
+		QString relativePath = current.relativeFilePath(td);
+		qss.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)", Qt::CaseSensitive, QRegExp::RegExp2),
+							QString("url(%1\\1)").arg(relativePath + "/"));
+		//qDebug("qss: %s", qss.toLatin1().constData());
+		qApp->setStyleSheet(qss);
+	}
 }
 
 void SkinGui::createActions() {

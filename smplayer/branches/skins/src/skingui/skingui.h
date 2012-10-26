@@ -86,6 +86,7 @@ protected slots:
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
 #endif
+	virtual void changeStyleSheet(QString style);
 
 protected:
 	MediaBarPanel* mediaBarPanel;
