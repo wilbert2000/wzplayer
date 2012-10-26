@@ -40,6 +40,8 @@ class MediaBarPanel;
 class SeekingButton;
 #endif
 
+//#define SKIN_CONTROLWIDGET_OVER_VIDEO 1
+
 class SkinGui : public BaseGuiPlus
 {
 	Q_OBJECT
@@ -57,7 +59,9 @@ protected:
 
 	void createMainToolBars();
 	void createControlWidget();
+#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	void createFloatingControl();
+#endif
 	void createActions();
 	void createMenus();
 
@@ -96,12 +100,16 @@ protected:
 	SeekingButton * forwardbutton_action;
 #endif
 
+#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	FloatingWidget * floating_control;
+#endif
 	TimeLabelAction * time_label_action;
 
 #if USE_CONFIGURABLE_TOOLBARS
 	MyAction * editToolbar1Act;
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	MyAction * editFloatingControlAct;
+	#endif
 #endif
 
 	QMenu * toolbar_menu;

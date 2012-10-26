@@ -47,8 +47,6 @@
 
 #define TOOLBAR_VERSION 1
 
-#undef CONTROLWIDGET_OVER_VIDEO
-
 using namespace Global;
 
 SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
@@ -67,15 +65,19 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	createActions();
 	createMainToolBars();
 	createControlWidget();
+#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	createFloatingControl();
+#endif
 	createMenus();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	connect( editToolbar1Act, SIGNAL(triggered()),
              toolbar1, SLOT(edit()) );
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	floating_control->toolbar()->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()),
              floating_control->toolbar(), SLOT(edit()) );
+	#endif
 #endif
 
 	retranslateStrings();
@@ -123,7 +125,9 @@ void SkinGui::createActions() {
 
 #if USE_CONFIGURABLE_TOOLBARS
 	editToolbar1Act = new MyAction( this, "edit_main_toolbar" );
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	editFloatingControlAct = new MyAction( this, "edit_floating_control" );
+	#endif
 #endif
 }
 
@@ -157,7 +161,9 @@ void SkinGui::createMenus() {
 #if USE_CONFIGURABLE_TOOLBARS
 	toolbar_menu->addSeparator();
 	toolbar_menu->addAction(editToolbar1Act);
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	toolbar_menu->addAction(editFloatingControlAct);
+	#endif
 #endif
 	optionsMenu->addSeparator();
 	optionsMenu->addMenu(toolbar_menu);
@@ -167,7 +173,9 @@ QMenu * SkinGui::createPopupMenu() {
 	QMenu * m = new QMenu(this);
 #if USE_CONFIGURABLE_TOOLBARS
 	m->addAction(editToolbar1Act);
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	m->addAction(editFloatingControlAct);
+	#endif
 #else
 	m->addAction(toolbar1->toggleViewAction());
 #endif
@@ -259,6 +267,7 @@ void SkinGui::createControlWidget() {
 #endif
 }
 
+#if SKIN_CONTROLWIDGET_OVER_VIDEO
 void SkinGui::createFloatingControl() {
 	// Floating control
 	floating_control = new FloatingWidget(this);
@@ -321,6 +330,7 @@ void SkinGui::createFloatingControl() {
 	floating_control->adjustSize();
 #endif
 }
+#endif
 
 void SkinGui::retranslateStrings() {
 	BaseGuiPlus::retranslateStrings();
@@ -333,7 +343,9 @@ void SkinGui::retranslateStrings() {
 
 #if USE_CONFIGURABLE_TOOLBARS
 	editToolbar1Act->change( tr("Edit main &toolbar") );
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	editFloatingControlAct->change( tr("Edit &floating control") );
+	#endif
 #endif
 }
 
@@ -368,7 +380,9 @@ void SkinGui::aboutToExitFullscreen() {
 
 	BaseGuiPlus::aboutToExitFullscreen();
 
+#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	floating_control->hide();
+#endif
 
 	if (!pref->compact_mode) {
 		statusBar()->hide();
@@ -402,16 +416,16 @@ void SkinGui::aboutToExitCompactMode() {
 void SkinGui::showFloatingControl(QPoint /*p*/) {
 	qDebug("SkinGui::showFloatingControl");
 
-#if CONTROLWIDGET_OVER_VIDEO
+#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	if ((pref->compact_mode) && (!pref->fullscreen)) {
 		floating_control->setAnimated( false );
 	} else {
 		floating_control->setAnimated( pref->floating_control_animated );
 	}
 	floating_control->setMargin(pref->floating_control_margin);
-#ifndef Q_OS_WIN
+	#ifndef Q_OS_WIN
 	floating_control->setBypassWindowManager(pref->bypass_window_manager);
-#endif
+	#endif
 	floating_control->showOver(panel, pref->floating_control_width);
 #else
 	if (!mediaBarPanel->isVisible()) {
@@ -421,7 +435,7 @@ void SkinGui::showFloatingControl(QPoint /*p*/) {
 }
 
 void SkinGui::showFloatingMenu(QPoint /*p*/) {
-#if !CONTROLWIDGET_OVER_VIDEO
+#if !SKIN_CONTROLWIDGET_OVER_VIDEO
 	qDebug("SkinGui::showFloatingMenu");
 
 	if (!menuBar()->isVisible())
@@ -432,7 +446,7 @@ void SkinGui::showFloatingMenu(QPoint /*p*/) {
 void SkinGui::hideFloatingControls() {
 	qDebug("SkinGui::hideFloatingControls");
 
-#if CONTROLWIDGET_OVER_VIDEO
+#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	floating_control->hide();
 #else
 	if (mediaBarPanel->isVisible())
@@ -464,7 +478,9 @@ void SkinGui::saveConfig() {
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
 	set->setValue("toolbar1", toolbar1->actionsToStringList() );
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	set->setValue("floating_control", floating_control->toolbar()->actionsToStringList() );
+	#endif
 	set->setValue("toolbar1_version", TOOLBAR_VERSION);
 	set->endGroup();
 #endif
@@ -508,8 +524,10 @@ void SkinGui::loadConfig() {
 		qDebug("SkinGui::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
+	#if SKIN_CONTROLWIDGET_OVER_VIDEO
 	floating_control->toolbar()->setActionsFromStringList( set->value("floating_control", floating_control->toolbar()->defaultActions()).toStringList() );
 	floating_control->adjustSize();
+	#endif
 	set->endGroup();
 #endif
 
