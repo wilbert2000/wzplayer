@@ -61,7 +61,6 @@ protected:
 	void createFloatingControl();
 	void createActions();
 	void createMenus();
-	void changeIcons();
 
 	void loadConfig();
 	void saveConfig();

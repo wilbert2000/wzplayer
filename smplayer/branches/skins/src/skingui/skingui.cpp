@@ -433,36 +433,7 @@ void SkinGui::retranslateStrings() {
 	editControl2Act->change( tr("Edit m&ini control bar") );
 	editFloatingControlAct->change( tr("Edit &floating control") );
 #endif
-
-	changeIcons();
 }
-
-void SkinGui::changeIcons() {
-	// Change icons of buttons
-	stopAct->setIcon( Images::multiIcon("button-stop", "stop") );
-	/* playOrPauseAct->setIcon( Images::multiIcon("button-play-pause", "play_pause") ); */
-	halveSpeedAct->setIcon( Images::multiIcon("button-rewind", "") );
-	doubleSpeedAct->setIcon( Images::multiIcon("button-fastforward", "") );
-	playNextAct->setIcon( Images::multiIcon("button-next", "next") );
-	playPrevAct->setIcon( Images::multiIcon("button-previous", "previous") );
-	fullscreenAct->setIcon( Images::multiIcon("button-fullscreen", "fullscreen") );
-
-	QIcon icon;
-	QPixmap pix = Images::icon("button-play-pause");
-	int w = pix.width();
-	int h = pix.height();
-	icon.addPixmap(pix.copy(0, 0, w/2, h/4 ), QIcon::Normal, QIcon::Off);
-	//icon2.setPixmap(pix.copy(0, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::Off);
-	//icon2.setPixmap(pix.copy(0, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::Off);
-	icon.addPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), QIcon::Disabled, QIcon::Off);
-
-	icon.addPixmap(pix.copy(w/2, 0, w/2, h/4 ), QIcon::Normal, QIcon::On);
-	//icon2.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::On);
-	//icon2.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::On);
-	icon.addPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), QIcon::Disabled, QIcon::On);
-	playOrPauseAct->setIcon(icon);
-}
-
 
 void SkinGui::displayTime(QString text) {
 	time_display->setText( text );
