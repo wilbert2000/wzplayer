@@ -224,12 +224,11 @@ void SkinGui::createMainToolBars() {
 #if USE_CONFIGURABLE_TOOLBARS
 	QStringList toolbar1_actions;
 	toolbar1_actions << "open_file" << "open_url" << "favorites_menu" << "separator"
-                     << "screenshot" << "separator" << "show_file_properties" << "show_playlist"
-                     << "show_preferences" << "separator" << "play_prev" << "play_next";
+                     << "screenshot" << "separator" << "show_file_properties" 
+                     << "show_find_sub_dialog" << "show_preferences";
 	toolbar1->setDefaultActions(toolbar1_actions);
 #else
 	toolbar1->addAction(openFileAct);
-	toolbar1->addAction(openDVDAct);
 	toolbar1->addAction(openURLAct);
 	toolbar1->addSeparator();
 	toolbar1->addAction(compactAct);
@@ -238,11 +237,8 @@ void SkinGui::createMainToolBars() {
 	toolbar1->addAction(screenshotAct);
 	toolbar1->addSeparator();
 	toolbar1->addAction(showPropertiesAct);
-	toolbar1->addAction(showPlaylistAct);
+	toolbar1->addAction(showFindSubtitlesDialogAct);
 	toolbar1->addAction(showPreferencesAct);
-	toolbar1->addSeparator();
-	toolbar1->addAction(playPrevAct);
-	toolbar1->addAction(playNextAct);
 	// Test:
 	//toolbar1->addSeparator();
 	//toolbar1->addAction(timeslider_action);
