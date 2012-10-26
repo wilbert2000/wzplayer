@@ -230,7 +230,7 @@ void SkinGui::createControlWidget() {
 
 	QList<QAction*> actions;
 	//actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << recordAct << playNextAct << doubleSpeedAct;
-	actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << playNextAct << doubleSpeedAct;
+	actions << rewind1Act << playPrevAct << playOrPauseAct << stopAct << playNextAct << forward1Act;
 	mediaBarPanel->setPlayControlActionCollection(actions);
 
 	actions.clear();
