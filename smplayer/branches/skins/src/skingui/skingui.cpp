@@ -102,15 +102,6 @@ SkinGui::~SkinGui() {
 	saveConfig();
 }
 
-/*
-void SkinGui::closeEvent( QCloseEvent * ) {
-	qDebug("SkinGui::closeEvent");
-
-	//BaseGuiPlus::closeEvent(e);
-	qDebug("w: %d h: %d", width(), height() );
-}
-*/
-
 void SkinGui::createActions() {
 	qDebug("SkinGui::createActions");
 
@@ -519,8 +510,6 @@ void SkinGui::aboutToEnterFullscreen() {
 	fullscreen_toolbar1_was_visible = toolbar1->isVisible();
 
 	if (!pref->compact_mode) {
-		//menuBar()->hide();
-		//statusBar()->hide();
 		mediaBarPanel->hide();
 		toolbar1->hide();
 	}
@@ -534,7 +523,6 @@ void SkinGui::aboutToExitFullscreen() {
 	floating_control->hide();
 
 	if (!pref->compact_mode) {
-		//menuBar()->show();
 		statusBar()->hide();
 		mediaBarPanel->show();
 		toolbar1->setVisible( fullscreen_toolbar1_was_visible );
@@ -548,8 +536,6 @@ void SkinGui::aboutToEnterCompactMode() {
 	// Save visibility of toolbars
 	compact_toolbar1_was_visible = toolbar1->isVisible();
 
-	//menuBar()->hide();
-	//statusBar()->hide();
 	mediaBarPanel->hide();
 	toolbar1->hide();
 }
@@ -557,13 +543,12 @@ void SkinGui::aboutToEnterCompactMode() {
 void SkinGui::aboutToExitCompactMode() {
 	BaseGuiPlus::aboutToExitCompactMode();
 
-	//menuBar()->show();
 	statusBar()->hide();
 	mediaBarPanel->show();
 	toolbar1->setVisible( compact_toolbar1_was_visible );
 
 	// Recheck size of controlwidget
-	resizeEvent( new QResizeEvent( size(), size() ) );
+	/* resizeEvent( new QResizeEvent( size(), size() ) ); */
 }
 
 void SkinGui::showFloatingControl(QPoint /*p*/) {
@@ -608,32 +593,6 @@ void SkinGui::hideFloatingControls() {
 	if (menuBar()->isVisible())
 		menuBar()->hide();
 #endif
-}
-
-void SkinGui::resizeEvent( QResizeEvent * ) {
-	/*
-	qDebug("defaultGui::resizeEvent");
-	qDebug(" controlwidget width: %d", controlwidget->width() );
-	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width() );
-	*/
-
-#if QT_VERSION < 0x040000
-#define LIMIT 470
-#else
-#define LIMIT 570
-#endif
-
-	/*
-	if ( (controlwidget->isVisible()) && (width() < LIMIT) ) {
-		controlwidget->hide();
-		controlwidget_mini->show();
-	}
-	else
-	if ( (controlwidget_mini->isVisible()) && (width() > LIMIT) ) {
-		controlwidget_mini->hide();
-		controlwidget->show();
-	}
-	*/
 }
 
 void SkinGui::saveConfig() {

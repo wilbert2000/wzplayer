@@ -66,13 +66,10 @@ protected:
 	void loadConfig();
 	void saveConfig();
 
-    virtual void aboutToEnterFullscreen();
-    virtual void aboutToExitFullscreen();
-    virtual void aboutToEnterCompactMode();
-    virtual void aboutToExitCompactMode();
-
-	virtual void resizeEvent( QResizeEvent * );
-	/* virtual void closeEvent( QCloseEvent * ); */
+	virtual void aboutToEnterFullscreen();
+	virtual void aboutToExitFullscreen();
+	virtual void aboutToEnterCompactMode();
+	virtual void aboutToExitCompactMode();
 
 protected slots:
 	virtual void updateWidgets();
