@@ -347,6 +347,8 @@ void SkinGui::retranslateStrings() {
 	editFloatingControlAct->change( tr("Edit &floating control") );
 	#endif
 #endif
+
+	mediaBarPanel->setVolume(core->mset.volume);
 }
 
 void SkinGui::displayTime(QString text) {
