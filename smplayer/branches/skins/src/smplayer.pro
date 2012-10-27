@@ -2,8 +2,8 @@ TEMPLATE = app
 LANGUAGE = C++
 
 CONFIG += qt warn_on
-#CONFIG += release
-CONFIG += debug
+CONFIG += release
+#CONFIG += debug
 
 QT += network xml
 
@@ -12,7 +12,7 @@ RESOURCES = icons.qrc
 INCLUDEPATH += mpcgui
 DEPENDPATH += mpcgui
 
-DEFINES += EXPERIMENTAL
+#DEFINES += EXPERIMENTAL
 DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
 DEFINES += VIDEOPREVIEW
