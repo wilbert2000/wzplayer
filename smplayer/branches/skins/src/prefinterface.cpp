@@ -54,6 +54,15 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n=0; n < iconsets.count(); n++) {
+		#ifdef SKINS
+		QString css_file = Paths::configPath() + "/themes/" + iconsets[n] + "/main.css";
+		bool is_skin = QFile::exists(css_file);
+		//qDebug("***** %s %d", css_file.toUtf8().constData(), is_skin);
+		if (is_skin) {
+			skin_combo->addItem( iconsets[n] );
+		}
+		else
+		#endif
 		iconset_combo->addItem( iconsets[n] );
 	}
 	// Global
@@ -61,6 +70,15 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n=0; n < iconsets.count(); n++) {
+		#ifdef SKINS
+		QString css_file = Paths::themesPath() + "/" + iconsets[n] + "/main.css";
+		bool is_skin = QFile::exists(css_file);
+		//qDebug("***** %s %d", css_file.toUtf8().constData(), is_skin);
+		if ((is_skin) && (iconset_combo->findText( iconsets[n] ) == -1)) {
+			skin_combo->addItem( iconsets[n] );
+		}
+		else
+		#endif
 		if (iconset_combo->findText( iconsets[n] ) == -1) {
 			iconset_combo->addItem( iconsets[n] );
 		}
@@ -71,6 +89,11 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
             this, SLOT(changeInstanceImages()));
 #else
 	tabWidget->setTabEnabled(SINGLE_INSTANCE_TAB, false);
+#endif
+
+#ifdef SKINS
+	connect(gui_combo, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(GUIChanged(int)));
 #endif
 
 #ifdef Q_OS_WIN
@@ -315,13 +338,38 @@ QString PrefInterface::language() {
 }
 
 void PrefInterface::setIconSet(QString set) {
+	/*
 	if (set.isEmpty())
 		iconset_combo->setCurrentIndex(0);
 	else
 		iconset_combo->setCurrentText(set);
+	*/
+	iconset_combo->setCurrentIndex(0);
+	for (int n=0; n < iconset_combo->count(); n++) {
+		if (iconset_combo->itemText(n) == set) {
+			iconset_combo->setCurrentIndex(n);
+			break;
+		}
+	}
+#ifdef SKINS
+	skin_combo->setCurrentIndex(0);
+	for (int n=0; n < skin_combo->count(); n++) {
+		if (skin_combo->itemText(n) == set) {
+			skin_combo->setCurrentIndex(n);
+			break;
+		}
+	}
+#endif
 }
 
 QString PrefInterface::iconSet() {
+#ifdef SKINS
+	QString GUI = gui_combo->itemData(gui_combo->currentIndex()).toString();
+	if (GUI == "SkinGUI") {
+		return skin_combo->currentText();
+	}
+	else
+#endif
 	if (iconset_combo->currentIndex()==0) 
 		return "";
 	else
@@ -368,6 +416,26 @@ void PrefInterface::setGUI(QString gui_name) {
 QString PrefInterface::GUI() {
 	return gui_combo->itemData(gui_combo->currentIndex()).toString();
 }
+
+#ifdef SKINS
+void PrefInterface::GUIChanged(int index) {
+	if (gui_combo->itemData(index).toString() == "SkinGUI") {
+		iconset_combo->hide();
+		iconset_label->hide();
+		iconset_sp->hide();
+		skin_combo->show();
+		skin_label->show();
+		skin_sp->show();
+	} else {
+		iconset_combo->show();
+		iconset_label->show();
+		iconset_sp->show();
+		skin_combo->hide();
+		skin_label->hide();
+		skin_sp->hide();
+	}
+}
+#endif
 
 #ifdef SINGLE_INSTANCE
 void PrefInterface::setUseSingleInstance(bool b) {

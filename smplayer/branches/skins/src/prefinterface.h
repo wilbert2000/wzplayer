@@ -138,6 +138,9 @@ protected slots:
 #ifdef SINGLE_INSTANCE
 	void changeInstanceImages();
 #endif
+#ifdef SKINS
+	void GUIChanged(int index);
+#endif
 
 protected:
 	virtual void retranslateStrings();
