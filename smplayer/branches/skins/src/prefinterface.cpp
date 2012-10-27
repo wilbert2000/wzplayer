@@ -196,7 +196,7 @@ void PrefInterface::retranslateStrings() {
 	gui_combo->addItem( tr("Mini GUI"), "MiniGUI");
 	gui_combo->addItem( tr("Mpc GUI"), "MpcGUI");
 #ifdef SKINS
-	gui_combo->addItem( tr("Skin GUI"), "SkinGUI");
+	gui_combo->addItem( tr("Skinnable GUI"), "SkinGUI");
 #endif
 	gui_combo->setCurrentIndex(gui_index);
 
@@ -642,21 +642,25 @@ void PrefInterface::createHelp() {
 	setWhatsThis(language_combo, tr("Language"),
 		tr("Here you can change the language of the application.") );
 
-	setWhatsThis(iconset_combo, tr("Icon set"),
-        tr("Select the icon set you prefer for the application.") );
-
-	setWhatsThis(style_combo, tr("Style"),
-        tr("Select the style you prefer for the application.") );
-
 	setWhatsThis(gui_combo, tr("GUI"),
         tr("Select the GUI you prefer for the application. Currently "
            "there are two available: Default GUI and Mini GUI.<br>"
            "The <b>Default GUI</b> provides the traditional GUI, with the "
            "toolbar and control bar. The <b>Mini GUI</b> provides a "
            "more simple GUI, without toolbar and a control bar with few "
-           "buttons.<br>"
-           "<b>Note:</b> this option will take effect the next "
-           "time you run SMPlayer.") );
+           "buttons.") );
+
+	setWhatsThis(iconset_combo, tr("Icon set"),
+        tr("Select the icon set you prefer for the application.") );
+
+#ifdef SKINS
+	setWhatsThis(skin_combo, tr("Skin"),
+        tr("Select the skin you prefer for the application. Only available with the skinnable GUI.") );
+#endif
+
+	setWhatsThis(style_combo, tr("Style"),
+        tr("Select the style you prefer for the application.") );
+
 
 	setWhatsThis(changeFontButton, tr("Default font"),
         tr("You can change here the application's font.") );
