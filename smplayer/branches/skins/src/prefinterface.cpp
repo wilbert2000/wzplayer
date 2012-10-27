@@ -104,6 +104,12 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
 	seeking_method_group->hide();
 #endif
 
+#ifndef SKINS
+	skin_combo->hide();
+	skin_label->hide();
+	skin_sp->hide();
+#endif
+
 	retranslateStrings();
 }
 
