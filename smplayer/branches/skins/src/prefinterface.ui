@@ -231,6 +231,12 @@
          <item row="2" column="2">
           <widget class="QWidget" name="iconset_sp" native="true">
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
             <item>
              <spacer name="iconset_spacer">
               <property name="orientation">
@@ -273,6 +279,12 @@
          <item row="3" column="2">
           <widget class="QWidget" name="skin_sp" native="true">
            <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
             <item>
              <spacer name="skin_spacer">
               <property name="orientation">
