@@ -40,7 +40,6 @@ public:
 	static QIcon multiIcon(QString name, QString fallback_icon);
 
 	static QString styleSheet();
-	static QString styleSheetSample();
 	static QString themesDirectory();
 
 private:

@@ -178,13 +178,3 @@ QString Images::themesDirectory(){
 	return dirname;
 }
 
-QString Images::styleSheetSample() {
-	QFile file(":/Control/main.css");
-	if (file.exists()) {
-		file.open(QFile::ReadOnly | QFile::Text);
-		QString css = QString::fromUtf8(file.readAll().constData());
-		return css;
-	}
-	else
-		return QString();
-}
