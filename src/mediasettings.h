@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ public:
 	enum Deinterlace { NoDeinterlace = 0, L5 = 1, Yadif = 2, LB = 3, 
                        Yadif_1 = 4, Kerndeint = 5 };
 	enum AudioChannels { ChDefault = 0, ChStereo = 2, ChSurround = 4, 
-                         ChFull51 = 6, ChFull61 = 7, ChFull71 = 8 };
+                         ChFull51 = 6 };
 	enum StereoMode { Stereo = 0, Left = 1, Right = 2 };
 
 	enum Rotate { NoRotate = -1, Clockwise_flip = 0, Clockwise = 1, 

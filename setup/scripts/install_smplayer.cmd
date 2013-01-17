@@ -13,7 +13,6 @@ set OUTPUT_DIR=smplayer-build
 set SMPLAYER_DIR=svn\smplayer
 set SMTUBE_DIR=svn\smtube
 set SMPLAYER_THEMES_DIR=svn\smplayer-themes
-set SMPLAYER_SKINS_DIR=svn\smplayer-skins
 set MPLAYER_DIR=mplayer
 set QT_DIR=C:\QtSDK\Desktop\Qt\%QTVER%\mingw
 
@@ -25,7 +24,6 @@ mkdir %OUTPUT_DIR%
 copy %SMPLAYER_DIR%\src\release\smplayer.exe %OUTPUT_DIR%
 copy %SMPLAYER_DIR%\dxlist\release\dxlist.exe %OUTPUT_DIR%
 copy %SMPLAYER_DIR%\zlib\zlib1.dll %OUTPUT_DIR%
-copy %SMPLAYER_DIR%\setup\sample.avi %OUTPUT_DIR%
 copy %SMPLAYER_DIR%\*.txt %OUTPUT_DIR%
 copy %QT_DIR%\bin\QtCore4.dll %OUTPUT_DIR%
 copy %QT_DIR%\bin\QtGui4.dll %OUTPUT_DIR%
@@ -67,11 +65,6 @@ echo.
 echo ######         Icon Themes         #######
 echo.
 svn export --force %SMPLAYER_THEMES_DIR%\themes %OUTPUT_DIR%\themes
-
-echo.
-echo ######         Skins Themes         #######
-echo.
-svn export --force %SMPLAYER_SKINS_DIR%\themes %OUTPUT_DIR%\themes
 
 echo.
 echo ######           MPlayer           #######

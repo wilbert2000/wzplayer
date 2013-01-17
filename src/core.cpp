@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -1409,13 +1409,6 @@ void Core::startMplayer( QString file, double seek ) {
         mplayer_bin = fi.absoluteFilePath();
 	}
 
-	if (fi.baseName().toLower() == "mplayer2") {
-		if (!pref->mplayer_is_mplayer2) {
-			qDebug("Core::startMplayer: this seems mplayer2");
-			pref->mplayer_is_mplayer2 = true;
-		}
-	}
-
 	proc->addArgument( mplayer_bin );
 
 	proc->addArgument("-noquiet");
@@ -1587,10 +1580,8 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 	proc->addArgument("-priority");
 	proc->addArgument( p );
-	/*
 	SetPriorityClass(GetCurrentProcess(), app_p);
 	qDebug("Core::startMplayer: priority of smplayer process set to %d", app_p);
-	*/
 	#endif
 
 	if (pref->frame_drop) {
@@ -1713,9 +1704,7 @@ void Core::startMplayer( QString file, double seek ) {
 		// Use the same font for OSD
 #if !defined(Q_OS_OS2)
 		if (!pref->ass_styles.fontname.isEmpty()) {
-			if (!pref->mplayer_is_mplayer2) { // -fontconfig removed from mplayer2
-				proc->addArgument("-fontconfig");
-			}
+			proc->addArgument("-fontconfig");
 			proc->addArgument("-font");
 			proc->addArgument( pref->ass_styles.fontname );
 		}
@@ -1724,10 +1713,8 @@ void Core::startMplayer( QString file, double seek ) {
 		if (pref->freetype_support) {
 			proc->addArgument("-subfont-autoscale");
 			proc->addArgument("0");
-			if (!pref->mplayer_is_mplayer2) { // Prevent huge OSD in mplayer2
-				proc->addArgument("-subfont-osd-scale");
-				proc->addArgument(QString::number(pref->ass_styles.fontsize));
-			}
+			proc->addArgument("-subfont-osd-scale");
+			proc->addArgument(QString::number(pref->ass_styles.fontsize));
 			proc->addArgument("-subfont-text-scale"); // Old versions (like 1.0rc2) need this
 			proc->addArgument(QString::number(pref->ass_styles.fontsize));
 		}
@@ -1736,9 +1723,7 @@ void Core::startMplayer( QString file, double seek ) {
 		if (pref->freetype_support) proc->addArgument("-noass");
 #if !defined(Q_OS_OS2)
 		if ( (pref->use_fontconfig) && (!pref->font_name.isEmpty()) ) {
-			if (!pref->mplayer_is_mplayer2) { // -fontconfig removed from mplayer2
-				proc->addArgument("-fontconfig");
-			}
+			proc->addArgument("-fontconfig");
 			proc->addArgument("-font");
 			proc->addArgument( pref->font_name );
 		}
@@ -2126,7 +2111,7 @@ void Core::startMplayer( QString file, double seek ) {
 	if ( (pref->use_soft_video_eq) ) {
 		proc->addArgument("-vf-add");
 		QString eq_filter = "eq2,hue";
-		if ( (pref->vo == "gl") || (pref->vo == "gl2") || (pref->vo == "gl_tiled")
+		if ( (pref->vo == "gl") || (pref->vo == "gl2")
 #ifdef Q_OS_WIN
              || (pref->vo == "directx:noaccel")
 #endif
@@ -2373,7 +2358,7 @@ void Core::stopMplayer() {
     tellmp("quit");
     
 	qDebug("Core::stopMplayer: Waiting mplayer to finish...");
-	if (!proc->waitForFinished(pref->time_to_kill_mplayer)) {
+	if (!proc->waitForFinished(5000)) {
 		qWarning("Core::stopMplayer: process didn't finish. Killing it...");
 		proc->kill();
 	}

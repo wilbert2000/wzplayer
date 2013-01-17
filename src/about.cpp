@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ About::About(QWidget * parent, Qt::WindowFlags f)
 	}
 
 	info->setText(
-		"<b>SMPlayer</b> &copy; 2006-2013 Ricardo Villalba &lt;rvm@users.sourceforge.net&gt;<br><br>"
+		"<b>SMPlayer</b> &copy; 2006-2012 Ricardo Villalba &lt;rvm@users.sourceforge.net&gt;<br><br>"
 		"<b>" + tr("Version: %1").arg(smplayerVersion()) + "</b>" +
 #if PORTABLE_APP
                 " (" + tr("Portable Edition") + ")" +
@@ -60,12 +60,13 @@ About::About(QWidget * parent, Qt::WindowFlags f)
         "<br>Experimental branch<br>"
 #endif
         "<br>" +
-        tr("Using Qt %1 (compiled with Qt %2)").arg(qVersion()).arg(QT_VERSION_STR) + "<br>" +
+        tr("Using Qt %1 (compiled with Qt %2)").arg(qVersion()).arg(QT_VERSION_STR) + "<br><br>" +
 		mplayer_version +
-		"<b>"+ tr("Links:") +"</b><br>"+
-		tr("Official website:") +" "+  link("http://smplayer.info") +"<br>"+
-		tr("Support forum:") +" "+  link("http://smplayer.info/forum/") +"<br>"+
-        "<br>" + 
+		tr("Visit our web for updates:") +"<br>"+
+        link("http://smplayer.sf.net") +
+        "<br><br>" +
+		tr("Get help in our forum:") +"<br>" + link("http://smplayer.sf.net/forum") + 
+        "<br><br>" + 
 		tr("SMPlayer uses the award-winning MPlayer as playback engine. See %1")
 		   .arg("<a href=\"http://www.mplayerhq.hu\">http://www.mplayerhq.hu</a>")
 	);
@@ -105,29 +106,12 @@ About::About(QWidget * parent, Qt::WindowFlags f)
 		tr("Many other people contributed with patches. See the Changelog for details.")
 	);
 
-#ifdef YOUTUBE_SUPPORT
-	youtube->setHtml(
-		tr("Founded in February 2005, YouTube&trade; is the world's most popular online "
-           "video community, allowing millions of people to discover, watch and share "
-           "originally-created videos. YouTube&trade; provides a forum for people to "
-           "connect, inform, and inspire others across the globe and acts as a "
-           "distribution platform for original content creators and advertisers large and small.") +
-           "<br><br>" +
-           tr("By using this application you hereby agree to be bound by Google Terms of Services located "
-           "at %1.").arg(link("http://www.google.com/accounts/TOS", "http://www.google.com/accounts/TOS"))
-	);
-	youtube->setOpenExternalLinks(true);
-#else
-	tab_widget->removeTab(4);
-#endif
-
 	// Copy the background color ("window") of the tab widget to the "base" color of the qtextbrowsers
 	// Problem, it doesn't work with some styles, so first we change the "window" color of the tab widgets.
 	info_tab->setAutoFillBackground(true);
 	contributions_tab->setAutoFillBackground(true);
 	translations_tab->setAutoFillBackground(true);
 	license_tab->setAutoFillBackground(true);
-	youtube_tab->setAutoFillBackground(true);
 
 	QPalette pal = info_tab->palette();
 	pal.setColor(QPalette::Window, palette().color(QPalette::Window) );
@@ -136,7 +120,6 @@ About::About(QWidget * parent, Qt::WindowFlags f)
 	contributions_tab->setPalette(pal);
 	translations_tab->setPalette(pal);
 	license_tab->setPalette(pal);
-	youtube_tab->setPalette(pal);
 
 	QPalette p = info->palette();
 	//p.setBrush(QPalette::Base, info_tab->palette().window());
@@ -146,7 +129,6 @@ About::About(QWidget * parent, Qt::WindowFlags f)
 	contributions->setPalette(p);
 	translators->setPalette(p);
 	license->setPalette(p);
-	youtube->setPalette(p);
 
 	adjustSize();
 }
@@ -212,7 +194,7 @@ QString About::getTranslators() {
 		trad(tr("Slovenian"), "Janez Troha <janez.troha@gmail.com>") +
 		trad(tr("Arabic"), "Muhammad Nour Hajj Omar <arabianheart@live.com>") +
 		trad(tr("Kurdish"), "Si_murg56 <simurg56@gmail.com>") +
-		trad(tr("Galician"), QStringList() << "Miguel Branco <mgl.branco@gmail.com>" << "Gallaecio") +
+		trad(tr("Galician"), "Miguel Branco <mgl.branco@gmail.com>") +
 		trad(tr("Vietnamese"), QString::fromUtf8("Lê Xuân Thảo <thaolx@gmail.com>")) +
 		trad(tr("Estonian"), QString::fromUtf8("Olav Mägi <olav.magi@hotmail.com>")) +
         trad(tr("Lithuanian"), QStringList() 

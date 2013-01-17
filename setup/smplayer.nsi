@@ -1,6 +1,6 @@
-﻿;Installer script for win32/win64 SMPlayer
-;Written by redxii (redxii@users.sourceforge.net)
-;Tested/Developed with Unicode NSIS 2.46.5
+﻿; Installer script for win32/win64 SMPlayer
+; Written by redxii (redxii@users.sourceforge.net)
+; Tested/Developed with Unicode NSIS 2.46.5
 
 !ifndef VER_MAJOR | VER_MINOR | VER_BUILD
   !error "Version information not defined (or incomplete). You must define: VER_MAJOR, VER_MINOR, VER_BUILD."
@@ -61,9 +61,9 @@
   Name "SMPlayer ${SMPLAYER_VERSION}"
   BrandingText "SMPlayer for Windows v${SMPLAYER_VERSION}"
 !ifdef WIN64
-  OutFile "output\smplayer-${SMPLAYER_VERSION}-x64.exe"
+  OutFile "output\smplayer-${SMPLAYER_VERSION}-x86_64.exe"
 !else
-  OutFile "output\smplayer-${SMPLAYER_VERSION}-win32.exe"
+  OutFile "output\smplayer-${SMPLAYER_VERSION}-x86.exe"
 !endif
 
   ;Version tab properties
@@ -120,22 +120,18 @@
   !define MUI_ICON "smplayer-orange-installer.ico"
   !define MUI_UNICON "smplayer-orange-uninstaller.ico"
 
-  ;Misc
+  ; Misc
   !define MUI_WELCOMEFINISHPAGE_BITMAP "smplayer-orange-wizard.bmp"
   !define MUI_UNWELCOMEFINISHPAGE_BITMAP "smplayer-orange-wizard-un.bmp"
   !define MUI_ABORTWARNING
 
-  ;Welcome page
-  !define MUI_WELCOMEPAGE_TITLE $(WelcomePage_Title)
-  !define MUI_WELCOMEPAGE_TEXT $(WelcomePage_Text)
-
-  ;License page
+  ; License page
   !define MUI_LICENSEPAGE_RADIOBUTTONS
 
-  ;Components page
+  ; Components page
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
-  ;Finish page
+  ; Finish page
   !define MUI_FINISHPAGE_LINK "http://smplayer.sourceforge.net"
   !define MUI_FINISHPAGE_LINK_LOCATION "http://smplayer.sourceforge.net"
   !define MUI_FINISHPAGE_NOREBOOTSUPPORT
@@ -176,11 +172,8 @@
 ;Pages
 
   ;Install pages
-  #Welcome
   !insertmacro MUI_PAGE_WELCOME
-
-  #License
-  !insertmacro MUI_PAGE_LICENSE "license.txt"
+  !insertmacro MUI_PAGE_LICENSE "${SMPLAYER_BUILD_DIR}\Copying.txt"
 
   #Upgrade/Reinstall
   Page custom PageReinstall PageReinstallLeave
@@ -204,6 +197,7 @@
   !define MUI_PAGE_CUSTOMFUNCTION_PRE un.ConfirmPagePre
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+  !define MUI_PAGE_CUSTOMFUNCTION_PRE un.FinishPagePre
   !insertmacro MUI_UNPAGE_FINISH
 
 ;--------------------------------
@@ -234,7 +228,7 @@
   !insertmacro MUI_LANGUAGE "Spanish"
   !insertmacro MUI_LANGUAGE "TradChinese"
 
-;Custom translations for setup
+; Custom translations for setup
 
   !insertmacro LANGFILE_INCLUDE "translations\english.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\basque.nsh"
@@ -362,7 +356,7 @@ SectionGroup $(MPlayerGroupTitle)
     SectionIn RO
 
     SetOutPath "$INSTDIR\mplayer"
-    File /r /x mencoder.exe "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
+    File /r "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
 
     WriteRegDWORD HKLM "${SMPLAYER_REG_KEY}" Installed_MPlayer 0x1
 
@@ -418,7 +412,7 @@ SectionGroup $(MPlayerGroupTitle)
 
     done:
 
-  SectionEnd
+	SectionEnd
 
 SectionGroupEnd
 
@@ -453,7 +447,6 @@ Section -Post
 
   ;Allows user to use 'start smplayer.exe'
   WriteRegStr HKLM "${SMPLAYER_APP_PATHS_KEY}" "" "$INSTDIR\smplayer.exe"
-  WriteRegStr HKLM "${SMPLAYER_APP_PATHS_KEY}" "Path" "$INSTDIR"
 
   ;Default Programs Registration (Vista & later)
   ${If} ${AtLeastWinVista}
@@ -497,16 +490,13 @@ ${MementoSectionDone}
 
 !macro MacroAllExtensions _action
   !insertmacro ${_action} ".3gp"
-  !insertmacro ${_action} ".aac"
   !insertmacro ${_action} ".ac3"
   !insertmacro ${_action} ".ape"
   !insertmacro ${_action} ".asf"
   !insertmacro ${_action} ".avi"
-  !insertmacro ${_action} ".bik"
   !insertmacro ${_action} ".bin"
   !insertmacro ${_action} ".dat"
   !insertmacro ${_action} ".divx"
-  !insertmacro ${_action} ".dts"
   !insertmacro ${_action} ".dv"
   !insertmacro ${_action} ".dvr-ms"
   !insertmacro ${_action} ".f4v"
@@ -517,7 +507,6 @@ ${MementoSectionDone}
   !insertmacro ${_action} ".m1v"
   !insertmacro ${_action} ".m2t"
   !insertmacro ${_action} ".m2ts"
-  !insertmacro ${_action} ".mts"
   !insertmacro ${_action} ".m2v"
   !insertmacro ${_action} ".m3u"
   !insertmacro ${_action} ".m3u8"
@@ -544,7 +533,6 @@ ${MementoSectionDone}
   !insertmacro ${_action} ".rec"
   !insertmacro ${_action} ".rm"
   !insertmacro ${_action} ".rmvb"
-  !insertmacro ${_action} ".smk"
   !insertmacro ${_action} ".swf"
   !insertmacro ${_action} ".thd"
   !insertmacro ${_action} ".ts"
@@ -621,10 +609,10 @@ ${MementoSectionDone}
 Function ${UN}RunCheck
 
   retry_runcheck:
-  FindProcDLL::FindProc "smplayer.exe"
-  IntCmp $R0 1 0 +3
-    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION $(SMPlayer_Is_Running) /SD IDCANCEL IDRETRY retry_runcheck
-    Abort
+	FindProcDLL::FindProc "smplayer.exe"
+	IntCmp $R0 1 0 +3
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION $(SMPlayer_Is_Running) /SD IDCANCEL IDRETRY retry_runcheck
+		Abort
 
 FunctionEnd
 !macroend
@@ -639,7 +627,7 @@ Function .onInit
   ${Unless} ${AtLeastWinXP}
     MessageBox MB_YESNO|MB_ICONSTOP $(OS_Not_Supported) /SD IDNO IDYES installonoldwindows
     Abort
-  installonoldwindows:
+	installonoldwindows:
   ${EndIf}
 
 !ifdef WIN64
@@ -655,7 +643,7 @@ Function .onInit
   IfErrors +3 0
     MessageBox MB_OK|MB_ICONSTOP $(Existing_32bitInst)
     Abort
-
+  
   SetRegView 64
 !else
   ${If} ${RunningX64}
@@ -666,7 +654,7 @@ Function .onInit
     IfErrors +3 0
       MessageBox MB_OK|MB_ICONSTOP $(Existing_64bitInst)
       Abort
-
+    
     SetRegView 32
   ${EndIf}
 !endif
@@ -680,11 +668,7 @@ Function .onInit
     Abort
 
   ;Check if SMPlayer is running
-  ;Allow skipping check using /NORUNCHECK
-  ${GetParameters} $R0
-  ${GetOptions} $R0 "/NORUNCHECK" $R1
-  IfErrors 0 +2
-    Call RunCheck
+  Call RunCheck
 
   ;Check for admin on < Vista
   UserInfo::GetAccountType
@@ -974,11 +958,7 @@ Function un.onInit
   ${EndIf}
 
   ;Check if SMPlayer is running
-  ;Allow skipping check using /NORUNCHECK
-  ${un.GetParameters} $R0
-  ${un.GetOptions} $R0 "/NORUNCHECK" $R1
-  IfErrors 0 +2
-    Call un.RunCheck
+  Call un.RunCheck
 
   ;Gets start menu folder name
   !insertmacro MUI_STARTMENU_GETFOLDER "SMP_SMenu" $SMPlayer_StartMenuFolder
@@ -989,6 +969,17 @@ Function un.onInit
 FunctionEnd
 
 Function un.ConfirmPagePre
+
+  ${un.GetParameters} $R0
+
+  ${un.GetOptionsS} $R0 "/X" $R1
+  ${Unless} ${Errors}
+    Abort
+  ${EndUnless}
+
+FunctionEnd
+
+Function un.FinishPagePre
 
   ${un.GetParameters} $R0
 

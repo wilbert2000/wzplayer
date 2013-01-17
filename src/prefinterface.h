@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include "ui_prefinterface.h"
 #include "prefwidget.h"
-#include "config.h"
 
 class Preferences;
 
@@ -47,7 +46,6 @@ public:
 	bool guiChanged() { return gui_changed; }
 	bool styleChanged() { return style_changed; };
 	bool recentsChanged() { return recents_changed; };
-	bool urlMaxChanged() { return url_max_changed; };
 
 protected:
 	virtual void createHelp();
@@ -76,6 +74,9 @@ protected:
 	bool useSingleInstance();
 #endif
 
+	void setRecentsMaxItems(int n);
+	int recentsMaxItems();
+
 	void setSeeking1(int n);
 	int seeking1();
 
@@ -91,9 +92,7 @@ protected:
 	void setUpdateWhileDragging(bool);
 	bool updateWhileDragging();
 
-#ifdef SEEKBAR_RESOLUTION
 	void setRelativeSeeking(bool);
-#endif
 	bool relativeSeeking();
 
 	void setPreciseSeeking(bool);
@@ -123,23 +122,10 @@ protected:
 	bool floatingBypassWindowManager();
 #endif
 
-	// Privacy tab
-	void setRecentsMaxItems(int n);
-	int recentsMaxItems();
-
-	void setURLMaxItems(int n);
-	int urlMaxItems();
-
-	void setRememberDirs(bool b);
-	bool rememberDirs();
-
 protected slots:
 	void on_changeFontButton_clicked();
 #ifdef SINGLE_INSTANCE
 	void changeInstanceImages();
-#endif
-#ifdef SKINS
-	void GUIChanged(int index);
 #endif
 
 protected:
@@ -151,11 +137,6 @@ private:
 	bool gui_changed;
 	bool style_changed;
 	bool recents_changed;
-	bool url_max_changed;
-
-#ifdef SKINS
-	int n_skins;
-#endif
 };
 
 #endif

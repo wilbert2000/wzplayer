@@ -11,14 +11,10 @@ ${LangFileString} Installer_Is_Running "O instalador já está em execução."
 ${LangFileString} Installer_No_Admin "Tem que iniciar a sessão como administrador para instalar este programa."
 ${LangFileString} SMPlayer_Is_Running "Já existe uma instância SMPlayer em execução. Feche o SMPlayer e tente novamente."
 
-${LangFileString} OS_Not_Supported "O sistema operativo não é suportado.$\nO SMPlayer ${SMPLAYER_VERSION} requer, pelo menos, o Windows XP para funcionar corretamente.$\nQuer mesmo continuar com a instalação?"
+${LangFileString} OS_Not_Supported "Unsupported operating system.$\nSMPlayer ${SMPLAYER_VERSION} requires at least Windows XP and may not work correctly on your system.$\nDo you really want to continue with the installation?"
 ${LangFileString} Win64_Required "Para instalar esta versão, tem que possuir um sistema de 64 bits."
-${LangFileString} Existing_32bitInst "Já existe uma instalação 32 bits do SMPlayer. Tem que a desinstalar antes de efetuar uma nova instalação."
-${LangFileString} Existing_64bitInst "Já existe uma instalação 64 bits do SMPlayer. Tem que a desinstalar antes de efetuar uma nova instalação."
-
-; Welcome page
-${LangFileString} WelcomePage_Title "$(^NameDA) Setup"
-${LangFileString} WelcomePage_Text "Esta configuração irá ajuda-lo a instalar o $(^NameDA).$\r$\n$\r$\nÉ altamente recomendado o encerramento de quaisquer instâncias do SMPlayer antes de iniciar a instalação. Deste modo, será possível atualizar os ficheiros do programa sem ter que reiniciar o computador.$\r$\n$\r$\n$_CLICK"
+${LangFileString} Existing_32bitInst "Já existe uma instalação 32 bits do SMPlayer. Tem que a desinstalar antes de uma nova instalação."
+${LangFileString} Existing_64bitInst "Já existe uma instalação 64 bits do SMPlayer. Tem que a desinstalar antes de uma nova instalação."
 
 ; Components Page
 ${LangFileString} ShortcutGroupTitle "Atalhos"
@@ -58,7 +54,7 @@ ${LangFileString} Reinstall_Header_Text "Selecione o tipo de instalação"
 ${LangFileString} Reinstall_Header_SubText "Selecione o modo de substituição ou desinstalação."
 
 ${LangFileString} Reinstall_Msg1 "Você possui uma instalação do SMPlayer nesta pasta:"
-${LangFileString} Reinstall_Msg2 "Por favor escolha o método a utilizar:"
+${LangFileString} Reinstall_Msg2 "Por favor, escolha o método a utilizar:"
 ${LangFileString} Reinstall_Overwrite "Substituir ($Inst_Type) a instalação existente"
 ${LangFileString} Reinstall_Uninstall "Desinstalar (remove) a instalação existente"
 ${LangFileString} Reinstall_Msg3_1 "Clique Iniciar para continuar."
@@ -71,6 +67,12 @@ ${LangFileString} Type_Downgrade "Reverter"
 ${LangFileString} Type_Upgrade "Atualizar"
 
 ${LangFileString} StartBtn "Iniciar"
+
+; MPlayer Section
+${LangFileString} MPlayer_DL_Msg "A transferir o MPlayer..."
+${LangFileString} MPlayer_DL_Retry "O MPlayer não foi instalado corretamente. Tentar novamente?"
+${LangFileString} MPlayer_DL_Failed "Falha ao transferir o MPlayer: '$R0'."
+${LangFileString} MPlayer_Inst_Failed "Falha ao instalar o MPlayer. O MPlayer é necessário para reproduzir ficheiros."
 
 ; Codecs Section
 ${LangFileString} Codecs_DL_Msg "A transferir os codificadores MPlayer..."
@@ -89,7 +91,7 @@ ${LangFileString} Uninstaller_NotInstalled "Parece que o SMPlayer não está ins
 ${LangFileString} Uninstaller_64bitOnly "Esta instalação só pode ser desinstalada num sistema Windows de 64 bits."
 
 ; Vista & Later Default Programs Registration
-${LangFileString} Application_Description "O SMPlayer é uma interface gráfico para o MPlayer, com funções simples como a reprodução de vídeos, DVDs e VCDs bem como outras mais avançadas(suporte a filtros MPlayer, listas e mais)."
+${LangFileString} Application_Description "O SMPlayer é um interface gráfico para o MPlayer, com funções simples como a reprodução de vídeos, DVDs e VCDs bem como outras mais avançadas(suporte a filtros MPlayer, listas e mais)."
 
 ; Misc
 ${LangFileString} Info_Del_Files "A eliminar ficheiros..."

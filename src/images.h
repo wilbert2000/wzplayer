@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include <QPixmap>
 #include <QString>
-#include <QIcon>
 
 /* Warning: don't use this until global->preferences is created! */
 class Images
@@ -36,11 +35,6 @@ public:
 
 	//! Returns the filename of the icon
 	static QString file(const QString & icon_name);
-
-	static QIcon multiIcon(QString name, QString fallback_icon);
-
-	static QString styleSheet();
-	static QString themesDirectory();
 
 private:
 	//! Return the filename for the icon

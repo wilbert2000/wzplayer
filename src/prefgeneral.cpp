@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -68,8 +68,6 @@ PrefGeneral::PrefGeneral(QWidget * parent, Qt::WindowFlags f)
 	channels_combo->addItem( "2", MediaSettings::ChStereo );
 	channels_combo->addItem( "4", MediaSettings::ChSurround );
 	channels_combo->addItem( "6", MediaSettings::ChFull51 );
-	channels_combo->addItem( "7", MediaSettings::ChFull61 );
-	channels_combo->addItem( "8", MediaSettings::ChFull71 );
 
 	connect(vo_combo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(vo_combo_changed(int)));
@@ -97,8 +95,6 @@ void PrefGeneral::retranslateStrings() {
 	channels_combo->setItemText(0, tr("2 (Stereo)") );
 	channels_combo->setItemText(1, tr("4 (4.0 Surround)") );
 	channels_combo->setItemText(2, tr("6 (5.1 Surround)") );
-	channels_combo->setItemText(3, tr("7 (6.1 Surround)") );
-	channels_combo->setItemText(4, tr("8 (7.1 Surround)") );
 
 	int deinterlace_item = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
@@ -371,11 +367,6 @@ void PrefGeneral::updateDriverCombos() {
 		if (vo == "gl2") {
 			vo_combo->addItem( vo, vo);
 			vo_combo->addItem( "gl2 (yuv)", "gl2:yuv=3");
-		}
-		else
-		if (vo == "gl_tiled") {
-			vo_combo->addItem( vo, vo);
-			vo_combo->addItem( "gl_tiled (yuv)", "gl_tiled:yuv=3");
 		}
 		else
 		if (vo == "null" || vo == "png" || vo == "jpeg" || vo == "gif89a" || 

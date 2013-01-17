@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -295,8 +295,6 @@ public:
 	//! Show file tag in window title
 	bool show_tag_in_window_title;
 
-	int time_to_kill_mplayer;
-
 
 	/* *********
 	   GUI stuff
@@ -493,18 +491,7 @@ public:
        Filters
        ******* */
 	Filters * filters;
-
-
-    /* *********
-       SMPlayer info
-       ********* */
-
-#ifdef FONTCACHE_DIALOG
-	QString smplayer_version;
-#endif
-
 };
-
 Q_DECLARE_OPERATORS_FOR_FLAGS(Preferences::WheelFunctions)
 
 #endif

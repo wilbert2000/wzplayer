@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -301,7 +301,6 @@ void MplayerProcess::parseLine(QByteArray ba) {
 		// Emulates mplayer version in Ubuntu:
 		//if (line.startsWith("MPlayer 1.0rc1")) line = "MPlayer 2:1.0~rc1-0ubuntu13.1 (C) 2000-2006 MPlayer Team";
 		//if (line.startsWith("MPlayer2")) line = "mplayer2 d0305da (C) 2000-2012 MPlayer & mplayer2 teams";
-		//if (line.startsWith("MPlayer SVN")) line = "MPlayer svn r34540 (Ubuntu), built with gcc-4.6 (C) 2000-2012 MPlayer Team";
 
 		// Emulates unknown version
 		//if (line.startsWith("MPlayer SVN")) line = "MPlayer lalksklsjjakksja";

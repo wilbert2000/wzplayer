@@ -11,14 +11,10 @@ ${LangFileString} Installer_Is_Running "Ezartzailea jadanik lanean dago."
 ${LangFileString} Installer_No_Admin "Administratzaile bezala saioa hasita egon behar duzu programa hau ezartzerakoan."
 ${LangFileString} SMPlayer_Is_Running "SMPlayerren eskabide bat lanean ari da. Mesedez irten SMPlayerretik eta saiatu berriro."
 
-${LangFileString} OS_Not_Supported "Sistema eragile sostengu gabea.$\nSMPlayer ${SMPLAYER_VERSION} gutxienez Windows XP behar du eta ezin du zuzen lan egin zure sisteman.$\nEgitan nahi duzu ezarpenarekin jarraitzea?"
+${LangFileString} OS_Not_Supported "Unsupported operating system.$\nSMPlayer ${SMPLAYER_VERSION} requires at least Windows XP and may not work correctly on your system.$\nDo you really want to continue with the installation?"
 ${LangFileString} Win64_Required "64-biteko Windows sistema eragile bat behar da software hau ezartzeko."
 ${LangFileString} Existing_32bitInst "32-biteko SMPlayer ezarpen bat dago. Lehenik 32-biteko SMPlayer kendu behar duzu."
 ${LangFileString} Existing_64bitInst "64-biteko SMPlayer ezarpen bat dago. Lehenik 64-biteko SMPlayer kendu behar duzu."
-
-; Welcome page
-${LangFileString} WelcomePage_Title "$(^NameDA) Setup"
-${LangFileString} WelcomePage_Text "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\nIt is recommended that you close all instances of SMPlayer before starting setup. This will make it possible to update relevant program files without having to reboot your computer.$\r$\n$\r$\n$_CLICK"
 
 ; Components Page
 ${LangFileString} ShortcutGroupTitle "Lasterbideak"
@@ -27,8 +23,8 @@ ${LangFileString} MPlayerGroupTitle "MPlayer Osagaiak"
 ${LangFileString} Section_SMPlayer "SMPlayer (beharrezkoa)"
 ${LangFileString} Section_SMPlayer_Desc "SMPlayer, elkarbanatutako liburutegiak, eta agiritza."
 
-${LangFileString} Section_DesktopShortcut "Mahaigaina"
-${LangFileString} Section_DesktopShortcut_Desc "Sortu SMPlayer lasterbide bat mahaigainean."
+${LangFileString} Section_DesktopShortcut "Mahigaina"
+${LangFileString} Section_DesktopShortcut_Desc "Sortu SMPlayer lasterbide bat mahigainean."
 
 ${LangFileString} Section_StartMenu "Hasiera Menua"
 ${LangFileString} Section_StartMenu_Desc "Sortu SMPlayer sarrera bat Hasiera Menuan."
@@ -71,6 +67,12 @@ ${LangFileString} Type_Downgrade "aurrekoratu"
 ${LangFileString} Type_Upgrade "eguneratu"
 
 ${LangFileString} StartBtn "Hasi"
+
+; MPlayer Section
+${LangFileString} MPlayer_DL_Msg "MPlayer jeisten..."
+${LangFileString} MPlayer_DL_Retry "MPlayer ez da ongi ezarri. Berriro saiatu?"
+${LangFileString} MPlayer_DL_Failed "Hutsegitea MPlayer: '$R0'. jeisterakoan"
+${LangFileString} MPlayer_Inst_Failed "Hutsegitea MPlayer ezartzerakoan. MPlayer beharrezkoa da irakurketarako"
 
 ; Codecs Section
 ${LangFileString} Codecs_DL_Msg "MPlayer kodekak jeisten..."

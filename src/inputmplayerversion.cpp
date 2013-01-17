@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ void InputMplayerVersion::setVersionFromOutput(QString text) {
 }
 
 void InputMplayerVersion::setVersion(int current_version) {
-	int index = 2;
+	int index = 0;
 
 	if (current_version == MPLAYER_1_0_RC2_SVN) index = 1;
 	else
