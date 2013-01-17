@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ class QTimer;
 #define ZOOM_MIN 0.5
 
 #define DELAYED_RESIZE 0
+#define NEW_MOUSE_CHECK_POS 1
 
 //! Screen is a widget that hides the mouse cursor after some seconds if not moved.
 
@@ -52,11 +53,13 @@ public:
 	Screen(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	~Screen();
 
+#if NEW_MOUSE_CHECK_POS
 	void setAutoHideCursor(bool b);
 	bool autoHideCursor() { return autohide_cursor; };
 
 	void setAutoHideInterval(int milliseconds) { autohide_interval = milliseconds; };
 	int autoHideInterval() { return autohide_interval; };
+#endif
 
 public slots:
 	//! Should be called when a file has started. 
@@ -66,7 +69,9 @@ public slots:
 	virtual void playingStopped();
 
 protected:
+#if !NEW_MOUSE_CHECK_POS
 	virtual void mouseMoveEvent( QMouseEvent * e );
+#endif
 	virtual void paintEvent ( QPaintEvent * e );
 
 protected slots:
@@ -74,9 +79,13 @@ protected slots:
 
 private:
 	QTimer * check_mouse_timer;
+#if NEW_MOUSE_CHECK_POS
 	QPoint mouse_last_position;
 	bool autohide_cursor;
 	int autohide_interval;
+#else
+	QPoint cursor_pos, last_cursor_pos;
+#endif
 };
 
 //! MplayerLayer can be instructed to not delete the background.
@@ -230,8 +239,6 @@ protected:
 #if LOGO_ANIMATION
 	bool animated_logo;
 #endif
-
-	bool moving_window;
 };
 
 

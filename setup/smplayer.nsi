@@ -362,7 +362,7 @@ SectionGroup $(MPlayerGroupTitle)
     SectionIn RO
 
     SetOutPath "$INSTDIR\mplayer"
-    File /r /x mencoder.exe "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
+    File /r "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
 
     WriteRegDWORD HKLM "${SMPLAYER_REG_KEY}" Installed_MPlayer 0x1
 
@@ -497,16 +497,13 @@ ${MementoSectionDone}
 
 !macro MacroAllExtensions _action
   !insertmacro ${_action} ".3gp"
-  !insertmacro ${_action} ".aac"
   !insertmacro ${_action} ".ac3"
   !insertmacro ${_action} ".ape"
   !insertmacro ${_action} ".asf"
   !insertmacro ${_action} ".avi"
-  !insertmacro ${_action} ".bik"
   !insertmacro ${_action} ".bin"
   !insertmacro ${_action} ".dat"
   !insertmacro ${_action} ".divx"
-  !insertmacro ${_action} ".dts"
   !insertmacro ${_action} ".dv"
   !insertmacro ${_action} ".dvr-ms"
   !insertmacro ${_action} ".f4v"
@@ -517,7 +514,6 @@ ${MementoSectionDone}
   !insertmacro ${_action} ".m1v"
   !insertmacro ${_action} ".m2t"
   !insertmacro ${_action} ".m2ts"
-  !insertmacro ${_action} ".mts"
   !insertmacro ${_action} ".m2v"
   !insertmacro ${_action} ".m3u"
   !insertmacro ${_action} ".m3u8"
@@ -544,7 +540,6 @@ ${MementoSectionDone}
   !insertmacro ${_action} ".rec"
   !insertmacro ${_action} ".rm"
   !insertmacro ${_action} ".rmvb"
-  !insertmacro ${_action} ".smk"
   !insertmacro ${_action} ".swf"
   !insertmacro ${_action} ".thd"
   !insertmacro ${_action} ".ts"
