@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -2972,14 +2972,6 @@ void BaseGui::initializeMenus() {
 
 	// Audio
 	audioTrackGroup->clear(true);
-	// If using an external audio file, show the file in the menu, but disabled.
-	if (!core->mset.external_audio.isEmpty()) {
-		QAction * a = audioTrackGroup->addAction( QFileInfo(core->mset.external_audio).fileName() );
-		a->setEnabled(false);
-		a->setCheckable(true);
-		a->setChecked(true);
-	}
-	else
 	if (core->mdat.audios.numItems()==0) {
 		QAction * a = audioTrackGroup->addAction( tr("<empty>") );
 		a->setEnabled(false);
@@ -3694,7 +3686,7 @@ void BaseGui::helpFAQ() {
 	QDesktopServices::openUrl( url );
 	*/
 
-	QString url = "http://smplayer.info/faq.php";
+	QString url = "http://smplayer.sourceforge.net/faq.php";
 	if (!pref->language.isEmpty()) url += QString("?tr_lang=%1").arg(pref->language);
 	QDesktopServices::openUrl( QUrl(url) );
 }
@@ -3709,7 +3701,7 @@ void BaseGui::helpCLOptions() {
 }
 
 void BaseGui::helpCheckUpdates() {
-	QString url = "http://smplayer.info/latest.php";
+	QString url = "http://smplayer.sourceforge.net/latest.php";
 	if (!pref->language.isEmpty()) url += QString("?tr_lang=%1").arg(pref->language);
 	QDesktopServices::openUrl( QUrl(url) );
 }
