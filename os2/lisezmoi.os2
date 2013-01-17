@@ -3,7 +3,7 @@ SMPlayer _VERSION_ _BUILD_ LISEZMOI
 Document original....: (W) Christian Hennecke, Oct 5, 2009
 Derniäre mise Ö jour.: 2012-03-19
 Traduction franáaise.: Guillaume Gay <guillaume.gay@bigfoot.com>
-Version..............: 2012-05-14
+Version..............: 2012-03-19
 
 
 0. CONTENU DU FICHIER
@@ -130,7 +130,7 @@ Qt4 dll
 klibc
 -----
 
-  1. TÇlÇchargez klibc 0.6.5 csd4 ou ultÇrieure
+  1. TÇlÇchargez klibc 0.6.4 csd4 ou ultÇrieure
      (consultez http://svn.netlabs.org/libc pour plus d'informations). 
   2. Extrayez toutes les DLL dans un rÇpertoire figurant dans
      LIBPATH, de prÇfÇrence x:\ecs\dll ou x:\os2\dll oó x: reprÇsente
@@ -273,7 +273,7 @@ Si vous avez une carte son qui ne prend pas en charge l'Çchantillonnage
 4. LICENCE, COPYRIGHT, RêCLAMATIONS
 ===================================
 
-SMPlayer est un copyright (C) 2006-2013 de RVM <rvm@users.sourceforge.net>.
+SMPlayer est un copyright (C) 2006 - 2012 de RVM <rvm@users.sourceforge.net>.
 
 Le portage OS/2 est un copyright (C) 2008, 2012 de Silvan Scherrer.
 
@@ -337,9 +337,6 @@ suivantes :
 
 8. HISTORIQUE DES VERSIONS
 ==========================
-
-2012-05-14
-  * Mise Ö jour Ö la version 0.8.0 de SMPlayer
 
 2012-03-16
   * Mise Ö jour Ö la version 0.7.1 de SMPlayer

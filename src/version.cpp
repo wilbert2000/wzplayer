@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,34 +18,18 @@
 
 #include "version.h"
 
-#define USE_SVN_VERSIONS 1
+#define USE_SVN_VERSIONS 0
 
-#define VERSION "0.8.3"
+#define VERSION "0.8.0"
 
 #if USE_SVN_VERSIONS
 #include "svn_revision.h"
 #endif
 
-#ifdef Q_OS_WIN
-#if defined( _WIN64 )
-#define SMPWIN_ARCH "(64-bit)"
-#elif defined( _WIN32 )
-#define SMPWIN_ARCH "(32-bit)"
-#endif
-#endif
-
 QString smplayerVersion() {
 #if USE_SVN_VERSIONS
-#ifdef Q_OS_WIN
-    return QString(QString(VERSION) + "+" + QString(SVN_REVISION) + " " + QString(SMPWIN_ARCH));
+	return QString(QString(VERSION) + "+" + QString(SVN_REVISION));
 #else
-    return QString(QString(VERSION) + "+" + QString(SVN_REVISION));
-#endif
-#else
-#ifdef Q_OS_WIN
-    return QString(QString(VERSION) + " " + QString(SMPWIN_ARCH));
-#else
-    return QString(VERSION);
-#endif
+	return QString(VERSION);
 #endif
 }

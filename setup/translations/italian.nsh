@@ -11,14 +11,9 @@ ${LangFileString} Installer_Is_Running "Il programma di installazione è già in
 ${LangFileString} Installer_No_Admin "Devi essere autenticato come amministratore per installare questo programma."
 ${LangFileString} SMPlayer_Is_Running "An instance of SMPlayer is running. Please exit SMPlayer and try again."
 
-${LangFileString} OS_Not_Supported "Unsupported operating system.$\nSMPlayer ${SMPLAYER_VERSION} requires at least Windows XP and may not work correctly on your system.$\nDo you really want to continue with the installation?"
 ${LangFileString} Win64_Required "A 64-bit Windows operating system is required to install this software."
 ${LangFileString} Existing_32bitInst "An existing 32-bit installation of SMPlayer exists. You must uninstall 32-bit SMPlayer first."
 ${LangFileString} Existing_64bitInst "An existing 64-bit installation of SMPlayer exists. You must uninstall 64-bit SMPlayer first."
-
-; Welcome page
-${LangFileString} WelcomePage_Title "$(^NameDA) Setup"
-${LangFileString} WelcomePage_Text "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\nIt is recommended that you close all instances of SMPlayer before starting setup. This will make it possible to update relevant program files without having to reboot your computer.$\r$\n$\r$\n$_CLICK"
 
 ; Components Page
 ${LangFileString} ShortcutGroupTitle "Collegamenti"
@@ -34,7 +29,11 @@ ${LangFileString} Section_StartMenu "Menu di avvio"
 ${LangFileString} Section_StartMenu_Desc "Crea un elemento nel menu di avvio per SMPlayer."
 
 ${LangFileString} Section_MPlayer "MPlayer (essenziale)"
+!ifdef WITH_MPLAYER
 ${LangFileString} Section_MPlayer_Desc "MPlayer; essenziale per la riproduzione."
+!else ifndef WITH_MPLAYER
+${LangFileString} Section_MPlayer_Desc "MPlayer; essenziale per la riproduzione. (Connessione a Internet richiesta per l'installazione)"
+!endif
 
 ${LangFileString} Section_MPlayerCodecs "Codec binari"
 !ifdef WITH_CODECS
@@ -72,6 +71,12 @@ ${LangFileString} Type_Upgrade "upgrade"
 
 ${LangFileString} StartBtn "Start"
 
+; MPlayer Section
+${LangFileString} MPlayer_DL_Msg "Sto scaricando MPlayer..."
+${LangFileString} MPlayer_DL_Retry "MPlayer non è stato completamente installato. Riprova?"
+${LangFileString} MPlayer_DL_Failed "Scaricamento di MPlayer fallito: '$R0'."
+${LangFileString} MPlayer_Inst_Failed "Installazione di MPlayer fallita. MPlayer è un componente necessario per la riproduzione multimediale."
+
 ; Codecs Section
 ${LangFileString} Codecs_DL_Msg "Sto scaricando i codec di MPlayer..."
 ${LangFileString} Codecs_DL_Retry "I codec di MPlayer non sono stati completamente installati. Riprova?"
@@ -86,7 +91,6 @@ ${LangFileString} VerInfo_DL_Failed "Scaricamento delle informazioni di versione
 ${LangFileString} Uninstaller_No_Admin "La disinstallazione può essere effettuata solo da un utente con permessi amministrativi."
 ${LangFileString} Uninstaller_Aborted "Disinstallazione annullata dall'utente."
 ${LangFileString} Uninstaller_NotInstalled "Sembra che SMPlayer non sia installato nella cartella '$INSTDIR'.$\r$\nContinua comunque (non raccomandato)?"
-${LangFileString} Uninstaller_64bitOnly "This installation can only be uninstalled on 64-bit Windows."
 
 ; Vista & Later Default Programs Registration
 ${LangFileString} Application_Description "SMPlayer è un'interfaccia completa per MPlayer, fornisce funzionalità di base come la riproduzione di video, DVD, VCD e funzionalità più avanzate come il supporto dei filtri di MPlayer, le liste edl e altro ancora."

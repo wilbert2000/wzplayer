@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -68,9 +68,6 @@ protected:
 	// Windows only: pass to mplayer short filenames (8+3)
 	void setUseShortNames(bool b);
 	bool useShortNames();
-
-	void setMplayerCrashes(bool b);
-	bool mplayerCrashes();
 
 	void setMplayerAdditionalArguments(QString args);
 	QString mplayerAdditionalArguments();

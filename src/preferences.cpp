@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "retrieveyoutubeurl.h"
 #endif
 
-#define CURRENT_CONFIG_VERSION 2
-
 using namespace Global;
 
 Preferences::Preferences() {
@@ -68,8 +66,6 @@ void Preferences::reset() {
     /* *******
        General
        ******* */
-
-	config_version = CURRENT_CONFIG_VERSION;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	mplayer_bin= "mplayer/mplayer.exe";
@@ -103,7 +99,7 @@ void Preferences::reset() {
 	use_double_buffer = true;
 
 	use_soft_video_eq = false;
-	use_slices = false;
+	use_slices = true;
 	autoq = 6;
 	add_blackborders_on_fullscreen = false;
 
@@ -197,7 +193,6 @@ void Preferences::reset() {
 
 #ifdef YOUTUBE_SUPPORT
 	yt_quality = RetrieveYoutubeUrl::MP4_720p;
-	yt_user_agent = QString::null;
 #endif
 
 
@@ -301,8 +296,6 @@ void Preferences::reset() {
 
 	show_tag_in_window_title = true;
 
-	time_to_kill_mplayer = 5000;
-
 
     /* *********
        GUI stuff
@@ -390,10 +383,6 @@ void Preferences::reset() {
 	auto_add_to_playlist = true;
 	add_to_playlist_consecutive_files = false;
 
-#if LOGO_ANIMATION
-	animated_logo = true;
-#endif
-
 
     /* ********
        TV (dvb)
@@ -411,7 +400,7 @@ void Preferences::reset() {
 
 	latest_dir = QDir::homePath();
 	last_dvd_directory="";
-	save_dirs = true;
+
 
     /* **************
        Initial values
@@ -487,15 +476,6 @@ void Preferences::reset() {
        ******* */
 
 	filters->init();
-
-
-    /* *********
-       SMPlayer info
-       ********* */
-
-#ifdef FONTCACHE_DIALOG
-	smplayer_version = "";
-#endif
 }
 
 #ifndef NO_USE_INI_FILES
@@ -510,8 +490,6 @@ void Preferences::save() {
        ******* */
 
 	set->beginGroup( "general");
-
-	set->setValue("config_version", config_version);
 
 	set->setValue("mplayer_bin", mplayer_bin);
 	set->setValue("driver/vo", vo);
@@ -626,14 +604,11 @@ void Preferences::save() {
 	set->setValue("cache_for_audiocds", cache_for_audiocds);
 	set->setValue("cache_for_tv", cache_for_tv);
 
-	set->endGroup(); // performance
-
 #ifdef YOUTUBE_SUPPORT
-	set->beginGroup("youtube");
-	set->setValue("quality", yt_quality);
-	set->setValue("user_agent", yt_user_agent);
-	set->endGroup();
+	set->setValue("youtube_quality", yt_quality);
 #endif
+
+	set->endGroup(); // performance
 
 
     /* *********
@@ -732,8 +707,6 @@ void Preferences::save() {
 
 	set->setValue("show_tag_in_window_title", show_tag_in_window_title);
 
-	set->setValue("time_to_kill_mplayer", time_to_kill_mplayer);
-
 	set->endGroup(); // advanced
 
 
@@ -812,12 +785,8 @@ void Preferences::save() {
 	set->setValue("reported_mplayer_is_old", reported_mplayer_is_old);
 #endif
 
-	set->setValue("auto_add_to_playlist", auto_add_to_playlist);
-	set->setValue("add_to_playlist_consecutive_files", add_to_playlist_consecutive_files);
-
-#if LOGO_ANIMATION
-	set->setValue("animated_logo", animated_logo);
-#endif
+    set->setValue("auto_add_to_playlist", auto_add_to_playlist);
+    set->setValue("add_to_playlist_consecutive_files", add_to_playlist_consecutive_files);
 
 	set->endGroup(); // gui
 
@@ -838,14 +807,8 @@ void Preferences::save() {
        *********** */
 
 	set->beginGroup( "directories");
-	if (save_dirs) {
-		set->setValue("latest_dir", latest_dir);
-		set->setValue("last_dvd_directory", last_dvd_directory);
-	} else {
-		set->setValue("latest_dir", "");
-		set->setValue("last_dvd_directory", "");
-	}
-	set->setValue("save_dirs", save_dirs);
+	set->setValue("latest_dir", latest_dir);
+	set->setValue("last_dvd_directory", last_dvd_directory);
 	set->endGroup(); // directories
 
 
@@ -939,16 +902,6 @@ void Preferences::save() {
 	filters->save(set);
 
 
-    /* *********
-       SMPlayer info
-       ********* */
-
-#ifdef FONTCACHE_DIALOG
-	set->beginGroup("smplayer");
-	set->setValue("version", smplayer_version);
-	set->endGroup();
-#endif
-
 	set->sync();
 }
 
@@ -963,8 +916,6 @@ void Preferences::load() {
        ******* */
 
 	set->beginGroup( "general");
-
-	config_version = set->value("config_version", 0).toInt();
 
 	mplayer_bin = set->value("mplayer_bin", mplayer_bin).toString();
 	vo = set->value("driver/vo", vo).toString();
@@ -1081,14 +1032,11 @@ void Preferences::load() {
 	cache_for_audiocds = set->value("cache_for_audiocds", cache_for_audiocds).toInt();
 	cache_for_tv = set->value("cache_for_tv", cache_for_tv).toInt();
 
-	set->endGroup(); // performance
-
 #ifdef YOUTUBE_SUPPORT
-	set->beginGroup("youtube");
-	yt_quality = set->value("quality", yt_quality).toInt();
-	yt_user_agent = set->value("user_agent", yt_user_agent).toString();
-	set->endGroup();
+	yt_quality = set->value("youtube_quality", yt_quality).toInt();
 #endif
+
+	set->endGroup(); // performance
 
 
     /* *********
@@ -1191,8 +1139,6 @@ void Preferences::load() {
 
 	show_tag_in_window_title = set->value("show_tag_in_window_title", show_tag_in_window_title).toBool();
 
-	time_to_kill_mplayer = set->value("time_to_kill_mplayer", time_to_kill_mplayer).toInt();
-
 	set->endGroup(); // advanced
 
 
@@ -1275,10 +1221,6 @@ void Preferences::load() {
 	auto_add_to_playlist = set->value("auto_add_to_playlist", auto_add_to_playlist).toBool();
 	add_to_playlist_consecutive_files = set->value("add_to_playlist_consecutive_files", add_to_playlist_consecutive_files).toBool();
 
-#if LOGO_ANIMATION
-	animated_logo = set->value("animated_logo", animated_logo).toBool();
-#endif
-
 	set->endGroup(); // gui
 
 
@@ -1299,11 +1241,8 @@ void Preferences::load() {
        *********** */
 
 	set->beginGroup( "directories");
-	save_dirs = set->value("save_dirs", save_dirs).toBool();
-	if (save_dirs) {
-		latest_dir = set->value("latest_dir", latest_dir).toString();
-		last_dvd_directory = set->value("last_dvd_directory", last_dvd_directory).toString();
-	}
+	latest_dir = set->value("latest_dir", latest_dir).toString();
+	last_dvd_directory = set->value("last_dvd_directory", last_dvd_directory).toString();
 	set->endGroup(); // directories
 
 
@@ -1399,24 +1338,6 @@ void Preferences::load() {
        ******* */
 
 	filters->load(set);
-
-
-    /* *********
-       SMPlayer info
-       ********* */
-
-#ifdef FONTCACHE_DIALOG
-	set->beginGroup("smplayer");
-	smplayer_version = set->value("version", smplayer_version).toString();
-	set->endGroup();
-#endif
-
-	// Fix some values if config is old
-	if (config_version < CURRENT_CONFIG_VERSION) {
-		qDebug("Preferences::load: config version is old, updating it");
-		config_version = CURRENT_CONFIG_VERSION;
-		use_slices = false;
-	}
 }
 
 #endif // NO_USE_INI_FILES

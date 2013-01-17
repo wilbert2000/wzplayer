@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,16 +46,15 @@ Extensions::Extensions()
            << "mpg" << "mpeg" << "m1v" << "m2v" << "mpv" << "dv" << "3gp"
            << "mov" << "mp4" << "m4v" << "mqv"
            << "dat" << "vcd"
-           << "ogg" << "ogm" << "ogv" << "ogx"
+           << "ogg" << "ogm" << "ogv"
            << "asf" << "wmv"
            << "bin" << "iso" << "vob"
            << "mkv" << "nsv" << "ram" << "flv"
            << "rm" << "swf"
-           << "ts" << "rmvb" << "dvr-ms" << "m2t" << "m2ts" << "mts" << "rec" << "wtv"
-           << "f4v" << "hdmov" << "webm" << "vp8"
-           << "bik" << "smk" ;
+           << "ts" << "rmvb" << "dvr-ms" << "m2t" << "m2ts" << "rec"
+           << "f4v" << "hdmov" << "webm" << "vp8" ;
 
-	_audio << "mp3" << "ogg" << "oga" << "wav" << "wma" <<  "aac" << "ac3" << "dts" << "ra" << "ape" << "flac" << "thd" << "mka" << "m4a";
+	_audio << "mp3" << "ogg" << "wav" << "wma" <<  "ac3" << "ra" << "ape" << "flac" << "thd";
 
 	_subtitles << "srt" << "sub" << "ssa" << "ass" << "idx" << "txt" << "smi"
                << "rt" << "utf" << "aqt";

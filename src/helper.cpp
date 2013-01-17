@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ QString Helper::timeForJumps(int secs) {
 // This function has been copied (and modified a little bit) from Scribus (program under GPL license):
 // http://docs.scribus.net/devel/util_8cpp-source.html#l00112
 QString Helper::shortPathName(QString long_path) {
-	if (QFile::exists(long_path)) {
+	if ((QSysInfo::WindowsVersion >= QSysInfo::WV_NT) && (QFile::exists(long_path))) {
 		QString short_path = long_path;
 
 		const int max_path = 4096;

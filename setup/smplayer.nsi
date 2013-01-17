@@ -1,6 +1,6 @@
-﻿;Installer script for win32/win64 SMPlayer
-;Written by redxii (redxii@users.sourceforge.net)
-;Tested/Developed with Unicode NSIS 2.46.5
+﻿; Installer script for win32 SMPlayer
+; Written by redxii (redxii@users.sourceforge.net)
+; Tested/Developed with Unicode NSIS 2.46.4
 
 !ifndef VER_MAJOR | VER_MINOR | VER_BUILD
   !error "Version information not defined (or incomplete). You must define: VER_MAJOR, VER_MINOR, VER_BUILD."
@@ -49,6 +49,14 @@
   !define DEFAULT_CODECS_VERSION "windows-essential-20071007"
 !endif
 
+!ifndef WITH_MPLAYER
+
+  !ifndef DEFAULT_MPLAYER_VERSION
+    !define DEFAULT_MPLAYER_VERSION "mplayer-svn-33216"
+  !endif
+
+!endif
+
   ;Version control
 !ifndef VERSION_FILE_URL
   !define VERSION_FILE_URL "http://smplayer.sourceforge.net/mplayer-version-info"
@@ -61,9 +69,19 @@
   Name "SMPlayer ${SMPLAYER_VERSION}"
   BrandingText "SMPlayer for Windows v${SMPLAYER_VERSION}"
 !ifdef WIN64
-  OutFile "output\smplayer-${SMPLAYER_VERSION}-x64.exe"
+  !ifdef WITH_MPLAYER
+    OutFile "smplayer-${SMPLAYER_VERSION}-x64.exe"
+  !else ifndef WITH_MPLAYER
+    OutFile "smplayer-${SMPLAYER_VERSION}-dl-x64.exe"
+  !endif
 !else
-  OutFile "output\smplayer-${SMPLAYER_VERSION}-win32.exe"
+  !ifdef WITH_MPLAYER
+    ;OutFile "smplayer-${SMPLAYER_VERSION}-x86.exe"
+    OutFile "smplayer-${SMPLAYER_VERSION}-win32.exe"
+  !else ifndef WITH_MPLAYER
+    ;OutFile "smplayer-${SMPLAYER_VERSION}-dl-x86.exe"
+    OutFile "smplayer-${SMPLAYER_VERSION}-webdl.exe"
+  !endif
 !endif
 
   ;Version tab properties
@@ -73,9 +91,19 @@
   VIAddVersionKey "FileVersion" "${SMPLAYER_VERSION}"
   VIAddVersionKey "LegalCopyright" ""
 !ifdef WIN64
-  VIAddVersionKey "FileDescription" "SMPlayer Installer (64-bit)"
+  !ifdef WITH_MPLAYER
+    VIAddVersionKey "FileDescription" "SMPlayer Installer x64 (Offline)"
+  !else ifndef WITH_MPLAYER
+    VIAddVersionKey "FileDescription" "SMPlayer Installer x64 (Web Downloader)"
+  !endif
 !else
-  VIAddVersionKey "FileDescription" "SMPlayer Installer (32-bit)"
+  !ifdef WITH_MPLAYER
+    ;VIAddVersionKey "FileDescription" "SMPlayer Installer x86 (Offline)"
+    VIAddVersionKey "FileDescription" "SMPlayer Installer (Offline)"
+  !else ifndef WITH_MPLAYER
+    ;VIAddVersionKey "FileDescription" "SMPlayer Installer x86 (Web Downloader)"
+    VIAddVersionKey "FileDescription" "SMPlayer Installer (Web Downloader)"
+  !endif
 !endif
 
   ;Default installation folder
@@ -97,6 +125,7 @@
 ;--------------------------------
 ;Variables
 
+  Var Codec_Version
   Var Dialog_Reinstall
   Var Inst_Type
   Var Previous_Version
@@ -110,7 +139,6 @@
   Var Reinstall_UninstallButton
   Var Reinstall_UninstallButton_State
   Var SMPlayer_Path
-  Var SMPlayer_UnStrPath
   Var SMPlayer_StartMenuFolder
 
 ;--------------------------------
@@ -120,22 +148,18 @@
   !define MUI_ICON "smplayer-orange-installer.ico"
   !define MUI_UNICON "smplayer-orange-uninstaller.ico"
 
-  ;Misc
+  ; Misc
   !define MUI_WELCOMEFINISHPAGE_BITMAP "smplayer-orange-wizard.bmp"
   !define MUI_UNWELCOMEFINISHPAGE_BITMAP "smplayer-orange-wizard-un.bmp"
   !define MUI_ABORTWARNING
 
-  ;Welcome page
-  !define MUI_WELCOMEPAGE_TITLE $(WelcomePage_Title)
-  !define MUI_WELCOMEPAGE_TEXT $(WelcomePage_Text)
-
-  ;License page
+  ; License page
   !define MUI_LICENSEPAGE_RADIOBUTTONS
 
-  ;Components page
+  ; Components page
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
-  ;Finish page
+  ; Finish page
   !define MUI_FINISHPAGE_LINK "http://smplayer.sourceforge.net"
   !define MUI_FINISHPAGE_LINK_LOCATION "http://smplayer.sourceforge.net"
   !define MUI_FINISHPAGE_NOREBOOTSUPPORT
@@ -176,11 +200,8 @@
 ;Pages
 
   ;Install pages
-  #Welcome
   !insertmacro MUI_PAGE_WELCOME
-
-  #License
-  !insertmacro MUI_PAGE_LICENSE "license.txt"
+  !insertmacro MUI_PAGE_LICENSE "${SMPLAYER_BUILD_DIR}\Copying.txt"
 
   #Upgrade/Reinstall
   Page custom PageReinstall PageReinstallLeave
@@ -204,6 +225,7 @@
   !define MUI_PAGE_CUSTOMFUNCTION_PRE un.ConfirmPagePre
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+  !define MUI_PAGE_CUSTOMFUNCTION_PRE un.FinishPagePre
   !insertmacro MUI_UNPAGE_FINISH
 
 ;--------------------------------
@@ -234,7 +256,7 @@
   !insertmacro MUI_LANGUAGE "Spanish"
   !insertmacro MUI_LANGUAGE "TradChinese"
 
-;Custom translations for setup
+; Custom translations for setup
 
   !insertmacro LANGFILE_INCLUDE "translations\english.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\basque.nsh"
@@ -284,13 +306,13 @@ Section $(Section_SMPlayer) SecSMPlayer
   ${If} $Reinstall_Uninstall == 1
 
     ${If} $Reinstall_UninstallButton_State == 1
-      Exec '"$SMPlayer_UnStrPath" /X'
+      Exec '"$SMPlayer_Path\uninst.exe" /X'
       Quit
     ${ElseIf} $Reinstall_OverwriteButton_State == 1
       ${If} "$INSTDIR" == "$SMPlayer_Path"
-        ExecWait '"$SMPlayer_UnStrPath" /S /R _?=$SMPlayer_Path'
+        ExecWait '"$SMPlayer_Path\uninst.exe" /S /R _?=$SMPlayer_Path'
       ${Else}
-        ExecWait '"$SMPlayer_UnStrPath" /S /R'
+        ExecWait '"$SMPlayer_Path\uninst.exe" /S /R'
       ${EndIf}
     ${EndIf}
 
@@ -331,7 +353,7 @@ SectionEnd
 ;Shortcuts
 SectionGroup $(ShortcutGroupTitle)
 
-  ${MementoSection} $(Section_DesktopShortcut) SecDesktopShortcut
+  ${MementoUnselectedSection} $(Section_DesktopShortcut) SecDesktopShortcut
 
     SetOutPath "$INSTDIR"
     CreateShortCut "$DESKTOP\SMPlayer.lnk" "$INSTDIR\smplayer.exe"
@@ -345,7 +367,7 @@ SectionGroup $(ShortcutGroupTitle)
       CreateDirectory "$SMPROGRAMS\$SMPlayer_StartMenuFolder"
       CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer.lnk" "$INSTDIR\smplayer.exe"
       CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMTube.lnk" "$INSTDIR\smtube.exe"
-      WriteINIStr    "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer on the Web.url" "InternetShortcut" "URL" "http://smplayer.sourceforge.net"
+      WriteINIStr    "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer on the Web.url" "InternetShortcut" "URL" "http://smplayer.sf.net"
       CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\Uninstall SMPlayer.lnk" "$INSTDIR\${SMPLAYER_UNINST_EXE}"
     !insertmacro MUI_STARTMENU_WRITE_END
 
@@ -361,18 +383,62 @@ SectionGroup $(MPlayerGroupTitle)
 
     SectionIn RO
 
+!ifdef WITH_MPLAYER
     SetOutPath "$INSTDIR\mplayer"
-    File /r /x mencoder.exe "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
+    File /r "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
 
     WriteRegDWORD HKLM "${SMPLAYER_REG_KEY}" Installed_MPlayer 0x1
+!else ifndef WITH_MPLAYER
+    AddSize 16800
 
+    Var /GLOBAL MPlayer_Version
+
+    Call GetVerInfo
+
+    /* Read from version-info
+    If it was unable to download, set version to that defined in the
+    beginning of the script. */
+    ${If} ${FileExists} "$PLUGINSDIR\version-info"
+      ReadINIStr $MPlayer_Version "$PLUGINSDIR\version-info" smplayer mplayer
+    ${Else}
+      StrCpy $MPlayer_Version ${DEFAULT_MPLAYER_VERSION}
+    ${EndIf}
+
+    retry_mplayer:
+
+    DetailPrint $(MPlayer_DL_Msg)
+    inetc::get /CONNECTTIMEOUT 15000 /RESUME "" /BANNER $(MPlayer_DL_Msg) /CAPTION $(MPlayer_DL_Msg) \"http://downloads.sourceforge.net/smplayer/$MPlayer_Version.7z?big_mirror=0" \
+    "$PLUGINSDIR\$MPlayer_Version.7z" /END
+    Pop $R0
+    StrCmp $R0 OK 0 check_mplayer
+
+    DetailPrint $(Info_Files_Extract)
+    nsExec::Exec '"$PLUGINSDIR\7za.exe" x "$PLUGINSDIR\$MPlayer_Version.7z" -y -o"$PLUGINSDIR"'
+
+    CreateDirectory "$INSTDIR\mplayer"
+    CopyFiles /SILENT "$PLUGINSDIR\$MPlayer_Version\*" "$INSTDIR\mplayer"
+
+    check_mplayer:
+
+    ${If} $R0 != "OK"
+      DetailPrint $(MPlayer_DL_Failed)
+    ${EndIf}
+
+    IfFileExists "$INSTDIR\mplayer\mplayer.exe" mplayerInstSuccess mplayerInstFailed
+      mplayerInstSuccess:
+        WriteRegDWORD HKLM "${SMPLAYER_REG_KEY}" Installed_MPlayer 0x1
+        Goto done
+      mplayerInstFailed:
+        MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION $(MPlayer_DL_Retry) /SD IDCANCEL IDRETRY retry_mplayer
+        Abort $(MPlayer_Inst_Failed)
+
+    done:
+!endif
   SectionEnd
 
   Section /o $(Section_MPlayerCodecs) SecCodecs
 
     AddSize 22300
-
-    Var /GLOBAL Codec_Version
 
     Call GetVerInfo
 
@@ -418,7 +484,7 @@ SectionGroup $(MPlayerGroupTitle)
 
     done:
 
-  SectionEnd
+	SectionEnd
 
 SectionGroupEnd
 
@@ -453,7 +519,6 @@ Section -Post
 
   ;Allows user to use 'start smplayer.exe'
   WriteRegStr HKLM "${SMPLAYER_APP_PATHS_KEY}" "" "$INSTDIR\smplayer.exe"
-  WriteRegStr HKLM "${SMPLAYER_APP_PATHS_KEY}" "Path" "$INSTDIR"
 
   ;Default Programs Registration (Vista & later)
   ${If} ${AtLeastWinVista}
@@ -468,11 +533,11 @@ Section -Post
 !endif
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "DisplayIcon" "$INSTDIR\smplayer.exe"
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "DisplayVersion" "${SMPLAYER_VERSION}"
-  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "HelpLink" "http://smplayer.sourceforge.net/forum"
+  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "HelpLink" "http://smplayer.berlios.de/forum"
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "Publisher" "Ricardo Villalba"
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "UninstallString" "$INSTDIR\${SMPLAYER_UNINST_EXE}"
-  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLInfoAbout" "http://smplayer.sourceforge.net"
-  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLUpdateInfo" "http://smplayer.sourceforge.net"
+  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLInfoAbout" "http://smplayer.sf.net"
+  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLUpdateInfo" "http://smplayer.sf.net"
   WriteRegDWORD HKLM "${SMPLAYER_UNINST_KEY}" "NoModify" "1"
   WriteRegDWORD HKLM "${SMPLAYER_UNINST_KEY}" "NoRepair" "1"
 
@@ -497,16 +562,13 @@ ${MementoSectionDone}
 
 !macro MacroAllExtensions _action
   !insertmacro ${_action} ".3gp"
-  !insertmacro ${_action} ".aac"
   !insertmacro ${_action} ".ac3"
   !insertmacro ${_action} ".ape"
   !insertmacro ${_action} ".asf"
   !insertmacro ${_action} ".avi"
-  !insertmacro ${_action} ".bik"
   !insertmacro ${_action} ".bin"
   !insertmacro ${_action} ".dat"
   !insertmacro ${_action} ".divx"
-  !insertmacro ${_action} ".dts"
   !insertmacro ${_action} ".dv"
   !insertmacro ${_action} ".dvr-ms"
   !insertmacro ${_action} ".f4v"
@@ -517,13 +579,10 @@ ${MementoSectionDone}
   !insertmacro ${_action} ".m1v"
   !insertmacro ${_action} ".m2t"
   !insertmacro ${_action} ".m2ts"
-  !insertmacro ${_action} ".mts"
   !insertmacro ${_action} ".m2v"
   !insertmacro ${_action} ".m3u"
   !insertmacro ${_action} ".m3u8"
-  !insertmacro ${_action} ".m4a"
   !insertmacro ${_action} ".m4v"
-  !insertmacro ${_action} ".mka"
   !insertmacro ${_action} ".mkv"
   !insertmacro ${_action} ".mov"
   !insertmacro ${_action} ".mp3"
@@ -533,18 +592,15 @@ ${MementoSectionDone}
   !insertmacro ${_action} ".mpv"
   !insertmacro ${_action} ".mqv"
   !insertmacro ${_action} ".nsv"
-  !insertmacro ${_action} ".oga"
   !insertmacro ${_action} ".ogg"
   !insertmacro ${_action} ".ogm"
   !insertmacro ${_action} ".ogv"
-  !insertmacro ${_action} ".ogx"
   !insertmacro ${_action} ".pls"
   !insertmacro ${_action} ".ra"
   !insertmacro ${_action} ".ram"
   !insertmacro ${_action} ".rec"
   !insertmacro ${_action} ".rm"
   !insertmacro ${_action} ".rmvb"
-  !insertmacro ${_action} ".smk"
   !insertmacro ${_action} ".swf"
   !insertmacro ${_action} ".thd"
   !insertmacro ${_action} ".ts"
@@ -556,7 +612,6 @@ ${MementoSectionDone}
   !insertmacro ${_action} ".webm"
   !insertmacro ${_action} ".wma"
   !insertmacro ${_action} ".wmv"
-  !insertmacro ${_action} ".wtv"
 !macroend
 
 !macro WriteRegStrSupportedTypes EXT
@@ -636,12 +691,6 @@ FunctionEnd
 
 Function .onInit
 
-  ${Unless} ${AtLeastWinXP}
-    MessageBox MB_YESNO|MB_ICONSTOP $(OS_Not_Supported) /SD IDNO IDYES installonoldwindows
-    Abort
-  installonoldwindows:
-  ${EndIf}
-
 !ifdef WIN64
   ${IfNot} ${RunningX64}
     MessageBox MB_OK|MB_ICONSTOP $(Win64_Required)
@@ -655,7 +704,7 @@ Function .onInit
   IfErrors +3 0
     MessageBox MB_OK|MB_ICONSTOP $(Existing_32bitInst)
     Abort
-
+  
   SetRegView 64
 !else
   ${If} ${RunningX64}
@@ -666,10 +715,14 @@ Function .onInit
     IfErrors +3 0
       MessageBox MB_OK|MB_ICONSTOP $(Existing_64bitInst)
       Abort
-
+    
     SetRegView 32
   ${EndIf}
 !endif
+
+  !ifdef PRE_RELEASE
+    MessageBox MB_OK|MB_ICONINFORMATION "This is a pre-release version of SMPlayer. Please report all issues."
+  !endif
 
   ;Check if setup is already running
   System::Call 'kernel32::CreateMutexW(i 0, i 0, t "SMPlayerSetup") i .r1 ?e'
@@ -680,11 +733,7 @@ Function .onInit
     Abort
 
   ;Check if SMPlayer is running
-  ;Allow skipping check using /NORUNCHECK
-  ${GetParameters} $R0
-  ${GetOptions} $R0 "/NORUNCHECK" $R1
-  IfErrors 0 +2
-    Call RunCheck
+  Call RunCheck
 
   ;Check for admin on < Vista
   UserInfo::GetAccountType
@@ -728,7 +777,6 @@ Function CheckPreviousVersion
 
   ClearErrors
   ReadRegStr $Previous_Version HKLM "${SMPLAYER_REG_KEY}" "Version"
-  ReadRegStr $SMPlayer_UnStrPath HKLM "${SMPLAYER_UNINST_KEY}" "UninstallString"
   ReadRegStr $SMPlayer_Path HKLM "${SMPLAYER_REG_KEY}" "Path"
 
   ${IfNot} ${Errors}
@@ -958,7 +1006,7 @@ Function un.onInit
 
 !ifdef WIN64
   ${IfNot} ${RunningX64}
-    MessageBox MB_OK|MB_ICONSTOP $(Uninstaller_64bitOnly)
+    MessageBox MB_OK|MB_ICONSTOP "This installation can only be uninstalled on 64-bit Windows."
     Abort
   ${EndIf}
 
@@ -974,11 +1022,7 @@ Function un.onInit
   ${EndIf}
 
   ;Check if SMPlayer is running
-  ;Allow skipping check using /NORUNCHECK
-  ${un.GetParameters} $R0
-  ${un.GetOptions} $R0 "/NORUNCHECK" $R1
-  IfErrors 0 +2
-    Call un.RunCheck
+  Call un.RunCheck
 
   ;Gets start menu folder name
   !insertmacro MUI_STARTMENU_GETFOLDER "SMP_SMenu" $SMPlayer_StartMenuFolder
@@ -989,6 +1033,17 @@ Function un.onInit
 FunctionEnd
 
 Function un.ConfirmPagePre
+
+  ${un.GetParameters} $R0
+
+  ${un.GetOptionsS} $R0 "/X" $R1
+  ${Unless} ${Errors}
+    Abort
+  ${EndUnless}
+
+FunctionEnd
+
+Function un.FinishPagePre
 
   ${un.GetParameters} $R0
 

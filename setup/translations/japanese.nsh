@@ -11,14 +11,9 @@ ${LangFileString} Installer_Is_Running "インストーラーは既に実行中�
 ${LangFileString} Installer_No_Admin "このプログラムをインストールするときは管理者としてログインする必要があります。"
 ${LangFileString} SMPlayer_Is_Running "SMPlayer のインスタンスが実行中です。SMPlayer を終了してやり直してください。"
 
-${LangFileString} OS_Not_Supported "サポートされていないオペレーティング システムです。$\nSMPlayer ${SMPLAYER_VERSION} は Windows XP 以上を必要とし、お使いのシステムでは正常に動作しない可能性があります。$\n本当にインストールを続行しますか?"
-${LangFileString} Win64_Required "このソフトウェアをインストールするには 64 ビットの Windows オペレーティング システムが必要です。"
-${LangFileString} Existing_32bitInst "32 ビットの SMPlayer が既にインストールされています。先に 32 ビットの SMPlayer をアンインストールする必要があります。"
-${LangFileString} Existing_64bitInst "64 ビットの SMPlayer が既にインストールされています。先に 64 ビットの SMPlayer をアンインストールする必要があります。"
-
-; Welcome page
-${LangFileString} WelcomePage_Title "$(^NameDA) のセットアップ"
-${LangFileString} WelcomePage_Text "セットアップは $(^NameDA) のインストールをご案内します。$\r$\n$\r$\nセットアップの開始前にすべての SMPlayer のインスタンスを閉じることが推奨されます。これによりお使いのコンピューターを再起動する必要なく関連するプログラム ファイルを更新することが可能になります。$\r$\n$\r$\n$_CLICK"
+${LangFileString} Win64_Required "A 64-bit Windows operating system is required to install this software."
+${LangFileString} Existing_32bitInst "An existing 32-bit installation of SMPlayer exists. You must uninstall 32-bit SMPlayer first."
+${LangFileString} Existing_64bitInst "An existing 64-bit installation of SMPlayer exists. You must uninstall 64-bit SMPlayer first."
 
 ; Components Page
 ${LangFileString} ShortcutGroupTitle "ショートカット"
@@ -34,7 +29,11 @@ ${LangFileString} Section_StartMenu "[スタート] メニュー"
 ${LangFileString} Section_StartMenu_Desc "SMPlayer の [スタート] メニュー エントリを作成します。"
 
 ${LangFileString} Section_MPlayer "MPlayer (必須)"
+!ifdef WITH_MPLAYER
 ${LangFileString} Section_MPlayer_Desc "再生のために必要な MPlayer です。"
+!else ifndef WITH_MPLAYER
+${LangFileString} Section_MPlayer_Desc "再生のために必要な MPlayer です。(インストールにはインターネット接続が必要です)"
+!endif
 
 ${LangFileString} Section_MPlayerCodecs "バイナリ コーデック"
 !ifdef WITH_CODECS
@@ -72,6 +71,12 @@ ${LangFileString} Type_Upgrade "アップグレード"
 
 ${LangFileString} StartBtn "開始"
 
+; MPlayer Section
+${LangFileString} MPlayer_DL_Msg "MPlayer をダウンロードしています..."
+${LangFileString} MPlayer_DL_Retry "MPlayer は正常にインストールされませんでした。再試行しますか?"
+${LangFileString} MPlayer_DL_Failed "MPlayer のダウンロードに失敗しました: '$R0'。"
+${LangFileString} MPlayer_Inst_Failed "MPlayer のインストールに失敗しました。MPlayer は再生に必要です。"
+
 ; Codecs Section
 ${LangFileString} Codecs_DL_Msg "MPlayer コーデックをダウンロードしています..."
 ${LangFileString} Codecs_DL_Retry "MPlayer コーデックは正常にインストールされませんでした。再試行しますか?"
@@ -86,7 +91,6 @@ ${LangFileString} VerInfo_DL_Failed "バージョン情報のダウンロード�
 ${LangFileString} Uninstaller_No_Admin "このインストールは管理者特権のあるユーザーによってのみアンインストールできます。"
 ${LangFileString} Uninstaller_Aborted "アンインストールはユーザーによって中止されました。"
 ${LangFileString} Uninstaller_NotInstalled "ディレクトリ '$INSTDIR' に SMPlayer がインストールされているように見えません。$\r$\nこのまま続行しますか (推奨されません)?"
-${LangFileString} Uninstaller_64bitOnly "このインストールは 64 ビットの Windows でのみアンインストールできます。"
 
 ; Vista & Later Default Programs Registration
 ${LangFileString} Application_Description "SMPlayer はビデオ、DVD、VCD の再生のような基本的な機能から MPlayer フィルター、edl リストなどへのサポートのような高度な機能まで、MPlayer の完全なフロントエンドです。"

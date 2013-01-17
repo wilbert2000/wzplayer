@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -594,7 +594,6 @@ QAction * ActionsEditor::findAction(QObject *o, const QString & name) {
 	QList<QAction *> actions = o->findChildren<QAction *>();
 	for (int n=0; n < actions.count(); n++) {
 		action = static_cast<QAction*> (actions[n]);
-		/* qDebug("ActionsEditor::findAction: %s", action->objectName().toLatin1().constData()); */
 		if (name == action->objectName()) return action;
     }
 

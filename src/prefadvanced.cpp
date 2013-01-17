@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -122,8 +122,6 @@ void PrefAdvanced::setData(Preferences * pref) {
 #endif
 
 	setUseShortNames( pref->use_short_pathnames );
-
-	setMplayerCrashes( pref->report_mplayer_crashes );
 }
 
 void PrefAdvanced::getData(Preferences * pref) {
@@ -183,8 +181,6 @@ void PrefAdvanced::getData(Preferences * pref) {
 #endif
 
 	pref->use_short_pathnames = useShortNames();
-
-	pref->report_mplayer_crashes = mplayerCrashes();
 }
 
 void PrefAdvanced::setMonitorAspect(QString asp) {
@@ -226,14 +222,6 @@ void PrefAdvanced::setUseShortNames(bool b) {
 
 bool PrefAdvanced::useShortNames() {
 	return shortnames_check->isChecked();
-}
-
-void PrefAdvanced::setMplayerCrashes(bool b) {
-	mplayer_crashes_check->setChecked(b);
-}
-
-bool PrefAdvanced::mplayerCrashes() {
-	return mplayer_crashes_check->isChecked();
 }
 
 void PrefAdvanced::setMplayerAdditionalArguments(QString args) {
@@ -421,6 +409,16 @@ void PrefAdvanced::createHelp() {
            "seeking (i.e. not with stdin, pipe, etc).<br> "
            "<b>Note:</b> the creation of the index may take some time.") );
 
+	setWhatsThis(correct_pts_combo, tr("Correct pts"),
+		tr("Switches MPlayer to an experimental mode where timestamps for "
+           "video frames are calculated differently and video filters which "
+           "add new frames or modify timestamps of existing ones are "
+           "supported. The more accurate timestamps can be visible for "
+           "example when playing subtitles timed to scene changes with the "
+           "SSA/ASS library enabled. Without correct pts the subtitle timing "
+           "will typically be off by some frames. This option does not work "
+           "correctly with some demuxers and codecs.") );
+
 #ifdef Q_OS_WIN
 	setWhatsThis(shortnames_check, tr("Pass short filenames (8+3) to MPlayer"),
 		tr("Currently MPlayer can't open filenames which contains characters "
@@ -436,21 +434,12 @@ void PrefAdvanced::createHelp() {
            "produce that the video won't be displayed properly.") );
 #endif
 
-	setWhatsThis(mplayer_crashes_check, 
-		tr("Report MPlayer crashes"),
-		tr("If this option is checked, a window will appear to inform "
-           "about MPlayer crashes. Otherwise those failures will be "
-           "silently ignored.") );
-
-	setWhatsThis(correct_pts_combo, tr("Correct pts"),
-		tr("Switches MPlayer to an experimental mode where timestamps for "
-           "video frames are calculated differently and video filters which "
-           "add new frames or modify timestamps of existing ones are "
-           "supported. The more accurate timestamps can be visible for "
-           "example when playing subtitles timed to scene changes with the "
-           "SSA/ASS library enabled. Without correct pts the subtitle timing "
-           "will typically be off by some frames. This option does not work "
-           "correctly with some demuxers and codecs.") );
+#if USE_COLORKEY
+	setWhatsThis(colorkey_view, tr("Colorkey"),
+        tr("If you see parts of the video over any other window, you can "
+           "change the colorkey to fix it. Try to select a color close to "
+           "black.") );
+#endif
 
 	setWhatsThis(actions_to_run_edit, tr("Actions list"),
 		tr("Here you can specify a list of <i>actions</i> which will be "
@@ -463,13 +452,6 @@ void PrefAdvanced::createHelp() {
 		tr("Limitation: the actions are run only when a file is opened and "
            "not when the mplayer process is restarted (e.g. you select an "
            "audio or video filter).") );
-
-#if USE_COLORKEY
-	setWhatsThis(colorkey_view, tr("Colorkey"),
-        tr("If you see parts of the video over any other window, you can "
-           "change the colorkey to fix it. Try to select a color close to "
-           "black.") );
-#endif
 
 	setWhatsThis(show_tag_in_title_check, tr("Show tag info in window title"),
 		tr("If this option is enabled, information from tags will be "

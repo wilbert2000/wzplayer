@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -66,8 +66,6 @@ public:
     /* *******
        General
        ******* */
-
-	int config_version;
 
 	QString mplayer_bin;
 	QString vo; // video output
@@ -181,7 +179,6 @@ public:
 
 #ifdef YOUTUBE_SUPPORT
 	int yt_quality;
-	QString yt_user_agent;
 #endif
 
 
@@ -295,8 +292,6 @@ public:
 	//! Show file tag in window title
 	bool show_tag_in_window_title;
 
-	int time_to_kill_mplayer;
-
 
 	/* *********
 	   GUI stuff
@@ -389,10 +384,6 @@ public:
 	bool auto_add_to_playlist; //!< Add files to open to playlist
 	bool add_to_playlist_consecutive_files;
 
-#if LOGO_ANIMATION
-	bool animated_logo;
-#endif
-
 
     /* ********
        TV (dvb)
@@ -410,7 +401,7 @@ public:
 
 	QString latest_dir; //!< Directory of the latest file loaded
 	QString last_dvd_directory;
-	bool save_dirs; // Save or not the latest dirs
+
 
     /* **************
        Initial values
@@ -493,18 +484,7 @@ public:
        Filters
        ******* */
 	Filters * filters;
-
-
-    /* *********
-       SMPlayer info
-       ********* */
-
-#ifdef FONTCACHE_DIALOG
-	QString smplayer_version;
-#endif
-
 };
-
 Q_DECLARE_OPERATORS_FOR_FLAGS(Preferences::WheelFunctions)
 
 #endif

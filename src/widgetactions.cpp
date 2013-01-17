@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -204,7 +204,6 @@ void TimeLabelAction::setText(QString s) {
 
 QWidget * TimeLabelAction::createWidget ( QWidget * parent ) {
 	QLabel * time_label = new QLabel(parent);
-	time_label->setObjectName("time_label");
     time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     time_label->setAutoFillBackground(true);
 

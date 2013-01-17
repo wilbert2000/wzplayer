@@ -11,14 +11,9 @@ ${LangFileString} Installer_Is_Running "Instalator już jest uruchomiony."
 ${LangFileString} Installer_No_Admin "Do instalacji tego programu wymagane są uprawnienia administratora."
 ${LangFileString} SMPlayer_Is_Running "An instance of SMPlayer is running. Please exit SMPlayer and try again."
 
-${LangFileString} OS_Not_Supported "Unsupported operating system.$\nSMPlayer ${SMPLAYER_VERSION} requires at least Windows XP and may not work correctly on your system.$\nDo you really want to continue with the installation?"
 ${LangFileString} Win64_Required "A 64-bit Windows operating system is required to install this software."
 ${LangFileString} Existing_32bitInst "An existing 32-bit installation of SMPlayer exists. You must uninstall 32-bit SMPlayer first."
 ${LangFileString} Existing_64bitInst "An existing 64-bit installation of SMPlayer exists. You must uninstall 64-bit SMPlayer first."
-
-; Welcome page
-${LangFileString} WelcomePage_Title "$(^NameDA) Setup"
-${LangFileString} WelcomePage_Text "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\nIt is recommended that you close all instances of SMPlayer before starting setup. This will make it possible to update relevant program files without having to reboot your computer.$\r$\n$\r$\n$_CLICK"
 
 ; Components Page
 ${LangFileString} ShortcutGroupTitle "Skróty"
@@ -34,7 +29,11 @@ ${LangFileString} Section_StartMenu "Menu Start"
 ${LangFileString} Section_StartMenu_Desc "Tworzy skrót do programu w Menu Start."
 
 ${LangFileString} Section_MPlayer "MPlayer (wymagane)"
+!ifdef WITH_MPLAYER
 ${LangFileString} Section_MPlayer_Desc "MPlayer; wymagany do odtwarzania filmów."
+!else ifndef WITH_MPLAYER
+${LangFileString} Section_MPlayer_Desc "MPlayer; wymagany do odtwarzania filmów. (Wymagane połączenie z internetem)"
+!endif
 
 ${LangFileString} Section_MPlayerCodecs "Kodeki"
 !ifdef WITH_CODECS
@@ -71,6 +70,12 @@ ${LangFileString} Type_Upgrade "aktualizuj"
 
 ${LangFileString} StartBtn "Start"
 
+; MPlayer Section
+${LangFileString} MPlayer_DL_Msg "Pobieram MPlayera..."
+${LangFileString} MPlayer_DL_Retry "Instalacja MPlayera nie powiodła się. Ponowić próbę?"
+${LangFileString} MPlayer_DL_Failed "Nie udało się pobrać MPlayera: '$R0'."
+${LangFileString} MPlayer_Inst_Failed "Nie udało się zainstalować MPlayera. Bez MPlayera odtwarzanie filmów nie jest możliwe."
+
 ; Codecs Section
 ${LangFileString} Codecs_DL_Msg "Pobieram kodeki do MPlayera..."
 ${LangFileString} Codecs_DL_Retry "Instalacja Kodeków MPlayera nie powiodła się. Ponowić próbę?"
@@ -85,7 +90,6 @@ ${LangFileString} VerInfo_DL_Failed "Nie udało się pobrać informacji o wersji
 ${LangFileString} Uninstaller_No_Admin "Aplikacja może być usunięta tylko przez osobe z uprawnieniami Administratora."
 ${LangFileString} Uninstaller_Aborted "Usuwanie anulowane przez użytkownika."
 ${LangFileString} Uninstaller_NotInstalled "Wygląda na to, że SMPlayer nie został zainstalowany w katalogu '$INSTDIR'.$\r$\nKontynuować mimo to (nie zalecane)?"
-${LangFileString} Uninstaller_64bitOnly "This installation can only be uninstalled on 64-bit Windows."
 
 ; Vista & Later Default Programs Registration
 ${LangFileString} Application_Description "SMPlayer jest graficzną nakładką programu MPlayer, z prostymi funkcjami, takimi jak odtwarzanie wideo, DVD i VCD oraz z bardziej zaawansowanymi funkcjami np: obsługa filtrów MPlayera i wiele innych."

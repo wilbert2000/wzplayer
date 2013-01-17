@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -85,8 +85,6 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
 	connect( editFloatingControlAct, SIGNAL(triggered()),
              floating_control->toolbar(), SLOT(edit()) );
 #endif
-
-	menuBar()->setObjectName("menubar");
 
 	retranslateStrings();
 
@@ -441,28 +439,24 @@ void DefaultGui::createStatusBar() {
 	qDebug("DefaultGui::createStatusBar");
 
 	time_display = new QLabel( statusBar() );
-	time_display->setObjectName("time_display");
 	time_display->setAlignment(Qt::AlignRight);
 	time_display->setFrameShape(QFrame::NoFrame);
 	time_display->setText(" 88:88:88 / 88:88:88 ");
 	time_display->setMinimumSize(time_display->sizeHint());
 
 	frame_display = new QLabel( statusBar() );
-	frame_display->setObjectName("frame_display");
 	frame_display->setAlignment(Qt::AlignRight);
 	frame_display->setFrameShape(QFrame::NoFrame);
 	frame_display->setText("88888888");
 	frame_display->setMinimumSize(frame_display->sizeHint());
 
 	ab_section_display = new QLabel( statusBar() );
-	ab_section_display->setObjectName("ab_section_display");
 	ab_section_display->setAlignment(Qt::AlignRight);
 	ab_section_display->setFrameShape(QFrame::NoFrame);
 //	ab_section_display->setText("A:0:00:00 B:0:00:00");
 //	ab_section_display->setMinimumSize(ab_section_display->sizeHint());
 
 	video_info_display = new QLabel( statusBar() );
-	video_info_display->setObjectName("video_info_display");
 	video_info_display->setAlignment(Qt::AlignRight);
 	video_info_display->setFrameShape(QFrame::NoFrame);
 

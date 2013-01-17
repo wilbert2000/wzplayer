@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,10 +29,15 @@
 #include <windows.h>
 
 bool isCDDevice(QString drive) {
+	if (QSysInfo::WindowsVersion >= QSysInfo::WV_NT) {
 		unsigned int r =  GetDriveTypeW((LPCWSTR) drive.utf16());
 		qDebug("isCDDevice: '%s' r: %d", drive.toUtf8().data(), r);
 		return (r == DRIVE_CDROM);
+	} else {
+		//Win98
+		return true;
 	}
+}
 
 #endif
 

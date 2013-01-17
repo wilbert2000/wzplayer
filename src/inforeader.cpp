@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -122,7 +122,6 @@ static QRegExp rx_vc_key("^ID_VIDEO_CODECS");
 
 static QRegExp rx_driver("\\t(.*)\\t(.*)");
 static QRegExp rx_demuxer("^\\s+([A-Z,a-z,0-9]+)\\s+(\\d+)\\s+(\\S.*)");
-static QRegExp rx_demuxer2("^\\s+([A-Z,a-z,0-9]+)\\s+(\\S.*)");
 static QRegExp rx_codec("^([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]+)\\s+(\\S.*)");
 
 void InfoReader::readLine(QByteArray ba) {
@@ -132,63 +131,45 @@ void InfoReader::readLine(QByteArray ba) {
 	QString line = QString::fromLocal8Bit(ba);
 #endif
 
-	if (line.isEmpty()) return;
-
 	qDebug("InfoReader::readLine: line: '%s'", line.toUtf8().data());
 	//qDebug("waiting_for_key: %d", waiting_for_key);
 
 	if (!waiting_for_key) {
-		if ((reading_type == VO) || (reading_type == AO)) {
-			if ( rx_driver.indexIn(line) > -1 ) {
-				QString name = rx_driver.cap(1);
-				QString desc = rx_driver.cap(2);
-				qDebug("InfoReader::readLine: found driver: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
-				if (reading_type==VO) {
-					vo_list.append( InfoData(name, desc) );
-				} 
-				else
-				if (reading_type==AO) {
-					ao_list.append( InfoData(name, desc) );
-				}
-			} else {
-				qWarning("InfoReader::readLine: can't parse output driver from line '%s'", line.toUtf8().constData());
+		if ( rx_driver.indexIn(line) > -1 ) {
+			QString name = rx_driver.cap(1);
+			QString desc = rx_driver.cap(2);
+			qDebug("InfoReader::readLine: found driver: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
+			if (reading_type==VO) {
+				vo_list.append( InfoData(name, desc) );
+			} 
+			else
+			if (reading_type==AO) {
+				ao_list.append( InfoData(name, desc) );
 			}
+			else
+			qWarning("InfoReader::readLine: Unknown type! Ignoring");
 		}
 		else
-		if (reading_type == DEMUXER) {
-			if ( rx_demuxer.indexIn(line) > -1 ) {
-				QString name = rx_demuxer.cap(1);
-				QString desc = rx_demuxer.cap(3);
-				qDebug("InfoReader::readLine: found demuxer: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
-				demuxer_list.append( InfoData(name, desc) );
-			}
-			else 
-			if ( rx_demuxer2.indexIn(line) > -1 ) {
-				QString name = rx_demuxer2.cap(1);
-				QString desc = rx_demuxer2.cap(2);
-				qDebug("InfoReader::readLine: found demuxer: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
-				demuxer_list.append( InfoData(name, desc) );
-			}
-			else {
-				qWarning("InfoReader::readLine: can't parse demuxer from line '%s'", line.toUtf8().constData());
-			}
+		if ( rx_demuxer.indexIn(line) > -1 ) {
+			QString name = rx_demuxer.cap(1);
+			QString desc = rx_demuxer.cap(3);
+			qDebug("InfoReader::readLine: found demuxer: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
+			demuxer_list.append( InfoData(name, desc) );
 		}
 		else
-		if ((reading_type == VC) || (reading_type == AC)) {
-			if ( rx_codec.indexIn(line) > -1 ) {
-				QString name = rx_codec.cap(1);
-				QString desc = rx_codec.cap(4);
-				qDebug("InfoReader::readLine: found codec: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
-				if (reading_type==VC) {
-					vc_list.append( InfoData(name, desc) );
-				} 
-				else
-				if (reading_type==AC) {
-					ac_list.append( InfoData(name, desc) );
-				}
-			} else {
-				qWarning("InfoReader::readLine: can't parse codec from line '%s'", line.toUtf8().constData());
+		if ( rx_codec.indexIn(line) > -1 ) {
+			QString name = rx_codec.cap(1);
+			QString desc = rx_codec.cap(4);
+			qDebug("InfoReader::readLine: found codec: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
+			if (reading_type==VC) {
+				vc_list.append( InfoData(name, desc) );
+			} 
+			else
+			if (reading_type==AC) {
+				ac_list.append( InfoData(name, desc) );
 			}
+			else
+			qWarning("InfoReader::readLine: Unknown type! Ignoring");
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -132,11 +132,5 @@
 // "panscan".
 
 #define USE_MPLAYER_PANSCAN 0
-
-
-// If 1, the background logo will be animated
-#if QT_VERSION >= 0x040600
-/* #define LOGO_ANIMATION 1 */
-#endif
 
 #endif

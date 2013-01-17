@@ -1,5 +1,5 @@
 /*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2013 Ricardo Villalba <rvm@users.sourceforge.net>
+    Copyright (C) 2006-2012 Ricardo Villalba <rvm@users.sourceforge.net>
     Copyright (C) 2010 Ori Rejwan
 
     This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,8 @@ RetrieveYoutubeUrl::RetrieveYoutubeUrl( QObject* parent ) : SimpleHttp(parent)
 			this, SLOT(parse(QByteArray)));
 
 	preferred_quality = FLV_360p;
+
+	setUserAgent("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
 }
 
 RetrieveYoutubeUrl::~RetrieveYoutubeUrl() {
@@ -54,47 +56,17 @@ void RetrieveYoutubeUrl::parse(QByteArray text) {
 
     QRegExp regex("\\\"url_encoded_fmt_stream_map\\\"\\s*:\\s*\\\"([^\\\"]*)");
     regex.indexIn(replyString);
-    QString fmtArray = regex.cap(1);
+    QString fmtArray = regex.cap(1);    
     fmtArray = sanitizeForUnicodePoint(fmtArray);
     fmtArray.replace(QRegExp("\\\\(.)"), "\\1");
     htmlDecode(fmtArray);
     QStringList codeList = fmtArray.split(',');
+    QStringList::iterator stIt = codeList.begin();
     foreach(QString code, codeList)
     {
-		// (2012-12-20) Youtube Fix by RVM for SMPlayer (http://smplayer.sourceforge.net)
-
-		/* qDebug("RetrieveYoutubeUrl::parse: code: '%s'", code.toLatin1().constData()); */
-
-		int itag = 0;
-		QString n_url;
-		QString url;
-		QString s_itag;
-
-		QStringList par_list = code.split(QRegExp("&|\\?"));
-		foreach(QString par, par_list) {
-			/* qDebug("RetrieveYoutubeUrl::parse: par: %s", par.toLatin1().constData()); */
-
-			if (par.startsWith("url=")) url = par.mid(4);
-			else
-			if (par.startsWith("itag=")) {
-				if (s_itag.isEmpty()) {
-					s_itag = par;
-					QRegExp rx("itag=(\\d+)");
-					if (rx.indexIn(s_itag) != -1) itag = rx.cap(1).toInt();
-					/* qDebug("RetrieveYoutubeUrl::parse: itag: %d", itag); */
-				}
-			}
-			else {
-				if (!n_url.isEmpty()) n_url += "&";
-				n_url += par;
-			}
-		}
-		n_url = url + "?" + s_itag + "&" + n_url;
-		n_url.replace("&sig=", "&signature=");
-
-		/* qDebug("RetrieveYoutubeUrl::parse: n_url: '%s'", n_url.toLatin1().constData()); */
-
-		urlMap[itag] = n_url;
+        code.remove(0, 4);
+        QUrl url(code);
+        urlMap[url.queryItemValue("itag").toInt()] = code.remove(QRegExp("&itag=\\d+$"));
     }
 
 	qDebug("RetrieveYoutubeUrl::parse: url count: %d", urlMap.count());
