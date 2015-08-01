@@ -344,8 +344,6 @@ public:
 	QString style; 	//!< SMPlayer look
 #endif
 
-	bool move_when_dragging; //!< Move the main window when the video area is dragged
-
 	// Function of mouse buttons:
 	QString mouse_left_click_function;
 	QString mouse_right_click_function;
@@ -406,9 +404,6 @@ public:
 
 	//!< Pause the current file when the main window is not visible
 	bool pause_when_hidden; 
-
-	//!< Allow frre movement of the video window
-	bool allow_video_movement;
 
 	QString gui; //!< The name of the GUI to use
 

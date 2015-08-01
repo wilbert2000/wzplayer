@@ -285,8 +285,6 @@ protected slots:
 	virtual void loadActions();
 	virtual void saveActions();
 
-	virtual void moveWindowDiff(QPoint diff);
-
 	// Single instance stuff
 #ifdef SINGLE_INSTANCE
 	void handleMessageFromOtherInstances(const QString& message);
@@ -352,6 +350,7 @@ signals:
 protected:
 	virtual void retranslateStrings();
 	virtual void changeEvent(QEvent * event);
+	virtual void moveEvent(QMoveEvent * event);
 #if QT_VERSION < 0x050000
 	virtual void hideEvent( QHideEvent * );
 	virtual void showEvent( QShowEvent * );

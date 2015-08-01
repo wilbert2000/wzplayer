@@ -357,9 +357,6 @@ void Preferences::reset() {
 	style="";
 #endif
 
-	move_when_dragging = false;
-
-
 #if DVDNAV_SUPPORT
 	mouse_left_click_function = "dvdnav_mouse";
 #else
@@ -412,8 +409,6 @@ void Preferences::reset() {
 	default_font = "";
 
 	pause_when_hidden = false;
-
-	allow_video_movement = false;
 
 #ifdef SKINS
 	gui = "SkinGUI";
@@ -850,8 +845,6 @@ void Preferences::save() {
 	set->setValue("style", style);
 #endif
 
-	set->setValue("move_when_dragging", move_when_dragging);
-
 	set->setValue("mouse_left_click_function", mouse_left_click_function);
 	set->setValue("mouse_right_click_function", mouse_right_click_function);
 	set->setValue("mouse_double_click_function", mouse_double_click_function);
@@ -896,8 +889,6 @@ void Preferences::save() {
 	set->setValue("default_font", default_font);
 
 	set->setValue("pause_when_hidden", pause_when_hidden);
-
-	set->setValue("allow_video_movement", allow_video_movement);
 
 	set->setValue("gui", gui);
 
@@ -1372,8 +1363,6 @@ void Preferences::load() {
 	style = set->value("style", style).toString();
 #endif
 
-	move_when_dragging = set->value("move_when_dragging", move_when_dragging).toBool();
-
 	mouse_left_click_function = set->value("mouse_left_click_function", mouse_left_click_function).toString();
 	mouse_right_click_function = set->value("mouse_right_click_function", mouse_right_click_function).toString();
 	mouse_double_click_function = set->value("mouse_double_click_function", mouse_double_click_function).toString();
@@ -1421,8 +1410,6 @@ void Preferences::load() {
 	default_font = set->value("default_font", default_font).toString();
 
 	pause_when_hidden = set->value("pause_when_hidden", pause_when_hidden).toBool();
-
-	allow_video_movement = set->value("allow_video_movement", allow_video_movement).toBool();
 
 	gui = set->value("gui", gui).toString();
 
@@ -1632,7 +1619,6 @@ void Preferences::load() {
 			time_to_kill_mplayer = 1000;
 
 			resize_method = Never;
-			move_when_dragging = false;
 		}
 		config_version = CURRENT_CONFIG_VERSION;
 	}

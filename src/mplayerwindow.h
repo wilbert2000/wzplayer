@@ -29,6 +29,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QPaintEvent>
+#include <QTime>
 
 #include "config.h"
 
@@ -37,59 +38,14 @@ class QLabel;
 class QKeyEvent;
 class QTimer;
 
+#define ZOOM_MIN 0.05
+#define ZOOM_MAX 10.0
 #define ZOOM_STEP 0.05
-#define ZOOM_MIN 0.5
 
-#define DELAYED_RESIZE 0
-
-// Number of pixels the window has to be dragged at least before dragging starts
-#define DRAG_THRESHOLD 4
-
-enum TDragState {NOT_DRAGGING, START_DRAGGING, DRAGGING};
-
-//! Screen is a widget that hides the mouse cursor after some seconds if not moved.
-
-class Screen : public QWidget
-{
-	Q_OBJECT
-
-public:
-	Screen(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	~Screen();
-
-	void setAutoHideCursor(bool b);
-	bool autoHideCursor() { return autohide_cursor; };
-
-	void setAutoHideInterval(int milliseconds) { autohide_interval = milliseconds; };
-	int autoHideInterval() { return autohide_interval; };
-
-public slots:
-	//! Should be called when a file has started. 
-	virtual void playingStarted();
-
-	//! Should be called when a file has stopped.
-	virtual void playingStopped();
-
-signals:
-	void mouseMoved(QPoint);
-
-protected:
-	virtual void mouseMoveEvent( QMouseEvent * e );
-
-protected slots:
-	virtual void checkMousePos();
-
-private:
-	QTimer * check_mouse_timer;
-	QPoint mouse_last_position;
-	bool autohide_cursor;
-	int autohide_interval;
-};
 
 //! MplayerLayer can be instructed to not delete the background.
 
-class MplayerLayer : public Screen
-{
+class MplayerLayer : public QWidget {
 	Q_OBJECT
 
 public:
@@ -105,12 +61,11 @@ public:
 	bool repaintBackground() { return repaint_background; };
 #endif
 
-public slots:
 	//! Should be called when a file has started. 
     /*! It's needed to know if the background has to be cleared or not. */
-	virtual void playingStarted();
+	void setFastBackground();
 	//! Should be called when a file has stopped.
-	virtual void playingStopped();
+	void restoreNormalBackground();
 
 #if REPAINT_BACKGROUND_OPTION
 protected:
@@ -121,11 +76,11 @@ private:
 #if REPAINT_BACKGROUND_OPTION
 	bool repaint_background;
 #endif
-	bool playing;
+	bool normal_background;
 };
 
 
-class MplayerWindow : public Screen
+class MplayerWindow : public QWidget
 {
 	Q_OBJECT
 
@@ -133,36 +88,29 @@ public:
 	MplayerWindow(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	~MplayerWindow();
 
-	MplayerLayer * videoLayer() { return mplayerlayer; };
+	MplayerLayer* videoLayer() { return mplayerlayer; }
+	bool main_window_moved;
+	bool mouse_button_down;
 
-	void setResolution( int w, int h);
+	void setResolution(int w, int h, double aspect);
 	void setAspect( double asp);
 	void setMonitorAspect(double asp);
-	void updateVideoWindow();
 
 #if USE_COLORKEY
 	void setColorKey(QColor c);
 #endif
 
-	void setOffsetX( int );
-	int offsetX();
-
-	void setOffsetY( int );
-	int offsetY();
-
+	// Zoom and pan
 	void setZoom( double );
 	double zoom();
+	void resetZoomAndPan();
 
-	void allowVideoMovement(bool b) { allow_video_movement = b; };
-	bool isVideoMovementAllowed() { return allow_video_movement; };
+	void aboutToEnterFullscreen();
+	void aboutToExitFullscreen();
 
-	void delayLeftClick(bool b) { delay_left_click = b; };
-	bool isLeftClickDelayed() { return delay_left_click; };
+	void setDelayLeftClick(bool b) { delay_left_click = b; };
 
 	virtual QSize sizeHint () const;
-	virtual QSize minimumSizeHint() const;
-
-	virtual bool eventFilter(QObject *, QEvent *);
 
 #if LOGO_ANIMATION
 	bool animatedLogo() { return animated_logo; }
@@ -172,40 +120,38 @@ public:
 	QWidget * cornerWidget() { return corner_widget; };
 
 public slots:
+	void playingStarted();
+	void playingStopped();
+
 	void setLogoVisible(bool b);
 	void showLogo() { setLogoVisible(true); };
 	void hideLogo() { setLogoVisible(false); };
+
+	void panLeft();
+	void panRight();
+	void panUp();
+	void panDown();
+	// core.h has resetZoomAndPan slot
 
 #if LOGO_ANIMATION
 	void setAnimatedLogo(bool b) { animated_logo = b; };
 #endif
 
-	void moveLeft();
-	void moveRight();
-	void moveUp();
-	void moveDown();
-	void incZoom();
-	void decZoom();
-
-	void activateMouseDragTracking(bool active) { mouse_drag_tracking = active; }
-
-#if DELAYED_RESIZE
 protected slots:
-	void resizeLater();
-#endif
+	void checkHideMouse();
 
 protected:
 	virtual void retranslateStrings();
 	virtual void changeEvent ( QEvent * event ) ;
-
 	virtual void resizeEvent( QResizeEvent * e);
+
+	virtual void mousePressEvent ( QMouseEvent * e );
+	virtual void mouseMoveEvent ( QMouseEvent * e );
 	virtual void mouseReleaseEvent( QMouseEvent * e);
 	virtual void mouseDoubleClickEvent( QMouseEvent * e );
 	virtual void wheelEvent( QWheelEvent * e );
-	void moveLayer( int offset_x, int offset_y );
 
 signals:
-    //void rightButtonReleased( QPoint p );
 	void doubleClicked();
 	void leftClicked();
 	void rightClicked();
@@ -215,30 +161,18 @@ signals:
 	void keyPressed(QKeyEvent * e);
 	void wheelUp();
 	void wheelDown();
-	void mouseMovedDiff(QPoint);
+	void mouseMoved(QPoint);
 
 protected:
 	int video_width, video_height;
 	double aspect;
 	double monitoraspect;
 
-	MplayerLayer * mplayerlayer;
 	QLabel * logo;
 
-	// Zoom and moving
+	// Zoom and pan
 	int offset_x, offset_y;
 	double zoom_factor;
-
-	// Original pos and dimensions of the mplayerlayer
-	// before zooming or moving
-	int orig_x, orig_y;
-	int orig_width, orig_height;
-
-	bool allow_video_movement;
-
-#if DELAYED_RESIZE
-	QTimer * resize_timer;
-#endif
 
 	// Delay left click event
 	bool delay_left_click;
@@ -252,9 +186,27 @@ protected:
 	QWidget * corner_widget;
 
 private:
-	TDragState drag_state;
-	QPoint start_drag;
-	bool mouse_drag_tracking;
+	MplayerLayer * mplayerlayer;
+
+	QTime* left_button_pressed_time;
+	QPoint drag_pos;
+	bool dragging;
+	bool kill_fake_event;
+	bool fullscreen;
+
+	bool autohide_cursor;
+	QTimer * check_hide_mouse_timer;
+	QPoint check_hide_mouse_last_position;
+	int autohide_interval;
+
+	void autoHideCursorStartTimer();
+	void showHiddenCursor(bool startTimer);
+	void setAutoHideCursor(bool enable);
+
+	void moveVideo(int dx, int dy);
+	void updateVideoWindow();
+
+	bool checkDragging(QMouseEvent * event);
 };
 
 #endif

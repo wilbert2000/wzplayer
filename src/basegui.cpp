@@ -923,18 +923,21 @@ void BaseGui::createActions() {
 	connect( playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()) );
 
 
-	// Move video window and zoom
+	// Pan and zoom video window
+	// WH: don't dare to touch these, fucking up people's keybindings etc,
+	// but bindings for panning should probably be the inverse of these if you
+	// ever want to rename move to pan.
 	moveUpAct = new MyAction(Qt::ALT | Qt::Key_Up, this, "move_up");
-	connect( moveUpAct, SIGNAL(triggered()), mplayerwindow, SLOT(moveUp()) );
+	connect( moveUpAct, SIGNAL(triggered()), mplayerwindow, SLOT(panDown()) );
 
 	moveDownAct = new MyAction(Qt::ALT | Qt::Key_Down, this, "move_down");
-	connect( moveDownAct, SIGNAL(triggered()), mplayerwindow, SLOT(moveDown()) );
+	connect( moveDownAct, SIGNAL(triggered()), mplayerwindow, SLOT(panUp()) );
 
 	moveLeftAct = new MyAction(Qt::ALT | Qt::Key_Left, this, "move_left");
-	connect( moveLeftAct, SIGNAL(triggered()), mplayerwindow, SLOT(moveLeft()) );
+	connect( moveLeftAct, SIGNAL(triggered()), mplayerwindow, SLOT(panRight()) );
 
 	moveRightAct = new MyAction(Qt::ALT | Qt::Key_Right, this, "move_right");
-	connect( moveRightAct, SIGNAL(triggered()), mplayerwindow, SLOT(moveRight()) );
+	connect( moveRightAct, SIGNAL(triggered()), mplayerwindow, SLOT(panLeft()) );
 
 	incZoomAct = new MyAction(Qt::Key_E, this, "inc_zoom");
 	connect( incZoomAct, SIGNAL(triggered()), core, SLOT(incZoom()) );
@@ -943,7 +946,7 @@ void BaseGui::createActions() {
 	connect( decZoomAct, SIGNAL(triggered()), core, SLOT(decZoom()) );
 
 	resetZoomAct = new MyAction(Qt::SHIFT | Qt::Key_E, this, "reset_zoom");
-	connect( resetZoomAct, SIGNAL(triggered()), core, SLOT(resetZoom()) );
+	connect( resetZoomAct, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()) );
 
 	autoZoomAct = new MyAction(Qt::SHIFT | Qt::Key_W, this, "auto_zoom");
 	connect( autoZoomAct, SIGNAL(triggered()), core, SLOT(autoZoom()) );
@@ -2182,12 +2185,10 @@ void BaseGui::createCore() {
 
 void BaseGui::createMplayerWindow() {
     mplayerwindow = new MplayerWindow( panel );
-	mplayerwindow->setObjectName("mplayerwindow");
 #if USE_COLORKEY
 	mplayerwindow->setColorKey( pref->color_key );
 #endif
-	mplayerwindow->allowVideoMovement( pref->allow_video_movement );
-	mplayerwindow->delayLeftClick(pref->delay_left_click);
+	mplayerwindow->setDelayLeftClick(pref->delay_left_click);
 
 #if LOGO_ANIMATION
 	mplayerwindow->setAnimatedLogo( pref->animated_logo);
@@ -2226,10 +2227,6 @@ void BaseGui::createMplayerWindow() {
              this, SLOT(xbutton1ClickFunction()) );
 	connect( mplayerwindow, SIGNAL(xbutton2Clicked()),
              this, SLOT(xbutton2ClickFunction()) );
-
-	connect( mplayerwindow, SIGNAL(mouseMovedDiff(QPoint)),
-             this, SLOT(moveWindowDiff(QPoint)), Qt::QueuedConnection );
-	mplayerwindow->activateMouseDragTracking(pref->move_when_dragging);
 }
 
 void BaseGui::createVideoEqualizer() {
@@ -2955,8 +2952,7 @@ void BaseGui::applyNewPreferences() {
 		#endif
 	}
 
-	mplayerwindow->activateMouseDragTracking(pref->move_when_dragging);
-	mplayerwindow->delayLeftClick(pref->delay_left_click);
+	mplayerwindow->setDelayLeftClick(pref->delay_left_click);
 
 #if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	if (pref->hide_video_window_on_audio_files) {
@@ -4387,9 +4383,16 @@ void BaseGui::aboutToEnterFullscreen() {
 		menuBar()->hide();
 		statusBar()->hide();
 	}
+
+	// Resets zoom and pan
+	mplayerwindow->aboutToEnterFullscreen();
+	core->mset.zoom_factor = mplayerwindow->zoom();
 }
 
 void BaseGui::aboutToExitFullscreen() {
+	mplayerwindow->aboutToExitFullscreen();
+	core->mset.zoom_factor = mplayerwindow->zoom();
+
 	if (!pref->compact_mode) {
 		menuBar()->show();
 		statusBar()->show();
@@ -4963,6 +4966,9 @@ void BaseGui::resizeWindow(int w, int h) {
 	// If fullscreen, don't resize!
 	if (pref->fullscreen) return;
 
+	// Don't resize if dragging++. Does not cover dragging by title.
+	if (mplayerwindow->mouse_button_down) return;
+
 	if ( (pref->resize_method==Preferences::Never) && (panel->isVisible()) ) {
 		return;
 	}
@@ -5250,37 +5256,6 @@ void BaseGui::saveActions() {
 #endif
 }
 
-void BaseGui::moveWindowDiff(QPoint diff) {
-	if (pref->fullscreen || isMaximized()) {
-		return;
-	}
-
-#if QT_VERSION >= 0x050000
-	// Move the window with some delay.
-	// Seems to work better with Qt 5
-
-	static QPoint d;
-	static int count = 0;
-
-	d += diff;
-	count++;
-
-	if (count > 3) {
-		//qDebug() << "BaseGui::moveWindowDiff:" << d;
-		QPoint new_pos = pos() + d;
-		if (new_pos.y() < 0) new_pos.setY(0);
-		if (new_pos.x() < 0) new_pos.setX(0);
-		//qDebug() << "BaseGui::moveWindowDiff: new_pos:" << new_pos;
-		move(new_pos);
-		count = 0;
-		d = QPoint(0,0);
-	}
-#else
-	//qDebug() << "BaseGui::moveWindowDiff:" << diff;
-	move(pos() + diff);
-#endif
-}
-
 #if QT_VERSION < 0x050000
 void BaseGui::showEvent( QShowEvent * ) {
 	qDebug("BaseGui::showEvent");
@@ -5340,6 +5315,13 @@ bool BaseGui::event(QEvent * e) {
 	return result;
 }
 #endif
+
+void BaseGui::moveEvent(QMoveEvent * event) {
+	//qDebug("BaseGui::moveEvent");
+
+	if (mplayerwindow)
+		mplayerwindow->main_window_moved = true;
+}
 
 void BaseGui::askForMplayerVersion(QString line) {
 	qDebug("BaseGui::askForMplayerVersion: %s", line.toUtf8().data());

@@ -100,18 +100,10 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 
 	// Do this the first
 	connect( proc, SIGNAL(processExited()),
-             mplayerwindow->videoLayer(), SLOT(playingStopped()) );
+			 mplayerwindow, SLOT(playingStopped()) );
 
 	connect( proc, SIGNAL(error(QProcess::ProcessError)),
-             mplayerwindow->videoLayer(), SLOT(playingStopped()) );
-
-	// Necessary to hide/unhide mouse cursor on black borders
-	connect( proc, SIGNAL(processExited()),
-             mplayerwindow, SLOT(playingStopped()) );
-
-	connect( proc, SIGNAL(error(QProcess::ProcessError)),
-             mplayerwindow, SLOT(playingStopped()) );
-
+			 mplayerwindow, SLOT(playingStopped()) );
 
 	connect( proc, SIGNAL(receivedCurrentSec(double)),
              this, SLOT(changeCurrentSec(double)) );
@@ -259,14 +251,10 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 
 	// Mplayerwindow
 	connect( this, SIGNAL(aboutToStartPlaying()),
-             mplayerwindow->videoLayer(), SLOT(playingStarted()) );
-
-	// Necessary to hide/unhide mouse cursor on black borders
-	connect( this, SIGNAL(aboutToStartPlaying()),
-             mplayerwindow, SLOT(playingStarted()) );
+			 mplayerwindow, SLOT(playingStarted()) );
 
 #if DVDNAV_SUPPORT
-	connect( mplayerwindow->videoLayer(), SIGNAL(mouseMoved(QPoint)),
+	connect( mplayerwindow, SIGNAL(mouseMoved(QPoint)),
              this, SLOT(dvdnavUpdateMousePos(QPoint)) );
 #endif
 
@@ -1030,6 +1018,8 @@ void Core::initPlaying(int seek) {
 	/* updateWidgets(); */
 
 	mplayerwindow->hideLogo();
+	// Feedback and prevent potential artifacts waiting for redraw
+	mplayerwindow->repaint();
 
 	if (proc->isRunning()) {
 		stopMplayer();
@@ -3488,7 +3478,6 @@ void Core::gotAudioBitrate(int b) {
 }
 
 void Core::changePause() {
-	qDebug("Core::changePause");
 	qDebug("Core::changePause: mplayer reports that it's paused");
 	setState(Paused);
 	//emit stateChanged(state());
@@ -4045,17 +4034,19 @@ void Core::toggleDoubleSize() {
 }
 #endif
 
-void Core::changeZoom(double p) {
-	qDebug("Core::changeZoom: %f", p);
-	if (p < ZOOM_MIN) p = ZOOM_MIN;
+void Core::changeZoom(double factor) {
+	qDebug("Core::changeZoom: %f", factor);
 
-	mset.zoom_factor = p;
-	mplayerwindow->setZoom(p);
+	// Kept between min and max by mplayerwindow->setZoom()
+	mplayerwindow->setZoom(factor);
+	mset.zoom_factor = mplayerwindow->zoom();
 	displayMessage( tr("Zoom: %1").arg(mset.zoom_factor) );
 }
 
-void Core::resetZoom() {
-	changeZoom(1.0);
+void Core::resetZoomAndPan() {
+	mplayerwindow->resetZoomAndPan();
+	mset.zoom_factor = mplayerwindow->zoom();
+	displayMessage( tr("Zoom and pan reset") );
 }
 
 void Core::autoZoom() {
@@ -4304,8 +4295,7 @@ void Core::gotWindowResolution(int w, int h) {
 	//Override aspect ratio, is this ok?
 	//mdat.video_aspect = mset.win_aspect();
 
-	mplayerwindow->setResolution( w, h );
-	mplayerwindow->setAspect( mset.win_aspect() );
+	mplayerwindow->setResolution( w, h, mset.win_aspect() );
 }
 
 void Core::gotNoVideo() {
