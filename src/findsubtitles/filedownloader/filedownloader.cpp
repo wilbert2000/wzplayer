@@ -19,6 +19,7 @@
 #include "filedownloader.h"
 #include <QFile>
 #include <QMessageBox>
+#include <QDebug>
 
 FileDownloader::FileDownloader(QWidget *parent) : QProgressDialog(parent)
 {

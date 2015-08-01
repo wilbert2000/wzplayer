@@ -39,6 +39,7 @@
 #include <QInputDialog>
 #include <QClipboard>
 #include <QMimeData>
+#include <QDebug>
 
 #include <cmath>
 
