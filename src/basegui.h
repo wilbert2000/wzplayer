@@ -184,6 +184,7 @@ public slots:
 	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; };
 	int forceStartInFullscreen() { return arg_start_in_fullscreen; };
 
+	void maybeShowLogo();
 
 protected slots:
 	virtual void closeWindow();
@@ -828,6 +829,9 @@ private:
 	QPoint win_pos;
 	QSize win_size;
 	bool was_maximized;
+
+	// Closing window set by closeWindow(). Used by slot maybeShowLog()
+	bool closing;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER

@@ -146,6 +146,7 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 #ifdef UPDATE_CHECKER
 	, update_checker(0)
 #endif
+	, closing(false)
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
@@ -2113,7 +2114,7 @@ void BaseGui::createCore() {
              this, SLOT(exitFullscreenOnStop()) );
 
 	connect( core, SIGNAL(mediaStoppedByUser()),
-             mplayerwindow, SLOT(showLogo()) );
+			 this, SLOT(maybeShowLogo()) );
 
 	connect( core, SIGNAL(mediaLoaded()),
              this, SLOT(enableActionsOnPlaying()) );
@@ -2157,7 +2158,7 @@ void BaseGui::createCore() {
 	if (pref->hide_video_window_on_audio_files) {
 		connect( core, SIGNAL(noVideo()), this, SLOT(hidePanel()) );
 	} else {
-		connect( core, SIGNAL(noVideo()), mplayerwindow, SLOT(showLogo()) );
+		connect( core, SIGNAL(noVideo()), this, SLOT(maybeShowLogo()) );
 	}
 #else
 	connect( core, SIGNAL(noVideo()), this, SLOT(hidePanel()) );
@@ -2300,9 +2301,6 @@ void BaseGui::createPlaylist() {
 	*/
 	connect( playlist, SIGNAL(playlistEnded()),
              this, SLOT(playlistHasFinished()) );
-
-	connect( playlist, SIGNAL(playlistEnded()),
-             mplayerwindow, SLOT(showLogo()) );
 
 	/*
 	connect( playlist, SIGNAL(visibilityChanged()),
@@ -2824,9 +2822,17 @@ void BaseGui::closeEvent( QCloseEvent * e )  {
 }
 */
 
+void BaseGui::maybeShowLogo() {
+	//qDebug("BaseGui::maybeShowLogo");
+	if (!closing)
+		mplayerwindow->showLogo();
+}
 
 void BaseGui::closeWindow() {
 	qDebug("BaseGui::closeWindow");
+
+	// Prevent update logo when closing down
+	closing = true;
 
 	if (core->state() != Core::Stopped) {
 		core->stop();
@@ -2960,7 +2966,7 @@ void BaseGui::applyNewPreferences() {
 		disconnect( core, SIGNAL(noVideo()), mplayerwindow, SLOT(hideLogo()) );
 	} else {
 		disconnect( core, SIGNAL(noVideo()), this, SLOT(hidePanel()) );
-		connect( core, SIGNAL(noVideo()), mplayerwindow, SLOT(showLogo()) );
+		connect( core, SIGNAL(noVideo()), this, SLOT(maybeShowLogo()) );
 		if (!panel->isVisible()) {
 			resize( width(), height() + 200);
 			panel->show();
@@ -4897,6 +4903,8 @@ void BaseGui::playlistHasFinished() {
 			exitAct->trigger();
 		}
 	}
+
+	maybeShowLogo();
 }
 
 void BaseGui::displayState(Core::State state) {
