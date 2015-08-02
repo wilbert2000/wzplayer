@@ -165,6 +165,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	logo->setObjectName("mplayerwindow logo");
 	logo->setAutoFillBackground(true);
 	ColorUtils::setBackgroundColor( logo, QColor(0,0,0) );
+	logo->setMouseTracking(true);
 
 	QVBoxLayout * mplayerlayerLayout = new QVBoxLayout( mplayerlayer );
 	mplayerlayerLayout->addWidget( logo, 0, Qt::AlignHCenter | Qt::AlignVCenter );
@@ -565,8 +566,8 @@ void MplayerWindow::setAutoHideCursor(bool enable) {
 
 void MplayerWindow::playingStarted() {
 	qDebug("MplayerWindow::playingStarted");
-	// Clear potential artifacts waiting for redraw during load of video.
-	repaint();
+	// No longer needed. Now done by Core::initPlaying
+	// repaint();
 	mplayerlayer->setFastBackground();
 	setAutoHideCursor(true);
 }
@@ -574,17 +575,20 @@ void MplayerWindow::playingStarted() {
 void MplayerWindow::playingStopped() {
 	qDebug("MplayerWindow::playingStopped");
 	mplayerlayer->restoreNormalBackground();
-	// Clear background right away. Maybe processing or waiting before next paint.
-	if (!quiting)
-		repaint();
+	// Clear background right away.
+	// Pro: no artifacts when things take a little while.
+	// Against: more flicker when switching bright videos in playlist.
+	// repaint();
 	setAutoHideCursor(false);
 }
 
 void MplayerWindow::setLogoVisible(bool b) {
 	qDebug("MplayerWindow::setLogoVisible %d", b);
 
-	if (quiting)
+	if (quiting) {
+		qDebug("MplayerWindow::setLogoVisible canceled");
 		return;
+	}
 
 	if (corner_widget) {
 		corner_widget->setVisible(b);
