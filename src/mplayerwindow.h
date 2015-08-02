@@ -38,9 +38,13 @@ class QLabel;
 class QKeyEvent;
 class QTimer;
 
+// Zooming
 #define ZOOM_MIN 0.05
 #define ZOOM_MAX 10.0
 #define ZOOM_STEP 0.05
+
+// Distance the mouse must travel before it is shown if not clicked
+#define SHOW_MOUSE_TRESHOLD 4
 
 
 //! MplayerLayer can be instructed to not delete the background.
@@ -89,8 +93,9 @@ public:
 	~MplayerWindow();
 
 	MplayerLayer* videoLayer() { return mplayerlayer; }
+
 	bool main_window_moved;
-	bool mouse_button_down;
+	bool quiting;
 
 	void setResolution(int w, int h, double aspect);
 	void setAspect( double asp);

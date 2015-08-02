@@ -125,7 +125,6 @@ void MplayerLayer::restoreNormalBackground() {
 MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 	, main_window_moved(false)
-	, mouse_button_down(false)
 	, video_width(0)
 	, video_height(0)
 	, aspect((double) 4/3)
@@ -188,7 +187,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 MplayerWindow::~MplayerWindow() {
 }
 
-void MplayerWindow::resizeEvent( QResizeEvent * e)
+void MplayerWindow::resizeEvent(QResizeEvent*)
 {
 	//qDebug("MplayerWindow::resizeEvent: %d, %d", e->size().width(), e->size().height() );
 	updateVideoWindow();
@@ -253,67 +252,10 @@ void MplayerWindow::updateVideoWindow()
 	//qDebug("MplayerWindow::updateVideoWindow x: %d y: %d w: %d, h: %d", x, y, w, h);
 }
 
-void MplayerWindow::autoHideCursorStartTimer() {
-	check_hide_mouse_last_position = QCursor::pos();
-	check_hide_mouse_timer->start();
-}
-
-void MplayerWindow::showHiddenCursor(bool startTimer) {
-	if (cursor().shape() == Qt::BlankCursor) {
-		setCursor(QCursor(Qt::ArrowCursor));
-	}
-	if (startTimer) {
-		autoHideCursorStartTimer();
-	} else {
-		check_hide_mouse_timer->stop();
-	}
-}
-
-// Called by timer
-void MplayerWindow::checkHideMouse() {
-	if (!autohide_cursor || QCursor::pos() != check_hide_mouse_last_position) {
-		showHiddenCursor(true);
-	} else {
-		if (cursor().shape() == Qt::ArrowCursor) {
-			setCursor(QCursor(Qt::BlankCursor));
-		}
-		autoHideCursorStartTimer();
-	}
-}
-
-// TODO: disable autoHideCUrsor when paused?
-void MplayerWindow::setAutoHideCursor(bool enable) {
-	autohide_cursor = enable;
-	if (autohide_cursor)
-		autoHideCursorStartTimer();
-	else showHiddenCursor(false);
-}
-
-void MplayerWindow::playingStarted() {
-	qDebug("MplayerWindow::playingStarted");
-	// Clear potential artifacts waiting for redraw during load of video.
-	// No longer needed since repaint in Core::initPlaying?
-	repaint();
-	mplayerlayer->setFastBackground();
-	setAutoHideCursor(true);
-}
-
-void MplayerWindow::playingStopped() {
-	qDebug("MplayerWindow::playingStopped");
-	mplayerlayer->restoreNormalBackground();
-	// Is this repaint needed?
-	repaint();
-	setAutoHideCursor(false);
-}
-
 void MplayerWindow::mousePressEvent( QMouseEvent * event) {
 	qDebug( "MplayerWindow::mousePressEvent" );
 
 	event->accept();
-
-	// Signal for mainwindow to not resize as long as a button down
-	// Resize can happen when loading a new video
-	mouse_button_down = true;
 
 	// Ignore second press event after a double click.
 	if (!double_clicked) {
@@ -326,6 +268,7 @@ void MplayerWindow::mousePressEvent( QMouseEvent * event) {
 			dragging = false;
 			main_window_moved = false;
 			// Catch release_events with button still down
+			// Happens only when mouse capture is released?
 			kill_fake_event = true;
 		}
 	}
@@ -336,6 +279,7 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 
 	event->accept();
 
+	// No longer kill release event with button down
 	kill_fake_event = false;
 
 	if ((event->buttons() == Qt::LeftButton)
@@ -361,6 +305,7 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 			setCursor(QCursor(Qt::DragMoveCursor));
 			qDebug("MplayerWindow::mouseMoveEvent started drag");
 		}
+
 		if (dragging) {
 			drag_pos = pos;
 			moveVideo(diff.x(), diff.y());
@@ -372,6 +317,8 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 	emit mouseMoved(event->pos());
 }
 
+// Return whether this event is accused of dragging.
+// Returning false will cancel the event.
 bool MplayerWindow::checkDragging(QMouseEvent * event) {
 
 	if (double_clicked)
@@ -388,30 +335,31 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	}
 
 	// Move of main window. Moves can be canceled, but that should be handled below.
+	// Set by BaseGui::moveEvent
 	if (main_window_moved) {
 		main_window_moved = false;
 		qDebug("MplayerWindow::mouseReleaseEvent canceled release event dragging mainwindow");
 		return false;
 	}
 
-	// Except for dragging, also good when event queue is not keeping up with
-	// events. Also nicely protects against strange behaviour after the mouse
-	// has been captured by Qt, sometimes release events don't come through
-	// until the mouse moved.
+	// Except for dragging, also nice when event queue is not keeping up with
+	// events. After the mouse has been captured, mouse release events sometimes
+	// do not come through until the mouse moved (on Qt 4.8 KDE 4.1.14.9).
 	if (left_button_pressed_time->elapsed() >= QApplication::startDragTime()) {
 		qDebug("MplayerWindow::mouseReleaseEvent canceled left click taking longer as %d ms",
 			   QApplication::startDragTime());
 		return false;
 	}
 
-	// If we do not capture the mouse and drag the mouse more then startDragDistance
-	// a mouse release event is sent, before the first mouse move event, while the
-	// mouse is still down.
+	// Dragging the mouse more then startDragDistance delivers a mouse release event,
+	// before the first mouse move event, while the left mouse is still down.
+	// (on Qt 4.8, KDE 4.1.14.9), Like an end-of-drag or what?
+	// Only when mouse not captured. Kill it.
 	if (kill) {
 		QPoint pos = event->globalPos();
 		QPoint diff = pos - drag_pos;
 		if (diff.manhattanLength() > QApplication::startDragDistance()) {
-			qDebug("MplayerWindow::mouseReleaseEvent killed fake release event");
+			qDebug("MplayerWindow::mouseReleaseEvent killed release event");
 			return false;
 		}
 	}
@@ -424,9 +372,6 @@ void MplayerWindow::mouseReleaseEvent(QMouseEvent * event) {
 	qDebug( "MplayerWindow::mouseReleaseEvent");
 
 	event->accept();
-
-	// Signal for main window to no longer block resize
-	mouse_button_down = false;
 
 	if (event->button() == Qt::LeftButton) {
 		if (event->modifiers() != Qt::NoModifier) {
@@ -579,15 +524,67 @@ void MplayerWindow::setColorKey( QColor c ) {
 }
 #endif
 
-void MplayerWindow::retranslateStrings() {
-	//qDebug("MplayerWindow::retranslateStrings");
-#ifndef MINILIB
-	logo->setPixmap( Images::icon("background") );
-#endif
+void MplayerWindow::autoHideCursorStartTimer() {
+	check_hide_mouse_last_position = QCursor::pos();
+	check_hide_mouse_timer->start();
 }
 
-void MplayerWindow::setLogoVisible( bool b) {
+void MplayerWindow::showHiddenCursor(bool startTimer) {
+	if (cursor().shape() == Qt::BlankCursor) {
+		setCursor(QCursor(Qt::ArrowCursor));
+	}
+	if (startTimer) {
+		autoHideCursorStartTimer();
+	} else {
+		check_hide_mouse_timer->stop();
+	}
+}
+
+// Called by timer
+void MplayerWindow::checkHideMouse() {
+	if (!autohide_cursor
+		|| ((QCursor::pos() - check_hide_mouse_last_position).manhattanLength()
+			> SHOW_MOUSE_TRESHOLD)) {
+		showHiddenCursor(true);
+	} else {
+		if (cursor().shape() == Qt::ArrowCursor) {
+			setCursor(QCursor(Qt::BlankCursor));
+		}
+		autoHideCursorStartTimer();
+	}
+}
+
+// TODO: disable autoHideCUrsor when paused?
+// Currently only start and stop toggle autohide_cursor
+void MplayerWindow::setAutoHideCursor(bool enable) {
+	autohide_cursor = enable;
+	if (autohide_cursor)
+		autoHideCursorStartTimer();
+	else showHiddenCursor(false);
+}
+
+void MplayerWindow::playingStarted() {
+	qDebug("MplayerWindow::playingStarted");
+	// Clear potential artifacts waiting for redraw during load of video.
+	repaint();
+	mplayerlayer->setFastBackground();
+	setAutoHideCursor(true);
+}
+
+void MplayerWindow::playingStopped() {
+	qDebug("MplayerWindow::playingStopped");
+	mplayerlayer->restoreNormalBackground();
+	// Clear background right away. Maybe processing or waiting before next paint.
+	if (!quiting)
+		repaint();
+	setAutoHideCursor(false);
+}
+
+void MplayerWindow::setLogoVisible(bool b) {
 	qDebug("MplayerWindow::setLogoVisible %d", b);
+
+	if (quiting)
+		return;
 
 	if (corner_widget) {
 		corner_widget->setVisible(b);
@@ -620,5 +617,13 @@ void MplayerWindow::setLogoVisible( bool b) {
 	}
 #endif
 }
+
+void MplayerWindow::retranslateStrings() {
+	//qDebug("MplayerWindow::retranslateStrings");
+#ifndef MINILIB
+	logo->setPixmap( Images::icon("background") );
+#endif
+}
+
 
 #include "moc_mplayerwindow.cpp"

@@ -2832,6 +2832,7 @@ void BaseGui::closeWindow() {
 		core->stop();
 	}
 
+	mplayerwindow->quiting = true;
 	//qApp->quit();
 	emit quitSolicited();
 }
@@ -4966,8 +4967,8 @@ void BaseGui::resizeWindow(int w, int h) {
 	// If fullscreen, don't resize!
 	if (pref->fullscreen) return;
 
-	// Don't resize if dragging++. Does not cover dragging by title.
-	if (mplayerwindow->mouse_button_down) return;
+	// Don't resize if any mouse buttons down, like when dragging
+	if (QApplication::mouseButtons()) return;
 
 	if ( (pref->resize_method==Preferences::Never) && (panel->isVisible()) ) {
 		return;
