@@ -585,11 +585,6 @@ void MplayerWindow::playingStopped() {
 void MplayerWindow::setLogoVisible(bool b) {
 	qDebug("MplayerWindow::setLogoVisible %d", b);
 
-	if (quiting) {
-		qDebug("MplayerWindow::setLogoVisible canceled");
-		return;
-	}
-
 	if (corner_widget) {
 		corner_widget->setVisible(b);
 	}

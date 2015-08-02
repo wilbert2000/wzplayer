@@ -95,7 +95,6 @@ public:
 	MplayerLayer* videoLayer() { return mplayerlayer; }
 
 	bool main_window_moved;
-	bool quiting;
 
 	void setResolution(int w, int h, double aspect);
 	void setAspect( double asp);

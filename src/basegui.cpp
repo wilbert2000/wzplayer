@@ -2832,7 +2832,6 @@ void BaseGui::closeWindow() {
 		core->stop();
 	}
 
-	mplayerwindow->quiting = true;
 	//qApp->quit();
 	emit quitSolicited();
 }
