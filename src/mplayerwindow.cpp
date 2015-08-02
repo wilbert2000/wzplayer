@@ -139,7 +139,9 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 #if LOGO_ANIMATION
 	, animated_logo(false)
 #endif
+#ifdef SHAREWIDGET
 	, corner_widget(0)
+#endif
 	, drag_pos(0, 0)
 	, dragging(false)
 	, kill_fake_event(false)
@@ -507,6 +509,7 @@ void MplayerWindow::changeEvent(QEvent *e) {
 	}
 }
 
+#ifdef SHAREWIDGET
 void MplayerWindow::setMouseTrackingInclChildren(QWidget *w) {
 	qDebug() << "MplayerWindow::setMouseTrackingInclChildren: " << w->objectName();
 
@@ -533,6 +536,7 @@ void MplayerWindow::setCornerWidget(QWidget * w) {
 	layout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding));
 	layout->addLayout(blayout);
 }
+#endif
 
 #if USE_COLORKEY
 void MplayerWindow::setColorKey( QColor c ) {
@@ -600,9 +604,11 @@ void MplayerWindow::playingStopped() {
 void MplayerWindow::setLogoVisible(bool b) {
 	qDebug("MplayerWindow::setLogoVisible %d", b);
 
+#ifdef SHAREWIDGET
 	if (corner_widget) {
 		corner_widget->setVisible(b);
 	}
+#endif
 
 #if !LOGO_ANIMATION
 	logo->setVisible(b);

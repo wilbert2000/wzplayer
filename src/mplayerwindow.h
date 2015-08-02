@@ -120,8 +120,10 @@ public:
 	bool animatedLogo() { return animated_logo; }
 #endif
 
+#ifdef SHAREWIDGET
 	void setCornerWidget(QWidget * w);
 	QWidget * cornerWidget() { return corner_widget; };
+#endif
 
 public slots:
 	void playingStarted();
