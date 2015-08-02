@@ -27,7 +27,7 @@
 #include <QPropertyAnimation>
 #endif
 
-AutohideWidget::AutohideWidget(QWidget * parent)
+AutohideWidget::AutohideWidget(QWidget * parent, QWidget * mplayerwindow)
 	: QWidget(parent)
 	, turned_on(false)
 	, auto_hide(false)
@@ -45,8 +45,7 @@ AutohideWidget::AutohideWidget(QWidget * parent)
 	setAutoFillBackground(true);
 	setLayoutDirection(Qt::LeftToRight);
 
-	parent->installEventFilter(this);
-	installFilter(parent);
+	mplayerwindow->installEventFilter(this);
 
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkUnderMouse()));
@@ -75,19 +74,6 @@ void AutohideWidget::setHideDelay(int ms) {
 
 int AutohideWidget::hideDelay() {
 	return timer->interval();
-}
-
-void AutohideWidget::installFilter(QObject *o) {
-	QObjectList children = o->children();
-	for (int n=0; n < children.count(); n++) {
-		if (children[n]->isWidgetType()) {
-			qDebug() << "AutohideWidget::installFilter: child name:" << children[n]->objectName();
-			QWidget *w = static_cast<QWidget *>(children[n]);
-			w->setMouseTracking(true);
-			w->installEventFilter(this);
-			installFilter(children[n]);
-		}
-	}
 }
 
 void AutohideWidget::activate() {

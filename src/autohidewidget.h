@@ -31,7 +31,7 @@ class AutohideWidget : public QWidget
 public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
-	AutohideWidget(QWidget * parent = 0);
+	AutohideWidget(QWidget * parent, QWidget * mplayerwindow);
 	~AutohideWidget();
 
 	void setInternalWidget(QWidget * w);
@@ -65,7 +65,6 @@ private slots:
 	void showAnimated();
 
 private:
-	void installFilter(QObject *o);
 	void resizeAndMove();
 
 private:

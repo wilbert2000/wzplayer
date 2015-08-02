@@ -307,7 +307,7 @@ void SkinGui::createControlWidget() {
 
 void SkinGui::createFloatingControl() {
 	// Floating control
-	floating_control = new AutohideWidget(panel);
+	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
 
 #ifndef SKIN_EDITABLE_CONTROL

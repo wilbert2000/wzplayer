@@ -65,6 +65,8 @@ ShareWidget::ShareWidget(QSettings * settings, QWidget * parent, Qt::WindowFlags
 	, count(0)
 	, display(Random)
 {
+	setObjectName("sharewidget");
+
 	donate_button = new ShareButton("paypal", "", this);
 	fb_button = new ShareButton("social_facebook", "", this);
 	twitter_button = new ShareButton("social_twitter", "", this);

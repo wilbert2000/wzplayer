@@ -206,6 +206,7 @@ private:
 	void autoHideCursorStartTimer();
 	void showHiddenCursor(bool startTimer);
 	void setAutoHideCursor(bool enable);
+	void setMouseTrackingInclChildren(QWidget *w);
 
 	void moveVideo(int dx, int dy);
 	void updateVideoWindow();

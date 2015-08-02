@@ -507,8 +507,23 @@ void MplayerWindow::changeEvent(QEvent *e) {
 	}
 }
 
+void MplayerWindow::setMouseTrackingInclChildren(QWidget *w) {
+	qDebug() << "MplayerWindow::setMouseTrackingInclChildren: " << w->objectName();
+
+	w->setMouseTracking(true);
+
+	QObjectList children = w->children();
+	for (int n = 0; n < children.count(); n++) {
+		QObject* child = children[n];
+		if (child->isWidgetType()) {
+			setMouseTrackingInclChildren(static_cast<QWidget *>(child));
+		}
+	}
+}
+
 void MplayerWindow::setCornerWidget(QWidget * w) {
 	corner_widget = w;
+	setMouseTrackingInclChildren(corner_widget);
 
 	QHBoxLayout * blayout = new QHBoxLayout;
 	blayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));

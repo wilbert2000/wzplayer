@@ -129,7 +129,7 @@ void MiniGui::createControlWidget() {
 
 void MiniGui::createFloatingControl() {
 	// Floating control
-	floating_control = new AutohideWidget(panel);
+	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
 
 	EditableToolbar * iw = new EditableToolbar(floating_control);
