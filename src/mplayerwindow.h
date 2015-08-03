@@ -96,8 +96,8 @@ public:
 
 	bool main_window_moved;
 
-	void setResolution(int w, int h, double aspect);
-	void setAspect( double asp);
+	void setResolution(int w, int h, double asp);
+	void setAspect(double asp);
 	void setMonitorAspect(double asp);
 
 #if USE_COLORKEY

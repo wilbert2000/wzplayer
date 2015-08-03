@@ -5007,7 +5007,10 @@ void BaseGui::resizeMainWindow(int w, int h) {
 	int diff_height = this->height() - panel->height();
 
 	int new_width = w + diff_width;
-	int new_height = h + diff_height;
+	// TODO:
+	// Height after resize is sometimes 2 less then it should be.
+	// Better add 2 and have it center vertically, then 2 short and scale
+	int new_height = h + diff_height + 2;
 
 #if USE_MINIMUMSIZE
 	int minimum_width = minimumSizeHint().width();

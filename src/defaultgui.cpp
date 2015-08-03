@@ -725,8 +725,8 @@ void DefaultGui::aboutToExitCompactMode() {
 }
 
 void DefaultGui::resizeEvent( QResizeEvent * ) {
+	qDebug("DefaultGui::resizeEvent %d x %d", width(), height());
 	/*
-	qDebug("defaultGui::resizeEvent");
 	qDebug(" controlwidget width: %d", controlwidget->width() );
 	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width() );
 	*/

@@ -127,7 +127,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	, main_window_moved(false)
 	, video_width(0)
 	, video_height(0)
-	, aspect((double) 4/3)
+	, aspect(0)
 	, monitoraspect(0)
 	, logo(0)
 	, offset_x(0)
@@ -196,23 +196,23 @@ void MplayerWindow::resizeEvent(QResizeEvent*) {
 	updateVideoWindow();
 }
 
-void MplayerWindow::setResolution( int w, int h, double aspect) {
-	qDebug("MplayerWindow::setResolution %d x %d aspect %f", w, h, aspect);
+void MplayerWindow::setResolution(int w, int h, double asp) {
+	qDebug("MplayerWindow::setResolution %d x %d aspect %f", w, h, asp);
 
 	video_width = w;
 	video_height = h;
-	setAspect(aspect);
+	setAspect(asp);
 }
 
 void MplayerWindow::setMonitorAspect(double asp) {
 	monitoraspect = asp;
 }
 
-void MplayerWindow::setAspect( double asp) {
+void MplayerWindow::setAspect(double asp) {
 	qDebug("MplayerWindow::setAspect %f", asp);
 
 	aspect = asp;
-	if (monitoraspect!=0) {
+	if (monitoraspect != 0) {
 		aspect = aspect / monitoraspect * DesktopInfo::desktop_aspectRatio(this);
 	}
 	updateVideoWindow();
