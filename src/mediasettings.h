@@ -125,6 +125,7 @@ public:
 	int stereo_mode;
 
 	double zoom_factor; // mplayerwindow zoom
+	double zoom_factor_fullscreen;
 
 	int rotate;
 	bool flip; //!< Flip image

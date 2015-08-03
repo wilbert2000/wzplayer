@@ -133,6 +133,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	, offset_x(0)
 	, offset_y(0)
 	, zoom_factor(1.0)
+	, zoom_factor_fullscreen(1.0)
 	, delay_left_click(false)
 	, left_click_timer(0)
 	, double_clicked(false)
@@ -190,16 +191,16 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 MplayerWindow::~MplayerWindow() {
 }
 
-void MplayerWindow::resizeEvent(QResizeEvent*)
-{
-	//qDebug("MplayerWindow::resizeEvent: %d, %d", e->size().width(), e->size().height() );
+void MplayerWindow::resizeEvent(QResizeEvent*) {
+	qDebug("MplayerWindow::resizeEvent");
 	updateVideoWindow();
 }
 
 void MplayerWindow::setResolution( int w, int h, double aspect) {
+	qDebug("MplayerWindow::setResolution %d x %d aspect %f", w, h, aspect);
+
 	video_width = w;
 	video_height = h;
-
 	setAspect(aspect);
 }
 
@@ -208,7 +209,9 @@ void MplayerWindow::setMonitorAspect(double asp) {
 }
 
 void MplayerWindow::setAspect( double asp) {
-    aspect = asp;
+	qDebug("MplayerWindow::setAspect %f", asp);
+
+	aspect = asp;
 	if (monitoraspect!=0) {
 		aspect = aspect / monitoraspect * DesktopInfo::desktop_aspectRatio(this);
 	}
@@ -217,8 +220,8 @@ void MplayerWindow::setAspect( double asp) {
 
 void MplayerWindow::updateVideoWindow()
 {
-	//qDebug("MplayerWindow::updateVideoWindow width: %d height: %d aspect: %f zoom: %f ofsx: %d ofsy %d",
-	//	width(), height(), aspect, zoom_factor, offset_x, offset_y);
+	qDebug("MplayerWindow::updateVideoWindow in width: %d height: %d aspect: %f zoom: %f ofsx: %d ofsy %d",
+		width(), height(), aspect, zoom(), offset_x, offset_y);
 
 	int w = width();
 	int h = height();
@@ -239,8 +242,9 @@ void MplayerWindow::updateVideoWindow()
 	}
 
 	// Zoom
-	w = w * zoom_factor + 0.5;
-	h = h * zoom_factor + 0.5;
+	double zoom = this->zoom();
+	w = w * zoom + 0.5;
+	h = h * zoom + 0.5;
 
 	// Center
 	int x = (width() - w) / 2;
@@ -252,7 +256,7 @@ void MplayerWindow::updateVideoWindow()
 
 	mplayerlayer->setGeometry(x, y, w, h);
 
-	//qDebug("MplayerWindow::updateVideoWindow x: %d y: %d w: %d, h: %d", x, y, w, h);
+	qDebug("MplayerWindow::updateVideoWindow out x: %d y: %d w: %d, h: %d", x, y, w, h);
 }
 
 void MplayerWindow::mousePressEvent( QMouseEvent * event) {
@@ -444,38 +448,46 @@ QSize MplayerWindow::sizeHint() const {
 	return QSize( video_width, video_height );
 }
 
+double MplayerWindow::zoom() {
+	return fullscreen ? zoom_factor_fullscreen : zoom_factor;
+}
+
 void MplayerWindow::setZoom(double factor) {
 	qDebug("MplayerWindow::setZoom %f", factor);
 	if (factor < ZOOM_MIN)
 		factor = ZOOM_MIN;
 	else if (factor > ZOOM_MAX)
 		factor = ZOOM_MAX;
-	zoom_factor = factor;
+	if (fullscreen)
+		zoom_factor_fullscreen = factor;
+	else zoom_factor = factor;
 	updateVideoWindow();
 }
 
 void MplayerWindow::resetZoomAndPan() {
-	zoom_factor = 1.0;
+	if (fullscreen)
+		zoom_factor_fullscreen = 1.0;
+	else zoom_factor = 1.0;
 	offset_x = 0;
 	offset_y = 0;
 	updateVideoWindow();
 }
 
 void MplayerWindow::aboutToEnterFullscreen() {
-	zoom_factor = 1.0;
+	qDebug("MplayerWindow::aboutToEnterFullscreen");
+
 	offset_x = 0;
 	offset_y = 0;
 	fullscreen = true;
 }
 
 void MplayerWindow::aboutToExitFullscreen() {
-	zoom_factor = 1.0;
+	qDebug("MplayerWindow::aboutToExitFullscreen");
+
 	offset_x = 0;
 	offset_y = 0;
 	fullscreen = false;
 }
-
-double MplayerWindow::zoom() { return zoom_factor; }
 
 void MplayerWindow::moveVideo(int dx, int dy) {
 	offset_x += dx;

@@ -1256,7 +1256,9 @@ void Core::finishRestart() {
 	emit videoEqualizerNeedsUpdate();
 	emit audioEqualizerNeedsUpdate();
 
-	changeZoom(mset.zoom_factor);
+	if (pref->fullscreen)
+		changeZoom(mset.zoom_factor_fullscreen);
+	else changeZoom(mset.zoom_factor);
 
 	// Toggle subtitle visibility
 	changeSubVisibility(pref->sub_visibility);
@@ -4034,18 +4036,24 @@ void Core::toggleDoubleSize() {
 }
 #endif
 
+void Core::saveZoomFactor() {
+	if (pref->fullscreen)
+		mset.zoom_factor_fullscreen = mplayerwindow->zoom();
+	else mset.zoom_factor = mplayerwindow->zoom();
+}
+
 void Core::changeZoom(double factor) {
 	qDebug("Core::changeZoom: %f", factor);
 
 	// Kept between min and max by mplayerwindow->setZoom()
 	mplayerwindow->setZoom(factor);
-	mset.zoom_factor = mplayerwindow->zoom();
-	displayMessage( tr("Zoom: %1").arg(mset.zoom_factor) );
+	saveZoomFactor();
+	displayMessage( tr("Zoom: %1").arg(mplayerwindow->zoom()) );
 }
 
 void Core::resetZoomAndPan() {
 	mplayerwindow->resetZoomAndPan();
-	mset.zoom_factor = mplayerwindow->zoom();
+	saveZoomFactor();
 	displayMessage( tr("Zoom and pan reset") );
 }
 
@@ -4120,12 +4128,12 @@ void Core::autoZoomFor235() {
 
 void Core::incZoom() {
 	qDebug("Core::incZoom");
-	changeZoom( mset.zoom_factor + ZOOM_STEP );
+	changeZoom(mplayerwindow->zoom() + ZOOM_STEP );
 }
 
 void Core::decZoom() {
 	qDebug("Core::decZoom");
-	changeZoom( mset.zoom_factor - ZOOM_STEP );
+	changeZoom(mplayerwindow->zoom() - ZOOM_STEP );
 }
 
 void Core::showFilenameOnOSD() {

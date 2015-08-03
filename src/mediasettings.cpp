@@ -98,6 +98,7 @@ void MediaSettings::reset() {
 	stereo_mode = pref->initial_stereo_mode; //Stereo; // (0)
 
 	zoom_factor = pref->initial_zoom_factor; // 1.0;
+	zoom_factor_fullscreen = pref->initial_zoom_factor; // 1.0;
 
 	starting_time = -1; // Not set yet.
 
@@ -371,6 +372,7 @@ void MediaSettings::save(QSettings * set, int player_id) {
 	set->setValue( "stereo_mode", stereo_mode);
 
 	set->setValue( "zoom_factor", zoom_factor);
+	set->setValue( "zoom_factor_fullscreen", zoom_factor_fullscreen);
 
 	set->setValue( "rotate", rotate );
 	set->setValue( "flip", flip);
@@ -486,6 +488,7 @@ void MediaSettings::load(QSettings * set, int player_id) {
 	stereo_mode = set->value( "stereo_mode", stereo_mode).toInt();
 
 	zoom_factor = set->value( "zoom_factor", zoom_factor).toDouble();
+	zoom_factor_fullscreen = set->value( "zoom_factor_fullscreen", zoom_factor_fullscreen).toDouble();
 
 	rotate = set->value( "rotate", rotate).toInt();
 	flip = set->value( "flip", flip).toBool();

@@ -4390,14 +4390,11 @@ void BaseGui::aboutToEnterFullscreen() {
 		statusBar()->hide();
 	}
 
-	// Resets zoom and pan
 	mplayerwindow->aboutToEnterFullscreen();
-	core->mset.zoom_factor = mplayerwindow->zoom();
 }
 
 void BaseGui::aboutToExitFullscreen() {
 	mplayerwindow->aboutToExitFullscreen();
-	core->mset.zoom_factor = mplayerwindow->zoom();
 
 	if (!pref->compact_mode) {
 		menuBar()->show();
@@ -4997,12 +4994,12 @@ void BaseGui::resizeMainWindow(int w, int h) {
 		h = h * pref->size_factor / 100;
 	}
 
-	qDebug("BaseGui::resizeWindow: size to scale: %d, %d", w, h);
+	qDebug("BaseGui::resizeMainWindow: size to scale: %d, %d", w, h);
 
 	QSize video_size(w,h);
 
 	if (video_size == panel->size()) {
-		qDebug("BaseGui::resizeWindow: the panel size is already the required size. Doing nothing.");
+		qDebug("BaseGui::resizeMainWindow: the panel size is already the required size. Doing nothing.");
 		return;
 	}
 
@@ -5016,20 +5013,21 @@ void BaseGui::resizeMainWindow(int w, int h) {
 	int minimum_width = minimumSizeHint().width();
 	if (pref->gui_minimum_width != 0) minimum_width = pref->gui_minimum_width;
 	if (new_width < minimum_width) {
-		qDebug("BaseGui::resizeWindow: width is too small, setting width to %d", minimum_width);
+		qDebug("BaseGui::resizeMainWindow: width is too small, setting width to %d", minimum_width);
 		new_width = minimum_width;
 	}
 #endif
 
+	qDebug("BaseGui::resizeMainWindow resizing from %d x %d to %d x %d",
+		   width(), height(), new_width, new_height);
 	resize(new_width, new_height);
 
-	qDebug("BaseGui::resizeWindow: done: window size: %d, %d", this->width(), this->height());
-	qDebug("BaseGui::resizeWindow: done: panel->size: %d, %d", 
-           panel->size().width(),  
-           panel->size().height() );
-	qDebug("BaseGui::resizeWindow: done: mplayerwindow->size: %d, %d", 
-           mplayerwindow->size().width(),  
-           mplayerwindow->size().height() );
+	qDebug("BaseGui::resizeMainWindow: done: window size: %d, %d",
+		   this->width(), this->height());
+	qDebug("BaseGui::resizeMainWindow: done: panel->size: %d, %d",
+		   panel->size().width(), panel->size().height() );
+	qDebug("BaseGui::resizeMainWindow: done: mplayerwindow->size: %d, %d",
+		   mplayerwindow->size().width(), mplayerwindow->size().height() );
 }
 
 void BaseGui::hidePanel() {

@@ -544,6 +544,8 @@ private:
 #endif
 
 	QMap<QString,QString> forced_titles;
+
+	void saveZoomFactor();
 };
 
 #endif

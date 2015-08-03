@@ -179,6 +179,7 @@ protected:
 	// Zoom and pan
 	int offset_x, offset_y;
 	double zoom_factor;
+	double zoom_factor_fullscreen;
 
 	// Delay left click event
 	bool delay_left_click;
