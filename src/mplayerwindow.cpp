@@ -445,14 +445,13 @@ QSize MplayerWindow::sizeHint() const {
 }
 
 void MplayerWindow::setZoom(double factor) {
+	qDebug("MplayerWindow::setZoom %f", factor);
 	if (factor < ZOOM_MIN)
 		factor = ZOOM_MIN;
 	else if (factor > ZOOM_MAX)
 		factor = ZOOM_MAX;
-	if (qAbs(zoom_factor - factor) > 0.0001) {
-		zoom_factor = factor;
-		updateVideoWindow();
-	}
+	zoom_factor = factor;
+	updateVideoWindow();
 }
 
 void MplayerWindow::resetZoomAndPan() {
