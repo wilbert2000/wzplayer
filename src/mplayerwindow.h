@@ -109,12 +109,13 @@ public:
 	double zoom();
 	void resetZoomAndPan();
 
+	// Get size adjusted for monitor aspect and desired zoom
+	QSize getAdjustedSize(int w, int h, double desired_zoom) const;
+
 	void aboutToEnterFullscreen();
 	void aboutToExitFullscreen();
 
 	void setDelayLeftClick(bool b) { delay_left_click = b; };
-
-	virtual QSize sizeHint () const;
 
 #if LOGO_ANIMATION
 	bool animatedLogo() { return animated_logo; }

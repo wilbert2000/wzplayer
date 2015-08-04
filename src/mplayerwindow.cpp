@@ -164,14 +164,16 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 
 	mplayerlayer = new MplayerLayer(this);
 
-	logo = new QLabel( mplayerlayer );
-	logo->setObjectName("mplayerwindow logo");
+	logo = new QLabel();
+	logo->setObjectName("logo");
 	logo->setAutoFillBackground(true);
-	ColorUtils::setBackgroundColor( logo, QColor(0,0,0) );
+	ColorUtils::setBackgroundColor(logo, QColor(0,0,0));
 	logo->setMouseTracking(true);
 
-	QVBoxLayout * mplayerlayerLayout = new QVBoxLayout( mplayerlayer );
-	mplayerlayerLayout->addWidget( logo, 0, Qt::AlignHCenter | Qt::AlignVCenter );
+	QVBoxLayout* layout = new QVBoxLayout();
+	layout->addWidget(logo, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+	// Note inserted into mplayerlayer
+	mplayerlayer->setLayout(layout);
 
 	left_click_timer = new QTimer(this);
 	left_click_timer->setSingleShot(true);
@@ -192,7 +194,7 @@ MplayerWindow::~MplayerWindow() {
 }
 
 void MplayerWindow::resizeEvent(QResizeEvent*) {
-	qDebug("MplayerWindow::resizeEvent");
+	//qDebug("MplayerWindow::resizeEvent");
 	updateVideoWindow();
 }
 
@@ -218,45 +220,50 @@ void MplayerWindow::setAspect(double asp) {
 	updateVideoWindow();
 }
 
-void MplayerWindow::updateVideoWindow()
-{
-	qDebug("MplayerWindow::updateVideoWindow in width: %d height: %d aspect: %f zoom: %f ofsx: %d ofsy %d",
-		width(), height(), aspect, zoom(), offset_x, offset_y);
-
-	int w = width();
-	int h = height();
+QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
+	//qDebug("MplayerWindow::getAdjustedSize in %d x %d zoom %f", w, h, desired_zoom);
 
 	// Select best fit: height adjusted or width adjusted,
 	// in case video aspect does not match the window aspect ratio.
 	// Height adjusted gives horizontal black borders.
 	// Width adjusted gives vertical black borders,
 	if (aspect != 0) {
-		int height_adjust = w / aspect + 0.5;
+		int height_adjust = qRound(w / aspect);
 		if (height_adjust <= h) {
 			// adjust height
 			h = height_adjust;
 		} else {
 			// adjust width
-			w = h * aspect + 0.5;
+			w = qRound(h * aspect);
 		}
 	}
 
 	// Zoom
-	double zoom = this->zoom();
-	w = w * zoom + 0.5;
-	h = h * zoom + 0.5;
+	QSize size = QSize(w, h) * desired_zoom;
+
+	//qDebug("MplayerWindow::getAdjustedSize out %d x %d", size.width(), size.height());
+	return size;
+}
+
+void MplayerWindow::updateVideoWindow()
+{
+	//qDebug("MplayerWindow::updateVideoWindow in width: %d height: %d aspect: %f zoom: %f ofsx: %d ofsy %d",
+	//	width(), height(), aspect, zoom(), offset_x, offset_y);
+
+	QSize size = getAdjustedSize(width(), height(), zoom());
 
 	// Center
-	int x = (width() - w) / 2;
-	int y = (height() - h) / 2;
+	int x = (width() - size.width()) / 2;
+	int y = (height() - size.height()) / 2;
 
 	// Move
 	x += offset_x;
 	y += offset_y;
 
-	mplayerlayer->setGeometry(x, y, w, h);
+	mplayerlayer->setGeometry(x, y, size.width(), size.height());
 
-	qDebug("MplayerWindow::updateVideoWindow out x: %d y: %d w: %d, h: %d", x, y, w, h);
+	//qDebug("MplayerWindow::updateVideoWindow out x: %d y: %d w: %d, h: %d",
+	//	   x, y, size.width(), size.height());
 }
 
 void MplayerWindow::mousePressEvent( QMouseEvent * event) {
@@ -444,10 +451,6 @@ void MplayerWindow::wheelEvent( QWheelEvent * event ) {
 	}
 }
 
-QSize MplayerWindow::sizeHint() const {
-	return QSize( video_width, video_height );
-}
-
 double MplayerWindow::zoom() {
 	return fullscreen ? zoom_factor_fullscreen : zoom_factor;
 }
@@ -607,7 +610,7 @@ void MplayerWindow::playingStopped() {
 	mplayerlayer->restoreNormalBackground();
 	// Clear background right away.
 	// Pro: no artifacts when things take a little while.
-	// Against: more flicker when switching bright videos in playlist.
+	// Against: longer black flicker when switching bright videos in playlist.
 	// repaint();
 	setAutoHideCursor(false);
 }

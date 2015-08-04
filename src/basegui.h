@@ -250,7 +250,7 @@ protected slots:
 
 	void changeSizeFactor(int factor);
 	void toggleDoubleSize();
-	void resizeMainWindow(int w, int h);
+	void resizeMainWindow(int w, int h, bool try_twice = true);
 	void resizeWindow(int w, int h);
 	virtual void hidePanel();
 

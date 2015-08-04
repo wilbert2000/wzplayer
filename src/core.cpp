@@ -4285,7 +4285,16 @@ void Core::displayPlaying() {
 
 void Core::gotWindowResolution(int w, int h) {
 	qDebug("Core::gotWindowResolution: %d, %d", w, h);
-	//double aspect = (double) w/h;
+
+	mset.win_width = w;
+	mset.win_height = h;
+
+	// Override aspect ratio, is this ok?
+	// mdat.video_aspect = mset.win_aspect();
+
+	// Call first. Makes sure BaseGui::resizeWindow, listening to signal
+	// needResize can correct for monitor aspect ratio.
+	mplayerwindow->setResolution(w, h, mset.win_aspect());
 
 	if (pref->use_mplayer_window) {
 		emit noVideo();
@@ -4297,13 +4306,6 @@ void Core::gotWindowResolution(int w, int h) {
 		}
 	}
 
-	mset.win_width = w;
-	mset.win_height = h;
-
-	//Override aspect ratio, is this ok?
-	//mdat.video_aspect = mset.win_aspect();
-
-	mplayerwindow->setResolution( w, h, mset.win_aspect() );
 }
 
 void Core::gotNoVideo() {

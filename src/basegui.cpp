@@ -4965,6 +4965,7 @@ void BaseGui::toggleDoubleSize() {
 	if (pref->size_factor != 100) changeSizeFactor(100); else changeSizeFactor(200);
 }
 
+// Slot called by signal needResize
 void BaseGui::resizeWindow(int w, int h) {
 	qDebug("BaseGui::resizeWindow: %d, %d", w, h);
 
@@ -4988,49 +4989,52 @@ void BaseGui::resizeWindow(int w, int h) {
 	resizeMainWindow(w, h);
 }
 
-void BaseGui::resizeMainWindow(int w, int h) {
-	if (pref->size_factor != 100) {
-		w = w * pref->size_factor / 100;
-		h = h * pref->size_factor / 100;
-	}
-
+void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 	qDebug("BaseGui::resizeMainWindow: size to scale: %d, %d", w, h);
 
-	QSize video_size(w,h);
+	// Adjust for zoom and monitor aspect
+	QSize video_size = mplayerwindow->getAdjustedSize(w, h,
+		(double) pref->size_factor / 100);
 
 	if (video_size == panel->size()) {
 		qDebug("BaseGui::resizeMainWindow: the panel size is already the required size. Doing nothing.");
 		return;
 	}
 
-	int diff_width = this->width() - panel->width();
-	int diff_height = this->height() - panel->height();
+	QSize new_size = QSize(w, h) + size() - panel->size();
 
-	int new_width = w + diff_width;
-	// TODO:
-	// Height after resize is sometimes 2 less then it should be.
-	// Better add 2 and have it center vertically, then 2 short and scale
-	int new_height = h + diff_height + 2;
-
+	// TODO: this code is not yet fixed for resize issue. See below.
 #if USE_MINIMUMSIZE
 	int minimum_width = minimumSizeHint().width();
 	if (pref->gui_minimum_width != 0) minimum_width = pref->gui_minimum_width;
-	if (new_width < minimum_width) {
+	if (new_size.width() < minimum_width) {
 		qDebug("BaseGui::resizeMainWindow: width is too small, setting width to %d", minimum_width);
-		new_width = minimum_width;
+		new_size = QSize(minimum_width, new_size.height());
+		try_twice = false;
 	}
 #endif
 
 	qDebug("BaseGui::resizeMainWindow resizing from %d x %d to %d x %d",
-		   width(), height(), new_width, new_height);
-	resize(new_width, new_height);
+		   width(), height(), new_size.width(), new_size.height());
+	resize(new_size);
 
-	qDebug("BaseGui::resizeMainWindow: done: window size: %d, %d",
-		   this->width(), this->height());
-	qDebug("BaseGui::resizeMainWindow: done: panel->size: %d, %d",
-		   panel->size().width(), panel->size().height() );
-	qDebug("BaseGui::resizeMainWindow: done: mplayerwindow->size: %d, %d",
-		   mplayerwindow->size().width(), mplayerwindow->size().height() );
+	if (panel->size() == video_size) {
+		qDebug("BaseGui::resizeMainWindow succeeded");
+	} else {
+		// Resizing the main window can change the height of the control bar.
+		// On my system when the volume slider becomes visible, the  control
+		// bar grows with two pixels in height. This changes the height of
+		// the panel during resize. Sigh.
+		// TODO: fix in control bar giving it a constant height?
+		// For now resize once again, to get rid of them.
+		if (try_twice) {
+			qDebug("BaseGui::resizeMainWindow trying a second time");
+			resizeMainWindow(w, h, false);
+		} else {
+			qWarning("BaseGui::resizeMainWindow failed. Panel size now %d x %d. Requested size was %d x %d",
+			   panel->size().width(), panel->size().height(), w, h);
+		}
+	}
 }
 
 void BaseGui::hidePanel() {
@@ -5325,9 +5329,7 @@ bool BaseGui::event(QEvent * e) {
 }
 #endif
 
-void BaseGui::moveEvent(QMoveEvent * event) {
-	//qDebug("BaseGui::moveEvent");
-
+void BaseGui::moveEvent(QMoveEvent *) {
 	if (mplayerwindow)
 		mplayerwindow->main_window_moved = true;
 }

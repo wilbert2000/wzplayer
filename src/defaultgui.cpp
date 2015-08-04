@@ -724,9 +724,9 @@ void DefaultGui::aboutToExitCompactMode() {
 	resizeEvent( new QResizeEvent( size(), size() ) );
 }
 
-void DefaultGui::resizeEvent( QResizeEvent * ) {
-	qDebug("DefaultGui::resizeEvent %d x %d", width(), height());
+void DefaultGui::resizeEvent( QResizeEvent * e ) {
 	/*
+	qDebug("DefaultGui::resizeEvent %d x %d", width(), height());
 	qDebug(" controlwidget width: %d", controlwidget->width() );
 	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width() );
 	*/
@@ -746,6 +746,8 @@ void DefaultGui::resizeEvent( QResizeEvent * ) {
 		controlwidget_mini->hide();
 		controlwidget->show();
 	}
+
+	BaseGuiPlus::resizeEvent(e);
 }
 
 #if USE_MINIMUMSIZE
