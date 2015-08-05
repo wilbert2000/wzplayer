@@ -4060,7 +4060,7 @@ void Core::changeZoom(double factor) {
 void Core::resetZoomAndPan() {
 	mplayerwindow->resetZoomAndPan();
 	saveZoomFactor();
-	displayMessage( tr("Reset zoom and pan") );
+	displayMessage( tr("Zoom and pan reset") );
 }
 
 void Core::autoZoom() {
