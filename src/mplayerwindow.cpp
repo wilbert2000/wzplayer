@@ -611,7 +611,7 @@ void MplayerWindow::playingStopped() {
 	// Clear background right away.
 	// Pro: no artifacts when things take a little while.
 	// Against: longer black flicker when switching bright videos in playlist.
-	// repaint();
+	repaint();
 	setAutoHideCursor(false);
 }
 
