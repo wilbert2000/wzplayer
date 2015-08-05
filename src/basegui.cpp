@@ -5035,10 +5035,9 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 	} else {
 		// Resizing the main window can change the height of the control bar.
 		// On my system when the volume slider becomes visible, the  control
-		// bar grows with two pixels in height. This changes the height of
-		// the panel during resize. Sigh.
-		// TODO: fix in control bar giving it a constant height?
-		// For now resize once again, to get rid of them.
+		// bar grows with two pixels in height. This changes the height of the
+		// panel during resize. For now, resize once again, using the new panel
+		// height.
 		if (try_twice) {
 			qDebug("BaseGui::resizeMainWindow trying a second time");
 			resizeMainWindow(w, h, false);
