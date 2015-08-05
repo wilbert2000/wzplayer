@@ -844,6 +844,11 @@ void DefaultGui::loadConfig() {
 			move(0,0);
 			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
 		}
+	} else {
+		// Center window
+		QSize center_pos = (DesktopInfo::desktop_size(this) - size()) / 2;
+		if (center_pos.isValid())
+			move(center_pos.width(), center_pos.height());
 	}
 
 #if USE_CONFIGURABLE_TOOLBARS
