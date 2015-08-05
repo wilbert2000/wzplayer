@@ -144,8 +144,8 @@
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
   ;Finish page
-  !define MUI_FINISHPAGE_LINK "http://smplayer.sourceforge.net"
-  !define MUI_FINISHPAGE_LINK_LOCATION "http://smplayer.sourceforge.net"
+  !define MUI_FINISHPAGE_LINK "http://www.smplayer.info"
+  !define MUI_FINISHPAGE_LINK_LOCATION "http://www.smplayer.info"
   !define MUI_FINISHPAGE_NOREBOOTSUPPORT
   !define MUI_FINISHPAGE_RUN $INSTDIR\smplayer.exe
   !define MUI_FINISHPAGE_RUN_NOTCHECKED
@@ -390,7 +390,7 @@ SectionGroup $(ShortcutGroupTitle)
       ${If} $Restore_SMTube == 1
         CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMTube.lnk" "$INSTDIR\smtube.exe"
       ${EndIf}
-      WriteINIStr    "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer on the Web.url" "InternetShortcut" "URL" "http://smplayer.sourceforge.net"
+      WriteINIStr    "$SMPROGRAMS\$SMPlayer_StartMenuFolder\SMPlayer on the Web.url" "InternetShortcut" "URL" "http://www.smplayer.info"
       CreateShortCut "$SMPROGRAMS\$SMPlayer_StartMenuFolder\Uninstall SMPlayer.lnk" "$INSTDIR\${SMPLAYER_UNINST_EXE}"
     !insertmacro MUI_STARTMENU_WRITE_END
 
@@ -434,13 +434,13 @@ SectionGroup $(MPlayerMPVGroupTitle)
     DetailPrint $(MPV_DL_Msg)
 !ifdef USE_INETC
     inetc::get /CONNECTTIMEOUT 30000 /RESUME "" /BANNER $(MPV_DL_Msg) /CAPTION $(MPV_DL_Msg) \
-    "http://mpv.srsfckn.biz/${MPV_FILENAME}" \
+    "http://downloads.smplayer.info/mpv/${MPV_FILENAME}" \
     "$PLUGINSDIR\mpv.7z" /END
     Pop $R0
     StrCmp $R0 OK +4 0
 !else
     NSISdl::download /TIMEOUT=30000 \
-    "http://mpv.srsfckn.biz/${MPV_FILENAME}" \
+    "http://downloads.smplayer.info/mpv/${MPV_FILENAME}" \
     "$PLUGINSDIR\mpv.7z" /END
     Pop $R0
     StrCmp $R0 "success" +4 0
@@ -572,11 +572,11 @@ Section -Post
 !endif
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "DisplayIcon" "$INSTDIR\smplayer.exe"
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "DisplayVersion" "${SMPLAYER_VERSION}"
-  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "HelpLink" "http://smplayer.sourceforge.net/forum"
+  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "HelpLink" "http://www.smplayer.info/forum"
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "Publisher" "Ricardo Villalba"
   WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "UninstallString" "$INSTDIR\${SMPLAYER_UNINST_EXE}"
-  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLInfoAbout" "http://smplayer.sourceforge.net"
-  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLUpdateInfo" "http://smplayer.sourceforge.net"
+  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLInfoAbout" "http://www.smplayer.info"
+  WriteRegStr HKLM "${SMPLAYER_UNINST_KEY}" "URLUpdateInfo" "http://www.smplayer.info"
   WriteRegDWORD HKLM "${SMPLAYER_UNINST_KEY}" "NoModify" "1"
   WriteRegDWORD HKLM "${SMPLAYER_UNINST_KEY}" "NoRepair" "1"
 

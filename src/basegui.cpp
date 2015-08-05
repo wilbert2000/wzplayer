@@ -1217,10 +1217,12 @@ void BaseGui::createActions() {
 	connect( subtitleTrackGroup, SIGNAL(activated(int)), 
 	         core, SLOT(changeSubtitle(int)) );
 
+#ifdef MPV_SUPPORT
 	// Secondary subtitle track
 	secondarySubtitleTrackGroup = new MyActionGroup(this);
 	connect( secondarySubtitleTrackGroup, SIGNAL(activated(int)), 
 	         core, SLOT(changeSecondarySubtitle(int)) );
+#endif
 
 	ccGroup = new MyActionGroup(this);
 	ccNoneAct = new MyActionGroupItem(this, ccGroup, "cc_none", 0);
@@ -1736,7 +1738,7 @@ void BaseGui::retranslateStrings() {
 
 	// Submenu Logs
 #ifdef LOG_MPLAYER
-	showLogMplayerAct->change( "MPlayer/MPV" );
+	showLogMplayerAct->change(PLAYER_NAME);
 #endif
 #ifdef LOG_SMPLAYER
 	showLogSmplayerAct->change( "SMPlayer" );
@@ -1981,8 +1983,10 @@ void BaseGui::retranslateStrings() {
 	subtitles_track_menu->menuAction()->setText( tr("&Select") );
 	subtitles_track_menu->menuAction()->setIcon( Images::icon("sub") );
 
+#ifdef MPV_SUPPORT
 	secondary_subtitles_track_menu->menuAction()->setText( tr("Secondary trac&k") );
 	secondary_subtitles_track_menu->menuAction()->setIcon( Images::icon("secondary_sub") );
+#endif
 
 	closed_captions_menu->menuAction()->setText( tr("&Closed captions") );
 	closed_captions_menu->menuAction()->setIcon( Images::icon("closed_caption") );
@@ -2036,7 +2040,7 @@ void BaseGui::retranslateStrings() {
 
 	// Other things
 #ifdef LOG_MPLAYER
-	mplayer_log_window->setWindowTitle( tr("SMPlayer - MPlayer log") );
+	mplayer_log_window->setWindowTitle( tr("SMPlayer - %1 log").arg(PLAYER_NAME) );
 #endif
 #ifdef LOG_SMPLAYER
 	smplayer_log_window->setWindowTitle( tr("SMPlayer - SMPlayer log") );
@@ -2610,11 +2614,15 @@ void BaseGui::createMenus() {
 	subtitles_track_menu = new QMenu(this);
 	subtitles_track_menu->menuAction()->setObjectName("subtitlestrack_menu");
 
+#ifdef MPV_SUPPORT
 	secondary_subtitles_track_menu = new QMenu(this);
 	secondary_subtitles_track_menu->menuAction()->setObjectName("secondary_subtitles_track_menu");
+#endif
 
 	subtitlesMenu->addMenu(subtitles_track_menu);
+#ifdef MPV_SUPPORT
 	subtitlesMenu->addMenu(secondary_subtitles_track_menu);
+#endif
 	subtitlesMenu->addSeparator();
 
 	subtitlesMenu->addAction(loadSubsAct);
@@ -3277,11 +3285,11 @@ void BaseGui::autosaveMplayerLog() {
 }
 
 void BaseGui::showMplayerLog() {
-    qDebug("BaseGui::showMplayerLog");
+	qDebug("BaseGui::showMplayerLog");
 
 	exitFullscreenIfNeeded();
 
-    mplayer_log_window->setText( mplayer_log );
+	mplayer_log_window->setText( mplayer_log );
 	mplayer_log_window->show();
 }
 #endif
@@ -3326,6 +3334,7 @@ void BaseGui::initializeMenus() {
 	}
 	subtitles_track_menu->addActions( subtitleTrackGroup->actions() );
 
+#ifdef MPV_SUPPORT
 	// Secondary Subtitles
 	secondarySubtitleTrackGroup->clear(true);
 	QAction * subSecNoneAct = secondarySubtitleTrackGroup->addAction( tr("&None") );
@@ -3338,6 +3347,7 @@ void BaseGui::initializeMenus() {
 		a->setData(n);
 	}
 	secondary_subtitles_track_menu->addActions( secondarySubtitleTrackGroup->actions() );
+#endif
 
 	// Audio
 	audioTrackGroup->clear(true);
@@ -3520,8 +3530,10 @@ void BaseGui::updateWidgets() {
 	// Subtitles menu
 	subtitleTrackGroup->setChecked( core->mset.current_sub_id );
 
+#ifdef MPV_SUPPORT
 	// Secondary subtitles menu
 	secondarySubtitleTrackGroup->setChecked( core->mset.current_secondary_sub_id );
+#endif
 
 	// Disable the unload subs action if there's no external subtitles
 	unloadSubsAct->setEnabled( !core->mset.external_subtitles.isEmpty() );
@@ -5360,7 +5372,8 @@ void BaseGui::showExitCodeFromMplayer(int exit_code) {
 
 	if (exit_code != 255 ) {
 		ErrorDialog d(this);
-		d.setText(tr("MPlayer has finished unexpectedly.") + " " + 
+		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
+		d.setText(tr("%1 has finished unexpectedly.").arg(PLAYER_NAME) + " " + 
 	              tr("Exit code: %1").arg(exit_code));
 #ifdef LOG_MPLAYER
 		d.setLog( mplayer_log );
@@ -5379,11 +5392,12 @@ void BaseGui::showErrorFromMplayer(QProcess::ProcessError e) {
 
 	if ((e == QProcess::FailedToStart) || (e == QProcess::Crashed)) {
 		ErrorDialog d(this);
+		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
 		if (e == QProcess::FailedToStart) {
-			d.setText(tr("MPlayer failed to start.") + " " + 
-                         tr("Please check the MPlayer path in preferences."));
+			d.setText(tr("%1 failed to start.").arg(PLAYER_NAME) + " " + 
+                         tr("Please check the %1 path in preferences.").arg(PLAYER_NAME));
 		} else {
-			d.setText(tr("MPlayer has crashed.") + " " + 
+			d.setText(tr("%1 has crashed.").arg(PLAYER_NAME) + " " + 
                       tr("See the log for more info."));
 		}
 #ifdef LOG_MPLAYER

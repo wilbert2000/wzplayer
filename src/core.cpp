@@ -2268,10 +2268,12 @@ void Core::startMplayer( QString file, double seek ) {
 	end_video_filters:
 #endif
 
+#ifdef MPV_SUPPORT
 	// Template for screenshots (only works with mpv)
 	if ((screenshot_enabled) && (!pref->screenshot_template.isEmpty())) {
 		proc->setOption("screenshot_template", pref->screenshot_template);
 	}
+#endif
 
 	// slices
 	if ((pref->use_slices) && (!force_noslices)) {
@@ -2344,7 +2346,9 @@ void Core::startMplayer( QString file, double seek ) {
 		proc->setOption("softvol-max", QString::number(pref->softvol_max));
 	}
 
+#ifdef MPV_SUPPORT
 	proc->setOption("enable_streaming_sites_support", pref->enable_streaming_sites);
+#endif
 
 #ifndef Q_OS_WIN
 	if (proc->isMPV() && file.startsWith("dvb:")) {
@@ -3566,6 +3570,7 @@ void Core::nextSubtitle() {
 	}
 }
 
+#ifdef MPV_SUPPORT
 void Core::changeSecondarySubtitle(int ID) {
 	// MPV only
 	qDebug("Core::changeSecondarySubtitle: %d", ID);
@@ -3590,6 +3595,7 @@ void Core::changeSecondarySubtitle(int ID) {
 		}
 	}
 }
+#endif
 
 void Core::changeAudio(int ID, bool allow_restart) {
 	qDebug("Core::changeAudio: ID: %d, allow_restart: %d", ID, allow_restart);
@@ -4586,7 +4592,9 @@ void Core::initSubtitleTrack(const SubTracks & subs) {
 	}
 end:
 
+#ifdef MPV_SUPPORT
 	changeSecondarySubtitle(mset.current_secondary_sub_id);
+#endif
 	updateWidgets();
 }
 

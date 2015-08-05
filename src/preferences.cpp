@@ -88,7 +88,9 @@ void Preferences::reset() {
 	ao = "";
 
 	use_screenshot = true;
+#ifdef MPV_SUPPORT
 	screenshot_template = "cap_%F_%p_%02n";
+#endif
 	screenshot_directory="";
 #ifdef PORTABLE_APP
 	screenshot_directory= "./screenshots";
@@ -231,7 +233,9 @@ void Preferences::reset() {
 	yt_use_https_main = false;
 	yt_use_https_vi = false;
 #endif
+#ifdef MPV_SUPPORT
 	enable_streaming_sites = false;
+#endif
 
 
     /* *********
@@ -580,7 +584,9 @@ void Preferences::save() {
 	set->setValue("driver/audio_output", ao);
 
 	set->setValue("use_screenshot", use_screenshot);
+	#ifdef MPV_SUPPORT
 	set->setValue("screenshot_template", screenshot_template);
+	#endif
 	#if QT_VERSION >= 0x040400
 	set->setValue("screenshot_folder", screenshot_directory);
 	#else
@@ -717,9 +723,11 @@ void Preferences::save() {
 	set->endGroup();
 #endif
 
+#ifdef MPV_SUPPORT
 	set->beginGroup("streaming");
 	set->setValue("enable_streaming_sites", enable_streaming_sites);
 	set->endGroup();
+#endif
 
 
 
@@ -1093,7 +1101,9 @@ void Preferences::load() {
 	ao = set->value("driver/audio_output", ao).toString();
 
 	use_screenshot = set->value("use_screenshot", use_screenshot).toBool();
+	#ifdef MPV_SUPPORT
 	screenshot_template = set->value("screenshot_template", screenshot_template).toString();
+	#endif
 	#if QT_VERSION >= 0x040400
 	screenshot_directory = set->value("screenshot_folder", screenshot_directory).toString();
 	setupScreenshotFolder();
@@ -1232,9 +1242,11 @@ void Preferences::load() {
 	set->endGroup();
 #endif
 
+#ifdef MPV_SUPPORT
 	set->beginGroup("streaming");
 	enable_streaming_sites = set->value("enable_streaming_sites", enable_streaming_sites).toBool();
 	set->endGroup();
+#endif
 
 
     /* *********
