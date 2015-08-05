@@ -975,8 +975,11 @@ void Core::playNewFile(QString file, int seek) {
 				saved_height = 0;
 			}
 			if ((saved_width > 0) && (saved_height > 0)) {
-				emit needResize(mset.win_width, mset.win_height);
+				// To make sure the needResize slot uses the correct
+				// aspect ratio for resizing, first change the aspect ratio
+				// then resize
 				changeAspectRatio(mset.aspect_ratio_id);
+				emit needResize(mset.win_width, mset.win_height);
 			}
 
 			if (pref->dont_remember_time_pos) {
