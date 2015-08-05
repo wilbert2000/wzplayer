@@ -5015,7 +5015,6 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 
 	QSize new_size = QSize(w, h) + size() - panel->size();
 
-	// TODO: this code is not yet fixed for resize issue. See below.
 #if USE_MINIMUMSIZE
 	int minimum_width = minimumSizeHint().width();
 	if (pref->gui_minimum_width != 0) minimum_width = pref->gui_minimum_width;
