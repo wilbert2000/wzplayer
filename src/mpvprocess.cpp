@@ -155,6 +155,7 @@ static QRegExp rx_mpv_playing("^Playing:.*|^\\[ytdl_hook\\].*");
 //static QRegExp rx_mpv_generic("^(.*)=(.*)");
 static QRegExp rx_mpv_generic("^([A-Z_]+)=(.*)");
 
+// TODO: Fix this
 void MPVProcess::parseLine(QByteArray ba) {
 	//qDebug("MPVProcess::parseLine: '%s'", ba.data() );
 
