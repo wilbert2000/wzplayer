@@ -5004,7 +5004,7 @@ void BaseGui::resizeWindow(int w, int h) {
 void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 	qDebug("BaseGui::resizeMainWindow: size to scale: %d, %d", w, h);
 
-	// Adjust for zoom and monitor aspect
+	// Adjust for selected size (100%, 200%, etc.) and monitor aspect.
 	QSize video_size = mplayerwindow->getAdjustedSize(w, h,
 		(double) pref->size_factor / 100);
 
@@ -5038,12 +5038,14 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 		// panel during resize. For now, resize once again, using the new panel
 		// height.
 		if (try_twice) {
-			qDebug("BaseGui::resizeMainWindow Panel size now %d x %d. Requested size %d x %d. Trying a second time",
-				   panel->size().width(), panel->size().height(), w, h);
+			qDebug("BaseGui::resizeMainWindow panel size now %d x %d. Wanted size %d x %d. Trying a second time",
+				   panel->size().width(), panel->size().height(),
+				   video_size.width(), video_size.height());
 			resizeMainWindow(w, h, false);
 		} else {
-			qWarning("BaseGui::resizeMainWindow failed. Panel size now %d x %d. Requested size was %d x %d",
-			   panel->size().width(), panel->size().height(), w, h);
+			qWarning("BaseGui::resizeMainWindow failed. Panel size now %d x %d. Wanted size %d x %d",
+					 panel->size().width(), panel->size().height(),
+					 video_size.width(), video_size.height());
 		}
 	}
 }
