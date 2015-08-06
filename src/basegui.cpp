@@ -5013,7 +5013,7 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 		return;
 	}
 
-	QSize new_size = QSize(w, h) + size() - panel->size();
+	QSize new_size = size() + video_size - panel->size();
 
 #if USE_MINIMUMSIZE
 	int minimum_width = minimumSizeHint().width();
@@ -5038,7 +5038,8 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 		// panel during resize. For now, resize once again, using the new panel
 		// height.
 		if (try_twice) {
-			qDebug("BaseGui::resizeMainWindow trying a second time");
+			qDebug("BaseGui::resizeMainWindow Panel size now %d x %d. Requested size %d x %d. Trying a second time",
+				   panel->size().width(), panel->size().height(), w, h);
 			resizeMainWindow(w, h, false);
 		} else {
 			qWarning("BaseGui::resizeMainWindow failed. Panel size now %d x %d. Requested size was %d x %d",
