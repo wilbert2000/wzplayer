@@ -773,8 +773,9 @@ void MplayerProcess::parseLine(QByteArray ba) {
 			else
 			if (tag == "ID_VIDEO_ASPECT") {
 				md.video_aspect = value.toDouble();
-				if ( md.video_aspect == 0.0 ) {
-					// I hope width & height are already set.
+				if ( md.video_aspect == 0.0
+					 && md.video_width > 0
+					 && md.video_height > 0) {
 					md.video_aspect = (double) md.video_width / md.video_height;
 				}
 				qDebug("MplayerProcess::parseLine: md.video_aspect set to %f", md.video_aspect);
