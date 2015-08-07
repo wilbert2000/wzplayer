@@ -402,9 +402,6 @@ void MediaSettings::save(QSettings * set, int player_id) {
 	set->setValue( "mplayer_additional_video_filters", mplayer_additional_video_filters);
 	set->setValue( "mplayer_additional_audio_filters", mplayer_additional_audio_filters);
 
-	set->setValue( "win_width", win_width );
-	set->setValue( "win_height", win_height );
-
 	set->setValue( "starting_time", starting_time );
 
 	set->setValue( "is264andHD", is264andHD );
@@ -522,9 +519,6 @@ void MediaSettings::load(QSettings * set, int player_id) {
 	mplayer_additional_options = set->value( "mplayer_additional_options", mplayer_additional_options).toString();
 	mplayer_additional_video_filters = set->value( "mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
 	mplayer_additional_audio_filters = set->value( "mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
-
-	win_width = set->value( "win_width", win_width ).toInt();
-	win_height = set->value( "win_height", win_height ).toInt();
 
 	starting_time = set->value( "starting_time", starting_time ).toDouble();
 
