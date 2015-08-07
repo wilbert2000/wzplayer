@@ -96,26 +96,55 @@ public:
 
 	bool main_window_moved;
 
-	void setResolution(int w, int h, double asp);
-	void setAspect(double asp);
+	void set(double aspect,
+			 double zoom_factor,
+			 double zoom_factor_fullscreen,
+			 QPoint pan,
+			 QPoint pan_fullscreen);
+
+	void setAspect(double aspect, bool updateVideoWindow = true);
 	void setMonitorAspect(double asp);
 
-#if USE_COLORKEY
-	void setColorKey(QColor c);
-#endif
-
-	// Zoom and pan
-	void setZoom( double );
+	// Zoom
+	// Sets current zoom to factor if factor_fullscreen == 0.0
+	// else sets both zoom for normal and full screen.
+	// Kept between ZOOM_MIN and ZOOM_MAX
+	void setZoom(double factor,
+				 double factor_fullscreen = 0.0,
+				 bool updateVideoWindow = true);
+	// Zoom current screen
 	double zoom();
+	// Zoom normal screen
+	double zoomNormalScreen() { return zoom_factor; }
+	// Zoom full screen
+	double zoomFullScreen() { return zoom_factor_fullscreen; }
+
+	// Pan
+	void setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWindow = true);
+	// Pan current screen
+	QPoint pan();
+	// Pan normal screen
+	QPoint panNormalScreen() { return pan_offset; }
+	// Pan full screen
+	QPoint panFullScreen() { return pan_offset_fullscreen; }
+
+	// Reset zoom and pan for current screen
 	void resetZoomAndPan();
+
+	void setDelayLeftClick(bool b) { delay_left_click = b; };
 
 	// Get size adjusted for monitor aspect and desired zoom
 	QSize getAdjustedSize(int w, int h, double desired_zoom) const;
 
+	// Keep track off full screen state
 	void aboutToEnterFullscreen();
 	void aboutToExitFullscreen();
 
-	void setDelayLeftClick(bool b) { delay_left_click = b; };
+	void updateVideoWindow();
+
+#if USE_COLORKEY
+	void setColorKey(QColor c);
+#endif
 
 #if LOGO_ANIMATION
 	bool animatedLogo() { return animated_logo; }
@@ -171,16 +200,16 @@ signals:
 	void mouseMoved(QPoint);
 
 protected:
-	int video_width, video_height;
 	double aspect;
 	double monitoraspect;
 
 	QLabel * logo;
 
 	// Zoom and pan
-	int offset_x, offset_y;
 	double zoom_factor;
 	double zoom_factor_fullscreen;
+	QPoint pan_offset;
+	QPoint pan_offset_fullscreen;
 
 	// Delay left click event
 	bool delay_left_click;
@@ -212,8 +241,8 @@ private:
 	void setAutoHideCursor(bool enable);
 	void setMouseTrackingInclChildren(QWidget *w);
 
+	void moveVideo(QPoint delta);
 	void moveVideo(int dx, int dy);
-	void updateVideoWindow();
 
 	bool checkDragging(QMouseEvent * event);
 };

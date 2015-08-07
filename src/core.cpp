@@ -964,23 +964,11 @@ void Core::playNewFile(QString file, int seek) {
 			file_settings->loadSettingsFor(file, mset, proc->player());
 			qDebug("Core::playNewFile: Media settings read");
 
-			// Resize the window and set the aspect as soon as possible
-			int saved_width = mset.win_width;
-			int saved_height = mset.win_height;
-			// 400x300 is the default size for win_width and win_height
-			// so we set them to 0 to avoid to resize the window on
-			// audio files
-			if ((saved_width == 400) && (saved_height == 300)) {
-				saved_width = 0;
-				saved_height = 0;
-			}
-			if ((saved_width > 0) && (saved_height > 0)) {
-				// To make sure the needResize slot uses the correct
-				// aspect ratio for resizing, first change the aspect ratio
-				// then resize
-				changeAspectRatio(mset.aspect_ratio_id);
-				emit needResize(mset.win_width, mset.win_height);
-			}
+			// Apply settings to mplayerwindow
+			mplayerwindow->set(
+				mset.aspectToNum((MediaSettings::Aspect) mset.aspect_ratio_id),
+				mset.zoom_factor, mset.zoom_factor_fullscreen,
+				mset.pan_offset, mset.pan_offset_fullscreen);
 
 			if (pref->dont_remember_time_pos) {
 				mset.current_sec = 0;
@@ -1135,6 +1123,8 @@ void Core::newMediaPlaying() {
 	qDebug("Core::newMediaPlaying: --- end ---");
 }
 
+// Slot called when queued signal mplayerFullyLoaded arrives.
+// Despite its name, also called for new files.
 void Core::finishRestart() {
 	qDebug("Core::finishRestart: --- start ---");
 
@@ -1225,8 +1215,6 @@ void Core::finishRestart() {
 
 	we_are_restarting = false;
 
-	changeAspectRatio(mset.aspect_ratio_id);
-
 	if (pref->mplayer_additional_options.contains("-volume")) {
 		qDebug("Core::finishRestart: don't set volume since -volume is used");
 	} else {
@@ -1258,10 +1246,6 @@ void Core::finishRestart() {
 	// Hack to be sure that the equalizers are up to date
 	emit videoEqualizerNeedsUpdate();
 	emit audioEqualizerNeedsUpdate();
-
-	if (pref->fullscreen)
-		changeZoom(mset.zoom_factor_fullscreen);
-	else changeZoom(mset.zoom_factor);
 
 	// Toggle subtitle visibility
 	changeSubVisibility(pref->sub_visibility);
@@ -4046,23 +4030,36 @@ void Core::toggleDoubleSize() {
 #endif
 
 void Core::saveZoomFactor() {
-	if (pref->fullscreen)
-		mset.zoom_factor_fullscreen = mplayerwindow->zoom();
-	else mset.zoom_factor = mplayerwindow->zoom();
+	mset.zoom_factor = mplayerwindow->zoomNormalScreen();
+	mset.zoom_factor_fullscreen = mplayerwindow->zoomFullScreen();
 }
 
 void Core::changeZoom(double factor) {
 	qDebug("Core::changeZoom: %f", factor);
 
 	// Kept between min and max by mplayerwindow->setZoom()
+	// Hence reread of factors by saveZoomFactors()
 	mplayerwindow->setZoom(factor);
 	saveZoomFactor();
 	displayMessage( tr("Zoom: %1").arg(mplayerwindow->zoom()) );
 }
 
 void Core::resetZoomAndPan() {
+
+	// Reset zoom and pan of video window
 	mplayerwindow->resetZoomAndPan();
+	// Reread settings
 	saveZoomFactor();
+	mset.pan_offset = mplayerwindow->panNormalScreen();
+	mset.pan_offset_fullscreen = mplayerwindow->panFullScreen();
+
+	// Not requested, but be nice and reset size of main window too?
+	// Would be resetSizeZoomAndPan then.
+	// if (!pref->fullscreen && pref->size_factor != 100) {
+	//	pref->size_factor = 100;
+	//	emit needResize(mset.win_width, mset.win_height);
+	// }
+
 	displayMessage( tr("Zoom and pan reset") );
 }
 
@@ -4295,24 +4292,20 @@ void Core::displayPlaying() {
 void Core::gotWindowResolution(int w, int h) {
 	qDebug("Core::gotWindowResolution: %d, %d", w, h);
 
+	// w x h should be the output video resolution selected by player with
+	// applied aspect and filters.
 	mset.win_width = w;
 	mset.win_height = h;
-
-	// Override aspect ratio, is this ok?
-	// mdat.video_aspect = mset.win_aspect();
-
-	// Call first. Makes sure BaseGui::resizeWindow, listening to signal
-	// needResize can correct for monitor aspect ratio.
-	mplayerwindow->setResolution(w, h, mset.win_aspect());
 
 	if (pref->use_mplayer_window) {
 		emit noVideo();
 	} else {
-		if ((pref->resize_method==Preferences::Afterload) && (we_are_restarting)) {
-			// Do nothing
-		} else {
-			emit needResize(w,h);
-		}
+		// Before BaseGui::resizeWindow starts to resize the main window,
+		// set aspect to w/h. false = do not update video window.
+		mplayerwindow->setAspect(mset.win_aspect(), false);
+		emit needResize(w,h);
+		// If resize is canceled adjust new video to old size
+		mplayerwindow->updateVideoWindow();
 	}
 
 }

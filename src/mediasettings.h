@@ -25,6 +25,7 @@
 
 #include <QString>
 #include <QSize>
+#include <QPoint>
 #include "config.h"
 #include "audioequalizerlist.h"
 
@@ -126,8 +127,11 @@ public:
 	int audio_use_channels;
 	int stereo_mode;
 
-	double zoom_factor; // mplayerwindow zoom
+	// mplayerwindow
+	double zoom_factor;
 	double zoom_factor_fullscreen;
+	QPoint pan_offset;
+	QPoint pan_offset_fullscreen;
 
 	int rotate;
 	bool flip; //!< Flip image

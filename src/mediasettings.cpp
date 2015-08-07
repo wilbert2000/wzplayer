@@ -19,6 +19,7 @@
 #include "mediasettings.h"
 #include "preferences.h"
 #include "global.h"
+#include <QDebug>
 #include <QSettings>
 
 using namespace Global;
@@ -101,6 +102,8 @@ void MediaSettings::reset() {
 
 	zoom_factor = pref->initial_zoom_factor; // 1.0;
 	zoom_factor_fullscreen = pref->initial_zoom_factor; // 1.0;
+	pan_offset = QPoint();
+	pan_offset_fullscreen = QPoint();
 
 	starting_time = -1; // Not set yet.
 
@@ -137,6 +140,8 @@ void MediaSettings::reset() {
 }
 
 double MediaSettings::win_aspect() {
+	if (win_height == 0)
+		return 0.0;
 	return (double) win_width / win_height;
 }
 
@@ -250,6 +255,9 @@ void MediaSettings::list() {
 	qDebug("  stereo_mode: %d", stereo_mode);
 
 	qDebug("  zoom_factor: %f", zoom_factor);
+	qDebug("  zoom_factor_fullscreen: %f", zoom_factor_fullscreen);
+	qDebug() << "  pan_offset:" << pan_offset;
+	qDebug() << "  pan_offset_fullscreen:" << pan_offset_fullscreen;
 
 	qDebug("  rotate: %d", rotate);
 	qDebug("  flip: %d", flip);
@@ -379,6 +387,8 @@ void MediaSettings::save(QSettings * set, int player_id) {
 
 	set->setValue( "zoom_factor", zoom_factor);
 	set->setValue( "zoom_factor_fullscreen", zoom_factor_fullscreen);
+	set->setValue( "pan_offset", pan_offset);
+	set->setValue( "pan_offset_fullscreen", pan_offset_fullscreen);
 
 	set->setValue( "rotate", rotate );
 	set->setValue( "flip", flip);
@@ -497,6 +507,8 @@ void MediaSettings::load(QSettings * set, int player_id) {
 
 	zoom_factor = set->value( "zoom_factor", zoom_factor).toDouble();
 	zoom_factor_fullscreen = set->value( "zoom_factor_fullscreen", zoom_factor_fullscreen).toDouble();
+	pan_offset = set->value( "pan_offset", pan_offset).toPoint();
+	pan_offset_fullscreen = set->value( "pan_offset_fullscreen", pan_offset_fullscreen).toPoint();
 
 	rotate = set->value( "rotate", rotate).toInt();
 	flip = set->value( "flip", flip).toBool();
