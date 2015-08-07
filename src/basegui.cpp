@@ -4984,8 +4984,12 @@ void BaseGui::resizeWindow(int w, int h) {
 	// If fullscreen, don't resize!
 	if (pref->fullscreen) return;
 
-	// Don't resize if any mouse buttons down, like when dragging
-	if (QApplication::mouseButtons()) return;
+	// Don't resize if any mouse buttons down, like when dragging.
+	// Button state is synchronized to events, so can be old.
+	if (QApplication::mouseButtons()) {
+		qDebug("BaseGui::resizeWindow mouse down, canceled resize");
+		return;
+	}
 
 	if ( (pref->resize_method==Preferences::Never) && (panel->isVisible()) ) {
 		return;
