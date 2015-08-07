@@ -167,7 +167,7 @@ public slots:
 	void panRight();
 	void panUp();
 	void panDown();
-	// core.h has resetZoomAndPan slot
+	// core.h has resetZoomPanAndSize slot
 
 #if LOGO_ANIMATION
 	void setAnimatedLogo(bool b) { animated_logo = b; };

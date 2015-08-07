@@ -947,7 +947,7 @@ void BaseGui::createActions() {
 	connect( decZoomAct, SIGNAL(triggered()), core, SLOT(decZoom()) );
 
 	resetZoomAct = new MyAction(Qt::SHIFT | Qt::Key_E, this, "reset_zoom");
-	connect( resetZoomAct, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()) );
+	connect( resetZoomAct, SIGNAL(triggered()), core, SLOT(resetZoomPanAndSize()) );
 
 	autoZoomAct = new MyAction(Qt::SHIFT | Qt::Key_W, this, "auto_zoom");
 	connect( autoZoomAct, SIGNAL(triggered()), core, SLOT(autoZoom()) );

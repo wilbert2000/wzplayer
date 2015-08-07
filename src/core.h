@@ -306,7 +306,7 @@ public slots:
 
 	void incZoom();
 	void decZoom();
-	void resetZoomAndPan();
+	void resetZoomPanAndSize();
 	void autoZoom();
 	void autoZoomFromLetterbox(double video_aspect);
 	void autoZoomFor169();

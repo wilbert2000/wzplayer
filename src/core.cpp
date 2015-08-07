@@ -4044,7 +4044,7 @@ void Core::changeZoom(double factor) {
 	displayMessage( tr("Zoom: %1").arg(mplayerwindow->zoom()) );
 }
 
-void Core::resetZoomAndPan() {
+void Core::resetZoomPanAndSize() {
 
 	// Reset zoom and pan of video window
 	mplayerwindow->resetZoomAndPan();
@@ -4053,14 +4053,12 @@ void Core::resetZoomAndPan() {
 	mset.pan_offset = mplayerwindow->panNormalScreen();
 	mset.pan_offset_fullscreen = mplayerwindow->panFullScreen();
 
-	// Not requested, but be nice and reset size of main window too?
-	// Would be resetSizeZoomAndPan then.
-	// if (!pref->fullscreen && pref->size_factor != 100) {
-	//	pref->size_factor = 100;
-	//	emit needResize(mset.win_width, mset.win_height);
-	// }
+	if (!pref->fullscreen) {
+		pref->size_factor = 100;
+		emit needResize(mset.win_width, mset.win_height);
+	}
 
-	displayMessage( tr("Zoom and pan reset") );
+	displayMessage( tr("Zoom, pan and size reset") );
 }
 
 void Core::autoZoom() {
