@@ -4298,9 +4298,11 @@ void Core::gotWindowResolution(int w, int h) {
 		mset.win_width = w;
 		mset.win_height = h;
 
-		// Before BaseGui::resizeWindow starts to resize the main window,
-		// set aspect to w/h. false = do not update video window.
-		mplayerwindow->setAspect(mset.win_aspect(), false);
+		if (mset.aspect_ratio_id == MediaSettings::AspectAuto) {
+			// Before BaseGui::resizeWindow starts to resize the main window,
+			// set aspect to w/h. false = do not update video window.
+			mplayerwindow->setAspect(mset.win_aspect(), false);
+		}
 
 		emit needResize(w, h);
 
