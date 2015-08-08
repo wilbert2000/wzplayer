@@ -48,15 +48,6 @@ MpcGui::MpcGui( QWidget * parent, Qt::WindowFlags flags )
 	retranslateStrings();
 
 	loadConfig();
-
-	if (pref->compact_mode) {
-		controlwidget->hide();
-		timeslidewidget->hide();
-	}
-
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
-#endif
 }
 
 MpcGui::~MpcGui() {
@@ -258,12 +249,8 @@ void MpcGui::saveConfig() {
 
 	set->beginGroup( "mpc_gui");
 
-	if (pref->save_window_size_on_exit) {
-		qDebug("MpcGui::saveConfig: w: %d h: %d", width(), height());
-		set->setValue( "pos", pos() );
-		set->setValue( "size", size() );
-		set->setValue( "state", (int) windowState() );
-	}
+	// Watch it BaseGui::saveConfig()
+	BaseGui::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -275,28 +262,20 @@ void MpcGui::loadConfig() {
 
 	set->beginGroup( "mpc_gui");
 
-	if (pref->save_window_size_on_exit) {
-		QPoint p = set->value("pos", pos()).toPoint();
-		QSize s = set->value("size", size()).toSize();
-
-		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
-		}
-
-		move(p);
-		resize(s);
-
-		setWindowState( (Qt::WindowStates) set->value("state", 0).toInt() );
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("MpcGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
-	}
-
-	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	// Watch it BaseGui::loadConfig!
+	BaseGui::loadConfig();
 
 	set->endGroup();
+
+	if (pref->compact_mode) {
+		controlwidget->hide();
+		timeslidewidget->hide();
+	}
+
+#if ALLOW_CHANGE_STYLESHEET
+	changeStyleSheet(pref->iconset);
+#endif
+
 }
 
 void MpcGui::setupIcons() {

@@ -185,6 +185,7 @@ public slots:
 	int forceStartInFullscreen() { return arg_start_in_fullscreen; };
 
 	void maybeShowLogo();
+	void slotNoVideo();
 
 protected slots:
 	virtual void closeWindow();
@@ -252,7 +253,6 @@ protected slots:
 	void toggleDoubleSize();
 	void resizeMainWindow(int w, int h, bool try_twice = true);
 	void resizeWindow(int w, int h);
-	virtual void hidePanel();
 
 	/* virtual void playlistVisibilityChanged(); */
 
@@ -371,6 +371,9 @@ protected:
 	virtual void aboutToEnterCompactMode();
 	virtual void aboutToExitCompactMode();
 
+	void loadConfig();
+	void saveConfig();
+
 protected:
 	void createCore();
 	void createMplayerWindow();
@@ -381,7 +384,6 @@ protected:
 	void createPreferencesDialog();
 	void createFilePropertiesDialog();
 	void setDataToFileProperties();
-	void initializeGui();
 	void createActions();
 #if AUTODISABLE_ACTIONS
 	void setActionsEnabled(bool);
@@ -852,7 +854,11 @@ private:
 #endif
 
 	bool ignore_show_hide_events;
+	bool block_resize;
+
+	void hidePanel();
+
 };
-    
+
 #endif
 

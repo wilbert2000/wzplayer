@@ -89,23 +89,6 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
 	retranslateStrings();
 
 	loadConfig();
-
-	//if (playlist_visible) showPlaylist(true);
-
-	if (pref->compact_mode) {
-		controlwidget->hide();
-		toolbar1->hide();
-		toolbar2->hide();
-
-		if (pref->floating_display_in_compact_mode) {
-			reconfigureFloatingControl();
-			floating_control->activate();
-		}
-	}
-
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
-#endif
 }
 
 DefaultGui::~DefaultGui() {
@@ -782,12 +765,8 @@ void DefaultGui::saveConfig() {
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
 	set->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
 
-	if (pref->save_window_size_on_exit) {
-		qDebug("DefaultGui::saveConfig: w: %d h: %d", width(), height());
-		set->setValue( "pos", pos() );
-		set->setValue( "size", size() );
-		set->setValue( "state", (int) windowState() );
-	}
+	// Watch it BaseGui::saveConfig()
+	BaseGui::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -827,29 +806,8 @@ void DefaultGui::loadConfig() {
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
 	compact_toolbar2_was_visible = set->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
 
-	if (pref->save_window_size_on_exit) {
-		QPoint p = set->value("pos", pos()).toPoint();
-		QSize s = set->value("size", size()).toSize();
-
-		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
-		}
-
-		move(p);
-		resize(s);
-
-		setWindowState( (Qt::WindowStates) set->value("state", 0).toInt() );
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
-	} else {
-		// Center window
-		QSize center_pos = (DesktopInfo::desktop_size(this) - size()) / 2;
-		if (center_pos.isValid())
-			move(center_pos.width(), center_pos.height());
-	}
+	// Watch it BaseGui::loadConfig!
+	BaseGui::loadConfig();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
@@ -887,6 +845,22 @@ void DefaultGui::loadConfig() {
 	set->endGroup();
 
 	updateWidgets();
+
+	if (pref->compact_mode) {
+		controlwidget->hide();
+		toolbar1->hide();
+		toolbar2->hide();
+
+		if (pref->floating_display_in_compact_mode) {
+			reconfigureFloatingControl();
+			floating_control->activate();
+		}
+	}
+
+#if ALLOW_CHANGE_STYLESHEET
+	changeStyleSheet(pref->iconset);
+#endif
+
 }
 
 #include "moc_defaultgui.cpp"

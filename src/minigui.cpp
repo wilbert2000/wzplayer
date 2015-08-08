@@ -50,14 +50,6 @@ MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
 	retranslateStrings();
 
 	loadConfig();
-
-	if (pref->compact_mode) {
-		controlwidget->hide();
-	}
-
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
-#endif
 }
 
 MiniGui::~MiniGui() {
@@ -275,12 +267,8 @@ void MiniGui::saveConfig() {
 
 	set->beginGroup( "mini_gui");
 
-	if (pref->save_window_size_on_exit) {
-		qDebug("MiniGui::saveConfig: w: %d h: %d", width(), height());
-		set->setValue( "pos", pos() );
-		set->setValue( "size", size() );
-		set->setValue( "state", (int) windowState() );
-	}
+	// Watch it BaseGui::saveConfig()
+	BaseGui::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -305,24 +293,8 @@ void MiniGui::loadConfig() {
 
 	set->beginGroup( "mini_gui");
 
-	if (pref->save_window_size_on_exit) {
-		QPoint p = set->value("pos", pos()).toPoint();
-		QSize s = set->value("size", size()).toSize();
-
-		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
-		}
-
-		move(p);
-		resize(s);
-
-		setWindowState( (Qt::WindowStates) set->value("state", 0).toInt() );
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("MiniGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
-	}
+	// Watch it BaseGui::loadConfig!
+	BaseGui::loadConfig();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
@@ -342,6 +314,14 @@ void MiniGui::loadConfig() {
 	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 
 	set->endGroup();
+
+	if (pref->compact_mode) {
+		controlwidget->hide();
+	}
+
+#if ALLOW_CHANGE_STYLESHEET
+	changeStyleSheet(pref->iconset);
+#endif
 }
 
 #include "moc_minigui.cpp"

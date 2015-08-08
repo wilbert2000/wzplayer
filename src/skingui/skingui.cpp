@@ -77,18 +77,6 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	retranslateStrings();
 
 	loadConfig();
-
-	//if (playlist_visible) showPlaylist(true);
-
-	if (pref->compact_mode) {
-		controlwidget->hide();
-		toolbar1->hide();
-	}
-
-	statusBar()->hide();
-
-	changeStyleSheet(pref->iconset);
-	mediaBarPanel->setVolume(50);
 }
 
 SkinGui::~SkinGui() {
@@ -531,12 +519,8 @@ void SkinGui::saveConfig() {
 	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
 
-	if (pref->save_window_size_on_exit) {
-		qDebug("SkinGui::saveConfig: w: %d h: %d", width(), height());
-		set->setValue( "pos", pos() );
-		set->setValue( "size", size() );
-		set->setValue( "state", (int) windowState() );
-	}
+	// Watch it BaseGui::saveConfig()
+	BaseGui::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -574,24 +558,8 @@ void SkinGui::loadConfig() {
 	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
 
-	if (pref->save_window_size_on_exit) {
-		QPoint p = set->value("pos", pos()).toPoint();
-		QSize s = set->value("size", size()).toSize();
-
-		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
-		}
-
-		move(p);
-		resize(s);
-
-		setWindowState( (Qt::WindowStates) set->value("state", 0).toInt() );
-
-		if (!DesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("SkinGui::loadConfig: window is outside of the screen, moved to 0x0");
-		}
-	}
+	// Watch it BaseGui::loadConfig
+	BaseGui::loadConfig();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
@@ -628,6 +596,16 @@ void SkinGui::loadConfig() {
 	set->endGroup();
 
 	updateWidgets();
+
+	if (pref->compact_mode) {
+		controlwidget->hide();
+		toolbar1->hide();
+	}
+
+	statusBar()->hide();
+
+	changeStyleSheet(pref->iconset);
+	mediaBarPanel->setVolume(50);
 }
 
 #include "moc_skingui.cpp"

@@ -147,6 +147,7 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 	, update_checker(0)
 #endif
 	, closing(false)
+	, block_resize(false)
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
@@ -238,7 +239,17 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 	panel->setFocus();
 
 	setupNetworkProxy();
-	initializeGui();
+
+	if (pref->compact_mode) toggleCompactMode(true);
+	changeStayOnTop(pref->stay_on_top);
+
+	updateRecents();
+
+	// TODO:
+	// Call loadActions() outside initialization of the class.
+	// Otherwise DefaultGui (and other subclasses) doesn't exist, and
+	// its actions are not loaded
+	QTimer::singleShot(20, this, SLOT(loadActions()));
 
 #ifdef UPDATE_CHECKER
 	update_checker = new UpdateChecker(this, &pref->update_checker_data);
@@ -255,21 +266,6 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 #ifdef MPRIS2
 	if (pref->use_mpris2) new Mpris2(this, this);
 #endif
-}
-
-void BaseGui::initializeGui() {
-	if (pref->compact_mode) toggleCompactMode(true);
-	changeStayOnTop(pref->stay_on_top);
-
-	updateRecents();
-
-	// Call loadActions() outside initialization of the class.
-	// Otherwise DefaultGui (and other subclasses) doesn't exist, and 
-	// its actions are not loaded
-	QTimer::singleShot(20, this, SLOT(loadActions()));
-
-	// Single instance
-	/* Deleted */
 }
 
 void BaseGui::setupNetworkProxy() {
@@ -294,6 +290,51 @@ void BaseGui::setupNetworkProxy() {
 	}
 
 	QNetworkProxy::setApplicationProxy(proxy);
+}
+
+void BaseGui::loadConfig() {
+	qDebug("BaseGui::loadConfig");
+
+	if (pref->save_window_size_on_exit) {
+		QSettings * set = settings;
+		// set->beginGroup(group);
+		QPoint p = set->value("pos", pos()).toPoint();
+		QSize s = set->value("size", size()).toSize();
+
+		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
+			s = pref->default_size;
+		}
+
+		move(p);
+		resize(s);
+
+		setWindowState( (Qt::WindowStates) set->value("state", 0).toInt() );
+
+		if (!DesktopInfo::isInsideScreen(this)) {
+			move(0,0);
+			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
+		}
+
+		// Block resize of main window by loading of video
+		// TODO: reset when video fails to load
+		block_resize = true;
+	} else {
+		// Center window
+		QSize center_pos = (DesktopInfo::desktop_size(this) - size()) / 2;
+		if (center_pos.isValid())
+			move(center_pos.width(), center_pos.height());
+	}
+}
+
+void BaseGui::saveConfig() {
+	qDebug("BaseGui::saveConfig");
+
+	if (pref->save_window_size_on_exit) {
+		QSettings * set = settings;
+		set->setValue( "pos", pos() );
+		set->setValue( "size", size() );
+		set->setValue( "state", (int) windowState() );
+	}
 }
 
 #ifdef SINGLE_INSTANCE
@@ -2157,16 +2198,7 @@ void BaseGui::createCore() {
 	connect( core, SIGNAL(mplayerFinishedWithError(int)),
              this, SLOT(showExitCodeFromMplayer(int)) );
 
-	// Hide mplayer window
-#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
-	if (pref->hide_video_window_on_audio_files) {
-		connect( core, SIGNAL(noVideo()), this, SLOT(hidePanel()) );
-	} else {
-		connect( core, SIGNAL(noVideo()), this, SLOT(maybeShowLogo()) );
-	}
-#else
-	connect( core, SIGNAL(noVideo()), this, SLOT(hidePanel()) );
-#endif
+	connect( core, SIGNAL(noVideo()), this, SLOT(slotNoVideo()) );
 
 	// Log mplayer output
 #ifdef LOG_MPLAYER
@@ -2969,16 +3001,9 @@ void BaseGui::applyNewPreferences() {
 	mplayerwindow->setDelayLeftClick(pref->delay_left_click);
 
 #if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
-	if (pref->hide_video_window_on_audio_files) {
-		connect( core, SIGNAL(noVideo()), this, SLOT(hidePanel()) );
-		disconnect( core, SIGNAL(noVideo()), mplayerwindow, SLOT(hideLogo()) );
-	} else {
-		disconnect( core, SIGNAL(noVideo()), this, SLOT(hidePanel()) );
-		connect( core, SIGNAL(noVideo()), this, SLOT(maybeShowLogo()) );
-		if (!panel->isVisible()) {
-			resize( width(), height() + 200);
-			panel->show();
-		}
+	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
+		resize( width(), height() + 200);
+		panel->show();
 	}
 #endif
 
@@ -4981,6 +5006,11 @@ void BaseGui::toggleDoubleSize() {
 void BaseGui::resizeWindow(int w, int h) {
 	qDebug("BaseGui::resizeWindow: %d, %d", w, h);
 
+	if (block_resize) {
+		block_resize = false;
+		return;
+	}
+
 	// If fullscreen, don't resize!
 	if (pref->fullscreen) return;
 
@@ -5073,6 +5103,22 @@ void BaseGui::hidePanel() {
 		// Disable compact mode
 		//compactAct->setEnabled(false);
 	}
+}
+
+void BaseGui::slotNoVideo() {
+
+	block_resize = false;
+
+#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
+	if (pref->hide_video_window_on_audio_files) {
+		hidePanel();
+	} else {
+		maybeShowLogo();
+	}
+#else
+	hidePanel();
+#endif
+
 }
 
 void BaseGui::displayGotoTime(int t) {
