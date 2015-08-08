@@ -4290,18 +4290,20 @@ void Core::displayPlaying() {
 void Core::gotWindowResolution(int w, int h) {
 	qDebug("Core::gotWindowResolution: %d, %d", w, h);
 
-	// w x h should be the output video resolution selected by player with
-	// applied aspect and filters.
-	mset.win_width = w;
-	mset.win_height = h;
-
 	if (pref->use_mplayer_window) {
 		emit noVideo();
 	} else {
+		// w x h should be the output video resolution selected by player with
+		// aspect and filters applied.
+		mset.win_width = w;
+		mset.win_height = h;
+
 		// Before BaseGui::resizeWindow starts to resize the main window,
 		// set aspect to w/h. false = do not update video window.
 		mplayerwindow->setAspect(mset.win_aspect(), false);
-		emit needResize(w,h);
+
+		emit needResize(w, h);
+
 		// If resize is canceled adjust new video to old size
 		mplayerwindow->updateVideoWindow();
 	}
@@ -4315,7 +4317,7 @@ void Core::gotNoVideo() {
 	/*
 	mset.win_width = mplayerwindow->size().width();
 	mset.win_height = 0;
-	mplayerwindow->setResolution( mset.win_width, mset.win_height );
+	mplayerwindow->setAspect( mset.win_aspect());
 	emit needResize( mset.win_width, mset.win_height );
 	*/
 	//mplayerwindow->showLogo(true);
