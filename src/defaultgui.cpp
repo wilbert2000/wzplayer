@@ -714,6 +714,8 @@ void DefaultGui::resizeEvent( QResizeEvent * e ) {
 	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width() );
 	*/
 
+	BaseGuiPlus::resizeEvent(e);
+
 #if QT_VERSION < 0x040000
 #define LIMIT 470
 #else
@@ -729,8 +731,6 @@ void DefaultGui::resizeEvent( QResizeEvent * e ) {
 		controlwidget_mini->hide();
 		controlwidget->show();
 	}
-
-	BaseGuiPlus::resizeEvent(e);
 }
 
 #if USE_MINIMUMSIZE
