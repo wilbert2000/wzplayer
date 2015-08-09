@@ -245,7 +245,7 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 
 	updateRecents();
 
-	// TODO:
+	// TODO: move to loadConfig
 	// Call loadActions() outside initialization of the class.
 	// Otherwise DefaultGui (and other subclasses) doesn't exist, and
 	// its actions are not loaded
