@@ -46,12 +46,9 @@ MpcGui::MpcGui( QWidget * parent, Qt::WindowFlags flags )
 	createFloatingControl();
 
 	retranslateStrings();
-
-	loadConfig();
 }
 
 MpcGui::~MpcGui() {
-	saveConfig();
 }
 
 void MpcGui::createActions() {
@@ -249,8 +246,7 @@ void MpcGui::saveConfig() {
 
 	set->beginGroup( "mpc_gui");
 
-	// Watch it BaseGui::saveConfig()
-	BaseGui::saveConfig();
+	BaseGuiPlus::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -258,12 +254,12 @@ void MpcGui::saveConfig() {
 }
 
 void MpcGui::loadConfig() {
+
 	QSettings * set = settings;
 
 	set->beginGroup( "mpc_gui");
 
-	// Watch it BaseGui::loadConfig!
-	BaseGui::loadConfig();
+	BaseGuiPlus::loadConfig();
 
 	set->endGroup();
 

@@ -75,12 +75,9 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 #endif
 
 	retranslateStrings();
-
-	loadConfig();
 }
 
 SkinGui::~SkinGui() {
-	saveConfig();
 }
 
 void SkinGui::createActions() {
@@ -513,14 +510,13 @@ void SkinGui::saveConfig() {
 
 	set->beginGroup( "skin_gui");
 
+	BaseGuiPlus::saveConfig();
+
 	set->setValue("video_info", viewVideoInfoAct->isChecked());
 	set->setValue("scroll_title", scrollTitleAct->isChecked());
 
 	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
-
-	// Watch it BaseGui::saveConfig()
-	BaseGui::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -552,14 +548,13 @@ void SkinGui::loadConfig() {
 
 	set->beginGroup( "skin_gui");
 
+	BaseGuiPlus::loadConfig();
+
 	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
 	scrollTitleAct->setChecked(set->value("scroll_title", false).toBool());
 
 	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
-
-	// Watch it BaseGui::loadConfig
-	BaseGui::loadConfig();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );

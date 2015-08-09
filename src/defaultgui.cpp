@@ -87,13 +87,9 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
 	menuBar()->setObjectName("menubar");
 
 	retranslateStrings();
-
-	loadConfig();
 }
 
 DefaultGui::~DefaultGui() {
-	qDebug("DefaultGui::~DefaultGui");
-	saveConfig();
 }
 
 /*
@@ -754,8 +750,10 @@ void DefaultGui::saveConfig() {
 	qDebug("DefaultGui::saveConfig");
 
 	QSettings * set = settings;
-
 	set->beginGroup( "default_gui");
+
+	// BaseGui needs save inside this group
+	BaseGuiPlus::saveConfig();
 
 	set->setValue("video_info", viewVideoInfoAct->isChecked());
 	set->setValue("frame_counter", viewFrameCounterAct->isChecked());
@@ -764,9 +762,6 @@ void DefaultGui::saveConfig() {
 	set->setValue("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible);
 	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
 	set->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
-
-	// Watch it BaseGui::saveConfig()
-	BaseGui::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -796,7 +791,10 @@ void DefaultGui::loadConfig() {
 
 	QSettings * set = settings;
 
+	// Let BaseGui load from this group
 	set->beginGroup( "default_gui");
+
+	BaseGuiPlus::loadConfig();
 
 	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
 	viewFrameCounterAct->setChecked(set->value("frame_counter", false).toBool());
@@ -805,9 +803,6 @@ void DefaultGui::loadConfig() {
 	fullscreen_toolbar2_was_visible = set->value("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible).toBool();
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
 	compact_toolbar2_was_visible = set->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
-
-	// Watch it BaseGui::loadConfig!
-	BaseGui::loadConfig();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );

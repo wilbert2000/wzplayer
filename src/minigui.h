@@ -38,6 +38,9 @@ public:
 	MiniGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~MiniGui();
 
+	virtual void loadConfig();
+	virtual void saveConfig();
+
 #if USE_MINIMUMSIZE
 	virtual QSize minimumSizeHint () const;
 #endif
@@ -61,9 +64,6 @@ protected:
 	void createActions();
 	void createControlWidget();
 	void createFloatingControl();
-
-	void loadConfig();
-	void saveConfig();
 
 	// Reimplemented
 	virtual void aboutToEnterFullscreen();

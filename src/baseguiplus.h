@@ -39,12 +39,12 @@ public:
 	~BaseGuiPlus();
 
 	virtual bool startHidden();
+	virtual void loadConfig();
+	virtual void saveConfig();
 
 protected:
 	virtual void retranslateStrings();
 
-	void loadConfig();
-	void saveConfig();
 	void updateShowAllAct();
 
     virtual void aboutToEnterFullscreen();
@@ -98,7 +98,6 @@ protected:
 	MyAction * showAllAct;
 
 	// To save state
-	QPoint mainwindow_pos;
 	bool mainwindow_visible;
 
 	QPoint playlist_pos;

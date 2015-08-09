@@ -39,6 +39,9 @@ public:
 	MpcGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~MpcGui();
 
+	virtual void loadConfig();
+	virtual void saveConfig();
+
 #if USE_MPCMUMSIZE
 	virtual QSize mpcmumSizeHint () const;
 #endif
@@ -70,9 +73,6 @@ protected:
     void createStatusBar();
 
     void setupIcons();
-
-	void loadConfig();
-	void saveConfig();
 
 	// Reimplemented
 	virtual void aboutToEnterFullscreen();

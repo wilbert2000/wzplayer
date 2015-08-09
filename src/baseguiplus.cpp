@@ -61,8 +61,6 @@ BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags)
 	ignore_playlist_events = false;
 #endif
 
-	mainwindow_pos = pos();
-
 	tray = new QSystemTrayIcon( Images::icon("logo", 22), this );
 
 	tray->setToolTip( "SMPlayer" );
@@ -150,12 +148,9 @@ BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags)
 #endif // DOCK_PLAYLIST
 
 	retranslateStrings();
-
-    loadConfig();
 }
 
 BaseGuiPlus::~BaseGuiPlus() {
-	saveConfig();
 }
 
 bool BaseGuiPlus::startHidden() {
@@ -226,6 +221,9 @@ void BaseGuiPlus::updateShowAllAct() {
 void BaseGuiPlus::saveConfig() {
 	qDebug("BaseGuiPlus::saveConfig");
 
+	// Needs to save to group derived class
+	BaseGui::saveConfig();
+
 	QSettings * set = settings;
 
 	set->beginGroup( "base_gui_plus");
@@ -253,6 +251,9 @@ void BaseGuiPlus::saveConfig() {
 
 void BaseGuiPlus::loadConfig() {
 	qDebug("BaseGuiPlus::loadConfig");
+
+	// Needs to load from group derived class
+	BaseGui::loadConfig();
 
 	QSettings * set = settings;
 
@@ -329,7 +330,6 @@ void BaseGuiPlus::showAll(bool b) {
 		playlist->hide();
 #endif
 
-		mainwindow_pos = pos();
 		hide();
 
 		/*
@@ -339,7 +339,6 @@ void BaseGuiPlus::showAll(bool b) {
 		*/
 	} else {
 		// Show all
-		move(mainwindow_pos);
 		show();
 
 #if DOCK_PLAYLIST

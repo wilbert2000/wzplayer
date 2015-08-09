@@ -48,12 +48,9 @@ MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
 	statusBar()->hide();
 
 	retranslateStrings();
-
-	loadConfig();
 }
 
 MiniGui::~MiniGui() {
-	saveConfig();
 }
 
 #if USE_CONFIGURABLE_TOOLBARS
@@ -267,8 +264,7 @@ void MiniGui::saveConfig() {
 
 	set->beginGroup( "mini_gui");
 
-	// Watch it BaseGui::saveConfig()
-	BaseGui::saveConfig();
+	BaseGuiPlus::saveConfig();
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -291,10 +287,10 @@ void MiniGui::saveConfig() {
 void MiniGui::loadConfig() {
 	QSettings * set = settings;
 
+	// Make BaseGui load from this group
 	set->beginGroup( "mini_gui");
 
-	// Watch it BaseGui::loadConfig!
-	BaseGui::loadConfig();
+	BaseGuiPlus::loadConfig();
 
 #if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );

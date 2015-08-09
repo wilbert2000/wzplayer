@@ -47,6 +47,9 @@ public:
 	DefaultGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~DefaultGui();
 
+	virtual void loadConfig();
+	virtual void saveConfig();
+
 #if USE_MINIMUMSIZE
 	virtual QSize minimumSizeHint () const;
 #endif
@@ -65,9 +68,6 @@ protected:
 	void createFloatingControl();
 	void createActions();
 	void createMenus();
-
-	void loadConfig();
-	void saveConfig();
 
     virtual void aboutToEnterFullscreen();
     virtual void aboutToExitFullscreen();

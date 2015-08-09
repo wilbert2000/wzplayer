@@ -93,6 +93,9 @@ public:
 	Core * getCore() { return core; };
 	Playlist * getPlaylist() { return playlist; };
 
+	virtual void loadConfig();
+	virtual void saveConfig();
+
 public slots:
 	virtual void open(QString file); // Generic open, autodetect type.
 	virtual void openFile();
@@ -370,9 +373,6 @@ protected:
 	virtual void aboutToExitFullscreen();
 	virtual void aboutToEnterCompactMode();
 	virtual void aboutToExitCompactMode();
-
-	void loadConfig();
-	void saveConfig();
 
 protected:
 	void createCore();

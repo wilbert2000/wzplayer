@@ -50,6 +50,9 @@ public:
 	SkinGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~SkinGui();
 
+	virtual void loadConfig();
+	virtual void saveConfig();
+
 public slots:
 	//virtual void showPlaylist(bool b);
 
@@ -62,9 +65,6 @@ protected:
 	void createFloatingControl();
 	void createActions();
 	void createMenus();
-
-	void loadConfig();
-	void saveConfig();
 
 	virtual void aboutToEnterFullscreen();
 	virtual void aboutToExitFullscreen();
