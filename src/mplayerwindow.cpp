@@ -198,10 +198,9 @@ void MplayerWindow::setMonitorAspect(double asp) {
 void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
 	qDebug("MplayerWindow::setAspect %f", aspect);
 
-	// See core::startMplayer. Currently the player is always started with
-	// monitorpixelaspect=1, hence it needs to be handled here.
-	// TODO: there is prob. a reason it is here, but performance wise, wouldn't
-	// it be much better to let the player handle it?
+	// See core::startMplayer. The player is started with --no-keepaspect and
+	// monitorpixelaspect=1, so aspect changes don't require a restart of the player,
+	// hence monitor aspect needs to be handled here.
 	if (monitoraspect != 0) {
 		aspect = aspect / monitoraspect * DesktopInfo::desktop_aspectRatio(this);
 	}
