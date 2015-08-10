@@ -3864,7 +3864,12 @@ void Core::changeAspectRatio( int ID ) {
 	double asp = mset.aspectToNum( (MediaSettings::Aspect) ID);
 
 	if (!pref->use_mplayer_window) {
-		mplayerwindow->setAspect(asp);
+		// Set aspect video window. false: don't update video window
+		mplayerwindow->setAspect(asp, false);
+		// Resize with new aspect, normally updates video window
+		emit needResize(mset.win_width, mset.win_height);
+		// Adjust video window if resize canceled
+		mplayerwindow->updateVideoWindow();
 	} else {
 		// Using mplayer own window
 		if (!mdat.novideo) {
