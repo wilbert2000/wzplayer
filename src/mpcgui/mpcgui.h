@@ -56,7 +56,7 @@ protected slots:
     void showFullscreenControls();
     void hideFullscreenControls();
     void setJumpTexts();
-    void updateWidgets();
+	virtual void updateWidgets();
 
 	// Reimplemented:
 #if AUTODISABLE_ACTIONS

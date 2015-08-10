@@ -478,7 +478,7 @@ void MpcGui::setJumpTexts() {
 
 void MpcGui::updateWidgets() {
 
-    BaseGui::updateWidgets();
+	BaseGuiPlus::updateWidgets();
 
 	// Frame counter
 	/* frame_display->setVisible( pref->show_frame_counter ); */
