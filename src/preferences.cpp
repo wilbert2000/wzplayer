@@ -353,7 +353,7 @@ void Preferences::reset() {
 	start_in_fullscreen = false;
 	compact_mode = false;
 	stay_on_top = NeverOnTop;
-	size_factor = 100; // 100%
+	size_factor = 1.0; // 100%
 
 	resize_method = Never;
 
@@ -1368,7 +1368,9 @@ void Preferences::load() {
 
 	compact_mode = set->value("compact_mode", compact_mode).toBool();
 	stay_on_top = (Preferences::OnTop) set->value("stay_on_top", (int) stay_on_top).toInt();
-	size_factor = set->value("size_factor", size_factor).toInt();
+	size_factor = set->value("size_factor", size_factor).toDouble();
+	// Backward compatibility. Size used to be stored as percentage.
+	if (size_factor > 24.0) size_factor = size_factor / 100;
 	resize_method = set->value("resize_method", resize_method).toInt();
 
 #if STYLE_SWITCHING

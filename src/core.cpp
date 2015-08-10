@@ -4018,8 +4018,8 @@ void Core::changeAdapter(int n) {
 
 #if 0
 void Core::changeSize(int n) {
-	if ( /*(n != pref->size_factor) &&*/ (!pref->use_mplayer_window) ) {
-		pref->size_factor = n;
+	if (!pref->use_mplayer_window) {
+		pref->size_factor = (double) n / 100;
 
 		emit needResize(mset.win_width, mset.win_height);
 		updateWidgets();
@@ -4027,7 +4027,7 @@ void Core::changeSize(int n) {
 }
 
 void Core::toggleDoubleSize() {
-	if (pref->size_factor != 100) 
+	if (pref->size_factor != 1.0)
 		changeSize(100);
 	else
 		changeSize(200);

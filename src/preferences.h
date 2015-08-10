@@ -340,7 +340,7 @@ public:
 	bool start_in_fullscreen;
 	bool compact_mode;
 	OnTop stay_on_top;
-	int size_factor;
+	double size_factor;
 
 	int resize_method; 	//!< Mainwindow resize method
 

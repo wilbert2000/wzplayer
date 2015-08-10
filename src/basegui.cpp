@@ -3612,7 +3612,7 @@ void BaseGui::updateWidgets() {
 	deinterlaceGroup->setChecked( core->mset.current_deinterlacer );
 
 	// Video size menu
-	sizeGroup->setChecked( pref->size_factor );
+	sizeGroup->setChecked( qRound(pref->size_factor * 100) );
 
 	// Auto phase
 	phaseAct->setChecked( core->mset.phase_filter );
@@ -4993,13 +4993,15 @@ void BaseGui::changeSizeFactor(int factor) {
 	if (pref->fullscreen) return;
 
 	if (!pref->use_mplayer_window) {
-		pref->size_factor = factor;
+		pref->size_factor = (double) factor / 100;
 		resizeMainWindow(core->mset.win_width, core->mset.win_height);
 	}
 }
 
 void BaseGui::toggleDoubleSize() {
-	if (pref->size_factor != 100) changeSizeFactor(100); else changeSizeFactor(200);
+	if (pref->size_factor != 1.0)
+		changeSizeFactor(100);
+	else changeSizeFactor(200);
 }
 
 // Slot called by signal needResize
@@ -5038,9 +5040,8 @@ void BaseGui::resizeWindow(int w, int h) {
 void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 	qDebug("BaseGui::resizeMainWindow: size to scale: %d, %d", w, h);
 
-	// Adjust for selected size (100%, 200%, etc.) and monitor aspect.
-	QSize video_size = mplayerwindow->getAdjustedSize(w, h,
-		(double) pref->size_factor / 100);
+	// Adjust for selected size and aspect.
+	QSize video_size = mplayerwindow->getAdjustedSize(w, h, pref->size_factor);
 
 	if (video_size == panel->size()) {
 		qDebug("BaseGui::resizeMainWindow: the panel size is already the required size. Doing nothing.");
