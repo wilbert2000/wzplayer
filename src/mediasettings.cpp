@@ -135,8 +135,8 @@ void MediaSettings::reset() {
 	mplayer_additional_video_filters="";
 	mplayer_additional_audio_filters="";
 
-	win_width=400;
-	win_height=300;
+	win_width = 0;
+	win_height = 0;
 }
 
 double MediaSettings::win_aspect() {
