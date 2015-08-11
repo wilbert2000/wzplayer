@@ -3311,12 +3311,14 @@ void Core::decSubStep() {
 
 void Core::changeSubVisibility(bool visible) {
 	qDebug("Core::changeSubVisilibity: %d", visible);
+
+	bool was_visible = pref->sub_visibility;
 	pref->sub_visibility = visible;
 	proc->setSubtitlesVisibility(pref->sub_visibility);
 
 	if (pref->sub_visibility) 
 		displayMessage( tr("Subtitles on") );
-	else
+	else if (was_visible)
 		displayMessage( tr("Subtitles off") );
 }
 
@@ -4312,17 +4314,11 @@ void Core::gotWindowResolution(int w, int h) {
 
 }
 
+// TODO: not called for mpv 0.9.2
 void Core::gotNoVideo() {
-	// File has no video (a sound file)
+	qDebug("Core::gotNoVideo");
 
-	// Reduce size of window
-	/*
-	mset.win_width = mplayerwindow->size().width();
-	mset.win_height = 0;
-	mplayerwindow->setAspect( mset.win_aspect());
-	emit needResize( mset.win_width, mset.win_height );
-	*/
-	//mplayerwindow->showLogo(true);
+	// File has no video (a sound file)
 	emit noVideo();
 }
 
