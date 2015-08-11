@@ -219,6 +219,7 @@ void MplayerWindow::setResolution(int width, int height) {
 
 	video_width = width;
 	video_height = height;
+	last_video_size = QSize(width, height);
 
 	enableSizeGroup();
 }

@@ -5013,6 +5013,7 @@ void BaseGui::toggleDoubleSize() {
 void BaseGui::resizeWindow(int w, int h) {
 	qDebug("BaseGui::resizeWindow: %d, %d", w, h);
 
+	// Set if pref->save_window_size_on_exit selected
 	if (block_resize) {
 		block_resize = false;
 		return;
