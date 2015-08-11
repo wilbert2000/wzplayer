@@ -5000,6 +5000,7 @@ void BaseGui::changeSizeFactor(int factor) {
 	if (!pref->use_mplayer_window) {
 		pref->size_factor = (double) factor / 100;
 		resizeMainWindow(core->mset.win_width, core->mset.win_height);
+		displayMessage(tr("Size %1%").arg(QString::number(factor)));
 	}
 }
 
