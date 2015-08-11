@@ -203,6 +203,7 @@ signals:
 	void wheelUp();
 	void wheelDown();
 	void mouseMoved(QPoint);
+	void showMessage(QString text, int time);
 
 protected:
 	double aspect;
@@ -233,6 +234,8 @@ private:
 	int video_width;
 	int video_height;
 	MyActionGroup* size_group;
+
+	QSize last_video_size;
 
 	QTime* left_button_pressed_time;
 	QPoint drag_pos;

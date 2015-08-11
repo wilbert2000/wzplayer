@@ -2261,6 +2261,9 @@ void BaseGui::createMplayerWindow() {
              this, SLOT(xbutton1ClickFunction()) );
 	connect( mplayerwindow, SIGNAL(xbutton2Clicked()),
              this, SLOT(xbutton2ClickFunction()) );
+
+	connect( mplayerwindow, SIGNAL(showMessage(QString, int)),
+			 this, SLOT(displayMessage(QString, int)) );
 }
 
 void BaseGui::createVideoEqualizer() {
@@ -5031,9 +5034,6 @@ void BaseGui::resizeWindow(int w, int h) {
 
 	if (!panel->isVisible()) {
 		panel->show();
-
-		// Enable compact mode
-		//compactAct->setEnabled(true);
 	}
 
 	resizeMainWindow(w, h);
@@ -5115,6 +5115,7 @@ void BaseGui::hidePanel() {
 }
 
 void BaseGui::slotNoVideo() {
+	qDebug("BaseGui::slotNoVideo");
 
 	block_resize = false;
 

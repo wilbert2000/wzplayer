@@ -144,6 +144,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	, video_width(0)
 	, video_height(0)
 	, size_group(0)
+	, last_video_size()
 	, drag_pos()
 	, dragging(false)
 	, kill_fake_event(false)
@@ -322,6 +323,13 @@ void MplayerWindow::updateVideoWindow() {
 	pos += pan();
 
 	mplayerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
+
+	// Update status bar with new size
+	if (!fullscreen && video_size != last_video_size) {
+		emit showMessage(tr("Video size %1 x %2").arg(QString::number(video_size.width())).arg(QString::number(video_size.height())),
+						 3000);
+		last_video_size = video_size;
+	}
 
 	qDebug("MplayerWindow::updateVideoWindow out: pos (%d, %d)  size %d x %d",
 		   pos.x(), pos.y(), video_size.width(), video_size.height());
