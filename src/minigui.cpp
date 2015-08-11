@@ -38,12 +38,10 @@ MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
 	createControlWidget();
 	createFloatingControl();
 
-#if USE_CONFIGURABLE_TOOLBARS
 	connect( editControlAct, SIGNAL(triggered()), controlwidget, SLOT(edit()) );
 	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
-#endif
 
 	statusBar()->hide();
 
@@ -53,14 +51,12 @@ MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
 MiniGui::~MiniGui() {
 }
 
-#if USE_CONFIGURABLE_TOOLBARS
 QMenu * MiniGui::createPopupMenu() {
 	QMenu * m = new QMenu(this);
 	m->addAction(editControlAct);
 	m->addAction(editFloatingControlAct);
 	return m;
 }
-#endif
 
 void MiniGui::createActions() {
 	timeslider_action = createTimeSliderAction(this);
@@ -82,10 +78,8 @@ void MiniGui::createActions() {
 	connect( this, SIGNAL(timeChanged(QString)),
              time_label_action, SLOT(setText(QString)) );
 
-#if USE_CONFIGURABLE_TOOLBARS
 	editControlAct = new MyAction( this, "edit_control_minigui" );
 	editFloatingControlAct = new MyAction( this, "edit_floating_control_minigui" );
-#endif
 }
 
 
@@ -97,23 +91,10 @@ void MiniGui::createControlWidget() {
 	controlwidget->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, controlwidget);
 
-#if USE_CONFIGURABLE_TOOLBARS
 	QStringList controlwidget_actions;
 	controlwidget_actions << "play_or_pause" << "stop" << "separator" << "timeslider_action" << "separator"
                           << "fullscreen" << "mute" << "volumeslider_action";
 	controlwidget->setDefaultActions(controlwidget_actions);
-#else
-	controlwidget->addAction(playOrPauseAct);
-	controlwidget->addAction(stopAct);
-	controlwidget->addSeparator();
-	controlwidget->addAction(timeslider_action);
-	controlwidget->addSeparator();
-	controlwidget->addAction(fullscreenAct);
-	controlwidget->addAction(muteAct);
-	#if USE_VOLUME_BAR
-	controlwidget->addAction(volumeslider_action);
-	#endif
-#endif // USE_CONFIGURABLE_TOOLBARS
 }
 
 void MiniGui::createFloatingControl() {
@@ -125,7 +106,6 @@ void MiniGui::createFloatingControl() {
 	iw->setObjectName("floating_control");
 	connect(iw, SIGNAL(iconSizeChanged(const QSize &)), this, SLOT(adjustFloatingControlSize()));
 
-#if USE_CONFIGURABLE_TOOLBARS
 	QStringList floatingcontrol_actions;
 	floatingcontrol_actions << "play_or_pause" << "stop" << "separator" << "timeslider_action" << "separator"
                             << "fullscreen" << "mute";
@@ -134,24 +114,8 @@ void MiniGui::createFloatingControl() {
 	#endif
 	floatingcontrol_actions << "separator" << "timelabel_action";
 	iw->setDefaultActions(floatingcontrol_actions);
-#else
-	iw->addAction(playOrPauseAct);
-	iw->addAction(stopAct);
-	iw->addSeparator();
-	iw->addAction(timeslider_action);
-	iw->addSeparator();
-	iw->addAction(fullscreenAct);
-	iw->addAction(muteAct);
-	#if USE_VOLUME_BAR
-	iw->addAction(volumeslider_action);
-	#endif
-#endif // USE_CONFIGURABLE_TOOLBARS
 
 	floating_control->setInternalWidget(iw);
-
-#if !USE_CONFIGURABLE_TOOLBARS
-	floating_control->adjustSize();
-#endif
 
 	floating_control->hide();
 }
@@ -164,10 +128,8 @@ void MiniGui::retranslateStrings() {
 
 	controlwidget->setWindowTitle( tr("Control bar") );
 
-#if USE_CONFIGURABLE_TOOLBARS
 	editControlAct->change( tr("Edit &control bar") );
 	editFloatingControlAct->change( tr("Edit &floating control") );
-#endif
 }
 
 #if AUTODISABLE_ACTIONS
@@ -268,7 +230,6 @@ void MiniGui::saveConfig() {
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
-#if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
 	set->setValue("controlwidget", controlwidget->actionsToStringList() );
 	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
@@ -279,7 +240,6 @@ void MiniGui::saveConfig() {
 	set->setValue("controlwidget", controlwidget->iconSize());
 	set->setValue("floating_control", iw->iconSize());
 	set->endGroup();
-#endif
 
 	set->endGroup();
 }
@@ -292,7 +252,6 @@ void MiniGui::loadConfig() {
 
 	BaseGuiPlus::loadConfig();
 
-#if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
 	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
@@ -305,7 +264,6 @@ void MiniGui::loadConfig() {
 	set->endGroup();
 
 	floating_control->adjustSize();
-#endif
 
 	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 

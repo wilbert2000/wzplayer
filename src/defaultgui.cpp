@@ -30,10 +30,6 @@
 #include "desktopinfo.h"
 #include "editabletoolbar.h"
 
-#if !USE_CONFIGURABLE_TOOLBARS
-#include "favorites.h"
-#endif
-
 #if DOCK_PLAYLIST
 #include "playlistdock.h"
 #endif
@@ -71,7 +67,6 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
 	createFloatingControl();
 	createMenus();
 
-#if USE_CONFIGURABLE_TOOLBARS
 	connect( editToolbar1Act, SIGNAL(triggered()),
              toolbar1, SLOT(edit()) );
 	connect( editControl1Act, SIGNAL(triggered()),
@@ -82,7 +77,6 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
 	iw->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()),
              iw, SLOT(edit()) );
-#endif
 
 	menuBar()->setObjectName("menubar");
 
@@ -139,12 +133,10 @@ void DefaultGui::createActions() {
 	connect( viewFrameCounterAct, SIGNAL(toggled(bool)),
              frame_display, SLOT(setVisible(bool)) );
 
-#if USE_CONFIGURABLE_TOOLBARS
 	editToolbar1Act = new MyAction( this, "edit_main_toolbar" );
 	editControl1Act = new MyAction( this, "edit_control1" );
 	editControl2Act = new MyAction( this, "edit_control2" );
 	editFloatingControlAct = new MyAction( this, "edit_floating_control" );
-#endif
 }
 
 #if AUTODISABLE_ACTIONS
@@ -180,13 +172,13 @@ void DefaultGui::createMenus() {
 	toolbar_menu = new QMenu(this);
 	toolbar_menu->addAction(toolbar1->toggleViewAction());
 	toolbar_menu->addAction(toolbar2->toggleViewAction());
-#if USE_CONFIGURABLE_TOOLBARS
+
 	toolbar_menu->addSeparator();
 	toolbar_menu->addAction(editToolbar1Act);
 	toolbar_menu->addAction(editControl1Act);
 	toolbar_menu->addAction(editControl2Act);
 	toolbar_menu->addAction(editFloatingControlAct);
-#endif
+
 	optionsMenu->addSeparator();
 	optionsMenu->addMenu(toolbar_menu);
 
@@ -199,15 +191,10 @@ void DefaultGui::createMenus() {
 
 QMenu * DefaultGui::createPopupMenu() {
 	QMenu * m = new QMenu(this);
-#if USE_CONFIGURABLE_TOOLBARS
 	m->addAction(editToolbar1Act);
 	m->addAction(editControl1Act);
 	m->addAction(editControl2Act);
 	m->addAction(editFloatingControlAct);
-#else
-	m->addAction(toolbar1->toggleViewAction());
-	m->addAction(toolbar2->toggleViewAction());
-#endif
 	return m;
 }
 
@@ -216,7 +203,7 @@ void DefaultGui::createMainToolBars() {
 	toolbar1->setObjectName("toolbar1");
 	//toolbar1->setMovable(false);
 	addToolBar(Qt::TopToolBarArea, toolbar1);
-#if USE_CONFIGURABLE_TOOLBARS
+
 	QStringList toolbar1_actions;
 	toolbar1_actions << "open_file" << "open_url" << "favorites_menu" << "separator"
                      << "screenshot" << "separator" << "show_file_properties" << "show_playlist"
@@ -224,33 +211,6 @@ void DefaultGui::createMainToolBars() {
                      << "separator" << "play_prev" << "play_next";
 
 	toolbar1->setDefaultActions(toolbar1_actions);
-#else
-	toolbar1->addAction(openFileAct);
-	/* toolbar1->addAction(openDVDAct); */
-	toolbar1->addAction(openURLAct);
-	toolbar1->addAction(favorites->menuAction());
-	toolbar1->addSeparator();
-	/*
-	toolbar1->addAction(compactAct);
-	toolbar1->addAction(fullscreenAct);
-	toolbar1->addSeparator();
-	*/
-	toolbar1->addAction(screenshotAct);
-	toolbar1->addSeparator();
-	toolbar1->addAction(showPropertiesAct);
-	toolbar1->addAction(showPlaylistAct);
-	toolbar1->addAction(showPreferencesAct);
-	toolbar1->addSeparator();
-	toolbar1->addAction(playPrevAct);
-	toolbar1->addAction(playNextAct);
-	// Test:
-	//toolbar1->addSeparator();
-	//toolbar1->addAction(timeslider_action);
-	//toolbar1->addAction(volumeslider_action);
-
-	QToolButton * button = qobject_cast<QToolButton *>(toolbar1->widgetForAction(favorites->menuAction()));
-	button->setPopupMode(QToolButton::InstantPopup);
-#endif
 
 	toolbar2 = new QToolBar( this );
 	toolbar2->setObjectName("toolbar2");
@@ -293,28 +253,10 @@ void DefaultGui::createControlWidgetMini() {
 	//addDockWindow(controlwidget_mini, Qt::DockBottom );
 	addToolBar(Qt::BottomToolBarArea, controlwidget_mini);
 
-#if USE_CONFIGURABLE_TOOLBARS
 	QStringList controlwidget_mini_actions;
 	controlwidget_mini_actions << "play_or_pause" << "stop" << "separator" << "rewind1" << "timeslider_action" 
                                << "forward1" << "separator" << "mute" << "volumeslider_action";
 	controlwidget_mini->setDefaultActions(controlwidget_mini_actions);
-#else
-	controlwidget_mini->addAction(playOrPauseAct);
-	controlwidget_mini->addAction(stopAct);
-	controlwidget_mini->addSeparator();
-
-	controlwidget_mini->addAction(rewind1Act);
-
-	controlwidget_mini->addAction(timeslider_action);
-
-	controlwidget_mini->addAction(forward1Act);
-
-	controlwidget_mini->addSeparator();
-
-	controlwidget_mini->addAction(muteAct );
-
-	controlwidget_mini->addAction(volumeslider_action);
-#endif // USE_CONFIGURABLE_TOOLBARS
 
 	controlwidget_mini->hide();
 }
@@ -330,7 +272,6 @@ void DefaultGui::createControlWidget() {
 	//addDockWindow(controlwidget, Qt::DockBottom );
 	addToolBar(Qt::BottomToolBarArea, controlwidget);
 
-#if USE_CONFIGURABLE_TOOLBARS
 	QStringList controlwidget_actions;
 	controlwidget_actions << "play_or_pause" << "stop" << "separator";
 	#if MINI_ARROW_BUTTONS
@@ -346,45 +287,6 @@ void DefaultGui::createControlWidget() {
 	#endif
 	controlwidget_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action";
 	controlwidget->setDefaultActions(controlwidget_actions);
-#else
-	/*
-	controlwidget->addAction(playAct);
-	controlwidget->addAction(pauseAndStepAct);
-	*/
-	controlwidget->addAction(playOrPauseAct);
-	controlwidget->addAction(stopAct);
-
-	controlwidget->addSeparator();
-
-	#if MINI_ARROW_BUTTONS
-	controlwidget->addAction( rewindbutton_action );
-	#else
-	controlwidget->addAction(rewind3Act);
-	controlwidget->addAction(rewind2Act);
-	controlwidget->addAction(rewind1Act);
-	#endif
-
-	controlwidget->addAction(timeslider_action);
-
-	#if MINI_ARROW_BUTTONS
-	controlwidget->addAction( forwardbutton_action );
-	#else
-	controlwidget->addAction(forward1Act);
-	controlwidget->addAction(forward2Act);
-	controlwidget->addAction(forward3Act);
-	#endif
-
-	controlwidget->addSeparator();
-
-	controlwidget->addAction(fullscreenAct);
-	controlwidget->addAction(muteAct);
-
-	controlwidget->addAction(volumeslider_action);
-#endif // USE_CONFIGURABLE_TOOLBARS
-
-	/*
-	controlwidget->show();
-	*/
 }
 
 void DefaultGui::createFloatingControl() {
@@ -396,7 +298,6 @@ void DefaultGui::createFloatingControl() {
 	iw->setObjectName("floating_control");
 	connect(iw, SIGNAL(iconSizeChanged(const QSize &)), this, SLOT(adjustFloatingControlSize()));
 
-#if USE_CONFIGURABLE_TOOLBARS
 	QStringList floatingcontrol_actions;
 	floatingcontrol_actions << "play" << "pause" << "stop" << "separator";
 	#if MINI_ARROW_BUTTONS
@@ -412,37 +313,6 @@ void DefaultGui::createFloatingControl() {
 	#endif
 	floatingcontrol_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action" << "separator" << "timelabel_action";
 	iw->setDefaultActions(floatingcontrol_actions);
-#else
-	iw->addAction(playAct);
-	iw->addAction(pauseAct);
-	iw->addAction(stopAct);
-	iw->addSeparator();
-
-	#if MINI_ARROW_BUTTONS
-	iw->addAction( rewindbutton_action );
-	#else
-	iw->addAction(rewind3Act);
-	iw->addAction(rewind2Act);
-	iw->addAction(rewind1Act);
-	#endif
-
-	iw->addAction(timeslider_action);
-
-	#if MINI_ARROW_BUTTONS
-	iw->addAction( forwardbutton_action );
-	#else
-	iw->addAction(forward1Act);
-	iw->addAction(forward2Act);
-	iw->addAction(forward3Act);
-	#endif
-
-	iw->addSeparator();
-	iw->addAction(fullscreenAct);
-	iw->addAction(muteAct);
-	iw->addAction(volumeslider_action);
-	iw->addSeparator();
-	iw->addAction(time_label_action);
-#endif // USE_CONFIGURABLE_TOOLBARS
 
 	floating_control->setInternalWidget(iw);
 
@@ -453,10 +323,6 @@ void DefaultGui::createFloatingControl() {
 	floating_control->addAction(exitAct);
 	*/
 	//floating_control->addActions(actions());
-#endif
-
-#if !USE_CONFIGURABLE_TOOLBARS
-	floating_control->adjustSize();
 #endif
 
 	floating_control->hide();
@@ -545,12 +411,10 @@ void DefaultGui::retranslateStrings() {
 	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info") );
 	viewFrameCounterAct->change( Images::icon("frame_counter"), tr("&Frame counter") );
 
-#if USE_CONFIGURABLE_TOOLBARS
 	editToolbar1Act->change( tr("Edit main &toolbar") );
 	editControl1Act->change( tr("Edit &control bar") );
 	editControl2Act->change( tr("Edit m&ini control bar") );
 	editFloatingControlAct->change( tr("Edit &floating control") );
-#endif
 }
 
 
@@ -767,7 +631,6 @@ void DefaultGui::saveConfig() {
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
-#if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
 	set->setValue("toolbar1", toolbar1->actionsToStringList() );
 	set->setValue("controlwidget", controlwidget->actionsToStringList() );
@@ -783,7 +646,6 @@ void DefaultGui::saveConfig() {
 	set->setValue("controlwidget_mini", controlwidget_mini->iconSize());
 	set->setValue("floating_control", iw->iconSize());
 	set->endGroup();
-#endif
 
 	set->endGroup();
 }
@@ -806,7 +668,6 @@ void DefaultGui::loadConfig() {
 	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
 	compact_toolbar2_was_visible = set->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
 
-#if USE_CONFIGURABLE_TOOLBARS
 	set->beginGroup( "actions" );
 	int toolbar_version = set->value("toolbar1_version", 0).toInt();
 	if (toolbar_version >= TOOLBAR_VERSION) {
@@ -829,7 +690,6 @@ void DefaultGui::loadConfig() {
 	set->endGroup();
 
 	floating_control->adjustSize();
-#endif
 
 	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 

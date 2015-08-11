@@ -126,12 +126,10 @@ protected:
 	MyAction * viewFrameCounterAct;
 	MyAction * viewVideoInfoAct;
 
-#if USE_CONFIGURABLE_TOOLBARS
 	MyAction * editToolbar1Act;
 	MyAction * editControl1Act;
 	MyAction * editControl2Act;
 	MyAction * editFloatingControlAct;
-#endif
 
 	QMenu * toolbar_menu;
 	QMenu * statusbar_menu;

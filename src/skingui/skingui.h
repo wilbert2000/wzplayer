@@ -103,11 +103,9 @@ protected:
 	AutohideWidget * floating_control;
 	TimeLabelAction * time_label_action;
 
-#if USE_CONFIGURABLE_TOOLBARS
 	MyAction * editToolbar1Act;
-	#if defined(SKIN_EDITABLE_CONTROL)
+#if defined(SKIN_EDITABLE_CONTROL)
 	MyAction * editFloatingControlAct;
-	#endif
 #endif
 
 	MyAction * viewVideoInfoAct;

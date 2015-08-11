@@ -66,13 +66,6 @@
 #define USE_INFOPROVIDER 1
 
 
-// USE_CONFIGURABLE_TOOLBARS
-// if 1, the toolbars (and controlbars) are saved to the config file
-// so the user can modify them.
-
-#define USE_CONFIGURABLE_TOOLBARS 1
-
-
 // USE_DOCK_TOPLEVEL_EVENT
 // if 1, the topLevelChanged from QDockWidget will be use to know
 // if the playlist has been docked or undocked

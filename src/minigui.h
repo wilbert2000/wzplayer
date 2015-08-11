@@ -57,9 +57,7 @@ protected slots:
 
 protected:
 	virtual void retranslateStrings();
-#if USE_CONFIGURABLE_TOOLBARS
 	virtual QMenu * createPopupMenu();
-#endif
 
 	void createActions();
 	void createControlWidget();
@@ -82,10 +80,8 @@ protected:
 #endif
 	TimeLabelAction * time_label_action;
 
-#if USE_CONFIGURABLE_TOOLBARS
 	MyAction * editControlAct;
 	MyAction * editFloatingControlAct;
-#endif
 };
 
 #endif
