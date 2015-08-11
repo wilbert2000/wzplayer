@@ -289,21 +289,22 @@ void MplayerWindow::updateSizeGroup() {
 	if (!fullscreen && video_width > 0 && video_height > 0) {
 		// Update size group with new size factor
 		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
-		double size_factor_x = (double) width() / video_size.width();
-		double size_factor_y = (double) height() / video_size.height();
+		int size_factor_x = qRound((double) width() * 100 / video_size.width());
+		int size_factor_y = qRound((double) height() * 100/ video_size.height());
 
 		uncheckSizeGroup();
 		// Set when x and y factor agree
-		if (qAbs(size_factor_x - size_factor_y) < 0.0001) {
-			if (size_group->setChecked(qRound(size_factor_x * 100))) {
-				qDebug("Mplayerwindow::updateSizegroup set size group to %f",
+		if (size_factor_x == size_factor_y) {
+			if (size_group->setChecked(size_factor_x)) {
+				qDebug("Mplayerwindow::updateSizegroup set size group to %d%%",
 						size_factor_x);
 			} else {
-				qDebug("Mplayerwindow::updateSizegroup no size group action for %f",
+				qDebug("Mplayerwindow::updateSizegroup no size group action for %d%%",
 					   size_factor_x);
 			}
 		} else {
-			qDebug("Mplayerwindow::updateSizegroup width and height factor mismatch");
+			qDebug("Mplayerwindow::updateSizegroup width %d%% and height %d%% factor mismatch",
+				   size_factor_x, size_factor_y);
 		}
 	}
 }
