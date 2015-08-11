@@ -425,7 +425,9 @@ void Preferences::reset() {
 #if USE_MINIMUMSIZE
 	gui_minimum_width = 0; // 0 == disabled
 #endif
-	default_size = QSize(683, 509);
+	// Used to be default_size = QSize(683, 509);
+	// Now 360p 16:9 is 640 x 360 (360 + 99 = 459)
+	default_size = QSize(640, 459);
 
 #if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	hide_video_window_on_audio_files = true;
