@@ -141,6 +141,9 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 #ifdef SHAREWIDGET
 	, corner_widget(0)
 #endif
+	, video_width(0)
+	, video_height(0)
+	, size_group(0)
 	, drag_pos()
 	, dragging(false)
 	, kill_fake_event(false)
@@ -210,23 +213,28 @@ void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
 		this->updateVideoWindow();
 }
 
+void MplayerWindow::setResolution(int width, int height) {
+	qDebug("MplayerWindow::setResolution %d x %d", width, height);
+
+	video_width = width;
+	video_height = height;
+
+	enableSizeGroup();
+}
+
 void MplayerWindow::set(double aspect,
 						double zoom_factor,
 						double zoom_factor_fullscreen,
 						QPoint pan,
 						QPoint pan_fullscreen) {
-	qDebug() << "MplayerWindow::set aspect" << aspect
-			 << "zoom" << zoom_factor
-			 << "zoom full screen" << zoom_factor_fullscreen
-			 << "pan" << pan
-			 << "pan full screen" << pan_fullscreen;
 
+	// Clear video size
+	setResolution(0, 0);
 	// false = do not update video window
 	setAspect(aspect, false);
 	setZoom(zoom_factor, zoom_factor_fullscreen, false);
 	setPan(pan, pan_fullscreen, false);
 }
-
 
 QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
 	qDebug("MplayerWindow::getAdjustedSize in: %d x %d zoom %f aspect %f",
@@ -254,6 +262,50 @@ QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
 	return size;
 }
 
+void MplayerWindow::setSizeGroup(MyActionGroup* group) {
+
+	size_group = group;
+	size_group->setEnabled(false);
+};
+
+void MplayerWindow::uncheckSizeGroup() {
+
+	QAction* current = size_group->checkedAction();
+	if (current)
+		current->setChecked(false);
+}
+
+void MplayerWindow::enableSizeGroup() {
+
+	size_group->setEnabled(!fullscreen && video_width > 0 && video_height > 0);
+	uncheckSizeGroup();
+}
+
+void MplayerWindow::updateSizeGroup() {
+	qDebug("Mplayerwindow::updateSizegroup");
+
+	if (!fullscreen && video_width > 0 && video_height > 0) {
+		// Update size group with new size factor
+		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
+		double size_factor_x = (double) width() / video_size.width();
+		double size_factor_y = (double) height() / video_size.height();
+
+		uncheckSizeGroup();
+		// Set when x and y factor agree
+		if (qAbs(size_factor_x - size_factor_y) < 0.0001) {
+			if (size_group->setChecked(qRound(size_factor_x * 100))) {
+				qDebug("Mplayerwindow::updateSizegroup set size group to %f",
+						size_factor_x);
+			} else {
+				qDebug("Mplayerwindow::updateSizegroup no size group action for %f",
+					   size_factor_x);
+			}
+		} else {
+			qDebug("Mplayerwindow::updateSizegroup width and height factor mismatch");
+		}
+	}
+}
+
 void MplayerWindow::updateVideoWindow() {
 	qDebug() << "MplayerWindow::updateVideoWindow in: fullscreen" << fullscreen
 			<< "size" << width() << "x" << height()
@@ -273,10 +325,13 @@ void MplayerWindow::updateVideoWindow() {
 
 	qDebug("MplayerWindow::updateVideoWindow out: pos (%d, %d)  size %d x %d",
 		   pos.x(), pos.y(), video_size.width(), video_size.height());
+
+	updateSizeGroup();
 }
 
 void MplayerWindow::resizeEvent(QResizeEvent*) {
 	qDebug("MplayerWindow::resizeEvent");
+
 	updateVideoWindow();
 }
 
@@ -469,12 +524,15 @@ void MplayerWindow::aboutToEnterFullscreen() {
 	qDebug("MplayerWindow::aboutToEnterFullscreen");
 
 	fullscreen = true;
+	enableSizeGroup();
 }
 
 void MplayerWindow::aboutToExitFullscreen() {
 	qDebug("MplayerWindow::aboutToExitFullscreen");
 
 	fullscreen = false;
+	enableSizeGroup();
+	qDebug("MplayerWindow::aboutToExitFullscreen done");
 }
 
 void MplayerWindow::setZoom(double factor,
@@ -662,6 +720,7 @@ void MplayerWindow::playingStopped() {
 	// Against: longer black flicker when switching bright videos in playlist.
 	repaint();
 	setAutoHideCursor(false);
+	setResolution(0, 0);
 }
 
 void MplayerWindow::setLogoVisible(bool b) {

@@ -956,35 +956,29 @@ void Core::playNewFile(QString file, int seek) {
 
 #ifndef NO_USE_INI_FILES
 	// Check if we already have info about this file
-	if (file_settings->existSettingsFor(file)) {
+	if (pref->dont_remember_media_settings || !file_settings->existSettingsFor(file)) {
+		mset.volume = old_volume;
+	} else {
 		qDebug("Core::playNewFile: We have settings for this file!!!");
 
-		// In this case we read info from config
-		if (!pref->dont_remember_media_settings) {
-			file_settings->loadSettingsFor(file, mset, proc->player());
-			qDebug("Core::playNewFile: Media settings read");
+		file_settings->loadSettingsFor(file, mset, proc->player());
+		qDebug("Core::playNewFile: Media settings read");
 
-			// Apply settings to mplayerwindow
-			mplayerwindow->set(
-				mset.aspectToNum((MediaSettings::Aspect) mset.aspect_ratio_id),
-				mset.zoom_factor, mset.zoom_factor_fullscreen,
-				mset.pan_offset, mset.pan_offset_fullscreen);
-
-			if (pref->dont_remember_time_pos) {
-				mset.current_sec = 0;
-				qDebug("Core::playNewFile: Time pos reset to 0");
-			}
-		} else {
-			qDebug("Core::playNewFile: Media settings have not read because of preferences setting");
+		if (pref->dont_remember_time_pos) {
+			mset.current_sec = 0;
+			qDebug("Core::playNewFile: Time pos reset to 0");
 		}
-	} else {
-		// Recover volume
-		mset.volume = old_volume;
 	}
 #else
 	// Recover volume
 	mset.volume = old_volume;
 #endif // NO_USE_INI_FILES
+
+	// Apply settings to mplayerwindow
+	mplayerwindow->set(
+		mset.aspectToNum((MediaSettings::Aspect) mset.aspect_ratio_id),
+		mset.zoom_factor, mset.zoom_factor_fullscreen,
+		mset.pan_offset, mset.pan_offset_fullscreen);
 
 	/* initializeMenus(); */
 
@@ -4050,6 +4044,7 @@ void Core::changeZoom(double factor) {
 }
 
 void Core::resetZoomPanAndSize() {
+	qDebug("Core::resetZoomPanAndSize");
 
 	// Reset zoom and pan of video window
 	mplayerwindow->resetZoomAndPan();
@@ -4059,7 +4054,7 @@ void Core::resetZoomPanAndSize() {
 	mset.pan_offset_fullscreen = mplayerwindow->panFullScreen();
 
 	if (!pref->fullscreen) {
-		pref->size_factor = 100;
+		pref->size_factor = 1.0;
 		emit needResize(mset.win_width, mset.win_height);
 	}
 
@@ -4302,10 +4297,10 @@ void Core::gotWindowResolution(int w, int h) {
 		// aspect and filters applied.
 		mset.win_width = w;
 		mset.win_height = h;
+		mplayerwindow->setResolution(w, h);
 
 		if (mset.aspect_ratio_id == MediaSettings::AspectAuto) {
-			// Before BaseGui::resizeWindow starts to resize the main window,
-			// set aspect to w/h. false = do not update video window.
+			// Set aspect to w/h. false = do not update video window.
 			mplayerwindow->setAspect(mset.win_aspect(), false);
 		}
 

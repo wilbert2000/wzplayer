@@ -659,6 +659,8 @@ void DefaultGui::aboutToExitFullscreen() {
 		toolbar1->setVisible( fullscreen_toolbar1_was_visible );
 		toolbar2->setVisible( fullscreen_toolbar2_was_visible );
 	}
+
+	qDebug("DefaultGui::aboutToExitFullscreen done");
 }
 
 void DefaultGui::aboutToEnterCompactMode() {

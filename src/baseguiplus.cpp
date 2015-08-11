@@ -362,6 +362,7 @@ void BaseGuiPlus::showAll(bool b) {
 	updateShowAllAct();
 }
 
+// TODO: this one is virtual, base class is not, so this will not get called
 void BaseGuiPlus::resizeWindow(int w, int h) {
     qDebug("BaseGuiPlus::resizeWindow: %d, %d", w, h);
 
@@ -432,6 +433,8 @@ void BaseGuiPlus::aboutToExitFullscreen() {
 	playlistdock->setFloating( fullscreen_playlist_was_floating );
 	ignore_playlist_events = false;
 #endif
+
+	qDebug("BaseGuiPlus::aboutToExitFullscreen done");
 }
 
 void BaseGuiPlus::aboutToEnterCompactMode() {

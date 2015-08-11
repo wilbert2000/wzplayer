@@ -51,16 +51,19 @@ MyActionGroup::MyActionGroup( QObject * parent ) : QActionGroup(parent)
              this, SLOT(itemTriggered(QAction *)) );
 }
 
-void MyActionGroup::setChecked(int ID) {
+QAction* MyActionGroup::setChecked(int ID) {
 	//qDebug("MyActionGroup::setChecked: ID: %d", ID);
 
 	QList <QAction *> l = actions();
-	for (int n=0; n < l.count(); n++) {
-		if ( (!l[n]->isSeparator()) && (l[n]->data().toInt() == ID) ) {
-			l[n]->setChecked(true);
-			return;
+	int count = l.count();
+	for (int n = 0; n < count; n++) {
+		QAction* action = l[n];
+		if ( (!action->isSeparator()) && (action->data().toInt() == ID) ) {
+			action->setChecked(true);
+			return action;
 		}
 	}
+	return 0;
 }
 
 int MyActionGroup::checked() {

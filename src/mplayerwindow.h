@@ -32,6 +32,8 @@
 #include <QTime>
 
 #include "config.h"
+#include "myactiongroup.h"
+
 
 class QWidget;
 class QLabel;
@@ -104,6 +106,7 @@ public:
 
 	void setAspect(double aspect, bool updateVideoWindow = true);
 	void setMonitorAspect(double asp);
+	void setResolution(int width, int height);
 
 	// Zoom
 	// Sets current zoom to factor if factor_fullscreen == 0.0
@@ -141,6 +144,8 @@ public:
 	void aboutToExitFullscreen();
 
 	void updateVideoWindow();
+
+	void setSizeGroup(MyActionGroup* group);
 
 #if USE_COLORKEY
 	void setColorKey(QColor c);
@@ -225,6 +230,10 @@ protected:
 private:
 	MplayerLayer * mplayerlayer;
 
+	int video_width;
+	int video_height;
+	MyActionGroup* size_group;
+
 	QTime* left_button_pressed_time;
 	QPoint drag_pos;
 	bool dragging;
@@ -245,6 +254,10 @@ private:
 	void moveVideo(int dx, int dy);
 
 	bool checkDragging(QMouseEvent * event);
+
+	void uncheckSizeGroup();
+	void enableSizeGroup();
+	void updateSizeGroup();
 };
 
 #endif

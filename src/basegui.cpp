@@ -1130,11 +1130,8 @@ void BaseGui::createActions() {
 	size100->setShortcut( Qt::CTRL | Qt::Key_1 );
 	size200->setShortcut( Qt::CTRL | Qt::Key_2 );
 	connect( sizeGroup, SIGNAL(activated(int)), this, SLOT(changeSizeFactor(int)) );
-	// Make all not checkable
-	QList <QAction *> size_list = sizeGroup->actions();
-	for (int n=0; n < size_list.count(); n++) {
-		size_list[n]->setCheckable(false);
-	}
+	// mplayerwindow updates group when size changed
+	mplayerwindow->setSizeGroup(sizeGroup);
 
 	// Deinterlace
 	deinterlaceGroup = new MyActionGroup(this);
@@ -1449,7 +1446,7 @@ void BaseGui::setActionsEnabled(bool b) {
 	// Groups
 	denoiseGroup->setActionsEnabled(b);
 	unsharpGroup->setActionsEnabled(b);
-	sizeGroup->setActionsEnabled(b);
+	// sizeGroup handled by mplayerwindow
 	deinterlaceGroup->setActionsEnabled(b);
 	aspectGroup->setActionsEnabled(b);
 	rotateGroup->setActionsEnabled(b);
@@ -1529,7 +1526,7 @@ void BaseGui::enableActionsOnPlaying() {
 
 		denoiseGroup->setActionsEnabled(false);
 		unsharpGroup->setActionsEnabled(false);
-		sizeGroup->setActionsEnabled(false);
+		// sizeGroup handled by mplayerwindow
 		deinterlaceGroup->setActionsEnabled(false);
 		aspectGroup->setActionsEnabled(false);
 		rotateGroup->setActionsEnabled(false);
@@ -3612,7 +3609,7 @@ void BaseGui::updateWidgets() {
 	deinterlaceGroup->setChecked( core->mset.current_deinterlacer );
 
 	// Video size menu
-	sizeGroup->setChecked( qRound(pref->size_factor * 100) );
+	// sizeGroup handled by mplayerwindow;
 
 	// Auto phase
 	phaseAct->setChecked( core->mset.phase_filter );
@@ -4422,21 +4419,26 @@ void BaseGui::toggleFullscreen(bool b) {
 
 
 void BaseGui::aboutToEnterFullscreen() {
+	qDebug("BaseGui::aboutToEnterFullscreen");
+
+	mplayerwindow->aboutToEnterFullscreen();
+
 	if (!pref->compact_mode) {
 		menuBar()->hide();
 		statusBar()->hide();
 	}
-
-	mplayerwindow->aboutToEnterFullscreen();
 }
 
 void BaseGui::aboutToExitFullscreen() {
+	qDebug("BaseGui::aboutToExitFullscreen");
+
 	mplayerwindow->aboutToExitFullscreen();
 
 	if (!pref->compact_mode) {
 		menuBar()->show();
 		statusBar()->show();
 	}
+	qDebug("BaseGui::aboutToExitFullscreen done");
 }
 
 
@@ -5083,6 +5085,12 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 					 video_size.width(), video_size.height());
 		}
 	}
+}
+
+void BaseGui::resizeEvent(QResizeEvent * event) {
+	qDebug("BaseGui::resizeEvent");
+
+	QMainWindow::resizeEvent(event);
 }
 
 void BaseGui::hidePanel() {

@@ -355,6 +355,7 @@ protected:
 	virtual void retranslateStrings();
 	virtual void changeEvent(QEvent * event);
 	virtual void moveEvent(QMoveEvent * event);
+	virtual void resizeEvent(QResizeEvent * event);
 #if QT_VERSION < 0x050000
 	virtual void hideEvent( QHideEvent * );
 	virtual void showEvent( QShowEvent * );

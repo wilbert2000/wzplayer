@@ -57,8 +57,9 @@ class MyActionGroup : public QActionGroup
 public:
 	MyActionGroup ( QObject * parent );
 
-	//! Looks for the item which ID is \a ID and checks it
-	void setChecked(int ID);
+	//! Looks for the item which ID is \a ID and checks and returns it
+	//! or 0 if not found
+	QAction* setChecked(int ID);
 
 	//! Returns the ID of the item checked or -1 if none
 	//! is checked
