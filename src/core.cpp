@@ -4057,7 +4057,10 @@ void Core::resetZoomPanAndSize() {
 
 	if (!pref->fullscreen) {
 		pref->size_factor = 1.0;
+		int old_resize_method = pref->resize_method;
+		pref->resize_method = Preferences::Always;
 		emit needResize(mset.win_width, mset.win_height);
+		pref->resize_method = old_resize_method;
 	}
 
 	displayMessage( tr("Zoom, pan and size reset") );
