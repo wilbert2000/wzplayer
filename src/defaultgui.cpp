@@ -706,11 +706,6 @@ void DefaultGui::loadConfig(const QString &group) {
 			floating_control->activate();
 		}
 	}
-
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
-#endif
-
 }
 
 #include "moc_defaultgui.cpp"

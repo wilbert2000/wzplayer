@@ -273,10 +273,6 @@ void MiniGui::loadConfig(const QString &group) {
 	if (pref->compact_mode) {
 		controlwidget->hide();
 	}
-
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
-#endif
 }
 
 #include "moc_minigui.cpp"

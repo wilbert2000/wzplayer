@@ -521,7 +521,6 @@ void SkinGui::loadConfig(const QString &group) {
 
 	statusBar()->hide();
 
-	changeStyleSheet(pref->iconset);
 	mediaBarPanel->setVolume(50);
 }
 

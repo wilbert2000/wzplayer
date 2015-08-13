@@ -256,11 +256,6 @@ void MpcGui::loadConfig(const QString &group) {
 		controlwidget->hide();
 		timeslidewidget->hide();
 	}
-
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
-#endif
-
 }
 
 void MpcGui::setupIcons() {

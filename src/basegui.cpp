@@ -289,6 +289,10 @@ void BaseGui::setupNetworkProxy() {
 void BaseGui::loadConfig(const QString &group) {
 	qDebug("BaseGui::loadConfig");
 
+#if ALLOW_CHANGE_STYLESHEET
+	changeStyleSheet(pref->iconset);
+#endif
+
 	// Load actions from outside group derived class
 	loadActions();
 
