@@ -198,6 +198,12 @@ void MPVProcess::parseVideoProperty(const QString &name, const QString &value) {
 		qDebug() << "MPVProcess::parseVideoProperty: md.video_format set to" << md.video_format;
 		return;
 	}
+	// If no video, the video codec regexp does not match
+	if (name == "CODEC") {
+		md.video_codec = "";
+		qDebug() << "MPVProcess::parseVideoProperty: md.video_codec set to" << md.video_codec;
+		return;
+	}
 
 	qWarning("MVPProcess::parseVideoProperty: unexpected property INFO_VIDEO_%s=%s",
 		name.toUtf8().constData(), value.toUtf8().constData());
@@ -224,6 +230,12 @@ void MPVProcess::parseAudioProperty(const QString &name, const QString &value) {
 	if (name == "NCH") {
 		md.audio_nch = value.toInt();
 		qDebug("MPVProcess::parseAudioProperty: md.audio_nch set to %d", md.audio_nch);
+		return;
+	}
+	// If no audio, the audio codec regexp does not match
+	if (name == "CODEC") {
+		md.audio_codec = "";
+		qDebug() << "MPVProcess::parseAudioProperty: md.audio_codec set to" << md.audio_codec;
 		return;
 	}
 
@@ -443,15 +455,11 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 } else {
 		// !notified_mplayer_is_running
 
-		/*
-		#if CHECK_VIDEO_CODEC_FOR_NO_VIDEO
-		// Another way to find out if there's no video
-		if (md.video_codec.isEmpty()) {
+		if (md.video_codec.isEmpty() && md.video_width == 0) {
 			md.novideo = true;
+			qDebug("MPVProcess::parseStatusLine: emit receivedNoVideo()");
 			emit receivedNoVideo();
 		}
-		#endif
-		*/
 
 		qDebug("MPVProcess::parseStatusLine: emit receivedStartingTime(%f)", sec);
 		emit receivedStartingTime(sec);

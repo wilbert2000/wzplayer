@@ -84,6 +84,7 @@
 // if 1, the video codec will be checked to decide if the file
 // has video or not. If it's empty it has no video.
 // If 0, it will check for the line "Video: no video"
+// mplayerprocess only. mpvprocess always uses codec and video size
 
 #define CHECK_VIDEO_CODEC_FOR_NO_VIDEO 1
 

@@ -4314,7 +4314,6 @@ void Core::gotWindowResolution(int w, int h) {
 
 }
 
-// TODO: not called for mpv 0.9.2
 void Core::gotNoVideo() {
 	qDebug("Core::gotNoVideo");
 
