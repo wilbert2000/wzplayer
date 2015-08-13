@@ -705,8 +705,7 @@ void MplayerWindow::checkHideMouse() {
 	}
 }
 
-// TODO: disable autoHideCUrsor when paused?
-// Currently only start and stop toggle autohide_cursor
+// Start and stop toggle autohide_cursor. Pause hides.
 void MplayerWindow::setAutoHideCursor(bool enable) {
 	autohide_cursor = enable;
 	if (autohide_cursor)
