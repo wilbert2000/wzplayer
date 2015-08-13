@@ -36,7 +36,6 @@ public:
 	bool start();
 
 	// Command line options
-	void addArgument(const QString & a);
 	void setMedia(const QString & media, bool is_playlist = false);
 	void disableInput();
 	void setFixedOptions();
@@ -161,6 +160,19 @@ private:
 	int br_current_title;
 
 	QString previous_eq;
+
+	void parseStatusLine(QRegExp &rx);
+	void parseVideoProperty(const QString &name, const QString &value);
+	void parseAudioProperty(const QString &name, const QString &value);
+	void parseMetaDataProperty(const QString &name, const QString &value);
+	void parseProperty(const QString &name, const QString &value);
+	void parseSubs(int id, const QString &lang, const QString &title);
+	void parseChapterName(int id, QString title);
+
+#if NOTIFY_VIDEO_CHANGES || NOTIFY_AUDIO_CHANGES || NOTIFY_SUB_CHANGES
+	void parseTrackInfo(QRegExp &rx);
+#endif
+
 };
 
 #endif
