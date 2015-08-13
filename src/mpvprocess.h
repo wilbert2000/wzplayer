@@ -133,6 +133,10 @@ private:
 
 	QString mpv_version;
 	bool verbose;
+	int line_count;
+
+	double fps;
+	int prev_frame;
 
 #if NOTIFY_SUB_CHANGES
 	SubTracks subs;
@@ -161,6 +165,8 @@ private:
 
 	QString previous_eq;
 
+	void notifyTimestamp(double sec);
+	void notifyChanges();
 	void parseStatusLine(QRegExp &rx);
 	void parseVideoProperty(const QString &name, const QString &value);
 	void parseAudioProperty(const QString &name, const QString &value);

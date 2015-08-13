@@ -39,6 +39,8 @@ MPVProcess::MPVProcess(QObject * parent)
 	, last_sub_id(-1)
 	, mplayer_svn(-1) // Not found yet
 	, verbose(false)
+	, line_count(0)
+	, fps(0.0)
 #if NOTIFY_SUB_CHANGES
 	, subtitle_info_received(false)
 	, subtitle_info_changed(false)
@@ -75,6 +77,8 @@ MPVProcess::~MPVProcess() {
 bool MPVProcess::start() {
 	md.reset();
 	notified_mplayer_is_running = false;
+	fps = 0.0;
+	prev_frame = -1;
 	last_sub_id = -1;
 	mplayer_svn = -1; // Not found yet
 	received_end_of_file = false;
@@ -184,6 +188,7 @@ void MPVProcess::parseVideoProperty(const QString &name, const QString &value) {
 	}
 	if (name == "FPS") {
 		md.video_fps = value;
+		fps = value.toDouble();
 		qDebug() << "MPVProcess::parseVideoProperty: md.video_fps set to" << md.video_fps;
 		return;
 	}
@@ -200,7 +205,7 @@ void MPVProcess::parseVideoProperty(const QString &name, const QString &value) {
 	}
 	// If no video, the video codec regexp does not match
 	if (name == "CODEC") {
-		md.video_codec = "";
+		md.video_codec = value;
 		qDebug() << "MPVProcess::parseVideoProperty: md.video_codec set to" << md.video_codec;
 		return;
 	}
@@ -234,7 +239,7 @@ void MPVProcess::parseAudioProperty(const QString &name, const QString &value) {
 	}
 	// If no audio, the audio codec regexp does not match
 	if (name == "CODEC") {
-		md.audio_codec = "";
+		md.audio_codec = value;
 		qDebug() << "MPVProcess::parseAudioProperty: md.audio_codec set to" << md.audio_codec;
 		return;
 	}
@@ -344,7 +349,7 @@ void MPVProcess::parseProperty(const QString &name, const QString &value) {
 		return;
 	}
 
-	qWarning("MVPProcess::parseProperty: unexpected property %s=%s",
+	qWarning("MVPProcess::parseProperty: unexpected property INFO_%s=%s",
 		name.toUtf8().constData(), value.toUtf8().constData());
 }
 
@@ -378,24 +383,87 @@ void MPVProcess::parseChapterName(int id, QString title) {
 		id, title.toUtf8().constData());
 }
 
+void MPVProcess::notifyChanges() {
+
+#if NOTIFY_SUB_CHANGES
+	if (subtitle_info_changed) {
+		qDebug("MPVProcess::notifyChanges: subtitle_info_changed");
+		subtitle_info_changed = false;
+		subtitle_info_received = false;
+		emit subtitleInfoChanged(subs);
+	}
+	if (subtitle_info_received) {
+		qDebug("MPVProcess::notifyChanges: subtitle_info_received");
+		subtitle_info_received = false;
+		emit subtitleInfoReceivedAgain(subs);
+	}
+#endif
+
+#if NOTIFY_AUDIO_CHANGES
+	if (audio_info_changed) {
+		qDebug("MPVProcess::notifyChanges: audio_info_changed");
+		audio_info_changed = false;
+		emit audioInfoChanged(audios);
+	}
+#endif
+
+#if NOTIFY_VIDEO_CHANGES
+	if (video_info_changed) {
+		qDebug("MPVProcess::notifyChanges: video_info_changed");
+		video_info_changed = false;
+		emit videoInfoChanged(videos);
+	}
+#endif
+
+#if NOTIFY_CHAPTER_CHANGES
+	if (chapter_info_changed) {
+		qDebug("MPVProcess::notifyChanges: chapter_info_changed");
+		chapter_info_changed = false;
+		emit chaptersChanged(chapters);
+	}
+#endif
+
+}
+
+void MPVProcess::notifyTimestamp(double sec) {
+
+	// Pass current time stamp
+	emit receivedCurrentSec( sec );
+
+	// Emulate frames. mpv won't give them?
+	// TODO: way to get them anyway for videos that do have frames
+	if (fps != 0.0) {
+		int frame = qRound(sec * fps);
+		if (frame != prev_frame) {
+			prev_frame = frame;
+			emit receivedCurrentFrame( frame );
+		}
+	}
+}
+
 void MPVProcess::parseStatusLine(QRegExp &rx) {
-	// Parse custom status line, fired once or twice per frame, that's often.
+	// Parse custom status line
 	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
 	double sec = rx.cap(1).toDouble();
 	double length = rx.cap(2).toDouble();
+
 	bool paused = rx.cap(3) == "yes";
 	bool buffering = rx.cap(4) == "yes";
 	bool idle = rx.cap(5) == "yes";
 
-	// Duration
+	// Duration changed
 	if (length != md.duration) {
 		md.duration = length;
 		qDebug("MPVProcess::parseStatusLine: emit receivedDuration(%f)", length);
 		emit receivedDuration(length);
 	}
 
-	// State flags
+	// Always pass current time stamp.
+	notifyTimestamp( sec );
+
+	// State flags.
+	// Only fall through when playing.
 	if (paused) {
 		qDebug("MPVProcess::parseStatusLine: paused");
 		receivedPause();
@@ -412,50 +480,16 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 		return;
 	}
 
+	// Playing
 	if (notified_mplayer_is_running) {
-		// Do some delayed notifications
+		// Playing except for first frame. Notify AV changes.
+		notifyChanges();
+	} else {
+		// First and only run of state playing
+		notified_mplayer_is_running = true;
 
-#if NOTIFY_SUB_CHANGES
-		if (subtitle_info_changed) {
-			qDebug("MPVProcess::parseStatusLine: subtitle_info_changed");
-			subtitle_info_changed = false;
-			subtitle_info_received = false;
-			emit subtitleInfoChanged(subs);
-		}
-		if (subtitle_info_received) {
-			qDebug("MPVProcess::parseStatusLine: subtitle_info_received");
-			subtitle_info_received = false;
-			emit subtitleInfoReceivedAgain(subs);
-		}
-#endif
-
-#if NOTIFY_AUDIO_CHANGES
-		if (audio_info_changed) {
-			qDebug("MPVProcess::parseStatusLine: audio_info_changed");
-			audio_info_changed = false;
-			emit audioInfoChanged(audios);
-		}
-#endif
-
-#if NOTIFY_VIDEO_CHANGES
-		if (video_info_changed) {
-			qDebug("MPVProcess::parseStatusLine: video_info_changed");
-			video_info_changed = false;
-			emit videoInfoChanged(videos);
-		}
-#endif
-
-#if NOTIFY_CHAPTER_CHANGES
-		if (chapter_info_changed) {
-			qDebug("MPVProcess::parseStatusLine: chapter_info_changed");
-			chapter_info_changed = false;
-			emit chaptersChanged(chapters);
-		}
-#endif
-} else {
-		// !notified_mplayer_is_running
-
-		if (md.video_codec.isEmpty() && md.video_width == 0) {
+		// Have any video?
+		if (md.video_width == 0) {
 			md.novideo = true;
 			qDebug("MPVProcess::parseStatusLine: emit receivedNoVideo()");
 			emit receivedNoVideo();
@@ -463,20 +497,18 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 
 		qDebug("MPVProcess::parseStatusLine: emit receivedStartingTime(%f)", sec);
 		emit receivedStartingTime(sec);
+
 		qDebug("MPVProcess::parseStatusLine: emit mplayerFullyLoaded()");
 		emit mplayerFullyLoaded();
 
-		// Ugly hack: set the frame counter to 0
-		qDebug("MPVProcess::parseStatusLine: emit receivedCurrentFrame(0)");
-		emit receivedCurrentFrame(0);
-
-		notified_mplayer_is_running = true;
+		// Clear frame counter if no fps
+		if (fps == 0.0) {
+			emit receivedCurrentFrame(0);
+		}
 
 		// Wait some secs to ask for bitrate
 		QTimer::singleShot(12000, this, SLOT(requestBitrateInfo()));
 	}
-
-	emit receivedCurrentSec( sec );
 }
 
 void MPVProcess::parseLine(QByteArray ba) {
@@ -514,6 +546,11 @@ void MPVProcess::parseLine(QByteArray ba) {
 	static QRegExp rx_mpv_forbidden("HTTP error 403 Forbidden");
 	static QRegExp rx_mpv_endoffile("^Exiting... \\(End of file\\)");
 
+
+	line_count++;
+	if (line_count % 10000 == 0) {
+		qDebug("MPVProcess::parseLine: parsed %d lines", line_count);
+	}
 
 	if (ba.isEmpty()) return;
 
