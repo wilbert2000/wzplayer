@@ -362,17 +362,17 @@ void BaseGuiPlus::showAll(bool b) {
 	updateShowAllAct();
 }
 
-// TODO: this one is virtual, base class is not, so this will not get called
 void BaseGuiPlus::resizeWindow(int w, int h) {
-    qDebug("BaseGuiPlus::resizeWindow: %d, %d", w, h);
+	qDebug("BaseGuiPlus::resizeWindow: %d, %d", w, h);
 
-	if ( (tray->isVisible()) && (!isVisible()) ) showAll(true);
+	if (tray->isVisible() && !isVisible())
+		showAll(true);
 
 	BaseGui::resizeWindow(w, h );
 }
 
 void BaseGuiPlus::updateMediaInfo() {
-    qDebug("BaseGuiPlus::updateMediaInfo");
+	qDebug("BaseGuiPlus::updateMediaInfo");
 	BaseGui::updateMediaInfo();
 
 	tray->setToolTip( windowTitle() );
