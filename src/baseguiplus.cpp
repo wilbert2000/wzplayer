@@ -218,14 +218,14 @@ void BaseGuiPlus::updateShowAllAct() {
 		showAllAct->change( tr("&Restore") );
 }
 
-void BaseGuiPlus::saveConfig() {
+void BaseGuiPlus::saveConfig(const QString &group) {
 	qDebug("BaseGuiPlus::saveConfig");
 
-	// Needs to save to group derived class
-	BaseGui::saveConfig();
+	BaseGui::saveConfig(group);
 
 	QSettings * set = settings;
-
+	// Store inside group derived class
+	set->beginGroup( group );
 	set->beginGroup( "base_gui_plus");
 
 	set->setValue( "show_tray_icon", showTrayAct->isChecked() );
@@ -240,23 +240,18 @@ void BaseGuiPlus::saveConfig() {
 	set->setValue( "ignore_playlist_events", ignore_playlist_events );
 #endif
 
-/*
-#if DOCK_PLAYLIST
-	set->setValue( "playlist_and_toolbars_state", saveState() );
-#endif
-*/
-
+	set->endGroup();
 	set->endGroup();
 }
 
-void BaseGuiPlus::loadConfig() {
+void BaseGuiPlus::loadConfig(const QString &group) {
 	qDebug("BaseGuiPlus::loadConfig");
 
-	// Needs to load from group derived class
-	BaseGui::loadConfig();
+	BaseGui::loadConfig(group);
 
 	QSettings * set = settings;
-
+	// load from group derived class
+	set->beginGroup( group );
 	set->beginGroup( "base_gui_plus");
 
 	bool show_tray_icon = set->value( "show_tray_icon", false).toBool();
@@ -274,12 +269,7 @@ void BaseGuiPlus::loadConfig() {
 	ignore_playlist_events = set->value( "ignore_playlist_events", ignore_playlist_events ).toBool();
 #endif
 
-/*
-#if DOCK_PLAYLIST
-	restoreState( set->value( "playlist_and_toolbars_state" ).toByteArray() );
-#endif
-*/
-
+	set->endGroup();
 	set->endGroup();
 
 	updateShowAllAct();

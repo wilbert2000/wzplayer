@@ -221,12 +221,13 @@ void MiniGui::adjustFloatingControlSize() {
 	floating_control->resize(floating_control->width(), new_height);
 }
 
-void MiniGui::saveConfig() {
+void MiniGui::saveConfig(const QString &group) {
+	Q_UNUSED(group)
+
+	BaseGuiPlus::saveConfig("mini_gui");
+
 	QSettings * set = settings;
-
-	set->beginGroup( "mini_gui");
-
-	BaseGuiPlus::saveConfig();
+	set->beginGroup("mini_gui");
 
 	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
@@ -244,13 +245,13 @@ void MiniGui::saveConfig() {
 	set->endGroup();
 }
 
-void MiniGui::loadConfig() {
+void MiniGui::loadConfig(const QString &group) {
+	Q_UNUSED(group)
+
+	BaseGuiPlus::loadConfig("mini_gui");
+
 	QSettings * set = settings;
-
-	// Make BaseGui load from this group
-	set->beginGroup( "mini_gui");
-
-	BaseGuiPlus::loadConfig();
+	set->beginGroup("mini_gui");
 
 	set->beginGroup( "actions" );
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );

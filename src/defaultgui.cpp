@@ -612,14 +612,14 @@ void DefaultGui::adjustFloatingControlSize() {
 	floating_control->resize(floating_control->width(), new_height);
 }
 
-void DefaultGui::saveConfig() {
+void DefaultGui::saveConfig(const QString &group) {
+	Q_UNUSED(group)
 	qDebug("DefaultGui::saveConfig");
+
+	BaseGuiPlus::saveConfig("default_gui");
 
 	QSettings * set = settings;
 	set->beginGroup( "default_gui");
-
-	// BaseGui needs save inside this group
-	BaseGuiPlus::saveConfig();
 
 	set->setValue("video_info", viewVideoInfoAct->isChecked());
 	set->setValue("frame_counter", viewFrameCounterAct->isChecked());
@@ -650,15 +650,14 @@ void DefaultGui::saveConfig() {
 	set->endGroup();
 }
 
-void DefaultGui::loadConfig() {
+void DefaultGui::loadConfig(const QString &group) {
+	Q_UNUSED(group)
 	qDebug("DefaultGui::loadConfig");
 
+	BaseGuiPlus::loadConfig("default_gui");
+
 	QSettings * set = settings;
-
-	// Let BaseGui load from this group
-	set->beginGroup( "default_gui");
-
-	BaseGuiPlus::loadConfig();
+	set->beginGroup("default_gui");
 
 	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
 	viewFrameCounterAct->setChecked(set->value("frame_counter", false).toBool());
@@ -673,7 +672,7 @@ void DefaultGui::loadConfig() {
 	if (toolbar_version >= TOOLBAR_VERSION) {
 		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
-		qDebug("DefaultGui::loadConfig: toolbar too old, loading default one");
+		qWarning("DefaultGui::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
@@ -692,12 +691,6 @@ void DefaultGui::loadConfig() {
 	floating_control->adjustSize();
 
 	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
-
-#if DOCK_PLAYLIST
-	qDebug("DefaultGui::loadConfig: playlist visible: %d", playlistdock->isVisible());
-	qDebug("DefaultGui::loadConfig: playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("DefaultGui::loadConfig: playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
-#endif
 
 	set->endGroup();
 

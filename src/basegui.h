@@ -93,8 +93,8 @@ public:
 	Core * getCore() { return core; };
 	Playlist * getPlaylist() { return playlist; };
 
-	virtual void loadConfig();
-	virtual void saveConfig();
+	virtual void loadConfig(const QString &group);
+	virtual void saveConfig(const QString &group);
 
 public slots:
 	virtual void open(QString file); // Generic open, autodetect type.

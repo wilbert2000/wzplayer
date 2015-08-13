@@ -39,8 +39,8 @@ public:
 	~BaseGuiPlus();
 
 	virtual bool startHidden();
-	virtual void loadConfig();
-	virtual void saveConfig();
+	virtual void loadConfig(const QString &group);
+	virtual void saveConfig(const QString &group);
 
 protected:
 	virtual void retranslateStrings();

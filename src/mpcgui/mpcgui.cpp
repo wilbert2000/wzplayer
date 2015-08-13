@@ -241,27 +241,16 @@ QSize MpcGui::mpcmumSizeHint() const {
 #endif
 
 
-void MpcGui::saveConfig() {
-	QSettings * set = settings;
+void MpcGui::saveConfig(const QString &group) {
+	Q_UNUSED(group)
 
-	set->beginGroup( "mpc_gui");
-
-	BaseGuiPlus::saveConfig();
-
-	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
-
-	set->endGroup();
+	BaseGuiPlus::saveConfig("mpc_gui");
 }
 
-void MpcGui::loadConfig() {
+void MpcGui::loadConfig(const QString &group) {
+	Q_UNUSED(group)
 
-	QSettings * set = settings;
-
-	set->beginGroup( "mpc_gui");
-
-	BaseGuiPlus::loadConfig();
-
-	set->endGroup();
+	BaseGuiPlus::loadConfig("mpc_gui");
 
 	if (pref->compact_mode) {
 		controlwidget->hide();

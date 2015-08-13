@@ -435,14 +435,14 @@ void SkinGui::aboutToExitCompactMode() {
 	/* resizeEvent( new QResizeEvent( size(), size() ) ); */
 }
 
-void SkinGui::saveConfig() {
+void SkinGui::saveConfig(const QString &group) {
+	Q_UNUSED(group)
 	qDebug("SkinGui::saveConfig");
 
+	BaseGuiPlus::saveConfig("skin_gui");
+
 	QSettings * set = settings;
-
-	set->beginGroup( "skin_gui");
-
-	BaseGuiPlus::saveConfig();
+	set->beginGroup("skin_gui");
 
 	set->setValue("video_info", viewVideoInfoAct->isChecked());
 	set->setValue("scroll_title", scrollTitleAct->isChecked());
@@ -471,14 +471,14 @@ void SkinGui::saveConfig() {
 	set->endGroup();
 }
 
-void SkinGui::loadConfig() {
+void SkinGui::loadConfig(const QString &group) {
+	Q_UNUSED(group)
 	qDebug("SkinGui::loadConfig");
 
+	BaseGuiPlus::loadConfig("skin_gui");
+
 	QSettings * set = settings;
-
-	set->beginGroup( "skin_gui");
-
-	BaseGuiPlus::loadConfig();
+	set->beginGroup("skin_gui");
 
 	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
 	scrollTitleAct->setChecked(set->value("scroll_title", false).toBool());
@@ -491,7 +491,7 @@ void SkinGui::loadConfig() {
 	if (toolbar_version >= TOOLBAR_VERSION) {
 		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
-		qDebug("SkinGui::loadConfig: toolbar too old, loading default one");
+		qWarning("SkinGui::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 #if defined(SKIN_EDITABLE_CONTROL)
@@ -509,12 +509,6 @@ void SkinGui::loadConfig() {
 	set->endGroup();
 
 	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
-
-#if DOCK_PLAYLIST
-	qDebug("SkinGui::loadConfig: playlist visible: %d", playlistdock->isVisible());
-	qDebug("SkinGui::loadConfig: playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	qDebug("SkinGui::loadConfig: playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
-#endif
 
 	set->endGroup();
 

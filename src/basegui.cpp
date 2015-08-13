@@ -245,12 +245,6 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 
 	updateRecents();
 
-	// TODO: move to loadConfig
-	// Call loadActions() outside initialization of the class.
-	// Otherwise DefaultGui (and other subclasses) doesn't exist, and
-	// its actions are not loaded
-	QTimer::singleShot(20, this, SLOT(loadActions()));
-
 #ifdef UPDATE_CHECKER
 	update_checker = new UpdateChecker(this, &pref->update_checker_data);
 #endif
@@ -292,14 +286,20 @@ void BaseGui::setupNetworkProxy() {
 	QNetworkProxy::setApplicationProxy(proxy);
 }
 
-void BaseGui::loadConfig() {
+void BaseGui::loadConfig(const QString &group) {
 	qDebug("BaseGui::loadConfig");
+
+	// Load actions from outside group derived class
+	loadActions();
 
 	if (pref->save_window_size_on_exit) {
 		QSettings * set = settings;
-		// set->beginGroup(group);
+		// Load window state from inside group derived class
+		set->beginGroup(group);
 		QPoint p = set->value("pos", pos()).toPoint();
 		QSize s = set->value("size", size()).toSize();
+		int state = set->value("state", 0).toInt();
+		set->endGroup();
 
 		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
 			s = pref->default_size;
@@ -307,17 +307,16 @@ void BaseGui::loadConfig() {
 
 		move(p);
 		resize(s);
-
-		setWindowState( (Qt::WindowStates) set->value("state", 0).toInt() );
+		setWindowState((Qt::WindowStates) state);
 
 		if (!DesktopInfo::isInsideScreen(this)) {
 			move(0,0);
 			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
+		} else {
+			// Block resize of main window by loading of video
+			// TODO: reset when video fails to load
+			block_resize = true;
 		}
-
-		// Block resize of main window by loading of video
-		// TODO: reset when video fails to load
-		block_resize = true;
 	} else {
 		// Center window
 		QSize center_pos = (DesktopInfo::desktop_size(this) - size()) / 2;
@@ -326,14 +325,16 @@ void BaseGui::loadConfig() {
 	}
 }
 
-void BaseGui::saveConfig() {
+void BaseGui::saveConfig(const QString &group) {
 	qDebug("BaseGui::saveConfig");
 
 	if (pref->save_window_size_on_exit) {
 		QSettings * set = settings;
+		set->beginGroup(group);
 		set->setValue( "pos", pos() );
 		set->setValue( "size", size() );
 		set->setValue( "state", (int) windowState() );
+		set->endGroup();
 	}
 }
 

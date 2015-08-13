@@ -39,8 +39,8 @@ public:
 	MpcGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~MpcGui();
 
-	virtual void loadConfig();
-	virtual void saveConfig();
+	virtual void loadConfig(const QString &group);
+	virtual void saveConfig(const QString &group);
 
 #if USE_MPCMUMSIZE
 	virtual QSize mpcmumSizeHint () const;

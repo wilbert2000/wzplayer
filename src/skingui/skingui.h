@@ -50,8 +50,8 @@ public:
 	SkinGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~SkinGui();
 
-	virtual void loadConfig();
-	virtual void saveConfig();
+	virtual void loadConfig(const QString &group);
+	virtual void saveConfig(const QString &group);
 
 public slots:
 	//virtual void showPlaylist(bool b);

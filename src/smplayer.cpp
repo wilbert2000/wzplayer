@@ -163,7 +163,7 @@ BaseGui * SMPlayer::createGUI(QString gui_name) {
 #endif
 		gui = new DefaultGui(0);
 
-	gui->loadConfig();
+	gui->loadConfig("");
 	gui->setForceCloseOnFinish(close_at_end);
 	gui->setForceStartInFullscreen(start_in_fullscreen);
 	connect(gui, SIGNAL(quitSolicited()), qApp, SLOT(quit()));
@@ -187,7 +187,7 @@ void SMPlayer::deleteGUI() {
 	allow_to_send_log_to_gui = false;
 #endif
 
-	main_window->saveConfig();
+	main_window->saveConfig("");
 	delete main_window;
 	main_window = 0;
 
