@@ -239,8 +239,8 @@ void MplayerWindow::set(double aspect,
 }
 
 QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
-	qDebug("MplayerWindow::getAdjustedSize in: %d x %d zoom %f aspect %f",
-		   w, h, desired_zoom, aspect);
+	//qDebug("MplayerWindow::getAdjustedSize in: %d x %d zoom %f aspect %f",
+	//	   w, h, desired_zoom, aspect);
 
 	// Select best fit: height adjusted or width adjusted,
 	// in case video aspect does not match the window aspect ratio.
@@ -260,7 +260,7 @@ QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
 	// Zoom
 	QSize size = QSize(w, h) * desired_zoom;
 
-	qDebug("MplayerWindow::getAdjustedSize out: %d x %d", size.width(), size.height());
+	//qDebug("MplayerWindow::getAdjustedSize out: %d x %d", size.width(), size.height());
 	return size;
 }
 
