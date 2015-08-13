@@ -5019,31 +5019,27 @@ void BaseGui::toggleDoubleSize() {
 void BaseGui::resizeWindow(int w, int h) {
 	qDebug("BaseGui::resizeWindow: %d, %d", w, h);
 
-	// Set if pref->save_window_size_on_exit selected
-	if (block_resize) {
-		block_resize = false;
-		return;
-	}
+	// Set first time if pref->save_window_size_on_exit selected
+	bool block = block_resize;
+	block_resize = false;
 
-	// If fullscreen, don't resize!
-	if (pref->fullscreen) return;
-
-	// Don't resize if any mouse buttons down, like when dragging.
-	// Button state is synchronized to events, so can be old.
-	if (QApplication::mouseButtons()) {
-		qDebug("BaseGui::resizeWindow mouse down, canceled resize");
-		return;
-	}
-
-	if ( (pref->resize_method==Preferences::Never) && (panel->isVisible()) ) {
-		return;
-	}
-
-	if (!panel->isVisible()) {
+	if (panel->isVisible()) {
+		// Don't resize if
+		// first time and pref->save_window_size_on_exit selected
+		// or pref->resize_method == Preferences::Never
+		// or if any mouse buttons down, like when dragging.
+		// Button state is synchronized to events, so can be old.
+		if (block || (pref->resize_method == Preferences::Never)
+			|| QApplication::mouseButtons()) {
+			return;
+		}
+	} else {
 		panel->show();
 	}
 
-	resizeMainWindow(w, h);
+	// If fullscreen, don't resize!
+	if (!pref->fullscreen)
+		resizeMainWindow(w, h);
 }
 
 void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
