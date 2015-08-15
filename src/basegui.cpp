@@ -2219,6 +2219,11 @@ void BaseGui::createCore() {
             this, SLOT(YTNoSslSupport()));
 #endif
 	connect(core, SIGNAL(receivedForbidden()), this, SLOT(gotForbidden()));
+
+	connect(mplayerwindow, SIGNAL(moveOSD(const QPoint &)),
+			core, SLOT(setOSDPos(const QPoint &)));
+	connect(mplayerwindow, SIGNAL(showMessage(QString)),
+			 core, SLOT(displayMessage(QString)) );
 }
 
 void BaseGui::createMplayerWindow() {
@@ -2265,9 +2270,6 @@ void BaseGui::createMplayerWindow() {
              this, SLOT(xbutton1ClickFunction()) );
 	connect( mplayerwindow, SIGNAL(xbutton2Clicked()),
              this, SLOT(xbutton2ClickFunction()) );
-
-	connect( mplayerwindow, SIGNAL(showMessage(QString, int)),
-			 this, SLOT(displayMessage(QString, int)) );
 }
 
 void BaseGui::createVideoEqualizer() {

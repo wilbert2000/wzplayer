@@ -32,6 +32,10 @@ using namespace Global;
 
 #define TOO_CHAPTERS_WORKAROUND
 
+// TODO: fix
+static const QPoint default_osd_pos(25, 22);
+static const QPoint max_osd_pos(300, 600);
+
 MPVProcess::MPVProcess(QObject * parent)
 	: PlayerProcess(parent)
 	, notified_mplayer_is_running(false)
@@ -56,6 +60,9 @@ MPVProcess::MPVProcess(QObject * parent)
 #endif
 	, dvd_current_title(-1)
 	, br_current_title(-1)
+	, osd_pos(default_osd_pos)
+	, osd_centered_x(false)
+	, osd_centered_y(false)
 {
 	player_id = PlayerID::MPV;
 
@@ -106,6 +113,10 @@ bool MPVProcess::start() {
 
 	dvd_current_title = -1;
 	br_current_title = -1;
+
+	osd_pos = default_osd_pos;
+	osd_centered_x = false;
+	osd_centered_y = false;
 
 	MyProcess::start();
 
@@ -459,8 +470,9 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 		emit receivedDuration(length);
 	}
 
-	// Always pass current time stamp.
-	notifyTimestamp( sec );
+	// Always pass current time stamp. This is new behaviour and needed
+	// because a state change and timestamp change can coincide.
+	notifyTimestamp(sec);
 
 	// State flags.
 	// Only fall through when playing.
@@ -1116,6 +1128,7 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 		option_name == "ass-styles" || option_name == "ass-force-style" ||
 		option_name == "ass-line-spacing" ||
 		option_name == "embeddedfonts" ||
+		option_name == "osd-scale-by-window" ||
 		option_name == "osd-scale" ||
 		option_name == "speed" ||
 		option_name == "contrast" || option_name == "brightness" ||
@@ -1495,6 +1508,84 @@ void MPVProcess::toggleDeinterlace() {
 
 void MPVProcess::askForLength() {
 	writeToStdin("print_text \"INFO_LENGTH=${=length}\"");
+}
+
+void MPVProcess::setOSDPos(const QPoint &pos) {
+	// mpv has no way to set the OSD position directly,
+	// so this hack uses osd-margin to emulate it.
+
+	// TODO: versioning
+	// osd-margin-y Integer (0 to 300) (default: 25)
+	// osd-margin-y Integer (0 to 600) (default: 22)
+	// options/osd-align-x and y from version 0.9.0 onwards
+
+	// From mpv/options/options.c
+	// OPT_FLOATRANGE("osd-bar-w", osd_bar_w, 0, 1, 100),
+	// OPT_FLOATRANGE("osd-bar-h", osd_bar_h, 0, 0.1, 50),
+
+	// TODO: how to disable OSD echo for set command
+
+	// Handle y first
+	if (pos.y() > max_osd_pos.y()) {
+		// Hack: center osd and hope for the best
+		if (!osd_centered_y) {
+			writeToStdin("set options/osd-align-y center");
+			osd_centered_y = true;
+		}
+		// Reset margin to default
+		if (osd_pos.y() != default_osd_pos.y()) {
+			osd_pos.ry() = default_osd_pos.y();
+			writeToStdin("set options/osd-margin-y "
+				+ QString::number(osd_pos.y()));
+		}
+	} else {
+		// Reset alignment hack if centered
+		if (osd_centered_y) {
+			osd_centered_y = false;
+			writeToStdin("set options/osd-align-y top");
+		}
+
+		int y = pos.y();
+		if (y < default_osd_pos.y()) {
+			y = default_osd_pos.y();
+		}
+
+		if (y != osd_pos.y()) {
+			osd_pos.ry() = y;
+			writeToStdin("set options/osd-margin-y " + QString::number(y));
+		}
+	}
+
+	// Handle x
+	if (pos.x() > max_osd_pos.x()) {
+		// Hack: center osd and hope for the best
+		if (!osd_centered_x) {
+			writeToStdin("set options/osd-align-x center");
+			osd_centered_x = true;
+		}
+		// Reset margin
+		if (osd_pos.x() != default_osd_pos.x()) {
+			osd_pos.rx() = default_osd_pos.x();
+			writeToStdin("set options/osd-margin-x "
+				+ QString::number(osd_pos.x()));
+		}
+	} else {
+		// Reset alignment hack if centered
+		if (osd_centered_x) {
+			osd_centered_x = false;
+			writeToStdin("set options/osd-align-x left");
+		}
+
+		int x = pos.x();
+		if (x < default_osd_pos.x()) {
+			x = default_osd_pos.x();
+		}
+
+		if (x != osd_pos.x()) {
+			osd_pos.rx() = x;
+			writeToStdin("set options/osd-margin-x " + QString::number(x));
+		}
+	}
 }
 
 void MPVProcess::setOSDScale(double value) {

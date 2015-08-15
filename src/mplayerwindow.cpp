@@ -40,6 +40,9 @@
 #include <QPropertyAnimation>
 #endif
 
+// TODO:
+static const QPoint default_osd_pos(25, 22);
+
 /* ---------------------------------------------------------------------- */
 
 MplayerLayer::MplayerLayer(QWidget* parent, Qt::WindowFlags f)
@@ -152,6 +155,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	, autohide_cursor(false)
 	, check_hide_mouse_last_position()
 	, autohide_interval(1000)
+	, osd_pos(default_osd_pos)
 {
 	setObjectName("mplayerwindow");
 
@@ -311,7 +315,7 @@ void MplayerWindow::updateSizeGroup() {
 
 void MplayerWindow::updateVideoWindow() {
 	qDebug() << "MplayerWindow::updateVideoWindow in: fullscreen" << fullscreen
-			<< "size" << width() << "x" << height()
+			<< " size" << width() << "x" << height()
 			<< " aspect" << aspect
 			<< " zoom" << zoom()
 			<< " pan" << pan();
@@ -326,17 +330,24 @@ void MplayerWindow::updateVideoWindow() {
 
 	mplayerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
 
-	// Update status bar with new size
-	if (!fullscreen && video_size != last_video_size) {
-		emit showMessage(tr("Video size %1 x %2").arg(QString::number(video_size.width())).arg(QString::number(video_size.height())),
-						 3000);
+	// Keep OSD in sight. Need the offset as seen by player.
+	QPoint o_pos(osd_pos);
+	if (pos.x() < 0)
+		o_pos.rx() = o_pos.x() - pos.x();
+	if (pos.y() < 0)
+		o_pos.ry() = o_pos.y() - pos.y();
+	emit moveOSD(o_pos);
+
+	// Update status with new size. After OSD to clear moveOSD msg.
+	if (video_size != last_video_size) {
+		emit showMessage(tr("Video size %1 x %2").arg(QString::number(video_size.width())).arg(QString::number(video_size.height())));
 		last_video_size = video_size;
 	}
 
+	updateSizeGroup();
+
 	qDebug("MplayerWindow::updateVideoWindow out: pos (%d, %d)  size %d x %d",
 		   pos.x(), pos.y(), video_size.width(), video_size.height());
-
-	updateSizeGroup();
 }
 
 void MplayerWindow::resizeEvent(QResizeEvent*) {
@@ -699,7 +710,10 @@ void MplayerWindow::setAutoHideCursor(bool enable) {
 
 void MplayerWindow::playingStarted() {
 	qDebug("MplayerWindow::playingStarted");
-	// No longer needed. Now done by Core::initPlaying
+
+	// TODO:
+	osd_pos = default_osd_pos;
+	// Done by Core::initPlaying
 	// repaint();
 	mplayerlayer->setFastBackground();
 	setAutoHideCursor(true);
@@ -707,11 +721,13 @@ void MplayerWindow::playingStarted() {
 
 void MplayerWindow::playingStopped() {
 	qDebug("MplayerWindow::playingStopped");
+
 	mplayerlayer->restoreNormalBackground();
 	// Clear background right away.
 	// Pro: no artifacts when things take a little while.
 	// Against: longer black flicker when switching bright videos in playlist.
 	repaint();
+
 	setAutoHideCursor(false);
 	setResolution(0, 0);
 }

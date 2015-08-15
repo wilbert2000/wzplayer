@@ -237,6 +237,7 @@ public slots:
 	void incSubScale();
 	void decSubScale();
 
+	void setOSDPos(const QPoint &pos);
 	void changeOSDScale(double value);
 	void incOSDScale();
 	void decOSDScale();

@@ -200,7 +200,8 @@ signals:
 	void wheelUp();
 	void wheelDown();
 	void mouseMoved(QPoint);
-	void showMessage(QString text, int time);
+	void showMessage(QString text);
+	void moveOSD(QPoint pos);
 
 protected:
 	double aspect;
@@ -244,6 +245,8 @@ private:
 	QTimer * check_hide_mouse_timer;
 	QPoint check_hide_mouse_last_position;
 	int autohide_interval;
+
+	QPoint osd_pos;
 
 	void autoHideCursorStartTimer();
 	void showHiddenCursor(bool startTimer);

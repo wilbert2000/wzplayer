@@ -373,6 +373,10 @@ void MplayerProcess::askForLength() {
 	writeToStdin(pausing_prefix + " get_property length");
 }
 
+void MplayerProcess::setOSDPos(const QPoint &pos) {
+	// TODO:
+}
+
 void MplayerProcess::setOSDScale(double value) {
 	// not available
 	//writeToStdin("set_property subfont-osd-scale " + QString::number(value)); 

@@ -19,6 +19,7 @@
 #ifndef MPVPROCESS_H
 #define MPVPROCESS_H
 
+#include <QPoint>
 #include <QString>
 #include "playerprocess.h"
 #include "config.h"
@@ -99,6 +100,7 @@ public:
 #endif
 	void toggleDeinterlace();
 	void askForLength();
+	void setOSDPos(const QPoint &pos);
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &);
 
@@ -164,6 +166,10 @@ private:
 	int br_current_title;
 
 	QString previous_eq;
+
+	QPoint osd_pos;
+	bool osd_centered_x;
+	bool osd_centered_y;
 
 	void notifyTimestamp(double sec);
 	void notifyChanges();

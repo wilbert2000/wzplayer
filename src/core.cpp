@@ -1402,7 +1402,6 @@ void Core::processFinished()
 	if (!we_are_restarting) {
 		qDebug("Core::processFinished: play has finished!");
 		setState(Stopped);
-		//emit stateChanged(state());
 	}
 
 	int exit_code = proc->exitCode();
@@ -1788,6 +1787,8 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 
 	// OSD
+	// TODO: check added osd-scale-by-window
+	proc->setOption("osd-scale-by-window", "no");
 	proc->setOption("osd-scale", proc->isMPlayer() ? pref->subfont_osd_scale : pref->osd_scale);
 
 	// Subtitles fonts
@@ -3262,6 +3263,12 @@ void Core::decSubScale() {
 	}
 }
 
+void Core::setOSDPos(const QPoint &pos) {
+	qDebug("Core::setOSDPos");
+
+	proc->setOSDPos(pos);
+}
+
 void Core::changeOSDScale(double value) {
 	qDebug("Core::changeOSDScale: %f", value);
 
@@ -4262,11 +4269,10 @@ void Core::dvdnavMouse() {
 
 void Core::displayMessage(QString text) {
 	qDebug("Core::displayMessage");
+
 	emit showMessage(text);
 
-	if ((pref->fullscreen) && (state() != Paused)) {
-		displayTextOnOSD( text );
-	}
+	displayTextOnOSD( text );
 }
 
 void Core::displayScreenshotName(QString filename) {

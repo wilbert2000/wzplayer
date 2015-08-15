@@ -100,6 +100,7 @@ public:
 #endif
 	void toggleDeinterlace();
 	void askForLength();
+	void setOSDPos(const QPoint &pos);
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &) {};
 

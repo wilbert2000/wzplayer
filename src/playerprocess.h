@@ -108,6 +108,7 @@ public:
 #endif
 	virtual void toggleDeinterlace() = 0;
 	virtual void askForLength() = 0;
+	virtual void setOSDPos(const QPoint &pos) = 0;
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
 
