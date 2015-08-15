@@ -141,11 +141,6 @@ public:
 	int A_marker;
 	int B_marker;
 
-	// This a property of the video and it should be
-    // in mediadata, but we have to save it to preserve 
-	// this data among restarts.
-	double starting_time; // Some videos don't start at 0
-
 	//! The codec of the video is ffh264 and it's high definition
 	bool is264andHD;
 

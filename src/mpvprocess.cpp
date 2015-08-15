@@ -495,13 +495,11 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 			emit receivedNoVideo();
 		}
 
-		qDebug("MPVProcess::parseStatusLine: emit receivedStartingTime(%f)", sec);
-		emit receivedStartingTime(sec);
-
 		qDebug("MPVProcess::parseStatusLine: emit mplayerFullyLoaded()");
 		emit mplayerFullyLoaded();
 
 		// Clear frame counter if no fps
+		// TODO: check if not already cleared by frame counter
 		if (fps == 0.0) {
 			emit receivedCurrentFrame(0);
 		}

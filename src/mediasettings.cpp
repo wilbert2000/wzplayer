@@ -105,8 +105,6 @@ void MediaSettings::reset() {
 	pan_offset = QPoint();
 	pan_offset_fullscreen = QPoint();
 
-	starting_time = -1; // Not set yet.
-
 	rotate = NoRotate;
 	flip = false;
 	mirror = false;
@@ -287,7 +285,6 @@ void MediaSettings::list() {
 	qDebug("  win_height: %d", win_height); 
 	qDebug("  win_aspect(): %f", win_aspect()); 
 
-	qDebug("  starting_time: %f", starting_time);
 	qDebug("  is264andHD: %d", is264andHD);
 }
 
@@ -401,8 +398,6 @@ void MediaSettings::save(QSettings * set, int player_id) {
 	set->setValue( "mplayer_additional_options", mplayer_additional_options);
 	set->setValue( "mplayer_additional_video_filters", mplayer_additional_video_filters);
 	set->setValue( "mplayer_additional_audio_filters", mplayer_additional_audio_filters);
-
-	set->setValue( "starting_time", starting_time );
 
 	set->setValue( "is264andHD", is264andHD );
 }
@@ -519,8 +514,6 @@ void MediaSettings::load(QSettings * set, int player_id) {
 	mplayer_additional_options = set->value( "mplayer_additional_options", mplayer_additional_options).toString();
 	mplayer_additional_video_filters = set->value( "mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
 	mplayer_additional_audio_filters = set->value( "mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
-
-	starting_time = set->value( "starting_time", starting_time ).toDouble();
 
 	is264andHD = set->value( "is264andHD", is264andHD ).toBool();
 

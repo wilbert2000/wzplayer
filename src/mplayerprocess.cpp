@@ -227,7 +227,6 @@ void MplayerProcess::parseLine(QByteArray ba) {
 			}
 #endif
 
-			emit receivedStartingTime(sec);
 			emit mplayerFullyLoaded();
 
 			emit receivedCurrentFrame(0); // Ugly hack: set the frame counter to 0

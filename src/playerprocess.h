@@ -129,7 +129,6 @@ signals:
 	void receivedAO(QString);
 	void receivedEndOfFile();
 	void mplayerFullyLoaded();
-	void receivedStartingTime(double sec);
 
 	void receivedCacheMessage(QString);
 	void receivedCacheEmptyMessage(QString);

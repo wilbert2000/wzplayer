@@ -370,7 +370,6 @@ protected slots:
 	void gotNoVideo();
 	void gotVO(QString);
 	void gotAO(QString);
-	void gotStartingTime(double);
 	void gotVideoBitrate(int);
 	void gotAudioBitrate(int);
 

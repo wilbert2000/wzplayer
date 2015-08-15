@@ -182,9 +182,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	connect( proc, SIGNAL(receivedEndOfFile()),
              this, SLOT(fileReachedEnd()), Qt::QueuedConnection );
 
-	connect( proc, SIGNAL(receivedStartingTime(double)),
-             this, SLOT(gotStartingTime(double)) );
-
 	connect( proc, SIGNAL(receivedVideoBitrate(int)), this, SLOT(gotVideoBitrate(int)) );
 	connect( proc, SIGNAL(receivedAudioBitrate(int)), this, SLOT(gotAudioBitrate(int)) );
 
@@ -3404,22 +3401,16 @@ void Core::setAudioEq9(int value) {
 
 
 void Core::changeCurrentSec(double sec) {
-    mset.current_sec = sec;
 
-	if (mset.starting_time != -1) {
-		mset.current_sec -= mset.starting_time;
-
-		// handle PTS rollover at MPEG-TS
-		if (mset.current_sec < 0 && mset.current_demuxer == "mpegts") {
-			mset.current_sec += 8589934592.0 / 90000.0;	// 2^33 / 90 kHz
-		}
-	}
+	// TODO: base playing state on flags, not timestamp change,
+	// then update this.
+	if (sec != mset.current_sec) {
+		mset.current_sec = sec;
 	
-	if (state() != Playing) {
-		setState(Playing);
-		qDebug("Core::changeCurrentSec: mplayer reports that now it's playing");
-		//emit mediaStartPlay();
-		//emit stateChanged(state());
+		if (state() != Playing) {
+			setState(Playing);
+			qDebug("Core::changeCurrentSec: mplayer reports that now it's playing");
+		}
 	}
 
 	emit showTime(mset.current_sec);
@@ -3449,15 +3440,6 @@ void Core::changeCurrentSec(double sec) {
 #endif
 }
 
-void Core::gotStartingTime(double time) {
-	qDebug("Core::gotStartingTime: %f", time);
-	qDebug("Core::gotStartingTime: current_sec: %f", mset.current_sec);
-	if ((mset.starting_time == -1.0) && (mset.current_sec == 0)) {
-		mset.starting_time = time;
-		qDebug("Core::gotStartingTime: starting time set to %f", time);
-	}
-}
-
 void Core::gotVideoBitrate(int b) {
 	mdat.video_bitrate = b;
 }
@@ -3468,8 +3450,8 @@ void Core::gotAudioBitrate(int b) {
 
 void Core::changePause() {
 	qDebug("Core::changePause: mplayer reports that it's paused");
+
 	setState(Paused);
-	//emit stateChanged(state());
 }
 
 void Core::changeDeinterlace(int ID) {
