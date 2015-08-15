@@ -131,6 +131,9 @@ private:
 
 	int dvd_current_title;
 	int br_current_title;
+
+	void notifyChanges();
+	void parseStatusLine(QRegExp &rx_av, const QString &line);
 };
 
 #endif

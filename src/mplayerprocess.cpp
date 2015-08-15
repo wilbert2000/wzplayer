@@ -160,6 +160,72 @@ static QRegExp rx_stream_title("^.* StreamTitle='(.*)';");
 static QRegExp rx_stream_title_and_url("^.* StreamTitle='(.*)';StreamUrl='(.*)';");
 
 
+void MplayerProcess::notifyChanges() {
+
+#if NOTIFY_SUB_CHANGES
+	if (subtitle_info_changed) {
+		qDebug("MplayerProcess::parseLine: subtitle_info_changed");
+		subtitle_info_changed = false;
+		subtitle_info_received = false;
+		emit subtitleInfoChanged(subs);
+	}
+	if (subtitle_info_received) {
+		qDebug("MplayerProcess::parseLine: subtitle_info_received");
+		subtitle_info_received = false;
+		emit subtitleInfoReceivedAgain(subs);
+	}
+#endif
+
+#if NOTIFY_AUDIO_CHANGES
+	if (audio_info_changed) {
+		qDebug("MplayerProcess::parseLine: audio_info_changed");
+		audio_info_changed = false;
+		emit audioInfoChanged(audios);
+	}
+#endif
+
+}
+
+void MplayerProcess::parseStatusLine(QRegExp &rx_av, const QString &line) {
+
+	double sec = rx_av.cap(1).toDouble();
+
+	if (notified_mplayer_is_running) {
+		notifyChanges();
+	} else {
+		qDebug("MplayerProcess::parseLine: starting sec: %f", sec);
+		if ( (md.n_chapters <= 0) && (dvd_current_title > 0) &&
+			 (md.titles.find(dvd_current_title) != -1) )
+		{
+			int idx = md.titles.find(dvd_current_title);
+			md.n_chapters = md.titles.itemAt(idx).chapters();
+			qDebug("MplayerProcess::parseLine: setting chapters to %d", md.n_chapters);
+		}
+
+#if CHECK_VIDEO_CODEC_FOR_NO_VIDEO
+		// Another way to find out if there's no video
+		if (md.video_codec.isEmpty()) {
+			md.novideo = true;
+			emit receivedNoVideo();
+		}
+#endif
+
+		emit mplayerFullyLoaded();
+
+		emit receivedCurrentFrame(0); // Ugly hack: set the frame counter to 0
+
+		notified_mplayer_is_running = true;
+	}
+
+	emit receivedCurrentSec( sec );
+
+	// Check for frame
+	if (rx_frame.indexIn(line) > -1) {
+		int frame = rx_frame.cap(1).toInt();
+		emit receivedCurrentFrame(frame);
+	}
+}
+
 void MplayerProcess::parseLine(QByteArray ba) {
 	//qDebug("MplayerProcess::parseLine: '%s'", ba.data() );
 
@@ -179,69 +245,8 @@ void MplayerProcess::parseLine(QByteArray ba) {
 	// Parse A: V: line
 	//qDebug("%s", line.toUtf8().data());
     if (rx_av.indexIn(line) > -1) {
-		double sec = rx_av.cap(1).toDouble();
-		//qDebug("cap(1): '%s'", rx_av.cap(1).toUtf8().data() );
-		//qDebug("sec: %f", sec);
-
-#if NOTIFY_SUB_CHANGES
-		if (notified_mplayer_is_running) {
-			if (subtitle_info_changed) {
-				qDebug("MplayerProcess::parseLine: subtitle_info_changed");
-				subtitle_info_changed = false;
-				subtitle_info_received = false;
-				emit subtitleInfoChanged(subs);
-			}
-			if (subtitle_info_received) {
-				qDebug("MplayerProcess::parseLine: subtitle_info_received");
-				subtitle_info_received = false;
-				emit subtitleInfoReceivedAgain(subs);
-			}
-		}
-#endif
-
-#if NOTIFY_AUDIO_CHANGES
-		if (notified_mplayer_is_running) {
-			if (audio_info_changed) {
-				qDebug("MplayerProcess::parseLine: audio_info_changed");
-				audio_info_changed = false;
-				emit audioInfoChanged(audios);
-			}
-		}
-#endif
-
-		if (!notified_mplayer_is_running) {
-			qDebug("MplayerProcess::parseLine: starting sec: %f", sec);
-			if ( (md.n_chapters <= 0) && (dvd_current_title > 0) && 
-                 (md.titles.find(dvd_current_title) != -1) )
-			{
-				int idx = md.titles.find(dvd_current_title);
-				md.n_chapters = md.titles.itemAt(idx).chapters();
-				qDebug("MplayerProcess::parseLine: setting chapters to %d", md.n_chapters);
-			}
-
-#if CHECK_VIDEO_CODEC_FOR_NO_VIDEO
-			// Another way to find out if there's no video
-			if (md.video_codec.isEmpty()) {
-				md.novideo = true;
-				emit receivedNoVideo();
-			}
-#endif
-
-			emit mplayerFullyLoaded();
-
-			emit receivedCurrentFrame(0); // Ugly hack: set the frame counter to 0
-
-			notified_mplayer_is_running = true;
-		}
-		
-	    emit receivedCurrentSec( sec );
-
-		// Check for frame
-        if (rx_frame.indexIn(line) > -1) {
-			int frame = rx_frame.cap(1).toInt();
-			//qDebug(" frame: %d", frame);
-			emit receivedCurrentFrame(frame);
-		}
+		parseStatusLine(rx_av, line);
+		return;
 	}
 	else {
 		// Emulates mplayer version in Ubuntu:
