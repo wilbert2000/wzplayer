@@ -3287,7 +3287,7 @@ void Core::incOSDScale() {
 	if (proc->isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale + 1);
 	} else {
-		changeOSDScale(pref->osd_scale + 0.20);
+		changeOSDScale(pref->osd_scale + 0.10);
 	}
 }
 
@@ -3295,7 +3295,7 @@ void Core::decOSDScale() {
 	if (proc->isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale - 1);
 	} else {
-		changeOSDScale(pref->osd_scale - 0.20);
+		changeOSDScale(pref->osd_scale - 0.10);
 	}
 }
 
