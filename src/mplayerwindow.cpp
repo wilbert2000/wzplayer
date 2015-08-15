@@ -339,7 +339,7 @@ void MplayerWindow::updateVideoWindow() {
 	emit moveOSD(o_pos);
 
 	// Update status with new size. After OSD to clear moveOSD msg.
-	if (video_size != last_video_size) {
+	if (!fullscreen && video_size != last_video_size) {
 		emit showMessage(tr("Video size %1 x %2").arg(QString::number(video_size.width())).arg(QString::number(video_size.height())));
 		last_video_size = video_size;
 	}
