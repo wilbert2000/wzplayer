@@ -3412,15 +3412,15 @@ void Core::setAudioEq9(int value) {
 
 void Core::changeCurrentSec(double sec) {
 
-	// TODO: base playing state on flags, not timestamp change,
-	// then update this.
-	if (sec != mset.current_sec) {
-		mset.current_sec = sec;
+	// Don't enter playing state if time stamp not changed
+	if (sec == mset.current_sec) {
+		return;
+	}
+	mset.current_sec = sec;
 	
-		if (state() != Playing) {
-			setState(Playing);
-			qDebug("Core::changeCurrentSec: mplayer reports that now it's playing");
-		}
+	if (state() != Playing) {
+		setState(Playing);
+		qDebug("Core::changeCurrentSec: mplayer reports that now it's playing");
 	}
 
 	emit showTime(mset.current_sec);

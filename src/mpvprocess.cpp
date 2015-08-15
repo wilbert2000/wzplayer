@@ -441,7 +441,7 @@ void MPVProcess::notifyTimestamp(double sec) {
 	// Pass current time stamp
 	emit receivedCurrentSec( sec );
 
-	// Emulate frames. mpv won't give them?
+	// Emulate frames. mpv won't give them.
 	// TODO: way to get them anyway for videos that do have frames
 	if (fps != 0.0) {
 		int frame = qRound(sec * fps);
@@ -457,67 +457,77 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
 	double sec = rx.cap(1).toDouble();
+#if DVDNAV_SUPPORT
 	double length = rx.cap(2).toDouble();
+#endif
 
 	bool paused = rx.cap(3) == "yes";
 	bool buffering = rx.cap(4) == "yes";
 	bool idle = rx.cap(5) == "yes";
 
+#if DVDNAV_SUPPORT
 	// Duration changed
 	if (length != md.duration) {
 		md.duration = length;
 		qDebug("MPVProcess::parseStatusLine: emit receivedDuration(%f)", length);
 		emit receivedDuration(length);
 	}
+#endif
 
-	// Always pass current time stamp. This is new behaviour and needed
-	// because a state change and timestamp change can coincide.
-	notifyTimestamp(sec);
+	// Because a time stamp change can coincide with a state change,
+	// it always needs to be signaled. In all cases it will be signaled first,
+	// except for the first playing frame, when it is done after emit
+	// mplayerFullyLoaded().
 
-	// State flags.
-	// Only fall through when playing.
 	if (paused) {
 		qDebug("MPVProcess::parseStatusLine: paused");
+		notifyTimestamp(sec);
 		receivedPause();
 		return;
 	}
 	if (buffering) {
 		qDebug("MPVProcess::parseStatusLine: buffering");
+		notifyTimestamp(sec);
 		receivedBuffering();
 		return;
 	}
 	if (idle) {
 		qDebug("MPVProcess::parseStatusLine: core idle");
+		notifyTimestamp(sec);
 		receivedBuffering();
 		return;
 	}
 
 	// Playing
 	if (notified_mplayer_is_running) {
-		// Playing except for first frame. Notify AV changes.
+		// Playing except for first frame
+		notifyTimestamp(sec);
 		notifyChanges();
-	} else {
-		// First and only run of state playing
-		notified_mplayer_is_running = true;
+		return;
+	}
 
-		// Have any video?
-		if (md.video_width == 0) {
-			md.novideo = true;
-			qDebug("MPVProcess::parseStatusLine: emit receivedNoVideo()");
-			emit receivedNoVideo();
-		}
+	// First and only run of state playing
+	notified_mplayer_is_running = true;
 
-		qDebug("MPVProcess::parseStatusLine: emit mplayerFullyLoaded()");
-		emit mplayerFullyLoaded();
+	// Have any video?
+	if (md.video_width == 0) {
+		md.novideo = true;
+		qDebug("MPVProcess::parseStatusLine: emit receivedNoVideo()");
+		emit receivedNoVideo();
+	}
 
-		// Clear frame counter if no fps
-		// TODO: check if not already cleared by frame counter
-		if (fps == 0.0) {
-			emit receivedCurrentFrame(0);
-		}
+	qDebug("MPVProcess::parseStatusLine: emit mplayerFullyLoaded()");
+	emit mplayerFullyLoaded();
 
-		// Wait some secs to ask for bitrate
-		QTimer::singleShot(12000, this, SLOT(requestBitrateInfo()));
+	// Wait some secs to ask for bitrate
+	QTimer::singleShot(12000, this, SLOT(requestBitrateInfo()));
+
+	notifyTimestamp(sec);
+
+	// Clear frame counter if no fps
+	// TODO: check if not already cleared by frame counter
+	if (fps == 0.0) {
+		emit receivedCurrentFrame(0);
 	}
 }
 
@@ -558,7 +568,7 @@ void MPVProcess::parseLine(QByteArray ba) {
 
 
 	line_count++;
-	if (line_count % 10000 == 0) {
+	if (line_count % 5000 == 0) {
 		qDebug("MPVProcess::parseLine: parsed %d lines", line_count);
 	}
 
