@@ -1787,9 +1787,12 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 
 	// OSD
-	// TODO: check added osd-scale-by-window
-	proc->setOption("osd-scale-by-window", "no");
-	proc->setOption("osd-scale", proc->isMPlayer() ? pref->subfont_osd_scale : pref->osd_scale);
+	if (proc->isMPlayer()) {
+		proc->setOption("osd-scale", pref->subfont_osd_scale);
+	} else {
+		proc->setOption("osd-scale-by-window", "no");
+		proc->setOption("osd-scale", pref->osd_scale);
+	}
 
 	// Subtitles fonts
 	if ((pref->use_ass_subtitles) && (pref->freetype_support)) {
