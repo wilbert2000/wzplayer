@@ -41,9 +41,11 @@ class QKeyEvent;
 class QTimer;
 
 // Zooming
-#define ZOOM_MIN 0.05
-#define ZOOM_MAX 10.0
-#define ZOOM_STEP 0.05
+const double ZOOM_MIN = 0.05;
+const double ZOOM_MAX = 8.0; // High max can blow up surface
+const double ZOOM_STEP = 0.05;
+
+const int PAN_STEP = 8;
 
 // Distance the mouse must travel before it is shown if not clicked
 #define SHOW_MOUSE_TRESHOLD 4
@@ -144,6 +146,7 @@ public:
 	void aboutToExitFullscreen();
 
 	void updateVideoWindow();
+	void moveVideo(int dx, int dy);
 
 	void setSizeGroup(MyActionGroup* group);
 
@@ -167,12 +170,6 @@ public slots:
 	void setLogoVisible(bool b);
 	void showLogo() { setLogoVisible(true); };
 	void hideLogo() { setLogoVisible(false); };
-
-	void panLeft();
-	void panRight();
-	void panUp();
-	void panDown();
-	// core.h has resetZoomPanAndSize slot
 
 #if LOGO_ANIMATION
 	void setAnimatedLogo(bool b) { animated_logo = b; };
@@ -254,7 +251,6 @@ private:
 	void setMouseTrackingInclChildren(QWidget *w);
 
 	void moveVideo(QPoint delta);
-	void moveVideo(int dx, int dy);
 
 	bool checkDragging(QMouseEvent * event);
 

@@ -4012,36 +4012,43 @@ void Core::changeAdapter(int n) {
 }
 #endif
 
-#if 0
-void Core::changeSize(int n) {
-	if (!pref->use_mplayer_window) {
-		pref->size_factor = (double) n / 100;
+void Core::forceResize() {
 
-		emit needResize(mset.win_width, mset.win_height);
-		updateWidgets();
+	// Overide user setting
+	int old_resize_method = pref->resize_method;
+	pref->resize_method = Preferences::Always;
+	emit needResize(mset.win_width, mset.win_height);
+	pref->resize_method = old_resize_method;
+}
+
+void Core::changeSize(int percentage) {
+	qDebug("Core::changeSize");
+
+	if (!pref->use_mplayer_window && !pref->fullscreen) {
+		pref->size_factor = (double) percentage / 100;
+		forceResize();
+		displayMessage( tr("Size %1%").arg(QString::number(percentage)) );
 	}
 }
 
-void Core::toggleDoubleSize() {
-	if (pref->size_factor != 1.0)
-		changeSize(100);
-	else
-		changeSize(200);
-}
-#endif
-
-void Core::saveZoomFactor() {
+void Core::getZoomFromMplayerWindow() {
 	mset.zoom_factor = mplayerwindow->zoomNormalScreen();
 	mset.zoom_factor_fullscreen = mplayerwindow->zoomFullScreen();
+}
+
+void Core::getPanFromMplayerWindow() {
+	mset.pan_offset = mplayerwindow->panNormalScreen();
+	mset.pan_offset_fullscreen = mplayerwindow->panFullScreen();
 }
 
 void Core::changeZoom(double factor) {
 	qDebug("Core::changeZoom: %f", factor);
 
 	// Kept between min and max by mplayerwindow->setZoom()
-	// Hence reread of factors by saveZoomFactors()
+	// Hence reread of factors
 	mplayerwindow->setZoom(factor);
-	saveZoomFactor();
+	getZoomFromMplayerWindow();
+
 	displayMessage( tr("Zoom: %1").arg(mplayerwindow->zoom()) );
 }
 
@@ -4050,20 +4057,44 @@ void Core::resetZoomPanAndSize() {
 
 	// Reset zoom and pan of video window
 	mplayerwindow->resetZoomAndPan();
-	// Reread settings
-	saveZoomFactor();
-	mset.pan_offset = mplayerwindow->panNormalScreen();
-	mset.pan_offset_fullscreen = mplayerwindow->panFullScreen();
+	// Reread modified settings
+	getZoomFromMplayerWindow();
+	getPanFromMplayerWindow();
 
 	if (!pref->fullscreen) {
 		pref->size_factor = 1.0;
-		int old_resize_method = pref->resize_method;
-		pref->resize_method = Preferences::Always;
-		emit needResize(mset.win_width, mset.win_height);
-		pref->resize_method = old_resize_method;
+		forceResize();
+		displayMessage( tr("Zoom, pan and size reset") );
+	} else {
+		displayMessage( tr("Zoom and pan reset") );
 	}
+}
 
-	displayMessage( tr("Zoom, pan and size reset") );
+void Core::pan(int dx, int dy) {
+	qDebug("Core::pan");
+
+	mplayerwindow->moveVideo(dx, dy);
+	getPanFromMplayerWindow();
+
+	QPoint current_pan = mplayerwindow->pan();
+	displayMessage( tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())) );
+}
+
+void Core::panLeft() {
+
+	pan( PAN_STEP, 0 );
+}
+
+void Core::panRight() {
+	pan( -PAN_STEP, 0 );
+}
+
+void Core::panUp() {
+	pan( 0, PAN_STEP );
+}
+
+void Core::panDown() {
+	pan( 0, -PAN_STEP );
 }
 
 void Core::autoZoom() {

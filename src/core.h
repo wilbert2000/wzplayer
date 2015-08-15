@@ -292,10 +292,7 @@ public slots:
 	void nextOSD();
 	void nextWheelFunction();
 
-	#if 0
-	void changeSize(int); // Size of the window
-	void toggleDoubleSize();
-	#endif
+	void changeSize(int percentage); // Size of the window
 	void changeZoom(double); // Zoom on mplayerwindow
 
 	void changeRotate(int r);
@@ -306,6 +303,12 @@ public slots:
 
 	void incZoom();
 	void decZoom();
+
+	void panLeft();
+	void panRight();
+	void panUp();
+	void panDown();
+
 	void resetZoomPanAndSize();
 	void autoZoom();
 	void autoZoomFromLetterbox(double video_aspect);
@@ -547,7 +550,10 @@ private:
 
 	QMap<QString,QString> forced_titles;
 
-	void saveZoomFactor();
+	void forceResize();
+	void getZoomFromMplayerWindow();
+	void getPanFromMplayerWindow();
+	void pan(int dx, int dy);
 };
 
 #endif

@@ -604,22 +604,6 @@ QPoint MplayerWindow::pan() {
 	return fullscreen ? pan_offset_fullscreen : pan_offset;
 }
 
-void MplayerWindow::panLeft() {
-	moveVideo( +16, 0 );
-}
-
-void MplayerWindow::panRight() {
-	moveVideo( -16, 0 );
-}
-
-void MplayerWindow::panUp() {
-	moveVideo( 0, +16 );
-}
-
-void MplayerWindow::panDown() {
-	moveVideo( 0, -16 );
-}
-
 void MplayerWindow::resetZoomAndPan() {
 	if (fullscreen) {
 		zoom_factor_fullscreen = 1.0;

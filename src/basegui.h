@@ -252,7 +252,6 @@ protected slots:
 #endif
 	virtual void togglePlayAction(Core::State);
 
-	void changeSizeFactor(int factor);
 	void toggleDoubleSize();
 	void resizeMainWindow(int w, int h, bool try_twice = true);
 	virtual void resizeWindow(int w, int h);

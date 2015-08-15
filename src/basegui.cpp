@@ -969,23 +969,22 @@ void BaseGui::createActions() {
 	playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
 	connect( playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()) );
 
-
-	// Pan and zoom video window
-	// WH: don't dare to touch these, fucking up people's keybindings etc,
-	// but bindings for panning should probably be the inverse of these if you
+	// Pan
+	//TODO: bindings for panning should probably be the inverse of these if you
 	// ever want to rename move to pan.
 	moveUpAct = new MyAction(Qt::ALT | Qt::Key_Up, this, "move_up");
-	connect( moveUpAct, SIGNAL(triggered()), mplayerwindow, SLOT(panDown()) );
+	connect( moveUpAct, SIGNAL(triggered()), core, SLOT(panDown()) );
 
 	moveDownAct = new MyAction(Qt::ALT | Qt::Key_Down, this, "move_down");
-	connect( moveDownAct, SIGNAL(triggered()), mplayerwindow, SLOT(panUp()) );
+	connect( moveDownAct, SIGNAL(triggered()), core, SLOT(panUp()) );
 
 	moveLeftAct = new MyAction(Qt::ALT | Qt::Key_Left, this, "move_left");
-	connect( moveLeftAct, SIGNAL(triggered()), mplayerwindow, SLOT(panRight()) );
+	connect( moveLeftAct, SIGNAL(triggered()), core, SLOT(panRight()) );
 
 	moveRightAct = new MyAction(Qt::ALT | Qt::Key_Right, this, "move_right");
-	connect( moveRightAct, SIGNAL(triggered()), mplayerwindow, SLOT(panLeft()) );
+	connect( moveRightAct, SIGNAL(triggered()), core, SLOT(panLeft()) );
 
+	// Zoom
 	incZoomAct = new MyAction(Qt::Key_E, this, "inc_zoom");
 	connect( incZoomAct, SIGNAL(triggered()), core, SLOT(incZoom()) );
 
@@ -1134,7 +1133,7 @@ void BaseGui::createActions() {
 	size400 = new MyActionGroupItem(this, sizeGroup, "&400%", "size_400", 400);
 	size100->setShortcut( Qt::CTRL | Qt::Key_1 );
 	size200->setShortcut( Qt::CTRL | Qt::Key_2 );
-	connect( sizeGroup, SIGNAL(activated(int)), this, SLOT(changeSizeFactor(int)) );
+	connect( sizeGroup, SIGNAL(activated(int)), core, SLOT(changeSize(int)) );
 	// mplayerwindow updates group when size changed
 	mplayerwindow->setSizeGroup(sizeGroup);
 
@@ -4998,21 +4997,10 @@ void BaseGui::gotCurrentTime(double sec) {
 	emit timeChanged( time );
 }
 
-void BaseGui::changeSizeFactor(int factor) {
-	// If fullscreen, don't resize!
-	if (pref->fullscreen) return;
-
-	if (!pref->use_mplayer_window) {
-		pref->size_factor = (double) factor / 100;
-		resizeMainWindow(core->mset.win_width, core->mset.win_height);
-		displayMessage(tr("Size %1%").arg(QString::number(factor)));
-	}
-}
-
 void BaseGui::toggleDoubleSize() {
 	if (pref->size_factor != 1.0)
-		changeSizeFactor(100);
-	else changeSizeFactor(200);
+		core->changeSize(100);
+	else core->changeSize(200);
 }
 
 // Slot called by signal needResize
