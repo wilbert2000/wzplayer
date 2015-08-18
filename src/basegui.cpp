@@ -2167,10 +2167,9 @@ void BaseGui::createCore() {
 
 	connect( core, SIGNAL(noFileToPlay()), this, SLOT(gotNoFileToPlay()) );
 
-#if NOTIFY_AUDIO_CHANGES
 	connect( core, SIGNAL(audioTracksChanged()),
              this, SLOT(enableActionsOnPlaying()) );
-#endif
+
 	connect( core, SIGNAL(mediaFinished()),
              this, SLOT(disableActionsOnStop()) );
 	connect( core, SIGNAL(mediaStoppedByUser()),

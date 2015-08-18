@@ -36,94 +36,101 @@ using namespace Global;
 static const QPoint default_osd_pos(25, 22);
 static const QPoint max_osd_pos(300, 600);
 
+// How to recognise eof
+static QRegExp rx_endoffile("^Exiting... \\(End of file\\)");
+
 MPVProcess::MPVProcess(QObject * parent)
-	: PlayerProcess(parent)
-	, notified_mplayer_is_running(false)
-	, received_end_of_file(false)
-	, last_sub_id(-1)
-	, mplayer_svn(-1) // Not found yet
+	: PlayerProcess(parent, &rx_endoffile)
 	, verbose(false)
-	, line_count(0)
-	, fps(0.0)
-#if NOTIFY_SUB_CHANGES
 	, subtitle_info_received(false)
 	, subtitle_info_changed(false)
-#endif
-#if NOTIFY_AUDIO_CHANGES
 	, audio_info_changed(false)
-#endif
 #if NOTIFY_VIDEO_CHANGES
 	, video_info_changed(false)
 #endif
-#if NOTIFY_CHAPTER_CHANGES
 	, chapter_info_changed(false)
-#endif
-	, dvd_current_title(-1)
-	, br_current_title(-1)
 	, osd_pos(default_osd_pos)
 	, osd_centered_x(false)
 	, osd_centered_y(false)
 {
 	player_id = PlayerID::MPV;
-
-	connect( this, SIGNAL(lineAvailable(QByteArray)),
-			 this, SLOT(parseLine(QByteArray)) );
-
-	connect( this, SIGNAL(finished(int,QProcess::ExitStatus)), 
-             this, SLOT(processFinished(int,QProcess::ExitStatus)) );
-
-	connect( this, SIGNAL(error(QProcess::ProcessError)),
-             this, SLOT(gotError(QProcess::ProcessError)) );
-
-	//int svn = MplayerVersion::mplayerVersion("mpv unknown version (C)");
 }
 
 MPVProcess::~MPVProcess() {
 }
 
-bool MPVProcess::start() {
-	md.reset();
-	notified_mplayer_is_running = false;
-	fps = 0.0;
-	prev_frame = -1;
-	last_sub_id = -1;
-	mplayer_svn = -1; // Not found yet
-	received_end_of_file = false;
+bool MPVProcess::startPlayer() {
 
-#if NOTIFY_SUB_CHANGES
 	subs.clear();
 	subtitle_info_received = false;
 	subtitle_info_changed = false;
-#endif
 
-#if NOTIFY_AUDIO_CHANGES
 	audios.clear();
 	audio_info_changed = false;
-#endif
 
 #if NOTIFY_VIDEO_CHANGES
 	videos.clear();
 	video_info_changed = false;
 #endif
 
-#if NOTIFY_CHAPTER_CHANGES
 	chapters.clear();
 	chapter_info_changed = false;
-#endif
-
-	dvd_current_title = -1;
-	br_current_title = -1;
 
 	osd_pos = default_osd_pos;
 	osd_centered_x = false;
 	osd_centered_y = false;
 
-	MyProcess::start();
-
-	return waitForStarted();
+	return PlayerProcess::startPlayer();
 }
 
-#if NOTIFY_VIDEO_CHANGES || NOTIFY_AUDIO_CHANGES || NOTIFY_SUB_CHANGES
+void MPVProcess::updateAudioTrack(int ID,
+								  const QString & name,
+								  const QString & lang) {
+	qDebug("MPVProcess::updateAudioTrack: audio id: %d, name: '%s', lang: '%s'",
+		   ID, name.toUtf8().constData(), lang.toUtf8().constData());
+
+	int idx = audios.find(ID);
+	if (idx == -1) {
+		// Not found: add it
+		audio_info_changed = true;
+		audios.addName(ID, name);
+		audios.addLang(ID, lang);
+	} else {
+		// Existing track
+		if (audios.itemAt(idx).name() != name) {
+			audio_info_changed = true;
+			audios.addName(ID, name);
+		}
+		if (audios.itemAt(idx).lang() != lang) {
+			audio_info_changed = true;
+			audios.addLang(ID, lang);
+		}
+	}
+}
+
+void MPVProcess::updateSubtitleTrack(int ID, const QString & name, const QString & lang) {
+	qDebug("MPVProcess::updateSubtitleTrack: ID: %d", ID);
+
+	int idx = subs.find(SubData::Sub, ID);
+	if (idx == -1) {
+		subtitle_info_changed = true;
+		subs.add(SubData::Sub, ID);
+		subs.changeName(SubData::Sub, ID, name);
+		subs.changeLang(SubData::Sub, ID, lang);
+	}
+	else {
+		// Track already existed
+		if (subs.itemAt(idx).name() != name) {
+			subtitle_info_changed = true;
+			subs.changeName(SubData::Sub, ID, name);
+		}
+		if (subs.itemAt(idx).lang() != lang) {
+			subtitle_info_changed = true;
+			subs.changeLang(SubData::Sub, ID, lang);
+		}
+	}
+}
+
 void MPVProcess::parseTrackInfo(QRegExp &rx) {
 
 	int ID = rx.cap(3).toInt();
@@ -163,154 +170,21 @@ void MPVProcess::parseTrackInfo(QRegExp &rx) {
 	}
 
 	if (type == "audio") {
-#if NOTIFY_AUDIO_CHANGES
 		updateAudioTrack(ID, name, lang);
-#endif
 		return;
 	}
 
 	if (type == "sub") {
-#if NOTIFY_SUB_CHANGES
 		updateSubtitleTrack(ID, name, lang);
-#endif
 	}
 }
-#endif
 
-void MPVProcess::parseVideoProperty(const QString &name, const QString &value) {
-
-	if (name == "WIDTH") {
-		md.video_width = value.toInt();
-		qDebug("MPVProcess::parseVideoProperty: md.video_width set to %d", md.video_width);
-		return;
-	}
-	if (name == "HEIGHT") {
-		md.video_height = value.toInt();
-		qDebug("MPVProcess::parseVideoProperty: md.video_height set to %d", md.video_height);
-		return;
-	}
-	if (name == "ASPECT") {
-		md.video_aspect = value.toDouble();
-		if (md.video_aspect == 0.0 && md.video_height != 0) {
-			md.video_aspect = (double) md.video_width / md.video_height;
-		}
-		qDebug("MPVProcess::parseVideoProperty: md.video_aspect set to %f", md.video_aspect);
-		return;
-	}
-	if (name == "FPS") {
-		md.video_fps = value;
-		fps = value.toDouble();
-		qDebug() << "MPVProcess::parseVideoProperty: md.video_fps set to" << md.video_fps;
-		return;
-	}
-	if (name == "BITRATE") {
-		int bitrate = value.toInt();
-		qDebug("MPVProcess::parseVideoProperty: emit receivedVideoBitrate(%d)", bitrate);
-		emit receivedVideoBitrate(bitrate);
-		return;
-	}
-	if (name == "FORMAT") {
-		md.video_format = value;
-		qDebug() << "MPVProcess::parseVideoProperty: md.video_format set to" << md.video_format;
-		return;
-	}
-	// If no video, the video codec regexp does not match
-	if (name == "CODEC") {
-		md.video_codec = value;
-		qDebug() << "MPVProcess::parseVideoProperty: md.video_codec set to" << md.video_codec;
-		return;
-	}
-
-	qWarning("MVPProcess::parseVideoProperty: unexpected property INFO_VIDEO_%s=%s",
-		name.toUtf8().constData(), value.toUtf8().constData());
-}
-
-void MPVProcess::parseAudioProperty(const QString &name, const QString &value) {
-
-	if (name == "BITRATE") {
-		int bitrate = value.toInt();
-		qDebug("MPVProcess::parseAudioProperty: emit receivedAudioBitrate(%d)", bitrate);
-		emit receivedAudioBitrate(bitrate);
-		return;
-	}
-	if (name == "FORMAT") {
-		md.audio_format = value;
-		qDebug() << "MPVProcess::parseAudioProperty: md.audio_format set to" << md.audio_format;
-		return;
-	}
-	if (name == "RATE") {
-		md.audio_rate = value.toInt();
-		qDebug("MPVProcess::parseAudioProperty: md.audio_rate set to %d", md.audio_rate);
-		return;
-	}
-	if (name == "NCH") {
-		md.audio_nch = value.toInt();
-		qDebug("MPVProcess::parseAudioProperty: md.audio_nch set to %d", md.audio_nch);
-		return;
-	}
-	// If no audio, the audio codec regexp does not match
-	if (name == "CODEC") {
-		md.audio_codec = value;
-		qDebug() << "MPVProcess::parseAudioProperty: md.audio_codec set to" << md.audio_codec;
-		return;
-	}
-
-	qWarning("MVPProcess::parseAudioProperty: unexpected property INFO_AUDIO_%s=%s",
-		name.toUtf8().constData(), value.toUtf8().constData());
-}
-
-
-void MPVProcess::parseMetaDataProperty(const QString &name, const QString &value) {
-
-	if (name == "TITLE") {
-		if (!value.isEmpty()) md.clip_name = value;
-		return;
-	}
-	if (name == "ARTIST") {
-		if (!value.isEmpty()) md.clip_artist = value;
-		return;
-	}
-	if (name == "ALBUM") {
-		if (!value.isEmpty()) md.clip_album = value;
-		return;
-	}
-	if (name == "GENRE") {
-		if (!value.isEmpty()) md.clip_genre = value;
-		return;
-	}
-	if (name == "DATE") {
-		if (!value.isEmpty()) md.clip_date = value;
-		return;
-	}
-	if (name == "TRACK") {
-		if (!value.isEmpty()) md.clip_track = value;
-		return;
-	}
-	if (name == "COPYRIGHT") {
-		if (!value.isEmpty()) md.clip_copyright = value;
-		return;
-	}
-
-	qWarning("MVPProcess::parseMetaDataProperty: unexpected property METADATA_%s=%s",
-		name.toUtf8().constData(), value.toUtf8().constData());
-}
-
-void MPVProcess::parseProperty(const QString &name, const QString &value) {
+bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "MPV_VERSION") {
 		mpv_version = value;
 		qDebug() << "MPVProcess::parseProperty: mpv_version set to" << mpv_version;
-		return;
-	}
-	if (name == "LENGTH") {
-		md.duration = value.toDouble();
-		qDebug("MPVProcess::parseProperty: md.duration set to %f", md.duration);
-		return;
-	}
-	if (name == "DEMUXER") {
-		md.demuxer = value;
-		qDebug() << "MPVProcess::parseProperty: md.demuxer set to" << md.demuxer;
-		return;
+		return true;
 	}
 	if (name == "TITLES") {
 		int n_titles = value.toInt();
@@ -318,34 +192,16 @@ void MPVProcess::parseProperty(const QString &name, const QString &value) {
 			md.titles.addName(id, QString::number(id + 1));
 		}
 		qDebug("MPVProcess::parseProperty: added %d titles", n_titles);
-		return;
-	}
-	if (name == "CHAPTERS") {
-		md.n_chapters = value.toInt();
-
-#ifdef TOO_CHAPTERS_WORKAROUND
-		if (md.n_chapters > 1000) {
-			qDebug("MPVProcess::parseProperty: warning too many chapters: %d", md.n_chapters);
-			qDebug("                           chapters will be ignored");
-			md.n_chapters = 0;
-		}
-#endif
-
-		for (int n = 0; n < md.n_chapters; n++) {
-			writeToStdin(QString("print_text INFO_CHAPTER_%1_NAME=${chapter-list/%1/title}").arg(n));
-		}
-		return;
+		return true;
 	}
 	if (name == "MEDIA_TITLE") {
 		if (!value.isEmpty() && value != "mp4" && !value.startsWith("mp4&")) {
 			md.clip_name = value;
 			qDebug() << "MPVProcess::parseProperty: set md.clip_name to" << md.clip_name;
 		}
-		return;
+		return true;
 	}
 	if (name == "TRACKS_COUNT") {
-
-#if NOTIFY_VIDEO_CHANGES || NOTIFY_AUDIO_CHANGES || NOTIFY_SUB_CHANGES
 		int tracks = value.toInt();
 		for (int n = 0; n < tracks; n++) {
 			writeToStdin(QString("print_text \"INFO_TRACK_%1: "
@@ -355,48 +211,34 @@ void MPVProcess::parseProperty(const QString &name, const QString &value) {
 				"'${track-list/%1/title:}' "
 				"${track-list/%1/selected}\"").arg(n));
 		}
-#endif
-
-		return;
+		return true;
 	}
 
-	qWarning("MVPProcess::parseProperty: unexpected property INFO_%s=%s",
-		name.toUtf8().constData(), value.toUtf8().constData());
-}
+	bool parsed = PlayerProcess::parseProperty(name, value);
 
-void MPVProcess::parseSubs(int id, const QString &lang, const QString &title) {
-	qDebug("MPVProcess::parseSubs: sub id: %d, lang: '%s', name: '%s'", id, lang.toUtf8().constData(), title.toUtf8().constData());
-
-#if NOTIFY_SUB_CHANGES
-	updateSubtitleTrack(id, title, lang);
-#else
-	if (md.subs.find(SubData::Sub, id) == -1) {
-		md.subs.add(SubData::Sub, id);
-		md.subs.changeName(SubData::Sub, id, title);
-		md.subs.changeLang(SubData::Sub, id, lang);
+	if (name == "CHAPTERS") {
+		// Ask for chapter info
+		for (int n = 0; n < md.n_chapters; n++) {
+			writeToStdin(QString("print_text INFO_CHAPTER_%1_NAME=${chapter-list/%1/title}").arg(n));
+		}
 	}
-#endif
 
+	return parsed;
 }
 
 void MPVProcess::parseChapterName(int id, QString title) {
 
 	if (title.isEmpty()) title = QString::number(id + 1);
 
-#if NOTIFY_CHAPTER_CHANGES
 	chapters.addName(id, title);
 	chapter_info_changed = true;
-#else
-	md.chapters.addName(id, title);
-#endif
 
-	qDebug("MPVProcess::parseLine: chapter id: %d title: '%s'",
-		id, title.toUtf8().constData());
+	qDebug("MPVProcess::parseChapterName: added chapter id: %d title: '%s'",
+		   id, title.toUtf8().constData());
 }
 
 void MPVProcess::notifyChanges() {
 
-#if NOTIFY_SUB_CHANGES
 	if (subtitle_info_changed) {
 		qDebug("MPVProcess::notifyChanges: subtitle_info_changed");
 		subtitle_info_changed = false;
@@ -408,15 +250,12 @@ void MPVProcess::notifyChanges() {
 		subtitle_info_received = false;
 		emit subtitleInfoReceivedAgain(subs);
 	}
-#endif
 
-#if NOTIFY_AUDIO_CHANGES
 	if (audio_info_changed) {
 		qDebug("MPVProcess::notifyChanges: audio_info_changed");
 		audio_info_changed = false;
 		emit audioInfoChanged(audios);
 	}
-#endif
 
 #if NOTIFY_VIDEO_CHANGES
 	if (video_info_changed) {
@@ -426,14 +265,11 @@ void MPVProcess::notifyChanges() {
 	}
 #endif
 
-#if NOTIFY_CHAPTER_CHANGES
 	if (chapter_info_changed) {
 		qDebug("MPVProcess::notifyChanges: chapter_info_changed");
 		chapter_info_changed = false;
 		emit chaptersChanged(chapters);
 	}
-#endif
-
 }
 
 void MPVProcess::notifyTimestamp(double sec) {
@@ -456,11 +292,12 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 	// Parse custom status line
 	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
+	// Time stamp
 	double sec = rx.cap(1).toDouble();
 #if DVDNAV_SUPPORT
 	double length = rx.cap(2).toDouble();
 #endif
-
+	// Status flags
 	bool paused = rx.cap(3) == "yes";
 	bool buffering = rx.cap(4) == "yes";
 	bool idle = rx.cap(5) == "yes";
@@ -474,10 +311,9 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 	}
 #endif
 
-	// Because a time stamp change can coincide with a state change,
-	// it always needs to be signaled. In all cases it will be signaled first,
-	// except for the first playing frame, when it is done after emit
-	// mplayerFullyLoaded().
+	// Because a time stamp change can coincide with a state change, it always
+	// needs to be signaled. In all cases it will be signaled first, except for
+	// the first playing frame, when it is done after emit playerFullyLoaded().
 
 	if (paused) {
 		qDebug("MPVProcess::parseStatusLine: paused");
@@ -499,7 +335,7 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 	}
 
 	// Playing
-	if (notified_mplayer_is_running) {
+	if (notified_player_is_running) {
 		// Playing except for first frame
 		notifyTimestamp(sec);
 		notifyChanges();
@@ -507,17 +343,17 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 	}
 
 	// First and only run of state playing
-	notified_mplayer_is_running = true;
+	notified_player_is_running = true;
 
 	// Have any video?
-	if (md.video_width == 0) {
+	if (md.video_width <= 0) {
 		md.novideo = true;
 		qDebug("MPVProcess::parseStatusLine: emit receivedNoVideo()");
 		emit receivedNoVideo();
 	}
 
-	qDebug("MPVProcess::parseStatusLine: emit mplayerFullyLoaded()");
-	emit mplayerFullyLoaded();
+	qDebug("MPVProcess::parseStatusLine: emit playerFullyLoaded()");
+	emit playerFullyLoaded();
 
 	// Wait some secs to ask for bitrate
 	QTimer::singleShot(12000, this, SLOT(requestBitrateInfo()));
@@ -525,64 +361,45 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 	notifyTimestamp(sec);
 
 	// Clear frame counter if no fps
-	// TODO: check if not already cleared by frame counter
 	if (fps == 0.0) {
 		emit receivedCurrentFrame(0);
 	}
 }
 
-void MPVProcess::parseLine(QByteArray ba) {
+bool MPVProcess::parseLine(QString &line) {
 
-	static QRegExp rx_mpv_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
-	static QRegExp rx_mpv_playing("^Playing:.*|^\\[ytdl_hook\\].*");
+	// Custom status line. Make sure it matches!
+	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
+	static QRegExp rx_playing("^Playing:.*|^\\[ytdl_hook\\].*");
 
 	#if !NOTIFY_VIDEO_CHANGES
-	static QRegExp rx_mpv_video("^.* Video\\s+--vid=(\\d+)([ \\(\\)\\*]+)('(.*)'|)");
+	static QRegExp rx_video("^.*Video\\s+--vid=(\\d+)([ \\(\\)\\*]+)('(.*)'|)");
 	#endif
 
-	static QRegExp rx_mpv_audio("^.* Audio\\s+--aid=(\\d+)( --alang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
+	static QRegExp rx_audio("^.*Audio\\s+--aid=(\\d+)( --alang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
 
-	static QRegExp rx_mpv_dsize("^INFO_VIDEO_DSIZE=(\\d+)x(\\d+)");
-	static QRegExp rx_mpv_vo("^VO: \\[(.*)\\]");
-	static QRegExp rx_mpv_ao("^AO: \\[(.*)\\]");
+	static QRegExp rx_dsize("^INFO_VIDEO_DSIZE=(\\d+)x(\\d+)");
+	static QRegExp rx_vo("^VO: \\[(.*)\\]");
+	static QRegExp rx_ao("^AO: \\[(.*)\\]");
 
-	static QRegExp rx_mpv_video_codec("^INFO_VIDEO_CODEC=(.*) \\[(.*)\\]");
-	static QRegExp rx_mpv_video_property("^INFO_VIDEO_([A-Z]+)=(.*)");
-	static QRegExp rx_mpv_audio_codec("^INFO_AUDIO_CODEC=(.*) \\[(.*)\\]");
-	static QRegExp rx_mpv_audio_property("^INFO_AUDIO_([A-Z]+)=(.*)");
+	static QRegExp rx_video_codec("^INFO_VIDEO_CODEC=\\s*(.*) \\[(.*)\\]");
+	static QRegExp rx_video_property("^INFO_VIDEO_([A-Z]+)=\\s*(.*)");
+	static QRegExp rx_audio_codec("^INFO_AUDIO_CODEC=\\s*(.*) \\[(.*)\\]");
+	static QRegExp rx_audio_property("^INFO_AUDIO_([A-Z]+)=\\s*(.*)");
 
-	static QRegExp rx_mpv_meta_data("^METADATA_([A-Z]+)=(.*)");
+	static QRegExp rx_meta_data("^METADATA_([A-Z]+)=\\s*(.*)");
 
-	static QRegExp rx_mpv_subs("^.* Subs\\s+--sid=(\\d+)( --slang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
+	static QRegExp rx_subs("^.*Subs\\s+--sid=(\\d+)( --slang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
 
-	static QRegExp rx_mpv_trackinfo("^INFO_TRACK_(\\d+): (audio|video|sub) (\\d+) '(.*)' '(.*)' (yes|no)");
-	static QRegExp rx_mpv_chaptername("^INFO_CHAPTER_(\\d+)_NAME=(.*)");
+	static QRegExp rx_trackinfo("^INFO_TRACK_(\\d+): (audio|video|sub) (\\d+) '(.*)' '(.*)' (yes|no)");
+	static QRegExp rx_chaptername("^INFO_CHAPTER_(\\d+)_NAME=\\s*(.*)");
 
 	#if DVDNAV_SUPPORT
-	static QRegExp rx_mpv_switch_title("^\\[dvdnav\\] DVDNAV, switched to title: (\\d+)");
+	static QRegExp rx_switch_title("^\\[dvdnav\\] DVDNAV, switched to title:\\s+(\\d+)");
 	#endif
 
-	static QRegExp rx_mpv_property("^INFO_([A-Z_]+)=(.*)");
-	static QRegExp rx_mpv_forbidden("HTTP error 403 Forbidden");
-	static QRegExp rx_mpv_endoffile("^Exiting... \\(End of file\\)");
-
-
-	line_count++;
-	if (line_count % 5000 == 0) {
-		qDebug("MPVProcess::parseLine: parsed %d lines", line_count);
-	}
-
-	if (ba.isEmpty()) return;
-
-#if COLOR_OUTPUT_SUPPORT
-	QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
-#else
-	#ifdef Q_OS_WIN
-	QString line = QString::fromUtf8(ba);
-	#else
-	QString line = QString::fromLocal8Bit(ba);
-	#endif
-#endif
+	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
+	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
 
 	if (verbose) {
 		line = line.replace("[statusline] ", "");
@@ -590,181 +407,146 @@ void MPVProcess::parseLine(QByteArray ba) {
 	}
 
 	// Parse custom status line
-	if (rx_mpv_status.indexIn(line) > -1) {
-		parseStatusLine(rx_mpv_status);
-		return;
+	if (rx_status.indexIn(line) >= 0) {
+		parseStatusLine(rx_status);
+		return true;
 	}
 
-	emit lineAvailable(line);
-
-	qDebug("MPVProcess::parseLine: '%s'", line.toUtf8().data() );
+	if (PlayerProcess::parseLine(line))
+		return true;
 
 	// Playing
-	if (rx_mpv_playing.indexIn(line) > -1) {
+	if (rx_playing.indexIn(line) >= 0) {
 		qDebug("MVPProcess::parseLine: emit receivedPlaying()");
 		emit receivedPlaying();
-		return;
+		return true;
 	}
 
 #if !NOTIFY_VIDEO_CHANGES
 	// Video id and name
-	if (rx_mpv_video.indexIn(line) > -1) {
-		int id = rx_mpv_video.cap(1).toInt();
-		QString title = rx_mpv_video.cap(4);
-		qDebug("MPVProcess::parseLine: video id: %d, name: '%s'",
+	if (rx_video.indexIn(line) >= 0) {
+		int id = rx_video.cap(1).toInt();
+		QString title = rx_video.cap(4).trimmed();
+		md.videos.addName(id, title);
+		qDebug("MPVProcess::parseLine: added video id: %d, name: '%s'",
 			   id, title.toUtf8().constData());
-		md.videos.addName(id, title);\
-		return;
+		return true;
 	}
 #endif
 
-	// Audio id, lang and name
-	if (rx_mpv_audio.indexIn(line) > -1) {
-		int id = rx_mpv_audio.cap(1).toInt();
-		QString lang = rx_mpv_audio.cap(3);
-		QString title = rx_mpv_audio.cap(6);
-		qDebug("MPVProcess::parseLine: audio id: %d, lang: '%s', name: '%s'",
-			   id, lang.toUtf8().constData(), title.toUtf8().constData());
-
-#if NOTIFY_AUDIO_CHANGES
-		updateAudioTrack(id, title, lang);
-#else
-		if (md.audios.find(id) == -1) {
-			md.audios.addID(id);
-			md.audios.addName(id, title);
-			md.audios.addLang(id, lang);
-		}
-#endif
-
-		return;
-	}
-
-	// Window resolution w x h
-	if (rx_mpv_dsize.indexIn(line) > -1) {
-		int w = rx_mpv_dsize.cap(1).toInt();
-		int h = rx_mpv_dsize.cap(2).toInt();
-		qDebug("MPVProcess::parseLine: emit receivedWindowResolution(%d, %d)", w, h);
-		emit receivedWindowResolution(w, h);
-		return;
+	// Audio id, name and lang
+	if (rx_audio.indexIn(line) >= 0) {
+		updateAudioTrack(rx_audio.cap(1).toInt(),
+						 rx_audio.cap(6),
+						 rx_audio.cap(3));
+		return true;
 	}
 
 	// VO
-	if (rx_mpv_vo.indexIn(line) > -1) {
-		QString vo = rx_mpv_vo.cap(1);
+	if (rx_vo.indexIn(line) >= 0) {
+		QString vo = rx_vo.cap(1);
 		qDebug() << "MVPProcess::parseLine: emit receivedVO(" << vo << ")";
 		emit receivedVO(vo);
 		// Ask for window resolution
 		writeToStdin("print_text INFO_VIDEO_DSIZE=${=dwidth}x${=dheight}");
-		return;
+		return true;
+	}
+
+	// Window resolution w x h
+	if (rx_dsize.indexIn(line) >= 0) {
+		int w = rx_dsize.cap(1).toInt();
+		int h = rx_dsize.cap(2).toInt();
+		qDebug("MPVProcess::parseLine: emit receivedWindowResolution(%d, %d)", w, h);
+		emit receivedWindowResolution(w, h);
+		return true;
 	}
 
 	// AO
-	if (rx_mpv_ao.indexIn(line) > -1) {
-		QString ao = rx_mpv_ao.cap(1);
+	if (rx_ao.indexIn(line) >= 0) {
+		QString ao = rx_ao.cap(1);
 		qDebug() << "MVPProcess::parseLine: emit receivedAO(" << ao << ")";
 		emit receivedAO(ao);
-		return;
+		return true;
 	}
 
-	// Video codec
-	if (rx_mpv_video_codec.indexIn(line) > -1) {
-		md.video_codec = rx_mpv_video_codec.cap(2);
+	// Video codec best match.
+	// Fall back to generic ID_VIDEO_CODEC if match fails.
+	if (rx_video_codec.indexIn(line) >= 0) {
+		md.video_codec = rx_video_codec.cap(2);
 		qDebug() << "MPVProcess::parseLine: md.video_codec set to" << md.video_codec;
-		return;
+		return true;
 	}
 
-	// Video property name and value
-	if (rx_mpv_video_property.indexIn(line) > -1) {
-		parseVideoProperty(rx_mpv_video_property.cap(1),
-						   rx_mpv_video_property.cap(2));
-		return;
+	// Video property INFO_VIDEO_name and value
+	if (rx_video_property.indexIn(line) >= 0) {
+		return parseVideoProperty(rx_video_property.cap(1),
+								  rx_video_property.cap(2));
 	}
 
-	// Audio codec
-	if (rx_mpv_audio_codec.indexIn(line) > -1) {
-		md.audio_codec = rx_mpv_audio_codec.cap(2);
+	// Audio codec best match
+	// Fall back to generic ID_AUDIO_CODEC if match fails.
+	if (rx_audio_codec.indexIn(line) >= 0) {
+		md.audio_codec = rx_audio_codec.cap(2);
 		qDebug() << "MPVProcess::parseLine: md.audio_codec set to" << md.audio_codec;
-		return;
+		return true;
 	}
 
-	// Audio property name and value
-	if (rx_mpv_audio_property.indexIn(line) > -1) {
-		parseAudioProperty(rx_mpv_audio_property.cap(1),
-						   rx_mpv_audio_property.cap(2));
-		return;
-	}
-
-	// Meta data name and value
-	if (rx_mpv_meta_data.indexIn(line) > -1) {
-		parseMetaDataProperty(rx_mpv_meta_data.cap(1), rx_mpv_meta_data.cap(2));
-		return;
+	// Audio property INFO_AUDIO_name and value
+	if (rx_audio_property.indexIn(line) >= 0) {
+		return parseAudioProperty(rx_audio_property.cap(1),
+								  rx_audio_property.cap(2));
 	}
 
 	// Subtitles id, lang and title
-	if (rx_mpv_subs.indexIn(line) > -1) {
-		parseSubs(rx_mpv_subs.cap(1).toInt(), rx_mpv_subs.cap(3),
-				  rx_mpv_subs.cap(6));
-		return;
+	if (rx_subs.indexIn(line) >= 0) {
+		updateSubtitleTrack(rx_subs.cap(1).toInt(),
+							rx_subs.cap(6),
+							rx_subs.cap(3));
+		return true;
 	}
 
-#if NOTIFY_VIDEO_CHANGES || NOTIFY_AUDIO_CHANGES || NOTIFY_SUB_CHANGES
 	// Track info
-	if (rx_mpv_trackinfo.indexIn(line) > -1) {
-		parseTrackInfo(rx_mpv_trackinfo);
-		return;
+	if (rx_trackinfo.indexIn(line) >= 0) {
+		parseTrackInfo(rx_trackinfo);
+		return true;
 	}
-#endif
 
 	// Chapter id and title
-	if (rx_mpv_chaptername.indexIn(line) > -1) {
-		parseChapterName(rx_mpv_chaptername.cap(1).toInt(),
-						 rx_mpv_chaptername.cap(2));
-		return;
+	if (rx_chaptername.indexIn(line) >= 0) {
+		parseChapterName(rx_chaptername.cap(1).toInt(),
+						 rx_chaptername.cap(2));
+		return true;
+	}
+
+	// Property INFO_name and value
+	if (rx_property.indexIn(line) >= 0) {
+		return parseProperty(rx_property.cap(1), rx_property.cap(2));
+	}
+
+	// Meta data METADATA_name and value
+	if (rx_meta_data.indexIn(line) >= 0) {
+		return parseMetaDataProperty(rx_meta_data.cap(1), rx_meta_data.cap(2));
 	}
 
 #if DVDNAV_SUPPORT
-	if (rx_mpv_switch_title.indexIn(line) > -1) {
-		int title = rx_mpv_switch_title.cap(1).toInt();
+	if (rx_switch_title.indexIn(line) >= 0) {
+		int title = rx_switch_title.cap(1).toInt();
 		qDebug("MPVProcess::parseLine: title changed to %d", title);
 		// Ask for chapter info
 		// Wait 10 secs. because it can take a while until the title start to play
 		QTimer::singleShot(10000, this, SLOT(requestChapterInfo()));
-		return;
+		return true;
 	}
 #endif
 
-	// General property name and value
-	if (rx_mpv_property.indexIn(line) > -1) {
-		parseProperty(rx_mpv_property.cap(1), rx_mpv_property.cap(2));
-		return;
-	}
-
 	// HTTP error 403 Forbidden
-	if (rx_mpv_forbidden.indexIn(line) > -1) {
+	if (rx_forbidden.indexIn(line) >= 0) {
 		qDebug("MVPProcess::parseLine: 403 forbidden");
 		emit receivedForbiddenText();
-		return;
+		return true;
 	}
 
-	// End of file
-	if (rx_mpv_endoffile.indexIn(line) > -1)  {
-		qDebug("MVPProcess::parseLine: detected end of file");
-		if (!received_end_of_file) {
-			// In case of playing VCDs or DVDs, maybe the first title
-			// is not playable, so the GUI doesn't get the info about
-			// available titles. So if we received the end of file
-			// first let's pretend the file has started so the GUI can have
-			// the data.
-			if ( !notified_mplayer_is_running) {
-				emit mplayerFullyLoaded();
-			}
-			// Send signal once the process is finished, not now!
-			received_end_of_file = true;
-		}
-		return;
-	}
-
-	qDebug("MPVProcess::parseLine: ignored '%s'", line.toUtf8().data());
+	return false;
 }
 
 void MPVProcess::requestChapterInfo() {
@@ -774,68 +556,6 @@ void MPVProcess::requestChapterInfo() {
 void MPVProcess::requestBitrateInfo() {
 	writeToStdin("print_text INFO_VIDEO_BITRATE=${=video-bitrate}");
 	writeToStdin("print_text INFO_AUDIO_BITRATE=${=audio-bitrate}");
-}
-
-#if NOTIFY_AUDIO_CHANGES
-void MPVProcess::updateAudioTrack(int ID, const QString & name, const QString & lang) {
-	qDebug("MPVProcess::updateAudioTrack: ID: %d", ID);
-
-	int idx = audios.find(ID);
-	if (idx == -1) {
-		audio_info_changed = true;
-		audios.addName(ID, name);
-		audios.addLang(ID, lang);
-	} else {
-		// Track already existed
-		if (audios.itemAt(idx).name() != name) {
-			audio_info_changed = true;
-			audios.addName(ID, name);
-		}
-		if (audios.itemAt(idx).lang() != lang) {
-			audio_info_changed = true;
-			audios.addLang(ID, lang);
-		}
-	}
-}
-#endif
-
-#if NOTIFY_SUB_CHANGES
-void MPVProcess::updateSubtitleTrack(int ID, const QString & name, const QString & lang) {
-	qDebug("MPVProcess::updateSubtitleTrack: ID: %d", ID);
-
-	int idx = subs.find(SubData::Sub, ID);
-	if (idx == -1) {
-		subtitle_info_changed = true;
-		subs.add(SubData::Sub, ID);
-		subs.changeName(SubData::Sub, ID, name);
-		subs.changeLang(SubData::Sub, ID, lang);
-	}
-	else {
-		// Track already existed
-		if (subs.itemAt(idx).name() != name) {
-			subtitle_info_changed = true;
-			subs.changeName(SubData::Sub, ID, name);
-		}
-		if (subs.itemAt(idx).lang() != lang) {
-			subtitle_info_changed = true;
-			subs.changeLang(SubData::Sub, ID, lang);
-		}
-	}
-}
-#endif
-
-// Called when the process is finished
-void MPVProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-	qDebug("MPVProcess::processFinished: exitCode: %d, status: %d", exitCode, (int) exitStatus);
-	// Send this signal before the endoffile one, otherwise
-	// the playlist will start to play next file before all
-	// objects are notified that the process has exited.
-	emit processExited();
-	if (received_end_of_file) emit receivedEndOfFile();
-}
-
-void MPVProcess::gotError(QProcess::ProcessError error) {
-	qDebug("MPVProcess::gotError: %d", (int) error);
 }
 
 
@@ -867,6 +587,7 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 			"INFO_CHAPTERS=${=chapters}\n"
 			"INFO_TRACKS_COUNT=${=track-list/count}\n"
 
+			// TODO: check name, author, comment etc.
 			"METADATA_TITLE=${metadata/by-key/title:}\n"
 			"METADATA_ARTIST=${metadata/by-key/artist:}\n"
 			"METADATA_ALBUM=${metadata/by-key/album:}\n"

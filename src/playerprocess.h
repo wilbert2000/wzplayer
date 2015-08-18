@@ -25,6 +25,7 @@
 #include "config.h"
 #include "assstyles.h"
 #include <QVariant>
+#include <QRegExp>
 
 class PlayerProcess : public MyProcess
 {
@@ -33,13 +34,13 @@ class PlayerProcess : public MyProcess
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	PlayerProcess(QObject * parent = 0);
+	PlayerProcess(QObject * parent, QRegExp * rx_eof);
 
 	PlayerID::Player player() { return player_id; }
 	bool isMPlayer() { return (player_id == PlayerID::MPLAYER); }
 	bool isMPV() { return (player_id == PlayerID::MPV); }
 
-	virtual bool start() = 0;
+	virtual bool startPlayer();
 
 	void writeToStdin(QString text);
 	MediaData mediaData() { return md; };
@@ -129,7 +130,7 @@ signals:
 	void receivedVO(QString);
 	void receivedAO(QString);
 	void receivedEndOfFile();
-	void mplayerFullyLoaded();
+	void playerFullyLoaded();
 
 	void receivedCacheMessage(QString);
 	void receivedCacheEmptyMessage(QString);
@@ -148,24 +149,21 @@ signals:
 
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
 
-#if NOTIFY_SUB_CHANGES
 	//! Emitted if a new subtitle has been added or an old one changed
 	void subtitleInfoChanged(const SubTracks &);
 
 	//! Emitted when subtitle info has been received but there wasn't anything new
 	void subtitleInfoReceivedAgain(const SubTracks &);
-#endif
-#if NOTIFY_AUDIO_CHANGES
+
 	//! Emitted if a new audio track been added or an old one changed
     void audioInfoChanged(const Tracks &);
-#endif
+
 #if NOTIFY_VIDEO_CHANGES
 	//! Emitted if a new video track been added or an old one changed
 	void videoInfoChanged(const Tracks &);
 #endif
-#if NOTIFY_CHAPTER_CHANGES
+
 	void chaptersChanged(const Chapters &);
-#endif
 
 #if DVDNAV_SUPPORT
 	void receivedDVDTitle(int);
@@ -177,11 +175,34 @@ signals:
 	void receivedVideoBitrate(int);
 	void receivedAudioBitrate(int);
 
+public slots:
+	void parseBytes(QByteArray ba);
+
 protected:
 	MediaData md;
 	QString pausing_prefix;
 
 	PlayerID::Player player_id;
+
+	bool notified_player_is_running;
+
+	double fps;
+	int prev_frame;
+
+	virtual bool parseLine(QString &line);
+	virtual bool parseAudioProperty(const QString &name, const QString &value);
+	virtual bool parseVideoProperty(const QString &name, const QString &value);
+	virtual bool parseMetaDataProperty(const QString &name, const QString &value);
+	virtual bool parseProperty(const QString &name, const QString &value);
+
+protected slots:
+	void gotError(QProcess::ProcessError);
+	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
+private:
+	int line_count;
+	bool received_end_of_file;
+	QRegExp* rx_eof;
 };
 
 #endif

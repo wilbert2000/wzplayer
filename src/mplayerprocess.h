@@ -34,7 +34,7 @@ public:
 	MplayerProcess(QObject * parent = 0);
 	~MplayerProcess();
 
-	bool start();
+	virtual bool startPlayer();
 
 	// Command line options
 	void setMedia(const QString & media, bool is_playlist = false);
@@ -55,7 +55,7 @@ public:
 	void setVideo(int ID);
 	void setSubtitle(int type, int ID);
 	void disableSubtitles();
-	void setSecondarySubtitle(int ID) {};
+	void setSecondarySubtitle(int) {};
 	void disableSecondarySubtitles() {};
 	void setSubtitlesVisibility(bool b);
 	void seek(double secs, int mode, bool precise);
@@ -104,34 +104,29 @@ public:
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &) {};
 
-protected slots:
-	void parseLine(QByteArray ba);
-	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
-	void gotError(QProcess::ProcessError);
+
+protected:
+	virtual bool parseLine(QString &line);
+	virtual bool parseAudioProperty(const QString &name, const QString &value);
+	virtual bool parseVideoProperty(const QString &name, const QString &value);
+	virtual bool parseMetaDataProperty(const QString &name, const QString &value);
+	virtual bool parseProperty(const QString &name, const QString &value);
 
 private:
-	bool notified_mplayer_is_running;
-	bool received_end_of_file;
-
-	int last_sub_id;
-
 	int mplayer_svn;
 
-#if NOTIFY_SUB_CHANGES
 	SubTracks subs;
-
 	bool subtitle_info_received;
 	bool subtitle_info_changed;
-#endif
 
-#if NOTIFY_AUDIO_CHANGES
 	Tracks audios;
 	bool audio_info_changed;
-#endif
 
 	int dvd_current_title;
 	int br_current_title;
 
+	void updateAudioTrack(int id, const QString &type, const QString &value);
+	void notifyTimestamp(double sec, const QString &line);
 	void notifyChanges();
 	void parseStatusLine(QRegExp &rx_av, const QString &line);
 };

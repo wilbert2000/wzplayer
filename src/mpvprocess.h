@@ -34,7 +34,7 @@ public:
 	MPVProcess(QObject * parent = 0);
 	~MPVProcess();
 
-	bool start();
+	virtual bool startPlayer();
 
 	// Command line options
 	void setMedia(const QString & media, bool is_playlist = false);
@@ -107,63 +107,36 @@ public:
 	QString mpvVersion() { return mpv_version; };
 
 protected:
+	virtual bool parseLine(QString &line);
+	virtual bool parseProperty(const QString &name, const QString &value);
+
 	bool isOptionAvailable(const QString & option);
 	void addVFIfAvailable(const QString & vf, const QString & value = QString::null);
+	void updateAudioTrack(int ID, const QString & name, const QString & lang);
+	void updateSubtitleTrack(int ID, const QString & name, const QString & lang);
 
 protected slots:
-	void parseLine(QByteArray ba);
-	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
-	void gotError(QProcess::ProcessError);
 	void requestChapterInfo();
 	void requestBitrateInfo();
 
-protected:
-#if NOTIFY_AUDIO_CHANGES
-	void updateAudioTrack(int ID, const QString & name, const QString & lang);
-#endif
-#if NOTIFY_SUB_CHANGES
-	void updateSubtitleTrack(int ID, const QString & name, const QString & lang);
-#endif
-
 private:
-	bool notified_mplayer_is_running;
-	bool received_end_of_file;
-
-	int last_sub_id;
-
-	int mplayer_svn;
-
 	QString mpv_version;
 	bool verbose;
-	int line_count;
 
-	double fps;
-	int prev_frame;
-
-#if NOTIFY_SUB_CHANGES
 	SubTracks subs;
-
 	bool subtitle_info_received;
 	bool subtitle_info_changed;
-#endif
 
-#if NOTIFY_AUDIO_CHANGES
 	Tracks audios;
 	bool audio_info_changed;
-#endif
 
 #if NOTIFY_VIDEO_CHANGES
 	Tracks videos;
 	bool video_info_changed;
 #endif
 
-#if NOTIFY_CHAPTER_CHANGES
 	Chapters chapters;
 	bool chapter_info_changed;
-#endif
-
-	int dvd_current_title;
-	int br_current_title;
 
 	QString previous_eq;
 
@@ -174,17 +147,8 @@ private:
 	void notifyTimestamp(double sec);
 	void notifyChanges();
 	void parseStatusLine(QRegExp &rx);
-	void parseVideoProperty(const QString &name, const QString &value);
-	void parseAudioProperty(const QString &name, const QString &value);
-	void parseMetaDataProperty(const QString &name, const QString &value);
-	void parseProperty(const QString &name, const QString &value);
-	void parseSubs(int id, const QString &lang, const QString &title);
 	void parseChapterName(int id, QString title);
-
-#if NOTIFY_VIDEO_CHANGES || NOTIFY_AUDIO_CHANGES || NOTIFY_SUB_CHANGES
 	void parseTrackInfo(QRegExp &rx);
-#endif
-
 };
 
 #endif

@@ -21,10 +21,7 @@
 
 #include <Qt>
 
-#define NOTIFY_SUB_CHANGES 1
-#define NOTIFY_AUDIO_CHANGES 1
 #define NOTIFY_VIDEO_CHANGES 0
-#define NOTIFY_CHAPTER_CHANGES 1
 
 
 // STYLE_SWITCHING
@@ -71,22 +68,6 @@
 // the config file
 
 #define ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES 1
-
-
-// DELAYED_AUDIO_SETUP_ON_STARTUP
-// if 1, the audio track will be initialized later once the file
-// has begun to play
-
-#define DELAYED_AUDIO_SETUP_ON_STARTUP 0
-
-
-// CHECK_VIDEO_CODEC_FOR_NO_VIDEO
-// if 1, the video codec will be checked to decide if the file
-// has video or not. If it's empty it has no video.
-// If 0, it will check for the line "Video: no video"
-// mplayerprocess only. mpvprocess always uses codec and video size
-
-#define CHECK_VIDEO_CODEC_FOR_NO_VIDEO 1
 
 
 // Just for testing, possibility to disable the use of the colorkey

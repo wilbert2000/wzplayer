@@ -397,22 +397,16 @@ protected slots:
 	//! the resolution is HD
 	void checkIfVideoIsHD();
 
-#if DELAYED_AUDIO_SETUP_ON_STARTUP
-	void initAudioTrack();
-#endif
-#if NOTIFY_AUDIO_CHANGES
 	void initAudioTrack(const Tracks &);
-#endif
+
 #if NOTIFY_VIDEO_CHANGES
 	void initVideoTrack(const Tracks &);
 #endif
-#if NOTIFY_SUB_CHANGES
+
 	void initSubtitleTrack(const SubTracks &);
 	void setSubtitleTrackAgain(const SubTracks &);
-#endif
-#if NOTIFY_CHAPTER_CHANGES
+
 	void updateChapterInfo(const Chapters &);
-#endif
 
 #if DVDNAV_SUPPORT
 	void dvdTitleChanged(int);
@@ -486,9 +480,7 @@ signals:
 	void needResize(int w, int h);
 	void noVideo();
 	void volumeChanged(int);
-#if NOTIFY_AUDIO_CHANGES
 	void audioTracksChanged();
-#endif
 
 	//! Sent when requested to play, but there is no file to play
 	void noFileToPlay();
