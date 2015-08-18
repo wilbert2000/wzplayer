@@ -294,10 +294,10 @@ void ToolbarEditor::load(QWidget *w, QStringList l, QList<QAction *> actions_lis
 	QAction * action;
 
 	for (int n = 0; n < l.count(); n++) {
-		qDebug("ToolbarEditor::load: loading action %s", l[n].toUtf8().data());
+		//qDebug("ToolbarEditor::load: loading action %s", l[n].toUtf8().data());
 
 		if (l[n] == "separator") {
-			qDebug("ToolbarEditor::load: adding separator");
+			//qDebug("ToolbarEditor::load: adding separator");
 			QAction * sep = new QAction(w);
 			sep->setSeparator(true);
 			w->addAction(sep);
