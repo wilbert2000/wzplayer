@@ -288,7 +288,7 @@ void MplayerWindow::enableSizeGroup() {
 }
 
 void MplayerWindow::updateSizeGroup() {
-	qDebug("Mplayerwindow::updateSizegroup");
+	// qDebug("Mplayerwindow::updateSizegroup");
 
 	if (!fullscreen && video_width > 0 && video_height > 0) {
 		// Update size group with new size factor
@@ -357,7 +357,7 @@ void MplayerWindow::resizeEvent(QResizeEvent*) {
 }
 
 void MplayerWindow::mousePressEvent( QMouseEvent * event) {
-	qDebug( "MplayerWindow::mousePressEvent" );
+	//qDebug( "MplayerWindow::mousePressEvent" );
 
 	event->accept();
 
@@ -473,7 +473,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 }
 
 void MplayerWindow::mouseReleaseEvent(QMouseEvent * event) {
-	qDebug( "MplayerWindow::mouseReleaseEvent");
+	//qDebug( "MplayerWindow::mouseReleaseEvent");
 
 	event->accept();
 
