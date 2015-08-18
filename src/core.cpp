@@ -402,10 +402,13 @@ void Core::changeFullscreenMode(bool b) {
 	proc->setFullscreen(b);
 }
 
-void Core::displayTextOnOSD(QString text, int duration, int level, QString prefix) {
-	qDebug("Core::displayTextOnOSD: '%s'", text.toUtf8().constData());
+void Core::displayTextOnOSD(QString text,
+							int duration,
+							int level,
+							QString prefix) {
+	//qDebug("Core::displayTextOnOSD: '%s'", text.toUtf8().constData());
 
-	if (proc->isRunning()) {
+	if (proc->isRunning() && level <= pref->osd_level) {
 		proc->setPausingPrefix(prefix);
 		proc->showOSDText(text, duration, level);
 	}
@@ -1226,14 +1229,6 @@ void Core::finishRestart() {
 		if (pref->mute) mute(true);
 	}
 
-#if 0
-// Old. Gamma already set with option -gamma
-	if (pref->change_video_equalizer_on_startup && (mset.gamma != 0)) {
-		int gamma = mset.gamma;
-		mset.gamma = -1000; // if mset.gamma == new value, mset.gamma is not changed!
-		setGamma( gamma );
-	}
-#endif
 	// Hack to be sure that the equalizers are up to date
 	emit videoEqualizerNeedsUpdate();
 	emit audioEqualizerNeedsUpdate();
@@ -1244,19 +1239,12 @@ void Core::finishRestart() {
 	// A-B marker
 	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
 
-	// Initialize the OSD level
-	QTimer::singleShot(pref->osd_delay, this, SLOT(initializeOSD()));
-
 	emit mediaLoaded();
 	emit mediaInfoChanged();
 
 	updateWidgets(); // New
 
 	qDebug("Core::finishRestart: --- end ---");
-}
-
-void Core::initializeOSD() {
-	changeOSD(pref->osd);
 }
 
 void Core::stop()
@@ -1787,6 +1775,7 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 
 	// OSD
+	proc->setOption("osdlevel", pref->osd_level);
 	if (proc->isMPlayer()) {
 		proc->setOption("osd-scale", pref->subfont_osd_scale);
 	} else {
@@ -2074,10 +2063,6 @@ void Core::startMplayer( QString file, double seek ) {
 			proc->setOption("ss", QString::number(seek));
 		}
 	}
-
-	// Enable the OSD later, to avoid a lot of messages to be
-	// printed on startup
-	proc->setOption("osdlevel", "0");
 
 	if (pref->use_idx) {
 		proc->setOption("idx");
@@ -3267,9 +3252,10 @@ void Core::decSubScale() {
 }
 
 void Core::setOSDPos(const QPoint &pos) {
-	qDebug("Core::setOSDPos");
+	// qDebug("Core::setOSDPos");
 
-	proc->setOSDPos(pos);
+	if (proc->isRunning())
+		proc->setOSDPos(pos);
 }
 
 void Core::changeOSDScale(double value) {
@@ -3946,23 +3932,26 @@ void Core::changeLetterboxOnFullscreen(bool b) {
 	CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(mplayerwindow));
 }
 
-void Core::changeOSD(int v) {
-	qDebug("Core::changeOSD: %d", v);
+void Core::changeOSD(int level) {
+	qDebug("Core::changeOSD: %d", level);
 
-	pref->osd = v;
+	pref->osd_level = (Preferences::OSDLevel) level;
 
 	proc->setPausingPrefix(pausing_prefix());
-	proc->setOSD(pref->osd);
+	proc->setOSD(level);
 
 	updateWidgets();
 }
 
 void Core::nextOSD() {
-	int osd = pref->osd + 1;
-	if (osd > Preferences::SeekTimerTotal) {
-		osd = Preferences::None;	
+
+	int level;
+	if (pref->osd_level >= Preferences::SeekTimerTotal) {
+		level = Preferences::None;
+	} else {
+		level = pref->osd_level + 1;
 	}
-	changeOSD( osd );
+	changeOSD( level );
 }
 
 void Core::changeRotate(int r) {

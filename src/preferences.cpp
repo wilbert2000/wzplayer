@@ -163,10 +163,9 @@ void Preferences::reset() {
 	autoload_m4a = true;
 	min_step = 4;
 
-	osd = None;
+	osd_level = None;
 	osd_scale = 1;
 	subfont_osd_scale = 3;
-	osd_delay = 2200;
 
 	file_settings_method = "hash"; // Possible values: normal & hash
 
@@ -650,10 +649,9 @@ void Preferences::save() {
 	set->setValue("autoload_m4a", autoload_m4a);
 	set->setValue("min_step", min_step);
 
-	set->setValue("osd", osd);
+	set->setValue("osd_level", osd_level);
 	set->setValue("osd_scale", osd_scale);
 	set->setValue("subfont_osd_scale", subfont_osd_scale);
-	set->setValue("osd_delay", osd_delay);
 
 	set->setValue("file_settings_method", file_settings_method);
 
@@ -1169,10 +1167,9 @@ void Preferences::load() {
 	autoload_m4a = set->value("autoload_m4a", autoload_m4a).toBool();
 	min_step = set->value("min_step", min_step).toInt();
 
-	osd = set->value("osd", osd).toInt();
+	osd_level = (OSDLevel) set->value("osd_level", (int) osd_level).toInt();
 	osd_scale = set->value("osd_scale", osd_scale).toDouble();
 	subfont_osd_scale = set->value("subfont_osd_scale", subfont_osd_scale).toDouble();
-	osd_delay = set->value("osd_delay", osd_delay).toInt();
 
 	file_settings_method = set->value("file_settings_method", file_settings_method).toString();
 
@@ -1628,7 +1625,7 @@ void Preferences::load() {
 		*/
 		if (config_version <= 4) {
 			use_slices = false;
-			osd = None;
+			osd_level = None;
 			frame_drop = false;
 			cache_for_files = 2048;
 			cache_for_streams = 2048;

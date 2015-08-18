@@ -289,7 +289,7 @@ public slots:
 	void changeAngle(int);
 	void changeAspectRatio(int);
 	void nextAspectRatio();
-	void changeOSD(int);
+	void changeOSD(int level);
 	void nextOSD();
 	void nextWheelFunction();
 
@@ -422,8 +422,6 @@ protected slots:
 	void dvdTitleIsMenu();
 	void dvdTitleIsMovie();
 #endif
-
-	void initializeOSD();
 
 #ifdef YOUTUBE_SUPPORT
 	void connectingToYT(QString host);

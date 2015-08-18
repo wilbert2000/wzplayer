@@ -3603,7 +3603,7 @@ void BaseGui::updateWidgets() {
 #endif
 
 	// OSD
-	osdGroup->setChecked( pref->osd );
+	osdGroup->setChecked( (int) pref->osd_level );
 
 	// Titles
 	titleGroup->setChecked( core->mset.current_title_id );

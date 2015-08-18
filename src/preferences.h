@@ -40,7 +40,7 @@ class Filters;
 class Preferences {
 
 public:
-	enum OSD { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
+	enum OSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
 	enum OnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
 	enum Resize { Never = 0, Always = 1, Afterload = 2 };
 	enum Priority { Realtime = 0, High = 1, AboveNormal = 2, Normal = 3,
@@ -150,10 +150,9 @@ public:
 	int min_step; //<! Step to increase of decrease the controls for color, contrast, brightness and so on
 
 	// Misc
-	int osd;
+	OSDLevel osd_level;
 	double osd_scale; // mpv
 	double subfont_osd_scale; // mplayer
-	int osd_delay; //<! Delay in ms to show the OSD.
 
 	QString file_settings_method; //!< Method to be used for saving file settings
 
