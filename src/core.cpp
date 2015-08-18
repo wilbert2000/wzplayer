@@ -4044,8 +4044,8 @@ void Core::changeZoom(double factor) {
 	displayMessage( tr("Zoom: %1").arg(mplayerwindow->zoom()) );
 }
 
-void Core::resetZoomPanAndSize() {
-	qDebug("Core::resetZoomPanAndSize");
+void Core::resetZoomAndPan() {
+	qDebug("Core::resetZoomAndPan");
 
 	// Reset zoom and pan of video window
 	mplayerwindow->resetZoomAndPan();
@@ -4053,13 +4053,7 @@ void Core::resetZoomPanAndSize() {
 	getZoomFromMplayerWindow();
 	getPanFromMplayerWindow();
 
-	if (!pref->fullscreen) {
-		pref->size_factor = 1.0;
-		forceResize();
-		displayMessage( tr("Zoom, pan and size reset") );
-	} else {
-		displayMessage( tr("Zoom and pan reset") );
-	}
+	displayMessage( tr("Zoom and pan reset") );
 }
 
 void Core::pan(int dx, int dy) {
