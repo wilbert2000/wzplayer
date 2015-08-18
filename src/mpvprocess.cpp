@@ -86,8 +86,6 @@ bool MPVProcess::startPlayer() {
 void MPVProcess::updateAudioTrack(int ID,
 								  const QString & name,
 								  const QString & lang) {
-	qDebug("MPVProcess::updateAudioTrack: audio id: %d, name: '%s', lang: '%s'",
-		   ID, name.toUtf8().constData(), lang.toUtf8().constData());
 
 	int idx = audios.find(ID);
 	if (idx == -1) {
@@ -95,6 +93,8 @@ void MPVProcess::updateAudioTrack(int ID,
 		audio_info_changed = true;
 		audios.addName(ID, name);
 		audios.addLang(ID, lang);
+		qDebug("MPVProcess::updateAudioTrack: added audio id: %d, name: '%s', lang: '%s'",
+			   ID, name.toUtf8().constData(), lang.toUtf8().constData());
 	} else {
 		// Existing track
 		if (audios.itemAt(idx).name() != name) {
@@ -105,6 +105,8 @@ void MPVProcess::updateAudioTrack(int ID,
 			audio_info_changed = true;
 			audios.addLang(ID, lang);
 		}
+		qDebug("MPVProcess::updateAudioTrack: updated audio id: %d, name: '%s', lang: '%s'",
+			   ID, name.toUtf8().constData(), lang.toUtf8().constData());
 	}
 }
 
@@ -203,8 +205,9 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	}
 	if (name == "TRACKS_COUNT") {
 		int tracks = value.toInt();
+		qDebug("MPVProcess::parseProperty: requesting track info for %d tracks", tracks);
 		for (int n = 0; n < tracks; n++) {
-			writeToStdin(QString("print_text \"INFO_TRACK_%1: "
+			writeToStdin(QString("print_text \"TRACK_INFO_%1: "
 				"${track-list/%1/type} "
 				"${track-list/%1/id} "
 				"'${track-list/%1/lang:}' "
@@ -217,9 +220,11 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	bool parsed = PlayerProcess::parseProperty(name, value);
 
 	if (name == "CHAPTERS") {
-		// Ask for chapter info
+		// Ask for chapter titles
+		if (md.n_chapters > 0)
+			qDebug("MPVProcess::parseProperty: requesting chapter titles");
 		for (int n = 0; n < md.n_chapters; n++) {
-			writeToStdin(QString("print_text INFO_CHAPTER_%1_NAME=${chapter-list/%1/title}").arg(n));
+			writeToStdin(QString("print_text CHAPTER_%1_NAME=${chapter-list/%1/title}").arg(n));
 		}
 	}
 
@@ -240,34 +245,34 @@ void MPVProcess::parseChapterName(int id, QString title) {
 void MPVProcess::notifyChanges() {
 
 	if (subtitle_info_changed) {
-		qDebug("MPVProcess::notifyChanges: subtitle_info_changed");
 		subtitle_info_changed = false;
 		subtitle_info_received = false;
+		qDebug("MPVProcess::notifyChanges: emit subtitleInfoChanged");
 		emit subtitleInfoChanged(subs);
 	}
 	if (subtitle_info_received) {
-		qDebug("MPVProcess::notifyChanges: subtitle_info_received");
 		subtitle_info_received = false;
+		qDebug("MPVProcess::notifyChanges: emit subtitleInfoReceivedAgain");
 		emit subtitleInfoReceivedAgain(subs);
 	}
 
 	if (audio_info_changed) {
-		qDebug("MPVProcess::notifyChanges: audio_info_changed");
 		audio_info_changed = false;
+		qDebug("MPVProcess::notifyChanges: emit audioInfoChanged");
 		emit audioInfoChanged(audios);
 	}
 
 #if NOTIFY_VIDEO_CHANGES
 	if (video_info_changed) {
-		qDebug("MPVProcess::notifyChanges: video_info_changed");
 		video_info_changed = false;
+		qDebug("MPVProcess::notifyChanges: emit videoInfoChanged");
 		emit videoInfoChanged(videos);
 	}
 #endif
 
 	if (chapter_info_changed) {
-		qDebug("MPVProcess::notifyChanges: chapter_info_changed");
 		chapter_info_changed = false;
+		qDebug("MPVProcess::notifyChanges: emit chaptersChanged");
 		emit chaptersChanged(chapters);
 	}
 }
@@ -373,26 +378,26 @@ bool MPVProcess::parseLine(QString &line) {
 	static QRegExp rx_playing("^Playing:.*|^\\[ytdl_hook\\].*");
 
 	#if !NOTIFY_VIDEO_CHANGES
-	static QRegExp rx_video("^.*Video\\s+--vid=(\\d+)([ \\(\\)\\*]+)('(.*)'|)");
+	static QRegExp rx_video("^.*Video --vid=(\\d+)([ \\(\\)\\*]+)('(.*)'|)");
 	#endif
 
-	static QRegExp rx_audio("^.*Audio\\s+--aid=(\\d+)( --alang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
+	static QRegExp rx_audio("^.*Audio --aid=(\\d+)( --alang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
 
-	static QRegExp rx_dsize("^INFO_VIDEO_DSIZE=(\\d+)x(\\d+)");
+	static QRegExp rx_dsize("^VIDEO_DSIZE=(\\d+)x(\\d+)");
 	static QRegExp rx_vo("^VO: \\[(.*)\\]");
 	static QRegExp rx_ao("^AO: \\[(.*)\\]");
 
-	static QRegExp rx_video_codec("^INFO_VIDEO_CODEC=\\s*(.*) \\[(.*)\\]");
-	static QRegExp rx_video_property("^INFO_VIDEO_([A-Z]+)=\\s*(.*)");
-	static QRegExp rx_audio_codec("^INFO_AUDIO_CODEC=\\s*(.*) \\[(.*)\\]");
-	static QRegExp rx_audio_property("^INFO_AUDIO_([A-Z]+)=\\s*(.*)");
+	static QRegExp rx_video_codec("^VIDEO_CODEC=\\s*(.*) \\[(.*)\\]");
+	static QRegExp rx_video_property("^VIDEO_([A-Z]+)=\\s*(.*)");
+	static QRegExp rx_audio_codec("^AUDIO_CODEC=\\s*(.*) \\[(.*)\\]");
+	static QRegExp rx_audio_property("^AUDIO_([A-Z]+)=\\s*(.*)");
 
 	static QRegExp rx_meta_data("^METADATA_([A-Z]+)=\\s*(.*)");
 
 	static QRegExp rx_subs("^.*Subs\\s+--sid=(\\d+)( --slang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
 
-	static QRegExp rx_trackinfo("^INFO_TRACK_(\\d+): (audio|video|sub) (\\d+) '(.*)' '(.*)' (yes|no)");
-	static QRegExp rx_chaptername("^INFO_CHAPTER_(\\d+)_NAME=\\s*(.*)");
+	static QRegExp rx_trackinfo("^TRACK_INFO_(\\d+): (audio|video|sub) (\\d+) '(.*)' '(.*)' (yes|no)");
+	static QRegExp rx_chaptername("^CHAPTER_(\\d+)_NAME=\\s*(.*)");
 
 	#if DVDNAV_SUPPORT
 	static QRegExp rx_switch_title("^\\[dvdnav\\] DVDNAV, switched to title:\\s+(\\d+)");
@@ -448,7 +453,7 @@ bool MPVProcess::parseLine(QString &line) {
 		qDebug() << "MVPProcess::parseLine: emit receivedVO(" << vo << ")";
 		emit receivedVO(vo);
 		// Ask for window resolution
-		writeToStdin("print_text INFO_VIDEO_DSIZE=${=dwidth}x${=dheight}");
+		writeToStdin("print_text VIDEO_DSIZE=${=dwidth}x${=dheight}");
 		return true;
 	}
 
@@ -470,28 +475,28 @@ bool MPVProcess::parseLine(QString &line) {
 	}
 
 	// Video codec best match.
-	// Fall back to generic ID_VIDEO_CODEC if match fails.
+	// Fall back to generic VIDEO_CODEC if match fails.
 	if (rx_video_codec.indexIn(line) >= 0) {
 		md.video_codec = rx_video_codec.cap(2);
 		qDebug() << "MPVProcess::parseLine: md.video_codec set to" << md.video_codec;
 		return true;
 	}
 
-	// Video property INFO_VIDEO_name and value
+	// Video property VIDEO_name and value
 	if (rx_video_property.indexIn(line) >= 0) {
 		return parseVideoProperty(rx_video_property.cap(1),
 								  rx_video_property.cap(2));
 	}
 
 	// Audio codec best match
-	// Fall back to generic ID_AUDIO_CODEC if match fails.
+	// Fall back to generic AUDIO_CODEC if match fails.
 	if (rx_audio_codec.indexIn(line) >= 0) {
 		md.audio_codec = rx_audio_codec.cap(2);
 		qDebug() << "MPVProcess::parseLine: md.audio_codec set to" << md.audio_codec;
 		return true;
 	}
 
-	// Audio property INFO_AUDIO_name and value
+	// Audio property AUDIO_name and value
 	if (rx_audio_property.indexIn(line) >= 0) {
 		return parseAudioProperty(rx_audio_property.cap(1),
 								  rx_audio_property.cap(2));
@@ -554,8 +559,8 @@ void MPVProcess::requestChapterInfo() {
 }
 
 void MPVProcess::requestBitrateInfo() {
-	writeToStdin("print_text INFO_VIDEO_BITRATE=${=video-bitrate}");
-	writeToStdin("print_text INFO_AUDIO_BITRATE=${=audio-bitrate}");
+	writeToStdin("print_text VIDEO_BITRATE=${=video-bitrate}");
+	writeToStdin("print_text AUDIO_BITRATE=${=audio-bitrate}");
 }
 
 
@@ -565,20 +570,20 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 	arg << "--term-playing-msg="
 			"INFO_MPV_VERSION=${=mpv-version:}\n"
 
-			"INFO_VIDEO_WIDTH=${=width}\n"
-			"INFO_VIDEO_HEIGHT=${=height}\n"
-			"INFO_VIDEO_ASPECT=${=video-aspect}\n"
-//			"INFO_VIDEO_DSIZE=${=dwidth}x${=dheight}\n"
-			"INFO_VIDEO_FPS=${=fps}\n"
-//			"INFO_VIDEO_BITRATE=${=video-bitrate}\n"
-			"INFO_VIDEO_FORMAT=${=video-format}\n"
-			"INFO_VIDEO_CODEC=${=video-codec}\n"
+			"VIDEO_WIDTH=${=width}\n"
+			"VIDEO_HEIGHT=${=height}\n"
+			"VIDEO_ASPECT=${=video-aspect}\n"
+//			"VIDEO_DSIZE=${=dwidth}x${=dheight}\n"
+			"VIDEO_FPS=${=fps}\n"
+//			"VIDEO_BITRATE=${=video-bitrate}\n"
+			"VIDEO_FORMAT=${=video-format}\n"
+			"VIDEO_CODEC=${=video-codec}\n"
 
-//			"INFO_AUDIO_BITRATE=${=audio-bitrate}\n"
-			"INFO_AUDIO_FORMAT=${=audio-codec-name:${=audio-format}}\n"
-			"INFO_AUDIO_CODEC=${=audio-codec}\n"
-			"INFO_AUDIO_RATE=${=audio-params/samplerate:${=audio-samplerate}}\n"
-			"INFO_AUDIO_NCH=${=audio-params/channel-count:${=audio-channels}}\n"
+//			"AUDIO_BITRATE=${=audio-bitrate}\n"
+			"AUDIO_FORMAT=${=audio-codec-name:${=audio-format}}\n"
+			"AUDIO_CODEC=${=audio-codec}\n"
+			"AUDIO_RATE=${=audio-params/samplerate:${=audio-samplerate}}\n"
+			"AUDIO_NCH=${=audio-params/channel-count:${=audio-channels}}\n"
 
 			"INFO_LENGTH=${=duration:${=length}}\n"
 			"INFO_DEMUXER=${=demuxer}\n"
