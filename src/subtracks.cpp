@@ -169,47 +169,43 @@ SubTracks::ParseResult SubTracks::parse(QString text) {
 	QRegExp rx_subtitle_file("^ID_FILE_SUB_FILENAME=(.*)");
 
 	if (rx_subtitle.indexIn(text) > -1) {
+		QString sub_type = rx_subtitle.cap(1);
 		int ID = rx_subtitle.cap(2).toInt();
-		QString type = rx_subtitle.cap(1);
 
 		SubData::Type t;
-		if (type == "FILE_SUB") t = SubData::File;
-		else
-		if (type == "VOBSUB") t = SubData::Vob;
-		else
-			t = SubData::Sub;
+		if (sub_type == "FILE_SUB")
+			t = SubData::File;
+		else if (sub_type == "VOBSUB")
+			t = SubData::Vob;
+		else t = SubData::Sub;
 
 		if (find(t, ID) > -1) {
 			qWarning("SubTracks::parse: subtitle type: %d, ID: %d already exists!", t, ID);
 		} else {
-			add(t,ID);
-
+			add(t, ID);
 			result = SubtitleAdded;
-		}	
-	}
-	else
-	if (rx_sid.indexIn(text) > -1) {
+		}
+	} else if (rx_sid.indexIn(text) > -1) {
+		QString sub_type = rx_sid.cap(1);
 		int ID = rx_sid.cap(2).toInt();
-		QString value = rx_sid.cap(4);
-		QString attr = rx_sid.cap(3);
-		QString type = rx_sid.cap(1);
+		QString name = rx_sid.cap(3);
+		QString value = rx_sid.cap(4).trimmed();
 
 		SubData::Type t = SubData::Sub;
-		if (type == "VSID") t = SubData::Vob;
+		if (sub_type == "VSID")
+			t = SubData::Vob;
 
 		if (find(t, ID) == -1) {
 			qWarning("SubTracks::parse: subtitle type: %d, ID: %d doesn't exist!", t, ID);
 		} else {
-			if (attr=="NAME")
-				changeName(t,ID, value);
+			if (name == "NAME")
+				changeName(t, ID, value);
 			else
-				changeLang(t,ID, value);
+				changeLang(t, ID, value);
 
 			result = SubtitleChanged;
 		}
-	}
-	else
-	if (rx_subtitle_file.indexIn(text) > -1) {
+	} else if (rx_subtitle_file.indexIn(text) > -1) {
 		QString file = rx_subtitle_file.cap(1);
 		if ( subs.count() > 0 ) {
 			int last = subs.count() -1;
@@ -221,6 +217,11 @@ SubTracks::ParseResult SubTracks::parse(QString text) {
 		}
 	}
 
+	if (result == SubtitleUnchanged) {
+		qDebug("SubTracks::parse: subtitles unchanged");
+	} else {
+		qDebug("SubTracks::parse: subtitles updated");
+	}
 	return result;
 }
 
