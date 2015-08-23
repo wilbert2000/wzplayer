@@ -38,7 +38,7 @@ void MediaData::reset() {
 
 	video_width=0;
     video_height=0;
-    video_aspect= (double) 4/3;
+	video_aspect=0;
 
 #if PROGRAM_SWITCH
 	programs.clear();
