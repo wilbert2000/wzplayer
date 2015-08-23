@@ -5069,12 +5069,6 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 	}
 }
 
-void BaseGui::resizeEvent(QResizeEvent * event) {
-	qDebug("BaseGui::resizeEvent");
-
-	QMainWindow::resizeEvent(event);
-}
-
 void BaseGui::hidePanel() {
 	qDebug("BaseGui::hidePanel");
 
