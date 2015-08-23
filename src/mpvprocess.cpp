@@ -1247,38 +1247,37 @@ void MPVProcess::askForLength() {
 }
 
 void MPVProcess::setOSDPos(const QPoint &pos) {
-	// mpv has no way to set the OSD position directly,
+	// mpv has no way to set the OSD position,
 	// so this hack uses osd-margin to emulate it.
 
-	// TODO: versioning
-	// osd-margin-y Integer (0 to 300) (default: 25)
-	// osd-margin-y Integer (0 to 600) (default: 22)
+	// TODO: ask default value prop to init default pos and see if available
 	// options/osd-align-x and y from version 0.9.0 onwards
+	// osd-margin-x Integer (0 to 300) (default: 25)
+	// osd-margin-y Integer (0 to 600) (default: 22)
+	// osd-duration=<time in ms> (default 1000)
 
-	// From mpv/options/options.c
-	// OPT_FLOATRANGE("osd-bar-w", osd_bar_w, 0, 1, 100),
-	// OPT_FLOATRANGE("osd-bar-h", osd_bar_h, 0, 0.1, 50),
-
-	// TODO: how to disable OSD echo for set command
+	bool clr_osd = false;
 
 	// Handle y first
 	if (pos.y() > max_osd_pos.y()) {
 		// Hack: center osd and hope for the best
 		if (!osd_centered_y) {
 			writeToStdin("set options/osd-align-y center");
+			clr_osd = true;
 			osd_centered_y = true;
 		}
 		// Reset margin to default
 		if (osd_pos.y() != default_osd_pos.y()) {
 			osd_pos.ry() = default_osd_pos.y();
-			writeToStdin("set options/osd-margin-y "
-				+ QString::number(osd_pos.y()));
+			writeToStdin("set options/osd-margin-y " + QString::number(osd_pos.y()));
+			clr_osd = true;
 		}
 	} else {
 		// Reset alignment hack if centered
 		if (osd_centered_y) {
 			osd_centered_y = false;
 			writeToStdin("set options/osd-align-y top");
+			clr_osd = true;
 		}
 
 		int y = pos.y();
@@ -1289,6 +1288,7 @@ void MPVProcess::setOSDPos(const QPoint &pos) {
 		if (y != osd_pos.y()) {
 			osd_pos.ry() = y;
 			writeToStdin("set options/osd-margin-y " + QString::number(y));
+			clr_osd = true;
 		}
 	}
 
@@ -1298,18 +1298,21 @@ void MPVProcess::setOSDPos(const QPoint &pos) {
 		if (!osd_centered_x) {
 			writeToStdin("set options/osd-align-x center");
 			osd_centered_x = true;
+			clr_osd = true;
 		}
 		// Reset margin
 		if (osd_pos.x() != default_osd_pos.x()) {
 			osd_pos.rx() = default_osd_pos.x();
 			writeToStdin("set options/osd-margin-x "
 				+ QString::number(osd_pos.x()));
+			clr_osd = true;
 		}
 	} else {
 		// Reset alignment hack if centered
 		if (osd_centered_x) {
 			osd_centered_x = false;
 			writeToStdin("set options/osd-align-x left");
+			clr_osd = true;
 		}
 
 		int x = pos.x();
@@ -1320,7 +1323,12 @@ void MPVProcess::setOSDPos(const QPoint &pos) {
 		if (x != osd_pos.x()) {
 			osd_pos.rx() = x;
 			writeToStdin("set options/osd-margin-x " + QString::number(x));
+			clr_osd = true;
 		}
+	}
+
+	if (clr_osd) {
+		writeToStdin("show_text \"\" 0 2");
 	}
 }
 
