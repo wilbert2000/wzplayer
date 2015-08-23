@@ -115,6 +115,7 @@ void MediaData::list() {
 	qDebug("  initialized: %d", initialized);
 
 	qDebug("  chapters: %d", n_chapters);
+	chapters.list();
 
 	qDebug("  Subs:");
 	subs.list();
