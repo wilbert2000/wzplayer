@@ -107,7 +107,9 @@ void MediaBarPanel::setCore(Core *c)
 
 void MediaBarPanel::setDuration()
 {
-    mediaPanel->setDuration(core->mdat.duration);
+	qDebug("MediaBarPanel::setDuration");
+
+	mediaPanel->setDuration(core->mdat.duration);
 }
 
 void MediaBarPanel::setVolumeControlActionCollection(QList<QAction *>actions)

@@ -247,6 +247,8 @@ bool PlayerProcess::parseLine(QString &line) {
 	// End of file
 	if (rx_eof->indexIn(line) > -1)  {
 		qDebug("PlayerProcess::parseLine: detected end of file");
+
+		// TODO:
 		if (!received_end_of_file) {
 			received_end_of_file = true;
 
@@ -395,8 +397,12 @@ bool PlayerProcess::parseMetaDataProperty(const QString &name, const QString &va
 bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "LENGTH") {
-		md->duration = value.toDouble();
-		qDebug("PlayerProcess::parseProperty: duration set to %f", md->duration);
+		double duration = value.toDouble();
+		if (qAbs(duration - md->duration) > 0.001) {
+			md->duration = duration;
+			qDebug("PlayerProcess::parseProperty: emit durationChanged");
+			emit durationChanged(duration);
+		}
 		return true;
 	}
 	if (name == "DEMUXER") {

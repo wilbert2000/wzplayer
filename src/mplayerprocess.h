@@ -99,7 +99,6 @@ public:
 	void setTSProgram(int ID);
 #endif
 	void toggleDeinterlace();
-	void askForLength();
 	void setOSDPos(const QPoint &pos);
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &) {};
@@ -119,6 +118,9 @@ private:
 	int br_current_title;
 
 	int sub_id_filename;
+
+	double check_duration_time;
+	int check_duration_time_threshold;
 
 	void askQuestions();
 	void notifyTimestamp(double sec, const QString &line);

@@ -33,7 +33,6 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QApplication>
-#include <QTimer>
 #include <QDebug>
 
 #if LOGO_ANIMATION

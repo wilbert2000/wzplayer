@@ -108,7 +108,6 @@ public:
 	virtual void setTSProgram(int ID) = 0;
 #endif
 	virtual void toggleDeinterlace() = 0;
-	virtual void askForLength() = 0;
 	virtual void setOSDPos(const QPoint &pos) = 0;
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
@@ -157,9 +156,10 @@ signals:
 	//! Emitted if a new subtitle has been added or an old one changed
 	void subtitleTracksChanged();
 
+	void durationChanged(double);
+
 #if DVDNAV_SUPPORT
 	void receivedDVDTitle(int);
-	void receivedDuration(double);
 	void receivedTitleIsMenu();
 	void receivedTitleIsMovie();
 #endif

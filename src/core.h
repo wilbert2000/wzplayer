@@ -400,7 +400,6 @@ protected slots:
 
 #if DVDNAV_SUPPORT
 	void dvdTitleChanged(int);
-	void askForInfo();
 	void dvdnavUpdateMousePos(QPoint);
 	void dvdTitleIsMenu();
 	void dvdTitleIsMovie();

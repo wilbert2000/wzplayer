@@ -191,24 +191,19 @@ void MPVProcess::parseStatusLine(QRegExp &rx) {
 
 	// Time stamp
 	double sec = rx.cap(1).toDouble();
-
-#if DVDNAV_SUPPORT
 	double length = rx.cap(2).toDouble();
-#endif
 
 	// Status flags
 	bool paused = rx.cap(3) == "yes";
 	bool buffering = rx.cap(4) == "yes";
 	bool idle = rx.cap(5) == "yes";
 
-#if DVDNAV_SUPPORT
 	// Duration changed
-	if (length != md->duration) {
+	if (qAbs(length - md->duration) > 0.001) {
 		md->duration = length;
-		qDebug("MPVProcess::parseStatusLine: emit receivedDuration(%f)", length);
-		emit receivedDuration(length);
+		qDebug("MPVProcess::parseStatusLine: emit durationChanged(%f)", length);
+		emit durationChanged(length);
 	}
-#endif
 
 	// Because a time stamp change can coincide with a state change,
 	// it always needs to be signaled.
@@ -1118,10 +1113,6 @@ void MPVProcess::setTSProgram(int ID) {
 
 void MPVProcess::toggleDeinterlace() {
 	writeToStdin("cycle deinterlace");
-}
-
-void MPVProcess::askForLength() {
-	writeToStdin("print_text \"INFO_LENGTH=${=length}\"");
 }
 
 void MPVProcess::setOSDPos(const QPoint &pos) {

@@ -201,16 +201,12 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	connect( proc, SIGNAL(subtitleTracksChanged()),
 			 this, SLOT(updateSubtitleTracks()), Qt::QueuedConnection );
 
+	connect( proc, SIGNAL(durationChanged(double)),
+			 this, SIGNAL(newDuration(double)));
+
 #if DVDNAV_SUPPORT
 	connect( proc, SIGNAL(receivedDVDTitle(int)), 
              this, SLOT(dvdTitleChanged(int)), Qt::QueuedConnection );
-	connect( proc, SIGNAL(receivedDuration(double)), 
-			 this, SIGNAL(newDuration(double)), Qt::QueuedConnection );
-
-	QTimer * ask_timer = new QTimer(this);
-	connect( ask_timer, SIGNAL(timeout()), this, SLOT(askForInfo()) );
-	ask_timer->start(5000);
-
 	connect( proc, SIGNAL(receivedTitleIsMenu()),
              this, SLOT(dvdTitleIsMenu()) );
 	connect( proc, SIGNAL(receivedTitleIsMovie()),
@@ -4319,15 +4315,6 @@ void Core::updateSubtitleTracks() {
 #if DVDNAV_SUPPORT
 void Core::dvdTitleChanged(int title) {
 	qDebug("Core::dvdTitleChanged: %d", title);
-}
-
-void Core::askForInfo() {
-	if (proc->isMPlayer()) {
-		if ((state() == Playing) && (mdat.filename.startsWith("dvdnav:"))) {
-			proc->setPausingPrefix(pausing_prefix());
-			proc->askForLength();
-		}
-	}
 }
 
 void Core::dvdnavUpdateMousePos(QPoint pos) {

@@ -32,6 +32,9 @@ using namespace Global;
 
 #define TOO_CHAPTERS_WORKAROUND
 
+
+const QString silly_prefix = "pausing_keep_force ";
+
 // How to recognise eof
 static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 
@@ -165,13 +168,13 @@ void MplayerProcess::askQuestions() {
 
 bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
-	// Queried for DVD
+	// Check funky duration times
 	if (name == "length") {
 		double length = value.toDouble();
-		qDebug("MplayerProcess::parseAnswer: length: %f", length);
-		if (length != md->duration) {
+		if (qAbs(length - md->duration) > 0.001) {
 			md->duration = length;
-			emit receivedDuration(length);
+			qDebug("MplayerProcess::parseAnswer: emit durationChanged(%f)", length);
+			emit durationChanged(length);
 		}
 		return true;
 	}
@@ -296,6 +299,15 @@ void MplayerProcess::parseStatusLine(QRegExp &rx_av, const QString &line) {
 	if (notified_player_is_running) {
 		notifyTimestamp(sec, line);
 		notifyChanges();
+
+		// Check for change in duration.
+		// Abs just to be sure with time wrappers like TS.
+		if (qAbs(sec - check_duration_time) > check_duration_time_threshold) {
+			writeToStdin("get_property length");
+			check_duration_time = sec;
+			check_duration_time_threshold *= 2;
+		}
+
 		return;
 	}
 
@@ -316,6 +328,9 @@ void MplayerProcess::parseStatusLine(QRegExp &rx_av, const QString &line) {
 	playingStarted();
 
 	notifyTimestamp(sec, line);
+
+	check_duration_time = sec;
+	check_duration_time_threshold = 5;
 }
 
 bool MplayerProcess::parseLine(QString &line) {
@@ -1019,10 +1034,6 @@ void MplayerProcess::setTSProgram(int ID) {
 
 void MplayerProcess::toggleDeinterlace() {
 	writeToStdin("step_property deinterlace");
-}
-
-void MplayerProcess::askForLength() {
-	writeToStdin(pausing_prefix + " get_property length");
 }
 
 void MplayerProcess::setOSDPos(const QPoint &) {
