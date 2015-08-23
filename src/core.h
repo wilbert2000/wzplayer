@@ -247,8 +247,6 @@ public slots:
 	//! Select previous line in subtitle file
 	void decSubStep();
 
-	void changeSubVisibility(bool visible);
-
 	void changeExternalSubFPS(int fps_id);
 
 	//! Audio equalizer

@@ -849,10 +849,6 @@ void BaseGui::createActions() {
 	useForcedSubsOnlyAct->setCheckable(true);
 	connect( useForcedSubsOnlyAct, SIGNAL(toggled(bool)), core, SLOT(toggleForcedSubsOnly(bool)) );
 
-	subVisibilityAct = new MyAction(Qt::Key_V, this, "subtitle_visibility");
-	subVisibilityAct->setCheckable(true);
-	connect( subVisibilityAct, SIGNAL(toggled(bool)), core, SLOT(changeSubVisibility(bool)) );
-
 #ifdef FIND_SUBTITLES
 	showFindSubtitlesDialogAct = new MyAction( this, "show_find_sub_dialog" );
 	connect( showFindSubtitlesDialogAct, SIGNAL(triggered()), 
@@ -1748,8 +1744,6 @@ void BaseGui::retranslateStrings() {
                            tr("N&ext line in subtitles") );
 	useCustomSubStyleAct->change( Images::icon("use_custom_sub_style"), tr("Use custo&m style") );
 	useForcedSubsOnlyAct->change( Images::icon("forced_subs"), tr("&Forced subtitles only") );
-
-	subVisibilityAct->change( Images::icon("sub_visibility"), tr("Subtitle &visibility") );
 
 #ifdef FIND_SUBTITLES
 	showFindSubtitlesDialogAct->change( Images::icon("download_subs"), tr("Find subtitles at &OpenSubtitles.org...") );
@@ -2702,8 +2696,6 @@ void BaseGui::createMenus() {
 	subtitlesMenu->addAction(incSubStepAct);
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(useForcedSubsOnlyAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(subVisibilityAct);
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(useCustomSubStyleAct);
 #ifdef FIND_SUBTITLES
@@ -3723,8 +3715,6 @@ void BaseGui::updateWidgets() {
 	// Forced subs
 	useForcedSubsOnlyAct->setChecked( pref->use_forced_subs_only );
 
-	// Subtitle visibility
-	subVisibilityAct->setChecked(pref->sub_visibility);
 
 	// Enable or disable subtitle options
 	bool e = ((core->mset.current_sub_id != MediaSettings::SubNone) &&

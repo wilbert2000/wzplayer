@@ -232,8 +232,6 @@ public:
 
 	bool use_forced_subs_only;
 
-	bool sub_visibility;
-
 	bool subtitles_on_screenshots;
 
 	OptionState change_sub_scale_should_restart;

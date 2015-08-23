@@ -253,8 +253,6 @@ void Preferences::reset() {
 
 	use_forced_subs_only = false;
 
-	sub_visibility = true;
-
 	subtitles_on_screenshots = false;
 
 	change_sub_scale_should_restart = Detect;
@@ -747,8 +745,6 @@ void Preferences::save() {
 	set->setValue("enable_ass_styles", enable_ass_styles);
 	set->setValue("ass_line_spacing", ass_line_spacing);
 	set->setValue("use_forced_subs_only", use_forced_subs_only);
-
-	set->setValue("sub_visibility", sub_visibility);
 
 	set->setValue("subtitles_on_screenshots", subtitles_on_screenshots);
 
@@ -1265,8 +1261,6 @@ void Preferences::load() {
 	ass_line_spacing = set->value("ass_line_spacing", ass_line_spacing).toInt();
 
 	use_forced_subs_only = set->value("use_forced_subs_only", use_forced_subs_only).toBool();
-
-	sub_visibility = set->value("sub_visibility", sub_visibility).toBool();
 
 	subtitles_on_screenshots = set->value("subtitles_on_screenshots", subtitles_on_screenshots).toBool();
 

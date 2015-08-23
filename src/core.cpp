@@ -1125,9 +1125,6 @@ void Core::finishRestart() {
 	emit videoEqualizerNeedsUpdate();
 	emit audioEqualizerNeedsUpdate();
 
-	// Toggle subtitle visibility
-	changeSubVisibility(pref->sub_visibility);
-
 	// A-B marker
 	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
 
@@ -3173,19 +3170,6 @@ void Core::incSubStep() {
 void Core::decSubStep() {
 	qDebug("Core::decSubStep");
 	proc->setSubStep(-1);
-}
-
-void Core::changeSubVisibility(bool visible) {
-	qDebug("Core::changeSubVisilibity: %d", visible);
-
-	bool was_visible = pref->sub_visibility;
-	pref->sub_visibility = visible;
-	proc->setSubtitlesVisibility(pref->sub_visibility);
-
-	if (pref->sub_visibility) 
-		displayMessage( tr("Subtitles on") );
-	else if (was_visible)
-		displayMessage( tr("Subtitles off") );
 }
 
 void Core::changeExternalSubFPS(int fps_id) {
