@@ -5003,10 +5003,7 @@ void BaseGui::resizeWindow(int w, int h) {
 	block_resize = false;
 
 	if (panel->isVisible()) {
-		// Don't resize if
-		// first time and pref->save_window_size_on_exit selected
-		// or pref->resize_method == Preferences::Never
-		// or if any mouse buttons down, like when dragging.
+		// Don't resize if any mouse buttons down, like when dragging.
 		// Button state is synchronized to events, so can be old.
 		if (block || (pref->resize_method == Preferences::Never)
 			|| QApplication::mouseButtons()) {
@@ -5051,8 +5048,8 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 	if (panel->size() == video_size) {
 		qDebug("BaseGui::resizeMainWindow succeeded");
 	} else {
-		// Resizing the main window can change the height of the control bar.
-		// On my system when the volume slider becomes visible, the  control
+		// TODO: Resizing the main window can change the height of the control
+		// bar. On my system when the volume slider becomes visible, the  control
 		// bar grows with two pixels in height. This changes the height of the
 		// panel during resize. For now, resize once again, using the new panel
 		// height.
