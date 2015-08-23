@@ -48,7 +48,8 @@ public:
 	enum Rotate { NoRotate = -1, Clockwise_flip = 0, Clockwise = 1, 
                   Counterclockwise = 2, Counterclockwise_flip = 3 };
 
-	enum IDs { NoneSelected = -1000, SubNone = 90000 };
+	// Must be < 0, any ID >= 0 can be valid
+	enum IDs { NoneSelected = -3, SubNone = -2 };
 
 	enum SubFPS { SFPS_None, SFPS_23, SFPS_24, SFPS_25, SFPS_30, SFPS_23976, SFPS_29970 };
 
@@ -58,7 +59,7 @@ public:
 	virtual void reset();
 
 	double current_sec;
-	int current_sub_id;
+	int current_sub_idx;
 #ifdef MPV_SUPPORT
 	int current_secondary_sub_id;
 #endif

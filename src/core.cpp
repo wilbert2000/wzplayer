@@ -80,7 +80,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 
 	we_are_restarting = false;
 	just_loaded_external_subs = false;
-	just_unloaded_external_subs = false;
 	change_volume_after_unpause = false;
 
 #if DVDNAV_SUPPORT
@@ -96,7 +95,7 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	tv_settings = new TVSettings(Paths::iniPath());
 #endif
 
-	proc = PlayerProcess::createPlayerProcess(pref->mplayer_bin);
+	proc = PlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
 
 	// Do this the first
 	connect( proc, SIGNAL(processExited()),
@@ -133,9 +132,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 
 	connect( proc, SIGNAL(receivedBuffering()),
 			 this, SIGNAL(buffering()));
-
-	connect( proc, SIGNAL(receivedPlaying()),
-			 this, SLOT(displayPlaying()));
 
 	connect( proc, SIGNAL(receivedCacheEmptyMessage(QString)),
 			 this, SIGNAL(buffering()));
@@ -196,27 +192,20 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 
 	connect( this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection );
 
-	connect( proc, SIGNAL(subtitleInfoChanged(const SubTracks &)),
-             this, SLOT(initSubtitleTrack(const SubTracks &)), Qt::QueuedConnection );
-	connect( proc, SIGNAL(subtitleInfoReceivedAgain(const SubTracks &)), 
-             this, SLOT(setSubtitleTrackAgain(const SubTracks &)), Qt::QueuedConnection );
+	connect( proc, SIGNAL(videoTracksChanged()),
+			 this, SLOT(updateVideoTracks()), Qt::QueuedConnection );
 
-	connect( proc, SIGNAL(audioInfoChanged(const Tracks &)),
-             this, SLOT(initAudioTrack(const Tracks &)), Qt::QueuedConnection );
+	connect( proc, SIGNAL(audioTracksChanged()),
+			 this, SLOT(updateAudioTracks()), Qt::QueuedConnection );
 
-#if NOTIFY_VIDEO_CHANGES
-	connect( proc, SIGNAL(videoInfoChanged(const Tracks &)),
-             this, SLOT(initVideoTrack(const Tracks &)), Qt::QueuedConnection );
-#endif
-
-	connect( proc, SIGNAL(chaptersChanged(const Chapters &)),
-             this, SLOT(updateChapterInfo(const Chapters &)), Qt::QueuedConnection );
+	connect( proc, SIGNAL(subtitleTracksChanged()),
+			 this, SLOT(updateSubtitleTracks()), Qt::QueuedConnection );
 
 #if DVDNAV_SUPPORT
 	connect( proc, SIGNAL(receivedDVDTitle(int)), 
              this, SLOT(dvdTitleChanged(int)), Qt::QueuedConnection );
 	connect( proc, SIGNAL(receivedDuration(double)), 
-             this, SLOT(durationChanged(double)), Qt::QueuedConnection );
+			 this, SIGNAL(newDuration(double)), Qt::QueuedConnection );
 
 	QTimer * ask_timer = new QTimer(this);
 	connect( ask_timer, SIGNAL(timeout()), this, SLOT(askForInfo()) );
@@ -403,7 +392,7 @@ void Core::displayTextOnOSD(QString text,
 							QString prefix) {
 	//qDebug("Core::displayTextOnOSD: '%s'", text.toUtf8().constData());
 
-	if (proc->isRunning() && level <= pref->osd_level) {
+	if (proc->isFullyStarted() && level <= pref->osd_level) {
 		proc->setPausingPrefix(prefix);
 		proc->showOSDText(text, duration, level);
 	}
@@ -566,8 +555,10 @@ void Core::disableScreensaver() {
 #endif
 
 void Core::loadSub(const QString & sub ) {
+	qDebug("Core::loadSub");
 
 	if ( (!sub.isEmpty()) && (QFile::exists(sub)) ) {
+		mset.current_sub_idx = MediaSettings::NoneSelected;
 		mset.external_subtitles = sub;
 		just_loaded_external_subs = true;
 
@@ -597,7 +588,7 @@ void Core::loadSub(const QString & sub ) {
 void Core::unloadSub() {
 	if ( !mset.external_subtitles.isEmpty() ) {
 		mset.external_subtitles = "";
-		just_unloaded_external_subs = true;
+		mset.current_sub_idx = MediaSettings::SubNone;
 		restartPlay();
 	}
 }
@@ -1017,49 +1008,128 @@ void Core::initPlaying(int seek) {
 	startMplayer( mdat.filename, start_sec );
 }
 
+// Called by newMediaPlaying and after playerprocess fully loaded,
+// when it finds new track info or changes selected track.
+void Core::initVideoTracks() {
+
+	mset.current_video_id = mdat.videos.selectedID();
+}
+
+// Called by newMediaPlaying and after playerprocess fully loaded,
+// when it finds new tracks or changes selected track.
+// Note: the notion of a single selected audio track is too simple
+// for some formats, so changing track needs to be done with caution.
+// TODO: remove initial_audio_track
+void Core::initAudioTracks() {
+	qDebug("Core::initAudioTracks");
+
+	if (mset.current_audio_id == MediaSettings::NoneSelected
+		&& mdat.audios.numItems() > 0) {
+
+		// Select audio track selected by player
+		int wanted_id = mdat.audios.selectedID();
+
+		// Check if one of the audio tracks matches the users preferred language.
+		// TODO: Check if this will not disable audio when:
+		// Track 0: sound track, no language, starting at 0
+		// Track 1: speach, language english, starting at 5 min
+		// Track 2: speach, language german, starting at 5 min
+		// This works if player only prints tracks while it's going along,
+		// and not all at once, at the start of the video, but then preferred
+		// language still needs to be handled when current_audio_id !=
+		// NoneSelected...
+		if (!pref->audio_lang.isEmpty()) {
+			int res = mdat.audios.findLang( pref->audio_lang );
+			if (res != -1)
+				wanted_id = res;
+		}
+		changeAudio(wanted_id, false); // Don't allow restart
+	}
+}
+
+void Core::initSubs() {
+	qDebug("Core::initSubs");
+
+	if (mdat.subs.numItems() <= 0) {
+		// No subs
+		mset.current_sub_idx = MediaSettings::SubNone;
+		qDebug("Core::initSubs: no subtitles found");
+	} else if (mset.current_sub_idx == MediaSettings::SubNone) {
+		// Don't want subs
+		if (mdat.subs.selectedID() != -1) {
+			qDebug("Core::initSubs: disabling subtitles because current_sub_id is SubNone");
+			proc->disableSubtitles();
+		}
+	} else {
+		// See what's wanted
+		int wanted_idx;
+		if (just_loaded_external_subs) {
+			if (proc->isMPV()) {
+				// Select last one.
+				wanted_idx = mdat.subs.numItems() - 1;
+			} else {
+				// find the sub file just loaded
+				wanted_idx = mdat.subs.findFile(mset.external_subtitles);
+				if (wanted_idx == -1) {
+					// mplayer stores vob files (.idx) under sub type vob
+					// Select preferred language or track from pref
+					wanted_idx = mdat.subs.selectOne(pref->language,
+						pref->initial_subtitle_track - 1);
+				}
+			}
+		} else if (we_are_restarting
+				   && (mset.current_sub_idx != MediaSettings::NoneSelected)) {
+			// If restarting and something selected, keep the current subs
+			wanted_idx = mset.current_sub_idx;
+		} else {
+			// Select preferred language or track from pref
+			wanted_idx = mdat.subs.selectOne(pref->language,
+											 pref->initial_subtitle_track - 1);
+		}
+
+		changeSubtitle(wanted_idx, false);
+	}
+
+	just_loaded_external_subs = false;
+
+#ifdef MPV_SUPPORT
+	changeSecondarySubtitle(mset.current_secondary_sub_id);
+#endif
+
+}
+
 // This is reached when a new video has just started playing
-// and maybe we need to give some defaults
 void Core::newMediaPlaying() {
 	qDebug("Core::newMediaPlaying: --- start ---");
-
-	QString file = mdat.filename;
-	int type = mdat.type;
-	mdat = proc->mediaData();
-	mdat.filename = file;
-	mdat.type = type;
-
-	initializeMenus(); // Old
 
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
 
-	// Video
-	if ( (mset.current_video_id == MediaSettings::NoneSelected) && 
-         (mdat.videos.numItems() > 0) ) 
-	{
-		changeVideo( mdat.videos.itemAt(0).ID(), false ); // Don't allow to restart
-	}
+	// Video tracks
+	initVideoTracks();
 
+	// Audio tracks
+	initAudioTracks();
+
+	// Subs
+	if (!pref->autoload_sub)
+		mset.current_sub_idx = MediaSettings::SubNone;
+	// Remainder is handled by initSubs called by finishRestart
+
+	// Chapters
 	if (mdat.n_chapters > 0) {
 		// Just to show the first chapter checked in the menu
 		mset.current_chapter_id = firstChapter();
 	}
 
-	mdat.initialized = true;
-
 	// MPlayer doesn't display the length in ID_LENGTH for audio CDs...
 	if ((mdat.duration == 0) && (mdat.type == TYPE_AUDIO_CD)) {
-		/*
-		qDebug(" *** get duration here from title info *** ");
-		qDebug(" *** current title: %d", mset.current_title_id );
-		*/
 		if (mset.current_title_id > 0) {
 			mdat.duration = mdat.titles.item(mset.current_title_id).duration();
 		}
 	}
 
-	/* updateWidgets(); */
-
+	mdat.initialized = true;
 	mdat.list();
 	mset.list();
 
@@ -1068,6 +1138,7 @@ void Core::newMediaPlaying() {
 
 // Slot called when queued signal playerFullyLoaded arrives.
 // Despite its name, also called for new files.
+// TODO: rename
 void Core::finishRestart() {
 	qDebug("Core::finishRestart: --- start ---");
 
@@ -1075,13 +1146,6 @@ void Core::finishRestart() {
 		newMediaPlaying();
 		emit mediaStartPlay();
 	} 
-
-	if (we_are_restarting) {
-		// Update info about codecs and demuxer
-		mdat.video_codec = proc->mediaData().video_codec;
-		mdat.audio_codec = proc->mediaData().audio_codec;
-		mdat.demuxer = proc->mediaData().demuxer;
-	}
 
 	if (forced_titles.contains(mdat.filename)) {
 		mdat.clip_name = forced_titles[mdat.filename];
@@ -1099,31 +1163,23 @@ void Core::finishRestart() {
 	}
 #endif
 
-	we_are_restarting = false;
-
 	if (pref->mplayer_additional_options.contains("-volume")) {
 		qDebug("Core::finishRestart: don't set volume since -volume is used");
 	} else {
-		// Code to set the volume, used when mplayer didn't have the -volume option
-		/*
-		if (pref->global_volume) {
-			bool was_muted = pref->mute;
-			setVolume( pref->volume, true);
-			if (was_muted) mute(true);
-		} else {
-			bool was_muted = mset.mute;
-			setVolume( mset.volume, true );
-			if (was_muted) mute(true);
-		}
-		*/
 		int vol = (pref->global_volume ? pref->volume : mset.volume);
 		volumeChanged(vol);
 		if (pref->mute) mute(true);
 	}
 
+	initSubs();
+
+	we_are_restarting = false;
+
+#if 0
 	// Hack to be sure that the equalizers are up to date
 	emit videoEqualizerNeedsUpdate();
 	emit audioEqualizerNeedsUpdate();
+#endif
 
 	// A-B marker
 	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
@@ -1131,15 +1187,15 @@ void Core::finishRestart() {
 	emit mediaLoaded();
 	emit mediaInfoChanged();
 
-	updateWidgets(); // New
+	initializeMenus();
+	updateWidgets();
 
 	qDebug("Core::finishRestart: --- end ---");
 }
 
 void Core::stop()
 {
-	qDebug("Core::stop");
-	qDebug("Core::stop: state: %s", stateToString().toUtf8().data());
+	qDebug("Core::stop: current state: %s", stateToString().toUtf8().data());
 	
 	if (state()==Stopped) {
 		// if pressed stop twice, reset video to the beginning
@@ -1650,8 +1706,8 @@ void Core::startMplayer( QString file, double seek ) {
 	if (proc->isMPlayer()) {
 		proc->setOption("osd-scale", pref->subfont_osd_scale);
 	} else {
-		proc->setOption("osd-scale-by-window", "no");
 		proc->setOption("osd-scale", pref->osd_scale);
+		proc->setOption("osd-scale-by-window", "no");
 	}
 
 	// Subtitles fonts
@@ -1700,7 +1756,8 @@ void Core::startMplayer( QString file, double seek ) {
 	} else {
 		// NO ASS:
 		if (pref->freetype_support) proc->setOption("noass");
-		proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
+		// TODO: not same mpv mplayer
+		// proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
 	}
 
 	// Subtitle encoding
@@ -1741,20 +1798,18 @@ void Core::startMplayer( QString file, double seek ) {
 	else {
 #endif
 
-#if 1
-	if (mset.current_video_id != MediaSettings::NoneSelected) {
+	if (mset.current_video_id >= 0) {
 		proc->setOption("vid", QString::number(mset.current_video_id));
 	}
 
 	if (mset.external_audio.isEmpty()) {
-		if (mset.current_audio_id != MediaSettings::NoneSelected) {
+		if (mset.current_audio_id >= 0) {
 			// Workaround for MPlayer bug #1321 (http://bugzilla.mplayerhq.hu/show_bug.cgi?id=1321)
 			if (mdat.audios.numItems() != 1) {
 				proc->setOption("aid", QString::number(mset.current_audio_id));
 			}
 		}
 	}
-#endif
 
 #if PROGRAM_SWITCH
 	}
@@ -1763,6 +1818,7 @@ void Core::startMplayer( QString file, double seek ) {
 	if (!initial_subtitle.isEmpty()) {
 		mset.external_subtitles = initial_subtitle;
 		initial_subtitle = "";
+		mset.current_sub_idx = MediaSettings::NoneSelected;
 		just_loaded_external_subs = true; // Big ugly hack :(
 	}
 	if (!mset.external_subtitles.isEmpty()) {
@@ -3251,14 +3307,13 @@ void Core::setAudioEq9(int value) {
 	setAudioEq(9, value);
 }
 
-
-
 void Core::changeCurrentSec(double sec) {
 
 	// Don't enter playing state if time stamp not changed
 	if (sec == mset.current_sec) {
 		return;
 	}
+
 	mset.current_sec = sec;
 	
 	if (state() != Playing) {
@@ -3341,54 +3396,43 @@ void Core::changeDeinterlace(int ID) {
 	}
 }
 
+void Core::changeSubtitle(int idx, bool updateWidgets) {
+	qDebug("Core::changeSubtitle: idx %d", idx);
 
-
-void Core::changeSubtitle(int ID) {
-	qDebug("Core::changeSubtitle: %d", ID);
-
-	mset.current_sub_id = ID;
-	if (ID==MediaSettings::SubNone) {
-		ID=-1;
-	}
-
-	if (ID==MediaSettings::NoneSelected) {
-		ID=-1;
-		qDebug("Core::changeSubtitle: subtitle is NoneSelected, this shouldn't happen. ID set to -1.");
-	}
-	
-	qDebug("Core::changeSubtitle: ID: %d", ID);
-
-	int real_id = -1;
-	if (ID == -1) {
-		proc->disableSubtitles();
-	} else {
-		bool valid_item = ( (ID >= 0) && (ID < mdat.subs.numItems()) );
-		if (!valid_item) qWarning("Core::changeSubtitle: ID: %d is not valid!", ID);
-		if ( (mdat.subs.numItems() > 0) && (valid_item) ) {
-			real_id = mdat.subs.itemAt(ID).ID();
-			proc->setSubtitle(mdat.subs.itemAt(ID).type(), real_id);
-		} else {
-			qWarning("Core::changeSubtitle: subtitle list is empty!");
+	if (idx >= 0 && idx < mdat.subs.numItems()) {
+		SubData sub = mdat.subs.itemAt(idx);
+		if (sub.ID() != mdat.subs.selectedID()
+			|| sub.type() != mdat.subs.selectedType()) {
+			mdat.subs.setSelected(sub.type(), sub.ID());
+			proc->setSubtitle(sub.type(), sub.ID());
 		}
+	} else {
+		if (mdat.subs.numItems() > 0) {
+			proc->disableSubtitles();
+		}
+		mdat.subs.setSelectedID(-1);
+		idx = MediaSettings::SubNone;
 	}
+	mset.current_sub_idx = idx;
 
-	updateWidgets();
+	if (updateWidgets)
+		this->updateWidgets();
 }
 
 void Core::nextSubtitle() {
 	qDebug("Core::nextSubtitle");
 
-	if ( (mset.current_sub_id == MediaSettings::SubNone) && 
-         (mdat.subs.numItems() > 0) ) 
-	{
-		changeSubtitle(0);
-	} 
-	else {
-		int item = mset.current_sub_id + 1;
-		if (item >= mdat.subs.numItems()) {
-			item = MediaSettings::SubNone;
+	if (mdat.subs.numItems() > 0) {
+		int idx = mset.current_sub_idx;
+		if (idx < 0) {
+			idx = 0;
+		} else {
+			idx++;
+			if (idx >= mdat.subs.numItems()) {
+				idx = MediaSettings::SubNone;
+			}
 		}
-		changeSubtitle( item );
+		changeSubtitle(idx);
 	}
 }
 
@@ -3419,35 +3463,29 @@ void Core::changeSecondarySubtitle(int ID) {
 }
 #endif
 
-void Core::changeAudio(int ID, bool allow_restart) {
-	qDebug("Core::changeAudio: ID: %d, allow_restart: %d", ID, allow_restart);
+void Core::changeAudio(int id, bool allow_restart) {
+	qDebug("Core::changeAudio: id: %d, allow_restart: %d", id, allow_restart);
 
-	if (ID != mset.current_audio_id) {
-		mset.current_audio_id = ID;
+	if (id != mset.current_audio_id) {
+		mset.current_audio_id = id;
+		if (id >= 0 && id != mdat.audios.selectedID()) {
+			if (allow_restart
+				&& pref->fast_audio_change == Preferences::Disabled) {
+				restartPlay();
+			} else {
+				mdat.audios.setSelectedID(id);
+				proc->setAudio(id);
 
-		bool need_restart = false;
-		if (allow_restart) {
-			need_restart = (pref->fast_audio_change == Preferences::Disabled);
-			if (pref->fast_audio_change == Preferences::Detect) {
-				need_restart = (!MplayerVersion::isMplayerAtLeast(21441));
-			}
-		}
+				// Workaround for a mplayer problem in windows,
+				// volume is too loud after changing audio.
 
-		if (need_restart) {
-			restartPlay(); 
-		} else {
-			proc->setAudio(ID);
-			// Workaround for a mplayer problem in windows,
-			// volume is too loud after changing audio.
+				// Workaround too for a mplayer problem in linux,
+				// the volume is reduced if using -softvol-max.
 
-			// Workaround too for a mplayer problem in linux,
-			// the volume is reduced if using -softvol-max.
-
-			if (proc->isMPlayer()) {
-				if (pref->mplayer_additional_options.contains("-volume")) {
-					qDebug("Core::changeAudio: don't set volume since -volume is used");
-				} else {
-					if (pref->global_volume) {
+				if (proc->isMPlayer()) {
+					if (pref->mplayer_additional_options.contains("-volume")) {
+						qDebug("Core::changeAudio: don't set volume since -volume is used");
+					} else if (pref->global_volume) {
 						setVolume( pref->volume, true);
 						if (pref->mute) mute(true);
 					} else {
@@ -3456,7 +3494,6 @@ void Core::changeAudio(int ID, bool allow_restart) {
 					}
 				}
 			}
-			updateWidgets();
 		}
 	}
 }
@@ -3464,41 +3501,24 @@ void Core::changeAudio(int ID, bool allow_restart) {
 void Core::nextAudio() {
 	qDebug("Core::nextAudio");
 
-	int item = mdat.audios.find( mset.current_audio_id );
-	if (item == -1) {
-		qWarning("Core::nextAudio: audio ID %d not found!", mset.current_audio_id);
-	} else {
-		qDebug( "Core::nextAudio: numItems: %d, item: %d", mdat.audios.numItems(), item);
-		item++;
-		if (item >= mdat.audios.numItems()) item=0;
-		int ID = mdat.audios.itemAt(item).ID();
-		qDebug( "Core::nextAudio: item: %d, ID: %d", item, ID);
-		changeAudio( ID );
+	if (mdat.audios.numItems() > 0) {
+		int idx = mdat.audios.find(mset.current_audio_id);
+		if (idx < 0) idx = 0;
+		idx++;
+		if (idx >= mdat.audios.numItems()) idx = 0;
+		int id = mdat.audios.itemAt(idx).ID();
+		qDebug( "Core::nextAudio: idx: %d, id: %d", idx, id);
+		changeAudio(id);
 	}
 }
 
-void Core::changeVideo(int ID, bool allow_restart) {
-	qDebug("Core::changeVideo: ID: %d, allow_restart: %d", ID, allow_restart);
+void Core::changeVideo(int id) {
+	qDebug("Core::changeVideo: idx: %d", id);
 
-	if (ID != mset.current_video_id) {
-		mset.current_video_id = ID;
-		qDebug("Core::changeVideo: ID set to: %d", ID);
-
-		bool need_restart = false;
-		if (allow_restart) {
-			// afaik lavf doesn't require to restart, any other?
-			need_restart = ((mdat.demuxer != "lavf") && (mdat.demuxer != "mpegts"));
-		}
-
-		if (need_restart) {
-			restartPlay(); 
-		} else {
-			if (mdat.demuxer == "nsv") {
-				// Workaround a problem with the nsv demuxer
-				qWarning("Core::changeVideo: not changing the video with nsv to prevent mplayer go crazy");
-			} else {
-				proc->setVideo(ID);
-			}
+	if (id != mset.current_video_id) {
+		mset.current_video_id = id;
+		if (id >= 0 && id != mdat.videos.selectedID()) {
+			restartPlay();
 		}
 	}
 }
@@ -3506,16 +3526,14 @@ void Core::changeVideo(int ID, bool allow_restart) {
 void Core::nextVideo() {
 	qDebug("Core::nextVideo");
 
-	int item = mdat.videos.find( mset.current_video_id );
-	if (item == -1) {
-		qWarning("Core::nextVideo: video ID %d not found!", mset.current_video_id);
-	} else {
-		qDebug( "Core::nextVideo: numItems: %d, item: %d", mdat.videos.numItems(), item);
-		item++;
-		if (item >= mdat.videos.numItems()) item=0;
-		int ID = mdat.videos.itemAt(item).ID();
-		qDebug( "Core::nextVideo: item: %d, ID: %d", item, ID);
-		changeVideo( ID );
+	if (mdat.videos.numItems() > 0) {
+		int idx = mdat.videos.find( mset.current_video_id );
+		if (idx < 0) idx = 0;
+		idx++;
+		if (idx >= mdat.videos.numItems()) idx = 0;
+		int id = mdat.videos.itemAt(idx).ID();
+		qDebug( "Core::nextVideo: idx: %d, id: %d", idx, id);
+		changeVideo(id);
 	}
 }
 
@@ -4151,11 +4169,6 @@ void Core::displayBuffering() {
 	emit showMessage(tr("Buffering..."));
 }
 
-void Core::displayPlaying() {
-	qDebug("Core::displayPlaying");
-	emit showMessage(tr("Player started..."));
-}
-
 void Core::gotWindowResolution(int w, int h) {
 	qDebug("Core::gotWindowResolution: %d x %d", w, h);
 
@@ -4266,168 +4279,39 @@ void Core::checkIfVideoIsHD() {
 	}
 }
 
-#if NOTIFY_VIDEO_CHANGES
-void Core::initVideoTrack(const Tracks & videos) {
-	qDebug("Core::initVideoTrack");
-	mdat.videos = videos;
+// Called when playerprocess finds new track info or changes selected track
+// after player full loaded
+void Core::updateVideoTracks() {
+	qDebug("Core::updateTracks");
+
+	initVideoTracks();
+
+	// TODO: move to basegui?
 	initializeMenus();
 	updateWidgets();
 }
-#endif
 
-void Core::initAudioTrack(const Tracks & audios) {
-	qDebug("Core::initAudioTrack: num_items: %d", mdat.audios.numItems());
+// Called when playerprocess finds new track info or changes selected track
+// after player full loaded, like when loading new external audio file.
+void Core::updateAudioTracks() {
+	qDebug("Core::updateTracks");
 
-	bool restore_audio = ((mdat.audios.numItems() > 0) || 
-                          (mset.current_audio_id != MediaSettings::NoneSelected));
+	initAudioTracks();
 
-	mdat.audios = audios;
-
-	qDebug("Core::initAudioTrack: list of audios:");
-	mdat.audios.list();
-
+	// TODO: move to basegui?
 	initializeMenus();
-
-	if (!restore_audio) {
-		// Select initial track
-		qDebug("Core::initAudioTrack: selecting initial track");
-
-		int audio = mdat.audios.itemAt(0).ID(); // First one
-		if (mdat.audios.existsItemAt(pref->initial_audio_track-1)) {
-			audio = mdat.audios.itemAt(pref->initial_audio_track-1).ID();
-		}
-
-		// Check if one of the audio tracks is the user preferred.
-		if (!pref->audio_lang.isEmpty()) {
-			int res = mdat.audios.findLang( pref->audio_lang );
-			if (res != -1) audio = res;
-		}
-
-		changeAudio( audio );
-	} else {
-		// Try to restore previous audio track
-		// qDebug("Core::initAudioTrack: restoring audio");
-		// Nothing to do, the audio is already set with -aid
-	}
-
 	updateWidgets();
 
 	emit audioTracksChanged();
 }
 
-void Core::initSubtitleTrack(const SubTracks & subs) {
-	qDebug("Core::initSubtitleTrack: num_items: %d", mdat.subs.numItems());
+// Called after loading new external sub file
+void Core::updateSubtitleTracks() {
+	qDebug("Core::updateSubtitleTracks");
 
-	bool restore_subs = ((mdat.subs.numItems() > 0) || 
-                         (mset.current_sub_id != MediaSettings::NoneSelected));
+	initSubs();
 
-	// Save current sub
-	SubData::Type previous_sub_type = SubData::Sub;
-	int previous_sub_id = -1;
-	if (mdat.subs.numItems() > 0) {
-		if ((mset.current_sub_id != MediaSettings::SubNone) && 
-	        (mset.current_sub_id != MediaSettings::NoneSelected)) 
-		{
-			previous_sub_type = mdat.subs.itemAt(mset.current_sub_id).type();
-			previous_sub_id = mdat.subs.itemAt(mset.current_sub_id).ID();
-		}
-	}
-	qDebug("Core::initSubtitleTrack: previous subtitle: type: %d id: %d", previous_sub_type, previous_sub_id);
-
-	mdat.subs = subs;
-
-	qDebug("Core::initSubtitleTrack: list of subtitles:");
-	mdat.subs.list();
-
-	initializeMenus();
-
-	if (just_unloaded_external_subs) {
-		qDebug("Core::initSubtitleTrack: just_unloaded_external_subs: true");
-		restore_subs = false;
-		just_unloaded_external_subs = false;
-	}
-	if (just_loaded_external_subs) {
-		qDebug("Core::initSubtitleTrack: just_loaded_external_subs: true");
-		restore_subs = false;
-		just_loaded_external_subs = false;
-
-		QFileInfo fi(mset.external_subtitles);
-		bool is_idx = (fi.suffix().toLower() == "idx");
-		if (proc->isMPV()) is_idx = false; // Hack to ignore the idx extension with mpv
-
-		if (!is_idx) {
-			// The loaded subtitle file is the last one, so
-			// try to select that one.
-			if (mdat.subs.numItems() > 0) {
-				int selected_subtitle = mdat.subs.numItems()-1; // If everything fails, use the last one
-
-				// Try to find the subtitle file in the list
-				for (int n = 0; n < mdat.subs.numItems(); n++) {
-					SubData sub = mdat.subs.itemAt(n);
-					if ((sub.type() == SubData::File) && (sub.filename() == mset.external_subtitles)) {
-						selected_subtitle = n;
-						qDebug("Core::initSubtitleTrack: external subtitle found: #%d", n);
-						break;
-					}
-				}
-				changeSubtitle( selected_subtitle );
-				goto end;
-			}
-		}
-	}
-
-	if (!restore_subs) {
-		// Select initial track
-		qDebug("Core::initSubtitleTrack: selecting initial track");
-
-		if (!pref->autoload_sub) {
-			changeSubtitle( MediaSettings::SubNone );
-		} else {
-			//Select first subtitle
-			int sub = mdat.subs.selectOne( pref->subtitle_lang, pref->initial_subtitle_track-1 );
-			changeSubtitle( sub );
-		}
-	} else {
-		// Try to restore previous subtitle track
-		qDebug("Core::initSubtitleTrack: restoring subtitle");
-
-		if (mset.current_sub_id == MediaSettings::SubNone) {
-			changeSubtitle( MediaSettings::SubNone );
-		}
-		else
-		if (mset.current_sub_id != MediaSettings::NoneSelected) {
-			// Try to find old subtitle
-			int item = mset.current_sub_id;
-			if (previous_sub_id != -1) {
-				int sub_item = mdat.subs.find(previous_sub_type, previous_sub_id);
-				if (sub_item > -1) {
-					item = sub_item;
-					qDebug("Core::initSubtitleTrack: previous subtitle found: %d", sub_item);
-				}
-			}
-			if (item > -1) {
-				changeSubtitle(item );
-			} else {
-				qDebug("Core::initSubtitleTrack: previous subtitle not found!");
-			}
-		}
-	}
-end:
-
-#ifdef MPV_SUPPORT
-	changeSecondarySubtitle(mset.current_secondary_sub_id);
-#endif
-	updateWidgets();
-}
-
-void Core::setSubtitleTrackAgain(const SubTracks &) {
-	qDebug("Core::setSubtitleTrackAgain");
-	changeSubtitle( mset.current_sub_id );
-}
-
-void Core::updateChapterInfo(const Chapters & chapters) {
-	qDebug("Core::updateChapterInfo");
-	mdat.chapters = chapters;
+	// TODO: move to basegui?
 	initializeMenus();
 	updateWidgets();
 }
@@ -4435,14 +4319,6 @@ void Core::updateChapterInfo(const Chapters & chapters) {
 #if DVDNAV_SUPPORT
 void Core::dvdTitleChanged(int title) {
 	qDebug("Core::dvdTitleChanged: %d", title);
-}
-
-void Core::durationChanged(double length) {
-	qDebug("Core::durationChanged: %f", length);
-	if (mdat.duration != length) {
-		mdat.duration = length;
-		emit newDuration(length);
-	}
 }
 
 void Core::askForInfo() {
@@ -4455,7 +4331,7 @@ void Core::askForInfo() {
 }
 
 void Core::dvdnavUpdateMousePos(QPoint pos) {
-	bool under_mouse = mplayerwindow->videoLayer()->underMouse();
+	// bool under_mouse = mplayerwindow->videoLayer()->underMouse();
 #if 0
 	qDebug("Core::dvdnavUpdateMousePos: %d %d", pos.x(), pos.y());
 	qDebug("Core::dvdnavUpdateMousePos: state: %d", state());

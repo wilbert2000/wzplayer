@@ -29,15 +29,18 @@
 #endif
 
 
-PlayerProcess::PlayerProcess(QObject * parent, QRegExp *rx_eof)
-	: MyProcess(parent)
+PlayerProcess::PlayerProcess(MediaData *mdata, QRegExp *r_eof)
+	: MyProcess(0)
+	, md(mdata)
 	, notified_player_is_running(false)
+	, video_tracks_changed(false)
+	, audio_tracks_changed(false)
+	, subtitle_tracks_changed(false)
 	, fps()
 	, line_count(0)
 	, received_end_of_file(false)
+	, rx_eof(r_eof)
 {
-	this->rx_eof = rx_eof;
-
 	qRegisterMetaType<SubTracks>("SubTracks");
 	qRegisterMetaType<Tracks>("Tracks");
 	qRegisterMetaType<Chapters>("Chapters");
@@ -65,23 +68,24 @@ void PlayerProcess::writeToStdin(QString text) {
 	}
 }
 
-PlayerProcess * PlayerProcess::createPlayerProcess(const QString & player_bin, QObject * parent) {
+PlayerProcess * PlayerProcess::createPlayerProcess(const QString &player_bin, MediaData *md) {
+
 	PlayerProcess * proc = 0;
 
 #if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
 	if (PlayerID::player(player_bin) == PlayerID::MPLAYER) {
 		qDebug() << "PlayerProcess::createPlayerProcess: creating MplayerProcess";
-		proc = new MplayerProcess(parent);
+		proc = new MplayerProcess(md);
 	} else {
 		qDebug() << "PlayerProcess::createPlayerProcess: creating MPVProcess";
-		proc = new MPVProcess(parent);
+		proc = new MPVProcess(md);
 	}
 #else
 	#ifdef MPV_SUPPORT
-	proc = new MPVProcess(parent);
+	proc = new MPVProcess(md);
 	#endif
 	#ifdef MPLAYER_SUPPORT
-	proc = new MplayerProcess(parent);
+	proc = new MplayerProcess(md);
 	#endif
 #endif
 
@@ -90,13 +94,22 @@ PlayerProcess * PlayerProcess::createPlayerProcess(const QString & player_bin, Q
 
 bool PlayerProcess::startPlayer() {
 
-	md.reset();
+	prev_line = "";
 
 	notified_player_is_running = false;
+
+	waiting_for_answers = 0;
+	waiting_for_answers_safe_guard = 50;
+
 	received_end_of_file = false;
+
+	dwidth = 0;
+	dheight = 0;
 
 	fps = 0.0;
 	prev_frame = -1;
+
+	md->reset();
 
 	// Start the player process
 	start();
@@ -144,14 +157,90 @@ void PlayerProcess::parseBytes(QByteArray ba) {
 	}
 }
 
+void PlayerProcess::notifyChanges() {
+
+	// Only called for changes after fully loaded
+
+	if (video_tracks_changed) {
+		video_tracks_changed = false;
+		qDebug("PlayerProcess::notifyChanges: emit videoTracksChanged");
+		emit videoTracksChanged();
+	}
+	if (audio_tracks_changed) {
+		audio_tracks_changed = false;
+		qDebug("PlayerProcess::notifyChanges: emit audioTracksChanged");
+		emit audioTracksChanged();
+	}
+	if (subtitle_tracks_changed) {
+		subtitle_tracks_changed = false;
+		qDebug("PlayerProcess::notifyChanges: emit subtitleTracksChanged");
+		emit subtitleTracksChanged();
+	}
+}
+
+bool PlayerProcess::waitForAnswers() {
+
+	if (waiting_for_answers > 0) {
+		waiting_for_answers_safe_guard--;
+		if (waiting_for_answers_safe_guard > 0)
+			return true;
+
+		qWarning("MplayerProcess::waitForAnswers: did not receive answers in time. Stopped waitng.");
+		waiting_for_answers = 0;
+	}
+
+	return false;
+}
+
+void PlayerProcess::playingStarted() {
+
+	notified_player_is_running = true;
+
+	video_tracks_changed = false;
+	audio_tracks_changed = false;
+	subtitle_tracks_changed = false;
+
+	// Have any video?
+	if (dwidth <= 0) {
+		md->novideo = true;
+		qDebug("PlayerProcess::startPlaying: emit receivedNoVideo()");
+		emit receivedNoVideo();
+	} else {
+		qDebug("PlayerProcess::startPlaying: emit receivedWindowResolution()");
+		emit receivedWindowResolution(dwidth, dheight);
+	}
+
+	qDebug("PlayerProcess::startPlaying: emit playerFullyLoaded()");
+	emit playerFullyLoaded();
+
+	// Clear frame counter if no fps
+	if (fps == 0.0) {
+		emit receivedCurrentFrame(0);
+	}
+}
+
 bool PlayerProcess::parseLine(QString &line) {
-	qDebug("PlayerProcess::parseLine: '%s'", line.toUtf8().data() );
 
 	// Trim line
 	line = line.trimmed();
-	// Might let through for nice log layout
 	if (line.isEmpty())
 		return true;
+
+	// Protect against spurious messages.
+	// There is danger in this...
+	// Scenario:
+	// Query
+	// Answer
+	// Play a little while
+	// Same query
+	// Oeps, answer eaten here
+	// Moreover, letting them through might alert someone to
+	// do something about them...
+	if (line == prev_line)
+		return true;
+	prev_line = line;
+
+	qDebug("PlayerProcess::parseLine: '%s'", line.toUtf8().data() );
 
 	emit lineAvailable(line);
 
@@ -184,29 +273,29 @@ bool PlayerProcess::parseLine(QString &line) {
 bool PlayerProcess::parseAudioProperty(const QString &name, const QString &value) {
 
 	if (name == "BITRATE") {
-		md.audio_bitrate = value.toInt();
-		qDebug("PlayerProcess::parseAudioProperty: md.audio_bitrate set to %d", md.audio_bitrate);
-		emit receivedAudioBitrate(md.audio_bitrate);
+		md->audio_bitrate = value.toInt();
+		qDebug("PlayerProcess::parseAudioProperty: audio_bitrate set to %d", md->audio_bitrate);
+		emit receivedAudioBitrate(md->audio_bitrate);
 		return true;
 	}
 	if (name == "FORMAT") {
-		md.audio_format = value;
-		qDebug() << "PlayerProcess::parseAudioProperty: md.audio_format set to" << md.audio_format;
+		md->audio_format = value;
+		qDebug() << "PlayerProcess::parseAudioProperty: audio_format set to" << md->audio_format;
 		return true;
 	}
 	if (name == "RATE") {
-		md.audio_rate = value.toInt();
-		qDebug("PlayerProcess::parseAudioProperty: md.audio_rate set to %d", md.audio_rate);
+		md->audio_rate = value.toInt();
+		qDebug("PlayerProcess::parseAudioProperty: audio_rate set to %d", md->audio_rate);
 		return true;
 	}
 	if (name == "NCH") {
-		md.audio_nch = value.toInt();
-		qDebug("PlayerProcess::parseAudioProperty: md.audio_nch set to %d", md.audio_nch);
+		md->audio_nch = value.toInt();
+		qDebug("PlayerProcess::parseAudioProperty: audio_nch set to %d", md->audio_nch);
 		return true;
 	}
 	if (name == "CODEC") {
-		md.audio_codec = value;
-		qDebug() << "PlayerProcess::parseAudioProperty: md.audio_codec set to" << md.audio_codec;
+		md->audio_codec = value;
+		qDebug() << "PlayerProcess::parseAudioProperty: audio_codec set to" << md->audio_codec;
 		return true;
 	}
 
@@ -216,43 +305,43 @@ bool PlayerProcess::parseAudioProperty(const QString &name, const QString &value
 bool PlayerProcess::parseVideoProperty(const QString &name, const QString &value) {
 
 	if (name == "WIDTH") {
-		md.video_width = value.toInt();
-		qDebug("PlayerProcess::parseVideoProperty: md.video_width set to %d", md.video_width);
+		md->video_width = value.toInt();
+		qDebug("PlayerProcess::parseVideoProperty: video_width set to %d", md->video_width);
 		return true;
 	}
 	if (name == "HEIGHT") {
-		md.video_height = value.toInt();
-		qDebug("PlayerProcess::parseVideoProperty: md.video_height set to %d", md.video_height);
+		md->video_height = value.toInt();
+		qDebug("PlayerProcess::parseVideoProperty: video_height set to %d", md->video_height);
 		return true;
 	}
 	if (name == "ASPECT") {
-		md.video_aspect = value.toDouble();
-		if (md.video_aspect == 0.0 && md.video_height != 0) {
-			md.video_aspect = (double) md.video_width / md.video_height;
+		md->video_aspect = value.toDouble();
+		if (md->video_aspect == 0.0 && md->video_height != 0) {
+			md->video_aspect = (double) md->video_width / md->video_height;
 		}
-		qDebug("PlayerProcess::parseVideoProperty: md.video_aspect set to %f", md.video_aspect);
+		qDebug("PlayerProcess::parseVideoProperty: video_aspect set to %f", md->video_aspect);
 		return true;
 	}
 	if (name == "FPS") {
-		md.video_fps = value;
+		md->video_fps = value;
 		fps = value.toDouble();
-		qDebug() << "PlayerProcess::parseVideoProperty: md.video_fps set to" << md.video_fps;
+		qDebug() << "PlayerProcess::parseVideoProperty: video_fps set to" << fps;
 		return true;
 	}
 	if (name == "BITRATE") {
-		md.video_bitrate = value.toInt();
-		qDebug("PlayerProcess::parseVideoProperty: md.video_bitrate set to %d", md.video_bitrate);
-		emit receivedVideoBitrate(md.video_bitrate);
+		md->video_bitrate = value.toInt();
+		qDebug("PlayerProcess::parseVideoProperty: video_bitrate set to %d", md->video_bitrate);
+		emit receivedVideoBitrate(md->video_bitrate);
 		return true;
 	}
 	if (name == "FORMAT") {
-		md.video_format = value;
-		qDebug() << "PlayerProcess::parseVideoProperty: md.video_format set to" << md.video_format;
+		md->video_format = value;
+		qDebug() << "PlayerProcess::parseVideoProperty: video_format set to" << md->video_format;
 		return true;
 	}
 	if (name == "CODEC") {
-		md.video_codec = value;
-		qDebug() << "PlayerProcess::parseVideoProperty: md.video_codec set to" << md.video_codec;
+		md->video_codec = value;
+		qDebug() << "PlayerProcess::parseVideoProperty: video_codec set to" << md->video_codec;
 		return true;
 	}
 
@@ -265,38 +354,38 @@ bool PlayerProcess::parseMetaDataProperty(const QString &name, const QString &va
 		return false;
 
 	if (name == "TITLE") {
-		md.clip_name = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: md.clip_name set to" << md.clip_name;
+		md->clip_name = value;
+		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_name set to" << md->clip_name;
 		return true;
 	}
 	if (name == "ARTIST") {
-		md.clip_artist = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty:md.clip_artist set to" << md.clip_artist;
+		md->clip_artist = value;
+		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_artist set to" << md->clip_artist;
 		return true;
 	}
 	if (name == "ALBUM") {
-		md.clip_album = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty:md.clip_album set to" << md.clip_album;
+		md->clip_album = value;
+		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_album set to" << md->clip_album;
 		return true;
 	}
 	if (name == "GENRE") {
-		md.clip_genre = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: md.clip_genre set to" << md.clip_genre;
+		md->clip_genre = value;
+		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_genre set to" << md->clip_genre;
 		return true;
 	}
 	if (name == "DATE") {
-		md.clip_date = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: md.clip_date set to" << md.clip_date;
+		md->clip_date = value;
+		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_date set to" << md->clip_date;
 		return true;
 	}
 	if (name == "TRACK") {
-		md.clip_track = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: md.clip_track set to" << md.clip_track;
+		md->clip_track = value;
+		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_track set to" << md->clip_track;
 		return true;
 	}
 	if (name == "COPYRIGHT") {
-		md.clip_copyright = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: md.clip_copyright set to" << md.clip_copyright;
+		md->clip_copyright = value;
+		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_copyright set to" << md->clip_copyright;
 		return true;
 	}
 
@@ -306,26 +395,26 @@ bool PlayerProcess::parseMetaDataProperty(const QString &name, const QString &va
 bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "LENGTH") {
-		md.duration = value.toDouble();
-		qDebug("PlayerProcess::parseProperty: md.duration set to %f", md.duration);
+		md->duration = value.toDouble();
+		qDebug("PlayerProcess::parseProperty: duration set to %f", md->duration);
 		return true;
 	}
 	if (name == "DEMUXER") {
-		md.demuxer = value;
-		qDebug() << "PlayerProcess::parseProperty: md.demuxer set to" << md.demuxer;
+		md->demuxer = value;
+		qDebug() << "PlayerProcess::parseProperty: demuxer set to" << md->demuxer;
 		return true;
 	}
 	if (name == "CHAPTERS") {
-		md.n_chapters = value.toInt();
+		md->n_chapters = value.toInt();
 
 #ifdef TOO_CHAPTERS_WORKAROUND
-		if (md.n_chapters > 1000) {
-			qWarning("PlayerProcess::parseProperty: ignoring too many chapters: %d", md.n_chapters);
-			md.n_chapters = 0;
+		if (md->n_chapters > 1000) {
+			qWarning("PlayerProcess::parseProperty: ignoring too many chapters: %d", md->n_chapters);
+			md->n_chapters = 0;
 		}
 #endif
 
-		qDebug("PlayerProcess::parseProperty: md.n_chapters set to %d", md.n_chapters);
+		qDebug("PlayerProcess::parseProperty: n_chapters set to %d", md->n_chapters);
 		return true;
 	}
 

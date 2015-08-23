@@ -267,14 +267,14 @@ public slots:
 	void setAudioEq9(int value);
 
 	void changeDeinterlace(int);
-	void changeSubtitle(int);
+	void changeSubtitle(int idx, bool updateWidgets = true);
 	void nextSubtitle();
 #ifdef MPV_SUPPORT
 	void changeSecondarySubtitle(int);
 #endif
-	void changeAudio(int ID, bool allow_restart = true);
+	void changeAudio(int id, bool allow_restart = true);
 	void nextAudio();
-	void changeVideo(int ID, bool allow_restart = true);
+	void changeVideo(int id);
 	void nextVideo();
 #if PROGRAM_SWITCH
 	void changeProgram(int ID);
@@ -380,7 +380,6 @@ protected slots:
 	void displayScreenshotName(QString filename);
 	void displayUpdatingFontCache();
 	void displayBuffering();
-	void displayPlaying();
 
 	void streamTitleChanged(QString);
 	void streamTitleAndUrlChanged(QString,QString);
@@ -395,20 +394,12 @@ protected slots:
 	//! the resolution is HD
 	void checkIfVideoIsHD();
 
-	void initAudioTrack(const Tracks &);
-
-#if NOTIFY_VIDEO_CHANGES
-	void initVideoTrack(const Tracks &);
-#endif
-
-	void initSubtitleTrack(const SubTracks &);
-	void setSubtitleTrackAgain(const SubTracks &);
-
-	void updateChapterInfo(const Chapters &);
+	void updateVideoTracks();
+	void updateAudioTracks();
+	void updateSubtitleTracks();
 
 #if DVDNAV_SUPPORT
 	void dvdTitleChanged(int);
-	void durationChanged(double);
 	void askForInfo();
 	void dvdnavUpdateMousePos(QPoint);
 	void dvdTitleIsMenu();
@@ -526,7 +517,6 @@ private:
 	bool we_are_restarting;
 
 	bool just_loaded_external_subs;
-	bool just_unloaded_external_subs;
 	State _state;
 	bool change_volume_after_unpause;
 
@@ -542,6 +532,9 @@ private:
 	void getZoomFromMplayerWindow();
 	void getPanFromMplayerWindow();
 	void pan(int dx, int dy);
+	void initVideoTracks();
+	void initAudioTracks();
+	void initSubs();
 };
 
 #endif

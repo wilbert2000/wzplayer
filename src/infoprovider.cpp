@@ -23,15 +23,14 @@
 #include "playerid.h"
 #include <QFileInfo>
 
-MediaData InfoProvider::getInfo(QString mplayer_bin, QString filename) {
+void InfoProvider::getInfo(QString mplayer_bin, QString filename, MediaData &md) {
 	qDebug("InfoProvider::getInfo: %s", filename.toUtf8().data());
 
 	QFileInfo fi(mplayer_bin);
 	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
 		mplayer_bin = fi.absoluteFilePath();
 	}
-
-	PlayerProcess * proc = PlayerProcess::createPlayerProcess(mplayer_bin, 0);
+	PlayerProcess * proc = PlayerProcess::createPlayerProcess(mplayer_bin, &md);
 
 	proc->setExecutable(mplayer_bin);
 	proc->setFixedOptions();
@@ -46,18 +45,15 @@ MediaData InfoProvider::getInfo(QString mplayer_bin, QString filename) {
 	QString commandline = proc->arguments().join(" ");
 	qDebug("InfoProvider::getInfo: command: '%s'", commandline.toUtf8().data());
 
-	proc->start();
+	proc->startPlayer();
 	if (!proc->waitForFinished()) {
 		qWarning("InfoProvider::getInfo: process didn't finish. Killing it...");
 		proc->kill();
 	}
 
-	MediaData md = proc->mediaData();
 	delete proc;
-
-	return md;
 }
 
-MediaData InfoProvider::getInfo(QString filename) {
-	return getInfo( Global::pref->mplayer_bin, filename );
+void InfoProvider::getInfo(QString filename, MediaData &md) {
+	getInfo( Global::pref->mplayer_bin, filename, md );
 }

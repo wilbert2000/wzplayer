@@ -31,13 +31,13 @@ public:
 	TrackData() { _lang = ""; _name = "";_ID = -1; };
 	~TrackData() {};
 
+	void setID( int id ) { _ID = id; };
 	void setLang( const QString & l ) { _lang = l; };
 	void setName( const QString & n ) { _name = n; };
-	void setID( int id ) { _ID = id; };
 
+	int ID() const { return _ID; };
 	QString lang() const { return _lang; };
 	QString name() const { return _name; };
-	int ID() const { return _ID; };
 
 	QString displayName() const {
 		QString dname="";
@@ -59,16 +59,14 @@ public:
 	}
 
 protected:
+	int _ID;
 
 	/* Language code: es, en, etc. */
 	QString _lang;
 
 	/* spanish, english... */
 	QString _name;
-
-	int _ID;
 };
-
 
 class Tracks {
 
@@ -80,22 +78,33 @@ public:
 	void clear();
 	void list();
 
-	void addLang(int ID, QString lang);
-	void addName(int ID, QString name);
 	void addID(int ID);
+	void addLang(int ID, QString lang);
+	void addName(int ID, const QString &name);
+	void addTrack(int ID, const QString &lang, const QString &name);
+	// For mplayer
+	bool updateTrack(int id, const QString &type, const QString &value);
+	// For mpv
+	bool updateTrack(int ID, const QString &lang, const QString &name, bool selected);
 
 	int numItems();
 	bool existsItemAt(int n);
+	bool existingID(int ID);
+
+
+	int selectedID() { return _selected_ID; }
+	void setSelectedID(int ID) { _selected_ID = ID; }
 
 	TrackData itemAt(int n);
 	TrackData item(int ID);
-	int find(int ID);
 
+	int find(int ID);
 	int findLang(QString expr);
 
 protected:
 	typedef QMap <int, TrackData> TrackMap;
 	TrackMap tm;
+	int _selected_ID;
 };
 
 #endif

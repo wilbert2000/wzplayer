@@ -20,9 +20,11 @@
 #include "subtracks.h"
 #include "mediasettings.h"
 #include <QRegExp>
+#include <QDebug>
 
 SubTracks::SubTracks() {
-	index = 0;
+	_selected_type = SubData::Sub;
+	_selected_ID = -1;
 }
 
 
@@ -30,30 +32,9 @@ SubTracks::~SubTracks() {
 }
 
 void SubTracks::clear() {
+	// Don't clear type: for mpv it's always sub
+	_selected_ID = -1;
 	subs.clear();
-}
-
-void SubTracks::add( SubData::Type t, int ID ) {
-	SubData d;
-	d.setType(t);
-	d.setID(ID);
-
-	subs.append(d);
-}
-
-void SubTracks::list() {
-	for (unsigned int n=0; n < subs.count(); n++) {
-		qDebug("SubTracks::list: item %d: type: %d ID: %d lang: '%s' name: '%s' filename: '%s'",
-               n, subs[n].type(), subs[n].ID(), subs[n].lang().toUtf8().data(),
-               subs[n].name().toUtf8().data(), subs[n].filename().toUtf8().data() );
-	}
-}
-
-void SubTracks::listNames() {
-	for (unsigned int n=0; n < subs.count(); n++) {
-		qDebug("SubTracks::list: item %d: '%s'",
-               n, subs[n].displayName().toUtf8().data() );
-	}
 }
 
 int SubTracks::numItems() {
@@ -64,13 +45,23 @@ bool SubTracks::existsItemAt(int n) {
 	return ((n > 0) && (n < numItems()));
 }
 
+int SubTracks::find( SubData::Type t, int ID ) {
+	for (int n = 0; n < subs.count(); n++) {
+		if ( ( subs[n].type() == t ) && ( subs[n].ID() == ID ) ) {
+			return n;
+		}
+	}
+	//qDebug("SubTracks::find: item type: %d, ID: %d doesn't exist", t, ID);
+	return -1;
+}
+
 int SubTracks::findLang(QString expr) {
 	qDebug( "SubTracks::findLang: '%s'", expr.toUtf8().data());
 	QRegExp rx( expr );
 
 	int res_id = -1;
 
-	for (int n=0; n < numItems(); n++) {
+	for (int n = 0; n < numItems(); n++) {
 		qDebug("SubTracks::findLang: lang #%d '%s'", n, 
                 subs[n].lang().toUtf8().data());
 		if (rx.indexIn( subs[n].lang() ) > -1) {
@@ -83,40 +74,31 @@ int SubTracks::findLang(QString expr) {
 	return res_id;
 }
 
-// Return first subtitle or the user preferred (if found)
-// or none if there's no subtitles
-int SubTracks::selectOne(QString preferred_lang, int default_sub) {
-	int sub = MediaSettings::SubNone; 
+int SubTracks::findFile(const QString &filename, int not_found_idx) {
 
-	if (numItems() > 0) {
-		sub = 0; // First subtitle
-		if (existsItemAt(default_sub)) {
-			sub = default_sub;
-		}
+	int result = not_found_idx;
+	bool found = false;
 
-		// Check if one of the subtitles is the user preferred.
-		if (!preferred_lang.isEmpty()) {
-			int res = findLang( preferred_lang );
-			if (res != -1) sub = res;
+	for (int n = 0; n < numItems(); n++) {
+		SubData sub = subs[n];
+		if (sub.type() == SubData::File && sub.filename() == filename) {
+			result = n;
+			found = true;
+			break;
 		}
 	}
-	return sub;
-}
 
-int SubTracks::find( SubData::Type t, int ID ) {
-	for (unsigned int n=0; n < subs.count(); n++) {
-		if ( ( subs[n].type() == t ) && ( subs[n].ID() == ID ) ) {
-			return n;
-		}
-	}
-	qDebug("SubTracks::find: item type: %d, ID: %d doesn't exist", t, ID);
-	return -1;
+	if (found)
+		qDebug() << "SubTracks::findFile: found" << filename;
+	else qDebug() << "SubTracks::findFile:" << filename << "not found";
+
+	return result;
 }
 
 SubData SubTracks::findItem( SubData::Type t, int ID ) {
 	SubData sub;
 	int n = find(t,ID);
-	if ( n != -1 ) 
+	if ( n != -1 )
 		return subs[n];
 	else
 		return sub;
@@ -133,6 +115,36 @@ SubData SubTracks::itemAt( int n ) {
 		SubData empty_sub;
 		return empty_sub;
 	}
+}
+
+// Return first subtitle or the user preferred (if found)
+// or none if there's no subtitles
+int SubTracks::selectOne(QString preferred_lang, int default_sub) {
+
+	int sub = MediaSettings::SubNone;
+
+	if (numItems() > 0) {
+		sub = 0; // First subtitle
+		if (existsItemAt(default_sub)) {
+			sub = default_sub;
+		}
+
+		// Check if one of the subtitles is the user preferred.
+		if (!preferred_lang.isEmpty()) {
+			int res = findLang( preferred_lang );
+			if (res != -1) sub = res;
+		}
+	}
+
+	return sub;
+}
+
+void SubTracks::add( SubData::Type t, int ID ) {
+	SubData d;
+	d.setType(t);
+	d.setID(ID);
+
+	subs.append(d);
 }
 
 bool SubTracks::changeLang( SubData::Type t, int ID, QString lang ) {
@@ -159,70 +171,67 @@ bool SubTracks::changeFilename( SubData::Type t, int ID, QString filename ) {
 	return true;
 }
 
-SubTracks::ParseResult SubTracks::parse(QString text) {
-	qDebug("SubTracks::parse: '%s'", text.toUtf8().data());
+bool SubTracks::update(int id, const QString & lang, const QString & name, bool selected) {
 
-	ParseResult result = SubtitleUnchanged;
+	bool changed = false;
 
-	QRegExp rx_subtitle("^ID_(SUBTITLE|FILE_SUB|VOBSUB)_ID=(\\d+)");
-	QRegExp rx_sid("^ID_(SID|VSID)_(\\d+)_(LANG|NAME)=(.*)");
-	QRegExp rx_subtitle_file("^ID_FILE_SUB_FILENAME=(.*)");
-
-	if (rx_subtitle.indexIn(text) > -1) {
-		QString sub_type = rx_subtitle.cap(1);
-		int ID = rx_subtitle.cap(2).toInt();
-
-		SubData::Type t;
-		if (sub_type == "FILE_SUB")
-			t = SubData::File;
-		else if (sub_type == "VOBSUB")
-			t = SubData::Vob;
-		else t = SubData::Sub;
-
-		if (find(t, ID) > -1) {
-			qWarning("SubTracks::parse: subtitle type: %d, ID: %d already exists!", t, ID);
-		} else {
-			add(t, ID);
-			result = SubtitleAdded;
-		}
-	} else if (rx_sid.indexIn(text) > -1) {
-		QString sub_type = rx_sid.cap(1);
-		int ID = rx_sid.cap(2).toInt();
-		QString name = rx_sid.cap(3);
-		QString value = rx_sid.cap(4).trimmed();
-
-		SubData::Type t = SubData::Sub;
-		if (sub_type == "VSID")
-			t = SubData::Vob;
-
-		if (find(t, ID) == -1) {
-			qWarning("SubTracks::parse: subtitle type: %d, ID: %d doesn't exist!", t, ID);
-		} else {
-			if (name == "NAME")
-				changeName(t, ID, value);
-			else
-				changeLang(t, ID, value);
-
-			result = SubtitleChanged;
-		}
-	} else if (rx_subtitle_file.indexIn(text) > -1) {
-		QString file = rx_subtitle_file.cap(1);
-		if ( subs.count() > 0 ) {
-			int last = subs.count() -1;
-			if (subs[last].type() == SubData::File) {
-				subs[last].setFilename( file );
-
-				result = SubtitleChanged;
-			}
-		}
-	}
-
-	if (result == SubtitleUnchanged) {
-		qDebug("SubTracks::parse: subtitles unchanged");
+	int idx = find(SubData::Sub, id);
+	if (idx == -1) {
+		changed = true;
+		add(SubData::Sub, id);
+		changeName(SubData::Sub, id, name);
+		changeLang(SubData::Sub, id, lang);
+		if (selected)
+			_selected_ID = id;
 	} else {
-		qDebug("SubTracks::parse: subtitles updated");
+		// Track already existed
+		if (itemAt(idx).name() != name) {
+			changed = true;
+			changeName(SubData::Sub, id, name);
+		}
+		if (itemAt(idx).lang() != lang) {
+			changed = true;
+			changeLang(SubData::Sub, id, lang);
+		}
+
+		if (selected) {
+			if (_selected_ID != id) {
+				qDebug() << "SubTracks::update: changed selected id from"
+						 << _selected_ID << "to" << id;
+				_selected_ID = id;
+				changed = true;
+			}
+		} else if (_selected_ID == id) {
+			qDebug() << "SubTracks::update: changed selected id from"
+					 << id << "to -1";
+			_selected_ID = -1;
+			changed = true;
+		}
 	}
-	return result;
+
+	if (changed) {
+		qDebug("SubTracks::update: updated subtitle track id: %d, lang: '%s', name: '%s', selected: %d",
+			   id, lang.toUtf8().constData(), name.toUtf8().constData(), selected);
+	} else {
+		qDebug("SubTracks::update:: subtitle track id %d already up to date", id);
+	}
+	return changed;
+}
+
+void SubTracks::list() {
+	qDebug("SubTracks::list: selected subtitle track ID: %d", _selected_ID);
+	for (int n = 0; n < subs.count(); n++) {
+		qDebug("SubTracks::list: item %d: type: %d ID: %d lang: '%s' name: '%s' filename: '%s'",
+			   n, subs[n].type(), subs[n].ID(), subs[n].lang().toUtf8().data(),
+			   subs[n].name().toUtf8().data(), subs[n].filename().toUtf8().data() );
+	}
+}
+
+void SubTracks::listNames() {
+	for (int n = 0; n < subs.count(); n++) {
+		qDebug("SubTracks::list: item %d: '%s'",
+			   n, subs[n].displayName().toUtf8().data() );
+	}
 }
 
 /*

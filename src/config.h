@@ -21,8 +21,6 @@
 
 #include <Qt>
 
-#define NOTIFY_VIDEO_CHANGES 0
-
 
 // STYLE_SWITCHING
 // if 1, the preferences dialog will have an option to switch

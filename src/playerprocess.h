@@ -34,16 +34,16 @@ class PlayerProcess : public MyProcess
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	PlayerProcess(QObject * parent, QRegExp * rx_eof);
+	PlayerProcess(MediaData * mdata, QRegExp * r_eof);
 
 	PlayerID::Player player() { return player_id; }
 	bool isMPlayer() { return (player_id == PlayerID::MPLAYER); }
 	bool isMPV() { return (player_id == PlayerID::MPV); }
+	bool isFullyStarted() { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();
 
 	void writeToStdin(QString text);
-	MediaData mediaData() { return md; };
 
 	// Command line options
 	virtual void setMedia(const QString & media, bool is_playlist = false) = 0;
@@ -113,9 +113,9 @@ public:
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
 
-	void setPausingPrefix(const QString & prefix) { pausing_prefix = prefix; };
+	void setPausingPrefix(const QString & prefix) { pausing_prefix = prefix; }
 
-	static PlayerProcess * createPlayerProcess(const QString & player_bin, QObject * parent = 0);
+	static PlayerProcess * createPlayerProcess(const QString &player_bin, MediaData *md);
 
 // Signals
 signals:
@@ -138,7 +138,6 @@ signals:
 	void receivedConnectingToMessage(QString);
 	void receivedResolvingMessage(QString);
 	void receivedBuffering();
-	void receivedPlaying();
 	void receivedScreenshot(QString);
 	void receivedUpdatingFontCache();
 	void receivedScanningFont(QString);
@@ -149,21 +148,14 @@ signals:
 
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
 
+	//! Emitted if a new video track has been added or an old one changed
+	void videoTracksChanged();
+
+	//! Emitted if a new audio track has been added or an old one changed
+	void audioTracksChanged();
+
 	//! Emitted if a new subtitle has been added or an old one changed
-	void subtitleInfoChanged(const SubTracks &);
-
-	//! Emitted when subtitle info has been received but there wasn't anything new
-	void subtitleInfoReceivedAgain(const SubTracks &);
-
-	//! Emitted if a new audio track been added or an old one changed
-    void audioInfoChanged(const Tracks &);
-
-#if NOTIFY_VIDEO_CHANGES
-	//! Emitted if a new video track been added or an old one changed
-	void videoInfoChanged(const Tracks &);
-#endif
-
-	void chaptersChanged(const Chapters &);
+	void subtitleTracksChanged();
 
 #if DVDNAV_SUPPORT
 	void receivedDVDTitle(int);
@@ -179,15 +171,28 @@ public slots:
 	void parseBytes(QByteArray ba);
 
 protected:
-	MediaData md;
+	MediaData* md;
 	QString pausing_prefix;
 
 	PlayerID::Player player_id;
 
 	bool notified_player_is_running;
+	int waiting_for_answers;
+	int waiting_for_answers_safe_guard;
+
+	bool video_tracks_changed;
+	bool audio_tracks_changed;
+	bool subtitle_tracks_changed;
+
+	int dwidth;
+	int dheight;
 
 	double fps;
 	int prev_frame;
+
+	void notifyChanges();
+	bool waitForAnswers();
+	void playingStarted();
 
 	virtual bool parseLine(QString &line);
 	virtual bool parseAudioProperty(const QString &name, const QString &value);
@@ -200,6 +205,7 @@ protected slots:
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
+	QString prev_line;
 	int line_count;
 	bool received_end_of_file;
 	QRegExp* rx_eof;

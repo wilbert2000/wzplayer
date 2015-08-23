@@ -31,7 +31,7 @@ class MPVProcess : public PlayerProcess
 	Q_OBJECT
 
 public:
-	MPVProcess(QObject * parent = 0);
+	MPVProcess(MediaData * mdata);
 	~MPVProcess();
 
 	virtual bool startPlayer();
@@ -112,8 +112,6 @@ protected:
 
 	bool isOptionAvailable(const QString & option);
 	void addVFIfAvailable(const QString & vf, const QString & value = QString::null);
-	void updateAudioTrack(int ID, const QString & name, const QString & lang);
-	void updateSubtitleTrack(int ID, const QString & name, const QString & lang);
 
 protected slots:
 	void requestChapterInfo();
@@ -123,20 +121,10 @@ private:
 	QString mpv_version;
 	bool verbose;
 
-	SubTracks subs;
-	bool subtitle_info_received;
-	bool subtitle_info_changed;
-
-	Tracks audios;
-	bool audio_info_changed;
-
-#if NOTIFY_VIDEO_CHANGES
-	Tracks videos;
-	bool video_info_changed;
+#ifdef TRAC_INFO
+	int wait_for_track_info;
+	int wait_for_track_info_safe_guard;
 #endif
-
-	Chapters chapters;
-	bool chapter_info_changed;
 
 	QString previous_eq;
 
@@ -145,10 +133,9 @@ private:
 	bool osd_centered_y;
 
 	void notifyTimestamp(double sec);
-	void notifyChanges();
 	void parseStatusLine(QRegExp &rx);
-	void parseChapterName(int id, QString title);
-	void parseTrackInfo(QRegExp &rx);
+	void parseChapter(int id, const QString &start, const QString &start_str, QString title);
+	bool parseTrackInfo(QRegExp &rx);
 };
 
 #endif

@@ -1068,7 +1068,7 @@ void Playlist::addFiles(QStringList files, AutoGetInfo auto_get_info) {
     while( it != files.end() ) {
 #if USE_INFOPROVIDER
 		if ( (get_info) && (QFile::exists((*it))) ) {
-			data = InfoProvider::getInfo( (*it) );
+			InfoProvider::getInfo( (*it), data );
 			addItem( (*it), data.displayName(), data.duration );
 			//updateView();
 			//qApp->processEvents();

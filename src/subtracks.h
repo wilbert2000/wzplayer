@@ -24,27 +24,27 @@
 #include <QFileInfo>
 #include <QList>
 
-class SubData 
-{
+class SubData {
 
 public:
 	enum Type { None = -1, Vob = 0, Sub = 1, File = 2 };
 
-	SubData() { _ID=-1; _lang=""; _name=""; _filename=""; _type = None; };
-	~SubData() {};
+	SubData() { _ID=-1; _lang=""; _name=""; _filename=""; _type = None; }
+	~SubData() {}
 
-	void setType( Type t ) { _type = t; };
-	void setID(int id) { _ID = id; };
-	void setLang(QString lang) { _lang = lang; };
-	void setName(QString name) { _name = name; };
-	void setFilename(QString f) { _filename = f; };
+	void setType( Type t ) { _type = t; }
+	void setID(int id) { _ID = id; }
+	void setLang(QString lang) { _lang = lang; }
+	void setName(QString name) { _name = name; }
+	void setFilename(QString f) { _filename = f; }
 
-	Type type() { return _type; };
-	int ID() { return _ID; };
-	QString lang() { return _lang; };
-	QString name() { return _name; };
-	QString filename() { return _filename; };
+	Type type() { return _type; }
+	int ID() { return _ID; }
+	QString lang() { return _lang; }
+	QString name() { return _name; }
+	QString filename() { return _filename; }
 
+	// TODO:
 	QString displayName() {
 		QString dname="";
 
@@ -64,7 +64,7 @@ public:
 		dname = QString::number(_ID);
 
 		return dname;
-	};
+	}
 
 protected:
 	Type _type;
@@ -74,44 +74,47 @@ protected:
 	QString _filename;
 };
 
-typedef QList <SubData> SubList;
-
-
-class SubTracks
-{
+class SubTracks {
 public:
-	enum ParseResult { SubtitleUnchanged = 0, SubtitleAdded = 1, SubtitleChanged = 2 };
-
 	SubTracks();
 	~SubTracks();
 
 	void clear();
+
+	int selectedID() { return _selected_ID; }
+	void setSelectedID(int id) { _selected_ID = id; }
+	SubData::Type selectedType() { return _selected_type; }
+	void setSelectedType(SubData::Type type) { _selected_type = type; }
+	void setSelected(SubData::Type type, int id) {
+		_selected_type = type;
+		_selected_ID = id;
+	}
+
+	int numItems();
+	bool existsItemAt(int n);
+
 	int find( SubData::Type t, int ID );
+	int findLang(QString expr);
+	int findFile(const QString &filename, int not_found_idx = -1);
+	SubData findItem( SubData::Type t, int ID );
+	SubData itemAt(int n);
+	int selectOne(QString preferred_lang, int default_sub = 0);
 
 	void add( SubData::Type t, int ID );
 	bool changeLang( SubData::Type t, int ID, QString lang );
 	bool changeName( SubData::Type t, int ID, QString name );
 	bool changeFilename( SubData::Type t, int ID, QString filename );
 
-	int numItems();
-	bool existsItemAt(int n);
-
-	SubData itemAt(int n);
-	SubData findItem( SubData::Type t, int ID );
-
-	int findLang(QString expr);
-	int selectOne(QString preferred_lang, int default_sub=0);
-
-	//! Parses a line from mplayer output with subtitle info
-	ParseResult parse(QString text);
+	bool update(int id, const QString & lang, const QString & name, bool selected);
 
 	void list();
 	void listNames();
-	/* void test(); */
 
 protected:
+	typedef QList <SubData> SubList;
 	SubList subs;
-	int index;
+	SubData::Type _selected_type;
+	int _selected_ID;
 };
 
 #endif

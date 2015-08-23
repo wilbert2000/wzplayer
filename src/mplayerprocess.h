@@ -31,7 +31,7 @@ class MplayerProcess : public PlayerProcess
 	Q_OBJECT
 
 public:
-	MplayerProcess(QObject * parent = 0);
+	MplayerProcess(MediaData * mdata);
 	~MplayerProcess();
 
 	virtual bool startPlayer();
@@ -115,20 +115,18 @@ protected:
 private:
 	int mplayer_svn;
 
-	SubTracks subs;
-	bool subtitle_info_received;
-	bool subtitle_info_changed;
-
-	Tracks audios;
-	bool audio_info_changed;
-
 	int dvd_current_title;
 	int br_current_title;
 
-	void updateAudioTrack(int id, const QString &type, const QString &value);
+	int sub_id_filename;
+
+	void askQuestions();
 	void notifyTimestamp(double sec, const QString &line);
-	void notifyChanges();
 	void parseStatusLine(QRegExp &rx_av, const QString &line);
+	bool parseSubID(const QString &type, int id);
+	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);
+	bool parseSubFile(const QString &filename);
+	bool parseAnswer(const QString &name, const QString &value);
 };
 
 #endif
