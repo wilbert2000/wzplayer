@@ -59,7 +59,7 @@ public:
 	// Slave commands
 	virtual void quit() = 0;
 	virtual void setVolume(int v) = 0;
-	virtual void setOSD(int o) = 0;
+	virtual void setOSDLevel(int level) = 0;
 	virtual void setAudio(int ID) = 0;
 	virtual void setVideo(int ID) = 0;
 	virtual void setSubtitle(int type, int ID) = 0;

@@ -50,7 +50,7 @@ public:
 	// Slave commands
 	void quit();
 	void setVolume(int v);
-	void setOSD(int o);
+	void setOSDLevel(int level);
 	void setAudio(int ID);
 	void setVideo(int ID);
 	void setSubtitle(int type, int ID);

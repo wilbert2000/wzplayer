@@ -1013,8 +1013,8 @@ void BaseGui::createActions() {
 	exitFullscreenAct = new MyAction( Qt::Key_Escape, this, "exit_fullscreen" );
 	connect( exitFullscreenAct, SIGNAL(triggered()), this, SLOT(exitFullscreen()) );
 
-	nextOSDAct = new MyAction( Qt::Key_O, this, "next_osd");
-	connect( nextOSDAct, SIGNAL(triggered()), core, SLOT(nextOSD()) );
+	nextOSDLevelAct = new MyAction( Qt::Key_O, this, "next_osd");
+	connect( nextOSDLevelAct, SIGNAL(triggered()), core, SLOT(nextOSDLevel()) );
 
 	decContrastAct = new MyAction( Qt::Key_1, this, "dec_contrast");
 	connect( decContrastAct, SIGNAL(triggered()), core, SLOT(decContrast()) );
@@ -1100,7 +1100,7 @@ void BaseGui::createActions() {
 	osdSeekAct = new MyActionGroupItem(this, osdGroup, "osd_seek", Preferences::Seek);
 	osdTimerAct = new MyActionGroupItem(this, osdGroup, "osd_timer", Preferences::SeekTimer);
 	osdTotalAct = new MyActionGroupItem(this, osdGroup, "osd_total", Preferences::SeekTimerTotal);
-	connect( osdGroup, SIGNAL(activated(int)), core, SLOT(changeOSD(int)) );
+	connect( osdGroup, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)) );
 
 	// Denoise
 	denoiseGroup = new MyActionGroup(this);
@@ -1825,7 +1825,7 @@ void BaseGui::retranslateStrings() {
 	// Exit fullscreen
 	exitFullscreenAct->change( tr("Exit fullscreen") );
 
-	nextOSDAct->change( tr("OSD - Next level") );
+	nextOSDLevelAct->change( tr("OSD - Next level") );
 	decContrastAct->change( tr("Dec contrast") );
 	incContrastAct->change( tr("Inc contrast") );
 	decBrightnessAct->change( tr("Dec brightness") );

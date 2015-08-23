@@ -287,8 +287,8 @@ public slots:
 	void changeAngle(int);
 	void changeAspectRatio(int);
 	void nextAspectRatio();
-	void changeOSD(int level);
-	void nextOSD();
+	void changeOSDLevel(int level);
+	void nextOSDLevel();
 	void nextWheelFunction();
 
 	void changeSize(int percentage); // Size of the window

@@ -1035,8 +1035,8 @@ void MPVProcess::setVolume(int v) {
 	writeToStdin("set volume " + QString::number(v));
 }
 
-void MPVProcess::setOSD(int o) {
-	writeToStdin("osd " + QString::number(o));
+void MPVProcess::setOSDLevel(int level) {
+	writeToStdin("osd " + QString::number(level));
 }
 
 void MPVProcess::setAudio(int ID) {

@@ -790,8 +790,8 @@ void MplayerProcess::setVolume(int v) {
 	writeToStdin("volume " + QString::number(v) + " 1");
 }
 
-void MplayerProcess::setOSD(int o) {
-	writeToStdin(pausing_prefix + " osd " + QString::number(o));
+void MplayerProcess::setOSDLevel(int level) {
+	writeToStdin(pausing_prefix + " osd " + QString::number(level));
 }
 
 void MplayerProcess::setAudio(int ID) {

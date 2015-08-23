@@ -496,7 +496,6 @@ protected:
 	MyAction * decSubScaleAct;
 	MyAction * useCustomSubStyleAct;
 	MyAction * useForcedSubsOnlyAct;
-	MyAction * subVisibilityAct;
 #ifdef FIND_SUBTITLES
 	MyAction * showFindSubtitlesDialogAct;
 	MyAction * openUploadSubtitlesPageAct;//turbos  
@@ -552,7 +551,7 @@ protected:
 	MyAction * incVolume2Act;
 #endif
 	MyAction * exitFullscreenAct;
-	MyAction * nextOSDAct;
+	MyAction * nextOSDLevelAct;
 	MyAction * decContrastAct;
 	MyAction * incContrastAct;
 	MyAction * decBrightnessAct;

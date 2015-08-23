@@ -3792,18 +3792,18 @@ void Core::changeLetterboxOnFullscreen(bool b) {
 	CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(mplayerwindow));
 }
 
-void Core::changeOSD(int level) {
-	qDebug("Core::changeOSD: %d", level);
+void Core::changeOSDLevel(int level) {
+	qDebug("Core::changeOSDLevel: %d", level);
 
 	pref->osd_level = (Preferences::OSDLevel) level;
 
 	proc->setPausingPrefix(pausing_prefix());
-	proc->setOSD(level);
+	proc->setOSDLevel(level);
 
 	updateWidgets();
 }
 
-void Core::nextOSD() {
+void Core::nextOSDLevel() {
 
 	int level;
 	if (pref->osd_level >= Preferences::SeekTimerTotal) {
@@ -3811,7 +3811,7 @@ void Core::nextOSD() {
 	} else {
 		level = pref->osd_level + 1;
 	}
-	changeOSD( level );
+	changeOSDLevel( level );
 }
 
 void Core::changeRotate(int r) {
