@@ -300,25 +300,27 @@ void MplayerWindow::updateSizeGroup() {
 		// Set when x and y factor agree
 		if (size_factor_x == size_factor_y) {
 			if (size_group->setChecked(size_factor_x)) {
-				qDebug("Mplayerwindow::updateSizegroup set size group to %d%%",
-						size_factor_x);
+				//qDebug("Mplayerwindow::updateSizegroup set size group to %d%%",
+				//		size_factor_x);
 			} else {
-				qDebug("Mplayerwindow::updateSizegroup no size group action for %d%%",
-					   size_factor_x);
+				//qDebug("Mplayerwindow::updateSizegroup no size group action for %d%%",
+				//	   size_factor_x);
 			}
 		} else {
-			qDebug("Mplayerwindow::updateSizegroup width %d%% and height %d%% factor mismatch",
-				   size_factor_x, size_factor_y);
+			//qDebug("Mplayerwindow::updateSizegroup width %d%% and height %d%% factor mismatch",
+			//	   size_factor_x, size_factor_y);
 		}
 	}
 }
 
 void MplayerWindow::updateVideoWindow() {
+	/*
 	qDebug() << "MplayerWindow::updateVideoWindow in: fullscreen" << fullscreen
 			<< " size" << width() << "x" << height()
 			<< " aspect" << aspect
 			<< " zoom" << zoom()
 			<< " pan" << pan();
+	*/
 
 	QSize video_size = getAdjustedSize(width(), height(), zoom());
 
@@ -340,20 +342,38 @@ void MplayerWindow::updateVideoWindow() {
 
 	// Update status with new size. After OSD to clear moveOSD msg.
 	if (!fullscreen && video_size != last_video_size) {
-		emit showMessage(tr("Video size %1 x %2").arg(QString::number(video_size.width())).arg(QString::number(video_size.height())));
+		emit showMessage(tr("Video size %1 x %2").arg(video_size.width()).arg(video_size.height()));
 		last_video_size = video_size;
 	}
 
 	updateSizeGroup();
 
-	qDebug("MplayerWindow::updateVideoWindow out: pos (%d, %d)  size %d x %d",
-		   pos.x(), pos.y(), video_size.width(), video_size.height());
+	//qDebug("MplayerWindow::updateVideoWindow out: pos (%d, %d)  size %d x %d",
+	//	   pos.x(), pos.y(), video_size.width(), video_size.height());
 }
 
-void MplayerWindow::resizeEvent(QResizeEvent*) {
-	qDebug("MplayerWindow::resizeEvent");
-
+void MplayerWindow::resizeEvent(QResizeEvent *) {
+	//qDebug("MplayerWindow::resizeEvent");
 	updateVideoWindow();
+}
+
+void MplayerWindow::startDragging() {
+
+	dragging = true;
+	// Cancel pending left click
+	if (delay_left_click)
+		left_click_timer->stop();
+	setCursor(QCursor(Qt::DragMoveCursor));
+
+	qDebug("MplayerWindow::startDragging: started drag");
+}
+
+void MplayerWindow::stopDragging() {
+
+	dragging = false;
+	setCursor(QCursor(Qt::ArrowCursor));
+
+	qDebug( "MplayerWindow::stopDragging: stopped dragging" );
 }
 
 void MplayerWindow::mousePressEvent( QMouseEvent * event) {
@@ -400,14 +420,8 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 		if (!dragging &&
 			((diff.manhattanLength() > QApplication::startDragDistance())
 			|| (left_button_pressed_time->elapsed() >= QApplication::startDragTime()))) {
-			dragging = true;
 
-			// Cancel pending left click
-			if (delay_left_click)
-				left_click_timer->stop();
-
-			setCursor(QCursor(Qt::DragMoveCursor));
-			qDebug("MplayerWindow::mouseMoveEvent started drag");
+			startDragging();
 		}
 
 		if (dragging) {
@@ -432,9 +446,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	kill_fake_event = false;
 
 	if (dragging) {
-		dragging = false;
-		setCursor(QCursor(Qt::ArrowCursor));
-		qDebug( "MplayerWindow::mouseReleaseEvent stopped dragging" );
+		stopDragging();
 		return false;
 	}
 
@@ -442,7 +454,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	// Set by BaseGui::moveEvent
 	if (main_window_moved) {
 		main_window_moved = false;
-		qDebug("MplayerWindow::mouseReleaseEvent canceled release event dragging mainwindow");
+		//qDebug("MplayerWindow::mouseReleaseEvent canceled release event dragging mainwindow");
 		return false;
 	}
 
@@ -450,8 +462,8 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	// events. After the mouse has been captured, mouse release events sometimes
 	// do not come through until the mouse moved (on Qt 4.8 KDE 4.1.14.9).
 	if (left_button_pressed_time->elapsed() >= QApplication::startDragTime()) {
-		qDebug("MplayerWindow::mouseReleaseEvent canceled left click taking longer as %d ms",
-			   QApplication::startDragTime());
+		//qDebug("MplayerWindow::mouseReleaseEvent canceled left click taking longer as %d ms",
+		//	   QApplication::startDragTime());
 		return false;
 	}
 
@@ -463,7 +475,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 		QPoint pos = event->globalPos();
 		QPoint diff = pos - drag_pos;
 		if (diff.manhattanLength() > QApplication::startDragDistance()) {
-			qDebug("MplayerWindow::mouseReleaseEvent killed release event");
+			//qDebug("MplayerWindow::mouseReleaseEvent killed release event");
 			return false;
 		}
 	}
@@ -553,7 +565,6 @@ void MplayerWindow::aboutToExitFullscreen() {
 
 	fullscreen = false;
 	enableSizeGroup();
-	qDebug("MplayerWindow::aboutToExitFullscreen done");
 }
 
 void MplayerWindow::setZoom(double factor,
@@ -711,10 +722,8 @@ void MplayerWindow::setAutoHideCursor(bool enable) {
 void MplayerWindow::playingStarted() {
 	qDebug("MplayerWindow::playingStarted");
 
-	// TODO:
 	osd_pos = default_osd_pos;
-	// Done by Core::initPlaying
-	// repaint();
+
 	mplayerlayer->setFastBackground();
 	setAutoHideCursor(true);
 }

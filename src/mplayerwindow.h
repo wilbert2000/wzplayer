@@ -181,7 +181,7 @@ protected slots:
 protected:
 	virtual void retranslateStrings();
 	virtual void changeEvent ( QEvent * event ) ;
-	virtual void resizeEvent( QResizeEvent * e);
+	virtual void resizeEvent(QResizeEvent *);
 
 	virtual void mousePressEvent ( QMouseEvent * e );
 	virtual void mouseMoveEvent ( QMouseEvent * e );
@@ -255,6 +255,8 @@ private:
 
 	void moveVideo(QPoint delta);
 
+	void startDragging();
+	void stopDragging();
 	bool checkDragging(QMouseEvent * event);
 
 	void uncheckSizeGroup();
