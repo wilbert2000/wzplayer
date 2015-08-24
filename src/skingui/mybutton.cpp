@@ -30,7 +30,7 @@ MyButton::MyButton(QWidget *parent) :
 }
 
 
-void MyButton::paintEvent(QPaintEvent *e)
+void MyButton::paintEvent(QPaintEvent *)
 {
     QPixmap pix;
     if(isEnabled() && ( isDown() || isChecked()))

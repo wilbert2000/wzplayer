@@ -54,7 +54,7 @@ PanelSeeker::PanelSeeker(QWidget *parent) :
 }
 
 
-void PanelSeeker::paintEvent(QPaintEvent * e)
+void PanelSeeker::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
 

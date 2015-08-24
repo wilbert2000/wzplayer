@@ -42,7 +42,7 @@ private:
     MyAction* action;
 
 protected:
-    virtual void paintEvent(QPaintEvent *e);
+	virtual void paintEvent(QPaintEvent *);
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
 

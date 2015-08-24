@@ -69,7 +69,7 @@ public:
 
 
 protected:
-    void resizeEvent(QResizeEvent * e);
+	void resizeEvent(QResizeEvent *);
     virtual void changeEvent (QEvent * event);
     virtual void retranslateStrings();
 

@@ -133,7 +133,7 @@ void MediaPanel::setScrollingEnabled(bool b) {
 	mediaLabel->setScrollingEnabled(b);
 }
 
-void MediaPanel::paintEvent(QPaintEvent * e) {
+void MediaPanel::paintEvent(QPaintEvent *) {
 	QPainter p(this);
 	p.drawPixmap(0,0,leftBackground.width(), 53, leftBackground);
 	p.drawPixmap(width() - rightBackground.width(), 0, rightBackground.width(), 53, rightBackground );
@@ -245,7 +245,7 @@ void MediaPanel::retranslateStrings() {
 	if (repeatButton) repeatButton->setToolTip(tr("Repeat playlist"));
 }
 
-void ScrollingLabel::paintEvent(QPaintEvent * e) {
+void ScrollingLabel::paintEvent(QPaintEvent *) {
 	QPainter p(this);
 	p.setFont(font());
 	p.setPen(palette().color(foregroundRole()));
@@ -292,7 +292,7 @@ void ScrollingLabel::updateLabel() {
 	}
 }
 
-void ScrollingLabel::timerEvent(QTimerEvent * t) {
+void ScrollingLabel::timerEvent(QTimerEvent *) {
 	scrollPos += 1;
 	scrollPos = scrollPos % (textRect.width() + gap);
 	update();

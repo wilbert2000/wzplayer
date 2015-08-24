@@ -56,7 +56,7 @@ PlayControl::PlayControl(QWidget *parent) :
 }
 
 
-void PlayControl::resizeEvent(QResizeEvent *e)
+void PlayControl::resizeEvent(QResizeEvent *)
 {
     updateSize();
 }
