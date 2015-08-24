@@ -32,7 +32,7 @@ using namespace Global;
 
 #define TOO_CHAPTERS_WORKAROUND
 
-// TODO: print in setMedia and pickup in parseProp
+// TODO: print in setMedia and pick up in parseProp
 static const QPoint default_osd_pos(25, 22);
 static const QPoint max_osd_pos(300, 600);
 
@@ -100,10 +100,6 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 #ifdef TRACK_INFO
 	if (name == "TRACKS_COUNT") {
 		int tracks = value.toInt();
-		// Number of tracks to wait for
-		wait_for_track_info = tracks;
-		// Max number of lines to wait for track info
-		wait_for_track_info_safe_guard = 200;
 		qDebug("MPVProcess::parseProperty: requesting track info for %d tracks", tracks);
 		for (int n = 0; n < tracks; n++) {
 			writeToStdin(QString("print_text \"TRACK_INFO_%1="
@@ -127,8 +123,8 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	}
 	if (name == "MEDIA_TITLE") {
 		if (!value.isEmpty() && value != "mp4" && !value.startsWith("mp4&")) {
-			md->clip_name = value;
-			qDebug() << "MPVProcess::parseProperty: set clip_name to" << md->clip_name;
+			md->meta_data["NAME"] = value;
+			qDebug() << "MPVProcess::parseProperty: set clip_name to" << value;
 		}
 		return true;
 	}
@@ -138,7 +134,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "CHAPTERS") {
 		// Ask for chapter titles
 		if (md->n_chapters > 0)
-			qDebug("MPVProcess::parseProperty: requesting chapter titles");
+			qDebug("MPVProcess::parseProperty: requesting chapter start times and titles");
 		for (int n = 0; n < md->n_chapters; n++) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} ${chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
@@ -167,81 +163,53 @@ void MPVProcess::parseChapter(int id, const QString &start, const QString &start
 			 << "with title" << title;
 }
 
-void MPVProcess::notifyTimestamp(double sec) {
-
-	// Pass current time stamp
-	emit receivedCurrentSec( sec );
+int MPVProcess::getFrame(double time_sec, const QString &line) {
+	Q_UNUSED(line)
 
 	// Emulate frames. mpv won't give them.
-	if (fps != 0.0) {
-		int frame = qRound(sec * fps);
-		if (frame != prev_frame) {
-			prev_frame = frame;
-			emit receivedCurrentFrame( frame );
-		}
-	}
+	return qRound(time_sec * fps);
 }
 
-void MPVProcess::parseStatusLine(QRegExp &rx) {
+bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 	// Parse custom status line
 	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
-	if (waitForAnswers())
-		return;
+	if (PlayerProcess::parseStatusLine(time_sec, duration, rx, line))
+		return true;
 
-	// Time stamp
-	double sec = rx.cap(1).toDouble();
-	double length = rx.cap(2).toDouble();
-
-	// Status flags
+	// Parse status flags
 	bool paused = rx.cap(3) == "yes";
 	bool buffering = rx.cap(4) == "yes";
 	bool idle = rx.cap(5) == "yes";
 
-	// Duration changed
-	if (qAbs(length - md->duration) > 0.001) {
-		md->duration = length;
-		qDebug("MPVProcess::parseStatusLine: emit durationChanged(%f)", length);
-		emit durationChanged(length);
-	}
-
-	// Because a time stamp change can coincide with a state change,
-	// it always needs to be signaled.
-
 	if (paused) {
 		qDebug("MPVProcess::parseStatusLine: paused");
-		notifyTimestamp(sec);
 		receivedPause();
-		return;
+		return true;
 	}
-	if (buffering) {
+
+	if (buffering or idle) {
 		qDebug("MPVProcess::parseStatusLine: buffering");
-		notifyTimestamp(sec);
 		receivedBuffering();
-		return;
-	}
-	if (idle) {
-		qDebug("MPVProcess::parseStatusLine: core idle");
-		notifyTimestamp(sec);
-		receivedBuffering();
-		return;
+		return true;
 	}
 
 	// Playing
 	if (notified_player_is_running) {
-		// Playing except for first frame
-		notifyTimestamp(sec);
+		// Normal way to go: playing, except for first frame
 		notifyChanges();
-		return;
+		return true;
 	}
 
 	// First and only run of state playing
+	// Base class sets notified_player_is_running to true and
+	// emits signals setVideoResolution unqueued and playerFullyLoaded queued
 	playingStarted();
-
-	notifyTimestamp(sec);
 
 	// Wait some secs to ask for bitrate
 	QTimer::singleShot(12000, this, SLOT(requestBitrateInfo()));
+
+	return true;
 }
 
 bool MPVProcess::parseLine(QString &line) {
@@ -285,8 +253,9 @@ bool MPVProcess::parseLine(QString &line) {
 
 	// Parse custom status line
 	if (rx_status.indexIn(line) >= 0) {
-		parseStatusLine(rx_status);
-		return true;
+		return parseStatusLine(rx_status.cap(1).toDouble(),
+							   rx_status.cap(2).toDouble(),
+							   rx_status, line);
 	}
 
 	if (PlayerProcess::parseLine(line))
@@ -324,10 +293,12 @@ bool MPVProcess::parseLine(QString &line) {
 		return true;
 	}
 
-	// Window resolution w x h
+	// Video out size w x h
 	if (rx_dsize.indexIn(line) >= 0) {
-		dwidth = rx_dsize.cap(1).toInt();
-		dheight = rx_dsize.cap(2).toInt();
+		md->video_out_width = rx_dsize.cap(1).toInt();
+		md->video_out_height = rx_dsize.cap(2).toInt();
+		qDebug("MPVProcess::parseLine: set video out size to %d x %d",
+			   md->video_out_width, md->video_out_height);
 		return true;
 	}
 

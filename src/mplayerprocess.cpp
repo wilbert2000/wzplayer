@@ -54,6 +54,8 @@ bool MplayerProcess::startPlayer() {
 
 	mplayer_svn = -1; // Not found yet
 
+	last_duration = 0;
+
 	dvd_current_title = -1;
 	br_current_title = -1;
 
@@ -170,12 +172,7 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 	// Check funky duration times
 	if (name == "length") {
-		double length = value.toDouble();
-		if (qAbs(length - md->duration) > 0.001) {
-			md->duration = length;
-			qDebug("MplayerProcess::parseAnswer: emit durationChanged(%f)", length);
-			emit durationChanged(length);
-		}
+		last_duration = value.toDouble();
 		return true;
 	}
 
@@ -200,38 +197,6 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 			   << name << "=" << value;
 
 	return false;
-}
-
-bool MplayerProcess::parseMetaDataProperty(const QString &name, const QString &value) {
-
-	// Author
-	if (name == "AUTHOR") {
-		md->clip_author = value;
-		qDebug() << "MplayerProcess::parseMetaDataProperty: set clip_author to" << md->clip_author;
-		return true;
-	}
-	// Comment
-	if (name == "COMMENT") {
-		md->clip_comment = value;
-		qDebug() << "MplayerProcess::parseMetaDataProperty: set clip_comment to" << md->clip_comment;
-		return true;
-	}
-	// Software
-	if (name == "SOFTWARE") {
-		md->clip_software = value;
-		qDebug("MplayerProcess::parseMetaDataProperty: set clip_software to '%s'", md->clip_software.toUtf8().data());
-		return true;
-	}
-	// NAME as alias for TITLE
-	QString n = name;
-	if (n == "NAME") {
-		n == "TITLE";
-	} else if (n == "CREATION DATE" || n == "YEAR") {
-		// TODO: year is not the same as date
-		n = "DATE";
-	}
-
-	return PlayerProcess::parseMetaDataProperty(n, value);
 }
 
 bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
@@ -270,67 +235,64 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 	return parsed;
 }
 
-void MplayerProcess::notifyTimestamp(double sec, const QString &line) {
+int MplayerProcess::getFrame(double sec, const QString &line) {
 
+	// Check for frame in status line
 	static QRegExp rx_frame("^[AV]:.* (\\d+)\\/.\\d+");
-
-	// Pass current time stamp
-	emit receivedCurrentSec( sec );
-
-	// Check for frame
-	int frame = -1;
 	if (rx_frame.indexIn(line) >= 0) {
-		frame = rx_frame.cap(1).toInt();
-	} else if (fps != 0.0) {
-		// Emulate frames
-		frame = qRound(sec * fps);
+		return rx_frame.cap(1).toInt();
 	}
 
-	if (frame >= 0 && frame != prev_frame) {
-		prev_frame = frame;
-		emit receivedCurrentFrame( frame );
-	}
+	// Emulate
+	return qRound(sec * fps);
 }
 
-void MplayerProcess::parseStatusLine(QRegExp &rx_av, const QString &line) {
+bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 
-	double sec = rx_av.cap(1).toDouble();
+	if (PlayerProcess::parseStatusLine(time_sec, duration, rx, line))
+		return true;
 
 	if (notified_player_is_running) {
-		notifyTimestamp(sec, line);
+		// Normal way to go: playing, except for first frame
 		notifyChanges();
 
-		// Check for change in duration.
-		// Abs just to be sure with time wrappers like TS.
-		if (qAbs(sec - check_duration_time) > check_duration_time_threshold) {
+		// Check for changes in duration once in a while.
+		// The answer is stored in last_duration by parseAnswer()
+		// and will be picked up by base PlayerProcess::parseStatusLine.
+		// Abs, to protect against time wrappers like TS.
+		if (qAbs(time_sec - check_duration_time) > check_duration_time_diff) {
+			// Ask for length
 			writeToStdin("get_property length");
-			check_duration_time = sec;
-			check_duration_time_threshold *= 2;
+			// Wait another while
+			check_duration_time = time_sec;
+			// Just a little longer
+			check_duration_time_diff *= 2;
 		}
-
-		return;
+		return true;
 	}
 
-	if (waitForAnswers())
-		return;
-
 	// First and only run of state playing
-
+	// If no chapters, try the chapters from the selected DVD title
 	if (md->n_chapters <= 0 && dvd_current_title > 0) {
 		int idx = md->titles.find(dvd_current_title);
 		if (idx >= 0) {
 			md->n_chapters = md->titles.itemAt(idx).chapters();
-			qDebug("MplayerProcess::parseStatusLine: setting chapters to %d",
-				   md->n_chapters);
+			qDebug("MplayerProcess::parseStatusLine: setting n_chapters to %d from current DVD title %d",
+				   md->n_chapters, dvd_current_title);
 		}
 	}
 
+	// Heat up the GUI.
+	// Base class sets notified_player_is_running to true and emits unqueued
+	// signal receivedVideoOutResolution and posts playerFullyLoaded.
 	playingStarted();
 
-	notifyTimestamp(sec, line);
-
-	check_duration_time = sec;
-	check_duration_time_threshold = 5;
+	// Reset the check duration timer to 5 seconds.
+	// Ask duration over 5, 10, 20, etc. seconds,
+	// except when paused.
+	check_duration_time = time_sec;
+	check_duration_time_diff = 5;
+	return true;
 }
 
 bool MplayerProcess::parseLine(QString &line) {
@@ -388,10 +350,9 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
 
 
-	// Parse A: V: line
-	if (rx_av.indexIn(line) >= 0) {
-		parseStatusLine(rx_av, line);
-		return true;
+	// Parse A: V: status line
+	if (rx_av.indexIn(line) >=0) {
+		return parseStatusLine(rx_av.cap(1).toDouble(), last_duration, rx_av, line);
 	}
 
 	if (PlayerProcess::parseLine(line))
@@ -414,9 +375,20 @@ bool MplayerProcess::parseLine(QString &line) {
 		qDebug("MplayerProcess::parseLine: emit receivedVO");
 		emit receivedVO( rx_vo.cap(1) );
 
-		// TODO: with multiple video tracks, the last one wins
-		dwidth = rx_vo.cap(2).toInt();
-		dheight = rx_vo.cap(3).toInt();
+		// TODO: must be stored per video track. Now the last one wins and all
+		// tracks are handled like the last or am I seeing spooks here?
+		int w = rx_vo.cap(2).toInt();
+		int h = rx_vo.cap(3).toInt();
+
+		if ((md->video_out_width > 0 && w != md->video_out_width)
+		 || (md->video_out_height > 0 && h != md->video_out_height)) {
+			qWarning("MplayerProcess::parseLine: bug, video out previous track overwritten");
+		}
+
+		md->video_out_width = w;
+		md->video_out_height = h;
+
+		qDebug("MplayerProcess::parseLine: video out size set to %d x %d", w, h);
 		return true;
 	}
 
@@ -670,7 +642,7 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// Meta data
 	if (rx_meta_data.indexIn(line) >= 0) {
-		return parseMetaDataProperty(rx_meta_data.cap(1).toUpper(),
+		return parseMetaDataProperty(rx_meta_data.cap(1),
 									 rx_meta_data.cap(2));
 	}
 

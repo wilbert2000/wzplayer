@@ -38,7 +38,7 @@ QString InfoFile::getInfo(MediaData md) {
 
 	QString icon;
 	switch (md.type) {
-		case TYPE_FILE	:	if (md.novideo) 
+		case TYPE_FILE	:	if (md.noVideo())
 								icon = "type_audio.png";
 							else
 								icon = "type_video.png"; 
@@ -84,16 +84,17 @@ QString InfoFile::getInfo(MediaData md) {
 
 	// Clip info
 	QString c;
-	if (!md.clip_name.isEmpty()) c+= addItem( tr("Name"), md.clip_name );
-	if (!md.clip_artist.isEmpty()) c+= addItem( tr("Artist"), md.clip_artist );
-	if (!md.clip_author.isEmpty()) c+= addItem( tr("Author"), md.clip_author );
-	if (!md.clip_album.isEmpty()) c+= addItem( tr("Album"), md.clip_album );
-	if (!md.clip_genre.isEmpty()) c+= addItem( tr("Genre"), md.clip_genre );
-	if (!md.clip_date.isEmpty()) c+= addItem( tr("Date"), md.clip_date );
-	if (!md.clip_track.isEmpty()) c+= addItem( tr("Track"), md.clip_track );
-	if (!md.clip_copyright.isEmpty()) c+= addItem( tr("Copyright"), md.clip_copyright );
-	if (!md.clip_comment.isEmpty()) c+= addItem( tr("Comment"), md.clip_comment );
-	if (!md.clip_software.isEmpty()) c+= addItem( tr("Software"), md.clip_software );
+	if (md.meta_data.contains("NAME")) c+= addItem( tr("Name"), md.meta_data["NAME"] );
+	if (md.meta_data.contains("ARTIST")) c+= addItem( tr("Artist"), md.meta_data["ARTIST"] );
+	if (md.meta_data.contains("AUTHOR")) c+= addItem( tr("Author"), md.meta_data["AUTHOR"] );
+	if (md.meta_data.contains("ALBUM")) c+= addItem( tr("Album"), md.meta_data["ALBUM"] );
+	if (md.meta_data.contains("GENRE")) c+= addItem( tr("Genre"), md.meta_data["GENRE"] );
+	if (md.meta_data.contains("DATE")) c+= addItem( tr("Date"), md.meta_data["DATE"] );
+	if (md.meta_data.contains("TRACK")) c+= addItem( tr("Track"), md.meta_data["TRACK"] );
+	if (md.meta_data.contains("COPYRIGHT")) c+= addItem( tr("Copyright"), md.meta_data["COPYRIGHT"] );
+	if (md.meta_data.contains("COMMENT")) c+= addItem( tr("Comment"), md.meta_data["COMMENT"] );
+	if (md.meta_data.contains("SOFTWARE")) c+= addItem( tr("Software"), md.meta_data["SOFTWARE"] );
+
 	if (!md.stream_title.isEmpty()) c+= addItem( tr("Stream title"), md.stream_title );
 	if (!md.stream_url.isEmpty()) c+= addItem( tr("Stream URL"), md.stream_url );
 
@@ -104,7 +105,7 @@ QString InfoFile::getInfo(MediaData md) {
 	}
 
 	// Video info
-	if (!md.novideo) {
+	if (!md.noVideo()) {
 		s += openPar( tr("Video") );
 		s += addItem( tr("Resolution"), QString("%1 x %2").arg(md.video_width).arg(md.video_height) );
 		s += addItem( tr("Aspect ratio"), QString::number(md.video_aspect) );

@@ -103,9 +103,6 @@ bool PlayerProcess::startPlayer() {
 
 	received_end_of_file = false;
 
-	dwidth = 0;
-	dheight = 0;
-
 	fps = 0.0;
 	prev_frame = -1;
 
@@ -196,27 +193,77 @@ void PlayerProcess::playingStarted() {
 
 	notified_player_is_running = true;
 
+	// Clear notifications
 	video_tracks_changed = false;
 	audio_tracks_changed = false;
 	subtitle_tracks_changed = false;
 
 	// Have any video?
-	if (dwidth <= 0) {
-		md->novideo = true;
-		qDebug("PlayerProcess::startPlaying: emit receivedNoVideo()");
+	if (md->noVideo()) {
+		qDebug("PlayerProcess::playingStarted: emit receivedNoVideo()");
 		emit receivedNoVideo();
 	} else {
-		qDebug("PlayerProcess::startPlaying: emit receivedWindowResolution()");
-		emit receivedWindowResolution(dwidth, dheight);
+		// emit resolution unqueued
+		qDebug("PlayerProcess::playingStarted: emit receivedVideoOutResolution()");
+		emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
 	}
 
-	qDebug("PlayerProcess::startPlaying: emit playerFullyLoaded()");
+	qDebug("PlayerProcess::playingStarted: queued emit playerFullyLoaded()");
 	emit playerFullyLoaded();
 
 	// Clear frame counter if no fps
 	if (fps == 0.0) {
 		emit receivedCurrentFrame(0);
 	}
+}
+
+bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
+	Q_UNUSED(rx)
+
+	// Store time stamp of first status line
+	if (!md->start_sec_set) {
+		md->start_sec_set = true;
+		md->start_sec = time_sec;
+		// TODO: cmp with container
+	}
+
+	// Any pending questions?
+	// Cancel the remainder of this line and get the answers.
+	if (waitForAnswers())
+		return true;
+
+	// Duration changed?
+	if (qAbs(duration - md->duration) > 0.001 && duration > 0) {
+		md->duration = duration;
+		qDebug("MPVProcess::parseStatusLine: emit durationChanged(%f)", duration);
+		emit durationChanged(duration);
+	}
+
+	// Store video time stamp
+	md->time_sec = time_sec;
+
+	// Substract start time grounding start time at 0
+	time_sec -= md->start_sec;
+
+	// Handle MPEG-TS PTS time stamp rollover
+	if (time_sec < 0 && md->demuxer == "mpegts") {
+		time_sec += 8589934592.0 / 90000.0; // 2^33 / 90 kHz
+	}
+
+	// Pass time stamp to GUI
+	emit receivedCurrentSec(time_sec);
+
+	// Ask children for frame
+	int frame = getFrame(time_sec, line);
+
+	// Pass frame to GUI
+	if (frame != prev_frame) {
+		prev_frame = frame;
+		emit receivedCurrentFrame( frame );
+	}
+
+	// Parse the line just a litlle bit longer
+	return false;
 }
 
 bool PlayerProcess::parseLine(QString &line) {
@@ -227,21 +274,15 @@ bool PlayerProcess::parseLine(QString &line) {
 		return true;
 
 	// Protect against spurious messages.
-	// There is danger in this...
-	// Scenario:
-	// Query
-	// Answer
-	// Play a little while
-	// Same query
-	// Oeps, answer eaten here
-	// Moreover, letting them through might alert someone to
-	// do something about them...
-	if (line == prev_line)
-		return true;
-	prev_line = line;
+	// if (line == prev_line)
+	//	return true;
+	// prev_line = line;
+	// And here the unique ones go:
 
+	// Output line to console
 	qDebug("PlayerProcess::parseLine: '%s'", line.toUtf8().data() );
 
+	// Output line to logs
 	emit lineAvailable(line);
 
 	// End of file
@@ -266,9 +307,12 @@ bool PlayerProcess::parseLine(QString &line) {
 			// once the process is finished, not now!
 			// emit receivedEndOfFile();
 		}
+
+		// Done looking at this line
 		return true;
 	}
 
+	// Like to be parsed a little longer
 	return false;
 }
 
@@ -350,55 +394,44 @@ bool PlayerProcess::parseVideoProperty(const QString &name, const QString &value
 	return false;
 }
 
-bool PlayerProcess::parseMetaDataProperty(const QString &name, const QString &value) {
+bool PlayerProcess::parseMetaDataProperty(QString name, QString value) {
+
+	/*
+	static QString accepted_names(
+		";"
+		"NAME;"
+		"TITLE;"
+		"AUTHOR;"
+		"ARTIST;"
+		"TRACK;"
+		"ALBUM;"
+		"GENRE;"
+		"YEAR;"
+		"DATE;"
+		"CREATION DATE;"
+		"COMMENT;"
+		"SOFTWARE;"
+		"COPYRIGHT;"
+	);
+	*/
+
+	name = name.toUpper();
+	value = value.trimmed();
 
 	if (value.isEmpty())
 		return false;
 
-	if (name == "TITLE") {
-		md->clip_name = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_name set to" << md->clip_name;
-		return true;
-	}
-	if (name == "ARTIST") {
-		md->clip_artist = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_artist set to" << md->clip_artist;
-		return true;
-	}
-	if (name == "ALBUM") {
-		md->clip_album = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_album set to" << md->clip_album;
-		return true;
-	}
-	if (name == "GENRE") {
-		md->clip_genre = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_genre set to" << md->clip_genre;
-		return true;
-	}
-	if (name == "DATE") {
-		md->clip_date = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_date set to" << md->clip_date;
-		return true;
-	}
-	if (name == "TRACK") {
-		md->clip_track = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_track set to" << md->clip_track;
-		return true;
-	}
-	if (name == "COPYRIGHT") {
-		md->clip_copyright = value;
-		qDebug() << "PlayerProcess::parseMetaDataProperty: clip_copyright set to" << md->clip_copyright;
-		return true;
-	}
-
-	return false;
+	// if (accepted_names.contains(";" + name + ";"))
+	md->meta_data[name] = value;
+	qDebug() << "PlayerProcess::parseMetaDataProperty:" << name << "set to" << value;
+	return true;
 }
 
 bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "LENGTH") {
 		double duration = value.toDouble();
-		if (qAbs(duration - md->duration) > 0.001) {
+		if (qAbs(duration - md->duration) > 0.001 && duration > 0) {
 			md->duration = duration;
 			qDebug("PlayerProcess::parseProperty: emit durationChanged");
 			emit durationChanged(duration);

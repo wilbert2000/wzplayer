@@ -104,11 +104,17 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	connect( proc, SIGNAL(error(QProcess::ProcessError)),
 			 mplayerwindow, SLOT(playingStopped()) );
 
+	connect( proc, SIGNAL(receivedVideoOutResolution(int,int)),
+			 this, SLOT(gotVideoOutResolution(int,int)) );
+
 	connect( proc, SIGNAL(receivedCurrentSec(double)),
              this, SLOT(changeCurrentSec(double)) );
 
 	connect( proc, SIGNAL(receivedCurrentFrame(int)),
              this, SIGNAL(showFrame(int)) );
+
+	connect( proc, SIGNAL(playerFullyLoaded()),
+			 this, SLOT(playingStarted()), Qt::QueuedConnection );
 
 	connect( proc, SIGNAL(receivedPause()),
 			 this, SLOT(changePause()) );
@@ -116,8 +122,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
     connect( proc, SIGNAL(processExited()),
 	         this, SLOT(processFinished()), Qt::QueuedConnection );
 
-	connect( proc, SIGNAL(playerFullyLoaded()),
-			 this, SLOT(finishRestart()), Qt::QueuedConnection );
 
 	connect( proc, SIGNAL(lineAvailable(QString)),
              this, SIGNAL(logLineAvailable(QString)) );
@@ -162,9 +166,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 
 	connect( proc, SIGNAL(receivedScanningFont(QString)),
 			 this, SLOT(displayMessage(QString)) );
-
-	connect( proc, SIGNAL(receivedWindowResolution(int,int)),
-             this, SLOT(gotWindowResolution(int,int)) );
 
 	connect( proc, SIGNAL(receivedNoVideo()),
              this, SLOT(gotNoVideo()) );
@@ -1133,10 +1134,10 @@ void Core::newMediaPlaying() {
 }
 
 // Slot called when queued signal playerFullyLoaded arrives.
-// Despite its name, also called for new files.
-// TODO: rename
-void Core::finishRestart() {
-	qDebug("Core::finishRestart: --- start ---");
+void Core::playingStarted() {
+	qDebug("Core::playingStarted");
+
+	setState(Playing);
 
 	if (!we_are_restarting) {
 		newMediaPlaying();
@@ -1144,7 +1145,7 @@ void Core::finishRestart() {
 	} 
 
 	if (forced_titles.contains(mdat.filename)) {
-		mdat.clip_name = forced_titles[mdat.filename];
+		mdat.meta_data["NAME"] = forced_titles[mdat.filename];
 	}
 
 #ifdef YOUTUBE_SUPPORT
@@ -1171,6 +1172,7 @@ void Core::finishRestart() {
 
 	we_are_restarting = false;
 
+	// TODO:
 #if 0
 	// Hack to be sure that the equalizers are up to date
 	emit videoEqualizerNeedsUpdate();
@@ -1186,7 +1188,7 @@ void Core::finishRestart() {
 	initializeMenus();
 	updateWidgets();
 
-	qDebug("Core::finishRestart: --- end ---");
+	qDebug("Core::playingStarted: done");
 }
 
 void Core::stop()
@@ -3305,31 +3307,25 @@ void Core::setAudioEq9(int value) {
 
 void Core::changeCurrentSec(double sec) {
 
-	// Don't enter playing state if time stamp not changed
-	if (sec == mset.current_sec) {
-		return;
-	}
-
 	mset.current_sec = sec;
-	
-	if (state() != Playing) {
-		qDebug("Core::changeCurrentSec: time is ticking");
-		setState(Playing);
-	}
 
-	emit showTime(mset.current_sec);
+	// Update GUI once per second
+	static double last_second = -11.0;
+	double f = floor(sec);
+	if (f == last_second)
+		return;
+	last_second = f;
+
+	// Let the world know what a beautiful time it is
+	emit showTime(sec);
 
 	// Emit posChanged:
-	static int last_second = 0;
-
-	if (floor(sec)==last_second) return; // Update only once per second
-	last_second = (int) floor(sec);
 
 #ifdef SEEKBAR_RESOLUTION
 	int value = 0;
-	if ( (mdat.duration > 1) && (mset.current_sec > 1) &&
-         (mdat.duration > mset.current_sec) )
-	{
+	if (mdat.duration > 1
+		&& mset.current_sec > 1
+		&& mdat.duration > mset.current_sec) {
 		value = ( (int) mset.current_sec * SEEKBAR_RESOLUTION) / (int) mdat.duration;
 	}
 	emit positionChanged(value);
@@ -3720,7 +3716,7 @@ void Core::changeAspectRatio( int ID ) {
 		mplayerwindow->updateVideoWindow();
 	} else {
 		// Using mplayer own window
-		if (!mdat.novideo) {
+		if (!mdat.noVideo()) {
 			if (ID == MediaSettings::AspectAuto) {
 				asp = mdat.video_aspect;
 			}
@@ -4165,13 +4161,13 @@ void Core::displayBuffering() {
 	emit showMessage(tr("Buffering..."));
 }
 
-void Core::gotWindowResolution(int w, int h) {
-	qDebug("Core::gotWindowResolution: %d x %d", w, h);
+void Core::gotVideoOutResolution(int w, int h) {
+	qDebug("Core::gotVideoOutResolution: %d x %d", w, h);
 
 	if (pref->use_mplayer_window) {
 		emit noVideo();
 	} else {
-		// w x h should be the output video resolution selected by player with
+		// w x h should be the output resolution selected by player with
 		// aspect and filters applied.
 		mset.win_width = w;
 		mset.win_height = h;
@@ -4187,13 +4183,12 @@ void Core::gotWindowResolution(int w, int h) {
 		// If resize is canceled adjust new video to old size
 		mplayerwindow->updateVideoWindow();
 	}
-
 }
 
 void Core::gotNoVideo() {
 	qDebug("Core::gotNoVideo");
 
-	// File has no video (a sound file)
+	// File has no video (a sound file) or a text file.
 	emit noVideo();
 }
 

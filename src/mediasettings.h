@@ -167,7 +167,7 @@ public:
 	// Some things that were before in mediadata
 	// They can vary, because of filters, so better here
 
-	//Resolution used by mplayer
+	//Resolution used by player
     //Can be bigger that video resolution
     //because of the aspect ratio or expand filter
     int win_width;

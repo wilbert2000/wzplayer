@@ -209,6 +209,7 @@ protected slots:
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 	virtual void gotCurrentTime(double);
+	virtual void gotDuration(double);
 
 	virtual void initializeMenus();
 	virtual void updateWidgets();

@@ -1495,7 +1495,7 @@ void BaseGui::enableActionsOnPlaying() {
 	}
 
 	// Disable video actions if it's an audio file
-	if (core->mdat.novideo) {
+	if (core->mdat.noVideo()) {
 		videoEqualizerAct->setEnabled(false);
 		screenshotAct->setEnabled(false);
 		screenshotsAct->setEnabled(false);
@@ -2134,6 +2134,8 @@ void BaseGui::createCore() {
 
 	connect( core, SIGNAL(showTime(double)),
              this, SLOT(gotCurrentTime(double)) );
+	connect( core, SIGNAL(newDuration(double)),
+			 this, SLOT(gotDuration(double)) );
 
 	connect( core, SIGNAL(needResize(int, int)),
              this, SLOT(resizeWindow(int,int)) );
@@ -4973,17 +4975,18 @@ void BaseGui::displayMessage(QString message) {
 void BaseGui::gotCurrentTime(double sec) {
 	//qDebug( "DefaultGui::displayTime: %f", sec);
 
-	static int last_second = 0;
-
-	if (floor(sec)==last_second) return; // Update only once per second
-	last_second = (int) floor(sec);
-
-	QString time = Helper::formatTime( (int) sec ) + " / " +
-                           Helper::formatTime( (int) core->mdat.duration );
-
-	//qDebug( " duration: %f, current_sec: %f", core->mdat.duration, core->mset.current_sec);
+	QString time =
+		Helper::formatTime( (int) sec ) + " / " +
+		Helper::formatTime( (int) core->mdat.duration );
 
 	emit timeChanged( time );
+}
+
+void BaseGui::gotDuration(double duration) {
+	Q_UNUSED(duration)
+
+	// Uses duration in text
+	gotCurrentTime( core->mset.current_sec );
 }
 
 void BaseGui::toggleDoubleSize() {

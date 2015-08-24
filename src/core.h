@@ -365,14 +365,14 @@ protected:
 protected slots:
     void changeCurrentSec(double sec);
     void changePause();
-	void gotWindowResolution( int w, int h );
 	void gotNoVideo();
+	void gotVideoOutResolution(int w, int h);
 	void gotVO(QString);
 	void gotAO(QString);
 	void gotVideoBitrate(int);
 	void gotAudioBitrate(int);
 
-	void finishRestart();
+	void playingStarted();
     void processFinished();
 	void fileReachedEnd();
     

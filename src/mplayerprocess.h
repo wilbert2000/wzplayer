@@ -105,10 +105,12 @@ public:
 
 
 protected:
+	virtual int getFrame(double sec, const QString &line);
+
 	virtual bool parseLine(QString &line);
+	virtual bool parseStatusLine(double seconds, double duration, QRegExp &rx, QString &line);
 	virtual bool parseAudioProperty(const QString &name, const QString &value);
 	virtual bool parseVideoProperty(const QString &name, const QString &value);
-	virtual bool parseMetaDataProperty(const QString &name, const QString &value);
 	virtual bool parseProperty(const QString &name, const QString &value);
 
 private:
@@ -119,12 +121,11 @@ private:
 
 	int sub_id_filename;
 
+	double last_duration;
 	double check_duration_time;
-	int check_duration_time_threshold;
+	int check_duration_time_diff;
 
 	void askQuestions();
-	void notifyTimestamp(double sec, const QString &line);
-	void parseStatusLine(QRegExp &rx_av, const QString &line);
 	bool parseSubID(const QString &type, int id);
 	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);
 	bool parseSubFile(const QString &filename);

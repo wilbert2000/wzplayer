@@ -168,33 +168,34 @@ void MediaPlayer2Player::setShuffle(bool shuffle) const
 
 QVariantMap MediaPlayer2Player::Metadata() const
 {
-    QVariantMap metaData;
+	QVariantMap metaData;
 
-    if (!m_core->mdat.initialized)
-        return metaData;
+	if (!m_core->mdat.initialized)
+		return metaData;
 
-    metaData["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(QDBusObjectPath(makeTrackId(m_core->mdat.filename).constData()));
-	metaData["mpris:length"] = m_core->mdat.duration * 1000000;
+	MediaData* md = &m_core->mdat;
+	metaData["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(QDBusObjectPath(makeTrackId(md->filename).constData()));
+	metaData["mpris:length"] = md->duration * 1000000;
 
-    if (m_core->mdat.type == TYPE_STREAM)
-        metaData["xesam:url"] = m_core->mdat.stream_url;
-    else
-        metaData["xesam:url"] = m_core->mdat.filename;
+	if (md->type == TYPE_STREAM)
+		metaData["xesam:url"] = md->stream_url;
+	else
+		metaData["xesam:url"] = md->filename;
 
-    if (!m_core->mdat.clip_album.isEmpty())
-        metaData["xesam:album"] = m_core->mdat.clip_album;
-    if (!m_core->mdat.clip_name.isEmpty())
-        metaData["xesam:title"] = m_core->mdat.clip_name;
-    else if (!m_core->mdat.filename.isEmpty()) {
-        QFileInfo fileInfo(m_core->mdat.filename);
-        metaData["xesam:title"] = fileInfo.fileName();
-    }
-    if (!m_core->mdat.clip_artist.isEmpty())
-        metaData["xesam:artist"] = m_core->mdat.clip_artist;
-    if (!m_core->mdat.clip_genre.isEmpty())
-        metaData["xesam:genre"] = m_core->mdat.clip_genre;
+	if (md->meta_data.contains("ALBUM"))
+		metaData["xesam:album"] = md->meta_data["ALBUM"];
+	if (md->meta_data.contains("NAME"))
+		metaData["xesam:title"] = md->meta_data["NAME"];
+	else if (!md->filename.isEmpty()) {
+		QFileInfo fileInfo(md->filename);
+		metaData["xesam:title"] = fileInfo.fileName();
+	}
+	if (md->meta_data.contains("ARTIST"))
+		metaData["xesam:artist"] = md->meta_data["ARTIST"];
+	if (md->meta_data.contains("GENRE"))
+		metaData["xesam:genre"] = md->meta_data["GENRE"];
 
-    return metaData;
+	return metaData;
 }
 
 double MediaPlayer2Player::Volume() const

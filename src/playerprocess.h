@@ -120,11 +120,10 @@ public:
 signals:
 	void processExited();
 	void lineAvailable(QString line);
-
+	void receivedVideoOutResolution(int, int);
 	void receivedCurrentSec(double sec);
 	void receivedCurrentFrame(int frame);
 	void receivedPause();
-	void receivedWindowResolution(int,int);
 	void receivedNoVideo();
 	void receivedVO(QString);
 	void receivedAO(QString);
@@ -184,20 +183,19 @@ protected:
 	bool audio_tracks_changed;
 	bool subtitle_tracks_changed;
 
-	int dwidth;
-	int dheight;
-
 	double fps;
 	int prev_frame;
 
+	virtual int getFrame(double time_sec, const QString &line) = 0;
 	void notifyChanges();
 	bool waitForAnswers();
 	void playingStarted();
 
 	virtual bool parseLine(QString &line);
+	virtual bool parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line);
 	virtual bool parseAudioProperty(const QString &name, const QString &value);
 	virtual bool parseVideoProperty(const QString &name, const QString &value);
-	virtual bool parseMetaDataProperty(const QString &name, const QString &value);
+	virtual bool parseMetaDataProperty(QString name, QString value);
 	virtual bool parseProperty(const QString &name, const QString &value);
 
 protected slots:

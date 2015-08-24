@@ -106,9 +106,11 @@ public:
 	QString mpvVersion() { return mpv_version; };
 
 protected:
-	virtual bool parseLine(QString &line);
-	virtual bool parseProperty(const QString &name, const QString &value);
+	virtual int getFrame(double time_sec, const QString &line);
 
+	virtual bool parseLine(QString &line);
+	virtual bool parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line);
+	virtual bool parseProperty(const QString &name, const QString &value);
 	bool isOptionAvailable(const QString & option);
 	void addVFIfAvailable(const QString & vf, const QString & value = QString::null);
 
@@ -131,7 +133,6 @@ private:
 	bool osd_centered_x;
 	bool osd_centered_y;
 
-	void notifyTimestamp(double sec);
 	void parseStatusLine(QRegExp &rx);
 	void parseChapter(int id, const QString &start, const QString &start_str, QString title);
 	bool parseTrackInfo(QRegExp &rx);

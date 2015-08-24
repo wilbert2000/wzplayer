@@ -19,6 +19,7 @@
 #include "mediadata.h"
 #include <QFileInfo>
 #include <cmath>
+#include <QDebug>
 
 
 MediaData::MediaData() {
@@ -29,16 +30,23 @@ MediaData::~MediaData() {
 }
 
 void MediaData::reset() {
-	filename="";
-	dvd_id="";
+
+	start_sec = 0;
+	time_sec = 0;
+	duration = 0;
+	start_sec_set = false;
+
+	video_width = 0;
+	video_height = 0;
+	video_out_width = 0;
+	video_out_height = 0;
+
+	video_aspect = 0;
+
+	filename = "";
+	dvd_id = "";
 	type = TYPE_UNKNOWN;
-	duration=0;
 
-	novideo = false;
-
-	video_width=0;
-    video_height=0;
-	video_aspect=0;
 
 #if PROGRAM_SWITCH
 	programs.clear();
@@ -56,16 +64,7 @@ void MediaData::reset() {
 	initialized=false;
 
 	// Clip info;
-	clip_name = "";
-    clip_artist = "";
-    clip_author = "";
-    clip_album = "";
-    clip_genre = "";
-    clip_date = "";
-    clip_track = "";
-    clip_copyright = "";
-    clip_comment = "";
-    clip_software = "";
+	meta_data.clear();
 
 	stream_title = "";
 	stream_url = "";
@@ -85,9 +84,14 @@ void MediaData::reset() {
 
 QString MediaData::displayName(bool show_tag) {
 	if (show_tag) {
-		if (!clip_name.isEmpty()) return clip_name;
-		else
-		if (!stream_title.isEmpty()) return stream_title;
+		QString name = meta_data.value("NAME");
+		if (!name.isEmpty())
+			return name;
+		name = meta_data.value("TITLE");
+		if (!name.isEmpty())
+			return name;
+		if (!stream_title.isEmpty())
+			return stream_title;
 	}
 
 	QFileInfo fi(filename);
@@ -106,10 +110,14 @@ void MediaData::list() {
 
 	qDebug("  video_width: %d", video_width); 
 	qDebug("  video_height: %d", video_height); 
-	qDebug("  video_aspect: %f", video_aspect); 
+	qDebug("  video_aspect: %f", video_aspect);
+
+	qDebug("  video_out_width: %d", video_out_width);
+	qDebug("  video_out_height: %d", video_out_height);
+
+	qDebug("  novideo(): %d", noVideo());
 
 	qDebug("  type: %d", type);
-	qDebug("  novideo: %d", novideo);
 	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
 
 	qDebug("  initialized: %d", initialized);
@@ -146,5 +154,12 @@ void MediaData::list() {
 	qDebug("  audio_nch: %d", audio_nch );
 	qDebug("  video_codec: '%s'", video_codec.toUtf8().data() );
 	qDebug("  audio_codec: '%s'", audio_codec.toUtf8().data() );
+
+	qDebug("  Meta data:");
+	MetaData::const_iterator i = meta_data.constBegin();
+	while (i != meta_data.constEnd()) {
+		qDebug() << i.key() << "=" << i.value();
+		i++;
+	}
 }
 

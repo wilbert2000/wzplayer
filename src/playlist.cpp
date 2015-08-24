@@ -990,10 +990,9 @@ void Playlist::getMediaInfo() {
 
 	QString filename = core->mdat.filename;
 	double duration = core->mdat.duration;
-	QString artist = core->mdat.clip_artist;
+	QString artist = core->mdat.meta_data.value("ARTIST");
 
-	QString name = core->mdat.clip_name;
-	if (name.isEmpty()) name = core->mdat.stream_title;
+	QString name = core->mdat.meta_data.value("NAME", core->mdat.stream_title);
 
 	#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	filename = Helper::changeSlashes(filename);

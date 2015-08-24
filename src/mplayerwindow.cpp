@@ -320,7 +320,6 @@ void MplayerWindow::updateVideoWindow() {
 			<< " zoom" << zoom()
 			<< " pan" << pan();
 	*/
-
 	QSize video_size = getAdjustedSize(width(), height(), zoom());
 
 	// Center

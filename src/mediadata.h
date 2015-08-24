@@ -53,18 +53,25 @@ public:
 
 	virtual void reset();
 
-	QString filename;
+	double start_sec;
+	double time_sec;
 	double duration;
+	bool start_sec_set;
 
 	//Resolution of the video
 	int video_width;
 	int video_height;
 	double video_aspect;
 
+	// Resolution with aspect and filters applied
+	int video_out_width;
+	int video_out_height;
+
+	bool noVideo() { return video_out_width <= 0; } // Can be audio
+
+	QString filename;
 	int type; // file, dvd...
 	QString dvd_id;
-
-	bool novideo; // Only audio
 
 	bool initialized;
 
@@ -83,25 +90,16 @@ public:
 
 	int n_chapters;
 
-	// Clip info
-	QString clip_name;
-	QString clip_artist;
-	QString clip_author;
-	QString clip_album;
-	QString clip_genre;
-	QString clip_date;
-	QString clip_track;
-	QString clip_copyright;
-	QString clip_comment;
-	QString clip_software;
+	// Meta data names and values
+	typedef QMap<QString, QString> MetaData;
+	MetaData meta_data;
 
 	QString stream_title;
 	QString stream_url;
 
-
+	QString demuxer;
 	// Other data not really useful for us,
 	// just to show info to the user.
-	QString demuxer;
 	QString video_format;
 	QString audio_format;
 	int video_bitrate;
