@@ -102,7 +102,7 @@ void MediaPlayer2Player::Pause() const
 
 void MediaPlayer2Player::PlayPause() const
 {
-    m_core->play_or_pause();
+	m_core->playOrPause();
 }
 
 void MediaPlayer2Player::Stop() const

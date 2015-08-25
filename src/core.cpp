@@ -1240,18 +1240,6 @@ void Core::play() {
 	}
 }
 
-void Core::pause_and_frame_step() {
-	qDebug("Core::pause_and_frame_step");
-	
-	if (proc->isRunning()) {
-		if (state() == Paused) {
-			proc->frameStep();
-		} else {
-			proc->setPause(true);
-		}
-	}
-}
-
 void Core::pause() {
 	qDebug("Core::pause: current state: %s", stateToString().toUtf8().data());
 
@@ -1277,7 +1265,11 @@ void Core::frameStep() {
 	qDebug("Core::frameStep");
 
 	if (proc->isRunning()) {
-		proc->frameStep();
+		if (_state == Paused) {
+			proc->frameStep();
+		} else {
+			pause();
+		}
 	}
 }
 
@@ -1285,7 +1277,11 @@ void Core::frameBackStep() {
 	qDebug("Core::frameBackStep");
 
 	if (proc->isRunning()) {
-		proc->frameBackStep();
+		if (_state == Paused) {
+			proc->frameBackStep();
+		} else {
+			pause();
+		}
 	}
 }
 

@@ -262,7 +262,6 @@ void MpcGui::setupIcons() {
     playAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(0,0,16,16) );
     playOrPauseAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(0,0,16,16) );
     pauseAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(16,0,16,16) );
-    pauseAndStepAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(16,0,16,16) );
     stopAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(32,0,16,16) );
     rewind3Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(64,0,16,16) );
     rewind2Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(80,0,16,16) );

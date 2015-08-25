@@ -428,6 +428,7 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 		"AUDIO_RATE=${=audio-params/samplerate:${=audio-samplerate}}\n"
 		"AUDIO_NCH=${=audio-params/channel-count:${=audio-channels}}\n"
 
+		"INFO_START_TIME=${=time-start:}\n"
 		"INFO_LENGTH=${=duration:${=length}}\n"
 		"INFO_DEMUXER=${=demuxer}\n"
 

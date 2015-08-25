@@ -54,11 +54,12 @@ void PrefInput::createMouseCombos() {
 	left_click_combo->addItem( tr("Play"), "play" );
 	left_click_combo->addItem( tr("Play / Pause"), "play_or_pause" );
 	left_click_combo->addItem( tr("Pause"), "pause" );
-	left_click_combo->addItem( tr("Pause / Frame step"), "pause_and_frame_step" );
 	left_click_combo->addItem( tr("Stop"), "stop" );
+	left_click_combo->addItem( tr("Frame back step"), "frame_back_step" );
 	left_click_combo->addItem( tr("Go backward (short)"), "rewind1" );
 	left_click_combo->addItem( tr("Go backward (medium)"), "rewind2" );
 	left_click_combo->addItem( tr("Go backward (long)"), "rewind3" );
+	left_click_combo->addItem( tr("Frame step"), "frame_step" );
 	left_click_combo->addItem( tr("Go forward (short)"), "forward1" );
 	left_click_combo->addItem( tr("Go forward (medium)"), "forward2" );
 	left_click_combo->addItem( tr("Go forward (long)"), "forward3" );

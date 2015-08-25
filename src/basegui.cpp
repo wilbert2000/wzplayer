@@ -536,10 +536,6 @@ void BaseGui::createActions() {
 	connect( pauseAct, SIGNAL(triggered()),
              core, SLOT(pause()) );
 
-	pauseAndStepAct = new MyAction( this, "pause_and_frame_step" );
-	connect( pauseAndStepAct, SIGNAL(triggered()),
-             core, SLOT(pause_and_frame_step()) );
-
 	stopAct = new MyAction( Qt::Key_MediaStop, this, "stop" );
 	connect( stopAct, SIGNAL(triggered()),
              core, SLOT(stop()) );
@@ -1331,7 +1327,6 @@ void BaseGui::setActionsEnabled(bool b) {
 	playAct->setEnabled(b);
 	playOrPauseAct->setEnabled(b);
 	pauseAct->setEnabled(b);
-	pauseAndStepAct->setEnabled(b);
 	stopAct->setEnabled(b);
 	frameStepAct->setEnabled(b);
 	frameBackStepAct->setEnabled(b);
@@ -1652,8 +1647,6 @@ void BaseGui::retranslateStrings() {
 
 	playOrPauseAct->change( tr("Play / Pause") );
 	playOrPauseAct->setIcon( Images::icon("play_pause") );
-
-	pauseAndStepAct->change( Images::icon("pause"), tr("Pause / Frame step") );
 
 	setJumpTexts(); // Texts for rewind*Act and forward*Act
 

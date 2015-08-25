@@ -420,7 +420,6 @@ protected:
 	MyAction * playAct;
 	MyAction * playOrPauseAct;
 	MyAction * pauseAct;
-	MyAction * pauseAndStepAct;
 	MyAction * stopAct;
 	MyAction * frameStepAct;
 	MyAction * frameBackStepAct;
@@ -856,7 +855,6 @@ private:
 	bool block_resize;
 
 	void hidePanel();
-
 };
 
 #endif
