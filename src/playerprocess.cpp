@@ -94,8 +94,6 @@ PlayerProcess * PlayerProcess::createPlayerProcess(const QString &player_bin, Me
 
 bool PlayerProcess::startPlayer() {
 
-	prev_line = "";
-
 	notified_player_is_running = false;
 
 	waiting_for_answers = 0;
@@ -104,7 +102,7 @@ bool PlayerProcess::startPlayer() {
 	received_end_of_file = false;
 
 	fps = 0.0;
-	prev_frame = -1;
+	prev_frame = -11111;
 
 	md->reset();
 
@@ -210,17 +208,12 @@ void PlayerProcess::playingStarted() {
 
 	qDebug("PlayerProcess::playingStarted: queued emit playerFullyLoaded()");
 	emit playerFullyLoaded();
-
-	// Clear frame counter if no fps
-	if (fps == 0.0) {
-		emit receivedCurrentFrame(0);
-	}
 }
 
 bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 	Q_UNUSED(rx)
 
-	// Store time stamp of first status line
+	// Store timestamp of first status line
 	if (!md->start_sec_set) {
 		md->start_sec_set = true;
 		if (md->start_sec_prop_set) {
@@ -245,18 +238,18 @@ bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &r
 		emit durationChanged(duration);
 	}
 
-	// Store video time stamp
+	// Store video timestamp
 	md->time_sec = time_sec;
 
 	// Substract start time grounding start time at 0
 	time_sec -= md->start_sec;
 
-	// Handle MPEG-TS PTS time stamp rollover
+	// Handle MPEG-TS PTS timestamp rollover
 	if (time_sec < 0 && md->demuxer == "mpegts") {
 		time_sec += 8589934592.0 / 90000.0; // 2^33 / 90 kHz
 	}
 
-	// Pass time stamp to GUI
+	// Pass timestamp to GUI
 	emit receivedCurrentSec(time_sec);
 
 	// Ask children for frame
@@ -278,12 +271,6 @@ bool PlayerProcess::parseLine(QString &line) {
 	line = line.trimmed();
 	if (line.isEmpty())
 		return true;
-
-	// Protect against spurious messages.
-	// if (line == prev_line)
-	//	return true;
-	// prev_line = line;
-	// And here the unique ones go:
 
 	// Output line to console
 	qDebug("PlayerProcess::parseLine: '%s'", line.toUtf8().data() );

@@ -203,7 +203,6 @@ protected slots:
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
-	QString prev_line;
 	int line_count;
 	bool received_end_of_file;
 	QRegExp* rx_eof;

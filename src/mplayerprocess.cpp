@@ -243,8 +243,10 @@ int MplayerProcess::getFrame(double sec, const QString &line) {
 		return rx_frame.cap(1).toInt();
 	}
 
-	// Emulate
-	return qRound(sec * fps);
+	// Emulate.
+	// Status line timestamp resolution is only 0.1, so can be off 10% of frame rate
+	// return qRound(sec * fps);
+	return 0;
 }
 
 bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {

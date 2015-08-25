@@ -166,7 +166,7 @@ void MPVProcess::parseChapter(int id, const QString &start, const QString &start
 int MPVProcess::getFrame(double time_sec, const QString &line) {
 	Q_UNUSED(line)
 
-	// Emulate frames. mpv won't give them.
+	// Emulate frames.
 	return qRound(time_sec * fps);
 }
 
