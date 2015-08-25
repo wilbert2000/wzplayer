@@ -313,6 +313,8 @@ void Core::changeFileSettingsMethod(QString method) {
 void Core::setState(State s) {
 	if (s != _state) {
 		_state = s;
+		qDebug() << "Core::setState: set state to" << stateToString()
+				 << "emit stateChanged()";
 		emit stateChanged(_state);
 	}
 }
@@ -1193,42 +1195,27 @@ void Core::playingStarted() {
 
 void Core::stop()
 {
-	qDebug("Core::stop: current state: %s", stateToString().toUtf8().data());
-	
-	if (state()==Stopped) {
-		// if pressed stop twice, reset video to the beginning
-		qDebug("Core::stop: mset.current_sec: %f", mset.current_sec);
-		mset.current_sec = 0;
-		qDebug("Core::stop: mset.current_sec set to 0");
-		emit showTime( mset.current_sec );
-		#ifdef SEEKBAR_RESOLUTION
-		emit positionChanged( 0 );
-		#else
-		emit posChanged( 0 );
-		#endif
-		//updateWidgets();
-	}
+	qDebug() << "Core::stop: current state: %s" << stateToString();
 
+	State prev_state = _state;
 	stopMplayer();
-	emit mediaStoppedByUser();
 
-	if (pref->reset_stop) {
-		mset.current_sec = 0;
-		emit showTime( mset.current_sec );
-		#ifdef SEEKBAR_RESOLUTION
-		emit positionChanged( 0 );
-		#else
-		emit posChanged( 0 );
-		#endif
+	// if pressed stop twice, reset video to the beginning
+	if ((prev_state == Stopped || pref->reset_stop) && mset.current_sec != 0) {
+		qDebug("Core::stop: resetting current_sec %f to 0", mset.current_sec);
+		changeCurrentSec(0);
 	}
+
+	emit mediaStoppedByUser();
 }
 
 void Core::play() {
-	qDebug("Core::play");
+	qDebug() << "Core::play: current state: " << stateToString();
 
 	if (proc->isRunning()) {
-		if (state() == Paused) {
+		if (_state == Paused) {
 			proc->setPause(false);
+			setState(Playing);
 		}
 	} else {
 		// if we're stopped, play it again
@@ -1241,13 +1228,13 @@ void Core::play() {
 }
 
 void Core::pause() {
-	qDebug("Core::pause: current state: %s", stateToString().toUtf8().data());
+	qDebug() << "Core::pause: current state:" << stateToString();
 
-	if (proc->isRunning()) {
-		// Pauses and unpauses
-		if (state() == Paused)
-			proc->setPause(false);
-		else proc->setPause(true);
+	// Note: MPlayer proc->setPause(bool) pauses and unpauses,
+	// whatever the bool passed, mpv uses the passed bool.
+	if (proc->isRunning() && _state != Paused) {
+		proc->setPause(true);
+		setState(Paused);
 	}
 }
 
@@ -3319,6 +3306,7 @@ void Core::changeCurrentSec(double sec) {
 
 	// Emit posChanged:
 
+	// TODO:
 #ifdef SEEKBAR_RESOLUTION
 	int value = 0;
 	if (mdat.duration > 1
@@ -3351,7 +3339,7 @@ void Core::gotAudioBitrate(int b) {
 }
 
 void Core::changePause() {
-	qDebug("Core::changePause: mplayer reports that it's paused");
+	qDebug("Core::changePause: player reports that it's paused at %f", mset.current_sec);
 
 	setState(Paused);
 }
