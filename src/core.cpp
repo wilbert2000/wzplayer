@@ -1263,8 +1263,10 @@ void Core::pause() {
 	}
 }
 
-void Core::play_or_pause() {
-	if (proc->isRunning()) {
+void Core::playOrPause() {
+	qDebug() << "Core::playOrPause: current state:" << stateToString();
+
+	if (_state == Playing) {
 		pause();
 	} else {
 		play();
