@@ -124,7 +124,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "MEDIA_TITLE") {
 		if (!value.isEmpty() && value != "mp4" && !value.startsWith("mp4&")) {
 			md->meta_data["NAME"] = value;
-			qDebug() << "MPVProcess::parseProperty: set clip_name to" << value;
+			qDebug() << "MPVProcess::parseProperty: set meta_data[\"NAME\"] to" << value;
 		}
 		return true;
 	}
@@ -134,7 +134,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "CHAPTERS") {
 		// Ask for chapter titles
 		if (md->n_chapters > 0)
-			qDebug("MPVProcess::parseProperty: requesting chapter start times and titles");
+			qDebug("MPVProcess::parseProperty: requesting start and title chapters");
 		for (int n = 0; n < md->n_chapters; n++) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} ${chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
@@ -1169,6 +1169,7 @@ void MPVProcess::setOSDPos(const QPoint &pos) {
 	}
 
 	if (clr_osd) {
+		// Show empty text for 0 ms at level 2 where the messages seem to appear
 		writeToStdin("show_text \"\" 0 2");
 	}
 }
