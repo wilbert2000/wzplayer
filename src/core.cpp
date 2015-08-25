@@ -385,14 +385,15 @@ void Core::changeFullscreenMode(bool b) {
 	proc->setFullscreen(b);
 }
 
-void Core::displayTextOnOSD(QString text,
-							int duration,
-							int level,
-							QString prefix) {
+void Core::clearOSD(int level) {
+
+	displayTextOnOSD("", 0, level);
+}
+
+void Core::displayTextOnOSD(QString text, int duration, int level) {
 	//qDebug("Core::displayTextOnOSD: '%s'", text.toUtf8().constData());
 
 	if (proc->isFullyStarted() && level <= pref->osd_level) {
-		proc->setPausingPrefix(prefix);
 		proc->showOSDText(text, duration, level);
 	}
 }
@@ -1278,7 +1279,6 @@ void Core::screenshot() {
 	if ( (!pref->screenshot_directory.isEmpty()) && 
          (QFileInfo(pref->screenshot_directory).isDir()) ) 
 	{
-		proc->setPausingPrefix(pausing_prefix());
 		proc->takeScreenshot(PlayerProcess::Single, pref->subtitles_on_screenshots);
 		qDebug("Core::screenshot: taken screenshot");
 	} else {
@@ -2392,7 +2392,7 @@ void Core::seek(int secs) {
 }
 
 void Core::seek_cmd(double secs, int mode) {
-	proc->seek(secs, mode, pref->precise_seeking);
+	proc->seek(secs, mode, pref->precise_seeking, _state == Paused);
 }
 
 void Core::sforward() {
@@ -2797,7 +2797,6 @@ void Core::setBrightness(int value) {
 	if (value < -100) value = -100;
 
 	if (value != mset.brightness) {
-		proc->setPausingPrefix(pausing_prefix());
 		proc->setBrightness(value);
 		mset.brightness = value;
 		displayMessage( tr("Brightness: %1").arg(value) );
@@ -2813,7 +2812,6 @@ void Core::setContrast(int value) {
 	if (value < -100) value = -100;
 
 	if (value != mset.contrast) {
-		proc->setPausingPrefix(pausing_prefix());
 		proc->setContrast(value);
 		mset.contrast = value;
 		displayMessage( tr("Contrast: %1").arg(value) );
@@ -2828,7 +2826,6 @@ void Core::setGamma(int value) {
 	if (value < -100) value = -100;
 
 	if (value != mset.gamma) {
-		proc->setPausingPrefix(pausing_prefix());
 		proc->setGamma(value);
 		mset.gamma= value;
 		displayMessage( tr("Gamma: %1").arg(value) );
@@ -2843,7 +2840,6 @@ void Core::setHue(int value) {
 	if (value < -100) value = -100;
 
 	if (value != mset.hue) {
-		proc->setPausingPrefix(pausing_prefix());
 		proc->setHue(value);
 		mset.hue = value;
 		displayMessage( tr("Hue: %1").arg(value) );
@@ -2858,7 +2854,6 @@ void Core::setSaturation(int value) {
 	if (value < -100) value = -100;
 
 	if (value != mset.saturation) {
-		proc->setPausingPrefix(pausing_prefix());
 		proc->setSaturation(value);
 		mset.saturation = value;
 		displayMessage( tr("Saturation: %1").arg(value) );
@@ -3018,7 +3013,6 @@ void Core::switchMute() {
 void Core::mute(bool b) {
 	qDebug("Core::mute");
 
-	proc->setPausingPrefix(pausing_prefix());
 	proc->mute(b);
 
 	if (pref->global_volume) {
@@ -3045,7 +3039,6 @@ void Core::decVolume() {
 void Core::setSubDelay(int delay) {
 	qDebug("Core::setSubDelay: %d", delay);
 	mset.sub_delay = delay;
-	proc->setPausingPrefix(pausing_prefix());
 	proc->setSubDelay((double) mset.sub_delay/1000);
 	displayMessage( tr("Subtitle delay: %1 ms").arg(delay) );
 }
@@ -3063,7 +3056,6 @@ void Core::decSubDelay() {
 void Core::setAudioDelay(int delay) {
 	qDebug("Core::setAudioDelay: %d", delay);
 	mset.audio_delay = delay;
-	proc->setPausingPrefix(pausing_prefix());
 	proc->setAudioDelay((double) mset.audio_delay/1000);
 	displayMessage( tr("Audio delay: %1 ms").arg(delay) );
 }
@@ -3792,8 +3784,6 @@ void Core::changeOSDLevel(int level) {
 	qDebug("Core::changeOSDLevel: %d", level);
 
 	pref->osd_level = (Preferences::OSDLevel) level;
-
-	proc->setPausingPrefix(pausing_prefix());
 	proc->setOSDLevel(level);
 
 	updateWidgets();
@@ -4109,33 +4099,19 @@ void Core::dvdnavMouse() {
 }
 #endif
 
-void Core::displayMessage(QString text) {
+void Core::displayMessage(QString text, int duration, int osd_level) {
 	//qDebug("Core::displayMessage");
 
 	emit showMessage(text);
-	displayTextOnOSD( text );
+	displayTextOnOSD(text, duration, osd_level);
 }
 
 void Core::displayScreenshotName(QString filename) {
 	qDebug("Core::displayScreenshotName");
+
 	//QString text = tr("Screenshot saved as %1").arg(filename);
 	QString text = QString("Screenshot saved as %1").arg(filename);
-
-	if (MplayerVersion::isMplayer2()) {
-		displayTextOnOSD(text, 3000, 1, "");
-	}
-	else
-	if (MplayerVersion::isMplayerAtLeast(27665)) {
-		displayTextOnOSD(text, 3000, 1, "pausing_keep_force");
-	}
-	else
-	if (state() != Paused) {
-		// Dont' show the message on OSD while in pause, otherwise
-		// the video goes forward a frame.
-		displayTextOnOSD(text, 3000, 1, "pausing_keep");
-	}
-
-	emit showMessage(text);
+	displayMessage(text);
 }
 
 void Core::displayUpdatingFontCache() {
@@ -4324,21 +4300,5 @@ void Core::dvdTitleIsMovie() {
 	dvdnav_title_is_menu = false;
 }
 #endif
-
-QString Core::pausing_prefix() {
-	qDebug("Core::pausing_prefix");
-
-	if (MplayerVersion::isMplayer2()) {
-		return QString::null;
-	}
-	else
-	if ( (pref->use_pausing_keep_force) && 
-         (MplayerVersion::isMplayerAtLeast(27665)) ) 
-	{
-		return "pausing_keep_force";
-	} else {
-		return "pausing_keep";
-	}
-}
 
 #include "moc_core.cpp"

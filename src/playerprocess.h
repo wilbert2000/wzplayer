@@ -67,7 +67,7 @@ public:
 	virtual void setSecondarySubtitle(int ID) = 0;
 	virtual void disableSecondarySubtitles() = 0;
 	virtual void setSubtitlesVisibility(bool b) = 0;
-	virtual void seek(double secs, int mode, bool precise) = 0;
+	virtual void seek(double secs, int mode, bool precise, bool currently_paused) = 0;
 	virtual void mute(bool b) = 0;
 	virtual void setPause(bool b) = 0;
 	virtual void frameStep() = 0;
@@ -111,8 +111,6 @@ public:
 	virtual void setOSDPos(const QPoint &pos) = 0;
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
-
-	void setPausingPrefix(const QString & prefix) { pausing_prefix = prefix; }
 
 	static PlayerProcess * createPlayerProcess(const QString &player_bin, MediaData *md);
 
@@ -171,7 +169,6 @@ public slots:
 
 protected:
 	MediaData* md;
-	QString pausing_prefix;
 
 	PlayerID::Player player_id;
 

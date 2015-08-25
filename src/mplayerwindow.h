@@ -200,7 +200,7 @@ signals:
 	void wheelUp();
 	void wheelDown();
 	void mouseMoved(QPoint);
-	void showMessage(QString text);
+	void showMessage(QString text, int duration, int osd_level);
 	void moveOSD(QPoint pos);
 
 protected:

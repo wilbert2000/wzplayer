@@ -342,8 +342,10 @@ public slots:
 	void changeFullscreenMode(bool b);
 
 	//! Wrapper for the osd_show_text slave command
-	void displayTextOnOSD(QString text, int duration = 3000, int level = 1, 
-                          QString prefix = QString::null);
+	void displayTextOnOSD(QString text,
+						  int duration = 3000,
+						  int level = 1);
+	void clearOSD(int level = 1);
 
 public:
 	//! Returns the number of the first chapter in 
@@ -357,8 +359,6 @@ public:
 #endif
 
 protected:
-	//! Returns the prefix to keep pausing on slave commands
-	QString pausing_prefix();
 	void seek_cmd(double secs, int mode);
 
 protected slots:
@@ -375,7 +375,7 @@ protected slots:
     void processFinished();
 	void fileReachedEnd();
     
-	void displayMessage(QString text);
+	void displayMessage(QString text, int duration = 3000, int osd_level = 1);
 	void displayScreenshotName(QString filename);
 	void displayUpdatingFontCache();
 	void displayBuffering();

@@ -58,7 +58,7 @@ public:
 	void setSecondarySubtitle(int) {};
 	void disableSecondarySubtitles() {};
 	void setSubtitlesVisibility(bool b);
-	void seek(double secs, int mode, bool precise);
+	void seek(double secs, int mode, bool precise, bool currently_paused);
 	void mute(bool b);
 	void setPause(bool b);
 	void frameStep();

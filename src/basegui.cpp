@@ -2210,8 +2210,8 @@ void BaseGui::createCore() {
 
 	connect(mplayerwindow, SIGNAL(moveOSD(const QPoint &)),
 			core, SLOT(setOSDPos(const QPoint &)));
-	connect(mplayerwindow, SIGNAL(showMessage(QString)),
-			 core, SLOT(displayMessage(QString)) );
+	connect(mplayerwindow, SIGNAL(showMessage(QString, int, int)),
+			 core, SLOT(displayMessage(QString, int, int)) );
 }
 
 void BaseGui::createMplayerWindow() {

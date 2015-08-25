@@ -327,8 +327,6 @@ void Preferences::reset() {
 
 	change_video_equalizer_on_startup = true;
 
-	use_pausing_keep_force = true;
-
 	use_correct_pts = Detect;
 
 	actions_to_run = "";
@@ -813,8 +811,6 @@ void Preferences::save() {
 	set->setValue("use_short_pathnames", use_short_pathnames);
 
 	set->setValue("change_video_equalizer_on_startup", change_video_equalizer_on_startup);
-
-	set->setValue("use_pausing_keep_force", use_pausing_keep_force);
 
 	set->setValue("correct_pts", use_correct_pts);
 
@@ -1332,8 +1328,6 @@ void Preferences::load() {
 	prefer_ipv4 = set->value("prefer_ipv4", prefer_ipv4).toBool();
 
 	use_short_pathnames = set->value("use_short_pathnames", use_short_pathnames).toBool();
-
-	use_pausing_keep_force = set->value("use_pausing_keep_force", use_pausing_keep_force).toBool();
 
 	use_correct_pts = (OptionState) set->value("correct_pts", use_correct_pts).toInt();
 

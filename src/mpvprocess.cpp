@@ -911,7 +911,9 @@ void MPVProcess::setSubtitlesVisibility(bool b) {
 	writeToStdin(QString("set sub-visibility %1").arg(b ? "yes" : "no"));
 }
 
-void MPVProcess::seek(double secs, int mode, bool precise) {
+void MPVProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
+	Q_UNUSED(currently_paused)
+
 	QString s = "seek " + QString::number(secs) + " ";
 	switch (mode) {
 		case 0 : s += "relative "; break;

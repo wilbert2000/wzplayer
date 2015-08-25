@@ -33,8 +33,6 @@ using namespace Global;
 #define TOO_CHAPTERS_WORKAROUND
 
 
-const QString silly_prefix = "pausing_keep_force ";
-
 // How to recognise eof
 static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 
@@ -236,6 +234,7 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 }
 
 int MplayerProcess::getFrame(double sec, const QString &line) {
+	Q_UNUSED(sec)
 
 	// Check for frame in status line
 	static QRegExp rx_frame("^[AV]:.* (\\d+)\\/.\\d+");
@@ -243,7 +242,6 @@ int MplayerProcess::getFrame(double sec, const QString &line) {
 		return rx_frame.cap(1).toInt();
 	}
 
-	// Emulate.
 	// Status line timestamp resolution is only 0.1, so can be off 10% of frame rate
 	// return qRound(sec * fps);
 	return 0;
@@ -300,7 +298,6 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 bool MplayerProcess::parseLine(QString &line) {
 
 	static QRegExp rx_av("^[AV]: *([0-9,:.-]+)");
-	static QRegExp rx_paused("^ID_PAUSED");
 	static QRegExp rx_vo("^VO: \\[(.*)\\] \\d+x\\d+ => (\\d+)x(\\d+)");
 	static QRegExp rx_ao("^AO: \\[(.*)\\]");
 	static QRegExp rx_video_track("^ID_VID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
@@ -361,7 +358,7 @@ bool MplayerProcess::parseLine(QString &line) {
 		return true;
 
 	// Pause
-	if (rx_paused.indexIn(line) >= 0) {
+	if (line == "ID_PAUSED") {
 		qDebug("MplayerProcess::parseLine: emit receivedPause()");
 		emit receivedPause();
 		return true;
@@ -818,7 +815,7 @@ void MplayerProcess::setVolume(int v) {
 }
 
 void MplayerProcess::setOSDLevel(int level) {
-	writeToStdin(pausing_prefix + " osd " + QString::number(level));
+	writeToStdin("pausing_keep osd " + QString::number(level));
 }
 
 void MplayerProcess::setAudio(int ID) {
@@ -855,14 +852,18 @@ void MplayerProcess::setSubtitlesVisibility(bool b) {
 	writeToStdin(QString("sub_visibility %1").arg(b ? 1 : 0));
 }
 
-void MplayerProcess::seek(double secs, int mode, bool precise) {
+void MplayerProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
+
 	QString s = QString("seek %1 %2").arg(secs).arg(mode);
 	if (precise) s += " 1"; else s += " -1";
+	// pausing_keep does strange things with seek, so need to use pausing instead,
+	// hence the leakage of currently_paused.
+	if (currently_paused) s = "pausing " + s;
 	writeToStdin(s);
 }
 
 void MplayerProcess::mute(bool b) {
-	writeToStdin(pausing_prefix + " mute " + QString::number(b ? 1 : 0));
+	writeToStdin("pausing_keep_force mute " + QString::number(b ? 1 : 0));
 }
 
 void MplayerProcess::setPause(bool) {
@@ -877,11 +878,16 @@ void MplayerProcess::frameBackStep() {
 	qDebug("MplayerProcess::frameBackStep: function not supported in mplayer");
 }
 
-
 void MplayerProcess::showOSDText(const QString & text, int duration, int level) {
-	QString str = QString("osd_show_text \"%1\" %2 %3").arg(text).arg(duration).arg(level);
-	if (!pausing_prefix.isEmpty()) str = pausing_prefix + " " + str;
-	writeToStdin(str);
+
+	QString s = "pausing_keep_force osd_show_text \"" + text + "\" "
+			+ QString::number(duration) + " " + QString::number(level);
+
+	// if (pausing_keep_force)
+	// s = "pausing_keep_force " + s;
+	// else s = "pausing_keep " + s;
+
+	writeToStdin(s);
 }
 
 void MplayerProcess::showFilenameOnOSD() {
@@ -893,23 +899,23 @@ void MplayerProcess::showTimeOnOSD() {
 }
 
 void MplayerProcess::setContrast(int value) {
-	writeToStdin(pausing_prefix + " contrast " + QString::number(value) + " 1");
+	writeToStdin("pausing_keep contrast " + QString::number(value) + " 1");
 }
 
 void MplayerProcess::setBrightness(int value) {
-	writeToStdin(pausing_prefix + " brightness " + QString::number(value) + " 1");
+	writeToStdin("pausing_keep brightness " + QString::number(value) + " 1");
 }
 
 void MplayerProcess::setHue(int value) {
-	writeToStdin(pausing_prefix + " hue " + QString::number(value) + " 1");
+	writeToStdin("pausing_keep hue " + QString::number(value) + " 1");
 }
 
 void MplayerProcess::setSaturation(int value) {
-	writeToStdin(pausing_prefix + " saturation " + QString::number(value) + " 1");
+	writeToStdin("pausing_keep saturation " + QString::number(value) + " 1");
 }
 
 void MplayerProcess::setGamma(int value) {
-	writeToStdin(pausing_prefix + " gamma " + QString::number(value) + " 1");
+	writeToStdin("pausing_keep gamma " + QString::number(value) + " 1");
 }
 
 void MplayerProcess::setChapter(int ID) {
@@ -957,11 +963,11 @@ void MplayerProcess::setAudioEqualizer(const QString & values) {
 }
 
 void MplayerProcess::setAudioDelay(double delay) {
-	writeToStdin(pausing_prefix + " audio_delay " + QString::number(delay) +" 1");
+	writeToStdin("pausing_keep_force audio_delay " + QString::number(delay) +" 1");
 }
 
 void MplayerProcess::setSubDelay(double delay) {
-	writeToStdin(pausing_prefix + " sub_delay " + QString::number(delay) +" 1");
+	writeToStdin("pausing_keep_force sub_delay " + QString::number(delay) +" 1");
 }
 
 void MplayerProcess::setLoop(int v) {
@@ -970,7 +976,7 @@ void MplayerProcess::setLoop(int v) {
 
 void MplayerProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
 	if (t == Single) {
-		writeToStdin(pausing_prefix + " screenshot 0");
+		writeToStdin("pausing_keep_force screenshot 0");
 	} else {
 		writeToStdin("screenshot 1");
 	}
