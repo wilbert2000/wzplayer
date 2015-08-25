@@ -223,8 +223,14 @@ bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &r
 	// Store time stamp of first status line
 	if (!md->start_sec_set) {
 		md->start_sec_set = true;
-		md->start_sec = time_sec;
-		// TODO: cmp with container
+		if (md->start_sec_prop_set) {
+			md->start_sec = md->start_sec_prop;
+			qDebug("PlayerProcess::parseStatusLine: selected start time container %f (status %f)",
+				   md->start_sec, time_sec);
+		} else {
+			md->start_sec = time_sec;
+			qDebug("PlayerProcess::parseStatusLine: selected start time status %f", time_sec);
+		}
 	}
 
 	// Any pending questions?
@@ -429,6 +435,17 @@ bool PlayerProcess::parseMetaDataProperty(QString name, QString value) {
 
 bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 
+	if (name == "START_TIME") {
+		if (value.isEmpty()) {
+			qDebug("PlayerProcess::parseProperty: start time not set");
+		} else {
+			md->start_sec_prop_set = true;
+			md->start_sec_prop = value.toDouble();
+			qDebug("PlayerProcess::parseProperty: start_sec_prop set to %f",
+				   md->start_sec_prop);
+		}
+		return true;
+	}
 	if (name == "LENGTH") {
 		double duration = value.toDouble();
 		if (qAbs(duration - md->duration) > 0.001 && duration > 0) {

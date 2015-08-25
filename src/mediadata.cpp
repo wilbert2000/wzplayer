@@ -35,6 +35,7 @@ void MediaData::reset() {
 	time_sec = 0;
 	duration = 0;
 	start_sec_set = false;
+	start_sec_prop_set = false;
 
 	video_width = 0;
 	video_height = 0;
@@ -106,6 +107,9 @@ void MediaData::list() {
 	qDebug("MediaData::list");
 
 	qDebug("  filename: '%s'", filename.toUtf8().data());
+	qDebug("  start: %f", start_sec);
+	qDebug("  start prop: %f", start_sec_prop);
+	qDebug("  start prop set: %d", start_sec_prop_set);
 	qDebug("  duration: %f", duration);
 
 	qDebug("  video_width: %d", video_width); 
@@ -115,31 +119,30 @@ void MediaData::list() {
 	qDebug("  video_out_width: %d", video_out_width);
 	qDebug("  video_out_height: %d", video_out_height);
 
-	qDebug("  novideo(): %d", noVideo());
-
 	qDebug("  type: %d", type);
 	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
 
 	qDebug("  initialized: %d", initialized);
 
-	qDebug("  chapters: %d", n_chapters);
-	chapters.list();
-
-	qDebug("  Subs:");
-	subs.list();
-
-#if PROGRAM_SWITCH
-	qDebug("  Programs:");
-	programs.list();
-#endif
 	qDebug("  Videos:");
 	videos.list();
 
 	qDebug("  Audios:");
 	audios.list();
 
+	qDebug("  Subs:");
+	subs.list();
+
+	qDebug("  chapters: %d", n_chapters);
+	chapters.list();
+
 	qDebug("  Titles:");
 	titles.list();
+
+#if PROGRAM_SWITCH
+	qDebug("  Programs:");
+	programs.list();
+#endif
 
 	//qDebug("  chapters: %d", chapters);
 	//qDebug("  angles: %d", angles);
