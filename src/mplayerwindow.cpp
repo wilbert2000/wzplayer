@@ -229,7 +229,8 @@ void MplayerWindow::setResolution(int width, int height) {
 
 	// Disable messages and post enable
 	enable_messages = false;
-	QTimer::singleShot(500, this, SLOT(enableMessages()));
+	if (width > 0)
+		pauseMessages(500);
 }
 
 void MplayerWindow::set(double aspect,
@@ -568,15 +569,20 @@ void MplayerWindow::enableMessages() {
 	enable_messages = true;
 }
 
+void MplayerWindow::pauseMessages(int msec) {
+
+	// Disable messages and post enable
+	enable_messages = false;
+	QTimer::singleShot(msec, this, SLOT(enableMessages()));
+}
+
 void MplayerWindow::aboutToExitFullscreen() {
 	qDebug("MplayerWindow::aboutToExitFullscreen");
 
 	fullscreen = false;
 	enableSizeGroup();
 
-	enable_messages = false;
-	// Post enable
-	QTimer::singleShot(500, this, SLOT(enableMessages()));
+	pauseMessages(500);
 }
 
 void MplayerWindow::setZoom(double factor,

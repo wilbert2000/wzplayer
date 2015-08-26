@@ -265,6 +265,8 @@ private:
 	void uncheckSizeGroup();
 	void enableSizeGroup();
 	void updateSizeGroup();
+
+	void pauseMessages(int msec);
 };
 
 #endif
