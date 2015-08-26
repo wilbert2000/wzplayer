@@ -177,6 +177,7 @@ public slots:
 
 protected slots:
 	void checkHideMouse();
+	void enableMessages();
 
 protected:
 	virtual void retranslateStrings();
@@ -239,7 +240,9 @@ private:
 	QPoint drag_pos;
 	bool dragging;
 	bool kill_fake_event;
+
 	bool fullscreen;
+	bool enable_messages;
 
 	bool autohide_cursor;
 	QTimer * check_hide_mouse_timer;

@@ -151,6 +151,7 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	, dragging(false)
 	, kill_fake_event(false)
 	, fullscreen(false)
+	, enable_messages(false)
 	, autohide_cursor(false)
 	, check_hide_mouse_last_position()
 	, autohide_interval(1000)
@@ -225,6 +226,10 @@ void MplayerWindow::setResolution(int width, int height) {
 	last_video_size = QSize(width, height);
 
 	enableSizeGroup();
+
+	// Disable messages and post enable
+	enable_messages = false;
+	QTimer::singleShot(500, this, SLOT(enableMessages()));
 }
 
 void MplayerWindow::set(double aspect,
@@ -339,9 +344,9 @@ void MplayerWindow::updateVideoWindow() {
 	emit moveOSD(o_pos);
 
 	// Update status with new size. After OSD to clear moveOSD msg.
-	if (!fullscreen && video_size != last_video_size) {
+	if (enable_messages && !fullscreen && video_size != last_video_size) {
 		emit showMessage(tr("Video size %1 x %2").arg(video_size.width()).arg(video_size.height()),
-						 2000, 1); // 3 sec, osd_level 1
+						 2000, 1); // 2 sec, osd_level 1
 		last_video_size = video_size;
 	}
 
@@ -559,11 +564,19 @@ void MplayerWindow::aboutToEnterFullscreen() {
 	enableSizeGroup();
 }
 
+void MplayerWindow::enableMessages() {
+	enable_messages = true;
+}
+
 void MplayerWindow::aboutToExitFullscreen() {
 	qDebug("MplayerWindow::aboutToExitFullscreen");
 
 	fullscreen = false;
 	enableSizeGroup();
+
+	enable_messages = false;
+	// Post enable
+	QTimer::singleShot(500, this, SLOT(enableMessages()));
 }
 
 void MplayerWindow::setZoom(double factor,
