@@ -164,37 +164,35 @@ bool BaseGuiPlus::startHidden() {
 #endif
 }
 
-void BaseGuiPlus::closeEvent( QCloseEvent * e ) {
-	qDebug("BaseGuiPlus::closeEvent");
-	e->ignore();
-	closeWindow();
+void BaseGuiPlus::switchToTray() {
+
+	exitFullscreen();
+	showAll(false); // Hide windows
+	if (core->state() == Core::Playing)
+		core->stop();
+
+	if (pref->balloon_count > 0) {
+		tray->showMessage( "SMPlayer",
+			tr("SMPlayer is still running here"),
+			QSystemTrayIcon::Information, 3000 );
+		pref->balloon_count--;
+	}
 }
 
 void BaseGuiPlus::closeWindow() {
 	qDebug("BaseGuiPlus::closeWindow");
 
 	if (tray->isVisible()) {
-		//e->ignore();
-		exitFullscreen();
-		showAll(false); // Hide windows
-		if (core->state() == Core::Playing) core->stop();
-
-		if (pref->balloon_count > 0) {
-			tray->showMessage( "SMPlayer", 
-				tr("SMPlayer is still running here"), 
-        	    QSystemTrayIcon::Information, 3000 );
-			pref->balloon_count--;
-		}
-
+		switchToTray();
 	} else {
 		BaseGui::closeWindow();
 	}
-	//tray->hide();
-
 }
 
 void BaseGuiPlus::quit() {
 	qDebug("BaseGuiPlus::quit");
+
+	// Bypass switch to tray
 	BaseGui::closeWindow();
 }
 

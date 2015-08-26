@@ -51,7 +51,7 @@ public:
 	MediaData();
 	virtual ~MediaData();
 
-	virtual void reset();
+	virtual void reset(bool clear_filename_and_type = true);
 
 	// Start time from first status line
 	double start_sec;

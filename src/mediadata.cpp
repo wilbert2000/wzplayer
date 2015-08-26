@@ -29,7 +29,7 @@ MediaData::MediaData() {
 MediaData::~MediaData() {
 }
 
-void MediaData::reset() {
+void MediaData::reset(bool clear_filename_and_type) {
 
 	start_sec = 0;
 	time_sec = 0;
@@ -44,9 +44,11 @@ void MediaData::reset() {
 
 	video_aspect = 0;
 
-	filename = "";
+	if (clear_filename_and_type) {
+		filename = "";
+		type = TYPE_UNKNOWN;
+	}
 	dvd_id = "";
-	type = TYPE_UNKNOWN;
 
 
 #if PROGRAM_SWITCH

@@ -52,8 +52,6 @@ protected:
 	virtual void aboutToEnterCompactMode();
 	virtual void aboutToExitCompactMode();
 
-	virtual void closeEvent( QCloseEvent * e );
-
 	// Functions for other GUI's
 	TimeSliderAction * createTimeSliderAction(QWidget * parent);
 	VolumeSliderAction * createVolumeSliderAction(QWidget * parent);
@@ -116,6 +114,8 @@ protected:
 	bool ignore_playlist_events;
 #endif
 
+private:
+	void switchToTray();
 };
 
 #endif

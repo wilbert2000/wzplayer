@@ -187,7 +187,6 @@ public slots:
 	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; };
 	int forceStartInFullscreen() { return arg_start_in_fullscreen; };
 
-	void maybeShowLogo();
 	void slotNoVideo();
 
 protected slots:
@@ -341,15 +340,10 @@ signals:
 	void middleClicked();
 	*/
 
-	//! Sent when the user wants to close the main window
-	void quitSolicited();
-
 	//! Sent when another instance requested to play a file
 	void openFileRequested();
 
-#ifdef GUI_CHANGE_ON_RUNTIME
-	void guiChanged(QString gui);
-#endif
+	void requestRestart();
 
 protected:
 	virtual void retranslateStrings();
@@ -392,7 +386,7 @@ protected:
 	void updateRecents();
 	void configureDiscDevices();
 	void setupNetworkProxy();
-	/* virtual void closeEvent( QCloseEvent * e ); */
+	virtual void closeEvent( QCloseEvent * e );
 
 protected:
 	/* virtual void wheelEvent( QWheelEvent * e ) ; */
@@ -833,9 +827,6 @@ private:
 	QPoint win_pos;
 	QSize win_size;
 	bool was_maximized;
-
-	// Closing window set by closeWindow(). Used by slot maybeShowLog()
-	bool closing;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER

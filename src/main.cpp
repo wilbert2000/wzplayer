@@ -30,8 +30,6 @@ int main( int argc, char ** argv )
 		return 0;
 	}
 	*/
-
-	a.setQuitOnLastWindowClosed(false);
 	
 #ifdef Q_OS_WIN
 	// Change the working directory to the application path
@@ -77,12 +75,17 @@ int main( int argc, char ** argv )
 	if (c != SMPlayer::NoExit) {
 		return c;
 	}
-	smplayer->start();
 
-	int r = a.exec();
+	// TODO: make smplayer descendant app
+	int exit_code;
+	do {
+		smplayer->start();
+		exit_code = a.exec();
+		qDebug("main: exec() returned %d", exit_code);
+	} while (smplayer->requested_restart);
 
 	delete smplayer;
 
-	return r;
+	return exit_code;
 }
 

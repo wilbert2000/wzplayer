@@ -104,7 +104,7 @@ public slots:
 	void loadAudioFile(const QString & audiofile);
 	void unloadAudioFile();
 
-    void stop(); 
+	void stop();
     void play();
 	void playOrPause();
 	void pause();

@@ -34,6 +34,8 @@ public:
 	SMPlayer(const QString & config_path = QString::null, QObject * parent = 0);
 	~SMPlayer();
 
+	bool requested_restart;
+
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
 	ExitCode processArgs(QStringList args);
 
@@ -41,14 +43,11 @@ public:
 
 	void start();
 
-#ifdef GUI_CHANGE_ON_RUNTIME
 private slots:
-	void changeGUI(QString new_gui);
-#endif
+	void restart();
 
 private:
 	BaseGui * createGUI(QString gui_name);
-	void deleteGUI();
 #ifndef PORTABLE_APP
 	void createConfigDirectory();
 #endif

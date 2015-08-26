@@ -94,9 +94,6 @@ SMPlayer::SMPlayer(const QString & config_path, QObject * parent )
 }
 
 SMPlayer::~SMPlayer() {
-	if (main_window != 0) {
-		deleteGUI();
-	}
 	global_end();
 
 #ifdef LOG_SMPLAYER
@@ -166,11 +163,7 @@ BaseGui * SMPlayer::createGUI(QString gui_name) {
 	gui->loadConfig("");
 	gui->setForceCloseOnFinish(close_at_end);
 	gui->setForceStartInFullscreen(start_in_fullscreen);
-	connect(gui, SIGNAL(quitSolicited()), qApp, SLOT(quit()));
-
-#ifdef GUI_CHANGE_ON_RUNTIME
-	connect(gui, SIGNAL(guiChanged(QString)), this, SLOT(changeGUI(QString)));
-#endif
+	connect(gui, SIGNAL(requestRestart()), this, SLOT(restart()));
 
 #if SINGLE_INSTANCE
 	MyApplication * app = MyApplication::instance();
@@ -182,31 +175,12 @@ BaseGui * SMPlayer::createGUI(QString gui_name) {
 	return gui;
 }
 
-void SMPlayer::deleteGUI() {
-#ifdef LOG_SMPLAYER
-	allow_to_send_log_to_gui = false;
-#endif
+void SMPlayer::restart() {
+	qDebug("SMPlayer::restart");
 
-	main_window->saveConfig("");
-	delete main_window;
+	requested_restart = true;
 	main_window = 0;
-
-#ifdef LOG_SMPLAYER
-	allow_to_send_log_to_gui = true;
-#endif
 }
-
-#ifdef GUI_CHANGE_ON_RUNTIME
-void SMPlayer::changeGUI(QString new_gui) {
-	qDebug("SMPlayer::changeGUI: '%s'", new_gui.toLatin1().constData());
-
-	deleteGUI();
-
-	main_window = createGUI(new_gui);
-
-	main_window->show();
-}
-#endif
 
 SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 	qDebug("SMPlayer::processArgs: arguments: %d", args.count());
@@ -432,6 +406,10 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 }
 
 void SMPlayer::start() {
+	qDebug("SMPlayer::start");
+
+	requested_restart = false;
+
 #ifdef FONTCACHE_DIALOG
 #ifndef PORTABLE_APP
 	if (Version::with_revision() != pref->smplayer_version) {
@@ -441,6 +419,9 @@ void SMPlayer::start() {
 	}
 #endif
 #endif
+
+	// gui() calls createGUI() first time
+	// TODO: make explicit call
 
 	if (!gui()->startHidden() || !files_to_play.isEmpty() ) gui()->show();
 	if (!files_to_play.isEmpty()) {

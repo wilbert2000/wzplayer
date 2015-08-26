@@ -146,7 +146,6 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 #ifdef UPDATE_CHECKER
 	, update_checker(0)
 #endif
-	, closing(false)
 	, block_resize(false)
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -2149,7 +2148,7 @@ void BaseGui::createCore() {
              this, SLOT(exitFullscreenOnStop()) );
 
 	connect( core, SIGNAL(mediaStoppedByUser()),
-			 this, SLOT(maybeShowLogo()) );
+			 mplayerwindow, SLOT(showLogo()) );
 
 	connect( core, SIGNAL(mediaLoaded()),
              this, SLOT(enableActionsOnPlaying()) );
@@ -2837,41 +2836,25 @@ void BaseGui::createMenus() {
 	initializeMenus();
 }
 
-/*
 void BaseGui::closeEvent( QCloseEvent * e )  {
 	qDebug("BaseGui::closeEvent");
 
-	qDebug("mplayer_log_window: %d x %d", mplayer_log_window->width(), mplayer_log_window->height() );
-	qDebug("smplayer_log_window: %d x %d", smplayer_log_window->width(), smplayer_log_window->height() );
-
-	mplayer_log_window->close();
-	smplayer_log_window->close();
-	playlist->close();
-	equalizer->close();
-
-	core->stop();
-	e->accept();
-}
-*/
-
-void BaseGui::maybeShowLogo() {
-	//qDebug("BaseGui::maybeShowLogo");
-	if (!closing)
-		mplayerwindow->showLogo();
-}
-
-void BaseGui::closeWindow() {
-	qDebug("BaseGui::closeWindow");
-
-	// Prevent update logo when closing down
-	closing = true;
+	// Prevent animations when closing down
+	disconnect(core, SIGNAL(mediaStoppedByUser()),
+			   mplayerwindow, SLOT(showLogo()));
 
 	if (core->state() != Core::Stopped) {
 		core->stop();
 	}
 
-	//qApp->quit();
-	emit quitSolicited();
+	saveConfig("");
+	e->accept();
+}
+
+void BaseGui::closeWindow() {
+	qDebug("BaseGui::closeWindow");
+
+	close();
 }
 
 void BaseGui::showPlaylist() {
@@ -3047,10 +3030,6 @@ void BaseGui::applyNewPreferences() {
 	}
 #endif
 
-    // Restart the video if needed
-	if (pref_dialog->requiresRestart())
-		core->restart();
-
 	// Update actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();
 	saveActions();
@@ -3059,25 +3038,15 @@ void BaseGui::applyNewPreferences() {
 	pref->save();
 #endif
 
-
-	if (_interface->guiChanged()) {
-#ifdef GUI_CHANGE_ON_RUNTIME
-		core->stop();
-		emit guiChanged(pref->gui);
-#else
-		QMessageBox::information(this, tr("Information"),
-			tr("You need to restart SMPlayer to use the new GUI.") );
-#endif
-	}
-
-	if (old_player_type != PlayerID::player(pref->mplayer_bin)) {
-		qDebug("BaseGui::applyNewPreferences: player changed!");
-		// Hack, simulate a change of GUI to restart the interface
-		// FIXME: try to create a new Core::proc in the future
-		#ifdef GUI_CHANGE_ON_RUNTIME
-		core->stop();
-		emit guiChanged(pref->gui);
-		#endif
+	// Any restarts needed?
+	if (_interface->guiChanged()
+		|| old_player_type != PlayerID::player(pref->mplayer_bin)) {
+		// Recreate the main window
+		emit requestRestart();
+		close();
+	} else if (pref_dialog->requiresRestart()) {
+		// Restart the video
+		core->restart();
 	}
 }
 
@@ -4908,9 +4877,8 @@ void BaseGui::exitFullscreenOnStop() {
 
 void BaseGui::playlistHasFinished() {
 	qDebug("BaseGui::playlistHasFinished");
-	core->stop();
 
-	exitFullscreenOnStop();
+	core->stop();
 
 	qDebug("BaseGui::playlistHasFinished: arg_close_on_finish: %d, pref->close_on_finish: %d", arg_close_on_finish, pref->close_on_finish);
 
@@ -4927,11 +4895,9 @@ void BaseGui::playlistHasFinished() {
 				}
 			}
 			#endif
-			exitAct->trigger();
+			close();
 		}
 	}
-
-	maybeShowLogo();
 }
 
 void BaseGui::displayState(Core::State state) {
@@ -5086,11 +5052,12 @@ void BaseGui::slotNoVideo() {
 
 	block_resize = false;
 
+	// TODO: remove ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 #if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	if (pref->hide_video_window_on_audio_files) {
 		hidePanel();
 	} else {
-		maybeShowLogo();
+		mplayerwindow->showLogo();
 	}
 #else
 	hidePanel();

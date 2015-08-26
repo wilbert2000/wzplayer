@@ -332,6 +332,7 @@ QString Core::stateToString() {
 // Public restart
 void Core::restart() {
 	qDebug("Core::restart");
+
 	if (proc->isRunning()) {
 		restartPlay();
 	} else {
@@ -1196,7 +1197,7 @@ void Core::playingStarted() {
 
 void Core::stop()
 {
-	qDebug() << "Core::stop: current state: %s" << stateToString();
+	qDebug() << "Core::stop: current state:" << stateToString();
 
 	State prev_state = _state;
 	stopMplayer();

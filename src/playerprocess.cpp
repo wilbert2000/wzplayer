@@ -104,7 +104,8 @@ bool PlayerProcess::startPlayer() {
 	fps = 0.0;
 	prev_frame = -11111;
 
-	md->reset();
+	// Clear media data, false don't clear filename and type
+	md->reset(false);
 
 	// Start the player process
 	start();
