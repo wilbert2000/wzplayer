@@ -462,6 +462,7 @@ public:
        ************** */
 
 	double initial_sub_scale;
+	double initial_sub_scale_mpv;
 	double initial_sub_scale_ass;
 	int initial_volume;
 	int initial_contrast;

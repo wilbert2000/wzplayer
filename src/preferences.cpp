@@ -478,6 +478,7 @@ void Preferences::reset() {
        ************** */
 
 	initial_sub_scale = 5;
+	initial_sub_scale_mpv = 1;
 	initial_sub_scale_ass = 1;
 	initial_volume = 40;
 	initial_contrast = 0;
@@ -966,6 +967,7 @@ void Preferences::save() {
 	set->beginGroup( "defaults");
 
 	set->setValue("initial_sub_scale", initial_sub_scale);
+	set->setValue("initial_sub_scale_mpv", initial_sub_scale_mpv);
 	set->setValue("initial_sub_scale_ass", initial_sub_scale_ass);
 	set->setValue("initial_volume", initial_volume);
 	set->setValue("initial_contrast", initial_contrast);
@@ -1485,6 +1487,7 @@ void Preferences::load() {
 	set->beginGroup( "defaults");
 
 	initial_sub_scale = set->value("initial_sub_scale", initial_sub_scale).toDouble();
+	initial_sub_scale_mpv = set->value("initial_sub_scale_mpv", initial_sub_scale_mpv).toDouble();
 	initial_sub_scale_ass = set->value("initial_sub_scale_ass", initial_sub_scale_ass).toDouble();
 	initial_volume = set->value("initial_volume", initial_volume).toInt();
 	initial_contrast = set->value("initial_contrast", initial_contrast).toInt();

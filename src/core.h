@@ -269,7 +269,7 @@ public slots:
 	void changeSubtitle(int idx, bool updateWidgets = true);
 	void nextSubtitle();
 #ifdef MPV_SUPPORT
-	void changeSecondarySubtitle(int);
+	void changeSecondarySubtitle(int idx);
 #endif
 	void changeAudio(int id, bool allow_restart = true);
 	void nextAudio();
@@ -432,9 +432,6 @@ protected:
 
     void initializeMenus();
 	void updateWidgets();
-
-	//! Returns true if changing the subscale requires to restart mplayer
-	bool subscale_need_restart();
 
 	int adjustVolume(int v, int max_vol);
 

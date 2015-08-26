@@ -96,6 +96,7 @@ public:
 	// Subtitles position (0-100)
 	int sub_pos;
 	double sub_scale;
+	double sub_scale_mpv;
 	double sub_scale_ass;
 
 	int closed_caption_channel; // 0 = disabled

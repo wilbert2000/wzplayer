@@ -60,6 +60,7 @@ void MediaSettings::reset() {
 	audio_delay=0;
 	sub_pos = pref->initial_sub_pos; // 100% by default
 	sub_scale = pref->initial_sub_scale; 
+	sub_scale_mpv = pref->initial_sub_scale_mpv;
 	sub_scale_ass = pref->initial_sub_scale_ass;
 
 	closed_caption_channel = 0; // disabled
@@ -215,6 +216,7 @@ void MediaSettings::list() {
 	qDebug("  audio_delay: %d", sub_delay);
 	qDebug("  sub_pos: %d", sub_pos);
 	qDebug("  sub_scale: %f", sub_scale);
+	qDebug("  sub_scale_mpv: %f", sub_scale_mpv);
 	qDebug("  sub_scale_ass: %f", sub_scale_ass);
 
 	qDebug("  closed_caption_channel: %d", closed_caption_channel);
@@ -343,6 +345,7 @@ void MediaSettings::save(QSettings * set, int player_id) {
 	set->setValue( "audio_delay", audio_delay);
 	set->setValue( "sub_pos", sub_pos);
 	set->setValue( "sub_scale", sub_scale);
+	set->setValue( "sub_scale_mpv", sub_scale_mpv);
 	set->setValue( "sub_scale_ass", sub_scale_ass);
 
 	set->setValue( "closed_caption_channel", closed_caption_channel);
@@ -460,6 +463,7 @@ void MediaSettings::load(QSettings * set, int player_id) {
 	audio_delay = set->value( "audio_delay", audio_delay).toInt();
 	sub_pos = set->value( "sub_pos", sub_pos).toInt();
 	sub_scale = set->value( "sub_scale", sub_scale).toDouble();
+	sub_scale_mpv = set->value( "sub_scale_mpv", sub_scale_mpv).toDouble();
 	sub_scale_ass = set->value( "sub_scale_ass", sub_scale_ass).toDouble();
 
 	closed_caption_channel = set->value( "closed_caption_channel", closed_caption_channel).toInt();

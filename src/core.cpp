@@ -1739,8 +1739,11 @@ void Core::startMplayer( QString file, double seek ) {
 	} else {
 		// NO ASS:
 		if (pref->freetype_support) proc->setOption("noass");
-		// TODO: not same mpv mplayer
-		// proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
+		if (proc->isMPV()) {
+			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
+		} else {
+			proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
+		}
 	}
 
 	// Subtitle encoding
@@ -3086,48 +3089,27 @@ void Core::decSubPos() {
 	proc->setSubPos(mset.sub_pos);
 }
 
-bool Core::subscale_need_restart() {
-	bool need_restart = false;
-
-	need_restart = (pref->change_sub_scale_should_restart == Preferences::Enabled);
-	if (pref->change_sub_scale_should_restart == Preferences::Detect) {
-		if (pref->use_ass_subtitles) 
-			need_restart = (!MplayerVersion::isMplayerAtLeast(25843));
-		else
-			need_restart = (!MplayerVersion::isMplayerAtLeast(23745));
-	}
-	return need_restart;
-}
-
 void Core::changeSubScale(double value) {
 	qDebug("Core::changeSubScale: %f", value);
-
-	bool need_restart = subscale_need_restart();
 
 	if (value < 0) value = 0;
 
 	if (pref->use_ass_subtitles) {
 		if (value != mset.sub_scale_ass) {
 			mset.sub_scale_ass = value;
-			if (need_restart) {
-				restartPlay();
-			} else {
-				proc->setSubScale(mset.sub_scale_ass);
-			}
-			displayMessage( tr("Font scale: %1").arg(mset.sub_scale_ass) );
+			proc->setSubScale(mset.sub_scale_ass);
 		}
-	} else {
-		// No ass
-		if (value != mset.sub_scale) {
-			mset.sub_scale = value;
-			if (need_restart) {
-				restartPlay();
-			} else {
-				proc->setSubScale(mset.sub_scale);
-			}
-			displayMessage( tr("Font scale: %1").arg(mset.sub_scale) );
+	} else if (proc->isMPV()) {
+		if (value != mset.sub_scale_mpv) {
+			mset.sub_scale_mpv = value;
+			proc->setSubScale(value);
 		}
+	} else if (value != mset.sub_scale) {
+		mset.sub_scale = value;
+		proc->setSubScale(value);
 	}
+
+	displayMessage( tr("Font scale: %1").arg(value) );
 }
 
 void Core::incSubScale() {
@@ -3135,8 +3117,9 @@ void Core::incSubScale() {
 
 	if (pref->use_ass_subtitles) {
 		changeSubScale( mset.sub_scale_ass + step );
+	} else if (proc->isMPV()) {
+		changeSubScale( mset.sub_scale_mpv + step );
 	} else {
-		if (subscale_need_restart()) step = 1;
 		changeSubScale( mset.sub_scale + step );
 	}
 }
@@ -3146,8 +3129,9 @@ void Core::decSubScale() {
 
 	if (pref->use_ass_subtitles) {
 		changeSubScale( mset.sub_scale_ass - step );
+	} else if (proc->isMPV()) {
+		changeSubScale( mset.sub_scale_mpv - step );
 	} else {
-		if (subscale_need_restart()) step = 1;
 		changeSubScale( mset.sub_scale - step );
 	}
 }
@@ -3407,26 +3391,26 @@ void Core::nextSubtitle() {
 }
 
 #ifdef MPV_SUPPORT
-void Core::changeSecondarySubtitle(int ID) {
+void Core::changeSecondarySubtitle(int idx) {
 	// MPV only
-	qDebug("Core::changeSecondarySubtitle: %d", ID);
+	qDebug("Core::changeSecondarySubtitle: %d", idx);
 
-	mset.current_secondary_sub_id = ID;
-	if (ID == MediaSettings::SubNone) {
-		ID = -1;
-	}
-	if (ID == MediaSettings::NoneSelected) {
-		ID = -1;
+	// Prevent update if requested idx is SubNone and
+	if (mset.current_secondary_sub_id == MediaSettings::NoneSelected)
+		mset.current_secondary_sub_id = MediaSettings::SubNone;
+
+	// Keep in range
+	if (idx < 0 || idx >= mdat.subs.numItems()) {
+		idx = MediaSettings::SubNone;
 	}
 
-	if (ID == -1) {
-		proc->disableSecondarySubtitles();
-	} else {
-		int real_id = -1;
-		bool valid_item = ( (ID >= 0) && (ID < mdat.subs.numItems()) );
-		if (!valid_item) qWarning("Core::changeSecondarySubtitle: ID: %d is not valid!", ID);
-		if ( (mdat.subs.numItems() > 0) && (valid_item) ) {
-			real_id = mdat.subs.itemAt(ID).ID();
+	if (idx != mset.current_secondary_sub_id) {
+		mset.current_secondary_sub_id = idx;
+
+		if (idx == MediaSettings::SubNone) {
+			proc->disableSecondarySubtitles();
+		} else {
+			int real_id = mdat.subs.itemAt(idx).ID();
 			proc->setSecondarySubtitle(real_id);
 		}
 	}
