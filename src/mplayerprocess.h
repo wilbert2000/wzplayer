@@ -60,7 +60,7 @@ public:
 	void setSubtitlesVisibility(bool b);
 	void seek(double secs, int mode, bool precise, bool currently_paused);
 	void mute(bool b);
-	void setPause(bool b);
+	void setPause(bool pause);
 	void frameStep();
 	void frameBackStep();
 	void showOSDText(const QString & text, int duration, int level);
@@ -125,10 +125,12 @@ private:
 	double check_duration_time;
 	int check_duration_time_diff;
 
+	bool want_pause;
+
 	void askQuestions();
+	bool parseVO(const QString &driver, int w, int h);
 	bool parseSubID(const QString &type, int id);
 	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);
-	bool parseSubFile(const QString &filename);
 	bool parseAnswer(const QString &name, const QString &value);
 };
 

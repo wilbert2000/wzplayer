@@ -30,8 +30,6 @@
 
 using namespace Global;
 
-#define TOO_CHAPTERS_WORKAROUND
-
 
 // How to recognise eof
 static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
@@ -140,22 +138,6 @@ bool MplayerProcess::parseSubTrack(const QString &type, int id, const QString &n
 	return false;
 }
 
-bool MplayerProcess::parseSubFile(const QString &filename) {
-
-	if (sub_id_filename >= 0) {
-		md->subs.changeFilename(SubData::File, sub_id_filename, filename);
-		sub_id_filename = -1;
-		subtitle_tracks_changed = true;
-		qDebug() << "MplayerProcess::parseSubProperty: set filename sub to"
-				 << filename;
-		return true;
-	}
-
-	qWarning() << "MplayerProcess::parseSubProperty: unexpected filename"
-			   << filename;
-	return false;
-}
-
 void MplayerProcess::askQuestions() {
 
 	// Get selected video track
@@ -170,7 +152,9 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 	// Check funky duration times
 	if (name == "length") {
-		last_duration = value.toDouble();
+		double duration = value.toDouble();
+		if (duration > 0)
+			last_duration = duration;
 		return true;
 	}
 
@@ -199,6 +183,19 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 
+	if (name == "FILE_SUB_FILENAME") {
+		if (sub_id_filename >= 0) {
+			md->subs.changeFilename(SubData::File, sub_id_filename, value);
+			sub_id_filename = -1;
+			subtitle_tracks_changed = true;
+			qDebug() << "MplayerProcess::parseProperty: set filename sub to"
+					 << value;
+			return true;
+		}
+		qWarning() << "MplayerProcess::parseProperty: unexpected subtitle filename"
+				   << value;
+		return false;
+	}
 	if (name == "DVD_DISC_ID") {
 		md->dvd_id = value;
 		qDebug("MplayerProcess::parseProperty: DVD id set to '%s'", md->dvd_id.toUtf8().data());
@@ -226,11 +223,30 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 		if (i != -1) {
 			double duration = md->titles.itemAt(i).duration();
 			qDebug("MplayerProcess::parseProperty: using blue ray title length: %f", duration);
-			md->duration = duration;
+			last_duration = duration;
 		}
 	}
 
 	return parsed;
+}
+
+bool MplayerProcess::parseVO(const QString &driver, int w, int h) {
+
+	qDebug("MplayerProcess::parseVO: emit receivedVO");
+	emit receivedVO(driver);
+
+	// TODO: must be stored per video track. Now the last one wins and all
+	// tracks are handled like the last...
+	if ((md->video_out_width > 0 && w != md->video_out_width)
+	 || (md->video_out_height > 0 && h != md->video_out_height)) {
+		qWarning("MplayerProcess::parseVO: bug, video out previous track overwritten");
+	}
+
+	md->video_out_width = w;
+	md->video_out_height = h;
+
+	qDebug("MplayerProcess::parseVO: video out size set to %d x %d", w, h);
+	return true;
 }
 
 int MplayerProcess::getFrame(double sec, const QString &line) {
@@ -272,6 +288,8 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	}
 
 	// First and only run of state playing
+	want_pause = false;
+
 	// If no chapters, try the chapters from the selected DVD title
 	if (md->n_chapters <= 0 && dvd_current_title > 0) {
 		int idx = md->titles.find(dvd_current_title);
@@ -308,8 +326,8 @@ bool MplayerProcess::parseLine(QString &line) {
 	//Subtitles
 	static QRegExp rx_sub_id("^ID_(SUBTITLE|FILE_SUB|VOBSUB)_ID=(\\d+)");
 	static QRegExp rx_sub_track("^ID_(SID|VSID)_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
-	static QRegExp rx_sub_file("^ID_FILE_SUB_FILENAME=(.*)");
 
+	static QRegExp rx_starting_playback("^Starting playback...");
 	static QRegExp rx_answer("^ANS_(.+)=(.*)");
 
 	static QRegExp rx_screenshot("^\\*\\*\\* screenshot '(.*)'");
@@ -337,6 +355,8 @@ bool MplayerProcess::parseLine(QString &line) {
 	// DVD/Blue ray titles
 	static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|CHAPTERS|ANGLES)=(.*)");
 
+	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
+
 	static QRegExp rx_cache("^Cache fill:.*");
 	static QRegExp rx_create_index("^Generating Index:.*");
 	static QRegExp rx_connecting("^Connecting to .*");
@@ -346,7 +366,6 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_forbidden("Server returned 403: Forbidden");
 
 	static QRegExp rx_meta_data("^(name|title|artist|author|album|genre|track|copyright|comment|software|creation date|year):\\s+(.*)", Qt::CaseInsensitive);
-	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
 
 
 	// Parse A: V: status line
@@ -364,38 +383,20 @@ bool MplayerProcess::parseLine(QString &line) {
 		return true;
 	}
 
-	if (line == "Starting playback...") {
+	if (rx_starting_playback.indexIn(line) >= 0) {
 		askQuestions();
 		return true;
 	}
 
-	// VO and resolution after aspect and filters applied
+	// VO driver and resolution after aspect and filters applied
 	if (rx_vo.indexIn(line) >= 0) {
-		qDebug("MplayerProcess::parseLine: emit receivedVO");
-		emit receivedVO( rx_vo.cap(1) );
-
-		// TODO: must be stored per video track. Now the last one wins and all
-		// tracks are handled like the last or am I seeing spooks here?
-		int w = rx_vo.cap(2).toInt();
-		int h = rx_vo.cap(3).toInt();
-
-		if ((md->video_out_width > 0 && w != md->video_out_width)
-		 || (md->video_out_height > 0 && h != md->video_out_height)) {
-			qWarning("MplayerProcess::parseLine: bug, video out previous track overwritten");
-		}
-
-		md->video_out_width = w;
-		md->video_out_height = h;
-
-		qDebug("MplayerProcess::parseLine: video out size set to %d x %d", w, h);
-		return true;
+		return parseVO(rx_vo.cap(1), rx_vo.cap(2).toInt(), rx_vo.cap(3).toInt());
 	}
 
-	// AO
+	// AO driver
 	if (rx_ao.indexIn(line) >= 0) {
-		QString ao = rx_ao.cap(1);
-		qDebug() << "MplayerProcess::parseLine: emit receivedAO(" << ao << ")";
-		emit receivedAO(ao);
+		qDebug("MplayerProcess::parseLine: emit receivedAO()");
+		emit receivedAO(rx_ao.cap(1));
 		return true;
 	}
 
@@ -436,11 +437,6 @@ bool MplayerProcess::parseLine(QString &line) {
 	if (rx_sub_track.indexIn(line) >= 0) {
 		return parseSubTrack(rx_sub_track.cap(1), rx_sub_track.cap(2).toInt(),
 							 rx_sub_track.cap(3), rx_sub_track.cap(4));
-	}
-
-	// Subtitle file
-	if (rx_sub_file.indexIn(line) >= 0) {
-		return parseSubFile(rx_sub_file.cap(1));
 	}
 
 	// Answers ANS_name=value
@@ -496,13 +492,6 @@ bool MplayerProcess::parseLine(QString &line) {
 		qDebug("MplayerProcess::parseLine: screenshot: '%s'", shot.toUtf8().data());
 		emit receivedScreenshot( shot );
 		return true;
-	}
-
-	// The following things are not sent when the file has started to play
-	// (or if sent, smplayer will ignore anyway...)
-	// So not process anymore, if video is playing to save some time
-	if (notified_player_is_running) {
-		return false;
 	}
 
 	if ( (mplayer_svn == -1) && ((line.startsWith("MPlayer ")) || (line.startsWith("MPlayer2 ", Qt::CaseInsensitive))) ) {
@@ -604,6 +593,11 @@ bool MplayerProcess::parseLine(QString &line) {
 		return true;
 	}
 
+	// Catch all property ID_name = value
+	if (rx_prop.indexIn(line) >= 0) {
+		return parseProperty(rx_prop.cap(1), rx_prop.cap(2));
+	}
+
 	// Catch cache messages
 	if (rx_cache.indexIn(line) >= 0) {
 		emit receivedCacheMessage(line);
@@ -643,11 +637,6 @@ bool MplayerProcess::parseLine(QString &line) {
 	if (rx_meta_data.indexIn(line) >= 0) {
 		return parseMetaDataProperty(rx_meta_data.cap(1),
 									 rx_meta_data.cap(2));
-	}
-
-	// Catch all property ID_name = value
-	if (rx_prop.indexIn(line) >= 0) {
-		return parseProperty(rx_prop.cap(1), rx_prop.cap(2));
 	}
 
 	return false;
@@ -856,9 +845,13 @@ void MplayerProcess::seek(double secs, int mode, bool precise, bool currently_pa
 
 	QString s = QString("seek %1 %2").arg(secs).arg(mode);
 	if (precise) s += " 1"; else s += " -1";
+
 	// pausing_keep does strange things with seek, so need to use pausing instead,
 	// hence the leakage of currently_paused.
-	if (currently_paused) s = "pausing " + s;
+	if (currently_paused)
+		s = "pausing " + s;
+	want_pause = currently_paused;
+
 	writeToStdin(s);
 }
 
@@ -866,8 +859,11 @@ void MplayerProcess::mute(bool b) {
 	writeToStdin("pausing_keep_force mute " + QString::number(b ? 1 : 0));
 }
 
-void MplayerProcess::setPause(bool) {
-	writeToStdin("pause"); // pauses / unpauses
+void MplayerProcess::setPause(bool pause) {
+
+	want_pause = pause;
+	if (pause) writeToStdin("pausing get_property length"); // pauses
+	else writeToStdin("pause"); // pauses / unpauses
 }
 
 void MplayerProcess::frameStep() {
