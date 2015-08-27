@@ -364,7 +364,6 @@ protected:
 protected slots:
     void changeCurrentSec(double sec);
     void changePause();
-	void gotNoVideo();
 	void gotVideoOutResolution(int w, int h);
 	void gotVO(QString);
 	void gotAO(QString);

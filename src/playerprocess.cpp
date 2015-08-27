@@ -197,16 +197,11 @@ void PlayerProcess::playingStarted() {
 	audio_tracks_changed = false;
 	subtitle_tracks_changed = false;
 
-	// Have any video?
-	if (md->noVideo()) {
-		qDebug("PlayerProcess::playingStarted: emit receivedNoVideo()");
-		emit receivedNoVideo();
-	} else {
-		// emit resolution unqueued
-		qDebug("PlayerProcess::playingStarted: emit receivedVideoOutResolution()");
-		emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
-	}
+	// emit resolution unqueued
+	qDebug("PlayerProcess::playingStarted: emit receivedVideoOutResolution()");
+	emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
 
+	// emit playerFullyLoaded queued
 	qDebug("PlayerProcess::playingStarted: queued emit playerFullyLoaded()");
 	emit playerFullyLoaded();
 }
@@ -451,12 +446,10 @@ bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "CHAPTERS") {
 		md->n_chapters = value.toInt();
 
-#ifdef TOO_CHAPTERS_WORKAROUND
 		if (md->n_chapters > 1000) {
 			qWarning("PlayerProcess::parseProperty: ignoring too many chapters: %d", md->n_chapters);
 			md->n_chapters = 0;
 		}
-#endif
 
 		qDebug("PlayerProcess::parseProperty: n_chapters set to %d", md->n_chapters);
 		return true;

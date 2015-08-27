@@ -122,7 +122,6 @@ signals:
 	void receivedCurrentSec(double sec);
 	void receivedCurrentFrame(int frame);
 	void receivedPause();
-	void receivedNoVideo();
 	void receivedVO(QString);
 	void receivedAO(QString);
 	void receivedEndOfFile();

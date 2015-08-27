@@ -167,9 +167,6 @@ Core::Core( MplayerWindow *mpw, QWidget* parent )
 	connect( proc, SIGNAL(receivedScanningFont(QString)),
 			 this, SLOT(displayMessage(QString)) );
 
-	connect( proc, SIGNAL(receivedNoVideo()),
-             this, SLOT(gotNoVideo()) );
-
 	connect( proc, SIGNAL(receivedVO(QString)),
              this, SLOT(gotVO(QString)) );
 
@@ -4111,7 +4108,7 @@ void Core::displayBuffering() {
 void Core::gotVideoOutResolution(int w, int h) {
 	qDebug("Core::gotVideoOutResolution: %d x %d", w, h);
 
-	if (pref->use_mplayer_window) {
+	if (pref->use_mplayer_window || w <= 0) {
 		emit noVideo();
 	} else {
 		// w x h should be the output resolution selected by player with
@@ -4130,13 +4127,6 @@ void Core::gotVideoOutResolution(int w, int h) {
 		// If resize is canceled adjust new video to old size
 		mplayerwindow->updateVideoWindow();
 	}
-}
-
-void Core::gotNoVideo() {
-	qDebug("Core::gotNoVideo");
-
-	// File has no video (a sound file) or a text file.
-	emit noVideo();
 }
 
 void Core::gotVO(QString vo) {

@@ -30,7 +30,6 @@
 
 using namespace Global;
 
-#define TOO_CHAPTERS_WORKAROUND
 
 // TODO: print in setMedia and pick up in parseProp
 static const QPoint default_osd_pos(25, 22);
