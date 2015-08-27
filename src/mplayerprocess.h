@@ -105,6 +105,7 @@ public:
 
 
 protected:
+	virtual void correctDuration(double sec);
 	virtual int getFrame(double sec, const QString &line);
 
 	virtual bool parseLine(QString &line);
@@ -121,7 +122,6 @@ private:
 
 	int sub_id_filename;
 
-	double last_duration;
 	double check_duration_time;
 	int check_duration_time_diff;
 
@@ -132,6 +132,7 @@ private:
 	bool parseSubID(const QString &type, int id);
 	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);
 	bool parseAnswer(const QString &name, const QString &value);
+	bool parsePause();
 };
 
 #endif

@@ -50,8 +50,6 @@ bool MplayerProcess::startPlayer() {
 
 	mplayer_svn = -1; // Not found yet
 
-	last_duration = 0;
-
 	dvd_current_title = -1;
 	br_current_title = -1;
 
@@ -151,10 +149,20 @@ void MplayerProcess::askQuestions() {
 bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 	// Check funky duration times
-	if (name == "length") {
+	if (name == "LENGTH") {
+		// To keep MplayerProcess::correctDuration() working, we can only set
+		// a new duration here when it is larger than the current one.
 		double duration = value.toDouble();
-		if (duration > 0)
-			last_duration = duration;
+		if (duration > md->duration)
+			notifyDuration(duration);
+		else qDebug("MplayerProcess::parseAnswer: ignored duration %f <= current duration %f",
+					duration, md->duration);
+		return true;
+	}
+
+	if (name == "TIME_POSITION") {
+		// Don't need to pass. Another status line will come and this one has no frames
+		// notifyTime(value.toDouble(), "");
 		return true;
 	}
 
@@ -162,14 +170,14 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 	int i = value.toInt();
 
 	// Video track
-	if (name == "switch_video") {
+	if (name == "SWITCH_VIDEO") {
 		md->videos.setSelectedID(i);
 		qDebug("MplayerProcess::parseSelectedTrack: selected video track %d", i);
 		return true;
 	}
 
 	// Audio track
-	if (name == "switch_audio") {
+	if (name == "SWITCH_AUDIO") {
 		md->audios.setSelectedID(i);
 		qDebug("MplayerProcess::parseSelectedTrack: selected audio track %d", i);
 		return true;
@@ -223,7 +231,7 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 		if (i != -1) {
 			double duration = md->titles.itemAt(i).duration();
 			qDebug("MplayerProcess::parseProperty: using blue ray title length: %f", duration);
-			last_duration = duration;
+			notifyDuration(duration);
 		}
 	}
 
@@ -247,6 +255,21 @@ bool MplayerProcess::parseVO(const QString &driver, int w, int h) {
 
 	qDebug("MplayerProcess::parseVO: video out size set to %d x %d", w, h);
 	return true;
+}
+
+bool MplayerProcess::parsePause() {
+
+	qDebug("MplayerProcess::parseLine: emit receivedPause()");
+	emit receivedPause();
+	return true;
+}
+
+void MplayerProcess::correctDuration(double sec) {
+
+	// When mplayer has duration wrong, adjust duration once a second as we go
+	if (sec > md->duration) {
+		notifyDuration(sec + 1);
+	}
 }
 
 int MplayerProcess::getFrame(double sec, const QString &line) {
@@ -273,8 +296,6 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 		notifyChanges();
 
 		// Check for changes in duration once in a while.
-		// The answer is stored in last_duration by parseAnswer()
-		// and will be picked up by base PlayerProcess::parseStatusLine.
 		// Abs, to protect against time wrappers like TS.
 		if (qAbs(time_sec - check_duration_time) > check_duration_time_diff) {
 			// Ask for length
@@ -370,7 +391,7 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// Parse A: V: status line
 	if (rx_av.indexIn(line) >=0) {
-		return parseStatusLine(rx_av.cap(1).toDouble(), last_duration, rx_av, line);
+		return parseStatusLine(rx_av.cap(1).toDouble(), 0, rx_av, line);
 	}
 
 	if (PlayerProcess::parseLine(line))
@@ -378,9 +399,7 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// Pause
 	if (line == "ID_PAUSED") {
-		qDebug("MplayerProcess::parseLine: emit receivedPause()");
-		emit receivedPause();
-		return true;
+		return parsePause();
 	}
 
 	if (rx_starting_playback.indexIn(line) >= 0) {
@@ -441,7 +460,7 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// Answers ANS_name=value
 	if (rx_answer.indexIn(line) >= 0) {
-		return parseAnswer(rx_answer.cap(1), rx_answer.cap(2));
+		return parseAnswer(rx_answer.cap(1).toUpper(), rx_answer.cap(2));
 	}
 
 	// Stream title
@@ -491,16 +510,6 @@ bool MplayerProcess::parseLine(QString &line) {
 		QString shot = rx_screenshot.cap(1);
 		qDebug("MplayerProcess::parseLine: screenshot: '%s'", shot.toUtf8().data());
 		emit receivedScreenshot( shot );
-		return true;
-	}
-
-	if ( (mplayer_svn == -1) && ((line.startsWith("MPlayer ")) || (line.startsWith("MPlayer2 ", Qt::CaseInsensitive))) ) {
-		mplayer_svn = MplayerVersion::mplayerVersion(line);
-		qDebug("MplayerProcess::parseLine: MPlayer SVN: %d", mplayer_svn);
-		if (mplayer_svn <= 0) {
-			qWarning("MplayerProcess::parseLine: couldn't parse mplayer version!");
-			emit failedToParseMplayerVersion(line);
-		}
 		return true;
 	}
 
@@ -596,6 +605,16 @@ bool MplayerProcess::parseLine(QString &line) {
 	// Catch all property ID_name = value
 	if (rx_prop.indexIn(line) >= 0) {
 		return parseProperty(rx_prop.cap(1), rx_prop.cap(2));
+	}
+
+	if ( (mplayer_svn == -1) && ((line.startsWith("MPlayer ")) || (line.startsWith("MPlayer2 ", Qt::CaseInsensitive))) ) {
+		mplayer_svn = MplayerVersion::mplayerVersion(line);
+		qDebug("MplayerProcess::parseLine: MPlayer SVN: %d", mplayer_svn);
+		if (mplayer_svn <= 0) {
+			qWarning("MplayerProcess::parseLine: couldn't parse mplayer version!");
+			emit failedToParseMplayerVersion(line);
+		}
+		return true;
 	}
 
 	// Catch cache messages
@@ -862,7 +881,7 @@ void MplayerProcess::mute(bool b) {
 void MplayerProcess::setPause(bool pause) {
 
 	want_pause = pause;
-	if (pause) writeToStdin("pausing get_property length"); // pauses
+	if (pause) writeToStdin("pausing get_time_pos"); // pauses
 	else writeToStdin("pause"); // pauses / unpauses
 }
 

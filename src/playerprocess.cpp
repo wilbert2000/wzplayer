@@ -206,6 +206,50 @@ void PlayerProcess::playingStarted() {
 	emit playerFullyLoaded();
 }
 
+void PlayerProcess::notifyDuration(double duration) {
+
+	// Duration changed?
+	if (duration > 0 && qAbs(duration - md->duration) > 0.001) {
+		md->duration = duration;
+		qDebug("MPVProcess::notifyDuration: emit durationChanged(%f)", duration);
+		emit durationChanged(duration);
+	}
+}
+
+void PlayerProcess::correctDuration(double sec) {
+	Q_UNUSED(sec)
+	// Only needed by mplayer.
+}
+
+void PlayerProcess::notifyTime(double time_sec, const QString &line) {
+
+	// Store video timestamp
+	md->time_sec = time_sec;
+
+	// Substract start time grounding start time at 0
+	time_sec -= md->start_sec;
+
+	// Handle MPEG-TS PTS timestamp rollover
+	if (time_sec < 0 && md->demuxer == "mpegts") {
+		time_sec += 8589934592.0 / 90000.0; // 2^33 / 90 kHz
+	}
+
+	// Only for mplayer
+	correctDuration(time_sec);
+
+	// Pass timestamp to GUI
+	emit receivedCurrentSec(time_sec);
+
+	// Ask children for frame
+	int frame = getFrame(time_sec, line);
+
+	// Pass frame to GUI
+	if (frame != prev_frame) {
+		prev_frame = frame;
+		emit receivedCurrentFrame( frame );
+	}
+}
+
 bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 	Q_UNUSED(rx)
 
@@ -227,35 +271,9 @@ bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &r
 	if (waitForAnswers())
 		return true;
 
-	// Duration changed?
-	if (qAbs(duration - md->duration) > 0.001 && duration > 0) {
-		md->duration = duration;
-		qDebug("MPVProcess::parseStatusLine: emit durationChanged(%f)", duration);
-		emit durationChanged(duration);
-	}
+	notifyDuration(duration);
 
-	// Store video timestamp
-	md->time_sec = time_sec;
-
-	// Substract start time grounding start time at 0
-	time_sec -= md->start_sec;
-
-	// Handle MPEG-TS PTS timestamp rollover
-	if (time_sec < 0 && md->demuxer == "mpegts") {
-		time_sec += 8589934592.0 / 90000.0; // 2^33 / 90 kHz
-	}
-
-	// Pass timestamp to GUI
-	emit receivedCurrentSec(time_sec);
-
-	// Ask children for frame
-	int frame = getFrame(time_sec, line);
-
-	// Pass frame to GUI
-	if (frame != prev_frame) {
-		prev_frame = frame;
-		emit receivedCurrentFrame( frame );
-	}
+	notifyTime(time_sec, line);
 
 	// Parse the line just a litlle bit longer
 	return false;
@@ -430,12 +448,7 @@ bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 		return true;
 	}
 	if (name == "LENGTH") {
-		double duration = value.toDouble();
-		if (qAbs(duration - md->duration) > 0.001 && duration > 0) {
-			md->duration = duration;
-			qDebug("PlayerProcess::parseProperty: emit durationChanged");
-			emit durationChanged(duration);
-		}
+		notifyDuration(value.toDouble());
 		return true;
 	}
 	if (name == "DEMUXER") {

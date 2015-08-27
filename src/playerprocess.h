@@ -184,6 +184,9 @@ protected:
 
 	virtual int getFrame(double time_sec, const QString &line) = 0;
 	void notifyChanges();
+	void notifyDuration(double duration);
+	virtual void correctDuration(double sec);
+	void notifyTime(double time_sec, const QString &line);
 	bool waitForAnswers();
 	void playingStarted();
 
