@@ -177,9 +177,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(receivedEndOfFile()),
              this, SLOT(fileReachedEnd()), Qt::QueuedConnection );
 
-	connect( proc, SIGNAL(receivedVideoBitrate(int)), this, SLOT(gotVideoBitrate(int)) );
-	connect( proc, SIGNAL(receivedAudioBitrate(int)), this, SLOT(gotAudioBitrate(int)) );
-
 	connect( proc, SIGNAL(receivedStreamTitle(QString)),
              this, SLOT(streamTitleChanged(QString)) );
 
@@ -3279,18 +3276,6 @@ void Core::changeCurrentSec(double sec) {
 		if (pos >= pos_max) pos = pos_max - 1;
 	}
 	emit positionChanged(pos);
-}
-
-void Core::gotVideoBitrate(int b) {
-	qDebug("Core::gotVideoBitrate");
-
-	mdat.video_bitrate = b;
-}
-
-void Core::gotAudioBitrate(int b) {
-	qDebug("Core::gotAudioBitrate");
-
-	mdat.audio_bitrate = b;
 }
 
 void Core::changePause() {

@@ -326,7 +326,6 @@ bool PlayerProcess::parseAudioProperty(const QString &name, const QString &value
 	if (name == "BITRATE") {
 		md->audio_bitrate = value.toInt();
 		qDebug("PlayerProcess::parseAudioProperty: audio_bitrate set to %d", md->audio_bitrate);
-		emit receivedAudioBitrate(md->audio_bitrate);
 		return true;
 	}
 	if (name == "FORMAT") {
@@ -381,7 +380,6 @@ bool PlayerProcess::parseVideoProperty(const QString &name, const QString &value
 	if (name == "BITRATE") {
 		md->video_bitrate = value.toInt();
 		qDebug("PlayerProcess::parseVideoProperty: video_bitrate set to %d", md->video_bitrate);
-		emit receivedVideoBitrate(md->video_bitrate);
 		return true;
 	}
 	if (name == "FORMAT") {

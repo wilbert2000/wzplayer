@@ -160,9 +160,6 @@ signals:
 	void receivedTitleIsMovie();
 #endif
 
-	void receivedVideoBitrate(int);
-	void receivedAudioBitrate(int);
-
 public slots:
 	void parseBytes(QByteArray ba);
 
