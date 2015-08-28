@@ -75,6 +75,8 @@ public:
 
 	bool noVideo() { return video_out_width <= 0; } // Can be audio
 
+	double video_fps;
+
 	QString filename;
 	int type; // file, dvd...
 	QString dvd_id;
@@ -109,7 +111,6 @@ public:
 	QString video_format;
 	QString audio_format;
 	int video_bitrate;
-	QString video_fps;
 	int audio_bitrate;
 	int audio_rate;
 	int audio_nch; // channels?

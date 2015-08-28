@@ -41,7 +41,7 @@ void MediaData::reset(bool clear_filename_and_type) {
 	video_height = 0;
 	video_out_width = 0;
 	video_out_height = 0;
-
+	video_fps = 0;
 	video_aspect = 0;
 
 	if (clear_filename_and_type) {
@@ -77,7 +77,6 @@ void MediaData::reset(bool clear_filename_and_type) {
 	video_format="";
 	audio_format="";
 	video_bitrate=0;
-	video_fps="";
 	audio_bitrate=0;
 	audio_rate=0;
 	audio_nch=0;
@@ -153,7 +152,7 @@ void MediaData::list() {
 	qDebug("  video_format: '%s'", video_format.toUtf8().data() );
 	qDebug("  audio_format: '%s'", audio_format.toUtf8().data() );
 	qDebug("  video_bitrate: %d", video_bitrate );
-	qDebug("  video_fps: '%s'", video_fps.toUtf8().data() );
+	qDebug("  video_fps: '%f'", video_fps );
 	qDebug("  audio_bitrate: %d", audio_bitrate );
 	qDebug("  audio_rate: %d", audio_rate );
 	qDebug("  audio_nch: %d", audio_nch );

@@ -179,7 +179,6 @@ protected:
 	bool audio_tracks_changed;
 	bool subtitle_tracks_changed;
 
-	double fps;
 	int prev_frame;
 
 	virtual int getFrame(double time_sec, const QString &line) = 0;

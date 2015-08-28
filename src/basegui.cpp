@@ -3163,7 +3163,7 @@ void BaseGui::updateMediaInfo() {
 
 	setWindowCaption( core->mdat.displayName(pref->show_tag_in_window_title) + " - SMPlayer" );
 
-	emit videoInfoChanged(core->mdat.video_width, core->mdat.video_height, core->mdat.video_fps.toDouble());
+	emit videoInfoChanged(core->mdat.video_width, core->mdat.video_height, core->mdat.video_fps);
 }
 
 void BaseGui::newMediaLoaded() {

@@ -111,7 +111,7 @@ QString InfoFile::getInfo(MediaData md) {
 		s += addItem( tr("Aspect ratio"), QString::number(md.video_aspect) );
 		s += addItem( tr("Format"), md.video_format );
 		s += addItem( tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000) );
-		s += addItem( tr("Frames per second"), md.video_fps );
+		s += addItem( tr("Frames per second"), QString::number(md.video_fps) );
 		s += addItem( tr("Selected codec"), md.video_codec );
 		s += closePar();
 	}

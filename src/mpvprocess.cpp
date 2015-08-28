@@ -166,7 +166,7 @@ int MPVProcess::getFrame(double time_sec, const QString &line) {
 	Q_UNUSED(line)
 
 	// Emulate frames.
-	return qRound(time_sec * fps);
+	return qRound(time_sec * md->video_fps);
 }
 
 bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {

@@ -36,7 +36,6 @@ PlayerProcess::PlayerProcess(MediaData *mdata, QRegExp *r_eof)
 	, video_tracks_changed(false)
 	, audio_tracks_changed(false)
 	, subtitle_tracks_changed(false)
-	, fps()
 	, line_count(0)
 	, received_end_of_file(false)
 	, rx_eof(r_eof)
@@ -101,7 +100,6 @@ bool PlayerProcess::startPlayer() {
 
 	received_end_of_file = false;
 
-	fps = 0.0;
 	prev_frame = -11111;
 
 	// Clear media data, false don't clear filename and type
@@ -376,9 +374,8 @@ bool PlayerProcess::parseVideoProperty(const QString &name, const QString &value
 		return true;
 	}
 	if (name == "FPS") {
-		md->video_fps = value;
-		fps = value.toDouble();
-		qDebug() << "PlayerProcess::parseVideoProperty: video_fps set to" << fps;
+		md->video_fps = value.toDouble();
+		qDebug("PlayerProcess::parseVideoProperty: video_fps set to %f", md->video_fps);
 		return true;
 	}
 	if (name == "BITRATE") {
