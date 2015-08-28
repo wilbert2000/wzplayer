@@ -219,6 +219,21 @@ void PlayerProcess::correctDuration(double sec) {
 	// Only needed by mplayer.
 }
 
+ // 2^33 / 90 kHz
+static const double ts_rollover = 8589934592.0 / 90000.0;
+
+double PlayerProcess::guiTimeToPlayerTime(double sec) {
+
+	sec += md->start_sec;
+
+	// Handle MPEG-TS PTS timestamp rollover
+	if (sec >= ts_rollover && md->demuxer == "mpegts") {
+		sec -= ts_rollover;
+	}
+
+	return sec;
+}
+
 void PlayerProcess::notifyTime(double time_sec, const QString &line) {
 
 	// Store video timestamp
@@ -229,7 +244,7 @@ void PlayerProcess::notifyTime(double time_sec, const QString &line) {
 
 	// Handle MPEG-TS PTS timestamp rollover
 	if (time_sec < 0 && md->demuxer == "mpegts") {
-		time_sec += 8589934592.0 / 90000.0; // 2^33 / 90 kHz
+		time_sec += ts_rollover;
 	}
 
 	// Only for mplayer

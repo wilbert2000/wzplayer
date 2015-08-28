@@ -927,6 +927,9 @@ void MPVProcess::setSubtitlesVisibility(bool b) {
 void MPVProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
 	Q_UNUSED(currently_paused)
 
+	// Convert time to player time
+	secs = guiTimeToPlayerTime(secs);
+
 	QString s = "seek " + QString::number(secs) + " ";
 	switch (mode) {
 		case 0 : s += "relative "; break;

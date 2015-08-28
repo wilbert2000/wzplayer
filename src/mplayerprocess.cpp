@@ -858,6 +858,9 @@ void MplayerProcess::setSubtitlesVisibility(bool b) {
 
 void MplayerProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
 
+	// Convert time to player time
+	secs = guiTimeToPlayerTime(secs);
+
 	QString s = QString("seek %1 %2").arg(secs).arg(mode);
 	if (precise) s += " 1"; else s += " -1";
 
@@ -886,6 +889,7 @@ void MplayerProcess::frameStep() {
 }
 
 void MplayerProcess::frameBackStep() {
+	// TODO:
 	qDebug("MplayerProcess::frameBackStep: function not supported in mplayer");
 }
 

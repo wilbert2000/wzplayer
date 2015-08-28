@@ -178,6 +178,8 @@ protected:
 
 	int prev_frame;
 
+	double guiTimeToPlayerTime(double sec);
+
 	virtual int getFrame(double time_sec, const QString &line) = 0;
 	void notifyChanges();
 	void notifyDuration(double duration);
