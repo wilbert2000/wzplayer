@@ -481,6 +481,11 @@ bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 	return false;
 }
 
+void PlayerProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
 
+	// Convert time to player time
+	secs = guiTimeToPlayerTime(secs);
+	seekPlayerTime(secs, mode, precise, currently_paused);
+}
 
 #include "moc_playerprocess.cpp"

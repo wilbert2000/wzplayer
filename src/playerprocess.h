@@ -67,7 +67,8 @@ public:
 	virtual void setSecondarySubtitle(int ID) = 0;
 	virtual void disableSecondarySubtitles() = 0;
 	virtual void setSubtitlesVisibility(bool b) = 0;
-	virtual void seek(double secs, int mode, bool precise, bool currently_paused) = 0;
+	virtual void seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) = 0;
+	virtual void seek(double secs, int mode, bool precise, bool currently_paused);
 	virtual void mute(bool b) = 0;
 	virtual void setPause(bool b) = 0;
 	virtual void frameStep() = 0;

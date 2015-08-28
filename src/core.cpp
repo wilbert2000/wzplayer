@@ -308,8 +308,8 @@ void Core::changeFileSettingsMethod(QString method) {
 void Core::setState(State s) {
 	if (s != _state) {
 		_state = s;
-		qDebug() << "Core::setState: set state to" << stateToString()
-				 << "emit stateChanged()";
+		qDebug() << "Core::setState: set state to" << stateToString();
+		qDebug() << "Core::setState: emit stateChanged()";
 		emit stateChanged(_state);
 	}
 }
@@ -2367,25 +2367,25 @@ void Core::goToPos(double perc) {
 
 void Core::goToSec( double sec ) {
 	qDebug("Core::goToSec: %f", sec);
-
-	if (sec < 0) sec = 0;
-	if (sec >= mdat.duration) {
-		if (mdat.video_fps > 0)
-			sec = mdat.duration - 1.0 / mdat.video_fps;
-		else sec = mdat.duration - 0.1;
-	}
 	seek_cmd(sec, 2);
 }
 
 void Core::seek(int secs) {
 	qDebug("Core::seek: %d", secs);
-	if ( (proc->isRunning()) && (secs!=0) ) {
-		seek_cmd(secs, 0);
-	}
+	seek_cmd(secs, 0);
 }
 
 void Core::seek_cmd(double secs, int mode) {
-	proc->seek(secs, mode, pref->precise_seeking, _state == Paused);
+
+	if (secs < 0) secs = 0;
+	if (mdat.duration > 0 && secs >= mdat.duration) {
+		if (mdat.video_fps > 0)
+			secs = mdat.duration - (1.0 / mdat.video_fps);
+		else secs = mdat.duration - 0.1;
+	}
+
+	if (proc->isFullyStarted())
+		proc->seek(secs, mode, pref->precise_seeking, _state == Paused);
 }
 
 void Core::sforward() {

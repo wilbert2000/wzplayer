@@ -924,11 +924,8 @@ void MPVProcess::setSubtitlesVisibility(bool b) {
 	writeToStdin(QString("set sub-visibility %1").arg(b ? "yes" : "no"));
 }
 
-void MPVProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
+void MPVProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
 	Q_UNUSED(currently_paused)
-
-	// Convert time to player time
-	secs = guiTimeToPlayerTime(secs);
 
 	QString s = "seek " + QString::number(secs) + " ";
 	switch (mode) {
