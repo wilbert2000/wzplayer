@@ -23,6 +23,7 @@
 #include <QProcess> // For QProcess::ProcessError
 #include "mediadata.h"
 #include "mediasettings.h"
+#include "preferences.h"
 #include "playerprocess.h"
 
 #include "config.h"
@@ -182,8 +183,8 @@ public slots:
     void fastrewind();	// - 10 minutes
 	void forward(int secs);
 	void rewind(int secs);
-	void wheelUp();
-	void wheelDown();
+	void wheelUp(Preferences::WheelFunction function = Preferences::DoNothing);
+	void wheelDown(Preferences::WheelFunction function = Preferences::DoNothing);
 
 	void setSpeed( double value );
 	void incSpeed10();	//!< Inc speed 10%

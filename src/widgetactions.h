@@ -23,6 +23,7 @@
 #include "timeslider.h"
 #include "config.h"
 #include "guiconfig.h"
+#include "preferences.h"
 
 class QStyle;
 
@@ -78,8 +79,8 @@ signals:
 #if ENABLE_DELAYED_DRAGGING
 	void delayedDraggingPos(int);
 #endif
-	void wheelUp();
-	void wheelDown();
+	void wheelUp(Preferences::WheelFunction function = Preferences::Seeking);
+	void wheelDown(Preferences::WheelFunction function = Preferences::Seeking);
 
 protected:
 	virtual QWidget * createWidget ( QWidget * parent );
