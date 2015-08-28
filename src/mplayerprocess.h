@@ -124,6 +124,7 @@ private:
 
 	double check_duration_time;
 	int check_duration_time_diff;
+	bool corrected_duration;
 
 	bool want_pause;
 

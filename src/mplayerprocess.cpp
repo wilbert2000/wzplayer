@@ -55,6 +55,8 @@ bool MplayerProcess::startPlayer() {
 
 	sub_id_filename = -1;
 
+	corrected_duration = false;
+
 	return PlayerProcess::startPlayer();
 }
 
@@ -150,13 +152,12 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 	// Check funky duration times
 	if (name == "LENGTH") {
-		// To keep MplayerProcess::correctDuration() working, we can only set
-		// a new duration here when it is larger than the current one.
 		double duration = value.toDouble();
-		if (duration > md->duration)
+		// If corrected_duration is set by correctDuration() it looks
+		// like mplayer got the duration wrong. In that case only accept
+		// durations larger than the current one.
+		if (!corrected_duration || duration > md->duration)
 			notifyDuration(duration);
-		else qDebug("MplayerProcess::parseAnswer: ignored duration %f <= current duration %f",
-					duration, md->duration);
 		return true;
 	}
 
@@ -268,6 +269,7 @@ void MplayerProcess::correctDuration(double sec) {
 
 	// When mplayer has duration wrong, adjust duration once a second as we go
 	if (sec > md->duration) {
+		corrected_duration = true;
 		notifyDuration(sec + 1);
 	}
 }
