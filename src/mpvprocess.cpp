@@ -590,7 +590,8 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 	}
 	else
 	if (option_name == "sub-scale" || option_name == "subfont-text-scale" || option_name == "ass-font-scale") {
-		arg << "--sub-scale=" + value.toString();
+		QString scale = value.toString();
+		if (scale != "1") arg << "--sub-scale=" + scale;
 	}
 	else
 	if (option_name == "stop-xscreensaver") {

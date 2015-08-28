@@ -704,7 +704,9 @@ void MplayerProcess::setOption(const QString & option_name, const QVariant & val
 	}
 	else
 	if (option_name == "osd-scale") {
-		arg << "-subfont-osd-scale" << value.toString();
+		QString scale = value.toString();
+		if (scale != "1")
+			arg << "-subfont-osd-scale" << scale;
 	}
 	else
 	if (option_name == "verbose") {
