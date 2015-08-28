@@ -2371,13 +2371,17 @@ void Core::goToSec( double sec ) {
 }
 
 void Core::seek(int secs) {
-	qDebug("Core::seek: %d", secs);
-	seek_cmd(secs, 0);
+	qDebug("Core::seek: seek relative %d secs", secs);
+
+	// Something to seek?
+	if (qAbs(secs) > 0.01)
+		seek_cmd(secs, 0);
 }
 
 void Core::seek_cmd(double secs, int mode) {
 
-	if (secs < 0) secs = 0;
+	if (secs < 0 && mode != 0)
+		secs = 0;
 	if (mdat.duration > 0 && secs >= mdat.duration) {
 		if (mdat.video_fps > 0)
 			secs = mdat.duration - (1.0 / mdat.video_fps);
