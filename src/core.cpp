@@ -69,8 +69,9 @@
 
 using namespace Global;
 
-Core::Core( MplayerWindow *mpw, QWidget* parent ) 
-	: QObject( parent ) 
+Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
+	: QObject( parent ),
+	  pos_max(position_max)
 {
 	qRegisterMetaType<Core::State>("Core::State");
 
@@ -1332,33 +1333,6 @@ void Core::fileReachedEnd() {
 	emit mediaFinished();
 }
 
-#if SEEKBAR_RESOLUTION
-void Core::goToPosition(int value) {
-	qDebug("Core::goToPosition: value: %d", value);
-
-	if (pref->relative_seeking) {
-		goToPos( (double) value / (SEEKBAR_RESOLUTION / 100) );
-	}
-	else {
-		if (mdat.duration > 0) {
-			int jump_time = (int) mdat.duration * value / SEEKBAR_RESOLUTION;
-			goToSec(jump_time);
-		}
-	}
-}
-
-void Core::goToPos(double perc) {
-	qDebug("Core::goToPos: per: %f", perc);
-	seek_cmd(perc, 1);
-}
-#else
-void Core::goToPos(int perc) {
-	qDebug("Core::goToPos: per: %d", perc);
-	seek_cmd(perc, 1);
-}
-#endif
-
-
 void Core::startMplayer( QString file, double seek ) {
 	qDebug("Core::startMplayer");
 
@@ -2375,15 +2349,35 @@ void Core::stopMplayer() {
 	qDebug("Core::stopMplayer: Finished. (I hope)");
 }
 
+void Core::goToPosition(int pos) {
+	qDebug("Core::goToPosition: %d/%d", pos, pos_max);
+
+	if (pos < 0) pos = 0;
+	else if (pos >= pos_max) pos = pos_max - 1;
+
+	if (pref->relative_seeking || mdat.duration <= 0) {
+		goToPos((double) pos / ((double) pos_max / 100));
+	} else {
+		goToSec(mdat.duration * pos / pos_max);
+	}
+}
+
+void Core::goToPos(double perc) {
+	qDebug("Core::goToPos: per: %f", perc);
+	seek_cmd(perc, 1);
+}
 
 void Core::goToSec( double sec ) {
 	qDebug("Core::goToSec: %f", sec);
 
 	if (sec < 0) sec = 0;
-	if (sec > mdat.duration ) sec = mdat.duration - 20;
+	if (sec >= mdat.duration) {
+		if (mdat.video_fps > 0)
+			sec = mdat.duration - 1.0 / mdat.video_fps;
+		else sec = mdat.duration - 0.1;
+	}
 	seek_cmd(sec, 2);
 }
-
 
 void Core::seek(int secs) {
 	qDebug("Core::seek: %d", secs);
@@ -3279,25 +3273,12 @@ void Core::changeCurrentSec(double sec) {
 	emit showTime(sec);
 
 	// Emit posChanged:
-
-	// TODO:
-#ifdef SEEKBAR_RESOLUTION
-	int value = 0;
-	if (mdat.duration > 1
-		&& mset.current_sec > 1
-		&& mdat.duration > mset.current_sec) {
-		value = ( (int) mset.current_sec * SEEKBAR_RESOLUTION) / (int) mdat.duration;
+	int pos = 0;
+	if (mset.current_sec > 0 && mdat.duration > 0.1) {
+		pos = qRound((mset.current_sec * pos_max) / mdat.duration);
+		if (pos >= pos_max) pos = pos_max - 1;
 	}
-	emit positionChanged(value);
-#else
-	int perc = 0;
-	if ( (mdat.duration > 1) && (mset.current_sec > 1) &&
-         (mdat.duration > mset.current_sec) )
-	{
-		perc = ( (int) mset.current_sec * 100) / (int) mdat.duration;
-	}
-	emit posChanged( perc );
-#endif
+	emit positionChanged(pos);
 }
 
 void Core::gotVideoBitrate(int b) {

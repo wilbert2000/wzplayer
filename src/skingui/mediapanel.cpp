@@ -57,9 +57,7 @@ MediaPanel::MediaPanel(QWidget *parent)
 	seeker = new PanelTimeSeeker;
 	seeker->setObjectName("panel-seeker");
 	seeker->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
-#ifdef SEEKBAR_RESOLUTION
 	seeker->setRange(0, SEEKBAR_RESOLUTION);
-#endif
 	seeker->installEventFilter(this);
 	mediaLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	mediaLabel->setObjectName("panel-main-label");

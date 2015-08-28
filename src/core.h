@@ -52,7 +52,7 @@ class Core : public QObject
 public:
 	enum State { Stopped = 0, Playing = 1, Paused = 2 };
 
-	Core( MplayerWindow *mpw, QWidget* parent = 0 );
+	Core( MplayerWindow *mpw, QWidget* parent, int position_max );
 	~Core();
 
 	MediaData mdat;
@@ -119,13 +119,11 @@ public slots:
 	//! Reopens the file (no restart)
 	void reload();
 
-#ifdef SEEKBAR_RESOLUTION
-    void goToPosition( int value );
-    void goToPos( double perc );
-#else
-    void goToPos( int perc );
-#endif
-    void goToSec( double sec );
+	int positionMax() { return pos_max; }
+	void goToPosition( int pos );
+	void goToPos( double perc );
+	// void goToPos( int perc );
+	void goToSec( double sec );
 
 	void setAMarker(); //!< Set A marker to current sec
 	void setAMarker(int sec);
@@ -452,11 +450,7 @@ signals:
 	void videoEqualizerNeedsUpdate();
 	void audioEqualizerNeedsUpdate();
 	void showTime(double sec);
-#ifdef SEEKBAR_RESOLUTION
 	void positionChanged(int); // To connect a slider
-#else
-	void posChanged(int); // To connect a slider
-#endif
 	void newDuration(double); // Duration has changed
 	void showFrame(int frame);
 	void ABMarkersChanged(int secs_a, int secs_b);
@@ -521,6 +515,8 @@ private:
 #endif
 
 	QMap<QString,QString> forced_titles;
+
+	int pos_max;
 
 	void forceResize();
 	void getZoomFromMplayerWindow();

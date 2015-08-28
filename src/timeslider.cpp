@@ -27,11 +27,7 @@ TimeSlider::TimeSlider( QWidget * parent ) : MySlider(parent)
 {
 	dont_update = false;
 	setMinimum(0);
-#ifdef SEEKBAR_RESOLUTION
 	setMaximum(SEEKBAR_RESOLUTION);
-#else
-	setMaximum(100);
-#endif
 
 	setFocusPolicy( Qt::NoFocus );
 	setSizePolicy( QSizePolicy::Expanding , QSizePolicy::Fixed );

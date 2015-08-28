@@ -362,11 +362,9 @@ public:
 #if ENABLE_DELAYED_DRAGGING	
 	int time_slider_drag_delay;
 #endif
-#if SEEKBAR_RESOLUTION
 	//! If true, seeking will be done using a
 	//! percentage (with fractions) instead of time.
 	bool relative_seeking;  
-#endif
 	bool precise_seeking; //! Enable precise_seeking (only available with mplayer2)
 
 	bool reset_stop; //! Pressing the stop button resets the position

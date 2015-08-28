@@ -2106,7 +2106,8 @@ void BaseGui::setWindowCaption(const QString & title) {
 }
 
 void BaseGui::createCore() {
-	core = new Core( mplayerwindow, this );
+
+	core = new Core( mplayerwindow, this, SEEKBAR_RESOLUTION);
 
 	connect( core, SIGNAL(menusNeedInitialize()),
              this, SLOT(initializeMenus()) );
@@ -5066,11 +5067,8 @@ void BaseGui::slotNoVideo() {
 }
 
 void BaseGui::displayGotoTime(int t) {
-#ifdef SEEKBAR_RESOLUTION
-	int jump_time = (int)core->mdat.duration * t / SEEKBAR_RESOLUTION;
-#else
-	int jump_time = (int)core->mdat.duration * t / 100;
-#endif
+
+	int jump_time = qRound(core->mdat.duration * t / core->positionMax());
 	QString s = tr("Jump to %1").arg( Helper::formatTime(jump_time) );
 	statusBar()->showMessage( s, 1000 );
 
@@ -5082,19 +5080,11 @@ void BaseGui::displayGotoTime(int t) {
 void BaseGui::goToPosOnDragging(int t) {
 	if (pref->update_while_seeking) {
 #if ENABLE_DELAYED_DRAGGING
-		#ifdef SEEKBAR_RESOLUTION
 		core->goToPosition(t);
-		#else
-		core->goToPos(t);
-		#endif
 #else
 		if ( ( t % 4 ) == 0 ) {
 			qDebug("BaseGui::goToPosOnDragging: %d", t);
-			#ifdef SEEKBAR_RESOLUTION
 			core->goToPosition(t);
-			#else
-			core->goToPos(t);
-			#endif
 		}
 #endif
 	}

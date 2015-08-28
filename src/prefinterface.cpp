@@ -109,10 +109,6 @@ PrefInterface::PrefInterface(QWidget * parent, Qt::WindowFlags f)
             this, SLOT(GUIChanged(int)));
 #endif
 
-#ifndef SEEKBAR_RESOLUTION
-	seeking_method_group->hide();
-#endif
-
 #ifndef SKINS
 	skin_combo->hide();
 	skin_label->hide();
@@ -237,9 +233,7 @@ void PrefInterface::setData(Preferences * pref) {
 	setSeeking4(pref->seeking4);
 
 	setUpdateWhileDragging(pref->update_while_seeking);
-#ifdef SEEKBAR_RESOLUTION
 	setRelativeSeeking(pref->relative_seeking);
-#endif
 	setPreciseSeeking(pref->precise_seeking);
 
 	reset_stop_check->setChecked(pref->reset_stop);
@@ -303,9 +297,7 @@ void PrefInterface::getData(Preferences * pref) {
 	pref->seeking4 = seeking4();
 
 	pref->update_while_seeking = updateWhileDragging();
-#ifdef SEEKBAR_RESOLUTION
 	pref->relative_seeking= relativeSeeking();
-#endif
 	pref->precise_seeking = preciseSeeking();
 
 	pref->reset_stop = reset_stop_check->isChecked();
@@ -518,7 +510,6 @@ bool PrefInterface::updateWhileDragging() {
 	return (timeslider_behaviour_combo->currentIndex() == 0);
 }
 
-#ifdef SEEKBAR_RESOLUTION
 void PrefInterface::setRelativeSeeking(bool b) {
 	relative_seeking_button->setChecked(b);
 	absolute_seeking_button->setChecked(!b);
@@ -527,7 +518,6 @@ void PrefInterface::setRelativeSeeking(bool b) {
 bool PrefInterface::relativeSeeking() {
 	return relative_seeking_button->isChecked();
 }
-#endif
 
 void PrefInterface::setPreciseSeeking(bool b) {
 	precise_seeking_check->setChecked(b);
@@ -702,12 +692,10 @@ void PrefInterface::createHelp() {
 	setWhatsThis(timeslider_behaviour_combo, tr("Behaviour of time slider"),
         tr("Select what to do when dragging the time slider.") );
 
-#ifdef SEEKBAR_RESOLUTION
 	setWhatsThis(seeking_method_group, tr("Seeking method"),
 		tr("Sets the method to be used when seeking with the slider. "
            "Absolute seeking may be a little bit more accurate, while "
            "relative seeking may work better with files with a wrong length.") );
-#endif
 
 	setWhatsThis(precise_seeking_check, tr("Precise seeking"),
 		tr("If this option is enabled, seeks are more accurate but they "

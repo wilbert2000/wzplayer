@@ -47,8 +47,7 @@
 
 
 // SEEKBAR_RESOLUTION
-// if SEEKBAR_RESOLUTION is defined, it specified the
-// maximum value of the time slider
+// specifies the maximum value of the time slider
 
 #define SEEKBAR_RESOLUTION 1000
 

@@ -379,9 +379,7 @@ void Preferences::reset() {
 #if ENABLE_DELAYED_DRAGGING
 	time_slider_drag_delay = 100;
 #endif
-#if SEEKBAR_RESOLUTION
 	relative_seeking = false;
-#endif
 	precise_seeking = true;
 
 	reset_stop = false;
@@ -865,9 +863,7 @@ void Preferences::save() {
 #if ENABLE_DELAYED_DRAGGING
 	set->setValue("time_slider_drag_delay", time_slider_drag_delay);
 #endif
-#if SEEKBAR_RESOLUTION
 	set->setValue("relative_seeking", relative_seeking);
-#endif
 	set->setValue("precise_seeking", precise_seeking);
 
 	set->setValue("reset_stop", reset_stop);
@@ -1388,9 +1384,7 @@ void Preferences::load() {
 #if ENABLE_DELAYED_DRAGGING
 	time_slider_drag_delay = set->value("time_slider_drag_delay", time_slider_drag_delay).toInt();
 #endif
-#if SEEKBAR_RESOLUTION
 	relative_seeking = set->value("relative_seeking", relative_seeking).toBool();
-#endif
 	precise_seeking = set->value("precise_seeking", precise_seeking).toBool();
 
 	reset_stop = set->value("reset_stop", reset_stop).toBool();
