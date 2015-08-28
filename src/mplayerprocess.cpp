@@ -161,12 +161,6 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 		return true;
 	}
 
-	if (name == "TIME_POSITION") {
-		// Don't need to pass. Another status line will come and this one has no frames
-		// notifyTime(value.toDouble(), "");
-		return true;
-	}
-
 	waiting_for_answers--;
 	int i = value.toInt();
 
@@ -883,7 +877,7 @@ void MplayerProcess::mute(bool b) {
 void MplayerProcess::setPause(bool pause) {
 
 	want_pause = pause;
-	if (pause) writeToStdin("pausing get_time_pos"); // pauses
+	if (pause) writeToStdin("pausing pause"); // pauses
 	else writeToStdin("pause"); // pauses / unpauses
 }
 

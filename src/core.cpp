@@ -3285,7 +3285,7 @@ void Core::changeCurrentSec(double sec) {
 }
 
 void Core::changePause() {
-	qDebug("Core::changePause: player reports that it's paused at %f", mset.current_sec);
+	qDebug("Core::changePause: player paused at %f", mset.current_sec);
 
 	setState(Paused);
 }
