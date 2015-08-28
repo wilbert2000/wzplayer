@@ -961,8 +961,6 @@ void BaseGui::createActions() {
 	connect( playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()) );
 
 	// Pan
-	// Bindings for panning should probably be the inverse of these if you
-	// ever want to rename move to pan.
 	moveUpAct = new MyAction(Qt::ALT | Qt::Key_Up, this, "move_up");
 	connect( moveUpAct, SIGNAL(triggered()), core, SLOT(panDown()) );
 

@@ -39,8 +39,7 @@
 #include <QPropertyAnimation>
 #endif
 
-// TODO:
-static const QPoint default_osd_pos(25, 22);
+extern QPoint default_osd_pos;
 
 /* ---------------------------------------------------------------------- */
 
@@ -89,7 +88,7 @@ void MplayerLayer::paintEvent( QPaintEvent * e ) {
 	// preventing flicker and speeding up redraws when set to false.
 	// When repaint background is false the background still needs to be
 	// repainted when no video is loaded, which is controlled by normal_background.
-	// MplayerWindow::playingStarted calls setFastBackground to set it and
+	// MplayerWindow::aboutToStartPlaying calls setFastBackground to set it and
 	// MplayerWindow::playingStopped calls restoreNormalBackground to clear it,
 	// together with the Qt::WA_PaintOnScreen attribute (when not on Windows).
 
@@ -155,7 +154,6 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	, autohide_cursor(false)
 	, check_hide_mouse_last_position()
 	, autohide_interval(1000)
-	, osd_pos(default_osd_pos)
 {
 	setObjectName("mplayerwindow");
 
@@ -227,10 +225,11 @@ void MplayerWindow::setResolution(int width, int height) {
 
 	enableSizeGroup();
 
-	// Disable messages and post enable
+	// Disable messages and post enable if video
 	enable_messages = false;
-	if (width > 0)
+	if (width > 0) {
 		pauseMessages(500);
+	}
 }
 
 void MplayerWindow::set(double aspect,
@@ -337,12 +336,12 @@ void MplayerWindow::updateVideoWindow() {
 	mplayerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
 
 	// Keep OSD in sight. Need the offset as seen by player.
-	QPoint o_pos(osd_pos);
+	QPoint osd_pos(default_osd_pos);
 	if (pos.x() < 0)
-		o_pos.rx() = o_pos.x() - pos.x();
+		osd_pos.rx() -= pos.x();
 	if (pos.y() < 0)
-		o_pos.ry() = o_pos.y() - pos.y();
-	emit moveOSD(o_pos);
+		osd_pos.ry() -= pos.y();
+	emit moveOSD(osd_pos);
 
 	// Update status with new size. After OSD to clear moveOSD msg.
 	if (enable_messages && !fullscreen && video_size != last_video_size) {
@@ -737,10 +736,8 @@ void MplayerWindow::setAutoHideCursor(bool enable) {
 	else showHiddenCursor(false);
 }
 
-void MplayerWindow::playingStarted() {
-	qDebug("MplayerWindow::playingStarted");
-
-	osd_pos = default_osd_pos;
+void MplayerWindow::aboutToStartPlaying() {
+	qDebug("MplayerWindow::aboutToStartPlaying");
 
 	mplayerlayer->setFastBackground();
 	setAutoHideCursor(true);

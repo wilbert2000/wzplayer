@@ -224,7 +224,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	// Mplayerwindow
 	connect( this, SIGNAL(aboutToStartPlaying()),
-			 mplayerwindow, SLOT(playingStarted()) );
+			 mplayerwindow, SLOT(aboutToStartPlaying()) );
 
 #if DVDNAV_SUPPORT
 	connect( mplayerwindow, SIGNAL(mouseMoved(QPoint)),
@@ -1110,7 +1110,7 @@ void Core::newMediaPlaying() {
 	// Subs
 	if (!pref->autoload_sub)
 		mset.current_sub_idx = MediaSettings::SubNone;
-	// Remainder is handled by initSubs called by finishRestart
+	// Remainder is handled by initSubs called by playingStarted
 
 	// Chapters
 	if (mdat.n_chapters > 0) {
@@ -1118,6 +1118,7 @@ void Core::newMediaPlaying() {
 		mset.current_chapter_id = firstChapter();
 	}
 
+	// TODO: move to proc
 	// MPlayer doesn't display the length in ID_LENGTH for audio CDs...
 	if ((mdat.duration == 0) && (mdat.type == TYPE_AUDIO_CD)) {
 		if (mset.current_title_id > 0) {
@@ -3134,7 +3135,7 @@ void Core::decSubScale() {
 void Core::setOSDPos(const QPoint &pos) {
 	// qDebug("Core::setOSDPos");
 
-	if (proc->isRunning())
+	if (proc->isFullyStarted())
 		proc->setOSDPos(pos);
 }
 
@@ -4080,15 +4081,15 @@ void Core::displayBuffering() {
 void Core::gotVideoOutResolution(int w, int h) {
 	qDebug("Core::gotVideoOutResolution: %d x %d", w, h);
 
+	// w x h should be the output resolution selected by player with
+	// aspect and filters applied.
+	mset.win_width = w;
+	mset.win_height = h;
+	mplayerwindow->setResolution(w, h);
+
 	if (pref->use_mplayer_window || w <= 0) {
 		emit noVideo();
 	} else {
-		// w x h should be the output resolution selected by player with
-		// aspect and filters applied.
-		mset.win_width = w;
-		mset.win_height = h;
-		mplayerwindow->setResolution(w, h);
-
 		if (mset.aspect_ratio_id == MediaSettings::AspectAuto) {
 			// Set aspect to w/h. false = do not update video window.
 			mplayerwindow->setAspect(mset.win_aspect(), false);

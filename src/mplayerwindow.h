@@ -164,7 +164,7 @@ public:
 #endif
 
 public slots:
-	void playingStarted();
+	void aboutToStartPlaying();
 	void playingStopped();
 
 	void setLogoVisible(bool b);
@@ -248,8 +248,6 @@ private:
 	QTimer * check_hide_mouse_timer;
 	QPoint check_hide_mouse_last_position;
 	int autohide_interval;
-
-	QPoint osd_pos;
 
 	void autoHideCursorStartTimer();
 	void showHiddenCursor(bool startTimer);

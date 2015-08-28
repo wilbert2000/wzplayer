@@ -31,8 +31,9 @@
 using namespace Global;
 
 
-// TODO: print in setMedia and pick up in parseProp
-static const QPoint default_osd_pos(25, 22);
+// Docs MPV: (25, 22);
+QPoint default_osd_pos = QPoint();
+// TODO: get from player too
 static const QPoint max_osd_pos(300, 600);
 
 // How to recognise eof
@@ -41,7 +42,7 @@ static QRegExp rx_endoffile("^Exiting... \\(End of file\\)");
 MPVProcess::MPVProcess(MediaData *mdata)
 	: PlayerProcess(mdata, &rx_endoffile)
 	, verbose(false)
-	, osd_pos(default_osd_pos)
+	, osd_pos()
 	, osd_centered_x(false)
 	, osd_centered_y(false)
 {
@@ -57,7 +58,6 @@ bool MPVProcess::startPlayer() {
 	wait_for_track_info = 0;
 #endif
 
-	osd_pos = default_osd_pos;
 	osd_centered_x = false;
 	osd_centered_y = false;
 
@@ -125,6 +125,18 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 			md->meta_data["NAME"] = value;
 			qDebug() << "MPVProcess::parseProperty: set meta_data[\"NAME\"] to" << value;
 		}
+		return true;
+	}
+	if (name == "OSD_X") {
+		default_osd_pos.rx() = value.toInt();
+		osd_pos.rx() = default_osd_pos.x();
+		qDebug("MPVProcess::parseProperty: set OSD x margin to %d", default_osd_pos.x());
+		return true;
+	}
+	if (name == "OSD_Y") {
+		default_osd_pos.ry() = value.toInt();
+		osd_pos.ry() = default_osd_pos.y();
+		qDebug("MPVProcess::parseProperty: set OSD y margin to %d", default_osd_pos.y());
 		return true;
 	}
 
@@ -443,7 +455,9 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 		"METADATA_TRACK=${metadata/by-key/track:}\n"
 		"METADATA_COPYRIGHT=${metadata/by-key/copyright:}\n"
 
-		"INFO_MEDIA_TITLE=${=media-title:}\n";
+		"INFO_MEDIA_TITLE=${=media-title:}\n"
+		"INFO_OSD_X=${=options/osd-margin-x:}\n"
+		"INFO_OSD_Y=${=options/osd-margin-y:}\n";
 
 	arg << "--term-status-msg=STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}";
 
@@ -1092,17 +1106,21 @@ void MPVProcess::setOSDPos(const QPoint &pos) {
 	// mpv has no way to set the OSD position,
 	// so this hack uses osd-margin to emulate it.
 
-	// TODO: ask default value prop to init default pos and see if available
+	if (default_osd_pos.x() == 0) {
+		// Old player, not supporting OSD margins
+		return;
+	}
+
+	// options/osd-margin-x Integer (0 to 300) (default: 25)
+	// options/osd-margin-y Integer (0 to 600) (default: 22)
 	// options/osd-align-x and y from version 0.9.0 onwards
-	// osd-margin-x Integer (0 to 300) (default: 25)
-	// osd-margin-y Integer (0 to 600) (default: 22)
 	// osd-duration=<time in ms> (default 1000)
 
 	bool clr_osd = false;
 
 	// Handle y first
 	if (pos.y() > max_osd_pos.y()) {
-		// Hack: center osd and hope for the best
+		// Max margin is 600. Beyond that center osd and hope for the best
 		if (!osd_centered_y) {
 			writeToStdin("set options/osd-align-y center");
 			clr_osd = true;
