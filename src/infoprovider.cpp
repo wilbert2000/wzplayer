@@ -23,7 +23,7 @@
 #include "playerid.h"
 #include <QFileInfo>
 
-void InfoProvider::getInfo(QString mplayer_bin, QString filename, MediaData &md) {
+void InfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaData &md) {
 	qDebug("InfoProvider::getInfo: %s", filename.toUtf8().data());
 
 	QFileInfo fi(mplayer_bin);
@@ -54,6 +54,6 @@ void InfoProvider::getInfo(QString mplayer_bin, QString filename, MediaData &md)
 	delete proc;
 }
 
-void InfoProvider::getInfo(QString filename, MediaData &md) {
+void InfoProvider::getInfo(const QString &filename, MediaData &md) {
 	getInfo( Global::pref->mplayer_bin, filename, md );
 }

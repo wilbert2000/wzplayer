@@ -29,11 +29,11 @@ class InfoProvider
 
 public:
 	//! Gets info about the specified filename.
-	static void getInfo(QString mplayer_bin, QString filename, MediaData &md);
+	static void getInfo(QString mplayer_bin, const QString &filename, MediaData &md);
 
 	//! Gets info about the specified filename. The mplayer executable will be
     // obtained from the global preferences.
-	static void getInfo(QString filename, MediaData &md);
+	static void getInfo(const QString &filename, MediaData &md);
 };
 
 #endif
