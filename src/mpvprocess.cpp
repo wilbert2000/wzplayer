@@ -295,17 +295,19 @@ bool MPVProcess::parseLine(QString &line) {
 
 	// VO
 	if (rx_vo.indexIn(line) >= 0) {
+		// Ask for video out resolution
+		writeToStdin("print_text VIDEO_DSIZE=${=dwidth}x${=dheight}");
+		waiting_for_answers++;
+
 		QString vo = rx_vo.cap(1);
 		qDebug() << "MVPProcess::parseLine: emit receivedVO(" << vo << ")";
 		emit receivedVO(vo);
-
-		// Ask for window resolution
-		writeToStdin("print_text VIDEO_DSIZE=${=dwidth}x${=dheight}");
 		return true;
 	}
 
 	// Video out size w x h
 	if (rx_dsize.indexIn(line) >= 0) {
+		waiting_for_answers--;
 		md->video_out_width = rx_dsize.cap(1).toInt();
 		md->video_out_height = rx_dsize.cap(2).toInt();
 		qDebug("MPVProcess::parseLine: set video out size to %d x %d",
