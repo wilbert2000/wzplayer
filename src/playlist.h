@@ -81,7 +81,7 @@ public:
 	bool isModified() { return modified; };
 
 public slots:
-	void addItem(QString filename, QString name, double duration);
+	void addItem(const QString &filename, QString name, double duration);
 
 	// Start playing, from item 0 if shuffle is off, or from
 	// a random item otherwise
@@ -106,14 +106,12 @@ public slots:
 	virtual void addDirectory();
 	virtual void addUrls();
 
-	virtual void addFile(QString file, AutoGetInfo auto_get_info = UserDefined);
-	virtual void addFiles(QStringList files, AutoGetInfo auto_get_info = UserDefined);
-
-	// Adds a directory, no recursive
-	virtual void addOneDirectory(QString dir);
+	virtual void addFile(const QString &filename, bool get_info = false);
+	virtual void addFiles(const QStringList &files, bool get_info = false);
+	void addFileOrDir(const QString &filename, bool get_info = false);
 
 	// Adds a directory, maybe with recursion (depends on user config)
-	virtual void addDirectory(QString dir);
+	virtual void addDirectory(const QString &dir, bool get_info = false);
 
 	// EDIT BY NEO -->
 	virtual void sortBy(int section);
@@ -125,10 +123,10 @@ public slots:
     virtual void load();
     virtual bool save();
 
-	virtual void load_m3u(QString file);
+	virtual void load_m3u(const QString &file, bool clear = true, bool play = true);
 	virtual bool save_m3u(QString file);
 
-	virtual void load_pls(QString file);
+	virtual void load_pls(const QString &file, bool clear = true, bool play = true);
 	virtual bool save_pls(QString file);
 
 	virtual void getMediaInfo();

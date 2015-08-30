@@ -99,9 +99,8 @@ public:
 	void retranslate() { retranslateStrings(); }
 
 public slots:
-	virtual void open(QString file); // Generic open, autodetect type.
+	virtual void open(const QString &file); // Generic open, autodetect type.
 	virtual void openFile();
-	virtual void openFile(QString file);
 	virtual void openFiles(QStringList files);
 	virtual void openFavorite(QString file);
 	virtual void openURL();

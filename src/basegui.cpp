@@ -3167,34 +3167,41 @@ void BaseGui::updateMediaInfo() {
 void BaseGui::newMediaLoaded() {
 	qDebug("BaseGui::newMediaLoaded");
 
+	QString filename = core->mdat.filename;
 	QString stream_title = core->mdat.stream_title;
-	qDebug("BaseGui::newMediaLoaded: mdat.stream_title: %s", stream_title.toUtf8().constData());
-
 	if (!stream_title.isEmpty()) {
-		pref->history_recents->addItem( core->mdat.filename, stream_title );
-		//pref->history_recents->list();
+		pref->history_recents->addItem(filename, stream_title);
 	} else {
-		pref->history_recents->addItem( core->mdat.filename );
+		pref->history_recents->addItem(filename);
 	}
 	updateRecents();
 
 	// If a VCD, Audio CD or DVD, add items to playlist
-	bool is_disc = ( (core->mdat.type == TYPE_VCD) || (core->mdat.type == TYPE_DVD) || (core->mdat.type == TYPE_AUDIO_CD) );
+	bool is_disc = ( (core->mdat.type == TYPE_VCD)
+					 || (core->mdat.type == TYPE_DVD)
+					 || (core->mdat.type == TYPE_AUDIO_CD) );
+
 #if DVDNAV_SUPPORT
 	// Don't add the list of titles if using dvdnav
-	if ((core->mdat.type == TYPE_DVD) && (core->mdat.filename.startsWith("dvdnav:"))) is_disc = false;
+	if ((core->mdat.type == TYPE_DVD) && filename.startsWith("dvdnav:"))
+		is_disc = false;
 #endif
-	if (pref->auto_add_to_playlist && is_disc)
-	{
+
+	// TODO: adding multiple times when playlist wraps?
+
+	if (pref->auto_add_to_playlist && is_disc) {
 		int first_title = 1;
-		if (core->mdat.type == TYPE_VCD) first_title = pref->vcd_initial_title;
+		if (core->mdat.type == TYPE_VCD)
+			first_title = pref->vcd_initial_title;
 
 		QString type = "dvd"; // FIXME: support dvdnav
 		if (core->mdat.type == TYPE_VCD) type="vcd";
-		else
-		if (core->mdat.type == TYPE_AUDIO_CD) type="cdda";
+		else if (core->mdat.type == TYPE_AUDIO_CD) type="cdda";
 
 		if (core->mset.current_title_id == first_title) {
+			qDebug() << "BaseGui::newMediaLoaded: creating new playlist from titles for"
+					 << filename;
+
 			playlist->clear();
 			QStringList l;
 			QString s;
@@ -3203,34 +3210,39 @@ void BaseGui::newMediaLoaded() {
 				DiscData disc_data = DiscName::split(core->mdat.filename);
 				folder = disc_data.device;
 			}
-			for (int n=0; n < core->mdat.titles.numItems(); n++) {
+			// TODO: fix FIXME
+			for (int n = 0; n < core->mdat.titles.numItems(); n++) {
 				s = type + "://" + QString::number(core->mdat.titles.itemAt(n).ID());
 				if ( !folder.isEmpty() ) {
 					s += "/" + folder; // FIXME: dvd names are not created as they should
 				}
 				l.append(s);
 			}
-			playlist->addFiles(l);
-			//playlist->setModified(false); // Not a real playlist
-		}
-	} /*else {
-		playlist->clear();
-		playlist->addCurrentFile();
-	}*/
 
-	// Automatically add files to playlist
-	if ((core->mdat.type == TYPE_FILE) && (pref->auto_add_to_playlist)) {
-		//qDebug("BaseGui::newMediaLoaded: playlist count: %d", playlist->count());
-		QStringList files_to_add;
-		if (playlist->count() == 1) {
-			files_to_add = Helper::filesForPlaylist(core->mdat.filename, pref->media_to_add_to_playlist);
+			playlist->addFiles(l);
 		}
-		if (!files_to_add.empty()) playlist->addFiles(files_to_add);
+	}
+
+	// Add associated files to playlist if single file
+	if (core->mdat.type == TYPE_FILE
+		&& pref->auto_add_to_playlist
+		&& playlist->count() == 1) {
+
+		qDebug() << "BaseGui::newMediaLoaded: searching for files to add to playlist for"
+				 << filename;
+		QStringList files_to_add = Helper::filesForPlaylist(
+			filename, pref->media_to_add_to_playlist);
+		if (files_to_add.isEmpty()) {
+			qDebug("BaseGui::newMediaLoaded: none found");
+		} else {
+			playlist->addFiles(files_to_add, false);
+		}
 	}
 }
 
 void BaseGui::gotNoFileToPlay() {
-	//qDebug("BaseGui::gotNoFileToPlay");
+	qDebug("BaseGui::gotNoFileToPlay");
+
 	playlist->resumePlay();
 }
 
@@ -3732,100 +3744,134 @@ void BaseGui::changeVideoEqualizerBySoftware(bool b) {
 	}
 }
 
-/*
-void BaseGui::playlistVisibilityChanged() {
-#if !DOCK_PLAYLIST
-	bool visible = playlist->isVisible();
+void BaseGui::openDirectory(QString directory) {
+	qDebug("BaseGui::openDirectory: '%s'", directory.toUtf8().data());
 
-	showPlaylistAct->setChecked( visible );
-#endif
-}
-*/
-
-/*
-void BaseGui::openRecent(int item) {
-	qDebug("BaseGui::openRecent: %d", item);
-	if ((item > -1) && (item < RECENTS_CLEAR)) { // 1000 = Clear item
-		open( recents->item(item) );
+	if (Helper::directoryContainsDVD(directory)) {
+		core->open(directory);
+	} else {
+		QFileInfo fi(directory);
+		if ( (fi.exists()) && (fi.isDir()) ) {
+			directory = fi.absoluteFilePath();
+			pref->latest_dir = directory;
+			playlist->clear();
+			playlist->addDirectory(directory);
+			playlist->startPlay();
+		} else {
+			qWarning("BaseGui::openDirectory: directory is not valid");
+		}
 	}
 }
-*/
 
-void BaseGui::openRecent() {
-	QAction *a = qobject_cast<QAction *> (sender());
-	if (a) {
-		int item = a->data().toInt();
-		qDebug("BaseGui::openRecent: %d", item);
-		QString file = pref->history_recents->item(item);
+void BaseGui::openDirectory() {
+	qDebug("BaseGui::openDirectory");
 
-		if (pref->auto_add_to_playlist) {
-			if (playlist->maybeSave()) {
-				playlist->clear();
-				playlist->addFile(file, Playlist::NoGetInfo);
+	QString s = MyFileDialog::getExistingDirectory(
+					this, tr("Choose a directory"),
+					pref->latest_dir );
 
-				open( file );
-			}
-		} else {
-			open( file );
+	if (!s.isEmpty()) {
+		openDirectory(s);
+	}
+}
+
+void BaseGui::open(const QString &file) {
+	qDebug() << "BaseGui::open:" << file;
+
+	if (file.isEmpty()) {
+		qWarning("BaseGui::open: filename is empty");
+		return;
+	}
+	if (!playlist->maybeSave()) {
+		return;
+	}
+
+	if (QFile::exists(file)) {
+		QFileInfo fi(file);
+		if (fi.isDir()) {
+			openDirectory(file);
+			return;
 		}
 
-	}
-}
+		pref->latest_dir = fi.absolutePath();
 
-void BaseGui::open(QString file) {
-	qDebug("BaseGui::open: '%s'", file.toUtf8().data());
-
-	// If file is a playlist, open that playlist
-	QString extension = QFileInfo(file).suffix().toLower();
-	if ( ((extension=="m3u") || (extension=="m3u8")) && (QFile::exists(file)) ) {
-		playlist->load_m3u(file);
-	} 
-	else
-	if (extension=="pls") {
-		playlist->load_pls(file);
-	}
-	else 
-	if (QFileInfo(file).isDir()) {
-		openDirectory(file);
-	} 
-	else {
-		// Let the core to open it, autodetecting the file type
-		//if (playlist->maybeSave()) {
-		//	playlist->clear();
-		//	playlist->addFile(file);
-
+		QString ext = fi.suffix().toLower();
+		if (ext == "iso") {
+			// Don't add to playlist
 			core->open(file);
-		//}
+			return;
+		}
+
+		// TODO: fix use of Extensions class
+		Extensions e;
+		QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
+
+		if (ext_sub.indexIn(ext) >= 0) {
+			qDebug() << "BaseGui::open: loading subtitle file" << file;
+			core->loadSub(file);
+			return;
+		}
 	}
 
-	if (QFile::exists(file)) pref->latest_dir = QFileInfo(file).absolutePath();
+	qDebug() << "BaseGui::open: starting new playlist for" << file;
+	playlist->clear();
+	playlist->addFile(file);
+	playlist->startPlay();
+
+	qDebug("BaseGui::open done");
 }
 
 void BaseGui::openFiles(QStringList files) {
 	qDebug("BaseGui::openFiles");
-	if (files.empty()) return;
+
+	if (files.empty()) {
+		qWarning("BaseGui::openFiles: no files in list to open");
+		return;
+	}
 
 	#ifdef Q_OS_WIN
 	files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
 	#endif
 
-	if (files.count()==1) {
-		if (pref->auto_add_to_playlist) {
-			if (playlist->maybeSave()) {
-				playlist->clear();
-				playlist->addFile(files[0], Playlist::NoGetInfo);
+	if (files.count() == 1) {
+		open(files[0]);
+	} else if (playlist->maybeSave()) {
+		qDebug("BaseGui::openFiles: starting new playlist");
+		files.sort();
+		playlist->clear();
+		playlist->addFiles(files);
+		playlist->startPlay();
+	}
+}
 
-				open(files[0]);
-			}
-		} else {
-			open(files[0]);
-		}
-	} else {
-		if (playlist->maybeSave()) {
-			playlist->clear();
-			playlist->addFiles(files);
-			open(files[0]);
-		}
+void BaseGui::openFile() {
+	qDebug("BaseGui::openFile");
+
+	exitFullscreenIfNeeded();
+
+	Extensions e;
+	QString s = MyFileDialog::getOpenFileName(
+					   this, tr("Choose a file"), pref->latest_dir,
+					   tr("Multimedia") + e.allPlayable().forFilter()+";;" +
+					   tr("Video") + e.video().forFilter()+";;" +
+					   tr("Audio") + e.audio().forFilter()+";;" +
+					   tr("Playlists") + e.playlist().forFilter()+";;" +
+					   tr("All files") +" (*.*)" );
+
+	if ( !s.isEmpty() ) {
+		open(s);
+	}
+}
+
+void BaseGui::openRecent() {
+	qDebug("BaseGui::openRecent");
+
+	QAction *a = qobject_cast<QAction *> (sender());
+	if (a) {
+		int item = a->data().toInt();
+		QString filename = pref->history_recents->item(item);
+		if (!filename.isEmpty())
+			open(filename);
 	}
 }
 
@@ -3887,70 +3933,11 @@ void BaseGui::openURL(QString url) {
 				core->openStream(url);
 
 				playlist->clear();
-				playlist->addFile(url, Playlist::NoGetInfo);
+				playlist->addFile(url);
 			}
 		} else {
 			core->openStream(url);
 		}
-	}
-}
-
-
-void BaseGui::openFile() {
-	qDebug("BaseGui::fileOpen");
-
-	exitFullscreenIfNeeded();
-
-	Extensions e;
-    QString s = MyFileDialog::getOpenFileName(
-                       this, tr("Choose a file"), pref->latest_dir, 
-                       tr("Multimedia") + e.allPlayable().forFilter()+";;" +
-                       tr("Video") + e.video().forFilter()+";;" +
-                       tr("Audio") + e.audio().forFilter()+";;" +
-                       tr("Playlists") + e.playlist().forFilter()+";;" +
-                       tr("All files") +" (*.*)" );
-
-    if ( !s.isEmpty() ) {
-		openFile(s);
-	}
-}
-
-void BaseGui::openFile(QString file) {
-	qDebug("BaseGui::openFile: '%s'", file.toUtf8().data());
-
-   if ( !file.isEmpty() ) {
-
-		//playlist->clear();
-		//playlistdock->hide();
-
-		// If file is a playlist, open that playlist
-		QString extension = QFileInfo(file).suffix().toLower();
-		if ( (extension=="m3u") || (extension=="m3u8") ) {
-			playlist->load_m3u(file);
-		} 
-		else
-		if (extension=="pls") {
-			playlist->load_pls(file);
-		}
-		else
-		if (extension=="iso") {
-			if (playlist->maybeSave()) {
-				core->open(file);
-			}
-		}
-		else {
-			if (pref->auto_add_to_playlist) {
-				if (playlist->maybeSave()) {
-					core->openFile(file);
-
-					playlist->clear();
-					playlist->addFile(file, Playlist::NoGetInfo);
-				}
-			} else {
-				core->openFile(file);
-			}
-		}
-		if (QFile::exists(file)) pref->latest_dir = QFileInfo(file).absolutePath();
 	}
 }
 
@@ -4077,37 +4064,6 @@ void BaseGui::openBluRayFromFolder() {
 	}
 }
 #endif
-
-void BaseGui::openDirectory() {
-	qDebug("BaseGui::openDirectory");
-
-	QString s = MyFileDialog::getExistingDirectory(
-                    this, tr("Choose a directory"),
-                    pref->latest_dir );
-
-	if (!s.isEmpty()) {
-		openDirectory(s);
-	}
-}
-
-void BaseGui::openDirectory(QString directory) {
-	qDebug("BaseGui::openDirectory: '%s'", directory.toUtf8().data());
-
-	if (Helper::directoryContainsDVD(directory)) {
-		core->open(directory);
-	} 
-	else {
-		QFileInfo fi(directory);
-		if ( (fi.exists()) && (fi.isDir()) ) {
-			playlist->clear();
-			//playlist->addDirectory(directory);
-			playlist->addDirectory( fi.absoluteFilePath() );
-			playlist->startPlay();
-		} else {
-			qDebug("BaseGui::openDirectory: directory is not valid");
-		}
-	}
-}
 
 void BaseGui::loadSub() {
 	qDebug("BaseGui::loadSub");
@@ -4378,7 +4334,7 @@ void BaseGui::toggleFullscreen(bool b) {
 
 
 void BaseGui::aboutToEnterFullscreen() {
-	qDebug("BaseGui::aboutToEnterFullscreen");
+	//qDebug("BaseGui::aboutToEnterFullscreen");
 
 	mplayerwindow->aboutToEnterFullscreen();
 
@@ -4389,7 +4345,7 @@ void BaseGui::aboutToEnterFullscreen() {
 }
 
 void BaseGui::aboutToExitFullscreen() {
-	qDebug("BaseGui::aboutToExitFullscreen");
+	//qDebug("BaseGui::aboutToExitFullscreen");
 
 	mplayerwindow->aboutToExitFullscreen();
 
@@ -4397,7 +4353,7 @@ void BaseGui::aboutToExitFullscreen() {
 		menuBar()->show();
 		statusBar()->show();
 	}
-	qDebug("BaseGui::aboutToExitFullscreen done");
+	//qDebug("BaseGui::aboutToExitFullscreen done");
 }
 
 
@@ -4729,76 +4685,30 @@ void BaseGui::dragEnterEvent( QDragEnterEvent *e ) {
 	}
 }
 
-
-
 void BaseGui::dropEvent( QDropEvent *e ) {
 	qDebug("BaseGui::dropEvent");
 
 	QStringList files;
 
 	if (e->mimeData()->hasUrls()) {
-		QList <QUrl> l = e->mimeData()->urls();
-		QString s;
-		for (int n=0; n < l.count(); n++) {
-			if (l[n].isValid()) {
-				qDebug("BaseGui::dropEvent: scheme: '%s'", l[n].scheme().toUtf8().data());
-				if (l[n].scheme() == "file") 
-					s = l[n].toLocalFile();
-				else
-					s = l[n].toString();
-				/*
-				qDebug(" * '%s'", l[n].toString().toUtf8().data());
-				qDebug(" * '%s'", l[n].toLocalFile().toUtf8().data());
-				*/
-				qDebug("BaseGui::dropEvent: file: '%s'", s.toUtf8().data());
-				files.append(s);
-			}
-		}
-	}
-
-
-	qDebug( "BaseGui::dropEvent: count: %d", files.count());
-	if (files.count() > 0) {
-		#ifdef Q_OS_WIN
-		files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
-		#endif
-		files.sort();
-
-		if (files.count() == 1) {
-			QFileInfo fi( files[0] );
-
-			Extensions e;
-			QRegExp ext_sub(e.subtitles().forRegExp());
-			ext_sub.setCaseSensitivity(Qt::CaseInsensitive);
-			if (ext_sub.indexIn(fi.suffix()) > -1) {
-				qDebug( "BaseGui::dropEvent: loading sub: '%s'", files[0].toUtf8().data());
-				core->loadSub( files[0] );
-			}
-			else
-			if (fi.isDir()) {
-				openDirectory( files[0] );
+		QList <QUrl> urls = e->mimeData()->urls();
+		for (int n = 0; n < urls.count(); n++) {
+			QUrl url = urls[n];
+			if (url.isValid()) {
+				QString filename;
+				if (url.scheme() == "file")
+					filename = url.toLocalFile();
+				else filename = url.toString();
+				qDebug() << "BaseGui::dropEvent: adding" << filename;
+				files.append(filename);
 			} else {
-				//openFile( files[0] );
-				if (pref->auto_add_to_playlist) {
-					if (playlist->maybeSave()) {
-						playlist->clear();
-						playlist->addFile(files[0], Playlist::NoGetInfo);
-
-						open( files[0] );
-					}
-				} else {
-					open( files[0] );
-				}
+				qWarning() << "BaseGui::dropEvent:: ignoring" << url.toString();
 			}
-		} else {
-			// More than one file
-			qDebug("BaseGui::dropEvent: adding files to playlist");
-			playlist->clear();
-			playlist->addFiles(files);
-			//openFile( files[0] );
-			playlist->startPlay();
 		}
 	}
+
+	qDebug( "BaseGui::dropEvent: number of files: %d", files.count());
+	openFiles(files);
 }
 
 void BaseGui::showPopupMenu() {

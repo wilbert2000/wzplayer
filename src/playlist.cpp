@@ -62,7 +62,6 @@
 #endif
 
 #define DRAG_ITEMS 0
-#define PL_ALLOW_DUPLICATES 1
 
 #define COL_PLAY 0
 #define COL_NAME 1
@@ -374,17 +373,16 @@ void Playlist::updateView() {
 
 	listView->setRowCount( pl.count() );
 
-	//QString number;
 	QString name;
 	QString time;
 
-	for (int n=0; n < pl.count(); n++) {
+	for (int n = 0; n < pl.count(); n++) {
 		name = pl[n].name();
 		if (name.isEmpty()) name = pl[n].filename();
 		time = Helper::formatTime( (int) pl[n].duration() );
 		
 		//listView->setText(n, COL_POS, number);
-		qDebug("Playlist::updateView: name: '%s'", name.toUtf8().data());
+		//qDebug("Playlist::updateView: name: '%s'", name.toUtf8().data());
 		listView->setText(n, COL_NAME, name);
 		listView->setText(n, COL_TIME, time);
 
@@ -409,24 +407,23 @@ void Playlist::setCurrentItem(int current) {
 	QIcon play_icon;
 	play_icon = Images::icon("play");
 
-	int old_current = current_item;
+	if ( (current_item >= 0) && (current_item < listView->rowCount()) ) {
+		listView->setIcon(current_item, COL_PLAY, QPixmap() );
+	}
+
 	current_item = current;
 
-	if ((current_item > -1) && (current_item < pl.count())) {
-		pl[current_item].setPlayed(true);
-	}
-
-	if ( (old_current >= 0) && (old_current < listView->rowCount()) ) {
-		listView->setIcon(old_current, COL_PLAY, QPixmap() );
-	}
-
-	if ( (current_item >= 0) && (current_item < listView->rowCount()) ) {
-		listView->setIcon(current_item, COL_PLAY, play_icon );
-	}
-	//if (current_item >= 0) listView->selectRow(current_item);
 	if (current_item >= 0) {
+		if (current_item < pl.count()) {
+			pl[current_item].setPlayed(true);
+		}
+
+		if (current_item < listView->rowCount()) {
+			listView->setIcon(current_item, COL_PLAY, play_icon );
+		}
+
 		listView->clearSelection();
-		listView->setCurrentCell( current_item, 0);
+		listView->setCurrentCell(current_item, 0);
 	}
 }
 
@@ -442,11 +439,11 @@ void Playlist::clear() {
 }
 
 void Playlist::remove(int i){
-	if(i > -1 && i < pl.count()){
+	if(i >= 0 && i < pl.count()){
 		pl.removeAt(i);
 		if(current_item == i && i == (pl.count() - 1))
 			setCurrentItem(i - 1);
-		setModified(false);
+		setModified(true);
 		updateView();
 	} //end if
 }
@@ -459,51 +456,26 @@ bool Playlist::isEmpty() {
 	return pl.isEmpty();
 }
 
-void Playlist::addItem(QString filename, QString name, double duration) {
-	qDebug("Playlist::addItem: '%s'", filename.toUtf8().data());
+void Playlist::addItem(const QString &filename, QString name, double duration) {
+	//qDebug() << "Playlist::addItem:" << filename;
 
-	#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	filename = Helper::changeSlashes(filename);
-	#endif
+#endif
 
-#if !PL_ALLOW_DUPLICATES
-	// Test if already is in the list
-	bool exists = false;
-	for ( int n = 0; n < pl.count(); n++) {
-		if ( pl[n].filename() == filename ) {
-			exists = true;
-			int last_item =  pl.count()-1;
-			pl.move(n, last_item);
-			qDebug("Playlist::addItem: item already in list (%d), moved to %d", n, last_item);
-			if (current_item > -1) {
-				if (current_item > n) current_item--;
-				else
-				if (current_item == n) current_item = last_item;
-			}
-			break;
+	if (name.isEmpty()) {
+		QFileInfo fi(filename);
+		// Let's see if it looks like a file (no dvd://1 or something)
+		if (filename.indexOf(QRegExp("^.*://.*")) == -1) {
+			// Local file
+			name = fi.fileName(); //fi.baseName(true);
+		} else {
+			// Stream
+			name = filename;
 		}
 	}
-
-	if (!exists) {
-#endif
-		if (name.isEmpty()) {
-			QFileInfo fi(filename);
-			// Let's see if it looks like a file (no dvd://1 or something)
-			if (filename.indexOf(QRegExp("^.*://.*")) == -1) {
-				// Local file
-				name = fi.fileName(); //fi.baseName(true);
-			} else {
-				// Stream
-				name = filename;
-			}
-		}
-		pl.append( PlaylistItem(filename, name, duration) );
-		//setModified( true ); // Better set the modified on a higher level
-#if !PL_ALLOW_DUPLICATES
-	} else {
-		qDebug("Playlist::addItem: item not added, already in the list");
-	}
-#endif
+	pl.append( PlaylistItem(filename, name, duration) );
+	//setModified( true ); // Better set the modified on a higher level
 }
 
 // EDIT BY NEO -->
@@ -597,19 +569,19 @@ void Playlist::sortBy(int section, bool revert, int count) {
 }
 // <--
 
-void Playlist::load_m3u(QString file) {
+void Playlist::load_m3u(const QString &file, bool clear, bool play) {
 	qDebug("Playlist::load_m3u");
 
 	bool utf8 = (QFileInfo(file).suffix().toLower() == "m3u8");
 
-	QRegExp m3u_id("^#EXTM3U|^#M3U");
 	QRegExp info("^#EXTINF:(.*),(.*)");
 
     QFile f( file );
     if ( f.open( QIODevice::ReadOnly ) ) {
 		playlist_path = QFileInfo(file).path();
 
-		clear();
+		if (clear)
+			this->clear();
 		QString filename="";
 		QString name="";
 		double duration=0;
@@ -625,18 +597,11 @@ void Playlist::load_m3u(QString file) {
         while ( !stream.atEnd() ) {
             line = stream.readLine(); // line of text excluding '\n'
             qDebug( " * line: '%s'", line.toUtf8().data() );
-			if (m3u_id.indexIn(line)!=-1) {
-				//#EXTM3U
-				// Ignore line
-			}
-			else
 			if (info.indexIn(line)!=-1) {
 				duration = info.cap(1).toDouble();
 				name = info.cap(2);
 				qDebug(" * name: '%s', duration: %f", name.toUtf8().data(), duration );
-			} 
-			else
-			if (line.startsWith("#")) {
+			} else if (line.startsWith("#")) {
 				// Comment
 				// Ignore
 			} else {
@@ -644,28 +609,25 @@ void Playlist::load_m3u(QString file) {
 				QFileInfo fi(filename);
 				if (fi.exists()) {
 					filename = fi.absoluteFilePath();
+				} else if (QFileInfo( playlist_path + "/" + filename).exists() ) {
+					filename = playlist_path + "/" + filename;
 				}
-				if (!fi.exists()) {
-					if (QFileInfo( playlist_path + "/" + filename).exists() ) {
-						filename = playlist_path + "/" + filename;
-					}
-				}
-				addItem( filename, name, duration );
-				name=""; 
+				addItem(filename, name, duration);
+				name = "";
 				duration = 0;
 			}
-        }
-        f.close();
+		}
+
+		f.close();
 		list();
 		updateView();
 
-		setModified( false );
-
-		startPlay();
+		if (play)
+			startPlay();
 	}
 }
 
-void Playlist::load_pls(QString file) {
+void Playlist::load_pls(const QString &file, bool clear, bool play) {
 	qDebug("Playlist::load_pls");
 
 	if (!QFile::exists(file)) {
@@ -679,28 +641,26 @@ void Playlist::load_pls(QString file) {
 	set.beginGroup("playlist");
 
 	if (set.status() == QSettings::NoError) {
-		clear();
+		if (clear)
+			this->clear();
 		QString filename;
 		QString name;
 		double duration;
 
 		int num_items = set.value("NumberOfEntries", 0).toInt();
 
-		for (int n=0; n < num_items; n++) {
-			filename = set.value("File"+QString::number(n+1), "").toString();
-			name = set.value("Title"+QString::number(n+1), "").toString();
-			duration = (double) set.value("Length"+QString::number(n+1), 0).toInt();
+		for (int n = 0; n < num_items; n++) {
+			filename = set.value("File" + QString::number(n + 1), "").toString();
+			name = set.value("Title" + QString::number(n + 1), "").toString();
+			duration = (double) set.value("Length" + QString::number(n + 1), 0).toInt();
 
 			QFileInfo fi(filename);
 			if (fi.exists()) {
 				filename = fi.absoluteFilePath();
+			} else if (QFileInfo( playlist_path + "/" + filename).exists() ) {
+				filename = playlist_path + "/" + filename;
 			}
-			if (!fi.exists()) {
-				if (QFileInfo( playlist_path + "/" + filename).exists() ) {
-					filename = playlist_path + "/" + filename;
-				}
-			}
-			addItem( filename, name, duration );
+			addItem(filename, name, duration);
 		}
 	}
 
@@ -709,9 +669,8 @@ void Playlist::load_pls(QString file) {
 	list();
 	updateView();
 
-	setModified( false );
-
-	if (set.status() == QSettings::NoError) startPlay();
+	if (play && (set.status() == QSettings::NoError))
+		startPlay();
 }
 
 bool Playlist::save_m3u(QString file) {
@@ -889,7 +848,7 @@ bool Playlist::maybeSave() {
 
 void Playlist::playCurrent() {
 	int current = listView->currentRow();
-	if (current > -1) {
+	if (current >= 0) {
 		playItem(current);
 	}
 }
@@ -917,28 +876,21 @@ void Playlist::startPlay() {
 }
 
 void Playlist::playItem( int n ) {
-	qDebug("Playlist::playItem: %d (count:%d)", n, pl.count());
+	qDebug("Playlist::playItem: %d (count: %d)", n, pl.count());
 
-	if ( (n >= pl.count()) || (n < 0) ) {
+	if ((n < 0) || (n >= pl.count())) {
 		qDebug("Playlist::playItem: out of range");
 		emit playlistEnded();
 		return;
 	}
 
-	qDebug(" playlist_path: '%s'", playlist_path.toUtf8().data() );
-
 	QString filename = pl[n].filename();
-	QString filename_with_path = playlist_path + "/" + filename;
-
 	if (!filename.isEmpty()) {
-		//pl[n].setPlayed(true);
 		setCurrentItem(n);
 		if (play_files_from_start) 
 			core->open(filename, 0);
-		else
-			core->open(filename);
+		else core->open(filename);
 	}
-
 }
 
 void Playlist::playNext() {
@@ -957,13 +909,14 @@ void Playlist::playNext() {
 		}
 		playItem( chosen_item );
 	} else {
-		bool finished_list = (current_item+1 >= pl.count());
-		if (finished_list) clearPlayedTag();
+		bool finished_list = (current_item + 1 >= pl.count());
+		if (finished_list)
+			clearPlayedTag();
 
-		if ( (repeatAct->isChecked()) && (finished_list) ) {
+		if (finished_list && repeatAct->isChecked()) {
 			playItem(0);
 		} else {
-			playItem( current_item+1 );
+			playItem(current_item + 1);
 		}
 	}
 }
@@ -971,12 +924,11 @@ void Playlist::playNext() {
 void Playlist::playPrev() {
 	qDebug("Playlist::playPrev");
 	if (current_item > 0) {
-		playItem( current_item-1 );
+		playItem( current_item - 1 );
 	} else {
-		if (pl.count() > 1) playItem( pl.count() -1 );
+		if (pl.count() > 1) playItem( pl.count() - 1 );
 	}
 }
-
 
 void Playlist::resumePlay() {
 	if (pl.count() > 0) {
@@ -1039,61 +991,104 @@ void Playlist::addCurrentFile() {
 	}
 }
 
-void Playlist::addFiles() {
-	Extensions e;
-	QStringList files = MyFileDialog::getOpenFileNames(
-                            this, tr("Select one or more files to open"), 
-                            lastDir(),
-                            tr("Multimedia") + e.multimedia().forFilter() + ";;" +
-                            tr("All files") +" (*.*)" );
+void Playlist::addFile(const QString &filename, bool get_info) {
+	qDebug() << "Playlist::addFile:" << filename;
+	// Note: currently addFile loads playlists and addDirectory skips them,
+	// giving a nice balance. Load if the individual file is requested,
+	// skip when adding a directory.
 
-	if (files.count()!=0) addFiles(files);  
+	if (QFile::exists(filename)) {
+		QFileInfo fi(filename);
+		QString ext = fi.suffix().toLower();
+		if (ext == "m3u" || ext == "m3u8") {
+			load_m3u(filename, false, false);
+		} else if (ext == "pls") {
+			load_pls(filename, false, false);
+		} else {
+			MediaData media_data;
+
+#if USE_INFOPROVIDER
+			if (get_info) {
+				InfoProvider::getInfo(filename, media_data);
+			}
+#endif
+
+			addItem(filename, media_data.displayName(), media_data.duration);
+		}
+
+		latest_dir = fi.absolutePath();
+	} else {
+		addItem(filename, "", 0);
+	}
 }
 
-void Playlist::addFiles(QStringList files, AutoGetInfo auto_get_info) {
+void Playlist::addDirectory(const QString &dir, bool get_info) {
+	qDebug() << "Playlist::addDirectory:" << dir;
+
+	static Extensions ext;
+	static QRegExp rx_ext(ext.multimedia().forRegExp(), Qt::CaseInsensitive);
+
+	QStringList dir_list = QDir(dir).entryList();
+	QStringList::Iterator it = dir_list.begin();
+	while( it != dir_list.end() ) {
+		QString filename = *it;
+		if (filename != "." && filename != "..") {
+			if (dir.right(1) != "/")
+				filename = dir + "/" + filename;
+			else filename = dir + filename;
+			QFileInfo fi(filename);
+			if (fi.isDir()) {
+				if (recursive_add_directory)
+					addDirectory(filename, get_info);
+			} else if (rx_ext.indexIn(fi.suffix()) >= 0) {
+				addFile(filename, get_info);
+			}
+		}
+		++it;
+	}
+}
+
+void Playlist::addFileOrDir(const QString &filename, bool get_info) {
+
+	if (QFileInfo(filename).isDir()) {
+		addDirectory(filename, get_info);
+	} else {
+		addFile(filename, get_info);
+	}
+}
+
+void Playlist::addFiles(const QStringList &files, bool get_info) {
 	qDebug("Playlist::addFiles");
 
 #if USE_INFOPROVIDER
-	bool get_info = (auto_get_info == GetInfo);
-	if (auto_get_info == UserDefined) {
-		get_info = automatically_get_info;
-	}
-
-	MediaData data;
 	setCursor(Qt::WaitCursor);
 #endif
 
-    QStringList::Iterator it = files.begin();
-    while( it != files.end() ) {
-#if USE_INFOPROVIDER
-		if ( (get_info) && (QFile::exists((*it))) ) {
-			InfoProvider::getInfo( (*it), data );
-			addItem( (*it), data.displayName(), data.duration );
-			//updateView();
-			//qApp->processEvents();
-		} else {
-			addItem( (*it), "", 0 );
-		}
-#else
-    	addItem( (*it), "", 0 );
-#endif
+	QStringList::ConstIterator it = files.constBegin();
+	while( it != files.constEnd() ) {
+		addFileOrDir(*it, get_info);
+		++it;
+	}
 
-		if (QFile::exists(*it)) {
-			latest_dir = QFileInfo((*it)).absolutePath();
-		}
-
-        ++it;
-    }
 #if USE_INFOPROVIDER
 	unsetCursor();
 #endif
+
 	updateView();
 
-	qDebug( "Playlist::addFiles: latest_dir: '%s'", latest_dir.toUtf8().constData() );
+	qDebug("Playlist::addFiles: done");
 }
 
-void Playlist::addFile(QString file, AutoGetInfo auto_get_info) {
-	addFiles( QStringList() << file, auto_get_info );
+void Playlist::addFiles() {
+
+	Extensions e;
+	QStringList files = MyFileDialog::getOpenFileNames(this,
+		tr("Select one or more files to open"), lastDir(),
+		tr("Multimedia") + e.multimedia().forFilter() + ";;" +
+			tr("All files") +" (*.*)");
+
+	if (files.count() > 0)
+		addFiles(files);
 }
 
 void Playlist::addDirectory() {
@@ -1102,7 +1097,7 @@ void Playlist::addDirectory() {
                     lastDir() );
 
 	if (!s.isEmpty()) {
-		addDirectory(s);
+		addDirectory(s, true);
 		latest_dir = s;
 	}
 }
@@ -1115,46 +1110,6 @@ void Playlist::addUrls() {
 			if (!u.isEmpty()) addItem( u, "", 0 );
 		}
 		updateView();
-	}
-}
-
-void Playlist::addOneDirectory(QString dir) {
-	QStringList filelist;
-
-	Extensions e;
-	QRegExp rx_ext(e.multimedia().forRegExp());
-	rx_ext.setCaseSensitivity(Qt::CaseInsensitive);
-
-	QStringList dir_list = QDir(dir).entryList();
-
-	QString filename;
-    QStringList::Iterator it = dir_list.begin();
-    while( it != dir_list.end() ) {
-		filename = dir;
-		if (filename.right(1)!="/") filename += "/";
-		filename += (*it);
-		QFileInfo fi(filename);
-		if (!fi.isDir()) {
-			if (rx_ext.indexIn(fi.suffix()) > -1) {
-				filelist << filename;
-			}
-		}
-		++it;
-	}
-	addFiles(filelist);
-}
-
-void Playlist::addDirectory(QString dir) {
-	addOneDirectory(dir);
-
-	if (recursive_add_directory) {
-		QFileInfoList dir_list = QDir(dir).entryInfoList(QStringList() << "*", QDir::AllDirs | QDir::NoDotAndDotDot);
-		for (int n=0; n < dir_list.count(); n++) {
-			if (dir_list[n].isDir()) {
-				qDebug("Playlist::addDirectory: adding directory: %s", dir_list[n].filePath().toUtf8().data());
-				addDirectory(dir_list[n].filePath());
-			}
-		}
 	}
 }
 
@@ -1223,20 +1178,17 @@ int Playlist::chooseRandomItem() {
 
 	QList <int> fi; //List of not played items (free items)
 	for (int n = 0; n < pl.count(); n++) {
-		if (!pl[n].played()) fi.append(n);
+		if (!pl[n].played())
+			fi.append(n);
 	}
 
 	qDebug("Playlist::chooseRandomItem: free items: %d", fi.count() );
 
 	if (fi.count() == 0) return -1; // none free
 
-	qDebug("Playlist::chooseRandomItem: items: ");
-	for (int i = 0; i < fi.count(); i++) {
-		qDebug("Playlist::chooseRandomItem: * item: %d", fi[i]);
-	}
-
 	int selected = (int) ((double) fi.count() * rand()/(RAND_MAX+1.0));
-	qDebug("Playlist::chooseRandomItem: selected item: %d (%d)", selected, fi[selected]);
+	qDebug("Playlist::chooseRandomItem: selected item: %d (%d)",
+		   selected, fi[selected]);
 	return fi[selected];
 }
 
@@ -1377,21 +1329,18 @@ void Playlist::dropEvent( QDropEvent *e ) {
 	QStringList files;
 
 	if (e->mimeData()->hasUrls()) {
-		QList <QUrl> l = e->mimeData()->urls();
-		QString s;
-		for (int n=0; n < l.count(); n++) {
-			if (l[n].isValid()) {
-				qDebug("Playlist::dropEvent: scheme: '%s'", l[n].scheme().toUtf8().data());
-				if (l[n].scheme() == "file") 
-					s = l[n].toLocalFile();
-				else
-					s = l[n].toString();
-				/*
-				qDebug(" * '%s'", l[n].toString().toUtf8().data());
-				qDebug(" * '%s'", l[n].toLocalFile().toUtf8().data());
-				*/
-				qDebug("Playlist::dropEvent: file: '%s'", s.toUtf8().data());
-				files.append(s);
+		QList <QUrl> urls = e->mimeData()->urls();
+		for (int n = 0; n < urls.count(); n++) {
+			QUrl url = urls[n];
+			if (url.isValid()) {
+				QString filename;
+				if (url.scheme() == "file")
+					filename = url.toLocalFile();
+				else filename = url.toString();
+				qDebug() << "Playlist::dropEvent: adding" << filename;
+				files.append(filename);
+			} else {
+				qWarning() << "Playlist::dropEvent:: ignoring" << url.toString();
 			}
 		}
 	}
@@ -1401,15 +1350,7 @@ void Playlist::dropEvent( QDropEvent *e ) {
 	#endif
 	files.sort();
 
-	QStringList only_files;
-	for (int n = 0; n < files.count(); n++) {
-		if ( QFileInfo( files[n] ).isDir() ) {
-			addDirectory( files[n] );
-		} else {
-			only_files.append( files[n] );
-		}
-	}
-	addFiles( only_files );
+	addFiles(files);
 }
 
 
