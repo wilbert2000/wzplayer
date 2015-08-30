@@ -3802,7 +3802,6 @@ void BaseGui::open(const QString &file) {
 			return;
 		}
 
-		// TODO: fix use of Extensions class
 		Extensions e;
 		QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
 
