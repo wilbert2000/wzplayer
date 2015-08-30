@@ -481,7 +481,7 @@ void DefaultGui::reconfigureFloatingControl() {
 }
 
 void DefaultGui::aboutToEnterFullscreen() {
-	qDebug("DefaultGui::aboutToEnterFullscreen");
+	//qDebug("DefaultGui::aboutToEnterFullscreen");
 
 	BaseGuiPlus::aboutToEnterFullscreen();
 
@@ -506,7 +506,7 @@ void DefaultGui::aboutToEnterFullscreen() {
 }
 
 void DefaultGui::aboutToExitFullscreen() {
-	qDebug("DefaultGui::aboutToExitFullscreen");
+	//qDebug("DefaultGui::aboutToExitFullscreen");
 
 	BaseGuiPlus::aboutToExitFullscreen();
 
@@ -524,7 +524,7 @@ void DefaultGui::aboutToExitFullscreen() {
 		toolbar2->setVisible( fullscreen_toolbar2_was_visible );
 	}
 
-	qDebug("DefaultGui::aboutToExitFullscreen done");
+	//qDebug("DefaultGui::aboutToExitFullscreen done");
 }
 
 void DefaultGui::aboutToEnterCompactMode() {
