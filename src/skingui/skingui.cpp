@@ -71,8 +71,6 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	iw->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
 	#endif
-
-	retranslateStrings();
 }
 
 SkinGui::~SkinGui() {

@@ -96,6 +96,8 @@ public:
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
 
+	void retranslate() { retranslateStrings(); }
+
 public slots:
 	virtual void open(QString file); // Generic open, autodetect type.
 	virtual void openFile();

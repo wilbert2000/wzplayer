@@ -79,8 +79,6 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
              iw, SLOT(edit()) );
 
 	menuBar()->setObjectName("menubar");
-
-	retranslateStrings();
 }
 
 DefaultGui::~DefaultGui() {
@@ -388,6 +386,8 @@ void DefaultGui::createStatusBar() {
 }
 
 void DefaultGui::retranslateStrings() {
+	qDebug("DefaultGui::retranslateStrings");
+
 	BaseGuiPlus::retranslateStrings();
 
 	// Change the icon of the play/pause action

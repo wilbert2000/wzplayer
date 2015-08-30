@@ -44,8 +44,6 @@ MpcGui::MpcGui( QWidget * parent, Qt::WindowFlags flags )
 	createControlWidget();
 	createStatusBar();
 	createFloatingControl();
-
-	retranslateStrings();
 }
 
 MpcGui::~MpcGui() {
@@ -136,6 +134,8 @@ void MpcGui::createFloatingControl() {
 }
 
 void MpcGui::retranslateStrings() {
+	qDebug("MpcGui::retranslateStrings");
+
 	BaseGuiPlus::retranslateStrings();
 
 	controlwidget->setWindowTitle( tr("Control bar") );

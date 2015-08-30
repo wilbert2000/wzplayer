@@ -102,6 +102,7 @@ SMPlayer::~SMPlayer() {
 }
 
 BaseGui * SMPlayer::gui() {
+
 	if (main_window == 0) {
 		// Changes to app path, so smplayer can find a relative mplayer path
 		QDir::setCurrent(Paths::appPath());
@@ -143,6 +144,8 @@ BaseGui * SMPlayer::gui() {
 }
 
 BaseGui * SMPlayer::createGUI(QString gui_name) {
+	qDebug() << "SMPlayer::createGUI:" << gui_name;
+
 	BaseGui * gui = 0;
 
 #ifdef SKINS
@@ -161,6 +164,8 @@ BaseGui * SMPlayer::createGUI(QString gui_name) {
 		gui = new DefaultGui(0);
 
 	gui->loadConfig("");
+	qDebug("SMPlayer::createGUI: loadConfig done. Translating...");
+	gui->retranslate();
 	gui->setForceCloseOnFinish(close_at_end);
 	gui->setForceStartInFullscreen(start_in_fullscreen);
 	connect(gui, SIGNAL(requestRestart()), this, SLOT(restart()));
@@ -172,6 +177,7 @@ BaseGui * SMPlayer::createGUI(QString gui_name) {
 	app->setActivationWindow(gui);
 #endif
 
+	qDebug() << "SMPlayer::createGUI: done";
 	return gui;
 }
 
@@ -423,10 +429,13 @@ void SMPlayer::start() {
 	// gui() calls createGUI() first time
 	// TODO: make explicit call
 
-	if (!gui()->startHidden() || !files_to_play.isEmpty() ) gui()->show();
+	if (!gui()->startHidden() || !files_to_play.isEmpty() )
+		gui()->show();
 	if (!files_to_play.isEmpty()) {
-		if (!subtitle_file.isEmpty()) gui()->setInitialSubtitle(subtitle_file);
-		if (!media_title.isEmpty()) gui()->getCore()->addForcedTitle(files_to_play[0], media_title);
+		if (!subtitle_file.isEmpty())
+			gui()->setInitialSubtitle(subtitle_file);
+		if (!media_title.isEmpty())
+			gui()->getCore()->addForcedTitle(files_to_play[0], media_title);
 		gui()->openFiles(files_to_play);
 	}
 

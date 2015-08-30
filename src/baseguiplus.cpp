@@ -146,8 +146,6 @@ BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags)
 
 	ignore_playlist_events = false;
 #endif // DOCK_PLAYLIST
-
-	retranslateStrings();
 }
 
 BaseGuiPlus::~BaseGuiPlus() {
@@ -197,6 +195,8 @@ void BaseGuiPlus::quit() {
 }
 
 void BaseGuiPlus::retranslateStrings() {
+	qDebug("BaseGuiPlus::retranslateStrings");
+
 	BaseGui::retranslateStrings();
 
 	quitAct->change( Images::icon("exit"), tr("&Quit") );

@@ -229,8 +229,6 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
             showPlaylistAct, SLOT(setChecked(bool)) );
 #endif
 
-	retranslateStrings();
-
 	setAcceptDrops(true);
 
 	resize(pref->default_size);
@@ -1594,6 +1592,8 @@ void BaseGui::togglePlayAction(Core::State state) {
 }
 
 void BaseGui::retranslateStrings() {
+	qDebug("BaseGui::retranslateStrings");
+
 	setWindowIcon( Images::icon("logo", 64) );
 
 	// ACTIONS

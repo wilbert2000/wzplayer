@@ -44,8 +44,6 @@ MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
 	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
 
 	statusBar()->hide();
-
-	retranslateStrings();
 }
 
 MiniGui::~MiniGui() {
@@ -121,6 +119,8 @@ void MiniGui::createFloatingControl() {
 }
 
 void MiniGui::retranslateStrings() {
+	qDebug("MiniGui::retranslateStrings");
+
 	BaseGuiPlus::retranslateStrings();
 
 	// Change the icon of the play/pause action
