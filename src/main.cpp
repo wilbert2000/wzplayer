@@ -80,6 +80,7 @@ int main( int argc, char ** argv )
 	int exit_code;
 	do {
 		smplayer->start();
+		qDebug("main: calling exec()");
 		exit_code = a.exec();
 		qDebug("main: exec() returned %d", exit_code);
 	} while (smplayer->requested_restart);
