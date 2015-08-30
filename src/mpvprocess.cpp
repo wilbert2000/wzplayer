@@ -40,23 +40,17 @@ static const QPoint max_osd_pos(300, 600);
 static QRegExp rx_endoffile("^Exiting... \\(End of file\\)");
 
 MPVProcess::MPVProcess(MediaData *mdata)
-	: PlayerProcess(mdata, &rx_endoffile)
+	: PlayerProcess(PlayerID::MPV, mdata, &rx_endoffile)
 	, verbose(false)
 	, osd_pos()
 	, osd_centered_x(false)
-	, osd_centered_y(false)
-{
-	player_id = PlayerID::MPV;
+	, osd_centered_y(false) {
 }
 
 MPVProcess::~MPVProcess() {
 }
 
 bool MPVProcess::startPlayer() {
-
-#ifdef TRACK_INFO
-	wait_for_track_info = 0;
-#endif
 
 	osd_centered_x = false;
 	osd_centered_y = false;

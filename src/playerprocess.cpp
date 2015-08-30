@@ -29,8 +29,9 @@
 #endif
 
 
-PlayerProcess::PlayerProcess(MediaData *mdata, QRegExp *r_eof)
+PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata, QRegExp *r_eof)
 	: MyProcess(0)
+	, player_id(pid)
 	, md(mdata)
 	, notified_player_is_running(false)
 	, video_tracks_changed(false)
@@ -208,6 +209,7 @@ void PlayerProcess::notifyDuration(double duration) {
 
 	// Duration changed?
 	if (duration > 0 && qAbs(duration - md->duration) > 0.001) {
+		qDebug("MPVProcess::notifyDuration: duration changed from %f to %f", md->duration, duration);
 		md->duration = duration;
 		qDebug("MPVProcess::notifyDuration: emit durationChanged(%f)", duration);
 		emit durationChanged(duration);

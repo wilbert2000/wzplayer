@@ -1118,19 +1118,13 @@ void Core::newMediaPlaying() {
 		mset.current_chapter_id = firstChapter();
 	}
 
-	// TODO: move to proc
-	// MPlayer doesn't display the length in ID_LENGTH for audio CDs...
-	if ((mdat.duration == 0) && (mdat.type == TYPE_AUDIO_CD)) {
-		if (mset.current_title_id > 0) {
-			mdat.duration = mdat.titles.item(mset.current_title_id).duration();
-		}
-	}
-
 	mdat.initialized = true;
 	mdat.list();
 	mset.list();
 
-	qDebug("Core::newMediaPlaying: --- end ---");
+	qDebug("Core::newMediaPlaying: emit mediaStartPlay()");
+	emit mediaStartPlay();
+	qDebug("Core::newMediaPlaying: done");
 }
 
 // Slot called when queued signal playerFullyLoaded arrives.
@@ -1141,7 +1135,6 @@ void Core::playingStarted() {
 
 	if (!we_are_restarting) {
 		newMediaPlaying();
-		emit mediaStartPlay();
 	} 
 
 	if (forced_titles.contains(mdat.filename)) {

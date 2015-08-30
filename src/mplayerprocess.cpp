@@ -35,12 +35,9 @@ using namespace Global;
 static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 
 MplayerProcess::MplayerProcess(MediaData *mdata)
-	: PlayerProcess(mdata, &rx_endoffile)
+	: PlayerProcess(PlayerID::MPLAYER, mdata, &rx_endoffile)
 	, mplayer_svn(-1) // Not found yet
-	, dvd_current_title(-1)
-	, br_current_title(-1)
-{
-	player_id = PlayerID::MPLAYER;
+	, current_title(-1) {
 }
 
 MplayerProcess::~MplayerProcess() {
@@ -50,8 +47,7 @@ bool MplayerProcess::startPlayer() {
 
 	mplayer_svn = -1; // Not found yet
 
-	dvd_current_title = -1;
-	br_current_title = -1;
+	current_title = -1;
 
 	sub_id_filename = -1;
 
@@ -156,8 +152,10 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 		// If corrected_duration is set by correctDuration() it looks
 		// like mplayer got the duration wrong. In that case only accept
 		// durations larger than the current one.
-		if (!corrected_duration || duration > md->duration)
+		if (!corrected_duration || duration > md->duration) {
 			notifyDuration(duration);
+			corrected_duration = false;
+		}
 		return true;
 	}
 
@@ -204,28 +202,21 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 		qDebug("MplayerProcess::parseProperty: DVD id set to '%s'", md->dvd_id.toUtf8().data());
 		return true;
 	}
-	if (name == "DVD_CURRENT_TITLE") {
-		dvd_current_title = value.toInt();
-		qDebug("MplayerProcess::parseProperty: DVD current title set to %d", dvd_current_title);
-		return true;
-	}
-	if (name == "BLURAY_CURRENT_TITLE") {
-		br_current_title = value.toInt();
-		qDebug("MplayerProcess::parseProperty: blue ray current title set to %d", br_current_title);
+	// TODO: VCD etc...
+	if (name == "CDDA_TRACK" || name == "DVD_CURRENT_TITLE" || name == "BLURAY_CURRENT_TITLE") {
+		current_title = value.toInt();
+		qDebug("MplayerProcess::parseProperty: current title set to %d", current_title);
 		return true;
 	}
 
 	bool parsed = PlayerProcess::parseProperty(name, value);
 
-	// Use the blue ray title length if duration is 0
-	if (name == "LENGTH"
-		&& md->duration == 0
-		&& br_current_title != -1) {
-
-		int i = md->titles.find(br_current_title);
+	// Use the CD/DVD/blue ray title length if duration is 0
+	if (name == "LENGTH" && md->duration == 0 && current_title != -1) {
+		int i = md->titles.find(current_title);
 		if (i != -1) {
 			double duration = md->titles.itemAt(i).duration();
-			qDebug("MplayerProcess::parseProperty: using blue ray title length: %f", duration);
+			qDebug("MplayerProcess::parseProperty: using duration %f of title %d", duration, current_title);
 			notifyDuration(duration);
 		}
 	}
@@ -299,7 +290,7 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 			// Wait another while
 			check_duration_time = time_sec;
 			// Just a little longer
-			check_duration_time_diff *= 2;
+			check_duration_time_diff *= 3;
 		}
 		return true;
 	}
@@ -308,12 +299,12 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	want_pause = false;
 
 	// If no chapters, try the chapters from the selected DVD title
-	if (md->n_chapters <= 0 && dvd_current_title > 0) {
-		int idx = md->titles.find(dvd_current_title);
+	if (md->n_chapters <= 0 && current_title > 0) {
+		int idx = md->titles.find(current_title);
 		if (idx >= 0) {
 			md->n_chapters = md->titles.itemAt(idx).chapters();
-			qDebug("MplayerProcess::parseStatusLine: setting n_chapters to %d from current DVD title %d",
-				   md->n_chapters, dvd_current_title);
+			qDebug("MplayerProcess::parseStatusLine: setting n_chapters to %d from current title %d",
+				   md->n_chapters, current_title);
 		}
 	}
 
@@ -322,11 +313,10 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	// signal receivedVideoOutResolution and posts playerFullyLoaded.
 	playingStarted();
 
-	// Reset the check duration timer to 5 seconds.
-	// Ask duration over 5, 10, 20, etc. seconds,
-	// except when paused.
+	// Reset the check duration timer to 1 second.
+	// Ask duration over 1, 3, 9, etc. seconds, except when paused.
 	check_duration_time = time_sec;
-	check_duration_time_diff = 5;
+	check_duration_time_diff = 1;
 	return true;
 }
 

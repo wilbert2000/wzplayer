@@ -34,7 +34,7 @@ class PlayerProcess : public MyProcess
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	PlayerProcess(MediaData * mdata, QRegExp * r_eof);
+	PlayerProcess(PlayerID::Player pid, MediaData * mdata, QRegExp * r_eof);
 
 	PlayerID::Player player() { return player_id; }
 	bool isMPlayer() { return (player_id == PlayerID::MPLAYER); }
@@ -165,9 +165,9 @@ public slots:
 	void parseBytes(QByteArray ba);
 
 protected:
-	MediaData* md;
-
 	PlayerID::Player player_id;
+
+	MediaData* md;
 
 	bool notified_player_is_running;
 	int waiting_for_answers;

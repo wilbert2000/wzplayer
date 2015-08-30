@@ -117,8 +117,7 @@ protected:
 private:
 	int mplayer_svn;
 
-	int dvd_current_title;
-	int br_current_title;
+	int current_title;
 
 	int sub_id_filename;
 
