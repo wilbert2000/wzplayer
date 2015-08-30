@@ -412,16 +412,12 @@ void Core::open(QString file, int seek) {
 #else
 		openDVD( DiscName::joinDVD(firstDVDTitle(), file, false) );
 #endif
-	}
-	else
-	if ( (fi.exists()) && (!fi.isDir()) ) {
-		qDebug("Core::open: * identified as local file");
+	} else if ( (fi.exists()) && (!fi.isDir()) ) {
 		// Local file
+		qDebug("Core::open: * identified as local file");
 		file = QFileInfo(file).absoluteFilePath();
 		openFile(file, seek);
-	} 
-	else
-	if ( (fi.exists()) && (fi.isDir()) ) {
+	} else if ( (fi.exists()) && (fi.isDir()) ) {
 		// Directory
 		qDebug("Core::open: * identified as a directory");
 		qDebug("Core::open:   checking if contains a dvd");
@@ -650,8 +646,6 @@ void Core::openDVD(int title) {
 	mset.current_chapter_id = 1;
 	mset.current_angle_id = 1;
 
-	initializeMenus();
-
 	initPlaying();
 }
 */
@@ -680,8 +674,6 @@ void Core::openVCD(int title) {
 	mset.current_chapter_id = -1;
 	mset.current_angle_id = -1;
 
-	/* initializeMenus(); */
-
 	initPlaying();
 }
 
@@ -708,8 +700,6 @@ void Core::openAudioCD(int title) {
 	mset.current_title_id = title;
 	mset.current_chapter_id = -1;
 	mset.current_angle_id = -1;
-
-	/* initializeMenus(); */
 
 	initPlaying();
 }
@@ -757,8 +747,6 @@ void Core::openDVD(QString dvd_url) {
 	mset.current_chapter_id = firstChapter();
 	mset.current_angle_id = 1;
 
-	/* initializeMenus(); */
-
 	initPlaying();
 }
 
@@ -805,8 +793,6 @@ void Core::openBluRay(QString bluray_url) {
 	mset.current_title_id = title;
 	mset.current_chapter_id = firstChapter();
 	mset.current_angle_id = 1;
-
-	/* initializeMenus(); */
 
 	initPlaying();
 }
@@ -861,8 +847,6 @@ void Core::openTV(QString channel_id) {
 	}
 #endif
 
-	/* initializeMenus(); */
-
 	initPlaying();
 }
 
@@ -904,8 +888,6 @@ void Core::openStream(QString name) {
 	mdat.type = TYPE_STREAM;
 
 	mset.reset();
-
-	/* initializeMenus(); */
 
 	initPlaying();
 }
@@ -956,8 +938,6 @@ void Core::playNewFile(QString file, int seek) {
 		mset.aspectToNum((MediaSettings::Aspect) mset.aspect_ratio_id),
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
-
-	/* initializeMenus(); */
 
 	qDebug("Core::playNewFile: volume: %d, old_volume: %d", mset.volume, old_volume);
 	initPlaying(seek);
@@ -1096,7 +1076,7 @@ void Core::initSubs() {
 
 // This is reached when a new video has just started playing
 void Core::newMediaPlaying() {
-	qDebug("Core::newMediaPlaying: --- start ---");
+	qDebug("Core::newMediaPlaying");
 
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
@@ -1154,7 +1134,7 @@ void Core::playingStarted() {
 #endif
 
 	if (pref->mplayer_additional_options.contains("-volume")) {
-		qDebug("Core::finishRestart: don't set volume since -volume is used");
+		qDebug("Core::playingStarted: don't set volume since -volume is used");
 	} else {
 		int vol = (pref->global_volume ? pref->volume : mset.volume);
 		volumeChanged(vol);
@@ -1175,7 +1155,9 @@ void Core::playingStarted() {
 	// A-B marker
 	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
 
+	qDebug("Core::playingStarted: emit mediaLoaded()");
 	emit mediaLoaded();
+	qDebug("Core::playingStarted: emit mediaInfoChanged()");
 	emit mediaInfoChanged();
 
 	initializeMenus();
@@ -1221,8 +1203,6 @@ void Core::play() {
 void Core::pause() {
 	qDebug() << "Core::pause: current state:" << stateToString();
 
-	// Note: MPlayer proc->setPause(bool) pauses and unpauses,
-	// whatever the bool passed, mpv uses the passed bool.
 	if (proc->isRunning() && _state != Paused) {
 		proc->setPause(true);
 		setState(Paused);
