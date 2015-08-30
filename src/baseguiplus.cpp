@@ -284,7 +284,7 @@ void BaseGuiPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 	}
 	else
 	if (reason == QSystemTrayIcon::MiddleClick) {
-		core->pause();
+		core->playOrPause();
 	}
 }
 
@@ -375,7 +375,7 @@ void BaseGuiPlus::setWindowCaption(const QString & title) {
 
 // Playlist stuff
 void BaseGuiPlus::aboutToEnterFullscreen() {
-    qDebug("BaseGuiPlus::aboutToEnterFullscreen");
+	//qDebug("BaseGuiPlus::aboutToEnterFullscreen");
 
 	BaseGui::aboutToEnterFullscreen();
 
@@ -384,7 +384,6 @@ void BaseGuiPlus::aboutToEnterFullscreen() {
 
 	int playlist_screen = QApplication::desktop()->screenNumber(playlistdock);
 	int mainwindow_screen = QApplication::desktop()->screenNumber(this);
-	qDebug("BaseGuiPlus::aboutToEnterFullscreen: mainwindow screen: %d, playlist screen: %d", mainwindow_screen, playlist_screen);
 
 	fullscreen_playlist_was_visible = playlistdock->isVisible();
 	fullscreen_playlist_was_floating = playlistdock->isFloating();
@@ -402,7 +401,7 @@ void BaseGuiPlus::aboutToEnterFullscreen() {
 }
 
 void BaseGuiPlus::aboutToExitFullscreen() {
-	qDebug("BaseGuiPlus::aboutToExitFullscreen");
+	//qDebug("BaseGuiPlus::aboutToExitFullscreen");
 
 	BaseGui::aboutToExitFullscreen();
 
@@ -422,7 +421,7 @@ void BaseGuiPlus::aboutToExitFullscreen() {
 	ignore_playlist_events = false;
 #endif
 
-	qDebug("BaseGuiPlus::aboutToExitFullscreen done");
+	//qDebug("BaseGuiPlus::aboutToExitFullscreen done");
 }
 
 void BaseGuiPlus::aboutToEnterCompactMode() {

@@ -5273,7 +5273,7 @@ void BaseGui::showEvent( QShowEvent * ) {
 	//qDebug("BaseGui::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
 	if ((pref->pause_when_hidden) && (core->state() == Core::Paused)) {
 		qDebug("BaseGui::showEvent: unpausing");
-		core->pause(); // Unpauses
+		core->play();
 	}
 }
 
@@ -5315,7 +5315,7 @@ bool BaseGui::event(QEvent * e) {
 			was_minimized = false;
 			if (core->state() == Core::Paused) {
 				qDebug("BaseGui::showEvent: unpausing");
-				core->pause(); // Unpauses
+				core->play();
 			}
 		}
 	}
