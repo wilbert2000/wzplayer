@@ -202,7 +202,7 @@ void MplayerWindow::setMonitorAspect(double asp) {
 }
 
 void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
-	qDebug("MplayerWindow::setAspect %f", aspect);
+	qDebug("MplayerWindow::setAspect: %f", aspect);
 
 	// See core::startMplayer. The player is started with --no-keepaspect and
 	// monitorpixelaspect=1, so aspect changes don't require a restart of the player,
@@ -217,7 +217,7 @@ void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
 }
 
 void MplayerWindow::setResolution(int width, int height) {
-	qDebug("MplayerWindow::setResolution %d x %d", width, height);
+	qDebug("MplayerWindow::setResolution: %d x %d", width, height);
 
 	video_width = width;
 	video_height = height;
@@ -247,7 +247,7 @@ void MplayerWindow::set(double aspect,
 }
 
 QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
-	//qDebug("MplayerWindow::getAdjustedSize in: %d x %d zoom %f aspect %f",
+	//qDebug("MplayerWindow::getAdjustedSize: in: %d x %d zoom %f aspect %f",
 	//	   w, h, desired_zoom, aspect);
 
 	// Select best fit: height adjusted or width adjusted,
@@ -268,7 +268,7 @@ QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
 	// Zoom
 	QSize size = QSize(w, h) * desired_zoom;
 
-	//qDebug("MplayerWindow::getAdjustedSize out: %d x %d", size.width(), size.height());
+	//qDebug("MplayerWindow::getAdjustedSize: out: %d x %d", size.width(), size.height());
 	return size;
 }
 
@@ -304,14 +304,14 @@ void MplayerWindow::updateSizeGroup() {
 		// Set when x and y factor agree
 		if (size_factor_x == size_factor_y) {
 			if (size_group->setChecked(size_factor_x)) {
-				//qDebug("Mplayerwindow::updateSizegroup set size group to %d%%",
+				//qDebug("Mplayerwindow::updateSizegroup: set size group to %d%%",
 				//		size_factor_x);
 			} else {
-				//qDebug("Mplayerwindow::updateSizegroup no size group action for %d%%",
+				//qDebug("Mplayerwindow::updateSizegroup: no size group action for %d%%",
 				//	   size_factor_x);
 			}
 		} else {
-			//qDebug("Mplayerwindow::updateSizegroup width %d%% and height %d%% factor mismatch",
+			//qDebug("Mplayerwindow::updateSizegroup: width %d%% and height %d%% factor mismatch",
 			//	   size_factor_x, size_factor_y);
 		}
 	}
@@ -319,7 +319,7 @@ void MplayerWindow::updateSizeGroup() {
 
 void MplayerWindow::updateVideoWindow() {
 	/*
-	qDebug() << "MplayerWindow::updateVideoWindow in: fullscreen" << fullscreen
+	qDebug() << "MplayerWindow::updateVideoWindow: in: fullscreen" << fullscreen
 			<< " size" << width() << "x" << height()
 			<< " aspect" << aspect
 			<< " zoom" << zoom()
@@ -352,7 +352,7 @@ void MplayerWindow::updateVideoWindow() {
 
 	updateSizeGroup();
 
-	//qDebug("MplayerWindow::updateVideoWindow out: pos (%d, %d)  size %d x %d",
+	//qDebug("MplayerWindow::updateVideoWindow: out: pos (%d, %d)  size %d x %d",
 	//	   pos.x(), pos.y(), video_size.width(), video_size.height());
 }
 
@@ -458,7 +458,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	// Set by BaseGui::moveEvent
 	if (main_window_moved) {
 		main_window_moved = false;
-		//qDebug("MplayerWindow::mouseReleaseEvent canceled release event dragging mainwindow");
+		//qDebug("MplayerWindow::mouseReleaseEvent: canceled release event dragging mainwindow");
 		return false;
 	}
 
@@ -466,7 +466,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	// events. After the mouse has been captured, mouse release events sometimes
 	// do not come through until the mouse moved (on Qt 4.8 KDE 4.1.14.9).
 	if (left_button_pressed_time->elapsed() >= QApplication::startDragTime()) {
-		//qDebug("MplayerWindow::mouseReleaseEvent canceled left click taking longer as %d ms",
+		//qDebug("MplayerWindow::mouseReleaseEvent: canceled left click taking longer as %d ms",
 		//	   QApplication::startDragTime());
 		return false;
 	}
@@ -479,7 +479,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 		QPoint pos = event->globalPos();
 		QPoint diff = pos - drag_pos;
 		if (diff.manhattanLength() > QApplication::startDragDistance()) {
-			//qDebug("MplayerWindow::mouseReleaseEvent killed release event");
+			//qDebug("MplayerWindow::mouseReleaseEvent: killed release event");
 			return false;
 		}
 	}
@@ -495,21 +495,21 @@ void MplayerWindow::mouseReleaseEvent(QMouseEvent * event) {
 
 	if (event->button() == Qt::LeftButton) {
 		if (event->modifiers() != Qt::NoModifier) {
-			qDebug("MplayerWindow::mouseReleaseEvent ignoring modified event");
+			qDebug("MplayerWindow::mouseReleaseEvent: ignoring modified event");
 		} else if (checkDragging(event)) {
 			if (delay_left_click) {
 				if (double_clicked) {
 					double_clicked = false;
-					qDebug( "MplayerWindow::mouseReleaseEvent ignoring event after double click" );
+					qDebug( "MplayerWindow::mouseReleaseEvent: ignoring event after double click" );
 				} else {
 					// Delay left click until double click has a chance to arrive
 					left_click_timer->start();
-					qDebug( "MplayerWindow::mouseReleaseEvent delaying left click" );
+					qDebug( "MplayerWindow::mouseReleaseEvent: delaying left click" );
 				}
 			} else {
 				double_clicked = false;
 				// Click right away
-				qDebug( "MplayerWindow::mouseReleaseEvent emitting left click" );
+				qDebug( "MplayerWindow::mouseReleaseEvent: emitting left click" );
 				emit leftClicked();
 			}
 		}
@@ -558,7 +558,7 @@ void MplayerWindow::wheelEvent( QWheelEvent * event ) {
 }
 
 void MplayerWindow::aboutToEnterFullscreen() {
-	qDebug("MplayerWindow::aboutToEnterFullscreen");
+	//qDebug("MplayerWindow::aboutToEnterFullscreen");
 
 	fullscreen = true;
 	enableSizeGroup();
@@ -576,7 +576,7 @@ void MplayerWindow::pauseMessages(int msec) {
 }
 
 void MplayerWindow::aboutToExitFullscreen() {
-	qDebug("MplayerWindow::aboutToExitFullscreen");
+	//qDebug("MplayerWindow::aboutToExitFullscreen");
 
 	fullscreen = false;
 	enableSizeGroup();
@@ -587,7 +587,7 @@ void MplayerWindow::aboutToExitFullscreen() {
 void MplayerWindow::setZoom(double factor,
 							double factor_fullscreen,
 							bool updateVideoWindow) {
-	qDebug("MplayerWindow::setZoom normal screen %f, full screen %f", factor, factor_fullscreen);
+	qDebug("MplayerWindow::setZoom: normal screen %f, full screen %f", factor, factor_fullscreen);
 
 	if (factor < ZOOM_MIN)
 		factor = ZOOM_MIN;
@@ -619,7 +619,7 @@ double MplayerWindow::zoom() {
 }
 
 void MplayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWindow) {
-	qDebug() << "MplayerWindow::setPan pan" << pan << "pan full screen" << pan_fullscreen;
+	qDebug() << "MplayerWindow::setPan: pan" << pan << "pan full screen" << pan_fullscreen;
 
 	pan_offset = pan;
 	pan_offset_fullscreen = pan_fullscreen;
@@ -665,7 +665,7 @@ void MplayerWindow::changeEvent(QEvent *e) {
 
 #ifdef SHAREWIDGET
 void MplayerWindow::setMouseTrackingInclChildren(QWidget *w) {
-	qDebug() << "MplayerWindow::setMouseTrackingInclChildren: " << w->objectName();
+	//qDebug() << "MplayerWindow::setMouseTrackingInclChildren: " << w->objectName();
 
 	w->setMouseTracking(true);
 
@@ -757,7 +757,7 @@ void MplayerWindow::playingStopped() {
 }
 
 void MplayerWindow::setLogoVisible(bool b) {
-	qDebug("MplayerWindow::setLogoVisible %d", b);
+	qDebug("MplayerWindow::setLogoVisible: %d", b);
 
 #ifdef SHAREWIDGET
 	if (corner_widget) {
