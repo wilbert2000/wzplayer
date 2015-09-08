@@ -247,11 +247,11 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 #endif
 
 #ifdef CHECK_UPGRADED
-	QTimer::singleShot(2000, this, SLOT(checkIfUpgraded()));
+	QTimer::singleShot(30000, this, SLOT(checkIfUpgraded()));
 #endif
 
 #if defined(REMINDER_ACTIONS) && !defined(SHAREWIDGET)
-	QTimer::singleShot(1000, this, SLOT(checkReminder()));
+	QTimer::singleShot(10000, this, SLOT(checkReminder()));
 #endif
 
 #ifdef MPRIS2
