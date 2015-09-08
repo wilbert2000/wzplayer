@@ -109,7 +109,7 @@ public slots:
 	virtual void openAudioCD();
 	virtual void openDVD();
 	virtual void openDVDFromFolder();
-	virtual void openDVDFromFolder(QString directory);
+	virtual void openDVDFromFolder(const QString &directory);
 	void openBluRay();
 	void openBluRayFromFolder();
 	void openBluRayFromFolder(QString directory);
@@ -841,6 +841,8 @@ private:
 
 	bool ignore_show_hide_events;
 	bool block_resize;
+
+	QString playlist_owner;
 
 	void hidePanel();
 };

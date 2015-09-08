@@ -59,21 +59,28 @@ public:
 	virtual void reset();
 
 	double current_sec;
+
+	int current_video_id;
+	int current_audio_id;
+	QString external_audio; // external audio file
 	int current_sub_idx;
+
+	// Only used for loading settings for local files
+	// and external subs during restart
+	SubData sub;
+
+	int external_subtitles_fps;
+
 #ifdef MPV_SUPPORT
-	int current_secondary_sub_id;
+	int current_secondary_sub_idx;
 #endif
+
+	int current_title_id;
+	int current_angle_id;
 
 #if PROGRAM_SWITCH
 	int current_program_id;
 #endif
-
-	int current_video_id;
-	int current_audio_id;
-
-	int current_title_id;
-	int current_chapter_id;
-	int current_angle_id;
 
 	int aspect_ratio_id;
 
@@ -85,10 +92,6 @@ public:
 	int brightness, contrast, gamma, hue, saturation;
 
 	AudioEqualizerList audio_equalizer;
-
-	QString external_subtitles;
-	int external_subtitles_fps;
-	QString external_audio; // external audio file
 
 	int sub_delay;
 	int audio_delay;

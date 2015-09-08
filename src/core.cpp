@@ -41,6 +41,7 @@
 #include "constants.h"
 #include "colorutils.h"
 #include "discname.h"
+#include "extensions.h"
 #include "filters.h"
 #include "tvlist.h"
 
@@ -80,7 +81,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	_state = Stopped;
 
 	we_are_restarting = false;
-	just_loaded_external_subs = false;
 	change_volume_after_unpause = false;
 
 #if DVDNAV_SUPPORT
@@ -267,13 +267,9 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect(this, SIGNAL(buffering()), this, SLOT(displayBuffering()));
 }
 
-
 Core::~Core() {
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
 
-	if (proc->isRunning()) stopMplayer();
+	stopPlayer();
 	proc->terminate();
 	delete proc;
 
@@ -338,7 +334,7 @@ void Core::restart() {
 void Core::reload() {
 	qDebug("Core::reload");
 
-	stopMplayer();
+	stopPlayer();
 	we_are_restarting = false;
 
 	initPlaying();
@@ -353,11 +349,11 @@ void Core::saveMediaInfo() {
 		return;
 	}
 
-	if ( (mdat.type == TYPE_FILE) && (!mdat.filename.isEmpty()) ) {
+	if ( (mdat.selected_type == MediaData::TYPE_FILE) && (!mdat.filename.isEmpty()) ) {
 		file_settings->saveSettingsFor(mdat.filename, mset, proc->player());
 	}
 	else
-	if ( (mdat.type == TYPE_TV) && (!mdat.filename.isEmpty()) ) {
+	if ( (mdat.selected_type == MediaData::TYPE_TV) && (!mdat.filename.isEmpty()) ) {
 		tv_settings->saveSettingsFor(mdat.filename, mset, proc->player());
 	}
 }
@@ -394,119 +390,132 @@ void Core::displayTextOnOSD(QString text, int duration, int level) {
 	}
 }
 
+void Core::close() {
+	qDebug("Core::close()");
+
+	stopPlayer();
+
+	we_are_restarting = false;
+
+	// Save data of previous file:
+#ifndef NO_USE_INI_FILES
+	saveMediaInfo();
+#endif
+
+	mdat.reset();
+}
+
+void Core::openDisc(DiscData &disc, bool fast_open) {
+	// Disc
+
+	// Change title if disc already playing
+	if (fast_open && disc.title > 0 && _state != Stopped) {
+		bool current_url_valid;
+		DiscData current_disc = DiscName::split(mdat.filename, &current_url_valid);
+		if (current_url_valid && current_disc.device == disc.device) {
+			// If it fails, it will call again with fast_open set to false
+			qDebug("Core::openDisc: trying changeTitle(%d)", disc.title);
+			changeTitle(disc.title);
+			return;
+		}
+	}
+
+	close();
+
+	// Add devices from prev if none specified
+	if (disc.device.isEmpty()) {
+		if (disc.protocol == "vcd" || disc.protocol == "cdda") {
+			disc.device = pref->cdrom_device;
+		} else if (disc.protocol == "br") {
+			disc.device = pref->bluray_device;
+		} else {
+			disc.device = pref->dvd_device;
+		}
+
+	}
+
+	// Test access
+	if (!QFileInfo(disc.device).exists()) {
+		qWarning() << "Core::openDisc: could not access" << disc.device;
+		// TODO:
+		return;
+	}
+
+	// Clean filename and set selected type
+	mdat.filename = DiscName::join(disc);
+	mdat.selected_type = MediaData::stringToType(disc.protocol);
+
+	// Clear settings
+	mset.reset();
+	mset.current_title_id = disc.title;
+	// TODO: check seek from open
+
+	initPlaying();
+	return;
+
+}
+
 // Generic open, autodetect type
-void Core::open(QString file, int seek) {
+void Core::open(QString file, int seek, bool fast_open) {
 	qDebug("Core::open: '%s'", file.toUtf8().data());
 
 	if (file.startsWith("file:")) {
 		file = QUrl(file).toLocalFile();
-		qDebug("Core::open: converting url to local file: %s", file.toUtf8().constData());
+	}
+
+	bool disc_url_valid;
+	DiscData disc = DiscName::split(file, &disc_url_valid);
+	if (disc_url_valid) {
+		qDebug() << "Core::openDisc: * identified as" << disc.protocol;
+		openDisc(disc, fast_open);
+		return;
 	}
 
 	QFileInfo fi(file);
+	if (fi.exists()) {
+		file = fi.absoluteFilePath();
 
-	if ( (fi.exists()) && (fi.suffix().toLower()=="iso") ) {
-		qDebug("Core::open: * identified as a dvd iso");
-#if DVDNAV_SUPPORT
-		openDVD( DiscName::joinDVD(0, file, pref->use_dvdnav) );
-#else
-		openDVD( DiscName::joinDVD(firstDVDTitle(), file, false) );
-#endif
-	} else if ( (fi.exists()) && (!fi.isDir()) ) {
+		Extensions e;
+		QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
+		if (ext_sub.indexIn(fi.suffix()) >= 0) {
+			qDebug("Core::open: * identified as subtitle file");
+			loadSub(file);
+			return;
+		}
+
+		if (fi.isDir()) {
+			qDebug("Core::open: * identified as a directory");
+			qDebug("Core::open:   checking if it contains a dvd");
+			if (Helper::directoryContainsDVD(file)) {
+				qDebug("Core::open: * directory contains a dvd");
+	#if DVDNAV_SUPPORT
+				open(DiscName::joinDVD(file, pref->use_dvdnav), fast_open);
+	#else
+				open(DiscName::joinDVD(file, false), fast_open);
+	#endif
+			} else {
+				qDebug("Core::open: * directory doesn't contain a dvd");
+				qDebug("Core::open:   opening nothing");
+			}
+			return;
+		}
+
 		// Local file
 		qDebug("Core::open: * identified as local file");
-		file = QFileInfo(file).absoluteFilePath();
 		openFile(file, seek);
-	} else if ( (fi.exists()) && (fi.isDir()) ) {
-		// Directory
-		qDebug("Core::open: * identified as a directory");
-		qDebug("Core::open:   checking if contains a dvd");
-		file = QFileInfo(file).absoluteFilePath();
-		if (Helper::directoryContainsDVD(file)) {
-			qDebug("Core::open: * directory contains a dvd");
-#if DVDNAV_SUPPORT
-			openDVD( DiscName::joinDVD(firstDVDTitle(), file, pref->use_dvdnav) );
-#else
-			openDVD( DiscName::joinDVD(firstDVDTitle(), file, false) );
-#endif
-		} else {
-			qDebug("Core::open: * directory doesn't contain a dvd");
-			qDebug("Core::open:   opening nothing");
-		}
+		return;
 	}
-	else 
-	if ((file.toLower().startsWith("dvd:")) || (file.toLower().startsWith("dvdnav:"))) {
-		qDebug("Core::open: * identified as dvd");
-		openDVD(file);
-		/*
-		QString f = file.lower();
-		QRegExp s("^dvd://(\\d+)");
-		if (s.indexIn(f) != -1) {
-			int title = s.cap(1).toInt();
-			openDVD(title);
-		} else {
-			qWarning("Core::open: couldn't parse dvd title, playing first one");
-			openDVD();
-		}
-		*/
-	}
-	else
-#ifdef BLURAY_SUPPORT
-	if (file.toLower().startsWith("br:")) {
-		qDebug("Core::open: * identified as blu-ray");
-		openBluRay(file);
-	}
-	else
-#endif
-	if (file.toLower().startsWith("vcd:")) {
-		qDebug("Core::open: * identified as vcd");
 
-		QString f = file.toLower();
-		QRegExp s("^vcd://(\\d+)");
-		if (s.indexIn(f) != -1) {
-			int title = s.cap(1).toInt();
-			openVCD(title);
-		} else {
-			qWarning("Core::open: couldn't parse vcd title, playing first one");
-			openVCD();
-		}
-	}
-	else
-	if (file.toLower().startsWith("cdda:")) {
-		qDebug("Core::open: * identified as cdda");
-
-		QString f = file.toLower();
-		QRegExp s("^cdda://(\\d+)");
-		if (s.indexIn(f) != -1) {
-			int title = s.cap(1).toInt();
-			openAudioCD(title);
-		} else {
-			qWarning("Core::open: couldn't parse cdda title, playing first one");
-			openAudioCD();
-		}
-	}
-	else
-	if ((file.toLower().startsWith("dvb:")) || (file.toLower().startsWith("tv:"))) {
+	// File does not exist
+	if (file.toLower().startsWith("tv:") || file.toLower().startsWith("dvb:")) {
 		qDebug("Core::open: * identified as TV");
 		openTV(file);
-	}
-	else {
+	} else {
 		qDebug("Core::open: * not identified, playing as stream");
 		openStream(file);
 	}
 }
 
-void Core::openFile(QString filename, int seek) {
-	qDebug("Core::openFile: '%s'", filename.toUtf8().data());
-
-	QFileInfo fi(filename);
-	if (fi.exists()) {
-		playNewFile(fi.absoluteFilePath(), seek);
-	} else {
-		//File doesn't exists
-		//TODO: error message
-	}
-}
 
 #ifdef YOUTUBE_SUPPORT
 void Core::openYT(const QString & url) {
@@ -546,31 +555,30 @@ void Core::disableScreensaver() {
 #endif
 #endif
 
+void Core::setExternalSubs(const QString &filename) {
+
+	mset.current_sub_idx = MediaSettings::NoneSelected;
+	mset.sub.setID(MediaSettings::NoneSelected);
+	mset.sub.setType(SubData::File);
+	if (proc->isMPlayer()) {
+		QFileInfo fi(filename);
+		if (fi.suffix().toLower() == "idx") {
+			mset.sub.setType(SubData::Vob);
+		}
+	}
+	mset.sub.setFilename(filename);
+}
+
 void Core::loadSub(const QString & sub ) {
 	qDebug("Core::loadSub");
 
 	if ( (!sub.isEmpty()) && (QFile::exists(sub)) ) {
-		mset.current_sub_idx = MediaSettings::NoneSelected;
-		mset.external_subtitles = sub;
-		just_loaded_external_subs = true;
-
-		QFileInfo fi(sub);
-		bool is_idx = (fi.suffix().toLower() == "idx");
-		if (proc->isMPV()) is_idx = false; // Hack to ignore the idx extension with mpv
-
-		if ((pref->fast_load_sub) && (!is_idx) && (mset.external_subtitles_fps == MediaSettings::SFPS_None)) {
-			QString sub_file = sub;
-			#ifdef Q_OS_WIN
-			if (pref->use_short_pathnames) {
-				sub_file = Helper::shortPathName(sub);
-				// For some reason it seems it's necessary to change the path separator to unix style
-				// otherwise mplayer fails to load it
-				sub_file = sub_file.replace("\\","/");
-			}
-			#endif
-			proc->setExternalSubtitleFile(sub_file);
-		} else {
+		setExternalSubs(sub);
+		if (!pref->fast_load_sub
+			|| mset.external_subtitles_fps != MediaSettings::SFPS_None) {
 			restartPlay();
+		} else {
+			proc->setExternalSubtitleFile(sub);
 		}
 	} else {
 		qWarning("Core::loadSub: file '%s' is not valid", sub.toUtf8().constData());
@@ -578,11 +586,11 @@ void Core::loadSub(const QString & sub ) {
 }
 
 void Core::unloadSub() {
-	if ( !mset.external_subtitles.isEmpty() ) {
-		mset.external_subtitles = "";
-		mset.current_sub_idx = MediaSettings::SubNone;
-		restartPlay();
-	}
+
+	mset.current_sub_idx = MediaSettings::NoneSelected;
+	mset.sub = SubData();
+
+	restartPlay();
 }
 
 void Core::loadAudioFile(const QString & audiofile) {
@@ -599,217 +607,10 @@ void Core::unloadAudioFile() {
 	}
 }
 
-/*
-void Core::openDVD( bool from_folder, QString directory) {
-	qDebug("Core::openDVD");
-
-	if (from_folder) {
-		if (!directory.isEmpty()) {
-			QFileInfo fi(directory);
-			if ( (fi.exists()) && (fi.isDir()) ) {
-				pref->dvd_directory = directory;
-				pref->play_dvd_from_hd = true;
-				openDVD();
-			} else {
-				qDebug("Core::openDVD: directory '%s' is not valid", directory.toUtf8().data());
-			}
-		} else {
-			qDebug("Core::openDVD: directory is empty");
-		}
-	} else {
-		pref->play_dvd_from_hd = false;
-		openDVD();
-	}
-}
-
-void Core::openDVD() {
-	openDVD(1);
-}
-
-void Core::openDVD(int title) {
-	qDebug("Core::openDVD: %d", title);
-
-	if (proc->isRunning()) {
-		stopMplayer();
-	}
-
-	// Save data of previous file:
-	saveMediaInfo();
-
-	mdat.reset();
-	mdat.filename = "dvd://" + QString::number(title);
-	mdat.type = TYPE_DVD;
-
-	mset.reset();
-
-	mset.current_title_id = title;
-	mset.current_chapter_id = 1;
-	mset.current_angle_id = 1;
-
-	initPlaying();
-}
-*/
-
-void Core::openVCD(int title) {
-	qDebug("Core::openVCD: %d", title);
-
-	if (title == -1) title = pref->vcd_initial_title;
-
-	if (proc->isRunning()) {
-		stopMplayer();
-	}
-
-	// Save data of previous file:
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
-
-	mdat.reset();
-	mdat.filename = "vcd://" + QString::number(title);
-	mdat.type = TYPE_VCD;
-
-	mset.reset();
-
-	mset.current_title_id = title;
-	mset.current_chapter_id = -1;
-	mset.current_angle_id = -1;
-
-	initPlaying();
-}
-
-void Core::openAudioCD(int title) {
-	qDebug("Core::openAudioCD: %d", title);
-
-	if (title == -1) title = 1;
-
-	if (proc->isRunning()) {
-		stopMplayer();
-	}
-
-	// Save data of previous file:
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
-
-	mdat.reset();
-	mdat.filename = "cdda://" + QString::number(title);
-	mdat.type = TYPE_AUDIO_CD;
-
-	mset.reset();
-
-	mset.current_title_id = title;
-	mset.current_chapter_id = -1;
-	mset.current_angle_id = -1;
-
-	initPlaying();
-}
-
-void Core::openDVD(QString dvd_url) {
-	qDebug("Core::openDVD: '%s'", dvd_url.toUtf8().data());
-
-	//Checks
-	DiscData disc_data = DiscName::split(dvd_url);
-	QString folder = disc_data.device;
-	int title = disc_data.title;
-
-	if (title == -1) {
-		qWarning("Core::openDVD: title invalid, not playing dvd");
-		return;
-	}
-
-	if (folder.isEmpty()) {
-		qDebug("Core::openDVD: not folder");
-	} else {
-		QFileInfo fi(folder);
-		if ( (!fi.exists()) /*|| (!fi.isDir())*/ ) {
-			qWarning("Core::openDVD: folder invalid, not playing dvd");
-			return;
-		}
-	}
-
-	if (proc->isRunning()) {
-		stopMplayer();
-		we_are_restarting = false;
-	}
-
-	// Save data of previous file:
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
-
-	mdat.reset();
-	mdat.filename = dvd_url;
-	mdat.type = TYPE_DVD;
-
-	mset.reset();
-
-	mset.current_title_id = title;
-	mset.current_chapter_id = firstChapter();
-	mset.current_angle_id = 1;
-
-	initPlaying();
-}
-
-
-#ifdef BLURAY_SUPPORT
-/**
- * Opens a BluRay, taking advantage of mplayer's capabilities to do so.
- */
-void Core::openBluRay(QString bluray_url) {
-	qDebug("Core::openBluRay: '%s'", bluray_url.toUtf8().data());
-
-	//Checks
-	DiscData disc_data = DiscName::split(bluray_url);
-	QString folder = disc_data.device;
-	int title = disc_data.title;
-
-	if (title == -1) {
-		qWarning("Core::openBluRay: title invalid, not playing bluray");
-		return;
-	}
-
-	QFileInfo fi(folder);
-	if ( (!fi.exists()) || (!fi.isDir()) ) {
-		qWarning("Core::openBluRay: folder invalid, not playing bluray");
-		return;
-	}
-
-	if (proc->isRunning()) {
-		stopMplayer();
-		we_are_restarting = false;
-	}
-
-	// Save data of previous file:
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
-
-	mdat.reset();
-	mdat.filename = bluray_url;
-	mdat.type = TYPE_BLURAY;
-
-	mset.reset();
-
-	mset.current_title_id = title;
-	mset.current_chapter_id = firstChapter();
-	mset.current_angle_id = 1;
-
-	initPlaying();
-}
-#endif
-
 void Core::openTV(QString channel_id) {
 	qDebug("Core::openTV: '%s'", channel_id.toUtf8().constData());
 
-	if (proc->isRunning()) {
-		stopMplayer();
-		we_are_restarting = false;
-	}
-
-	// Save data of previous file:
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
+	close();
 
 	// Use last channel if the name is just "dvb://" or "tv://"
 	if ((channel_id == "dvb://") && (!pref->last_dvb_channel.isEmpty())) {
@@ -825,9 +626,8 @@ void Core::openTV(QString channel_id) {
 	else
 	if (channel_id.startsWith("tv://")) pref->last_tv_channel = channel_id;
 
-	mdat.reset();
 	mdat.filename = channel_id;
-	mdat.type = TYPE_TV;
+	mdat.selected_type = MediaData::TYPE_TV;
 
 	mset.reset();
 
@@ -873,54 +673,34 @@ void Core::openStream(QString name) {
 	}
 #endif
 
-	if (proc->isRunning()) {
-		stopMplayer();
-		we_are_restarting = false;
-	}
-
-	// Save data of previous file:
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
-
-	mdat.reset();
+	close();
 	mdat.filename = name;
-	mdat.type = TYPE_STREAM;
+	mdat.selected_type = MediaData::TYPE_STREAM;
 
 	mset.reset();
 
 	initPlaying();
 }
 
+void Core::openFile(QString filename, int seek) {
+	qDebug("Core::openFile: '%s'", filename.toUtf8().data());
 
-void Core::playNewFile(QString file, int seek) {
-	qDebug("Core::playNewFile: '%s'", file.toUtf8().data());
+	close();
 
-	if (proc->isRunning()) {
-		stopMplayer();
-		we_are_restarting = false;
-	}
-
-	// Save data of previous file:
-#ifndef NO_USE_INI_FILES
-	saveMediaInfo();
-#endif
-
-	mdat.reset();
-	mdat.filename = file;
-	mdat.type = TYPE_FILE;
+	mdat.filename = filename;
+	mdat.selected_type = MediaData::TYPE_FILE;
 
 	int old_volume = mset.volume;
 	mset.reset();
 
 #ifndef NO_USE_INI_FILES
 	// Check if we already have info about this file
-	if (pref->dont_remember_media_settings || !file_settings->existSettingsFor(file)) {
+	if (pref->dont_remember_media_settings || !file_settings->existSettingsFor(filename)) {
 		mset.volume = old_volume;
 	} else {
 		qDebug("Core::playNewFile: We have settings for this file!!!");
 
-		file_settings->loadSettingsFor(file, mset, proc->player());
+		file_settings->loadSettingsFor(filename, mset, proc->player());
 		qDebug("Core::playNewFile: Media settings read");
 
 		if (pref->dont_remember_time_pos) {
@@ -952,19 +732,13 @@ void Core::restartPlay() {
 void Core::initPlaying(int seek) {
 	qDebug("Core::initPlaying");
 
-	/*
-	mdat.list();
-	mset.list();
-	*/
-
-	/* updateWidgets(); */
-
 	mplayerwindow->hideLogo();
 	// Feedback and prevent potential artifacts waiting for redraw
 	mplayerwindow->repaint();
+	qDebug("Core::initPlaying: entered the black hole");
 
 	if (proc->isRunning()) {
-		stopMplayer();
+		stopPlayer();
 	}
 
 	int start_sec = (int) mset.current_sec;
@@ -973,7 +747,7 @@ void Core::initPlaying(int seek) {
 #ifdef YOUTUBE_SUPPORT
 	if (pref->enable_yt_support) {
 		// Avoid to pass to mplayer the youtube page url
-		if (mdat.type == TYPE_STREAM) {
+		if (mdat.selected_type == MediaData::TYPE_STREAM) {
 			if (mdat.filename == yt->origUrl()) {
 				mdat.filename = yt->latestPreferredUrl();
 			}
@@ -981,97 +755,46 @@ void Core::initPlaying(int seek) {
 	}
 #endif
 
-	startMplayer( mdat.filename, start_sec );
+	startPlayer( mdat.filename, start_sec );
 }
 
-// Called by newMediaPlaying and after playerprocess fully loaded,
-// when it finds new track info or changes selected track.
-void Core::initVideoTracks() {
-
-	mset.current_video_id = mdat.videos.selectedID();
-}
-
-// Called by newMediaPlaying and after playerprocess fully loaded,
-// when it finds new tracks or changes selected track.
-// Note: the notion of a single selected audio track is too simple
-// for some formats, so changing track needs to be done with caution.
-// TODO: remove initial_audio_track
+// Called by newMediaPlaying
 void Core::initAudioTracks() {
 	qDebug("Core::initAudioTracks");
 
-	if (mset.current_audio_id == MediaSettings::NoneSelected
-		&& mdat.audios.numItems() > 0) {
-
-		// Select audio track selected by player
-		int wanted_id = mdat.audios.selectedID();
-
-		// Check if one of the audio tracks matches the users preferred language.
-		// TODO: Check if this will not disable audio when:
-		// Track 0: sound track, no language, starting at 0
-		// Track 1: speach, language english, starting at 5 min
-		// Track 2: speach, language german, starting at 5 min
-		// This works if player only prints tracks while it's going along,
-		// and not all at once, at the start of the video, but then preferred
-		// language still needs to be handled when current_audio_id !=
-		// NoneSelected...
-		if (!pref->audio_lang.isEmpty()) {
-			int res = mdat.audios.findLang( pref->audio_lang );
-			if (res != -1)
-				wanted_id = res;
+	// Check if one of the audio tracks matches the users preferred language.
+	// TODO: This will disable audio when:
+	// Track 0: sound track, no language, starting at 0
+	// Track 1: speach, language english, starting at 5 min
+	// Track 2: speach, language german, starting at 5 min
+	// For now disabled
+	/*
+	if (mdat.audios.count() > 0 && !pref->audio_lang.isEmpty()) {
+		int wanted_id = mdat.audios.findLangID(pref->audio_lang);
+		if (wanted_id >= 0 && wanted_id != mdat.audios.selectedID()) {
+			changeAudioTrack(wanted_id, false); // Don't allow restart
 		}
-		changeAudio(wanted_id, false); // Don't allow restart
 	}
+	*/
 }
 
+// Called by newMediaPlaying
 void Core::initSubs() {
 	qDebug("Core::initSubs");
 
-	if (mdat.subs.numItems() <= 0) {
-		// No subs
-		mset.current_sub_idx = MediaSettings::SubNone;
-		qDebug("Core::initSubs: no subtitles found");
-	} else if (mset.current_sub_idx == MediaSettings::SubNone) {
-		// Don't want subs
-		if (mdat.subs.selectedID() != -1) {
-			qDebug("Core::initSubs: disabling subtitles because current_sub_id is SubNone");
-			proc->disableSubtitles();
-		}
-	} else {
-		// See what's wanted
-		int wanted_idx;
-		if (just_loaded_external_subs) {
-			if (proc->isMPV()) {
-				// Select last one.
-				wanted_idx = mdat.subs.numItems() - 1;
-			} else {
-				// find the sub file just loaded
-				wanted_idx = mdat.subs.findFile(mset.external_subtitles);
-				if (wanted_idx == -1) {
-					// mplayer stores vob files (.idx) under sub type vob
-					// Select preferred language or track from pref
-					wanted_idx = mdat.subs.selectOne(pref->language,
-						pref->initial_subtitle_track - 1);
-				}
-			}
-		} else if (we_are_restarting
-				   && (mset.current_sub_idx != MediaSettings::NoneSelected)) {
-			// If restarting and something selected, keep the current subs
-			wanted_idx = mset.current_sub_idx;
-		} else {
-			// Select preferred language or track from pref
+	if (pref->autoload_sub) {
+		// TODO: this is not reliable. Subs can contain all kind of things,
+		// like graphics etc. Just selecting the first matching language is
+		// asking for trouble. For now disabled.
+		/*
+		if (mdat.subs.count() > 0 && mdat.subs.selectedID() < 0) {
+			// Nothing selected, check preferred language
 			wanted_idx = mdat.subs.selectOne(pref->language,
 											 pref->initial_subtitle_track - 1);
+			changeSubtitleTrack(wanted_idx);
 		}
-
-		changeSubtitle(wanted_idx, false);
+		*/
 	}
-
-	just_loaded_external_subs = false;
-
-#ifdef MPV_SUPPORT
-	changeSecondarySubtitle(mset.current_secondary_sub_id);
-#endif
-
 }
 
 // This is reached when a new video has just started playing
@@ -1081,22 +804,8 @@ void Core::newMediaPlaying() {
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
 
-	// Video tracks
-	initVideoTracks();
-
-	// Audio tracks
 	initAudioTracks();
-
-	// Subs
-	if (!pref->autoload_sub)
-		mset.current_sub_idx = MediaSettings::SubNone;
-	// Remainder is handled by initSubs called by playingStarted
-
-	// Chapters
-	if (mdat.n_chapters > 0) {
-		// Just to show the first chapter checked in the menu
-		mset.current_chapter_id = firstChapter();
-	}
+	initSubs();
 
 	mdat.initialized = true;
 	mdat.list();
@@ -1104,7 +813,6 @@ void Core::newMediaPlaying() {
 
 	qDebug("Core::newMediaPlaying: emit mediaStartPlay()");
 	emit mediaStartPlay();
-	qDebug("Core::newMediaPlaying: done");
 }
 
 // Slot called when queued signal playerFullyLoaded arrives.
@@ -1113,7 +821,9 @@ void Core::playingStarted() {
 
 	setState(Playing);
 
-	if (!we_are_restarting) {
+	if (we_are_restarting) {
+		we_are_restarting = false;
+	} else {
 		newMediaPlaying();
 	} 
 
@@ -1124,7 +834,7 @@ void Core::playingStarted() {
 #ifdef YOUTUBE_SUPPORT
 	if (pref->enable_yt_support) {
 		// Change the real url with the youtube page url and set the title
-		if (mdat.type == TYPE_STREAM) {
+		if (mdat.selected_type == MediaData::TYPE_STREAM) {
 			if (mdat.filename == yt->latestPreferredUrl()) {
 				mdat.filename = yt->origUrl();
 				mdat.stream_title = yt->urlTitle();
@@ -1171,12 +881,12 @@ void Core::stop()
 	qDebug() << "Core::stop: current state:" << stateToString();
 
 	State prev_state = _state;
-	stopMplayer();
+	stopPlayer();
 
 	// if pressed stop twice, reset video to the beginning
 	if ((prev_state == Stopped || pref->reset_stop) && mset.current_sec != 0) {
 		qDebug("Core::stop: resetting current_sec %f to 0", mset.current_sec);
-		changeCurrentSec(0);
+		gotCurrentSec(0);
 	}
 
 	emit mediaStoppedByUser();
@@ -1304,43 +1014,31 @@ void Core::fileReachedEnd() {
 	emit mediaFinished();
 }
 
-void Core::startMplayer( QString file, double seek ) {
-	qDebug("Core::startMplayer");
+void Core::startPlayer( QString file, double seek ) {
+	qDebug("Core::startPlayer");
 
 	if (file.isEmpty()) {
-		qWarning("Core:startMplayer: file is empty!");
+		qWarning("Core:startPlayer: file is empty!");
 		return;
 	}
 
 	if (proc->isRunning()) {
-		qWarning("Core::startMplayer: MPlayer still running!");
+		qWarning("Core::startPlayer: MPlayer still running!");
 		return;
     }
 
-	emit showMessage(tr("Starting player..."));
+	emit showMessage(tr("Starting player..."), 5000);
 
 #ifdef YOUTUBE_SUPPORT
 	// Stop any pending request
 	#if 0
-	qDebug("Core::startMplayer: yt state: %d", yt->state());
+	qDebug("Core::startPlayer: yt state: %d", yt->state());
 	if (yt->state() != QHttp::Unconnected) {
 		//yt->abort(); /* Make the app to crash, don't know why */
 	}
 	#endif
 	yt->close();
 #endif
-
-	// DVD
-	QString dvd_folder;
-	int dvd_title = -1;
-	if (mdat.type==TYPE_DVD) {
-		DiscData disc_data = DiscName::split(file);
-		dvd_folder = disc_data.device;
-		if (dvd_folder.isEmpty()) dvd_folder = pref->dvd_device;
-		dvd_title = disc_data.title;
-		file = disc_data.protocol + "://";
-		if (dvd_title > -1) file += QString::number(dvd_title);
-	}
 
 	// Check URL playlist
 	bool url_is_playlist = false;
@@ -1349,15 +1047,15 @@ void Core::startMplayer( QString file, double seek ) {
 		file = file.remove("|playlist");
 	} else {
 		QUrl url(file);
-		qDebug("Core::startMplayer: checking if stream is a playlist");
-		qDebug("Core::startMplayer: url path: '%s'", url.path().toUtf8().constData());
+		qDebug("Core::startPlayer: checking if stream is a playlist");
+		qDebug("Core::startPlayer: url path: '%s'", url.path().toUtf8().constData());
 
 		if (url.scheme().toLower() != "ffmpeg") {
 			QRegExp rx("\\.ram$|\\.asx$|\\.m3u$|\\.m3u8$|\\.pls$", Qt::CaseInsensitive);
 			url_is_playlist = (rx.indexIn(url.path()) != -1);
 		}
 	}
-	qDebug("Core::startMplayer: url_is_playlist: %d", url_is_playlist);
+	qDebug("Core::startPlayer: url_is_playlist: %d", url_is_playlist);
 
 
 	// Check if a m4a file exists with the same name of file, in that cause if will be used as audio
@@ -1366,13 +1064,13 @@ void Core::startMplayer( QString file, double seek ) {
 		if (fi.exists() && !fi.isDir()) {
 			if (fi.suffix().toLower() == "mp4") {
 				QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
-				//qDebug("Core::startMplayer: file2: %s", file2.toUtf8().constData());
+				//qDebug("Core::startPlayer: file2: %s", file2.toUtf8().constData());
 				if (!QFile::exists(file2)) {
 					// Check for upper case
 					file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
 				}
 				if (QFile::exists(file2)) {
-					qDebug("Core::startMplayer: found %s, so it will be used as audio file", file2.toUtf8().constData());
+					qDebug("Core::startPlayer: found %s, so it will be used as audio file", file2.toUtf8().constData());
 					mset.external_audio = file2;
 				}
 			}
@@ -1388,7 +1086,7 @@ void Core::startMplayer( QString file, double seek ) {
 
 	// Set working directory to screenshot directory
 	if (screenshot_enabled) {
-		qDebug("Core::startMplayer: setting working directory to '%s'", pref->screenshot_directory.toUtf8().data());
+		qDebug("Core::startPlayer: setting working directory to '%s'", pref->screenshot_directory.toUtf8().data());
 		proc->setWorkingDirectory( pref->screenshot_directory );
 	}
 
@@ -1403,7 +1101,7 @@ void Core::startMplayer( QString file, double seek ) {
 
 	if (fi.baseName().toLower() == "mplayer2") {
 		if (!pref->mplayer_is_mplayer2) {
-			qDebug("Core::startMplayer: this seems mplayer2");
+			qDebug("Core::startPlayer: this seems mplayer2");
 			pref->mplayer_is_mplayer2 = true;
 		}
 	}
@@ -1509,10 +1207,6 @@ void Core::startMplayer( QString file, double seek ) {
 
 	proc->setOption("sub-fuzziness", pref->subfuzziness);
 
-	// From mplayer SVN r27667 the number of chapters can be obtained from ID_CHAPTERS
-	mset.current_chapter_id = 0; // Reset chapters
-	// TODO: I think the current_chapter_id thing has to be deleted
-
 	if (pref->vo != "player_default") {
 		if (!pref->vo.isEmpty()) {
 			proc->setOption("vo", pref->vo );
@@ -1571,7 +1265,7 @@ void Core::startMplayer( QString file, double seek ) {
 	proc->setOption("priority", p);
 	/*
 	SetPriorityClass(GetCurrentProcess(), app_p);
-	qDebug("Core::startMplayer: priority of smplayer process set to %d", app_p);
+	qDebug("Core::startPlayer: priority of smplayer process set to %d", app_p);
 	*/
 	#endif
 
@@ -1734,7 +1428,7 @@ void Core::startMplayer( QString file, double seek ) {
 	if (mset.external_audio.isEmpty()) {
 		if (mset.current_audio_id >= 0) {
 			// Workaround for MPlayer bug #1321 (http://bugzilla.mplayerhq.hu/show_bug.cgi?id=1321)
-			if (mdat.audios.numItems() != 1) {
+			if (mdat.audios.count() != 1) {
 				proc->setOption("aid", QString::number(mset.current_audio_id));
 			}
 		}
@@ -1744,64 +1438,60 @@ void Core::startMplayer( QString file, double seek ) {
 	}
 #endif
 
+	// Subtitles
+	// Setup external sub from command line or other instance
 	if (!initial_subtitle.isEmpty()) {
-		mset.external_subtitles = initial_subtitle;
+		setExternalSubs(initial_subtitle);
 		initial_subtitle = "";
-		mset.current_sub_idx = MediaSettings::NoneSelected;
-		just_loaded_external_subs = true; // Big ugly hack :(
+	} else if (mset.current_sub_idx >= 0) {
+		// Selected sub when restarting
+		mset.sub = mdat.subs.itemAt(mset.current_sub_idx);
 	}
-	if (!mset.external_subtitles.isEmpty()) {
-		bool is_idx = (QFileInfo(mset.external_subtitles).suffix().toLower()=="idx");
-		if (proc->isMPV()) is_idx = false; // Hack to ignore the idx extension with mpv
 
-		if (is_idx) {
-			// sub/idx subtitles
-			QFileInfo fi;
-
-			#ifdef Q_OS_WIN
-			if (pref->use_short_pathnames)
-				fi.setFile(Helper::shortPathName(mset.external_subtitles));
-			else
-			#endif
-			fi.setFile(mset.external_subtitles);
-
+	if (mset.sub.type() == SubData::Vob) {
+		// Set vob subs. Mplayer only
+		// External sub
+		if (!mset.sub.filename().isEmpty()) {
+			// Remove extension
+			QFileInfo fi(mset.sub.filename());
 			QString s = fi.path() +"/"+ fi.completeBaseName();
-			qDebug("Core::startMplayer: subtitle file without extension: '%s'", s.toUtf8().data());
+			qDebug("Core::startPlayer: subtitle file without extension: '%s'", s.toUtf8().data());
 			proc->setOption("vobsub", s);
-		} else {
-			#ifdef Q_OS_WIN
-			if (pref->use_short_pathnames)
-				proc->setOption("sub", Helper::shortPathName(mset.external_subtitles));
-			else
-			#endif
-			{
-				proc->setOption("sub", mset.external_subtitles);
+		}
+		if (mset.sub.ID() >= 0) {
+			proc->setOption("sub_vob", mset.sub.ID());
+		}
+	} else if (mset.sub.type() == SubData::File) {
+		if (!mset.sub.filename().isEmpty()) {
+			proc->setOption("sub", mset.sub.filename());
+			if (mset.sub.ID() >= 0) {
+				proc->setOption("sub_file", mset.sub.ID());
 			}
 		}
-		if (mset.external_subtitles_fps != MediaSettings::SFPS_None) {
-			QString fps;
-			switch (mset.external_subtitles_fps) {
-				case MediaSettings::SFPS_23: fps = "23"; break;
-				case MediaSettings::SFPS_24: fps = "24"; break;
-				case MediaSettings::SFPS_25: fps = "25"; break;
-				case MediaSettings::SFPS_30: fps = "30"; break;
-				case MediaSettings::SFPS_23976: fps = "24000/1001"; break;
-				case MediaSettings::SFPS_29970: fps = "30000/1001"; break;
-				default: fps = "25";
-			}
-			proc->setOption("subfps", fps);
+	} else if (mset.sub.type() == SubData::Sub && mset.sub.ID() >= 0) {
+		// Subs from demux when restarting or from settings local file
+		proc->setOption("sub_demux", mset.sub.ID());
+	}
+
+	// Set fps external file
+	if (!mset.sub.filename().isEmpty()
+		&& mset.external_subtitles_fps != MediaSettings::SFPS_None) {
+
+		QString fps;
+		switch (mset.external_subtitles_fps) {
+			case MediaSettings::SFPS_23: fps = "23"; break;
+			case MediaSettings::SFPS_24: fps = "24"; break;
+			case MediaSettings::SFPS_25: fps = "25"; break;
+			case MediaSettings::SFPS_30: fps = "30"; break;
+			case MediaSettings::SFPS_23976: fps = "24000/1001"; break;
+			case MediaSettings::SFPS_29970: fps = "30000/1001"; break;
+			default: fps = "25";
 		}
+		proc->setOption("subfps", fps);
 	}
 
 	if (!mset.external_audio.isEmpty()) {
-		#ifdef Q_OS_WIN
-		if (pref->use_short_pathnames)
-			proc->setOption("audiofile", Helper::shortPathName(mset.external_audio));
-		else
-		#endif
-		{
-			proc->setOption("audiofile", mset.external_audio);
-		}
+		proc->setOption("audiofile", mset.external_audio);
 	}
 
 	proc->setOption("subpos", QString::number(mset.sub_pos));
@@ -1839,7 +1529,7 @@ void Core::startMplayer( QString file, double seek ) {
 
 
 	if (pref->mplayer_additional_options.contains("-volume")) {
-		qDebug("Core::startMplayer: don't set volume since -volume is used");
+		qDebug("Core::startPlayer: don't set volume since -volume is used");
 	} else {
 		int vol = (pref->global_volume ? pref->volume : mset.volume);
 		if (proc->isMPV()) {
@@ -1848,66 +1538,30 @@ void Core::startMplayer( QString file, double seek ) {
 		proc->setOption("volume", QString::number(vol));
 	}
 
-
-	if (mdat.type==TYPE_DVD) {
-		if (!dvd_folder.isEmpty()) {
-			#ifdef Q_OS_WIN
-			if (pref->use_short_pathnames) {
-				proc->setOption("dvd-device", Helper::shortPathName(dvd_folder));
-			}
-			else
-			#endif
-			proc->setOption("dvd-device", dvd_folder);
-		} else {
-			qWarning("Core::startMplayer: dvd device is empty!");
-		}
-	}
-
-	if ((mdat.type==TYPE_VCD) || (mdat.type==TYPE_AUDIO_CD)) {
-		if (!pref->cdrom_device.isEmpty()) {
-			proc->setOption("cdrom-device", pref->cdrom_device);
-		}
-	}
-
-	/*
-	if (mset.current_chapter_id > 0) {
-		int chapter = mset.current_chapter_id;
-		// Fix for older versions of mplayer:
-		if ((mdat.type == TYPE_DVD) && (firstChapter() == 0)) chapter++;
-		proc->setOption("chapter", QString::number(chapter));
-	}
-	*/
-
 	if (mset.current_angle_id > 0) {
 		proc->setOption("dvdangle", QString::number( mset.current_angle_id));
 	}
 
-
-	int cache = 0;
-	switch (mdat.type) {
-		case TYPE_FILE	 	: cache = pref->cache_for_files; break;
-		case TYPE_DVD 		: cache = pref->cache_for_dvds; 
-							  #if DVDNAV_SUPPORT
-							  if (file.startsWith("dvdnav:")) cache = 0;
-							  #endif
-		                      break;
-		case TYPE_STREAM 	: cache = pref->cache_for_streams; break;
-		case TYPE_VCD 		: cache = pref->cache_for_vcds; break;
-		case TYPE_AUDIO_CD	: cache = pref->cache_for_audiocds; break;
-		case TYPE_TV		: cache = pref->cache_for_tv; break;
-#ifdef BLURAY_SUPPORT
-		case TYPE_BLURAY	: cache = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
-#endif
-		default: cache = 0;
+	// TODO: cache 0 for .iso?
+	switch (mdat.selected_type) {
+		case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
+		case MediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
+		case MediaData::TYPE_DVDNAV	: cache_size = 0; break;
+		case MediaData::TYPE_STREAM	: cache_size = pref->cache_for_streams; break;
+		case MediaData::TYPE_VCD 	: cache_size = pref->cache_for_vcds; break;
+		case MediaData::TYPE_CDDA	: cache_size = pref->cache_for_audiocds; break;
+		case MediaData::TYPE_TV		: cache_size = pref->cache_for_tv; break;
+		case MediaData::TYPE_BLURAY	: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
+		default: cache_size = 0;
 	}
 
-	proc->setOption("cache", QString::number(cache));
+	proc->setOption("cache", QString::number(cache_size));
 
 	if (mset.speed != 1.0) {
 		proc->setOption("speed", QString::number(mset.speed));
 	}
 
-	if (mdat.type != TYPE_TV) {
+	if (mdat.selected_type != MediaData::TYPE_TV) {
 		// Play A - B
 		if ((mset.A_marker > -1) && (mset.B_marker > mset.A_marker)) {
 			proc->setOption("ss", QString::number(mset.A_marker));
@@ -1924,7 +1578,7 @@ void Core::startMplayer( QString file, double seek ) {
 		proc->setOption("idx");
 	}
 
-	if (mdat.type == TYPE_STREAM) {
+	if (mdat.selected_type == MediaData::TYPE_STREAM) {
 		if (pref->prefer_ipv4) {
 			proc->setOption("prefer-ipv4");
 		} else {
@@ -1941,13 +1595,13 @@ void Core::startMplayer( QString file, double seek ) {
 #ifndef Q_OS_WIN
 	if (proc->isMPlayer()) {
 		if ((pref->vdpau.disable_video_filters) && (pref->vo.startsWith("vdpau"))) {
-			qDebug("Core::startMplayer: using vdpau, video filters are ignored");
+			qDebug("Core::startPlayer: using vdpau, video filters are ignored");
 			goto end_video_filters;
 		}
 	} else {
 		// MPV
 		if (!pref->hwdec.isEmpty() && pref->hwdec != "no") {
-			qDebug("Core::startMplayer: hardware decoding is enabled. The video filters will be ignored");
+			qDebug("Core::startPlayer: hardware decoding is enabled. The video filters will be ignored");
 			goto end_video_filters;
 		}
 	}
@@ -2135,9 +1789,9 @@ void Core::startMplayer( QString file, double seek ) {
 			proc->addAF("volnorm", pref->filters->item("volnorm").options());
 		}
 
-		bool use_scaletempo = (pref->use_scaletempo == Preferences::Enabled);
+		bool use_scaletempo = pref->use_scaletempo == Preferences::Enabled;
 		if (pref->use_scaletempo == Preferences::Detect) {
-			use_scaletempo = (MplayerVersion::isMplayerAtLeast(24924));
+			use_scaletempo = true;
 		}
 		if (use_scaletempo) {
 			proc->addAF("scaletempo");
@@ -2160,7 +1814,7 @@ void Core::startMplayer( QString file, double seek ) {
 		}
 	} else {
 		// Don't use audio filters if using the S/PDIF output
-			qDebug("Core::startMplayer: audio filters are disabled when using the S/PDIF output!");
+			qDebug("Core::startPlayer: audio filters are disabled when using the S/PDIF output!");
 	}
 
 	if (pref->use_soft_vol) {
@@ -2175,7 +1829,7 @@ void Core::startMplayer( QString file, double seek ) {
 #ifndef Q_OS_WIN
 	if (proc->isMPV() && file.startsWith("dvb:")) {
 		QString channels_file = TVList::findChannelsFile();
-		qDebug("Core::startMplayer: channels_file: %s", channels_file.toUtf8().constData());
+		qDebug("Core::startPlayer: channels_file: %s", channels_file.toUtf8().constData());
 		if (!channels_file.isEmpty()) proc->setChannelsFile(channels_file);
 	}
 #endif
@@ -2186,7 +1840,7 @@ void Core::startMplayer( QString file, double seek ) {
 		QFileInfo f(file);
 		QString basename = f.path() + "/" + f.completeBaseName();
 
-		//qDebug("Core::startMplayer: file basename: '%s'", basename.toUtf8().data());
+		//qDebug("Core::startPlayer: file basename: '%s'", basename.toUtf8().data());
 
 		if (QFile::exists(basename+".edl")) 
 			edl_f = basename+".edl";
@@ -2194,7 +1848,7 @@ void Core::startMplayer( QString file, double seek ) {
 		if (QFile::exists(basename+".EDL")) 
 			edl_f = basename+".EDL";
 
-		qDebug("Core::startMplayer: edl file: '%s'", edl_f.toUtf8().data());
+		qDebug("Core::startPlayer: edl file: '%s'", edl_f.toUtf8().data());
 		if (!edl_f.isEmpty()) {
 			proc->setOption("edl", edl_f);
 		}
@@ -2238,12 +1892,14 @@ void Core::startMplayer( QString file, double seek ) {
 		file = "ffmpeg://" + file;
 	}
 
+/*
 #if DVDNAV_SUPPORT
 	if (proc->isMPV() && file.startsWith("dvdnav:")) {
 		// Hack to open the DVD menu with MPV
 		file = "dvd://menu";
 	}
 #endif
+*/
 
 #ifdef Q_OS_WIN
 	if (pref->use_short_pathnames) {
@@ -2261,7 +1917,7 @@ void Core::startMplayer( QString file, double seek ) {
 	emit aboutToStartPlaying();
 
 	QString commandline = proc->arguments().join(" ");
-	qDebug("Core::startMplayer: command: '%s'", commandline.toUtf8().data());
+	qDebug("Core::startPlayer: command: '%s'", commandline.toUtf8().data());
 
 	//Log command
 	QString line_for_log = commandline + "\n";
@@ -2272,7 +1928,7 @@ void Core::startMplayer( QString file, double seek ) {
 		QString proxy = QString("http://%1:%2@%3:%4").arg(pref->proxy_username).arg(pref->proxy_password).arg(pref->proxy_host).arg(pref->proxy_port);
 		env.insert("http_proxy", proxy);
 	}
-	//qDebug("Core::startMplayer: env: %s", env.toStringList().join(",").toUtf8().constData());
+	//qDebug("Core::startPlayer: env: %s", env.toStringList().join(",").toUtf8().constData());
 	#ifdef Q_OS_WIN
 	if (!pref->use_windowsfontdir) {
 		env.insert("FONTCONFIG_FILE", Paths::configPath() + "/fonts.conf");
@@ -2282,17 +1938,24 @@ void Core::startMplayer( QString file, double seek ) {
 
 	if ( !proc->startPlayer() ) {
 		// TODO: error handling
-		qWarning("Core::startMplayer: mplayer process didn't start");
+		qWarning("Core::startPlayer: mplayer process didn't start");
 	}
 
 }
 
-void Core::stopMplayer() {
-	qDebug("Core::stopMplayer");
+void Core::stopPlayer() {
 
 	if (!proc->isRunning()) {
-		qWarning("Core::stopMplayer: mplayer is not running!");
+		qDebug("Core::stopPlayer: player not running");
 		return;
+	}
+	qDebug("Core::stopPlayer");
+
+	// If set high enough the OS will detect the "not responding state" and popup a dialog
+	int timeout = pref->time_to_kill_mplayer;
+	if (timeout < 4000) {
+		qDebug("Core::stopPlayer: timeout %d much too small, adjusting it to 4000 ms", timeout);
+		timeout = 4000;
 	}
 
 #ifdef Q_OS_OS2
@@ -2302,24 +1965,25 @@ void Core::stopMplayer() {
 
 	proc->quit();
 
-	QTimer::singleShot(5000, &eventLoop, SLOT(quit()));
+	QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
 	eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 
 	if (proc->isRunning()) {
-		qWarning("Core::stopMplayer: process didn't finish. Killing it...");
+		qWarning("Core::stopPlayer: player didn't finish. Killing it...");
 		proc->kill();
 	}
 #else
 	proc->quit();
 
-	qDebug("Core::stopMplayer: Waiting mplayer to finish...");
-	if (!proc->waitForFinished(pref->time_to_kill_mplayer)) {
-		qWarning("Core::stopMplayer: process didn't finish. Killing it...");
+	qDebug("Core::stopPlayer: Waiting %d ms for player to finish...", timeout);
+	if (!proc->waitForFinished(timeout)) {
+		qWarning("Core::stopPlayer: player process did not finish in %d ms. Killing it...",
+				 timeout);
 		proc->kill();
 	}
 #endif
 
-	qDebug("Core::stopMplayer: Finished. (I hope)");
+	qDebug("Core::stopPlayer: Finished. (I hope)");
 }
 
 void Core::goToPosition(int pos) {

@@ -35,27 +35,35 @@ void MediaSettings::reset() {
 	qDebug("MediaSettings::reset");
 
 	current_sec = 0;
+
+	current_video_id = NoneSelected;
+	current_audio_id = NoneSelected;
+	external_audio = "";
 	current_sub_idx = NoneSelected;
+
+	// Only used for loading settings for local files
+	// and external subs during restart
+	sub = SubData();
+	sub.setID(NoneSelected);
+
+	external_subtitles_fps = SFPS_None;
+
 #ifdef MPV_SUPPORT
-	current_secondary_sub_id = NoneSelected;
+	current_secondary_sub_idx = NoneSelected;
 #endif
+
+	current_title_id = NoneSelected;
+	current_angle_id = NoneSelected;
+
 #if PROGRAM_SWITCH
 	current_program_id = NoneSelected;
 #endif
-	current_video_id = NoneSelected;
-	current_audio_id = NoneSelected;
-	current_title_id = NoneSelected;
-	current_chapter_id = NoneSelected;
-	current_angle_id = NoneSelected;
 
 	aspect_ratio_id = AspectAuto;
 
 	//fullscreen = false;
 	volume = pref->initial_volume;
 	mute = false;
-	external_subtitles = "";
-	external_subtitles_fps = SFPS_None;
-	external_audio = "";
 	sub_delay=0;
 	audio_delay=0;
 	sub_pos = pref->initial_sub_pos; // 100% by default
@@ -192,25 +200,26 @@ void MediaSettings::list() {
 	qDebug("MediaSettings::list");
 
 	qDebug("  current_sec: %f", current_sec);
+	qDebug("  current_video_id: %d", current_video_id);
+	qDebug("  current_audio_id: %d", current_audio_id);
 	qDebug("  current_sub_idx: %d", current_sub_idx);
+	qDebug("  external_subtitles: '%s'", sub.filename().toUtf8().data());
+	qDebug("  external_subtitles_fps: '%d'", external_subtitles_fps);
+
 #ifdef MPV_SUPPORT
-	qDebug("  current_secondary_sub_id: %d", current_secondary_sub_id);
+	qDebug("  current_secondary_sub_idx: %d", current_secondary_sub_idx);
 #endif
+
 #if PROGRAM_SWITCH
 	qDebug("  current_program_id: %d", current_program_id);
 #endif
-	qDebug("  current_video_id: %d", current_video_id);
-	qDebug("  current_audio_id: %d", current_audio_id);
 	qDebug("  current_title_id: %d", current_title_id);
-	qDebug("  current_chapter_id: %d", current_chapter_id);
 	qDebug("  current_angle_id: %d", current_angle_id);
 
 	qDebug("  aspect_ratio_id: %d", aspect_ratio_id);
 	//qDebug("  fullscreen: %d", fullscreen);
 	qDebug("  volume: %d", volume);
 	qDebug("  mute: %d", mute);
-	qDebug("  external_subtitles: '%s'", external_subtitles.toUtf8().data());
-	qDebug("  external_subtitles_fps: '%d'", external_subtitles_fps);
 	qDebug("  external_audio: '%s'", external_audio.toUtf8().data());
 	qDebug("  sub_delay: %d", sub_delay);
 	qDebug("  audio_delay: %d", sub_delay);

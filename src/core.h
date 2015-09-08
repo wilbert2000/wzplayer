@@ -66,6 +66,9 @@ public:
 	//! so it can be printed on debugging messages.
 	QString stateToString();
 
+	// Stop player if running and save MediaInfo
+	void close();
+
 	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; };
 
 protected:
@@ -75,20 +78,8 @@ protected:
     
 public slots:
 	//! Generic open, with autodetection of type
-	void open(QString file, int seek=-1); 
-	void openFile(QString filename, int seek=-1);
+	void open(QString file, int seek = -1, bool fast_open = true);
 	void openStream(QString name);
-	/*
-	void openDVD( bool from_folder, QString directory = "");
-	void openDVD(); // Plays title 1
-	void openDVD(int title = 1);
-	*/
-	void openDVD(QString dvd_url);
-#ifdef BLURAY_SUPPORT
-	void openBluRay(QString blu_ray_url);
-#endif
-	void openVCD(int title = -1);
-	void openAudioCD(int title = -1);
 	void openTV(QString channel_id);
 
 #ifdef YOUTUBE_SUPPORT
@@ -414,13 +405,12 @@ protected slots:
 #endif
 
 protected:
-	void playNewFile(QString file, int seek=-1);
 	void restartPlay();
 	void initPlaying(int seek=-1);
 	void newMediaPlaying();
 
-    void startMplayer(QString file, double seek = -1 );
-	void stopMplayer();
+	void startPlayer(QString file, double seek = -1 );
+	void stopPlayer();
 
 #ifndef NO_USE_INI_FILES
 	void saveMediaInfo();
@@ -503,7 +493,6 @@ private:
 	// Some variables to proper restart
 	bool we_are_restarting;
 
-	bool just_loaded_external_subs;
 	State _state;
 	bool change_volume_after_unpause;
 
@@ -516,6 +505,10 @@ private:
 	QMap<QString,QString> forced_titles;
 
 	int pos_max;
+	int cache_size;
+
+	void openDisc(DiscData &disc, bool fast_open);
+	void openFile(QString filename, int seek = -1);
 
 	void forceResize();
 	void getZoomFromMplayerWindow();
@@ -524,6 +517,7 @@ private:
 	void initVideoTracks();
 	void initAudioTracks();
 	void initSubs();
+	void setExternalSubs(const QString &filename);
 };
 
 #endif

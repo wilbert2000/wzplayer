@@ -421,6 +421,8 @@ BaseGui::~BaseGui() {
 }
 
 void BaseGui::createActions() {
+	qDebug("BaseGui::createActions");
+
 	// Menu File
 	openFileAct = new MyAction( QKeySequence("Ctrl+F"), this, "open_file" );
 	connect( openFileAct, SIGNAL(triggered()),
@@ -3170,68 +3172,49 @@ void BaseGui::newMediaLoaded() {
 	}
 	updateRecents();
 
-	// If a VCD, Audio CD or DVD, add items to playlist
-	bool is_disc = ( (core->mdat.type == TYPE_VCD)
-					 || (core->mdat.type == TYPE_DVD)
-					 || (core->mdat.type == TYPE_AUDIO_CD) );
+	if (!pref->auto_add_to_playlist) {
+		qDebug("BaseGui::newMediaLoaded: add to playlist disabled by user");
+		return;
+	}
 
-#if DVDNAV_SUPPORT
-	// Don't add the list of titles if using dvdnav
-	if ((core->mdat.type == TYPE_DVD) && filename.startsWith("dvdnav:"))
-		is_disc = false;
-#endif
+	if (playlist_owner == filename) {
+		qDebug("BaseGui::newMediaLoaded: playlist should be uptodate");
+		return;
+	}
 
-	// TODO: adding multiple times when playlist wraps?
+	qDebug() << "BaseGui::newMediaLoaded: creating new playlist for" << filename;
 
-	if (pref->auto_add_to_playlist && is_disc) {
-		int first_title = 1;
-		if (core->mdat.type == TYPE_VCD)
-			first_title = pref->vcd_initial_title;
+	playlist->clear();
 
-		QString type = "dvd"; // FIXME: support dvdnav
-		if (core->mdat.type == TYPE_VCD) type="vcd";
-		else if (core->mdat.type == TYPE_AUDIO_CD) type="cdda";
+	// Add titles
+	DiscData disc_name = DiscName::split(core->mdat.filename);
+	Maps::TTitleTracks::TMapIterator i = core->mdat.titles.getIterator();
+	while (i.hasNext()) {
+		i.next();
+		Maps::TTitleData title = i.value();
+		disc_name.title = title.getID();
+		QString filename = DiscName::join(disc_name);
+		playlist->addItem(filename, title.getDisplayName(false), title.getDuration());
+	}
 
-		if (core->mset.current_title_id == first_title) {
-			qDebug() << "BaseGui::newMediaLoaded: creating new playlist from titles for"
+	// Add current file if still empty
+	if (playlist->count() == 0) {
+		playlist->addItem(filename, core->mdat.meta_data["NAME"], core->mdat.duration);
+		// Add associated files to playlist
+		if (core->mdat.selected_type == MediaData::TYPE_FILE) {
+			qDebug() << "BaseGui::newMediaLoaded: searching for files to add to playlist for"
 					 << filename;
-
-			playlist->clear();
-			QStringList l;
-			QString s;
-			QString folder;
-			if (core->mdat.type == TYPE_DVD) {
-				DiscData disc_data = DiscName::split(core->mdat.filename);
-				folder = disc_data.device;
+			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
+			if (files_to_add.isEmpty()) {
+				qDebug("BaseGui::newMediaLoaded: none found");
+			} else {
+				playlist->addFiles(files_to_add);
 			}
-			// TODO: fix FIXME
-			for (int n = 0; n < core->mdat.titles.numItems(); n++) {
-				s = type + "://" + QString::number(core->mdat.titles.itemAt(n).ID());
-				if ( !folder.isEmpty() ) {
-					s += "/" + folder; // FIXME: dvd names are not created as they should
-				}
-				l.append(s);
-			}
-
-			playlist->addFiles(l);
 		}
 	}
 
-	// Add associated files to playlist if single file
-	if (core->mdat.type == TYPE_FILE
-		&& pref->auto_add_to_playlist
-		&& playlist->count() == 1) {
-
-		qDebug() << "BaseGui::newMediaLoaded: searching for files to add to playlist for"
-				 << filename;
-		QStringList files_to_add = Helper::filesForPlaylist(
-			filename, pref->media_to_add_to_playlist);
-		if (files_to_add.isEmpty()) {
-			qDebug("BaseGui::newMediaLoaded: none found");
-		} else {
-			playlist->addFiles(files_to_add, false);
-		}
-	}
+	playlist->updateView();
+	playlist_owner = filename;
 }
 
 void BaseGui::gotNoFileToPlay() {
@@ -3779,37 +3762,16 @@ void BaseGui::open(const QString &file) {
 	if (!playlist->maybeSave()) {
 		return;
 	}
-
 	if (QFile::exists(file)) {
 		QFileInfo fi(file);
 		if (fi.isDir()) {
 			openDirectory(file);
 			return;
 		}
-
 		pref->latest_dir = fi.absolutePath();
-
-		QString ext = fi.suffix().toLower();
-		if (ext == "iso") {
-			// Don't add to playlist
-			core->open(file);
-			return;
-		}
-
-		Extensions e;
-		QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
-
-		if (ext_sub.indexIn(ext) >= 0) {
-			qDebug() << "BaseGui::open: loading subtitle file" << file;
-			core->loadSub(file);
-			return;
-		}
 	}
 
-	qDebug() << "BaseGui::open: starting new playlist for" << file;
-	playlist->clear();
-	playlist->addFile(file);
-	playlist->startPlay();
+	core->open(file);
 
 	qDebug("BaseGui::open done");
 }
@@ -3879,23 +3841,6 @@ void BaseGui::openURL() {
 
 	exitFullscreenIfNeeded();
 
-	/*
-    bool ok;
-    QString s = QInputDialog::getText(this, 
-            tr("SMPlayer - Enter URL"), tr("URL:"), QLineEdit::Normal,
-            pref->last_url, &ok );
-
-    if ( ok && !s.isEmpty() ) {
-
-		//playlist->clear();
-		//playlistdock->hide();
-
-		openURL(s);
-    } else {
-        // user entered nothing or pressed Cancel
-    }
-	*/
-
 	InputURL d(this);
 
 	// Get url from clipboard
@@ -3918,19 +3863,9 @@ void BaseGui::openURL() {
 }
 
 void BaseGui::openURL(QString url) {
-	if (!url.isEmpty()) {
-		//pref->history_urls->addUrl(url);
-
-		if (pref->auto_add_to_playlist) {
-			if (playlist->maybeSave()) {
-				core->openStream(url);
-
-				playlist->clear();
-				playlist->addFile(url);
-			}
-		} else {
+	if (!url.isEmpty()
+		&& (!pref->auto_add_to_playlist || playlist->maybeSave())) {
 			core->openStream(url);
-		}
 	}
 }
 
@@ -3947,14 +3882,12 @@ void BaseGui::configureDiscDevices() {
 void BaseGui::openVCD() {
 	qDebug("BaseGui::openVCD");
 
-	if ( (pref->dvd_device.isEmpty()) || 
-         (pref->cdrom_device.isEmpty()) )
-	{
+	if (pref->dvd_device.isEmpty()
+		|| pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
-	} else {
-		if (playlist->maybeSave()) {
-			core->openVCD( pref->vcd_initial_title );
-		}
+	} else if (playlist->maybeSave()) {
+		// TODO: remove pref->vcd_initial_title?
+		core->open(DiscName::join(DiscName::VCD, 0, pref->cdrom_device));
 	}
 }
 
@@ -3967,7 +3900,7 @@ void BaseGui::openAudioCD() {
 		configureDiscDevices();
 	} else {
 		if (playlist->maybeSave()) {
-			core->openAudioCD();
+			core->open("cdda://");
 		}
 	}
 }
@@ -3975,19 +3908,16 @@ void BaseGui::openAudioCD() {
 void BaseGui::openDVD() {
 	qDebug("BaseGui::openDVD");
 
-	if ( (pref->dvd_device.isEmpty()) || 
-         (pref->cdrom_device.isEmpty()) )
-	{
+	if (pref->dvd_device.isEmpty() || pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
 	} else {
 		if (playlist->maybeSave()) {
+			bool use_dvdnav = false;
+
 #if DVDNAV_SUPPORT
-			int first_title = 0;
-			if (!pref->use_dvdnav) first_title = core->firstDVDTitle();
-			core->openDVD( DiscName::joinDVD(first_title, pref->dvd_device, pref->use_dvdnav) );
-#else
-			core->openDVD( DiscName::joinDVD(core->firstDVDTitle(), pref->dvd_device, false) );
+			use_dvdnav = pref->use_dvdnav;
 #endif
+			core->open(DiscName::joinDVD(pref->dvd_device, use_dvdnav));
 		}
 	}
 }
@@ -4008,25 +3938,24 @@ void BaseGui::openDVDFromFolder() {
 	}
 }
 
-void BaseGui::openDVDFromFolder(QString directory) {
+void BaseGui::openDVDFromFolder(const QString &directory) {
+
 	pref->last_dvd_directory = directory;
 #if DVDNAV_SUPPORT
-	int first_title = 0;
-	if (!pref->use_dvdnav) first_title = core->firstDVDTitle();
-	core->openDVD( DiscName::joinDVD(first_title, directory, pref->use_dvdnav) );
+	core->open( DiscName::joinDVD(directory, pref->use_dvdnav) );
 #else
-	core->openDVD( DiscName::joinDVD(core->firstDVDTitle(), directory, false) );
+	core->open( DiscName::joinDVD(directory, false) );
 #endif
 }
 
-#ifdef BLURAY_SUPPORT
 /**
  * Minimal BaseGui abstraction for calling openBluRay. It's called from
  * OpenBluRayFromFolder()
  */
 void BaseGui::openBluRayFromFolder(QString directory) {
+
 	pref->last_dvd_directory = directory;
-	core->openBluRay( DiscName::join(DiscName::BLURAY, core->firstBlurayTitle(), directory) );
+	core->open(DiscName::join(DiscName::BLURAY, 0, directory));
 }
 
 /**
@@ -4036,12 +3965,12 @@ void BaseGui::openBluRayFromFolder(QString directory) {
 void BaseGui::openBluRay() {
 	qDebug("BaseGui::openBluRay");
 
-	if ( (pref->dvd_device.isEmpty()) || 
-         (pref->cdrom_device.isEmpty()) || pref->bluray_device.isEmpty())
-	{
+	if (pref->dvd_device.isEmpty()
+		|| pref->cdrom_device.isEmpty()
+		|| pref->bluray_device.isEmpty()) {
 		configureDiscDevices();
 	} else {
-		core->openBluRay( DiscName::join(DiscName::BLURAY, core->firstBlurayTitle(), pref->bluray_device) );
+		core->open(DiscName::join(DiscName::BLURAY, 0, pref->bluray_device));
 	}
 }
 
@@ -4056,7 +3985,6 @@ void BaseGui::openBluRayFromFolder() {
 		}
 	}
 }
-#endif
 
 void BaseGui::loadSub() {
 	qDebug("BaseGui::loadSub");
@@ -4315,16 +4243,12 @@ void BaseGui::toggleFullscreen(bool b) {
 
 	updateWidgets();
 
-	if ((pref->add_blackborders_on_fullscreen) && 
-        (!core->mset.add_letterbox)) 
-	{
+	if (pref->add_blackborders_on_fullscreen &&  !core->mset.add_letterbox) {
 		core->changeLetterboxOnFullscreen(b);
-		/* core->restart(); */
 	}
 
 	setFocus(); // Fixes bug #2493415
 }
-
 
 void BaseGui::aboutToEnterFullscreen() {
 	//qDebug("BaseGui::aboutToEnterFullscreen");
@@ -5330,7 +5254,7 @@ void BaseGui::showVideoPreviewDialog() {
 		video_preview->setVideoFile(core->mdat.filename);
 
 		// DVD
-		if (core->mdat.type==TYPE_DVD) {
+		if (MediaData::isDVD(core->mdat.selected_type)) {
 			QString file = core->mdat.filename;
 			DiscData disc_data = DiscName::split(file);
 			QString dvd_folder = disc_data.device;

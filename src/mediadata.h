@@ -30,20 +30,8 @@
 #include <QString>
 #include <QSettings>
 
+#include "discname.h"
 
-// Types of media
-
-#define TYPE_UNKNOWN -1
-#define TYPE_FILE 0
-#define TYPE_DVD 1
-#define TYPE_STREAM 2
-#define TYPE_VCD 3
-#define TYPE_AUDIO_CD 4
-#define TYPE_TV 5
-
-#ifdef BLURAY_SUPPORT
-#define TYPE_BLURAY 6
-#endif
 
 class MediaData {
 
@@ -51,9 +39,28 @@ public:
 	MediaData();
 	virtual ~MediaData();
 
-	virtual void reset(bool clear_filename_and_type = true);
+	virtual void reset(bool clear_filename_and_selected_type = true);
 
-	// Start time from first status line
+
+	QString filename;
+
+	// Types of media
+	enum Type {
+		TYPE_UNKNOWN = -1,
+		TYPE_FILE = 0,
+		TYPE_DVD = DiscName::DVD,
+		TYPE_DVDNAV = DiscName::DVDNAV,
+		TYPE_VCD = DiscName::VCD,
+		TYPE_CDDA = DiscName::CDDA,
+		TYPE_BLURAY = DiscName::BLURAY,
+		TYPE_STREAM,
+		TYPE_TV
+	};
+
+	Type selected_type;
+	Type detected_type;
+
+	// Start time from first status line or reported by player
 	double start_sec;
 	// Start time reported by player
 	double start_sec_prop;
@@ -68,6 +75,7 @@ public:
 	int video_width;
 	int video_height;
 	double video_aspect;
+	double video_fps;
 
 	// Resolution with aspect and filters applied
 	int video_out_width;
@@ -75,15 +83,9 @@ public:
 
 	bool noVideo() { return video_out_width <= 0; } // Can be audio
 
-	double video_fps;
-
-	QString filename;
-	int type; // file, dvd...
 	QString dvd_id;
 
-	bool initialized;
 
-	void list();
 
 #if PROGRAM_SWITCH
 	Tracks programs;
@@ -98,27 +100,37 @@ public:
 
 	int n_chapters;
 
-	// Meta data names and values
-	typedef QMap<QString, QString> MetaData;
-	MetaData meta_data;
 
 	QString stream_title;
 	QString stream_url;
 
 	QString demuxer;
+
 	// Other data not really useful for us,
 	// just to show info to the user.
 	QString video_format;
 	QString audio_format;
+	QString video_codec;
+	QString audio_codec;
 	int video_bitrate;
 	int audio_bitrate;
 	int audio_rate;
-	int audio_nch; // channels?
-	QString video_codec;
-	QString audio_codec;
+	int audio_nch;
 
-	/*QString info();*/
+	// Meta data names and values
+	typedef QMap<QString, QString> MetaData;
+	MetaData meta_data;
+
+	bool initialized;
+
+	static bool isCD(Type type);
+	static bool isDVD(Type type);
+
+	static QString typeToString(Type type);
+	static Type stringToType(QString type);
+
 	QString displayName(bool show_tag = true);
+	void list();
 };
 
 #endif

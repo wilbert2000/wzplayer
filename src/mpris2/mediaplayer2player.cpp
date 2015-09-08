@@ -177,7 +177,7 @@ QVariantMap MediaPlayer2Player::Metadata() const
 	metaData["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(QDBusObjectPath(makeTrackId(md->filename).constData()));
 	metaData["mpris:length"] = md->duration * 1000000;
 
-	if (md->type == TYPE_STREAM)
+	if (md->selected_type == MediaData::TYPE_STREAM)
 		metaData["xesam:url"] = md->stream_url;
 	else
 		metaData["xesam:url"] = md->filename;

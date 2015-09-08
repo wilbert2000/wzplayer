@@ -19,13 +19,13 @@
 #include "discname.h"
 #include <QRegExp>
 
-QString DiscName::joinDVD(int title, const QString & device, bool use_dvdnav) {
-	return join(use_dvdnav ? DVDNAV : DVD, title, device);
+QString DiscName::joinDVD(const QString & device, bool use_dvdnav) {
+	return join(use_dvdnav ? DVDNAV : DVD, 0, device);
 }
 
 QString DiscName::join(const DiscData & d) {
 	QString s = d.protocol + "://";
-	/* if (d.title > 0) */ s += QString::number(d.title);
+	if (d.title > 0) s += QString::number(d.title);
 	if (!d.device.isEmpty()) s+= "/" + removeTrailingSlash(d.device);
 
 	qDebug("DiscName::join: result: '%s'", s.toUtf8().constData());
@@ -45,7 +45,7 @@ QString DiscName::join(Disc type, int title, const QString & device) {
 }
 
 DiscData DiscName::split(const QString & disc_url, bool * ok) {
-	qDebug("DiscName::split: disc_url: '%s'", disc_url.toUtf8().constData());
+	//qDebug("DiscName::split: disc_url: '%s'", disc_url.toUtf8().constData());
 
 	QRegExp rx1("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)/(.*)");
 	QRegExp rx2("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)");
@@ -87,11 +87,11 @@ DiscData DiscName::split(const QString & disc_url, bool * ok) {
 	if (!d.device.isEmpty()) d.device = removeTrailingSlash(d.device);
 
 	if (success) {
-		qDebug("DiscName::split: protocol: '%s'", d.protocol.toUtf8().constData());
-		qDebug("DiscName::split: title: '%d'", d.title);
-		qDebug("DiscName::split: device: '%s'", d.device.toUtf8().constData());
+		//qDebug("DiscName::split: protocol: '%s'", d.protocol.toUtf8().constData());
+		//qDebug("DiscName::split: title: '%d'", d.title);
+		//qDebug("DiscName::split: device: '%s'", d.device.toUtf8().constData());
 	} else {
-		qWarning("DiscName::split: no match in regular expression");
+		qDebug("DiscName::split: invalid url '%s'", disc_url.toUtf8().constData());
 	}
 
 	if (ok != 0) (*ok) = success;

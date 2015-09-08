@@ -37,30 +37,27 @@ QString InfoFile::getInfo(MediaData md) {
 	QFileInfo fi(md.filename);
 
 	QString icon;
-	switch (md.type) {
-		case TYPE_FILE	:	if (md.noVideo())
-								icon = "type_audio.png";
-							else
-								icon = "type_video.png"; 
-							break;
-		case TYPE_DVD	: 	icon = "type_dvd.png"; break;
-		case TYPE_VCD	: 	icon = "type_vcd.png"; break;
-		case TYPE_AUDIO_CD	: 	icon = "type_vcd.png"; break;
-		case TYPE_TV	: 	icon = "type_tv.png"; break;
-		case TYPE_STREAM : 	icon = "type_url.png"; break;
-#ifdef BLURAY_SUPPORT
-		case TYPE_BLURAY : 	icon = "type_bluray.png"; break;
-#endif
-		default 		: 	icon = "type_unknown.png";
+	switch (md.selected_type) {
+		case MediaData::TYPE_FILE:	if (md.noVideo())
+										icon = "type_audio.png";
+									else
+										icon = "type_video.png";
+									break;
+		case MediaData::TYPE_DVD	:	icon = "type_dvd.png"; break;
+		case MediaData::TYPE_DVDNAV	:	icon = "type_dvd.png"; break;
+		case MediaData::TYPE_VCD	:	icon = "type_vcd.png"; break;
+		case MediaData::TYPE_CDDA	:	icon = "type_vcd.png"; break;
+		case MediaData::TYPE_TV		:	icon = "type_tv.png"; break;
+		case MediaData::TYPE_STREAM :	icon = "type_url.png"; break;
+		case MediaData::TYPE_BLURAY :	icon = "type_bluray.png"; break;
+		default						:	icon = "type_unknown.png";
 	}
 	icon = icon.replace(".png", ""); // FIXME
 	icon = "<img src=\"" + Images::file(icon) + "\"> ";
 
-#ifdef BLURAY_SUPPORT
-	if (md.type == TYPE_DVD || md.type == TYPE_BLURAY)
-#else
-	if (md.type == TYPE_DVD)
-#endif
+	if (md.selected_type == MediaData::TYPE_DVD
+		|| md.selected_type == MediaData::TYPE_DVDNAV
+		|| md.selected_type == MediaData::TYPE_BLURAY)
 	{
 		DiscData disc_data = DiscName::split(md.filename);
 		s += title( icon + disc_data.protocol + "://" + QString::number(disc_data.title) );
