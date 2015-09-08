@@ -197,7 +197,7 @@ protected:
 	virtual bool parseProperty(const QString &name, const QString &value);
 
 protected slots:
-	void gotError(QProcess::ProcessError);
+	void processError(QProcess::ProcessError);
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:

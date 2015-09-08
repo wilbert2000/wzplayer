@@ -46,7 +46,7 @@ PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata, QRegExp *r_
 	qRegisterMetaType<Chapters>("Chapters");
 
 	connect( this, SIGNAL(error(QProcess::ProcessError)),
-			 this, SLOT(gotError(QProcess::ProcessError)) );
+			 this, SLOT(processError(QProcess::ProcessError)) );
 
 	connect( this, SIGNAL(finished(int,QProcess::ExitStatus)),
 			 this, SLOT(processFinished(int,QProcess::ExitStatus)) );
