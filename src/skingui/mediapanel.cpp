@@ -297,6 +297,8 @@ void ScrollingLabel::timerEvent(QTimerEvent *) {
 }
 
 ScrollingLabel::ScrollingLabel(QWidget* parent ) {
+	Q_UNUSED(parent)
+
 	scrollPos =0;
 	timerId = -1;
 	scrolling_enabled = false;
