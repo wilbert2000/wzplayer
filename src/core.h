@@ -359,7 +359,7 @@ protected slots:
 	void gotAO(QString);
 
 	void playingStarted();
-    void processFinished();
+	void processFinished(bool normal_exit);
 	void fileReachedEnd();
     
 	void displayMessage(QString text, int duration = 3000, int osd_level = 1);

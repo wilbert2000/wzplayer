@@ -112,8 +112,9 @@ bool PlayerProcess::startPlayer() {
 	return waitForStarted();
 }
 
-void PlayerProcess::gotError(QProcess::ProcessError error) {
-	qWarning("PlayerProcess::gotError: %d", (int) error);
+void PlayerProcess::processError(QProcess::ProcessError error) {
+	qWarning("PlayerProcess::processError: %d", (int) error);
+
 }
 
 // Slot called when the process is finished
@@ -123,7 +124,9 @@ void PlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatu
 	// Send this signal before the endoffile one, otherwise
 	// the playlist will start to play next file before all
 	// objects are notified that the process has exited.
-	emit processExited();
+
+	emit processExited(exitCode == 0 && exitStatus == QProcess::NormalExit);
+
 	if (received_end_of_file)
 		emit receivedEndOfFile();
 }

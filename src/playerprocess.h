@@ -117,7 +117,7 @@ public:
 
 // Signals
 signals:
-	void processExited();
+	void processExited(bool normal_exit);
 	void lineAvailable(QString line);
 	void receivedVideoOutResolution(int, int);
 	void receivedCurrentSec(double sec);

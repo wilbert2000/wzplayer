@@ -98,10 +98,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	proc = PlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
 
-	// Do this the first
-	connect( proc, SIGNAL(processExited()),
-			 mplayerwindow, SLOT(playingStopped()) );
-
 	connect( proc, SIGNAL(error(QProcess::ProcessError)),
 			 mplayerwindow, SLOT(playingStopped()) );
 
@@ -120,8 +116,8 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(receivedPause()),
 			 this, SLOT(changePause()) );
 
-    connect( proc, SIGNAL(processExited()),
-	         this, SLOT(processFinished()), Qt::QueuedConnection );
+	connect( proc, SIGNAL(processExited(bool)),
+			 this, SLOT(processFinished(bool)));
 
 
 	connect( proc, SIGNAL(lineAvailable(QString)),
@@ -240,9 +236,12 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 #ifdef SCREENSAVER_OFF
 	// Windows or OS2 screensaver
 	win_screensaver = new WinScreenSaver();
-	connect( this, SIGNAL(aboutToStartPlaying()), this, SLOT(disableScreensaver()) );
-	connect( proc, SIGNAL(processExited()), this, SLOT(enableScreensaver()) );
-	connect( proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(enableScreensaver()) );
+	connect( this, SIGNAL(aboutToStartPlaying()),
+			 this, SLOT(disableScreensaver()) );
+	connect( proc, SIGNAL(processExited(bool)),
+			 this, SLOT(enableScreensaver()), Qt::QueuedConnection );
+	connect( proc, SIGNAL(error(QProcess::ProcessError)),
+			 this, SLOT(enableScreensaver()), Qt::QueuedConnection );
 #endif
 #endif
 
@@ -980,37 +979,40 @@ void Core::screenshots() {
 	}
 }
 
-void Core::processFinished()
-{
-	qDebug("Core::processFinished: we_are_restarting: %d", we_are_restarting);
+void Core::processFinished(bool normal_exit) {
+	qDebug("Core::processFinished");
 
-	if (!we_are_restarting) {
-		qDebug("Core::processFinished: play has finished!");
+	// First restore normal window background
+	mplayerwindow->playingStopped();
+
+	if (normal_exit) {
+		if (we_are_restarting) {
+			qDebug("Core::processFinished: something tells me we are restarting...");
+		} else {
+			qDebug("Core::processFinished: player finished, entering the stopped state");
+			setState(Stopped);
+		}
+	} else {
+		mplayerwindow->showLogo();
+
+		int exit_code = proc->exitCode();
+		qWarning("Core::processFinished: player crash or error (%d), entering the stopped state.",
+				 exit_code);
 		setState(Stopped);
-	}
 
-	int exit_code = proc->exitCode();
-	qDebug("Core::processFinished: exit_code: %d", exit_code);
-	if (exit_code != 0) {
-		emit mplayerFinishedWithError(exit_code);
+		qDebug("Core::processFinished: emit playerFinishedWithError(%d)", exit_code);
+		emit playerFinishedWithError(exit_code);
 	}
 }
 
 void Core::fileReachedEnd() {
 	qDebug("Core::fileReachedEnd");
 
-	/*
-	if (mdat.type == TYPE_VCD) {
-		// If the first vcd title has nothing, it doesn't start to play
-        // and menus are not initialized.
-		initializeMenus();
-	}
-	*/
-
 	// If we're at the end of the movie, reset to 0
 	mset.current_sec = 0;
 	updateWidgets();
 
+	qDebug("Core::fileReachedEnd: emit mediaFinished()");
 	emit mediaFinished();
 }
 
@@ -1961,7 +1963,7 @@ void Core::stopPlayer() {
 #ifdef Q_OS_OS2
 	QEventLoop eventLoop;
 
-	connect(proc, SIGNAL(processExited()), &eventLoop, SLOT(quit()));
+	connect(proc, SIGNAL(processExited(bool)), &eventLoop, SLOT(quit()));
 
 	proc->quit();
 
