@@ -19,6 +19,7 @@
 #include "deviceinfo.h"
 #include <QProcess>
 #include <QFile>
+#include <QDebug>
 
 #ifdef Q_OS_WIN
 
@@ -110,7 +111,9 @@ DeviceList DeviceInfo::xvAdaptors() {
 		QByteArray line;
 		while (p.canReadLine()) {
 			line = p.readLine();
-			qDebug("DeviceInfo::xvAdaptors: '%s'", line.constData());
+			QString s = QString::fromLocal8Bit(line);
+			s = s.trimmed();
+			qDebug() << "DeviceInfo::xvAdaptors:" << s;
 			if ( rx_device.indexIn(line) > -1 ) {
 				QString id = rx_device.cap(1);
 				QString desc = rx_device.cap(2);
