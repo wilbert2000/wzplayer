@@ -66,6 +66,13 @@ QAction* MyActionGroup::setChecked(int ID) {
 	return 0;
 }
 
+void MyActionGroup::setCheckedSlot(int ID) {
+	qDebug("MyActionGroup::setCheckedSlot: %d", ID);
+
+	setChecked(ID);
+}
+
+
 int MyActionGroup::checked() {
 	QAction * a = checkedAction();
 	if (a) 

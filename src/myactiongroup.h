@@ -86,6 +86,7 @@ signals:
 
 protected slots:
 	void itemTriggered(QAction *);
+	void setCheckedSlot(int ID);
 };
 
 #endif
