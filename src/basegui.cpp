@@ -451,7 +451,6 @@ void BaseGui::createActions() {
              this, SLOT(openDVDFromFolder()) );
 
 	// Bluray section.
-#ifdef BLURAY_SUPPORT
 	openBluRayAct = new MyAction( this, "open_bluray" );
 	connect( openBluRayAct, SIGNAL(triggered()),
              this, SLOT(openBluRay()));
@@ -459,7 +458,6 @@ void BaseGui::createActions() {
 	openBluRayFolderAct = new MyAction( this, "open_bluray_folder" );
 	connect( openBluRayFolderAct, SIGNAL(triggered()),
              this, SLOT(openBluRayFromFolder()));
-#endif
 
 	openURLAct = new MyAction( QKeySequence("Ctrl+U"), this, "open_url" );
 	connect( openURLAct, SIGNAL(triggered()),
@@ -1606,10 +1604,8 @@ void BaseGui::retranslateStrings() {
 	openAudioCDAct->change( Images::icon("cdda"), tr("&Audio CD") );
 	openDVDAct->change( Images::icon("dvd"), tr("&DVD from drive") );
 	openDVDFolderAct->change( Images::icon("dvd_hd"), tr("D&VD from folder...") );
-#ifdef BLURAY_SUPPORT
 	openBluRayAct->change( Images::icon("bluray"), tr("&Blu-ray from drive") );
 	openBluRayFolderAct->change( Images::icon("bluray_hd"), tr("Blu-&ray from folder...") );
-#endif
 	openURLAct->change( Images::icon("url"), tr("&URL...") );
 	exitAct->change( Images::icon("close"), tr("C&lose") );
 
@@ -2400,10 +2396,8 @@ void BaseGui::createMenus() {
 	disc_menu->menuAction()->setObjectName("disc_menu");
 	disc_menu->addAction(openDVDAct);
 	disc_menu->addAction(openDVDFolderAct);
-#ifdef BLURAY_SUPPORT
 	disc_menu->addAction(openBluRayAct);
 	disc_menu->addAction(openBluRayFolderAct);
-#endif
 	disc_menu->addAction(openVCDAct);
 	disc_menu->addAction(openAudioCDAct);
 
