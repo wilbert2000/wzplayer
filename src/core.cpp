@@ -3729,18 +3729,17 @@ void Core::gotSubtitleTrackChanged(int id) {
 
 #if DVDNAV_SUPPORT
 void Core::dvdnavUpdateMousePos(QPoint pos) {
-	// bool under_mouse = mplayerwindow->videoLayer()->underMouse();
 #if 0
 	qDebug("Core::dvdnavUpdateMousePos: %d %d", pos.x(), pos.y());
-	qDebug("Core::dvdnavUpdateMousePos: state: %d", state());
-	qDebug("Core::dvdnavUpdateMousePos: filename: %s", mdat.filename.toUtf8().constData());
 	qDebug("Core::dvdnavUpdateMousePos: dvdnav_title_is_menu: %d", dvdnav_title_is_menu);
-	qDebug("Core::dvdnavUpdateMousePos: under mouse: %d", under_mouse);
 #endif
-	if ((state() == Playing) && (mdat.filename.startsWith("dvdnav:")) && (dvdnav_title_is_menu)) {
-		//if (under_mouse) {
+	// TODO: dvdnav_title_is_menu/discSetMousePos for mpv
+	if (proc->isMPlayer()
+		&& mdat.detectcedType == MediaData::TYPE_DVDNAV
+		&& dvdnav_title_is_menu
+		&& mplayerwindow->videoLayer()->underMouse()
+		&& state() != Stopped) {
 			proc->discSetMousePos(pos.x(), pos.y());
-		//}
 	}
 }
 
