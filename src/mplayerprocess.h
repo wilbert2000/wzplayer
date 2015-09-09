@@ -125,8 +125,14 @@ private:
 	int check_duration_time_diff;
 	bool corrected_duration;
 
+	bool video_tracks_changed;
+	bool audio_tracks_changed;
+	bool subtitle_tracks_changed;
+	bool title_tracks_changed;
+
 	bool want_pause;
 
+	void notifyChanges();
 	void askQuestions();
 	bool parseVO(const QString &driver, int w, int h);
 	bool parseSubID(const QString &type, int id);

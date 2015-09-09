@@ -173,16 +173,11 @@ protected:
 	int waiting_for_answers;
 	int waiting_for_answers_safe_guard;
 
-	bool video_tracks_changed;
-	bool audio_tracks_changed;
-	bool subtitle_tracks_changed;
-
 	int prev_frame;
 
 	double guiTimeToPlayerTime(double sec);
 
 	virtual int getFrame(double time_sec, const QString &line) = 0;
-	void notifyChanges();
 	void notifyDuration(double duration);
 	virtual void correctDuration(double sec);
 	void notifyTime(double time_sec, const QString &line);

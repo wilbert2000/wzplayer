@@ -35,9 +35,12 @@ using namespace Global;
 static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 
 MplayerProcess::MplayerProcess(MediaData *mdata)
-	: PlayerProcess(PlayerID::MPLAYER, mdata, &rx_endoffile)
-	, mplayer_svn(-1) // Not found yet
-	, current_title(-1) {
+	: PlayerProcess(PlayerID::MPLAYER, mdata, &rx_endoffile),
+	svn_version(-1),
+	video_tracks_changed(false),
+	audio_tracks_changed(false),
+	subtitle_tracks_changed(false),
+	title_tracks_changed(false) {
 }
 
 MplayerProcess::~MplayerProcess() {
@@ -273,13 +276,32 @@ int MplayerProcess::getFrame(double sec, const QString &line) {
 	return 0;
 }
 
+void MplayerProcess::notifyChanges() {
+
+	if (video_tracks_changed) {
+		video_tracks_changed = false;
+		qDebug("MplayerProcess::notifyChanges: emit videoTrackInfoChanged");
+		emit receivedVideoTrackInfo();
+	}
+	if (audio_tracks_changed) {
+		audio_tracks_changed = false;
+		qDebug("MplayerProcess::notifyChanges: emit audioTrackInfoChanged");
+		emit receivedAudioTrackInfo();
+	}
+	if (subtitle_tracks_changed) {
+		subtitle_tracks_changed = false;
+		qDebug("MplayerProcess::notifyChanges: emit receivedSubtitleTrackInfo");
+		emit receivedSubtitleTrackInfo();
+	}
+}
+
 bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 
 	if (PlayerProcess::parseStatusLine(time_sec, duration, rx, line))
 		return true;
 
 	if (notified_player_is_running) {
-		// Normal way to go: playing, except for first frame
+		// Normal way to go, playing, except for first frame
 		notifyChanges();
 
 		// Check for changes in duration once in a while.
@@ -306,6 +328,12 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 			qDebug("MplayerProcess::parseStatusLine: setting n_chapters to %d from current title %d",
 				   md->n_chapters, current_title);
 		}
+	// Clear notifications
+	video_tracks_changed = false;
+	audio_tracks_changed = false;
+	subtitle_tracks_changed = false;
+	title_tracks_changed = false;
+
 	}
 
 	// Heat up the GUI.

@@ -34,16 +34,13 @@ PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata, QRegExp *r_
 	, player_id(pid)
 	, md(mdata)
 	, notified_player_is_running(false)
-	, video_tracks_changed(false)
-	, audio_tracks_changed(false)
-	, subtitle_tracks_changed(false)
 	, line_count(0)
 	, received_end_of_file(false)
 	, rx_eof(r_eof)
 {
-	qRegisterMetaType<SubTracks>("SubTracks");
-	qRegisterMetaType<Tracks>("Tracks");
-	qRegisterMetaType<Chapters>("Chapters");
+	//qRegisterMetaType<SubTracks>("SubTracks");
+	//qRegisterMetaType<Maps::TTracks>("Tracks");
+	//qRegisterMetaType<Chapters>("Chapters");
 
 	connect( this, SIGNAL(error(QProcess::ProcessError)),
 			 this, SLOT(processError(QProcess::ProcessError)) );
@@ -56,8 +53,9 @@ PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata, QRegExp *r_
 }
 
 void PlayerProcess::writeToStdin(QString text) {
+	qDebug("PlayerProcess::writeToStdin: %s", text.toUtf8().constData());
+
 	if (isRunning()) {
-		qDebug("PlayerProcess::writeToStdin: %s", text.toUtf8().constData());
 		#ifdef Q_OS_WIN
 		write( text.toUtf8() + "\n");
 		#else
@@ -155,24 +153,7 @@ void PlayerProcess::parseBytes(QByteArray ba) {
 	}
 }
 
-void PlayerProcess::notifyChanges() {
 
-	// Only called for changes after fully loaded
-
-	if (video_tracks_changed) {
-		video_tracks_changed = false;
-		qDebug("PlayerProcess::notifyChanges: emit videoTracksChanged");
-		emit videoTracksChanged();
-	}
-	if (audio_tracks_changed) {
-		audio_tracks_changed = false;
-		qDebug("PlayerProcess::notifyChanges: emit audioTracksChanged");
-		emit audioTracksChanged();
-	}
-	if (subtitle_tracks_changed) {
-		subtitle_tracks_changed = false;
-		qDebug("PlayerProcess::notifyChanges: emit subtitleTracksChanged");
-		emit subtitleTracksChanged();
 	}
 }
 
@@ -193,11 +174,6 @@ bool PlayerProcess::waitForAnswers() {
 void PlayerProcess::playingStarted() {
 
 	notified_player_is_running = true;
-
-	// Clear notifications
-	video_tracks_changed = false;
-	audio_tracks_changed = false;
-	subtitle_tracks_changed = false;
 
 	// emit resolution unqueued
 	qDebug("PlayerProcess::playingStarted: emit receivedVideoOutResolution()");
