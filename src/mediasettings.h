@@ -27,6 +27,7 @@
 #include <QSize>
 #include <QPoint>
 #include "config.h"
+#include "mediadata.h"
 #include "subtracks.h"
 #include "audioequalizerlist.h"
 
@@ -55,7 +56,7 @@ public:
 
 	enum SubFPS { SFPS_None, SFPS_23, SFPS_24, SFPS_25, SFPS_30, SFPS_23976, SFPS_29970 };
 
-	MediaSettings();
+	MediaSettings(MediaData* mdat);
 	virtual ~MediaSettings();
 
 	virtual void reset();
@@ -190,6 +191,11 @@ public:
 	void save(QSettings * set, int player_id);
 	void load(QSettings * set, int player_id);
 #endif
+
+private:
+	MediaData* md;
+	void convertOldSelectedTrack(int &id);
+	void convertOldSelectedSub(int idx, SubData &sub);
 };
 
 #endif

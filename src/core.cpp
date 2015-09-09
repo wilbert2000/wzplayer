@@ -72,6 +72,8 @@ using namespace Global;
 
 Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	: QObject( parent ),
+	  mdat(),
+	  mset(&mdat),
 	  pos_max(position_max)
 {
 	qRegisterMetaType<Core::State>("Core::State");

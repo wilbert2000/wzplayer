@@ -53,7 +53,7 @@ public:
 	void setOSDLevel(int level);
 	void setAudio(int ID);
 	void setVideo(int ID);
-	void setSubtitle(int type, int ID);
+	void setSubtitle(SubData::Type type, int ID);
 	void disableSubtitles();
 	void setSecondarySubtitle(int ID);
 	void disableSecondarySubtitles();

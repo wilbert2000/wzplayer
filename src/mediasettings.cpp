@@ -24,9 +24,11 @@
 #include "mediasettings.h"
 #include "maps/tracks.h"
 #include "subtracks.h"
+
 using namespace Global;
 
-MediaSettings::MediaSettings() {
+MediaSettings::MediaSettings(MediaData *mdat) {
+	md = mdat;
 	reset();
 }
 
@@ -325,32 +327,61 @@ void MediaSettings::save(QSettings * set, int player_id) {
 #endif
 
 	set->beginGroup(demuxer_section);
-	set->setValue( "current_sub_idx", current_sub_idx );
+
+	// Is this too agressive writing towards NoneSelected?
+	if (current_video_id > md->videos.firstID())
+		set->setValue("current_video_id", current_video_id);
+	else set->setValue("current_video_id", NoneSelected );
+	if (current_audio_id > md->audios.firstID())
+		set->setValue("current_audio_id", current_video_id);
+	else set->setValue("current_audio_id", NoneSelected );
+
+	// Old config
+	set->remove("current_sub_id");
+
 	#ifdef MPV_SUPPORT
-	set->setValue( "current_secondary_sub_id", current_secondary_sub_id );
+	set->setValue( "current_secondary_sub_idx", current_secondary_sub_idx );
 	#endif
 	#if PROGRAM_SWITCH
 	set->setValue( "current_program_id", current_program_id );
 	#endif
-	set->setValue( "current_video_id", current_video_id );
-	set->setValue( "current_audio_id", current_audio_id );
+
 	set->endGroup();
+
+	// Subtitles
+	// Used to be in demux group as index "current_sub_id"
+	// Player group is compromise between the needs of
+	// internal and external subs
+	SubData sub = md->subs.itemAt(current_sub_idx);
+	set->setValue("sub_type", sub.type());
+	set->setValue("sub_id", sub.ID());
+
+	// Used to be outside player group as "external_subtitles"
+	set->setValue("sub_filename", sub.filename());
 
 	set->endGroup(); // player
 
+	// Old config
+	set->remove("external_subtitles");
+
+	set->setValue( "external_subtitles_fps", external_subtitles_fps );
 
 	set->setValue( "current_sec", current_sec );
 
-	set->setValue( "current_title_id", current_title_id );
-	set->setValue( "current_chapter_id", current_chapter_id );
+	// Is this too agressive?
+	if (current_title_id > md->titles.firstID())
+		set->setValue( "current_title_id", current_title_id );
+	else set->setValue( "current_title_id", NoneSelected );
+
+	// Old config
+	set->remove( "current_chapter_id" );
+
 	set->setValue( "current_angle_id", current_angle_id );
 
 	set->setValue( "aspect_ratio", aspect_ratio_id );
 	//set->setValue( "fullscreen", fullscreen );
 	set->setValue( "volume", volume );
 	set->setValue( "mute", mute );
-	set->setValue( "external_subtitles", external_subtitles );
-	set->setValue( "external_subtitles_fps", external_subtitles_fps );
 	set->setValue( "external_audio", external_audio );
 	set->setValue( "sub_delay", sub_delay);
 	set->setValue( "audio_delay", audio_delay);
@@ -415,6 +446,29 @@ void MediaSettings::save(QSettings * set, int player_id) {
 	set->setValue( "is264andHD", is264andHD );
 }
 
+void MediaSettings::convertOldSelectedTrack(int &id) {
+
+	// const int oldNoneSelected = -1000;
+
+	if (id < NoneSelected) {
+		id = NoneSelected;
+	}
+}
+
+void MediaSettings::convertOldSelectedSub(int idx, SubData &sub) {
+
+	const int oldSubNone = 90000;
+
+	if (idx == oldSubNone) {
+		sub.setID(SubNone);
+	} else if (idx >= 0) {
+		qWarning("MediaSettings::convertOldSelectedSub: converted old config");
+		sub.setType(SubData::Sub);
+		sub.setID(idx);
+	}
+}
+
+
 void MediaSettings::load(QSettings * set, int player_id) {
 	qDebug("MediaSettings::load");
 
@@ -441,33 +495,47 @@ void MediaSettings::load(QSettings * set, int player_id) {
 	qDebug("MediaSettings::load: demuxer_section: %s", demuxer_section.toUtf8().constData());
 
 	set->beginGroup(demuxer_section);
-	// Used to be called current_sub_id
-	current_sub_idx = set->value( "current_sub_id", NoneSelected ).toInt();
-	current_sub_idx = set->value( "current_sub_idx", current_sub_idx ).toInt();
-	#ifdef MPV_SUPPORT
-	current_secondary_sub_id = set->value( "current_secondary_sub_id", NoneSelected ).toInt();
-	#endif
-	#if PROGRAM_SWITCH
-	current_program_id = set->value( "current_program_id", NoneSelected ).toInt();
-	#endif
+
 	current_video_id = set->value( "current_video_id", NoneSelected ).toInt();
+	convertOldSelectedTrack(current_video_id);
 	current_audio_id = set->value( "current_audio_id", NoneSelected ).toInt();
+	convertOldSelectedTrack(current_audio_id);
+
+	// Old config
+	current_sub_idx = set->value( "current_sub_id", NoneSelected ).toInt();
+
+#ifdef MPV_SUPPORT
+	current_secondary_sub_idx = set->value( "current_secondary_sub_id", NoneSelected ).toInt();
+#endif
+
+#if PROGRAM_SWITCH
+	current_program_id = set->value( "current_program_id", NoneSelected ).toInt();
+#endif
+
 	set->endGroup();
+
+	convertOldSelectedSub(current_sub_idx, sub);
+	current_sub_idx = NoneSelected;
+	sub.setType((SubData::Type) set->value( "sub_type", sub.type()).toInt());
+	sub.setID(set->value("sub_id", sub.ID()).toInt());
+	sub.setFilename(set->value("sub_filename", sub.filename()).toString());
 
 	set->endGroup(); // player
 
+	// Old config
+	if (sub.filename().isEmpty()) {
+		sub.setFilename(set->value("external_subtitles", "").toString());
+	}
 
 	current_sec = set->value( "current_sec", current_sec).toDouble();
 
 	current_title_id = set->value( "current_title_id", current_title_id ).toInt();
-	current_chapter_id = set->value( "current_chapter_id", current_chapter_id ).toInt();
 	current_angle_id = set->value( "current_angle_id", current_angle_id ).toInt();
 
 	aspect_ratio_id = set->value( "aspect_ratio", aspect_ratio_id ).toInt();
 	//fullscreen = set->value( "fullscreen", fullscreen ).toBool();
 	volume = set->value( "volume", volume ).toInt();
 	mute = set->value( "mute", mute ).toBool();
-	external_subtitles = set->value( "external_subtitles", external_subtitles ).toString();
 	external_subtitles_fps = set->value( "external_subtitles_fps", external_subtitles_fps ).toInt();
 	external_audio = set->value( "external_audio", external_audio ).toString();
 	sub_delay = set->value( "sub_delay", sub_delay).toInt();

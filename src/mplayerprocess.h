@@ -53,7 +53,7 @@ public:
 	void setOSDLevel(int level);
 	void setAudio(int ID);
 	void setVideo(int ID);
-	void setSubtitle(int type, int ID);
+	void setSubtitle(SubData::Type type, int ID);
 	void disableSubtitles();
 	void setSecondarySubtitle(int) {};
 	void disableSecondarySubtitles() {};
@@ -117,6 +117,10 @@ protected:
 private:
 	int svn_version;
 
+	int sub_source;
+	int sub_demux;
+	int sub_vob;
+	int sub_file;
 	int sub_id_filename;
 
 	double check_duration_time;
@@ -131,7 +135,8 @@ private:
 	bool want_pause;
 
 	void notifyChanges();
-	void askQuestions();
+
+	void getSelectedTracks();
 	bool parseVO(const QString &driver, int w, int h);
 	bool parseSubID(const QString &type, int id);
 	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);

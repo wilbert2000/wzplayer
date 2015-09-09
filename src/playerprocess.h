@@ -62,7 +62,7 @@ public:
 	virtual void setOSDLevel(int level) = 0;
 	virtual void setAudio(int ID) = 0;
 	virtual void setVideo(int ID) = 0;
-	virtual void setSubtitle(int type, int ID) = 0;
+	virtual void setSubtitle(SubData::Type type, int ID) = 0;
 	virtual void disableSubtitles() = 0;
 	virtual void setSecondarySubtitle(int ID) = 0;
 	virtual void disableSecondarySubtitles() = 0;

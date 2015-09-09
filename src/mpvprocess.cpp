@@ -603,8 +603,13 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 		arg << "--sub-delay=" + value.toString();
 	}
 	else
+	if (option_name == "sub_demux" || option_name == "sub_file") {
+		arg << "--sid=" + value.toString();
+	}
+	else
 	if (option_name == "sub") {
-		arg << "--sub-file=" + value.toString();
+		sub_file = value.toString();
+		arg << "--sub-file=" + sub_file;
 	}
 	else
 	if (option_name == "subpos") {
@@ -948,21 +953,30 @@ void MPVProcess::setVideo(int ID) {
 	writeToStdin("set vid " + QString::number(ID));
 }
 
-void MPVProcess::setSubtitle(int type, int ID) {
-	Q_UNUSED(type)
+void MPVProcess::setSubtitle(SubData::Type type, int ID) {
+
 	writeToStdin("set sid " + QString::number(ID));
+	md->subs.setSelected(type, ID);
+	emit receivedSubtitleTrackChanged(ID);
 }
 
 void MPVProcess::disableSubtitles() {
+
 	writeToStdin("set sid no");
+	md->subs.clearSelected();
+	emit receivedSubtitleTrackChanged(-1);
 }
 
 void MPVProcess::setSecondarySubtitle(int ID) {
 	writeToStdin("set secondary-sid " + QString::number(ID));
+	md->subs.setSelectedSecondaryID(ID);
+	//emit receivedSecondarySubtitleTrackChanged(ID);
 }
 
 void MPVProcess::disableSecondarySubtitles() {
 	writeToStdin("set secondary-sid no");
+	md->subs.setSelectedSecondaryID(-1);
+	//emit receivedSecondarySubtitleTrackChanged(ID);
 }
 
 void MPVProcess::setSubtitlesVisibility(bool b) {
@@ -1036,10 +1050,10 @@ void MPVProcess::setChapter(int ID) {
 }
 
 void MPVProcess::setExternalSubtitleFile(const QString & filename) {
+
 	writeToStdin("sub_add \""+ filename +"\"");
-	//writeToStdin("print_text ${track-list}");
-	// No longer needed
-	// writeToStdin("print_text \"INFO_TRACKS_COUNT=${=track-list/count}\"");
+	// Remeber filename to add to subs when MPV is done with it
+	sub_file = filename;
 }
 
 void MPVProcess::setSubPos(int pos) {
