@@ -808,15 +808,35 @@ void Core::initSubs() {
 void Core::newMediaPlaying() {
 	qDebug("Core::newMediaPlaying");
 
+	mdat.initialized = true;
+	mdat.list();
+	mset.list();
+
+	// Switch disc to detected protocol
+	if (mdat.detected_type != MediaData::TYPE_UNKNOWN
+		&& mdat.selected_type != mdat.detected_type
+		&& MediaData::isDisc(mdat.detected_type)) {
+		bool valid_name;
+		DiscData disc = DiscName::split(mdat.filename, &valid_name);
+		if (!valid_name) {
+			disc.device = mdat.filename;
+			if (mset.current_title_id < 0) disc.title = 0;
+			else disc.title = mset.current_title_id;
+		}
+		QString protocol = MediaData::typeToString(mdat.detected_type);
+		disc.protocol = protocol;
+		mdat.filename = DiscName::join(disc);
+		qDebug() << "Core::newMediaPlaying: switched filename from selected protocol"
+				 << MediaData::typeToString(mdat.selected_type)
+				 << "to detected protocol" << protocol;
+		mdat.selected_type = mdat.detected_type;
+	}
+
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
 
 	initAudioTracks();
 	initSubs();
-
-	mdat.initialized = true;
-	mdat.list();
-	mset.list();
 
 	qDebug("Core::newMediaPlaying: emit mediaStartPlay()");
 	emit mediaStartPlay();
