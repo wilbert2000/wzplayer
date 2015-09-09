@@ -2163,17 +2163,12 @@ void Core::toggleRepeat() {
 
 void Core::toggleRepeat(bool b) {
 	qDebug("Core::toggleRepeat: %d", b);
+
 	if ( mset.loop != b ) {
 		mset.loop = b;
-		if (MplayerVersion::isMplayerAtLeast(23747)) {
-			// Use slave command
-			int v = -1; // no loop
-			if (mset.loop) v = 0; // infinite loop
-			proc->setLoop(v);
-		} else {
-			// Restart mplayer
-			if (proc->isRunning()) restartPlay();
-		}
+		int v = -1; // no loop
+		if (mset.loop) v = 0; // infinite loop
+		proc->setLoop(v);
 	}
 }
 
@@ -2187,12 +2182,7 @@ void Core::toggleKaraoke(bool b) {
 	qDebug("Core::toggleKaraoke: %d", b);
 	if (b != mset.karaoke_filter) {
 		mset.karaoke_filter = b;
-		if (MplayerVersion::isMplayerAtLeast(31030)) {
-			// Change filter without restarting
-			proc->enableKaraoke(b);
-		} else {
-			restartPlay();
-		}
+		proc->enableKaraoke(b);
 	}
 }
 
@@ -2204,12 +2194,7 @@ void Core::toggleExtrastereo(bool b) {
 	qDebug("Core::toggleExtrastereo: %d", b);
 	if (b != mset.extrastereo_filter) {
 		mset.extrastereo_filter = b;
-		if (MplayerVersion::isMplayerAtLeast(31030)) {
-			// Change filter without restarting
-			proc->enableExtrastereo(b);
-		} else {
-			restartPlay();
-		}
+		proc->enableExtrastereo(b);
 	}
 }
 
@@ -2221,13 +2206,8 @@ void Core::toggleVolnorm(bool b) {
 	qDebug("Core::toggleVolnorm: %d", b);
 	if (b != mset.volnorm_filter) {
 		mset.volnorm_filter = b;
-		if (MplayerVersion::isMplayerAtLeast(31030)) {
-			// Change filter without restarting
-			QString f = pref->filters->item("volnorm").filter();
-			proc->enableVolnorm(b, pref->filters->item("volnorm").options());
-		} else {
-			restartPlay();
-		}
+		QString f = pref->filters->item("volnorm").filter();
+		proc->enableVolnorm(b, pref->filters->item("volnorm").options());
 	}
 }
 
