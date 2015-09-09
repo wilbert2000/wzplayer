@@ -405,13 +405,9 @@ void Preferences::reset() {
 
 	pause_when_hidden = false;
 
-#ifdef SKINS
-	gui = "SkinGUI";
-	iconset = "Gonzo";
-#else
 	gui = "DefaultGUI";
-	iconset = "";
-#endif
+	iconset = "H2O";
+
 
 #if USE_MINIMUMSIZE
 	gui_minimum_width = 0; // 0 == disabled
