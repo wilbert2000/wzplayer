@@ -418,32 +418,14 @@ bool PlayerProcess::parseVideoProperty(const QString &name, const QString &value
 
 bool PlayerProcess::parseMetaDataProperty(QString name, QString value) {
 
-	/*
-	static QString accepted_names(
-		";"
-		"NAME;"
-		"TITLE;"
-		"AUTHOR;"
-		"ARTIST;"
-		"TRACK;"
-		"ALBUM;"
-		"GENRE;"
-		"YEAR;"
-		"DATE;"
-		"CREATION DATE;"
-		"COMMENT;"
-		"SOFTWARE;"
-		"COPYRIGHT;"
-	);
-	*/
-
 	name = name.toUpper();
 	value = value.trimmed();
 
-	if (value.isEmpty())
+	if (value.isEmpty()) {
+		qDebug("PlayerProcess::parseMetaDataProperty: value empty");
 		return false;
+	}
 
-	// if (accepted_names.contains(";" + name + ";"))
 	md->meta_data[name] = value;
 	qDebug() << "PlayerProcess::parseMetaDataProperty:" << name << "set to" << value;
 	return true;
