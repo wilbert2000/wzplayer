@@ -146,13 +146,25 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "TITLES") {
 		int n_titles = value.toInt();
-		// TODO: get duration prop disc-title-list/%id/length
 		qDebug("MPVProcess::parseProperty: creating %d titles", n_titles);
-		for (int id = 0; id < n_titles; id++) {
-			md->titles.addName(id, QString::number(id + 1));
-			// writeToStdin(QString("print_text \"TITLE_%1=${=disc-title-list/%1/length:}\"").arg(id));
+		for (int idx = 0; idx < n_titles; idx++) {
+			md->titles.addID(idx + 1);
+			writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1 ${=disc-title-list/%1/length:}\"").arg(idx));
 		}
-		//waiting_for_answers += md->titles.count();
+		waiting_for_answers += n_titles;
+		return true;
+	}
+	if (name == "TITLE_LENGTH") {
+		static QRegExp rx_title_length("^(\\d+) (.*)");
+		if (rx_title_length.indexIn(value) >= 0) {
+			int idx = rx_title_length.cap(1).toInt();
+			// if "" player does not know or support prop
+			if (!rx_title_length.cap(2).isEmpty()) {
+				double length = rx_title_length.cap(2).toDouble();
+				md->titles.addDuration(idx + 1, length);
+			}
+		}
+		waiting_for_answers--;
 		return true;
 	}
 	if (name == "MEDIA_TITLE") {
@@ -177,12 +189,19 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	bool parsed = PlayerProcess::parseProperty(name, value);
 
-	if (name == "CHAPTERS" && md->n_chapters > 0) {
-		qDebug("MPVProcess::parseProperty: requesting start and title chapters");
+	if (name == "CHAPTERS") {
+		qDebug("MPVProcess::parseProperty: requesting start and title of %d chapter(s)", md->n_chapters);
 		for (int n = 0; n < md->n_chapters; n++) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
 		waiting_for_answers += md->n_chapters;
+		// Remember chapters if from selected title
+		int id = md->titles.getSelectedID();
+		if (id >= 0) {
+			qDebug("MPVProcess::parseProperty: added %d chapter(s) to title id %d", md->n_chapters, id);
+			md->titles.addChapters(id, md->n_chapters);
+		}
+		return true;
 	}
 
 	return parsed;
@@ -290,8 +309,7 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 		convertChaptersToTitles();
 	}
 
-	// Base class sets notified_player_is_running to true and
-	// emits signals setVideoResolution unqueued and playerFullyLoaded queued
+	// Base class sets notified_player_is_running to true
 	playingStarted();
 
 	// Wait some secs to ask for bitrate
@@ -436,13 +454,6 @@ bool MPVProcess::parseLine(QString &line) {
 		return parseAudioProperty(rx_audio_property.cap(1),
 								  rx_audio_property.cap(2));
 	}
-
-/*
-	// Track info
-	if (rx_trackinfo.indexIn(line) >= 0) {
-		return parseTrackInfo(rx_trackinfo);
-	}
-*/
 
 	// Chapter id, time and title
 	if (rx_chapter.indexIn(line) >= 0) {
