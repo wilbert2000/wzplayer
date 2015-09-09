@@ -122,6 +122,9 @@ private:
 	QString mpv_version;
 	bool verbose;
 
+	bool received_buffering;
+
+	QString sub_file;
 
 	QString previous_eq;
 

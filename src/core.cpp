@@ -3582,6 +3582,10 @@ void Core::displayBuffering() {
 	emit showMessage(tr("Buffering..."));
 }
 
+void Core::displayBufferingEnded() {
+	emit showMessage(tr("Playing from %1").arg(Helper::formatTime(mset.current_sec)));
+}
+
 void Core::gotVideoOutResolution(int w, int h) {
 	qDebug("Core::gotVideoOutResolution: %d x %d", w, h);
 

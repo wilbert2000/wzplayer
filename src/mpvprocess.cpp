@@ -52,6 +52,8 @@ MPVProcess::~MPVProcess() {
 
 bool MPVProcess::startPlayer() {
 
+	received_buffering = false;
+
 	osd_centered_x = false;
 	osd_centered_y = false;
 
@@ -252,6 +254,7 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 
 	if (buffering or idle) {
 		//qDebug("MPVProcess::parseStatusLine: buffering");
+		received_buffering = true;
 		emit receivedBuffering();
 		return true;
 	}
@@ -259,6 +262,10 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	// Playing
 	if (notified_player_is_running) {
 		// Normal way to go: playing, except for first frame
+		if (received_buffering) {
+			received_buffering = false;
+			emit receivedBufferingEnded();
+		}
 		return true;
 	}
 

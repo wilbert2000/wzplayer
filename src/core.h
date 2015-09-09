@@ -364,6 +364,7 @@ protected slots:
 	void displayScreenshotName(QString filename);
 	void displayUpdatingFontCache();
 	void displayBuffering();
+	void displayBufferingEnded();
 
 	void streamTitleChanged(QString);
 	void streamTitleAndUrlChanged(QString,QString);
