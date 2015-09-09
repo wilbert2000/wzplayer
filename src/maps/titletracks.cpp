@@ -25,7 +25,7 @@ namespace Maps {
 TTitleData::TTitleData() :
 	TData(),
 	name(),
-	duration(),
+	duration(-1),
 	chapters(-1),
 	angles(-1),
 	isTrack(false) {
