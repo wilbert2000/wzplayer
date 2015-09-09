@@ -96,6 +96,14 @@ bool MediaData::isDVD(Type type) {
 	return type == TYPE_DVD || type == TYPE_DVDNAV;
 }
 
+bool MediaData::isDisc(Type type) {
+	return type == TYPE_DVD
+			|| type == TYPE_DVDNAV
+			|| type == TYPE_VCD
+			|| type == TYPE_CDDA
+			|| type == TYPE_BLURAY;
+}
+
 QString MediaData::displayName(bool show_tag) {
 	if (show_tag) {
 		QString name = meta_data.value("NAME");
