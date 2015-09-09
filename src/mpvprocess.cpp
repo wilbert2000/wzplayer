@@ -58,29 +58,51 @@ bool MPVProcess::startPlayer() {
 	return PlayerProcess::startPlayer();
 }
 
-#ifdef TRACK_INFO
-bool MPVProcess::parseTrackInfo(QRegExp &rx) {
+bool MPVProcess::parseVideoTrack(int id, const QString &name, bool selected) {
 
-	QString type = rx.cap(2);
-	int id = rx.cap(3).toInt();
-	bool selected = rx.cap(4) == "yes";
-	QString lang = rx.cap(5);
-	QString name = rx.cap(6).trimmed();
-
-	// One track less to go
-	wait_for_track_info--;
-
-	if (type == "video") {
-		return md->videos.updateTrack(id, lang, name, selected);
+	// Note lang "". Track info has lang.
+	if (md->videos.updateTrack(id, "", name, selected)) {
+		if (notified_player_is_running)
+			emit receivedVideoTrackInfo();
+		return true;
 	}
-
-	if (type == "audio") {
-		return updateAudioTrack(id, lang, name, selected);
-	}
-
-	return updateSubtitleTrack(id, lang, name, selected);
+	return false;
 }
-#endif
+
+bool MPVProcess::parseAudioTrack(int id, const QString &lang, const QString &name, bool selected) {
+
+	if (md->audios.updateTrack(id, lang, name, selected)) {
+		if (notified_player_is_running)
+			emit receivedAudioTrackInfo();
+		return true;
+	}
+	return false;
+}
+
+bool MPVProcess::parseSubtitleTrack(int id,
+									const QString &lang,
+									const QString &name,
+									bool selected,
+									bool external) {
+
+	SubData::Type type;
+	QString filename;
+	if (external) {
+		type = SubData::File;
+		filename = sub_file;
+	} else {
+		type = SubData::Sub;
+	}
+
+	if (md->subs.update(type, id, lang, name, filename, selected)) {
+		if (notified_player_is_running)
+			emit receivedSubtitleTrackInfo();
+		return true;
+	}
+
+	return false;
+}
+
 
 bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
@@ -90,7 +112,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		return true;
 	}
 
-#ifdef TRACK_INFO
+/*
 	if (name == "TRACKS_COUNT") {
 		int tracks = value.toInt();
 		qDebug("MPVProcess::parseProperty: requesting track info for %d tracks", tracks);
@@ -104,14 +126,17 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		}
 		return true;
 	}
-#endif
+*/
 
 	if (name == "TITLES") {
 		int n_titles = value.toInt();
+		// TODO: get duration prop disc-title-list/%id/length
+		qDebug("MPVProcess::parseProperty: creating %d titles", n_titles);
 		for (int id = 0; id < n_titles; id++) {
 			md->titles.addName(id, QString::number(id + 1));
+			// writeToStdin(QString("print_text \"TITLE_%1=${=disc-title-list/%1/length:}\"").arg(id));
 		}
-		qDebug("MPVProcess::parseProperty: added %d titles", n_titles);
+		//waiting_for_answers += md->titles.count();
 		return true;
 	}
 	if (name == "MEDIA_TITLE") {
@@ -136,12 +161,10 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	bool parsed = PlayerProcess::parseProperty(name, value);
 
-	if (name == "CHAPTERS") {
-		// Ask for chapter titles
-		if (md->n_chapters > 0)
-			qDebug("MPVProcess::parseProperty: requesting start and title chapters");
+	if (name == "CHAPTERS" && md->n_chapters > 0) {
+		qDebug("MPVProcess::parseProperty: requesting start and title chapters");
 		for (int n = 0; n < md->n_chapters; n++) {
-			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} ${chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
+			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
 		waiting_for_answers += md->n_chapters;
 	}
@@ -149,23 +172,17 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	return parsed;
 }
 
-void MPVProcess::parseChapter(int id, const QString &start, const QString &start_str, QString title) {
+bool MPVProcess::parseChapter(int id, double start, QString title) {
 
 	waiting_for_answers--;
 
-	if (title.isEmpty()) {
-		// If both start and title are empty the prop is not supported
-		if (start.isEmpty())
-			return;
-		title = QString::number(id + 1);
-	}
-	title += "  (" + start_str + ")";
+	md->chapters.addChapter(id, title, start);
 
-	md->chapters.addStart(id, start.toDouble());
-	md->chapters.addName(id, title);
+	qDebug() << "MPVProcess::parseChapter: added chapter id" << id
+			 << "starting at" << start << "with title" << title;
+	return true;
+}
 
-	qDebug() << "MPVProcess::parseChapter: added chapter id" << id << "starting at" << start_str
-			 << "with title" << title;
 }
 
 int MPVProcess::getFrame(double time_sec, const QString &line) {
@@ -188,21 +205,20 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	bool idle = rx.cap(5) == "yes";
 
 	if (paused) {
-		qDebug("MPVProcess::parseStatusLine: paused");
-		receivedPause();
+		//qDebug("MPVProcess::parseStatusLine: paused");
+		emit receivedPause();
 		return true;
 	}
 
 	if (buffering or idle) {
-		qDebug("MPVProcess::parseStatusLine: buffering");
-		receivedBuffering();
+		//qDebug("MPVProcess::parseStatusLine: buffering");
+		emit receivedBuffering();
 		return true;
 	}
 
 	// Playing
 	if (notified_player_is_running) {
 		// Normal way to go: playing, except for first frame
-		notifyChanges();
 		return true;
 	}
 
@@ -225,7 +241,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 	static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)([ \\(\\)\\*]+)('(.*)'|)");
 	static QRegExp rx_audio_track("^(.*)Audio\\s+--aid=(\\d+)(\\s+--alang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
-	static QRegExp rx_subs("^(.*)Subs\\s+--sid=(\\d+)(\\s+--slang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
+	static QRegExp rx_subtitle_track("^(.*)Subs\\s+--sid=(\\d+)(\\s+--slang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)(.*external)?");
 
 	static QRegExp rx_dsize("^VIDEO_DSIZE=(\\d+)x(\\d+)");
 	static QRegExp rx_vo("^VO: \\[(.*)\\]");
@@ -238,11 +254,11 @@ bool MPVProcess::parseLine(QString &line) {
 
 	static QRegExp rx_meta_data("^METADATA_([A-Z]+)=\\s*(.*)");
 
-#ifdef TRACK_INFO
+/*
 	static QRegExp rx_trackinfo("^TRACK_INFO_(\\d+)=(audio|video|sub) (\\d+) (yes|no) '(.*)' '(.*)'");
-#endif
+*/
 
-	static QRegExp rx_chapter("^CHAPTER_(\\d+)=(.*) (.*) '(.*)'");
+	static QRegExp rx_chapter("^CHAPTER_(\\d+)=([0-9\\.-]+) '(.*)'");
 
 #if DVDNAV_SUPPORT
 	static QRegExp rx_switch_title("^\\[dvdnav\\] DVDNAV, switched to title:\\s+(\\d+)");
@@ -263,39 +279,45 @@ bool MPVProcess::parseLine(QString &line) {
 							   rx_status, line);
 	}
 
+	// Let parent have a look at it
 	if (PlayerProcess::parseLine(line))
 		return true;
 
 	// Video id, lang "", name and selected
 	// If enabled, track info does give lang
 	if (rx_video_track.indexIn(line) >= 0) {
-		bool changed = md->videos.updateTrack(rx_video_track.cap(2).toInt(),
-											  "",
-											  rx_video_track.cap(5).trimmed(),
-											  rx_video_track.cap(1) != "");
-		if (changed) video_tracks_changed = true;
-		return changed;
+		return parseVideoTrack(rx_video_track.cap(2).toInt(),
+							   rx_video_track.cap(5).trimmed(),
+							   rx_video_track.cap(1) != "");
 	}
 
 	// Audio id, name, lang and selected
 	if (rx_audio_track.indexIn(line) >= 0) {
-		bool changed = md->audios.updateTrack(rx_audio_track.cap(2).toInt(),
-											  rx_audio_track.cap(4),
-											  rx_audio_track.cap(7).trimmed(),
-											  rx_audio_track.cap(1) != "");
-		if (changed) audio_tracks_changed = true;
-		return changed;
+		return parseAudioTrack(rx_audio_track.cap(2).toInt(),
+							   rx_audio_track.cap(4),
+							   rx_audio_track.cap(7).trimmed(),
+							   rx_audio_track.cap(1) != "");
+	}
+
+	// Subtitles id, lang, name, selected and external
+	if (rx_subtitle_track.indexIn(line) >= 0) {
+		return parseSubtitleTrack(rx_subtitle_track.cap(2).toInt(),
+								  rx_subtitle_track.cap(4),
+								  rx_subtitle_track.cap(7).trimmed(),
+								  rx_subtitle_track.cap(1) != "",
+								  rx_subtitle_track.cap(8) != "");
 	}
 
 	// VO
 	if (rx_vo.indexIn(line) >= 0) {
+		QString vo = rx_vo.cap(1);
+		qDebug() << "MVPProcess::parseLine: emit receivedVO(" << vo << ")";
+		emit receivedVO(vo);
+
 		// Ask for video out resolution
 		writeToStdin("print_text VIDEO_DSIZE=${=dwidth}x${=dheight}");
 		waiting_for_answers++;
 
-		QString vo = rx_vo.cap(1);
-		qDebug() << "MVPProcess::parseLine: emit receivedVO(" << vo << ")";
-		emit receivedVO(vo);
 		return true;
 	}
 
@@ -345,28 +367,18 @@ bool MPVProcess::parseLine(QString &line) {
 								  rx_audio_property.cap(2));
 	}
 
-	// Subtitles id, lang, name and selected
-	if (rx_subs.indexIn(line) >= 0) {
-		bool changed = md->subs.update(rx_subs.cap(2).toInt(),
-									   rx_subs.cap(4),
-									   rx_subs.cap(7).trimmed(),
-									   rx_subs.cap(1) != "");
-		if (changed) subtitle_tracks_changed = true;
-		return changed;
-	}
-
-#ifdef TRACK_INFO
+/*
 	// Track info
 	if (rx_trackinfo.indexIn(line) >= 0) {
 		return parseTrackInfo(rx_trackinfo);
 	}
-#endif
+*/
 
 	// Chapter id, time and title
 	if (rx_chapter.indexIn(line) >= 0) {
-		parseChapter(rx_chapter.cap(1).toInt(), rx_chapter.cap(2),
-					 rx_chapter.cap(3), rx_chapter.cap(4).trimmed());
-		return true;
+		return parseChapter(rx_chapter.cap(1).toInt(),
+							rx_chapter.cap(2).toDouble(),
+							rx_chapter.cap(3).trimmed());
 	}
 
 	// Property INFO_name and value
@@ -416,10 +428,6 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 	arg << "--term-playing-msg="
 		"INFO_MPV_VERSION=${=mpv-version:}\n"
 
-#ifdef TRACK_INFO
-		"INFO_TRACKS_COUNT=${=track-list/count}\n"
-#endif
-
 		"VIDEO_WIDTH=${=width}\n"
 		"VIDEO_HEIGHT=${=height}\n"
 		"VIDEO_ASPECT=${=video-aspect}\n"
@@ -441,6 +449,7 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 
 		"INFO_TITLES=${=disc-titles}\n"
 		"INFO_CHAPTERS=${=chapters}\n"
+//		"INFO_TRACKS_COUNT=${=track-list/count}\n"
 
 		// TODO: check name, author, comment etc.
 		"METADATA_TITLE=${metadata/by-key/title:}\n"
@@ -1064,6 +1073,7 @@ void MPVProcess::setTitle(int ID) {
 
 #if DVDNAV_SUPPORT
 void MPVProcess::discSetMousePos(int x, int y) {
+	// TODO:
 	qDebug("MPVProcess::discSetMousePos: %d %d", x, y);
 	//writeToStdin(QString("discnav mouse_move %1 %2").arg(x).arg(y));
 	// mouse_move doesn't accept options :?

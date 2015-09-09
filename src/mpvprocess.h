@@ -122,10 +122,6 @@ private:
 	QString mpv_version;
 	bool verbose;
 
-#ifdef TRAC_INFO
-	int wait_for_track_info;
-	int wait_for_track_info_safe_guard;
-#endif
 
 	QString previous_eq;
 
@@ -134,8 +130,10 @@ private:
 	bool osd_centered_y;
 
 	void parseStatusLine(QRegExp &rx);
-	void parseChapter(int id, const QString &start, const QString &start_str, QString title);
-	bool parseTrackInfo(QRegExp &rx);
+	bool parseChapter(int id, double start, QString title);
+	bool parseVideoTrack(int id, const QString &name, bool selected);
+	bool parseAudioTrack(int id, const QString &lang, const QString &name, bool selected);
+	bool parseSubtitleTrack(int id, const QString &lang, const QString &name, bool selected, bool external);
 };
 
 #endif

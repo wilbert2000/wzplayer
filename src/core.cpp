@@ -184,14 +184,20 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	connect( this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection );
 
-	connect( proc, SIGNAL(videoTracksChanged()),
-			 this, SLOT(updateVideoTracks()), Qt::QueuedConnection );
+	connect( proc, SIGNAL(receivedVideoTrackInfo()),
+			 this, SIGNAL(videoTrackInfoChanged()));
+	connect( proc, SIGNAL(receivedVideoTrackChanged(int)),
+			 this, SIGNAL(videoTrackChanged(int)));
 
-	connect( proc, SIGNAL(audioTracksChanged()),
-			 this, SLOT(updateAudioTracks()), Qt::QueuedConnection );
+	connect( proc, SIGNAL(receivedAudioTrackInfo()),
+			 this, SIGNAL(audioTrackInfoChanged()));
+	connect( proc, SIGNAL(receivedAudioTrackChanged(int)),
+			 this, SIGNAL(audioTrackChanged(int)));
 
-	connect( proc, SIGNAL(subtitleTracksChanged()),
-			 this, SLOT(updateSubtitleTracks()), Qt::QueuedConnection );
+	connect( proc, SIGNAL(receivedSubtitleTrackInfo()),
+			 this, SLOT(gotSubtitleTrackInfo()));
+	connect( proc, SIGNAL(receivedSubtitleTrackChanged(int)),
+			 this, SLOT(gotSubtitleTrackChanged(int)));
 
 	connect( proc, SIGNAL(durationChanged(double)),
 			 this, SIGNAL(newDuration(double)));
@@ -3825,41 +3831,23 @@ void Core::checkIfVideoIsHD() {
 	}
 }
 
-// Called when playerprocess finds new track info or changes selected track
-// after player full loaded
-void Core::updateVideoTracks() {
-	qDebug("Core::updateTracks");
+void Core::gotSubtitleTrackInfo() {
+	qDebug("Core::gotSubtitleTrackInfo");
 
-	initVideoTracks();
-
-	// TODO: move to basegui?
-	initializeMenus();
-	updateWidgets();
+	// Need to set current_sub_idx, the subtitle group checks on it.
+	mset.current_sub_idx = mdat.subs.findSelectedIdx();
+	emit subtitleTrackInfoChanged();
 }
 
-// Called when playerprocess finds new track info or changes selected track
-// after player full loaded, like when loading new external audio file.
-void Core::updateAudioTracks() {
-	qDebug("Core::updateTracks");
+// Called when player changed subtitle track
+void Core::gotSubtitleTrackChanged(int id) {
+	Q_UNUSED(id)
+	qDebug("Core::gotSubtitleTrackChanged");
 
-	initAudioTracks();
-
-	// TODO: move to basegui?
-	initializeMenus();
-	updateWidgets();
-
-	emit audioTracksChanged();
-}
-
-// Called after loading new external sub file
-void Core::updateSubtitleTracks() {
-	qDebug("Core::updateSubtitleTracks");
-
-	initSubs();
-
-	// TODO: move to basegui?
-	initializeMenus();
-	updateWidgets();
+	// Need to set current_sub_idx, the subtitle group checks on it.
+	int selected_idx = mdat.subs.findSelectedIdx();
+	mset.current_sub_idx = selected_idx;
+	emit subtitleTrackChanged(selected_idx);
 }
 
 #if DVDNAV_SUPPORT

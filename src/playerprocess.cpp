@@ -172,15 +172,17 @@ bool PlayerProcess::waitForAnswers() {
 }
 
 void PlayerProcess::playingStarted() {
+	qDebug("PlayerProcess::playingStarted");
 
 	notified_player_is_running = true;
 
-	// emit resolution unqueued
-	qDebug("PlayerProcess::playingStarted: emit receivedVideoOutResolution()");
 	emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
 
-	// emit playerFullyLoaded queued
-	qDebug("PlayerProcess::playingStarted: queued emit playerFullyLoaded()");
+	emit receivedVideoTrackInfo();
+	emit receivedAudioTrackInfo();
+	emit receivedSubtitleTrackInfo();
+
+	qDebug("PlayerProcess::playingStarted: emit playerFullyLoaded()");
 	emit playerFullyLoaded();
 }
 
@@ -197,7 +199,8 @@ void PlayerProcess::notifyDuration(double duration) {
 
 void PlayerProcess::correctDuration(double sec) {
 	Q_UNUSED(sec)
-	// Only needed by mplayer.
+
+	// MPlayer only
 }
 
  // 2^33 / 90 kHz

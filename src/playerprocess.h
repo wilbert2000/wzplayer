@@ -118,7 +118,11 @@ public:
 // Signals
 signals:
 	void processExited(bool normal_exit);
+
+	void playerFullyLoaded();
+
 	void lineAvailable(QString line);
+
 	void receivedVideoOutResolution(int, int);
 	void receivedCurrentSec(double sec);
 	void receivedCurrentFrame(int frame);
@@ -126,7 +130,6 @@ signals:
 	void receivedVO(QString);
 	void receivedAO(QString);
 	void receivedEndOfFile();
-	void playerFullyLoaded();
 
 	void receivedCacheMessage(QString);
 	void receivedCacheEmptyMessage(QString);
@@ -145,13 +148,22 @@ signals:
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
 
 	//! Emitted if a new video track has been added or an old one changed
-	void videoTracksChanged();
+	void receivedVideoTrackInfo();
+
+	//! Emitted if player changed video track
+	void receivedVideoTrackChanged(int);
 
 	//! Emitted if a new audio track has been added or an old one changed
-	void audioTracksChanged();
+	void receivedAudioTrackInfo();
+
+	//! Emitted if player changed audio track
+	void receivedAudioTrackChanged(int);
 
 	//! Emitted if a new subtitle has been added or an old one changed
-	void subtitleTracksChanged();
+	void receivedSubtitleTrackInfo();
+
+	//! Emitted if player changed subtitle track
+	void receivedSubtitleTrackChanged(int);
 
 	void durationChanged(double);
 

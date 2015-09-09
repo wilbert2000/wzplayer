@@ -380,9 +380,8 @@ protected slots:
 	//! the resolution is HD
 	void checkIfVideoIsHD();
 
-	void updateVideoTracks();
-	void updateAudioTracks();
-	void updateSubtitleTracks();
+	void gotSubtitleTrackInfo();
+	void gotSubtitleTrackChanged(int id);
 
 #if DVDNAV_SUPPORT
 	void dvdTitleChanged(int);
@@ -446,7 +445,12 @@ signals:
 	void needResize(int w, int h);
 	void noVideo();
 	void volumeChanged(int);
-	void audioTracksChanged();
+	void videoTrackInfoChanged();
+	void videoTrackChanged(int);
+	void audioTrackInfoChanged();
+	void audioTrackChanged(int);
+	void subtitleTrackInfoChanged();
+	void subtitleTrackChanged(int);
 
 	//! Sent when requested to play, but there is no file to play
 	void noFileToPlay();

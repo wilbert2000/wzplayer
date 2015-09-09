@@ -105,8 +105,8 @@ public:
 
 
 protected:
-	virtual void correctDuration(double sec);
 	virtual int getFrame(double sec, const QString &line);
+	virtual void correctDuration(double sec);
 
 	virtual bool parseLine(QString &line);
 	virtual bool parseStatusLine(double seconds, double duration, QRegExp &rx, QString &line);
@@ -137,6 +137,9 @@ private:
 	bool parseVO(const QString &driver, int w, int h);
 	bool parseSubID(const QString &type, int id);
 	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);
+	bool parseChapter(int id, const QString &type, const QString &value);
+	bool parseCDTrack(const QString &type, int id, const QString &length);
+	bool parseTitle(int id, const QString &field, const QString &value);
 	bool parseAnswer(const QString &name, const QString &value);
 	bool parsePause();
 };
