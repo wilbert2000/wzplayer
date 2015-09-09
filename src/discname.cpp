@@ -28,7 +28,7 @@ QString DiscName::join(const DiscData & d) {
 	if (d.title > 0) s += QString::number(d.title);
 	if (!d.device.isEmpty()) s+= "/" + removeTrailingSlash(d.device);
 
-	qDebug("DiscName::join: result: '%s'", s.toUtf8().constData());
+	//qDebug("DiscName::join: result: '%s'", s.toUtf8().constData());
 	return s;
 }
 
