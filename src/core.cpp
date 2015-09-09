@@ -3735,7 +3735,7 @@ void Core::dvdnavUpdateMousePos(QPoint pos) {
 #endif
 	// TODO: dvdnav_title_is_menu/discSetMousePos for mpv
 	if (proc->isMPlayer()
-		&& mdat.detectcedType == MediaData::TYPE_DVDNAV
+		&& mdat.detected_type == MediaData::TYPE_DVDNAV
 		&& dvdnav_title_is_menu
 		&& mplayerwindow->videoLayer()->underMouse()
 		&& state() != Stopped) {
