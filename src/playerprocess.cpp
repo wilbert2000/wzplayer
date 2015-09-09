@@ -98,6 +98,7 @@ bool PlayerProcess::startPlayer() {
 	waiting_for_answers_safe_guard = 50;
 
 	received_end_of_file = false;
+	quit_send = false;
 
 	prev_frame = -11111;
 
@@ -298,6 +299,8 @@ bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &r
 
 bool PlayerProcess::parseLine(QString &line) {
 
+	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
+
 	// Trim line
 	line = line.trimmed();
 	if (line.isEmpty())
@@ -309,23 +312,25 @@ bool PlayerProcess::parseLine(QString &line) {
 	// Output line to logs
 	emit lineAvailable(line);
 
+	if (quit_send) {
+		qDebug("PlayerProcess::parseLine: ignored, waiting for quit to arrive");
+		return true;
+	}
+
+	if (rx_no_disk.indexIn(line) >= 0) {
+		qWarning("PlayerProcess::parseLine: no disc in device");
+		quit_send = true;
+		// ENOMEDIUM, 159, is linux specific, but does the job
+		writeToStdin("quit 159");
+		return true;
+	}
+
 	// End of file
 	if (rx_eof->indexIn(line) > -1)  {
 		qDebug("PlayerProcess::parseLine: detected end of file");
 
-		// TODO:
 		if (!received_end_of_file) {
 			received_end_of_file = true;
-
-			// In case of playing VCDs or DVDs, maybe the first title
-			// is not playable, so the GUI doesn't get the info about
-			// available titles. So if we received the end of file
-			// first let's pretend the file has started so the GUI can have
-			// the data.
-			if ( !notified_player_is_running) {
-				notified_player_is_running = true;
-				emit playerFullyLoaded();
-			}
 
 			// Send signal in processFinished(),
 			// once the process is finished, not now!

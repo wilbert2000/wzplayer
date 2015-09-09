@@ -137,6 +137,7 @@ signals:
 	void receivedConnectingToMessage(QString);
 	void receivedResolvingMessage(QString);
 	void receivedBuffering();
+	void receivedBufferingEnded();
 	void receivedScreenshot(QString);
 	void receivedUpdatingFontCache();
 	void receivedScanningFont(QString);
@@ -214,6 +215,7 @@ private:
 	int waiting_for_answers_safe_guard;
 
 	bool received_end_of_file;
+	bool quit_send;
 
 	int prev_frame;
 
