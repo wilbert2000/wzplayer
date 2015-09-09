@@ -19,18 +19,15 @@
 #ifndef _MEDIADATA_H_
 #define _MEDIADATA_H_
 
-/* Here we store some volatile info about the file we need to remember */
-
-#include "tracks.h"
-#include "subtracks.h"
-#include "titletracks.h"
-#include "chapters.h"
-#include "config.h"
-
 #include <QString>
 #include <QSettings>
 
+#include "config.h"
 #include "discname.h"
+#include "maps/tracks.h"
+#include "subtracks.h"
+#include "maps/titletracks.h"
+#include "maps/chapters.h"
 
 
 class MediaData {
@@ -85,21 +82,18 @@ public:
 
 	QString dvd_id;
 
+	Maps::TTracks videos;
+	Maps::TTracks audios;
+	SubTracks subs;
 
+	int n_chapters;
+	Maps::TChapters chapters;
+
+	Maps::TTitleTracks titles;
 
 #if PROGRAM_SWITCH
 	Tracks programs;
 #endif
-	Tracks videos;
-	Tracks audios;
-	TitleTracks titles; // for DVDs
-
-	SubTracks subs;
-
-	Chapters chapters;
-
-	int n_chapters;
-
 
 	QString stream_title;
 	QString stream_url;

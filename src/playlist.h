@@ -129,6 +129,7 @@ public slots:
 	virtual bool save_pls(QString file);
 
 	virtual void getMediaInfo();
+	void playerSwitchedTitle(int id);
 
 	void setModified(bool);
 

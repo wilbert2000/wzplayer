@@ -129,8 +129,10 @@ private:
 	bool osd_centered_x;
 	bool osd_centered_y;
 
+	void convertChaptersToTitles();
 	void parseStatusLine(QRegExp &rx);
 	bool parseChapter(int id, double start, QString title);
+	bool parseSwitchedTitle(const QString &disc_type, int id);
 	bool parseVideoTrack(int id, const QString &name, bool selected);
 	bool parseAudioTrack(int id, const QString &lang, const QString &name, bool selected);
 	bool parseSubtitleTrack(int id, const QString &lang, const QString &name, bool selected, bool external);

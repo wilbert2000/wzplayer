@@ -70,6 +70,7 @@ public:
 	void close();
 
 	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; };
+	bool haveExternalSubs();
 
 protected:
 	//! Change the current state (Stopped, Playing or Paused)
@@ -256,21 +257,23 @@ public slots:
 	void setAudioEq9(int value);
 
 	void changeDeinterlace(int);
-	void changeSubtitle(int idx, bool updateWidgets = true);
-	void nextSubtitle();
+
+	void changeVideoTrack(int id);
+	void nextVideoTrack();
+	void changeAudioTrack(int id, bool allow_restart = true);
+	void nextAudioTrack();
+	void changeSubtitleTrack(int idx);
+	void nextSubtitleTrack();
 #ifdef MPV_SUPPORT
 	void changeSecondarySubtitle(int idx);
 #endif
-	void changeAudio(int id, bool allow_restart = true);
-	void nextAudio();
-	void changeVideo(int id);
-	void nextVideo();
+
 #if PROGRAM_SWITCH
 	void changeProgram(int ID);
 	void nextProgram();
 #endif
-	void changeTitle(int);
-	void changeChapter(int);
+	void changeTitle(int id);
+	void changeChapter(int id);
 	void prevChapter();
 	void nextChapter();
 	void changeAngle(int);
@@ -338,11 +341,6 @@ public slots:
 	void clearOSD(int level = 1);
 
 public:
-	//! Returns the number of the first chapter in 
-	//! files. In some versions of mplayer is 0, in others 1
-	static int firstChapter();
-	int firstDVDTitle();
-	int firstBlurayTitle();
 
 #ifndef NO_USE_INI_FILES
 	void changeFileSettingsMethod(QString method);
@@ -352,8 +350,8 @@ protected:
 	void seek_cmd(double secs, int mode);
 
 protected slots:
-    void changeCurrentSec(double sec);
-    void changePause();
+	void gotCurrentSec(double sec);
+	void gotPause();
 	void gotVideoOutResolution(int w, int h);
 	void gotVO(QString);
 	void gotAO(QString);
@@ -384,7 +382,6 @@ protected slots:
 	void gotSubtitleTrackChanged(int id);
 
 #if DVDNAV_SUPPORT
-	void dvdTitleChanged(int);
 	void dvdnavUpdateMousePos(QPoint);
 	void dvdTitleIsMenu();
 	void dvdTitleIsMovie();
@@ -415,7 +412,6 @@ protected:
 	void saveMediaInfo();
 #endif
 
-    void initializeMenus();
 	void updateWidgets();
 
 	int adjustVolume(int v, int max_vol);
@@ -433,7 +429,6 @@ signals:
 	void mediaStoppedByUser();
 	void showMessage(QString text);
 	void showMessage(QString text, int time);
-	void menusNeedInitialize();
 	void widgetsNeedUpdate();
 	void videoEqualizerNeedsUpdate();
 	void audioEqualizerNeedsUpdate();
@@ -451,15 +446,17 @@ signals:
 	void audioTrackChanged(int);
 	void subtitleTrackInfoChanged();
 	void subtitleTrackChanged(int);
+	void titleTrackInfoChanged();
+	void titleTrackChanged(int);
 
 	//! Sent when requested to play, but there is no file to play
 	void noFileToPlay();
 
-	//! MPlayer started but finished with exit code != 0
-	void mplayerFinishedWithError(int exitCode);
+	//! Player started but finished with exit code != 0
+	void playerFinishedWithError(int exitCode);
 
-	//! MPlayer didn't started or crashed
-	void mplayerFailed(QProcess::ProcessError error);
+	//! Player didn't started or crashed
+	void playerFailed(QProcess::ProcessError error);
 
 	// Resend signal from mplayerprocess:
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
@@ -518,7 +515,6 @@ private:
 	void getZoomFromMplayerWindow();
 	void getPanFromMplayerWindow();
 	void pan(int dx, int dy);
-	void initVideoTracks();
 	void initAudioTracks();
 	void initSubs();
 	void setExternalSubs(const QString &filename);

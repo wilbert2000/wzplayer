@@ -153,7 +153,19 @@ void PlayerProcess::parseBytes(QByteArray ba) {
 	}
 }
 
+void PlayerProcess::notifyTitleTrackChanged(int new_id) {
 
+	if (new_id != md->titles.getSelectedID()) {
+		qDebug("PlayerProcess::notifyTitleTrackChanged: title changed from %d to %d",
+			   md->titles.getSelectedID(), new_id);
+		md->titles.setSelectedID(new_id);
+		if (notified_player_is_running) {
+			qDebug("PlayerProcess::notifyTitleTrackChanged: emit receivedTitleTrackChanged()");
+			emit receivedTitleTrackChanged(new_id);
+		}
+	} else {
+		qDebug("PlayerProcess::notifyTitleTrackChanged: current title already set to %d",
+			   new_id);
 	}
 }
 
@@ -181,6 +193,7 @@ void PlayerProcess::playingStarted() {
 	emit receivedVideoTrackInfo();
 	emit receivedAudioTrackInfo();
 	emit receivedSubtitleTrackInfo();
+	emit receivedTitleTrackInfo();
 
 	qDebug("PlayerProcess::playingStarted: emit playerFullyLoaded()");
 	emit playerFullyLoaded();
@@ -190,9 +203,9 @@ void PlayerProcess::notifyDuration(double duration) {
 
 	// Duration changed?
 	if (duration > 0 && qAbs(duration - md->duration) > 0.001) {
-		qDebug("MPVProcess::notifyDuration: duration changed from %f to %f", md->duration, duration);
+		qDebug("PlayerProcess::notifyDuration: duration changed from %f to %f", md->duration, duration);
 		md->duration = duration;
-		qDebug("MPVProcess::notifyDuration: emit durationChanged(%f)", duration);
+		qDebug("PlayerProcess::notifyDuration: emit durationChanged(%f)", duration);
 		emit durationChanged(duration);
 	}
 }
@@ -218,20 +231,27 @@ double PlayerProcess::guiTimeToPlayerTime(double sec) {
 	return sec;
 }
 
+double PlayerProcess::playerTimeToGuiTime(double sec) {
+
+	// Substract start time grounding start time at 0
+	sec -= md->start_sec;
+
+	// Handle MPEG-TS PTS timestamp rollover
+	if (sec < 0 && md->demuxer == "mpegts") {
+		sec += ts_rollover;
+	}
+
+	return sec;
+}
+
 void PlayerProcess::notifyTime(double time_sec, const QString &line) {
 
 	// Store video timestamp
 	md->time_sec = time_sec;
 
-	// Substract start time grounding start time at 0
-	time_sec -= md->start_sec;
+	time_sec = playerTimeToGuiTime(time_sec);
 
-	// Handle MPEG-TS PTS timestamp rollover
-	if (time_sec < 0 && md->demuxer == "mpegts") {
-		time_sec += ts_rollover;
-	}
-
-	// Only for mplayer
+	// See if duration in range
 	correctDuration(time_sec);
 
 	// Pass timestamp to GUI

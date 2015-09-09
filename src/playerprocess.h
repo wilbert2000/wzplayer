@@ -165,10 +165,12 @@ signals:
 	//! Emitted if player changed subtitle track
 	void receivedSubtitleTrackChanged(int);
 
+	void receivedTitleTrackInfo();
+	void receivedTitleTrackChanged(int);
+
 	void durationChanged(double);
 
 #if DVDNAV_SUPPORT
-	void receivedDVDTitle(int);
 	void receivedTitleIsMenu();
 	void receivedTitleIsMovie();
 #endif
@@ -183,13 +185,12 @@ protected:
 
 	bool notified_player_is_running;
 	int waiting_for_answers;
-	int waiting_for_answers_safe_guard;
-
-	int prev_frame;
 
 	double guiTimeToPlayerTime(double sec);
+	double playerTimeToGuiTime(double sec);
 
 	virtual int getFrame(double time_sec, const QString &line) = 0;
+	void notifyTitleTrackChanged(int new_id);
 	void notifyDuration(double duration);
 	virtual void correctDuration(double sec);
 	void notifyTime(double time_sec, const QString &line);
@@ -209,7 +210,13 @@ protected slots:
 
 private:
 	int line_count;
+
+	int waiting_for_answers_safe_guard;
+
 	bool received_end_of_file;
+
+	int prev_frame;
+
 	QRegExp* rx_eof;
 };
 

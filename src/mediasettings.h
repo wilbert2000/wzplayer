@@ -27,6 +27,7 @@
 #include <QSize>
 #include <QPoint>
 #include "config.h"
+#include "subtracks.h"
 #include "audioequalizerlist.h"
 
 class QSettings;
@@ -49,7 +50,8 @@ public:
                   Counterclockwise = 2, Counterclockwise_flip = 3 };
 
 	// Must be < 0, any ID >= 0 can be valid
-	enum IDs { NoneSelected = -3, SubNone = -2 };
+	// SubNone must be -1, because that is used by the player process for SubNone
+	enum IDs { NoneSelected = -2, SubNone = -1 };
 
 	enum SubFPS { SFPS_None, SFPS_23, SFPS_24, SFPS_25, SFPS_30, SFPS_23976, SFPS_29970 };
 

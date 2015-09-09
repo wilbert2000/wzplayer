@@ -17,10 +17,13 @@
 */
 
 #include "infofile.h"
+
 #include <QFileInfo>
 #include <QCoreApplication>
+
 #include "discname.h"
 #include "images.h"
+#include "maps/tracks.h"
 
 
 InfoFile::InfoFile() {
@@ -123,7 +126,7 @@ QString InfoFile::getInfo(MediaData md) {
 	s += closePar();
 
 	// Audio Tracks
-	if (md.audios.numItems() > 0) {
+	if (md.audios.count() > 0) {
 		s += openPar( tr("Audio Streams") );
 		row++;
 		s += openItem();
@@ -131,23 +134,29 @@ QString InfoFile::getInfo(MediaData md) {
               tr("Language") + "</td><td>" + tr("Name") +"</td><td>" +
               tr("ID", "Info for translators: this is a identification code") + "</td>";
 		s += closeItem();
-		for (int n = 0; n < md.audios.numItems(); n++) {
+
+		Maps::TTracks::TTrackIterator i = md.audios.getIterator();
+		int n = 0;
+		do {
+			i.next();
+			Maps::TTrackData track = i.value();
 			row++;
+			n++;
 			s += openItem();
-			QString lang = md.audios.itemAt(n).lang();
+			QString lang = track.getLang();
 			if (lang.isEmpty()) lang = "<i>&lt;"+tr("empty")+"&gt;</i>";
-			QString name = md.audios.itemAt(n).name();
+			QString name = track.getName();
 			if (name.isEmpty()) name = "<i>&lt;"+tr("empty")+"&gt;</i>";
 			s += QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
                  .arg(n).arg(lang).arg(name)
-                 .arg(md.audios.itemAt(n).ID());
+				 .arg(track.getID());
 			s += closeItem();
-		}
+		} while (i.hasNext());
 		s += closePar();
 	}
 
 	// Subtitles
-	if (md.subs.numItems() > 0) {
+	if (md.subs.count() > 0) {
 		s += openPar( tr("Subtitles") );
 		row++;
 		s += openItem();
@@ -156,7 +165,7 @@ QString InfoFile::getInfo(MediaData md) {
               tr("Language") + "</td><td>" + tr("Name") +"</td><td>" +
               tr("ID", "Info for translators: this is a identification code") + "</td>";
 		s += closeItem();
-		for (int n = 0; n < md.subs.numItems(); n++) {
+		for (int n = 0; n < md.subs.count(); n++) {
 			row++;
 			s += openItem();
 			QString t;

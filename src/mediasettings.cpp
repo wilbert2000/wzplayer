@@ -16,12 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mediasettings.h"
-#include "preferences.h"
-#include "global.h"
 #include <QDebug>
 #include <QSettings>
 
+#include "global.h"
+#include "preferences.h"
+#include "mediasettings.h"
+#include "maps/tracks.h"
+#include "subtracks.h"
 using namespace Global;
 
 MediaSettings::MediaSettings() {

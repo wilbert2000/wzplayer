@@ -1038,13 +1038,13 @@ void BaseGui::createActions() {
 	connect( incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()) );
 
 	nextVideoAct = new MyAction( this, "next_video");
-	connect( nextVideoAct, SIGNAL(triggered()), core, SLOT(nextVideo()) );
+	connect( nextVideoAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()) );
 
 	nextAudioAct = new MyAction( Qt::Key_K, this, "next_audio");
-	connect( nextAudioAct, SIGNAL(triggered()), core, SLOT(nextAudio()) );
+	connect( nextAudioAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()) );
 
 	nextSubtitleAct = new MyAction( Qt::Key_J, this, "next_subtitle");
-	connect( nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()) );
+	connect( nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitleTrack()) );
 
 	nextChapterAct = new MyAction( Qt::Key_At, this, "next_chapter");
 	connect( nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()) );
@@ -1233,25 +1233,62 @@ void BaseGui::createActions() {
 
 	// Video track
 	videoTrackGroup = new MyActionGroup(this);
-	connect( videoTrackGroup, SIGNAL(activated(int)), 
-	         core, SLOT(changeVideo(int)) );
+	connect( videoTrackGroup, SIGNAL(activated(int)),
+			 core, SLOT(changeVideoTrack(int)) );
+	connect( core, SIGNAL(videoTrackInfoChanged()),
+			 this, SLOT(updateVideoTracks()) );
+	connect( core, SIGNAL(videoTrackChanged(int)),
+			 videoTrackGroup, SLOT(setCheckedSlot(int)) );
 
 	// Audio track
 	audioTrackGroup = new MyActionGroup(this);
-	connect( audioTrackGroup, SIGNAL(activated(int)), 
-	         core, SLOT(changeAudio(int)) );
+	connect( audioTrackGroup, SIGNAL(activated(int)),
+			 core, SLOT(changeAudioTrack(int)) );
+	connect( core, SIGNAL(audioTrackInfoChanged()),
+			 this, SLOT(updateAudioTracks()) );
+	connect( core, SIGNAL(audioTrackChanged(int)),
+			 audioTrackGroup, SLOT(setCheckedSlot(int)) );
 
-	// Subtitle track
 	subtitleTrackGroup = new MyActionGroup(this);
-	connect( subtitleTrackGroup, SIGNAL(activated(int)), 
-	         core, SLOT(changeSubtitle(int)) );
+	connect( subtitleTrackGroup, SIGNAL(activated(int)),
+			 core, SLOT(changeSubtitleTrack(int)) );
+	connect( core, SIGNAL(subtitleTrackInfoChanged()),
+			 this, SLOT(updateSubtitleTracks()) );
+	connect( core, SIGNAL(subtitleTrackChanged(int)),
+			 subtitleTrackGroup, SLOT(setCheckedSlot(int)) );
 
 #ifdef MPV_SUPPORT
 	// Secondary subtitle track
 	secondarySubtitleTrackGroup = new MyActionGroup(this);
 	connect( secondarySubtitleTrackGroup, SIGNAL(activated(int)), 
 	         core, SLOT(changeSecondarySubtitle(int)) );
+	// InfoChanged already connected by subtitleTrackGroup
+	// checked not needed
+	// connect( core, SIGNAL(secondarySubtitleTrackChanged(int)),
+	//		 secondarySubtitleTrackGroup, SLOT(setCheckedSlot(int)) );
 #endif
+
+	// Titles
+	titleGroup = new MyActionGroup(this);
+	connect( titleGroup, SIGNAL(activated(int)),
+			 core, SLOT(changeTitle(int)) );
+	connect( core, SIGNAL(titleTrackChanged(int)),
+			 titleGroup, SLOT(setCheckedSlot(int)));
+	connect( core, SIGNAL(titleTrackInfoChanged()),
+			 this, SLOT(updateTitles()));
+
+	// Chapters
+	chapterGroup = new MyActionGroup(this);
+	connect( chapterGroup, SIGNAL(activated(int)),
+			 core, SLOT(changeChapter(int)) );
+	// Update done by updateTitles
+
+	// Angles
+	angleGroup = new MyActionGroup(this);
+	connect( angleGroup, SIGNAL(activated(int)),
+			 core, SLOT(changeAngle(int)) );
+	// Update done by updateTitles
+
 
 	ccGroup = new MyActionGroup(this);
 	ccNoneAct = new MyActionGroupItem(this, ccGroup, "cc_none", 0);
@@ -1273,20 +1310,6 @@ void BaseGui::createActions() {
 	connect( subFPSGroup, SIGNAL(activated(int)),
              core, SLOT(changeExternalSubFPS(int)) );
 
-	// Titles
-	titleGroup = new MyActionGroup(this);
-	connect( titleGroup, SIGNAL(activated(int)),
-			 core, SLOT(changeTitle(int)) );
-
-	// Angles
-	angleGroup = new MyActionGroup(this);
-	connect( angleGroup, SIGNAL(activated(int)),
-			 core, SLOT(changeAngle(int)) );
-
-	// Chapters
-	chapterGroup = new MyActionGroup(this);
-	connect( chapterGroup, SIGNAL(activated(int)),
-			 core, SLOT(changeChapter(int)) );
 
 #if DVDNAV_SUPPORT
 	dvdnavUpAct = new MyAction(Qt::SHIFT | Qt::Key_Up, this, "dvdnav_up");
@@ -1469,7 +1492,7 @@ void BaseGui::enableActionsOnPlaying() {
 	audioEqualizerAct->setEnabled(pref->use_audio_equalizer);
 
 	// Disable audio actions if there's not audio track
-	if ((core->mdat.audios.numItems()==0) && (core->mset.external_audio.isEmpty())) {
+	if ((core->mdat.audios.count() == 0) && (core->mset.external_audio.isEmpty())) {
 		audioEqualizerAct->setEnabled(false);
 		muteAct->setEnabled(false);
 		decVolumeAct->setEnabled(false);
@@ -2059,8 +2082,7 @@ void BaseGui::retranslateStrings() {
 	logs_menu->menuAction()->setIcon( Images::icon("logs") );
 #endif
 
-	// To be sure that the "<empty>" string is translated
-	initializeMenus();
+	// TODO: make sure the "<empty>" string is translated
 
 	// Other things
 #ifdef LOG_MPLAYER
@@ -2105,8 +2127,6 @@ void BaseGui::createCore() {
 
 	core = new Core( mplayerwindow, this, SEEKBAR_RESOLUTION);
 
-	connect( core, SIGNAL(menusNeedInitialize()),
-             this, SLOT(initializeMenus()) );
 	connect( core, SIGNAL(widgetsNeedUpdate()),
              this, SLOT(updateWidgets()) );
 	connect( core, SIGNAL(videoEqualizerNeedsUpdate()),
@@ -2152,9 +2172,6 @@ void BaseGui::createCore() {
 
 	connect( core, SIGNAL(noFileToPlay()), this, SLOT(gotNoFileToPlay()) );
 
-	connect( core, SIGNAL(audioTracksChanged()),
-             this, SLOT(enableActionsOnPlaying()) );
-
 	connect( core, SIGNAL(mediaFinished()),
              this, SLOT(disableActionsOnStop()) );
 	connect( core, SIGNAL(mediaStoppedByUser()),
@@ -2177,11 +2194,11 @@ void BaseGui::createCore() {
 	connect( core, SIGNAL(failedToParseMplayerVersion(QString)),
              this, SLOT(askForMplayerVersion(QString)) );
 
-	connect( core, SIGNAL(mplayerFailed(QProcess::ProcessError)),
-             this, SLOT(showErrorFromMplayer(QProcess::ProcessError)) );
+	connect( core, SIGNAL(playerFailed(QProcess::ProcessError)),
+			 this, SLOT(showErrorFromPlayer(QProcess::ProcessError)) );
 
-	connect( core, SIGNAL(mplayerFinishedWithError(int)),
-             this, SLOT(showExitCodeFromMplayer(int)) );
+	connect( core, SIGNAL(playerFinishedWithError(int)),
+			 this, SLOT(showExitCodeFromPlayer(int)) );
 
 	connect( core, SIGNAL(noVideo()), this, SLOT(slotNoVideo()) );
 
@@ -2826,21 +2843,12 @@ void BaseGui::createMenus() {
 	popup->addMenu( favorites );
 	popup->addMenu( browseMenu );
 	popup->addMenu( optionsMenu );
-
-	// let's show something, even a <empty> entry
-	initializeMenus();
 }
 
 void BaseGui::closeEvent( QCloseEvent * e )  {
 	qDebug("BaseGui::closeEvent");
 
-	// Prevent animations when closing down
-	disconnect(core, SIGNAL(mediaStoppedByUser()),
-			   mplayerwindow, SLOT(showLogo()));
-
-	if (core->state() != Core::Stopped) {
-		core->stop();
-	}
+	core->close();
 
 	saveConfig("");
 	e->accept();
@@ -3287,148 +3295,215 @@ void BaseGui::showLog() {
 }
 #endif
 
+void BaseGui::updateVideoTracks() {
+	qDebug("BaseGui::updateVideoTracks");
 
-void BaseGui::initializeMenus() {
-	qDebug("BaseGui::initializeMenus");
-
-#define EMPTY 1
-
-	int n;
-
-	// Subtitles
-	subtitleTrackGroup->clear(true);
-	QAction * subNoneAct = subtitleTrackGroup->addAction( tr("&None") );
-	subNoneAct->setData(MediaSettings::SubNone);
-	subNoneAct->setCheckable(true);
-	for (n=0; n < core->mdat.subs.numItems(); n++) {
-		QAction *a = new QAction(subtitleTrackGroup);
-		a->setCheckable(true);
-		a->setText(core->mdat.subs.itemAt(n).displayName());
-		a->setData(n);
-	}
-	subtitles_track_menu->addActions( subtitleTrackGroup->actions() );
-
-#ifdef MPV_SUPPORT
-	// Secondary Subtitles
-	secondarySubtitleTrackGroup->clear(true);
-	QAction * subSecNoneAct = secondarySubtitleTrackGroup->addAction( tr("&None") );
-	subSecNoneAct->setData(MediaSettings::SubNone);
-	subSecNoneAct->setCheckable(true);
-	for (n=0; n < core->mdat.subs.numItems(); n++) {
-		QAction *a = new QAction(secondarySubtitleTrackGroup);
-		a->setCheckable(true);
-		a->setText(core->mdat.subs.itemAt(n).displayName());
-		a->setData(n);
-	}
-	secondary_subtitles_track_menu->addActions( secondarySubtitleTrackGroup->actions() );
-#endif
-
-	// Audio
-	audioTrackGroup->clear(true);
-	// If using an external audio file, show the file in the menu, but disabled.
-	if (!core->mset.external_audio.isEmpty()) {
-		QAction * a = audioTrackGroup->addAction( QFileInfo(core->mset.external_audio).fileName() );
-		a->setEnabled(false);
-		a->setCheckable(true);
-		a->setChecked(true);
-	}
-	else
-	if (core->mdat.audios.numItems()==0) {
-		QAction * a = audioTrackGroup->addAction( tr("<empty>") );
-		a->setEnabled(false);
-	} else {
-		for (n=0; n < core->mdat.audios.numItems(); n++) {
-			QAction *a = new QAction(audioTrackGroup);
-			a->setCheckable(true);
-			a->setText(core->mdat.audios.itemAt(n).displayName());
-			a->setData(core->mdat.audios.itemAt(n).ID());
-		}
-	}
-	audiotrack_menu->addActions( audioTrackGroup->actions() );
-
-#if PROGRAM_SWITCH
-	// Program
-	programTrackGroup->clear(true);
-	if (core->mdat.programs.numItems()==0) {
-		QAction * a = programTrackGroup->addAction( tr("<empty>") );
-		a->setEnabled(false);
-	} else {
-		for (n=0; n < core->mdat.programs.numItems(); n++) {
-			QAction *a = new QAction(programTrackGroup);
-			a->setCheckable(true);
-			a->setText(core->mdat.programs.itemAt(n).displayName());
-			a->setData(core->mdat.programs.itemAt(n).ID());
-		}
-	}
-	programtrack_menu->addActions( programTrackGroup->actions() );
-#endif
-
-	// Video
 	videoTrackGroup->clear(true);
-	if (core->mdat.videos.numItems()==0) {
+
+	Maps::TTracks* videos = &core->mdat.videos;
+	if (videos->count() == 0) {
 		QAction * a = videoTrackGroup->addAction( tr("<empty>") );
 		a->setEnabled(false);
 	} else {
-		for (n=0; n < core->mdat.videos.numItems(); n++) {
-			QAction *a = new QAction(videoTrackGroup);
-			a->setCheckable(true);
-			a->setText(core->mdat.videos.itemAt(n).displayName());
-			a->setData(core->mdat.videos.itemAt(n).ID());
+		Maps::TTracks::TTrackIterator i = videos->getIterator();
+		while (i.hasNext()) {
+			i.next();
+			Maps::TTrackData track = i.value();
+			QAction* action = new QAction(videoTrackGroup);
+			action->setCheckable(true);
+			action->setText(track.getDisplayName());
+			action->setData(track.getID());
+			if (track.getID() == videos->getSelectedID())
+				action->setChecked(true);
 		}
 	}
-	videotrack_menu->addActions( videoTrackGroup->actions() );
 
-	// Titles
+	videotrack_menu->addActions( videoTrackGroup->actions() );
+}
+
+void BaseGui::updateAudioTracks() {
+	qDebug("BaseGui::updateAudioTracks");
+
+	audioTrackGroup->clear(true);
+
+	Maps::TTracks* audios = &core->mdat.audios;
+	if (audios->count() == 0) {
+		QAction * a = audioTrackGroup->addAction( tr("<empty>") );
+		a->setEnabled(false);
+	} else {
+		Maps::TTracks::TTrackIterator i = audios->getIterator();
+		while (i.hasNext()) {
+			i.next();
+			Maps::TTrackData track = i.value();
+			QAction* action = new QAction(audioTrackGroup);
+			action->setCheckable(true);
+			action->setText(track.getDisplayName());
+			action->setData(track.getID());
+			if (track.getID() == audios->getSelectedID())
+				action->setChecked(true);
+		}
+	}
+
+	audiotrack_menu->addActions(audioTrackGroup->actions());
+}
+
+void BaseGui::updateSubtitleTracks() {
+	qDebug("BaseGui::updateSubtitleTracks");
+
+	// Note: use idx not ID
+	subtitleTrackGroup->clear(true);
+#ifdef MPV_SUPPORT
+	secondarySubtitleTrackGroup->clear(true);
+#endif
+
+	QAction * subNoneAct = subtitleTrackGroup->addAction( tr("&None") );
+	subNoneAct->setData(SubData::None);
+	subNoneAct->setCheckable(true);
+	if (core->mset.current_sub_idx < 0) {
+		subNoneAct->setChecked(true);
+	}
+#ifdef MPV_SUPPORT
+	subNoneAct = secondarySubtitleTrackGroup->addAction( tr("&None") );
+	subNoneAct->setData(SubData::None);
+	subNoneAct->setCheckable(true);
+	if (core->mset.current_secondary_sub_idx < 0) {
+		subNoneAct->setChecked(true);
+	}
+#endif
+
+	for (int idx = 0; idx < core->mdat.subs.count(); idx++) {
+		SubData sub = core->mdat.subs.itemAt(idx);
+		QAction *a = new QAction(subtitleTrackGroup);
+		a->setCheckable(true);
+		a->setText(sub.displayName());
+		a->setData(idx);
+		if (idx == core->mset.current_sub_idx) {
+			a->setChecked(true);
+		}
+#ifdef MPV_SUPPORT
+		a = new QAction(secondarySubtitleTrackGroup);
+		a->setCheckable(true);
+		a->setText(sub.displayName());
+		a->setData(idx);
+		if (idx == core->mset.current_secondary_sub_idx) {
+			a->setChecked(true);
+		}
+#endif
+	}
+
+	subtitles_track_menu->addActions(subtitleTrackGroup->actions());
+#ifdef MPV_SUPPORT
+	secondary_subtitles_track_menu->addActions(secondarySubtitleTrackGroup->actions());
+#endif
+
+	// Enable or disable the unload subs action if there are file subs
+	// or for mplayer externally loaded vob subs
+	bool have_ext_subs = core->haveExternalSubs();
+	unloadSubsAct->setEnabled(have_ext_subs);
+	subFPSGroup->setEnabled(have_ext_subs);
+
+	// Enable or disable subtitle options
+	bool e = core->mset.current_sub_idx >= 0;
+
+	if (core->mset.closed_caption_channel !=0 ) e = true; // Enable if using closed captions
+
+	decSubDelayAct->setEnabled(e);
+	incSubDelayAct->setEnabled(e);
+	subDelayAct->setEnabled(e);
+	decSubPosAct->setEnabled(e);
+	incSubPosAct->setEnabled(e);
+	decSubScaleAct->setEnabled(e);
+	incSubScaleAct->setEnabled(e);
+	decSubStepAct->setEnabled(e);
+	incSubStepAct->setEnabled(e);
+}
+
+void BaseGui::updateTitles() {
+	qDebug("BaseGui::updateTitles");
+
 	titleGroup->clear(true);
-	if (core->mdat.titles.numItems()==0) {
+	if (core->mdat.titles.count() == 0) {
 		QAction * a = titleGroup->addAction( tr("<empty>") );
 		a->setEnabled(false);
 	} else {
-		for (n=0; n < core->mdat.titles.numItems(); n++) {
-			QAction *a = new QAction(titleGroup);
-			a->setCheckable(true);
-			a->setText(core->mdat.titles.itemAt(n).displayName());
-			a->setData(core->mdat.titles.itemAt(n).ID());
+		int selected_ID = core->mdat.titles.getSelectedID();
+		Maps::TTitleTracks::TTitleTrackIterator i = core->mdat.titles.getIterator();
+		while (i.hasNext()) {
+			i.next();
+			Maps::TTitleData title = i.value();
+			QAction* action = new QAction(titleGroup);
+			action->setCheckable(true);
+			action->setText(title.getDisplayName());
+			action->setData(title.getID());
+			if (title.getID() == selected_ID) {
+				action->setChecked(true);
+			}
 		}
 	}
-	titles_menu->addActions( titleGroup->actions() );
 
-	// Chapters
+	titles_menu->addActions(titleGroup->actions());
+
+	updateChapters();
+	updateAngles();
+}
+
+void BaseGui::updateChapters() {
+	qDebug("BaseGui::updateChapters");
+
+	// No current is maintained for chapters
 	chapterGroup->clear(true);
-	//qDebug("BaseGui::initializeMenus: mdat.chapters.numItems: %d", core->mdat.chapters.numItems());
-	if (core->mdat.chapters.numItems() > 0) {
-		for (n=0; n < core->mdat.chapters.numItems(); n++) {
+	if (core->mdat.chapters.count() > 0) {
+		// Use info from mdat.chapters
+		Maps::TChapters::TChapterIterator i = core->mdat.chapters.getIterator();
+		do {
+			i.next();
+			Maps::TChapterData chapter = i.value();
 			QAction *a = new QAction(chapterGroup);
-			//a->setCheckable(true);
-			//qDebug("BaseGui::initializeMenus: chapter %d name: %s", n, core->mdat.chapters.itemAt(n).name().toUtf8().constData());
-			a->setText(core->mdat.chapters.itemAt(n).name());
-			a->setData(core->mdat.chapters.itemAt(n).ID());
-		}
-	} 
-	else
-	if (core->mdat.n_chapters > 0) {
-		for (n=0; n < core->mdat.n_chapters; n++) {
-			QAction *a = new QAction(chapterGroup);
-			//a->setCheckable(true);
-			a->setText( QString::number(n+1) );
-			a->setData( n + Core::firstChapter() );
-		}
-	} 
-	else {
-		QAction * a = chapterGroup->addAction( tr("<empty>") );
-		a->setEnabled(false);
-	}
-	chapters_menu->addActions( chapterGroup->actions() );
+			// a->setCheckable(true);
+			a->setText(chapter.getDisplayName());
+			a->setData(chapter.getID());
+		} while (i.hasNext());
+	} else {
+		// Create actions with name ID + 1, action ID
+		int chapters_to_create = core->mdat.n_chapters;
 
-	// Angles
+		// Use chapters from selected title
+		int selected_title = core->mdat.titles.getSelectedID();
+		if (selected_title > 0) {
+			Maps::TTitleData title = core->mdat.titles.value(selected_title);
+			// Use only if set
+			if (title.getChapters() >= 0)
+				chapters_to_create = title.getChapters();
+		}
+
+		if (chapters_to_create > 0) {
+			for (int n = 0; n < chapters_to_create; n++) {
+				QAction *a = new QAction(chapterGroup);
+				// a->setCheckable(true);
+				a->setText( QString::number(n + 1) );
+				a->setData( n );
+			}
+		} else {
+			QAction * a = chapterGroup->addAction( tr("<empty>") );
+			a->setEnabled(false);
+		}
+	}
+
+	chapters_menu->addActions( chapterGroup->actions() );
+}
+
+// Angles
+void BaseGui::updateAngles() {
+	qDebug("BaseGui::updateAngels");
+
 	angleGroup->clear(true);
 	int n_angles = 0;
-	if (core->mset.current_angle_id > 0) {
-		int i = core->mdat.titles.find(core->mset.current_angle_id);
-		if (i > -1) n_angles = core->mdat.titles.itemAt(i).angles();
+	if (core->mset.current_title_id > 0) {
+		Maps::TTitleData title = core->mdat.titles.value(core->mset.current_title_id);
+		n_angles = title.getAngles();
 	}
 	if (n_angles > 0) {
-		for (n=1; n <= n_angles; n++) {
+		for (int n = 1; n <= n_angles; n++) {
 			QAction *a = new QAction(angleGroup);
 			a->setCheckable(true);
 			a->setText( QString::number(n) );
@@ -3501,19 +3576,6 @@ void BaseGui::clearRecentsList() {
 void BaseGui::updateWidgets() {
 	qDebug("BaseGui::updateWidgets");
 
-	// Subtitles menu
-	subtitleTrackGroup->setChecked( core->mset.current_sub_idx );
-
-#ifdef MPV_SUPPORT
-	// Secondary subtitles menu
-	secondarySubtitleTrackGroup->setChecked( core->mset.current_secondary_sub_id );
-#endif
-
-	// Disable the unload subs action if there's no external subtitles
-	unloadSubsAct->setEnabled( !core->mset.external_subtitles.isEmpty() );
-
-	subFPSGroup->setEnabled( !core->mset.external_subtitles.isEmpty() );
-
 	// Closed caption menu
 	ccGroup->setChecked( core->mset.closed_caption_channel );
 
@@ -3521,7 +3583,6 @@ void BaseGui::updateWidgets() {
 	subFPSGroup->setChecked( core->mset.external_subtitles_fps );
 
 	// Audio menu
-	audioTrackGroup->setChecked( core->mset.current_audio_id );
 	channelsGroup->setChecked( core->mset.audio_use_channels );
 	stereoGroup->setChecked( core->mset.stereo_mode );
 	// Disable the unload audio file action if there's no external audio file
@@ -3531,9 +3592,6 @@ void BaseGui::updateWidgets() {
 	// Program menu
 	programTrackGroup->setChecked( core->mset.current_program_id );
 #endif
-
-	// Video menu
-	videoTrackGroup->setChecked( core->mset.current_video_id );
 
 	// Aspect ratio
 	aspectGroup->setChecked( core->mset.aspect_ratio_id );
@@ -3548,20 +3606,8 @@ void BaseGui::updateWidgets() {
 	// OSD
 	osdGroup->setChecked( (int) pref->osd_level );
 
-	// Titles
-	titleGroup->setChecked( core->mset.current_title_id );
-
-	// Chapters
-	chapterGroup->setChecked( core->mset.current_chapter_id );
-
-	// Angles
-	angleGroup->setChecked( core->mset.current_angle_id );
-
 	// Deinterlace menu
 	deinterlaceGroup->setChecked( core->mset.current_deinterlacer );
-
-	// Video size menu
-	// sizeGroup handled by mplayerwindow;
 
 	// Auto phase
 	phaseAct->setChecked( core->mset.phase_filter );
@@ -3667,20 +3713,6 @@ void BaseGui::updateWidgets() {
 	// Forced subs
 	useForcedSubsOnlyAct->setChecked( pref->use_forced_subs_only );
 
-	// Enable or disable subtitle options
-	bool e = core->mset.current_sub_idx >= 0;
-
-	if (core->mset.closed_caption_channel !=0 ) e = true; // Enable if using closed captions
-
-	decSubDelayAct->setEnabled(e);
-	incSubDelayAct->setEnabled(e);
-	subDelayAct->setEnabled(e);
-	decSubPosAct->setEnabled(e);
-	incSubPosAct->setEnabled(e);
-	decSubScaleAct->setEnabled(e);
-	incSubScaleAct->setEnabled(e);
-	decSubStepAct->setEnabled(e);
-	incSubStepAct->setEnabled(e);
 }
 
 void BaseGui::updateVideoEqualizer() {
@@ -3728,11 +3760,12 @@ void BaseGui::openDirectory(QString directory) {
 		core->open(directory);
 	} else {
 		QFileInfo fi(directory);
-		if ( (fi.exists()) && (fi.isDir()) ) {
+		if (fi.isDir()) {
 			directory = fi.absoluteFilePath();
 			pref->latest_dir = directory;
 			playlist->clear();
 			playlist->addDirectory(directory);
+			playlist->updateView();
 			playlist->startPlay();
 		} else {
 			qWarning("BaseGui::openDirectory: directory is not valid");
@@ -4429,9 +4462,9 @@ void BaseGui::checkMplayerVersion() {
 	// Qt 4.3.5 is crazy, I can't popup a messagebox here, it calls 
 	// this function once and again when the messagebox is shown
 
-	if ( (pref->mplayer_detected_version > 0) && (!MplayerVersion::isMplayerAtLeast(25158)) ) {
-		QTimer::singleShot(1000, this, SLOT(displayWarningAboutOldMplayer()));
-	}
+	//if ( (pref->mplayer_detected_version > 0) && (!MplayerVersion::isMplayerAtLeast(25158)) ) {
+	//	QTimer::singleShot(1000, this, SLOT(displayWarningAboutOldMplayer()));
+	//}
 }
 
 void BaseGui::displayWarningAboutOldMplayer() {
@@ -4761,8 +4794,8 @@ void BaseGui::gotCurrentTime(double sec) {
 	//qDebug( "DefaultGui::displayTime: %f", sec);
 
 	QString time =
-		Helper::formatTime( (int) sec ) + " / " +
-		Helper::formatTime( (int) core->mdat.duration );
+		Helper::formatTime((int) sec) + " / " +
+		Helper::formatTime(qRound(core->mdat.duration));
 
 	emit timeChanged( time );
 }
@@ -5172,19 +5205,22 @@ void BaseGui::askForMplayerVersion(QString line) {
 	}
 }
 
-void BaseGui::showExitCodeFromMplayer(int exit_code) {
-	qDebug("BaseGui::showExitCodeFromMplayer: %d", exit_code);
+void BaseGui::showExitCodeFromPlayer(int exit_code) {
+	qDebug("BaseGui::showExitCodeFromPlayer: %d", exit_code);
+
+	QString msg = tr("%1 has finished unexpectedly.").arg(PLAYER_NAME)
+			+ " " + tr("Exit code: %1").arg(exit_code);
 
 	if (!pref->report_mplayer_crashes) {
-		qDebug("BaseGui::showExitCodeFromMplayer: not displaying error dialog");
+		qDebug("BaseGui::showExitCodeFromPlayer: error reporting is turned off");
+		displayMessage(msg, 6000);
 		return;
 	}
 
 	if (exit_code != 255 ) {
 		ErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
-		d.setText(tr("%1 has finished unexpectedly.").arg(PLAYER_NAME) + " " + 
-	              tr("Exit code: %1").arg(exit_code));
+		d.setText(msg);
 #ifdef LOG_MPLAYER
 		d.setLog( mplayer_log );
 #endif
@@ -5192,11 +5228,12 @@ void BaseGui::showExitCodeFromMplayer(int exit_code) {
 	} 
 }
 
-void BaseGui::showErrorFromMplayer(QProcess::ProcessError e) {
-	qDebug("BaseGui::showErrorFromMplayer");
+void BaseGui::showErrorFromPlayer(QProcess::ProcessError e) {
+	qDebug("BaseGui::showErrorFromPlayer");
 
 	if (!pref->report_mplayer_crashes) {
-		qDebug("BaseGui::showErrorFromMplayer: not displaying error dialog");
+		qDebug("BaseGui::showErrorFromPlayer: error reporting is turned off");
+		displayMessage(tr("Player crashed or quit with errors."), 6000);
 		return;
 	}
 

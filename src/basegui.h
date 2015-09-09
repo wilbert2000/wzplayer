@@ -209,8 +209,13 @@ protected slots:
 	virtual void gotCurrentTime(double);
 	virtual void gotDuration(double);
 
-	virtual void initializeMenus();
 	virtual void updateWidgets();
+	virtual void updateVideoTracks();
+	virtual void updateAudioTracks();
+	virtual void updateSubtitleTracks();
+	virtual void updateTitles();
+	virtual void updateChapters();
+	virtual void updateAngles();
 	virtual void updateVideoEqualizer();
 	virtual void updateAudioEqualizer();
 	virtual void setDefaultValuesFromVideoEqualizer();
@@ -296,8 +301,8 @@ protected slots:
 	//! version supplied by the user
 	void askForMplayerVersion(QString);
 
-	void showExitCodeFromMplayer(int exit_code);
-	void showErrorFromMplayer(QProcess::ProcessError);
+	void showExitCodeFromPlayer(int exit_code);
+	void showErrorFromPlayer(QProcess::ProcessError);
 
 	// stylesheet
 #if ALLOW_CHANGE_STYLESHEET

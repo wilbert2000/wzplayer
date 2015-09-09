@@ -115,9 +115,7 @@ protected:
 	virtual bool parseProperty(const QString &name, const QString &value);
 
 private:
-	int mplayer_svn;
-
-	int current_title;
+	int svn_version;
 
 	int sub_id_filename;
 
@@ -142,6 +140,7 @@ private:
 	bool parseTitle(int id, const QString &field, const QString &value);
 	bool parseAnswer(const QString &name, const QString &value);
 	bool parsePause();
+	void convertTitlesToChapters();
 };
 
 #endif

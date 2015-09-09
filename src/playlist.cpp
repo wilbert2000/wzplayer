@@ -119,6 +119,8 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	}
 	connect( core, SIGNAL(mediaLoaded()),
 			 this, SLOT(getMediaInfo()) );
+	connect( core, SIGNAL(titleTrackChanged(int)),
+			 this, SLOT(playerSwitchedTitle(int)));
 
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->addWidget( listView );
@@ -441,6 +443,15 @@ void Playlist::setCurrentItem(int current) {
 
 		listView->clearSelection();
 		listView->setCurrentCell(current_item, 0);
+	}
+}
+
+void Playlist::playerSwitchedTitle(int id) {
+	qDebug("Playlist::playerSwitchedTitle: %d", id);
+
+	id --;
+	if (id >= 0 && id < pl.count()) {
+		setCurrentItem(id);
 	}
 }
 

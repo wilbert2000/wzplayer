@@ -14,7 +14,6 @@ DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
 DEFINES += VIDEOPREVIEW
 DEFINES += YOUTUBE_SUPPORT
-DEFINES += BLURAY_SUPPORT
 DEFINES += LOG_MPLAYER
 DEFINES += LOG_SMPLAYER
 DEFINES += MPCGUI
@@ -92,15 +91,12 @@ HEADERS += guiconfig.h \
 	links.h \
 	svn_revision.h \
 	version.h \
-	chapters.h \
 	global.h \
 	paths.h \
 	helper.h \
 	colorutils.h \
 	translator.h \
 	subtracks.h \
-	tracks.h \
-	titletracks.h \
 	discname.h \
 	extensions.h \
 	desktopinfo.h \
@@ -188,19 +184,20 @@ HEADERS += guiconfig.h \
 	clhelp.h \
 	cleanconfig.h \
 	smplayer.h \
-	myapplication.h
+	myapplication.h \
+    maps/map.h \
+    maps/tracks.h \
+    maps/titletracks.h \
+    maps/chapters.h
 
 
 SOURCES	+= version.cpp \
 	global.cpp \
 	paths.cpp \
-	chapters.cpp \
 	helper.cpp \
 	colorutils.cpp \
 	translator.cpp \
 	subtracks.cpp \
-	tracks.cpp \
-	titletracks.cpp \
 	discname.cpp \
 	extensions.cpp \
 	desktopinfo.cpp \
@@ -288,7 +285,11 @@ SOURCES	+= version.cpp \
 	cleanconfig.cpp \
 	smplayer.cpp \
 	myapplication.cpp \
-	main.cpp
+    maps/map.cpp \
+    maps/tracks.cpp \
+    maps/titletracks.cpp \
+    main.cpp \
+    maps/chapters.cpp
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui inputurl.ui videoequalizer.ui vdpauproperties.ui \

@@ -48,10 +48,6 @@ MplayerProcess::~MplayerProcess() {
 
 bool MplayerProcess::startPlayer() {
 
-	mplayer_svn = -1; // Not found yet
-
-	current_title = -1;
-
 	sub_id_filename = -1;
 
 	corrected_duration = false;
@@ -63,7 +59,7 @@ bool MplayerProcess::parseVideoProperty(const QString &name, const QString &valu
 
 	if (name == "ID") {
 		int id = value.toInt();
-		if (md->videos.existingID(id)) {
+		if (md->videos.contains(id)) {
 			qDebug("MplayerProcess::parseVideoProperty: video id %d already added", id);
 			return false;
 		}
@@ -81,7 +77,7 @@ bool MplayerProcess::parseAudioProperty(const QString &name, const QString &valu
 	// Audio ID
 	if (name == "ID") {
 		int id = value.toInt();
-		if (md->audios.existingID(id)) {
+		if (md->audios.contains(id)) {
 			qDebug("MplayerProcess::parseAudioProperty: audio id %d already added", id);
 			return false;
 		}
@@ -314,6 +310,27 @@ bool MplayerProcess::parsePause() {
 	return true;
 }
 
+void MplayerProcess::convertTitlesToChapters() {
+
+	// Just for safety, don't overwrite
+	if (md->chapters.count() > 0)
+		return;
+
+	int first_title_id = md->titles.firstID();
+
+	Maps::TTitleTracks::TTitleTrackIterator i = md->titles.getIterator();
+	double start = 0;
+	while (i.hasNext()) {
+		i.next();
+		Maps::TTitleData title = i.value();
+		md->chapters.addChapter(title.getID() - first_title_id, title.getName(), start);
+		start += title.getDuration();
+	}
+
+	qDebug("MplayerProcess::convertTitlesToChapters: added %d chapers",
+		   md->chapters.count());
+}
+
 void MplayerProcess::correctDuration(double sec) {
 
 	// Keep duration in range. Adjust once a second as we go
@@ -354,6 +371,11 @@ void MplayerProcess::notifyChanges() {
 		qDebug("MplayerProcess::notifyChanges: emit receivedSubtitleTrackInfo");
 		emit receivedSubtitleTrackInfo();
 	}
+	if (title_tracks_changed) {
+		title_tracks_changed = false;
+		qDebug("MplayerProcess::notifyChanges: emit receivedTitleTrackInfo");
+		emit receivedTitleTrackInfo();
+	}
 }
 
 bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
@@ -373,7 +395,7 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 			// Wait another while
 			check_duration_time = time_sec;
 			// Just a little longer
-			check_duration_time_diff *= 3;
+			check_duration_time_diff *= 4;
 		}
 		return true;
 	}
@@ -381,31 +403,24 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	// First and only run of state playing
 	want_pause = false;
 
-	// If no chapters, try the chapters from the selected DVD title
-	if (md->n_chapters <= 0 && current_title > 0) {
-		int idx = md->titles.find(current_title);
-		if (idx >= 0) {
-			md->n_chapters = md->titles.itemAt(idx).chapters();
-			qDebug("MplayerProcess::parseStatusLine: setting n_chapters to %d from current title %d",
-				   md->n_chapters, current_title);
-		}
+	// Reset the check duration timer
+	check_duration_time = time_sec;
+	check_duration_time_diff = 1;
+
 	// Clear notifications
 	video_tracks_changed = false;
 	audio_tracks_changed = false;
 	subtitle_tracks_changed = false;
 	title_tracks_changed = false;
 
+	// Create chapters from titles for vcd or audio CD
+	if (MediaData::isCD(md->detected_type)) {
+		convertTitlesToChapters();
 	}
 
-	// Heat up the GUI.
-	// Base class sets notified_player_is_running to true and emits unqueued
-	// signal receivedVideoOutResolution and posts playerFullyLoaded.
+	// Get the GUI going
 	playingStarted();
 
-	// Reset the check duration timer to 1 second.
-	// Ask duration over 1, 3, 9, etc. seconds, except when paused.
-	check_duration_time = time_sec;
-	check_duration_time_diff = 1;
 	return true;
 }
 
@@ -600,6 +615,7 @@ bool MplayerProcess::parseLine(QString &line) {
 		QString url = rx_stream_title_and_url.cap(2);
 		qDebug("MplayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
 		qDebug("MplayerProcess::parseLine: stream_url: '%s'", url.toUtf8().data());
+		md->detected_type = MediaData::TYPE_STREAM;
 		md->stream_title = s;
 		md->stream_url = url;
 		emit receivedStreamTitleAndUrl( s, url );
@@ -609,6 +625,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	if (rx_stream_title.indexIn(line) >= 0) {
 		QString s = rx_stream_title.cap(1);
 		qDebug("MplayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
+		md->detected_type = MediaData::TYPE_STREAM;
 		md->stream_title = s;
 		emit receivedStreamTitle( s );
 		return true;
@@ -939,10 +956,6 @@ void MplayerProcess::showOSDText(const QString & text, int duration, int level) 
 	QString s = "pausing_keep_force osd_show_text \"" + text + "\" "
 			+ QString::number(duration) + " " + QString::number(level);
 
-	// if (pausing_keep_force)
-	// s = "pausing_keep_force " + s;
-	// else s = "pausing_keep " + s;
-
 	writeToStdin(s);
 }
 
@@ -1031,6 +1044,8 @@ void MplayerProcess::setLoop(int v) {
 }
 
 void MplayerProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
+	Q_UNUSED(include_subtitles)
+
 	if (t == Single) {
 		writeToStdin("pausing_keep_force screenshot 0");
 	} else {

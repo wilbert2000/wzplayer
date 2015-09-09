@@ -183,6 +183,18 @@ bool MPVProcess::parseChapter(int id, double start, QString title) {
 	return true;
 }
 
+bool MPVProcess::parseSwitchedTitle(const QString &disc_type, int title_id) {
+
+	if (notified_player_is_running && disc_type == "dvdnav") {
+		// TODO: Ask for chapter info unless we already have it
+		// Wait 10 secs. because it can take a while until the title start to play
+		// qDebug("MPVProcess::parseSwitchedTitle: requesting chapter info in 10 secs");
+		// QTimer::singleShot(10000, this, SLOT(requestChapterInfo()));
+	}
+
+	md->detected_type = md->stringToType(disc_type);
+	notifyTitleTrackChanged(title_id);
+	return true;
 }
 
 int MPVProcess::getFrame(double time_sec, const QString &line) {
@@ -190,6 +202,34 @@ int MPVProcess::getFrame(double time_sec, const QString &line) {
 
 	// Emulate frames.
 	return qRound(time_sec * md->video_fps);
+}
+
+void MPVProcess::convertChaptersToTitles() {
+
+	// Just for safety...
+	if (md->titles.count() > 0)
+		return;
+
+	Maps::TChapters::TChapterIterator i = md->chapters.getIterator();
+	if (i.hasNext()) {
+		i.next();
+		Maps::TChapterData prev_chapter = i.value();
+		while (i.hasNext()) {
+			i.next();
+			Maps::TChapterData chapter = i.value();
+			double duration = chapter.getStart() - prev_chapter.getStart();
+			md->titles.addTrack(prev_chapter.getID() + 1,
+								prev_chapter.getName(),
+								duration);
+			prev_chapter = chapter;
+		}
+		md->titles.addTrack(prev_chapter.getID() + 1,
+							prev_chapter.getName(),
+							md->duration - prev_chapter.getStart());
+	}
+
+	qDebug("MPVProcess::convertChaptersToTitles: created %d titles",
+		   md->titles.count());
 }
 
 bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
@@ -223,6 +263,12 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	}
 
 	// First and only run of state playing
+
+	// Convert chapters to titles for CD
+	if (MediaData::isCD(md->detected_type)) {
+		convertChaptersToTitles();
+	}
+
 	// Base class sets notified_player_is_running to true and
 	// emits signals setVideoResolution unqueued and playerFullyLoaded queued
 	playingStarted();
@@ -260,9 +306,8 @@ bool MPVProcess::parseLine(QString &line) {
 
 	static QRegExp rx_chapter("^CHAPTER_(\\d+)=([0-9\\.-]+) '(.*)'");
 
-#if DVDNAV_SUPPORT
-	static QRegExp rx_switch_title("^\\[dvdnav\\] DVDNAV, switched to title:\\s+(\\d+)");
-#endif
+	static QRegExp rx_switch_title("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*switched to (track|title):?\\s+(\\d+)",
+								   Qt::CaseInsensitive);
 
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
@@ -391,16 +436,10 @@ bool MPVProcess::parseLine(QString &line) {
 		return parseMetaDataProperty(rx_meta_data.cap(1), rx_meta_data.cap(2));
 	}
 
-#if DVDNAV_SUPPORT
 	if (rx_switch_title.indexIn(line) >= 0) {
-		int title = rx_switch_title.cap(1).toInt();
-		qDebug("MPVProcess::parseLine: title changed to %d", title);
-		// Ask for chapter info
-		// Wait 10 secs. because it can take a while until the title start to play
-		QTimer::singleShot(10000, this, SLOT(requestChapterInfo()));
-		return true;
+		return parseSwitchedTitle(rx_switch_title.cap(1).toLower(),
+								  rx_switch_title.cap(3).toInt());
 	}
-#endif
 
 	// HTTP error 403 Forbidden
 	if (rx_forbidden.indexIn(line) >= 0) {

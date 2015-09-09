@@ -98,6 +98,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	proc = PlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
 
+	// Do this first unqueued, to restore normal background window
 	connect( proc, SIGNAL(error(QProcess::ProcessError)),
 			 mplayerwindow, SLOT(playingStopped()) );
 
@@ -105,7 +106,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 			 this, SLOT(gotVideoOutResolution(int,int)) );
 
 	connect( proc, SIGNAL(receivedCurrentSec(double)),
-             this, SLOT(changeCurrentSec(double)) );
+			 this, SLOT(gotCurrentSec(double)) );
 
 	connect( proc, SIGNAL(receivedCurrentFrame(int)),
              this, SIGNAL(showFrame(int)) );
@@ -114,7 +115,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 			 this, SLOT(playingStarted()), Qt::QueuedConnection );
 
 	connect( proc, SIGNAL(receivedPause()),
-			 this, SLOT(changePause()) );
+			 this, SLOT(gotPause()) );
 
 	connect( proc, SIGNAL(processExited(bool)),
 			 this, SLOT(processFinished(bool)));
@@ -126,13 +127,11 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(receivedCacheMessage(QString)),
 			 this, SLOT(displayMessage(QString)) );
 
-	/*
-	connect( proc, SIGNAL(receivedCacheMessage(QString)),
-			 this, SIGNAL(buffering()));
-	*/
-
 	connect( proc, SIGNAL(receivedBuffering()),
 			 this, SIGNAL(buffering()));
+
+	connect( proc, SIGNAL(receivedBufferingEnded()),
+			 this, SLOT(displayBufferingEnded()));
 
 	connect( proc, SIGNAL(receivedCacheEmptyMessage(QString)),
 			 this, SIGNAL(buffering()));
@@ -199,12 +198,15 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(receivedSubtitleTrackChanged(int)),
 			 this, SLOT(gotSubtitleTrackChanged(int)));
 
+	connect( proc, SIGNAL(receivedTitleTrackInfo()),
+			 this, SIGNAL(titleTrackInfoChanged()));
+	connect( proc, SIGNAL(receivedTitleTrackChanged(int)),
+			 this, SIGNAL(titleTrackChanged(int)));
+
 	connect( proc, SIGNAL(durationChanged(double)),
 			 this, SIGNAL(newDuration(double)));
 
 #if DVDNAV_SUPPORT
-	connect( proc, SIGNAL(receivedDVDTitle(int)), 
-             this, SLOT(dvdTitleChanged(int)), Qt::QueuedConnection );
 	connect( proc, SIGNAL(receivedTitleIsMenu()),
              this, SLOT(dvdTitleIsMenu()) );
 	connect( proc, SIGNAL(receivedTitleIsMovie()),
@@ -219,9 +221,8 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()) );
 
 	connect( proc, SIGNAL(error(QProcess::ProcessError)), 
-             this, SIGNAL(mplayerFailed(QProcess::ProcessError)) );
+			 this, SIGNAL(playerFailed(QProcess::ProcessError)) );
 
-	//pref->load();
 	mset.reset();
 
 	// Mplayerwindow
@@ -363,12 +364,6 @@ void Core::saveMediaInfo() {
 	}
 }
 #endif // NO_USE_INI_FILES
-
-void Core::initializeMenus() {
-	qDebug("Core::initializeMenus");
-
-	emit menusNeedInitialize();
-}
 
 
 void Core::updateWidgets() {
@@ -588,6 +583,11 @@ void Core::loadSub(const QString & sub ) {
 	} else {
 		qWarning("Core::loadSub: file '%s' is not valid", sub.toUtf8().constData());
 	}
+}
+
+bool Core::haveExternalSubs() {
+	return mdat.subs.hasFileSubs()
+		|| (mset.sub.type() == SubData::Vob && !mset.sub.filename().isEmpty());
 }
 
 void Core::unloadSub() {
@@ -856,10 +856,6 @@ void Core::playingStarted() {
 		if (pref->mute) mute(true);
 	}
 
-	initSubs();
-
-	we_are_restarting = false;
-
 	// TODO:
 #if 0
 	// Hack to be sure that the equalizers are up to date
@@ -875,7 +871,7 @@ void Core::playingStarted() {
 	qDebug("Core::playingStarted: emit mediaInfoChanged()");
 	emit mediaInfoChanged();
 
-	initializeMenus();
+	// TODO:
 	updateWidgets();
 
 	qDebug("Core::playingStarted: done");
@@ -2837,7 +2833,7 @@ void Core::decSubStep() {
 void Core::changeExternalSubFPS(int fps_id) {
 	qDebug("Core::setExternalSubFPS: %d", fps_id);
 	mset.external_subtitles_fps = fps_id;
-	if (!mset.external_subtitles.isEmpty()) {
+	if (haveExternalSubs()) {
 		restartPlay();
 	}
 }
@@ -2913,7 +2909,7 @@ void Core::setAudioEq9(int value) {
 	setAudioEq(9, value);
 }
 
-void Core::changeCurrentSec(double sec) {
+void Core::gotCurrentSec(double sec) {
 
 	mset.current_sec = sec;
 
@@ -2936,8 +2932,8 @@ void Core::changeCurrentSec(double sec) {
 	emit positionChanged(pos);
 }
 
-void Core::changePause() {
-	qDebug("Core::changePause: player paused at %f", mset.current_sec);
+void Core::gotPause() {
+	qDebug("Core::gotPause: player paused at %f", mset.current_sec);
 
 	setState(Paused);
 }
@@ -2972,85 +2968,37 @@ void Core::changeDeinterlace(int ID) {
 	}
 }
 
-void Core::changeSubtitle(int idx, bool updateWidgets) {
-	qDebug("Core::changeSubtitle: idx %d", idx);
+void Core::changeVideoTrack(int id) {
+	qDebug("Core::changeVideoTrack: id: %d", id);
 
-	if (idx >= 0 && idx < mdat.subs.numItems()) {
-		SubData sub = mdat.subs.itemAt(idx);
-		if (sub.ID() != mdat.subs.selectedID()
-			|| sub.type() != mdat.subs.selectedType()) {
-			mdat.subs.setSelected(sub.type(), sub.ID());
-			proc->setSubtitle(sub.type(), sub.ID());
-		}
-	} else {
-		if (mdat.subs.numItems() > 0) {
-			proc->disableSubtitles();
-		}
-		mdat.subs.setSelectedID(-1);
-		idx = MediaSettings::SubNone;
-	}
-	mset.current_sub_idx = idx;
-
-	if (updateWidgets)
-		this->updateWidgets();
-}
-
-void Core::nextSubtitle() {
-	qDebug("Core::nextSubtitle");
-
-	if (mdat.subs.numItems() > 0) {
-		int idx = mset.current_sub_idx;
-		if (idx < 0) {
-			idx = 0;
-		} else {
-			idx++;
-			if (idx >= mdat.subs.numItems()) {
-				idx = MediaSettings::SubNone;
-			}
-		}
-		changeSubtitle(idx);
-	}
-}
-
-#ifdef MPV_SUPPORT
-void Core::changeSecondarySubtitle(int idx) {
-	// MPV only
-	qDebug("Core::changeSecondarySubtitle: %d", idx);
-
-	// Prevent update if requested idx is SubNone and
-	if (mset.current_secondary_sub_id == MediaSettings::NoneSelected)
-		mset.current_secondary_sub_id = MediaSettings::SubNone;
-
-	// Keep in range
-	if (idx < 0 || idx >= mdat.subs.numItems()) {
-		idx = MediaSettings::SubNone;
-	}
-
-	if (idx != mset.current_secondary_sub_id) {
-		mset.current_secondary_sub_id = idx;
-
-		if (idx == MediaSettings::SubNone) {
-			proc->disableSecondarySubtitles();
-		} else {
-			int real_id = mdat.subs.itemAt(idx).ID();
-			proc->setSecondarySubtitle(real_id);
+	// TODO: restore fast change after overwriting video out fixed
+	if (id != mset.current_video_id) {
+		mset.current_video_id = id;
+		if (id >= 0 && id != mdat.videos.getSelectedID()) {
+			restartPlay();
 		}
 	}
 }
-#endif
 
-void Core::changeAudio(int id, bool allow_restart) {
+void Core::nextVideoTrack() {
+	qDebug("Core::nextVideoTrack");
+
+	changeVideoTrack(mdat.videos.nextID(mdat.videos.getSelectedID()));
+}
+
+void Core::changeAudioTrack(int id, bool allow_restart) {
 	qDebug("Core::changeAudio: id: %d, allow_restart: %d", id, allow_restart);
 
 	if (id != mset.current_audio_id) {
 		mset.current_audio_id = id;
-		if (id >= 0 && id != mdat.audios.selectedID()) {
+		if (id >= 0 && id != mdat.audios.getSelectedID()) {
 			if (allow_restart
 				&& pref->fast_audio_change == Preferences::Disabled) {
 				restartPlay();
 			} else {
-				mdat.audios.setSelectedID(id);
 				proc->setAudio(id);
+				mdat.audios.setSelectedID(id);
+				emit audioTrackChanged(id);
 
 				// Workaround for a mplayer problem in windows,
 				// volume is too loud after changing audio.
@@ -3074,42 +3022,113 @@ void Core::changeAudio(int id, bool allow_restart) {
 	}
 }
 
-void Core::nextAudio() {
-	qDebug("Core::nextAudio");
+void Core::nextAudioTrack() {
+	qDebug("Core::nextAudioTrack");
 
-	if (mdat.audios.numItems() > 0) {
-		int idx = mdat.audios.find(mset.current_audio_id);
-		if (idx < 0) idx = 0;
-		idx++;
-		if (idx >= mdat.audios.numItems()) idx = 0;
-		int id = mdat.audios.itemAt(idx).ID();
-		qDebug( "Core::nextAudio: idx: %d, id: %d", idx, id);
-		changeAudio(id);
-	}
+	changeAudioTrack(mdat.audios.nextID(mdat.audios.getSelectedID()));
 }
 
-void Core::changeVideo(int id) {
-	qDebug("Core::changeVideo: idx: %d", id);
+// Note: changeSubtitle is by index, not ID
+void Core::changeSubtitleTrack(int idx) {
+	qDebug("Core::changeSubtitle: idx %d", idx);
 
-	if (id != mset.current_video_id) {
-		mset.current_video_id = id;
-		if (id >= 0 && id != mdat.videos.selectedID()) {
-			restartPlay();
+	if (idx >= 0 && idx < mdat.subs.count()) {
+		mset.current_sub_idx = idx;
+		SubData sub = mdat.subs.itemAt(idx);
+		if (sub.ID() != mdat.subs.selectedID()
+			|| sub.type() != mdat.subs.selectedType()) {
+			proc->setSubtitle(sub.type(), sub.ID());
+		}
+	} else {
+		mset.current_sub_idx = MediaSettings::SubNone;
+		if (mdat.subs.selectedID() >= 0) {
+			proc->disableSubtitles();
 		}
 	}
 }
 
-void Core::nextVideo() {
-	qDebug("Core::nextVideo");
+void Core::nextSubtitleTrack() {
+	qDebug("Core::nextSubtitleTrack");
 
-	if (mdat.videos.numItems() > 0) {
-		int idx = mdat.videos.find( mset.current_video_id );
-		if (idx < 0) idx = 0;
-		idx++;
-		if (idx >= mdat.videos.numItems()) idx = 0;
-		int id = mdat.videos.itemAt(idx).ID();
-		qDebug( "Core::nextVideo: idx: %d, id: %d", idx, id);
-		changeVideo(id);
+	changeSubtitleTrack(mdat.subs.nextID());
+}
+
+#ifdef MPV_SUPPORT
+void Core::changeSecondarySubtitle(int idx) {
+	// MPV only
+	qDebug("Core::changeSecondarySubtitle: idx %d", idx);
+
+	if (idx >= 0 && idx < mdat.subs.count()) {
+		mset.current_secondary_sub_idx = idx;
+		int id = mdat.subs.itemAt(idx).ID();
+		if (id != mdat.subs.selectedSecondaryID()) {
+			proc->setSecondarySubtitle(id);
+		}
+	} else {
+		mset.current_secondary_sub_idx = MediaSettings::SubNone;
+		if (mdat.subs.selectedSecondaryID() >= 0) {
+			proc->disableSecondarySubtitles();
+		}
+	}
+}
+#endif
+
+// Triggered by user
+void Core::changeTitle(int id) {
+	qDebug("Core::changeTitle: id %d", id);
+
+	// Handle CDs with the chapter commands
+	if (MediaData::isCD(mdat.detected_type)) {
+		changeChapter(id - mdat.titles.firstID() + mdat.chapters.firstID());
+	} else if (cache_size == 0) {
+		// Switch through slave command
+		mset.current_title_id = id;
+		proc->setTitle(id);
+	} else {
+		// Restart
+		qWarning("Core::changeTitle: fast title switch is disabled, because cache size (%d) not 0",
+				 cache_size);
+		mset.current_title_id = id;
+		DiscData disc_data = DiscName::split(mdat.filename);
+		disc_data.title = id;
+		openDisc(disc_data, false);
+	}
+}
+
+void Core::changeChapter(int id) {
+	qDebug("Core::changeChapter: ID: %d", id);
+
+	int firstID = mdat.chapters.firstID();
+	if (id >= firstID) {
+		if (MediaData::isCD(mdat.detected_type)) {
+			mset.current_title_id = id - firstID + mdat.titles.firstID();
+		}
+		proc->setChapter(id);
+	}
+}
+
+void Core::prevChapter() {
+	qDebug("Core::prevChapter");
+
+	// TODO use mplayer: seek_chapter -1 mpv: add chapter -1
+	int id = mdat.chapters.idForTime(mset.current_sec);
+	changeChapter(mdat.chapters.previousID(id));
+}
+
+void Core::nextChapter() {
+	qDebug("Core::nextChapter");
+
+	// TODO use mplayer: seek_chapter 1 mpv: add chapter 1
+	int id = mdat.chapters.idForTime(mset.current_sec);
+	changeChapter(mdat.chapters.nextID(id));
+}
+
+void Core::changeAngle(int ID) {
+	qDebug("Core::changeAngle: ID: %d", ID);
+
+	if (ID != mset.current_angle_id) {
+		mset.current_angle_id = ID;
+		restartPlay();
 	}
 }
 
@@ -3134,155 +3153,7 @@ void Core::nextProgram() {
 	qDebug("Core::nextProgram");
 	// Not implemented yet
 }
-
 #endif
-
-void Core::changeTitle(int ID) {
-	if (mdat.type == TYPE_VCD) {
-		// VCD
-		openVCD( ID );
-	}
-	else 
-	if (mdat.type == TYPE_AUDIO_CD) {
-		// AUDIO CD
-		openAudioCD( ID );
-	}
-	else
-	if (mdat.type == TYPE_DVD) {
-		#if DVDNAV_SUPPORT
-		if (mdat.filename.startsWith("dvdnav:")) {
-			proc->setTitle(ID);
-		} else {
-		#endif
-			DiscData disc_data = DiscName::split(mdat.filename);
-			disc_data.title = ID;
-			QString dvd_url = DiscName::join(disc_data);
-
-			openDVD( DiscName::join(disc_data) );
-		#if DVDNAV_SUPPORT
-		}
-		#endif
-	}
-#ifdef BLURAY_SUPPORT
-	else
-	if (mdat.type == TYPE_BLURAY) {
-		//DiscName::test();
-
-		DiscData disc_data = DiscName::split(mdat.filename);
-		disc_data.title = ID;
-		QString bluray_url = DiscName::join(disc_data);
-		qDebug("Core::changeTitle: bluray_url: %s", bluray_url.toUtf8().constData());
-		openBluRay(bluray_url);
-	}
-#endif
-}
-
-void Core::changeChapter(int ID) {
-	qDebug("Core::changeChapter: ID: %d", ID);
-
-	if (mdat.type != TYPE_DVD) {
-		/*
-		if (mdat.chapters.find(ID) > -1) {
-			double start = mdat.chapters.item(ID).start();
-			qDebug("Core::changeChapter: start: %f", start);
-			goToSec(start);
-			mset.current_chapter_id = ID;
-		} else {
-		*/
-			proc->setChapter(ID);
-			mset.current_chapter_id = ID;
-			//updateWidgets();
-		/*
-		}
-		*/
-	} else {
-#if SMART_DVD_CHAPTERS
-		if (pref->cache_for_dvds == 0) {
-#else
-		if (pref->fast_chapter_change) {
-#endif
-			proc->setChapter(ID);
-			mset.current_chapter_id = ID;
-			updateWidgets();
-		} else {
-			stopMplayer();
-			mset.current_chapter_id = ID;
-			//goToPos(0);
-			mset.current_sec = 0;
-			restartPlay();
-		}
-	}
-}
-
-int Core::firstChapter() {
-	if ( (MplayerVersion::isMplayerAtLeast(25391)) && 
-         (!MplayerVersion::isMplayerAtLeast(29407)) ) 
-		return 1;
-	else
-		return 0;
-}
-
-int Core::firstDVDTitle() {
-	if (proc->isMPV()) {
-		return 0;
-	} else {
-		return 1;
-	}
-}
-
-int Core::firstBlurayTitle() {
-	if (proc->isMPV()) {
-		return 0;
-	} else {
-		return 1;
-	}
-}
-
-void Core::prevChapter() {
-	qDebug("Core::prevChapter");
-
-	int last_chapter = 0;
-	int first_chapter = firstChapter();
-
-	int ID = mdat.chapters.itemBeforeTime(mset.current_sec).ID();
-
-	if (ID == -1) {
-		last_chapter = mdat.n_chapters + firstChapter() - 1;
-
-		ID = mset.current_chapter_id - 1;
-		if (ID < first_chapter) {
-			ID = last_chapter;
-		}
-	}
-
-	changeChapter(ID);
-}
-
-void Core::nextChapter() {
-	qDebug("Core::nextChapter");
-
-	int last_chapter = mdat.n_chapters + firstChapter() - 1;
-
-	int ID = mdat.chapters.itemAfterTime(mset.current_sec).ID();
-
-	if (ID == -1) {
-		ID = mset.current_chapter_id + 1;
-		if (ID > last_chapter) {
-			ID = firstChapter();
-		}
-	}
-
-	changeChapter(ID);
-}
-
-void Core::changeAngle(int ID) {
-	qDebug("Core::changeAngle: ID: %d", ID);
-
-	if (ID != mset.current_angle_id) {
-		mset.current_angle_id = ID;
-		restartPlay();
-	}
-}
 
 void Core::changeAspectRatio( int ID ) {
 	qDebug("Core::changeAspectRatio: %d", ID);
@@ -3851,10 +3722,6 @@ void Core::gotSubtitleTrackChanged(int id) {
 }
 
 #if DVDNAV_SUPPORT
-void Core::dvdTitleChanged(int title) {
-	qDebug("Core::dvdTitleChanged: %d", title);
-}
-
 void Core::dvdnavUpdateMousePos(QPoint pos) {
 	// bool under_mouse = mplayerwindow->videoLayer()->underMouse();
 #if 0
