@@ -28,24 +28,21 @@
 class PlaylistItem {
 
 public:
-	PlaylistItem() { _filename=""; _name=""; _duration=0; 
-                     _played = false; _deleted=false; };
-	PlaylistItem(QString filename, QString name, double duration) {
-		         _filename = filename; _name = name; _duration = duration; 
-                 _played = false; _deleted = false; };
+	PlaylistItem();
+	PlaylistItem(const QString &filename, const QString &name, double duration);
 	~PlaylistItem() {};
 
-	void setFilename(QString filename) { _filename = filename; };
-	void setName(QString name) { _name = name; };
-	void setDuration(double duration) { _duration = duration; };
-	void setPlayed(bool b) { _played = b; };
-	void setMarkForDeletion(bool b) { _deleted = b; };
+	void setFilename(const QString &filename) { _filename = filename; }
+	void setName(const QString &name) { _name = name; }
+	void setDuration(double duration) { _duration = duration; }
+	void setPlayed(bool b) { _played = b; }
+	void setMarkForDeletion(bool b) { _deleted = b; }
 
-	QString filename() { return _filename; };
-	QString name() { return _name; };
-	double duration() { return _duration; };
-	bool played() { return _played; };
-	bool markedForDeletion() { return _deleted; };
+	QString filename() { return _filename; }
+	QString name() { return _name; }
+	double duration() { return _duration; }
+	bool played() { return _played; }
+	bool markedForDeletion() { return _deleted; }
 
 private:
 	QString _filename, _name;
@@ -72,13 +69,15 @@ public:
 	Playlist( Core *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window );
 	~Playlist();
 
-	void clear();
-	void list();
 	int count();
 	bool isEmpty();
 	QString print(QString seperator);
 
-	bool isModified() { return modified; };
+	bool isModified() { return modified; }
+
+	void clear();
+	void list();
+	void updateView();
 
 public slots:
 	void addItem(const QString &filename, QString name, double duration);
@@ -134,20 +133,20 @@ public slots:
 	void setModified(bool);
 
 	// Preferences
-	void setDirectoryRecursion(bool b) { recursive_add_directory = b; };
-	void setAutoGetInfo(bool b) { automatically_get_info = b; };
-	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; };
-	void setPlayFilesFromStart(bool b) { play_files_from_start = b; };
-	void setIgnorePlayerErrors(bool b) { ignore_player_errors = b; };
+	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
+	void setAutoGetInfo(bool b) { automatically_get_info = b; }
+	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; }
+	void setPlayFilesFromStart(bool b) { play_files_from_start = b; }
+	void setIgnorePlayerErrors(bool b) { ignore_player_errors = b; }
 
 public:
-	bool directoryRecursion() { return recursive_add_directory; };
-	bool autoGetInfo() { return automatically_get_info; };
-	bool savePlaylistOnExit() { return save_playlist_in_config; };
-	bool playFilesFromStart() { return play_files_from_start; };
-	bool ignorePlayerErrors() { return ignore_player_errors; };
+	bool directoryRecursion() { return recursive_add_directory; }
+	bool autoGetInfo() { return automatically_get_info; }
+	bool savePlaylistOnExit() { return save_playlist_in_config; }
+	bool playFilesFromStart() { return play_files_from_start; }
+	bool ignorePlayerErrors() { return ignore_player_errors; }
 
-	QList<PlaylistItem> playlist(){return pl;};
+	QList<PlaylistItem> playlist() {return pl;}
 
 /*
 public:
@@ -161,7 +160,6 @@ signals:
 	void modifiedChanged(bool);
 
 protected:
-	void updateView();
 	void setCurrentItem(int current);
 	void clearPlayedTag();
 	int chooseRandomItem();

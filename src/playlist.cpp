@@ -69,6 +69,21 @@
 
 using namespace Global;
 
+PlaylistItem::PlaylistItem() {
+	_filename = "";
+	_name = "";
+	_duration = 0;
+	_played = false;
+	_deleted=false;
+}
+
+PlaylistItem::PlaylistItem(const QString &filename, const QString &name, double duration) {
+	_filename = filename;
+	_name = name;
+	_duration = duration;
+	_played = false;
+	_deleted = false;
+}
 
 Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	: QWidget(parent,f) 
@@ -93,10 +108,17 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	createActions();
 	createToolbar();
 
-	connect( core, SIGNAL(mediaFinished()), this, SLOT(playNext()), Qt::QueuedConnection );
-	connect( core, SIGNAL(mplayerFailed(QProcess::ProcessError)), this, SLOT(playerFailed(QProcess::ProcessError)) );
-	connect( core, SIGNAL(mplayerFinishedWithError(int)), this, SLOT(playerFinishedWithError(int)) );
-	connect( core, SIGNAL(mediaLoaded()), this, SLOT(getMediaInfo()) );
+	// Ugly hack to avoid to play next item automatically
+	if (automatically_play_next) {
+		connect( core, SIGNAL(mediaFinished()),
+				 this, SLOT(playNext()), Qt::QueuedConnection );
+		connect( core, SIGNAL(playerFailed(QProcess::ProcessError)),
+				 this, SLOT(playerFailed(QProcess::ProcessError)) );
+		connect( core, SIGNAL(playerFinishedWithError(int)),
+				 this, SLOT(playerFinishedWithError(int)) );
+	}
+	connect( core, SIGNAL(mediaLoaded()),
+			 this, SLOT(getMediaInfo()) );
 
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->addWidget( listView );
@@ -125,11 +147,6 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	srand( t.hour() * 3600 + t.minute() * 60 + t.second() );
 
 	loadSettings();
-
-	// Ugly hack to avoid to play next item automatically
-	if (!automatically_play_next) {
-		disconnect( core, SIGNAL(mediaFinished()), this, SLOT(playNext()) );
-	}
 
 	// Save config every 5 minutes.
 	save_timer = new QTimer(this);
@@ -379,7 +396,7 @@ void Playlist::updateView() {
 	for (int n = 0; n < pl.count(); n++) {
 		name = pl[n].name();
 		if (name.isEmpty()) name = pl[n].filename();
-		time = Helper::formatTime( (int) pl[n].duration() );
+		time = Helper::formatTime(qRound(pl[n].duration()));
 		
 		//listView->setText(n, COL_POS, number);
 		//qDebug("Playlist::updateView: name: '%s'", name.toUtf8().data());
@@ -1368,18 +1385,30 @@ void Playlist::closeEvent( QCloseEvent * e )  {
 }
 
 void Playlist::playerFailed(QProcess::ProcessError e) {
-	qDebug("Playlist::playerFailed");
-	if (ignore_player_errors) {
-		if (e != QProcess::FailedToStart) {
-			playNext();
-		}
+	qDebug("Playlist::playerFailed %d", e);
+
+	if (ignore_player_errors && e == QProcess::UnknownError) {
+		qWarning("Playlist::playerFailed: ignoring error");
+		playNext();
 	}
 }
 
 void Playlist::playerFinishedWithError(int e) {
 	qDebug("Playlist::playerFinishedWithError: %d", e);
-	if (ignore_player_errors) {
+
+	// TODO:
+	// Old covention says:
+	// -1: failed to execute
+	// exitCode & 127 died with signal
+	// exitCode >> 8
+	// Don't know about mplayer and mpv
+
+	// Currently translated into: never play next
+	if (0 && ignore_player_errors) {
+		qWarning("Playlist::playerFinishedWithError: ignoring error");
 		playNext();
+	} else {
+		qWarning("Playlist::playerFinishedWithError: not playing next, due to errors");
 	}
 }
 
