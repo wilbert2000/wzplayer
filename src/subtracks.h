@@ -27,9 +27,9 @@
 class SubData {
 
 public:
-	enum Type { None = -1, Vob = 0, Sub = 1, File = 2 };
+	enum Type { None = -1, File = 0, Vob = 1, Sub = 2};
 
-	SubData() { _ID=-1; _lang=""; _name=""; _filename=""; _type = None; }
+	SubData() { _ID = -1; _lang = ""; _name = ""; _filename = ""; _type = None; }
 	~SubData() {}
 
 	void setType( Type t ) { _type = t; }
@@ -38,36 +38,13 @@ public:
 	void setName(QString name) { _name = name; }
 	void setFilename(QString f) { _filename = f; }
 
-	Type type() { return _type; }
-	int ID() { return _ID; }
-	QString lang() { return _lang; }
-	QString name() { return _name; }
-	QString filename() { return _filename; }
+	Type type() const { return _type; }
+	int ID() const { return _ID; }
+	QString lang() const { return _lang; }
+	QString name() const { return _name; }
+	QString filename() const { return _filename; }
 
-	// TODO:
-	QString displayName() {
-		QString dname="";
-
-		if (!_name.isEmpty()) {
-			dname = _name;
-			if (!_lang.isEmpty()) {
-				dname += " ["+ _lang + "]";
-			}
-		}
-		else
-		if (!_lang.isEmpty()) {
-			dname = _lang;
-		}
-		else
-		if (!_filename.isEmpty()) {
-			QFileInfo f(_filename);
-			dname = f.fileName();
-		}
-		else
-		dname = QString::number(_ID);
-
-		return dname;
-	}
+	QString displayName() const;
 
 protected:
 	Type _type;
@@ -77,6 +54,8 @@ protected:
 	QString _filename;
 };
 
+typedef QListIterator<SubData> SubIterator;
+
 class SubTracks {
 public:
 	SubTracks();
@@ -84,40 +63,53 @@ public:
 
 	void clear();
 
-	int selectedID() { return _selected_ID; }
-	void setSelectedID(int id) { _selected_ID = id; }
-	SubData::Type selectedType() { return _selected_type; }
-	void setSelectedType(SubData::Type type) { _selected_type = type; }
+	int selectedID() const { return _selected_ID; }
+	SubData::Type selectedType() const { return _selected_type; }
 	void setSelected(SubData::Type type, int id) {
 		_selected_type = type;
 		_selected_ID = id;
 	}
+	void clearSelected() { _selected_ID = -1; }
 
-	int numItems();
-	bool existsItemAt(int n);
+#ifdef MPV_SUPPORT
+	int selectedSecondaryID() const { return _selected_secondary_ID; }
+	void setSelectedSecondaryID(int id) { _selected_secondary_ID = id; }
+#endif
 
-	int find( SubData::Type t, int ID );
-	int findLang(QString expr);
-	int findFile(const QString &filename, int not_found_idx = -1);
-	SubData findItem( SubData::Type t, int ID );
-	SubData itemAt(int n);
-	int selectOne(QString preferred_lang, int default_sub = 0);
+
+	int count() const { return subs.count(); }
+
+	int find(SubData::Type type, int ID) const;
+	int findSelectedIdx() const;
+	int findLangIdx(QString expr) const;
+	SubData findItem( SubData::Type t, int ID ) const;
+	SubData itemAt(int n) const;
+
+	int firstID() const;
+	int nextID() const;
+	bool hasFileSubs() const;
+
+	int selectOne(QString preferred_lang, int default_sub = 0) const;
 
 	void add( SubData::Type t, int ID );
 	bool changeLang( SubData::Type t, int ID, QString lang );
 	bool changeName( SubData::Type t, int ID, QString name );
 	bool changeFilename( SubData::Type t, int ID, QString filename );
 
-	bool update(int id, const QString & lang, const QString & name, bool selected);
+	bool update(SubData::Type type, int id, const QString & lang, const QString & name, const QString &filename, bool selected);
 
-	void list();
-	void listNames();
+	void list() const;
+	void listNames() const;
 
 protected:
 	typedef QList <SubData> SubList;
 	SubList subs;
 	SubData::Type _selected_type;
 	int _selected_ID;
+
+#ifdef MPV_SUPPORT
+	int _selected_secondary_ID;
+#endif
 };
 
 #endif
