@@ -3503,8 +3503,9 @@ void BaseGui::updateAngles() {
 
 	angleGroup->clear(true);
 	int n_angles = 0;
-	if (core->mset.current_title_id > 0) {
-		Maps::TTitleData title = core->mdat.titles.value(core->mset.current_title_id);
+	int sel_title_id = core->mdat.titles.getSelectedID();
+	if (sel_title_id > 0) {
+		Maps::TTitleData title = core->mdat.titles.value(sel_title_id);
 		n_angles = title.getAngles();
 	}
 	if (n_angles > 0) {
