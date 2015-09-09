@@ -60,9 +60,16 @@ bool MPVProcess::startPlayer() {
 	return PlayerProcess::startPlayer();
 }
 
-bool MPVProcess::parseVideoTrack(int id, const QString &name, bool selected) {
+bool MPVProcess::parseVideoTrack(int id,
+								 const QString &codec,
+								 QString name,
+								 bool selected) {
 
 	// Note lang "". Track info has lang.
+
+	if (name.isEmpty() && !codec.isEmpty()) {
+		name = "(" + codec + ")";
+	}
 	if (md->videos.updateTrack(id, "", name, selected)) {
 		if (notified_player_is_running)
 			emit receivedVideoTrackInfo();
@@ -71,8 +78,11 @@ bool MPVProcess::parseVideoTrack(int id, const QString &name, bool selected) {
 	return false;
 }
 
-bool MPVProcess::parseAudioTrack(int id, const QString &lang, const QString &name, bool selected) {
+bool MPVProcess::parseAudioTrack(int id, const QString &lang, const QString &codec, QString name, bool selected) {
 
+	if (name.isEmpty() && !codec.isEmpty()) {
+		name = "(" + codec + ")";
+	}
 	if (md->audios.updateTrack(id, lang, name, selected)) {
 		if (notified_player_is_running)
 			emit receivedAudioTrackInfo();
@@ -83,20 +93,24 @@ bool MPVProcess::parseAudioTrack(int id, const QString &lang, const QString &nam
 
 bool MPVProcess::parseSubtitleTrack(int id,
 									const QString &lang,
-									const QString &name,
-									bool selected,
-									bool external) {
+									QString name,
+									const QString &type,
+									bool selected) {
 
-	SubData::Type type;
-	QString filename;
-	if (external) {
-		type = SubData::File;
-		filename = sub_file;
-	} else {
-		type = SubData::Sub;
+	if (name.isEmpty() && !type.isEmpty()) {
+		name = "(" + type + ")";
 	}
 
-	if (md->subs.update(type, id, lang, name, filename, selected)) {
+	SubData::Type sub_type;
+	QString filename;
+	if (type.contains("external", Qt::CaseInsensitive)) {
+		sub_type = SubData::File;
+		filename = sub_file;
+	} else {
+		sub_type = SubData::Sub;
+	}
+
+	if (md->subs.update(sub_type, id, lang, name, filename, selected)) {
 		if (notified_player_is_running)
 			emit receivedSubtitleTrackInfo();
 		return true;
@@ -292,9 +306,11 @@ bool MPVProcess::parseLine(QString &line) {
 	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
 	static QRegExp rx_playing("^Playing:.*|^\\[ytdl_hook\\].*");
 
-	static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)([ \\(\\)\\*]+)('(.*)'|)");
-	static QRegExp rx_audio_track("^(.*)Audio\\s+--aid=(\\d+)(\\s+--alang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)");
-	static QRegExp rx_subtitle_track("^(.*)Subs\\s+--sid=(\\d+)(\\s+--slang=([a-z]+)|)([ \\(\\)\\*]+)('(.*)'|)(.*external)?");
+	// TODO: check video and audio track name.
+	// Subs suggest name comes before codec...
+	static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)(\\s+\\((.*)\\))?(\\s+'(.*)')?");
+	static QRegExp rx_audio_track("^(.*)Audio\\s+--aid=(\\d+)(\\s+--alang=([a-zA-Z]+))?(\\s+\\((.*)\\))?(\\s+'(.*)')?");
+	static QRegExp rx_subtitle_track("^(.*)Subs\\s+--sid=(\\d+)(\\s+--slang=([a-zA-Z]+))?(\\s+'(.*)')?(\\s+\\((.*)\\))?");
 
 	static QRegExp rx_dsize("^VIDEO_DSIZE=(\\d+)x(\\d+)");
 	static QRegExp rx_vo("^VO: \\[(.*)\\]");
@@ -335,29 +351,31 @@ bool MPVProcess::parseLine(QString &line) {
 	if (PlayerProcess::parseLine(line))
 		return true;
 
-	// Video id, lang "", name and selected
+	// Video id, codec, name and selected
 	// If enabled, track info does give lang
 	if (rx_video_track.indexIn(line) >= 0) {
 		return parseVideoTrack(rx_video_track.cap(2).toInt(),
-							   rx_video_track.cap(5).trimmed(),
+							   rx_video_track.cap(4),
+							   rx_video_track.cap(6).trimmed(),
 							   rx_video_track.cap(1) != "");
 	}
 
-	// Audio id, name, lang and selected
+	// Audio id, lang, codec, name and selected
 	if (rx_audio_track.indexIn(line) >= 0) {
 		return parseAudioTrack(rx_audio_track.cap(2).toInt(),
 							   rx_audio_track.cap(4),
-							   rx_audio_track.cap(7).trimmed(),
+							   rx_audio_track.cap(6),
+							   rx_audio_track.cap(8).trimmed(),
 							   rx_audio_track.cap(1) != "");
 	}
 
-	// Subtitles id, lang, name, selected and external
+	// Subtitles id, lang, name, type and selected
 	if (rx_subtitle_track.indexIn(line) >= 0) {
 		return parseSubtitleTrack(rx_subtitle_track.cap(2).toInt(),
 								  rx_subtitle_track.cap(4),
-								  rx_subtitle_track.cap(7).trimmed(),
-								  rx_subtitle_track.cap(1) != "",
-								  rx_subtitle_track.cap(8) != "");
+								  rx_subtitle_track.cap(6).trimmed(),
+								  rx_subtitle_track.cap(8),
+								  rx_subtitle_track.cap(1) != "");
 	}
 
 	// VO
