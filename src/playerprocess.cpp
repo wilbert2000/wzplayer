@@ -133,6 +133,11 @@ void PlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatu
 // Convert line of bytes to QString.
 void PlayerProcess::parseBytes(QByteArray ba) {
 
+	static QTime line_time;
+	if (line_count == 0) {
+		line_time.start();
+	}
+
 #if COLOR_OUTPUT_SUPPORT
 	QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
 #else
@@ -150,7 +155,8 @@ void PlayerProcess::parseBytes(QByteArray ba) {
 
 	line_count++;
 	if (line_count % 5000 == 0) {
-		qDebug("PlayerProcess::parseBytes: parsed %'d lines", line_count);
+		qDebug("PlayerProcess::parseBytes: parsed %'d lines at %f lines per second",
+			   line_count, (line_count * 1000.0) / line_time.elapsed());
 	}
 }
 
