@@ -78,6 +78,7 @@ public:
 	void clear();
 	void list();
 	void updateView();
+	void setCurrentItem(int current);
 
 public slots:
 	void addItem(const QString &filename, QString name, double duration);
@@ -161,7 +162,6 @@ signals:
 	void modifiedChanged(bool);
 
 protected:
-	void setCurrentItem(int current);
 	void clearPlayedTag();
 	int chooseRandomItem();
 	void swapItems(int item1, int item2 );

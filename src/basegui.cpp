@@ -3190,8 +3190,6 @@ void BaseGui::newMediaLoaded() {
 		return;
 	}
 
-	qDebug() << "BaseGui::newMediaLoaded: creating new playlist for" << filename;
-
 	playlist->clear();
 
 	// Add titles
@@ -3203,6 +3201,9 @@ void BaseGui::newMediaLoaded() {
 		disc_name.title = title.getID();
 		QString filename = DiscName::join(disc_name);
 		playlist->addItem(filename, title.getDisplayName(false), title.getDuration());
+		if (title.getID() == core->mdat.titles.getSelectedID()) {
+			playlist->setCurrentItem(title.getID() - 1);
+		}
 	}
 
 	// Add current file if still empty
@@ -3223,6 +3224,10 @@ void BaseGui::newMediaLoaded() {
 
 	playlist->updateView();
 	playlist_owner = filename;
+
+	qDebug() << "BaseGui::newMediaLoaded: created new playlist with" << playlist->count()
+			 << "items for" << filename;
+
 }
 
 void BaseGui::gotNoFileToPlay() {
