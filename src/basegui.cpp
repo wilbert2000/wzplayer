@@ -3179,48 +3179,6 @@ void BaseGui::newMediaLoaded() {
 		pref->history_recents->addItem(filename);
 	}
 	updateRecents();
-
-	if (!pref->auto_add_to_playlist) {
-		qDebug("BaseGui::newMediaLoaded: add to playlist disabled by user");
-		return;
-	}
-
-	playlist->clear();
-
-	// Add titles
-	DiscData disc = DiscName::split(filename);
-	Maps::TTitleTracks::TMapIterator i = core->mdat.titles.getIterator();
-	while (i.hasNext()) {
-		i.next();
-		Maps::TTitleData title = i.value();
-		disc.title = title.getID();
-		QString fname = DiscName::join(disc);
-		playlist->addItem(fname, title.getDisplayName(false), title.getDuration());
-		if (title.getID() == core->mdat.titles.getSelectedID()) {
-			playlist->setCurrentItem(title.getID() - 1);
-		}
-	}
-
-	// Add current file if still empty
-	if (playlist->count() == 0) {
-		playlist->addItem(filename, core->mdat.meta_data["NAME"], core->mdat.duration);
-		// Add associated files to playlist
-		if (core->mdat.selected_type == MediaData::TYPE_FILE) {
-			qDebug() << "BaseGui::newMediaLoaded: searching for files to add to playlist for"
-					 << filename;
-			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
-			if (files_to_add.isEmpty()) {
-				qDebug("BaseGui::newMediaLoaded: none found");
-			} else {
-				playlist->addFiles(files_to_add);
-			}
-		}
-	}
-
-	playlist->updateView();
-
-	qDebug() << "BaseGui::newMediaLoaded: created new playlist with" << playlist->count()
-			 << "items for" << filename;
 }
 
 void BaseGui::gotNoFileToPlay() {

@@ -108,7 +108,13 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	createActions();
 	createToolbar();
 
-	// Ugly hack to avoid to play next item automatically
+	connect( core, SIGNAL(mediaStartPlay()),
+			 this, SLOT(newMediaLoaded()) );
+	connect( core, SIGNAL(mediaLoaded()),
+			 this, SLOT(getMediaInfo()) );
+	connect( core, SIGNAL(titleTrackChanged(int)),
+			 this, SLOT(playerSwitchedTitle(int)));
+
 	if (automatically_play_next) {
 		connect( core, SIGNAL(mediaFinished()),
 				 this, SLOT(playNext()), Qt::QueuedConnection );
@@ -117,10 +123,6 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 		connect( core, SIGNAL(playerFinishedWithError(int)),
 				 this, SLOT(playerFinishedWithError(int)) );
 	}
-	connect( core, SIGNAL(mediaLoaded()),
-			 this, SLOT(getMediaInfo()) );
-	connect( core, SIGNAL(titleTrackChanged(int)),
-			 this, SLOT(playerSwitchedTitle(int)));
 
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->addWidget( listView );
@@ -443,15 +445,6 @@ void Playlist::setCurrentItem(int current) {
 
 		listView->clearSelection();
 		listView->setCurrentCell(current_item, 0);
-	}
-}
-
-void Playlist::playerSwitchedTitle(int id) {
-	qDebug("Playlist::playerSwitchedTitle: %d", id);
-
-	id --;
-	if (id >= 0 && id < pl.count()) {
-		setCurrentItem(id);
 	}
 }
 
@@ -965,6 +958,54 @@ void Playlist::resumePlay() {
 	}
 }
 
+void Playlist::newMediaLoaded() {
+	qDebug("Playlist::newMediaLoaded");
+
+	if (!pref->auto_add_to_playlist) {
+		qDebug("Playlist::newMediaLoaded: add to playlist disabled by user");
+		return;
+	}
+
+	clear();
+
+	QString filename = core->mdat.filename;
+
+	// Add titles
+	DiscData disc = DiscName::split(filename);
+	Maps::TTitleTracks::TMapIterator i = core->mdat.titles.getIterator();
+	while (i.hasNext()) {
+		i.next();
+		Maps::TTitleData title = i.value();
+		disc.title = title.getID();
+		QString fname = DiscName::join(disc);
+		addItem(fname, title.getDisplayName(false), title.getDuration());
+		if (title.getID() == core->mdat.titles.getSelectedID()) {
+			setCurrentItem(title.getID() - 1);
+		}
+	}
+
+	// Add current file if still empty
+	if (count() == 0) {
+		addItem(filename, core->mdat.meta_data["NAME"], core->mdat.duration);
+		// Add associated files to playlist
+		if (core->mdat.selected_type == MediaData::TYPE_FILE) {
+			qDebug() << "Playlist::newMediaLoaded: searching for files to add to playlist for"
+					 << filename;
+			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
+			if (files_to_add.isEmpty()) {
+				qDebug("Playlist::newMediaLoaded: none found");
+			} else {
+				addFiles(files_to_add);
+			}
+		}
+	}
+
+	updateView();
+
+	qDebug() << "Playlist::newMediaLoaded: created new playlist with" << count()
+			 << "items for" << filename;
+}
+
 void Playlist::getMediaInfo() {
 	qDebug("Playlist::getMediaInfo");
 
@@ -1013,6 +1054,15 @@ void Playlist::getMediaInfo() {
 	}
 
 	updateView();
+}
+
+void Playlist::playerSwitchedTitle(int id) {
+	qDebug("Playlist::playerSwitchedTitle: %d", id);
+
+	id --;
+	if (id >= 0 && id < pl.count()) {
+		setCurrentItem(id);
+	}
 }
 
 // Add current file to playlist

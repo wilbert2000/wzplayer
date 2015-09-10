@@ -81,8 +81,6 @@ public:
 	void setCurrentItem(int current);
 
 public slots:
-	void addItem(const QString &filename, QString name, double duration);
-
 	// Start playing, from item 0 if shuffle is off, or from
 	// a random item otherwise
 	void startPlay();
@@ -129,6 +127,7 @@ public slots:
 	virtual void load_pls(const QString &file, bool clear = true, bool play = true);
 	virtual bool save_pls(QString file);
 
+	virtual void newMediaLoaded();
 	virtual void getMediaInfo();
 	void playerSwitchedTitle(int id);
 
@@ -162,6 +161,7 @@ signals:
 	void modifiedChanged(bool);
 
 protected:
+	void addItem(const QString &filename, QString name, double duration);
 	void clearPlayedTag();
 	int chooseRandomItem();
 	void swapItems(int item1, int item2 );
