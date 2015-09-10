@@ -131,7 +131,7 @@ signals:
 	void receivedAO(QString);
 	void receivedEndOfFile();
 
-	void receivedCacheMessage(QString);
+	void receivedMessage(QString);
 	void receivedCacheEmptyMessage(QString);
 	void receivedCreatingIndex(QString);
 	void receivedConnectingToMessage(QString);
@@ -140,7 +140,6 @@ signals:
 	void receivedBufferingEnded();
 	void receivedScreenshot(QString);
 	void receivedUpdatingFontCache();
-	void receivedScanningFont(QString);
 	void receivedForbiddenText();
 
 	void receivedStreamTitle(QString);
