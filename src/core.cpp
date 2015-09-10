@@ -384,7 +384,9 @@ void Core::clearOSD(int level) {
 void Core::displayTextOnOSD(QString text, int duration, int level) {
 	//qDebug("Core::displayTextOnOSD: '%s'", text.toUtf8().constData());
 
-	if (proc->isFullyStarted() && level <= pref->osd_level) {
+	if (proc->isFullyStarted()
+		&& level <= pref->osd_level
+		&& !mdat.noVideo()) {
 		proc->showOSDText(text, duration, level);
 	}
 }
