@@ -3185,22 +3185,17 @@ void BaseGui::newMediaLoaded() {
 		return;
 	}
 
-	if (playlist_owner == filename) {
-		qDebug("BaseGui::newMediaLoaded: playlist should be uptodate");
-		return;
-	}
-
 	playlist->clear();
 
 	// Add titles
-	DiscData disc_name = DiscName::split(core->mdat.filename);
+	DiscData disc = DiscName::split(filename);
 	Maps::TTitleTracks::TMapIterator i = core->mdat.titles.getIterator();
 	while (i.hasNext()) {
 		i.next();
 		Maps::TTitleData title = i.value();
-		disc_name.title = title.getID();
-		QString filename = DiscName::join(disc_name);
-		playlist->addItem(filename, title.getDisplayName(false), title.getDuration());
+		disc.title = title.getID();
+		QString fname = DiscName::join(disc);
+		playlist->addItem(fname, title.getDisplayName(false), title.getDuration());
 		if (title.getID() == core->mdat.titles.getSelectedID()) {
 			playlist->setCurrentItem(title.getID() - 1);
 		}
@@ -3223,11 +3218,9 @@ void BaseGui::newMediaLoaded() {
 	}
 
 	playlist->updateView();
-	playlist_owner = filename;
 
 	qDebug() << "BaseGui::newMediaLoaded: created new playlist with" << playlist->count()
 			 << "items for" << filename;
-
 }
 
 void BaseGui::gotNoFileToPlay() {

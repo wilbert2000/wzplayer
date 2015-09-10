@@ -847,8 +847,6 @@ private:
 	bool ignore_show_hide_events;
 	bool block_resize;
 
-	QString playlist_owner;
-
 	void hidePanel();
 };
 
