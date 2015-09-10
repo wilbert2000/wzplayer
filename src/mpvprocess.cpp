@@ -197,7 +197,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		waiting_for_answers += md->n_chapters;
 		// Remember chapters if from selected title
 		int id = md->titles.getSelectedID();
-		if (id >= 0) {
+		if (id >= 0 && !MediaData::isCD(md->detected_type)) {
 			qDebug("MPVProcess::parseProperty: added %d chapter(s) to title id %d", md->n_chapters, id);
 			md->titles.addChapters(id, md->n_chapters);
 		}
