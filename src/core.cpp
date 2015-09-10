@@ -1978,9 +1978,9 @@ void Core::stopPlayer() {
 
 	// If set high enough the OS will detect the "not responding state" and popup a dialog
 	int timeout = pref->time_to_kill_mplayer;
-	if (timeout < 4000) {
-		qDebug("Core::stopPlayer: timeout %d much too small, adjusting it to 4000 ms", timeout);
-		timeout = 4000;
+	if (timeout < 5000) {
+		qDebug("Core::stopPlayer: timeout %d too small, adjusting it to 5000 ms", timeout);
+		timeout = 5000;
 	}
 
 #ifdef Q_OS_OS2
@@ -2190,7 +2190,6 @@ void Core::toggleRepeat(bool b) {
 		proc->setLoop(v);
 	}
 }
-
 
 // Audio filters
 void Core::toggleKaraoke() {
