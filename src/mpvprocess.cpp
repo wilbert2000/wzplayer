@@ -218,7 +218,11 @@ bool MPVProcess::parseChapter(int id, double start, QString title) {
 	return true;
 }
 
-bool MPVProcess::parseSwitchedTitle(const QString &disc_type, int title_id) {
+void MPVProcess::requestChapterInfo() {
+	writeToStdin("print_text \"INFO_CHAPTERS=${=chapters:}\"");
+}
+
+bool MPVProcess::parseTitleSwitched(const QString &disc_type, int title_id) {
 
 	if (notified_player_is_running && disc_type == "dvdnav") {
 		// TODO: Ask for chapter info unless we already have it
@@ -229,8 +233,24 @@ bool MPVProcess::parseSwitchedTitle(const QString &disc_type, int title_id) {
 
 	md->detected_type = md->stringToType(disc_type);
 	notifyTitleTrackChanged(title_id);
+
 	return true;
 }
+
+bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
+
+	qWarning("MPVProcess::parseTitleNotFound: title id %d not found",
+			 md->titles.getSelectedID());
+
+	// Ask which one is selected. Seems to always deliver -1.
+	// Probably mpv just doesn't know or doesn't see a menu as a title?
+	writeToStdin("print_text \"[" + disc_type + "] switched to title: ${disc-title:-1}\"");
+
+	// TODO: mark the title as bad?
+
+	return true;
+}
+
 
 int MPVProcess::getFrame(double time_sec, const QString &line) {
 	Q_UNUSED(line)
@@ -341,13 +361,11 @@ bool MPVProcess::parseLine(QString &line) {
 
 	static QRegExp rx_meta_data("^METADATA_([A-Z]+)=\\s*(.*)");
 
-/*
-	static QRegExp rx_trackinfo("^TRACK_INFO_(\\d+)=(audio|video|sub) (\\d+) (yes|no) '(.*)' '(.*)'");
-*/
-
 	static QRegExp rx_chapter("^CHAPTER_(\\d+)=([0-9\\.-]+) '(.*)'");
 
-	static QRegExp rx_switch_title("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*switched to (track|title):?\\s+(\\d+)",
+	static QRegExp rx_title_switch("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*(selecting|selected|switched to) (track|title):?\\s+(-?\\d+)",
+								   Qt::CaseInsensitive);
+	static QRegExp rx_title_not_found("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*(track|title) not found",
 								   Qt::CaseInsensitive);
 
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
@@ -477,9 +495,15 @@ bool MPVProcess::parseLine(QString &line) {
 		return parseMetaDataProperty(rx_meta_data.cap(1), rx_meta_data.cap(2));
 	}
 
-	if (rx_switch_title.indexIn(line) >= 0) {
-		return parseSwitchedTitle(rx_switch_title.cap(1).toLower(),
-								  rx_switch_title.cap(3).toInt());
+	// Switch title
+	if (rx_title_switch.indexIn(line) >= 0) {
+		return parseTitleSwitched(rx_title_switch.cap(1).toLower(),
+								  rx_title_switch.cap(4).toInt());
+	}
+
+	// Title not found
+	if (rx_title_not_found.indexIn(line) >= 0) {
+		return parseTitleNotFound(rx_title_not_found.cap(1));
 	}
 
 	// HTTP error 403 Forbidden
@@ -490,10 +514,6 @@ bool MPVProcess::parseLine(QString &line) {
 	}
 
 	return false;
-}
-
-void MPVProcess::requestChapterInfo() {
-	writeToStdin("print_text \"INFO_CHAPTERS=${=chapters}\"");
 }
 
 void MPVProcess::requestBitrateInfo() {
@@ -824,6 +844,7 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 		option_name == "autosync" ||
 		option_name == "dvd-device" || option_name == "cdrom-device" ||
 		option_name == "demuxer" ||
+		option_name == "shuffle" ||
 		option_name == "frames")
 	{
 		QString s = "--" + option_name;
