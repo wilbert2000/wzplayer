@@ -968,6 +968,11 @@ void Playlist::resumePlay() {
 void Playlist::getMediaInfo() {
 	qDebug("Playlist::getMediaInfo");
 
+	// Already have info for dics
+	if (MediaData::isDisc(core->mdat.detected_type)) {
+		return;
+	}
+
 	QString filename = core->mdat.filename;
 	double duration = core->mdat.duration;
 	QString artist = core->mdat.meta_data.value("ARTIST");
