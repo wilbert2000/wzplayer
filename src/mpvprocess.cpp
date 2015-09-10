@@ -369,6 +369,11 @@ bool MPVProcess::parseLine(QString &line) {
 	if (PlayerProcess::parseLine(line))
 		return true;
 
+	if (rx_playing.indexIn(line) >= 0) {
+		emit receivedMessage(line);
+		return true;
+	}
+
 	// Video id, codec, name and selected
 	// If enabled, track info does give lang
 	if (rx_video_track.indexIn(line) >= 0) {

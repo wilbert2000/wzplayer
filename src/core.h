@@ -48,8 +48,8 @@ class RetrieveYoutubeUrl;
 
 class Core : public QObject
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
 	enum State { Stopped = 0, Playing = 1, Paused = 2 };
 
@@ -60,7 +60,7 @@ public:
 	MediaSettings mset;
 
 	//! Return the current state
-	State state() { return _state; };
+	State state() { return _state; }
 
 	//! Return a string with the name of the current state,
 	//! so it can be printed on debugging messages.
@@ -69,14 +69,14 @@ public:
 	// Stop player if running and save MediaInfo
 	void close();
 
-	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; };
+	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; }
 	bool haveExternalSubs();
 
 protected:
 	//! Change the current state (Stopped, Playing or Paused)
 	//! And sends the stateChanged() signal.
 	void setState(State s);
-    
+
 public slots:
 	//! Generic open, with autodetection of type
 	void open(QString file, int seek = -1, bool fast_open = true);
@@ -92,7 +92,7 @@ public slots:
 
 	//! Forces to use the specified subtitle file. It's not loaded immediately but stored
 	//! and will be used for the next video. After that the variable is cleared.  
-	void setInitialSubtitle(const QString & subtitle_file) { initial_subtitle = subtitle_file; };
+	void setInitialSubtitle(const QString & subtitle_file) { initial_subtitle = subtitle_file; }
 
 	void loadAudioFile(const QString & audiofile);
 	void unloadAudioFile();
@@ -241,7 +241,7 @@ public slots:
 
 	//! Audio equalizer
 	void setAudioEqualizer(AudioEqualizerList values, bool restart = false);
-	void setAudioAudioEqualizerRestart(AudioEqualizerList values) { setAudioEqualizer(values, true); };
+	void setAudioAudioEqualizerRestart(AudioEqualizerList values) { setAudioEqualizer(values, true); }
 	void updateAudioEqualizer();
 
 	void setAudioEq(int eq, int value);

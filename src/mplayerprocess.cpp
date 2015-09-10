@@ -790,7 +790,7 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// Catch cache messages
 	if (rx_cache.indexIn(line) >= 0) {
-		emit receivedCacheMessage(line);
+		emit receivedMessage(line);
 		return true;
 	}
 	if (rx_cache_empty.indexIn(line) >= 0) {
@@ -818,7 +818,7 @@ bool MplayerProcess::parseLine(QString &line) {
 		return true;
 	}
 	if (rx_scanning_font.indexIn(line) >= 0) {
-		emit receivedScanningFont(line);
+		emit receivedMessage(line);
 		return true;
 	}
 	if (rx_forbidden.indexIn(line) >= 0) {

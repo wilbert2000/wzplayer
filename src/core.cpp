@@ -126,7 +126,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(lineAvailable(QString)),
              this, SIGNAL(logLineAvailable(QString)) );
 
-	connect( proc, SIGNAL(receivedCacheMessage(QString)),
+	connect( proc, SIGNAL(receivedMessage(QString)),
 			 this, SLOT(displayMessage(QString)) );
 
 	connect( proc, SIGNAL(receivedBuffering()),
@@ -161,9 +161,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	connect( proc, SIGNAL(receivedUpdatingFontCache()),
              this, SLOT(displayUpdatingFontCache()) );
-
-	connect( proc, SIGNAL(receivedScanningFont(QString)),
-			 this, SLOT(displayMessage(QString)) );
 
 	connect( proc, SIGNAL(receivedVO(QString)),
              this, SLOT(gotVO(QString)) );
