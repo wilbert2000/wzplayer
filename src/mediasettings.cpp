@@ -27,8 +27,7 @@
 
 using namespace Global;
 
-MediaSettings::MediaSettings(MediaData *mdat) {
-	md = mdat;
+MediaSettings::MediaSettings(MediaData *mdat) : md(mdat) {
 	reset();
 }
 

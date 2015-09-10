@@ -60,11 +60,10 @@ void MediaData::reset(bool clear_filename_and_selected_type) {
 	videos.clear();
 	audios.clear();
 	subs.clear();
+	titles.clear();
 
 	n_chapters = 0;
 	chapters.clear();
-
-	titles.clear();
 
 	// Clip info;
 	meta_data.clear();
@@ -85,7 +84,6 @@ void MediaData::reset(bool clear_filename_and_selected_type) {
 	audio_nch = 0;
 
 	initialized = false;
-
 }
 
 bool MediaData::isCD(Type type) {
