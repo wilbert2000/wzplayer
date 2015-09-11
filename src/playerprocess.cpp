@@ -445,7 +445,7 @@ bool PlayerProcess::parseMetaDataProperty(QString name, QString value) {
 bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "START_TIME") {
-		if (value.isEmpty()) {
+		if (value.isEmpty() || value == "unknown") {
 			qDebug("PlayerProcess::parseProperty: start time not set");
 		} else {
 			md->start_sec_prop_set = true;
