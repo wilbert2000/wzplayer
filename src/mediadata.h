@@ -31,16 +31,7 @@
 
 
 class MediaData {
-
 public:
-	MediaData();
-	virtual ~MediaData();
-
-	virtual void reset(bool clear_filename_and_selected_type = true);
-
-
-	QString filename;
-
 	// Types of media
 	enum Type {
 		TYPE_UNKNOWN = -1,
@@ -53,6 +44,12 @@ public:
 		TYPE_STREAM,
 		TYPE_TV
 	};
+
+	MediaData();
+	MediaData(const QString &fame, Type sel_type);
+	virtual ~MediaData() {}
+
+	QString filename;
 
 	Type selected_type;
 	Type detected_type;

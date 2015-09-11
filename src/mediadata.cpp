@@ -22,68 +22,15 @@
 #include <QDebug>
 
 
-MediaData::MediaData() {
-	reset();
+MediaData::MediaData() :
+	selected_type(TYPE_UNKNOWN),
+	detected_type(TYPE_UNKNOWN) {
 }
 
-MediaData::~MediaData() {
-}
-
-void MediaData::reset(bool clear_filename_and_selected_type) {
-
-	start_sec = 0;
-	start_sec_prop = 0;
-	time_sec = 0;
-	duration = 0;
-	start_sec_set = false;
-	start_sec_prop_set = false;
-
-	video_width = 0;
-	video_height = 0;
-	video_aspect = 0;
-	video_out_width = 0;
-	video_out_height = 0;
-	video_fps = 0;
-
-	if (clear_filename_and_selected_type) {
-		filename = "";
-		selected_type = TYPE_UNKNOWN;
-	}
-	detected_type = TYPE_UNKNOWN;
-
-	dvd_id = "";
-
-
-#if PROGRAM_SWITCH
-	programs.clear();
-#endif
-	videos.clear();
-	audios.clear();
-	subs.clear();
-	titles.clear();
-
-	n_chapters = 0;
-	chapters.clear();
-
-	// Clip info;
-	meta_data.clear();
-
-	stream_title = "";
-	stream_url = "";
-
-	demuxer = "";
-
-	// Other data
-	video_format = "";
-	audio_format = "";
-	video_codec = "";
-	audio_codec = "";
-	video_bitrate = 0;
-	audio_bitrate = 0;
-	audio_rate = 0;
-	audio_nch = 0;
-
-	initialized = false;
+MediaData::MediaData(const QString &fname, Type sel_type) :
+	filename(fname),
+	selected_type(sel_type),
+	detected_type(TYPE_UNKNOWN) {
 }
 
 bool MediaData::isCD(Type type) {
