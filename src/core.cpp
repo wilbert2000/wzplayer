@@ -309,7 +309,8 @@ void Core::changeFileSettingsMethod(QString method) {
 void Core::setState(State s) {
 	if (s != _state) {
 		_state = s;
-		qDebug() << "Core::setState: set state to" << stateToString();
+		qDebug() << "Core::setState: set state to" << stateToString()
+				 << "at" << mset.current_sec;
 		qDebug() << "Core::setState: emit stateChanged()";
 		emit stateChanged(_state);
 	}
@@ -403,7 +404,6 @@ void Core::close() {
 	saveMediaInfo();
 #endif
 
-	mdat.reset();
 }
 
 void Core::openDisc(DiscData &disc, bool fast_open) {
@@ -2933,8 +2933,6 @@ void Core::gotCurrentSec(double sec) {
 }
 
 void Core::gotPause() {
-	qDebug("Core::gotPause: player paused at %f", mset.current_sec);
-
 	setState(Paused);
 }
 
