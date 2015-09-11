@@ -3424,9 +3424,9 @@ void BaseGui::updateChapters() {
 		int chapters_to_create = core->mdat.n_chapters;
 
 		// Use chapters from selected title
-		int selected_title = core->mdat.titles.getSelectedID();
-		if (selected_title > 0) {
-			Maps::TTitleData title = core->mdat.titles.value(selected_title);
+		int selected_title_id = core->mdat.titles.getSelectedID();
+		if (selected_title_id >= 0) {
+			Maps::TTitleData title = core->mdat.titles.value(selected_title_id);
 			// Use only if set
 			if (title.getChapters() >= 0)
 				chapters_to_create = title.getChapters();
@@ -3455,7 +3455,7 @@ void BaseGui::updateAngles() {
 	angleGroup->clear(true);
 	int n_angles = 0;
 	int sel_title_id = core->mdat.titles.getSelectedID();
-	if (sel_title_id > 0) {
+	if (sel_title_id >= 0) {
 		Maps::TTitleData title = core->mdat.titles.value(sel_title_id);
 		n_angles = title.getAngles();
 	}
