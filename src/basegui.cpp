@@ -337,6 +337,8 @@ void BaseGui::saveConfig(const QString &group) {
 		set->setValue( "state", (int) windowState() );
 		set->endGroup();
 	}
+
+	playlist->saveSettings();
 }
 
 #ifdef SINGLE_INSTANCE

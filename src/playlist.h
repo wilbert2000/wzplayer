@@ -120,6 +120,7 @@ public slots:
 	virtual bool maybeSave();
     virtual void load();
     virtual bool save();
+	virtual void saveSettings();
 
 	virtual void load_m3u(const QString &file, bool clear = true, bool play = true);
 	virtual bool save_m3u(QString file);
@@ -179,7 +180,6 @@ protected slots:
 	virtual void editCurrentItem();
 	virtual void editItem(int item);
 
-	virtual void saveSettings();
 	virtual void loadSettings();
 
 	virtual void maybeSaveSettings();
