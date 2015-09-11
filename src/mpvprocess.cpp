@@ -238,15 +238,17 @@ bool MPVProcess::parseTitleSwitched(const QString &disc_type, int title_id) {
 }
 
 bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
+	Q_UNUSED(disc_type)
 
-	qWarning("MPVProcess::parseTitleNotFound: title id %d not found",
-			 md->titles.getSelectedID());
+	qWarning("MPVProcess::parseTitleNotFound: requested title not found");
 
-	// Ask which one is selected. Seems to always deliver -1.
-	// Probably mpv just doesn't know or doesn't see a menu as a title?
-	writeToStdin("print_text \"[" + disc_type + "] switched to title: ${disc-title:-1}\"");
-
+	// Requested title means the original title. The currently selected title
+	// seems still valid and is the last selected title during its search through
+	// the disc.
 	// TODO: mark the title as bad?
+
+	// Ask which one is selected. Seems to always deliver -1, probably mpv just doesn't know?
+	// writeToStdin("print_text \"[" + disc_type + "] switched to title: ${disc-title:-1}\"");
 
 	return true;
 }
