@@ -28,6 +28,7 @@
 #include "mplayerprocess.h"
 #endif
 
+const int waiting_for_answers_safe_guard_init = 100;
 
 PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata, QRegExp *r_eof)
 	: MyProcess(0)
@@ -95,7 +96,7 @@ bool PlayerProcess::startPlayer() {
 	notified_player_is_running = false;
 
 	waiting_for_answers = 0;
-	waiting_for_answers_safe_guard = 50;
+	waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
 
 	received_end_of_file = false;
 	quit_send = false;
@@ -186,6 +187,7 @@ bool PlayerProcess::waitForAnswers() {
 
 		qWarning("MplayerProcess::waitForAnswers: did not receive answers in time. Stopped waitng.");
 		waiting_for_answers = 0;
+		waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
 	}
 
 	return false;
