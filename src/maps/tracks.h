@@ -28,7 +28,7 @@ namespace Maps {
 
 class TTrackData : public TData {
 public:
-	TTrackData();
+	TTrackData() {}
 	~TTrackData() {}
 
 	QString getLang() const { return lang; }

@@ -24,12 +24,6 @@
 
 namespace Maps {
 
-TTrackData::TTrackData() :
-	TData(),
-	lang(),
-	name() {
-}
-
 QString TTrackData::getDisplayName() const {
 
 	QString dname = QString::number(ID);
