@@ -365,7 +365,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 	static QRegExp rx_chapter("^CHAPTER_(\\d+)=([0-9\\.-]+) '(.*)'");
 
-	static QRegExp rx_title_switch("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*(selecting|selected|switched to) (track|title):?\\s+(-?\\d+)",
+	static QRegExp rx_title_switch("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*switched to (track|title):?\\s+(-?\\d+)",
 								   Qt::CaseInsensitive);
 	static QRegExp rx_title_not_found("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*(track|title) not found",
 								   Qt::CaseInsensitive);
@@ -500,7 +500,7 @@ bool MPVProcess::parseLine(QString &line) {
 	// Switch title
 	if (rx_title_switch.indexIn(line) >= 0) {
 		return parseTitleSwitched(rx_title_switch.cap(1).toLower(),
-								  rx_title_switch.cap(4).toInt());
+								  rx_title_switch.cap(3).toInt());
 	}
 
 	// Title not found
