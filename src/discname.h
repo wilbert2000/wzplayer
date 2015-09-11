@@ -50,7 +50,7 @@ public:
 	enum Disc { DVD = 1, DVDNAV = 2, VCD = 3, CDDA = 4, BLURAY = 5 };
 
 	static QString join(Disc type, int title, const QString & device);
-	static QString join(const DiscData & d);
+	static QString join(const DiscData & d, bool add_zero_title = false);
 	static QString joinDVD(const QString & device, bool use_dvdnav = false);
 	static DiscData split(const QString & disc_url, bool *ok = 0);
 
