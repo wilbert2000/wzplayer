@@ -27,11 +27,11 @@
 
 namespace Maps {
 
-class TTitleData : public TData{
+class TTitleData : public TData {
 
 public:
 	TTitleData();
-	~TTitleData() {};
+	~TTitleData() {}
 
 	void setName( const QString & aName ) { name = aName; }
 	void setDuration( double d ) { duration = d; }
@@ -64,7 +64,7 @@ protected:
 class TTitleTracks : public TMap<TTitleData> {
 
 public:
-	TTitleTracks() {};
+	TTitleTracks() {}
 	~TTitleTracks() {}
 
 	typedef QMapIterator<int, TTitleData> TTitleTrackIterator;

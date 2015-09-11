@@ -46,12 +46,12 @@ QString TTitleData::getDisplayName(bool add_duration) const {
 		dname += " " + name;
 	}
 
-	if (add_duration && duration > 0) {
+	if (add_duration && duration >= 0) {
 		dname += " (" + Helper::formatTime(qRound(duration)) + ")";
 	}
 
 	return dname;
-};
+}
 
 void TTitleTracks::addName(int ID, const QString &name) {
 	TTitleData& title = (*this)[ID];
