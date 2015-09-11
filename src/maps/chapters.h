@@ -51,7 +51,7 @@ public:
 class TChapters : public TMap<TChapterData> {
 
 public:
-	TChapters() {};
+	TChapters() {}
 	~TChapters() {}
 
 	typedef QMap <int, TChapterData> TChapterMap;
