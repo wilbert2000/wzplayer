@@ -108,6 +108,7 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	createActions();
 	createToolbar();
 
+	// TODO: connect to TitleInfoChanged?
 	connect( core, SIGNAL(mediaStartPlay()),
 			 this, SLOT(newMediaLoaded()) );
 	connect( core, SIGNAL(mediaLoaded()),
@@ -971,15 +972,15 @@ void Playlist::newMediaLoaded() {
 	QString filename = core->mdat.filename;
 
 	// Add titles
+	int selected_title = core->mdat.titles.getSelectedID();
 	DiscData disc = DiscName::split(filename);
 	Maps::TTitleTracks::TMapIterator i = core->mdat.titles.getIterator();
 	while (i.hasNext()) {
 		i.next();
 		Maps::TTitleData title = i.value();
 		disc.title = title.getID();
-		QString fname = DiscName::join(disc);
-		addItem(fname, title.getDisplayName(false), title.getDuration());
-		if (title.getID() == core->mdat.titles.getSelectedID()) {
+		addItem(DiscName::join(disc), title.getDisplayName(false), title.getDuration());
+		if (title.getID() == selected_title) {
 			setCurrentItem(title.getID() - 1);
 		}
 	}
@@ -1059,7 +1060,7 @@ void Playlist::getMediaInfo() {
 void Playlist::playerSwitchedTitle(int id) {
 	qDebug("Playlist::playerSwitchedTitle: %d", id);
 
-	id --;
+	id -= core->mdat.titles.firstID();
 	if (id >= 0 && id < pl.count()) {
 		setCurrentItem(id);
 	}
