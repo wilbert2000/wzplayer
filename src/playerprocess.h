@@ -190,7 +190,7 @@ protected:
 	double playerTimeToGuiTime(double sec);
 
 	virtual int getFrame(double time_sec, const QString &line) = 0;
-	void notifyTitleTrackChanged(int new_id);
+	void notifyTitleTrackChanged(int new_title);
 	void notifyDuration(double duration);
 	virtual void correctDuration(double sec);
 	void notifyTime(double time_sec, const QString &line);

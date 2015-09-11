@@ -102,8 +102,8 @@ bool PlayerProcess::startPlayer() {
 
 	prev_frame = -11111;
 
-	// Clear media data, false don't clear filename and type
-	md->reset(false);
+	// Clear media data
+	*md = MediaData(md->filename, md->selected_type);
 
 	// Start the player process
 	start();
@@ -160,19 +160,20 @@ void PlayerProcess::parseBytes(QByteArray ba) {
 	}
 }
 
-void PlayerProcess::notifyTitleTrackChanged(int new_id) {
+void PlayerProcess::notifyTitleTrackChanged(int new_title) {
 
-	if (new_id != md->titles.getSelectedID()) {
+	int selected = md->titles.getSelectedID();
+	if (new_title != selected) {
 		qDebug("PlayerProcess::notifyTitleTrackChanged: title changed from %d to %d",
-			   md->titles.getSelectedID(), new_id);
-		md->titles.setSelectedID(new_id);
+			   selected, new_title);
+		md->titles.setSelectedID(new_title);
 		if (notified_player_is_running) {
 			qDebug("PlayerProcess::notifyTitleTrackChanged: emit receivedTitleTrackChanged()");
-			emit receivedTitleTrackChanged(new_id);
+			emit receivedTitleTrackChanged(new_title);
 		}
 	} else {
 		qDebug("PlayerProcess::notifyTitleTrackChanged: current title already set to %d",
-			   new_id);
+			   new_title);
 	}
 }
 
