@@ -149,7 +149,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		qDebug("MPVProcess::parseProperty: creating %d titles", n_titles);
 		for (int idx = 0; idx < n_titles; idx++) {
 			md->titles.addID(idx + 1);
-			writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1 ${=disc-title-list/%1/length:}\"").arg(idx));
+			writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1 ${=disc-title-list/%1/length:-1}\"").arg(idx));
 		}
 		waiting_for_answers += n_titles;
 		return true;
