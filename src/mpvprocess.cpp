@@ -568,10 +568,24 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 
 	arg << "--term-status-msg=STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}";
 
+	// MPV interprets the ID in a DVD URL as index [0..#titles-1] instead of
+	// [1..#titles]. Maybe one day they gonna fix it and this will break. Sigh.
+	// When no title is given it plays the longest title it can find.
+	// CDs work as expected, don't know about bluray.
+
+	QString url = media;
+	bool valid_disc;
+	DiscData disc = DiscName::split(media, &valid_disc);
+	if (valid_disc && (disc.protocol == "dvd" || disc.protocol == "dvdnav")) {
+		if (disc.title > 0)
+			disc.title--;
+		url = DiscName::join(disc, true);
+	}
+
 	if (is_playlist) {
-		arg << "--playlist=" + media;
+		arg << "--playlist=" + url;
 	} else {
-		arg << media;
+		arg << url;
 	}
 }
 
