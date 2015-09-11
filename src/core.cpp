@@ -438,8 +438,14 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 	// Test access
 	if (!QFileInfo(disc.device).exists()) {
 		qWarning() << "Core::openDisc: could not access" << disc.device;
-		// TODO:
-		return;
+		// Forgot /?
+		if (QFileInfo("/" + disc.device).exists()) {
+			qWarning() << "Core::openDisc: added missing /";
+			disc.device = "/" + disc.device;
+		} else {
+			emit showMessage(tr("File not found: %1").arg(disc.device), 10000);
+			return;
+		}
 	}
 
 	// Clean filename and set selected type
@@ -449,7 +455,7 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 	// Clear settings
 	mset.reset();
 	mset.current_title_id = disc.title;
-	// TODO: check seek from open
+	// TODO: check seek from open?
 
 	initPlaying();
 	return;
@@ -1932,7 +1938,8 @@ void Core::startPlayer( QString file, double seek ) {
 	}
 #endif
 
-	proc->setMedia(file, proc->isMPlayer() ? url_is_playlist : false); // Don't use playlist with mpv
+	// Don't use playlist with mpv
+	proc->setMedia(file, proc->isMPlayer() ? url_is_playlist : false);
 
 	// It seems the loop option must be after the filename
 	if (mset.loop) {
@@ -3071,26 +3078,30 @@ void Core::changeSecondarySubtitle(int idx) {
 }
 #endif
 
-// Triggered by user
-void Core::changeTitle(int id) {
-	qDebug("Core::changeTitle: id %d", id);
+void Core::changeTitle(int title) {
+	qDebug("Core::changeTitle: title %d", title);
 
-	// Handle CDs with the chapter commands
-	if (MediaData::isCD(mdat.detected_type)) {
-		changeChapter(id - mdat.titles.firstID() + mdat.chapters.firstID());
-	} else if (cache_size == 0) {
-		// Switch through slave command
-		mset.current_title_id = id;
-		proc->setTitle(id);
-	} else {
-		// Restart
+	// Handle audio CDs with the chapter commands
+	if (proc->isRunning()) {
+		if (MediaData::isCD(mdat.detected_type)) {
+			changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
+			return;
+		}
+		if (cache_size == 0) {
+			// Switch through slave command
+			mset.current_title_id = title;
+			proc->setTitle(title);
+			return;
+		}
 		qWarning("Core::changeTitle: fast title switch is disabled, because cache size (%d) not 0",
 				 cache_size);
-		mset.current_title_id = id;
-		DiscData disc_data = DiscName::split(mdat.filename);
-		disc_data.title = id;
-		openDisc(disc_data, false);
 	}
+
+	// Start/restart
+	mset.current_title_id = title;
+	DiscData disc_data = DiscName::split(mdat.filename);
+	disc_data.title = title;
+	openDisc(disc_data, false);
 }
 
 void Core::changeChapter(int id) {

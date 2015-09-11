@@ -272,7 +272,7 @@ public slots:
 	void changeProgram(int ID);
 	void nextProgram();
 #endif
-	void changeTitle(int id);
+	void changeTitle(int title);
 	void changeChapter(int id);
 	void prevChapter();
 	void nextChapter();
