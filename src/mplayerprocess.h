@@ -55,8 +55,8 @@ public:
 	void setVideo(int ID);
 	void setSubtitle(SubData::Type type, int ID);
 	void disableSubtitles();
-	void setSecondarySubtitle(int) {};
-	void disableSecondarySubtitles() {};
+	void setSecondarySubtitle(int) {}
+	void disableSecondarySubtitles() {}
 	void setSubtitlesVisibility(bool b);
 	void seekPlayerTime(double secs, int mode, bool precise, bool currently_paused);
 	void mute(bool b);
@@ -118,9 +118,6 @@ private:
 	int svn_version;
 
 	int sub_source;
-	int sub_demux;
-	int sub_vob;
-	int sub_file;
 	int sub_id_filename;
 
 	double check_duration_time;
@@ -136,7 +133,6 @@ private:
 
 	void notifyChanges();
 
-	void getSelectedTracks();
 	bool parseVO(const QString &driver, int w, int h);
 	bool parseSubID(const QString &type, int id);
 	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);

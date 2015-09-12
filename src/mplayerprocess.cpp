@@ -36,11 +36,7 @@ static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 
 MplayerProcess::MplayerProcess(MediaData *mdata)
 	: PlayerProcess(PlayerID::MPLAYER, mdata, &rx_endoffile),
-	svn_version(-1),
-	video_tracks_changed(false),
-	audio_tracks_changed(false),
-	subtitle_tracks_changed(false),
-	title_tracks_changed(false) {
+	svn_version(-1) {
 }
 
 MplayerProcess::~MplayerProcess() {
@@ -49,9 +45,6 @@ MplayerProcess::~MplayerProcess() {
 bool MplayerProcess::startPlayer() {
 
 	sub_source = -1;
-	sub_demux = 0;
-	sub_vob = 0;
-	sub_file = 0;
 	sub_id_filename = -1;
 
 	corrected_duration = false;
@@ -63,13 +56,14 @@ bool MplayerProcess::parseVideoProperty(const QString &name, const QString &valu
 
 	if (name == "ID") {
 		int id = value.toInt();
-		if (md->videos.contains(id)) {
-			qDebug("MplayerProcess::parseVideoProperty: video id %d already added", id);
-			return false;
-		}
 		md->videos.addID(id);
-		video_tracks_changed = true;
-		qDebug("MplayerProcess::parseVideoProperty: added video id %d", id);
+		// get_property switch_video with single video track does not seem to
+		// work. Maybe too early?
+		if (md->videos.count() > 1) {
+			writeToStdin("get_property switch_video");
+		} else {
+			md->videos.setSelectedID(id);
+		}
 		return true;
 	}
 
@@ -81,13 +75,8 @@ bool MplayerProcess::parseAudioProperty(const QString &name, const QString &valu
 	// Audio ID
 	if (name == "ID") {
 		int id = value.toInt();
-		if (md->audios.contains(id)) {
-			qDebug("MplayerProcess::parseAudioProperty: audio id %d already added", id);
-			return false;
-		}
 		md->audios.addID(id);
-		audio_tracks_changed = true;
-		qDebug("MplayerProcess::parseAudioProperty: added audio id %d", id);
+		writeToStdin("get_property switch_audio");
 		return true;
 	}
 
@@ -96,31 +85,32 @@ bool MplayerProcess::parseAudioProperty(const QString &name, const QString &valu
 
 bool MplayerProcess::parseSubID(const QString &type, int id) {
 
-	// Add id, data still to come
+	// Add new id or a track got selected
+
+	// Get sub_source
+	writeToStdin("get_property sub_source");
+
 	SubData::Type sub_type;
 	if (type == "FILE_SUB") {
 		sub_type = SubData::File;
-		sub_file = 1;
+		writeToStdin("get_property sub_file");
+		// Remember id in case there is a filename comming
+		sub_id_filename = id;
 	} else if (type == "VOBSUB") {
 		sub_type = SubData::Vob;
-		sub_vob = 1;
+		writeToStdin("get_property sub_vob");
 	} else {
 		sub_type = SubData::Sub;
-		sub_demux = 1;
+		writeToStdin("get_property sub_demux");
 	}
 
 	if (md->subs.find(sub_type, id) < 0) {
 		md->subs.add(sub_type, id);
-		// Remember id for filename to come
-		if (sub_type == SubData::File)
-			sub_id_filename = id;
 		qDebug() << "MplayerProcess::parseSubID: created"
 				 << type << "subtitle track id" << id;
-		return true;
 	}
 
-	qDebug("MplayerProcess::parseSubID: subtitle track %d already exists", id);
-	return false;
+	return true;
 }
 
 bool MplayerProcess::parseSubTrack(const QString &type, int id, const QString &name, const QString &value) {
@@ -141,71 +131,6 @@ bool MplayerProcess::parseSubTrack(const QString &type, int id, const QString &n
 	return false;
 }
 
-void MplayerProcess::getSelectedTracks() {
-
-	// Get selected video track
-	if (md->videos.count() > 0 && md->videos.getSelectedID() < 0) {
-		if (md->videos.count() == 1) {
-			int id = md->videos.firstID();
-			md->videos.setSelectedID(id);
-			qDebug("MplayerProcess::getSelectedTracks: selected video track id %d", id);
-		} else {
-			writeToStdin("get_property switch_video");
-			waiting_for_answers++;
-		}
-	}
-
-	// Get selected audio track
-	if (md->audios.count() > 0 && md->audios.getSelectedID() < 0) {
-		if (md->audios.count() == 1) {
-			int id = md->audios.firstID();
-			md->audios.setSelectedID(id);
-			qDebug("MplayerProcess::getSelectedTracks: selected audio track id %d", id);
-		} else {
-			writeToStdin("get_property switch_audio");
-			waiting_for_answers++;
-		}
-	}
-
-	// Get selected subtitle
-	if (md->subs.count() > 0 && md->subs.selectedID() < 0) {
-
-		// Get sub_source
-		if (sub_demux + sub_vob + sub_file > 1) {
-			writeToStdin("get_property sub_source");
-			waiting_for_answers++;
-		} else {
-			if (sub_demux) sub_source = SubData::Sub;
-			else if (sub_vob) sub_source = SubData::Vob;
-			else sub_source = SubData::File;
-			qDebug("MplayerProcess::getSelectedTracks: selected subtitle source %d", sub_source);
-		}
-
-		// Get selected ID
-		if (md->subs.count() == 1) {
-			int id = md->subs.firstID();
-			md->subs.setSelected((SubData::Type) sub_source, id);
-			qDebug("MplayerProcess::getSelectedTracks: selected subtitle track id %d from source %d",
-				   id, sub_source);
-			return;
-		}
-
-		// Multiple subtitles
-		if (sub_demux) {
-			writeToStdin("get_property sub_demux");
-			waiting_for_answers++;
-		}
-		if (sub_vob) {
-			writeToStdin("get_property sub_vob");
-			waiting_for_answers++;
-		}
-		if (sub_file) {
-			writeToStdin("get_property sub_file");
-			waiting_for_answers++;
-		}
-	}
-}
-
 bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 	// Check funky duration times
@@ -221,13 +146,14 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 		return true;
 	}
 
-	waiting_for_answers--;
 	int i = value.toInt();
 
 	// Video track
 	if (name == "SWITCH_VIDEO") {
 		qDebug("MplayerProcess::parseAnswer: selected video track id %d", i);
 		md->videos.setSelectedID(i);
+		if (notified_player_is_running)
+			emit receivedVideoTrackChanged(i);
 		return true;
 	}
 
@@ -235,6 +161,8 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 	if (name == "SWITCH_AUDIO") {
 		qDebug("MplayerProcess::parseAnswer: selected audio track id %d", i);
 		md->audios.setSelectedID(i);
+		if (notified_player_is_running)
+			emit receivedAudioTrackChanged(i);
 		return true;
 	}
 
@@ -242,13 +170,20 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 	if (name == "SUB_SOURCE") {
 		qDebug("MplayerProcess::parseAnswer: subtitle source set to %d", i);
 		sub_source = i;
+		if (i < 0 && md->subs.selectedID() >= 0) {
+			md->subs.clearSelected();
+			if (notified_player_is_running)
+				emit receivedSubtitleTrackChanged();
+		}
 		return true;
 	}
 
 	if (name == "SUB_DEMUX") {
-		if (sub_source == SubData::Sub && i >= 0) {
+		if (sub_source == SubData::Sub) {
 			qDebug("MplayerProcess::parseAnswer: selected subtitle track id %d from demuxer", i);
 			md->subs.setSelected(SubData::Sub, i);
+			if (notified_player_is_running)
+				emit receivedSubtitleTrackChanged();
 		} else {
 			qDebug("MplayerProcess::parseAnswer: did not select subtitles from demuxer");
 		}
@@ -256,9 +191,11 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 	}
 
 	if (name == "SUB_VOB") {
-		if (sub_source == SubData::Vob && i >= 0) {
+		if (sub_source == SubData::Vob) {
 			qDebug("MplayerProcess::parseAnswer: selected VOB subtitle track id %d", i);
 			md->subs.setSelected(SubData::Vob, i);
+			if (notified_player_is_running)
+				emit receivedSubtitleTrackChanged();
 		} else {
 			qDebug("MplayerProcess::parseAnswer: did not select VOB subtitles");
 		}
@@ -266,9 +203,11 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 	}
 
 	if (name == "SUB_FILE") {
-		if (sub_source == SubData::File && i >= 0) {
+		if (sub_source == SubData::File) {
 			qDebug("MplayerProcess::parseAnswer: selected subtitle track id %d from external file", i);
 			md->subs.setSelected(SubData::File, i);
+			if (notified_player_is_running)
+				emit receivedSubtitleTrackChanged();
 		} else {
 			qDebug("MplayerProcess::parseAnswer: did not select external subtitles");
 		}
@@ -312,10 +251,6 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 			qDebug() << "MplayerProcess::parseProperty: set filename sub id"
 					 << sub_id_filename << "to" << value;
 			md->subs.changeFilename(SubData::File, sub_id_filename, value);
-			// Assume selected if running and none selected
-			if (notified_player_is_running && md->subs.selectedID() < 0)
-				md->subs.setSelected(SubData::File, sub_id_filename);
-			sub_id_filename = -1;
 			subtitle_tracks_changed = true;
 			return true;
 		}
@@ -323,8 +258,8 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 				   << value;
 		return false;
 	}
-	// DVD disc id
-	if (name == "DVD_DISC_ID" || name == "DVD_VOLUME_ID") {
+	// DVD disc id (DVD_VOLUME_ID not the same)
+	if (name == "DVD_DISC_ID") {
 		md->dvd_id = value;
 		qDebug("MplayerProcess::parseProperty: DVD id set to '%s'", md->dvd_id.toUtf8().data());
 		return true;
@@ -332,7 +267,7 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	bool parsed = PlayerProcess::parseProperty(name, value);
 
-	// Use title length if duration is 0
+	// TODO: Use title length if duration is 0
 	if (name == "LENGTH" && md->duration == 0 && md->titles.getSelectedID() >= 0) {
 		Maps::TTitleData title = md->titles.value(md->titles.getSelectedID());
 		qDebug("MplayerProcess::parseProperty: using duration %f of title id %d",
@@ -558,7 +493,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_sub_id("^ID_(SUBTITLE|FILE_SUB|VOBSUB)_ID=(\\d+)");
 	static QRegExp rx_sub_track("^ID_(SID|VSID)_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
 
-	static QRegExp rx_starting_playback("^Starting playback...");
+	//static QRegExp rx_starting_playback("^Starting playback...");
 	static QRegExp rx_answer("^ANS_(.+)=(.*)");
 
 	static QRegExp rx_mkvchapters("\\[mkv\\] Chapter (\\d+) from");
@@ -621,12 +556,6 @@ bool MplayerProcess::parseLine(QString &line) {
 	// Pause
 	if (line == "ID_PAUSED") {
 		return parsePause();
-	}
-
-	// Starting playback
-	if (rx_starting_playback.indexIn(line) >= 0) {
-		getSelectedTracks();
-		return true;
 	}
 
 	// VO driver and resolution after aspect and filters applied
@@ -1030,7 +959,7 @@ void MplayerProcess::setSubtitle(SubData::Type type, int ID) {
 	}
 
 	md->subs.setSelected(type, ID);
-	emit receivedSubtitleTrackChanged(ID);
+	emit receivedSubtitleTrackChanged();
 }
 
 void MplayerProcess::disableSubtitles() {
@@ -1038,7 +967,7 @@ void MplayerProcess::disableSubtitles() {
 	writeToStdin("sub_source -1");
 
 	md->subs.clearSelected();
-	emit receivedSubtitleTrackChanged(-1);
+	emit receivedSubtitleTrackChanged();
 }
 
 void MplayerProcess::setSubtitlesVisibility(bool b) {
@@ -1126,8 +1055,6 @@ void MplayerProcess::setExternalSubtitleFile(const QString & filename) {
 	writeToStdin("sub_load \""+ filename +"\"");
 	// Select files as sub source
 	writeToStdin("sub_source 0");
-	// Unselect current, so we can select only the first new id in parseProperty
-	md->subs.clearSelected();
 }
 
 void MplayerProcess::setSubPos(int pos) {
