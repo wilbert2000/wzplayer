@@ -202,7 +202,7 @@ void MplayerWindow::setMonitorAspect(double asp) {
 }
 
 void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
-	qDebug("MplayerWindow::setAspect: %f", aspect);
+	//qDebug("MplayerWindow::setAspect: %f", aspect);
 
 	// See core::startPlayer. The player is started with --no-keepaspect and
 	// monitorpixelaspect=1, so aspect changes don't require a restart of the player,
@@ -217,7 +217,7 @@ void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
 }
 
 void MplayerWindow::setResolution(int width, int height) {
-	qDebug("MplayerWindow::setResolution: %d x %d", width, height);
+	//qDebug("MplayerWindow::setResolution: %d x %d", width, height);
 
 	video_width = width;
 	video_height = height;
@@ -500,16 +500,16 @@ void MplayerWindow::mouseReleaseEvent(QMouseEvent * event) {
 			if (delay_left_click) {
 				if (double_clicked) {
 					double_clicked = false;
-					qDebug( "MplayerWindow::mouseReleaseEvent: ignoring event after double click" );
+					//qDebug( "MplayerWindow::mouseReleaseEvent: ignoring event after double click" );
 				} else {
 					// Delay left click until double click has a chance to arrive
 					left_click_timer->start();
-					qDebug( "MplayerWindow::mouseReleaseEvent: delaying left click" );
+					//qDebug( "MplayerWindow::mouseReleaseEvent: delaying left click" );
 				}
 			} else {
 				double_clicked = false;
 				// Click right away
-				qDebug( "MplayerWindow::mouseReleaseEvent: emitting left click" );
+				//qDebug( "MplayerWindow::mouseReleaseEvent: emitting left click" );
 				emit leftClicked();
 			}
 		}
@@ -528,7 +528,7 @@ void MplayerWindow::mouseReleaseEvent(QMouseEvent * event) {
 }
 
 void MplayerWindow::mouseDoubleClickEvent( QMouseEvent * event ) {
-	qDebug( "MplayerWindow::mouseDoubleClickEvent" );
+	//qDebug( "MplayerWindow::mouseDoubleClickEvent" );
 
 	event->accept();
 
@@ -543,7 +543,7 @@ void MplayerWindow::mouseDoubleClickEvent( QMouseEvent * event ) {
 }
 
 void MplayerWindow::wheelEvent( QWheelEvent * event ) {
-	qDebug("MplayerWindow::wheelEvent: delta: %d", event->delta());
+	//qDebug("MplayerWindow::wheelEvent: delta: %d", event->delta());
 
 	event->accept();
 
