@@ -576,9 +576,10 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 	QString url = media;
 	bool valid_disc;
 	DiscData disc = DiscName::split(media, &valid_disc);
-	if (valid_disc && (disc.protocol == "dvd" || disc.protocol == "dvdnav")) {
-		if (disc.title > 0)
-			disc.title--;
+	if (valid_disc
+		&& (disc.protocol == "dvd" || disc.protocol == "dvdnav")
+		&& disc.title > 0) {
+		disc.title--;
 		url = DiscName::join(disc, true);
 	}
 
