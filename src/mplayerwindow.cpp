@@ -202,7 +202,7 @@ void MplayerWindow::setMonitorAspect(double asp) {
 }
 
 void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
-	//qDebug("MplayerWindow::setAspect: %f", aspect);
+	qDebug("MplayerWindow::setAspect: %f", aspect);
 
 	// See core::startPlayer. The player is started with --no-keepaspect and
 	// monitorpixelaspect=1, so aspect changes don't require a restart of the player,
@@ -217,7 +217,7 @@ void MplayerWindow::setAspect(double aspect, bool updateVideoWindow) {
 }
 
 void MplayerWindow::setResolution(int width, int height) {
-	//qDebug("MplayerWindow::setResolution: %d x %d", width, height);
+	qDebug("MplayerWindow::setResolution: %d x %d", width, height);
 
 	video_width = width;
 	video_height = height;
