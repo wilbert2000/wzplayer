@@ -539,13 +539,13 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_program("^PROGRAM_ID=(\\d+)");
 #endif
 
-	static QRegExp rx_cache("^Cache fill:.*");
+	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file)");
+
 	static QRegExp rx_cache_empty("^Cache empty.*|^Cache not filling.*");
 	static QRegExp rx_create_index("^Generating Index:.*");
 	static QRegExp rx_connecting("^Connecting to .*");
 	static QRegExp rx_resolving("^Resolving .*");
 	static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
-	static QRegExp rx_scanning_font("Scanning file");
 	static QRegExp rx_forbidden("Server returned 403: Forbidden");
 
 	static QRegExp rx_meta_data("^(name|"
@@ -740,7 +740,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	*/
 
 	// Catch cache messages
-	if (rx_cache.indexIn(line) >= 0) {
+	if (rx_message.indexIn(line) >= 0) {
 		emit receivedMessage(line);
 		return true;
 	}
@@ -766,10 +766,6 @@ bool MplayerProcess::parseLine(QString &line) {
 	if (rx_fontcache.indexIn(line) >= 0) {
 		qDebug("MplayerProcess::parseLine: emit receivedUpdatingFontCache");
 		emit receivedUpdatingFontCache();
-		return true;
-	}
-	if (rx_scanning_font.indexIn(line) >= 0) {
-		emit receivedMessage(line);
 		return true;
 	}
 	if (rx_forbidden.indexIn(line) >= 0) {
