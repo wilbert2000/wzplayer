@@ -139,6 +139,7 @@ private:
 	bool parseChapter(int id, const QString &type, const QString &value);
 	bool parseCDTrack(const QString &type, int id, const QString &length);
 	bool parseTitle(int id, const QString &field, const QString &value);
+	bool parseTitleChapters(QString chapters);
 	bool parseAnswer(const QString &name, const QString &value);
 	bool parsePause();
 	void convertTitlesToChapters();

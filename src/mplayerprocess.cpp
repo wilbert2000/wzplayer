@@ -339,22 +339,37 @@ bool MplayerProcess::parseTitle(int id, const QString &field, const QString &val
 	return true;
 }
 
-bool MplayerProcess::parseVO(const QString &driver, int w, int h) {
+bool MplayerProcess::parseTitleChapters(QString chapters) {
 
-	qDebug("MplayerProcess::parseVO: emit receivedVO");
-	emit receivedVO(driver);
+	static QRegExp rx_time("(\\d\\d):(\\d\\d):(\\d\\d).(\\d\\d\\d)");
 
-	// TODO: should be stored per video track. Now the last one wins and all
-	// tracks are handled like the last...
-	if ((md->video_out_width > 0 && w != md->video_out_width)
-	 || (md->video_out_height > 0 && h != md->video_out_height)) {
-		qWarning("MplayerProcess::parseVO: video out previous track overwritten");
+	int i;
+	int idx = 0;
+	int from = 0;
+	while ((i = chapters.indexOf(",", from)) > 0) {
+		QString s = chapters.mid(from, i - from);
+		if (rx_time.indexIn(s) >= 0) {
+			double time = rx_time.cap(1).toInt() * 3600
+						  + rx_time.cap(2).toInt() * 60
+						  + rx_time.cap(3).toInt()
+						  + rx_time.cap(4).toDouble()/1000;
+			md->chapters.addStart(idx, time);
+		}
+		from = i + 1;
+		idx++;
 	}
 
-	md->video_out_width = w;
-	md->video_out_height = h;
+	qDebug("MplayerProcess::parseTitleChapters: added %d chapters", md->chapters.count());
+	return true;
+}
+
+bool MplayerProcess::parseVO(const QString &driver, int w, int h) {
 
 	qDebug("MplayerProcess::parseVO: video out size set to %d x %d", w, h);
+	md->video_out_width = w;
+	md->video_out_height = h;
+	emit receivedVO(driver);
+
 	return true;
 }
 
@@ -503,6 +518,8 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_cd_track("^ID_(CDDA|VCD)_TRACK_(\\d+)_MSF=(.*)");
 	// DVD/BLURAY titles
 	static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|CHAPTERS|ANGLES)=(.*)");
+	// Title chapters
+	static QRegExp rx_title_chapters("^CHAPTERS: (.*)");
 
 #if DVDNAV_SUPPORT
 	static QRegExp rx_dvdnav_switch_title("^DVDNAV, switched to title: (\\d+)");
@@ -641,6 +658,11 @@ bool MplayerProcess::parseLine(QString &line) {
 		return parseTitle(rx_title.cap(2).toInt(),
 						  rx_title.cap(3),
 						  rx_title.cap(4));
+	}
+
+	// DVD/Bluray title chapters
+	if (rx_title_chapters.indexIn(line) >= 0) {
+		return parseTitleChapters(rx_title_chapters.cap(1));
 	}
 
 #if DVDNAV_SUPPORT
