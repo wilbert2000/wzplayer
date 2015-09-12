@@ -38,7 +38,6 @@ void MediaData::init() {
 	detected_type = TYPE_UNKNOWN;
 
 	start_sec = 0;
-	start_sec_prop = 0;
 	time_sec = 0;
 	duration = 0;
 	start_sec_set = false;
@@ -152,7 +151,6 @@ void MediaData::list() {
 	qDebug("  detected type: %s", typeToString(detected_type).toUtf8().data());
 
 	qDebug("  start: %f", start_sec);
-	qDebug("  start prop: %f", start_sec_prop);
 	qDebug("  start prop set: %d", start_sec_prop_set);
 	qDebug("  duration: %f", duration);
 

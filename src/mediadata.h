@@ -56,8 +56,6 @@ public:
 
 	// Start time from first status line or reported by player
 	double start_sec;
-	// Start time reported by player
-	double start_sec_prop;
 	// Current time video, without start time substracted
 	// See MediaSettings for time with start time substracted
 	double time_sec;
