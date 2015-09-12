@@ -971,6 +971,17 @@ void Playlist::playDirectory(const QString &dir) {
 void Playlist::newMediaLoaded() {
 	qDebug("Playlist::newMediaLoaded");
 
+	QString filename = core->mdat.filename;
+
+	// Done if new file is current item and not a disc.
+	// For disc rebuild the playlist, just in case someone changed disc.
+	if (current_item >= 0 && current_item < pl.count()
+		&& pl[current_item].filename() == filename
+		&& !core->mdat.detectedDisc()) {
+		qDebug("Playlist::newMediaLoaded: new file is current item");
+		return;
+	}
+
 	if (!pref->auto_add_to_playlist) {
 		qDebug("Playlist::newMediaLoaded: add to playlist disabled by user");
 		return;
@@ -978,25 +989,26 @@ void Playlist::newMediaLoaded() {
 
 	clear();
 
-	QString filename = core->mdat.filename;
-
-	// Add titles
-	int selected_title = core->mdat.titles.getSelectedID();
+	// Add disc titles
+	Maps::TTitleTracks* titles = &core->mdat.titles;
 	DiscData disc = DiscName::split(filename);
-	Maps::TTitleTracks::TMapIterator i = core->mdat.titles.getIterator();
+	Maps::TTitleTracks::TMapIterator i = titles->getIterator();
 	while (i.hasNext()) {
 		i.next();
 		Maps::TTitleData title = i.value();
 		disc.title = title.getID();
 		addItem(DiscName::join(disc), title.getDisplayName(false), title.getDuration());
-		if (title.getID() == selected_title) {
-			setCurrentItem(title.getID() - 1);
+		if (title.getID() == titles->getSelectedID()) {
+			setCurrentItem(title.getID() - titles->firstID());
 		}
 	}
 
-	// Add current file if still empty
-	if (count() == 0) {
-		addItem(filename, core->mdat.meta_data["NAME"], core->mdat.duration);
+	if (count() > 0) {
+		updateView();
+	} else {
+		// Add current file. getMediaInfo will fill name and duration.
+		addItem(filename, "", 0);
+
 		// Add associated files to playlist
 		if (core->mdat.selected_type == MediaData::TYPE_FILE) {
 			qDebug() << "Playlist::newMediaLoaded: searching for files to add to playlist for"
@@ -1010,8 +1022,6 @@ void Playlist::newMediaLoaded() {
 		}
 	}
 
-	updateView();
-
 	qDebug() << "Playlist::newMediaLoaded: created new playlist with" << count()
 			 << "items for" << filename;
 }
@@ -1020,7 +1030,7 @@ void Playlist::getMediaInfo() {
 	qDebug("Playlist::getMediaInfo");
 
 	// Already have info for dics
-	if (MediaData::isDisc(core->mdat.detected_type)) {
+	if (core->mdat.detectedDisc()) {
 		return;
 	}
 
