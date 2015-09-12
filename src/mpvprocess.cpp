@@ -264,8 +264,10 @@ int MPVProcess::getFrame(double time_sec, const QString &line) {
 void MPVProcess::convertChaptersToTitles() {
 
 	// Just for safety...
-	if (md->titles.count() > 0)
+	if (md->titles.count() > 0) {
+		qWarning("MPVProcess::convertChaptersToTitles: found unexpected titles");
 		return;
+	}
 
 	Maps::TChapters::TChapterIterator i = md->chapters.getIterator();
 	if (i.hasNext()) {
