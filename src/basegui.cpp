@@ -3722,10 +3722,7 @@ void BaseGui::openDirectory(QString directory) {
 		if (fi.isDir()) {
 			directory = fi.absoluteFilePath();
 			pref->latest_dir = directory;
-			playlist->clear();
-			playlist->addDirectory(directory);
-			playlist->updateView();
-			playlist->startPlay();
+			playlist->playDirectory(directory);
 		} else {
 			qWarning("BaseGui::openDirectory: directory is not valid");
 		}

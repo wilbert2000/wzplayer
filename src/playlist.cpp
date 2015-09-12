@@ -959,6 +959,15 @@ void Playlist::resumePlay() {
 	}
 }
 
+void Playlist::playDirectory(const QString &dir) {
+
+	clear();
+	addDirectory(dir);
+	latest_dir = dir;
+	updateView();
+	startPlay();
+}
+
 void Playlist::newMediaLoaded() {
 	qDebug("Playlist::newMediaLoaded");
 

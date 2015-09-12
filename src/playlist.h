@@ -77,8 +77,6 @@ public:
 
 	void clear();
 	void list();
-	void updateView();
-	void setCurrentItem(int current);
 
 public slots:
 	// Start playing, from item 0 if shuffle is off, or from
@@ -86,6 +84,7 @@ public slots:
 	void startPlay();
 
 	void playItem(int n);
+	void playDirectory(const QString &dir);
 
 	virtual void playNext();
 	virtual void playPrev();
@@ -163,6 +162,7 @@ signals:
 
 protected:
 	void addItem(const QString &filename, QString name, double duration);
+	void setCurrentItem(int current);
 	void clearPlayedTag();
 	int chooseRandomItem();
 	void swapItems(int item1, int item2 );
@@ -170,6 +170,7 @@ protected:
 	void sortBy(int section, bool revert, int count);
 	// <--
 	QString lastDir();
+	void updateView();
 
 protected slots:
 	virtual void playCurrent();
