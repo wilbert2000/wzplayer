@@ -117,6 +117,7 @@ public:
 	static bool isCD(Type type);
 	static bool isDVD(Type type);
 	static bool isDisc(Type type);
+	bool detectedDisc();
 
 	static QString typeToString(Type type);
 	static Type stringToType(QString type);

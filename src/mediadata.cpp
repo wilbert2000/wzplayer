@@ -78,6 +78,10 @@ bool MediaData::isDisc(Type type) {
 			|| type == TYPE_BLURAY;
 }
 
+bool MediaData::detectedDisc() {
+	return isDisc(detected_type);
+}
+
 QString MediaData::displayName(bool show_tag) {
 	if (show_tag) {
 		QString name = meta_data.value("NAME");
