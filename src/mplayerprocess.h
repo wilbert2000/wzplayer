@@ -118,7 +118,10 @@ private:
 	int svn_version;
 
 	int sub_source;
-	int sub_id_filename;
+	bool sub_file;
+	bool sub_vob;
+	bool sub_demux;
+	int sub_file_id;
 
 	double check_duration_time;
 	int check_duration_time_diff;
@@ -131,6 +134,7 @@ private:
 
 	bool want_pause;
 
+	void getSelectedTracks();
 	void notifyChanges();
 
 	bool parseVO(const QString &driver, int w, int h);
