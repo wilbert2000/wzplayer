@@ -23,14 +23,43 @@
 
 
 MediaData::MediaData() :
-	selected_type(TYPE_UNKNOWN),
-	detected_type(TYPE_UNKNOWN) {
+	selected_type(TYPE_UNKNOWN) {
+	init();
 }
 
 MediaData::MediaData(const QString &fname, Type sel_type) :
 	filename(fname),
-	selected_type(sel_type),
-	detected_type(TYPE_UNKNOWN) {
+	selected_type(sel_type) {
+	init();
+}
+
+void MediaData::init() {
+
+	detected_type = TYPE_UNKNOWN;
+
+	start_sec = 0;
+	start_sec_prop = 0;
+	time_sec = 0;
+	duration = 0;
+	start_sec_set = false;
+	start_sec_prop_set = false;
+
+	video_width = 0;
+	video_height = 0;
+	video_aspect = 0;
+	video_fps = 0;
+
+	video_out_width = 0;
+	video_out_height = 0;
+
+	n_chapters = 0;
+
+	video_bitrate = 0;
+	audio_bitrate = 0;
+	audio_rate = 0;
+	audio_nch = 0;
+
+	initialized = false;
 }
 
 bool MediaData::isCD(Type type) {

@@ -123,6 +123,9 @@ public:
 
 	QString displayName(bool show_tag = true);
 	void list();
+
+private:
+	void init();
 };
 
 #endif
