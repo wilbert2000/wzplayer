@@ -161,6 +161,22 @@ void PlayerProcess::parseBytes(QByteArray ba) {
 	}
 }
 
+void PlayerProcess::playingStarted() {
+	qDebug("PlayerProcess::playingStarted");
+
+	notified_player_is_running = true;
+
+	emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
+
+	emit receivedVideoTrackInfo();
+	emit receivedAudioTrackInfo();
+	emit receivedSubtitleTrackInfo();
+	emit receivedTitleTrackInfo();
+
+	qDebug("PlayerProcess::playingStarted: emit playerFullyLoaded()");
+	emit playerFullyLoaded();
+}
+
 void PlayerProcess::notifyTitleTrackChanged(int new_title) {
 
 	int selected = md->titles.getSelectedID();
@@ -176,37 +192,6 @@ void PlayerProcess::notifyTitleTrackChanged(int new_title) {
 		qDebug("PlayerProcess::notifyTitleTrackChanged: current title already set to %d",
 			   new_title);
 	}
-}
-
-bool PlayerProcess::waitForAnswers() {
-
-	if (waiting_for_answers > 0) {
-		waiting_for_answers_safe_guard--;
-		if (waiting_for_answers_safe_guard > 0)
-			return true;
-
-		qWarning("MplayerProcess::waitForAnswers: did not receive answers in time. Stopped waitng.");
-		waiting_for_answers = 0;
-		waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
-	}
-
-	return false;
-}
-
-void PlayerProcess::playingStarted() {
-	qDebug("PlayerProcess::playingStarted");
-
-	notified_player_is_running = true;
-
-	emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
-
-	emit receivedVideoTrackInfo();
-	emit receivedAudioTrackInfo();
-	emit receivedSubtitleTrackInfo();
-	emit receivedTitleTrackInfo();
-
-	qDebug("PlayerProcess::playingStarted: emit playerFullyLoaded()");
-	emit playerFullyLoaded();
 }
 
 void PlayerProcess::notifyDuration(double duration) {
@@ -275,6 +260,21 @@ void PlayerProcess::notifyTime(double time_sec, const QString &line) {
 		prev_frame = frame;
 		emit receivedCurrentFrame( frame );
 	}
+}
+
+bool PlayerProcess::waitForAnswers() {
+
+	if (waiting_for_answers > 0) {
+		waiting_for_answers_safe_guard--;
+		if (waiting_for_answers_safe_guard > 0)
+			return true;
+
+		qWarning("MplayerProcess::waitForAnswers: did not receive answers in time. Stopped waitng.");
+		waiting_for_answers = 0;
+		waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
+	}
+
+	return false;
 }
 
 bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
@@ -429,21 +429,6 @@ bool PlayerProcess::parseVideoProperty(const QString &name, const QString &value
 	return false;
 }
 
-bool PlayerProcess::parseMetaDataProperty(QString name, QString value) {
-
-	name = name.toUpper();
-	value = value.trimmed();
-
-	if (value.isEmpty()) {
-		qDebug("PlayerProcess::parseMetaDataProperty: value empty");
-		return false;
-	}
-
-	md->meta_data[name] = value;
-	qDebug() << "PlayerProcess::parseMetaDataProperty:" << name << "set to" << value;
-	return true;
-}
-
 bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "START_TIME") {
@@ -479,6 +464,21 @@ bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 	}
 
 	return false;
+}
+
+bool PlayerProcess::parseMetaDataProperty(QString name, QString value) {
+
+	name = name.toUpper();
+	value = value.trimmed();
+
+	if (value.isEmpty()) {
+		qDebug("PlayerProcess::parseMetaDataProperty: value empty");
+		return false;
+	}
+
+	md->meta_data[name] = value;
+	qDebug() << "PlayerProcess::parseMetaDataProperty:" << name << "set to" << value;
+	return true;
 }
 
 void PlayerProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
