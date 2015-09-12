@@ -404,6 +404,7 @@ void Core::close() {
 	saveMediaInfo();
 #endif
 
+	mdat = MediaData();
 }
 
 void Core::openDisc(DiscData &disc, bool fast_open) {
