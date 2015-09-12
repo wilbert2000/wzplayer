@@ -194,8 +194,8 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	connect( proc, SIGNAL(receivedSubtitleTrackInfo()),
 			 this, SLOT(gotSubtitleTrackInfo()));
-	connect( proc, SIGNAL(receivedSubtitleTrackChanged(int)),
-			 this, SLOT(gotSubtitleTrackChanged(int)));
+	connect( proc, SIGNAL(receivedSubtitleTrackChanged()),
+			 this, SLOT(gotSubtitleTrackChanged()));
 
 	connect( proc, SIGNAL(receivedTitleTrackInfo()),
 			 this, SIGNAL(titleTrackInfoChanged()));
@@ -3724,8 +3724,7 @@ void Core::gotSubtitleTrackInfo() {
 }
 
 // Called when player changed subtitle track
-void Core::gotSubtitleTrackChanged(int id) {
-	Q_UNUSED(id)
+void Core::gotSubtitleTrackChanged() {
 	qDebug("Core::gotSubtitleTrackChanged");
 
 	// Need to set current_sub_idx, the subtitle group checks on it.

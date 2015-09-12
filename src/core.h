@@ -380,7 +380,7 @@ protected slots:
 	void checkIfVideoIsHD();
 
 	void gotSubtitleTrackInfo();
-	void gotSubtitleTrackChanged(int id);
+	void gotSubtitleTrackChanged();
 
 #if DVDNAV_SUPPORT
 	void dvdnavUpdateMousePos(QPoint);

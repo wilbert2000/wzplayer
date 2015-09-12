@@ -1035,14 +1035,14 @@ void MPVProcess::setSubtitle(SubData::Type type, int ID) {
 
 	writeToStdin("set sid " + QString::number(ID));
 	md->subs.setSelected(type, ID);
-	emit receivedSubtitleTrackChanged(ID);
+	emit receivedSubtitleTrackChanged();
 }
 
 void MPVProcess::disableSubtitles() {
 
 	writeToStdin("set sid no");
 	md->subs.clearSelected();
-	emit receivedSubtitleTrackChanged(-1);
+	emit receivedSubtitleTrackChanged();
 }
 
 void MPVProcess::setSecondarySubtitle(int ID) {

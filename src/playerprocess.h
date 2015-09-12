@@ -163,7 +163,7 @@ signals:
 	void receivedSubtitleTrackInfo();
 
 	//! Emitted if player changed subtitle track
-	void receivedSubtitleTrackChanged(int);
+	void receivedSubtitleTrackChanged();
 
 	void receivedTitleTrackInfo();
 	void receivedTitleTrackChanged(int);
