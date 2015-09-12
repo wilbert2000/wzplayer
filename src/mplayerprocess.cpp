@@ -287,17 +287,7 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 		return true;
 	}
 
-	bool parsed = PlayerProcess::parseProperty(name, value);
-
-	// TODO: Use title length if duration is 0
-	if (name == "LENGTH" && md->duration == 0 && md->titles.getSelectedID() >= 0) {
-		Maps::TTitleData title = md->titles.value(md->titles.getSelectedID());
-		qDebug("MplayerProcess::parseProperty: using duration %f of title id %d",
-				title.getDuration(), title.getID());
-		notifyDuration(title.getDuration());
-	}
-
-	return parsed;
+	return PlayerProcess::parseProperty(name, value);
 }
 
 bool MplayerProcess::parseChapter(int id, const QString &type, const QString &value) {
@@ -326,17 +316,11 @@ bool MplayerProcess::parseCDTrack(const QString &type, int id, const QString &le
 	if (rx_length.indexIn(length) >= 0) {
 		duration = rx_length.cap(1).toInt() * 60;
 		duration += rx_length.cap(2).toInt();
+		// MSF is 1/75 of second
 		duration += ((double) rx_length.cap(3).toInt())/75;
 	}
 
 	md->titles.addDuration(id, duration, true);
-
-	// Already done by parseProperty, but can't hurt...
-	if (type == "VCD") {
-		md->detected_type = MediaData::TYPE_VCD;
-	} else {
-		md->detected_type = MediaData::TYPE_CDDA;
-	}
 
 	title_tracks_changed = true;
 	qDebug() << "MplayerProcess::parseCDTrack: added" << type << "track with duration" << duration;
@@ -493,21 +477,29 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	}
 
 	// First and only run of state playing
-
-	// Get selected video, audio and subtitle tracks
-	getSelectedTracks();
-
 	want_pause = false;
 
 	// Reset the check duration timer
 	check_duration_time = time_sec;
 	check_duration_time_diff = 1;
 
+	// Use duration from selected title if duration 0
+	if (md->duration == 0) {
+		int title = md->titles.getSelectedID();
+		if (title >= 0) notifyDuration(md->titles[title].getDuration());
+
+		// See if duration is known by now
+		writeToStdin("get_property length");
+	}
+
 	// Clear notifications
 	video_tracks_changed = false;
 	audio_tracks_changed = false;
 	subtitle_tracks_changed = false;
 	title_tracks_changed = false;
+
+	// Get selected video, audio and subtitle tracks
+	getSelectedTracks();
 
 	// Create chapters from titles for vcd or audio CD
 	if (MediaData::isCD(md->detected_type)) {
