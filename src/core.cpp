@@ -424,7 +424,7 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 
 	close();
 
-	// Add devices from prev if none specified
+	// Add device from prev if none specified
 	if (disc.device.isEmpty()) {
 		if (disc.protocol == "vcd" || disc.protocol == "cdda") {
 			disc.device = pref->cdrom_device;
@@ -819,9 +819,7 @@ void Core::newMediaPlaying() {
 	mset.list();
 
 	// Switch disc to detected protocol
-	if (mdat.detected_type != MediaData::TYPE_UNKNOWN
-		&& mdat.selected_type != mdat.detected_type
-		&& MediaData::isDisc(mdat.detected_type)) {
+	if (mdat.detectedDisc() && mdat.selected_type != mdat.detected_type) {
 		bool valid_name;
 		DiscData disc = DiscName::split(mdat.filename, &valid_name);
 		if (!valid_name) {
@@ -3082,20 +3080,23 @@ void Core::changeSecondarySubtitle(int idx) {
 void Core::changeTitle(int title) {
 	qDebug("Core::changeTitle: title %d", title);
 
-	// Handle audio CDs with the chapter commands
 	if (proc->isRunning()) {
+		// Handle CDs with the chapter commands
 		if (MediaData::isCD(mdat.detected_type)) {
 			changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
 			return;
 		}
-		if (cache_size == 0) {
-			// Switch through slave command
-			mset.current_title_id = title;
-			proc->setTitle(title);
-			return;
+		if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+			// TODO:
+			if (cache_size == 0) {
+				// Switch through slave command
+				//mset.current_title_id = title;
+				//proc->setTitle(title);
+				//return;
+			}
+			//qWarning("Core::changeTitle: fast title switch is disabled, because cache size (%d) not 0",
+			//		 cache_size);
 		}
-		qWarning("Core::changeTitle: fast title switch is disabled, because cache size (%d) not 0",
-				 cache_size);
 	}
 
 	// Start/restart
