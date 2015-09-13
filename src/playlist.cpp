@@ -991,26 +991,32 @@ void Playlist::newMediaLoaded() {
 
 	// Add disc titles
 	Maps::TTitleTracks* titles = &core->mdat.titles;
-	DiscData disc = DiscName::split(filename);
-	Maps::TTitleTracks::TMapIterator i = titles->getIterator();
-	while (i.hasNext()) {
-		i.next();
-		Maps::TTitleData title = i.value();
-		disc.title = title.getID();
-		addItem(DiscName::join(disc), title.getDisplayName(false), title.getDuration());
-		if (title.getID() == titles->getSelectedID()) {
-			setCurrentItem(title.getID() - titles->firstID());
+	bool valid;
+	DiscData disc = DiscName::split(filename, &valid);
+	if (valid) {
+		Maps::TTitleTracks::TMapIterator i = titles->getIterator();
+		while (i.hasNext()) {
+			i.next();
+			Maps::TTitleData title = i.value();
+			disc.title = title.getID();
+			addItem(DiscName::join(disc), title.getDisplayName(false), title.getDuration());
+			if (title.getID() == titles->getSelectedID()) {
+				setCurrentItem(title.getID() - titles->firstID());
+			}
 		}
 	}
 
 	if (count() > 0) {
 		updateView();
 	} else {
-		// Add current file. getMediaInfo will fill name and duration.
+		// Add current file. getMediaInfo will fill in name and duration.
 		addItem(filename, "", 0);
 
-		// Add associated files to playlist
-		if (core->mdat.selected_type == MediaData::TYPE_FILE) {
+		// Add associated files to playlist. Don't go searching when there are
+		// titles to prevent interrupting access to a device misdiagnosed by
+		// Core::open() as TYPE_FILE.
+		if (core->mdat.selected_type == MediaData::TYPE_FILE
+			&& titles->count() == 0) {
 			qDebug() << "Playlist::newMediaLoaded: searching for files to add to playlist for"
 					 << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
