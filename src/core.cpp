@@ -819,7 +819,7 @@ void Core::newMediaPlaying() {
 	mset.list();
 
 	// Switch disc to detected protocol
-	if (mdat.detectedDisc() && mdat.selected_type != mdat.detected_type) {
+	if (0 && mdat.detectedDisc() && mdat.selected_type != mdat.detected_type) {
 		bool valid_name;
 		DiscData disc = DiscName::split(mdat.filename, &valid_name);
 		if (!valid_name) {
@@ -1572,8 +1572,8 @@ void Core::startPlayer( QString file, double seek ) {
 		proc->setOption("dvdangle", QString::number( mset.current_angle_id));
 	}
 
-	// TODO: cache 0 for .iso?
-	switch (mdat.selected_type) {
+	if (proc->isMPlayer()) {
+		switch (mdat.selected_type) {
 		case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
 		case MediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
 		case MediaData::TYPE_DVDNAV	: cache_size = 0; break;
@@ -1583,9 +1583,20 @@ void Core::startPlayer( QString file, double seek ) {
 		case MediaData::TYPE_TV		: cache_size = pref->cache_for_tv; break;
 		case MediaData::TYPE_BLURAY	: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
 		default: cache_size = 0;
+		} // switch
+
+		proc->setOption("cache", QString::number(cache_size));
+	} else {
+		// MPV DVD and BR need cache 0, otherwise too much is lost at the end
+		// of a title. See MPVProcess::parseTitleSwitched for details.
+		// For the other types it looks like it's best to let MPV figure out
+		// the cache size all by itself.
+		if (MediaData::isDVD(mdat.selected_type)
+			|| mdat.selected_type == MediaData::TYPE_BLURAY) {
+			proc->setOption("cache", "0");
+		}
 	}
 
-	proc->setOption("cache", QString::number(cache_size));
 
 	if (mset.speed != 1.0) {
 		proc->setOption("speed", QString::number(mset.speed));

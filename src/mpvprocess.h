@@ -48,7 +48,6 @@ public:
 	void setSubStyles(const AssStyles & styles, const QString & assStylesFile = QString::null);
 
 	// Slave commands
-	void quit();
 	void setVolume(int v);
 	void setOSDLevel(int level);
 	void setAudio(int ID);
@@ -123,6 +122,7 @@ private:
 	bool verbose;
 
 	bool received_buffering;
+	bool received_title_not_found;
 
 	QString sub_file;
 
@@ -133,9 +133,10 @@ private:
 	bool osd_centered_y;
 
 	void convertChaptersToTitles();
+	void fixTitle();
 	void parseStatusLine(QRegExp &rx);
 	bool parseChapter(int id, double start, QString title);
-	bool parseTitleSwitched(const QString &disc_type, int id);
+	bool parseTitleSwitched(QString disc_type, int title);
 	bool parseTitleNotFound(const QString &disc_type);
 	bool parseVideoTrack(int id, const QString &codec, QString name, bool selected);
 	bool parseAudioTrack(int id, const QString &lang, const QString &codec, QString name, bool selected);

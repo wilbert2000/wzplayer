@@ -53,6 +53,7 @@ MPVProcess::~MPVProcess() {
 bool MPVProcess::startPlayer() {
 
 	received_buffering = false;
+	received_title_not_found = false;
 
 	osd_centered_x = false;
 	osd_centered_y = false;
@@ -195,12 +196,16 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
 		waiting_for_answers += md->n_chapters;
-		// Remember chapters if from selected title
-		int id = md->titles.getSelectedID();
-		if (id >= 0 && !MediaData::isCD(md->detected_type)) {
-			qDebug("MPVProcess::parseProperty: added %d chapter(s) to title id %d", md->n_chapters, id);
-			md->titles.addChapters(id, md->n_chapters);
-		}
+
+		// Remember chapters if from selected title.
+		// TODO: How reliable is this? Selected title track is emitted by DVDNAV,
+		// but it is like a cache size ahead of mpv?
+		//
+		// int id = md->titles.getSelectedID();
+		// if (id >= 0 && !MediaData::isCD(md->detected_type)) {
+		//	qDebug("MPVProcess::parseProperty: added %d chapter(s) to title id %d", md->n_chapters, id);
+		//	md->titles.addChapters(id, md->n_chapters);
+		//}
 		return true;
 	}
 
@@ -222,17 +227,66 @@ void MPVProcess::requestChapterInfo() {
 	writeToStdin("print_text \"INFO_CHAPTERS=${=chapters:}\"");
 }
 
-bool MPVProcess::parseTitleSwitched(const QString &disc_type, int title_id) {
+void MPVProcess::fixTitle() {
 
-	if (notified_player_is_running && disc_type == "dvdnav") {
-		// TODO: Ask for chapter info unless we already have it
-		// Wait 10 secs. because it can take a while until the title start to play
-		// qDebug("MPVProcess::parseSwitchedTitle: requesting chapter info in 10 secs");
-		// QTimer::singleShot(10000, this, SLOT(requestChapterInfo()));
+	// Accept a selected title 1, covering requested title 0 and 1
+	if (md->titles.getSelectedID() >= 0) {
+		return;
 	}
 
+	DiscData disc = DiscName::split(md->filename);
+	if (disc.title == 0) disc.title = 1;
+
+	// Accept the requested title as the selected title, if we did
+	// not receive a title not found
+	if (!received_title_not_found) {
+		notifyTitleTrackChanged(disc.title);
+		return;
+	}
+
+	qWarning("MPVProcess::fixTitle: requested title %d not found", disc.title);
+
+	// Let the playlist try the next title if a valid title was requested and
+	// there is more than 1 title, hoping the queued signal playerFullyLoaded()
+	// will arrive before quit, otherwise there will be no playlist.
+	// TODO: prevent race with playerFullyLoaded()
+	if (disc.title <= md->titles.count() && md->titles.count() > 1) {
+		received_end_of_file = true;
+		quit(0);
+		return;
+	}
+
+	// Accept defeat
+	quit(1);
+}
+
+bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
+
 	md->detected_type = md->stringToType(disc_type);
-	notifyTitleTrackChanged(title_id);
+	if (disc_type == "cdda" || disc_type == "vcd") {
+		notifyTitleTrackChanged(title);
+		return true;
+	}
+
+	// MPV dvd/br playback is seriously broken. The selected title passed
+	// here makes no sense and when a title ends it goes haywire. The best
+	// I can do here is release it from its suffering by sending quit and
+	// let the playlist select the next title by faking eof, cause except
+	// for the wrong title name fixed by setMedia(), if it can find it,
+	// it does seem to select the title passed to it by setMedia(), it just
+	// reports the wrong selected title. Unfortunately this means the title
+	// will stop playing a little too early, so it is important to set the
+	// cache to 0 in Core::startPlayer to keep the loss to a few seconds.
+	if (notified_player_is_running) {
+		received_end_of_file = true;
+		quit(0);
+	} else if (title == 1) {
+		// Title 1 is the only one that seems reliable
+		notifyTitleTrackChanged(title);
+	} else {
+		// Need to unselect title, in case title 1 wasn't liked after all
+		notifyTitleTrackChanged(-1);
+	}
 
 	return true;
 }
@@ -240,7 +294,7 @@ bool MPVProcess::parseTitleSwitched(const QString &disc_type, int title_id) {
 bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
 	Q_UNUSED(disc_type)
 
-	qWarning("MPVProcess::parseTitleNotFound: requested title not found");
+	// qWarning("MPVProcess::parseTitleNotFound: requested title not found");
 
 	// Requested title means the original title. The currently selected title
 	// seems still valid and is the last selected title during its search through
@@ -249,6 +303,8 @@ bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
 
 	// Ask which one is selected. Seems to always deliver -1, probably mpv just doesn't know?
 	// writeToStdin("print_text \"[" + disc_type + "] switched to title: ${disc-title:-1}\"");
+
+	received_title_not_found = true;
 
 	return true;
 }
@@ -328,9 +384,12 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 
 	// First and only run of state playing
 
-	// Convert chapters to titles for CD
 	if (MediaData::isCD(md->detected_type)) {
+		// Convert chapters to titles for CD
 		convertChaptersToTitles();
+	} else if (md->detectedDisc()) {
+		// Workaround MPV title bugs
+		fixTitle();
 	}
 
 	// Base class sets notified_player_is_running to true
@@ -573,15 +632,16 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 	// MPV interprets the ID in a DVD URL as index [0..#titles-1] instead of
 	// [1..#titles]. Maybe one day they gonna fix it and this will break. Sigh.
 	// When no title is given it plays the longest title it can find.
-	// CDs work as expected, don't know about bluray.
-
+	// Need to change no title to 0, otherwise fixTitle() won't work.
+	// CDs work as expected, don't know about bluray, but assuming it's the same.
 	QString url = media;
 	bool valid_disc;
 	DiscData disc = DiscName::split(media, &valid_disc);
 	if (valid_disc
-		&& (disc.protocol == "dvd" || disc.protocol == "dvdnav")
-		&& disc.title > 0) {
-		disc.title--;
+		&& (disc.protocol == "dvd" || disc.protocol == "dvdnav"
+			|| disc.protocol == "br")) {
+		if (disc.title > 0)
+			disc.title--;
 		url = DiscName::join(disc, true);
 	}
 
@@ -1012,10 +1072,6 @@ void MPVProcess::addAF(const QString & filter_name, const QVariant & value) {
 		if (!option.isEmpty()) s += "=" + option;
 		arg << "--af-add=" + s;
 	}
-}
-
-void MPVProcess::quit() {
-	writeToStdin("quit 0");
 }
 
 void MPVProcess::setVolume(int v) {

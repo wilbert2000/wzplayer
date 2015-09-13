@@ -35,8 +35,8 @@ PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata, QRegExp *r_
 	, player_id(pid)
 	, md(mdata)
 	, notified_player_is_running(false)
-	, line_count(0)
 	, received_end_of_file(false)
+	, line_count(0)
 	, rx_eof(r_eof)
 {
 	//qRegisterMetaType<SubTracks>("SubTracks");
