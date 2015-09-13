@@ -510,9 +510,6 @@ private:
 	// Max value [0.. pos_max) for gotoPosition() and positionChanged()
 	int pos_max;
 
-	// Selected cache size
-	int cache_size;
-
 	void openDisc(DiscData &disc, bool fast_open);
 	void openFile(QString filename, int seek = -1);
 

@@ -1575,6 +1575,7 @@ void Core::startPlayer( QString file, double seek ) {
 	}
 
 	if (proc->isMPlayer()) {
+		int cache_size;
 		switch (mdat.selected_type) {
 		case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
 		case MediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
