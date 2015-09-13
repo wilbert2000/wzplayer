@@ -960,10 +960,6 @@ void MplayerProcess::addAF(const QString & filter_name, const QVariant & value) 
 	arg << "-af-add" << s;
 }
 
-void MplayerProcess::quit() {
-	writeToStdin("quit");
-}
-
 void MplayerProcess::setVolume(int v) {
 	writeToStdin("volume " + QString::number(v) + " 1");
 }

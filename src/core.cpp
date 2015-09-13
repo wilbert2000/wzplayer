@@ -1994,7 +1994,7 @@ void Core::stopPlayer() {
 
 	connect(proc, SIGNAL(processExited(bool)), &eventLoop, SLOT(quit()));
 
-	proc->quit();
+	proc->quit(0);
 
 	QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
 	eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
@@ -2004,7 +2004,7 @@ void Core::stopPlayer() {
 		proc->kill();
 	}
 #else
-	proc->quit();
+	proc->quit(0);
 
 	qDebug("Core::stopPlayer: Waiting %d ms for player to finish...", timeout);
 	if (!proc->waitForFinished(timeout)) {

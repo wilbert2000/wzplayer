@@ -306,6 +306,13 @@ bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &r
 	return false;
 }
 
+void PlayerProcess::quit(int exit_code) {
+	qDebug("PlayerProcess::quit");
+
+	quit_send = true;
+	writeToStdin("quit " + QString::number(exit_code));
+}
+
 bool PlayerProcess::parseLine(QString &line) {
 
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
@@ -328,25 +335,15 @@ bool PlayerProcess::parseLine(QString &line) {
 
 	if (rx_no_disk.indexIn(line) >= 0) {
 		qWarning("PlayerProcess::parseLine: no disc in device");
-		quit_send = true;
-		// ENOMEDIUM, 159, is linux specific, but does the job
-		writeToStdin("quit 159");
+		// ENOMEDIUM 159 is linux specific
+		quit(1);
 		return true;
 	}
 
 	// End of file
-	if (rx_eof->indexIn(line) > -1)  {
+	if (rx_eof->indexIn(line) >= 0)  {
 		qDebug("PlayerProcess::parseLine: detected end of file");
-
-		if (!received_end_of_file) {
-			received_end_of_file = true;
-
-			// Send signal in processFinished(),
-			// once the process is finished, not now!
-			// emit receivedEndOfFile();
-		}
-
-		// Done looking at this line
+		received_end_of_file = true;
 		return true;
 	}
 

@@ -48,7 +48,6 @@ public:
 	void setSubStyles(const AssStyles & styles, const QString & assStylesFile = QString::null);
 
 	// Slave commands
-	void quit();
 	void setVolume(int v);
 	void setOSDLevel(int level);
 	void setAudio(int ID);

@@ -57,7 +57,7 @@ public:
 	virtual void setSubStyles(const AssStyles & styles, const QString & assStylesFile = QString::null) = 0;
 
 	// Slave commands
-	virtual void quit() = 0;
+	void quit(int exit_code);
 	virtual void setVolume(int v) = 0;
 	virtual void setOSDLevel(int level) = 0;
 	virtual void setAudio(int ID) = 0;
