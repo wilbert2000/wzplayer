@@ -113,8 +113,7 @@ bool PlayerProcess::startPlayer() {
 }
 
 void PlayerProcess::processError(QProcess::ProcessError error) {
-	qWarning("PlayerProcess::processError: %d", (int) error);
-
+	qWarning("PlayerProcess::processError: %d", error);
 }
 
 // Slot called when the process is finished
