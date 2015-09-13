@@ -81,6 +81,11 @@ bool MediaData::detectedDisc() {
 	return isDisc(detected_type);
 }
 
+bool MediaData::selectedDisc() {
+	return isDisc(selected_type);
+}
+
+
 QString MediaData::displayName(bool show_tag) {
 	if (show_tag) {
 		QString name = meta_data.value("NAME");
