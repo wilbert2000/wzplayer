@@ -448,8 +448,9 @@ void Core::close() {
 void Core::openDisc(DiscData &disc, bool fast_open) {
 	// Disc
 
-	// Change title if disc already playing
-	if (fast_open && disc.title > 0 && _state != Stopped) {
+	// Change title if CD already playing
+	if (fast_open && _state != Stopped && MediaData::isCD(mdat.detected_type)
+		&& disc.title > 0) {
 		bool current_url_valid;
 		DiscData current_disc = DiscName::split(mdat.filename, &current_url_valid);
 		if (current_url_valid && current_disc.device == disc.device) {
@@ -3091,30 +3092,16 @@ void Core::changeSecondarySubtitle(int idx) {
 void Core::changeTitle(int title) {
 	qDebug("Core::changeTitle: title %d", title);
 
-	if (proc->isRunning()) {
-		// Handle CDs with the chapter commands
-		if (MediaData::isCD(mdat.detected_type)) {
-			changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
-			return;
-		}
-		if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
-			// TODO:
-			if (cache_size == 0) {
-				// Switch through slave command
-				//mset.current_title_id = title;
-				//proc->setTitle(title);
-				//return;
-			}
-			//qWarning("Core::changeTitle: fast title switch is disabled, because cache size (%d) not 0",
-			//		 cache_size);
-		}
+	// Handle CDs with the chapter commands
+	if (proc->isRunning() && MediaData::isCD(mdat.detected_type)) {
+		changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
+	} else {
+		// Start/restart
+		mset.current_title_id = title;
+		DiscData disc_data = DiscName::split(mdat.filename);
+		disc_data.title = title;
+		openDisc(disc_data, false);
 	}
-
-	// Start/restart
-	mset.current_title_id = title;
-	DiscData disc_data = DiscName::split(mdat.filename);
-	disc_data.title = title;
-	openDisc(disc_data, false);
 }
 
 void Core::changeChapter(int id) {
