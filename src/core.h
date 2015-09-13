@@ -350,16 +350,17 @@ protected:
 	void seek_cmd(double secs, int mode);
 
 protected slots:
+	void playingStarted();
+	void processError(QProcess::ProcessError error);
+	void processFinished(bool normal_exit);
+	void fileReachedEnd();
+
 	void gotCurrentSec(double sec);
 	void gotPause();
 	void gotVideoOutResolution(int w, int h);
 	void gotVO(QString);
 	void gotAO(QString);
 
-	void playingStarted();
-	void processFinished(bool normal_exit);
-	void fileReachedEnd();
-    
 	void displayMessage(QString text, int duration = 3000, int osd_level = 1);
 	void displayScreenshotName(QString filename);
 	void displayUpdatingFontCache();

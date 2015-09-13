@@ -100,9 +100,8 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	proc = PlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
 
-	// Do this first unqueued, to restore normal background window
 	connect( proc, SIGNAL(error(QProcess::ProcessError)),
-			 mplayerwindow, SLOT(playingStopped()) );
+			 this, SLOT(processError(QProcess::ProcessError)) );
 
 	connect( proc, SIGNAL(receivedVideoOutResolution(int,int)),
 			 this, SLOT(gotVideoOutResolution(int,int)) );
@@ -219,9 +218,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	connect( this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()) );
 
-	connect( proc, SIGNAL(error(QProcess::ProcessError)), 
-			 this, SIGNAL(playerFailed(QProcess::ProcessError)) );
-
 	mset.reset();
 
 	// Mplayerwindow
@@ -292,6 +288,48 @@ Core::~Core() {
 #ifdef YOUTUBE_SUPPORT
 	delete yt;
 #endif
+}
+
+void Core::processError(QProcess::ProcessError error) {
+	qDebug("Core::processError: %d", error);
+
+	// First restore normal window background
+	mplayerwindow->playingStopped();
+
+	emit playerFailed(error);
+}
+
+void Core::processFinished(bool normal_exit) {
+	qDebug("Core::processFinished");
+
+	// First restore normal window background
+	mplayerwindow->playingStopped();
+
+	if (we_are_restarting && normal_exit) {
+		qDebug("Core::processFinished: something tells me we are restarting...");
+		return;
+	}
+
+	qDebug("Core::processFinished: entering the stopped state");
+	setState(Stopped);
+
+	if (!normal_exit) {
+		int exit_code = proc->exitCode();
+		qWarning("Core::processFinished: player crash or error (%d)", exit_code);
+
+		mplayerwindow->showLogo();
+		emit playerFinishedWithError(exit_code);
+	}
+}
+
+void Core::fileReachedEnd() {
+	qDebug("Core::fileReachedEnd");
+
+	// If we're at the end of the movie, reset to 0
+	gotCurrentSec(0);
+
+	qDebug("Core::fileReachedEnd: emit mediaFinished()");
+	emit mediaFinished();
 }
 
 #ifndef NO_USE_INI_FILES 
@@ -1005,43 +1043,6 @@ void Core::screenshots() {
 		qDebug("Core::screenshots: error: directory for screenshots not valid");
 		emit showMessage( tr("Screenshots NOT taken, folder not configured") );
 	}
-}
-
-void Core::processFinished(bool normal_exit) {
-	qDebug("Core::processFinished");
-
-	// First restore normal window background
-	mplayerwindow->playingStopped();
-
-	if (normal_exit) {
-		if (we_are_restarting) {
-			qDebug("Core::processFinished: something tells me we are restarting...");
-		} else {
-			qDebug("Core::processFinished: player finished, entering the stopped state");
-			setState(Stopped);
-		}
-	} else {
-		mplayerwindow->showLogo();
-
-		int exit_code = proc->exitCode();
-		qWarning("Core::processFinished: player crash or error (%d), entering the stopped state.",
-				 exit_code);
-		setState(Stopped);
-
-		qDebug("Core::processFinished: emit playerFinishedWithError(%d)", exit_code);
-		emit playerFinishedWithError(exit_code);
-	}
-}
-
-void Core::fileReachedEnd() {
-	qDebug("Core::fileReachedEnd");
-
-	// If we're at the end of the movie, reset to 0
-	mset.current_sec = 0;
-	updateWidgets();
-
-	qDebug("Core::fileReachedEnd: emit mediaFinished()");
-	emit mediaFinished();
 }
 
 void Core::startPlayer( QString file, double seek ) {
