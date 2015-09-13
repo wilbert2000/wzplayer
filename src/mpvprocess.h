@@ -122,7 +122,11 @@ private:
 	bool verbose;
 
 	bool received_buffering;
+
 	bool received_title_not_found;
+	int selected_title;
+
+	bool request_bit_rate_info;
 
 	QString sub_file;
 

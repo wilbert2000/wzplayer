@@ -53,7 +53,11 @@ MPVProcess::~MPVProcess() {
 bool MPVProcess::startPlayer() {
 
 	received_buffering = false;
+
 	received_title_not_found = false;
+	selected_title = -1;
+
+	request_bit_rate_info = true;
 
 	osd_centered_x = false;
 	osd_centered_y = false;
@@ -196,16 +200,6 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
 		waiting_for_answers += md->n_chapters;
-
-		// Remember chapters if from selected title.
-		// TODO: How reliable is this? Selected title track is emitted by DVDNAV,
-		// but it is like a cache size ahead of mpv?
-		//
-		// int id = md->titles.getSelectedID();
-		// if (id >= 0 && !MediaData::isCD(md->detected_type)) {
-		//	qDebug("MPVProcess::parseProperty: added %d chapter(s) to title id %d", md->n_chapters, id);
-		//	md->titles.addChapters(id, md->n_chapters);
-		//}
 		return true;
 	}
 
@@ -229,28 +223,34 @@ void MPVProcess::requestChapterInfo() {
 
 void MPVProcess::fixTitle() {
 
-	// Accept a selected title 1, covering requested title 0 and 1
-	if (md->titles.getSelectedID() >= 0) {
-		return;
-	}
-
 	DiscData disc = DiscName::split(md->filename);
 	if (disc.title == 0) disc.title = 1;
 
-	// Accept the requested title as the selected title, if we did
-	// not receive a title not found
+	// Accept the requested title as the selected title, if we did not receive
+	// a title not found. First and upmost this handles faulty reported titles,
+	// but it also makes it possible to sequentially play all titles (needed
+	// because MPV does not support menus), while if you set the selected title
+	// to the title selected by DVDNAV you'll often end on the same few titles
+	// it sees as best match, given the structure of the disc.
 	if (!received_title_not_found) {
+		if (disc.title == selected_title) {
+			qDebug("MPVProcess::fixTitle: found requested title %d", disc.title);
+		} else {
+			qDebug("MPVProcess::fixTitle: selecting title %d, but player reports it is playing title %d",
+				   disc.title, selected_title);
+		}
 		notifyTitleTrackChanged(disc.title);
 		return;
 	}
 
-	qWarning("MPVProcess::fixTitle: requested title %d not found", disc.title);
+	qWarning("MPVProcess::fixTitle: requested title %d not found or really short", disc.title);
 
 	// Let the playlist try the next title if a valid title was requested and
-	// there is more than 1 title, hoping the queued signal playerFullyLoaded()
-	// will arrive before quit, otherwise there will be no playlist.
-	// TODO: prevent race with playerFullyLoaded()
+	// there is more than 1 title.
 	if (disc.title <= md->titles.count() && md->titles.count() > 1) {
+		// Need to set the selected title, otherwise the playlist will select
+		// the second title instead of the title after this one.
+		notifyTitleTrackChanged(disc.title);
 		received_end_of_file = true;
 		quit(0);
 		return;
@@ -268,24 +268,15 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 		return true;
 	}
 
-	// MPV dvd/br playback is seriously broken. The selected title passed
-	// here makes no sense and when a title ends it goes haywire. The best
-	// I can do here is release it from its suffering by sending quit and
-	// let the playlist select the next title by faking eof, cause except
-	// for the wrong title name fixed by setMedia(), if it can find it,
-	// it does seem to select the title passed to it by setMedia(), it just
-	// reports the wrong selected title. Unfortunately this means the title
-	// will stop playing a little too early, so it is important to set the
-	// cache to 0 in Core::startPlayer to keep the loss to a few seconds.
+	// When a title ends and hits a menu MPV goes haywire, so to release it
+	// from its suffering send a quit and let the playlist select the next
+	// title by faking eof. Unfortunately this means the title will stop
+	// playing a little too early, so it is important to set the cache to 0
+	// in Core::startPlayer to limit the loss to a few seconds.
+	selected_title = title;
 	if (notified_player_is_running) {
 		received_end_of_file = true;
 		quit(0);
-	} else if (title == 1) {
-		// Title 1 is the only one that seems reliable
-		notifyTitleTrackChanged(title);
-	} else {
-		// Need to unselect title, in case title 1 wasn't liked after all
-		notifyTitleTrackChanged(-1);
 	}
 
 	return true;
@@ -347,6 +338,11 @@ void MPVProcess::convertChaptersToTitles() {
 		   md->titles.count());
 }
 
+void MPVProcess::requestBitrateInfo() {
+	writeToStdin("print_text VIDEO_BITRATE=${=video-bitrate}");
+	writeToStdin("print_text AUDIO_BITRATE=${=audio-bitrate}");
+}
+
 bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 	// Parse custom status line
 	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
@@ -379,6 +375,12 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 			received_buffering = false;
 			emit receivedBufferingEnded();
 		}
+
+		if (request_bit_rate_info && time_sec > 11) {
+			request_bit_rate_info = false;
+			requestBitrateInfo();
+		}
+
 		return true;
 	}
 
@@ -394,9 +396,6 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 
 	// Base class sets notified_player_is_running to true
 	playingStarted();
-
-	// Wait some secs to ask for bitrate
-	QTimer::singleShot(12000, this, SLOT(requestBitrateInfo()));
 
 	return true;
 }
@@ -578,12 +577,6 @@ bool MPVProcess::parseLine(QString &line) {
 
 	return false;
 }
-
-void MPVProcess::requestBitrateInfo() {
-	writeToStdin("print_text VIDEO_BITRATE=${=video-bitrate}");
-	writeToStdin("print_text AUDIO_BITRATE=${=audio-bitrate}");
-}
-
 
 // Start of what used to be mpvoptions.cpp and was pulled in with an include
 

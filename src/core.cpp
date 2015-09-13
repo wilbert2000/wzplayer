@@ -114,7 +114,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
              this, SIGNAL(showFrame(int)) );
 
 	connect( proc, SIGNAL(playerFullyLoaded()),
-			 this, SLOT(playingStarted()), Qt::QueuedConnection );
+			 this, SLOT(playingStarted()) );
 
 	connect( proc, SIGNAL(receivedPause()),
 			 this, SLOT(gotPause()) );
@@ -1596,7 +1596,6 @@ void Core::startPlayer( QString file, double seek ) {
 			proc->setOption("cache", "0");
 		}
 	}
-
 
 	if (mset.speed != 1.0) {
 		proc->setOption("speed", QString::number(mset.speed));
