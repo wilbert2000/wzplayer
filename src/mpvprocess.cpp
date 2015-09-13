@@ -404,7 +404,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 	// Custom status line. Make sure it matches!
 	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
-	static QRegExp rx_playing("^Playing:.*|^\\[ytdl_hook\\].*");
+	static QRegExp rx_message("^(Playing:|\\[ytdl_hook\\])");
 
 	// TODO: check video and audio track name.
 	// Subs suggest name comes before codec...
@@ -433,6 +433,7 @@ bool MPVProcess::parseLine(QString &line) {
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
 
+
 	if (verbose) {
 		line = line.replace("[statusline] ", "");
 		line = line.replace("[cplayer] ", "");
@@ -449,7 +450,7 @@ bool MPVProcess::parseLine(QString &line) {
 	if (PlayerProcess::parseLine(line))
 		return true;
 
-	if (rx_playing.indexIn(line) >= 0) {
+	if (rx_message.indexIn(line) >= 0) {
 		emit receivedMessage(line);
 		return true;
 	}
