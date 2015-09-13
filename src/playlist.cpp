@@ -94,6 +94,7 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	play_files_from_start = true;
 
 	automatically_play_next = true;
+	// TODO: remove option ignore_player_errors, it is not safe and already removed
 	ignore_player_errors = false;
 
 	row_spacing = -1; // Default height
@@ -108,7 +109,6 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	createActions();
 	createToolbar();
 
-	// TODO: connect to TitleInfoChanged?
 	connect( core, SIGNAL(mediaStartPlay()),
 			 this, SLOT(newMediaLoaded()) );
 	connect( core, SIGNAL(mediaLoaded()),
@@ -119,10 +119,6 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	if (automatically_play_next) {
 		connect( core, SIGNAL(mediaFinished()),
 				 this, SLOT(playNext()), Qt::QueuedConnection );
-		connect( core, SIGNAL(playerFailed(QProcess::ProcessError)),
-				 this, SLOT(playerFailed(QProcess::ProcessError)) );
-		connect( core, SIGNAL(playerFinishedWithError(int)),
-				 this, SLOT(playerFinishedWithError(int)) );
 	}
 
 	QVBoxLayout *layout = new QVBoxLayout;
@@ -1474,34 +1470,6 @@ void Playlist::showEvent( QShowEvent * ) {
 void Playlist::closeEvent( QCloseEvent * e )  {
 	saveSettings();
 	e->accept();
-}
-
-void Playlist::playerFailed(QProcess::ProcessError e) {
-	qDebug("Playlist::playerFailed %d", e);
-
-	if (ignore_player_errors && e == QProcess::UnknownError) {
-		qWarning("Playlist::playerFailed: ignoring error");
-		playNext();
-	}
-}
-
-void Playlist::playerFinishedWithError(int e) {
-	qDebug("Playlist::playerFinishedWithError: %d", e);
-
-	// TODO:
-	// Old covention says:
-	// -1: failed to execute
-	// exitCode & 127 died with signal
-	// exitCode >> 8
-	// Don't know about mplayer and mpv
-
-	// Currently translated into: never play next
-	if (0 && ignore_player_errors) {
-		qWarning("Playlist::playerFinishedWithError: ignoring error");
-		playNext();
-	} else {
-		qWarning("Playlist::playerFinishedWithError: not playing next, due to errors");
-	}
 }
 
 void Playlist::maybeSaveSettings() {

@@ -23,7 +23,6 @@
 #include <QList>
 #include <QStringList>
 #include <QWidget>
-#include <QProcess>
 
 class PlaylistItem {
 
@@ -182,11 +181,7 @@ protected slots:
 	virtual void editItem(int item);
 
 	virtual void loadSettings();
-
 	virtual void maybeSaveSettings();
-
-	void playerFailed(QProcess::ProcessError);
-	void playerFinishedWithError(int);
 
 protected:
 	void createTable();
