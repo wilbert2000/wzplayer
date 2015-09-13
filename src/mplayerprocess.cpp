@@ -174,20 +174,24 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 	// Video track
 	if (name == "SWITCH_VIDEO") {
-		qDebug("MplayerProcess::parseAnswer: selected video track id %d", i);
 		if (i != md->videos.getSelectedID()) {
+			qDebug("MplayerProcess::parseAnswer: selected video track id %d", i);
 			md->videos.setSelectedID(i);
 			emit receivedVideoTrackChanged(i);
+		} else {
+			qDebug("MplayerProcess::parseAnswer: video track id %d already selected", i);
 		}
 		return true;
 	}
 
 	// Audio track
 	if (name == "SWITCH_AUDIO") {
-		qDebug("MplayerProcess::parseAnswer: selected audio track id %d", i);
 		if (i != md->audios.getSelectedID()) {
+			qDebug("MplayerProcess::parseAnswer: selected audio track id %d", i);
 			md->audios.setSelectedID(i);
 			emit receivedAudioTrackChanged(i);
+		} else {
+			qDebug("MplayerProcess::parseAnswer: audio track id %d already selected", i);
 		}
 		return true;
 	}
