@@ -102,7 +102,7 @@ public:
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &);
 
-	QString mpvVersion() { return mpv_version; };
+	QString mpvVersion() { return mpv_version; }
 
 protected:
 	virtual int getFrame(double time_sec, const QString &line);

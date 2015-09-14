@@ -80,11 +80,8 @@ public:
 	Maps::TTracks videos;
 	Maps::TTracks audios;
 	SubTracks subs;
-
-	int n_chapters;
-	Maps::TChapters chapters;
-
 	Maps::TTitleTracks titles;
+	Maps::TChapters chapters;
 
 #if PROGRAM_SWITCH
 	Tracks programs;
@@ -115,14 +112,14 @@ public:
 	static bool isCD(Type type);
 	static bool isDVD(Type type);
 	static bool isDisc(Type type);
-	bool detectedDisc();
-	bool selectedDisc();
+	bool detectedDisc() const;
+	bool selectedDisc() const;
 
 	static QString typeToString(Type type);
 	static Type stringToType(QString type);
 
-	QString displayName(bool show_tag = true);
-	void list();
+	QString displayName(bool show_tag = true) const;
+	void list() const;
 
 private:
 	void init();

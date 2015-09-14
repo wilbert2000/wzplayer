@@ -450,6 +450,8 @@ signals:
 	void subtitleTrackChanged(int);
 	void titleTrackInfoChanged();
 	void titleTrackChanged(int);
+	void chapterChanged(int);
+
 
 	//! Sent when requested to play, but there is no file to play
 	void noFileToPlay();

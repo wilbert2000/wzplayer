@@ -64,7 +64,7 @@ public:
 	void addEnd(int id, double end);
 	void addChapter(int id, const QString &name, double start);
 
-	int idForTime(double sec) const;
+	int idForTime(double sec, bool allow_gaps = true) const;
 };
 
 } // namespace Maps

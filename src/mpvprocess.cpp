@@ -161,6 +161,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		waiting_for_answers += n_titles;
 		return true;
 	}
+
 	if (name == "TITLE_LENGTH") {
 		static QRegExp rx_title_length("^(\\d+) (.*)");
 		if (rx_title_length.indexIn(value) >= 0) {
@@ -174,6 +175,17 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		waiting_for_answers--;
 		return true;
 	}
+
+	if (name == "CHAPTERS") {
+		int n_chapters = value.toInt();
+		qDebug("MPVProcess::parseProperty: requesting start and title of %d chapter(s)", n_chapters);
+		for (int n = 0; n < n_chapters; n++) {
+			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
+		}
+		waiting_for_answers += n_chapters;
+		return true;
+	}
+
 	if (name == "MEDIA_TITLE") {
 		if (!value.isEmpty() && value != "mp4" && !value.startsWith("mp4&")) {
 			md->meta_data["NAME"] = value;
@@ -181,12 +193,14 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		}
 		return true;
 	}
+
 	if (name == "OSD_X") {
 		default_osd_pos.rx() = value.toInt();
 		osd_pos.rx() = default_osd_pos.x();
 		qDebug("MPVProcess::parseProperty: set OSD x margin to %d", default_osd_pos.x());
 		return true;
 	}
+
 	if (name == "OSD_Y") {
 		default_osd_pos.ry() = value.toInt();
 		osd_pos.ry() = default_osd_pos.y();
@@ -194,26 +208,13 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 		return true;
 	}
 
-	bool parsed = PlayerProcess::parseProperty(name, value);
-
-	if (name == "CHAPTERS") {
-		qDebug("MPVProcess::parseProperty: requesting start and title of %d chapter(s)", md->n_chapters);
-		for (int n = 0; n < md->n_chapters; n++) {
-			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
-		}
-		waiting_for_answers += md->n_chapters;
-		return true;
-	}
-
-	return parsed;
+	return PlayerProcess::parseProperty(name, value);
 }
 
 bool MPVProcess::parseChapter(int id, double start, QString title) {
 
 	waiting_for_answers--;
-
 	md->chapters.addChapter(id, title, start);
-
 	qDebug() << "MPVProcess::parseChapter: added chapter id" << id
 			 << "starting at" << start << "with title" << title;
 	return true;

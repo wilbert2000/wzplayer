@@ -51,8 +51,6 @@ void MediaData::init() {
 	video_out_width = 0;
 	video_out_height = 0;
 
-	n_chapters = 0;
-
 	video_bitrate = 0;
 	audio_bitrate = 0;
 	audio_rate = 0;
@@ -77,16 +75,16 @@ bool MediaData::isDisc(Type type) {
 			|| type == TYPE_BLURAY;
 }
 
-bool MediaData::detectedDisc() {
+bool MediaData::detectedDisc() const {
 	return isDisc(detected_type);
 }
 
-bool MediaData::selectedDisc() {
+bool MediaData::selectedDisc() const {
 	return isDisc(selected_type);
 }
 
 
-QString MediaData::displayName(bool show_tag) {
+QString MediaData::displayName(bool show_tag) const {
 	if (show_tag) {
 		QString name = meta_data.value("NAME");
 		if (!name.isEmpty())
@@ -148,7 +146,7 @@ MediaData::Type MediaData::stringToType(QString type) {
 }
 
 
-void MediaData::list() {
+void MediaData::list() const {
 	qDebug("MediaData::list");
 
 	qDebug("  filename: '%s'", filename.toUtf8().data());
@@ -171,18 +169,14 @@ void MediaData::list() {
 
 	qDebug("  Videos:");
 	videos.list();
-
 	qDebug("  Audios:");
 	audios.list();
-
 	qDebug("  Subs:");
 	subs.list();
-
-	qDebug("  Chapters: %d", n_chapters);
-	chapters.list();
-
 	qDebug("  Titles:");
 	titles.list();
+	qDebug("  Chapters:");
+	chapters.list();
 
 #if PROGRAM_SWITCH
 	qDebug("  Programs:");

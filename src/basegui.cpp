@@ -1283,7 +1283,9 @@ void BaseGui::createActions() {
 	chapterGroup = new MyActionGroup(this);
 	connect( chapterGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeChapter(int)) );
-	// Update done by updateTitles
+	connect( core, SIGNAL(chapterChanged(int)),
+			 chapterGroup, SLOT(setCheckedSlot(int)));
+	// Update chapter info done by updateTitles
 
 	// Angles
 	angleGroup = new MyActionGroup(this);
@@ -3408,43 +3410,22 @@ void BaseGui::updateTitles() {
 void BaseGui::updateChapters() {
 	qDebug("BaseGui::updateChapters");
 
-	// No current is maintained for chapters
+	// Clear selected. Core::gotCurrentSec will set it.
+	core->mdat.chapters.setSelectedID(-1);
 	chapterGroup->clear(true);
 	if (core->mdat.chapters.count() > 0) {
-		// Use info from mdat.chapters
 		Maps::TChapters::TChapterIterator i = core->mdat.chapters.getIterator();
 		do {
 			i.next();
-			Maps::TChapterData chapter = i.value();
+			const Maps::TChapterData chapter = i.value();
 			QAction *a = new QAction(chapterGroup);
-			// a->setCheckable(true);
+			a->setCheckable(true);
 			a->setText(chapter.getDisplayName());
 			a->setData(chapter.getID());
 		} while (i.hasNext());
 	} else {
-		// Create actions with name ID + 1, action ID
-		int chapters_to_create = core->mdat.n_chapters;
-
-		// Use chapters from selected title
-		int selected_title_id = core->mdat.titles.getSelectedID();
-		if (selected_title_id >= 0) {
-			Maps::TTitleData title = core->mdat.titles.value(selected_title_id);
-			// Use only if set
-			if (title.getChapters() >= 0)
-				chapters_to_create = title.getChapters();
-		}
-
-		if (chapters_to_create > 0) {
-			for (int n = 0; n < chapters_to_create; n++) {
-				QAction *a = new QAction(chapterGroup);
-				// a->setCheckable(true);
-				a->setText( QString::number(n + 1) );
-				a->setData( n );
-			}
-		} else {
-			QAction * a = chapterGroup->addAction( tr("<empty>") );
-			a->setEnabled(false);
-		}
+		QAction * a = chapterGroup->addAction( tr("<empty>") );
+		a->setEnabled(false);
 	}
 
 	chapters_menu->addActions( chapterGroup->actions() );

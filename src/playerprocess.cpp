@@ -445,17 +445,6 @@ bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 		qDebug() << "PlayerProcess::parseProperty: demuxer set to" << md->demuxer;
 		return true;
 	}
-	if (name == "CHAPTERS") {
-		md->n_chapters = value.toInt();
-
-		if (md->n_chapters > 1000) {
-			qWarning("PlayerProcess::parseProperty: ignoring too many chapters: %d", md->n_chapters);
-			md->n_chapters = 0;
-		}
-
-		qDebug("PlayerProcess::parseProperty: n_chapters set to %d", md->n_chapters);
-		return true;
-	}
 
 	return false;
 }

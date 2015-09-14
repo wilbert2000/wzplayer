@@ -2945,6 +2945,40 @@ void Core::gotCurrentSec(double sec) {
 		if (pos >= pos_max) pos = pos_max - 1;
 	}
 	emit positionChanged(pos);
+
+	// Check chapter
+	if (mdat.chapters.count() <= 0) {
+		return;
+	}
+	int chapter_id = mdat.chapters.getSelectedID();
+	if (chapter_id >= 0) {
+		Maps::TChapterData& chapter = mdat.chapters[chapter_id];
+		if (sec >= chapter.getStart()) {
+			if (sec < chapter.getEnd()) {
+				// Chapter is current
+				return;
+			}
+			if (chapter.getEnd() == -1) {
+				// No end set
+				if (chapter_id - mdat.chapters.firstID() + 1
+					>= mdat.chapters.count()) {
+					// chapter is last and current
+					return;
+				}
+				if (sec < mdat.chapters[chapter_id + 1].getStart()) {
+					// Chapter is current
+					return;
+				}
+			}
+		}
+	}
+
+	int new_chapter_id = mdat.chapters.idForTime(sec);
+	if (new_chapter_id != chapter_id) {
+		mdat.chapters.setSelectedID(new_chapter_id);
+		qDebug("Core:gotCurrentSec: emit chapterChanged(%d)", new_chapter_id);
+		emit chapterChanged(new_chapter_id);
+	}
 }
 
 void Core::gotPause() {
@@ -3116,16 +3150,16 @@ void Core::changeChapter(int id) {
 void Core::prevChapter() {
 	qDebug("Core::prevChapter");
 
-	// TODO use mplayer: seek_chapter -1 mpv: add chapter -1
-	int id = mdat.chapters.idForTime(mset.current_sec);
+	// Can use mplayer: seek_chapter -1 mpv: add chapter -1
+	int id = mdat.chapters.idForTime(mset.current_sec, false);
 	changeChapter(mdat.chapters.previousID(id));
 }
 
 void Core::nextChapter() {
 	qDebug("Core::nextChapter");
 
-	// TODO use mplayer: seek_chapter 1 mpv: add chapter 1
-	int id = mdat.chapters.idForTime(mset.current_sec);
+	// Can use mplayer: seek_chapter 1 mpv: add chapter 1
+	int id = mdat.chapters.idForTime(mset.current_sec, false);
 	changeChapter(mdat.chapters.nextID(id));
 }
 

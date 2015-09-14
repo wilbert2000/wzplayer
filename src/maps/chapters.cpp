@@ -68,29 +68,38 @@ void TChapters::addChapter(int id, const QString &name, double start) {
 	chapter.setStart(start);
 }
 
-// Can only use start time. MPV does not give end time.
-int TChapters::idForTime(double sec) const {
+int TChapters::idForTime(double sec, bool allow_gaps) const {
 
 	int id = -1;
 
 	TChapterIterator i(*this);
 	while(i.hasNext()) {
 		i.next();
-		TChapterData chapter = i.value();
+		const TChapterData chapter = i.value();
 		if(sec < chapter.getStart()) {
+			// return previous id
 			return id;
 		}
 		id = chapter.getID();
+		if (sec < chapter.getEnd()) {
+			// return current id
+			return id;
+		}
+		// if chapter has end set reset id
+		if (allow_gaps && chapter.getEnd() != -1) {
+			id = -1;
+		}
 	}
 
 	return id;
 }
 
 void TChapters::list() const {
+	qDebug("Chapters::list: selected ID: %d", selectedID);
 	TChapterIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
-		TChapterData d = i.value();
+		const TChapterData d = i.value();
 		qDebug("Chapters::list: ID: %d name: '%s' start: %g end: %g",
 			   d.getID(), d.getName().toUtf8().constData(),
 			   d.getStart(), d.getEnd() );
