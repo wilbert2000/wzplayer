@@ -815,7 +815,8 @@ void Core::initAudioTracks() {
 	qDebug("Core::initAudioTracks");
 
 	// Check if one of the audio tracks matches the users preferred language.
-	// TODO: This will disable audio when:
+	// TODO: Selected audio is no longer waited for by mplayer
+	// This will disable audio when:
 	// Track 0: sound track, no language, starting at 0
 	// Track 1: speach, language english, starting at 5 min
 	// Track 2: speach, language german, starting at 5 min
@@ -838,6 +839,7 @@ void Core::initSubs() {
 		// TODO: this is not reliable. Subs can contain all kind of things,
 		// like graphics etc. Just selecting the first matching language is
 		// asking for trouble. For now disabled.
+		// Also selected sub is no longer waited for by mplayer
 		/*
 		if (mdat.subs.count() > 0 && mdat.subs.selectedID() < 0) {
 			// Nothing selected, check preferred language
@@ -936,7 +938,6 @@ void Core::playingStarted() {
 	qDebug("Core::playingStarted: emit mediaInfoChanged()");
 	emit mediaInfoChanged();
 
-	// TODO:
 	updateWidgets();
 
 	qDebug("Core::playingStarted: done");
