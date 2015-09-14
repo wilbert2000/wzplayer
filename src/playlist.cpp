@@ -83,6 +83,7 @@ PlaylistItem::PlaylistItem(const QString &filename, const QString &name, double 
 	_duration = duration;
 	_played = false;
 	_deleted = false;
+	_edited = false;
 }
 
 Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
