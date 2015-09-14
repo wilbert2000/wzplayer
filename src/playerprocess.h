@@ -194,7 +194,7 @@ protected:
 	virtual int getFrame(double time_sec, const QString &line) = 0;
 	void notifyTitleTrackChanged(int new_title);
 	void notifyDuration(double duration);
-	virtual void correctDuration(double sec);
+	virtual void checkTime(double sec);
 	void notifyTime(double time_sec, const QString &line);
 	bool waitForAnswers();
 	void playingStarted();

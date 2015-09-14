@@ -204,10 +204,8 @@ void PlayerProcess::notifyDuration(double duration) {
 	}
 }
 
-void PlayerProcess::correctDuration(double sec) {
+void PlayerProcess::checkTime(double sec) {
 	Q_UNUSED(sec)
-
-	// MPlayer only
 }
 
  // 2^33 / 90 kHz
@@ -245,8 +243,8 @@ void PlayerProcess::notifyTime(double time_sec, const QString &line) {
 
 	time_sec = playerTimeToGuiTime(time_sec);
 
-	// See if duration in range
-	correctDuration(time_sec);
+	// Give descendants a look at the time
+	checkTime(time_sec);
 
 	// Pass timestamp to GUI
 	emit receivedCurrentSec(time_sec);

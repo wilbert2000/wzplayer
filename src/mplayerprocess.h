@@ -105,7 +105,7 @@ public:
 
 protected:
 	virtual int getFrame(double sec, const QString &line);
-	virtual void correctDuration(double sec);
+	virtual void checkTime(double sec);
 
 	virtual bool parseLine(QString &line);
 	virtual bool parseStatusLine(double seconds, double duration, QRegExp &rx, QString &line);

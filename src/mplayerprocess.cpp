@@ -159,7 +159,7 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
 	// Check funky duration times
 	if (name == "LENGTH") {
-		// If corrected_duration is set by correctDuration(), it looks like we
+		// If corrected_duration is set by checkTime(), it looks like we
 		// have the duration wrong. In that case only accept durations larger
 		// than the current one, to prevent flipflopping the duration...
 		double duration = value.toDouble();
@@ -411,7 +411,7 @@ void MplayerProcess::convertTitlesToChapters() {
 		   md->chapters.count());
 }
 
-void MplayerProcess::correctDuration(double sec) {
+void MplayerProcess::checkTime(double sec) {
 
 	// Keep duration in range. Adjust once a second as we go
 	if (sec > md->duration) {
@@ -1040,8 +1040,7 @@ void MplayerProcess::frameStep() {
 }
 
 void MplayerProcess::frameBackStep() {
-	// TODO:
-	// seek()
+	// TODO: use seek()
 	qDebug("MplayerProcess::frameBackStep: function not supported in mplayer");
 }
 

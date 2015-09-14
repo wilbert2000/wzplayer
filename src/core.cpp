@@ -1575,30 +1575,25 @@ void Core::startPlayer( QString file, double seek ) {
 		proc->setOption("dvdangle", QString::number( mset.current_angle_id));
 	}
 
+	// TODO: MPVProcess title and track switch code does not run nicely when
+	// caching is set. Seeks inside the cache don't notify track or title
+	// changes. So instead of honouring some cache settings and not others,
+	// for now, declare them MPlayer only.
 	if (proc->isMPlayer()) {
 		int cache_size;
 		switch (mdat.selected_type) {
-		case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
-		case MediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
-		case MediaData::TYPE_DVDNAV	: cache_size = 0; break;
-		case MediaData::TYPE_STREAM	: cache_size = pref->cache_for_streams; break;
-		case MediaData::TYPE_VCD 	: cache_size = pref->cache_for_vcds; break;
-		case MediaData::TYPE_CDDA	: cache_size = pref->cache_for_audiocds; break;
-		case MediaData::TYPE_TV		: cache_size = pref->cache_for_tv; break;
-		case MediaData::TYPE_BLURAY	: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
-		default: cache_size = 0;
+			case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
+			case MediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
+			case MediaData::TYPE_DVDNAV	: cache_size = 0; break;
+			case MediaData::TYPE_STREAM	: cache_size = pref->cache_for_streams; break;
+			case MediaData::TYPE_VCD 	: cache_size = pref->cache_for_vcds; break;
+			case MediaData::TYPE_CDDA	: cache_size = pref->cache_for_audiocds; break;
+			case MediaData::TYPE_TV		: cache_size = pref->cache_for_tv; break;
+			case MediaData::TYPE_BLURAY	: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
+			default: cache_size = 0;
 		} // switch
 
 		proc->setOption("cache", QString::number(cache_size));
-	} else {
-		// MPV DVD and BR need cache 0, otherwise too much is lost at the end
-		// of a title. See MPVProcess::parseTitleSwitched for details.
-		// For the other types it looks like it's best to let MPV figure out
-		// the cache size all by itself.
-		if (MediaData::isDVD(mdat.selected_type)
-			|| mdat.selected_type == MediaData::TYPE_BLURAY) {
-			proc->setOption("cache", "0");
-		}
 	}
 
 	if (mset.speed != 1.0) {

@@ -106,6 +106,7 @@ public:
 
 protected:
 	virtual int getFrame(double time_sec, const QString &line);
+	virtual void checkTime(double sec);
 
 	virtual bool parseLine(QString &line);
 	virtual bool parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line);
@@ -123,8 +124,11 @@ private:
 
 	bool received_buffering;
 
-	bool received_title_not_found;
 	int selected_title;
+	bool received_title_not_found;
+	bool title_swictched;
+	double title_switch_time;
+	bool quit_at_end_of_title;
 
 	bool request_bit_rate_info;
 

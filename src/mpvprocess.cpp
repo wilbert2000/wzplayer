@@ -54,8 +54,10 @@ bool MPVProcess::startPlayer() {
 
 	received_buffering = false;
 
-	received_title_not_found = false;
 	selected_title = -1;
+	received_title_not_found = false;
+	title_swictched = false;
+	quit_at_end_of_title = false;
 
 	request_bit_rate_info = true;
 
@@ -229,9 +231,7 @@ void MPVProcess::fixTitle() {
 	// Accept the requested title as the selected title, if we did not receive
 	// a title not found. First and upmost this handles faulty reported titles,
 	// but it also makes it possible to sequentially play all titles (needed
-	// because MPV does not support menus), while if you set the selected title
-	// to the title selected by DVDNAV you'll often end on the same few titles
-	// it sees as best match, given the structure of the disc.
+	// because MPV does not support menus).
 	if (!received_title_not_found) {
 		if (disc.title == selected_title) {
 			qDebug("MPVProcess::fixTitle: found requested title %d", disc.title);
@@ -260,23 +260,58 @@ void MPVProcess::fixTitle() {
 	quit(1);
 }
 
+void MPVProcess::checkTime(double sec) {
+
+	if (title_swictched && sec >= title_switch_time) {
+		title_swictched = false;
+		if (quit_at_end_of_title) {
+			qDebug("MPVProcess::checkTime: quiting at end of title");
+			quit_at_end_of_title = false;
+			received_end_of_file =  true;
+			quit(0);
+		} else {
+			qDebug("MPVProcess::checkTime: sending track changed");
+			notifyTitleTrackChanged(selected_title);
+		}
+	}
+}
+
 bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 
 	md->detected_type = md->stringToType(disc_type);
-	if (disc_type == "cdda" || disc_type == "vcd") {
-		notifyTitleTrackChanged(title);
-		return true;
-	}
 
-	// When a title ends and hits a menu MPV goes haywire, so to release it
-	// from its suffering send a quit and let the playlist select the next
-	// title by faking eof. Unfortunately this means the title will stop
-	// playing a little too early, so it is important to set the cache to 0
-	// in Core::startPlayer to limit the loss to a few seconds.
+	// Due to caching it still can take a while before the previous title
+	// really ends, so store the title and the time to swicth and let
+	// checkTime() do the swithing when the moment arrives.
 	selected_title = title;
-	if (notified_player_is_running) {
-		received_end_of_file = true;
-		quit(0);
+
+	if (disc_type == "cdda" || disc_type == "vcd") {
+		if (notified_player_is_running) {
+			int chapter = title - md->titles.firstID() + md->chapters.firstID();
+			title_switch_time = md->chapters[chapter].getStart();
+			if (title_switch_time <= md->time_sec + 0.5) {
+				qDebug("MPVProcess::parseTitleSwitched: switched to track %d", title);
+				notifyTitleTrackChanged(title);
+			} else {
+				// Switch when the time comes
+				title_swictched = true;
+				title_switch_time -= 0.4;
+				qDebug("MPVProcess::parseTitleSwitched: saved track changed to %d", title);
+			}
+		} else {
+			notifyTitleTrackChanged(title);
+		}
+	} else {
+		// When a title ends and hits a menu MPV can go haywire. By setting
+		// quit_at_end_of_title to true, checkTime() will release it from its
+		// suffering when the title ends by sending a quit and fake an eof,
+		// so the playlist can play the next item.
+		if (notified_player_is_running) {
+			qDebug("MPVProcess::parseTitleSwitched: marked title to quit at end");
+			title_swictched = true;
+			quit_at_end_of_title = true;
+			title_switch_time = md->duration - 0.1;
+		}
 	}
 
 	return true;
