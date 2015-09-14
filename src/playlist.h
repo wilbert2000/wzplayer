@@ -36,17 +36,19 @@ public:
 	void setDuration(double duration) { _duration = duration; }
 	void setPlayed(bool b) { _played = b; }
 	void setMarkForDeletion(bool b) { _deleted = b; }
+	void setEdited(bool b) { _edited = b; }
 
 	QString filename() { return _filename; }
 	QString name() { return _name; }
 	double duration() { return _duration; }
 	bool played() { return _played; }
 	bool markedForDeletion() { return _deleted; }
+	bool edited() { return _edited; }
 
 private:
 	QString _filename, _name;
 	double _duration;
-	bool _played, _deleted;
+	bool _played, _deleted, _edited;
 };
 
 class MyTableWidget;

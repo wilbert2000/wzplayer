@@ -94,7 +94,8 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	play_files_from_start = true;
 
 	automatically_play_next = true;
-	// TODO: remove option ignore_player_errors, it is not safe and already removed
+	// TODO: remove option ignore_player_errors from GUI,
+	// it is not safe and the implementation is already removed
 	ignore_player_errors = false;
 
 	row_spacing = -1; // Default height
@@ -905,7 +906,7 @@ void Playlist::playItem( int n ) {
 	QString filename = pl[n].filename();
 	if (!filename.isEmpty()) {
 		setCurrentItem(n);
-		if (play_files_from_start) 
+		if (play_files_from_start)
 			core->open(filename, 0);
 		else core->open(filename);
 	}
@@ -995,7 +996,8 @@ void Playlist::newMediaLoaded() {
 			i.next();
 			Maps::TTitleData title = i.value();
 			disc.title = title.getID();
-			addItem(DiscName::join(disc), title.getDisplayName(false), title.getDuration());
+			addItem(DiscName::join(disc), title.getDisplayName(false),
+					title.getDuration());
 			if (title.getID() == titles->getSelectedID()) {
 				setCurrentItem(title.getID() - titles->firstID());
 			}
@@ -1059,18 +1061,14 @@ void Playlist::getMediaInfo() {
 	if (!artist.isEmpty()) name = artist + " - " + name;
 
 	for (int n = 0; n < pl.count(); n++) {
-		if (pl[n].filename() == filename) {
-			// Found item
-			if (pl[n].duration() < 1) {
-				if (!name.isEmpty()) {
-					pl[n].setName(name);
+		PlaylistItem& item = pl[n];
+		if (item.filename() == filename) {
+			// Protect playlist by only updating items with duration 0
+			if (item.duration() == 0) {
+				if (!name.isEmpty() && !item.edited()) {
+					item.setName(name);
 				}
-				pl[n].setDuration(duration);
-			}
-			else
-			// Edited name (sets duration to 1)
-			if (pl[n].duration() == 1) {
-				pl[n].setDuration(duration);
+				item.setDuration(duration);
 			}
 		}
 	}
@@ -1368,13 +1366,10 @@ void Playlist::editItem(int item) {
             current_name, &ok );
     if ( ok && !text.isEmpty() ) {
         // user entered something and pressed OK
+		pl[item].setEdited(true);
 		pl[item].setName(text);
-
-		// If duration == 0 the name will be overwritten!
-		if (pl[item].duration()<1) pl[item].setDuration(1); 
+		setModified(true);
 		updateView();
-
-		setModified( true );
     } 
 }
 
