@@ -36,11 +36,8 @@ QPoint default_osd_pos = QPoint();
 // TODO: get from player too
 static const QPoint max_osd_pos(300, 600);
 
-// How to recognise eof
-static QRegExp rx_endoffile("^Exiting... \\(End of file\\)");
-
 MPVProcess::MPVProcess(MediaData *mdata)
-	: PlayerProcess(PlayerID::MPV, mdata, &rx_endoffile)
+	: PlayerProcess(PlayerID::MPV, mdata)
 	, verbose(false)
 	, osd_pos()
 	, osd_centered_x(false)

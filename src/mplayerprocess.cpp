@@ -33,10 +33,8 @@
 using namespace Global;
 
 
-// How to recognise eof
-static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 MplayerProcess::MplayerProcess(MediaData *mdata)
-	: PlayerProcess(PlayerID::MPLAYER, mdata, &rx_endoffile),
+	: PlayerProcess(PlayerID::MPLAYER, mdata),
 	svn_version(-1) {
 }
 

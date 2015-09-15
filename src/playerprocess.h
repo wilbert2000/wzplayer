@@ -34,7 +34,7 @@ class PlayerProcess : public MyProcess
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	PlayerProcess(PlayerID::Player pid, MediaData * mdata, QRegExp * r_eof);
+	PlayerProcess(PlayerID::Player pid, MediaData * mdata);
 
 	PlayerID::Player player() { return player_id; }
 	bool isMPlayer() { return (player_id == PlayerID::MPLAYER); }
@@ -220,8 +220,6 @@ private:
 	bool quit_send;
 
 	int prev_frame;
-
-	QRegExp* rx_eof;
 };
 
 #endif

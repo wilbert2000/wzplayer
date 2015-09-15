@@ -30,14 +30,13 @@
 
 const int waiting_for_answers_safe_guard_init = 100;
 
-PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata, QRegExp *r_eof)
+PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata)
 	: MyProcess(0)
 	, player_id(pid)
 	, md(mdata)
 	, notified_player_is_running(false)
 	, received_end_of_file(false)
 	, line_count(0)
-	, rx_eof(r_eof)
 {
 	//qRegisterMetaType<SubTracks>("SubTracks");
 	//qRegisterMetaType<Maps::TTracks>("Tracks");
@@ -312,6 +311,7 @@ void PlayerProcess::quit(int exit_code) {
 
 bool PlayerProcess::parseLine(QString &line) {
 
+	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
 	// Trim line
@@ -338,7 +338,7 @@ bool PlayerProcess::parseLine(QString &line) {
 	}
 
 	// End of file
-	if (rx_eof->indexIn(line) >= 0)  {
+	if (rx_eof.indexIn(line) >= 0)  {
 		qDebug("PlayerProcess::parseLine: detected end of file");
 		received_end_of_file = true;
 		return true;
