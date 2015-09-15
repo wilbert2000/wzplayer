@@ -301,6 +301,7 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "VCD_TRACK") {
 		return titleChanged(MediaData::TYPE_VCD, value.toInt());
 	}
+
 	// Title changed. DVDNAV uses its own reg expr
 	if (name == "DVD_CURRENT_TITLE") {
 		return titleChanged(MediaData::TYPE_DVD, value.toInt());
@@ -308,6 +309,7 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "BLURAY_CURRENT_TITLE") {
 		return titleChanged(MediaData::TYPE_BLURAY, value.toInt());
 	}
+
 	// Subtitle filename
 	if (name == "FILE_SUB_FILENAME") {
 		if (sub_file_id >= 0) {
@@ -321,6 +323,7 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 				   << value;
 		return false;
 	}
+
 	// DVD disc id (DVD_VOLUME_ID is not the same)
 	if (name == "DVD_DISC_ID") {
 		md->dvd_id = value;
@@ -408,9 +411,10 @@ bool MplayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QString
 
 bool MplayerProcess::parseVO(const QString &driver, int w, int h) {
 
-	qDebug("MplayerProcess::parseVO: video out size set to %d x %d", w, h);
 	md->video_out_width = w;
 	md->video_out_height = h;
+
+	qDebug("MplayerProcess::parseVO: video out size set to %d x %d", w, h);
 	emit receivedVO(driver);
 
 	return true;
@@ -556,62 +560,63 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 
 bool MplayerProcess::parseLine(QString &line) {
 
+	// Status line
 	static QRegExp rx_av("^[AV]: *([0-9,:.-]+)");
+
+	// Answers to queries
+	static QRegExp rx_answer("^ANS_(.+)=(.*)");
+
+	// Video driver and resolution after filters and aspect applied
 	static QRegExp rx_vo("^VO: \\[(.*)\\] \\d+x\\d+ => (\\d+)x(\\d+)");
+	// Audio driver
 	static QRegExp rx_ao("^AO: \\[(.*)\\]");
+	// Video and audio tracks
 	static QRegExp rx_video_track("^ID_VID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_track("^ID_AID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_track_alt("^audio stream: \\d+ format: (.*) language: (.*) aid: (\\d+)");
+	// Video and audio properties
 	static QRegExp rx_video_prop("^ID_VIDEO_([A-Z]+)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_prop("^ID_AUDIO_([A-Z]+)\\s*=\\s*(.*)");
 
-	//Subtitles
+	// Subtitles
 	static QRegExp rx_sub_id("^ID_(SUBTITLE|FILE_SUB|VOBSUB)_ID=(\\d+)");
 	static QRegExp rx_sub_track("^ID_(SID|VSID)_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
 
-	//static QRegExp rx_starting_playback("^Starting playback...");
-	static QRegExp rx_answer("^ANS_(.+)=(.*)");
-
-	static QRegExp rx_mkvchapters("\\[mkv\\] Chapter (\\d+) from");
+	// Chapters
 	static QRegExp rx_chapters("^ID_CHAPTER_(\\d+)_(START|END|NAME)=(.*)");
+	static QRegExp rx_mkvchapters("\\[mkv\\] Chapter (\\d+) from");
 
-	// Audio/Video CD tracks
+	// CD tracks
 	static QRegExp rx_cd_track("^ID_(CDDA|VCD)_TRACK_(\\d+)_MSF=(.*)");
-	// DVD/BLURAY titles. Chapters not used.
-	//static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|CHAPTERS|ANGLES)=(.*)");
+
+	// DVD/BLURAY titles
 	static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|ANGLES)=(.*)");
-	// Title chapters
+	// DVD/BLURAY chapters
 	static QRegExp rx_title_chapters("^CHAPTERS: (.*)");
 
 #if DVDNAV_SUPPORT
-	// Chapters for title
+	// DVDNAV chapters for title
 	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
 	static QRegExp rx_dvdnav_switch_title("^DVDNAV, switched to title: (\\d+)");
 	static QRegExp rx_dvdnav_title_is_menu("^DVDNAV_TITLE_IS_MENU");
 	static QRegExp rx_dvdnav_title_is_movie("^DVDNAV_TITLE_IS_MOVIE");
 #endif
 
+	// Stream title and url
 	static QRegExp rx_stream_title("^.*StreamTitle='(.*)';");
 	static QRegExp rx_stream_title_and_url("^.*StreamTitle='(.*)';StreamUrl='(.*)';");
 
-	// Catch all props
-	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
-
 	static QRegExp rx_screenshot("^\\*\\*\\* screenshot '(.*)'");
 
+	// Program switch
 #if PROGRAM_SWITCH
 	static QRegExp rx_program("^PROGRAM_ID=(\\d+)");
 #endif
 
-	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file|libdvdread:)");
+	// Catch all props
+	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
 
-	static QRegExp rx_cache_empty("^Cache empty.*|^Cache not filling.*");
-	static QRegExp rx_create_index("^Generating Index:.*");
-	static QRegExp rx_connecting("^Connecting to .*");
-	static QRegExp rx_resolving("^Resolving .*");
-	static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
-	static QRegExp rx_forbidden("Server returned 403: Forbidden");
-
+	// Meta data
 	static QRegExp rx_meta_data("^(name|"
 								"title|"
 								"artist|"
@@ -625,6 +630,17 @@ bool MplayerProcess::parseLine(QString &line) {
 								"creation date|"
 								"year):(.*)", Qt::CaseInsensitive);
 
+	// Messages with side effects
+	static QRegExp rx_cache_empty("^Cache empty.*|^Cache not filling.*");
+	static QRegExp rx_create_index("^Generating Index:.*");
+	static QRegExp rx_connecting("^Connecting to .*");
+	static QRegExp rx_resolving("^Resolving .*");
+	static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
+	static QRegExp rx_forbidden("Server returned 403: Forbidden");
+
+	// General messages to pass on
+	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file|libdvdread:)");
+
 
 	// Parse A: V: status line
 	if (rx_av.indexIn(line) >=0) {
@@ -637,6 +653,11 @@ bool MplayerProcess::parseLine(QString &line) {
 	// Pause
 	if (line == "ID_PAUSED") {
 		return parsePause();
+	}
+
+	// Answers ANS_name=value
+	if (rx_answer.indexIn(line) >= 0) {
+		return parseAnswer(rx_answer.cap(1).toUpper(), rx_answer.cap(2));
 	}
 
 	// VO driver and resolution after aspect and filters applied
@@ -702,9 +723,11 @@ bool MplayerProcess::parseLine(QString &line) {
 		return parseAudioProperty(rx_audio_prop.cap(1), rx_audio_prop.cap(2));
 	}
 
-	// Answers ANS_name=value
-	if (rx_answer.indexIn(line) >= 0) {
-		return parseAnswer(rx_answer.cap(1).toUpper(), rx_answer.cap(2));
+	// Chapters
+	if (rx_chapters.indexIn(line) >= 0) {
+		return parseChapter(rx_chapters.cap(1).toInt(),
+							rx_chapters.cap(2),
+							rx_chapters.cap(3).trimmed());
 	}
 
 	// Matroshka chapters
@@ -713,13 +736,6 @@ bool MplayerProcess::parseLine(QString &line) {
 		qDebug("MplayerProcess::parseLine: adding mkv chapter %d", c);
 		md->chapters.addID(c);
 		return true;
-	}
-
-	// Chapter info
-	if (rx_chapters.indexIn(line) >= 0) {
-		return parseChapter(rx_chapters.cap(1).toInt(),
-							rx_chapters.cap(2),
-							rx_chapters.cap(3).trimmed());
 	}
 
 	// Audio/Video CD tracks
@@ -741,6 +757,7 @@ bool MplayerProcess::parseLine(QString &line) {
 		return parseTitleChapters(md->chapters, rx_title_chapters.cap(1));
 	}
 
+	// DVDNAV
 #if DVDNAV_SUPPORT
 	if (rx_dvdnav_chapters.indexIn(line) >= 0) {
 		int title = rx_dvdnav_chapters.cap(1).toInt();
@@ -753,7 +770,7 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	if (rx_dvdnav_switch_title.indexIn(line) >= 0) {
 		return titleChanged(MediaData::TYPE_DVDNAV,
-							 rx_dvdnav_switch_title.cap(1).toInt());
+							rx_dvdnav_switch_title.cap(1).toInt());
 	}
 
 	if (rx_dvdnav_title_is_menu.indexIn(line) >= 0) {
@@ -793,11 +810,6 @@ bool MplayerProcess::parseLine(QString &line) {
 		return true;
 	}
 
-	// Catch all property ID_name = value
-	if (rx_prop.indexIn(line) >= 0) {
-		return parseProperty(rx_prop.cap(1), rx_prop.cap(2));
-	}
-
 	// Screenshot
 	if (rx_screenshot.indexIn(line) >= 0) {
 		QString shot = rx_screenshot.cap(1);
@@ -807,7 +819,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	}
 
 #if PROGRAM_SWITCH
-	// Program
+	// Program switch
 	if (rx_program.indexIn(line) >= 0) {
 		int ID = rx_program.cap(1).toInt();
 		md->programs.addID( ID );
@@ -816,7 +828,18 @@ bool MplayerProcess::parseLine(QString &line) {
 	}
 #endif
 
-	/*
+	// Catch all property ID_name = value
+	if (rx_prop.indexIn(line) >= 0) {
+		return parseProperty(rx_prop.cap(1), rx_prop.cap(2));
+	}
+
+	// Meta data
+	if (rx_meta_data.indexIn(line) >= 0) {
+		return parseMetaDataProperty(rx_meta_data.cap(1),
+									 rx_meta_data.cap(2));
+	}
+
+/*
 	if (svn_version == -1 && (line.startsWith("MPlayer ") || line.startsWith("MPlayer2 ", Qt::CaseInsensitive))) {
 		svn_version = MplayerVersion::mplayerVersion(line);
 		qDebug("MplayerProcess::parseLine: MPlayer SVN: %d", svn_version);
@@ -827,7 +850,7 @@ bool MplayerProcess::parseLine(QString &line) {
 		}
 		return true;
 	}
-	*/
+*/
 
 	// Catch cache messages
 	if (rx_cache_empty.indexIn(line) >= 0) {
@@ -858,12 +881,6 @@ bool MplayerProcess::parseLine(QString &line) {
 		qDebug("MplayerProcess::parseLine: 403 forbidden");
 		emit receivedForbiddenText();
 		return true;
-	}
-
-	// Meta data
-	if (rx_meta_data.indexIn(line) >= 0) {
-		return parseMetaDataProperty(rx_meta_data.cap(1),
-									 rx_meta_data.cap(2));
 	}
 
 	// Messages to display
