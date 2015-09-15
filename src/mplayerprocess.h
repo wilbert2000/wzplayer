@@ -128,7 +128,6 @@ private:
 	bool video_tracks_changed;
 	bool audio_tracks_changed;
 	bool subtitles_changed;
-	bool title_tracks_changed;
 
 	bool want_pause;
 

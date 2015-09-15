@@ -363,21 +363,19 @@ bool MplayerProcess::parseCDTrack(const QString &type, int id, const QString &le
 
 	md->titles.addDuration(id, duration, true);
 
-	title_tracks_changed = true;
 	qDebug() << "MplayerProcess::parseCDTrack: added" << type << "track with duration" << duration;
 	return true;
 }
 
 bool MplayerProcess::parseTitle(int id, const QString &field, const QString &value) {
 
-	// DVD/Bluray titles
+	// DVD/Bluray titles. Chapters handled by parseTitleChapters.
 	if (field == "LENGTH") {
 		md->titles.addDuration(id, value.toDouble());
 	} else {
 		md->titles.addAngles(id, value.toInt());
 	}
 
-	title_tracks_changed = true;
 	qDebug() << "MplayerProcess::parseTitle:" << field
 			 << "for title" << id
 			 << "set to" << value;
@@ -492,11 +490,6 @@ void MplayerProcess::notifyChanges() {
 		emit receivedSubtitleTrackInfo();
 		getSelectedSub();
 	}
-	if (title_tracks_changed) {
-		title_tracks_changed = false;
-		qDebug("MplayerProcess::notifyChanges: emit receivedTitleTrackInfo");
-		emit receivedTitleTrackInfo();
-	}
 }
 
 bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
@@ -546,7 +539,6 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	video_tracks_changed = false;
 	audio_tracks_changed = false;
 	subtitles_changed = false;
-	title_tracks_changed = false;
 
 	// Get selected video, audio and subtitle tracks
 	getSelectedTracks();
