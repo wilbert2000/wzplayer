@@ -24,9 +24,9 @@ namespace Maps {
 
 TTitleData::TTitleData() :
 	TData(),
+	chapters(),
 	name(),
 	duration(-1),
-	chapters(-1),
 	angles(-1),
 	isTrack(false) {
 }
@@ -66,12 +66,6 @@ void TTitleTracks::addDuration(int ID, double duration, bool is_track) {
 	title.setType(is_track);
 }
 
-void TTitleTracks::addChapters(int ID, int n) {
-	TTitleData& title = (*this)[ID];
-	title.setID(ID);
-	title.setChapters(n);
-}
-
 void TTitleTracks::addTrack(int ID, const QString &name, double duration) {
 	(*this)[ID].setTrack(ID, name, duration);
 }
@@ -90,7 +84,8 @@ void TTitleTracks::list() const {
 		i.next();
 		TTitleData d = i.value();
 		qDebug("TitleTracks::list: ID: %d name: '%s' duration %f chapters: %d angles: %d",
-			   d.getID(), d.getName().toUtf8().constData(), d.getDuration(), d.getChapters(), d.getAngles());
+			   d.getID(), d.getName().toUtf8().constData(), d.getDuration(),
+			   d.chapters.count(), d.getAngles());
 	}
 }
 

@@ -1285,7 +1285,10 @@ void BaseGui::createActions() {
 			 core, SLOT(changeChapter(int)) );
 	connect( core, SIGNAL(chapterChanged(int)),
 			 chapterGroup, SLOT(setCheckedSlot(int)));
-	// Update chapter info done by updateTitles
+	// Update chapter info done by updateTitles.
+	// DVDNAV only:
+	connect( core, SIGNAL(chapterInfoChanged()),
+			 this, SLOT(updateChapters()));
 
 	// Angles
 	angleGroup = new MyActionGroup(this);

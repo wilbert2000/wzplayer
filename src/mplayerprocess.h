@@ -124,17 +124,19 @@ private:
 
 	double check_duration_time;
 	int check_duration_time_diff;
-	bool corrected_duration;
 
 	bool video_tracks_changed;
 	bool audio_tracks_changed;
-	bool subtitle_tracks_changed;
+	bool subtitles_changed;
 	bool title_tracks_changed;
 
 	bool want_pause;
 
+	void clearSubSources();
+	void getSelectedSub();
 	void getSelectedTracks();
 	void notifyChanges();
+	bool titleChanged(MediaData::Type type, int title);
 
 	bool parseVO(const QString &driver, int w, int h);
 	bool parseSubID(const QString &type, int id);
@@ -142,7 +144,7 @@ private:
 	bool parseChapter(int id, const QString &type, const QString &value);
 	bool parseCDTrack(const QString &type, int id, const QString &length);
 	bool parseTitle(int id, const QString &field, const QString &value);
-	bool parseTitleChapters(QString chapters);
+	bool parseTitleChapters(Maps::TChapters& chapters, const QString& chaps);
 	bool parseAnswer(const QString &name, const QString &value);
 	bool parsePause();
 	void convertTitlesToChapters();

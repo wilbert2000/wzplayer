@@ -17,6 +17,7 @@
 */
 
 #include "mplayerprocess.h"
+//#include <cmath>
 #include <QRegExp>
 #include <QStringList>
 #include <QApplication>
@@ -27,13 +28,13 @@
 #include "mplayerversion.h"
 #include "colorutils.h"
 #include "subtracks.h"
+#include "maps/titletracks.h"
 
 using namespace Global;
 
 
 // How to recognise eof
 static QRegExp rx_endoffile("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
-
 MplayerProcess::MplayerProcess(MediaData *mdata)
 	: PlayerProcess(PlayerID::MPLAYER, mdata, &rx_endoffile),
 	svn_version(-1) {
@@ -42,26 +43,24 @@ MplayerProcess::MplayerProcess(MediaData *mdata)
 MplayerProcess::~MplayerProcess() {
 }
 
-bool MplayerProcess::startPlayer() {
+void MplayerProcess::clearSubSources() {
 
 	sub_source = -1;
 	sub_file = false;
 	sub_vob = false;
 	sub_demux = false;
 	sub_file_id = -1;
+}
 
-	corrected_duration = false;
+bool MplayerProcess::startPlayer() {
 
+	clearSubSources();
 	return PlayerProcess::startPlayer();
 }
 
-void MplayerProcess::getSelectedTracks() {
-	qDebug("MplayerProcess::getSelectedTracks");
+void MplayerProcess::getSelectedSub() {
+	qDebug("MplayerProcess::getSelectedSub");
 
-	if (md->videos.count() > 0)
-		writeToStdin("get_property switch_video");
-	if (md->audios.count() > 0)
-		writeToStdin("get_property switch_audio");
 	if (md->subs.count() > 0) {
 		writeToStdin("get_property sub_source");
 		if (sub_file)
@@ -73,13 +72,29 @@ void MplayerProcess::getSelectedTracks() {
 	}
 }
 
+void MplayerProcess::getSelectedTracks() {
+	qDebug("MplayerProcess::getSelectedTracks");
+
+	if (md->videos.count() > 0)
+		writeToStdin("get_property switch_video");
+	if (md->audios.count() > 0)
+		writeToStdin("get_property switch_audio");
+	getSelectedSub();
+}
+
 bool MplayerProcess::parseVideoProperty(const QString &name, const QString &value) {
 
 	if (name == "ID") {
 		int id = value.toInt();
-		md->videos.addID(id);
-		if (notified_player_is_running)
-			writeToStdin("get_property switch_video");
+		if (md->videos.contains(id)) {
+			qDebug("parseVideoProperty: found video track id %d", id);
+			if (notified_player_is_running)
+				writeToStdin("get_property switch_video");
+		} else {
+			md->videos.addID(id);
+			video_tracks_changed = true;
+			qDebug("parseVideoProperty: added video track id %d", id);
+		}
 		return true;
 	}
 
@@ -91,9 +106,15 @@ bool MplayerProcess::parseAudioProperty(const QString &name, const QString &valu
 	// Audio ID
 	if (name == "ID") {
 		int id = value.toInt();
-		md->audios.addID(id);
-		if (notified_player_is_running)
-			writeToStdin("get_property switch_audio");
+		if (md->audios.contains(id)) {
+			qDebug("parseAudioProperty: found audio track id %d", id);
+			if (notified_player_is_running)
+				writeToStdin("get_property switch_audio");
+		} else {
+			md->audios.addID(id);
+			audio_tracks_changed = true;
+			qDebug("parseAudioProperty: added audio track id %d", id);
+		}
 		return true;
 	}
 
@@ -102,11 +123,7 @@ bool MplayerProcess::parseAudioProperty(const QString &name, const QString &valu
 
 bool MplayerProcess::parseSubID(const QString &type, int id) {
 
-	// Add new id or a track got selected
-
-	// Get sub_source
-	if (notified_player_is_running)
-		writeToStdin("get_property sub_source");
+	// Add new id or a sub got selected
 
 	SubData::Type sub_type;
 	if (type == "FILE_SUB") {
@@ -114,24 +131,24 @@ bool MplayerProcess::parseSubID(const QString &type, int id) {
 		sub_file = true;
 		// Remember id in case there is a filename comming
 		sub_file_id = id;
-		if (notified_player_is_running)
-			writeToStdin("get_property sub_file");
 	} else if (type == "VOBSUB") {
 		sub_type = SubData::Vob;
 		sub_vob = true;
-		if (notified_player_is_running)
-			writeToStdin("get_property sub_vob");
 	} else {
 		sub_type = SubData::Sub;
 		sub_demux = true;
-		if (notified_player_is_running)
-			writeToStdin("get_property sub_demux");
 	}
 
 	if (md->subs.find(sub_type, id) < 0) {
 		md->subs.add(sub_type, id);
-		qDebug() << "MplayerProcess::parseSubID: created"
-				 << type << "subtitle track id" << id;
+		subtitles_changed = true;
+		qDebug() << "MplayerProcess::parseSubID: created subtitle id"
+				 << id << "type" << type;
+	} else {
+		qDebug() << "MplayerProcess::parseSubID: found subtitle id"
+				 << id << "type" << type;
+		if (notified_player_is_running)
+			getSelectedSub();
 	}
 
 	return true;
@@ -146,7 +163,7 @@ bool MplayerProcess::parseSubTrack(const QString &type, int id, const QString &n
 	if (md->subs.find(sub_type, id) >= 0) {
 		if (name == "NAME")	md->subs.changeName(sub_type, id, value);
 		else md->subs.changeLang(sub_type, id, value);
-		subtitle_tracks_changed = true;
+		subtitles_changed = true;
 		qDebug("MplayerProcess::parseSubTrack: updated subtitle track %d", id);
 		return true;
 	}
@@ -157,16 +174,8 @@ bool MplayerProcess::parseSubTrack(const QString &type, int id, const QString &n
 
 bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 
-	// Check funky duration times
 	if (name == "LENGTH") {
-		// If corrected_duration is set by checkTime(), it looks like we
-		// have the duration wrong. In that case only accept durations larger
-		// than the current one, to prevent flipflopping the duration...
-		double duration = value.toDouble();
-		if (!corrected_duration || duration >= md->duration) {
-			corrected_duration = false;
-			notifyDuration(duration);
-		}
+		notifyDuration(value.toDouble());
 		return true;
 	}
 
@@ -246,30 +255,60 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 	return false;
 }
 
+bool MplayerProcess::titleChanged(MediaData::Type type, int title) {
+	qDebug("MplayerProcess::titleChanged: title %d", title);
+
+	md->detected_type = type;
+	notifyTitleTrackChanged(title);
+
+	if (type == MediaData::TYPE_DVDNAV) {
+		// Reset start time. Assuming we get ID_START_TIME if title has one,
+		// though never seen it except for the first title at startup.
+		// (get_property start_time does not work)
+		md->start_sec = 0;
+
+		// Set duration
+		Maps::TTitleData& t = md->titles[title];
+		notifyDuration(t.getDuration());
+
+		if (notified_player_is_running) {
+			// Videos
+
+			// Audios
+			md->audios = Maps::TTracks();
+			audio_tracks_changed = true;
+
+			// Subs
+			clearSubSources();
+			md->subs.clear();
+			subtitles_changed = true;
+		}
+
+		// Chapters
+		md->chapters = t.chapters;
+		if (notified_player_is_running) {
+			emit receivedChapterInfo();
+		}
+	}
+
+	return true;
+}
+
 bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	// Track changed
 	if (name == "CDDA_TRACK") {
-		md->detected_type = MediaData::TYPE_CDDA;
-		notifyTitleTrackChanged(value.toInt());
-		return true;
+		return titleChanged(MediaData::TYPE_CDDA, value.toInt());
 	}
 	if (name == "VCD_TRACK") {
-		md->detected_type = MediaData::TYPE_VCD;
-		notifyTitleTrackChanged(value.toInt());
-		return true;
+		return titleChanged(MediaData::TYPE_VCD, value.toInt());
 	}
-	// Title changed
+	// Title changed. DVDNAV uses its own reg expr
 	if (name == "DVD_CURRENT_TITLE") {
-		md->detected_type = MediaData::TYPE_DVD;
-		notifyTitleTrackChanged(value.toInt());
-		return true;
+		return titleChanged(MediaData::TYPE_DVD, value.toInt());
 	}
-	// DVDNAV uses its own reg expr
 	if (name == "BLURAY_CURRENT_TITLE") {
-		md->detected_type = MediaData::TYPE_BLURAY;
-		notifyTitleTrackChanged(value.toInt());
-		return true;
+		return titleChanged(MediaData::TYPE_BLURAY, value.toInt());
 	}
 	// Subtitle filename
 	if (name == "FILE_SUB_FILENAME") {
@@ -277,14 +316,14 @@ bool MplayerProcess::parseProperty(const QString &name, const QString &value) {
 			qDebug() << "MplayerProcess::parseProperty: set filename sub id"
 					 << sub_file_id << "to" << value;
 			md->subs.changeFilename(SubData::File, sub_file_id, value);
-			subtitle_tracks_changed = true;
+			subtitles_changed = true;
 			return true;
 		}
 		qWarning() << "MplayerProcess::parseProperty: unexpected subtitle filename"
 				   << value;
 		return false;
 	}
-	// DVD disc id (DVD_VOLUME_ID not the same)
+	// DVD disc id (DVD_VOLUME_ID is not the same)
 	if (name == "DVD_DISC_ID") {
 		md->dvd_id = value;
 		qDebug("MplayerProcess::parseProperty: DVD id set to '%s'", md->dvd_id.toUtf8().data());
@@ -336,9 +375,7 @@ bool MplayerProcess::parseTitle(int id, const QString &field, const QString &val
 	// DVD/Bluray titles
 	if (field == "LENGTH") {
 		md->titles.addDuration(id, value.toDouble());
-	} else if (field == "CHAPTERS") {
-		md->titles.addChapters(id, value.toInt());
-	} else 	{
+	} else {
 		md->titles.addAngles(id, value.toInt());
 	}
 
@@ -349,27 +386,27 @@ bool MplayerProcess::parseTitle(int id, const QString &field, const QString &val
 	return true;
 }
 
-bool MplayerProcess::parseTitleChapters(QString chapters) {
+bool MplayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QString& chaps) {
 
-	static QRegExp rx_time("(\\d\\d):(\\d\\d):(\\d\\d).(\\d\\d\\d)");
+	static QRegExp rx_time("(\\d\\d):(\\d\\d):(\\d\\d)(.(\\d\\d\\d))?");
 
 	int i;
 	int idx = 0;
 	int from = 0;
-	while ((i = chapters.indexOf(",", from)) > 0) {
-		QString s = chapters.mid(from, i - from);
+	while ((i = chaps.indexOf(",", from)) > 0) {
+		QString s = chaps.mid(from, i - from);
 		if (rx_time.indexIn(s) >= 0) {
 			double time = rx_time.cap(1).toInt() * 3600
 						  + rx_time.cap(2).toInt() * 60
 						  + rx_time.cap(3).toInt()
-						  + rx_time.cap(4).toDouble()/1000;
-			md->chapters.addStart(idx, time);
+						  + rx_time.cap(5).toDouble()/1000;
+			chapters.addStart(idx, time);
 		}
 		from = i + 1;
 		idx++;
 	}
 
-	qDebug("MplayerProcess::parseTitleChapters: added %d chapters", md->chapters.count());
+	qDebug("MplayerProcess::parseTitleChapters: added %d chapters", chapters.count());
 	return true;
 }
 
@@ -412,12 +449,15 @@ void MplayerProcess::convertTitlesToChapters() {
 }
 
 void MplayerProcess::checkTime(double sec) {
+	Q_UNUSED(sec)
 
 	// Keep duration in range. Adjust once a second as we go
-	if (sec > md->duration) {
-		corrected_duration = true;
-		notifyDuration(sec + 1);
-	}
+	// TODO: switch seek to relative to not generate eof on seek
+	// if (floor(sec) > qRound(md->duration)) {
+	//	qDebug("md start: %f md sec: %f sec: %f dur: %f",
+	//		   md->start_sec, md->time_sec, sec, md->duration);
+	//	notifyDuration(sec);
+	// }
 }
 
 int MplayerProcess::getFrame(double sec, const QString &line) {
@@ -440,16 +480,19 @@ void MplayerProcess::notifyChanges() {
 		video_tracks_changed = false;
 		qDebug("MplayerProcess::notifyChanges: emit videoTrackInfoChanged");
 		emit receivedVideoTrackInfo();
+		writeToStdin("get_property switch_video");
 	}
 	if (audio_tracks_changed) {
 		audio_tracks_changed = false;
 		qDebug("MplayerProcess::notifyChanges: emit audioTrackInfoChanged");
 		emit receivedAudioTrackInfo();
+		writeToStdin("get_property switch_audio");
 	}
-	if (subtitle_tracks_changed) {
-		subtitle_tracks_changed = false;
+	if (subtitles_changed) {
+		subtitles_changed = false;
 		qDebug("MplayerProcess::notifyChanges: emit receivedSubtitleTrackInfo");
 		emit receivedSubtitleTrackInfo();
+		getSelectedSub();
 	}
 	if (title_tracks_changed) {
 		title_tracks_changed = false;
@@ -485,7 +528,12 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 
 	// Reset the check duration timer
 	check_duration_time = time_sec;
-	check_duration_time_diff = 1;
+	if (md->detectedDisc()) {
+		// Don't check disc
+		check_duration_time_diff = 360000;
+	} else {
+		check_duration_time_diff = 1;
+	}
 
 	// Use duration from selected title if duration 0
 	if (md->duration == 0) {
@@ -499,7 +547,7 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	// Clear notifications
 	video_tracks_changed = false;
 	audio_tracks_changed = false;
-	subtitle_tracks_changed = false;
+	subtitles_changed = false;
 	title_tracks_changed = false;
 
 	// Get selected video, audio and subtitle tracks
@@ -523,6 +571,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_ao("^AO: \\[(.*)\\]");
 	static QRegExp rx_video_track("^ID_VID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_track("^ID_AID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
+	static QRegExp rx_audio_track_alt("^audio stream: \\d+ format: (.*) language: (.*) aid: (\\d+)");
 	static QRegExp rx_video_prop("^ID_VIDEO_([A-Z]+)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_prop("^ID_AUDIO_([A-Z]+)\\s*=\\s*(.*)");
 
@@ -538,12 +587,15 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// Audio/Video CD tracks
 	static QRegExp rx_cd_track("^ID_(CDDA|VCD)_TRACK_(\\d+)_MSF=(.*)");
-	// DVD/BLURAY titles
-	static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|CHAPTERS|ANGLES)=(.*)");
+	// DVD/BLURAY titles. Chapters not used.
+	//static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|CHAPTERS|ANGLES)=(.*)");
+	static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|ANGLES)=(.*)");
 	// Title chapters
 	static QRegExp rx_title_chapters("^CHAPTERS: (.*)");
 
 #if DVDNAV_SUPPORT
+	// Chapters for title
+	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
 	static QRegExp rx_dvdnav_switch_title("^DVDNAV, switched to title: (\\d+)");
 	static QRegExp rx_dvdnav_title_is_menu("^DVDNAV_TITLE_IS_MENU");
 	static QRegExp rx_dvdnav_title_is_movie("^DVDNAV_TITLE_IS_MOVIE");
@@ -561,7 +613,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_program("^PROGRAM_ID=(\\d+)");
 #endif
 
-	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file)");
+	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file|libdvdread:)");
 
 	static QRegExp rx_cache_empty("^Cache empty.*|^Cache not filling.*");
 	static QRegExp rx_create_index("^Generating Index:.*");
@@ -599,7 +651,8 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// VO driver and resolution after aspect and filters applied
 	if (rx_vo.indexIn(line) >= 0) {
-		return parseVO(rx_vo.cap(1), rx_vo.cap(2).toInt(), rx_vo.cap(3).toInt());
+		return parseVO(rx_vo.cap(1), rx_vo.cap(2).toInt(),
+					   rx_vo.cap(3).toInt());
 	}
 
 	// AO driver
@@ -623,6 +676,17 @@ bool MplayerProcess::parseLine(QString &line) {
 		bool changed = md->audios.updateTrack(rx_audio_track.cap(1).toInt(),
 											  rx_audio_track.cap(2),
 											  rx_audio_track.cap(3));
+		if (changed) audio_tracks_changed = true;
+		return changed;
+	}
+
+	// Audio track alt ID, lang and format
+	if (rx_audio_track_alt.indexIn(line) >= 0) {
+		int id = rx_audio_track_alt.cap(3).toInt();
+		bool selected = md->audios.getSelectedID() == id;
+		bool changed = md->audios.updateTrack(id, rx_audio_track_alt.cap(2),
+											  rx_audio_track_alt.cap(1),
+											  selected);
 		if (changed) audio_tracks_changed = true;
 		return changed;
 	}
@@ -684,19 +748,33 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	// DVD/Bluray title chapters
 	if (rx_title_chapters.indexIn(line) >= 0) {
-		return parseTitleChapters(rx_title_chapters.cap(1));
+		return parseTitleChapters(md->chapters, rx_title_chapters.cap(1));
 	}
 
 #if DVDNAV_SUPPORT
-	if (rx_dvdnav_switch_title.indexIn(line) >= 0) {
-		md->detected_type = MediaData::TYPE_DVDNAV;
-		notifyTitleTrackChanged(rx_dvdnav_switch_title.cap(1).toInt());
-		return true;
+	if (rx_dvdnav_chapters.indexIn(line) >= 0) {
+		int title = rx_dvdnav_chapters.cap(1).toInt();
+		if (md->titles.contains(title))
+			return parseTitleChapters(md->titles[title].chapters,
+									  rx_dvdnav_chapters.cap(2));
+		qWarning("MplayerProcess::parseLine: unexpected title %d", title);
+		return false;
 	}
+
+	if (rx_dvdnav_switch_title.indexIn(line) >= 0) {
+		return titleChanged(MediaData::TYPE_DVDNAV,
+							 rx_dvdnav_switch_title.cap(1).toInt());
+	}
+
 	if (rx_dvdnav_title_is_menu.indexIn(line) >= 0) {
+		qDebug("MplayerProcess::parseLine: title is menu");
+		// Length menu can differ from title
+		if (notified_player_is_running)
+			writeToStdin("get_property length");
 		emit receivedTitleIsMenu();
 		return true;
 	}
+
 	if (rx_dvdnav_title_is_movie.indexIn(line) >= 0) {
 		emit receivedTitleIsMovie();
 		return true;
@@ -762,10 +840,6 @@ bool MplayerProcess::parseLine(QString &line) {
 	*/
 
 	// Catch cache messages
-	if (rx_message.indexIn(line) >= 0) {
-		emit receivedMessage(line);
-		return true;
-	}
 	if (rx_cache_empty.indexIn(line) >= 0) {
 		emit receivedCacheEmptyMessage(line);
 		return true;
@@ -800,6 +874,12 @@ bool MplayerProcess::parseLine(QString &line) {
 	if (rx_meta_data.indexIn(line) >= 0) {
 		return parseMetaDataProperty(rx_meta_data.cap(1),
 									 rx_meta_data.cap(2));
+	}
+
+	// Messages to display
+	if (rx_message.indexIn(line) >= 0) {
+		emit receivedMessage(line);
+		return true;
 	}
 
 	return false;

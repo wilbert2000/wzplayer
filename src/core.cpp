@@ -201,6 +201,9 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(receivedTitleTrackChanged(int)),
 			 this, SIGNAL(titleTrackChanged(int)));
 
+	connect( proc, SIGNAL(receivedChapterInfo()),
+			 this, SIGNAL(chapterInfoChanged()));
+
 	connect( proc, SIGNAL(durationChanged(double)),
 			 this, SIGNAL(newDuration(double)));
 

@@ -101,8 +101,6 @@ bool TTracks::updateTrack(int id, const QString &field, const QString &value) {
 	return changed;
 }
 
-
-// updateTrack used by MPV
 bool TTracks::updateTrack(int ID, const QString &lang, const QString &name, bool selected) {
 
 	bool changed = false;

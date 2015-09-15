@@ -168,6 +168,8 @@ signals:
 	void receivedTitleTrackInfo();
 	void receivedTitleTrackChanged(int);
 
+	void receivedChapterInfo();
+
 	void durationChanged(double);
 
 #if DVDNAV_SUPPORT

@@ -450,6 +450,7 @@ signals:
 	void subtitleTrackChanged(int);
 	void titleTrackInfoChanged();
 	void titleTrackChanged(int);
+	void chapterInfoChanged();
 	void chapterChanged(int);
 
 

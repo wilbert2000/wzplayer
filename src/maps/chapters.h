@@ -32,10 +32,6 @@ public:
 	TChapterData();
 	~TChapterData() {}
 
-	QString name;
-	double start;
-	double end;
-
 	void setName( const QString & n ) { name = n; }
 	void setStart( double aStart ) { start = aStart; }
 	void setEnd( double aEnd ) { end = aEnd; }
@@ -45,7 +41,10 @@ public:
 	double getEnd() const { return end; }
 	QString getDisplayName() const;
 
-// protected:
+protected:
+	QString name;
+	double start;
+	double end;
 };
 
 class TChapters : public TMap<TChapterData> {

@@ -22,6 +22,7 @@
 #include <QMap>
 #include "helper.h"
 #include "map.h"
+#include "chapters.h"
 
 /* Class to store info about Cd tracks and DVD titles */
 
@@ -33,9 +34,10 @@ public:
 	TTitleData();
 	~TTitleData() {}
 
+	TChapters chapters;
+
 	void setName( const QString & aName ) { name = aName; }
 	void setDuration( double d ) { duration = d; }
-	void setChapters( int n ) { chapters = n; }
 	void setAngles( int n ) { angles = n; }
 	void setType( bool aTrack ) { isTrack = aTrack; }
 	void setTrack(int id, const QString &aName, double aDuration) {
@@ -47,7 +49,6 @@ public:
 
 	QString getName() const { return name; }
 	double getDuration() const { return duration; }
-	int getChapters() const { return chapters; }
 	int getAngles() const { return angles; }
 
 	QString getDisplayName(bool add_duration = true) const;
@@ -55,7 +56,6 @@ public:
 protected:
 	QString name;
 	double duration;
-	int chapters;
 	int angles;
 	bool isTrack;
 };
