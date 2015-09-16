@@ -86,8 +86,7 @@ bool MplayerProcess::parseVideoProperty(const QString &name, const QString &valu
 		int id = value.toInt();
 		if (md->videos.contains(id)) {
 			qDebug("parseVideoProperty: found video track id %d", id);
-			if (notified_player_is_running)
-				writeToStdin("get_property switch_video");
+			get_selected_video_track = true;
 		} else {
 			md->videos.addID(id);
 			video_tracks_changed = true;
@@ -106,8 +105,7 @@ bool MplayerProcess::parseAudioProperty(const QString &name, const QString &valu
 		int id = value.toInt();
 		if (md->audios.contains(id)) {
 			qDebug("parseAudioProperty: found audio track id %d", id);
-			if (notified_player_is_running)
-				writeToStdin("get_property switch_audio");
+			get_selected_audio_track = true;
 		} else {
 			md->audios.addID(id);
 			audio_tracks_changed = true;
@@ -145,8 +143,7 @@ bool MplayerProcess::parseSubID(const QString &type, int id) {
 	} else {
 		qDebug() << "MplayerProcess::parseSubID: found subtitle id"
 				 << id << "type" << type;
-		if (notified_player_is_running)
-			getSelectedSub();
+		get_selected_sub = true;
 	}
 
 	return true;
@@ -491,18 +488,30 @@ void MplayerProcess::notifyChanges() {
 		video_tracks_changed = false;
 		qDebug("MplayerProcess::notifyChanges: emit videoTrackInfoChanged");
 		emit receivedVideoTrackInfo();
+		get_selected_video_track = true;
+	}
+	if (get_selected_video_track) {
+		get_selected_video_track = false;
 		writeToStdin("get_property switch_video");
 	}
 	if (audio_tracks_changed) {
 		audio_tracks_changed = false;
 		qDebug("MplayerProcess::notifyChanges: emit audioTrackInfoChanged");
 		emit receivedAudioTrackInfo();
+		get_selected_audio_track = true;
+	}
+	if (get_selected_audio_track) {
+		get_selected_audio_track = false;
 		writeToStdin("get_property switch_audio");
 	}
 	if (subtitles_changed) {
 		subtitles_changed = false;
 		qDebug("MplayerProcess::notifyChanges: emit receivedSubtitleTrackInfo");
 		emit receivedSubtitleTrackInfo();
+		get_selected_sub = true;
+	}
+	if (get_selected_sub) {
+		get_selected_sub = false;
 		getSelectedSub();
 	}
 }
@@ -532,6 +541,14 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	// First and only run of state playing
 	want_pause = false;
 
+	// Clear notifications
+	video_tracks_changed = false;
+	audio_tracks_changed = false;
+	subtitles_changed = false;
+	get_selected_video_track = false;
+	get_selected_audio_track = false;
+	get_selected_sub = false;
+
 	// Reset the check duration timer
 	check_duration_time = time_sec;
 	if (md->detectedDisc()) {
@@ -553,11 +570,6 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 		// See if the duration is known by now
 		writeToStdin("get_property length");
 	}
-
-	// Clear notifications
-	video_tracks_changed = false;
-	audio_tracks_changed = false;
-	subtitles_changed = false;
 
 	// Get selected video, audio and subtitle tracks
 	getSelectedTracks();
