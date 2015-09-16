@@ -380,8 +380,11 @@ protected slots:
 	//! the resolution is HD
 	void checkIfVideoIsHD();
 
-	void gotSubtitleTrackInfo();
-	void gotSubtitleTrackChanged();
+	void gotAudioTrackInfo();
+	void gotAudioTrackChanged(int id);
+
+	void gotSubtitleInfo();
+	void gotSubtitleChanged();
 
 #if DVDNAV_SUPPORT
 	void dvdnavUpdateMousePos(QPoint);
@@ -514,9 +517,9 @@ private:
 	void getZoomFromMplayerWindow();
 	void getPanFromMplayerWindow();
 	void pan(int dx, int dy);
-	void initAudioTracks();
 	void initSubs();
 	void setExternalSubs(const QString &filename);
+	bool setPreferredAudio();
 };
 
 #endif

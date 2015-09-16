@@ -150,21 +150,30 @@ bool TTracks::updateTrack(int ID, const QString &lang, const QString &name, bool
 	return changed;
 }
 
+// Select a track matching expr if only one track matches
 int TTracks::findLangID(QString expr) const {
 	qDebug("Maps::Tracks::findLang: '%s'", expr.toUtf8().data());
 
+	int id = -1;
 	QRegExp rx( expr );
 	TMapIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
 		TTrackData track = i.value();
 		if (rx.indexIn(track.getLang()) >= 0) {
-			qDebug("Maps::Tracks::findLangID: found preferred lang!");
-			return track.getID();
+			if (id != -1) {
+				// For complex formats it is not save to select just a track,
+				// it can disable audio
+				qDebug("Maps::Tracks::findLang: found multiple matching tracks, canceling selection");
+				return -1;
+			}
+			qDebug() << "Maps::Tracks::findLangID: found preferred lang" << track.getLang()
+					 << "matching" << expr;
+			id = track.getID();
 		}
 	}
 
-	return -1;
+	return id;
 }
 
 void TTracks::list() const {

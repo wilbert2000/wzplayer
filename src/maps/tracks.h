@@ -74,9 +74,10 @@ public:
 
 	// For mplayer
 	bool updateTrack(int id, const QString &field, const QString &value);
-	// For mpv
+	// For both
 	bool updateTrack(int ID, const QString &lang, const QString &name, bool selected);
 
+	// Select a track matching expr if only one track matches
 	int findLangID(QString expr) const;
 };
 

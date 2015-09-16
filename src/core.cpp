@@ -99,36 +99,32 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(error(QProcess::ProcessError)),
 			 this, SLOT(processError(QProcess::ProcessError)) );
 
-	connect( proc, SIGNAL(receivedVideoOutResolution(int,int)),
-			 this, SLOT(gotVideoOutResolution(int,int)) );
+	connect( proc, SIGNAL(processExited(bool)),
+			 this, SLOT(processFinished(bool)));
+
+	connect( proc, SIGNAL(playerFullyLoaded()),
+			 this, SLOT(playingStarted()) );
 
 	connect( proc, SIGNAL(receivedCurrentSec(double)),
 			 this, SLOT(gotCurrentSec(double)) );
 
 	connect( proc, SIGNAL(receivedCurrentFrame(int)),
-             this, SIGNAL(showFrame(int)) );
-
-	connect( proc, SIGNAL(playerFullyLoaded()),
-			 this, SLOT(playingStarted()) );
+			 this, SIGNAL(showFrame(int)) );
 
 	connect( proc, SIGNAL(receivedPause()),
 			 this, SLOT(gotPause()) );
-
-	connect( proc, SIGNAL(processExited(bool)),
-			 this, SLOT(processFinished(bool)));
-
-
-	connect( proc, SIGNAL(lineAvailable(QString)),
-             this, SIGNAL(logLineAvailable(QString)) );
-
-	connect( proc, SIGNAL(receivedMessage(QString)),
-			 this, SLOT(displayMessage(QString)) );
 
 	connect( proc, SIGNAL(receivedBuffering()),
 			 this, SIGNAL(buffering()));
 
 	connect( proc, SIGNAL(receivedBufferingEnded()),
 			 this, SLOT(displayBufferingEnded()));
+
+	connect( proc, SIGNAL(lineAvailable(QString)),
+             this, SIGNAL(logLineAvailable(QString)) );
+
+	connect( proc, SIGNAL(receivedMessage(QString)),
+			 this, SLOT(displayMessage(QString)) );
 
 	connect( proc, SIGNAL(receivedCacheEmptyMessage(QString)),
 			 this, SIGNAL(buffering()));
@@ -157,6 +153,9 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(receivedUpdatingFontCache()),
              this, SLOT(displayUpdatingFontCache()) );
 
+	connect( proc, SIGNAL(receivedVideoOutResolution(int,int)),
+			 this, SLOT(gotVideoOutResolution(int,int)) );
+
 	connect( proc, SIGNAL(receivedVO(QString)),
              this, SLOT(gotVO(QString)) );
 
@@ -183,14 +182,14 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 			 this, SIGNAL(videoTrackChanged(int)));
 
 	connect( proc, SIGNAL(receivedAudioTrackInfo()),
-			 this, SIGNAL(audioTrackInfoChanged()));
+			 this, SLOT(gotAudioTrackInfo()));
 	connect( proc, SIGNAL(receivedAudioTrackChanged(int)),
-			 this, SIGNAL(audioTrackChanged(int)));
+			 this, SLOT(gotAudioTrackChanged(int)));
 
 	connect( proc, SIGNAL(receivedSubtitleTrackInfo()),
-			 this, SLOT(gotSubtitleTrackInfo()));
+			 this, SLOT(gotSubtitleInfo()));
 	connect( proc, SIGNAL(receivedSubtitleTrackChanged()),
-			 this, SLOT(gotSubtitleTrackChanged()));
+			 this, SLOT(gotSubtitleChanged()));
 
 	connect( proc, SIGNAL(receivedTitleTrackInfo()),
 			 this, SIGNAL(titleTrackInfoChanged()));
@@ -820,27 +819,6 @@ void Core::initPlaying(int seek) {
 }
 
 // Called by newMediaPlaying
-void Core::initAudioTracks() {
-	qDebug("Core::initAudioTracks");
-
-	// Check if one of the audio tracks matches the users preferred language.
-	// TODO: Selected audio is no longer waited for by mplayer
-	// This will disable audio when:
-	// Track 0: sound track, no language, starting at 0
-	// Track 1: speach, language english, starting at 5 min
-	// Track 2: speach, language german, starting at 5 min
-	// For now disabled
-	/*
-	if (mdat.audios.count() > 0 && !pref->audio_lang.isEmpty()) {
-		int wanted_id = mdat.audios.findLangID(pref->audio_lang);
-		if (wanted_id >= 0 && wanted_id != mdat.audios.selectedID()) {
-			changeAudioTrack(wanted_id, false); // Don't allow restart
-		}
-	}
-	*/
-}
-
-// Called by newMediaPlaying
 void Core::initSubs() {
 	qDebug("Core::initSubs");
 
@@ -890,7 +868,6 @@ void Core::newMediaPlaying() {
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
 
-	initAudioTracks();
 	initSubs();
 
 	qDebug("Core::newMediaPlaying: emit mediaStartPlay()");
@@ -3798,8 +3775,58 @@ void Core::checkIfVideoIsHD() {
 	}
 }
 
-void Core::gotSubtitleTrackInfo() {
-	qDebug("Core::gotSubtitleTrackInfo");
+bool Core::setPreferredAudio() {
+	qDebug("Core::setPreferredAudio");
+
+	mset.preferred_language_audio_set = true;
+
+	if (!pref->audio_lang.isEmpty()) {
+		int wanted_id = mdat.audios.findLangID(pref->audio_lang);
+		if (wanted_id >= 0 && wanted_id != mdat.audios.getSelectedID()) {
+			mset.current_audio_id = MediaSettings::NoneSelected;
+			changeAudioTrack(wanted_id, false); // Don't allow restart
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Core::gotAudioTrackInfo() {
+	qDebug("Core::gotAudioTrackInfo");
+
+	// First update the tracks, so a possible track change will arrive
+	// on defined actions
+	emit audioTrackInfoChanged();
+
+	// Check if one of the audio tracks matches the preferred language.
+	// If there is no audio selected, we have to wait for the audio to be
+	// selected and set the preferred language in gotAudioTrackChanged()
+	if (mdat.audios.getSelectedID() >= 0) {
+		setPreferredAudio();
+	} else {
+		// Let gotAudioTrackChanged() have a look at it
+		mset.preferred_language_audio_set = false;
+	}
+
+}
+
+void Core::gotAudioTrackChanged(int id) {
+	qDebug("Core::gotAudioTrackChanged: id %d", id);
+
+	// Check if one of the audio tracks matches the preferred language.
+	if (!mset.preferred_language_audio_set && mdat.audios.count() > 0) {
+		if (setPreferredAudio()) {
+			// audioTrackChanged() already emitted, so return
+			return;
+		}
+	}
+
+	emit audioTrackChanged(id);
+}
+
+void Core::gotSubtitleInfo() {
+	qDebug("Core::gotSubtitleInfo");
 
 	// Need to set current_sub_idx, the subtitle group checks on it.
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
@@ -3807,8 +3834,8 @@ void Core::gotSubtitleTrackInfo() {
 }
 
 // Called when player changed subtitle track
-void Core::gotSubtitleTrackChanged() {
-	qDebug("Core::gotSubtitleTrackChanged");
+void Core::gotSubtitleChanged() {
+	qDebug("Core::gotSubtitleChanged");
 
 	// Need to set current_sub_idx, the subtitle group checks on it.
 	int selected_idx = mdat.subs.findSelectedIdx();

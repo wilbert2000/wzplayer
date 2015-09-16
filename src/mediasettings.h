@@ -66,13 +66,13 @@ public:
 	int current_video_id;
 	int current_audio_id;
 	QString external_audio; // external audio file
+	bool preferred_language_audio_set;
+
 	int current_sub_idx;
 	bool current_sub_set_by_user;
-
 	// Only used for loading settings for local files
 	// and external subs during restart
 	SubData sub;
-
 	int external_subtitles_fps;
 
 #ifdef MPV_SUPPORT
