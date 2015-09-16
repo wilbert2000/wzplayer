@@ -276,7 +276,12 @@ void MPVProcess::checkTime(double sec) {
 
 bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 
-	md->detected_type = md->stringToType(disc_type);
+	// MPV uses dvdnav to play DVDs, but without support for menus
+	if (disc_type == "dvdnav") {
+		md->detected_type = MediaData::TYPE_DVD;
+	} else {
+		md->detected_type = md->stringToType(disc_type);
+	}
 
 	// Due to caching it still can take a while before the previous title
 	// really ends, so store the title and the time to swicth and let
