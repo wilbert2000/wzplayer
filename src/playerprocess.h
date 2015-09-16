@@ -43,7 +43,7 @@ public:
 
 	virtual bool startPlayer();
 
-	void writeToStdin(QString text);
+	void writeToStdin(QString text, bool log = true);
 
 	// Command line options
 	virtual void setMedia(const QString & media, bool is_playlist = false) = 0;

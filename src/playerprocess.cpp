@@ -52,8 +52,10 @@ PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata)
 			 this, SLOT(parseBytes(QByteArray)) );
 }
 
-void PlayerProcess::writeToStdin(QString text) {
-	qDebug("PlayerProcess::writeToStdin: %s", text.toUtf8().constData());
+void PlayerProcess::writeToStdin(QString text, bool log) {
+
+	if (log)
+		qDebug("PlayerProcess::writeToStdin: %s", text.toUtf8().constData());
 
 	if (isRunning()) {
 		#ifdef Q_OS_WIN
