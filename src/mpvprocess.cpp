@@ -753,6 +753,10 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 		arg << "--no-sub-ass";
 	}
 	else
+	if (option_name == "nosub") {
+		arg << "--no-sub";
+	}
+	else
 	if (option_name == "sub-fuzziness") {
 		QString v;
 		switch (value.toInt()) {

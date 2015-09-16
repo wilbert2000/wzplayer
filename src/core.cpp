@@ -596,6 +596,7 @@ void Core::disableScreensaver() {
 
 void Core::setExternalSubs(const QString &filename) {
 
+	mset.current_sub_set_by_user = true;
 	mset.current_sub_idx = MediaSettings::NoneSelected;
 	mset.sub.setID(MediaSettings::NoneSelected);
 	mset.sub.setType(SubData::File);
@@ -631,6 +632,7 @@ bool Core::haveExternalSubs() {
 
 void Core::unloadSub() {
 
+	mset.current_sub_set_by_user = false;
 	mset.current_sub_idx = MediaSettings::NoneSelected;
 	mset.sub = SubData();
 
@@ -1483,11 +1485,13 @@ void Core::startPlayer( QString file, double seek ) {
 	if (!initial_subtitle.isEmpty()) {
 		setExternalSubs(initial_subtitle);
 		initial_subtitle = "";
-	} else if (mset.current_sub_idx >= 0) {
+	} else if (mset.current_sub_set_by_user) {
 		// Selected sub when restarting
-		// TODO: keep flag whether subs were selected by user and only
-		// pass options if so
-		mset.sub = mdat.subs.itemAt(mset.current_sub_idx);
+		if (mset.current_sub_idx >= 0) {
+			mset.sub = mdat.subs.itemAt(mset.current_sub_idx);
+		} else {
+			proc->setOption("nosub");
+		}
 	}
 
 	if (mset.sub.type() == SubData::Vob) {
@@ -3087,6 +3091,8 @@ void Core::nextAudioTrack() {
 // Note: changeSubtitle is by index, not ID
 void Core::changeSubtitleTrack(int idx) {
 	qDebug("Core::changeSubtitle: idx %d", idx);
+
+	mset.current_sub_set_by_user = true;
 
 	if (idx >= 0 && idx < mdat.subs.count()) {
 		mset.current_sub_idx = idx;

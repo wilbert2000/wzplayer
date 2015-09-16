@@ -43,6 +43,7 @@ void MediaSettings::reset() {
 	current_audio_id = NoneSelected;
 	external_audio = "";
 	current_sub_idx = NoneSelected;
+	current_sub_set_by_user = false;
 
 	// Only used for loading settings for local files
 	// and external subs during restart
@@ -206,6 +207,7 @@ void MediaSettings::list() {
 	qDebug("  current_video_id: %d", current_video_id);
 	qDebug("  current_audio_id: %d", current_audio_id);
 	qDebug("  current_sub_idx: %d", current_sub_idx);
+	qDebug("  current_sub_set_by_user: %d", current_sub_set_by_user);
 	qDebug("  external_subtitles: '%s'", sub.filename().toUtf8().data());
 	qDebug("  external_subtitles_fps: '%d'", external_subtitles_fps);
 
@@ -351,9 +353,12 @@ void MediaSettings::save(QSettings * set, int player_id) {
 	// Used to be in demux group as index "current_sub_id"
 	// Player group is compromise between the needs of
 	// internal and external subs
-	SubData sub = md->subs.itemAt(current_sub_idx);
-	set->setValue("sub_type", sub.type());
-	set->setValue("sub_id", sub.ID());
+	if (current_sub_set_by_user) {
+		set->setValue("current_sub_set_by_user", true);
+		SubData sub = md->subs.itemAt(current_sub_idx);
+		set->setValue("sub_type", sub.type());
+		set->setValue("sub_id", sub.ID());
+	}
 
 	// Used to be outside player group as "external_subtitles"
 	set->setValue("sub_filename", sub.filename());
@@ -454,20 +459,6 @@ void MediaSettings::convertOldSelectedTrack(int &id) {
 	}
 }
 
-void MediaSettings::convertOldSelectedSub(int idx, SubData &sub) {
-
-	const int oldSubNone = 90000;
-
-	if (idx == oldSubNone) {
-		sub.setID(SubNone);
-	} else if (idx >= 0) {
-		qWarning("MediaSettings::convertOldSelectedSub: converted old config");
-		sub.setType(SubData::Sub);
-		sub.setID(idx);
-	}
-}
-
-
 void MediaSettings::load(QSettings * set, int player_id) {
 	qDebug("MediaSettings::load");
 
@@ -500,9 +491,6 @@ void MediaSettings::load(QSettings * set, int player_id) {
 	current_audio_id = set->value( "current_audio_id", NoneSelected ).toInt();
 	convertOldSelectedTrack(current_audio_id);
 
-	// Old config
-	current_sub_idx = set->value( "current_sub_id", NoneSelected ).toInt();
-
 #ifdef MPV_SUPPORT
 	current_secondary_sub_idx = set->value( "current_secondary_sub_id", NoneSelected ).toInt();
 #endif
@@ -513,8 +501,8 @@ void MediaSettings::load(QSettings * set, int player_id) {
 
 	set->endGroup();
 
-	convertOldSelectedSub(current_sub_idx, sub);
 	current_sub_idx = NoneSelected;
+	current_sub_set_by_user = set->value( "current_sub_set_by_user", false).toBool();
 	sub.setType((SubData::Type) set->value( "sub_type", sub.type()).toInt());
 	sub.setID(set->value("sub_id", sub.ID()).toInt());
 	sub.setFilename(set->value("sub_filename", sub.filename()).toString());

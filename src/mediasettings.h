@@ -67,6 +67,7 @@ public:
 	int current_audio_id;
 	QString external_audio; // external audio file
 	int current_sub_idx;
+	bool current_sub_set_by_user;
 
 	// Only used for loading settings for local files
 	// and external subs during restart
@@ -195,7 +196,6 @@ public:
 private:
 	MediaData* md;
 	void convertOldSelectedTrack(int &id);
-	void convertOldSelectedSub(int idx, SubData &sub);
 };
 
 #endif
