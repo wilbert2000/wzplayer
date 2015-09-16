@@ -770,7 +770,7 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 		arg << "--sub-delay=" + value.toString();
 	}
 	else
-	if (option_name == "sub_demux" || option_name == "sub_file") {
+	if (option_name == "sid") {
 		arg << "--sid=" + value.toString();
 	}
 	else
