@@ -190,10 +190,7 @@ void Preferences::reset() {
 
 	vcd_initial_title = 2; // Most VCD's start at title #2
 
-#if DVDNAV_SUPPORT
-	use_dvdnav = false;
-#endif
-
+	use_dvdnav = true;
 
     /* ***********
        Performance
@@ -354,11 +351,7 @@ void Preferences::reset() {
 	style="";
 #endif
 
-#if DVDNAV_SUPPORT
 	mouse_left_click_function = "dvdnav_mouse";
-#else
-	mouse_left_click_function = "";
-#endif
 	mouse_right_click_function = "show_context_menu";
 	mouse_double_click_function = "fullscreen";
 	mouse_middle_click_function = "mute";
@@ -663,9 +656,7 @@ void Preferences::save() {
 
 	set->setValue("vcd_initial_title", vcd_initial_title);
 
-#if DVDNAV_SUPPORT
 	set->setValue("use_dvdnav", use_dvdnav);
-#endif
 
 	set->endGroup(); // drives
 
@@ -1174,9 +1165,7 @@ void Preferences::load() {
 
 	vcd_initial_title = set->value("vcd_initial_title", vcd_initial_title ).toInt();
 
-#if DVDNAV_SUPPORT
 	use_dvdnav = set->value("use_dvdnav", use_dvdnav).toBool();
-#endif
 
 	set->endGroup(); // drives
 

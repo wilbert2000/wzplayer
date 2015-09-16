@@ -79,13 +79,6 @@
 #define USE_MINIMUMSIZE 1
 
 
-// DVDNAV_SUPPORT
-// if 1, smplayer will be compiled with support for mplayer's dvdnav
-#ifdef MPLAYER_SUPPORT
-#define DVDNAV_SUPPORT 1
-#endif
-
-
 // PROGRAM_SWITCH
 // support for program switch in ts files
 

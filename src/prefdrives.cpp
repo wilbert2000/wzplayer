@@ -47,10 +47,6 @@ PrefDrives::PrefDrives(QWidget * parent, Qt::WindowFlags f)
 {
 	setupUi(this);
 
-#if !DVDNAV_SUPPORT
-	use_dvdnav_check->hide();
-#endif
-
 #ifndef Q_OS_WIN
 	check_drives_button->hide();
 #endif
@@ -133,10 +129,7 @@ void PrefDrives::setData(Preferences * pref) {
 	setDVDDevice( pref->dvd_device );
 	setCDRomDevice( pref->cdrom_device );
 	setBlurayDevice( pref->bluray_device );
-
-#if DVDNAV_SUPPORT
 	setUseDVDNav( pref->use_dvdnav );
-#endif
 }
 
 void PrefDrives::getData(Preferences * pref) {
@@ -145,10 +138,7 @@ void PrefDrives::getData(Preferences * pref) {
 	pref->dvd_device = dvdDevice();
 	pref->cdrom_device = cdromDevice();
 	pref->bluray_device = blurayDevice();
-
-#if DVDNAV_SUPPORT
 	pref->use_dvdnav = useDVDNav();
-#endif
 }
 
 void PrefDrives::setDVDDevice( QString dir ) {
@@ -175,7 +165,6 @@ QString PrefDrives::cdromDevice() {
 	return cdrom_device_combo->currentText();
 }
 
-#if DVDNAV_SUPPORT
 void PrefDrives::setUseDVDNav(bool b) {
 	use_dvdnav_check->setChecked(b);
 }
@@ -183,7 +172,6 @@ void PrefDrives::setUseDVDNav(bool b) {
 bool PrefDrives::useDVDNav() {
 	return use_dvdnav_check->isChecked();
 }
-#endif
 
 void PrefDrives::on_check_drives_button_clicked() {
 	qDebug("PrefDrives::on_check_drives_button_clicked");
@@ -200,7 +188,6 @@ void PrefDrives::createHelp() {
 	setWhatsThis(dvd_device_combo, tr("DVD device"),
 		tr("Choose your DVD device. It will be used to play DVDs.") );
 
-#if DVDNAV_SUPPORT
 	setWhatsThis(use_dvdnav_check, tr("Enable DVD menus"),
 		tr("If this option is checked, SMPlayer will play DVDs using "
            "dvdnav. Requires a recent version of MPlayer compiled with dvdnav "
@@ -210,7 +197,6 @@ void PrefDrives::createHelp() {
            "\"activate option in DVD menus\" to one of the mouse buttons.") + "<br>"+
         tr("<b>Note 3</b>: this feature is under development, expect a lot of "
            "issues with it."));
-#endif
 
 	setWhatsThis(bluray_device_combo, tr("Blu-ray device"),
 		tr("Choose your Blu-ray device. It will be used to play Blu-ray discs.") );

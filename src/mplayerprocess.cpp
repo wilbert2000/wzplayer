@@ -628,13 +628,11 @@ bool MplayerProcess::parseLine(QString &line) {
 	// DVD/BLURAY chapters
 	static QRegExp rx_title_chapters("^CHAPTERS: (.*)");
 
-#if DVDNAV_SUPPORT
-	// DVDNAV chapters for title
+	// DVDNAV chapters for every title
 	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
 	static QRegExp rx_dvdnav_switch_title("^DVDNAV, switched to title: (\\d+)");
 	static QRegExp rx_dvdnav_title_is_menu("^DVDNAV_TITLE_IS_MENU");
 	static QRegExp rx_dvdnav_title_is_movie("^DVDNAV_TITLE_IS_MOVIE");
-#endif
 
 	// Stream title and url
 	static QRegExp rx_stream_title("^.*StreamTitle='(.*)';");
@@ -792,7 +790,6 @@ bool MplayerProcess::parseLine(QString &line) {
 	}
 
 	// DVDNAV
-#if DVDNAV_SUPPORT
 	if (rx_dvdnav_chapters.indexIn(line) >= 0) {
 		int title = rx_dvdnav_chapters.cap(1).toInt();
 		if (md->titles.contains(title))
@@ -801,12 +798,10 @@ bool MplayerProcess::parseLine(QString &line) {
 		qWarning("MplayerProcess::parseLine: unexpected title %d", title);
 		return false;
 	}
-
 	if (rx_dvdnav_switch_title.indexIn(line) >= 0) {
 		return titleChanged(MediaData::TYPE_DVDNAV,
 							rx_dvdnav_switch_title.cap(1).toInt());
 	}
-
 	if (rx_dvdnav_title_is_menu.indexIn(line) >= 0) {
 		qDebug("MplayerProcess::parseLine: title is menu");
 		md->title_is_menu = true;
@@ -817,24 +812,21 @@ bool MplayerProcess::parseLine(QString &line) {
 		emit receivedTitleIsMenu();
 		return true;
 	}
-
 	if (line == "Failed to get value of property 'length'.") {
 		if (md->title_is_menu) {
-			qDebug("MplayerProcess::parseLine: this menu has no length");
+			qDebug("MplayerProcess::parseLine: this menu has no length, cleaning time");
 			clearTime();
 			notifyDuration(0);
 			return true;
 		}
 		return false;
 	}
-
 	if (rx_dvdnav_title_is_movie.indexIn(line) >= 0) {
 		qDebug("MplayerProcess::parseLine: title is movie");
 		md->title_is_menu = false;
 		emit receivedTitleIsMovie();
 		return true;
 	}
-#endif
 
 	// Stream title
 	if (rx_stream_title_and_url.indexIn(line) >= 0) {
@@ -1289,7 +1281,6 @@ void MplayerProcess::setTitle(int ID) {
 	writeToStdin("switch_title " + QString::number(ID));
 }
 
-#if DVDNAV_SUPPORT
 void MplayerProcess::discSetMousePos(int x, int y) {
 	writeToStdin(QString("set_mouse_pos %1 %2").arg(x).arg(y), false);
 }
@@ -1297,7 +1288,6 @@ void MplayerProcess::discSetMousePos(int x, int y) {
 void MplayerProcess::discButtonPressed(const QString & button_name) {
 	writeToStdin("dvdnav " + button_name);
 }
-#endif
 
 void MplayerProcess::setAspect(double aspect) {
 	writeToStdin("switch_ratio " + QString::number(aspect));

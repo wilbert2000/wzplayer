@@ -711,7 +711,6 @@ protected:
 	MyActionGroup * angleGroup;
 	MyActionGroup * chapterGroup;
 
-#if DVDNAV_SUPPORT
 	MyAction * dvdnavUpAct;
 	MyAction * dvdnavDownAct;
 	MyAction * dvdnavLeftAct;
@@ -720,7 +719,6 @@ protected:
 	MyAction * dvdnavSelectAct;
 	MyAction * dvdnavPrevAct;
 	MyAction * dvdnavMouseAct;
-#endif
 
 	// MENUS
 	QMenu *openMenu;

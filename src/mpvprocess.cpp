@@ -1297,7 +1297,6 @@ void MPVProcess::setTitle(int ID) {
 	writeToStdin("set disc-title " + QString::number(ID));
 }
 
-#if DVDNAV_SUPPORT
 void MPVProcess::discSetMousePos(int x, int y) {
 	Q_UNUSED(x)
 	Q_UNUSED(y)
@@ -1319,7 +1318,6 @@ void MPVProcess::discSetMousePos(int x, int y) {
 void MPVProcess::discButtonPressed(const QString & button_name) {
 	writeToStdin("discnav " + button_name);
 }
-#endif
 
 void MPVProcess::setAspect(double aspect) {
 	writeToStdin("set video-aspect " + QString::number(aspect));

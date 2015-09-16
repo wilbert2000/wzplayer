@@ -88,10 +88,10 @@ public:
 	void setTitle(int ID);
 	void changeVF(const QString & filter, bool enable, const QVariant & option = QVariant());
 	void changeStereo3DFilter(bool enable, const QString & in, const QString & out);
-#if DVDNAV_SUPPORT
+
 	void discSetMousePos(int x, int y);
 	void discButtonPressed(const QString & button_name);
-#endif
+
 	void setAspect(double aspect);
 	void setFullscreen(bool b);
 #if PROGRAM_SWITCH

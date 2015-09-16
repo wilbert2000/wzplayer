@@ -319,7 +319,6 @@ public slots:
 	void prevClosedCaptionChannel();
 	*/
 
-#if DVDNAV_SUPPORT
 	// dvdnav buttons
 	void dvdnavUp();
 	void dvdnavDown();
@@ -329,7 +328,6 @@ public slots:
 	void dvdnavSelect();
 	void dvdnavPrev();
 	void dvdnavMouse();
-#endif
 
 	//! Change fullscreen when using the player own window
 	void changeFullscreenMode(bool b);
@@ -386,9 +384,7 @@ protected slots:
 	void gotSubtitleInfo();
 	void gotSubtitleChanged();
 
-#if DVDNAV_SUPPORT
 	void dvdnavUpdateMousePos(QPoint);
-#endif
 
 #ifdef YOUTUBE_SUPPORT
 	void connectingToYT(QString host);

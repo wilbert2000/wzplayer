@@ -214,11 +214,8 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	// Mplayerwindow
 	connect( this, SIGNAL(aboutToStartPlaying()),
 			 mplayerwindow, SLOT(aboutToStartPlaying()) );
-
-#if DVDNAV_SUPPORT
 	connect( mplayerwindow, SIGNAL(mouseMoved(QPoint)),
 			 this, SLOT(dvdnavUpdateMousePos(QPoint)) );
-#endif
 
 #if REPAINT_BACKGROUND_OPTION
 	mplayerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
@@ -526,12 +523,9 @@ void Core::open(QString file, int seek, bool fast_open) {
 			qDebug("Core::open:   checking if it contains a dvd");
 			if (Helper::directoryContainsDVD(file)) {
 				qDebug("Core::open: * directory contains a dvd");
-	#if DVDNAV_SUPPORT
 				open(DiscName::joinDVD(file, pref->use_dvdnav), fast_open);
-	#else
-				open(DiscName::joinDVD(file, false), fast_open);
-	#endif
 			} else {
+				// TODO:
 				qDebug("Core::open: * directory doesn't contain a dvd");
 				qDebug("Core::open:   opening nothing");
 			}
@@ -1900,15 +1894,6 @@ void Core::startPlayer( QString file, double seek ) {
 	if (proc->isMPlayer() && file.startsWith("https")) {
 		file = "ffmpeg://" + file;
 	}
-
-/*
-#if DVDNAV_SUPPORT
-	if (proc->isMPV() && file.startsWith("dvdnav:")) {
-		// Hack to open the DVD menu with MPV
-		file = "dvd://menu";
-	}
-#endif
-*/
 
 #ifdef Q_OS_WIN
 	if (pref->use_short_pathnames) {
@@ -3555,7 +3540,6 @@ void Core::prevClosedCaptionChannel() {
 }
 */
 
-#if DVDNAV_SUPPORT
 // dvdnav buttons
 void Core::dvdnavUp() {
 	qDebug("Core::dvdnavUp");
@@ -3632,8 +3616,6 @@ void Core::dvdnavUpdateMousePos(QPoint pos) {
 		}
 	}
 }
-
-#endif
 
 void Core::displayMessage(QString text, int duration, int osd_level) {
 	//qDebug("Core::displayMessage");

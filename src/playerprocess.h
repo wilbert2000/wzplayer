@@ -99,10 +99,10 @@ public:
 	virtual void setTitle(int ID) = 0;
 	virtual void changeVF(const QString & filter, bool enable, const QVariant & option = QVariant()) = 0;
 	virtual void changeStereo3DFilter(bool enable, const QString & in, const QString & out) = 0;
-#if DVDNAV_SUPPORT
+
 	virtual void discSetMousePos(int x, int y) = 0;
 	virtual void discButtonPressed(const QString & button_name) = 0;
-#endif
+
 	virtual void setAspect(double aspect) = 0;
 	virtual void setFullscreen(bool b) = 0;
 #if PROGRAM_SWITCH
@@ -172,10 +172,8 @@ signals:
 
 	void durationChanged(double);
 
-#if DVDNAV_SUPPORT
 	void receivedTitleIsMenu();
 	void receivedTitleIsMovie();
-#endif
 
 public slots:
 	void parseBytes(QByteArray ba);

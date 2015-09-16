@@ -86,7 +86,6 @@ void PrefInput::createMouseCombos() {
 	left_click_combo->addItem( tr("Show audio equalizer"), "audio_equalizer" );
 	left_click_combo->addItem( tr("Show context menu"), "show_context_menu" );
 	left_click_combo->addItem( tr("Change function of wheel"), "next_wheel_function" );
-#if DVDNAV_SUPPORT
 	left_click_combo->addItem( tr("Activate option under mouse in DVD menus"), "dvdnav_mouse" );
 	left_click_combo->addItem( tr("Return to main DVD menu"), "dvdnav_menu" );
 	left_click_combo->addItem( tr("Return to previous menu in DVD menus"), "dvdnav_prev" );
@@ -95,7 +94,6 @@ void PrefInput::createMouseCombos() {
 	left_click_combo->addItem( tr("Move cursor left in DVD menus"), "dvdnav_left" );
 	left_click_combo->addItem( tr("Move cursor right in DVD menus"), "dvdnav_right" );
 	left_click_combo->addItem( tr("Activate highlighted option in DVD menus"), "dvdnav_select" );
-#endif
 
 	// Copy to other combos
 	for (int n=0; n < left_click_combo->count(); n++) {

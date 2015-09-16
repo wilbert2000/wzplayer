@@ -171,9 +171,7 @@ public:
 
 	int vcd_initial_title;
 
-#if DVDNAV_SUPPORT
 	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:
-#endif
 
 
     /* ***********

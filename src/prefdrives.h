@@ -54,10 +54,8 @@ protected:
 	void setCDRomDevice( QString dir );
 	QString cdromDevice();
 
-#if DVDNAV_SUPPORT
 	void setUseDVDNav(bool b);
 	bool useDVDNav();
-#endif
 
 	void updateDriveCombos(bool detect_cd_devices = false);
 

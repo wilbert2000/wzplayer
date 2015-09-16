@@ -1318,7 +1318,6 @@ void BaseGui::createActions() {
              core, SLOT(changeExternalSubFPS(int)) );
 
 
-#if DVDNAV_SUPPORT
 	dvdnavUpAct = new MyAction(Qt::SHIFT | Qt::Key_Up, this, "dvdnav_up");
 	connect( dvdnavUpAct, SIGNAL(triggered()), core, SLOT(dvdnavUp()) );
 
@@ -1342,8 +1341,6 @@ void BaseGui::createActions() {
 
 	dvdnavMouseAct = new MyAction( this, "dvdnav_mouse");
 	connect( dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()) );
-#endif
-
 }
 
 #if AUTODISABLE_ACTIONS
@@ -1452,7 +1449,6 @@ void BaseGui::setActionsEnabled(bool b) {
 	autoZoom169Act->setEnabled(b);
 	autoZoom235Act->setEnabled(b);
 
-#if DVDNAV_SUPPORT
 	dvdnavUpAct->setEnabled(b);
 	dvdnavDownAct->setEnabled(b);
 	dvdnavLeftAct->setEnabled(b);
@@ -1461,7 +1457,6 @@ void BaseGui::setActionsEnabled(bool b) {
 	dvdnavSelectAct->setEnabled(b);
 	dvdnavPrevAct->setEnabled(b);
 	dvdnavMouseAct->setEnabled(b);
-#endif
 
 	// Groups
 	denoiseGroup->setActionsEnabled(b);
@@ -1585,8 +1580,7 @@ void BaseGui::enableActionsOnPlaying() {
 	}
 #endif
 
-#if DVDNAV_SUPPORT
-	if (!core->mdat.filename.startsWith("dvdnav:")) {
+	if (!core->mdat.detected_type == MediaData::TYPE_DVDNAV) {
 		dvdnavUpAct->setEnabled(false);
 		dvdnavDownAct->setEnabled(false);
 		dvdnavLeftAct->setEnabled(false);
@@ -1596,7 +1590,6 @@ void BaseGui::enableActionsOnPlaying() {
 		dvdnavPrevAct->setEnabled(false);
 		dvdnavMouseAct->setEnabled(false);
 	}
-#endif
 }
 
 void BaseGui::disableActionsOnStop() {
@@ -2064,7 +2057,6 @@ void BaseGui::retranslateStrings() {
 #endif
 
 
-#if DVDNAV_SUPPORT
 	dvdnavUpAct->change(Images::icon("dvdnav_up"), tr("DVD menu, move up"));
 	dvdnavDownAct->change(Images::icon("dvdnav_down"), tr("DVD menu, move down"));
 	dvdnavLeftAct->change(Images::icon("dvdnav_left"), tr("DVD menu, move left"));
@@ -2073,7 +2065,6 @@ void BaseGui::retranslateStrings() {
 	dvdnavSelectAct->change(Images::icon("dvdnav_select"), tr("DVD menu, select option"));
 	dvdnavPrevAct->change(Images::icon("dvdnav_prev"), tr("DVD &previous menu"));
 	dvdnavMouseAct->change(Images::icon("dvdnav_mouse"), tr("DVD menu, mouse click"));
-#endif
 
 	// Menu Options
 	osd_menu->menuAction()->setText( tr("&OSD") );
@@ -2736,11 +2727,9 @@ void BaseGui::createMenus() {
 
 	browseMenu->addMenu(angles_menu);
 
-#if DVDNAV_SUPPORT
 	browseMenu->addSeparator();
 	browseMenu->addAction(dvdnavMenuAct);
 	browseMenu->addAction(dvdnavPrevAct);
-#endif
 
 #if PROGRAM_SWITCH
 	programtrack_menu = new QMenu(this);
@@ -3885,12 +3874,7 @@ void BaseGui::openDVD() {
 		configureDiscDevices();
 	} else {
 		if (playlist->maybeSave()) {
-			bool use_dvdnav = false;
-
-#if DVDNAV_SUPPORT
-			use_dvdnav = pref->use_dvdnav;
-#endif
-			core->open(DiscName::joinDVD(pref->dvd_device, use_dvdnav));
+			core->open(DiscName::joinDVD(pref->dvd_device, pref->use_dvdnav));
 		}
 	}
 }
@@ -3914,11 +3898,7 @@ void BaseGui::openDVDFromFolder() {
 void BaseGui::openDVDFromFolder(const QString &directory) {
 
 	pref->last_dvd_directory = directory;
-#if DVDNAV_SUPPORT
 	core->open( DiscName::joinDVD(directory, pref->use_dvdnav) );
-#else
-	core->open( DiscName::joinDVD(directory, false) );
-#endif
 }
 
 /**
