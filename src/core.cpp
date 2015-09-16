@@ -770,6 +770,22 @@ void Core::openFile(QString filename, int seek) {
 
 void Core::restartPlay() {
 	we_are_restarting = true;
+
+	// Add current title if DVDNAV and clear mset.current_sec if menu.
+	// It really doesn't like seek on a menu.
+	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+		if (mdat.titles.getSelectedID() >= 0) {
+			DiscData disc = DiscName::split(mdat.filename);
+			disc.title = mdat.titles.getSelectedID();
+			mdat.filename = DiscName::join(disc);
+			if (mdat.title_is_menu) {
+				mset.current_sec = 0;
+			}
+		} else {
+			mset.current_sec = 0;
+		}
+	}
+
 	initPlaying();
 }
 
