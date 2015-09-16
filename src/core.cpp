@@ -774,15 +774,14 @@ void Core::restartPlay() {
 	// Add current title if DVDNAV and clear mset.current_sec if menu.
 	// It really doesn't like seek on a menu.
 	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
-		if (mdat.titles.getSelectedID() >= 0) {
+		if (mdat.title_is_menu || mdat.titles.getSelectedID() < 0) {
+			// If on menu leave the title as is, so at least when
+			// no title is set we stay on the main menu.
+			mset.current_sec = 0;
+		} else {
 			DiscData disc = DiscName::split(mdat.filename);
 			disc.title = mdat.titles.getSelectedID();
 			mdat.filename = DiscName::join(disc);
-			if (mdat.title_is_menu) {
-				mset.current_sec = 0;
-			}
-		} else {
-			mset.current_sec = 0;
 		}
 	}
 
