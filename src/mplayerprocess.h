@@ -131,6 +131,7 @@ private:
 
 	bool want_pause;
 
+	void clearTime();
 	void clearSubSources();
 	void getSelectedSub();
 	void getSelectedTracks();

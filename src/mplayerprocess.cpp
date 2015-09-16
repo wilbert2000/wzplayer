@@ -260,6 +260,18 @@ bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
 	return false;
 }
 
+void MplayerProcess::clearTime() {
+	qDebug("MplayerProcess::clearTime");
+
+	// Reset start time. Assuming we get ID_START_TIME if title has one,
+	// though never seen it, except for the first title at startup.
+	md->start_sec = 0;
+	// Start time status is not reliable, so can't set start_sec_set to false
+	md->start_sec_set = true;
+	md->start_sec_prop_set = false;
+	notifyTime(0, "");
+}
+
 bool MplayerProcess::titleChanged(MediaData::Type type, int title) {
 	qDebug("MplayerProcess::titleChanged: title %d", title);
 
@@ -267,10 +279,8 @@ bool MplayerProcess::titleChanged(MediaData::Type type, int title) {
 	notifyTitleTrackChanged(title);
 
 	if (type == MediaData::TYPE_DVDNAV) {
-		// Reset start time. Assuming we get ID_START_TIME if title has one,
-		// though never seen it except for the first title at startup.
-		// (get_property start_time does not work)
-		md->start_sec = 0;
+		// Set time to 0
+		clearTime();
 
 		// Set duration
 		Maps::TTitleData& t = md->titles[title];
