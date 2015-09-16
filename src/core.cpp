@@ -1495,18 +1495,18 @@ void Core::startPlayer( QString file, double seek ) {
 			proc->setOption("vobsub", s);
 		}
 		if (mset.sub.ID() >= 0) {
-			proc->setOption("sub_vob", mset.sub.ID());
+			proc->setOption("vobsubid", mset.sub.ID());
 		}
 	} else if (mset.sub.type() == SubData::File) {
 		if (!mset.sub.filename().isEmpty()) {
 			proc->setOption("sub", mset.sub.filename());
 			if (mset.sub.ID() >= 0) {
-				proc->setOption("sub_file", mset.sub.ID());
+				proc->setOption("sid", mset.sub.ID());
 			}
 		}
 	} else if (mset.sub.type() == SubData::Sub && mset.sub.ID() >= 0) {
 		// Subs from demux when restarting or from settings local file
-		proc->setOption("sub_demux", mset.sub.ID());
+		proc->setOption("sid", mset.sub.ID());
 	}
 
 	// Set fps external file
