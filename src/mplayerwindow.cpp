@@ -435,8 +435,9 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 	} else if (event->buttons() == Qt::NoButton)
 		showHiddenCursor(autohide_cursor);
 
-	// For DVD nav
-	emit mouseMoved(event->pos());
+	// For DVDNAV
+	if (mplayerlayer->underMouse())
+		emit mouseMoved(event->pos());
 }
 
 // Return whether this event is accused of dragging.
