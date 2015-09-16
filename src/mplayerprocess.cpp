@@ -284,9 +284,11 @@ bool MplayerProcess::titleChanged(MediaData::Type type, int title) {
 			audio_tracks_changed = true;
 
 			// Subs
-			clearSubSources();
-			md->subs.clear();
-			subtitles_changed = true;
+			// Subs mostly get announced at the start of title, but not always.
+			// By not clearing them they are at least accesible, working or not.
+			// clearSubSources();
+			// md->subs.clear();
+			// subtitles_changed = true;
 		}
 
 		// Chapters
