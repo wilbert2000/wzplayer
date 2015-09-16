@@ -828,9 +828,9 @@ void Core::initSubs() {
 	qDebug("Core::initSubs");
 
 	if (pref->autoload_sub) {
-		// TODO: this is not reliable. Subs can contain all kind of things,
-		// like graphics etc. Just selecting the first matching language is
-		// asking for trouble. For now disabled.
+		// TODO: use player option --slang. This is not reliable. Subs can
+		// contain all kind of things, like graphics etc. Just selecting
+		// the first matching language is asking for trouble. For now disabled.
 		// Also selected sub is no longer waited for by mplayer
 		/*
 		if (mdat.subs.count() > 0 && mdat.subs.selectedID() < 0) {
@@ -1470,6 +1470,8 @@ void Core::startPlayer( QString file, double seek ) {
 		initial_subtitle = "";
 	} else if (mset.current_sub_idx >= 0) {
 		// Selected sub when restarting
+		// TODO: keep flag whether subs were selected by user and only
+		// pass options if so
 		mset.sub = mdat.subs.itemAt(mset.current_sub_idx);
 	}
 
