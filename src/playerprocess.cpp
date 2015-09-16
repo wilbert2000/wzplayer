@@ -318,6 +318,8 @@ bool PlayerProcess::parseLine(QString &line) {
 
 	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
+
+	// Emitted on DVDNAV menus when image not mpeg2 compliant
 	static QRegExp rx_kill_line("Invalid horizontal or vertical size value");
 
 	// Trim line
