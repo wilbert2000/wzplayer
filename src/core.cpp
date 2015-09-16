@@ -439,9 +439,8 @@ void Core::close() {
 void Core::openDisc(DiscData &disc, bool fast_open) {
 	// Disc
 
-	// Change title if CD already playing
-	if (fast_open && _state != Stopped && MediaData::isCD(mdat.detected_type)
-		&& disc.title > 0) {
+	// Change title if already playing
+	if (fast_open && _state != Stopped && disc.title > 0) {
 		bool current_url_valid;
 		DiscData current_disc = DiscName::split(mdat.filename, &current_url_valid);
 		if (current_url_valid && current_disc.device == disc.device) {
@@ -451,6 +450,8 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 			return;
 		}
 	}
+
+	// Restart
 
 	close();
 
@@ -479,14 +480,13 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 		}
 	}
 
-	// Clean filename and set selected type
+	// Set filename and selected type
 	mdat.filename = DiscName::join(disc);
-	mdat.selected_type = MediaData::stringToType(disc.protocol);
+	mdat.selected_type = (MediaData::Type) DiscName::protocolToDisc(disc.protocol);
 
 	// Clear settings
 	mset.reset();
 	mset.current_title_id = disc.title;
-	// TODO: check seek from open?
 
 	initPlaying();
 	return;
@@ -1549,7 +1549,6 @@ void Core::startPlayer( QString file, double seek ) {
 	// changes. So instead of honouring some cache settings and not others,
 	// for now, declare them MPlayer only.
 	if (proc->isMPlayer()) {
-		int cache_size;
 		switch (mdat.selected_type) {
 			case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
 			case MediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
@@ -1563,6 +1562,8 @@ void Core::startPlayer( QString file, double seek ) {
 		} // switch
 
 		proc->setOption("cache", QString::number(cache_size));
+	} else {
+		cache_size = -1;
 	}
 
 	if (mset.speed != 1.0) {
@@ -3066,8 +3067,8 @@ void Core::changeSubtitle(int idx, bool selected_by_user) {
 	}
 }
 
-void Core::nextSubtitleTrack() {
-	qDebug("Core::nextSubtitleTrack");
+void Core::nextSubtitle() {
+	qDebug("Core::nextSubtitle");
 
 	changeSubtitle(mdat.subs.nextID());
 }
@@ -3095,16 +3096,28 @@ void Core::changeSecondarySubtitle(int idx) {
 void Core::changeTitle(int title) {
 	qDebug("Core::changeTitle: title %d", title);
 
-	// Handle CDs with the chapter commands
-	if (proc->isRunning() && MediaData::isCD(mdat.detected_type)) {
-		changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
-	} else {
-		// Start/restart
-		mset.current_title_id = title;
-		DiscData disc_data = DiscName::split(mdat.filename);
-		disc_data.title = title;
-		openDisc(disc_data, false);
+	if (proc->isRunning()) {
+		// Handle CDs with the chapter commands
+		if (MediaData::isCD(mdat.detected_type)) {
+			changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
+			return;
+		}
+		// Handle DVDNAV with title command
+		if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+			if (cache_size == 0) {
+				qDebug("Core::changeTitle: switching title through proc");
+				proc->setTitle(title);
+				return;
+			}
+			qWarning("Core::changeTitle: restarting because cache size not 0");
+		}
 	}
+
+	// Start/restart
+	mset.current_title_id = title;
+	DiscData disc = DiscName::split(mdat.filename);
+	disc.title = title;
+	openDisc(disc, false);
 }
 
 void Core::changeChapter(int id) {

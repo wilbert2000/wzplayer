@@ -36,6 +36,7 @@ public:
 	enum Type {
 		TYPE_UNKNOWN = -1,
 		TYPE_FILE = 0,
+		// Still need to be the same as DiscName
 		TYPE_DVD = DiscName::DVD,
 		TYPE_DVDNAV = DiscName::DVDNAV,
 		TYPE_VCD = DiscName::VCD,

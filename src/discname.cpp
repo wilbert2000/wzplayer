@@ -19,6 +19,27 @@
 #include "discname.h"
 #include <QRegExp>
 
+DiscName::Disc DiscName::protocolToDisc(QString protocol) {
+
+	protocol = protocol.toLower();
+
+	//if (protocol == "dvd")
+	//	return DVD;
+
+	if (protocol == "dvdnav")
+		return DVDNAV;
+	if (protocol == "vcd")
+		return VCD;
+	if (protocol == "cdda")
+		return CDDA;
+	if (protocol == "br")
+		return BLURAY;
+
+	// Bad
+	return DVD;
+}
+
+
 QString DiscName::joinDVD(const QString & device, bool use_dvdnav) {
 	return join(use_dvdnav ? DVDNAV : DVD, 0, device);
 }
@@ -100,6 +121,8 @@ DiscData DiscName::split(const QString & disc_url, bool * ok) {
 
 	return d;
 }
+
+
 
 // This functions remove the trailing "/" from the device
 // with one exception: from Windows drives letters (D:/ E:/...)

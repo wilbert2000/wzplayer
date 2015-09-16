@@ -1046,7 +1046,7 @@ void BaseGui::createActions() {
 	connect( nextAudioAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()) );
 
 	nextSubtitleAct = new MyAction( Qt::Key_J, this, "next_subtitle");
-	connect( nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitleTrack()) );
+	connect( nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()) );
 
 	nextChapterAct = new MyAction( Qt::Key_At, this, "next_chapter");
 	connect( nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()) );

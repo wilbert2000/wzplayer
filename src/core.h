@@ -263,7 +263,7 @@ public slots:
 	void changeAudioTrack(int id, bool allow_restart = true);
 	void nextAudioTrack();
 	void changeSubtitle(int idx, bool selected_by_user = true);
-	void nextSubtitleTrack();
+	void nextSubtitle();
 #ifdef MPV_SUPPORT
 	void changeSecondarySubtitle(int idx);
 #endif
@@ -501,6 +501,7 @@ private:
 	bool we_are_restarting;
 
 	State _state;
+
 	bool change_volume_after_unpause;
 
 	QString initial_subtitle;
@@ -509,6 +510,8 @@ private:
 
 	// Max value [0.. pos_max) for gotoPosition() and positionChanged()
 	int pos_max;
+
+	int cache_size;
 
 	void openDisc(DiscData &disc, bool fast_open);
 	void openFile(QString filename, int seek = -1);
