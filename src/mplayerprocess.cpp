@@ -813,7 +813,7 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	if (line == "Failed to get value of property 'length'.") {
 		if (md->title_is_menu) {
-			qDebug("MplayerProcess::parseLine: menu has no length");
+			qDebug("MplayerProcess::parseLine: this menu has no length");
 			clearTime();
 			notifyDuration(0);
 			return true;

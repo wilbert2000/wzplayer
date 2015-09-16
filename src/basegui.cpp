@@ -4251,7 +4251,8 @@ void BaseGui::leftClickFunction() {
 	qDebug("BaseGui::leftClickFunction");
 
 	if (core->mdat.title_is_menu && mplayerwindow->videoLayer()->underMouse()) {
-		core->dvdnavMouse();
+		// dvdnavMouse() gets easily confused, so use select()
+		core->dvdnavSelect(true);
 	} else if (!pref->mouse_left_click_function.isEmpty()) {
 		processFunction(pref->mouse_left_click_function);
 	}

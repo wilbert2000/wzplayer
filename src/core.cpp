@@ -873,6 +873,7 @@ void Core::newMediaPlaying() {
 		bool valid_name;
 		DiscData disc = DiscName::split(mdat.filename, &valid_name);
 		if (!valid_name) {
+			// Assume file
 			disc.device = mdat.filename;
 			if (mset.current_title_id < 0) disc.title = 0;
 			else disc.title = mset.current_title_id;
@@ -3612,17 +3613,12 @@ void Core::dvdnavMenu() {
 	proc->discButtonPressed("menu");
 }
 
-void Core::dvdnavSelect() {
-	qDebug("Core::dvdnavSelect");
-	proc->discButtonPressed("select");
-}
-
 void Core::dvdnavPrev() {
 	qDebug("Core::dvdnavPrev");
 	proc->discButtonPressed("prev");
 }
 
-// Slot called by action dvdnav_mouse and BaseGui when left mouse clicked
+// Slot only called by action dvdnav_mouse, BaseGui uses select for mouse click
 void Core::dvdnavMouse() {
 	qDebug("Core::dvdnavMouse");
 
@@ -3633,6 +3629,22 @@ void Core::dvdnavMouse() {
 		}
 		if (_state == Playing) {
 			proc->discButtonPressed("mouse");
+		}
+	}
+}
+
+// Slot called by action dvdnav_select and BaseGui when left mouse clicked
+void Core::dvdnavSelect(bool select_by_mouse) {
+	qDebug("Core::dvdnavSelect");
+
+	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+		if (_state == Paused) {
+			play();
+		}
+		if (_state == Playing) {
+			if (select_by_mouse)
+				dvdnavUpdateMousePos(QCursor::pos());
+			proc->discButtonPressed("select");
 		}
 	}
 }
