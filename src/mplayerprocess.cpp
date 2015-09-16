@@ -155,19 +155,26 @@ bool MplayerProcess::parseSubID(const QString &type, int id) {
 bool MplayerProcess::parseSubTrack(const QString &type, int id, const QString &name, const QString &value) {
 
 	SubData::Type sub_type;
-	if (type == "VSID")	sub_type = SubData::Vob;
-	else sub_type = SubData::Sub;
-
-	if (md->subs.find(sub_type, id) >= 0) {
-		if (name == "NAME")	md->subs.changeName(sub_type, id, value);
-		else md->subs.changeLang(sub_type, id, value);
-		subtitles_changed = true;
-		qDebug("MplayerProcess::parseSubTrack: updated subtitle track %d", id);
-		return true;
+	if (type == "VSID")	{
+		sub_type = SubData::Vob;
+		sub_vob = true;
+	} else {
+		sub_type = SubData::Sub;
+		sub_demux = true;
 	}
 
-	qWarning("MplayerProcess::parseSubTrack: subtitle track %d does not exist", id);
-	return false;
+	if (md->subs.find(sub_type, id) < 0) {
+		qDebug("MplayerProcess::parseSubTrack: adding new subtitle id %d", id);
+		md->subs.add(sub_type, id);
+	}
+
+	if (name == "NAME")	md->subs.changeName(sub_type, id, value);
+	else md->subs.changeLang(sub_type, id, value);
+	subtitles_changed = true;
+
+	qDebug() << "MplayerProcess::parseSubTrack: updated subtitle id" << id
+			 << "type" << type << "field" << name << "to" << value;
+	return true;
 }
 
 bool MplayerProcess::parseAnswer(const QString &name, const QString &value) {
