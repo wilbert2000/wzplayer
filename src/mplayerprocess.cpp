@@ -143,7 +143,7 @@ bool MplayerProcess::parseSubID(const QString &type, int id) {
 	} else {
 		qDebug() << "MplayerProcess::parseSubID: found subtitle id"
 				 << id << "type" << type;
-		get_selected_sub = true;
+		get_selected_subtitle = true;
 	}
 
 	return true;
@@ -508,49 +508,30 @@ void MplayerProcess::notifyChanges() {
 		subtitles_changed = false;
 		qDebug("MplayerProcess::notifyChanges: emit receivedSubtitleTrackInfo");
 		emit receivedSubtitleTrackInfo();
-		get_selected_sub = true;
+		get_selected_subtitle = true;
 	}
-	if (get_selected_sub) {
-		get_selected_sub = false;
+	if (get_selected_subtitle) {
+		get_selected_subtitle = false;
 		getSelectedSub();
 	}
 }
 
-bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
+void MplayerProcess::playingStarted() {
+	qDebug("MplayerProcess::playingStarted");
 
-	if (PlayerProcess::parseStatusLine(time_sec, duration, rx, line))
-		return true;
-
-	if (notified_player_is_running) {
-		// Normal way to go, playing, except for first frame
-		notifyChanges();
-
-		// Check for changes in duration once in a while.
-		// Abs, to protect against time wrappers like TS.
-		if (qAbs(time_sec - check_duration_time) > check_duration_time_diff) {
-			// Ask for length
-			writeToStdin("get_property length");
-			// Wait another while
-			check_duration_time = time_sec;
-			// Just a little longer
-			check_duration_time_diff *= 4;
-		}
-		return true;
-	}
-
-	// First and only run of state playing
+	// ...
 	want_pause = false;
 
 	// Clear notifications
 	video_tracks_changed = false;
-	audio_tracks_changed = false;
-	subtitles_changed = false;
 	get_selected_video_track = false;
+	audio_tracks_changed = false;
 	get_selected_audio_track = false;
-	get_selected_sub = false;
+	subtitles_changed = false;
+	get_selected_subtitle = false;
 
 	// Reset the check duration timer
-	check_duration_time = time_sec;
+	check_duration_time = md->time_sec;
 	if (md->detectedDisc()) {
 		// Don't check disc
 		check_duration_time_diff = 360000;
@@ -580,6 +561,32 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 	}
 
 	// Get the GUI going
+	PlayerProcess::playingStarted();
+}
+
+bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
+
+	if (PlayerProcess::parseStatusLine(time_sec, duration, rx, line))
+		return true;
+
+	if (notified_player_is_running) {
+		// Normal way to go, playing, except for first frame
+		notifyChanges();
+
+		// Check for changes in duration once in a while.
+		// Abs, to protect against time wrappers like TS.
+		if (qAbs(time_sec - check_duration_time) > check_duration_time_diff) {
+			// Ask for length
+			writeToStdin("get_property length");
+			// Wait another while
+			check_duration_time = time_sec;
+			// Just a little longer
+			check_duration_time_diff *= 4;
+		}
+		return true;
+	}
+
+	// First and only run of state playing
 	playingStarted();
 
 	return true;

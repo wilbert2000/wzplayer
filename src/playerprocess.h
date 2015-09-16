@@ -199,8 +199,8 @@ protected:
 	virtual void checkTime(double sec);
 	void notifyTime(double time_sec, const QString &line);
 	bool waitForAnswers();
-	void playingStarted();
 
+	virtual void playingStarted();
 	virtual bool parseLine(QString &line);
 	virtual bool parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line);
 	virtual bool parseAudioProperty(const QString &name, const QString &value);

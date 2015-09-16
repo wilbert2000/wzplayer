@@ -107,6 +107,7 @@ protected:
 	virtual int getFrame(double sec, const QString &line);
 	virtual void checkTime(double sec);
 
+	virtual void playingStarted();
 	virtual bool parseLine(QString &line);
 	virtual bool parseStatusLine(double seconds, double duration, QRegExp &rx, QString &line);
 	virtual bool parseAudioProperty(const QString &name, const QString &value);
@@ -126,11 +127,11 @@ private:
 	int check_duration_time_diff;
 
 	bool video_tracks_changed;
-	bool audio_tracks_changed;
-	bool subtitles_changed;
 	bool get_selected_video_track;
+	bool audio_tracks_changed;
 	bool get_selected_audio_track;
-	bool get_selected_sub;
+	bool subtitles_changed;
+	bool get_selected_subtitle;
 
 	bool want_pause;
 
