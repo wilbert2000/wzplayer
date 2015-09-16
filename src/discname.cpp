@@ -48,6 +48,7 @@ QString DiscName::join(Disc type, int title, const QString & device) {
 DiscData DiscName::split(const QString & disc_url, bool * ok) {
 	//qDebug("DiscName::split: disc_url: '%s'", disc_url.toUtf8().constData());
 
+	// TODO: dvdread and title ranges dvd://1-99
 	QRegExp rx1("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)/(.*)");
 	QRegExp rx2("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)");
 	QRegExp rx3("^(dvd|dvdnav|vcd|cdda|br):///(.*)");
