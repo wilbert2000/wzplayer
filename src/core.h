@@ -385,8 +385,6 @@ protected slots:
 
 #if DVDNAV_SUPPORT
 	void dvdnavUpdateMousePos(QPoint);
-	void dvdTitleIsMenu();
-	void dvdTitleIsMovie();
 #endif
 
 #ifdef YOUTUBE_SUPPORT
@@ -503,10 +501,6 @@ private:
 	bool change_volume_after_unpause;
 
 	QString initial_subtitle;
-
-#if DVDNAV_SUPPORT
-	bool dvdnav_title_is_menu;
-#endif
 
 	QMap<QString,QString> forced_titles;
 

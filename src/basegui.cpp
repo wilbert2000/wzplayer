@@ -4250,7 +4250,9 @@ void BaseGui::aboutToExitFullscreen() {
 void BaseGui::leftClickFunction() {
 	qDebug("BaseGui::leftClickFunction");
 
-	if (!pref->mouse_left_click_function.isEmpty()) {
+	if (core->mdat.title_is_menu && mplayerwindow->videoLayer()->underMouse()) {
+		core->dvdnavMouse();
+	} else if (!pref->mouse_left_click_function.isEmpty()) {
 		processFunction(pref->mouse_left_click_function);
 	}
 }

@@ -75,8 +75,6 @@ public:
 
 	bool noVideo() { return video_out_width <= 0; } // Can be audio
 
-	QString dvd_id;
-
 	Maps::TTracks videos;
 	Maps::TTracks audios;
 	SubTracks subs;
@@ -86,6 +84,11 @@ public:
 #if PROGRAM_SWITCH
 	Tracks programs;
 #endif
+
+	QString dvd_id;
+
+	// DVDNAV
+	bool title_is_menu;
 
 	QString stream_title;
 	QString stream_url;

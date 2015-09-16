@@ -85,10 +85,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	we_are_restarting = false;
 	change_volume_after_unpause = false;
 
-#if DVDNAV_SUPPORT
-	dvdnav_title_is_menu = true; // Enabled by default for compatibility with previous versions of mplayer
-#endif
-
 #ifndef NO_USE_INI_FILES
 	// Create file_settings
 	file_settings = 0;
@@ -207,13 +203,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( proc, SIGNAL(durationChanged(double)),
 			 this, SIGNAL(newDuration(double)));
 
-#if DVDNAV_SUPPORT
-	connect( proc, SIGNAL(receivedTitleIsMenu()),
-             this, SLOT(dvdTitleIsMenu()) );
-	connect( proc, SIGNAL(receivedTitleIsMovie()),
-             this, SLOT(dvdTitleIsMovie()) );
-#endif
-
 	connect( proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()) );
 
 	connect( this, SIGNAL(stateChanged(Core::State)), 
@@ -229,7 +218,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 #if DVDNAV_SUPPORT
 	connect( mplayerwindow, SIGNAL(mouseMoved(QPoint)),
-             this, SLOT(dvdnavUpdateMousePos(QPoint)) );
+			 this, SLOT(dvdnavUpdateMousePos(QPoint)) );
 #endif
 
 #if REPAINT_BACKGROUND_OPTION
@@ -3610,13 +3599,38 @@ void Core::dvdnavPrev() {
 	proc->discButtonPressed("prev");
 }
 
+// Slot called by action dvdnav_mouse and BaseGui when left mouse clicked
 void Core::dvdnavMouse() {
 	qDebug("Core::dvdnavMouse");
 
-	if ((state() == Playing) && (mdat.filename.startsWith("dvdnav:"))) {
-		proc->discButtonPressed("mouse");
+	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+		if (_state == Paused) {
+			play();
+			dvdnavUpdateMousePos(QCursor::pos());
+		}
+		if (_state == Playing) {
+			proc->discButtonPressed("mouse");
+		}
 	}
 }
+
+// Slot called by mplayerwindow to pass mouse move
+void Core::dvdnavUpdateMousePos(QPoint pos) {
+
+	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+		// MPlayer won't act if paused. Play if menu not animated.
+		if (_state == Paused && mdat.title_is_menu && mdat.duration == 0) {
+			play();
+		}
+		// Titles that are not menu can have buttons too. Currently
+		// you only won't be able to click them with the mouse because
+		// BaseGui tests for title_is_menu...
+		if (_state == Playing) {
+			proc->discSetMousePos(pos.x(), pos.y());
+		}
+	}
+}
+
 #endif
 
 void Core::displayMessage(QString text, int duration, int osd_level) {
@@ -3766,32 +3780,5 @@ void Core::gotSubtitleTrackChanged() {
 	mset.current_sub_idx = selected_idx;
 	emit subtitleTrackChanged(selected_idx);
 }
-
-#if DVDNAV_SUPPORT
-void Core::dvdnavUpdateMousePos(QPoint pos) {
-#if 0
-	qDebug("Core::dvdnavUpdateMousePos: %d %d", pos.x(), pos.y());
-	qDebug("Core::dvdnavUpdateMousePos: dvdnav_title_is_menu: %d", dvdnav_title_is_menu);
-#endif
-	// TODO: dvdnav_title_is_menu/discSetMousePos for mpv
-	if (proc->isMPlayer()
-		&& mdat.detected_type == MediaData::TYPE_DVDNAV
-		&& dvdnav_title_is_menu
-		&& mplayerwindow->videoLayer()->underMouse()
-		&& state() != Stopped) {
-			proc->discSetMousePos(pos.x(), pos.y());
-	}
-}
-
-void Core::dvdTitleIsMenu() {
-	qDebug("Core::dvdTitleIsMenu");
-	dvdnav_title_is_menu = true;
-}
-
-void Core::dvdTitleIsMovie() {
-	qDebug("Core::dvdTitleIsMovie");
-	dvdnav_title_is_menu = false;
-}
-#endif
 
 #include "moc_core.cpp"

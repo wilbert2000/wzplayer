@@ -51,6 +51,8 @@ void MediaData::init() {
 	video_out_width = 0;
 	video_out_height = 0;
 
+	title_is_menu = false;
+
 	video_bitrate = 0;
 	audio_bitrate = 0;
 	audio_rate = 0;
@@ -165,8 +167,6 @@ void MediaData::list() const {
 	qDebug("  video_out_width: %d", video_out_width);
 	qDebug("  video_out_height: %d", video_out_height);
 
-	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
-
 	qDebug("  Videos:");
 	videos.list();
 	qDebug("  Audios:");
@@ -182,6 +182,9 @@ void MediaData::list() const {
 	qDebug("  Programs:");
 	programs.list();
 #endif
+
+	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
+	qDebug("  title_is_menu: '%d'", title_is_menu);
 
 	qDebug("  demuxer: '%s'", demuxer.toUtf8().data() );
 	qDebug("  video_format: '%s'", video_format.toUtf8().data() );

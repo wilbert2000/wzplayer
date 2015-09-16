@@ -197,7 +197,7 @@ void PlayerProcess::notifyTitleTrackChanged(int new_title) {
 void PlayerProcess::notifyDuration(double duration) {
 
 	// Duration changed?
-	if (duration > 0 && qAbs(duration - md->duration) > 0.001) {
+	if (qAbs(duration - md->duration) > 0.001) {
 		qDebug("PlayerProcess::notifyDuration: duration changed from %f to %f", md->duration, duration);
 		md->duration = duration;
 		qDebug("PlayerProcess::notifyDuration: emit durationChanged(%f)", duration);
@@ -279,7 +279,6 @@ bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &r
 	Q_UNUSED(rx)
 
 	// Store timestamp of first status line if no start time received from player
-	// TODO: see if you can get start time later
 	if (!md->start_sec_set) {
 		md->start_sec_set = true;
 		if (md->start_sec_prop_set) {
@@ -296,9 +295,13 @@ bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &r
 	if (waitForAnswers())
 		return true;
 
-	notifyDuration(duration);
+	// For mplayer duration is always 0
+	if (duration > 0)
+		notifyDuration(duration);
 
-	notifyTime(time_sec, line);
+	// Notify time if not menu or animated menu
+	if (!md->title_is_menu || md->duration > 0)
+		notifyTime(time_sec, line);
 
 	// Parse the line just a litlle bit longer
 	return false;
@@ -315,10 +318,15 @@ bool PlayerProcess::parseLine(QString &line) {
 
 	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
+	static QRegExp rx_kill_line("Invalid horizontal or vertical size value");
 
 	// Trim line
 	line = line.trimmed();
 	if (line.isEmpty())
+		return true;
+
+	// Lines that kill the log
+	if (rx_kill_line.indexIn(line) >= 0)
 		return true;
 
 	// Output line to console

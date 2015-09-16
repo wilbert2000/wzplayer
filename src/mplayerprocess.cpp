@@ -469,14 +469,6 @@ void MplayerProcess::convertTitlesToChapters() {
 
 void MplayerProcess::checkTime(double sec) {
 	Q_UNUSED(sec)
-
-	// Keep duration in range. Adjust once a second as we go
-	// TODO: switch seek to relative to not generate eof on seek
-	// if (floor(sec) > qRound(md->duration)) {
-	//	qDebug("md start: %f md sec: %f sec: %f dur: %f",
-	//		   md->start_sec, md->time_sec, sec, md->duration);
-	//	notifyDuration(sec);
-	// }
 }
 
 int MplayerProcess::getFrame(double sec, const QString &line) {
@@ -549,12 +541,16 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 		check_duration_time_diff = 1;
 	}
 
-	// Use duration from selected title if duration 0
-	if (md->duration == 0) {
+	if (md->title_is_menu) {
+		// See if the menu has a length
+		writeToStdin("get_property length");
+	} else if (md->duration == 0) {
+		// Use duration from selected title if duration 0
 		int title = md->titles.getSelectedID();
-		if (title >= 0) notifyDuration(md->titles[title].getDuration());
+		if (title >= 0)
+			notifyDuration(md->titles[title].getDuration());
 
-		// See if duration is known by now
+		// See if the duration is known by now
 		writeToStdin("get_property length");
 	}
 
@@ -794,14 +790,28 @@ bool MplayerProcess::parseLine(QString &line) {
 
 	if (rx_dvdnav_title_is_menu.indexIn(line) >= 0) {
 		qDebug("MplayerProcess::parseLine: title is menu");
-		// Length menu can differ from title
+		md->title_is_menu = true;
+		// Menus can have a length. If the menu has no length we get:
+		// 'Failed to get value of property 'length'.'
 		if (notified_player_is_running)
 			writeToStdin("get_property length");
 		emit receivedTitleIsMenu();
 		return true;
 	}
 
+	if (line == "Failed to get value of property 'length'.") {
+		if (md->title_is_menu) {
+			qDebug("MplayerProcess::parseLine: menu has no length");
+			clearTime();
+			notifyDuration(0);
+			return true;
+		}
+		return false;
+	}
+
 	if (rx_dvdnav_title_is_movie.indexIn(line) >= 0) {
+		qDebug("MplayerProcess::parseLine: title is movie");
+		md->title_is_menu = false;
 		emit receivedTitleIsMovie();
 		return true;
 	}
