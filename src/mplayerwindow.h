@@ -136,7 +136,7 @@ public:
 	// Reset zoom and pan for current screen
 	void resetZoomAndPan();
 
-	void setDelayLeftClick(bool b) { delay_left_click = b; };
+	void setDelayLeftClick(bool b) { delay_left_click = b; }
 
 	// Get size adjusted for monitor aspect and desired zoom
 	QSize getAdjustedSize(int w, int h, double desired_zoom) const;
@@ -160,7 +160,7 @@ public:
 
 #ifdef SHAREWIDGET
 	void setCornerWidget(QWidget * w);
-	QWidget * cornerWidget() { return corner_widget; };
+	QWidget * cornerWidget() { return corner_widget; }
 #endif
 
 public slots:
@@ -168,8 +168,8 @@ public slots:
 	void playingStopped();
 
 	void setLogoVisible(bool b);
-	void showLogo() { setLogoVisible(true); };
-	void hideLogo() { setLogoVisible(false); };
+	void showLogo() { setLogoVisible(true); }
+	void hideLogo() { setLogoVisible(false); }
 
 #if LOGO_ANIMATION
 	void setAnimatedLogo(bool b) { animated_logo = b; };
@@ -181,7 +181,7 @@ protected slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void changeEvent ( QEvent * event );
 	virtual void resizeEvent(QResizeEvent *);
 
 	virtual void mousePressEvent ( QMouseEvent * e );
@@ -201,6 +201,7 @@ signals:
 	void wheelUp();
 	void wheelDown();
 	void mouseMoved(QPoint);
+
 	void showMessage(QString text, int duration, int osd_level);
 	void moveOSD(QPoint pos);
 
