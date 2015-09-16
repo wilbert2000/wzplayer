@@ -437,7 +437,7 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 
 	// For DVDNAV
 	if (mplayerlayer->underMouse()) {
-		// Make evnt position relative to video layer
+		// Make event relative to video layer
 		QPoint pos = event->pos() - mplayerlayer->pos();
 		emit mouseMoved(pos);
 	}

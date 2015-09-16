@@ -3614,9 +3614,6 @@ void Core::dvdnavUpdateMousePos(QPoint pos) {
 		if (_state == Paused && mdat.title_is_menu && mdat.duration == 0) {
 			play();
 		}
-		// Titles that are not menu can have buttons too. Currently
-		// you only won't be able to click them with the mouse because
-		// BaseGui tests for title_is_menu...
 		if (_state == Playing) {
 			proc->discSetMousePos(pos.x(), pos.y());
 		}
