@@ -1252,7 +1252,7 @@ void MplayerProcess::setTitle(int ID) {
 
 #if DVDNAV_SUPPORT
 void MplayerProcess::discSetMousePos(int x, int y) {
-	writeToStdin(QString("set_mouse_pos %1 %2").arg(x).arg(y));
+	writeToStdin(QString("set_mouse_pos %1 %2").arg(x).arg(y), false);
 }
 
 void MplayerProcess::discButtonPressed(const QString & button_name) {
