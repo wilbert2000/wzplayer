@@ -436,8 +436,11 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 		showHiddenCursor(autohide_cursor);
 
 	// For DVDNAV
-	if (mplayerlayer->underMouse())
-		emit mouseMoved(event->pos());
+	if (mplayerlayer->underMouse()) {
+		// Make evnt position relative to video layer
+		QPoint pos = event->pos() - mplayerlayer->pos();
+		emit mouseMoved(pos);
+	}
 }
 
 // Return whether this event is accused of dragging.

@@ -326,7 +326,7 @@ public slots:
 	void dvdnavLeft();
 	void dvdnavRight();
 	void dvdnavMenu();
-	void dvdnavSelect(bool select_by_mouse = false);
+	void dvdnavSelect();
 	void dvdnavPrev();
 	void dvdnavMouse();
 #endif

@@ -962,7 +962,7 @@ void Core::playOrPause() {
 }
 
 void Core::frameStep() {
-	qDebug("Core::frameStep");
+	qDebug() << "Core::frameStep at" <<  mset.current_sec;
 
 	if (proc->isRunning()) {
 		if (_state == Paused) {
@@ -974,7 +974,7 @@ void Core::frameStep() {
 }
 
 void Core::frameBackStep() {
-	qDebug("Core::frameBackStep");
+	qDebug() << "Core::frameBackStep at" <<  mset.current_sec;
 
 	if (proc->isRunning()) {
 		if (_state == Paused) {
@@ -3574,23 +3574,8 @@ void Core::dvdnavPrev() {
 	proc->discButtonPressed("prev");
 }
 
-// Slot only called by action dvdnav_mouse, BaseGui uses select for mouse click
-void Core::dvdnavMouse() {
-	qDebug("Core::dvdnavMouse");
-
-	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
-		if (_state == Paused) {
-			play();
-			dvdnavUpdateMousePos(QCursor::pos());
-		}
-		if (_state == Playing) {
-			proc->discButtonPressed("mouse");
-		}
-	}
-}
-
-// Slot called by action dvdnav_select and BaseGui when left mouse clicked
-void Core::dvdnavSelect(bool select_by_mouse) {
+// Slot called by action dvdnav_select
+void Core::dvdnavSelect() {
 	qDebug("Core::dvdnavSelect");
 
 	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
@@ -3598,14 +3583,30 @@ void Core::dvdnavSelect(bool select_by_mouse) {
 			play();
 		}
 		if (_state == Playing) {
-			if (select_by_mouse)
-				dvdnavUpdateMousePos(QCursor::pos());
 			proc->discButtonPressed("select");
 		}
 	}
 }
 
-// Slot called by mplayerwindow to pass mouse move
+// Slot called by action dvdnav_mouse and BaseGui when left mouse clicked
+void Core::dvdnavMouse() {
+	qDebug("Core::dvdnavMouse");
+
+	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+		if (_state == Paused) {
+			play();
+		}
+		if (_state == Playing) {
+			// Give a last update on the mouse position
+			QPoint pos = mplayerwindow->videoLayer()->mapFromGlobal(QCursor::pos());
+			dvdnavUpdateMousePos(pos);
+			// Click
+			proc->discButtonPressed("mouse");
+		}
+	}
+}
+
+// Slot called by mplayerwindow to pass mouse move local to video
 void Core::dvdnavUpdateMousePos(QPoint pos) {
 
 	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
@@ -3768,6 +3769,7 @@ bool Core::setPreferredAudio() {
 		}
 	}
 
+	qDebug("Core::setPreferredAudio: no player overrides");
 	return false;
 }
 
@@ -3818,8 +3820,11 @@ void Core::gotSubtitleInfo() {
 			// Hack: mdat.subs selected sub does not have to be uptodate yet...
 			mdat.subs.clearSelected();
 			changeSubtitle(wanted_idx, false);
+			return;
 		}
 	}
+
+	qDebug("Core::gotSubtitleInfo: no player overrides");
 }
 
 // Called when player changed subtitle track
