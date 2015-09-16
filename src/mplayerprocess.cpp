@@ -654,7 +654,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	static QRegExp rx_forbidden("Server returned 403: Forbidden");
 
 	// General messages to pass on
-	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file|libdvdread:)");
+	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file)");
 
 
 	// Parse A: V: status line
