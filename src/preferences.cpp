@@ -243,7 +243,7 @@ void Preferences::reset() {
 	use_enca = false;
 	enca_lang = QString(QLocale::system().name()).section("_",0,0);
 	subfuzziness = 1;
-	autoload_sub = true;
+	autoload_sub = false;
 
 	use_ass_subtitles = true;
 	enable_ass_styles = true;

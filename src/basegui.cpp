@@ -1253,8 +1253,8 @@ void BaseGui::createActions() {
 
 	subtitleTrackGroup = new MyActionGroup(this);
 	connect( subtitleTrackGroup, SIGNAL(activated(int)),
-			 core, SLOT(changeSubtitleTrack(int)) );
-	connect( core, SIGNAL(subtitleTrackInfoChanged()),
+			 core, SLOT(changeSubtitle(int)) );
+	connect( core, SIGNAL(subtitleInfoChanged()),
 			 this, SLOT(updateSubtitleTracks()) );
 	connect( core, SIGNAL(subtitleTrackChanged(int)),
 			 subtitleTrackGroup, SLOT(setCheckedSlot(int)) );

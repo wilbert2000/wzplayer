@@ -262,7 +262,7 @@ public slots:
 	void nextVideoTrack();
 	void changeAudioTrack(int id, bool allow_restart = true);
 	void nextAudioTrack();
-	void changeSubtitleTrack(int idx);
+	void changeSubtitle(int idx, bool selected_by_user = true);
 	void nextSubtitleTrack();
 #ifdef MPV_SUPPORT
 	void changeSecondarySubtitle(int idx);
@@ -447,7 +447,7 @@ signals:
 	void videoTrackChanged(int);
 	void audioTrackInfoChanged();
 	void audioTrackChanged(int);
-	void subtitleTrackInfoChanged();
+	void subtitleInfoChanged();
 	void subtitleTrackChanged(int);
 	void titleTrackInfoChanged();
 	void titleTrackChanged(int);
@@ -517,7 +517,6 @@ private:
 	void getZoomFromMplayerWindow();
 	void getPanFromMplayerWindow();
 	void pan(int dx, int dy);
-	void initSubs();
 	void setExternalSubs(const QString &filename);
 	bool setPreferredAudio();
 };

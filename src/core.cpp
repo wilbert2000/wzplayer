@@ -818,26 +818,6 @@ void Core::initPlaying(int seek) {
 	startPlayer( mdat.filename, start_sec );
 }
 
-// Called by newMediaPlaying
-void Core::initSubs() {
-	qDebug("Core::initSubs");
-
-	if (pref->autoload_sub) {
-		// TODO: use player option --slang. This is not reliable. Subs can
-		// contain all kind of things, like graphics etc. Just selecting
-		// the first matching language is asking for trouble. For now disabled.
-		// Also selected sub is no longer waited for by mplayer
-		/*
-		if (mdat.subs.count() > 0 && mdat.subs.selectedID() < 0) {
-			// Nothing selected, check preferred language
-			wanted_idx = mdat.subs.selectOne(pref->language,
-											 pref->initial_subtitle_track - 1);
-			changeSubtitleTrack(wanted_idx);
-		}
-		*/
-	}
-}
-
 // This is reached when a new video has just started playing
 void Core::newMediaPlaying() {
 	qDebug("Core::newMediaPlaying");
@@ -867,8 +847,6 @@ void Core::newMediaPlaying() {
 
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
-
-	initSubs();
 
 	qDebug("Core::newMediaPlaying: emit mediaStartPlay()");
 	emit mediaStartPlay();
@@ -3067,10 +3045,11 @@ void Core::nextAudioTrack() {
 }
 
 // Note: changeSubtitle is by index, not ID
-void Core::changeSubtitleTrack(int idx) {
+void Core::changeSubtitle(int idx, bool selected_by_user) {
 	qDebug("Core::changeSubtitle: idx %d", idx);
 
-	mset.current_sub_set_by_user = true;
+	if (selected_by_user)
+		mset.current_sub_set_by_user = true;
 
 	if (idx >= 0 && idx < mdat.subs.count()) {
 		mset.current_sub_idx = idx;
@@ -3090,7 +3069,7 @@ void Core::changeSubtitleTrack(int idx) {
 void Core::nextSubtitleTrack() {
 	qDebug("Core::nextSubtitleTrack");
 
-	changeSubtitleTrack(mdat.subs.nextID());
+	changeSubtitle(mdat.subs.nextID());
 }
 
 #ifdef MPV_SUPPORT
@@ -3828,9 +3807,19 @@ void Core::gotAudioTrackChanged(int id) {
 void Core::gotSubtitleInfo() {
 	qDebug("Core::gotSubtitleInfo");
 
-	// Need to set current_sub_idx, the subtitle group checks on it.
+	// Need to set current_sub_idx, the subtitle action group checks on it.
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
-	emit subtitleTrackInfoChanged();
+	emit subtitleInfoChanged();
+
+	if (pref->autoload_sub && mdat.subs.count() > 0) {
+		int wanted_idx = pref->initial_subtitle_track - 1;
+		wanted_idx = mdat.subs.selectOne(pref->language, wanted_idx);
+		if (wanted_idx >= 0) {
+			// Hack: mdat.subs selected sub does not have to be uptodate yet...
+			mdat.subs.clearSelected();
+			changeSubtitle(wanted_idx, false);
+		}
+	}
 }
 
 // Called when player changed subtitle track
@@ -3840,6 +3829,7 @@ void Core::gotSubtitleChanged() {
 	// Need to set current_sub_idx, the subtitle group checks on it.
 	int selected_idx = mdat.subs.findSelectedIdx();
 	mset.current_sub_idx = selected_idx;
+
 	emit subtitleTrackChanged(selected_idx);
 }
 
