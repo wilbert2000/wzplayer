@@ -789,7 +789,8 @@ void Core::initPlaying(int seek) {
 	mplayerwindow->hideLogo();
 	// Feedback and prevent potential artifacts waiting for redraw
 	mplayerwindow->repaint();
-	qDebug("Core::initPlaying: entered the black hole");
+	qDebug("Core::initPlaying: entered the black hole, resetting time");
+	time.start();
 
 	if (proc->isRunning()) {
 		stopPlayer();
@@ -902,7 +903,7 @@ void Core::playingStarted() {
 
 	updateWidgets();
 
-	qDebug("Core::playingStarted: done");
+	qDebug() << "Core::playingStarted: done in" << time.elapsed() << "ms";
 }
 
 void Core::stop()

@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QProcess> // For QProcess::ProcessError
+#include <QTime>
 
 #include "config.h"
 #include "mediadata.h"
@@ -497,9 +498,9 @@ private:
 	State _state;
 
 	bool change_volume_after_unpause;
+	QTime time;
 
 	QString initial_subtitle;
-
 	QMap<QString,QString> forced_titles;
 
 	// Max value [0.. pos_max) for gotoPosition() and positionChanged()
