@@ -23,6 +23,7 @@
 #include <QTextStream>
 #include <QUrl>
 #include <QNetworkProxy>
+#include <QTimer>
 
 #ifdef Q_OS_OS2
 #include <QEventLoop>
@@ -3800,6 +3801,18 @@ void Core::gotAudioTrackChanged(int id) {
 	emit audioTrackChanged(id);
 }
 
+void Core::selectPreferredSub() {
+
+	int wanted_sub_idx = pref->initial_subtitle_track - 1;
+	wanted_sub_idx = mdat.subs.selectOne(pref->language, wanted_sub_idx);
+	if (wanted_sub_idx >= 0) {
+		qDebug("Core::selectPreferredSub: selecting subtitle idx %d", wanted_sub_idx);
+		changeSubtitle(wanted_sub_idx, false);
+	} else {
+		qDebug("Core::selectPreferredSub: no player overrides");
+	}
+}
+
 void Core::gotSubtitleInfo() {
 	qDebug("Core::gotSubtitleInfo");
 
@@ -3807,20 +3820,18 @@ void Core::gotSubtitleInfo() {
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
 	emit subtitleInfoChanged();
 
-	// TODO: this is racy as hell. Do not use pref->autoload_sub.
 	if (pref->autoload_sub && mdat.subs.count() > 0) {
-		int wanted_idx = pref->initial_subtitle_track - 1;
-		wanted_idx = mdat.subs.selectOne(pref->language, wanted_idx);
-		if (wanted_idx >= 0) {
-			// Note: mplayers selected sub will not yet be updated.
-			// TODO: delay change so clearSelected() not needed?
-			// If no sub is selected by mplayer, gotSubtitleChanged() won't
-			// arrive, so can't delay it with gotSubtitleChanged()
+		int wanted_sub_idx = pref->initial_subtitle_track - 1;
+		wanted_sub_idx = mdat.subs.selectOne(pref->language, wanted_sub_idx);
+		if (wanted_sub_idx >= 0) {
 			if (proc->isMPlayer()) {
-				// For mplayer this allways sets the sub, even if already selected
-				mdat.subs.clearSelected();
+				// mplayers selected sub will not yet be updated, que the update.
+				qDebug("Core::gotSubtitleInfo: posting update subtitle idx %d", wanted_sub_idx);
+				QTimer::singleShot(500, this, SLOT(selectPreferredSub()));
+			} else {
+				qDebug("Core::gotSubtitleInfo: selecting subtitle idx %d", wanted_sub_idx);
+				changeSubtitle(wanted_sub_idx, false);
 			}
-			changeSubtitle(wanted_idx, false);
 			return;
 		}
 	}

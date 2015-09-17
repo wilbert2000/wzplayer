@@ -378,6 +378,7 @@ protected slots:
 	void gotAudioTrackInfo();
 	void gotAudioTrackChanged(int id);
 
+	void selectPreferredSub();
 	void gotSubtitleInfo();
 	void gotSubtitleChanged();
 
