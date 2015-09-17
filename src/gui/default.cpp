@@ -16,11 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "defaultgui.h"
+#include "default.h"
+
+#include <QMenu>
+#include <QSettings>
+#include <QLabel>
+#include <QStatusBar>
+#include <QPushButton>
+#include <QToolButton>
+#include <QMenuBar>
+
+#include "global.h"
 #include "helper.h"
 #include "colorutils.h"
 #include "core.h"
-#include "global.h"
 #include "widgetactions.h"
 #include "playlist.h"
 #include "mplayerwindow.h"
@@ -34,20 +43,14 @@
 #include "playlistdock.h"
 #endif
 
-#include <QMenu>
-#include <QSettings>
-#include <QLabel>
-#include <QStatusBar>
-#include <QPushButton>
-#include <QToolButton>
-#include <QMenuBar>
-
 #define TOOLBAR_VERSION 1
 
 using namespace Global;
 
-DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
-	: BaseGuiPlus( parent, flags )
+namespace Gui {
+
+TDefault::TDefault( QWidget * parent, Qt::WindowFlags flags )
+	: TBasePlus( parent, flags )
 {
 	createStatusBar();
 
@@ -81,20 +84,20 @@ DefaultGui::DefaultGui( QWidget * parent, Qt::WindowFlags flags )
 	menuBar()->setObjectName("menubar");
 }
 
-DefaultGui::~DefaultGui() {
+TDefault::~TDefault() {
 }
 
 /*
-void DefaultGui::closeEvent( QCloseEvent * ) {
-	qDebug("DefaultGui::closeEvent");
+void TDefault::closeEvent( QCloseEvent * ) {
+	qDebug("Gui::TDefault::closeEvent");
 
-	//BaseGuiPlus::closeEvent(e);
+	//TBasePlus::closeEvent(e);
 	qDebug("w: %d h: %d", width(), height() );
 }
 */
 
-void DefaultGui::createActions() {
-	qDebug("DefaultGui::createActions");
+void TDefault::createActions() {
+	qDebug("Gui::TDefault::createActions");
 
 	timeslider_action = createTimeSliderAction(this);
 	volumeslider_action = createVolumeSliderAction(this);
@@ -138,26 +141,26 @@ void DefaultGui::createActions() {
 }
 
 #if AUTODISABLE_ACTIONS
-void DefaultGui::enableActionsOnPlaying() {
-	qDebug("DefaultGui::enableActionsOnPlaying");
-	BaseGuiPlus::enableActionsOnPlaying();
+void TDefault::enableActionsOnPlaying() {
+	qDebug("Gui::TDefault::enableActionsOnPlaying");
+	TBasePlus::enableActionsOnPlaying();
 
 	timeslider_action->enable();
 	volumeslider_action->enable();
 }
 
-void DefaultGui::disableActionsOnStop() {
-	qDebug("DefaultGui::disableActionsOnStop");
-	BaseGuiPlus::disableActionsOnStop();
+void TDefault::disableActionsOnStop() {
+	qDebug("Gui::TDefault::disableActionsOnStop");
+	TBasePlus::disableActionsOnStop();
 
 	timeslider_action->disable();
 	volumeslider_action->disable();
 }
 #endif // AUTODISABLE_ACTIONS
 
-void DefaultGui::togglePlayAction(Core::State state) {
-	qDebug("DefaultGui::togglePlayAction");
-	BaseGui::togglePlayAction(state);
+void TDefault::togglePlayAction(Core::State state) {
+	qDebug("Gui::TDefault::togglePlayAction");
+	TBasePlus::togglePlayAction(state);
 
 	if (state == Core::Playing) {
 		playOrPauseAct->setIcon(Images::icon("pause"));
@@ -166,7 +169,7 @@ void DefaultGui::togglePlayAction(Core::State state) {
 	}
 }
 
-void DefaultGui::createMenus() {
+void TDefault::createMenus() {
 	toolbar_menu = new QMenu(this);
 	toolbar_menu->addAction(toolbar1->toggleViewAction());
 	toolbar_menu->addAction(toolbar2->toggleViewAction());
@@ -187,7 +190,7 @@ void DefaultGui::createMenus() {
 	optionsMenu->addMenu(statusbar_menu);
 }
 
-QMenu * DefaultGui::createPopupMenu() {
+QMenu * TDefault::createPopupMenu() {
 	QMenu * m = new QMenu(this);
 	m->addAction(editToolbar1Act);
 	m->addAction(editControl1Act);
@@ -196,7 +199,7 @@ QMenu * DefaultGui::createPopupMenu() {
 	return m;
 }
 
-void DefaultGui::createMainToolBars() {
+void TDefault::createMainToolBars() {
 	toolbar1 = new EditableToolbar( this );
 	toolbar1->setObjectName("toolbar1");
 	//toolbar1->setMovable(false);
@@ -240,8 +243,8 @@ void DefaultGui::createMainToolBars() {
 }
 
 
-void DefaultGui::createControlWidgetMini() {
-	qDebug("DefaultGui::createControlWidgetMini");
+void TDefault::createControlWidgetMini() {
+	qDebug("Gui::TDefault::createControlWidgetMini");
 
 	controlwidget_mini = new EditableToolbar( this );
 	controlwidget_mini->setObjectName("controlwidget_mini");
@@ -259,8 +262,8 @@ void DefaultGui::createControlWidgetMini() {
 	controlwidget_mini->hide();
 }
 
-void DefaultGui::createControlWidget() {
-	qDebug("DefaultGui::createControlWidget");
+void TDefault::createControlWidget() {
+	qDebug("Gui::TDefault::createControlWidget");
 
 	controlwidget = new EditableToolbar( this );
 	controlwidget->setObjectName("controlwidget");
@@ -287,7 +290,7 @@ void DefaultGui::createControlWidget() {
 	controlwidget->setDefaultActions(controlwidget_actions);
 }
 
-void DefaultGui::createFloatingControl() {
+void TDefault::createFloatingControl() {
 	// Floating control
 	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
@@ -326,8 +329,8 @@ void DefaultGui::createFloatingControl() {
 	floating_control->hide();
 }
 
-void DefaultGui::createStatusBar() {
-	qDebug("DefaultGui::createStatusBar");
+void TDefault::createStatusBar() {
+	qDebug("Gui::TDefault::createStatusBar");
 
 	time_display = new QLabel( statusBar() );
 	time_display->setObjectName("time_display");
@@ -385,10 +388,10 @@ void DefaultGui::createStatusBar() {
 	video_info_display->hide();
 }
 
-void DefaultGui::retranslateStrings() {
-	qDebug("DefaultGui::retranslateStrings");
+void TDefault::retranslateStrings() {
+	qDebug("Gui::TDefault::retranslateStrings");
 
-	BaseGuiPlus::retranslateStrings();
+	TBasePlus::retranslateStrings();
 
 	// Change the icon of the play/pause action
 	playOrPauseAct->setIcon(Images::icon("play"));
@@ -418,18 +421,18 @@ void DefaultGui::retranslateStrings() {
 }
 
 
-void DefaultGui::displayTime(QString text) {
+void TDefault::displayTime(QString text) {
 	time_display->setText( text );
 	time_label_action->setText(text);
 }
 
-void DefaultGui::displayFrame(int frame) {
+void TDefault::displayFrame(int frame) {
 	if (frame_display->isVisible()) {
 		frame_display->setNum( frame );
 	}
 }
 
-void DefaultGui::displayABSection(int secs_a, int secs_b) {
+void TDefault::displayABSection(int secs_a, int secs_b) {
 	QString s;
 	if (secs_a > -1) s = tr("A:%1").arg(Helper::formatTime(secs_a));
 
@@ -443,7 +446,7 @@ void DefaultGui::displayABSection(int secs_a, int secs_b) {
 	ab_section_display->setVisible( !s.isEmpty() );
 }
 
-void DefaultGui::displayVideoInfo(int width, int height, double fps) {
+void TDefault::displayVideoInfo(int width, int height, double fps) {
 	if ((width != 0) && (height != 0)) {
 		video_info_display->setText(tr("%1x%2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
 	} else {
@@ -451,16 +454,16 @@ void DefaultGui::displayVideoInfo(int width, int height, double fps) {
 	}
 }
 
-void DefaultGui::updateWidgets() {
-	qDebug("DefaultGui::updateWidgets");
+void TDefault::updateWidgets() {
+	qDebug("Gui::TDefault::updateWidgets");
 
-	BaseGuiPlus::updateWidgets();
+	TBasePlus::updateWidgets();
 
 	panel->setFocus();
 }
 
-void DefaultGui::applyNewPreferences() {
-	qDebug("DefaultGui::applyNewPreferences");
+void TDefault::applyNewPreferences() {
+	qDebug("Gui::TDefault::applyNewPreferences");
 
 	if ((pref->compact_mode) && (pref->floating_display_in_compact_mode)) {
 		reconfigureFloatingControl();
@@ -469,10 +472,10 @@ void DefaultGui::applyNewPreferences() {
 		floating_control->deactivate();
 	}
 
-	BaseGuiPlus::applyNewPreferences();
+	TBasePlus::applyNewPreferences();
 }
 
-void DefaultGui::reconfigureFloatingControl() {
+void TDefault::reconfigureFloatingControl() {
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
@@ -480,10 +483,10 @@ void DefaultGui::reconfigureFloatingControl() {
 	floating_control->setHideDelay(pref->floating_hide_delay);
 }
 
-void DefaultGui::aboutToEnterFullscreen() {
-	//qDebug("DefaultGui::aboutToEnterFullscreen");
+void TDefault::aboutToEnterFullscreen() {
+	//qDebug("Gui::TDefault::aboutToEnterFullscreen");
 
-	BaseGuiPlus::aboutToEnterFullscreen();
+	TBasePlus::aboutToEnterFullscreen();
 
 	// Show floating_control
 	reconfigureFloatingControl();
@@ -505,10 +508,10 @@ void DefaultGui::aboutToEnterFullscreen() {
 	}
 }
 
-void DefaultGui::aboutToExitFullscreen() {
-	//qDebug("DefaultGui::aboutToExitFullscreen");
+void TDefault::aboutToExitFullscreen() {
+	//qDebug("Gui::TDefault::aboutToExitFullscreen");
 
-	BaseGuiPlus::aboutToExitFullscreen();
+	TBasePlus::aboutToExitFullscreen();
 
 	// Hide floating_control
 	if (!pref->compact_mode || !pref->floating_display_in_compact_mode) {
@@ -524,12 +527,12 @@ void DefaultGui::aboutToExitFullscreen() {
 		toolbar2->setVisible( fullscreen_toolbar2_was_visible );
 	}
 
-	//qDebug("DefaultGui::aboutToExitFullscreen done");
+	//qDebug("Gui::TDefault::aboutToExitFullscreen done");
 }
 
-void DefaultGui::aboutToEnterCompactMode() {
+void TDefault::aboutToEnterCompactMode() {
 
-	BaseGuiPlus::aboutToEnterCompactMode();
+	TBasePlus::aboutToEnterCompactMode();
 
 	// Show floating_control
 	if (pref->floating_display_in_compact_mode) {
@@ -550,8 +553,8 @@ void DefaultGui::aboutToEnterCompactMode() {
 	toolbar2->hide();
 }
 
-void DefaultGui::aboutToExitCompactMode() {
-	BaseGuiPlus::aboutToExitCompactMode();
+void TDefault::aboutToExitCompactMode() {
+	TBasePlus::aboutToExitCompactMode();
 
 	// Hide floating_control
 	if (pref->floating_display_in_compact_mode) {
@@ -569,14 +572,14 @@ void DefaultGui::aboutToExitCompactMode() {
 	resizeEvent( new QResizeEvent( size(), size() ) );
 }
 
-void DefaultGui::resizeEvent( QResizeEvent * e ) {
+void TDefault::resizeEvent( QResizeEvent * e ) {
 	/*
-	qDebug("DefaultGui::resizeEvent %d x %d", width(), height());
+	qDebug("Gui::TDefault::resizeEvent %d x %d", width(), height());
 	qDebug(" controlwidget width: %d", controlwidget->width() );
 	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width() );
 	*/
 
-	BaseGuiPlus::resizeEvent(e);
+	TBasePlus::resizeEvent(e);
 
 #if QT_VERSION < 0x040000
 #define LIMIT 470
@@ -596,13 +599,13 @@ void DefaultGui::resizeEvent( QResizeEvent * e ) {
 }
 
 #if USE_MINIMUMSIZE
-QSize DefaultGui::minimumSizeHint() const {
+QSize TDefault::minimumSizeHint() const {
 	return QSize(controlwidget_mini->sizeHint().width(), 0);
 }
 #endif
 
-void DefaultGui::adjustFloatingControlSize() {
-	qDebug("DefaultGui::adjustFloatingControlSize");
+void TDefault::adjustFloatingControlSize() {
+	qDebug("Gui::TDefault::adjustFloatingControlSize");
 	//floating_control->adjustSize();
 	QWidget *iw = floating_control->internalWidget();
 	QSize iws = iw->size();
@@ -612,11 +615,11 @@ void DefaultGui::adjustFloatingControlSize() {
 	floating_control->resize(floating_control->width(), new_height);
 }
 
-void DefaultGui::saveConfig(const QString &group) {
+void TDefault::saveConfig(const QString &group) {
 	Q_UNUSED(group)
-	qDebug("DefaultGui::saveConfig");
+	qDebug("Gui::TDefault::saveConfig");
 
-	BaseGuiPlus::saveConfig("default_gui");
+	TBasePlus::saveConfig("default_gui");
 
 	QSettings * set = settings;
 	set->beginGroup( "default_gui");
@@ -650,11 +653,11 @@ void DefaultGui::saveConfig(const QString &group) {
 	set->endGroup();
 }
 
-void DefaultGui::loadConfig(const QString &group) {
+void TDefault::loadConfig(const QString &group) {
 	Q_UNUSED(group)
-	qDebug("DefaultGui::loadConfig");
+	qDebug("Gui::TDefault::loadConfig");
 
-	BaseGuiPlus::loadConfig("default_gui");
+	TBasePlus::loadConfig("default_gui");
 
 	QSettings * set = settings;
 	set->beginGroup("default_gui");
@@ -672,7 +675,7 @@ void DefaultGui::loadConfig(const QString &group) {
 	if (toolbar_version >= TOOLBAR_VERSION) {
 		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
-		qWarning("DefaultGui::loadConfig: toolbar too old, loading default one");
+		qWarning("TDefault::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
@@ -708,4 +711,6 @@ void DefaultGui::loadConfig(const QString &group) {
 	}
 }
 
-#include "moc_defaultgui.cpp"
+} // namespace Gui
+
+#include "moc_default.cpp"

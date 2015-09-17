@@ -333,6 +333,7 @@ bool PlayerProcess::parseLine(QString &line) {
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
 	// Emitted on DVDNAV menus when image not mpeg2 compliant
+	// TODO: move to MplayerProcess?
 	static QRegExp rx_kill_line("Invalid horizontal or vertical size value");
 
 	// Trim line
@@ -345,7 +346,7 @@ bool PlayerProcess::parseLine(QString &line) {
 		return true;
 
 	// Output line to console
-	qDebug("PlayerProcess::parseLine: '%s'", line.toUtf8().data() );
+	qDebug("PlayerProcess::parseLine [%f]: '%s'", md->time_sec, line.toUtf8().data() );
 
 	// Output line to logs
 	emit lineAvailable(line);

@@ -38,7 +38,7 @@ using namespace Global;
 
 
 MpcGui::MpcGui( QWidget * parent, Qt::WindowFlags flags )
-	: BaseGuiPlus( parent, flags )
+	: Gui::TBasePlus( parent, flags )
 {
 	createActions();
 	createControlWidget();
@@ -136,7 +136,7 @@ void MpcGui::createFloatingControl() {
 void MpcGui::retranslateStrings() {
 	qDebug("MpcGui::retranslateStrings");
 
-	BaseGuiPlus::retranslateStrings();
+	Gui::TBasePlus::retranslateStrings();
 
 	controlwidget->setWindowTitle( tr("Control bar") );
 	timeslidewidget->setWindowTitle( tr("Seek bar") );
@@ -146,7 +146,7 @@ void MpcGui::retranslateStrings() {
 
 #if AUTODISABLE_ACTIONS
 void MpcGui::enableActionsOnPlaying() {
-	BaseGuiPlus::enableActionsOnPlaying();
+	Gui::TBasePlus::enableActionsOnPlaying();
 
 	timeslider_action->enable();
 #if USE_VOLUME_BAR
@@ -155,7 +155,7 @@ void MpcGui::enableActionsOnPlaying() {
 }
 
 void MpcGui::disableActionsOnStop() {
-	BaseGuiPlus::disableActionsOnStop();
+	Gui::TBasePlus::disableActionsOnStop();
 
 	timeslider_action->disable();
 #if USE_VOLUME_BAR
@@ -165,7 +165,7 @@ void MpcGui::disableActionsOnStop() {
 #endif // AUTODISABLE_ACTIONS
 
 void MpcGui::aboutToEnterFullscreen() {
-	BaseGuiPlus::aboutToEnterFullscreen();
+	Gui::TBasePlus::aboutToEnterFullscreen();
 
 	// Show floating_control
 	// Move controls to the floating_control layout
@@ -196,7 +196,7 @@ void MpcGui::aboutToEnterFullscreen() {
 }
 
 void MpcGui::aboutToExitFullscreen() {
-	BaseGuiPlus::aboutToExitFullscreen();
+	Gui::TBasePlus::aboutToExitFullscreen();
 
 	// Remove controls from the floating_control and put them back to the mainwindow
 	floating_control->deactivate();
@@ -219,7 +219,7 @@ void MpcGui::aboutToExitFullscreen() {
 }
 
 void MpcGui::aboutToEnterCompactMode() {
-	BaseGuiPlus::aboutToEnterCompactMode();
+	Gui::TBasePlus::aboutToEnterCompactMode();
 
 	controlwidget->hide();
 	timeslidewidget->hide();
@@ -227,7 +227,7 @@ void MpcGui::aboutToEnterCompactMode() {
 }
 
 void MpcGui::aboutToExitCompactMode() {
-	BaseGuiPlus::aboutToExitCompactMode();
+	Gui::TBasePlus::aboutToExitCompactMode();
 
 	statusBar()->show();
 	controlwidget->show();
@@ -244,13 +244,13 @@ QSize MpcGui::mpcmumSizeHint() const {
 void MpcGui::saveConfig(const QString &group) {
 	Q_UNUSED(group)
 
-	BaseGuiPlus::saveConfig("mpc_gui");
+	Gui::TBasePlus::saveConfig("mpc_gui");
 }
 
 void MpcGui::loadConfig(const QString &group) {
 	Q_UNUSED(group)
 
-	BaseGuiPlus::loadConfig("mpc_gui");
+	Gui::TBasePlus::loadConfig("mpc_gui");
 
 	if (pref->compact_mode) {
 		controlwidget->hide();
@@ -461,7 +461,7 @@ void MpcGui::setJumpTexts() {
 
 void MpcGui::updateWidgets() {
 
-	BaseGuiPlus::updateWidgets();
+	Gui::TBasePlus::updateWidgets();
 
 	// Frame counter
 	/* frame_display->setVisible( pref->show_frame_counter ); */

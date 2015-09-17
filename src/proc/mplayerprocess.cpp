@@ -289,6 +289,7 @@ bool MplayerProcess::titleChanged(MediaData::Type type, int title) {
 			// Videos
 
 			// Audios
+			qDebug("MplayerProcess::titleChanged: clearing audio tracks");
 			md->audios = Maps::TTracks();
 			audio_tracks_changed = true;
 
@@ -572,7 +573,7 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 		return true;
 
 	if (notified_player_is_running) {
-		// Normal way to go, playing, except for first frame
+		// Normal way to go, playing, except for the first frame
 		notifyChanges();
 
 		// Check for changes in duration once in a while.
@@ -585,11 +586,10 @@ bool MplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &
 			// Just a little longer
 			check_duration_time_diff *= 4;
 		}
-		return true;
+	} else {
+		// First and only run of state playing. Base sets notified_player_is_running.
+		playingStarted();
 	}
-
-	// First and only run of state playing
-	playingStarted();
 
 	return true;
 }
@@ -807,8 +807,8 @@ bool MplayerProcess::parseLine(QString &line) {
 	if (rx_dvdnav_title_is_menu.indexIn(line) >= 0) {
 		qDebug("MplayerProcess::parseLine: title is menu");
 		md->title_is_menu = true;
-		// Menus can have a length. If the menu has no length we get:
-		// 'Failed to get value of property 'length'.'
+		// Menus can have a length. If the menu has no length we get
+		// 'Failed to get value of property 'length'.' and clear the duration.
 		if (notified_player_is_running)
 			writeToStdin("get_property length");
 		emit receivedTitleIsMenu();
@@ -816,7 +816,7 @@ bool MplayerProcess::parseLine(QString &line) {
 	}
 	if (line == "Failed to get value of property 'length'.") {
 		if (md->title_is_menu) {
-			qDebug("MplayerProcess::parseLine: this menu has no length, cleaning time");
+			qDebug("MplayerProcess::parseLine: this menu has no length, clearing time");
 			clearTime();
 			notifyDuration(0);
 			return true;
@@ -824,7 +824,7 @@ bool MplayerProcess::parseLine(QString &line) {
 		return false;
 	}
 	if (rx_dvdnav_title_is_movie.indexIn(line) >= 0) {
-		qDebug("MplayerProcess::parseLine: title is movie");
+		qDebug("MplayerProcess::parseLine: title is a movie");
 		md->title_is_menu = false;
 		emit receivedTitleIsMovie();
 		return true;

@@ -461,7 +461,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	}
 
 	// Move of main window. Moves can be canceled, but that should be handled below.
-	// Set by BaseGui::moveEvent
+	// Set by Gui::TBase::moveEvent
 	if (main_window_moved) {
 		main_window_moved = false;
 		//qDebug("MplayerWindow::mouseReleaseEvent: canceled release event dragging mainwindow");

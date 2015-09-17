@@ -3589,7 +3589,7 @@ void Core::dvdnavSelect() {
 	}
 }
 
-// Slot called by action dvdnav_mouse and BaseGui when left mouse clicked
+// Slot called by action dvdnav_mouse and Gui::TBase when left mouse clicked
 void Core::dvdnavMouse() {
 	qDebug("Core::dvdnavMouse");
 

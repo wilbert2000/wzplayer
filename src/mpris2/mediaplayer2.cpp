@@ -37,13 +37,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#include "mediaplayer2.h"
-#include "mpris2.h"
-#include "basegui.h"
 #include <QApplication>
 
+#include "mediaplayer2.h"
+#include "mpris2.h"
+#include "gui/base.h"
 
-MediaPlayer2::MediaPlayer2(BaseGui* gui, QObject* parent)
+
+MediaPlayer2::MediaPlayer2(Gui::TBase* gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
       m_gui(gui)
 {

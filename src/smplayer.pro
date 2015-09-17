@@ -173,13 +173,13 @@ HEADERS += guiconfig.h \
 	favorites.h \
 	tvlist.h \
 	favoriteeditor.h \
-	basegui.h \
-	baseguiplus.h \
-	autohidewidget.h \
+    gui/base.h \
+	gui/baseplus.h \
+    gui/default.h \
+    autohidewidget.h \
 	widgetactions.h \
 	toolbareditor.h \
 	editabletoolbar.h \
-	defaultgui.h \
 	minigui.h \
 	clhelp.h \
 	cleanconfig.h \
@@ -273,13 +273,13 @@ SOURCES	+= version.cpp \
 	favorites.cpp \
 	tvlist.cpp \
 	favoriteeditor.cpp \
-	basegui.cpp \
-	baseguiplus.cpp \
-	autohidewidget.cpp \
+    gui/base.cpp \
+	gui/baseplus.cpp \
+    gui/default.cpp \
+    autohidewidget.cpp \
 	widgetactions.cpp \
 	toolbareditor.cpp \
 	editabletoolbar.cpp \
-	defaultgui.cpp \
 	minigui.cpp \
 	clhelp.cpp \
 	cleanconfig.cpp \

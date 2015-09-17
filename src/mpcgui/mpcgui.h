@@ -19,7 +19,7 @@
 #ifndef _MPC_GUI_H_
 #define _MPC_GUI_H_
 
-#include "baseguiplus.h"
+#include "gui/baseplus.h"
 #include "guiconfig.h"
 
 #define USE_VOLUME_BAR 1
@@ -31,7 +31,7 @@ class AutohideWidget;
 class QSpacerItem;
 class QToolBar;
 
-class MpcGui : public BaseGuiPlus
+class MpcGui : public Gui::TBasePlus
 {
 	Q_OBJECT
 

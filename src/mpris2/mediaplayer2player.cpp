@@ -40,7 +40,7 @@
 
 #include "mediaplayer2player.h"
 #include "mpris2.h"
-#include "basegui.h"
+#include "gui/base.h"
 #include "core.h"
 #include "playlist.h"
 
@@ -53,7 +53,7 @@ static QByteArray makeTrackId(const QString& source)
             .toHex();
 }
 
-MediaPlayer2Player::MediaPlayer2Player(BaseGui * gui, QObject* parent)
+MediaPlayer2Player::MediaPlayer2Player(Gui::TBase * gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
       m_core(gui->getCore()),
       m_playlist(gui->getPlaylist())

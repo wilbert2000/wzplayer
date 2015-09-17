@@ -16,12 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _DEFAULTGUI_H_
-#define _DEFAULTGUI_H_
+#ifndef _GUI_DEFAULT_H_
+#define _GUI_DEFAULT_H_
+
+#include <QPoint>
 
 #include "guiconfig.h"
-#include "baseguiplus.h"
-#include <QPoint>
+#include "baseplus.h"
 
 class QToolBar;
 class EditableToolbar;
@@ -39,13 +40,15 @@ class MyAction;
 class SeekingButton;
 #endif
 
-class DefaultGui : public BaseGuiPlus
+namespace Gui {
+	
+class TDefault : public TBasePlus
 {
 	Q_OBJECT
 
 public:
-	DefaultGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
-	~DefaultGui();
+	TDefault( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	~TDefault();
 
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
@@ -142,4 +145,6 @@ protected:
 	bool compact_toolbar2_was_visible;
 };
 
-#endif
+} // namespace GUI
+
+#endif // _GUI_DEFAULT_H_

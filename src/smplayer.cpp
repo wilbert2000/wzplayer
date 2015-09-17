@@ -17,13 +17,20 @@
 */
 
 #include "smplayer.h"
-#include "defaultgui.h"
-#include "minigui.h"
+
+#include <QDir>
+#include <QUrl>
+#include <QTime>
+#include <stdio.h>
+
+#include "config.h"
 #include "global.h"
+
+#include "gui/default.h"
+#include "minigui.h"
 #include "paths.h"
 #include "translator.h"
 #include "version.h"
-#include "config.h"
 #include "clhelp.h"
 #include "cleanconfig.h"
 #include "myapplication.h"
@@ -36,10 +43,6 @@
 #include "skingui.h"
 #endif
 
-#include <QDir>
-#include <QUrl>
-#include <QTime>
-#include <stdio.h>
 
 #ifdef Q_OS_WIN
 #if USE_ASSOCIATIONS
@@ -55,7 +58,7 @@
 
 using namespace Global;
 
-BaseGui * SMPlayer::main_window = 0;
+Gui::TBase * SMPlayer::main_window = 0;
 
 SMPlayer::SMPlayer(const QString & config_path, QObject * parent )
 	: QObject(parent) 
@@ -101,7 +104,7 @@ SMPlayer::~SMPlayer() {
 #endif
 }
 
-BaseGui * SMPlayer::gui() {
+Gui::TBase * SMPlayer::gui() {
 
 	if (main_window == 0) {
 		// Changes to app path, so smplayer can find a relative mplayer path
@@ -143,10 +146,10 @@ BaseGui * SMPlayer::gui() {
 	return main_window;
 }
 
-BaseGui * SMPlayer::createGUI(QString gui_name) {
+Gui::TBase * SMPlayer::createGUI(QString gui_name) {
 	qDebug() << "SMPlayer::createGUI:" << gui_name;
 
-	BaseGui * gui = 0;
+	Gui::TBase * gui = 0;
 
 #ifdef SKINS
 	if (gui_name.toLower() == "skingui")
@@ -161,13 +164,15 @@ BaseGui * SMPlayer::createGUI(QString gui_name) {
 		gui = new MpcGui(0);
 	else
 #endif
-		gui = new DefaultGui(0);
+		gui = new Gui::TDefault(0);
 
 	gui->loadConfig("");
 	qDebug("SMPlayer::createGUI: loadConfig done. Translating...");
 	gui->retranslate();
+
 	gui->setForceCloseOnFinish(close_at_end);
 	gui->setForceStartInFullscreen(start_in_fullscreen);
+
 	connect(gui, SIGNAL(requestRestart()), this, SLOT(restart()));
 
 #if SINGLE_INSTANCE
@@ -177,13 +182,14 @@ BaseGui * SMPlayer::createGUI(QString gui_name) {
 	app->setActivationWindow(gui);
 #endif
 
-	qDebug() << "SMPlayer::createGUI: done";
+	qDebug() << "SMPlayer::createGUI: create" << gui_name << "done";
 	return gui;
 }
 
 void SMPlayer::restart() {
 	qDebug("SMPlayer::restart");
 
+	// Leaking timers
 	requested_restart = true;
 	main_window = 0;
 }

@@ -19,7 +19,7 @@
 #ifndef _MINI_GUI_H_
 #define _MINI_GUI_H_
 
-#include "baseguiplus.h"
+#include "gui/baseplus.h"
 #include "guiconfig.h"
 
 #define USE_VOLUME_BAR 1
@@ -30,7 +30,7 @@ class TimeLabelAction;
 class AutohideWidget;
 class EditableToolbar;
 
-class MiniGui : public BaseGuiPlus
+class MiniGui : public Gui::TBasePlus
 {
 	Q_OBJECT
 

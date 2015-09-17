@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#include "basegui.h"
+#include "gui/base.h"
 
 class SMPlayer : public QObject
 {
@@ -39,7 +39,7 @@ public:
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
 	ExitCode processArgs(QStringList args);
 
-	BaseGui * gui();
+	Gui::TBase* gui();
 
 	void start();
 
@@ -47,7 +47,7 @@ private slots:
 	void restart();
 
 private:
-	BaseGui * createGUI(QString gui_name);
+	Gui::TBase * createGUI(QString gui_name);
 #ifndef PORTABLE_APP
 	void createConfigDirectory();
 #endif
@@ -57,7 +57,7 @@ private:
 	void createFontFile();
 #endif
 
-	static BaseGui * main_window;
+	static Gui::TBase * main_window;
 
 	QStringList files_to_play;
 	QString subtitle_file;

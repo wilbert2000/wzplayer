@@ -16,7 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "baseguiplus.h"
+#include "baseplus.h"
+
+#include <QMenu>
+#include <QCloseEvent>
+#include <QApplication>
+#include <QDesktopWidget>
+
 #include "config.h"
 #include "myaction.h"
 #include "global.h"
@@ -31,11 +37,6 @@
 
 #include "widgetactions.h"
 
-#include <QMenu>
-#include <QCloseEvent>
-#include <QApplication>
-#include <QDesktopWidget>
-
 #if DOCK_PLAYLIST
 #include <QDockWidget>
 #include "playlistdock.h"
@@ -46,8 +47,10 @@
 
 using namespace Global;
 
-BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags)
-	: BaseGui( parent, flags )
+namespace Gui {
+
+TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
+	: TBase( parent, flags )
 {
 	// Initialize variables
 	mainwindow_visible = true;
@@ -148,10 +151,10 @@ BaseGuiPlus::BaseGuiPlus( QWidget * parent, Qt::WindowFlags flags)
 #endif // DOCK_PLAYLIST
 }
 
-BaseGuiPlus::~BaseGuiPlus() {
+TBasePlus::~TBasePlus() {
 }
 
-bool BaseGuiPlus::startHidden() {
+bool TBasePlus::startHidden() {
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	return false;
 #else
@@ -162,7 +165,7 @@ bool BaseGuiPlus::startHidden() {
 #endif
 }
 
-void BaseGuiPlus::switchToTray() {
+void TBasePlus::switchToTray() {
 
 	exitFullscreen();
 	showAll(false); // Hide windows
@@ -177,27 +180,27 @@ void BaseGuiPlus::switchToTray() {
 	}
 }
 
-void BaseGuiPlus::closeWindow() {
-	qDebug("BaseGuiPlus::closeWindow");
+void TBasePlus::closeWindow() {
+	qDebug("Gui::TBasePlus::closeWindow");
 
 	if (tray->isVisible()) {
 		switchToTray();
 	} else {
-		BaseGui::closeWindow();
+		TBase::closeWindow();
 	}
 }
 
-void BaseGuiPlus::quit() {
-	qDebug("BaseGuiPlus::quit");
+void TBasePlus::quit() {
+	qDebug("Gui::TBasePlus::quit");
 
 	// Bypass switch to tray
-	BaseGui::closeWindow();
+	TBase::closeWindow();
 }
 
-void BaseGuiPlus::retranslateStrings() {
-	qDebug("BaseGuiPlus::retranslateStrings");
+void TBasePlus::retranslateStrings() {
+	qDebug("Gui::TBasePlus::retranslateStrings");
 
-	BaseGui::retranslateStrings();
+	TBase::retranslateStrings();
 
 	quitAct->change( Images::icon("exit"), tr("&Quit") );
 	showTrayAct->change( Images::icon("systray"), tr("S&how icon in system tray") );
@@ -209,17 +212,17 @@ void BaseGuiPlus::retranslateStrings() {
 #endif
 }
 
-void BaseGuiPlus::updateShowAllAct() {
+void TBasePlus::updateShowAllAct() {
 	if (isVisible()) 
 		showAllAct->change( tr("&Hide") );
 	else
 		showAllAct->change( tr("&Restore") );
 }
 
-void BaseGuiPlus::saveConfig(const QString &group) {
-	qDebug("BaseGuiPlus::saveConfig");
+void TBasePlus::saveConfig(const QString &group) {
+	qDebug("Gui::TBasePlus::saveConfig");
 
-	BaseGui::saveConfig(group);
+	TBase::saveConfig(group);
 
 	QSettings * set = settings;
 	// Store inside group derived class
@@ -242,10 +245,10 @@ void BaseGuiPlus::saveConfig(const QString &group) {
 	set->endGroup();
 }
 
-void BaseGuiPlus::loadConfig(const QString &group) {
-	qDebug("BaseGuiPlus::loadConfig");
+void TBasePlus::loadConfig(const QString &group) {
+	qDebug("Gui::TBasePlus::loadConfig");
 
-	BaseGui::loadConfig(group);
+	TBase::loadConfig(group);
 
 	QSettings * set = settings;
 	// load from group derived class
@@ -274,8 +277,8 @@ void BaseGuiPlus::loadConfig(const QString &group) {
 }
 
 
-void BaseGuiPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
-	qDebug("DefaultGui::trayIconActivated: %d", reason);
+void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+	qDebug("Gui::TBasePlus::trayIconActivated: %d", reason);
 
 	updateShowAllAct();
 
@@ -288,18 +291,18 @@ void BaseGuiPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 	}
 }
 
-void BaseGuiPlus::toggleShowAll() {
+void TBasePlus::toggleShowAll() {
 	// Ignore if tray is not visible
 	if (tray->isVisible()) {
 		showAll( !isVisible() );
 	}
 }
 
-void BaseGuiPlus::showAll() {
+void TBasePlus::showAll() {
 	if (!isVisible()) showAll(true);
 }
 
-void BaseGuiPlus::showAll(bool b) {
+void TBasePlus::showAll(bool b) {
 	if (!b) {
 		// Hide all
 #if DOCK_PLAYLIST
@@ -350,34 +353,34 @@ void BaseGuiPlus::showAll(bool b) {
 	updateShowAllAct();
 }
 
-void BaseGuiPlus::resizeWindow(int w, int h) {
-	qDebug("BaseGuiPlus::resizeWindow: %d, %d", w, h);
+void TBasePlus::resizeWindow(int w, int h) {
+	qDebug("Gui::TBasePlus::resizeWindow: %d, %d", w, h);
 
 	if (tray->isVisible() && !isVisible())
 		showAll(true);
 
-	BaseGui::resizeWindow(w, h );
+	TBase::resizeWindow(w, h );
 }
 
-void BaseGuiPlus::updateMediaInfo() {
-	qDebug("BaseGuiPlus::updateMediaInfo");
-	BaseGui::updateMediaInfo();
+void TBasePlus::updateMediaInfo() {
+	qDebug("Gui::TBasePlus::updateMediaInfo");
+	TBase::updateMediaInfo();
 
 	tray->setToolTip( windowTitle() );
 }
 
-void BaseGuiPlus::setWindowCaption(const QString & title) {
+void TBasePlus::setWindowCaption(const QString & title) {
 	tray->setToolTip( title );
 
-	BaseGui::setWindowCaption( title );
+	TBase::setWindowCaption( title );
 }
 
 
 // Playlist stuff
-void BaseGuiPlus::aboutToEnterFullscreen() {
-	//qDebug("BaseGuiPlus::aboutToEnterFullscreen");
+void TBasePlus::aboutToEnterFullscreen() {
+	//qDebug("Gui::TBasePlus::aboutToEnterFullscreen");
 
-	BaseGui::aboutToEnterFullscreen();
+	TBase::aboutToEnterFullscreen();
 
 #if DOCK_PLAYLIST
 	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
@@ -400,10 +403,10 @@ void BaseGuiPlus::aboutToEnterFullscreen() {
 #endif
 }
 
-void BaseGuiPlus::aboutToExitFullscreen() {
-	//qDebug("BaseGuiPlus::aboutToExitFullscreen");
+void TBasePlus::aboutToExitFullscreen() {
+	//qDebug("Gui::TBasePlus::aboutToExitFullscreen");
 
-	BaseGui::aboutToExitFullscreen();
+	TBase::aboutToExitFullscreen();
 
 #if DOCK_PLAYLIST
 	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea | 
@@ -421,10 +424,10 @@ void BaseGuiPlus::aboutToExitFullscreen() {
 	ignore_playlist_events = false;
 #endif
 
-	//qDebug("BaseGuiPlus::aboutToExitFullscreen done");
+	//qDebug("Gui::TBasePlus::aboutToExitFullscreen done");
 }
 
-void BaseGuiPlus::aboutToEnterCompactMode() {
+void TBasePlus::aboutToEnterCompactMode() {
 #if DOCK_PLAYLIST
 	compact_playlist_was_visible = (playlistdock->isVisible() && 
                                     !playlistdock->isFloating());
@@ -433,17 +436,17 @@ void BaseGuiPlus::aboutToEnterCompactMode() {
 #endif
 
     widgets_size = height() - panel->height();
-    qDebug("BaseGuiPlus::aboutToEnterCompactMode: widgets_size: %d", widgets_size);
+	qDebug("Gui::TBasePlus::aboutToEnterCompactMode: widgets_size: %d", widgets_size);
 
-	BaseGui::aboutToEnterCompactMode();
+	TBase::aboutToEnterCompactMode();
 
 	if (pref->resize_method == Preferences::Always) {
 		resize( width(), height() - widgets_size );
 	}
 }
 
-void BaseGuiPlus::aboutToExitCompactMode() {
-	BaseGui::aboutToExitCompactMode();
+void TBasePlus::aboutToExitCompactMode() {
+	TBase::aboutToExitCompactMode();
 
 	if (pref->resize_method == Preferences::Always) {
 		resize( width(), height() + widgets_size );
@@ -456,11 +459,11 @@ void BaseGuiPlus::aboutToExitCompactMode() {
 }
 
 #if DOCK_PLAYLIST
-void BaseGuiPlus::showPlaylist(bool b) {
-	qDebug("BaseGuiPlus::showPlaylist: %d", b);
-	//qDebug("BaseGuiPlus::showPlaylist (before): playlist visible: %d", playlistdock->isVisible());
-	//qDebug("BaseGuiPlus::showPlaylist (before): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	//qDebug("BaseGuiPlus::showPlaylist (before): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
+void TBasePlus::showPlaylist(bool b) {
+	qDebug("Gui::TBasePlus::showPlaylist: %d", b);
+	//qDebug("Gui::TBasePlus::showPlaylist (before): playlist visible: %d", playlistdock->isVisible());
+	//qDebug("Gui::TBasePlus::showPlaylist (before): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
+	//qDebug("Gui::TBasePlus::showPlaylist (before): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
 
 	if ( !b ) {
 		playlistdock->hide();
@@ -471,25 +474,25 @@ void BaseGuiPlus::showPlaylist(bool b) {
 		// Check if playlist is outside of the screen
 		if (playlistdock->isFloating()) {
 			if (!DesktopInfo::isInsideScreen(playlistdock)) {
-				qWarning("BaseGuiPlus::showPlaylist: playlist is outside of the screen");
+				qWarning("TBasePlus::showPlaylist: playlist is outside of the screen");
 				playlistdock->move(0,0);
 			}
 		}
 	}
 	//updateWidgets();
 
-	//qDebug("BaseGuiPlus::showPlaylist (after): playlist visible: %d", playlistdock->isVisible());
-	//qDebug("BaseGuiPlus::showPlaylist (after): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	//qDebug("BaseGuiPlus::showPlaylist (after): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
+	//qDebug("Gui::TBasePlus::showPlaylist (after): playlist visible: %d", playlistdock->isVisible());
+	//qDebug("Gui::TBasePlus::showPlaylist (after): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
+	//qDebug("Gui::TBasePlus::showPlaylist (after): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
 }
 
-void BaseGuiPlus::playlistClosed() {
+void TBasePlus::playlistClosed() {
 	showPlaylistAct->setChecked(false);
 }
 
 #if !USE_DOCK_TOPLEVEL_EVENT
-void BaseGuiPlus::dockVisibilityChanged(bool visible) {
-	qDebug("BaseGuiPlus::dockVisibilityChanged: %d", visible);
+void TBasePlus::dockVisibilityChanged(bool visible) {
+	qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
 
 	if (!playlistdock->isFloating()) {
 		if (!visible) shrinkWindow(); else stretchWindow();
@@ -498,18 +501,18 @@ void BaseGuiPlus::dockVisibilityChanged(bool visible) {
 
 #else
 
-void BaseGuiPlus::dockTopLevelChanged(bool floating) {
-	qDebug("BaseGuiPlus::dockTopLevelChanged: %d", floating);
+void TBasePlus::dockTopLevelChanged(bool floating) {
+	qDebug("Gui::TBasePlus::dockTopLevelChanged: %d", floating);
 
 	if (floating) shrinkWindow(); else stretchWindow();
 }
 #endif
 
-void BaseGuiPlus::stretchWindow() {
-	qDebug("BaseGuiPlus::stretchWindow");
+void TBasePlus::stretchWindow() {
+	qDebug("Gui::TBasePlus::stretchWindow");
 	if ((ignore_playlist_events) || (pref->resize_method!=Preferences::Always)) return;
 
-	qDebug("BaseGuiPlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
+	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
 
 	if ( (dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
          (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea) )
@@ -519,7 +522,7 @@ void BaseGuiPlus::stretchWindow() {
 		//if (new_height > DesktopInfo::desktop_size(this).height()) 
 		//	new_height = DesktopInfo::desktop_size(this).height() - 20;
 
-		qDebug("BaseGuiPlus::stretchWindow: stretching: new height: %d", new_height);
+		qDebug("Gui::TBasePlus::stretchWindow: stretching: new height: %d", new_height);
 		resize( width(), new_height );
 
 		//resizeWindow(core->mset.win_width, core->mset.win_height);
@@ -532,22 +535,22 @@ void BaseGuiPlus::stretchWindow() {
 	{
 		int new_width = width() + playlistdock->width();
 
-		qDebug("BaseGuiPlus::stretchWindow: stretching: new width: %d", new_width);
+		qDebug("Gui::TBasePlus::stretchWindow: stretching: new width: %d", new_width);
 		resize( new_width, height() );
 	}
 }
 
-void BaseGuiPlus::shrinkWindow() {
-	qDebug("BaseGuiPlus::shrinkWindow");
+void TBasePlus::shrinkWindow() {
+	qDebug("Gui::TBasePlus::shrinkWindow");
 	if ((ignore_playlist_events) || (pref->resize_method!=Preferences::Always)) return;
 
-	qDebug("BaseGuiPlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
+	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
 
 	if ( (dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
          (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea) )
 	{
 		int new_height = height() - playlistdock->height();
-		qDebug("DefaultGui::shrinkWindow: shrinking: new height: %d", new_height);
+		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new height: %d", new_height);
 		resize( width(), new_height );
 
 		//resizeWindow(core->mset.win_width, core->mset.win_height);
@@ -560,7 +563,7 @@ void BaseGuiPlus::shrinkWindow() {
 	{
 		int new_width = width() - playlistdock->width();
 
-		qDebug("BaseGuiPlus::shrinkWindow: shrinking: new width: %d", new_width);
+		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new width: %d", new_width);
 		resize( new_width, height() );
 	}
 }
@@ -568,7 +571,7 @@ void BaseGuiPlus::shrinkWindow() {
 #endif
 
 // Convenience functions intended for other GUI's
-TimeSliderAction * BaseGuiPlus::createTimeSliderAction(QWidget * parent) {
+TimeSliderAction * TBasePlus::createTimeSliderAction(QWidget * parent) {
 	TimeSliderAction * timeslider_action = new TimeSliderAction( parent );
 	timeslider_action->setObjectName("timeslider_action");
 
@@ -597,7 +600,7 @@ TimeSliderAction * BaseGuiPlus::createTimeSliderAction(QWidget * parent) {
 	return timeslider_action;
 }
 
-VolumeSliderAction * BaseGuiPlus::createVolumeSliderAction(QWidget * parent) {
+VolumeSliderAction * TBasePlus::createVolumeSliderAction(QWidget * parent) {
 	VolumeSliderAction * volumeslider_action = new VolumeSliderAction(parent);
 	volumeslider_action->setObjectName("volumeslider_action");
 
@@ -611,7 +614,7 @@ VolumeSliderAction * BaseGuiPlus::createVolumeSliderAction(QWidget * parent) {
 
 #ifdef Q_OS_OS2
 // we test if xcenter is available at all. if not disable the tray action. this is possible when xcenter is not opened or crashed
-void BaseGuiPlus::trayAvailable() {
+void TBasePlus::trayAvailable() {
 	if (!tray->isSystemTrayAvailable()) {
 			optionsMenu->removeAction(showTrayAct);
 	}
@@ -621,4 +624,6 @@ void BaseGuiPlus::trayAvailable() {
 }
 #endif
 
-#include "moc_baseguiplus.cpp"
+} // namespace Gui
+
+#include "moc_baseplus.cpp"

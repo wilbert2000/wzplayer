@@ -16,17 +16,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _BASEGUI_H_
-#define _BASEGUI_H_
+#ifndef _GUI_BASE_H_
+#define _GUI_BASE_H_
 
 #include <QMainWindow>
 #include <QNetworkProxy>
+
+#include "config.h"
+#include "guiconfig.h"
 #include "mediadata.h"
 #include "mediasettings.h"
 #include "preferences.h"
 #include "core.h"
-#include "config.h"
-#include "guiconfig.h"
 
 #ifdef Q_OS_WIN
 #ifdef AVOID_SCREENSAVER
@@ -66,13 +67,16 @@ class UpdateChecker;
 class ShareWidget;
 #endif
 
-class BaseGui : public QMainWindow
+namespace Gui {
+	
+
+class TBase : public QMainWindow
 {
     Q_OBJECT
     
 public:
-	BaseGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
-	~BaseGui();
+	TBase(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~TBase();
 
 	/* Return true if the window shouldn't show on startup */
 	virtual bool startHidden() { return false; };
@@ -848,5 +852,7 @@ private:
 	void hidePanel();
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_BASE_H_
 

@@ -48,11 +48,11 @@
 
 #include <unistd.h>
 
-// basegui.h includes windows.h which creates a conflict with QDBusConnection
+// base.h includes windows.h which creates a conflict with QDBusConnection
 // so moved here to avoid it
-#include "basegui.h"
+#include "gui/base.h"
 
-Mpris2::Mpris2(BaseGui* gui, QObject* parent)
+Mpris2::Mpris2(Gui::TBase* gui, QObject* parent)
     : QObject(parent)
 {
     QString mpris2Name("org.mpris.MediaPlayer2." + QLatin1String("smplayer"));

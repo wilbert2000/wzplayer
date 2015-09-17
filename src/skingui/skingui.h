@@ -20,7 +20,7 @@
 #define _SKINGUI_H_
 
 #include "guiconfig.h"
-#include "baseguiplus.h"
+#include "gui/baseplus.h"
 #include <QPoint>
 
 class QToolBar;
@@ -42,7 +42,7 @@ class SeekingButton;
 
 //#define SKIN_EDITABLE_CONTROL 1
 
-class SkinGui : public BaseGuiPlus
+class SkinGui : public Gui::TBasePlus
 {
 	Q_OBJECT
 

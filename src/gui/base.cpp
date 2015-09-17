@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "basegui.h"
+#include "base.h"
 
 #include "filedialog.h"
 #include <QMessageBox>
@@ -138,7 +138,10 @@
 
 using namespace Global;
 
-BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags ) 
+namespace Gui {
+
+
+TBase::TBase( QWidget* parent, Qt::WindowFlags flags ) 
 	: QMainWindow( parent, flags )
 #if QT_VERSION >= 0x050000
 	, was_minimized(false)
@@ -255,12 +258,13 @@ BaseGui::BaseGui( QWidget* parent, Qt::WindowFlags flags )
 #endif
 
 #ifdef MPRIS2
-	if (pref->use_mpris2) new Mpris2(this, this);
+	// TODO reenable
+	// if (pref->use_mpris2) new Mpris2(this, this);
 #endif
 }
 
-void BaseGui::setupNetworkProxy() {
-	qDebug("BaseGui::setupNetworkProxy");
+void TBase::setupNetworkProxy() {
+	qDebug("Gui::TBase::setupNetworkProxy");
 
 	QNetworkProxy proxy;
 
@@ -272,19 +276,19 @@ void BaseGui::setupNetworkProxy() {
 			proxy.setUser(pref->proxy_username);
 			proxy.setPassword(pref->proxy_password);
 		}
-		qDebug("BaseGui::setupNetworkProxy: using proxy: host: %s, port: %d, type: %d", 
+		qDebug("Gui::TBase::setupNetworkProxy: using proxy: host: %s, port: %d, type: %d", 
                pref->proxy_host.toUtf8().constData(), pref->proxy_port, pref->proxy_type);
 	} else {
 		// No proxy
 		proxy.setType(QNetworkProxy::NoProxy);
-		qDebug("BaseGui::setupNetworkProxy: no proxy");
+		qDebug("Gui::TBase::setupNetworkProxy: no proxy");
 	}
 
 	QNetworkProxy::setApplicationProxy(proxy);
 }
 
-void BaseGui::loadConfig(const QString &group) {
-	qDebug("BaseGui::loadConfig");
+void TBase::loadConfig(const QString &group) {
+	qDebug("Gui::TBase::loadConfig");
 
 #if ALLOW_CHANGE_STYLESHEET
 	changeStyleSheet(pref->iconset);
@@ -312,7 +316,7 @@ void BaseGui::loadConfig(const QString &group) {
 
 		if (!DesktopInfo::isInsideScreen(this)) {
 			move(0,0);
-			qWarning("DefaultGui::loadConfig: window is outside of the screen, moved to 0x0");
+			qWarning("Gui::TBase::loadConfig: window is outside of the screen, moved to 0x0");
 		} else {
 			// Block resize of main window by loading of video
 			// TODO: reset when video fails to load
@@ -326,8 +330,8 @@ void BaseGui::loadConfig(const QString &group) {
 	}
 }
 
-void BaseGui::saveConfig(const QString &group) {
-	qDebug("BaseGui::saveConfig");
+void TBase::saveConfig(const QString &group) {
+	qDebug("Gui::TBase::saveConfig");
 
 	if (pref->save_window_size_on_exit) {
 		QSettings * set = settings;
@@ -342,8 +346,8 @@ void BaseGui::saveConfig(const QString &group) {
 }
 
 #ifdef SINGLE_INSTANCE
-void BaseGui::handleMessageFromOtherInstances(const QString& message) {
-	qDebug("BaseGui::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
+void TBase::handleMessageFromOtherInstances(const QString& message) {
+	qDebug("Gui::TBase::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
 
 	int pos = message.indexOf(' ');
 	if (pos > -1) {
@@ -388,7 +392,7 @@ void BaseGui::handleMessageFromOtherInstances(const QString& message) {
 }
 #endif
 
-BaseGui::~BaseGui() {
+TBase::~TBase() {
 	delete core; // delete before mplayerwindow, otherwise, segfault...
 #ifdef LOG_MPLAYER
 	delete mplayer_log_window;
@@ -422,8 +426,8 @@ BaseGui::~BaseGui() {
 #endif
 }
 
-void BaseGui::createActions() {
-	qDebug("BaseGui::createActions");
+void TBase::createActions() {
+	qDebug("Gui::TBase::createActions");
 
 	// Menu File
 	openFileAct = new MyAction( QKeySequence("Ctrl+F"), this, "open_file" );
@@ -1344,7 +1348,7 @@ void BaseGui::createActions() {
 }
 
 #if AUTODISABLE_ACTIONS
-void BaseGui::setActionsEnabled(bool b) {
+void TBase::setActionsEnabled(bool b) {
 	// Menu Play
 	playAct->setEnabled(b);
 	playOrPauseAct->setEnabled(b);
@@ -1472,8 +1476,8 @@ void BaseGui::setActionsEnabled(bool b) {
 	stereoGroup->setActionsEnabled(b);
 }
 
-void BaseGui::enableActionsOnPlaying() {
-	qDebug("BaseGui::enableActionsOnPlaying");
+void TBase::enableActionsOnPlaying() {
+	qDebug("Gui::TBase::enableActionsOnPlaying");
 
 	setActionsEnabled(true);
 
@@ -1592,8 +1596,8 @@ void BaseGui::enableActionsOnPlaying() {
 	}
 }
 
-void BaseGui::disableActionsOnStop() {
-	qDebug("BaseGui::disableActionsOnStop");
+void TBase::disableActionsOnStop() {
+	qDebug("Gui::TBase::disableActionsOnStop");
 
 	setActionsEnabled(false);
 
@@ -1603,8 +1607,8 @@ void BaseGui::disableActionsOnStop() {
 }
 #endif // AUTODISABLE_ACTIONS
 
-void BaseGui::togglePlayAction(Core::State state) {
-	qDebug("BaseGui::togglePlayAction");
+void TBase::togglePlayAction(Core::State state) {
+	qDebug("Gui::TBase::togglePlayAction");
 
 #if AUTODISABLE_ACTIONS
 	if (state == Core::Playing)
@@ -1614,8 +1618,8 @@ void BaseGui::togglePlayAction(Core::State state) {
 #endif
 }
 
-void BaseGui::retranslateStrings() {
-	qDebug("BaseGui::retranslateStrings");
+void TBase::retranslateStrings() {
+	qDebug("Gui::TBase::retranslateStrings");
 
 	setWindowIcon( Images::icon("logo", 64) );
 
@@ -2099,7 +2103,7 @@ void BaseGui::retranslateStrings() {
 	if (pref_dialog) pref_dialog->mod_input()->actions_editor->updateView();
 }
 
-void BaseGui::setJumpTexts() {
+void TBase::setJumpTexts() {
 	rewind1Act->change( tr("-%1").arg(Helper::timeForJumps(pref->seeking1)) );
 	rewind2Act->change( tr("-%1").arg(Helper::timeForJumps(pref->seeking2)) );
 	rewind3Act->change( tr("-%1").arg(Helper::timeForJumps(pref->seeking3)) );
@@ -2117,11 +2121,11 @@ void BaseGui::setJumpTexts() {
 	forward3Act->setIcon( Images::icon("forward10m") );
 }
 
-void BaseGui::setWindowCaption(const QString & title) {
+void TBase::setWindowCaption(const QString & title) {
 	setWindowTitle(title);
 }
 
-void BaseGui::createCore() {
+void TBase::createCore() {
 
 	core = new Core( mplayerwindow, this, SEEKBAR_RESOLUTION);
 
@@ -2225,7 +2229,7 @@ void BaseGui::createCore() {
 			 core, SLOT(displayMessage(QString, int, int)) );
 }
 
-void BaseGui::createMplayerWindow() {
+void TBase::createMplayerWindow() {
     mplayerwindow = new MplayerWindow( panel );
 #if USE_COLORKEY
 	mplayerwindow->setColorKey( pref->color_key );
@@ -2271,7 +2275,7 @@ void BaseGui::createMplayerWindow() {
              this, SLOT(xbutton2ClickFunction()) );
 }
 
-void BaseGui::createVideoEqualizer() {
+void TBase::createVideoEqualizer() {
 	// Equalizer
 	video_equalizer = new VideoEqualizer(this);
 	connect( video_equalizer, SIGNAL(contrastChanged(int)), 
@@ -2293,7 +2297,7 @@ void BaseGui::createVideoEqualizer() {
              this, SLOT(changeVideoEqualizerBySoftware(bool)) );
 }
 
-void BaseGui::createAudioEqualizer() {
+void TBase::createAudioEqualizer() {
 	// Audio Equalizer
 	audio_equalizer = new AudioEqualizer(this);
 
@@ -2328,7 +2332,7 @@ void BaseGui::createAudioEqualizer() {
              this, SLOT(updateWidgets()) );
 }
 
-void BaseGui::createPlaylist() {
+void TBase::createPlaylist() {
 #if DOCK_PLAYLIST
 	playlist = new Playlist(core, this, 0);
 #else
@@ -2350,7 +2354,7 @@ void BaseGui::createPlaylist() {
 
 }
 
-void BaseGui::createPanel() {
+void TBase::createPanel() {
 	panel = new QWidget( this );
 	panel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 	panel->setMinimumSize( QSize(1,1) );
@@ -2363,7 +2367,7 @@ void BaseGui::createPanel() {
 	*/
 }
 
-void BaseGui::createPreferencesDialog() {
+void TBase::createPreferencesDialog() {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	pref_dialog = new PreferencesDialog(this);
 	pref_dialog->setModal(false);
@@ -2373,8 +2377,8 @@ void BaseGui::createPreferencesDialog() {
 	QApplication::restoreOverrideCursor();
 }
 
-void BaseGui::createFilePropertiesDialog() {
-	qDebug("BaseGui::createFilePropertiesDialog");
+void TBase::createFilePropertiesDialog() {
+	qDebug("Gui::TBase::createFilePropertiesDialog");
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	file_dialog = new FilePropertiesDialog(this);
 	file_dialog->setModal(false);
@@ -2384,7 +2388,7 @@ void BaseGui::createFilePropertiesDialog() {
 }
 
 
-void BaseGui::createMenus() {
+void TBase::createMenus() {
 	// MENUS
 	openMenu = menuBar()->addMenu("Open");
 	playMenu = menuBar()->addMenu("Play");
@@ -2753,9 +2757,9 @@ void BaseGui::createMenus() {
 		#endif
 		if (QFile::exists(tube_exec)) {
 			optionsMenu->addAction(showTubeBrowserAct);
-			qDebug("BaseGui::createMenus: %s does exist", tube_exec.toUtf8().constData());
+			qDebug("Gui::TBase::createMenus: %s does exist", tube_exec.toUtf8().constData());
 		} else {
-			qDebug("BaseGui::createMenus: %s does not exist", tube_exec.toUtf8().constData());
+			qDebug("Gui::TBase::createMenus: %s does not exist", tube_exec.toUtf8().constData());
 		}
 	}
 	#else
@@ -2841,8 +2845,8 @@ void BaseGui::createMenus() {
 	popup->addMenu( optionsMenu );
 }
 
-void BaseGui::closeEvent( QCloseEvent * e )  {
-	qDebug("BaseGui::closeEvent");
+void TBase::closeEvent( QCloseEvent * e )  {
+	qDebug("Gui::TBase::closeEvent");
 
 	core->close();
 
@@ -2850,17 +2854,17 @@ void BaseGui::closeEvent( QCloseEvent * e )  {
 	e->accept();
 }
 
-void BaseGui::closeWindow() {
-	qDebug("BaseGui::closeWindow");
+void TBase::closeWindow() {
+	qDebug("Gui::TBase::closeWindow");
 
 	close();
 }
 
-void BaseGui::showPlaylist() {
+void TBase::showPlaylist() {
 	showPlaylist( !playlist->isVisible() );
 }
 
-void BaseGui::showPlaylist(bool b) {
+void TBase::showPlaylist(bool b) {
 	if ( !b ) {
 		playlist->hide();
 	} else {
@@ -2870,11 +2874,11 @@ void BaseGui::showPlaylist(bool b) {
 	//updateWidgets();
 }
 
-void BaseGui::showVideoEqualizer() {
+void TBase::showVideoEqualizer() {
 	showVideoEqualizer( !video_equalizer->isVisible() );
 }
 
-void BaseGui::showVideoEqualizer(bool b) {
+void TBase::showVideoEqualizer(bool b) {
 	if (!b) {
 		video_equalizer->hide();
 	} else {
@@ -2885,11 +2889,11 @@ void BaseGui::showVideoEqualizer(bool b) {
 	updateWidgets();
 }
 
-void BaseGui::showAudioEqualizer() {
+void TBase::showAudioEqualizer() {
 	showAudioEqualizer( !audio_equalizer->isVisible() );
 }
 
-void BaseGui::showAudioEqualizer(bool b) {
+void TBase::showAudioEqualizer(bool b) {
 	if (!b) {
 		audio_equalizer->hide();
 	} else {
@@ -2900,8 +2904,8 @@ void BaseGui::showAudioEqualizer(bool b) {
 	updateWidgets();
 }
 
-void BaseGui::showPreferencesDialog() {
-	qDebug("BaseGui::showPreferencesDialog");
+void TBase::showPreferencesDialog() {
+	qDebug("Gui::TBase::showPreferencesDialog");
 
 	exitFullscreenIfNeeded();
 	
@@ -2929,8 +2933,8 @@ void BaseGui::showPreferencesDialog() {
 }
 
 // The user has pressed OK in preferences dialog
-void BaseGui::applyNewPreferences() {
-	qDebug("BaseGui::applyNewPreferences");
+void TBase::applyNewPreferences() {
+	qDebug("Gui::TBase::applyNewPreferences");
 
 	bool need_update_language = false;
 
@@ -2946,7 +2950,7 @@ void BaseGui::applyNewPreferences() {
 		QFont f;
 		f.fromString( pref->default_font );
 		if (QApplication::font() != f) {
-			qDebug("BaseGui::applyNewPreferences: setting new font: %s", pref->default_font.toLatin1().constData());
+			qDebug("Gui::TBase::applyNewPreferences: setting new font: %s", pref->default_font.toLatin1().constData());
 			QApplication::setFont(f);
 		}
 	}
@@ -3050,8 +3054,8 @@ void BaseGui::applyNewPreferences() {
 }
 
 
-void BaseGui::showFilePropertiesDialog() {
-	qDebug("BaseGui::showFilePropertiesDialog");
+void TBase::showFilePropertiesDialog() {
+	qDebug("Gui::TBase::showFilePropertiesDialog");
 
 	exitFullscreenIfNeeded();
 
@@ -3064,7 +3068,7 @@ void BaseGui::showFilePropertiesDialog() {
 	file_dialog->show();
 }
 
-void BaseGui::setDataToFileProperties() {
+void TBase::setDataToFileProperties() {
 #if ALLOW_DEMUXER_CODEC_CHANGE
 	InfoReader *i = InfoReader::obj();
 	i->getInfo();
@@ -3101,8 +3105,8 @@ void BaseGui::setDataToFileProperties() {
 	file_dialog->setMediaData( core->mdat );
 }
 
-void BaseGui::applyFileProperties() {
-	qDebug("BaseGui::applyFileProperties");
+void TBase::applyFileProperties() {
+	qDebug("Gui::TBase::applyFileProperties");
 
 	bool need_restart = false;
 
@@ -3152,8 +3156,8 @@ void BaseGui::applyFileProperties() {
 }
 
 
-void BaseGui::updateMediaInfo() {
-	qDebug("BaseGui::updateMediaInfo");
+void TBase::updateMediaInfo() {
+	qDebug("Gui::TBase::updateMediaInfo");
 
 	if (file_dialog) {
 		if (file_dialog->isVisible()) setDataToFileProperties();
@@ -3164,8 +3168,8 @@ void BaseGui::updateMediaInfo() {
 	emit videoInfoChanged(core->mdat.video_width, core->mdat.video_height, core->mdat.video_fps);
 }
 
-void BaseGui::newMediaLoaded() {
-	qDebug("BaseGui::newMediaLoaded");
+void TBase::newMediaLoaded() {
+	qDebug("Gui::TBase::newMediaLoaded");
 
 	QString filename = core->mdat.filename;
 	QString stream_title = core->mdat.stream_title;
@@ -3177,19 +3181,19 @@ void BaseGui::newMediaLoaded() {
 	updateRecents();
 }
 
-void BaseGui::gotNoFileToPlay() {
-	qDebug("BaseGui::gotNoFileToPlay");
+void TBase::gotNoFileToPlay() {
+	qDebug("Gui::TBase::gotNoFileToPlay");
 
 	playlist->resumePlay();
 }
 
 #ifdef LOG_MPLAYER
-void BaseGui::clearMplayerLog() {
+void TBase::clearMplayerLog() {
 	mplayer_log.clear();
 	if (mplayer_log_window->isVisible()) mplayer_log_window->clear();
 }
 
-void BaseGui::recordMplayerLog(QString line) {
+void TBase::recordMplayerLog(QString line) {
 	if (pref->log_mplayer) {
 		if ( (line.indexOf("A:")==-1) && (line.indexOf("V:")==-1) ) {
 			line.append("\n");
@@ -3203,8 +3207,8 @@ void BaseGui::recordMplayerLog(QString line) {
 	Save the mplayer log to a file, so it can be used by external
 	applications.
 */
-void BaseGui::autosaveMplayerLog() {
-	qDebug("BaseGui::autosaveMplayerLog");
+void TBase::autosaveMplayerLog() {
+	qDebug("Gui::TBase::autosaveMplayerLog");
 
 	if (pref->autosave_mplayer_log) {
 		if (!pref->mplayer_log_saveto.isEmpty()) {
@@ -3218,8 +3222,8 @@ void BaseGui::autosaveMplayerLog() {
 	}
 }
 
-void BaseGui::showMplayerLog() {
-	qDebug("BaseGui::showMplayerLog");
+void TBase::showMplayerLog() {
+	qDebug("Gui::TBase::showMplayerLog");
 
 	exitFullscreenIfNeeded();
 
@@ -3229,7 +3233,7 @@ void BaseGui::showMplayerLog() {
 #endif
 
 #ifdef LOG_SMPLAYER
-void BaseGui::recordSmplayerLog(QString line) {
+void TBase::recordSmplayerLog(QString line) {
 	if (pref->log_smplayer) {
 		line.append("\n");
 		smplayer_log.append(line);
@@ -3237,8 +3241,8 @@ void BaseGui::recordSmplayerLog(QString line) {
 	}
 }
 
-void BaseGui::showLog() {
-	qDebug("BaseGui::showLog");
+void TBase::showLog() {
+	qDebug("Gui::TBase::showLog");
 
 	exitFullscreenIfNeeded();
 
@@ -3247,8 +3251,8 @@ void BaseGui::showLog() {
 }
 #endif
 
-void BaseGui::updateVideoTracks() {
-	qDebug("BaseGui::updateVideoTracks");
+void TBase::updateVideoTracks() {
+	qDebug("Gui::TBase::updateVideoTracks");
 
 	videoTrackGroup->clear(true);
 
@@ -3273,8 +3277,8 @@ void BaseGui::updateVideoTracks() {
 	videotrack_menu->addActions( videoTrackGroup->actions() );
 }
 
-void BaseGui::updateAudioTracks() {
-	qDebug("BaseGui::updateAudioTracks");
+void TBase::updateAudioTracks() {
+	qDebug("Gui::TBase::updateAudioTracks");
 
 	audioTrackGroup->clear(true);
 
@@ -3299,8 +3303,8 @@ void BaseGui::updateAudioTracks() {
 	audiotrack_menu->addActions(audioTrackGroup->actions());
 }
 
-void BaseGui::updateSubtitles() {
-	qDebug("BaseGui::updateSubtitles");
+void TBase::updateSubtitles() {
+	qDebug("Gui::TBase::updateSubtitles");
 
 	// Note: use idx not ID
 	subtitleTrackGroup->clear(true);
@@ -3370,8 +3374,8 @@ void BaseGui::updateSubtitles() {
 	incSubStepAct->setEnabled(e);
 }
 
-void BaseGui::updateTitles() {
-	qDebug("BaseGui::updateTitles");
+void TBase::updateTitles() {
+	qDebug("Gui::TBase::updateTitles");
 
 	titleGroup->clear(true);
 	if (core->mdat.titles.count() == 0) {
@@ -3399,8 +3403,8 @@ void BaseGui::updateTitles() {
 	updateAngles();
 }
 
-void BaseGui::updateChapters() {
-	qDebug("BaseGui::updateChapters");
+void TBase::updateChapters() {
+	qDebug("Gui::TBase::updateChapters");
 
 	// Clear selected. Core::gotCurrentSec will set it.
 	core->mdat.chapters.setSelectedID(-1);
@@ -3424,8 +3428,8 @@ void BaseGui::updateChapters() {
 }
 
 // Angles
-void BaseGui::updateAngles() {
-	qDebug("BaseGui::updateAngels");
+void TBase::updateAngles() {
+	qDebug("Gui::TBase::updateAngels");
 
 	angleGroup->clear(true);
 	int n_angles = 0;
@@ -3448,8 +3452,8 @@ void BaseGui::updateAngles() {
 	angles_menu->addActions( angleGroup->actions() );
 }
 
-void BaseGui::updateRecents() {
-	qDebug("BaseGui::updateRecents");
+void TBase::updateRecents() {
+	qDebug("Gui::TBase::updateRecents");
 
 	// Not clear the first 2 items
 	while (recentfiles_menu->actions().count() > 2) {
@@ -3493,7 +3497,7 @@ void BaseGui::updateRecents() {
 	recentfiles_menu->menuAction()->setVisible( current_items > 0 );
 }
 
-void BaseGui::clearRecentsList() {
+void TBase::clearRecentsList() {
 	int ret = QMessageBox::question(this, tr("Confirm deletion - SMPlayer"),
 				tr("Delete the list of recent files?"),
 				QMessageBox::Cancel, QMessageBox::Ok);
@@ -3505,8 +3509,8 @@ void BaseGui::clearRecentsList() {
 	}
 }
 
-void BaseGui::updateWidgets() {
-	qDebug("BaseGui::updateWidgets");
+void TBase::updateWidgets() {
+	qDebug("Gui::TBase::updateWidgets");
 
 	// Closed caption menu
 	ccGroup->setChecked( core->mset.closed_caption_channel );
@@ -3647,7 +3651,7 @@ void BaseGui::updateWidgets() {
 
 }
 
-void BaseGui::updateVideoEqualizer() {
+void TBase::updateVideoEqualizer() {
 	// Equalizer
 	video_equalizer->setContrast( core->mset.contrast );
 	video_equalizer->setBrightness( core->mset.brightness );
@@ -3656,14 +3660,14 @@ void BaseGui::updateVideoEqualizer() {
 	video_equalizer->setGamma( core->mset.gamma );
 }
 
-void BaseGui::updateAudioEqualizer() {
+void TBase::updateAudioEqualizer() {
 	// Audio Equalizer
 	AudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : core->mset.audio_equalizer;
 	audio_equalizer->setEqualizer(l);
 }
 
-void BaseGui::setDefaultValuesFromVideoEqualizer() {
-	qDebug("BaseGui::setDefaultValuesFromVideoEqualizer");
+void TBase::setDefaultValuesFromVideoEqualizer() {
+	qDebug("Gui::TBase::setDefaultValuesFromVideoEqualizer");
 
 	pref->initial_contrast = video_equalizer->contrast();
 	pref->initial_brightness = video_equalizer->brightness();
@@ -3676,8 +3680,8 @@ void BaseGui::setDefaultValuesFromVideoEqualizer() {
                                 "used as default.") );
 }
 
-void BaseGui::changeVideoEqualizerBySoftware(bool b) {
-	qDebug("BaseGui::changeVideoEqualizerBySoftware: %d", b);
+void TBase::changeVideoEqualizerBySoftware(bool b) {
+	qDebug("Gui::TBase::changeVideoEqualizerBySoftware: %d", b);
 
 	if (b != pref->use_soft_video_eq) {
 		pref->use_soft_video_eq = b;
@@ -3685,8 +3689,8 @@ void BaseGui::changeVideoEqualizerBySoftware(bool b) {
 	}
 }
 
-void BaseGui::openDirectory(QString directory) {
-	qDebug("BaseGui::openDirectory: '%s'", directory.toUtf8().data());
+void TBase::openDirectory(QString directory) {
+	qDebug("Gui::TBase::openDirectory: '%s'", directory.toUtf8().data());
 
 	if (Helper::directoryContainsDVD(directory)) {
 		core->open(directory);
@@ -3697,13 +3701,13 @@ void BaseGui::openDirectory(QString directory) {
 			pref->latest_dir = directory;
 			playlist->playDirectory(directory);
 		} else {
-			qWarning("BaseGui::openDirectory: directory is not valid");
+			qWarning("TBase::openDirectory: directory is not valid");
 		}
 	}
 }
 
-void BaseGui::openDirectory() {
-	qDebug("BaseGui::openDirectory");
+void TBase::openDirectory() {
+	qDebug("Gui::TBase::openDirectory");
 
 	QString s = MyFileDialog::getExistingDirectory(
 					this, tr("Choose a directory"),
@@ -3714,11 +3718,11 @@ void BaseGui::openDirectory() {
 	}
 }
 
-void BaseGui::open(const QString &file) {
-	qDebug() << "BaseGui::open:" << file;
+void TBase::open(const QString &file) {
+	qDebug() << "TBase::open:" << file;
 
 	if (file.isEmpty()) {
-		qWarning("BaseGui::open: filename is empty");
+		qWarning("TBase::open: filename is empty");
 		return;
 	}
 	if (!playlist->maybeSave()) {
@@ -3735,14 +3739,14 @@ void BaseGui::open(const QString &file) {
 
 	core->open(file);
 
-	qDebug("BaseGui::open done");
+	qDebug("Gui::TBase::open done");
 }
 
-void BaseGui::openFiles(QStringList files) {
-	qDebug("BaseGui::openFiles");
+void TBase::openFiles(QStringList files) {
+	qDebug("Gui::TBase::openFiles");
 
 	if (files.empty()) {
-		qWarning("BaseGui::openFiles: no files in list to open");
+		qWarning("TBase::openFiles: no files in list to open");
 		return;
 	}
 
@@ -3753,7 +3757,7 @@ void BaseGui::openFiles(QStringList files) {
 	if (files.count() == 1) {
 		open(files[0]);
 	} else if (playlist->maybeSave()) {
-		qDebug("BaseGui::openFiles: starting new playlist");
+		qDebug("Gui::TBase::openFiles: starting new playlist");
 		files.sort();
 		playlist->clear();
 		playlist->addFiles(files);
@@ -3761,8 +3765,8 @@ void BaseGui::openFiles(QStringList files) {
 	}
 }
 
-void BaseGui::openFile() {
-	qDebug("BaseGui::openFile");
+void TBase::openFile() {
+	qDebug("Gui::TBase::openFile");
 
 	exitFullscreenIfNeeded();
 
@@ -3780,8 +3784,8 @@ void BaseGui::openFile() {
 	}
 }
 
-void BaseGui::openRecent() {
-	qDebug("BaseGui::openRecent");
+void TBase::openRecent() {
+	qDebug("Gui::TBase::openRecent");
 
 	QAction *a = qobject_cast<QAction *> (sender());
 	if (a) {
@@ -3792,14 +3796,14 @@ void BaseGui::openRecent() {
 	}
 }
 
-void BaseGui::openFavorite(QString file) {
-	qDebug("BaseGui::openFavorite");
+void TBase::openFavorite(QString file) {
+	qDebug("Gui::TBase::openFavorite");
 
 	openFiles(QStringList() << file);
 }
 
-void BaseGui::openURL() {
-	qDebug("BaseGui::openURL");
+void TBase::openURL() {
+	qDebug("Gui::TBase::openURL");
 
 	exitFullscreenIfNeeded();
 
@@ -3824,14 +3828,14 @@ void BaseGui::openURL() {
 	}
 }
 
-void BaseGui::openURL(QString url) {
+void TBase::openURL(QString url) {
 	if (!url.isEmpty()
 		&& (!pref->auto_add_to_playlist || playlist->maybeSave())) {
 			core->openStream(url);
 	}
 }
 
-void BaseGui::configureDiscDevices() {
+void TBase::configureDiscDevices() {
 	QMessageBox::information( this, tr("SMPlayer - Information"),
 			tr("The CDROM / DVD drives are not configured yet.\n"
 			   "The configuration dialog will be shown now, "
@@ -3841,8 +3845,8 @@ void BaseGui::configureDiscDevices() {
 	pref_dialog->showSection( PreferencesDialog::Drives );
 }
 
-void BaseGui::openVCD() {
-	qDebug("BaseGui::openVCD");
+void TBase::openVCD() {
+	qDebug("Gui::TBase::openVCD");
 
 	if (pref->dvd_device.isEmpty()
 		|| pref->cdrom_device.isEmpty()) {
@@ -3853,8 +3857,8 @@ void BaseGui::openVCD() {
 	}
 }
 
-void BaseGui::openAudioCD() {
-	qDebug("BaseGui::openAudioCD");
+void TBase::openAudioCD() {
+	qDebug("Gui::TBase::openAudioCD");
 
 	if ( (pref->dvd_device.isEmpty()) || 
          (pref->cdrom_device.isEmpty()) )
@@ -3867,8 +3871,8 @@ void BaseGui::openAudioCD() {
 	}
 }
 
-void BaseGui::openDVD() {
-	qDebug("BaseGui::openDVD");
+void TBase::openDVD() {
+	qDebug("Gui::TBase::openDVD");
 
 	if (pref->dvd_device.isEmpty() || pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
@@ -3879,15 +3883,15 @@ void BaseGui::openDVD() {
 	}
 }
 
-void BaseGui::openDVDFromFolder() {
-	qDebug("BaseGui::openDVDFromFolder");
+void TBase::openDVDFromFolder() {
+	qDebug("Gui::TBase::openDVDFromFolder");
 
 	if (playlist->maybeSave()) {
 		InputDVDDirectory *d = new InputDVDDirectory(this);
 		d->setFolder( pref->last_dvd_directory );
 
 		if (d->exec() == QDialog::Accepted) {
-			qDebug("BaseGui::openDVDFromFolder: accepted");
+			qDebug("Gui::TBase::openDVDFromFolder: accepted");
 			openDVDFromFolder( d->folder() );
 		}
 
@@ -3895,17 +3899,17 @@ void BaseGui::openDVDFromFolder() {
 	}
 }
 
-void BaseGui::openDVDFromFolder(const QString &directory) {
+void TBase::openDVDFromFolder(const QString &directory) {
 
 	pref->last_dvd_directory = directory;
 	core->open( DiscName::joinDVD(directory, pref->use_dvdnav) );
 }
 
 /**
- * Minimal BaseGui abstraction for calling openBluRay. It's called from
+ * Minimal TBase abstraction for calling openBluRay. It's called from
  * OpenBluRayFromFolder()
  */
-void BaseGui::openBluRayFromFolder(QString directory) {
+void TBase::openBluRayFromFolder(QString directory) {
 
 	pref->last_dvd_directory = directory;
 	core->open(DiscName::join(DiscName::BLURAY, 0, directory));
@@ -3915,8 +3919,8 @@ void BaseGui::openBluRayFromFolder(QString directory) {
  * Attempts to open a bluray from pref->bluray_device. If not set, calls configureDiscDevices.
  * If successful, calls Core::OpenBluRay(QString)
  */
-void BaseGui::openBluRay() {
-	qDebug("BaseGui::openBluRay");
+void TBase::openBluRay() {
+	qDebug("Gui::TBase::openBluRay");
 
 	if (pref->dvd_device.isEmpty()
 		|| pref->cdrom_device.isEmpty()
@@ -3927,8 +3931,8 @@ void BaseGui::openBluRay() {
 	}
 }
 
-void BaseGui::openBluRayFromFolder() {
-	qDebug("BaseGui::openBluRayFromFolder");
+void TBase::openBluRayFromFolder() {
+	qDebug("Gui::TBase::openBluRayFromFolder");
 
 	if (playlist->maybeSave()) {
 		QString dir = QFileDialog::getExistingDirectory(this, tr("Select the Blu-ray folder"),
@@ -3939,8 +3943,8 @@ void BaseGui::openBluRayFromFolder() {
 	}
 }
 
-void BaseGui::loadSub() {
-	qDebug("BaseGui::loadSub");
+void TBase::loadSub() {
+	qDebug("Gui::TBase::loadSub");
 
 	exitFullscreenIfNeeded();
 
@@ -3954,14 +3958,14 @@ void BaseGui::loadSub() {
 	if (!s.isEmpty()) core->loadSub(s);
 }
 
-void BaseGui::setInitialSubtitle(const QString & subtitle_file) {
-	qDebug("BaseGui::setInitialSubtitle: '%s'", subtitle_file.toUtf8().constData());
+void TBase::setInitialSubtitle(const QString & subtitle_file) {
+	qDebug("Gui::TBase::setInitialSubtitle: '%s'", subtitle_file.toUtf8().constData());
 
 	core->setInitialSubtitle(subtitle_file);
 }
 
-void BaseGui::loadAudioFile() {
-	qDebug("BaseGui::loadAudioFile");
+void TBase::loadAudioFile() {
+	qDebug("Gui::TBase::loadAudioFile");
 
 	exitFullscreenIfNeeded();
 
@@ -3975,17 +3979,17 @@ void BaseGui::loadAudioFile() {
 	if (!s.isEmpty()) core->loadAudioFile(s);
 }
 
-void BaseGui::helpFirstSteps() {
+void TBase::helpFirstSteps() {
 	QDesktopServices::openUrl(QString(URL_FIRST_STEPS "?version=%1").arg(Version::printable()));
 }
 
-void BaseGui::helpFAQ() {
+void TBase::helpFAQ() {
 	QString url = URL_FAQ;
 	/* if (!pref->language.isEmpty()) url += QString("?tr_lang=%1").arg(pref->language); */
 	QDesktopServices::openUrl( QUrl(url) );
 }
 
-void BaseGui::helpCLOptions() {
+void TBase::helpCLOptions() {
 	if (clhelp_window == 0) {
 		clhelp_window = new LogWindow(this);
 	}
@@ -3994,7 +3998,7 @@ void BaseGui::helpCLOptions() {
 	clhelp_window->show();
 }
 
-void BaseGui::helpCheckUpdates() {
+void TBase::helpCheckUpdates() {
 #ifdef UPDATE_CHECKER
 	update_checker->check();
 #else
@@ -4003,12 +4007,12 @@ void BaseGui::helpCheckUpdates() {
 #endif
 }
 
-void BaseGui::helpShowConfig() {
+void TBase::helpShowConfig() {
 	QDesktopServices::openUrl(QUrl::fromLocalFile(Paths::configPath()));
 }
 
 #ifdef REMINDER_ACTIONS
-void BaseGui::helpDonate() {
+void TBase::helpDonate() {
 	ShareDialog d(this);
 	d.showRemindCheck(false);
 
@@ -4018,7 +4022,7 @@ void BaseGui::helpDonate() {
 
 	d.exec();
 	int action = d.actions();
-	qDebug("BaseGui::helpDonate: action: %d", action);
+	qDebug("Gui::TBase::helpDonate: action: %d", action);
 
 	if (action > 0) {
 		#ifdef SHAREWIDGET
@@ -4033,13 +4037,13 @@ void BaseGui::helpDonate() {
 }
 #endif
 
-void BaseGui::helpAbout() {
+void TBase::helpAbout() {
 	About d(this);
 	d.exec();
 }
 
 #ifdef SHARE_MENU
-void BaseGui::shareSMPlayer() {
+void TBase::shareSMPlayer() {
 	QString text = QString("SMPlayer - Free Media Player with built-in codecs that can play and download Youtube videos").replace(" ","+");
 	QString url = URL_HOMEPAGE;
 
@@ -4072,7 +4076,7 @@ void BaseGui::shareSMPlayer() {
 }
 #endif
 
-void BaseGui::showGotoDialog() {
+void TBase::showGotoDialog() {
 	TimeDialog d(this);
 	d.setLabel(tr("&Jump to:"));
 	d.setWindowTitle(tr("SMPlayer - Seek"));
@@ -4083,7 +4087,7 @@ void BaseGui::showGotoDialog() {
 	}
 }
 
-void BaseGui::showAudioDelayDialog() {
+void TBase::showAudioDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
 	int delay = QInputDialog::getInt(this, tr("SMPlayer - Audio delay"),
@@ -4099,7 +4103,7 @@ void BaseGui::showAudioDelayDialog() {
 	}
 }
 
-void BaseGui::showSubDelayDialog() {
+void TBase::showSubDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
 	int delay = QInputDialog::getInt(this, tr("SMPlayer - Subtitle delay"),
@@ -4115,7 +4119,7 @@ void BaseGui::showSubDelayDialog() {
 	}
 }
 
-void BaseGui::showStereo3dDialog() {
+void TBase::showStereo3dDialog() {
 	Stereo3dDialog d(this);
 	d.setInputFormat(core->mset.stereo3d_in);
 	d.setOutputFormat(core->mset.stereo3d_out);
@@ -4125,24 +4129,24 @@ void BaseGui::showStereo3dDialog() {
 	}
 }
 
-void BaseGui::exitFullscreen() {
+void TBase::exitFullscreen() {
 	if (pref->fullscreen) {
 		toggleFullscreen(false);
 	}
 }
 
-void BaseGui::toggleFullscreen() {
-	qDebug("BaseGui::toggleFullscreen");
+void TBase::toggleFullscreen() {
+	qDebug("Gui::TBase::toggleFullscreen");
 
 	toggleFullscreen(!pref->fullscreen);
 }
 
-void BaseGui::toggleFullscreen(bool b) {
-	qDebug("BaseGui::toggleFullscreen: %d", b);
+void TBase::toggleFullscreen(bool b) {
+	qDebug("Gui::TBase::toggleFullscreen: %d", b);
 
 	if (b==pref->fullscreen) {
 		// Nothing to do
-		qDebug("BaseGui::toggleFullscreen: nothing to do, returning");
+		qDebug("Gui::TBase::toggleFullscreen: nothing to do, returning");
 		return;
 	}
 
@@ -4166,7 +4170,7 @@ void BaseGui::toggleFullscreen(bool b) {
 		}
 
 		was_maximized = isMaximized();
-		qDebug("BaseGui::toggleFullscreen: was_maximized: %d", was_maximized);
+		qDebug("Gui::TBase::toggleFullscreen: was_maximized: %d", was_maximized);
 
 		aboutToEnterFullscreen();
 
@@ -4203,8 +4207,8 @@ void BaseGui::toggleFullscreen(bool b) {
 	setFocus(); // Fixes bug #2493415
 }
 
-void BaseGui::aboutToEnterFullscreen() {
-	//qDebug("BaseGui::aboutToEnterFullscreen");
+void TBase::aboutToEnterFullscreen() {
+	//qDebug("Gui::TBase::aboutToEnterFullscreen");
 
 	mplayerwindow->aboutToEnterFullscreen();
 
@@ -4214,8 +4218,8 @@ void BaseGui::aboutToEnterFullscreen() {
 	}
 }
 
-void BaseGui::aboutToExitFullscreen() {
-	//qDebug("BaseGui::aboutToExitFullscreen");
+void TBase::aboutToExitFullscreen() {
+	//qDebug("Gui::TBase::aboutToExitFullscreen");
 
 	mplayerwindow->aboutToExitFullscreen();
 
@@ -4223,12 +4227,12 @@ void BaseGui::aboutToExitFullscreen() {
 		menuBar()->show();
 		statusBar()->show();
 	}
-	//qDebug("BaseGui::aboutToExitFullscreen done");
+	//qDebug("Gui::TBase::aboutToExitFullscreen done");
 }
 
 
-void BaseGui::leftClickFunction() {
-	qDebug("BaseGui::leftClickFunction");
+void TBase::leftClickFunction() {
+	qDebug("Gui::TBase::leftClickFunction");
 
 	if (core->mdat.detected_type == MediaData::TYPE_DVDNAV
 		&& mplayerwindow->videoLayer()->underMouse()) {
@@ -4238,48 +4242,48 @@ void BaseGui::leftClickFunction() {
 	}
 }
 
-void BaseGui::rightClickFunction() {
-	qDebug("BaseGui::rightClickFunction");
+void TBase::rightClickFunction() {
+	qDebug("Gui::TBase::rightClickFunction");
 
 	if (!pref->mouse_right_click_function.isEmpty()) {
 		processFunction(pref->mouse_right_click_function);
 	}
 }
 
-void BaseGui::doubleClickFunction() {
-	qDebug("BaseGui::doubleClickFunction");
+void TBase::doubleClickFunction() {
+	qDebug("Gui::TBase::doubleClickFunction");
 
 	if (!pref->mouse_double_click_function.isEmpty()) {
 		processFunction(pref->mouse_double_click_function);
 	}
 }
 
-void BaseGui::middleClickFunction() {
-	qDebug("BaseGui::middleClickFunction");
+void TBase::middleClickFunction() {
+	qDebug("Gui::TBase::middleClickFunction");
 
 	if (!pref->mouse_middle_click_function.isEmpty()) {
 		processFunction(pref->mouse_middle_click_function);
 	}
 }
 
-void BaseGui::xbutton1ClickFunction() {
-	qDebug("BaseGui::xbutton1ClickFunction");
+void TBase::xbutton1ClickFunction() {
+	qDebug("Gui::TBase::xbutton1ClickFunction");
 
 	if (!pref->mouse_xbutton1_click_function.isEmpty()) {
 		processFunction(pref->mouse_xbutton1_click_function);
 	}
 }
 
-void BaseGui::xbutton2ClickFunction() {
-	qDebug("BaseGui::xbutton2ClickFunction");
+void TBase::xbutton2ClickFunction() {
+	qDebug("Gui::TBase::xbutton2ClickFunction");
 
 	if (!pref->mouse_xbutton2_click_function.isEmpty()) {
 		processFunction(pref->mouse_xbutton2_click_function);
 	}
 }
 
-void BaseGui::processFunction(QString function) {
-	qDebug("BaseGui::processFunction: '%s'", function.toUtf8().data());
+void TBase::processFunction(QString function) {
+	qDebug("Gui::TBase::processFunction: '%s'", function.toUtf8().data());
 
 	//parse args for checkable actions
 	QRegExp func_rx("(.*) (true|false)");
@@ -4296,10 +4300,10 @@ void BaseGui::processFunction(QString function) {
 	if (!action) action = ActionsEditor::findAction(playlist, function);
 
 	if (action) {
-		qDebug("BaseGui::processFunction: action found");
+		qDebug("Gui::TBase::processFunction: action found");
 
 		if (!action->isEnabled()) {
-			qDebug("BaseGui::processFunction: action is disabled, doing nothing");
+			qDebug("Gui::TBase::processFunction: action is disabled, doing nothing");
 			return;
 		}
 
@@ -4315,8 +4319,8 @@ void BaseGui::processFunction(QString function) {
 	}
 }
 
-void BaseGui::runActions(QString actions) {
-	qDebug("BaseGui::runActions");
+void TBase::runActions(QString actions) {
+	qDebug("Gui::TBase::runActions");
 
 	actions = actions.simplified(); // Remove white space
 
@@ -4339,7 +4343,7 @@ void BaseGui::runActions(QString actions) {
 		if (!action) action = ActionsEditor::findAction(playlist, actionStr);
 
 		if (action) {
-			qDebug("BaseGui::runActions: running action: '%s' (par: '%s')",
+			qDebug("Gui::TBase::runActions: running action: '%s' (par: '%s')",
 				   actionStr.toUtf8().data(), par.toUtf8().data() );
 
 			if (action->isCheckable()) {
@@ -4353,13 +4357,13 @@ void BaseGui::runActions(QString actions) {
 				action->trigger();
 			} //end if
 		} else {
-			qWarning("BaseGui::runActions: action: '%s' not found",actionStr.toUtf8().data());
+			qWarning("TBase::runActions: action: '%s' not found",actionStr.toUtf8().data());
 		} //end if
 	} //end for
 }
 
-void BaseGui::checkPendingActionsToRun() {
-	qDebug("BaseGui::checkPendingActionsToRun");
+void TBase::checkPendingActionsToRun() {
+	qDebug("Gui::TBase::checkPendingActionsToRun");
 
 	QString actions;
 	if (!pending_actions_to_run.isEmpty()) {
@@ -4373,14 +4377,14 @@ void BaseGui::checkPendingActionsToRun() {
 	}
 
 	if (!actions.isEmpty()) {
-		qDebug("BaseGui::checkPendingActionsToRun: actions: '%s'", actions.toUtf8().constData());
+		qDebug("Gui::TBase::checkPendingActionsToRun: actions: '%s'", actions.toUtf8().constData());
 		runActions(actions);
 	}
 }
 
 #if REPORT_OLD_MPLAYER
-void BaseGui::checkMplayerVersion() {
-	qDebug("BaseGui::checkMplayerVersion");
+void TBase::checkMplayerVersion() {
+	qDebug("Gui::TBase::checkMplayerVersion");
 
 	// Qt 4.3.5 is crazy, I can't popup a messagebox here, it calls 
 	// this function once and again when the messagebox is shown
@@ -4390,8 +4394,8 @@ void BaseGui::checkMplayerVersion() {
 	//}
 }
 
-void BaseGui::displayWarningAboutOldMplayer() {
-	qDebug("BaseGui::displayWarningAboutOldMplayer");
+void TBase::displayWarningAboutOldMplayer() {
+	qDebug("Gui::TBase::displayWarningAboutOldMplayer");
 
 	if (!pref->reported_mplayer_is_old) {
 		QMessageBox::warning(this, tr("Warning - Using old MPlayer"),
@@ -4412,12 +4416,12 @@ void BaseGui::displayWarningAboutOldMplayer() {
 #endif
 
 #ifdef CHECK_UPGRADED
-void BaseGui::checkIfUpgraded() {
-	qDebug("BaseGui::checkIfUpgraded");
+void TBase::checkIfUpgraded() {
+	qDebug("Gui::TBase::checkIfUpgraded");
 
 	if ( (pref->check_if_upgraded) && (pref->smplayer_stable_version != Version::stable()) ) {
 		// Running a new version
-		qDebug("BaseGui::checkIfUpgraded: running a new version: %s", Version::stable().toUtf8().constData());
+		qDebug("Gui::TBase::checkIfUpgraded: running a new version: %s", Version::stable().toUtf8().constData());
 		QString os = "other";
 		#ifdef Q_OS_WIN
 		os = "win";
@@ -4432,8 +4436,8 @@ void BaseGui::checkIfUpgraded() {
 #endif
 
 #if defined(REMINDER_ACTIONS) && !defined(SHAREWIDGET)
-void BaseGui::checkReminder() {
-	qDebug("BaseGui::checkReminder");
+void TBase::checkReminder() {
+	qDebug("Gui::TBase::checkReminder");
 
 	if (core->state() == Core::Playing) return;
 
@@ -4457,7 +4461,7 @@ void BaseGui::checkReminder() {
 	//d.showRemindCheck(false);
 	d.exec();
 	action = d.actions();
-	qDebug("BaseGui::checkReminder: action: %d", action);
+	qDebug("Gui::TBase::checkReminder: action: %d", action);
 
 	if (!d.isRemindChecked()) {
 		set->beginGroup("reminder");
@@ -4476,8 +4480,8 @@ void BaseGui::checkReminder() {
 #endif
 
 #ifdef YOUTUBE_SUPPORT
-void BaseGui::YTNoSslSupport() {
-	qDebug("BaseGui::YTNoSslSupport");
+void TBase::YTNoSslSupport() {
+	qDebug("Gui::TBase::YTNoSslSupport");
 	QMessageBox::warning(this, tr("Connection failed"),
 		tr("The video you requested needs to open a HTTPS connection.") +"<br>"+
 		tr("Unfortunately the OpenSSL component, required for it, is not available in your system.") +"<br>"+
@@ -4485,8 +4489,8 @@ void BaseGui::YTNoSslSupport() {
 			.arg("<a href=\"" URL_OPENSSL_INFO "\">" + tr("this link") + "</a>") );
 }
 
-void BaseGui::YTNoSignature(const QString & title) {
-	qDebug("BaseGui::YTNoSignature: %s", title.toUtf8().constData());
+void TBase::YTNoSignature(const QString & title) {
+	qDebug("Gui::TBase::YTNoSignature: %s", title.toUtf8().constData());
 
 	QString t = title;
 
@@ -4514,7 +4518,7 @@ void BaseGui::YTNoSignature(const QString & title) {
 }
 
 #ifdef YT_USE_YTSIG
-void BaseGui::YTUpdateScript() {
+void TBase::YTUpdateScript() {
 	static CodeDownloader * downloader = 0;
 	if (!downloader) downloader = new CodeDownloader(this);
 	downloader->saveAs(Paths::configPath() + "/yt.js");
@@ -4524,11 +4528,11 @@ void BaseGui::YTUpdateScript() {
 #endif // YT_USE_YTSIG
 #endif //YOUTUBE_SUPPORT
 
-void BaseGui::gotForbidden() {
-	qDebug("BaseGui::gotForbidden");
+void TBase::gotForbidden() {
+	qDebug("Gui::TBase::gotForbidden");
 
 	if (!pref->report_mplayer_crashes) {
-		qDebug("BaseGui::gotForbidden: not displaying error dialog");
+		qDebug("Gui::TBase::gotForbidden: not displaying error dialog");
 		return;
 	}
 
@@ -4550,16 +4554,16 @@ void BaseGui::gotForbidden() {
 	busy = false;
 }
 
-void BaseGui::dragEnterEvent( QDragEnterEvent *e ) {
-	qDebug("BaseGui::dragEnterEvent");
+void TBase::dragEnterEvent( QDragEnterEvent *e ) {
+	qDebug("Gui::TBase::dragEnterEvent");
 
 	if (e->mimeData()->hasUrls()) {
 		e->acceptProposedAction();
 	}
 }
 
-void BaseGui::dropEvent( QDropEvent *e ) {
-	qDebug("BaseGui::dropEvent");
+void TBase::dropEvent( QDropEvent *e ) {
+	qDebug("Gui::TBase::dropEvent");
 
 	QStringList files;
 
@@ -4572,31 +4576,31 @@ void BaseGui::dropEvent( QDropEvent *e ) {
 				if (url.scheme() == "file")
 					filename = url.toLocalFile();
 				else filename = url.toString();
-				qDebug() << "BaseGui::dropEvent: adding" << filename;
+				qDebug() << "TBase::dropEvent: adding" << filename;
 				files.append(filename);
 			} else {
-				qWarning() << "BaseGui::dropEvent:: ignoring" << url.toString();
+				qWarning() << "TBase::dropEvent:: ignoring" << url.toString();
 			}
 		}
 	}
 
-	qDebug( "BaseGui::dropEvent: number of files: %d", files.count());
+	qDebug( "TBase::dropEvent: number of files: %d", files.count());
 	openFiles(files);
 }
 
-void BaseGui::showPopupMenu() {
+void TBase::showPopupMenu() {
 	showPopupMenu(QCursor::pos());
 }
 
-void BaseGui::showPopupMenu( QPoint p ) {
-	//qDebug("BaseGui::showPopupMenu: %d, %d", p.x(), p.y());
+void TBase::showPopupMenu( QPoint p ) {
+	//qDebug("Gui::TBase::showPopupMenu: %d, %d", p.x(), p.y());
 	popup->move( p );
 	popup->show();
 }
 
 /*
-void BaseGui::mouseReleaseEvent( QMouseEvent * e ) {
-	qDebug("BaseGui::mouseReleaseEvent");
+void TBase::mouseReleaseEvent( QMouseEvent * e ) {
+	qDebug("Gui::TBase::mouseReleaseEvent");
 
 	if (e->button() == Qt::LeftButton) {
 		e->accept();
@@ -4617,15 +4621,15 @@ void BaseGui::mouseReleaseEvent( QMouseEvent * e ) {
 		e->ignore();
 }
 
-void BaseGui::mouseDoubleClickEvent( QMouseEvent * e ) {
+void TBase::mouseDoubleClickEvent( QMouseEvent * e ) {
 	e->accept();
 	emit doubleClicked();
 }
 */
 
 /*
-void BaseGui::wheelEvent( QWheelEvent * e ) {
-	qDebug("BaseGui::wheelEvent: delta: %d", e->delta());
+void TBase::wheelEvent( QWheelEvent * e ) {
+	qDebug("Gui::TBase::wheelEvent: delta: %d", e->delta());
 	e->accept();
 
 	if (e->orientation() == Qt::Vertical) {
@@ -4634,14 +4638,14 @@ void BaseGui::wheelEvent( QWheelEvent * e ) {
 	    else
 	        emit wheelDown();
 	} else {
-		qDebug("BaseGui::wheelEvent: horizontal event received, doing nothing");
+		qDebug("Gui::TBase::wheelEvent: horizontal event received, doing nothing");
 	}
 }
 */
 
 // Called when a video has started to play
-void BaseGui::enterFullscreenOnPlay() {
-	qDebug("BaseGui::enterFullscreenOnPlay: arg_start_in_fullscreen: %d, pref->start_in_fullscreen: %d", arg_start_in_fullscreen, pref->start_in_fullscreen);
+void TBase::enterFullscreenOnPlay() {
+	qDebug("Gui::TBase::enterFullscreenOnPlay: arg_start_in_fullscreen: %d, pref->start_in_fullscreen: %d", arg_start_in_fullscreen, pref->start_in_fullscreen);
 
 	if (arg_start_in_fullscreen != 0) {
 		if ( (arg_start_in_fullscreen == 1) || (pref->start_in_fullscreen) ) {
@@ -4651,18 +4655,18 @@ void BaseGui::enterFullscreenOnPlay() {
 }
 
 // Called when the playlist has stopped
-void BaseGui::exitFullscreenOnStop() {
+void TBase::exitFullscreenOnStop() {
     if (pref->fullscreen) {
 		toggleFullscreen(false);
 	}
 }
 
-void BaseGui::playlistHasFinished() {
-	qDebug("BaseGui::playlistHasFinished");
+void TBase::playlistHasFinished() {
+	qDebug("Gui::TBase::playlistHasFinished");
 
 	core->stop();
 
-	qDebug("BaseGui::playlistHasFinished: arg_close_on_finish: %d, pref->close_on_finish: %d", arg_close_on_finish, pref->close_on_finish);
+	qDebug("Gui::TBase::playlistHasFinished: arg_close_on_finish: %d, pref->close_on_finish: %d", arg_close_on_finish, pref->close_on_finish);
 
 	if (arg_close_on_finish != 0) {
 		if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
@@ -4670,10 +4674,10 @@ void BaseGui::playlistHasFinished() {
 			if (pref->auto_shutdown_pc) {
 				ShutdownDialog d(this);
 				if (d.exec() == QDialog::Accepted) {
-					qDebug("BaseGui::playlistHasFinished: the PC will shut down");
+					qDebug("Gui::TBase::playlistHasFinished: the PC will shut down");
 					Shutdown::shutdown();
 				} else {
-					qDebug("BaseGui::playlistHasFinished: shutdown aborted");
+					qDebug("Gui::TBase::playlistHasFinished: shutdown aborted");
 				}
 			}
 			#endif
@@ -4682,8 +4686,8 @@ void BaseGui::playlistHasFinished() {
 	}
 }
 
-void BaseGui::displayState(Core::State state) {
-	qDebug("BaseGui::displayState: %s", core->stateToString().toUtf8().data());
+void TBase::displayState(Core::State state) {
+	qDebug("Gui::TBase::displayState: %s", core->stateToString().toUtf8().data());
 	switch (state) {
 		case Core::Playing:	statusBar()->showMessage( tr("Playing %1").arg(core->mdat.filename), 2000); break;
 		case Core::Paused:	statusBar()->showMessage( tr("Pause") ); break;
@@ -4705,16 +4709,16 @@ void BaseGui::displayState(Core::State state) {
 #endif
 }
 
-void BaseGui::displayMessage(QString message, int time) {
+void TBase::displayMessage(QString message, int time) {
 	statusBar()->showMessage(message, time);
 }
 
-void BaseGui::displayMessage(QString message) {
+void TBase::displayMessage(QString message) {
 	displayMessage(message, 2000);
 }
 
-void BaseGui::gotCurrentTime(double sec) {
-	//qDebug( "DefaultGui::displayTime: %f", sec);
+void TBase::gotCurrentTime(double sec) {
+	//qDebug( "Gui::TBase::displayTime: %f", sec);
 
 	QString time =
 		Helper::formatTime((int) sec) + " / " +
@@ -4723,22 +4727,22 @@ void BaseGui::gotCurrentTime(double sec) {
 	emit timeChanged( time );
 }
 
-void BaseGui::gotDuration(double duration) {
+void TBase::gotDuration(double duration) {
 	Q_UNUSED(duration)
 
 	// Uses duration in text
 	gotCurrentTime( core->mset.current_sec );
 }
 
-void BaseGui::toggleDoubleSize() {
+void TBase::toggleDoubleSize() {
 	if (pref->size_factor != 1.0)
 		core->changeSize(100);
 	else core->changeSize(200);
 }
 
 // Slot called by signal needResize
-void BaseGui::resizeWindow(int w, int h) {
-	qDebug("BaseGui::resizeWindow: %d, %d", w, h);
+void TBase::resizeWindow(int w, int h) {
+	qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
 	// Set first time if pref->save_window_size_on_exit selected
 	bool block = block_resize;
@@ -4760,14 +4764,14 @@ void BaseGui::resizeWindow(int w, int h) {
 		resizeMainWindow(w, h);
 }
 
-void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
-	qDebug("BaseGui::resizeMainWindow: size to scale: %d, %d", w, h);
+void TBase::resizeMainWindow(int w, int h, bool try_twice) {
+	qDebug("Gui::TBase::resizeMainWindow: size to scale: %d, %d", w, h);
 
 	// Adjust for selected size and aspect.
 	QSize video_size = mplayerwindow->getAdjustedSize(w, h, pref->size_factor);
 
 	if (video_size == panel->size()) {
-		qDebug("BaseGui::resizeMainWindow: the panel size is already the required size. Doing nothing.");
+		qDebug("Gui::TBase::resizeMainWindow: the panel size is already the required size. Doing nothing.");
 		return;
 	}
 
@@ -4777,18 +4781,18 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 	int minimum_width = minimumSizeHint().width();
 	if (pref->gui_minimum_width != 0) minimum_width = pref->gui_minimum_width;
 	if (new_size.width() < minimum_width) {
-		qDebug("BaseGui::resizeMainWindow: width is too small, setting width to %d", minimum_width);
+		qDebug("Gui::TBase::resizeMainWindow: width is too small, setting width to %d", minimum_width);
 		new_size = QSize(minimum_width, new_size.height());
 		try_twice = false;
 	}
 #endif
 
-	qDebug("BaseGui::resizeMainWindow resizing from %d x %d to %d x %d",
+	qDebug("Gui::TBase::resizeMainWindow resizing from %d x %d to %d x %d",
 		   width(), height(), new_size.width(), new_size.height());
 	resize(new_size);
 
 	if (panel->size() == video_size) {
-		qDebug("BaseGui::resizeMainWindow succeeded");
+		qDebug("Gui::TBase::resizeMainWindow succeeded");
 	} else {
 		// TODO: Resizing the main window can change the height of the control
 		// bar. On my system when the volume slider becomes visible, the  control
@@ -4796,20 +4800,20 @@ void BaseGui::resizeMainWindow(int w, int h, bool try_twice) {
 		// panel during resize. For now, resize once again, using the new panel
 		// height.
 		if (try_twice) {
-			qDebug("BaseGui::resizeMainWindow panel size now %d x %d. Wanted size %d x %d. Trying a second time",
+			qDebug("Gui::TBase::resizeMainWindow panel size now %d x %d. Wanted size %d x %d. Trying a second time",
 				   panel->size().width(), panel->size().height(),
 				   video_size.width(), video_size.height());
 			resizeMainWindow(w, h, false);
 		} else {
-			qWarning("BaseGui::resizeMainWindow failed. Panel size now %d x %d. Wanted size %d x %d",
+			qWarning("TBase::resizeMainWindow failed. Panel size now %d x %d. Wanted size %d x %d",
 					 panel->size().width(), panel->size().height(),
 					 video_size.width(), video_size.height());
 		}
 	}
 }
 
-void BaseGui::hidePanel() {
-	qDebug("BaseGui::hidePanel");
+void TBase::hidePanel() {
+	qDebug("Gui::TBase::hidePanel");
 
 	if (panel->isVisible()) {
 		// Exit from fullscreen mode 
@@ -4829,8 +4833,8 @@ void BaseGui::hidePanel() {
 	}
 }
 
-void BaseGui::slotNoVideo() {
-	qDebug("BaseGui::slotNoVideo");
+void TBase::slotNoVideo() {
+	qDebug("Gui::TBase::slotNoVideo");
 
 	block_resize = false;
 
@@ -4847,7 +4851,7 @@ void BaseGui::slotNoVideo() {
 
 }
 
-void BaseGui::displayGotoTime(int t) {
+void TBase::displayGotoTime(int t) {
 
 	int jump_time = qRound(core->mdat.duration * t / core->positionMax());
 	QString s = tr("Jump to %1").arg( Helper::formatTime(jump_time) );
@@ -4858,25 +4862,25 @@ void BaseGui::displayGotoTime(int t) {
 	}
 }
 
-void BaseGui::goToPosOnDragging(int t) {
+void TBase::goToPosOnDragging(int t) {
 	if (pref->update_while_seeking) {
 #if ENABLE_DELAYED_DRAGGING
 		core->goToPosition(t);
 #else
 		if ( ( t % 4 ) == 0 ) {
-			qDebug("BaseGui::goToPosOnDragging: %d", t);
+			qDebug("Gui::TBase::goToPosOnDragging: %d", t);
 			core->goToPosition(t);
 		}
 #endif
 	}
 }
 
-void BaseGui::toggleCompactMode() {
+void TBase::toggleCompactMode() {
 	toggleCompactMode( !pref->compact_mode );
 }
 
-void BaseGui::toggleCompactMode(bool b) {
-	qDebug("BaseGui::toggleCompactMode: %d", b);
+void TBase::toggleCompactMode(bool b) {
+	qDebug("Gui::TBase::toggleCompactMode: %d", b);
 
 	if (b) 
 		aboutToEnterCompactMode();
@@ -4887,24 +4891,24 @@ void BaseGui::toggleCompactMode(bool b) {
 	updateWidgets();
 }
 
-void BaseGui::aboutToEnterCompactMode() {
+void TBase::aboutToEnterCompactMode() {
 	menuBar()->hide();
 	statusBar()->hide();
 }
 
-void BaseGui::aboutToExitCompactMode() {
+void TBase::aboutToExitCompactMode() {
 	menuBar()->show();
 	statusBar()->show();
 }
 
-void BaseGui::setStayOnTop(bool b) {
-	qDebug("BaseGui::setStayOnTop: %d", b);
+void TBase::setStayOnTop(bool b) {
+	qDebug("Gui::TBase::setStayOnTop: %d", b);
 
 	if ( (b && (windowFlags() & Qt::WindowStaysOnTopHint)) ||
          (!b && (!(windowFlags() & Qt::WindowStaysOnTopHint))) )
 	{
 		// identical do nothing
-		qDebug("BaseGui::setStayOnTop: nothing to do");
+		qDebug("Gui::TBase::setStayOnTop: nothing to do");
 		return;
 	}
 
@@ -4930,7 +4934,7 @@ void BaseGui::setStayOnTop(bool b) {
 	ignore_show_hide_events = false;
 }
 
-void BaseGui::changeStayOnTop(int stay_on_top) {
+void TBase::changeStayOnTop(int stay_on_top) {
 	switch (stay_on_top) {
 		case Preferences::AlwaysOnTop : setStayOnTop(true); break;
 		case Preferences::NeverOnTop  : setStayOnTop(false); break;
@@ -4941,14 +4945,14 @@ void BaseGui::changeStayOnTop(int stay_on_top) {
 	updateWidgets();
 }
 
-void BaseGui::checkStayOnTop(Core::State state) {
-	qDebug("BaseGui::checkStayOnTop");
+void TBase::checkStayOnTop(Core::State state) {
+	qDebug("Gui::TBase::checkStayOnTop");
     if ((!pref->fullscreen) && (pref->stay_on_top == Preferences::WhilePlayingOnTop)) {
 		setStayOnTop((state == Core::Playing));
 	}
 }
 
-void BaseGui::toggleStayOnTop() {
+void TBase::toggleStayOnTop() {
 	if (pref->stay_on_top == Preferences::AlwaysOnTop) 
 		changeStayOnTop(Preferences::NeverOnTop);
 	else
@@ -4957,7 +4961,7 @@ void BaseGui::toggleStayOnTop() {
 }
 
 // Called when a new window (equalizer, preferences..) is opened.
-void BaseGui::exitFullscreenIfNeeded() {
+void TBase::exitFullscreenIfNeeded() {
 	/*
 	if (pref->fullscreen) {
 		toggleFullscreen(false);
@@ -4966,7 +4970,7 @@ void BaseGui::exitFullscreenIfNeeded() {
 }
 
 #if ALLOW_CHANGE_STYLESHEET
-QString BaseGui::loadQss(QString filename) {
+QString TBase::loadQss(QString filename) {
 	QFile file( filename );
 	file.open(QFile::ReadOnly);
 	QString stylesheet = QLatin1String(file.readAll());
@@ -4988,12 +4992,12 @@ QString BaseGui::loadQss(QString filename) {
 #endif
 	stylesheet.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)", Qt::CaseSensitive, QRegExp::RegExp2),
 						QString("url(%1\\1)").arg(path + "/"));
-	//qDebug("BaseGui::loadQss: styleSheet: %s", stylesheet.toUtf8().constData());
+	//qDebug("Gui::TBase::loadQss: styleSheet: %s", stylesheet.toUtf8().constData());
 	return stylesheet;
 }
 
-void BaseGui::changeStyleSheet(QString style) {
-	qDebug("BaseGui::changeStyleSheet: %s", style.toUtf8().constData());
+void TBase::changeStyleSheet(QString style) {
+	qDebug("Gui::TBase::changeStyleSheet: %s", style.toUtf8().constData());
 
 	// Load default stylesheet
 	QString stylesheet = loadQss(":/default-theme/style.qss");
@@ -5015,18 +5019,18 @@ void BaseGui::changeStyleSheet(QString style) {
 
 		// Load style file
 		if (QFile::exists(qss_file)) {
-			qDebug("BaseGui::changeStyleSheet: '%s'", qss_file.toUtf8().data());
+			qDebug("Gui::TBase::changeStyleSheet: '%s'", qss_file.toUtf8().data());
 			stylesheet += loadQss(qss_file);
 		}
 	}
 
-	//qDebug("BaseGui::changeStyleSheet: styleSheet: %s", stylesheet.toUtf8().constData());
+	//qDebug("Gui::TBase::changeStyleSheet: styleSheet: %s", stylesheet.toUtf8().constData());
 	qApp->setStyleSheet(stylesheet);
 }
 #endif
 
-void BaseGui::loadActions() {
-	qDebug("BaseGui::loadActions");
+void TBase::loadActions() {
+	qDebug("Gui::TBase::loadActions");
 	ActionsEditor::loadFromConfig(this, settings);
 #if !DOCK_PLAYLIST
 	ActionsEditor::loadFromConfig(playlist, settings);
@@ -5038,8 +5042,8 @@ void BaseGui::loadActions() {
 #endif
 }
 
-void BaseGui::saveActions() {
-	qDebug("BaseGui::saveActions");
+void TBase::saveActions() {
+	qDebug("Gui::TBase::saveActions");
 
 	ActionsEditor::saveToConfig(this, settings);
 #if !DOCK_PLAYLIST
@@ -5048,56 +5052,56 @@ void BaseGui::saveActions() {
 }
 
 #if QT_VERSION < 0x050000
-void BaseGui::showEvent( QShowEvent * ) {
-	qDebug("BaseGui::showEvent");
+void TBase::showEvent( QShowEvent * ) {
+	qDebug("Gui::TBase::showEvent");
 
 	if (ignore_show_hide_events) return;
 
-	//qDebug("BaseGui::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
+	//qDebug("Gui::TBase::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
 	if ((pref->pause_when_hidden) && (core->state() == Core::Paused)) {
-		qDebug("BaseGui::showEvent: unpausing");
+		qDebug("Gui::TBase::showEvent: unpausing");
 		core->play();
 	}
 }
 
-void BaseGui::hideEvent( QHideEvent * ) {
-	qDebug("BaseGui::hideEvent");
+void TBase::hideEvent( QHideEvent * ) {
+	qDebug("Gui::TBase::hideEvent");
 
 	if (ignore_show_hide_events) return;
 
-	//qDebug("BaseGui::hideEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
+	//qDebug("Gui::TBase::hideEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
 	if ((pref->pause_when_hidden) && (core->state() == Core::Playing)) {
-		qDebug("BaseGui::hideEvent: pausing");
+		qDebug("Gui::TBase::hideEvent: pausing");
 		core->pause();
 	}
 }
 #else
 // Qt 5 doesn't call showEvent / hideEvent when the window is minimized or unminimized
-bool BaseGui::event(QEvent * e) {
-	//qDebug("BaseGui::event: %d", e->type());
+bool TBase::event(QEvent * e) {
+	//qDebug("Gui::TBase::event: %d", e->type());
 
 	bool result = QWidget::event(e);
 	if ((ignore_show_hide_events) || (!pref->pause_when_hidden)) return result;
 
 	if (e->type() == QEvent::WindowStateChange) {
-		qDebug("BaseGui::event: WindowStateChange");
+		qDebug("Gui::TBase::event: WindowStateChange");
 
 		if (isMinimized()) {
 			was_minimized = true;
 			if (core->state() == Core::Playing) {
-				qDebug("BaseGui::event: pausing");
+				qDebug("Gui::TBase::event: pausing");
 				core->pause();
 			}
 		}
 	}
 
 	if ((e->type() == QEvent::ActivationChange) && (isActiveWindow())) {
-		qDebug("BaseGui::event: ActivationChange: %d", was_minimized);
+		qDebug("Gui::TBase::event: ActivationChange: %d", was_minimized);
 
 		if ((!isMinimized()) && (was_minimized)) {
 			was_minimized = false;
 			if (core->state() == Core::Paused) {
-				qDebug("BaseGui::showEvent: unpausing");
+				qDebug("Gui::TBase::showEvent: unpausing");
 				core->play();
 			}
 		}
@@ -5107,13 +5111,13 @@ bool BaseGui::event(QEvent * e) {
 }
 #endif
 
-void BaseGui::moveEvent(QMoveEvent *) {
+void TBase::moveEvent(QMoveEvent *) {
 	if (mplayerwindow)
 		mplayerwindow->main_window_moved = true;
 }
 
-void BaseGui::askForMplayerVersion(QString line) {
-	qDebug("BaseGui::askForMplayerVersion: %s", line.toUtf8().data());
+void TBase::askForMplayerVersion(QString line) {
+	qDebug("Gui::TBase::askForMplayerVersion: %s", line.toUtf8().data());
 
 	if (pref->mplayer_user_supplied_version <= 0) {
 		InputMplayerVersion d(this);
@@ -5121,21 +5125,21 @@ void BaseGui::askForMplayerVersion(QString line) {
 		d.setVersionFromOutput(line);
 		if (d.exec() == QDialog::Accepted) {
 			pref->mplayer_user_supplied_version = d.version();
-			qDebug("BaseGui::askForMplayerVersion: user supplied version: %d", pref->mplayer_user_supplied_version);
+			qDebug("Gui::TBase::askForMplayerVersion: user supplied version: %d", pref->mplayer_user_supplied_version);
 		}
 	} else {
-		qDebug("BaseGui::askForMplayerVersion: already have a version supplied by user, so no asking");
+		qDebug("Gui::TBase::askForMplayerVersion: already have a version supplied by user, so no asking");
 	}
 }
 
-void BaseGui::showExitCodeFromPlayer(int exit_code) {
-	qDebug("BaseGui::showExitCodeFromPlayer: %d", exit_code);
+void TBase::showExitCodeFromPlayer(int exit_code) {
+	qDebug("Gui::TBase::showExitCodeFromPlayer: %d", exit_code);
 
 	QString msg = tr("%1 has finished unexpectedly.").arg(PLAYER_NAME)
 			+ " " + tr("Exit code: %1").arg(exit_code);
 
 	if (!pref->report_mplayer_crashes) {
-		qDebug("BaseGui::showExitCodeFromPlayer: error reporting is turned off");
+		qDebug("Gui::TBase::showExitCodeFromPlayer: error reporting is turned off");
 		displayMessage(msg, 6000);
 		return;
 	}
@@ -5151,11 +5155,11 @@ void BaseGui::showExitCodeFromPlayer(int exit_code) {
 	} 
 }
 
-void BaseGui::showErrorFromPlayer(QProcess::ProcessError e) {
-	qDebug("BaseGui::showErrorFromPlayer");
+void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
+	qDebug("Gui::TBase::showErrorFromPlayer");
 
 	if (!pref->report_mplayer_crashes) {
-		qDebug("BaseGui::showErrorFromPlayer: error reporting is turned off");
+		qDebug("Gui::TBase::showErrorFromPlayer: error reporting is turned off");
 		displayMessage(tr("Player crashed or quit with errors."), 6000);
 		return;
 	}
@@ -5179,8 +5183,8 @@ void BaseGui::showErrorFromPlayer(QProcess::ProcessError e) {
 
 
 #ifdef FIND_SUBTITLES
-void BaseGui::showFindSubtitlesDialog() {
-	qDebug("BaseGui::showFindSubtitlesDialog");
+void TBase::showFindSubtitlesDialog() {
+	qDebug("Gui::TBase::showFindSubtitlesDialog");
 
 	if (!find_subs_dialog) {
 		find_subs_dialog = new FindSubtitlesWindow(this, Qt::Window | Qt::WindowMinMaxButtonsHint);
@@ -5196,14 +5200,14 @@ void BaseGui::showFindSubtitlesDialog() {
 	find_subs_dialog->setMovie(core->mdat.filename);
 }
 
-void BaseGui::openUploadSubtitlesPage() {	
+void TBase::openUploadSubtitlesPage() {	
 	QDesktopServices::openUrl( QUrl("http://www.opensubtitles.org/upload") );
 }
 #endif
 
 #ifdef VIDEOPREVIEW
-void BaseGui::showVideoPreviewDialog() {
-	qDebug("BaseGui::showVideoPreviewDialog");
+void TBase::showVideoPreviewDialog() {
+	qDebug("Gui::TBase::showVideoPreviewDialog");
 
 	if (video_preview == 0) {
 		video_preview = new VideoPreview( pref->mplayer_bin, this );
@@ -5239,10 +5243,10 @@ void BaseGui::showVideoPreviewDialog() {
 #endif
 
 #ifdef YOUTUBE_SUPPORT
-void BaseGui::showTubeBrowser() {
-	qDebug("BaseGui::showTubeBrowser");
+void TBase::showTubeBrowser() {
+	qDebug("Gui::TBase::showTubeBrowser");
 	QString exec = Paths::appPath() + "/smtube";
-	qDebug("BaseGui::showTubeBrowser: '%s'", exec.toUtf8().constData());
+	qDebug("Gui::TBase::showTubeBrowser: '%s'", exec.toUtf8().constData());
 	if (!QProcess::startDetached(exec, QStringList())) {
 		QMessageBox::warning(this, "SMPlayer",
 			tr("The YouTube Browser is not installed.") +"<br>"+ 
@@ -5252,7 +5256,7 @@ void BaseGui::showTubeBrowser() {
 #endif
 
 // Language change stuff
-void BaseGui::changeEvent(QEvent *e) {
+void TBase::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
@@ -5263,26 +5267,26 @@ void BaseGui::changeEvent(QEvent *e) {
 #ifdef Q_OS_WIN
 #ifdef AVOID_SCREENSAVER
 /* Disable screensaver by event */
-bool BaseGui::winEvent ( MSG * m, long * result ) {
-	//qDebug("BaseGui::winEvent");
+bool TBase::winEvent ( MSG * m, long * result ) {
+	//qDebug("Gui::TBase::winEvent");
 	if (m->message==WM_SYSCOMMAND) {
 		if ((m->wParam & 0xFFF0)==SC_SCREENSAVE || (m->wParam & 0xFFF0)==SC_MONITORPOWER) {
-			qDebug("BaseGui::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
-			qDebug("BaseGui::winEvent: avoid_screensaver: %d", pref->avoid_screensaver);
-			qDebug("BaseGui::winEvent: playing: %d", core->state()==Core::Playing);
-			qDebug("BaseGui::winEvent: video: %d", !core->mdat.novideo);
+			qDebug("Gui::TBase::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
+			qDebug("Gui::TBase::winEvent: avoid_screensaver: %d", pref->avoid_screensaver);
+			qDebug("Gui::TBase::winEvent: playing: %d", core->state()==Core::Playing);
+			qDebug("Gui::TBase::winEvent: video: %d", !core->mdat.novideo);
 			
 			if ((pref->avoid_screensaver) && (core->state()==Core::Playing) && (!core->mdat.novideo)) {
-				qDebug("BaseGui::winEvent: not allowing screensaver");
+				qDebug("Gui::TBase::winEvent: not allowing screensaver");
 				(*result) = 0;
 				return true;
 			} else {
 				if ((pref->avoid_screensaver) && (just_stopped)) {
-					qDebug("BaseGui::winEvent: file just stopped, so not allowing screensaver for a while");
+					qDebug("Gui::TBase::winEvent: file just stopped, so not allowing screensaver for a while");
 					(*result) = 0;
 					return true;
 				} else {
-					qDebug("BaseGui::winEvent: allowing screensaver");
+					qDebug("Gui::TBase::winEvent: allowing screensaver");
 					return false;
 				}
 			}
@@ -5295,11 +5299,13 @@ bool BaseGui::winEvent ( MSG * m, long * result ) {
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
-void BaseGui::clear_just_stopped() {
-	qDebug("BaseGui::clear_just_stopped");
+void TBase::clear_just_stopped() {
+	qDebug("Gui::TBase::clear_just_stopped");
 	just_stopped = false;
 }
 #endif
 #endif
 
-#include "moc_basegui.cpp"
+} // namespace Gui
+
+#include "moc_base.cpp"

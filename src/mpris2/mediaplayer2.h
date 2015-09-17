@@ -42,8 +42,7 @@
 
 #include <QDBusAbstractAdaptor>
 #include <QStringList>
-
-class BaseGui;
+#include "gui/baseplus.h"
 
 class MediaPlayer2 : public QDBusAbstractAdaptor
 {
@@ -65,7 +64,7 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
     Q_PROPERTY(QStringList SupportedMimeTypes READ SupportedMimeTypes)
 
     public:
-        explicit MediaPlayer2(BaseGui* gui, QObject* parent);
+		explicit MediaPlayer2(Gui::TBase* gui, QObject* parent);
         ~MediaPlayer2();
 
         bool CanQuit() const;
@@ -90,7 +89,7 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
     private slots:
         void emitFullscreenChange(bool fullscreen) const;
     private:
-        BaseGui* m_gui;
+		Gui::TBase* m_gui;
 };
 
 #endif

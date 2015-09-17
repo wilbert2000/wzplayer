@@ -16,12 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _BASEGUIPLUS_H_
-#define _BASEGUIPLUS_H_
+#ifndef _GUI_BASEPLUS_H_
+#define _GUI_BASEPLUS_H_
 
-#include "basegui.h"
+#include "base.h"
 #include <QSystemTrayIcon>
 #include <QPoint>
+
 #include "guiconfig.h"
 
 class QMenu;
@@ -30,13 +31,15 @@ class PlaylistDock;
 class TimeSliderAction;
 class VolumeSliderAction;
 
-class BaseGuiPlus : public BaseGui
+namespace Gui {
+
+class TBasePlus : public TBase
 {
 	Q_OBJECT
 
 public:
-	BaseGuiPlus( QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	~BaseGuiPlus();
+	TBasePlus( QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~TBasePlus();
 
 	virtual bool startHidden();
 	virtual void loadConfig(const QString &group);
@@ -118,4 +121,6 @@ private:
 	void switchToTray();
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_BASEPLUS_H_
