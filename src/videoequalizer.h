@@ -20,6 +20,7 @@
 #define VIDEOEQUALIZER_H
 
 #include "ui_videoequalizer.h"
+#include <QObject>
 #include <QWidget>
 
 class VideoEqualizer : public QWidget, public Ui::VideoEqualizer
