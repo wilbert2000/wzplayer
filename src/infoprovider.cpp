@@ -19,7 +19,7 @@
 #include "infoprovider.h"
 #include "global.h"
 #include "preferences.h"
-#include "playerprocess.h"
+#include "proc/playerprocess.h"
 #include "playerid.h"
 #include <QFileInfo>
 
@@ -30,7 +30,7 @@ void InfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaDa
 	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
 		mplayer_bin = fi.absoluteFilePath();
 	}
-	PlayerProcess * proc = PlayerProcess::createPlayerProcess(mplayer_bin, &md);
+	Proc::PlayerProcess * proc = Proc::PlayerProcess::createPlayerProcess(mplayer_bin, &md);
 
 	proc->setExecutable(mplayer_bin);
 	proc->setFixedOptions();

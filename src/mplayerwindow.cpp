@@ -17,13 +17,6 @@
 */
 
 #include "mplayerwindow.h"
-#include "global.h"
-#include "desktopinfo.h"
-#include "colorutils.h"
-
-#ifndef MINILIB
-#include "images.h"
-#endif
 
 #include <QLabel>
 #include <QTimer>
@@ -39,7 +32,16 @@
 #include <QPropertyAnimation>
 #endif
 
-extern QPoint default_osd_pos;
+#include "global.h"
+#include "desktopinfo.h"
+#include "colorutils.h"
+
+#ifndef MINILIB
+#include "images.h"
+#endif
+
+#include "proc/playerprocess.h"
+
 
 /* ---------------------------------------------------------------------- */
 
@@ -336,14 +338,14 @@ void MplayerWindow::updateVideoWindow() {
 	mplayerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
 
 	// Keep OSD in sight. Need the offset as seen by player.
-	QPoint osd_pos(default_osd_pos);
+	QPoint osd_pos(Proc::default_osd_pos);
 	if (pos.x() < 0)
 		osd_pos.rx() -= pos.x();
 	if (pos.y() < 0)
 		osd_pos.ry() -= pos.y();
 	emit moveOSD(osd_pos);
 
-	// Update status with new size. After OSD to clear moveOSD msg.
+	// Update status with new size
 	if (enable_messages && !fullscreen && video_size != last_video_size) {
 		emit showMessage(tr("Video size %1 x %2").arg(video_size.width()).arg(video_size.height()),
 						 2000, 1); // 2 sec, osd_level 1

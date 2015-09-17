@@ -103,7 +103,7 @@ HEADERS += guiconfig.h \
 	myprocess.h \
 	mplayerversion.h \
 	playerid.h \
-	playerprocess.h \
+	proc/playerprocess.h \
 	infoprovider.h \
 	mplayerwindow.h \
 	mediadata.h \
@@ -204,7 +204,7 @@ SOURCES	+= version.cpp \
 	myprocess.cpp \
 	mplayerversion.cpp \
 	playerid.cpp \
-	playerprocess.cpp \
+	proc/playerprocess.cpp \
 	infoprovider.cpp \
 	mplayerwindow.cpp \
 	mediadata.cpp \
@@ -300,13 +300,13 @@ FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         toolbareditor.ui multilineinputdialog.ui
 
 contains( DEFINES, MPV_SUPPORT ) {
-	HEADERS += mpvprocess.h inforeadermpv.h
-	SOURCES += mpvprocess.cpp inforeadermpv.cpp
+    HEADERS += proc/mpvprocess.h inforeadermpv.h
+    SOURCES += proc/mpvprocess.cpp inforeadermpv.cpp
 }
 
 contains( DEFINES, MPLAYER_SUPPORT ) {
-	HEADERS += mplayerprocess.h inforeadermplayer.h
-	SOURCES += mplayerprocess.cpp inforeadermplayer.cpp
+    HEADERS += proc/mplayerprocess.h inforeadermplayer.h
+    SOURCES += proc/mplayerprocess.cpp inforeadermplayer.cpp
 }
 
 # qtsingleapplication

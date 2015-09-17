@@ -94,7 +94,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	tv_settings = new TVSettings(Paths::iniPath());
 #endif
 
-	proc = PlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
+	proc = Proc::PlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
 
 	connect( proc, SIGNAL(error(QProcess::ProcessError)),
 			 this, SLOT(processError(QProcess::ProcessError)) );
@@ -715,7 +715,6 @@ void Core::openStream(QString name) {
 	close();
 	mdat.filename = name;
 	mdat.selected_type = MediaData::TYPE_STREAM;
-
 	mset.reset();
 
 	initPlaying();
@@ -725,10 +724,8 @@ void Core::openFile(QString filename, int seek) {
 	qDebug("Core::openFile: '%s'", filename.toUtf8().data());
 
 	close();
-
 	mdat.filename = filename;
 	mdat.selected_type = MediaData::TYPE_FILE;
-
 	int old_volume = mset.volume;
 	mset.reset();
 
@@ -985,7 +982,7 @@ void Core::screenshot() {
 	if ( (!pref->screenshot_directory.isEmpty()) && 
          (QFileInfo(pref->screenshot_directory).isDir()) ) 
 	{
-		proc->takeScreenshot(PlayerProcess::Single, pref->subtitles_on_screenshots);
+		proc->takeScreenshot(Proc::PlayerProcess::Single, pref->subtitles_on_screenshots);
 		qDebug("Core::screenshot: taken screenshot");
 	} else {
 		qDebug("Core::screenshot: error: directory for screenshots not valid");
@@ -999,7 +996,7 @@ void Core::screenshots() {
 	if ( (!pref->screenshot_directory.isEmpty()) && 
          (QFileInfo(pref->screenshot_directory).isDir()) ) 
 	{
-		proc->takeScreenshot(PlayerProcess::Multiple, pref->subtitles_on_screenshots);
+		proc->takeScreenshot(Proc::PlayerProcess::Multiple, pref->subtitles_on_screenshots);
 	} else {
 		qDebug("Core::screenshots: error: directory for screenshots not valid");
 		emit showMessage( tr("Screenshots NOT taken, folder not configured") );
@@ -3336,7 +3333,7 @@ void Core::forceResize() {
 }
 
 void Core::changeSize(int percentage) {
-	qDebug("Core::changeSize");
+	qDebug("Core::changeSize: %d", percentage);
 
 	if (!pref->use_mplayer_window && !pref->fullscreen) {
 		pref->size_factor = (double) percentage / 100;

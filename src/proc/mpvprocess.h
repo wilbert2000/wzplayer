@@ -16,15 +16,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef MPVPROCESS_H
-#define MPVPROCESS_H
+#ifndef _PROC_MPVPROCESS_H
+#define _PROC_MPVPROCESS_H
 
+#include <QObject>
 #include <QPoint>
 #include <QString>
-#include "playerprocess.h"
 #include "config.h"
+#include "playerprocess.h"
 
 class QStringList;
+
+namespace Proc {
 
 class MPVProcess : public PlayerProcess
 {
@@ -151,4 +154,6 @@ private:
 	bool parseSubtitleTrack(int id, const QString &lang, QString name, const QString &type, bool selected);
 };
 
-#endif
+} // namespace Proc
+
+#endif // _PROC_MPVPROCESS_H

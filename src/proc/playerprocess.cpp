@@ -17,8 +17,12 @@
 */
 
 #include "playerprocess.h"
-#include <QFileInfo>
+
 #include <QDebug>
+#include <QPoint>
+#include <QFileInfo>
+
+#include "config.h"
 
 #ifdef MPV_SUPPORT
 #include "mpvprocess.h"
@@ -28,7 +32,16 @@
 #include "mplayerprocess.h"
 #endif
 
+
+namespace Proc {
+
+	// Default position OSD. Used by setOSDPos and MplayerWindow.
+	// Should be set by player process.
+	QPoint default_osd_pos = QPoint();
+
+
 const int waiting_for_answers_safe_guard_init = 100;
+
 
 PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata)
 	: MyProcess(0)
@@ -482,5 +495,7 @@ void PlayerProcess::seek(double secs, int mode, bool precise, bool currently_pau
 	secs = guiTimeToPlayerTime(secs);
 	seekPlayerTime(secs, mode, precise, currently_paused);
 }
+
+} // namespace Proc
 
 #include "moc_playerprocess.cpp"

@@ -17,6 +17,7 @@
 */
 
 #include "mplayerprocess.h"
+
 //#include <cmath>
 #include <QRegExp>
 #include <QStringList>
@@ -32,6 +33,7 @@
 
 using namespace Global;
 
+namespace Proc {
 
 MplayerProcess::MplayerProcess(MediaData *mdata)
 	: PlayerProcess(PlayerID::MPLAYER, mdata),
@@ -1344,5 +1346,6 @@ void MplayerProcess::setSubStyles(const AssStyles & styles, const QString & assS
 	}
 }
 
+} // namespace Proc
 
 #include "moc_mplayerprocess.cpp"

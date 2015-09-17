@@ -16,15 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MPLAYERPROCESS_H_
-#define _MPLAYERPROCESS_H_
+#ifndef _PROC_MPLAYERPROCESS_H_
+#define _PROC_MPLAYERPROCESS_H_
 
+#include <QObject>
 #include <QString>
+
+#include "config.h"
 #include "playerprocess.h"
 #include "mediadata.h"
-#include "config.h"
 
 class QStringList;
+
+namespace Proc {
 
 class MplayerProcess : public PlayerProcess
 {
@@ -100,7 +104,7 @@ public:
 	void toggleDeinterlace();
 	void setOSDPos(const QPoint &pos);
 	void setOSDScale(double value);
-	void setChannelsFile(const QString &) {};
+	void setChannelsFile(const QString &) {}
 
 
 protected:
@@ -154,4 +158,6 @@ private:
 	void convertTitlesToChapters();
 };
 
-#endif
+} // namesapce Proc
+
+#endif // _PROC_MPLAYERPROCESS_H_

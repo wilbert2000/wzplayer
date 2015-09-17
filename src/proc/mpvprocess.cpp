@@ -17,22 +17,23 @@
 */
 
 #include "mpvprocess.h"
+
 #include <QRegExp>
 #include <QStringList>
 #include <QApplication>
 #include <QDebug>
 
 #include "global.h"
+#include "playerprocess.h"
 #include "preferences.h"
 #include "mplayerversion.h"
 #include "colorutils.h"
 #include "inforeader.h"
 
-using namespace Global;
 
+namespace Proc {
 
-// Docs MPV: (25, 22);
-QPoint default_osd_pos = QPoint();
+// Max pos accepted by MPV for OSD margins used by setOSDPos.
 // TODO: get from player too
 static const QPoint max_osd_pos(300, 600);
 
@@ -656,6 +657,8 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 		"METADATA_COPYRIGHT=${metadata/by-key/copyright:}\n"
 
 		"INFO_MEDIA_TITLE=${=media-title:}\n"
+
+		// OSD position used by setOSDPos. Docs MPV: (25, 22)
 		"INFO_OSD_X=${=options/osd-margin-x:}\n"
 		"INFO_OSD_Y=${=options/osd-margin-y:}\n";
 
@@ -1564,5 +1567,8 @@ void MPVProcess::setSubStyles(const AssStyles & styles, const QString &) {
 void MPVProcess::setChannelsFile(const QString & filename) {
 	arg << "--dvbin-file=" + filename;
 }
+
+} // namespace Proc
+
 
 #include "moc_mpvprocess.cpp"

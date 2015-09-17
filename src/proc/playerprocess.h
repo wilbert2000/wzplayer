@@ -16,17 +16,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PLAYERPROCESS_H
-#define PLAYERPROCESS_H
+#ifndef _PROC_PLAYERPROCESS_H
+#define _PROC_PLAYERPROCESS_H
 
-#include "myprocess.h"
-#include "mediadata.h"
-#include "playerid.h"
-#include "config.h"
-#include "assstyles.h"
+#include <QObject>
 #include <QVariant>
 #include <QRegExp>
 
+#include "config.h"
+#include "myprocess.h"
+#include "mediadata.h"
+#include "playerid.h"
+#include "assstyles.h"
+
+
+namespace Proc {
+
+// OSD position used by setOSDPos and MplayerWindow
+extern QPoint default_osd_pos;
+
+	
 class PlayerProcess : public MyProcess
 {
 	Q_OBJECT
@@ -220,4 +229,6 @@ private:
 	int prev_frame;
 };
 
-#endif
+} // namespace Proc
+
+#endif // _PROC_PLAYERPROCESS_H

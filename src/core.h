@@ -21,20 +21,17 @@
 
 #include <QObject>
 #include <QProcess> // For QProcess::ProcessError
+
+#include "config.h"
 #include "mediadata.h"
 #include "mediasettings.h"
 #include "preferences.h"
-#include "playerprocess.h"
-
-#include "config.h"
+#include "proc/playerprocess.h"
+#include "mplayerwindow.h"
 
 #ifndef NO_USE_INI_FILES
 class FileSettingsBase;
 #endif
-
-class PlayerProcess;
-class MplayerWindow;
-class QSettings;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -474,7 +471,7 @@ signals:
 	void receivedForbidden();
 
 protected:
-	PlayerProcess * proc;
+	Proc::PlayerProcess * proc;
 	MplayerWindow * mplayerwindow;
 
 #ifndef NO_USE_INI_FILES
