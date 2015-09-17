@@ -25,6 +25,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSize>
+
 #include "config.h"
 #include "audioequalizerlist.h"
 #include "assstyles.h"
@@ -51,7 +52,7 @@ public:
 	enum H264LoopFilter { LoopDisabled = 0, LoopEnabled = 1, LoopDisabledOnHD = 2 };
 	enum AutoAddToPlaylistFilter { NoFiles = 0, VideoFiles = 1, AudioFiles = 2, MultimediaFiles = 3, ConsecutiveFiles = 4 };
 
-	Q_DECLARE_FLAGS(WheelFunctions, WheelFunction);
+	Q_DECLARE_FLAGS(WheelFunctions, WheelFunction)
 
 	Preferences();
 	virtual ~Preferences();
