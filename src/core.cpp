@@ -3805,12 +3805,19 @@ void Core::gotSubtitleInfo() {
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
 	emit subtitleInfoChanged();
 
+	// TODO: this is racy as hell. Do not use pref->autoload_sub.
 	if (pref->autoload_sub && mdat.subs.count() > 0) {
 		int wanted_idx = pref->initial_subtitle_track - 1;
 		wanted_idx = mdat.subs.selectOne(pref->language, wanted_idx);
 		if (wanted_idx >= 0) {
-			// Hack: mdat.subs selected sub does not have to be uptodate yet...
-			mdat.subs.clearSelected();
+			// Note: mplayers selected sub will not yet be updated.
+			// TODO: delay change so clearSelected() not needed?
+			// If no sub is selected by mplayer, gotSubtitleChanged() won't
+			// arrive, so can't delay it with gotSubtitleChanged()
+			if (proc->isMPlayer()) {
+				// For mplayer this allways sets the sub, even if already selected
+				mdat.subs.clearSelected();
+			}
 			changeSubtitle(wanted_idx, false);
 			return;
 		}
