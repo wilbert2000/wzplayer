@@ -17,8 +17,10 @@
 */
 
 #include "images.h"
-#include <QFile>
 #include <QDebug>
+#include <QString>
+#include <QFile>
+#include <QPixmap>
 
 #ifdef USE_RESOURCES
 #include <QResource>
