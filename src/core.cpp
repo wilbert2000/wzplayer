@@ -763,12 +763,14 @@ void Core::openFile(QString filename, int seek) {
 void Core::restartPlay() {
 	we_are_restarting = true;
 
-	// Add current title if DVDNAV and clear mset.current_sec if menu.
-	// It really doesn't like seek on a menu.
+	// For DVDNAV add the current title.
+	// When on a menu clear mset.current_sec.
+	// DVDNAV does not like a seek on a menu.
 	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
 		if (mdat.title_is_menu || mdat.titles.getSelectedID() < 0) {
-			// If on menu leave the title as is, so at least when
-			// no title is set we stay on the main menu.
+			// If on a menu leave the title as is, so at least when no title is
+			// set, we stay on the main menu. When a title is set, we probably
+			// leave the menu, because setting the title will play it.
 			mset.current_sec = 0;
 		} else {
 			DiscData disc = DiscName::split(mdat.filename);
@@ -817,7 +819,9 @@ void Core::newMediaPlaying() {
 	mdat.list();
 	mset.list();
 
-	// Switch disc to detected protocol
+	// Switch disc to detected protocol. Not a good idea.
+	// Use detected_type and selected_type where apropriate.
+/*
 	if (0 && mdat.detectedDisc() && mdat.selected_type != mdat.detected_type) {
 		bool valid_name;
 		DiscData disc = DiscName::split(mdat.filename, &valid_name);
@@ -835,6 +839,7 @@ void Core::newMediaPlaying() {
 				 << "to detected protocol" << protocol;
 		mdat.selected_type = mdat.detected_type;
 	}
+*/
 
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
