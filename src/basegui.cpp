@@ -1255,7 +1255,7 @@ void BaseGui::createActions() {
 	connect( subtitleTrackGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeSubtitle(int)) );
 	connect( core, SIGNAL(subtitleInfoChanged()),
-			 this, SLOT(updateSubtitleTracks()) );
+			 this, SLOT(updateSubtitles()) );
 	connect( core, SIGNAL(subtitleTrackChanged(int)),
 			 subtitleTrackGroup, SLOT(setCheckedSlot(int)) );
 
@@ -3299,8 +3299,8 @@ void BaseGui::updateAudioTracks() {
 	audiotrack_menu->addActions(audioTrackGroup->actions());
 }
 
-void BaseGui::updateSubtitleTracks() {
-	qDebug("BaseGui::updateSubtitleTracks");
+void BaseGui::updateSubtitles() {
+	qDebug("BaseGui::updateSubtitles");
 
 	// Note: use idx not ID
 	subtitleTrackGroup->clear(true);

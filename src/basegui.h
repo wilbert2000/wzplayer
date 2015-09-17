@@ -212,7 +212,7 @@ protected slots:
 	virtual void updateWidgets();
 	virtual void updateVideoTracks();
 	virtual void updateAudioTracks();
-	virtual void updateSubtitleTracks();
+	virtual void updateSubtitles();
 	virtual void updateTitles();
 	virtual void updateChapters();
 	virtual void updateAngles();
