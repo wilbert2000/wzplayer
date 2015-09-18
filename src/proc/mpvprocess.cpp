@@ -229,8 +229,8 @@ void MPVProcess::fixTitle() {
 
 	// Accept the requested title as the selected title, if we did not receive
 	// a title not found. First and upmost this handles faulty reported titles,
-	// but it also makes it possible to sequentially play all titles (needed
-	// because MPV does not support menus).
+	// but it also makes it possible to sequentially play all titles, needed
+	// because MPV does not support menus.
 	if (!received_title_not_found) {
 		if (disc.title == selected_title) {
 			qDebug("MPVProcess::fixTitle: found requested title %d", disc.title);
@@ -250,7 +250,9 @@ void MPVProcess::fixTitle() {
 		// Need to set the selected title, otherwise the playlist will select
 		// the second title instead of the title after this one.
 		notifyTitleTrackChanged(disc.title);
+		// Pass eof to trigger playNext() in playlist
 		received_end_of_file = true;
+		// Ask player to quit
 		quit(0);
 		return;
 	}
