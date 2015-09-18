@@ -165,7 +165,7 @@ public:
 
 public slots:
 	void aboutToStartPlaying();
-	void playingStopped();
+	void playingStopped(bool clear_background = true);
 
 	void setLogoVisible(bool b);
 	void showLogo() { setLogoVisible(true); }

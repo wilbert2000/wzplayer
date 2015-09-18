@@ -291,10 +291,10 @@ void Core::processError(QProcess::ProcessError error) {
 void Core::processFinished(bool normal_exit) {
 	qDebug("Core::processFinished");
 
-	// First restore normal window background
-	mplayerwindow->playingStopped();
+	// Restore normal window background
+	mplayerwindow->playingStopped(!we_are_restarting);
 
-	if (we_are_restarting && normal_exit) {
+	if (we_are_restarting) {
 		qDebug("Core::processFinished: something tells me we are restarting...");
 		return;
 	}
@@ -787,9 +787,13 @@ void Core::initPlaying(int seek) {
 	qDebug("Core::initPlaying");
 
 	mplayerwindow->hideLogo();
-	// Feedback and prevent potential artifacts waiting for redraw
-	mplayerwindow->repaint();
-	qDebug("Core::initPlaying: entered the black hole, resetting time");
+	if (we_are_restarting) {
+		qDebug("Core::initPlaying: resetting time");
+	} else {
+		// Feedback and prevent potential artifacts waiting for redraw
+		mplayerwindow->repaint();
+		qDebug("Core::initPlaying: entered the black hole, resetting time");
+	}
 	time.start();
 
 	if (proc->isRunning()) {

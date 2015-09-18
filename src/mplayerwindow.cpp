@@ -749,14 +749,15 @@ void MplayerWindow::aboutToStartPlaying() {
 	setAutoHideCursor(true);
 }
 
-void MplayerWindow::playingStopped() {
+void MplayerWindow::playingStopped(bool clear_background) {
 	qDebug("MplayerWindow::playingStopped");
 
 	mplayerlayer->restoreNormalBackground();
 	// Clear background right away.
 	// Pro: no artifacts when things take a little while.
-	// Against: longer black flicker when switching bright videos in playlist.
-	repaint();
+	// Against: longer black flicker when restarting or switching bright videos
+	if (clear_background)
+		repaint();
 
 	setAutoHideCursor(false);
 	setResolution(0, 0);
