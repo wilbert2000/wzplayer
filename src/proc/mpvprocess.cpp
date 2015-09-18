@@ -265,15 +265,8 @@ void MPVProcess::checkTime(double sec) {
 
 	if (title_swictched && sec >= title_switch_time) {
 		title_swictched = false;
-		if (quit_at_end_of_title) {
-			qDebug("MPVProcess::checkTime: quiting at end of title");
-			quit_at_end_of_title = false;
-			received_end_of_file =  true;
-			quit(0);
-		} else {
-			qDebug("MPVProcess::checkTime: sending track changed");
-			notifyTitleTrackChanged(selected_title);
-		}
+		qDebug("MPVProcess::checkTime: sending track changed");
+		notifyTitleTrackChanged(selected_title);
 	}
 }
 
@@ -302,21 +295,37 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 				// Switch when the time comes
 				title_swictched = true;
 				title_switch_time -= 0.4;
-				qDebug("MPVProcess::parseTitleSwitched: saved track changed to %d", title);
+				qDebug("MPVProcess::parseTitleSwitched: saved track changed to %d at %f", title, title_switch_time);
 			}
 		} else {
 			notifyTitleTrackChanged(title);
 		}
 	} else {
-		// When a title ends and hits a menu MPV can go haywire. By setting
-		// quit_at_end_of_title to true, checkTime() will release it from its
-		// suffering when the title ends by sending a quit and fake an eof,
-		// so the playlist can play the next item.
-		if (notified_player_is_running) {
-			qDebug("MPVProcess::parseTitleSwitched: marked title to quit at end");
-			title_swictched = true;
+		// When a title ends and hits a menu MPV can go haywire on invalid
+		// video time stamps. By setting quit_at_end_of_title, parseLine() will
+		// release it from its suffering when the title ends by sending a quit
+		// and fake an eof, so the playlist can play the next item.
+		if (notified_player_is_running && !quit_at_end_of_title) {
 			quit_at_end_of_title = true;
-			title_switch_time = md->duration - 0.1;
+			// Set ms to wait before quitting. Cannnot rely on timestamp video,
+			// because it can switch before the end of the title is reached.
+			// A note on margins:
+			// - Current md->time_sec can be behind
+			// - Menus tend to be triggered on the last second of video
+			// - Quit needs time to arrive
+			quit_at_end_of_title_ms = (int) ((md->duration - md->time_sec) * 1000);
+			// Quit right away if less than 400 ms to go.
+			if (quit_at_end_of_title_ms <= 400) {
+				qDebug("MPVProcess::parseTitleSwitched: quitting at end of title");
+				received_end_of_file =  true;
+				quit(0);
+			} else {
+				// Quit when quit_at_end_of_title_ms elapsed
+				quit_at_end_of_title_ms -= 400;
+				quit_at_end_of_title_time.start();
+				qDebug("MPVProcess::parseTitleSwitched: marked title to quit in %d ms",
+					   quit_at_end_of_title_ms);
+			}
 		}
 	}
 
@@ -426,6 +435,11 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	}
 
 	// First and only run of state playing
+	// If not yet set, see if start time is known by now
+	if (!md->start_sec_set) {
+		qDebug("MPVProcess::parseStatusLine: requesting start time");
+		writeToStdin("print_text \"INFO_START_TIME=${=time-start:}\"");
+	}
 
 	if (MediaData::isCD(md->detected_type)) {
 		// Convert chapters to titles for CD
@@ -474,6 +488,16 @@ bool MPVProcess::parseLine(QString &line) {
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
 
+
+	if (quit_at_end_of_title && !quit_send
+		&& quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
+		qDebug("MPVProcess::parseLine: %d ms elapsed, quitting title",
+			   quit_at_end_of_title_ms);
+		quit_at_end_of_title = false;
+		received_end_of_file =  true;
+		quit(0);
+		return true;
+	}
 
 	if (verbose) {
 		line = line.replace("[statusline] ", "");

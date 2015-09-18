@@ -22,6 +22,8 @@
 #include <QObject>
 #include <QPoint>
 #include <QString>
+#include <QTime>
+
 #include "config.h"
 #include "playerprocess.h"
 
@@ -132,6 +134,8 @@ private:
 	bool title_swictched;
 	double title_switch_time;
 	bool quit_at_end_of_title;
+	int quit_at_end_of_title_ms;
+	QTime quit_at_end_of_title_time;
 
 	bool request_bit_rate_info;
 

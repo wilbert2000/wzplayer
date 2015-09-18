@@ -194,8 +194,8 @@ protected:
 
 	bool notified_player_is_running;
 	int waiting_for_answers;
-
 	bool received_end_of_file;
+	bool quit_send;
 
 	double guiTimeToPlayerTime(double sec);
 	double playerTimeToGuiTime(double sec);
@@ -221,11 +221,7 @@ protected slots:
 
 private:
 	int line_count;
-
 	int waiting_for_answers_safe_guard;
-
-	bool quit_send;
-
 	int prev_frame;
 };
 
