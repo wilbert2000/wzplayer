@@ -492,8 +492,10 @@ bool PlayerProcess::parseMetaDataProperty(QString name, QString value) {
 
 void PlayerProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
 
-	// Convert time to player time
-	secs = guiTimeToPlayerTime(secs);
+	// Convert time to player time if time is absolute position in secs
+	if (mode == 2) {
+		secs = guiTimeToPlayerTime(secs);
+	}
 	seekPlayerTime(secs, mode, precise, currently_paused);
 }
 
