@@ -129,6 +129,8 @@ private:
 
 	double check_duration_time;
 	int check_duration_time_diff;
+	double frame_backstep_time_start;
+	double frame_backstep_time_requested;
 
 	bool video_tracks_changed;
 	bool get_selected_video_track;

@@ -35,6 +35,9 @@ using namespace Global;
 
 namespace Proc {
 
+const double FRAME_BACKSTEP_TIME = 0.1;
+const double FRAME_BACKSTEP_DISABLED = 3600000;
+
 MplayerProcess::MplayerProcess(MediaData *mdata)
 	: PlayerProcess(PlayerID::MPLAYER, mdata),
 	svn_version(-1) {
@@ -54,6 +57,7 @@ void MplayerProcess::clearSubSources() {
 
 bool MplayerProcess::startPlayer() {
 
+	frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
 	clearSubSources();
 	return PlayerProcess::startPlayer();
 }
@@ -441,8 +445,16 @@ bool MplayerProcess::parseVO(const QString &driver, int w, int h) {
 
 bool MplayerProcess::parsePause() {
 
+	if (md->time_sec > frame_backstep_time_start) {
+		qDebug("MplayerProcess::parsePause(): retrying frameBackStep() at %f", md->time_sec);
+		frameBackStep();
+		return true;
+	}
+	frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
+
 	qDebug("MplayerProcess::parsePause: emit receivedPause()");
 	emit receivedPause();
+
 	return true;
 }
 
@@ -1140,6 +1152,11 @@ void MplayerProcess::setSubtitlesVisibility(bool b) {
 }
 
 void MplayerProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
+	//seek <value> [type]
+	//    Seek to some place in the movie.
+	//        0 is a relative seek of +/- <value> seconds (default).
+	//        1 is a seek to <value> % in the movie.
+	//        2 is a seek to an absolute position of <value> seconds.
 
 	QString s = QString("seek %1 %2").arg(secs).arg(mode);
 	if (precise) s += " 1"; else s += " -1";
@@ -1169,8 +1186,28 @@ void MplayerProcess::frameStep() {
 }
 
 void MplayerProcess::frameBackStep() {
-	// TODO: use seek()
-	qDebug("MplayerProcess::frameBackStep: function not supported in mplayer");
+
+	if (frame_backstep_time_start == FRAME_BACKSTEP_DISABLED) {
+		frame_backstep_time_start = md->time_sec - FRAME_BACKSTEP_TIME;
+		frame_backstep_time_requested = frame_backstep_time_start;
+	} else {
+		// Retry call from parsePause()
+		frame_backstep_time_requested -= FRAME_BACKSTEP_TIME;
+	}
+	if (frame_backstep_time_requested < 0) frame_backstep_time_requested = 0;
+	qDebug("MplayerProcess::frameBackStep: emulating unsupported function. Trying %f",
+		   frame_backstep_time_requested);
+
+	seekPlayerTime(frame_backstep_time_requested, // time to seek
+				   2,		// seek absolute
+				   true,	// seek precise
+				   true);	// currently paused
+
+	// Don't retry when hitting zero
+	if (frame_backstep_time_requested <= md->start_sec
+		|| frame_backstep_time_requested <= 0) {
+		frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
+	}
 }
 
 void MplayerProcess::showOSDText(const QString & text, int duration, int level) {
