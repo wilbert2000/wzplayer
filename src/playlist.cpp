@@ -424,11 +424,13 @@ void Playlist::updateView() {
 }
 
 void Playlist::setCurrentItem(int current) {
-	QIcon play_icon;
-	play_icon = Images::icon("play");
 
 	if ( (current_item >= 0) && (current_item < listView->rowCount()) ) {
-		listView->setIcon(current_item, COL_PLAY, QPixmap() );
+		if (current_item < pl.count() && pl[current_item].played()) {
+			listView->setIcon(current_item, COL_PLAY, Images::icon("ok") );
+		} else {
+			listView->setIcon(current_item, COL_PLAY, QPixmap() );
+		}
 	}
 
 	current_item = current;
@@ -439,7 +441,7 @@ void Playlist::setCurrentItem(int current) {
 		}
 
 		if (current_item < listView->rowCount()) {
-			listView->setIcon(current_item, COL_PLAY, play_icon );
+			listView->setIcon(current_item, COL_PLAY, Images::icon("play") );
 		}
 
 		listView->clearSelection();
@@ -967,37 +969,55 @@ void Playlist::playDirectory(const QString &dir) {
 	clear();
 	addDirectory(dir);
 	sortBy(1);
+	// sortBy() changes current_item and sets modified
+	setCurrentItem(0);
 	setModified(false);
 	latest_dir = dir;
 	startPlay();
 }
 
 void Playlist::newMediaLoaded() {
-	qDebug("Playlist::newMediaLoaded");
-
-	QString filename = core->mdat.filename;
-
-	// Done if new file is current item and not a disc.
-	// For disc rebuild the playlist, just in case someone changed disc.
-	if (current_item >= 0 && current_item < pl.count()
-		&& pl[current_item].filename() == filename
-		&& !core->mdat.detectedDisc()) {
-		qDebug("Playlist::newMediaLoaded: new file is current item");
-		return;
-	}
 
 	if (!pref->auto_add_to_playlist) {
 		qDebug("Playlist::newMediaLoaded: add to playlist disabled by user");
 		return;
 	}
 
+	Maps::TTitleTracks* titles = &core->mdat.titles;
+	QString filename = core->mdat.filename;
+	QString current_filename;
+	if (current_item >= 0 && current_item < pl.count()) {
+		current_filename = pl[current_item].filename();
+	} else {
+		current_filename = "";
+	}
+	bool is_disc;
+	DiscData disc = DiscName::split(filename, &is_disc);
+
+	if (is_disc) {
+		if (titles->count() == count()) {
+			if (filename == current_filename) {
+				qDebug("Playlist::newMediaLoaded: new file is current item from disc");
+				return;
+			}
+			bool cur_is_disc;
+			DiscData cur_disc = DiscName::split(current_filename, &cur_is_disc);
+			if (cur_is_disc && cur_disc.protocol == disc.protocol
+				&& cur_disc.device == disc.device) {
+				qDebug("Playlist::newMediaLoaded: new file is from current disc");
+				return;
+			}
+		}
+	} else if (filename == current_filename) {
+		qDebug("Playlist::newMediaLoaded: new file is current item");
+		return;
+	}
+
+	// Create new playlist
 	clear();
 
-	// Add disc titles
-	Maps::TTitleTracks* titles = &core->mdat.titles;
-	bool valid;
-	DiscData disc = DiscName::split(filename, &valid);
-	if (valid) {
+	if (is_disc) {
+		// Add disc titles
 		Maps::TTitleTracks::TMapIterator i = titles->getIterator();
 		while (i.hasNext()) {
 			i.next();
