@@ -3666,7 +3666,8 @@ void Core::gotVideoOutResolution(int w, int h) {
 			mplayerwindow->setAspect(mset.win_aspect(), false);
 		}
 
-		emit needResize(w, h);
+		if (!we_are_restarting)
+			emit needResize(w, h);
 
 		// If resize is canceled adjust new video to old size
 		mplayerwindow->updateVideoWindow();
