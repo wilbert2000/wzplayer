@@ -967,6 +967,7 @@ void Playlist::playDirectory(const QString &dir) {
 	clear();
 	addDirectory(dir);
 	sortBy(1);
+	setModified(false);
 	latest_dir = dir;
 	startPlay();
 }
