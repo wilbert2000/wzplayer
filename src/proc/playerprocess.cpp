@@ -291,18 +291,6 @@ bool PlayerProcess::waitForAnswers() {
 bool PlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 	Q_UNUSED(rx)
 
-	// Store timestamp of first status line if no start time received from player
-	if (!md->start_sec_set) {
-		md->start_sec_set = true;
-		if (md->start_sec_prop_set) {
-			qDebug("PlayerProcess::parseStatusLine: using start time %f reported by player (status %f)",
-				   md->start_sec, time_sec);
-		} else {
-			md->start_sec = time_sec;
-			qWarning("PlayerProcess::parseStatusLine: received no start time from player, using start time status %f", time_sec);
-		}
-	}
-
 	// Any pending questions?
 	// Cancel the remainder of this line and get the answers.
 	if (waitForAnswers())
@@ -455,7 +443,7 @@ bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 		if (value.isEmpty() || value == "unknown") {
 			qDebug("PlayerProcess::parseProperty: start time unknown");
 		} else {
-			md->start_sec_prop_set = true;
+			md->start_sec_set = true;
 			md->start_sec = value.toDouble();
 			qDebug("PlayerProcess::parseProperty: start time set to %f",
 				   md->start_sec);

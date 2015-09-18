@@ -269,9 +269,7 @@ void MplayerProcess::clearTime() {
 	// Reset start time. Assuming we get ID_START_TIME if title has one,
 	// though never seen it, except for the first title at startup.
 	md->start_sec = 0;
-	// Start time status is not reliable, so can't set start_sec_set to false
-	md->start_sec_set = true;
-	md->start_sec_prop_set = false;
+	md->start_sec_set = false;
 	notifyTime(0, "");
 }
 
@@ -282,7 +280,7 @@ bool MplayerProcess::titleChanged(MediaData::Type type, int title) {
 	notifyTitleTrackChanged(title);
 
 	if (type == MediaData::TYPE_DVDNAV) {
-		// Set time to 0
+		// Set start time and time to 0
 		clearTime();
 
 		// Set duration

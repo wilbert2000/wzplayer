@@ -55,14 +55,13 @@ public:
 	Type selected_type;
 	Type detected_type;
 
-	// Start time from first status line or reported by player
+	// Start time reported by player
 	double start_sec;
 	// Current time video, without start time substracted
 	// See MediaSettings for time with start time substracted
 	double time_sec;
 	double duration;
 	bool start_sec_set;
-	bool start_sec_prop_set;
 
 	//Resolution of the video
 	int video_width;
