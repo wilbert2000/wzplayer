@@ -540,12 +540,17 @@ void Playlist::sortBy(int section, bool revert, int count) {
                   compare = -1;
               }
           }
-          else if (section == 1) {
-              // Sort alphabetically
-              QString lastItem = pl[last].name();
-              QString currentItem = pl[current].name();
-              compare = lastItem.compare(currentItem);
-          } else if (section == 2) {
+		  else if (section == 1) {
+			  // Sort alphabetically on dir then filename
+			  QString lastItem = pl[last].filename();
+			  QString lastItemDir = QFileInfo(lastItem).absolutePath();
+			  QString currentItem = pl[current].filename();
+			  QString currentItemDir = QFileInfo(currentItem).absolutePath();
+			  compare = lastItemDir.compare(currentItemDir);
+			  if (compare == 0) {
+				  compare = lastItem.compare(currentItem);
+			  }
+		  } else if (section == 2) {
               // Sort by duration
               double lastItem = pl[last].duration();
               double currentItem = pl[current].duration();
@@ -961,8 +966,8 @@ void Playlist::playDirectory(const QString &dir) {
 
 	clear();
 	addDirectory(dir);
+	sortBy(1);
 	latest_dir = dir;
-	updateView();
 	startPlay();
 }
 
