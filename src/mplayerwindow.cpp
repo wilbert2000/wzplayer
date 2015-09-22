@@ -758,6 +758,7 @@ void MplayerWindow::playingStopped(bool clear_background) {
 	// Against: longer black flicker when restarting or switching bright videos
 	if (clear_background)
 		repaint();
+	else qDebug("MplayerWindow::playingStopped: not clearing background");
 
 	setAutoHideCursor(false);
 	setResolution(0, 0);
