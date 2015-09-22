@@ -162,7 +162,7 @@ Playlist::~Playlist() {
 }
 
 void Playlist::setModified(bool mod) {
-	qDebug("Playlist::setModified: %d", mod);
+	//qDebug("Playlist::setModified: %d", mod);
 
 	modified = mod;
 	emit modifiedChanged(modified);
