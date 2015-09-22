@@ -210,8 +210,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	connect( this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()) );
 
-	mset.reset();
-
 	// Mplayerwindow
 	connect( this, SIGNAL(aboutToStartPlaying()),
 			 mplayerwindow, SLOT(aboutToStartPlaying()) );
