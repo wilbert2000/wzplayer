@@ -39,6 +39,7 @@ public:
 	void setName( const QString & aName ) { name = aName; }
 	void setDuration( double d ) { duration = d; }
 	void setAngles( int n ) { angles = n; }
+	void setVTS( int n ) { vts = n; }
 	void setType( bool aTrack ) { isTrack = aTrack; }
 	void setTrack(int id, const QString &aName, double aDuration) {
 		ID = id;
@@ -50,6 +51,7 @@ public:
 	QString getName() const { return name; }
 	double getDuration() const { return duration; }
 	int getAngles() const { return angles; }
+	int getVTS() const { return vts; }
 
 	QString getDisplayName(bool add_duration = true) const;
 
@@ -57,6 +59,7 @@ protected:
 	QString name;
 	double duration;
 	int angles;
+	int vts;
 	bool isTrack;
 };
 
@@ -64,10 +67,16 @@ protected:
 class TTitleTracks : public TMap<TTitleData> {
 
 public:
-	TTitleTracks() {}
+	TTitleTracks() : selectedVTS(-1), vtsCount(0) {}
 	~TTitleTracks() {}
 
 	typedef QMapIterator<int, TTitleData> TTitleTrackIterator;
+
+	int getSelectedVTS() const { return selectedVTS; }
+	void setSelectedVTS(int vts) { selectedVTS = vts; }
+	int getVTSCount() const { return vtsCount; }
+	void setVTSCount(int count) { vtsCount = count; }
+	bool setTitleFromDuration(double duration, int& titleHint);
 
 	void list() const;
 
@@ -76,6 +85,12 @@ public:
 	void addChapters(int ID, int n);
 	void addAngles(int ID, int n);
 	void addTrack(int ID, const QString &name, double duration);
+
+protected:
+	int selectedVTS;
+	int vtsCount;
+
+	void setVTSTitle(int title);
 };
 
 } // namespace Maps

@@ -28,6 +28,7 @@ TTitleData::TTitleData() :
 	name(),
 	duration(-1),
 	angles(-1),
+	vts(-1),
 	isTrack(false) {
 }
 
@@ -76,9 +77,68 @@ void TTitleTracks::addAngles(int ID, int n) {
 	title.setAngles(n);
 }
 
+void TTitleTracks::setVTSTitle(int title) {
+	(*this)[title].setVTS(selectedVTS);
+	selectedID = title;
+}
+
+bool TTitleTracks::setTitleFromDuration(double duration, int& titleHint) {
+
+	int hint = titleHint;
+	titleHint = -2;
+	int foundTitle = -1;
+	bool foundTwice = false;
+	TMapIterator i = getIterator();
+	while (i.hasNext()) {
+		i.next();
+		TTitleData title = i.value();
+
+		if (title.getVTS() > selectedVTS) {
+			break;
+		}
+
+		if (title.getVTS() < 0 || title.getVTS() == selectedVTS) {
+			if (qAbs(title.getDuration() - duration) <= 0.01) {
+				if (title.getID() == hint) {
+					qDebug("TTitleTracks::setTitleFromDuration: selecting title %d with duration %f based on hint",
+						   title.getID(), duration);
+					setVTSTitle(title.getID());
+					return true;
+				}
+				if (foundTitle > 0) {
+					foundTwice = true;
+				} else {
+					foundTitle = title.getID();
+				}
+			}
+		} else {
+			foundTitle = -1;
+			foundTwice = false;
+		}
+	}
+
+	if (foundTwice) {
+		qDebug("TTitleTracks::setTitleFromDuration: found duration %f multiple times, no title selected",
+			   duration);
+		return false;
+	}
+	if (foundTitle > 0) {
+		qDebug("TTitleTracks::setTitleFromDuration: selecting title %d with duration %f",
+			   foundTitle, duration);
+		setVTSTitle(foundTitle);
+		return true;
+	}
+	qWarning("TTitleTracks::setTitleFromDuration: no title selected, duration %f not found",
+			 duration);
+	return false;
+}
+
+
 void TTitleTracks::list() const {
 
-	qDebug("TitleTracks::list: selected ID: %d", selectedID);
+	qDebug("TitleTracks::list: selected title ID: %d", selectedID);
+	qDebug("TitleTracks::list: selected VTS: %d", selectedVTS);
+	qDebug("TitleTracks::list: VTS count: %d", vtsCount);
 	TTitleTrackIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
