@@ -110,6 +110,7 @@ public:
 	QString mpvVersion() { return mpv_version; }
 
 protected:
+	virtual void playingStarted();
 	virtual int getFrame(double time_sec, const QString &line);
 	virtual void checkTime(double sec);
 

@@ -228,14 +228,14 @@ void MPVProcess::fixTitle() {
 	if (disc.title == 0) disc.title = 1;
 
 	// Accept the requested title as the selected title, if we did not receive
-	// a title not found. First and upmost this handles faulty reported titles,
-	// but it also makes it possible to sequentially play all titles, needed
-	// because MPV does not support menus.
+	// a title not found. First and upmost this handles titles being reported
+	// as VTS by DVDNAV, but it also makes it possible to sequentially play all
+	// titles, needed because MPV does not support menus.
 	if (!received_title_not_found) {
 		if (disc.title == selected_title) {
 			qDebug("MPVProcess::fixTitle: found requested title %d", disc.title);
 		} else {
-			qDebug("MPVProcess::fixTitle: selecting title %d, but player reports it is playing title %d",
+			qDebug("MPVProcess::fixTitle: selecting title %d, player reports it is playing VTS %d",
 				   disc.title, selected_title);
 		}
 		notifyTitleTrackChanged(disc.title);
@@ -340,7 +340,6 @@ bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
 	// Requested title means the original title. The currently selected title
 	// seems still valid and is the last selected title during its search through
 	// the disc.
-	// TODO: mark the title as bad?
 
 	// Ask which one is selected. Seems to always deliver -1, probably mpv just doesn't know?
 	// writeToStdin("print_text \"[" + disc_type + "] switched to title: ${disc-title:-1}\"");
@@ -386,6 +385,30 @@ void MPVProcess::convertChaptersToTitles() {
 
 	qDebug("MPVProcess::convertChaptersToTitles: created %d titles",
 		   md->titles.count());
+}
+
+void MPVProcess::playingStarted() {
+	qDebug("MPVProcess::playingStarted");
+
+	// MPV can give negative times for TS without giving a start time.
+	// Correct them by setting the start time.
+	if (!md->start_sec_set && md->time_sec < 0) {
+		qDebug("MPVProcess::playingStarted: setting negative start time %f", md->time_sec);
+		md->start_sec = md->time_sec;
+		// No longer need rollover protection (though not set for MPV anyway).
+		md->mpegts = false;
+		notifyTime(md->time_sec, "");
+	}
+
+	if (MediaData::isCD(md->detected_type)) {
+		// Convert chapters to titles for CD
+		convertChaptersToTitles();
+	} else if (md->detectedDisc()) {
+		// Workaround titles being reported as VTS
+		fixTitle();
+	}
+
+	PlayerProcess::playingStarted();
 }
 
 void MPVProcess::requestBitrateInfo() {
@@ -435,20 +458,6 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	}
 
 	// First and only run of state playing
-	// If not yet set, see if start time is known by now
-	if (!md->start_sec_set) {
-		qDebug("MPVProcess::parseStatusLine: requesting start time");
-		writeToStdin("print_text \"INFO_START_TIME=${=time-start:}\"");
-	}
-
-	if (MediaData::isCD(md->detected_type)) {
-		// Convert chapters to titles for CD
-		convertChaptersToTitles();
-	} else if (md->detectedDisc()) {
-		// Workaround MPV title bugs
-		fixTitle();
-	}
-
 	// Base class sets notified_player_is_running to true
 	playingStarted();
 
