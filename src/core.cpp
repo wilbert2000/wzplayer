@@ -733,14 +733,14 @@ void Core::openFile(QString filename, int seek) {
 	if (pref->dont_remember_media_settings || !file_settings->existSettingsFor(filename)) {
 		mset.volume = old_volume;
 	} else {
-		qDebug("Core::playNewFile: We have settings for this file!!!");
+		qDebug("Core::openFile: We have settings for this file!!!");
 
 		file_settings->loadSettingsFor(filename, mset, proc->player());
-		qDebug("Core::playNewFile: Media settings read");
+		qDebug("Core::openFile: Media settings read");
 
 		if (pref->dont_remember_time_pos) {
 			mset.current_sec = 0;
-			qDebug("Core::playNewFile: Time pos reset to 0");
+			qDebug("Core::openFile: Time pos reset to 0");
 		}
 	}
 #else
@@ -754,7 +754,7 @@ void Core::openFile(QString filename, int seek) {
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
 
-	qDebug("Core::playNewFile: volume: %d, old_volume: %d", mset.volume, old_volume);
+	qDebug("Core::openFile: volume: %d, old_volume: %d", mset.volume, old_volume);
 	initPlaying(seek);
 }
 
