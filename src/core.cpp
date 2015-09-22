@@ -3174,6 +3174,27 @@ void Core::changeSecondarySubtitle(int idx) {
 }
 #endif
 
+void Core::changeTitleLeaveMenu() {
+
+	if (mdat.title_is_menu) {
+		if (menus_selected >= 2) {
+			qDebug("Core::changeTitleLeaveMenu: failed to leave menu, giving up");
+			block_dvd_nav = false;
+			return;
+		}
+		qDebug("Core::changeTitleLeaveMenu: still on menu, sending select");
+		dvdnavSelect();
+		menus_selected++;
+		QTimer::singleShot(500, this, SLOT(changeTitleLeaveMenu()));
+		return;
+	}
+
+	qDebug("Core::changeTitleLeaveMenu: left menu, setting title");
+
+	proc->setTitle(title_to_select);
+	block_dvd_nav = false;
+}
+
 void Core::changeTitle(int title) {
 	qDebug("Core::changeTitle: title %d", title);
 
@@ -3184,18 +3205,25 @@ void Core::changeTitle(int title) {
 			return;
 		}
 		// Handle DVDNAV with title command
-		if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
-			if (cache_size == 0) {
+		if (mdat.detected_type == MediaData::TYPE_DVDNAV && cache_size == 0) {
+			if (mdat.title_is_menu && mdat.duration <= 0) {
+				// Changing title on a menu does not work :(
+				// Risc pressing menus you don't want to press, like settings...
+				qDebug("Core::changeTitle: trying to leave menu");
+				dvdnavSelect();
+				block_dvd_nav = true;
+				menus_selected = 1;
+				title_to_select = title;
+				QTimer::singleShot(1000, this, SLOT(changeTitleLeaveMenu()));
+			} else {
 				qDebug("Core::changeTitle: switching title through proc");
 				proc->setTitle(title);
-				return;
 			}
-			qWarning("Core::changeTitle: restarting because cache size not 0");
+			return;
 		}
 	}
 
 	// Start/restart
-	mset.current_title_id = title;
 	DiscData disc = DiscName::split(mdat.filename);
 	disc.title = title;
 	openDisc(disc, false);

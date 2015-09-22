@@ -386,6 +386,7 @@ protected slots:
 	void dvdnavUpdateMousePos(QPoint);
 	void dvdnavSeek();
 	void dvdnavRestoreTitle();
+	void changeTitleLeaveMenu();
 
 #ifdef YOUTUBE_SUPPORT
 	void connectingToYT(QString host);
