@@ -884,7 +884,7 @@ void Core::playingStarted() {
 		qDebug("Core::playingStarted: don't set volume since -volume is used");
 	} else {
 		int vol = (pref->global_volume ? pref->volume : mset.volume);
-		volumeChanged(vol);
+		emit volumeChanged(vol);
 		if (pref->mute) mute(true);
 	}
 
