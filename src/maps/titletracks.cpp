@@ -82,10 +82,8 @@ void TTitleTracks::setVTSTitle(int title) {
 	selectedID = title;
 }
 
-bool TTitleTracks::setTitleFromDuration(double duration, int& titleHint) {
+bool TTitleTracks::setTitleFromDuration(double duration, int titleHint) {
 
-	int hint = titleHint;
-	titleHint = -2;
 	int foundTitle = -1;
 	bool foundTwice = false;
 	TMapIterator i = getIterator();
@@ -99,7 +97,7 @@ bool TTitleTracks::setTitleFromDuration(double duration, int& titleHint) {
 
 		if (title.getVTS() < 0 || title.getVTS() == selectedVTS) {
 			if (qAbs(title.getDuration() - duration) <= 0.01) {
-				if (title.getID() == hint) {
+				if (title.getID() == titleHint) {
 					qDebug("TTitleTracks::setTitleFromDuration: selecting title %d with duration %f based on hint",
 						   title.getID(), duration);
 					setVTSTitle(title.getID());

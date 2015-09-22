@@ -76,7 +76,7 @@ public:
 	void setSelectedVTS(int vts) { selectedVTS = vts; }
 	int getVTSCount() const { return vtsCount; }
 	void setVTSCount(int count) { vtsCount = count; }
-	bool setTitleFromDuration(double duration, int& titleHint);
+	bool setTitleFromDuration(double duration, int titleHint);
 
 	void list() const;
 

@@ -303,7 +303,10 @@ void MplayerProcess::updateTitleFromDuration(double duration) {
 	title_needs_update = false;
 	int old_title = md->titles.getSelectedID();
 	if (md->titles.setTitleFromDuration(duration, title_hint)) {
+		title_hint = -2;
 		dvdnavTitleChanged(old_title);
+	} else {
+		title_hint = -2;
 	}
 }
 
