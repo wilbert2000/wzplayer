@@ -181,9 +181,6 @@ signals:
 
 	void durationChanged(double);
 
-	void receivedTitleIsMenu();
-	void receivedTitleIsMovie();
-
 public slots:
 	void parseBytes(QByteArray ba);
 

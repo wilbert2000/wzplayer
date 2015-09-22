@@ -139,14 +139,25 @@ private:
 	bool subtitles_changed;
 	bool get_selected_subtitle;
 
+	bool title_needs_update;
+	int title_hint;
+
 	bool want_pause;
 
-	void clearTime();
+	void clearStartTime();
 	void clearSubSources();
 	void getSelectedSub();
 	void getSelectedTracks();
 	void notifyChanges();
+
 	bool titleChanged(MediaData::Type type, int title);
+	void dvdnavTitleChanged(int old_title);
+	void dvdnavGetTitle();
+	void updateTitleFromDuration(double duration);
+	bool failedToGetLength();
+	bool parseTitleIsMenu();
+	bool parseTitleIsMovie();
+	bool vtsChanged(int vts);
 
 	bool parseVO(const QString &driver, int w, int h);
 	bool parseSubID(const QString &type, int id);
