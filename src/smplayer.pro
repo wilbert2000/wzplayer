@@ -176,11 +176,11 @@ HEADERS += guiconfig.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
+    gui/mini.h \
     autohidewidget.h \
 	widgetactions.h \
 	toolbareditor.h \
 	editabletoolbar.h \
-	minigui.h \
 	clhelp.h \
 	cleanconfig.h \
 	smplayer.h \
@@ -276,11 +276,11 @@ SOURCES	+= version.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
+    gui/mini.cpp \
     autohidewidget.cpp \
 	widgetactions.cpp \
 	toolbareditor.cpp \
 	editabletoolbar.cpp \
-	minigui.cpp \
 	clhelp.cpp \
 	cleanconfig.cpp \
 	smplayer.cpp \

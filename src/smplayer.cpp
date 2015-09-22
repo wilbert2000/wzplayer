@@ -27,7 +27,7 @@
 #include "global.h"
 
 #include "gui/default.h"
-#include "minigui.h"
+#include "gui/mini.h"
 #include "paths.h"
 #include "translator.h"
 #include "version.h"
@@ -157,7 +157,7 @@ Gui::TBase * SMPlayer::createGUI(QString gui_name) {
 	else
 #endif
 	if (gui_name.toLower() == "minigui") 
-		gui = new MiniGui(0);
+		gui = new Gui::TMini(0);
 	else
 #ifdef MPCGUI
 	if (gui_name.toLower() == "mpcgui")

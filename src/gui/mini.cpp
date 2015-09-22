@@ -16,7 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "minigui.h"
+#include "mini.h"
+
+#include <QStatusBar>
+#include <QMenu>
+
 #include "widgetactions.h"
 #include "autohidewidget.h"
 #include "myaction.h"
@@ -26,13 +30,13 @@
 #include "desktopinfo.h"
 #include "editabletoolbar.h"
 #include "images.h"
-#include <QStatusBar>
-#include <QMenu>
 
 using namespace Global;
 
-MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
-	: Gui::TBasePlus( parent, flags )
+namespace Gui {
+
+TMini::TMini( QWidget * parent, Qt::WindowFlags flags )
+	: TBasePlus( parent, flags )
 {
 	createActions();
 	createControlWidget();
@@ -46,17 +50,17 @@ MiniGui::MiniGui( QWidget * parent, Qt::WindowFlags flags )
 	statusBar()->hide();
 }
 
-MiniGui::~MiniGui() {
+TMini::~TMini() {
 }
 
-QMenu * MiniGui::createPopupMenu() {
+QMenu * TMini::createPopupMenu() {
 	QMenu * m = new QMenu(this);
 	m->addAction(editControlAct);
 	m->addAction(editFloatingControlAct);
 	return m;
 }
 
-void MiniGui::createActions() {
+void TMini::createActions() {
 	timeslider_action = createTimeSliderAction(this);
 
 #if USE_VOLUME_BAR
@@ -81,7 +85,7 @@ void MiniGui::createActions() {
 }
 
 
-void MiniGui::createControlWidget() {
+void TMini::createControlWidget() {
 	controlwidget = new EditableToolbar( this );
 	controlwidget->setObjectName("controlwidget");
 	controlwidget->setLayoutDirection(Qt::LeftToRight);
@@ -95,7 +99,7 @@ void MiniGui::createControlWidget() {
 	controlwidget->setDefaultActions(controlwidget_actions);
 }
 
-void MiniGui::createFloatingControl() {
+void TMini::createFloatingControl() {
 	// Floating control
 	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
@@ -118,10 +122,10 @@ void MiniGui::createFloatingControl() {
 	floating_control->hide();
 }
 
-void MiniGui::retranslateStrings() {
-	qDebug("MiniGui::retranslateStrings");
+void TMini::retranslateStrings() {
+	qDebug("TMini::retranslateStrings");
 
-	Gui::TBasePlus::retranslateStrings();
+	TBasePlus::retranslateStrings();
 
 	// Change the icon of the play/pause action
 	playOrPauseAct->setIcon(Images::icon("play"));
@@ -133,8 +137,8 @@ void MiniGui::retranslateStrings() {
 }
 
 #if AUTODISABLE_ACTIONS
-void MiniGui::enableActionsOnPlaying() {
-	Gui::TBasePlus::enableActionsOnPlaying();
+void TMini::enableActionsOnPlaying() {
+	TBasePlus::enableActionsOnPlaying();
 
 	timeslider_action->enable();
 #if USE_VOLUME_BAR
@@ -142,8 +146,8 @@ void MiniGui::enableActionsOnPlaying() {
 #endif
 }
 
-void MiniGui::disableActionsOnStop() {
-	Gui::TBasePlus::disableActionsOnStop();
+void TMini::disableActionsOnStop() {
+	TBasePlus::disableActionsOnStop();
 
 	timeslider_action->disable();
 #if USE_VOLUME_BAR
@@ -152,8 +156,8 @@ void MiniGui::disableActionsOnStop() {
 }
 #endif // AUTODISABLE_ACTIONS
 
-void MiniGui::togglePlayAction(Core::State state) {
-	qDebug("MiniGui::togglePlayAction");
+void TMini::togglePlayAction(Core::State state) {
+	qDebug("TMini::togglePlayAction");
 	TBasePlus::togglePlayAction(state);
 
 	if (state == Core::Playing) {
@@ -163,8 +167,8 @@ void MiniGui::togglePlayAction(Core::State state) {
 	}
 }
 
-void MiniGui::aboutToEnterFullscreen() {
-	Gui::TBasePlus::aboutToEnterFullscreen();
+void TMini::aboutToEnterFullscreen() {
+	TBasePlus::aboutToEnterFullscreen();
 
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
@@ -178,8 +182,8 @@ void MiniGui::aboutToEnterFullscreen() {
 	}
 }
 
-void MiniGui::aboutToExitFullscreen() {
-	Gui::TBasePlus::aboutToExitFullscreen();
+void TMini::aboutToExitFullscreen() {
+	TBasePlus::aboutToExitFullscreen();
 
 	floating_control->deactivate();
 	//floating_control->hide();
@@ -190,14 +194,14 @@ void MiniGui::aboutToExitFullscreen() {
 	}
 }
 
-void MiniGui::aboutToEnterCompactMode() {
-	Gui::TBasePlus::aboutToEnterCompactMode();
+void TMini::aboutToEnterCompactMode() {
+	TBasePlus::aboutToEnterCompactMode();
 
 	controlwidget->hide();
 }
 
-void MiniGui::aboutToExitCompactMode() {
-	Gui::TBasePlus::aboutToExitCompactMode();
+void TMini::aboutToExitCompactMode() {
+	TBasePlus::aboutToExitCompactMode();
 
 	statusBar()->hide();
 
@@ -205,13 +209,13 @@ void MiniGui::aboutToExitCompactMode() {
 }
 
 #if USE_MINIMUMSIZE
-QSize MiniGui::minimumSizeHint() const {
+QSize TMini::minimumSizeHint() const {
 	return QSize(controlwidget->sizeHint().width(), 0);
 }
 #endif
 
-void MiniGui::adjustFloatingControlSize() {
-	qDebug("MiniGui::adjustFloatingControlSize");
+void TMini::adjustFloatingControlSize() {
+	qDebug("TMini::adjustFloatingControlSize");
 	//floating_control->adjustSize();
 	QWidget *iw = floating_control->internalWidget();
 	QSize iws = iw->size();
@@ -221,10 +225,10 @@ void MiniGui::adjustFloatingControlSize() {
 	floating_control->resize(floating_control->width(), new_height);
 }
 
-void MiniGui::saveConfig(const QString &group) {
+void TMini::saveConfig(const QString &group) {
 	Q_UNUSED(group)
 
-	Gui::TBasePlus::saveConfig("mini_gui");
+	TBasePlus::saveConfig("mini_gui");
 
 	QSettings * set = settings;
 	set->beginGroup("mini_gui");
@@ -245,10 +249,10 @@ void MiniGui::saveConfig(const QString &group) {
 	set->endGroup();
 }
 
-void MiniGui::loadConfig(const QString &group) {
+void TMini::loadConfig(const QString &group) {
 	Q_UNUSED(group)
 
-	Gui::TBasePlus::loadConfig("mini_gui");
+	TBasePlus::loadConfig("mini_gui");
 
 	QSettings * set = settings;
 	set->beginGroup("mini_gui");
@@ -275,5 +279,7 @@ void MiniGui::loadConfig(const QString &group) {
 	}
 }
 
-#include "moc_minigui.cpp"
+} // namespace Gui
+
+#include "moc_mini.cpp"
 

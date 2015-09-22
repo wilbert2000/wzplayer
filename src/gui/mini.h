@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MINI_GUI_H_
-#define _MINI_GUI_H_
+#ifndef _GUI_MINI_H_
+#define _GUI_MINI_H_
 
 #include "gui/baseplus.h"
 #include "guiconfig.h"
@@ -30,13 +30,15 @@ class TimeLabelAction;
 class AutohideWidget;
 class EditableToolbar;
 
-class MiniGui : public Gui::TBasePlus
+namespace Gui {
+
+class TMini : public TBasePlus
 {
 	Q_OBJECT
 
 public:
-	MiniGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
-	~MiniGui();
+	TMini( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	~TMini();
 
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
@@ -84,4 +86,6 @@ protected:
 	MyAction * editFloatingControlAct;
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_MINI_H_
