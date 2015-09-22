@@ -51,6 +51,7 @@ void MediaData::init() {
 	video_out_height = 0;
 
 	title_is_menu = false;
+	mpegts = false;
 
 	video_bitrate = 0;
 	audio_bitrate = 0;
@@ -156,6 +157,7 @@ void MediaData::list() const {
 
 	qDebug("  start: %f", start_sec);
 	qDebug("  start sec set: %d", start_sec_set);
+	qDebug("  time_sec: %f", time_sec);
 	qDebug("  duration: %f", duration);
 
 	qDebug("  video_width: %d", video_width); 
@@ -186,6 +188,8 @@ void MediaData::list() const {
 	qDebug("  title_is_menu: '%d'", title_is_menu);
 
 	qDebug("  demuxer: '%s'", demuxer.toUtf8().data() );
+	qDebug("  mpegts: %d", mpegts );
+
 	qDebug("  video_format: '%s'", video_format.toUtf8().data() );
 	qDebug("  audio_format: '%s'", audio_format.toUtf8().data() );
 	qDebug("  video_codec: '%s'", video_codec.toUtf8().data() );

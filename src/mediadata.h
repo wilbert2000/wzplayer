@@ -94,6 +94,7 @@ public:
 	QString stream_url;
 
 	QString demuxer;
+	bool mpegts;
 
 	// Other data not really useful for us,
 	// just to show info to the user.

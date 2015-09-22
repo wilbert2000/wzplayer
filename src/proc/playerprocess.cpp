@@ -230,7 +230,7 @@ double PlayerProcess::guiTimeToPlayerTime(double sec) {
 	sec += md->start_sec;
 
 	// Handle MPEG-TS PTS timestamp rollover
-	if (sec >= ts_rollover && md->demuxer == "mpegts") {
+	if (md->mpegts && sec >= ts_rollover) {
 		sec -= ts_rollover;
 	}
 
@@ -243,7 +243,7 @@ double PlayerProcess::playerTimeToGuiTime(double sec) {
 	sec -= md->start_sec;
 
 	// Handle MPEG-TS PTS timestamp rollover
-	if (sec < 0 && md->demuxer == "mpegts") {
+	if (md->mpegts && sec < 0) {
 		sec += ts_rollover;
 	}
 
@@ -457,6 +457,10 @@ bool PlayerProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "DEMUXER") {
 		md->demuxer = value;
 		qDebug() << "PlayerProcess::parseProperty: demuxer set to" << md->demuxer;
+		if (md->demuxer == "mpegts") {
+			md->mpegts = true;
+			qDebug("PlayerProcess::parseProperty: detected mpegts");
+		}
 		return true;
 	}
 
