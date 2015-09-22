@@ -384,6 +384,8 @@ protected slots:
 	void gotSubtitleChanged();
 
 	void dvdnavUpdateMousePos(QPoint);
+	void dvdnavSeek();
+	void dvdnavRestoreTitle();
 
 #ifdef YOUTUBE_SUPPORT
 	void connectingToYT(QString host);
@@ -492,10 +494,16 @@ protected:
 #endif
 
 private:
-	// Some variables to proper restart
-	bool we_are_restarting;
-
 	State _state;
+
+	bool we_are_restarting;
+	// Get DVDNAV to restart
+	int title;
+	int title_to_select;
+	double title_time;
+	bool title_was_menu;
+	bool block_dvd_nav;
+	int menus_selected;
 
 	bool change_volume_after_unpause;
 	QTime time;

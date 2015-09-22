@@ -75,16 +75,15 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	: QObject( parent ),
 	  mdat(),
 	  mset(&mdat),
+	  mplayerwindow(mpw),
+	  _state(Stopped),
+	  we_are_restarting(false),
+	  title(-1),
+	  block_dvd_nav(false),
+	  change_volume_after_unpause(false),
 	  pos_max(position_max)
 {
 	qRegisterMetaType<Core::State>("Core::State");
-
-	mplayerwindow = mpw;
-
-	_state = Stopped;
-
-	we_are_restarting = false;
-	change_volume_after_unpause = false;
 
 #ifndef NO_USE_INI_FILES
 	// Create file_settings
@@ -482,6 +481,7 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 
 	// Clear settings
 	mset.reset();
+	// TODO: check use of current_title_id
 	mset.current_title_id = disc.title;
 
 	initPlaying();
@@ -762,20 +762,18 @@ void Core::openFile(QString filename, int seek) {
 void Core::restartPlay() {
 	we_are_restarting = true;
 
-	// For DVDNAV add the current title.
-	// When on a menu clear mset.current_sec.
-	// DVDNAV does not like a seek on a menu.
+	// For DVDNAV remember the current title, pos and menu.
 	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
-		if (mdat.title_is_menu || mdat.titles.getSelectedID() < 0) {
-			// If on a menu leave the title as is, so at least when no title is
-			// set, we stay on the main menu. When a title is set, we probably
-			// leave the menu, because setting the title will play it.
-			mset.current_sec = 0;
-		} else {
-			DiscData disc = DiscName::split(mdat.filename);
-			disc.title = mdat.titles.getSelectedID();
-			mdat.filename = DiscName::join(disc);
-		}
+		title = mdat.titles.getSelectedID();
+		title_time = mset.current_sec - 10;
+		title_was_menu = mdat.title_is_menu;
+		DiscData disc = DiscName::split(mdat.filename);
+		disc.title = 0;
+		mdat.filename = DiscName::join(disc);
+		mdat.selected_type = MediaData::TYPE_DVDNAV;
+		qDebug() << "Core::restartPlay: restarting" << mdat.filename;
+	} else {
+		title = -1;
 	}
 
 	initPlaying();
@@ -786,11 +784,11 @@ void Core::initPlaying(int seek) {
 
 	mplayerwindow->hideLogo();
 	if (we_are_restarting) {
-		qDebug("Core::initPlaying: resetting time");
+		qDebug("Core::initPlaying: starting time");
 	} else {
 		// Feedback and prevent potential artifacts waiting for redraw
 		mplayerwindow->repaint();
-		qDebug("Core::initPlaying: entered the black hole, resetting time");
+		qDebug("Core::initPlaying: entered the black hole, starting time");
 	}
 	time.start();
 
@@ -800,6 +798,9 @@ void Core::initPlaying(int seek) {
 
 	int start_sec = (int) mset.current_sec;
 	if (seek > -1) start_sec = seek;
+	// Cannot seek at startup in DVDNAV.
+	// See restartPlay() and restoreTitle() for DVDNAV seek.
+	if (mdat.selected_type == MediaData::TYPE_DVDNAV) start_sec = 0;
 
 #ifdef YOUTUBE_SUPPORT
 	if (pref->enable_yt_support) {
@@ -852,7 +853,77 @@ void Core::newMediaPlaying() {
 	emit mediaStartPlay();
 }
 
-// Slot called when queued signal playerFullyLoaded arrives.
+
+void Core::dvdnavSeek() {
+
+	if (mdat.duration > 0) {
+		qDebug("Core::dvdnavSeek: going back to %f", title_time);
+		proc->seek(title_time, 2, true, false);
+	} else {
+		qDebug("Core::dvdnavSeek: title duration is 0, skipping seek");
+	}
+	block_dvd_nav = false;
+}
+
+void Core::dvdnavRestoreTitle() {
+
+	// Restore title, time and menu
+
+	int selected_title = mdat.titles.getSelectedID();
+	if (title_to_select == selected_title) {
+		if (title_was_menu) {
+			if (!mdat.title_is_menu) {
+				qDebug("Core::dvdnavRestoreTitle: going back to menu");
+				dvdnavMenu();
+			}
+			qDebug("Core::dvdnavRestoreTitle: done, selected menu of title %d", title_to_select);
+			block_dvd_nav = false;
+			return;
+		}
+	}
+
+	if (mdat.title_is_menu && mdat.duration <= 0) {
+		// Changing title or seeking on a menu does not work :(
+		// Risc pressing menu you don't want to press, like settings...
+		if (menus_selected >= 2) {
+			qDebug("Core::dvdnavRestoreTitle: failed to leave menu, giving up");
+			block_dvd_nav = false;
+			return;
+		}
+		menus_selected++;
+		qDebug("Core::dvdnavRestoreTitle: current title %d is menu, sending select",
+			   selected_title);
+		dvdnavSelect();
+		QTimer::singleShot(500, this, SLOT(dvdnavRestoreTitle()));
+		return;
+	}
+
+	if (title_to_select == selected_title) {
+		if (title_time > 0) {
+			qDebug("Core::dvdnavRestoreTitle: going back to %f", title_time);
+			proc->seek(title_time, 2, true, false);
+		}
+		block_dvd_nav = false;
+		return;
+	}
+
+	qDebug("Core::dvdnavRestoreTitle: current title is %d, sending setTitle(%d)",
+		   selected_title, title_to_select);
+	proc->setTitle(title_to_select);
+
+	if (title_was_menu) {
+		qDebug("Core::dvdnavRestoreTitle: posting dvdnavMenu");
+		QTimer::singleShot(500, this, SLOT(dvdnavMenu()));
+	} else if (title_time > 0) {
+		qDebug("Core::dvdnavRestoreTitle: posting seek");
+		QTimer::singleShot(1000, this, SLOT(dvdnavSeek()));
+		return;
+	}
+
+	block_dvd_nav = false;
+}
+
+// Slot called when signal playerFullyLoaded arrives.
 void Core::playingStarted() {
 	qDebug("Core::playingStarted");
 
@@ -860,6 +931,16 @@ void Core::playingStarted() {
 
 	if (we_are_restarting) {
 		we_are_restarting = false;
+		// For DVDNAV go back to where we were.
+		// Need timer to give DVDNAV time to update its current state.
+		if (title >= 0) {
+			qDebug("Core::playingStarted: posting dvdnavRestoreTitle()");
+			title_to_select = title;
+			title = -1;
+			menus_selected = 0;
+			block_dvd_nav = true;
+			QTimer::singleShot(1000, this, SLOT(dvdnavRestoreTitle()));
+		}
 	} else {
 		newMediaPlaying();
 	} 
@@ -1013,7 +1094,7 @@ void Core::screenshots() {
 }
 
 void Core::startPlayer( QString file, double seek ) {
-	qDebug("Core::startPlayer");
+	qDebug() << "Core::startPlayer:" << file << "at" << seek;
 
 	if (file.isEmpty()) {
 		qWarning("Core:startPlayer: file is empty!");
@@ -1325,7 +1406,7 @@ void Core::startPlayer( QString file, double seek ) {
 		proc->setOption("osd-scale", pref->subfont_osd_scale);
 	} else {
 		proc->setOption("osd-scale", pref->osd_scale);
-		proc->setOption("osd-scale-by-window", "no");
+		//proc->setOption("osd-scale-by-window", "no");
 	}
 
 	// Subtitles fonts
@@ -2020,12 +2101,21 @@ void Core::seek(int secs) {
 
 void Core::seek_cmd(double secs, int mode) {
 
-	if (secs < 0 && mode != 0)
-		secs = 0;
-	if (mdat.duration > 0 && secs >= mdat.duration) {
-		if (mdat.video_fps > 0)
-			secs = mdat.duration - (1.0 / mdat.video_fps);
-		else secs = mdat.duration - 0.1;
+	//seek <value> [type]
+	//    Seek to some place in the movie.
+	//        0 is a relative seek of +/- <value> seconds (default).
+	//        1 is a seek to <value> % in the movie.
+	//        2 is a seek to an absolute position of <value> seconds.
+	if (mode != 0) {
+		if (secs < 0)
+			secs = 0;
+		if (mode == 2) {
+			if (mdat.duration > 0 && secs >= mdat.duration) {
+				if (mdat.video_fps > 0)
+					secs = mdat.duration - (1.0 / mdat.video_fps);
+				else secs = mdat.duration - 0.1;
+			}
+		}
 	}
 
 	if (proc->isFullyStarted())
@@ -3612,7 +3702,7 @@ void Core::dvdnavMouse() {
 // Slot called by mplayerwindow to pass mouse move local to video
 void Core::dvdnavUpdateMousePos(QPoint pos) {
 
-	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+	if (mdat.detected_type == MediaData::TYPE_DVDNAV && !block_dvd_nav) {
 		// MPlayer won't act if paused. Play if menu not animated.
 		if (_state == Paused && mdat.title_is_menu && mdat.duration == 0) {
 			play();
