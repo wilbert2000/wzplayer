@@ -253,10 +253,10 @@ static QStringList modToString(Qt::KeyboardModifiers k)
 		l << "Alt";
 	if ( k & Qt::MetaModifier )
 		l << "Meta";
-	if ( k & Qt::GroupSwitchModifier )
-		;
-	if ( k & Qt::KeypadModifier )
-		;
+	if ( k & Qt::GroupSwitchModifier ) {
+	}
+	if ( k & Qt::KeypadModifier ) {
+	}
 	
 	return l;
 }
