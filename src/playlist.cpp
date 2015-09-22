@@ -972,6 +972,9 @@ void Playlist::playDirectory(const QString &dir) {
 	addDirectory(dir);
 	sortBy(1);
 	// sortBy() changes current_item and sets modified
+	if (current_item >= 0 && current_item < pl.count()) {
+		pl[current_item].setPlayed(false);
+	}
 	setCurrentItem(0);
 	setModified(false);
 	latest_dir = dir;
