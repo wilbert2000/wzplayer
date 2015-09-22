@@ -603,8 +603,8 @@ void Playlist::load_m3u(const QString &file, bool clear, bool play) {
 
 	QRegExp info("^#EXTINF:(.*),(.*)");
 
-    QFile f( file );
-    if ( f.open( QIODevice::ReadOnly ) ) {
+	QFile f( file );
+	if ( f.open( QIODevice::ReadOnly ) ) {
 		playlist_path = QFileInfo(file).path();
 
 		if (clear)
@@ -613,21 +613,23 @@ void Playlist::load_m3u(const QString &file, bool clear, bool play) {
 		QString name="";
 		double duration=0;
 
-        QTextStream stream( &f );
+		QTextStream stream( &f );
 
 		if (utf8)
 			stream.setCodec("UTF-8");
 		else
 			stream.setCodec(QTextCodec::codecForLocale());
 
-        QString line;
-        while ( !stream.atEnd() ) {
-            line = stream.readLine(); // line of text excluding '\n'
-            qDebug( " * line: '%s'", line.toUtf8().data() );
+		QString line;
+		while ( !stream.atEnd() ) {
+			line = stream.readLine().trimmed();
+			if (line.isEmpty()) continue; // Ignore empty lines
+
+			qDebug( "Playlist::load_m3u: line: '%s'", line.toUtf8().data() );
 			if (info.indexIn(line)!=-1) {
 				duration = info.cap(1).toDouble();
 				name = info.cap(2);
-				qDebug(" * name: '%s', duration: %f", name.toUtf8().data(), duration );
+				qDebug("Playlist::load_m3u: name: '%s', duration: %f", name.toUtf8().data(), duration );
 			} else if (line.startsWith("#")) {
 				// Comment
 				// Ignore

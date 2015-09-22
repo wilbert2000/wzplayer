@@ -43,9 +43,9 @@
   !define SMPLAYER_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SMPlayer"
 
 !ifdef WIN64
-  !define MPV_FILENAME "mpv-x86_64-20150616.7z"
+  !define MPV_FILENAME "mpv-x86_64-20150903.7z"
 !else
-  !define MPV_FILENAME "mpv-i686-20150616.7z"
+  !define MPV_FILENAME "mpv-i686-20150903.7z"
 !endif
 
   !define INSTALLER_VERSION "1"
@@ -253,6 +253,9 @@
   !insertmacro MUI_LANGUAGE "Thai"
   !insertmacro MUI_LANGUAGE "TradChinese"
   !insertmacro MUI_LANGUAGE "Ukrainian"
+  !insertmacro MUI_LANGUAGE "Galician"
+  !insertmacro MUI_LANGUAGE "Indonesian"
+  !insertmacro MUI_LANGUAGE "Turkish"
 
 ;Custom translations for setup
 
@@ -288,6 +291,9 @@
   !insertmacro LANGFILE_INCLUDE "translations\thai.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\tradchinese.nsh"
   !insertmacro LANGFILE_INCLUDE "translations\ukrainian.nsh"
+  !insertmacro LANGFILE_INCLUDE "translations\galician.nsh"
+  !insertmacro LANGFILE_INCLUDE "translations\indonesian.nsh"
+  !insertmacro LANGFILE_INCLUDE "translations\turkish.nsh"
 
 ;--------------------------------
 ;Reserve Files

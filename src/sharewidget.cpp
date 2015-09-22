@@ -24,6 +24,7 @@
 #include <QDesktopServices>
 #include <QSettings>
 #include <QEvent>
+#include <QTime>
 
 //#define TEST_SHAREWIDGET
 
@@ -66,6 +67,9 @@ ShareWidget::ShareWidget(QSettings * settings, QWidget * parent, Qt::WindowFlags
 	, display(Random)
 {
 	setObjectName("sharewidget");
+
+	QTime now = QTime::currentTime();
+	qsrand(now.msec());
 
 	donate_button = new ShareButton("paypal", "", this);
 	fb_button = new ShareButton("social_facebook", "", this);

@@ -2404,8 +2404,10 @@ void TBase::createMenus() {
 	openMenu->addAction(openFileAct);
 
 	recentfiles_menu = new QMenu(this);
+	/*
 	recentfiles_menu->addAction( clearRecentsAct );
 	recentfiles_menu->addSeparator();
+	*/
 
 	openMenu->addMenu( recentfiles_menu );
 	openMenu->addMenu(favorites);
@@ -3455,12 +3457,7 @@ void TBase::updateAngles() {
 void TBase::updateRecents() {
 	qDebug("Gui::TBase::updateRecents");
 
-	// Not clear the first 2 items
-	while (recentfiles_menu->actions().count() > 2) {
-		QAction * a = recentfiles_menu->actions()[2];
-		recentfiles_menu->removeAction( a );
-		a->deleteLater();
-	}
+	recentfiles_menu->clear();
 
 	int current_items = 0;
 
@@ -3495,6 +3492,10 @@ void TBase::updateRecents() {
 	}
 
 	recentfiles_menu->menuAction()->setVisible( current_items > 0 );
+	if (current_items  > 0) {
+		recentfiles_menu->addSeparator();
+		recentfiles_menu->addAction( clearRecentsAct );
+	}
 }
 
 void TBase::clearRecentsList() {

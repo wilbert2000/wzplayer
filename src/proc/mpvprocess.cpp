@@ -494,6 +494,8 @@ bool MPVProcess::parseLine(QString &line) {
 	static QRegExp rx_title_not_found("^\\[(cdda|vcd|dvd|dvdnav|br)\\] .*(track|title) not found",
 								   Qt::CaseInsensitive);
 
+	static QRegExp rx_stream_title("icy-title: (.*)");
+
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
 
@@ -641,6 +643,14 @@ bool MPVProcess::parseLine(QString &line) {
 	// Title not found
 	if (rx_title_not_found.indexIn(line) >= 0) {
 		return parseTitleNotFound(rx_title_not_found.cap(1));
+	}
+
+	if (rx_stream_title.indexIn(line) > -1) {
+		QString s = rx_stream_title.cap(1);
+		qDebug("MPVProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
+		md->stream_title = s;
+		emit receivedStreamTitle(s);
+		return true;
 	}
 
 	// HTTP error 403 Forbidden
@@ -1566,7 +1576,8 @@ void MPVProcess::changeStereo3DFilter(bool enable, const QString & in, const QSt
 
 void MPVProcess::setSubStyles(const AssStyles & styles, const QString &) {
 	QString font = styles.fontname;
-	arg << "--sub-text-font=" + font.replace(" ", "");
+	//arg << "--sub-text-font=" + font.replace(" ", "");
+	arg << "--sub-text-font=" + font;
 	arg << "--sub-text-color=#" + ColorUtils::colorToRRGGBB(styles.primarycolor);
 
 	if (styles.borderstyle == AssStyles::Outline) {
