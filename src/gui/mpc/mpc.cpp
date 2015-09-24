@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mpcgui.h"
-#include "mpcstyles.h"
+#include "mpc.h"
+#include "styles.h"
 #include "widgetactions.h"
 #include "autohidewidget.h"
 #include "myaction.h"
@@ -36,9 +36,10 @@
 
 using namespace Global;
 
+namespace Gui {
 
-MpcGui::MpcGui( QWidget * parent, Qt::WindowFlags flags )
-	: Gui::TBasePlus( parent, flags )
+TMpc::TMpc( QWidget * parent, Qt::WindowFlags flags )
+	: TBasePlus( parent, flags )
 {
 	createActions();
 	createControlWidget();
@@ -46,18 +47,18 @@ MpcGui::MpcGui( QWidget * parent, Qt::WindowFlags flags )
 	createFloatingControl();
 }
 
-MpcGui::~MpcGui() {
+TMpc::~TMpc() {
 }
 
-void MpcGui::createActions() {
+void TMpc::createActions() {
 	timeslider_action = createTimeSliderAction(this);
 	timeslider_action->disable();
-    timeslider_action->setCustomStyle( new MpcTimeSlideStyle() );
+    timeslider_action->setCustomStyle( new Mpc::TimeSlideStyle() );
 
 #if USE_VOLUME_BAR
 	volumeslider_action = createVolumeSliderAction(this);
 	volumeslider_action->disable();
-    volumeslider_action->setCustomStyle( new MpcVolumeSlideStyle() );
+    volumeslider_action->setCustomStyle( new Mpc::VolumeSlideStyle() );
     volumeslider_action->setFixedSize( QSize(50,18) );
 	volumeslider_action->setTickPosition( QSlider::NoTicks );
 #endif
@@ -70,7 +71,7 @@ void MpcGui::createActions() {
 }
 
 
-void MpcGui::createControlWidget() {
+void TMpc::createControlWidget() {
 	controlwidget = new QToolBar( this );
 	controlwidget->setObjectName("controlwidget");
 	controlwidget->setLayoutDirection(Qt::LeftToRight);
@@ -112,13 +113,13 @@ void MpcGui::createControlWidget() {
 	addToolBarBreak(Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, timeslidewidget);
 
-	controlwidget->setStyle(new MpcToolbarStyle() );
-	timeslidewidget->setStyle(new MpcToolbarStyle() );
+	controlwidget->setStyle(new Mpc::ToolbarStyle() );
+	timeslidewidget->setStyle(new Mpc::ToolbarStyle() );
 
 	statusBar()->show();
 }
 
-void MpcGui::createFloatingControl() {
+void TMpc::createFloatingControl() {
 	// Floating control
 	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
@@ -133,10 +134,10 @@ void MpcGui::createFloatingControl() {
 
 }
 
-void MpcGui::retranslateStrings() {
-	qDebug("MpcGui::retranslateStrings");
+void TMpc::retranslateStrings() {
+	qDebug("TMpc::retranslateStrings");
 
-	Gui::TBasePlus::retranslateStrings();
+	TBasePlus::retranslateStrings();
 
 	controlwidget->setWindowTitle( tr("Control bar") );
 	timeslidewidget->setWindowTitle( tr("Seek bar") );
@@ -145,8 +146,8 @@ void MpcGui::retranslateStrings() {
 }
 
 #if AUTODISABLE_ACTIONS
-void MpcGui::enableActionsOnPlaying() {
-	Gui::TBasePlus::enableActionsOnPlaying();
+void TMpc::enableActionsOnPlaying() {
+	TBasePlus::enableActionsOnPlaying();
 
 	timeslider_action->enable();
 #if USE_VOLUME_BAR
@@ -154,8 +155,8 @@ void MpcGui::enableActionsOnPlaying() {
 #endif
 }
 
-void MpcGui::disableActionsOnStop() {
-	Gui::TBasePlus::disableActionsOnStop();
+void TMpc::disableActionsOnStop() {
+	TBasePlus::disableActionsOnStop();
 
 	timeslider_action->disable();
 #if USE_VOLUME_BAR
@@ -164,8 +165,8 @@ void MpcGui::disableActionsOnStop() {
 }
 #endif // AUTODISABLE_ACTIONS
 
-void MpcGui::aboutToEnterFullscreen() {
-	Gui::TBasePlus::aboutToEnterFullscreen();
+void TMpc::aboutToEnterFullscreen() {
+	TBasePlus::aboutToEnterFullscreen();
 
 	// Show floating_control
 	// Move controls to the floating_control layout
@@ -195,8 +196,8 @@ void MpcGui::aboutToEnterFullscreen() {
 	}
 }
 
-void MpcGui::aboutToExitFullscreen() {
-	Gui::TBasePlus::aboutToExitFullscreen();
+void TMpc::aboutToExitFullscreen() {
+	TBasePlus::aboutToExitFullscreen();
 
 	// Remove controls from the floating_control and put them back to the mainwindow
 	floating_control->deactivate();
@@ -218,16 +219,16 @@ void MpcGui::aboutToExitFullscreen() {
 	}
 }
 
-void MpcGui::aboutToEnterCompactMode() {
-	Gui::TBasePlus::aboutToEnterCompactMode();
+void TMpc::aboutToEnterCompactMode() {
+	TBasePlus::aboutToEnterCompactMode();
 
 	controlwidget->hide();
 	timeslidewidget->hide();
 	statusBar()->hide();
 }
 
-void MpcGui::aboutToExitCompactMode() {
-	Gui::TBasePlus::aboutToExitCompactMode();
+void TMpc::aboutToExitCompactMode() {
+	TBasePlus::aboutToExitCompactMode();
 
 	statusBar()->show();
 	controlwidget->show();
@@ -235,22 +236,22 @@ void MpcGui::aboutToExitCompactMode() {
 }
 
 #if USE_mpcMUMSIZE
-QSize MpcGui::mpcmumSizeHint() const {
+QSize TMpc::mpcmumSizeHint() const {
 	return QSize(controlwidget->sizeHint().width(), 0);
 }
 #endif
 
 
-void MpcGui::saveConfig(const QString &group) {
+void TMpc::saveConfig(const QString &group) {
 	Q_UNUSED(group)
 
-	Gui::TBasePlus::saveConfig("mpc_gui");
+	TBasePlus::saveConfig("mpc_gui");
 }
 
-void MpcGui::loadConfig(const QString &group) {
+void TMpc::loadConfig(const QString &group) {
 	Q_UNUSED(group)
 
-	Gui::TBasePlus::loadConfig("mpc_gui");
+	TBasePlus::loadConfig("mpc_gui");
 
 	if (pref->compact_mode) {
 		controlwidget->hide();
@@ -258,19 +259,19 @@ void MpcGui::loadConfig(const QString &group) {
 	}
 }
 
-void MpcGui::setupIcons() {
-    playAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(0,0,16,16) );
-    playOrPauseAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(0,0,16,16) );
-    pauseAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(16,0,16,16) );
-    stopAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(32,0,16,16) );
-    rewind3Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(64,0,16,16) );
-    rewind2Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(80,0,16,16) );
-    rewind1Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(80,0,16,16) );
-    forward1Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(96,0,16,16) );
-    forward2Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(96,0,16,16) );
-    forward3Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(112,0,16,16) );
-    frameStepAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(144,0,16,16) );
-    muteAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(192,0,16,16) );
+void TMpc::setupIcons() {
+    playAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(0,0,16,16) );
+    playOrPauseAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(0,0,16,16) );
+    pauseAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(16,0,16,16) );
+    stopAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(32,0,16,16) );
+    rewind3Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(64,0,16,16) );
+    rewind2Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(80,0,16,16) );
+    rewind1Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(80,0,16,16) );
+    forward1Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(96,0,16,16) );
+    forward2Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(96,0,16,16) );
+    forward3Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(112,0,16,16) );
+    frameStepAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(144,0,16,16) );
+    muteAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(192,0,16,16) );
 
     pauseAct->setCheckable(true);
     playAct->setCheckable(true);
@@ -285,7 +286,7 @@ void MpcGui::setupIcons() {
              this, SLOT(iconChange(Core::State)) );
 }
 
-void MpcGui::iconChange(Core::State state) {
+void TMpc::iconChange(Core::State state) {
     playAct->blockSignals(true);
     pauseAct->blockSignals(true);
     stopAct->blockSignals(true);
@@ -314,20 +315,20 @@ void MpcGui::iconChange(Core::State state) {
     stopAct->blockSignals(false);
 }
 
-void MpcGui::muteIconChange(bool b) {
+void TMpc::muteIconChange(bool b) {
     if( sender() == muteAct )
     {
         if(!b) {
-            muteAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(192,0,16,16) );
+            muteAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(192,0,16,16) );
         } else {
-            muteAct->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(208,0,16,16) );
+            muteAct->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(208,0,16,16) );
         }
     }
 
 }
 
 
-void MpcGui::createStatusBar() {
+void TMpc::createStatusBar() {
 
     // remove frames around statusbar items
     statusBar()->setStyleSheet("QStatusBar::item { border: 0px solid black }; ");
@@ -336,7 +337,7 @@ void MpcGui::createStatusBar() {
     audiochannel_display = new QLabel( statusBar() );
     audiochannel_display->setContentsMargins(0,0,0,0);
     audiochannel_display->setAlignment(Qt::AlignRight);
-    audiochannel_display->setPixmap( QPixmap(":/mpcgui/mpc_stereo.png") );
+    audiochannel_display->setPixmap( QPixmap(":/gui/mpc/mpc_stereo.png") );
     audiochannel_display->setMinimumSize(audiochannel_display->sizeHint());
     audiochannel_display->setMaximumSize(audiochannel_display->sizeHint());
     audiochannel_display->setPixmap( QPixmap("") );
@@ -385,28 +386,28 @@ void MpcGui::createStatusBar() {
              this, SLOT(displayFrame(int)) );
 }
 
-void MpcGui::displayTime(QString text) {
+void TMpc::displayTime(QString text) {
 	time_display->setText( text );
 	time_label_action->setText(text );
 	floating_control_time->setText(text);
 }
 
-void MpcGui::displayFrame(int frame) {
+void TMpc::displayFrame(int frame) {
 	if (frame_display->isVisible()) {
 		frame_display->setNum( frame );
 	}
 }
 
-void MpcGui::updateAudioChannels() {
+void TMpc::updateAudioChannels() {
     if( core->mdat.audio_nch == 1 ) {
-        audiochannel_display->setPixmap( QPixmap(":/mpcgui/mpc_mono.png") );
+        audiochannel_display->setPixmap( QPixmap(":/gui/mpc/mpc_mono.png") );
     }
     else {
-        audiochannel_display->setPixmap( QPixmap(":/mpcgui/mpc_stereo.png") );
+        audiochannel_display->setPixmap( QPixmap(":/gui/mpc/mpc_stereo.png") );
     }
 }
 
-void MpcGui::showFullscreenControls() {
+void TMpc::showFullscreenControls() {
 
     if(pref->fullscreen && controlwidget->isHidden() && timeslidewidget->isHidden() && 
         !pref->compact_mode )
@@ -417,7 +418,7 @@ void MpcGui::showFullscreenControls() {
     }
 }
 
-void MpcGui::hideFullscreenControls() {
+void TMpc::hideFullscreenControls() {
 
     if(pref->fullscreen && controlwidget->isVisible() && timeslidewidget->isVisible() )
     {
@@ -427,7 +428,7 @@ void MpcGui::hideFullscreenControls() {
     }
 }
 
-void MpcGui::setJumpTexts() {
+void TMpc::setJumpTexts() {
 	rewind1Act->change( tr("-%1").arg(Helper::timeForJumps(pref->seeking1)) );
 	rewind2Act->change( tr("-%1").arg(Helper::timeForJumps(pref->seeking2)) );
 	rewind3Act->change( tr("-%1").arg(Helper::timeForJumps(pref->seeking3)) );
@@ -439,33 +440,35 @@ void MpcGui::setJumpTexts() {
 	/*
 	if (qApp->isLeftToRight()) {
 	*/
-        rewind1Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(80,0,16,16) );
-        rewind2Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(80,0,16,16) );
-        rewind3Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(64,0,16,16) );
+        rewind1Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(80,0,16,16) );
+        rewind2Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(80,0,16,16) );
+        rewind3Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(64,0,16,16) );
 
-        forward1Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(96,0,16,16) );
-        forward2Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(96,0,16,16) );
-        forward3Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(112,0,16,16) );
+        forward1Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(96,0,16,16) );
+        forward2Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(96,0,16,16) );
+        forward3Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(112,0,16,16) );
 	/*
 	} else {
-        rewind1Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(96,0,16,16) );
-        rewind2Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(96,0,16,16) );
-        rewind3Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(112,0,16,16) );
+        rewind1Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(96,0,16,16) );
+        rewind2Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(96,0,16,16) );
+        rewind3Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(112,0,16,16) );
 
-        forward1Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(80,0,16,16) );
-        forward2Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(80,0,16,16) );
-        forward3Act->setIcon( QPixmap(":/mpcgui/mpc_toolbar.png").copy(64,0,16,16) );
+        forward1Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(80,0,16,16) );
+        forward2Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(80,0,16,16) );
+        forward3Act->setIcon( QPixmap(":/gui/mpc/mpc_toolbar.png").copy(64,0,16,16) );
 	}
 	*/
 }
 
-void MpcGui::updateWidgets() {
+void TMpc::updateWidgets() {
 
-	Gui::TBasePlus::updateWidgets();
+	TBasePlus::updateWidgets();
 
 	// Frame counter
 	/* frame_display->setVisible( pref->show_frame_counter ); */
 }
 
-#include "moc_mpcgui.cpp"
+} // namespace Gui
+
+#include "moc_mpc.cpp"
 

@@ -16,43 +16,48 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MPC_STYLES_H_
-#define _MPC_STYLES_H_
+#ifndef _GUI_MPC_STYLES_H_
+#define _GUI_MPC_STYLES_H_
 
 #include <QWindowsStyle>
 #include <QStyleOptionToolBar>
 
+namespace Gui {
+	namespace Mpc {
+
 enum QSliderDirection { SlUp, SlDown, SlLeft, SlRight };
 
-class MpcToolbarStyle : public QWindowsStyle
+class ToolbarStyle : public QWindowsStyle
 {
     Q_OBJECT
 
 public:
-    MpcToolbarStyle() {};
+    ToolbarStyle() {};
     void drawControl(ControlElement control, const QStyleOption *option,
                       QPainter *painter, const QWidget *widget) const;
 };
 
-class MpcTimeSlideStyle : public QWindowsStyle
+class TimeSlideStyle : public QWindowsStyle
 {
     Q_OBJECT
 
 public:
-    MpcTimeSlideStyle() {};
+    TimeSlideStyle() {};
     void drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const;
 };
 
-class MpcVolumeSlideStyle : public QWindowsStyle
+class VolumeSlideStyle : public QWindowsStyle
 {
     Q_OBJECT
 
 public:
-    MpcVolumeSlideStyle() {};
+    VolumeSlideStyle() {};
     void drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const;
 };
 
+	} // namespace Mpc
+} // namespace Gui
 
-#endif
+#endif // _GUI_MPC_STYLES_H_

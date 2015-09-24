@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MPC_GUI_H_
-#define _MPC_GUI_H_
+#ifndef _GUI_MPC_H_
+#define _GUI_MPC_H_
 
 #include "gui/baseplus.h"
 #include "guiconfig.h"
@@ -31,13 +31,15 @@ class AutohideWidget;
 class QSpacerItem;
 class QToolBar;
 
-class MpcGui : public Gui::TBasePlus
+namespace Gui {
+
+class TMpc : public TBasePlus
 {
 	Q_OBJECT
 
 public:
-	MpcGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
-	~MpcGui();
+	TMpc( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	~TMpc();
 
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
@@ -100,4 +102,6 @@ protected:
 	TimeLabelAction * time_label_action;
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_MPC_H_

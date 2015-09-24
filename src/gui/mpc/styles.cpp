@@ -16,16 +16,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mpcstyles.h"
+#include "styles.h"
 
 #include <QWindowsStyle>
 #include <QStyleOptionToolBar>
 #include <QSlider>
 #include <QPainter>
 
-
+namespace Gui {
+	namespace Mpc {
 void
-MpcToolbarStyle::drawControl(ControlElement control, const QStyleOption *option,
+ToolbarStyle::drawControl(ControlElement control, const QStyleOption *option,
                       QPainter *painter, const QWidget *widget) const
 {
     if(control == CE_ToolBar)
@@ -89,7 +90,7 @@ MpcToolbarStyle::drawControl(ControlElement control, const QStyleOption *option,
 }
 
 // draw custom slider + handle for volume widget
-void MpcVolumeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
+void VolumeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const
 {
     if( cc == CC_Slider )
@@ -127,11 +128,11 @@ void MpcVolumeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOpti
             }
 
             if (slider->subControls & SC_SliderHandle) {
-                const QColor c0 = slider->palette.shadow().color();
-                const QColor c1 = slider->palette.dark().color();
+				// const QColor c0 = slider->palette.shadow().color();
+				// const QColor c1 = slider->palette.dark().color();
                 // const QColor c2 = g.button();
-                const QColor c3 = slider->palette.midlight().color();
-                const QColor c4 = slider->palette.light().color();
+				// const QColor c3 = slider->palette.midlight().color();
+				// const QColor c4 = slider->palette.light().color();
                 QBrush handleBrush;
 
                 if (slider->state & State_Enabled) {
@@ -168,7 +169,7 @@ void MpcVolumeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOpti
 }
 
 // draw custom slider + handle for timeslide widget
-void MpcTimeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
+void TimeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const
 {
     if( cc == CC_Slider )
@@ -196,11 +197,11 @@ void MpcTimeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOption
             }
 
             if (slider->subControls & SC_SliderHandle) {
-                const QColor c0 = slider->palette.shadow().color();
-                const QColor c1 = slider->palette.dark().color();
+				// const QColor c0 = slider->palette.shadow().color();
+				// const QColor c1 = slider->palette.dark().color();
                 // const QColor c2 = g.button();
-                const QColor c3 = slider->palette.midlight().color();
-                const QColor c4 = slider->palette.light().color();
+				// const QColor c3 = slider->palette.midlight().color();
+				// const QColor c4 = slider->palette.light().color();
                 QBrush handleBrush;
 
                 if (slider->state & State_Enabled) {
@@ -237,4 +238,7 @@ void MpcTimeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOption
     }
 }
 
-#include "moc_mpcstyles.cpp"
+	} // namesapce Mpc
+} // namespace Gui
+
+#include "moc_styles.cpp"

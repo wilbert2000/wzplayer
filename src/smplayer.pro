@@ -21,10 +21,11 @@ DEFINES += SKINS
 DEFINES += MPRIS2
 DEFINES += UPDATE_CHECKER
 DEFINES += CHECK_UPGRADED
-DEFINES += REMINDER_ACTIONS
-DEFINES += SHAREWIDGET
 #DEFINES += USE_FONTCONFIG_OPTIONS
 DEFINES += AUTO_SHUTDOWN_PC
+
+#DEFINES += REMINDER_ACTIONS
+#DEFINES += SHAREWIDGET
 
 DEFINES += MPV_SUPPORT
 DEFINES += MPLAYER_SUPPORT
@@ -406,11 +407,11 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 
 # mpcgui
 contains( DEFINES, MPCGUI ) {
-	INCLUDEPATH += mpcgui
-	DEPENDPATH += mpcgui
+	INCLUDEPATH += gui/mpc
+	DEPENDPATH += gui/mpc
 
-	HEADERS += mpcgui/mpcgui.h mpcgui/mpcstyles.h
-	SOURCES += mpcgui/mpcgui.cpp mpcgui/mpcstyles.cpp
+	HEADERS += gui/mpc/mpc.h gui/mpc/styles.h
+	SOURCES += gui/mpc/mpc.cpp gui/mpc/styles.cpp
 }
 
 # Skins support

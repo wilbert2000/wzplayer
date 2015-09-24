@@ -36,7 +36,7 @@
 #include "myapplication.h"
 
 #ifdef MPCGUI
-#include "mpcgui.h"
+#include "gui/mpc/mpc.h"
 #endif
 
 #ifdef SKINS
@@ -161,7 +161,7 @@ Gui::TBase * SMPlayer::createGUI(QString gui_name) {
 	else
 #ifdef MPCGUI
 	if (gui_name.toLower() == "mpcgui")
-		gui = new MpcGui(0);
+		gui = new Gui::TMpc(0);
 	else
 #endif
 		gui = new Gui::TDefault(0);
