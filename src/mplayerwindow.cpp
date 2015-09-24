@@ -191,8 +191,6 @@ MplayerWindow::MplayerWindow(QWidget* parent, Qt::WindowFlags f)
 	check_hide_mouse_timer->setInterval(autohide_interval);
 	connect(check_hide_mouse_timer, SIGNAL(timeout()), this, SLOT(checkHideMouse()) );
 
-	left_button_pressed_time = new QTime();
-
 	retranslateStrings();
 }
 
@@ -393,7 +391,7 @@ void MplayerWindow::mousePressEvent( QMouseEvent * event) {
 
 		if ((event->button() == Qt::LeftButton)
 				&& (event->modifiers() == Qt::NoModifier)) {
-			left_button_pressed_time->start();
+			left_button_pressed_time.start();
 			drag_pos = event->globalPos();
 			dragging = false;
 			main_window_moved = false;
@@ -425,7 +423,7 @@ void MplayerWindow::mouseMoveEvent(QMouseEvent * event) {
 		// because Qts capture of the mouse blocks timer events.
 		if (!dragging &&
 			((diff.manhattanLength() > QApplication::startDragDistance())
-			|| (left_button_pressed_time->elapsed() >= QApplication::startDragTime()))) {
+			|| (left_button_pressed_time.elapsed() >= QApplication::startDragTime()))) {
 
 			startDragging();
 		}
@@ -471,7 +469,7 @@ bool MplayerWindow::checkDragging(QMouseEvent * event) {
 	// Except for dragging, also nice when event queue is not keeping up with
 	// events. After the mouse has been captured, mouse release events sometimes
 	// do not come through until the mouse moved (on Qt 4.8 KDE 4.1.14.9).
-	if (left_button_pressed_time->elapsed() >= QApplication::startDragTime()) {
+	if (left_button_pressed_time.elapsed() >= QApplication::startDragTime()) {
 		//qDebug("MplayerWindow::mouseReleaseEvent: canceled left click taking longer as %d ms",
 		//	   QApplication::startDragTime());
 		return false;

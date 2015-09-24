@@ -237,7 +237,7 @@ private:
 
 	QSize last_video_size;
 
-	QTime* left_button_pressed_time;
+	QTime left_button_pressed_time;
 	QPoint drag_pos;
 	bool dragging;
 	bool kill_fake_event;
