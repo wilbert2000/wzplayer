@@ -16,14 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "timeslider.h"
+#include "gui/timeslider.h"
 
 #include <QWheelEvent>
 #include <QTimer>
 
 #define DEBUG 0
 
-TimeSlider::TimeSlider( QWidget * parent ) : MySlider(parent)
+namespace Gui {
+
+TTimeSlider::TTimeSlider( QWidget * parent ) : TSlider(parent)
 {
 	dont_update = false;
 	setMinimum(0);
@@ -46,33 +48,33 @@ TimeSlider::TimeSlider( QWidget * parent ) : MySlider(parent)
 #endif
 }
 
-TimeSlider::~TimeSlider() {
+TTimeSlider::~TTimeSlider() {
 }
 
-void TimeSlider::stopUpdate() {
+void TTimeSlider::stopUpdate() {
 	#if DEBUG
-	qDebug("TimeSlider::stopUpdate");
+	qDebug("TTimeSlider::stopUpdate");
 	#endif
 	dont_update = true;
 }
 
-void TimeSlider::resumeUpdate() {
+void TTimeSlider::resumeUpdate() {
 	#if DEBUG
-	qDebug("TimeSlider::resumeUpdate");
+	qDebug("TTimeSlider::resumeUpdate");
 	#endif
 	dont_update = false;
 }
 
-void TimeSlider::mouseReleased() {
+void TTimeSlider::mouseReleased() {
 	#if DEBUG
-	qDebug("TimeSlider::mouseReleased");
+	qDebug("TTimeSlider::mouseReleased");
 	#endif
 	emit posChanged( value() );
 }
 
-void TimeSlider::valueChanged_slot(int v) {
+void TTimeSlider::valueChanged_slot(int v) {
 	#if DEBUG
-	qDebug("TimeSlider::changedValue_slot: %d", v);
+	qDebug("TTimeSlider::changedValue_slot: %d", v);
 	#endif
 
 	// Only to make things clear:
@@ -93,32 +95,32 @@ void TimeSlider::valueChanged_slot(int v) {
 }
 
 #if ENABLE_DELAYED_DRAGGING
-void TimeSlider::setDragDelay(int d) {
-	qDebug("TimeSlider::setDragDelay: %d", d);
+void TTimeSlider::setDragDelay(int d) {
+	qDebug("TTimeSlider::setDragDelay: %d", d);
 	timer->setInterval(d);
 }
 
-int TimeSlider::dragDelay() {
+int TTimeSlider::dragDelay() {
 	return timer->interval();
 }
 
-void TimeSlider::checkDragging(int v) {
-	qDebug("TimeSlider::checkDragging: %d", v);
+void TTimeSlider::checkDragging(int v) {
+	qDebug("TTimeSlider::checkDragging: %d", v);
 	last_pos_to_send = v;
 }
 
-void TimeSlider::sendDelayedPos() {
+void TTimeSlider::sendDelayedPos() {
 	if (last_pos_to_send != -1) {
-		qDebug("TimeSlider::sendDelayedPos: %d", last_pos_to_send);
+		qDebug("TTimeSlider::sendDelayedPos: %d", last_pos_to_send);
 		emit delayedDraggingPos(last_pos_to_send);
 		last_pos_to_send = -1;
 	}
 }
 #endif
 
-void TimeSlider::setPos(int v) {
+void TTimeSlider::setPos(int v) {
 	#if DEBUG
-	qDebug("TimeSlider::setPos: %d", v);
+	qDebug("TTimeSlider::setPos: %d", v);
 	qDebug(" dont_update: %d", dont_update);
 	#endif
 
@@ -130,14 +132,14 @@ void TimeSlider::setPos(int v) {
 	}
 }
 
-int TimeSlider::pos() {
+int TTimeSlider::pos() {
 	return position;
 }
 
-void TimeSlider::wheelEvent(QWheelEvent * e) {
+void TTimeSlider::wheelEvent(QWheelEvent * e) {
 	//e->ignore();
 
-	qDebug("TimeSlider::wheelEvent: delta: %d", e->delta());
+	qDebug("TTimeSlider::wheelEvent: delta: %d", e->delta());
 	e->accept();
 
 	if (e->orientation() == Qt::Vertical) {
@@ -149,5 +151,7 @@ void TimeSlider::wheelEvent(QWheelEvent * e) {
 		qDebug("Timeslider::wheelEvent: horizontal event received, doing nothing");
 	}
 }
+
+} // namespace Gui
 
 #include "moc_timeslider.cpp"

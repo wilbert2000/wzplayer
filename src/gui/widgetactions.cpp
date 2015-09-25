@@ -47,7 +47,7 @@ void TWidgetAction::disable() {
 void TWidgetAction::propagate_enabled(bool b) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
-		TimeSlider *s = (TimeSlider*) l[n];
+		TTimeSlider *s = (TTimeSlider*) l[n];
 		s->setEnabled(b);;
 	}
 	setEnabled(b);
@@ -68,7 +68,7 @@ TTimeSliderAction::~TTimeSliderAction() {
 void TTimeSliderAction::setPos(int v) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
-		TimeSlider *s = (TimeSlider*) l[n];
+		TTimeSlider *s = (TTimeSlider*) l[n];
 		bool was_blocked= s->blockSignals(true);
 		s->setPos(v);
 		s->blockSignals(was_blocked);
@@ -78,7 +78,7 @@ void TTimeSliderAction::setPos(int v) {
 int TTimeSliderAction::pos() {
 	QList<QWidget *> l = createdWidgets();
 	if (l.count() >= 1) {
-		TimeSlider *s = (TimeSlider*) l[0];
+		TTimeSlider *s = (TTimeSlider*) l[0];
 		return s->pos();
 	} else {
 		return -1;
@@ -91,7 +91,7 @@ void TTimeSliderAction::setDragDelay(int d) {
 
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
-		TimeSlider *s = (TimeSlider*) l[n];
+		TTimeSlider *s = (TTimeSlider*) l[n];
 		s->setDragDelay(drag_delay);
 	}
 }
@@ -102,7 +102,7 @@ int TTimeSliderAction::dragDelay() {
 #endif
 
 QWidget * TTimeSliderAction::createWidget ( QWidget * parent ) {
-	TimeSlider *t = new TimeSlider(parent);
+	TTimeSlider *t = new TTimeSlider(parent);
 	t->setEnabled( isEnabled() );
 
 	if (custom_style) t->setStyle(custom_style);
@@ -138,7 +138,7 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 void TVolumeSliderAction::setValue(int v) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
-		MySlider *s = (MySlider*) l[n];
+		TSlider *s = (TSlider*) l[n];
 		bool was_blocked = s->blockSignals(true);
 		s->setValue(v);
 		s->blockSignals(was_blocked);
@@ -148,7 +148,7 @@ void TVolumeSliderAction::setValue(int v) {
 int TVolumeSliderAction::value() {
 	QList<QWidget *> l = createdWidgets();
 	if (l.count() >= 1) {
-		MySlider *s = (MySlider*) l[0];
+		TSlider *s = (TSlider*) l[0];
 		return s->value();
 	} else {
 		return -1;
@@ -162,13 +162,13 @@ void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 	// Propagate changes to all existing widgets
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
-		MySlider *s = (MySlider*) l[n];
+		TSlider *s = (TSlider*) l[n];
 		s->setTickPosition(tick_position);
 	}
 }
 
 QWidget * TVolumeSliderAction::createWidget ( QWidget * parent ) {
-	MySlider *t = new MySlider(parent);
+	TSlider *t = new TSlider(parent);
 
 	if (custom_style) t->setStyle(custom_style);
 	if (!custom_stylesheet.isEmpty()) t->setStyleSheet(custom_stylesheet);

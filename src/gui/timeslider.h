@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _TIMESLIDER_H_
-#define _TIMESLIDER_H_
+#ifndef _GUI_TIMESLIDER_H_
+#define _GUI_TIMESLIDER_H_
 
-#include "myslider.h"
 #include "config.h"
+#include "gui/slider.h"
 
-class TimeSlider : public MySlider 
+namespace Gui {
+
+class TTimeSlider : public TSlider
 {
 	Q_OBJECT
 
 public:
-	TimeSlider( QWidget * parent );
-	~TimeSlider();
+	TTimeSlider( QWidget * parent );
+	~TTimeSlider();
 
 public slots:
 	virtual void setPos(int); // Don't use setValue!
@@ -70,5 +72,7 @@ private:
 #endif
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_TIMESLIDER_H_
 

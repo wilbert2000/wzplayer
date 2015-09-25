@@ -19,7 +19,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "myslider.h"
+#include "gui/slider.h"
 
 #include <QApplication>
 #include <QMouseEvent>
@@ -33,25 +33,26 @@
 #include <QStyleOption>
 #endif
 
+namespace Gui {
 
-MySlider::MySlider( QWidget * parent ) : QSlider(parent)
+TSlider::TSlider( QWidget * parent ) : QSlider(parent)
 {
 	setOrientation( Qt::Horizontal );
 }
 
-MySlider::~MySlider() {
+TSlider::~TSlider() {
 }
 
 #if CODE_FOR_CLICK == 1
 // Function copied from qslider.cpp
-inline int MySlider::pick(const QPoint &pt) const
+inline int TSlider::pick(const QPoint &pt) const
 {
     return orientation() == Qt::Horizontal ? pt.x() : pt.y();
 }
 
 #if QT_VERSION < 0x040300
 // Function copied from qslider.cpp and modified to make it compile
-void MySlider::initStyleOption(QStyleOptionSlider *option) const
+void TSlider::initStyleOption(QStyleOptionSlider *option) const
 {
     if (!option)
         return;
@@ -78,7 +79,7 @@ void MySlider::initStyleOption(QStyleOptionSlider *option) const
 #endif
 
 // Function copied from qslider.cpp and modified to make it compile
-int MySlider::pixelPosToRangeValue(int pos) const
+int TSlider::pixelPosToRangeValue(int pos) const
 {
     QStyleOptionSlider opt;
     initStyleOption(&opt);
@@ -100,7 +101,7 @@ int MySlider::pixelPosToRangeValue(int pos) const
 }
 
 // Based on code from qslider.cpp
-void MySlider::mousePressEvent( QMouseEvent * e ) {
+void TSlider::mousePressEvent( QMouseEvent * e ) {
 	if (e->button() == Qt::LeftButton) {
         QStyleOptionSlider opt;
         initStyleOption(&opt);
@@ -126,7 +127,7 @@ void MySlider::mousePressEvent( QMouseEvent * e ) {
 
 
 #if CODE_FOR_CLICK == 2
-void MySlider::mousePressEvent( QMouseEvent * e ) {
+void TSlider::mousePressEvent( QMouseEvent * e ) {
 	// Swaps middle button click with left click
 	if (e->button() == Qt::LeftButton) {
 		QMouseEvent ev2(QEvent::MouseButtonRelease, e->pos(), e->globalPos(), Qt::MidButton, Qt::MidButton, e->modifiers());
@@ -145,7 +146,7 @@ void MySlider::mousePressEvent( QMouseEvent * e ) {
 
 
 #if CODE_FOR_CLICK == 0
-void MySlider::mousePressEvent( QMouseEvent * e ) {
+void TSlider::mousePressEvent( QMouseEvent * e ) {
 	// FIXME:
 	// The code doesn't work well with right to left layout,
 	// so it's disabled.
@@ -180,5 +181,7 @@ void MySlider::mousePressEvent( QMouseEvent * e ) {
 }
 #endif
 
-#include "moc_myslider.cpp"
+} // namespace Gui
+
+#include "moc_slider.cpp"
 

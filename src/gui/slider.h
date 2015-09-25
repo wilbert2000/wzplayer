@@ -19,8 +19,8 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _MYSLIDER_H_
-#define _MYSLIDER_H_
+#ifndef _GUI_SLIDER_H_
+#define _GUI_SLIDER_H_
 
 #include <QSlider>
 #include "config.h"
@@ -29,13 +29,15 @@
 
 class QTimer;
 
-class MySlider : public QSlider
+namespace Gui {
+
+class TSlider : public QSlider
 {
 	Q_OBJECT
 
 public:
-	MySlider( QWidget * parent );
-	~MySlider();
+	TSlider( QWidget * parent );
+	~TSlider();
 
 protected:
 	void mousePressEvent ( QMouseEvent * event );
@@ -48,5 +50,7 @@ protected:
 #endif
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_SLIDER_H_
 

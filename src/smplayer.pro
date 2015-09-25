@@ -159,8 +159,6 @@ HEADERS += guiconfig.h \
 	eqslider.h \
 	videoequalizer.h \
 	audioequalizer.h \
-	myslider.h \
-	timeslider.h \
 	inputdvddirectory.h \
 	inputurl.h \
 	stereo3ddialog.h \
@@ -176,6 +174,8 @@ HEADERS += guiconfig.h \
 	gui/actiongroup.h \
 	gui/widgetactions.h \
 	gui/editabletoolbar.h \
+	gui/slider.h \
+	gui/timeslider.h \
     gui/autohidewidget.h \
     gui/base.h \
 	gui/baseplus.h \
@@ -259,8 +259,6 @@ SOURCES	+= version.cpp \
 	eqslider.cpp \
 	videoequalizer.cpp \
 	audioequalizer.cpp \
-	myslider.cpp \
-	timeslider.cpp \
 	inputdvddirectory.cpp \
 	inputurl.cpp \
 	stereo3ddialog.cpp \
@@ -276,6 +274,8 @@ SOURCES	+= version.cpp \
 	gui/actiongroup.cpp \
 	gui/widgetactions.cpp \
 	gui/editabletoolbar.cpp \
+	gui/slider.cpp \
+	gui/timeslider.cpp \
     gui/autohidewidget.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
