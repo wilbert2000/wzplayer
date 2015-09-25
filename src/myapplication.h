@@ -36,7 +36,7 @@ class MyApplication : public QtSingleApplication
 
 public:
 	MyApplication ( const QString & appId, int & argc, char ** argv ) 
-		: QtSingleApplication(appId, argc, argv) {};
+		: QtSingleApplication(appId, argc, argv) {}
 
 	virtual void commitData ( QSessionManager & /*manager*/ ) {
 		// Nothing to do, let the application to close
