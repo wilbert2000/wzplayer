@@ -16,14 +16,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef VOLUMECONTROLPANEL_H
-#define VOLUMECONTROLPANEL_H
+#ifndef GUI_SKIN_VOLUMECONTROLPANEL_H
+#define GUI_SKIN_VOLUMECONTROLPANEL_H
 
 #include <QWidget>
-#include "mybutton.h"
-#include "panelseeker.h"
+#include "gui/skin/button.h"
+#include "gui/skin/panelseeker.h"
 
-class VolumeControlPanel : public QWidget
+namespace Gui {
+namespace Skin {
+
+
+class TVolumeControlPanel : public QWidget
 {
 Q_OBJECT
 Q_PROPERTY( QPixmap mute READ muteIcon WRITE setMuteIcon )
@@ -36,21 +40,21 @@ Q_PROPERTY( QPixmap volumebarProgress READ volumebarProgressPix WRITE setVolumeb
 Q_PROPERTY( QPixmap volumeKnob READ volumeKnobPix WRITE setVolumeKnobPix)
 
 private:
-    MyButton* muteButton;
-    MyButton* maxButton;
-    MyButton* fullscreenButton;
-    MyButton* playlistButton;
-    MyButton* equalizerButton;
-    PanelSeeker* volumeBar;
-    void setButtonIcons( MyButton* button, QPixmap pix);
+    TButton* muteButton;
+    TButton* maxButton;
+    TButton* fullscreenButton;
+    TButton* playlistButton;
+    TButton* equalizerButton;
+    TPanelSeeker* volumeBar;
+    void setButtonIcons( TButton* button, QPixmap pix);
 
 public:
-    explicit VolumeControlPanel(QWidget *parent = 0);
-    QPixmap muteIcon() { return muteButton->myIcon().pixmap(MyIcon::Normal, MyIcon::Off); }
-    QPixmap maxIcon() { return maxButton->myIcon().pixmap(MyIcon::Normal, MyIcon::Off); }
-    QPixmap fullscreenIcon() { return fullscreenButton->myIcon().pixmap(MyIcon::Normal, MyIcon::Off); }
-    QPixmap playlistIcon() { return playlistButton->myIcon().pixmap(MyIcon::Normal, MyIcon::Off); }
-    QPixmap equalizerIcon() { return equalizerButton->myIcon().pixmap(MyIcon::Normal, MyIcon::Off); }
+	explicit TVolumeControlPanel(QWidget *parent = 0);
+    QPixmap muteIcon() { return muteButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+    QPixmap maxIcon() { return maxButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+    QPixmap fullscreenIcon() { return fullscreenButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+    QPixmap playlistIcon() { return playlistButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+    QPixmap equalizerIcon() { return equalizerButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
     QPixmap volumebarPix() { return volumeBar->centerIcon(); }
     QPixmap volumebarProgressPix() { return volumeBar->progressIcon(); }
     QPixmap volumeKnobPix() { return volumeBar->knobIcon(); }
@@ -80,4 +84,7 @@ protected:
     virtual void retranslateStrings();
 };
 
-#endif // VOLUMECONTROLPANEL_H
+} // namesapce Skin
+} // namespace Gui
+
+#endif // GUI_SKIN_VOLUMECONTROLPANEL_H

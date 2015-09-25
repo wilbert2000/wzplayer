@@ -16,15 +16,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "actiontools.h"
+#include "gui/skin/actiontools.h"
 #include "myaction.h"
 
-void ActionTools::setActionToButton(MyButton * button, const QString & name, QList<QAction*> actions) {
+namespace Gui {
+namespace Skin {
+
+void TActionTools::setActionToButton(TButton * button, const QString & name, QList<QAction*> actions) {
 	MyAction * a = static_cast<MyAction*>( findAction(name, actions) );
 	if (a) button->setAction(a);
 }
 
-QAction * ActionTools::findAction(const QString & name, QList<QAction*> actions) {
+QAction * TActionTools::findAction(const QString & name, QList<QAction*> actions) {
 	QAction * a = 0;
 	for (int n=0; n < actions.count(); n++) {
 		a = actions.at(n);
@@ -33,3 +36,7 @@ QAction * ActionTools::findAction(const QString & name, QList<QAction*> actions)
 	}
 	return 0;
 }
+
+} // namespace Skin
+} // namespace Gui
+

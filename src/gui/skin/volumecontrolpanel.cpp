@@ -17,28 +17,32 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "volumecontrolpanel.h"
+#include "gui/skin/volumecontrolpanel.h"
+
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QEvent>
-#include "widgetactions.h"
-#include "myaction.h"
-#include "actiontools.h"
 
-VolumeControlPanel::VolumeControlPanel(QWidget *parent) :
+#include "gui/skin/actiontools.h"
+
+namespace Gui {
+namespace Skin {
+
+
+TVolumeControlPanel::TVolumeControlPanel(QWidget *parent) :
     QWidget(parent)
 {
     setAttribute(Qt::WA_StyledBackground, true);    
     setFixedWidth(108);
-    muteButton = new MyButton(this);
-    maxButton = new MyButton(this);
-    playlistButton = new MyButton(this);    
-    equalizerButton = new MyButton(this);    
-    fullscreenButton = new MyButton(this);    
+    muteButton = new TButton(this);
+    maxButton = new TButton(this);
+    playlistButton = new TButton(this);    
+    equalizerButton = new TButton(this);    
+    fullscreenButton = new TButton(this);    
     playlistButton->setCheckable(true);
     equalizerButton->setCheckable(true);
     fullscreenButton->setCheckable(true);
-    volumeBar = new PanelSeeker(this);
+    volumeBar = new TPanelSeeker(this);
     volumeBar->setLeftRightMargin(8);
     volumeBar->setMinimum(0);
     volumeBar->setMaximum(100);
@@ -74,26 +78,26 @@ VolumeControlPanel::VolumeControlPanel(QWidget *parent) :
 	connect(volumeBar, SIGNAL(sliderMoved(int)), this, SIGNAL(volumeSliderMoved(int)));
 }
 
-void VolumeControlPanel::setButtonIcons( MyButton* button, QPixmap pix)
+void TVolumeControlPanel::setButtonIcons( TButton* button, QPixmap pix)
 {
-    MyIcon icon;
+    TIcon icon;
     int w = pix.width();
     int h = pix.height();
-    icon.setPixmap(pix.copy(0, 0, w, h/4 ), MyIcon::Normal, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), MyIcon::MouseOver, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), MyIcon::MouseDown, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), MyIcon::Disabled, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, 0, w, h/4 ), MyIcon::Normal, MyIcon::On);
-    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), MyIcon::MouseOver, MyIcon::On);
-    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), MyIcon::MouseDown, MyIcon::On);
-    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), MyIcon::Disabled, MyIcon::On);
-    button->setMyIcon(icon);
-    button->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off));
+    icon.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::On);
+    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::On);
+    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::On);
+    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::On);
+	button->setIcon(icon);
+    button->setFixedSize(icon.size(TIcon::Normal, TIcon::Off));
 }
 
-void VolumeControlPanel::setActionCollection(QList<QAction*> actions)
+void TVolumeControlPanel::setActionCollection(QList<QAction*> actions)
 {
-	//ActionTools::findAction("aaa", actions);
+	//TActionTools::findAction("aaa", actions);
 	volumeBar->setEnabled(true);
 	/* volumeSliderAction->installEventFilter(this); */
 	SETACTIONTOBUTTON(playlistButton, "show_playlist");
@@ -103,13 +107,13 @@ void VolumeControlPanel::setActionCollection(QList<QAction*> actions)
 	retranslateStrings();
 }
 
-void VolumeControlPanel::setVolume(int value)
+void TVolumeControlPanel::setVolume(int value)
 {
     volumeBar->setSliderValue(value);
 }
 
 /*
-bool VolumeControlPanel::eventFilter(QObject *watched, QEvent *event)
+bool TVolumeControlPanel::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == volumeSliderAction && event->type() == QEvent::EnabledChange)
     {
@@ -120,7 +124,7 @@ bool VolumeControlPanel::eventFilter(QObject *watched, QEvent *event)
 */
 
 // Language change stuff
-void VolumeControlPanel::changeEvent(QEvent *e) {
+void TVolumeControlPanel::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
@@ -128,10 +132,13 @@ void VolumeControlPanel::changeEvent(QEvent *e) {
 	}
 }
 
-void VolumeControlPanel::retranslateStrings() {
+void TVolumeControlPanel::retranslateStrings() {
 	if (playlistButton) playlistButton->setToolTip(tr("Playlist"));
 	if (fullscreenButton) fullscreenButton->setToolTip(tr("Fullscreen on/off"));
 	if (equalizerButton) equalizerButton->setToolTip(tr("Video equalizer"));
 }
+
+} // namesapce Skin
+} // namespace Gui
 
 #include "moc_volumecontrolpanel.cpp"

@@ -16,22 +16,28 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef ACTIONTOOLS_H
-#define ACTIONTOOLS_H
+#ifndef GUI_SKIN_ACTIONTOOLS_H
+#define GUI_SKIN_ACTIONTOOLS_H
 
-#include "mybutton.h"
+#include "gui/skin/button.h"
 #include <QAction>
 #include <QList>
 
-#define SETACTIONTOBUTTON(button, name) { ActionTools::setActionToButton(button, name, actions); }
+#define SETACTIONTOBUTTON(button, name) { TActionTools::setActionToButton(button, name, actions); }
 
-class ActionTools {
+namespace Gui {
+namespace Skin {
+
+class TActionTools {
 
 public:
 
-	static void setActionToButton(MyButton * button, const QString & name, QList<QAction*> actions);
+	static void setActionToButton(TButton * button, const QString & name, QList<QAction*> actions);
 	static QAction * findAction(const QString & name, QList<QAction*> actions);
 };
 
-#endif
+} // namespace Skin
+} // namespace Gui
+
+#endif // GUI_SKIN_ACTIONTOOLS_H
 

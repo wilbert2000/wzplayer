@@ -17,10 +17,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "qpropertysetter.h"
-#include "myicon.h"
+#include "gui/skin/iconsetter.h"
+#include "gui/skin/icon.h"
+#include "gui/skin/actiontools.h"
 #include "images.h"
-#include "actiontools.h"
 
 
 #define ICON_ADD(icon, png) { icon.addPixmap(Images::icon(png, 16), QIcon::Normal, QIcon::Off); \
@@ -28,31 +28,33 @@
                               icon.addPixmap(Images::icon(png, 16), QIcon::Selected, QIcon::Off); \
                               icon.addPixmap(Images::icon(png, 16), QIcon::Disabled, QIcon::Off);}
 
+namespace Gui {
+namespace Skin {
 
-IconSetter* IconSetter::m_instance = 0;
+TIconSetter* TIconSetter::m_instance = 0;
 
-IconSetter::IconSetter(QWidget *parent) :
+TIconSetter::TIconSetter(QWidget *parent) :
     QWidget(parent)
 {
 }
 
-IconSetter* IconSetter::instance()
+TIconSetter* TIconSetter::instance()
 {
     if(m_instance == 0)
     {
-        m_instance = new IconSetter();
+		m_instance = new TIconSetter();
     }
     return m_instance;
 }
 
-void IconSetter::removeInstance()
+void TIconSetter::removeInstance()
 {
     if(m_instance)
         delete m_instance;
     m_instance = 0;
 }
 
-void IconSetter::setActionIcon(QPixmap pixmap )
+void TIconSetter::setActionIcon(QPixmap pixmap )
 {
 #if 0
 //#define SAVE_ICONS 1
@@ -68,52 +70,52 @@ void IconSetter::setActionIcon(QPixmap pixmap )
         icon.addPixmap(pixmap.copy(n*24, 48, 24, 24), QIcon::Selected, QIcon::Off);
         icon.addPixmap(pixmap.copy(n*24, 72, 24, 24), QIcon::Disabled, QIcon::Off);
         QAction * action = 0;
-		//ActionTools::findAction("aaa", toolbar_actions);
+		//TActionTools::findAction("aaa", toolbar_actions);
         switch(n)
         {
-        case 0: action = ActionTools::findAction("open_file", toolbar_actions);
+        case 0: action = TActionTools::findAction("open_file", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("open")
 				#endif
                 break;
-        case 1: action = ActionTools::findAction("open_directory", toolbar_actions);
+        case 1: action = TActionTools::findAction("open_directory", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("open_folder")
 				#endif
                 break;
-        case 2: action = ActionTools::findAction("open_dvd", toolbar_actions);
+        case 2: action = TActionTools::findAction("open_dvd", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("dvd")
 				#endif
                 break;
-        case 3: action = ActionTools::findAction("open_url", toolbar_actions);
+        case 3: action = TActionTools::findAction("open_url", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("url")
 				#endif
                 break;
-        case 4: action = ActionTools::findAction("screenshot", toolbar_actions);
+        case 4: action = TActionTools::findAction("screenshot", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("screenshot")
 				#endif
                 break;
-        case 5: action = ActionTools::findAction("show_file_properties", toolbar_actions);
+        case 5: action = TActionTools::findAction("show_file_properties", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("info")
 				#endif
                 break;
-        case 6: action = ActionTools::findAction("show_find_sub_dialog", toolbar_actions);
+        case 6: action = TActionTools::findAction("show_find_sub_dialog", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("download_subs")
 				#endif
                 break;
-        case 7: action = ActionTools::findAction("show_preferences", toolbar_actions);
+        case 7: action = TActionTools::findAction("show_preferences", toolbar_actions);
 				if (action) ICON_ADD(icon, "file")
 				#if SAVE_ICONS
 				SAVE("prefs")
@@ -125,16 +127,16 @@ void IconSetter::setActionIcon(QPixmap pixmap )
 #endif
 }
 
-void IconSetter::buttonIcon(int buttonNo, QPixmap pix )
+void TIconSetter::buttonIcon(int buttonNo, QPixmap pix )
 {
-    MyIcon icon;
+    TIcon icon;
     int w = pix.width();
     int h = pix.height();
-    icon.setPixmap(pix.copy(0, 0, w, h/4 ), MyIcon::Normal, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), MyIcon::MouseOver, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), MyIcon::MouseDown, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), MyIcon::Disabled, MyIcon::Off);
-    MyIcon icon2;
+    icon.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::Off);
+    TIcon icon2;
     switch(buttonNo)
     {
     case 1:
@@ -143,15 +145,15 @@ void IconSetter::buttonIcon(int buttonNo, QPixmap pix )
     case 2:
         playControl->setPreviousIcon(icon);break;
     case 3:        
-        icon2.setPixmap(pix.copy(0, 0, w/2, h/4 ), MyIcon::Normal, MyIcon::Off);
-        icon2.setPixmap(pix.copy(0, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::Off);
-        icon2.setPixmap(pix.copy(0, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::Off);
-        icon2.setPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), MyIcon::Disabled, MyIcon::Off);
+        icon2.setPixmap(pix.copy(0, 0, w/2, h/4 ), TIcon::Normal, TIcon::Off);
+        icon2.setPixmap(pix.copy(0, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::Off);
+        icon2.setPixmap(pix.copy(0, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::Off);
+        icon2.setPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::Off);
 
-        icon2.setPixmap(pix.copy(w/2, 0, w/2, h/4 ), MyIcon::Normal, MyIcon::On);
-        icon2.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::On);
-        icon2.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::On);
-        icon2.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), MyIcon::Disabled, MyIcon::On);
+        icon2.setPixmap(pix.copy(w/2, 0, w/2, h/4 ), TIcon::Normal, TIcon::On);
+        icon2.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::On);
+        icon2.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::On);
+        icon2.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::On);
 
         playControl->setPlayPauseIcon(icon2);
         break;
@@ -168,21 +170,21 @@ void IconSetter::buttonIcon(int buttonNo, QPixmap pix )
 }
 
 
-void IconSetter::mediaPanelButtonIcon( int n, QPixmap pix)
+void TIconSetter::mediaPanelButtonIcon( int n, QPixmap pix)
 {
     if(pix.isNull()) return;
-    MyIcon icon;
+    TIcon icon;
     int w = pix.width();
     int h = pix.height();
-    icon.setPixmap(pix.copy(0, 0, w/2, h/4 ), MyIcon::Normal, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::Off);
-    icon.setPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), MyIcon::Disabled, MyIcon::Off);
+    icon.setPixmap(pix.copy(0, 0, w/2, h/4 ), TIcon::Normal, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::Off);
 
-    icon.setPixmap(pix.copy(w/2, 0, w/2, h/4 ), MyIcon::Normal, MyIcon::On);
-    icon.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), MyIcon::MouseOver, MyIcon::On);
-    icon.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), MyIcon::MouseDown, MyIcon::On);
-    icon.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), MyIcon::Disabled, MyIcon::On);
+    icon.setPixmap(pix.copy(w/2, 0, w/2, h/4 ), TIcon::Normal, TIcon::On);
+    icon.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::On);
+    icon.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::On);
+    icon.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::On);
 
     switch(n)
     {
@@ -193,4 +195,7 @@ void IconSetter::mediaPanelButtonIcon( int n, QPixmap pix)
     }
 }
 
-#include "moc_qpropertysetter.cpp"
+} // namesapce Skin
+} // namespace Gui
+
+#include "moc_iconsetter.cpp"

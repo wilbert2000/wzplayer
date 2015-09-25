@@ -18,14 +18,16 @@
 */
 
 
-#include "myicon.h"
+#include "gui/skin/icon.h"
 
-MyIcon::MyIcon()
+namespace Gui {
+namespace Skin {
+
+TIcon::TIcon()
 {
 }
 
-
-void MyIcon::setPixmap(QPixmap pix, Mode mode, State state )
+void TIcon::setPixmap(QPixmap pix, Mode mode, State state )
 {
     switch(mode)
     {
@@ -44,12 +46,12 @@ void MyIcon::setPixmap(QPixmap pix, Mode mode, State state )
     }
 }
 
-QSize MyIcon::size(Mode mode, State state)
+QSize TIcon::size(Mode mode, State state)
 {
     return pixmap(mode, state).size();
 }
 
-QPixmap MyIcon::pixmap(Mode mode, State state) const
+QPixmap TIcon::pixmap(Mode mode, State state) const
 {
     QPixmap p = actualPixmap(mode, state);
     if(p.isNull())
@@ -60,7 +62,7 @@ QPixmap MyIcon::pixmap(Mode mode, State state) const
     else return p;
 }
 
-QPixmap MyIcon::actualPixmap(Mode mode, State state ) const
+QPixmap TIcon::actualPixmap(Mode mode, State state ) const
 {
     switch(mode)
     {
@@ -79,3 +81,7 @@ QPixmap MyIcon::actualPixmap(Mode mode, State state ) const
     }
     return QPixmap();
 }
+
+} // namesapce Skin
+} // namespace Gui
+

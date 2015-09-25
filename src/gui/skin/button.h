@@ -17,49 +17,48 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef MYICON_H
-#define MYICON_H
+#ifndef GUI_SKIN_MYBUTTON_H
+#define GUI_SKIN_MYBUTTON_H
 
-#include <QObject>
-#include <QPixmap>
+#include <QAbstractButton>
+#include "gui/skin/icon.h"
 
-class MyIcon
+class MyAction;
+
+namespace Gui {
+namespace Skin {
+
+class TButton : public QAbstractButton
 {
+Q_OBJECT
 public:
-    enum Mode
-    {
-        Normal,
-        MouseOver,
-        MouseDown,
-        Disabled
-    };
-
-    enum State
-    {
-        Off,
-        On
-    };
-
-    explicit MyIcon();
-    QSize size(Mode mode, State state = Off );
-    void setPixmap(QPixmap pix, Mode mode, State state = Off);
-    QPixmap pixmap(Mode mode, State state =Off) const;
+	explicit TButton(QWidget *parent = 0);
+    void setState(bool on) {state = on; }
+	void setIcon(TIcon p_icon) { icon = p_icon; }
+	TIcon getIcon() { return icon;}
+    void setAction(MyAction* pAction);
+    bool eventFilter(QObject *watched, QEvent *event);
 
 private:
-    QPixmap normalPixOff;
-    QPixmap mouseOverPixOff;
-    QPixmap mouseDownPixOff;
-    QPixmap disabledPixOff;
-    QPixmap normalPixOn;
-    QPixmap mouseOverPixOn;
-    QPixmap mouseDownPixOn;
-    QPixmap disabledPixOn;
-    QPixmap actualPixmap(Mode mode, State state =Off) const;
+	TIcon icon;
+    bool mouseHover;
+    bool state;
+    MyAction* action;
+
+protected:
+	virtual void paintEvent(QPaintEvent *);
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
+
 
 signals:
 
 public slots:
+    void toggleImage();
 
 };
 
-#endif // MYICON_H
+} // namesapce Skin
+} // namespace Gui
+
+#endif // GUI_SKIN_MYBUTTON_H

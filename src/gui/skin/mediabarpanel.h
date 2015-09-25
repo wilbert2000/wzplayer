@@ -17,32 +17,33 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef MEDIABARPANEL_H
-#define MEDIABARPANEL_H
+#ifndef GUI_SKIN_MEDIABARPANEL_H
+#define GUI_SKIN_MEDIABARPANEL_H
 
 #include <QWidget>
 #include <QPushButton>
 #include <QList>
+
+#include "gui/skin/playcontrol.h"
+#include "gui/skin/mediapanel.h"
+#include "gui/skin/volumecontrolpanel.h"
 #include "core.h"
 
+#include "ui_mediabarpanel.h"
 
-namespace Ui {
-    class MediaBarPanel;
-}
-
-class PlayControl;
-class MediaPanel;
-class VolumeControlPanel;
 class MyAction;
 
-class MediaBarPanel : public QWidget {
+namespace Gui {
+namespace Skin {
+
+class TMediaBarPanel : public QWidget {
     Q_OBJECT
 
 public:
-    MediaBarPanel(QWidget *parent = 0);
-    ~MediaBarPanel();
+	TMediaBarPanel(QWidget *parent = 0);
+	~TMediaBarPanel();
     void setPlayControlActionCollection(QList<QAction*> actions);
-    void setMediaPanelActionCollection(QList<QAction*> actions);
+	void setMediaPanelActionCollection(QList<QAction*> actions);
     void setVolumeControlActionCollection(QList<QAction*> actions);
 	void setToolbarActionCollection(QList<QAction *>actions);
     void setCore(Core* c);
@@ -52,10 +53,10 @@ protected:
     void changeEvent(QEvent *e);
 
 private:
-    Ui::MediaBarPanel *ui;
-    PlayControl* playControlPanel;
-    MediaPanel* mediaPanel;
-    VolumeControlPanel* volumeControlPanel;
+	Ui::TMediaBarPanel *ui;
+	TPlayControl* playControlPanel;
+	TMediaPanel* mediaPanel;
+    TVolumeControlPanel* volumeControlPanel;
     Core* core;
 
     // Play Control
@@ -79,4 +80,7 @@ signals:
 	void seekerChanged(int);
 };
 
-#endif // MEDIABARPANEL_H
+} // namesapce Skin
+} // namespace Gui
+
+#endif // GUI_SKIN_MEDIABARPANEL_H

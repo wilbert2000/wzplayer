@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "skingui.h"
+#include "skin.h"
 #include "helper.h"
 #include "colorutils.h"
 #include "core.h"
@@ -51,8 +51,10 @@
 
 using namespace Global;
 
-SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
-	: Gui::TBasePlus( parent, flags )
+namespace Gui {
+
+TSkin::TSkin( QWidget * parent, Qt::WindowFlags flags )
+	: TBasePlus( parent, flags )
 	, was_muted(false)
 {
 	connect( this, SIGNAL(timeChanged(QString)),
@@ -73,11 +75,11 @@ SkinGui::SkinGui( QWidget * parent, Qt::WindowFlags flags )
 	#endif
 }
 
-SkinGui::~SkinGui() {
+TSkin::~TSkin() {
 }
 
-void SkinGui::createActions() {
-	qDebug("SkinGui::createActions");
+void TSkin::createActions() {
+	qDebug("Gui::TSkin::createActions");
 
 	timeslider_action = createTimeSliderAction(this);
 	timeslider_action->disable();
@@ -116,26 +118,26 @@ void SkinGui::createActions() {
 }
 
 #if AUTODISABLE_ACTIONS
-void SkinGui::enableActionsOnPlaying() {
-	qDebug("SkinGui::enableActionsOnPlaying");
-	Gui::TBasePlus::enableActionsOnPlaying();
+void TSkin::enableActionsOnPlaying() {
+	qDebug("Gui::TSkin::enableActionsOnPlaying");
+	TBasePlus::enableActionsOnPlaying();
 
 	timeslider_action->enable();
 	volumeslider_action->enable();
 }
 
-void SkinGui::disableActionsOnStop() {
-	qDebug("SkinGui::disableActionsOnStop");
-	Gui::TBasePlus::disableActionsOnStop();
+void TSkin::disableActionsOnStop() {
+	qDebug("Gui::TSkin::disableActionsOnStop");
+	TBasePlus::disableActionsOnStop();
 
 	timeslider_action->disable();
 	volumeslider_action->disable();
 }
 #endif // AUTODISABLE_ACTIONS
 
-void SkinGui::togglePlayAction(Core::State state) {
-	qDebug("SkinGui::togglePlayAction");
-	Gui::TBasePlus::togglePlayAction(state);
+void TSkin::togglePlayAction(Core::State state) {
+	qDebug("Gui::TSkin::togglePlayAction");
+	TBasePlus::togglePlayAction(state);
 
 	if (state == Core::Playing) {
 		playOrPauseAct->setChecked(true);
@@ -145,7 +147,7 @@ void SkinGui::togglePlayAction(Core::State state) {
 	}
 }
 
-void SkinGui::createMenus() {
+void TSkin::createMenus() {
 	menuBar()->setObjectName("menubar");
 	QFont font = menuBar()->font();
 	font.setPixelSize(11);
@@ -170,7 +172,7 @@ void SkinGui::createMenus() {
 	optionsMenu->addMenu(statusbar_menu);
 }
 
-QMenu * SkinGui::createPopupMenu() {
+QMenu * TSkin::createPopupMenu() {
 	QMenu * m = new QMenu(this);
 	m->addAction(editToolbar1Act);
 #if defined(SKIN_EDITABLE_CONTROL)
@@ -179,7 +181,7 @@ QMenu * SkinGui::createPopupMenu() {
 	return m;
 }
 
-void SkinGui::createMainToolBars() {
+void TSkin::createMainToolBars() {
 	toolbar1 = new EditableToolbar( this );
 	toolbar1->setObjectName("toolbar");
 	toolbar1->setMovable(false);
@@ -200,8 +202,8 @@ void SkinGui::createMainToolBars() {
 }
 
 
-void SkinGui::createControlWidget() {
-	qDebug("SkinGui::createControlWidget");
+void TSkin::createControlWidget() {
+	qDebug("Gui::TSkin::createControlWidget");
 
 	controlwidget = new QToolBar( this );
 	controlwidget->setObjectName("controlwidget");
@@ -210,7 +212,7 @@ void SkinGui::createControlWidget() {
 	controlwidget->setMovable(false);
 	addToolBar(Qt::BottomToolBarArea, controlwidget);
 
-	mediaBarPanel = new MediaBarPanel(panel);
+	mediaBarPanel = new Skin::TMediaBarPanel(panel);
 	mediaBarPanel->setObjectName("mediabar-panel");
 	mediaBarPanel->setCore(core);
 	/* panel->layout()->addWidget(mediaBarPanel); */
@@ -258,7 +260,7 @@ void SkinGui::createControlWidget() {
 	mediaBarPanelAction = controlwidget->addWidget(mediaBarPanel);
 }
 
-void SkinGui::createFloatingControl() {
+void TSkin::createFloatingControl() {
 	// Floating control
 	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
@@ -297,8 +299,8 @@ void SkinGui::createFloatingControl() {
 	floating_control->hide();
 }
 
-void SkinGui::retranslateStrings() {
-	Gui::TBasePlus::retranslateStrings();
+void TSkin::retranslateStrings() {
+	TBasePlus::retranslateStrings();
 
 	toolbar_menu->menuAction()->setText( tr("&Toolbars") );
 	toolbar_menu->menuAction()->setIcon( Images::icon("toolbars") );
@@ -318,12 +320,12 @@ void SkinGui::retranslateStrings() {
 	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title") );
 }
 
-void SkinGui::displayTime(QString text) {
+void TSkin::displayTime(QString text) {
 	time_label_action->setText(text);
 }
 
-void SkinGui::displayState(Core::State state) {
-	Gui::TBasePlus::displayState(state);
+void TSkin::displayState(Core::State state) {
+	TBasePlus::displayState(state);
 
 	switch (state) {
 		case Core::Playing:		mediaBarPanel->displayMessage( tr("Playing %1").arg(core->mdat.filename)); break;
@@ -332,20 +334,20 @@ void SkinGui::displayState(Core::State state) {
 	}
 }
 
-void SkinGui::displayMessage(QString message, int time) {
-	Gui::TBasePlus::displayMessage(message, time);
+void TSkin::displayMessage(QString message, int time) {
+	TBasePlus::displayMessage(message, time);
 	mediaBarPanel->displayMessage(message, time);
 }
 
-void SkinGui::displayMessage(QString message) {
-	Gui::TBasePlus::displayMessage(message);
+void TSkin::displayMessage(QString message) {
+	TBasePlus::displayMessage(message);
 	mediaBarPanel->displayMessage(message);
 }
 
-void SkinGui::updateWidgets() {
-	qDebug("SkinGui::updateWidgets");
+void TSkin::updateWidgets() {
+	qDebug("Gui::TSkin::updateWidgets");
 
-	Gui::TBasePlus::updateWidgets();
+	TBasePlus::updateWidgets();
 
 	panel->setFocus();
 
@@ -360,10 +362,10 @@ void SkinGui::updateWidgets() {
 	}
 }
 
-void SkinGui::aboutToEnterFullscreen() {
-	qDebug("SkinGui::aboutToEnterFullscreen");
+void TSkin::aboutToEnterFullscreen() {
+	qDebug("Gui::TSkin::aboutToEnterFullscreen");
 
-	Gui::TBasePlus::aboutToEnterFullscreen();
+	TBasePlus::aboutToEnterFullscreen();
 
 	#ifndef SKIN_EDITABLE_CONTROL
 	controlwidget->removeAction(mediaBarPanelAction);
@@ -388,10 +390,10 @@ void SkinGui::aboutToEnterFullscreen() {
 	}
 }
 
-void SkinGui::aboutToExitFullscreen() {
-	qDebug("SkinGui::aboutToExitFullscreen");
+void TSkin::aboutToExitFullscreen() {
+	qDebug("Gui::TSkin::aboutToExitFullscreen");
 
-	Gui::TBasePlus::aboutToExitFullscreen();
+	TBasePlus::aboutToExitFullscreen();
 
 	floating_control->deactivate();
 	#ifndef SKIN_EDITABLE_CONTROL
@@ -406,9 +408,9 @@ void SkinGui::aboutToExitFullscreen() {
 	}
 }
 
-void SkinGui::aboutToEnterCompactMode() {
+void TSkin::aboutToEnterCompactMode() {
 
-	Gui::TBasePlus::aboutToEnterCompactMode();
+	TBasePlus::aboutToEnterCompactMode();
 
 	// Save visibility of toolbars
 	compact_toolbar1_was_visible = toolbar1->isVisible();
@@ -417,8 +419,8 @@ void SkinGui::aboutToEnterCompactMode() {
 	toolbar1->hide();
 }
 
-void SkinGui::aboutToExitCompactMode() {
-	Gui::TBasePlus::aboutToExitCompactMode();
+void TSkin::aboutToExitCompactMode() {
+	TBasePlus::aboutToExitCompactMode();
 
 	statusBar()->hide();
 	controlwidget->show();
@@ -428,11 +430,11 @@ void SkinGui::aboutToExitCompactMode() {
 	/* resizeEvent( new QResizeEvent( size(), size() ) ); */
 }
 
-void SkinGui::saveConfig(const QString &group) {
+void TSkin::saveConfig(const QString &group) {
 	Q_UNUSED(group)
-	qDebug("SkinGui::saveConfig");
+	qDebug("Gui::TSkin::saveConfig");
 
-	Gui::TBasePlus::saveConfig("skin_gui");
+	TBasePlus::saveConfig("skin_gui");
 
 	QSettings * set = settings;
 	set->beginGroup("skin_gui");
@@ -464,11 +466,11 @@ void SkinGui::saveConfig(const QString &group) {
 	set->endGroup();
 }
 
-void SkinGui::loadConfig(const QString &group) {
+void TSkin::loadConfig(const QString &group) {
 	Q_UNUSED(group)
-	qDebug("SkinGui::loadConfig");
+	qDebug("Gui::TSkin::loadConfig");
 
-	Gui::TBasePlus::loadConfig("skin_gui");
+	TBasePlus::loadConfig("skin_gui");
 
 	QSettings * set = settings;
 	set->beginGroup("skin_gui");
@@ -484,7 +486,7 @@ void SkinGui::loadConfig(const QString &group) {
 	if (toolbar_version >= TOOLBAR_VERSION) {
 		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
-		qWarning("SkinGui::loadConfig: toolbar too old, loading default one");
+		qWarning("Gui::TSkin::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 #if defined(SKIN_EDITABLE_CONTROL)
@@ -517,4 +519,6 @@ void SkinGui::loadConfig(const QString &group) {
 	mediaBarPanel->setVolume(50);
 }
 
-#include "moc_skingui.cpp"
+} // namespace Gui
+
+#include "moc_skin.cpp"

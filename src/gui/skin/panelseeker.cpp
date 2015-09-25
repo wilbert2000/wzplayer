@@ -17,22 +17,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "panelseeker.h"
+#include "gui/skin/panelseeker.h"
+
 #include <QPainter>
 #include <QSlider>
 #include <QMouseEvent>
 #include <QDebug>
 #include <QToolTip>
+
+#include "config.h"
 #include "global.h"
 #include "preferences.h"
-#include "config.h"
 #include "helper.h"
 
 
 using namespace Global;
 
+namespace Gui {
+namespace Skin {
 
-PanelSeeker::PanelSeeker(QWidget *parent) :
+TPanelSeeker::TPanelSeeker(QWidget *parent) :
     QAbstractSlider(parent), isPressed(false), leftRightMargin(5), bufferingPixShift(0),
     frozen(false), delayPeriod(100), frozenPeriod(500)
 {
@@ -54,7 +58,7 @@ PanelSeeker::PanelSeeker(QWidget *parent) :
 }
 
 
-void PanelSeeker::paintEvent(QPaintEvent *)
+void TPanelSeeker::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
 
@@ -79,32 +83,32 @@ void PanelSeeker::paintEvent(QPaintEvent *)
 
 }
 
-void PanelSeeker::setKnobIcon( QPixmap pix )
+void TPanelSeeker::setKnobIcon( QPixmap pix )
 {
     int w = pix.width();
     int h = pix.height();
-    knobPix.setPixmap(pix.copy(0, 0, w, h/4 ), MyIcon::Normal, MyIcon::Off);
-    knobPix.setPixmap(pix.copy(0, h/4, w, h/4 ), MyIcon::MouseOver, MyIcon::Off);
-    knobPix.setPixmap(pix.copy(0, h/2, w, h/4 ), MyIcon::MouseDown, MyIcon::Off);
-    knobPix.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), MyIcon::Disabled, MyIcon::Off);
-    knobCurrentPix = knobPix.pixmap(MyIcon::Normal, MyIcon::Off);
+    knobPix.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::Off);
+    knobPix.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::Off);
+    knobPix.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::Off);
+    knobPix.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::Off);
+    knobCurrentPix = knobPix.pixmap(TIcon::Normal, TIcon::Off);
     /* setSliderValue(minimum()); */
     setState(Normal, true);
 }
 
 /*
-void PanelSeeker::setSingleKnobIcon(QPixmap pix)
+void TPanelSeeker::setSingleKnobIcon(QPixmap pix)
 {
-    knobPix.setPixmap(pix, MyIcon::Normal, MyIcon::Off);
-    knobPix.setPixmap(pix, MyIcon::MouseOver, MyIcon::Off);
-    knobPix.setPixmap(pix, MyIcon::MouseDown, MyIcon::Off);
-    knobPix.setPixmap(pix, MyIcon::Disabled, MyIcon::Off);
+    knobPix.setPixmap(pix, TIcon::Normal, TIcon::Off);
+    knobPix.setPixmap(pix, TIcon::MouseOver, TIcon::Off);
+    knobPix.setPixmap(pix, TIcon::MouseDown, TIcon::Off);
+    knobPix.setPixmap(pix, TIcon::Disabled, TIcon::Off);
     setSliderValue(minimum());
     setState(Normal, true);
 }
 */
 
-void PanelSeeker::mousePressEvent(QMouseEvent *m)
+void TPanelSeeker::mousePressEvent(QMouseEvent *m)
 {
     m->accept();
     setTracking(pref->update_while_seeking);
@@ -135,7 +139,7 @@ void PanelSeeker::mousePressEvent(QMouseEvent *m)
     }
 }
 
-void PanelSeeker::mouseMoveEvent(QMouseEvent *m)
+void TPanelSeeker::mouseMoveEvent(QMouseEvent *m)
 {
     m->accept();
     if(isPressed)
@@ -148,7 +152,7 @@ void PanelSeeker::mouseMoveEvent(QMouseEvent *m)
     }
 }
 
-void PanelSeeker::mouseReleaseEvent(QMouseEvent *m)
+void TPanelSeeker::mouseReleaseEvent(QMouseEvent *m)
 {    
     setSliderDown(false);        
     if(isPressed)
@@ -165,7 +169,7 @@ void PanelSeeker::mouseReleaseEvent(QMouseEvent *m)
     }
 }
 
-void PanelSeeker::resetKnob( bool start)
+void TPanelSeeker::resetKnob( bool start)
 {
     if(start)
     {
@@ -177,7 +181,7 @@ void PanelSeeker::resetKnob( bool start)
     }    
 }
 
-void PanelSeeker::knobAdjust(qreal x, bool isSetValue)
+void TPanelSeeker::knobAdjust(qreal x, bool isSetValue)
 {    
     if(state.testFlag(Buffering)) return;
     qreal value = minimum() + (knobRect.center().x() - (leftRightMargin + knobCurrentPix.width()/2) +x ) * (maximum() - minimum()) /(width() - (leftRightMargin) - (leftRightMargin) - knobCurrentPix.width()) ;
@@ -203,7 +207,7 @@ void PanelSeeker::knobAdjust(qreal x, bool isSetValue)
     }
 }
 
-bool PanelSeeker::event(QEvent *e)
+bool TPanelSeeker::event(QEvent *e)
 {    
     if(e->type() == QEvent::HoverMove || e->type() == QEvent::HoverEnter  )
     {
@@ -224,13 +228,13 @@ bool PanelSeeker::event(QEvent *e)
     return QAbstractSlider::event(e);
 }
 
-qreal PanelSeeker::valueForPos(int pos)
+qreal TPanelSeeker::valueForPos(int pos)
 {
         qreal value = (qreal)( pos - (leftRightMargin + knobCurrentPix.width()/2) ) * maximum() /(width() - (leftRightMargin) - (leftRightMargin) - knobCurrentPix.width());
         return value;
 }
 
-void PanelSeeker::setState(State st, bool on)
+void TPanelSeeker::setState(State st, bool on)
 {
     if(on)
     {
@@ -248,24 +252,24 @@ void PanelSeeker::setState(State st, bool on)
     }
     if(state.testFlag(Disabled))
     {
-        knobCurrentPix = knobPix.pixmap(MyIcon::Disabled, MyIcon::Off);
+        knobCurrentPix = knobPix.pixmap(TIcon::Disabled, TIcon::Off);
     }
     else if(state.testFlag(Pressed))
     {
-        knobCurrentPix = knobPix.pixmap(MyIcon::MouseDown, MyIcon::Off);
+        knobCurrentPix = knobPix.pixmap(TIcon::MouseDown, TIcon::Off);
     }
     else if(state.testFlag(Hovered))
     {
-        knobCurrentPix = knobPix.pixmap(MyIcon::MouseOver, MyIcon::Off);
+        knobCurrentPix = knobPix.pixmap(TIcon::MouseOver, TIcon::Off);
     }
     else
     {
-        knobCurrentPix = knobPix.pixmap(MyIcon::Normal, MyIcon::Off);
+        knobCurrentPix = knobPix.pixmap(TIcon::Normal, TIcon::Off);
     }
     update();
 }
 
-void PanelSeeker::moved( int value)
+void TPanelSeeker::moved( int value)
 {
     if(value > maximum()) value = maximum();
     if(value < minimum()) value = minimum();
@@ -273,18 +277,18 @@ void PanelSeeker::moved( int value)
 
     qreal ratio =  (qreal)(value - minimum())/(maximum()-minimum());
     qreal centerPixel = ratio*(width() - (leftRightMargin ) - (leftRightMargin) - knobCurrentPix.width());
-    QSize size = knobPix.size(MyIcon::Normal, MyIcon::Off);
+    QSize size = knobPix.size(TIcon::Normal, TIcon::Off);
     knobRect = QRectF(QPointF(centerPixel + (leftRightMargin + knobCurrentPix.width()/2) - size.width()/2, ( height() - size.height())/2 ), size );
     setSliderPosition(value);
     update();
 }
 
-void PanelSeeker::resizeEvent(QResizeEvent *)
+void TPanelSeeker::resizeEvent(QResizeEvent *)
 {
     setSliderValue(value());
 }
 
-void PanelSeeker::changeEvent(QEvent *e)
+void TPanelSeeker::changeEvent(QEvent *e)
 {
     if(e->type() == QEvent::EnabledChange)
     {
@@ -302,7 +306,7 @@ void PanelSeeker::changeEvent(QEvent *e)
     }    
 }
 
-void PanelSeeker::timerEvent(QTimerEvent *t)
+void TPanelSeeker::timerEvent(QTimerEvent *t)
 {
     if (bufferingPix.width() < 1) return;
 
@@ -319,7 +323,7 @@ void PanelSeeker::timerEvent(QTimerEvent *t)
     }
 }
 
-void PanelSeeker::setSliderValue(int value)
+void TPanelSeeker::setSliderValue(int value)
 {
     if(!isPressed && !frozen)
     {
@@ -330,19 +334,19 @@ void PanelSeeker::setSliderValue(int value)
     }
 }
 
-void PanelSeeker::stopFreeze()
+void TPanelSeeker::stopFreeze()
 {
     frozen = false;
     update();
 }
 
-void PanelSeeker::goToSliderPosition()
+void TPanelSeeker::goToSliderPosition()
 {
     emit valueChanged(sliderPosition());
     dragDelayTimer->stop();
 }
 
-void PanelSeeker::wheelEvent(QWheelEvent *e)
+void TPanelSeeker::wheelEvent(QWheelEvent *e)
 {
     blockSignals(true);
     QAbstractSlider::wheelEvent(e);
@@ -355,8 +359,8 @@ void PanelSeeker::wheelEvent(QWheelEvent *e)
 
 }
 
-void PanelTimeSeeker::wheelEvent(QWheelEvent *e) {
-	qDebug("PanelTimeSeeker::wheelEvent: delta: %d", e->delta());
+void TPanelTimeSeeker::wheelEvent(QWheelEvent *e) {
+	qDebug("TPanelTimeSeeker::wheelEvent: delta: %d", e->delta());
 	e->accept();
 
 	if (e->orientation() == Qt::Vertical) {
@@ -365,8 +369,11 @@ void PanelTimeSeeker::wheelEvent(QWheelEvent *e) {
 		else
 			emit wheelDown();
 	} else {
-		qDebug("PanelTimeSeeker::wheelEvent: horizontal event received, doing nothing");
+		qDebug("TPanelTimeSeeker::wheelEvent: horizontal event received, doing nothing");
 	}
 }
+
+} // namesapce Skin
+} // namespace Gui
 
 #include "moc_panelseeker.cpp"

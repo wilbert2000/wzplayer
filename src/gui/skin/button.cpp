@@ -17,37 +17,41 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mybutton.h"
+#include "gui/skin/button.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QDebug>
 #include "myaction.h"
 
-MyButton::MyButton(QWidget *parent) :
+namespace Gui {
+namespace Skin {
+
+
+TButton::TButton(QWidget *parent) :
     QAbstractButton(parent), mouseHover(false), state(false), action(0)
 {
 
 }
 
 
-void MyButton::paintEvent(QPaintEvent *)
+void TButton::paintEvent(QPaintEvent *)
 {
     QPixmap pix;
     if(isEnabled() && ( isDown() || isChecked()))
     {
-        pix = icon.pixmap(MyIcon::MouseDown, state ? MyIcon::On : MyIcon::Off);
+		pix = icon.pixmap(TIcon::MouseDown, state ? TIcon::On : TIcon::Off);
     }
     else if(isEnabled() && mouseHover)
     {
-        pix = icon.pixmap(MyIcon::MouseOver, state ? MyIcon::On : MyIcon::Off);
+		pix = icon.pixmap(TIcon::MouseOver, state ? TIcon::On : TIcon::Off);
     }
     else if(isEnabled())
     {
-        pix = icon.pixmap(MyIcon::Normal, state ? MyIcon::On : MyIcon::Off);
+		pix = icon.pixmap(TIcon::Normal, state ? TIcon::On : TIcon::Off);
     }
     else
     {
-        pix = icon.pixmap(MyIcon::Disabled, state ? MyIcon::On : MyIcon::Off);
+		pix = icon.pixmap(TIcon::Disabled, state ? TIcon::On : TIcon::Off);
     }
     QPainter p(this);    
     if(!pix.isNull())
@@ -55,19 +59,19 @@ void MyButton::paintEvent(QPaintEvent *)
 }
 
 
-void MyButton::enterEvent(QEvent *)
+void TButton::enterEvent(QEvent *)
 {
     mouseHover = true;
     update();
 }
 
-void MyButton::leaveEvent(QEvent *)
+void TButton::leaveEvent(QEvent *)
 {
     mouseHover = false;
     update();
 }
 
-void MyButton::setAction(MyAction *pAction)
+void TButton::setAction(MyAction *pAction)
 {
     action = pAction;
     if(action)
@@ -83,7 +87,7 @@ void MyButton::setAction(MyAction *pAction)
     }
 }
 
-bool MyButton::eventFilter(QObject *watched, QEvent *event)
+bool TButton::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == action)
     {
@@ -95,11 +99,14 @@ bool MyButton::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
-void MyButton::toggleImage()
+void TButton::toggleImage()
 {
     if(isCheckable()) setChecked(action->isChecked());
     else setState(action->isChecked());
     update();
 }
 
-#include "moc_mybutton.cpp"
+} // namesapce Skin
+} // namespace Gui
+
+#include "moc_button.cpp"

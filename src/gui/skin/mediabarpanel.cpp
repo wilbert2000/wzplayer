@@ -17,34 +17,33 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mediabarpanel.h"
-#include "ui_mediabarpanel.h"
-#include "playcontrol.h"
-#include "mediapanel.h"
+#include "gui/skin/mediabarpanel.h"
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QDebug>
-#include "qpropertysetter.h"
+
+#include "gui/skin/iconsetter.h"
 #include "colorutils.h"
-#include "qpropertysetter.h"
-#include "volumecontrolpanel.h"
+
+namespace Gui {
+namespace Skin {
 
 
-
-MediaBarPanel::MediaBarPanel(QWidget *parent) :
-    QWidget(parent),ui(new Ui::MediaBarPanel),core(0)
+TMediaBarPanel::TMediaBarPanel(QWidget *parent) :
+	QWidget(parent),ui(new Ui::TMediaBarPanel),core(0)
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_StyledBackground, true);
     setFixedHeight(53);
     QHBoxLayout* layout = new QHBoxLayout;
-    playControlPanel = new PlayControl(this);
-    IconSetter::instance()->playControl = playControlPanel;
-    volumeControlPanel = new VolumeControlPanel(this);
+	playControlPanel = new TPlayControl(this);
+	TIconSetter::instance()->playControl = playControlPanel;
+	volumeControlPanel = new TVolumeControlPanel(this);
     volumeControlPanel->setObjectName("volume-control-panel");
-    mediaPanel = new MediaPanel(this);
+	mediaPanel = new TMediaPanel(this);
     mediaPanel->setObjectName("media-panel");
-    IconSetter::instance()->mediaPanel = mediaPanel;
+	TIconSetter::instance()->mediaPanel = mediaPanel;
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(playControlPanel);
@@ -57,12 +56,12 @@ MediaBarPanel::MediaBarPanel(QWidget *parent) :
 	connect(mediaPanel, SIGNAL(seekerChanged(int)), this, SIGNAL(seekerChanged(int)));
 }
 
-MediaBarPanel::~MediaBarPanel()
+TMediaBarPanel::~TMediaBarPanel()
 {
     delete ui;
 }
 
-void MediaBarPanel::changeEvent(QEvent *e)
+void TMediaBarPanel::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);
     switch (e->type()) {
@@ -74,26 +73,26 @@ void MediaBarPanel::changeEvent(QEvent *e)
     }
 }
 
-void MediaBarPanel::setToolbarActionCollection(QList<QAction *>actions) {
-	IconSetter::instance()->setToolbarActions(actions);
+void TMediaBarPanel::setToolbarActionCollection(QList<QAction *>actions) {
+	TIconSetter::instance()->setToolbarActions(actions);
 }
 
-void MediaBarPanel::setPlayControlActionCollection(QList<QAction *>actions)
+void TMediaBarPanel::setPlayControlActionCollection(QList<QAction *>actions)
 {
     playControlPanel->setActionCollection(actions);
 }
 
-void MediaBarPanel::setMediaPanelActionCollection(QList<QAction *>actions)
+void TMediaBarPanel::setMediaPanelActionCollection(QList<QAction *>actions)
 {
     mediaPanel->setActionCollection(actions);
 }
 
-void MediaBarPanel::setMplayerState(Core::State state)
+void TMediaBarPanel::setMplayerState(Core::State state)
 {
     mediaPanel->setMplayerState((int)state);
 }
 
-void MediaBarPanel::setCore(Core *c)
+void TMediaBarPanel::setCore(Core *c)
 {
     core = c;
     connect(core, SIGNAL(newDuration(double)), this, SLOT(setDuration()));
@@ -104,24 +103,24 @@ void MediaBarPanel::setCore(Core *c)
 	connect(mediaPanel, SIGNAL(seekerWheelDown()), core, SLOT(wheelDown()));
 }
 
-void MediaBarPanel::setDuration()
+void TMediaBarPanel::setDuration()
 {
-	qDebug("MediaBarPanel::setDuration");
+	qDebug("Gui::Skin::TMediaBarPanel::setDuration");
 
 	mediaPanel->setDuration(core->mdat.duration);
 }
 
-void MediaBarPanel::setVolumeControlActionCollection(QList<QAction *>actions)
+void TMediaBarPanel::setVolumeControlActionCollection(QList<QAction *>actions)
 {
     volumeControlPanel->setActionCollection(actions);
 }
 
-void MediaBarPanel::gotCurrentTime(double time)
+void TMediaBarPanel::gotCurrentTime(double time)
 {
     mediaPanel->setElapsedText(Helper::formatTime((int)time));    
 }
 
-void MediaBarPanel::updateMediaInfo()
+void TMediaBarPanel::updateMediaInfo()
 {
     //QString s = QString("%1 (%2x%3)").arg(core->mdat.displayName()).arg(core->mdat.video_width).arg(core->mdat.video_height);
     mediaPanel->setMediaLabelText(core->mdat.displayName());
@@ -134,48 +133,51 @@ void MediaBarPanel::updateMediaInfo()
     }
 }
 
-void MediaBarPanel::displayMessage(QString status, int time)
+void TMediaBarPanel::displayMessage(QString status, int time)
 {
     mediaPanel->setStatusText(status, time);
 }
 
-void MediaBarPanel::displayMessage(QString status)
+void TMediaBarPanel::displayMessage(QString status)
 {
     mediaPanel->setStatusText(status);
 }
 
-void MediaBarPanel::displayPermanentMessage(QString status)
+void TMediaBarPanel::displayPermanentMessage(QString status)
 {
     mediaPanel->setStatusText(status, 0);
 }
 
-void MediaBarPanel::setRecordAvailable(bool av)
+void TMediaBarPanel::setRecordAvailable(bool av)
 {
     playControlPanel->setRecordEnabled(av);
 }
 
-void MediaBarPanel::setBuffering()
+void TMediaBarPanel::setBuffering()
 {
     mediaPanel->setBuffering(true);
 }
 
-void MediaBarPanel::setVolume(int v) { 
+void TMediaBarPanel::setVolume(int v) {
 	volumeControlPanel->setVolume(v); 
 }
 
-void MediaBarPanel::setSeeker(int v) {
+void TMediaBarPanel::setSeeker(int v) {
 	mediaPanel->setSeeker(v);
 }
 
-void MediaBarPanel::setResolutionVisible(bool b) { 
-	qDebug("MediaBarPanel::setResolutionVisible: %d", b);
+void TMediaBarPanel::setResolutionVisible(bool b) {
+	qDebug("Gui::Skin::TMediaBarPanel::setResolutionVisible: %d", b);
 	mediaPanel->setResolutionVisible(b); 
 }
 
-void MediaBarPanel::setScrollingEnabled(bool b) { 
-	qDebug("MediaBarPanel::setScrollingEnabled: %d", b);
+void TMediaBarPanel::setScrollingEnabled(bool b) {
+	qDebug("Gui::Skin::TMediaBarPanel::setScrollingEnabled: %d", b);
 	mediaPanel->setScrollingEnabled(b);
 }
+
+} // namesapce Skin
+} // namespace Gui
 
 #include "moc_mediabarpanel.cpp"
 

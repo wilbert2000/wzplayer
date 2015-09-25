@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>MediaPanelClass</class>
- <widget class="QWidget" name="MediaPanelClass" >
+ <class>TMediaPanelClass</class>
+ <widget class="QWidget" name="TMediaPanelClass" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>MediaPanel</string>
+   <string>TMediaPanel</string>
   </property>
  </widget>
  <layoutdefault spacing="6" margin="11" />

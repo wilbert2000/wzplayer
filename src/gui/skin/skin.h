@@ -16,25 +16,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SKINGUI_H_
-#define _SKINGUI_H_
+#ifndef _GUI_SKIN_H_
+#define _GUI_SKIN_H_
 
 #include "guiconfig.h"
 #include "gui/baseplus.h"
-#include <QPoint>
+#include "gui/skin/mediabarpanel.h"
 
-class QToolBar;
-class EditableToolbar;
-class QPushButton;
-class QResizeEvent;
-class MyAction;
 class QMenu;
+class QPushButton;
+class QToolBar;
+
+// TODO: check candidates for move to Gui
+class MyAction;
+class EditableToolbar;
 class TimeSliderAction;
 class VolumeSliderAction;
 class AutohideWidget;
 class TimeLabelAction;
-class MyAction;
-class MediaBarPanel;
 
 #if MINI_ARROW_BUTTONS
 class SeekingButton;
@@ -42,13 +41,15 @@ class SeekingButton;
 
 //#define SKIN_EDITABLE_CONTROL 1
 
-class SkinGui : public Gui::TBasePlus
+namespace Gui {
+
+class TSkin : public TBasePlus
 {
 	Q_OBJECT
 
 public:
-	SkinGui( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
-	~SkinGui();
+	TSkin( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	~TSkin();
 
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
@@ -86,7 +87,7 @@ protected slots:
 	virtual void togglePlayAction(Core::State);
 
 protected:
-	MediaBarPanel* mediaBarPanel;
+	Skin::TMediaBarPanel* mediaBarPanel;
 	QAction * mediaBarPanelAction;
 
 	EditableToolbar * toolbar1;
@@ -122,4 +123,6 @@ protected:
 	bool was_muted;
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_SKIN_H_

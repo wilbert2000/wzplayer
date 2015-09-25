@@ -17,31 +17,35 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-#ifndef MEDIAPANEL_H
-#define MEDIAPANEL_H
+#ifndef GUI_SKIN_MEDIAPANEL_H
+#define GUI_SKIN_MEDIAPANEL_H
 
 #include <QWidget>
 #include <QPixmap>
 #include <QLabel>
+
+#include "gui/skin/button.h"
+#include "gui/skin/panelseeker.h"
+
 #include "ui_mediapanel.h"
-#include "mybutton.h"
-#include "panelseeker.h"
 
 class QGridLayout;
 
-class ScrollingLabel : public QWidget
+namespace Gui {
+namespace Skin {
+
+class TScrollingLabel : public QWidget
 {
     Q_OBJECT
 
 public:
-    ScrollingLabel(QWidget* parent=0);
-    ~ScrollingLabel(){}
+	TScrollingLabel(QWidget* parent=0);
+	~TScrollingLabel(){}
     QString text() { return mText; }
     void setText( QString text);
 
     void setScrollingEnabled(bool b);
-    bool scrollingEnabled() { return scrolling_enabled; };
+	bool scrollingEnabled() { return scrolling_enabled; }
 
 private:
     QString mText;
@@ -62,7 +66,7 @@ private slots:
     void timerEvent(QTimerEvent *);
 };
 
-class MediaPanel : public QWidget
+class TMediaPanel : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QPixmap bgLeft READ bgLeftPix WRITE setBgLeftPix)
@@ -70,19 +74,19 @@ class MediaPanel : public QWidget
     Q_PROPERTY(QPixmap bgCenter READ bgCenterPix WRITE setBgCenterPix)
 
 public:
-    MediaPanel(QWidget *parent = 0);
-    ~MediaPanel();
+	TMediaPanel(QWidget *parent = 0);
+	~TMediaPanel();
     QPixmap bgLeftPix() { return leftBackground ;}
     void setBgLeftPix( QPixmap pix){ leftBackground = pix; }
     QPixmap bgRightPix() { return rightBackground ;}
     void setBgRightPix( QPixmap pix){ rightBackground = pix; }
     QPixmap bgCenterPix() { return centerBackground ;}
     void setBgCenterPix( QPixmap pix){ centerBackground = pix; }
-    void setShuffleIcon( MyIcon icon );
-    void setRepeatIcon(MyIcon icon);
+	void setShuffleIcon( TIcon icon );
+	void setRepeatIcon(TIcon icon);
     void setElapsedText(QString text) {
         elapsedLabel->setText(text);
-        if(seeker->states().testFlag(PanelSeeker::Buffering))
+		if(seeker->states().testFlag(TPanelSeeker::Buffering))
             setBuffering(false);
         }
     void setTotalText( QString text) { totalLabel->setText(text); }
@@ -101,16 +105,16 @@ public slots:
 	void setScrollingEnabled(bool b);
 
 private:
-    Ui::MediaPanelClass ui;
+	Ui::TMediaPanelClass ui;
     QGridLayout * layout;
     QPixmap leftBackground;
     QPixmap centerBackground;
     QPixmap rightBackground;
-    ScrollingLabel* mediaLabel;
+	TScrollingLabel* mediaLabel;
     QLabel *resolutionLabel;
-    PanelTimeSeeker* seeker;
-    MyButton* repeatButton;
-    MyButton* shuffleButton;
+	TPanelTimeSeeker* seeker;
+	TButton* repeatButton;
+	TButton* shuffleButton;
     QLabel* elapsedLabel;
     QLabel* totalLabel;
     QString originalTitle;
@@ -132,7 +136,10 @@ signals:
 	void seekerWheelDown();
 
 public:
-    friend class IconSetter;
+    friend class TIconSetter;
 };
 
-#endif // MEDIAPANEL_H
+} // namesapce Skin
+} // namespace Gui
+
+#endif // GUI_SKIN_MEDIAPANEL_H

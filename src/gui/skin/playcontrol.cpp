@@ -17,23 +17,25 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "playcontrol.h"
+#include "gui/skin/playcontrol.h"
 #include <QResizeEvent>
-#include "myaction.h"
-#include "actiontools.h"
+#include "gui/skin/actiontools.h"
 
-PlayControl::PlayControl(QWidget *parent) :
+namespace Gui {
+namespace Skin {
+
+TPlayControl::TPlayControl(QWidget *parent) :
     QWidget(parent), playOrPause(true)
 {
     setAttribute(Qt::WA_StyledBackground, true);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-    backwardButton = new MyButton(this);
-    previousButton = new MyButton(this);
-    playPauseButton = new MyButton(this);
-    stopButton = new MyButton(this);
-    nextButton = new MyButton(this);
-    forwardButton = new MyButton(this);
-    recordButton = new MyButton(this);
+    backwardButton = new TButton(this);
+    previousButton = new TButton(this);
+    playPauseButton = new TButton(this);
+    stopButton = new TButton(this);
+    nextButton = new TButton(this);
+    forwardButton = new TButton(this);
+    recordButton = new TButton(this);
     layout = new QHBoxLayout;
     QSpacerItem* spacer1 = new QSpacerItem(9, 10, QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
     QSpacerItem* spacer2 = new QSpacerItem(9, 10, QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
@@ -56,12 +58,12 @@ PlayControl::PlayControl(QWidget *parent) :
 }
 
 
-void PlayControl::resizeEvent(QResizeEvent *)
+void TPlayControl::resizeEvent(QResizeEvent *)
 {
     updateSize();
 }
 
-void PlayControl::updateSize()
+void TPlayControl::updateSize()
 {
     backwardButton->hide();
     previousButton->hide();
@@ -121,7 +123,7 @@ void PlayControl::updateSize()
 
 }
 
-void PlayControl::updateWidths()
+void TPlayControl::updateWidths()
 {
     int maxWidth = 18;
     int totalWidth = 18;
@@ -145,7 +147,7 @@ void PlayControl::updateWidths()
     updateSize();
 }
 
-void PlayControl::setActionCollection(QList<QAction *> actions)
+void TPlayControl::setActionCollection(QList<QAction *> actions)
 {
 	/*
 	MyAction *a = static_cast<MyAction*>(actions.at(2));
@@ -163,7 +165,7 @@ void PlayControl::setActionCollection(QList<QAction *> actions)
 	retranslateStrings();
 }
 
-bool PlayControl::eventFilter(QObject *watched, QEvent *event)
+bool TPlayControl::eventFilter(QObject *watched, QEvent *event)
 {
     if((watched == recordButton || watched == previousButton || watched == nextButton ) && event->type() == QEvent::EnabledChange)
     {
@@ -173,7 +175,7 @@ bool PlayControl::eventFilter(QObject *watched, QEvent *event)
 }
 
 // Language change stuff
-void PlayControl::changeEvent(QEvent *e) {
+void TPlayControl::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
@@ -181,7 +183,7 @@ void PlayControl::changeEvent(QEvent *e) {
 	}
 }
 
-void PlayControl::retranslateStrings() {
+void TPlayControl::retranslateStrings() {
 	if (backwardButton) backwardButton->setToolTip(tr("Rewind"));
 	if (forwardButton) forwardButton->setToolTip(tr("Forward"));
 	if (playPauseButton) playPauseButton->setToolTip(tr("Play / Pause"));
@@ -190,5 +192,8 @@ void PlayControl::retranslateStrings() {
 	if (nextButton) nextButton->setToolTip(tr("Next file in playlist"));
 	if (previousButton) previousButton->setToolTip(tr("Previous file in playlist"));
 }
+
+} // namesapce Skin
+} // namespace Gui
 
 #include "moc_playcontrol.cpp"

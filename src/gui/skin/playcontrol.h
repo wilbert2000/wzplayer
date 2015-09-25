@@ -17,33 +17,33 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PLAYCONTROL_H
-#define PLAYCONTROL_H
+#ifndef GUI_SKIN_PLAYCONTROL_H
+#define GUI_SKIN_PLAYCONTROL_H
 
 #include <QWidget>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QPixmap>
-#include "myicon.h"
-#include "mybutton.h"
+#include "gui/skin/button.h"
 
-class MyAction;
+namespace Gui {
+namespace Skin {
 
-class PlayControl : public QWidget
+class TPlayControl : public QWidget
 {
 Q_OBJECT
 
 public:
-    explicit PlayControl(QWidget *parent = 0);
+	explicit TPlayControl(QWidget *parent = 0);
 
 private:
-    MyButton* backwardButton;
-    MyButton* previousButton;
-    MyButton* playPauseButton;
-    MyButton* stopButton;
-    MyButton* nextButton;
-    MyButton* forwardButton;
-    MyButton* recordButton;
+    TButton* backwardButton;
+    TButton* previousButton;
+    TButton* playPauseButton;
+    TButton* stopButton;
+    TButton* nextButton;
+    TButton* forwardButton;
+    TButton* recordButton;
     QHBoxLayout* layout;    
     bool playOrPause;
     void updateSize();    
@@ -56,13 +56,13 @@ public:
     void setNextTrackEnabled(bool enable) { nextButton->setEnabled(enable); updateWidths();}
     void setPlay(bool on) { playOrPause = on; playPauseButton->setState(on); }
 
-    void setBackwardIcon(MyIcon icon ) { backwardButton->setMyIcon(icon); backwardButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off)); updateWidths(); }
-    void setForwardIcon(MyIcon icon) { forwardButton->setMyIcon(icon); forwardButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off)); updateWidths(); }
-    void setPreviousIcon(MyIcon icon) { previousButton->setMyIcon(icon); previousButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off)); updateWidths();}
-    void setNextIcon(MyIcon icon) { nextButton->setMyIcon(icon); nextButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off)); updateWidths();}
-    void setPlayPauseIcon (MyIcon icon) { playPauseButton->setMyIcon(icon); playPauseButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off));updateWidths();}
-    void setStopIcon (MyIcon icon) { stopButton->setMyIcon(icon); stopButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off)); updateWidths();}
-    void setRecordIcon(MyIcon icon) { recordButton->setMyIcon(icon); recordButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off)); updateWidths();}
+	void setBackwardIcon(TIcon icon ) { backwardButton->setIcon(icon); backwardButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths(); }
+	void setForwardIcon(TIcon icon) { forwardButton->setIcon(icon); forwardButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths(); }
+	void setPreviousIcon(TIcon icon) { previousButton->setIcon(icon); previousButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths();}
+	void setNextIcon(TIcon icon) { nextButton->setIcon(icon); nextButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths();}
+	void setPlayPauseIcon (TIcon icon) { playPauseButton->setIcon(icon); playPauseButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off));updateWidths();}
+	void setStopIcon (TIcon icon) { stopButton->setIcon(icon); stopButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths();}
+	void setRecordIcon(TIcon icon) { recordButton->setIcon(icon); recordButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths();}
 
     void setActionCollection(QList<QAction*> actions);
     bool eventFilter(QObject *watched, QEvent *event);
@@ -73,7 +73,10 @@ protected:
     virtual void changeEvent (QEvent * event);
     virtual void retranslateStrings();
 
-friend class IconSetter;
+friend class TIconSetter;
 };
 
-#endif // PLAYCONTROL_H
+} // namesapce Skin
+} // namespace Gui
+
+#endif // GUI_SKIN_PLAYCONTROL_H

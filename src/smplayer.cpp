@@ -40,7 +40,7 @@
 #endif
 
 #ifdef SKINS
-#include "skingui.h"
+#include "gui/skin/skin.h"
 #endif
 
 
@@ -153,7 +153,7 @@ Gui::TBase * SMPlayer::createGUI(QString gui_name) {
 
 #ifdef SKINS
 	if (gui_name.toLower() == "skingui")
-		gui = new SkinGui(0);
+		gui = new Gui::TSkin(0);
 	else
 #endif
 	if (gui_name.toLower() == "minigui") 

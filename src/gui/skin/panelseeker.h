@@ -17,15 +17,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PANELSEEKER_H
-#define PANELSEEKER_H
+#ifndef GUI_SKIN_PANELSEEKER_H
+#define GUI_SKIN_PANELSEEKER_H
 
 #include <QAbstractSlider>
 #include <QPixmap>
 #include <QTimer>
-#include "mybutton.h"
+#include "gui/skin/icon.h"
 
-class PanelSeeker : public QAbstractSlider
+namespace Gui {
+namespace Skin {
+
+class TPanelSeeker : public QAbstractSlider
 {
 Q_OBJECT
 
@@ -48,13 +51,14 @@ public:
         Buffering = 64
     };
     Q_DECLARE_FLAGS(States, State)
-    explicit PanelSeeker(QWidget *parent = 0);
+
+	explicit TPanelSeeker(QWidget *parent = 0);
     QPixmap leftIcon() { return leftPix; }
     QPixmap centerIcon() { return centerPix; }
     QPixmap rightIcon() { return rightPix; }
     QPixmap progressIcon() { return progressPix; }
     QPixmap bufferingIcon() { return bufferingPix; }
-    QPixmap knobIcon() { return knobPix.pixmap(MyIcon::Normal, MyIcon::Off); }
+	QPixmap knobIcon() { return knobPix.pixmap(TIcon::Normal, TIcon::Off); }
     States states() { return state; }
 
     void setLeftIcon( QPixmap pix) { leftPix = pix;  }
@@ -70,15 +74,13 @@ public:
     void setFrozenPeriod(int period) { frozenPeriod = period; }    
     qreal valueForPos(int pos);
 
-
-
 private:
     QPixmap leftPix;
     QPixmap centerPix;
     QPixmap rightPix;
     QPixmap progressPix;
     QPixmap bufferingPix;
-    MyIcon  knobPix;
+	TIcon  knobPix;
     QRectF knobRect;
     bool isPressed;        
     int leftRightMargin;
@@ -97,21 +99,14 @@ private:
     int delayPeriod;
     int frozenPeriod;
 
-
     void resetKnob( bool start = true);
     void knobAdjust(qreal x, bool setValue = false);
-
-
-
-
-signals:
 
 public slots:
     void moved( int value);
     void setSliderValue(int value);
     void stopFreeze();
     void goToSliderPosition();
-
 
 protected:
 	void paintEvent(QPaintEvent *);
@@ -123,13 +118,11 @@ protected:
     void changeEvent(QEvent *e);
     void timerEvent(QTimerEvent * t);
     void wheelEvent(QWheelEvent *e);
-
-
 };
-Q_DECLARE_OPERATORS_FOR_FLAGS(PanelSeeker::States)
+Q_DECLARE_OPERATORS_FOR_FLAGS(TPanelSeeker::States)
 
 
-class PanelTimeSeeker : public PanelSeeker {
+class TPanelTimeSeeker : public TPanelSeeker {
 	Q_OBJECT
 
 signals:
@@ -140,4 +133,7 @@ protected:
     void wheelEvent(QWheelEvent *e);
 };
 
-#endif // PANELSEEKER_H
+} // namespace Skin
+} // namespace Gui
+
+#endif // GUI_SKIN_PANELSEEKER_H

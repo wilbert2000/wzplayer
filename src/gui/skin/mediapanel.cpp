@@ -17,7 +17,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mediapanel.h"
+#include "gui/skin/mediapanel.h"
+
+#include <Qt>
 #include <QPainter>
 #include <QFont>
 #include <QFontMetrics>
@@ -27,14 +29,17 @@
 #include <QHelpEvent>
 #include <QToolTip>
 #include <QDebug>
-#include "qpropertysetter.h"
+
+#include "config.h"
+#include "gui/skin/actiontools.h"
+#include "gui/skin/iconsetter.h"
 #include "widgetactions.h"
 #include "core.h"
-#include "config.h"
-#include "actiontools.h"
 
+namespace Gui {
+namespace Skin {
 
-MediaPanel::MediaPanel(QWidget *parent)
+TMediaPanel::TMediaPanel(QWidget *parent)
     : QWidget(parent), duration(0)
 {
 	ui.setupUi(this);
@@ -48,13 +53,13 @@ MediaPanel::MediaPanel(QWidget *parent)
 	}
 
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-	mediaLabel = new ScrollingLabel(this);
+	mediaLabel = new TScrollingLabel(this);
 	resolutionLabel = new QLabel(this);
 	resolutionLabel->setObjectName("panel-resolution");
 	resolutionLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-	repeatButton = new MyButton(this);
-	shuffleButton = new MyButton(this);
-	seeker = new PanelTimeSeeker;
+	repeatButton = new TButton(this);
+	shuffleButton = new TButton(this);
+	seeker = new TPanelTimeSeeker;
 	seeker->setObjectName("panel-seeker");
 	seeker->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
 	seeker->setRange(0, SEEKBAR_RESOLUTION);
@@ -65,13 +70,13 @@ MediaPanel::MediaPanel(QWidget *parent)
 	elapsedLabel = new QLabel(this);
 	elapsedLabel->setObjectName("panel-elapsed-label");
 	elapsedLabel->setMargin(0);
-	elapsedLabel->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+	elapsedLabel->setAlignment((Qt::Alignment) Qt::AlignHCenter | Qt::AlignTop);
 	elapsedLabel->setIndent(3);
 	elapsedLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	totalLabel = new QLabel(this);
 	totalLabel->setObjectName("panel-total-label");
 	totalLabel->setMargin(0);
-	totalLabel->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+	totalLabel->setAlignment((Qt::Alignment) Qt::AlignHCenter | Qt::AlignTop);
 	totalLabel->setIndent(3);
 	/*
 	layout->addWidget( mediaLabel, 0, 0, 1, 2 );
@@ -99,10 +104,10 @@ MediaPanel::MediaPanel(QWidget *parent)
 	connect(seeker, SIGNAL(wheelDown()), this, SIGNAL(seekerWheelDown()));
 }
 
-MediaPanel::~MediaPanel() {
+TMediaPanel::~TMediaPanel() {
 }
 
-void MediaPanel::rearrangeWidgets(bool resolution_visible) {
+void TMediaPanel::rearrangeWidgets(bool resolution_visible) {
 	if (resolution_visible) {
 		layout->addWidget( mediaLabel, 0, 0, 1, 2 );
 		layout->addWidget( resolutionLabel, 0, 2, 1, 1 );
@@ -123,40 +128,40 @@ void MediaPanel::rearrangeWidgets(bool resolution_visible) {
 	}
 }
 
-void MediaPanel::setResolutionVisible(bool b) {
+void TMediaPanel::setResolutionVisible(bool b) {
 	rearrangeWidgets(b);
 }
 
-void MediaPanel::setScrollingEnabled(bool b) {
+void TMediaPanel::setScrollingEnabled(bool b) {
 	mediaLabel->setScrollingEnabled(b);
 }
 
-void MediaPanel::paintEvent(QPaintEvent *) {
+void TMediaPanel::paintEvent(QPaintEvent *) {
 	QPainter p(this);
 	p.drawPixmap(0,0,leftBackground.width(), 53, leftBackground);
 	p.drawPixmap(width() - rightBackground.width(), 0, rightBackground.width(), 53, rightBackground );
 	p.drawTiledPixmap(leftBackground.width(), 0, width() - leftBackground.width() - rightBackground.width(), 53, centerBackground  );    
 }
 
-void MediaPanel::setShuffleIcon( MyIcon icon ) {
-	shuffleButton->setMyIcon(icon);
-	shuffleButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off));
+void TMediaPanel::setShuffleIcon( TIcon icon ) {
+	shuffleButton->setIcon(icon);
+	shuffleButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off));
 }
 
-void MediaPanel::setRepeatIcon(MyIcon icon) {
-	repeatButton->setMyIcon(icon);
-	repeatButton->setFixedSize(icon.size(MyIcon::Normal, MyIcon::Off));
+void TMediaPanel::setRepeatIcon(TIcon icon) {
+	repeatButton->setIcon(icon);
+	repeatButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off));
 }
 
-void MediaPanel::setActionCollection(QList<QAction *>actions) {
-	//ActionTools::findAction("aaa", actions);
+void TMediaPanel::setActionCollection(QList<QAction *>actions) {
+	//TActionTools::findAction("aaa", actions);
 	SETACTIONTOBUTTON(shuffleButton, "pl_shuffle");
 	SETACTIONTOBUTTON(repeatButton, "pl_repeat");
 
 	retranslateStrings();
 }
 
-void MediaPanel::setMplayerState(int state) {
+void TMediaPanel::setMplayerState(int state) {
 	Core::State s = static_cast<Core::State>(state);
 	if (s == Core::Stopped) {
 		seeker->setEnabled(false);
@@ -167,29 +172,29 @@ void MediaPanel::setMplayerState(int state) {
 	}
 }
 
-void MediaPanel::setDuration(int duration) {
+void TMediaPanel::setDuration(int duration) {
 	this->duration = duration;
 	if (duration == 0) {
-		seeker->setState(PanelSeeker::Stopped, true);
+		seeker->setState(TPanelSeeker::Stopped, true);
 	}
 	else {
-		seeker->setState(PanelSeeker::Stopped, false);
+		seeker->setState(TPanelSeeker::Stopped, false);
 	}
 	setTotalText(Helper::formatTime(duration));
 	setElapsedText(Helper::formatTime(0));
 }
 
-void MediaPanel::setMediaLabelText(QString text) {
+void TMediaPanel::setMediaLabelText(QString text) {
 	mediaLabel->setText(text);
 	mediaLabel->update();
 	originalTitle = text;
 }
 
-void MediaPanel::setResolutionLabelText(QString text) {
+void TMediaPanel::setResolutionLabelText(QString text) {
 	resolutionLabel->setText(text);
 }
 
-void MediaPanel::setStatusText(QString text, int time) {
+void TMediaPanel::setStatusText(QString text, int time) {
 	mediaLabel->setText(text);
 	mediaLabel->update();
 	if (time > 0)
@@ -198,25 +203,25 @@ void MediaPanel::setStatusText(QString text, int time) {
 		timer->stop();
 }
 
-void MediaPanel::reverseStatus() {
+void TMediaPanel::reverseStatus() {
 	setMediaLabelText(originalTitle);
 }
 
-void MediaPanel::setBuffering(bool enable) {
+void TMediaPanel::setBuffering(bool enable) {
 	if (enable) {
-		seeker->setState(PanelSeeker::Buffering, true);
+		seeker->setState(TPanelSeeker::Buffering, true);
 	}
 	else
 	{
-		seeker->setState(PanelSeeker::Buffering, false);
+		seeker->setState(TPanelSeeker::Buffering, false);
 	}
 }
 
-void MediaPanel::setSeeker(int v) {
+void TMediaPanel::setSeeker(int v) {
 	seeker->setSliderValue(v);
 }
 
-bool MediaPanel::eventFilter(QObject *o, QEvent *e) {
+bool TMediaPanel::eventFilter(QObject *o, QEvent *e) {
 	if (o == seeker && e->type() == QEvent::ToolTip) {
 		QHelpEvent *helpEvent = static_cast<QHelpEvent *>(e);
 		qreal value = seeker->valueForPos(helpEvent->pos().x())* duration/seeker->maximum();
@@ -230,7 +235,7 @@ bool MediaPanel::eventFilter(QObject *o, QEvent *e) {
 }
 
 // Language change stuff
-void MediaPanel::changeEvent(QEvent *e) {
+void TMediaPanel::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
@@ -238,12 +243,12 @@ void MediaPanel::changeEvent(QEvent *e) {
 	}
 }
 
-void MediaPanel::retranslateStrings() {
+void TMediaPanel::retranslateStrings() {
 	if (shuffleButton) shuffleButton->setToolTip(tr("Shuffle playlist"));
 	if (repeatButton) repeatButton->setToolTip(tr("Repeat playlist"));
 }
 
-void ScrollingLabel::paintEvent(QPaintEvent *) {
+void TScrollingLabel::paintEvent(QPaintEvent *) {
 	QPainter p(this);
 	p.setFont(font());
 	p.setPen(palette().color(foregroundRole()));
@@ -260,19 +265,19 @@ void ScrollingLabel::paintEvent(QPaintEvent *) {
 	p.end();
 }
 
-void ScrollingLabel::setText(QString text) {
+void TScrollingLabel::setText(QString text) {
 	mText = text;
 	updateLabel();
 	repaint();
 }
 
-void ScrollingLabel::changeEvent(QEvent * e) {
+void TScrollingLabel::changeEvent(QEvent * e) {
 	if (e->type() == QEvent::FontChange) {
 		updateLabel();
 	}
 }
 
-void ScrollingLabel::updateLabel() {
+void TScrollingLabel::updateLabel() {
 	QFontMetrics fm(font());
 	QRect rect = fm.boundingRect(mText);
 	textRect = rect;
@@ -290,13 +295,13 @@ void ScrollingLabel::updateLabel() {
 	}
 }
 
-void ScrollingLabel::timerEvent(QTimerEvent *) {
+void TScrollingLabel::timerEvent(QTimerEvent *) {
 	scrollPos += 1;
 	scrollPos = scrollPos % (textRect.width() + gap);
 	update();
 }
 
-ScrollingLabel::ScrollingLabel(QWidget* parent ) {
+TScrollingLabel::TScrollingLabel(QWidget* parent ) {
 	Q_UNUSED(parent)
 
 	scrollPos =0;
@@ -307,19 +312,22 @@ ScrollingLabel::ScrollingLabel(QWidget* parent ) {
 	setText("SMPlayer");
 }
 
-void ScrollingLabel::setScrollingEnabled(bool b) {
+void TScrollingLabel::setScrollingEnabled(bool b) {
 	scrolling_enabled = b;
 	updateLabel();
 	repaint();
 }
 
-void ScrollingLabel::resizeEvent(QResizeEvent *) {
+void TScrollingLabel::resizeEvent(QResizeEvent *) {
 	updateLabel();
 }
 
-QSize ScrollingLabel::sizeHint() const {
+QSize TScrollingLabel::sizeHint() const {
 	QFontMetrics fm(font());
 	return QSize(0, fm.height());
 }
+
+} // namesapce Skin
+} // namespace Gui
 
 #include "moc_mediapanel.cpp"

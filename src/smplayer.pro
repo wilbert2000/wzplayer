@@ -416,16 +416,18 @@ contains( DEFINES, MPCGUI ) {
 
 # Skins support
 contains( DEFINES, SKINS ) {
-	INCLUDEPATH += skingui
-	DEPENDPATH += skingui
+	INCLUDEPATH += gui/skin
+	DEPENDPATH += gui/skin
 
-	HEADERS += skingui/myicon.h skingui/mybutton.h skingui/panelseeker.h skingui/playcontrol.h \
-               skingui/mediapanel.h skingui/volumecontrolpanel.h skingui/mediabarpanel.h \
-               skingui/qpropertysetter.h skingui/actiontools.h skingui/skingui.h
-	SOURCES += skingui/myicon.cpp skingui/mybutton.cpp skingui/panelseeker.cpp skingui/playcontrol.cpp \
-               skingui/mediapanel.cpp skingui/volumecontrolpanel.cpp skingui/mediabarpanel.cpp \
-               skingui/qpropertysetter.cpp skingui/actiontools.cpp skingui/skingui.cpp
-	FORMS += skingui/mediapanel.ui skingui/mediabarpanel.ui
+    HEADERS += gui/skin/icon.h gui/skin/button.h gui/skin/panelseeker.h \
+               gui/skin/playcontrol.h gui/skin/mediapanel.h \
+               gui/skin/volumecontrolpanel.h gui/skin/mediabarpanel.h \
+               gui/skin/iconsetter.h gui/skin/actiontools.h gui/skin/skin.h
+    SOURCES += gui/skin/icon.cpp gui/skin/button.cpp gui/skin/panelseeker.cpp \
+               gui/skin/playcontrol.cpp gui/skin/mediapanel.cpp \
+               gui/skin/volumecontrolpanel.cpp gui/skin/mediabarpanel.cpp \
+               gui/skin/iconsetter.cpp gui/skin/actiontools.cpp gui/skin/skin.cpp
+	FORMS += gui/skin/mediapanel.ui gui/skin/mediabarpanel.ui
 }
 
 contains( DEFINES, MPRIS2 ) {
