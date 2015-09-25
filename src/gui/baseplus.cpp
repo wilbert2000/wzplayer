@@ -121,7 +121,7 @@ TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
 
 #if DOCK_PLAYLIST
 	// TPlaylistdock
-	playlistdock = new PlaylistDock(this);
+	playlistdock = new TPlaylistDock(this);
 	playlistdock->setObjectName("playlistdock");
 	playlistdock->setFloating(false); // To avoid that the playlist is visible for a moment
 	playlistdock->setWidget(playlist);

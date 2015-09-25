@@ -22,12 +22,12 @@
 #include "guiconfig.h"
 #include "gui/base.h"
 #include "gui/widgetactions.h"
+#include "gui/playlistdock.h"
 
 #include <QSystemTrayIcon>
 #include <QPoint>
 
 class QMenu;
-class PlaylistDock;
 
 namespace Gui {
 
@@ -108,7 +108,7 @@ protected:
    int widgets_size; // To be able to restore the original size after exiting from compact mode
 
 #if DOCK_PLAYLIST
-	PlaylistDock * playlistdock;
+	TPlaylistDock * playlistdock;
 	bool fullscreen_playlist_was_visible;
 	bool fullscreen_playlist_was_floating;
 	bool compact_playlist_was_visible;

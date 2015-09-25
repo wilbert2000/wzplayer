@@ -16,37 +16,36 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "playlistdock.h"
-#include <QCloseEvent>
+#ifndef _GUI_PLAYLIST_DOCK_H_
+#define _GUI_PLAYLIST_DOCK_H_
 
-PlaylistDock::PlaylistDock(QWidget * parent, Qt::WindowFlags flags)
-	: QDockWidget(parent, flags)
+#include <QDockWidget>
+#include "guiconfig.h"
+
+namespace Gui {
+
+class TPlaylistDock : public QDockWidget
 {
-	//setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
-	setAcceptDrops(true); // Fix for Qt 4.4, otherwise the playlist doesn't accept drops...
-}
+	Q_OBJECT
 
-PlaylistDock::~PlaylistDock() {
-}
+public:
+	TPlaylistDock ( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
+	~TPlaylistDock();
 
-void PlaylistDock::closeEvent( QCloseEvent * e ) {
-	qDebug("PlaylistDock::closeEvent");
-	emit closed();
-	e->accept();
-}
-
+signals:
+	void closed();
 #if QT_VERSION < 0x040300
-void PlaylistDock::showEvent( QShowEvent * /* event */ ) {
-	qDebug("PlaylistDock::showEvent");
-	emit visibilityChanged(true);
-}
-
-void PlaylistDock::hideEvent( QHideEvent * /* event */ ) {
-	qDebug("PlaylistDock::hideEvent");
-	emit visibilityChanged(false);
-}
+	void visibilityChanged(bool visible);
 #endif
 
+protected:
+	virtual void closeEvent( QCloseEvent * e );
+#if QT_VERSION < 0x040300
+	virtual void showEvent ( QShowEvent * event );
+	virtual void hideEvent ( QHideEvent * event );
+#endif
+};
 
-#include "moc_playlistdock.cpp"
+} // namespace Gui
 
+#endif // _GUI_PLAYLIST_DOCK_H_

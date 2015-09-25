@@ -152,7 +152,6 @@ HEADERS += guiconfig.h \
 	prefnetwork.h \
 	filepropertiesdialog.h \
 	multilineinputdialog.h \
-	playlistdock.h \
 	verticaltext.h \
 	eqslider.h \
 	videoequalizer.h \
@@ -177,6 +176,7 @@ HEADERS += guiconfig.h \
     gui/autohidewidget.h \
 	gui/tablewidget.h \
 	gui/playlist.h \
+	gui/playlistdock.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
@@ -252,7 +252,6 @@ SOURCES	+= version.cpp \
 	prefnetwork.cpp \
 	filepropertiesdialog.cpp \
 	multilineinputdialog.cpp \
-	playlistdock.cpp \
 	verticaltext.cpp \
 	eqslider.cpp \
 	videoequalizer.cpp \
@@ -277,6 +276,7 @@ SOURCES	+= version.cpp \
     gui/autohidewidget.cpp \
    	gui/tablewidget.cpp \
 	gui/playlist.cpp \
+	gui/playlistdock.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \

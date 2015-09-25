@@ -33,7 +33,7 @@
 #include "actionseditor.h"
 
 #if DOCK_PLAYLIST
-#include "playlistdock.h"
+#include "gui/playlistdock.h"
 #endif
 
 #include <QMenu>
