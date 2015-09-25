@@ -24,12 +24,6 @@
 int main( int argc, char ** argv ) 
 {
 	MyApplication a( "smplayer", argc, argv );
-	/*
-	if (a.isRunning()) { 
-		qDebug("Another instance is running. Exiting.");
-		return 0;
-	}
-	*/
 	
 #ifdef Q_OS_WIN
 	// Change the working directory to the application path
