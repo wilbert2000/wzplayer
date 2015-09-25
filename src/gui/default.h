@@ -28,13 +28,13 @@ class QToolBar;
 class EditableToolbar;
 class QPushButton;
 class QResizeEvent;
-class MyAction;
+class TAction;
 class QMenu;
 class TimeSliderAction;
 class VolumeSliderAction;
 class AutohideWidget;
 class TimeLabelAction;
-class MyAction;
+class TAction;
 
 #if MINI_ARROW_BUTTONS
 class SeekingButton;
@@ -126,13 +126,13 @@ protected:
 	AutohideWidget * floating_control;
 	TimeLabelAction * time_label_action;
 
-	MyAction * viewFrameCounterAct;
-	MyAction * viewVideoInfoAct;
+	TAction * viewFrameCounterAct;
+	TAction * viewVideoInfoAct;
 
-	MyAction * editToolbar1Act;
-	MyAction * editControl1Act;
-	MyAction * editControl2Act;
-	MyAction * editFloatingControlAct;
+	TAction * editToolbar1Act;
+	TAction * editControl1Act;
+	TAction * editControl2Act;
+	TAction * editFloatingControlAct;
 
 	QMenu * toolbar_menu;
 	QMenu * statusbar_menu;

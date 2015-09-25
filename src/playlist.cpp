@@ -43,7 +43,7 @@
 #include <QDebug>
 
 #include "mytablewidget.h"
-#include "myaction.h"
+#include "gui/action.h"
 #include "filedialog.h"
 #include "helper.h"
 #include "images.h"
@@ -209,58 +209,58 @@ void Playlist::createTable() {
 }
 
 void Playlist::createActions() {
-	openAct = new MyAction(this, "pl_open", false);
+	openAct = new Gui::TAction(this, "pl_open", false);
 	connect( openAct, SIGNAL(triggered()), this, SLOT(load()) );
 
-	saveAct = new MyAction(this, "pl_save", false);
+	saveAct = new Gui::TAction(this, "pl_save", false);
 	connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
 
-	playAct = new MyAction(this, "pl_play", false);
+	playAct = new Gui::TAction(this, "pl_play", false);
 	connect( playAct, SIGNAL(triggered()), this, SLOT(playCurrent()) );
 
-	nextAct = new MyAction(Qt::Key_N /*Qt::Key_Greater*/, this, "pl_next", false);
+	nextAct = new Gui::TAction(Qt::Key_N /*Qt::Key_Greater*/, this, "pl_next", false);
 	connect( nextAct, SIGNAL(triggered()), this, SLOT(playNext()) );
 
-	prevAct = new MyAction(Qt::Key_P /*Qt::Key_Less*/, this, "pl_prev", false);
+	prevAct = new Gui::TAction(Qt::Key_P /*Qt::Key_Less*/, this, "pl_prev", false);
 	connect( prevAct, SIGNAL(triggered()), this, SLOT(playPrev()) );
 
-	moveUpAct = new MyAction(this, "pl_move_up", false);
+	moveUpAct = new Gui::TAction(this, "pl_move_up", false);
 	connect( moveUpAct, SIGNAL(triggered()), this, SLOT(upItem()) );
 
-	moveDownAct = new MyAction(this, "pl_move_down", false);
+	moveDownAct = new Gui::TAction(this, "pl_move_down", false);
 	connect( moveDownAct, SIGNAL(triggered()), this, SLOT(downItem()) );
 
-	repeatAct = new MyAction(this, "pl_repeat", false);
+	repeatAct = new Gui::TAction(this, "pl_repeat", false);
 	repeatAct->setCheckable(true);
 
-	shuffleAct = new MyAction(this, "pl_shuffle", false);
+	shuffleAct = new Gui::TAction(this, "pl_shuffle", false);
 	shuffleAct->setCheckable(true);
 
 	// Add actions
-	addCurrentAct = new MyAction(this, "pl_add_current", false);
+	addCurrentAct = new Gui::TAction(this, "pl_add_current", false);
 	connect( addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()) );
 
-	addFilesAct = new MyAction(this, "pl_add_files", false);
+	addFilesAct = new Gui::TAction(this, "pl_add_files", false);
 	connect( addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()) );
 
-	addDirectoryAct = new MyAction(this, "pl_add_directory", false);
+	addDirectoryAct = new Gui::TAction(this, "pl_add_directory", false);
 	connect( addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()) );
 
-	addUrlsAct = new MyAction(this, "pl_add_urls", false);
+	addUrlsAct = new Gui::TAction(this, "pl_add_urls", false);
 	connect( addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()) );
 
 	// Remove actions
-	removeSelectedAct = new MyAction(this, "pl_remove_selected", false);
+	removeSelectedAct = new Gui::TAction(this, "pl_remove_selected", false);
 	connect( removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()) );
 
-	removeAllAct = new MyAction(this, "pl_remove_all", false);
+	removeAllAct = new Gui::TAction(this, "pl_remove_all", false);
 	connect( removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()) );
 
 	// Edit
-	editAct = new MyAction(this, "pl_edit", false);
+	editAct = new Gui::TAction(this, "pl_edit", false);
 	connect( editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()) );
 
-	deleteSelectedFileFromDiskAct = new MyAction(this, "pl_delete_from_disk");
+	deleteSelectedFileFromDiskAct = new Gui::TAction(this, "pl_delete_from_disk");
 	connect( deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 }
 

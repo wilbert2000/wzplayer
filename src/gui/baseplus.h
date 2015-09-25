@@ -94,9 +94,9 @@ protected:
 	QSystemTrayIcon * tray;
 	QMenu * context_menu;
 
-	MyAction * quitAct;
-	MyAction * showTrayAct;
-	MyAction * showAllAct;
+	TAction * quitAct;
+	TAction * showTrayAct;
+	TAction * showAllAct;
 
 	// To save state
 	bool mainwindow_visible;

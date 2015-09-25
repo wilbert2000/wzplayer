@@ -16,26 +16,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "myaction.h"
+#include "gui/action.h"
 #include <QWidget>
 
-MyAction::MyAction ( QObject * parent, const char * name, bool autoadd ) 
+namespace Gui {
+
+TAction::TAction ( QObject * parent, const char * name, bool autoadd ) 
 	: QAction(parent)
 {
-	//qDebug("MyAction::MyAction: name: '%s'", name);
 	setObjectName(name);
 	if (autoadd) addActionToParent();
 }
 
 
-MyAction::MyAction( QObject * parent, bool autoadd )
+TAction::TAction( QObject * parent, bool autoadd )
 	: QAction(parent)
 {
-	//qDebug("MyAction::MyAction: QObject, bool");
 	if (autoadd) addActionToParent();
 }
 
-MyAction::MyAction(const QString & text, QKeySequence accel, 
+TAction::TAction(const QString & text, QKeySequence accel, 
                    QObject * parent, const char * name, bool autoadd )
 	: QAction(parent)
 {
@@ -45,7 +45,7 @@ MyAction::MyAction(const QString & text, QKeySequence accel,
 	if (autoadd) addActionToParent();
 }
 
-MyAction::MyAction(QKeySequence accel, QObject * parent, const char * name, 
+TAction::TAction(QKeySequence accel, QObject * parent, const char * name, 
                    bool autoadd )
 	: QAction(parent)
 {
@@ -54,14 +54,14 @@ MyAction::MyAction(QKeySequence accel, QObject * parent, const char * name,
 	if (autoadd) addActionToParent();
 }
 
-MyAction::~MyAction() {
+TAction::~TAction() {
 }
 
-void MyAction::addShortcut(QKeySequence key) {
+void TAction::addShortcut(QKeySequence key) {
 	setShortcuts( shortcuts() << key);
 }
 
-void MyAction::addActionToParent() {
+void TAction::addActionToParent() {
 	if (parent()) {
 		if (parent()->inherits("QWidget")) {
 			QWidget *w = static_cast<QWidget*> (parent());
@@ -70,12 +70,12 @@ void MyAction::addActionToParent() {
 	}
 }
 
-void MyAction::change(const QIcon & icon, const QString & text) {
+void TAction::change(const QIcon & icon, const QString & text) {
 	setIcon( icon );
 	change(text);
 }
 
-void MyAction::change(const QString & text ) {
+void TAction::change(const QString & text ) {
 	setText( text );
 
 	QString accel_text = shortcut().toString();
@@ -103,3 +103,4 @@ void MyAction::change(const QString & text ) {
 	*/
 }
 
+} // namespace Gui

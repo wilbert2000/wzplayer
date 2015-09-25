@@ -33,7 +33,7 @@
 #include "widgetactions.h"
 #include "playlist.h"
 #include "mplayerwindow.h"
-#include "myaction.h"
+#include "gui/action.h"
 #include "images.h"
 #include "autohidewidget.h"
 #include "desktopinfo.h"
@@ -124,20 +124,20 @@ void TDefault::createActions() {
 #endif
 
 	// Statusbar
-	viewVideoInfoAct = new MyAction(this, "toggle_video_info" );
+	viewVideoInfoAct = new TAction(this, "toggle_video_info" );
 	viewVideoInfoAct->setCheckable(true);
 	connect( viewVideoInfoAct, SIGNAL(toggled(bool)),
              video_info_display, SLOT(setVisible(bool)) );
 
-	viewFrameCounterAct = new MyAction( this, "toggle_frame_counter" );
+	viewFrameCounterAct = new TAction( this, "toggle_frame_counter" );
 	viewFrameCounterAct->setCheckable( true );
 	connect( viewFrameCounterAct, SIGNAL(toggled(bool)),
              frame_display, SLOT(setVisible(bool)) );
 
-	editToolbar1Act = new MyAction( this, "edit_main_toolbar" );
-	editControl1Act = new MyAction( this, "edit_control1" );
-	editControl2Act = new MyAction( this, "edit_control2" );
-	editFloatingControlAct = new MyAction( this, "edit_floating_control" );
+	editToolbar1Act = new TAction( this, "edit_main_toolbar" );
+	editControl1Act = new TAction( this, "edit_control1" );
+	editControl2Act = new TAction( this, "edit_control2" );
+	editFloatingControlAct = new TAction( this, "edit_floating_control" );
 }
 
 #if AUTODISABLE_ACTIONS

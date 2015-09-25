@@ -56,8 +56,8 @@ class FindSubtitlesWindow;
 class VideoPreview;
 #endif
 
-class MyAction;
-class MyActionGroup;
+class TAction;
+class TActionGroup;
 class PreferencesDialog;
 class Favorites;
 class TVList;
@@ -403,326 +403,326 @@ protected:
 	QWidget * panel;
 
 	// Menu File
-	MyAction * openFileAct;
-	MyAction * openDirectoryAct;
-	MyAction * openPlaylistAct;
-	MyAction * openVCDAct;
-	MyAction * openAudioCDAct;
-	MyAction * openDVDAct;
-	MyAction * openDVDFolderAct;
-	MyAction * openBluRayAct;
-	MyAction * openBluRayFolderAct;
-	MyAction * openURLAct;
-	MyAction * exitAct;
-	MyAction * clearRecentsAct;
+	TAction * openFileAct;
+	TAction * openDirectoryAct;
+	TAction * openPlaylistAct;
+	TAction * openVCDAct;
+	TAction * openAudioCDAct;
+	TAction * openDVDAct;
+	TAction * openDVDFolderAct;
+	TAction * openBluRayAct;
+	TAction * openBluRayFolderAct;
+	TAction * openURLAct;
+	TAction * exitAct;
+	TAction * clearRecentsAct;
 
 	// Menu Play
-	MyAction * playAct;
-	MyAction * playOrPauseAct;
-	MyAction * pauseAct;
-	MyAction * stopAct;
-	MyAction * frameStepAct;
-	MyAction * frameBackStepAct;
-	MyAction * rewind1Act;
-	MyAction * rewind2Act;
-	MyAction * rewind3Act;
-	MyAction * forward1Act;
-	MyAction * forward2Act;
-	MyAction * forward3Act;
-	MyAction * repeatAct;
-	MyAction * setAMarkerAct;
-	MyAction * setBMarkerAct;
-	MyAction * clearABMarkersAct;
-	MyAction * gotoAct;
+	TAction * playAct;
+	TAction * playOrPauseAct;
+	TAction * pauseAct;
+	TAction * stopAct;
+	TAction * frameStepAct;
+	TAction * frameBackStepAct;
+	TAction * rewind1Act;
+	TAction * rewind2Act;
+	TAction * rewind3Act;
+	TAction * forward1Act;
+	TAction * forward2Act;
+	TAction * forward3Act;
+	TAction * repeatAct;
+	TAction * setAMarkerAct;
+	TAction * setBMarkerAct;
+	TAction * clearABMarkersAct;
+	TAction * gotoAct;
 
 	// Menu Speed
-	MyAction * normalSpeedAct;
-	MyAction * halveSpeedAct;
-	MyAction * doubleSpeedAct;
-	MyAction * decSpeed10Act;
-	MyAction * incSpeed10Act;
-	MyAction * decSpeed4Act;
-	MyAction * incSpeed4Act;
-	MyAction * decSpeed1Act;
-	MyAction * incSpeed1Act;
+	TAction * normalSpeedAct;
+	TAction * halveSpeedAct;
+	TAction * doubleSpeedAct;
+	TAction * decSpeed10Act;
+	TAction * incSpeed10Act;
+	TAction * decSpeed4Act;
+	TAction * incSpeed4Act;
+	TAction * decSpeed1Act;
+	TAction * incSpeed1Act;
 
 	// Menu Video
-	MyAction * fullscreenAct;
-	MyAction * compactAct;
-	MyAction * videoEqualizerAct;
-	MyAction * screenshotAct;
-	MyAction * screenshotsAct;
+	TAction * fullscreenAct;
+	TAction * compactAct;
+	TAction * videoEqualizerAct;
+	TAction * screenshotAct;
+	TAction * screenshotsAct;
 #ifdef VIDEOPREVIEW
-	MyAction * videoPreviewAct;
+	TAction * videoPreviewAct;
 #endif
-	MyAction * flipAct;
-	MyAction * mirrorAct;
-	MyAction * stereo3dAct;
-	MyAction * postProcessingAct;
-	MyAction * phaseAct;
-	MyAction * deblockAct;
-	MyAction * deringAct;
-	MyAction * gradfunAct;
-	MyAction * addNoiseAct;
-	MyAction * addLetterboxAct;
-	MyAction * upscaleAct;
+	TAction * flipAct;
+	TAction * mirrorAct;
+	TAction * stereo3dAct;
+	TAction * postProcessingAct;
+	TAction * phaseAct;
+	TAction * deblockAct;
+	TAction * deringAct;
+	TAction * gradfunAct;
+	TAction * addNoiseAct;
+	TAction * addLetterboxAct;
+	TAction * upscaleAct;
 
 	// Menu Audio
-	MyAction * audioEqualizerAct;
-	MyAction * muteAct;
-	MyAction * decVolumeAct;
-	MyAction * incVolumeAct;
-	MyAction * decAudioDelayAct;
-	MyAction * incAudioDelayAct;
-	MyAction * audioDelayAct; // Ask for delay
-	MyAction * extrastereoAct;
-	MyAction * karaokeAct;
-	MyAction * volnormAct;
-	MyAction * loadAudioAct;
-	MyAction * unloadAudioAct;
+	TAction * audioEqualizerAct;
+	TAction * muteAct;
+	TAction * decVolumeAct;
+	TAction * incVolumeAct;
+	TAction * decAudioDelayAct;
+	TAction * incAudioDelayAct;
+	TAction * audioDelayAct; // Ask for delay
+	TAction * extrastereoAct;
+	TAction * karaokeAct;
+	TAction * volnormAct;
+	TAction * loadAudioAct;
+	TAction * unloadAudioAct;
 
 	// Menu Subtitles
-	MyAction * loadSubsAct;
-	MyAction * unloadSubsAct;
-	MyAction * decSubDelayAct;
-	MyAction * incSubDelayAct;
-	MyAction * subDelayAct; // Ask for delay
-	MyAction * decSubPosAct;
-	MyAction * incSubPosAct;
-	MyAction * incSubStepAct;
-	MyAction * decSubStepAct;
-	MyAction * incSubScaleAct;
-	MyAction * decSubScaleAct;
-	MyAction * useCustomSubStyleAct;
-	MyAction * useForcedSubsOnlyAct;
+	TAction * loadSubsAct;
+	TAction * unloadSubsAct;
+	TAction * decSubDelayAct;
+	TAction * incSubDelayAct;
+	TAction * subDelayAct; // Ask for delay
+	TAction * decSubPosAct;
+	TAction * incSubPosAct;
+	TAction * incSubStepAct;
+	TAction * decSubStepAct;
+	TAction * incSubScaleAct;
+	TAction * decSubScaleAct;
+	TAction * useCustomSubStyleAct;
+	TAction * useForcedSubsOnlyAct;
 #ifdef FIND_SUBTITLES
-	MyAction * showFindSubtitlesDialogAct;
-	MyAction * openUploadSubtitlesPageAct;//turbos  
+	TAction * showFindSubtitlesDialogAct;
+	TAction * openUploadSubtitlesPageAct;//turbos  
 #endif
 
 	// Menu Options
-	MyAction * showPlaylistAct;
-	MyAction * showPropertiesAct;
-	MyAction * showPreferencesAct;
+	TAction * showPlaylistAct;
+	TAction * showPropertiesAct;
+	TAction * showPreferencesAct;
 #ifdef YOUTUBE_SUPPORT
-	MyAction * showTubeBrowserAct;
+	TAction * showTubeBrowserAct;
 #endif
 #ifdef LOG_MPLAYER
-	MyAction * showLogMplayerAct;
+	TAction * showLogMplayerAct;
 #endif
 #ifdef LOG_SMPLAYER
-	MyAction * showLogSmplayerAct;
+	TAction * showLogSmplayerAct;
 #endif
 
 	// Menu Help
-	MyAction * showFirstStepsAct;
-	MyAction * showFAQAct;
-	MyAction * showCLOptionsAct; // Command line options
-	MyAction * showCheckUpdatesAct;
+	TAction * showFirstStepsAct;
+	TAction * showFAQAct;
+	TAction * showCLOptionsAct; // Command line options
+	TAction * showCheckUpdatesAct;
 #if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	MyAction * updateYTAct;
+	TAction * updateYTAct;
 #endif
-	MyAction * showConfigAct;
+	TAction * showConfigAct;
 #ifdef REMINDER_ACTIONS
-	MyAction * donateAct;
+	TAction * donateAct;
 #endif
-	MyAction * aboutThisAct;
+	TAction * aboutThisAct;
 
 #ifdef SHARE_MENU
-	MyAction * facebookAct;
-	MyAction * twitterAct;
-	MyAction * gmailAct;
-	MyAction * hotmailAct;
-	MyAction * yahooAct;
+	TAction * facebookAct;
+	TAction * twitterAct;
+	TAction * gmailAct;
+	TAction * hotmailAct;
+	TAction * yahooAct;
 #endif
 
 	// OSD
-	MyAction * incOSDScaleAct;
-	MyAction * decOSDScaleAct;
+	TAction * incOSDScaleAct;
+	TAction * decOSDScaleAct;
 
 	// Playlist
-	MyAction * playPrevAct;
-	MyAction * playNextAct;
+	TAction * playPrevAct;
+	TAction * playNextAct;
 
 	// Actions not in menus
 #if !USE_MULTIPLE_SHORTCUTS
-	MyAction * decVolume2Act;
-	MyAction * incVolume2Act;
+	TAction * decVolume2Act;
+	TAction * incVolume2Act;
 #endif
-	MyAction * exitFullscreenAct;
-	MyAction * nextOSDLevelAct;
-	MyAction * decContrastAct;
-	MyAction * incContrastAct;
-	MyAction * decBrightnessAct;
-	MyAction * incBrightnessAct;
-	MyAction * decHueAct;
-	MyAction * incHueAct;
-	MyAction * decSaturationAct;
-	MyAction * incSaturationAct;
-	MyAction * decGammaAct;
-	MyAction * incGammaAct;
-	MyAction * nextVideoAct;
-	MyAction * nextAudioAct;
-	MyAction * nextSubtitleAct;
-	MyAction * nextChapterAct;
-	MyAction * prevChapterAct;
-	MyAction * doubleSizeAct;
-	MyAction * resetVideoEqualizerAct;
-	MyAction * resetAudioEqualizerAct;
-	MyAction * showContextMenuAct;
-	MyAction * nextAspectAct;
-	MyAction * nextWheelFunctionAct;
+	TAction * exitFullscreenAct;
+	TAction * nextOSDLevelAct;
+	TAction * decContrastAct;
+	TAction * incContrastAct;
+	TAction * decBrightnessAct;
+	TAction * incBrightnessAct;
+	TAction * decHueAct;
+	TAction * incHueAct;
+	TAction * decSaturationAct;
+	TAction * incSaturationAct;
+	TAction * decGammaAct;
+	TAction * incGammaAct;
+	TAction * nextVideoAct;
+	TAction * nextAudioAct;
+	TAction * nextSubtitleAct;
+	TAction * nextChapterAct;
+	TAction * prevChapterAct;
+	TAction * doubleSizeAct;
+	TAction * resetVideoEqualizerAct;
+	TAction * resetAudioEqualizerAct;
+	TAction * showContextMenuAct;
+	TAction * nextAspectAct;
+	TAction * nextWheelFunctionAct;
 
-	MyAction * showFilenameAct;
-	MyAction * showTimeAct;
-	MyAction * toggleDeinterlaceAct;
+	TAction * showFilenameAct;
+	TAction * showTimeAct;
+	TAction * toggleDeinterlaceAct;
 
 	// Moving and zoom
-	MyAction * moveUpAct;
-	MyAction * moveDownAct;
-	MyAction * moveLeftAct;
-	MyAction * moveRightAct;
-	MyAction * incZoomAct;
-	MyAction * decZoomAct;
-	MyAction * resetZoomAct;
-	MyAction * autoZoomAct;
-	MyAction * autoZoom169Act;
-	MyAction * autoZoom235Act;
+	TAction * moveUpAct;
+	TAction * moveDownAct;
+	TAction * moveLeftAct;
+	TAction * moveRightAct;
+	TAction * incZoomAct;
+	TAction * decZoomAct;
+	TAction * resetZoomAct;
+	TAction * autoZoomAct;
+	TAction * autoZoom169Act;
+	TAction * autoZoom235Act;
 
 
 	// OSD Action Group 
-	MyActionGroup * osdGroup;
-	MyAction * osdNoneAct;
-	MyAction * osdSeekAct;
-	MyAction * osdTimerAct;
-	MyAction * osdTotalAct;
+	TActionGroup * osdGroup;
+	TAction * osdNoneAct;
+	TAction * osdSeekAct;
+	TAction * osdTimerAct;
+	TAction * osdTotalAct;
 
 	// Denoise Action Group
-	MyActionGroup * denoiseGroup;
-	MyAction * denoiseNoneAct;
-	MyAction * denoiseNormalAct;
-	MyAction * denoiseSoftAct;
+	TActionGroup * denoiseGroup;
+	TAction * denoiseNoneAct;
+	TAction * denoiseNormalAct;
+	TAction * denoiseSoftAct;
 
 	// Blur-sharpen group
-	MyActionGroup * unsharpGroup;
-	MyAction * unsharpNoneAct;
-	MyAction * blurAct;
-	MyAction * sharpenAct;
+	TActionGroup * unsharpGroup;
+	TAction * unsharpNoneAct;
+	TAction * blurAct;
+	TAction * sharpenAct;
 
 	// Window Size Action Group
-	MyActionGroup * sizeGroup;
-	MyAction * size50;
-	MyAction * size75;
-	MyAction * size100;
-	MyAction * size125;
-	MyAction * size150;
-	MyAction * size175;
-	MyAction * size200;
-	MyAction * size300;
-	MyAction * size400;
+	TActionGroup * sizeGroup;
+	TAction * size50;
+	TAction * size75;
+	TAction * size100;
+	TAction * size125;
+	TAction * size150;
+	TAction * size175;
+	TAction * size200;
+	TAction * size300;
+	TAction * size400;
 
 	// Deinterlace Action Group
-	MyActionGroup * deinterlaceGroup;
-	MyAction * deinterlaceNoneAct;
-	MyAction * deinterlaceL5Act;
-	MyAction * deinterlaceYadif0Act;
-	MyAction * deinterlaceYadif1Act;
-	MyAction * deinterlaceLBAct;
-	MyAction * deinterlaceKernAct;
+	TActionGroup * deinterlaceGroup;
+	TAction * deinterlaceNoneAct;
+	TAction * deinterlaceL5Act;
+	TAction * deinterlaceYadif0Act;
+	TAction * deinterlaceYadif1Act;
+	TAction * deinterlaceLBAct;
+	TAction * deinterlaceKernAct;
 
 	// Aspect Action Group
-	MyActionGroup * aspectGroup;
-	MyAction * aspectDetectAct;
-	MyAction * aspectNoneAct;
-	MyAction * aspect11Act;		// 1:1
-	MyAction * aspect32Act;		// 3:2
-	MyAction * aspect43Act;		// 4:3
-	MyAction * aspect118Act;	// 11:8
-	MyAction * aspect54Act;		// 5:4
-	MyAction * aspect149Act;	// 14:9
-	MyAction * aspect1410Act;	// 14:10
-	MyAction * aspect169Act;	// 16:9
-	MyAction * aspect1610Act;	// 16:10
-	MyAction * aspect235Act;	// 2.35:1
+	TActionGroup * aspectGroup;
+	TAction * aspectDetectAct;
+	TAction * aspectNoneAct;
+	TAction * aspect11Act;		// 1:1
+	TAction * aspect32Act;		// 3:2
+	TAction * aspect43Act;		// 4:3
+	TAction * aspect118Act;	// 11:8
+	TAction * aspect54Act;		// 5:4
+	TAction * aspect149Act;	// 14:9
+	TAction * aspect1410Act;	// 14:10
+	TAction * aspect169Act;	// 16:9
+	TAction * aspect1610Act;	// 16:10
+	TAction * aspect235Act;	// 2.35:1
 
 	// Rotate Group
-	MyActionGroup * rotateGroup;
-	MyAction * rotateNoneAct;
-	MyAction * rotateClockwiseFlipAct;
-	MyAction * rotateClockwiseAct;
-	MyAction * rotateCounterclockwiseAct;
-	MyAction * rotateCounterclockwiseFlipAct;
+	TActionGroup * rotateGroup;
+	TAction * rotateNoneAct;
+	TAction * rotateClockwiseFlipAct;
+	TAction * rotateClockwiseAct;
+	TAction * rotateCounterclockwiseAct;
+	TAction * rotateCounterclockwiseFlipAct;
 
 	// Menu StayOnTop
-	MyActionGroup * onTopActionGroup;
-	MyAction * onTopAlwaysAct;
-	MyAction * onTopNeverAct;
-	MyAction * onTopWhilePlayingAct;
-	MyAction * toggleStayOnTopAct;
+	TActionGroup * onTopActionGroup;
+	TAction * onTopAlwaysAct;
+	TAction * onTopNeverAct;
+	TAction * onTopWhilePlayingAct;
+	TAction * toggleStayOnTopAct;
 
 #if USE_ADAPTER
 	// Screen Group
-	MyActionGroup * screenGroup;
-	MyAction * screenDefaultAct;
+	TActionGroup * screenGroup;
+	TAction * screenDefaultAct;
 #endif
 
 	// Closed Captions Group
-	MyActionGroup * ccGroup;
-	MyAction * ccNoneAct;
-	MyAction * ccChannel1Act;
-	MyAction * ccChannel2Act;
-	MyAction * ccChannel3Act;
-	MyAction * ccChannel4Act;
+	TActionGroup * ccGroup;
+	TAction * ccNoneAct;
+	TAction * ccChannel1Act;
+	TAction * ccChannel2Act;
+	TAction * ccChannel3Act;
+	TAction * ccChannel4Act;
 
 	// External sub fps Group
-	MyActionGroup * subFPSGroup;
-	MyAction * subFPSNoneAct;
-	/* MyAction * subFPS23Act; */
-	MyAction * subFPS23976Act;
-	MyAction * subFPS24Act;
-	MyAction * subFPS25Act;
-	MyAction * subFPS29970Act;
-	MyAction * subFPS30Act;
+	TActionGroup * subFPSGroup;
+	TAction * subFPSNoneAct;
+	/* TAction * subFPS23Act; */
+	TAction * subFPS23976Act;
+	TAction * subFPS24Act;
+	TAction * subFPS25Act;
+	TAction * subFPS29970Act;
+	TAction * subFPS30Act;
 
 	// Audio Channels Action Group
-	MyActionGroup * channelsGroup;
-	/* MyAction * channelsDefaultAct; */
-	MyAction * channelsStereoAct;
-	MyAction * channelsSurroundAct;
-	MyAction * channelsFull51Act;
-	MyAction * channelsFull61Act;
-	MyAction * channelsFull71Act;
+	TActionGroup * channelsGroup;
+	/* TAction * channelsDefaultAct; */
+	TAction * channelsStereoAct;
+	TAction * channelsSurroundAct;
+	TAction * channelsFull51Act;
+	TAction * channelsFull61Act;
+	TAction * channelsFull71Act;
 
 	// Stereo Mode Action Group
-	MyActionGroup * stereoGroup;
-	MyAction * stereoAct;
-	MyAction * leftChannelAct;
-	MyAction * rightChannelAct;
-	MyAction * monoAct;
-	MyAction * reverseAct;
+	TActionGroup * stereoGroup;
+	TAction * stereoAct;
+	TAction * leftChannelAct;
+	TAction * rightChannelAct;
+	TAction * monoAct;
+	TAction * reverseAct;
 
 	// Other groups
 #if PROGRAM_SWITCH
-	MyActionGroup * programTrackGroup;
+	TActionGroup * programTrackGroup;
 #endif
-	MyActionGroup * videoTrackGroup;
-	MyActionGroup * audioTrackGroup;
-	MyActionGroup * subtitleTrackGroup;
+	TActionGroup * videoTrackGroup;
+	TActionGroup * audioTrackGroup;
+	TActionGroup * subtitleTrackGroup;
 #ifdef MPV_SUPPORT
-	MyActionGroup * secondarySubtitleTrackGroup;
+	TActionGroup * secondarySubtitleTrackGroup;
 #endif
-	MyActionGroup * titleGroup;
-	MyActionGroup * angleGroup;
-	MyActionGroup * chapterGroup;
+	TActionGroup * titleGroup;
+	TActionGroup * angleGroup;
+	TActionGroup * chapterGroup;
 
-	MyAction * dvdnavUpAct;
-	MyAction * dvdnavDownAct;
-	MyAction * dvdnavLeftAct;
-	MyAction * dvdnavRightAct;
-	MyAction * dvdnavMenuAct;
-	MyAction * dvdnavSelectAct;
-	MyAction * dvdnavPrevAct;
-	MyAction * dvdnavMouseAct;
+	TAction * dvdnavUpAct;
+	TAction * dvdnavDownAct;
+	TAction * dvdnavLeftAct;
+	TAction * dvdnavRightAct;
+	TAction * dvdnavMenuAct;
+	TAction * dvdnavSelectAct;
+	TAction * dvdnavPrevAct;
+	TAction * dvdnavMouseAct;
 
 	// MENUS
 	QMenu *openMenu;

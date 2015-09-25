@@ -24,7 +24,7 @@
 #include <QDesktopWidget>
 
 #include "config.h"
-#include "myaction.h"
+#include "gui/action.h"
 #include "global.h"
 #include "images.h"
 #include "playlist.h"
@@ -70,11 +70,11 @@ TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
 	connect( tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), 
              this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
-	quitAct = new MyAction(QKeySequence("Ctrl+Q"), this, "quit");
+	quitAct = new TAction(QKeySequence("Ctrl+Q"), this, "quit");
     connect( quitAct, SIGNAL(triggered()), this, SLOT(quit()) );
 	openMenu->addAction(quitAct);
 
-	showTrayAct = new MyAction(this, "show_tray_icon" );
+	showTrayAct = new TAction(this, "show_tray_icon" );
 	showTrayAct->setCheckable(true);
 	connect( showTrayAct, SIGNAL(toggled(bool)),
              tray, SLOT(setVisible(bool)) );
@@ -87,7 +87,7 @@ TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
              this, SLOT(trayAvailable()) );
 #endif
 
-	showAllAct = new MyAction(this, "restore/hide");
+	showAllAct = new TAction(this, "restore/hide");
 	connect( showAllAct, SIGNAL(triggered()),
              this, SLOT(toggleShowAll()) );
 

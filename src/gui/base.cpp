@@ -94,8 +94,8 @@
 #include "prefadvanced.h"
 #include "prefplaylist.h"
 
-#include "myaction.h"
-#include "myactiongroup.h"
+#include "gui/action.h"
+#include "gui/actiongroup.h"
 #include "playlist.h"
 
 #include "constants.h"
@@ -430,51 +430,51 @@ void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
 	// Menu File
-	openFileAct = new MyAction( QKeySequence("Ctrl+F"), this, "open_file" );
+	openFileAct = new TAction( QKeySequence("Ctrl+F"), this, "open_file" );
 	connect( openFileAct, SIGNAL(triggered()),
              this, SLOT(openFile()) );
 
-	openDirectoryAct = new MyAction( this, "open_directory" );
+	openDirectoryAct = new TAction( this, "open_directory" );
 	connect( openDirectoryAct, SIGNAL(triggered()),
              this, SLOT(openDirectory()) );
 
-	openPlaylistAct = new MyAction( this, "open_playlist" );
+	openPlaylistAct = new TAction( this, "open_playlist" );
 	connect( openPlaylistAct, SIGNAL(triggered()),
              playlist, SLOT(load()) );
 
-	openVCDAct = new MyAction( this, "open_vcd" );
+	openVCDAct = new TAction( this, "open_vcd" );
 	connect( openVCDAct, SIGNAL(triggered()),
              this, SLOT(openVCD()) );
 
-	openAudioCDAct = new MyAction( this, "open_audio_cd" );
+	openAudioCDAct = new TAction( this, "open_audio_cd" );
 	connect( openAudioCDAct, SIGNAL(triggered()),
              this, SLOT(openAudioCD()) );
 
-	openDVDAct = new MyAction( this, "open_dvd" );
+	openDVDAct = new TAction( this, "open_dvd" );
 	connect( openDVDAct, SIGNAL(triggered()),
              this, SLOT(openDVD()) );
 
-	openDVDFolderAct = new MyAction( this, "open_dvd_folder" );
+	openDVDFolderAct = new TAction( this, "open_dvd_folder" );
 	connect( openDVDFolderAct, SIGNAL(triggered()),
              this, SLOT(openDVDFromFolder()) );
 
 	// Bluray section.
-	openBluRayAct = new MyAction( this, "open_bluray" );
+	openBluRayAct = new TAction( this, "open_bluray" );
 	connect( openBluRayAct, SIGNAL(triggered()),
              this, SLOT(openBluRay()));
 
-	openBluRayFolderAct = new MyAction( this, "open_bluray_folder" );
+	openBluRayFolderAct = new TAction( this, "open_bluray_folder" );
 	connect( openBluRayFolderAct, SIGNAL(triggered()),
              this, SLOT(openBluRayFromFolder()));
 
-	openURLAct = new MyAction( QKeySequence("Ctrl+U"), this, "open_url" );
+	openURLAct = new TAction( QKeySequence("Ctrl+U"), this, "open_url" );
 	connect( openURLAct, SIGNAL(triggered()),
              this, SLOT(openURL()) );
 
-	exitAct = new MyAction( QKeySequence("Ctrl+X"), this, "close" );
+	exitAct = new TAction( QKeySequence("Ctrl+X"), this, "close" );
 	connect( exitAct, SIGNAL(triggered()), this, SLOT(closeWindow()) );
 
-	clearRecentsAct = new MyAction( this, "clear_recents" );
+	clearRecentsAct = new TAction( this, "clear_recents" );
 	connect( clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()) );
 
 	// Favorites
@@ -525,415 +525,415 @@ void TBase::createActions() {
 
 
 	// Menu Play
-	playAct = new MyAction( this, "play" );
+	playAct = new TAction( this, "play" );
 	connect( playAct, SIGNAL(triggered()),
              core, SLOT(play()) );
 
-	playOrPauseAct = new MyAction( Qt::Key_MediaPlay, this, "play_or_pause" );
+	playOrPauseAct = new TAction( Qt::Key_MediaPlay, this, "play_or_pause" );
 	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
 	connect( playOrPauseAct, SIGNAL(triggered()),
 			 core, SLOT(playOrPause()) );
 
-	pauseAct = new MyAction( Qt::Key_Space, this, "pause" );
+	pauseAct = new TAction( Qt::Key_Space, this, "pause" );
 	pauseAct->addShortcut(QKeySequence("Media Pause")); // MCE remote key
 	connect( pauseAct, SIGNAL(triggered()),
              core, SLOT(pause()) );
 
-	stopAct = new MyAction( Qt::Key_MediaStop, this, "stop" );
+	stopAct = new TAction( Qt::Key_MediaStop, this, "stop" );
 	connect( stopAct, SIGNAL(triggered()),
              core, SLOT(stop()) );
 
-	frameStepAct = new MyAction( Qt::Key_Period, this, "frame_step" );
+	frameStepAct = new TAction( Qt::Key_Period, this, "frame_step" );
 	connect( frameStepAct, SIGNAL(triggered()),
              core, SLOT(frameStep()) );
 
-	frameBackStepAct = new MyAction( Qt::Key_Comma, this, "frame_back_step" );
+	frameBackStepAct = new TAction( Qt::Key_Comma, this, "frame_back_step" );
 	connect( frameBackStepAct, SIGNAL(triggered()),
              core, SLOT(frameBackStep()) );
 
-	rewind1Act = new MyAction( Qt::Key_Left, this, "rewind1" );
+	rewind1Act = new TAction( Qt::Key_Left, this, "rewind1" );
 	rewind1Act->addShortcut(QKeySequence("Shift+Ctrl+B")); // MCE remote key
 	connect( rewind1Act, SIGNAL(triggered()),
              core, SLOT(srewind()) );
 
-	rewind2Act = new MyAction( Qt::Key_Down, this, "rewind2" );
+	rewind2Act = new TAction( Qt::Key_Down, this, "rewind2" );
 	connect( rewind2Act, SIGNAL(triggered()),
              core, SLOT(rewind()) );
 
-	rewind3Act = new MyAction( Qt::Key_PageDown, this, "rewind3" );
+	rewind3Act = new TAction( Qt::Key_PageDown, this, "rewind3" );
 	connect( rewind3Act, SIGNAL(triggered()),
              core, SLOT(fastrewind()) );
 
-	forward1Act = new MyAction( Qt::Key_Right, this, "forward1" );
+	forward1Act = new TAction( Qt::Key_Right, this, "forward1" );
 	forward1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
 	connect( forward1Act, SIGNAL(triggered()),
              core, SLOT(sforward()) );
 
-	forward2Act = new MyAction( Qt::Key_Up, this, "forward2" );
+	forward2Act = new TAction( Qt::Key_Up, this, "forward2" );
 	connect( forward2Act, SIGNAL(triggered()),
              core, SLOT(forward()) );
 
-	forward3Act = new MyAction( Qt::Key_PageUp, this, "forward3" );
+	forward3Act = new TAction( Qt::Key_PageUp, this, "forward3" );
 	connect( forward3Act, SIGNAL(triggered()),
              core, SLOT(fastforward()) );
 
-	setAMarkerAct = new MyAction( this, "set_a_marker" );
+	setAMarkerAct = new TAction( this, "set_a_marker" );
 	connect( setAMarkerAct, SIGNAL(triggered()),
              core, SLOT(setAMarker()) );
 
-	setBMarkerAct = new MyAction( this, "set_b_marker" );
+	setBMarkerAct = new TAction( this, "set_b_marker" );
 	connect( setBMarkerAct, SIGNAL(triggered()),
              core, SLOT(setBMarker()) );
 
-	clearABMarkersAct = new MyAction( this, "clear_ab_markers" );
+	clearABMarkersAct = new TAction( this, "clear_ab_markers" );
 	connect( clearABMarkersAct, SIGNAL(triggered()),
              core, SLOT(clearABMarkers()) );
 
-	repeatAct = new MyAction( this, "repeat" );
+	repeatAct = new TAction( this, "repeat" );
 	repeatAct->setCheckable( true );
 	connect( repeatAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleRepeat(bool)) );
 
-	gotoAct = new MyAction( QKeySequence("Ctrl+J"), this, "jump_to" );
+	gotoAct = new TAction( QKeySequence("Ctrl+J"), this, "jump_to" );
 	connect( gotoAct, SIGNAL(triggered()),
              this, SLOT(showGotoDialog()) );
 
 	// Submenu Speed
-	normalSpeedAct = new MyAction( Qt::Key_Backspace, this, "normal_speed" );
+	normalSpeedAct = new TAction( Qt::Key_Backspace, this, "normal_speed" );
 	connect( normalSpeedAct, SIGNAL(triggered()),
              core, SLOT(normalSpeed()) );
 
-	halveSpeedAct = new MyAction( Qt::Key_BraceLeft, this, "halve_speed" );
+	halveSpeedAct = new TAction( Qt::Key_BraceLeft, this, "halve_speed" );
 	connect( halveSpeedAct, SIGNAL(triggered()),
              core, SLOT(halveSpeed()) );
 
-	doubleSpeedAct = new MyAction( Qt::Key_BraceRight, this, "double_speed" );
+	doubleSpeedAct = new TAction( Qt::Key_BraceRight, this, "double_speed" );
 	connect( doubleSpeedAct, SIGNAL(triggered()),
              core, SLOT(doubleSpeed()) );
 
-	decSpeed10Act = new MyAction( Qt::Key_BracketLeft, this, "dec_speed" );
+	decSpeed10Act = new TAction( Qt::Key_BracketLeft, this, "dec_speed" );
 	connect( decSpeed10Act, SIGNAL(triggered()),
              core, SLOT(decSpeed10()) );
 
-	incSpeed10Act = new MyAction( Qt::Key_BracketRight, this, "inc_speed" );
+	incSpeed10Act = new TAction( Qt::Key_BracketRight, this, "inc_speed" );
 	connect( incSpeed10Act, SIGNAL(triggered()),
              core, SLOT(incSpeed10()) );
 
-	decSpeed4Act = new MyAction( this, "dec_speed_4" );
+	decSpeed4Act = new TAction( this, "dec_speed_4" );
 	connect( decSpeed4Act, SIGNAL(triggered()),
              core, SLOT(decSpeed4()) );
 
-	incSpeed4Act = new MyAction( this, "inc_speed_4" );
+	incSpeed4Act = new TAction( this, "inc_speed_4" );
 	connect( incSpeed4Act, SIGNAL(triggered()),
              core, SLOT(incSpeed4()) );
 
-	decSpeed1Act = new MyAction( this, "dec_speed_1" );
+	decSpeed1Act = new TAction( this, "dec_speed_1" );
 	connect( decSpeed1Act, SIGNAL(triggered()),
              core, SLOT(decSpeed1()) );
 
-	incSpeed1Act = new MyAction( this, "inc_speed_1" );
+	incSpeed1Act = new TAction( this, "inc_speed_1" );
 	connect( incSpeed1Act, SIGNAL(triggered()),
              core, SLOT(incSpeed1()) );
 
 
 	// Menu Video
-	fullscreenAct = new MyAction( Qt::Key_F, this, "fullscreen" );
+	fullscreenAct = new TAction( Qt::Key_F, this, "fullscreen" );
 	fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
 	fullscreenAct->setCheckable( true );
 	connect( fullscreenAct, SIGNAL(toggled(bool)),
              this, SLOT(toggleFullscreen(bool)) );
 
-	compactAct = new MyAction( QKeySequence("Ctrl+C"), this, "compact" );
+	compactAct = new TAction( QKeySequence("Ctrl+C"), this, "compact" );
 	compactAct->setCheckable( true );
 	connect( compactAct, SIGNAL(toggled(bool)),
              this, SLOT(toggleCompactMode(bool)) );
 
-	videoEqualizerAct = new MyAction( QKeySequence("Ctrl+E"), this, "video_equalizer" );
+	videoEqualizerAct = new TAction( QKeySequence("Ctrl+E"), this, "video_equalizer" );
 	videoEqualizerAct->setCheckable( true );
 	connect( videoEqualizerAct, SIGNAL(toggled(bool)),
              this, SLOT(showVideoEqualizer(bool)) );
 
 	// Single screenshot
-	screenshotAct = new MyAction( Qt::Key_S, this, "screenshot" );
+	screenshotAct = new TAction( Qt::Key_S, this, "screenshot" );
 	connect( screenshotAct, SIGNAL(triggered()),
              core, SLOT(screenshot()) );
 
 	// Multiple screenshots
-	screenshotsAct = new MyAction( QKeySequence("Shift+D"), this, "multiple_screenshots" );
+	screenshotsAct = new TAction( QKeySequence("Shift+D"), this, "multiple_screenshots" );
 	connect( screenshotsAct, SIGNAL(triggered()),
              core, SLOT(screenshots()) );
 
 #ifdef VIDEOPREVIEW
-	videoPreviewAct = new MyAction( this, "video_preview" );
+	videoPreviewAct = new TAction( this, "video_preview" );
 	connect( videoPreviewAct, SIGNAL(triggered()),
              this, SLOT(showVideoPreviewDialog()) );
 #endif
 
-	flipAct = new MyAction( this, "flip" );
+	flipAct = new TAction( this, "flip" );
 	flipAct->setCheckable( true );
 	connect( flipAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleFlip(bool)) );
 
-	mirrorAct = new MyAction( this, "mirror" );
+	mirrorAct = new TAction( this, "mirror" );
 	mirrorAct->setCheckable( true );
 	connect( mirrorAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleMirror(bool)) );
 
-	stereo3dAct = new MyAction( this, "stereo_3d_filter" );
+	stereo3dAct = new TAction( this, "stereo_3d_filter" );
 	connect( stereo3dAct, SIGNAL(triggered()),
              this, SLOT(showStereo3dDialog()) );
 
 	// Submenu filter
-	postProcessingAct = new MyAction( this, "postprocessing" );
+	postProcessingAct = new TAction( this, "postprocessing" );
 	postProcessingAct->setCheckable( true );
 	connect( postProcessingAct, SIGNAL(toggled(bool)),
              core, SLOT(togglePostprocessing(bool)) );
 
-	phaseAct = new MyAction( this, "autodetect_phase" );
+	phaseAct = new TAction( this, "autodetect_phase" );
 	phaseAct->setCheckable( true );
 	connect( phaseAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleAutophase(bool)) );
 
-	deblockAct = new MyAction( this, "deblock" );
+	deblockAct = new TAction( this, "deblock" );
 	deblockAct->setCheckable( true );
 	connect( deblockAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleDeblock(bool)) );
 
-	deringAct = new MyAction( this, "dering" );
+	deringAct = new TAction( this, "dering" );
 	deringAct->setCheckable( true );
 	connect( deringAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleDering(bool)) );
 
-	gradfunAct = new MyAction( this, "gradfun" );
+	gradfunAct = new TAction( this, "gradfun" );
 	gradfunAct->setCheckable( true );
 	connect( gradfunAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleGradfun(bool)) );
 
 
-	addNoiseAct = new MyAction( this, "add_noise" );
+	addNoiseAct = new TAction( this, "add_noise" );
 	addNoiseAct->setCheckable( true );
 	connect( addNoiseAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleNoise(bool)) );
 
-	addLetterboxAct = new MyAction( this, "add_letterbox" );
+	addLetterboxAct = new TAction( this, "add_letterbox" );
 	addLetterboxAct->setCheckable( true );
 	connect( addLetterboxAct, SIGNAL(toggled(bool)),
              core, SLOT(changeLetterbox(bool)) );
 
-	upscaleAct = new MyAction( this, "upscaling" );
+	upscaleAct = new TAction( this, "upscaling" );
 	upscaleAct->setCheckable( true );
 	connect( upscaleAct, SIGNAL(toggled(bool)),
              core, SLOT(changeUpscale(bool)) );
 
 
 	// Menu Audio
-	audioEqualizerAct = new MyAction( this, "audio_equalizer" );
+	audioEqualizerAct = new TAction( this, "audio_equalizer" );
 	audioEqualizerAct->setCheckable( true );
 	connect( audioEqualizerAct, SIGNAL(toggled(bool)),
              this, SLOT(showAudioEqualizer(bool)) );
 
-	muteAct = new MyAction( Qt::Key_M, this, "mute" );
+	muteAct = new TAction( Qt::Key_M, this, "mute" );
 	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
 	muteAct->setCheckable( true );
 	connect( muteAct, SIGNAL(toggled(bool)),
              core, SLOT(mute(bool)) );
 
 #if USE_MULTIPLE_SHORTCUTS
-	decVolumeAct = new MyAction( this, "decrease_volume" );
+	decVolumeAct = new TAction( this, "decrease_volume" );
 	decVolumeAct->setShortcuts( ActionsEditor::stringToShortcuts("9,/") );
 	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
 #else
-	decVolumeAct = new MyAction( Qt::Key_9, this, "dec_volume" );
+	decVolumeAct = new TAction( Qt::Key_9, this, "dec_volume" );
 #endif
 	connect( decVolumeAct, SIGNAL(triggered()),
              core, SLOT(decVolume()) );
 
 #if USE_MULTIPLE_SHORTCUTS
-	incVolumeAct = new MyAction( this, "increase_volume" );
+	incVolumeAct = new TAction( this, "increase_volume" );
 	incVolumeAct->setShortcuts( ActionsEditor::stringToShortcuts("0,*") );
 	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
 #else
-	incVolumeAct = new MyAction( Qt::Key_0, this, "inc_volume" );
+	incVolumeAct = new TAction( Qt::Key_0, this, "inc_volume" );
 #endif
 	connect( incVolumeAct, SIGNAL(triggered()),
              core, SLOT(incVolume()) );
 
-	decAudioDelayAct = new MyAction( Qt::Key_Minus, this, "dec_audio_delay" );
+	decAudioDelayAct = new TAction( Qt::Key_Minus, this, "dec_audio_delay" );
 	connect( decAudioDelayAct, SIGNAL(triggered()),
              core, SLOT(decAudioDelay()) );
 
-	incAudioDelayAct = new MyAction( Qt::Key_Plus, this, "inc_audio_delay" );
+	incAudioDelayAct = new TAction( Qt::Key_Plus, this, "inc_audio_delay" );
 	connect( incAudioDelayAct, SIGNAL(triggered()),
              core, SLOT(incAudioDelay()) );
 
-	audioDelayAct = new MyAction( this, "audio_delay" );
+	audioDelayAct = new TAction( this, "audio_delay" );
 	connect( audioDelayAct, SIGNAL(triggered()),
              this, SLOT(showAudioDelayDialog()) );
 
-	loadAudioAct = new MyAction( this, "load_audio_file" );
+	loadAudioAct = new TAction( this, "load_audio_file" );
 	connect( loadAudioAct, SIGNAL(triggered()),
              this, SLOT(loadAudioFile()) );
 
-	unloadAudioAct = new MyAction( this, "unload_audio_file" );
+	unloadAudioAct = new TAction( this, "unload_audio_file" );
 	connect( unloadAudioAct, SIGNAL(triggered()),
              core, SLOT(unloadAudioFile()) );
 
 
 	// Submenu Filters
-	extrastereoAct = new MyAction( this, "extrastereo_filter" );
+	extrastereoAct = new TAction( this, "extrastereo_filter" );
 	extrastereoAct->setCheckable( true );
 	connect( extrastereoAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleExtrastereo(bool)) );
 
-	karaokeAct = new MyAction( this, "karaoke_filter" );
+	karaokeAct = new TAction( this, "karaoke_filter" );
 	karaokeAct->setCheckable( true );
 	connect( karaokeAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleKaraoke(bool)) );
 
-	volnormAct = new MyAction( this, "volnorm_filter" );
+	volnormAct = new TAction( this, "volnorm_filter" );
 	volnormAct->setCheckable( true );
 	connect( volnormAct, SIGNAL(toggled(bool)),
              core, SLOT(toggleVolnorm(bool)) );
 
 
 	// Menu Subtitles
-	loadSubsAct = new MyAction( this, "load_subs" );
+	loadSubsAct = new TAction( this, "load_subs" );
 	connect( loadSubsAct, SIGNAL(triggered()),
              this, SLOT(loadSub()) );
 
-	unloadSubsAct = new MyAction( this, "unload_subs" );
+	unloadSubsAct = new TAction( this, "unload_subs" );
 	connect( unloadSubsAct, SIGNAL(triggered()),
              core, SLOT(unloadSub()) );
 
-	decSubDelayAct = new MyAction( Qt::Key_Z, this, "dec_sub_delay" );
+	decSubDelayAct = new TAction( Qt::Key_Z, this, "dec_sub_delay" );
 	connect( decSubDelayAct, SIGNAL(triggered()),
              core, SLOT(decSubDelay()) );
 
-	incSubDelayAct = new MyAction( Qt::Key_X, this, "inc_sub_delay" );
+	incSubDelayAct = new TAction( Qt::Key_X, this, "inc_sub_delay" );
 	connect( incSubDelayAct, SIGNAL(triggered()),
              core, SLOT(incSubDelay()) );
 
-	subDelayAct = new MyAction( this, "sub_delay" );
+	subDelayAct = new TAction( this, "sub_delay" );
 	connect( subDelayAct, SIGNAL(triggered()),
              this, SLOT(showSubDelayDialog()) );
 
-	decSubPosAct = new MyAction( Qt::Key_R, this, "dec_sub_pos" );
+	decSubPosAct = new TAction( Qt::Key_R, this, "dec_sub_pos" );
 	connect( decSubPosAct, SIGNAL(triggered()),
              core, SLOT(decSubPos()) );
-	incSubPosAct = new MyAction( Qt::Key_T, this, "inc_sub_pos" );
+	incSubPosAct = new TAction( Qt::Key_T, this, "inc_sub_pos" );
 	connect( incSubPosAct, SIGNAL(triggered()),
              core, SLOT(incSubPos()) );
 
-	decSubScaleAct = new MyAction( Qt::SHIFT | Qt::Key_R, this, "dec_sub_scale" );
+	decSubScaleAct = new TAction( Qt::SHIFT | Qt::Key_R, this, "dec_sub_scale" );
 	connect( decSubScaleAct, SIGNAL(triggered()),
              core, SLOT(decSubScale()) );
 
-	incSubScaleAct = new MyAction( Qt::SHIFT | Qt::Key_T, this, "inc_sub_scale" );
+	incSubScaleAct = new TAction( Qt::SHIFT | Qt::Key_T, this, "inc_sub_scale" );
 	connect( incSubScaleAct, SIGNAL(triggered()),
              core, SLOT(incSubScale()) );
     
-	decSubStepAct = new MyAction( Qt::Key_G, this, "dec_sub_step" );
+	decSubStepAct = new TAction( Qt::Key_G, this, "dec_sub_step" );
 	connect( decSubStepAct, SIGNAL(triggered()),
              core, SLOT(decSubStep()) );
 
-	incSubStepAct = new MyAction( Qt::Key_Y, this, "inc_sub_step" );
+	incSubStepAct = new TAction( Qt::Key_Y, this, "inc_sub_step" );
 	connect( incSubStepAct, SIGNAL(triggered()),
              core, SLOT(incSubStep()) );
 
-	useCustomSubStyleAct = new MyAction(this, "use_custom_sub_style");
+	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style");
 	useCustomSubStyleAct->setCheckable(true);
 	connect( useCustomSubStyleAct, SIGNAL(toggled(bool)), core, SLOT(changeUseCustomSubStyle(bool)) );
 
-	useForcedSubsOnlyAct = new MyAction(this, "use_forced_subs_only");
+	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only");
 	useForcedSubsOnlyAct->setCheckable(true);
 	connect( useForcedSubsOnlyAct, SIGNAL(toggled(bool)), core, SLOT(toggleForcedSubsOnly(bool)) );
 
 #ifdef FIND_SUBTITLES
-	showFindSubtitlesDialogAct = new MyAction( this, "show_find_sub_dialog" );
+	showFindSubtitlesDialogAct = new TAction( this, "show_find_sub_dialog" );
 	connect( showFindSubtitlesDialogAct, SIGNAL(triggered()), 
              this, SLOT(showFindSubtitlesDialog()) );
 
-	openUploadSubtitlesPageAct = new MyAction( this, "upload_subtitles" );		//turbos
+	openUploadSubtitlesPageAct = new TAction( this, "upload_subtitles" );		//turbos
 	connect( openUploadSubtitlesPageAct, SIGNAL(triggered()),					//turbos
              this, SLOT(openUploadSubtitlesPage()) );							//turbos
 #endif
 
 	// Menu Options
-	showPlaylistAct = new MyAction( QKeySequence("Ctrl+L"), this, "show_playlist" );
+	showPlaylistAct = new TAction( QKeySequence("Ctrl+L"), this, "show_playlist" );
 	showPlaylistAct->setCheckable( true );
 	connect( showPlaylistAct, SIGNAL(toggled(bool)),
              this, SLOT(showPlaylist(bool)) );
 
-	showPropertiesAct = new MyAction( QKeySequence("Ctrl+I"), this, "show_file_properties" );
+	showPropertiesAct = new TAction( QKeySequence("Ctrl+I"), this, "show_file_properties" );
 	connect( showPropertiesAct, SIGNAL(triggered()),
              this, SLOT(showFilePropertiesDialog()) );
 
-	showPreferencesAct = new MyAction( QKeySequence("Ctrl+P"), this, "show_preferences" );
+	showPreferencesAct = new TAction( QKeySequence("Ctrl+P"), this, "show_preferences" );
 	connect( showPreferencesAct, SIGNAL(triggered()),
              this, SLOT(showPreferencesDialog()) );
 
 #ifdef YOUTUBE_SUPPORT
-	showTubeBrowserAct = new MyAction( Qt::Key_F11, this, "show_tube_browser" );
+	showTubeBrowserAct = new TAction( Qt::Key_F11, this, "show_tube_browser" );
 	connect( showTubeBrowserAct, SIGNAL(triggered()),
              this, SLOT(showTubeBrowser()) );
 #endif
 
 	// Submenu Logs
 #ifdef LOG_MPLAYER
-	showLogMplayerAct = new MyAction( QKeySequence("Ctrl+M"), this, "show_mplayer_log" );
+	showLogMplayerAct = new TAction( QKeySequence("Ctrl+M"), this, "show_mplayer_log" );
 	connect( showLogMplayerAct, SIGNAL(triggered()),
              this, SLOT(showMplayerLog()) );
 #endif
 
 #ifdef LOG_SMPLAYER
-	showLogSmplayerAct = new MyAction( QKeySequence("Ctrl+S"), this, "show_smplayer_log" );
+	showLogSmplayerAct = new TAction( QKeySequence("Ctrl+S"), this, "show_smplayer_log" );
 	connect( showLogSmplayerAct, SIGNAL(triggered()),
              this, SLOT(showLog()) );
 #endif
 
 	// Menu Help
-	showFirstStepsAct = new MyAction( this, "first_steps" );
+	showFirstStepsAct = new TAction( this, "first_steps" );
 	connect( showFirstStepsAct, SIGNAL(triggered()),
              this, SLOT(helpFirstSteps()) );
 
-	showFAQAct = new MyAction( this, "faq" );
+	showFAQAct = new TAction( this, "faq" );
 	connect( showFAQAct, SIGNAL(triggered()),
              this, SLOT(helpFAQ()) );
 
-	showCLOptionsAct = new MyAction( this, "cl_options" );
+	showCLOptionsAct = new TAction( this, "cl_options" );
 	connect( showCLOptionsAct, SIGNAL(triggered()),
              this, SLOT(helpCLOptions()) );
 
-	showCheckUpdatesAct = new MyAction( this, "check_updates" );
+	showCheckUpdatesAct = new TAction( this, "check_updates" );
 	connect( showCheckUpdatesAct, SIGNAL(triggered()),
              this, SLOT(helpCheckUpdates()) );
 
 #if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	updateYTAct = new MyAction( this, "update_youtube" );
+	updateYTAct = new TAction( this, "update_youtube" );
 	connect( updateYTAct, SIGNAL(triggered()),
              this, SLOT(YTUpdateScript()) );
 #endif
 
-	showConfigAct = new MyAction( this, "show_config" );
+	showConfigAct = new TAction( this, "show_config" );
 	connect( showConfigAct, SIGNAL(triggered()),
              this, SLOT(helpShowConfig()) );
 
 #ifdef REMINDER_ACTIONS
-	donateAct = new MyAction( this, "donate" );
+	donateAct = new TAction( this, "donate" );
 	connect( donateAct, SIGNAL(triggered()),
              this, SLOT(helpDonate()) );
 #endif
 
-	aboutThisAct = new MyAction( this, "about_smplayer" );
+	aboutThisAct = new TAction( this, "about_smplayer" );
 	connect( aboutThisAct, SIGNAL(triggered()),
              this, SLOT(helpAbout()) );
 
 #ifdef SHARE_MENU
-	facebookAct = new MyAction (this, "facebook");
-	twitterAct = new MyAction (this, "twitter");
-	gmailAct = new MyAction (this, "gmail");
-	hotmailAct = new MyAction (this, "hotmail");
-	yahooAct = new MyAction (this, "yahoo");
+	facebookAct = new TAction (this, "facebook");
+	twitterAct = new TAction (this, "twitter");
+	gmailAct = new TAction (this, "gmail");
+	hotmailAct = new TAction (this, "hotmail");
+	yahooAct = new TAction (this, "yahoo");
 
 	connect( facebookAct, SIGNAL(triggered()),
              this, SLOT(shareSMPlayer()) );
@@ -948,182 +948,182 @@ void TBase::createActions() {
 #endif
 
 	// OSD
-	incOSDScaleAct = new MyAction(Qt::SHIFT | Qt::Key_U, this, "inc_osd_scale");
+	incOSDScaleAct = new TAction(Qt::SHIFT | Qt::Key_U, this, "inc_osd_scale");
 	connect(incOSDScaleAct, SIGNAL(triggered()), core, SLOT(incOSDScale()));
 
-	decOSDScaleAct = new MyAction(Qt::SHIFT | Qt::Key_Y, this, "dec_osd_scale");
+	decOSDScaleAct = new TAction(Qt::SHIFT | Qt::Key_Y, this, "dec_osd_scale");
 	connect(decOSDScaleAct, SIGNAL(triggered()), core, SLOT(decOSDScale()));
 
 
 	// Playlist
-	playNextAct = new MyAction(Qt::Key_Greater, this, "play_next");
+	playNextAct = new TAction(Qt::Key_Greater, this, "play_next");
 	playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
 	connect( playNextAct, SIGNAL(triggered()), playlist, SLOT(playNext()) );
 
-	playPrevAct = new MyAction(Qt::Key_Less, this, "play_prev");
+	playPrevAct = new TAction(Qt::Key_Less, this, "play_prev");
 	playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
 	connect( playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()) );
 
 	// Pan
-	moveUpAct = new MyAction(Qt::ALT | Qt::Key_Up, this, "move_up");
+	moveUpAct = new TAction(Qt::ALT | Qt::Key_Up, this, "move_up");
 	connect( moveUpAct, SIGNAL(triggered()), core, SLOT(panDown()) );
 
-	moveDownAct = new MyAction(Qt::ALT | Qt::Key_Down, this, "move_down");
+	moveDownAct = new TAction(Qt::ALT | Qt::Key_Down, this, "move_down");
 	connect( moveDownAct, SIGNAL(triggered()), core, SLOT(panUp()) );
 
-	moveLeftAct = new MyAction(Qt::ALT | Qt::Key_Left, this, "move_left");
+	moveLeftAct = new TAction(Qt::ALT | Qt::Key_Left, this, "move_left");
 	connect( moveLeftAct, SIGNAL(triggered()), core, SLOT(panRight()) );
 
-	moveRightAct = new MyAction(Qt::ALT | Qt::Key_Right, this, "move_right");
+	moveRightAct = new TAction(Qt::ALT | Qt::Key_Right, this, "move_right");
 	connect( moveRightAct, SIGNAL(triggered()), core, SLOT(panLeft()) );
 
 	// Zoom
-	incZoomAct = new MyAction(Qt::Key_E, this, "inc_zoom");
+	incZoomAct = new TAction(Qt::Key_E, this, "inc_zoom");
 	connect( incZoomAct, SIGNAL(triggered()), core, SLOT(incZoom()) );
 
-	decZoomAct = new MyAction(Qt::Key_W, this, "dec_zoom");
+	decZoomAct = new TAction(Qt::Key_W, this, "dec_zoom");
 	connect( decZoomAct, SIGNAL(triggered()), core, SLOT(decZoom()) );
 
-	resetZoomAct = new MyAction(Qt::SHIFT | Qt::Key_E, this, "reset_zoom");
+	resetZoomAct = new TAction(Qt::SHIFT | Qt::Key_E, this, "reset_zoom");
 	connect( resetZoomAct, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()) );
 
-	autoZoomAct = new MyAction(Qt::SHIFT | Qt::Key_W, this, "auto_zoom");
+	autoZoomAct = new TAction(Qt::SHIFT | Qt::Key_W, this, "auto_zoom");
 	connect( autoZoomAct, SIGNAL(triggered()), core, SLOT(autoZoom()) );
 
-	autoZoom169Act = new MyAction(Qt::SHIFT | Qt::Key_A, this, "zoom_169");
+	autoZoom169Act = new TAction(Qt::SHIFT | Qt::Key_A, this, "zoom_169");
 	connect( autoZoom169Act, SIGNAL(triggered()), core, SLOT(autoZoomFor169()) );
 
-	autoZoom235Act = new MyAction(Qt::SHIFT | Qt::Key_S, this, "zoom_235");
+	autoZoom235Act = new TAction(Qt::SHIFT | Qt::Key_S, this, "zoom_235");
 	connect( autoZoom235Act, SIGNAL(triggered()), core, SLOT(autoZoomFor235()) );
 
 
 	// Actions not in menus or buttons
 	// Volume 2
 #if !USE_MULTIPLE_SHORTCUTS
-	decVolume2Act = new MyAction( Qt::Key_Slash, this, "dec_volume2" );
+	decVolume2Act = new TAction( Qt::Key_Slash, this, "dec_volume2" );
 	connect( decVolume2Act, SIGNAL(triggered()), core, SLOT(decVolume()) );
 
-	incVolume2Act = new MyAction( Qt::Key_Asterisk, this, "inc_volume2" );
+	incVolume2Act = new TAction( Qt::Key_Asterisk, this, "inc_volume2" );
 	connect( incVolume2Act, SIGNAL(triggered()), core, SLOT(incVolume()) );
 #endif
 	// Exit fullscreen
-	exitFullscreenAct = new MyAction( Qt::Key_Escape, this, "exit_fullscreen" );
+	exitFullscreenAct = new TAction( Qt::Key_Escape, this, "exit_fullscreen" );
 	connect( exitFullscreenAct, SIGNAL(triggered()), this, SLOT(exitFullscreen()) );
 
-	nextOSDLevelAct = new MyAction( Qt::Key_O, this, "next_osd");
+	nextOSDLevelAct = new TAction( Qt::Key_O, this, "next_osd");
 	connect( nextOSDLevelAct, SIGNAL(triggered()), core, SLOT(nextOSDLevel()) );
 
-	decContrastAct = new MyAction( Qt::Key_1, this, "dec_contrast");
+	decContrastAct = new TAction( Qt::Key_1, this, "dec_contrast");
 	connect( decContrastAct, SIGNAL(triggered()), core, SLOT(decContrast()) );
 
-	incContrastAct = new MyAction( Qt::Key_2, this, "inc_contrast");
+	incContrastAct = new TAction( Qt::Key_2, this, "inc_contrast");
 	connect( incContrastAct, SIGNAL(triggered()), core, SLOT(incContrast()) );
 
-	decBrightnessAct = new MyAction( Qt::Key_3, this, "dec_brightness");
+	decBrightnessAct = new TAction( Qt::Key_3, this, "dec_brightness");
 	connect( decBrightnessAct, SIGNAL(triggered()), core, SLOT(decBrightness()) );
 
-	incBrightnessAct = new MyAction( Qt::Key_4, this, "inc_brightness");
+	incBrightnessAct = new TAction( Qt::Key_4, this, "inc_brightness");
 	connect( incBrightnessAct, SIGNAL(triggered()), core, SLOT(incBrightness()) );
 
-	decHueAct = new MyAction(Qt::Key_5, this, "dec_hue");
+	decHueAct = new TAction(Qt::Key_5, this, "dec_hue");
 	connect( decHueAct, SIGNAL(triggered()), core, SLOT(decHue()) );
 
-	incHueAct = new MyAction( Qt::Key_6, this, "inc_hue");
+	incHueAct = new TAction( Qt::Key_6, this, "inc_hue");
 	connect( incHueAct, SIGNAL(triggered()), core, SLOT(incHue()) );
 
-	decSaturationAct = new MyAction( Qt::Key_7, this, "dec_saturation");
+	decSaturationAct = new TAction( Qt::Key_7, this, "dec_saturation");
 	connect( decSaturationAct, SIGNAL(triggered()), core, SLOT(decSaturation()) );
 
-	incSaturationAct = new MyAction( Qt::Key_8, this, "inc_saturation");
+	incSaturationAct = new TAction( Qt::Key_8, this, "inc_saturation");
 	connect( incSaturationAct, SIGNAL(triggered()), core, SLOT(incSaturation()) );
 
-	decGammaAct = new MyAction( this, "dec_gamma");
+	decGammaAct = new TAction( this, "dec_gamma");
 	connect( decGammaAct, SIGNAL(triggered()), core, SLOT(decGamma()) );
 
-	incGammaAct = new MyAction( this, "inc_gamma");
+	incGammaAct = new TAction( this, "inc_gamma");
 	connect( incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()) );
 
-	nextVideoAct = new MyAction( this, "next_video");
+	nextVideoAct = new TAction( this, "next_video");
 	connect( nextVideoAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()) );
 
-	nextAudioAct = new MyAction( Qt::Key_K, this, "next_audio");
+	nextAudioAct = new TAction( Qt::Key_K, this, "next_audio");
 	connect( nextAudioAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()) );
 
-	nextSubtitleAct = new MyAction( Qt::Key_J, this, "next_subtitle");
+	nextSubtitleAct = new TAction( Qt::Key_J, this, "next_subtitle");
 	connect( nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()) );
 
-	nextChapterAct = new MyAction( Qt::Key_At, this, "next_chapter");
+	nextChapterAct = new TAction( Qt::Key_At, this, "next_chapter");
 	connect( nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()) );
 
-	prevChapterAct = new MyAction( Qt::Key_Exclam, this, "prev_chapter");
+	prevChapterAct = new TAction( Qt::Key_Exclam, this, "prev_chapter");
 	connect( prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()) );
 
-	doubleSizeAct = new MyAction( Qt::CTRL | Qt::Key_D, this, "toggle_double_size");
+	doubleSizeAct = new TAction( Qt::CTRL | Qt::Key_D, this, "toggle_double_size");
 	connect( doubleSizeAct, SIGNAL(triggered()), this, SLOT(toggleDoubleSize()) );
 
-	resetVideoEqualizerAct = new MyAction( this, "reset_video_equalizer");
+	resetVideoEqualizerAct = new TAction( this, "reset_video_equalizer");
 	connect( resetVideoEqualizerAct, SIGNAL(triggered()), video_equalizer, SLOT(reset()) );
 
-	resetAudioEqualizerAct = new MyAction( this, "reset_audio_equalizer");
+	resetAudioEqualizerAct = new TAction( this, "reset_audio_equalizer");
 	connect( resetAudioEqualizerAct, SIGNAL(triggered()), audio_equalizer, SLOT(reset()) );
 
-	showContextMenuAct = new MyAction( this, "show_context_menu");
+	showContextMenuAct = new TAction( this, "show_context_menu");
 	connect( showContextMenuAct, SIGNAL(triggered()), 
              this, SLOT(showPopupMenu()) );
 
-	nextAspectAct = new MyAction( Qt::Key_A, this, "next_aspect");
+	nextAspectAct = new TAction( Qt::Key_A, this, "next_aspect");
 	connect( nextAspectAct, SIGNAL(triggered()), 
              core, SLOT(nextAspectRatio()) );
 
-	nextWheelFunctionAct = new MyAction(this, "next_wheel_function");
+	nextWheelFunctionAct = new TAction(this, "next_wheel_function");
 	connect( nextWheelFunctionAct, SIGNAL(triggered()),
 			 core, SLOT(nextWheelFunction()) );
 
-	showFilenameAct = new MyAction(Qt::SHIFT | Qt::Key_I, this, "show_filename");
+	showFilenameAct = new TAction(Qt::SHIFT | Qt::Key_I, this, "show_filename");
 	connect( showFilenameAct, SIGNAL(triggered()), core, SLOT(showFilenameOnOSD()) );
 
-	showTimeAct = new MyAction(Qt::Key_I, this, "show_time");
+	showTimeAct = new TAction(Qt::Key_I, this, "show_time");
 	connect( showTimeAct, SIGNAL(triggered()), core, SLOT(showTimeOnOSD()) );
 
-	toggleDeinterlaceAct = new MyAction(Qt::Key_D, this, "toggle_deinterlacing");
+	toggleDeinterlaceAct = new TAction(Qt::Key_D, this, "toggle_deinterlacing");
 	connect( toggleDeinterlaceAct, SIGNAL(triggered()), core, SLOT(toggleDeinterlace()) );
 
 
 	// Group actions
 
 	// OSD
-	osdGroup = new MyActionGroup(this);
-	osdNoneAct = new MyActionGroupItem(this, osdGroup, "osd_none", Preferences::None);
-	osdSeekAct = new MyActionGroupItem(this, osdGroup, "osd_seek", Preferences::Seek);
-	osdTimerAct = new MyActionGroupItem(this, osdGroup, "osd_timer", Preferences::SeekTimer);
-	osdTotalAct = new MyActionGroupItem(this, osdGroup, "osd_total", Preferences::SeekTimerTotal);
+	osdGroup = new TActionGroup(this);
+	osdNoneAct = new TActionGroupItem(this, osdGroup, "osd_none", Preferences::None);
+	osdSeekAct = new TActionGroupItem(this, osdGroup, "osd_seek", Preferences::Seek);
+	osdTimerAct = new TActionGroupItem(this, osdGroup, "osd_timer", Preferences::SeekTimer);
+	osdTotalAct = new TActionGroupItem(this, osdGroup, "osd_total", Preferences::SeekTimerTotal);
 	connect( osdGroup, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)) );
 
 	// Denoise
-	denoiseGroup = new MyActionGroup(this);
-	denoiseNoneAct = new MyActionGroupItem(this, denoiseGroup, "denoise_none", MediaSettings::NoDenoise);
-	denoiseNormalAct = new MyActionGroupItem(this, denoiseGroup, "denoise_normal", MediaSettings::DenoiseNormal);
-	denoiseSoftAct = new MyActionGroupItem(this, denoiseGroup, "denoise_soft", MediaSettings::DenoiseSoft);
+	denoiseGroup = new TActionGroup(this);
+	denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none", MediaSettings::NoDenoise);
+	denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", MediaSettings::DenoiseNormal);
+	denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", MediaSettings::DenoiseSoft);
 	connect( denoiseGroup, SIGNAL(activated(int)), core, SLOT(changeDenoise(int)) );
 
 	// Unsharp group
-	unsharpGroup = new MyActionGroup(this);
-	unsharpNoneAct = new MyActionGroupItem(this, unsharpGroup, "unsharp_off", 0);
-	blurAct = new MyActionGroupItem(this, unsharpGroup, "blur", 1);
-	sharpenAct = new MyActionGroupItem(this, unsharpGroup, "sharpen", 2);
+	unsharpGroup = new TActionGroup(this);
+	unsharpNoneAct = new TActionGroupItem(this, unsharpGroup, "unsharp_off", 0);
+	blurAct = new TActionGroupItem(this, unsharpGroup, "blur", 1);
+	sharpenAct = new TActionGroupItem(this, unsharpGroup, "sharpen", 2);
 	connect( unsharpGroup, SIGNAL(activated(int)), core, SLOT(changeUnsharp(int)) );
 
 	// Video size
-	sizeGroup = new MyActionGroup(this);
-	size50 = new MyActionGroupItem(this, sizeGroup, "5&0%", "size_50", 50);
-	size75 = new MyActionGroupItem(this, sizeGroup, "7&5%", "size_75", 75);
-	size100 = new MyActionGroupItem(this, sizeGroup, "&100%", "size_100", 100);
-	size125 = new MyActionGroupItem(this, sizeGroup, "1&25%", "size_125", 125);
-	size150 = new MyActionGroupItem(this, sizeGroup, "15&0%", "size_150", 150);
-	size175 = new MyActionGroupItem(this, sizeGroup, "1&75%", "size_175", 175);
-	size200 = new MyActionGroupItem(this, sizeGroup, "&200%", "size_200", 200);
-	size300 = new MyActionGroupItem(this, sizeGroup, "&300%", "size_300", 300);
-	size400 = new MyActionGroupItem(this, sizeGroup, "&400%", "size_400", 400);
+	sizeGroup = new TActionGroup(this);
+	size50 = new TActionGroupItem(this, sizeGroup, "5&0%", "size_50", 50);
+	size75 = new TActionGroupItem(this, sizeGroup, "7&5%", "size_75", 75);
+	size100 = new TActionGroupItem(this, sizeGroup, "&100%", "size_100", 100);
+	size125 = new TActionGroupItem(this, sizeGroup, "1&25%", "size_125", 125);
+	size150 = new TActionGroupItem(this, sizeGroup, "15&0%", "size_150", 150);
+	size175 = new TActionGroupItem(this, sizeGroup, "1&75%", "size_175", 175);
+	size200 = new TActionGroupItem(this, sizeGroup, "&200%", "size_200", 200);
+	size300 = new TActionGroupItem(this, sizeGroup, "&300%", "size_300", 300);
+	size400 = new TActionGroupItem(this, sizeGroup, "&400%", "size_400", 400);
 	size100->setShortcut( Qt::CTRL | Qt::Key_1 );
 	size200->setShortcut( Qt::CTRL | Qt::Key_2 );
 	connect( sizeGroup, SIGNAL(activated(int)), core, SLOT(changeSize(int)) );
@@ -1131,98 +1131,98 @@ void TBase::createActions() {
 	mplayerwindow->setSizeGroup(sizeGroup);
 
 	// Deinterlace
-	deinterlaceGroup = new MyActionGroup(this);
-	deinterlaceNoneAct = new MyActionGroupItem(this, deinterlaceGroup, "deinterlace_none", MediaSettings::NoDeinterlace);
-	deinterlaceL5Act = new MyActionGroupItem(this, deinterlaceGroup, "deinterlace_l5", MediaSettings::L5);
-	deinterlaceYadif0Act = new MyActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif0", MediaSettings::Yadif);
-	deinterlaceYadif1Act = new MyActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif1", MediaSettings::Yadif_1);
-	deinterlaceLBAct = new MyActionGroupItem(this, deinterlaceGroup, "deinterlace_lb", MediaSettings::LB);
-	deinterlaceKernAct = new MyActionGroupItem(this, deinterlaceGroup, "deinterlace_kern", MediaSettings::Kerndeint);
+	deinterlaceGroup = new TActionGroup(this);
+	deinterlaceNoneAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_none", MediaSettings::NoDeinterlace);
+	deinterlaceL5Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_l5", MediaSettings::L5);
+	deinterlaceYadif0Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif0", MediaSettings::Yadif);
+	deinterlaceYadif1Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif1", MediaSettings::Yadif_1);
+	deinterlaceLBAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_lb", MediaSettings::LB);
+	deinterlaceKernAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_kern", MediaSettings::Kerndeint);
 	connect( deinterlaceGroup, SIGNAL(activated(int)),
              core, SLOT(changeDeinterlace(int)) );
 
 	// Audio channels
-	channelsGroup = new MyActionGroup(this);
-	/* channelsDefaultAct = new MyActionGroupItem(this, channelsGroup, "channels_default", MediaSettings::ChDefault); */
-	channelsStereoAct = new MyActionGroupItem(this, channelsGroup, "channels_stereo", MediaSettings::ChStereo);
-	channelsSurroundAct = new MyActionGroupItem(this, channelsGroup, "channels_surround", MediaSettings::ChSurround);
-	channelsFull51Act = new MyActionGroupItem(this, channelsGroup, "channels_ful51", MediaSettings::ChFull51);
-	channelsFull61Act = new MyActionGroupItem(this, channelsGroup, "channels_ful61", MediaSettings::ChFull61);
-	channelsFull71Act = new MyActionGroupItem(this, channelsGroup, "channels_ful71", MediaSettings::ChFull71);
+	channelsGroup = new TActionGroup(this);
+	/* channelsDefaultAct = new TActionGroupItem(this, channelsGroup, "channels_default", MediaSettings::ChDefault); */
+	channelsStereoAct = new TActionGroupItem(this, channelsGroup, "channels_stereo", MediaSettings::ChStereo);
+	channelsSurroundAct = new TActionGroupItem(this, channelsGroup, "channels_surround", MediaSettings::ChSurround);
+	channelsFull51Act = new TActionGroupItem(this, channelsGroup, "channels_ful51", MediaSettings::ChFull51);
+	channelsFull61Act = new TActionGroupItem(this, channelsGroup, "channels_ful61", MediaSettings::ChFull61);
+	channelsFull71Act = new TActionGroupItem(this, channelsGroup, "channels_ful71", MediaSettings::ChFull71);
 	connect( channelsGroup, SIGNAL(activated(int)),
              core, SLOT(setAudioChannels(int)) );
 
 	// Stereo mode
-	stereoGroup = new MyActionGroup(this);
-	stereoAct = new MyActionGroupItem(this, stereoGroup, "stereo", MediaSettings::Stereo);
-	leftChannelAct = new MyActionGroupItem(this, stereoGroup, "left_channel", MediaSettings::Left);
-	rightChannelAct = new MyActionGroupItem(this, stereoGroup, "right_channel", MediaSettings::Right);
-	monoAct = new MyActionGroupItem(this, stereoGroup, "mono", MediaSettings::Mono);
-	reverseAct = new MyActionGroupItem(this, stereoGroup, "reverse_channels", MediaSettings::Reverse);
+	stereoGroup = new TActionGroup(this);
+	stereoAct = new TActionGroupItem(this, stereoGroup, "stereo", MediaSettings::Stereo);
+	leftChannelAct = new TActionGroupItem(this, stereoGroup, "left_channel", MediaSettings::Left);
+	rightChannelAct = new TActionGroupItem(this, stereoGroup, "right_channel", MediaSettings::Right);
+	monoAct = new TActionGroupItem(this, stereoGroup, "mono", MediaSettings::Mono);
+	reverseAct = new TActionGroupItem(this, stereoGroup, "reverse_channels", MediaSettings::Reverse);
 	connect( stereoGroup, SIGNAL(activated(int)),
              core, SLOT(setStereoMode(int)) );
 
 	// Video aspect
-	aspectGroup = new MyActionGroup(this);
-	aspectDetectAct = new MyActionGroupItem(this, aspectGroup, "aspect_detect", MediaSettings::AspectAuto);
-	aspect11Act = new MyActionGroupItem(this, aspectGroup, "aspect_1:1", MediaSettings::Aspect11 );
-	aspect54Act = new MyActionGroupItem(this, aspectGroup, "aspect_5:4", MediaSettings::Aspect54 );
-	aspect43Act = new MyActionGroupItem(this, aspectGroup, "aspect_4:3", MediaSettings::Aspect43);
-	aspect118Act = new MyActionGroupItem(this, aspectGroup, "aspect_11:8", MediaSettings::Aspect118 );
-	aspect1410Act = new MyActionGroupItem(this, aspectGroup, "aspect_14:10", MediaSettings::Aspect1410 );
-	aspect32Act = new MyActionGroupItem(this, aspectGroup, "aspect_3:2", MediaSettings::Aspect32);
-	aspect149Act = new MyActionGroupItem(this, aspectGroup, "aspect_14:9", MediaSettings::Aspect149 );
-	aspect1610Act = new MyActionGroupItem(this, aspectGroup, "aspect_16:10", MediaSettings::Aspect1610 );
-	aspect169Act = new MyActionGroupItem(this, aspectGroup, "aspect_16:9", MediaSettings::Aspect169 );
-	aspect235Act = new MyActionGroupItem(this, aspectGroup, "aspect_2.35:1", MediaSettings::Aspect235 );
+	aspectGroup = new TActionGroup(this);
+	aspectDetectAct = new TActionGroupItem(this, aspectGroup, "aspect_detect", MediaSettings::AspectAuto);
+	aspect11Act = new TActionGroupItem(this, aspectGroup, "aspect_1:1", MediaSettings::Aspect11 );
+	aspect54Act = new TActionGroupItem(this, aspectGroup, "aspect_5:4", MediaSettings::Aspect54 );
+	aspect43Act = new TActionGroupItem(this, aspectGroup, "aspect_4:3", MediaSettings::Aspect43);
+	aspect118Act = new TActionGroupItem(this, aspectGroup, "aspect_11:8", MediaSettings::Aspect118 );
+	aspect1410Act = new TActionGroupItem(this, aspectGroup, "aspect_14:10", MediaSettings::Aspect1410 );
+	aspect32Act = new TActionGroupItem(this, aspectGroup, "aspect_3:2", MediaSettings::Aspect32);
+	aspect149Act = new TActionGroupItem(this, aspectGroup, "aspect_14:9", MediaSettings::Aspect149 );
+	aspect1610Act = new TActionGroupItem(this, aspectGroup, "aspect_16:10", MediaSettings::Aspect1610 );
+	aspect169Act = new TActionGroupItem(this, aspectGroup, "aspect_16:9", MediaSettings::Aspect169 );
+	aspect235Act = new TActionGroupItem(this, aspectGroup, "aspect_2.35:1", MediaSettings::Aspect235 );
 	{
 		QAction * sep = new QAction(aspectGroup);
 		sep->setSeparator(true);
 	}
-	aspectNoneAct = new MyActionGroupItem(this, aspectGroup, "aspect_none", MediaSettings::AspectNone);
+	aspectNoneAct = new TActionGroupItem(this, aspectGroup, "aspect_none", MediaSettings::AspectNone);
 
 	connect( aspectGroup, SIGNAL(activated(int)),
              core, SLOT(changeAspectRatio(int)) );
 
 	// Rotate
-	rotateGroup = new MyActionGroup(this);
-	rotateNoneAct = new MyActionGroupItem(this, rotateGroup, "rotate_none", MediaSettings::NoRotate);
-	rotateClockwiseFlipAct = new MyActionGroupItem(this, rotateGroup, "rotate_clockwise_flip", MediaSettings::Clockwise_flip);
-	rotateClockwiseAct = new MyActionGroupItem(this, rotateGroup, "rotate_clockwise", MediaSettings::Clockwise);
-	rotateCounterclockwiseAct = new MyActionGroupItem(this, rotateGroup, "rotate_counterclockwise", MediaSettings::Counterclockwise);
-	rotateCounterclockwiseFlipAct = new MyActionGroupItem(this, rotateGroup, "rotate_counterclockwise_flip", MediaSettings::Counterclockwise_flip);
+	rotateGroup = new TActionGroup(this);
+	rotateNoneAct = new TActionGroupItem(this, rotateGroup, "rotate_none", MediaSettings::NoRotate);
+	rotateClockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise_flip", MediaSettings::Clockwise_flip);
+	rotateClockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise", MediaSettings::Clockwise);
+	rotateCounterclockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise", MediaSettings::Counterclockwise);
+	rotateCounterclockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise_flip", MediaSettings::Counterclockwise_flip);
 	connect( rotateGroup, SIGNAL(activated(int)),
              core, SLOT(changeRotate(int)) );
 
 	// On Top
-	onTopActionGroup = new MyActionGroup(this);
-	onTopAlwaysAct = new MyActionGroupItem( this,onTopActionGroup,"on_top_always",Preferences::AlwaysOnTop);
-	onTopNeverAct = new MyActionGroupItem( this,onTopActionGroup,"on_top_never",Preferences::NeverOnTop);
-	onTopWhilePlayingAct = new MyActionGroupItem( this,onTopActionGroup,"on_top_playing",Preferences::WhilePlayingOnTop);
+	onTopActionGroup = new TActionGroup(this);
+	onTopAlwaysAct = new TActionGroupItem( this,onTopActionGroup,"on_top_always",Preferences::AlwaysOnTop);
+	onTopNeverAct = new TActionGroupItem( this,onTopActionGroup,"on_top_never",Preferences::NeverOnTop);
+	onTopWhilePlayingAct = new TActionGroupItem( this,onTopActionGroup,"on_top_playing",Preferences::WhilePlayingOnTop);
 	connect( onTopActionGroup , SIGNAL(activated(int)),
              this, SLOT(changeStayOnTop(int)) );
 
-	toggleStayOnTopAct = new MyAction( this, "toggle_stay_on_top");
+	toggleStayOnTopAct = new TAction( this, "toggle_stay_on_top");
 	connect( toggleStayOnTopAct, SIGNAL(triggered()), this, SLOT(toggleStayOnTop()) );
 
 
 #if USE_ADAPTER
-	screenGroup = new MyActionGroup(this);
-	screenDefaultAct = new MyActionGroupItem(this, screenGroup, "screen_default", -1);
+	screenGroup = new TActionGroup(this);
+	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", -1);
 	#ifdef Q_OS_WIN
 	DeviceList display_devices = DeviceInfo::displayDevices();
 	if (!display_devices.isEmpty()) {
 		for (int n = 0; n < display_devices.count(); n++) {
 			int id = display_devices[n].ID().toInt();
 			QString desc = display_devices[n].desc();
-			MyAction * screen_item = new MyActionGroupItem(this, screenGroup, QString("screen_%1").arg(n).toLatin1().constData(), id);
+			TAction * screen_item = new TActionGroupItem(this, screenGroup, QString("screen_%1").arg(n).toLatin1().constData(), id);
 			screen_item->change( "&"+QString::number(n) + " - " + desc);
 		}
 	}
 	else
 	#endif // Q_OS_WIN
 	for (int n = 1; n <= 4; n++) {
-		MyAction * screen_item = new MyActionGroupItem(this, screenGroup, QString("screen_%1").arg(n).toLatin1().constData(), n);
+		TAction * screen_item = new TActionGroupItem(this, screenGroup, QString("screen_%1").arg(n).toLatin1().constData(), n);
 		screen_item->change( "&"+QString::number(n) );
 	}
 
@@ -1232,13 +1232,13 @@ void TBase::createActions() {
 
 #if PROGRAM_SWITCH
 	// Program track
-	programTrackGroup = new MyActionGroup(this);
+	programTrackGroup = new TActionGroup(this);
 	connect( programTrackGroup, SIGNAL(activated(int)), 
 	         core, SLOT(changeProgram(int)) );
 #endif
 
 	// Video track
-	videoTrackGroup = new MyActionGroup(this);
+	videoTrackGroup = new TActionGroup(this);
 	connect( videoTrackGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeVideoTrack(int)) );
 	connect( core, SIGNAL(videoTrackInfoChanged()),
@@ -1247,7 +1247,7 @@ void TBase::createActions() {
 			 videoTrackGroup, SLOT(setCheckedSlot(int)) );
 
 	// Audio track
-	audioTrackGroup = new MyActionGroup(this);
+	audioTrackGroup = new TActionGroup(this);
 	connect( audioTrackGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeAudioTrack(int)) );
 	connect( core, SIGNAL(audioTrackInfoChanged()),
@@ -1255,7 +1255,7 @@ void TBase::createActions() {
 	connect( core, SIGNAL(audioTrackChanged(int)),
 			 audioTrackGroup, SLOT(setCheckedSlot(int)) );
 
-	subtitleTrackGroup = new MyActionGroup(this);
+	subtitleTrackGroup = new TActionGroup(this);
 	connect( subtitleTrackGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeSubtitle(int)) );
 	connect( core, SIGNAL(subtitleInfoChanged()),
@@ -1265,7 +1265,7 @@ void TBase::createActions() {
 
 #ifdef MPV_SUPPORT
 	// Secondary subtitle track
-	secondarySubtitleTrackGroup = new MyActionGroup(this);
+	secondarySubtitleTrackGroup = new TActionGroup(this);
 	connect( secondarySubtitleTrackGroup, SIGNAL(activated(int)), 
 	         core, SLOT(changeSecondarySubtitle(int)) );
 	// InfoChanged already connected by subtitleTrackGroup
@@ -1275,7 +1275,7 @@ void TBase::createActions() {
 #endif
 
 	// Titles
-	titleGroup = new MyActionGroup(this);
+	titleGroup = new TActionGroup(this);
 	connect( titleGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeTitle(int)) );
 	connect( core, SIGNAL(titleTrackChanged(int)),
@@ -1284,7 +1284,7 @@ void TBase::createActions() {
 			 this, SLOT(updateTitles()));
 
 	// Chapters
-	chapterGroup = new MyActionGroup(this);
+	chapterGroup = new TActionGroup(this);
 	connect( chapterGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeChapter(int)) );
 	connect( core, SIGNAL(chapterChanged(int)),
@@ -1295,55 +1295,55 @@ void TBase::createActions() {
 			 this, SLOT(updateChapters()));
 
 	// Angles
-	angleGroup = new MyActionGroup(this);
+	angleGroup = new TActionGroup(this);
 	connect( angleGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeAngle(int)) );
 	// Update done by updateTitles
 
 
-	ccGroup = new MyActionGroup(this);
-	ccNoneAct = new MyActionGroupItem(this, ccGroup, "cc_none", 0);
-	ccChannel1Act = new MyActionGroupItem(this, ccGroup, "cc_ch_1", 1);
-	ccChannel2Act = new MyActionGroupItem(this, ccGroup, "cc_ch_2", 2);
-	ccChannel3Act = new MyActionGroupItem(this, ccGroup, "cc_ch_3", 3);
-	ccChannel4Act = new MyActionGroupItem(this, ccGroup, "cc_ch_4", 4);
+	ccGroup = new TActionGroup(this);
+	ccNoneAct = new TActionGroupItem(this, ccGroup, "cc_none", 0);
+	ccChannel1Act = new TActionGroupItem(this, ccGroup, "cc_ch_1", 1);
+	ccChannel2Act = new TActionGroupItem(this, ccGroup, "cc_ch_2", 2);
+	ccChannel3Act = new TActionGroupItem(this, ccGroup, "cc_ch_3", 3);
+	ccChannel4Act = new TActionGroupItem(this, ccGroup, "cc_ch_4", 4);
 	connect( ccGroup, SIGNAL(activated(int)),
              core, SLOT(changeClosedCaptionChannel(int)) );
 
-	subFPSGroup = new MyActionGroup(this);
-	subFPSNoneAct = new MyActionGroupItem(this, subFPSGroup, "sub_fps_none", MediaSettings::SFPS_None);
-	/* subFPS23Act = new MyActionGroupItem(this, subFPSGroup, "sub_fps_23", MediaSettings::SFPS_23); */
-	subFPS23976Act = new MyActionGroupItem(this, subFPSGroup, "sub_fps_23976", MediaSettings::SFPS_23976);
-	subFPS24Act = new MyActionGroupItem(this, subFPSGroup, "sub_fps_24", MediaSettings::SFPS_24);
-	subFPS25Act = new MyActionGroupItem(this, subFPSGroup, "sub_fps_25", MediaSettings::SFPS_25);
-	subFPS29970Act = new MyActionGroupItem(this, subFPSGroup, "sub_fps_29970", MediaSettings::SFPS_29970);
-	subFPS30Act = new MyActionGroupItem(this, subFPSGroup, "sub_fps_30", MediaSettings::SFPS_30);
+	subFPSGroup = new TActionGroup(this);
+	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", MediaSettings::SFPS_None);
+	/* subFPS23Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23", MediaSettings::SFPS_23); */
+	subFPS23976Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23976", MediaSettings::SFPS_23976);
+	subFPS24Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_24", MediaSettings::SFPS_24);
+	subFPS25Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_25", MediaSettings::SFPS_25);
+	subFPS29970Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_29970", MediaSettings::SFPS_29970);
+	subFPS30Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_30", MediaSettings::SFPS_30);
 	connect( subFPSGroup, SIGNAL(activated(int)),
              core, SLOT(changeExternalSubFPS(int)) );
 
 
-	dvdnavUpAct = new MyAction(Qt::SHIFT | Qt::Key_Up, this, "dvdnav_up");
+	dvdnavUpAct = new TAction(Qt::SHIFT | Qt::Key_Up, this, "dvdnav_up");
 	connect( dvdnavUpAct, SIGNAL(triggered()), core, SLOT(dvdnavUp()) );
 
-	dvdnavDownAct = new MyAction(Qt::SHIFT | Qt::Key_Down, this, "dvdnav_down");
+	dvdnavDownAct = new TAction(Qt::SHIFT | Qt::Key_Down, this, "dvdnav_down");
 	connect( dvdnavDownAct, SIGNAL(triggered()), core, SLOT(dvdnavDown()) );
 
-	dvdnavLeftAct = new MyAction(Qt::SHIFT | Qt::Key_Left, this, "dvdnav_left");
+	dvdnavLeftAct = new TAction(Qt::SHIFT | Qt::Key_Left, this, "dvdnav_left");
 	connect( dvdnavLeftAct, SIGNAL(triggered()), core, SLOT(dvdnavLeft()) );
 
-	dvdnavRightAct = new MyAction(Qt::SHIFT | Qt::Key_Right, this, "dvdnav_right");
+	dvdnavRightAct = new TAction(Qt::SHIFT | Qt::Key_Right, this, "dvdnav_right");
 	connect( dvdnavRightAct, SIGNAL(triggered()), core, SLOT(dvdnavRight()) );
 
-	dvdnavMenuAct = new MyAction(Qt::SHIFT | Qt::Key_Return, this, "dvdnav_menu");
+	dvdnavMenuAct = new TAction(Qt::SHIFT | Qt::Key_Return, this, "dvdnav_menu");
 	connect( dvdnavMenuAct, SIGNAL(triggered()), core, SLOT(dvdnavMenu()) );
 
-	dvdnavSelectAct = new MyAction(Qt::Key_Return, this, "dvdnav_select");
+	dvdnavSelectAct = new TAction(Qt::Key_Return, this, "dvdnav_select");
 	connect( dvdnavSelectAct, SIGNAL(triggered()), core, SLOT(dvdnavSelect()) );
 
-	dvdnavPrevAct = new MyAction(Qt::SHIFT | Qt::Key_Escape, this, "dvdnav_prev");
+	dvdnavPrevAct = new TAction(Qt::SHIFT | Qt::Key_Escape, this, "dvdnav_prev");
 	connect( dvdnavPrevAct, SIGNAL(triggered()), core, SLOT(dvdnavPrev()) );
 
-	dvdnavMouseAct = new MyAction( this, "dvdnav_mouse");
+	dvdnavMouseAct = new TAction( this, "dvdnav_mouse");
 	connect( dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()) );
 }
 

@@ -82,8 +82,8 @@ protected:
 #endif
 	TimeLabelAction * time_label_action;
 
-	MyAction * editControlAct;
-	MyAction * editFloatingControlAct;
+	TAction * editControlAct;
+	TAction * editFloatingControlAct;
 };
 
 } // namespace Gui

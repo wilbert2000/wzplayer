@@ -21,9 +21,8 @@
 #define GUI_SKIN_MYBUTTON_H
 
 #include <QAbstractButton>
+#include "gui/action.h"
 #include "gui/skin/icon.h"
-
-class MyAction;
 
 namespace Gui {
 namespace Skin {
@@ -36,14 +35,14 @@ public:
     void setState(bool on) {state = on; }
 	void setIcon(TIcon p_icon) { icon = p_icon; }
 	TIcon getIcon() { return icon;}
-    void setAction(MyAction* pAction);
+	void setAction(TAction* pAction);
     bool eventFilter(QObject *watched, QEvent *event);
 
 private:
 	TIcon icon;
     bool mouseHover;
     bool state;
-    MyAction* action;
+	TAction* action;
 
 protected:
 	virtual void paintEvent(QPaintEvent *);

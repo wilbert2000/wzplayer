@@ -23,13 +23,14 @@
 #include <QList>
 #include <QStringList>
 #include <QWidget>
+#include "gui/action.h"
 
 class PlaylistItem {
 
 public:
 	PlaylistItem();
 	PlaylistItem(const QString &filename, const QString &name, double duration);
-	~PlaylistItem() {};
+	~PlaylistItem() {}
 
 	void setFilename(const QString &filename) { _filename = filename; }
 	void setName(const QString &name) { _name = name; }
@@ -53,7 +54,6 @@ private:
 
 class MyTableWidget;
 class QToolBar;
-class MyAction;
 class Core;
 class QMenu;
 class QSettings;
@@ -152,8 +152,8 @@ public:
 
 /*
 public:
-	MyAction * playPrevAct() { return prevAct; };
-	MyAction * playNextAct() { return nextAct; };
+	Gui::TAction * playPrevAct() { return prevAct; };
+	Gui::TAction * playNextAct() { return nextAct; };
 */
 
 signals:
@@ -218,27 +218,27 @@ protected:
 	QToolButton * add_button;
 	QToolButton * remove_button;
 
-	MyAction * openAct;
-	MyAction * saveAct;
-	MyAction * playAct;
-	MyAction * prevAct;
-	MyAction * nextAct;
-	MyAction * repeatAct;
-	MyAction * shuffleAct;
+	Gui::TAction * openAct;
+	Gui::TAction * saveAct;
+	Gui::TAction * playAct;
+	Gui::TAction * prevAct;
+	Gui::TAction * nextAct;
+	Gui::TAction * repeatAct;
+	Gui::TAction * shuffleAct;
 
-	MyAction * moveUpAct;
-	MyAction * moveDownAct;
-	MyAction * editAct;
+	Gui::TAction * moveUpAct;
+	Gui::TAction * moveDownAct;
+	Gui::TAction * editAct;
 
-	MyAction * addCurrentAct;
-	MyAction * addFilesAct;
-	MyAction * addDirectoryAct;
-	MyAction * addUrlsAct;
+	Gui::TAction * addCurrentAct;
+	Gui::TAction * addFilesAct;
+	Gui::TAction * addDirectoryAct;
+	Gui::TAction * addUrlsAct;
 
-	MyAction * removeSelectedAct;
-	MyAction * removeAllAct;
+	Gui::TAction * removeSelectedAct;
+	Gui::TAction * removeAllAct;
 
-	MyAction * deleteSelectedFileFromDiskAct;
+	Gui::TAction * deleteSelectedFileFromDiskAct;
 
 private:
 	bool modified;

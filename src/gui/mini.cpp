@@ -23,7 +23,7 @@
 
 #include "widgetactions.h"
 #include "autohidewidget.h"
-#include "myaction.h"
+#include "gui/action.h"
 #include "mplayerwindow.h"
 #include "global.h"
 #include "helper.h"
@@ -80,8 +80,8 @@ void TMini::createActions() {
 	connect( this, SIGNAL(timeChanged(QString)),
              time_label_action, SLOT(setText(QString)) );
 
-	editControlAct = new MyAction( this, "edit_control_minigui" );
-	editFloatingControlAct = new MyAction( this, "edit_floating_control_minigui" );
+	editControlAct = new TAction( this, "edit_control_minigui" );
+	editFloatingControlAct = new TAction( this, "edit_floating_control_minigui" );
 }
 
 

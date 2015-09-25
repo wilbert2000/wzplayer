@@ -16,34 +16,36 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MYACTION_H_
-#define _MYACTION_H_
+#ifndef _GUI_ACTION_H_
+#define _GUI_ACTION_H_
 
 #include <QAction>
 #include <QString>
 #include <QIcon>
 #include <QKeySequence>
 
-class MyAction : public QAction
+namespace Gui {
+
+class TAction : public QAction
 {
 
 public:
-	//! Creates a new MyAction with name \a name. If \a autoadd is true 
+	//! Creates a new TAction with name \a name. If \a autoadd is true
 	//! the action will be added to the parent
-	MyAction ( QObject * parent, const char * name, bool autoadd = true );
+	TAction ( QObject * parent, const char * name, bool autoadd = true );
 
-	//! Creates a new MyAction. If \a autoadd is true 
+	//! Creates a new TAction. If \a autoadd is true
 	//! the action will be added to the parent
-	MyAction ( QObject * parent, bool autoadd = true );
+	TAction ( QObject * parent, bool autoadd = true );
 
-	MyAction ( const QString & text, QKeySequence accel, 
+	TAction ( const QString & text, QKeySequence accel,
                QObject * parent, const char * name = "",
                bool autoadd = true );
 
-	MyAction ( QKeySequence accel, QObject * parent, 
+	TAction ( QKeySequence accel, QObject * parent,
                const char * name = "", bool autoadd = true );
 
-	~MyAction();
+	~TAction();
 
 	void addShortcut(QKeySequence key);
 
@@ -58,5 +60,7 @@ protected:
 	void addActionToParent();
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_ACTION_H_
 

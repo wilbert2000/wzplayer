@@ -31,7 +31,7 @@
 
 #include "ui_mediabarpanel.h"
 
-class MyAction;
+class TAction;
 
 namespace Gui {
 namespace Skin {

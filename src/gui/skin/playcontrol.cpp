@@ -150,7 +150,7 @@ void TPlayControl::updateWidths()
 void TPlayControl::setActionCollection(QList<QAction *> actions)
 {
 	/*
-	MyAction *a = static_cast<MyAction*>(actions.at(2));
+	TAction *a = static_cast<TAction*>(actions.at(2));
 	qDebug("*** action: %s", a->objectName().toLatin1().constData());
 	*/
 

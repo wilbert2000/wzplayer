@@ -24,7 +24,7 @@
 #include "widgetactions.h"
 #include "playlist.h"
 #include "mplayerwindow.h"
-#include "myaction.h"
+#include "gui/action.h"
 #include "images.h"
 #include "autohidewidget.h"
 #include "desktopinfo.h"
@@ -103,17 +103,17 @@ void TSkin::createActions() {
 	forwardbutton_action->setObjectName("forwardbutton_action");
 #endif
 
-	editToolbar1Act = new MyAction( this, "edit_main_toolbar" );
+	editToolbar1Act = new TAction( this, "edit_main_toolbar" );
 	#if defined(SKIN_EDITABLE_CONTROL)
-	editFloatingControlAct = new MyAction( this, "edit_floating_control" );
+	editFloatingControlAct = new TAction( this, "edit_floating_control" );
 	#endif
 
 	playOrPauseAct->setCheckable(true);
 
-	viewVideoInfoAct = new MyAction(this, "toggle_video_info_skingui" );
+	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui" );
 	viewVideoInfoAct->setCheckable(true);
 
-	scrollTitleAct = new MyAction(this, "toggle_scroll_title_skingui" );
+	scrollTitleAct = new TAction(this, "toggle_scroll_title_skingui" );
 	scrollTitleAct->setCheckable(true);
 }
 

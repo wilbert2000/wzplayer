@@ -20,7 +20,7 @@
 #include "styles.h"
 #include "widgetactions.h"
 #include "autohidewidget.h"
-#include "myaction.h"
+#include "gui/action.h"
 #include "mplayerwindow.h"
 #include "global.h"
 #include "helper.h"

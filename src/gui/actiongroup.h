@@ -16,46 +16,48 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MYACTIONGROUP_H_
-#define _MYACTIONGROUP_H_
+#ifndef _GUI_ACTIONGROUP_H_
+#define _GUI_ACTIONGROUP_H_
 
 #include <QActionGroup>
 #include <QWidget>
-#include "myaction.h"
+#include "gui/action.h"
 
-class MyActionGroup;
+namespace Gui {
 
-//! This class makes easy to create actions for MyActionGroup
+class TActionGroup;
 
-class MyActionGroupItem : public MyAction
+//! This class makes easy to create actions for TActionGroup
+
+class TActionGroupItem : public TAction
 {
 public:
 	//! Creates a new item.
 	/*! \a group is the group where the action will be added, \a data is
 	   the ID of the item. If \autoadd is true the action will be added to
        the parent (if it's a QWidget), so the shortcut could work. */
-	MyActionGroupItem( QObject * parent, MyActionGroup *group,
+	TActionGroupItem( QObject * parent, TActionGroup *group,
                        const char * name, int data, bool autoadd = true );
 
 	//! Creates a new item.
 	/*! \a text is the text that the item will have. */
-	MyActionGroupItem( QObject * parent, MyActionGroup *group,
+	TActionGroupItem( QObject * parent, TActionGroup *group,
                        const QString & text, const char * name, 
                        int data, bool autoadd = true );
 };
 
-class QAction;
 
-//! MyActionGroup makes easier to create exclusive menus based on items
+
+//! TActionGroup makes easier to create exclusive menus based on items
 //! with an integer data.
 
 
-class MyActionGroup : public QActionGroup
+class TActionGroup : public QActionGroup
 {
 	Q_OBJECT
 
 public:
-	MyActionGroup ( QObject * parent );
+	TActionGroup ( QObject * parent );
 
 	//! Looks for the item which ID is \a ID and checks and returns it
 	//! or 0 if not found
@@ -89,4 +91,6 @@ protected slots:
 	void setCheckedSlot(int ID);
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_ACTIONGROUP_H_

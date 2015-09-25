@@ -28,7 +28,7 @@ class QPushButton;
 class QToolBar;
 
 // TODO: check candidates for move to Gui
-class MyAction;
+class TAction;
 class EditableToolbar;
 class TimeSliderAction;
 class VolumeSliderAction;
@@ -104,13 +104,13 @@ protected:
 	AutohideWidget * floating_control;
 	TimeLabelAction * time_label_action;
 
-	MyAction * editToolbar1Act;
+	TAction * editToolbar1Act;
 #if defined(SKIN_EDITABLE_CONTROL)
-	MyAction * editFloatingControlAct;
+	TAction * editFloatingControlAct;
 #endif
 
-	MyAction * viewVideoInfoAct;
-	MyAction * scrollTitleAct;
+	TAction * viewVideoInfoAct;
+	TAction * scrollTitleAct;
 
 	QMenu * toolbar_menu;
 	QMenu * statusbar_menu;

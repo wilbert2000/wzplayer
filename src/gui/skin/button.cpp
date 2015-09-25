@@ -21,7 +21,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QDebug>
-#include "myaction.h"
+#include "gui/action.h"
 
 namespace Gui {
 namespace Skin {
@@ -71,7 +71,7 @@ void TButton::leaveEvent(QEvent *)
     update();
 }
 
-void TButton::setAction(MyAction *pAction)
+void TButton::setAction(TAction *pAction)
 {
     action = pAction;
     if(action)

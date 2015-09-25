@@ -164,8 +164,6 @@ HEADERS += guiconfig.h \
 	inputdvddirectory.h \
 	inputurl.h \
 	stereo3ddialog.h \
-	myaction.h \
-	myactiongroup.h \
 	filedialog.h \
 	inputmplayerversion.h \
 	about.h \
@@ -174,6 +172,8 @@ HEADERS += guiconfig.h \
 	favorites.h \
 	tvlist.h \
 	favoriteeditor.h \
+	gui/action.h \
+	gui/actiongroup.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
@@ -264,8 +264,6 @@ SOURCES	+= version.cpp \
 	inputdvddirectory.cpp \
 	inputurl.cpp \
 	stereo3ddialog.cpp \
-	myaction.cpp \
-	myactiongroup.cpp \
 	filedialog.cpp \
 	inputmplayerversion.cpp \
 	about.cpp \
@@ -274,6 +272,8 @@ SOURCES	+= version.cpp \
 	favorites.cpp \
 	tvlist.cpp \
 	favoriteeditor.cpp \
+	gui/action.cpp \
+	gui/actiongroup.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \

@@ -32,7 +32,7 @@
 #include <QTime>
 
 #include "config.h"
-#include "myactiongroup.h"
+#include "gui/actiongroup.h"
 
 
 class QWidget;
@@ -148,7 +148,7 @@ public:
 	void updateVideoWindow();
 	void moveVideo(int dx, int dy);
 
-	void setSizeGroup(MyActionGroup* group);
+	void setSizeGroup(Gui::TActionGroup* group);
 
 #if USE_COLORKEY
 	void setColorKey(QColor c);
@@ -233,7 +233,7 @@ private:
 
 	int video_width;
 	int video_height;
-	MyActionGroup* size_group;
+	Gui::TActionGroup* size_group;
 
 	QSize last_video_size;
 

@@ -17,13 +17,13 @@
 */
 
 #include "gui/skin/actiontools.h"
-#include "myaction.h"
+#include "gui/action.h"
 
 namespace Gui {
 namespace Skin {
 
 void TActionTools::setActionToButton(TButton * button, const QString & name, QList<QAction*> actions) {
-	MyAction * a = static_cast<MyAction*>( findAction(name, actions) );
+	TAction * a = static_cast<TAction*>( findAction(name, actions) );
 	if (a) button->setAction(a);
 }
 

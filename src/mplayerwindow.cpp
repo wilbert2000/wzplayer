@@ -272,7 +272,7 @@ QSize MplayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
 	return size;
 }
 
-void MplayerWindow::setSizeGroup(MyActionGroup* group) {
+void MplayerWindow::setSizeGroup(Gui::TActionGroup* group) {
 
 	size_group = group;
 	size_group->setEnabled(false);
