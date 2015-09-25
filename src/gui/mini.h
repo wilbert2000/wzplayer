@@ -19,8 +19,9 @@
 #ifndef _GUI_MINI_H_
 #define _GUI_MINI_H_
 
-#include "gui/baseplus.h"
 #include "guiconfig.h"
+#include "gui/baseplus.h"
+#include "gui/editabletoolbar.h"
 
 #define USE_VOLUME_BAR 1
 
@@ -28,7 +29,6 @@ class TimeSliderAction;
 class VolumeSliderAction;
 class TimeLabelAction;
 class AutohideWidget;
-class EditableToolbar;
 
 namespace Gui {
 
@@ -72,7 +72,7 @@ protected:
 	virtual void aboutToExitCompactMode();
 
 protected:
-	EditableToolbar * controlwidget;
+	TEditableToolbar * controlwidget;
 
 	AutohideWidget * floating_control;
 

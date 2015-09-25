@@ -43,7 +43,7 @@ TMini::TMini( QWidget * parent, Qt::WindowFlags flags )
 	createFloatingControl();
 
 	connect( editControlAct, SIGNAL(triggered()), controlwidget, SLOT(edit()) );
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
 
@@ -86,7 +86,7 @@ void TMini::createActions() {
 
 
 void TMini::createControlWidget() {
-	controlwidget = new EditableToolbar( this );
+	controlwidget = new TEditableToolbar( this );
 	controlwidget->setObjectName("controlwidget");
 	controlwidget->setLayoutDirection(Qt::LeftToRight);
 	controlwidget->setMovable(true);
@@ -104,7 +104,7 @@ void TMini::createFloatingControl() {
 	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
 
-	EditableToolbar * iw = new EditableToolbar(floating_control);
+	TEditableToolbar * iw = new TEditableToolbar(floating_control);
 	iw->setObjectName("floating_control");
 	connect(iw, SIGNAL(iconSizeChanged(const QSize &)), this, SLOT(adjustFloatingControlSize()));
 
@@ -237,7 +237,7 @@ void TMini::saveConfig(const QString &group) {
 
 	set->beginGroup( "actions" );
 	set->setValue("controlwidget", controlwidget->actionsToStringList() );
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	set->setValue("floating_control", iw->actionsToStringList() );
 	set->endGroup();
 
@@ -259,7 +259,7 @@ void TMini::loadConfig(const QString &group) {
 
 	set->beginGroup( "actions" );
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->setActionsFromStringList( set->value("floating_control", iw->defaultActions()).toStringList() );
 	set->endGroup();
 

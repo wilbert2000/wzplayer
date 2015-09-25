@@ -16,7 +16,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "skin.h"
+#include "gui/skin/skin.h"
+#include "gui/action.h"
+#include "gui/editabletoolbar.h"
 #include "helper.h"
 #include "colorutils.h"
 #include "core.h"
@@ -24,11 +26,9 @@
 #include "widgetactions.h"
 #include "playlist.h"
 #include "mplayerwindow.h"
-#include "gui/action.h"
 #include "images.h"
 #include "autohidewidget.h"
 #include "desktopinfo.h"
-#include "editabletoolbar.h"
 #include "mediabarpanel.h"
 #include "actionseditor.h"
 
@@ -69,7 +69,7 @@ TSkin::TSkin( QWidget * parent, Qt::WindowFlags flags )
 	connect( editToolbar1Act, SIGNAL(triggered()),
              toolbar1, SLOT(edit()) );
 	#if defined(SKIN_EDITABLE_CONTROL)
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
 	#endif
@@ -182,7 +182,7 @@ QMenu * TSkin::createPopupMenu() {
 }
 
 void TSkin::createMainToolBars() {
-	toolbar1 = new EditableToolbar( this );
+	toolbar1 = new TEditableToolbar( this );
 	toolbar1->setObjectName("toolbar");
 	toolbar1->setMovable(false);
 	//toolbar1->setFixedHeight(35);
@@ -266,7 +266,7 @@ void TSkin::createFloatingControl() {
 	floating_control->setAutoHide(true);
 
 #ifdef SKIN_EDITABLE_CONTROL
-	EditableToolbar * iw = new EditableToolbar(floating_control);
+	TEditableToolbar * iw = new TEditableToolbar(floating_control);
 
 	QStringList floatingcontrol_actions;
 	floatingcontrol_actions << "play" << "pause" << "stop" << "separator";
@@ -450,7 +450,7 @@ void TSkin::saveConfig(const QString &group) {
 	set->beginGroup( "actions" );
 	set->setValue("toolbar1", toolbar1->actionsToStringList() );
 #if defined(SKIN_EDITABLE_CONTROL)
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	set->setValue("floating_control", iw->actionsToStringList() );
 #endif
 	set->setValue("toolbar1_version", TOOLBAR_VERSION);
@@ -490,7 +490,7 @@ void TSkin::loadConfig(const QString &group) {
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 #if defined(SKIN_EDITABLE_CONTROL)
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->setActionsFromStringList( set->value("floating_control", iw->defaultActions()).toStringList() );
 	floating_control->adjustSize();
 #endif

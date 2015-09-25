@@ -174,6 +174,7 @@ HEADERS += guiconfig.h \
 	favoriteeditor.h \
 	gui/action.h \
 	gui/actiongroup.h \
+	gui/editabletoolbar.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
@@ -181,7 +182,6 @@ HEADERS += guiconfig.h \
     autohidewidget.h \
 	widgetactions.h \
 	toolbareditor.h \
-	editabletoolbar.h \
 	clhelp.h \
 	cleanconfig.h \
 	smplayer.h \
@@ -274,6 +274,7 @@ SOURCES	+= version.cpp \
 	favoriteeditor.cpp \
 	gui/action.cpp \
 	gui/actiongroup.cpp \
+	gui/editabletoolbar.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
@@ -281,7 +282,6 @@ SOURCES	+= version.cpp \
     autohidewidget.cpp \
 	widgetactions.cpp \
 	toolbareditor.cpp \
-	editabletoolbar.cpp \
 	clhelp.cpp \
 	cleanconfig.cpp \
 	smplayer.cpp \

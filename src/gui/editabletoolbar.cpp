@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "editabletoolbar.h"
+#include "gui/editabletoolbar.h"
 #include "toolbareditor.h"
 #include <QAction>
 
-EditableToolbar::EditableToolbar(QWidget * parent) : QToolBar(parent)
+namespace Gui {
+
+TEditableToolbar::TEditableToolbar(QWidget * parent) : QToolBar(parent)
 {
 	widget = parent;
 }
 
-EditableToolbar::~EditableToolbar() {
+TEditableToolbar::~TEditableToolbar() {
 }
 
-QList<QAction *> EditableToolbar::allActions() {
+QList<QAction *> TEditableToolbar::allActions() {
 	if (!all_actions.isEmpty()) return all_actions;
 
 	QList<QAction *> actions;
@@ -38,17 +40,17 @@ QList<QAction *> EditableToolbar::allActions() {
 	return actions;
 }
 
-void EditableToolbar::setActionsFromStringList(QStringList action_names) {
+void TEditableToolbar::setActionsFromStringList(QStringList action_names) {
 	clear();
 	ToolbarEditor::load(this, action_names, allActions());
 }
 
-QStringList EditableToolbar::actionsToStringList() {
+QStringList TEditableToolbar::actionsToStringList() {
 	return ToolbarEditor::save(this);
 }
 
-void EditableToolbar::edit() {
-	qDebug("EditableToolbar::edit");
+void TEditableToolbar::edit() {
+	qDebug("TEditableToolbar::edit");
 
 	ToolbarEditor e(widget);
 	e.setAllActions(allActions());
@@ -58,12 +60,13 @@ void EditableToolbar::edit() {
 
 	if (e.exec() == QDialog::Accepted) {
 		QStringList r = e.activeActionsToStringList();
-		qDebug("EditableToolbar::edit: list: %s", r.join(",").toUtf8().constData());
+		qDebug("TEditableToolbar::edit: list: %s", r.join(",").toUtf8().constData());
 		setActionsFromStringList(r);
 		resize(width(), e.iconSize());
 		setIconSize(QSize(e.iconSize(), e.iconSize()));
 	}
 }
 
+} // namespace Gui
 #include "moc_editabletoolbar.cpp"
 

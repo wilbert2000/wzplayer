@@ -20,16 +20,16 @@
 #define _GUI_SKIN_H_
 
 #include "guiconfig.h"
+#include "gui/action.h"
 #include "gui/baseplus.h"
 #include "gui/skin/mediabarpanel.h"
+#include "gui/editabletoolbar.h"
 
 class QMenu;
 class QPushButton;
 class QToolBar;
 
 // TODO: check candidates for move to Gui
-class TAction;
-class EditableToolbar;
 class TimeSliderAction;
 class VolumeSliderAction;
 class AutohideWidget;
@@ -90,7 +90,7 @@ protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
 	QAction * mediaBarPanelAction;
 
-	EditableToolbar * toolbar1;
+	TEditableToolbar * toolbar1;
 	QToolBar * controlwidget;
 
 	TimeSliderAction * timeslider_action;

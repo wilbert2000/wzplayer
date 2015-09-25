@@ -76,7 +76,7 @@ TDefault::TDefault( QWidget * parent, Qt::WindowFlags flags )
              controlwidget, SLOT(edit()) );
 	connect( editControl2Act, SIGNAL(triggered()),
              controlwidget_mini, SLOT(edit()) );
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()),
              iw, SLOT(edit()) );
@@ -200,7 +200,7 @@ QMenu * TDefault::createPopupMenu() {
 }
 
 void TDefault::createMainToolBars() {
-	toolbar1 = new EditableToolbar( this );
+	toolbar1 = new TEditableToolbar( this );
 	toolbar1->setObjectName("toolbar1");
 	//toolbar1->setMovable(false);
 	addToolBar(Qt::TopToolBarArea, toolbar1);
@@ -246,7 +246,7 @@ void TDefault::createMainToolBars() {
 void TDefault::createControlWidgetMini() {
 	qDebug("Gui::TDefault::createControlWidgetMini");
 
-	controlwidget_mini = new EditableToolbar( this );
+	controlwidget_mini = new TEditableToolbar( this );
 	controlwidget_mini->setObjectName("controlwidget_mini");
 	controlwidget_mini->setLayoutDirection(Qt::LeftToRight);
 	//controlwidget_mini->setResizeEnabled(false);
@@ -265,7 +265,7 @@ void TDefault::createControlWidgetMini() {
 void TDefault::createControlWidget() {
 	qDebug("Gui::TDefault::createControlWidget");
 
-	controlwidget = new EditableToolbar( this );
+	controlwidget = new TEditableToolbar( this );
 	controlwidget->setObjectName("controlwidget");
 	controlwidget->setLayoutDirection(Qt::LeftToRight);
 	//controlwidget->setResizeEnabled(false);
@@ -295,7 +295,7 @@ void TDefault::createFloatingControl() {
 	floating_control = new AutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
 
-	EditableToolbar * iw = new EditableToolbar(floating_control);
+	TEditableToolbar * iw = new TEditableToolbar(floating_control);
 	iw->setObjectName("floating_control");
 	connect(iw, SIGNAL(iconSizeChanged(const QSize &)), this, SLOT(adjustFloatingControlSize()));
 
@@ -638,7 +638,7 @@ void TDefault::saveConfig(const QString &group) {
 	set->setValue("toolbar1", toolbar1->actionsToStringList() );
 	set->setValue("controlwidget", controlwidget->actionsToStringList() );
 	set->setValue("controlwidget_mini", controlwidget_mini->actionsToStringList() );
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	set->setValue("floating_control", iw->actionsToStringList() );
 	set->setValue("toolbar1_version", TOOLBAR_VERSION);
 	set->endGroup();
@@ -680,7 +680,7 @@ void TDefault::loadConfig(const QString &group) {
 	}
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
 	controlwidget_mini->setActionsFromStringList( set->value("controlwidget_mini", controlwidget_mini->defaultActions()).toStringList() );
-	EditableToolbar * iw = static_cast<EditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->setActionsFromStringList( set->value("floating_control", iw->defaultActions()).toStringList() );
 	set->endGroup();
 

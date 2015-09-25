@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef EDITABLETOOLBAR_H
-#define EDITABLETOOLBAR_H
+#ifndef GUI_EDITABLETOOLBAR_H
+#define GUI_EDITABLETOOLBAR_H
 
 #include <QToolBar>
 #include <QList>
@@ -26,13 +26,15 @@
 class QAction;
 class QWidget;
 
-class EditableToolbar : public QToolBar
+namespace Gui {
+
+class TEditableToolbar : public QToolBar
 {
 	Q_OBJECT
 
 public:
-	EditableToolbar( QWidget * parent = 0 );
-	~EditableToolbar();
+	TEditableToolbar( QWidget * parent = 0 );
+	~TEditableToolbar();
 
 	void setActionsFromStringList(QStringList action_names);
 	QStringList actionsToStringList();
@@ -56,4 +58,6 @@ protected:
 	QStringList default_actions;
 };
 
-#endif
+} // namesapce Gui
+
+#endif // GUI_EDITABLETOOLBAR_H

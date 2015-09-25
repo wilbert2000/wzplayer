@@ -22,10 +22,10 @@
 #include <QPoint>
 
 #include "guiconfig.h"
-#include "baseplus.h"
+#include "gui/baseplus.h"
+#include "gui/editabletoolbar.h"
 
 class QToolBar;
-class EditableToolbar;
 class QPushButton;
 class QResizeEvent;
 class TAction;
@@ -106,10 +106,10 @@ protected:
 	QLabel * ab_section_display;
 	QLabel * video_info_display;
 
-	EditableToolbar * controlwidget;
-	EditableToolbar * controlwidget_mini;
+	TEditableToolbar * controlwidget;
+	TEditableToolbar * controlwidget_mini;
 
-	EditableToolbar * toolbar1;
+	TEditableToolbar * toolbar1;
 	QToolBar * toolbar2;
 
 	QPushButton * select_audio;
