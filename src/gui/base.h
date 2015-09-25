@@ -28,6 +28,7 @@
 #include "mediasettings.h"
 #include "preferences.h"
 #include "core.h"
+#include "gui/playlist.h"
 
 #ifdef Q_OS_WIN
 #ifdef AVOID_SCREENSAVER
@@ -47,7 +48,6 @@ class QLabel;
 class FilePropertiesDialog;
 class VideoEqualizer;
 class AudioEqualizer;
-class Playlist;
 #ifdef FIND_SUBTITLES
 class FindSubtitlesWindow;
 #endif
@@ -56,8 +56,6 @@ class FindSubtitlesWindow;
 class VideoPreview;
 #endif
 
-class TAction;
-class TActionGroup;
 class PreferencesDialog;
 class Favorites;
 class TVList;
@@ -79,7 +77,7 @@ public:
 	~TBase();
 
 	/* Return true if the window shouldn't show on startup */
-	virtual bool startHidden() { return false; };
+	virtual bool startHidden() { return false; }
 
 	//! Execute all actions in \a actions. The actions should be
 	//! separated by spaces. Checkable actions could have a parameter:
@@ -87,15 +85,15 @@ public:
 	void runActions(QString actions);
 
 	//! Execute all the actions after the video has started to play
-	void runActionsLater(QString actions) { pending_actions_to_run = actions; };
+	void runActionsLater(QString actions) { pending_actions_to_run = actions; }
 
 #ifdef LOG_SMPLAYER
 	//! Saves the line from the smplayer output
 	void recordSmplayerLog(QString line);
 #endif
 
-	Core * getCore() { return core; };
-	Playlist * getPlaylist() { return playlist; };
+	Core * getCore() { return core; }
+	TPlaylist * getPlaylist() { return playlist; }
 
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
@@ -152,8 +150,8 @@ public slots:
 	virtual void showTubeBrowser();
 #endif
 
-	virtual void showPlaylist();
-	virtual void showPlaylist(bool b);
+	virtual void showTPlaylist();
+	virtual void showTPlaylist(bool b);
 	virtual void showVideoEqualizer();
 	virtual void showVideoEqualizer(bool b);
 	virtual void showAudioEqualizer();
@@ -184,11 +182,11 @@ public slots:
 	virtual void checkStayOnTop(Core::State);
 	void toggleStayOnTop();
 
-	void setForceCloseOnFinish(int n) { arg_close_on_finish = n; };
-	int forceCloseOnFinish() { return arg_close_on_finish; };
+	void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
+	int forceCloseOnFinish() { return arg_close_on_finish; }
 
-	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; };
-	int forceStartInFullscreen() { return arg_start_in_fullscreen; };
+	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; }
+	int forceStartInFullscreen() { return arg_start_in_fullscreen; }
 
 	void slotNoVideo();
 
@@ -285,7 +283,7 @@ protected slots:
 	virtual void xbutton2ClickFunction();
 	virtual void processFunction(QString function);
 
-	virtual void dragEnterEvent( QDragEnterEvent * ) ;
+	virtual void dragEnterEvent( QDragEnterEvent * );
 	virtual void dropEvent ( QDropEvent * );
 
 	virtual void applyNewPreferences();
@@ -381,7 +379,7 @@ protected:
 	void createMplayerWindow();
 	void createVideoEqualizer();
 	void createAudioEqualizer();
-	void createPlaylist();
+	void createTPlaylist();
 	void createPanel();
 	void createPreferencesDialog();
 	void createFilePropertiesDialog();
@@ -405,7 +403,7 @@ protected:
 	// Menu File
 	TAction * openFileAct;
 	TAction * openDirectoryAct;
-	TAction * openPlaylistAct;
+	TAction * openTPlaylistAct;
 	TAction * openVCDAct;
 	TAction * openAudioCDAct;
 	TAction * openDVDAct;
@@ -540,7 +538,7 @@ protected:
 	TAction * incOSDScaleAct;
 	TAction * decOSDScaleAct;
 
-	// Playlist
+	// TPlaylist
 	TAction * playPrevAct;
 	TAction * playNextAct;
 
@@ -789,7 +787,7 @@ protected:
 
 	PreferencesDialog *pref_dialog;
 	FilePropertiesDialog *file_dialog;
-	Playlist * playlist;
+	TPlaylist * playlist;
 	VideoEqualizer * video_equalizer;
 	AudioEqualizer * audio_equalizer;
 #ifdef FIND_SUBTITLES

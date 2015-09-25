@@ -17,20 +17,30 @@
 */
 
 
-#ifndef _PLAYLIST_H_
-#define _PLAYLIST_H_
+#ifndef _GUI_PLAYLIST_H_
+#define _GUI_PLAYLIST_H_
 
 #include <QList>
 #include <QStringList>
 #include <QWidget>
 #include "gui/action.h"
+#include "gui/tablewidget.h"
 
-class PlaylistItem {
+class QToolBar;
+class Core;
+class QMenu;
+class QSettings;
+class QToolButton;
+class QTimer;
+
+namespace Gui {
+
+class TPlaylistItem {
 
 public:
-	PlaylistItem();
-	PlaylistItem(const QString &filename, const QString &name, double duration);
-	~PlaylistItem() {}
+	TPlaylistItem();
+	TPlaylistItem(const QString &filename, const QString &name, double duration);
+	~TPlaylistItem() {}
 
 	void setFilename(const QString &filename) { _filename = filename; }
 	void setName(const QString &name) { _name = name; }
@@ -52,23 +62,15 @@ private:
 	bool _played, _deleted, _edited;
 };
 
-class MyTableWidget;
-class QToolBar;
-class Core;
-class QMenu;
-class QSettings;
-class QToolButton;
-class QTimer;
-
-class Playlist : public QWidget
+class TPlaylist : public QWidget
 {
 	Q_OBJECT
 
 public:
 	enum AutoGetInfo { NoGetInfo = 0, GetInfo = 1, UserDefined = 2 };
 
-	Playlist( Core *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window );
-	~Playlist();
+	TPlaylist( Core *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window );
+	~TPlaylist();
 
 	int count();
 	bool isEmpty();
@@ -148,12 +150,12 @@ public:
 	bool playFilesFromStart() { return play_files_from_start; }
 	bool ignorePlayerErrors() { return ignore_player_errors; }
 
-	QList<PlaylistItem> playlist() {return pl;}
+	QList<TPlaylistItem> playlist() {return pl;}
 
 /*
 public:
-	Gui::TAction * playPrevAct() { return prevAct; };
-	Gui::TAction * playNextAct() { return nextAct; };
+	TAction * playPrevAct() { return prevAct; };
+	TAction * playNextAct() { return nextAct; };
 */
 
 signals:
@@ -200,8 +202,8 @@ protected:
 	virtual void closeEvent( QCloseEvent * e );
 
 protected:
-	typedef QList <PlaylistItem> PlaylistItemList;
-	PlaylistItemList pl;
+	typedef QList <TPlaylistItem> TPlaylistItemList;
+	TPlaylistItemList pl;
 	int current_item;
 
 	QString playlist_path;
@@ -212,33 +214,33 @@ protected:
 	QMenu * remove_menu;
 	QMenu * popup;
 
-	MyTableWidget * listView;
+	TTableWidget * listView;
 
 	QToolBar * toolbar;
 	QToolButton * add_button;
 	QToolButton * remove_button;
 
-	Gui::TAction * openAct;
-	Gui::TAction * saveAct;
-	Gui::TAction * playAct;
-	Gui::TAction * prevAct;
-	Gui::TAction * nextAct;
-	Gui::TAction * repeatAct;
-	Gui::TAction * shuffleAct;
+	TAction * openAct;
+	TAction * saveAct;
+	TAction * playAct;
+	TAction * prevAct;
+	TAction * nextAct;
+	TAction * repeatAct;
+	TAction * shuffleAct;
 
-	Gui::TAction * moveUpAct;
-	Gui::TAction * moveDownAct;
-	Gui::TAction * editAct;
+	TAction * moveUpAct;
+	TAction * moveDownAct;
+	TAction * editAct;
 
-	Gui::TAction * addCurrentAct;
-	Gui::TAction * addFilesAct;
-	Gui::TAction * addDirectoryAct;
-	Gui::TAction * addUrlsAct;
+	TAction * addCurrentAct;
+	TAction * addFilesAct;
+	TAction * addDirectoryAct;
+	TAction * addUrlsAct;
 
-	Gui::TAction * removeSelectedAct;
-	Gui::TAction * removeAllAct;
+	TAction * removeSelectedAct;
+	TAction * removeAllAct;
 
-	Gui::TAction * deleteSelectedFileFromDiskAct;
+	TAction * deleteSelectedFileFromDiskAct;
 
 private:
 	bool modified;
@@ -255,6 +257,7 @@ private:
 	bool ignore_player_errors;
 };
 
+} // namespace Gui
 
-#endif
+#endif // _GUI_PLAYLIST_H_
 

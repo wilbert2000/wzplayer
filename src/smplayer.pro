@@ -127,7 +127,6 @@ HEADERS += guiconfig.h \
 	logwindow.h \
 	infofile.h \
 	seekwidget.h \
-	mytablewidget.h \
 	shortcutgetter.h \
 	actionseditor.h \
 	filechooser.h \
@@ -153,7 +152,6 @@ HEADERS += guiconfig.h \
 	prefnetwork.h \
 	filepropertiesdialog.h \
 	multilineinputdialog.h \
-	playlist.h \
 	playlistdock.h \
 	verticaltext.h \
 	eqslider.h \
@@ -177,6 +175,8 @@ HEADERS += guiconfig.h \
 	gui/slider.h \
 	gui/timeslider.h \
     gui/autohidewidget.h \
+	gui/tablewidget.h \
+	gui/playlist.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
@@ -227,7 +227,6 @@ SOURCES	+= version.cpp \
 	logwindow.cpp \
 	infofile.cpp \
 	seekwidget.cpp \
-	mytablewidget.cpp \
 	shortcutgetter.cpp \
 	actionseditor.cpp \
 	filechooser.cpp \
@@ -253,7 +252,6 @@ SOURCES	+= version.cpp \
 	prefnetwork.cpp \
 	filepropertiesdialog.cpp \
 	multilineinputdialog.cpp \
-	playlist.cpp \
 	playlistdock.cpp \
 	verticaltext.cpp \
 	eqslider.cpp \
@@ -277,6 +275,8 @@ SOURCES	+= version.cpp \
 	gui/slider.cpp \
 	gui/timeslider.cpp \
     gui/autohidewidget.cpp \
+   	gui/tablewidget.cpp \
+	gui/playlist.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \

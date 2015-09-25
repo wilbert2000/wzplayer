@@ -120,7 +120,7 @@ TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
 	tray->setContextMenu( context_menu );
 
 #if DOCK_PLAYLIST
-	// Playlistdock
+	// TPlaylistdock
 	playlistdock = new PlaylistDock(this);
 	playlistdock->setObjectName("playlistdock");
 	playlistdock->setFloating(false); // To avoid that the playlist is visible for a moment
@@ -208,7 +208,7 @@ void TBasePlus::retranslateStrings() {
 	updateShowAllAct();
 
 #if DOCK_PLAYLIST
-    playlistdock->setWindowTitle( tr("Playlist") );
+    playlistdock->setWindowTitle( tr("TPlaylist") );
 #endif
 }
 
@@ -376,7 +376,7 @@ void TBasePlus::setWindowCaption(const QString & title) {
 }
 
 
-// Playlist stuff
+// TPlaylist stuff
 void TBasePlus::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBasePlus::aboutToEnterFullscreen");
 
@@ -459,11 +459,11 @@ void TBasePlus::aboutToExitCompactMode() {
 }
 
 #if DOCK_PLAYLIST
-void TBasePlus::showPlaylist(bool b) {
-	qDebug("Gui::TBasePlus::showPlaylist: %d", b);
-	//qDebug("Gui::TBasePlus::showPlaylist (before): playlist visible: %d", playlistdock->isVisible());
-	//qDebug("Gui::TBasePlus::showPlaylist (before): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	//qDebug("Gui::TBasePlus::showPlaylist (before): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
+void TBasePlus::showTPlaylist(bool b) {
+	qDebug("Gui::TBasePlus::showTPlaylist: %d", b);
+	//qDebug("Gui::TBasePlus::showTPlaylist (before): playlist visible: %d", playlistdock->isVisible());
+	//qDebug("Gui::TBasePlus::showTPlaylist (before): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
+	//qDebug("Gui::TBasePlus::showTPlaylist (before): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
 
 	if ( !b ) {
 		playlistdock->hide();
@@ -474,16 +474,16 @@ void TBasePlus::showPlaylist(bool b) {
 		// Check if playlist is outside of the screen
 		if (playlistdock->isFloating()) {
 			if (!DesktopInfo::isInsideScreen(playlistdock)) {
-				qWarning("TBasePlus::showPlaylist: playlist is outside of the screen");
+				qWarning("TBasePlus::showTPlaylist: playlist is outside of the screen");
 				playlistdock->move(0,0);
 			}
 		}
 	}
 	//updateWidgets();
 
-	//qDebug("Gui::TBasePlus::showPlaylist (after): playlist visible: %d", playlistdock->isVisible());
-	//qDebug("Gui::TBasePlus::showPlaylist (after): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
-	//qDebug("Gui::TBasePlus::showPlaylist (after): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
+	//qDebug("Gui::TBasePlus::showTPlaylist (after): playlist visible: %d", playlistdock->isVisible());
+	//qDebug("Gui::TBasePlus::showTPlaylist (after): playlist position: %d, %d", playlistdock->pos().x(), playlistdock->pos().y());
+	//qDebug("Gui::TBasePlus::showTPlaylist (after): playlist size: %d x %d", playlistdock->size().width(), playlistdock->size().height());
 }
 
 void TBasePlus::playlistClosed() {

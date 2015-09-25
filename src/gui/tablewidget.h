@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MYTABLEWIDGET_H_
-#define _MYTABLEWIDGET_H_
+#ifndef _GUI_TABLEWIDGET_H_
+#define _GUI_TABLEWIDGET_H_
 
 #include <QTableWidget>
 #include <QIcon>
 
 class QTableWidgetItem;
 
-class MyTableWidget : public QTableWidget 
+namespace Gui {
+
+class TTableWidget : public QTableWidget
 {
 public:
-	MyTableWidget ( QWidget * parent = 0 );
-	MyTableWidget ( int rows, int columns, QWidget * parent = 0 );
+	TTableWidget ( QWidget * parent = 0 );
+	TTableWidget ( int rows, int columns, QWidget * parent = 0 );
 
 	QTableWidgetItem * getItem(int row, int column, bool * existed = 0 );
 
@@ -45,4 +47,6 @@ protected:
 
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_TABLEWIDGET_H_

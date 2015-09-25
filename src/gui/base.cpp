@@ -182,7 +182,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 
 	createMplayerWindow();
 	createCore();
-	createPlaylist();
+	createTPlaylist();
 	createVideoEqualizer();
 	createAudioEqualizer();
 
@@ -229,7 +229,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 
 #if !DOCK_PLAYLIST
 	connect(playlist, SIGNAL(visibilityChanged(bool)),
-            showPlaylistAct, SLOT(setChecked(bool)) );
+			showPlaylistAct, SLOT(setChecked(bool)) );
 #endif
 
 	setAcceptDrops(true);
@@ -438,8 +438,8 @@ void TBase::createActions() {
 	connect( openDirectoryAct, SIGNAL(triggered()),
              this, SLOT(openDirectory()) );
 
-	openPlaylistAct = new TAction( this, "open_playlist" );
-	connect( openPlaylistAct, SIGNAL(triggered()),
+	openTPlaylistAct = new TAction( this, "open_playlist" );
+	connect( openTPlaylistAct, SIGNAL(triggered()),
              playlist, SLOT(load()) );
 
 	openVCDAct = new TAction( this, "open_vcd" );
@@ -862,7 +862,7 @@ void TBase::createActions() {
 	showPlaylistAct = new TAction( QKeySequence("Ctrl+L"), this, "show_playlist" );
 	showPlaylistAct->setCheckable( true );
 	connect( showPlaylistAct, SIGNAL(toggled(bool)),
-             this, SLOT(showPlaylist(bool)) );
+             this, SLOT(showTPlaylist(bool)) );
 
 	showPropertiesAct = new TAction( QKeySequence("Ctrl+I"), this, "show_file_properties" );
 	connect( showPropertiesAct, SIGNAL(triggered()),
@@ -955,7 +955,7 @@ void TBase::createActions() {
 	connect(decOSDScaleAct, SIGNAL(triggered()), core, SLOT(decOSDScale()));
 
 
-	// Playlist
+	// TPlaylist
 	playNextAct = new TAction(Qt::Key_Greater, this, "play_next");
 	playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
 	connect( playNextAct, SIGNAL(triggered()), playlist, SLOT(playNext()) );
@@ -1628,7 +1628,7 @@ void TBase::retranslateStrings() {
 	// Menu File
 	openFileAct->change( Images::icon("open"), tr("&File...") );
 	openDirectoryAct->change( Images::icon("openfolder"), tr("D&irectory...") );
-	openPlaylistAct->change( Images::icon("open_playlist"), tr("&Playlist...") );
+	openTPlaylistAct->change( Images::icon("open_playlist"), tr("&TPlaylist...") );
 	openVCDAct->change( Images::icon("vcd"), tr("V&CD") );
 	openAudioCDAct->change( Images::icon("cdda"), tr("&Audio CD") );
 	openDVDAct->change( Images::icon("dvd"), tr("&DVD from drive") );
@@ -1780,7 +1780,7 @@ void TBase::retranslateStrings() {
 	subFPS30Act->change( "3&0" );
 
 	// Menu Options
-	showPlaylistAct->change( Images::icon("playlist"), tr("&Playlist") );
+	showPlaylistAct->change( Images::icon("playlist"), tr("&TPlaylist") );
 	showPropertiesAct->change( Images::icon("info"), tr("View &info and properties...") );
 	showPreferencesAct->change( Images::icon("prefs"), tr("P&references") );
 #ifdef YOUTUBE_SUPPORT
@@ -1823,7 +1823,7 @@ void TBase::retranslateStrings() {
 	incOSDScaleAct->change(tr("Size &+"));
 	decOSDScaleAct->change(tr("Size &-"));
 
-	// Playlist
+	// TPlaylist
 	playNextAct->change( tr("&Next") );
 	playPrevAct->change( tr("Pre&vious") );
 
@@ -2332,12 +2332,12 @@ void TBase::createAudioEqualizer() {
              this, SLOT(updateWidgets()) );
 }
 
-void TBase::createPlaylist() {
+void TBase::createTPlaylist() {
 #if DOCK_PLAYLIST
-	playlist = new Playlist(core, this, 0);
+	playlist = new TPlaylist(core, this, 0);
 #else
-	//playlist = new Playlist(core, this, "playlist");
-	playlist = new Playlist(core, 0);
+	//playlist = new TPlaylist(core, this, "playlist");
+	playlist = new TPlaylist(core, 0);
 #endif
 
 	/*
@@ -2412,7 +2412,7 @@ void TBase::createMenus() {
 	openMenu->addMenu( recentfiles_menu );
 	openMenu->addMenu(favorites);
 	openMenu->addAction(openDirectoryAct);
-	openMenu->addAction(openPlaylistAct);
+	openMenu->addAction(openTPlaylistAct);
 
 	// Disc submenu
 	disc_menu = new QMenu(this);
@@ -2862,11 +2862,11 @@ void TBase::closeWindow() {
 	close();
 }
 
-void TBase::showPlaylist() {
-	showPlaylist( !playlist->isVisible() );
+void TBase::showTPlaylist() {
+	showTPlaylist( !playlist->isVisible() );
 }
 
-void TBase::showPlaylist(bool b) {
+void TBase::showTPlaylist(bool b) {
 	if ( !b ) {
 		playlist->hide();
 	} else {
@@ -3623,7 +3623,7 @@ void TBase::updateWidgets() {
 	// Audio equalizer
 	audioEqualizerAct->setChecked( audio_equalizer->isVisible() );
 
-	// Playlist
+	// TPlaylist
 #if !DOCK_PLAYLIST
 	//showPlaylistAct->setChecked( playlist->isVisible() );
 #endif
@@ -3777,7 +3777,7 @@ void TBase::openFile() {
 					   tr("Multimedia") + e.allPlayable().forFilter()+";;" +
 					   tr("Video") + e.video().forFilter()+";;" +
 					   tr("Audio") + e.audio().forFilter()+";;" +
-					   tr("Playlists") + e.playlist().forFilter()+";;" +
+					   tr("TPlaylists") + e.playlist().forFilter()+";;" +
 					   tr("All files") +" (*.*)" );
 
 	if ( !s.isEmpty() ) {

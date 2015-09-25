@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "playlist.h"
+#include "gui/playlist.h"
 
 #include <QToolBar>
 #include <QFile>
@@ -42,8 +42,8 @@
 #include <QMimeData>
 #include <QDebug>
 
-#include "mytablewidget.h"
 #include "gui/action.h"
+#include "gui/tablewidget.h"
 #include "filedialog.h"
 #include "helper.h"
 #include "images.h"
@@ -69,7 +69,9 @@
 
 using namespace Global;
 
-PlaylistItem::PlaylistItem() {
+namespace Gui {
+
+TPlaylistItem::TPlaylistItem() {
 	_filename = "";
 	_name = "";
 	_duration = 0;
@@ -77,7 +79,7 @@ PlaylistItem::PlaylistItem() {
 	_deleted=false;
 }
 
-PlaylistItem::PlaylistItem(const QString &filename, const QString &name, double duration) {
+TPlaylistItem::TPlaylistItem(const QString &filename, const QString &name, double duration) {
 	_filename = filename;
 	_name = name;
 	_duration = duration;
@@ -86,7 +88,7 @@ PlaylistItem::PlaylistItem(const QString &filename, const QString &name, double 
 	_edited = false;
 }
 
-Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
+TPlaylist::TPlaylist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	: QWidget(parent,f) 
 {
 	save_playlist_in_config = true;
@@ -157,19 +159,19 @@ Playlist::Playlist( Core *c, QWidget * parent, Qt::WindowFlags f)
 	save_timer->start( 5 * 60000 ); 
 }
 
-Playlist::~Playlist() {
+TPlaylist::~TPlaylist() {
 	saveSettings();
 }
 
-void Playlist::setModified(bool mod) {
-	//qDebug("Playlist::setModified: %d", mod);
+void TPlaylist::setModified(bool mod) {
+	//qDebug("TPlaylist::setModified: %d", mod);
 
 	modified = mod;
 	emit modifiedChanged(modified);
 }
 
-void Playlist::createTable() {
-	listView = new MyTableWidget( 0, COL_TIME + 1, this);
+void TPlaylist::createTable() {
+	listView = new TTableWidget( 0, COL_TIME + 1, this);
 	listView->setObjectName("playlist_table");
 	listView->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 	listView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -208,7 +210,7 @@ void Playlist::createTable() {
 	// <--
 }
 
-void Playlist::createActions() {
+void TPlaylist::createActions() {
 	openAct = new Gui::TAction(this, "pl_open", false);
 	connect( openAct, SIGNAL(triggered()), this, SLOT(load()) );
 
@@ -264,7 +266,7 @@ void Playlist::createActions() {
 	connect( deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 }
 
-void Playlist::createToolbar() {
+void TPlaylist::createToolbar() {
 	toolbar = new QToolBar(this);
 	toolbar->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 
@@ -316,7 +318,7 @@ void Playlist::createToolbar() {
              this, SLOT(showPopup(const QPoint &)) );
 }
 
-void Playlist::retranslateStrings() {
+void TPlaylist::retranslateStrings() {
 	listView->setHorizontalHeaderLabels( QStringList() << "   " <<
         tr("Name") << tr("Length") );
 
@@ -364,10 +366,10 @@ void Playlist::retranslateStrings() {
 	setWindowTitle( tr( "SMPlayer - Playlist" ) );
 }
 
-void Playlist::list() {
-	qDebug("Playlist::list");
+void TPlaylist::list() {
+	qDebug("TPlaylist::list");
 
-	PlaylistItemList::iterator it;
+	TPlaylistItemList::iterator it;
 	for ( it = pl.begin(); it != pl.end(); ++it ) {
 		qDebug( "filename: '%s', name: '%s' duration: %f",
                (*it).filename().toUtf8().data(), (*it).name().toUtf8().data(),
@@ -376,11 +378,11 @@ void Playlist::list() {
 }
 
 
-QString Playlist::print(QString seperator){
-	qDebug("Playlist::print");
+QString TPlaylist::print(QString seperator){
+	qDebug("TPlaylist::print");
 	QString output = "";
 
-	PlaylistItemList::iterator it;
+	TPlaylistItemList::iterator it;
 	for ( it = pl.begin(); it != pl.end(); ++it ) {
 		output += it->filename() + seperator + it->name() + seperator + QString::number(it->duration()) + "\r\n";
 	}
@@ -388,8 +390,8 @@ QString Playlist::print(QString seperator){
 	return output;
 }
 
-void Playlist::updateView() {
-	qDebug("Playlist::updateView");
+void TPlaylist::updateView() {
+	qDebug("TPlaylist::updateView");
 
 	listView->setRowCount( pl.count() );
 
@@ -402,7 +404,7 @@ void Playlist::updateView() {
 		time = Helper::formatTime(qRound(pl[n].duration()));
 		
 		//listView->setText(n, COL_POS, number);
-		//qDebug("Playlist::updateView: name: '%s'", name.toUtf8().data());
+		//qDebug("TPlaylist::updateView: name: '%s'", name.toUtf8().data());
 		listView->setText(n, COL_NAME, name);
 		listView->setText(n, COL_TIME, time);
 
@@ -423,7 +425,7 @@ void Playlist::updateView() {
 	//adjustSize();
 }
 
-void Playlist::setCurrentItem(int current) {
+void TPlaylist::setCurrentItem(int current) {
 
 	if ( (current_item >= 0) && (current_item < listView->rowCount()) ) {
 		if (current_item < pl.count() && pl[current_item].played()) {
@@ -449,7 +451,7 @@ void Playlist::setCurrentItem(int current) {
 	}
 }
 
-void Playlist::clear() {
+void TPlaylist::clear() {
 	pl.clear();
 
 	listView->clearContents();
@@ -460,7 +462,7 @@ void Playlist::clear() {
 	setModified( false );
 }
 
-void Playlist::remove(int i){
+void TPlaylist::remove(int i){
 	if(i >= 0 && i < pl.count()){
 		pl.removeAt(i);
 		if(current_item == i && i == (pl.count() - 1))
@@ -470,16 +472,16 @@ void Playlist::remove(int i){
 	} //end if
 }
 
-int Playlist::count() {
+int TPlaylist::count() {
 	return pl.count();
 }
 
-bool Playlist::isEmpty() {
+bool TPlaylist::isEmpty() {
 	return pl.isEmpty();
 }
 
-void Playlist::addItem(const QString &filename, QString name, double duration) {
-	//qDebug() << "Playlist::addItem:" << filename;
+void TPlaylist::addItem(const QString &filename, QString name, double duration) {
+	//qDebug() << "TPlaylist::addItem:" << filename;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	filename = Helper::changeSlashes(filename);
@@ -496,18 +498,18 @@ void Playlist::addItem(const QString &filename, QString name, double duration) {
 			name = filename;
 		}
 	}
-	pl.append( PlaylistItem(filename, name, duration) );
+	pl.append( TPlaylistItem(filename, name, duration) );
 	//setModified( true ); // Better set the modified on a higher level
 }
 
 // EDIT BY NEO -->
-void Playlist::sortBy(int section) {
-	qDebug("Playlist::sortBy");
+void TPlaylist::sortBy(int section) {
+	qDebug("TPlaylist::sortBy");
 
 	sortBy(section, false, 0);
 }
 
-void Playlist::sortBy(int section, bool revert, int count) {
+void TPlaylist::sortBy(int section, bool revert, int count) {
     // Bubble sort
     bool swaped = false;
 
@@ -596,8 +598,8 @@ void Playlist::sortBy(int section, bool revert, int count) {
 }
 // <--
 
-void Playlist::load_m3u(const QString &file, bool clear, bool play) {
-	qDebug("Playlist::load_m3u");
+void TPlaylist::load_m3u(const QString &file, bool clear, bool play) {
+	qDebug("TPlaylist::load_m3u");
 
 	bool utf8 = (QFileInfo(file).suffix().toLower() == "m3u8");
 
@@ -625,11 +627,11 @@ void Playlist::load_m3u(const QString &file, bool clear, bool play) {
 			line = stream.readLine().trimmed();
 			if (line.isEmpty()) continue; // Ignore empty lines
 
-			qDebug( "Playlist::load_m3u: line: '%s'", line.toUtf8().data() );
+			qDebug( "TPlaylist::load_m3u: line: '%s'", line.toUtf8().data() );
 			if (info.indexIn(line)!=-1) {
 				duration = info.cap(1).toDouble();
 				name = info.cap(2);
-				qDebug("Playlist::load_m3u: name: '%s', duration: %f", name.toUtf8().data(), duration );
+				qDebug("TPlaylist::load_m3u: name: '%s', duration: %f", name.toUtf8().data(), duration );
 			} else if (line.startsWith("#")) {
 				// Comment
 				// Ignore
@@ -656,11 +658,11 @@ void Playlist::load_m3u(const QString &file, bool clear, bool play) {
 	}
 }
 
-void Playlist::load_pls(const QString &file, bool clear, bool play) {
-	qDebug("Playlist::load_pls");
+void TPlaylist::load_pls(const QString &file, bool clear, bool play) {
+	qDebug("TPlaylist::load_pls");
 
 	if (!QFile::exists(file)) {
-		qDebug("Playlist::load_pls: '%s' doesn't exist, doing nothing", file.toUtf8().constData());
+		qDebug("TPlaylist::load_pls: '%s' doesn't exist, doing nothing", file.toUtf8().constData());
 		return;
 	}
 
@@ -702,8 +704,8 @@ void Playlist::load_pls(const QString &file, bool clear, bool play) {
 		startPlay();
 }
 
-bool Playlist::save_m3u(QString file) {
-	qDebug("Playlist::save_m3u: '%s'", file.toUtf8().data());
+bool TPlaylist::save_m3u(QString file) {
+	qDebug("TPlaylist::save_m3u: '%s'", file.toUtf8().data());
 
 	QString dir_path = QFileInfo(file).path();
 	if (!dir_path.endsWith("/")) dir_path += "/";
@@ -730,7 +732,7 @@ bool Playlist::save_m3u(QString file) {
 		stream << "#EXTM3U" << "\n";
 		stream << "# Playlist created by SMPlayer " << Version::printable() << " \n";
 
-		PlaylistItemList::iterator it;
+		TPlaylistItemList::iterator it;
 		for ( it = pl.begin(); it != pl.end(); ++it ) {
 			filename = (*it).filename();
 			#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -755,8 +757,8 @@ bool Playlist::save_m3u(QString file) {
 }
 
 
-bool Playlist::save_pls(QString file) {
-	qDebug("Playlist::save_pls: '%s'", file.toUtf8().data());
+bool TPlaylist::save_pls(QString file) {
+	qDebug("TPlaylist::save_pls: '%s'", file.toUtf8().data());
 
 	QString dir_path = QFileInfo(file).path();
 	if (!dir_path.endsWith("/")) dir_path += "/";
@@ -772,7 +774,7 @@ bool Playlist::save_pls(QString file) {
 	
 	QString filename;
 
-	PlaylistItemList::iterator it;
+	TPlaylistItemList::iterator it;
 	for ( int n=0; n < pl.count(); n++ ) {
 		filename = pl[n].filename();
 		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -803,7 +805,7 @@ bool Playlist::save_pls(QString file) {
 }
 
 
-void Playlist::load() {
+void TPlaylist::load() {
 	if (maybeSave()) {
 		Extensions e;
 		QString s = MyFileDialog::getOpenFileName(
@@ -822,7 +824,7 @@ void Playlist::load() {
 	}
 }
 
-bool Playlist::save() {
+bool TPlaylist::save() {
 	Extensions e;
 	QString s = MyFileDialog::getSaveFileName(
                     this, tr("Choose a filename"), 
@@ -858,7 +860,7 @@ bool Playlist::save() {
 	}
 }
 
-bool Playlist::maybeSave() {
+bool TPlaylist::maybeSave() {
 	if (!isModified()) return true;
 
 	int res = QMessageBox::question( this,
@@ -875,20 +877,20 @@ bool Playlist::maybeSave() {
 	}
 }
 
-void Playlist::playCurrent() {
+void TPlaylist::playCurrent() {
 	int current = listView->currentRow();
 	if (current >= 0) {
 		playItem(current);
 	}
 }
 
-void Playlist::itemDoubleClicked(int row) {
-	qDebug("Playlist::itemDoubleClicked: row: %d", row );
+void TPlaylist::itemDoubleClicked(int row) {
+	qDebug("TPlaylist::itemDoubleClicked: row: %d", row );
 	playItem(row);
 }
 
-void Playlist::showPopup(const QPoint & pos) {
-	qDebug("Playlist::showPopup: x: %d y: %d", pos.x(), pos.y() );
+void TPlaylist::showPopup(const QPoint & pos) {
+	qDebug("TPlaylist::showPopup: x: %d y: %d", pos.x(), pos.y() );
 
 	if (!popup->isVisible()) {
 		popup->move( listView->viewport()->mapToGlobal(pos) );
@@ -896,7 +898,7 @@ void Playlist::showPopup(const QPoint & pos) {
 	}
 }
 
-void Playlist::startPlay() {
+void TPlaylist::startPlay() {
 	// Start to play
 	if ( shuffleAct->isChecked() ) 
 		playItem( chooseRandomItem() );
@@ -904,11 +906,11 @@ void Playlist::startPlay() {
 		playItem(0);
 }
 
-void Playlist::playItem( int n ) {
-	qDebug("Playlist::playItem: %d (count: %d)", n, pl.count());
+void TPlaylist::playItem( int n ) {
+	qDebug("TPlaylist::playItem: %d (count: %d)", n, pl.count());
 
 	if ((n < 0) || (n >= pl.count())) {
-		qDebug("Playlist::playItem: out of range");
+		qDebug("TPlaylist::playItem: out of range");
 		emit playlistEnded();
 		return;
 	}
@@ -922,13 +924,13 @@ void Playlist::playItem( int n ) {
 	}
 }
 
-void Playlist::playNext() {
-	qDebug("Playlist::playNext");
+void TPlaylist::playNext() {
+	qDebug("TPlaylist::playNext");
 
 	if (shuffleAct->isChecked()) {
 		// Shuffle
 		int chosen_item = chooseRandomItem();
-		qDebug("Playlist::playNext: chosen_item: %d", chosen_item);
+		qDebug("TPlaylist::playNext: chosen_item: %d", chosen_item);
 		if (chosen_item == -1) {
 			clearPlayedTag();
 			if (repeatAct->isChecked()) {
@@ -950,8 +952,8 @@ void Playlist::playNext() {
 	}
 }
 
-void Playlist::playPrev() {
-	qDebug("Playlist::playPrev");
+void TPlaylist::playPrev() {
+	qDebug("TPlaylist::playPrev");
 	if (current_item > 0) {
 		playItem( current_item - 1 );
 	} else {
@@ -959,14 +961,14 @@ void Playlist::playPrev() {
 	}
 }
 
-void Playlist::resumePlay() {
+void TPlaylist::resumePlay() {
 	if (pl.count() > 0) {
 		if (current_item < 0) current_item = 0;
 		playItem(current_item);
 	}
 }
 
-void Playlist::playDirectory(const QString &dir) {
+void TPlaylist::playDirectory(const QString &dir) {
 
 	clear();
 	addDirectory(dir);
@@ -981,10 +983,10 @@ void Playlist::playDirectory(const QString &dir) {
 	startPlay();
 }
 
-void Playlist::newMediaLoaded() {
+void TPlaylist::newMediaLoaded() {
 
 	if (!pref->auto_add_to_playlist) {
-		qDebug("Playlist::newMediaLoaded: add to playlist disabled by user");
+		qDebug("TPlaylist::newMediaLoaded: add to playlist disabled by user");
 		return;
 	}
 
@@ -1002,19 +1004,19 @@ void Playlist::newMediaLoaded() {
 	if (is_disc) {
 		if (titles->count() == count()) {
 			if (filename == current_filename) {
-				qDebug("Playlist::newMediaLoaded: new file is current item from disc");
+				qDebug("TPlaylist::newMediaLoaded: new file is current item from disc");
 				return;
 			}
 			bool cur_is_disc;
 			DiscData cur_disc = DiscName::split(current_filename, &cur_is_disc);
 			if (cur_is_disc && cur_disc.protocol == disc.protocol
 				&& cur_disc.device == disc.device) {
-				qDebug("Playlist::newMediaLoaded: new file is from current disc");
+				qDebug("TPlaylist::newMediaLoaded: new file is from current disc");
 				return;
 			}
 		}
 	} else if (filename == current_filename) {
-		qDebug("Playlist::newMediaLoaded: new file is current item");
+		qDebug("TPlaylist::newMediaLoaded: new file is current item");
 		return;
 	}
 
@@ -1047,23 +1049,23 @@ void Playlist::newMediaLoaded() {
 		// Core::open() as TYPE_FILE.
 		if (core->mdat.selected_type == MediaData::TYPE_FILE
 			&& titles->count() == 0) {
-			qDebug() << "Playlist::newMediaLoaded: searching for files to add to playlist for"
+			qDebug() << "TPlaylist::newMediaLoaded: searching for files to add to playlist for"
 					 << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
 			if (files_to_add.isEmpty()) {
-				qDebug("Playlist::newMediaLoaded: none found");
+				qDebug("TPlaylist::newMediaLoaded: none found");
 			} else {
 				addFiles(files_to_add);
 			}
 		}
 	}
 
-	qDebug() << "Playlist::newMediaLoaded: created new playlist with" << count()
+	qDebug() << "TPlaylist::newMediaLoaded: created new playlist with" << count()
 			 << "items for" << filename;
 }
 
-void Playlist::getMediaInfo() {
-	qDebug("Playlist::getMediaInfo");
+void TPlaylist::getMediaInfo() {
+	qDebug("TPlaylist::getMediaInfo");
 
 	// Already have info for dics
 	if (core->mdat.detectedDisc()) {
@@ -1093,7 +1095,7 @@ void Playlist::getMediaInfo() {
 	if (!artist.isEmpty()) name = artist + " - " + name;
 
 	for (int n = 0; n < pl.count(); n++) {
-		PlaylistItem& item = pl[n];
+		TPlaylistItem& item = pl[n];
 		if (item.filename() == filename) {
 			// Protect playlist by only updating items with duration 0
 			if (item.duration() == 0) {
@@ -1108,8 +1110,8 @@ void Playlist::getMediaInfo() {
 	updateView();
 }
 
-void Playlist::playerSwitchedTitle(int id) {
-	qDebug("Playlist::playerSwitchedTitle: %d", id);
+void TPlaylist::playerSwitchedTitle(int id) {
+	qDebug("TPlaylist::playerSwitchedTitle: %d", id);
 
 	id -= core->mdat.titles.firstID();
 	if (id >= 0 && id < pl.count()) {
@@ -1118,16 +1120,16 @@ void Playlist::playerSwitchedTitle(int id) {
 }
 
 // Add current file to playlist
-void Playlist::addCurrentFile() {
-	qDebug("Playlist::addCurrentFile");
+void TPlaylist::addCurrentFile() {
+	qDebug("TPlaylist::addCurrentFile");
 	if (!core->mdat.filename.isEmpty()) {
 		addItem( core->mdat.filename, "", 0 );
 		getMediaInfo();
 	}
 }
 
-void Playlist::addFile(const QString &filename, bool get_info) {
-	qDebug() << "Playlist::addFile:" << filename;
+void TPlaylist::addFile(const QString &filename, bool get_info) {
+	qDebug() << "TPlaylist::addFile:" << filename;
 	// Note: currently addFile loads playlists and addDirectory skips them,
 	// giving a nice balance. Load if the individual file is requested,
 	// skip when adding a directory.
@@ -1157,8 +1159,8 @@ void Playlist::addFile(const QString &filename, bool get_info) {
 	}
 }
 
-void Playlist::addDirectory(const QString &dir, bool get_info) {
-	qDebug() << "Playlist::addDirectory:" << dir;
+void TPlaylist::addDirectory(const QString &dir, bool get_info) {
+	qDebug() << "TPlaylist::addDirectory:" << dir;
 
 	static Extensions ext;
 	static QRegExp rx_ext(ext.multimedia().forRegExp(), Qt::CaseInsensitive);
@@ -1183,7 +1185,7 @@ void Playlist::addDirectory(const QString &dir, bool get_info) {
 	}
 }
 
-void Playlist::addFileOrDir(const QString &filename, bool get_info) {
+void TPlaylist::addFileOrDir(const QString &filename, bool get_info) {
 
 	if (QFileInfo(filename).isDir()) {
 		addDirectory(filename, get_info);
@@ -1192,8 +1194,8 @@ void Playlist::addFileOrDir(const QString &filename, bool get_info) {
 	}
 }
 
-void Playlist::addFiles(const QStringList &files, bool get_info) {
-	qDebug("Playlist::addFiles");
+void TPlaylist::addFiles(const QStringList &files, bool get_info) {
+	qDebug("TPlaylist::addFiles");
 
 #if USE_INFOPROVIDER
 	setCursor(Qt::WaitCursor);
@@ -1211,10 +1213,10 @@ void Playlist::addFiles(const QStringList &files, bool get_info) {
 
 	updateView();
 
-	qDebug("Playlist::addFiles: done");
+	qDebug("TPlaylist::addFiles: done");
 }
 
-void Playlist::addFiles() {
+void TPlaylist::addFiles() {
 
 	Extensions e;
 	QStringList files = MyFileDialog::getOpenFileNames(this,
@@ -1226,7 +1228,7 @@ void Playlist::addFiles() {
 		addFiles(files);
 }
 
-void Playlist::addDirectory() {
+void TPlaylist::addDirectory() {
 	QString s = MyFileDialog::getExistingDirectory(
                     this, tr("Choose a directory"),
                     lastDir() );
@@ -1237,7 +1239,7 @@ void Playlist::addDirectory() {
 	}
 }
 
-void Playlist::addUrls() {
+void TPlaylist::addUrls() {
 	MultilineInputDialog d(this);
 	if (d.exec() == QDialog::Accepted) {
 		QStringList urls = d.lines();
@@ -1249,8 +1251,8 @@ void Playlist::addUrls() {
 }
 
 // Remove selected items
-void Playlist::removeSelected() {
-	qDebug("Playlist::removeSelected");
+void TPlaylist::removeSelected() {
+	qDebug("TPlaylist::removeSelected");
 
 	int first_selected = -1;
 	int number_previous_item = 0;
@@ -1264,7 +1266,7 @@ void Playlist::removeSelected() {
 		}
 	}
 
-	PlaylistItemList::iterator it;
+	TPlaylistItemList::iterator it;
 	for ( it = pl.begin(); it != pl.end(); ++it ) {
 		if ( (*it).markedForDeletion() ) {
 			qDebug("Remove '%s'", (*it).filename().toUtf8().data());
@@ -1292,7 +1294,7 @@ void Playlist::removeSelected() {
 	}
 }
 
-void Playlist::removeAll() {
+void TPlaylist::removeAll() {
 	/*
 	pl.clear();
 	updateView();
@@ -1301,15 +1303,15 @@ void Playlist::removeAll() {
 	clear();
 }
 
-void Playlist::clearPlayedTag() {
+void TPlaylist::clearPlayedTag() {
 	for (int n = 0; n < pl.count(); n++) {
 		pl[n].setPlayed(false);
 	}
 	updateView();
 }
 
-int Playlist::chooseRandomItem() {
-	qDebug( "Playlist::chooseRandomItem");
+int TPlaylist::chooseRandomItem() {
+	qDebug( "TPlaylist::chooseRandomItem");
 
 	QList <int> fi; //List of not played items (free items)
 	for (int n = 0; n < pl.count(); n++) {
@@ -1317,26 +1319,26 @@ int Playlist::chooseRandomItem() {
 			fi.append(n);
 	}
 
-	qDebug("Playlist::chooseRandomItem: free items: %d", fi.count() );
+	qDebug("TPlaylist::chooseRandomItem: free items: %d", fi.count() );
 
 	if (fi.count() == 0) return -1; // none free
 
 	int selected = (int) ((double) fi.count() * rand()/(RAND_MAX+1.0));
-	qDebug("Playlist::chooseRandomItem: selected item: %d (%d)",
+	qDebug("TPlaylist::chooseRandomItem: selected item: %d (%d)",
 		   selected, fi[selected]);
 	return fi[selected];
 }
 
-void Playlist::swapItems(int item1, int item2 ) {
-	PlaylistItem it1 = pl[item1];
+void TPlaylist::swapItems(int item1, int item2 ) {
+	TPlaylistItem it1 = pl[item1];
 	pl[item1] = pl[item2];
 	pl[item2] = it1;
 	setModified( true );
 }
 
 
-void Playlist::upItem() {
-	qDebug("Playlist::upItem");
+void TPlaylist::upItem() {
+	qDebug("TPlaylist::upItem");
 
 	int current = listView->currentRow();
 	qDebug(" currentRow: %d", current );
@@ -1345,8 +1347,8 @@ void Playlist::upItem() {
 
 }
 
-void Playlist::downItem() {
-	qDebug("Playlist::downItem");
+void TPlaylist::downItem() {
+	qDebug("TPlaylist::downItem");
 
 	int current = listView->currentRow();
 	qDebug(" currentRow: %d", current );
@@ -1354,8 +1356,8 @@ void Playlist::downItem() {
 	moveItemDown(current);
 }
 
-void Playlist::moveItemUp(int current){
-	qDebug("Playlist::moveItemUp");
+void TPlaylist::moveItemUp(int current){
+	qDebug("TPlaylist::moveItemUp");
 
 	if (current >= 1) {
 		swapItems( current, current-1 );
@@ -1367,8 +1369,8 @@ void Playlist::moveItemUp(int current){
 		listView->setCurrentCell( current-1, 0);
 	}
 }
-void Playlist::moveItemDown(int current	){
-	qDebug("Playlist::moveItemDown");
+void TPlaylist::moveItemDown(int current	){
+	qDebug("TPlaylist::moveItemDown");
 
 	if ( (current > -1) && (current < (pl.count()-1)) ) {
 		swapItems( current, current+1 );
@@ -1381,12 +1383,12 @@ void Playlist::moveItemDown(int current	){
 	}
 }
 
-void Playlist::editCurrentItem() {
+void TPlaylist::editCurrentItem() {
 	int current = listView->currentRow();
 	if (current > -1) editItem(current);
 }
 
-void Playlist::editItem(int item) {
+void TPlaylist::editItem(int item) {
 	QString current_name = pl[item].name();
 	if (current_name.isEmpty()) current_name = pl[item].filename();
 
@@ -1405,8 +1407,8 @@ void Playlist::editItem(int item) {
     } 
 }
 
-void Playlist::deleteSelectedFileFromDisk() {
-	qDebug("Playlist::deleteSelectedFileFromDisk");
+void TPlaylist::deleteSelectedFileFromDisk() {
+	qDebug("TPlaylist::deleteSelectedFileFromDisk");
 
 	int current = listView->currentRow();
 	if (current > -1) {
@@ -1415,7 +1417,7 @@ void Playlist::deleteSelectedFileFromDisk() {
 		listView->setCurrentCell(current, 0);
 
 		QString filename = pl[current].filename();
-		qDebug() << "Playlist::deleteSelectedFileFromDisk: current file:" << filename;
+		qDebug() << "TPlaylist::deleteSelectedFileFromDisk: current file:" << filename;
 
 		QFileInfo fi(filename);
 		if (fi.exists() && fi.isFile() && fi.isWritable()) {
@@ -1439,7 +1441,7 @@ void Playlist::deleteSelectedFileFromDisk() {
 				}
 			}
 		} else {
-			qDebug("Playlist::deleteSelectedFileFromDisk: file doesn't exists, it's not a file or it's not writable");
+			qDebug("TPlaylist::deleteSelectedFileFromDisk: file doesn't exists, it's not a file or it's not writable");
 			QMessageBox::information(this, tr("Error deleting the file"),
 				tr("It's not possible to delete '%1' from the filesystem.").arg(filename));
 		}
@@ -1447,16 +1449,16 @@ void Playlist::deleteSelectedFileFromDisk() {
 }
 
 // Drag&drop
-void Playlist::dragEnterEvent( QDragEnterEvent *e ) {
-	qDebug("Playlist::dragEnterEvent");
+void TPlaylist::dragEnterEvent( QDragEnterEvent *e ) {
+	qDebug("TPlaylist::dragEnterEvent");
 
 	if (e->mimeData()->hasUrls()) {
 		e->acceptProposedAction();
 	}
 }
 
-void Playlist::dropEvent( QDropEvent *e ) {
-	qDebug("Playlist::dropEvent");
+void TPlaylist::dropEvent( QDropEvent *e ) {
+	qDebug("TPlaylist::dropEvent");
 
 	QStringList files;
 
@@ -1469,10 +1471,10 @@ void Playlist::dropEvent( QDropEvent *e ) {
 				if (url.scheme() == "file")
 					filename = url.toLocalFile();
 				else filename = url.toString();
-				qDebug() << "Playlist::dropEvent: adding" << filename;
+				qDebug() << "TPlaylist::dropEvent: adding" << filename;
 				files.append(filename);
 			} else {
-				qWarning() << "Playlist::dropEvent:: ignoring" << url.toString();
+				qWarning() << "TPlaylist::dropEvent:: ignoring" << url.toString();
 			}
 		}
 	}
@@ -1486,26 +1488,26 @@ void Playlist::dropEvent( QDropEvent *e ) {
 }
 
 
-void Playlist::hideEvent( QHideEvent * ) {
+void TPlaylist::hideEvent( QHideEvent * ) {
 	emit visibilityChanged(false);
 }
 
-void Playlist::showEvent( QShowEvent * ) {
+void TPlaylist::showEvent( QShowEvent * ) {
 	emit visibilityChanged(true);
 }
 
-void Playlist::closeEvent( QCloseEvent * e )  {
+void TPlaylist::closeEvent( QCloseEvent * e )  {
 	saveSettings();
 	e->accept();
 }
 
-void Playlist::maybeSaveSettings() {
-	qDebug("Playlist::maybeSaveSettings");
+void TPlaylist::maybeSaveSettings() {
+	qDebug("TPlaylist::maybeSaveSettings");
 	if (isModified()) saveSettings();
 }
 
-void Playlist::saveSettings() {
-	qDebug("Playlist::saveSettings");
+void TPlaylist::saveSettings() {
+	qDebug("TPlaylist::saveSettings");
 
 	QSettings * set = settings;
 
@@ -1555,8 +1557,8 @@ void Playlist::saveSettings() {
 	}
 }
 
-void Playlist::loadSettings() {
-	qDebug("Playlist::loadSettings");
+void TPlaylist::loadSettings() {
+	qDebug("TPlaylist::loadSettings");
 
 	QSettings * set = settings;
 
@@ -1603,19 +1605,21 @@ void Playlist::loadSettings() {
 	}
 }
 
-QString Playlist::lastDir() {
+QString TPlaylist::lastDir() {
 	QString last_dir = latest_dir;
 	if (last_dir.isEmpty()) last_dir = pref->latest_dir;
 	return last_dir;
 }
 
 // Language change stuff
-void Playlist::changeEvent(QEvent *e) {
+void TPlaylist::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
 		QWidget::changeEvent(e);
 	}
 }
+
+} // namespace Gui
 
 #include "moc_playlist.cpp"
