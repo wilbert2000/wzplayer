@@ -16,11 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mpc.h"
-#include "styles.h"
-#include "widgetactions.h"
-#include "autohidewidget.h"
+#include "gui/mpc/mpc.h"
 #include "gui/action.h"
+#include "gui/widgetactions.h"
+#include "gui/autohidewidget.h"
+
+#include "styles.h"
 #include "mplayerwindow.h"
 #include "global.h"
 #include "helper.h"
@@ -63,7 +64,7 @@ void TMpc::createActions() {
 	volumeslider_action->setTickPosition( QSlider::NoTicks );
 #endif
 
-	time_label_action = new TimeLabelAction(this);
+	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
 	connect( this, SIGNAL(timeChanged(QString)),
@@ -121,7 +122,7 @@ void TMpc::createControlWidget() {
 
 void TMpc::createFloatingControl() {
 	// Floating control
-	floating_control = new AutohideWidget(panel, mplayerwindow);
+	floating_control = new TAutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
 	floating_control->hide();
 	spacer = new QSpacerItem(10,10);
@@ -184,7 +185,7 @@ void TMpc::aboutToEnterFullscreen() {
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea( (AutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setActivationArea( (TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
 	QTimer::singleShot(100, floating_control, SLOT(activate()));
 

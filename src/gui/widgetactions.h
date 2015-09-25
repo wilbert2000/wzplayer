@@ -16,30 +16,32 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _WIDGETACTIONS_H_
-#define _WIDGETACTIONS_H_
+#ifndef _GUI_WIDGETACTIONS_H_
+#define _GUI_WIDGETACTIONS_H_
 
 #include <QWidgetAction>
-#include "timeslider.h"
 #include "config.h"
 #include "guiconfig.h"
+#include "timeslider.h"
 #include "preferences.h"
 
 class QStyle;
 
-class MyWidgetAction : public QWidgetAction
+namespace Gui {
+
+class TWidgetAction : public QWidgetAction
 {
 	Q_OBJECT
 
 public:
-	MyWidgetAction( QWidget * parent );
-	~MyWidgetAction();
+	TWidgetAction( QWidget * parent );
+	~TWidgetAction();
 
-	void setCustomStyle(QStyle * style) { custom_style = style; };
-	QStyle * customStyle() { return custom_style; };
+	void setCustomStyle(QStyle * style) { custom_style = style; }
+	QStyle * customStyle() { return custom_style; }
 
-	void setStyleSheet(QString style) { custom_stylesheet = style; };
-	QString styleSheet() { return custom_stylesheet; };
+	void setStyleSheet(QString style) { custom_stylesheet = style; }
+	QString styleSheet() { return custom_stylesheet; }
 
 public slots:
 	virtual void enable(); 	// setEnabled in QAction is not virtual :(
@@ -54,13 +56,13 @@ protected:
 };
 
 
-class TimeSliderAction : public MyWidgetAction 
+class TTimeSliderAction : public TWidgetAction
 {
 	Q_OBJECT
 
 public:
-	TimeSliderAction( QWidget * parent );
-	~TimeSliderAction();
+	TTimeSliderAction( QWidget * parent );
+	~TTimeSliderAction();
 
 public slots:
 	virtual void setPos(int);
@@ -87,13 +89,13 @@ protected:
 };
 
 
-class VolumeSliderAction : public MyWidgetAction 
+class TVolumeSliderAction : public TWidgetAction
 {
 	Q_OBJECT
 
 public:
-	VolumeSliderAction( QWidget * parent );
-	~VolumeSliderAction();
+	TVolumeSliderAction( QWidget * parent );
+	~TVolumeSliderAction();
 
 	void setFixedSize(QSize size) { fixed_size = size; };
 	QSize fixedSize() { return fixed_size; };
@@ -117,13 +119,13 @@ private:
 };
 
 
-class TimeLabelAction : public MyWidgetAction 
+class TTimeLabelAction : public TWidgetAction
 {
 	Q_OBJECT
 
 public:
-	TimeLabelAction( QWidget * parent );
-	~TimeLabelAction();
+	TTimeLabelAction( QWidget * parent );
+	~TTimeLabelAction();
 
 	virtual QString text() { return _text; };
 
@@ -142,13 +144,13 @@ private:
 
 
 #if MINI_ARROW_BUTTONS
-class SeekingButton : public QWidgetAction
+class TSeekingButton : public QWidgetAction
 {
 	Q_OBJECT
 
 public:
-	SeekingButton( QList<QAction*> actions, QWidget * parent );
-	~SeekingButton();
+	TSeekingButton( QList<QAction*> actions, QWidget * parent );
+	~TSeekingButton();
 
 protected:
 	virtual QWidget * createWidget ( QWidget * parent );
@@ -157,5 +159,7 @@ protected:
 };
 #endif
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_WIDGETACTIONS_H_
 

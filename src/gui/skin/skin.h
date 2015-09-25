@@ -21,6 +21,8 @@
 
 #include "guiconfig.h"
 #include "gui/action.h"
+#include "gui/widgetactions.h"
+#include "gui/autohidewidget.h"
 #include "gui/baseplus.h"
 #include "gui/skin/mediabarpanel.h"
 #include "gui/editabletoolbar.h"
@@ -29,15 +31,6 @@ class QMenu;
 class QPushButton;
 class QToolBar;
 
-// TODO: check candidates for move to Gui
-class TimeSliderAction;
-class VolumeSliderAction;
-class AutohideWidget;
-class TimeLabelAction;
-
-#if MINI_ARROW_BUTTONS
-class SeekingButton;
-#endif
 
 //#define SKIN_EDITABLE_CONTROL 1
 
@@ -93,16 +86,16 @@ protected:
 	TEditableToolbar * toolbar1;
 	QToolBar * controlwidget;
 
-	TimeSliderAction * timeslider_action;
-	VolumeSliderAction * volumeslider_action;
+	TTimeSliderAction * timeslider_action;
+	TVolumeSliderAction * volumeslider_action;
 
 #if MINI_ARROW_BUTTONS
-	SeekingButton * rewindbutton_action;
-	SeekingButton * forwardbutton_action;
+	TSeekingButton * rewindbutton_action;
+	TSeekingButton * forwardbutton_action;
 #endif
 
-	AutohideWidget * floating_control;
-	TimeLabelAction * time_label_action;
+	TAutohideWidget * floating_control;
+	TTimeLabelAction * time_label_action;
 
 	TAction * editToolbar1Act;
 #if defined(SKIN_EDITABLE_CONTROL)

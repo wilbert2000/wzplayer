@@ -23,7 +23,7 @@
 #include "recents.h"
 #include "urlhistory.h"
 #include "filters.h"
-#include "autohidewidget.h"
+#include "gui/autohidewidget.h"
 #include "helper.h"
 
 #include <QSettings>
@@ -515,7 +515,7 @@ void Preferences::reset() {
 	floating_control_width = 70; //70 %
 	floating_control_animated = true;
 	floating_display_in_compact_mode = false;
-	floating_activation_area = AutohideWidget::Anywhere;
+	floating_activation_area = Gui::TAutohideWidget::Anywhere;
 	floating_hide_delay = 3000;
 
 

@@ -19,17 +19,15 @@
 #ifndef _GUI_BASEPLUS_H_
 #define _GUI_BASEPLUS_H_
 
-#include "base.h"
+#include "guiconfig.h"
+#include "gui/base.h"
+#include "gui/widgetactions.h"
+
 #include <QSystemTrayIcon>
 #include <QPoint>
 
-#include "guiconfig.h"
-
 class QMenu;
 class PlaylistDock;
-
-class TimeSliderAction;
-class VolumeSliderAction;
 
 namespace Gui {
 
@@ -56,8 +54,8 @@ protected:
 	virtual void aboutToExitCompactMode();
 
 	// Functions for other GUI's
-	TimeSliderAction * createTimeSliderAction(QWidget * parent);
-	VolumeSliderAction * createVolumeSliderAction(QWidget * parent);
+	TTimeSliderAction * createTimeSliderAction(QWidget * parent);
+	TVolumeSliderAction * createVolumeSliderAction(QWidget * parent);
 
 protected slots:
 	// Reimplemented methods

@@ -24,25 +24,27 @@
 #include <QToolButton>
 #endif
 
-MyWidgetAction::MyWidgetAction( QWidget * parent )
+namespace Gui {
+
+TWidgetAction::TWidgetAction( QWidget * parent )
 	: QWidgetAction(parent)
 {
 	custom_style = 0;
 	custom_stylesheet = "";
 }
 
-MyWidgetAction::~MyWidgetAction() {
+TWidgetAction::~TWidgetAction() {
 }
 
-void MyWidgetAction::enable() {
+void TWidgetAction::enable() {
 	propagate_enabled(true);
 }
 
-void MyWidgetAction::disable() {
+void TWidgetAction::disable() {
 	propagate_enabled(false);
 }
 
-void MyWidgetAction::propagate_enabled(bool b) {
+void TWidgetAction::propagate_enabled(bool b) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		TimeSlider *s = (TimeSlider*) l[n];
@@ -52,18 +54,18 @@ void MyWidgetAction::propagate_enabled(bool b) {
 }
 
 
-TimeSliderAction::TimeSliderAction( QWidget * parent )
-	: MyWidgetAction(parent)
+TTimeSliderAction::TTimeSliderAction( QWidget * parent )
+	: TWidgetAction(parent)
 {
 #if ENABLE_DELAYED_DRAGGING
 	drag_delay = 200;
 #endif
 }
 
-TimeSliderAction::~TimeSliderAction() {
+TTimeSliderAction::~TTimeSliderAction() {
 }
 
-void TimeSliderAction::setPos(int v) {
+void TTimeSliderAction::setPos(int v) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		TimeSlider *s = (TimeSlider*) l[n];
@@ -73,7 +75,7 @@ void TimeSliderAction::setPos(int v) {
 	}
 }
 
-int TimeSliderAction::pos() {
+int TTimeSliderAction::pos() {
 	QList<QWidget *> l = createdWidgets();
 	if (l.count() >= 1) {
 		TimeSlider *s = (TimeSlider*) l[0];
@@ -84,7 +86,7 @@ int TimeSliderAction::pos() {
 }
 
 #if ENABLE_DELAYED_DRAGGING
-void TimeSliderAction::setDragDelay(int d) {
+void TTimeSliderAction::setDragDelay(int d) {
 	drag_delay = d;
 
 	QList<QWidget *> l = createdWidgets();
@@ -94,12 +96,12 @@ void TimeSliderAction::setDragDelay(int d) {
 	}
 }
 
-int TimeSliderAction::dragDelay() {
+int TTimeSliderAction::dragDelay() {
 	return drag_delay;
 }
 #endif
 
-QWidget * TimeSliderAction::createWidget ( QWidget * parent ) {
+QWidget * TTimeSliderAction::createWidget ( QWidget * parent ) {
 	TimeSlider *t = new TimeSlider(parent);
 	t->setEnabled( isEnabled() );
 
@@ -124,16 +126,16 @@ QWidget * TimeSliderAction::createWidget ( QWidget * parent ) {
 }
 
 
-VolumeSliderAction::VolumeSliderAction( QWidget * parent )
-	: MyWidgetAction(parent)
+TVolumeSliderAction::TVolumeSliderAction( QWidget * parent )
+	: TWidgetAction(parent)
 {
 	tick_position = QSlider::TicksBelow;
 }
 
-VolumeSliderAction::~VolumeSliderAction() {
+TVolumeSliderAction::~TVolumeSliderAction() {
 }
 
-void VolumeSliderAction::setValue(int v) {
+void TVolumeSliderAction::setValue(int v) {
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		MySlider *s = (MySlider*) l[n];
@@ -143,7 +145,7 @@ void VolumeSliderAction::setValue(int v) {
 	}
 }
 
-int VolumeSliderAction::value() {
+int TVolumeSliderAction::value() {
 	QList<QWidget *> l = createdWidgets();
 	if (l.count() >= 1) {
 		MySlider *s = (MySlider*) l[0];
@@ -153,7 +155,7 @@ int VolumeSliderAction::value() {
 	}
 }
 
-void VolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
+void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 	// For new widgets
 	tick_position = position; 
 
@@ -165,7 +167,7 @@ void VolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 	}
 }
 
-QWidget * VolumeSliderAction::createWidget ( QWidget * parent ) {
+QWidget * TVolumeSliderAction::createWidget ( QWidget * parent ) {
 	MySlider *t = new MySlider(parent);
 
 	if (custom_style) t->setStyle(custom_style);
@@ -192,20 +194,20 @@ QWidget * VolumeSliderAction::createWidget ( QWidget * parent ) {
 }
 
 
-TimeLabelAction::TimeLabelAction( QWidget * parent )
-	: MyWidgetAction(parent)
+TTimeLabelAction::TTimeLabelAction( QWidget * parent )
+	: TWidgetAction(parent)
 {
 }
 
-TimeLabelAction::~TimeLabelAction() {
+TTimeLabelAction::~TTimeLabelAction() {
 }
 
-void TimeLabelAction::setText(QString s) {
+void TTimeLabelAction::setText(QString s) {
 	_text = s;
 	emit newText(s);
 }
 
-QWidget * TimeLabelAction::createWidget ( QWidget * parent ) {
+QWidget * TTimeLabelAction::createWidget ( QWidget * parent ) {
 	QLabel * time_label = new QLabel(parent);
 	time_label->setObjectName("time_label");
     time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
@@ -224,16 +226,16 @@ QWidget * TimeLabelAction::createWidget ( QWidget * parent ) {
 }
 
 #if MINI_ARROW_BUTTONS
-SeekingButton::SeekingButton( QList<QAction*> actions, QWidget * parent ) 
+TSeekingButton::TSeekingButton( QList<QAction*> actions, QWidget * parent )
 	: QWidgetAction(parent)
 {
 	_actions = actions;
 }
 
-SeekingButton::~SeekingButton() {
+TSeekingButton::~TSeekingButton() {
 }
 
-QWidget * SeekingButton::createWidget( QWidget * parent ) {
+QWidget * TSeekingButton::createWidget( QWidget * parent ) {
 	QToolButton * button = new QToolButton(parent);
 	button->setPopupMode(QToolButton::MenuButtonPopup);
 
@@ -247,5 +249,7 @@ QWidget * SeekingButton::createWidget( QWidget * parent ) {
 	return button;
 }
 #endif
+
+} // namespace Gui
 
 #include "moc_widgetactions.cpp"

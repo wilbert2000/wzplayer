@@ -22,13 +22,9 @@
 #include "guiconfig.h"
 #include "gui/baseplus.h"
 #include "gui/editabletoolbar.h"
+#include "gui/autohidewidget.h"
 
 #define USE_VOLUME_BAR 1
-
-class TimeSliderAction;
-class VolumeSliderAction;
-class TimeLabelAction;
-class AutohideWidget;
 
 namespace Gui {
 
@@ -74,13 +70,13 @@ protected:
 protected:
 	TEditableToolbar * controlwidget;
 
-	AutohideWidget * floating_control;
+	TAutohideWidget * floating_control;
 
-	TimeSliderAction * timeslider_action;
+	TTimeSliderAction * timeslider_action;
 #if USE_VOLUME_BAR
-	VolumeSliderAction * volumeslider_action;
+	TVolumeSliderAction * volumeslider_action;
 #endif
-	TimeLabelAction * time_label_action;
+	TTimeLabelAction * time_label_action;
 
 	TAction * editControlAct;
 	TAction * editFloatingControlAct;

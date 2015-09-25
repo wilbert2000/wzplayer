@@ -19,15 +19,12 @@
 #ifndef _GUI_MPC_H_
 #define _GUI_MPC_H_
 
-#include "gui/baseplus.h"
 #include "guiconfig.h"
+#include "gui/baseplus.h"
+#include "gui/autohidewidget.h"
 
 #define USE_VOLUME_BAR 1
 
-class TimeSliderAction;
-class VolumeSliderAction;
-class TimeLabelAction;
-class AutohideWidget;
 class QSpacerItem;
 class QToolBar;
 
@@ -92,14 +89,14 @@ protected:
 
 	QLabel * floating_control_time;
 
-	AutohideWidget * floating_control;
+	TAutohideWidget * floating_control;
 	QSpacerItem * spacer;
 
-	TimeSliderAction * timeslider_action;
+	TTimeSliderAction * timeslider_action;
 #if USE_VOLUME_BAR
-	VolumeSliderAction * volumeslider_action;
+	TVolumeSliderAction * volumeslider_action;
 #endif
-	TimeLabelAction * time_label_action;
+	TTimeLabelAction * time_label_action;
 };
 
 } // namespace Gui

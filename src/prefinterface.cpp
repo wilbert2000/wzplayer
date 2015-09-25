@@ -24,7 +24,7 @@
 #include "languages.h"
 #include "recents.h"
 #include "urlhistory.h"
-#include "autohidewidget.h"
+#include "gui/autohidewidget.h"
 
 #include <QDir>
 #include <QStyleFactory>
@@ -252,7 +252,7 @@ void PrefInterface::setData(Preferences * pref) {
 	setFloatingWidth(pref->floating_control_width);
 	setFloatingMargin(pref->floating_control_margin);
 	setDisplayFloatingInCompactMode(pref->floating_display_in_compact_mode);
-	floating_move_bottom_check->setChecked(pref->floating_activation_area == AutohideWidget::Bottom);
+	floating_move_bottom_check->setChecked(pref->floating_activation_area == Gui::TAutohideWidget::Bottom);
 	floating_hide_delay_spin->setValue(pref->floating_hide_delay);
 
 	setRecentsMaxItems(pref->history_recents->maxItems());
@@ -317,7 +317,7 @@ void PrefInterface::getData(Preferences * pref) {
 	pref->floating_control_width = floatingWidth();
 	pref->floating_control_margin = floatingMargin();
 	pref->floating_display_in_compact_mode = displayFloatingInCompactMode();
-	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? AutohideWidget::Bottom : AutohideWidget::Anywhere;
+	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? Gui::TAutohideWidget::Bottom : Gui::TAutohideWidget::Anywhere;
 	pref->floating_hide_delay = floating_hide_delay_spin->value();
 
 	if (pref->history_recents->maxItems() != recentsMaxItems()) {

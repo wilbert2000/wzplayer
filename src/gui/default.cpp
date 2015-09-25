@@ -108,18 +108,18 @@ void TDefault::createActions() {
 #endif
 
 	// Create the time label
-	time_label_action = new TimeLabelAction(this);
+	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
 #if MINI_ARROW_BUTTONS
 	QList<QAction*> rewind_actions;
 	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
-	rewindbutton_action = new SeekingButton(rewind_actions, this);
+	rewindbutton_action = new TSeekingButton(rewind_actions, this);
 	rewindbutton_action->setObjectName("rewindbutton_action");
 
 	QList<QAction*> forward_actions;
 	forward_actions << forward1Act << forward2Act << forward3Act;
-	forwardbutton_action = new SeekingButton(forward_actions, this);
+	forwardbutton_action = new TSeekingButton(forward_actions, this);
 	forwardbutton_action->setObjectName("forwardbutton_action");
 #endif
 
@@ -292,7 +292,7 @@ void TDefault::createControlWidget() {
 
 void TDefault::createFloatingControl() {
 	// Floating control
-	floating_control = new AutohideWidget(panel, mplayerwindow);
+	floating_control = new TAutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
 
 	TEditableToolbar * iw = new TEditableToolbar(floating_control);
@@ -479,7 +479,7 @@ void TDefault::reconfigureFloatingControl() {
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea( (AutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setActivationArea( (TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
 }
 

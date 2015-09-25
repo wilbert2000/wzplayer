@@ -74,7 +74,7 @@ void TMini::createActions() {
 	#endif
 #endif
 
-	time_label_action = new TimeLabelAction(this);
+	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
 	connect( this, SIGNAL(timeChanged(QString)),
@@ -101,7 +101,7 @@ void TMini::createControlWidget() {
 
 void TMini::createFloatingControl() {
 	// Floating control
-	floating_control = new AutohideWidget(panel, mplayerwindow);
+	floating_control = new TAutohideWidget(panel, mplayerwindow);
 	floating_control->setAutoHide(true);
 
 	TEditableToolbar * iw = new TEditableToolbar(floating_control);
@@ -173,7 +173,7 @@ void TMini::aboutToEnterFullscreen() {
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea( (AutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setActivationArea( (TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
 	QTimer::singleShot(100, floating_control, SLOT(activate()));
 

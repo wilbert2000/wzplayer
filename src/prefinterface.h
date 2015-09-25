@@ -42,12 +42,12 @@ public:
     // Apply changes
     void getData(Preferences * pref);
 
-	bool languageChanged() { return language_changed; };
-	bool iconsetChanged() { return iconset_changed; };
+	bool languageChanged() { return language_changed; }
+	bool iconsetChanged() { return iconset_changed; }
 	bool guiChanged() { return gui_changed; }
-	bool styleChanged() { return style_changed; };
-	bool recentsChanged() { return recents_changed; };
-	bool urlMaxChanged() { return url_max_changed; };
+	bool styleChanged() { return style_changed; }
+	bool recentsChanged() { return recents_changed; }
+	bool urlMaxChanged() { return url_max_changed; }
 
 protected:
 	virtual void createHelp();

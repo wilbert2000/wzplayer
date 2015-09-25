@@ -24,20 +24,15 @@
 #include "guiconfig.h"
 #include "gui/baseplus.h"
 #include "gui/editabletoolbar.h"
+#include "gui/autohidewidget.h"
 
 class QToolBar;
 class QPushButton;
 class QResizeEvent;
-class TAction;
 class QMenu;
-class TimeSliderAction;
-class VolumeSliderAction;
-class AutohideWidget;
-class TimeLabelAction;
-class TAction;
 
 #if MINI_ARROW_BUTTONS
-class SeekingButton;
+class TSeekingButton;
 #endif
 
 namespace Gui {
@@ -115,16 +110,16 @@ protected:
 	QPushButton * select_audio;
 	QPushButton * select_subtitle;
 
-	TimeSliderAction * timeslider_action;
-	VolumeSliderAction * volumeslider_action;
+	TTimeSliderAction * timeslider_action;
+	TVolumeSliderAction * volumeslider_action;
 
 #if MINI_ARROW_BUTTONS
-	SeekingButton * rewindbutton_action;
-	SeekingButton * forwardbutton_action;
+	TSeekingButton * rewindbutton_action;
+	TSeekingButton * forwardbutton_action;
 #endif
 
-	AutohideWidget * floating_control;
-	TimeLabelAction * time_label_action;
+	TAutohideWidget * floating_control;
+	TTimeLabelAction * time_label_action;
 
 	TAction * viewFrameCounterAct;
 	TAction * viewVideoInfoAct;

@@ -571,8 +571,8 @@ void TBasePlus::shrinkWindow() {
 #endif
 
 // Convenience functions intended for other GUI's
-TimeSliderAction * TBasePlus::createTimeSliderAction(QWidget * parent) {
-	TimeSliderAction * timeslider_action = new TimeSliderAction( parent );
+TTimeSliderAction * TBasePlus::createTimeSliderAction(QWidget * parent) {
+	TTimeSliderAction * timeslider_action = new TTimeSliderAction( parent );
 	timeslider_action->setObjectName("timeslider_action");
 
 	connect( timeslider_action, SIGNAL( posChanged(int) ), 
@@ -600,8 +600,8 @@ TimeSliderAction * TBasePlus::createTimeSliderAction(QWidget * parent) {
 	return timeslider_action;
 }
 
-VolumeSliderAction * TBasePlus::createVolumeSliderAction(QWidget * parent) {
-	VolumeSliderAction * volumeslider_action = new VolumeSliderAction(parent);
+TVolumeSliderAction * TBasePlus::createVolumeSliderAction(QWidget * parent) {
+	TVolumeSliderAction * volumeslider_action = new TVolumeSliderAction(parent);
 	volumeslider_action->setObjectName("volumeslider_action");
 
 	connect( volumeslider_action, SIGNAL( valueChanged(int) ), 

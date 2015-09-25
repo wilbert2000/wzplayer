@@ -16,44 +16,46 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef AUTOHIDEWIDGET_H
-#define AUTOHIDEWIDGET_H
+#ifndef GUI_AUTOHIDEWIDGET_H
+#define GUI_AUTOHIDEWIDGET_H
 
 #include <QWidget>
 
 class QTimer;
 class QPropertyAnimation;
 
-class AutohideWidget : public QWidget
+namespace Gui {
+
+class TAutohideWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
-	AutohideWidget(QWidget * parent, QWidget * mplayerwindow);
-	~AutohideWidget();
+	TAutohideWidget(QWidget * parent, QWidget * mplayerwindow);
+	~TAutohideWidget();
 
 	void setInternalWidget(QWidget * w);
-	QWidget * internalWidget() { return internal_widget; };
+	QWidget * internalWidget() { return internal_widget; }
 
 public slots:
 	void show();
 	void activate();
 	void deactivate();
 	void setAutoHide(bool b);
-	void setAnimated(bool b) { use_animation = b; };
-	void setMargin(int margin) { spacing = margin; };
+	void setAnimated(bool b) { use_animation = b; }
+	void setMargin(int margin) { spacing = margin; }
 	void setPercWidth(int s) { perc_width = s;}
 	void setActivationArea(Activation m) { activation_area = m; }
 	void setHideDelay(int ms);
 
 public:
-	bool isActive() { return turned_on; };
-	bool autoHide() { return auto_hide; };
-	bool isAnimated() { return use_animation; };
-	int margin() { return spacing; };
-	int percWidth() { return perc_width; };
+	bool isActive() { return turned_on; }
+	bool autoHide() { return auto_hide; }
+	bool isAnimated() { return use_animation; }
+	int margin() { return spacing; }
+	int percWidth() { return perc_width; }
 	Activation activationArea() { return activation_area; }
 	int hideDelay();
 
@@ -81,5 +83,7 @@ private:
 #endif
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_AUTOHIDEWIDGET_H
 

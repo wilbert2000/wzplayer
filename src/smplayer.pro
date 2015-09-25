@@ -174,13 +174,13 @@ HEADERS += guiconfig.h \
 	favoriteeditor.h \
 	gui/action.h \
 	gui/actiongroup.h \
+	gui/widgetactions.h \
 	gui/editabletoolbar.h \
+    gui/autohidewidget.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
     gui/mini.h \
-    autohidewidget.h \
-	widgetactions.h \
 	toolbareditor.h \
 	clhelp.h \
 	cleanconfig.h \
@@ -274,13 +274,13 @@ SOURCES	+= version.cpp \
 	favoriteeditor.cpp \
 	gui/action.cpp \
 	gui/actiongroup.cpp \
+	gui/widgetactions.cpp \
 	gui/editabletoolbar.cpp \
+    gui/autohidewidget.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
     gui/mini.cpp \
-    autohidewidget.cpp \
-	widgetactions.cpp \
 	toolbareditor.cpp \
 	clhelp.cpp \
 	cleanconfig.cpp \
