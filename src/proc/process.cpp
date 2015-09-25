@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "myprocess.h"
+#include "process.h"
 #include <QDebug>
 
 #ifdef Q_OS_WIN
@@ -31,8 +31,9 @@
 #define USE_TEMP_FILE 0
 #endif
 
+namespace Proc {
 
-MyProcess::MyProcess(QObject * parent) : QProcess(parent)
+TProcess::TProcess(QObject * parent) : QProcess(parent)
 {
 	clearArguments();
 	setProcessChannelMode( QProcess::MergedChannels );
@@ -41,7 +42,7 @@ MyProcess::MyProcess(QObject * parent) : QProcess(parent)
 	temp_file.open(); // Create temporary file
 	QString filename = temp_file.fileName();
 	setStandardOutputFile( filename );
-	qDebug("MyProcess::MyProcess: temporary file: %s", filename.toUtf8().data());
+	qDebug("TProcess::TProcess: temporary file: %s", filename.toUtf8().data());
 	temp_file.close();
 
 	//connect(&temp_file, SIGNAL(readyRead()), this, SLOT(readTmpFile()) );
@@ -54,19 +55,19 @@ MyProcess::MyProcess(QObject * parent) : QProcess(parent)
             this, SLOT(procFinished()) ); 
 
 	// Test splitArguments
-	//QStringList l = MyProcess::splitArguments("-opt 1 hello \"56 67\" wssx -ios");
+	//QStringList l = TProcess::splitArguments("-opt 1 hello \"56 67\" wssx -ios");
 }
 
-void MyProcess::clearArguments() {
+void TProcess::clearArguments() {
 	program = "";
 	arg.clear();
 }
 
-bool MyProcess::isRunning() {
+bool TProcess::isRunning() {
 	return (state() == QProcess::Running);
 }
 
-void MyProcess::addArgument(const QString & a) {
+void TProcess::addArgument(const QString & a) {
 	if (program.isEmpty()) {
 		program = a;
 	} else {
@@ -74,13 +75,13 @@ void MyProcess::addArgument(const QString & a) {
 	}
 }
 
-QStringList MyProcess::arguments() {
+QStringList TProcess::arguments() {
 	QStringList l = arg;
 	l.prepend(program);
 	return l;
 }
 
-void MyProcess::start() {
+void TProcess::start() {
 	remaining_output.clear();
 
 	QProcess::start(program, arg);
@@ -89,26 +90,26 @@ void MyProcess::start() {
 	//bool r = temp_file.open(QIODevice::ReadOnly);
 	bool r = temp_file.open();
 	timer.start(50);
-	qDebug("MyProcess::start: r: %d", r);
+	qDebug("TProcess::start: r: %d", r);
 #endif
 }
 
-void MyProcess::readStdOut() {
+void TProcess::readStdOut() {
 	genericRead( readAllStandardOutput() );
 }
 
 
-void MyProcess::readTmpFile() {
+void TProcess::readTmpFile() {
 	genericRead( temp_file.readAll() );
 }
 
-void MyProcess::genericRead(QByteArray buffer) {
+void TProcess::genericRead(QByteArray buffer) {
 	QByteArray ba = remaining_output + buffer;
 	int start = 0;
 	int from_pos = 0;
 	int pos = canReadLine(ba, from_pos);
 
-	//qDebug("MyProcess::read: pos: %d", pos);
+	//qDebug("TProcess::read: pos: %d", pos);
 	while ( pos > -1 ) {
 		// Readline
 		//QByteArray line = ba.left(pos);
@@ -128,11 +129,11 @@ void MyProcess::genericRead(QByteArray buffer) {
 	remaining_output = ba.mid(from_pos);
 }
 
-int MyProcess::canReadLine(const QByteArray & ba, int from) {
+int TProcess::canReadLine(const QByteArray & ba, int from) {
 	int pos1 = ba.indexOf('\n', from);
 	int pos2 = ba.indexOf('\r', from);
 
-	//qDebug("MyProcess::canReadLine: pos2: %d", pos2);
+	//qDebug("TProcess::canReadLine: pos2: %d", pos2);
 
 	if ( (pos1 == -1) && (pos2 == -1) ) return -1;
 
@@ -155,25 +156,25 @@ int MyProcess::canReadLine(const QByteArray & ba, int from) {
 /*!
 Do some clean up, and be sure that all output has been read.
 */
-void MyProcess::procFinished() {
-	qDebug("MyProcess::procFinished");
+void TProcess::procFinished() {
+	qDebug("TProcess::procFinished");
 
 #if !USE_TEMP_FILE
-	qDebug() << "MyProcess::procFinished: Bytes available: " << bytesAvailable();
+	qDebug() << "TProcess::procFinished: Bytes available: " << bytesAvailable();
 	if ( bytesAvailable() > 0 ) readStdOut();
 #else
 	timer.stop();
 
-	qDebug() << "MyProcess::procFinished: Bytes available: " << temp_file.bytesAvailable();
+	qDebug() << "TProcess::procFinished: Bytes available: " << temp_file.bytesAvailable();
 	if ( temp_file.bytesAvailable() > 0 ) readTmpFile();
-	qDebug() << "MyProcess::procFinished: Bytes available:" << temp_file.bytesAvailable();
+	qDebug() << "TProcess::procFinished: Bytes available:" << temp_file.bytesAvailable();
 
 	temp_file.close();
 #endif
 }
 
-QStringList MyProcess::splitArguments(const QString & args) {
-	qDebug("MyProcess::splitArguments: '%s'", args.toUtf8().constData());
+QStringList TProcess::splitArguments(const QString & args) {
+	qDebug("TProcess::splitArguments: '%s'", args.toUtf8().constData());
 
 	QStringList l;
 
@@ -193,10 +194,12 @@ QStringList MyProcess::splitArguments(const QString & args) {
 	}
 
 	for (int n = 0; n < l.count(); n++) {
-		qDebug("MyProcess::splitArguments: arg: %d '%s'", n, l[n].toUtf8().constData());
+		qDebug("TProcess::splitArguments: arg: %d '%s'", n, l[n].toUtf8().constData());
 	}
 
 	return l;
 }
 
-#include "moc_myprocess.cpp"
+} // namespace Proc
+
+#include "moc_process.cpp"

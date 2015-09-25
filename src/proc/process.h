@@ -16,14 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MY_PROCESS_H_
-#define _MY_PROCESS_H_
+#ifndef _PROC_PROCESS_H_
+#define _PROC_PROCESS_H_
 
 #include <QProcess>
 #include <QTemporaryFile>
 #include <QTimer>
 
-//! MyProcess is a specialized QProcess designed to properly work with mplayer.
+//! TProcess is a specialized QProcess designed to properly work with mplayer.
 
 /*!
  It can split the mplayer status line into lines.
@@ -35,12 +35,14 @@
  standard ouput as usual.
 */
 
-class MyProcess : public QProcess
+namespace Proc {
+
+class TProcess : public QProcess
 {
 	Q_OBJECT
 
 public:
-	MyProcess ( QObject * parent = 0 );
+	TProcess ( QObject * parent = 0 );
 
 	virtual void setExecutable(const QString & p) { program = p; };
 	QString executable() { return program; };
@@ -81,4 +83,6 @@ protected:
 	QTimer timer;
 };
 
-#endif
+} // namespace Proc
+
+#endif // _PROC_PROCESS_H_

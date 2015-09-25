@@ -44,7 +44,7 @@ const int waiting_for_answers_safe_guard_init = 100;
 
 
 PlayerProcess::PlayerProcess(PlayerID::Player pid, MediaData *mdata)
-	: MyProcess(0)
+	: TProcess(0)
 	, player_id(pid)
 	, md(mdata)
 	, notified_player_is_running(false)

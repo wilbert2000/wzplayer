@@ -101,9 +101,9 @@ HEADERS += guiconfig.h \
 	discname.h \
 	extensions.h \
 	desktopinfo.h \
-	myprocess.h \
 	mplayerversion.h \
 	playerid.h \
+	proc/process.h \
 	proc/playerprocess.h \
 	infoprovider.h \
 	mplayerwindow.h \
@@ -202,9 +202,9 @@ SOURCES	+= version.cpp \
 	discname.cpp \
 	extensions.cpp \
 	desktopinfo.cpp \
-	myprocess.cpp \
 	mplayerversion.cpp \
 	playerid.cpp \
+	proc/process.cpp \
 	proc/playerprocess.cpp \
 	infoprovider.cpp \
 	mplayerwindow.cpp \

@@ -31,13 +31,13 @@
 
 #include <cmath>
 
+#include "config.h"
+#include "global.h"
 #include "mplayerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
 #include "paths.h"
 #include "preferences.h"
-#include "global.h"
-#include "config.h"
 #include "mplayerversion.h"
 #include "constants.h"
 #include "colorutils.h"
@@ -1947,7 +1947,7 @@ void Core::startPlayer( QString file, double seek ) {
 	// Additional options supplied by the user
 	// File
 	if (!mset.mplayer_additional_options.isEmpty()) {
-		QStringList args = MyProcess::splitArguments(mset.mplayer_additional_options);
+		QStringList args = Proc::TProcess::splitArguments(mset.mplayer_additional_options);
 		for (int n = 0; n < args.count(); n++) {
 			QString arg = args[n].simplified();
 			if (!arg.isEmpty()) {
@@ -1964,7 +1964,7 @@ void Core::startPlayer( QString file, double seek ) {
 			additional_options.replace("-fontconfig", "");
 			additional_options.replace("-nofontconfig", "");
 		}
-		QStringList args = MyProcess::splitArguments(additional_options);
+		QStringList args = Proc::TProcess::splitArguments(additional_options);
 		for (int n = 0; n < args.count(); n++) {
 			QString arg = args[n].simplified();
 			if (!arg.isEmpty()) {

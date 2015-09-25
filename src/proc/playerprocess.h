@@ -24,7 +24,7 @@
 #include <QRegExp>
 
 #include "config.h"
-#include "myprocess.h"
+#include "process.h"
 #include "mediadata.h"
 #include "playerid.h"
 #include "assstyles.h"
@@ -36,7 +36,7 @@ namespace Proc {
 extern QPoint default_osd_pos;
 
 	
-class PlayerProcess : public MyProcess
+class PlayerProcess : public TProcess
 {
 	Q_OBJECT
 
