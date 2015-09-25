@@ -31,9 +31,9 @@
 #include <QDebug>
 
 #include "config.h"
+#include "gui/widgetactions.h"
 #include "gui/skin/actiontools.h"
 #include "gui/skin/iconsetter.h"
-#include "widgetactions.h"
 #include "core.h"
 
 namespace Gui {
