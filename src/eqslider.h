@@ -44,9 +44,9 @@ public:
 	const QPixmap * icon() const;
 	QString label() const;
 
-	QSlider * sliderWidget() { return _slider; };
-	VerticalText * labelWidget() { return _label; };
-	QLabel * iconWidget() { return _icon; };
+	QSlider * sliderWidget() { return _slider; }
+	VerticalText * labelWidget() { return _label; }
+	QLabel * iconWidget() { return _icon; }
 
 signals:
 	void valueChanged(int);
