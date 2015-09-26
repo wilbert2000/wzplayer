@@ -30,47 +30,47 @@
 #ifdef SINGLE_INSTANCE
 #include "QtSingleApplication"
 
-class MyApplication : public QtSingleApplication
-{
-	Q_OBJECT
-
+class TBaseApp : public QtSingleApplication {
 public:
-	MyApplication ( const QString & appId, int & argc, char ** argv ) 
+	TBaseApp(const QString& appId, int& argc, char** argv)
 		: QtSingleApplication(appId, argc, argv) {}
-
-	virtual void commitData ( QSessionManager & /*manager*/ ) {
-		// Nothing to do, let the application to close
-	}
-
-	inline static MyApplication * instance() {
-		return qobject_cast<MyApplication*>(QApplication::instance());
-	}
-	
-#ifdef USE_WINEVENTFILTER
-	virtual bool winEventFilter(MSG * msg, long * result);
-#endif
+	~TBaseApp() {}
 };
 
 #else
 #include <QApplication>
 
-class MyApplication : public QApplication
-{
+class TBaseApp : public QApplication {
+public:
+	TBaseApp(const QString& appId, int& argc, char** argv)
+		: QApplication(argc, argv) {};
+	~TBaseApp() {}
+};
+#endif
+
+
+class MyApplication : public TBaseApp {
 	Q_OBJECT
 
 public:
-	MyApplication ( const QString & appId, int & argc, char ** argv ) : QApplication(argc, argv) {};
+	MyApplication(const QString& appId, int& argc, char** argv);
+	~MyApplication() {}
 
-	virtual void commitData ( QSessionManager & /*manager*/ ) {
+	virtual void commitData(QSessionManager& /*manager*/) {
 		// Nothing to do, let the application to close
 	}
+
+#ifdef SINGLE_INSTANCE
+	static MyApplication* instance() {
+		return qobject_cast<MyApplication*>(QApplication::instance());
+	}
+#endif
 	
 #ifdef USE_WINEVENTFILTER
-	virtual bool winEventFilter(MSG * msg, long * result);
-#endif
-};
-
+	virtual bool winEventFilter(MSG* msg, long* result);
 #endif
 
-#endif
+}; // class MyApplication
+
+#endif // MYAPPLICATION_H
 

@@ -159,7 +159,7 @@ void SMPlayer::createGUI() {
 	connect(main_window, SIGNAL(requestRestart()), this, SLOT(restart()));
 
 #if SINGLE_INSTANCE
-	MyApplication * app = MyApplication::instance();
+	MyApplication* app = MyApplication::instance();
 	connect(app, SIGNAL(messageReceived(const QString&)),
 			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
 	app->setActivationWindow(main_window);
@@ -409,6 +409,9 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 }
 
 void SMPlayer::start() {
+
+	// Block SMPlayer::myMessageOutput()
+	main_window = 0;
 	qDebug("SMPlayer::start");
 
 	requested_restart = false;
@@ -423,10 +426,12 @@ void SMPlayer::start() {
 #endif
 #endif
 
+	// Create the main window. It will be destoyed when leaving exec().
 	createGUI();
 
 	if (!main_window->startHidden() || !files_to_play.isEmpty() )
 		main_window->show();
+
 	if (!files_to_play.isEmpty()) {
 		if (!subtitle_file.isEmpty())
 			main_window->setInitialSubtitle(subtitle_file);
@@ -573,10 +578,12 @@ QFile SMPlayer::output_log;
 bool SMPlayer::allow_to_send_log_to_gui = false;
 
 #if QT_VERSION >= 0x050000
-void SMPlayer::myMessageOutput( QtMsgType type, const QMessageLogContext &, const QString & msg ) {
+void SMPlayer::myMessageOutput(QtMsgType type, const QMessageLogContext&,
+							   const QString& msg) {
 #else
-void SMPlayer::myMessageOutput( QtMsgType type, const char *msg ) {
+void SMPlayer::myMessageOutput(QtMsgType type, const char* msg) {
 #endif
+
 	static QStringList saved_lines;
 	static QString orig_line;
 	static QString line2;
@@ -642,7 +649,6 @@ void SMPlayer::myMessageOutput( QtMsgType type, const char *msg ) {
 	} else {
 		// GUI is not created yet, save lines for later
 		saved_lines.append(line2);
-		/* printf("SMPlayer::myMessageOutput: no gui\n"); */
 	}
 
 	if (pref) {
@@ -661,7 +667,7 @@ void SMPlayer::myMessageOutput( QtMsgType type, const char *msg ) {
 		}
 	}
 }
-#endif
+#endif // LOG_SMPLAYER
 
 /*
 void myMessageOutput( QtMsgType type, const char *msg ) {

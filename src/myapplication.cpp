@@ -22,8 +22,9 @@
 #include <QKeyEvent>
 #include <QEvent>
 #include <QWidget>
-#include <windows.h>
+#include <QDir>
 #include <QDebug>
+#include <windows.h>
 
 #ifndef WM_APPCOMMAND
 #define WM_APPCOMMAND 0x0319
@@ -173,6 +174,21 @@ bool MyApplication::winEventFilter(MSG * msg, long * result) {
 	return false;
 }
 #endif // USE_WINEVENTFILTER
+
+MyApplication::MyApplication(const QString& appId, int& argc, char** argv) :
+	TBaseApp(appId, argc, argv) {
+
+#ifdef Q_OS_WIN
+	// Change the working directory to the application path
+	QDir::setCurrent(applicationDirPath());
+#endif
+
+#if QT_VERSION >= 0x040400
+	// Enable icons in menus
+	setAttribute(Qt::AA_DontShowIconsInMenus, false);
+#endif
+
+}
 
 #include "moc_myapplication.cpp"
 

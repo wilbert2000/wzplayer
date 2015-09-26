@@ -19,37 +19,26 @@
 #include "myapplication.h"
 #include "smplayer.h"
 
-#include <QDir>
 
 int main( int argc, char ** argv ) 
 {
-	MyApplication a( "smplayer", argc, argv );
-	
-#ifdef Q_OS_WIN
-	// Change the working directory to the application path
-	QDir::setCurrent(a.applicationDirPath());
-#endif
-
-#if QT_VERSION >= 0x040400
-	// Enable icons in menus
-	QCoreApplication::setAttribute(Qt::AA_DontShowIconsInMenus, false);
-#endif
+	MyApplication app("smplayer", argc, argv);
 
 	// Sets the config path
 	QString config_path;
 
 #ifdef PORTABLE_APP
-	config_path = a.applicationDirPath();
+	config_path = app.applicationDirPath();
 #else
 	// If a smplayer.ini exists in the app path, will use that path
 	// for the config file by default
-	if (QFile::exists( a.applicationDirPath() + "/smplayer.ini" ) ) {
-		config_path = a.applicationDirPath();
+	if (QFile::exists( app.applicationDirPath() + "/smplayer.ini" ) ) {
+		config_path = app.applicationDirPath();
 		qDebug("main: using existing %s", QString(config_path + "/smplayer.ini").toUtf8().data());
 	}
 #endif
 
-	QStringList args = a.arguments();
+	QStringList args = app.arguments();
 	int pos = args.indexOf("-config-path");
 	if ( pos != -1) {
 		if (pos+1 < args.count()) {
@@ -64,8 +53,8 @@ int main( int argc, char ** argv )
 		}
 	}
 
-	SMPlayer * smplayer = new SMPlayer(config_path);
-	SMPlayer::ExitCode c = smplayer->processArgs( args );
+	SMPlayer* smplayer = new SMPlayer(config_path);
+	SMPlayer::ExitCode c = smplayer->processArgs(args);
 	if (c != SMPlayer::NoExit) {
 		return c;
 	}
@@ -75,7 +64,7 @@ int main( int argc, char ** argv )
 	do {
 		smplayer->start();
 		qDebug("main: calling exec()");
-		exit_code = a.exec();
+		exit_code = app.exec();
 		qDebug("main: exec() returned %d", exit_code);
 	} while (smplayer->requested_restart);
 
