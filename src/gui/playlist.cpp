@@ -378,40 +378,39 @@ QString TPlaylist::print(QString seperator){
 void TPlaylist::updateView() {
 	qDebug("Gui::TPlaylist::updateView");
 
-	listView->setRowCount( pl.count() );
+	listView->setRowCount(pl.count());
 
 	QString name;
 	QString time;
 
 	for (int n = 0; n < pl.count(); n++) {
-		name = pl[n].name();
-		if (name.isEmpty()) name = pl[n].filename();
-		time = Helper::formatTime(qRound(pl[n].duration()));
+		TPlaylistItem& item = pl[n];
+		name = item.name();
+		if (name.isEmpty()) name = item.filename();
+		time = Helper::formatTime(qRound(item.duration()));
 		
-		//listView->setText(n, COL_POS, number);
-		//qDebug("Gui::TPlaylist::updateView: name: '%s'", name.toUtf8().data());
 		listView->setText(n, COL_NAME, name);
 		listView->setText(n, COL_TIME, time);
 
-		if (pl[n].played()) {
+		if (item.played()) {
 			listView->setIcon(n, COL_PLAY, Images::icon("ok") );
 		} else {
 			listView->setIcon(n, COL_PLAY, QPixmap() );
 		}
 
-		if (row_spacing > -1) listView->setRowHeight(n, listView->font().pointSize() + row_spacing);
+		if (row_spacing >= 0)
+			listView->setRowHeight(n, listView->font().pointSize() + row_spacing);
 	}
-	//listView->resizeColumnsToContents();
+
 	listView->resizeColumnToContents(COL_PLAY);
 	listView->resizeColumnToContents(COL_TIME);
 
 	setCurrentItem(current_item);
-
-	//adjustSize();
 }
 
 void TPlaylist::setCurrentItem(int current) {
 
+	// Give old current_item an icon
 	if ( (current_item >= 0) && (current_item < listView->rowCount()) ) {
 		if (current_item < pl.count() && pl[current_item].played()) {
 			listView->setIcon(current_item, COL_PLAY, Images::icon("ok") );
@@ -423,10 +422,6 @@ void TPlaylist::setCurrentItem(int current) {
 	current_item = current;
 
 	if (current_item >= 0) {
-		if (current_item < pl.count()) {
-			pl[current_item].setPlayed(true);
-		}
-
 		if (current_item < listView->rowCount()) {
 			listView->setIcon(current_item, COL_PLAY, Images::icon("play") );
 		}
@@ -879,14 +874,15 @@ void TPlaylist::showPopup(const QPoint & pos) {
 }
 
 void TPlaylist::startPlay() {
-	// Start to play
+	qDebug("Gui::TPlaylist::startPlay");
+
 	if ( shuffleAct->isChecked() ) 
 		playItem( chooseRandomItem() );
 	else
 		playItem(0);
 }
 
-void TPlaylist::playItem( int n ) {
+void TPlaylist::playItem(int n) {
 	qDebug("Gui::TPlaylist::playItem: %d (count: %d)", n, pl.count());
 
 	if ((n < 0) || (n >= pl.count())) {
@@ -895,12 +891,13 @@ void TPlaylist::playItem( int n ) {
 		return;
 	}
 
-	QString filename = pl[n].filename();
-	if (!filename.isEmpty()) {
+	TPlaylistItem& item = pl[n];
+	if (!item.filename().isEmpty()) {
 		setCurrentItem(n);
+		item.setPlayed(true);
 		if (play_files_from_start)
-			core->open(filename, 0);
-		else core->open(filename);
+			core->open(item.filename(), 0);
+		else core->open(item.filename());
 	}
 }
 
@@ -918,7 +915,7 @@ void TPlaylist::playNext() {
 				if (chosen_item == -1) chosen_item = 0;
 			}
 		}
-		playItem( chosen_item );
+		playItem(chosen_item);
 	} else {
 		bool finished_list = (current_item + 1 >= pl.count());
 		if (finished_list)
@@ -953,10 +950,7 @@ void TPlaylist::playDirectory(const QString &dir) {
 	clear();
 	addDirectory(dir);
 	sortBy(1);
-	// sortBy() changes current_item and sets modified
-	if (current_item >= 0 && current_item < pl.count()) {
-		pl[current_item].setPlayed(false);
-	}
+	// sortBy() can change current_item and modified
 	setCurrentItem(0);
 	setModified(false);
 	latest_dir = dir;
@@ -1104,6 +1098,7 @@ void TPlaylist::playerSwitchedTitle(int id) {
 	id -= core->mdat.titles.firstID();
 	if (id >= 0 && id < pl.count()) {
 		setCurrentItem(id);
+		pl[id].setPlayed(true);
 	}
 }
 
@@ -1580,17 +1575,17 @@ void TPlaylist::loadSettings() {
 		//Load latest list
 		set->beginGroup( "playlist_contents");
 
-		int count = set->value( "count", 0 ).toInt();
+		int count = set->value("count", 0).toInt();
 		QString filename, name;
 		double duration;
 		for ( int n=0; n < count; n++ ) {
 			filename = set->value( QString("item_%1_filename").arg(n), "" ).toString();
 			duration = set->value( QString("item_%1_duration").arg(n), -1 ).toDouble();
 			name = set->value( QString("item_%1_name").arg(n), "" ).toString();
-			addItem( filename, name, duration );
+			addItem(filename, name, duration);
 		}
-		setCurrentItem( set->value( "current_item", -1 ).toInt() );
-		setModified( set->value( "modified", false ).toBool() );
+		setCurrentItem(set->value("current_item", 0).toInt());
+		setModified(set->value("modified", false ).toBool());
 		updateView();
 
 		set->endGroup();
