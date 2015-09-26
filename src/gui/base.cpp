@@ -3708,7 +3708,7 @@ void TBase::openDirectory(QString directory) {
 			pref->latest_dir = directory;
 			playlist->playDirectory(directory);
 		} else {
-			qWarning("TBase::openDirectory: directory is not valid");
+			qWarning("Gui::TBase::openDirectory: directory is not valid");
 		}
 	}
 }
@@ -3726,10 +3726,10 @@ void TBase::openDirectory() {
 }
 
 void TBase::open(const QString &file) {
-	qDebug() << "TBase::open:" << file;
+	qDebug() << "Gui::TBase::open:" << file;
 
 	if (file.isEmpty()) {
-		qWarning("TBase::open: filename is empty");
+		qWarning("Gui::TBase::open: filename is empty");
 		return;
 	}
 	if (!playlist->maybeSave()) {
@@ -3753,7 +3753,7 @@ void TBase::openFiles(QStringList files) {
 	qDebug("Gui::TBase::openFiles");
 
 	if (files.empty()) {
-		qWarning("TBase::openFiles: no files in list to open");
+		qWarning("Gui::TBase::openFiles: no files in list to open");
 		return;
 	}
 
@@ -4364,7 +4364,7 @@ void TBase::runActions(QString actions) {
 				action->trigger();
 			} //end if
 		} else {
-			qWarning("TBase::runActions: action: '%s' not found",actionStr.toUtf8().data());
+			qWarning("Gui::TBase::runActions: action: '%s' not found",actionStr.toUtf8().data());
 		} //end if
 	} //end for
 }
@@ -4583,15 +4583,15 @@ void TBase::dropEvent( QDropEvent *e ) {
 				if (url.scheme() == "file")
 					filename = url.toLocalFile();
 				else filename = url.toString();
-				qDebug() << "TBase::dropEvent: adding" << filename;
+				qDebug() << "Gui::TBase::dropEvent: adding" << filename;
 				files.append(filename);
 			} else {
-				qWarning() << "TBase::dropEvent:: ignoring" << url.toString();
+				qWarning() << "Gui::TBase::dropEvent:: ignoring" << url.toString();
 			}
 		}
 	}
 
-	qDebug( "TBase::dropEvent: number of files: %d", files.count());
+	qDebug("Gui::TBase::dropEvent: number of files: %d", files.count());
 	openFiles(files);
 }
 
@@ -4812,7 +4812,7 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 				   video_size.width(), video_size.height());
 			resizeMainWindow(w, h, false);
 		} else {
-			qWarning("TBase::resizeMainWindow failed. Panel size now %d x %d. Wanted size %d x %d",
+			qWarning("Gui::TBase::resizeMainWindow failed. Panel size now %d x %d. Wanted size %d x %d",
 					 panel->size().width(), panel->size().height(),
 					 video_size.width(), video_size.height());
 		}

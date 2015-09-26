@@ -53,28 +53,28 @@ TTimeSlider::~TTimeSlider() {
 
 void TTimeSlider::stopUpdate() {
 	#if DEBUG
-	qDebug("TTimeSlider::stopUpdate");
+	qDebug("Gui::TTimeSlider::stopUpdate");
 	#endif
 	dont_update = true;
 }
 
 void TTimeSlider::resumeUpdate() {
 	#if DEBUG
-	qDebug("TTimeSlider::resumeUpdate");
+	qDebug("Gui::TTimeSlider::resumeUpdate");
 	#endif
 	dont_update = false;
 }
 
 void TTimeSlider::mouseReleased() {
 	#if DEBUG
-	qDebug("TTimeSlider::mouseReleased");
+	qDebug("Gui::TTimeSlider::mouseReleased");
 	#endif
 	emit posChanged( value() );
 }
 
 void TTimeSlider::valueChanged_slot(int v) {
 	#if DEBUG
-	qDebug("TTimeSlider::changedValue_slot: %d", v);
+	qDebug("Gui::TTimeSlider::changedValue_slot: %d", v);
 	#endif
 
 	// Only to make things clear:
@@ -96,7 +96,7 @@ void TTimeSlider::valueChanged_slot(int v) {
 
 #if ENABLE_DELAYED_DRAGGING
 void TTimeSlider::setDragDelay(int d) {
-	qDebug("TTimeSlider::setDragDelay: %d", d);
+	qDebug("Gui::TTimeSlider::setDragDelay: %d", d);
 	timer->setInterval(d);
 }
 
@@ -105,13 +105,13 @@ int TTimeSlider::dragDelay() {
 }
 
 void TTimeSlider::checkDragging(int v) {
-	qDebug("TTimeSlider::checkDragging: %d", v);
+	qDebug("Gui::TTimeSlider::checkDragging: %d", v);
 	last_pos_to_send = v;
 }
 
 void TTimeSlider::sendDelayedPos() {
 	if (last_pos_to_send != -1) {
-		qDebug("TTimeSlider::sendDelayedPos: %d", last_pos_to_send);
+		qDebug("Gui::TTimeSlider::sendDelayedPos: %d", last_pos_to_send);
 		emit delayedDraggingPos(last_pos_to_send);
 		last_pos_to_send = -1;
 	}
@@ -120,7 +120,7 @@ void TTimeSlider::sendDelayedPos() {
 
 void TTimeSlider::setPos(int v) {
 	#if DEBUG
-	qDebug("TTimeSlider::setPos: %d", v);
+	qDebug("Gui::TTimeSlider::setPos: %d", v);
 	qDebug(" dont_update: %d", dont_update);
 	#endif
 
@@ -139,7 +139,7 @@ int TTimeSlider::pos() {
 void TTimeSlider::wheelEvent(QWheelEvent * e) {
 	//e->ignore();
 
-	qDebug("TTimeSlider::wheelEvent: delta: %d", e->delta());
+	qDebug("Gui::TTimeSlider::wheelEvent: delta: %d", e->delta());
 	e->accept();
 
 	if (e->orientation() == Qt::Vertical) {
