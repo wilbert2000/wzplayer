@@ -90,7 +90,7 @@ void TAutohideWidget::deactivate() {
 }
 
 void TAutohideWidget::show() {
-	qDebug() << "TAutohideWidget::show";
+	qDebug() << "Gui::TAutohideWidget::show";
 	resizeAndMove();
 
 	if (use_animation) {
@@ -108,9 +108,8 @@ void TAutohideWidget::setAutoHide(bool b) {
 }
 
 void TAutohideWidget::checkUnderMouse() {
-	if (auto_hide) {
-		//qDebug("TAutohideWidget::checkUnderMouse");
-		if ((isVisible()) && (!underMouse())) hide();
+	if (auto_hide && isVisible() && !underMouse()) {
+		hide();
 	}
 }
 
@@ -127,9 +126,7 @@ void TAutohideWidget::resizeAndMove() {
 
 bool TAutohideWidget::eventFilter(QObject * obj, QEvent * event) {
 	if (turned_on) {
-		//qDebug() << "TAutohideWidget::eventFilter: obj:" << obj << "type:" << event->type();
 		if (event->type() == QEvent::MouseMove) {
-			//qDebug() << "TAutohideWidget::eventFilter: mouse move" << obj;
 			if (!isVisible()) {
 				if (activation_area == Anywhere) {
 					show();
@@ -137,7 +134,6 @@ bool TAutohideWidget::eventFilter(QObject * obj, QEvent * event) {
 					QMouseEvent * mouse_event = dynamic_cast<QMouseEvent*>(event);
 					QWidget * parent = parentWidget();
 					QPoint p = parent->mapFromGlobal(mouse_event->globalPos());
-					//qDebug() << "TAutohideWidget::eventFilter: y:" << p.y();
 					if (p.y() > (parent->height() - height() - spacing)) {
 						show();
 					}

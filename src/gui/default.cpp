@@ -87,15 +87,6 @@ TDefault::TDefault( QWidget * parent, Qt::WindowFlags flags )
 TDefault::~TDefault() {
 }
 
-/*
-void TDefault::closeEvent( QCloseEvent * ) {
-	qDebug("Gui::TDefault::closeEvent");
-
-	//TBasePlus::closeEvent(e);
-	qDebug("w: %d h: %d", width(), height() );
-}
-*/
-
 void TDefault::createActions() {
 	qDebug("Gui::TDefault::createActions");
 

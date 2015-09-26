@@ -50,7 +50,7 @@ QStringList TEditableToolbar::actionsToStringList() {
 }
 
 void TEditableToolbar::edit() {
-	qDebug("TEditableToolbar::edit");
+	qDebug("Gui::TEditableToolbar::edit");
 
 	ToolbarEditor e(widget);
 	e.setAllActions(allActions());
@@ -60,7 +60,7 @@ void TEditableToolbar::edit() {
 
 	if (e.exec() == QDialog::Accepted) {
 		QStringList r = e.activeActionsToStringList();
-		qDebug("TEditableToolbar::edit: list: %s", r.join(",").toUtf8().constData());
+		qDebug("Gui::TEditableToolbar::edit: list: %s", r.join(",").toUtf8().constData());
 		setActionsFromStringList(r);
 		resize(width(), e.iconSize());
 		setIconSize(QSize(e.iconSize(), e.iconSize()));

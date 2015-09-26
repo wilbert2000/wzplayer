@@ -3783,7 +3783,7 @@ void TBase::openFile() {
 					   tr("Multimedia") + e.allPlayable().forFilter()+";;" +
 					   tr("Video") + e.video().forFilter()+";;" +
 					   tr("Audio") + e.audio().forFilter()+";;" +
-					   tr("TPlaylists") + e.playlist().forFilter()+";;" +
+					   tr("Playlists") + e.playlist().forFilter()+";;" +
 					   tr("All files") +" (*.*)" );
 
 	if ( !s.isEmpty() ) {

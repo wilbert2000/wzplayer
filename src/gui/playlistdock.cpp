@@ -32,19 +32,19 @@ TPlaylistDock::~TPlaylistDock() {
 }
 
 void TPlaylistDock::closeEvent( QCloseEvent * e ) {
-	qDebug("TPlaylistDock::closeEvent");
+	qDebug("Gui::TPlaylistDock::closeEvent");
 	emit closed();
 	e->accept();
 }
 
 #if QT_VERSION < 0x040300
 void TPlaylistDock::showEvent( QShowEvent * /* event */ ) {
-	qDebug("TPlaylistDock::showEvent");
+	qDebug("Gui::TPlaylistDock::showEvent");
 	emit visibilityChanged(true);
 }
 
 void TPlaylistDock::hideEvent( QHideEvent * /* event */ ) {
-	qDebug("TPlaylistDock::hideEvent");
+	qDebug("Gui::TPlaylistDock::hideEvent");
 	emit visibilityChanged(false);
 }
 #endif

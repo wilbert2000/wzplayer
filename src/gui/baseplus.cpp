@@ -208,7 +208,7 @@ void TBasePlus::retranslateStrings() {
 	updateShowAllAct();
 
 #if DOCK_PLAYLIST
-    playlistdock->setWindowTitle( tr("TPlaylist") );
+	playlistdock->setWindowTitle( tr("Playlist") );
 #endif
 }
 
@@ -471,7 +471,7 @@ void TBasePlus::showPlaylist(bool b) {
 		// Check if playlist is outside of the screen
 		if (playlistdock->isFloating()) {
 			if (!DesktopInfo::isInsideScreen(playlistdock)) {
-				qWarning("TBasePlus::showPlaylist: playlist is outside of the screen");
+				qWarning("Gui::TBasePlus::showPlaylist: playlist is outside of the screen");
 				playlistdock->move(0,0);
 			}
 		}

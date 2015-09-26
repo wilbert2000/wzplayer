@@ -123,7 +123,7 @@ void TMini::createFloatingControl() {
 }
 
 void TMini::retranslateStrings() {
-	qDebug("TMini::retranslateStrings");
+	qDebug("Gui::TMini::retranslateStrings");
 
 	TBasePlus::retranslateStrings();
 
@@ -157,7 +157,7 @@ void TMini::disableActionsOnStop() {
 #endif // AUTODISABLE_ACTIONS
 
 void TMini::togglePlayAction(Core::State state) {
-	qDebug("TMini::togglePlayAction");
+	qDebug("Gui::TMini::togglePlayAction");
 	TBasePlus::togglePlayAction(state);
 
 	if (state == Core::Playing) {
@@ -215,7 +215,7 @@ QSize TMini::minimumSizeHint() const {
 #endif
 
 void TMini::adjustFloatingControlSize() {
-	qDebug("TMini::adjustFloatingControlSize");
+	qDebug("Gui::TMini::adjustFloatingControlSize");
 	//floating_control->adjustSize();
 	QWidget *iw = floating_control->internalWidget();
 	QSize iws = iw->size();
