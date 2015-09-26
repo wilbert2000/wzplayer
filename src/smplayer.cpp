@@ -26,14 +26,15 @@
 #include "config.h"
 #include "global.h"
 
-#include "gui/default.h"
-#include "gui/mini.h"
 #include "paths.h"
 #include "translator.h"
 #include "version.h"
 #include "clhelp.h"
 #include "cleanconfig.h"
 #include "myapplication.h"
+
+#include "gui/default.h"
+#include "gui/mini.h"
 
 #ifdef MPCGUI
 #include "gui/mpc/mpc.h"
@@ -58,11 +59,17 @@
 
 using namespace Global;
 
-Gui::TBase * SMPlayer::main_window = 0;
+Gui::TBase* SMPlayer::main_window = 0;
 
-SMPlayer::SMPlayer(const QString & config_path, QObject * parent )
-	: QObject(parent) 
-{
+SMPlayer::SMPlayer(const QString & config_path) :
+	QObject(0),
+	requested_restart(false),
+	gui_to_use("DefaultGUI"),
+	move_gui(false),
+	resize_gui(false),
+	close_at_end(-1),
+	start_in_fullscreen(-1) {
+
 #ifdef LOG_SMPLAYER
 	#if QT_VERSION >= 0x050000
 	qInstallMessageHandler( SMPlayer::myMessageOutput );
@@ -72,19 +79,12 @@ SMPlayer::SMPlayer(const QString & config_path, QObject * parent )
 	allow_to_send_log_to_gui = true;
 #endif
 
-	gui_to_use = "DefaultGUI";
-
-	close_at_end = -1; // Not set
-	start_in_fullscreen = -1; // Not set
-
-	move_gui = false;
-	resize_gui = false;
-
 	Paths::setAppPath( qApp->applicationDirPath() );
 
 #ifndef PORTABLE_APP
 	if (config_path.isEmpty()) createConfigDirectory();
 #endif
+
 	global_init(config_path);
 
 	// Application translations
@@ -104,86 +104,77 @@ SMPlayer::~SMPlayer() {
 #endif
 }
 
-Gui::TBase * SMPlayer::gui() {
+void SMPlayer::createGUI() {
 
-	if (main_window == 0) {
-		// Changes to app path, so smplayer can find a relative mplayer path
-		QDir::setCurrent(Paths::appPath());
-		qDebug("SMPlayer::gui: changed working directory to app path");
-		qDebug("SMPlayer::gui: current directory: %s", QDir::currentPath().toUtf8().data());
+	// Change cd to app path, so smplayer can find a relative mplayer path
+	QDir::setCurrent(Paths::appPath());
+	qDebug("SMPlayer::createGUI: changed working directory to app path");
+	qDebug("SMPlayer::createGUI: current directory: %s", QDir::currentPath().toUtf8().data());
 
 #ifdef SKINS
-		if (gui_to_use == "SkinGUI") {
-			QString theme = pref->iconset;
-			if (theme.isEmpty()) theme = "Gonzo";
-			QString user_theme_dir = Paths::configPath() + "/themes/" + theme;
-			QString theme_dir = Paths::themesPath() + "/" + theme;
-			qDebug("SMPlayer::gui: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
-			qDebug("SMPlayer::gui: theme_dir: %s", theme_dir.toUtf8().constData());
-			if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
-				if (pref->iconset.isEmpty()) pref->iconset = theme;
-			} else {
-				qDebug("SMPlayer::gui: skin folder doesn't exist. Falling back to default gui.");
-				gui_to_use = "DefaultGUI";
-				pref->iconset = "";
-				pref->gui = gui_to_use;
-			}
-		}
-#endif
-
-		main_window = createGUI(gui_to_use);
-
-		if (move_gui) {
-			qDebug("SMPlayer::gui: moving main window to %d %d", gui_position.x(), gui_position.y());
-			main_window->move(gui_position);
-		}
-		if (resize_gui) {
-			qDebug("SMPlayer::gui: resizing main window to %dx%d", gui_size.width(), gui_size.height());
-			main_window->resize(gui_size);
+	if (gui_to_use == "SkinGUI") {
+		QString theme = pref->iconset;
+		if (theme.isEmpty()) theme = "Gonzo";
+		QString user_theme_dir = Paths::configPath() + "/themes/" + theme;
+		QString theme_dir = Paths::themesPath() + "/" + theme;
+		qDebug("SMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
+		qDebug("SMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
+		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
+			if (pref->iconset.isEmpty()) pref->iconset = theme;
+		} else {
+			qDebug("SMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
+			gui_to_use = "DefaultGUI";
+			pref->iconset = "";
+			pref->gui = gui_to_use;
 		}
 	}
+#endif
 
-	return main_window;
-}
-
-Gui::TBase * SMPlayer::createGUI(QString gui_name) {
-	qDebug() << "SMPlayer::createGUI:" << gui_name;
-
-	Gui::TBase * gui = 0;
+	qDebug() << "SMPlayer::createGUI:" << gui_to_use;
 
 #ifdef SKINS
-	if (gui_name.toLower() == "skingui")
-		gui = new Gui::TSkin(0);
+	if (gui_to_use.toLower() == "skingui")
+		main_window = new Gui::TSkin(0);
 	else
 #endif
-	if (gui_name.toLower() == "minigui") 
-		gui = new Gui::TMini(0);
-	else
+
 #ifdef MPCGUI
-	if (gui_name.toLower() == "mpcgui")
-		gui = new Gui::TMpc(0);
+	if (gui_to_use.toLower() == "mpcgui")
+		main_window = new Gui::TMpc(0);
 	else
 #endif
-		gui = new Gui::TDefault(0);
 
-	gui->loadConfig("");
+	if (gui_to_use.toLower() == "minigui")
+		main_window = new Gui::TMini(0);
+	else
+		main_window = new Gui::TDefault(0);
+
+	main_window->loadConfig("");
 	qDebug("SMPlayer::createGUI: loadConfig done. Translating...");
-	gui->retranslate();
+	main_window->retranslate();
 
-	gui->setForceCloseOnFinish(close_at_end);
-	gui->setForceStartInFullscreen(start_in_fullscreen);
+	main_window->setForceCloseOnFinish(close_at_end);
+	main_window->setForceStartInFullscreen(start_in_fullscreen);
 
-	connect(gui, SIGNAL(requestRestart()), this, SLOT(restart()));
+	connect(main_window, SIGNAL(requestRestart()), this, SLOT(restart()));
 
 #if SINGLE_INSTANCE
 	MyApplication * app = MyApplication::instance();
 	connect(app, SIGNAL(messageReceived(const QString&)),
-            gui, SLOT(handleMessageFromOtherInstances(const QString&)));
-	app->setActivationWindow(gui);
+			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
+	app->setActivationWindow(main_window);
 #endif
 
-	qDebug() << "SMPlayer::createGUI: create" << gui_name << "done";
-	return gui;
+	if (move_gui) {
+		qDebug("SMPlayer::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
+		main_window->move(gui_position);
+	}
+	if (resize_gui) {
+		qDebug("SMPlayer::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
+		main_window->resize(gui_size);
+	}
+
+	qDebug() << "SMPlayer::createGUI: created" << gui_to_use;
 }
 
 void SMPlayer::restart() {
@@ -432,24 +423,23 @@ void SMPlayer::start() {
 #endif
 #endif
 
-	// gui() calls createGUI() first time
-	// TODO: make explicit call
+	createGUI();
 
-	if (!gui()->startHidden() || !files_to_play.isEmpty() )
-		gui()->show();
+	if (!main_window->startHidden() || !files_to_play.isEmpty() )
+		main_window->show();
 	if (!files_to_play.isEmpty()) {
 		if (!subtitle_file.isEmpty())
-			gui()->setInitialSubtitle(subtitle_file);
+			main_window->setInitialSubtitle(subtitle_file);
 		if (!media_title.isEmpty())
-			gui()->getCore()->addForcedTitle(files_to_play[0], media_title);
-		gui()->openFiles(files_to_play);
+			main_window->getCore()->addForcedTitle(files_to_play[0], media_title);
+		main_window->openFiles(files_to_play);
 	}
 
 	if (!actions_list.isEmpty()) {
 		if (files_to_play.isEmpty()) {
-			gui()->runActions(actions_list);
+			main_window->runActions(actions_list);
 		} else {
-			gui()->runActionsLater(actions_list);
+			main_window->runActionsLater(actions_list);
 		}
 	}
 }

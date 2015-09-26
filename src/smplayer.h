@@ -31,15 +31,13 @@ class SMPlayer : public QObject
 public:
 	enum ExitCode { ErrorArgument = -3, NoAction = -2, NoRunningInstance = -1, NoError = 0, NoExit = 1 };
 
-	SMPlayer(const QString & config_path = QString::null, QObject * parent = 0);
-	~SMPlayer();
-
 	bool requested_restart;
+
+	SMPlayer(const QString & config_path = QString::null);
+	~SMPlayer();
 
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
 	ExitCode processArgs(QStringList args);
-
-	Gui::TBase* gui();
 
 	void start();
 
@@ -47,17 +45,7 @@ private slots:
 	void restart();
 
 private:
-	Gui::TBase * createGUI(QString gui_name);
-#ifndef PORTABLE_APP
-	void createConfigDirectory();
-#endif
-	void showInfo();
-	void deleteConfig();
-#ifdef Q_OS_WIN
-	void createFontFile();
-#endif
-
-	static Gui::TBase * main_window;
+	static Gui::TBase* main_window;
 
 	QStringList files_to_play;
 	QString subtitle_file;
@@ -75,6 +63,18 @@ private:
 	// Options to pass to gui
 	int close_at_end; // -1 = not set, 1 = true, 0 false
 	int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
+
+	void createGUI();
+	void showInfo();
+	void deleteConfig();
+
+#ifndef PORTABLE_APP
+	void createConfigDirectory();
+#endif
+
+#ifdef Q_OS_WIN
+	void createFontFile();
+#endif
 
 #ifdef LOG_SMPLAYER
 	// Output log
