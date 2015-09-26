@@ -49,27 +49,27 @@ public:
 	void setMarkForDeletion(bool b) { _deleted = b; }
 	void setEdited(bool b) { _edited = b; }
 
-	QString filename() { return _filename; }
-	QString name() { return _name; }
-	double duration() { return _duration; }
-	bool played() { return _played; }
-	bool markedForDeletion() { return _deleted; }
-	bool edited() { return _edited; }
+	QString directory() const { return _directory; }
+	QString filename() const { return _filename; }
+	QString name() const { return _name; }
+	double duration() const { return _duration; }
+	bool played() const { return _played; }
+	bool markedForDeletion() const { return _deleted; }
+	bool edited() const { return _edited; }
 
 private:
-	QString _filename, _name;
+	QString _directory, _filename, _name;
 	double _duration;
 	bool _played, _deleted, _edited;
 };
 
-class TPlaylist : public QWidget
-{
+class TPlaylist : public QWidget {
 	Q_OBJECT
 
 public:
 	enum AutoGetInfo { NoGetInfo = 0, GetInfo = 1, UserDefined = 2 };
 
-	TPlaylist( Core *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window );
+	TPlaylist(Core *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window);
 	~TPlaylist();
 
 	int count();
@@ -80,6 +80,9 @@ public:
 
 	void clear();
 	void list();
+
+	void loadSettings();
+	void retranslateStrings();
 
 public slots:
 	// Start playing, from item 0 if shuffle is off, or from
@@ -132,6 +135,7 @@ public slots:
 
 	virtual void newMediaLoaded();
 	virtual void getMediaInfo();
+	virtual void mediaFinished();
 	void playerSwitchedTitle(int id);
 
 	void setModified(bool);
@@ -150,7 +154,7 @@ public:
 	bool playFilesFromStart() { return play_files_from_start; }
 	bool ignorePlayerErrors() { return ignore_player_errors; }
 
-	QList<TPlaylistItem> playlist() {return pl;}
+	QList<TPlaylistItem> playlist() { return pl; }
 
 /*
 public:
@@ -164,7 +168,7 @@ signals:
 	void modifiedChanged(bool);
 
 protected:
-	void addItem(const QString &filename, QString name, double duration);
+	void addItem(QString filename, QString name, double duration);
 	void setCurrentItem(int current);
 	void clearPlayedTag();
 	int chooseRandomItem();
@@ -184,7 +188,6 @@ protected slots:
 	virtual void editCurrentItem();
 	virtual void editItem(int item);
 
-	virtual void loadSettings();
 	virtual void maybeSaveSettings();
 
 protected:
@@ -193,8 +196,6 @@ protected:
 	void createToolbar();
 
 protected:
-	void retranslateStrings();
-	virtual void changeEvent ( QEvent * event ) ;
 	virtual void dragEnterEvent( QDragEnterEvent * ) ;
 	virtual void dropEvent ( QDropEvent * );
 	virtual void hideEvent ( QHideEvent * );

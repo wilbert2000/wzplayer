@@ -328,6 +328,9 @@ void TBase::loadConfig(const QString &group) {
 		if (center_pos.isValid())
 			move(center_pos.width(), center_pos.height());
 	}
+
+	// Load playlist settings outside group
+	playlist->loadSettings();
 }
 
 void TBase::saveConfig(const QString &group) {
@@ -2085,6 +2088,9 @@ void TBase::retranslateStrings() {
 #endif
 
 	// TODO: make sure the "<empty>" string is translated
+
+	// Playlist
+	playlist->retranslateStrings();
 
 	// Other things
 #ifdef LOG_MPLAYER
