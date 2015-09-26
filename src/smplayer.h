@@ -40,6 +40,7 @@ public:
 	ExitCode processArgs(QStringList args);
 
 	void start();
+	void setMainWindow(Gui::TBase* win) { main_window = win; }
 
 private slots:
 	void restart();

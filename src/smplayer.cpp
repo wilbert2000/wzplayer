@@ -79,7 +79,7 @@ SMPlayer::SMPlayer(const QString & config_path) :
 	allow_to_send_log_to_gui = true;
 #endif
 
-	Paths::setAppPath( qApp->applicationDirPath() );
+	Paths::setAppPath(qApp->applicationDirPath());
 
 #ifndef PORTABLE_APP
 	if (config_path.isEmpty()) createConfigDirectory();
@@ -409,9 +409,6 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 }
 
 void SMPlayer::start() {
-
-	// Block SMPlayer::myMessageOutput()
-	main_window = 0;
 	qDebug("SMPlayer::start");
 
 	requested_restart = false;
