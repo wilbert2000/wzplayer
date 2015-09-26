@@ -53,7 +53,7 @@ public:
 #endif
 
 public slots:
-	//virtual void showTPlaylist(bool b);
+	//virtual void showPlaylist(bool b);
 
 protected:
 	virtual void retranslateStrings();

@@ -865,7 +865,7 @@ void TBase::createActions() {
 	showPlaylistAct = new TAction( QKeySequence("Ctrl+L"), this, "show_playlist" );
 	showPlaylistAct->setCheckable( true );
 	connect( showPlaylistAct, SIGNAL(toggled(bool)),
-             this, SLOT(showTPlaylist(bool)) );
+			 this, SLOT(showPlaylist(bool)) );
 
 	showPropertiesAct = new TAction( QKeySequence("Ctrl+I"), this, "show_file_properties" );
 	connect( showPropertiesAct, SIGNAL(triggered()),
@@ -2868,11 +2868,11 @@ void TBase::closeWindow() {
 	close();
 }
 
-void TBase::showTPlaylist() {
-	showTPlaylist( !playlist->isVisible() );
+void TBase::showPlaylist() {
+	showPlaylist( !playlist->isVisible() );
 }
 
-void TBase::showTPlaylist(bool b) {
+void TBase::showPlaylist(bool b) {
 	if ( !b ) {
 		playlist->hide();
 	} else {

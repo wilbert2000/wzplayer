@@ -150,8 +150,8 @@ public slots:
 	virtual void showTubeBrowser();
 #endif
 
-	virtual void showTPlaylist();
-	virtual void showTPlaylist(bool b);
+	virtual void showPlaylist();
+	virtual void showPlaylist(bool b);
 	virtual void showVideoEqualizer();
 	virtual void showVideoEqualizer(bool b);
 	virtual void showAudioEqualizer();

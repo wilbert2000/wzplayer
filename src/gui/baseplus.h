@@ -74,7 +74,7 @@ protected slots:
 #endif
 
 #if DOCK_PLAYLIST
-	virtual void showTPlaylist(bool b);
+	virtual void showPlaylist(bool b);
 	void playlistClosed();
 
 #if !USE_DOCK_TOPLEVEL_EVENT
