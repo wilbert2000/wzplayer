@@ -1680,7 +1680,7 @@ void TBase::retranslateStrings() {
 
 	decZoomAct->change( tr("Zoom &-") );
 	incZoomAct->change( tr("Zoom &+") );
-	resetZoomAct->change( tr("&Reset") );
+	resetZoomAct->change( Images::icon("zoom_reset"), tr("&Reset") );
 	autoZoomAct->change( tr("&Auto zoom") );
 	autoZoom169Act->change( tr("Zoom for &16:9") );
 	autoZoom235Act->change( tr("Zoom for &2.35:1") );

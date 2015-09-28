@@ -142,6 +142,7 @@
         <file>default-theme/paypal.png</file>
         <file>default-theme/shutdown.png</file>
         <file>default-theme/stereo3d.png</file>
+        <file>default-theme/zoom_reset.png</file>
         <file>default-theme/empty_icon.png</file>
         <file>default-theme/style.qss</file>
         <file>gui/mpc/mpc_toolbar.png</file>
