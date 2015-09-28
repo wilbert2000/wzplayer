@@ -45,13 +45,6 @@ PrefAdvanced::PrefAdvanced(QWidget * parent, Qt::WindowFlags f)
 	repaint_video_background_check->hide();
 #endif
 
-#ifndef LOG_MPLAYER
-	mplayer_log_box->hide();
-#endif
-
-	smplayer_log_box->hide();
-	advanced_tab->setTabEnabled(LOGS_TAB, false);
-
 	// Monitor aspect
 	monitoraspect_combo->addItem("Auto");
 	monitoraspect_combo->addItem("4:3");
@@ -88,9 +81,8 @@ void PrefAdvanced::retranslateStrings() {
 	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(PLAYER_NAME) );
 	options_info_label->setText( tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
 		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25" );
-	mplayer_log_box->setTitle(PLAYER_NAME);
-	log_mplayer_check->setText( tr("Log %1 &output").arg(PLAYER_NAME) );
-	log_mplayer_save_check->setText( tr("A&utosave %1 log to file").arg(PLAYER_NAME) );
+
+	// TODO: translate log tab
 
 	createHelp();
 }
@@ -117,14 +109,10 @@ void PrefAdvanced::setData(Preferences * pref) {
 	setActionsToRun( pref->actions_to_run );
 	setShowTagInTitle( pref->show_tag_in_window_title );
 
-	setLogMplayer( pref->log_mplayer );
-	setMplayerLogVerbose( pref->verbose_log );
-	setSaveMplayerLog( pref->autosave_mplayer_log );
-	setMplayerLogName( pref->mplayer_log_saveto );
-
-	setLogSmplayer( pref->log_smplayer );
-	setLogFilter( pref->log_filter );
-	setSaveSmplayerLog( pref->save_smplayer_log );
+	setLogEnabled(pref->log_enabled);
+	setLogVerbose(pref->log_verbose);
+	setLogFile(pref->log_file);
+	setLogFilter(pref->log_filter);
 
 	setUseShortNames( pref->use_short_pathnames );
 
@@ -183,16 +171,10 @@ void PrefAdvanced::getData(Preferences * pref) {
 	}
 #endif
 
-#ifdef LOG_MPLAYER
-	pref->log_mplayer = logMplayer();
-	TEST_AND_SET( pref->verbose_log, mplayerLogVerbose() );
-	pref->autosave_mplayer_log = saveMplayerLog();
-	pref->mplayer_log_saveto = mplayerLogName();
-#endif
-
-	pref->log_smplayer = logSmplayer();
+	pref->log_enabled = logEnabled();
+	TEST_AND_SET(pref->log_verbose, logVerbose());
+	pref->log_file = logFile();
 	pref->log_filter = logFilter();
-	pref->save_smplayer_log = saveSmplayerLog();
 
 	pref->use_short_pathnames = useShortNames();
 
@@ -358,46 +340,28 @@ void PrefAdvanced::on_changeButton_clicked() {
 }
 
 // Log options
-#ifdef LOG_MPLAYER
-void PrefAdvanced::setLogMplayer(bool b) {
-	log_mplayer_check->setChecked(b);
+void PrefAdvanced::setLogEnabled(bool b) {
+	log_enabled_check->setChecked(b);
 }
 
-bool PrefAdvanced::logMplayer() {
-	return log_mplayer_check->isChecked();
+bool PrefAdvanced::logEnabled() {
+	return log_enabled_check->isChecked();
 }
 
-void PrefAdvanced::setMplayerLogVerbose(bool b) {
-	verbose_check->setChecked(b);
+void PrefAdvanced::setLogVerbose(bool b) {
+	log_verbose_check->setChecked(b);
 }
 
-bool PrefAdvanced::mplayerLogVerbose() {
-	return verbose_check->isChecked();
+bool PrefAdvanced::logVerbose() {
+	return log_verbose_check->isChecked();
 }
 
-void PrefAdvanced::setSaveMplayerLog(bool b) {
-    log_mplayer_save_check->setChecked(b);
+void PrefAdvanced::setLogFile(bool b) {
+	log_file_check->setChecked(b);
 }
 
-bool PrefAdvanced::saveMplayerLog() {
-    return log_mplayer_save_check->isChecked();
-}
-
-void PrefAdvanced::setMplayerLogName(QString filter) {
-    log_mplayer_save_name->setText(filter);
-}
-
-QString PrefAdvanced::mplayerLogName() {
-    return log_mplayer_save_name->text();
-}
-#endif
-
-void PrefAdvanced::setLogSmplayer(bool b) {
-	log_smplayer_check->setChecked(b);
-}
-
-bool PrefAdvanced::logSmplayer() {
-	return log_smplayer_check->isChecked();
+bool PrefAdvanced::logFile() {
+	return log_file_check->isChecked();
 }
 
 void PrefAdvanced::setLogFilter(QString filter) {
@@ -406,14 +370,6 @@ void PrefAdvanced::setLogFilter(QString filter) {
 
 QString PrefAdvanced::logFilter() {
 	return log_filter_edit->text();
-}
-
-void PrefAdvanced::setSaveSmplayerLog(bool b) {
-	log_smplayer_save_check->setChecked(b);
-}
-
-bool PrefAdvanced::saveSmplayerLog(){
-    return log_smplayer_save_check->isChecked();
 }
 
 void PrefAdvanced::createHelp() {
@@ -518,26 +474,17 @@ void PrefAdvanced::createHelp() {
 
 	addSectionTitle(tr("Logs"));
 
-	// TODO: update
-	setWhatsThis(log_smplayer_check, tr("Log SMPlayer output"),
-		tr("If this option is checked, SMPlayer will store the debugging "
-           "messages that SMPlayer outputs "
-           "(you can see the log in <b>Options -> View logs -> SMPlayer</b>). "
-           "This information can be very useful for the developer in case "
-           "you find a bug." ) );
+	setWhatsThis(log_enabled_check, tr("Enable logging"),
+		tr("If checked, SMPlayer will log its actions "
+		   "(you can see it in <b>Options -> View log</b>). "
+		   "In case of problems this log can contain important information, "
+		   "so it's recommended to keep this option checked."));
 
-	setWhatsThis(log_smplayer_save_check, tr("Save SMPlayer log to file"),
+	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
 		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
           .arg( "<i>"+ Paths::configPath() + "/smplayer_log.txt</i>" ) );
 
-#ifdef LOG_MPLAYER
-	// TODO: update
-	setWhatsThis(log_mplayer_check, tr("Log %1 output").arg(PLAYER_NAME),
-		tr("If checked, SMPlayer will store the output of %1 "
-           "(you can see it in <b>Options -> View logs -> %1</b>). "
-           "In case of problems this log can contain important information, "
-           "so it's recommended to keep this option checked.").arg(PLAYER_NAME) );
-
+/*
 	setWhatsThis(log_mplayer_save_check, tr("Autosave %1 log").arg(PLAYER_NAME),
 		tr("If this option is checked, the %1 log will be saved to the "
            "specified file every time a new file starts to play. "
@@ -547,13 +494,13 @@ void PrefAdvanced::createHelp() {
 	setWhatsThis(log_mplayer_save_name, tr("Autosave %1 log filename").arg(PLAYER_NAME),
  		tr("Enter here the path and filename that will be used to save the "
            "%1 log.").arg(PLAYER_NAME) );
-#endif
+*/
 
-	setWhatsThis(log_filter_edit, tr("Filter for Slogsyer logs"),
+	setWhatsThis(log_filter_edit, tr("Filter for log"),
 		tr("This option allows to filter the SMPlayer messages that will "
            "be stored in the log. Here you can write any regular expression.<br>"
            "For instance: <i>^Core::.*</i> will display only the lines "
-           "starting with <i>Core::</i>") );
+		   "starting with <i>Core::</i>. Warnings and errors are not filtered.") );
 }
 
 #include "moc_prefadvanced.cpp"

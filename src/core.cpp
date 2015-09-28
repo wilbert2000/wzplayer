@@ -1192,7 +1192,7 @@ void Core::startPlayer( QString file, double seek ) {
 	proc->setExecutable(mplayer_bin);
 	proc->setFixedOptions();
 
-	if (pref->verbose_log) {
+	if (pref->log_verbose) {
 		proc->setOption("verbose");
 	}
 

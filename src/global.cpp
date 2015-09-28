@@ -48,10 +48,9 @@ void global_init(const QString& config_path) {
 	pref = new Preferences();
 
 	// Log
-	log = new TLog(pref->log_smplayer, pref->save_smplayer_log,
-				   pref->log_filter);
-	qDebug() << "Global::global_init: started log at " +
-				QDateTime::currentDateTimeUtc().toString(Qt::ISODate) + " UTC";
+	log = new TLog(pref->log_enabled, pref->log_file, pref->log_filter);
+	qDebug() << "Global::global_init: started log at UTC " +
+				QDateTime::currentDateTimeUtc().toString(Qt::ISODate);
 
 	// Translator
 	translator = new Translator();
@@ -68,7 +67,6 @@ void global_end() {
 
 	delete translator;
 	delete log;
-	log = 0;
 	delete pref;
 	delete settings;
 }

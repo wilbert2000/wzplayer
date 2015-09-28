@@ -13,14 +13,13 @@ TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter)
 	filter(debug_filter),
 	log_window(0) {
 
-	// Open log file
-	if (log_file_enabled) {
-		file.setFileName(Paths::configPath() + "/smplayer_log.txt");
-		file.open(QIODevice::WriteOnly);
-	}
-
 	// Reserve a buf for logLine()
 	lines.reserve(LOG_BUF_LENGTH);
+
+	// Open log file
+	if (log_file_enabled) {
+		setLogFileEnabled(log_file_enabled);
+	}
 
 	// Install message handler
 #if QT_VERSION >= 0x050000
@@ -32,9 +31,25 @@ TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter)
 
 TLog::~TLog() {
 
+	// Close log file
 	log_window = 0;
 	if (file.isOpen()) {
 		qDebug("Closing log file");
+		file.close();
+	}
+	// No longer handle messages
+	Global::log = 0;
+}
+
+void TLog::setLogFileEnabled(bool log_file_enabled) {
+
+	if (log_file_enabled) {
+		// Open log file
+		if (!file.isOpen()) {
+			file.setFileName(Paths::configPath() + "/smplayer_log.txt");
+			file.open(QIODevice::WriteOnly);
+		}
+	} else {
 		file.close();
 	}
 }
@@ -92,7 +107,7 @@ void TLog::logLine(QtMsgType type, QString line) {
 	}
 } // TLog::logLine()
 
-
+// Message handler
 #if QT_VERSION >= 0x050000
 void TLog::messageHandler(QtMsgType type, const QMessageLogContext&,
 						  const QString& msg) {
@@ -103,8 +118,9 @@ void TLog::msgHandler(QtMsgType type, const char* p_msg) {
 #endif
 
 	if (Global::log
-		&& Global::log->isEnabled()
-		&& (type != QtDebugMsg || Global::log->passesFilter(msg))) {
+		&& (type != QtDebugMsg
+			|| (Global::log->isEnabled() && Global::log->passesFilter(msg)))) {
+
 		Global::log->logLine(type, msg);
 	}
 }

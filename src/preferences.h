@@ -274,17 +274,11 @@ public:
 	QString mplayer_additional_video_filters;
 	QString mplayer_additional_audio_filters;
 
-	// Logs
-#ifdef LOG_MPLAYER
-	bool log_mplayer;
-	bool verbose_log;
-	bool autosave_mplayer_log;
-	QString mplayer_log_saveto;
-#endif
-
-	bool log_smplayer;
+	// Logging
+	bool log_enabled;
+	bool log_verbose;
 	QString log_filter;
-	bool save_smplayer_log;
+	bool log_file;
 
 #if REPAINT_BACKGROUND_OPTION
 	//! If true, mplayerlayer erases its background

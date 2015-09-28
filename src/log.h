@@ -17,9 +17,13 @@ public:
 	~TLog();
 
 	bool isEnabled() const { return enabled; }
+	void setEnabled(bool enable_log) { enabled = enable_log; }
+	void setLogFileEnabled(bool log_file_enabled);
+	void setFilter(const QString& filter_str) { filter = QRegExp(filter_str); }
 	bool passesFilter(const QString& msg) { return filter.indexIn(msg) >= 0; }
-	void logLine(QtMsgType type, QString line);
 	void setLogWindow(LogWindow* window);
+
+	void logLine(QtMsgType type, QString line);
 	QString getLogLines() { return lines_back + lines; }
 
 private:

@@ -2935,6 +2935,12 @@ void TBase::applyNewPreferences() {
 	}
 #endif
 
+	// Update logging
+	Global::log->setEnabled(pref->log_enabled);
+	// log_verbose sets restart
+	Global::log->setLogFileEnabled(pref->log_file);
+	Global::log->setFilter(pref->log_filter);
+
 	// Update playlist preferences
 	PrefPlaylist * pl = pref_dialog->mod_playlist();
 	playlist->setDirectoryRecursion(pl->directoryRecursion());

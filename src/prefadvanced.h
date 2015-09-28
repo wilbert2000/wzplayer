@@ -43,13 +43,13 @@ public:
     void getData(Preferences * pref);
 
 #if REPAINT_BACKGROUND_OPTION
-	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; };
+	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; }
 #endif
-	bool monitorAspectChanged() { return monitor_aspect_changed; };
+	bool monitorAspectChanged() { return monitor_aspect_changed; }
 #if USE_COLORKEY
-	bool colorkeyChanged() { return colorkey_changed; };
+	bool colorkeyChanged() { return colorkey_changed; }
 #endif
-	bool lavfDemuxerChanged() { return lavf_demuxer_changed; };
+	bool lavfDemuxerChanged() { return lavf_demuxer_changed; }
 
 protected:
 	virtual void createHelp();
@@ -106,28 +106,17 @@ protected:
 	bool showTagInTitle();
 
 	// Log options
-#ifdef LOG_MPLAYER
-	void setLogMplayer(bool b);
-	bool logMplayer();
+	void setLogEnabled(bool b);
+	bool logEnabled();
 
-	void setMplayerLogVerbose(bool b);
-	bool mplayerLogVerbose();
+	void setLogVerbose(bool b);
+	bool logVerbose();
 
-	void setSaveMplayerLog(bool b);
-	bool saveMplayerLog();
-
-	void setMplayerLogName(QString filter);
-	QString mplayerLogName();
-#endif
-
-	void setLogSmplayer(bool b);
-	bool logSmplayer();
+	void setLogFile(bool b);
+	bool logFile();
 
 	void setLogFilter(QString filter);
 	QString logFilter();
-
-	void setSaveSmplayerLog(bool b);
-	bool saveSmplayerLog();
 
 protected:
 	virtual void retranslateStrings();
