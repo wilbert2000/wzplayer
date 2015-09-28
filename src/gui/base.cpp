@@ -182,7 +182,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 
 	createMplayerWindow();
 	createCore();
-	createTPlaylist();
+	createPlaylist();
 	createVideoEqualizer();
 	createAudioEqualizer();
 
@@ -2283,26 +2283,16 @@ void TBase::createAudioEqualizer() {
              this, SLOT(updateWidgets()) );
 }
 
-void TBase::createTPlaylist() {
+void TBase::createPlaylist() {
+
 #if DOCK_PLAYLIST
 	playlist = new TPlaylist(core, this, 0);
 #else
-	//playlist = new TPlaylist(core, this, "playlist");
 	playlist = new TPlaylist(core, 0);
 #endif
 
-	/*
 	connect( playlist, SIGNAL(playlistEnded()),
-             this, SLOT(exitFullscreenOnStop()) );
-	*/
-	connect( playlist, SIGNAL(playlistEnded()),
-             this, SLOT(playlistHasFinished()) );
-
-	/*
-	connect( playlist, SIGNAL(visibilityChanged()),
-             this, SLOT(playlistVisibilityChanged()) );
-	*/
-
+			 this, SLOT(playlistHasFinished()) );
 }
 
 void TBase::createPanel() {

@@ -358,7 +358,7 @@ protected:
 	void createMplayerWindow();
 	void createVideoEqualizer();
 	void createAudioEqualizer();
-	void createTPlaylist();
+	void createPlaylist();
 	void createPanel();
 	void createPreferencesDialog();
 	void createFilePropertiesDialog();
