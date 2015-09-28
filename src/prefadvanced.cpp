@@ -82,7 +82,12 @@ void PrefAdvanced::retranslateStrings() {
 	options_info_label->setText( tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
 		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25" );
 
-	// TODO: translate log tab
+	// Log tab
+	log_enabled_check->setText( tr("&Enable logging") );
+	log_verbose_check->setText( tr("&Verbose") );
+	log_enabled_check->setText( tr("&Save log to a file") );
+	log_filter_label1->setText( tr("&Filter for log:") );
+	log_filter_label2->setText( tr("This option is mainly intended for debugging the application.") );
 
 	createHelp();
 }
