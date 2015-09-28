@@ -102,7 +102,7 @@ public:
 	void setTSProgram(int ID);
 #endif
 	void toggleDeinterlace();
-	void setOSDPos(const QPoint &pos);
+	void setOSDPos(const QPoint &pos, int);
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &) {}
 

@@ -1385,7 +1385,7 @@ void MPVProcess::toggleDeinterlace() {
 	writeToStdin("cycle deinterlace");
 }
 
-void MPVProcess::setOSDPos(const QPoint &pos) {
+void MPVProcess::setOSDPos(const QPoint &pos, int current_osd_level) {
 	// mpv has no way to set the OSD position,
 	// so this hack uses osd-margin to emulate it.
 
@@ -1471,8 +1471,7 @@ void MPVProcess::setOSDPos(const QPoint &pos) {
 	}
 
 	if (clr_osd) {
-		// Show empty text for 0 ms at level 2 where the messages seem to appear
-		writeToStdin("show_text \"\" 0 2");
+		writeToStdin("show_text \"\" 0 " + QString::number(current_osd_level));
 	}
 }
 

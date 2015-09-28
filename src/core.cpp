@@ -398,9 +398,9 @@ void Core::changeFullscreenMode(bool b) {
 	proc->setFullscreen(b);
 }
 
-void Core::clearOSD(int level) {
+void Core::clearOSD() {
 
-	displayTextOnOSD("", 0, level);
+	displayTextOnOSD("", 0, pref->osd_level);
 }
 
 void Core::displayTextOnOSD(QString text, int duration, int level) {
@@ -411,6 +411,13 @@ void Core::displayTextOnOSD(QString text, int duration, int level) {
 		&& !mdat.noVideo()) {
 		proc->showOSDText(text, duration, level);
 	}
+}
+
+void Core::setOSDPos(const QPoint &pos) {
+	// qDebug("Core::setOSDPos");
+
+	if (proc->isFullyStarted())
+		proc->setOSDPos(pos, pref->osd_level);
 }
 
 void Core::close() {
@@ -1401,7 +1408,7 @@ void Core::startPlayer( QString file, double seek ) {
 		proc->setOption("osd-scale", pref->subfont_osd_scale);
 	} else {
 		proc->setOption("osd-scale", pref->osd_scale);
-		//proc->setOption("osd-scale-by-window", "no");
+		proc->setOption("osd-scale-by-window", "no");
 	}
 
 	// Subtitles fonts
@@ -2834,13 +2841,6 @@ void Core::decSubScale() {
 	} else {
 		changeSubScale( mset.sub_scale - step );
 	}
-}
-
-void Core::setOSDPos(const QPoint &pos) {
-	// qDebug("Core::setOSDPos");
-
-	if (proc->isFullyStarted())
-		proc->setOSDPos(pos);
 }
 
 void Core::changeOSDScale(double value) {

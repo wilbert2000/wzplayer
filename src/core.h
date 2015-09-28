@@ -334,7 +334,7 @@ public slots:
 	void displayTextOnOSD(QString text,
 						  int duration = 3000,
 						  int level = 1);
-	void clearOSD(int level = 1);
+	void clearOSD();
 
 public:
 

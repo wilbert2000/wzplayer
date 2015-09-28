@@ -118,7 +118,7 @@ public:
 	virtual void setTSProgram(int ID) = 0;
 #endif
 	virtual void toggleDeinterlace() = 0;
-	virtual void setOSDPos(const QPoint &pos) = 0;
+	virtual void setOSDPos(const QPoint &pos, int current_osd_level) = 0;
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
 

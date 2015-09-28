@@ -1430,7 +1430,7 @@ void MplayerProcess::toggleDeinterlace() {
 	writeToStdin("step_property deinterlace");
 }
 
-void MplayerProcess::setOSDPos(const QPoint &) {
+void MplayerProcess::setOSDPos(const QPoint&, int) {
 	// not supported
 }
 
