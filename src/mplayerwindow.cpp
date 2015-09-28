@@ -645,13 +645,11 @@ QPoint MplayerWindow::pan() {
 }
 
 void MplayerWindow::resetZoomAndPan() {
-	if (fullscreen) {
-		zoom_factor_fullscreen = 1.0;
-		pan_offset_fullscreen = QPoint();
-	} else {
-		zoom_factor = 1.0;
-		pan_offset = QPoint();
-	}
+
+	zoom_factor_fullscreen = 1.0;
+	pan_offset_fullscreen = QPoint();
+	zoom_factor = 1.0;
+	pan_offset = QPoint();
 	updateVideoWindow();
 }
 
