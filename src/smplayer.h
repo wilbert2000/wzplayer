@@ -24,8 +24,7 @@
 #include <QStringList>
 #include "gui/base.h"
 
-class SMPlayer : public QObject
-{
+class SMPlayer : public QObject {
 	Q_OBJECT
 
 public:
@@ -33,20 +32,18 @@ public:
 
 	bool requested_restart;
 
-	SMPlayer(const QString & config_path = QString::null);
+	SMPlayer();
 	~SMPlayer();
 
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
 	ExitCode processArgs(QStringList args);
-
 	void start();
-	void setMainWindow(Gui::TBase* win) { main_window = win; }
 
 private slots:
 	void restart();
 
 private:
-	static Gui::TBase* main_window;
+	Gui::TBase* main_window;
 
 	QStringList files_to_play;
 	QString subtitle_file;
@@ -57,7 +54,6 @@ private:
 	// Change position and size
 	bool move_gui;
 	QPoint gui_position;
-
 	bool resize_gui;
 	QSize gui_size;
 
@@ -67,26 +63,6 @@ private:
 
 	void createGUI();
 	void showInfo();
-	void deleteConfig();
-
-#ifndef PORTABLE_APP
-	void createConfigDirectory();
-#endif
-
-#ifdef Q_OS_WIN
-	void createFontFile();
-#endif
-
-#ifdef LOG_SMPLAYER
-	// Output log
-	static QFile output_log;
-	#if QT_VERSION >= 0x050000
-	static void myMessageOutput( QtMsgType type, const QMessageLogContext &, const QString & msg );
-	#else
-	static void myMessageOutput( QtMsgType type, const char *msg );
-	#endif
-	static bool allow_to_send_log_to_gui;
-#endif
 };
 
 #endif

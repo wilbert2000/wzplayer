@@ -333,11 +333,8 @@ bool PlayerProcess::parseLine(QString &line) {
 	if (rx_kill_line.indexIn(line) >= 0)
 		return true;
 
-	// Output line to console
-	qDebug("PlayerProcess::parseLine [%f]: '%s'", md->time_sec, line.toUtf8().data() );
-
-	// Output line to logs
-	emit lineAvailable(line);
+	// Output line to console+
+	qDebug("PlayerProcess::parseLine [%f]: '%s'", md->time_sec, line.toUtf8().data());
 
 	if (quit_send) {
 		qDebug("PlayerProcess::parseLine: ignored, waiting for quit to arrive");

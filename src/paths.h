@@ -47,8 +47,11 @@ public:
 
 	static QString subtitleStyleFile();
 
+	static void createConfigDirectory();
+
 #ifdef Q_OS_WIN
 	static QString fontPath();
+	static createFontFile();
 #endif
 
 private:

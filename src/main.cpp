@@ -18,26 +18,22 @@
 
 #include "myapplication.h"
 #include "smplayer.h"
+#include "global.h"
 
 
 int main( int argc, char ** argv ) 
 {
 	MyApplication app("smplayer", argc, argv);
 
-	// Sets the config path
+	// Set the config path
 	QString config_path;
 
-#ifdef PORTABLE_APP
-	config_path = app.applicationDirPath();
-#else
-	// If a smplayer.ini exists in the app path, will use that path
-	// for the config file by default
-	if (QFile::exists( app.applicationDirPath() + "/smplayer.ini" ) ) {
+	// If a smplayer.ini exists in the app path, use that path
+	if (QFile::exists(app.applicationDirPath() + "/smplayer.ini")) {
 		config_path = app.applicationDirPath();
-		qDebug("main: using existing %s", QString(config_path + "/smplayer.ini").toUtf8().data());
 	}
-#endif
 
+	// Get config path from args
 	QStringList args = app.arguments();
 	int pos = args.indexOf("-config-path");
 	if ( pos != -1) {
@@ -53,23 +49,25 @@ int main( int argc, char ** argv )
 		}
 	}
 
-	SMPlayer* smplayer = new SMPlayer(config_path);
+	// Load setting, preferences, setup logging and translation
+	Global::global_init(config_path);
+
+	SMPlayer* smplayer = new SMPlayer();
 	SMPlayer::ExitCode c = smplayer->processArgs(args);
 	if (c != SMPlayer::NoExit) {
 		return c;
 	}
 
-	// TODO: make smplayer descendant app
 	int exit_code;
 	do {
 		smplayer->start();
 		qDebug("main: calling exec()");
 		exit_code = app.exec();
-		smplayer->setMainWindow(0);
 		qDebug("main: exec() returned %d", exit_code);
 	} while (smplayer->requested_restart);
 
 	delete smplayer;
+	Global::global_end();
 
 	return exit_code;
 }

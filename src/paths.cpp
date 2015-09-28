@@ -20,10 +20,12 @@
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QFile>
-#include <QRegExp>
 #include <QDir>
+#include <QRegExp>
 
-#ifndef Q_OS_WIN
+#ifdef Q_OS_WIN
+#include <QIODevice>
+#else
 #include <stdlib.h>
 #endif
 
@@ -131,25 +133,52 @@ void Paths::setConfigPath(QString path) {
 }
 
 QString Paths::configPath() {
-	if (!config_path.isEmpty()) {
-		return config_path;
-	} else {
+
+	if (config_path.isEmpty()) {
+
 #ifdef PORTABLE_APP
-		return appPath();
+		config_path = app_path;
 #else
-		#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+
+#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 		const char * XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
-		if (XDG_CONFIG_HOME!=NULL) {
-			/* qDebug("Paths::configPath: XDG_CONFIG_HOME: %s", XDG_CONFIG_HOME); */
-			return QString(XDG_CONFIG_HOME) + "/smplayer";
-		} 
-		else
-		return QDir::homePath() + "/.config/smplayer";
-		#else
-		return QDir::homePath() + "/.smplayer";
-		#endif
+		if (XDG_CONFIG_HOME != NULL) {
+			config_path = QString(XDG_CONFIG_HOME) + "/smplayer";
+		} else {
+			config_path = QDir::homePath() + "/.config/smplayer";
+		}
+#else
+		config_path = QDir::homePath() + "/.smplayer";
 #endif
+
+#endif
+
 	}
+
+	return config_path;
+}
+
+void Paths::createConfigDirectory() {
+
+#ifndef PORTABLE_APP
+	// Create smplayer config directory
+	if (!QFile::exists(configPath())) {
+		QDir d;
+		if (!d.mkdir(config_path)) {
+			qWarning("Paths::createConfigDirectory: can't create %s", config_path.toUtf8().data());
+		}
+
+		// Screenshot folder already created in preferences.cpp if Qt >= 4.4
+#if QT_VERSION < 0x040400
+		QString s = config_path + "/screenshots";
+		if (!d.mkdir(s)) {
+			qWarning("Paths::createHomeDirectory: can't create %s", s.toUtf8().data());
+		}
+#endif
+
+	}
+#endif
+
 }
 
 QString Paths::iniPath() {
@@ -172,4 +201,49 @@ QString Paths::fontPath() {
 		return appPath() + "/open-fonts";
 	}
 }
-#endif
+
+void Paths::createFontFile() {
+	qDebug("Paths::createFontFile");
+
+	QString output = configPath() + "/fonts.conf";
+
+	// Check if the file already exists with the modified path
+	if (QFile::exists(output)) {
+		QFile i(output);
+		if (i.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			QString text = i.readAll();
+			if (text.contains("<dir>" + fontPath() + "</dir>")) {
+				qDebug("Paths::createFontFile: file %s already exists with font path. Doing nothing.", output.toUtf8().constData());
+				return;
+			}
+		}
+	}
+
+	QString input = appPath() + "/mplayer/fonts/fonts.conf";
+	if (!QFile::exists(input)) {
+		qDebug("Paths::createFontFile: %s doesn't exist", input.toUtf8().constData());
+		input = appPath() + "/mplayer/mpv/fonts.conf";
+		if (!QFile::exists(input)) {
+			qDebug("Paths::createFontFile: %s doesn't exist", input.toUtf8().constData());
+			qWarning("Paths::createFontFile: failed to create fonts.conf");
+			return;
+		}
+	}
+
+	qDebug("Paths::createFontFile: input: %s", input.toUtf8().constData());
+	QFile infile(input);
+	if (infile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		QString text = infile.readAll();
+		text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
+		text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + fontPath() + "</dir>");
+
+		qDebug("Paths::createFontFile: saving %s", output.toUtf8().constData());
+		QFile outfile(output);
+		if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			outfile.write(text.toUtf8());
+			outfile.close();
+		}
+	}
+}
+#endif // Q_OS_WIN
+

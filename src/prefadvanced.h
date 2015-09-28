@@ -120,7 +120,6 @@ protected:
 	QString mplayerLogName();
 #endif
 
-#ifdef LOG_SMPLAYER
 	void setLogSmplayer(bool b);
 	bool logSmplayer();
 
@@ -129,7 +128,6 @@ protected:
 
 	void setSaveSmplayerLog(bool b);
 	bool saveSmplayerLog();
-#endif
 
 protected:
 	virtual void retranslateStrings();

@@ -39,7 +39,6 @@
 #include "paths.h"
 #include "preferences.h"
 #include "mplayerversion.h"
-#include "constants.h"
 #include "colorutils.h"
 #include "discname.h"
 #include "extensions.h"
@@ -119,9 +118,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	connect( proc, SIGNAL(receivedBufferingEnded()),
 			 this, SLOT(displayBufferingEnded()));
-
-	connect( proc, SIGNAL(lineAvailable(QString)),
-             this, SIGNAL(logLineAvailable(QString)) );
 
 	connect( proc, SIGNAL(receivedMessage(QString)),
 			 this, SLOT(displayMessage(QString)) );
@@ -258,11 +254,9 @@ Core::~Core() {
 
 	stopPlayer();
 	proc->terminate();
-	delete proc;
 
-#ifndef NO_USE_INI_FILES
-	delete file_settings;
-	delete tv_settings;
+#ifdef YOUTUBE_SUPPORT
+	delete yt;
 #endif
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -271,8 +265,11 @@ Core::~Core() {
 #endif
 #endif
 
-#ifdef YOUTUBE_SUPPORT
-	delete yt;
+	delete proc;
+
+#ifndef NO_USE_INI_FILES
+	delete tv_settings;
+	delete file_settings;
 #endif
 }
 
@@ -1188,11 +1185,9 @@ void Core::startPlayer( QString file, double seek ) {
 	proc->setExecutable(mplayer_bin);
 	proc->setFixedOptions();
 
-#ifdef LOG_MPLAYER
 	if (pref->verbose_log) {
 		proc->setOption("verbose");
 	}
-#endif
 
 	if (pref->fullscreen && pref->use_mplayer_window) {
 		proc->setOption("fs", true);
@@ -2001,28 +1996,24 @@ void Core::startPlayer( QString file, double seek ) {
 	QString commandline = proc->arguments().join(" ");
 	qDebug("Core::startPlayer: command: '%s'", commandline.toUtf8().data());
 
-	//Log command
-	QString line_for_log = commandline + "\n";
-	emit logLineAvailable(line_for_log);
-
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	if ((pref->use_proxy) && (pref->proxy_type == QNetworkProxy::HttpProxy) && (!pref->proxy_host.isEmpty())) {
 		QString proxy = QString("http://%1:%2@%3:%4").arg(pref->proxy_username).arg(pref->proxy_password).arg(pref->proxy_host).arg(pref->proxy_port);
 		env.insert("http_proxy", proxy);
 	}
-	//qDebug("Core::startPlayer: env: %s", env.toStringList().join(",").toUtf8().constData());
-	#ifdef Q_OS_WIN
+
+#ifdef Q_OS_WIN
 	if (!pref->use_windowsfontdir) {
 		env.insert("FONTCONFIG_FILE", Paths::configPath() + "/fonts.conf");
 	}
-	#endif
+#endif
+
 	proc->setProcessEnvironment(env);
 
-	if ( !proc->startPlayer() ) {
+	if (!proc->startPlayer()) {
 		// TODO: error handling
 		qWarning("Core::startPlayer: mplayer process didn't start");
 	}
-
 }
 
 void Core::stopPlayer() {

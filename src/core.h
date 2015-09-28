@@ -465,9 +465,6 @@ signals:
 	// Resend signal from mplayerprocess:
 	void failedToParseMplayerVersion(QString line_with_mplayer_version);
 
-	//! A new line from the mplayer output is available
-	void logLineAvailable(QString);
-
 #ifdef YOUTUBE_SUPPORT
 	void signatureNotFound(const QString &);
 	void noSslSupport();

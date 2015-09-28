@@ -16,9 +16,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include "config.h"
 #include "base.h"
 
-#include "filedialog.h"
 #include <QMessageBox>
 #include <QLabel>
 #include <QMenu>
@@ -43,6 +43,8 @@
 
 #include <cmath>
 
+#include "log.h"
+#include "filedialog.h"
 #include "mplayerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
@@ -80,7 +82,6 @@
 #include "videopreview.h"
 #endif
 
-#include "config.h"
 #include "actionseditor.h"
 
 #include "tvlist.h"
@@ -96,9 +97,8 @@
 
 #include "gui/action.h"
 #include "gui/actiongroup.h"
-#include "playlist.h"
+#include "gui/playlist.h"
 
-#include "constants.h"
 #include "links.h"
 
 #ifdef MPRIS2
@@ -210,12 +210,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	}
 #endif
 
-#ifdef LOG_MPLAYER
-	mplayer_log_window = new LogWindow(0);
-#endif
-#ifdef LOG_SMPLAYER
-	smplayer_log_window = new LogWindow(0);
-#endif
+	log_window = new LogWindow(0);
 
 	createActions();
 	createMenus();
@@ -261,6 +256,25 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	// TODO reenable
 	// if (pref->use_mpris2) new Mpris2(this, this);
 #endif
+}
+
+// TODO: check leaking and ownership
+TBase::~TBase() {
+
+#ifdef VIDEOPREVIEW
+	delete video_preview;
+#endif
+
+#ifdef FIND_SUBTITLES
+	delete find_subs_dialog;
+#endif
+
+	delete radiolist;
+	delete tvlist;
+	delete favorites;
+	delete log_window;
+	delete playlist;
+	delete core;
 }
 
 void TBase::setupNetworkProxy() {
@@ -394,40 +408,6 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 	}
 }
 #endif
-
-TBase::~TBase() {
-	delete core; // delete before mplayerwindow, otherwise, segfault...
-#ifdef LOG_MPLAYER
-	delete mplayer_log_window;
-#endif
-#ifdef LOG_SMPLAYER
-	delete smplayer_log_window;
-#endif
-
-	delete favorites;
-	delete tvlist;
-	delete radiolist;
-
-//#if !DOCK_PLAYLIST
-	if (playlist) {
-		delete playlist;
-		playlist = 0;
-	}
-//#endif
-
-#ifdef FIND_SUBTITLES
-	if (find_subs_dialog) {
-		delete find_subs_dialog;
-		find_subs_dialog = 0; // Necessary?
-	}
-#endif
-
-#ifdef VIDEOPREVIEW
-	if (video_preview) {
-		delete video_preview;
-	}
-#endif
-}
 
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
@@ -881,18 +861,9 @@ void TBase::createActions() {
              this, SLOT(showTubeBrowser()) );
 #endif
 
-	// Submenu Logs
-#ifdef LOG_MPLAYER
-	showLogMplayerAct = new TAction( QKeySequence("Ctrl+M"), this, "show_mplayer_log" );
-	connect( showLogMplayerAct, SIGNAL(triggered()),
-             this, SLOT(showMplayerLog()) );
-#endif
-
-#ifdef LOG_SMPLAYER
-	showLogSmplayerAct = new TAction( QKeySequence("Ctrl+S"), this, "show_smplayer_log" );
-	connect( showLogSmplayerAct, SIGNAL(triggered()),
-             this, SLOT(showLog()) );
-#endif
+	// Show log
+	showLogAct = new TAction( QKeySequence("Ctrl+S"), this, "show_smplayer_log" );
+	connect( showLogAct, SIGNAL(triggered()), this, SLOT(showLog()));
 
 	// Menu Help
 	showFirstStepsAct = new TAction( this, "first_steps" );
@@ -1790,13 +1761,8 @@ void TBase::retranslateStrings() {
 	showTubeBrowserAct->change( Images::icon("tubebrowser"), tr("&YouTube%1 browser").arg(QChar(0x2122)) );
 #endif
 
-	// Submenu Logs
-#ifdef LOG_MPLAYER
-	showLogMplayerAct->change(PLAYER_NAME);
-#endif
-#ifdef LOG_SMPLAYER
-	showLogSmplayerAct->change( "SMPlayer" );
-#endif
+	// Show log
+	showLogAct->change( Images::icon("log"), tr("&View log"));
 
 	// Menu Help
 	showFirstStepsAct->change( Images::icon("guide"), tr("First Steps &Guide") );
@@ -2082,23 +2048,13 @@ void TBase::retranslateStrings() {
 	share_menu->menuAction()->setIcon( Images::icon("share") );
 #endif
 
-#if defined(LOG_MPLAYER) || defined(LOG_SMPLAYER)
-	logs_menu->menuAction()->setText( tr("&View logs") );
-	logs_menu->menuAction()->setIcon( Images::icon("logs") );
-#endif
-
 	// TODO: make sure the "<empty>" string is translated
 
 	// Playlist
 	playlist->retranslateStrings();
 
-	// Other things
-#ifdef LOG_MPLAYER
-	mplayer_log_window->setWindowTitle( tr("%1 log").arg(PLAYER_NAME) );
-#endif
-#ifdef LOG_SMPLAYER
-	smplayer_log_window->setWindowTitle( tr("SMPlayer log") );
-#endif
+	// Log window
+	log_window->setWindowTitle( tr("SMPlayer log") );
 
 	updateRecents();
 	updateWidgets();
@@ -2209,17 +2165,6 @@ void TBase::createCore() {
 			 this, SLOT(showExitCodeFromPlayer(int)) );
 
 	connect( core, SIGNAL(noVideo()), this, SLOT(slotNoVideo()) );
-
-	// Log mplayer output
-#ifdef LOG_MPLAYER
-	connect( core, SIGNAL(aboutToStartPlaying()),
-             this, SLOT(clearMplayerLog()) );
-	connect( core, SIGNAL(logLineAvailable(QString)),
-             this, SLOT(recordMplayerLog(QString)) );
-
-	connect( core, SIGNAL(mediaLoaded()), 
-             this, SLOT(autosaveMplayerLog()) );
-#endif
 
 #ifdef YOUTUBE_SUPPORT
 	connect(core, SIGNAL(signatureNotFound(const QString &)),
@@ -2782,22 +2727,9 @@ void TBase::createMenus() {
 	osd_menu->addSeparator();
 	osd_menu->addAction(decOSDScaleAct);
 	osd_menu->addAction(incOSDScaleAct);
-
-
 	optionsMenu->addMenu(osd_menu);
 
-	// Logs submenu
-#if defined(LOG_MPLAYER) || defined(LOG_SMPLAYER)
-	logs_menu = new QMenu(this);
-	#ifdef LOG_MPLAYER
-	logs_menu->addAction(showLogMplayerAct);
-	#endif
-	#ifdef LOG_SMPLAYER
-	logs_menu->addAction(showLogSmplayerAct);
-	#endif
-	optionsMenu->addMenu(logs_menu);
-#endif
-
+	optionsMenu->addAction(showLogAct);
 	optionsMenu->addAction(showPreferencesAct);
 
 	/*
@@ -3195,69 +3127,14 @@ void TBase::gotNoFileToPlay() {
 	playlist->resumePlay();
 }
 
-#ifdef LOG_MPLAYER
-void TBase::clearMplayerLog() {
-	mplayer_log.clear();
-	if (mplayer_log_window->isVisible()) mplayer_log_window->clear();
-}
-
-void TBase::recordMplayerLog(QString line) {
-	if (pref->log_mplayer) {
-		if ( (line.indexOf("A:")==-1) && (line.indexOf("V:")==-1) ) {
-			line.append("\n");
-			mplayer_log.append(line);
-			if (mplayer_log_window->isVisible()) mplayer_log_window->appendText(line);
-		}
-	}
-}
-
-/*! 
-	Save the mplayer log to a file, so it can be used by external
-	applications.
-*/
-void TBase::autosaveMplayerLog() {
-	qDebug("Gui::TBase::autosaveMplayerLog");
-
-	if (pref->autosave_mplayer_log) {
-		if (!pref->mplayer_log_saveto.isEmpty()) {
-			QFile file( pref->mplayer_log_saveto );
-			if ( file.open( QIODevice::WriteOnly ) ) {
-				QTextStream strm( &file );
-				strm << mplayer_log;
-				file.close();
-			}
-		}
-	}
-}
-
-void TBase::showMplayerLog() {
-	qDebug("Gui::TBase::showMplayerLog");
-
-	exitFullscreenIfNeeded();
-
-	mplayer_log_window->setText( mplayer_log );
-	mplayer_log_window->show();
-}
-#endif
-
-#ifdef LOG_SMPLAYER
-void TBase::recordSmplayerLog(QString line) {
-	if (pref->log_smplayer) {
-		line.append("\n");
-		smplayer_log.append(line);
-		if (smplayer_log_window->isVisible()) smplayer_log_window->appendText(line);
-	}
-}
+// TODO: remove or use autosave_mplayer_log and mplayer_log_saveto
 
 void TBase::showLog() {
 	qDebug("Gui::TBase::showLog");
 
 	exitFullscreenIfNeeded();
-
-	smplayer_log_window->setText( smplayer_log );
-	smplayer_log_window->show();
+	log_window->show();
 }
-#endif
 
 void TBase::updateVideoTracks() {
 	qDebug("Gui::TBase::updateVideoTracks");
@@ -5155,9 +5032,7 @@ void TBase::showExitCodeFromPlayer(int exit_code) {
 		ErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
 		d.setText(msg);
-#ifdef LOG_MPLAYER
-		d.setLog( mplayer_log );
-#endif
+		d.setLog(Global::log->getLogLines());
 		d.exec();
 	} 
 }
@@ -5181,9 +5056,7 @@ void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 			d.setText(tr("%1 has crashed.").arg(PLAYER_NAME) + " " + 
                       tr("See the log for more info."));
 		}
-#ifdef LOG_MPLAYER
-		d.setLog( mplayer_log );
-#endif
+		d.setLog(Global::log->getLogLines());
 		d.exec();
 	}
 }

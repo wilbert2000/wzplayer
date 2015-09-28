@@ -14,8 +14,8 @@ DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
 DEFINES += VIDEOPREVIEW
 DEFINES += YOUTUBE_SUPPORT
+DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += LOG_MPLAYER
-DEFINES += LOG_SMPLAYER
 DEFINES += MPCGUI
 DEFINES += SKINS
 DEFINES += MPRIS2
@@ -36,8 +36,6 @@ contains( DEFINES, SIMPLE_BUILD ) {
 	DEFINES -= SINGLE_INSTANCE
 	DEFINES -= FIND_SUBTITLES
 	DEFINES -= VIDEOPREVIEW
-	DEFINES -= LOG_MPLAYER
-	DEFINES -= LOG_SMPLAYER
 	DEFINES -= MPCGUI
 	DEFINES -= SKINS
 	DEFINES -= MPRIS2
@@ -88,7 +86,6 @@ contains(QT_VERSION, ^4\\.[0-3]\\..*) {
 
 HEADERS += guiconfig.h \
 	config.h \
-	constants.h \
 	links.h \
 	svn_revision.h \
 	version.h \
@@ -189,7 +186,8 @@ HEADERS += guiconfig.h \
     maps/map.h \
     maps/tracks.h \
     maps/titletracks.h \
-    maps/chapters.h
+    maps/chapters.h \
+    log.h
 
 
 SOURCES	+= version.cpp \
@@ -290,7 +288,8 @@ SOURCES	+= version.cpp \
     maps/tracks.cpp \
     maps/titletracks.cpp \
     main.cpp \
-    maps/chapters.cpp
+    maps/chapters.cpp \
+    log.cpp
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui inputurl.ui videoequalizer.ui vdpauproperties.ui \
@@ -486,7 +485,6 @@ unix {
 	DEFINES += TRANSLATION_PATH=$(TRANSLATION_PATH)
 	DEFINES += THEMES_PATH=$(THEMES_PATH)
 	DEFINES += SHORTCUTS_PATH=$(SHORTCUTS_PATH)
-	#DEFINES += NO_DEBUG_ON_CONSOLE
 }
 
 win32 {
@@ -522,7 +520,7 @@ win32 {
 	}
 	
 	RC_FILE = smplayer.rc
-	DEFINES += NO_DEBUG_ON_CONSOLE
+    DEFINES -= OUTPUT_ON_CONSOLE
 	#debug {
 	#	CONFIG += console
 	#}

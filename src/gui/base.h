@@ -87,11 +87,6 @@ public:
 	//! Execute all the actions after the video has started to play
 	void runActionsLater(QString actions) { pending_actions_to_run = actions; }
 
-#ifdef LOG_SMPLAYER
-	//! Saves the line from the smplayer output
-	void recordSmplayerLog(QString line);
-#endif
-
 	Core * getCore() { return core; }
 	TPlaylist * getPlaylist() { return playlist; }
 
@@ -156,12 +151,7 @@ public slots:
 	virtual void showVideoEqualizer(bool b);
 	virtual void showAudioEqualizer();
 	virtual void showAudioEqualizer(bool b);
-#ifdef LOG_MPLAYER
-	virtual void showMplayerLog();
-#endif
-#ifdef LOG_SMPLAYER
 	virtual void showLog();
-#endif
 	virtual void showPreferencesDialog();
 	virtual void showFilePropertiesDialog();
 
@@ -317,17 +307,6 @@ protected slots:
 	/* Disable screensaver by event */
 	void clear_just_stopped();
 #endif
-#endif
-
-#ifdef LOG_MPLAYER
-	//! Clears the mplayer log
-	void clearMplayerLog();
-
-	//! Saves the line from the mplayer output
-	void recordMplayerLog(QString line);
-
-	//! Saves the mplayer log to a file every time a file is loaded
-	void autosaveMplayerLog();
 #endif
 
 signals:
@@ -505,12 +484,7 @@ protected:
 #ifdef YOUTUBE_SUPPORT
 	TAction * showTubeBrowserAct;
 #endif
-#ifdef LOG_MPLAYER
-	TAction * showLogMplayerAct;
-#endif
-#ifdef LOG_SMPLAYER
-	TAction * showLogSmplayerAct;
-#endif
+	TAction * showLogAct;
 
 	// Menu Help
 	TAction * showFirstStepsAct;
@@ -758,9 +732,6 @@ protected:
 	QMenu * ab_menu; // A-B menu
 	QMenu * videofilter_menu;
 	QMenu * audiofilter_menu;
-#if defined(LOG_MPLAYER) || defined(LOG_SMPLAYER)
-	QMenu * logs_menu;
-#endif
 	QMenu * zoom_menu;
 	QMenu * rotate_menu;
 	QMenu * ontop_menu;
@@ -777,13 +748,8 @@ protected:
 	QMenu * popup;
 	QMenu * recentfiles_menu;
 
-#ifdef LOG_MPLAYER
-	LogWindow * mplayer_log_window;
-#endif
-#ifdef LOG_SMPLAYER
-	LogWindow * smplayer_log_window;
-#endif
-	LogWindow * clhelp_window;
+	LogWindow* log_window;
+	LogWindow* clhelp_window;
 
 	PreferencesDialog *pref_dialog;
 	FilePropertiesDialog *file_dialog;
@@ -835,13 +801,6 @@ private:
 	/* Disable screensaver by event */
 	bool just_stopped;
 #endif
-#endif
-
-#ifdef LOG_MPLAYER
-	QString mplayer_log;
-#endif
-#ifdef LOG_SMPLAYER
-	QString smplayer_log;
 #endif
 
 	bool ignore_show_hide_events;

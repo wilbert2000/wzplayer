@@ -16,18 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include "config.h"
 #include "smplayer.h"
 
 #include <QDir>
 #include <QUrl>
-#include <QTime>
-#include <stdio.h>
-
-#include "config.h"
-#include "global.h"
 
 #include "paths.h"
-#include "translator.h"
+#include "global.h"
 #include "version.h"
 #include "clhelp.h"
 #include "cleanconfig.h"
@@ -44,7 +40,6 @@
 #include "gui/skin/skin.h"
 #endif
 
-
 #ifdef Q_OS_WIN
 #if USE_ASSOCIATIONS
 #include "extensions.h"
@@ -54,59 +49,29 @@
 
 #ifdef FONTCACHE_DIALOG
 #include "fontcache.h"
-#include "version.h"
 #endif
 
 using namespace Global;
 
-Gui::TBase* SMPlayer::main_window = 0;
-
-SMPlayer::SMPlayer(const QString & config_path) :
+SMPlayer::SMPlayer() :
 	QObject(0),
 	requested_restart(false),
+	main_window(0),
 	gui_to_use("DefaultGUI"),
 	move_gui(false),
 	resize_gui(false),
 	close_at_end(-1),
 	start_in_fullscreen(-1) {
 
-#ifdef LOG_SMPLAYER
-	#if QT_VERSION >= 0x050000
-	qInstallMessageHandler( SMPlayer::myMessageOutput );
-	#else
-	qInstallMsgHandler( SMPlayer::myMessageOutput );
-	#endif
-	allow_to_send_log_to_gui = true;
-#endif
-
-	Paths::setAppPath(qApp->applicationDirPath());
-
-#ifndef PORTABLE_APP
-	if (config_path.isEmpty()) createConfigDirectory();
-#endif
-
-	global_init(config_path);
-
-	// Application translations
-	translator->load( pref->language );
 	showInfo();
-
-#ifdef Q_OS_WIN
-	createFontFile();
-#endif
 }
 
 SMPlayer::~SMPlayer() {
-	global_end();
-
-#ifdef LOG_SMPLAYER
-	if (output_log.isOpen()) output_log.close();
-#endif
 }
 
 void SMPlayer::createGUI() {
 
-	// Change cd to app path, so smplayer can find a relative mplayer path
+	// Change dir to app path, so smplayer can find a relative mplayer path
 	QDir::setCurrent(Paths::appPath());
 	qDebug("SMPlayer::createGUI: changed working directory to app path");
 	qDebug("SMPlayer::createGUI: current directory: %s", QDir::currentPath().toUtf8().data());
@@ -180,9 +145,7 @@ void SMPlayer::createGUI() {
 void SMPlayer::restart() {
 	qDebug("SMPlayer::restart");
 
-	// Leaking timers
 	requested_restart = true;
-	main_window = 0;
 }
 
 SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
@@ -413,6 +376,7 @@ void SMPlayer::start() {
 
 	requested_restart = false;
 
+	// TODO: move to global.cpp?
 #ifdef FONTCACHE_DIALOG
 #ifndef PORTABLE_APP
 	if (Version::with_revision() != pref->smplayer_version) {
@@ -423,10 +387,10 @@ void SMPlayer::start() {
 #endif
 #endif
 
-	// Create the main window. It will be destoyed when leaving exec().
+	// Create the main window. It will be destoyed when leaving exec()
 	createGUI();
 
-	if (!main_window->startHidden() || !files_to_play.isEmpty() )
+	if (!main_window->startHidden() || !files_to_play.isEmpty())
 		main_window->show();
 
 	if (!files_to_play.isEmpty()) {
@@ -445,70 +409,6 @@ void SMPlayer::start() {
 		}
 	}
 }
-
-#ifndef PORTABLE_APP
-void SMPlayer::createConfigDirectory() {
-	// Create smplayer config directory
-	if (!QFile::exists(Paths::configPath())) {
-		QDir d;
-		if (!d.mkdir(Paths::configPath())) {
-			qWarning("SMPlayer::createConfigDirectory: can't create %s", Paths::configPath().toUtf8().data());
-		}
-		// Screenshot folder already created in preferences.cpp if Qt >= 4.4
-		#if QT_VERSION < 0x040400 
-		QString s = Paths::configPath() + "/screenshots";
-		if (!d.mkdir(s)) {
-			qWarning("SMPlayer::createHomeDirectory: can't create %s", s.toUtf8().data());
-		}
-		#endif
-	}
-}
-#endif
-
-#ifdef Q_OS_WIN
-void SMPlayer::createFontFile() {
-	qDebug("SMPlayer::createFontFile");
-	QString output = Paths::configPath() + "/fonts.conf";
-
-	// Check if the file already exists with the modified path
-	if (QFile::exists(output)) {
-		QFile i(output);
-		if (i.open(QIODevice::ReadOnly | QIODevice::Text)) {
-			QString text = i.readAll();
-			if (text.contains("<dir>" + Paths::fontPath() + "</dir>")) {
-				qDebug("SMPlayer::createFontFile: file %s already exists with font path. Doing nothing.", output.toUtf8().constData());
-				return;
-			}
-		}
-	}
-
-	QString input = Paths::appPath() + "/mplayer/fonts/fonts.conf";
-	if (!QFile::exists(input)) {
-		qDebug("SMPlayer::createFontFile: %s doesn't exist", input.toUtf8().constData());
-		input = Paths::appPath() + "/mplayer/mpv/fonts.conf";
-		if (!QFile::exists(input)) {
-			qDebug("SMPlayer::createFontFile: %s doesn't exist", input.toUtf8().constData());
-			qWarning("SMPlayer::createFontFile: failed to create fonts.conf");
-			return;
-		}
-	}
-	qDebug("SMPlayer::createFontFile: input: %s", input.toUtf8().constData());
-	QFile infile(input);
-	if (infile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		QString text = infile.readAll();
-		text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
-		text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + Paths::fontPath() + "</dir>");
-		//qDebug("SMPlayer::createFontFile: %s", text.toUtf8().constData());
-
-		qDebug("SMPlayer::createFontFile: saving %s", output.toUtf8().constData());
-		QFile outfile(output);
-		if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			outfile.write(text.toUtf8());
-			outfile.close();
-		}
-	}
-}
-#endif
 
 void SMPlayer::showInfo() {
 #ifdef Q_OS_WIN
@@ -569,134 +469,5 @@ void SMPlayer::showInfo() {
 	qDebug(" * font path: '%s'", Paths::fontPath().toUtf8().data());
 #endif
 }
-
-#ifdef LOG_SMPLAYER
-QFile SMPlayer::output_log;
-bool SMPlayer::allow_to_send_log_to_gui = false;
-
-#if QT_VERSION >= 0x050000
-void SMPlayer::myMessageOutput(QtMsgType type, const QMessageLogContext&,
-							   const QString& msg) {
-#else
-void SMPlayer::myMessageOutput(QtMsgType type, const char* msg) {
-#endif
-
-	static QStringList saved_lines;
-	static QString orig_line;
-	static QString line2;
-	static QRegExp rx_log;
-
-	if (pref) {
-		if (!pref->log_smplayer) return;
-		rx_log.setPattern(pref->log_filter);
-	} else {
-		rx_log.setPattern(".*");
-	}
-
-	line2.clear();
-
-#if QT_VERSION >= 0x050000
-	orig_line = msg;
-#else
-	orig_line = QString::fromUtf8(msg);
-#endif
-
-	switch ( type ) {
-		case QtDebugMsg:
-			if (rx_log.indexIn(orig_line) > -1) {
-				#ifndef NO_DEBUG_ON_CONSOLE
-				fprintf( stderr, "Debug: %s\n", orig_line.toLocal8Bit().data() );
-				#endif
-				line2 = orig_line;
-			}
-			break;
-		case QtWarningMsg:
-			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Warning: %s\n", orig_line.toLocal8Bit().data() );
-			#endif
-			line2 = "WARNING: " + orig_line;
-			break;
-		case QtFatalMsg:
-			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Fatal: %s\n", orig_line.toLocal8Bit().data() );
-			#endif
-			line2 = "FATAL: " + orig_line;
-			abort();                    // deliberately core dump
-		case QtCriticalMsg:
-			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Critical: %s\n", orig_line.toLocal8Bit().data() );
-			#endif
-			line2 = "CRITICAL: " + orig_line;
-			break;
-	}
-
-	if (line2.isEmpty()) return;
-
-	line2 = "["+ QTime::currentTime().toString("hh:mm:ss:zzz") +"] "+ line2;
-
-	if (allow_to_send_log_to_gui && main_window) {
-		if (!saved_lines.isEmpty()) {
-			// Send saved lines first
-			for (int n=0; n < saved_lines.count(); n++) {
-				main_window->recordSmplayerLog(saved_lines[n]);
-			}
-			saved_lines.clear();
-		}
-		main_window->recordSmplayerLog(line2);
-	} else {
-		// GUI is not created yet, save lines for later
-		saved_lines.append(line2);
-	}
-
-	if (pref) {
-		if (pref->save_smplayer_log) {
-			// Save log to file
-			if (!output_log.isOpen()) {
-				// FIXME: the config path may not be initialized if USE_LOCKS is not defined
-				output_log.setFileName( Paths::configPath() + "/smplayer_log.txt" );
-				output_log.open(QIODevice::WriteOnly);
-			}
-			if (output_log.isOpen()) {
-				QString l = line2 + "\r\n";
-				output_log.write(l.toUtf8().constData());
-				output_log.flush();
-			}
-		}
-	}
-}
-#endif // LOG_SMPLAYER
-
-/*
-void myMessageOutput( QtMsgType type, const char *msg ) {
-	static QString orig_line;
-	orig_line = QString::fromUtf8(msg);
-
-	switch ( type ) {
-		case QtDebugMsg:
-			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Debug: %s\n", orig_line.toLocal8Bit().data() );
-			#endif
-			break;
-
-		case QtWarningMsg:
-			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Warning: %s\n", orig_line.toLocal8Bit().data() );
-			#endif
-			break;
-
-		case QtCriticalMsg:
-			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Critical: %s\n", orig_line.toLocal8Bit().data() );
-			#endif
-			break;
-
-		case QtFatalMsg:
-			#ifndef NO_DEBUG_ON_CONSOLE
-			fprintf( stderr, "Fatal: %s\n", orig_line.toLocal8Bit().data() );
-			#endif
-			abort();                    // deliberately core dump
-	}
-}
-*/
 
 #include "moc_smplayer.cpp"

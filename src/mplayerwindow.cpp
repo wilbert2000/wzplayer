@@ -35,10 +35,7 @@
 #include "global.h"
 #include "desktopinfo.h"
 #include "colorutils.h"
-
-#ifndef MINILIB
 #include "images.h"
-#endif
 
 #include "proc/playerprocess.h"
 
@@ -801,9 +798,7 @@ void MplayerWindow::setLogoVisible(bool b) {
 
 void MplayerWindow::retranslateStrings() {
 	//qDebug("MplayerWindow::retranslateStrings");
-#ifndef MINILIB
 	logo->setPixmap( Images::icon("background") );
-#endif
 }
 
 

@@ -28,7 +28,7 @@ class LogWindow : public QWidget, public Ui::LogWindowBase
 	Q_OBJECT
 
 public:
-	LogWindow( QWidget* parent = 0);
+	LogWindow(QWidget* parent = 0);
 	~LogWindow();
 
 	void setText(QString log);
@@ -42,11 +42,11 @@ public:
 	void appendText(QString text);
 	void appendHtml(QString text);
 
-	/* QTextEdit * editor(); */
-
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void changeEvent (QEvent * event);
+	virtual void showEvent(QShowEvent*);
+	virtual void hideEvent(QShowEvent*);
 
 protected slots:
 	void on_copyButton_clicked();
@@ -54,4 +54,4 @@ protected slots:
 };
 
 
-#endif
+#endif // _LOGWINDOW_H_

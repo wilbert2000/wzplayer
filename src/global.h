@@ -23,44 +23,29 @@
 #include <QString>
 
 // Some global objects
-
-#ifndef MINILIB
-
 class QSettings;
 class Preferences;
+class TLog;
 class Translator;
 
 namespace Global {
 
 	//! Read and store application settings
-	extern QSettings * settings;
+	extern QSettings* settings;
 
 	//! Prefences
-	extern Preferences * pref;
+	extern Preferences* pref;
+
+	//! Log
+	extern TLog* log;
 
 	//! Translator (for changing language)
-	extern Translator * translator;
+	extern Translator* translator;
 
-
-	void global_init(const QString & config_path);
+	void global_init(const QString& config_path);
 	void global_end();
 
-};
+} // namespace Global
 
-#else
-
-class Preferences;
-
-namespace Global {
-	//! Prefences
-	extern Preferences * pref;
-
-	void global_init();
-	void global_end();
-
-};
-
-#endif // MINILIB
-
-#endif
+#endif // _GLOBAL_H_
 

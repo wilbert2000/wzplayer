@@ -17,6 +17,7 @@
 */
 
 #include "myapplication.h"
+#include "paths.h"
 
 #ifdef USE_WINEVENTFILTER
 #include <QKeyEvent>
@@ -177,6 +178,8 @@ bool MyApplication::winEventFilter(MSG * msg, long * result) {
 
 MyApplication::MyApplication(const QString& appId, int& argc, char** argv) :
 	TBaseApp(appId, argc, argv) {
+
+	Paths::setAppPath(applicationDirPath());
 
 #ifdef Q_OS_WIN
 	// Change the working directory to the application path

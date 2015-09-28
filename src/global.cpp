@@ -18,79 +18,59 @@
 
 
 #include "global.h"
-#include "preferences.h"
-
-#ifndef MINILIB
-
-#include "constants.h"
+#include <QDebug>
 #include <QSettings>
-#include "translator.h"
+#include <QDateTime>
 #include "paths.h"
-#include <QApplication>
-#include <QFile>
+#include "preferences.h"
+#include "log.h"
+#include "translator.h"
 
-QSettings * Global::settings = 0;
-Preferences * Global::pref = 0;
-Translator * Global::translator = 0;
+namespace Global {
 
-using namespace Global;
+QSettings* settings = 0;
+Preferences* pref = 0;
+TLog* log = 0;
+Translator* translator = 0;
 
-void Global::global_init(const QString & config_path) {
-	qDebug("global_init");
+void global_init(const QString& config_path) {
+
+	// Settings
+	if (config_path.isEmpty()) {
+		Paths::createConfigDirectory();
+	} else {
+		Paths::setConfigPath(config_path);
+	}
+	settings = new QSettings(Paths::configPath() + "/smplayer.ini",
+							 QSettings::IniFormat);
+
+	// Preferences
+	pref = new Preferences();
+
+	// Log
+	log = new TLog(pref->log_smplayer, pref->save_smplayer_log,
+				   pref->log_filter);
+	qDebug() << "Global::global_init: started log at " +
+				QDateTime::currentDateTimeUtc().toString(Qt::ISODate) + " UTC";
 
 	// Translator
 	translator = new Translator();
+	translator->load(pref->language);
 
-	// settings
-	if (!config_path.isEmpty()) {
-		Paths::setConfigPath(config_path);
-	}
-
-	if (Paths::iniPath().isEmpty()) {
-		settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
-    	                         QString(COMPANY), QString(PROGRAM) );
-	} else {
-		QString filename = Paths::iniPath() + "/smplayer.ini";
-		settings = new QSettings( filename, QSettings::IniFormat );
-		qDebug("global_init: config file: '%s'", filename.toUtf8().data());
-
-	}
-
-	// Preferences
-	pref = new Preferences();
+	// Fonts
+#ifdef Q_OS_WIN
+	Paths::createFontFile();
+#endif
 }
 
-void Global::global_end() {
+void global_end() {
 	qDebug("global_end");
 
-	// delete
-	delete pref;
-	pref = 0;
-
-	delete settings;
 	delete translator;
-}
-
-#else
-
-Preferences * Global::pref = 0;
-
-using namespace Global;
-
-void Global::global_init() {
-	qDebug("global_init");
-
-	// Preferences
-	pref = new Preferences();
-}
-
-void Global::global_end() {
-	qDebug("global_end");
-
-	// delete
+	delete log;
+	log = 0;
 	delete pref;
-	pref = 0;
+	delete settings;
 }
 
-#endif // MINILIB
-
+} // namespace Global

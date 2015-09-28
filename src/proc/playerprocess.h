@@ -130,8 +130,6 @@ signals:
 
 	void playerFullyLoaded();
 
-	void lineAvailable(QString line);
-
 	void receivedVideoOutResolution(int, int);
 	void receivedCurrentSec(double sec);
 	void receivedCurrentFrame(int frame);

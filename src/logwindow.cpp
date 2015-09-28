@@ -17,34 +17,29 @@
 */
 
 #include "logwindow.h"
-#include <QTextEdit>
-#include "filedialog.h"
-#include <QFile>
-#include <QTextStream>
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QFile>
+#include <QTextStream>
+#include <QTextEdit>
 #include <QPushButton>
-
+#include "global.h"
+#include "log.h"
 #include "images.h"
+#include "filedialog.h"
 
 LogWindow::LogWindow( QWidget* parent )
-	: QWidget(parent, Qt::Window ) 
-{
+	: QWidget(parent, Qt::Window ) {
+
 	setupUi(this);
-
 	browser->setFont( QFont("fixed") );
-
 	retranslateStrings();
 }
 
 LogWindow::~LogWindow() {
-}
 
-/*
-QTextEdit * LogWindow::editor() {
-	return browser;
+	Global::log->setLogWindow(0);
 }
-*/
 
 void LogWindow::retranslateStrings() {
 	retranslateUi(this);
@@ -58,6 +53,16 @@ void LogWindow::retranslateStrings() {
 	setWindowIcon( Images::icon("logo") );
 }
 
+void LogWindow::showEvent(QShowEvent*) {
+
+	Global::log->setLogWindow(this);
+}
+
+void LogWindow::hideEvent(QShowEvent*) {
+
+	Global::log->setLogWindow(0);
+	clear();
+}
 
 void LogWindow::setText(QString log) {
 	browser->setPlainText(log);
