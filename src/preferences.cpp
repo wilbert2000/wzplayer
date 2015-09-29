@@ -203,12 +203,6 @@ void Preferences::reset() {
 	h264_skip_loop_filter = LoopEnabled;
 	HD_height = 720;
 
-	// MPlayer 1.0rc1 require restart, new versions don't
-	fast_audio_change = Detect;
-#if !SMART_DVD_CHAPTERS
-	fast_chapter_change = false;
-#endif
-
 	threads = 1;
 	hwdec = "no";
 
@@ -666,11 +660,6 @@ void Preferences::save() {
 	set->setValue("coreavc", coreavc);
 	set->setValue("h264_skip_loop_filter", h264_skip_loop_filter);
 	set->setValue("HD_height", HD_height);
-
-	set->setValue("fast_audio_change", fast_audio_change);
-#if !SMART_DVD_CHAPTERS
-	set->setValue("fast_chapter_change", fast_chapter_change);
-#endif
 
 	set->setValue("threads", threads);
 	set->setValue("hwdec", hwdec);
@@ -1168,11 +1157,6 @@ void Preferences::load() {
 	coreavc = set->value("coreavc", coreavc).toBool();
 	h264_skip_loop_filter = (H264LoopFilter) set->value("h264_skip_loop_filter", h264_skip_loop_filter).toInt();
 	HD_height = set->value("HD_height", HD_height).toInt();
-
-	fast_audio_change = (OptionState) set->value("fast_audio_change", fast_audio_change).toInt();
-#if !SMART_DVD_CHAPTERS
-	fast_chapter_change = set->value("fast_chapter_change", fast_chapter_change).toBool();
-#endif
 
 	threads = set->value("threads", threads).toInt();
 	hwdec = set->value("hwdec", hwdec).toString();

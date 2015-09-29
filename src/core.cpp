@@ -1627,10 +1627,10 @@ void Core::startPlayer( QString file, double seek ) {
 		proc->setOption("dvdangle", QString::number( mset.current_angle_id));
 	}
 
-	// TODO: MPVProcess title and track switch code does not run nicely when
-	// caching is set. Seeks inside the cache don't notify track or title
-	// changes. So instead of honouring some cache settings and not others,
-	// for now, declare them MPlayer only.
+	// MPVProcess title and track switch code does not run nicely when caching
+	// is set. Seeks inside the cache don't notify track or title changes.
+	// So instead of honouring some cache settings and not others, for now,
+	// declare them MPlayer only.
 	if (proc->isMPlayer()) {
 		switch (mdat.selected_type) {
 			case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
@@ -3075,36 +3075,31 @@ void Core::nextVideoTrack() {
 	changeVideoTrack(mdat.videos.nextID(mdat.videos.getSelectedID()));
 }
 
-void Core::changeAudioTrack(int id, bool allow_restart) {
-	qDebug("Core::changeAudio: id: %d, allow_restart: %d", id, allow_restart);
+void Core::changeAudioTrack(int id) {
+	qDebug("Core::changeAudio: id: %d", id);
 
 	if (id != mset.current_audio_id) {
 		mset.current_audio_id = id;
 		if (id >= 0 && id != mdat.audios.getSelectedID()) {
-			if (allow_restart
-				&& pref->fast_audio_change == Preferences::Disabled) {
-				restartPlay();
-			} else {
-				proc->setAudio(id);
-				mdat.audios.setSelectedID(id);
-				emit audioTrackChanged(id);
+			proc->setAudio(id);
+			mdat.audios.setSelectedID(id);
+			emit audioTrackChanged(id);
 
-				// Workaround for a mplayer problem in windows,
-				// volume is too loud after changing audio.
+			// Workaround for a mplayer problem in windows,
+			// volume is too loud after changing audio.
 
-				// Workaround too for a mplayer problem in linux,
-				// the volume is reduced if using -softvol-max.
+			// Workaround too for a mplayer problem in linux,
+			// the volume is reduced if using -softvol-max.
 
-				if (proc->isMPlayer()) {
-					if (pref->mplayer_additional_options.contains("-volume")) {
-						qDebug("Core::changeAudio: don't set volume since -volume is used");
-					} else if (pref->global_volume) {
-						setVolume( pref->volume, true);
-						if (pref->mute) mute(true);
-					} else {
-						setVolume( mset.volume, true );
-						if (mset.mute) mute(true); // if muted, mute again
-					}
+			if (proc->isMPlayer()) {
+				if (pref->mplayer_additional_options.contains("-volume")) {
+					qDebug("Core::changeAudio: don't set volume since -volume is used");
+				} else if (pref->global_volume) {
+					setVolume( pref->volume, true);
+					if (pref->mute) mute(true);
+				} else {
+					setVolume( mset.volume, true );
+					if (mset.mute) mute(true); // if muted, mute again
 				}
 			}
 		}
@@ -3872,7 +3867,7 @@ bool Core::setPreferredAudio() {
 		int wanted_id = mdat.audios.findLangID(pref->audio_lang);
 		if (wanted_id >= 0 && wanted_id != mdat.audios.getSelectedID()) {
 			mset.current_audio_id = MediaSettings::NoneSelected;
-			changeAudioTrack(wanted_id, false); // Don't allow restart
+			changeAudioTrack(wanted_id);
 			return true;
 		}
 	}

@@ -53,7 +53,7 @@ public:
 
 	static QString join(Disc type, int title, const QString & device);
 	static QString join(const DiscData & d, bool add_zero_title = false);
-	static QString joinDVD(const QString & device, bool use_dvdnav = false);
+	static QString joinDVD(const QString & device, bool use_dvdnav);
 	static DiscData split(const QString & disc_url, bool *ok = 0);
 
 #if DISCNAME_TEST

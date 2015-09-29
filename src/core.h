@@ -258,7 +258,7 @@ public slots:
 
 	void changeVideoTrack(int id);
 	void nextVideoTrack();
-	void changeAudioTrack(int id, bool allow_restart = true);
+	void changeAudioTrack(int id);
 	void nextAudioTrack();
 	void changeSubtitle(int idx, bool selected_by_user = true);
 	void nextSubtitle();

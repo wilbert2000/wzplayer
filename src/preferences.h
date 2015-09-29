@@ -186,11 +186,6 @@ public:
 	H264LoopFilter h264_skip_loop_filter;
 	int HD_height; //!< An HD is a video which height is equal or greater than this.
 
-	OptionState fast_audio_change; // If activated, not restart mplayer
-#if !SMART_DVD_CHAPTERS
-	bool fast_chapter_change;
-#endif
-
 	int threads; //!< number of threads to use for decoding (-lavdopts threads <1-8>)
 	QString hwdec; //!< hardware video decoding (mpv only)
 

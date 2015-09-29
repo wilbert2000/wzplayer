@@ -52,13 +52,6 @@
 #define SEEKBAR_RESOLUTION 1000
 
 
-// SMART_DVD_CHAPTERS
-// if set to 1, the slave command "chapter" will use if not using a cache,
-// otherwise mplayer will be restarted and -chapter will be used.
-
-#define SMART_DVD_CHAPTERS 1
-
-
 // ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 // if 1, the video window may be hidden when playing audio files
 // depending on the hide_video_window_on_audio_files option in
