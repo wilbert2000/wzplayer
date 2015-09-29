@@ -17,16 +17,6 @@
 */
 
 #include "gui/mpc/mpc.h"
-#include "gui/action.h"
-#include "gui/widgetactions.h"
-#include "gui/autohidewidget.h"
-
-#include "styles.h"
-#include "mplayerwindow.h"
-#include "global.h"
-#include "helper.h"
-#include "desktopinfo.h"
-#include "colorutils.h"
 
 #include <QToolBar>
 #include <QStatusBar>
@@ -34,6 +24,19 @@
 #include <QSlider>
 #include <QLayout>
 #include <QApplication>
+#include <QTimer>
+
+#include "gui/action.h"
+#include "gui/widgetactions.h"
+#include "gui/autohidewidget.h"
+
+#include "global.h"
+#include "styles.h"
+#include "mplayerwindow.h"
+#include "helper.h"
+#include "desktopinfo.h"
+#include "colorutils.h"
+
 
 using namespace Global;
 

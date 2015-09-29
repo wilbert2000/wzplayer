@@ -25,6 +25,7 @@
 #include <QPushButton>
 #include <QToolButton>
 #include <QMenuBar>
+#include <QTimer>
 
 #include "global.h"
 #include "helper.h"

@@ -20,6 +20,7 @@
 
 #include <QStatusBar>
 #include <QMenu>
+#include <QTimer>
 
 #include "widgetactions.h"
 #include "autohidewidget.h"

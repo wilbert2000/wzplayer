@@ -19,43 +19,16 @@
 #include "process.h"
 #include <QDebug>
 
-#ifdef Q_OS_WIN
-
-#if QT_VERSION < 0x040300
-#define USE_TEMP_FILE 1
-#else
-#define USE_TEMP_FILE 0
-#endif
-
-#else
-#define USE_TEMP_FILE 0
-#endif
-
 namespace Proc {
 
 TProcess::TProcess(QObject * parent) : QProcess(parent)
 {
 	clearArguments();
-	setProcessChannelMode( QProcess::MergedChannels );
+	setProcessChannelMode(QProcess::MergedChannels);
 	
-#if USE_TEMP_FILE
-	temp_file.open(); // Create temporary file
-	QString filename = temp_file.fileName();
-	setStandardOutputFile( filename );
-	qDebug("TProcess::TProcess: temporary file: %s", filename.toUtf8().data());
-	temp_file.close();
-
-	//connect(&temp_file, SIGNAL(readyRead()), this, SLOT(readTmpFile()) );
-	connect(&timer, SIGNAL(timeout()), this, SLOT(readTmpFile()) );
-#else
 	connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(readStdOut()) );
-#endif
-
 	connect(this, SIGNAL(finished(int, QProcess::ExitStatus)), 
-            this, SLOT(procFinished()) ); 
-
-	// Test splitArguments
-	//QStringList l = TProcess::splitArguments("-opt 1 hello \"56 67\" wssx -ios");
+			this, SLOT(procFinished()) );
 }
 
 void TProcess::clearArguments() {
@@ -82,25 +55,13 @@ QStringList TProcess::arguments() {
 }
 
 void TProcess::start() {
+
 	remaining_output.clear();
-
 	QProcess::start(program, arg);
-
-#if USE_TEMP_FILE
-	//bool r = temp_file.open(QIODevice::ReadOnly);
-	bool r = temp_file.open();
-	timer.start(50);
-	qDebug("TProcess::start: r: %d", r);
-#endif
 }
 
 void TProcess::readStdOut() {
 	genericRead( readAllStandardOutput() );
-}
-
-
-void TProcess::readTmpFile() {
-	genericRead( temp_file.readAll() );
 }
 
 void TProcess::genericRead(QByteArray buffer) {
@@ -109,12 +70,8 @@ void TProcess::genericRead(QByteArray buffer) {
 	int from_pos = 0;
 	int pos = canReadLine(ba, from_pos);
 
-	//qDebug("TProcess::read: pos: %d", pos);
 	while ( pos > -1 ) {
-		// Readline
-		//QByteArray line = ba.left(pos);
 		QByteArray line = ba.mid(start, pos-start);
-		//ba = ba.mid(pos+1);
 		from_pos = pos + 1;
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		if ((from_pos < ba.size()) && (ba.at(from_pos)=='\n')) from_pos++;
@@ -132,8 +89,6 @@ void TProcess::genericRead(QByteArray buffer) {
 int TProcess::canReadLine(const QByteArray & ba, int from) {
 	int pos1 = ba.indexOf('\n', from);
 	int pos2 = ba.indexOf('\r', from);
-
-	//qDebug("TProcess::canReadLine: pos2: %d", pos2);
 
 	if ( (pos1 == -1) && (pos2 == -1) ) return -1;
 
@@ -157,24 +112,14 @@ int TProcess::canReadLine(const QByteArray & ba, int from) {
 Do some clean up, and be sure that all output has been read.
 */
 void TProcess::procFinished() {
-	qDebug("TProcess::procFinished");
+	qDebug("Proc::TProcess::procFinished");
 
-#if !USE_TEMP_FILE
 	qDebug() << "TProcess::procFinished: Bytes available: " << bytesAvailable();
 	if ( bytesAvailable() > 0 ) readStdOut();
-#else
-	timer.stop();
-
-	qDebug() << "TProcess::procFinished: Bytes available: " << temp_file.bytesAvailable();
-	if ( temp_file.bytesAvailable() > 0 ) readTmpFile();
-	qDebug() << "TProcess::procFinished: Bytes available:" << temp_file.bytesAvailable();
-
-	temp_file.close();
-#endif
 }
 
 QStringList TProcess::splitArguments(const QString & args) {
-	qDebug("TProcess::splitArguments: '%s'", args.toUtf8().constData());
+	qDebug("Proc::TProcess::splitArguments: '%s'", args.toUtf8().constData());
 
 	QStringList l;
 
@@ -194,7 +139,7 @@ QStringList TProcess::splitArguments(const QString & args) {
 	}
 
 	for (int n = 0; n < l.count(); n++) {
-		qDebug("TProcess::splitArguments: arg: %d '%s'", n, l[n].toUtf8().constData());
+		qDebug("Proc::TProcess::splitArguments: arg: %d '%s'", n, l[n].toUtf8().constData());
 	}
 
 	return l;

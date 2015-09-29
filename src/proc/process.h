@@ -20,19 +20,12 @@
 #define _PROC_PROCESS_H_
 
 #include <QProcess>
-#include <QTemporaryFile>
-#include <QTimer>
 
 //! TProcess is a specialized QProcess designed to properly work with mplayer.
 
 /*!
  It can split the mplayer status line into lines.
  It also provides some Qt 3 like functions like addArgument().
-
- There are two working modes, controlled by the USE_TEMP_FILE define.
- If USE_TEMP_FILE is 1 it will send the output of mplayer to a temporary
- file, and then it will be read from it. Otherwise it will read from
- standard ouput as usual.
 */
 
 namespace Proc {
@@ -44,8 +37,8 @@ class TProcess : public QProcess
 public:
 	TProcess ( QObject * parent = 0 );
 
-	virtual void setExecutable(const QString & p) { program = p; };
-	QString executable() { return program; };
+	virtual void setExecutable(const QString & p) { program = p; }
+	QString executable() { return program; }
 
 	virtual void addArgument(const QString & a); 	//!< Add an argument
 
@@ -63,7 +56,6 @@ signals:
 
 protected slots:
 	void readStdOut();			//!< Called for reading from standard output
-	void readTmpFile();			//!< Called for reading from the temp file
 	void procFinished();		//!< Called when the process has finished
 
 protected:
@@ -78,9 +70,6 @@ protected:
 	QStringList arg;
 
 	QByteArray remaining_output;
-
-	QTemporaryFile temp_file;
-	QTimer timer;
 };
 
 } // namespace Proc
