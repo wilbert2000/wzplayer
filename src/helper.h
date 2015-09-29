@@ -48,8 +48,6 @@ public:
 	/* static void setScreensaverEnabled(bool b); */
 #endif
 
-	static void msleep(int ms);
-
 	//! Change filenames like "C:/Program Files/" to "C:\Program Files\"
 	static QString changeSlashes(QString filename);
 

@@ -29,16 +29,6 @@
 #define STYLE_SWITCHING 1
 
 
-// EXTERNAL_SLEEP
-// if 1, it will be used the function usleep() from unistd.h
-// instead of QThread::msleep()
-// It can be useful if your Qt doesn't have QThread support.
-// Note: not much test it
-// Note 2: not used anymore
-
-#define EXTERNAL_SLEEP 0
-
-
 // ENABLE_DELAYED_DRAGGING
 // if 1, sends the dragging position of the time slider
 // some ms later
