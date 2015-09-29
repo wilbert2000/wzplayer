@@ -2857,7 +2857,6 @@ void TBase::showPreferencesDialog() {
 	pl->setAutoGetInfo(playlist->autoGetInfo());
 	pl->setSavePlaylistOnExit(playlist->savePlaylistOnExit());
 	pl->setPlayFilesFromStart(playlist->playFilesFromStart());
-	pl->setIgnorePlayerErrors(playlist->ignorePlayerErrors());
 
 	pref_dialog->show();
 }
@@ -2947,7 +2946,6 @@ void TBase::applyNewPreferences() {
 	playlist->setAutoGetInfo(pl->autoGetInfo());
 	playlist->setSavePlaylistOnExit(pl->savePlaylistOnExit());
 	playlist->setPlayFilesFromStart(pl->playFilesFromStart());
-	playlist->setIgnorePlayerErrors(pl->ignorePlayerErrors());
 
 
 	if (need_update_language) {

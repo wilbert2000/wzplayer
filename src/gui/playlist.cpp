@@ -98,11 +98,9 @@ TPlaylist::TPlaylist(Core* c, QWidget* parent, Qt::WindowFlags f) :
 	automatically_get_info(false),
 	save_playlist_in_config(true),
 	play_files_from_start(true),
-	row_spacing(-1), // Default height
 	automatically_play_next(true),
-	// TODO: remove option ignore_player_errors from GUI,
-	// it is not safe and the implementation is already partly removed
-	ignore_player_errors(false) {
+	row_spacing(-1) // Default height
+{
 
 	createTable();
 	createActions();
@@ -1512,7 +1510,6 @@ void TPlaylist::saveSettings() {
 	set->setValue( "save_playlist_in_config", save_playlist_in_config );
 	set->setValue( "play_files_from_start", play_files_from_start );
 	set->setValue( "automatically_play_next", automatically_play_next );
-	set->setValue( "ignore_player_errors", ignore_player_errors );
 
 	set->setValue( "row_spacing", row_spacing );
 
@@ -1559,7 +1556,6 @@ void TPlaylist::loadSettings() {
 	save_playlist_in_config = set->value( "save_playlist_in_config", save_playlist_in_config ).toBool();
 	play_files_from_start = set->value( "play_files_from_start", play_files_from_start ).toBool();
 	automatically_play_next = set->value( "automatically_play_next", automatically_play_next ).toBool();
-	ignore_player_errors = set->value( "ignore_player_errors", ignore_player_errors ).toBool();
 
 	row_spacing = set->value( "row_spacing", row_spacing ).toInt();
 

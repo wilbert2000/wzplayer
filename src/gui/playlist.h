@@ -145,14 +145,12 @@ public slots:
 	void setAutoGetInfo(bool b) { automatically_get_info = b; }
 	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; }
 	void setPlayFilesFromStart(bool b) { play_files_from_start = b; }
-	void setIgnorePlayerErrors(bool b) { ignore_player_errors = b; }
 
 public:
 	bool directoryRecursion() { return recursive_add_directory; }
 	bool autoGetInfo() { return automatically_get_info; }
 	bool savePlaylistOnExit() { return save_playlist_in_config; }
 	bool playFilesFromStart() { return play_files_from_start; }
-	bool ignorePlayerErrors() { return ignore_player_errors; }
 
 	QList<TPlaylistItem> playlist() { return pl; }
 
@@ -252,10 +250,8 @@ private:
 	bool automatically_get_info;
 	bool save_playlist_in_config;
 	bool play_files_from_start;
-	int row_spacing;
-
 	bool automatically_play_next;
-	bool ignore_player_errors;
+	int row_spacing;
 };
 
 } // namespace Gui
