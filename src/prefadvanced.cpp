@@ -85,7 +85,7 @@ void PrefAdvanced::retranslateStrings() {
 	// Log tab
 	log_enabled_check->setText( tr("&Enable logging") );
 	log_verbose_check->setText( tr("&Verbose") );
-	log_enabled_check->setText( tr("&Save log to a file") );
+	log_file_check->setText( tr("&Save log to a file") );
 	log_filter_label1->setText( tr("&Filter for log:") );
 	log_filter_label2->setText( tr("This option is mainly intended for debugging the application.") );
 
@@ -177,8 +177,8 @@ void PrefAdvanced::getData(Preferences * pref) {
 #endif
 
 	pref->log_enabled = logEnabled();
-	TEST_AND_SET(pref->log_verbose, logVerbose());
-	pref->log_file = logFile();
+	TEST_AND_SET(pref->log_verbose, pref->log_enabled && logVerbose());
+	pref->log_file = pref->log_enabled && logFile();
 	pref->log_filter = logFilter();
 
 	pref->use_short_pathnames = useShortNames();

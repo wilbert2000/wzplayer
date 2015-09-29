@@ -43,9 +43,9 @@ public:
 
 	// Return true if the changes made require to restart the mplayer
 	// process. Should be call just after the changes have been applied.
-	virtual bool requiresRestart() { return requires_restart; };
+	virtual bool requiresRestart() { return requires_restart; }
 
-	virtual QString help() { return help_message; };
+	virtual QString help() { return help_message; }
 
 protected:
 	virtual void retranslateStrings();

@@ -2937,7 +2937,7 @@ void TBase::applyNewPreferences() {
 
 	// Update logging
 	Global::log->setEnabled(pref->log_enabled);
-	// log_verbose sets restart
+	// log_verbose sets requires_restart
 	Global::log->setLogFileEnabled(pref->log_file);
 	Global::log->setFilter(pref->log_filter);
 
@@ -3122,8 +3122,6 @@ void TBase::gotNoFileToPlay() {
 
 	playlist->resumePlay();
 }
-
-// TODO: remove or use autosave_mplayer_log and mplayer_log_saveto
 
 void TBase::showLog() {
 	qDebug("Gui::TBase::showLog");

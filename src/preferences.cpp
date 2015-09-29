@@ -1271,8 +1271,13 @@ void Preferences::load() {
 	mplayer_additional_audio_filters = set->value("mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
 
 	log_enabled = set->value("log_enabled", log_enabled).toBool();
-	log_verbose = set->value("log_verbose", log_verbose).toBool();
-	log_file = set->value("log_file", log_file).toBool();
+	if (log_enabled) {
+		log_verbose = set->value("log_verbose", log_verbose).toBool();
+		log_file = set->value("log_file", log_file).toBool();
+	} else {
+		log_verbose = false;
+		log_file = false;
+	}
 	log_filter = set->value("log_filter", log_filter).toString();
 
 #if REPAINT_BACKGROUND_OPTION
