@@ -67,20 +67,17 @@ public:
 public slots:
 	virtual void setPos(int);
 	virtual int pos();
-#if ENABLE_DELAYED_DRAGGING
 	void setDragDelay(int);
 	int dragDelay();
 
 private:
 	int drag_delay;
-#endif
 
 signals:
 	void posChanged(int value);
 	void draggingPos(int value);
-#if ENABLE_DELAYED_DRAGGING
 	void delayedDraggingPos(int);
-#endif
+
 	void wheelUp(Preferences::WheelFunction function = Preferences::Seeking);
 	void wheelDown(Preferences::WheelFunction function = Preferences::Seeking);
 

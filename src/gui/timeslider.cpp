@@ -38,14 +38,12 @@ TTimeSlider::TTimeSlider( QWidget * parent ) : TSlider(parent)
 	connect( this, SIGNAL( sliderReleased() ), this, SLOT( resumeUpdate() ) );
 	connect( this, SIGNAL( sliderReleased() ), this, SLOT( mouseReleased() ) );
 	connect( this, SIGNAL( valueChanged(int) ), this, SLOT( valueChanged_slot(int) ) );
-#if ENABLE_DELAYED_DRAGGING
 	connect( this, SIGNAL(draggingPos(int) ), this, SLOT(checkDragging(int)) );
 	
 	last_pos_to_send = -1;
 	timer = new QTimer(this);
 	connect( timer, SIGNAL(timeout()), this, SLOT(sendDelayedPos()) );
 	timer->start(200);
-#endif
 }
 
 TTimeSlider::~TTimeSlider() {
@@ -94,7 +92,6 @@ void TTimeSlider::valueChanged_slot(int v) {
 	}
 }
 
-#if ENABLE_DELAYED_DRAGGING
 void TTimeSlider::setDragDelay(int d) {
 	qDebug("Gui::TTimeSlider::setDragDelay: %d", d);
 	timer->setInterval(d);
@@ -116,7 +113,6 @@ void TTimeSlider::sendDelayedPos() {
 		last_pos_to_send = -1;
 	}
 }
-#endif
 
 void TTimeSlider::setPos(int v) {
 	#if DEBUG

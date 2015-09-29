@@ -342,9 +342,8 @@ public:
 	int seeking4; // For mouse wheel, by default 30s
 
 	bool update_while_seeking;
-#if ENABLE_DELAYED_DRAGGING	
 	int time_slider_drag_delay;
-#endif
+
 	//! If true, seeking will be done using a
 	//! percentage (with fractions) instead of time.
 	bool relative_seeking;  

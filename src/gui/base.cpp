@@ -4729,14 +4729,7 @@ void TBase::displayGotoTime(int t) {
 
 void TBase::goToPosOnDragging(int t) {
 	if (pref->update_while_seeking) {
-#if ENABLE_DELAYED_DRAGGING
 		core->goToPosition(t);
-#else
-		if ( ( t % 4 ) == 0 ) {
-			qDebug("Gui::TBase::goToPosOnDragging: %d", t);
-			core->goToPosition(t);
-		}
-#endif
 	}
 }
 

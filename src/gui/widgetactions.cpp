@@ -55,11 +55,7 @@ void TWidgetAction::propagate_enabled(bool b) {
 
 
 TTimeSliderAction::TTimeSliderAction( QWidget * parent )
-	: TWidgetAction(parent)
-{
-#if ENABLE_DELAYED_DRAGGING
-	drag_delay = 200;
-#endif
+	: TWidgetAction(parent), drag_delay(200) {
 }
 
 TTimeSliderAction::~TTimeSliderAction() {
@@ -85,7 +81,6 @@ int TTimeSliderAction::pos() {
 	}
 }
 
-#if ENABLE_DELAYED_DRAGGING
 void TTimeSliderAction::setDragDelay(int d) {
 	drag_delay = d;
 
@@ -99,7 +94,6 @@ void TTimeSliderAction::setDragDelay(int d) {
 int TTimeSliderAction::dragDelay() {
 	return drag_delay;
 }
-#endif
 
 QWidget * TTimeSliderAction::createWidget ( QWidget * parent ) {
 	TTimeSlider *t = new TTimeSlider(parent);
@@ -112,12 +106,10 @@ QWidget * TTimeSliderAction::createWidget ( QWidget * parent ) {
              this, SIGNAL(posChanged(int)) );
 	connect( t,    SIGNAL(draggingPos(int)),
              this, SIGNAL(draggingPos(int)) );
-#if ENABLE_DELAYED_DRAGGING
-	t->setDragDelay(drag_delay);
 
+	t->setDragDelay(drag_delay);
 	connect( t,    SIGNAL(delayedDraggingPos(int)),
 	         this, SIGNAL(delayedDraggingPos(int)) );
-#endif
 
 	connect(t, SIGNAL(wheelUp()), this, SIGNAL(wheelUp()));
 	connect(t, SIGNAL(wheelDown()), this, SIGNAL(wheelDown()));

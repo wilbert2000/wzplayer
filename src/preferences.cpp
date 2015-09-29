@@ -352,9 +352,7 @@ void Preferences::reset() {
 	seeking4 = 30;
 
 	update_while_seeking = false;
-#if ENABLE_DELAYED_DRAGGING
-	time_slider_drag_delay = 100;
-#endif
+	time_slider_drag_delay = 200;
 	relative_seeking = false;
 	precise_seeking = true;
 
@@ -812,9 +810,7 @@ void Preferences::save() {
 	set->setValue("seeking4", seeking4);
 
 	set->setValue("update_while_seeking", update_while_seeking);
-#if ENABLE_DELAYED_DRAGGING
 	set->setValue("time_slider_drag_delay", time_slider_drag_delay);
-#endif
 	set->setValue("relative_seeking", relative_seeking);
 	set->setValue("precise_seeking", precise_seeking);
 
@@ -1318,9 +1314,7 @@ void Preferences::load() {
 	seeking4 = set->value("seeking4", seeking4).toInt();
 
 	update_while_seeking = set->value("update_while_seeking", update_while_seeking).toBool();
-#if ENABLE_DELAYED_DRAGGING
 	time_slider_drag_delay = set->value("time_slider_drag_delay", time_slider_drag_delay).toInt();
-#endif
 	relative_seeking = set->value("relative_seeking", relative_seeking).toBool();
 	precise_seeking = set->value("precise_seeking", precise_seeking).toBool();
 
