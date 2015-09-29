@@ -2906,12 +2906,10 @@ void TBase::applyNewPreferences() {
 
 	mplayerwindow->setDelayLeftClick(pref->delay_left_click);
 
-#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
 		resize( width(), height() + 200);
 		panel->show();
 	}
-#endif
 
 	PrefAdvanced *advanced = pref_dialog->mod_advanced();
 #if REPAINT_BACKGROUND_OPTION
@@ -4713,17 +4711,11 @@ void TBase::slotNoVideo() {
 
 	block_resize = false;
 
-	// TODO: remove ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
-#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	if (pref->hide_video_window_on_audio_files) {
 		hidePanel();
 	} else {
 		mplayerwindow->showLogo();
 	}
-#else
-	hidePanel();
-#endif
-
 }
 
 void TBase::displayGotoTime(int t) {

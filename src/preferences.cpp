@@ -396,9 +396,7 @@ void Preferences::reset() {
 	// Now 360p 16:9 is 640 x 360 (360 + 99 = 459)
 	default_size = QSize(640, 459);
 
-#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	hide_video_window_on_audio_files = true;
-#endif
 
 	report_mplayer_crashes = true;
 
@@ -852,9 +850,7 @@ void Preferences::save() {
 #endif
 	set->setValue("default_size", default_size);
 
-#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	set->setValue("hide_video_window_on_audio_files", hide_video_window_on_audio_files);
-#endif
 
 	set->setValue("report_mplayer_crashes", report_mplayer_crashes);
 
@@ -1362,9 +1358,7 @@ void Preferences::load() {
 #endif
 	default_size = set->value("default_size", default_size).toSize();
 
-#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	hide_video_window_on_audio_files = set->value("hide_video_window_on_audio_files", hide_video_window_on_audio_files).toBool();
-#endif
 
 	report_mplayer_crashes = set->value("report_mplayer_crashes", report_mplayer_crashes).toBool();
 

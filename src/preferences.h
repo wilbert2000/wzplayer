@@ -391,9 +391,7 @@ public:
 #endif
 	QSize default_size; // Default size of the main window
 
-#if ALLOW_TO_HIDE_VIDEO_WINDOW_ON_AUDIO_FILES
 	bool hide_video_window_on_audio_files;
-#endif
 
 	bool report_mplayer_crashes;
 
