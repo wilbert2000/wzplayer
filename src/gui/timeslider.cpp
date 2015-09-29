@@ -56,6 +56,7 @@ void TTimeSlider::stopUpdate() {
 	qDebug("Gui::TTimeSlider::stopUpdate");
 	#endif
 	dont_update = true;
+	last_pos_to_send = -1;
 	timer->start();
 }
 
@@ -65,6 +66,7 @@ void TTimeSlider::resumeUpdate() {
 	#endif
 	dont_update = false;
 	timer->stop();
+	last_pos_to_send = -1;
 }
 
 void TTimeSlider::mouseReleased() {
