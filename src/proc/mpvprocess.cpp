@@ -129,14 +129,14 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "MPV_VERSION") {
 		mpv_version = value;
-		qDebug() << "MPVProcess::parseProperty: mpv_version set to" << mpv_version;
+		qDebug() << "Proc::MPVProcess::parseProperty: mpv_version set to" << mpv_version;
 		return true;
 	}
 
 /*
 	if (name == "TRACKS_COUNT") {
 		int tracks = value.toInt();
-		qDebug("MPVProcess::parseProperty: requesting track info for %d tracks", tracks);
+		qDebug("Proc::MPVProcess::parseProperty: requesting track info for %d tracks", tracks);
 		for (int n = 0; n < tracks; n++) {
 			writeToStdin(QString("print_text \"TRACK_INFO_%1="
 				"${track-list/%1/type} "
@@ -151,7 +151,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "TITLES") {
 		int n_titles = value.toInt();
-		qDebug("MPVProcess::parseProperty: creating %d titles", n_titles);
+		qDebug("Proc::MPVProcess::parseProperty: creating %d titles", n_titles);
 		for (int idx = 0; idx < n_titles; idx++) {
 			md->titles.addID(idx + 1);
 			writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1 ${=disc-title-list/%1/length:-1}\"").arg(idx));
@@ -176,7 +176,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "CHAPTERS") {
 		int n_chapters = value.toInt();
-		qDebug("MPVProcess::parseProperty: requesting start and title of %d chapter(s)", n_chapters);
+		qDebug("Proc::MPVProcess::parseProperty: requesting start and title of %d chapter(s)", n_chapters);
 		for (int n = 0; n < n_chapters; n++) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
@@ -187,7 +187,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "MEDIA_TITLE") {
 		if (!value.isEmpty() && value != "mp4" && !value.startsWith("mp4&")) {
 			md->meta_data["NAME"] = value;
-			qDebug() << "MPVProcess::parseProperty: set meta_data[\"NAME\"] to" << value;
+			qDebug() << "Proc::MPVProcess::parseProperty: set meta_data[\"NAME\"] to" << value;
 		}
 		return true;
 	}
@@ -195,14 +195,14 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "OSD_X") {
 		default_osd_pos.rx() = value.toInt();
 		osd_pos.rx() = default_osd_pos.x();
-		qDebug("MPVProcess::parseProperty: set OSD x margin to %d", default_osd_pos.x());
+		qDebug("Proc::MPVProcess::parseProperty: set OSD x margin to %d", default_osd_pos.x());
 		return true;
 	}
 
 	if (name == "OSD_Y") {
 		default_osd_pos.ry() = value.toInt();
 		osd_pos.ry() = default_osd_pos.y();
-		qDebug("MPVProcess::parseProperty: set OSD y margin to %d", default_osd_pos.y());
+		qDebug("Proc::MPVProcess::parseProperty: set OSD y margin to %d", default_osd_pos.y());
 		return true;
 	}
 
@@ -213,7 +213,7 @@ bool MPVProcess::parseChapter(int id, double start, QString title) {
 
 	waiting_for_answers--;
 	md->chapters.addChapter(id, title, start);
-	qDebug() << "MPVProcess::parseChapter: added chapter id" << id
+	qDebug() << "Proc::MPVProcess::parseChapter: added chapter id" << id
 			 << "starting at" << start << "with title" << title;
 	return true;
 }
@@ -233,16 +233,16 @@ void MPVProcess::fixTitle() {
 	// titles, needed because MPV does not support menus.
 	if (!received_title_not_found) {
 		if (disc.title == selected_title) {
-			qDebug("MPVProcess::fixTitle: found requested title %d", disc.title);
+			qDebug("Proc::MPVProcess::fixTitle: found requested title %d", disc.title);
 		} else {
-			qDebug("MPVProcess::fixTitle: selecting title %d, player reports it is playing VTS %d",
+			qDebug("Proc::MPVProcess::fixTitle: selecting title %d, player reports it is playing VTS %d",
 				   disc.title, selected_title);
 		}
 		notifyTitleTrackChanged(disc.title);
 		return;
 	}
 
-	qWarning("MPVProcess::fixTitle: requested title %d not found or really short", disc.title);
+	qWarning("Proc::MPVProcess::fixTitle: requested title %d not found or really short", disc.title);
 
 	// Let the playlist try the next title if a valid title was requested and
 	// there is more than 1 title.
@@ -265,7 +265,7 @@ void MPVProcess::checkTime(double sec) {
 
 	if (title_swictched && sec >= title_switch_time) {
 		title_swictched = false;
-		qDebug("MPVProcess::checkTime: sending track changed");
+		qDebug("Proc::MPVProcess::checkTime: sending track changed");
 		notifyTitleTrackChanged(selected_title);
 	}
 }
@@ -289,13 +289,13 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 			int chapter = title - md->titles.firstID() + md->chapters.firstID();
 			title_switch_time = md->chapters[chapter].getStart();
 			if (title_switch_time <= md->time_sec + 0.5) {
-				qDebug("MPVProcess::parseTitleSwitched: switched to track %d", title);
+				qDebug("Proc::MPVProcess::parseTitleSwitched: switched to track %d", title);
 				notifyTitleTrackChanged(title);
 			} else {
 				// Switch when the time comes
 				title_swictched = true;
 				title_switch_time -= 0.4;
-				qDebug("MPVProcess::parseTitleSwitched: saved track changed to %d at %f", title, title_switch_time);
+				qDebug("Proc::MPVProcess::parseTitleSwitched: saved track changed to %d at %f", title, title_switch_time);
 			}
 		} else {
 			notifyTitleTrackChanged(title);
@@ -316,14 +316,14 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 			quit_at_end_of_title_ms = (int) ((md->duration - md->time_sec) * 1000);
 			// Quit right away if less than 400 ms to go.
 			if (quit_at_end_of_title_ms <= 400) {
-				qDebug("MPVProcess::parseTitleSwitched: quitting at end of title");
+				qDebug("Proc::MPVProcess::parseTitleSwitched: quitting at end of title");
 				received_end_of_file =  true;
 				quit(0);
 			} else {
 				// Quit when quit_at_end_of_title_ms elapsed
 				quit_at_end_of_title_ms -= 400;
 				quit_at_end_of_title_time.start();
-				qDebug("MPVProcess::parseTitleSwitched: marked title to quit in %d ms",
+				qDebug("Proc::MPVProcess::parseTitleSwitched: marked title to quit in %d ms",
 					   quit_at_end_of_title_ms);
 			}
 		}
@@ -335,7 +335,7 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
 	Q_UNUSED(disc_type)
 
-	// qWarning("MPVProcess::parseTitleNotFound: requested title not found");
+	// qWarning("Proc::MPVProcess::parseTitleNotFound: requested title not found");
 
 	// Requested title means the original title. The currently selected title
 	// seems still valid and is the last selected title during its search through
@@ -361,7 +361,7 @@ void MPVProcess::convertChaptersToTitles() {
 
 	// Just for safety...
 	if (md->titles.count() > 0) {
-		qWarning("MPVProcess::convertChaptersToTitles: found unexpected titles");
+		qWarning("Proc::MPVProcess::convertChaptersToTitles: found unexpected titles");
 		return;
 	}
 
@@ -383,17 +383,17 @@ void MPVProcess::convertChaptersToTitles() {
 							md->duration - prev_chapter.getStart());
 	}
 
-	qDebug("MPVProcess::convertChaptersToTitles: created %d titles",
+	qDebug("Proc::MPVProcess::convertChaptersToTitles: created %d titles",
 		   md->titles.count());
 }
 
 void MPVProcess::playingStarted() {
-	qDebug("MPVProcess::playingStarted");
+	qDebug("Proc::MPVProcess::playingStarted");
 
 	// MPV can give negative times for TS without giving a start time.
 	// Correct them by setting the start time.
 	if (!md->start_sec_set && md->time_sec < 0) {
-		qDebug("MPVProcess::playingStarted: setting negative start time %f", md->time_sec);
+		qDebug("Proc::MPVProcess::playingStarted: setting negative start time %f", md->time_sec);
 		md->start_sec = md->time_sec;
 		// No longer need rollover protection (though not set for MPV anyway).
 		md->mpegts = false;
@@ -429,13 +429,13 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	bool idle = rx.cap(5) == "yes";
 
 	if (paused) {
-		//qDebug("MPVProcess::parseStatusLine: paused");
+		//qDebug("Proc::MPVProcess::parseStatusLine: paused");
 		emit receivedPause();
 		return true;
 	}
 
 	if (buffering or idle) {
-		//qDebug("MPVProcess::parseStatusLine: buffering");
+		//qDebug("Proc::MPVProcess::parseStatusLine: buffering");
 		received_buffering = true;
 		emit receivedBuffering();
 		return true;
@@ -502,7 +502,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 	if (quit_at_end_of_title && !quit_send
 		&& quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
-		qDebug("MPVProcess::parseLine: %d ms elapsed, quitting title",
+		qDebug("Proc::MPVProcess::parseLine: %d ms elapsed, quitting title",
 			   quit_at_end_of_title_ms);
 		quit_at_end_of_title = false;
 		received_end_of_file =  true;
@@ -576,7 +576,7 @@ bool MPVProcess::parseLine(QString &line) {
 		waiting_for_answers--;
 		md->video_out_width = rx_dsize.cap(1).toInt();
 		md->video_out_height = rx_dsize.cap(2).toInt();
-		qDebug("MPVProcess::parseLine: set video out size to %d x %d",
+		qDebug("Proc::MPVProcess::parseLine: set video out size to %d x %d",
 			   md->video_out_width, md->video_out_height);
 		return true;
 	}
@@ -593,7 +593,7 @@ bool MPVProcess::parseLine(QString &line) {
 	// Fall back to generic VIDEO_CODEC if match fails.
 	if (rx_video_codec.indexIn(line) >= 0) {
 		md->video_codec = rx_video_codec.cap(2);
-		qDebug() << "MPVProcess::parseLine: video_codec set to" << md->video_codec;
+		qDebug() << "Proc::MPVProcess::parseLine: video_codec set to" << md->video_codec;
 		return true;
 	}
 
@@ -607,7 +607,7 @@ bool MPVProcess::parseLine(QString &line) {
 	// Fall back to generic AUDIO_CODEC if match fails.
 	if (rx_audio_codec.indexIn(line) >= 0) {
 		md->audio_codec = rx_audio_codec.cap(2);
-		qDebug() << "MPVProcess::parseLine: audio_codec set to" << md->audio_codec;
+		qDebug() << "Proc::MPVProcess::parseLine: audio_codec set to" << md->audio_codec;
 		return true;
 	}
 
@@ -647,7 +647,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 	if (rx_stream_title.indexIn(line) > -1) {
 		QString s = rx_stream_title.cap(1);
-		qDebug("MPVProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
+		qDebug("Proc::MPVProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
 		md->stream_title = s;
 		emit receivedStreamTitle(s);
 		return true;
@@ -752,7 +752,7 @@ void MPVProcess::disableInput() {
 bool MPVProcess::isOptionAvailable(const QString & option) {
 	InfoReader * ir = InfoReader::obj(executable());
 	ir->getInfo();
-	//qDebug() << "MPVProcess::isOptionAvailable: option_list:" << ir->optionList();
+	//qDebug() << "Proc::MPVProcess::isOptionAvailable: option_list:" << ir->optionList();
 	return ir->optionList().contains(option);
 }
 
@@ -765,7 +765,7 @@ void MPVProcess::addVFIfAvailable(const QString & vf, const QString & value) {
 		arg << s;
 	} else {
 		QString f = vf +"="+ value;
-		qDebug("MPVProcess::addVFIfAvailable: filter %s is not used because it's not available", f.toLatin1().constData());
+		qDebug("Proc::MPVProcess::addVFIfAvailable: filter %s is not used because it's not available", f.toLatin1().constData());
 	}
 }
 
@@ -941,7 +941,7 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 		QString o = value.toString();
 		if (o.startsWith("alsa:device=")) {
 			QString device = o.mid(12);
-			//qDebug() << "MPVProcess::setOption: alsa device:" << device;
+			//qDebug() << "Proc::MPVProcess::setOption: alsa device:" << device;
 			device = device.replace("=", ":").replace(".", ",");
 			o = "alsa:device=[" + device + "]";
 		}
@@ -949,11 +949,11 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 	}
 	else
 	if (option_name == "vc") {
-		qDebug() << "MPVProcess::setOption: video codec ignored";
+		qDebug() << "Proc::MPVProcess::setOption: video codec ignored";
 	}
 	else
 	if (option_name == "ac") {
-		qDebug() << "MPVProcess::setOption: audio codec ignored";
+		qDebug() << "Proc::MPVProcess::setOption: audio codec ignored";
 	}
 	else
 	if (option_name == "afm") {
@@ -1016,7 +1016,7 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 	}
 	else
 	{
-		qDebug() << "MPVProcess::setOption: unknown option:" << option_name;
+		qDebug() << "Proc::MPVProcess::setOption: unknown option:" << option_name;
 	}
 }
 
@@ -1351,7 +1351,7 @@ void MPVProcess::discSetMousePos(int x, int y) {
 
 	// MPV versions later than 18 july 2015 no longer support menus
 
-	// qDebug("MPVProcess::discSetMousePos: %d %d", x, y);
+	// qDebug("Proc::MPVProcess::discSetMousePos: %d %d", x, y);
 	// writeToStdin(QString("discnav mouse_move %1 %2").arg(x).arg(y));
 	// mouse_move doesn't accept options :?
 
@@ -1377,7 +1377,7 @@ void MPVProcess::setFullscreen(bool b) {
 
 #if PROGRAM_SWITCH
 void MPVProcess::setTSProgram(int ID) {
-	qDebug("MPVProcess::setTSProgram: function not supported");
+	qDebug("Proc::MPVProcess::setTSProgram: function not supported");
 }
 #endif
 
@@ -1480,7 +1480,7 @@ void MPVProcess::setOSDScale(double value) {
 }
 
 void MPVProcess::changeVF(const QString & filter, bool enable, const QVariant & option) {
-	qDebug() << "MPVProcess::changeVF:" << filter << enable;
+	qDebug() << "Proc::MPVProcess::changeVF:" << filter << enable;
 
 	QString f;
 	if (filter == "letterbox") {
@@ -1560,7 +1560,7 @@ void MPVProcess::changeVF(const QString & filter, bool enable, const QVariant & 
 		f = "lavfi=[kerndeint=" + option.toString() +"]";
 	}
 	else {
-		qDebug() << "MPVProcess::changeVF: unknown filter:" << filter;
+		qDebug() << "Proc::MPVProcess::changeVF: unknown filter:" << filter;
 	}
 
 	if (!f.isEmpty()) {
