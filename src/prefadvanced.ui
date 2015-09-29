@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="advanced_tab">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab1">
       <attribute name="title">
@@ -531,7 +531,7 @@ Example: extrastereo,karaoke</string>
      </widget>
      <widget class="QWidget" name="tab4">
       <attribute name="title">
-       <string>Lo&amp;gs</string>
+       <string>&amp;Logging</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
