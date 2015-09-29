@@ -1549,6 +1549,8 @@ void Preferences::load() {
 			if (time_to_kill_mplayer < 5000)
 				time_to_kill_mplayer = 5000;
 			use_dvdnav = true;
+			if (time_slider_drag_delay < 200)
+				time_slider_drag_delay = 200;
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;

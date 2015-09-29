@@ -54,8 +54,8 @@ void TWidgetAction::propagate_enabled(bool b) {
 }
 
 
-TTimeSliderAction::TTimeSliderAction( QWidget * parent )
-	: TWidgetAction(parent), drag_delay(200) {
+TTimeSliderAction::TTimeSliderAction(QWidget * parent , int delay)
+	: TWidgetAction(parent), drag_delay(delay) {
 }
 
 TTimeSliderAction::~TTimeSliderAction() {
@@ -95,9 +95,10 @@ int TTimeSliderAction::dragDelay() {
 	return drag_delay;
 }
 
-QWidget * TTimeSliderAction::createWidget ( QWidget * parent ) {
-	TTimeSlider *t = new TTimeSlider(parent);
-	t->setEnabled( isEnabled() );
+QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
+
+	TTimeSlider* t = new TTimeSlider(parent, drag_delay);
+	t->setEnabled(isEnabled());
 
 	if (custom_style) t->setStyle(custom_style);
 	if (!custom_stylesheet.isEmpty()) t->setStyleSheet(custom_stylesheet);
@@ -106,8 +107,6 @@ QWidget * TTimeSliderAction::createWidget ( QWidget * parent ) {
              this, SIGNAL(posChanged(int)) );
 	connect( t,    SIGNAL(draggingPos(int)),
              this, SIGNAL(draggingPos(int)) );
-
-	t->setDragDelay(drag_delay);
 	connect( t,    SIGNAL(delayedDraggingPos(int)),
 	         this, SIGNAL(delayedDraggingPos(int)) );
 

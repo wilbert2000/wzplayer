@@ -61,7 +61,7 @@ class TTimeSliderAction : public TWidgetAction
 	Q_OBJECT
 
 public:
-	TTimeSliderAction( QWidget * parent );
+	TTimeSliderAction(QWidget * parent, int delay);
 	~TTimeSliderAction();
 
 public slots:
@@ -69,9 +69,6 @@ public slots:
 	virtual int pos();
 	void setDragDelay(int);
 	int dragDelay();
-
-private:
-	int drag_delay;
 
 signals:
 	void posChanged(int value);
@@ -83,6 +80,9 @@ signals:
 
 protected:
 	virtual QWidget * createWidget ( QWidget * parent );
+
+private:
+	int drag_delay;
 };
 
 
@@ -94,11 +94,11 @@ public:
 	TVolumeSliderAction( QWidget * parent );
 	~TVolumeSliderAction();
 
-	void setFixedSize(QSize size) { fixed_size = size; };
-	QSize fixedSize() { return fixed_size; };
+	void setFixedSize(QSize size) { fixed_size = size; }
+	QSize fixedSize() { return fixed_size; }
 
 	void setTickPosition(QSlider::TickPosition position);
-	QSlider::TickPosition tickPosition() { return tick_position; };
+	QSlider::TickPosition tickPosition() { return tick_position; }
 
 public slots:
 	virtual void setValue(int);
@@ -124,7 +124,7 @@ public:
 	TTimeLabelAction( QWidget * parent );
 	~TTimeLabelAction();
 
-	virtual QString text() { return _text; };
+	virtual QString text() { return _text; }
 
 public slots:
 	virtual void setText(QString s);

@@ -563,8 +563,9 @@ void TBasePlus::shrinkWindow() {
 #endif
 
 // Convenience functions intended for other GUI's
-TTimeSliderAction * TBasePlus::createTimeSliderAction(QWidget * parent) {
-	TTimeSliderAction * timeslider_action = new TTimeSliderAction( parent );
+TTimeSliderAction* TBasePlus::createTimeSliderAction(QWidget* parent) {
+	TTimeSliderAction* timeslider_action =
+			new TTimeSliderAction(parent, pref->time_slider_drag_delay);
 	timeslider_action->setObjectName("timeslider_action");
 
 	connect( timeslider_action, SIGNAL( posChanged(int) ), 
@@ -574,9 +575,7 @@ TTimeSliderAction * TBasePlus::createTimeSliderAction(QWidget * parent) {
 
 	connect( timeslider_action, SIGNAL( draggingPos(int) ),
              this, SLOT(displayGotoTime(int)) );
-	timeslider_action->setDragDelay( pref->time_slider_drag_delay );
-
-	connect( timeslider_action, SIGNAL( delayedDraggingPos(int) ), 
+	connect( timeslider_action, SIGNAL( delayedDraggingPos(int) ),
              this, SLOT(goToPosOnDragging(int)) );
 
 	connect(timeslider_action, SIGNAL(wheelUp(Preferences::WheelFunction)),

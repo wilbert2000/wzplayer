@@ -29,7 +29,7 @@ class TTimeSlider : public TSlider
 	Q_OBJECT
 
 public:
-	TTimeSlider( QWidget * parent );
+	TTimeSlider(QWidget * parent , int drag_delay);
 	~TTimeSlider();
 
 public slots:

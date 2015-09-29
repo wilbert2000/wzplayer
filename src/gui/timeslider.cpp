@@ -25,25 +25,27 @@
 
 namespace Gui {
 
-TTimeSlider::TTimeSlider( QWidget * parent ) : TSlider(parent)
-{
-	dont_update = false;
+TTimeSlider::TTimeSlider(QWidget * parent, int drag_delay) :
+	TSlider(parent),
+	dont_update(false),
+	position(0),
+	last_pos_to_send(-1) {
+
 	setMinimum(0);
 	setMaximum(SEEKBAR_RESOLUTION);
 
-	setFocusPolicy( Qt::NoFocus );
-	setSizePolicy( QSizePolicy::Expanding , QSizePolicy::Fixed );
+	setFocusPolicy(Qt::NoFocus);
+	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Fixed);
 
 	connect( this, SIGNAL( sliderPressed() ), this, SLOT( stopUpdate() ) );
 	connect( this, SIGNAL( sliderReleased() ), this, SLOT( resumeUpdate() ) );
 	connect( this, SIGNAL( sliderReleased() ), this, SLOT( mouseReleased() ) );
 	connect( this, SIGNAL( valueChanged(int) ), this, SLOT( valueChanged_slot(int) ) );
-	connect( this, SIGNAL(draggingPos(int) ), this, SLOT(checkDragging(int)) );
+	connect( this, SIGNAL( draggingPos(int) ), this, SLOT( checkDragging(int) ) );
 	
-	last_pos_to_send = -1;
 	timer = new QTimer(this);
+	timer->setInterval(drag_delay);
 	connect( timer, SIGNAL(timeout()), this, SLOT(sendDelayedPos()) );
-	timer->start(200);
 }
 
 TTimeSlider::~TTimeSlider() {
@@ -54,6 +56,7 @@ void TTimeSlider::stopUpdate() {
 	qDebug("Gui::TTimeSlider::stopUpdate");
 	#endif
 	dont_update = true;
+	timer->start();
 }
 
 void TTimeSlider::resumeUpdate() {
@@ -61,6 +64,7 @@ void TTimeSlider::resumeUpdate() {
 	qDebug("Gui::TTimeSlider::resumeUpdate");
 	#endif
 	dont_update = false;
+	timer->stop();
 }
 
 void TTimeSlider::mouseReleased() {
