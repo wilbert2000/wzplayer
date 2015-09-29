@@ -41,10 +41,6 @@ PrefAdvanced::PrefAdvanced(QWidget * parent, Qt::WindowFlags f)
 	changeButton->hide();
 #endif
 
-#if !REPAINT_BACKGROUND_OPTION
-	repaint_video_background_check->hide();
-#endif
-
 	// Monitor aspect
 	monitoraspect_combo->addItem("Auto");
 	monitoraspect_combo->addItem("4:3");
@@ -88,9 +84,7 @@ void PrefAdvanced::retranslateStrings() {
 void PrefAdvanced::setData(Preferences * pref) {
 	setMonitorAspect( pref->monitor_aspect );
 
-#if REPAINT_BACKGROUND_OPTION	
 	setRepaintVideoBackground( pref->repaint_video_background );
-#endif
 	setUseMplayerWindow( pref->use_mplayer_window );
 	setMplayerAdditionalArguments( pref->mplayer_additional_options );
 	setMplayerAdditionalVideoFilters( pref->mplayer_additional_video_filters );
@@ -118,12 +112,9 @@ void PrefAdvanced::setData(Preferences * pref) {
 }
 
 void PrefAdvanced::getData(Preferences * pref) {
+
 	requires_restart = false;
-
-#if REPAINT_BACKGROUND_OPTION
 	repaint_video_background_changed = false;
-#endif
-
 	monitor_aspect_changed = false;
 #if USE_COLORKEY
 	colorkey_changed = false;
@@ -150,12 +141,10 @@ void PrefAdvanced::getData(Preferences * pref) {
 		requires_restart = true;
 	}
 
-#if REPAINT_BACKGROUND_OPTION
 	if (pref->repaint_video_background != repaintVideoBackground()) {
 		pref->repaint_video_background = repaintVideoBackground();
 		repaint_video_background_changed = true;
     }
-#endif
 
 	TEST_AND_SET(pref->use_mplayer_window, useMplayerWindow());
 	TEST_AND_SET(pref->mplayer_additional_options, mplayerAdditionalArguments());
@@ -194,7 +183,6 @@ QString PrefAdvanced::monitorAspect() {
 		return monitoraspect_combo->currentText();
 }
 
-#if REPAINT_BACKGROUND_OPTION
 void PrefAdvanced::setRepaintVideoBackground(bool b) {
 	repaint_video_background_check->setChecked(b);
 }
@@ -202,7 +190,6 @@ void PrefAdvanced::setRepaintVideoBackground(bool b) {
 bool PrefAdvanced::repaintVideoBackground() {
 	return repaint_video_background_check->isChecked();
 }
-#endif
 
 void PrefAdvanced::setUseMplayerWindow(bool v) {
 	mplayer_use_window_check->setChecked(v);
@@ -401,12 +388,10 @@ void PrefAdvanced::createHelp() {
 		tr("If this option is checked, SMPlayer will pass to %1 the short version of the filenames.").arg(PLAYER_NAME) );
 #endif
 
-#if REPAINT_BACKGROUND_OPTION
 	setWhatsThis(repaint_video_background_check, 
         tr("Repaint the background of the video window"),
 		tr("Checking this option may reduce flickering, but it also might "
            "produce that the video won't be displayed properly.") );
-#endif
 
 	setWhatsThis(mplayer_crashes_check, 
 		tr("Report %1 crashes").arg(PLAYER_NAME),

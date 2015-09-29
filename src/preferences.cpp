@@ -292,13 +292,11 @@ void Preferences::reset() {
 	log_filter = ".*";
 	log_file = false;
 
-#if REPAINT_BACKGROUND_OPTION
 	// "Repaint video background" in the preferences dialog
-	#ifndef Q_OS_WIN
-	repaint_video_background = false;
-	#else
+#ifdef Q_OS_WIN
 	repaint_video_background = true;
-	#endif
+#else
+	repaint_video_background = false;
 #endif
 
 	use_edl_files = true;
@@ -755,9 +753,7 @@ void Preferences::save() {
 	set->setValue("log_file", log_file);
 	set->setValue("log_filter", log_filter);
 
-#if REPAINT_BACKGROUND_OPTION
 	set->setValue("repaint_video_background", repaint_video_background);
-#endif
 
 	set->setValue("use_edl_files", use_edl_files);
 
@@ -1260,9 +1256,7 @@ void Preferences::load() {
 	}
 	log_filter = set->value("log_filter", log_filter).toString();
 
-#if REPAINT_BACKGROUND_OPTION
 	repaint_video_background = set->value("repaint_video_background", repaint_video_background).toBool();
-#endif
 
 	use_edl_files = set->value("use_edl_files", use_edl_files).toBool();
 

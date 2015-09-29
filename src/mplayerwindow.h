@@ -60,14 +60,12 @@ public:
 	MplayerLayer(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	~MplayerLayer();
 
-#if REPAINT_BACKGROUND_OPTION
 	//! If b is true, the background of the widget will be repainted as usual.
 	/*! Otherwise the background will not repainted when a video is playing. */
 	void setRepaintBackground(bool b);
 
 	//! Return true if repainting the background is allowed.
-	bool repaintBackground() { return repaint_background; };
-#endif
+	bool repaintBackground() { return repaint_background; }
 
 	//! Should be called when a file has started. 
     /*! It's needed to know if the background has to be cleared or not. */
@@ -75,15 +73,11 @@ public:
 	//! Should be called when a file has stopped.
 	void restoreNormalBackground();
 
-#if REPAINT_BACKGROUND_OPTION
 protected:
 	virtual void paintEvent ( QPaintEvent * e );
-#endif
 
 private:
-#if REPAINT_BACKGROUND_OPTION
 	bool repaint_background;
-#endif
 	bool normal_background;
 };
 

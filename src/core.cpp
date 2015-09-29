@@ -211,9 +211,7 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	connect( mplayerwindow, SIGNAL(mouseMoved(QPoint)),
 			 this, SLOT(dvdnavUpdateMousePos(QPoint)) );
 
-#if REPAINT_BACKGROUND_OPTION
 	mplayerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
-#endif
 	mplayerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)

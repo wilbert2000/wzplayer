@@ -66,12 +66,6 @@
 #define ALLOW_DEMUXER_CODEC_CHANGE 1
 
 
-// Adds or not the "Repaint the background of the video window" option.
-//#ifndef Q_OS_WIN
-#define REPAINT_BACKGROUND_OPTION 1
-//#endif
-
-
 // Enables/disables the use of -adapter
 #ifdef Q_OS_WIN
 #define USE_ADAPTER 1

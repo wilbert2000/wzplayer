@@ -44,9 +44,7 @@
 
 MplayerLayer::MplayerLayer(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
-#if REPAINT_BACKGROUND_OPTION
 	, repaint_background(false)
-#endif
 	, normal_background(true)
 {
 	setObjectName("mplayerlayer");
@@ -74,7 +72,6 @@ MplayerLayer::MplayerLayer(QWidget* parent, Qt::WindowFlags f)
 MplayerLayer::~MplayerLayer() {
 }
 
-#if REPAINT_BACKGROUND_OPTION
 void MplayerLayer::setRepaintBackground(bool b) {
 	qDebug("MplayerLayer::setRepaintBackground: %d", b);
 	repaint_background = b;
@@ -98,7 +95,6 @@ void MplayerLayer::paintEvent( QPaintEvent * e ) {
 		//painter.fillRect( e->rect(), QColor(255,0,0) );
 	}
 }
-#endif
 
 void MplayerLayer::setFastBackground() {
 	qDebug("MplayerLayer::setFastBackground");

@@ -2912,11 +2912,9 @@ void TBase::applyNewPreferences() {
 	}
 
 	PrefAdvanced *advanced = pref_dialog->mod_advanced();
-#if REPAINT_BACKGROUND_OPTION
 	if (advanced->repaintVideoBackgroundChanged()) {
 		mplayerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
 	}
-#endif
 #if USE_COLORKEY
 	if (advanced->colorkeyChanged()) {
 		mplayerwindow->setColorKey( pref->color_key );
