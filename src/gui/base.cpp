@@ -253,8 +253,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 #endif
 
 #ifdef MPRIS2
-	// TODO reenable
-	// if (pref->use_mpris2) new Mpris2(this, this);
+	if (pref->use_mpris2) new Mpris2(this, this);
 #endif
 }
 
