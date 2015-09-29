@@ -222,7 +222,7 @@
        <item>
         <widget class="QCheckBox" name="use_dvdnav_check">
          <property name="text">
-          <string>&amp;Enable DVD menus (experimental)</string>
+          <string>&amp;Enable DVD menus</string>
          </property>
         </widget>
        </item>

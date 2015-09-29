@@ -45,7 +45,7 @@
 #include "retrieveyoutubeurl.h"
 #endif
 
-#define CURRENT_CONFIG_VERSION 4
+#define CURRENT_CONFIG_VERSION 5
 
 using namespace Global;
 
@@ -315,7 +315,7 @@ void Preferences::reset() {
 
 	show_tag_in_window_title = true;
 
-	time_to_kill_mplayer = 1000;
+	time_to_kill_mplayer = 5000;
 
 #ifdef MPRIS2
 	use_mpris2 = true;
@@ -1555,16 +1555,20 @@ void Preferences::load() {
 			time_to_kill_mplayer = 1000;
 		}
 		*/
-		if (config_version <= 4) {
+		if (config_version < 4) {
 			use_slices = false;
 			osd_level = None;
 			frame_drop = false;
 			cache_for_files = 2048;
 			cache_for_streams = 2048;
-			time_to_kill_mplayer = 1000;
-
 			resize_method = Never;
 		}
+		if (config_version <= 4) {
+			if (time_to_kill_mplayer < 5000)
+				time_to_kill_mplayer = 5000;
+			use_dvdnav = true;
+		}
+
 		config_version = CURRENT_CONFIG_VERSION;
 	}
 

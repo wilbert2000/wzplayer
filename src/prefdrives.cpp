@@ -191,12 +191,7 @@ void PrefDrives::createHelp() {
 	setWhatsThis(use_dvdnav_check, tr("Enable DVD menus"),
 		tr("If this option is checked, SMPlayer will play DVDs using "
            "dvdnav. Requires a recent version of MPlayer compiled with dvdnav "
-           "support.") +"<br>" +
-        tr("<b>Note 1</b>: cache will be disabled, this can affect performance.") +"<br>"+
-        tr("<b>Note 2</b>: you may want to assign the action "
-           "\"activate option in DVD menus\" to one of the mouse buttons.") + "<br>"+
-        tr("<b>Note 3</b>: this feature is under development, expect a lot of "
-           "issues with it."));
+		   "support."));
 
 	setWhatsThis(bluray_device_combo, tr("Blu-ray device"),
 		tr("Choose your Blu-ray device. It will be used to play Blu-ray discs.") );
