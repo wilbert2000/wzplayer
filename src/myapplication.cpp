@@ -17,13 +17,13 @@
 */
 
 #include "myapplication.h"
+#include <QDir>
 #include "paths.h"
 
 #ifdef USE_WINEVENTFILTER
 #include <QKeyEvent>
 #include <QEvent>
 #include <QWidget>
-#include <QDir>
 #include <QDebug>
 #include <windows.h>
 
@@ -180,11 +180,8 @@ MyApplication::MyApplication(const QString& appId, int& argc, char** argv) :
 	TBaseApp(appId, argc, argv) {
 
 	Paths::setAppPath(applicationDirPath());
-
-#ifdef Q_OS_WIN
 	// Change the working directory to the application path
 	QDir::setCurrent(applicationDirPath());
-#endif
 
 #if QT_VERSION >= 0x040400
 	// Enable icons in menus

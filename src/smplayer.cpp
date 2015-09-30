@@ -71,11 +71,6 @@ SMPlayer::~SMPlayer() {
 
 void SMPlayer::createGUI() {
 
-	// Change dir to app path, so smplayer can find a relative mplayer path
-	QDir::setCurrent(Paths::appPath());
-	qDebug("SMPlayer::createGUI: changed working directory to app path");
-	qDebug("SMPlayer::createGUI: current directory: %s", QDir::currentPath().toUtf8().data());
-
 #ifdef SKINS
 	if (gui_to_use == "SkinGUI") {
 		QString theme = pref->iconset;
@@ -87,7 +82,7 @@ void SMPlayer::createGUI() {
 		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
 			if (pref->iconset.isEmpty()) pref->iconset = theme;
 		} else {
-			qDebug("SMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
+			qWarning("SMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
 			gui_to_use = "DefaultGUI";
 			pref->iconset = "";
 			pref->gui = gui_to_use;
