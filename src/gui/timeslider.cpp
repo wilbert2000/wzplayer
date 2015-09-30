@@ -150,7 +150,7 @@ void TTimeSlider::wheelEvent(QWheelEvent * e) {
 	    else
 	        emit wheelDown();
 	} else {
-		qDebug("Timeslider::wheelEvent: horizontal event received, doing nothing");
+		qDebug("Gui::TTimeslider::wheelEvent: horizontal event received, doing nothing");
 	}
 }
 
