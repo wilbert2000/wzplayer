@@ -489,17 +489,11 @@ unix {
 win32 {
 	DEFINES += SCREENSAVER_OFF
 	DEFINES += AVOID_SCREENSAVER
-	#DEFINES += FONTCACHE_DIALOG
 	DEFINES += USE_FONTCONFIG_OPTIONS
 
 	contains( DEFINES, SCREENSAVER_OFF ) {
 		HEADERS += screensaver.h
 		SOURCES += screensaver.cpp
-	}
-
-	contains( DEFINES, FONTCACHE_DIALOG ) {
-		HEADERS += fontcache.h
-		SOURCES += fontcache.cpp
 	}
 
 	!contains( DEFINES, PORTABLE_APP ) {

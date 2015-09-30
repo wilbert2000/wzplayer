@@ -47,9 +47,6 @@
 #endif
 #endif
 
-#ifdef FONTCACHE_DIALOG
-#include "fontcache.h"
-#endif
 
 using namespace Global;
 
@@ -370,19 +367,7 @@ void SMPlayer::start() {
 	qDebug("SMPlayer::start");
 
 	requested_restart = false;
-
-	// TODO: move to global.cpp?
-#ifdef FONTCACHE_DIALOG
-#ifndef PORTABLE_APP
-	if (Version::with_revision() != pref->smplayer_version) {
-		FontCacheDialog d(0);
-		d.run(pref->mplayer_bin, "sample.avi");
-		pref->smplayer_version = Version::with_revision();
-	}
-#endif
-#endif
-
-	// Create the main window. It will be destoyed when leaving exec()
+	// Create the main window. It will be destoyed when leaving exec().
 	createGUI();
 
 	if (!main_window->startHidden() || !files_to_play.isEmpty())
