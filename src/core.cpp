@@ -434,10 +434,10 @@ void Core::close() {
 }
 
 void Core::openDisc(DiscData &disc, bool fast_open) {
-	// Disc
 
 	// Change title if already playing
-	if (fast_open && _state != Stopped && disc.title > 0) {
+	if (fast_open && _state != Stopped && disc.title > 0
+		&& !mset.playing_single_track) {
 		bool current_url_valid;
 		DiscData current_disc = DiscName::split(mdat.filename, &current_url_valid);
 		if (current_url_valid && current_disc.device == disc.device) {
@@ -449,7 +449,6 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 	}
 
 	// Restart
-
 	close();
 
 	// Add device from prev if none specified
@@ -485,6 +484,9 @@ void Core::openDisc(DiscData &disc, bool fast_open) {
 	mset.reset();
 	// TODO: check use of current_title_id
 	mset.current_title_id = disc.title;
+	if (disc.title > 0 && MediaData::isCD(mdat.selected_type)) {
+		mset.playing_single_track = true;
+	}
 
 	initPlaying();
 	return;
@@ -2987,7 +2989,7 @@ void Core::gotCurrentSec(double sec) {
 	emit positionChanged(pos);
 
 	// Check chapter
-	if (mdat.chapters.count() <= 0) {
+	if (mdat.chapters.count() <= 0 || mset.playing_single_track) {
 		return;
 	}
 	int chapter_id = mdat.chapters.getSelectedID();

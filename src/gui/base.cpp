@@ -3278,10 +3278,9 @@ void TBase::updateTitles() {
 void TBase::updateChapters() {
 	qDebug("Gui::TBase::updateChapters");
 
-	// Clear selected. Core::gotCurrentSec will set it.
-	core->mdat.chapters.setSelectedID(-1);
 	chapterGroup->clear(true);
 	if (core->mdat.chapters.count() > 0) {
+		int selected_id = core->mdat.chapters.getSelectedID();
 		Maps::TChapters::TChapterIterator i = core->mdat.chapters.getIterator();
 		do {
 			i.next();
@@ -3290,6 +3289,9 @@ void TBase::updateChapters() {
 			a->setCheckable(true);
 			a->setText(chapter.getDisplayName());
 			a->setData(chapter.getID());
+			if (chapter.getID() == selected_id) {
+				a->setChecked(true);
+			}
 		} while (i.hasNext());
 	} else {
 		QAction * a = chapterGroup->addAction( tr("<empty>") );

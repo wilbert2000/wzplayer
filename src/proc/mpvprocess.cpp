@@ -364,23 +364,32 @@ void MPVProcess::convertChaptersToTitles() {
 		qWarning("Proc::MPVProcess::convertChaptersToTitles: found unexpected titles");
 		return;
 	}
-
-	Maps::TChapters::TChapterIterator i = md->chapters.getIterator();
-	if (i.hasNext()) {
-		i.next();
-		Maps::TChapterData prev_chapter = i.value();
-		while (i.hasNext()) {
+	if (md->chapters.count() == 1) {
+		// Playing a single track
+		int firstChapter = md->chapters.firstID();
+		md->titles.addTrack(md->titles.getSelectedID(),
+							md->chapters[firstChapter].getName(),
+							md->duration);
+		md->chapters.setSelectedID(firstChapter);
+	} else {
+		// Playing all tracks
+		Maps::TChapters::TChapterIterator i = md->chapters.getIterator();
+		if (i.hasNext()) {
 			i.next();
-			Maps::TChapterData chapter = i.value();
-			double duration = chapter.getStart() - prev_chapter.getStart();
+			Maps::TChapterData prev_chapter = i.value();
+			while (i.hasNext()) {
+				i.next();
+				Maps::TChapterData chapter = i.value();
+				double duration = chapter.getStart() - prev_chapter.getStart();
+				md->titles.addTrack(prev_chapter.getID() + 1,
+									prev_chapter.getName(),
+									duration);
+				prev_chapter = chapter;
+			}
 			md->titles.addTrack(prev_chapter.getID() + 1,
 								prev_chapter.getName(),
-								duration);
-			prev_chapter = chapter;
+								md->duration - prev_chapter.getStart());
 		}
-		md->titles.addTrack(prev_chapter.getID() + 1,
-							prev_chapter.getName(),
-							md->duration - prev_chapter.getStart());
 	}
 
 	qDebug("Proc::MPVProcess::convertChaptersToTitles: created %d titles",

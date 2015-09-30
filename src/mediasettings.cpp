@@ -58,6 +58,7 @@ void MediaSettings::reset() {
 #endif
 
 	current_title_id = NoneSelected;
+	playing_single_track = false;
 	current_angle_id = NoneSelected;
 
 #if PROGRAM_SWITCH

@@ -94,12 +94,12 @@ bool MplayerProcess::parseVideoProperty(const QString &name, const QString &valu
 	if (name == "ID") {
 		int id = value.toInt();
 		if (md->videos.contains(id)) {
-			qDebug("parseVideoProperty: found video track id %d", id);
+			qDebug("Proc::MplayerProcess::parseVideoProperty: found video track id %d", id);
 			get_selected_video_track = true;
 		} else {
 			md->videos.addID(id);
 			video_tracks_changed = true;
-			qDebug("parseVideoProperty: added video track id %d", id);
+			qDebug("Proc::MplayerProcess::parseVideoProperty: added video track id %d", id);
 		}
 		return true;
 	}
@@ -113,12 +113,12 @@ bool MplayerProcess::parseAudioProperty(const QString &name, const QString &valu
 	if (name == "ID") {
 		int id = value.toInt();
 		if (md->audios.contains(id)) {
-			qDebug("parseAudioProperty: found audio track id %d", id);
+			qDebug("Proc::MplayerProcess::parseAudioProperty: found audio track id %d", id);
 			get_selected_audio_track = true;
 		} else {
 			md->audios.addID(id);
 			audio_tracks_changed = true;
-			qDebug("parseAudioProperty: added audio track id %d", id);
+			qDebug("Proc::MplayerProcess::parseAudioProperty: added audio track id %d", id);
 		}
 		return true;
 	}
@@ -567,6 +567,10 @@ void MplayerProcess::convertTitlesToChapters() {
 		Maps::TTitleData title = i.value();
 		md->chapters.addChapter(title.getID() - first_title_id, title.getName(), start);
 		start += title.getDuration();
+	}
+
+	if (md->chapters.count() > 0) {
+		md->chapters.setSelectedID(md->titles.getSelectedID() - first_title_id);
 	}
 
 	qDebug("Proc::MplayerProcess::convertTitlesToChapters: added %d chapers",

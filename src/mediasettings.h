@@ -80,6 +80,7 @@ public:
 #endif
 
 	int current_title_id;
+	bool playing_single_track;
 	int current_angle_id;
 
 #if PROGRAM_SWITCH

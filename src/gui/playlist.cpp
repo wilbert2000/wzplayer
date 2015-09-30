@@ -962,34 +962,27 @@ void TPlaylist::newMediaLoaded() {
 		return;
 	}
 
-	Maps::TTitleTracks* titles = &core->mdat.titles;
 	QString filename = core->mdat.filename;
 	QString current_filename;
 	if (current_item >= 0 && current_item < pl.count()) {
 		current_filename = pl[current_item].filename();
-	} else {
-		current_filename = "";
 	}
-	bool is_disc;
-	DiscData disc = DiscName::split(filename, &is_disc);
-
-	if (is_disc) {
-		if (titles->count() == count()) {
-			if (filename == current_filename) {
-				qDebug("Gui::TPlaylist::newMediaLoaded: new file is current item from disc");
-				return;
-			}
-			bool cur_is_disc;
-			DiscData cur_disc = DiscName::split(current_filename, &cur_is_disc);
-			if (cur_is_disc && cur_disc.protocol == disc.protocol
-				&& cur_disc.device == disc.device) {
-				qDebug("Gui::TPlaylist::newMediaLoaded: new file is from current disc");
-				return;
-			}
-		}
-	} else if (filename == current_filename) {
+	if (filename == current_filename) {
 		qDebug("Gui::TPlaylist::newMediaLoaded: new file is current item");
 		return;
+	}
+
+	Maps::TTitleTracks* titles = &core->mdat.titles;
+	bool is_disc;
+	DiscData disc = DiscName::split(filename, &is_disc);
+	if (is_disc && titles->count() == count()) {
+		bool cur_is_disc;
+		DiscData cur_disc = DiscName::split(current_filename, &cur_is_disc);
+		if (cur_is_disc && cur_disc.protocol == disc.protocol
+			&& cur_disc.device == disc.device) {
+			qDebug("Gui::TPlaylist::newMediaLoaded: new file is from current disc");
+			return;
+		}
 	}
 
 	// Create new playlist
@@ -1008,19 +1001,12 @@ void TPlaylist::newMediaLoaded() {
 				setCurrentItem(title.getID() - titles->firstID());
 			}
 		}
-	}
-
-	if (count() > 0) {
-		updateView();
 	} else {
 		// Add current file. getMediaInfo will fill in name and duration.
 		addItem(filename, "", 0);
 
-		// Add associated files to playlist. Don't go searching when there are
-		// titles to prevent interrupting access to a device misdiagnosed by
-		// Core::open() as TYPE_FILE.
-		if (core->mdat.selected_type == MediaData::TYPE_FILE
-			&& titles->count() == 0) {
+		// Add associated files to playlist
+		if (core->mdat.selected_type == MediaData::TYPE_FILE) {
 			qDebug() << "Gui::TPlaylist::newMediaLoaded: searching for files to add to playlist for"
 					 << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
@@ -1031,6 +1017,12 @@ void TPlaylist::newMediaLoaded() {
 			}
 		}
 	}
+
+	// Mark current item as played
+	if (current_item >= 0 && current_item < pl.count()) {
+		pl[current_item].setPlayed(true);
+	}
+	updateView();
 
 	qDebug() << "Gui::TPlaylist::newMediaLoaded: created new playlist with" << count()
 			 << "items for" << filename;
