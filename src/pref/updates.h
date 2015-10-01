@@ -16,35 +16,41 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SELECTCOLORBUTTON_H_
-#define _SELECTCOLORBUTTON_H_
+#ifndef PREF_UPDATES_H
+#define PREF_UPDATES_H
 
-#include <QPushButton>
+#include "ui_updates.h"
+#include "pref/widget.h"
 
-class SelectColorButton : public QPushButton
+class Preferences;
+
+namespace Pref {
+
+class TUpdates : public TWidget, public Ui::TUpdates
 {
 	Q_OBJECT
 
 public:
-	SelectColorButton ( QWidget * parent = 0 );
-	~SelectColorButton();
+	TUpdates( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	~TUpdates();
 
-	QColor color() { return _color;}
+	virtual QString sectionName();
+	virtual QPixmap sectionIcon();
 
-public slots:
-	void setColor(QColor c);
+	// Pass data to the dialog
+	void setData(Preferences * pref);
 
-private slots:
-	void selectColor();
+	// Apply changes
+	void getData(Preferences * pref);
 
-private:
-	QColor _color;
-
-	bool ignore_change_event;
-	
 protected:
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void createHelp();
+
+
+protected:
+	virtual void retranslateStrings();
 };
 
-#endif
+} // namespace Pref
 
+#endif // PREF_UPDATES_H

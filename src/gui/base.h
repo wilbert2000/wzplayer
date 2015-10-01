@@ -29,6 +29,7 @@
 #include "preferences.h"
 #include "core.h"
 #include "gui/playlist.h"
+#include "pref/dialog.h"
 
 #ifdef Q_OS_WIN
 #ifdef AVOID_SCREENSAVER
@@ -56,7 +57,6 @@ class FindSubtitlesWindow;
 class VideoPreview;
 #endif
 
-class PreferencesDialog;
 class Favorites;
 class TVList;
 class UpdateChecker;
@@ -382,7 +382,7 @@ protected:
 	// Menu File
 	TAction * openFileAct;
 	TAction * openDirectoryAct;
-	TAction * openTPlaylistAct;
+	TAction * openPlaylistAct;
 	TAction * openVCDAct;
 	TAction * openAudioCDAct;
 	TAction * openDVDAct;
@@ -751,7 +751,7 @@ protected:
 	LogWindow* log_window;
 	LogWindow* clhelp_window;
 
-	PreferencesDialog *pref_dialog;
+	Pref::TDialog *pref_dialog;
 	FilePropertiesDialog *file_dialog;
 	TPlaylist * playlist;
 	VideoEqualizer * video_equalizer;

@@ -16,35 +16,49 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SELECTCOLORBUTTON_H_
-#define _SELECTCOLORBUTTON_H_
+#ifndef PREF_NETWORK_H
+#define PREF_NETWORK_H
 
-#include <QPushButton>
+#include "ui_network.h"
+#include "pref/widget.h"
+#include "config.h"
 
-class SelectColorButton : public QPushButton
+class Preferences;
+
+namespace Pref {
+
+class TNetwork : public TWidget, public Ui::TNetwork
 {
 	Q_OBJECT
 
 public:
-	SelectColorButton ( QWidget * parent = 0 );
-	~SelectColorButton();
+	TNetwork( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	~TNetwork();
 
-	QColor color() { return _color;}
+	virtual QString sectionName();
+	virtual QPixmap sectionIcon();
 
-public slots:
-	void setColor(QColor c);
+	// Pass data to the dialog
+	void setData(Preferences * pref);
 
-private slots:
-	void selectColor();
+	// Apply changes
+	void getData(Preferences * pref);
 
-private:
-	QColor _color;
-
-	bool ignore_change_event;
-	
 protected:
-	virtual void changeEvent ( QEvent * event ) ;
-};
+	virtual void createHelp();
 
+	void setProxyType(int type);
+	int proxyType();
+
+#ifdef YOUTUBE_SUPPORT
+	void setYTQuality(int q);
+	int YTQuality();
 #endif
 
+protected:
+	virtual void retranslateStrings();
+};
+
+} // namespace Pref
+
+#endif // PREF_NETWORK_H

@@ -127,25 +127,25 @@ HEADERS += guiconfig.h \
 	actionseditor.h \
 	filechooser.h \
 	vdpauproperties.h \
-	preferencesdialog.h \
 	lineedit_with_icon.h \
 	mylineedit.h \
 	mycombobox.h \
 	tristatecombo.h \
 	languages.h \
 	selectcolorbutton.h \
-	prefwidget.h \
-	prefgeneral.h \
-	prefdrives.h \
-	prefinterface.h \
-	prefperformance.h \
-	prefinput.h \
-	prefsubtitles.h \
-	prefadvanced.h \
-	prefplaylist.h \
-	preftv.h \
-	prefupdates.h \
-	prefnetwork.h \
+	pref/dialog.h \
+	pref/widget.h \
+	pref/general.h \
+	pref/drives.h \
+	pref/interface.h \
+	pref/performance.h \
+	pref/input.h \
+	pref/subtitles.h \
+	pref/advanced.h \
+	pref/prefplaylist.h \
+	pref/tv.h \
+	pref/updates.h \
+	pref/network.h \
 	filepropertiesdialog.h \
 	multilineinputdialog.h \
 	verticaltext.h \
@@ -228,25 +228,25 @@ SOURCES	+= version.cpp \
 	actionseditor.cpp \
 	filechooser.cpp \
 	vdpauproperties.cpp \
-	preferencesdialog.cpp \
 	lineedit_with_icon.cpp \
 	mylineedit.cpp \
 	mycombobox.cpp \
 	tristatecombo.cpp \
 	languages.cpp \
 	selectcolorbutton.cpp \
-	prefwidget.cpp \
-	prefgeneral.cpp \
-	prefdrives.cpp \
-	prefinterface.cpp \
-	prefperformance.cpp \
-	prefinput.cpp \
-	prefsubtitles.cpp \
-	prefadvanced.cpp \
-	prefplaylist.cpp \
-	preftv.cpp \
-	prefupdates.cpp \
-	prefnetwork.cpp \
+	pref/dialog.cpp \
+	pref/widget.cpp \
+	pref/general.cpp \
+	pref/drives.cpp \
+	pref/interface.cpp \
+	pref/performance.cpp \
+	pref/input.cpp \
+	pref/subtitles.cpp \
+	pref/advanced.cpp \
+	pref/prefplaylist.cpp \
+	pref/tv.cpp \
+	pref/updates.cpp \
+	pref/network.cpp \
 	filepropertiesdialog.cpp \
 	multilineinputdialog.cpp \
 	verticaltext.cpp \
@@ -292,9 +292,9 @@ SOURCES	+= version.cpp \
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui inputurl.ui videoequalizer.ui vdpauproperties.ui \
-        preferencesdialog.ui prefgeneral.ui prefdrives.ui prefinterface.ui \
-        prefperformance.ui prefinput.ui prefsubtitles.ui prefadvanced.ui \
-        prefplaylist.ui preftv.ui prefupdates.ui prefnetwork.ui favoriteeditor.ui \
+        pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
+        pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \
+        pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui favoriteeditor.ui \
         about.ui inputmplayerversion.ui errordialog.ui timedialog.ui stereo3ddialog.ui \
         toolbareditor.ui multilineinputdialog.ui
 
@@ -501,9 +501,9 @@ win32 {
 	}
 	
 	contains( DEFINES, USE_ASSOCIATIONS ) {
-		HEADERS += prefassociations.h winfileassoc.h
-		SOURCES += prefassociations.cpp winfileassoc.cpp
-		FORMS += prefassociations.ui
+		HEADERS += pref/associations.h winfileassoc.h
+		SOURCES += pref/associations.cpp winfileassoc.cpp
+		FORMS += pref/associations.ui
 	}
 
 	contains(TEMPLATE,vcapp) {

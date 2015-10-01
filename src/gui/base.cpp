@@ -86,14 +86,14 @@
 
 #include "tvlist.h"
 
-#include "preferencesdialog.h"
+#include "pref/dialog.h"
 #ifndef NO_USE_INI_FILES
-#include "prefgeneral.h"
+#include "pref/general.h"
 #endif
-#include "prefinterface.h"
-#include "prefinput.h"
-#include "prefadvanced.h"
-#include "prefplaylist.h"
+#include "pref/interface.h"
+#include "pref/input.h"
+#include "pref/advanced.h"
+#include "pref/prefplaylist.h"
 
 #include "gui/action.h"
 #include "gui/actiongroup.h"
@@ -420,8 +420,8 @@ void TBase::createActions() {
 	connect( openDirectoryAct, SIGNAL(triggered()),
              this, SLOT(openDirectory()) );
 
-	openTPlaylistAct = new TAction( this, "open_playlist" );
-	connect( openTPlaylistAct, SIGNAL(triggered()),
+	openPlaylistAct = new TAction( this, "open_playlist" );
+	connect( openPlaylistAct, SIGNAL(triggered()),
              playlist, SLOT(load()) );
 
 	openVCDAct = new TAction( this, "open_vcd" );
@@ -1601,7 +1601,7 @@ void TBase::retranslateStrings() {
 	// Menu File
 	openFileAct->change( Images::icon("open"), tr("&File...") );
 	openDirectoryAct->change( Images::icon("openfolder"), tr("D&irectory...") );
-	openTPlaylistAct->change( Images::icon("open_playlist"), tr("&TPlaylist...") );
+	openPlaylistAct->change( Images::icon("open_playlist"), tr("&TPlaylist...") );
 	openVCDAct->change( Images::icon("vcd"), tr("V&CD") );
 	openAudioCDAct->change( Images::icon("cdda"), tr("&Audio CD") );
 	openDVDAct->change( Images::icon("dvd"), tr("&DVD from drive") );
@@ -2309,7 +2309,7 @@ void TBase::createPanel() {
 
 void TBase::createPreferencesDialog() {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	pref_dialog = new PreferencesDialog(this);
+	pref_dialog = new Pref::TDialog(this);
 	pref_dialog->setModal(false);
 	/* pref_dialog->mod_input()->setActionsList( actions_list ); */
 	connect( pref_dialog, SIGNAL(applied()),
@@ -2352,7 +2352,7 @@ void TBase::createMenus() {
 	openMenu->addMenu( recentfiles_menu );
 	openMenu->addMenu(favorites);
 	openMenu->addAction(openDirectoryAct);
-	openMenu->addAction(openTPlaylistAct);
+	openMenu->addAction(openPlaylistAct);
 
 	// Disc submenu
 	disc_menu = new QMenu(this);
@@ -2851,7 +2851,7 @@ void TBase::showPreferencesDialog() {
 #endif
 
 	// Set playlist preferences
-	PrefPlaylist * pl = pref_dialog->mod_playlist();
+	Pref::TPrefPlaylist * pl = pref_dialog->mod_playlist();
 	pl->setDirectoryRecursion(playlist->directoryRecursion());
 	pl->setAutoGetInfo(playlist->autoGetInfo());
 	pl->setSavePlaylistOnExit(playlist->savePlaylistOnExit());
@@ -2884,13 +2884,13 @@ void TBase::applyNewPreferences() {
 	}
 
 #ifndef NO_USE_INI_FILES
-	PrefGeneral *_general = pref_dialog->mod_general();
+	Pref::TGeneral *_general = pref_dialog->mod_general();
 	if (_general->fileSettingsMethodChanged()) {
 		core->changeFileSettingsMethod(pref->file_settings_method);
 	}
 #endif
 
-	PrefInterface *_interface = pref_dialog->mod_interface();
+	Pref::TInterface *_interface = pref_dialog->mod_interface();
 	if (_interface->recentsChanged()) {
 		updateRecents();
 	}
@@ -2911,7 +2911,7 @@ void TBase::applyNewPreferences() {
 		panel->show();
 	}
 
-	PrefAdvanced *advanced = pref_dialog->mod_advanced();
+	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();
 	if (advanced->repaintVideoBackgroundChanged()) {
 		mplayerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
 	}
@@ -2936,7 +2936,7 @@ void TBase::applyNewPreferences() {
 	Global::log->setFilter(pref->log_filter);
 
 	// Update playlist preferences
-	PrefPlaylist * pl = pref_dialog->mod_playlist();
+	Pref::TPrefPlaylist * pl = pref_dialog->mod_playlist();
 	playlist->setDirectoryRecursion(pl->directoryRecursion());
 	playlist->setAutoGetInfo(pl->autoGetInfo());
 	playlist->setSavePlaylistOnExit(pl->savePlaylistOnExit());
@@ -3715,7 +3715,7 @@ void TBase::configureDiscDevices() {
                "so you can do it."), QMessageBox::Ok);
 	
 	showPreferencesDialog();
-	pref_dialog->showSection( PreferencesDialog::Drives );
+	pref_dialog->showSection( Pref::TDialog::Drives );
 }
 
 void TBase::openVCD() {

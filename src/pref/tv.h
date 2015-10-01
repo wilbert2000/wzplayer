@@ -16,35 +16,47 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SELECTCOLORBUTTON_H_
-#define _SELECTCOLORBUTTON_H_
+#ifndef _PREF_TV_H_
+#define _PREF_TV_H_
 
-#include <QPushButton>
+#include "ui_tv.h"
+#include "pref/widget.h"
 
-class SelectColorButton : public QPushButton
+class Preferences;
+
+namespace Pref {
+
+class TTV : public TWidget, public Ui::TTV
 {
 	Q_OBJECT
 
 public:
-	SelectColorButton ( QWidget * parent = 0 );
-	~SelectColorButton();
+	TTV( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	~TTV();
 
-	QColor color() { return _color;}
+	virtual QString sectionName();
+	virtual QPixmap sectionIcon();
 
-public slots:
-	void setColor(QColor c);
+    // Pass data to the dialog
+    void setData(Preferences * pref);
 
-private slots:
-	void selectColor();
+    // Apply changes
+    void getData(Preferences * pref);
 
-private:
-	QColor _color;
-
-	bool ignore_change_event;
-	
 protected:
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void createHelp();
+
+	void setInitialDeinterlace(int ID);
+	int initialDeinterlace();
+
+	void setRescan(bool b);
+	bool rescan();
+
+
+protected:
+	virtual void retranslateStrings();
 };
 
-#endif
+} // namespace Pref
 
+#endif // _PREF_TV_H_
