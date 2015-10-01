@@ -667,7 +667,7 @@ void TDefault::loadConfig(const QString &group) {
 	if (toolbar_version >= TOOLBAR_VERSION) {
 		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
-		qWarning("TDefault::loadConfig: toolbar too old, loading default one");
+		qWarning("Gui::TDefault::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );

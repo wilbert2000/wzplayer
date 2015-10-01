@@ -273,7 +273,7 @@ void TInterface::getData(Preferences * pref) {
 	if (pref->language != language()) {
 		pref->language = language();
 		language_changed = true;
-		qDebug("TInterface::getData: chosen language: '%s'", pref->language.toUtf8().data());
+		qDebug("Pref::TInterface::getData: chosen language: '%s'", pref->language.toUtf8().data());
 	}
 
 	if (pref->iconset != iconSet()) {

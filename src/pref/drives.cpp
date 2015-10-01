@@ -176,7 +176,7 @@ bool TDrives::useDVDNav() {
 }
 
 void TDrives::on_check_drives_button_clicked() {
-	qDebug("TDrives::on_check_drives_button_clicked");
+	qDebug("Pref::TDrives::on_check_drives_button_clicked");
 	updateDriveCombos(true);
 }
 

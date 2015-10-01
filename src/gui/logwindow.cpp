@@ -127,7 +127,7 @@ void TLogWindow::on_saveButton_clicked() {
 	        file.close();
 	    } else {
 			// Error opening file
-			qDebug("TLogWindow::save: error saving file");
+			qDebug("Gui::TLogWindow::save: error saving file");
 			QMessageBox::warning ( this, 
                                    tr("Error saving file"), 
                                    tr("The log couldn't be saved"),

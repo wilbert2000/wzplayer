@@ -102,7 +102,7 @@ TDialog::~TDialog()
 }
 
 void TDialog::showSection(Section s) {
-	qDebug("TDialog::showSection: %d", s);
+	qDebug("Pref::TDialog::showSection: %d", s);
 
 	sections->setCurrentRow(s);
 }

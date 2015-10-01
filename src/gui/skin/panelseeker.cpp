@@ -360,7 +360,7 @@ void TPanelSeeker::wheelEvent(QWheelEvent *e)
 }
 
 void TPanelTimeSeeker::wheelEvent(QWheelEvent *e) {
-	qDebug("TPanelTimeSeeker::wheelEvent: delta: %d", e->delta());
+	qDebug("Gui::Skin::TPanelTimeSeeker::wheelEvent: delta: %d", e->delta());
 	e->accept();
 
 	if (e->orientation() == Qt::Vertical) {
@@ -369,7 +369,7 @@ void TPanelTimeSeeker::wheelEvent(QWheelEvent *e) {
 		else
 			emit wheelDown();
 	} else {
-		qDebug("TPanelTimeSeeker::wheelEvent: horizontal event received, doing nothing");
+		qDebug("Gui::Skin::TPanelTimeSeeker::wheelEvent: horizontal event received, doing nothing");
 	}
 }
 

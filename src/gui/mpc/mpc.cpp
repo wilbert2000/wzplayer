@@ -139,7 +139,7 @@ void TMpc::createFloatingControl() {
 }
 
 void TMpc::retranslateStrings() {
-	qDebug("TMpc::retranslateStrings");
+	qDebug("Gui::TMpc::retranslateStrings");
 
 	TBasePlus::retranslateStrings();
 

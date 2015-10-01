@@ -519,7 +519,7 @@ QString TGeneral::VO() {
 		/*
 		if (vo.isEmpty()) {
 			vo = vo_combo->itemData(0).toString();
-			qDebug("TGeneral::VO: user defined vo is empty, using %s", vo.toUtf8().constData());
+			qDebug("Pref::TGeneral::VO: user defined vo is empty, using %s", vo.toUtf8().constData());
 		}
 		*/
 	}
@@ -533,7 +533,7 @@ QString TGeneral::AO() {
 		/*
 		if (ao.isEmpty()) {
 			ao = ao_combo->itemData(0).toString();
-			qDebug("TGeneral::AO: user defined ao is empty, using %s", ao.toUtf8().constData());
+			qDebug("Pref::TGeneral::AO: user defined ao is empty, using %s", ao.toUtf8().constData());
 		}
 		*/
 	}

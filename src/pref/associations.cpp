@@ -93,7 +93,7 @@ void TAssociations::selectNoneClicked(bool)
 
 void TAssociations::listItemClicked(QListWidgetItem* item)
 {
-	qDebug("TAssociations::listItemClicked");
+	qDebug("Pref::TAssociations::listItemClicked");
 	
 	if (!(item->flags() & Qt::ItemIsEnabled))
 		return; 
