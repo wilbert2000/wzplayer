@@ -210,7 +210,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	}
 #endif
 
-	log_window = new LogWindow(0);
+	log_window = new TLogWindow(0);
 
 	createActions();
 	createMenus();
@@ -3864,7 +3864,7 @@ void TBase::helpFAQ() {
 
 void TBase::helpCLOptions() {
 	if (clhelp_window == 0) {
-		clhelp_window = new LogWindow(this);
+		clhelp_window = new TLogWindow(this);
 	}
 	clhelp_window->setWindowTitle( tr("SMPlayer command line options") );
 	clhelp_window->setHtml(CLHelp::help(true));

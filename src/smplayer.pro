@@ -120,7 +120,6 @@ HEADERS += guiconfig.h \
 	recents.h \
 	urlhistory.h \
 	core.h \
-	logwindow.h \
 	infofile.h \
 	seekwidget.h \
 	shortcutgetter.h \
@@ -177,7 +176,8 @@ HEADERS += guiconfig.h \
 	gui/baseplus.h \
     gui/default.h \
     gui/mini.h \
-	toolbareditor.h \
+    gui/logwindow.h \
+    toolbareditor.h \
 	clhelp.h \
 	cleanconfig.h \
 	smplayer.h \
@@ -221,7 +221,6 @@ SOURCES	+= version.cpp \
 	recents.cpp \
 	urlhistory.cpp \
 	core.cpp \
-	logwindow.cpp \
 	infofile.cpp \
 	seekwidget.cpp \
 	shortcutgetter.cpp \
@@ -278,7 +277,8 @@ SOURCES	+= version.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
     gui/mini.cpp \
-	toolbareditor.cpp \
+    gui/logwindow.cpp \
+    toolbareditor.cpp \
 	clhelp.cpp \
 	cleanconfig.cpp \
 	smplayer.cpp \
@@ -290,7 +290,7 @@ SOURCES	+= version.cpp \
     maps/chapters.cpp \
     log.cpp
 
-FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
+FORMS = inputdvddirectory.ui gui/logwindow.ui filepropertiesdialog.ui \
         eqslider.ui seekwidget.ui gui/inputurl.ui videoequalizer.ui pref/vdpauproperties.ui \
         pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
         pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \

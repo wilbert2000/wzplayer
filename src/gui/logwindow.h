@@ -16,20 +16,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _LOGWINDOW_H_
-#define _LOGWINDOW_H_
+#ifndef _GUI_LOGWINDOW_H_
+#define _GUI_LOGWINDOW_H_
 
-#include "ui_logwindowbase.h"
+#include "ui_logwindow.h"
 
 class QTextEdit;
 
-class LogWindow : public QWidget, public Ui::LogWindowBase
+namespace Gui {
+
+class TLogWindow : public QWidget, public Ui::TLogWindow
 {
 	Q_OBJECT
 
 public:
-	LogWindow(QWidget* parent = 0);
-	~LogWindow();
+	TLogWindow(QWidget* parent = 0);
+	~TLogWindow();
 
 	void setText(QString log);
 	QString text();
@@ -53,5 +55,6 @@ protected slots:
     void on_saveButton_clicked();
 };
 
+} // namespace Gui
 
-#endif // _LOGWINDOW_H_
+#endif // _GUI_LOGWINDOW_H_

@@ -3,7 +3,7 @@
 #include <QTime>
 #include "paths.h"
 #include "global.h"
-#include "logwindow.h"
+#include "gui/logwindow.h"
 
 
 const int LOG_BUF_LENGTH = 32768;
@@ -54,7 +54,7 @@ void TLog::setLogFileEnabled(bool log_file_enabled) {
 	}
 }
 
-void TLog::setLogWindow(LogWindow *window) {
+void TLog::setLogWindow(Gui::TLogWindow *window) {
 
 	log_window = window;
 	if (log_window) {

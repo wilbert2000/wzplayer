@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "logwindow.h"
+#include "gui/logwindow.h"
 #include <QMessageBox>
 #include <QFileInfo>
 #include <QFile>
@@ -28,7 +28,9 @@
 #include "images.h"
 #include "filedialog.h"
 
-LogWindow::LogWindow( QWidget* parent )
+namespace Gui {
+
+TLogWindow::TLogWindow( QWidget* parent )
 	: QWidget(parent, Qt::Window ) {
 
 	setupUi(this);
@@ -36,12 +38,12 @@ LogWindow::LogWindow( QWidget* parent )
 	retranslateStrings();
 }
 
-LogWindow::~LogWindow() {
+TLogWindow::~TLogWindow() {
 
 	Global::log->setLogWindow(0);
 }
 
-void LogWindow::retranslateStrings() {
+void TLogWindow::retranslateStrings() {
 	retranslateUi(this);
 
 	saveButton->setText("");
@@ -53,53 +55,53 @@ void LogWindow::retranslateStrings() {
 	setWindowIcon( Images::icon("logo") );
 }
 
-void LogWindow::showEvent(QShowEvent*) {
+void TLogWindow::showEvent(QShowEvent*) {
 
 	Global::log->setLogWindow(this);
 }
 
-void LogWindow::hideEvent(QShowEvent*) {
+void TLogWindow::hideEvent(QShowEvent*) {
 
 	Global::log->setLogWindow(0);
 	clear();
 }
 
-void LogWindow::setText(QString log) {
+void TLogWindow::setText(QString log) {
 	browser->setPlainText(log);
 }
 
-QString LogWindow::text() {
+QString TLogWindow::text() {
 	return browser->toPlainText();
 }
 
-void LogWindow::setHtml(QString text) {
+void TLogWindow::setHtml(QString text) {
 	browser->setHtml(text);
 }
 
-QString LogWindow::html() {
+QString TLogWindow::html() {
 	return browser->toHtml();
 }
 
-void LogWindow::clear() {
+void TLogWindow::clear() {
 	browser->clear();
 }
 
-void LogWindow::appendText(QString text) {
+void TLogWindow::appendText(QString text) {
 	browser->moveCursor(QTextCursor::End);
 	browser->insertPlainText(text);
 }
 
-void LogWindow::appendHtml(QString text) {
+void TLogWindow::appendHtml(QString text) {
 	browser->moveCursor(QTextCursor::End);
 	browser->insertHtml(text);
 }
 
-void LogWindow::on_copyButton_clicked() {
+void TLogWindow::on_copyButton_clicked() {
 	browser->selectAll();
 	browser->copy();
 }
 
-void LogWindow::on_saveButton_clicked() {
+void TLogWindow::on_saveButton_clicked() {
 	QString s = MyFileDialog::getSaveFileName(
                     this, tr("Choose a filename to save under"), 
                     "", tr("Logs") +" (*.log *.txt)" );
@@ -125,7 +127,7 @@ void LogWindow::on_saveButton_clicked() {
 	        file.close();
 	    } else {
 			// Error opening file
-			qDebug("LogWindow::save: error saving file");
+			qDebug("TLogWindow::save: error saving file");
 			QMessageBox::warning ( this, 
                                    tr("Error saving file"), 
                                    tr("The log couldn't be saved"),
@@ -138,12 +140,14 @@ void LogWindow::on_saveButton_clicked() {
 }
 
 // Language change stuff
-void LogWindow::changeEvent(QEvent *e) {
+void TLogWindow::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
 		QWidget::changeEvent(e);
 	}
 }
+
+} // namespace Gui
 
 #include "moc_logwindow.cpp"

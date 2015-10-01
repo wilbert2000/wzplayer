@@ -9,7 +9,7 @@
 #include <QMessageLogContext>
 #endif
 
-class LogWindow;
+#include "gui/logwindow.h"
 
 class TLog {
 public:
@@ -21,7 +21,7 @@ public:
 	void setLogFileEnabled(bool log_file_enabled);
 	void setFilter(const QString& filter_str) { filter = QRegExp(filter_str); }
 	bool passesFilter(const QString& msg) { return filter.indexIn(msg) >= 0; }
-	void setLogWindow(LogWindow* window);
+	void setLogWindow(Gui::TLogWindow* window);
 
 	void logLine(QtMsgType type, QString line);
 	QString getLogLines() { return lines_back + lines; }
@@ -32,7 +32,7 @@ private:
 	QString lines;
 	QFile file;
 	QRegExp filter;
-	LogWindow* log_window;
+	Gui::TLogWindow* log_window;
 
 #if QT_VERSION >= 0x050000
 	static void messageHandler(QtMsgType type, const QMessageLogContext&, const QString& msg);

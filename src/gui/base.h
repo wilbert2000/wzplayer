@@ -29,6 +29,7 @@
 #include "preferences.h"
 #include "core.h"
 #include "gui/playlist.h"
+#include "gui/logwindow.h"
 #include "pref/dialog.h"
 
 #ifdef Q_OS_WIN
@@ -42,7 +43,6 @@
 
 class QWidget;
 class QMenu;
-class LogWindow;
 class MplayerWindow;
 
 class QLabel;
@@ -748,8 +748,8 @@ protected:
 	QMenu * popup;
 	QMenu * recentfiles_menu;
 
-	LogWindow* log_window;
-	LogWindow* clhelp_window;
+	TLogWindow* log_window;
+	TLogWindow* clhelp_window;
 
 	Pref::TDialog *pref_dialog;
 	FilePropertiesDialog *file_dialog;
