@@ -16,9 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "videoequalizer.h"
+#include "gui/videoequalizer.h"
 
-VideoEqualizer::VideoEqualizer( QWidget* parent, Qt::WindowFlags f ) 
+namespace Gui {
+
+TVideoEqualizer::TVideoEqualizer( QWidget* parent, Qt::WindowFlags f ) 
 	: QWidget(parent, f)
 {
 	setupUi(this);
@@ -64,10 +66,10 @@ VideoEqualizer::VideoEqualizer( QWidget* parent, Qt::WindowFlags f )
 	adjustSize();
 }
 
-VideoEqualizer::~VideoEqualizer() {
+TVideoEqualizer::~TVideoEqualizer() {
 }
 
-void VideoEqualizer::reset() {
+void TVideoEqualizer::reset() {
 	setContrast(0);
 	setBrightness(0);
 	setHue(0);
@@ -75,25 +77,25 @@ void VideoEqualizer::reset() {
 	setGamma(0);
 }
 
-void VideoEqualizer::on_reset_button_clicked() {
-	qDebug("VideoEqualizer::on_reset_button_clicked");
+void TVideoEqualizer::on_reset_button_clicked() {
+	qDebug("TVideoEqualizer::on_reset_button_clicked");
 	reset();
 }
 
-void VideoEqualizer::on_bysoftware_check_stateChanged(int state) {
-	qDebug("VideoEqualizer::on_bysoftware_check_stateChanged");
+void TVideoEqualizer::on_bysoftware_check_stateChanged(int state) {
+	qDebug("TVideoEqualizer::on_bysoftware_check_stateChanged");
 	emit bySoftwareChanged(state == Qt::Checked);
 }
 
-void VideoEqualizer::hideEvent( QHideEvent * ) {
+void TVideoEqualizer::hideEvent( QHideEvent * ) {
 	emit visibilityChanged();
 }
 
-void VideoEqualizer::showEvent( QShowEvent * ) {
+void TVideoEqualizer::showEvent( QShowEvent * ) {
 	emit visibilityChanged();
 }
 
-void VideoEqualizer::retranslateStrings() {
+void TVideoEqualizer::retranslateStrings() {
 	retranslateUi(this);
 
 	// What's this help:
@@ -104,12 +106,14 @@ void VideoEqualizer::retranslateStrings() {
 }
 
 // Language change stuff
-void VideoEqualizer::changeEvent(QEvent *e) {
+void TVideoEqualizer::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
 		QWidget::changeEvent(e);
 	}
 }
+
+} // namespace Gui
 
 #include "moc_videoequalizer.cpp"

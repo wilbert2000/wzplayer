@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>VideoEqualizer</class>
- <widget class="QWidget" name="VideoEqualizer">
+ <class>Gui::TVideoEqualizer</class>
+ <widget class="QWidget" name="Gui::TVideoEqualizer">
   <property name="geometry">
    <rect>
     <x>0</x>

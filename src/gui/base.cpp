@@ -2227,7 +2227,7 @@ void TBase::createMplayerWindow() {
 
 void TBase::createVideoEqualizer() {
 	// Equalizer
-	video_equalizer = new VideoEqualizer(this);
+	video_equalizer = new TVideoEqualizer(this);
 	connect( video_equalizer, SIGNAL(contrastChanged(int)), 
              core, SLOT(setContrast(int)) );
 	connect( video_equalizer, SIGNAL(brightnessChanged(int)), 
@@ -2249,7 +2249,7 @@ void TBase::createVideoEqualizer() {
 
 void TBase::createAudioEqualizer() {
 	// Audio Equalizer
-	audio_equalizer = new AudioEqualizer(this);
+	audio_equalizer = new TAudioEqualizer(this);
 
 	connect( audio_equalizer->eq[0], SIGNAL(valueChanged(int)), 
              core, SLOT(setAudioEq0(int)) );

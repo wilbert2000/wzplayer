@@ -17,8 +17,8 @@
 */
 
 
-#ifndef _AUDIOOEQUALIZER_H_
-#define _AUDIOOEQUALIZER_H_
+#ifndef _GUI_AUDIOOEQUALIZER_H_
+#define _GUI_AUDIOOEQUALIZER_H_
 
 #include <QWidget>
 #include <QHideEvent>
@@ -30,7 +30,9 @@ class QComboBox;
 class QPushButton;
 class EqSlider;
 
-class AudioEqualizer : public QWidget
+namespace Gui {
+
+class TAudioEqualizer : public QWidget
 {
 	Q_OBJECT
 
@@ -39,8 +41,8 @@ public:
                   FullbassTreble = 8, Fulltreble = 9, Headphones = 10, LargeHall = 11, Live = 12,
                   Party = 13, Reggae = 14, Ska = 15, Soft = 16, SoftRock = 17, Techno = 18 };
 
-	AudioEqualizer( QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog );
-	~AudioEqualizer();
+	TAudioEqualizer( QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog );
+	~TAudioEqualizer();
 
 	EqSlider * eq[10];
 
@@ -79,5 +81,6 @@ protected:
 	QMap<int,AudioEqualizerList> preset_list;
 };
 
+} // namespace Gui
 
-#endif
+#endif // _GUI_AUDIOOEQUALIZER_H_

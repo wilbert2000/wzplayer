@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "audioequalizer.h"
+#include "gui/audioequalizer.h"
 #include "eqslider.h"
 #include "images.h"
 #include "preferences.h"
@@ -29,7 +29,9 @@
 
 using namespace Global;
 
-AudioEqualizer::AudioEqualizer( QWidget* parent, Qt::WindowFlags f)
+namespace Gui {
+
+TAudioEqualizer::TAudioEqualizer( QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 {
 	createPresets();
@@ -78,10 +80,10 @@ AudioEqualizer::AudioEqualizer( QWidget* parent, Qt::WindowFlags f)
 	//setFixedSize( sizeHint() );
 }
 
-AudioEqualizer::~AudioEqualizer() {
+TAudioEqualizer::~TAudioEqualizer() {
 }
 
-void AudioEqualizer::createPresets() {
+void TAudioEqualizer::createPresets() {
 	preset_list.clear();
 	AudioEqualizerList preset;
 
@@ -177,7 +179,7 @@ void AudioEqualizer::createPresets() {
 }
 
 
-void AudioEqualizer::retranslateStrings() {
+void TAudioEqualizer::retranslateStrings() {
 	setWindowTitle( tr("Audio Equalizer") );
 	setWindowIcon( Images::icon("logo") );
 
@@ -229,12 +231,12 @@ void AudioEqualizer::retranslateStrings() {
 
 }
 
-void AudioEqualizer::reset() {
+void TAudioEqualizer::reset() {
 	setValues(preset_list[Flat]);
 	presets_combo->setCurrentIndex(presets_combo->findData(Flat));
 }
 
-void AudioEqualizer::setDefaults() {
+void TAudioEqualizer::setDefaults() {
 	AudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {
 		l << eq[n]->value();
@@ -246,19 +248,19 @@ void AudioEqualizer::setDefaults() {
                                 "used as default.") );
 }
 
-void AudioEqualizer::setEqualizer(AudioEqualizerList l) {
+void TAudioEqualizer::setEqualizer(AudioEqualizerList l) {
 	int p = findPreset(l);
 	int index = presets_combo->findData(p);
 	if (index != 1) {
 		presets_combo->setCurrentIndex(index);
 	} else {
-		qWarning("AudioEqualizer::setEqualizer: preset not found");
+		qWarning("TAudioEqualizer::setEqualizer: preset not found");
 	}
 	setValues(l);
 }
 
-void AudioEqualizer::setValues(AudioEqualizerList l) {
-	qDebug("AudioEqualizer::setValues");
+void TAudioEqualizer::setValues(AudioEqualizerList l) {
+	qDebug("TAudioEqualizer::setValues");
 
 	for (int n = 0; n < 10; n++) {
 		eq[n]->blockSignals(true);
@@ -269,15 +271,15 @@ void AudioEqualizer::setValues(AudioEqualizerList l) {
 	emit valuesChanged(l);
 }
 
-void AudioEqualizer::presetChanged(int index) {
-	qDebug("AudioEqualizer::presetChanged: %d", index);
+void TAudioEqualizer::presetChanged(int index) {
+	qDebug("TAudioEqualizer::presetChanged: %d", index);
 	int p = presets_combo->itemData(index).toInt();
 	if (p != User_defined) {
 		setValues(preset_list[p]);
 	}
 }
 
-int AudioEqualizer::findPreset(AudioEqualizerList l) {
+int TAudioEqualizer::findPreset(AudioEqualizerList l) {
 	QMap<int,AudioEqualizerList>::iterator i;
 	for (i = preset_list.begin(); i != preset_list.end(); ++i) {
 		if (l == i.value()) return i.key();
@@ -285,7 +287,7 @@ int AudioEqualizer::findPreset(AudioEqualizerList l) {
 	return User_defined;
 }
 
-void AudioEqualizer::applyButtonClicked() {
+void TAudioEqualizer::applyButtonClicked() {
 	AudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {
 		l << eq[n]->value();
@@ -293,8 +295,8 @@ void AudioEqualizer::applyButtonClicked() {
 	emit applyClicked( l );
 }
 
-void AudioEqualizer::updatePresetCombo() {
-	qDebug("AudioEqualizer::updatePresetCombo");
+void TAudioEqualizer::updatePresetCombo() {
+	qDebug("TAudioEqualizer::updatePresetCombo");
 
 	AudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {
@@ -308,21 +310,23 @@ void AudioEqualizer::updatePresetCombo() {
 	}
 }
 
-void AudioEqualizer::hideEvent( QHideEvent * ) {
+void TAudioEqualizer::hideEvent( QHideEvent * ) {
 	emit visibilityChanged();
 }
 
-void AudioEqualizer::showEvent( QShowEvent * ) {
+void TAudioEqualizer::showEvent( QShowEvent * ) {
 	emit visibilityChanged();
 }
 
 // Language change stuff
-void AudioEqualizer::changeEvent(QEvent *e) {
+void TAudioEqualizer::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
 		QWidget::changeEvent(e);
 	}
 }
+
+} // namespace Gui
 
 #include "moc_audioequalizer.cpp"
