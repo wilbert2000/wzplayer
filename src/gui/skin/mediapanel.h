@@ -66,7 +66,7 @@ private slots:
     void timerEvent(QTimerEvent *);
 };
 
-class TMediaPanel : public QWidget
+class TMediaPanel : public QWidget, public Ui::TMediaPanel
 {
     Q_OBJECT
     Q_PROPERTY(QPixmap bgLeft READ bgLeftPix WRITE setBgLeftPix)
@@ -105,7 +105,6 @@ public slots:
 	void setScrollingEnabled(bool b);
 
 private:
-	Ui::TMediaPanelClass ui;
     QGridLayout * layout;
     QPixmap leftBackground;
     QPixmap centerBackground;

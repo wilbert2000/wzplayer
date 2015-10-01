@@ -2,8 +2,8 @@
  <author/>
  <comment/>
  <exportmacro/>
- <class>TMediaBarPanel</class>
- <widget class="QWidget" name="TMediaBarPanel">
+ <class>Gui::Skin::TMediaBarPanel</class>
+ <widget class="QWidget" name="Gui::Skin::TMediaBarPanel">
   <property name="geometry">
    <rect>
     <x>0</x>

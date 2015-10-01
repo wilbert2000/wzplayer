@@ -42,7 +42,7 @@ namespace Skin {
 TMediaPanel::TMediaPanel(QWidget *parent)
     : QWidget(parent), duration(0)
 {
-	ui.setupUi(this);
+	setupUi(this);
 	setAttribute(Qt::WA_StyledBackground, true);
 	setMinimumWidth(270);
 

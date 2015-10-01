@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>TMediaPanelClass</class>
- <widget class="QWidget" name="TMediaPanelClass" >
+ <class>Gui::Skin::TMediaPanel</class>
+ <widget class="QWidget" name="Gui::Skin::TMediaPanel" >
   <property name="geometry" >
    <rect>
     <x>0</x>

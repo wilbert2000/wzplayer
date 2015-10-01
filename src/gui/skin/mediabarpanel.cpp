@@ -31,9 +31,9 @@ namespace Skin {
 
 
 TMediaBarPanel::TMediaBarPanel(QWidget *parent) :
-	QWidget(parent),ui(new Ui::TMediaBarPanel),core(0)
+	QWidget(parent), core(0)
 {
-    ui->setupUi(this);
+	setupUi(this);
     setAttribute(Qt::WA_StyledBackground, true);
     setFixedHeight(53);
     QHBoxLayout* layout = new QHBoxLayout;
@@ -56,9 +56,7 @@ TMediaBarPanel::TMediaBarPanel(QWidget *parent) :
 	connect(mediaPanel, SIGNAL(seekerChanged(int)), this, SIGNAL(seekerChanged(int)));
 }
 
-TMediaBarPanel::~TMediaBarPanel()
-{
-    delete ui;
+TMediaBarPanel::~TMediaBarPanel() {
 }
 
 void TMediaBarPanel::changeEvent(QEvent *e)
@@ -66,7 +64,7 @@ void TMediaBarPanel::changeEvent(QEvent *e)
     QWidget::changeEvent(e);
     switch (e->type()) {
     case QEvent::LanguageChange:
-        ui->retranslateUi(this);
+		retranslateUi(this);
         break;
     default:
         break;

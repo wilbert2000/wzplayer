@@ -36,7 +36,7 @@ class TAction;
 namespace Gui {
 namespace Skin {
 
-class TMediaBarPanel : public QWidget {
+class TMediaBarPanel : public QWidget, public Ui::TMediaBarPanel {
     Q_OBJECT
 
 public:
@@ -53,7 +53,6 @@ protected:
     void changeEvent(QEvent *e);
 
 private:
-	Ui::TMediaBarPanel *ui;
 	TPlayControl* playControlPanel;
 	TMediaPanel* mediaPanel;
     TVolumeControlPanel* volumeControlPanel;
