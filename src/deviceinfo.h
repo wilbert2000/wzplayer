@@ -26,15 +26,15 @@
 class DeviceData {
 
 public:
-	DeviceData() {};
-	DeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; };
-	~DeviceData() {};
+	DeviceData() {}
+	DeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; }
+	~DeviceData() {}
 
-	void setID(QVariant ID) { _id = ID; };
-	void setDesc(QString desc) { _desc = desc; };
+	void setID(QVariant ID) { _id = ID; }
+	void setDesc(QString desc) { _desc = desc; }
 
-	QVariant ID() { return _id; };
-	QString desc() { return _desc; };
+	QVariant ID() { return _id; }
+	QString desc() { return _desc; }
 
 private:
 	QVariant _id;

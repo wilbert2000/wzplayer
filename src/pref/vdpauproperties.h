@@ -16,20 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _VDPAUPROPERTIES_H_
-#define _VDPAUPROPERTIES_H_
-
-#include "ui_vdpauproperties.h"
+#ifndef _PREF_VDPAUPROPERTIES_H_
+#define _PREF_VDPAUPROPERTIES_H_
 
 #include <QDialog>
+#include "ui_vdpauproperties.h"
 
-class VDPAUProperties : public QDialog, public Ui::VDPAUProperties
-{
+namespace Pref {
+
+class TVDPAUProperties : public QDialog, public Ui::TVDPAUProperties {
 	Q_OBJECT
 
 public:
-	VDPAUProperties( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~VDPAUProperties();
+	TVDPAUProperties( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	~TVDPAUProperties();
 
 	void setffh264vdpau(bool b);
 	void setffmpeg12vdpau(bool b);
@@ -46,8 +46,8 @@ public:
 	bool ffodivxvdpau();
 
 	bool disableFilters();
-
-	//virtual QSize sizeHint () const;
 };
 
-#endif
+} // namespace Pref
+
+#endif // _PREF_VDPAUPROPERTIES_H_

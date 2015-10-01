@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TDrives</class>
- <widget class="QWidget" name="TDrives">
+ <class>Pref::TDrives</class>
+ <widget class="QWidget" name="Pref::TDrives">
   <property name="geometry">
    <rect>
     <x>0</x>

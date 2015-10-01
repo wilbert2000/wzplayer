@@ -19,6 +19,7 @@
 #ifndef _PREF_GENERAL_H_
 #define _PREF_GENERAL_H_
 
+#include <QObject>
 #include "ui_general.h"
 #include "pref/widget.h"
 #include "inforeader.h"
@@ -38,8 +39,7 @@
 
 namespace Pref {
 
-class TGeneral : public TWidget, public Ui::TGeneral
-{
+class TGeneral : public TWidget, public Ui::TGeneral {
 	Q_OBJECT
 
 public:

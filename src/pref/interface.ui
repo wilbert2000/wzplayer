@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TInterface</class>
- <widget class="QWidget" name="TInterface">
+ <class>Pref::TInterface</class>
+ <widget class="QWidget" name="Pref::TInterface">
   <property name="geometry">
    <rect>
     <x>0</x>

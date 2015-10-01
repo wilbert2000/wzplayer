@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TPrefPlaylist</class>
- <widget class="QWidget" name="TPrefPlaylist">
+ <class>Pref::TPrefPlaylist</class>
+ <widget class="QWidget" name="Pref::TPrefPlaylist">
   <property name="geometry">
    <rect>
     <x>0</x>

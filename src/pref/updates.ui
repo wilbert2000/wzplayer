@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TUpdates</class>
- <widget class="QWidget" name="TUpdates">
+ <class>Pref::TUpdates</class>
+ <widget class="QWidget" name="Pref::TUpdates">
   <property name="geometry">
    <rect>
     <x>0</x>

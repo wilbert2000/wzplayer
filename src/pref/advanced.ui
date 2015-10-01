@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TAdvanced</class>
- <widget class="QWidget" name="TAdvanced">
+ <class>Pref::TAdvanced</class>
+ <widget class="QWidget" name="Pref::TAdvanced">
   <property name="geometry">
    <rect>
     <x>0</x>

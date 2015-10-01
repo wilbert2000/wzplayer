@@ -126,9 +126,9 @@ HEADERS += guiconfig.h \
 	shortcutgetter.h \
 	actionseditor.h \
 	filechooser.h \
-	vdpauproperties.h \
 	lineedit_with_icon.h \
 	languages.h \
+    pref/vdpauproperties.h \
     pref/selectcolorbutton.h \
     pref/tristatecombo.h \
     pref/combobox.h \
@@ -227,9 +227,9 @@ SOURCES	+= version.cpp \
 	shortcutgetter.cpp \
 	actionseditor.cpp \
 	filechooser.cpp \
-	vdpauproperties.cpp \
 	lineedit_with_icon.cpp \
 	languages.cpp \
+    pref/vdpauproperties.cpp \
     pref/selectcolorbutton.cpp \
     pref/tristatecombo.cpp \
     pref/combobox.cpp \
@@ -291,7 +291,7 @@ SOURCES	+= version.cpp \
     log.cpp
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
-        eqslider.ui seekwidget.ui gui/inputurl.ui videoequalizer.ui vdpauproperties.ui \
+        eqslider.ui seekwidget.ui gui/inputurl.ui videoequalizer.ui pref/vdpauproperties.ui \
         pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
         pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \
         pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui favoriteeditor.ui \

@@ -16,9 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "vdpauproperties.h"
+#include "pref/vdpauproperties.h"
 
-VDPAUProperties::VDPAUProperties(QWidget * parent, Qt::WindowFlags f)
+namespace Pref {
+
+TVDPAUProperties::TVDPAUProperties(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent, f) 
 {
 	setupUi(this);
@@ -26,56 +28,58 @@ VDPAUProperties::VDPAUProperties(QWidget * parent, Qt::WindowFlags f)
 	layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-VDPAUProperties::~VDPAUProperties() {
+TVDPAUProperties::~TVDPAUProperties() {
 }
 
-void VDPAUProperties::setffh264vdpau(bool b) {
+void TVDPAUProperties::setffh264vdpau(bool b) {
 	ffh264vdpau_check->setChecked(b);
 }
 
-void VDPAUProperties::setffmpeg12vdpau(bool b) {
+void TVDPAUProperties::setffmpeg12vdpau(bool b) {
 	ffmpeg12vdpau_check->setChecked(b);
 }
 
-void VDPAUProperties::setffwmv3vdpau(bool b) {
+void TVDPAUProperties::setffwmv3vdpau(bool b) {
 	ffwmv3vdpau_check->setChecked(b);
 }
 
-void VDPAUProperties::setffvc1vdpau(bool b) {
+void TVDPAUProperties::setffvc1vdpau(bool b) {
 	ffvc1vdpau_check->setChecked(b);
 }
 
-void VDPAUProperties::setffodivxvdpau(bool b) {
+void TVDPAUProperties::setffodivxvdpau(bool b) {
 	ffodivxvdpau_check->setChecked(b);
 }
 
-void VDPAUProperties::setDisableFilters(bool b) {
+void TVDPAUProperties::setDisableFilters(bool b) {
 	disable_filters_check->setChecked(b);
 }
 
-bool VDPAUProperties::ffh264vdpau() {
+bool TVDPAUProperties::ffh264vdpau() {
 	return ffh264vdpau_check->isChecked();
 }
 
-bool VDPAUProperties::ffmpeg12vdpau() {
+bool TVDPAUProperties::ffmpeg12vdpau() {
 	return ffmpeg12vdpau_check->isChecked();
 }
 
-bool VDPAUProperties::ffwmv3vdpau() {
+bool TVDPAUProperties::ffwmv3vdpau() {
 	return ffwmv3vdpau_check->isChecked();
 }
 
-bool VDPAUProperties::ffvc1vdpau() {
+bool TVDPAUProperties::ffvc1vdpau() {
 	return ffvc1vdpau_check->isChecked();
 }
 
-bool VDPAUProperties::ffodivxvdpau() {
+bool TVDPAUProperties::ffodivxvdpau() {
 	return ffodivxvdpau_check->isChecked();
 }
 
-bool VDPAUProperties::disableFilters() {
+bool TVDPAUProperties::disableFilters() {
 	return disable_filters_check->isChecked();
 }
+
+} // namespace Pref
 
 #include "moc_vdpauproperties.cpp"
 

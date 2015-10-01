@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>TDialog</class>
- <widget class="QDialog" name="TDialog" >
+ <class>Pref::TDialog</class>
+ <widget class="QDialog" name="Pref::TDialog" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -85,7 +85,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>TDialog</receiver>
+   <receiver>Pref::TDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -101,7 +101,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>TDialog</receiver>
+   <receiver>Pref::TDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

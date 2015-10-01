@@ -18,12 +18,12 @@
 
 
 #include "pref/general.h"
+#include "pref/vdpauproperties.h"
 #include "preferences.h"
 #include "filedialog.h"
 #include "images.h"
 #include "mediasettings.h"
 #include "paths.h"
-#include "vdpauproperties.h"
 #include "playerid.h"
 
 #if USE_ALSA_DEVICES || USE_DSOUND_DEVICES
@@ -866,7 +866,8 @@ void TGeneral::ao_combo_changed(int idx) {
 void TGeneral::on_vdpau_button_clicked() {
 	qDebug("Pref::TGeneral::on_vdpau_button_clicked");
 
-	VDPAUProperties d(this);
+/*
+	TVDPAUProperties d(this);
 
 	d.setffh264vdpau(vdpau.ffh264vdpau);
 	d.setffmpeg12vdpau(vdpau.ffmpeg12vdpau);
@@ -885,6 +886,7 @@ void TGeneral::on_vdpau_button_clicked() {
 
 		vdpau.disable_video_filters = d.disableFilters();
 	}
+*/
 }
 #endif
 
