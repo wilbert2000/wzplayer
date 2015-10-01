@@ -3911,7 +3911,7 @@ void TBase::helpDonate() {
 #endif
 
 void TBase::helpAbout() {
-	About d(this);
+	TAbout d(this);
 	d.exec();
 }
 

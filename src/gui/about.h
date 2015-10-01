@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _ABOUT_H_
-#define _ABOUT_H_
+#ifndef _GUI_ABOUT_H_
+#define _GUI_ABOUT_H_
 
 #include "ui_about.h"
 
@@ -31,13 +31,15 @@ class QUrl;
  Displays copyright info, license, translators...
 */
 
-class About : public QDialog, public Ui::About
+namespace Gui {
+
+class TAbout : public QDialog, public Ui::TAbout
 {
 	Q_OBJECT
 
 public:
-	About( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~About();
+	TAbout( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	~TAbout();
 
 	virtual QSize sizeHint () const;
 
@@ -58,4 +60,6 @@ protected slots:
 	void openLink(const QUrl & link);
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_ABOUT_H_

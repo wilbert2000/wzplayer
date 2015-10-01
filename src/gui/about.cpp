@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "about.h"
+#include "gui/about.h"
 #include "images.h"
 #include "version.h"
 #include "global.h"
@@ -30,7 +30,9 @@
 
 using namespace Global;
 
-About::About(QWidget * parent, Qt::WindowFlags f)
+namespace Gui {
+
+TAbout::TAbout(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -148,10 +150,10 @@ About::About(QWidget * parent, Qt::WindowFlags f)
 	adjustSize();
 }
 
-About::~About() {
+TAbout::~TAbout() {
 }
 
-QString About::getTranslators() {
+QString TAbout::getTranslators() {
 	return QString(
 		 tr("Many people contributed with translations.") +" "+
 		 tr("You can also help to translate SMPlayer into your own language.") +"<p>"+
@@ -161,11 +163,11 @@ QString About::getTranslators() {
 		"</a>");
 }
 
-QString About::trad(const QString & lang, const QString & author) {
+QString TAbout::trad(const QString & lang, const QString & author) {
 	return trad(lang, QStringList() << author);
 }
 
-QString About::trad(const QString & lang, const QStringList & authors) {
+QString TAbout::trad(const QString & lang, const QStringList & authors) {
 	QString s;
 	for (int n = 0; n < authors.count(); n++) {
 		QString author = authors[n];
@@ -176,22 +178,24 @@ QString About::trad(const QString & lang, const QStringList & authors) {
 	return QString("<p><b>%1</b>: %2</p>").arg(lang).arg(s);
 }
 
-QString About::link(const QString & url, QString name) {
+QString TAbout::link(const QString & url, QString name) {
 	if (name.isEmpty()) name = url;
 	return QString("<a href=\"" + url + "\">" + name +"</a>");
 }
 
-QString About::contr(const QString & author, const QString & thing) {
+QString TAbout::contr(const QString & author, const QString & thing) {
 	return "<li>"+ tr("<b>%1</b> (%2)").arg(author).arg(thing) +"</li>";
 }
 
-QSize About::sizeHint () const {
+QSize TAbout::sizeHint () const {
 	return QSize(518, 326);
 }
 
-void About::openLink(const QUrl & link) {
-	qDebug("About::openLink: '%s'", link.toString().toUtf8().constData());
+void TAbout::openLink(const QUrl & link) {
+	qDebug("Gui::TAbout::openLink: '%s'", link.toString().toUtf8().constData());
 	QDesktopServices::openUrl(link);
 }
+
+} // namespace
 
 #include "moc_about.cpp"
