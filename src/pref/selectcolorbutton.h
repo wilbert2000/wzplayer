@@ -16,26 +16,39 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef MYLINEEDIT_H
-#define MYLINEEDIT_H
+#ifndef _PREF_SELECTCOLORBUTTON_H_
+#define _PREF_SELECTCOLORBUTTON_H_
 
-#include "lineedit_with_icon.h"
+#include <QPushButton>
 
-class QToolButton;
+namespace Pref {
 
-class MyLineEdit : public LineEditWithIcon
+class TSelectColorButton : public QPushButton
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    MyLineEdit(QWidget *parent = 0);
+	TSelectColorButton ( QWidget * parent = 0 );
+	~TSelectColorButton();
 
-protected:
-	virtual void setupButton();
+	QColor color() { return _color;}
+
+public slots:
+	void setColor(QColor c);
 
 private slots:
-    void updateCloseButton(const QString &text);
+	void selectColor();
+
+private:
+	QColor _color;
+
+	bool ignore_change_event;
+	
+protected:
+	virtual void changeEvent ( QEvent * event ) ;
 };
 
-#endif // MYLINEEDIT_H
+} // namespace Pref
+
+#endif // _PREF_SELECTCOLORBUTTON_H_
 

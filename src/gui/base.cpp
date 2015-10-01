@@ -3680,7 +3680,7 @@ void TBase::openURL() {
 
 	exitFullscreenIfNeeded();
 
-	InputURL d(this);
+	TInputURL d(this);
 
 	// Get url from clipboard
 	QString clipboard_text = QApplication::clipboard()->text();
@@ -3950,7 +3950,7 @@ void TBase::shareSMPlayer() {
 #endif
 
 void TBase::showGotoDialog() {
-	TimeDialog d(this);
+	TTimeDialog d(this);
 	d.setLabel(tr("&Jump to:"));
 	d.setWindowTitle(tr("SMPlayer - Seek"));
 	d.setMaximumTime( (int) core->mdat.duration);

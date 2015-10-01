@@ -150,7 +150,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="MyComboBox" name="language_combo">
+          <widget class="Pref::TComboBox" name="language_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -219,7 +219,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="MyComboBox" name="iconset_combo">
+          <widget class="Pref::TComboBox" name="iconset_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -267,7 +267,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="MyComboBox" name="skin_combo">
+          <widget class="Pref::TComboBox" name="skin_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -315,7 +315,7 @@
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="MyComboBox" name="style_combo">
+          <widget class="Pref::TComboBox" name="style_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -922,9 +922,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyComboBox</class>
+   <class>Pref::TComboBox</class>
    <extends>QComboBox</extends>
-   <header>mycombobox.h</header>
+   <header>pref/combobox.h</header>
   </customwidget>
   <customwidget>
    <class>SeekWidget</class>

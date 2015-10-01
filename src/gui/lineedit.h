@@ -16,22 +16,30 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _INPUTURL_H_
-#define _INPUTURL_H_
+#ifndef GUI_LINEEDIT_H
+#define GUI_LINEEDIT_H
 
-#include "ui_inputurl.h"
-#include <QDialog>
+#include "lineedit_with_icon.h"
 
-class InputURL : public QDialog, public Ui::InputURL
+class QToolButton;
+
+namespace Gui {
+
+class TLineEdit : public LineEditWithIcon
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	InputURL( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~InputURL();
+	TLineEdit(QWidget *parent = 0);
 
-	void setURL(QString url);
-	QString url();
+protected:
+	virtual void setupButton();
+
+private slots:
+    void updateCloseButton(const QString &text);
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_LINEEDIT_H
+

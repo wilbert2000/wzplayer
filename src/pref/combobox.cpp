@@ -16,20 +16,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mycombobox.h"
+#include "pref/combobox.h"
 #include <QDir>
 #include <QStringListModel>
 #include <QDebug>
 
-MyComboBox::MyComboBox( QWidget * parent ) : QComboBox(parent)
+namespace Pref {
+
+TComboBox::TComboBox( QWidget * parent ) : QComboBox(parent)
 {
 }
 
-MyComboBox::~MyComboBox() 
+TComboBox::~TComboBox() 
 {
 }
 
-void MyComboBox::setCurrentText( const QString & text ) {
+void TComboBox::setCurrentText( const QString & text ) {
 	int i = findText(text);
 	if (i != -1)
 		setCurrentIndex(i);
@@ -39,21 +41,21 @@ void MyComboBox::setCurrentText( const QString & text ) {
 		setItemText(currentIndex(), text);
 }
 
-void MyComboBox::insertStringList( const QStringList & list, int index ) {
+void TComboBox::insertStringList( const QStringList & list, int index ) {
 	insertItems((index < 0 ? count() : index), list);
 }
 
 
 
-MyFontComboBox::MyFontComboBox( QWidget * parent ) : QFontComboBox(parent)
+TFontComboBox::TFontComboBox( QWidget * parent ) : QFontComboBox(parent)
 {
 }
 
-MyFontComboBox::~MyFontComboBox() 
+TFontComboBox::~TFontComboBox()
 {
 }
 
-void MyFontComboBox::setCurrentText( const QString & text ) {
+void TFontComboBox::setCurrentText( const QString & text ) {
 	int i = findText(text);
 	if (i != -1)
 		setCurrentIndex(i);
@@ -63,7 +65,7 @@ void MyFontComboBox::setCurrentText( const QString & text ) {
 		setItemText(currentIndex(), text);
 }
 
-void MyFontComboBox::setFontsFromDir(const QString & fontdir) {
+void TFontComboBox::setFontsFromDir(const QString & fontdir) {
 	QString current_text = currentText();
 
 	if (fontdir.isEmpty()) {
@@ -75,13 +77,13 @@ void MyFontComboBox::setFontsFromDir(const QString & fontdir) {
 		QStringList fontnames;
 		QStringList fontfiles = QDir(fontdir).entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
 		for (int n=0; n < fontfiles.count(); n++) {
-			qDebug() << "MyFontComboBox::setFontsFromDir: adding font:" << fontfiles[n];
+			qDebug() << "Pref::TFontComboBox::setFontsFromDir: adding font:" << fontfiles[n];
 			int id = fdb.addApplicationFont(fontdir +"/"+ fontfiles[n]);
 			fontnames << fdb.applicationFontFamilies(id);
 		}
 		//fdb.removeAllApplicationFonts();
 		fontnames.removeDuplicates();
-		qDebug() << "MyFontComboBox::setFontsFromDir: fontnames:" << fontnames;
+		qDebug() << "Pref::TFontComboBox::setFontsFromDir: fontnames:" << fontnames;
 		clear();
 		QStringListModel *m = qobject_cast<QStringListModel *>(model());
 		if (m) m->setStringList(fontnames);
@@ -90,3 +92,4 @@ void MyFontComboBox::setFontsFromDir(const QString & fontdir) {
 	setCurrentText(current_text);
 }
 
+} // namespace Pref

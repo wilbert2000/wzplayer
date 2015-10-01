@@ -16,35 +16,49 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "inputurl.h"
-#include "images.h"
-#include "mylineedit.h"
+#include "gui/timedialog.h"
 
-InputURL::InputURL( QWidget* parent, Qt::WindowFlags f ) 
+namespace Gui {
+
+TTimeDialog::TTimeDialog( QWidget* parent, Qt::WindowFlags f )
 	: QDialog(parent, f)
 {
 	setupUi(this);
 
-	setMinimumSize( QSize(500,140) );
-	setMaximumSize( QSize(600,170) );
-	//layout()->setSizeConstraint(QLayout::SetFixedSize);
-
-	url_icon->setPixmap( Images::icon("url_big", 48) );
-	url_edit->setFocus();
-
-	MyLineEdit * edit = new MyLineEdit(this);
-	url_edit->setLineEdit(edit);
+	time_edit->setDisplayFormat("H:mm:ss");
 }
 
-InputURL::~InputURL() {
+TTimeDialog::~TTimeDialog() {
 }
 
-void InputURL::setURL(QString url) {
-	url_edit->addItem(url);
+void TTimeDialog::setTime(int seconds) {
+	QTime t(0,0);
+	time_edit->setTime(t.addSecs(seconds));
 }
 
-QString InputURL::url() {
-	return url_edit->currentText().trimmed();
+int TTimeDialog::time() {
+	QTime t(0,0);
+	return t.secsTo(time_edit->time());
 }
 
-#include "moc_inputurl.cpp"
+void TTimeDialog::setMaximumTime( int seconds ) {
+	QTime t(0,0);
+	time_edit->setMaximumTime(t.addSecs(seconds));
+}
+
+int TTimeDialog::maximumTime() {
+	QTime t(0,0);
+	return t.secsTo(time_edit->maximumTime());
+}
+
+void TTimeDialog::setLabel(const QString & label) {
+	time_label->setText(label);
+}
+
+QString TTimeDialog::label() {
+	return time_label->text();
+}
+
+} // namespace Gui
+
+#include "moc_timedialog.cpp"

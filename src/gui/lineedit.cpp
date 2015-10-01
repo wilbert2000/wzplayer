@@ -16,35 +16,30 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SELECTCOLORBUTTON_H_
-#define _SELECTCOLORBUTTON_H_
+#include "gui/lineedit.h"
+#include <QToolButton>
+#include <QStyle>
+#include "images.h"
 
-#include <QPushButton>
+namespace Gui {
 
-class SelectColorButton : public QPushButton
+TLineEdit::TLineEdit(QWidget *parent)
+    : LineEditWithIcon(parent)
 {
-	Q_OBJECT
+	setupButton();
+	button->hide();
+	connect(button, SIGNAL(clicked()), this, SLOT(clear()));
+	connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateCloseButton(const QString&)));
+}
 
-public:
-	SelectColorButton ( QWidget * parent = 0 );
-	~SelectColorButton();
+void TLineEdit::setupButton() {
+	setIcon( Images::icon("clear_left") );
+}
 
-	QColor color() { return _color;}
+void TLineEdit::updateCloseButton(const QString& text) {
+	button->setVisible(!text.isEmpty());
+}
 
-public slots:
-	void setColor(QColor c);
+} // namespace Gui
 
-private slots:
-	void selectColor();
-
-private:
-	QColor _color;
-
-	bool ignore_change_event;
-	
-protected:
-	virtual void changeEvent ( QEvent * event ) ;
-};
-
-#endif
-
+#include "moc_lineedit.cpp"

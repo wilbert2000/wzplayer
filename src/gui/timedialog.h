@@ -16,18 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _TIMEDIALOG_H_
-#define _TIMEDIALOG_H_
+#ifndef _GUI_TIMEDIALOG_H_
+#define _GUI_TIMEDIALOG_H_
 
 #include "ui_timedialog.h"
 
-class TimeDialog : public QDialog, public Ui::TimeDialog
+namespace Gui {
+
+class TTimeDialog : public QDialog, public Ui::TTimeDialog
 {
 	Q_OBJECT
 
 public:
-	TimeDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~TimeDialog();
+	TTimeDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	~TTimeDialog();
 
 	int time();
 	int maximumTime();
@@ -39,4 +41,6 @@ public slots:
 	void setLabel(const QString & label);
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_TIMEDIALOG_H_

@@ -16,13 +16,15 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "selectcolorbutton.h"
+#include "pref/selectcolorbutton.h"
 #include "colorutils.h"
 #include <QColorDialog>
 #include <QApplication>
 #include <QStyle>
 
-SelectColorButton::SelectColorButton( QWidget * parent ) 
+namespace Pref {
+
+TSelectColorButton::TSelectColorButton( QWidget * parent ) 
 	: QPushButton(parent)
 {
 	connect(this, SIGNAL(clicked()), this, SLOT(selectColor()));
@@ -30,14 +32,14 @@ SelectColorButton::SelectColorButton( QWidget * parent )
 	ignore_change_event = false;
 }
 
-SelectColorButton::~SelectColorButton() {
+TSelectColorButton::~TSelectColorButton() {
 }
 
-void SelectColorButton::setColor(QColor c) {
+void TSelectColorButton::setColor(QColor c) {
 	_color = c;
 
 	QString current_style = qApp->style()->objectName();
-	qDebug("SelectColorButton::setColor: current style name: %s", current_style.toUtf8().constData());
+	qDebug("TSelectColorButton::setColor: current style name: %s", current_style.toUtf8().constData());
 
 	ignore_change_event = true;
 
@@ -51,14 +53,14 @@ void SelectColorButton::setColor(QColor c) {
 	ignore_change_event = false;
 }
 
-void SelectColorButton::selectColor() {
+void TSelectColorButton::selectColor() {
 	QColor c = QColorDialog::getColor( _color, 0 );
 	if (c.isValid()) {
 		setColor( c );
 	}
 }
 
-void SelectColorButton::changeEvent(QEvent *e) {
+void TSelectColorButton::changeEvent(QEvent *e) {
 
 	QPushButton::changeEvent(e);
 	
@@ -67,5 +69,7 @@ void SelectColorButton::changeEvent(QEvent *e) {
 	}
 
 }
+
+} // namespace Pref
 
 #include "moc_selectcolorbutton.cpp"

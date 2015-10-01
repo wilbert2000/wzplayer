@@ -128,11 +128,10 @@ HEADERS += guiconfig.h \
 	filechooser.h \
 	vdpauproperties.h \
 	lineedit_with_icon.h \
-	mylineedit.h \
-	mycombobox.h \
-	tristatecombo.h \
 	languages.h \
-	selectcolorbutton.h \
+    pref/selectcolorbutton.h \
+    pref/tristatecombo.h \
+    pref/combobox.h \
 	pref/dialog.h \
 	pref/widget.h \
 	pref/general.h \
@@ -153,17 +152,18 @@ HEADERS += guiconfig.h \
 	videoequalizer.h \
 	audioequalizer.h \
 	inputdvddirectory.h \
-	inputurl.h \
 	stereo3ddialog.h \
 	filedialog.h \
 	inputmplayerversion.h \
 	about.h \
 	errordialog.h \
-	timedialog.h \
 	favorites.h \
 	tvlist.h \
 	favoriteeditor.h \
-	gui/action.h \
+    gui/timedialog.h \
+    gui/lineedit.h \
+    gui/inputurl.h \
+    gui/action.h \
 	gui/actiongroup.h \
 	gui/widgetactions.h \
 	gui/editabletoolbar.h \
@@ -229,11 +229,10 @@ SOURCES	+= version.cpp \
 	filechooser.cpp \
 	vdpauproperties.cpp \
 	lineedit_with_icon.cpp \
-	mylineedit.cpp \
-	mycombobox.cpp \
-	tristatecombo.cpp \
 	languages.cpp \
-	selectcolorbutton.cpp \
+    pref/selectcolorbutton.cpp \
+    pref/tristatecombo.cpp \
+    pref/combobox.cpp \
 	pref/dialog.cpp \
 	pref/widget.cpp \
 	pref/general.cpp \
@@ -254,17 +253,18 @@ SOURCES	+= version.cpp \
 	videoequalizer.cpp \
 	audioequalizer.cpp \
 	inputdvddirectory.cpp \
-	inputurl.cpp \
 	stereo3ddialog.cpp \
 	filedialog.cpp \
 	inputmplayerversion.cpp \
 	about.cpp \
 	errordialog.cpp \
-	timedialog.cpp \
 	favorites.cpp \
 	tvlist.cpp \
 	favoriteeditor.cpp \
-	gui/action.cpp \
+    gui/timedialog.cpp \
+    gui/lineedit.cpp \
+    gui/inputurl.cpp \
+    gui/action.cpp \
 	gui/actiongroup.cpp \
 	gui/widgetactions.cpp \
 	gui/editabletoolbar.cpp \
@@ -291,11 +291,11 @@ SOURCES	+= version.cpp \
     log.cpp
 
 FORMS = inputdvddirectory.ui logwindowbase.ui filepropertiesdialog.ui \
-        eqslider.ui seekwidget.ui inputurl.ui videoequalizer.ui vdpauproperties.ui \
+        eqslider.ui seekwidget.ui gui/inputurl.ui videoequalizer.ui vdpauproperties.ui \
         pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
         pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \
         pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui favoriteeditor.ui \
-        about.ui inputmplayerversion.ui errordialog.ui timedialog.ui stereo3ddialog.ui \
+        about.ui inputmplayerversion.ui errordialog.ui gui/timedialog.ui stereo3ddialog.ui \
         toolbareditor.ui multilineinputdialog.ui
 
 contains( DEFINES, MPV_SUPPORT ) {

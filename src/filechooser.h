@@ -39,16 +39,16 @@ public:
     FileChooser( QWidget* parent = 0 );
     ~FileChooser();
 
-	QString caption() const { return _caption; };
-	QString filter() const { return _filter; };
-	DialogType dialogType() const { return _type; };
-	QFileDialog::Options options() const { return _options; };
+	QString caption() const { return _caption; }
+	QString filter() const { return _filter; }
+	DialogType dialogType() const { return _type; }
+	QFileDialog::Options options() const { return _options; }
 
 public slots:
-	void setCaption(const QString & caption) { _caption = caption; };
-	void setFilter(const QString & filter) { _filter = filter; };
-	void setDialogType( DialogType type) { _type = type; };
-	void setOptions( QFileDialog::Options options) { _options = options; };
+	void setCaption(const QString & caption) { _caption = caption; }
+	void setFilter(const QString & filter) { _filter = filter; }
+	void setDialogType( DialogType type) { _type = type; }
+	void setOptions( QFileDialog::Options options) { _options = options; }
 
 signals:
 	void fileChanged(QString file);

@@ -16,32 +16,38 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/*! 
-	This class is to replace some QCheckBox with a combo with three possible
-    values: true, false or autodetect
-*/
-
-#ifndef _TRISTATE_COMBO_H_
-#define _TRISTATE_COMBO_H_
+#ifndef _PREF_COMBOBOX_H_
+#define _PREF_COMBOBOX_H_
 
 #include <QComboBox>
-#include "preferences.h"
+#include <QFontComboBox>
 
-class TristateCombo : public QComboBox
+//! This class adds some Qt 3 compatibility functions which don't have a
+//! direct equivalent in Qt 4.
+
+namespace Pref {
+
+class TComboBox : public QComboBox
 {
-	Q_OBJECT
-
 public:
-	TristateCombo( QWidget * parent = 0 );
-	~TristateCombo();
+	TComboBox( QWidget * parent = 0 );
+	~TComboBox();
 
-	void setState( Preferences::OptionState v );
-	Preferences::OptionState state();
-
-protected:
-	virtual void retranslateStrings();
-	virtual void changeEvent( QEvent * event );
-
+	void setCurrentText ( const QString & text );
+	void insertStringList ( const QStringList & list, int index = -1 );
 };
 
-#endif
+
+class TFontComboBox : public QFontComboBox
+{
+public:
+	TFontComboBox( QWidget * parent = 0 );
+	~TFontComboBox();
+
+	void setCurrentText ( const QString & text );
+	void setFontsFromDir(const QString & fontdir);
+};
+
+} // namespace Pref
+
+#endif // _PREF_COMBOBOX_H_

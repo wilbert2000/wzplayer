@@ -374,7 +374,7 @@
                  <item>
                   <layout class="QHBoxLayout">
                    <item>
-                    <widget class="MyFontComboBox" name="style_font_combo"/>
+                    <widget class="Pref::TFontComboBox" name="style_font_combo"/>
                    </item>
                   </layout>
                  </item>
@@ -464,7 +464,7 @@
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="SelectColorButton" name="style_text_color_button">
+                  <widget class="Pref::TSelectColorButton" name="style_text_color_button">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
                      <horstretch>0</horstretch>
@@ -490,7 +490,7 @@
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="SelectColorButton" name="style_border_color_button">
+                  <widget class="Pref::TSelectColorButton" name="style_border_color_button">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
                      <horstretch>0</horstretch>
@@ -513,7 +513,7 @@
                   </widget>
                  </item>
                  <item row="2" column="1">
-                  <widget class="SelectColorButton" name="style_shadow_color_button">
+                  <widget class="Pref::TSelectColorButton" name="style_shadow_color_button">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
                      <horstretch>0</horstretch>
@@ -797,14 +797,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyFontComboBox</class>
+   <class>Pref::TFontComboBox</class>
    <extends>QFontComboBox</extends>
-   <header>mycombobox.h</header>
+   <header>pref/combobox.h</header>
   </customwidget>
   <customwidget>
-   <class>SelectColorButton</class>
+   <class>Pref::TSelectColorButton</class>
    <extends>QPushButton</extends>
-   <header>selectcolorbutton.h</header>
+   <header>pref/selectcolorbutton.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -83,7 +83,7 @@
             </widget>
            </item>
            <item>
-            <widget class="MyComboBox" name="cdrom_device_combo">
+            <widget class="Pref::TComboBox" name="cdrom_device_combo">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -184,7 +184,7 @@
             </widget>
            </item>
            <item>
-            <widget class="MyComboBox" name="dvd_device_combo">
+            <widget class="Pref::TComboBox" name="dvd_device_combo">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -282,7 +282,7 @@
                </widget>
               </item>
               <item>
-               <widget class="MyComboBox" name="bluray_device_combo">
+               <widget class="Pref::TComboBox" name="bluray_device_combo">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -342,9 +342,9 @@
  <layoutdefault spacing="6" margin="9"/>
  <customwidgets>
   <customwidget>
-   <class>MyComboBox</class>
+   <class>Pref::TComboBox</class>
    <extends>QComboBox</extends>
-   <header>mycombobox.h</header>
+   <header>pref/combobox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

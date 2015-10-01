@@ -56,7 +56,7 @@
           </widget>
          </item>
          <item>
-          <widget class="MyComboBox" name="monitoraspect_combo">
+          <widget class="Pref::TComboBox" name="monitoraspect_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -154,7 +154,7 @@
           </widget>
          </item>
          <item>
-          <widget class="TristateCombo" name="correct_pts_combo"/>
+          <widget class="Pref::TTristateCombo" name="correct_pts_combo"/>
          </item>
          <item>
           <spacer>
@@ -703,14 +703,14 @@ Example: extrastereo,karaoke</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TristateCombo</class>
+   <class>Pref::TTristateCombo</class>
    <extends>QComboBox</extends>
-   <header>tristatecombo.h</header>
+   <header>pref/tristatecombo.h</header>
   </customwidget>
   <customwidget>
-   <class>MyComboBox</class>
+   <class>Pref::TComboBox</class>
    <extends>QComboBox</extends>
-   <header>mycombobox.h</header>
+   <header>pref/combobox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

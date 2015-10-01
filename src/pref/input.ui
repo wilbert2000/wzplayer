@@ -156,7 +156,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="MyComboBox" name="left_click_combo">
+            <widget class="Pref::TComboBox" name="left_click_combo">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -179,7 +179,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="MyComboBox" name="double_click_combo">
+            <widget class="Pref::TComboBox" name="double_click_combo">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -202,7 +202,7 @@
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="MyComboBox" name="right_click_combo">
+            <widget class="Pref::TComboBox" name="right_click_combo">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -438,9 +438,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyComboBox</class>
+   <class>Pref::TComboBox</class>
    <extends>QComboBox</extends>
-   <header>mycombobox.h</header>
+   <header>pref/combobox.h</header>
   </customwidget>
   <customwidget>
    <class>ActionsEditor</class>

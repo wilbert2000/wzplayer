@@ -16,43 +16,39 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "tristatecombo.h"
-#include <QEvent>
+#include "gui/inputurl.h"
+#include "gui/lineedit.h"
+#include "images.h"
 
-TristateCombo::TristateCombo( QWidget * parent ) : QComboBox(parent) 
+namespace Gui {
+
+TInputURL::TInputURL( QWidget* parent, Qt::WindowFlags f )
+	: QDialog(parent, f)
 {
-	retranslateStrings();
+	setupUi(this);
+
+	setMinimumSize( QSize(500,140) );
+	setMaximumSize( QSize(600,170) );
+	//layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+	url_icon->setPixmap( Images::icon("url_big", 48) );
+	url_edit->setFocus();
+
+	TLineEdit * edit = new TLineEdit(this);
+	url_edit->setLineEdit(edit);
 }
 
-TristateCombo::~TristateCombo() {
+TInputURL::~TInputURL() {
 }
 
-void TristateCombo::retranslateStrings() {
-	int i = currentIndex();
-
-	clear();
-	addItem( tr("Auto"), Preferences::Detect );
-	addItem( tr("Yes"), Preferences::Enabled );
-	addItem( tr("No"), Preferences::Disabled );
-
-	setCurrentIndex(i);
+void TInputURL::setURL(QString url) {
+	url_edit->addItem(url);
 }
 
-void TristateCombo::setState( Preferences::OptionState v ) {
-	setCurrentIndex( findData(v) );
+QString TInputURL::url() {
+	return url_edit->currentText().trimmed();
 }
 
-Preferences::OptionState TristateCombo::state() {
-	return (Preferences::OptionState) itemData( currentIndex() ).toInt();
-}
+} // namespace Gui
 
-// Language change stuff
-void TristateCombo::changeEvent(QEvent *e) {
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QComboBox::changeEvent(e);
-	}
-}
-
-#include "moc_tristatecombo.cpp"
+#include "moc_inputurl.cpp"
