@@ -5005,7 +5005,7 @@ void TBase::showExitCodeFromPlayer(int exit_code) {
 	}
 
 	if (exit_code != 255 ) {
-		ErrorDialog d(this);
+		TErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
 		d.setText(msg);
 		d.setLog(Global::log->getLogLines());
@@ -5023,7 +5023,7 @@ void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 	}
 
 	if ((e == QProcess::FailedToStart) || (e == QProcess::Crashed)) {
-		ErrorDialog d(this);
+		TErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
 		if (e == QProcess::FailedToStart) {
 			d.setText(tr("%1 failed to start.").arg(PLAYER_NAME) + " " + 

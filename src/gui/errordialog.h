@@ -16,18 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _ERRORDIALOG_H_
-#define _ERRORDIALOG_H_
+#ifndef _GUI_ERRORDIALOG_H_
+#define _GUI_ERRORDIALOG_H_
 
 #include "ui_errordialog.h"
 
-class ErrorDialog : public QDialog, public Ui::ErrorDialog
+namespace Gui {
+
+class TErrorDialog : public QDialog, public Ui::TErrorDialog
 {
 	Q_OBJECT
 
 public:
-	ErrorDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~ErrorDialog();
+	TErrorDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	~TErrorDialog();
 
 public slots:
 	void setText(QString error);
@@ -37,4 +39,6 @@ protected slots:
 	void toggleLog(bool);
 };
 
-#endif
+}
+
+#endif // _GUI_ERRORDIALOG_H_

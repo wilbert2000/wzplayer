@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ErrorDialog</class>
- <widget class="QDialog" name="ErrorDialog">
+ <class>Gui::TErrorDialog</class>
+ <widget class="QDialog" name="Gui::TErrorDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -139,7 +139,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>ErrorDialog</receiver>
+   <receiver>Gui::TErrorDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -155,7 +155,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>ErrorDialog</receiver>
+   <receiver>Gui::TErrorDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

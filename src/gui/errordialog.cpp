@@ -16,10 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "errordialog.h"
+#include "gui/errordialog.h"
 #include "images.h"
 
-ErrorDialog::ErrorDialog( QWidget* parent, Qt::WindowFlags f )
+namespace Gui {
+
+TErrorDialog::TErrorDialog( QWidget* parent, Qt::WindowFlags f )
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -38,19 +40,19 @@ ErrorDialog::ErrorDialog( QWidget* parent, Qt::WindowFlags f )
 	layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-ErrorDialog::~ErrorDialog() {
+TErrorDialog::~TErrorDialog() {
 }
 
-void ErrorDialog::setText(QString error) {
+void TErrorDialog::setText(QString error) {
 	text->setText(error);
 }
 
-void ErrorDialog::setLog(QString log_text) {
+void TErrorDialog::setLog(QString log_text) {
 	log->setPlainText("");
 	log->append(log_text); // To move cursor to the end
 }
 
-void ErrorDialog::toggleLog(bool checked) {
+void TErrorDialog::toggleLog(bool checked) {
 	log->setVisible(checked);
 
 	if (checked) 
@@ -58,5 +60,7 @@ void ErrorDialog::toggleLog(bool checked) {
 	else
 		viewlog_button->setText(tr("Show log"));
 }
+
+} // namespace Gui
 
 #include "moc_errordialog.cpp"
