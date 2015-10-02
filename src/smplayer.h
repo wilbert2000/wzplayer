@@ -19,12 +19,27 @@
 #ifndef _SMPLAYER_H_
 #define _SMPLAYER_H_
 
-#include <QObject>
+#include <QtGlobal>
 #include <QString>
 #include <QStringList>
 #include "gui/base.h"
 
-class SMPlayer : public QObject {
+#ifdef Q_OS_WIN
+#if QT_VERSION < 0x050000
+#define USE_WINEVENTFILTER
+#endif
+#endif
+
+#ifdef SINGLE_INSTANCE
+#include "QtSingleApplication"
+typedef QtSingleApplication TBaseApp;
+#else
+#include <QApplication>
+typedef QApplication TBaseApp;
+#endif
+
+
+class TSMPlayer : public TBaseApp {
 	Q_OBJECT
 
 public:
@@ -32,12 +47,21 @@ public:
 
 	bool requested_restart;
 
-	SMPlayer();
-	~SMPlayer();
+	TSMPlayer(int& argc, char** argv);
+	~TSMPlayer();
+
+	virtual void commitData(QSessionManager& /*manager*/) {
+		// Nothing to do, let the application close
+	}
 
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
-	ExitCode processArgs(QStringList args);
+	ExitCode processArgs();
 	void start();
+	void showInfo();
+
+#ifdef USE_WINEVENTFILTER
+	virtual bool winEventFilter(MSG* msg, long* result);
+#endif
 
 private slots:
 	void restart();
@@ -62,7 +86,6 @@ private:
 	int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
 
 	void createGUI();
-	void showInfo();
 };
 
 #endif

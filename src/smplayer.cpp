@@ -19,6 +19,7 @@
 #include "config.h"
 #include "smplayer.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QUrl>
 
@@ -27,7 +28,6 @@
 #include "version.h"
 #include "clhelp.h"
 #include "cleanconfig.h"
-#include "myapplication.h"
 
 #include "gui/default.h"
 #include "gui/mini.h"
@@ -48,10 +48,12 @@
 #endif
 
 
-using namespace Global;
-
-SMPlayer::SMPlayer() :
-	QObject(0),
+TSMPlayer::TSMPlayer(int& argc, char** argv) :
+	TBaseApp(
+#ifdef SINGLE_INSTANCE
+		"smplayer", // AppID
+#endif
+		argc, argv),
 	requested_restart(false),
 	main_window(0),
 	gui_to_use("DefaultGUI"),
@@ -60,24 +62,23 @@ SMPlayer::SMPlayer() :
 	close_at_end(-1),
 	start_in_fullscreen(-1) {
 
-	showInfo();
+	// Change the working directory to the application path
+	QDir::setCurrent(applicationDirPath());
+	Paths::setAppPath(applicationDirPath());
+
+#if QT_VERSION >= 0x040400
+	// Enable icons in menus
+	setAttribute(Qt::AA_DontShowIconsInMenus, false);
+#endif
 }
 
-SMPlayer::~SMPlayer() {
+TSMPlayer::~TSMPlayer() {
+	Global::global_end();
 }
 
-SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
-	qDebug("SMPlayer::processArgs: arguments: %d", args.count());
-	for (int n = 0; n < args.count(); n++) {
-		qDebug("SMPlayer::processArgs: %d = %s", n, args[n].toUtf8().data());
-	}
+TSMPlayer::ExitCode TSMPlayer::processArgs() {
 
-
-	QString action; // Action to be passed to running instance
-	bool show_help = false;
-
-	if (!pref->gui.isEmpty()) gui_to_use = pref->gui;
-	bool add_to_playlist = false;
+	QStringList args = arguments();
 
 #ifdef Q_OS_WIN
 	if (args.contains("-uninstall")) {
@@ -88,16 +89,43 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		QStringList regExts; 
 		RegAssoc.GetRegisteredExtensions(exts.multimedia(), regExts); 
 		RegAssoc.RestoreFileAssociations(regExts); 
-		printf("Restored associations\n");
+		printf("TSMPlayer::processArgs: restored associations\n");
 		#endif
 		return NoError;
 	}
 #endif
 
+	// Get config path from args
+	QString config_path;
+	int pos = args.indexOf("-config-path");
+	if ( pos >= 0) {
+		if (pos + 1 < args.count()) {
+			pos++;
+			config_path = args[pos];
+			// Delete from list
+			args.removeAt(pos);
+			args.removeAt(pos - 1);
+		} else {
+			printf("TSMPlayer::processArgs: error: expected parameter for -config-path\r\n");
+			return TSMPlayer::ErrorArgument;
+		}
+	}
+
+	// Load preferences, setup logging and translation
+	Global::global_init(config_path);
+
 	if (args.contains("-delete-config")) {
 		CleanConfig::clean(Paths::configPath());
 		return NoError;
 	}
+
+	showInfo();
+
+	QString action; // Action to be passed to running instance
+	bool show_help = false;
+
+	if (!Global::pref->gui.isEmpty()) gui_to_use = Global::pref->gui;
+	bool add_to_playlist = false;
 
 	for (int n = 1; n < args.count(); n++) {
 		QString argument = args[n];
@@ -211,11 +239,11 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		}
 		else
 		if (argument == "-ontop") {
-			pref->stay_on_top = Preferences::AlwaysOnTop;
+			Global::pref->stay_on_top = Preferences::AlwaysOnTop;
 		}
 		else
 		if (argument == "-no-ontop") {
-			pref->stay_on_top = Preferences::NeverOnTop;
+			Global::pref->stay_on_top = Preferences::NeverOnTop;
 		}
 #ifdef SKINS
 		else
@@ -243,35 +271,33 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 		return NoError;
 	}
 
-	qDebug("SMPlayer::processArgs: files_to_play: count: %d", files_to_play.count() );
+	qDebug("TSMPlayer::processArgs: files_to_play: count: %d", files_to_play.count() );
 	for (int n=0; n < files_to_play.count(); n++) {
-		qDebug("SMPlayer::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
+		qDebug("TSMPlayer::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
 	}
 
 #ifdef SINGLE_INSTANCE
-	if (pref->use_single_instance) {
+	if (Global::pref->use_single_instance) {
 		// Single instance
-		MyApplication * a = MyApplication::instance();
-		if (a->isRunning()) {
-			a->sendMessage("Hello");
+		if (isRunning()) {
+			sendMessage("Hello");
 
 			if (!action.isEmpty()) {
-				a->sendMessage("action " + action);
-			}
-			else {
+				sendMessage("action " + action);
+			} else {
 				if (!subtitle_file.isEmpty()) {
-					a->sendMessage("load_sub " + subtitle_file);
+					sendMessage("load_sub " + subtitle_file);
 				}
 
 				if (!media_title.isEmpty()) {
-					a->sendMessage("media_title " + files_to_play[0] + " <<sep>> " + media_title);
+					sendMessage("media_title " + files_to_play[0] + " <<sep>> "
+						+ media_title);
 				}
 
 				if (!files_to_play.isEmpty()) {
-					/* a->sendMessage("open_file " + files_to_play[0]); */
 					QString command = "open_files";
 					if (add_to_playlist) command = "add_to_playlist";
-					a->sendMessage(command +" "+ files_to_play.join(" <<sep>> "));
+					sendMessage(command + " " + files_to_play.join(" <<sep>> "));
 				}
 			}
 
@@ -280,37 +306,37 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 	}
 #endif
 
-	if (!pref->default_font.isEmpty()) {
+	if (!Global::pref->default_font.isEmpty()) {
 		QFont f;
-		f.fromString(pref->default_font);
-		qApp->setFont(f);
+		f.fromString(Global::pref->default_font);
+		setFont(f);
 	}
 
-	return SMPlayer::NoExit;
+	return TSMPlayer::NoExit;
 }
 
-void SMPlayer::createGUI() {
+void TSMPlayer::createGUI() {
 
 #ifdef SKINS
 	if (gui_to_use == "SkinGUI") {
-		QString theme = pref->iconset;
+		QString theme = Global::pref->iconset;
 		if (theme.isEmpty()) theme = "Gonzo";
 		QString user_theme_dir = Paths::configPath() + "/themes/" + theme;
 		QString theme_dir = Paths::themesPath() + "/" + theme;
-		qDebug("SMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
-		qDebug("SMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
+		qDebug("TSMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
+		qDebug("TSMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
 		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
-			if (pref->iconset.isEmpty()) pref->iconset = theme;
+			if (Global::pref->iconset.isEmpty()) Global::pref->iconset = theme;
 		} else {
-			qWarning("SMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
+			qWarning("TSMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
 			gui_to_use = "DefaultGUI";
-			pref->iconset = "";
-			pref->gui = gui_to_use;
+			Global::pref->iconset = "";
+			Global::pref->gui = gui_to_use;
 		}
 	}
 #endif
 
-	qDebug() << "SMPlayer::createGUI:" << gui_to_use;
+	qDebug() << "TSMPlayer::createGUI:" << gui_to_use;
 
 #ifdef SKINS
 	if (gui_to_use.toLower() == "skingui")
@@ -330,7 +356,7 @@ void SMPlayer::createGUI() {
 		main_window = new Gui::TDefault(0);
 
 	main_window->loadConfig("");
-	qDebug("SMPlayer::createGUI: loadConfig done. Translating...");
+	qDebug("TSMPlayer::createGUI: loadConfig done. Translating...");
 	main_window->retranslate();
 
 	main_window->setForceCloseOnFinish(close_at_end);
@@ -339,32 +365,31 @@ void SMPlayer::createGUI() {
 	connect(main_window, SIGNAL(requestRestart()), this, SLOT(restart()));
 
 #if SINGLE_INSTANCE
-	MyApplication* app = MyApplication::instance();
-	connect(app, SIGNAL(messageReceived(const QString&)),
+	connect(this, SIGNAL(messageReceived(const QString&)),
 			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
-	app->setActivationWindow(main_window);
+	setActivationWindow(main_window);
 #endif
 
 	if (move_gui) {
-		qDebug("SMPlayer::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
+		qDebug("TSMPlayer::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
 		main_window->move(gui_position);
 	}
 	if (resize_gui) {
-		qDebug("SMPlayer::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
+		qDebug("TSMPlayer::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
 		main_window->resize(gui_size);
 	}
 
-	qDebug() << "SMPlayer::createGUI: created" << gui_to_use;
+	qDebug() << "TSMPlayer::createGUI: created" << gui_to_use;
 }
 
-void SMPlayer::restart() {
-	qDebug("SMPlayer::restart");
+void TSMPlayer::restart() {
+	qDebug("TSMPlayer::restart");
 
 	requested_restart = true;
 }
 
-void SMPlayer::start() {
-	qDebug("SMPlayer::start");
+void TSMPlayer::start() {
+	qDebug("TSMPlayer::start");
 
 	requested_restart = false;
 	// Create the main window. It will be destoyed when leaving exec().
@@ -390,7 +415,7 @@ void SMPlayer::start() {
 	}
 }
 
-void SMPlayer::showInfo() {
+void TSMPlayer::showInfo() {
 #ifdef Q_OS_WIN
 	QString win_ver;
 	switch (QSysInfo::WindowsVersion) {
@@ -448,5 +473,159 @@ void SMPlayer::showInfo() {
 	qDebug(" * font path: '%s'", Paths::fontPath().toUtf8().data());
 #endif
 }
+
+#ifdef USE_WINEVENTFILTER
+#include <QKeyEvent>
+#include <QEvent>
+#include <QWidget>
+#include <windows.h>
+
+#ifndef WM_APPCOMMAND
+#define WM_APPCOMMAND 0x0319
+#endif
+
+#ifndef FAPPCOMMAND_MOUSE
+#define FAPPCOMMAND_MOUSE 0x8000
+#define FAPPCOMMAND_KEY   0
+#define FAPPCOMMAND_OEM   0x1000
+#define FAPPCOMMAND_MASK  0xF000
+#define GET_APPCOMMAND_LPARAM(lParam) ((short)(HIWORD(lParam) & ~FAPPCOMMAND_MASK))
+#define GET_DEVICE_LPARAM(lParam)     ((WORD)(HIWORD(lParam) & FAPPCOMMAND_MASK))
+#define GET_MOUSEORKEY_LPARAM         GET_DEVICE_LPARAM
+#define GET_FLAGS_LPARAM(lParam)      (LOWORD(lParam))
+#define GET_KEYSTATE_LPARAM(lParam)   GET_FLAGS_LPARAM(lParam)
+
+#define APPCOMMAND_BROWSER_BACKWARD       1
+#define APPCOMMAND_BROWSER_FORWARD        2
+#define APPCOMMAND_BROWSER_REFRESH        3
+#define APPCOMMAND_BROWSER_STOP           4
+#define APPCOMMAND_BROWSER_SEARCH         5
+#define APPCOMMAND_BROWSER_FAVORITES      6
+#define APPCOMMAND_BROWSER_HOME           7
+#define APPCOMMAND_VOLUME_MUTE            8
+#define APPCOMMAND_VOLUME_DOWN            9
+#define APPCOMMAND_VOLUME_UP              10
+#define APPCOMMAND_MEDIA_NEXTTRACK        11
+#define APPCOMMAND_MEDIA_PREVIOUSTRACK    12
+#define APPCOMMAND_MEDIA_STOP             13
+#define APPCOMMAND_MEDIA_PLAY_PAUSE       14
+#define APPCOMMAND_LAUNCH_MAIL            15
+#define APPCOMMAND_LAUNCH_MEDIA_SELECT    16
+#define APPCOMMAND_LAUNCH_APP1            17
+#define APPCOMMAND_LAUNCH_APP2            18
+#define APPCOMMAND_BASS_DOWN              19
+#define APPCOMMAND_BASS_BOOST             20
+#define APPCOMMAND_BASS_UP                21
+#define APPCOMMAND_TREBLE_DOWN            22
+#define APPCOMMAND_TREBLE_UP              23
+#endif // FAPPCOMMAND_MOUSE
+
+// New commands from Windows XP (some even Sp1)
+#ifndef APPCOMMAND_MICROPHONE_VOLUME_MUTE
+#define APPCOMMAND_MICROPHONE_VOLUME_MUTE 24
+#define APPCOMMAND_MICROPHONE_VOLUME_DOWN 25
+#define APPCOMMAND_MICROPHONE_VOLUME_UP   26
+#define APPCOMMAND_HELP                   27
+#define APPCOMMAND_FIND                   28
+#define APPCOMMAND_NEW                    29
+#define APPCOMMAND_OPEN                   30
+#define APPCOMMAND_CLOSE                  31
+#define APPCOMMAND_SAVE                   32
+#define APPCOMMAND_PRINT                  33
+#define APPCOMMAND_UNDO                   34
+#define APPCOMMAND_REDO                   35
+#define APPCOMMAND_COPY                   36
+#define APPCOMMAND_CUT                    37
+#define APPCOMMAND_PASTE                  38
+#define APPCOMMAND_REPLY_TO_MAIL          39
+#define APPCOMMAND_FORWARD_MAIL           40
+#define APPCOMMAND_SEND_MAIL              41
+#define APPCOMMAND_SPELL_CHECK            42
+#define APPCOMMAND_DICTATE_OR_COMMAND_CONTROL_TOGGLE    43
+#define APPCOMMAND_MIC_ON_OFF_TOGGLE      44
+#define APPCOMMAND_CORRECTION_LIST        45
+#define APPCOMMAND_MEDIA_PLAY             46
+#define APPCOMMAND_MEDIA_PAUSE            47
+#define APPCOMMAND_MEDIA_RECORD           48
+#define APPCOMMAND_MEDIA_FAST_FORWARD     49
+#define APPCOMMAND_MEDIA_REWIND           50
+#define APPCOMMAND_MEDIA_CHANNEL_UP       51
+#define APPCOMMAND_MEDIA_CHANNEL_DOWN     52
+#endif // APPCOMMAND_MICROPHONE_VOLUME_MUTE
+
+#define VK_MEDIA_NEXT_TRACK 0xB0
+#define VK_MEDIA_PREV_TRACK 0xB1
+#define VK_MEDIA_PLAY_PAUSE 0xB3
+#define VK_MEDIA_STOP 0xB2
+
+bool TSMPlayer::winEventFilter(MSG * msg, long * result) {
+	//qDebug() << "TSMPlayer::winEventFilter" << msg->message << "lParam:" << msg->lParam;
+
+	static uint last_appcommand = 0;
+
+	if (msg->message == WM_KEYDOWN) {
+		//qDebug("TSMPlayer::winEventFilter: WM_KEYDOWN: %X", msg->wParam);
+		bool eat_key = false;
+		if ((last_appcommand == APPCOMMAND_MEDIA_NEXTTRACK) && (msg->wParam == VK_MEDIA_NEXT_TRACK)) eat_key = true;
+		else
+		if ((last_appcommand == APPCOMMAND_MEDIA_PREVIOUSTRACK) && (msg->wParam == VK_MEDIA_PREV_TRACK)) eat_key = true;
+		else
+		if ((last_appcommand == APPCOMMAND_MEDIA_PLAY_PAUSE) && (msg->wParam == VK_MEDIA_PLAY_PAUSE)) eat_key = true;
+		else
+		if ((last_appcommand == APPCOMMAND_MEDIA_STOP) && (msg->wParam == VK_MEDIA_STOP)) eat_key = true;
+
+		if (eat_key) {
+			qDebug("TSMPlayer::winEventFilter: ignoring key %X", msg->wParam);
+			last_appcommand = 0;
+			*result = true;
+			return true;
+		}
+	}
+	else
+	if (msg->message == WM_APPCOMMAND) {
+		/*
+		QKeySequence k(Qt::Key_MediaTogglePlayPause);
+		qDebug() << "TSMPlayer::winEventFilter" << k.toString();
+		*/
+
+		//qDebug() << "TSMPlayer::winEventFilter" << msg->message << "lParam:" << msg->lParam;
+		uint cmd  = GET_APPCOMMAND_LPARAM(msg->lParam);
+		uint uDevice = GET_DEVICE_LPARAM(msg->lParam);
+		uint dwKeys = GET_KEYSTATE_LPARAM(msg->lParam);
+		qDebug() << "TSMPlayer::winEventFilter: cmd:" << cmd <<"uDevice:" << uDevice << "dwKeys:" << dwKeys;
+
+		//if (uDevice == FAPPCOMMAND_KEY) {
+			int key = 0;
+			Qt::KeyboardModifiers modifier = Qt::NoModifier;
+			QString name;
+
+			switch (cmd) {
+				case APPCOMMAND_MEDIA_PAUSE: key = Qt::Key_MediaPause; name = "Media Pause"; break;
+				case APPCOMMAND_MEDIA_PLAY: key = Qt::Key_MediaPlay; name = "Media Play"; break;
+				case APPCOMMAND_MEDIA_STOP: key = Qt::Key_MediaStop; name = "Media Stop"; break;
+				case APPCOMMAND_MEDIA_PLAY_PAUSE: key = Qt::Key_MediaTogglePlayPause; name = "Toggle Media Play/Pause"; break;
+
+				case APPCOMMAND_MEDIA_NEXTTRACK: key = Qt::Key_MediaNext; name = "Media Next"; break;
+				case APPCOMMAND_MEDIA_PREVIOUSTRACK: key = Qt::Key_MediaPrevious; name = "Media Previous"; break;
+
+				case APPCOMMAND_MEDIA_FAST_FORWARD: key = Qt::Key_F; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
+				case APPCOMMAND_MEDIA_REWIND: key = Qt::Key_B; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
+			}
+
+			if (key != 0) {
+				last_appcommand = cmd;
+
+				QKeyEvent event(QEvent::KeyPress, key, modifier, name);
+				QWidget * w = QApplication::focusWidget();
+				if (w) QCoreApplication::sendEvent(w, &event);
+				*result = true;
+				return true;
+			}
+		//}
+	}
+
+	return false;
+}
+#endif // USE_WINEVENTFILTER
 
 #include "moc_smplayer.cpp"

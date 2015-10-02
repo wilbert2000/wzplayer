@@ -181,7 +181,6 @@ HEADERS += guiconfig.h \
 	clhelp.h \
 	cleanconfig.h \
 	smplayer.h \
-	myapplication.h \
     maps/map.h \
     maps/tracks.h \
     maps/titletracks.h \
@@ -282,7 +281,6 @@ SOURCES	+= version.cpp \
 	clhelp.cpp \
 	cleanconfig.cpp \
 	smplayer.cpp \
-	myapplication.cpp \
     maps/map.cpp \
     maps/tracks.cpp \
     maps/titletracks.cpp \
