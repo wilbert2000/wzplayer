@@ -66,80 +66,6 @@ SMPlayer::SMPlayer() :
 SMPlayer::~SMPlayer() {
 }
 
-void SMPlayer::createGUI() {
-
-#ifdef SKINS
-	if (gui_to_use == "SkinGUI") {
-		QString theme = pref->iconset;
-		if (theme.isEmpty()) theme = "Gonzo";
-		QString user_theme_dir = Paths::configPath() + "/themes/" + theme;
-		QString theme_dir = Paths::themesPath() + "/" + theme;
-		qDebug("SMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
-		qDebug("SMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
-		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
-			if (pref->iconset.isEmpty()) pref->iconset = theme;
-		} else {
-			qWarning("SMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
-			gui_to_use = "DefaultGUI";
-			pref->iconset = "";
-			pref->gui = gui_to_use;
-		}
-	}
-#endif
-
-	qDebug() << "SMPlayer::createGUI:" << gui_to_use;
-
-#ifdef SKINS
-	if (gui_to_use.toLower() == "skingui")
-		main_window = new Gui::TSkin(0);
-	else
-#endif
-
-#ifdef MPCGUI
-	if (gui_to_use.toLower() == "mpcgui")
-		main_window = new Gui::TMpc(0);
-	else
-#endif
-
-	if (gui_to_use.toLower() == "minigui")
-		main_window = new Gui::TMini(0);
-	else
-		main_window = new Gui::TDefault(0);
-
-	main_window->loadConfig("");
-	qDebug("SMPlayer::createGUI: loadConfig done. Translating...");
-	main_window->retranslate();
-
-	main_window->setForceCloseOnFinish(close_at_end);
-	main_window->setForceStartInFullscreen(start_in_fullscreen);
-
-	connect(main_window, SIGNAL(requestRestart()), this, SLOT(restart()));
-
-#if SINGLE_INSTANCE
-	MyApplication* app = MyApplication::instance();
-	connect(app, SIGNAL(messageReceived(const QString&)),
-			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
-	app->setActivationWindow(main_window);
-#endif
-
-	if (move_gui) {
-		qDebug("SMPlayer::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
-		main_window->move(gui_position);
-	}
-	if (resize_gui) {
-		qDebug("SMPlayer::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
-		main_window->resize(gui_size);
-	}
-
-	qDebug() << "SMPlayer::createGUI: created" << gui_to_use;
-}
-
-void SMPlayer::restart() {
-	qDebug("SMPlayer::restart");
-
-	requested_restart = true;
-}
-
 SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 	qDebug("SMPlayer::processArgs: arguments: %d", args.count());
 	for (int n = 0; n < args.count(); n++) {
@@ -363,6 +289,80 @@ SMPlayer::ExitCode SMPlayer::processArgs(QStringList args) {
 	return SMPlayer::NoExit;
 }
 
+void SMPlayer::createGUI() {
+
+#ifdef SKINS
+	if (gui_to_use == "SkinGUI") {
+		QString theme = pref->iconset;
+		if (theme.isEmpty()) theme = "Gonzo";
+		QString user_theme_dir = Paths::configPath() + "/themes/" + theme;
+		QString theme_dir = Paths::themesPath() + "/" + theme;
+		qDebug("SMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
+		qDebug("SMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
+		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
+			if (pref->iconset.isEmpty()) pref->iconset = theme;
+		} else {
+			qWarning("SMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
+			gui_to_use = "DefaultGUI";
+			pref->iconset = "";
+			pref->gui = gui_to_use;
+		}
+	}
+#endif
+
+	qDebug() << "SMPlayer::createGUI:" << gui_to_use;
+
+#ifdef SKINS
+	if (gui_to_use.toLower() == "skingui")
+		main_window = new Gui::TSkin(0);
+	else
+#endif
+
+#ifdef MPCGUI
+	if (gui_to_use.toLower() == "mpcgui")
+		main_window = new Gui::TMpc(0);
+	else
+#endif
+
+	if (gui_to_use.toLower() == "minigui")
+		main_window = new Gui::TMini(0);
+	else
+		main_window = new Gui::TDefault(0);
+
+	main_window->loadConfig("");
+	qDebug("SMPlayer::createGUI: loadConfig done. Translating...");
+	main_window->retranslate();
+
+	main_window->setForceCloseOnFinish(close_at_end);
+	main_window->setForceStartInFullscreen(start_in_fullscreen);
+
+	connect(main_window, SIGNAL(requestRestart()), this, SLOT(restart()));
+
+#if SINGLE_INSTANCE
+	MyApplication* app = MyApplication::instance();
+	connect(app, SIGNAL(messageReceived(const QString&)),
+			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
+	app->setActivationWindow(main_window);
+#endif
+
+	if (move_gui) {
+		qDebug("SMPlayer::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
+		main_window->move(gui_position);
+	}
+	if (resize_gui) {
+		qDebug("SMPlayer::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
+		main_window->resize(gui_size);
+	}
+
+	qDebug() << "SMPlayer::createGUI: created" << gui_to_use;
+}
+
+void SMPlayer::restart() {
+	qDebug("SMPlayer::restart");
+
+	requested_restart = true;
+}
+
 void SMPlayer::start() {
 	qDebug("SMPlayer::start");
 
@@ -415,21 +415,20 @@ void SMPlayer::showInfo() {
 	}
 #endif
 	QString s = QObject::tr("This is SMPlayer v. %1 running on %2")
-            .arg(Version::printable())
+				.arg(Version::printable())
 #ifdef Q_OS_LINUX
-           .arg("Linux")
+				.arg("Linux");
 #else
 #ifdef Q_OS_WIN
-           .arg("Windows ("+win_ver+")")
+				.arg("Windows ("+win_ver+")");
 #else
 #ifdef Q_OS_OS2
-           .arg("eCS (OS/2)")
+				.arg("eCS (OS/2)");
 #else
-		   .arg("Other OS")
+				.arg("Other OS");
 #endif
 #endif
 #endif
-           ;
 
 	printf("%s\n", s.toLocal8Bit().data() );
 	qDebug("%s", s.toUtf8().data() );
