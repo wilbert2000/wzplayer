@@ -16,51 +16,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "myapplication.h"
 #include "smplayer.h"
-#include "global.h"
-
+#include <QDebug>
 
 int main(int argc, char ** argv) {
 
-	MyApplication app(argc, argv);
-
-	// Get config path from args
-	QString config_path;
-	QStringList args = app.arguments();
-	int pos = args.indexOf("-config-path");
-	if ( pos != -1) {
-		if (pos+1 < args.count()) {
-			pos++;
-			config_path = args[pos];
-			// Delete from list
-			args.removeAt(pos);
-			args.removeAt(pos-1);
-		} else {
-			printf("Error: expected parameter for -config-path\r\n");
-			return SMPlayer::ErrorArgument;
-		}
-	}
-
-	// Load setting, preferences, setup logging and translation
-	Global::global_init(config_path);
-
-	SMPlayer* smplayer = new SMPlayer();
-	SMPlayer::ExitCode c = smplayer->processArgs(args);
-	if (c != SMPlayer::NoExit) {
+	TSMPlayer app(argc, argv);
+	TSMPlayer::ExitCode c = app.processArgs();
+	if (c != TSMPlayer::NoExit) {
 		return c;
 	}
 
 	int exit_code;
 	do {
-		smplayer->start();
+		app.start();
 		qDebug("main: calling exec()");
 		exit_code = app.exec();
 		qDebug("main: exec() returned %d", exit_code);
-	} while (smplayer->requested_restart);
-
-	delete smplayer;
-	Global::global_end();
+	} while (app.requested_restart);
 
 	return exit_code;
 }
