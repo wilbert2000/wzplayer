@@ -176,8 +176,12 @@ bool MyApplication::winEventFilter(MSG * msg, long * result) {
 }
 #endif // USE_WINEVENTFILTER
 
-MyApplication::MyApplication(const QString& appId, int& argc, char** argv) :
-	TBaseApp(appId, argc, argv) {
+MyApplication::MyApplication(int& argc, char** argv) :
+	TBaseApp(
+#ifdef SINGLE_INSTANCE
+		"smplayer", // AppID
+#endif
+		argc, argv) {
 
 	Paths::setAppPath(applicationDirPath());
 	// Change the working directory to the application path

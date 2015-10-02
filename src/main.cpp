@@ -21,10 +21,9 @@
 #include "global.h"
 
 
-int main( int argc, char ** argv ) 
-{
-	MyApplication app("smplayer", argc, argv);
+int main(int argc, char ** argv) {
 
+	MyApplication app(argc, argv);
 
 	// Get config path from args
 	QString config_path;

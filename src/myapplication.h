@@ -29,31 +29,17 @@
 
 #ifdef SINGLE_INSTANCE
 #include "QtSingleApplication"
-
-class TBaseApp : public QtSingleApplication {
-public:
-	TBaseApp(const QString& appId, int& argc, char** argv)
-		: QtSingleApplication(appId, argc, argv) {}
-	~TBaseApp() {}
-};
-
+typedef QtSingleApplication TBaseApp;
 #else
 #include <QApplication>
-
-class TBaseApp : public QApplication {
-public:
-	TBaseApp(const QString& appId, int& argc, char** argv)
-		: QApplication(argc, argv) {};
-	~TBaseApp() {}
-};
+typedef QApplication TBaseApp;
 #endif
-
 
 class MyApplication : public TBaseApp {
 	Q_OBJECT
 
 public:
-	MyApplication(const QString& appId, int& argc, char** argv);
+	MyApplication(int& argc, char** argv);
 	~MyApplication() {}
 
 	virtual void commitData(QSessionManager& /*manager*/) {
