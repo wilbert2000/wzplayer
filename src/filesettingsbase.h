@@ -26,8 +26,8 @@ class MediaSettings;
 class FileSettingsBase
 {
 public:
-	FileSettingsBase(QString directory) { output_directory = directory; };
-	virtual ~FileSettingsBase() {};
+	FileSettingsBase(QString directory) { output_directory = directory; }
+	virtual ~FileSettingsBase() {}
 
 	virtual bool existSettingsFor(QString filename) = 0;
 
