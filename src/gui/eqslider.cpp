@@ -16,14 +16,15 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "eqslider.h"
+#include "gui/eqslider.h"
 #include <QSlider>
 #include <QLabel>
 #include <QPixmap>
 #include "verticaltext.h"
 
+namespace Gui {
 
-EqSlider::EqSlider( QWidget* parent, Qt::WindowFlags f) 
+TEqSlider::TEqSlider( QWidget* parent, Qt::WindowFlags f) 
 	: QWidget(parent, f)
 {
 	setupUi(this);
@@ -39,41 +40,43 @@ EqSlider::EqSlider( QWidget* parent, Qt::WindowFlags f)
              this, SLOT(sliderValueChanged(int)) );
 }
 
-EqSlider::~EqSlider() {
+TEqSlider::~TEqSlider() {
 }
 
 /*
-void EqSlider::languageChange() {
+void TEqSlider::languageChange() {
 }
 */
 
-void EqSlider::setIcon( QPixmap i) {
+void TEqSlider::setIcon( QPixmap i) {
 	_icon->setPixmap(i);
 }
 
-const QPixmap * EqSlider::icon() const {
+const QPixmap * TEqSlider::icon() const {
 	return _icon->pixmap();
 }
 
-void EqSlider::setLabel( QString s) {
+void TEqSlider::setLabel( QString s) {
 	_label->setText(s);
 }
 
-QString EqSlider::label() const {
+QString TEqSlider::label() const {
 	return _label->text();
 }
 
-void EqSlider::setValue(int value) {
+void TEqSlider::setValue(int value) {
 	_slider->setValue(value);
 	value_label->setNum(value);
 }
 
-int EqSlider::value() const {
+int TEqSlider::value() const {
 	return _slider->value();
 }
 
-void EqSlider::sliderValueChanged(int v) {
+void TEqSlider::sliderValueChanged(int v) {
 	emit valueChanged( v );
 }
+
+} // namespace Gui
 
 #include "moc_eqslider.cpp"

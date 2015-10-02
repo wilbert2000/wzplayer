@@ -57,7 +57,7 @@
 #include "discname.h"
 #include "logwindow.h"
 #include "filepropertiesdialog.h"
-#include "eqslider.h"
+#include "gui/eqslider.h"
 #include "videoequalizer.h"
 #include "audioequalizer.h"
 #include "inputdvddirectory.h"

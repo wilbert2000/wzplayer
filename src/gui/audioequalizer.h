@@ -24,11 +24,11 @@
 #include <QHideEvent>
 #include <QShowEvent>
 #include "audioequalizerlist.h"
+#include "gui/eqslider.h"
 
 class QLabel;
 class QComboBox;
 class QPushButton;
-class EqSlider;
 
 namespace Gui {
 
@@ -44,7 +44,7 @@ public:
 	TAudioEqualizer( QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog );
 	~TAudioEqualizer();
 
-	EqSlider * eq[10];
+	TEqSlider * eq[10];
 
 	void setEqualizer(AudioEqualizerList l);
 

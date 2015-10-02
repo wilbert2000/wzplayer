@@ -17,13 +17,15 @@
 */
 
 
-#ifndef _EQSLIDER_H_
-#define _EQSLIDER_H_
+#ifndef _GUI_EQSLIDER_H_
+#define _GUI_EQSLIDER_H_
 
 #include "ui_eqslider.h"
 #include <QPixmap>
 
-class EqSlider : public QWidget, public Ui::EqSlider
+namespace Gui {
+
+class TEqSlider : public QWidget, public Ui::TEqSlider
 {
 	Q_OBJECT
 	Q_PROPERTY(QPixmap icon READ icon WRITE setIcon)
@@ -31,8 +33,8 @@ class EqSlider : public QWidget, public Ui::EqSlider
 	Q_PROPERTY(int value READ value WRITE setValue)
 
 public:
-	EqSlider( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~EqSlider();
+	TEqSlider( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	~TEqSlider();
 
 public slots:
 	void setIcon( QPixmap i);
@@ -59,4 +61,6 @@ protected:
 
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_EQSLIDER_H_

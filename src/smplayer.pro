@@ -147,7 +147,6 @@ HEADERS += guiconfig.h \
 	filepropertiesdialog.h \
 	multilineinputdialog.h \
 	verticaltext.h \
-	eqslider.h \
 	inputdvddirectory.h \
 	stereo3ddialog.h \
 	filedialog.h \
@@ -155,6 +154,7 @@ HEADERS += guiconfig.h \
 	favorites.h \
 	tvlist.h \
 	favoriteeditor.h \
+    gui/eqslider.h \
     gui/videoequalizer.h \
     gui/audioequalizer.h \
     gui/errordialog.h \
@@ -248,7 +248,6 @@ SOURCES	+= version.cpp \
 	filepropertiesdialog.cpp \
 	multilineinputdialog.cpp \
 	verticaltext.cpp \
-	eqslider.cpp \
 	inputdvddirectory.cpp \
 	stereo3ddialog.cpp \
 	filedialog.cpp \
@@ -256,6 +255,7 @@ SOURCES	+= version.cpp \
 	favorites.cpp \
 	tvlist.cpp \
 	favoriteeditor.cpp \
+    gui/eqslider.cpp \
     gui/videoequalizer.cpp \
     gui/audioequalizer.cpp \
     gui/errordialog.cpp \
@@ -291,7 +291,7 @@ SOURCES	+= version.cpp \
     log.cpp
 
 FORMS = inputdvddirectory.ui gui/logwindow.ui filepropertiesdialog.ui \
-        eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui pref/vdpauproperties.ui \
+        gui/eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui pref/vdpauproperties.ui \
         pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
         pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \
         pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui favoriteeditor.ui \

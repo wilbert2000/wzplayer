@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>EqSlider</class>
- <widget class="QWidget" name="EqSlider" >
+ <class>Gui::TEqSlider</class>
+ <widget class="QWidget" name="Gui::TEqSlider" >
   <property name="geometry" >
    <rect>
     <x>0</x>

@@ -17,7 +17,7 @@
 */
 
 #include "gui/audioequalizer.h"
-#include "eqslider.h"
+#include "gui/eqslider.h"
 #include "images.h"
 #include "preferences.h"
 #include "global.h"
@@ -39,7 +39,7 @@ TAudioEqualizer::TAudioEqualizer( QWidget* parent, Qt::WindowFlags f)
 	QBoxLayout *bl = new QHBoxLayout; //(0, 4, 2);
 
 	for (int n = 0; n < 10; n++) {
-		eq[n] = new EqSlider(this);
+		eq[n] = new TEqSlider(this);
 		eq[n]->setIcon( QPixmap() );
 		eq[n]->sliderWidget()->setRange(-120, 120);
 		eq[n]->sliderWidget()->setTracking(false);
