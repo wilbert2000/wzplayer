@@ -30,9 +30,7 @@
 #include "proc/playerprocess.h"
 #include "mplayerwindow.h"
 
-#ifndef NO_USE_INI_FILES
 class FileSettingsBase;
-#endif
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -68,6 +66,7 @@ public:
 	void close();
 
 	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; }
+	void changeFileSettingsMethod(QString method);
 	bool haveExternalSubs();
 
 protected:
@@ -336,12 +335,6 @@ public slots:
 						  int level = 1);
 	void clearOSD();
 
-public:
-
-#ifndef NO_USE_INI_FILES
-	void changeFileSettingsMethod(QString method);
-#endif
-
 protected:
 	void seek_cmd(double secs, int mode);
 
@@ -402,16 +395,14 @@ protected slots:
 #endif
 
 protected:
-	void restartPlay();
 	void initPlaying(int seek=-1);
 	void newMediaPlaying();
 
 	void startPlayer(QString file, double seek = -1 );
 	void stopPlayer();
+	void restartPlay();
 
-#ifndef NO_USE_INI_FILES
 	void saveMediaInfo();
-#endif
 
 	void updateWidgets();
 
@@ -476,10 +467,8 @@ protected:
 	Proc::PlayerProcess * proc;
 	MplayerWindow * mplayerwindow;
 
-#ifndef NO_USE_INI_FILES
 	FileSettingsBase * file_settings;
 	FileSettingsBase * tv_settings;
-#endif
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF

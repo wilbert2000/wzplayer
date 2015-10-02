@@ -87,9 +87,7 @@
 #include "tvlist.h"
 
 #include "pref/dialog.h"
-#ifndef NO_USE_INI_FILES
 #include "pref/general.h"
-#endif
 #include "pref/interface.h"
 #include "pref/input.h"
 #include "pref/advanced.h"
@@ -2883,12 +2881,10 @@ void TBase::applyNewPreferences() {
 		}
 	}
 
-#ifndef NO_USE_INI_FILES
 	Pref::TGeneral *_general = pref_dialog->mod_general();
 	if (_general->fileSettingsMethodChanged()) {
 		core->changeFileSettingsMethod(pref->file_settings_method);
 	}
-#endif
 
 	Pref::TInterface *_interface = pref_dialog->mod_interface();
 	if (_interface->recentsChanged()) {
@@ -2965,10 +2961,7 @@ void TBase::applyNewPreferences() {
 	// Update actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();
 	saveActions();
-
-#ifndef NO_USE_INI_FILES
 	pref->save();
-#endif
 
 	// Any restarts needed?
 	if (_interface->guiChanged()

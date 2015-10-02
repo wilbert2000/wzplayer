@@ -56,17 +56,12 @@ Preferences::Preferences() {
 	filters = new Filters;
 
 	reset();
-
-#ifndef NO_USE_INI_FILES
 	load();
-#endif
 }
 
 Preferences::~Preferences() {
 
-#ifndef NO_USE_INI_FILES
 	save();
-#endif
 
 	delete filters;
 	delete history_urls;
@@ -527,7 +522,6 @@ void Preferences::reset() {
 #endif
 }
 
-#ifndef NO_USE_INI_FILES
 void Preferences::save() {
 	qDebug("Preferences::save");
 
@@ -1594,8 +1588,6 @@ void Preferences::load() {
 	}
 #endif
 }
-
-#endif // NO_USE_INI_FILES
 
 double Preferences::monitor_aspect_double() {
 	qDebug("Preferences::monitor_aspect_double");

@@ -189,10 +189,8 @@ public:
 
 	void list();
 
-#ifndef NO_USE_INI_FILES
 	void save(QSettings * set, int player_id);
 	void load(QSettings * set, int player_id);
-#endif
 
 private:
 	MediaData* md;

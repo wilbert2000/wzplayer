@@ -59,10 +59,8 @@ public:
 
 	virtual void reset();
 
-#ifndef NO_USE_INI_FILES
 	void save();
 	void load();
-#endif
 
 	double monitor_aspect_double();
 	void setupScreenshotFolder();
