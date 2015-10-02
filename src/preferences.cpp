@@ -50,6 +50,7 @@
 using namespace Global;
 
 Preferences::Preferences() {
+
 	history_recents = new Recents;
 	history_urls = new URLHistory;
 	filters = new Filters;
@@ -62,13 +63,14 @@ Preferences::Preferences() {
 }
 
 Preferences::~Preferences() {
+
 #ifndef NO_USE_INI_FILES
 	save();
 #endif
 
-	delete history_recents;
-	delete history_urls;
 	delete filters;
+	delete history_urls;
+	delete history_recents;
 }
 
 void Preferences::reset() {

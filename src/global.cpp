@@ -37,7 +37,13 @@ void global_init(const QString& config_path) {
 
 	// Settings
 	if (config_path.isEmpty()) {
-		Paths::createConfigDirectory();
+		// If a smplayer.ini exists in the app path, use that path
+		// TODO: This is the old behaviour, but should prefer ini in home dir.
+		if (QFile::exists(Paths::appPath() + "/smplayer.ini")) {
+			Paths::setConfigPath(Paths::appPath());
+		} else {
+			Paths::createConfigDirectory();
+		}
 	} else {
 		Paths::setConfigPath(config_path);
 	}

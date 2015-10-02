@@ -25,15 +25,9 @@ int main( int argc, char ** argv )
 {
 	MyApplication app("smplayer", argc, argv);
 
-	// Set the config path
-	QString config_path;
-
-	// If a smplayer.ini exists in the app path, use that path
-	if (QFile::exists(app.applicationDirPath() + "/smplayer.ini")) {
-		config_path = app.applicationDirPath();
-	}
 
 	// Get config path from args
+	QString config_path;
 	QStringList args = app.arguments();
 	int pos = args.indexOf("-config-path");
 	if ( pos != -1) {
