@@ -19,7 +19,7 @@
 #ifndef _TV_SETTINGS_H_
 #define _TV_SETTINGS_H_
 
-#include "filesettingsbase.h"
+#include "settings/filesettingsbase.h"
 
 class QSettings;
 

@@ -19,7 +19,7 @@
 #ifndef _FILESETTINGS_HASH_H_
 #define _FILESETTINGS_HASH_H_
 
-#include "filesettingsbase.h"
+#include "settings/filesettingsbase.h"
 
 class FileSettingsHash : public FileSettingsBase
 {

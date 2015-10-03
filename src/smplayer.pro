@@ -109,7 +109,7 @@ HEADERS += guiconfig.h \
 	filters.h \
     settings/smplayersettings.h \
     settings/preferences.h \
-	filesettingsbase.h \
+    settings/filesettingsbase.h \
 	filesettings.h \
 	filesettingshash.h \
 	filehash.h \
@@ -209,7 +209,7 @@ SOURCES	+= version.cpp \
 	filters.cpp \
     settings/smplayersettings.cpp \
     settings/preferences.cpp \
-	filesettingsbase.cpp \
+    settings/filesettingsbase.cpp \
 	filesettings.cpp \
 	filesettingshash.cpp \
 	filehash.cpp \
