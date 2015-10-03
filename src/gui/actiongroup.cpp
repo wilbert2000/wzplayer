@@ -69,11 +69,10 @@ QAction* TActionGroup::setChecked(int ID) {
 }
 
 void TActionGroup::setCheckedSlot(int ID) {
-	qDebug("Gui::TActionGroup::setCheckedSlot: %d", ID);
+	qDebug("Gui::TActionGroup::setCheckedSlot: ID %d", ID);
 
 	setChecked(ID);
 }
-
 
 int TActionGroup::checked() {
 	QAction * a = checkedAction();

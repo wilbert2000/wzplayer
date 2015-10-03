@@ -577,10 +577,10 @@ TTimeSliderAction* TBasePlus::createTimeSliderAction(QWidget* parent) {
 	connect( timeslider_action, SIGNAL( delayedDraggingPos(int) ),
              this, SLOT(goToPosOnDragging(int)) );
 
-	connect(timeslider_action, SIGNAL(wheelUp(TPreferences::WheelFunction)),
-			core, SLOT(wheelUp(TPreferences::WheelFunction)));
-	connect(timeslider_action, SIGNAL(wheelDown(TPreferences::WheelFunction)),
-			core, SLOT(wheelDown(TPreferences::WheelFunction)));
+	connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::WheelFunction)),
+			core, SLOT(wheelUp(Settings::TPreferences::WheelFunction)));
+	connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::WheelFunction)),
+			core, SLOT(wheelDown(Settings::TPreferences::WheelFunction)));
 
 	return timeslider_action;
 }
