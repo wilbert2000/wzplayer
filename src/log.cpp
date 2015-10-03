@@ -51,7 +51,6 @@ TLog::~TLog() {
 	}
 
 	// Stop handling messages
-
 	log = 0;
 }
 
@@ -100,10 +99,16 @@ void TLog::logLine(QtMsgType type, QString line) {
 	}
 	lines.append(line);
 
-	// Output to STDERR
+	// Output to console
 #ifdef OUTPUT_ON_CONSOLE
 	QByteArray bytes = line.toUtf8();
-	fwrite(bytes.constData(), 1, bytes.size(), stderr);
+	if (type == QtDebugMsg) {
+		fwrite(bytes.constData(), 1, bytes.size(), stdout);
+		fflush(stdout);
+	} else {
+		fwrite(bytes.constData(), 1, bytes.size(), stderr);
+		fflush(stderr);
+	}
 #endif
 
 	// Output to log file

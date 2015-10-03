@@ -19,7 +19,7 @@
 #include "smplayer.h"
 #include <QDebug>
 
-int main(int argc, char ** argv) {
+int main(int argc, char** argv) {
 
 	TSMPlayer app(argc, argv);
 	int exit_code = app.processArgs();

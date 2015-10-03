@@ -498,7 +498,6 @@ void TSMPlayer::showInfo() {
 #endif
 #endif
 
-	printf("%s\n", s.toLocal8Bit().data() );
 	qDebug("%s", s.toUtf8().data() );
 	qDebug("Compiled with Qt v. %s, using %s", QT_VERSION_STR, qVersion());
 
