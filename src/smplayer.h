@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QSettings>
 
+#include "log.h"
 #include "gui/base.h"
 
 #ifdef Q_OS_WIN
@@ -66,6 +67,7 @@ private slots:
 	void setRequestedRestart();
 
 private:
+	TLog log;
 	Gui::TBase* main_window;
 	bool requested_restart;
 

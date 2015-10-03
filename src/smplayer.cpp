@@ -57,6 +57,7 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 		"smplayer", // AppID
 #endif
 		argc, argv),
+	log(true, false, ".*"),
 	main_window(0),
 	requested_restart(false),
 	gui_to_use("DefaultGUI"),
@@ -82,8 +83,6 @@ TSMPlayer::~TSMPlayer() {
 	// windows. Hence, there is no guarantee that the application will have time
 	// to exit its event loop and execute code at the end of the main() function.
 	delete Translator::translator;
-	delete TLog::log;
-	// settings owned by this
 }
 
 void TSMPlayer::loadConfig(const QString& config_path) {
@@ -92,8 +91,10 @@ void TSMPlayer::loadConfig(const QString& config_path) {
 	Paths::setConfigPath(config_path);
 	Settings::pref = new Settings::TPreferences(this);
 
-	// Start log
-	TLog::log = new TLog(pref->log_enabled, pref->log_file, pref->log_filter);
+	// Reconfig log
+	TLog::log->setEnabled(pref->log_enabled);
+	TLog::log->setLogFileEnabled(pref->log_file);
+	TLog::log->setFilter(pref->log_filter);
 
 	// Translator
 	Translator::translator = new Translator();

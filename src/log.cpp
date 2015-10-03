@@ -19,11 +19,6 @@ TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter)
 	// Reserve a buf for logLine()
 	lines.reserve(LOG_BUF_LENGTH);
 
-	// Open log file
-	if (log_file_enabled) {
-		setLogFileEnabled(log_file_enabled);
-	}
-
 	// Install message handler
 #if QT_VERSION >= 0x050000
 	qInstallMessageHandler(messageHandler);
@@ -33,21 +28,26 @@ TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter)
 
 	// Start handling messages
 	log = this;
+
+	// Open log file
+	if (log_file_enabled) {
+		setLogFileEnabled(log_file_enabled);
+	}
+
 	qDebug("TLog::Tlog: started log at %s",
 			QDateTime::currentDateTime().toString().toUtf8().data());
 }
 
 TLog::~TLog() {
 
-	// Stop passing messages to window
+	// Don't pass messages to window
 	log_window = 0;
+
 	qDebug("TLog::~Tlog: stopping log at %s",
 			QDateTime::currentDateTime().toString().toUtf8().data());
 
 	// Close log file
-	if (file.isOpen()) {
-		file.close();
-	}
+	file.close();
 
 	// Stop handling messages
 	log = 0;
@@ -58,8 +58,16 @@ void TLog::setLogFileEnabled(bool log_file_enabled) {
 	if (log_file_enabled) {
 		// Open log file
 		if (!file.isOpen()) {
-			file.setFileName(Paths::configPath() + "/smplayer_log.txt");
+			QString filename = Paths::configPath() + "/smplayer_log.txt";
+			file.setFileName(filename);
 			file.open(QIODevice::WriteOnly);
+			if (file.isOpen()) {
+				qDebug("TLog::setLogFileEnabled: opened log file '%s'",
+					   filename.toUtf8().data());
+			} else {
+				qWarning("TLog::setLogFileEnabled: failed to open '%s'",
+						 filename.toUtf8().data());
+			}
 		}
 	} else {
 		file.close();

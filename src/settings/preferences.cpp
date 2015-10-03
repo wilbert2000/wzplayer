@@ -56,25 +56,23 @@ TPreferences* pref = 0;
 TPreferences::TPreferences(QObject* parent) :
 	TSMPlayerSettings(Paths::configPath() + "/smplayer.ini", parent) {
 
-	pref = this;
-
 	history_recents = new Recents;
 	history_urls = new URLHistory;
 	filters = new Filters;
 
 	reset();
 	load();
+	pref = this;
 }
 
 TPreferences::~TPreferences() {
 
+	pref = 0;
 	save();
 
 	delete filters;
 	delete history_urls;
 	delete history_recents;
-
-	pref = 0;
 }
 
 void TPreferences::reset() {
