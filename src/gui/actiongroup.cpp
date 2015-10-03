@@ -33,10 +33,12 @@ TActionGroupItem::TActionGroupItem(QObject * parent, TActionGroup *group,
 	if (group) group->addAction(this);
 }
 
-TActionGroupItem::TActionGroupItem(QObject * parent, TActionGroup *group,
-                                     const QString & text,
-                                     const char * name, 
-                                     int data, bool autoadd)
+TActionGroupItem::TActionGroupItem(QObject * parent,
+								   TActionGroup *group,
+								   const QString & text,
+								   const char * name,
+								   int data,
+								   bool autoadd)
 	: TAction(parent, name, autoadd)
 {
 	setData(data);
@@ -46,11 +48,12 @@ TActionGroupItem::TActionGroupItem(QObject * parent, TActionGroup *group,
 }
 
 
-TActionGroup::TActionGroup( QObject * parent ) : QActionGroup(parent)
+TActionGroup::TActionGroup(const QString& obj_name, QObject* parent) : QActionGroup(parent)
 {
+	setObjectName(obj_name);
 	setExclusive(true);
 	connect( this, SIGNAL(triggered(QAction *)), 
-             this, SLOT(itemTriggered(QAction *)) );
+			 this, SLOT(itemTriggered(QAction *)) );
 }
 
 QAction* TActionGroup::setChecked(int ID) {
@@ -68,10 +71,11 @@ QAction* TActionGroup::setChecked(int ID) {
 	return 0;
 }
 
-void TActionGroup::setCheckedSlot(int ID) {
-	qDebug("Gui::TActionGroup::setCheckedSlot: ID %d", ID);
+void TActionGroup::setCheckedSlot(int id) {
+	qDebug("Gui::TActionGroup::setCheckedSlot: group %s id %d",
+		   objectName().toUtf8().data(), id);
 
-	setChecked(ID);
+	setChecked(id);
 }
 
 int TActionGroup::checked() {

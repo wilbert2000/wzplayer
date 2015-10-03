@@ -1060,7 +1060,7 @@ void TBase::createActions() {
 	// Group actions
 
 	// OSD
-	osdGroup = new TActionGroup(this);
+	osdGroup = new TActionGroup("osd", this);
 	osdNoneAct = new TActionGroupItem(this, osdGroup, "osd_none", Settings::TPreferences::None);
 	osdSeekAct = new TActionGroupItem(this, osdGroup, "osd_seek", Settings::TPreferences::Seek);
 	osdTimerAct = new TActionGroupItem(this, osdGroup, "osd_timer", Settings::TPreferences::SeekTimer);
@@ -1068,21 +1068,21 @@ void TBase::createActions() {
 	connect( osdGroup, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)) );
 
 	// Denoise
-	denoiseGroup = new TActionGroup(this);
+	denoiseGroup = new TActionGroup("denoise", this);
 	denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none", MediaSettings::NoDenoise);
 	denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", MediaSettings::DenoiseNormal);
 	denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", MediaSettings::DenoiseSoft);
 	connect( denoiseGroup, SIGNAL(activated(int)), core, SLOT(changeDenoise(int)) );
 
 	// Unsharp group
-	unsharpGroup = new TActionGroup(this);
+	unsharpGroup = new TActionGroup("unsharp", this);
 	unsharpNoneAct = new TActionGroupItem(this, unsharpGroup, "unsharp_off", 0);
 	blurAct = new TActionGroupItem(this, unsharpGroup, "blur", 1);
 	sharpenAct = new TActionGroupItem(this, unsharpGroup, "sharpen", 2);
 	connect( unsharpGroup, SIGNAL(activated(int)), core, SLOT(changeUnsharp(int)) );
 
 	// Video size
-	sizeGroup = new TActionGroup(this);
+	sizeGroup = new TActionGroup("size", this);
 	size50 = new TActionGroupItem(this, sizeGroup, "5&0%", "size_50", 50);
 	size75 = new TActionGroupItem(this, sizeGroup, "7&5%", "size_75", 75);
 	size100 = new TActionGroupItem(this, sizeGroup, "&100%", "size_100", 100);
@@ -1099,7 +1099,7 @@ void TBase::createActions() {
 	mplayerwindow->setSizeGroup(sizeGroup);
 
 	// Deinterlace
-	deinterlaceGroup = new TActionGroup(this);
+	deinterlaceGroup = new TActionGroup("deinterlace", this);
 	deinterlaceNoneAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_none", MediaSettings::NoDeinterlace);
 	deinterlaceL5Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_l5", MediaSettings::L5);
 	deinterlaceYadif0Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif0", MediaSettings::Yadif);
@@ -1110,7 +1110,7 @@ void TBase::createActions() {
              core, SLOT(changeDeinterlace(int)) );
 
 	// Audio channels
-	channelsGroup = new TActionGroup(this);
+	channelsGroup = new TActionGroup("channels", this);
 	/* channelsDefaultAct = new TActionGroupItem(this, channelsGroup, "channels_default", MediaSettings::ChDefault); */
 	channelsStereoAct = new TActionGroupItem(this, channelsGroup, "channels_stereo", MediaSettings::ChStereo);
 	channelsSurroundAct = new TActionGroupItem(this, channelsGroup, "channels_surround", MediaSettings::ChSurround);
@@ -1121,7 +1121,7 @@ void TBase::createActions() {
              core, SLOT(setAudioChannels(int)) );
 
 	// Stereo mode
-	stereoGroup = new TActionGroup(this);
+	stereoGroup = new TActionGroup("stereo", this);
 	stereoAct = new TActionGroupItem(this, stereoGroup, "stereo", MediaSettings::Stereo);
 	leftChannelAct = new TActionGroupItem(this, stereoGroup, "left_channel", MediaSettings::Left);
 	rightChannelAct = new TActionGroupItem(this, stereoGroup, "right_channel", MediaSettings::Right);
@@ -1131,7 +1131,7 @@ void TBase::createActions() {
              core, SLOT(setStereoMode(int)) );
 
 	// Video aspect
-	aspectGroup = new TActionGroup(this);
+	aspectGroup = new TActionGroup("aspect", this);
 	aspectDetectAct = new TActionGroupItem(this, aspectGroup, "aspect_detect", MediaSettings::AspectAuto);
 	aspect11Act = new TActionGroupItem(this, aspectGroup, "aspect_1:1", MediaSettings::Aspect11 );
 	aspect54Act = new TActionGroupItem(this, aspectGroup, "aspect_5:4", MediaSettings::Aspect54 );
@@ -1153,7 +1153,7 @@ void TBase::createActions() {
              core, SLOT(changeAspectRatio(int)) );
 
 	// Rotate
-	rotateGroup = new TActionGroup(this);
+	rotateGroup = new TActionGroup("rotate", this);
 	rotateNoneAct = new TActionGroupItem(this, rotateGroup, "rotate_none", MediaSettings::NoRotate);
 	rotateClockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise_flip", MediaSettings::Clockwise_flip);
 	rotateClockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise", MediaSettings::Clockwise);
@@ -1163,7 +1163,7 @@ void TBase::createActions() {
              core, SLOT(changeRotate(int)) );
 
 	// On Top
-	onTopActionGroup = new TActionGroup(this);
+	onTopActionGroup = new TActionGroup("ontop", this);
 	onTopAlwaysAct = new TActionGroupItem( this,onTopActionGroup,"on_top_always",Settings::TPreferences::AlwaysOnTop);
 	onTopNeverAct = new TActionGroupItem( this,onTopActionGroup,"on_top_never",Settings::TPreferences::NeverOnTop);
 	onTopWhilePlayingAct = new TActionGroupItem( this,onTopActionGroup,"on_top_playing",Settings::TPreferences::WhilePlayingOnTop);
@@ -1175,7 +1175,7 @@ void TBase::createActions() {
 
 
 #if USE_ADAPTER
-	screenGroup = new TActionGroup(this);
+	screenGroup = new TActionGroup("screen", this);
 	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", -1);
 	#ifdef Q_OS_WIN
 	DeviceList display_devices = DeviceInfo::displayDevices();
@@ -1200,13 +1200,13 @@ void TBase::createActions() {
 
 #if PROGRAM_SWITCH
 	// Program track
-	programTrackGroup = new TActionGroup(this);
+	programTrackGroup = new TActionGroup("programtrack", this);
 	connect( programTrackGroup, SIGNAL(activated(int)), 
 	         core, SLOT(changeProgram(int)) );
 #endif
 
 	// Video track
-	videoTrackGroup = new TActionGroup(this);
+	videoTrackGroup = new TActionGroup("videotrack", this);
 	connect( videoTrackGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeVideoTrack(int)) );
 	connect( core, SIGNAL(videoTrackInfoChanged()),
@@ -1215,7 +1215,7 @@ void TBase::createActions() {
 			 videoTrackGroup, SLOT(setCheckedSlot(int)) );
 
 	// Audio track
-	audioTrackGroup = new TActionGroup(this);
+	audioTrackGroup = new TActionGroup("audiotrack", this);
 	connect( audioTrackGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeAudioTrack(int)) );
 	connect( core, SIGNAL(audioTrackInfoChanged()),
@@ -1223,7 +1223,7 @@ void TBase::createActions() {
 	connect( core, SIGNAL(audioTrackChanged(int)),
 			 audioTrackGroup, SLOT(setCheckedSlot(int)) );
 
-	subtitleTrackGroup = new TActionGroup(this);
+	subtitleTrackGroup = new TActionGroup("subtitletrack", this);
 	connect( subtitleTrackGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeSubtitle(int)) );
 	connect( core, SIGNAL(subtitleInfoChanged()),
@@ -1233,7 +1233,7 @@ void TBase::createActions() {
 
 #ifdef MPV_SUPPORT
 	// Secondary subtitle track
-	secondarySubtitleTrackGroup = new TActionGroup(this);
+	secondarySubtitleTrackGroup = new TActionGroup("secondarysubtitletrack", this);
 	connect( secondarySubtitleTrackGroup, SIGNAL(activated(int)), 
 	         core, SLOT(changeSecondarySubtitle(int)) );
 	// InfoChanged already connected by subtitleTrackGroup
@@ -1243,7 +1243,7 @@ void TBase::createActions() {
 #endif
 
 	// Titles
-	titleGroup = new TActionGroup(this);
+	titleGroup = new TActionGroup("title", this);
 	connect( titleGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeTitle(int)) );
 	connect( core, SIGNAL(titleTrackChanged(int)),
@@ -1252,7 +1252,7 @@ void TBase::createActions() {
 			 this, SLOT(updateTitles()));
 
 	// Chapters
-	chapterGroup = new TActionGroup(this);
+	chapterGroup = new TActionGroup("chapter", this);
 	connect( chapterGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeChapter(int)) );
 	connect( core, SIGNAL(chapterChanged(int)),
@@ -1263,13 +1263,13 @@ void TBase::createActions() {
 			 this, SLOT(updateChapters()));
 
 	// Angles
-	angleGroup = new TActionGroup(this);
+	angleGroup = new TActionGroup("angle", this);
 	connect( angleGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeAngle(int)) );
 	// Update done by updateTitles
 
 
-	ccGroup = new TActionGroup(this);
+	ccGroup = new TActionGroup("cc", this);
 	ccNoneAct = new TActionGroupItem(this, ccGroup, "cc_none", 0);
 	ccChannel1Act = new TActionGroupItem(this, ccGroup, "cc_ch_1", 1);
 	ccChannel2Act = new TActionGroupItem(this, ccGroup, "cc_ch_2", 2);
@@ -1278,7 +1278,7 @@ void TBase::createActions() {
 	connect( ccGroup, SIGNAL(activated(int)),
              core, SLOT(changeClosedCaptionChannel(int)) );
 
-	subFPSGroup = new TActionGroup(this);
+	subFPSGroup = new TActionGroup("subfps", this);
 	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", MediaSettings::SFPS_None);
 	/* subFPS23Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23", MediaSettings::SFPS_23); */
 	subFPS23976Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23976", MediaSettings::SFPS_23976);

@@ -57,7 +57,7 @@ class TActionGroup : public QActionGroup
 	Q_OBJECT
 
 public:
-	TActionGroup ( QObject * parent );
+	TActionGroup (const QString& obj_name, QObject * parent);
 
 	//! Looks for the item which ID is \a ID and checks and returns it
 	//! or 0 if not found
@@ -88,7 +88,7 @@ signals:
 
 protected slots:
 	void itemTriggered(QAction *);
-	void setCheckedSlot(int ID);
+	void setCheckedSlot(int id);
 };
 
 } // namespace Gui
