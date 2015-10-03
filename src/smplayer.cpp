@@ -57,8 +57,8 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 		"smplayer", // AppID
 #endif
 		argc, argv),
-	requested_restart(false),
 	main_window(0),
+	requested_restart(false),
 	gui_to_use("DefaultGUI"),
 	move_gui(false),
 	resize_gui(false),
@@ -76,10 +76,14 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 }
 
 TSMPlayer::~TSMPlayer() {
-
+	// See aboutToQuit() signal. On some platforms the QApplication::exec()
+	// call may not return. For example, on the Windows platform, when the user
+	// logs off, the system terminates the process after Qt closes all top-level
+	// windows. Hence, there is no guarantee that the application will have time
+	// to exit its event loop and execute code at the end of the main() function.
 	delete Translator::translator;
 	delete TLog::log;
-	// settings is owned by this
+	// settings owned by this
 }
 
 void TSMPlayer::loadConfig(const QString& config_path) {
@@ -387,7 +391,8 @@ void TSMPlayer::createGUI() {
 	main_window->setForceCloseOnFinish(close_at_end);
 	main_window->setForceStartInFullscreen(start_in_fullscreen);
 
-	connect(main_window, SIGNAL(requestRestart()), this, SLOT(restart()));
+	connect(main_window, SIGNAL(requestRestart()),
+			this, SLOT(setRequestedRestart()));
 
 #if SINGLE_INSTANCE
 	connect(this, SIGNAL(messageReceived(const QString&)),
@@ -407,16 +412,29 @@ void TSMPlayer::createGUI() {
 	qDebug() << "TSMPlayer::createGUI: created" << gui_to_use;
 }
 
-void TSMPlayer::restart() {
-	qDebug("TSMPlayer::restart");
+void TSMPlayer::setRequestedRestart() {
+	qDebug("TSMPlayer::setRequestedRestart");
 
 	requested_restart = true;
+}
+
+int TSMPlayer::execWithRestart() {
+
+	int exit_code;
+	do {
+		requested_restart = false;
+		start();
+		qDebug("TSMPlayer::execWithRestart: calling exec()");
+		exit_code = exec();
+		qDebug("TSMPlayer::execWithRestart: exec() returned %d", exit_code);
+	} while (requested_restart);
+
+	return exit_code;
 }
 
 void TSMPlayer::start() {
 	qDebug("TSMPlayer::start");
 
-	requested_restart = false;
 	// Create the main window. It will be destoyed when leaving exec().
 	createGUI();
 

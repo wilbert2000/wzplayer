@@ -47,8 +47,6 @@ class TSMPlayer : public TBaseApp {
 public:
 	enum ExitCode { ErrorArgument = -3, NoAction = -2, NoRunningInstance = -1, NoError = 0, NoExit = 1 };
 
-	bool requested_restart;
-
 	TSMPlayer(int& argc, char** argv);
 	virtual ~TSMPlayer();
 
@@ -58,18 +56,18 @@ public:
 
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
 	ExitCode processArgs();
-	void start();
-	void showInfo();
+	int execWithRestart();
 
 #ifdef USE_WINEVENTFILTER
 	virtual bool winEventFilter(MSG* msg, long* result);
 #endif
 
 private slots:
-	void restart();
+	void setRequestedRestart();
 
 private:
 	Gui::TBase* main_window;
+	bool requested_restart;
 
 	QStringList files_to_play;
 	QString subtitle_file;
@@ -89,6 +87,8 @@ private:
 
 	void createGUI();
 	void loadConfig(const QString& config_path);
+	void showInfo();
+	void start();
 };
 
 #endif

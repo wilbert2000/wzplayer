@@ -22,19 +22,13 @@
 int main(int argc, char ** argv) {
 
 	TSMPlayer app(argc, argv);
-	TSMPlayer::ExitCode c = app.processArgs();
-	if (c != TSMPlayer::NoExit) {
-		return c;
+	int exit_code = app.processArgs();
+	if (exit_code == TSMPlayer::NoExit) {
+		qDebug("main: calling execWithRestart()");
+		exit_code = app.execWithRestart();
 	}
 
-	int exit_code;
-	do {
-		app.start();
-		qDebug("main: calling exec()");
-		exit_code = app.exec();
-		qDebug("main: exec() returned %d", exit_code);
-	} while (app.requested_restart);
-
+	qDebug("main: returning %d", exit_code);
 	return exit_code;
 }
 
