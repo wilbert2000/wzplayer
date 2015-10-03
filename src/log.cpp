@@ -33,20 +33,19 @@ TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter)
 
 	// Start handling messages
 	log = this;
-	qDebug("TLog::Tlog: started log at UTC %s",
-			QDateTime::currentDateTimeUtc().toString(Qt::ISODate).toUtf8().data());
+	qDebug("TLog::Tlog: started log at %s",
+			QDateTime::currentDateTime().toString().toUtf8().data());
 }
 
 TLog::~TLog() {
 
 	// Stop passing messages to window
 	log_window = 0;
-	qDebug("TLog::~Tlog: log ending at UTC %s",
-			QDateTime::currentDateTimeUtc().toString(Qt::ISODate).toUtf8().data());
+	qDebug("TLog::~Tlog: stopping log at %s",
+			QDateTime::currentDateTime().toString().toUtf8().data());
 
 	// Close log file
 	if (file.isOpen()) {
-		qDebug("~TLog: closing log file");
 		file.close();
 	}
 
@@ -102,13 +101,13 @@ void TLog::logLine(QtMsgType type, QString line) {
 	// Output to console
 #ifdef OUTPUT_ON_CONSOLE
 	QByteArray bytes = line.toUtf8();
-	if (type == QtDebugMsg) {
+	//if (type == QtDebugMsg) {
 		fwrite(bytes.constData(), 1, bytes.size(), stdout);
 		fflush(stdout);
-	} else {
-		fwrite(bytes.constData(), 1, bytes.size(), stderr);
-		fflush(stderr);
-	}
+	//} else {
+	//	fwrite(bytes.constData(), 1, bytes.size(), stderr);
+	//	fflush(stderr);
+	//}
 #endif
 
 	// Output to log file
