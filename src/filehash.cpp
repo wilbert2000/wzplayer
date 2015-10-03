@@ -22,9 +22,9 @@
 
 // From the patch by Kamil Dziobek turbos11(at)gmail.com
 // (c) Kamil Dziobek turbos11(at)gmail.com | BSD or GPL or public domain
-QString FileHash::calculateHash(QString filename) {
-	QFile file(filename);
+QString FileHash::calculateHash(const QString& filename) {
 
+	QFile file(filename);
 	if (!file.exists()) {
 		qWarning("OSParser:calculateHash: error hashing file. File doesn't exist.");
 		return QString();
@@ -33,13 +33,13 @@ QString FileHash::calculateHash(QString filename) {
 	file.open(QIODevice::ReadOnly);
 	QDataStream in(&file);
 	in.setByteOrder(QDataStream::LittleEndian);
-	quint64 size=file.size ();
-	quint64 hash=size; 
+	quint64 size = file.size ();
+	quint64 hash = size;
 	quint64 a;
 	for(int i = 0; i < 8192; i++) {
 		in >> a ; hash += a;
 	};
-	file.seek(size-65536);
+	file.seek(size - 65536);
 	for(int i = 0; i < 8192; i++) {
 		in >> a ; hash += a;
 	};

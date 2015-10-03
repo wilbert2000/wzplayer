@@ -16,21 +16,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filesettings.h"
+#include "settings/filesettings.h"
+#include "settings/../paths.h"
 #include "mediasettings.h"
-#include <QSettings>
 #include <QFileInfo>
 
-FileSettings::FileSettings(QString directory) : FileSettingsBase(directory) 
-{
-	my_settings = new QSettings(directory + "/smplayer_files.ini", QSettings::IniFormat);
+namespace Settings {
+
+TFileSettings::TFileSettings() :
+	TFileSettingsBase(Paths::configPath() + "/smplayer_files.ini", 0) {
 }
 
-FileSettings::~FileSettings() {
-	delete my_settings;
+TFileSettings::~TFileSettings() {
 }
 
-QString FileSettings::filenameToGroupname(const QString & filename) {
+QString TFileSettings::filenameToGroupname(const QString& filename) {
+
 	QString s = filename;
 	s = s.replace('/', '_');
 	s = s.replace('\\', '_');
@@ -46,44 +47,40 @@ QString FileSettings::filenameToGroupname(const QString & filename) {
 	return s;	
 }
 
-bool FileSettings::existSettingsFor(QString filename) {
-	qDebug("FileSettings::existSettingsFor: '%s'", filename.toUtf8().constData());
+bool TFileSettings::existSettingsFor(const QString& filename) {
+	qDebug("Settings::TFileSettings::existSettingsFor: '%s'", filename.toUtf8().constData());
 
 	QString group_name = filenameToGroupname(filename);
-
-	qDebug("FileSettings::existSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
-
-	my_settings->beginGroup( group_name );
-	bool saved = my_settings->value("saved", false).toBool();
-	my_settings->endGroup();
+	qDebug("Settings::TFileSettings::existSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
+	beginGroup(group_name);
+	bool saved = value("saved", false).toBool();
+	endGroup();
 
 	return saved;
 }
 
-void FileSettings::loadSettingsFor(QString filename, MediaSettings & mset, int player) {
-	qDebug("FileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
+void TFileSettings::loadSettingsFor(const QString& filename, MediaSettings& mset, int player) {
+	qDebug("Settings::TFileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
 
 	QString group_name = filenameToGroupname(filename);
-
-	qDebug("FileSettings::loadSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
-
+	qDebug("Settings::TFileSettings::loadSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
 	mset.reset();
-
-	my_settings->beginGroup( group_name );
-	mset.load(my_settings, player);
-	my_settings->endGroup();
+	beginGroup(group_name);
+	mset.load(this, player);
+	endGroup();
 }
 
-void FileSettings::saveSettingsFor(QString filename, MediaSettings & mset, int player) {
-	qDebug("FileSettings::saveSettingsFor: '%s'", filename.toUtf8().constData());
+void TFileSettings::saveSettingsFor(const QString& filename, MediaSettings & mset, int player) {
+	qDebug("Settings::TFileSettings::saveSettingsFor: '%s'", filename.toUtf8().constData());
 
 	QString group_name = filenameToGroupname(filename);
 
-	qDebug("FileSettings::saveSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
+	qDebug("Settings::TFileSettings::saveSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
 
-	my_settings->beginGroup( group_name );
-	my_settings->setValue("saved", true);
-	mset.save(my_settings, player);
-	my_settings->endGroup();
+	beginGroup(group_name);
+	setValue("saved", true);
+	mset.save(this, player);
+	endGroup();
 }
 
+} // namespace Settings

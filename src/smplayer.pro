@@ -110,10 +110,10 @@ HEADERS += guiconfig.h \
     settings/smplayersettings.h \
     settings/preferences.h \
     settings/filesettingsbase.h \
-	filesettings.h \
-	filesettingshash.h \
-	filehash.h \
-	tvsettings.h \
+    settings/filesettings.h \
+    filehash.h \
+    settings/filesettingshash.h \
+    settings/tvsettings.h \
 	images.h \
 	inforeader.h \
 	deviceinfo.h \
@@ -210,10 +210,10 @@ SOURCES	+= version.cpp \
     settings/smplayersettings.cpp \
     settings/preferences.cpp \
     settings/filesettingsbase.cpp \
-	filesettings.cpp \
-	filesettingshash.cpp \
-	filehash.cpp \
-	tvsettings.cpp \
+    settings/filesettings.cpp \
+    filehash.cpp \
+    settings/filesettingshash.cpp \
+    settings/tvsettings.cpp \
 	images.cpp \
 	inforeader.cpp \
 	deviceinfo.cpp \

@@ -30,8 +30,6 @@
 #include "proc/playerprocess.h"
 #include "mplayerwindow.h"
 
-class FileSettingsBase;
-
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
 class WinScreenSaver;
@@ -68,7 +66,6 @@ public:
 	void close();
 
 	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; }
-	void changeFileSettingsMethod(QString method);
 	bool haveExternalSubs();
 
 protected:
@@ -468,9 +465,6 @@ signals:
 protected:
 	Proc::PlayerProcess * proc;
 	MplayerWindow * mplayerwindow;
-
-	FileSettingsBase * file_settings;
-	FileSettingsBase * tv_settings;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF

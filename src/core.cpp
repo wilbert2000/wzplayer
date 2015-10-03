@@ -33,6 +33,9 @@
 
 #include "config.h"
 #include "settings/preferences.h"
+#include "settings/filesettings.h"
+#include "settings/filesettingshash.h"
+#include "settings/tvsettings.h"
 #include "mplayerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
@@ -54,10 +57,6 @@
 #endif
 #endif
 
-#include "filesettings.h"
-#include "filesettingshash.h"
-#include "tvsettings.h"
-
 #ifdef YOUTUBE_SUPPORT
 #include "retrieveyoutubeurl.h"
   #ifdef YT_USE_YTSIG
@@ -72,8 +71,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	  mdat(),
 	  mset(&mdat),
 	  mplayerwindow(mpw),
-	  file_settings(0),
-	  tv_settings(0),
 	  _state(Stopped),
 	  we_are_restarting(false),
 	  title(-1),
@@ -82,12 +79,6 @@ Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	  pos_max(position_max)
 {
 	qRegisterMetaType<Core::State>("Core::State");
-
-	// Create file_settings
-	changeFileSettingsMethod(pref->file_settings_method);
-
-	// TV settings
-	tv_settings = new TVSettings(Paths::iniPath());
 
 	proc = Proc::PlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
 
@@ -260,8 +251,6 @@ Core::~Core() {
 #endif
 
 	delete proc;
-	delete tv_settings;
-	delete file_settings;
 }
 
 void Core::processError(QProcess::ProcessError error) {
@@ -304,16 +293,6 @@ void Core::fileReachedEnd() {
 
 	qDebug("Core::fileReachedEnd: emit mediaFinished()");
 	emit mediaFinished();
-}
-
-void Core::changeFileSettingsMethod(QString method) {
-	qDebug("Core::changeFileSettingsMethod: %s", method.toUtf8().constData());
-	if (file_settings) delete file_settings;
-
-	if (method.toLower() == "hash")
-		file_settings = new FileSettingsHash(Paths::iniPath());
-	else
-		file_settings = new FileSettings(Paths::iniPath());
 }
 
 void Core::setState(State s) {
@@ -364,12 +343,21 @@ void Core::saveMediaInfo() {
 		return;
 	}
 
-	if ( (mdat.selected_type == MediaData::TYPE_FILE) && (!mdat.filename.isEmpty()) ) {
-		file_settings->saveSettingsFor(mdat.filename, mset, proc->player());
+	if (mdat.filename.isEmpty()) {
+		return;
 	}
-	else
-	if ( (mdat.selected_type == MediaData::TYPE_TV) && (!mdat.filename.isEmpty()) ) {
-		tv_settings->saveSettingsFor(mdat.filename, mset, proc->player());
+
+	if (mdat.selected_type == MediaData::TYPE_FILE) {
+		if (pref->file_settings_method.toLower() == "hash") {
+			Settings::TFileSettingsHash settings(mdat.filename);
+			settings.saveSettingsFor(mdat.filename, mset, proc->player());
+		} else {
+			Settings::TFileSettings settings;
+			settings.saveSettingsFor(mdat.filename, mset, proc->player());
+		}
+	} else if (mdat.selected_type == MediaData::TYPE_TV) {
+		Settings::TTVSettings settings;
+		settings.saveSettingsFor(mdat.filename, mset, proc->player());
 	}
 }
 
@@ -661,13 +649,9 @@ void Core::openTV(QString channel_id) {
 	mset.current_deinterlacer = pref->initial_tv_deinterlace;
 
 	if (!pref->dont_remember_media_settings) {
-		// Check if we already have info about this file
-		if (tv_settings->existSettingsFor(channel_id)) {
-			qDebug("Core::openTV: we have settings for this file!!!");
-
-			// In this case we read info from config
-			tv_settings->loadSettingsFor(channel_id, mset, proc->player());
-			qDebug("Core::openTV: media settings read");
+		Settings::TTVSettings settings;
+		if (settings.existSettingsFor(channel_id)) {
+			settings.loadSettingsFor(channel_id, mset, proc->player());
 		}
 	}
 
@@ -715,14 +699,24 @@ void Core::openFile(QString filename, int seek) {
 	mset.reset();
 
 	// Check if we already have info about this file
-	if (pref->dont_remember_media_settings
-		|| !file_settings->existSettingsFor(filename)) {
+	if (pref->dont_remember_media_settings) {
 		mset.volume = old_volume;
 	} else {
-		qDebug("Core::openFile: We have settings for this file!!!");
-
-		file_settings->loadSettingsFor(filename, mset, proc->player());
-		qDebug("Core::openFile: Media settings read");
+		if (pref->file_settings_method.toLower() == "hash") {
+			Settings::TFileSettingsHash settings(mdat.filename);
+			if (settings.existSettingsFor(mdat.filename)) {
+				settings.loadSettingsFor(mdat.filename, mset, proc->player());
+			} else {
+				mset.volume = old_volume;
+			}
+		} else {
+			Settings::TFileSettings settings;
+			if (settings.existSettingsFor(mdat.filename)) {
+				settings.loadSettingsFor(mdat.filename, mset, proc->player());
+			} else {
+				mset.volume = old_volume;
+			}
+		}
 
 		if (pref->dont_remember_time_pos) {
 			mset.current_sec = 0;

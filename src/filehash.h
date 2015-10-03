@@ -25,7 +25,7 @@ class FileHash
 {
 public:
 
-	static QString calculateHash(QString filename);
+	static QString calculateHash(const QString& filename);
 };
 
 #endif

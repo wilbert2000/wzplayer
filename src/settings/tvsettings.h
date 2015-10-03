@@ -16,30 +16,29 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _TV_SETTINGS_H_
-#define _TV_SETTINGS_H_
+#ifndef _SETTINGS_TVSETTINGS_H_
+#define _SETTINGS_TVSETTINGS_H_
 
 #include "settings/filesettingsbase.h"
 
-class QSettings;
+namespace Settings {
 
-class TVSettings : public FileSettingsBase
-{
+class TTVSettings : public TFileSettingsBase {
 public:
-	TVSettings(QString directory);
-	virtual ~TVSettings();
+	TTVSettings();
+	virtual ~TTVSettings();
 
-	virtual bool existSettingsFor(QString filename);
+	virtual bool existSettingsFor(const QString& filename);
+	virtual void loadSettingsFor(const QString& filename, MediaSettings& mset, int player);
+	virtual void saveSettingsFor(const QString& filename, MediaSettings& mset, int player);
 
-	virtual void loadSettingsFor(QString filename, MediaSettings & mset, int player);
-
-	virtual void saveSettingsFor(QString filename, MediaSettings & mset, int player);
-
-	static QString filenameToGroupname(const QString & filename);
+	static QString filenameToGroupname(const QString& filename);
 
 private:
 	QSettings * my_settings;
 };
 
-#endif
+} // namespace Settings
+
+#endif // _SETTINGS_TVSETTINGS_H_
 

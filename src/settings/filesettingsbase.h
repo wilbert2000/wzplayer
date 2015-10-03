@@ -16,26 +16,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _FILESETTINGS_BASE_H_
-#define _FILESETTINGS_BASE_H_
+#ifndef _SETTINGS_FILESETTINGS_BASE_H_
+#define _SETTINGS_FILESETTINGS_BASE_H_
 
-#include <QString>
+#include "settings/smplayersettings.h"
+#include "mediasettings.h"
 
-class MediaSettings;
 
-class FileSettingsBase
-{
+namespace Settings {
+
+class TFileSettingsBase : public TSMPlayerSettings {
 public:
-	FileSettingsBase(QString directory) { output_directory = directory; }
-	virtual ~FileSettingsBase() {}
+	TFileSettingsBase(const QString& filename, QObject* parent);
+	virtual ~TFileSettingsBase() {}
 
-	virtual bool existSettingsFor(QString filename) = 0;
-	virtual void loadSettingsFor(QString filename, MediaSettings& mset, int player) = 0;
-	virtual void saveSettingsFor(QString filename, MediaSettings& mset, int player) = 0;
-
-protected:
-	QString output_directory;
+	virtual bool existSettingsFor(const QString& filename) = 0;
+	virtual void loadSettingsFor(const QString& filename, MediaSettings& mset, int player) = 0;
+	virtual void saveSettingsFor(const QString& filename, MediaSettings& mset, int player) = 0;
 };
 
-#endif
+} // namespace Settings
+
+#endif // _SETTINGS_FILESETTINGS_BASE_H_
 

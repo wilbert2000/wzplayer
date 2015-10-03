@@ -2878,11 +2878,6 @@ void TBase::applyNewPreferences() {
 		}
 	}
 
-	Pref::TGeneral *_general = pref_dialog->mod_general();
-	if (_general->fileSettingsMethodChanged()) {
-		core->changeFileSettingsMethod(pref->file_settings_method);
-	}
-
 	Pref::TInterface *_interface = pref_dialog->mod_interface();
 	if (_interface->recentsChanged()) {
 		updateRecents();

@@ -16,87 +16,68 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filesettingshash.h"
-#include "mediasettings.h"
-#include "filehash.h" // hash function
-#include <QSettings>
+#include "settings/filesettingshash.h"
+
 #include <QFile>
 #include <QDir>
 
-FileSettingsHash::FileSettingsHash(QString directory) : FileSettingsBase(directory) 
-{
-	base_dir = directory + "/file_settings";
-}
+#include "settings/../paths.h"
+#include "mediasettings.h"
+#include "filehash.h" // hash function
 
-FileSettingsHash::~FileSettingsHash() {
-}
+namespace Settings {
 
-
-QString FileSettingsHash::configFile(const QString & filename, QString * output_dir) {
-	QString res;
+QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 
 	QString hash = FileHash::calculateHash(filename);
-	if (!hash.isEmpty()) {
-		if (output_dir != 0) (*output_dir) = hash[0];
-		res = base_dir +"/"+ hash[0] +"/"+ hash + ".ini";
+	if (hash.isEmpty()) {
+		return QString();
 	}
-	return res;
+
+	QString dir_name = Paths::configPath() + "/file_settings/" + hash[0];
+	QDir dir(Paths::configPath());
+	if (!dir.exists(dir_name)) {
+		if (!dir.mkpath(dir_name)) {
+			qWarning("Settings::TFileSettingsHash::iniFilenameFor: failed to create directory '%s'",
+					 dir_name.toUtf8().constData());
+			return QString();
+		}
+	}
+
+	return dir_name + "/" + hash + ".ini";
 }
 
-bool FileSettingsHash::existSettingsFor(QString filename) {
-	qDebug("FileSettingsHash::existSettingsFor: '%s'", filename.toUtf8().constData());
+TFileSettingsHash::TFileSettingsHash(const QString& filename) :
+	TFileSettingsBase(TFileSettingsHash::iniFilenameFor(filename), 0) {
+}
 
-	QString config_file = configFile(filename);
+TFileSettingsHash::~TFileSettingsHash() {
+}
 
-	qDebug("FileSettingsHash::existSettingsFor: config_file: '%s'", config_file.toUtf8().constData());
+bool TFileSettingsHash::existSettingsFor(const QString& filename) {
+	qDebug("TFileSettingsHash::existSettingsFor: '%s'", filename.toUtf8().constData());
 
+	QString config_file = iniFilenameFor(filename);
+	qDebug("TFileSettingsHash::existSettingsFor: config_file: '%s'", config_file.toUtf8().constData());
 	return QFile::exists(config_file);
 }
 
-void FileSettingsHash::loadSettingsFor(QString filename, MediaSettings & mset, int player) {
+void TFileSettingsHash::loadSettingsFor(const QString& filename, MediaSettings& mset, int player) {
 	qDebug("FileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
 
-	QString config_file = configFile(filename);
-
-	qDebug("FileSettingsHash::loadSettingsFor: config_file: '%s'", config_file.toUtf8().constData());
-
 	mset.reset();
-
-	if ((!config_file.isEmpty()) && (QFile::exists(config_file))) {
-		QSettings settings(config_file, QSettings::IniFormat);
-
-		settings.beginGroup("file_settings");
-		mset.load(&settings, player);
-		settings.endGroup();
-	}
+	beginGroup("file_settings");
+	mset.load(this, player);
+	endGroup();
 }
 
-void FileSettingsHash::saveSettingsFor(QString filename, MediaSettings & mset, int player) {
-	qDebug("FileSettingsHash::saveSettingsFor: '%s'", filename.toUtf8().constData());
+void TFileSettingsHash::saveSettingsFor(const QString& filename, MediaSettings & mset, int player) {
+	qDebug("TFileSettingsHash::saveSettingsFor: '%s'", filename.toUtf8().constData());
 
-	QString output_dir;
-	QString config_file = configFile(filename, &output_dir);
-
-	qDebug("FileSettingsHash::saveSettingsFor: config_file: '%s'", config_file.toUtf8().constData());
-	qDebug("FileSettingsHash::saveSettingsFor: output_dir: '%s'", output_dir.toUtf8().constData());
-
-	if (!config_file.isEmpty()) {
-		QDir d(base_dir);
-		if (!d.exists(output_dir)) {
-			if (!d.mkpath(output_dir)) {
-				qWarning("FileSettingsHash::saveSettingsFor: can't create directory '%s'", QString(base_dir + "/" + output_dir).toUtf8().constData());
-				return;
-			}
-		}
-
-		QSettings settings(config_file, QSettings::IniFormat);
-
-		/* settings.setValue("filename", filename); */
-
-		settings.beginGroup("file_settings");
-		mset.save(&settings, player);
-		settings.endGroup();
-		settings.sync();
-	}
+	beginGroup("file_settings");
+	mset.save(this, player);
+	endGroup();
+	sync();
 }
 
+} // namespace Settings

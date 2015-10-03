@@ -16,27 +16,28 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _FILESETTINGS_HASH_H_
-#define _FILESETTINGS_HASH_H_
+#ifndef _SETTINGS_FILESETTINGS_HASH_H_
+#define _SETTINGS_FILESETTINGS_HASH_H_
 
 #include "settings/filesettingsbase.h"
 
-class FileSettingsHash : public FileSettingsBase
+namespace Settings {
+
+class TFileSettingsHash : public TFileSettingsBase
 {
 public:
-	FileSettingsHash(QString directory);
-	virtual ~FileSettingsHash();
+	TFileSettingsHash(const QString& filename);
+	virtual ~TFileSettingsHash();
 
-	virtual bool existSettingsFor(QString filename);
-
-	virtual void loadSettingsFor(QString filename, MediaSettings & mset, int player);
-
-	virtual void saveSettingsFor(QString filename, MediaSettings & mset, int player);
+	virtual bool existSettingsFor(const QString& filename);
+	virtual void loadSettingsFor(const QString& filename, MediaSettings& mset, int player);
+	virtual void saveSettingsFor(const QString& filename, MediaSettings& mset, int player);
 
 private:
-	QString configFile(const QString & filename, QString * output_dir = 0);
-	QString base_dir;
+	static QString iniFilenameFor(const QString& filename);
 };
 
-#endif
+} // namespace Settings
+
+#endif // _SETTINGS_FILESETTINGS_HASH_H_
 

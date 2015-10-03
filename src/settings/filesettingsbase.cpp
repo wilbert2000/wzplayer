@@ -16,5 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filesettingsbase.h"
+#include "settings/filesettingsbase.h"
+
+namespace Settings {
+
+TFileSettingsBase::TFileSettingsBase(const QString& filename, QObject* parent) :
+	TSMPlayerSettings(filename, parent) {
+}
+
+} // namespace Settings
 
