@@ -101,13 +101,8 @@ void TLog::logLine(QtMsgType type, QString line) {
 	// Output to console
 #ifdef OUTPUT_ON_CONSOLE
 	QByteArray bytes = line.toUtf8();
-	//if (type == QtDebugMsg) {
-		fwrite(bytes.constData(), 1, bytes.size(), stdout);
-		fflush(stdout);
-	//} else {
-	//	fwrite(bytes.constData(), 1, bytes.size(), stderr);
-	//	fflush(stderr);
-	//}
+	fwrite(bytes.constData(), 1, bytes.size(), stdout);
+	fflush(stdout);
 #endif
 
 	// Output to log file
