@@ -17,7 +17,7 @@
 */
 
 #include "pref/updates.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "images.h"
 #include "updatecheckerdata.h"
 
@@ -57,7 +57,7 @@ void TUpdates::retranslateStrings() {
 	createHelp();
 }
 
-void TUpdates::setData(Preferences * pref) {
+void TUpdates::setData(Settings::TPreferences * pref) {
 #ifdef UPDATE_CHECKER
 	updates_check->setChecked(pref->update_checker_data.enabled);
 	days_spin->setValue(pref->update_checker_data.days_to_check);
@@ -68,7 +68,7 @@ void TUpdates::setData(Preferences * pref) {
 #endif
 }
 
-void TUpdates::getData(Preferences * pref) {
+void TUpdates::getData(Settings::TPreferences * pref) {
 	requires_restart = false;
 
 #ifdef UPDATE_CHECKER

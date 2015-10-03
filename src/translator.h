@@ -22,17 +22,21 @@
 #include <QString>
 #include <QTranslator>
 
-class Translator
-{
+class Translator {
 
 public:
+	static Translator* translator;
+
 	Translator();
 	~Translator();
 
 	void load(QString locale);
 
 protected:
-	static bool loadCatalog(QTranslator & t, QString name, QString locale, QString dir);
+	static bool loadCatalog(QTranslator& t,
+							const QString& name,
+							const QString& locale,
+							const QString& dir);
 
 	QTranslator app_trans;
 	QTranslator qt_trans;

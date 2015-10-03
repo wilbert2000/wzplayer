@@ -17,7 +17,7 @@
 */
 
 #include "pref/prefplaylist.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "images.h"
 
 namespace Pref {
@@ -46,26 +46,26 @@ void TPrefPlaylist::retranslateStrings() {
 
 	int index = media_to_add_combo->currentIndex();
 	media_to_add_combo->clear();
-	media_to_add_combo->addItem(tr("None"), Preferences::NoFiles);
-	media_to_add_combo->addItem(tr("Video files"), Preferences::VideoFiles);
-	media_to_add_combo->addItem(tr("Audio files"), Preferences::AudioFiles);
-	media_to_add_combo->addItem(tr("Video and audio files"), Preferences::MultimediaFiles);
-	media_to_add_combo->addItem(tr("Consecutive files"), Preferences::ConsecutiveFiles);
+	media_to_add_combo->addItem(tr("None"), Settings::TPreferences::NoFiles);
+	media_to_add_combo->addItem(tr("Video files"), Settings::TPreferences::VideoFiles);
+	media_to_add_combo->addItem(tr("Audio files"), Settings::TPreferences::AudioFiles);
+	media_to_add_combo->addItem(tr("Video and audio files"), Settings::TPreferences::MultimediaFiles);
+	media_to_add_combo->addItem(tr("Consecutive files"), Settings::TPreferences::ConsecutiveFiles);
 	media_to_add_combo->setCurrentIndex(index);
 
 	createHelp();
 }
 
-void TPrefPlaylist::setData(Preferences * pref) {
+void TPrefPlaylist::setData(Settings::TPreferences * pref) {
 	setAutoAddFilesToPlaylist( pref->auto_add_to_playlist );
 	setMediaToAdd( pref->media_to_add_to_playlist );
 }
 
-void TPrefPlaylist::getData(Preferences * pref) {
+void TPrefPlaylist::getData(Settings::TPreferences * pref) {
 	requires_restart = false;
 
 	pref->auto_add_to_playlist = autoAddFilesToPlaylist();
-	pref->media_to_add_to_playlist = (Preferences::AutoAddToPlaylistFilter) mediaToAdd();
+	pref->media_to_add_to_playlist = (Settings::TPreferences::AutoAddToPlaylistFilter) mediaToAdd();
 }
 
 void TPrefPlaylist::setAutoAddFilesToPlaylist(bool b) {

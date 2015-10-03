@@ -58,7 +58,7 @@ class MplayerLayer : public QWidget {
 
 public:
 	MplayerLayer(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	~MplayerLayer();
+	virtual ~MplayerLayer();
 
 	//! If b is true, the background of the widget will be repainted as usual.
 	/*! Otherwise the background will not repainted when a video is playing. */
@@ -88,7 +88,7 @@ class MplayerWindow : public QWidget
 
 public:
 	MplayerWindow(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	~MplayerWindow();
+	virtual ~MplayerWindow();
 
 	MplayerLayer* videoLayer() { return mplayerlayer; }
 

@@ -17,7 +17,7 @@
 */
 
 #include "pref/tv.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "images.h"
 #include "mediasettings.h"
 
@@ -63,12 +63,12 @@ void TTV::retranslateStrings() {
 	createHelp();
 }
 
-void TTV::setData(Preferences * pref) {
+void TTV::setData(Settings::TPreferences * pref) {
 	setInitialDeinterlace( pref->initial_tv_deinterlace );
 	setRescan( pref->check_channels_conf_on_startup );
 }
 
-void TTV::getData(Preferences * pref) {
+void TTV::getData(Settings::TPreferences * pref) {
 	requires_restart = false;
 
 	pref->initial_tv_deinterlace = initialDeinterlace();

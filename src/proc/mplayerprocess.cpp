@@ -24,14 +24,13 @@
 #include <QApplication>
 #include <QDebug>
 
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "mplayerversion.h"
 #include "colorutils.h"
 #include "subtracks.h"
 #include "maps/titletracks.h"
 
-using namespace Global;
+using namespace Settings;
 
 namespace Proc {
 

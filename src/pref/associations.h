@@ -27,7 +27,7 @@
 #include "ui_associations.h"
 #include "pref/widget.h"
 
-class Preferences;
+class TPreferences;
 
 namespace Pref {
 
@@ -43,10 +43,10 @@ public:
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(Preferences * pref);
+	void setData(TPreferences * pref);
 
 	// Apply changes
-	void getData(Preferences * pref);
+	void getData(TPreferences * pref);
 
 	void addItem(QString label); 
 

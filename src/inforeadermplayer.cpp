@@ -23,11 +23,10 @@
 #include <QProcess>
 
 #include "colorutils.h"
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "mplayerversion.h"
 
-using namespace Global;
+using namespace Settings;
 
 #define NOME 0
 #define VO 1

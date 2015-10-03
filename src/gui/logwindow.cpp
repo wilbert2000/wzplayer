@@ -23,7 +23,6 @@
 #include <QTextStream>
 #include <QTextEdit>
 #include <QPushButton>
-#include "global.h"
 #include "log.h"
 #include "images.h"
 #include "filedialog.h"
@@ -40,7 +39,7 @@ TLogWindow::TLogWindow( QWidget* parent )
 
 TLogWindow::~TLogWindow() {
 
-	Global::log->setLogWindow(0);
+	TLog::log->setLogWindow(0);
 }
 
 void TLogWindow::retranslateStrings() {
@@ -57,12 +56,12 @@ void TLogWindow::retranslateStrings() {
 
 void TLogWindow::showEvent(QShowEvent*) {
 
-	Global::log->setLogWindow(this);
+	TLog::log->setLogWindow(this);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
 
-	Global::log->setLogWindow(0);
+	TLog::log->setLogWindow(0);
 	clear();
 }
 

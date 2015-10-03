@@ -18,6 +18,7 @@
 
 #include "default.h"
 
+#include <QDebug>
 #include <QMenu>
 #include <QSettings>
 #include <QLabel>
@@ -27,7 +28,6 @@
 #include <QMenuBar>
 #include <QTimer>
 
-#include "global.h"
 #include "helper.h"
 #include "colorutils.h"
 #include "core.h"
@@ -46,13 +46,14 @@
 
 #define TOOLBAR_VERSION 1
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 
-TDefault::TDefault( QWidget * parent, Qt::WindowFlags flags )
-	: TBasePlus( parent, flags )
-{
+TDefault::TDefault(QWidget* parent, Qt::WindowFlags flags)
+	: TBasePlus(parent, flags) {
+	qDebug("Gui::TDefault::TDefault: constructing default GUI");
+
 	createStatusBar();
 
 	connect( this, SIGNAL(timeChanged(QString)),
@@ -613,36 +614,35 @@ void TDefault::saveConfig(const QString &group) {
 
 	TBasePlus::saveConfig("default_gui");
 
-	QSettings * set = settings;
-	set->beginGroup( "default_gui");
+	pref->beginGroup( "default_gui");
 
-	set->setValue("video_info", viewVideoInfoAct->isChecked());
-	set->setValue("frame_counter", viewFrameCounterAct->isChecked());
+	pref->setValue("video_info", viewVideoInfoAct->isChecked());
+	pref->setValue("frame_counter", viewFrameCounterAct->isChecked());
 
-	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
-	set->setValue("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible);
-	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
-	set->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
+	pref->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
+	pref->setValue("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible);
+	pref->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
+	pref->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
 
-	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
+	pref->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
-	set->beginGroup( "actions" );
-	set->setValue("toolbar1", toolbar1->actionsToStringList() );
-	set->setValue("controlwidget", controlwidget->actionsToStringList() );
-	set->setValue("controlwidget_mini", controlwidget_mini->actionsToStringList() );
+	pref->beginGroup( "actions" );
+	pref->setValue("toolbar1", toolbar1->actionsToStringList() );
+	pref->setValue("controlwidget", controlwidget->actionsToStringList() );
+	pref->setValue("controlwidget_mini", controlwidget_mini->actionsToStringList() );
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	set->setValue("floating_control", iw->actionsToStringList() );
-	set->setValue("toolbar1_version", TOOLBAR_VERSION);
-	set->endGroup();
+	pref->setValue("floating_control", iw->actionsToStringList() );
+	pref->setValue("toolbar1_version", TOOLBAR_VERSION);
+	pref->endGroup();
 
-	set->beginGroup("toolbars_icon_size");
-	set->setValue("toolbar1", toolbar1->iconSize());
-	set->setValue("controlwidget", controlwidget->iconSize());
-	set->setValue("controlwidget_mini", controlwidget_mini->iconSize());
-	set->setValue("floating_control", iw->iconSize());
-	set->endGroup();
+	pref->beginGroup("toolbars_icon_size");
+	pref->setValue("toolbar1", toolbar1->iconSize());
+	pref->setValue("controlwidget", controlwidget->iconSize());
+	pref->setValue("controlwidget_mini", controlwidget_mini->iconSize());
+	pref->setValue("floating_control", iw->iconSize());
+	pref->endGroup();
 
-	set->endGroup();
+	pref->endGroup();
 }
 
 void TDefault::loadConfig(const QString &group) {
@@ -651,43 +651,42 @@ void TDefault::loadConfig(const QString &group) {
 
 	TBasePlus::loadConfig("default_gui");
 
-	QSettings * set = settings;
-	set->beginGroup("default_gui");
+	pref->beginGroup("default_gui");
 
-	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
-	viewFrameCounterAct->setChecked(set->value("frame_counter", false).toBool());
+	viewVideoInfoAct->setChecked(pref->value("video_info", false).toBool());
+	viewFrameCounterAct->setChecked(pref->value("frame_counter", false).toBool());
 
-	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
-	fullscreen_toolbar2_was_visible = set->value("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible).toBool();
-	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
-	compact_toolbar2_was_visible = set->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
+	fullscreen_toolbar1_was_visible = pref->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
+	fullscreen_toolbar2_was_visible = pref->value("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible).toBool();
+	compact_toolbar1_was_visible = pref->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
+	compact_toolbar2_was_visible = pref->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
 
-	set->beginGroup( "actions" );
-	int toolbar_version = set->value("toolbar1_version", 0).toInt();
+	pref->beginGroup( "actions" );
+	int toolbar_version = pref->value("toolbar1_version", 0).toInt();
 	if (toolbar_version >= TOOLBAR_VERSION) {
-		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
+		toolbar1->setActionsFromStringList( pref->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
 		qWarning("Gui::TDefault::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
-	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
-	controlwidget_mini->setActionsFromStringList( set->value("controlwidget_mini", controlwidget_mini->defaultActions()).toStringList() );
+	controlwidget->setActionsFromStringList( pref->value("controlwidget", controlwidget->defaultActions()).toStringList() );
+	controlwidget_mini->setActionsFromStringList( pref->value("controlwidget_mini", controlwidget_mini->defaultActions()).toStringList() );
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList( set->value("floating_control", iw->defaultActions()).toStringList() );
-	set->endGroup();
+	iw->setActionsFromStringList( pref->value("floating_control", iw->defaultActions()).toStringList() );
+	pref->endGroup();
 
-	set->beginGroup("toolbars_icon_size");
-	toolbar1->setIconSize(set->value("toolbar1", toolbar1->iconSize()).toSize());
-	controlwidget->setIconSize(set->value("controlwidget", controlwidget->iconSize()).toSize());
-	controlwidget_mini->setIconSize(set->value("controlwidget_mini", controlwidget_mini->iconSize()).toSize());
-	iw->setIconSize(set->value("floating_control", iw->iconSize()).toSize());
-	set->endGroup();
+	pref->beginGroup("toolbars_icon_size");
+	toolbar1->setIconSize(pref->value("toolbar1", toolbar1->iconSize()).toSize());
+	controlwidget->setIconSize(pref->value("controlwidget", controlwidget->iconSize()).toSize());
+	controlwidget_mini->setIconSize(pref->value("controlwidget_mini", controlwidget_mini->iconSize()).toSize());
+	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
+	pref->endGroup();
 
 	floating_control->adjustSize();
 
-	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	restoreState( pref->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 
-	set->endGroup();
+	pref->endGroup();
 
 	updateWidgets();
 

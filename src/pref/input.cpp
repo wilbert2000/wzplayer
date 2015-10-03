@@ -21,6 +21,9 @@
 #include "images.h"
 #include "config.h"
 #include "guiconfig.h"
+#include "settings/preferences.h"
+
+using namespace Settings;
 
 namespace Pref {
 
@@ -142,11 +145,11 @@ void TInput::retranslateStrings() {
 	xbutton2_click_combo->setCurrentIndex(mouse_xclick2);
 
 	wheel_function_combo->clear();
-	wheel_function_combo->addItem( tr("No function"), Preferences::DoNothing );
-	wheel_function_combo->addItem( tr("Media seeking"), Preferences::Seeking );
-	wheel_function_combo->addItem( tr("Volume control"), Preferences::Volume );
-	wheel_function_combo->addItem( tr("Zoom video"), Preferences::Zoom );
-	wheel_function_combo->addItem( tr("Change speed"), Preferences::ChangeSpeed );
+	wheel_function_combo->addItem( tr("No function"), Settings::TPreferences::DoNothing );
+	wheel_function_combo->addItem( tr("Media seeking"), Settings::TPreferences::Seeking );
+	wheel_function_combo->addItem( tr("Volume control"), Settings::TPreferences::Volume );
+	wheel_function_combo->addItem( tr("Zoom video"), Settings::TPreferences::Zoom );
+	wheel_function_combo->addItem( tr("Change speed"), Settings::TPreferences::ChangeSpeed );
 	wheel_function_combo->setCurrentIndex(wheel_function);
 
 	wheel_function_seek->setText( tr("Media &seeking") );
@@ -165,7 +168,7 @@ void TInput::retranslateStrings() {
 	createHelp();
 }
 
-void TInput::setData(Preferences * pref) {
+void TInput::setData(Settings::TPreferences * pref) {
 	setLeftClickFunction( pref->mouse_left_click_function );
 	setRightClickFunction( pref->mouse_right_click_function );
 	setDoubleClickFunction( pref->mouse_double_click_function );
@@ -178,7 +181,7 @@ void TInput::setData(Preferences * pref) {
 	delay_left_check->setChecked(pref->delay_left_click);
 }
 
-void TInput::getData(Preferences * pref) {
+void TInput::getData(Settings::TPreferences * pref) {
 	requires_restart = false;
 
 	pref->mouse_left_click_function = leftClickFunction();
@@ -270,19 +273,19 @@ int TInput::wheelFunction() {
 	return wheel_function_combo->itemData(wheel_function_combo->currentIndex()).toInt();
 }
 
-void TInput::setWheelFunctionCycle(Preferences::WheelFunctions flags){
-	wheel_function_seek->setChecked(flags.testFlag(Preferences::Seeking));
-	wheel_function_volume->setChecked(flags.testFlag(Preferences::Volume));
-	wheel_function_zoom->setChecked(flags.testFlag(Preferences::Zoom));
-	wheel_function_speed->setChecked(flags.testFlag(Preferences::ChangeSpeed));
+void TInput::setWheelFunctionCycle(Settings::TPreferences::WheelFunctions flags){
+	wheel_function_seek->setChecked(flags.testFlag(Settings::TPreferences::Seeking));
+	wheel_function_volume->setChecked(flags.testFlag(Settings::TPreferences::Volume));
+	wheel_function_zoom->setChecked(flags.testFlag(Settings::TPreferences::Zoom));
+	wheel_function_speed->setChecked(flags.testFlag(Settings::TPreferences::ChangeSpeed));
 }
 
-Preferences::WheelFunctions TInput::wheelFunctionCycle(){
-	Preferences::WheelFunctions seekflags (QFlag ((int) Preferences::Seeking)) ;
-	Preferences::WheelFunctions volumeflags (QFlag ((int) Preferences::Volume)) ;
-	Preferences::WheelFunctions zoomflags (QFlag ((int) Preferences::Zoom)) ;
-	Preferences::WheelFunctions speedflags (QFlag ((int) Preferences::ChangeSpeed)) ;
-	Preferences::WheelFunctions out (QFlag (0));
+Settings::TPreferences::WheelFunctions TInput::wheelFunctionCycle(){
+	Settings::TPreferences::WheelFunctions seekflags (QFlag ((int) Settings::TPreferences::Seeking)) ;
+	Settings::TPreferences::WheelFunctions volumeflags (QFlag ((int) Settings::TPreferences::Volume)) ;
+	Settings::TPreferences::WheelFunctions zoomflags (QFlag ((int) Settings::TPreferences::Zoom)) ;
+	Settings::TPreferences::WheelFunctions speedflags (QFlag ((int) Settings::TPreferences::ChangeSpeed)) ;
+	Settings::TPreferences::WheelFunctions out (QFlag (0));
 	if(wheel_function_seek->isChecked()){
 		out = out | seekflags;
 	}

@@ -17,10 +17,13 @@
 */
 
 #include "translator.h"
-#include "paths.h"
+#include <QString>
 #include <QTranslator>
 #include <QLocale>
 #include <QApplication>
+#include "paths.h"
+
+Translator* Translator::translator = 0;
 
 Translator::Translator() {
 	qApp->installTranslator( &app_trans );
@@ -30,7 +33,11 @@ Translator::Translator() {
 Translator::~Translator() {
 }
 
-bool Translator::loadCatalog(QTranslator & t, QString name, QString locale, QString dir) {
+bool Translator::loadCatalog(QTranslator& t,
+							 const QString& name,
+							 const QString& locale,
+							 const QString& dir) {
+
 	QString s = name + "_" + locale; //.toLower();
 	bool r = t.load(s, dir);
 	if (r) 

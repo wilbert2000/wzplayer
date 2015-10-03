@@ -19,13 +19,12 @@
 #include <QDebug>
 #include <QSettings>
 
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "mediasettings.h"
 #include "maps/tracks.h"
 #include "subtracks.h"
 
-using namespace Global;
+using namespace Settings;
 
 MediaSettings::MediaSettings(MediaData *mdat) : md(mdat) {
 	reset();

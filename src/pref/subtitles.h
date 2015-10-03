@@ -20,9 +20,9 @@
 #define _PREF_SUBTITLES_H_
 
 #include "ui_subtitles.h"
+#include "settings/preferences.h"
 #include "pref/widget.h"
 
-class Preferences;
 class Encodings;
 
 namespace Pref {
@@ -39,10 +39,10 @@ public:
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
     // Apply changes
-    void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 protected:
 	virtual void createHelp();

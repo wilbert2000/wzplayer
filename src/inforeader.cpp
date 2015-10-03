@@ -17,8 +17,7 @@
 */
 
 #include "inforeader.h"
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "proc/playerprocess.h"
 #include "paths.h"
 #include <QFileInfo>
@@ -36,7 +35,7 @@
 
 #define INFOREADER_SAVE_VERSION 2
 
-using namespace Global;
+using namespace Settings;
 
 InfoReader * InfoReader::static_obj = 0;
 

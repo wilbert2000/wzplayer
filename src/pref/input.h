@@ -20,11 +20,11 @@
 #define _PREF_INPUT_H_
 
 #include "ui_input.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "pref/widget.h"
 #include <QStringList>
 
-class Preferences;
+class TPreferences;
 
 namespace Pref {
 
@@ -40,10 +40,10 @@ public:
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
     // Apply changes
-    void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 	// Pass action's list to dialog
 	/* void setActionsList(QStringList l); */
@@ -74,8 +74,8 @@ protected:
 	void setWheelFunction(int function);
 	int wheelFunction();
 
-	void setWheelFunctionCycle(Preferences::WheelFunctions flags);
-	Preferences::WheelFunctions wheelFunctionCycle();
+	void setWheelFunctionCycle(Settings::TPreferences::WheelFunctions flags);
+	Settings::TPreferences::WheelFunctions wheelFunctionCycle();
 
 	void setWheelFunctionSeekingReverse(bool b);
 	bool wheelFunctionSeekingReverse();

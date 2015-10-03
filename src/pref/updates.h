@@ -20,9 +20,10 @@
 #define PREF_UPDATES_H
 
 #include "ui_updates.h"
+#include "settings/preferences.h"
 #include "pref/widget.h"
 
-class Preferences;
+class TPreferences;
 
 namespace Pref {
 
@@ -38,10 +39,10 @@ public:
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
 	// Apply changes
-	void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 protected:
 	virtual void createHelp();

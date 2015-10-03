@@ -17,18 +17,18 @@
 */
 
 #include "gui/about.h"
-#include "images.h"
-#include "version.h"
-#include "global.h"
-#include "preferences.h"
-#include "paths.h"
-#include "inforeader.h"
-#include "links.h"
 
 #include <QFile>
 #include <QDesktopServices>
 
-using namespace Global;
+#include "settings/preferences.h"
+#include "images.h"
+#include "version.h"
+#include "paths.h"
+#include "inforeader.h"
+#include "links.h"
+
+using namespace Settings;
 
 namespace Gui {
 

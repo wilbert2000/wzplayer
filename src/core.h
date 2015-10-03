@@ -26,7 +26,7 @@
 #include "config.h"
 #include "mediadata.h"
 #include "mediasettings.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "proc/playerprocess.h"
 #include "mplayerwindow.h"
 
@@ -41,6 +41,8 @@ class WinScreenSaver;
 #ifdef YOUTUBE_SUPPORT
 class RetrieveYoutubeUrl;
 #endif
+
+using namespace Settings;
 
 class Core : public QObject
 {
@@ -172,8 +174,8 @@ public slots:
     void fastrewind();	// - 10 minutes
 	void forward(int secs);
 	void rewind(int secs);
-	void wheelUp(Preferences::WheelFunction function = Preferences::DoNothing);
-	void wheelDown(Preferences::WheelFunction function = Preferences::DoNothing);
+	void wheelUp(TPreferences::WheelFunction function = TPreferences::DoNothing);
+	void wheelDown(TPreferences::WheelFunction function = TPreferences::DoNothing);
 
 	void setSpeed( double value );
 	void incSpeed10();	//!< Inc speed 10%

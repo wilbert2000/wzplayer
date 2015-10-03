@@ -20,10 +20,11 @@
 #define _PREF_INTERFACE_H_
 
 #include "ui_interface.h"
+#include "settings/preferences.h"
 #include "pref/widget.h"
 #include "config.h"
 
-class Preferences;
+class TPreferences;
 
 namespace Pref {
 
@@ -39,10 +40,10 @@ public:
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
     // Apply changes
-    void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 	bool languageChanged() { return language_changed; }
 	bool iconsetChanged() { return iconset_changed; }

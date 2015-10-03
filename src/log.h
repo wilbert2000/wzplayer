@@ -14,7 +14,9 @@
 class TLog {
 public:
 	TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter);
-	~TLog();
+	virtual ~TLog();
+
+	static TLog* log;
 
 	bool isEnabled() const { return enabled; }
 	void setEnabled(bool enable_log) { enabled = enable_log; }

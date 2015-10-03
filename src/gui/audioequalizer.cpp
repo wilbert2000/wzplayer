@@ -19,15 +19,14 @@
 #include "gui/audioequalizer.h"
 #include "gui/eqslider.h"
 #include "images.h"
-#include "preferences.h"
-#include "global.h"
+#include "settings/preferences.h"
 #include <QLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QComboBox>
 #include <QMessageBox>
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 

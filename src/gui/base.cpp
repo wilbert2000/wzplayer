@@ -50,10 +50,9 @@
 #include "helper.h"
 #include "paths.h"
 #include "colorutils.h"
-#include "global.h"
 #include "translator.h"
 #include "images.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "discname.h"
 #include "logwindow.h"
 #include "filepropertiesdialog.h"
@@ -134,7 +133,7 @@
 #include "shutdown.h"
 #endif
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 
@@ -309,13 +308,12 @@ void TBase::loadConfig(const QString &group) {
 	loadActions();
 
 	if (pref->save_window_size_on_exit) {
-		QSettings * set = settings;
 		// Load window state from inside group derived class
-		set->beginGroup(group);
-		QPoint p = set->value("pos", pos()).toPoint();
-		QSize s = set->value("size", size()).toSize();
-		int state = set->value("state", 0).toInt();
-		set->endGroup();
+		pref->beginGroup(group);
+		QPoint p = pref->value("pos", pos()).toPoint();
+		QSize s = pref->value("size", size()).toSize();
+		int state = pref->value("state", 0).toInt();
+		pref->endGroup();
 
 		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
 			s = pref->default_size;
@@ -348,12 +346,11 @@ void TBase::saveConfig(const QString &group) {
 	qDebug("Gui::TBase::saveConfig");
 
 	if (pref->save_window_size_on_exit) {
-		QSettings * set = settings;
-		set->beginGroup(group);
-		set->setValue( "pos", pos() );
-		set->setValue( "size", size() );
-		set->setValue( "state", (int) windowState() );
-		set->endGroup();
+		pref->beginGroup(group);
+		pref->setValue( "pos", pos() );
+		pref->setValue( "size", size() );
+		pref->setValue( "state", (int) windowState() );
+		pref->endGroup();
 	}
 
 	playlist->saveSettings();
@@ -1064,10 +1061,10 @@ void TBase::createActions() {
 
 	// OSD
 	osdGroup = new TActionGroup(this);
-	osdNoneAct = new TActionGroupItem(this, osdGroup, "osd_none", Preferences::None);
-	osdSeekAct = new TActionGroupItem(this, osdGroup, "osd_seek", Preferences::Seek);
-	osdTimerAct = new TActionGroupItem(this, osdGroup, "osd_timer", Preferences::SeekTimer);
-	osdTotalAct = new TActionGroupItem(this, osdGroup, "osd_total", Preferences::SeekTimerTotal);
+	osdNoneAct = new TActionGroupItem(this, osdGroup, "osd_none", Settings::TPreferences::None);
+	osdSeekAct = new TActionGroupItem(this, osdGroup, "osd_seek", Settings::TPreferences::Seek);
+	osdTimerAct = new TActionGroupItem(this, osdGroup, "osd_timer", Settings::TPreferences::SeekTimer);
+	osdTotalAct = new TActionGroupItem(this, osdGroup, "osd_total", Settings::TPreferences::SeekTimerTotal);
 	connect( osdGroup, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)) );
 
 	// Denoise
@@ -1167,9 +1164,9 @@ void TBase::createActions() {
 
 	// On Top
 	onTopActionGroup = new TActionGroup(this);
-	onTopAlwaysAct = new TActionGroupItem( this,onTopActionGroup,"on_top_always",Preferences::AlwaysOnTop);
-	onTopNeverAct = new TActionGroupItem( this,onTopActionGroup,"on_top_never",Preferences::NeverOnTop);
-	onTopWhilePlayingAct = new TActionGroupItem( this,onTopActionGroup,"on_top_playing",Preferences::WhilePlayingOnTop);
+	onTopAlwaysAct = new TActionGroupItem( this,onTopActionGroup,"on_top_always",Settings::TPreferences::AlwaysOnTop);
+	onTopNeverAct = new TActionGroupItem( this,onTopActionGroup,"on_top_never",Settings::TPreferences::NeverOnTop);
+	onTopWhilePlayingAct = new TActionGroupItem( this,onTopActionGroup,"on_top_playing",Settings::TPreferences::WhilePlayingOnTop);
 	connect( onTopActionGroup , SIGNAL(activated(int)),
              this, SLOT(changeStayOnTop(int)) );
 
@@ -2926,10 +2923,10 @@ void TBase::applyNewPreferences() {
 #endif
 
 	// Update logging
-	Global::log->setEnabled(pref->log_enabled);
+	TLog::log->setEnabled(pref->log_enabled);
 	// log_verbose sets requires_restart
-	Global::log->setLogFileEnabled(pref->log_file);
-	Global::log->setFilter(pref->log_filter);
+	TLog::log->setLogFileEnabled(pref->log_file);
+	TLog::log->setFilter(pref->log_filter);
 
 	// Update playlist preferences
 	Pref::TPrefPlaylist * pl = pref_dialog->mod_playlist();
@@ -2940,7 +2937,9 @@ void TBase::applyNewPreferences() {
 
 
 	if (need_update_language) {
-		translator->load(pref->language);
+		delete Translator::translator;
+		Translator::translator = new Translator();
+		Translator::translator->load(pref->language);
 	}
 
 	setJumpTexts(); // Update texts in menus
@@ -4617,7 +4616,7 @@ void TBase::resizeWindow(int w, int h) {
 	if (panel->isVisible()) {
 		// Don't resize if any mouse buttons down, like when dragging.
 		// Button state is synchronized to events, so can be old.
-		if (block || (pref->resize_method == Preferences::Never)
+		if (block || (pref->resize_method == Settings::TPreferences::Never)
 			|| QApplication::mouseButtons()) {
 			return;
 		}
@@ -4789,28 +4788,28 @@ void TBase::setStayOnTop(bool b) {
 
 void TBase::changeStayOnTop(int stay_on_top) {
 	switch (stay_on_top) {
-		case Preferences::AlwaysOnTop : setStayOnTop(true); break;
-		case Preferences::NeverOnTop  : setStayOnTop(false); break;
-		case Preferences::WhilePlayingOnTop : setStayOnTop((core->state() == Core::Playing)); break;
+		case Settings::TPreferences::AlwaysOnTop : setStayOnTop(true); break;
+		case Settings::TPreferences::NeverOnTop  : setStayOnTop(false); break;
+		case Settings::TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == Core::Playing)); break;
 	}
 
-	pref->stay_on_top = (Preferences::OnTop) stay_on_top;
+	pref->stay_on_top = (Settings::TPreferences::OnTop) stay_on_top;
 	updateWidgets();
 }
 
 void TBase::checkStayOnTop(Core::State state) {
 	qDebug("Gui::TBase::checkStayOnTop");
-    if ((!pref->fullscreen) && (pref->stay_on_top == Preferences::WhilePlayingOnTop)) {
+	if ((!pref->fullscreen) && (pref->stay_on_top == Settings::TPreferences::WhilePlayingOnTop)) {
 		setStayOnTop((state == Core::Playing));
 	}
 }
 
 void TBase::toggleStayOnTop() {
-	if (pref->stay_on_top == Preferences::AlwaysOnTop) 
-		changeStayOnTop(Preferences::NeverOnTop);
+	if (pref->stay_on_top == Settings::TPreferences::AlwaysOnTop)
+		changeStayOnTop(Settings::TPreferences::NeverOnTop);
 	else
-	if (pref->stay_on_top == Preferences::NeverOnTop) 
-		changeStayOnTop(Preferences::AlwaysOnTop);
+	if (pref->stay_on_top == Settings::TPreferences::NeverOnTop)
+		changeStayOnTop(Settings::TPreferences::AlwaysOnTop);
 }
 
 // Called when a new window (equalizer, preferences..) is opened.
@@ -4884,9 +4883,9 @@ void TBase::changeStyleSheet(QString style) {
 
 void TBase::loadActions() {
 	qDebug("Gui::TBase::loadActions");
-	ActionsEditor::loadFromConfig(this, settings);
+	ActionsEditor::loadFromConfig(this, Settings::pref);
 #if !DOCK_PLAYLIST
-	ActionsEditor::loadFromConfig(playlist, settings);
+	ActionsEditor::loadFromConfig(playlist, Settings::pref);
 #endif
 
 	actions_list = ActionsEditor::actionsNames(this);
@@ -4898,9 +4897,9 @@ void TBase::loadActions() {
 void TBase::saveActions() {
 	qDebug("Gui::TBase::saveActions");
 
-	ActionsEditor::saveToConfig(this, settings);
+	ActionsEditor::saveToConfig(this, Settings::pref);
 #if !DOCK_PLAYLIST
-	ActionsEditor::saveToConfig(playlist, settings);
+	ActionsEditor::saveToConfig(playlist, Settings::pref);
 #endif
 }
 
@@ -5001,7 +5000,7 @@ void TBase::showExitCodeFromPlayer(int exit_code) {
 		TErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
 		d.setText(msg);
-		d.setLog(Global::log->getLogLines());
+		d.setLog(TLog::log->getLogLines());
 		d.exec();
 	} 
 }
@@ -5025,7 +5024,7 @@ void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 			d.setText(tr("%1 has crashed.").arg(PLAYER_NAME) + " " + 
                       tr("See the log for more info."));
 		}
-		d.setLog(Global::log->getLogLines());
+		d.setLog(TLog::log->getLogLines());
 		d.exec();
 	}
 }
@@ -5037,7 +5036,7 @@ void TBase::showFindSubtitlesDialog() {
 
 	if (!find_subs_dialog) {
 		find_subs_dialog = new FindSubtitlesWindow(this, Qt::Window | Qt::WindowMinMaxButtonsHint);
-		find_subs_dialog->setSettings(Global::settings);
+		find_subs_dialog->setSettings(Settings::pref);
 		find_subs_dialog->setWindowIcon(windowIcon());
 #if DOWNLOAD_SUBS
 		connect(find_subs_dialog, SIGNAL(subtitleDownloaded(const QString &)),
@@ -5060,7 +5059,7 @@ void TBase::showVideoPreviewDialog() {
 
 	if (video_preview == 0) {
 		video_preview = new VideoPreview( pref->mplayer_bin, this );
-		video_preview->setSettings(Global::settings);
+		video_preview->setSettings(Settings::pref);
 	}
 
 	if (!core->mdat.filename.isEmpty()) {

@@ -17,12 +17,11 @@
 */
 
 #include "mplayerversion.h"
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 
 #include <QRegExp>
 
-using namespace Global;
+using namespace Settings;
 
 QString MplayerVersion::mplayer2_version;
 QString MplayerVersion::mpv_version;

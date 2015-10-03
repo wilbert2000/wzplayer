@@ -20,9 +20,9 @@
 #define _PREF_PLAYLIST_H_
 
 #include "ui_prefplaylist.h"
+#include "settings/preferences.h"
 #include "pref/widget.h"
 
-class Preferences;
 
 namespace Pref {
 
@@ -38,10 +38,10 @@ public:
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
     // Apply changes
-    void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 
 	void setDirectoryRecursion(bool b);

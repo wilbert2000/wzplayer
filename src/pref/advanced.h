@@ -21,7 +21,7 @@
 
 #include "ui_advanced.h"
 #include "pref/widget.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 
 namespace Pref {
 
@@ -37,10 +37,10 @@ public:
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
     // Apply changes
-    void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; }
 	bool monitorAspectChanged() { return monitor_aspect_changed; }
@@ -94,8 +94,8 @@ protected:
 	void setUseLavfDemuxer(bool);
 	bool useLavfDemuxer();
 
-	void setUseCorrectPts(Preferences::OptionState value);
-	Preferences::OptionState useCorrectPts();
+	void setUseCorrectPts(Settings::TPreferences::OptionState value);
+	Settings::TPreferences::OptionState useCorrectPts();
 
 	void setActionsToRun(QString actions);
 	QString actionsToRun();

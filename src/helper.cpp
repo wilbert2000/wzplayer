@@ -32,6 +32,7 @@
 #include <windows.h> // For the screensaver stuff
 #endif
 
+using namespace Settings;
 
 QString Helper::formatTime(int secs) {
 	bool negative = (secs < 0);
@@ -247,18 +248,19 @@ QStringList Helper::filesInDirectory(const QString & initial_file, const QString
 	return r;
 }
 
-QStringList Helper::filesForPlaylist(const QString & initial_file, Preferences::AutoAddToPlaylistFilter filter) {
+QStringList Helper::filesForPlaylist(const QString & initial_file,
+									 Settings::TPreferences::AutoAddToPlaylistFilter filter) {
 	QStringList res;
 
-	if (filter == Preferences::ConsecutiveFiles) {
+	if (filter == TPreferences::ConsecutiveFiles) {
 		res = searchForConsecutiveFiles(initial_file);
 	} else {
 		Extensions e;
 		QStringList exts;
 		switch (filter) {
-			case Preferences::VideoFiles: exts = e.video().forDirFilter(); break;
-			case Preferences::AudioFiles: exts = e.audio().forDirFilter(); break;
-			case Preferences::MultimediaFiles: exts = e.multimedia().forDirFilter(); break;
+			case TPreferences::VideoFiles: exts = e.video().forDirFilter(); break;
+			case TPreferences::AudioFiles: exts = e.audio().forDirFilter(); break;
+			case TPreferences::MultimediaFiles: exts = e.multimedia().forDirFilter(); break;
 			default: ;
 		}
 		if (!exts.isEmpty()) res = Helper::filesInDirectory(initial_file, exts);

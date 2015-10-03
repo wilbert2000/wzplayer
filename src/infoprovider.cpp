@@ -17,8 +17,7 @@
 */
 
 #include "infoprovider.h"
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "proc/playerprocess.h"
 #include "playerid.h"
 #include <QFileInfo>
@@ -55,5 +54,5 @@ void InfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaDa
 }
 
 void InfoProvider::getInfo(const QString &filename, MediaData &md) {
-	getInfo( Global::pref->mplayer_bin, filename, md );
+	getInfo(Settings::pref->mplayer_bin, filename, md);
 }

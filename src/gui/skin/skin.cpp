@@ -25,7 +25,6 @@
 #include "helper.h"
 #include "colorutils.h"
 #include "core.h"
-#include "global.h"
 #include "mplayerwindow.h"
 #include "images.h"
 #include "desktopinfo.h"
@@ -49,7 +48,7 @@
 
 #define TOOLBAR_VERSION 1
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 
@@ -436,34 +435,33 @@ void TSkin::saveConfig(const QString &group) {
 
 	TBasePlus::saveConfig("skin_gui");
 
-	QSettings * set = settings;
-	set->beginGroup("skin_gui");
+	pref->beginGroup("skin_gui");
 
-	set->setValue("video_info", viewVideoInfoAct->isChecked());
-	set->setValue("scroll_title", scrollTitleAct->isChecked());
+	pref->setValue("video_info", viewVideoInfoAct->isChecked());
+	pref->setValue("scroll_title", scrollTitleAct->isChecked());
 
-	set->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
-	set->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
+	pref->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
+	pref->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
 
-	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
+	pref->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
-	set->beginGroup( "actions" );
-	set->setValue("toolbar1", toolbar1->actionsToStringList() );
+	pref->beginGroup( "actions" );
+	pref->setValue("toolbar1", toolbar1->actionsToStringList() );
 #if defined(SKIN_EDITABLE_CONTROL)
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	set->setValue("floating_control", iw->actionsToStringList() );
+	pref->setValue("floating_control", iw->actionsToStringList() );
 #endif
-	set->setValue("toolbar1_version", TOOLBAR_VERSION);
-	set->endGroup();
+	pref->setValue("toolbar1_version", TOOLBAR_VERSION);
+	pref->endGroup();
 
-	set->beginGroup("toolbars_icon_size");
-	set->setValue("toolbar1", toolbar1->iconSize());
+	pref->beginGroup("toolbars_icon_size");
+	pref->setValue("toolbar1", toolbar1->iconSize());
 #if defined(SKIN_EDITABLE_CONTROL)
-	set->setValue("floating_control", iw->iconSize());
+	pref->setValue("floating_control", iw->iconSize());
 #endif
-	set->endGroup();
+	pref->endGroup();
 
-	set->endGroup();
+	pref->endGroup();
 }
 
 void TSkin::loadConfig(const QString &group) {
@@ -472,40 +470,39 @@ void TSkin::loadConfig(const QString &group) {
 
 	TBasePlus::loadConfig("skin_gui");
 
-	QSettings * set = settings;
-	set->beginGroup("skin_gui");
+	pref->beginGroup("skin_gui");
 
-	viewVideoInfoAct->setChecked(set->value("video_info", false).toBool());
-	scrollTitleAct->setChecked(set->value("scroll_title", false).toBool());
+	viewVideoInfoAct->setChecked(pref->value("video_info", false).toBool());
+	scrollTitleAct->setChecked(pref->value("scroll_title", false).toBool());
 
-	fullscreen_toolbar1_was_visible = set->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
-	compact_toolbar1_was_visible = set->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
+	fullscreen_toolbar1_was_visible = pref->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
+	compact_toolbar1_was_visible = pref->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
 
-	set->beginGroup( "actions" );
-	int toolbar_version = set->value("toolbar1_version", 0).toInt();
+	pref->beginGroup( "actions" );
+	int toolbar_version = pref->value("toolbar1_version", 0).toInt();
 	if (toolbar_version >= TOOLBAR_VERSION) {
-		toolbar1->setActionsFromStringList( set->value("toolbar1", toolbar1->defaultActions()).toStringList() );
+		toolbar1->setActionsFromStringList( pref->value("toolbar1", toolbar1->defaultActions()).toStringList() );
 	} else {
 		qWarning("Gui::TSkin::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
 	}
 #if defined(SKIN_EDITABLE_CONTROL)
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList( set->value("floating_control", iw->defaultActions()).toStringList() );
+	iw->setActionsFromStringList( pref->value("floating_control", iw->defaultActions()).toStringList() );
 	floating_control->adjustSize();
 #endif
-	set->endGroup();
+	pref->endGroup();
 
-	set->beginGroup("toolbars_icon_size");
-	toolbar1->setIconSize(set->value("toolbar1", toolbar1->iconSize()).toSize());
+	pref->beginGroup("toolbars_icon_size");
+	toolbar1->setIconSize(pref->value("toolbar1", toolbar1->iconSize()).toSize());
 #if defined(SKIN_EDITABLE_CONTROL)
-	iw->setIconSize(set->value("floating_control", iw->iconSize()).toSize());
+	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
 #endif
-	set->endGroup();
+	pref->endGroup();
 
-	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	restoreState( pref->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 
-	set->endGroup();
+	pref->endGroup();
 
 	updateWidgets();
 

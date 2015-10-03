@@ -19,7 +19,7 @@
 
 #include "pref/drives.h"
 #include "images.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 
 #include <QFile>
 #include <QFileInfoList>
@@ -127,14 +127,14 @@ void TDrives::updateDriveCombos(bool detect_cd_devices) {
 	setBlurayDevice( current_bluray_device );
 }
 
-void TDrives::setData(Preferences * pref) {
+void TDrives::setData(Settings::TPreferences * pref) {
 	setDVDDevice( pref->dvd_device );
 	setCDRomDevice( pref->cdrom_device );
 	setBlurayDevice( pref->bluray_device );
 	setUseDVDNav( pref->use_dvdnav );
 }
 
-void TDrives::getData(Preferences * pref) {
+void TDrives::getData(Settings::TPreferences * pref) {
 	requires_restart = false;
 
 	pref->dvd_device = dvdDevice();

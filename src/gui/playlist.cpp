@@ -47,10 +47,9 @@
 #include "filedialog.h"
 #include "helper.h"
 #include "images.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "multilineinputdialog.h"
 #include "version.h"
-#include "global.h"
 #include "core.h"
 #include "extensions.h"
 #include "guiconfig.h"
@@ -67,7 +66,7 @@
 #define COL_NAME 1
 #define COL_TIME 2
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 
@@ -1486,7 +1485,7 @@ void TPlaylist::maybeSaveSettings() {
 void TPlaylist::saveSettings() {
 	qDebug("Gui::TPlaylist::saveSettings");
 
-	QSettings * set = settings;
+	QSettings* set = Settings::pref;
 
 	set->beginGroup( "directories");
 	bool save_dirs = set->value("save_dirs", false).toBool();
@@ -1536,7 +1535,7 @@ void TPlaylist::saveSettings() {
 void TPlaylist::loadSettings() {
 	qDebug("Gui::TPlaylist::loadSettings");
 
-	QSettings * set = settings;
+	QSettings * set = Settings::pref;
 
 	set->beginGroup( "playlist");
 

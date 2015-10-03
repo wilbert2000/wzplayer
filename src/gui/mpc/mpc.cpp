@@ -30,7 +30,6 @@
 #include "gui/widgetactions.h"
 #include "gui/autohidewidget.h"
 
-#include "global.h"
 #include "styles.h"
 #include "mplayerwindow.h"
 #include "helper.h"
@@ -38,7 +37,7 @@
 #include "colorutils.h"
 
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 

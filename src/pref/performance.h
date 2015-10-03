@@ -22,7 +22,7 @@
 #include "ui_performance.h"
 #include "pref/widget.h"
 
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "config.h"
 
 namespace Pref {
@@ -39,10 +39,10 @@ public:
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
     // Apply changes
-    void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 protected:
 	virtual void createHelp();
@@ -74,8 +74,8 @@ protected:
 	void setHardFrameDrop(bool b);
 	bool hardFrameDrop();
 
-	void setSkipLoop(Preferences::H264LoopFilter value);
-	Preferences::H264LoopFilter skipLoop();
+	void setSkipLoop(Settings::TPreferences::H264LoopFilter value);
+	Settings::TPreferences::H264LoopFilter skipLoop();
 
 	void setThreads(int v);
 	int threads();

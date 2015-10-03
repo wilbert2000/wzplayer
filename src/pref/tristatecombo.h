@@ -25,7 +25,9 @@
 #define _PREF_TRISTATE_COMBO_H_
 
 #include <QComboBox>
-#include "preferences.h"
+#include "settings/preferences.h"
+
+using namespace Settings;
 
 namespace Pref {
 
@@ -34,11 +36,11 @@ class TTristateCombo : public QComboBox
 	Q_OBJECT
 
 public:
-	TTristateCombo( QWidget * parent = 0 );
+	TTristateCombo(QWidget * parent = 0);
 	~TTristateCombo();
 
-	void setState( Preferences::OptionState v );
-	Preferences::OptionState state();
+	void setState(TPreferences::OptionState v);
+	TPreferences::OptionState state();
 
 protected:
 	virtual void retranslateStrings();

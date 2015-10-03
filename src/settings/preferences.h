@@ -17,16 +17,15 @@
 */
 
 
-#ifndef _PREFERENCES_H_
-#define _PREFERENCES_H_
+#ifndef _SETTINGS_PREFERENCES_H_
+#define _SETTINGS_PREFERENCES_H_
 
-/* Global settings */
-
+#include <QSize>
 #include <QString>
 #include <QStringList>
-#include <QSize>
 
 #include "config.h"
+#include "settings/smplayersettings.h"
 #include "audioequalizerlist.h"
 #include "assstyles.h"
 
@@ -38,7 +37,9 @@ class Recents;
 class URLHistory;
 class Filters;
 
-class Preferences {
+namespace Settings {
+
+class TPreferences : public TSMPlayerSettings {
 
 public:
 	enum OSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
@@ -54,8 +55,8 @@ public:
 
 	Q_DECLARE_FLAGS(WheelFunctions, WheelFunction)
 
-	Preferences();
-	virtual ~Preferences();
+	TPreferences(QObject* parent);
+	virtual ~TPreferences();
 
 	virtual void reset();
 
@@ -64,7 +65,6 @@ public:
 
 	double monitor_aspect_double();
 	void setupScreenshotFolder();
-
 
 
     /* *******
@@ -535,6 +535,10 @@ public:
 #endif
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Preferences::WheelFunctions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::WheelFunctions)
 
-#endif
+extern TPreferences* pref;
+
+} // namespace Settings
+
+#endif // _SETTINGS_PREFERENCES_H_

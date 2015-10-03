@@ -19,7 +19,7 @@
 
 #include "pref/subtitles.h"
 #include "images.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "paths.h"
 #include "assstyles.h"
 #include "filedialog.h"
@@ -125,7 +125,7 @@ void TSubtitles::retranslateStrings() {
 	createHelp();
 }
 
-void TSubtitles::setData(Preferences * pref) {
+void TSubtitles::setData(Settings::TPreferences * pref) {
 	setAssFontScale( pref->initial_sub_scale_ass );
 	setAutoloadSub( pref->autoload_sub );
 	setFontFuzziness( pref->subfuzziness );
@@ -165,7 +165,7 @@ void TSubtitles::setData(Preferences * pref) {
 #endif
 }
 
-void TSubtitles::getData(Preferences * pref) {
+void TSubtitles::getData(Settings::TPreferences * pref) {
 	requires_restart = false;
 
 	pref->initial_sub_scale_ass = assFontScale();

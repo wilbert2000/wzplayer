@@ -27,10 +27,9 @@
 #endif
 
 #ifdef SMCODE
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "paths.h"
-using namespace Global;
+using namespace Settings;
 #endif
 
 QString Images::current_theme;

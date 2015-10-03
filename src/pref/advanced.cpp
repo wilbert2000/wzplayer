@@ -19,7 +19,7 @@
 
 #include "pref/advanced.h"
 #include "images.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "paths.h"
 #include "playerid.h"
 #include <QColorDialog>
@@ -83,7 +83,7 @@ void TAdvanced::retranslateStrings() {
 	createHelp();
 }
 
-void TAdvanced::setData(Preferences * pref) {
+void TAdvanced::setData(TPreferences * pref) {
 	setMonitorAspect( pref->monitor_aspect );
 
 	setRepaintVideoBackground( pref->repaint_video_background );
@@ -113,7 +113,7 @@ void TAdvanced::setData(Preferences * pref) {
 	setMplayerCrashes( pref->report_mplayer_crashes );
 }
 
-void TAdvanced::getData(Preferences * pref) {
+void TAdvanced::getData(TPreferences * pref) {
 
 	requires_restart = false;
 	repaint_video_background_changed = false;
@@ -291,11 +291,11 @@ bool TAdvanced::useLavfDemuxer() {
 	return lavf_demuxer_check->isChecked();
 }
 
-void TAdvanced::setUseCorrectPts(Preferences::OptionState value) {
+void TAdvanced::setUseCorrectPts(TPreferences::OptionState value) {
 	correct_pts_combo->setState(value);
 }
 
-Preferences::OptionState TAdvanced::useCorrectPts() {
+TPreferences::OptionState TAdvanced::useCorrectPts() {
 	return correct_pts_combo->state();
 }
 

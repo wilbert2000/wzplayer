@@ -19,7 +19,7 @@
 
 #include "pref/general.h"
 #include "pref/vdpauproperties.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "filedialog.h"
 #include "images.h"
 #include "mediasettings.h"
@@ -166,7 +166,7 @@ void TGeneral::retranslateStrings() {
 	createHelp();
 }
 
-void TGeneral::setData(Preferences * pref) {
+void TGeneral::setData(TPreferences * pref) {
 	setMplayerPath( pref->mplayer_bin );
 
 	setUseScreenshots( pref->use_screenshot );
@@ -263,7 +263,7 @@ void TGeneral::setData(Preferences * pref) {
 	setMc( pref->mc_value );
 }
 
-void TGeneral::getData(Preferences * pref) {
+void TGeneral::getData(TPreferences * pref) {
 	requires_restart = false;
 	filesettings_method_changed = false;
 
@@ -835,11 +835,11 @@ int TGeneral::autoq() {
 	return autoq_spin->value();
 }
 
-void TGeneral::setScaleTempoFilter(Preferences::OptionState value) {
+void TGeneral::setScaleTempoFilter(TPreferences::OptionState value) {
 	scaletempo_combo->setState(value);
 }
 
-Preferences::OptionState TGeneral::scaleTempoFilter() {
+TPreferences::OptionState TGeneral::scaleTempoFilter() {
 	return scaletempo_combo->state();
 }
 

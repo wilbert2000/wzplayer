@@ -19,10 +19,9 @@
 
 #include "pref/performance.h"
 #include "images.h"
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 
-using namespace Global;
+using namespace Settings;
 
 namespace Pref {
 
@@ -73,9 +72,9 @@ void TPerformance::retranslateStrings() {
 	retranslateUi(this);
 
 	loopfilter_combo->clear();
-	loopfilter_combo->addItem( tr("Enabled"), Preferences::LoopEnabled );
-	loopfilter_combo->addItem( tr("Skip (always)"), Preferences::LoopDisabled );
-	loopfilter_combo->addItem( tr("Skip only on HD videos"), Preferences::LoopDisabledOnHD );
+	loopfilter_combo->addItem( tr("Enabled"), TPreferences::LoopEnabled );
+	loopfilter_combo->addItem( tr("Skip (always)"), TPreferences::LoopDisabled );
+	loopfilter_combo->addItem( tr("Skip only on HD videos"), TPreferences::LoopDisabledOnHD );
 
 	priority_combo->setCurrentIndex(priority);
 	loopfilter_combo->setCurrentIndex(loop_filter);
@@ -83,7 +82,7 @@ void TPerformance::retranslateStrings() {
 	createHelp();
 }
 
-void TPerformance::setData(Preferences * pref) {
+void TPerformance::setData(TPreferences * pref) {
 	setCacheForFiles( pref->cache_for_files );
 	setCacheForStreams( pref->cache_for_streams );
 	setCacheForDVDs( pref->cache_for_dvds );
@@ -100,7 +99,7 @@ void TPerformance::setData(Preferences * pref) {
 	setHwdec( pref->hwdec );
 }
 
-void TPerformance::getData(Preferences * pref) {
+void TPerformance::getData(TPreferences * pref) {
 	requires_restart = false;
 
 	TEST_AND_SET(pref->cache_for_files, cacheForFiles());
@@ -199,12 +198,12 @@ bool TPerformance::coreavcUsage() {
 	return coreavc_check->isChecked();
 }
 
-void TPerformance::setSkipLoop(Preferences::H264LoopFilter value) {
+void TPerformance::setSkipLoop(TPreferences::H264LoopFilter value) {
 	loopfilter_combo->setCurrentIndex(loopfilter_combo->findData(value));
 }
 
-Preferences::H264LoopFilter TPerformance::skipLoop() {
-	return (Preferences::H264LoopFilter) loopfilter_combo->itemData(loopfilter_combo->currentIndex()).toInt();
+TPreferences::H264LoopFilter TPerformance::skipLoop() {
+	return (TPreferences::H264LoopFilter) loopfilter_combo->itemData(loopfilter_combo->currentIndex()).toInt();
 }
 
 void TPerformance::setThreads(int v) {

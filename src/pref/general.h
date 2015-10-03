@@ -24,7 +24,7 @@
 #include "pref/widget.h"
 #include "inforeader.h"
 #include "deviceinfo.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 
 #ifdef Q_OS_WIN
 #define USE_DSOUND_DEVICES 1
@@ -52,10 +52,10 @@ public:
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(Preferences * pref);
+	void setData(TPreferences * pref);
 
 	// Apply changes
-	void getData(Preferences * pref);
+	void getData(TPreferences * pref);
 
 	bool fileSettingsMethodChanged() { return filesettings_method_changed; }
 
@@ -183,8 +183,8 @@ protected:
 	void setAudioChannels(int ID);
 	int audioChannels();
 
-	void setScaleTempoFilter(Preferences::OptionState value);
-	Preferences::OptionState scaleTempoFilter();
+	void setScaleTempoFilter(TPreferences::OptionState value);
+	TPreferences::OptionState scaleTempoFilter();
 
 protected slots:
 	void vo_combo_changed(int);
@@ -216,7 +216,7 @@ private:
 	bool filesettings_method_changed;
 
 #ifndef Q_OS_WIN
-	struct Preferences::VDPAU_settings vdpau;
+	struct TPreferences::VDPAU_settings vdpau;
 #endif
 
 };

@@ -39,7 +39,7 @@
 class QTextBrowser;
 class QPushButton;
 
-class Preferences;
+class TPreferences;
 
 namespace Pref {
 
@@ -66,10 +66,10 @@ public:
 	void addSection(TWidget *w);
 
 	// Pass data to the standard dialogs
-	void setData(Preferences * pref);
+	void setData(Settings::TPreferences * pref);
 
 	// Apply changes
-	void getData(Preferences * pref);
+	void getData(Settings::TPreferences * pref);
 
 	// Return true if the mplayer process should be restarted.
 	bool requiresRestart();

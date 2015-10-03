@@ -26,7 +26,7 @@
 #include "guiconfig.h"
 #include "mediadata.h"
 #include "mediasettings.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "core.h"
 #include "gui/playlist.h"
 #include "gui/logwindow.h"
@@ -74,7 +74,7 @@ class TBase : public QMainWindow
     
 public:
 	TBase(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	~TBase();
+	virtual ~TBase();
 
 	/* Return true if the window shouldn't show on startup */
 	virtual bool startHidden() { return false; }

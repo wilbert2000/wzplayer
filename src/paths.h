@@ -28,6 +28,13 @@ public:
 	static void setAppPath(QString path);
 	static QString appPath();
 
+	static void setConfigPath(const QString& path);
+	//! Return the path where smplayer should save its config files
+	static QString configPath() { return config_path; }
+
+	//! Replaced by configPath()
+	static QString iniPath() { return config_path; }
+
 	static QString dataPath();
 	static QString translationPath();
 	static QString docPath();
@@ -35,19 +42,7 @@ public:
 	static QString shortcutsPath();
 	static QString qtTranslationPath();
 	static QString doc(QString file, QString locale = QString::null, bool english_fallback = true);
-
-	//! Forces to use a different path for the config files
-	static void setConfigPath(QString path);
-
-	//! Return the path where smplayer should save its config files
-	static QString configPath();
-
-	//! Obsolete. Just returns configPath()
-	static QString iniPath();
-
 	static QString subtitleStyleFile();
-
-	static void createConfigDirectory();
 
 #ifdef Q_OS_WIN
 	static QString fontPath();

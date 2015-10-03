@@ -23,9 +23,8 @@
 #include <QApplication>
 #include <QDebug>
 
-#include "global.h"
 #include "playerprocess.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "mplayerversion.h"
 #include "colorutils.h"
 #include "inforeader.h"

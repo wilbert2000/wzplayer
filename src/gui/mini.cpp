@@ -26,13 +26,12 @@
 #include "autohidewidget.h"
 #include "gui/action.h"
 #include "mplayerwindow.h"
-#include "global.h"
 #include "helper.h"
 #include "desktopinfo.h"
 #include "editabletoolbar.h"
 #include "images.h"
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 
@@ -231,23 +230,22 @@ void TMini::saveConfig(const QString &group) {
 
 	TBasePlus::saveConfig("mini_gui");
 
-	QSettings * set = settings;
-	set->beginGroup("mini_gui");
+	pref->beginGroup("mini_gui");
 
-	set->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
+	pref->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
 
-	set->beginGroup( "actions" );
-	set->setValue("controlwidget", controlwidget->actionsToStringList() );
+	pref->beginGroup( "actions" );
+	pref->setValue("controlwidget", controlwidget->actionsToStringList() );
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	set->setValue("floating_control", iw->actionsToStringList() );
-	set->endGroup();
+	pref->setValue("floating_control", iw->actionsToStringList() );
+	pref->endGroup();
 
-	set->beginGroup("toolbars_icon_size");
-	set->setValue("controlwidget", controlwidget->iconSize());
-	set->setValue("floating_control", iw->iconSize());
-	set->endGroup();
+	pref->beginGroup("toolbars_icon_size");
+	pref->setValue("controlwidget", controlwidget->iconSize());
+	pref->setValue("floating_control", iw->iconSize());
+	pref->endGroup();
 
-	set->endGroup();
+	pref->endGroup();
 }
 
 void TMini::loadConfig(const QString &group) {
@@ -255,25 +253,24 @@ void TMini::loadConfig(const QString &group) {
 
 	TBasePlus::loadConfig("mini_gui");
 
-	QSettings * set = settings;
-	set->beginGroup("mini_gui");
+	pref->beginGroup("mini_gui");
 
-	set->beginGroup( "actions" );
-	controlwidget->setActionsFromStringList( set->value("controlwidget", controlwidget->defaultActions()).toStringList() );
+	pref->beginGroup( "actions" );
+	controlwidget->setActionsFromStringList( pref->value("controlwidget", controlwidget->defaultActions()).toStringList() );
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList( set->value("floating_control", iw->defaultActions()).toStringList() );
-	set->endGroup();
+	iw->setActionsFromStringList( pref->value("floating_control", iw->defaultActions()).toStringList() );
+	pref->endGroup();
 
-	set->beginGroup("toolbars_icon_size");
-	controlwidget->setIconSize(set->value("controlwidget", controlwidget->iconSize()).toSize());
-	iw->setIconSize(set->value("floating_control", iw->iconSize()).toSize());
-	set->endGroup();
+	pref->beginGroup("toolbars_icon_size");
+	controlwidget->setIconSize(pref->value("controlwidget", controlwidget->iconSize()).toSize());
+	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
+	pref->endGroup();
 
 	floating_control->adjustSize();
 
-	restoreState( set->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	restoreState( pref->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
 
-	set->endGroup();
+	pref->endGroup();
 
 	if (pref->compact_mode) {
 		controlwidget->hide();

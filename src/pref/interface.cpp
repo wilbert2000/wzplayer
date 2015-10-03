@@ -19,7 +19,7 @@
 
 #include "pref/interface.h"
 #include "images.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "paths.h"
 #include "languages.h"
 #include "recents.h"
@@ -219,7 +219,7 @@ void TInterface::retranslateStrings() {
 	createHelp();
 }
 
-void TInterface::setData(Preferences * pref) {
+void TInterface::setData(Settings::TPreferences * pref) {
 	setLanguage( pref->language );
 	setIconSet( pref->iconset );
 
@@ -262,7 +262,7 @@ void TInterface::setData(Preferences * pref) {
 	setRememberDirs(pref->save_dirs);
 }
 
-void TInterface::getData(Preferences * pref) {
+void TInterface::getData(Settings::TPreferences * pref) {
 	requires_restart = false;
 	language_changed = false;
 	iconset_changed = false;

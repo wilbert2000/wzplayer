@@ -26,12 +26,11 @@
 #include <QToolTip>
 
 #include "config.h"
-#include "global.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "helper.h"
 
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 namespace Skin {

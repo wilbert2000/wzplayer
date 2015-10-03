@@ -19,7 +19,7 @@
 
 #include "pref/dialog.h"
 
-#include "preferences.h"
+#include "settings/preferences.h"
 
 #include <QVBoxLayout>
 #include <QTextBrowser>
@@ -158,7 +158,7 @@ void TDialog::addSection(TWidget *w) {
 	pages->addWidget(w);
 }
 
-void TDialog::setData(Preferences * pref) {
+void TDialog::setData(Settings::TPreferences* pref) {
 	page_general->setData(pref);
 	page_drives->setData(pref);
 	page_interface->setData(pref);
@@ -176,7 +176,7 @@ void TDialog::setData(Preferences * pref) {
 #endif
 }
 
-void TDialog::getData(Preferences * pref) {
+void TDialog::getData(Settings::TPreferences* pref) {
 	page_general->getData(pref);
 	page_drives->getData(pref);
 	page_interface->getData(pref);

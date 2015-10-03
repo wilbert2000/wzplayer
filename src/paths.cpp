@@ -40,6 +40,56 @@ QString Paths::appPath() {
 	return app_path;
 }
 
+void Paths::setConfigPath(const QString& path) {
+
+	// Set config path
+	if (path.isEmpty()) {
+
+#ifdef PORTABLE_APP
+		config_path = Paths::appPath();
+#else
+		// If a smplayer.ini exists in the app path, use that path
+		// TODO: This is the old behaviour, but should prefer ini in home dir.
+		if (QFile::exists(app_path + "/smplayer.ini")) {
+			config_path = app_path;
+		} else {
+
+#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+			const char * XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
+			if (XDG_CONFIG_HOME != NULL) {
+				config_path = QString(XDG_CONFIG_HOME) + "/smplayer";
+			} else {
+				config_path = QDir::homePath() + "/.config/smplayer";
+			}
+#else
+			config_path = QDir::homePath() + "/.smplayer";
+#endif
+
+		}
+#endif
+
+	}
+
+	// Create config directory
+#ifndef PORTABLE_APP
+	if (!QFile::exists(config_path)) {
+		QDir d;
+		if (!d.mkdir(config_path)) {
+			qWarning("Paths::setConfigPath: failed to create %s", config_path.toUtf8().data());
+		}
+
+		// Screenshot folder already created in preferences.cpp if Qt >= 4.4
+#if QT_VERSION < 0x040400
+		QString s = config_path + "/screenshots";
+		if (!d.mkdir(s)) {
+			qWarning("Paths::setConfigPath: failed to create %s", s.toUtf8().data());
+		}
+#endif
+	}
+#endif
+
+}
+
 QString Paths::dataPath() {
 #ifdef DATA_PATH
 	QString path = QString(DATA_PATH);
@@ -126,63 +176,6 @@ QString Paths::doc(QString file, QString locale, bool english_fallback) {
 	}
 
 	return QString::null;
-}
-
-void Paths::setConfigPath(QString path) {
-	config_path = path;
-}
-
-QString Paths::configPath() {
-
-	if (config_path.isEmpty()) {
-
-#ifdef PORTABLE_APP
-		config_path = app_path;
-#else
-
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-		const char * XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
-		if (XDG_CONFIG_HOME != NULL) {
-			config_path = QString(XDG_CONFIG_HOME) + "/smplayer";
-		} else {
-			config_path = QDir::homePath() + "/.config/smplayer";
-		}
-#else
-		config_path = QDir::homePath() + "/.smplayer";
-#endif
-
-#endif
-
-	}
-
-	return config_path;
-}
-
-void Paths::createConfigDirectory() {
-
-#ifndef PORTABLE_APP
-	// Create smplayer config directory
-	if (!QFile::exists(configPath())) {
-		QDir d;
-		if (!d.mkdir(config_path)) {
-			qWarning("Paths::createConfigDirectory: can't create %s", config_path.toUtf8().data());
-		}
-
-		// Screenshot folder already created in preferences.cpp if Qt >= 4.4
-#if QT_VERSION < 0x040400
-		QString s = config_path + "/screenshots";
-		if (!d.mkdir(s)) {
-			qWarning("Paths::createHomeDirectory: can't create %s", s.toUtf8().data());
-		}
-#endif
-
-	}
-#endif
-
-}
-
-QString Paths::iniPath() {
-	return configPath();
 }
 
 QString Paths::subtitleStyleFile() {

@@ -155,7 +155,7 @@ void TAssociations::refreshList()
 	}
 }
 
-void TAssociations::setData(Preferences * )
+void TAssociations::setData(TPreferences * )
 {
 	refreshList(); 
 }
@@ -177,7 +177,7 @@ int TAssociations::ProcessAssociations(QStringList& current, QStringList& old)
 	return RegAssoc.CreateFileAssociations(current); 
 }
 
-void TAssociations::getData(Preferences *)
+void TAssociations::getData(TPreferences *)
 {
 	qDebug("Pref::TAssociations::getData: something_changed: %d", something_changed);
 	if (!something_changed) return;

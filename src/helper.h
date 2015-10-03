@@ -22,8 +22,8 @@
 
 #include <QString>
 #include <QStringList>
+#include "settings/preferences.h"
 #include "audioequalizerlist.h"
-#include "preferences.h"
 
 #ifdef Q_OS_WIN
 #include "config.h"
@@ -61,7 +61,8 @@ public:
 	//! values.
 	static QString equalizerListToString(AudioEqualizerList values);
 
-	static QStringList filesForPlaylist(const QString & initial_file, Preferences::AutoAddToPlaylistFilter filter);
+	static QStringList filesForPlaylist(const QString & initial_file,
+										Settings::TPreferences::AutoAddToPlaylistFilter filter);
 
 #ifdef Q_OS_WIN
 	static QStringList resolveSymlinks(const QStringList & files);

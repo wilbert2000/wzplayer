@@ -37,7 +37,7 @@ class TBasePlus : public TBase
 
 public:
 	TBasePlus( QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	~TBasePlus();
+	virtual ~TBasePlus();
 
 	virtual bool startHidden();
 	virtual void loadConfig(const QString &group);

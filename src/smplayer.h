@@ -22,6 +22,8 @@
 #include <QtGlobal>
 #include <QString>
 #include <QStringList>
+#include <QSettings>
+
 #include "gui/base.h"
 
 #ifdef Q_OS_WIN
@@ -86,6 +88,7 @@ private:
 	int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
 
 	void createGUI();
+	void loadConfig(const QString& config_path);
 };
 
 #endif

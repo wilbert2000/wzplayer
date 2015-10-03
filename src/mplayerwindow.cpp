@@ -32,7 +32,6 @@
 #include <QPropertyAnimation>
 #endif
 
-#include "global.h"
 #include "desktopinfo.h"
 #include "colorutils.h"
 #include "images.h"

@@ -88,7 +88,6 @@ HEADERS += guiconfig.h \
 	links.h \
 	svn_revision.h \
 	version.h \
-	global.h \
 	paths.h \
 	helper.h \
 	colorutils.h \
@@ -108,7 +107,8 @@ HEADERS += guiconfig.h \
 	mediasettings.h \
 	assstyles.h \
 	filters.h \
-	preferences.h \
+    settings/smplayersettings.h \
+    settings/preferences.h \
 	filesettingsbase.h \
 	filesettings.h \
 	filesettingshash.h \
@@ -189,7 +189,6 @@ HEADERS += guiconfig.h \
 
 
 SOURCES	+= version.cpp \
-	global.cpp \
 	paths.cpp \
 	helper.cpp \
 	colorutils.cpp \
@@ -208,7 +207,8 @@ SOURCES	+= version.cpp \
 	mediasettings.cpp \
 	assstyles.cpp \
 	filters.cpp \
-	preferences.cpp \
+    settings/smplayersettings.cpp \
+    settings/preferences.cpp \
 	filesettingsbase.cpp \
 	filesettings.cpp \
 	filesettingshash.cpp \

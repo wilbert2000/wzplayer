@@ -25,7 +25,6 @@
 
 #include "config.h"
 #include "gui/action.h"
-#include "global.h"
 #include "images.h"
 #include "playlist.h"
 
@@ -45,7 +44,7 @@
 #define PLAYLIST_ON_SIDES 1
 #endif
 
-using namespace Global;
+using namespace Settings;
 
 namespace Gui {
 
@@ -224,25 +223,24 @@ void TBasePlus::saveConfig(const QString &group) {
 
 	TBase::saveConfig(group);
 
-	QSettings * set = settings;
 	// Store inside group derived class
-	set->beginGroup( group );
-	set->beginGroup( "base_gui_plus");
+	pref->beginGroup( group );
+	pref->beginGroup( "base_gui_plus");
 
-	set->setValue( "show_tray_icon", showTrayAct->isChecked() );
-	set->setValue( "mainwindow_visible", isVisible() );
+	pref->setValue( "show_tray_icon", showTrayAct->isChecked() );
+	pref->setValue( "mainwindow_visible", isVisible() );
 
-	set->setValue( "trayicon_playlist_was_visible", trayicon_playlist_was_visible );
-	set->setValue( "widgets_size", widgets_size );
+	pref->setValue( "trayicon_playlist_was_visible", trayicon_playlist_was_visible );
+	pref->setValue( "widgets_size", widgets_size );
 #if DOCK_PLAYLIST
-	set->setValue( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible );
-	set->setValue( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating );
-	set->setValue( "compact_playlist_was_visible", compact_playlist_was_visible );
-	set->setValue( "ignore_playlist_events", ignore_playlist_events );
+	pref->setValue( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible );
+	pref->setValue( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating );
+	pref->setValue( "compact_playlist_was_visible", compact_playlist_was_visible );
+	pref->setValue( "ignore_playlist_events", ignore_playlist_events );
 #endif
 
-	set->endGroup();
-	set->endGroup();
+	pref->endGroup();
+	pref->endGroup();
 }
 
 void TBasePlus::loadConfig(const QString &group) {
@@ -250,28 +248,27 @@ void TBasePlus::loadConfig(const QString &group) {
 
 	TBase::loadConfig(group);
 
-	QSettings * set = settings;
 	// load from group derived class
-	set->beginGroup( group );
-	set->beginGroup( "base_gui_plus");
+	pref->beginGroup( group );
+	pref->beginGroup( "base_gui_plus");
 
-	bool show_tray_icon = set->value( "show_tray_icon", false).toBool();
+	bool show_tray_icon = pref->value( "show_tray_icon", false).toBool();
 	showTrayAct->setChecked( show_tray_icon );
 	//tray->setVisible( show_tray_icon );
 
-	mainwindow_visible = set->value("mainwindow_visible", true).toBool();
+	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
 
-	trayicon_playlist_was_visible = set->value( "trayicon_playlist_was_visible", trayicon_playlist_was_visible ).toBool();
-	widgets_size = set->value( "widgets_size", widgets_size ).toInt();
+	trayicon_playlist_was_visible = pref->value( "trayicon_playlist_was_visible", trayicon_playlist_was_visible ).toBool();
+	widgets_size = pref->value( "widgets_size", widgets_size ).toInt();
 #if DOCK_PLAYLIST
-	fullscreen_playlist_was_visible = set->value( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible ).toBool();
-	fullscreen_playlist_was_floating = set->value( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating ).toBool();
-	compact_playlist_was_visible = set->value( "compact_playlist_was_visible", compact_playlist_was_visible ).toBool();
-	ignore_playlist_events = set->value( "ignore_playlist_events", ignore_playlist_events ).toBool();
+	fullscreen_playlist_was_visible = pref->value( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible ).toBool();
+	fullscreen_playlist_was_floating = pref->value( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating ).toBool();
+	compact_playlist_was_visible = pref->value( "compact_playlist_was_visible", compact_playlist_was_visible ).toBool();
+	ignore_playlist_events = pref->value( "ignore_playlist_events", ignore_playlist_events ).toBool();
 #endif
 
-	set->endGroup();
-	set->endGroup();
+	pref->endGroup();
+	pref->endGroup();
 
 	updateShowAllAct();
 }
@@ -440,7 +437,7 @@ void TBasePlus::aboutToEnterCompactMode() {
 
 	TBase::aboutToEnterCompactMode();
 
-	if (pref->resize_method == Preferences::Always) {
+	if (pref->resize_method == Settings::TPreferences::Always) {
 		resize( width(), height() - widgets_size );
 	}
 }
@@ -448,7 +445,7 @@ void TBasePlus::aboutToEnterCompactMode() {
 void TBasePlus::aboutToExitCompactMode() {
 	TBase::aboutToExitCompactMode();
 
-	if (pref->resize_method == Preferences::Always) {
+	if (pref->resize_method == Settings::TPreferences::Always) {
 		resize( width(), height() + widgets_size );
 	}
 
@@ -502,7 +499,7 @@ void TBasePlus::dockTopLevelChanged(bool floating) {
 
 void TBasePlus::stretchWindow() {
 	qDebug("Gui::TBasePlus::stretchWindow");
-	if ((ignore_playlist_events) || (pref->resize_method!=Preferences::Always)) return;
+	if (ignore_playlist_events || (pref->resize_method != Settings::TPreferences::Always)) return;
 
 	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
 
@@ -534,7 +531,9 @@ void TBasePlus::stretchWindow() {
 
 void TBasePlus::shrinkWindow() {
 	qDebug("Gui::TBasePlus::shrinkWindow");
-	if ((ignore_playlist_events) || (pref->resize_method!=Preferences::Always)) return;
+
+	if (ignore_playlist_events || (pref->resize_method != Settings::TPreferences::Always))
+		return;
 
 	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
 
@@ -578,10 +577,10 @@ TTimeSliderAction* TBasePlus::createTimeSliderAction(QWidget* parent) {
 	connect( timeslider_action, SIGNAL( delayedDraggingPos(int) ),
              this, SLOT(goToPosOnDragging(int)) );
 
-	connect(timeslider_action, SIGNAL(wheelUp(Preferences::WheelFunction)),
-			core, SLOT(wheelUp(Preferences::WheelFunction)));
-	connect(timeslider_action, SIGNAL(wheelDown(Preferences::WheelFunction)),
-			core, SLOT(wheelDown(Preferences::WheelFunction)));
+	connect(timeslider_action, SIGNAL(wheelUp(TPreferences::WheelFunction)),
+			core, SLOT(wheelUp(TPreferences::WheelFunction)));
+	connect(timeslider_action, SIGNAL(wheelDown(TPreferences::WheelFunction)),
+			core, SLOT(wheelDown(TPreferences::WheelFunction)));
 
 	return timeslider_action;
 }

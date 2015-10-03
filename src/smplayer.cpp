@@ -20,11 +20,14 @@
 #include "smplayer.h"
 
 #include <QDebug>
+#include <QFile>
 #include <QDir>
 #include <QUrl>
 
 #include "paths.h"
-#include "global.h"
+#include "settings/preferences.h"
+#include "log.h"
+#include "translator.h"
 #include "version.h"
 #include "clhelp.h"
 #include "cleanconfig.h"
@@ -62,7 +65,7 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 	close_at_end(-1),
 	start_in_fullscreen(-1) {
 
-	// Change the working directory to the application path
+	// Change working directory to application path
 	QDir::setCurrent(applicationDirPath());
 	Paths::setAppPath(applicationDirPath());
 
@@ -73,7 +76,29 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 }
 
 TSMPlayer::~TSMPlayer() {
-	Global::global_end();
+
+	delete Translator::translator;
+	delete TLog::log;
+	// settings is owned by this
+}
+
+void TSMPlayer::loadConfig(const QString& config_path) {
+
+	// Load preferences
+	Paths::setConfigPath(config_path);
+	Settings::pref = new Settings::TPreferences(this);
+
+	// Start log
+	TLog::log = new TLog(pref->log_enabled, pref->log_file, pref->log_filter);
+
+	// Translator
+	Translator::translator = new Translator();
+	Translator::translator->load(pref->language);
+
+	// Fonts
+#ifdef Q_OS_WIN
+	Paths::createFontFile();
+#endif
 }
 
 TSMPlayer::ExitCode TSMPlayer::processArgs() {
@@ -112,7 +137,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	}
 
 	// Load preferences, setup logging and translation
-	Global::global_init(config_path);
+	loadConfig(config_path);
 
 	if (args.contains("-delete-config")) {
 		CleanConfig::clean(Paths::configPath());
@@ -124,7 +149,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	QString action; // Action to be passed to running instance
 	bool show_help = false;
 
-	if (!Global::pref->gui.isEmpty()) gui_to_use = Global::pref->gui;
+	if (!Settings::pref->gui.isEmpty()) gui_to_use = Settings::pref->gui;
 	bool add_to_playlist = false;
 
 	for (int n = 1; n < args.count(); n++) {
@@ -239,11 +264,11 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		}
 		else
 		if (argument == "-ontop") {
-			Global::pref->stay_on_top = Preferences::AlwaysOnTop;
+			Settings::pref->stay_on_top = Settings::TPreferences::AlwaysOnTop;
 		}
 		else
 		if (argument == "-no-ontop") {
-			Global::pref->stay_on_top = Preferences::NeverOnTop;
+			Settings::pref->stay_on_top = Settings::TPreferences::NeverOnTop;
 		}
 #ifdef SKINS
 		else
@@ -277,7 +302,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	}
 
 #ifdef SINGLE_INSTANCE
-	if (Global::pref->use_single_instance) {
+	if (Settings::pref->use_single_instance) {
 		// Single instance
 		if (isRunning()) {
 			sendMessage("Hello");
@@ -306,9 +331,9 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	}
 #endif
 
-	if (!Global::pref->default_font.isEmpty()) {
+	if (!Settings::pref->default_font.isEmpty()) {
 		QFont f;
-		f.fromString(Global::pref->default_font);
+		f.fromString(Settings::pref->default_font);
 		setFont(f);
 	}
 
@@ -319,24 +344,24 @@ void TSMPlayer::createGUI() {
 
 #ifdef SKINS
 	if (gui_to_use == "SkinGUI") {
-		QString theme = Global::pref->iconset;
+		QString theme = Settings::pref->iconset;
 		if (theme.isEmpty()) theme = "Gonzo";
 		QString user_theme_dir = Paths::configPath() + "/themes/" + theme;
 		QString theme_dir = Paths::themesPath() + "/" + theme;
 		qDebug("TSMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
 		qDebug("TSMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
 		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
-			if (Global::pref->iconset.isEmpty()) Global::pref->iconset = theme;
+			if (Settings::pref->iconset.isEmpty()) Settings::pref->iconset = theme;
 		} else {
 			qWarning("TSMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
 			gui_to_use = "DefaultGUI";
-			Global::pref->iconset = "";
-			Global::pref->gui = gui_to_use;
+			Settings::pref->iconset = "";
+			Settings::pref->gui = gui_to_use;
 		}
 	}
 #endif
 
-	qDebug() << "TSMPlayer::createGUI:" << gui_to_use;
+	qDebug() << "TSMPlayer::createGUI: gui to create" << gui_to_use;
 
 #ifdef SKINS
 	if (gui_to_use.toLower() == "skingui")
@@ -466,7 +491,6 @@ void TSMPlayer::showInfo() {
 	qDebug(" * themes path: '%s'", Paths::themesPath().toUtf8().data());
 	qDebug(" * shortcuts path: '%s'", Paths::shortcutsPath().toUtf8().data());
 	qDebug(" * config path: '%s'", Paths::configPath().toUtf8().data());
-	qDebug(" * ini path: '%s'", Paths::iniPath().toUtf8().data());
 	qDebug(" * file for subtitles' styles: '%s'", Paths::subtitleStyleFile().toUtf8().data());
 	qDebug(" * current path: '%s'", QDir::currentPath().toUtf8().data());
 #ifdef Q_OS_WIN

@@ -43,7 +43,7 @@ class TDefault : public TBasePlus
 
 public:
 	TDefault( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
-	~TDefault();
+	virtual ~TDefault();
 
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);

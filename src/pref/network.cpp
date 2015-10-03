@@ -17,7 +17,7 @@
 */
 
 #include "pref/network.h"
-#include "preferences.h"
+#include "settings/preferences.h"
 #include "images.h"
 #include <QNetworkProxy>
 
@@ -79,7 +79,7 @@ void TNetwork::retranslateStrings() {
 	createHelp();
 }
 
-void TNetwork::setData(Preferences * pref) {
+void TNetwork::setData(Settings::TPreferences* pref) {
 	use_proxy_check->setChecked(pref->use_proxy);
 	proxy_hostname_edit->setText(pref->proxy_host);
 	proxy_port_spin->setValue(pref->proxy_port);
@@ -98,7 +98,7 @@ void TNetwork::setData(Preferences * pref) {
 #endif
 }
 
-void TNetwork::getData(Preferences * pref) {
+void TNetwork::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 	pref->use_proxy = use_proxy_check->isChecked();

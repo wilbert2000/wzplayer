@@ -32,12 +32,11 @@
 #include <cmath>
 
 #include "config.h"
-#include "global.h"
+#include "settings/preferences.h"
 #include "mplayerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
 #include "paths.h"
-#include "preferences.h"
 #include "mplayerversion.h"
 #include "colorutils.h"
 #include "discname.h"
@@ -66,7 +65,7 @@
   #endif
 #endif
 
-using namespace Global;
+using namespace Settings;
 
 Core::Core(MplayerWindow *mpw, QWidget* parent , int position_max)
 	: QObject( parent ),
@@ -1232,8 +1231,8 @@ void Core::startPlayer( QString file, double seek ) {
 		// MPlayer
 		QString lavdopts;
 
-		if ( (pref->h264_skip_loop_filter == Preferences::LoopDisabled) || 
-	         ((pref->h264_skip_loop_filter == Preferences::LoopDisabledOnHD) && 
+		if ( (pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
+			 ((pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) &&
 	          (mset.is264andHD)) )
 		{
 			if (!lavdopts.isEmpty()) lavdopts += ":";
@@ -1251,8 +1250,8 @@ void Core::startPlayer( QString file, double seek ) {
 	}
 	else {
 		// MPV
-		if ( (pref->h264_skip_loop_filter == Preferences::LoopDisabled) || 
-	         ((pref->h264_skip_loop_filter == Preferences::LoopDisabledOnHD) && 
+		if ( (pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
+			 ((pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) &&
 	          (mset.is264andHD)) )
 		{
 			proc->setOption("skiploopfilter");
@@ -1306,20 +1305,20 @@ void Core::startPlayer( QString file, double seek ) {
 	QString p;
 	int app_p = NORMAL_PRIORITY_CLASS;
 	switch (pref->priority) {
-		case Preferences::Realtime: 	p = "realtime"; 
+		case TPreferences::Realtime: 	p = "realtime";
 										app_p = REALTIME_PRIORITY_CLASS;
 										break;
-		case Preferences::High:			p = "high"; 
+		case TPreferences::High:			p = "high";
 										app_p = REALTIME_PRIORITY_CLASS;
 										break;
-		case Preferences::AboveNormal:	p = "abovenormal"; 
+		case TPreferences::AboveNormal:	p = "abovenormal";
 										app_p = HIGH_PRIORITY_CLASS;
 										break;
-		case Preferences::Normal: 		p = "normal"; 
+		case TPreferences::Normal: 		p = "normal";
 										app_p = ABOVE_NORMAL_PRIORITY_CLASS; 
 										break;
-		case Preferences::BelowNormal: 	p = "belownormal"; break;
-		case Preferences::Idle: 		p = "idle"; break;
+		case TPreferences::BelowNormal: 	p = "belownormal"; break;
+		case TPreferences::Idle: 		p = "idle"; break;
 		default: 						p = "normal";
 	}
 	proc->setOption("priority", p);
@@ -1657,8 +1656,8 @@ void Core::startPlayer( QString file, double seek ) {
 		}
 	}
 
-	if (pref->use_correct_pts != Preferences::Detect) {
-		proc->setOption("correct-pts", (pref->use_correct_pts == Preferences::Enabled));
+	if (pref->use_correct_pts != TPreferences::Detect) {
+		proc->setOption("correct-pts", (pref->use_correct_pts == TPreferences::Enabled));
 	}
 
 	bool force_noslices = false;
@@ -1860,8 +1859,8 @@ void Core::startPlayer( QString file, double seek ) {
 			proc->addAF("volnorm", pref->filters->item("volnorm").options());
 		}
 
-		bool use_scaletempo = pref->use_scaletempo == Preferences::Enabled;
-		if (pref->use_scaletempo == Preferences::Detect) {
+		bool use_scaletempo = pref->use_scaletempo == TPreferences::Enabled;
+		if (pref->use_scaletempo == TPreferences::Detect) {
 			use_scaletempo = true;
 		}
 		if (use_scaletempo) {
@@ -2143,30 +2142,30 @@ void Core::rewind(int secs) {
 	seek(-secs);
 }
 
-void Core::wheelUp(Preferences::WheelFunction function) {
+void Core::wheelUp(TPreferences::WheelFunction function) {
 	qDebug("Core::wheelUp");
 
-	if (function == Preferences::DoNothing)
-		function = (Preferences::WheelFunction) pref->wheel_function;
+	if (function == TPreferences::DoNothing)
+		function = (TPreferences::WheelFunction) pref->wheel_function;
 	switch (function) {
-		case Preferences::Volume : incVolume(); break;
-		case Preferences::Zoom : incZoom(); break;
-		case Preferences::Seeking : pref->wheel_function_seeking_reverse ? rewind( pref->seeking4 ) : forward( pref->seeking4 ); break;
-		case Preferences::ChangeSpeed : incSpeed10(); break;
+		case TPreferences::Volume : incVolume(); break;
+		case TPreferences::Zoom : incZoom(); break;
+		case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? rewind( pref->seeking4 ) : forward( pref->seeking4 ); break;
+		case TPreferences::ChangeSpeed : incSpeed10(); break;
 		default : {} // do nothing
 	}
 }
 
-void Core::wheelDown(Preferences::WheelFunction function) {
+void Core::wheelDown(TPreferences::WheelFunction function) {
 	qDebug("Core::wheelDown");
 
-	if (function == Preferences::DoNothing)
-		function = (Preferences::WheelFunction) pref->wheel_function;
+	if (function == TPreferences::DoNothing)
+		function = (TPreferences::WheelFunction) pref->wheel_function;
 	switch (function) {
-		case Preferences::Volume : decVolume(); break;
-		case Preferences::Zoom : decZoom(); break;
-		case Preferences::Seeking : pref->wheel_function_seeking_reverse ? forward( pref->seeking4 ) : rewind( pref->seeking4 ); break;
-		case Preferences::ChangeSpeed : decSpeed10(); break;
+		case TPreferences::Volume : decVolume(); break;
+		case TPreferences::Zoom : decZoom(); break;
+		case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? forward( pref->seeking4 ) : rewind( pref->seeking4 ); break;
+		case TPreferences::ChangeSpeed : decSpeed10(); break;
 		default : {} // do nothing
 	}
 }
@@ -3320,22 +3319,22 @@ void Core::nextWheelFunction() {
 		if(a==32)
 			a = 2;
 		// See if we are done
-		if (pref->wheel_function_cycle.testFlag((Preferences::WheelFunction)a))
+		if (pref->wheel_function_cycle.testFlag((TPreferences::WheelFunction)a))
 			done = true;
 	}
 	pref->wheel_function = a;
 	QString m = "";
 	switch(a){
-	case Preferences::Seeking:
+	case TPreferences::Seeking:
 		m = tr("Mouse wheel seeks now");
 		break;
-	case Preferences::Volume:
+	case TPreferences::Volume:
 		m = tr("Mouse wheel changes volume now");
 		break;
-	case Preferences::Zoom:
+	case TPreferences::Zoom:
 		m = tr("Mouse wheel changes zoom level now");
 		break;
-	case Preferences::ChangeSpeed:
+	case TPreferences::ChangeSpeed:
 		m = tr("Mouse wheel changes speed now");
 		break;
 	}
@@ -3359,7 +3358,7 @@ void Core::changeLetterboxOnFullscreen(bool b) {
 void Core::changeOSDLevel(int level) {
 	qDebug("Core::changeOSDLevel: %d", level);
 
-	pref->osd_level = (Preferences::OSDLevel) level;
+	pref->osd_level = (TPreferences::OSDLevel) level;
 	proc->setOSDLevel(level);
 
 	updateWidgets();
@@ -3368,8 +3367,8 @@ void Core::changeOSDLevel(int level) {
 void Core::nextOSDLevel() {
 
 	int level;
-	if (pref->osd_level >= Preferences::SeekTimerTotal) {
-		level = Preferences::None;
+	if (pref->osd_level >= TPreferences::SeekTimerTotal) {
+		level = TPreferences::None;
 	} else {
 		level = pref->osd_level + 1;
 	}
@@ -3419,7 +3418,7 @@ void Core::forceResize() {
 
 	// Overide user setting
 	int old_resize_method = pref->resize_method;
-	pref->resize_method = Preferences::Always;
+	pref->resize_method = TPreferences::Always;
 	emit needResize(mset.win_width, mset.win_height);
 	pref->resize_method = old_resize_method;
 }
@@ -3825,7 +3824,7 @@ void Core::checkIfVideoIsHD() {
 		qDebug("Core::checkIfVideoIsHD: video == ffh264 and height >= %d", pref->HD_height);
 		if (!mset.is264andHD) {
 			mset.is264andHD = true;
-			if (pref->h264_skip_loop_filter == Preferences::LoopDisabledOnHD) {
+			if (pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) {
 				qDebug("Core::checkIfVideoIsHD: we're about to restart the video");
 				restartPlay();
 			}

@@ -1,12 +1,15 @@
 #include "log.h"
+#include <QDebug>
 #include <stdio.h>
 #include <QTime>
+#include <QDateTime>
 #include "paths.h"
-#include "global.h"
 #include "gui/logwindow.h"
 
 
 const int LOG_BUF_LENGTH = 32768;
+
+TLog* TLog::log = 0;
 
 TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter) :
 	enabled(log_enabled),
@@ -27,18 +30,29 @@ TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter)
 #else
 	qInstallMsgHandler(msgHandler);
 #endif
+
+	// Start handling messages
+	log = this;
+	qDebug("TLog::Tlog: started log at UTC %s",
+			QDateTime::currentDateTimeUtc().toString(Qt::ISODate).toUtf8().data());
 }
 
 TLog::~TLog() {
 
-	// Close log file
+	// Stop passing messages to window
 	log_window = 0;
+	qDebug("TLog::~Tlog: log ending at UTC %s",
+			QDateTime::currentDateTimeUtc().toString(Qt::ISODate).toUtf8().data());
+
+	// Close log file
 	if (file.isOpen()) {
-		qDebug("Closing log file");
+		qDebug("~TLog: closing log file");
 		file.close();
 	}
-	// No longer handle messages
-	Global::log = 0;
+
+	// Stop handling messages
+
+	log = 0;
 }
 
 void TLog::setLogFileEnabled(bool log_file_enabled) {
@@ -117,11 +131,8 @@ void TLog::msgHandler(QtMsgType type, const char* p_msg) {
 	QString msg = QString::fromUtf8(p_msg);
 #endif
 
-	if (Global::log
-		&& (type != QtDebugMsg
-			|| (Global::log->isEnabled() && Global::log->passesFilter(msg)))) {
-
-		Global::log->logLine(type, msg);
+	if (log && (type != QtDebugMsg || (log->isEnabled() && log->passesFilter(msg)))) {
+		log->logLine(type, msg);
 	}
 }
 
