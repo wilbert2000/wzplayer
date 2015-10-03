@@ -50,7 +50,7 @@ public:
 	bool requested_restart;
 
 	TSMPlayer(int& argc, char** argv);
-	~TSMPlayer();
+	virtual ~TSMPlayer();
 
 	virtual void commitData(QSessionManager& /*manager*/) {
 		// Nothing to do, let the application close

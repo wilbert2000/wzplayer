@@ -65,7 +65,7 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
 
     public:
 		explicit MediaPlayer2(Gui::TBase* gui, QObject* parent);
-        ~MediaPlayer2();
+		virtual ~MediaPlayer2();
 
         bool CanQuit() const;
         bool CanRaise() const;

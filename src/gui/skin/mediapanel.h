@@ -75,7 +75,7 @@ class TMediaPanel : public QWidget, public Ui::TMediaPanel
 
 public:
 	TMediaPanel(QWidget *parent = 0);
-	~TMediaPanel();
+	virtual ~TMediaPanel();
     QPixmap bgLeftPix() { return leftBackground ;}
     void setBgLeftPix( QPixmap pix){ leftBackground = pix; }
     QPixmap bgRightPix() { return rightBackground ;}

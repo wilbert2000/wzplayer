@@ -52,7 +52,7 @@ class Mpris2 : public QObject
 
     public:
 		explicit Mpris2(Gui::TBase* gui, QObject* parent);
-        ~Mpris2();
+		virtual ~Mpris2();
 
         static void signalPropertiesChange(const QObject* adaptor, const QVariantMap& properties);
 };

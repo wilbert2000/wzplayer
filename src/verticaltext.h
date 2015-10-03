@@ -12,10 +12,10 @@ class VerticalText : public QWidget
 {
 public:
     VerticalText(QWidget * parent, Qt::WindowFlags f = 0);
-    ~VerticalText();
+	virtual ~VerticalText();
 
-	void setText(QString s) { _label = s; };
-	QString text() { return _label; };
+	void setText(QString s) { _label = s; }
+	QString text() { return _label; }
     QSize sizeHint() const;
     QSizePolicy sizePolicy () const;
 	

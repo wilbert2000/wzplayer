@@ -28,7 +28,7 @@ class Stereo3dDialog : public QDialog, public Ui::Stereo3dDialog
 
 public:
 	Stereo3dDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	~Stereo3dDialog();
+	virtual ~Stereo3dDialog();
 
 	void setInputFormat(const QString & in);
 	void setOutputFormat(const QString & out);

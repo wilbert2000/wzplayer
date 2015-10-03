@@ -32,7 +32,7 @@ class WinScreenSaver
 {
 public:
 	WinScreenSaver();
-	~WinScreenSaver();
+	virtual ~WinScreenSaver();
 
 	void disable();
 	void enable();

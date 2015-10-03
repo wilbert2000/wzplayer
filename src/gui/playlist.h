@@ -40,7 +40,7 @@ class TPlaylistItem {
 public:
 	TPlaylistItem();
 	TPlaylistItem(const QString &filename, const QString &name, double duration);
-	~TPlaylistItem() {}
+	virtual ~TPlaylistItem() {}
 
 	void setFilename(const QString &filename) { _filename = filename; }
 	void setName(const QString &name) { _name = name; }
@@ -70,7 +70,7 @@ public:
 	enum AutoGetInfo { NoGetInfo = 0, GetInfo = 1, UserDefined = 2 };
 
 	TPlaylist(Core *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window);
-	~TPlaylist();
+	virtual ~TPlaylist();
 
 	int count();
 	bool isEmpty();

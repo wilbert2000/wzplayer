@@ -32,7 +32,7 @@ class FilePropertiesDialog : public QDialog, public Ui::FilePropertiesDialog
 
 public:
     FilePropertiesDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-    ~FilePropertiesDialog();
+	virtual ~FilePropertiesDialog();
 
 	void setMediaData(MediaData md);
 

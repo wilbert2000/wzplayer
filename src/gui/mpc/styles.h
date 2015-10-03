@@ -32,7 +32,7 @@ class ToolbarStyle : public QWindowsStyle
     Q_OBJECT
 
 public:
-    ToolbarStyle() {};
+	ToolbarStyle() {}
     void drawControl(ControlElement control, const QStyleOption *option,
                       QPainter *painter, const QWidget *widget) const;
 };
@@ -42,7 +42,7 @@ class TimeSlideStyle : public QWindowsStyle
     Q_OBJECT
 
 public:
-    TimeSlideStyle() {};
+	TimeSlideStyle() {}
     void drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const;
 };
@@ -52,7 +52,7 @@ class VolumeSlideStyle : public QWindowsStyle
     Q_OBJECT
 
 public:
-    VolumeSlideStyle() {};
+	VolumeSlideStyle() {}
     void drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const;
 };

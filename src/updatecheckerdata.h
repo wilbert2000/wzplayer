@@ -27,7 +27,9 @@ class QSettings;
 
 class UpdateCheckerData {
 public:
-	UpdateCheckerData() { enabled = true; days_to_check = 7; };
+	UpdateCheckerData() { enabled = true; days_to_check = 7; }
+	virtual ~UpdateCheckerData() {}
+
 	void save(QSettings * set);
 	void load(QSettings * set);
 

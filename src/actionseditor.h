@@ -38,7 +38,7 @@ class ActionsEditor : public QWidget
 
 public:
     ActionsEditor( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~ActionsEditor();
+	virtual ~ActionsEditor();
 
 	// Clear the actionlist
 	void clear();

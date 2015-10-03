@@ -36,7 +36,7 @@ class MplayerProcess : public PlayerProcess
 
 public:
 	MplayerProcess(MediaData * mdata);
-	~MplayerProcess();
+	virtual ~MplayerProcess();
 
 	virtual bool startPlayer();
 

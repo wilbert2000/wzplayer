@@ -32,7 +32,7 @@ class ShareButton : public QPushButton
 
 public:
 	ShareButton(const QString icon_name, const QString & tooltip, QWidget * parent = 0);
-	~ShareButton() {};
+	virtual ~ShareButton() {}
 
 	QSize sizeHint() const;
 
@@ -50,7 +50,7 @@ public:
 	enum Display { Never = 0, Random = 1, Always = 2 };
 
 	ShareWidget(QSettings * settings, QWidget * parent = 0, Qt::WindowFlags f = 0);
-	~ShareWidget();
+	virtual ~ShareWidget();
 
 	virtual void setVisible(bool visible);
 

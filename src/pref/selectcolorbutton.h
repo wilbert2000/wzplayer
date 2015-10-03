@@ -29,7 +29,7 @@ class TSelectColorButton : public QPushButton
 
 public:
 	TSelectColorButton ( QWidget * parent = 0 );
-	~TSelectColorButton();
+	virtual ~TSelectColorButton();
 
 	QColor color() { return _color;}
 

@@ -44,7 +44,7 @@ class TGeneral : public TWidget, public Ui::TGeneral {
 
 public:
 	TGeneral( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TGeneral();
+	virtual ~TGeneral();
 
 	// Return the name of the section
 	virtual QString sectionName();

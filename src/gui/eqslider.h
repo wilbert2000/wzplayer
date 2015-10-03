@@ -34,7 +34,7 @@ class TEqSlider : public QWidget, public Ui::TEqSlider
 
 public:
 	TEqSlider( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~TEqSlider();
+	virtual ~TEqSlider();
 
 public slots:
 	void setIcon( QPixmap i);

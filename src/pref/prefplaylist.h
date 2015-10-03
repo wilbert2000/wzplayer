@@ -32,7 +32,7 @@ class TPrefPlaylist : public TWidget, public Ui::TPrefPlaylist
 
 public:
 	TPrefPlaylist( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TPrefPlaylist();
+	virtual ~TPrefPlaylist();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

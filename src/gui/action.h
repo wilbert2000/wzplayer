@@ -45,7 +45,7 @@ public:
 	TAction ( QKeySequence accel, QObject * parent,
                const char * name = "", bool autoadd = true );
 
-	~TAction();
+	virtual ~TAction();
 
 	void addShortcut(QKeySequence key);
 

@@ -29,6 +29,7 @@ class LineEditWithIcon : public QLineEdit
 
 public:
     LineEditWithIcon(QWidget *parent = 0);
+	virtual ~LineEditWithIcon() {}
 
 	void setIcon(const QPixmap & pixmap);
 

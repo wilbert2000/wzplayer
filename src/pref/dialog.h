@@ -53,7 +53,7 @@ public:
                    Subtitles=3, Gui=4, Mouse=5, Advanced=6, Associations=7 };
 
 	TDialog( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TDialog();
+	virtual ~TDialog();
 
 	TGeneral * mod_general() { return page_general; }
 	TInterface * mod_interface() { return page_interface; }

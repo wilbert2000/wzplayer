@@ -33,7 +33,7 @@ class TTV : public TWidget, public Ui::TTV
 
 public:
 	TTV( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TTV();
+	virtual ~TTV();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

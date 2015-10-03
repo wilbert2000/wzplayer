@@ -31,7 +31,7 @@ class TAdvanced : public TWidget, public Ui::TAdvanced
 
 public:
 	TAdvanced( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TAdvanced();
+	virtual ~TAdvanced();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

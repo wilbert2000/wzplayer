@@ -39,14 +39,14 @@ public:
 
 	static bool isMplayerAtLeast(int svn_revision);
 
-	static bool isMplayer2() { return is_mplayer2; };
+	static bool isMplayer2() { return is_mplayer2; }
 
-	static bool isMPV() { return is_mpv; };
+	static bool isMPV() { return is_mpv; }
 
 	static QString toString(int mplayer_svn);
 
-	static QString mplayer2Version() { return mplayer2_version; };
-	static QString mpvVersion() { return mpv_version; };
+	static QString mplayer2Version() { return mplayer2_version; }
+	static QString mpvVersion() { return mpv_version; }
 
 protected:
 	static QString mplayer2_version;

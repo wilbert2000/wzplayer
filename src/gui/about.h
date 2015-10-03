@@ -39,7 +39,7 @@ class TAbout : public QDialog, public Ui::TAbout
 
 public:
 	TAbout( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TAbout();
+	virtual ~TAbout();
 
 	virtual QSize sizeHint () const;
 

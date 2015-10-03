@@ -36,7 +36,7 @@ class TWidget : public QWidget
 
 public:
 	TWidget(QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TWidget();
+	virtual ~TWidget();
 
 	// Return the name of the section
 	virtual QString sectionName();

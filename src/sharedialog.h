@@ -27,7 +27,7 @@ class ShareDialog : public QDialog, public Ui::ShareDialog
 
 public:
 	ShareDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~ShareDialog();
+	virtual ~ShareDialog();
 
 	bool isRemindChecked();
 

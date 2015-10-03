@@ -33,7 +33,7 @@ class TPerformance : public TWidget, public Ui::TPerformance
 
 public:
 	TPerformance( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TPerformance();
+	virtual ~TPerformance();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

@@ -34,7 +34,7 @@ class TInput : public TWidget, public Ui::TInput
 
 public:
 	TInput( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TInput();
+	virtual ~TInput();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

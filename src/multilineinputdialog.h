@@ -28,7 +28,7 @@ class MultilineInputDialog : public QDialog, public Ui::MultilineInputDialog
 
 public:
 	MultilineInputDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	~MultilineInputDialog();
+	virtual ~MultilineInputDialog();
 
 	void setLines(const QStringList & lines);
 	QStringList lines();

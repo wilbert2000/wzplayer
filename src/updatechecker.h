@@ -31,7 +31,7 @@ class UpdateChecker : public QObject {
 
 public:
 	UpdateChecker(QWidget * parent, UpdateCheckerData * data);
-	~UpdateChecker();
+	virtual ~UpdateChecker();
 
 	void check();
 

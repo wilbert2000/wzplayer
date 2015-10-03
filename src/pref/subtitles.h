@@ -33,7 +33,7 @@ class TSubtitles : public TWidget, public Ui::TSubtitles
 
 public:
 	TSubtitles( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TSubtitles();
+	virtual ~TSubtitles();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

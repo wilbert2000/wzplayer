@@ -30,7 +30,7 @@ public:
 	enum Type { None = -1, File = 0, Vob = 1, Sub = 2};
 
 	SubData() { _ID = -1; _lang = ""; _name = ""; _filename = ""; _type = None; }
-	~SubData() {}
+	virtual ~SubData() {}
 
 	void setType( Type t ) { _type = t; }
 	void setID(int id) { _ID = id; }
@@ -59,7 +59,7 @@ typedef QListIterator<SubData> SubIterator;
 class SubTracks {
 public:
 	SubTracks();
-	~SubTracks();
+	virtual ~SubTracks();
 
 	void clear();
 

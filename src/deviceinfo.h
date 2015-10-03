@@ -28,7 +28,7 @@ class DeviceData {
 public:
 	DeviceData() {}
 	DeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; }
-	~DeviceData() {}
+	virtual ~DeviceData() {}
 
 	void setID(QVariant ID) { _id = ID; }
 	void setDesc(QString desc) { _desc = desc; }

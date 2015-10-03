@@ -33,7 +33,7 @@ class TUpdates : public TWidget, public Ui::TUpdates
 
 public:
 	TUpdates( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TUpdates();
+	virtual ~TUpdates();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

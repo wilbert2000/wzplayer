@@ -62,7 +62,7 @@ class TTimeSliderAction : public TWidgetAction
 
 public:
 	TTimeSliderAction(QWidget * parent, int delay);
-	~TTimeSliderAction();
+	virtual ~TTimeSliderAction();
 
 public slots:
 	virtual void setPos(int);

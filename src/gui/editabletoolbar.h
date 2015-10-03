@@ -34,7 +34,7 @@ class TEditableToolbar : public QToolBar
 
 public:
 	TEditableToolbar( QWidget * parent = 0 );
-	~TEditableToolbar();
+	virtual ~TEditableToolbar();
 
 	void setActionsFromStringList(QStringList action_names);
 	QStringList actionsToStringList();

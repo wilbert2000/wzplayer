@@ -29,7 +29,7 @@ class TErrorDialog : public QDialog, public Ui::TErrorDialog
 
 public:
 	TErrorDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~TErrorDialog();
+	virtual ~TErrorDialog();
 
 public slots:
 	void setText(QString error);

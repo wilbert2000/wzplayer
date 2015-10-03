@@ -52,7 +52,7 @@ public:
 	enum State { Stopped = 0, Playing = 1, Paused = 2 };
 
 	Core( MplayerWindow *mpw, QWidget* parent, int position_max );
-	~Core();
+	virtual ~Core();
 
 	MediaData mdat;
 	MediaSettings mset;

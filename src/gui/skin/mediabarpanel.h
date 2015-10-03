@@ -41,7 +41,7 @@ class TMediaBarPanel : public QWidget, public Ui::TMediaBarPanel {
 
 public:
 	TMediaBarPanel(QWidget *parent = 0);
-	~TMediaBarPanel();
+	virtual ~TMediaBarPanel();
     void setPlayControlActionCollection(QList<QAction*> actions);
 	void setMediaPanelActionCollection(QList<QAction*> actions);
     void setVolumeControlActionCollection(QList<QAction*> actions);

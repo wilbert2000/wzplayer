@@ -36,7 +36,7 @@ class TMpc : public TBasePlus
 
 public:
 	TMpc( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
-	~TMpc();
+	virtual ~TMpc();
 
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);

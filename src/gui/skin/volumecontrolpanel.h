@@ -50,6 +50,7 @@ private:
 
 public:
 	explicit TVolumeControlPanel(QWidget *parent = 0);
+	virtual ~TVolumeControlPanel() {}
     QPixmap muteIcon() { return muteButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
     QPixmap maxIcon() { return maxButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
     QPixmap fullscreenIcon() { return fullscreenButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }

@@ -37,7 +37,7 @@ class TAssociations : public TWidget, public Ui::TAssociations
 
 public:
 	TAssociations( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TAssociations();
+	virtual ~TAssociations();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

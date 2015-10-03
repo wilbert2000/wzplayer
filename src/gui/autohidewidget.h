@@ -34,7 +34,7 @@ public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
 	TAutohideWidget(QWidget * parent, QWidget * mplayerwindow);
-	~TAutohideWidget();
+	virtual ~TAutohideWidget();
 
 	void setInternalWidget(QWidget * w);
 	QWidget * internalWidget() { return internal_widget; }

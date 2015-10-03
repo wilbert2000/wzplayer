@@ -35,14 +35,14 @@ class Extensions
 {
 public:
 	Extensions();
-	~Extensions();
+	virtual ~Extensions();
 
-	ExtensionList video() { return _video; };
-	ExtensionList audio() { return _audio; };
-	ExtensionList playlist() { return _playlist; };
-	ExtensionList subtitles() { return _subtitles; };
-	ExtensionList multimedia() { return _multimedia; };
-	ExtensionList allPlayable() { return _all_playable; };
+	ExtensionList video() { return _video; }
+	ExtensionList audio() { return _audio; }
+	ExtensionList playlist() { return _playlist; }
+	ExtensionList subtitles() { return _subtitles; }
+	ExtensionList multimedia() { return _multimedia; }
+	ExtensionList allPlayable() { return _all_playable; }
 
 protected:
 	ExtensionList _video, _audio, _playlist, _subtitles;

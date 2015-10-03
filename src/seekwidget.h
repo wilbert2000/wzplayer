@@ -32,7 +32,7 @@ class SeekWidget : public QWidget, public Ui::SeekWidget
 
 public:
     SeekWidget( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-    ~SeekWidget();
+	virtual ~SeekWidget();
 
 	int time() const;
 	const QPixmap * icon() const;

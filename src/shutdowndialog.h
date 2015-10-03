@@ -29,7 +29,7 @@ class ShutdownDialog : public QDialog, public Ui::ShutdownDialog
 
 public:
 	ShutdownDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~ShutdownDialog();
+	virtual ~ShutdownDialog();
 
 private slots:
 	void updateCountdown();

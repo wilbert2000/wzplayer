@@ -37,7 +37,7 @@ class TSlider : public QSlider
 
 public:
 	TSlider( QWidget * parent );
-	~TSlider();
+	virtual ~TSlider();
 
 protected:
 	void mousePressEvent ( QMouseEvent * event );

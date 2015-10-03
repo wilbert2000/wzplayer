@@ -27,7 +27,7 @@ class InputMplayerVersion : public QDialog, public Ui::InputMplayerVersion
 
 public:
 	InputMplayerVersion( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~InputMplayerVersion();
+	virtual ~InputMplayerVersion();
 
 	void setVersion(int current_version);
 	int version();

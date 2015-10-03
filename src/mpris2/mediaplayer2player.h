@@ -69,7 +69,7 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
 
     public:
 		explicit MediaPlayer2Player(Gui::TBase* gui, QObject* parent);
-        ~MediaPlayer2Player();
+		virtual ~MediaPlayer2Player();
 
         QString PlaybackStatus() const;
         QString LoopStatus() const;

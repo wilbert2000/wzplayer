@@ -39,6 +39,7 @@ class ShortcutGetter : public QDialog
 
 public:
 	ShortcutGetter(QWidget *parent = 0);
+	virtual ~ShortcutGetter() {}
 
 	QString exec(const QString& s);
 
@@ -51,7 +52,7 @@ protected slots:
 	void removeItemClicked();
 
 protected:
-	bool captureKeyboard() { return capture; };
+	bool captureKeyboard() { return capture; }
 
 	bool event(QEvent *e);
 	bool eventFilter(QObject *o, QEvent *e);

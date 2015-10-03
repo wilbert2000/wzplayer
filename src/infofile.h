@@ -27,7 +27,7 @@ class InfoFile
 
 public:
 	InfoFile();
-	~InfoFile();
+	virtual ~InfoFile();
 
 	QString getInfo(MediaData md);
 

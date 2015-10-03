@@ -31,7 +31,7 @@ class TComboBox : public QComboBox
 {
 public:
 	TComboBox( QWidget * parent = 0 );
-	~TComboBox();
+	virtual ~TComboBox();
 
 	void setCurrentText ( const QString & text );
 	void insertStringList ( const QStringList & list, int index = -1 );

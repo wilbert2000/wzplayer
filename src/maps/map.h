@@ -8,7 +8,7 @@ namespace Maps {
 class TData {
 public:
 	TData(): ID(-1) {}
-	~TData() {}
+	virtual ~TData() {}
 
 	int getID() const { return ID; }
 	void setID(int id) { ID = id; }
@@ -21,7 +21,7 @@ template <class T>
 class TMap : public QMap<int, T> {
 public:
 	TMap() : selectedID(-1) {}
-	~TMap() {}
+	virtual ~TMap() {}
 
 	typedef QMap<int, T> TQMap;
 	typedef QMapIterator<int, T> TMapIterator;

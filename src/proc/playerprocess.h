@@ -44,6 +44,7 @@ public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
 	PlayerProcess(PlayerID::Player pid, MediaData * mdata);
+	virtual ~PlayerProcess() {}
 
 	PlayerID::Player player() { return player_id; }
 	bool isMPlayer() { return (player_id == PlayerID::MPLAYER); }

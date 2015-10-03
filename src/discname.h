@@ -37,7 +37,7 @@ public:
 		this->title = title; 
 		this->device = device; 
 	};
-	~DiscData() {};
+	virtual ~DiscData() {}
 
 	QString protocol;
 	QString device;

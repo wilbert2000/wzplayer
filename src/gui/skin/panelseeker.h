@@ -53,6 +53,7 @@ public:
     Q_DECLARE_FLAGS(States, State)
 
 	explicit TPanelSeeker(QWidget *parent = 0);
+	virtual ~TPanelSeeker() {}
     QPixmap leftIcon() { return leftPix; }
     QPixmap centerIcon() { return centerPix; }
     QPixmap rightIcon() { return rightPix; }

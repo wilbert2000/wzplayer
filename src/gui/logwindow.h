@@ -31,7 +31,7 @@ class TLogWindow : public QWidget, public Ui::TLogWindow
 
 public:
 	TLogWindow(QWidget* parent = 0);
-	~TLogWindow();
+	virtual ~TLogWindow();
 
 	void setText(QString log);
 	QString text();

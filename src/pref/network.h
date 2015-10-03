@@ -34,7 +34,7 @@ class TNetwork : public TWidget, public Ui::TNetwork
 
 public:
 	TNetwork( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	~TNetwork();
+	virtual ~TNetwork();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();

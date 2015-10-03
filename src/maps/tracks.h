@@ -29,7 +29,7 @@ namespace Maps {
 class TTrackData : public TData {
 public:
 	TTrackData() {}
-	~TTrackData() {}
+	virtual ~TTrackData() {}
 
 	QString getLang() const { return lang; }
 	QString getName() const { return name; }
@@ -60,7 +60,7 @@ class TTracks : public TMap<TTrackData> {
 public:
 
 	TTracks() {}
-	~TTracks() {}
+	virtual ~TTracks() {}
 
 	typedef QMapIterator<int, TTrackData> TTrackIterator;
 

@@ -34,7 +34,7 @@ class ToolbarEditor : public QDialog, public Ui::ToolbarEditor
 public:
 
 	ToolbarEditor( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~ToolbarEditor();
+	virtual ~ToolbarEditor();
 
 	void setAllActions(QList<QAction *> actions_list);
 	void setActiveActions(QList<QAction *> actions_list);

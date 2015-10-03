@@ -30,7 +30,7 @@ class FavoriteEditor : public QDialog, public Ui::FavoriteEditor
 
 public:
 	FavoriteEditor( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	~FavoriteEditor();
+	virtual ~FavoriteEditor();
 
 	void setCaption(const QString & caption);
 	QString caption();

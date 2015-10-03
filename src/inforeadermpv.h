@@ -32,7 +32,7 @@ class InfoReaderMPV : QObject {
 
 public:
 	InfoReaderMPV( QString mplayer_bin, QObject * parent = 0);
-	~InfoReaderMPV();
+	virtual ~InfoReaderMPV();
 
 	void getInfo();
 

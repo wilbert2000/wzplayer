@@ -31,6 +31,7 @@ class TTableWidget : public QTableWidget
 public:
 	TTableWidget ( QWidget * parent = 0 );
 	TTableWidget ( int rows, int columns, QWidget * parent = 0 );
+	virtual ~TTableWidget() {}
 
 	QTableWidgetItem * getItem(int row, int column, bool * existed = 0 );
 

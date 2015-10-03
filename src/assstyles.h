@@ -31,6 +31,7 @@ public:
 	enum BorderStyle { Outline = 1, Opaque = 3 };
 
 	AssStyles();
+	virtual ~AssStyles() {}
 
 	QString fontname;
 	int fontsize;

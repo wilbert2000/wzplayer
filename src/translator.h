@@ -28,7 +28,7 @@ public:
 	static Translator* translator;
 
 	Translator();
-	~Translator();
+	virtual ~Translator();
 
 	void load(QString locale);
 

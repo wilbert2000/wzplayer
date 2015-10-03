@@ -30,7 +30,7 @@ class TTimeSlider : public TSlider
 
 public:
 	TTimeSlider(QWidget * parent , int drag_delay);
-	~TTimeSlider();
+	virtual ~TTimeSlider();
 
 public slots:
 	virtual void setPos(int); // Don't use setValue!

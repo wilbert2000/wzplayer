@@ -34,10 +34,10 @@ public:
 	{ 
 		_name = name; _file = file; _icon = icon; is_subentry = subentry;
 	};
-	virtual ~Favorite() {};
+	virtual ~Favorite() {}
 
-	void setName(QString name) { _name = name; };
-	void setFile(QString file) { _file = file; };
+	void setName(QString name) { _name = name; }
+	void setFile(QString file) { _file = file; }
 	void setIcon(QString file) {
 		// Fix wrong icon
 		if (file == ":/icons-png/openfolder.png" ||
@@ -49,10 +49,10 @@ public:
 	};
 	void setSubentry(bool b) { is_subentry = b; }
 
-	QString name() { return _name; };
+	QString name() { return _name; }
 	QString file() { return _file; }
-	QString icon() { return _icon; };
-	bool isSubentry() { return is_subentry; };
+	QString icon() { return _icon; }
+	bool isSubentry() { return is_subentry; }
 
 protected:
 	QString _name, _file, _icon;
@@ -66,13 +66,13 @@ class Favorites : public QMenu
 	Q_OBJECT
 public:
 	Favorites(QString filename, QWidget * parent = 0);
-	~Favorites();
+	virtual ~Favorites();
 
-	QAction * editAct() { return edit_act; };
-	QAction * jumpAct() { return jump_act; };
-	QAction * nextAct() { return next_act; };
-	QAction * previousAct() { return previous_act; };
-	QAction * addCurrentAct() { return add_current_act; };
+	QAction * editAct() { return edit_act; }
+	QAction * jumpAct() { return jump_act; }
+	QAction * nextAct() { return next_act; }
+	QAction * previousAct() { return previous_act; }
+	QAction * addCurrentAct() { return add_current_act; }
 
 public slots:
 	void next();

@@ -33,13 +33,13 @@ public:
 		_name = name;
 		_desc = desc;
 	};
-	~InfoData() {};
+	virtual ~InfoData() {}
 
-	void setName(QString name) { _name = name; };
-	void setDesc(QString desc) { _desc = desc; };
+	void setName(QString name) { _name = name; }
+	void setDesc(QString desc) { _desc = desc; }
 
-	QString name() const { return _name; };
-	QString desc() const { return _desc; };
+	QString name() const { return _name; }
+	QString desc() const { return _desc; }
 
 	bool operator<(const InfoData & other) const {
 		return name() < other.name();
@@ -62,29 +62,29 @@ class InfoReader : QObject {
 
 public:
 	InfoReader( QString mplayer_bin, QObject * parent = 0 );
-	~InfoReader();
+	virtual ~InfoReader();
 
 	void setPlayerBin(const QString & bin);
 	QString playerBin() { return mplayerbin; }
 
 	void getInfo();
 
-	InfoList voList() { return vo_list; };
-	InfoList aoList() { return ao_list; };
+	InfoList voList() { return vo_list; }
+	InfoList aoList() { return ao_list; }
 
 #if ALLOW_DEMUXER_CODEC_CHANGE
-	InfoList demuxerList() { return demuxer_list; };
-	InfoList vcList() { return vc_list; };
-	InfoList acList() { return ac_list; };
+	InfoList demuxerList() { return demuxer_list; }
+	InfoList vcList() { return vc_list; }
+	InfoList acList() { return ac_list; }
 #endif
-	QStringList vfList() { return vf_list; };
-	QStringList optionList() { return option_list; };
+	QStringList vfList() { return vf_list; }
+	QStringList optionList() { return option_list; }
 
-	int mplayerSVN() { return mplayer_svn; };
-	QString mpvVersion() { return mpv_version; };
-	QString mplayer2Version() { return mplayer2_version; };
-	bool isMplayer2() { return is_mplayer2; };
-	bool isMPV() { return is_mpv; };
+	int mplayerSVN() { return mplayer_svn; }
+	QString mpvVersion() { return mpv_version; }
+	QString mplayer2Version() { return mplayer2_version; }
+	bool isMplayer2() { return is_mplayer2; }
+	bool isMPV() { return is_mpv; }
 
 	QString playerVersion();
 
