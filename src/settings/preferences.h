@@ -26,10 +26,10 @@
 
 #include "config.h"
 #include "settings/smplayersettings.h"
+#include "settings/recents.h"
+#include "settings/urlhistory.h"
 #include "audioequalizerlist.h"
 #include "assstyles.h"
-#include "recents.h"
-#include "urlhistory.h"
 #include "filters.h"
 
 #ifdef UPDATE_CHECKER
@@ -513,7 +513,7 @@ public:
     /* *******
        Filters
        ******* */
-	Filters filters;
+	TFilters filters;
 
 
     /* *********

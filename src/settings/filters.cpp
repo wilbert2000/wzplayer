@@ -16,40 +16,42 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filters.h"
+#include "settings/filters.h"
 #include <QSettings>
 
-Filters::Filters() : QObject() {
+namespace Settings {
+
+TFilters::TFilters() : QObject() {
 	init();
 }
 
-Filters::~Filters() {
+TFilters::~TFilters() {
 }
 
-void Filters::init() {
+void TFilters::init() {
 	list.clear();
 
 	// Video
-	list["noise"] = Filter("add noise", "noise", "9ah:5ah");
-	list["deblock"] = Filter("deblock", "pp", "vb/hb");
-	list["gradfun"] = Filter("gradfun", "gradfun");
-	list["denoise_normal"] = Filter("normal denoise", "hqdn3d");
-	list["denoise_soft"] = Filter("soft denoise", "hqdn3d", "2:1:2");
-	list["blur"] = Filter("blur", "unsharp", "lc:-1.5");
-	list["sharpen"] = Filter("sharpen", "unsharp", "lc:1.5");
+	list["noise"] = TFilter("add noise", "noise", "9ah:5ah");
+	list["deblock"] = TFilter("deblock", "pp", "vb/hb");
+	list["gradfun"] = TFilter("gradfun", "gradfun");
+	list["denoise_normal"] = TFilter("normal denoise", "hqdn3d");
+	list["denoise_soft"] = TFilter("soft denoise", "hqdn3d", "2:1:2");
+	list["blur"] = TFilter("blur", "unsharp", "lc:-1.5");
+	list["sharpen"] = TFilter("sharpen", "unsharp", "lc:1.5");
 
 	// Audio
-	list["volnorm"] = Filter("volume normalization", "volnorm", "1");
+	list["volnorm"] = TFilter("volume normalization", "volnorm", "1");
 }
 
-Filter Filters::item(const QString & key) {
+TFilter TFilters::item(const QString & key) {
 	return list[key];
 }
 
-void Filters::save(QSettings *set) {
+void TFilters::save(QSettings *set) {
 	set->beginGroup("filter_options");
 
-	QMap<QString, Filter>::iterator i;
+	QMap<QString, TFilter>::iterator i;
 	for (i = list.begin(); i != list.end(); ++i) {
 		set->setValue(i.key(), i.value().options());
 	}
@@ -57,15 +59,17 @@ void Filters::save(QSettings *set) {
 	set->endGroup();
 }
 
-void Filters::load(QSettings *set) {
+void TFilters::load(QSettings *set) {
 	set->beginGroup("filter_options");
 
-	QMap<QString, Filter>::iterator i;
+	QMap<QString, TFilter>::iterator i;
 	for (i = list.begin(); i != list.end(); ++i) {
 		i.value().setOptions( set->value(i.key(), i.value().options()).toString() );
 	}
 
 	set->endGroup();
 }
+
+} // namespace Settings
 
 #include "moc_filters.cpp"

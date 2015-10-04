@@ -36,6 +36,7 @@
 #include "settings/filesettings.h"
 #include "settings/filesettingshash.h"
 #include "settings/tvsettings.h"
+#include "settings/filters.h"
 #include "mplayerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
@@ -44,7 +45,6 @@
 #include "colorutils.h"
 #include "discname.h"
 #include "extensions.h"
-#include "filters.h"
 #include "tvlist.h"
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)

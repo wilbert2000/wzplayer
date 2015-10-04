@@ -18,8 +18,8 @@
 
 /* Default options for the video and audio filters */
 
-#ifndef _FILTERS_H_
-#define _FILTERS_H_
+#ifndef _SETTINGS_FILTERS_H_
+#define _SETTINGS_FILTERS_H_
 
 #include <QObject>
 #include <QString>
@@ -27,13 +27,15 @@
 
 class QSettings;
 
-class Filter {
+namespace Settings {
+
+class TFilter {
 public:
-	Filter() {}
-	Filter(QString tr_name, QString name, QString options = QString::null) {
+	TFilter() {}
+	TFilter(QString tr_name, QString name, QString options = QString::null) {
 		_tr_name = tr_name; _name = name; _options = options;
 	}
-	virtual ~Filter() {}
+	virtual ~TFilter() {}
 
 	void setTrName(QString tr_name) { _tr_name = tr_name; }
 	void setName(QString name) { _name = name; }
@@ -45,7 +47,7 @@ public:
 
 	QString filter() {
 		QString s = name();
-		if (!options().isEmpty()) s += "="+options();
+		if (!options().isEmpty()) s += "=" + options();
 		return s;
 	}
 
@@ -53,28 +55,30 @@ protected:
 	QString _tr_name, _name, _options;
 };
 
-typedef QMap<QString,Filter> FilterMap;
+typedef QMap<QString,TFilter> TFilterMap;
 
-class Filters : public QObject {
+class TFilters : public QObject {
 	Q_OBJECT
 
 public:
-	Filters();
-	virtual ~Filters();
+	TFilters();
+	virtual ~TFilters();
 
 	void init();
 
-	Filter item(const QString & key);
+	TFilter item(const QString& key);
 
-	void setFilters(FilterMap filters) { list = filters; }
-	FilterMap filters() { return list; }
+	void setTFilters(TFilterMap filters) { list = filters; }
+	TFilterMap filters() { return list; }
 
-	void save(QSettings *set);
-	void load(QSettings *set);
+	void save(QSettings* set);
+	void load(QSettings* set);
 
 protected:
-	FilterMap list;
+	TFilterMap list;
 };
 
-#endif
+} // namespace Settings
+
+#endif // _SETTINGS_FILTERS_H_
 

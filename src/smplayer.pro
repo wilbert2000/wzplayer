@@ -105,7 +105,7 @@ HEADERS += guiconfig.h \
 	audioequalizerlist.h \
 	mediasettings.h \
 	assstyles.h \
-	filters.h \
+    settings/filters.h \
     settings/smplayersettings.h \
     settings/preferences.h \
     settings/filesettingsbase.h \
@@ -204,7 +204,7 @@ SOURCES	+= version.cpp \
 	mediadata.cpp \
 	mediasettings.cpp \
 	assstyles.cpp \
-	filters.cpp \
+    settings/filters.cpp \
     settings/smplayersettings.cpp \
     settings/preferences.cpp \
     settings/filesettingsbase.cpp \

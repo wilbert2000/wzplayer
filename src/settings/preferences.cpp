@@ -36,9 +36,9 @@
 
 #include "paths.h"
 #include "mediasettings.h"
-#include "recents.h"
-#include "urlhistory.h"
-#include "filters.h"
+#include "settings/recents.h"
+#include "settings/urlhistory.h"
+#include "settings/filters.h"
 #include "gui/autohidewidget.h"
 #include "helper.h"
 
