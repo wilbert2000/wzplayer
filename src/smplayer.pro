@@ -113,11 +113,11 @@ HEADERS += guiconfig.h \
     filehash.h \
     settings/filesettingshash.h \
     settings/tvsettings.h \
-	images.h \
+    settings/recents.h \
+    settings/urlhistory.h \
+    images.h \
 	inforeader.h \
 	deviceinfo.h \
-	recents.h \
-	urlhistory.h \
 	core.h \
 	infofile.h \
 	seekwidget.h \
@@ -212,11 +212,11 @@ SOURCES	+= version.cpp \
     filehash.cpp \
     settings/filesettingshash.cpp \
     settings/tvsettings.cpp \
-	images.cpp \
+    settings/recents.cpp \
+    settings/urlhistory.cpp \
+    images.cpp \
 	inforeader.cpp \
 	deviceinfo.cpp \
-	recents.cpp \
-	urlhistory.cpp \
 	core.cpp \
 	infofile.cpp \
 	seekwidget.cpp \

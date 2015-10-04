@@ -16,85 +16,81 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "recents.h"
+#include "settings/recents.h"
 
-Recents::Recents()
-{
-	l.clear();
-	max_items = 10;
+namespace Settings {
+
+TRecents::TRecents() : max_items(10) {
 }
 
-Recents::~Recents() {
+TRecents::~TRecents() {
 }
 
-void Recents::clear() {
-	l.clear();
-}
+void TRecents::setMaxItems(int n_items) {
 
-int Recents::count() {
-	return l.count();
-}
-
-void Recents::setMaxItems(int n_items) {
 	max_items = n_items;
-	fromStringList(l);
+	while (count() > max_items) {
+		removeLast();
+	}
 }
 
-void Recents::addItem(QString s) {
-	qDebug("Recents::addItem: '%s'", s.toUtf8().data());
+void TRecents::addItem(QString s) {
+	qDebug("Settings::TRecents::addItem: '%s'", s.toUtf8().data());
 
-	int pos = l.indexOf(s);
-	if (pos != -1) l.removeAt(pos);
-	l.prepend(s);
+	int pos = indexOf(s);
+	if (pos >= 0)
+		removeAt(pos);
+	prepend(s);
 
-	if (l.count() > max_items) l.removeLast();
+	if (count() > max_items)
+		removeLast();
 }
 
-void Recents::addItem(QString s, QString title) {
+void TRecents::addItem(QString s, QString title) {
+
 	s += "|title]=" + title;
 	addItem(s);
 }
 
-QString Recents::item(int n) {
-	QString res;
+QString TRecents::item(int n) {
 
-	QStringList s = l[n].split("|title]=");
-	if (s.count() > 0) res = s[0];
+	QString res;
+	QStringList s = (*this)[n].split("|title]=");
+	if (s.count() > 0)
+		res = s[0];
 
 	return res;
 }
 
-QString Recents::title(int n) {
-	QString res;
+QString TRecents::title(int n) {
 
-	QStringList s = l[n].split("|title]=");
-	if (s.count() > 1) res = s[1];
+	QString res;
+	QStringList s = (*this)[n].split("|title]=");
+	if (s.count() > 1)
+		res = s[1];
 
 	return res;
 }
 
-void Recents::list() {
-	qDebug("Recents::list");
+void TRecents::list() {
+	qDebug("Settings::TRecents::list");
 
-	for (int n=0; n < l.count(); n++) {
-		qDebug(" * item %d: '%s'", n, l[n].toUtf8().constData() );
+	for (int n = 0; n < count(); n++) {
+		qDebug(" * item %d: '%s'", n, (*this)[n].toUtf8().constData());
 	}
 }
 
-void Recents::fromStringList(QStringList list) {
-	l.clear();
+void TRecents::fromStringList(const QStringList& list) {
+
+	clear();
 
 	int max = list.count();
-	if (max_items < max) max = max_items;
-
-	//qDebug("max_items: %d, count: %d max: %d", max_items, l.count(), max);
+	if (max > max_items)
+		max = max_items;
 
 	for (int n = 0; n < max; n++) {
-		l.append( list[n] );
+		append(list[n]);
 	}
 }
 
-QStringList Recents::toStringList() {
-	return l;
-}
-
+} // namespace Settings

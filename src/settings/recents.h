@@ -16,18 +16,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _RECENTS_H_
-#define _RECENTS_H_
+#ifndef _SETTINGS_RECENTS_H_
+#define _SETTINGS_RECENTS_H_
 
 #include <QStringList>
 
-class Recents {
+namespace Settings {
+
+class TRecents : public QStringList {
 
 public:
-	Recents();
-	virtual ~Recents();
-
-	virtual void clear();
+	TRecents();
+	virtual ~TRecents();
 
 	virtual void addItem(QString s);
 	virtual void addItem(QString s, QString title);
@@ -35,19 +35,17 @@ public:
 	virtual QString item(int n);
 	virtual QString title(int n);
 
-	virtual int count();
-
 	virtual void setMaxItems(int n_items);
 	virtual int maxItems() { return max_items; }
 
-	virtual void fromStringList(QStringList list);
-	virtual QStringList toStringList();
+	virtual void fromStringList(const QStringList& list);
 
 	virtual void list();
 
 protected:
 	int max_items;
-	QStringList l;
 };
 
-#endif
+} // namespace Settings
+
+#endif // _SETTINGS_RECENTS_H_

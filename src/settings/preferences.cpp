@@ -966,9 +966,9 @@ void TPreferences::save() {
        ******* */
 
 	beginGroup("history");
-	setValue("recents", history_recents.toStringList());
+	setValue("recents", history_recents);
 	setValue("recents/max_items", history_recents.maxItems());
-	setValue("urls", history_urls.toStringList());
+	setValue("urls", history_urls);
 	setValue("urls/max_items", history_urls.maxItems());
 	endGroup(); // history
 
@@ -1464,10 +1464,10 @@ void TPreferences::load() {
 	beginGroup("history");
 
 	history_recents.setMaxItems( value("recents/max_items", history_recents.maxItems()).toInt() );
-	history_recents.fromStringList( value("recents", history_recents.toStringList()).toStringList() );
+	history_recents.fromStringList( value("recents", history_recents).toStringList() );
 
 	history_urls.setMaxItems( value("urls/max_items", history_urls.maxItems()).toInt() );
-	history_urls.fromStringList( value("urls", history_urls.toStringList()).toStringList() );
+	history_urls.fromStringList( value("urls", history_urls).toStringList() );
 
 	endGroup(); // history
 

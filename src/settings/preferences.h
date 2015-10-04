@@ -506,8 +506,8 @@ public:
        History
        ******* */
 
-	Recents history_recents;
-	URLHistory history_urls;
+	TRecents history_recents;
+	TURLHistory history_urls;
 
 
     /* *******

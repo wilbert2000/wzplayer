@@ -20,10 +20,10 @@
 #include "pref/interface.h"
 #include "images.h"
 #include "settings/preferences.h"
+#include "settings/recents.h"
+#include "settings/urlhistory.h"
 #include "paths.h"
 #include "languages.h"
-#include "recents.h"
-#include "urlhistory.h"
 #include "gui/autohidewidget.h"
 
 #include <QDir>

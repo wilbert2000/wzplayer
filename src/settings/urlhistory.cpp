@@ -16,37 +16,39 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "urlhistory.h"
+#include "settings/urlhistory.h"
 
-URLHistory::URLHistory() : Recents() 
-{
-	setMaxItems(50);
+namespace Settings {
+
+TURLHistory::TURLHistory() : TRecents() {
+	max_items = 50;
 }
 
-URLHistory::~URLHistory() {
+TURLHistory::~TURLHistory() {
 }
 
-void URLHistory::addUrl(QString url) {
-	qDebug("Recents::addItem: '%s'", url.toUtf8().data());
+void TURLHistory::addUrl(const QString& url) {
+	qDebug("Settings::TURLHistory::addItem: '%s'", url.toUtf8().data());
 
 	// Delete duplicates
-	QStringList::iterator iterator = l.begin();
-	while (iterator != l.end()) {
-		QString s = (*iterator);
-		if (s == url) 
-			iterator = l.erase(iterator);
+	QStringList::iterator iterator = begin();
+	while (iterator != end()) {
+		if (*iterator == url)
+			iterator = erase(iterator);
 		else
 			iterator++;
 	}
 
 	// Add new item to list
-	l.prepend(url);
+	prepend(url);
 
-	if (l.count() > max_items) l.removeLast();
+	if (count() > max_items)
+		removeLast();
 }
 
-QString URLHistory::url(int n) {
-	QString s = l[n];
-	return s;
+QString TURLHistory::url(int n) {
+	return (*this)[n];
 }
+
+} // namespace Settings
 

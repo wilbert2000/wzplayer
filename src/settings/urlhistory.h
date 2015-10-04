@@ -16,21 +16,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _URLHISTORY_H_
-#define _URLHISTORY_H_
+#ifndef _SETTINGS_URLHISTORY_H_
+#define _SETTINGS_URLHISTORY_H_
 
-#include "recents.h"
+#include "settings/recents.h"
 
-class URLHistory : public Recents
-{
+namespace Settings {
+
+class TURLHistory : public TRecents {
 public:
-	URLHistory();
-	virtual ~URLHistory();
+	TURLHistory();
+	virtual ~TURLHistory();
 
-	virtual void addUrl(QString url);
+	virtual void addUrl(const QString& url);
 
 	//! Returns the URL
 	virtual QString url(int n);
 };
 
-#endif
+} // namespace Settings
+
+#endif // _SETTINGS_URLHISTORY_H_
