@@ -27,8 +27,8 @@ namespace Settings {
 
 class TFileSettingsBase : public TSMPlayerSettings {
 public:
-	TFileSettingsBase(const QString& filename, QObject* parent);
-	virtual ~TFileSettingsBase() {}
+	TFileSettingsBase(const QString& filename);
+	virtual ~TFileSettingsBase();
 
 	virtual bool existSettingsFor(const QString& filename) = 0;
 	virtual void loadSettingsFor(const QString& filename, MediaSettings& mset, int player) = 0;

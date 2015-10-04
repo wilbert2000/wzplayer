@@ -64,10 +64,8 @@ void Paths::setConfigPath(const QString& path) {
 #else
 			config_path = QDir::homePath() + "/.smplayer";
 #endif
-
 		}
 #endif
-
 	}
 
 	// Create config directory

@@ -33,9 +33,6 @@ public:
 	virtual void saveSettingsFor(const QString& filename, MediaSettings& mset, int player);
 
 	static QString filenameToGroupname(const QString& filename);
-
-private:
-	QSettings * my_settings;
 };
 
 } // namespace Settings

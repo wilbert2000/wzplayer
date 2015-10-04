@@ -257,8 +257,8 @@ void TInterface::setData(Settings::TPreferences * pref) {
 	floating_move_bottom_check->setChecked(pref->floating_activation_area == Gui::TAutohideWidget::Bottom);
 	floating_hide_delay_spin->setValue(pref->floating_hide_delay);
 
-	setRecentsMaxItems(pref->history_recents->maxItems());
-	setURLMaxItems(pref->history_urls->maxItems());
+	setRecentsMaxItems(pref->history_recents.maxItems());
+	setURLMaxItems(pref->history_urls.maxItems());
 	setRememberDirs(pref->save_dirs);
 }
 
@@ -322,13 +322,13 @@ void TInterface::getData(Settings::TPreferences * pref) {
 	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? Gui::TAutohideWidget::Bottom : Gui::TAutohideWidget::Anywhere;
 	pref->floating_hide_delay = floating_hide_delay_spin->value();
 
-	if (pref->history_recents->maxItems() != recentsMaxItems()) {
-		pref->history_recents->setMaxItems( recentsMaxItems() );
+	if (pref->history_recents.maxItems() != recentsMaxItems()) {
+		pref->history_recents.setMaxItems( recentsMaxItems() );
 		recents_changed = true;
 	}
 
-	if (pref->history_urls->maxItems() != urlMaxItems()) {
-		pref->history_urls->setMaxItems( urlMaxItems() );
+	if (pref->history_urls.maxItems() != urlMaxItems()) {
+		pref->history_urls.setMaxItems( urlMaxItems() );
 		url_max_changed = true;
 	}
 

@@ -53,12 +53,8 @@ namespace Settings {
 
 TPreferences* pref = 0;
 
-TPreferences::TPreferences(QObject* parent) :
-	TSMPlayerSettings(Paths::configPath() + "/smplayer.ini", parent) {
-
-	history_recents = new Recents;
-	history_urls = new URLHistory;
-	filters = new Filters;
+TPreferences::TPreferences() :
+	TSMPlayerSettings(Paths::configPath() + "/smplayer.ini") {
 
 	reset();
 	load();
@@ -68,11 +64,6 @@ TPreferences::TPreferences(QObject* parent) :
 TPreferences::~TPreferences() {
 
 	pref = 0;
-	save();
-
-	delete filters;
-	delete history_urls;
-	delete history_recents;
 }
 
 void TPreferences::reset() {
@@ -508,15 +499,15 @@ void TPreferences::reset() {
        History
        ******* */
 
-	history_recents->clear();
-	history_urls->clear();
+	history_recents.clear();
+	history_urls.clear();
 
 
     /* *******
        Filters
        ******* */
 
-	filters->init();
+	filters.init();
 
 
     /* *********
@@ -975,10 +966,10 @@ void TPreferences::save() {
        ******* */
 
 	beginGroup("history");
-	setValue("recents", history_recents->toStringList());
-	setValue("recents/max_items", history_recents->maxItems());
-	setValue("urls", history_urls->toStringList());
-	setValue("urls/max_items", history_urls->maxItems());
+	setValue("recents", history_recents.toStringList());
+	setValue("recents/max_items", history_recents.maxItems());
+	setValue("urls", history_urls.toStringList());
+	setValue("urls/max_items", history_urls.maxItems());
 	endGroup(); // history
 
 
@@ -986,7 +977,7 @@ void TPreferences::save() {
        Filters
        ******* */
 
-	filters->save(this);
+	filters.save(this);
 
 
     /* *********
@@ -1472,11 +1463,11 @@ void TPreferences::load() {
 
 	beginGroup("history");
 
-	history_recents->setMaxItems( value("recents/max_items", history_recents->maxItems()).toInt() );
-	history_recents->fromStringList( value("recents", history_recents->toStringList()).toStringList() );
+	history_recents.setMaxItems( value("recents/max_items", history_recents.maxItems()).toInt() );
+	history_recents.fromStringList( value("recents", history_recents.toStringList()).toStringList() );
 
-	history_urls->setMaxItems( value("urls/max_items", history_urls->maxItems()).toInt() );
-	history_urls->fromStringList( value("urls", history_urls->toStringList()).toStringList() );
+	history_urls.setMaxItems( value("urls/max_items", history_urls.maxItems()).toInt() );
+	history_urls.fromStringList( value("urls", history_urls.toStringList()).toStringList() );
 
 	endGroup(); // history
 
@@ -1485,7 +1476,7 @@ void TPreferences::load() {
        Filters
        ******* */
 
-	filters->load(this);
+	filters.load(this);
 
 
     /* *********

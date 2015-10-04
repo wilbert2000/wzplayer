@@ -28,14 +28,14 @@
 #include "settings/smplayersettings.h"
 #include "audioequalizerlist.h"
 #include "assstyles.h"
+#include "recents.h"
+#include "urlhistory.h"
+#include "filters.h"
 
 #ifdef UPDATE_CHECKER
 #include "updatecheckerdata.h"
 #endif
 
-class Recents;
-class URLHistory;
-class Filters;
 
 namespace Settings {
 
@@ -55,7 +55,7 @@ public:
 
 	Q_DECLARE_FLAGS(WheelFunctions, WheelFunction)
 
-	TPreferences(QObject* parent);
+	TPreferences();
 	virtual ~TPreferences();
 
 	virtual void reset();
@@ -506,14 +506,14 @@ public:
        History
        ******* */
 
-	Recents * history_recents;
-	URLHistory * history_urls;
+	Recents history_recents;
+	URLHistory history_urls;
 
 
     /* *******
        Filters
        ******* */
-	Filters * filters;
+	Filters filters;
 
 
     /* *********

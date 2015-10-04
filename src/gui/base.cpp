@@ -2772,8 +2772,8 @@ void TBase::closeEvent( QCloseEvent * e )  {
 	qDebug("Gui::TBase::closeEvent");
 
 	core->close();
-
 	saveConfig("");
+	pref->save();
 	e->accept();
 }
 
@@ -3086,9 +3086,9 @@ void TBase::newMediaLoaded() {
 	QString filename = core->mdat.filename;
 	QString stream_title = core->mdat.stream_title;
 	if (!stream_title.isEmpty()) {
-		pref->history_recents->addItem(filename, stream_title);
+		pref->history_recents.addItem(filename, stream_title);
 	} else {
-		pref->history_recents->addItem(filename);
+		pref->history_recents.addItem(filename);
 	}
 	updateRecents();
 }
@@ -3316,10 +3316,10 @@ void TBase::updateRecents() {
 
 	int current_items = 0;
 
-	if (pref->history_recents->count() > 0) {
-		for (int n=0; n < pref->history_recents->count(); n++) {
+	if (pref->history_recents.count() > 0) {
+		for (int n=0; n < pref->history_recents.count(); n++) {
 			QString i = QString::number( n+1 );
-			QString fullname = pref->history_recents->item(n);
+			QString fullname = pref->history_recents.item(n);
 			QString filename = fullname;
 			QFileInfo fi(fullname);
 			//if (fi.exists()) filename = fi.fileName(); // Can be slow
@@ -3332,7 +3332,7 @@ void TBase::updateRecents() {
 			}
 
 			QString show_name = filename;
-			QString title = pref->history_recents->title(n);
+			QString title = pref->history_recents.title(n);
 			if (!title.isEmpty()) show_name = title;
 
 			QAction * a = recentfiles_menu->addAction( QString("%1. " + show_name ).arg( i.insert( i.size()-1, '&' ), 3, ' ' ));
@@ -3360,7 +3360,7 @@ void TBase::clearRecentsList() {
 
 	if (ret == QMessageBox::Ok) {
 		// Delete items in menu
-		pref->history_recents->clear();
+		pref->history_recents.clear();
 		updateRecents();
 	}
 }
@@ -3646,7 +3646,7 @@ void TBase::openRecent() {
 	QAction *a = qobject_cast<QAction *> (sender());
 	if (a) {
 		int item = a->data().toInt();
-		QString filename = pref->history_recents->item(item);
+		QString filename = pref->history_recents.item(item);
 		if (!filename.isEmpty())
 			open(filename);
 	}
@@ -3671,14 +3671,14 @@ void TBase::openURL() {
 		d.setURL(clipboard_text);
 	}
 
-	for (int n=0; n < pref->history_urls->count(); n++) {
-		d.setURL( pref->history_urls->url(n) );
+	for (int n=0; n < pref->history_urls.count(); n++) {
+		d.setURL( pref->history_urls.url(n) );
 	}
 
 	if (d.exec() == QDialog::Accepted ) {
 		QString url = d.url();
 		if (!url.isEmpty()) {
-			pref->history_urls->addUrl(url);
+			pref->history_urls.addUrl(url);
 			openURL(url);
 		}
 	}

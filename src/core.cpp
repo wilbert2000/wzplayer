@@ -1696,24 +1696,24 @@ void Core::startPlayer( QString file, double seek ) {
 	// Denoise
 	if (mset.current_denoiser != MediaSettings::NoDenoise) {
 		if (mset.current_denoiser==MediaSettings::DenoiseSoft) {
-			proc->addVF("hqdn3d", pref->filters->item("denoise_soft").options());
+			proc->addVF("hqdn3d", pref->filters.item("denoise_soft").options());
 		} else {
-			proc->addVF("hqdn3d", pref->filters->item("denoise_normal").options());
+			proc->addVF("hqdn3d", pref->filters.item("denoise_normal").options());
 		}
 	}
 
 	// Unsharp
 	if (mset.current_unsharp != 0) {
 		if (mset.current_unsharp == 1) {
-			proc->addVF("blur", pref->filters->item("blur").options());
+			proc->addVF("blur", pref->filters.item("blur").options());
 		} else {
-			proc->addVF("sharpen", pref->filters->item("sharpen").options());
+			proc->addVF("sharpen", pref->filters.item("sharpen").options());
 		}
 	}
 
 	// Deblock
 	if (mset.deblock_filter) {
-		proc->addVF("deblock", pref->filters->item("deblock").options());
+		proc->addVF("deblock", pref->filters.item("deblock").options());
 	}
 
 	// Dering
@@ -1723,7 +1723,7 @@ void Core::startPlayer( QString file, double seek ) {
 
 	// Gradfun
 	if (mset.gradfun_filter) {
-		proc->addVF("gradfun", pref->filters->item("gradfun").options());
+		proc->addVF("gradfun", pref->filters.item("gradfun").options());
 	}
 
 	// Upscale
@@ -1735,7 +1735,7 @@ void Core::startPlayer( QString file, double seek ) {
 
 	// Addnoise
 	if (mset.noise_filter) {
-		proc->addVF("noise", pref->filters->item("noise").options());
+		proc->addVF("noise", pref->filters.item("noise").options());
 	}
 
 	// Postprocessing
@@ -1850,7 +1850,7 @@ void Core::startPlayer( QString file, double seek ) {
 		}
 
 		if (mset.volnorm_filter) {
-			proc->addAF("volnorm", pref->filters->item("volnorm").options());
+			proc->addAF("volnorm", pref->filters.item("volnorm").options());
 		}
 
 		bool use_scaletempo = pref->use_scaletempo == TPreferences::Enabled;
@@ -2260,8 +2260,8 @@ void Core::toggleVolnorm(bool b) {
 	qDebug("Core::toggleVolnorm: %d", b);
 	if (b != mset.volnorm_filter) {
 		mset.volnorm_filter = b;
-		QString f = pref->filters->item("volnorm").filter();
-		proc->enableVolnorm(b, pref->filters->item("volnorm").options());
+		QString f = pref->filters.item("volnorm").filter();
+		proc->enableVolnorm(b, pref->filters.item("volnorm").options());
 	}
 }
 
@@ -2337,7 +2337,7 @@ void Core::toggleDeblock(bool b) {
 	qDebug("Core::toggleDeblock: %d", b);
 	if ( b != mset.deblock_filter ) {
 		mset.deblock_filter = b;
-		CHANGE_VF("deblock", b, pref->filters->item("deblock").options());
+		CHANGE_VF("deblock", b, pref->filters.item("deblock").options());
 	}
 }
 
@@ -2361,7 +2361,7 @@ void Core::toggleGradfun(bool b) {
 	qDebug("Core::toggleGradfun: %d", b);
 	if ( b != mset.gradfun_filter) {
 		mset.gradfun_filter = b;
-		CHANGE_VF("gradfun", b, pref->filters->item("gradfun").options());
+		CHANGE_VF("gradfun", b, pref->filters.item("gradfun").options());
 	}
 }
 
@@ -2397,8 +2397,8 @@ void Core::changeDenoise(int id) {
 			restartPlay();
 		} else {
 			// MPV
-			QString dsoft = pref->filters->item("denoise_soft").options();
-			QString dnormal = pref->filters->item("denoise_normal").options();
+			QString dsoft = pref->filters.item("denoise_soft").options();
+			QString dnormal = pref->filters.item("denoise_normal").options();
 			// Remove previous filter
 			switch (mset.current_denoiser) {
 				case MediaSettings::DenoiseSoft: proc->changeVF("hqdn3d", false, dsoft); break;

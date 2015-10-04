@@ -59,8 +59,8 @@ class Filters : public QObject {
 	Q_OBJECT
 
 public:
-	Filters(QObject * parent = 0);
-	virtual ~Filters() {}
+	Filters();
+	virtual ~Filters();
 
 	void init();
 

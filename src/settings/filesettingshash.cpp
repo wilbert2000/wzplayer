@@ -48,7 +48,7 @@ QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 }
 
 TFileSettingsHash::TFileSettingsHash(const QString& filename) :
-	TFileSettingsBase(TFileSettingsHash::iniFilenameFor(filename), 0) {
+	TFileSettingsBase(TFileSettingsHash::iniFilenameFor(filename)) {
 }
 
 TFileSettingsHash::~TFileSettingsHash() {

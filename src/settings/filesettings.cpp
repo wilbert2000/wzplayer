@@ -24,7 +24,7 @@
 namespace Settings {
 
 TFileSettings::TFileSettings() :
-	TFileSettingsBase(Paths::configPath() + "/smplayer_files.ini", 0) {
+	TFileSettingsBase(Paths::configPath() + "/smplayer_files.ini") {
 }
 
 TFileSettings::~TFileSettings() {

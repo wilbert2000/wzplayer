@@ -21,8 +21,7 @@
 
 #include <QStringList>
 
-class Recents
-{
+class Recents {
 
 public:
 	Recents();
@@ -39,7 +38,7 @@ public:
 	virtual int count();
 
 	virtual void setMaxItems(int n_items);
-	virtual int maxItems() { return max_items; };
+	virtual int maxItems() { return max_items; }
 
 	virtual void fromStringList(QStringList list);
 	virtual QStringList toStringList();

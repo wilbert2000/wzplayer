@@ -20,8 +20,11 @@
 
 namespace Settings {
 
-TFileSettingsBase::TFileSettingsBase(const QString& filename, QObject* parent) :
-	TSMPlayerSettings(filename, parent) {
+TFileSettingsBase::TFileSettingsBase(const QString& filename) :
+	TSMPlayerSettings(filename) {
+}
+
+TFileSettingsBase::~TFileSettingsBase() {
 }
 
 } // namespace Settings

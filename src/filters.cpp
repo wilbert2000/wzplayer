@@ -19,9 +19,11 @@
 #include "filters.h"
 #include <QSettings>
 
-Filters::Filters(QObject * parent) : QObject(parent) 
-{
+Filters::Filters() : QObject() {
 	init();
+}
+
+Filters::~Filters() {
 }
 
 void Filters::init() {

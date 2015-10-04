@@ -78,6 +78,7 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 }
 
 TSMPlayer::~TSMPlayer() {
+	delete Settings::pref;
 }
 
 bool TSMPlayer::loadCatalog(QTranslator& translator,
@@ -116,12 +117,12 @@ void TSMPlayer::loadConfig(const QString& config_path) {
 
 	// Load preferences
 	Paths::setConfigPath(config_path);
-	Settings::pref = new Settings::TPreferences(this);
+	Settings::pref = new Settings::TPreferences();
 
 	// Reconfig log
-	TLog::log->setEnabled(pref->log_enabled);
-	TLog::log->setLogFileEnabled(pref->log_file);
-	TLog::log->setFilter(pref->log_filter);
+	log.setEnabled(pref->log_enabled);
+	log.setLogFileEnabled(pref->log_file);
+	log.setFilter(pref->log_filter);
 
 	// Load translation
 	loadTranslation();

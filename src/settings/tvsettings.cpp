@@ -25,7 +25,7 @@
 namespace Settings {
 
 TTVSettings::TTVSettings() :
-	TFileSettingsBase(Paths::configPath() + "/smplayer_tv.ini", 0) {
+	TFileSettingsBase(Paths::configPath() + "/smplayer_tv.ini") {
 }
 
 TTVSettings::~TTVSettings() {
@@ -48,7 +48,7 @@ bool TTVSettings::existSettingsFor(const QString& filename) {
 	QString group_name = filenameToGroupname(filename);
 	qDebug("TTVSettings::existSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
 	beginGroup(group_name);
-	bool saved = my_settings->value("saved", false).toBool();
+	bool saved = value("saved", false).toBool();
 	endGroup();
 
 	return saved;
