@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>FavoriteEditor</class>
- <widget class="QDialog" name="FavoriteEditor" >
+ <class>Gui::TFavoriteEditor</class>
+ <widget class="QDialog" name="Gui::TFavoriteEditor" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -180,7 +180,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>FavoriteEditor</receiver>
+   <receiver>Gui::TFavoriteEditor</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -196,7 +196,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>FavoriteEditor</receiver>
+   <receiver>Gui::TFavoriteEditor</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

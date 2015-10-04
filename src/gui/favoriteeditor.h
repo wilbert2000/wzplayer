@@ -16,21 +16,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _FAVORITEEDITOR_H_
-#define _FAVORITEEDITOR_H_
+#ifndef _GUI_FAVORITEEDITOR_H_
+#define _GUI_FAVORITEEDITOR_H_
 
 #include "ui_favoriteeditor.h"
-#include "favorites.h"
+#include "gui/favorites.h"
 
 class QPixmap;
 
-class FavoriteEditor : public QDialog, public Ui::FavoriteEditor
-{
+namespace Gui {
+
+class TFavoriteEditor : public QDialog, public Ui::TFavoriteEditor {
 	Q_OBJECT
 
 public:
-	FavoriteEditor( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~FavoriteEditor();
+	TFavoriteEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	virtual ~TFavoriteEditor();
 
 	void setCaption(const QString & caption);
 	QString caption();
@@ -38,14 +39,14 @@ public:
 	void setIntro(const QString & intro);
 	QString intro();
 
-	void setData( FavoriteList list );
-	FavoriteList data();
+	void setData(TFavoriteList list);
+	TFavoriteList data();
 
-	void setDialogIcon( const QPixmap & icon );
-	const QPixmap * dialogIcon() const;
+	void setDialogIcon(const QPixmap& icon);
+	const QPixmap* dialogIcon() const;
 
 	//! The editor will give a filename to subentries (submenus), using this path.
-	void setStorePath(const QString & path) { store_path = path; }
+	void setStorePath(const QString& path) { store_path = path; }
 	QString storePath() { return store_path; }
 
 protected slots:
@@ -69,4 +70,6 @@ protected:
 	QString store_path;
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_FAVORITEEDITOR_H_

@@ -454,7 +454,7 @@ void TBase::createActions() {
 	connect( clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()) );
 
 	// Favorites
-	favorites = new Favorites(Paths::configPath() + "/favorites.m3u8", this);
+	favorites = new TFavorites(Paths::configPath() + "/favorites.m3u8", this);
 	favorites->menuAction()->setObjectName( "favorites_menu" );
 	addAction(favorites->editAct());
 	addAction(favorites->jumpAct());
@@ -465,8 +465,8 @@ void TBase::createActions() {
             favorites, SLOT(getCurrentMedia(const QString &, const QString &)));
 
 	// TV and Radio
-	tvlist = new TVList(pref->check_channels_conf_on_startup, 
-                        TVList::TV, Paths::configPath() + "/tv.m3u8", this);
+	tvlist = new TTVList(pref->check_channels_conf_on_startup, 
+                        TTVList::TV, Paths::configPath() + "/tv.m3u8", this);
 	tvlist->menuAction()->setObjectName( "tv_menu" );
 	addAction(tvlist->editAct());
 	addAction(tvlist->jumpAct());
@@ -482,8 +482,8 @@ void TBase::createActions() {
 	connect(core, SIGNAL(mediaPlaying(const QString &, const QString &)),
             tvlist, SLOT(getCurrentMedia(const QString &, const QString &)));
 
-	radiolist = new TVList(pref->check_channels_conf_on_startup, 
-                           TVList::Radio, Paths::configPath() + "/radio.m3u8", this);
+	radiolist = new TTVList(pref->check_channels_conf_on_startup, 
+                           TTVList::Radio, Paths::configPath() + "/radio.m3u8", this);
 	radiolist->menuAction()->setObjectName( "radio_menu" );
 	addAction(radiolist->editAct());
 	addAction(radiolist->jumpAct());
@@ -2716,7 +2716,7 @@ void TBase::createMenus() {
 	optionsMenu->addAction(showPreferencesAct);
 
 	/*
-	Favorites * fav = new Favorites(Paths::configPath() + "/test.fav", this);
+	TFavorites * fav = new TFavorites(Paths::configPath() + "/test.fav", this);
 	connect(fav, SIGNAL(activated(QString)), this, SLOT(open(QString)));
 	optionsMenu->addMenu( fav->menu() )->setText("Favorites");
 	*/

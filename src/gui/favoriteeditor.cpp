@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "favoriteeditor.h"
+#include "gui/favoriteeditor.h"
 #include "images.h"
 
 #include <QHeaderView>
@@ -76,9 +76,11 @@ void FEDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const 
 	}
 }
 
-QString FavoriteEditor::last_dir;
+namespace Gui {
 
-FavoriteEditor::FavoriteEditor( QWidget* parent, Qt::WindowFlags f )
+QString TFavoriteEditor::last_dir;
+
+TFavoriteEditor::TFavoriteEditor( QWidget* parent, Qt::WindowFlags f )
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -117,40 +119,40 @@ FavoriteEditor::FavoriteEditor( QWidget* parent, Qt::WindowFlags f )
 	setDialogIcon( Images::icon("favorite") );
 }
 
-FavoriteEditor::~FavoriteEditor() {
+TFavoriteEditor::~TFavoriteEditor() {
 }
 
-void FavoriteEditor::setCaption(const QString & caption) {
+void TFavoriteEditor::setCaption(const QString & caption) {
 	caption_text = caption;
 	updateTitleLabel();
 }
 
-QString FavoriteEditor::caption() {
+QString TFavoriteEditor::caption() {
 	return caption_text;
 }
 
-void FavoriteEditor::setIntro(const QString & intro) {
+void TFavoriteEditor::setIntro(const QString & intro) {
 	intro_text = intro;
 	updateTitleLabel();
 }
 
-QString FavoriteEditor::intro() {
+QString TFavoriteEditor::intro() {
 	return intro_text;
 }
 
-void FavoriteEditor::updateTitleLabel() {
+void TFavoriteEditor::updateTitleLabel() {
 	title_label->setText( "<h1>" + caption_text + "</h1>" + intro_text );
 }
 
-void FavoriteEditor::setDialogIcon( const QPixmap & icon ) {
+void TFavoriteEditor::setDialogIcon( const QPixmap & icon ) {
 	dialog_icon->setPixmap(icon);
 }
 
-const QPixmap * FavoriteEditor::dialogIcon() const {
+const QPixmap * TFavoriteEditor::dialogIcon() const {
 	return dialog_icon->pixmap();
 }
 
-void FavoriteEditor::setData( FavoriteList list ) {
+void TFavoriteEditor::setData( TFavoriteList list ) {
 	table->setRowCount(list.count());
 
 	for (int n = 0; n < list.count(); n++) {
@@ -185,11 +187,11 @@ void FavoriteEditor::setData( FavoriteList list ) {
 	table->setCurrentCell(table->rowCount()-1, 0);
 }
 
-FavoriteList FavoriteEditor::data() {
-	FavoriteList list;
+TFavoriteList TFavoriteEditor::data() {
+	TFavoriteList list;
 
 	for (int n = 0; n < table->rowCount(); n++) {
-		Favorite f;
+		TFavorite f;
 		f.setName( table->item(n, COL_NAME)->text() );
 		f.setIcon( table->item(n, COL_ICON)->data(Qt::UserRole).toString() );
 		f.setSubentry( table->item(n, COL_FILE)->data(Qt::UserRole).toBool() );
@@ -205,9 +207,9 @@ FavoriteList FavoriteEditor::data() {
 	return list;
 }
 
-void FavoriteEditor::on_delete_button_clicked() {
+void TFavoriteEditor::on_delete_button_clicked() {
 	int row = table->currentRow();
-	qDebug("FavoriteEditor::on_delete_button_clicked: current_row: %d", row);
+	qDebug("Gui::TFavoriteEditor::on_delete_button_clicked: current_row: %d", row);
 
 	if (row > -1) table->removeRow(row);
 
@@ -215,14 +217,14 @@ void FavoriteEditor::on_delete_button_clicked() {
 	table->setCurrentCell(row, table->currentColumn());
 }
 
-void FavoriteEditor::on_delete_all_button_clicked() {
-	qDebug("FavoriteEditor::on_delete_all_button_clicked");
+void TFavoriteEditor::on_delete_all_button_clicked() {
+	qDebug("Gui::TFavoriteEditor::on_delete_all_button_clicked");
 	table->setRowCount(0);
 }
 
-void FavoriteEditor::on_add_button_clicked() {
+void TFavoriteEditor::on_add_button_clicked() {
 	int row = table->currentRow();
-	qDebug("FavoriteEditor::on_add_button_clicked: current_row: %d", row);
+	qDebug("Gui::TFavoriteEditor::on_add_button_clicked: current_row: %d", row);
 	row++;
 	table->insertRow(row);
 
@@ -236,9 +238,9 @@ void FavoriteEditor::on_add_button_clicked() {
 	table->setCurrentCell(row, table->currentColumn());
 }
 
-void FavoriteEditor::on_add_submenu_button_clicked() {
-	qDebug("FavoriteEditor::on_add_submenu_button_clicked");
-	qDebug("FavoriteEditor::on_add_submenu_button_clicked: store_path: '%s'", store_path.toUtf8().constData());
+void TFavoriteEditor::on_add_submenu_button_clicked() {
+	qDebug("Gui::TFavoriteEditor::on_add_submenu_button_clicked");
+	qDebug("Gui::TFavoriteEditor::on_add_submenu_button_clicked: store_path: '%s'", store_path.toUtf8().constData());
 
 	QString filename;
 	//QString s;
@@ -246,11 +248,11 @@ void FavoriteEditor::on_add_submenu_button_clicked() {
 	do {
 		filename = QString("favorites%1.m3u8").arg(n, 4, 10, QChar('0'));
 		if (!store_path.isEmpty()) filename = store_path +"/"+ filename;
-		qDebug("FavoriteEditor::on_add_submenu_button_clicked: filename: '%s'", filename.toUtf8().constData());
+		qDebug("Gui::TFavoriteEditor::on_add_submenu_button_clicked: filename: '%s'", filename.toUtf8().constData());
 		n++;
 	} while (QFile::exists(filename));
 
-	qDebug("FavoriteEditor::on_add_submenu_button_clicked: choosen filename: '%s'", filename.toUtf8().constData());
+	qDebug("Gui::TFavoriteEditor::on_add_submenu_button_clicked: choosen filename: '%s'", filename.toUtf8().constData());
 
 
 	int row = table->currentRow();
@@ -276,9 +278,9 @@ void FavoriteEditor::on_add_submenu_button_clicked() {
 	table->setCurrentCell(row, table->currentColumn());
 }
 
-void FavoriteEditor::on_up_button_clicked() {
+void TFavoriteEditor::on_up_button_clicked() {
 	int row = table->currentRow();
-	qDebug("FavoriteEditor::on_up_button_clicked: current_row: %d", row);
+	qDebug("Gui::TFavoriteEditor::on_up_button_clicked: current_row: %d", row);
 
 	if (row == 0) return;
 
@@ -293,9 +295,9 @@ void FavoriteEditor::on_up_button_clicked() {
 	table->setCurrentCell(row-1, table->currentColumn());
 }
 
-void FavoriteEditor::on_down_button_clicked() {
+void TFavoriteEditor::on_down_button_clicked() {
 	int row = table->currentRow();
-	qDebug("FavoriteEditor::on_down_button_clicked: current_row: %d", row);
+	qDebug("Gui::TFavoriteEditor::on_down_button_clicked: current_row: %d", row);
 
 	if ((row+1) >= table->rowCount()) return;
 
@@ -311,7 +313,7 @@ void FavoriteEditor::on_down_button_clicked() {
 }
  
 // takes and returns the whole row
-QList<QTableWidgetItem*> FavoriteEditor::takeRow(int row) {
+QList<QTableWidgetItem*> TFavoriteEditor::takeRow(int row) {
 	QList<QTableWidgetItem*> rowItems;
 	for (int col = 0; col < table->columnCount(); ++col)
 	{
@@ -321,7 +323,7 @@ QList<QTableWidgetItem*> FavoriteEditor::takeRow(int row) {
 }
  
 // sets the whole row
-void FavoriteEditor::setRow(int row, const QList<QTableWidgetItem*>& rowItems)
+void TFavoriteEditor::setRow(int row, const QList<QTableWidgetItem*>& rowItems)
 {
 	for (int col = 0; col < table->columnCount(); ++col)
 	{
@@ -329,15 +331,15 @@ void FavoriteEditor::setRow(int row, const QList<QTableWidgetItem*>& rowItems)
 	}
 }
 
-void FavoriteEditor::edit_icon(int row, int column ) {
-	qDebug("FavoriteEditor::edit_icon: %d, %d", row, column);
+void TFavoriteEditor::edit_icon(int row, int column ) {
+	qDebug("Gui::TFavoriteEditor::edit_icon: %d, %d", row, column);
 
 	if (column != COL_ICON) return;
 
 	QTableWidgetItem * i = table->item(row, column);
 	QString icon_filename = i->data(Qt::UserRole).toString();
 
-	qDebug("FavoriteEditor::edit_icon: icon file: '%s'", icon_filename.toUtf8().constData());
+	qDebug("Gui::TFavoriteEditor::edit_icon: icon file: '%s'", icon_filename.toUtf8().constData());
 
 	QString dir = icon_filename;
 	if (dir.isEmpty()) dir = last_dir;
@@ -352,5 +354,7 @@ void FavoriteEditor::edit_icon(int row, int column ) {
 		last_dir = QFileInfo(res).absolutePath();
 	}
 }
+
+} // namespace Gui
 
 #include "moc_favoriteeditor.cpp"

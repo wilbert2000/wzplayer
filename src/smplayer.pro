@@ -150,9 +150,9 @@ HEADERS += guiconfig.h \
 	stereo3ddialog.h \
 	filedialog.h \
 	inputmplayerversion.h \
-	favorites.h \
-	tvlist.h \
-	favoriteeditor.h \
+    gui/favoriteeditor.h \
+    gui/favorites.h \
+    gui/tvlist.h \
     gui/eqslider.h \
     gui/videoequalizer.h \
     gui/audioequalizer.h \
@@ -249,9 +249,9 @@ SOURCES	+= version.cpp \
 	stereo3ddialog.cpp \
 	filedialog.cpp \
 	inputmplayerversion.cpp \
-	favorites.cpp \
-	tvlist.cpp \
-	favoriteeditor.cpp \
+    gui/favoriteeditor.cpp \
+    gui/favorites.cpp \
+    gui/tvlist.cpp \
     gui/eqslider.cpp \
     gui/videoequalizer.cpp \
     gui/audioequalizer.cpp \
@@ -290,7 +290,7 @@ FORMS = inputdvddirectory.ui gui/logwindow.ui filepropertiesdialog.ui \
         gui/eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui pref/vdpauproperties.ui \
         pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
         pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \
-        pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui favoriteeditor.ui \
+        pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui gui/favoriteeditor.ui \
         gui/about.ui inputmplayerversion.ui gui/errordialog.ui gui/timedialog.ui stereo3ddialog.ui \
         toolbareditor.ui multilineinputdialog.ui
 

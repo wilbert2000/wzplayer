@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _FAVORITES_H_
-#define _FAVORITES_H_
+#ifndef _GUI_FAVORITES_H_
+#define _GUI_FAVORITES_H_
 
 #include <QMenu>
 #include <QString>
@@ -26,15 +26,19 @@
 class QAction;
 class QWidget;
 
-class Favorite 
-{
+namespace Gui {
+
+class TFavorite {
 public:
-	Favorite() { is_subentry = false; }
-	Favorite(QString name, QString file, QString icon = QString::null, bool subentry = false) 
+	TFavorite() { is_subentry = false; }
+	TFavorite(QString name,
+			  QString file,
+			  QString icon = QString::null,
+			  bool subentry = false)
 	{ 
 		_name = name; _file = file; _icon = icon; is_subentry = subentry;
-	};
-	virtual ~Favorite() {}
+	}
+	virtual ~TFavorite();
 
 	void setName(QString name) { _name = name; }
 	void setFile(QString file) { _file = file; }
@@ -59,14 +63,13 @@ protected:
 	bool is_subentry; // Not a favorite file, but a new favorite list
 };
 
-typedef QList<Favorite> FavoriteList;
+typedef QList<TFavorite> TFavoriteList;
 
-class Favorites : public QMenu
-{
+class TFavorites : public QMenu {
 	Q_OBJECT
 public:
-	Favorites(QString filename, QWidget * parent = 0);
-	virtual ~Favorites();
+	TFavorites(QString filename, QWidget* parent = 0);
+	virtual ~TFavorites();
 
 	QAction * editAct() { return edit_act; }
 	QAction * jumpAct() { return jump_act; }
@@ -78,19 +81,19 @@ public slots:
 	void next();
 	void previous();
 
-	void getCurrentMedia(const QString & filename, const QString & title);
+	void getCurrentMedia(const QString& filename, const QString& title);
 
 signals:
 	void activated(QString filemane);
 	//! Signal to resend the data to child
-	void sendCurrentMedia(const QString & filename, const QString & title);
+	void sendCurrentMedia(const QString& filename, const QString& title);
 
 protected:
 	virtual void save();
 	virtual void load();
 	virtual void updateMenu();
 	virtual void populateMenu();
-	virtual Favorites * createNewObject(QString filename, QWidget * parent);
+	virtual TFavorites* createNewObject(QString filename, QWidget* parent);
 	void delete_children();
 
 	int findFile(QString filename);
@@ -100,7 +103,7 @@ protected:
 	bool anyItemAvailable();
 
 protected slots:
-	void triggered_slot(QAction * action);
+	void triggered_slot(QAction* action);
 	virtual void edit();
 	virtual void jump();
 	virtual void addCurrentPlaying(); // Adds to menu current (or last played) file
@@ -110,15 +113,15 @@ protected:
     virtual void changeEvent(QEvent * event);
 
 protected:
-	FavoriteList f_list;
+	TFavoriteList f_list;
 	QString _filename;
-	QAction * edit_act;
-	QAction * jump_act;
-	QAction * next_act;
-	QAction * previous_act;
-	QAction * add_current_act;
+	QAction* edit_act;
+	QAction* jump_act;
+	QAction* next_act;
+	QAction* previous_act;
+	QAction* add_current_act;
 
-	QWidget * parent_widget;
+	QWidget* parent_widget;
 
 	// Current (or last) file clicked
 	QString current_file;
@@ -129,8 +132,10 @@ protected:
 	QString received_file_playing;
 	QString received_title;
 
-	QList<Favorites*> child;
+	QList<TFavorites*> child;
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_FAVORITES_H_
 

@@ -16,16 +16,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "tvlist.h"
-#include "favoriteeditor.h"
+#include "gui/tvlist.h"
+#include "gui/favoriteeditor.h"
 #include "images.h"
 
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
 
-TVList::TVList(bool check_channels_conf, Services services, QString filename, QWidget * parent) 
-	: Favorites(filename,parent)
+namespace Gui {
+
+TTVList::TTVList(bool check_channels_conf, Services services, QString filename, QWidget * parent)
+	: TFavorites(filename,parent)
 {
 #ifndef Q_OS_WIN
 	if (check_channels_conf) {
@@ -36,16 +38,16 @@ TVList::TVList(bool check_channels_conf, Services services, QString filename, QW
 #endif
 }
 
-TVList::~TVList() {
+TTVList::~TTVList() {
 }
 
-Favorites * TVList::createNewObject(QString filename, QWidget * parent) {
-	return new TVList(false, TV, filename, parent);
+TFavorites * TTVList::createNewObject(QString filename, QWidget * parent) {
+	return new TTVList(false, TV, filename, parent);
 }
 
 #ifndef Q_OS_WIN
-void TVList::parse_channels_conf(Services services) {
-	qDebug("TVList::parse_channels_conf");
+void TTVList::parse_channels_conf(Services services) {
+	qDebug("Gui::TTVList::parse_channels_conf");
 
 	QString file = QDir::homePath() + "/.mplayer/channels.conf.ter";
 
@@ -56,14 +58,14 @@ void TVList::parse_channels_conf(Services services) {
 
 	QFile f( file );
 	if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qDebug("TVList::parse_channels_conf: can't open %s", file.toUtf8().constData());
+		qDebug("Gui::TTVList::parse_channels_conf: can't open %s", file.toUtf8().constData());
 		return;
 	}
 
 	QTextStream in(&f);
 	while (!in.atEnd()) {
 		QString line = in.readLine();
-		qDebug("TVList::parse_channels_conf: '%s'", line.toUtf8().constData());
+		qDebug("Gui::TTVList::parse_channels_conf: '%s'", line.toUtf8().constData());
 		QString channel = line.section(':', 0, 0);
 		QString video_pid = line.section(':', 10, 10);
 		QString audio_pid = line.section(':', 11, 11);
@@ -71,21 +73,21 @@ void TVList::parse_channels_conf(Services services) {
 		bool is_data = (video_pid == "0" && audio_pid == "0");
 		bool is_tv = (!is_radio && !is_data);
 		if (!channel.isEmpty()) {
-			qDebug("TVList::parse_channels_conf: channel: '%s' video_pid: %s audio_pid: %s", channel.toUtf8().constData(),video_pid.toUtf8().constData(),audio_pid.toUtf8().constData());
+			qDebug("Gui::TTVList::parse_channels_conf: channel: '%s' video_pid: %s audio_pid: %s", channel.toUtf8().constData(),video_pid.toUtf8().constData(),audio_pid.toUtf8().constData());
 			QString channel_id = "dvb://"+channel;
 			if (findFile(channel_id) == -1) {
-				if ( (services.testFlag(TVList::TV) && is_tv) || 
-                     (services.testFlag(TVList::Radio) && is_radio) || 
-                     (services.testFlag(TVList::Data) && is_data) )
+				if ( (services.testFlag(TTVList::TV) && is_tv) ||
+					 (services.testFlag(TTVList::Radio) && is_radio) ||
+					 (services.testFlag(TTVList::Data) && is_data) )
 				{
-					f_list.append( Favorite(channel, channel_id) );
+					f_list.append( TFavorite(channel, channel_id) );
 				}
 			}
 		}
 	}
 }
 
-QString TVList::findChannelsFile() {
+QString TTVList::findChannelsFile() {
 	QString channels_file;
 
 	QString file = QDir::homePath() + "/.mplayer/channels.conf.ter";
@@ -104,10 +106,10 @@ QString TVList::findChannelsFile() {
 }
 #endif
 
-void TVList::edit() {
-	qDebug("TVList::edit");
+void TTVList::edit() {
+	qDebug("Gui::TTVList::edit");
 
-	FavoriteEditor e(parent_widget);
+	TFavoriteEditor e(parent_widget);
 
 	e.setWindowTitle( tr("Channel editor") );
 	e.setCaption( tr("TV/Radio list") );
@@ -121,5 +123,7 @@ void TVList::edit() {
 		updateMenu();
 	}
 }
+
+} // namespace Gui
 
 #include "moc_tvlist.cpp"

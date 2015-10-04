@@ -45,7 +45,7 @@
 #include "colorutils.h"
 #include "discname.h"
 #include "extensions.h"
-#include "tvlist.h"
+#include "gui/tvlist.h"
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef Q_OS_WIN
@@ -1892,7 +1892,7 @@ void Core::startPlayer( QString file, double seek ) {
 
 #ifndef Q_OS_WIN
 	if (proc->isMPV() && file.startsWith("dvb:")) {
-		QString channels_file = TVList::findChannelsFile();
+		QString channels_file = Gui::TTVList::findChannelsFile();
 		qDebug("Core::startPlayer: channels_file: %s", channels_file.toUtf8().constData());
 		if (!channels_file.isEmpty()) proc->setChannelsFile(channels_file);
 	}

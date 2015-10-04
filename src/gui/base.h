@@ -32,6 +32,8 @@
 #include "gui/logwindow.h"
 #include "gui/audioequalizer.h"
 #include "gui/videoequalizer.h"
+#include "gui/favorites.h"
+#include "gui/tvlist.h"
 #include "pref/dialog.h"
 
 #ifdef Q_OS_WIN
@@ -57,8 +59,6 @@ class FindSubtitlesWindow;
 class VideoPreview;
 #endif
 
-class Favorites;
-class TVList;
 class UpdateChecker;
 
 #ifdef SHAREWIDGET
@@ -767,10 +767,10 @@ protected:
 	Core * core;
 	MplayerWindow *mplayerwindow;
 
-	Favorites * favorites;
+	TFavorites * favorites;
 
-	TVList * tvlist;
-	TVList * radiolist;
+	TTVList * tvlist;
+	TTVList * radiolist;
 
 #ifdef UPDATE_CHECKER
 	UpdateChecker * update_checker;

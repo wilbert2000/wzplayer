@@ -16,23 +16,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _TVLIST_H_
-#define _TVLIST_H_
+#ifndef _GUI_TVLIST_H_
+#define _GUI_TVLIST_H_
 
-#include "favorites.h"
+#include "gui/favorites.h"
 
 class QWidget;
 
-class TVList : public Favorites
-{
+namespace Gui {
+
+class TTVList : public TFavorites {
 	Q_OBJECT
 
 public:
 	enum Service { TV = 1, Radio = 2, Data = 4 };
 	Q_DECLARE_FLAGS(Services, Service)
 
-	TVList(bool check_channels_conf, Services services, QString filename, QWidget * parent = 0);
-	virtual ~TVList();
+	TTVList(bool check_channels_conf, Services services, QString filename, QWidget* parent = 0);
+	virtual ~TTVList();
 
 #ifndef Q_OS_WIN
 	static QString findChannelsFile();
@@ -44,13 +45,15 @@ protected:
 #endif
 
 protected:
-	virtual Favorites * createNewObject(QString filename, QWidget * parent);
+	virtual TFavorites * createNewObject(QString filename, QWidget* parent);
 
 protected slots:
 	virtual void edit();
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(TVList::Services)
+} // namespace Gui
 
-#endif
+Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::TTVList::Services)
+
+#endif // _GUI_TVLIST_H_
 

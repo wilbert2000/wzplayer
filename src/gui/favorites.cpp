@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "favorites.h"
-#include "favoriteeditor.h"
+#include "gui/favorites.h"
+#include "gui/favoriteeditor.h"
 
 #include <QAction>
 #include <QSettings>
@@ -29,8 +29,13 @@
 //#define FIRST_MENU_ENTRY 4
 #define FIRST_MENU_ENTRY 3
 
-Favorites::Favorites(QString filename, QWidget * parent) : QMenu(parent)
-{
+namespace Gui {
+
+TFavorite::~TFavorite() {
+}
+
+TFavorites::TFavorites(QString filename, QWidget * parent) : QMenu(parent) {
+
 	_filename = filename;
 
 	parent_widget = parent;
@@ -67,17 +72,16 @@ Favorites::Favorites(QString filename, QWidget * parent) : QMenu(parent)
 	addSeparator();
 
 	populateMenu();
-
 }
 
-Favorites::~Favorites() {
-	/* qDebug("Favorites::~Favorites"); */
+TFavorites::~TFavorites() {
+	/* qDebug("Gui::TFavorites::~TFavorites"); */
 
 	save();
 	delete_children();
 }
 
-void Favorites::delete_children() {
+void TFavorites::delete_children() {
 	for (int n=0; n < child.count(); n++) {
 		if (child[n]) delete child[n];
 		child[n] = 0;
@@ -85,7 +89,7 @@ void Favorites::delete_children() {
 	child.clear();
 }
 
-void Favorites::retranslateStrings() {
+void TFavorites::retranslateStrings() {
 	edit_act->setText( tr("&Edit...") );
 	jump_act->setText( tr("&Jump...") );
 	next_act->setText( tr("&Next") );
@@ -93,22 +97,22 @@ void Favorites::retranslateStrings() {
 	add_current_act->setText( tr("&Add current media") );
 }
 
-Favorites * Favorites::createNewObject(QString filename, QWidget * parent) {
-	return new Favorites(filename, parent);
+TFavorites * TFavorites::createNewObject(QString filename, QWidget * parent) {
+	return new TFavorites(filename, parent);
 }
 
-void Favorites::populateMenu() {
+void TFavorites::populateMenu() {
 	for (int n = 0; n < f_list.count(); n++) {
 		QString i = QString::number(n+1);
 		QString name = QString("%1 - " + f_list[n].name() ).arg( i.insert( i.size()-1, '&' ), 3, ' ' );
 		if (f_list[n].isSubentry()) {
 
 			if (f_list[n].file() == _filename) {
-				qDebug("Favorites::populateMenu: infinite recursion detected. Ignoring item.");
+				qDebug("Gui::TFavorites::populateMenu: infinite recursion detected. Ignoring item.");
 				break;
 			}
 
-			Favorites * new_fav = createNewObject(f_list[n].file(), parent_widget);
+			TFavorites * new_fav = createNewObject(f_list[n].file(), parent_widget);
 			new_fav->getCurrentMedia(received_file_playing, received_title);
 			connect(this, SIGNAL(sendCurrentMedia(const QString &, const QString &)), 
                     new_fav, SLOT(getCurrentMedia(const QString &, const QString &)));
@@ -134,7 +138,7 @@ void Favorites::populateMenu() {
 	}
 }
 
-void Favorites::updateMenu() {
+void TFavorites::updateMenu() {
 	// Remove all except the first 2 items
 	while (actions().count() > FIRST_MENU_ENTRY) {
 		QAction * a = actions()[FIRST_MENU_ENTRY];
@@ -148,7 +152,7 @@ void Favorites::updateMenu() {
 	markCurrent();
 }
 
-void Favorites::triggered_slot(QAction * action) {
+void TFavorites::triggered_slot(QAction * action) {
 	if (action->data().isValid()) {
 		QString file = action->data().toString();
 		emit activated( file );
@@ -157,7 +161,7 @@ void Favorites::triggered_slot(QAction * action) {
 	}
 }
 
-void Favorites::markCurrent() {
+void TFavorites::markCurrent() {
 	for (int n = FIRST_MENU_ENTRY; n < actions().count(); n++) {
 		QAction * a = actions()[n];
 		QString file = a->data().toString();
@@ -173,14 +177,14 @@ void Favorites::markCurrent() {
 	}
 }
 
-int Favorites::findFile(QString filename) {
+int TFavorites::findFile(QString filename) {
 	for (int n = 0; n < f_list.count(); n++) {
 		if (f_list[n].file() == filename) return n;
 	}
 	return -1;
 }
 
-bool Favorites::anyItemAvailable() {
+bool TFavorites::anyItemAvailable() {
 	if (f_list.isEmpty()) return false;
 
 	bool item_available = false;
@@ -194,8 +198,8 @@ bool Favorites::anyItemAvailable() {
 	return item_available;
 }
 
-void Favorites::next() {
-	qDebug("Favorites::next");
+void TFavorites::next() {
+	qDebug("Gui::TFavorites::next");
 
 	if (!anyItemAvailable()) return;
 
@@ -216,8 +220,8 @@ void Favorites::next() {
 	}
 }
 
-void Favorites::previous() {
-	qDebug("Favorites::previous");
+void TFavorites::previous() {
+	qDebug("Gui::TFavorites::previous");
 
 	if (!anyItemAvailable()) return;
 
@@ -238,8 +242,8 @@ void Favorites::previous() {
 	}
 }
 
-void Favorites::getCurrentMedia(const QString & filename, const QString & title) {
-	qDebug("Favorites::getCurrentMedia: '%s', '%s'", filename.toUtf8().constData(), title.toUtf8().constData());
+void TFavorites::getCurrentMedia(const QString & filename, const QString & title) {
+	qDebug("Gui::TFavorites::getCurrentMedia: '%s', '%s'", filename.toUtf8().constData(), title.toUtf8().constData());
 
 	if (!filename.isEmpty()) {
 		received_file_playing = filename;
@@ -251,11 +255,11 @@ void Favorites::getCurrentMedia(const QString & filename, const QString & title)
 	}
 }
 
-void Favorites::addCurrentPlaying() {
+void TFavorites::addCurrentPlaying() {
 	if (received_file_playing.isEmpty()) {
-		qDebug("Favorites::addCurrentPlaying: received file is empty, doing nothing");
+		qDebug("Gui::TFavorites::addCurrentPlaying: received file is empty, doing nothing");
 	} else {
-		Favorite fav;
+		TFavorite fav;
 		fav.setName(received_title.replace(",", ""));
 		fav.setFile(received_file_playing);
 		f_list.append(fav);
@@ -264,8 +268,8 @@ void Favorites::addCurrentPlaying() {
 	}
 }
 
-void Favorites::save() {
-	qDebug("Favorites::save");
+void TFavorites::save() {
+	qDebug("Gui::TFavorites::save");
 
 	QFile f( _filename );
     if ( f.open( QIODevice::WriteOnly ) ) {
@@ -284,8 +288,8 @@ void Favorites::save() {
 	}
 }
 
-void Favorites::load() {
-	qDebug("Favorites::load");
+void TFavorites::load() {
+	qDebug("Gui::TFavorites::load");
 
 	QRegExp m3u_id("^#EXTM3U|^#M3U");
 	QRegExp info1("^#EXTINF:(.*),(.*),(.*)");
@@ -296,7 +300,7 @@ void Favorites::load() {
 
 		f_list.clear();
 
-		Favorite fav;
+		TFavorite fav;
 
 		QTextStream stream( &f );
 		stream.setCodec("UTF-8");
@@ -332,7 +336,7 @@ void Favorites::load() {
 			} else {
 				fav.setFile( line );
 				if (fav.name().isEmpty()) fav.setName(line);
-				//qDebug("Favorites::load: adding '%s' '%s'", fav.name().toUtf8().constData(), fav.file().toUtf8().constData());
+				//qDebug("Gui::TFavorites::load: adding '%s' '%s'", fav.name().toUtf8().constData(), fav.file().toUtf8().constData());
 				f_list.append(fav);
 
 				// Clear data
@@ -346,10 +350,10 @@ void Favorites::load() {
 	}
 }
 
-void Favorites::edit() {
-	qDebug("Favorites::edit");
+void TFavorites::edit() {
+	qDebug("Gui::TFavorites::edit");
 
-	FavoriteEditor e(parent_widget);
+	TFavoriteEditor e(parent_widget);
 
 	e.setData(f_list);
 	e.setStorePath( QFileInfo(_filename).absolutePath() );
@@ -366,8 +370,8 @@ void Favorites::edit() {
 	}
 }
 
-void Favorites::jump() {
-	qDebug("Favorites::jump");
+void TFavorites::jump() {
+	qDebug("Gui::TFavorites::jump");
 
 	bool ok;
 	#if QT_VERSION >= 0x050000
@@ -387,13 +391,15 @@ void Favorites::jump() {
 }
 
 // Language change stuff
-void Favorites::changeEvent(QEvent *e) {
+void TFavorites::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
 		QWidget::changeEvent(e);
 	}
 }
+
+} // namespace Gui
 
 #include "moc_favorites.cpp"
 
