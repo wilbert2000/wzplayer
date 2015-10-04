@@ -23,11 +23,12 @@
 #include <QFile>
 #include <QDir>
 #include <QUrl>
+#include <QTranslator>
+#include <QLocale>
 
 #include "paths.h"
 #include "settings/preferences.h"
 #include "log.h"
-#include "translator.h"
 #include "version.h"
 #include "clhelp.h"
 #include "cleanconfig.h"
@@ -77,12 +78,38 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 }
 
 TSMPlayer::~TSMPlayer() {
-	// See aboutToQuit() signal. On some platforms the QApplication::exec()
-	// call may not return. For example, on the Windows platform, when the user
-	// logs off, the system terminates the process after Qt closes all top-level
-	// windows. Hence, there is no guarantee that the application will have time
-	// to exit its event loop and execute code at the end of the main() function.
-	delete Translator::translator;
+}
+
+bool TSMPlayer::loadCatalog(QTranslator& translator,
+							const QString& name,
+							const QString& locale,
+							const QString& dir) {
+
+	QString loc = name + "_" + locale; //.toLower();
+	bool r = translator.load(loc, dir);
+	if (r)
+		qDebug("TSMPlayer::loadCatalog: successfully loaded %s from %s",
+			   loc.toUtf8().data(), dir.toUtf8().data());
+	else
+		qDebug("TSMPlayer::loadCatalog: can't load %s from %s",
+			   loc.toUtf8().data(), dir.toUtf8().data());
+	return r;
+}
+
+void TSMPlayer::loadTranslation() {
+
+	QString locale = pref->language;
+	if (locale.isEmpty()) {
+		locale = QLocale::system().name();
+	}
+	QString trans_path = Paths::translationPath();
+
+	// Try to load it first from app path (in case there's an updated
+	// translation), if it fails it will try then from the Qt path.
+	if (!loadCatalog(qt_trans, "qt", locale, trans_path)) {
+		loadCatalog(qt_trans, "qt", locale, Paths::qtTranslationPath());
+	}
+	loadCatalog(app_trans, "smplayer", locale, trans_path);
 }
 
 void TSMPlayer::loadConfig(const QString& config_path) {
@@ -96,9 +123,10 @@ void TSMPlayer::loadConfig(const QString& config_path) {
 	TLog::log->setLogFileEnabled(pref->log_file);
 	TLog::log->setFilter(pref->log_filter);
 
-	// Translator
-	Translator::translator = new Translator();
-	Translator::translator->load(pref->language);
+	// Load translation
+	loadTranslation();
+	installTranslator(&app_trans);
+	installTranslator(&qt_trans);
 
 	// Fonts
 #ifdef Q_OS_WIN
@@ -392,6 +420,8 @@ void TSMPlayer::createGUI() {
 	main_window->setForceCloseOnFinish(close_at_end);
 	main_window->setForceStartInFullscreen(start_in_fullscreen);
 
+	connect(main_window, SIGNAL(loadTranslation()),
+			this, SLOT(loadTranslation()));
 	connect(main_window, SIGNAL(requestRestart()),
 			this, SLOT(setRequestedRestart()));
 

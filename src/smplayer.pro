@@ -91,7 +91,6 @@ HEADERS += guiconfig.h \
 	paths.h \
 	helper.h \
 	colorutils.h \
-	translator.h \
 	subtracks.h \
 	discname.h \
 	extensions.h \
@@ -192,7 +191,6 @@ SOURCES	+= version.cpp \
 	paths.cpp \
 	helper.cpp \
 	colorutils.cpp \
-	translator.cpp \
 	subtracks.cpp \
 	discname.cpp \
 	extensions.cpp \

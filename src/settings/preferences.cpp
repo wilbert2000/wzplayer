@@ -1013,7 +1013,7 @@ void TPreferences::save() {
 }
 
 void TPreferences::load() {
-	qDebug("Setting::TPreferences::load");
+	qDebug("Settings::TPreferences::load");
 
     /* *******
        General
@@ -1590,25 +1590,24 @@ void TPreferences::load() {
 }
 
 double TPreferences::monitor_aspect_double() {
-	qDebug("Settings::TPreferences::monitor_aspect_double");
 
 	QRegExp exp("(\\d+)[:/](\\d+)");
-	if (exp.indexIn( monitor_aspect ) != -1) {
+	if (exp.indexIn(monitor_aspect) >= 0) {
 		int w = exp.cap(1).toInt();
 		int h = exp.cap(2).toInt();
-		qDebug(" monitor_aspect parsed successfully: %d:%d", w, h);
-		return (double) w/h;
+		qDebug("Settings::TPreferences::monitor_aspect_double: monitor_aspect parsed successfully: %d:%d", w, h);
+		return (double) w / h;
 	}
 
 	bool ok;
 	double res = monitor_aspect.toDouble(&ok);
 	if (ok) {
-		qDebug(" monitor_aspect parsed successfully: %f", res);
+		qDebug("Settings::TPreferences::monitor_aspect_double: monitor_aspect parsed successfully: %f", res);
 		return res;
-	} else {
-        qDebug(" monitor_aspect set to 0");
-		return 0;
 	}
+
+	qDebug("Settings::TPreferences::monitor_aspect_double: monitor_aspect set to 0");
+	return 0;
 }
 
 void TPreferences::setupScreenshotFolder() {

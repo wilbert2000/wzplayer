@@ -50,7 +50,6 @@
 #include "helper.h"
 #include "paths.h"
 #include "colorutils.h"
-#include "translator.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "discname.h"
@@ -2930,11 +2929,8 @@ void TBase::applyNewPreferences() {
 	playlist->setSavePlaylistOnExit(pl->savePlaylistOnExit());
 	playlist->setPlayFilesFromStart(pl->playFilesFromStart());
 
-
 	if (need_update_language) {
-		delete Translator::translator;
-		Translator::translator = new Translator();
-		Translator::translator->load(pref->language);
+		emit loadTranslation();
 	}
 
 	setJumpTexts(); // Update texts in menus
@@ -2942,12 +2938,12 @@ void TBase::applyNewPreferences() {
 
 #if STYLE_SWITCHING
 	if (_interface->styleChanged()) {
-		qDebug( "selected style: '%s'", pref->style.toUtf8().data() );
-		if ( !pref->style.isEmpty()) {
-			qApp->setStyle( pref->style );
+		qDebug("Gui::TBase::applyNewPreferences: selected style: '%s'", pref->style.toUtf8().data());
+		if (!pref->style.isEmpty()) {
+			qApp->setStyle(pref->style);
 		} else {
-			qDebug("setting default style: '%s'", default_style.toUtf8().data() );
-			qApp->setStyle( default_style );
+			qDebug("Gui::TBase::applyNewPreferences: setting default style: '%s'", default_style.toUtf8().data());
+			qApp->setStyle(default_style);
 		}
 	}
 #endif

@@ -23,6 +23,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSettings>
+#include <QTranslator>
 
 #include "log.h"
 #include "gui/base.h"
@@ -51,9 +52,8 @@ public:
 	TSMPlayer(int& argc, char** argv);
 	virtual ~TSMPlayer();
 
-	virtual void commitData(QSessionManager& /*manager*/) {
-		// Nothing to do, let the application close
-	}
+	// Nothing to do, let the application close
+	virtual void commitData(QSessionManager& /*manager*/) {}
 
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
 	ExitCode processArgs();
@@ -64,10 +64,13 @@ public:
 #endif
 
 private slots:
+	void loadTranslation();
 	void setRequestedRestart();
 
 private:
 	TLog log;
+	QTranslator app_trans;
+	QTranslator qt_trans;
 	Gui::TBase* main_window;
 	bool requested_restart;
 
@@ -87,8 +90,12 @@ private:
 	int close_at_end; // -1 = not set, 1 = true, 0 false
 	int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
 
-	void createGUI();
+	bool loadCatalog(QTranslator& translator,
+					 const QString& name,
+					 const QString& locale,
+					 const QString& dir);
 	void loadConfig(const QString& config_path);
+	void createGUI();
 	void showInfo();
 	void start();
 };

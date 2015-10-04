@@ -52,7 +52,6 @@ namespace Gui {
 
 TDefault::TDefault(QWidget* parent, Qt::WindowFlags flags)
 	: TBasePlus(parent, flags) {
-	qDebug("Gui::TDefault::TDefault: constructing default GUI");
 
 	createStatusBar();
 
