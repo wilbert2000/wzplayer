@@ -145,8 +145,8 @@ HEADERS += guiconfig.h \
 	pref/network.h \
 	filepropertiesdialog.h \
 	multilineinputdialog.h \
-	inputdvddirectory.h \
 	filedialog.h \
+    gui/inputdvddirectory.h \
     gui/stereo3ddialog.h \
     gui/inputmplayerversion.h \
     gui/verticaltext.h \
@@ -244,8 +244,8 @@ SOURCES	+= version.cpp \
 	pref/network.cpp \
 	filepropertiesdialog.cpp \
 	multilineinputdialog.cpp \
-	inputdvddirectory.cpp \
 	filedialog.cpp \
+    gui/inputdvddirectory.cpp \
     gui/stereo3ddialog.cpp \
     gui/inputmplayerversion.cpp \
     gui/verticaltext.cpp \
@@ -286,7 +286,7 @@ SOURCES	+= version.cpp \
     maps/chapters.cpp \
     log.cpp
 
-FORMS = inputdvddirectory.ui gui/logwindow.ui filepropertiesdialog.ui \
+FORMS = gui/inputdvddirectory.ui gui/logwindow.ui filepropertiesdialog.ui \
         gui/eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui pref/vdpauproperties.ui \
         pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
         pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \

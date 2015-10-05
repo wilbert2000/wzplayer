@@ -16,18 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _INPUTDVDDIRECTORY_H_
-#define _INPUTDVDDIRECTORY_H_
+#ifndef _GUI_INPUTDVDDIRECTORY_H_
+#define _GUI_INPUTDVDDIRECTORY_H_
 
 #include "ui_inputdvddirectory.h"
 
-class InputDVDDirectory : public QDialog, public Ui::InputDVDDirectory
+namespace Gui {
+
+class TInputDVDDirectory : public QDialog, public Ui::TInputDVDDirectory
 {
 	Q_OBJECT
 
 public:
-	InputDVDDirectory( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~InputDVDDirectory();
+	TInputDVDDirectory( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	virtual ~TInputDVDDirectory();
 
 	void setFolder(QString folder);
 	QString folder();
@@ -36,5 +38,6 @@ protected slots:
     void on_searchButton_clicked();
 };
 
+} // namespace Gui
 
-#endif
+#endif // _GUI_INPUTDVDDIRECTORY_H_

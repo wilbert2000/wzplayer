@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>InputDVDDirectory</class>
- <widget class="QDialog" name="InputDVDDirectory" >
+ <class>Gui::TInputDVDDirectory</class>
+ <widget class="QDialog" name="Gui::TInputDVDDirectory" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -134,7 +134,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>InputDVDDirectory</receiver>
+   <receiver>Gui::TInputDVDDirectory</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -150,7 +150,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>InputDVDDirectory</receiver>
+   <receiver>Gui::TInputDVDDirectory</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

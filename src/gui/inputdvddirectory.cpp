@@ -16,29 +16,31 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "inputdvddirectory.h"
+#include "gui/inputdvddirectory.h"
 
 #include <QLineEdit>
 #include "filedialog.h"
 
-InputDVDDirectory::InputDVDDirectory( QWidget* parent, Qt::WindowFlags f )
+namespace Gui {
+
+TInputDVDDirectory::TInputDVDDirectory( QWidget* parent, Qt::WindowFlags f )
 	: QDialog(parent, f)
 {
 	setupUi(this);
 }
 
-InputDVDDirectory::~InputDVDDirectory() {
+TInputDVDDirectory::~TInputDVDDirectory() {
 }
 
-void InputDVDDirectory::setFolder(QString folder) {
+void TInputDVDDirectory::setFolder(QString folder) {
 	dvd_directory_edit->setText( folder );
 }
 
-QString InputDVDDirectory::folder() {
+QString TInputDVDDirectory::folder() {
 	return dvd_directory_edit->text();
 }
 
-void InputDVDDirectory::on_searchButton_clicked() {
+void TInputDVDDirectory::on_searchButton_clicked() {
 	QString s = MyFileDialog::getExistingDirectory(
                     this, tr("Choose a directory"),
                     dvd_directory_edit->text() );
@@ -54,5 +56,7 @@ void InputDVDDirectory::on_searchButton_clicked() {
 		dvd_directory_edit->setText(s);
 	}
 }
+
+} // namespace Gui
 
 #include "moc_inputdvddirectory.cpp"

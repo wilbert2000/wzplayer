@@ -60,7 +60,7 @@
 #include "gui/eqslider.h"
 #include "videoequalizer.h"
 #include "audioequalizer.h"
-#include "inputdvddirectory.h"
+#include "gui/inputdvddirectory.h"
 #include "gui/inputmplayerversion.h"
 #include "errordialog.h"
 #include "gui/about.h"
@@ -3743,7 +3743,7 @@ void TBase::openDVDFromFolder() {
 	qDebug("Gui::TBase::openDVDFromFolder");
 
 	if (playlist->maybeSave()) {
-		InputDVDDirectory *d = new InputDVDDirectory(this);
+		TInputDVDDirectory *d = new TInputDVDDirectory(this);
 		d->setFolder( pref->last_dvd_directory );
 
 		if (d->exec() == QDialog::Accepted) {
