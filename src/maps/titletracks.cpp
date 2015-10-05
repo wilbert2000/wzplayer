@@ -98,7 +98,7 @@ bool TTitleTracks::setTitleFromDuration(double duration, int titleHint) {
 		if (title.getVTS() < 0 || title.getVTS() == selectedVTS) {
 			if (qAbs(title.getDuration() - duration) <= 0.01) {
 				if (title.getID() == titleHint) {
-					qDebug("TTitleTracks::setTitleFromDuration: selecting title %d with duration %f based on hint",
+					qDebug("Maps::TTitleTracks::setTitleFromDuration: selecting title %d with duration %f based on hint",
 						   title.getID(), duration);
 					setVTSTitle(title.getID());
 					return true;
@@ -116,17 +116,17 @@ bool TTitleTracks::setTitleFromDuration(double duration, int titleHint) {
 	}
 
 	if (foundTwice) {
-		qDebug("TTitleTracks::setTitleFromDuration: found duration %f multiple times, no title selected",
+		qDebug("Maps::TTitleTracks::setTitleFromDuration: found duration %f multiple times, no title selected",
 			   duration);
 		return false;
 	}
 	if (foundTitle > 0) {
-		qDebug("TTitleTracks::setTitleFromDuration: selecting title %d with duration %f",
+		qDebug("Maps::TTitleTracks::setTitleFromDuration: selecting title %d with duration %f",
 			   foundTitle, duration);
 		setVTSTitle(foundTitle);
 		return true;
 	}
-	qWarning("TTitleTracks::setTitleFromDuration: no title selected, duration %f not found",
+	qWarning("Maps::TTitleTracks::setTitleFromDuration: no title selected, duration %f not found",
 			 duration);
 	return false;
 }
