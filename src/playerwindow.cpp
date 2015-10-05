@@ -151,16 +151,16 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, Qt::WindowFlags f)
 {
 	setObjectName("playerwindow");
 
-	setFocusPolicy( Qt::StrongFocus );
+	setFocusPolicy(Qt::StrongFocus);
 	setMouseTracking(true);
 
-	setMinimumSize( QSize(0,0) );
-	setSizePolicy( QSizePolicy::Expanding , QSizePolicy::Expanding );
+	setMinimumSize(QSize(0,0));
+	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
 
 	setAutoFillBackground(true);
-	ColorUtils::setBackgroundColor( this, QColor(0,0,0) );
+	ColorUtils::setBackgroundColor(this, QColor(0,0,0));
 
-	mplayerlayer = new TPlayerLayer(this);
+	playerlayer = new TPlayerLayer(this);
 
 	logo = new QLabel();
 	logo->setObjectName("logo");
@@ -171,7 +171,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, Qt::WindowFlags f)
 	QVBoxLayout* layout = new QVBoxLayout();
 	layout->addWidget(logo, 0, Qt::AlignHCenter | Qt::AlignVCenter);
 	// Note inserted into playerlayer
-	mplayerlayer->setLayout(layout);
+	playerlayer->setLayout(layout);
 
 	left_click_timer = new QTimer(this);
 	left_click_timer->setSingleShot(true);
@@ -325,7 +325,7 @@ void TPlayerWindow::updateVideoWindow() {
 	// Move
 	pos += pan();
 
-	mplayerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
+	playerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
 
 	// Keep OSD in sight. Need the offset as seen by player.
 	QPoint osd_pos(Proc::default_osd_pos);
@@ -428,16 +428,16 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent * event) {
 		showHiddenCursor(autohide_cursor);
 
 	// For DVDNAV
-	if (mplayerlayer->underMouse()) {
+	if (playerlayer->underMouse()) {
 		// Make event relative to video layer
-		QPoint pos = event->pos() - mplayerlayer->pos();
+		QPoint pos = event->pos() - playerlayer->pos();
 		emit mouseMoved(pos);
 	}
 }
 
 // Return whether this event is accused of dragging.
 // Returning false will cancel the event.
-bool TPlayerWindow::checkDragging(QMouseEvent * event) {
+bool TPlayerWindow::checkDragging(QMouseEvent* event) {
 
 	if (double_clicked)
 		return true;
@@ -688,7 +688,7 @@ void TPlayerWindow::setCornerWidget(QWidget * w) {
 
 #if USE_COLORKEY
 void TPlayerWindow::setColorKey( QColor c ) {
-	ColorUtils::setBackgroundColor( mplayerlayer, c );
+	ColorUtils::setBackgroundColor( playerlayer, c );
 }
 #endif
 
@@ -733,14 +733,14 @@ void TPlayerWindow::setAutoHideCursor(bool enable) {
 void TPlayerWindow::aboutToStartPlaying() {
 	qDebug("TPlayerWindow::aboutToStartPlaying");
 
-	mplayerlayer->setFastBackground();
+	playerlayer->setFastBackground();
 	setAutoHideCursor(true);
 }
 
 void TPlayerWindow::playingStopped(bool clear_background) {
 	qDebug("TPlayerWindow::playingStopped");
 
-	mplayerlayer->restoreNormalBackground();
+	playerlayer->restoreNormalBackground();
 	// Clear background right away.
 	// Pro: no artifacts when things take a little while.
 	// Against: longer black flicker when restarting or switching bright videos

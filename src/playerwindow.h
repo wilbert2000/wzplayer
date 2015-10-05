@@ -90,7 +90,7 @@ public:
 	TPlayerWindow(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TPlayerWindow();
 
-	TPlayerLayer* videoLayer() { return mplayerlayer; }
+	TPlayerLayer* videoLayer() { return playerlayer; }
 
 	bool main_window_moved;
 
@@ -175,14 +175,14 @@ protected slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent ( QEvent * event );
-	virtual void resizeEvent(QResizeEvent *);
+	virtual void changeEvent(QEvent* event);
+	virtual void resizeEvent(QResizeEvent*);
 
-	virtual void mousePressEvent ( QMouseEvent * e );
-	virtual void mouseMoveEvent ( QMouseEvent * e );
-	virtual void mouseReleaseEvent( QMouseEvent * e);
-	virtual void mouseDoubleClickEvent( QMouseEvent * e );
-	virtual void wheelEvent( QWheelEvent * e );
+	virtual void mousePressEvent(QMouseEvent* e);
+	virtual void mouseMoveEvent(QMouseEvent* e);
+	virtual void mouseReleaseEvent(QMouseEvent* e);
+	virtual void mouseDoubleClickEvent(QMouseEvent* e);
+	virtual void wheelEvent(QWheelEvent* e);
 
 signals:
 	void doubleClicked();
@@ -191,7 +191,7 @@ signals:
 	void middleClicked();
 	void xbutton1Clicked(); // first X button
 	void xbutton2Clicked(); // second X button
-	void keyPressed(QKeyEvent * e);
+	void keyPressed(QKeyEvent* e);
 	void wheelUp();
 	void wheelDown();
 	void mouseMoved(QPoint);
@@ -203,7 +203,7 @@ protected:
 	double aspect;
 	double monitoraspect;
 
-	QLabel * logo;
+	QLabel* logo;
 
 	// Zoom and pan
 	double zoom_factor;
@@ -213,17 +213,17 @@ protected:
 
 	// Delay left click event
 	bool delay_left_click;
-	QTimer * left_click_timer;
+	QTimer* left_click_timer;
 	bool double_clicked;
 
 #if LOGO_ANIMATION
 	bool animated_logo;
 #endif
 
-	QWidget * corner_widget;
+	QWidget* corner_widget;
 
 private:
-	TPlayerLayer * mplayerlayer;
+	TPlayerLayer* playerlayer;
 
 	int video_width;
 	int video_height;
@@ -240,20 +240,20 @@ private:
 	bool enable_messages;
 
 	bool autohide_cursor;
-	QTimer * check_hide_mouse_timer;
+	QTimer* check_hide_mouse_timer;
 	QPoint check_hide_mouse_last_position;
 	int autohide_interval;
 
 	void autoHideCursorStartTimer();
 	void showHiddenCursor(bool startTimer);
 	void setAutoHideCursor(bool enable);
-	void setMouseTrackingInclChildren(QWidget *w);
+	void setMouseTrackingInclChildren(QWidget* w);
 
 	void moveVideo(QPoint delta);
 
 	void startDragging();
 	void stopDragging();
-	bool checkDragging(QMouseEvent * event);
+	bool checkDragging(QMouseEvent* event);
 
 	void uncheckSizeGroup();
 	void enableSizeGroup();

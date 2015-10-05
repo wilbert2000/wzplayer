@@ -273,7 +273,7 @@ public:
 	QString log_filter;
 	bool log_file;
 
-	//! If true, mplayerlayer erases its background
+	//! If true, playerlayer erases its background
 	bool repaint_video_background; 
 
 	//! If true it will autoload edl files with the same name of the file
