@@ -16,9 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "stereo3ddialog.h"
+#include "gui/stereo3ddialog.h"
 
-Stereo3dDialog::Stereo3dDialog(QWidget* parent, Qt::WindowFlags f)
+namespace Gui {
+
+TStereo3dDialog::TStereo3dDialog(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -63,16 +65,16 @@ Stereo3dDialog::Stereo3dDialog(QWidget* parent, Qt::WindowFlags f)
 	adjustSize();
 }
 
-Stereo3dDialog::~Stereo3dDialog() {
+TStereo3dDialog::~TStereo3dDialog() {
 }
 
-void Stereo3dDialog::setInputFormat(const QString & in) {
+void TStereo3dDialog::setInputFormat(const QString & in) {
 	int i = in_combo->findData(in);
 	if (i == -1) i = 0;
 	in_combo->setCurrentIndex(i);
 }
 
-void Stereo3dDialog::setOutputFormat(const QString & out) {
+void TStereo3dDialog::setOutputFormat(const QString & out) {
 	int i = out_combo->findData(out);
 	if (i == -1) {
 		// Use ml as default if the output format is not found
@@ -82,14 +84,16 @@ void Stereo3dDialog::setOutputFormat(const QString & out) {
 	out_combo->setCurrentIndex(i);
 }
 
-QString Stereo3dDialog::inputFormat() {
+QString TStereo3dDialog::inputFormat() {
 	int i = in_combo->currentIndex();
 	return in_combo->itemData(i).toString();
 }
 
-QString Stereo3dDialog::outputFormat() {
+QString TStereo3dDialog::outputFormat() {
 	int i = out_combo->currentIndex();
 	return out_combo->itemData(i).toString();
 }
+
+} // namespace Gui
 
 #include "moc_stereo3ddialog.cpp"

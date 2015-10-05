@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Stereo3dDialog</class>
- <widget class="QDialog" name="Stereo3dDialog">
+ <class>Gui::TStereo3dDialog</class>
+ <widget class="QDialog" name="Gui::TStereo3dDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -57,7 +57,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Stereo3dDialog</receiver>
+   <receiver>Gui::TStereo3dDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -73,7 +73,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Stereo3dDialog</receiver>
+   <receiver>Gui::TStereo3dDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

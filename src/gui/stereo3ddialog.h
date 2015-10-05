@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef STEREO3DDIALOG_H
-#define STEREO3DDIALOG_H
+#ifndef GUI_STEREO3DDIALOG_H
+#define GUI_STEREO3DDIALOG_H
 
 #include "ui_stereo3ddialog.h"
 #include <QDialog>
 
-class Stereo3dDialog : public QDialog, public Ui::Stereo3dDialog
+namespace Gui {
+
+class TStereo3dDialog : public QDialog, public Ui::TStereo3dDialog
 {
 	Q_OBJECT
 
 public:
-	Stereo3dDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~Stereo3dDialog();
+	TStereo3dDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	virtual ~TStereo3dDialog();
 
 	void setInputFormat(const QString & in);
 	void setOutputFormat(const QString & out);
@@ -37,4 +39,6 @@ public:
 	QString outputFormat();
 };
 
-#endif
+} // namespace GUi
+
+#endif // GUI_STEREO3DDIALOG_H

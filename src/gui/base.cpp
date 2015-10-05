@@ -68,7 +68,7 @@
 #include "gui/timedialog.h"
 #include "gui/playlist.h"
 #include "gui/timeslider.h"
-#include "stereo3ddialog.h"
+#include "gui/stereo3ddialog.h"
 #include "clhelp.h"
 #include "mplayerversion.h"
 
@@ -3976,7 +3976,7 @@ void TBase::showSubDelayDialog() {
 }
 
 void TBase::showStereo3dDialog() {
-	Stereo3dDialog d(this);
+	TStereo3dDialog d(this);
 	d.setInputFormat(core->mset.stereo3d_in);
 	d.setOutputFormat(core->mset.stereo3d_out);
 
