@@ -177,13 +177,13 @@ HEADERS += config.h \
     gui/default.h \
     gui/mini.h \
     gui/logwindow.h \
-	clhelp.h \
-	cleanconfig.h \
-	smplayer.h \
     maps/map.h \
     maps/tracks.h \
     maps/titletracks.h \
     maps/chapters.h \
+    clhelp.h \
+	cleanconfig.h \
+	smplayer.h \
     log.h
 
 
@@ -351,20 +351,20 @@ contains( DEFINES, DOWNLOAD_SUBS ) {
 		DEPENDPATH += findsubtitles/quazip
 
 		HEADERS += crypt.h \
-		           ioapi.h \
-		           quazip.h \
-		           quazipfile.h \
-		           quazipfileinfo.h \
-		           quazipnewinfo.h \
-		           unzip.h \
-		           zip.h
+                   ioapi.h \
+                   quazip.h \
+                   quazipfile.h \
+                   quazipfileinfo.h \
+                   quazipnewinfo.h \
+                   unzip.h \
+                   zip.h
 
 		SOURCES += ioapi.c \
-		           quazip.cpp \
-		           quazipfile.cpp \
-		           quazipnewinfo.cpp \
-		           unzip.c \
-		           zip.c
+                   quazip.cpp \
+                   quazipfile.cpp \
+                   quazipnewinfo.cpp \
+                   unzip.c \
+                   zip.c
 }
 
 	LIBS += -lz
