@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "infofile.h"
+#include "gui/infofile.h"
 
 #include <QFileInfo>
 #include <QCoreApplication>
@@ -25,15 +25,16 @@
 #include "images.h"
 #include "maps/tracks.h"
 
+namespace Gui {
 
-InfoFile::InfoFile() {
+TInfoFile::TInfoFile() {
 	row = 0;
 }
 
-InfoFile::~InfoFile() {
+TInfoFile::~TInfoFile() {
 }
 
-QString InfoFile::getInfo(MediaData md) {
+QString TInfoFile::getInfo(MediaData md) {
 	QString s;
 
 	// General
@@ -194,32 +195,32 @@ QString InfoFile::getInfo(MediaData md) {
 	return "<html><body bgcolor=\"white\"><font color=\"black\">"+ s + "</font></body></html>";
 }
 
-QString InfoFile::title(QString text) {
+QString TInfoFile::title(QString text) {
 	return "<h1>" + text + "</h1>";
 }
 
-QString InfoFile::openPar(QString text) {
+QString TInfoFile::openPar(QString text) {
 	return "<h2>" + text + "</h2>"
            "<table width=\"100%\">";
 }
 
-QString InfoFile::closePar() {
+QString TInfoFile::closePar() {
 	row = 0;
 	return "</table>";
 }
 
-QString InfoFile::openItem() {
+QString TInfoFile::openItem() {
 	if (row % 2 == 1)
 		return "<tr bgcolor=\"lavender\">";
 	else
 		return "<tr bgcolor=\"powderblue\">";
 }
 
-QString InfoFile::closeItem() {
+QString TInfoFile::closeItem() {
 	return "</tr>";
 }
 
-QString InfoFile::addItem( QString tag, QString value ) {
+QString TInfoFile::addItem( QString tag, QString value ) {
 	row++;
 	return openItem() + 
            "<td><b>" + tag + "</b></td>" +
@@ -228,11 +229,12 @@ QString InfoFile::addItem( QString tag, QString value ) {
 }
 
 
-inline QString InfoFile::tr( const char * sourceText, const char * comment, int n )  {
+inline QString TInfoFile::tr( const char * sourceText, const char * comment, int n )  {
 #if QT_VERSION >= 0x050000
-	return QCoreApplication::translate("InfoFile", sourceText, comment, n );
+	return QCoreApplication::translate("TInfoFile", sourceText, comment, n );
 #else
-	return QCoreApplication::translate("InfoFile", sourceText, comment, QCoreApplication::CodecForTr, n );
+	return QCoreApplication::translate("TInfoFile", sourceText, comment, QCoreApplication::CodecForTr, n );
 #endif
 }
 
+} // namespace Gui

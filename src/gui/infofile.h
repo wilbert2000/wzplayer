@@ -16,18 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _INFOFILE_H_
-#define _INFOFILE_H_
+#ifndef _GUI_INFOFILE_H_
+#define _GUI_INFOFILE_H_
 
 #include "mediadata.h"
 #include <QString>
 
-class InfoFile 
+namespace Gui {
+
+class TInfoFile
 {
 
 public:
-	InfoFile();
-	virtual ~InfoFile();
+	TInfoFile();
+	virtual ~TInfoFile();
 
 	QString getInfo(MediaData md);
 
@@ -46,4 +48,6 @@ private:
 	inline QString tr( const char * sourceText, const char * comment = 0, int n = -1 );
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_INFOFILE_H_

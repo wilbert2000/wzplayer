@@ -22,7 +22,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include "images.h"
-#include "infofile.h"
+#include "gui/infofile.h"
 #include "playerid.h"
 
 namespace Gui {
@@ -62,7 +62,7 @@ void TFilePropertiesDialog::setMediaData(MediaData md) {
 }
 
 void TFilePropertiesDialog::showInfo() {
-	InfoFile info;
+	TInfoFile info;
 	info_edit->setText( info.getInfo(media_data) );
 }
 

@@ -118,7 +118,6 @@ HEADERS += config.h \
 	inforeader.h \
 	deviceinfo.h \
 	core.h \
-	infofile.h \
 	filechooser.h \
 	lineedit_with_icon.h \
 	languages.h \
@@ -145,6 +144,7 @@ HEADERS += config.h \
     gui/pref/network.h \
 	filedialog.h \
     gui/multilineinputdialog.h \
+    gui/infofile.h \
     gui/filepropertiesdialog.h \
     gui/inputdvddirectory.h \
     gui/stereo3ddialog.h \
@@ -218,7 +218,6 @@ SOURCES	+= version.cpp \
 	inforeader.cpp \
 	deviceinfo.cpp \
 	core.cpp \
-	infofile.cpp \
 	filechooser.cpp \
 	lineedit_with_icon.cpp \
 	languages.cpp \
@@ -244,6 +243,7 @@ SOURCES	+= version.cpp \
     gui/pref/network.cpp \
 	filedialog.cpp \
     gui/multilineinputdialog.cpp \
+    gui/infofile.cpp \
     gui/filepropertiesdialog.cpp \
     gui/inputdvddirectory.cpp \
     gui/stereo3ddialog.cpp \
