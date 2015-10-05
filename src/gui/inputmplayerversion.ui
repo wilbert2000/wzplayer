@@ -1,7 +1,7 @@
 <ui version="4.0" >
  <author>Ricardo Villalba</author>
- <class>InputMplayerVersion</class>
- <widget class="QDialog" name="InputMplayerVersion" >
+ <class>Gui::TInputMplayerVersion</class>
+ <widget class="QDialog" name="Gui::TInputMplayerVersion" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -151,7 +151,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>InputMplayerVersion</receiver>
+   <receiver>Gui::TInputMplayerVersion</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -167,7 +167,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>InputMplayerVersion</receiver>
+   <receiver>Gui::TInputMplayerVersion</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

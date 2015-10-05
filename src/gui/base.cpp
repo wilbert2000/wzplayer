@@ -61,7 +61,7 @@
 #include "videoequalizer.h"
 #include "audioequalizer.h"
 #include "inputdvddirectory.h"
-#include "inputmplayerversion.h"
+#include "gui/inputmplayerversion.h"
 #include "errordialog.h"
 #include "gui/about.h"
 #include "gui/inputurl.h"
@@ -4963,7 +4963,7 @@ void TBase::askForMplayerVersion(QString line) {
 	qDebug("Gui::TBase::askForMplayerVersion: %s", line.toUtf8().data());
 
 	if (pref->mplayer_user_supplied_version <= 0) {
-		InputMplayerVersion d(this);
+		TInputMplayerVersion d(this);
 		d.setVersion( pref->mplayer_user_supplied_version );
 		d.setVersionFromOutput(line);
 		if (d.exec() == QDialog::Accepted) {

@@ -16,18 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _INPUTMPLAYERVERSION_H_
-#define _INPUTMPLAYERVERSION_H_
+#ifndef _GUI_INPUTMPLAYERVERSION_H_
+#define _GUI_INPUTMPLAYERVERSION_H_
 
 #include "ui_inputmplayerversion.h"
 
-class InputMplayerVersion : public QDialog, public Ui::InputMplayerVersion
+namespace Gui {
+
+class TInputMplayerVersion : public QDialog, public Ui::TInputMplayerVersion
 {
 	Q_OBJECT
 
 public:
-	InputMplayerVersion( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~InputMplayerVersion();
+	TInputMplayerVersion( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	virtual ~TInputMplayerVersion();
 
 	void setVersion(int current_version);
 	int version();
@@ -35,4 +37,6 @@ public:
 	void setVersionFromOutput(QString text);
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_INPUTMPLAYERVERSION_H_

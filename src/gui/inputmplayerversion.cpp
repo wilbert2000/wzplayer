@@ -16,25 +16,27 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "inputmplayerversion.h"
+#include "gui/inputmplayerversion.h"
 #include "mplayerversion.h"
 #include <QLineEdit>
 #include <QComboBox>
 
-InputMplayerVersion::InputMplayerVersion( QWidget* parent, Qt::WindowFlags f )
+namespace Gui {
+
+TInputMplayerVersion::TInputMplayerVersion( QWidget* parent, Qt::WindowFlags f )
 	: QDialog(parent, f)
 {
 	setupUi(this);
 }
 
-InputMplayerVersion::~InputMplayerVersion() {
+TInputMplayerVersion::~TInputMplayerVersion() {
 }
 
-void InputMplayerVersion::setVersionFromOutput(QString text) {
+void TInputMplayerVersion::setVersionFromOutput(QString text) {
 	orig_string->setText(text);
 }
 
-void InputMplayerVersion::setVersion(int current_version) {
+void TInputMplayerVersion::setVersion(int current_version) {
 	int index = 2;
 
 	if (current_version == MPLAYER_1_0_RC2_SVN) index = 1;
@@ -44,7 +46,7 @@ void InputMplayerVersion::setVersion(int current_version) {
 	version_combo->setCurrentIndex(index);
 }
 
-int InputMplayerVersion::version() {
+int TInputMplayerVersion::version() {
 	int r = -1;
 	switch (version_combo->currentIndex()) {
 		case 0 : r = MPLAYER_1_0_RC1_SVN; break; // rc1 or older
@@ -53,5 +55,7 @@ int InputMplayerVersion::version() {
 	}
 	return r;
 }
+
+} // namespace Gui
 
 #include "moc_inputmplayerversion.cpp"
