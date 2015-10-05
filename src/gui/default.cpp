@@ -33,7 +33,7 @@
 #include "core.h"
 #include "widgetactions.h"
 #include "playlist.h"
-#include "mplayerwindow.h"
+#include "playerwindow.h"
 #include "gui/action.h"
 #include "images.h"
 #include "autohidewidget.h"
@@ -284,7 +284,7 @@ void TDefault::createControlWidget() {
 
 void TDefault::createFloatingControl() {
 	// Floating control
-	floating_control = new TAutohideWidget(panel, mplayerwindow);
+	floating_control = new TAutohideWidget(panel, playerwindow);
 	floating_control->setAutoHide(true);
 
 	TEditableToolbar * iw = new TEditableToolbar(floating_control);

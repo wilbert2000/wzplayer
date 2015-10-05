@@ -37,7 +37,7 @@
 #include "settings/filesettingshash.h"
 #include "settings/tvsettings.h"
 #include "settings/filters.h"
-#include "mplayerwindow.h"
+#include "playerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
 #include "paths.h"
@@ -66,11 +66,11 @@
 
 using namespace Settings;
 
-TCore::TCore(MplayerWindow *mpw, QWidget* parent , int position_max)
+TCore::TCore(TPlayerWindow *mpw, QWidget* parent , int position_max)
 	: QObject( parent ),
 	  mdat(),
 	  mset(&mdat),
-	  mplayerwindow(mpw),
+	  playerwindow(mpw),
 	  _state(Stopped),
 	  we_are_restarting(false),
 	  title(-1),
@@ -192,14 +192,14 @@ TCore::TCore(MplayerWindow *mpw, QWidget* parent , int position_max)
 
 	connect( this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()) );
 
-	// Mplayerwindow
+	// TPlayerWindow
 	connect( this, SIGNAL(aboutToStartPlaying()),
-			 mplayerwindow, SLOT(aboutToStartPlaying()) );
-	connect( mplayerwindow, SIGNAL(mouseMoved(QPoint)),
+			 playerwindow, SLOT(aboutToStartPlaying()) );
+	connect( playerwindow, SIGNAL(mouseMoved(QPoint)),
 			 this, SLOT(dvdnavUpdateMousePos(QPoint)) );
 
-	mplayerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
-	mplayerwindow->setMonitorAspect( pref->monitor_aspect_double() );
+	playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
+	playerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -257,7 +257,7 @@ void TCore::processError(QProcess::ProcessError error) {
 	qDebug("TCore::processError: %d", error);
 
 	// First restore normal window background
-	mplayerwindow->playingStopped();
+	playerwindow->playingStopped();
 
 	emit playerFailed(error);
 }
@@ -266,7 +266,7 @@ void TCore::processFinished(bool normal_exit) {
 	qDebug("TCore::processFinished");
 
 	// Restore normal window background
-	mplayerwindow->playingStopped(!we_are_restarting);
+	playerwindow->playingStopped(!we_are_restarting);
 
 	if (we_are_restarting) {
 		qDebug("TCore::processFinished: something tells me we are restarting...");
@@ -280,7 +280,7 @@ void TCore::processFinished(bool normal_exit) {
 		int exit_code = proc->exitCode();
 		qWarning("TCore::processFinished: player crash or error (%d)", exit_code);
 
-		mplayerwindow->showLogo();
+		playerwindow->showLogo();
 		emit playerFinishedWithError(exit_code);
 	}
 }
@@ -724,8 +724,8 @@ void TCore::openFile(QString filename, int seek) {
 		}
 	}
 
-	// Apply settings to mplayerwindow
-	mplayerwindow->set(
+	// Apply settings to playerwindow
+	playerwindow->set(
 		mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id),
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
@@ -758,12 +758,12 @@ void TCore::restartPlay() {
 void TCore::initPlaying(int seek) {
 	qDebug("TCore::initPlaying");
 
-	mplayerwindow->hideLogo();
+	playerwindow->hideLogo();
 	if (we_are_restarting) {
 		qDebug("TCore::initPlaying: starting time");
 	} else {
 		// Feedback and prevent potential artifacts waiting for redraw
-		mplayerwindow->repaint();
+		playerwindow->repaint();
 		qDebug("TCore::initPlaying: entered the black hole, starting time");
 	}
 	time.start();
@@ -1351,9 +1351,9 @@ void TCore::startPlayer( QString file, double seek ) {
 
 #if defined(Q_OS_OS2)
 		#define WINIDFROMHWND(hwnd) ( ( hwnd ) - 0x80000000UL )
-		proc->setOption("wid", QString::number( WINIDFROMHWND( (int) mplayerwindow->videoLayer()->winId() ) ));
+		proc->setOption("wid", QString::number( WINIDFROMHWND( (int) playerwindow->videoLayer()->winId() ) ));
 #else
-		proc->setOption("wid", QString::number( (qint64) mplayerwindow->videoLayer()->winId() ) );
+		proc->setOption("wid", QString::number( (qint64) playerwindow->videoLayer()->winId() ) );
 #endif
 
 #if USE_COLORKEY
@@ -1728,7 +1728,7 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	// Upscale
 	if (mset.upscaling_filter) {
-		int width = DesktopInfo::desktop_size(mplayerwindow).width();
+		int width = DesktopInfo::desktop_size(playerwindow).width();
 		proc->setOption("sws", "9");
 		proc->addVF("scale", QString::number(width) + ":-2");
 	}
@@ -1746,7 +1746,7 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	// Letterbox (expand)
 	if ((mset.add_letterbox) || (pref->fullscreen && pref->add_blackborders_on_fullscreen)) {
-		proc->addVF("expand", QString("aspect=%1").arg( DesktopInfo::desktop_aspectRatio(mplayerwindow)));
+		proc->addVF("expand", QString("aspect=%1").arg( DesktopInfo::desktop_aspectRatio(playerwindow)));
 	}
 
 	// Software equalizer
@@ -2443,7 +2443,7 @@ void TCore::changeUpscale(bool b) {
 	qDebug( "TCore::changeUpscale: %d", b );
 	if (mset.upscaling_filter != b) {
 		mset.upscaling_filter = b;
-		int width = DesktopInfo::desktop_size(mplayerwindow).width();
+		int width = DesktopInfo::desktop_size(playerwindow).width();
 		CHANGE_VF("scale", b, QString::number(width) + ":-2");
 	}
 }
@@ -3256,11 +3256,11 @@ void TCore::changeAspectRatio( int ID ) {
 
 	if (!pref->use_mplayer_window) {
 		// Set aspect video window. false: don't update video window
-		mplayerwindow->setAspect(asp, false);
+		playerwindow->setAspect(asp, false);
 		// Resize with new aspect, normally updates video window
 		emit needResize(mset.win_width, mset.win_height);
 		// Adjust video window if resize canceled
-		mplayerwindow->updateVideoWindow();
+		playerwindow->updateVideoWindow();
 	} else {
 		// Using mplayer own window
 		if (!mdat.noVideo()) {
@@ -3340,13 +3340,13 @@ void TCore::changeLetterbox(bool b) {
 
 	if (mset.add_letterbox != b) {
 		mset.add_letterbox = b;
-		CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(mplayerwindow));
+		CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(playerwindow));
 	}
 }
 
 void TCore::changeLetterboxOnFullscreen(bool b) {
 	qDebug("TCore::changeLetterboxOnFullscreen: %d", b);
-	CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(mplayerwindow));
+	CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(playerwindow));
 }
 
 void TCore::changeOSDLevel(int level) {
@@ -3427,35 +3427,35 @@ void TCore::changeSize(int percentage) {
 	}
 }
 
-void TCore::getZoomFromMplayerWindow() {
-	mset.zoom_factor = mplayerwindow->zoomNormalScreen();
-	mset.zoom_factor_fullscreen = mplayerwindow->zoomFullScreen();
+void TCore::getZoomFromPlayerWindow() {
+	mset.zoom_factor = playerwindow->zoomNormalScreen();
+	mset.zoom_factor_fullscreen = playerwindow->zoomFullScreen();
 }
 
-void TCore::getPanFromMplayerWindow() {
-	mset.pan_offset = mplayerwindow->panNormalScreen();
-	mset.pan_offset_fullscreen = mplayerwindow->panFullScreen();
+void TCore::getPanFromPlayerWindow() {
+	mset.pan_offset = playerwindow->panNormalScreen();
+	mset.pan_offset_fullscreen = playerwindow->panFullScreen();
 }
 
 void TCore::changeZoom(double factor) {
 	qDebug("TCore::changeZoom: %f", factor);
 
-	// Kept between min and max by mplayerwindow->setZoom()
+	// Kept between min and max by playerwindow->setZoom()
 	// Hence reread of factors
-	mplayerwindow->setZoom(factor);
-	getZoomFromMplayerWindow();
+	playerwindow->setZoom(factor);
+	getZoomFromPlayerWindow();
 
-	displayMessage( tr("Zoom: %1").arg(mplayerwindow->zoom()) );
+	displayMessage( tr("Zoom: %1").arg(playerwindow->zoom()) );
 }
 
 void TCore::resetZoomAndPan() {
 	qDebug("TCore::resetZoomAndPan");
 
 	// Reset zoom and pan of video window
-	mplayerwindow->resetZoomAndPan();
+	playerwindow->resetZoomAndPan();
 	// Reread modified settings
-	getZoomFromMplayerWindow();
-	getPanFromMplayerWindow();
+	getZoomFromPlayerWindow();
+	getPanFromPlayerWindow();
 
 	displayMessage( tr("Zoom and pan reset") );
 }
@@ -3463,10 +3463,10 @@ void TCore::resetZoomAndPan() {
 void TCore::pan(int dx, int dy) {
 	qDebug("TCore::pan");
 
-	mplayerwindow->moveVideo(dx, dy);
-	getPanFromMplayerWindow();
+	playerwindow->moveVideo(dx, dy);
+	getPanFromPlayerWindow();
 
-	QPoint current_pan = mplayerwindow->pan();
+	QPoint current_pan = playerwindow->pan();
 	displayMessage( tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())) );
 }
 
@@ -3491,11 +3491,11 @@ void TCore::autoZoom() {
 	double video_aspect = mset.aspectToNum( (TMediaSettings::Aspect) mset.aspect_ratio_id);
 
 	if (video_aspect <= 0) {
-		QSize w = mplayerwindow->videoLayer()->size();
+		QSize w = playerwindow->videoLayer()->size();
 		video_aspect = (double) w.width() / w.height();
 	}
 
-	double screen_aspect = DesktopInfo::desktop_aspectRatio(mplayerwindow);
+	double screen_aspect = DesktopInfo::desktop_aspectRatio(playerwindow);
 	double zoom_factor;
 
 	if (video_aspect > screen_aspect)
@@ -3515,12 +3515,12 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 
 	// Probably there's a much easy way to do this, but I'm not good with maths...
 
-	QSize desktop =  DesktopInfo::desktop_size(mplayerwindow);
+	QSize desktop =  DesktopInfo::desktop_size(playerwindow);
 
 	double video_aspect = mset.aspectToNum( (TMediaSettings::Aspect) mset.aspect_ratio_id);
 
 	if (video_aspect <= 0) {
-		QSize w = mplayerwindow->videoLayer()->size();
+		QSize w = playerwindow->videoLayer()->size();
 		video_aspect = (double) w.width() / w.height();
 	}
 
@@ -3558,12 +3558,12 @@ void TCore::autoZoomFor235() {
 
 void TCore::incZoom() {
 	qDebug("TCore::incZoom");
-	changeZoom(mplayerwindow->zoom() + ZOOM_STEP );
+	changeZoom(playerwindow->zoom() + ZOOM_STEP );
 }
 
 void TCore::decZoom() {
 	qDebug("TCore::decZoom");
-	changeZoom(mplayerwindow->zoom() - ZOOM_STEP );
+	changeZoom(playerwindow->zoom() - ZOOM_STEP );
 }
 
 void TCore::showFilenameOnOSD() {
@@ -3677,7 +3677,7 @@ void TCore::dvdnavMouse() {
 		}
 		if (_state == Playing) {
 			// Give a last update on the mouse position
-			QPoint pos = mplayerwindow->videoLayer()->mapFromGlobal(QCursor::pos());
+			QPoint pos = playerwindow->videoLayer()->mapFromGlobal(QCursor::pos());
 			dvdnavUpdateMousePos(pos);
 			// Click
 			proc->discButtonPressed("mouse");
@@ -3685,7 +3685,7 @@ void TCore::dvdnavMouse() {
 	}
 }
 
-// Slot called by mplayerwindow to pass mouse move local to video
+// Slot called by playerwindow to pass mouse move local to video
 void TCore::dvdnavUpdateMousePos(QPoint pos) {
 
 	if (mdat.detected_type == MediaData::TYPE_DVDNAV && !block_dvd_nav) {
@@ -3734,21 +3734,21 @@ void TCore::gotVideoOutResolution(int w, int h) {
 	// aspect and filters applied.
 	mset.win_width = w;
 	mset.win_height = h;
-	mplayerwindow->setResolution(w, h);
+	playerwindow->setResolution(w, h);
 
 	if (pref->use_mplayer_window || w <= 0) {
 		emit noVideo();
 	} else {
 		if (mset.aspect_ratio_id == TMediaSettings::AspectAuto) {
 			// Set aspect to w/h. false = do not update video window.
-			mplayerwindow->setAspect(mset.win_aspect(), false);
+			playerwindow->setAspect(mset.win_aspect(), false);
 		}
 
 		if (!we_are_restarting)
 			emit needResize(w, h);
 
 		// If resize is canceled adjust new video to old size
-		mplayerwindow->updateVideoWindow();
+		playerwindow->updateVideoWindow();
 	}
 }
 

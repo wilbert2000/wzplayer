@@ -49,7 +49,7 @@
 
 class QWidget;
 class QMenu;
-class MplayerWindow;
+class TPlayerWindow;
 
 class QLabel;
 #ifdef FIND_SUBTITLES
@@ -355,7 +355,7 @@ protected:
 
 protected:
 	void createCore();
-	void createMplayerWindow();
+	void createPlayerWindow();
 	void createVideoEqualizer();
 	void createAudioEqualizer();
 	void createPlaylist();
@@ -764,7 +764,7 @@ protected:
 #endif
 
 	TCore * core;
-	MplayerWindow *mplayerwindow;
+	TPlayerWindow *playerwindow;
 
 	TFavorites * favorites;
 

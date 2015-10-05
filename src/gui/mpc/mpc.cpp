@@ -31,7 +31,7 @@
 #include "gui/autohidewidget.h"
 
 #include "styles.h"
-#include "mplayerwindow.h"
+#include "playerwindow.h"
 #include "helper.h"
 #include "desktopinfo.h"
 #include "colorutils.h"
@@ -124,7 +124,7 @@ void TMpc::createControlWidget() {
 
 void TMpc::createFloatingControl() {
 	// Floating control
-	floating_control = new TAutohideWidget(panel, mplayerwindow);
+	floating_control = new TAutohideWidget(panel, playerwindow);
 	floating_control->setAutoHide(true);
 	floating_control->hide();
 	spacer = new QSpacerItem(10,10);

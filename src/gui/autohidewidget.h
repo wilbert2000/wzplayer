@@ -33,7 +33,7 @@ class TAutohideWidget : public QWidget
 public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
-	TAutohideWidget(QWidget * parent, QWidget * mplayerwindow);
+	TAutohideWidget(QWidget * parent, QWidget * playerwindow);
 	virtual ~TAutohideWidget();
 
 	void setInternalWidget(QWidget * w);

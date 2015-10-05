@@ -98,7 +98,7 @@ HEADERS += config.h \
 	playerid.h \
 	proc/process.h \
 	proc/playerprocess.h \
-	mplayerwindow.h \
+    playerwindow.h \
 	mediadata.h \
 	audioequalizerlist.h \
 	mediasettings.h \
@@ -199,7 +199,7 @@ SOURCES	+= version.cpp \
 	playerid.cpp \
 	proc/process.cpp \
 	proc/playerprocess.cpp \
-	mplayerwindow.cpp \
+    playerwindow.cpp \
 	mediadata.cpp \
 	mediasettings.cpp \
 	assstyles.cpp \

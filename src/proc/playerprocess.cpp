@@ -35,7 +35,7 @@
 
 namespace Proc {
 
-	// Default position OSD. Used by setOSDPos and MplayerWindow.
+	// Default position OSD. Used by setOSDPos and TPlayerWindow.
 	// Should be set by player process.
 	QPoint default_osd_pos = QPoint();
 

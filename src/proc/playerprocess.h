@@ -32,7 +32,7 @@
 
 namespace Proc {
 
-// OSD position used by setOSDPos and MplayerWindow
+// OSD position used by setOSDPos and TPlayerWindow
 extern QPoint default_osd_pos;
 
 	

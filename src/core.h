@@ -28,7 +28,7 @@
 #include "mediasettings.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
-#include "mplayerwindow.h"
+#include "playerwindow.h"
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -49,7 +49,7 @@ class TCore : public QObject
 public:
 	enum State { Stopped = 0, Playing = 1, Paused = 2 };
 
-	TCore( MplayerWindow *mpw, QWidget* parent, int position_max );
+	TCore( TPlayerWindow *mpw, QWidget* parent, int position_max );
 	virtual ~TCore();
 
 	MediaData mdat;
@@ -280,7 +280,7 @@ public slots:
 	void nextWheelFunction();
 
 	void changeSize(int percentage); // Size of the window
-	void changeZoom(double); // Zoom on mplayerwindow
+	void changeZoom(double); // Zoom on playerwindow
 
 	void changeRotate(int r);
 
@@ -464,7 +464,7 @@ signals:
 
 protected:
 	Proc::TPlayerProcess * proc;
-	MplayerWindow * mplayerwindow;
+	TPlayerWindow * playerwindow;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -503,8 +503,8 @@ private:
 	void openFile(QString filename, int seek = -1);
 
 	void forceResize();
-	void getZoomFromMplayerWindow();
-	void getPanFromMplayerWindow();
+	void getZoomFromPlayerWindow();
+	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);
 	void setExternalSubs(const QString &filename);
 	bool setPreferredAudio();

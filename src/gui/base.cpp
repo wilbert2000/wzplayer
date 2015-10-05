@@ -45,7 +45,7 @@
 
 #include "log.h"
 #include "filedialog.h"
-#include "mplayerwindow.h"
+#include "playerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
 #include "paths.h"
@@ -176,7 +176,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	createPanel();
 	setCentralWidget(panel);
 
-	createMplayerWindow();
+	createPlayerWindow();
 	createCore();
 	createPlaylist();
 	createVideoEqualizer();
@@ -189,9 +189,9 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	connect( this, SIGNAL(wheelDown()),
              core, SLOT(wheelDown()) );
 	*/
-	connect( mplayerwindow, SIGNAL(wheelUp()),
+	connect( playerwindow, SIGNAL(wheelUp()),
              core, SLOT(wheelUp()) );
-	connect( mplayerwindow, SIGNAL(wheelDown()),
+	connect( playerwindow, SIGNAL(wheelDown()),
              core, SLOT(wheelDown()) );
 
 	// Set style before changing color of widgets:
@@ -1094,8 +1094,8 @@ void TBase::createActions() {
 	size100->setShortcut( Qt::CTRL | Qt::Key_1 );
 	size200->setShortcut( Qt::CTRL | Qt::Key_2 );
 	connect( sizeGroup, SIGNAL(activated(int)), core, SLOT(changeSize(int)) );
-	// mplayerwindow updates group when size changed
-	mplayerwindow->setSizeGroup(sizeGroup);
+	// playerwindow updates group when size changed
+	playerwindow->setSizeGroup(sizeGroup);
 
 	// Deinterlace
 	deinterlaceGroup = new TActionGroup("deinterlace", this);
@@ -1432,7 +1432,7 @@ void TBase::setActionsEnabled(bool b) {
 	// Groups
 	denoiseGroup->setActionsEnabled(b);
 	unsharpGroup->setActionsEnabled(b);
-	// sizeGroup handled by mplayerwindow
+	// sizeGroup handled by playerwindow
 	deinterlaceGroup->setActionsEnabled(b);
 	aspectGroup->setActionsEnabled(b);
 	rotateGroup->setActionsEnabled(b);
@@ -1512,7 +1512,7 @@ void TBase::enableActionsOnPlaying() {
 
 		denoiseGroup->setActionsEnabled(false);
 		unsharpGroup->setActionsEnabled(false);
-		// sizeGroup handled by mplayerwindow
+		// sizeGroup handled by playerwindow
 		deinterlaceGroup->setActionsEnabled(false);
 		aspectGroup->setActionsEnabled(false);
 		rotateGroup->setActionsEnabled(false);
@@ -2082,7 +2082,7 @@ void TBase::setWindowCaption(const QString & title) {
 
 void TBase::createCore() {
 
-	core = new TCore( mplayerwindow, this, SEEKBAR_RESOLUTION);
+	core = new TCore( playerwindow, this, SEEKBAR_RESOLUTION);
 
 	connect( core, SIGNAL(widgetsNeedUpdate()),
              this, SLOT(updateWidgets()) );
@@ -2122,7 +2122,7 @@ void TBase::createCore() {
              this, SLOT(exitFullscreenOnStop()) );
 
 	connect( core, SIGNAL(mediaStoppedByUser()),
-			 mplayerwindow, SLOT(showLogo()) );
+			 playerwindow, SLOT(showLogo()) );
 
 	connect( core, SIGNAL(mediaLoaded()),
              this, SLOT(enableActionsOnPlaying()) );
@@ -2167,26 +2167,26 @@ void TBase::createCore() {
 #endif
 	connect(core, SIGNAL(receivedForbidden()), this, SLOT(gotForbidden()));
 
-	connect(mplayerwindow, SIGNAL(moveOSD(const QPoint &)),
+	connect(playerwindow, SIGNAL(moveOSD(const QPoint &)),
 			core, SLOT(setOSDPos(const QPoint &)));
-	connect(mplayerwindow, SIGNAL(showMessage(QString, int, int)),
+	connect(playerwindow, SIGNAL(showMessage(QString, int, int)),
 			 core, SLOT(displayMessage(QString, int, int)) );
 }
 
-void TBase::createMplayerWindow() {
-    mplayerwindow = new MplayerWindow( panel );
+void TBase::createPlayerWindow() {
+	playerwindow = new TPlayerWindow( panel );
 #if USE_COLORKEY
-	mplayerwindow->setColorKey( pref->color_key );
+	playerwindow->setColorKey( pref->color_key );
 #endif
-	mplayerwindow->setDelayLeftClick(pref->delay_left_click);
+	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
 #if LOGO_ANIMATION
-	mplayerwindow->setAnimatedLogo( pref->animated_logo);
+	playerwindow->setAnimatedLogo( pref->animated_logo);
 #endif
 
 #ifdef SHAREWIDGET
-	sharewidget = new ShareWidget(Global::settings, mplayerwindow);
-	mplayerwindow->setCornerWidget(sharewidget);
+	sharewidget = new ShareWidget(Global::settings, playerwindow);
+	playerwindow->setCornerWidget(sharewidget);
 	#ifdef REMINDER_ACTIONS
 	connect(sharewidget, SIGNAL(supportClicked()), this, SLOT(helpDonate()));
 	#endif
@@ -2195,27 +2195,27 @@ void TBase::createMplayerWindow() {
 	QVBoxLayout * layout = new QVBoxLayout;
 	layout->setSpacing(0);
 	layout->setMargin(0);
-	layout->addWidget(mplayerwindow);
+	layout->addWidget(playerwindow);
 	panel->setLayout(layout);
 
-	// mplayerwindow
+	// playerwindow
 	/*
-    connect( mplayerwindow, SIGNAL(rightButtonReleased(QPoint)),
+	connect( playerwindow, SIGNAL(rightButtonReleased(QPoint)),
 	         this, SLOT(showPopupMenu(QPoint)) );
 	*/
 
-	// mplayerwindow mouse events
-	connect( mplayerwindow, SIGNAL(doubleClicked()),
+	// playerwindow mouse events
+	connect( playerwindow, SIGNAL(doubleClicked()),
              this, SLOT(doubleClickFunction()) );
-	connect( mplayerwindow, SIGNAL(leftClicked()),
+	connect( playerwindow, SIGNAL(leftClicked()),
              this, SLOT(leftClickFunction()) );
-	connect( mplayerwindow, SIGNAL(rightClicked()),
+	connect( playerwindow, SIGNAL(rightClicked()),
              this, SLOT(rightClickFunction()) );
-	connect( mplayerwindow, SIGNAL(middleClicked()),
+	connect( playerwindow, SIGNAL(middleClicked()),
              this, SLOT(middleClickFunction()) );
-	connect( mplayerwindow, SIGNAL(xbutton1Clicked()),
+	connect( playerwindow, SIGNAL(xbutton1Clicked()),
              this, SLOT(xbutton1ClickFunction()) );
-	connect( mplayerwindow, SIGNAL(xbutton2Clicked()),
+	connect( playerwindow, SIGNAL(xbutton2Clicked()),
              this, SLOT(xbutton2ClickFunction()) );
 }
 
@@ -2891,7 +2891,7 @@ void TBase::applyNewPreferences() {
 		#endif
 	}
 
-	mplayerwindow->setDelayLeftClick(pref->delay_left_click);
+	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
 	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
 		resize( width(), height() + 200);
@@ -2900,15 +2900,15 @@ void TBase::applyNewPreferences() {
 
 	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();
 	if (advanced->repaintVideoBackgroundChanged()) {
-		mplayerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
+		playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
 	}
 #if USE_COLORKEY
 	if (advanced->colorkeyChanged()) {
-		mplayerwindow->setColorKey( pref->color_key );
+		playerwindow->setColorKey( pref->color_key );
 	}
 #endif
 	if (advanced->monitorAspectChanged()) {
-		mplayerwindow->setMonitorAspect( pref->monitor_aspect_double() );
+		playerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 	}
 #if ALLOW_DEMUXER_CODEC_CHANGE
 	if (advanced->lavfDemuxerChanged()) {
@@ -4066,7 +4066,7 @@ void TBase::toggleFullscreen(bool b) {
 void TBase::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBase::aboutToEnterFullscreen");
 
-	mplayerwindow->aboutToEnterFullscreen();
+	playerwindow->aboutToEnterFullscreen();
 
 	if (!pref->compact_mode) {
 		menuBar()->hide();
@@ -4077,7 +4077,7 @@ void TBase::aboutToEnterFullscreen() {
 void TBase::aboutToExitFullscreen() {
 	//qDebug("Gui::TBase::aboutToExitFullscreen");
 
-	mplayerwindow->aboutToExitFullscreen();
+	playerwindow->aboutToExitFullscreen();
 
 	if (!pref->compact_mode) {
 		menuBar()->show();
@@ -4091,7 +4091,7 @@ void TBase::leftClickFunction() {
 	qDebug("Gui::TBase::leftClickFunction");
 
 	if (core->mdat.detected_type == MediaData::TYPE_DVDNAV
-		&& mplayerwindow->videoLayer()->underMouse()) {
+		&& playerwindow->videoLayer()->underMouse()) {
 		core->dvdnavMouse();
 	} else if (!pref->mouse_left_click_function.isEmpty()) {
 		processFunction(pref->mouse_left_click_function);
@@ -4624,7 +4624,7 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 	qDebug("Gui::TBase::resizeMainWindow: size to scale: %d, %d", w, h);
 
 	// Adjust for selected size and aspect.
-	QSize video_size = mplayerwindow->getAdjustedSize(w, h, pref->size_factor);
+	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 
 	if (video_size == panel->size()) {
 		qDebug("Gui::TBase::resizeMainWindow: the panel size is already the required size. Doing nothing.");
@@ -4697,7 +4697,7 @@ void TBase::slotNoVideo() {
 	if (pref->hide_video_window_on_audio_files) {
 		hidePanel();
 	} else {
-		mplayerwindow->showLogo();
+		playerwindow->showLogo();
 	}
 }
 
@@ -4955,8 +4955,8 @@ bool TBase::event(QEvent * e) {
 #endif
 
 void TBase::moveEvent(QMoveEvent *) {
-	if (mplayerwindow)
-		mplayerwindow->main_window_moved = true;
+	if (playerwindow)
+		playerwindow->main_window_moved = true;
 }
 
 void TBase::askForMplayerVersion(QString line) {

@@ -29,7 +29,7 @@
 
 namespace Gui {
 
-TAutohideWidget::TAutohideWidget(QWidget * parent, QWidget * mplayerwindow)
+TAutohideWidget::TAutohideWidget(QWidget * parent, QWidget * playerwindow)
 	: QWidget(parent)
 	, turned_on(false)
 	, auto_hide(false)
@@ -47,7 +47,7 @@ TAutohideWidget::TAutohideWidget(QWidget * parent, QWidget * mplayerwindow)
 	setAutoFillBackground(true);
 	setLayoutDirection(Qt::LeftToRight);
 
-	mplayerwindow->installEventFilter(this);
+	playerwindow->installEventFilter(this);
 
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkUnderMouse()));

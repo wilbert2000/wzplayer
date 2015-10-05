@@ -25,7 +25,7 @@
 #include "widgetactions.h"
 #include "autohidewidget.h"
 #include "gui/action.h"
-#include "mplayerwindow.h"
+#include "playerwindow.h"
 #include "helper.h"
 #include "desktopinfo.h"
 #include "editabletoolbar.h"
@@ -101,7 +101,7 @@ void TMini::createControlWidget() {
 
 void TMini::createFloatingControl() {
 	// Floating control
-	floating_control = new TAutohideWidget(panel, mplayerwindow);
+	floating_control = new TAutohideWidget(panel, playerwindow);
 	floating_control->setAutoHide(true);
 
 	TEditableToolbar * iw = new TEditableToolbar(floating_control);

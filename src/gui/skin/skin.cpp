@@ -25,7 +25,7 @@
 #include "helper.h"
 #include "colorutils.h"
 #include "core.h"
-#include "mplayerwindow.h"
+#include "playerwindow.h"
 #include "images.h"
 #include "desktopinfo.h"
 #include "mediabarpanel.h"
@@ -261,7 +261,7 @@ void TSkin::createControlWidget() {
 
 void TSkin::createFloatingControl() {
 	// Floating control
-	floating_control = new TAutohideWidget(panel, mplayerwindow);
+	floating_control = new TAutohideWidget(panel, playerwindow);
 	floating_control->setAutoHide(true);
 
 #ifdef SKIN_EDITABLE_CONTROL

@@ -17,8 +17,8 @@
 */
 
 
-#ifndef MPLAYERWINDOW_H
-#define MPLAYERWINDOW_H
+#ifndef PLAYERWINDOW_H
+#define PLAYERWINDOW_H
 
 #include <QWidget>
 #include <QSize>
@@ -51,14 +51,14 @@ const int PAN_STEP = 8;
 #define SHOW_MOUSE_TRESHOLD 4
 
 
-//! MplayerLayer can be instructed to not delete the background.
+//! TPlayerLayer can be instructed to not delete the background.
 
-class MplayerLayer : public QWidget {
+class TPlayerLayer : public QWidget {
 	Q_OBJECT
 
 public:
-	MplayerLayer(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~MplayerLayer();
+	TPlayerLayer(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	virtual ~TPlayerLayer();
 
 	//! If b is true, the background of the widget will be repainted as usual.
 	/*! Otherwise the background will not repainted when a video is playing. */
@@ -82,15 +82,15 @@ private:
 };
 
 
-class MplayerWindow : public QWidget
+class TPlayerWindow : public QWidget
 {
 	Q_OBJECT
 
 public:
-	MplayerWindow(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~MplayerWindow();
+	TPlayerWindow(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	virtual ~TPlayerWindow();
 
-	MplayerLayer* videoLayer() { return mplayerlayer; }
+	TPlayerLayer* videoLayer() { return mplayerlayer; }
 
 	bool main_window_moved;
 
@@ -223,7 +223,7 @@ protected:
 	QWidget * corner_widget;
 
 private:
-	MplayerLayer * mplayerlayer;
+	TPlayerLayer * mplayerlayer;
 
 	int video_width;
 	int video_height;
@@ -262,5 +262,5 @@ private:
 	void pauseMessages(int msec);
 };
 
-#endif
+#endif // PLAYERWINDOW_H
 

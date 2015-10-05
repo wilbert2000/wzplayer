@@ -137,7 +137,7 @@ public:
 	int audio_use_channels;
 	int stereo_mode;
 
-	// mplayerwindow
+	// playerwindow
 	double zoom_factor;
 	double zoom_factor_fullscreen;
 	QPoint pan_offset;
