@@ -37,12 +37,12 @@ public:
 		TYPE_UNKNOWN = -1,
 		TYPE_FILE = 0,
 
-		// Need to be the same as DiscName
-		TYPE_DVD = DiscName::DVD,
-		TYPE_DVDNAV = DiscName::DVDNAV,
-		TYPE_VCD = DiscName::VCD,
-		TYPE_CDDA = DiscName::CDDA,
-		TYPE_BLURAY = DiscName::BLURAY,
+		// Need to be the same as TDiscName
+		TYPE_DVD = TDiscName::DVD,
+		TYPE_DVDNAV = TDiscName::DVDNAV,
+		TYPE_VCD = TDiscName::VCD,
+		TYPE_CDDA = TDiscName::CDDA,
+		TYPE_BLURAY = TDiscName::BLURAY,
 
 		TYPE_STREAM,
 		TYPE_TV

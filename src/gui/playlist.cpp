@@ -973,10 +973,10 @@ void TPlaylist::newMediaLoaded() {
 
 	Maps::TTitleTracks* titles = &core->mdat.titles;
 	bool is_disc;
-	DiscData disc = DiscName::split(filename, &is_disc);
+	TDiscData disc = TDiscName::split(filename, &is_disc);
 	if (is_disc && titles->count() == count()) {
 		bool cur_is_disc;
-		DiscData cur_disc = DiscName::split(current_filename, &cur_is_disc);
+		TDiscData cur_disc = TDiscName::split(current_filename, &cur_is_disc);
 		if (cur_is_disc && cur_disc.protocol == disc.protocol
 			&& cur_disc.device == disc.device) {
 			qDebug("Gui::TPlaylist::newMediaLoaded: new file is from current disc");
@@ -994,7 +994,7 @@ void TPlaylist::newMediaLoaded() {
 			i.next();
 			Maps::TTitleData title = i.value();
 			disc.title = title.getID();
-			addItem(DiscName::join(disc), title.getDisplayName(false),
+			addItem(TDiscName::join(disc), title.getDisplayName(false),
 					title.getDuration());
 			if (title.getID() == titles->getSelectedID()) {
 				setCurrentItem(title.getID() - titles->firstID());

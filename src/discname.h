@@ -23,28 +23,28 @@
 
 #define DISCNAME_TEST 0
 
-class DiscData {
+class TDiscData {
 
 public:
 
-	DiscData() { 
+	TDiscData() {
 		protocol = ""; 
 		device = ""; 
 		title = 0; 
 	};
-	DiscData(const QString & protocol, int title, const QString & device) { 
+	TDiscData(const QString & protocol, int title, const QString & device) {
 		this->protocol = protocol; 
 		this->title = title; 
 		this->device = device; 
 	};
-	virtual ~DiscData() {}
+	virtual ~TDiscData() {}
 
 	QString protocol;
 	QString device;
 	int title;
 };
 
-class DiscName {
+class TDiscName {
 
 public:
 	enum Disc { DVD = 1, DVDNAV = 2, VCD = 3, CDDA = 4, BLURAY = 5 };
@@ -52,9 +52,9 @@ public:
 	static Disc protocolToDisc(QString protocol);
 
 	static QString join(Disc type, int title, const QString & device);
-	static QString join(const DiscData & d, bool add_zero_title = false);
+	static QString join(const TDiscData & d, bool add_zero_title = false);
 	static QString joinDVD(const QString & device, bool use_dvdnav);
-	static DiscData split(const QString & disc_url, bool *ok = 0);
+	static TDiscData split(const QString & disc_url, bool *ok = 0);
 
 #if DISCNAME_TEST
 	static void test();

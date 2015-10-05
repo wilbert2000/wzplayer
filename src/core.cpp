@@ -405,13 +405,13 @@ void TCore::close() {
 	mdat = MediaData();
 }
 
-void TCore::openDisc(DiscData &disc, bool fast_open) {
+void TCore::openDisc(TDiscData &disc, bool fast_open) {
 
 	// Change title if already playing
 	if (fast_open && _state != Stopped && disc.title > 0
 		&& !mset.playing_single_track) {
 		bool current_url_valid;
-		DiscData current_disc = DiscName::split(mdat.filename, &current_url_valid);
+		TDiscData current_disc = TDiscName::split(mdat.filename, &current_url_valid);
 		if (current_url_valid && current_disc.device == disc.device) {
 			// If it fails, it will call again with fast_open set to false
 			qDebug("TCore::openDisc: trying changeTitle(%d)", disc.title);
@@ -449,8 +449,8 @@ void TCore::openDisc(DiscData &disc, bool fast_open) {
 	}
 
 	// Set filename and selected type
-	mdat.filename = DiscName::join(disc);
-	mdat.selected_type = (MediaData::Type) DiscName::protocolToDisc(disc.protocol);
+	mdat.filename = TDiscName::join(disc);
+	mdat.selected_type = (MediaData::Type) TDiscName::protocolToDisc(disc.protocol);
 
 	// Clear settings
 	mset.reset();
@@ -474,7 +474,7 @@ void TCore::open(QString file, int seek, bool fast_open) {
 	}
 
 	bool disc_url_valid;
-	DiscData disc = DiscName::split(file, &disc_url_valid);
+	TDiscData disc = TDiscName::split(file, &disc_url_valid);
 	if (disc_url_valid) {
 		qDebug() << "TCore::openDisc: * identified as" << disc.protocol;
 		openDisc(disc, fast_open);
@@ -498,7 +498,7 @@ void TCore::open(QString file, int seek, bool fast_open) {
 			qDebug("TCore::open:   checking if it contains a dvd");
 			if (Helper::directoryContainsDVD(file)) {
 				qDebug("TCore::open: * directory contains a dvd");
-				open(DiscName::joinDVD(file, pref->use_dvdnav), fast_open);
+				open(TDiscName::joinDVD(file, pref->use_dvdnav), fast_open);
 			} else {
 				// TODO:
 				qDebug("TCore::open: * directory doesn't contain a dvd");
@@ -743,9 +743,9 @@ void TCore::restartPlay() {
 		title = mdat.titles.getSelectedID();
 		title_time = mset.current_sec - 10;
 		title_was_menu = mdat.title_is_menu;
-		DiscData disc = DiscName::split(mdat.filename);
+		TDiscData disc = TDiscName::split(mdat.filename);
 		disc.title = 0;
-		mdat.filename = DiscName::join(disc);
+		mdat.filename = TDiscName::join(disc);
 		mdat.selected_type = MediaData::TYPE_DVDNAV;
 		qDebug() << "TCore::restartPlay: restarting" << mdat.filename;
 	} else {
@@ -805,7 +805,7 @@ void TCore::newMediaPlaying() {
 /*
 	if (0 && mdat.detectedDisc() && mdat.selected_type != mdat.detected_type) {
 		bool valid_name;
-		DiscData disc = DiscName::split(mdat.filename, &valid_name);
+		TDiscData disc = TDiscName::split(mdat.filename, &valid_name);
 		if (!valid_name) {
 			// Assume file
 			disc.device = mdat.filename;
@@ -814,7 +814,7 @@ void TCore::newMediaPlaying() {
 		}
 		QString protocol = MediaData::typeToString(mdat.detected_type);
 		disc.protocol = protocol;
-		mdat.filename = DiscName::join(disc);
+		mdat.filename = TDiscName::join(disc);
 		qDebug() << "TCore::newMediaPlaying: switched filename from selected protocol"
 				 << MediaData::typeToString(mdat.selected_type)
 				 << "to detected protocol" << protocol;
@@ -3182,7 +3182,7 @@ void TCore::changeTitle(int title) {
 	}
 
 	// Start/restart
-	DiscData disc = DiscName::split(mdat.filename);
+	TDiscData disc = TDiscName::split(mdat.filename);
 	disc.title = title;
 	openDisc(disc, false);
 }

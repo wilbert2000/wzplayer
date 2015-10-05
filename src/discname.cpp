@@ -19,7 +19,7 @@
 #include "discname.h"
 #include <QRegExp>
 
-DiscName::Disc DiscName::protocolToDisc(QString protocol) {
+TDiscName::Disc TDiscName::protocolToDisc(QString protocol) {
 
 	protocol = protocol.toLower();
 
@@ -40,21 +40,21 @@ DiscName::Disc DiscName::protocolToDisc(QString protocol) {
 }
 
 
-QString DiscName::joinDVD(const QString & device, bool use_dvdnav) {
+QString TDiscName::joinDVD(const QString & device, bool use_dvdnav) {
 	return join(use_dvdnav ? DVDNAV : DVD, 0, device);
 }
 
-QString DiscName::join(const DiscData & d, bool add_zero_title) {
+QString TDiscName::join(const TDiscData & d, bool add_zero_title) {
 	QString s = d.protocol + "://";
 	if (d.title > 0 || (add_zero_title && d.title == 0))
 		s += QString::number(d.title);
 	if (!d.device.isEmpty()) s+= "/" + removeTrailingSlash(d.device);
 
-	//qDebug("DiscName::join: result: '%s'", s.toUtf8().constData());
+	//qDebug("TDiscName::join: result: '%s'", s.toUtf8().constData());
 	return s;
 }
 
-QString DiscName::join(Disc type, int title, const QString & device) {
+QString TDiscName::join(Disc type, int title, const QString & device) {
 	QString protocol;
 	switch (type) {
 		case DVD: protocol = "dvd"; break;
@@ -63,11 +63,11 @@ QString DiscName::join(Disc type, int title, const QString & device) {
 		case CDDA: protocol = "cdda"; break;
 		case BLURAY: protocol = "br"; break;
 	}
-	return join( DiscData(protocol, title, device) );
+	return join( TDiscData(protocol, title, device) );
 }
 
-DiscData DiscName::split(const QString & disc_url, bool * ok) {
-	//qDebug("DiscName::split: disc_url: '%s'", disc_url.toUtf8().constData());
+TDiscData TDiscName::split(const QString & disc_url, bool * ok) {
+	//qDebug("TDiscName::split: disc_url: '%s'", disc_url.toUtf8().constData());
 
 	// TODO: dvdread and title ranges dvd://1-99
 	QRegExp rx1("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)/(.*)");
@@ -75,7 +75,7 @@ DiscData DiscName::split(const QString & disc_url, bool * ok) {
 	QRegExp rx3("^(dvd|dvdnav|vcd|cdda|br):///(.*)");
 	QRegExp rx4("^(dvd|dvdnav|vcd|cdda|br):(.*)");
 
-	DiscData d;
+	TDiscData d;
 
 	bool success = false;
 
@@ -110,11 +110,11 @@ DiscData DiscName::split(const QString & disc_url, bool * ok) {
 	if (!d.device.isEmpty()) d.device = removeTrailingSlash(d.device);
 
 	if (success) {
-		//qDebug("DiscName::split: protocol: '%s'", d.protocol.toUtf8().constData());
-		//qDebug("DiscName::split: title: '%d'", d.title);
-		//qDebug("DiscName::split: device: '%s'", d.device.toUtf8().constData());
+		//qDebug("TDiscName::split: protocol: '%s'", d.protocol.toUtf8().constData());
+		//qDebug("TDiscName::split: title: '%d'", d.title);
+		//qDebug("TDiscName::split: device: '%s'", d.device.toUtf8().constData());
 	} else {
-		qDebug("DiscName::split: invalid url '%s'", disc_url.toUtf8().constData());
+		qDebug("TDiscName::split: invalid url '%s'", disc_url.toUtf8().constData());
 	}
 
 	if (ok != 0) (*ok) = success;
@@ -126,14 +126,14 @@ DiscData DiscName::split(const QString & disc_url, bool * ok) {
 
 // This functions remove the trailing "/" from the device
 // with one exception: from Windows drives letters (D:/ E:/...)
-QString DiscName::removeTrailingSlash(const QString & device) {
+QString TDiscName::removeTrailingSlash(const QString & device) {
 	QString dev = device;
 
 	if (dev.endsWith("/")) {
 #ifdef Q_OS_WIN
 		QRegExp r("^[A-Z]:/$");
 		int pos = r.indexIn(dev);
-		//qDebug("DiscName::removeTrailingSlash: drive check: '%s': regexp: %d", dev.toUtf8().data(), pos);
+		//qDebug("TDiscName::removeTrailingSlash: drive check: '%s': regexp: %d", dev.toUtf8().data(), pos);
 		if (pos == -1)
 #endif
 			dev = dev.remove( dev.length()-1, 1);
@@ -143,8 +143,8 @@ QString DiscName::removeTrailingSlash(const QString & device) {
 }
 
 #if DISCNAME_TEST
-void DiscName::test() {
-	DiscData d;
+void TDiscName::test() {
+	TDiscData d;
 	d = split( "vcd://1//dev/dvd/" );
 	d = split( "vcd://1/E:/" );
 	d = split( "vcd://5" );

@@ -63,7 +63,7 @@ QString TInfoFile::getInfo(MediaData md) {
 		|| md.selected_type == MediaData::TYPE_DVDNAV
 		|| md.selected_type == MediaData::TYPE_BLURAY)
 	{
-		DiscData disc_data = DiscName::split(md.filename);
+		TDiscData disc_data = TDiscName::split(md.filename);
 		s += title( icon + disc_data.protocol + "://" + QString::number(disc_data.title) );
 	} else {
 		s += title( icon + md.displayName() );

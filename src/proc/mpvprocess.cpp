@@ -223,7 +223,7 @@ void TMPVProcess::requestChapterInfo() {
 
 void TMPVProcess::fixTitle() {
 
-	DiscData disc = DiscName::split(md->filename);
+	TDiscData disc = TDiscName::split(md->filename);
 	if (disc.title == 0) disc.title = 1;
 
 	// Accept the requested title as the selected title, if we did not receive
@@ -724,13 +724,13 @@ void TMPVProcess::setMedia(const QString & media, bool is_playlist) {
 	// CDs work as expected, don't know about bluray, but assuming it's the same.
 	QString url = media;
 	bool valid_disc;
-	DiscData disc = DiscName::split(media, &valid_disc);
+	TDiscData disc = TDiscName::split(media, &valid_disc);
 	if (valid_disc
 		&& (disc.protocol == "dvd" || disc.protocol == "dvdnav"
 			|| disc.protocol == "br")) {
 		if (disc.title > 0)
 			disc.title--;
-		url = DiscName::join(disc, true);
+		url = TDiscName::join(disc, true);
 	}
 
 	if (is_playlist) {

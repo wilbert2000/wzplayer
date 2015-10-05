@@ -3709,7 +3709,7 @@ void TBase::openVCD() {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
 		// TODO: remove pref->vcd_initial_title?
-		core->open(DiscName::join(DiscName::VCD, 0, pref->cdrom_device));
+		core->open(TDiscName::join(TDiscName::VCD, 0, pref->cdrom_device));
 	}
 }
 
@@ -3734,7 +3734,7 @@ void TBase::openDVD() {
 		configureDiscDevices();
 	} else {
 		if (playlist->maybeSave()) {
-			core->open(DiscName::joinDVD(pref->dvd_device, pref->use_dvdnav));
+			core->open(TDiscName::joinDVD(pref->dvd_device, pref->use_dvdnav));
 		}
 	}
 }
@@ -3758,7 +3758,7 @@ void TBase::openDVDFromFolder() {
 void TBase::openDVDFromFolder(const QString &directory) {
 
 	pref->last_dvd_directory = directory;
-	core->open( DiscName::joinDVD(directory, pref->use_dvdnav) );
+	core->open( TDiscName::joinDVD(directory, pref->use_dvdnav) );
 }
 
 /**
@@ -3768,7 +3768,7 @@ void TBase::openDVDFromFolder(const QString &directory) {
 void TBase::openBluRayFromFolder(QString directory) {
 
 	pref->last_dvd_directory = directory;
-	core->open(DiscName::join(DiscName::BLURAY, 0, directory));
+	core->open(TDiscName::join(TDiscName::BLURAY, 0, directory));
 }
 
 /**
@@ -3783,7 +3783,7 @@ void TBase::openBluRay() {
 		|| pref->bluray_device.isEmpty()) {
 		configureDiscDevices();
 	} else {
-		core->open(DiscName::join(DiscName::BLURAY, 0, pref->bluray_device));
+		core->open(TDiscName::join(TDiscName::BLURAY, 0, pref->bluray_device));
 	}
 }
 
@@ -5059,7 +5059,7 @@ void TBase::showVideoPreviewDialog() {
 		// DVD
 		if (MediaData::isDVD(core->mdat.selected_type)) {
 			QString file = core->mdat.filename;
-			DiscData disc_data = DiscName::split(file);
+			TDiscData disc_data = TDiscName::split(file);
 			QString dvd_folder = disc_data.device;
 			if (dvd_folder.isEmpty()) dvd_folder = pref->dvd_device;
 			int dvd_title = disc_data.title;

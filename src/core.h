@@ -499,7 +499,7 @@ private:
 
 	int cache_size;
 
-	void openDisc(DiscData &disc, bool fast_open);
+	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(QString filename, int seek = -1);
 
 	void forceResize();
