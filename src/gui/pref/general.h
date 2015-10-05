@@ -23,7 +23,7 @@
 #include "ui_general.h"
 #include "gui/pref/widget.h"
 #include "inforeader.h"
-#include "deviceinfo.h"
+#include "gui/deviceinfo.h"
 #include "settings/preferences.h"
 
 #ifdef Q_OS_WIN
@@ -202,14 +202,14 @@ protected:
 	InfoList ao_list;
 	
 #if USE_DSOUND_DEVICES
-	DeviceList dsound_devices;
+	TDeviceList dsound_devices;
 #endif
 
 #if USE_ALSA_DEVICES
-	DeviceList alsa_devices;
+	TDeviceList alsa_devices;
 #endif
 #if USE_XV_ADAPTORS
-	DeviceList xv_adaptors;
+	TDeviceList xv_adaptors;
 #endif
 
 private:

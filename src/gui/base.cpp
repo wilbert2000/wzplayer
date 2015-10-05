@@ -105,7 +105,7 @@
 #include "version.h"
 
 #ifdef Q_OS_WIN
-#include "deviceinfo.h"
+#include "gui/deviceinfo.h"
 #include <QSysInfo>
 #endif
 
@@ -1177,7 +1177,7 @@ void TBase::createActions() {
 	screenGroup = new TActionGroup("screen", this);
 	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", -1);
 	#ifdef Q_OS_WIN
-	DeviceList display_devices = DeviceInfo::displayDevices();
+	TDeviceList display_devices = TDeviceInfo::displayDevices();
 	if (!display_devices.isEmpty()) {
 		for (int n = 0; n < display_devices.count(); n++) {
 			int id = display_devices[n].ID().toInt();

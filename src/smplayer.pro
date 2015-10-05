@@ -115,11 +115,11 @@ HEADERS += config.h \
     settings/urlhistory.h \
     images.h \
 	inforeader.h \
-	deviceinfo.h \
 	core.h \
 	filechooser.h \
 	lineedit_with_icon.h \
 	languages.h \
+    gui/deviceinfo.h \
     gui/guiconfig.h \
     gui/shortcutgetter.h \
     gui/actionseditor.h \
@@ -215,11 +215,11 @@ SOURCES	+= version.cpp \
     settings/urlhistory.cpp \
     images.cpp \
 	inforeader.cpp \
-	deviceinfo.cpp \
 	core.cpp \
 	filechooser.cpp \
 	lineedit_with_icon.cpp \
 	languages.cpp \
+    gui/deviceinfo.cpp \
     gui/shortcutgetter.cpp \
     gui/actionseditor.cpp \
     gui/pref/seekwidget.cpp \

@@ -27,7 +27,7 @@
 #include "playerid.h"
 
 #if USE_ALSA_DEVICES || USE_DSOUND_DEVICES
-#include "deviceinfo.h"
+#include "gui/deviceinfo.h"
 #endif
 
 namespace Gui { namespace Pref {
@@ -47,14 +47,14 @@ TGeneral::TGeneral(QWidget * parent, Qt::WindowFlags f)
 	ao_list = i->aoList();
 
 #if USE_DSOUND_DEVICES
-	dsound_devices = DeviceInfo::dsoundDevices();
+	dsound_devices = TDeviceInfo::dsoundDevices();
 #endif
 
 #if USE_ALSA_DEVICES
-	alsa_devices = DeviceInfo::alsaDevices();
+	alsa_devices = TDeviceInfo::alsaDevices();
 #endif
 #if USE_XV_ADAPTORS
-	xv_adaptors = DeviceInfo::xvAdaptors();
+	xv_adaptors = TDeviceInfo::xvAdaptors();
 #endif
 
 	// Screensaver

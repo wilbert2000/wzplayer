@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _DEVICEINFO_H_
-#define _DEVICEINFO_H_
+#ifndef _GUI_DEVICEINFO_H_
+#define _GUI_DEVICEINFO_H_
 
 #include <QString>
 #include <QVariant>
 #include <QList>
 
-class DeviceData {
+namespace Gui {
+
+class TDeviceData {
 
 public:
-	DeviceData() {}
-	DeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; }
-	virtual ~DeviceData() {}
+	TDeviceData() {}
+	TDeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; }
+	virtual ~TDeviceData() {}
 
 	void setID(QVariant ID) { _id = ID; }
 	void setDesc(QString desc) { _desc = desc; }
@@ -42,27 +44,29 @@ private:
 };
 
 
-typedef QList<DeviceData> DeviceList;
+typedef QList<TDeviceData> TDeviceList;
 
 
-class DeviceInfo {
+class TDeviceInfo {
 
 public:
 #ifdef Q_OS_WIN
-	static DeviceList dsoundDevices();
-	static DeviceList displayDevices();
+	static TDeviceList dsoundDevices();
+	static TDeviceList displayDevices();
 #else
-	static DeviceList alsaDevices();
-	static DeviceList xvAdaptors();
+	static TDeviceList alsaDevices();
+	static TDeviceList xvAdaptors();
 #endif
 
 protected:
 #ifdef Q_OS_WIN
 	enum DeviceType { Sound = 0, Display = 1 };
 
-	static DeviceList retrieveDevices(DeviceType type);
+	static TDeviceList retrieveDevices(DeviceType type);
 #endif
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_DEVICEINFO_H_
 

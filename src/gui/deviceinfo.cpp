@@ -16,17 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "deviceinfo.h"
+#include "gui/deviceinfo.h"
 #include <QProcess>
 #include <QFile>
 #include <QDebug>
 
+namespace Gui {
+
 #ifdef Q_OS_WIN
 
-DeviceList DeviceInfo::retrieveDevices(DeviceType type) {
-	qDebug("DeviceInfo::retrieveDevices: %d", type);
+TDeviceList TDeviceInfo::retrieveDevices(DeviceType type) {
+	qDebug("Gui::TDeviceInfo::retrieveDevices: %d", type);
 	
-	DeviceList l;
+	TDeviceList l;
 	QRegExp rx_device("^(\\d+): (.*)");
 	
 	if (QFile::exists("dxlist.exe")) {
@@ -40,12 +42,12 @@ DeviceList DeviceInfo::retrieveDevices(DeviceType type) {
 			QByteArray line;
 			while (p.canReadLine()) {
 				line = p.readLine().trimmed();
-				qDebug("DeviceInfo::retrieveDevices: '%s'", line.constData());
+				qDebug("Gui::TDeviceInfo::retrieveDevices: '%s'", line.constData());
 				if ( rx_device.indexIn(line) > -1 ) {
 					int id = rx_device.cap(1).toInt();
 					QString desc = rx_device.cap(2);
-					qDebug("DeviceInfo::retrieveDevices: found device: '%d' '%s'", id, desc.toUtf8().constData());
-					l.append( DeviceData(id, desc) );
+					qDebug("Gui::TDeviceInfo::retrieveDevices: found device: '%d' '%s'", id, desc.toUtf8().constData());
+					l.append( TDeviceData(id, desc) );
 				}
 			}
 		}
@@ -54,20 +56,20 @@ DeviceList DeviceInfo::retrieveDevices(DeviceType type) {
 	return l;
 }
 
-DeviceList DeviceInfo::dsoundDevices() { 
+TDeviceList TDeviceInfo::dsoundDevices() { 
 	return retrieveDevices(Sound);
 }
 
-DeviceList DeviceInfo::displayDevices() {
+TDeviceList TDeviceInfo::displayDevices() {
 	return retrieveDevices(Display);
 }
 
 #else
 
-DeviceList DeviceInfo::alsaDevices() {
-	qDebug("DeviceInfo::alsaDevices");
+TDeviceList TDeviceInfo::alsaDevices() {
+	qDebug("Gui::TDeviceInfo::alsaDevices");
 
-	DeviceList l;
+	TDeviceList l;
 	QRegExp rx_device("^card\\s([0-9]+).*\\[(.*)\\],\\sdevice\\s([0-9]+):");
 
 	QProcess p;
@@ -79,27 +81,27 @@ DeviceList DeviceInfo::alsaDevices() {
 		QByteArray line;
 		while (p.canReadLine()) {
 			line = p.readLine();
-			qDebug("DeviceInfo::alsaDevices: '%s'", line.constData());
+			qDebug("Gui::TDeviceInfo::alsaDevices: '%s'", line.constData());
 			if ( rx_device.indexIn(line) > -1 ) {
 				QString id = rx_device.cap(1);
 				id.append(".");
 				id.append(rx_device.cap(3));
 				QString desc = rx_device.cap(2);
-				qDebug("DeviceInfo::alsaDevices: found device: '%s' '%s'", id.toUtf8().constData(), desc.toUtf8().constData());
-				l.append( DeviceData(id, desc) );
+				qDebug("Gui::TDeviceInfo::alsaDevices: found device: '%s' '%s'", id.toUtf8().constData(), desc.toUtf8().constData());
+				l.append( TDeviceData(id, desc) );
 			}
 		}
 	} else {
-		qDebug("DeviceInfo::alsaDevices: could not start aplay, error %d", p.error());
+		qDebug("Gui::TDeviceInfo::alsaDevices: could not start aplay, error %d", p.error());
 	}
 
 	return l;
 }
 
-DeviceList DeviceInfo::xvAdaptors() {
-	qDebug("DeviceInfo::xvAdaptors");
+TDeviceList TDeviceInfo::xvAdaptors() {
+	qDebug("Gui::TDeviceInfo::xvAdaptors");
 
-	DeviceList l;
+	TDeviceList l;
 	QRegExp rx_device("^.*Adaptor #([0-9]+): \"(.*)\"");
 
 	QProcess p;
@@ -113,19 +115,22 @@ DeviceList DeviceInfo::xvAdaptors() {
 			line = p.readLine();
 			QString s = QString::fromLocal8Bit(line);
 			s = s.trimmed();
-			qDebug() << "DeviceInfo::xvAdaptors:" << s;
+			qDebug() << "Gui::TDeviceInfo::xvAdaptors:" << s;
 			if ( rx_device.indexIn(line) > -1 ) {
 				QString id = rx_device.cap(1);
 				QString desc = rx_device.cap(2);
-				qDebug("DeviceInfo::xvAdaptors: found adaptor: '%s' '%s'", id.toUtf8().constData(), desc.toUtf8().constData());
-				l.append( DeviceData(id, desc) );
+				qDebug("Gui::TDeviceInfo::xvAdaptors: found adaptor: '%s' '%s'", id.toUtf8().constData(), desc.toUtf8().constData());
+				l.append( TDeviceData(id, desc) );
 			}
 		}
 	} else {
-		qDebug("DeviceInfo::xvAdaptors: could not start xvinfo, error %d", p.error());
+		qDebug("Gui::TDeviceInfo::xvAdaptors: could not start xvinfo, error %d", p.error());
 	}
 
 	return l;
 }
 
 #endif
+
+} // namespace Gui
+
