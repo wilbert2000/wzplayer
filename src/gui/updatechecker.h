@@ -17,8 +17,8 @@
 */
 
 
-#ifndef UPDATE_CHECKER_H
-#define UPDATE_CHECKER_H
+#ifndef GUI_UPDATE_CHECKER_H
+#define GUI_UPDATE_CHECKER_H
 
 #include <QWidget>
 #include <QUrl>
@@ -26,12 +26,14 @@
 class QNetworkAccessManager;
 class UpdateCheckerData;
 
-class UpdateChecker : public QObject {
+namespace Gui {
+
+class TUpdateChecker : public QObject {
 	Q_OBJECT
 
 public:
-	UpdateChecker(QWidget * parent, UpdateCheckerData * data);
-	virtual ~UpdateChecker();
+	TUpdateChecker(QWidget * parent, UpdateCheckerData * data);
+	virtual ~TUpdateChecker();
 
 	void check();
 
@@ -59,5 +61,7 @@ protected:
 	QByteArray user_agent;
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_UPDATE_CHECKER_H
 

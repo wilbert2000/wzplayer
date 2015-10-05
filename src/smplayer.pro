@@ -282,9 +282,9 @@ SOURCES	+= version.cpp \
     maps/map.cpp \
     maps/tracks.cpp \
     maps/titletracks.cpp \
-    main.cpp \
     maps/chapters.cpp \
-    log.cpp
+    log.cpp \
+    main.cpp
 
 FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui \
@@ -438,8 +438,8 @@ contains( DEFINES, MPRIS2 ) {
 
 # Update checker
 contains( DEFINES, UPDATE_CHECKER ) {
-	HEADERS += updatechecker.h updatecheckerdata.h
-	SOURCES += updatechecker.cpp updatecheckerdata.cpp
+    HEADERS += gui/updatechecker.h updatecheckerdata.h
+    SOURCES += gui/updatechecker.cpp updatecheckerdata.cpp
 }
 
 # Videopreview

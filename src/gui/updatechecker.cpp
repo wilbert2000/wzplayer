@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "updatechecker.h"
+#include "gui/updatechecker.h"
 #include "updatecheckerdata.h"
 #include "version.h"
 #include "links.h"
@@ -34,8 +34,9 @@
 #include <QSettings>
 #include <QDebug>
 
+namespace Gui {
 
-UpdateChecker::UpdateChecker(QWidget * parent, UpdateCheckerData * data) : QObject(parent)
+TUpdateChecker::TUpdateChecker(QWidget * parent, UpdateCheckerData * data) : QObject(parent)
 	, net_manager(0)
 	, d(0)
 {
@@ -58,9 +59,9 @@ UpdateChecker::UpdateChecker(QWidget * parent, UpdateCheckerData * data) : QObje
 	//now = now.addDays(27);
 	int days = QDateTime(d->last_checked).daysTo(QDateTime(now));
 
-	qDebug("UpdateChecker::UpdateChecker: enabled: %d", d->enabled);
-	qDebug("UpdateChecker::UpdateChecker: days_to_check: %d", d->days_to_check);
-	qDebug("UpdateChecker::UpdateChecker: days since last check: %d", days);
+	qDebug("TUpdateChecker::TUpdateChecker: enabled: %d", d->enabled);
+	qDebug("TUpdateChecker::TUpdateChecker: days_to_check: %d", d->days_to_check);
+	qDebug("TUpdateChecker::TUpdateChecker: days since last check: %d", days);
 
 	if ((!d->enabled) || (days < d->days_to_check)) return;
 
@@ -70,12 +71,12 @@ UpdateChecker::UpdateChecker(QWidget * parent, UpdateCheckerData * data) : QObje
 	connect(reply, SIGNAL(finished()), this, SLOT(gotReply()));
 }
 
-UpdateChecker::~UpdateChecker() {
+TUpdateChecker::~TUpdateChecker() {
 }
 
 // Force a check, requested by the user
-void UpdateChecker::check() {
-	qDebug("UpdateChecker::check");
+void TUpdateChecker::check() {
+	qDebug("TUpdateChecker::check");
 
 	QNetworkRequest req(check_url);
 	req.setRawHeader("User-Agent", user_agent);
@@ -83,13 +84,13 @@ void UpdateChecker::check() {
 	connect(reply, SIGNAL(finished()), this, SLOT(gotReplyFromUserRequest()));
 }
 
-QString UpdateChecker::parseVersion(const QByteArray & data, const QString & name) {
+QString TUpdateChecker::parseVersion(const QByteArray & data, const QString & name) {
 	QTemporaryFile tf;
 	tf.open();
 	tf.write(data);
 	tf.close();
 	QString tfile = tf.fileName();
-	qDebug() << "UpdateChecker::parseVersion: tfile:" << tfile;
+	qDebug() << "TUpdateChecker::parseVersion: tfile:" << tfile;
 
 	#ifdef Q_OS_WIN
 	QString grname = "windows";
@@ -103,8 +104,8 @@ QString UpdateChecker::parseVersion(const QByteArray & data, const QString & nam
 	return version;
 }
 
-void UpdateChecker::gotReply() {
-	qDebug("UpdateChecker::gotReply");
+void TUpdateChecker::gotReply() {
+	qDebug("TUpdateChecker::gotReply");
 
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
@@ -113,24 +114,24 @@ void UpdateChecker::gotReply() {
 			QString version = parseVersion(reply->readAll(), "stable");
 			if (!version.isEmpty()) {
 				d->last_checked = QDate::currentDate();
-				qDebug() << "UpdateChecker::gotReply: last known version:" << d->last_known_version << "received version:" << version;
-				qDebug() << "UpdateChecker::gotReply: installed version:" << Version::with_revision();
+				qDebug() << "TUpdateChecker::gotReply: last known version:" << d->last_known_version << "received version:" << version;
+				qDebug() << "TUpdateChecker::gotReply: installed version:" << Version::with_revision();
 				if ((d->last_known_version != version) && (formattedVersion(version) > formattedVersion(Version::with_revision()))) {
-					qDebug() << "UpdateChecker::gotReply: new version found:" << version;
+					qDebug() << "TUpdateChecker::gotReply: new version found:" << version;
 					emit newVersionFound(version);
 				}
 			}
 		} else {
 			//get http status code
 			int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-			qDebug("UpdateChecker::gotReply: status: %d", status);
+			qDebug("TUpdateChecker::gotReply: status: %d", status);
 		}
 		reply->deleteLater();
 	}
 }
 
-void UpdateChecker::gotReplyFromUserRequest() {
-	qDebug("UpdateChecker::gotReplyFromUserRequest");
+void TUpdateChecker::gotReplyFromUserRequest() {
+	qDebug("TUpdateChecker::gotReplyFromUserRequest");
 
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
@@ -139,7 +140,7 @@ void UpdateChecker::gotReplyFromUserRequest() {
 			QString version = parseVersion(reply->readAll(), "unstable");
 			if (!version.isEmpty()) {
 				if ((formattedVersion(version) > formattedVersion(Version::with_revision()))) {
-					qDebug("UpdateChecker::gotReplyFromUserRequest: new version found: %s", version.toUtf8().constData());
+					qDebug("TUpdateChecker::gotReplyFromUserRequest: new version found: %s", version.toUtf8().constData());
 					emit newVersionFound(version);
 				} else {
 					emit noNewVersionFound(version);
@@ -149,18 +150,18 @@ void UpdateChecker::gotReplyFromUserRequest() {
 			}
 		} else {
 			int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-			qDebug("UpdateChecker::gotReplyFromUserRequest: status: %d", status);
+			qDebug("TUpdateChecker::gotReplyFromUserRequest: status: %d", status);
 			emit errorOcurred((int)reply->error(), reply->errorString());
 		}
 		reply->deleteLater();
 	}
 }
 
-void UpdateChecker::saveVersion(QString v) {
+void TUpdateChecker::saveVersion(QString v) {
 	d->last_known_version = v;
 }
 
-QString UpdateChecker::formattedVersion(const QString & version) {
+QString TUpdateChecker::formattedVersion(const QString & version) {
 	int n1 = 0, n2 = 0, n3 = 0, n4 = 0;
 	QStringList l = version.split(".");
 	int c = l.count();
@@ -173,11 +174,11 @@ QString UpdateChecker::formattedVersion(const QString & version) {
 										.arg(n2, 2, 10, QChar('0'))
 										.arg(n3, 2, 10, QChar('0'))
 										.arg(n4, 4, 10, QChar('0'));
-	//qDebug() << "UpdateChecker::formattedVersion:" << res;
+	//qDebug() << "TUpdateChecker::formattedVersion:" << res;
 	return res;
 }
 
-void UpdateChecker::reportNewVersionAvailable(const QString & new_version) {
+void TUpdateChecker::reportNewVersionAvailable(const QString & new_version) {
 	QWidget * p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),
@@ -194,7 +195,7 @@ void UpdateChecker::reportNewVersionAvailable(const QString & new_version) {
 	saveVersion(new_version);
 }
 
-void UpdateChecker::reportNoNewVersionFound(const QString & version) {
+void TUpdateChecker::reportNoNewVersionFound(const QString & version) {
 	QWidget * p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::information(p, tr("Checking for updates"),
@@ -203,12 +204,14 @@ void UpdateChecker::reportNoNewVersionFound(const QString & version) {
 		tr("Available version: %1").arg(version));
 }
 
-void UpdateChecker::reportError(int error_number, QString error_str) {
+void TUpdateChecker::reportError(int error_number, QString error_str) {
 	QWidget * p = qobject_cast<QWidget*>(parent());
 	QMessageBox::warning(p, tr("Error"), 
 		tr("An error happened while trying to retrieve information about the latest version available.") +
 		"<br>" + tr("Error code: %1").arg(error_number) + "<br>" + error_str);
 }
+
+} // namespace Gui
 
 #include "moc_updatechecker.cpp"
 

@@ -110,7 +110,7 @@
 #endif
 
 #ifdef UPDATE_CHECKER
-#include "updatechecker.h"
+#include "gui/updatechecker.h"
 #endif
 
 #ifdef YOUTUBE_SUPPORT
@@ -237,7 +237,7 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	updateRecents();
 
 #ifdef UPDATE_CHECKER
-	update_checker = new UpdateChecker(this, &pref->update_checker_data);
+	update_checker = new TUpdateChecker(this, &pref->update_checker_data);
 #endif
 
 #ifdef CHECK_UPGRADED

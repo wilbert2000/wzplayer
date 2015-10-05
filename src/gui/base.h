@@ -35,6 +35,7 @@
 #include "gui/favorites.h"
 #include "gui/tvlist.h"
 #include "gui/filepropertiesdialog.h"
+#include "gui/updatechecker.h"
 #include "gui/pref/dialog.h"
 
 #ifdef Q_OS_WIN
@@ -58,8 +59,6 @@ class FindSubtitlesWindow;
 #ifdef VIDEOPREVIEW
 class VideoPreview;
 #endif
-
-class UpdateChecker;
 
 #ifdef SHAREWIDGET
 class ShareWidget;
@@ -773,7 +772,7 @@ protected:
 	TTVList * radiolist;
 
 #ifdef UPDATE_CHECKER
-	UpdateChecker * update_checker;
+	TUpdateChecker * update_checker;
 #endif
 
 #ifdef SHAREWIDGET
