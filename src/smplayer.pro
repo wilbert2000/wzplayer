@@ -120,11 +120,11 @@ HEADERS += config.h \
 	core.h \
 	infofile.h \
 	seekwidget.h \
-	shortcutgetter.h \
 	filechooser.h \
 	lineedit_with_icon.h \
 	languages.h \
     gui/guiconfig.h \
+    gui/shortcutgetter.h \
     gui/actionseditor.h \
     gui/pref/vdpauproperties.h \
     gui/pref/selectcolorbutton.h \
@@ -220,10 +220,10 @@ SOURCES	+= version.cpp \
 	core.cpp \
 	infofile.cpp \
 	seekwidget.cpp \
-	shortcutgetter.cpp \
 	filechooser.cpp \
 	lineedit_with_icon.cpp \
 	languages.cpp \
+    gui/shortcutgetter.cpp \
     gui/actionseditor.cpp \
     gui/pref/vdpauproperties.cpp \
     gui/pref/selectcolorbutton.cpp \

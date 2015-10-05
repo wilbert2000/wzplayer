@@ -41,7 +41,7 @@
 #include "filedialog.h"
 #include "paths.h"
 
-#include "shortcutgetter.h"
+#include "gui/shortcutgetter.h"
 
 
 /*
@@ -370,7 +370,7 @@ void TActionsEditor::validateAction(QTableWidgetItem * i) {
 void TActionsEditor::editShortcut() {
 	QTableWidgetItem * i = actionsTable->item( actionsTable->currentRow(), COL_SHORTCUT );
 	if (i) {
-		ShortcutGetter d(this);
+		TShortcutGetter d(this);
 		QString result = d.exec( i->text() );
 
 		if (!result.isNull()) {

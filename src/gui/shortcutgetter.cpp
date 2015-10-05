@@ -15,7 +15,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-    Note: The ShortcutGetter class is taken from the source code of Edyuk
+    Note: The TShortcutGetter class is taken from the source code of Edyuk
     (http://www.edyuk.org/), from file 3rdparty/qcumber/qshortcutdialog.cpp
 
     Copyright (C) 2006 FullMetalCoder
@@ -45,7 +45,7 @@
 ****************************************************************************/
 
 
-#include "shortcutgetter.h"
+#include "gui/shortcutgetter.h"
 #include "images.h"
 
 #include <QLayout>
@@ -57,6 +57,8 @@
 #include <QKeyEvent>
 #include <QPushButton>
 #include <QDialogButtonBox>
+
+namespace Gui {
 
 #if 1
 
@@ -262,7 +264,7 @@ static QStringList modToString(Qt::KeyboardModifiers k)
 }
 
 
-ShortcutGetter::ShortcutGetter(QWidget *parent) : QDialog(parent)
+TShortcutGetter::TShortcutGetter(QWidget *parent) : QDialog(parent)
 {
 	setWindowTitle(tr("Modify shortcut"));
 
@@ -325,34 +327,34 @@ ShortcutGetter::ShortcutGetter(QWidget *parent) : QDialog(parent)
 	vbox->addWidget(buttonbox);
 }
 
-void ShortcutGetter::setCaptureKeyboard(bool b) { 
+void TShortcutGetter::setCaptureKeyboard(bool b) { 
 	capture = b; 
 	leKey->setReadOnly(b);
 	leKey->setFocus();
 }
 
 // Added by rvm
-void ShortcutGetter::rowChanged(int row) {
+void TShortcutGetter::rowChanged(int row) {
 	QString s = list->item(row)->text();
 	leKey->setText(s);
 	leKey->setFocus();
 }
 
 // Added by rvm
-void ShortcutGetter::textChanged(const QString & text) {
+void TShortcutGetter::textChanged(const QString & text) {
 	list->item(list->currentRow())->setText(text);
 }
 
 // Added by rvm
-void ShortcutGetter::addItemClicked() {
-	qDebug("ShortcutGetter::addItemClicked");
+void TShortcutGetter::addItemClicked() {
+	qDebug("TShortcutGetter::addItemClicked");
 	list->addItem("");
 	list->setCurrentRow( list->count()-1 ); // Select last item
 }
 
 // Added by rvm
-void ShortcutGetter::removeItemClicked() {
-	qDebug("ShortcutGetter::removeItemClicked");
+void TShortcutGetter::removeItemClicked() {
+	qDebug("Gui::TShortcutGetter::removeItemClicked");
 	if (list->count() > 1) {
 		QListWidgetItem * i = list->takeItem( list->currentRow() );
 		if (i) delete i;
@@ -362,7 +364,7 @@ void ShortcutGetter::removeItemClicked() {
 	}
 }
 
-QString ShortcutGetter::exec(const QString& s)
+QString TShortcutGetter::exec(const QString& s)
 {
 	// Added by rvm
 	QStringList shortcuts = s.split(", ");
@@ -380,7 +382,7 @@ QString ShortcutGetter::exec(const QString& s)
 		for (int n = 0; n < list->count(); n++) {
 			QString shortcut = list->item(n)->text();
 			if (!shortcut.isEmpty()) {
-				//qDebug("ShortcutGetter::exec: shortcut: '%s'", shortcut.toUtf8().constData());
+				//qDebug("Gui::TShortcutGetter::exec: shortcut: '%s'", shortcut.toUtf8().constData());
 				l << shortcut;
 			}
 		}
@@ -392,7 +394,7 @@ QString ShortcutGetter::exec(const QString& s)
 	return QString();
 }
 
-bool ShortcutGetter::event(QEvent *e)
+bool TShortcutGetter::event(QEvent *e)
 {
 	if (!capture) return QDialog::event(e);
 
@@ -454,7 +456,7 @@ bool ShortcutGetter::event(QEvent *e)
 	return true;
 }
 		
-bool ShortcutGetter::eventFilter(QObject *o, QEvent *e)
+bool TShortcutGetter::eventFilter(QObject *o, QEvent *e)
 {
 	if (!capture) return QDialog::eventFilter(o, e);
 
@@ -465,7 +467,7 @@ bool ShortcutGetter::eventFilter(QObject *o, QEvent *e)
 		return QDialog::eventFilter(o, e);
 }
 		
-void ShortcutGetter::setText()
+void TShortcutGetter::setText()
 {
 	QStringList seq;
 			
@@ -491,5 +493,7 @@ void ShortcutGetter::setText()
 	leKey->setText(seq.join("+"));
 	//leKey->selectAll();
 }
-		
+
+} // namespace Gui
+
 #include "moc_shortcutgetter.cpp"

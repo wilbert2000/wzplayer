@@ -15,7 +15,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-    Note: The ShortcutGetter class is taken from the source code of Edyuk
+	Note: The TShortcutGetter class is taken from the source code of Edyuk
     (http://www.edyuk.org/), from file 3rdparty/qcumber/qshortcutdialog.cpp
 
     Copyright (C) 2006 FullMetalCoder
@@ -25,21 +25,23 @@
 */
 
 
-#ifndef SHORTCUTGETTER_H
-#define SHORTCUTGETTER_H
+#ifndef GUI_SHORTCUTGETTER_H
+#define GUI_SHORTCUTGETTER_H
 
 #include <QDialog>
 #include <QListWidget>
 
 class QLineEdit;
 
-class ShortcutGetter : public QDialog
+namespace Gui {
+
+class TShortcutGetter : public QDialog
 {
 	Q_OBJECT
 
 public:
-	ShortcutGetter(QWidget *parent = 0);
-	virtual ~ShortcutGetter() {}
+	TShortcutGetter(QWidget *parent = 0);
+	virtual ~TShortcutGetter() {}
 
 	QString exec(const QString& s);
 
@@ -69,4 +71,6 @@ private:
 	QPushButton * removeItem;
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_SHORTCUTGETTER_H
