@@ -168,7 +168,7 @@ void TBasePlus::switchToTray() {
 
 	exitFullscreen();
 	showAll(false); // Hide windows
-	if (core->state() == Core::Playing)
+	if (core->state() == TCore::Playing)
 		core->stop();
 
 	if (pref->balloon_count > 0) {

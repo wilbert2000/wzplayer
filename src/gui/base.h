@@ -86,7 +86,7 @@ public:
 	//! Execute all the actions after the video has started to play
 	void runActionsLater(QString actions) { pending_actions_to_run = actions; }
 
-	Core * getCore() { return core; }
+	TCore * getCore() { return core; }
 	TPlaylist * getPlaylist() { return playlist; }
 
 	virtual void loadConfig(const QString &group);
@@ -168,7 +168,7 @@ public slots:
 
 	void setStayOnTop(bool b);
 	virtual void changeStayOnTop(int);
-	virtual void checkStayOnTop(Core::State);
+	virtual void checkStayOnTop(TCore::State);
 	void toggleStayOnTop();
 
 	void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
@@ -194,7 +194,7 @@ protected slots:
 	virtual void exitFullscreenIfNeeded();
 	virtual void playlistHasFinished();
 
-	virtual void displayState(Core::State state);
+	virtual void displayState(TCore::State state);
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 	virtual void gotCurrentTime(double);
@@ -245,7 +245,7 @@ protected slots:
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
 #endif
-	virtual void togglePlayAction(Core::State);
+	virtual void togglePlayAction(TCore::State);
 
 	void toggleDoubleSize();
 	void resizeMainWindow(int w, int h, bool try_twice = true);
@@ -763,7 +763,7 @@ protected:
 	VideoPreview * video_preview;
 #endif
 
-	Core * core;
+	TCore * core;
 	MplayerWindow *mplayerwindow;
 
 	TFavorites * favorites;

@@ -60,7 +60,7 @@ public:
 	// Start time reported by player
 	double start_sec;
 	// Current time video, without start time substracted
-	// See MediaSettings for time with start time substracted
+	// See TMediaSettings for time with start time substracted
 	double time_sec;
 	double duration;
 	bool start_sec_set;

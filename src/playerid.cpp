@@ -20,7 +20,7 @@
 #include <QFileInfo>
 #include <QDebug>
 
-PlayerID::Player PlayerID::player(const QString & player_bin) {
+TPlayerID::Player TPlayerID::player(const QString & player_bin) {
 #if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
 	Player p;
 	QString bin_name;
@@ -32,7 +32,7 @@ PlayerID::Player PlayerID::player(const QString & player_bin) {
 		bin_name = player_bin;
 	}
 
-	qDebug() << "PlayerID::Player: player_bin:" << player_bin << "filename:" << bin_name;
+	qDebug() << "TPlayerID::Player: player_bin:" << player_bin << "filename:" << bin_name;
 
 	if (bin_name.toLower().startsWith("mplayer")) {
 		p = MPLAYER;

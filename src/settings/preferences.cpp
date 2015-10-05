@@ -408,7 +408,7 @@ void TPreferences::reset() {
        ******** */
 
 	check_channels_conf_on_startup = true;
-	initial_tv_deinterlace = MediaSettings::Yadif_1;
+	initial_tv_deinterlace = TMediaSettings::Yadif_1;
 	last_dvb_channel = "";
 	last_tv_channel = "";
 
@@ -456,10 +456,10 @@ void TPreferences::reset() {
 	initial_postprocessing = false;
 	initial_volnorm = false;
 
-	initial_deinterlace = MediaSettings::NoDeinterlace;
+	initial_deinterlace = TMediaSettings::NoDeinterlace;
 
-	initial_audio_channels = MediaSettings::ChDefault;
-	initial_stereo_mode = MediaSettings::Stereo;
+	initial_audio_channels = TMediaSettings::ChDefault;
+	initial_stereo_mode = TMediaSettings::Stereo;
 
 	initial_audio_track = 1;
 	initial_subtitle_track = 1;

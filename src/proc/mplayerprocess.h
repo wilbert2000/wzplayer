@@ -23,20 +23,20 @@
 #include <QString>
 
 #include "config.h"
-#include "playerprocess.h"
+#include "proc/playerprocess.h"
 #include "mediadata.h"
 
 class QStringList;
 
 namespace Proc {
 
-class MplayerProcess : public PlayerProcess
+class TMplayerProcess : public TPlayerProcess
 {
 	Q_OBJECT
 
 public:
-	MplayerProcess(MediaData * mdata);
-	virtual ~MplayerProcess();
+	TMplayerProcess(MediaData * mdata);
+	virtual ~TMplayerProcess();
 
 	virtual bool startPlayer();
 

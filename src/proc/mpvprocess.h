@@ -25,19 +25,19 @@
 #include <QTime>
 
 #include "config.h"
-#include "playerprocess.h"
+#include "proc/playerprocess.h"
 
 class QStringList;
 
 namespace Proc {
 
-class MPVProcess : public PlayerProcess
+class TMPVProcess : public TPlayerProcess
 {
 	Q_OBJECT
 
 public:
-	MPVProcess(MediaData * mdata);
-	~MPVProcess();
+	TMPVProcess(MediaData * mdata);
+	~TMPVProcess();
 
 	virtual bool startPlayer();
 

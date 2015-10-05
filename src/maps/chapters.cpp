@@ -95,12 +95,12 @@ int TChapters::idForTime(double sec, bool allow_gaps) const {
 }
 
 void TChapters::list() const {
-	qDebug("Maps::Chapters::list: selected ID: %d", selectedID);
+	qDebug("Maps::TChapters::list: selected ID: %d", selectedID);
 	TChapterIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
 		const TChapterData d = i.value();
-		qDebug("Maps::Chapters::list: ID: %d name: '%s' start: %g end: %g",
+		qDebug("Maps::TChapters::list: ID: %d name: '%s' start: %g end: %g",
 			   d.getID(), d.getName().toUtf8().constData(),
 			   d.getStart(), d.getEnd() );
 	}

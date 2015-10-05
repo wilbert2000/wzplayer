@@ -484,8 +484,8 @@ void TAdvanced::createHelp() {
 	setWhatsThis(log_filter_edit, tr("Filter for log"),
 		tr("This option allows to filter the SMPlayer messages that will "
            "be stored in the log. Here you can write any regular expression.<br>"
-           "For instance: <i>^Core::.*</i> will display only the lines "
-		   "starting with <i>Core::</i>. Warnings and errors are not filtered.") );
+           "For instance: <i>^TCore::.*</i> will display only the lines "
+		   "starting with <i>TCore::</i>. Warnings and errors are not filtered.") );
 }
 
 }} // namespace Gui::Pref

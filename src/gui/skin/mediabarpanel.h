@@ -46,7 +46,7 @@ public:
 	void setMediaPanelActionCollection(QList<QAction*> actions);
     void setVolumeControlActionCollection(QList<QAction*> actions);
 	void setToolbarActionCollection(QList<QAction *>actions);
-    void setCore(Core* c);
+    void setCore(TCore* c);
     void setRecordAvailable(bool av);
 
 protected:
@@ -56,11 +56,11 @@ private:
 	TPlayControl* playControlPanel;
 	TMediaPanel* mediaPanel;
     TVolumeControlPanel* volumeControlPanel;
-    Core* core;
+    TCore* core;
 
     // Play Control
 public slots:
-    void setMplayerState(Core::State state);
+    void setMplayerState(TCore::State state);
     void setDuration();
     void gotCurrentTime(double time);
     void updateMediaInfo();

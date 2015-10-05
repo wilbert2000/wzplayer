@@ -285,28 +285,28 @@ void TMpc::setupIcons() {
 	connect( core , SIGNAL(mediaInfoChanged()),
              this, SLOT(updateAudioChannels()) );
 
-    connect( core , SIGNAL(stateChanged(Core::State)),
-             this, SLOT(iconChange(Core::State)) );
+    connect( core , SIGNAL(stateChanged(TCore::State)),
+             this, SLOT(iconChange(TCore::State)) );
 }
 
-void TMpc::iconChange(Core::State state) {
+void TMpc::iconChange(TCore::State state) {
     playAct->blockSignals(true);
     pauseAct->blockSignals(true);
     stopAct->blockSignals(true);
 
-    if( state == Core::Paused )
+    if( state == TCore::Paused )
     {
         playAct->setChecked(false);
         pauseAct->setChecked(true);
         stopAct->setChecked(false);
     }
-    if( state == Core::Playing )
+    if( state == TCore::Playing )
     {
         playAct->setChecked(true);
         pauseAct->setChecked(false);
         stopAct->setChecked(false);
     }
-    if( state == Core::Stopped )
+    if( state == TCore::Stopped )
     {
         playAct->setChecked(false);
         pauseAct->setChecked(false);

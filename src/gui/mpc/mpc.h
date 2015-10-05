@@ -47,7 +47,7 @@ public:
 
 protected slots:
     void muteIconChange(bool b);
-    void iconChange(Core::State state);
+    void iconChange(TCore::State state);
     void updateAudioChannels();
 
     void displayTime(QString text);

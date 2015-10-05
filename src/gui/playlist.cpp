@@ -88,7 +88,7 @@ TPlaylistItem::TPlaylistItem(const QString &filename, const QString &name,
 	_directory = QFileInfo(filename).absolutePath();
 }
 
-TPlaylist::TPlaylist(Core* c, QWidget* parent, Qt::WindowFlags f) :
+TPlaylist::TPlaylist(TCore* c, QWidget* parent, Qt::WindowFlags f) :
 	QWidget(parent, f),
 	current_item(0),
 	core(c),

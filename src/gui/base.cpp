@@ -379,7 +379,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "add_to_playlist") {
 			QStringList file_list = arg.split(" <<sep>> ");
-			/* if (core->state() == Core::Stopped) { emit openFileRequested(); } */
+			/* if (core->state() == TCore::Stopped) { emit openFileRequested(); } */
 			playlist->addFiles(file_list);
 		}
 		else
@@ -394,7 +394,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "load_sub") {
 			setInitialSubtitle(arg);
-			if (core->state() != Core::Stopped) {
+			if (core->state() != TCore::Stopped) {
 				core->loadSub(arg);
 			}
 		}
@@ -1068,9 +1068,9 @@ void TBase::createActions() {
 
 	// Denoise
 	denoiseGroup = new TActionGroup("denoise", this);
-	denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none", MediaSettings::NoDenoise);
-	denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", MediaSettings::DenoiseNormal);
-	denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", MediaSettings::DenoiseSoft);
+	denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none", TMediaSettings::NoDenoise);
+	denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", TMediaSettings::DenoiseNormal);
+	denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", TMediaSettings::DenoiseSoft);
 	connect( denoiseGroup, SIGNAL(activated(int)), core, SLOT(changeDenoise(int)) );
 
 	// Unsharp group
@@ -1099,65 +1099,65 @@ void TBase::createActions() {
 
 	// Deinterlace
 	deinterlaceGroup = new TActionGroup("deinterlace", this);
-	deinterlaceNoneAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_none", MediaSettings::NoDeinterlace);
-	deinterlaceL5Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_l5", MediaSettings::L5);
-	deinterlaceYadif0Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif0", MediaSettings::Yadif);
-	deinterlaceYadif1Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif1", MediaSettings::Yadif_1);
-	deinterlaceLBAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_lb", MediaSettings::LB);
-	deinterlaceKernAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_kern", MediaSettings::Kerndeint);
+	deinterlaceNoneAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_none", TMediaSettings::NoDeinterlace);
+	deinterlaceL5Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_l5", TMediaSettings::L5);
+	deinterlaceYadif0Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif0", TMediaSettings::Yadif);
+	deinterlaceYadif1Act = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_yadif1", TMediaSettings::Yadif_1);
+	deinterlaceLBAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_lb", TMediaSettings::LB);
+	deinterlaceKernAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_kern", TMediaSettings::Kerndeint);
 	connect( deinterlaceGroup, SIGNAL(activated(int)),
              core, SLOT(changeDeinterlace(int)) );
 
 	// Audio channels
 	channelsGroup = new TActionGroup("channels", this);
-	/* channelsDefaultAct = new TActionGroupItem(this, channelsGroup, "channels_default", MediaSettings::ChDefault); */
-	channelsStereoAct = new TActionGroupItem(this, channelsGroup, "channels_stereo", MediaSettings::ChStereo);
-	channelsSurroundAct = new TActionGroupItem(this, channelsGroup, "channels_surround", MediaSettings::ChSurround);
-	channelsFull51Act = new TActionGroupItem(this, channelsGroup, "channels_ful51", MediaSettings::ChFull51);
-	channelsFull61Act = new TActionGroupItem(this, channelsGroup, "channels_ful61", MediaSettings::ChFull61);
-	channelsFull71Act = new TActionGroupItem(this, channelsGroup, "channels_ful71", MediaSettings::ChFull71);
+	/* channelsDefaultAct = new TActionGroupItem(this, channelsGroup, "channels_default", TMediaSettings::ChDefault); */
+	channelsStereoAct = new TActionGroupItem(this, channelsGroup, "channels_stereo", TMediaSettings::ChStereo);
+	channelsSurroundAct = new TActionGroupItem(this, channelsGroup, "channels_surround", TMediaSettings::ChSurround);
+	channelsFull51Act = new TActionGroupItem(this, channelsGroup, "channels_ful51", TMediaSettings::ChFull51);
+	channelsFull61Act = new TActionGroupItem(this, channelsGroup, "channels_ful61", TMediaSettings::ChFull61);
+	channelsFull71Act = new TActionGroupItem(this, channelsGroup, "channels_ful71", TMediaSettings::ChFull71);
 	connect( channelsGroup, SIGNAL(activated(int)),
              core, SLOT(setAudioChannels(int)) );
 
 	// Stereo mode
 	stereoGroup = new TActionGroup("stereo", this);
-	stereoAct = new TActionGroupItem(this, stereoGroup, "stereo", MediaSettings::Stereo);
-	leftChannelAct = new TActionGroupItem(this, stereoGroup, "left_channel", MediaSettings::Left);
-	rightChannelAct = new TActionGroupItem(this, stereoGroup, "right_channel", MediaSettings::Right);
-	monoAct = new TActionGroupItem(this, stereoGroup, "mono", MediaSettings::Mono);
-	reverseAct = new TActionGroupItem(this, stereoGroup, "reverse_channels", MediaSettings::Reverse);
+	stereoAct = new TActionGroupItem(this, stereoGroup, "stereo", TMediaSettings::Stereo);
+	leftChannelAct = new TActionGroupItem(this, stereoGroup, "left_channel", TMediaSettings::Left);
+	rightChannelAct = new TActionGroupItem(this, stereoGroup, "right_channel", TMediaSettings::Right);
+	monoAct = new TActionGroupItem(this, stereoGroup, "mono", TMediaSettings::Mono);
+	reverseAct = new TActionGroupItem(this, stereoGroup, "reverse_channels", TMediaSettings::Reverse);
 	connect( stereoGroup, SIGNAL(activated(int)),
              core, SLOT(setStereoMode(int)) );
 
 	// Video aspect
 	aspectGroup = new TActionGroup("aspect", this);
-	aspectDetectAct = new TActionGroupItem(this, aspectGroup, "aspect_detect", MediaSettings::AspectAuto);
-	aspect11Act = new TActionGroupItem(this, aspectGroup, "aspect_1:1", MediaSettings::Aspect11 );
-	aspect54Act = new TActionGroupItem(this, aspectGroup, "aspect_5:4", MediaSettings::Aspect54 );
-	aspect43Act = new TActionGroupItem(this, aspectGroup, "aspect_4:3", MediaSettings::Aspect43);
-	aspect118Act = new TActionGroupItem(this, aspectGroup, "aspect_11:8", MediaSettings::Aspect118 );
-	aspect1410Act = new TActionGroupItem(this, aspectGroup, "aspect_14:10", MediaSettings::Aspect1410 );
-	aspect32Act = new TActionGroupItem(this, aspectGroup, "aspect_3:2", MediaSettings::Aspect32);
-	aspect149Act = new TActionGroupItem(this, aspectGroup, "aspect_14:9", MediaSettings::Aspect149 );
-	aspect1610Act = new TActionGroupItem(this, aspectGroup, "aspect_16:10", MediaSettings::Aspect1610 );
-	aspect169Act = new TActionGroupItem(this, aspectGroup, "aspect_16:9", MediaSettings::Aspect169 );
-	aspect235Act = new TActionGroupItem(this, aspectGroup, "aspect_2.35:1", MediaSettings::Aspect235 );
+	aspectDetectAct = new TActionGroupItem(this, aspectGroup, "aspect_detect", TMediaSettings::AspectAuto);
+	aspect11Act = new TActionGroupItem(this, aspectGroup, "aspect_1:1", TMediaSettings::Aspect11 );
+	aspect54Act = new TActionGroupItem(this, aspectGroup, "aspect_5:4", TMediaSettings::Aspect54 );
+	aspect43Act = new TActionGroupItem(this, aspectGroup, "aspect_4:3", TMediaSettings::Aspect43);
+	aspect118Act = new TActionGroupItem(this, aspectGroup, "aspect_11:8", TMediaSettings::Aspect118 );
+	aspect1410Act = new TActionGroupItem(this, aspectGroup, "aspect_14:10", TMediaSettings::Aspect1410 );
+	aspect32Act = new TActionGroupItem(this, aspectGroup, "aspect_3:2", TMediaSettings::Aspect32);
+	aspect149Act = new TActionGroupItem(this, aspectGroup, "aspect_14:9", TMediaSettings::Aspect149 );
+	aspect1610Act = new TActionGroupItem(this, aspectGroup, "aspect_16:10", TMediaSettings::Aspect1610 );
+	aspect169Act = new TActionGroupItem(this, aspectGroup, "aspect_16:9", TMediaSettings::Aspect169 );
+	aspect235Act = new TActionGroupItem(this, aspectGroup, "aspect_2.35:1", TMediaSettings::Aspect235 );
 	{
 		QAction * sep = new QAction(aspectGroup);
 		sep->setSeparator(true);
 	}
-	aspectNoneAct = new TActionGroupItem(this, aspectGroup, "aspect_none", MediaSettings::AspectNone);
+	aspectNoneAct = new TActionGroupItem(this, aspectGroup, "aspect_none", TMediaSettings::AspectNone);
 
 	connect( aspectGroup, SIGNAL(activated(int)),
              core, SLOT(changeAspectRatio(int)) );
 
 	// Rotate
 	rotateGroup = new TActionGroup("rotate", this);
-	rotateNoneAct = new TActionGroupItem(this, rotateGroup, "rotate_none", MediaSettings::NoRotate);
-	rotateClockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise_flip", MediaSettings::Clockwise_flip);
-	rotateClockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise", MediaSettings::Clockwise);
-	rotateCounterclockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise", MediaSettings::Counterclockwise);
-	rotateCounterclockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise_flip", MediaSettings::Counterclockwise_flip);
+	rotateNoneAct = new TActionGroupItem(this, rotateGroup, "rotate_none", TMediaSettings::NoRotate);
+	rotateClockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise_flip", TMediaSettings::Clockwise_flip);
+	rotateClockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_clockwise", TMediaSettings::Clockwise);
+	rotateCounterclockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise", TMediaSettings::Counterclockwise);
+	rotateCounterclockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise_flip", TMediaSettings::Counterclockwise_flip);
 	connect( rotateGroup, SIGNAL(activated(int)),
              core, SLOT(changeRotate(int)) );
 
@@ -1278,13 +1278,13 @@ void TBase::createActions() {
              core, SLOT(changeClosedCaptionChannel(int)) );
 
 	subFPSGroup = new TActionGroup("subfps", this);
-	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", MediaSettings::SFPS_None);
-	/* subFPS23Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23", MediaSettings::SFPS_23); */
-	subFPS23976Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23976", MediaSettings::SFPS_23976);
-	subFPS24Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_24", MediaSettings::SFPS_24);
-	subFPS25Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_25", MediaSettings::SFPS_25);
-	subFPS29970Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_29970", MediaSettings::SFPS_29970);
-	subFPS30Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_30", MediaSettings::SFPS_30);
+	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", TMediaSettings::SFPS_None);
+	/* subFPS23Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23", TMediaSettings::SFPS_23); */
+	subFPS23976Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23976", TMediaSettings::SFPS_23976);
+	subFPS24Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_24", TMediaSettings::SFPS_24);
+	subFPS25Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_25", TMediaSettings::SFPS_25);
+	subFPS29970Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_29970", TMediaSettings::SFPS_29970);
+	subFPS30Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_30", TMediaSettings::SFPS_30);
 	connect( subFPSGroup, SIGNAL(activated(int)),
              core, SLOT(changeExternalSubFPS(int)) );
 
@@ -1574,11 +1574,11 @@ void TBase::disableActionsOnStop() {
 }
 #endif // AUTODISABLE_ACTIONS
 
-void TBase::togglePlayAction(Core::State state) {
+void TBase::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TBase::togglePlayAction");
 
 #if AUTODISABLE_ACTIONS
-	if (state == Core::Playing)
+	if (state == TCore::Playing)
 		playAct->setEnabled(false);
 	else
 		playAct->setEnabled(true);
@@ -2082,7 +2082,7 @@ void TBase::setWindowCaption(const QString & title) {
 
 void TBase::createCore() {
 
-	core = new Core( mplayerwindow, this, SEEKBAR_RESOLUTION);
+	core = new TCore( mplayerwindow, this, SEEKBAR_RESOLUTION);
 
 	connect( core, SIGNAL(widgetsNeedUpdate()),
              this, SLOT(updateWidgets()) );
@@ -2111,10 +2111,10 @@ void TBase::createCore() {
 	connect( core, SIGNAL(showMessage(QString)),
              this, SLOT(displayMessage(QString)) );
 
-	connect( core, SIGNAL(stateChanged(Core::State)),
-             this, SLOT(displayState(Core::State)) );
-	connect( core, SIGNAL(stateChanged(Core::State)),
-             this, SLOT(checkStayOnTop(Core::State)), Qt::QueuedConnection );
+	connect( core, SIGNAL(stateChanged(TCore::State)),
+             this, SLOT(displayState(TCore::State)) );
+	connect( core, SIGNAL(stateChanged(TCore::State)),
+             this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection );
 
 	connect( core, SIGNAL(mediaStartPlay()),
              this, SLOT(enterFullscreenOnPlay()), Qt::QueuedConnection );
@@ -2134,8 +2134,8 @@ void TBase::createCore() {
 	connect( core, SIGNAL(mediaStoppedByUser()),
              this, SLOT(disableActionsOnStop()) );
 
-	connect( core, SIGNAL(stateChanged(Core::State)),
-             this, SLOT(togglePlayAction(Core::State)) );
+	connect( core, SIGNAL(stateChanged(TCore::State)),
+             this, SLOT(togglePlayAction(TCore::State)) );
 
 	connect( core, SIGNAL(mediaStartPlay()),
              this, SLOT(newMediaLoaded()), Qt::QueuedConnection );
@@ -2860,7 +2860,7 @@ void TBase::applyNewPreferences() {
 
 	bool need_update_language = false;
 
-	PlayerID::Player old_player_type = PlayerID::player(pref->mplayer_bin);
+	TPlayerID::Player old_player_type = TPlayerID::player(pref->mplayer_bin);
 
 	pref_dialog->getData(pref);
 
@@ -2955,7 +2955,7 @@ void TBase::applyNewPreferences() {
 
 	// Any restarts needed?
 	if (_interface->guiChanged()
-		|| old_player_type != PlayerID::player(pref->mplayer_bin)) {
+		|| old_player_type != TPlayerID::player(pref->mplayer_bin)) {
 		// Recreate the main window
 		emit requestRestart();
 		close();
@@ -3038,8 +3038,8 @@ void TBase::applyFileProperties() {
 	if (prev_demuxer != core->mset.forced_demuxer) {
 		// Demuxer changed
 		demuxer_changed = true;
-		core->mset.current_audio_id = MediaSettings::NoneSelected;
-		core->mset.current_sub_idx = MediaSettings::NoneSelected;
+		core->mset.current_audio_id = TMediaSettings::NoneSelected;
+		core->mset.current_sub_idx = TMediaSettings::NoneSelected;
 	}
 
 	QString ac = file_dialog->audioCodec();
@@ -3466,7 +3466,7 @@ void TBase::updateWidgets() {
 	fullscreenAct->setChecked( pref->fullscreen );
 
 	// Time slider
-	if (core->state()==Core::Stopped) {
+	if (core->state()==TCore::Stopped) {
 		//FIXME
 		//timeslider->setValue( (int) core->mset.current_sec );
 	}
@@ -3773,7 +3773,7 @@ void TBase::openBluRayFromFolder(QString directory) {
 
 /**
  * Attempts to open a bluray from pref->bluray_device. If not set, calls configureDiscDevices.
- * If successful, calls Core::OpenBluRay(QString)
+ * If successful, calls TCore::OpenBluRay(QString)
  */
 void TBase::openBluRay() {
 	qDebug("Gui::TBase::openBluRay");
@@ -4295,7 +4295,7 @@ void TBase::checkIfUpgraded() {
 void TBase::checkReminder() {
 	qDebug("Gui::TBase::checkReminder");
 
-	if (core->state() == Core::Playing) return;
+	if (core->state() == TCore::Playing) return;
 
 	QSettings * set = Global::settings;
 	set->beginGroup("reminder");
@@ -4542,21 +4542,21 @@ void TBase::playlistHasFinished() {
 	}
 }
 
-void TBase::displayState(Core::State state) {
+void TBase::displayState(TCore::State state) {
 	qDebug("Gui::TBase::displayState: %s", core->stateToString().toUtf8().data());
 	switch (state) {
-		case Core::Playing:	statusBar()->showMessage( tr("Playing %1").arg(core->mdat.filename), 2000); break;
-		case Core::Paused:	statusBar()->showMessage( tr("Pause") ); break;
-		case Core::Stopped:	statusBar()->showMessage( tr("Stop") , 2000); break;
+		case TCore::Playing:	statusBar()->showMessage( tr("Playing %1").arg(core->mdat.filename), 2000); break;
+		case TCore::Paused:	statusBar()->showMessage( tr("Pause") ); break;
+		case TCore::Stopped:	statusBar()->showMessage( tr("Stop") , 2000); break;
 	}
-	if (state == Core::Stopped) setWindowCaption( "SMPlayer" );
+	if (state == TCore::Stopped) setWindowCaption( "SMPlayer" );
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
 	just_stopped = false;
 	
-	if (state == Core::Stopped) {
+	if (state == TCore::Stopped) {
 		just_stopped = true;
 		int time = 1000 * 60; // 1 minute
 		QTimer::singleShot( time, this, SLOT(clear_just_stopped()) );
@@ -4643,12 +4643,12 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 	}
 #endif
 
-	qDebug("Gui::TBase::resizeMainWindow resizing from %d x %d to %d x %d",
+	qDebug("Gui::TBase::resizeMainWindow: resizing from %d x %d to %d x %d",
 		   width(), height(), new_size.width(), new_size.height());
 	resize(new_size);
 
 	if (panel->size() == video_size) {
-		qDebug("Gui::TBase::resizeMainWindow succeeded");
+		qDebug("Gui::TBase::resizeMainWindow: resize succeeded");
 	} else {
 		// TODO: Resizing the main window can change the height of the control
 		// bar. On my system when the volume slider becomes visible, the  control
@@ -4656,12 +4656,12 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 		// panel during resize. For now, resize once again, using the new panel
 		// height.
 		if (try_twice) {
-			qDebug("Gui::TBase::resizeMainWindow panel size now %d x %d. Wanted size %d x %d. Trying a second time",
+			qDebug("Gui::TBase::resizeMainWindow: panel size now %d x %d. Wanted size %d x %d. Trying a second time",
 				   panel->size().width(), panel->size().height(),
 				   video_size.width(), video_size.height());
 			resizeMainWindow(w, h, false);
 		} else {
-			qWarning("Gui::TBase::resizeMainWindow failed. Panel size now %d x %d. Wanted size %d x %d",
+			qDebug("Gui::TBase::resizeMainWindow: resize failed. Panel size now %d x %d. Wanted size %d x %d",
 					 panel->size().width(), panel->size().height(),
 					 video_size.width(), video_size.height());
 		}
@@ -4781,17 +4781,17 @@ void TBase::changeStayOnTop(int stay_on_top) {
 	switch (stay_on_top) {
 		case Settings::TPreferences::AlwaysOnTop : setStayOnTop(true); break;
 		case Settings::TPreferences::NeverOnTop  : setStayOnTop(false); break;
-		case Settings::TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == Core::Playing)); break;
+		case Settings::TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == TCore::Playing)); break;
 	}
 
 	pref->stay_on_top = (Settings::TPreferences::OnTop) stay_on_top;
 	updateWidgets();
 }
 
-void TBase::checkStayOnTop(Core::State state) {
+void TBase::checkStayOnTop(TCore::State state) {
 	qDebug("Gui::TBase::checkStayOnTop");
 	if ((!pref->fullscreen) && (pref->stay_on_top == Settings::TPreferences::WhilePlayingOnTop)) {
-		setStayOnTop((state == Core::Playing));
+		setStayOnTop((state == TCore::Playing));
 	}
 }
 
@@ -4901,7 +4901,7 @@ void TBase::showEvent( QShowEvent * ) {
 	if (ignore_show_hide_events) return;
 
 	//qDebug("Gui::TBase::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
-	if ((pref->pause_when_hidden) && (core->state() == Core::Paused)) {
+	if ((pref->pause_when_hidden) && (core->state() == TCore::Paused)) {
 		qDebug("Gui::TBase::showEvent: unpausing");
 		core->play();
 	}
@@ -4913,7 +4913,7 @@ void TBase::hideEvent( QHideEvent * ) {
 	if (ignore_show_hide_events) return;
 
 	//qDebug("Gui::TBase::hideEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
-	if ((pref->pause_when_hidden) && (core->state() == Core::Playing)) {
+	if ((pref->pause_when_hidden) && (core->state() == TCore::Playing)) {
 		qDebug("Gui::TBase::hideEvent: pausing");
 		core->pause();
 	}
@@ -4931,7 +4931,7 @@ bool TBase::event(QEvent * e) {
 
 		if (isMinimized()) {
 			was_minimized = true;
-			if (core->state() == Core::Playing) {
+			if (core->state() == TCore::Playing) {
 				qDebug("Gui::TBase::event: pausing");
 				core->pause();
 			}
@@ -4943,7 +4943,7 @@ bool TBase::event(QEvent * e) {
 
 		if ((!isMinimized()) && (was_minimized)) {
 			was_minimized = false;
-			if (core->state() == Core::Paused) {
+			if (core->state() == TCore::Paused) {
 				qDebug("Gui::TBase::showEvent: unpausing");
 				core->play();
 			}
@@ -5112,10 +5112,10 @@ bool TBase::winEvent ( MSG * m, long * result ) {
 		if ((m->wParam & 0xFFF0)==SC_SCREENSAVE || (m->wParam & 0xFFF0)==SC_MONITORPOWER) {
 			qDebug("Gui::TBase::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
 			qDebug("Gui::TBase::winEvent: avoid_screensaver: %d", pref->avoid_screensaver);
-			qDebug("Gui::TBase::winEvent: playing: %d", core->state()==Core::Playing);
+			qDebug("Gui::TBase::winEvent: playing: %d", core->state()==TCore::Playing);
 			qDebug("Gui::TBase::winEvent: video: %d", !core->mdat.novideo);
 			
-			if ((pref->avoid_screensaver) && (core->state()==Core::Playing) && (!core->mdat.novideo)) {
+			if ((pref->avoid_screensaver) && (core->state()==TCore::Playing) && (!core->mdat.novideo)) {
 				qDebug("Gui::TBase::winEvent: not allowing screensaver");
 				(*result) = 0;
 				return true;

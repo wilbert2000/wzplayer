@@ -116,8 +116,9 @@ HEADERS += config.h \
     images.h \
 	inforeader.h \
 	core.h \
-	filechooser.h \
-	lineedit_with_icon.h \
+    lineedit_with_icon.h \
+    filedialog.h \
+    filechooser.h \
 	languages.h \
     gui/deviceinfo.h \
     gui/guiconfig.h \
@@ -141,7 +142,6 @@ HEADERS += config.h \
     gui/pref/tv.h \
     gui/pref/updates.h \
     gui/pref/network.h \
-	filedialog.h \
     gui/multilineinputdialog.h \
     gui/infofile.h \
     gui/filepropertiesdialog.h \
@@ -216,8 +216,9 @@ SOURCES	+= version.cpp \
     images.cpp \
 	inforeader.cpp \
 	core.cpp \
-	filechooser.cpp \
-	lineedit_with_icon.cpp \
+    lineedit_with_icon.cpp \
+    filedialog.cpp \
+    filechooser.cpp \
 	languages.cpp \
     gui/deviceinfo.cpp \
     gui/shortcutgetter.cpp \
@@ -240,7 +241,6 @@ SOURCES	+= version.cpp \
     gui/pref/tv.cpp \
     gui/pref/updates.cpp \
     gui/pref/network.cpp \
-	filedialog.cpp \
     gui/multilineinputdialog.cpp \
     gui/infofile.cpp \
     gui/filepropertiesdialog.cpp \
@@ -276,13 +276,13 @@ SOURCES	+= version.cpp \
     gui/default.cpp \
     gui/mini.cpp \
     gui/logwindow.cpp \
-	clhelp.cpp \
-	cleanconfig.cpp \
-	smplayer.cpp \
     maps/map.cpp \
     maps/tracks.cpp \
     maps/titletracks.cpp \
     maps/chapters.cpp \
+    clhelp.cpp \
+    cleanconfig.cpp \
+    smplayer.cpp \
     log.cpp \
     main.cpp
 

@@ -32,7 +32,7 @@
 #endif
 #endif
 
-class PlayerID
+class TPlayerID
 {
 public:
 	enum Player { MPLAYER = 0, MPV = 1 };

@@ -36,19 +36,19 @@ namespace Proc {
 extern QPoint default_osd_pos;
 
 	
-class PlayerProcess : public TProcess
+class TPlayerProcess : public TProcess
 {
 	Q_OBJECT
 
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	PlayerProcess(PlayerID::Player pid, MediaData * mdata);
-	virtual ~PlayerProcess() {}
+	TPlayerProcess(TPlayerID::Player pid, MediaData * mdata);
+	virtual ~TPlayerProcess() {}
 
-	PlayerID::Player player() { return player_id; }
-	bool isMPlayer() { return (player_id == PlayerID::MPLAYER); }
-	bool isMPV() { return (player_id == PlayerID::MPV); }
+	TPlayerID::Player player() { return player_id; }
+	bool isMPlayer() { return (player_id == TPlayerID::MPLAYER); }
+	bool isMPV() { return (player_id == TPlayerID::MPV); }
 	bool isFullyStarted() { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();
@@ -123,7 +123,7 @@ public:
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
 
-	static PlayerProcess * createPlayerProcess(const QString &player_bin, MediaData *md);
+	static TPlayerProcess * createPlayerProcess(const QString &player_bin, MediaData *md);
 
 // Signals
 signals:
@@ -184,7 +184,7 @@ public slots:
 	void parseBytes(QByteArray ba);
 
 protected:
-	PlayerID::Player player_id;
+	TPlayerID::Player player_id;
 
 	MediaData* md;
 

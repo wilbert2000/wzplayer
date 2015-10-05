@@ -274,7 +274,7 @@ bool VideoPreview::extractImages() {
 bool VideoPreview::runPlayer(int seek, double aspect_ratio) {
 	QStringList args;
 
-	if (PlayerID::player(mplayer_bin) == PlayerID::MPV) {
+	if (TPlayerID::player(mplayer_bin) == TPlayerID::MPV) {
 		#ifdef MPV_SUPPORT
 		// MPV
 		args << "--no-config" << "--no-audio" << "--no-cache";
@@ -481,7 +481,7 @@ VideoInfo VideoPreview::getInfo(const QString & mplayer_path, const QString & fi
 
 	QStringList args;
 
-	if (PlayerID::player(mplayer_path) == PlayerID::MPV) {
+	if (TPlayerID::player(mplayer_path) == TPlayerID::MPV) {
 		#ifdef MPV_SUPPORT
 		// MPV
 		args << "--term-playing-msg="

@@ -134,11 +134,11 @@ void TSkin::disableActionsOnStop() {
 }
 #endif // AUTODISABLE_ACTIONS
 
-void TSkin::togglePlayAction(Core::State state) {
+void TSkin::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TSkin::togglePlayAction");
 	TBasePlus::togglePlayAction(state);
 
-	if (state == Core::Playing) {
+	if (state == TCore::Playing) {
 		playOrPauseAct->setChecked(true);
 	}
 	else {
@@ -228,7 +228,7 @@ void TSkin::createControlWidget() {
 	if (shuffleAct) actions << shuffleAct;
 	if (repeatPlaylistAct) actions << repeatPlaylistAct;
 	mediaBarPanel->setMediaPanelActionCollection(actions);
-	connect(core, SIGNAL(stateChanged(Core::State)), mediaBarPanel, SLOT(setMplayerState(Core::State)));
+	connect(core, SIGNAL(stateChanged(TCore::State)), mediaBarPanel, SLOT(setMplayerState(TCore::State)));
 
 	actions.clear();
 	//actions << volumeslider_action << showPlaylistAct << fullscreenAct << equalizerAct;
@@ -323,13 +323,13 @@ void TSkin::displayTime(QString text) {
 	time_label_action->setText(text);
 }
 
-void TSkin::displayState(Core::State state) {
+void TSkin::displayState(TCore::State state) {
 	TBasePlus::displayState(state);
 
 	switch (state) {
-		case Core::Playing:		mediaBarPanel->displayMessage( tr("Playing %1").arg(core->mdat.filename)); break;
-		case Core::Paused:		mediaBarPanel->displayMessage( tr("Pause") ); break;
-		case Core::Stopped:		mediaBarPanel->displayMessage( tr("Stop") ); break;
+		case TCore::Playing:		mediaBarPanel->displayMessage( tr("Playing %1").arg(core->mdat.filename)); break;
+		case TCore::Paused:		mediaBarPanel->displayMessage( tr("Pause") ); break;
+		case TCore::Stopped:		mediaBarPanel->displayMessage( tr("Stop") ); break;
 	}
 }
 

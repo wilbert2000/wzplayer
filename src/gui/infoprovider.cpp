@@ -31,7 +31,7 @@ void TInfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaD
 	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
 		mplayer_bin = fi.absoluteFilePath();
 	}
-	Proc::PlayerProcess * proc = Proc::PlayerProcess::createPlayerProcess(mplayer_bin, &md);
+	Proc::TPlayerProcess * proc = Proc::TPlayerProcess::createPlayerProcess(mplayer_bin, &md);
 
 	proc->setExecutable(mplayer_bin);
 	proc->setFixedOptions();

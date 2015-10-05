@@ -84,11 +84,11 @@ TGeneral::TGeneral(QWidget * parent, Qt::WindowFlags f)
 #endif
 
 	// Channels combo
-	channels_combo->addItem( "2", MediaSettings::ChStereo );
-	channels_combo->addItem( "4", MediaSettings::ChSurround );
-	channels_combo->addItem( "6", MediaSettings::ChFull51 );
-	channels_combo->addItem( "7", MediaSettings::ChFull61 );
-	channels_combo->addItem( "8", MediaSettings::ChFull71 );
+	channels_combo->addItem( "2", TMediaSettings::ChStereo );
+	channels_combo->addItem( "4", TMediaSettings::ChSurround );
+	channels_combo->addItem( "6", TMediaSettings::ChFull51 );
+	channels_combo->addItem( "7", TMediaSettings::ChFull61 );
+	channels_combo->addItem( "8", TMediaSettings::ChFull71 );
 
 	connect(vo_combo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(vo_combo_changed(int)));
@@ -121,12 +121,12 @@ void TGeneral::retranslateStrings() {
 
 	int deinterlace_item = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
-	deinterlace_combo->addItem( tr("None"), MediaSettings::NoDeinterlace );
-	deinterlace_combo->addItem( tr("Lowpass5"), MediaSettings::L5 );
-	deinterlace_combo->addItem( tr("Yadif (normal)"), MediaSettings::Yadif );
-	deinterlace_combo->addItem( tr("Yadif (double framerate)"), MediaSettings::Yadif_1 );
-	deinterlace_combo->addItem( tr("Linear Blend"), MediaSettings::LB );
-	deinterlace_combo->addItem( tr("Kerndeint"), MediaSettings::Kerndeint );
+	deinterlace_combo->addItem( tr("None"), TMediaSettings::NoDeinterlace );
+	deinterlace_combo->addItem( tr("Lowpass5"), TMediaSettings::L5 );
+	deinterlace_combo->addItem( tr("Yadif (normal)"), TMediaSettings::Yadif );
+	deinterlace_combo->addItem( tr("Yadif (double framerate)"), TMediaSettings::Yadif_1 );
+	deinterlace_combo->addItem( tr("Linear Blend"), TMediaSettings::LB );
+	deinterlace_combo->addItem( tr("Kerndeint"), TMediaSettings::Kerndeint );
 	deinterlace_combo->setCurrentIndex(deinterlace_item);
 
 	int filesettings_method_item = filesettings_method_combo->currentIndex();

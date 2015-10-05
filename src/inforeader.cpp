@@ -123,7 +123,7 @@ void InfoReader::getInfo() {
 		}
 	}
 
-	if (PlayerID::player(mplayerbin) == PlayerID::MPV) {
+	if (TPlayerID::player(mplayerbin) == TPlayerID::MPV) {
 		#ifdef MPV_SUPPORT
 		qDebug("InfoReader::getInfo: mpv");
 		InfoReaderMPV ir(mplayerbin, this);

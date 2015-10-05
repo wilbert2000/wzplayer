@@ -16,14 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mpvprocess.h"
+#include "proc/mpvprocess.h"
 
 #include <QRegExp>
 #include <QStringList>
 #include <QApplication>
 #include <QDebug>
 
-#include "playerprocess.h"
+#include "proc/playerprocess.h"
 #include "settings/preferences.h"
 #include "mplayerversion.h"
 #include "colorutils.h"
@@ -36,18 +36,18 @@ namespace Proc {
 // TODO: get from player too
 static const QPoint max_osd_pos(300, 600);
 
-MPVProcess::MPVProcess(MediaData *mdata)
-	: PlayerProcess(PlayerID::MPV, mdata)
+TMPVProcess::TMPVProcess(MediaData *mdata)
+	: TPlayerProcess(TPlayerID::MPV, mdata)
 	, verbose(false)
 	, osd_pos()
 	, osd_centered_x(false)
 	, osd_centered_y(false) {
 }
 
-MPVProcess::~MPVProcess() {
+TMPVProcess::~TMPVProcess() {
 }
 
-bool MPVProcess::startPlayer() {
+bool TMPVProcess::startPlayer() {
 
 	received_buffering = false;
 
@@ -61,10 +61,10 @@ bool MPVProcess::startPlayer() {
 	osd_centered_x = false;
 	osd_centered_y = false;
 
-	return PlayerProcess::startPlayer();
+	return TPlayerProcess::startPlayer();
 }
 
-bool MPVProcess::parseVideoTrack(int id,
+bool TMPVProcess::parseVideoTrack(int id,
 								 const QString &codec,
 								 QString name,
 								 bool selected) {
@@ -82,7 +82,7 @@ bool MPVProcess::parseVideoTrack(int id,
 	return false;
 }
 
-bool MPVProcess::parseAudioTrack(int id, const QString &lang, const QString &codec, QString name, bool selected) {
+bool TMPVProcess::parseAudioTrack(int id, const QString &lang, const QString &codec, QString name, bool selected) {
 
 	if (name.isEmpty() && !codec.isEmpty()) {
 		name = "(" + codec + ")";
@@ -95,7 +95,7 @@ bool MPVProcess::parseAudioTrack(int id, const QString &lang, const QString &cod
 	return false;
 }
 
-bool MPVProcess::parseSubtitleTrack(int id,
+bool TMPVProcess::parseSubtitleTrack(int id,
 									const QString &lang,
 									QString name,
 									const QString &type,
@@ -124,18 +124,18 @@ bool MPVProcess::parseSubtitleTrack(int id,
 }
 
 
-bool MPVProcess::parseProperty(const QString &name, const QString &value) {
+bool TMPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "MPV_VERSION") {
 		mpv_version = value;
-		qDebug() << "Proc::MPVProcess::parseProperty: mpv_version set to" << mpv_version;
+		qDebug() << "Proc::TMPVProcess::parseProperty: mpv_version set to" << mpv_version;
 		return true;
 	}
 
 /*
 	if (name == "TRACKS_COUNT") {
 		int tracks = value.toInt();
-		qDebug("Proc::MPVProcess::parseProperty: requesting track info for %d tracks", tracks);
+		qDebug("Proc::TMPVProcess::parseProperty: requesting track info for %d tracks", tracks);
 		for (int n = 0; n < tracks; n++) {
 			writeToStdin(QString("print_text \"TRACK_INFO_%1="
 				"${track-list/%1/type} "
@@ -150,7 +150,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "TITLES") {
 		int n_titles = value.toInt();
-		qDebug("Proc::MPVProcess::parseProperty: creating %d titles", n_titles);
+		qDebug("Proc::TMPVProcess::parseProperty: creating %d titles", n_titles);
 		for (int idx = 0; idx < n_titles; idx++) {
 			md->titles.addID(idx + 1);
 			writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1 ${=disc-title-list/%1/length:-1}\"").arg(idx));
@@ -175,7 +175,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 
 	if (name == "CHAPTERS") {
 		int n_chapters = value.toInt();
-		qDebug("Proc::MPVProcess::parseProperty: requesting start and title of %d chapter(s)", n_chapters);
+		qDebug("Proc::TMPVProcess::parseProperty: requesting start and title of %d chapter(s)", n_chapters);
 		for (int n = 0; n < n_chapters; n++) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
@@ -186,7 +186,7 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "MEDIA_TITLE") {
 		if (!value.isEmpty() && value != "mp4" && !value.startsWith("mp4&")) {
 			md->meta_data["NAME"] = value;
-			qDebug() << "Proc::MPVProcess::parseProperty: set meta_data[\"NAME\"] to" << value;
+			qDebug() << "Proc::TMPVProcess::parseProperty: set meta_data[\"NAME\"] to" << value;
 		}
 		return true;
 	}
@@ -194,34 +194,34 @@ bool MPVProcess::parseProperty(const QString &name, const QString &value) {
 	if (name == "OSD_X") {
 		default_osd_pos.rx() = value.toInt();
 		osd_pos.rx() = default_osd_pos.x();
-		qDebug("Proc::MPVProcess::parseProperty: set OSD x margin to %d", default_osd_pos.x());
+		qDebug("Proc::TMPVProcess::parseProperty: set OSD x margin to %d", default_osd_pos.x());
 		return true;
 	}
 
 	if (name == "OSD_Y") {
 		default_osd_pos.ry() = value.toInt();
 		osd_pos.ry() = default_osd_pos.y();
-		qDebug("Proc::MPVProcess::parseProperty: set OSD y margin to %d", default_osd_pos.y());
+		qDebug("Proc::TMPVProcess::parseProperty: set OSD y margin to %d", default_osd_pos.y());
 		return true;
 	}
 
-	return PlayerProcess::parseProperty(name, value);
+	return TPlayerProcess::parseProperty(name, value);
 }
 
-bool MPVProcess::parseChapter(int id, double start, QString title) {
+bool TMPVProcess::parseChapter(int id, double start, QString title) {
 
 	waiting_for_answers--;
 	md->chapters.addChapter(id, title, start);
-	qDebug() << "Proc::MPVProcess::parseChapter: added chapter id" << id
+	qDebug() << "Proc::TMPVProcess::parseChapter: added chapter id" << id
 			 << "starting at" << start << "with title" << title;
 	return true;
 }
 
-void MPVProcess::requestChapterInfo() {
+void TMPVProcess::requestChapterInfo() {
 	writeToStdin("print_text \"INFO_CHAPTERS=${=chapters:}\"");
 }
 
-void MPVProcess::fixTitle() {
+void TMPVProcess::fixTitle() {
 
 	DiscData disc = DiscName::split(md->filename);
 	if (disc.title == 0) disc.title = 1;
@@ -232,16 +232,16 @@ void MPVProcess::fixTitle() {
 	// titles, needed because MPV does not support menus.
 	if (!received_title_not_found) {
 		if (disc.title == selected_title) {
-			qDebug("Proc::MPVProcess::fixTitle: found requested title %d", disc.title);
+			qDebug("Proc::TMPVProcess::fixTitle: found requested title %d", disc.title);
 		} else {
-			qDebug("Proc::MPVProcess::fixTitle: selecting title %d, player reports it is playing VTS %d",
+			qDebug("Proc::TMPVProcess::fixTitle: selecting title %d, player reports it is playing VTS %d",
 				   disc.title, selected_title);
 		}
 		notifyTitleTrackChanged(disc.title);
 		return;
 	}
 
-	qWarning("Proc::MPVProcess::fixTitle: requested title %d not found or really short", disc.title);
+	qWarning("Proc::TMPVProcess::fixTitle: requested title %d not found or really short", disc.title);
 
 	// Let the playlist try the next title if a valid title was requested and
 	// there is more than 1 title.
@@ -260,16 +260,16 @@ void MPVProcess::fixTitle() {
 	quit(1);
 }
 
-void MPVProcess::checkTime(double sec) {
+void TMPVProcess::checkTime(double sec) {
 
 	if (title_swictched && sec >= title_switch_time) {
 		title_swictched = false;
-		qDebug("Proc::MPVProcess::checkTime: sending track changed");
+		qDebug("Proc::TMPVProcess::checkTime: sending track changed");
 		notifyTitleTrackChanged(selected_title);
 	}
 }
 
-bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
+bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 
 	// MPV uses dvdnav to play DVDs, but without support for menus
 	if (disc_type == "dvdnav") {
@@ -288,13 +288,13 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 			int chapter = title - md->titles.firstID() + md->chapters.firstID();
 			title_switch_time = md->chapters[chapter].getStart();
 			if (title_switch_time <= md->time_sec + 0.5) {
-				qDebug("Proc::MPVProcess::parseTitleSwitched: switched to track %d", title);
+				qDebug("Proc::TMPVProcess::parseTitleSwitched: switched to track %d", title);
 				notifyTitleTrackChanged(title);
 			} else {
 				// Switch when the time comes
 				title_swictched = true;
 				title_switch_time -= 0.4;
-				qDebug("Proc::MPVProcess::parseTitleSwitched: saved track changed to %d at %f", title, title_switch_time);
+				qDebug("Proc::TMPVProcess::parseTitleSwitched: saved track changed to %d at %f", title, title_switch_time);
 			}
 		} else {
 			notifyTitleTrackChanged(title);
@@ -315,14 +315,14 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 			quit_at_end_of_title_ms = (int) ((md->duration - md->time_sec) * 1000);
 			// Quit right away if less than 400 ms to go.
 			if (quit_at_end_of_title_ms <= 400) {
-				qDebug("Proc::MPVProcess::parseTitleSwitched: quitting at end of title");
+				qDebug("Proc::TMPVProcess::parseTitleSwitched: quitting at end of title");
 				received_end_of_file =  true;
 				quit(0);
 			} else {
 				// Quit when quit_at_end_of_title_ms elapsed
 				quit_at_end_of_title_ms -= 400;
 				quit_at_end_of_title_time.start();
-				qDebug("Proc::MPVProcess::parseTitleSwitched: marked title to quit in %d ms",
+				qDebug("Proc::TMPVProcess::parseTitleSwitched: marked title to quit in %d ms",
 					   quit_at_end_of_title_ms);
 			}
 		}
@@ -331,10 +331,10 @@ bool MPVProcess::parseTitleSwitched(QString disc_type, int title) {
 	return true;
 }
 
-bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
+bool TMPVProcess::parseTitleNotFound(const QString &disc_type) {
 	Q_UNUSED(disc_type)
 
-	// qWarning("Proc::MPVProcess::parseTitleNotFound: requested title not found");
+	// qWarning("Proc::TMPVProcess::parseTitleNotFound: requested title not found");
 
 	// Requested title means the original title. The currently selected title
 	// seems still valid and is the last selected title during its search through
@@ -349,18 +349,18 @@ bool MPVProcess::parseTitleNotFound(const QString &disc_type) {
 }
 
 
-int MPVProcess::getFrame(double time_sec, const QString &line) {
+int TMPVProcess::getFrame(double time_sec, const QString &line) {
 	Q_UNUSED(line)
 
 	// Emulate frames.
 	return qRound(time_sec * md->video_fps);
 }
 
-void MPVProcess::convertChaptersToTitles() {
+void TMPVProcess::convertChaptersToTitles() {
 
 	// Just for safety...
 	if (md->titles.count() > 0) {
-		qWarning("Proc::MPVProcess::convertChaptersToTitles: found unexpected titles");
+		qWarning("Proc::TMPVProcess::convertChaptersToTitles: found unexpected titles");
 		return;
 	}
 	if (md->chapters.count() == 1) {
@@ -391,17 +391,17 @@ void MPVProcess::convertChaptersToTitles() {
 		}
 	}
 
-	qDebug("Proc::MPVProcess::convertChaptersToTitles: created %d titles",
+	qDebug("Proc::TMPVProcess::convertChaptersToTitles: created %d titles",
 		   md->titles.count());
 }
 
-void MPVProcess::playingStarted() {
-	qDebug("Proc::MPVProcess::playingStarted");
+void TMPVProcess::playingStarted() {
+	qDebug("Proc::TMPVProcess::playingStarted");
 
 	// MPV can give negative times for TS without giving a start time.
 	// Correct them by setting the start time.
 	if (!md->start_sec_set && md->time_sec < 0) {
-		qDebug("Proc::MPVProcess::playingStarted: setting negative start time %f", md->time_sec);
+		qDebug("Proc::TMPVProcess::playingStarted: setting negative start time %f", md->time_sec);
 		md->start_sec = md->time_sec;
 		// No longer need rollover protection (though not set for MPV anyway).
 		md->mpegts = false;
@@ -416,19 +416,19 @@ void MPVProcess::playingStarted() {
 		fixTitle();
 	}
 
-	PlayerProcess::playingStarted();
+	TPlayerProcess::playingStarted();
 }
 
-void MPVProcess::requestBitrateInfo() {
+void TMPVProcess::requestBitrateInfo() {
 	writeToStdin("print_text VIDEO_BITRATE=${=video-bitrate}");
 	writeToStdin("print_text AUDIO_BITRATE=${=audio-bitrate}");
 }
 
-bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
+bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
 	// Parse custom status line
 	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
-	if (PlayerProcess::parseStatusLine(time_sec, duration, rx, line))
+	if (TPlayerProcess::parseStatusLine(time_sec, duration, rx, line))
 		return true;
 
 	// Parse status flags
@@ -437,13 +437,13 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	bool idle = rx.cap(5) == "yes";
 
 	if (paused) {
-		//qDebug("Proc::MPVProcess::parseStatusLine: paused");
+		//qDebug("Proc::TMPVProcess::parseStatusLine: paused");
 		emit receivedPause();
 		return true;
 	}
 
 	if (buffering or idle) {
-		//qDebug("Proc::MPVProcess::parseStatusLine: buffering");
+		//qDebug("Proc::TMPVProcess::parseStatusLine: buffering");
 		received_buffering = true;
 		emit receivedBuffering();
 		return true;
@@ -472,7 +472,7 @@ bool MPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, 
 	return true;
 }
 
-bool MPVProcess::parseLine(QString &line) {
+bool TMPVProcess::parseLine(QString &line) {
 
 	// Custom status line. Make sure it matches!
 	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
@@ -510,7 +510,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 	if (quit_at_end_of_title && !quit_send
 		&& quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
-		qDebug("Proc::MPVProcess::parseLine: %d ms elapsed, quitting title",
+		qDebug("Proc::TMPVProcess::parseLine: %d ms elapsed, quitting title",
 			   quit_at_end_of_title_ms);
 		quit_at_end_of_title = false;
 		received_end_of_file =  true;
@@ -531,7 +531,7 @@ bool MPVProcess::parseLine(QString &line) {
 	}
 
 	// Let parent have a look at it
-	if (PlayerProcess::parseLine(line))
+	if (TPlayerProcess::parseLine(line))
 		return true;
 
 	if (rx_message.indexIn(line) >= 0) {
@@ -584,7 +584,7 @@ bool MPVProcess::parseLine(QString &line) {
 		waiting_for_answers--;
 		md->video_out_width = rx_dsize.cap(1).toInt();
 		md->video_out_height = rx_dsize.cap(2).toInt();
-		qDebug("Proc::MPVProcess::parseLine: set video out size to %d x %d",
+		qDebug("Proc::TMPVProcess::parseLine: set video out size to %d x %d",
 			   md->video_out_width, md->video_out_height);
 		return true;
 	}
@@ -601,7 +601,7 @@ bool MPVProcess::parseLine(QString &line) {
 	// Fall back to generic VIDEO_CODEC if match fails.
 	if (rx_video_codec.indexIn(line) >= 0) {
 		md->video_codec = rx_video_codec.cap(2);
-		qDebug() << "Proc::MPVProcess::parseLine: video_codec set to" << md->video_codec;
+		qDebug() << "Proc::TMPVProcess::parseLine: video_codec set to" << md->video_codec;
 		return true;
 	}
 
@@ -615,7 +615,7 @@ bool MPVProcess::parseLine(QString &line) {
 	// Fall back to generic AUDIO_CODEC if match fails.
 	if (rx_audio_codec.indexIn(line) >= 0) {
 		md->audio_codec = rx_audio_codec.cap(2);
-		qDebug() << "Proc::MPVProcess::parseLine: audio_codec set to" << md->audio_codec;
+		qDebug() << "Proc::TMPVProcess::parseLine: audio_codec set to" << md->audio_codec;
 		return true;
 	}
 
@@ -655,7 +655,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 	if (rx_stream_title.indexIn(line) > -1) {
 		QString s = rx_stream_title.cap(1);
-		qDebug("Proc::MPVProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
+		qDebug("Proc::TMPVProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
 		md->stream_title = s;
 		emit receivedStreamTitle(s);
 		return true;
@@ -673,7 +673,7 @@ bool MPVProcess::parseLine(QString &line) {
 
 // Start of what used to be mpvoptions.cpp and was pulled in with an include
 
-void MPVProcess::setMedia(const QString & media, bool is_playlist) {
+void TMPVProcess::setMedia(const QString & media, bool is_playlist) {
 	arg << "--term-playing-msg="
 		"INFO_MPV_VERSION=${=mpv-version:}\n"
 
@@ -740,7 +740,7 @@ void MPVProcess::setMedia(const QString & media, bool is_playlist) {
 	}
 }
 
-void MPVProcess::setFixedOptions() {
+void TMPVProcess::setFixedOptions() {
 	arg << "--no-config";
 	arg << "--no-quiet";
 	arg << "--terminal";
@@ -750,21 +750,21 @@ void MPVProcess::setFixedOptions() {
 	//arg << "--msg-level=vd=v";
 }
 
-void MPVProcess::disableInput() {
+void TMPVProcess::disableInput() {
 	arg << "--no-input-default-bindings";
 	arg << "--input-x11-keyboard=no";
 	arg << "--no-input-cursor";
 	arg << "--cursor-autohide=no";
 }
 
-bool MPVProcess::isOptionAvailable(const QString & option) {
+bool TMPVProcess::isOptionAvailable(const QString & option) {
 	InfoReader * ir = InfoReader::obj(executable());
 	ir->getInfo();
-	//qDebug() << "Proc::MPVProcess::isOptionAvailable: option_list:" << ir->optionList();
+	//qDebug() << "Proc::TMPVProcess::isOptionAvailable: option_list:" << ir->optionList();
 	return ir->optionList().contains(option);
 }
 
-void MPVProcess::addVFIfAvailable(const QString & vf, const QString & value) {
+void TMPVProcess::addVFIfAvailable(const QString & vf, const QString & value) {
 	InfoReader * ir = InfoReader::obj(executable());
 	ir->getInfo();
 	if (ir->vfList().contains(vf)) {
@@ -773,11 +773,11 @@ void MPVProcess::addVFIfAvailable(const QString & vf, const QString & value) {
 		arg << s;
 	} else {
 		QString f = vf +"="+ value;
-		qDebug("Proc::MPVProcess::addVFIfAvailable: filter %s is not used because it's not available", f.toLatin1().constData());
+		qDebug("Proc::TMPVProcess::addVFIfAvailable: filter %s is not used because it's not available", f.toLatin1().constData());
 	}
 }
 
-void MPVProcess::setOption(const QString & option_name, const QVariant & value) {
+void TMPVProcess::setOption(const QString & option_name, const QVariant & value) {
 	if (option_name == "cache") {
 		int cache = value.toInt();
 		if (cache > 31) {
@@ -949,7 +949,7 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 		QString o = value.toString();
 		if (o.startsWith("alsa:device=")) {
 			QString device = o.mid(12);
-			//qDebug() << "Proc::MPVProcess::setOption: alsa device:" << device;
+			//qDebug() << "Proc::TMPVProcess::setOption: alsa device:" << device;
 			device = device.replace("=", ":").replace(".", ",");
 			o = "alsa:device=[" + device + "]";
 		}
@@ -957,11 +957,11 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 	}
 	else
 	if (option_name == "vc") {
-		qDebug() << "Proc::MPVProcess::setOption: video codec ignored";
+		qDebug() << "Proc::TMPVProcess::setOption: video codec ignored";
 	}
 	else
 	if (option_name == "ac") {
-		qDebug() << "Proc::MPVProcess::setOption: audio codec ignored";
+		qDebug() << "Proc::TMPVProcess::setOption: audio codec ignored";
 	}
 	else
 	if (option_name == "afm") {
@@ -1024,18 +1024,18 @@ void MPVProcess::setOption(const QString & option_name, const QVariant & value) 
 	}
 	else
 	{
-		qDebug() << "Proc::MPVProcess::setOption: unknown option:" << option_name;
+		qDebug() << "Proc::TMPVProcess::setOption: unknown option:" << option_name;
 	}
 }
 
-void MPVProcess::addUserOption(const QString & option) {
+void TMPVProcess::addUserOption(const QString & option) {
 	arg << option;
 	if (option == "-v") {
 		verbose = true;
 	}
 }
 
-void MPVProcess::addVF(const QString & filter_name, const QVariant & value) {
+void TMPVProcess::addVF(const QString & filter_name, const QVariant & value) {
 	QString option = value.toString();
 
 	if ((filter_name == "harddup") || (filter_name == "hue")) {
@@ -1128,11 +1128,11 @@ void MPVProcess::addVF(const QString & filter_name, const QVariant & value) {
 	}
 }
 
-void MPVProcess::addStereo3DFilter(const QString & in, const QString & out) {
+void TMPVProcess::addStereo3DFilter(const QString & in, const QString & out) {
 	arg << "--vf-add=stereo3d=" + in + ":" + out;
 }
 
-void MPVProcess::addAF(const QString & filter_name, const QVariant & value) {
+void TMPVProcess::addAF(const QString & filter_name, const QVariant & value) {
 	QString option = value.toString();
 
 	if (filter_name == "volnorm") {
@@ -1166,53 +1166,53 @@ void MPVProcess::addAF(const QString & filter_name, const QVariant & value) {
 	}
 }
 
-void MPVProcess::setVolume(int v) {
+void TMPVProcess::setVolume(int v) {
 	writeToStdin("set volume " + QString::number(v));
 }
 
-void MPVProcess::setOSDLevel(int level) {
+void TMPVProcess::setOSDLevel(int level) {
 	writeToStdin("osd " + QString::number(level));
 }
 
-void MPVProcess::setAudio(int ID) {
+void TMPVProcess::setAudio(int ID) {
 	writeToStdin("set aid " + QString::number(ID));
 }
 
-void MPVProcess::setVideo(int ID) {
+void TMPVProcess::setVideo(int ID) {
 	writeToStdin("set vid " + QString::number(ID));
 }
 
-void MPVProcess::setSubtitle(SubData::Type type, int ID) {
+void TMPVProcess::setSubtitle(SubData::Type type, int ID) {
 
 	writeToStdin("set sid " + QString::number(ID));
 	md->subs.setSelected(type, ID);
 	emit receivedSubtitleTrackChanged();
 }
 
-void MPVProcess::disableSubtitles() {
+void TMPVProcess::disableSubtitles() {
 
 	writeToStdin("set sid no");
 	md->subs.clearSelected();
 	emit receivedSubtitleTrackChanged();
 }
 
-void MPVProcess::setSecondarySubtitle(int ID) {
+void TMPVProcess::setSecondarySubtitle(int ID) {
 	writeToStdin("set secondary-sid " + QString::number(ID));
 	md->subs.setSelectedSecondaryID(ID);
 	//emit receivedSecondarySubtitleTrackChanged(ID);
 }
 
-void MPVProcess::disableSecondarySubtitles() {
+void TMPVProcess::disableSecondarySubtitles() {
 	writeToStdin("set secondary-sid no");
 	md->subs.setSelectedSecondaryID(-1);
 	//emit receivedSecondarySubtitleTrackChanged(ID);
 }
 
-void MPVProcess::setSubtitlesVisibility(bool b) {
+void TMPVProcess::setSubtitlesVisibility(bool b) {
 	writeToStdin(QString("set sub-visibility %1").arg(b ? "yes" : "no"));
 }
 
-void MPVProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
+void TMPVProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
 	Q_UNUSED(currently_paused)
 
 	QString s = "seek " + QString::number(secs) + " ";
@@ -1225,99 +1225,99 @@ void MPVProcess::seekPlayerTime(double secs, int mode, bool precise, bool curren
 	writeToStdin(s);
 }
 
-void MPVProcess::mute(bool b) {
+void TMPVProcess::mute(bool b) {
 	writeToStdin(QString("set mute %1").arg(b ? "yes" : "no"));
 }
 
-void MPVProcess::setPause(bool b) {
+void TMPVProcess::setPause(bool b) {
 	writeToStdin(QString("set pause %1").arg(b ? "yes" : "no"));
 }
 
-void MPVProcess::frameStep() {
+void TMPVProcess::frameStep() {
 	writeToStdin("frame_step");
 }
 
-void MPVProcess::frameBackStep() {
+void TMPVProcess::frameBackStep() {
 	writeToStdin("frame_back_step");
 }
 
-void MPVProcess::showOSDText(const QString & text, int duration, int level) {
+void TMPVProcess::showOSDText(const QString & text, int duration, int level) {
 	QString str = QString("show_text \"%1\" %2 %3").arg(text).arg(duration).arg(level);
 	writeToStdin(str);
 }
 
-void MPVProcess::showFilenameOnOSD() {
+void TMPVProcess::showFilenameOnOSD() {
 	writeToStdin("show_text \"${filename}\" 2000 0");
 }
 
-void MPVProcess::showTimeOnOSD() {
+void TMPVProcess::showTimeOnOSD() {
 	writeToStdin("show_text \"${time-pos} / ${length:0} (${percent-pos}%)\" 2000 0");
 }
 
-void MPVProcess::setContrast(int value) {
+void TMPVProcess::setContrast(int value) {
 	writeToStdin("set contrast " + QString::number(value));
 }
 
-void MPVProcess::setBrightness(int value) {
+void TMPVProcess::setBrightness(int value) {
 	writeToStdin("set brightness " + QString::number(value));
 }
 
-void MPVProcess::setHue(int value) {
+void TMPVProcess::setHue(int value) {
 	writeToStdin("set hue " + QString::number(value));
 }
 
-void MPVProcess::setSaturation(int value) {
+void TMPVProcess::setSaturation(int value) {
 	writeToStdin("set saturation " + QString::number(value));
 }
 
-void MPVProcess::setGamma(int value) {
+void TMPVProcess::setGamma(int value) {
 	writeToStdin("set gamma " + QString::number(value));
 }
 
-void MPVProcess::setChapter(int ID) {
+void TMPVProcess::setChapter(int ID) {
 	writeToStdin("set chapter " + QString::number(ID));
 }
 
-void MPVProcess::setExternalSubtitleFile(const QString & filename) {
+void TMPVProcess::setExternalSubtitleFile(const QString & filename) {
 
 	writeToStdin("sub_add \""+ filename +"\"");
 	// Remeber filename to add to subs when MPV is done with it
 	sub_file = filename;
 }
 
-void MPVProcess::setSubPos(int pos) {
+void TMPVProcess::setSubPos(int pos) {
 	writeToStdin("set sub-pos " + QString::number(pos));
 }
 
-void MPVProcess::setSubScale(double value) {
+void TMPVProcess::setSubScale(double value) {
 	writeToStdin("set sub-scale " + QString::number(value));
 }
 
-void MPVProcess::setSubStep(int value) {
+void TMPVProcess::setSubStep(int value) {
 	writeToStdin("sub_step " + QString::number(value));
 }
 
-void MPVProcess::setSubForcedOnly(bool b) {
+void TMPVProcess::setSubForcedOnly(bool b) {
 	writeToStdin(QString("set sub-forced-only %1").arg(b ? "yes" : "no"));
 }
 
-void MPVProcess::setSpeed(double value) {
+void TMPVProcess::setSpeed(double value) {
 	writeToStdin("set speed " + QString::number(value));
 }
 
-void MPVProcess::enableKaraoke(bool b) {
+void TMPVProcess::enableKaraoke(bool b) {
 	if (b) writeToStdin("af add karaoke"); else writeToStdin("af del karaoke");
 }
 
-void MPVProcess::enableExtrastereo(bool b) {
+void TMPVProcess::enableExtrastereo(bool b) {
 	if (b) writeToStdin("af add extrastereo"); else writeToStdin("af del extrastereo");
 }
 
-void MPVProcess::enableVolnorm(bool b, const QString & option) {
+void TMPVProcess::enableVolnorm(bool b, const QString & option) {
 	if (b) writeToStdin("af add drc=" + option); else writeToStdin("af del drc=" + option);
 }
 
-void MPVProcess::setAudioEqualizer(const QString & values) {
+void TMPVProcess::setAudioEqualizer(const QString & values) {
 	if (values == previous_eq) return;
 
 	if (!previous_eq.isEmpty()) {
@@ -1327,15 +1327,15 @@ void MPVProcess::setAudioEqualizer(const QString & values) {
 	previous_eq = values;
 }
 
-void MPVProcess::setAudioDelay(double delay) {
+void TMPVProcess::setAudioDelay(double delay) {
 	writeToStdin("set audio-delay " + QString::number(delay));
 }
 
-void MPVProcess::setSubDelay(double delay) {
+void TMPVProcess::setSubDelay(double delay) {
 	writeToStdin("set sub-delay " + QString::number(delay));
 }
 
-void MPVProcess::setLoop(int v) {
+void TMPVProcess::setLoop(int v) {
 	QString o;
 	switch (v) {
 		case -1: o = "no"; break;
@@ -1345,21 +1345,21 @@ void MPVProcess::setLoop(int v) {
 	writeToStdin(QString("set loop %1").arg(o));
 }
 
-void MPVProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
+void TMPVProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
 	writeToStdin(QString("screenshot %1 %2").arg(include_subtitles ? "subtitles" : "video").arg(t == Single ? "single" : "each-frame"));
 }
 
-void MPVProcess::setTitle(int ID) {
+void TMPVProcess::setTitle(int ID) {
 	writeToStdin("set disc-title " + QString::number(ID));
 }
 
-void MPVProcess::discSetMousePos(int x, int y) {
+void TMPVProcess::discSetMousePos(int x, int y) {
 	Q_UNUSED(x)
 	Q_UNUSED(y)
 
 	// MPV versions later than 18 july 2015 no longer support menus
 
-	// qDebug("Proc::MPVProcess::discSetMousePos: %d %d", x, y);
+	// qDebug("Proc::TMPVProcess::discSetMousePos: %d %d", x, y);
 	// writeToStdin(QString("discnav mouse_move %1 %2").arg(x).arg(y));
 	// mouse_move doesn't accept options :?
 
@@ -1371,29 +1371,29 @@ void MPVProcess::discSetMousePos(int x, int y) {
 	// writeToStdin("discnav mouse_move");
 }
 
-void MPVProcess::discButtonPressed(const QString & button_name) {
+void TMPVProcess::discButtonPressed(const QString & button_name) {
 	writeToStdin("discnav " + button_name);
 }
 
-void MPVProcess::setAspect(double aspect) {
+void TMPVProcess::setAspect(double aspect) {
 	writeToStdin("set video-aspect " + QString::number(aspect));
 }
 
-void MPVProcess::setFullscreen(bool b) {
+void TMPVProcess::setFullscreen(bool b) {
 	writeToStdin(QString("set fullscreen %1").arg(b ? "yes" : "no"));
 }
 
 #if PROGRAM_SWITCH
-void MPVProcess::setTSProgram(int ID) {
-	qDebug("Proc::MPVProcess::setTSProgram: function not supported");
+void TMPVProcess::setTSProgram(int ID) {
+	qDebug("Proc::TMPVProcess::setTSProgram: function not supported");
 }
 #endif
 
-void MPVProcess::toggleDeinterlace() {
+void TMPVProcess::toggleDeinterlace() {
 	writeToStdin("cycle deinterlace");
 }
 
-void MPVProcess::setOSDPos(const QPoint &pos, int current_osd_level) {
+void TMPVProcess::setOSDPos(const QPoint &pos, int current_osd_level) {
 	// mpv has no way to set the OSD position,
 	// so this hack uses osd-margin to emulate it.
 
@@ -1483,12 +1483,12 @@ void MPVProcess::setOSDPos(const QPoint &pos, int current_osd_level) {
 	}
 }
 
-void MPVProcess::setOSDScale(double value) {
+void TMPVProcess::setOSDScale(double value) {
 	writeToStdin("set osd-scale " + QString::number(value));
 }
 
-void MPVProcess::changeVF(const QString & filter, bool enable, const QVariant & option) {
-	qDebug() << "Proc::MPVProcess::changeVF:" << filter << enable;
+void TMPVProcess::changeVF(const QString & filter, bool enable, const QVariant & option) {
+	qDebug() << "Proc::TMPVProcess::changeVF:" << filter << enable;
 
 	QString f;
 	if (filter == "letterbox") {
@@ -1568,7 +1568,7 @@ void MPVProcess::changeVF(const QString & filter, bool enable, const QVariant & 
 		f = "lavfi=[kerndeint=" + option.toString() +"]";
 	}
 	else {
-		qDebug() << "Proc::MPVProcess::changeVF: unknown filter:" << filter;
+		qDebug() << "Proc::TMPVProcess::changeVF: unknown filter:" << filter;
 	}
 
 	if (!f.isEmpty()) {
@@ -1576,12 +1576,12 @@ void MPVProcess::changeVF(const QString & filter, bool enable, const QVariant & 
 	}
 }
 
-void MPVProcess::changeStereo3DFilter(bool enable, const QString & in, const QString & out) {
+void TMPVProcess::changeStereo3DFilter(bool enable, const QString & in, const QString & out) {
 	QString filter = "stereo3d=" + in + ":" + out;
 	writeToStdin(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(filter));
 }
 
-void MPVProcess::setSubStyles(const AssStyles & styles, const QString &) {
+void TMPVProcess::setSubStyles(const AssStyles & styles, const QString &) {
 	QString font = styles.fontname;
 	//arg << "--sub-text-font=" + font.replace(" ", "");
 	arg << "--sub-text-font=" + font;
@@ -1617,7 +1617,7 @@ void MPVProcess::setSubStyles(const AssStyles & styles, const QString &) {
 	}
 }
 
-void MPVProcess::setChannelsFile(const QString & filename) {
+void TMPVProcess::setChannelsFile(const QString & filename) {
 	arg << "--dvbin-file=" + filename;
 }
 

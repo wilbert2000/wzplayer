@@ -162,12 +162,12 @@ void TMediaPanel::setActionCollection(QList<QAction *>actions) {
 }
 
 void TMediaPanel::setMplayerState(int state) {
-	Core::State s = static_cast<Core::State>(state);
-	if (s == Core::Stopped) {
+	TCore::State s = static_cast<TCore::State>(state);
+	if (s == TCore::Stopped) {
 		seeker->setEnabled(false);
 	}
 	else
-	if (s == Core::Paused || s == Core::Playing) {
+	if (s == TCore::Paused || s == TCore::Playing) {
 		seeker->setEnabled(true);
 	}
 }

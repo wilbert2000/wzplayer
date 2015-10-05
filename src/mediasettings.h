@@ -33,7 +33,7 @@
 
 class QSettings;
 
-class MediaSettings {
+class TMediaSettings {
 
 public:
 	enum Denoise { NoDenoise = 0, DenoiseNormal = 1, DenoiseSoft = 2 };
@@ -56,8 +56,8 @@ public:
 
 	enum SubFPS { SFPS_None, SFPS_23, SFPS_24, SFPS_25, SFPS_30, SFPS_23976, SFPS_29970 };
 
-	MediaSettings(MediaData* mdat);
-	virtual ~MediaSettings();
+	TMediaSettings(MediaData* mdat);
+	virtual ~TMediaSettings();
 
 	virtual void reset();
 

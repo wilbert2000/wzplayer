@@ -49,7 +49,7 @@ protected slots:
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
 #endif
-	virtual void togglePlayAction(Core::State state);
+	virtual void togglePlayAction(TCore::State state);
 
 	void adjustFloatingControlSize();
 

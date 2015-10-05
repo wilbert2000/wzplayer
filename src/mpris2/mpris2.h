@@ -44,7 +44,7 @@
 #include <QVariantMap>
 #include "gui/base.h"
 
-class Core;
+class TCore;
 
 class Mpris2 : public QObject
 {

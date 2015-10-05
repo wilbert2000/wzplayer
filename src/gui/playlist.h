@@ -27,7 +27,7 @@
 #include "gui/tablewidget.h"
 
 class QToolBar;
-class Core;
+class TCore;
 class QMenu;
 class QSettings;
 class QToolButton;
@@ -69,7 +69,7 @@ class TPlaylist : public QWidget {
 public:
 	enum AutoGetInfo { NoGetInfo = 0, GetInfo = 1, UserDefined = 2 };
 
-	TPlaylist(Core *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window);
+	TPlaylist(TCore *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window);
 	virtual ~TPlaylist();
 
 	int count();
@@ -208,7 +208,7 @@ protected:
 	QString playlist_path;
 	QString latest_dir;
 
-	Core * core;
+	TCore * core;
 	QMenu * add_menu;
 	QMenu * remove_menu;
 	QMenu * popup;

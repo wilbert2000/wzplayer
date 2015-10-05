@@ -68,7 +68,7 @@ protected:
 protected slots:
 	virtual void updateWidgets();
 	virtual void displayTime(QString text);
-	virtual void displayState(Core::State state);
+	virtual void displayState(TCore::State state);
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 
@@ -77,7 +77,7 @@ protected slots:
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
 #endif
-	virtual void togglePlayAction(Core::State);
+	virtual void togglePlayAction(TCore::State);
 
 protected:
 	Skin::TMediaBarPanel* mediaBarPanel;

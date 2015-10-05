@@ -141,7 +141,7 @@ SubData SubTracks::itemAt(int n) const {
 // or SubNone if there are no subtitles
 int SubTracks::selectOne(QString preferred_lang, int default_sub) const {
 
-	int sub = MediaSettings::SubNone;
+	int sub = TMediaSettings::SubNone;
 
 	if (subs.count() > 0) {
 		// First subtitle

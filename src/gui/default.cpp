@@ -150,11 +150,11 @@ void TDefault::disableActionsOnStop() {
 }
 #endif // AUTODISABLE_ACTIONS
 
-void TDefault::togglePlayAction(Core::State state) {
+void TDefault::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TDefault::togglePlayAction");
 	TBasePlus::togglePlayAction(state);
 
-	if (state == Core::Playing) {
+	if (state == TCore::Playing) {
 		playOrPauseAct->setIcon(Images::icon("pause"));
 	} else {
 		playOrPauseAct->setIcon(Images::icon("play"));

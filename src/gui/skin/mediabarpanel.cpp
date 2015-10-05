@@ -85,12 +85,12 @@ void TMediaBarPanel::setMediaPanelActionCollection(QList<QAction *>actions)
     mediaPanel->setActionCollection(actions);
 }
 
-void TMediaBarPanel::setMplayerState(Core::State state)
+void TMediaBarPanel::setMplayerState(TCore::State state)
 {
     mediaPanel->setMplayerState((int)state);
 }
 
-void TMediaBarPanel::setCore(Core *c)
+void TMediaBarPanel::setCore(TCore *c)
 {
     core = c;
     connect(core, SIGNAL(newDuration(double)), this, SLOT(setDuration()));
