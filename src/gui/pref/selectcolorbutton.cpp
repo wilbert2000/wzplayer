@@ -16,13 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/selectcolorbutton.h"
+#include "gui/pref/selectcolorbutton.h"
 #include "colorutils.h"
 #include <QColorDialog>
 #include <QApplication>
 #include <QStyle>
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TSelectColorButton::TSelectColorButton( QWidget * parent ) 
 	: QPushButton(parent)
@@ -39,7 +39,7 @@ void TSelectColorButton::setColor(QColor c) {
 	_color = c;
 
 	QString current_style = qApp->style()->objectName();
-	qDebug("Pref::TSelectColorButton::setColor: current style name: %s", current_style.toUtf8().constData());
+	qDebug("Gui::Pref::TSelectColorButton::setColor: current style name: %s", current_style.toUtf8().constData());
 
 	ignore_change_event = true;
 
@@ -70,6 +70,6 @@ void TSelectColorButton::changeEvent(QEvent *e) {
 
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_selectcolorbutton.cpp"

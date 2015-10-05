@@ -21,11 +21,11 @@
 
 #include "ui_updates.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 
 class TPreferences;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TUpdates : public TWidget, public Ui::TUpdates
 {
@@ -52,6 +52,6 @@ protected:
 	virtual void retranslateStrings();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // PREF_UPDATES_H

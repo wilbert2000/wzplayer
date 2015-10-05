@@ -84,12 +84,12 @@
 
 #include "tvlist.h"
 
-#include "pref/dialog.h"
-#include "pref/general.h"
-#include "pref/interface.h"
-#include "pref/input.h"
-#include "pref/advanced.h"
-#include "pref/prefplaylist.h"
+#include "gui/pref/dialog.h"
+#include "gui/pref/general.h"
+#include "gui/pref/interface.h"
+#include "gui/pref/input.h"
+#include "gui/pref/advanced.h"
+#include "gui/pref/prefplaylist.h"
 
 #include "gui/action.h"
 #include "gui/actiongroup.h"

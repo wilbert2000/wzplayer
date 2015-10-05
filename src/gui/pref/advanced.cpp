@@ -17,7 +17,7 @@
 */
 
 
-#include "pref/advanced.h"
+#include "gui/pref/advanced.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "paths.h"
@@ -26,7 +26,7 @@
 
 #define LOGS_TAB 3
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TAdvanced::TAdvanced(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -256,9 +256,9 @@ unsigned int TAdvanced::colorKey() {
 	unsigned int color = c.toUInt(&ok, 16);
 
 	if (!ok) 
-		qWarning("Pref::TAdvanced::colorKey: cannot convert color to uint");
+		qWarning("Gui::Pref::TAdvanced::colorKey: cannot convert color to uint");
 
-	qDebug("Pref::TAdvanced::colorKey: color: %s", QString::number(color,16).toUtf8().data() );
+	qDebug("Gui::Pref::TAdvanced::colorKey: color: %s", QString::number(color,16).toUtf8().data() );
 
 	return color;
 }
@@ -488,6 +488,6 @@ void TAdvanced::createHelp() {
 		   "starting with <i>Core::</i>. Warnings and errors are not filtered.") );
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_advanced.cpp"

@@ -20,10 +20,10 @@
 #define _PREF_ADVANCED_H_
 
 #include "ui_advanced.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 #include "settings/preferences.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TAdvanced : public TWidget, public Ui::TAdvanced
 {
@@ -131,6 +131,6 @@ private:
 	bool lavf_demuxer_changed;
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_ADVANCED_H_

@@ -22,7 +22,7 @@
 */
 
 
-#include "pref/associations.h"
+#include "gui/pref/associations.h"
 #include "images.h"
 #include <QSettings>
 #include <QApplication>
@@ -30,7 +30,7 @@
 #include "winfileassoc.h"
 #include "extensions.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 static Qt::CheckState CurItemCheckState = Qt::Unchecked; 
 
@@ -93,7 +93,7 @@ void TAssociations::selectNoneClicked(bool)
 
 void TAssociations::listItemClicked(QListWidgetItem* item)
 {
-	qDebug("Pref::TAssociations::listItemClicked");
+	qDebug("Gui::Pref::TAssociations::listItemClicked");
 	
 	if (!(item->flags() & Qt::ItemIsEnabled))
 		return; 
@@ -179,7 +179,7 @@ int TAssociations::ProcessAssociations(QStringList& current, QStringList& old)
 
 void TAssociations::getData(TPreferences *)
 {
-	qDebug("Pref::TAssociations::getData: something_changed: %d", something_changed);
+	qDebug("Gui::Pref::TAssociations::getData: something_changed: %d", something_changed);
 	if (!something_changed) return;
 	
 	QStringList extensions; 
@@ -237,7 +237,7 @@ void TAssociations::createHelp() {
         tr("Restoration doesn't work on Windows Vista."));
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_associations.cpp"
 

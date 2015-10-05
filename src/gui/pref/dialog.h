@@ -20,20 +20,20 @@
 #define _PREF_DIALOG_H_
 
 #include "ui_dialog.h"
-#include "pref/widget.h"
-#include "pref/general.h"
-#include "pref/drives.h"
-#include "pref/interface.h"
-#include "pref/performance.h"
-#include "pref/input.h"
-#include "pref/subtitles.h"
-#include "pref/advanced.h"
-#include "pref/prefplaylist.h"
-#include "pref/tv.h"
-#include "pref/updates.h"
-#include "pref/network.h"
+#include "gui/pref/widget.h"
+#include "gui/pref/general.h"
+#include "gui/pref/drives.h"
+#include "gui/pref/interface.h"
+#include "gui/pref/performance.h"
+#include "gui/pref/input.h"
+#include "gui/pref/subtitles.h"
+#include "gui/pref/advanced.h"
+#include "gui/pref/prefplaylist.h"
+#include "gui/pref/tv.h"
+#include "gui/pref/updates.h"
+#include "gui/pref/network.h"
 #if USE_ASSOCIATIONS
-#include "pref/associations.h"
+#include "gui/pref/associations.h"
 #endif
 
 class QTextBrowser;
@@ -41,7 +41,7 @@ class QPushButton;
 
 class TPreferences;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 
 class TDialog : public QDialog, public Ui::TDialog
@@ -117,6 +117,6 @@ private:
 	QPushButton * helpButton;
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_DIALOG_H_

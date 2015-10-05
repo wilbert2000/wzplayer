@@ -21,12 +21,12 @@
 
 #include "ui_input.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 #include <QStringList>
 
 class TPreferences;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TInput : public TWidget, public Ui::TInput
 {
@@ -84,6 +84,6 @@ protected:
 	virtual void retranslateStrings();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_INPUT_H_

@@ -17,13 +17,13 @@
 */
 
 
-#include "pref/performance.h"
+#include "gui/pref/performance.h"
 #include "images.h"
 #include "settings/preferences.h"
 
 using namespace Settings;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TPerformance::TPerformance(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -312,6 +312,6 @@ void TPerformance::createHelp() {
            "precaching a VCD.") );
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_performance.cpp"

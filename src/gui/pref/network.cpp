@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/network.h"
+#include "gui/pref/network.h"
 #include "settings/preferences.h"
 #include "images.h"
 #include <QNetworkProxy>
@@ -25,7 +25,7 @@
 #include "retrieveyoutubeurl.h"
 #endif
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TNetwork::TNetwork(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -187,6 +187,6 @@ void TNetwork::createHelp() {
 
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_network.cpp"

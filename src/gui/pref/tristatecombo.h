@@ -29,7 +29,7 @@
 
 using namespace Settings;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TTristateCombo : public QComboBox
 {
@@ -48,6 +48,6 @@ protected:
 
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_TRISTATE_COMBO_H_

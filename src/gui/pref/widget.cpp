@@ -16,10 +16,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 #include <QEvent>
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TWidget::TWidget(QWidget * parent, Qt::WindowFlags f )
 	: QWidget(parent, f)
@@ -71,4 +71,4 @@ void TWidget::changeEvent(QEvent *e) {
 void TWidget::retranslateStrings() {
 }
 
-} // namespace pref
+}} // namespace Gui::Pref

@@ -16,9 +16,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/vdpauproperties.h"
+#include "gui/pref/vdpauproperties.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TVDPAUProperties::TVDPAUProperties(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent, f) 
@@ -79,7 +79,7 @@ bool TVDPAUProperties::disableFilters() {
 	return disable_filters_check->isChecked();
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_vdpauproperties.cpp"
 

@@ -16,11 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/prefplaylist.h"
+#include "gui/pref/prefplaylist.h"
 #include "settings/preferences.h"
 #include "images.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TPrefPlaylist::TPrefPlaylist(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -158,6 +158,6 @@ void TPrefPlaylist::createHelp() {
            "reloaded automatically when smplayer is run again."));
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_prefplaylist.cpp"

@@ -25,11 +25,11 @@
 #define _PREF_ASSOCIATIONS_H_
 
 #include "ui_associations.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 
 class TPreferences;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TAssociations : public TWidget, public Ui::TAssociations
 {
@@ -71,6 +71,6 @@ protected:
 	bool something_changed;
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_ASSOCIATIONS_H_

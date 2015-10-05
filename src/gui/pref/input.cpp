@@ -17,7 +17,7 @@
 */
 
 
-#include "pref/input.h"
+#include "gui/pref/input.h"
 #include "images.h"
 #include "config.h"
 #include "guiconfig.h"
@@ -25,7 +25,7 @@
 
 using namespace Settings;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TInput::TInput(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -370,6 +370,6 @@ void TInput::createHelp() {
 		tr("Check it to enable changing speed as one function.") );
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_input.cpp"

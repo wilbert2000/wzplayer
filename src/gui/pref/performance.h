@@ -20,12 +20,12 @@
 #define _PREF_PERFORMANCE_H_
 
 #include "ui_performance.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 
 #include "settings/preferences.h"
 #include "config.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TPerformance : public TWidget, public Ui::TPerformance
 {
@@ -90,6 +90,6 @@ protected:
 	virtual void retranslateStrings();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_PERFORMANCE_H_

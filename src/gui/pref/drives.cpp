@@ -17,7 +17,7 @@
 */
 
 
-#include "pref/drives.h"
+#include "gui/pref/drives.h"
 #include "images.h"
 #include "settings/preferences.h"
 
@@ -25,7 +25,7 @@
 #include <QFileInfoList>
 #include <QDir>
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -82,7 +82,7 @@ void TDrives::retranslateStrings() {
 }
 
 void TDrives::updateDriveCombos(bool detect_cd_devices) {
-	qDebug("Pref::TDrives::updateDriveCombos: detect_cd_devices: %d", detect_cd_devices);
+	qDebug("Gui::Pref::TDrives::updateDriveCombos: detect_cd_devices: %d", detect_cd_devices);
 
 	// Save current values
 	QString current_dvd_device = dvdDevice();
@@ -114,7 +114,7 @@ void TDrives::updateDriveCombos(bool detect_cd_devices) {
                                              QDir::Files | QDir::System | QDir::Readable);
 	for (int n=0; n < devices.count(); n++) {
 		QString device_name = "/dev/" + devices[n];
-		qDebug("Pref::TDrives::TDrives: device found: '%s'", device_name.toUtf8().constData());
+		qDebug("Gui::Pref::TDrives::TDrives: device found: '%s'", device_name.toUtf8().constData());
 		dvd_device_combo->addItem(device_name);
 		cdrom_device_combo->addItem(device_name);
 		bluray_device_combo->addItem(device_name);
@@ -176,7 +176,7 @@ bool TDrives::useDVDNav() {
 }
 
 void TDrives::on_check_drives_button_clicked() {
-	qDebug("Pref::TDrives::on_check_drives_button_clicked");
+	qDebug("Gui::Pref::TDrives::on_check_drives_button_clicked");
 	updateDriveCombos(true);
 }
 
@@ -199,6 +199,6 @@ void TDrives::createHelp() {
 		tr("Choose your Blu-ray device. It will be used to play Blu-ray discs.") );
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_drives.cpp"

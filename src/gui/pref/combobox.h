@@ -25,7 +25,7 @@
 //! This class adds some Qt 3 compatibility functions which don't have a
 //! direct equivalent in Qt 4.
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TComboBox : public QComboBox
 {
@@ -48,6 +48,6 @@ public:
 	void setFontsFromDir(const QString & fontdir);
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_COMBOBOX_H_

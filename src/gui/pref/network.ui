@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Pref::TNetwork</class>
- <widget class="QWidget" name="Pref::TNetwork">
+ <class>Gui::Pref::TNetwork</class>
+ <widget class="QWidget" name="Gui::Pref::TNetwork">
   <property name="geometry">
    <rect>
     <x>0</x>

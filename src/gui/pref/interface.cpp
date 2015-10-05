@@ -17,7 +17,7 @@
 */
 
 
-#include "pref/interface.h"
+#include "gui/pref/interface.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
@@ -32,7 +32,7 @@
 
 #define SINGLE_INSTANCE_TAB 2
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TInterface::TInterface(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -273,7 +273,7 @@ void TInterface::getData(Settings::TPreferences * pref) {
 	if (pref->language != language()) {
 		pref->language = language();
 		language_changed = true;
-		qDebug("Pref::TInterface::getData: chosen language: '%s'", pref->language.toUtf8().data());
+		qDebug("Gui::Pref::TInterface::getData: chosen language: '%s'", pref->language.toUtf8().data());
 	}
 
 	if (pref->iconset != iconSet()) {
@@ -766,6 +766,6 @@ void TInterface::createHelp() {
 		tr("If this option is checked, SMPlayer will remember the last folder you use to open a file.") );
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_interface.cpp"

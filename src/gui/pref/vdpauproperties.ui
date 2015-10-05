@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>Pref::TVDPAUProperties</class>
- <widget class="QDialog" name="Pref::TVDPAUProperties" >
+ <class>Gui::Pref::TVDPAUProperties</class>
+ <widget class="QDialog" name="Gui::Pref::TVDPAUProperties" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -89,7 +89,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Pref::TVDPAUProperties</receiver>
+   <receiver>Gui::Pref::TVDPAUProperties</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -105,7 +105,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Pref::TVDPAUProperties</receiver>
+   <receiver>Gui::Pref::TVDPAUProperties</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

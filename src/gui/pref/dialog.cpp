@@ -17,7 +17,7 @@
 */
 
 
-#include "pref/dialog.h"
+#include "gui/pref/dialog.h"
 
 #include "settings/preferences.h"
 
@@ -26,7 +26,7 @@
 
 #include "images.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TDialog::TDialog(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent, f )
@@ -102,7 +102,7 @@ TDialog::~TDialog()
 }
 
 void TDialog::showSection(Section s) {
-	qDebug("Pref::TDialog::showSection: %d", s);
+	qDebug("Gui::Pref::TDialog::showSection: %d", s);
 
 	sections->setCurrentRow(s);
 }
@@ -226,6 +226,6 @@ void TDialog::changeEvent(QEvent *e) {
 	}
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_dialog.cpp"

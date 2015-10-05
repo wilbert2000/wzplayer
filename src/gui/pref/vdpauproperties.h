@@ -22,7 +22,7 @@
 #include <QDialog>
 #include "ui_vdpauproperties.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TVDPAUProperties : public QDialog, public Ui::TVDPAUProperties {
 	Q_OBJECT
@@ -48,6 +48,6 @@ public:
 	bool disableFilters();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_VDPAUPROPERTIES_H_

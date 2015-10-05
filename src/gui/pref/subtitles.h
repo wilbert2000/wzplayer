@@ -21,11 +21,11 @@
 
 #include "ui_subtitles.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 
 class Encodings;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TSubtitles : public TWidget, public Ui::TSubtitles
 {
@@ -95,6 +95,6 @@ private:
 	QString forced_ass_style;
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_SUBTITLES_H_

@@ -21,12 +21,12 @@
 
 #include "ui_interface.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 #include "config.h"
 
 class TPreferences;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TInterface : public TWidget, public Ui::TInterface
 {
@@ -154,6 +154,6 @@ private:
 #endif
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_INTERFACE_H_

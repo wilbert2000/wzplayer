@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Pref::TGeneral</class>
- <widget class="QWidget" name="Pref::TGeneral">
+ <class>Gui::Pref::TGeneral</class>
+ <widget class="QWidget" name="Gui::Pref::TGeneral">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -765,7 +765,7 @@
           </widget>
          </item>
          <item>
-          <widget class="Pref::TTristateCombo" name="scaletempo_combo">
+          <widget class="Gui::Pref::TTristateCombo" name="scaletempo_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1246,9 +1246,9 @@ For translators: don't translate this text, it will be replaced with another one
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Pref::TTristateCombo</class>
+   <class>Gui::Pref::TTristateCombo</class>
    <extends>QComboBox</extends>
-   <header>pref/tristatecombo.h</header>
+   <header>gui/pref/tristatecombo.h</header>
   </customwidget>
   <customwidget>
    <class>FileChooser</class>

@@ -16,12 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/combobox.h"
+#include "gui/pref/combobox.h"
 #include <QDir>
 #include <QStringListModel>
 #include <QDebug>
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TComboBox::TComboBox( QWidget * parent ) : QComboBox(parent)
 {
@@ -77,13 +77,13 @@ void TFontComboBox::setFontsFromDir(const QString & fontdir) {
 		QStringList fontnames;
 		QStringList fontfiles = QDir(fontdir).entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
 		for (int n=0; n < fontfiles.count(); n++) {
-			qDebug() << "Pref::TFontComboBox::setFontsFromDir: adding font:" << fontfiles[n];
+			qDebug() << "Gui::Pref::TFontComboBox::setFontsFromDir: adding font:" << fontfiles[n];
 			int id = fdb.addApplicationFont(fontdir +"/"+ fontfiles[n]);
 			fontnames << fdb.applicationFontFamilies(id);
 		}
 		//fdb.removeAllApplicationFonts();
 		fontnames.removeDuplicates();
-		qDebug() << "Pref::TFontComboBox::setFontsFromDir: fontnames:" << fontnames;
+		qDebug() << "Gui::Pref::TFontComboBox::setFontsFromDir: fontnames:" << fontnames;
 		clear();
 		QStringListModel *m = qobject_cast<QStringListModel *>(model());
 		if (m) m->setStringList(fontnames);
@@ -92,4 +92,4 @@ void TFontComboBox::setFontsFromDir(const QString & fontdir) {
 	setCurrentText(current_text);
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref

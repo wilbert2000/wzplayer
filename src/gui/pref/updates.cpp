@@ -16,12 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/updates.h"
+#include "gui/pref/updates.h"
 #include "settings/preferences.h"
 #include "images.h"
 #include "updatecheckerdata.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TUpdates::TUpdates(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -100,6 +100,6 @@ void TUpdates::createHelp() {
 #endif
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_updates.cpp"

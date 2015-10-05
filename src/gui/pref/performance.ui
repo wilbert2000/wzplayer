@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Pref::TPerformance</class>
- <widget class="QWidget" name="Pref::TPerformance">
+ <class>Gui::Pref::TPerformance</class>
+ <widget class="QWidget" name="Gui::Pref::TPerformance">
   <property name="geometry">
    <rect>
     <x>0</x>

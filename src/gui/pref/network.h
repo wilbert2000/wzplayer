@@ -21,12 +21,12 @@
 
 #include "ui_network.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 #include "config.h"
 
 class TPreferences;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TNetwork : public TWidget, public Ui::TNetwork
 {
@@ -60,6 +60,6 @@ protected:
 	virtual void retranslateStrings();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // PREF_NETWORK_H

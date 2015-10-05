@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Pref::TAdvanced</class>
- <widget class="QWidget" name="Pref::TAdvanced">
+ <class>Gui::Pref::TAdvanced</class>
+ <widget class="QWidget" name="Gui::Pref::TAdvanced">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -56,7 +56,7 @@
           </widget>
          </item>
          <item>
-          <widget class="Pref::TComboBox" name="monitoraspect_combo">
+          <widget class="Gui::Pref::TComboBox" name="monitoraspect_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -154,7 +154,7 @@
           </widget>
          </item>
          <item>
-          <widget class="Pref::TTristateCombo" name="correct_pts_combo"/>
+          <widget class="Gui::Pref::TTristateCombo" name="correct_pts_combo"/>
          </item>
          <item>
           <spacer>
@@ -703,14 +703,14 @@ Example: extrastereo,karaoke</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Pref::TTristateCombo</class>
+   <class>Gui::Pref::TTristateCombo</class>
    <extends>QComboBox</extends>
-   <header>pref/tristatecombo.h</header>
+   <header>gui/pref/tristatecombo.h</header>
   </customwidget>
   <customwidget>
-   <class>Pref::TComboBox</class>
+   <class>Gui::Pref::TComboBox</class>
    <extends>QComboBox</extends>
-   <header>pref/combobox.h</header>
+   <header>gui/pref/combobox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

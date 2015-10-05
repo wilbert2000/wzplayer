@@ -21,7 +21,7 @@
 
 #include <QObject>
 #include "ui_general.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 #include "inforeader.h"
 #include "deviceinfo.h"
 #include "settings/preferences.h"
@@ -37,7 +37,7 @@
 #define MPLAYER_KAI_VERSION 30994
 #endif
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TGeneral : public TWidget, public Ui::TGeneral {
 	Q_OBJECT
@@ -221,6 +221,6 @@ private:
 
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_GENERAL_H_

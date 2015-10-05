@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>Pref::TTV</class>
- <widget class="QWidget" name="Pref::TTV" >
+ <class>Gui::Pref::TTV</class>
+ <widget class="QWidget" name="Gui::Pref::TTV" >
   <property name="geometry" >
    <rect>
     <x>0</x>

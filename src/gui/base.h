@@ -35,7 +35,7 @@
 #include "gui/favorites.h"
 #include "gui/tvlist.h"
 #include "gui/filepropertiesdialog.h"
-#include "pref/dialog.h"
+#include "gui/pref/dialog.h"
 
 #ifdef Q_OS_WIN
 #ifdef AVOID_SCREENSAVER

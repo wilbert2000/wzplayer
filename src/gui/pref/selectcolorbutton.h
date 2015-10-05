@@ -21,7 +21,7 @@
 
 #include <QPushButton>
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TSelectColorButton : public QPushButton
 {
@@ -48,7 +48,7 @@ protected:
 	virtual void changeEvent ( QEvent * event ) ;
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_SELECTCOLORBUTTON_H_
 

@@ -16,12 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/tv.h"
+#include "gui/pref/tv.h"
 #include "settings/preferences.h"
 #include "images.h"
 #include "mediasettings.h"
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TTV::TTV(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -80,7 +80,7 @@ void TTV::setInitialDeinterlace(int ID) {
 	if (pos != -1) {
 		deinterlace_combo->setCurrentIndex(pos);
 	} else {
-		qWarning("Pref::TTV::setInitialDeinterlace: ID: %d not found in combo", ID);
+		qWarning("Gui::Pref::TTV::setInitialDeinterlace: ID: %d not found in combo", ID);
 	}
 }
 
@@ -88,7 +88,7 @@ int TTV::initialDeinterlace() {
 	if (deinterlace_combo->currentIndex() != -1) {
 		return deinterlace_combo->itemData( deinterlace_combo->currentIndex() ).toInt();
 	} else {
-		qWarning("Pref::TTV::initialDeinterlace: no item selected");
+		qWarning("Gui::Pref::TTV::initialDeinterlace: no item selected");
 		return 0;
 	}
 }
@@ -114,6 +114,6 @@ void TTV::createHelp() {
 #endif
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_tv.cpp"

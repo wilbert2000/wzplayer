@@ -17,7 +17,7 @@
 */
 
 
-#include "pref/subtitles.h"
+#include "gui/pref/subtitles.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "paths.h"
@@ -27,7 +27,7 @@
 
 #include <QInputDialog>
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TSubtitles::TSubtitles(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -350,11 +350,11 @@ bool TSubtitles::freetypeSupport() {
 }
 
 void TSubtitles::on_freetype_check_toggled(bool b) {
-	qDebug("Pref::TSubtitles:on_freetype_check_toggled: %d", b);
+	qDebug("Gui::Pref::TSubtitles:on_freetype_check_toggled: %d", b);
 }
 
 void TSubtitles::on_windowsfontdir_check_toggled(bool b) {
-	qDebug("Pref::TSubtitles::on_windowsfontdir_check_toggled: %d", b);
+	qDebug("Gui::Pref::TSubtitles::on_windowsfontdir_check_toggled: %d", b);
 
 #ifdef Q_OS_WIN
 	if (b) {
@@ -505,6 +505,6 @@ void TSubtitles::createHelp() {
            "applied to ass subtitles too.") );
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_subtitles.cpp"

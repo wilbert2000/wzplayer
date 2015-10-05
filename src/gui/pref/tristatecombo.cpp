@@ -16,10 +16,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "pref/tristatecombo.h"
+#include "gui/pref/tristatecombo.h"
 #include <QEvent>
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TTristateCombo::TTristateCombo( QWidget * parent ) : QComboBox(parent) 
 {
@@ -57,6 +57,6 @@ void TTristateCombo::changeEvent(QEvent *e) {
 	}
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_tristatecombo.cpp"

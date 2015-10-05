@@ -21,11 +21,11 @@
 
 #include "ui_tv.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 
 class TPreferences;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TTV : public TWidget, public Ui::TTV
 {
@@ -58,6 +58,6 @@ protected:
 	virtual void retranslateStrings();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_TV_H_

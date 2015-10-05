@@ -21,10 +21,10 @@
 
 #include "ui_prefplaylist.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TPrefPlaylist : public TWidget, public Ui::TPrefPlaylist
 {
@@ -69,6 +69,6 @@ protected:
 	virtual void retranslateStrings();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_PLAYLIST_H_

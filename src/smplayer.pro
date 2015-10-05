@@ -126,23 +126,23 @@ HEADERS += guiconfig.h \
 	filechooser.h \
 	lineedit_with_icon.h \
 	languages.h \
-    pref/vdpauproperties.h \
-    pref/selectcolorbutton.h \
-    pref/tristatecombo.h \
-    pref/combobox.h \
-	pref/dialog.h \
-	pref/widget.h \
-	pref/general.h \
-	pref/drives.h \
-	pref/interface.h \
-	pref/performance.h \
-	pref/input.h \
-	pref/subtitles.h \
-	pref/advanced.h \
-	pref/prefplaylist.h \
-	pref/tv.h \
-	pref/updates.h \
-	pref/network.h \
+    gui/pref/vdpauproperties.h \
+    gui/pref/selectcolorbutton.h \
+    gui/pref/tristatecombo.h \
+    gui/pref/combobox.h \
+    gui/pref/dialog.h \
+    gui/pref/widget.h \
+    gui/pref/general.h \
+    gui/pref/drives.h \
+    gui/pref/interface.h \
+    gui/pref/performance.h \
+    gui/pref/input.h \
+    gui/pref/subtitles.h \
+    gui/pref/advanced.h \
+    gui/pref/prefplaylist.h \
+    gui/pref/tv.h \
+    gui/pref/updates.h \
+    gui/pref/network.h \
 	filedialog.h \
     gui/multilineinputdialog.h \
     gui/filepropertiesdialog.h \
@@ -225,23 +225,23 @@ SOURCES	+= version.cpp \
 	filechooser.cpp \
 	lineedit_with_icon.cpp \
 	languages.cpp \
-    pref/vdpauproperties.cpp \
-    pref/selectcolorbutton.cpp \
-    pref/tristatecombo.cpp \
-    pref/combobox.cpp \
-	pref/dialog.cpp \
-	pref/widget.cpp \
-	pref/general.cpp \
-	pref/drives.cpp \
-	pref/interface.cpp \
-	pref/performance.cpp \
-	pref/input.cpp \
-	pref/subtitles.cpp \
-	pref/advanced.cpp \
-	pref/prefplaylist.cpp \
-	pref/tv.cpp \
-	pref/updates.cpp \
-	pref/network.cpp \
+    gui/pref/vdpauproperties.cpp \
+    gui/pref/selectcolorbutton.cpp \
+    gui/pref/tristatecombo.cpp \
+    gui/pref/combobox.cpp \
+    gui/pref/dialog.cpp \
+    gui/pref/widget.cpp \
+    gui/pref/general.cpp \
+    gui/pref/drives.cpp \
+    gui/pref/interface.cpp \
+    gui/pref/performance.cpp \
+    gui/pref/input.cpp \
+    gui/pref/subtitles.cpp \
+    gui/pref/advanced.cpp \
+    gui/pref/prefplaylist.cpp \
+    gui/pref/tv.cpp \
+    gui/pref/updates.cpp \
+    gui/pref/network.cpp \
 	filedialog.cpp \
     gui/multilineinputdialog.cpp \
     gui/filepropertiesdialog.cpp \
@@ -287,11 +287,13 @@ SOURCES	+= version.cpp \
     log.cpp
 
 FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
-        gui/eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui pref/vdpauproperties.ui \
-        pref/dialog.ui pref/general.ui pref/drives.ui pref/interface.ui \
-        pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \
-        pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui gui/favoriteeditor.ui \
-        gui/about.ui gui/inputmplayerversion.ui gui/errordialog.ui gui/timedialog.ui gui/stereo3ddialog.ui \
+        gui/eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui \
+        gui/pref/vdpauproperties.ui gui/pref/dialog.ui gui/pref/general.ui \
+        gui/pref/drives.ui gui/pref/interface.ui gui/pref/performance.ui \
+        gui/pref/input.ui gui/pref/subtitles.ui gui/pref/advanced.ui \
+        gui/pref/prefplaylist.ui gui/pref/tv.ui gui/pref/updates.ui gui/pref/network.ui \
+        gui/favoriteeditor.ui gui/about.ui gui/inputmplayerversion.ui \
+        gui/errordialog.ui gui/timedialog.ui gui/stereo3ddialog.ui \
         toolbareditor.ui gui/multilineinputdialog.ui
 
 contains( DEFINES, MPV_SUPPORT ) {
@@ -497,9 +499,9 @@ win32 {
 	}
 	
 	contains( DEFINES, USE_ASSOCIATIONS ) {
-		HEADERS += pref/associations.h winfileassoc.h
-		SOURCES += pref/associations.cpp winfileassoc.cpp
-		FORMS += pref/associations.ui
+        HEADERS += gui/pref/associations.h winfileassoc.h
+        SOURCES += gui/pref/associations.cpp winfileassoc.cpp
+        FORMS += gui/pref/associations.ui
 	}
 
 	contains(TEMPLATE,vcapp) {

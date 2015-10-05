@@ -29,7 +29,7 @@
 
 class QEvent;
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TWidget : public QWidget
 {
@@ -66,6 +66,6 @@ private:
 	QString help_message;
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_WIDGET_H_

@@ -21,11 +21,11 @@
 
 #include "ui_drives.h"
 #include "settings/preferences.h"
-#include "pref/widget.h"
+#include "gui/pref/widget.h"
 #include "config.h"
 
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 class TDrives : public TWidget, public Ui::TDrives
 {
@@ -68,6 +68,6 @@ protected:
 	virtual void retranslateStrings();
 };
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #endif // _PREF_DRIVES_H_

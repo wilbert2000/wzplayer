@@ -17,8 +17,8 @@
 */
 
 
-#include "pref/general.h"
-#include "pref/vdpauproperties.h"
+#include "gui/pref/general.h"
+#include "gui/pref/vdpauproperties.h"
 #include "settings/preferences.h"
 #include "filedialog.h"
 #include "images.h"
@@ -30,7 +30,7 @@
 #include "deviceinfo.h"
 #endif
 
-namespace Pref {
+namespace Gui { namespace Pref {
 
 TGeneral::TGeneral(QWidget * parent, Qt::WindowFlags f)
 	: TWidget(parent, f )
@@ -271,7 +271,7 @@ void TGeneral::getData(TPreferences * pref) {
 		requires_restart = true;
 		pref->mplayer_bin = mplayerPath();
 
-		qDebug("Pref::TGeneral::getData: mplayer binary has changed, getting version number");
+		qDebug("Gui::Pref::TGeneral::getData: mplayer binary has changed, getting version number");
 		// Forces to get info from mplayer to update version number
 		InfoReader * i = InfoReader::obj();
 		i->getInfo();
@@ -519,7 +519,7 @@ QString TGeneral::VO() {
 		/*
 		if (vo.isEmpty()) {
 			vo = vo_combo->itemData(0).toString();
-			qDebug("Pref::TGeneral::VO: user defined vo is empty, using %s", vo.toUtf8().constData());
+			qDebug("Gui::Pref::TGeneral::VO: user defined vo is empty, using %s", vo.toUtf8().constData());
 		}
 		*/
 	}
@@ -533,7 +533,7 @@ QString TGeneral::AO() {
 		/*
 		if (ao.isEmpty()) {
 			ao = ao_combo->itemData(0).toString();
-			qDebug("Pref::TGeneral::AO: user defined ao is empty, using %s", ao.toUtf8().constData());
+			qDebug("Gui::Pref::TGeneral::AO: user defined ao is empty, using %s", ao.toUtf8().constData());
 		}
 		*/
 	}
@@ -709,7 +709,7 @@ void TGeneral::setInitialDeinterlace(int ID) {
 	if (pos != -1) {
 		deinterlace_combo->setCurrentIndex(pos);
 	} else {
-		qWarning("Pref::TGeneral::setInitialDeinterlace: ID: %d not found in combo", ID);
+		qWarning("Gui::Pref::TGeneral::setInitialDeinterlace: ID: %d not found in combo", ID);
 	}
 }
 
@@ -717,7 +717,7 @@ int TGeneral::initialDeinterlace() {
 	if (deinterlace_combo->currentIndex() != -1) {
 		return deinterlace_combo->itemData( deinterlace_combo->currentIndex() ).toInt();
 	} else {
-		qWarning("Pref::TGeneral::initialDeinterlace: no item selected");
+		qWarning("Gui::Pref::TGeneral::initialDeinterlace: no item selected");
 		return 0;
 	}
 }
@@ -767,7 +767,7 @@ void TGeneral::setAudioChannels(int ID) {
 	if (pos != -1) {
 		channels_combo->setCurrentIndex(pos);
 	} else {
-		qWarning("Pref::TGeneral::setAudioChannels: ID: %d not found in combo", ID);
+		qWarning("Gui::Pref::TGeneral::setAudioChannels: ID: %d not found in combo", ID);
 	}
 }
 
@@ -775,7 +775,7 @@ int TGeneral::audioChannels() {
 	if (channels_combo->currentIndex() != -1) {
 		return channels_combo->itemData( channels_combo->currentIndex() ).toInt();
 	} else {
-		qWarning("Pref::TGeneral::audioChannels: no item selected");
+		qWarning("Gui::Pref::TGeneral::audioChannels: no item selected");
 		return 0;
 	}
 }
@@ -844,7 +844,7 @@ TPreferences::OptionState TGeneral::scaleTempoFilter() {
 }
 
 void TGeneral::vo_combo_changed(int idx) {
-	qDebug("Pref::TGeneral::vo_combo_changed: %d", idx);
+	qDebug("Gui::Pref::TGeneral::vo_combo_changed: %d", idx);
 	bool visible = (vo_combo->itemData(idx).toString() == "user_defined");
 	vo_user_defined_edit->setVisible(visible);
 	vo_user_defined_edit->setFocus();
@@ -856,7 +856,7 @@ void TGeneral::vo_combo_changed(int idx) {
 }
 
 void TGeneral::ao_combo_changed(int idx) {
-	qDebug("Pref::TGeneral::ao_combo_changed: %d", idx);
+	qDebug("Gui::Pref::TGeneral::ao_combo_changed: %d", idx);
 	bool visible = (ao_combo->itemData(idx).toString() == "user_defined");
 	ao_user_defined_edit->setVisible(visible);
 	ao_user_defined_edit->setFocus();
@@ -864,7 +864,7 @@ void TGeneral::ao_combo_changed(int idx) {
 
 #ifndef Q_OS_WIN
 void TGeneral::on_vdpau_button_clicked() {
-	qDebug("Pref::TGeneral::on_vdpau_button_clicked");
+	qDebug("Gui::Pref::TGeneral::on_vdpau_button_clicked");
 
 /*
 	TVDPAUProperties d(this);
@@ -1167,6 +1167,6 @@ void TGeneral::createHelp() {
 
 }
 
-} // namespace Pref
+}} // namespace Gui::Pref
 
 #include "moc_general.cpp"
