@@ -20,7 +20,7 @@
 #include "gui/pref/input.h"
 #include "images.h"
 #include "config.h"
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "settings/preferences.h"
 
 using namespace Settings;

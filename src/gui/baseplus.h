@@ -19,7 +19,7 @@
 #ifndef _GUI_BASEPLUS_H_
 #define _GUI_BASEPLUS_H_
 
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "gui/base.h"
 #include "gui/widgetactions.h"
 #include "gui/playlistdock.h"

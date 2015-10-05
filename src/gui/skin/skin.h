@@ -19,7 +19,7 @@
 #ifndef _GUI_SKIN_H_
 #define _GUI_SKIN_H_
 
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "gui/action.h"
 #include "gui/widgetactions.h"
 #include "gui/autohidewidget.h"

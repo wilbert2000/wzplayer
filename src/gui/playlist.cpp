@@ -52,7 +52,7 @@
 #include "version.h"
 #include "core.h"
 #include "extensions.h"
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 
 #include <stdlib.h>
 

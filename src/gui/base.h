@@ -23,7 +23,7 @@
 #include <QNetworkProxy>
 
 #include "config.h"
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "mediadata.h"
 #include "mediasettings.h"
 #include "settings/preferences.h"

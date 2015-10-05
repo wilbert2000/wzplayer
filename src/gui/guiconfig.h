@@ -16,62 +16,45 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUICONFIG_H_
-#define _GUICONFIG_H_
-
+#ifndef _GUI_GUICONFIG_H_
+#define _GUI_GUICONFIG_H_
 
 // DOCK_PLAYLIST
 // if 1, the playlist will be docked in the main window, instead
 // of being a top level window
-
 #define DOCK_PLAYLIST 1
-
 
 // AUTODISABLE_ACTIONS
 // if set to 1, some actions will be disabled if they are not needed
-
 #define AUTODISABLE_ACTIONS 1
-
 
 // MINI_ARROW_BUTTONS
 // if set to 1, the GUI will use a popup menu for arrow buttons
-
 #define MINI_ARROW_BUTTONS 1
-
 
 // ALLOW_CHANGE_STYLESHEET
 // if 1, the app stylesheet can be changed
-
 #define ALLOW_CHANGE_STYLESHEET 1
 
-
 // Allow to use multiple shortcuts for actions
-
 #define USE_MULTIPLE_SHORTCUTS 1
-
 
 // USE_SHORTCUTGETTER
 // if 1, a new dialog will be used to ask the user for a
 // keyshortcut.
-
 #define USE_SHORTCUTGETTER 1
-
 
 // USE_INFOPROVIDER
 // if 1, the playlist will read info about the files when they are added
 // to the list.
 // It's slow but allows the user to see the length and even the name of
 // a mp3 song.
-
 #define USE_INFOPROVIDER 1
-
 
 // USE_DOCK_TOPLEVEL_EVENT
 // if 1, the topLevelChanged from QDockWidget will be use to know
 // if the playlist has been docked or undocked
-
 #define USE_DOCK_TOPLEVEL_EVENT 0
 
-
-#endif
+#endif // _GUI_GUICONFIG_H_
 

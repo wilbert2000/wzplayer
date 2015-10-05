@@ -83,8 +83,7 @@ contains(QT_VERSION, ^4\\.[0-3]\\..*) {
 	}
 }
 
-HEADERS += guiconfig.h \
-	config.h \
+HEADERS += config.h \
 	links.h \
 	svn_revision.h \
 	version.h \
@@ -125,6 +124,7 @@ HEADERS += guiconfig.h \
 	filechooser.h \
 	lineedit_with_icon.h \
 	languages.h \
+    gui/guiconfig.h \
     gui/actionseditor.h \
     gui/pref/vdpauproperties.h \
     gui/pref/selectcolorbutton.h \

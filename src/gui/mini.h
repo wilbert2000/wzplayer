@@ -19,7 +19,7 @@
 #ifndef _GUI_MINI_H_
 #define _GUI_MINI_H_
 
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "gui/baseplus.h"
 #include "gui/editabletoolbar.h"
 #include "gui/autohidewidget.h"

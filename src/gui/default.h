@@ -21,7 +21,7 @@
 
 #include <QPoint>
 
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "gui/baseplus.h"
 #include "gui/editabletoolbar.h"
 #include "gui/autohidewidget.h"

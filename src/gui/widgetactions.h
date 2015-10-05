@@ -21,7 +21,7 @@
 
 #include <QWidgetAction>
 #include "config.h"
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "timeslider.h"
 #include "settings/preferences.h"
 

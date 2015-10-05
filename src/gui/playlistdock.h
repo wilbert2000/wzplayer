@@ -20,7 +20,7 @@
 #define _GUI_PLAYLIST_DOCK_H_
 
 #include <QDockWidget>
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 
 namespace Gui {
 

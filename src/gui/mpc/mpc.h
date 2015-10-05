@@ -19,7 +19,7 @@
 #ifndef _GUI_MPC_H_
 #define _GUI_MPC_H_
 
-#include "guiconfig.h"
+#include "gui/guiconfig.h"
 #include "gui/baseplus.h"
 #include "gui/autohidewidget.h"
 
