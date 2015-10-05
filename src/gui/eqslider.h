@@ -47,7 +47,7 @@ public:
 	QString label() const;
 
 	QSlider * sliderWidget() { return _slider; }
-	VerticalText * labelWidget() { return _label; }
+	TVerticalText * labelWidget() { return _label; }
 	QLabel * iconWidget() { return _icon; }
 
 signals:

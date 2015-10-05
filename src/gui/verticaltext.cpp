@@ -19,25 +19,23 @@
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include "verticaltext.h"
+#include "gui/verticaltext.h"
 #include <QPainter>
 #include <QPaintEvent>
-/*#include <kdebug.h>*/
 
+namespace Gui {
 
-VerticalText::VerticalText(QWidget * parent,  Qt::WindowFlags f) 
-	: QWidget(parent, f)
-{
+TVerticalText::TVerticalText(QWidget * parent,  Qt::WindowFlags f) :
+	QWidget(parent, f) {
 	resize(20,100 /*parent->height() */ );
 	setMinimumSize(20,10); // neccesary for smooth integration into layouts (we only care for the widths).
 }
 
-VerticalText::~VerticalText() {
+TVerticalText::~TVerticalText() {
 }
 
+void TVerticalText::paintEvent ( QPaintEvent * /*event*/ ) {
 
-void VerticalText::paintEvent ( QPaintEvent * /*event*/ ) {
-	//kdDebug(67100) << "paintEvent(). height()=" <<  height() << "\n";
 	QPainter paint(this);
 	paint.rotate(270);
 	// Fix for bug 72520
@@ -46,11 +44,13 @@ void VerticalText::paintEvent ( QPaintEvent * /*event*/ ) {
 	paint.drawText( -height()+2, width(), _label );
 }
 
-QSize VerticalText::sizeHint() const {
+QSize TVerticalText::sizeHint() const {
     return QSize(20,100); // !! UGLY. Should be reworked
 }
 
-QSizePolicy VerticalText::sizePolicy () const
+QSizePolicy TVerticalText::sizePolicy () const
 {
     return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 }
+
+} // namespace Gui

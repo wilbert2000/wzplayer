@@ -20,7 +20,7 @@
 #include <QSlider>
 #include <QLabel>
 #include <QPixmap>
-#include "verticaltext.h"
+#include "gui/verticaltext.h"
 
 namespace Gui {
 

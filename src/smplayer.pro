@@ -145,11 +145,11 @@ HEADERS += guiconfig.h \
 	pref/network.h \
 	filepropertiesdialog.h \
 	multilineinputdialog.h \
-	verticaltext.h \
 	inputdvddirectory.h \
 	stereo3ddialog.h \
 	filedialog.h \
 	inputmplayerversion.h \
+    gui/verticaltext.h \
     gui/favoriteeditor.h \
     gui/favorites.h \
     gui/tvlist.h \
@@ -244,11 +244,11 @@ SOURCES	+= version.cpp \
 	pref/network.cpp \
 	filepropertiesdialog.cpp \
 	multilineinputdialog.cpp \
-	verticaltext.cpp \
 	inputdvddirectory.cpp \
 	stereo3ddialog.cpp \
 	filedialog.cpp \
 	inputmplayerversion.cpp \
+    gui/verticaltext.cpp \
     gui/favoriteeditor.cpp \
     gui/favorites.cpp \
     gui/tvlist.cpp \

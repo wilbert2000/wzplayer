@@ -2,17 +2,19 @@
 /* Copyright (C) 2003-2004 Christian Esken <esken@kde.org> */
 
 
-#ifndef VerticalText_h
-#define VerticalText_h
+#ifndef GUI_VERTICALTEXT_H
+#define GUI_VERTICALTEXT_H
 
 #include <QWidget>
 #include <QPaintEvent>
 
-class VerticalText : public QWidget
+namespace Gui {
+
+class TVerticalText : public QWidget
 {
 public:
-    VerticalText(QWidget * parent, Qt::WindowFlags f = 0);
-	virtual ~VerticalText();
+	TVerticalText(QWidget * parent, Qt::WindowFlags f = 0);
+	virtual ~TVerticalText();
 
 	void setText(QString s) { _label = s; }
 	QString text() { return _label; }
@@ -24,4 +26,6 @@ protected:
 	QString _label;
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_VERTICALTEXT_H

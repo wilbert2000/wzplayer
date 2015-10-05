@@ -38,7 +38,7 @@
       <number>6</number>
      </property>
      <item>
-      <widget class="VerticalText" native="1" name="_label" >
+      <widget class="Gui::TVerticalText" native="1" name="_label" >
        <property name="sizePolicy" >
         <sizepolicy>
          <hsizetype>1</hsizetype>
@@ -93,13 +93,13 @@
  <layoutdefault spacing="0" margin="0" />
  <customwidgets>
   <customwidget>
-   <class>VerticalText</class>
+   <class>Gui::TVerticalText</class>
    <extends>QWidget</extends>
-   <header>verticaltext.h</header>
+   <header>gui/verticaltext.h</header>
   </customwidget>
  </customwidgets>
  <includes>
-  <include location="local" >verticaltext.h</include>
+  <include location="local" >gui/verticaltext.h</include>
  </includes>
  <resources/>
  <connections>
