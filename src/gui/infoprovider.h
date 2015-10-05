@@ -18,13 +18,15 @@
 
 //! Reads info about a file (resolution, length...)
 
-#ifndef _INFOPROVIDER_H_
-#define _INFOPROVIDER_H_
+#ifndef _GUI_INFOPROVIDER_H_
+#define _GUI_INFOPROVIDER_H_
 
 #include <QString>
 #include "mediadata.h"
 
-class InfoProvider 
+namespace Gui {
+
+class TInfoProvider
 {
 
 public:
@@ -36,5 +38,7 @@ public:
 	static void getInfo(const QString &filename, MediaData &md);
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_INFOPROVIDER_H_
 

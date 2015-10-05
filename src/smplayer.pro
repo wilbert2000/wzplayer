@@ -98,7 +98,6 @@ HEADERS += config.h \
 	playerid.h \
 	proc/process.h \
 	proc/playerprocess.h \
-	infoprovider.h \
 	mplayerwindow.h \
 	mediadata.h \
 	audioequalizerlist.h \
@@ -170,7 +169,8 @@ HEADERS += config.h \
 	gui/timeslider.h \
     gui/autohidewidget.h \
 	gui/tablewidget.h \
-	gui/playlist.h \
+    gui/infoprovider.h \
+    gui/playlist.h \
 	gui/playlistdock.h \
     gui/base.h \
 	gui/baseplus.h \
@@ -199,7 +199,6 @@ SOURCES	+= version.cpp \
 	playerid.cpp \
 	proc/process.cpp \
 	proc/playerprocess.cpp \
-	infoprovider.cpp \
 	mplayerwindow.cpp \
 	mediadata.cpp \
 	mediasettings.cpp \
@@ -269,7 +268,8 @@ SOURCES	+= version.cpp \
 	gui/timeslider.cpp \
     gui/autohidewidget.cpp \
    	gui/tablewidget.cpp \
-	gui/playlist.cpp \
+    gui/infoprovider.cpp \
+    gui/playlist.cpp \
 	gui/playlistdock.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \

@@ -57,7 +57,7 @@
 #include <stdlib.h>
 
 #if USE_INFOPROVIDER
-#include "infoprovider.h"
+#include "gui/infoprovider.h"
 #endif
 
 #define DRAG_ITEMS 0
@@ -1118,7 +1118,7 @@ void TPlaylist::addFile(const QString &filename, bool get_info) {
 
 #if USE_INFOPROVIDER
 			if (get_info) {
-				InfoProvider::getInfo(filename, media_data);
+				TInfoProvider::getInfo(filename, media_data);
 			}
 #endif
 

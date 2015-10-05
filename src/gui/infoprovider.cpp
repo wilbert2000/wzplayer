@@ -16,14 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "infoprovider.h"
+#include "gui/infoprovider.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
 #include "playerid.h"
 #include <QFileInfo>
 
-void InfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaData &md) {
-	qDebug("InfoProvider::getInfo: %s", filename.toUtf8().data());
+namespace Gui {
+
+void TInfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaData &md) {
+	qDebug("Gui::TInfoProvider::getInfo: %s", filename.toUtf8().data());
 
 	QFileInfo fi(mplayer_bin);
 	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
@@ -42,17 +44,19 @@ void InfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaDa
 	proc->setMedia(filename);
 
 	QString commandline = proc->arguments().join(" ");
-	qDebug("InfoProvider::getInfo: command: '%s'", commandline.toUtf8().data());
+	qDebug("Gui::TInfoProvider::getInfo: command: '%s'", commandline.toUtf8().data());
 
 	proc->startPlayer();
 	if (!proc->waitForFinished()) {
-		qWarning("InfoProvider::getInfo: process didn't finish. Killing it...");
+		qWarning("Gui::TInfoProvider::getInfo: process didn't finish. Killing it...");
 		proc->kill();
 	}
 
 	delete proc;
 }
 
-void InfoProvider::getInfo(const QString &filename, MediaData &md) {
+void TInfoProvider::getInfo(const QString &filename, MediaData &md) {
 	getInfo(Settings::pref->mplayer_bin, filename, md);
 }
+
+} // namespace Gui
