@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _TOOLBAR_EDITOR_H_
-#define _TOOLBAR_EDITOR_H_
+#ifndef _GUI_TOOLBAR_EDITOR_H_
+#define _GUI_TOOLBAR_EDITOR_H_
 
 #include <QStringList>
 #include <QWidget>
@@ -27,14 +27,16 @@
 
 class QListWidget;
 
-class ToolbarEditor : public QDialog, public Ui::ToolbarEditor
+namespace Gui {
+
+class TToolbarEditor : public QDialog, public Ui::TToolbarEditor
 {
 	Q_OBJECT
 
 public:
 
-	ToolbarEditor( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~ToolbarEditor();
+	TToolbarEditor( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	virtual ~TToolbarEditor();
 
 	void setAllActions(QList<QAction *> actions_list);
 	void setActiveActions(QList<QAction *> actions_list);
@@ -76,5 +78,7 @@ protected:
 	QStringList default_actions;
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_TOOLBAR_EDITOR_H_
 

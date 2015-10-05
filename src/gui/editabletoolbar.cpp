@@ -17,7 +17,7 @@
 */
 
 #include "gui/editabletoolbar.h"
-#include "toolbareditor.h"
+#include "gui/toolbareditor.h"
 #include <QAction>
 
 namespace Gui {
@@ -42,17 +42,17 @@ QList<QAction *> TEditableToolbar::allActions() {
 
 void TEditableToolbar::setActionsFromStringList(QStringList action_names) {
 	clear();
-	ToolbarEditor::load(this, action_names, allActions());
+	TToolbarEditor::load(this, action_names, allActions());
 }
 
 QStringList TEditableToolbar::actionsToStringList() {
-	return ToolbarEditor::save(this);
+	return TToolbarEditor::save(this);
 }
 
 void TEditableToolbar::edit() {
 	qDebug("Gui::TEditableToolbar::edit");
 
-	ToolbarEditor e(widget);
+	TToolbarEditor e(widget);
 	e.setAllActions(allActions());
 	e.setActiveActions(this->actions());
 	e.setDefaultActions(defaultActions());

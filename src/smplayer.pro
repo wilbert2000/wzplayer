@@ -164,7 +164,8 @@ HEADERS += config.h \
     gui/action.h \
 	gui/actiongroup.h \
 	gui/widgetactions.h \
-	gui/editabletoolbar.h \
+    gui/toolbareditor.h \
+    gui/editabletoolbar.h \
 	gui/slider.h \
 	gui/timeslider.h \
     gui/autohidewidget.h \
@@ -176,7 +177,6 @@ HEADERS += config.h \
     gui/default.h \
     gui/mini.h \
     gui/logwindow.h \
-    toolbareditor.h \
 	clhelp.h \
 	cleanconfig.h \
 	smplayer.h \
@@ -263,7 +263,8 @@ SOURCES	+= version.cpp \
     gui/action.cpp \
 	gui/actiongroup.cpp \
 	gui/widgetactions.cpp \
-	gui/editabletoolbar.cpp \
+    gui/toolbareditor.cpp \
+    gui/editabletoolbar.cpp \
 	gui/slider.cpp \
 	gui/timeslider.cpp \
     gui/autohidewidget.cpp \
@@ -275,7 +276,6 @@ SOURCES	+= version.cpp \
     gui/default.cpp \
     gui/mini.cpp \
     gui/logwindow.cpp \
-    toolbareditor.cpp \
 	clhelp.cpp \
 	cleanconfig.cpp \
 	smplayer.cpp \
@@ -294,7 +294,7 @@ FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/pref/prefplaylist.ui gui/pref/tv.ui gui/pref/updates.ui gui/pref/network.ui \
         gui/favoriteeditor.ui gui/about.ui gui/inputmplayerversion.ui \
         gui/errordialog.ui gui/timedialog.ui gui/stereo3ddialog.ui \
-        toolbareditor.ui gui/multilineinputdialog.ui
+        gui/toolbareditor.ui gui/multilineinputdialog.ui
 
 contains( DEFINES, MPV_SUPPORT ) {
     HEADERS += proc/mpvprocess.h inforeadermpv.h
