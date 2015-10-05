@@ -134,14 +134,14 @@ bool TTitleTracks::setTitleFromDuration(double duration, int titleHint) {
 
 void TTitleTracks::list() const {
 
-	qDebug("TitleTracks::list: selected title ID: %d", selectedID);
-	qDebug("TitleTracks::list: selected VTS: %d", selectedVTS);
-	qDebug("TitleTracks::list: VTS count: %d", vtsCount);
+	qDebug("Maps::TitleTracks::list: selected title ID: %d", selectedID);
+	qDebug("Maps::TitleTracks::list: selected VTS: %d", selectedVTS);
+	qDebug("Maps::TitleTracks::list: VTS count: %d", vtsCount);
 	TTitleTrackIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
 		TTitleData d = i.value();
-		qDebug("TitleTracks::list: ID: %d name: '%s' duration %f chapters: %d angles: %d",
+		qDebug("Maps::TitleTracks::list: ID: %d name: '%s' duration %f chapters: %d angles: %d",
 			   d.getID(), d.getName().toUtf8().constData(), d.getDuration(),
 			   d.chapters.count(), d.getAngles());
 	}
