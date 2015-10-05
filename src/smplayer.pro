@@ -119,13 +119,13 @@ HEADERS += config.h \
 	deviceinfo.h \
 	core.h \
 	infofile.h \
-	seekwidget.h \
 	filechooser.h \
 	lineedit_with_icon.h \
 	languages.h \
     gui/guiconfig.h \
     gui/shortcutgetter.h \
     gui/actionseditor.h \
+    gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
     gui/pref/selectcolorbutton.h \
     gui/pref/tristatecombo.h \
@@ -219,12 +219,12 @@ SOURCES	+= version.cpp \
 	deviceinfo.cpp \
 	core.cpp \
 	infofile.cpp \
-	seekwidget.cpp \
 	filechooser.cpp \
 	lineedit_with_icon.cpp \
 	languages.cpp \
     gui/shortcutgetter.cpp \
     gui/actionseditor.cpp \
+    gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \
     gui/pref/selectcolorbutton.cpp \
     gui/pref/tristatecombo.cpp \
@@ -287,7 +287,7 @@ SOURCES	+= version.cpp \
     main.cpp
 
 FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
-        gui/eqslider.ui seekwidget.ui gui/inputurl.ui gui/videoequalizer.ui \
+        gui/eqslider.ui gui/inputurl.ui gui/videoequalizer.ui gui/pref/seekwidget.ui\
         gui/pref/vdpauproperties.ui gui/pref/dialog.ui gui/pref/general.ui \
         gui/pref/drives.ui gui/pref/interface.ui gui/pref/performance.ui \
         gui/pref/input.ui gui/pref/subtitles.ui gui/pref/advanced.ui \

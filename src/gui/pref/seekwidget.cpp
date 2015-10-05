@@ -16,45 +16,49 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "seekwidget.h"
+#include "gui/pref/seekwidget.h"
 #include <QLabel>
 #include <QDateTimeEdit>
 
-SeekWidget::SeekWidget( QWidget* parent, Qt::WindowFlags f)
+namespace Gui { namespace Pref {
+
+TSeekWidget::TSeekWidget( QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 {
 	setupUi(this);
 	time_edit->setDisplayFormat("mm:ss");
 }
 
-SeekWidget::~SeekWidget() {
+TSeekWidget::~TSeekWidget() {
 }
 
-void SeekWidget::setIcon(QPixmap icon) {
+void TSeekWidget::setIcon(QPixmap icon) {
 	_image->setText("");
 	_image->setPixmap(icon);
 }
 
-const QPixmap * SeekWidget::icon() const {
+const QPixmap * TSeekWidget::icon() const {
 	return _image->pixmap();
 }
 
-void SeekWidget::setLabel(QString text) {
+void TSeekWidget::setLabel(QString text) {
 	_label->setText(text);
 }
 
-QString SeekWidget::label() const {
+QString TSeekWidget::label() const {
 	return _label->text();
 }
 
-void SeekWidget::setTime(int secs) {
+void TSeekWidget::setTime(int secs) {
 	QTime t(0,0);
 	time_edit->setTime(t.addSecs(secs));
 }
 
-int SeekWidget::time() const {
+int TSeekWidget::time() const {
 	QTime t = time_edit->time();
 	return (t.minute() * 60) + t.second();
 }
+
+}} // namespace Gui::Pref
 
 #include "moc_seekwidget.cpp"

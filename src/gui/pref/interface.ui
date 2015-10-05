@@ -412,16 +412,16 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="SeekWidget" name="seek1" native="true"/>
+          <widget class="Gui::Pref::TSeekWidget" name="seek1" native="true"/>
          </item>
          <item>
-          <widget class="SeekWidget" name="seek2" native="true"/>
+          <widget class="Gui::Pref::TSeekWidget" name="seek2" native="true"/>
          </item>
          <item>
-          <widget class="SeekWidget" name="seek3" native="true"/>
+          <widget class="Gui::Pref::TSeekWidget" name="seek3" native="true"/>
          </item>
          <item>
-          <widget class="SeekWidget" name="seek4" native="true"/>
+          <widget class="Gui::Pref::TSeekWidget" name="seek4" native="true"/>
          </item>
         </layout>
        </item>
@@ -927,9 +927,9 @@
    <header>gui/pref/combobox.h</header>
   </customwidget>
   <customwidget>
-   <class>SeekWidget</class>
+   <class>Gui::Pref::TSeekWidget</class>
    <extends>QWidget</extends>
-   <header>seekwidget.h</header>
+   <header>gui/pref/seekwidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

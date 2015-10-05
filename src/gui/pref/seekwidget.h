@@ -16,14 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SEEKWIDGET_H_
-#define _SEEKWIDGET_H_
+#ifndef _GUI_PREF_SEEKWIDGET_H_
+#define _GUI_PREF_SEEKWIDGET_H_
 
 #include "ui_seekwidget.h"
 #include <QPixmap>
 #include <QString>
 
-class SeekWidget : public QWidget, public Ui::SeekWidget
+namespace Gui { namespace Pref {
+
+class TSeekWidget : public QWidget, public Ui::TSeekWidget
 {
     Q_OBJECT
 	Q_PROPERTY(QPixmap icon READ icon WRITE setIcon)
@@ -31,8 +33,8 @@ class SeekWidget : public QWidget, public Ui::SeekWidget
 	Q_PROPERTY(int time READ time WRITE setTime)
 
 public:
-    SeekWidget( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~SeekWidget();
+	TSeekWidget( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	virtual ~TSeekWidget();
 
 	int time() const;
 	const QPixmap * icon() const;
@@ -45,4 +47,6 @@ public slots:
 
 };
 
-#endif
+}} // namespace Gui::Pref
+
+#endif // _GUI_PREF_SEEKWIDGET_H_
