@@ -80,7 +80,7 @@
 #include "videopreview.h"
 #endif
 
-#include "actionseditor.h"
+#include "gui/actionseditor.h"
 
 #include "tvlist.h"
 
@@ -716,7 +716,7 @@ void TBase::createActions() {
 
 #if USE_MULTIPLE_SHORTCUTS
 	decVolumeAct = new TAction( this, "decrease_volume" );
-	decVolumeAct->setShortcuts( ActionsEditor::stringToShortcuts("9,/") );
+	decVolumeAct->setShortcuts( TActionsEditor::stringToShortcuts("9,/") );
 	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
 #else
 	decVolumeAct = new TAction( Qt::Key_9, this, "dec_volume" );
@@ -726,7 +726,7 @@ void TBase::createActions() {
 
 #if USE_MULTIPLE_SHORTCUTS
 	incVolumeAct = new TAction( this, "increase_volume" );
-	incVolumeAct->setShortcuts( ActionsEditor::stringToShortcuts("0,*") );
+	incVolumeAct->setShortcuts( TActionsEditor::stringToShortcuts("0,*") );
 	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
 #else
 	incVolumeAct = new TAction( Qt::Key_0, this, "inc_volume" );
@@ -4152,8 +4152,8 @@ void TBase::processFunction(QString function) {
 		checkableFunction = true;
 	} //end if
 
-	QAction * action = ActionsEditor::findAction(this, function);
-	if (!action) action = ActionsEditor::findAction(playlist, function);
+	QAction * action = TActionsEditor::findAction(this, function);
+	if (!action) action = TActionsEditor::findAction(playlist, function);
 
 	if (action) {
 		qDebug("Gui::TBase::processFunction: action found");
@@ -4195,8 +4195,8 @@ void TBase::runActions(QString actions) {
 			} //end if
 		} //end if
 
-		action = ActionsEditor::findAction(this, actionStr);
-		if (!action) action = ActionsEditor::findAction(playlist, actionStr);
+		action = TActionsEditor::findAction(this, actionStr);
+		if (!action) action = TActionsEditor::findAction(playlist, actionStr);
 
 		if (action) {
 			qDebug("Gui::TBase::runActions: running action: '%s' (par: '%s')",
@@ -4874,23 +4874,23 @@ void TBase::changeStyleSheet(QString style) {
 
 void TBase::loadActions() {
 	qDebug("Gui::TBase::loadActions");
-	ActionsEditor::loadFromConfig(this, Settings::pref);
+	TActionsEditor::loadFromConfig(this, Settings::pref);
 #if !DOCK_PLAYLIST
-	ActionsEditor::loadFromConfig(playlist, Settings::pref);
+	TActionsEditor::loadFromConfig(playlist, Settings::pref);
 #endif
 
-	actions_list = ActionsEditor::actionsNames(this);
+	actions_list = TActionsEditor::actionsNames(this);
 #if !DOCK_PLAYLIST
-	actions_list += ActionsEditor::actionsNames(playlist);
+	actions_list += TActionsEditor::actionsNames(playlist);
 #endif
 }
 
 void TBase::saveActions() {
 	qDebug("Gui::TBase::saveActions");
 
-	ActionsEditor::saveToConfig(this, Settings::pref);
+	TActionsEditor::saveToConfig(this, Settings::pref);
 #if !DOCK_PLAYLIST
-	ActionsEditor::saveToConfig(playlist, Settings::pref);
+	TActionsEditor::saveToConfig(playlist, Settings::pref);
 #endif
 }
 

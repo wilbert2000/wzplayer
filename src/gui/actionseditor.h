@@ -18,8 +18,8 @@
 
 /* This is based on qq14-actioneditor-code.zip from Qt */
 
-#ifndef _ACTIONSEDITOR_H_
-#define _ACTIONSEDITOR_H_
+#ifndef _GUI_ACTIONSEDITOR_H_
+#define _GUI_ACTIONSEDITOR_H_
 
 #include <QWidget>
 #include <QList>
@@ -32,13 +32,15 @@ class QAction;
 class QSettings;
 class QPushButton;
 
-class ActionsEditor : public QWidget
+namespace Gui {
+
+class TActionsEditor : public QWidget
 {
     Q_OBJECT
 
 public:
-    ActionsEditor( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~ActionsEditor();
+	TActionsEditor( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	virtual ~TActionsEditor();
 
 	// Clear the actionlist
 	void clear();
@@ -102,4 +104,6 @@ private:
 #endif
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_ACTIONSEDITOR_H_

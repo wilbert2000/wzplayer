@@ -29,7 +29,7 @@
 #include "images.h"
 #include "desktopinfo.h"
 #include "mediabarpanel.h"
-#include "actionseditor.h"
+#include "gui/actionseditor.h"
 
 #if DOCK_PLAYLIST
 #include "gui/playlistdock.h"
@@ -223,8 +223,8 @@ void TSkin::createControlWidget() {
 
 	actions.clear();
 	//actions << timeslider_action << shuffleAct << repeatPlaylistAct;
-	QAction * shuffleAct = ActionsEditor::findAction(playlist, "pl_shuffle");
-	QAction * repeatPlaylistAct = ActionsEditor::findAction(playlist, "pl_repeat");
+	QAction * shuffleAct = TActionsEditor::findAction(playlist, "pl_shuffle");
+	QAction * repeatPlaylistAct = TActionsEditor::findAction(playlist, "pl_repeat");
 	if (shuffleAct) actions << shuffleAct;
 	if (repeatPlaylistAct) actions << repeatPlaylistAct;
 	mediaBarPanel->setMediaPanelActionCollection(actions);

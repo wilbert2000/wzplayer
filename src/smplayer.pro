@@ -122,10 +122,10 @@ HEADERS += guiconfig.h \
 	infofile.h \
 	seekwidget.h \
 	shortcutgetter.h \
-	actionseditor.h \
 	filechooser.h \
 	lineedit_with_icon.h \
 	languages.h \
+    gui/actionseditor.h \
     gui/pref/vdpauproperties.h \
     gui/pref/selectcolorbutton.h \
     gui/pref/tristatecombo.h \
@@ -221,10 +221,10 @@ SOURCES	+= version.cpp \
 	infofile.cpp \
 	seekwidget.cpp \
 	shortcutgetter.cpp \
-	actionseditor.cpp \
 	filechooser.cpp \
 	lineedit_with_icon.cpp \
 	languages.cpp \
+    gui/actionseditor.cpp \
     gui/pref/vdpauproperties.cpp \
     gui/pref/selectcolorbutton.cpp \
     gui/pref/tristatecombo.cpp \
