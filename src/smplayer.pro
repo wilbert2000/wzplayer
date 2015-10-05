@@ -143,8 +143,8 @@ HEADERS += guiconfig.h \
 	pref/tv.h \
 	pref/updates.h \
 	pref/network.h \
-	multilineinputdialog.h \
 	filedialog.h \
+    gui/multilineinputdialog.h \
     gui/filepropertiesdialog.h \
     gui/inputdvddirectory.h \
     gui/stereo3ddialog.h \
@@ -242,8 +242,8 @@ SOURCES	+= version.cpp \
 	pref/tv.cpp \
 	pref/updates.cpp \
 	pref/network.cpp \
-	multilineinputdialog.cpp \
 	filedialog.cpp \
+    gui/multilineinputdialog.cpp \
     gui/filepropertiesdialog.cpp \
     gui/inputdvddirectory.cpp \
     gui/stereo3ddialog.cpp \
@@ -292,7 +292,7 @@ FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         pref/performance.ui pref/input.ui pref/subtitles.ui pref/advanced.ui \
         pref/prefplaylist.ui pref/tv.ui pref/updates.ui pref/network.ui gui/favoriteeditor.ui \
         gui/about.ui gui/inputmplayerversion.ui gui/errordialog.ui gui/timedialog.ui gui/stereo3ddialog.ui \
-        toolbareditor.ui multilineinputdialog.ui
+        toolbareditor.ui gui/multilineinputdialog.ui
 
 contains( DEFINES, MPV_SUPPORT ) {
     HEADERS += proc/mpvprocess.h inforeadermpv.h

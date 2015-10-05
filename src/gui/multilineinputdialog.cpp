@@ -16,22 +16,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "multilineinputdialog.h"
+#include "gui/multilineinputdialog.h"
 
-MultilineInputDialog::MultilineInputDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent,f)
+namespace Gui {
+
+TMultilineInputDialog::TMultilineInputDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent,f)
 {
 	setupUi(this);
 }
 
-MultilineInputDialog::~MultilineInputDialog() {
+TMultilineInputDialog::~TMultilineInputDialog() {
 }
 
-void MultilineInputDialog::setLines(const QStringList & lines) {
+void TMultilineInputDialog::setLines(const QStringList&) {
 }
 
-QStringList MultilineInputDialog::lines() {
+QStringList TMultilineInputDialog::lines() {
 	return editor->toPlainText().split("\n");
 }
+
+} // namespace Gui
 
 #include "moc_multilineinputdialog.cpp"
 

@@ -48,7 +48,7 @@
 #include "helper.h"
 #include "images.h"
 #include "settings/preferences.h"
-#include "multilineinputdialog.h"
+#include "gui/multilineinputdialog.h"
 #include "version.h"
 #include "core.h"
 #include "extensions.h"
@@ -1212,7 +1212,7 @@ void TPlaylist::addDirectory() {
 }
 
 void TPlaylist::addUrls() {
-	MultilineInputDialog d(this);
+	TMultilineInputDialog d(this);
 	if (d.exec() == QDialog::Accepted) {
 		QStringList urls = d.lines();
 		foreach(QString u, urls) {
