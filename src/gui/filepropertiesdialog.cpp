@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filepropertiesdialog.h"
+#include "gui/filepropertiesdialog.h"
 #include <QListWidget>
 #include <QLineEdit>
 #include <QTextEdit>
@@ -25,7 +25,9 @@
 #include "infofile.h"
 #include "playerid.h"
 
-FilePropertiesDialog::FilePropertiesDialog( QWidget* parent, Qt::WindowFlags f )
+namespace Gui {
+
+TFilePropertiesDialog::TFilePropertiesDialog( QWidget* parent, Qt::WindowFlags f )
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -51,20 +53,20 @@ FilePropertiesDialog::FilePropertiesDialog( QWidget* parent, Qt::WindowFlags f )
 	retranslateStrings();
 }
 
-FilePropertiesDialog::~FilePropertiesDialog() {
+TFilePropertiesDialog::~TFilePropertiesDialog() {
 }
 
-void FilePropertiesDialog::setMediaData(MediaData md) {
+void TFilePropertiesDialog::setMediaData(MediaData md) {
 	media_data = md;
 	showInfo();
 }
 
-void FilePropertiesDialog::showInfo() {
+void TFilePropertiesDialog::showInfo() {
 	InfoFile info;
 	info_edit->setText( info.getInfo(media_data) );
 }
 
-void FilePropertiesDialog::retranslateStrings() {
+void TFilePropertiesDialog::retranslateStrings() {
 	retranslateUi(this);
 
 	setWindowIcon( Images::icon("logo") );
@@ -89,23 +91,23 @@ void FilePropertiesDialog::retranslateStrings() {
 		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25" );
 }
 
-void FilePropertiesDialog::accept() {
-	qDebug("FilePropertiesDialog::accept");
+void TFilePropertiesDialog::accept() {
+	qDebug("Gui::TFilePropertiesDialog::accept");
 
 	hide();
 	setResult( QDialog::Accepted );
 	emit applied();
 }
 
-void FilePropertiesDialog::apply() {
-	qDebug("FilePropertiesDialog::apply");
+void TFilePropertiesDialog::apply() {
+	qDebug("Gui::TFilePropertiesDialog::apply");
 
 	setResult( QDialog::Accepted );
 	emit applied();
 }
 
 #if ALLOW_DEMUXER_CODEC_CHANGE
-void FilePropertiesDialog::setCodecs(InfoList vc, InfoList ac, InfoList demuxer) 
+void TFilePropertiesDialog::setCodecs(InfoList vc, InfoList ac, InfoList demuxer) 
 {
 	vclist = vc;
 	aclist = ac;
@@ -136,8 +138,8 @@ void FilePropertiesDialog::setCodecs(InfoList vc, InfoList ac, InfoList demuxer)
 	codecs_set = true;
 }
 
-void FilePropertiesDialog::setDemuxer(QString demuxer, QString original_demuxer) {
-	qDebug("FilePropertiesDialog::setDemuxer");
+void TFilePropertiesDialog::setDemuxer(QString demuxer, QString original_demuxer) {
+	qDebug("Gui::TFilePropertiesDialog::setDemuxer");
 	if (!original_demuxer.isEmpty()) orig_demuxer = original_demuxer;
 	int pos = find(demuxer, demuxerlist );
 	if (pos != -1) demuxer_listbox->setCurrentRow(pos);
@@ -145,7 +147,7 @@ void FilePropertiesDialog::setDemuxer(QString demuxer, QString original_demuxer)
 	qDebug(" * demuxer: '%s', pos: %d", demuxer.toUtf8().data(), pos );
 }
 
-QString FilePropertiesDialog::demuxer() {
+QString TFilePropertiesDialog::demuxer() {
 	int pos = demuxer_listbox->currentRow();
 	if ( pos < 0 )
 		return "";
@@ -153,8 +155,8 @@ QString FilePropertiesDialog::demuxer() {
 		return demuxerlist[pos].name();
 }
 
-void FilePropertiesDialog::setVideoCodec(QString vc, QString original_vc) {
-	qDebug("FilePropertiesDialog::setVideoCodec");
+void TFilePropertiesDialog::setVideoCodec(QString vc, QString original_vc) {
+	qDebug("Gui::TFilePropertiesDialog::setVideoCodec");
 	if (!original_vc.isEmpty()) orig_vc = original_vc;
 	int pos = find(vc, vclist );
 	if (pos != -1) vc_listbox->setCurrentRow(pos);
@@ -162,7 +164,7 @@ void FilePropertiesDialog::setVideoCodec(QString vc, QString original_vc) {
 	qDebug(" * vc: '%s', pos: %d", vc.toUtf8().data(), pos );
 }
 
-QString FilePropertiesDialog::videoCodec() {
+QString TFilePropertiesDialog::videoCodec() {
 	int pos = vc_listbox->currentRow();
 	if ( pos < 0 )
 		return "";
@@ -170,8 +172,8 @@ QString FilePropertiesDialog::videoCodec() {
 		return vclist[pos].name();
 }
 
-void FilePropertiesDialog::setAudioCodec(QString ac, QString original_ac) {
-	qDebug("FilePropertiesDialog::setAudioCodec");
+void TFilePropertiesDialog::setAudioCodec(QString ac, QString original_ac) {
+	qDebug("Gui::TFilePropertiesDialog::setAudioCodec");
 	if (!original_ac.isEmpty()) orig_ac = original_ac;
 	int pos = find(ac, aclist );
 	if (pos != -1) ac_listbox->setCurrentRow(pos);
@@ -179,7 +181,7 @@ void FilePropertiesDialog::setAudioCodec(QString ac, QString original_ac) {
 	qDebug(" * ac: '%s', pos: %d", ac.toUtf8().data(), pos );
 }
 
-QString FilePropertiesDialog::audioCodec() {
+QString TFilePropertiesDialog::audioCodec() {
 	int pos = ac_listbox->currentRow();
 	if ( pos < 0 )
 		return "";
@@ -187,26 +189,25 @@ QString FilePropertiesDialog::audioCodec() {
 		return aclist[pos].name();
 }
 
-void FilePropertiesDialog::on_resetDemuxerButton_clicked() {
+void TFilePropertiesDialog::on_resetDemuxerButton_clicked() {
 	setDemuxer( orig_demuxer );
 }
 
-void FilePropertiesDialog::on_resetACButton_clicked() {
+void TFilePropertiesDialog::on_resetACButton_clicked() {
 	setAudioCodec( orig_ac );
 }
 
-void FilePropertiesDialog::on_resetVCButton_clicked() {
+void TFilePropertiesDialog::on_resetVCButton_clicked() {
 	setVideoCodec( orig_vc );
 }
 
-int FilePropertiesDialog::find(QString s, InfoList &list) {
-	qDebug("FilePropertiesDialog::find");
+int TFilePropertiesDialog::find(QString s, InfoList &list) {
+	qDebug("Gui::TFilePropertiesDialog::find");
 
 	int n=0;
 	InfoList::iterator it;
 
 	for ( it = list.begin(); it != list.end(); ++it ) {
-		//qDebug(" * item: '%s', s: '%s'", (*it).name().toUtf8().data(), s.toUtf8().data());
 		if ((*it).name() == s) return n;
 		n++;
 	}
@@ -214,37 +215,39 @@ int FilePropertiesDialog::find(QString s, InfoList &list) {
 }
 #endif
 
-void FilePropertiesDialog::setMplayerAdditionalArguments(QString args) {
+void TFilePropertiesDialog::setMplayerAdditionalArguments(QString args) {
 	mplayer_args_edit->setText(args);
 }
 
-QString FilePropertiesDialog::mplayerAdditionalArguments() {
+QString TFilePropertiesDialog::mplayerAdditionalArguments() {
 	return mplayer_args_edit->text();
 }
 
-void FilePropertiesDialog::setMplayerAdditionalVideoFilters(QString s) {
+void TFilePropertiesDialog::setMplayerAdditionalVideoFilters(QString s) {
 	mplayer_vfilters_edit->setText(s);
 }
 
-QString FilePropertiesDialog::mplayerAdditionalVideoFilters() {
+QString TFilePropertiesDialog::mplayerAdditionalVideoFilters() {
 	return mplayer_vfilters_edit->text();
 }
 
-void FilePropertiesDialog::setMplayerAdditionalAudioFilters(QString s) {
+void TFilePropertiesDialog::setMplayerAdditionalAudioFilters(QString s) {
 	mplayer_afilters_edit->setText(s);
 }
 
-QString FilePropertiesDialog::mplayerAdditionalAudioFilters() {
+QString TFilePropertiesDialog::mplayerAdditionalAudioFilters() {
 	return mplayer_afilters_edit->text();
 }
 
 // Language change stuff
-void FilePropertiesDialog::changeEvent(QEvent *e) {
+void TFilePropertiesDialog::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
 		QDialog::changeEvent(e);
 	}
 }
+
+} // namespace Gui
 
 #include "moc_filepropertiesdialog.cpp"

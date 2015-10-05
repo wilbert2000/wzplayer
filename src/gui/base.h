@@ -34,6 +34,7 @@
 #include "gui/videoequalizer.h"
 #include "gui/favorites.h"
 #include "gui/tvlist.h"
+#include "gui/filepropertiesdialog.h"
 #include "pref/dialog.h"
 
 #ifdef Q_OS_WIN
@@ -50,7 +51,6 @@ class QMenu;
 class MplayerWindow;
 
 class QLabel;
-class FilePropertiesDialog;
 #ifdef FIND_SUBTITLES
 class FindSubtitlesWindow;
 #endif
@@ -753,7 +753,7 @@ protected:
 	TLogWindow* clhelp_window;
 
 	Pref::TDialog *pref_dialog;
-	FilePropertiesDialog *file_dialog;
+	TFilePropertiesDialog *file_dialog;
 	TPlaylist * playlist;
 	TVideoEqualizer * video_equalizer;
 	TAudioEqualizer * audio_equalizer;

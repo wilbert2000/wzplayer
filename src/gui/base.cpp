@@ -56,7 +56,7 @@
 #include "settings/urlhistory.h"
 #include "discname.h"
 #include "logwindow.h"
-#include "filepropertiesdialog.h"
+#include "gui/filepropertiesdialog.h"
 #include "gui/eqslider.h"
 #include "videoequalizer.h"
 #include "audioequalizer.h"
@@ -2314,7 +2314,7 @@ void TBase::createPreferencesDialog() {
 void TBase::createFilePropertiesDialog() {
 	qDebug("Gui::TBase::createFilePropertiesDialog");
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	file_dialog = new FilePropertiesDialog(this);
+	file_dialog = new TFilePropertiesDialog(this);
 	file_dialog->setModal(false);
 	connect( file_dialog, SIGNAL(applied()),
              this, SLOT(applyFileProperties()) );

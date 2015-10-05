@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>Ricardo Villalba</author>
- <class>FilePropertiesDialog</class>
- <widget class="QDialog" name="FilePropertiesDialog">
+ <class>Gui::TFilePropertiesDialog</class>
+ <widget class="QDialog" name="Gui::TFilePropertiesDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -470,7 +470,7 @@ Example: extrastereo,karaoke</string>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>FilePropertiesDialog</receiver>
+   <receiver>Gui::TFilePropertiesDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -486,7 +486,7 @@ Example: extrastereo,karaoke</string>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>FilePropertiesDialog</receiver>
+   <receiver>Gui::TFilePropertiesDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

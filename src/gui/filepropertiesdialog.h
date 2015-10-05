@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _FILEPROPERTIESDIALOG_H_
-#define _FILEPROPERTIESDIALOG_H_
+#ifndef _GUI_FILEPROPERTIESDIALOG_H_
+#define _GUI_FILEPROPERTIESDIALOG_H_
 
 #include "ui_filepropertiesdialog.h"
 #include "inforeader.h"
@@ -26,13 +26,15 @@
 
 class QPushButton;
 
-class FilePropertiesDialog : public QDialog, public Ui::FilePropertiesDialog
+namespace Gui {
+
+class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog
 {
 	Q_OBJECT
 
 public:
-    FilePropertiesDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
-	virtual ~FilePropertiesDialog();
+	TFilePropertiesDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	virtual ~TFilePropertiesDialog();
 
 	void setMediaData(MediaData md);
 
@@ -97,4 +99,6 @@ private:
 	QPushButton * applyButton;
 };
 
-#endif
+} // namespace Gui
+
+#endif // _GUI_FILEPROPERTIESDIALOG_H_
