@@ -208,13 +208,11 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 
 	createActions();
 	createMenus();
-#if AUTODISABLE_ACTIONS
 	setActionsEnabled(false);
 	if (playlist->count() > 0) {
 		playAct->setEnabled(true);
 		playOrPauseAct->setEnabled(true);
 	}
-#endif
 
 #if !DOCK_PLAYLIST
 	connect(playlist, SIGNAL(visibilityChanged(bool)),
@@ -1314,7 +1312,6 @@ void TBase::createActions() {
 	connect( dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()) );
 }
 
-#if AUTODISABLE_ACTIONS
 void TBase::setActionsEnabled(bool b) {
 	// Menu Play
 	playAct->setEnabled(b);
@@ -1572,17 +1569,14 @@ void TBase::disableActionsOnStop() {
 	playOrPauseAct->setEnabled(true);
 	stopAct->setEnabled(true);
 }
-#endif // AUTODISABLE_ACTIONS
 
 void TBase::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TBase::togglePlayAction");
 
-#if AUTODISABLE_ACTIONS
 	if (state == TCore::Playing)
 		playAct->setEnabled(false);
 	else
 		playAct->setEnabled(true);
-#endif
 }
 
 void TBase::retranslateStrings() {
@@ -3069,6 +3063,7 @@ void TBase::updateMediaInfo() {
 void TBase::newMediaLoaded() {
 	qDebug("Gui::TBase::newMediaLoaded");
 
+	// Recents
 	QString filename = core->mdat.filename;
 	QString stream_title = core->mdat.stream_title;
 	if (!stream_title.isEmpty()) {
@@ -3355,10 +3350,9 @@ void TBase::updateWidgets() {
 	qDebug("Gui::TBase::updateWidgets");
 
 	// Closed caption menu
-	ccGroup->setChecked( core->mset.closed_caption_channel );
-
+	ccGroup->setChecked(core->mset.closed_caption_channel);
 	// Subfps menu
-	subFPSGroup->setChecked( core->mset.external_subtitles_fps );
+	subFPSGroup->setChecked(core->mset.external_subtitles_fps);
 
 	// Audio menu
 	channelsGroup->setChecked( core->mset.audio_use_channels );

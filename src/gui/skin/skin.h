@@ -71,11 +71,8 @@ protected slots:
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 
-	// Reimplemented:
-#if AUTODISABLE_ACTIONS
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
-#endif
 	virtual void togglePlayAction(TCore::State);
 
 protected:

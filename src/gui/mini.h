@@ -40,11 +40,8 @@ public:
 	virtual void saveConfig(const QString &group);
 
 protected slots:
-	// Reimplemented:
-#if AUTODISABLE_ACTIONS
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
-#endif
 	virtual void togglePlayAction(TCore::State state);
 
 	void adjustFloatingControlSize();

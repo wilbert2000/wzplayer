@@ -115,7 +115,6 @@ void TSkin::createActions() {
 	scrollTitleAct->setCheckable(true);
 }
 
-#if AUTODISABLE_ACTIONS
 void TSkin::enableActionsOnPlaying() {
 	qDebug("Gui::TSkin::enableActionsOnPlaying");
 	TBasePlus::enableActionsOnPlaying();
@@ -131,7 +130,6 @@ void TSkin::disableActionsOnStop() {
 	timeslider_action->disable();
 	volumeslider_action->disable();
 }
-#endif // AUTODISABLE_ACTIONS
 
 void TSkin::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TSkin::togglePlayAction");

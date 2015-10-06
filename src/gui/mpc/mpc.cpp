@@ -148,7 +148,6 @@ void TMpc::retranslateStrings() {
     setupIcons();
 }
 
-#if AUTODISABLE_ACTIONS
 void TMpc::enableActionsOnPlaying() {
 	TBasePlus::enableActionsOnPlaying();
 
@@ -166,7 +165,6 @@ void TMpc::disableActionsOnStop() {
 	volumeslider_action->disable();
 #endif
 }
-#endif // AUTODISABLE_ACTIONS
 
 void TMpc::aboutToEnterFullscreen() {
 	TBasePlus::aboutToEnterFullscreen();

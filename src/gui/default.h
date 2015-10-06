@@ -78,11 +78,8 @@ protected slots:
 	virtual void displayABSection(int secs_a, int secs_b);
 	virtual void displayVideoInfo(int width, int height, double fps);
 
-	// Reimplemented:
-#if AUTODISABLE_ACTIONS
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
-#endif
 	virtual void togglePlayAction(TCore::State state);
 
 	void adjustFloatingControlSize();

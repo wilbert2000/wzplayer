@@ -56,11 +56,8 @@ protected slots:
     void hideFullscreenControls();
     void setJumpTexts();
 
-	// Reimplemented:
-#if AUTODISABLE_ACTIONS
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
-#endif
 
 protected:
 	virtual void retranslateStrings();

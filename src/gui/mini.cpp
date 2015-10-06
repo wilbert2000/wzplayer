@@ -67,11 +67,9 @@ void TMini::createActions() {
 	volumeslider_action = createVolumeSliderAction(this);
 #endif
 
-#if AUTODISABLE_ACTIONS
 	timeslider_action->disable();
-	#if USE_VOLUME_BAR
+#if USE_VOLUME_BAR
 	volumeslider_action->disable();
-	#endif
 #endif
 
 	time_label_action = new TTimeLabelAction(this);
@@ -136,7 +134,6 @@ void TMini::retranslateStrings() {
 	editFloatingControlAct->change( tr("Edit &floating control") );
 }
 
-#if AUTODISABLE_ACTIONS
 void TMini::enableActionsOnPlaying() {
 	TBasePlus::enableActionsOnPlaying();
 
@@ -154,7 +151,6 @@ void TMini::disableActionsOnStop() {
 	volumeslider_action->disable();
 #endif
 }
-#endif // AUTODISABLE_ACTIONS
 
 void TMini::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TMini::togglePlayAction");

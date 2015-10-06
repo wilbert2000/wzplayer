@@ -94,10 +94,8 @@ void TDefault::createActions() {
 	timeslider_action = createTimeSliderAction(this);
 	volumeslider_action = createVolumeSliderAction(this);
 
-#if AUTODISABLE_ACTIONS
 	timeslider_action->disable();
 	volumeslider_action->disable();
-#endif
 
 	// Create the time label
 	time_label_action = new TTimeLabelAction(this);
@@ -132,7 +130,6 @@ void TDefault::createActions() {
 	editFloatingControlAct = new TAction( this, "edit_floating_control" );
 }
 
-#if AUTODISABLE_ACTIONS
 void TDefault::enableActionsOnPlaying() {
 	qDebug("Gui::TDefault::enableActionsOnPlaying");
 	TBasePlus::enableActionsOnPlaying();
@@ -148,7 +145,6 @@ void TDefault::disableActionsOnStop() {
 	timeslider_action->disable();
 	volumeslider_action->disable();
 }
-#endif // AUTODISABLE_ACTIONS
 
 void TDefault::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TDefault::togglePlayAction");

@@ -241,10 +241,8 @@ protected slots:
 #endif
 	void gotForbidden();
 
-#if AUTODISABLE_ACTIONS
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
-#endif
 	virtual void togglePlayAction(TCore::State);
 
 	void toggleDoubleSize();
@@ -364,9 +362,7 @@ protected:
 	void createFilePropertiesDialog();
 	void setDataToFileProperties();
 	void createActions();
-#if AUTODISABLE_ACTIONS
 	void setActionsEnabled(bool);
-#endif
 	void createMenus();
 	void updateRecents();
 	void configureDiscDevices();
