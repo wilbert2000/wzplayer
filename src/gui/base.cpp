@@ -322,7 +322,7 @@ void TBase::loadConfig(const QString &group) {
 		resize(s);
 		setWindowState((Qt::WindowStates) state);
 
-		if (!DesktopInfo::isInsideScreen(this)) {
+		if (!TDesktopInfo::isInsideScreen(this)) {
 			move(0,0);
 			qWarning("Gui::TBase::loadConfig: window is outside of the screen, moved to 0x0");
 		} else {
@@ -332,7 +332,7 @@ void TBase::loadConfig(const QString &group) {
 		}
 	} else {
 		// Center window
-		QSize center_pos = (DesktopInfo::desktop_size(this) - size()) / 2;
+		QSize center_pos = (TDesktopInfo::desktop_size(this) - size()) / 2;
 		if (center_pos.isValid())
 			move(center_pos.width(), center_pos.height());
 	}

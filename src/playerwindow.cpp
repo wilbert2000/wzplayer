@@ -194,7 +194,7 @@ void TPlayerWindow::setAspect(double aspect, bool updateVideoWindow) {
 	// monitorpixelaspect=1, so aspect changes don't require a restart of the player,
 	// hence monitor aspect needs to be handled here.
 	if (monitoraspect != 0) {
-		aspect = aspect / monitoraspect * DesktopInfo::desktop_aspectRatio(this);
+		aspect = aspect / monitoraspect * TDesktopInfo::desktop_aspectRatio(this);
 	}
 
 	this->aspect = aspect;

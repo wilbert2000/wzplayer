@@ -24,7 +24,7 @@
 
 class QWidget;
 
-class DesktopInfo
+class TDesktopInfo
 {
 public:
 	static QSize desktop_size(QWidget *w);

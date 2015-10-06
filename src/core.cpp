@@ -1728,7 +1728,7 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	// Upscale
 	if (mset.upscaling_filter) {
-		int width = DesktopInfo::desktop_size(playerwindow).width();
+		int width = TDesktopInfo::desktop_size(playerwindow).width();
 		proc->setOption("sws", "9");
 		proc->addVF("scale", QString::number(width) + ":-2");
 	}
@@ -1746,7 +1746,7 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	// Letterbox (expand)
 	if ((mset.add_letterbox) || (pref->fullscreen && pref->add_blackborders_on_fullscreen)) {
-		proc->addVF("expand", QString("aspect=%1").arg( DesktopInfo::desktop_aspectRatio(playerwindow)));
+		proc->addVF("expand", QString("aspect=%1").arg( TDesktopInfo::desktop_aspectRatio(playerwindow)));
 	}
 
 	// Software equalizer
@@ -2443,7 +2443,7 @@ void TCore::changeUpscale(bool b) {
 	qDebug( "TCore::changeUpscale: %d", b );
 	if (mset.upscaling_filter != b) {
 		mset.upscaling_filter = b;
-		int width = DesktopInfo::desktop_size(playerwindow).width();
+		int width = TDesktopInfo::desktop_size(playerwindow).width();
 		CHANGE_VF("scale", b, QString::number(width) + ":-2");
 	}
 }
@@ -3340,13 +3340,13 @@ void TCore::changeLetterbox(bool b) {
 
 	if (mset.add_letterbox != b) {
 		mset.add_letterbox = b;
-		CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(playerwindow));
+		CHANGE_VF("letterbox", b, TDesktopInfo::desktop_aspectRatio(playerwindow));
 	}
 }
 
 void TCore::changeLetterboxOnFullscreen(bool b) {
 	qDebug("TCore::changeLetterboxOnFullscreen: %d", b);
-	CHANGE_VF("letterbox", b, DesktopInfo::desktop_aspectRatio(playerwindow));
+	CHANGE_VF("letterbox", b, TDesktopInfo::desktop_aspectRatio(playerwindow));
 }
 
 void TCore::changeOSDLevel(int level) {
@@ -3495,7 +3495,7 @@ void TCore::autoZoom() {
 		video_aspect = (double) w.width() / w.height();
 	}
 
-	double screen_aspect = DesktopInfo::desktop_aspectRatio(playerwindow);
+	double screen_aspect = TDesktopInfo::desktop_aspectRatio(playerwindow);
 	double zoom_factor;
 
 	if (video_aspect > screen_aspect)
@@ -3515,7 +3515,7 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 
 	// Probably there's a much easy way to do this, but I'm not good with maths...
 
-	QSize desktop =  DesktopInfo::desktop_size(playerwindow);
+	QSize desktop =  TDesktopInfo::desktop_size(playerwindow);
 
 	double video_aspect = mset.aspectToNum( (TMediaSettings::Aspect) mset.aspect_ratio_id);
 

@@ -467,7 +467,7 @@ void TBasePlus::showPlaylist(bool b) {
 
 		// Check if playlist is outside of the screen
 		if (playlistdock->isFloating()) {
-			if (!DesktopInfo::isInsideScreen(playlistdock)) {
+			if (!TDesktopInfo::isInsideScreen(playlistdock)) {
 				qWarning("Gui::TBasePlus::showPlaylist: playlist is outside of the screen");
 				playlistdock->move(0,0);
 			}
@@ -508,8 +508,8 @@ void TBasePlus::stretchWindow() {
 	{
 		int new_height = height() + playlistdock->height();
 
-		//if (new_height > DesktopInfo::desktop_size(this).height()) 
-		//	new_height = DesktopInfo::desktop_size(this).height() - 20;
+		//if (new_height > TDesktopInfo::desktop_size(this).height()) 
+		//	new_height = TDesktopInfo::desktop_size(this).height() - 20;
 
 		qDebug("Gui::TBasePlus::stretchWindow: stretching: new height: %d", new_height);
 		resize( width(), new_height );
