@@ -34,10 +34,6 @@
 // support for program switch in ts files
 #define PROGRAM_SWITCH 0
 
-// ALLOW_DEMUXER_CODE_CHANGE
-// support changing of demuxer and video and audio codecs
-#define ALLOW_DEMUXER_CODEC_CHANGE 1
-
 // Enables/disables the use of -adapter
 #ifdef Q_OS_WIN
 #define USE_ADAPTER 1

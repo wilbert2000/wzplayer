@@ -55,18 +55,10 @@ void InfoReaderMplayer::getInfo() {
 	waiting_for_key = true;
 	vo_list.clear();
 	ao_list.clear();
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	demuxer_list.clear();
-#endif
 	mplayer_svn = -1;
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	run("-identify -vo help -ao help -demuxer help -vc help -ac help");
-#else
-	run("-identify -vo help -ao help");
-#endif
-
-	//list();
 }
 
 void InfoReaderMplayer::list() {
@@ -84,7 +76,6 @@ void InfoReaderMplayer::list() {
 		qDebug( "driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	qDebug(" demuxer_list:");
 	for ( it = demuxer_list.begin(); it != demuxer_list.end(); ++it ) {
 		qDebug( "demuxer: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
@@ -99,18 +90,14 @@ void InfoReaderMplayer::list() {
 	for ( it = ac_list.begin(); it != ac_list.end(); ++it ) {
 		qDebug( "codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
-#endif
-
 }
 
 static QRegExp rx_vo_key("^ID_VIDEO_OUTPUTS");
 static QRegExp rx_ao_key("^ID_AUDIO_OUTPUTS");
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 static QRegExp rx_demuxer_key("^ID_DEMUXERS");
 static QRegExp rx_ac_key("^ID_AUDIO_CODECS");
 static QRegExp rx_vc_key("^ID_VIDEO_CODECS");
-#endif
 
 static QRegExp rx_driver("\\t(.*)\\t(.*)");
 static QRegExp rx_demuxer("^\\s+([A-Z,a-z,0-9]+)\\s+(\\d+)\\s+(\\S.*)");
@@ -146,7 +133,6 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 				qWarning("InfoReaderMplayer::readLine: can't parse output driver from line '%s'", line.toUtf8().constData());
 			}
 		}
-#if ALLOW_DEMUXER_CODEC_CHANGE
 		else
 		if (reading_type == DEMUXER) {
 			if ( rx_demuxer.indexIn(line) > -1 ) {
@@ -183,7 +169,6 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 				qWarning("InfoReaderMplayer::readLine: can't parse codec from line '%s'", line.toUtf8().constData());
 			}
 		}
-#endif
 	}
 
 	if ( rx_vo_key.indexIn(line) > -1 ) {
@@ -198,7 +183,6 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 		qDebug("InfoReaderMplayer::readLine: found key: ao");
 	}
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	if ( rx_demuxer_key.indexIn(line) > -1 ) {
 		reading_type = DEMUXER;
 		waiting_for_key = false;
@@ -216,7 +200,6 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLines: found key: vc");
 	}
-#endif
 
 	if (line.startsWith("MPlayer ") || line.startsWith("MPlayer2 ")) {
 		mplayer_svn = MplayerVersion::mplayerVersion(line);

@@ -2907,11 +2907,9 @@ void TBase::applyNewPreferences() {
 	if (advanced->monitorAspectChanged()) {
 		playerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 	}
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	if (advanced->lavfDemuxerChanged()) {
 		core->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
 	}
-#endif
 
 	// Update logging
 	TLog::log->setEnabled(pref->log_enabled);
@@ -2978,7 +2976,7 @@ void TBase::showFilePropertiesDialog() {
 }
 
 void TBase::setDataToFileProperties() {
-#if ALLOW_DEMUXER_CODEC_CHANGE
+
 	InfoReader *i = InfoReader::obj();
 	i->getInfo();
 	file_dialog->setCodecs( i->vcList(), i->acList(), i->demuxerList() );
@@ -3005,7 +3003,6 @@ void TBase::setDataToFileProperties() {
 	file_dialog->setDemuxer(demuxer, core->mset.original_demuxer);
 	file_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
 	file_dialog->setVideoCodec(vc, core->mset.original_video_codec);
-#endif
 
 	file_dialog->setMplayerAdditionalArguments( core->mset.mplayer_additional_options );
 	file_dialog->setMplayerAdditionalVideoFilters( core->mset.mplayer_additional_video_filters );
@@ -3021,7 +3018,6 @@ void TBase::applyFileProperties() {
 #define TEST_AND_SET( Pref, Dialog ) \
 	if ( Pref != Dialog ) { Pref = Dialog; need_restart = true; }
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	bool demuxer_changed = false;
 
 	QString prev_demuxer = core->mset.forced_demuxer;
@@ -3044,13 +3040,11 @@ void TBase::applyFileProperties() {
 	QString vc = file_dialog->videoCodec();
 	if (vc == core->mset.original_video_codec) vc="";
 	TEST_AND_SET(core->mset.forced_video_codec, vc);
-#endif
 
 	TEST_AND_SET(core->mset.mplayer_additional_options, file_dialog->mplayerAdditionalArguments());
 	TEST_AND_SET(core->mset.mplayer_additional_video_filters, file_dialog->mplayerAdditionalVideoFilters());
 	TEST_AND_SET(core->mset.mplayer_additional_audio_filters, file_dialog->mplayerAdditionalAudioFilters());
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	// Restart the video to apply
 	if (need_restart) {
 		if (demuxer_changed) {
@@ -3059,7 +3053,6 @@ void TBase::applyFileProperties() {
 			core->restart();
 		}
 	}
-#endif
 }
 
 

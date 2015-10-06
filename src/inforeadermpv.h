@@ -36,19 +36,17 @@ public:
 
 	void getInfo();
 
-	InfoList voList() { return vo_list; };
-	InfoList aoList() { return ao_list; };
+	InfoList voList() { return vo_list; }
+	InfoList aoList() { return ao_list; }
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
-	InfoList demuxerList() { return demuxer_list; };
-	InfoList vcList() { return vc_list; };
-	InfoList acList() { return ac_list; };
-#endif
-	QStringList vfList() { return vf_list; };
-	QStringList optionList() { return option_list; };
+	InfoList demuxerList() { return demuxer_list; }
+	InfoList vcList() { return vc_list; }
+	InfoList acList() { return ac_list; }
+	QStringList vfList() { return vf_list; }
+	QStringList optionList() { return option_list; }
 
-	int mplayerSVN() { return mplayer_svn; };
-	QString mpvVersion() { return mpv_version; };
+	int mplayerSVN() { return mplayer_svn; }
+	QString mpvVersion() { return mpv_version; }
 
 protected:
 	QList<QByteArray> run(QString options);
@@ -62,11 +60,10 @@ protected:
 	InfoList vo_list;
 	InfoList ao_list;
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	InfoList demuxer_list;
 	InfoList vc_list;
 	InfoList ac_list;
-#endif
+
 	QStringList vf_list;
 	QStringList option_list;
 

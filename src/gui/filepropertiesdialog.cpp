@@ -40,17 +40,7 @@ TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, const TMediaData& 
 	applyButton = buttonBox->button(QDialogButtonBox::Apply);
 	connect( applyButton, SIGNAL(clicked()), this, SLOT(apply()) );
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	codecs_set = false;
-#else
-	// Hide unused tabs
-	int i = tabWidget->indexOf(demuxer_page);
-	if (i != -1) tabWidget->removeTab(i);
-	i = tabWidget->indexOf(vc_page);
-	if (i != -1) tabWidget->removeTab(i);
-	i = tabWidget->indexOf(ac_page);
-	if (i != -1) tabWidget->removeTab(i);
-#endif
 
 	retranslateStrings();
 }
@@ -77,11 +67,7 @@ void TFilePropertiesDialog::retranslateStrings() {
 	applyButton->setText( tr("Apply") );
 #endif
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	int tab_idx = 4;
-#else
-	int tab_idx = 1;
-#endif
 	tabWidget->setTabText(tab_idx, tr("O&ptions for %1").arg(PLAYER_NAME) );
 	groupBox->setTitle( tr("Additional Options for %1").arg(PLAYER_NAME) );
 	options_info_label->setText( tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
@@ -103,7 +89,6 @@ void TFilePropertiesDialog::apply() {
 	emit applied();
 }
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 void TFilePropertiesDialog::setCodecs(InfoList vc, InfoList ac, InfoList demuxer) 
 {
 	vclist = vc;
@@ -210,7 +195,6 @@ int TFilePropertiesDialog::find(QString s, InfoList &list) {
 	}
 	return -1;
 }
-#endif
 
 void TFilePropertiesDialog::setMplayerAdditionalArguments(QString args) {
 	mplayer_args_edit->setText(args);

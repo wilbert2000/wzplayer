@@ -102,11 +102,9 @@ void InfoReader::getInfo() {
 			got_info = true;
 			vo_list = convertListToInfoList(set.value("vo_list").toStringList());
 			ao_list = convertListToInfoList(set.value("ao_list").toStringList());
-			#if ALLOW_DEMUXER_CODEC_CHANGE
 			demuxer_list = convertListToInfoList(set.value("demuxer_list").toStringList());
 			vc_list = convertListToInfoList(set.value("vc_list").toStringList());
 			ac_list = convertListToInfoList(set.value("ac_list").toStringList());
-			#endif
 			vf_list = set.value("vf_list").toStringList();
 			option_list = set.value("option_list").toStringList();
 			//qDebug() << "InfoReader::getInfo: option_list:" << option_list;
@@ -130,11 +128,9 @@ void InfoReader::getInfo() {
 		ir.getInfo();
 		vo_list = ir.voList();
 		ao_list = ir.aoList();
-		#if ALLOW_DEMUXER_CODEC_CHANGE
 		demuxer_list = ir.demuxerList();
 		vc_list = ir.vcList();
 		ac_list = ir.acList();
-		#endif
 		vf_list = ir.vfList();
 		option_list = ir.optionList();
 		mplayer_svn = ir.mplayerSVN();
@@ -150,11 +146,9 @@ void InfoReader::getInfo() {
 		ir.getInfo();
 		vo_list = ir.voList();
 		ao_list = ir.aoList();
-		#if ALLOW_DEMUXER_CODEC_CHANGE
 		demuxer_list = ir.demuxerList();
 		vc_list = ir.vcList();
 		ac_list = ir.acList();
-		#endif
 		vf_list.clear();
 		option_list.clear();
 		mplayer_svn = ir.mplayerSVN();
@@ -172,11 +166,9 @@ void InfoReader::getInfo() {
 		set.setValue("date", fi.lastModified());
 		set.setValue("vo_list", convertInfoListToList(vo_list));
 		set.setValue("ao_list", convertInfoListToList(ao_list));
-		#if ALLOW_DEMUXER_CODEC_CHANGE
 		set.setValue("demuxer_list", convertInfoListToList(demuxer_list));
 		set.setValue("vc_list", convertInfoListToList(vc_list));
 		set.setValue("ac_list", convertInfoListToList(ac_list));
-		#endif
 		set.setValue("vf_list", vf_list);
 		set.setValue("option_list", option_list);
 		set.setValue("mplayer_svn", mplayer_svn);

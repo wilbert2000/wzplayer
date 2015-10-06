@@ -36,21 +36,17 @@ InfoReaderMPV::~InfoReaderMPV() {
 void InfoReaderMPV::getInfo() {
 	vo_list.clear();
 	ao_list.clear();
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	demuxer_list.clear();
 	vc_list.clear();
 	ac_list.clear();
-#endif
 	vf_list.clear();
 	mplayer_svn = -1;
 
 	vo_list = getList(run("--vo help"));
 	ao_list = getList(run("--ao help"));
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	demuxer_list = getList(run("--demuxer help"));
 	vc_list = getList(run("--vd help"));
 	ac_list = getList(run("--ad help"));
-#endif
 	{
 		InfoList list = getList(run("--vf help"));
 		for (int n = 0; n < list.count(); n++) {
@@ -90,7 +86,6 @@ void InfoReaderMPV::list() {
 		qDebug( "driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
-#if ALLOW_DEMUXER_CODEC_CHANGE
 	qDebug(" demuxer_list:");
 	for ( it = demuxer_list.begin(); it != demuxer_list.end(); ++it ) {
 		qDebug( "demuxer: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
@@ -105,7 +100,6 @@ void InfoReaderMPV::list() {
 	for ( it = ac_list.begin(); it != ac_list.end(); ++it ) {
 		qDebug( "codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
-#endif
 }
 
 QList<QByteArray> InfoReaderMPV::run(QString options) {

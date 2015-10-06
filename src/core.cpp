@@ -1175,11 +1175,6 @@ void TCore::startPlayer( QString file, double seek ) {
 		proc->setOption("fs", false);
 	}
 
-#if !ALLOW_DEMUXER_CODEC_CHANGE
-	if (pref->use_lavf_demuxer) {
-		proc->setOption("demuxer", "lavf");
-	}
-#else
 	// Demuxer and audio and video codecs:
 	if (!mset.forced_demuxer.isEmpty()) {
 		proc->setOption("demuxer", mset.forced_demuxer);
@@ -1189,11 +1184,8 @@ void TCore::startPlayer( QString file, double seek ) {
 	}
 	if (!mset.forced_video_codec.isEmpty()) {
 		proc->setOption("vc", mset.forced_video_codec);
-	}
-	else
-#endif
-	{
-		#ifndef Q_OS_WIN
+	} else {
+#ifndef Q_OS_WIN
 		/* if (pref->vo.startsWith("x11")) { */ // My card doesn't support vdpau, I use x11 to test
 		if (pref->vo.startsWith("vdpau")) {
 			QString c;
@@ -1205,15 +1197,14 @@ void TCore::startPlayer( QString file, double seek ) {
 			if (!c.isEmpty()) {
 				proc->setOption("vc", c);
 			}
-		}
-		else {
-		#endif
+		} else {
+#endif
 			if (pref->coreavc) {
 				proc->setOption("vc", "coreserve,");
 			}
-		#ifndef Q_OS_WIN
+#ifndef Q_OS_WIN
 		}
-		#endif
+#endif
 	}
 
 	if (pref->use_hwac3) {
