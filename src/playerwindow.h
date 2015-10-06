@@ -144,6 +144,8 @@ public:
 
 	void setSizeGroup(Gui::TActionGroup* group);
 
+	void retranslateStrings();
+
 #if USE_COLORKEY
 	void setColorKey(QColor c);
 #endif
@@ -174,8 +176,6 @@ protected slots:
 	void enableMessages();
 
 protected:
-	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent* event);
 	virtual void resizeEvent(QResizeEvent*);
 
 	virtual void mousePressEvent(QMouseEvent* e);

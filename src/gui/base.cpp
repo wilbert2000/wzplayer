@@ -2043,6 +2043,9 @@ void TBase::retranslateStrings() {
 
 	// TODO: make sure the "<empty>" string is translated
 
+	// PlayerWindow
+	playerwindow->retranslateStrings();
+
 	// Playlist
 	playlist->retranslateStrings();
 

@@ -183,7 +183,6 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, Qt::WindowFlags f)
 	check_hide_mouse_timer->setInterval(autohide_interval);
 	connect(check_hide_mouse_timer, SIGNAL(timeout()), this, SLOT(checkHideMouse()) );
 
-	retranslateStrings();
 }
 
 TPlayerWindow::~TPlayerWindow() {
@@ -648,47 +647,9 @@ void TPlayerWindow::resetZoomAndPan() {
 	updateVideoWindow();
 }
 
-// Language change stuff
-void TPlayerWindow::changeEvent(QEvent *e) {
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QWidget::changeEvent(e);
-	}
-}
-
-#ifdef SHAREWIDGET
-void TPlayerWindow::setMouseTrackingInclChildren(QWidget *w) {
-	//qDebug() << "TPlayerWindow::setMouseTrackingInclChildren: " << w->objectName();
-
-	w->setMouseTracking(true);
-
-	QObjectList children = w->children();
-	for (int n = 0; n < children.count(); n++) {
-		QObject* child = children[n];
-		if (child->isWidgetType()) {
-			setMouseTrackingInclChildren(static_cast<QWidget *>(child));
-		}
-	}
-}
-
-void TPlayerWindow::setCornerWidget(QWidget * w) {
-	corner_widget = w;
-	setMouseTrackingInclChildren(corner_widget);
-
-	QHBoxLayout * blayout = new QHBoxLayout;
-	blayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
-	blayout->addWidget(corner_widget);
-
-	QVBoxLayout * layout = new QVBoxLayout(this);
-	layout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding));
-	layout->addLayout(blayout);
-}
-#endif
-
 #if USE_COLORKEY
-void TPlayerWindow::setColorKey( QColor c ) {
-	ColorUtils::setBackgroundColor( playerlayer, c );
+void TPlayerWindow::setColorKey(QColor c) {
+	ColorUtils::setBackgroundColor(playerlayer, c);
 }
 #endif
 
@@ -752,6 +713,12 @@ void TPlayerWindow::playingStopped(bool clear_background) {
 	setResolution(0, 0);
 }
 
+// Called by TBase::retranslateStrings
+void TPlayerWindow::retranslateStrings() {
+	//qDebug("TPlayerWindow::retranslateStrings");
+	logo->setPixmap( Images::icon("background") );
+}
+
 void TPlayerWindow::setLogoVisible(bool b) {
 	qDebug("TPlayerWindow::setLogoVisible: %d", b);
 
@@ -789,10 +756,33 @@ void TPlayerWindow::setLogoVisible(bool b) {
 #endif
 }
 
-void TPlayerWindow::retranslateStrings() {
-	//qDebug("TPlayerWindow::retranslateStrings");
-	logo->setPixmap( Images::icon("background") );
+#ifdef SHAREWIDGET
+void TPlayerWindow::setMouseTrackingInclChildren(QWidget *w) {
+	//qDebug() << "TPlayerWindow::setMouseTrackingInclChildren: " << w->objectName();
+
+	w->setMouseTracking(true);
+
+	QObjectList children = w->children();
+	for (int n = 0; n < children.count(); n++) {
+		QObject* child = children[n];
+		if (child->isWidgetType()) {
+			setMouseTrackingInclChildren(static_cast<QWidget *>(child));
+		}
+	}
 }
 
+void TPlayerWindow::setCornerWidget(QWidget * w) {
+	corner_widget = w;
+	setMouseTrackingInclChildren(corner_widget);
+
+	QHBoxLayout * blayout = new QHBoxLayout;
+	blayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
+	blayout->addWidget(corner_widget);
+
+	QVBoxLayout * layout = new QVBoxLayout(this);
+	layout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding));
+	layout->addLayout(blayout);
+}
+#endif
 
 #include "moc_playerwindow.cpp"
