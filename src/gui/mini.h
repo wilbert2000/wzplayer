@@ -39,10 +39,6 @@ public:
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
 
-#if USE_MINIMUMSIZE
-	virtual QSize minimumSizeHint () const;
-#endif
-
 protected slots:
 	// Reimplemented:
 #if AUTODISABLE_ACTIONS

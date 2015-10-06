@@ -379,10 +379,6 @@ void TPreferences::reset() {
 	gui = "DefaultGUI";
 	iconset = "H2O";
 
-
-#if USE_MINIMUMSIZE
-	gui_minimum_width = 0; // 0 == disabled
-#endif
 	// Used to be default_size = QSize(683, 509);
 	// Now 360p 16:9 is 640 x 360 (360 + 99 = 459)
 	default_size = QSize(640, 459);
@@ -825,9 +821,6 @@ void TPreferences::save() {
 
 	setValue("gui", gui);
 
-#if USE_MINIMUMSIZE
-	setValue("gui_minimum_width", gui_minimum_width);
-#endif
 	setValue("default_size", default_size);
 
 	setValue("hide_video_window_on_audio_files", hide_video_window_on_audio_files);
@@ -1323,9 +1316,6 @@ void TPreferences::load() {
 
 	gui = value("gui", gui).toString();
 
-#if USE_MINIMUMSIZE
-	gui_minimum_width = value("gui_minimum_width", gui_minimum_width).toInt();
-#endif
 	default_size = value("default_size", default_size).toSize();
 
 	hide_video_window_on_audio_files = value("hide_video_window_on_audio_files", hide_video_window_on_audio_files).toBool();

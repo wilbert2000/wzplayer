@@ -33,11 +33,6 @@
 // Just for testing, possibility to disable the use of the colorkey
 #define USE_COLORKEY 1
 
-// USE_MINIMUMSIZE
-// if 1, the main window will not be smaller than the control widget 
-// size hint or pref->gui_minimum_width.
-#define USE_MINIMUMSIZE 1
-
 // PROGRAM_SWITCH
 // support for program switch in ts files
 #define PROGRAM_SWITCH 0

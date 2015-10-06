@@ -4636,17 +4636,6 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 	}
 
 	QSize new_size = size() + video_size - panel->size();
-
-#if USE_MINIMUMSIZE
-	int minimum_width = minimumSizeHint().width();
-	if (pref->gui_minimum_width != 0) minimum_width = pref->gui_minimum_width;
-	if (new_size.width() < minimum_width) {
-		qDebug("Gui::TBase::resizeMainWindow: width is too small, setting width to %d", minimum_width);
-		new_size = QSize(minimum_width, new_size.height());
-		try_twice = false;
-	}
-#endif
-
 	qDebug("Gui::TBase::resizeMainWindow: resizing from %d x %d to %d x %d",
 		   width(), height(), new_size.width(), new_size.height());
 	resize(new_size);

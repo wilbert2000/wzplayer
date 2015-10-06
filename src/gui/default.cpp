@@ -590,15 +590,9 @@ void TDefault::resizeEvent( QResizeEvent * e ) {
 	}
 }
 
-#if USE_MINIMUMSIZE
-QSize TDefault::minimumSizeHint() const {
-	return QSize(controlwidget_mini->sizeHint().width(), 0);
-}
-#endif
-
 void TDefault::adjustFloatingControlSize() {
 	qDebug("Gui::TDefault::adjustFloatingControlSize");
-	//floating_control->adjustSize();
+
 	QWidget *iw = floating_control->internalWidget();
 	QSize iws = iw->size();
 	QMargins m = floating_control->contentsMargins();

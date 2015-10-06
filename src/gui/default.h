@@ -48,10 +48,6 @@ public:
 	virtual void loadConfig(const QString &group);
 	virtual void saveConfig(const QString &group);
 
-#if USE_MINIMUMSIZE
-	virtual QSize minimumSizeHint () const;
-#endif
-
 public slots:
 	//virtual void showPlaylist(bool b);
 

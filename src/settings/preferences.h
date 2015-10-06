@@ -381,9 +381,6 @@ public:
 
 	QString gui; //!< The name of the GUI to use
 
-#if USE_MINIMUMSIZE
-	int gui_minimum_width;
-#endif
 	QSize default_size; // Default size of the main window
 
 	bool hide_video_window_on_audio_files;

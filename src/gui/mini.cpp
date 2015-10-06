@@ -208,15 +208,9 @@ void TMini::aboutToExitCompactMode() {
 	controlwidget->show();
 }
 
-#if USE_MINIMUMSIZE
-QSize TMini::minimumSizeHint() const {
-	return QSize(controlwidget->sizeHint().width(), 0);
-}
-#endif
-
 void TMini::adjustFloatingControlSize() {
 	qDebug("Gui::TMini::adjustFloatingControlSize");
-	//floating_control->adjustSize();
+
 	QWidget *iw = floating_control->internalWidget();
 	QSize iws = iw->size();
 	QMargins m = floating_control->contentsMargins();
