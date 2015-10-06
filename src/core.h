@@ -52,7 +52,7 @@ public:
 	TCore( TPlayerWindow *mpw, QWidget* parent, int position_max );
 	virtual ~TCore();
 
-	MediaData mdat;
+	TMediaData mdat;
 	TMediaSettings mset;
 
 	//! Return the current state

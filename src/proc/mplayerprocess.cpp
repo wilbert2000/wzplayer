@@ -37,7 +37,7 @@ namespace Proc {
 const double FRAME_BACKSTEP_TIME = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
-TMplayerProcess::TMplayerProcess(MediaData *mdata)
+TMplayerProcess::TMplayerProcess(TMediaData* mdata)
 	: TPlayerProcess(TPlayerID::MPLAYER, mdata),
 	svn_version(-1) {
 }
@@ -376,7 +376,7 @@ bool TMplayerProcess::parseTitleIsMovie() {
 bool TMplayerProcess::vtsChanged(int vts) {
 	qDebug("Proc::TMplayerProcess::vtsChanged: selecting VTS %d", vts);
 
-	md->detected_type = MediaData::TYPE_DVDNAV;
+	md->detected_type = TMediaData::TYPE_DVDNAV;
 	md->titles.setSelectedVTS(vts);
 
 	if (notified_player_is_running) {
@@ -399,7 +399,7 @@ bool TMplayerProcess::vtsChanged(int vts) {
 	return true;
 }
 
-bool TMplayerProcess::titleChanged(MediaData::Type type, int title) {
+bool TMplayerProcess::titleChanged(TMediaData::Type type, int title) {
 	qDebug("Proc::TMplayerProcess::titleChanged: title %d", title);
 
 	md->detected_type = type;
@@ -412,18 +412,18 @@ bool TMplayerProcess::parseProperty(const QString &name, const QString &value) {
 
 	// Track changed
 	if (name == "CDDA_TRACK") {
-		return titleChanged(MediaData::TYPE_CDDA, value.toInt());
+		return titleChanged(TMediaData::TYPE_CDDA, value.toInt());
 	}
 	if (name == "VCD_TRACK") {
-		return titleChanged(MediaData::TYPE_VCD, value.toInt());
+		return titleChanged(TMediaData::TYPE_VCD, value.toInt());
 	}
 
 	// Title changed. DVDNAV uses its own reg expr
 	if (name == "DVD_CURRENT_TITLE") {
-		return titleChanged(MediaData::TYPE_DVD, value.toInt());
+		return titleChanged(TMediaData::TYPE_DVD, value.toInt());
 	}
 	if (name == "BLURAY_CURRENT_TITLE") {
-		return titleChanged(MediaData::TYPE_BLURAY, value.toInt());
+		return titleChanged(TMediaData::TYPE_BLURAY, value.toInt());
 	}
 
 	// Subtitle filename
@@ -665,7 +665,7 @@ void TMplayerProcess::playingStarted() {
 	getSelectedTracks();
 
 	// Create chapters from titles for vcd or audio CD
-	if (MediaData::isCD(md->detected_type)) {
+	if (TMediaData::isCD(md->detected_type)) {
 		convertTitlesToChapters();
 	}
 
@@ -932,7 +932,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 		QString url = rx_stream_title_and_url.cap(2);
 		qDebug("Proc::TMplayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
 		qDebug("Proc::TMplayerProcess::parseLine: stream_url: '%s'", url.toUtf8().data());
-		md->detected_type = MediaData::TYPE_STREAM;
+		md->detected_type = TMediaData::TYPE_STREAM;
 		md->stream_title = s;
 		md->stream_url = url;
 		emit receivedStreamTitleAndUrl( s, url );
@@ -942,7 +942,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 	if (rx_stream_title.indexIn(line) >= 0) {
 		QString s = rx_stream_title.cap(1);
 		qDebug("Proc::TMplayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
-		md->detected_type = MediaData::TYPE_STREAM;
+		md->detected_type = TMediaData::TYPE_STREAM;
 		md->stream_title = s;
 		emit receivedStreamTitle( s );
 		return true;

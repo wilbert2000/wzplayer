@@ -26,7 +26,7 @@
 
 using namespace Settings;
 
-TMediaSettings::TMediaSettings(MediaData *mdat) : md(mdat) {
+TMediaSettings::TMediaSettings(TMediaData* mdat) : md(mdat) {
 	reset();
 }
 

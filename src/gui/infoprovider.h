@@ -31,11 +31,11 @@ class TInfoProvider
 
 public:
 	//! Gets info about the specified filename.
-	static void getInfo(QString mplayer_bin, const QString &filename, MediaData &md);
+	static void getInfo(QString mplayer_bin, const QString& filename, TMediaData& md);
 
 	//! Gets info about the specified filename. The mplayer executable will be
     // obtained from the global preferences.
-	static void getInfo(const QString &filename, MediaData &md);
+	static void getInfo(const QString& filename, TMediaData& md);
 };
 
 } // namespace Gui

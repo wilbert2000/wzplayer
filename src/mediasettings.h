@@ -56,7 +56,7 @@ public:
 
 	enum SubFPS { SFPS_None, SFPS_23, SFPS_24, SFPS_25, SFPS_30, SFPS_23976, SFPS_29970 };
 
-	TMediaSettings(MediaData* mdat);
+	TMediaSettings(TMediaData* mdat);
 	virtual ~TMediaSettings();
 
 	virtual void reset();
@@ -193,7 +193,7 @@ public:
 	void load(QSettings * set, int player_id);
 
 private:
-	MediaData* md;
+	TMediaData* md;
 	void convertOldSelectedTrack(int &id);
 };
 

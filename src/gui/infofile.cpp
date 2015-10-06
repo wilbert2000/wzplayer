@@ -34,7 +34,7 @@ TInfoFile::TInfoFile() {
 TInfoFile::~TInfoFile() {
 }
 
-QString TInfoFile::getInfo(MediaData md) {
+QString TInfoFile::getInfo(TMediaData md) {
 	QString s;
 
 	// General
@@ -42,26 +42,26 @@ QString TInfoFile::getInfo(MediaData md) {
 
 	QString icon;
 	switch (md.selected_type) {
-		case MediaData::TYPE_FILE:	if (md.noVideo())
+		case TMediaData::TYPE_FILE:	if (md.noVideo())
 										icon = "type_audio.png";
 									else
 										icon = "type_video.png";
 									break;
-		case MediaData::TYPE_DVD	:	icon = "type_dvd.png"; break;
-		case MediaData::TYPE_DVDNAV	:	icon = "type_dvd.png"; break;
-		case MediaData::TYPE_VCD	:	icon = "type_vcd.png"; break;
-		case MediaData::TYPE_CDDA	:	icon = "type_vcd.png"; break;
-		case MediaData::TYPE_TV		:	icon = "type_tv.png"; break;
-		case MediaData::TYPE_STREAM :	icon = "type_url.png"; break;
-		case MediaData::TYPE_BLURAY :	icon = "type_bluray.png"; break;
+		case TMediaData::TYPE_DVD	:	icon = "type_dvd.png"; break;
+		case TMediaData::TYPE_DVDNAV	:	icon = "type_dvd.png"; break;
+		case TMediaData::TYPE_VCD	:	icon = "type_vcd.png"; break;
+		case TMediaData::TYPE_CDDA	:	icon = "type_vcd.png"; break;
+		case TMediaData::TYPE_TV		:	icon = "type_tv.png"; break;
+		case TMediaData::TYPE_STREAM :	icon = "type_url.png"; break;
+		case TMediaData::TYPE_BLURAY :	icon = "type_bluray.png"; break;
 		default						:	icon = "type_unknown.png";
 	}
 	icon = icon.replace(".png", ""); // FIXME
 	icon = "<img src=\"" + Images::file(icon) + "\"> ";
 
-	if (md.selected_type == MediaData::TYPE_DVD
-		|| md.selected_type == MediaData::TYPE_DVDNAV
-		|| md.selected_type == MediaData::TYPE_BLURAY)
+	if (md.selected_type == TMediaData::TYPE_DVD
+		|| md.selected_type == TMediaData::TYPE_DVDNAV
+		|| md.selected_type == TMediaData::TYPE_BLURAY)
 	{
 		TDiscData disc_data = TDiscName::split(md.filename);
 		s += title( icon + disc_data.protocol + "://" + QString::number(disc_data.title) );

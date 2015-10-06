@@ -36,7 +36,7 @@ namespace Proc {
 // TODO: get from player too
 static const QPoint max_osd_pos(300, 600);
 
-TMPVProcess::TMPVProcess(MediaData *mdata)
+TMPVProcess::TMPVProcess(TMediaData* mdata)
 	: TPlayerProcess(TPlayerID::MPV, mdata)
 	, verbose(false)
 	, osd_pos()
@@ -273,7 +273,7 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 
 	// MPV uses dvdnav to play DVDs, but without support for menus
 	if (disc_type == "dvdnav") {
-		md->detected_type = MediaData::TYPE_DVD;
+		md->detected_type = TMediaData::TYPE_DVD;
 	} else {
 		md->detected_type = md->stringToType(disc_type);
 	}
@@ -408,7 +408,7 @@ void TMPVProcess::playingStarted() {
 		notifyTime(md->time_sec, "");
 	}
 
-	if (MediaData::isCD(md->detected_type)) {
+	if (TMediaData::isCD(md->detected_type)) {
 		// Convert chapters to titles for CD
 		convertChaptersToTitles();
 	} else if (md->detectedDisc()) {

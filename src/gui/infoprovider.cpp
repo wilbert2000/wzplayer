@@ -24,14 +24,14 @@
 
 namespace Gui {
 
-void TInfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaData &md) {
+void TInfoProvider::getInfo(QString mplayer_bin, const QString& filename, TMediaData& md) {
 	qDebug("Gui::TInfoProvider::getInfo: %s", filename.toUtf8().data());
 
 	QFileInfo fi(mplayer_bin);
 	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
 		mplayer_bin = fi.absoluteFilePath();
 	}
-	Proc::TPlayerProcess * proc = Proc::TPlayerProcess::createPlayerProcess(mplayer_bin, &md);
+	Proc::TPlayerProcess* proc = Proc::TPlayerProcess::createPlayerProcess(mplayer_bin, &md);
 
 	proc->setExecutable(mplayer_bin);
 	proc->setFixedOptions();
@@ -55,7 +55,7 @@ void TInfoProvider::getInfo(QString mplayer_bin, const QString &filename, MediaD
 	delete proc;
 }
 
-void TInfoProvider::getInfo(const QString &filename, MediaData &md) {
+void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
 	getInfo(Settings::pref->mplayer_bin, filename, md);
 }
 

@@ -43,7 +43,7 @@ namespace Proc {
 const int waiting_for_answers_safe_guard_init = 100;
 
 
-TPlayerProcess::TPlayerProcess(TPlayerID::Player pid, MediaData *mdata)
+TPlayerProcess::TPlayerProcess(TPlayerID::Player pid, TMediaData* mdata)
 	: TProcess(0)
 	, player_id(pid)
 	, md(mdata)
@@ -81,7 +81,7 @@ void TPlayerProcess::writeToStdin(QString text, bool log) {
 	}
 }
 
-TPlayerProcess * TPlayerProcess::createPlayerProcess(const QString &player_bin, MediaData *md) {
+TPlayerProcess * TPlayerProcess::createPlayerProcess(const QString& player_bin, TMediaData* md) {
 
 	TPlayerProcess * proc = 0;
 
@@ -118,7 +118,7 @@ bool TPlayerProcess::startPlayer() {
 	prev_frame = -11111;
 
 	// Clear media data
-	*md = MediaData(md->filename, md->selected_type);
+	*md = TMediaData(md->filename, md->selected_type);
 
 	// Start the player process
 	start();

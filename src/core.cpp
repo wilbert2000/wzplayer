@@ -347,7 +347,7 @@ void TCore::saveMediaInfo() {
 		return;
 	}
 
-	if (mdat.selected_type == MediaData::TYPE_FILE) {
+	if (mdat.selected_type == TMediaData::TYPE_FILE) {
 		if (pref->file_settings_method.toLower() == "hash") {
 			Settings::TFileSettingsHash settings(mdat.filename);
 			settings.saveSettingsFor(mdat.filename, mset, proc->player());
@@ -355,7 +355,7 @@ void TCore::saveMediaInfo() {
 			Settings::TFileSettings settings;
 			settings.saveSettingsFor(mdat.filename, mset, proc->player());
 		}
-	} else if (mdat.selected_type == MediaData::TYPE_TV) {
+	} else if (mdat.selected_type == TMediaData::TYPE_TV) {
 		Settings::TTVSettings settings;
 		settings.saveSettingsFor(mdat.filename, mset, proc->player());
 	}
@@ -402,7 +402,7 @@ void TCore::close() {
 	// Save data previous file:
 	saveMediaInfo();
 	// Clear media data
-	mdat = MediaData();
+	mdat = TMediaData();
 }
 
 void TCore::openDisc(TDiscData &disc, bool fast_open) {
@@ -450,13 +450,13 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 
 	// Set filename and selected type
 	mdat.filename = TDiscName::join(disc);
-	mdat.selected_type = (MediaData::Type) TDiscName::protocolToDisc(disc.protocol);
+	mdat.selected_type = (TMediaData::Type) TDiscName::protocolToDisc(disc.protocol);
 
 	// Clear settings
 	mset.reset();
 	// TODO: check use of current_title_id
 	mset.current_title_id = disc.title;
-	if (disc.title > 0 && MediaData::isCD(mdat.selected_type)) {
+	if (disc.title > 0 && TMediaData::isCD(mdat.selected_type)) {
 		mset.playing_single_track = true;
 	}
 
@@ -641,7 +641,7 @@ void TCore::openTV(QString channel_id) {
 	if (channel_id.startsWith("tv://")) pref->last_tv_channel = channel_id;
 
 	mdat.filename = channel_id;
-	mdat.selected_type = MediaData::TYPE_TV;
+	mdat.selected_type = TMediaData::TYPE_TV;
 
 	mset.reset();
 
@@ -683,7 +683,7 @@ void TCore::openStream(QString name) {
 
 	close();
 	mdat.filename = name;
-	mdat.selected_type = MediaData::TYPE_STREAM;
+	mdat.selected_type = TMediaData::TYPE_STREAM;
 	mset.reset();
 
 	initPlaying();
@@ -694,7 +694,7 @@ void TCore::openFile(QString filename, int seek) {
 
 	close();
 	mdat.filename = filename;
-	mdat.selected_type = MediaData::TYPE_FILE;
+	mdat.selected_type = TMediaData::TYPE_FILE;
 	int old_volume = mset.volume;
 	mset.reset();
 
@@ -739,14 +739,14 @@ void TCore::restartPlay() {
 	we_are_restarting = true;
 
 	// For DVDNAV remember the current title, pos and menu.
-	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		title = mdat.titles.getSelectedID();
 		title_time = mset.current_sec - 10;
 		title_was_menu = mdat.title_is_menu;
 		TDiscData disc = TDiscName::split(mdat.filename);
 		disc.title = 0;
 		mdat.filename = TDiscName::join(disc);
-		mdat.selected_type = MediaData::TYPE_DVDNAV;
+		mdat.selected_type = TMediaData::TYPE_DVDNAV;
 		qDebug() << "TCore::restartPlay: restarting" << mdat.filename;
 	} else {
 		title = -1;
@@ -776,12 +776,12 @@ void TCore::initPlaying(int seek) {
 	if (seek > -1) start_sec = seek;
 	// Cannot seek at startup in DVDNAV.
 	// See restartPlay() and restoreTitle() for DVDNAV seek.
-	if (mdat.selected_type == MediaData::TYPE_DVDNAV) start_sec = 0;
+	if (mdat.selected_type == TMediaData::TYPE_DVDNAV) start_sec = 0;
 
 #ifdef YOUTUBE_SUPPORT
 	if (pref->enable_yt_support) {
 		// Avoid to pass to mplayer the youtube page url
-		if (mdat.selected_type == MediaData::TYPE_STREAM) {
+		if (mdat.selected_type == TMediaData::TYPE_STREAM) {
 			if (mdat.filename == yt->origUrl()) {
 				mdat.filename = yt->latestPreferredUrl();
 			}
@@ -812,11 +812,11 @@ void TCore::newMediaPlaying() {
 			if (mset.current_title_id < 0) disc.title = 0;
 			else disc.title = mset.current_title_id;
 		}
-		QString protocol = MediaData::typeToString(mdat.detected_type);
+		QString protocol = TMediaData::typeToString(mdat.detected_type);
 		disc.protocol = protocol;
 		mdat.filename = TDiscName::join(disc);
 		qDebug() << "TCore::newMediaPlaying: switched filename from selected protocol"
-				 << MediaData::typeToString(mdat.selected_type)
+				 << TMediaData::typeToString(mdat.selected_type)
 				 << "to detected protocol" << protocol;
 		mdat.selected_type = mdat.detected_type;
 	}
@@ -928,7 +928,7 @@ void TCore::playingStarted() {
 #ifdef YOUTUBE_SUPPORT
 	if (pref->enable_yt_support) {
 		// Change the real url with the youtube page url and set the title
-		if (mdat.selected_type == MediaData::TYPE_STREAM) {
+		if (mdat.selected_type == TMediaData::TYPE_STREAM) {
 			if (mdat.filename == yt->latestPreferredUrl()) {
 				mdat.filename = yt->origUrl();
 				mdat.stream_title = yt->urlTitle();
@@ -1605,14 +1605,14 @@ void TCore::startPlayer( QString file, double seek ) {
 	// declare them MPlayer only.
 	if (proc->isMPlayer()) {
 		switch (mdat.selected_type) {
-			case MediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
-			case MediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
-			case MediaData::TYPE_DVDNAV	: cache_size = 0; break;
-			case MediaData::TYPE_STREAM	: cache_size = pref->cache_for_streams; break;
-			case MediaData::TYPE_VCD 	: cache_size = pref->cache_for_vcds; break;
-			case MediaData::TYPE_CDDA	: cache_size = pref->cache_for_audiocds; break;
-			case MediaData::TYPE_TV		: cache_size = pref->cache_for_tv; break;
-			case MediaData::TYPE_BLURAY	: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
+			case TMediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
+			case TMediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
+			case TMediaData::TYPE_DVDNAV	: cache_size = 0; break;
+			case TMediaData::TYPE_STREAM	: cache_size = pref->cache_for_streams; break;
+			case TMediaData::TYPE_VCD 	: cache_size = pref->cache_for_vcds; break;
+			case TMediaData::TYPE_CDDA	: cache_size = pref->cache_for_audiocds; break;
+			case TMediaData::TYPE_TV		: cache_size = pref->cache_for_tv; break;
+			case TMediaData::TYPE_BLURAY	: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
 			default: cache_size = 0;
 		} // switch
 
@@ -1625,7 +1625,7 @@ void TCore::startPlayer( QString file, double seek ) {
 		proc->setOption("speed", QString::number(mset.speed));
 	}
 
-	if (mdat.selected_type != MediaData::TYPE_TV) {
+	if (mdat.selected_type != TMediaData::TYPE_TV) {
 		// Play A - B
 		if ((mset.A_marker > -1) && (mset.B_marker > mset.A_marker)) {
 			proc->setOption("ss", QString::number(mset.A_marker));
@@ -1642,7 +1642,7 @@ void TCore::startPlayer( QString file, double seek ) {
 		proc->setOption("idx");
 	}
 
-	if (mdat.selected_type == MediaData::TYPE_STREAM) {
+	if (mdat.selected_type == TMediaData::TYPE_STREAM) {
 		if (pref->prefer_ipv4) {
 			proc->setOption("prefer-ipv4");
 		} else {
@@ -3158,12 +3158,12 @@ void TCore::changeTitle(int title) {
 
 	if (proc->isRunning()) {
 		// Handle CDs with the chapter commands
-		if (MediaData::isCD(mdat.detected_type)) {
+		if (TMediaData::isCD(mdat.detected_type)) {
 			changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
 			return;
 		}
 		// Handle DVDNAV with title command
-		if (mdat.detected_type == MediaData::TYPE_DVDNAV && cache_size == 0) {
+		if (mdat.detected_type == TMediaData::TYPE_DVDNAV && cache_size == 0) {
 			if (mdat.title_is_menu && mdat.duration <= 0) {
 				// Changing title on a menu does not work :(
 				// Risc pressing menus you don't want to press, like settings...
@@ -3192,7 +3192,7 @@ void TCore::changeChapter(int id) {
 
 	int firstID = mdat.chapters.firstID();
 	if (id >= firstID) {
-		if (MediaData::isCD(mdat.detected_type)) {
+		if (TMediaData::isCD(mdat.detected_type)) {
 			mset.current_title_id = id - firstID + mdat.titles.firstID();
 		}
 		proc->setChapter(id);
@@ -3657,7 +3657,7 @@ void TCore::dvdnavPrev() {
 void TCore::dvdnavSelect() {
 	qDebug("TCore::dvdnavSelect");
 
-	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		if (_state == Paused) {
 			play();
 		}
@@ -3671,7 +3671,7 @@ void TCore::dvdnavSelect() {
 void TCore::dvdnavMouse() {
 	qDebug("TCore::dvdnavMouse");
 
-	if (mdat.detected_type == MediaData::TYPE_DVDNAV) {
+	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		if (_state == Paused) {
 			play();
 		}
@@ -3688,7 +3688,7 @@ void TCore::dvdnavMouse() {
 // Slot called by playerwindow to pass mouse move local to video
 void TCore::dvdnavUpdateMousePos(QPoint pos) {
 
-	if (mdat.detected_type == MediaData::TYPE_DVDNAV && !block_dvd_nav) {
+	if (mdat.detected_type == TMediaData::TYPE_DVDNAV && !block_dvd_nav) {
 		// MPlayer won't act if paused. Play if menu not animated.
 		if (_state == Paused && mdat.title_is_menu && mdat.duration == 0) {
 			play();

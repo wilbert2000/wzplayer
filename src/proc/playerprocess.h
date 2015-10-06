@@ -43,7 +43,7 @@ class TPlayerProcess : public TProcess
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	TPlayerProcess(TPlayerID::Player pid, MediaData * mdata);
+	TPlayerProcess(TPlayerID::Player pid, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
 	TPlayerID::Player player() { return player_id; }
@@ -123,7 +123,7 @@ public:
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
 
-	static TPlayerProcess * createPlayerProcess(const QString &player_bin, MediaData *md);
+	static TPlayerProcess* createPlayerProcess(const QString& player_bin, TMediaData* md);
 
 // Signals
 signals:
@@ -186,7 +186,7 @@ public slots:
 protected:
 	TPlayerID::Player player_id;
 
-	MediaData* md;
+	TMediaData* md;
 
 	bool notified_player_is_running;
 	int waiting_for_answers;

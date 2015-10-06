@@ -31,7 +31,7 @@ public:
 	TInfoFile();
 	virtual ~TInfoFile();
 
-	QString getInfo(MediaData md);
+	QString getInfo(TMediaData md);
 
 protected:
 	QString title(QString text);

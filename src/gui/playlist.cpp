@@ -1005,7 +1005,7 @@ void TPlaylist::newMediaLoaded() {
 		addItem(filename, "", 0);
 
 		// Add associated files to playlist
-		if (core->mdat.selected_type == MediaData::TYPE_FILE) {
+		if (core->mdat.selected_type == TMediaData::TYPE_FILE) {
 			qDebug() << "Gui::TPlaylist::newMediaLoaded: searching for files to add to playlist for"
 					 << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
@@ -1114,7 +1114,7 @@ void TPlaylist::addFile(const QString &filename, bool get_info) {
 		} else if (ext == "pls") {
 			load_pls(filename, false, false);
 		} else {
-			MediaData media_data;
+			TMediaData media_data;
 
 #if USE_INFOPROVIDER
 			if (get_info) {

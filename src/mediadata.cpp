@@ -22,18 +22,18 @@
 #include <QDebug>
 
 
-MediaData::MediaData() :
+TMediaData::TMediaData() :
 	selected_type(TYPE_UNKNOWN) {
 	init();
 }
 
-MediaData::MediaData(const QString &fname, Type sel_type) :
+TMediaData::TMediaData(const QString &fname, Type sel_type) :
 	filename(fname),
 	selected_type(sel_type) {
 	init();
 }
 
-void MediaData::init() {
+void TMediaData::init() {
 
 	detected_type = TYPE_UNKNOWN;
 
@@ -61,15 +61,15 @@ void MediaData::init() {
 	initialized = false;
 }
 
-bool MediaData::isCD(Type type) {
+bool TMediaData::isCD(Type type) {
 	return type == TYPE_CDDA || type == TYPE_VCD;
 }
 
-bool MediaData::isDVD(Type type) {
+bool TMediaData::isDVD(Type type) {
 	return type == TYPE_DVD || type == TYPE_DVDNAV;
 }
 
-bool MediaData::isDisc(Type type) {
+bool TMediaData::isDisc(Type type) {
 	return type == TYPE_DVD
 			|| type == TYPE_DVDNAV
 			|| type == TYPE_VCD
@@ -77,16 +77,16 @@ bool MediaData::isDisc(Type type) {
 			|| type == TYPE_BLURAY;
 }
 
-bool MediaData::detectedDisc() const {
+bool TMediaData::detectedDisc() const {
 	return isDisc(detected_type);
 }
 
-bool MediaData::selectedDisc() const {
+bool TMediaData::selectedDisc() const {
 	return isDisc(selected_type);
 }
 
 
-QString MediaData::displayName(bool show_tag) const {
+QString TMediaData::displayName(bool show_tag) const {
 	if (show_tag) {
 		QString name = meta_data.value("NAME");
 		if (!name.isEmpty())
@@ -105,7 +105,7 @@ QString MediaData::displayName(bool show_tag) const {
 		return filename;
 }
 
-QString MediaData::typeToString(Type type) {
+QString TMediaData::typeToString(Type type) {
 
 	QString s;
 	switch (type) {
@@ -123,7 +123,7 @@ QString MediaData::typeToString(Type type) {
 	return s;
 }
 
-MediaData::Type MediaData::stringToType(QString type) {
+TMediaData::Type TMediaData::stringToType(QString type) {
 
 	type = type.toLower();
 
@@ -148,8 +148,8 @@ MediaData::Type MediaData::stringToType(QString type) {
 }
 
 
-void MediaData::list() const {
-	qDebug("MediaData::list");
+void TMediaData::list() const {
+	qDebug("TMediaData::list");
 
 	qDebug("  filename: '%s'", filename.toUtf8().data());
 	qDebug("  selected type: %s", typeToString(selected_type).toUtf8().data());

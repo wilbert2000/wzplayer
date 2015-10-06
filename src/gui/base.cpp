@@ -1551,7 +1551,7 @@ void TBase::enableActionsOnPlaying() {
 	}
 #endif
 
-	if (!core->mdat.detected_type == MediaData::TYPE_DVDNAV) {
+	if (!core->mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		dvdnavUpAct->setEnabled(false);
 		dvdnavDownAct->setEnabled(false);
 		dvdnavLeftAct->setEnabled(false);
@@ -4090,7 +4090,7 @@ void TBase::aboutToExitFullscreen() {
 void TBase::leftClickFunction() {
 	qDebug("Gui::TBase::leftClickFunction");
 
-	if (core->mdat.detected_type == MediaData::TYPE_DVDNAV
+	if (core->mdat.detected_type == TMediaData::TYPE_DVDNAV
 		&& playerwindow->videoLayer()->underMouse()) {
 		core->dvdnavMouse();
 	} else if (!pref->mouse_left_click_function.isEmpty()) {
@@ -5057,7 +5057,7 @@ void TBase::showVideoPreviewDialog() {
 		video_preview->setVideoFile(core->mdat.filename);
 
 		// DVD
-		if (MediaData::isDVD(core->mdat.selected_type)) {
+		if (TMediaData::isDVD(core->mdat.selected_type)) {
 			QString file = core->mdat.filename;
 			TDiscData disc_data = TDiscName::split(file);
 			QString dvd_folder = disc_data.device;

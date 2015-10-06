@@ -56,7 +56,7 @@ TFilePropertiesDialog::TFilePropertiesDialog( QWidget* parent, Qt::WindowFlags f
 TFilePropertiesDialog::~TFilePropertiesDialog() {
 }
 
-void TFilePropertiesDialog::setMediaData(MediaData md) {
+void TFilePropertiesDialog::setMediaData(TMediaData md) {
 	media_data = md;
 	showInfo();
 }

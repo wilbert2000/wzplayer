@@ -35,7 +35,7 @@ class TMplayerProcess : public TPlayerProcess
 	Q_OBJECT
 
 public:
-	TMplayerProcess(MediaData * mdata);
+	TMplayerProcess(TMediaData* mdata);
 	virtual ~TMplayerProcess();
 
 	virtual bool startPlayer();
@@ -150,7 +150,7 @@ private:
 	void getSelectedTracks();
 	void notifyChanges();
 
-	bool titleChanged(MediaData::Type type, int title);
+	bool titleChanged(TMediaData::Type type, int title);
 	void dvdnavTitleChanged(int old_title);
 	void dvdnavGetTitle();
 	void updateTitleFromDuration(double duration);

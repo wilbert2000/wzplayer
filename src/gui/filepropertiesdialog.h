@@ -36,7 +36,7 @@ public:
 	TFilePropertiesDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
 	virtual ~TFilePropertiesDialog();
 
-	void setMediaData(MediaData md);
+	void setMediaData(TMediaData md);
 
 #if ALLOW_DEMUXER_CODEC_CHANGE
 	// Call it as soon as possible
@@ -92,7 +92,7 @@ private:
 	InfoList vclist, aclist, demuxerlist;
 	QString orig_demuxer, orig_ac, orig_vc;
 #endif
-	MediaData media_data;
+	TMediaData media_data;
 
 	QPushButton * okButton;
 	QPushButton * cancelButton;

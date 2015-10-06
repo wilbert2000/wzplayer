@@ -30,7 +30,7 @@
 #include "maps/chapters.h"
 
 
-class MediaData {
+class TMediaData {
 public:
 	// Types of media
 	enum Type {
@@ -48,9 +48,9 @@ public:
 		TYPE_TV
 	};
 
-	MediaData();
-	MediaData(const QString &fame, Type sel_type);
-	virtual ~MediaData() {}
+	TMediaData();
+	TMediaData(const QString& fame, Type sel_type);
+	virtual ~TMediaData() {}
 
 	QString filename;
 
