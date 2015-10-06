@@ -2685,7 +2685,7 @@ void TCore::switchMute() {
 }
 
 void TCore::mute(bool b) {
-	qDebug("TCore::mute");
+	qDebug("TCore::mute: %d", b);
 
 	proc->mute(b);
 	if (pref->global_volume) {
@@ -3229,7 +3229,6 @@ void TCore::changeProgram(int ID) {
 		mset.current_video_id = TMediaSettings::NoneSelected;
 		mset.current_audio_id = TMediaSettings::NoneSelected;
 
-		updateWidgets();
 		*/
 	}
 }

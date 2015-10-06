@@ -446,14 +446,6 @@ void TDefault::displayVideoInfo(int width, int height, double fps) {
 	}
 }
 
-void TDefault::updateWidgets() {
-	qDebug("Gui::TDefault::updateWidgets");
-
-	TBasePlus::updateWidgets();
-
-	panel->setFocus();
-}
-
 void TDefault::applyNewPreferences() {
 	qDebug("Gui::TDefault::applyNewPreferences");
 

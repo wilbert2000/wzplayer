@@ -463,14 +463,6 @@ void TMpc::setJumpTexts() {
 	*/
 }
 
-void TMpc::updateWidgets() {
-
-	TBasePlus::updateWidgets();
-
-	// Frame counter
-	/* frame_display->setVisible( pref->show_frame_counter ); */
-}
-
 } // namespace Gui
 
 #include "moc_mpc.cpp"

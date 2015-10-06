@@ -72,7 +72,6 @@ protected:
 	/* virtual void closeEvent( QCloseEvent * ); */
 
 protected slots:
-	virtual void updateWidgets();
 	virtual void applyNewPreferences();
 	virtual void displayTime(QString text);
 	virtual void displayFrame(int frame);

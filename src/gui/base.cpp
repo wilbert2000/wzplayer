@@ -3461,6 +3461,9 @@ void TBase::updateWidgets() {
 
 	// Forced subs
 	useForcedSubsOnlyAct->setChecked( pref->use_forced_subs_only );
+
+	// TODO:
+	panel->setFocus();
 }
 
 void TBase::updateVideoEqualizer() {
