@@ -351,7 +351,7 @@ void TBasePlus::showAll(bool b) {
 }
 
 void TBasePlus::resizeWindow(int w, int h) {
-	qDebug("Gui::TBasePlus::resizeWindow: %d, %d", w, h);
+	// qDebug("Gui::TBasePlus::resizeWindow: %d, %d", w, h);
 
 	if (tray->isVisible() && !isVisible())
 		showAll(true);

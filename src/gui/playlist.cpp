@@ -1283,7 +1283,7 @@ void TPlaylist::clearPlayedTag() {
 }
 
 int TPlaylist::chooseRandomItem() {
-	qDebug( "Gui::TPlaylist::chooseRandomItem");
+	// qDebug( "Gui::TPlaylist::chooseRandomItem");
 
 	QList <int> fi; //List of not played items (free items)
 	for (int n = 0; n < pl.count(); n++) {
@@ -1296,8 +1296,8 @@ int TPlaylist::chooseRandomItem() {
 	if (fi.count() == 0) return -1; // none free
 
 	int selected = (int) ((double) fi.count() * rand()/(RAND_MAX+1.0));
-	qDebug("Gui::TPlaylist::chooseRandomItem: selected item: %d (%d)",
-		   selected, fi[selected]);
+	qDebug("Gui::TPlaylist::chooseRandomItem: selected item: %d",
+		   fi[selected]);
 	return fi[selected];
 }
 

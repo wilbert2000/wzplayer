@@ -4602,7 +4602,7 @@ void TBase::toggleDoubleSize() {
 
 // Slot called by signal needResize
 void TBase::resizeWindow(int w, int h) {
-	qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
+	// qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
 	// Set first time if pref->save_window_size_on_exit selected
 	bool block = block_resize;
