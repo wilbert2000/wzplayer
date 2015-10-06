@@ -3625,7 +3625,7 @@ void TBase::openFile() {
 
 	exitFullscreenIfNeeded();
 
-	Extensions e;
+	TExtensions e;
 	QString s = MyFileDialog::getOpenFileName(
 					   this, tr("Choose a file"), pref->latest_dir,
 					   tr("Multimedia") + e.allPlayable().forFilter()+";;" +
@@ -3803,7 +3803,7 @@ void TBase::loadSub() {
 
 	exitFullscreenIfNeeded();
 
-	Extensions e;
+	TExtensions e;
     QString s = MyFileDialog::getOpenFileName(
         this, tr("Choose a file"), 
 	    pref->latest_dir, 
@@ -3824,7 +3824,7 @@ void TBase::loadAudioFile() {
 
 	exitFullscreenIfNeeded();
 
-	Extensions e;
+	TExtensions e;
 	QString s = MyFileDialog::getOpenFileName(
         this, tr("Choose a file"), 
 	    pref->latest_dir, 

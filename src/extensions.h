@@ -31,11 +31,11 @@ public:
 	QString forRegExp();
 };
 
-class Extensions 
+class TExtensions
 {
 public:
-	Extensions();
-	virtual ~Extensions();
+	TExtensions();
+	virtual ~TExtensions();
 
 	ExtensionList video() { return _video; }
 	ExtensionList audio() { return _audio; }

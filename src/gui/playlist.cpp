@@ -779,7 +779,7 @@ bool TPlaylist::save_pls(QString file) {
 
 void TPlaylist::load() {
 	if (maybeSave()) {
-		Extensions e;
+		TExtensions e;
 		QString s = MyFileDialog::getOpenFileName(
                     this, tr("Choose a file"), 
                     lastDir(),
@@ -797,7 +797,7 @@ void TPlaylist::load() {
 }
 
 bool TPlaylist::save() {
-	Extensions e;
+	TExtensions e;
 	QString s = MyFileDialog::getSaveFileName(
                     this, tr("Choose a filename"), 
                     lastDir(),
@@ -1134,7 +1134,7 @@ void TPlaylist::addFile(const QString &filename, bool get_info) {
 void TPlaylist::addDirectory(const QString &dir, bool get_info) {
 	qDebug() << "Gui::TPlaylist::addDirectory:" << dir;
 
-	static Extensions ext;
+	static TExtensions ext;
 	static QRegExp rx_ext(ext.multimedia().forRegExp(), Qt::CaseInsensitive);
 
 	QStringList dir_list = QDir(dir).entryList();
@@ -1190,7 +1190,7 @@ void TPlaylist::addFiles(const QStringList &files, bool get_info) {
 
 void TPlaylist::addFiles() {
 
-	Extensions e;
+	TExtensions e;
 	QStringList files = MyFileDialog::getOpenFileNames(this,
 		tr("Select one or more files to open"), lastDir(),
 		tr("Multimedia") + e.multimedia().forFilter() + ";;" +

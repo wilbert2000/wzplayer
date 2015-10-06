@@ -255,7 +255,7 @@ QStringList Helper::filesForPlaylist(const QString & initial_file,
 	if (filter == TPreferences::ConsecutiveFiles) {
 		res = searchForConsecutiveFiles(initial_file);
 	} else {
-		Extensions e;
+		TExtensions e;
 		QStringList exts;
 		switch (filter) {
 			case TPreferences::VideoFiles: exts = e.video().forDirFilter(); break;

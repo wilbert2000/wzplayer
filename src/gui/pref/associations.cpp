@@ -54,7 +54,7 @@ TAssociations::TAssociations(QWidget * parent, Qt::WindowFlags f)
 		//connect(lpbButton, SIGNAL(clicked(bool)), this, SLOT(launchAppDefaults()));
 	}
 
-	Extensions e;
+	TExtensions e;
 	for (int n=0; n < e.multimedia().count(); n++) {
 		addItem( e.multimedia()[n] );
 	}
@@ -128,7 +128,7 @@ void TAssociations::addItem(QString label)
 void TAssociations::refreshList()
 {
 	m_regExtensions.clear(); 
-	WinFileAssoc ().GetRegisteredExtensions(Extensions().multimedia(), m_regExtensions); 
+	WinFileAssoc ().GetRegisteredExtensions(TExtensions().multimedia(), m_regExtensions);
 
 	for (int k = 0; k < listWidget->count(); k++)
 	{

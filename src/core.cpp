@@ -485,7 +485,7 @@ void TCore::open(QString file, int seek, bool fast_open) {
 	if (fi.exists()) {
 		file = fi.absoluteFilePath();
 
-		Extensions e;
+		TExtensions e;
 		QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
 		if (ext_sub.indexIn(fi.suffix()) >= 0) {
 			qDebug("TCore::open: * identified as subtitle file");

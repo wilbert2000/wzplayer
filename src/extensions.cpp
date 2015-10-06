@@ -49,7 +49,7 @@ QString ExtensionList::forRegExp() {
 	return s;
 }
 
-Extensions::Extensions()
+TExtensions::TExtensions()
 {
 	_video << "avi" << "vfw" << "divx" 
            << "mpg" << "mpeg" << "m1v" << "m2v" << "mpv" << "dv" << "3gp"
@@ -79,6 +79,6 @@ Extensions::Extensions()
 	_all_playable << _multimedia << _playlist;
 }
 
-Extensions::~Extensions() {
+TExtensions::~TExtensions() {
 }
 

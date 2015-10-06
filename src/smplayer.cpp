@@ -144,7 +144,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		#if USE_ASSOCIATIONS
 		//Called by uninstaller. Will restore old associations.
 		WinFileAssoc RegAssoc; 
-		Extensions exts; 
+		TExtensions exts;
 		QStringList regExts; 
 		RegAssoc.GetRegisteredExtensions(exts.multimedia(), regExts); 
 		RegAssoc.RestoreFileAssociations(regExts); 
