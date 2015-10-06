@@ -82,17 +82,14 @@ private:
 };
 
 
-class TPlayerWindow : public QWidget
-{
+class TPlayerWindow : public QWidget {
 	Q_OBJECT
 
 public:
-	TPlayerWindow(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	TPlayerWindow(QWidget* parent);
 	virtual ~TPlayerWindow();
 
 	TPlayerLayer* videoLayer() { return playerlayer; }
-
-	bool main_window_moved;
 
 	void set(double aspect,
 			 double zoom_factor,
@@ -127,7 +124,7 @@ public:
 	// Pan full screen
 	QPoint panFullScreen() { return pan_offset_fullscreen; }
 
-	// Reset zoom and pan for current screen
+	// Reset zoom and pan full and normal screen
 	void resetZoomAndPan();
 
 	void setDelayLeftClick(bool b) { delay_left_click = b; }
@@ -195,6 +192,7 @@ signals:
 	void wheelUp();
 	void wheelDown();
 	void mouseMoved(QPoint);
+	void moveWindow(QPoint);
 
 	void showMessage(QString text, int duration, int osd_level);
 	void moveOSD(QPoint pos);

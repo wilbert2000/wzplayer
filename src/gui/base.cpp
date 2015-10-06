@@ -2177,35 +2177,30 @@ void TBase::createCore() {
 }
 
 void TBase::createPlayerWindow() {
-	playerwindow = new TPlayerWindow( panel );
-#if USE_COLORKEY
-	playerwindow->setColorKey( pref->color_key );
-#endif
+
+	playerwindow = new TPlayerWindow(panel);
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
+#if USE_COLORKEY
+	playerwindow->setColorKey(pref->color_key);
+#endif
 
 #if LOGO_ANIMATION
-	playerwindow->setAnimatedLogo( pref->animated_logo);
+	playerwindow->setAnimatedLogo(pref->animated_logo);
 #endif
 
 #ifdef SHAREWIDGET
-	sharewidget = new ShareWidget(Global::settings, playerwindow);
+	sharewidget = new ShareWidget(pref, playerwindow);
 	playerwindow->setCornerWidget(sharewidget);
 	#ifdef REMINDER_ACTIONS
 	connect(sharewidget, SIGNAL(supportClicked()), this, SLOT(helpDonate()));
 	#endif
 #endif
 
-	QVBoxLayout * layout = new QVBoxLayout;
+	QVBoxLayout* layout = new QVBoxLayout;
 	layout->setSpacing(0);
 	layout->setMargin(0);
 	layout->addWidget(playerwindow);
 	panel->setLayout(layout);
-
-	// playerwindow
-	/*
-	connect( playerwindow, SIGNAL(rightButtonReleased(QPoint)),
-	         this, SLOT(showPopupMenu(QPoint)) );
-	*/
 
 	// playerwindow mouse events
 	connect( playerwindow, SIGNAL(doubleClicked()),
@@ -2220,6 +2215,8 @@ void TBase::createPlayerWindow() {
              this, SLOT(xbutton1ClickFunction()) );
 	connect( playerwindow, SIGNAL(xbutton2Clicked()),
              this, SLOT(xbutton2ClickFunction()) );
+	connect( playerwindow, SIGNAL(moveWindow(QPoint)),
+			 this, SLOT(moveWindow(QPoint)) );
 }
 
 void TBase::createVideoEqualizer() {
@@ -4141,6 +4138,11 @@ void TBase::xbutton2ClickFunction() {
 	}
 }
 
+void TBase::moveWindow(QPoint diff) {
+
+	move(pos() + diff);
+}
+
 void TBase::processFunction(QString function) {
 	qDebug("Gui::TBase::processFunction: '%s'", function.toUtf8().data());
 
@@ -4956,11 +4958,6 @@ bool TBase::event(QEvent * e) {
 	return result;
 }
 #endif
-
-void TBase::moveEvent(QMoveEvent *) {
-	if (playerwindow)
-		playerwindow->main_window_moved = true;
-}
 
 void TBase::askForMplayerVersion(QString line) {
 	qDebug("Gui::TBase::askForMplayerVersion: %s", line.toUtf8().data());
