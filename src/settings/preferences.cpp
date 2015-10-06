@@ -325,9 +325,7 @@ void TPreferences::reset() {
 
 	resize_method = Never;
 
-#if STYLE_SWITCHING
-	style="";
-#endif
+	style = "";
 
 	mouse_left_click_function = "dvdnav_mouse";
 	mouse_right_click_function = "show_context_menu";
@@ -770,9 +768,7 @@ void TPreferences::save() {
 	setValue("size_factor", size_factor);
 	setValue("resize_method", resize_method);
 
-#if STYLE_SWITCHING
 	setValue("style", style);
-#endif
 
 	setValue("mouse_left_click_function", mouse_left_click_function);
 	setValue("mouse_right_click_function", mouse_right_click_function);
@@ -1259,9 +1255,7 @@ void TPreferences::load() {
 	if (size_factor > 24.0) size_factor = size_factor / 100;
 	resize_method = value("resize_method", resize_method).toInt();
 
-#if STYLE_SWITCHING
 	style = value("style", style).toString();
-#endif
 
 	mouse_left_click_function = value("mouse_left_click_function", mouse_left_click_function).toString();
 	mouse_right_click_function = value("mouse_right_click_function", mouse_right_click_function).toString();

@@ -196,7 +196,6 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 
 	// Set style before changing color of widgets:
 	// Set style
-#if STYLE_SWITCHING
 	qDebug( "Style name: '%s'", qApp->style()->objectName().toUtf8().data() );
 	qDebug( "Style class name: '%s'", qApp->style()->metaObject()->className() );
 
@@ -204,7 +203,6 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	if (!pref->style.isEmpty()) {
 		qApp->setStyle( pref->style );
 	}
-#endif
 
 	log_window = new TLogWindow(0);
 
@@ -2931,7 +2929,6 @@ void TBase::applyNewPreferences() {
 	setJumpTexts(); // Update texts in menus
 	updateWidgets(); // Update the screenshot action
 
-#if STYLE_SWITCHING
 	if (_interface->styleChanged()) {
 		qDebug("Gui::TBase::applyNewPreferences: selected style: '%s'", pref->style.toUtf8().data());
 		if (!pref->style.isEmpty()) {
@@ -2941,7 +2938,6 @@ void TBase::applyNewPreferences() {
 			qApp->setStyle(default_style);
 		}
 	}
-#endif
 
 	// Update actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();

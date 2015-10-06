@@ -21,11 +21,6 @@
 
 #include <Qt>
 
-// STYLE_SWITCHING
-// if 1, the preferences dialog will have an option to switch
-// the Qt style
-#define STYLE_SWITCHING 1
-
 // SEEKBAR_RESOLUTION
 // specifies the maximum value of the time slider
 #define SEEKBAR_RESOLUTION 1000

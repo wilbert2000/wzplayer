@@ -41,13 +41,8 @@ TInterface::TInterface(QWidget * parent, Qt::WindowFlags f)
 	/* volume_icon->hide(); */
 
 	// Style combo
-#if !STYLE_SWITCHING
-    style_label->hide();
-    style_combo->hide();
-#else
 	style_combo->addItem( "<default>" );
 	style_combo->addItems( QStyleFactory::keys() );
-#endif
 
 	// Icon set combo
 	iconset_combo->addItem( "Default" );
@@ -193,9 +188,7 @@ void TInterface::retranslateStrings() {
 	// Iconset combo
 	iconset_combo->setItemText( 0, tr("Default") );
 
-#if STYLE_SWITCHING
 	style_combo->setItemText( 0, tr("Default") );
-#endif
 
 	int gui_index = gui_combo->currentIndex();
 	gui_combo->clear();
@@ -244,9 +237,7 @@ void TInterface::setData(Settings::TPreferences * pref) {
 
 	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
 
-#if STYLE_SWITCHING
-	setStyle( pref->style );
-#endif
+	setStyle(pref->style);
 
 	setGUI(pref->gui);
 
@@ -308,12 +299,10 @@ void TInterface::getData(Settings::TPreferences * pref) {
 
 	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
 
-#if STYLE_SWITCHING
-    if ( pref->style != style() ) {
-        pref->style = style();
+	if ( pref->style != style() ) {
+		pref->style = style();
 		style_changed = true;
 	}
-#endif
 
 	pref->floating_control_animated = floatingAnimated();
 	pref->floating_control_width = floatingWidth();

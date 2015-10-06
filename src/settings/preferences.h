@@ -315,9 +315,7 @@ public:
 
 	int resize_method; 	//!< Mainwindow resize method
 
-#if STYLE_SWITCHING
 	QString style; 	//!< SMPlayer look
-#endif
 
 	// Function of mouse buttons:
 	QString mouse_left_click_function;
