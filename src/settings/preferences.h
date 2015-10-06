@@ -251,9 +251,7 @@ public:
 	int adapter; //Screen for overlay. If -1 it won't be used.
 #endif
 
-#if USE_COLORKEY
 	unsigned int color_key;
-#endif
 
 	bool use_mplayer_window;
 

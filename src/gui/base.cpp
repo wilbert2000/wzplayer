@@ -2180,9 +2180,7 @@ void TBase::createPlayerWindow() {
 
 	playerwindow = new TPlayerWindow(panel);
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
-#if USE_COLORKEY
 	playerwindow->setColorKey(pref->color_key);
-#endif
 
 #if LOGO_ANIMATION
 	playerwindow->setAnimatedLogo(pref->animated_logo);
@@ -2903,11 +2901,9 @@ void TBase::applyNewPreferences() {
 	if (advanced->repaintVideoBackgroundChanged()) {
 		playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
 	}
-#if USE_COLORKEY
 	if (advanced->colorkeyChanged()) {
 		playerwindow->setColorKey( pref->color_key );
 	}
-#endif
 	if (advanced->monitorAspectChanged()) {
 		playerwindow->setMonitorAspect( pref->monitor_aspect_double() );
 	}

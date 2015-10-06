@@ -1356,12 +1356,10 @@ void TCore::startPlayer( QString file, double seek ) {
 		proc->setOption("wid", QString::number( (qint64) playerwindow->videoLayer()->winId() ) );
 #endif
 
-#if USE_COLORKEY
-		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		if ((pref->vo.startsWith("directx")) || (pref->vo.startsWith("kva")) || (pref->vo.isEmpty())) {
 			proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
 		}
-		#endif
 #endif
 
 		// Square pixels

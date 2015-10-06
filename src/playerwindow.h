@@ -143,9 +143,7 @@ public:
 
 	void retranslateStrings();
 
-#if USE_COLORKEY
 	void setColorKey(QColor c);
-#endif
 
 #if LOGO_ANIMATION
 	bool animatedLogo() { return animated_logo; }

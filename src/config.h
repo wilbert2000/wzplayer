@@ -30,9 +30,6 @@
 // specifies the maximum value of the time slider
 #define SEEKBAR_RESOLUTION 1000
 
-// Just for testing, possibility to disable the use of the colorkey
-#define USE_COLORKEY 1
-
 // PROGRAM_SWITCH
 // support for program switch in ts files
 #define PROGRAM_SWITCH 0

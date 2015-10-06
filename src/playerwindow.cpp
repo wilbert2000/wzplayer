@@ -633,11 +633,9 @@ void TPlayerWindow::resetZoomAndPan() {
 	updateVideoWindow();
 }
 
-#if USE_COLORKEY
 void TPlayerWindow::setColorKey(QColor c) {
 	ColorUtils::setBackgroundColor(playerlayer, c);
 }
-#endif
 
 void TPlayerWindow::autoHideCursorStartTimer() {
 	check_hide_mouse_last_position = QCursor::pos();

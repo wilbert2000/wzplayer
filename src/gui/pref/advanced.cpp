@@ -37,11 +37,9 @@ TAdvanced::TAdvanced(QWidget * parent, Qt::WindowFlags f)
 	shortnames_check->hide();
 #endif
 
-#if !USE_COLORKEY
 	colorkey_label->hide();
 	colorkey_view->hide();
 	changeButton->hide();
-#endif
 
 	// Monitor aspect
 	monitoraspect_combo->addItem("Auto");
@@ -91,9 +89,8 @@ void TAdvanced::setData(TPreferences * pref) {
 	setMplayerAdditionalArguments( pref->mplayer_additional_options );
 	setMplayerAdditionalVideoFilters( pref->mplayer_additional_video_filters );
 	setMplayerAdditionalAudioFilters( pref->mplayer_additional_audio_filters );
-#if USE_COLORKEY
 	setColorKey( pref->color_key );
-#endif
+
 	setPreferIpv4( pref->prefer_ipv4 );
 	setUseIdx( pref->use_idx );
 
@@ -118,9 +115,7 @@ void TAdvanced::getData(TPreferences * pref) {
 	requires_restart = false;
 	repaint_video_background_changed = false;
 	monitor_aspect_changed = false;
-#if USE_COLORKEY
 	colorkey_changed = false;
-#endif
 	lavf_demuxer_changed = false;
 
 	pref->prefer_ipv4 = preferIpv4();
@@ -152,13 +147,11 @@ void TAdvanced::getData(TPreferences * pref) {
 	TEST_AND_SET(pref->mplayer_additional_options, mplayerAdditionalArguments());
 	TEST_AND_SET(pref->mplayer_additional_video_filters, mplayerAdditionalVideoFilters());
 	TEST_AND_SET(pref->mplayer_additional_audio_filters, mplayerAdditionalAudioFilters());
-#if USE_COLORKEY
 	if (pref->color_key != colorKey()) {
 		pref->color_key = colorKey();
 		colorkey_changed = true;
 		requires_restart = true;
 	}
-#endif
 
 	pref->log_enabled = logEnabled();
 	TEST_AND_SET(pref->log_verbose, pref->log_enabled && logVerbose());
@@ -241,14 +234,14 @@ QString TAdvanced::mplayerAdditionalAudioFilters() {
 	return mplayer_afilters_edit->text();
 }
 
-#if USE_COLORKEY
 void TAdvanced::setColorKey(unsigned int c) {
 	QString color = QString::number(c, 16);
-	while (color.length() < 6) color = "0"+color;
-	colorkey_view->setText( "#" + color );
+	while (color.length() < 6) color = "0" + color;
+	colorkey_view->setText("#" + color);
 }
 
 unsigned int TAdvanced::colorKey() {
+
 	QString c = colorkey_view->text();
 	if (c.startsWith("#")) c = c.mid(1);
 
@@ -258,11 +251,9 @@ unsigned int TAdvanced::colorKey() {
 	if (!ok) 
 		qWarning("Gui::Pref::TAdvanced::colorKey: cannot convert color to uint");
 
-	qDebug("Gui::Pref::TAdvanced::colorKey: color: %s", QString::number(color,16).toUtf8().data() );
-
+	qDebug("Gui::Pref::TAdvanced::colorKey: color: %s", QString::number(color, 16).toUtf8().data());
 	return color;
 }
-#endif
 
 void TAdvanced::setPreferIpv4(bool b) {
 	if (b) 
@@ -423,12 +414,10 @@ void TAdvanced::createHelp() {
            "not when the mplayer process is restarted (e.g. you select an "
            "audio or video filter).") );
 
-#if USE_COLORKEY
 	setWhatsThis(colorkey_view, tr("Colorkey"),
         tr("If you see parts of the video over any other window, you can "
            "change the colorkey to fix it. Try to select a color close to "
            "black.") );
-#endif
 
 	setWhatsThis(show_tag_in_title_check, tr("Show tag info in window title"),
 		tr("If this option is enabled, information from tags will be "

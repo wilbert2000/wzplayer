@@ -45,9 +45,7 @@ public:
 	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; }
 	bool monitorAspectChanged() { return monitor_aspect_changed; }
 
-#if USE_COLORKEY
 	bool colorkeyChanged() { return colorkey_changed; }
-#endif
 
 	bool lavfDemuxerChanged() { return lavf_demuxer_changed; }
 
@@ -80,10 +78,8 @@ protected:
 	void setMplayerAdditionalAudioFilters(QString s);
 	QString mplayerAdditionalAudioFilters();
 
-#if USE_COLORKEY
 	void setColorKey(unsigned int c);
 	unsigned int colorKey();
-#endif
 
 	void setPreferIpv4(bool b);
 	bool preferIpv4();
@@ -125,9 +121,7 @@ protected slots:
 private:
 	bool repaint_video_background_changed;
 	bool monitor_aspect_changed;
-#if USE_COLORKEY
 	bool colorkey_changed;
-#endif
 	bool lavf_demuxer_changed;
 };
 

@@ -264,9 +264,7 @@ void TPreferences::reset() {
 	adapter = -1;
 #endif
 
-#if USE_COLORKEY
 	color_key = 0x020202;
-#endif
 
 	use_mplayer_window = false;
 
@@ -715,9 +713,7 @@ void TPreferences::save() {
 	setValue("adapter", adapter);
 #endif
 
-#if USE_COLORKEY
-	setValue("color_key", QString::number(color_key,16));
-#endif
+	setValue("color_key", QString::number(color_key, 16));
 
 	setValue("use_mplayer_window", use_mplayer_window);
 
@@ -1197,14 +1193,11 @@ void TPreferences::load() {
 	adapter = value("adapter", adapter).toInt();
 #endif
 
-#if USE_COLORKEY
 	bool ok;
-	QString color = value("color_key", QString::number(color_key,16)).toString();
+	QString color = value("color_key", QString::number(color_key, 16)).toString();
 	unsigned int temp_color_key = color.toUInt(&ok, 16);
 	if (ok)
 		color_key = temp_color_key;
-	//color_key = value("color_key", color_key).toInt();
-#endif
 
 	use_mplayer_window = value("use_mplayer_window", use_mplayer_window).toBool();
 
