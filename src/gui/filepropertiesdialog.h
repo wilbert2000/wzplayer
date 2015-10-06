@@ -33,10 +33,8 @@ class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog
 	Q_OBJECT
 
 public:
-	TFilePropertiesDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	TFilePropertiesDialog(QWidget* parent, const TMediaData& md);
 	virtual ~TFilePropertiesDialog();
-
-	void setMediaData(TMediaData md);
 
 #if ALLOW_DEMUXER_CODEC_CHANGE
 	// Call it as soon as possible
@@ -77,14 +75,14 @@ protected slots:
 
 protected:
 #if ALLOW_DEMUXER_CODEC_CHANGE
-	bool hasCodecsList() { return codecs_set; };
+	bool hasCodecsList() { return codecs_set; }
 	int find(QString s, InfoList &list);
 #endif
 	void showInfo();
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void changeEvent(QEvent* event);
 
 private:
 #if ALLOW_DEMUXER_CODEC_CHANGE
@@ -92,11 +90,11 @@ private:
 	InfoList vclist, aclist, demuxerlist;
 	QString orig_demuxer, orig_ac, orig_vc;
 #endif
-	TMediaData media_data;
+	const TMediaData* media_data;
 
-	QPushButton * okButton;
-	QPushButton * cancelButton;
-	QPushButton * applyButton;
+	QPushButton* okButton;
+	QPushButton* cancelButton;
+	QPushButton* applyButton;
 };
 
 } // namespace Gui

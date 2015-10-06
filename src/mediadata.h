@@ -75,7 +75,7 @@ public:
 	int video_out_width;
 	int video_out_height;
 
-	bool noVideo() { return video_out_width <= 0; } // Can be audio
+	bool noVideo() const { return video_out_width <= 0; } // Can be audio
 
 	Maps::TTracks videos;
 	Maps::TTracks audios;

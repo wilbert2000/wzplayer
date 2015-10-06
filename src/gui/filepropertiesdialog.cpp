@@ -17,6 +17,7 @@
 */
 
 #include "gui/filepropertiesdialog.h"
+#include <QDebug>
 #include <QListWidget>
 #include <QLineEdit>
 #include <QTextEdit>
@@ -27,9 +28,10 @@
 
 namespace Gui {
 
-TFilePropertiesDialog::TFilePropertiesDialog( QWidget* parent, Qt::WindowFlags f )
-	: QDialog(parent, f)
-{
+TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, const TMediaData& md)
+	: QDialog(parent),
+	  media_data(&md) {
+
 	setupUi(this);
 
 	// Setup buttons
@@ -56,14 +58,9 @@ TFilePropertiesDialog::TFilePropertiesDialog( QWidget* parent, Qt::WindowFlags f
 TFilePropertiesDialog::~TFilePropertiesDialog() {
 }
 
-void TFilePropertiesDialog::setMediaData(TMediaData md) {
-	media_data = md;
-	showInfo();
-}
-
 void TFilePropertiesDialog::showInfo() {
 	TInfoFile info;
-	info_edit->setText( info.getInfo(media_data) );
+	info_edit->setText(info.getInfo(*media_data));
 }
 
 void TFilePropertiesDialog::retranslateStrings() {

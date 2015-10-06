@@ -2313,8 +2313,9 @@ void TBase::createPreferencesDialog() {
 
 void TBase::createFilePropertiesDialog() {
 	qDebug("Gui::TBase::createFilePropertiesDialog");
+
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	file_dialog = new TFilePropertiesDialog(this);
+	file_dialog = new TFilePropertiesDialog(this, core->mdat);
 	file_dialog->setModal(false);
 	connect( file_dialog, SIGNAL(applied()),
              this, SLOT(applyFileProperties()) );
@@ -3013,8 +3014,6 @@ void TBase::setDataToFileProperties() {
 	file_dialog->setMplayerAdditionalArguments( core->mset.mplayer_additional_options );
 	file_dialog->setMplayerAdditionalVideoFilters( core->mset.mplayer_additional_video_filters );
 	file_dialog->setMplayerAdditionalAudioFilters( core->mset.mplayer_additional_audio_filters );
-
-	file_dialog->setMediaData( core->mdat );
 }
 
 void TBase::applyFileProperties() {

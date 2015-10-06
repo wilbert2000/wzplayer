@@ -34,7 +34,8 @@ TInfoFile::TInfoFile() {
 TInfoFile::~TInfoFile() {
 }
 
-QString TInfoFile::getInfo(TMediaData md) {
+QString TInfoFile::getInfo(const TMediaData& md) {
+
 	QString s;
 
 	// General
