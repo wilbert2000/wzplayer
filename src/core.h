@@ -49,7 +49,7 @@ class TCore : public QObject
 public:
 	enum State { Stopped = 0, Playing = 1, Paused = 2 };
 
-	TCore( TPlayerWindow *mpw, QWidget* parent, int position_max );
+	TCore(TPlayerWindow *mpw, QWidget* parent);
 	virtual ~TCore();
 
 	TMediaData mdat;
@@ -67,6 +67,7 @@ public:
 
 	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; }
 	bool haveExternalSubs();
+	int positionMax() { return pos_max; }
 
 protected:
 	//! Change the current state (Stopped, Playing or Paused)
@@ -108,7 +109,6 @@ public slots:
 	//! Reopens the file (no restart)
 	void reload();
 
-	int positionMax() { return pos_max; }
 	void goToPosition( int pos );
 	void goToPos( double perc );
 	// void goToPos( int perc );

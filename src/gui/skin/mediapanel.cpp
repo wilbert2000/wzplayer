@@ -39,9 +39,10 @@
 namespace Gui {
 namespace Skin {
 
-TMediaPanel::TMediaPanel(QWidget *parent)
-    : QWidget(parent), duration(0)
-{
+TMediaPanel::TMediaPanel(QWidget* parent, int pos_max) :
+	QWidget(parent),
+	duration(0) {
+
 	setupUi(this);
 	setAttribute(Qt::WA_StyledBackground, true);
 	setMinimumWidth(270);
@@ -62,7 +63,7 @@ TMediaPanel::TMediaPanel(QWidget *parent)
 	seeker = new TPanelTimeSeeker;
 	seeker->setObjectName("panel-seeker");
 	seeker->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
-	seeker->setRange(0, SEEKBAR_RESOLUTION);
+	seeker->setRange(0, pos_max);
 	seeker->installEventFilter(this);
 	mediaLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	mediaLabel->setObjectName("panel-main-label");
@@ -161,13 +162,11 @@ void TMediaPanel::setActionCollection(QList<QAction *>actions) {
 	retranslateStrings();
 }
 
-void TMediaPanel::setMplayerState(int state) {
-	TCore::State s = static_cast<TCore::State>(state);
-	if (s == TCore::Stopped) {
+void TMediaPanel::setPlayerState(TCore::State state) {
+
+	if (state == TCore::Stopped) {
 		seeker->setEnabled(false);
-	}
-	else
-	if (s == TCore::Paused || s == TCore::Playing) {
+	} else if (state == TCore::Paused || state == TCore::Playing) {
 		seeker->setEnabled(true);
 	}
 }

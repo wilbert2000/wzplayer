@@ -26,6 +26,7 @@
 
 #include "gui/skin/button.h"
 #include "gui/skin/panelseeker.h"
+#include "core.h"
 
 #include "ui_mediapanel.h"
 
@@ -74,7 +75,7 @@ class TMediaPanel : public QWidget, public Ui::TMediaPanel
     Q_PROPERTY(QPixmap bgCenter READ bgCenterPix WRITE setBgCenterPix)
 
 public:
-	TMediaPanel(QWidget *parent = 0);
+	TMediaPanel(QWidget* parent, int pos_max);
 	virtual ~TMediaPanel();
     QPixmap bgLeftPix() { return leftBackground ;}
     void setBgLeftPix( QPixmap pix){ leftBackground = pix; }
@@ -91,8 +92,6 @@ public:
         }
     void setTotalText( QString text) { totalLabel->setText(text); }
     void setActionCollection(QList<QAction*> actions);
-    void setMplayerState(int state);
-    void setDuration(int duration);
     void setMediaLabelText(QString text);
     void setResolutionLabelText(QString text);
     void setStatusText(QString text, int time = 2000);
@@ -100,7 +99,9 @@ public:
     bool eventFilter(QObject *object, QEvent *event);
 
 public slots:
+	void setDuration(int duration);
 	void setSeeker(int v);
+	void setPlayerState(TCore::State state);
 	void setResolutionVisible(bool b);
 	void setScrollingEnabled(bool b);
 

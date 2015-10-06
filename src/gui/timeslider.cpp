@@ -25,14 +25,14 @@
 
 namespace Gui {
 
-TTimeSlider::TTimeSlider(QWidget * parent, int drag_delay) :
+TTimeSlider::TTimeSlider(QWidget * parent, int max_pos, int drag_delay) :
 	TSlider(parent),
 	dont_update(false),
 	position(0),
 	last_pos_to_send(-1) {
 
 	setMinimum(0);
-	setMaximum(SEEKBAR_RESOLUTION);
+	setMaximum(max_pos);
 
 	setFocusPolicy(Qt::NoFocus);
 	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Fixed);

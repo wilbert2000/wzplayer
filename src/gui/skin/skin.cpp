@@ -211,27 +211,21 @@ void TSkin::createControlWidget() {
 	controlwidget->setMovable(false);
 	addToolBar(Qt::BottomToolBarArea, controlwidget);
 
-	mediaBarPanel = new Skin::TMediaBarPanel(panel);
+	mediaBarPanel = new Skin::TMediaBarPanel(panel, core);
 	mediaBarPanel->setObjectName("mediabar-panel");
-	mediaBarPanel->setCore(core);
-	/* panel->layout()->addWidget(mediaBarPanel); */
 
 	QList<QAction*> actions;
-	//actions << halveSpeedAct << playPrevAct << playOrPauseAct << stopAct << recordAct << playNextAct << doubleSpeedAct;
 	actions << rewind1Act << playPrevAct << playOrPauseAct << stopAct << playNextAct << forward1Act;
 	mediaBarPanel->setPlayControlActionCollection(actions);
 
 	actions.clear();
-	//actions << timeslider_action << shuffleAct << repeatPlaylistAct;
 	QAction * shuffleAct = TActionsEditor::findAction(playlist, "pl_shuffle");
 	QAction * repeatPlaylistAct = TActionsEditor::findAction(playlist, "pl_repeat");
 	if (shuffleAct) actions << shuffleAct;
 	if (repeatPlaylistAct) actions << repeatPlaylistAct;
 	mediaBarPanel->setMediaPanelActionCollection(actions);
-	connect(core, SIGNAL(stateChanged(TCore::State)), mediaBarPanel, SLOT(setMplayerState(TCore::State)));
 
 	actions.clear();
-	//actions << volumeslider_action << showPlaylistAct << fullscreenAct << equalizerAct;
 	actions << volumeslider_action << showPlaylistAct << fullscreenAct << videoEqualizerAct;
 	mediaBarPanel->setVolumeControlActionCollection(actions);
 
@@ -243,18 +237,10 @@ void TSkin::createControlWidget() {
 	actions << showPreferencesAct;
 	mediaBarPanel->setToolbarActionCollection(actions);
 
-	connect(mediaBarPanel, SIGNAL(volumeChanged(int)), core, SLOT(setVolume(int)));
-	connect(mediaBarPanel, SIGNAL(volumeSliderMoved(int)), core, SLOT(setVolume(int)));
-	connect(core, SIGNAL(volumeChanged(int)), mediaBarPanel, SLOT(setVolume(int)));
-
-	connect(mediaBarPanel, SIGNAL(seekerChanged(int)), core, SLOT(goToPosition(int)));
-	connect(core, SIGNAL(positionChanged(int)), mediaBarPanel, SLOT(setSeeker(int)));
-
-	connect( viewVideoInfoAct, SIGNAL(toggled(bool)),
-             mediaBarPanel, SLOT(setResolutionVisible(bool)) );
-
-	connect( scrollTitleAct, SIGNAL(toggled(bool)),
-             mediaBarPanel, SLOT(setScrollingEnabled(bool)) );
+	connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
+			mediaBarPanel, SLOT(setResolutionVisible(bool)) );
+	connect(scrollTitleAct, SIGNAL(toggled(bool)),
+			mediaBarPanel, SLOT(setScrollingEnabled(bool)) );
 
 	mediaBarPanelAction = controlwidget->addWidget(mediaBarPanel);
 }

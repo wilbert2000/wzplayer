@@ -30,30 +30,56 @@ namespace Gui {
 namespace Skin {
 
 
-TMediaBarPanel::TMediaBarPanel(QWidget *parent) :
-	QWidget(parent), core(0)
+TMediaBarPanel::TMediaBarPanel(QWidget* parent, TCore* c) :
+	QWidget(parent),
+	core(c)
 {
 	setupUi(this);
-    setAttribute(Qt::WA_StyledBackground, true);
-    setFixedHeight(53);
-    QHBoxLayout* layout = new QHBoxLayout;
+	setAttribute(Qt::WA_StyledBackground, true);
+	setFixedHeight(53);
+	QHBoxLayout* layout = new QHBoxLayout;
 	playControlPanel = new TPlayControl(this);
 	TIconSetter::instance()->playControl = playControlPanel;
 	volumeControlPanel = new TVolumeControlPanel(this);
-    volumeControlPanel->setObjectName("volume-control-panel");
-	mediaPanel = new TMediaPanel(this);
-    mediaPanel->setObjectName("media-panel");
+	volumeControlPanel->setObjectName("volume-control-panel");
+	mediaPanel = new TMediaPanel(this, core->positionMax());
+	mediaPanel->setObjectName("media-panel");
 	TIconSetter::instance()->mediaPanel = mediaPanel;
-    layout->setSpacing(0);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(playControlPanel);
-    layout->addWidget(mediaPanel);
-    layout->addWidget(volumeControlPanel);            
-    setLayout(layout);
+	layout->setSpacing(0);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(playControlPanel);
+	layout->addWidget(mediaPanel);
+	layout->addWidget(volumeControlPanel);
+	setLayout(layout);
 
-	connect(volumeControlPanel, SIGNAL(volumeChanged(int)), this, SIGNAL(volumeChanged(int)));
-	connect(volumeControlPanel, SIGNAL(volumeSliderMoved(int)), this, SIGNAL(volumeSliderMoved(int)));
-	connect(mediaPanel, SIGNAL(seekerChanged(int)), this, SIGNAL(seekerChanged(int)));
+	connect(volumeControlPanel, SIGNAL(volumeChanged(int)),
+			core, SLOT(setVolume(int)));
+	connect(volumeControlPanel, SIGNAL(volumeSliderMoved(int)),
+			core, SLOT(setVolume(int)));
+	connect(core, SIGNAL(volumeChanged(int)),
+			volumeControlPanel, SLOT(setVolume(int)));
+
+	connect(mediaPanel, SIGNAL(seekerChanged(int)),
+			core, SLOT(goToPosition(int)));
+	connect(core, SIGNAL(positionChanged(int)),
+			mediaPanel, SLOT(setSeeker(int)));
+	connect(core, SIGNAL(stateChanged(TCore::State)),
+			mediaPanel, SLOT(setPlayerState(TCore::State)));
+
+	connect(core, SIGNAL(newDuration(double)),
+			mediaPanel, SLOT(setDuration()));
+	connect(core, SIGNAL(showTime(double)),
+			this, SLOT(gotCurrentTime(double)));
+
+	connect(core, SIGNAL(mediaInfoChanged()),
+			this, SLOT(updateMediaInfo()));
+	connect(core, SIGNAL(buffering()),
+			this, SLOT(setBuffering()));
+
+	connect(mediaPanel, SIGNAL(seekerWheelUp()),
+			core, SLOT(wheelUp()));
+	connect(mediaPanel, SIGNAL(seekerWheelDown()),
+			core, SLOT(wheelDown()));
 }
 
 TMediaBarPanel::~TMediaBarPanel() {
@@ -83,29 +109,6 @@ void TMediaBarPanel::setPlayControlActionCollection(QList<QAction *>actions)
 void TMediaBarPanel::setMediaPanelActionCollection(QList<QAction *>actions)
 {
     mediaPanel->setActionCollection(actions);
-}
-
-void TMediaBarPanel::setMplayerState(TCore::State state)
-{
-    mediaPanel->setMplayerState((int)state);
-}
-
-void TMediaBarPanel::setCore(TCore *c)
-{
-    core = c;
-    connect(core, SIGNAL(newDuration(double)), this, SLOT(setDuration()));
-    connect(core, SIGNAL(showTime(double)), this, SLOT(gotCurrentTime(double)));
-    connect(core, SIGNAL(mediaInfoChanged()), this, SLOT(updateMediaInfo()));
-    connect(core, SIGNAL(buffering()), this, SLOT(setBuffering()));
-	connect(mediaPanel, SIGNAL(seekerWheelUp()), core, SLOT(wheelUp()));
-	connect(mediaPanel, SIGNAL(seekerWheelDown()), core, SLOT(wheelDown()));
-}
-
-void TMediaBarPanel::setDuration()
-{
-	qDebug("Gui::Skin::TMediaBarPanel::setDuration");
-
-	mediaPanel->setDuration(core->mdat.duration);
 }
 
 void TMediaBarPanel::setVolumeControlActionCollection(QList<QAction *>actions)
@@ -158,10 +161,6 @@ void TMediaBarPanel::setBuffering()
 
 void TMediaBarPanel::setVolume(int v) {
 	volumeControlPanel->setVolume(v); 
-}
-
-void TMediaBarPanel::setSeeker(int v) {
-	mediaPanel->setSeeker(v);
 }
 
 void TMediaBarPanel::setResolutionVisible(bool b) {

@@ -37,46 +37,37 @@ namespace Gui {
 namespace Skin {
 
 class TMediaBarPanel : public QWidget, public Ui::TMediaBarPanel {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-	TMediaBarPanel(QWidget *parent = 0);
+	TMediaBarPanel(QWidget* parent, TCore* c);
 	virtual ~TMediaBarPanel();
-    void setPlayControlActionCollection(QList<QAction*> actions);
+	void setPlayControlActionCollection(QList<QAction*> actions);
 	void setMediaPanelActionCollection(QList<QAction*> actions);
-    void setVolumeControlActionCollection(QList<QAction*> actions);
+	void setVolumeControlActionCollection(QList<QAction*> actions);
 	void setToolbarActionCollection(QList<QAction *>actions);
-    void setCore(TCore* c);
-    void setRecordAvailable(bool av);
+	void setRecordAvailable(bool av);
+	void setVolume(int v);
 
 protected:
-    void changeEvent(QEvent *e);
+	void changeEvent(QEvent *e);
 
 private:
 	TPlayControl* playControlPanel;
 	TMediaPanel* mediaPanel;
-    TVolumeControlPanel* volumeControlPanel;
-    TCore* core;
+	TVolumeControlPanel* volumeControlPanel;
+	TCore* core;
 
-    // Play Control
+	// Play Control
 public slots:
-    void setMplayerState(TCore::State state);
-    void setDuration();
-    void gotCurrentTime(double time);
-    void updateMediaInfo();
-    void displayMessage(QString status, int time);
-    void displayMessage(QString status);
-    void displayPermanentMessage(QString status);
-    void setBuffering();
-	void setVolume(int v);
-	void setSeeker(int v);
+	void gotCurrentTime(double time);
+	void updateMediaInfo();
+	void displayMessage(QString status, int time);
+	void displayMessage(QString status);
+	void displayPermanentMessage(QString status);
+	void setBuffering();
 	void setResolutionVisible(bool b);
 	void setScrollingEnabled(bool b);
-
-signals:
-	void volumeChanged(int);
-	void volumeSliderMoved(int);
-	void seekerChanged(int);
 };
 
 } // namesapce Skin

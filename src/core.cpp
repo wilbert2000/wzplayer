@@ -66,7 +66,7 @@
 
 using namespace Settings;
 
-TCore::TCore(TPlayerWindow *mpw, QWidget* parent , int position_max)
+TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
 	: QObject( parent ),
 	  mdat(),
 	  mset(&mdat),
@@ -76,7 +76,7 @@ TCore::TCore(TPlayerWindow *mpw, QWidget* parent , int position_max)
 	  title(-1),
 	  block_dvd_nav(false),
 	  change_volume_after_unpause(false),
-	  pos_max(position_max)
+	  pos_max(1000)
 {
 	qRegisterMetaType<TCore::State>("TCore::State");
 

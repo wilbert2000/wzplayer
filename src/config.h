@@ -21,10 +21,6 @@
 
 #include <Qt>
 
-// SEEKBAR_RESOLUTION
-// specifies the maximum value of the time slider
-#define SEEKBAR_RESOLUTION 1000
-
 // PROGRAM_SWITCH
 // support for program switch in ts files
 #define PROGRAM_SWITCH 0

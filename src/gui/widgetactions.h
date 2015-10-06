@@ -61,7 +61,7 @@ class TTimeSliderAction : public TWidgetAction
 	Q_OBJECT
 
 public:
-	TTimeSliderAction(QWidget * parent, int delay);
+	TTimeSliderAction(QWidget* parent, int max_position, int delay);
 	virtual ~TTimeSliderAction();
 
 public slots:
@@ -82,6 +82,7 @@ protected:
 	virtual QWidget * createWidget ( QWidget * parent );
 
 private:
+	int max_pos;
 	int drag_delay;
 };
 

@@ -2083,7 +2083,7 @@ void TBase::setWindowCaption(const QString & title) {
 
 void TBase::createCore() {
 
-	core = new TCore( playerwindow, this, SEEKBAR_RESOLUTION);
+	core = new TCore(playerwindow, this);
 
 	connect( core, SIGNAL(widgetsNeedUpdate()),
              this, SLOT(updateWidgets()) );
@@ -3406,7 +3406,6 @@ void TBase::updateWidgets() {
 	// Upscaling
 	upscaleAct->setChecked( core->mset.upscaling_filter );
 
-
 	// Postprocessing
 	postProcessingAct->setChecked( core->mset.postprocessing_filter );
 
@@ -3415,21 +3414,6 @@ void TBase::updateWidgets() {
 
 	// Unsharp submenu
 	unsharpGroup->setChecked( core->mset.current_unsharp );
-
-	/*
-	// Fullscreen button
-	fullscreenbutton->setOn(pref->fullscreen); 
-
-	// Mute button
-	mutebutton->setOn(core->mset.mute);
-	if (core->mset.mute) 
-		mutebutton->setPixmap( Images::icon("mute_small") );
-	else
-		mutebutton->setPixmap( Images::icon("volume_small") );
-
-	// Volume slider
-	volumeslider->setValue( core->mset.volume );
-	*/
 
 	// Mute menu option
 	muteAct->setChecked( (pref->global_volume ? pref->mute : core->mset.mute) );
@@ -3449,12 +3433,6 @@ void TBase::updateWidgets() {
 	// Fullscreen action
 	fullscreenAct->setChecked( pref->fullscreen );
 
-	// Time slider
-	if (core->state()==TCore::Stopped) {
-		//FIXME
-		//timeslider->setValue( (int) core->mset.current_sec );
-	}
-
 	// Video equalizer
 	videoEqualizerAct->setChecked( video_equalizer->isVisible() );
 	video_equalizer->setBySoftware( pref->use_soft_video_eq );
@@ -3463,10 +3441,6 @@ void TBase::updateWidgets() {
 	audioEqualizerAct->setChecked( audio_equalizer->isVisible() );
 
 	// TPlaylist
-#if !DOCK_PLAYLIST
-	//showPlaylistAct->setChecked( playlist->isVisible() );
-#endif
-
 #if DOCK_PLAYLIST
 	showPlaylistAct->setChecked( playlist->isVisible() );
 #endif
@@ -3488,7 +3462,6 @@ void TBase::updateWidgets() {
 
 	// Forced subs
 	useForcedSubsOnlyAct->setChecked( pref->use_forced_subs_only );
-
 }
 
 void TBase::updateVideoEqualizer() {
