@@ -84,7 +84,7 @@ TAudioEqualizer::~TAudioEqualizer() {
 
 void TAudioEqualizer::createPresets() {
 	preset_list.clear();
-	AudioEqualizerList preset;
+	TAudioEqualizerList preset;
 
 	// Classical
 	preset.clear();
@@ -236,7 +236,7 @@ void TAudioEqualizer::reset() {
 }
 
 void TAudioEqualizer::setDefaults() {
-	AudioEqualizerList l;
+	TAudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {
 		l << eq[n]->value();
 	}
@@ -247,7 +247,7 @@ void TAudioEqualizer::setDefaults() {
                                 "used as default.") );
 }
 
-void TAudioEqualizer::setEqualizer(AudioEqualizerList l) {
+void TAudioEqualizer::setEqualizer(TAudioEqualizerList l) {
 	int p = findPreset(l);
 	int index = presets_combo->findData(p);
 	if (index != 1) {
@@ -258,7 +258,7 @@ void TAudioEqualizer::setEqualizer(AudioEqualizerList l) {
 	setValues(l);
 }
 
-void TAudioEqualizer::setValues(AudioEqualizerList l) {
+void TAudioEqualizer::setValues(TAudioEqualizerList l) {
 	qDebug("TAudioEqualizer::setValues");
 
 	for (int n = 0; n < 10; n++) {
@@ -278,8 +278,8 @@ void TAudioEqualizer::presetChanged(int index) {
 	}
 }
 
-int TAudioEqualizer::findPreset(AudioEqualizerList l) {
-	QMap<int,AudioEqualizerList>::iterator i;
+int TAudioEqualizer::findPreset(TAudioEqualizerList l) {
+	QMap<int,TAudioEqualizerList>::iterator i;
 	for (i = preset_list.begin(); i != preset_list.end(); ++i) {
 		if (l == i.value()) return i.key();
 	}
@@ -287,7 +287,7 @@ int TAudioEqualizer::findPreset(AudioEqualizerList l) {
 }
 
 void TAudioEqualizer::applyButtonClicked() {
-	AudioEqualizerList l;
+	TAudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {
 		l << eq[n]->value();
 	}
@@ -297,7 +297,7 @@ void TAudioEqualizer::applyButtonClicked() {
 void TAudioEqualizer::updatePresetCombo() {
 	qDebug("TAudioEqualizer::updatePresetCombo");
 
-	AudioEqualizerList l;
+	TAudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {
 		l << eq[n]->value();
 	}

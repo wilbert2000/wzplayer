@@ -59,7 +59,7 @@ public:
 
 	//! Returns a string to be passed to mplayer with the audio equalizer
 	//! values.
-	static QString equalizerListToString(AudioEqualizerList values);
+	static QString equalizerListToString(TAudioEqualizerList values);
 
 	static QStringList filesForPlaylist(const QString & initial_file,
 										Settings::TPreferences::AutoAddToPlaylistFilter filter);

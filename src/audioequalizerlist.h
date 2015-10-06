@@ -22,6 +22,6 @@
 #include <QList>
 #include <QVariant>
 
-typedef QList<QVariant> AudioEqualizerList;
+typedef QList<QVariant> TAudioEqualizerList;
 
 #endif

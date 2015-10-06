@@ -96,7 +96,7 @@ public:
 
 	int brightness, contrast, gamma, hue, saturation;
 
-	AudioEqualizerList audio_equalizer;
+	TAudioEqualizerList audio_equalizer;
 
 	int sub_delay;
 	int audio_delay;

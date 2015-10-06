@@ -135,7 +135,7 @@ public:
 
 	// Global equalizer
 	bool global_audio_equalizer;
-	AudioEqualizerList audio_equalizer;
+	TAudioEqualizerList audio_equalizer;
 
 	bool autosync;
 	int autosync_factor;
@@ -447,7 +447,7 @@ public:
 	int initial_saturation;
 	int initial_gamma;
 
-	AudioEqualizerList initial_audio_equalizer;
+	TAudioEqualizerList initial_audio_equalizer;
 
 	//! Default value for zoom (1.0 = no zoom)
 	double initial_zoom_factor;

@@ -2266,11 +2266,11 @@ void TBase::createAudioEqualizer() {
 	connect( audio_equalizer->eq[9], SIGNAL(valueChanged(int)), 
              core, SLOT(setAudioEq9(int)) );
 
-	connect( audio_equalizer, SIGNAL(applyClicked(AudioEqualizerList)), 
-             core, SLOT(setAudioAudioEqualizerRestart(AudioEqualizerList)) );
+	connect( audio_equalizer, SIGNAL(applyClicked(TAudioEqualizerList)),
+			 core, SLOT(setAudioAudioEqualizerRestart(TAudioEqualizerList)) );
 
-	connect( audio_equalizer, SIGNAL(valuesChanged(AudioEqualizerList)),
-             core, SLOT(setAudioEqualizer(AudioEqualizerList)) );
+	connect( audio_equalizer, SIGNAL(valuesChanged(TAudioEqualizerList)),
+			 core, SLOT(setAudioEqualizer(TAudioEqualizerList)) );
 
 	connect( audio_equalizer, SIGNAL(visibilityChanged()),
              this, SLOT(updateWidgets()) );
@@ -3517,7 +3517,7 @@ void TBase::updateVideoEqualizer() {
 
 void TBase::updateAudioEqualizer() {
 	// Audio Equalizer
-	AudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : core->mset.audio_equalizer;
+	TAudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : core->mset.audio_equalizer;
 	audio_equalizer->setEqualizer(l);
 }
 

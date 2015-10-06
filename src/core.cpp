@@ -1863,7 +1863,7 @@ void TCore::startPlayer( QString file, double seek ) {
 
 		// Audio equalizer
 		if (pref->use_audio_equalizer) {
-			AudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : mset.audio_equalizer;
+			TAudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : mset.audio_equalizer;
 			proc->addAF("equalizer", Helper::equalizerListToString(l));
 		}
 
@@ -2868,7 +2868,7 @@ void TCore::changeExternalSubFPS(int fps_id) {
 }
 
 // Audio equalizer functions
-void TCore::setAudioEqualizer(AudioEqualizerList values, bool restart) {
+void TCore::setAudioEqualizer(TAudioEqualizerList values, bool restart) {
 	if (pref->global_audio_equalizer) {
 		pref->audio_equalizer = values;
 	} else {

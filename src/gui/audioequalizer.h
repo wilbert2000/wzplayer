@@ -46,12 +46,12 @@ public:
 
 	TEqSlider * eq[10];
 
-	void setEqualizer(AudioEqualizerList l);
+	void setEqualizer(TAudioEqualizerList l);
 
 signals:
 	void visibilityChanged();
-	void applyClicked(AudioEqualizerList new_values);
-	void valuesChanged(AudioEqualizerList values);
+	void applyClicked(TAudioEqualizerList new_values);
+	void valuesChanged(TAudioEqualizerList values);
 
 public slots:
 	void reset();
@@ -69,8 +69,8 @@ protected:
 	virtual void retranslateStrings();
 
 	void createPresets();
-	void setValues(AudioEqualizerList l);
-	int findPreset(AudioEqualizerList l);
+	void setValues(TAudioEqualizerList l);
+	int findPreset(TAudioEqualizerList l);
 
 protected:
 	QLabel * presets_label;
@@ -78,7 +78,7 @@ protected:
 	QPushButton * apply_button;
 	QPushButton * reset_button;
 	QPushButton * set_default_button;
-	QMap<int,AudioEqualizerList> preset_list;
+	QMap<int,TAudioEqualizerList> preset_list;
 };
 
 } // namespace Gui

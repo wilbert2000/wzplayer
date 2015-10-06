@@ -146,7 +146,7 @@ int Helper::qtVersion() {
 	return r;
 }
 
-QString Helper::equalizerListToString(AudioEqualizerList values) {
+QString Helper::equalizerListToString(TAudioEqualizerList values) {
 	double v0 = (double) values[0].toInt() / 10;
 	double v1 = (double) values[1].toInt() / 10;
 	double v2 = (double) values[2].toInt() / 10;
