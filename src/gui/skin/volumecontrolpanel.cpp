@@ -112,6 +112,14 @@ void TVolumeControlPanel::setVolume(int value)
     volumeBar->setSliderValue(value);
 }
 
+void TVolumeControlPanel::setMute(bool mute)
+{
+	if (mute)
+		setVolumeMin();
+	else
+		setVolumeMax();
+}
+
 /*
 bool TVolumeControlPanel::eventFilter(QObject *watched, QEvent *event)
 {

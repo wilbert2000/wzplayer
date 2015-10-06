@@ -711,6 +711,8 @@ void TBase::createActions() {
 	muteAct->setCheckable( true );
 	connect( muteAct, SIGNAL(toggled(bool)),
              core, SLOT(mute(bool)) );
+	connect( core, SIGNAL(muteChanged(bool)),
+			 muteAct, SLOT(setChecked(bool)) );
 
 #if USE_MULTIPLE_SHORTCUTS
 	decVolumeAct = new TAction( this, "decrease_volume" );
@@ -3414,9 +3416,6 @@ void TBase::updateWidgets() {
 
 	// Unsharp submenu
 	unsharpGroup->setChecked( core->mset.current_unsharp );
-
-	// Mute menu option
-	muteAct->setChecked( (pref->global_volume ? pref->mute : core->mset.mute) );
 
 	// Karaoke menu option
 	karaokeAct->setChecked( core->mset.karaoke_filter );

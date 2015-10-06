@@ -66,7 +66,6 @@ protected:
 	virtual void aboutToExitCompactMode();
 
 protected slots:
-	virtual void updateWidgets();
 	virtual void displayTime(QString text);
 	virtual void displayState(TCore::State state);
 	virtual void displayMessage(QString message, int time);
@@ -112,8 +111,6 @@ protected:
 
 	bool fullscreen_toolbar1_was_visible;
 	bool compact_toolbar1_was_visible;
-
-	bool was_muted;
 };
 
 } // namespace Gui

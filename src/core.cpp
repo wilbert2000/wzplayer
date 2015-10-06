@@ -2660,18 +2660,21 @@ void TCore::setVolume(int volume, bool force) {
 		}
 	}
 
+	bool mute_changed;
 	if (pref->global_volume) {
 		pref->volume = current_volume;
+		mute_changed = pref->mute;
 		pref->mute = false;
 	} else {
 		mset.volume = current_volume;
+		mute_changed = mset.mute;
 		mset.mute = false;
 	}
 
-	updateWidgets();
-
 	displayMessage( tr("Volume: %1").arg(current_volume) );
-	emit volumeChanged( current_volume );
+	if (mute_changed)
+		emit muteChanged(false);
+	emit volumeChanged(current_volume);
 }
 
 void TCore::switchMute() {
@@ -2685,30 +2688,31 @@ void TCore::mute(bool b) {
 	qDebug("TCore::mute");
 
 	proc->mute(b);
-
 	if (pref->global_volume) {
 		pref->mute = b;
 	} else {
 		mset.mute = b;
 	}
-
-	updateWidgets();
+	emit muteChanged(b);
 }
 
 void TCore::incVolume() {
 	qDebug("TCore::incVolume");
+
 	int new_vol = (pref->global_volume ? pref->volume + pref->min_step : mset.volume + pref->min_step);
 	setVolume(new_vol);
 }
 
 void TCore::decVolume() {
 	qDebug("TCore::incVolume");
+
 	int new_vol = (pref->global_volume ? pref->volume - pref->min_step : mset.volume - pref->min_step);
 	setVolume(new_vol);
 }
 
 void TCore::setSubDelay(int delay) {
 	qDebug("TCore::setSubDelay: %d", delay);
+
 	mset.sub_delay = delay;
 	proc->setSubDelay((double) mset.sub_delay/1000);
 	displayMessage( tr("Subtitle delay: %1 ms").arg(delay) );
@@ -3777,25 +3781,13 @@ void TCore::sendMediaInfo() {
 
 //!  Called when the state changes
 void TCore::watchState(TCore::State state) {
-#ifdef SCREENSAVER_OFF
-	#if 0
-	qDebug("TCore::watchState: %d", state);
-	//qDebug("TCore::watchState: has video: %d", !mdat.novideo);
 
-	if ((state == Playing) /* && (!mdat.novideo) */) {
-		disableScreensaver();
-	} else {
-		enableScreensaver();
-	}
-	#endif
-#endif
-
+	// Delayed volume change
 	if ((proc->isMPlayer()) && (state == Playing) && (change_volume_after_unpause)) {
-		// Delayed volume change
 		qDebug("TCore::watchState: delayed volume change");
+		change_volume_after_unpause = false;
 		int volume = (pref->global_volume ? pref->volume : mset.volume);
 		proc->setVolume(volume);
-		change_volume_after_unpause = false;
 	}
 }
 

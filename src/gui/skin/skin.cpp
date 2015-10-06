@@ -53,11 +53,10 @@ using namespace Settings;
 namespace Gui {
 
 TSkin::TSkin( QWidget * parent, Qt::WindowFlags flags )
-	: TBasePlus( parent, flags )
-	, was_muted(false)
-{
-	connect( this, SIGNAL(timeChanged(QString)),
-             this, SLOT(displayTime(QString)) );
+	: TBasePlus( parent, flags ) {
+
+	connect(this, SIGNAL(timeChanged(QString)),
+			this, SLOT(displayTime(QString)));
 
 	createActions();
 	createMainToolBars();
@@ -65,8 +64,8 @@ TSkin::TSkin( QWidget * parent, Qt::WindowFlags flags )
 	createFloatingControl();
 	createMenus();
 
-	connect( editToolbar1Act, SIGNAL(triggered()),
-             toolbar1, SLOT(edit()) );
+	connect(editToolbar1Act, SIGNAL(triggered()),
+			toolbar1, SLOT(edit()));
 	#if defined(SKIN_EDITABLE_CONTROL)
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
@@ -327,24 +326,6 @@ void TSkin::displayMessage(QString message, int time) {
 void TSkin::displayMessage(QString message) {
 	TBasePlus::displayMessage(message);
 	mediaBarPanel->displayMessage(message);
-}
-
-void TSkin::updateWidgets() {
-	qDebug("Gui::TSkin::updateWidgets");
-
-	TBasePlus::updateWidgets();
-
-	panel->setFocus();
-
-	bool muted = (pref->global_volume ? pref->mute : core->mset.mute);
-	if (was_muted != muted) {
-		was_muted = muted;
-		if (muted) {
-			mediaBarPanel->setVolume(0);
-		} else {
-			mediaBarPanel->setVolume(core->mset.volume);
-		}
-	}
 }
 
 void TSkin::aboutToEnterFullscreen() {

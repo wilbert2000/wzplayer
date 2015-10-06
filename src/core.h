@@ -431,6 +431,7 @@ signals:
 	void needResize(int w, int h);
 	void noVideo();
 	void volumeChanged(int);
+	void muteChanged(bool);
 	void videoTrackInfoChanged();
 	void videoTrackChanged(int);
 	void audioTrackInfoChanged();

@@ -58,6 +58,8 @@ TMediaBarPanel::TMediaBarPanel(QWidget* parent, TCore* c) :
 			core, SLOT(setVolume(int)));
 	connect(core, SIGNAL(volumeChanged(int)),
 			volumeControlPanel, SLOT(setVolume(int)));
+	connect(core, SIGNAL(muteChanged(bool)),
+			volumeControlPanel, SLOT(setMute(bool)));
 
 	connect(mediaPanel, SIGNAL(seekerChanged(int)),
 			core, SLOT(goToPosition(int)));
