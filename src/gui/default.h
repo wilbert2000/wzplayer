@@ -31,9 +31,7 @@ class QPushButton;
 class QResizeEvent;
 class QMenu;
 
-#if MINI_ARROW_BUTTONS
 class TSeekingButton;
-#endif
 
 namespace Gui {
 	
@@ -100,10 +98,8 @@ protected:
 	TTimeSliderAction * timeslider_action;
 	TVolumeSliderAction * volumeslider_action;
 
-#if MINI_ARROW_BUTTONS
 	TSeekingButton * rewindbutton_action;
 	TSeekingButton * forwardbutton_action;
-#endif
 
 	TAutohideWidget * floating_control;
 	TTimeLabelAction * time_label_action;

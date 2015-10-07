@@ -141,7 +141,6 @@ private:
 };
 
 
-#if MINI_ARROW_BUTTONS
 class TSeekingButton : public QWidgetAction
 {
 	Q_OBJECT
@@ -155,7 +154,6 @@ protected:
 
 	QList<QAction*> _actions;
 };
-#endif
 
 } // namespace Gui
 

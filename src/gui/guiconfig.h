@@ -24,10 +24,6 @@
 // of being a top level window
 #define DOCK_PLAYLIST 1
 
-// MINI_ARROW_BUTTONS
-// if set to 1, the GUI will use a popup menu for arrow buttons
-#define MINI_ARROW_BUTTONS 1
-
 // ALLOW_CHANGE_STYLESHEET
 // if 1, the app stylesheet can be changed
 #define ALLOW_CHANGE_STYLESHEET 1

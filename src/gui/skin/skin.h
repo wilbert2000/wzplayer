@@ -85,10 +85,8 @@ protected:
 	TTimeSliderAction * timeslider_action;
 	TVolumeSliderAction * volumeslider_action;
 
-#if MINI_ARROW_BUTTONS
 	TSeekingButton * rewindbutton_action;
 	TSeekingButton * forwardbutton_action;
-#endif
 
 	TAutohideWidget * floating_control;
 	TTimeLabelAction * time_label_action;

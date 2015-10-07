@@ -89,7 +89,6 @@ void TSkin::createActions() {
 	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
-#if MINI_ARROW_BUTTONS
 	QList<QAction*> rewind_actions;
 	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
 	rewindbutton_action = new TSeekingButton(rewind_actions, this);
@@ -99,7 +98,6 @@ void TSkin::createActions() {
 	forward_actions << forward1Act << forward2Act << forward3Act;
 	forwardbutton_action = new TSeekingButton(forward_actions, this);
 	forwardbutton_action->setObjectName("forwardbutton_action");
-#endif
 
 	editToolbar1Act = new TAction( this, "edit_main_toolbar" );
 	#if defined(SKIN_EDITABLE_CONTROL)
@@ -252,17 +250,9 @@ void TSkin::createFloatingControl() {
 
 	QStringList floatingcontrol_actions;
 	floatingcontrol_actions << "play" << "pause" << "stop" << "separator";
-	#if MINI_ARROW_BUTTONS
 	floatingcontrol_actions << "rewindbutton_action";
-	#else
-	floatingcontrol_actions << "rewind3" << "rewind2" << "rewind1";
-	#endif
 	floatingcontrol_actions << "timeslider_action";
-	#if MINI_ARROW_BUTTONS
 	floatingcontrol_actions << "forwardbutton_action";
-	#else
-	floatingcontrol_actions << "forward1" << "forward2" << "forward3";
-	#endif
 	floatingcontrol_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action" << "separator" << "timelabel_action";
 
 	iw->setDefaultActions(floatingcontrol_actions);

@@ -19,10 +19,7 @@
 #include "widgetactions.h"
 #include "colorutils.h"
 #include <QLabel>
-
-#if MINI_ARROW_BUTTONS
 #include <QToolButton>
-#endif
 
 namespace Gui {
 
@@ -219,7 +216,6 @@ QWidget * TTimeLabelAction::createWidget ( QWidget * parent ) {
 	return time_label;
 }
 
-#if MINI_ARROW_BUTTONS
 TSeekingButton::TSeekingButton( QList<QAction*> actions, QWidget * parent )
 	: QWidgetAction(parent)
 {
@@ -242,7 +238,6 @@ QWidget * TSeekingButton::createWidget( QWidget * parent ) {
 
 	return button;
 }
-#endif
 
 } // namespace Gui
 
