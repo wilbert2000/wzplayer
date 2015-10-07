@@ -137,8 +137,8 @@ using namespace Settings;
 namespace Gui {
 
 
-TBase::TBase(QWidget* parent, Qt::WindowFlags flags) :
-	QMainWindow( parent, flags )
+TBase::TBase()
+	: QMainWindow()
 #if QT_VERSION >= 0x050000
 	, was_minimized(false)
 #endif

@@ -40,55 +40,51 @@
 #include <QDockWidget>
 #include "playlistdock.h"
 #include "desktopinfo.h"
-
-#define PLAYLIST_ON_SIDES 1
 #endif
 
 using namespace Settings;
 
 namespace Gui {
 
-TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
-	: TBase( parent, flags )
-{
-	// Initialize variables
-	mainwindow_visible = true;
-	//infowindow_visible = false;
-	trayicon_playlist_was_visible = false;
-	widgets_size = 0;
+TBasePlus::TBasePlus()
+	: TBase()
+	, mainwindow_visible(true)
+	, trayicon_playlist_was_visible(false)
+	, widgets_size(0)
+
 #if DOCK_PLAYLIST
-	fullscreen_playlist_was_visible = false;
-	fullscreen_playlist_was_floating = false;
-	compact_playlist_was_visible = false;
-	ignore_playlist_events = false;
+	, fullscreen_playlist_was_visible(false)
+	, fullscreen_playlist_was_floating(false)
+	, compact_playlist_was_visible(false)
+	, ignore_playlist_events(false)
 #endif
+{
 
 	tray = new QSystemTrayIcon( Images::icon("logo", 22), this );
-
 	tray->setToolTip( "SMPlayer" );
 	connect( tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), 
-             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+			 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
 	quitAct = new TAction(QKeySequence("Ctrl+Q"), this, "quit");
-    connect( quitAct, SIGNAL(triggered()), this, SLOT(quit()) );
+	connect( quitAct, SIGNAL(triggered()), this, SLOT(quit()) );
 	openMenu->addAction(quitAct);
 
 	showTrayAct = new TAction(this, "show_tray_icon" );
 	showTrayAct->setCheckable(true);
 	connect( showTrayAct, SIGNAL(toggled(bool)),
-             tray, SLOT(setVisible(bool)) );
+			 tray, SLOT(setVisible(bool)) );
 
 #ifndef Q_OS_OS2
 	optionsMenu->addAction(showTrayAct);
 #else
 	trayAvailable();
 	connect( optionsMenu, SIGNAL(aboutToShow()),
-             this, SLOT(trayAvailable()) );
+			 this, SLOT(trayAvailable()) );
 #endif
 
 	showAllAct = new TAction(this, "restore/hide");
 	connect( showAllAct, SIGNAL(triggered()),
-             this, SLOT(toggleShowAll()) );
+			 this, SLOT(toggleShowAll()) );
 
 
 	context_menu = new QMenu(this);
@@ -124,13 +120,10 @@ TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
 	playlistdock->setObjectName("playlistdock");
 	playlistdock->setFloating(false); // To avoid that the playlist is visible for a moment
 	playlistdock->setWidget(playlist);
-	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea | 
-                                  Qt::BottomDockWidgetArea
-#if PLAYLIST_ON_SIDES
-                                  | Qt::LeftDockWidgetArea | 
-                                  Qt::RightDockWidgetArea
-#endif
-                                  );
+	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
+								  | Qt::BottomDockWidgetArea
+								  | Qt::LeftDockWidgetArea
+								  | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
 	playlistdock->hide();
 	playlistdock->setFloating(true); // Floating by default
@@ -138,15 +131,13 @@ TBasePlus::TBasePlus( QWidget * parent, Qt::WindowFlags flags)
 	connect( playlistdock, SIGNAL(closed()), this, SLOT(playlistClosed()) );
 #if USE_DOCK_TOPLEVEL_EVENT
 	connect( playlistdock, SIGNAL(topLevelChanged(bool)), 
-             this, SLOT(dockTopLevelChanged(bool)) );
+			 this, SLOT(dockTopLevelChanged(bool)) );
 #else
 	connect( playlistdock, SIGNAL(visibilityChanged(bool)), 
-             this, SLOT(dockVisibilityChanged(bool)) );
+			 this, SLOT(dockVisibilityChanged(bool)) );
 #endif // USE_DOCK_TOPLEVEL_EVENT
 
 	connect(this, SIGNAL(openFileRequested()), this, SLOT(showAll()));
-
-	ignore_playlist_events = false;
 #endif // DOCK_PLAYLIST
 }
 
@@ -405,18 +396,14 @@ void TBasePlus::aboutToExitFullscreen() {
 	TBase::aboutToExitFullscreen();
 
 #if DOCK_PLAYLIST
-	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea | 
-                                  Qt::BottomDockWidgetArea
-                                  #if PLAYLIST_ON_SIDES
-                                  | Qt::LeftDockWidgetArea | 
-                                  Qt::RightDockWidgetArea
-                                  #endif
-                                  );
-
+	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
+								  | Qt::BottomDockWidgetArea
+								  | Qt::LeftDockWidgetArea
+								  | Qt::RightDockWidgetArea);
 	if (fullscreen_playlist_was_visible) {
 		playlistdock->show();
 	}
-	playlistdock->setFloating( fullscreen_playlist_was_floating );
+	playlistdock->setFloating(fullscreen_playlist_was_floating);
 	ignore_playlist_events = false;
 #endif
 

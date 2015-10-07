@@ -30,12 +30,11 @@ class QToolBar;
 
 namespace Gui {
 
-class TMpc : public TBasePlus
-{
+class TMpc : public TBasePlus {
 	Q_OBJECT
 
 public:
-	TMpc( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	TMpc();
 	virtual ~TMpc();
 
 	virtual void loadConfig(const QString &group);

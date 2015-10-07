@@ -52,8 +52,8 @@ using namespace Settings;
 
 namespace Gui {
 
-TSkin::TSkin( QWidget * parent, Qt::WindowFlags flags )
-	: TBasePlus( parent, flags ) {
+TSkin::TSkin()
+	: TBasePlus() {
 
 	connect(this, SIGNAL(timeChanged(QString)),
 			this, SLOT(displayTime(QString)));

@@ -41,8 +41,8 @@ using namespace Settings;
 
 namespace Gui {
 
-TMpc::TMpc( QWidget * parent, Qt::WindowFlags flags )
-	: TBasePlus( parent, flags )
+TMpc::TMpc()
+	: TBasePlus()
 {
 	createActions();
 	createControlWidget();

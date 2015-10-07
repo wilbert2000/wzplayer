@@ -70,7 +70,7 @@ class TBase : public QMainWindow {
 	Q_OBJECT
 
 public:
-	TBase(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	TBase();
 	virtual ~TBase();
 
 	/* Return true if the window shouldn't show on startup */

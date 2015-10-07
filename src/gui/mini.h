@@ -28,12 +28,11 @@
 
 namespace Gui {
 
-class TMini : public TBasePlus
-{
+class TMini : public TBasePlus {
 	Q_OBJECT
 
 public:
-	TMini( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	TMini();
 	virtual ~TMini();
 
 	virtual void loadConfig(const QString &group);

@@ -39,7 +39,7 @@ class TDefault : public TBasePlus {
 	Q_OBJECT
 
 public:
-	TDefault(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	TDefault();
 	virtual ~TDefault();
 
 	virtual void loadConfig(const QString& group);

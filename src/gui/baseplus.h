@@ -31,12 +31,11 @@ class QMenu;
 
 namespace Gui {
 
-class TBasePlus : public TBase
-{
+class TBasePlus : public TBase {
 	Q_OBJECT
 
 public:
-	TBasePlus( QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	TBasePlus();
 	virtual ~TBasePlus();
 
 	virtual bool startHidden();
@@ -89,26 +88,21 @@ protected slots:
 
 
 protected:
-	QSystemTrayIcon * tray;
-	QMenu * context_menu;
+	QSystemTrayIcon* tray;
+	QMenu* context_menu;
 
-	TAction * quitAct;
-	TAction * showTrayAct;
-	TAction * showAllAct;
+	TAction* quitAct;
+	TAction* showTrayAct;
+	TAction* showAllAct;
 
 	// To save state
 	bool mainwindow_visible;
-
 	QPoint playlist_pos;
 	bool trayicon_playlist_was_visible;
-
-	//QPoint infowindow_pos;
-	//bool infowindow_visible;
-
-   int widgets_size; // To be able to restore the original size after exiting from compact mode
+	int widgets_size; // To be able to restore the original size after exiting from compact mode
 
 #if DOCK_PLAYLIST
-	TPlaylistDock * playlistdock;
+	TPlaylistDock* playlistdock;
 	bool fullscreen_playlist_was_visible;
 	bool fullscreen_playlist_was_floating;
 	bool compact_playlist_was_visible;

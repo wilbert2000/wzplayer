@@ -41,7 +41,7 @@ class TSkin : public TBasePlus
 	Q_OBJECT
 
 public:
-	TSkin( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	TSkin();
 	virtual ~TSkin();
 
 	virtual void loadConfig(const QString &group);

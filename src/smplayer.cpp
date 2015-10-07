@@ -399,20 +399,20 @@ void TSMPlayer::createGUI() {
 
 #ifdef SKINS
 	if (gui_to_use.toLower() == "skingui")
-		main_window = new Gui::TSkin(0);
+		main_window = new Gui::TSkin();
 	else
 #endif
 
 #ifdef MPCGUI
 	if (gui_to_use.toLower() == "mpcgui")
-		main_window = new Gui::TMpc(0);
+		main_window = new Gui::TMpc();
 	else
 #endif
 
 	if (gui_to_use.toLower() == "minigui")
-		main_window = new Gui::TMini(0);
+		main_window = new Gui::TMini();
 	else
-		main_window = new Gui::TDefault(0);
+		main_window = new Gui::TDefault();
 
 	main_window->loadConfig("");
 	qDebug("TSMPlayer::createGUI: loadConfig done. Translating...");

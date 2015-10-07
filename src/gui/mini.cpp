@@ -35,8 +35,8 @@ using namespace Settings;
 
 namespace Gui {
 
-TMini::TMini( QWidget * parent, Qt::WindowFlags flags )
-	: TBasePlus( parent, flags )
+TMini::TMini()
+	: TBasePlus()
 {
 	createActions();
 	createControlWidget();

@@ -50,8 +50,8 @@ using namespace Settings;
 
 namespace Gui {
 
-TDefault::TDefault(QWidget* parent, Qt::WindowFlags flags)
-	: TBasePlus(parent, flags) {
+TDefault::TDefault()
+	: TBasePlus() {
 
 	createStatusBar();
 
