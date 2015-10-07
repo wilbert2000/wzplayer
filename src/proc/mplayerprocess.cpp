@@ -1450,7 +1450,7 @@ void TMplayerProcess::changeStereo3DFilter(bool, const QString &, const QString 
 	// not supported
 }
 
-void TMplayerProcess::setSubStyles(const AssStyles & styles, const QString & assStylesFile) {
+void TMplayerProcess::setSubStyles(const TAssStyles & styles, const QString & assStylesFile) {
 	if (assStylesFile.isEmpty()) {
 		qWarning("Proc::TMplayerProcess::setSubStyles: assStylesFile is invalid");
 		return;

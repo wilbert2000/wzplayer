@@ -245,7 +245,7 @@ void TPreferences::reset() {
 
 	// ASS styles
 	// Nothing to do, default values are given in
-	// AssStyles constructor
+	// TAssStyles constructor
 
 	force_ass_styles = false;
 	user_forced_ass_style.clear();

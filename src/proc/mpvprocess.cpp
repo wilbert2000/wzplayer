@@ -1581,13 +1581,13 @@ void TMPVProcess::changeStereo3DFilter(bool enable, const QString & in, const QS
 	writeToStdin(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(filter));
 }
 
-void TMPVProcess::setSubStyles(const AssStyles & styles, const QString &) {
+void TMPVProcess::setSubStyles(const TAssStyles & styles, const QString &) {
 	QString font = styles.fontname;
 	//arg << "--sub-text-font=" + font.replace(" ", "");
 	arg << "--sub-text-font=" + font;
 	arg << "--sub-text-color=#" + ColorUtils::colorToRRGGBB(styles.primarycolor);
 
-	if (styles.borderstyle == AssStyles::Outline) {
+	if (styles.borderstyle == TAssStyles::Outline) {
 		arg << "--sub-text-shadow-color=#" + ColorUtils::colorToRRGGBB(styles.backcolor);
 	} else {
 		arg << "--sub-text-back-color=#" + ColorUtils::colorToRRGGBB(styles.outlinecolor);
@@ -1599,14 +1599,14 @@ void TMPVProcess::setSubStyles(const AssStyles & styles, const QString &) {
 
 	QString halign;
 	switch (styles.halignment) {
-		case AssStyles::Left: halign = "left"; break;
-		case AssStyles::Right: halign = "right"; break;
+		case TAssStyles::Left: halign = "left"; break;
+		case TAssStyles::Right: halign = "right"; break;
 	}
 
 	QString valign;
 	switch (styles.valignment) {
-		case AssStyles::VCenter: valign = "center"; break;
-		case AssStyles::Top: valign = "top"; break;
+		case TAssStyles::VCenter: valign = "center"; break;
+		case TAssStyles::Top: valign = "top"; break;
 	}
 
 	if (!halign.isEmpty() || !valign.isEmpty()) {

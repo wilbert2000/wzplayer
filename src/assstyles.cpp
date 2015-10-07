@@ -22,7 +22,7 @@
 #include <QTextStream>
 #include "colorutils.h"
 
-AssStyles::AssStyles() {
+TAssStyles::TAssStyles() {
 	fontname = "Arial";
 	fontsize = 20;
 	primarycolor = 0xFFFFFF;
@@ -40,8 +40,8 @@ AssStyles::AssStyles() {
 	marginv = 8;
 }
 
-void AssStyles::save(QSettings * set) {
-	qDebug("AssStyles::save");
+void TAssStyles::save(QSettings * set) {
+	qDebug("TAssStyles::save");
 
 	set->setValue("styles/fontname", fontname);
 	set->setValue("styles/fontsize", fontsize);
@@ -60,8 +60,8 @@ void AssStyles::save(QSettings * set) {
 	set->setValue("styles/marginv", marginv);
 }
 
-void AssStyles::load(QSettings * set) {
-	qDebug("AssStyles::load");
+void TAssStyles::load(QSettings * set) {
+	qDebug("TAssStyles::load");
 
 	fontname = set->value("styles/fontname", fontname).toString();
 	fontsize = set->value("styles/fontsize", fontsize).toInt();
@@ -80,8 +80,8 @@ void AssStyles::load(QSettings * set) {
 	marginv = set->value("styles/marginv", marginv).toInt();
 }
 
-bool AssStyles::exportStyles(const QString & filename) const {
-	qDebug("AssStyles::exportStyles: filename: %s", filename.toUtf8().constData());
+bool TAssStyles::exportStyles(const QString & filename) const {
+	qDebug("TAssStyles::exportStyles: filename: %s", filename.toUtf8().constData());
 
 	QFile f(filename);
 	if (f.open(QFile::WriteOnly)) {
@@ -124,7 +124,7 @@ bool AssStyles::exportStyles(const QString & filename) const {
 // Returns a string for -ass-force-style
 // It seems that option ignores "ScriptType: v4.00+" 
 // so the function uses the v4.00 format
-QString AssStyles::toString() {
+QString TAssStyles::toString() {
 	int alignment = halignment;
 	if (valignment == 1) alignment += 8; // Middle
 	else

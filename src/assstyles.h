@@ -23,15 +23,15 @@
 
 class QSettings;
 
-class AssStyles {
+class TAssStyles {
 
 public:
 	enum HAlignment { Left = 1, HCenter = 2, Right = 3 };
 	enum VAlignment { Bottom = 0, VCenter = 1, Top = 2 };
 	enum BorderStyle { Outline = 1, Opaque = 3 };
 
-	AssStyles();
-	virtual ~AssStyles() {}
+	TAssStyles();
+	virtual ~TAssStyles() {}
 
 	QString fontname;
 	int fontsize;

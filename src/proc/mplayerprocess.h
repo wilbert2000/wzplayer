@@ -49,7 +49,7 @@ public:
 	void addVF(const QString & filter_name, const QVariant & value = QVariant());
 	void addAF(const QString & filter_name, const QVariant & value = QVariant());
 	void addStereo3DFilter(const QString & in, const QString & out);
-	void setSubStyles(const AssStyles & styles, const QString & assStylesFile = QString::null);
+	void setSubStyles(const TAssStyles & styles, const QString & assStylesFile = QString::null);
 
 	// Slave commands
 	void setVolume(int v);

@@ -104,22 +104,22 @@ void TSubtitles::retranslateStrings() {
 	// Ass styles
 	int alignment_item = style_alignment_combo->currentIndex();
 	style_alignment_combo->clear();
-	style_alignment_combo->addItem(tr("Left", "horizontal alignment"), AssStyles::Left);
-	style_alignment_combo->addItem(tr("Centered", "horizontal alignment"), AssStyles::HCenter);
-	style_alignment_combo->addItem(tr("Right", "horizontal alignment"), AssStyles::Right);
+	style_alignment_combo->addItem(tr("Left", "horizontal alignment"), TAssStyles::Left);
+	style_alignment_combo->addItem(tr("Centered", "horizontal alignment"), TAssStyles::HCenter);
+	style_alignment_combo->addItem(tr("Right", "horizontal alignment"), TAssStyles::Right);
 	style_alignment_combo->setCurrentIndex(alignment_item);
 
 	int valignment_item = style_valignment_combo->currentIndex();
 	style_valignment_combo->clear();
-	style_valignment_combo->addItem(tr("Bottom", "vertical alignment"), AssStyles::Bottom);
-	style_valignment_combo->addItem(tr("Middle", "vertical alignment"), AssStyles::VCenter);
-	style_valignment_combo->addItem(tr("Top", "vertical alignment"), AssStyles::Top);
+	style_valignment_combo->addItem(tr("Bottom", "vertical alignment"), TAssStyles::Bottom);
+	style_valignment_combo->addItem(tr("Middle", "vertical alignment"), TAssStyles::VCenter);
+	style_valignment_combo->addItem(tr("Top", "vertical alignment"), TAssStyles::Top);
 	style_valignment_combo->setCurrentIndex(valignment_item);
 
 	int borderstyle_item = style_border_style_combo->currentIndex();
 	style_border_style_combo->clear();
-	style_border_style_combo->addItem(tr("Outline", "border style"), AssStyles::Outline);
-	style_border_style_combo->addItem(tr("Opaque box", "border style"), AssStyles::Opaque);
+	style_border_style_combo->addItem(tr("Outline", "border style"), TAssStyles::Outline);
+	style_border_style_combo->addItem(tr("Opaque box", "border style"), TAssStyles::Opaque);
 	style_border_style_combo->setCurrentIndex(borderstyle_item);
 
 	createHelp();
@@ -309,7 +309,7 @@ void TSubtitles::on_ass_customize_button_clicked() {
 	QString edit = forced_ass_style;
 
 	// A copy with the current values in the dialog
-	AssStyles ass_styles;
+	TAssStyles ass_styles;
 	ass_styles.fontname = style_font_combo->currentText();
 	ass_styles.fontsize = style_size_spin->value();
 	ass_styles.primarycolor = style_text_color_button->color().rgb();
