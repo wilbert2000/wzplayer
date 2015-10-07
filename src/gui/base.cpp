@@ -782,23 +782,15 @@ void TBase::createActions() {
 	connect( core, SIGNAL(muteChanged(bool)),
 			 muteAct, SLOT(setChecked(bool)) );
 
-#if USE_MULTIPLE_SHORTCUTS
 	decVolumeAct = new TAction( this, "decrease_volume" );
 	decVolumeAct->setShortcuts( TActionsEditor::stringToShortcuts("9,/") );
 	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
-#else
-	decVolumeAct = new TAction( Qt::Key_9, this, "dec_volume" );
-#endif
 	connect( decVolumeAct, SIGNAL(triggered()),
 			 core, SLOT(decVolume()) );
 
-#if USE_MULTIPLE_SHORTCUTS
 	incVolumeAct = new TAction( this, "increase_volume" );
 	incVolumeAct->setShortcuts( TActionsEditor::stringToShortcuts("0,*") );
 	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
-#else
-	incVolumeAct = new TAction( Qt::Key_0, this, "inc_volume" );
-#endif
 	connect( incVolumeAct, SIGNAL(triggered()),
 			 core, SLOT(incVolume()) );
 
@@ -1033,15 +1025,6 @@ void TBase::createActions() {
 
 
 	// Actions not in menus or buttons
-	// Volume 2
-#if !USE_MULTIPLE_SHORTCUTS
-	decVolume2Act = new TAction( Qt::Key_Slash, this, "dec_volume2" );
-	connect( decVolume2Act, SIGNAL(triggered()), core, SLOT(decVolume()) );
-
-	incVolume2Act = new TAction( Qt::Key_Asterisk, this, "inc_volume2" );
-	connect( incVolume2Act, SIGNAL(triggered()), core, SLOT(incVolume()) );
-#endif
-	// Exit fullscreen
 	exitFullscreenAct = new TAction( Qt::Key_Escape, this, "exit_fullscreen" );
 	connect( exitFullscreenAct, SIGNAL(triggered()), this, SLOT(exitFullscreen()) );
 
@@ -1922,10 +1905,6 @@ void TBase::setActionsEnabled(bool b) {
 	decSubScaleAct->setEnabled(b);
 
 	// Actions not in menus
-#if !USE_MULTIPLE_SHORTCUTS
-	decVolume2Act->setEnabled(b);
-	incVolume2Act->setEnabled(b);
-#endif
 	decContrastAct->setEnabled(b);
 	incContrastAct->setEnabled(b);
 	decBrightnessAct->setEnabled(b);
@@ -2325,14 +2304,7 @@ void TBase::retranslateStrings() {
 	playPrevAct->setIcon( Images::icon("previous") );
 
 	// Actions not in menus or buttons
-	// Volume 2
-#if !USE_MULTIPLE_SHORTCUTS
-	decVolume2Act->change( tr("Dec volume (2)") );
-	incVolume2Act->change( tr("Inc volume (2)") );
-#endif
-	// Exit fullscreen
 	exitFullscreenAct->change( tr("Exit fullscreen") );
-
 	nextOSDLevelAct->change( tr("OSD - Next level") );
 	decContrastAct->change( tr("Dec contrast") );
 	incContrastAct->change( tr("Inc contrast") );

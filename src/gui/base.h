@@ -491,10 +491,6 @@ protected:
 	TAction * playNextAct;
 
 	// Actions not in menus
-#if !USE_MULTIPLE_SHORTCUTS
-	TAction * decVolume2Act;
-	TAction * incVolume2Act;
-#endif
 	TAction * exitFullscreenAct;
 	TAction * nextOSDLevelAct;
 	TAction * decContrastAct;

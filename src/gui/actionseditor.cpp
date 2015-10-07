@@ -94,7 +94,6 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 
 namespace Gui {
 
-#if USE_MULTIPLE_SHORTCUTS
 QString TActionsEditor::shortcutsToString(QList <QKeySequence> shortcuts_list) {
 	QString accelText = "";
 
@@ -136,8 +135,6 @@ QList <QKeySequence> TActionsEditor::stringToShortcuts(QString shortcuts) {
 
 	return shortcuts_list;
 }
-#endif
-
 
 #define COL_CONFLICTS 0
 #define COL_SHORTCUT 1
@@ -266,12 +263,7 @@ void TActionsEditor::updateView() {
 
 	for (int n=0; n < actionsList.count(); n++) {
 		action = static_cast<QAction*> (actionsList[n]);
-
-#if USE_MULTIPLE_SHORTCUTS
 		accelText = shortcutsToString( action->shortcuts() );
-#else
-		accelText = action->shortcut().toString();
-#endif
 
 		// Conflict column
 		QTableWidgetItem * i_conf = new QTableWidgetItem();
@@ -323,12 +315,7 @@ void TActionsEditor::applyChanges() {
 	for (int row = 0; row < (int)actionsList.size(); ++row) {
 		QAction *action = actionsList[row];
 		QTableWidgetItem *i = actionsTable->item(row, COL_SHORTCUT);
-
-#if USE_MULTIPLE_SHORTCUTS
 		action->setShortcuts( stringToShortcuts(i->text()) );
-#else
-		action->setShortcut( QKeySequence(i->text()) );
-#endif
 	}
 }
 
@@ -576,11 +563,7 @@ void TActionsEditor::saveToConfig(QObject *o, QSettings *set) {
 	for (int n=0; n < actions.count(); n++) {
 		action = static_cast<QAction*> (actions[n]);
 		if (!action->objectName().isEmpty() && !action->inherits("QWidgetAction")) {
-#if USE_MULTIPLE_SHORTCUTS
 			QString accelText = shortcutsToString(action->shortcuts());
-#else
-			QString accelText = action->shortcut().toString();
-#endif
 			set->setValue(action->objectName(), accelText);
 		}
     }
@@ -601,16 +584,11 @@ void TActionsEditor::loadFromConfig(QObject *o, QSettings *set) {
 	for (int n=0; n < actions.count(); n++) {
 		action = static_cast<QAction*> (actions[n]);
 		if (!action->objectName().isEmpty() && !action->inherits("QWidgetAction")) {
-#if USE_MULTIPLE_SHORTCUTS
 			QString current = shortcutsToString(action->shortcuts());
 			accelText = set->value(action->objectName(), current).toString();
 			action->setShortcuts( stringToShortcuts( accelText ) );
-#else
-			accelText = set->value(action->objectName(), action->shortcut().toString()).toString();
-			action->setShortcut(QKeySequence(accelText));
-#endif
 		}
-    }
+	}
 
 	set->endGroup();
 }

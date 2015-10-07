@@ -32,9 +32,6 @@
 // if 1, the app stylesheet can be changed
 #define ALLOW_CHANGE_STYLESHEET 1
 
-// Allow to use multiple shortcuts for actions
-#define USE_MULTIPLE_SHORTCUTS 1
-
 // USE_SHORTCUTGETTER
 // if 1, a new dialog will be used to ask the user for a
 // keyshortcut.
