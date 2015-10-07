@@ -54,23 +54,18 @@ TMpc::~TMpc() {
 }
 
 void TMpc::createActions() {
-	timeslider_action = createTimeSliderAction(this);
-	timeslider_action->disable();
-    timeslider_action->setCustomStyle( new Mpc::TimeSlideStyle() );
 
-#if USE_VOLUME_BAR
-	volumeslider_action = createVolumeSliderAction(this);
-	volumeslider_action->disable();
-    volumeslider_action->setCustomStyle( new Mpc::VolumeSlideStyle() );
-    volumeslider_action->setFixedSize( QSize(50,18) );
-	volumeslider_action->setTickPosition( QSlider::NoTicks );
-#endif
+	timeslider_action->setCustomStyle(new Mpc::TimeSlideStyle());
+
+	volumeslider_action->setCustomStyle(new Mpc::VolumeSlideStyle());
+	volumeslider_action->setFixedSize(QSize(50, 18));
+	volumeslider_action->setTickPosition(QSlider::NoTicks);
 
 	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
 	connect( this, SIGNAL(timeChanged(QString)),
-             time_label_action, SLOT(setText(QString)) );
+			 time_label_action, SLOT(setText(QString)) );
 }
 
 
@@ -146,24 +141,6 @@ void TMpc::retranslateStrings() {
 	timeslidewidget->setWindowTitle( tr("Seek bar") );
 
     setupIcons();
-}
-
-void TMpc::enableActionsOnPlaying() {
-	TBasePlus::enableActionsOnPlaying();
-
-	timeslider_action->enable();
-#if USE_VOLUME_BAR
-	volumeslider_action->enable();
-#endif
-}
-
-void TMpc::disableActionsOnStop() {
-	TBasePlus::disableActionsOnStop();
-
-	timeslider_action->disable();
-#if USE_VOLUME_BAR
-	volumeslider_action->disable();
-#endif
 }
 
 void TMpc::aboutToEnterFullscreen() {

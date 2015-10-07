@@ -43,34 +43,35 @@
 
 #include <cmath>
 
+#include "paths.h"
 #include "log.h"
-#include "filedialog.h"
-#include "playerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
-#include "paths.h"
 #include "colorutils.h"
 #include "images.h"
+#include "discname.h"
+#include "playerwindow.h"
+#include "logwindow.h"
+#include "clhelp.h"
+#include "filedialog.h"
+#include "mplayerversion.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
-#include "discname.h"
-#include "logwindow.h"
-#include "gui/filepropertiesdialog.h"
+#include "gui/timeslider.h"
+#include "gui/widgetactions.h"
 #include "gui/eqslider.h"
-#include "videoequalizer.h"
-#include "audioequalizer.h"
+#include "gui/videoequalizer.h"
+#include "gui/audioequalizer.h"
+#include "gui/filepropertiesdialog.h"
 #include "gui/inputdvddirectory.h"
 #include "gui/inputmplayerversion.h"
-#include "errordialog.h"
+#include "gui/errordialog.h"
 #include "gui/about.h"
 #include "gui/inputurl.h"
 #include "gui/timedialog.h"
 #include "gui/playlist.h"
-#include "gui/timeslider.h"
 #include "gui/stereo3ddialog.h"
-#include "clhelp.h"
-#include "mplayerversion.h"
 
 #ifdef FIND_SUBTITLES
 #include "findsubtitleswindow.h"
@@ -262,6 +263,7 @@ void TBase::createPanel() {
 void TBase::createPlayerWindow() {
 
 	playerwindow = new TPlayerWindow(panel);
+	playerwindow->setObjectName("playerwindow");
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
 	playerwindow->setColorKey(pref->color_key);
 
@@ -1363,7 +1365,37 @@ void TBase::createActions() {
 
 	dvdnavMouseAct = new TAction( this, "dvdnav_mouse");
 	connect( dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()) );
-}
+
+	// Time slider action
+	timeslider_action = new TTimeSliderAction(this, core->positionMax(),
+											  pref->time_slider_drag_delay);
+	timeslider_action->setObjectName("timeslider_action");
+
+	connect( timeslider_action, SIGNAL( posChanged(int) ),
+			 core, SLOT(goToPosition(int)) );
+	connect( core, SIGNAL(positionChanged(int)),
+			 timeslider_action, SLOT(setPos(int)) );
+
+	connect( timeslider_action, SIGNAL( draggingPos(int) ),
+			 this, SLOT(displayGotoTime(int)) );
+	connect( timeslider_action, SIGNAL( delayedDraggingPos(int) ),
+			 this, SLOT(goToPosOnDragging(int)) );
+
+	connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::WheelFunction)),
+			core, SLOT(wheelUp(Settings::TPreferences::WheelFunction)));
+	connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::WheelFunction)),
+			core, SLOT(wheelDown(Settings::TPreferences::WheelFunction)));
+
+	// Volume slider action
+	volumeslider_action = new TVolumeSliderAction(this);
+	volumeslider_action->setObjectName("volumeslider_action");
+
+	connect( volumeslider_action, SIGNAL( valueChanged(int) ),
+			 core, SLOT( setVolume(int) ) );
+	connect( core, SIGNAL(volumeChanged(int)),
+			 volumeslider_action, SLOT(setValue(int)) );
+
+} // createActions
 
 void TBase::createMenus() {
 
@@ -1955,6 +1987,9 @@ void TBase::setActionsEnabled(bool b) {
 #endif
 	channelsGroup->setActionsEnabled(b);
 	stereoGroup->setActionsEnabled(b);
+
+	// Time slider
+	timeslider_action->enable(b);
 }
 
 void TBase::enableActionsOnPlaying() {
@@ -3902,7 +3937,7 @@ void TBase::toggleFullscreen() {
 void TBase::toggleFullscreen(bool b) {
 	qDebug("Gui::TBase::toggleFullscreen: %d", b);
 
-	if (b==pref->fullscreen) {
+	if (b == pref->fullscreen) {
 		// Nothing to do
 		qDebug("Gui::TBase::toggleFullscreen: nothing to do, returning");
 		return;
@@ -3917,18 +3952,16 @@ void TBase::toggleFullscreen(bool b) {
 		return;
 	}
 
-	if (!panel->isVisible()) return; // mplayer window is not used.
+	if (!panel->isVisible())
+		return; // mplayer window is not used.
 
 	if (pref->fullscreen) {
 		compactAct->setEnabled(false);
-
 		if (pref->restore_pos_after_fullscreen) {
 			win_pos = pos();
 			win_size = size();
 		}
-
 		was_maximized = isMaximized();
-		qDebug("Gui::TBase::toggleFullscreen: was_maximized: %d", was_maximized);
 
 		aboutToEnterFullscreen();
 
@@ -3943,16 +3976,15 @@ void TBase::toggleFullscreen(bool b) {
 
 	} else {
 		showNormal();
-
-		if (was_maximized) showMaximized(); // It has to be called after showNormal()
+		if (was_maximized)
+			showMaximized(); // It has to be called after showNormal()
 
 		aboutToExitFullscreen();
 
 		if (pref->restore_pos_after_fullscreen) {
-			move( win_pos );
-			resize( win_size );
+			move(win_pos);
+			resize(win_size);
 		}
-
 		compactAct->setEnabled(true);
 	}
 

@@ -24,7 +24,6 @@
 #include "gui/editabletoolbar.h"
 #include "gui/autohidewidget.h"
 
-#define USE_VOLUME_BAR 1
 
 namespace Gui {
 
@@ -39,8 +38,6 @@ public:
 	virtual void saveConfig(const QString &group);
 
 protected slots:
-	virtual void enableActionsOnPlaying();
-	virtual void disableActionsOnStop();
 	virtual void togglePlayAction(TCore::State state);
 
 	void adjustFloatingControlSize();
@@ -64,10 +61,6 @@ protected:
 
 	TAutohideWidget * floating_control;
 
-	TTimeSliderAction * timeslider_action;
-#if USE_VOLUME_BAR
-	TVolumeSliderAction * volumeslider_action;
-#endif
 	TTimeLabelAction * time_label_action;
 
 	TAction * editControlAct;

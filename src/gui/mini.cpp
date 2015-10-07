@@ -61,22 +61,12 @@ QMenu * TMini::createPopupMenu() {
 }
 
 void TMini::createActions() {
-	timeslider_action = createTimeSliderAction(this);
-
-#if USE_VOLUME_BAR
-	volumeslider_action = createVolumeSliderAction(this);
-#endif
-
-	timeslider_action->disable();
-#if USE_VOLUME_BAR
-	volumeslider_action->disable();
-#endif
 
 	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
 	connect( this, SIGNAL(timeChanged(QString)),
-             time_label_action, SLOT(setText(QString)) );
+			 time_label_action, SLOT(setText(QString)) );
 
 	editControlAct = new TAction( this, "edit_control_minigui" );
 	editFloatingControlAct = new TAction( this, "edit_floating_control_minigui" );
@@ -109,9 +99,7 @@ void TMini::createFloatingControl() {
 	QStringList floatingcontrol_actions;
 	floatingcontrol_actions << "play_or_pause" << "stop" << "separator" << "timeslider_action" << "separator"
                             << "fullscreen" << "mute";
-	#if USE_VOLUME_BAR
 	floatingcontrol_actions << "volumeslider_action";
-	#endif
 	floatingcontrol_actions << "separator" << "timelabel_action";
 	iw->setDefaultActions(floatingcontrol_actions);
 
@@ -132,24 +120,6 @@ void TMini::retranslateStrings() {
 
 	editControlAct->change( tr("Edit &control bar") );
 	editFloatingControlAct->change( tr("Edit &floating control") );
-}
-
-void TMini::enableActionsOnPlaying() {
-	TBasePlus::enableActionsOnPlaying();
-
-	timeslider_action->enable();
-#if USE_VOLUME_BAR
-	volumeslider_action->enable();
-#endif
-}
-
-void TMini::disableActionsOnStop() {
-	TBasePlus::disableActionsOnStop();
-
-	timeslider_action->disable();
-#if USE_VOLUME_BAR
-	volumeslider_action->disable();
-#endif
 }
 
 void TMini::togglePlayAction(TCore::State state) {

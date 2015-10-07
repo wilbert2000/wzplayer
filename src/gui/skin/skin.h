@@ -71,8 +71,6 @@ protected slots:
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 
-	virtual void enableActionsOnPlaying();
-	virtual void disableActionsOnStop();
 	virtual void togglePlayAction(TCore::State);
 
 protected:
@@ -81,9 +79,6 @@ protected:
 
 	TEditableToolbar * toolbar1;
 	QToolBar * controlwidget;
-
-	TTimeSliderAction * timeslider_action;
-	TVolumeSliderAction * volumeslider_action;
 
 	TSeekingButton * rewindbutton_action;
 	TSeekingButton * forwardbutton_action;

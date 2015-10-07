@@ -79,12 +79,6 @@ TSkin::~TSkin() {
 void TSkin::createActions() {
 	qDebug("Gui::TSkin::createActions");
 
-	timeslider_action = createTimeSliderAction(this);
-	timeslider_action->disable();
-
-	volumeslider_action = createVolumeSliderAction(this);
-	volumeslider_action->disable();
-
 	// Create the time label
 	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
@@ -111,22 +105,6 @@ void TSkin::createActions() {
 
 	scrollTitleAct = new TAction(this, "toggle_scroll_title_skingui" );
 	scrollTitleAct->setCheckable(true);
-}
-
-void TSkin::enableActionsOnPlaying() {
-	qDebug("Gui::TSkin::enableActionsOnPlaying");
-	TBasePlus::enableActionsOnPlaying();
-
-	timeslider_action->enable();
-	volumeslider_action->enable();
-}
-
-void TSkin::disableActionsOnStop() {
-	qDebug("Gui::TSkin::disableActionsOnStop");
-	TBasePlus::disableActionsOnStop();
-
-	timeslider_action->disable();
-	volumeslider_action->disable();
 }
 
 void TSkin::togglePlayAction(TCore::State state) {

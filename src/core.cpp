@@ -2647,15 +2647,16 @@ void TCore::setVolume(int volume, bool force) {
 	if (current_volume < 0) current_volume = 0;
 
 	if (proc->isMPV()) {
-		// MPV
-		int vol = adjustVolume(current_volume, pref->use_soft_vol ? pref->softvol_max : 100);
-		proc->setVolume(vol);
+		if (proc->isRunning()) {
+			int vol = adjustVolume(current_volume, pref->use_soft_vol ? pref->softvol_max : 100);
+			proc->setVolume(vol);
+		}
 	} else {
 		// MPlayer
 		if (state() == Paused) {
 			// Change volume later, after quiting pause
 			change_volume_after_unpause = true;
-		} else {
+		} else if (proc->isRunning()) {
 			proc->setVolume(current_volume);
 		}
 	}

@@ -23,11 +23,12 @@
 #include <QNetworkProxy>
 
 #include "config.h"
-#include "gui/guiconfig.h"
 #include "mediadata.h"
 #include "mediasettings.h"
-#include "settings/preferences.h"
 #include "core.h"
+#include "settings/preferences.h"
+#include "gui/guiconfig.h"
+#include "gui/widgetactions.h"
 #include "gui/playlist.h"
 #include "gui/logwindow.h"
 #include "gui/audioequalizer.h"
@@ -716,6 +717,9 @@ protected:
 
 	QMenu * popup;
 	QMenu * recentfiles_menu;
+
+	TTimeSliderAction* timeslider_action;
+	TVolumeSliderAction* volumeslider_action;
 
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;

@@ -547,44 +547,6 @@ void TBasePlus::shrinkWindow() {
 
 #endif
 
-// Convenience functions intended for other GUI's
-TTimeSliderAction* TBasePlus::createTimeSliderAction(QWidget* parent) {
-
-	TTimeSliderAction* timeslider_action =
-			new TTimeSliderAction(parent, core->positionMax(),
-								  pref->time_slider_drag_delay);
-
-	connect( timeslider_action, SIGNAL( posChanged(int) ), 
-             core, SLOT(goToPosition(int)) );
-	connect( core, SIGNAL(positionChanged(int)), 
-             timeslider_action, SLOT(setPos(int)) );
-
-	connect( timeslider_action, SIGNAL( draggingPos(int) ),
-             this, SLOT(displayGotoTime(int)) );
-	connect( timeslider_action, SIGNAL( delayedDraggingPos(int) ),
-             this, SLOT(goToPosOnDragging(int)) );
-
-	connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::WheelFunction)),
-			core, SLOT(wheelUp(Settings::TPreferences::WheelFunction)));
-	connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::WheelFunction)),
-			core, SLOT(wheelDown(Settings::TPreferences::WheelFunction)));
-
-	return timeslider_action;
-}
-
-TVolumeSliderAction* TBasePlus::createVolumeSliderAction(QWidget * parent) {
-
-	TVolumeSliderAction * volumeslider_action = new TVolumeSliderAction(parent);
-	volumeslider_action->setObjectName("volumeslider_action");
-
-	connect( volumeslider_action, SIGNAL( valueChanged(int) ), 
-             core, SLOT( setVolume(int) ) );
-	connect( core, SIGNAL(volumeChanged(int)),
-             volumeslider_action, SLOT(setValue(int)) );
-
-	return volumeslider_action;
-}
-
 #ifdef Q_OS_OS2
 // we test if xcenter is available at all. if not disable the tray action. this is possible when xcenter is not opened or crashed
 void TBasePlus::trayAvailable() {

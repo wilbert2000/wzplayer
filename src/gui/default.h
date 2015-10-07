@@ -71,8 +71,6 @@ protected slots:
 	virtual void displayABSection(int secs_a, int secs_b);
 	virtual void displayVideoInfo(int width, int height, double fps);
 
-	virtual void enableActionsOnPlaying();
-	virtual void disableActionsOnStop();
 	virtual void togglePlayAction(TCore::State state);
 
 	void adjustFloatingControlSize();
@@ -94,9 +92,6 @@ protected:
 
 	QPushButton * select_audio;
 	QPushButton * select_subtitle;
-
-	TTimeSliderAction * timeslider_action;
-	TVolumeSliderAction * volumeslider_action;
 
 	TSeekingButton * rewindbutton_action;
 	TSeekingButton * forwardbutton_action;

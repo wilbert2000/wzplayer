@@ -46,7 +46,6 @@ TPlayerLayer::TPlayerLayer(QWidget* parent, Qt::WindowFlags f)
 	, repaint_background(false)
 	, normal_background(true)
 {
-	setObjectName("playerlayer");
 
 	// If not set parent playerwindow will not get mouse move events
 	setMouseTracking(true);
@@ -146,7 +145,6 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	, check_hide_mouse_last_position()
 	, autohide_interval(1000)
 {
-	setObjectName("playerwindow");
 
 	setFocusPolicy(Qt::StrongFocus);
 	setMouseTracking(true);
@@ -158,6 +156,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	ColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
 
 	playerlayer = new TPlayerLayer(this);
+	playerlayer->setObjectName("playerwindow");
 
 	logo = new QLabel();
 	logo->setObjectName("logo");

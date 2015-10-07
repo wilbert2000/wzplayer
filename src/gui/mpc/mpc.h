@@ -23,8 +23,6 @@
 #include "gui/baseplus.h"
 #include "gui/autohidewidget.h"
 
-#define USE_VOLUME_BAR 1
-
 class QSpacerItem;
 class QToolBar;
 
@@ -45,18 +43,15 @@ public:
 #endif
 
 protected slots:
-    void muteIconChange(bool b);
-    void iconChange(TCore::State state);
-    void updateAudioChannels();
+	void muteIconChange(bool b);
+	void iconChange(TCore::State state);
+	void updateAudioChannels();
 
-    void displayTime(QString text);
-    void displayFrame(int frame);
-    void showFullscreenControls();
-    void hideFullscreenControls();
-    void setJumpTexts();
-
-	virtual void enableActionsOnPlaying();
-	virtual void disableActionsOnStop();
+	void displayTime(QString text);
+	void displayFrame(int frame);
+	void showFullscreenControls();
+	void hideFullscreenControls();
+	void setJumpTexts();
 
 protected:
 	virtual void retranslateStrings();
@@ -64,9 +59,9 @@ protected:
 	void createActions();
 	void createControlWidget();
 	void createFloatingControl();
-    void createStatusBar();
+	void createStatusBar();
 
-    void setupIcons();
+	void setupIcons();
 
 	// Reimplemented
 	virtual void aboutToEnterFullscreen();
@@ -76,7 +71,7 @@ protected:
 
 protected:
 	QToolBar* controlwidget;
-    QToolBar* timeslidewidget;
+	QToolBar* timeslidewidget;
 
 	QLabel * audiochannel_display;
 	QLabel * time_display;
@@ -87,10 +82,6 @@ protected:
 	TAutohideWidget * floating_control;
 	QSpacerItem * spacer;
 
-	TTimeSliderAction * timeslider_action;
-#if USE_VOLUME_BAR
-	TVolumeSliderAction * volumeslider_action;
-#endif
 	TTimeLabelAction * time_label_action;
 };
 

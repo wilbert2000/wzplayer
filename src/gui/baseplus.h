@@ -52,10 +52,6 @@ protected:
 	virtual void aboutToEnterCompactMode();
 	virtual void aboutToExitCompactMode();
 
-	// Functions for other GUI's
-	TTimeSliderAction* createTimeSliderAction(QWidget* parent);
-	TVolumeSliderAction* createVolumeSliderAction(QWidget* parent);
-
 protected slots:
 	// Reimplemented methods
 	virtual void closeWindow();

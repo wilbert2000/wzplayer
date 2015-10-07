@@ -33,8 +33,8 @@ TWidgetAction::TWidgetAction( QWidget * parent )
 TWidgetAction::~TWidgetAction() {
 }
 
-void TWidgetAction::enable() {
-	propagate_enabled(true);
+void TWidgetAction::enable(bool e) {
+	propagate_enabled(e);
 }
 
 void TWidgetAction::disable() {
@@ -55,7 +55,6 @@ TTimeSliderAction::TTimeSliderAction(QWidget * parent , int max_position, int de
 	: TWidgetAction(parent),
 	  max_pos(max_position),
 	  drag_delay(delay) {
-	setObjectName("timeslider_action");
 }
 
 TTimeSliderAction::~TTimeSliderAction() {

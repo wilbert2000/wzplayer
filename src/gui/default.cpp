@@ -91,12 +91,6 @@ TDefault::~TDefault() {
 void TDefault::createActions() {
 	qDebug("Gui::TDefault::createActions");
 
-	timeslider_action = createTimeSliderAction(this);
-	volumeslider_action = createVolumeSliderAction(this);
-
-	timeslider_action->disable();
-	volumeslider_action->disable();
-
 	// Create the time label
 	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
@@ -126,22 +120,6 @@ void TDefault::createActions() {
 	editControl1Act = new TAction( this, "edit_control1" );
 	editControl2Act = new TAction( this, "edit_control2" );
 	editFloatingControlAct = new TAction( this, "edit_floating_control" );
-}
-
-void TDefault::enableActionsOnPlaying() {
-	qDebug("Gui::TDefault::enableActionsOnPlaying");
-	TBasePlus::enableActionsOnPlaying();
-
-	timeslider_action->enable();
-	volumeslider_action->enable();
-}
-
-void TDefault::disableActionsOnStop() {
-	qDebug("Gui::TDefault::disableActionsOnStop");
-	TBasePlus::disableActionsOnStop();
-
-	timeslider_action->disable();
-	volumeslider_action->disable();
 }
 
 void TDefault::togglePlayAction(TCore::State state) {

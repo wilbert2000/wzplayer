@@ -44,7 +44,7 @@ public:
 	QString styleSheet() { return custom_stylesheet; }
 
 public slots:
-	virtual void enable(); 	// setEnabled in QAction is not virtual :(
+	virtual void enable(bool e = true); // setEnabled in QAction is not virtual :(
 	virtual void disable();
 
 protected:
