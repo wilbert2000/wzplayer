@@ -132,10 +132,10 @@ void TMini::aboutToEnterFullscreen() {
 }
 
 void TMini::aboutToExitFullscreen() {
+
 	TBasePlus::aboutToExitFullscreen();
 
 	floating_control->deactivate();
-	//floating_control->hide();
 
 	if (!pref->compact_mode) {
 		statusBar()->hide();

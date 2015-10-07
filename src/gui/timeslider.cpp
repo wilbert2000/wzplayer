@@ -81,10 +81,9 @@ void TTimeSlider::valueChanged_slot(int v) {
 	qDebug("Gui::TTimeSlider::changedValue_slot: %d", v);
 	#endif
 
-	// Only to make things clear:
 	bool dragging = dont_update;
 	if (!dragging) {
-		if (v!=position) {
+		if (v != position) {
 			#if DEBUG
 			qDebug(" emitting posChanged");
 			#endif
@@ -113,6 +112,7 @@ void TTimeSlider::checkDragging(int v) {
 }
 
 void TTimeSlider::sendDelayedPos() {
+
 	if (last_pos_to_send != -1) {
 		qDebug("Gui::TTimeSlider::sendDelayedPos: %d", last_pos_to_send);
 		emit delayedDraggingPos(last_pos_to_send);
@@ -126,11 +126,9 @@ void TTimeSlider::setPos(int v) {
 	qDebug(" dont_update: %d", dont_update);
 	#endif
 
-	if (v!=pos()) {
-		if (!dont_update) {
-			position = v;
-			setValue(v);
-		}
+	if (v != pos() && !dont_update) {
+		position = v;
+		setValue(v);
 	}
 }
 
@@ -139,16 +137,14 @@ int TTimeSlider::pos() {
 }
 
 void TTimeSlider::wheelEvent(QWheelEvent* e) {
-	//e->ignore();
-
 	qDebug("Gui::TTimeSlider::wheelEvent: delta: %d", e->delta());
-	e->accept();
 
+	e->accept();
 	if (e->orientation() == Qt::Vertical) {
-	    if (e->delta() >= 0)
-	        emit wheelUp();
-	    else
-	        emit wheelDown();
+		if (e->delta() >= 0)
+			emit wheelUp();
+		else
+			emit wheelDown();
 	} else {
 		qDebug("Gui::TTimeslider::wheelEvent: horizontal event received, doing nothing");
 	}

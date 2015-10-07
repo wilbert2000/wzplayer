@@ -25,10 +25,8 @@ namespace Gui {
 
 TWidgetAction::TWidgetAction(QWidget* parent)
 	: QWidgetAction(parent)
-{
-	custom_style = 0;
-	custom_stylesheet = "";
-}
+	, custom_style(0)
+{}
 
 TWidgetAction::~TWidgetAction() {
 }
@@ -42,6 +40,7 @@ void TWidgetAction::disable() {
 }
 
 void TWidgetAction::propagate_enabled(bool b) {
+
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		TTimeSlider *s = (TTimeSlider*) l[n];
@@ -61,6 +60,7 @@ TTimeSliderAction::~TTimeSliderAction() {
 }
 
 void TTimeSliderAction::setPos(int v) {
+
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		TTimeSlider *s = (TTimeSlider*) l[n];
@@ -71,6 +71,7 @@ void TTimeSliderAction::setPos(int v) {
 }
 
 int TTimeSliderAction::pos() {
+
 	QList<QWidget *> l = createdWidgets();
 	if (l.count() >= 1) {
 		TTimeSlider *s = (TTimeSlider*) l[0];
@@ -81,8 +82,8 @@ int TTimeSliderAction::pos() {
 }
 
 void TTimeSliderAction::setDragDelay(int d) {
-	drag_delay = d;
 
+	drag_delay = d;
 	QList<QWidget *> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
 		TTimeSlider *s = (TTimeSlider*) l[n];
@@ -99,18 +100,22 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 	TTimeSlider* t = new TTimeSlider(parent, max_pos, drag_delay);
 	t->setEnabled(isEnabled());
 
-	if (custom_style) t->setStyle(custom_style);
-	if (!custom_stylesheet.isEmpty()) t->setStyleSheet(custom_stylesheet);
+	if (custom_style)
+		t->setStyle(custom_style);
+	if (!custom_stylesheet.isEmpty())
+		t->setStyleSheet(custom_stylesheet);
 
-	connect(t,    SIGNAL(posChanged(int)), 
-             this, SIGNAL(posChanged(int)));
-	connect(t,    SIGNAL(draggingPos(int)),
-             this, SIGNAL(draggingPos(int)));
-	connect(t,    SIGNAL(delayedDraggingPos(int)),
-	         this, SIGNAL(delayedDraggingPos(int)));
+	connect(t, SIGNAL(posChanged(int)),
+			this, SIGNAL(posChanged(int)));
+	connect(t, SIGNAL(draggingPos(int)),
+			this, SIGNAL(draggingPos(int)));
+	connect(t, SIGNAL(delayedDraggingPos(int)),
+			this, SIGNAL(delayedDraggingPos(int)));
 
-	connect(t, SIGNAL(wheelUp()), this, SIGNAL(wheelUp()));
-	connect(t, SIGNAL(wheelDown()), this, SIGNAL(wheelDown()));
+	connect(t, SIGNAL(wheelUp()),
+			this, SIGNAL(wheelUp()));
+	connect(t, SIGNAL(wheelDown()),
+			this, SIGNAL(wheelDown()));
 
 	return t;
 }
