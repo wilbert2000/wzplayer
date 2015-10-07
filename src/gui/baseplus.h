@@ -40,8 +40,8 @@ public:
 	virtual ~TBasePlus();
 
 	virtual bool startHidden();
-	virtual void loadConfig(const QString &group);
-	virtual void saveConfig(const QString &group);
+	virtual void loadConfig(const QString& group);
+	virtual void saveConfig(const QString& group);
 
 protected:
 	virtual void retranslateStrings();
@@ -54,13 +54,13 @@ protected:
 	virtual void aboutToExitCompactMode();
 
 	// Functions for other GUI's
-	TTimeSliderAction * createTimeSliderAction(QWidget * parent);
-	TVolumeSliderAction * createVolumeSliderAction(QWidget * parent);
+	TTimeSliderAction* createTimeSliderAction(QWidget* parent);
+	TVolumeSliderAction* createVolumeSliderAction(QWidget* parent);
 
 protected slots:
 	// Reimplemented methods
 	virtual void closeWindow();
-	virtual void setWindowCaption(const QString & title);
+	virtual void setWindowCaption(const QString& title);
 	virtual void resizeWindow(int w, int h);
 	virtual void updateMediaInfo();
 	// New

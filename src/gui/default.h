@@ -37,19 +37,15 @@ class TSeekingButton;
 
 namespace Gui {
 	
-class TDefault : public TBasePlus
-{
+class TDefault : public TBasePlus {
 	Q_OBJECT
 
 public:
-	TDefault( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	TDefault(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~TDefault();
 
-	virtual void loadConfig(const QString &group);
-	virtual void saveConfig(const QString &group);
-
-public slots:
-	//virtual void showPlaylist(bool b);
+	virtual void loadConfig(const QString& group);
+	virtual void saveConfig(const QString& group);
 
 protected:
 	virtual void retranslateStrings();
@@ -68,8 +64,7 @@ protected:
     virtual void aboutToEnterCompactMode();
     virtual void aboutToExitCompactMode();
 
-	virtual void resizeEvent( QResizeEvent * );
-	/* virtual void closeEvent( QCloseEvent * ); */
+	virtual void resizeEvent(QResizeEvent*);
 
 protected slots:
 	virtual void applyNewPreferences();

@@ -65,12 +65,10 @@ class ShareWidget;
 #endif
 
 namespace Gui {
-	
 
-class TBase : public QMainWindow
-{
-    Q_OBJECT
-    
+class TBase : public QMainWindow {
+	Q_OBJECT
+
 public:
 	TBase(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~TBase();
@@ -86,16 +84,16 @@ public:
 	//! Execute all the actions after the video has started to play
 	void runActionsLater(QString actions) { pending_actions_to_run = actions; }
 
-	TCore * getCore() { return core; }
-	TPlaylist * getPlaylist() { return playlist; }
+	TCore* getCore() { return core; }
+	TPlaylist* getPlaylist() { return playlist; }
 
-	virtual void loadConfig(const QString &group);
-	virtual void saveConfig(const QString &group);
+	virtual void loadConfig(const QString& group);
+	virtual void saveConfig(const QString& group);
 
 	void retranslate() { retranslateStrings(); }
 
 public slots:
-	virtual void open(const QString &file); // Generic open, autodetect type.
+	virtual void open(const QString& file); // Generic open, autodetect type.
 	virtual void openFile();
 	virtual void openFiles(QStringList files);
 	virtual void openFavorite(QString file);
@@ -105,7 +103,7 @@ public slots:
 	virtual void openAudioCD();
 	virtual void openDVD();
 	virtual void openDVDFromFolder();
-	virtual void openDVDFromFolder(const QString &directory);
+	virtual void openDVDFromFolder(const QString& directory);
 	void openBluRay();
 	void openBluRayFromFolder();
 	void openBluRayFromFolder(QString directory);
@@ -129,7 +127,7 @@ public slots:
 	virtual void loadSub();
 	virtual void loadAudioFile(); // Load external audio file
 
-	void setInitialSubtitle(const QString & subtitle_file);
+	void setInitialSubtitle(const QString& subtitle_file);
 
 #ifdef FIND_SUBTITLES
 	virtual void showFindSubtitlesDialog();
@@ -185,9 +183,8 @@ protected slots:
 	virtual void setJumpTexts();
 
 	// Replace for setCaption (in Qt 4 it's not virtual)
-	virtual void setWindowCaption(const QString & title); 
+	virtual void setWindowCaption(const QString& title);
 
-	//virtual void openRecent(int item);
 	virtual void openRecent();
 	virtual void enterFullscreenOnPlay();
 	virtual void exitFullscreenOnStop();
@@ -234,7 +231,7 @@ protected slots:
 
 #ifdef YOUTUBE_SUPPORT
 	void YTNoSslSupport();
-	void YTNoSignature(const QString &);
+	void YTNoSignature(const QString&);
 	#ifdef YT_USE_YTSIG
 	void YTUpdateScript();
 	#endif
@@ -249,18 +246,12 @@ protected slots:
 	void resizeMainWindow(int w, int h, bool try_twice = true);
 	virtual void resizeWindow(int w, int h);
 
-	/* virtual void playlistVisibilityChanged(); */
-
 	virtual void displayGotoTime(int);
 	//! You can call this slot to jump to the specified percentage in the video, while dragging the slider.
 	virtual void goToPosOnDragging(int);
 
 	virtual void showPopupMenu();
 	virtual void showPopupMenu( QPoint p );
-	/*
-	virtual void mouseReleaseEvent( QMouseEvent * e );
-	virtual void mouseDoubleClickEvent( QMouseEvent * e );
-	*/
 
 	virtual void leftClickFunction();
 	virtual void rightClickFunction();
@@ -271,8 +262,8 @@ protected slots:
 	virtual void moveWindow(QPoint diff);
 	virtual void processFunction(QString function);
 
-	virtual void dragEnterEvent( QDragEnterEvent * );
-	virtual void dropEvent ( QDropEvent * );
+	virtual void dragEnterEvent(QDragEnterEvent*);
+	virtual void dropEvent(QDropEvent*);
 
 	virtual void applyNewPreferences();
 	virtual void applyFileProperties();
@@ -313,16 +304,6 @@ signals:
 	void videoInfoChanged(int width, int height, double fps);
 	void timeChanged(QString time_ready_to_print);
 
-	/*
-	void wheelUp();
-	void wheelDown();
-	*/
-	/*
-	void doubleClicked();
-	void leftClicked();
-	void middleClicked();
-	*/
-
 	//! Sent when another instance requested to play a file
 	void openFileRequested();
 
@@ -331,18 +312,18 @@ signals:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent * event);
+	virtual void changeEvent(QEvent* event);
 #if QT_VERSION < 0x050000
-	virtual void hideEvent( QHideEvent * );
-	virtual void showEvent( QShowEvent * );
+	virtual void hideEvent(QHideEvent*);
+	virtual void showEvent(QShowEvent*);
 #else
-	virtual bool event(QEvent * e);
+	virtual bool event(QEvent* e);
 	bool was_minimized;
 #endif
 #ifdef Q_OS_WIN
 	#ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
-	virtual bool winEvent ( MSG * m, long * result );
+	virtual bool winEvent (MSG* m, long* result);
 	#endif
 #endif
 
@@ -367,10 +348,7 @@ protected:
 	void updateRecents();
 	void configureDiscDevices();
 	void setupNetworkProxy();
-	virtual void closeEvent( QCloseEvent * e );
-
-protected:
-	/* virtual void wheelEvent( QWheelEvent * e ) ; */
+	virtual void closeEvent(QCloseEvent* e);
 
 protected:
 	QWidget * panel;
@@ -557,7 +535,6 @@ protected:
 	TAction * autoZoom169Act;
 	TAction * autoZoom235Act;
 
-
 	// OSD Action Group 
 	TActionGroup * osdGroup;
 	TAction * osdNoneAct;
@@ -605,13 +582,13 @@ protected:
 	TAction * aspect11Act;		// 1:1
 	TAction * aspect32Act;		// 3:2
 	TAction * aspect43Act;		// 4:3
-	TAction * aspect118Act;	// 11:8
+	TAction * aspect118Act;		// 11:8
 	TAction * aspect54Act;		// 5:4
-	TAction * aspect149Act;	// 14:9
+	TAction * aspect149Act;		// 14:9
 	TAction * aspect1410Act;	// 14:10
-	TAction * aspect169Act;	// 16:9
+	TAction * aspect169Act;		// 16:9
 	TAction * aspect1610Act;	// 16:10
-	TAction * aspect235Act;	// 2.35:1
+	TAction * aspect235Act;		// 2.35:1
 
 	// Rotate Group
 	TActionGroup * rotateGroup;
@@ -747,43 +724,41 @@ protected:
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;
 
-	Pref::TDialog *pref_dialog;
-	TFilePropertiesDialog *file_dialog;
-	TPlaylist * playlist;
-	TVideoEqualizer * video_equalizer;
-	TAudioEqualizer * audio_equalizer;
+	Pref::TDialog* pref_dialog;
+	TFilePropertiesDialog* file_dialog;
+	TPlaylist* playlist;
+	TVideoEqualizer* video_equalizer;
+	TAudioEqualizer* audio_equalizer;
 #ifdef FIND_SUBTITLES
-	FindSubtitlesWindow * find_subs_dialog;
+	FindSubtitlesWindow* find_subs_dialog;
 #endif
 #ifdef VIDEOPREVIEW
-	VideoPreview * video_preview;
+	VideoPreview* video_preview;
 #endif
 
-	TCore * core;
-	TPlayerWindow *playerwindow;
+	TCore* core;
+	TPlayerWindow* playerwindow;
 
-	TFavorites * favorites;
-
-	TTVList * tvlist;
-	TTVList * radiolist;
+	TFavorites* favorites;
+	TTVList* tvlist;
+	TTVList* radiolist;
 
 #ifdef UPDATE_CHECKER
-	TUpdateChecker * update_checker;
+	TUpdateChecker* update_checker;
 #endif
 
 #ifdef SHAREWIDGET
-	ShareWidget * sharewidget;
+	ShareWidget* sharewidget;
 #endif
 
 	QStringList actions_list;
-
 	QString pending_actions_to_run;
 
+private:
 	// Force settings from command line
 	int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 	int arg_start_in_fullscreen; // -1 = not set, 1 = true, 0 = false
 
-private:
 	QString default_style;
 
 	// Variables to restore pos and size of the window
@@ -792,15 +767,15 @@ private:
 	QSize win_size;
 	bool was_maximized;
 
+	bool ignore_show_hide_events;
+	bool block_resize;
+
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
 	bool just_stopped;
 #endif
 #endif
-
-	bool ignore_show_hide_events;
-	bool block_resize;
 
 	void hidePanel();
 };

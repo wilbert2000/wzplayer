@@ -137,40 +137,37 @@ using namespace Settings;
 namespace Gui {
 
 
-TBase::TBase( QWidget* parent, Qt::WindowFlags flags ) 
-	: QMainWindow( parent, flags )
+TBase::TBase(QWidget* parent, Qt::WindowFlags flags) :
+	QMainWindow( parent, flags )
 #if QT_VERSION >= 0x050000
 	, was_minimized(false)
+#endif
+	, popup(0)
+	, clhelp_window(0)
+	, pref_dialog(0)
+	, file_dialog(0)
+#ifdef FIND_SUBTITLES
+	, find_subs_dialog(0)
+#endif
+#ifdef VIDEOPREVIEW
+	, video_preview(0)
 #endif
 #ifdef UPDATE_CHECKER
 	, update_checker(0)
 #endif
+	, arg_close_on_finish(-1)
+	, arg_start_in_fullscreen(-1)
+	, ignore_show_hide_events(false)
 	, block_resize(false)
-{
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
-	just_stopped = false;
+	, just_stopped(false)
 #endif
 #endif
-	ignore_show_hide_events = false;
+{
 
-	arg_close_on_finish = -1;
-	arg_start_in_fullscreen = -1;
-
-	setWindowTitle( "SMPlayer" );
-
-	// Not created objects
-	popup = 0;
-	pref_dialog = 0;
-	file_dialog = 0;
-	clhelp_window = 0;
-#ifdef FIND_SUBTITLES
-	find_subs_dialog = 0;
-#endif
-#ifdef VIDEOPREVIEW
-	video_preview = 0;
-#endif
+	setWindowTitle("SMPlayer");
 
 	// Create objects:
 	createPanel();
@@ -182,26 +179,13 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 	createVideoEqualizer();
 	createAudioEqualizer();
 
-	// Mouse Wheel
-	/*
-	connect( this, SIGNAL(wheelUp()),
-             core, SLOT(wheelUp()) );
-	connect( this, SIGNAL(wheelDown()),
-             core, SLOT(wheelDown()) );
-	*/
-	connect( playerwindow, SIGNAL(wheelUp()),
-             core, SLOT(wheelUp()) );
-	connect( playerwindow, SIGNAL(wheelDown()),
-             core, SLOT(wheelDown()) );
-
 	// Set style before changing color of widgets:
-	// Set style
-	qDebug( "Style name: '%s'", qApp->style()->objectName().toUtf8().data() );
-	qDebug( "Style class name: '%s'", qApp->style()->metaObject()->className() );
-
+	// TODO: from help: Warning: To ensure that the application's style is set
+	// correctly, it is best to call this function before the QApplication
+	// constructor, if possible.
 	default_style = qApp->style()->objectName();
 	if (!pref->style.isEmpty()) {
-		qApp->setStyle( pref->style );
+		qApp->setStyle(pref->style);
 	}
 
 	log_window = new TLogWindow(0);
@@ -220,14 +204,13 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 #endif
 
 	setAcceptDrops(true);
-
 	resize(pref->default_size);
-
 	panel->setFocus();
 
 	setupNetworkProxy();
 
-	if (pref->compact_mode) toggleCompactMode(true);
+	if (pref->compact_mode)
+		toggleCompactMode(true);
 	changeStayOnTop(pref->stay_on_top);
 
 	updateRecents();
@@ -245,7 +228,8 @@ TBase::TBase( QWidget* parent, Qt::WindowFlags flags )
 #endif
 
 #ifdef MPRIS2
-	if (pref->use_mpris2) new Mpris2(this, this);
+	if (pref->use_mpris2)
+		new Mpris2(this, this);
 #endif
 }
 
@@ -255,7 +239,6 @@ TBase::~TBase() {
 #ifdef VIDEOPREVIEW
 	delete video_preview;
 #endif
-
 #ifdef FIND_SUBTITLES
 	delete find_subs_dialog;
 #endif
@@ -268,135 +251,222 @@ TBase::~TBase() {
 	delete core;
 }
 
-void TBase::setupNetworkProxy() {
-	qDebug("Gui::TBase::setupNetworkProxy");
+void TBase::createPanel() {
 
-	QNetworkProxy proxy;
-
-	if ( (pref->use_proxy) && (!pref->proxy_host.isEmpty()) ) {
-		proxy.setType((QNetworkProxy::ProxyType) pref->proxy_type);
-		proxy.setHostName(pref->proxy_host);
-		proxy.setPort(pref->proxy_port);
-		if ( (!pref->proxy_username.isEmpty()) && (!pref->proxy_password.isEmpty()) ) {
-			proxy.setUser(pref->proxy_username);
-			proxy.setPassword(pref->proxy_password);
-		}
-		qDebug("Gui::TBase::setupNetworkProxy: using proxy: host: %s, port: %d, type: %d", 
-               pref->proxy_host.toUtf8().constData(), pref->proxy_port, pref->proxy_type);
-	} else {
-		// No proxy
-		proxy.setType(QNetworkProxy::NoProxy);
-		qDebug("Gui::TBase::setupNetworkProxy: no proxy");
-	}
-
-	QNetworkProxy::setApplicationProxy(proxy);
+	panel = new QWidget(this);
+	panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	panel->setMinimumSize(QSize(1, 1));
+	panel->setFocusPolicy(Qt::StrongFocus);
 }
 
-void TBase::loadConfig(const QString &group) {
-	qDebug("Gui::TBase::loadConfig");
+void TBase::createPlayerWindow() {
 
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
+	playerwindow = new TPlayerWindow(panel);
+	playerwindow->setDelayLeftClick(pref->delay_left_click);
+	playerwindow->setColorKey(pref->color_key);
+
+#if LOGO_ANIMATION
+	playerwindow->setAnimatedLogo(pref->animated_logo);
 #endif
 
-	// Load actions from outside group derived class
-	loadActions();
-
-	if (pref->save_window_size_on_exit) {
-		// Load window state from inside group derived class
-		pref->beginGroup(group);
-		QPoint p = pref->value("pos", pos()).toPoint();
-		QSize s = pref->value("size", size()).toSize();
-		int state = pref->value("state", 0).toInt();
-		pref->endGroup();
-
-		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
-			s = pref->default_size;
-		}
-
-		move(p);
-		resize(s);
-		setWindowState((Qt::WindowStates) state);
-
-		if (!TDesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("Gui::TBase::loadConfig: window is outside of the screen, moved to 0x0");
-		} else {
-			// Block resize of main window by loading of video
-			// TODO: reset when video fails to load
-			block_resize = true;
-		}
-	} else {
-		// Center window
-		QSize center_pos = (TDesktopInfo::desktop_size(this) - size()) / 2;
-		if (center_pos.isValid())
-			move(center_pos.width(), center_pos.height());
-	}
-
-	// Load playlist settings outside group
-	playlist->loadSettings();
-}
-
-void TBase::saveConfig(const QString &group) {
-	qDebug("Gui::TBase::saveConfig");
-
-	if (pref->save_window_size_on_exit) {
-		pref->beginGroup(group);
-		pref->setValue( "pos", pos() );
-		pref->setValue( "size", size() );
-		pref->setValue( "state", (int) windowState() );
-		pref->endGroup();
-	}
-
-	playlist->saveSettings();
-}
-
-#ifdef SINGLE_INSTANCE
-void TBase::handleMessageFromOtherInstances(const QString& message) {
-	qDebug("Gui::TBase::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
-
-	int pos = message.indexOf(' ');
-	if (pos > -1) {
-		QString command = message.left(pos);
-		QString arg = message.mid(pos+1);
-		qDebug("command: '%s'", command.toUtf8().constData());
-		qDebug("arg: '%s'", arg.toUtf8().constData());
-
-		if (command == "open_file") {
-			emit openFileRequested();
-			open(arg);
-		} 
-		else
-		if (command == "open_files") {
-			QStringList file_list = arg.split(" <<sep>> ");
-			emit openFileRequested();
-			openFiles(file_list);
-		}
-		else
-		if (command == "add_to_playlist") {
-			QStringList file_list = arg.split(" <<sep>> ");
-			/* if (core->state() == TCore::Stopped) { emit openFileRequested(); } */
-			playlist->addFiles(file_list);
-		}
-		else
-		if (command == "media_title") {
-			QStringList list = arg.split(" <<sep>> ");
-			core->addForcedTitle(list[0], list[1]);
-		}
-		else
-		if (command == "action") {
-			processFunction(arg);
-		}
-		else
-		if (command == "load_sub") {
-			setInitialSubtitle(arg);
-			if (core->state() != TCore::Stopped) {
-				core->loadSub(arg);
-			}
-		}
-	}
-}
+#ifdef SHAREWIDGET
+	sharewidget = new ShareWidget(pref, playerwindow);
+	playerwindow->setCornerWidget(sharewidget);
+	#ifdef REMINDER_ACTIONS
+	connect(sharewidget, SIGNAL(supportClicked()), this, SLOT(helpDonate()));
+	#endif
 #endif
+
+	QVBoxLayout* layout = new QVBoxLayout;
+	layout->setSpacing(0);
+	layout->setMargin(0);
+	layout->addWidget(playerwindow);
+	panel->setLayout(layout);
+
+	// playerwindow mouse events
+	connect( playerwindow, SIGNAL(doubleClicked()),
+			 this, SLOT(doubleClickFunction()) );
+	connect( playerwindow, SIGNAL(leftClicked()),
+			 this, SLOT(leftClickFunction()) );
+	connect( playerwindow, SIGNAL(rightClicked()),
+			 this, SLOT(rightClickFunction()) );
+	connect( playerwindow, SIGNAL(middleClicked()),
+			 this, SLOT(middleClickFunction()) );
+	connect( playerwindow, SIGNAL(xbutton1Clicked()),
+			 this, SLOT(xbutton1ClickFunction()) );
+	connect( playerwindow, SIGNAL(xbutton2Clicked()),
+			 this, SLOT(xbutton2ClickFunction()) );
+	connect( playerwindow, SIGNAL(moveWindow(QPoint)),
+			 this, SLOT(moveWindow(QPoint)) );
+}
+
+void TBase::createCore() {
+
+	core = new TCore(playerwindow, this);
+
+	connect( core, SIGNAL(widgetsNeedUpdate()),
+			 this, SLOT(updateWidgets()) );
+	connect( core, SIGNAL(videoEqualizerNeedsUpdate()),
+			 this, SLOT(updateVideoEqualizer()) );
+
+	connect( core, SIGNAL(audioEqualizerNeedsUpdate()),
+			 this, SLOT(updateAudioEqualizer()) );
+
+	connect( core, SIGNAL(showFrame(int)),
+			 this, SIGNAL(frameChanged(int)) );
+
+	connect( core, SIGNAL(ABMarkersChanged(int,int)),
+			 this, SIGNAL(ABMarkersChanged(int,int)) );
+
+	connect( core, SIGNAL(showTime(double)),
+			 this, SLOT(gotCurrentTime(double)) );
+	connect( core, SIGNAL(newDuration(double)),
+			 this, SLOT(gotDuration(double)) );
+
+	connect( core, SIGNAL(needResize(int, int)),
+			 this, SLOT(resizeWindow(int,int)) );
+
+	connect( core, SIGNAL(showMessage(QString,int)),
+			 this, SLOT(displayMessage(QString,int)) );
+	connect( core, SIGNAL(showMessage(QString)),
+			 this, SLOT(displayMessage(QString)) );
+
+	connect( core, SIGNAL(stateChanged(TCore::State)),
+			 this, SLOT(displayState(TCore::State)) );
+	connect( core, SIGNAL(stateChanged(TCore::State)),
+			 this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection );
+
+	connect( core, SIGNAL(mediaStartPlay()),
+			 this, SLOT(enterFullscreenOnPlay()), Qt::QueuedConnection );
+	connect( core, SIGNAL(mediaStoppedByUser()),
+			 this, SLOT(exitFullscreenOnStop()) );
+
+	connect( core, SIGNAL(mediaLoaded()),
+			 this, SLOT(enableActionsOnPlaying()) );
+
+	connect( core, SIGNAL(noFileToPlay()),
+			 this, SLOT(gotNoFileToPlay()) );
+
+	connect( core, SIGNAL(mediaFinished()),
+			 this, SLOT(disableActionsOnStop()) );
+	connect( core, SIGNAL(mediaStoppedByUser()),
+			 this, SLOT(disableActionsOnStop()) );
+
+	connect( core, SIGNAL(stateChanged(TCore::State)),
+			 this, SLOT(togglePlayAction(TCore::State)) );
+
+	connect( core, SIGNAL(mediaStartPlay()),
+			 this, SLOT(newMediaLoaded()), Qt::QueuedConnection );
+	connect( core, SIGNAL(mediaInfoChanged()),
+			 this, SLOT(updateMediaInfo()) );
+
+	connect( core, SIGNAL(mediaStartPlay()),
+			 this, SLOT(checkPendingActionsToRun()), Qt::QueuedConnection );
+#if REPORT_OLD_MPLAYER
+	connect( core, SIGNAL(mediaStartPlay()),
+			 this, SLOT(checkMplayerVersion()), Qt::QueuedConnection );
+#endif
+	connect( core, SIGNAL(failedToParseMplayerVersion(QString)),
+			 this, SLOT(askForMplayerVersion(QString)) );
+
+	connect( core, SIGNAL(playerFailed(QProcess::ProcessError)),
+			 this, SLOT(showErrorFromPlayer(QProcess::ProcessError)) );
+
+	connect( core, SIGNAL(playerFinishedWithError(int)),
+			 this, SLOT(showExitCodeFromPlayer(int)) );
+
+	connect( core, SIGNAL(noVideo()),
+			 this, SLOT(slotNoVideo()) );
+
+#ifdef YOUTUBE_SUPPORT
+	connect( core, SIGNAL(signatureNotFound(const QString &)),
+			 this, SLOT(YTNoSignature(const QString &)));
+	connect( core, SIGNAL(noSslSupport()),
+			 this, SLOT(YTNoSslSupport()));
+#endif
+	connect( core, SIGNAL(receivedForbidden()),
+			 this, SLOT(gotForbidden()));
+
+	// Mouse wheel
+	connect( playerwindow, SIGNAL(wheelUp()),
+			 core, SLOT(wheelUp()) );
+	connect( playerwindow, SIGNAL(wheelDown()),
+			 core, SLOT(wheelDown()) );
+
+	connect( core, SIGNAL(mediaStoppedByUser()),
+			 playerwindow, SLOT(showLogo()) );
+	connect( playerwindow, SIGNAL(moveOSD(const QPoint &)),
+			 core, SLOT(setOSDPos(const QPoint &)));
+	connect( playerwindow, SIGNAL(showMessage(QString, int, int)),
+			 core, SLOT(displayMessage(QString, int, int)) );
+}
+
+void TBase::createPlaylist() {
+
+#if DOCK_PLAYLIST
+	playlist = new TPlaylist(core, this, 0);
+#else
+	playlist = new TPlaylist(core, 0);
+#endif
+
+	connect( playlist, SIGNAL(playlistEnded()),
+			 this, SLOT(playlistHasFinished()) );
+}
+
+void TBase::createVideoEqualizer() {
+
+	video_equalizer = new TVideoEqualizer(this);
+	connect( video_equalizer, SIGNAL(contrastChanged(int)),
+			 core, SLOT(setContrast(int)) );
+	connect( video_equalizer, SIGNAL(brightnessChanged(int)),
+			 core, SLOT(setBrightness(int)) );
+	connect( video_equalizer, SIGNAL(hueChanged(int)),
+			 core, SLOT(setHue(int)) );
+	connect( video_equalizer, SIGNAL(saturationChanged(int)),
+			 core, SLOT(setSaturation(int)) );
+	connect( video_equalizer, SIGNAL(gammaChanged(int)),
+			 core, SLOT(setGamma(int)) );
+
+	connect( video_equalizer, SIGNAL(visibilityChanged()),
+			 this, SLOT(updateWidgets()) );
+	connect( video_equalizer, SIGNAL(requestToChangeDefaultValues()),
+			 this, SLOT(setDefaultValuesFromVideoEqualizer()) );
+	connect( video_equalizer, SIGNAL(bySoftwareChanged(bool)),
+			 this, SLOT(changeVideoEqualizerBySoftware(bool)) );
+}
+
+void TBase::createAudioEqualizer() {
+
+	audio_equalizer = new TAudioEqualizer(this);
+
+	connect( audio_equalizer->eq[0], SIGNAL(valueChanged(int)),
+			core, SLOT(setAudioEq0(int)) );
+	connect( audio_equalizer->eq[1], SIGNAL(valueChanged(int)),
+			core, SLOT(setAudioEq1(int)) );
+	connect( audio_equalizer->eq[2], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq2(int)) );
+	connect( audio_equalizer->eq[3], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq3(int)) );
+	connect( audio_equalizer->eq[4], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq4(int)) );
+	connect( audio_equalizer->eq[5], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq5(int)) );
+	connect( audio_equalizer->eq[6], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq6(int)) );
+	connect( audio_equalizer->eq[7], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq7(int)) );
+	connect( audio_equalizer->eq[8], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq8(int)) );
+	connect( audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
+			 core, SLOT(setAudioEq9(int)) );
+
+	connect( audio_equalizer, SIGNAL(applyClicked(TAudioEqualizerList)),
+			 core, SLOT(setAudioAudioEqualizerRestart(TAudioEqualizerList)) );
+	connect( audio_equalizer, SIGNAL(valuesChanged(TAudioEqualizerList)),
+			 core, SLOT(setAudioEqualizer(TAudioEqualizerList)) );
+	connect( audio_equalizer, SIGNAL(visibilityChanged()),
+			 this, SLOT(updateWidgets()) );
+}
 
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
@@ -404,44 +474,44 @@ void TBase::createActions() {
 	// Menu File
 	openFileAct = new TAction( QKeySequence("Ctrl+F"), this, "open_file" );
 	connect( openFileAct, SIGNAL(triggered()),
-             this, SLOT(openFile()) );
+			 this, SLOT(openFile()) );
 
 	openDirectoryAct = new TAction( this, "open_directory" );
 	connect( openDirectoryAct, SIGNAL(triggered()),
-             this, SLOT(openDirectory()) );
+			 this, SLOT(openDirectory()) );
 
 	openPlaylistAct = new TAction( this, "open_playlist" );
 	connect( openPlaylistAct, SIGNAL(triggered()),
-             playlist, SLOT(load()) );
+			 playlist, SLOT(load()) );
 
 	openVCDAct = new TAction( this, "open_vcd" );
 	connect( openVCDAct, SIGNAL(triggered()),
-             this, SLOT(openVCD()) );
+			 this, SLOT(openVCD()) );
 
 	openAudioCDAct = new TAction( this, "open_audio_cd" );
 	connect( openAudioCDAct, SIGNAL(triggered()),
-             this, SLOT(openAudioCD()) );
+			 this, SLOT(openAudioCD()) );
 
 	openDVDAct = new TAction( this, "open_dvd" );
 	connect( openDVDAct, SIGNAL(triggered()),
-             this, SLOT(openDVD()) );
+			 this, SLOT(openDVD()) );
 
 	openDVDFolderAct = new TAction( this, "open_dvd_folder" );
 	connect( openDVDFolderAct, SIGNAL(triggered()),
-             this, SLOT(openDVDFromFolder()) );
+			 this, SLOT(openDVDFromFolder()) );
 
 	// Bluray section.
 	openBluRayAct = new TAction( this, "open_bluray" );
 	connect( openBluRayAct, SIGNAL(triggered()),
-             this, SLOT(openBluRay()));
+			 this, SLOT(openBluRay()));
 
 	openBluRayFolderAct = new TAction( this, "open_bluray_folder" );
 	connect( openBluRayFolderAct, SIGNAL(triggered()),
-             this, SLOT(openBluRayFromFolder()));
+			 this, SLOT(openBluRayFromFolder()));
 
 	openURLAct = new TAction( QKeySequence("Ctrl+U"), this, "open_url" );
 	connect( openURLAct, SIGNAL(triggered()),
-             this, SLOT(openURL()) );
+			 this, SLOT(openURL()) );
 
 	exitAct = new TAction( QKeySequence("Ctrl+X"), this, "close" );
 	connect( exitAct, SIGNAL(triggered()), this, SLOT(closeWindow()) );
@@ -458,11 +528,11 @@ void TBase::createActions() {
 	addAction(favorites->previousAct());
 	connect(favorites, SIGNAL(activated(QString)), this, SLOT(openFavorite(QString)));
 	connect(core, SIGNAL(mediaPlaying(const QString &, const QString &)),
-            favorites, SLOT(getCurrentMedia(const QString &, const QString &)));
+			favorites, SLOT(getCurrentMedia(const QString &, const QString &)));
 
 	// TV and Radio
 	tvlist = new TTVList(pref->check_channels_conf_on_startup, 
-                        TTVList::TV, Paths::configPath() + "/tv.m3u8", this);
+						 TTVList::TV, Paths::configPath() + "/tv.m3u8", this);
 	tvlist->menuAction()->setObjectName( "tv_menu" );
 	addAction(tvlist->editAct());
 	addAction(tvlist->jumpAct());
@@ -476,10 +546,10 @@ void TBase::createActions() {
 	tvlist->jumpAct()->setObjectName("jump_tv_list");
 	connect(tvlist, SIGNAL(activated(QString)), this, SLOT(open(QString)));
 	connect(core, SIGNAL(mediaPlaying(const QString &, const QString &)),
-            tvlist, SLOT(getCurrentMedia(const QString &, const QString &)));
+			tvlist, SLOT(getCurrentMedia(const QString &, const QString &)));
 
 	radiolist = new TTVList(pref->check_channels_conf_on_startup, 
-                           TTVList::Radio, Paths::configPath() + "/radio.m3u8", this);
+							TTVList::Radio, Paths::configPath() + "/radio.m3u8", this);
 	radiolist->menuAction()->setObjectName( "radio_menu" );
 	addAction(radiolist->editAct());
 	addAction(radiolist->jumpAct());
@@ -493,13 +563,13 @@ void TBase::createActions() {
 	radiolist->jumpAct()->setObjectName("jump_radio_list");
 	connect(radiolist, SIGNAL(activated(QString)), this, SLOT(open(QString)));
 	connect(core, SIGNAL(mediaPlaying(const QString &, const QString &)),
-            radiolist, SLOT(getCurrentMedia(const QString &, const QString &)));
+			radiolist, SLOT(getCurrentMedia(const QString &, const QString &)));
 
 
 	// Menu Play
 	playAct = new TAction( this, "play" );
 	connect( playAct, SIGNAL(triggered()),
-             core, SLOT(play()) );
+			 core, SLOT(play()) );
 
 	playOrPauseAct = new TAction( Qt::Key_MediaPlay, this, "play_or_pause" );
 	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
@@ -509,103 +579,103 @@ void TBase::createActions() {
 	pauseAct = new TAction( Qt::Key_Space, this, "pause" );
 	pauseAct->addShortcut(QKeySequence("Media Pause")); // MCE remote key
 	connect( pauseAct, SIGNAL(triggered()),
-             core, SLOT(pause()) );
+			 core, SLOT(pause()) );
 
 	stopAct = new TAction( Qt::Key_MediaStop, this, "stop" );
 	connect( stopAct, SIGNAL(triggered()),
-             core, SLOT(stop()) );
+			 core, SLOT(stop()) );
 
 	frameStepAct = new TAction( Qt::Key_Period, this, "frame_step" );
 	connect( frameStepAct, SIGNAL(triggered()),
-             core, SLOT(frameStep()) );
+			 core, SLOT(frameStep()) );
 
 	frameBackStepAct = new TAction( Qt::Key_Comma, this, "frame_back_step" );
 	connect( frameBackStepAct, SIGNAL(triggered()),
-             core, SLOT(frameBackStep()) );
+			 core, SLOT(frameBackStep()) );
 
 	rewind1Act = new TAction( Qt::Key_Left, this, "rewind1" );
 	rewind1Act->addShortcut(QKeySequence("Shift+Ctrl+B")); // MCE remote key
 	connect( rewind1Act, SIGNAL(triggered()),
-             core, SLOT(srewind()) );
+			 core, SLOT(srewind()) );
 
 	rewind2Act = new TAction( Qt::Key_Down, this, "rewind2" );
 	connect( rewind2Act, SIGNAL(triggered()),
-             core, SLOT(rewind()) );
+			 core, SLOT(rewind()) );
 
 	rewind3Act = new TAction( Qt::Key_PageDown, this, "rewind3" );
 	connect( rewind3Act, SIGNAL(triggered()),
-             core, SLOT(fastrewind()) );
+			 core, SLOT(fastrewind()) );
 
 	forward1Act = new TAction( Qt::Key_Right, this, "forward1" );
 	forward1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
 	connect( forward1Act, SIGNAL(triggered()),
-             core, SLOT(sforward()) );
+			 core, SLOT(sforward()) );
 
 	forward2Act = new TAction( Qt::Key_Up, this, "forward2" );
 	connect( forward2Act, SIGNAL(triggered()),
-             core, SLOT(forward()) );
+			 core, SLOT(forward()) );
 
 	forward3Act = new TAction( Qt::Key_PageUp, this, "forward3" );
 	connect( forward3Act, SIGNAL(triggered()),
-             core, SLOT(fastforward()) );
+			 core, SLOT(fastforward()) );
 
 	setAMarkerAct = new TAction( this, "set_a_marker" );
 	connect( setAMarkerAct, SIGNAL(triggered()),
-             core, SLOT(setAMarker()) );
+			 core, SLOT(setAMarker()) );
 
 	setBMarkerAct = new TAction( this, "set_b_marker" );
 	connect( setBMarkerAct, SIGNAL(triggered()),
-             core, SLOT(setBMarker()) );
+			 core, SLOT(setBMarker()) );
 
 	clearABMarkersAct = new TAction( this, "clear_ab_markers" );
 	connect( clearABMarkersAct, SIGNAL(triggered()),
-             core, SLOT(clearABMarkers()) );
+			 core, SLOT(clearABMarkers()) );
 
 	repeatAct = new TAction( this, "repeat" );
 	repeatAct->setCheckable( true );
 	connect( repeatAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleRepeat(bool)) );
+			 core, SLOT(toggleRepeat(bool)) );
 
 	gotoAct = new TAction( QKeySequence("Ctrl+J"), this, "jump_to" );
 	connect( gotoAct, SIGNAL(triggered()),
-             this, SLOT(showGotoDialog()) );
+			 this, SLOT(showGotoDialog()) );
 
 	// Submenu Speed
 	normalSpeedAct = new TAction( Qt::Key_Backspace, this, "normal_speed" );
 	connect( normalSpeedAct, SIGNAL(triggered()),
-             core, SLOT(normalSpeed()) );
+			 core, SLOT(normalSpeed()) );
 
 	halveSpeedAct = new TAction( Qt::Key_BraceLeft, this, "halve_speed" );
 	connect( halveSpeedAct, SIGNAL(triggered()),
-             core, SLOT(halveSpeed()) );
+			 core, SLOT(halveSpeed()) );
 
 	doubleSpeedAct = new TAction( Qt::Key_BraceRight, this, "double_speed" );
 	connect( doubleSpeedAct, SIGNAL(triggered()),
-             core, SLOT(doubleSpeed()) );
+			 core, SLOT(doubleSpeed()) );
 
 	decSpeed10Act = new TAction( Qt::Key_BracketLeft, this, "dec_speed" );
 	connect( decSpeed10Act, SIGNAL(triggered()),
-             core, SLOT(decSpeed10()) );
+			 core, SLOT(decSpeed10()) );
 
 	incSpeed10Act = new TAction( Qt::Key_BracketRight, this, "inc_speed" );
 	connect( incSpeed10Act, SIGNAL(triggered()),
-             core, SLOT(incSpeed10()) );
+			 core, SLOT(incSpeed10()) );
 
 	decSpeed4Act = new TAction( this, "dec_speed_4" );
 	connect( decSpeed4Act, SIGNAL(triggered()),
-             core, SLOT(decSpeed4()) );
+			 core, SLOT(decSpeed4()) );
 
 	incSpeed4Act = new TAction( this, "inc_speed_4" );
 	connect( incSpeed4Act, SIGNAL(triggered()),
-             core, SLOT(incSpeed4()) );
+			 core, SLOT(incSpeed4()) );
 
 	decSpeed1Act = new TAction( this, "dec_speed_1" );
 	connect( decSpeed1Act, SIGNAL(triggered()),
-             core, SLOT(decSpeed1()) );
+			 core, SLOT(decSpeed1()) );
 
 	incSpeed1Act = new TAction( this, "inc_speed_1" );
 	connect( incSpeed1Act, SIGNAL(triggered()),
-             core, SLOT(incSpeed1()) );
+			 core, SLOT(incSpeed1()) );
 
 
 	// Menu Video
@@ -613,102 +683,102 @@ void TBase::createActions() {
 	fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
 	fullscreenAct->setCheckable( true );
 	connect( fullscreenAct, SIGNAL(toggled(bool)),
-             this, SLOT(toggleFullscreen(bool)) );
+			 this, SLOT(toggleFullscreen(bool)) );
 
 	compactAct = new TAction( QKeySequence("Ctrl+C"), this, "compact" );
 	compactAct->setCheckable( true );
 	connect( compactAct, SIGNAL(toggled(bool)),
-             this, SLOT(toggleCompactMode(bool)) );
+			 this, SLOT(toggleCompactMode(bool)) );
 
 	videoEqualizerAct = new TAction( QKeySequence("Ctrl+E"), this, "video_equalizer" );
 	videoEqualizerAct->setCheckable( true );
 	connect( videoEqualizerAct, SIGNAL(toggled(bool)),
-             this, SLOT(showVideoEqualizer(bool)) );
+			 this, SLOT(showVideoEqualizer(bool)) );
 
 	// Single screenshot
 	screenshotAct = new TAction( Qt::Key_S, this, "screenshot" );
 	connect( screenshotAct, SIGNAL(triggered()),
-             core, SLOT(screenshot()) );
+			 core, SLOT(screenshot()) );
 
 	// Multiple screenshots
 	screenshotsAct = new TAction( QKeySequence("Shift+D"), this, "multiple_screenshots" );
 	connect( screenshotsAct, SIGNAL(triggered()),
-             core, SLOT(screenshots()) );
+			 core, SLOT(screenshots()) );
 
 #ifdef VIDEOPREVIEW
 	videoPreviewAct = new TAction( this, "video_preview" );
 	connect( videoPreviewAct, SIGNAL(triggered()),
-             this, SLOT(showVideoPreviewDialog()) );
+			 this, SLOT(showVideoPreviewDialog()) );
 #endif
 
 	flipAct = new TAction( this, "flip" );
 	flipAct->setCheckable( true );
 	connect( flipAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleFlip(bool)) );
+			 core, SLOT(toggleFlip(bool)) );
 
 	mirrorAct = new TAction( this, "mirror" );
 	mirrorAct->setCheckable( true );
 	connect( mirrorAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleMirror(bool)) );
+			 core, SLOT(toggleMirror(bool)) );
 
 	stereo3dAct = new TAction( this, "stereo_3d_filter" );
 	connect( stereo3dAct, SIGNAL(triggered()),
-             this, SLOT(showStereo3dDialog()) );
+			 this, SLOT(showStereo3dDialog()) );
 
 	// Submenu filter
 	postProcessingAct = new TAction( this, "postprocessing" );
 	postProcessingAct->setCheckable( true );
 	connect( postProcessingAct, SIGNAL(toggled(bool)),
-             core, SLOT(togglePostprocessing(bool)) );
+			 core, SLOT(togglePostprocessing(bool)) );
 
 	phaseAct = new TAction( this, "autodetect_phase" );
 	phaseAct->setCheckable( true );
 	connect( phaseAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleAutophase(bool)) );
+			 core, SLOT(toggleAutophase(bool)) );
 
 	deblockAct = new TAction( this, "deblock" );
 	deblockAct->setCheckable( true );
 	connect( deblockAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleDeblock(bool)) );
+			 core, SLOT(toggleDeblock(bool)) );
 
 	deringAct = new TAction( this, "dering" );
 	deringAct->setCheckable( true );
 	connect( deringAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleDering(bool)) );
+			 core, SLOT(toggleDering(bool)) );
 
 	gradfunAct = new TAction( this, "gradfun" );
 	gradfunAct->setCheckable( true );
 	connect( gradfunAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleGradfun(bool)) );
+			 core, SLOT(toggleGradfun(bool)) );
 
 
 	addNoiseAct = new TAction( this, "add_noise" );
 	addNoiseAct->setCheckable( true );
 	connect( addNoiseAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleNoise(bool)) );
+			 core, SLOT(toggleNoise(bool)) );
 
 	addLetterboxAct = new TAction( this, "add_letterbox" );
 	addLetterboxAct->setCheckable( true );
 	connect( addLetterboxAct, SIGNAL(toggled(bool)),
-             core, SLOT(changeLetterbox(bool)) );
+			 core, SLOT(changeLetterbox(bool)) );
 
 	upscaleAct = new TAction( this, "upscaling" );
 	upscaleAct->setCheckable( true );
 	connect( upscaleAct, SIGNAL(toggled(bool)),
-             core, SLOT(changeUpscale(bool)) );
+			 core, SLOT(changeUpscale(bool)) );
 
 
 	// Menu Audio
 	audioEqualizerAct = new TAction( this, "audio_equalizer" );
 	audioEqualizerAct->setCheckable( true );
 	connect( audioEqualizerAct, SIGNAL(toggled(bool)),
-             this, SLOT(showAudioEqualizer(bool)) );
+			 this, SLOT(showAudioEqualizer(bool)) );
 
 	muteAct = new TAction( Qt::Key_M, this, "mute" );
 	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
 	muteAct->setCheckable( true );
 	connect( muteAct, SIGNAL(toggled(bool)),
-             core, SLOT(mute(bool)) );
+			 core, SLOT(mute(bool)) );
 	connect( core, SIGNAL(muteChanged(bool)),
 			 muteAct, SLOT(setChecked(bool)) );
 
@@ -720,7 +790,7 @@ void TBase::createActions() {
 	decVolumeAct = new TAction( Qt::Key_9, this, "dec_volume" );
 #endif
 	connect( decVolumeAct, SIGNAL(triggered()),
-             core, SLOT(decVolume()) );
+			 core, SLOT(decVolume()) );
 
 #if USE_MULTIPLE_SHORTCUTS
 	incVolumeAct = new TAction( this, "increase_volume" );
@@ -730,89 +800,89 @@ void TBase::createActions() {
 	incVolumeAct = new TAction( Qt::Key_0, this, "inc_volume" );
 #endif
 	connect( incVolumeAct, SIGNAL(triggered()),
-             core, SLOT(incVolume()) );
+			 core, SLOT(incVolume()) );
 
 	decAudioDelayAct = new TAction( Qt::Key_Minus, this, "dec_audio_delay" );
 	connect( decAudioDelayAct, SIGNAL(triggered()),
-             core, SLOT(decAudioDelay()) );
+			 core, SLOT(decAudioDelay()) );
 
 	incAudioDelayAct = new TAction( Qt::Key_Plus, this, "inc_audio_delay" );
 	connect( incAudioDelayAct, SIGNAL(triggered()),
-             core, SLOT(incAudioDelay()) );
+			 core, SLOT(incAudioDelay()) );
 
 	audioDelayAct = new TAction( this, "audio_delay" );
 	connect( audioDelayAct, SIGNAL(triggered()),
-             this, SLOT(showAudioDelayDialog()) );
+			 this, SLOT(showAudioDelayDialog()) );
 
 	loadAudioAct = new TAction( this, "load_audio_file" );
 	connect( loadAudioAct, SIGNAL(triggered()),
-             this, SLOT(loadAudioFile()) );
+			 this, SLOT(loadAudioFile()) );
 
 	unloadAudioAct = new TAction( this, "unload_audio_file" );
 	connect( unloadAudioAct, SIGNAL(triggered()),
-             core, SLOT(unloadAudioFile()) );
+			 core, SLOT(unloadAudioFile()) );
 
 
 	// Submenu Filters
 	extrastereoAct = new TAction( this, "extrastereo_filter" );
 	extrastereoAct->setCheckable( true );
 	connect( extrastereoAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleExtrastereo(bool)) );
+			 core, SLOT(toggleExtrastereo(bool)) );
 
 	karaokeAct = new TAction( this, "karaoke_filter" );
 	karaokeAct->setCheckable( true );
 	connect( karaokeAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleKaraoke(bool)) );
+			 core, SLOT(toggleKaraoke(bool)) );
 
 	volnormAct = new TAction( this, "volnorm_filter" );
 	volnormAct->setCheckable( true );
 	connect( volnormAct, SIGNAL(toggled(bool)),
-             core, SLOT(toggleVolnorm(bool)) );
+			 core, SLOT(toggleVolnorm(bool)) );
 
 
 	// Menu Subtitles
 	loadSubsAct = new TAction( this, "load_subs" );
 	connect( loadSubsAct, SIGNAL(triggered()),
-             this, SLOT(loadSub()) );
+			 this, SLOT(loadSub()) );
 
 	unloadSubsAct = new TAction( this, "unload_subs" );
 	connect( unloadSubsAct, SIGNAL(triggered()),
-             core, SLOT(unloadSub()) );
+			 core, SLOT(unloadSub()) );
 
 	decSubDelayAct = new TAction( Qt::Key_Z, this, "dec_sub_delay" );
 	connect( decSubDelayAct, SIGNAL(triggered()),
-             core, SLOT(decSubDelay()) );
+			 core, SLOT(decSubDelay()) );
 
 	incSubDelayAct = new TAction( Qt::Key_X, this, "inc_sub_delay" );
 	connect( incSubDelayAct, SIGNAL(triggered()),
-             core, SLOT(incSubDelay()) );
+			 core, SLOT(incSubDelay()) );
 
 	subDelayAct = new TAction( this, "sub_delay" );
 	connect( subDelayAct, SIGNAL(triggered()),
-             this, SLOT(showSubDelayDialog()) );
+			 this, SLOT(showSubDelayDialog()) );
 
 	decSubPosAct = new TAction( Qt::Key_R, this, "dec_sub_pos" );
 	connect( decSubPosAct, SIGNAL(triggered()),
-             core, SLOT(decSubPos()) );
+			 core, SLOT(decSubPos()) );
 	incSubPosAct = new TAction( Qt::Key_T, this, "inc_sub_pos" );
 	connect( incSubPosAct, SIGNAL(triggered()),
-             core, SLOT(incSubPos()) );
+			 core, SLOT(incSubPos()) );
 
 	decSubScaleAct = new TAction( Qt::SHIFT | Qt::Key_R, this, "dec_sub_scale" );
 	connect( decSubScaleAct, SIGNAL(triggered()),
-             core, SLOT(decSubScale()) );
+			 core, SLOT(decSubScale()) );
 
 	incSubScaleAct = new TAction( Qt::SHIFT | Qt::Key_T, this, "inc_sub_scale" );
 	connect( incSubScaleAct, SIGNAL(triggered()),
-             core, SLOT(incSubScale()) );
+			 core, SLOT(incSubScale()) );
     
 	decSubStepAct = new TAction( Qt::Key_G, this, "dec_sub_step" );
 	connect( decSubStepAct, SIGNAL(triggered()),
-             core, SLOT(decSubStep()) );
+			 core, SLOT(decSubStep()) );
 
 	incSubStepAct = new TAction( Qt::Key_Y, this, "inc_sub_step" );
 	connect( incSubStepAct, SIGNAL(triggered()),
-             core, SLOT(incSubStep()) );
+			 core, SLOT(incSubStep()) );
 
 	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style");
 	useCustomSubStyleAct->setCheckable(true);
@@ -825,11 +895,11 @@ void TBase::createActions() {
 #ifdef FIND_SUBTITLES
 	showFindSubtitlesDialogAct = new TAction( this, "show_find_sub_dialog" );
 	connect( showFindSubtitlesDialogAct, SIGNAL(triggered()), 
-             this, SLOT(showFindSubtitlesDialog()) );
+			 this, SLOT(showFindSubtitlesDialog()) );
 
 	openUploadSubtitlesPageAct = new TAction( this, "upload_subtitles" );		//turbos
 	connect( openUploadSubtitlesPageAct, SIGNAL(triggered()),					//turbos
-             this, SLOT(openUploadSubtitlesPage()) );							//turbos
+			 this, SLOT(openUploadSubtitlesPage()) );							//turbos
 #endif
 
 	// Menu Options
@@ -840,16 +910,16 @@ void TBase::createActions() {
 
 	showPropertiesAct = new TAction( QKeySequence("Ctrl+I"), this, "show_file_properties" );
 	connect( showPropertiesAct, SIGNAL(triggered()),
-             this, SLOT(showFilePropertiesDialog()) );
+			 this, SLOT(showFilePropertiesDialog()) );
 
 	showPreferencesAct = new TAction( QKeySequence("Ctrl+P"), this, "show_preferences" );
 	connect( showPreferencesAct, SIGNAL(triggered()),
-             this, SLOT(showPreferencesDialog()) );
+			 this, SLOT(showPreferencesDialog()) );
 
 #ifdef YOUTUBE_SUPPORT
 	showTubeBrowserAct = new TAction( Qt::Key_F11, this, "show_tube_browser" );
 	connect( showTubeBrowserAct, SIGNAL(triggered()),
-             this, SLOT(showTubeBrowser()) );
+			 this, SLOT(showTubeBrowser()) );
 #endif
 
 	// Show log
@@ -859,39 +929,39 @@ void TBase::createActions() {
 	// Menu Help
 	showFirstStepsAct = new TAction( this, "first_steps" );
 	connect( showFirstStepsAct, SIGNAL(triggered()),
-             this, SLOT(helpFirstSteps()) );
+			 this, SLOT(helpFirstSteps()) );
 
 	showFAQAct = new TAction( this, "faq" );
 	connect( showFAQAct, SIGNAL(triggered()),
-             this, SLOT(helpFAQ()) );
+			 this, SLOT(helpFAQ()) );
 
 	showCLOptionsAct = new TAction( this, "cl_options" );
 	connect( showCLOptionsAct, SIGNAL(triggered()),
-             this, SLOT(helpCLOptions()) );
+			 this, SLOT(helpCLOptions()) );
 
 	showCheckUpdatesAct = new TAction( this, "check_updates" );
 	connect( showCheckUpdatesAct, SIGNAL(triggered()),
-             this, SLOT(helpCheckUpdates()) );
+			 this, SLOT(helpCheckUpdates()) );
 
 #if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
 	updateYTAct = new TAction( this, "update_youtube" );
 	connect( updateYTAct, SIGNAL(triggered()),
-             this, SLOT(YTUpdateScript()) );
+			 this, SLOT(YTUpdateScript()) );
 #endif
 
 	showConfigAct = new TAction( this, "show_config" );
 	connect( showConfigAct, SIGNAL(triggered()),
-             this, SLOT(helpShowConfig()) );
+			 this, SLOT(helpShowConfig()) );
 
 #ifdef REMINDER_ACTIONS
 	donateAct = new TAction( this, "donate" );
 	connect( donateAct, SIGNAL(triggered()),
-             this, SLOT(helpDonate()) );
+			 this, SLOT(helpDonate()) );
 #endif
 
 	aboutThisAct = new TAction( this, "about_smplayer" );
 	connect( aboutThisAct, SIGNAL(triggered()),
-             this, SLOT(helpAbout()) );
+			 this, SLOT(helpAbout()) );
 
 #ifdef SHARE_MENU
 	facebookAct = new TAction (this, "facebook");
@@ -901,15 +971,15 @@ void TBase::createActions() {
 	yahooAct = new TAction (this, "yahoo");
 
 	connect( facebookAct, SIGNAL(triggered()),
-             this, SLOT(shareSMPlayer()) );
+			 this, SLOT(shareSMPlayer()) );
 	connect( twitterAct, SIGNAL(triggered()),
-             this, SLOT(shareSMPlayer()) );
+			 this, SLOT(shareSMPlayer()) );
 	connect( gmailAct, SIGNAL(triggered()),
-             this, SLOT(shareSMPlayer()) );
+			 this, SLOT(shareSMPlayer()) );
 	connect( hotmailAct, SIGNAL(triggered()),
-             this, SLOT(shareSMPlayer()) );
+			 this, SLOT(shareSMPlayer()) );
 	connect( yahooAct, SIGNAL(triggered()),
-             this, SLOT(shareSMPlayer()) );
+			 this, SLOT(shareSMPlayer()) );
 #endif
 
 	// OSD
@@ -1034,11 +1104,11 @@ void TBase::createActions() {
 
 	showContextMenuAct = new TAction( this, "show_context_menu");
 	connect( showContextMenuAct, SIGNAL(triggered()), 
-             this, SLOT(showPopupMenu()) );
+			 this, SLOT(showPopupMenu()) );
 
 	nextAspectAct = new TAction( Qt::Key_A, this, "next_aspect");
 	connect( nextAspectAct, SIGNAL(triggered()), 
-             core, SLOT(nextAspectRatio()) );
+			 core, SLOT(nextAspectRatio()) );
 
 	nextWheelFunctionAct = new TAction(this, "next_wheel_function");
 	connect( nextWheelFunctionAct, SIGNAL(triggered()),
@@ -1104,7 +1174,7 @@ void TBase::createActions() {
 	deinterlaceLBAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_lb", TMediaSettings::LB);
 	deinterlaceKernAct = new TActionGroupItem(this, deinterlaceGroup, "deinterlace_kern", TMediaSettings::Kerndeint);
 	connect( deinterlaceGroup, SIGNAL(activated(int)),
-             core, SLOT(changeDeinterlace(int)) );
+			 core, SLOT(changeDeinterlace(int)) );
 
 	// Audio channels
 	channelsGroup = new TActionGroup("channels", this);
@@ -1115,7 +1185,7 @@ void TBase::createActions() {
 	channelsFull61Act = new TActionGroupItem(this, channelsGroup, "channels_ful61", TMediaSettings::ChFull61);
 	channelsFull71Act = new TActionGroupItem(this, channelsGroup, "channels_ful71", TMediaSettings::ChFull71);
 	connect( channelsGroup, SIGNAL(activated(int)),
-             core, SLOT(setAudioChannels(int)) );
+			 core, SLOT(setAudioChannels(int)) );
 
 	// Stereo mode
 	stereoGroup = new TActionGroup("stereo", this);
@@ -1125,7 +1195,7 @@ void TBase::createActions() {
 	monoAct = new TActionGroupItem(this, stereoGroup, "mono", TMediaSettings::Mono);
 	reverseAct = new TActionGroupItem(this, stereoGroup, "reverse_channels", TMediaSettings::Reverse);
 	connect( stereoGroup, SIGNAL(activated(int)),
-             core, SLOT(setStereoMode(int)) );
+			 core, SLOT(setStereoMode(int)) );
 
 	// Video aspect
 	aspectGroup = new TActionGroup("aspect", this);
@@ -1147,7 +1217,7 @@ void TBase::createActions() {
 	aspectNoneAct = new TActionGroupItem(this, aspectGroup, "aspect_none", TMediaSettings::AspectNone);
 
 	connect( aspectGroup, SIGNAL(activated(int)),
-             core, SLOT(changeAspectRatio(int)) );
+			 core, SLOT(changeAspectRatio(int)) );
 
 	// Rotate
 	rotateGroup = new TActionGroup("rotate", this);
@@ -1157,7 +1227,7 @@ void TBase::createActions() {
 	rotateCounterclockwiseAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise", TMediaSettings::Counterclockwise);
 	rotateCounterclockwiseFlipAct = new TActionGroupItem(this, rotateGroup, "rotate_counterclockwise_flip", TMediaSettings::Counterclockwise_flip);
 	connect( rotateGroup, SIGNAL(activated(int)),
-             core, SLOT(changeRotate(int)) );
+			 core, SLOT(changeRotate(int)) );
 
 	// On Top
 	onTopActionGroup = new TActionGroup("ontop", this);
@@ -1165,7 +1235,7 @@ void TBase::createActions() {
 	onTopNeverAct = new TActionGroupItem( this,onTopActionGroup,"on_top_never",Settings::TPreferences::NeverOnTop);
 	onTopWhilePlayingAct = new TActionGroupItem( this,onTopActionGroup,"on_top_playing",Settings::TPreferences::WhilePlayingOnTop);
 	connect( onTopActionGroup , SIGNAL(activated(int)),
-             this, SLOT(changeStayOnTop(int)) );
+			 this, SLOT(changeStayOnTop(int)) );
 
 	toggleStayOnTopAct = new TAction( this, "toggle_stay_on_top");
 	connect( toggleStayOnTopAct, SIGNAL(triggered()), this, SLOT(toggleStayOnTop()) );
@@ -1192,7 +1262,7 @@ void TBase::createActions() {
 	}
 
 	connect( screenGroup, SIGNAL(activated(int)),
-             core, SLOT(changeAdapter(int)) );
+			 core, SLOT(changeAdapter(int)) );
 #endif
 
 #if PROGRAM_SWITCH
@@ -1273,7 +1343,7 @@ void TBase::createActions() {
 	ccChannel3Act = new TActionGroupItem(this, ccGroup, "cc_ch_3", 3);
 	ccChannel4Act = new TActionGroupItem(this, ccGroup, "cc_ch_4", 4);
 	connect( ccGroup, SIGNAL(activated(int)),
-             core, SLOT(changeClosedCaptionChannel(int)) );
+			 core, SLOT(changeClosedCaptionChannel(int)) );
 
 	subFPSGroup = new TActionGroup("subfps", this);
 	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", TMediaSettings::SFPS_None);
@@ -1284,7 +1354,7 @@ void TBase::createActions() {
 	subFPS29970Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_29970", TMediaSettings::SFPS_29970);
 	subFPS30Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_30", TMediaSettings::SFPS_30);
 	connect( subFPSGroup, SIGNAL(activated(int)),
-             core, SLOT(changeExternalSubFPS(int)) );
+			 core, SLOT(changeExternalSubFPS(int)) );
 
 
 	dvdnavUpAct = new TAction(Qt::SHIFT | Qt::Key_Up, this, "dvdnav_up");
@@ -1310,6 +1380,474 @@ void TBase::createActions() {
 
 	dvdnavMouseAct = new TAction( this, "dvdnav_mouse");
 	connect( dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()) );
+}
+
+void TBase::createMenus() {
+
+	// MENUS
+	openMenu = menuBar()->addMenu("Open");
+	playMenu = menuBar()->addMenu("Play");
+	videoMenu = menuBar()->addMenu("Video");
+	audioMenu = menuBar()->addMenu("Audio");
+	subtitlesMenu = menuBar()->addMenu("Subtitles");
+	/* menuBar()->addMenu(favorites); */
+	browseMenu = menuBar()->addMenu("Browse");
+	optionsMenu = menuBar()->addMenu("Options");
+	helpMenu = menuBar()->addMenu("Help");
+
+	// OPEN MENU
+	openMenu->addAction(openFileAct);
+
+	recentfiles_menu = new QMenu(this);
+	/*
+	recentfiles_menu->addAction( clearRecentsAct );
+	recentfiles_menu->addSeparator();
+	*/
+
+	openMenu->addMenu( recentfiles_menu );
+	openMenu->addMenu(favorites);
+	openMenu->addAction(openDirectoryAct);
+	openMenu->addAction(openPlaylistAct);
+
+	// Disc submenu
+	disc_menu = new QMenu(this);
+	disc_menu->menuAction()->setObjectName("disc_menu");
+	disc_menu->addAction(openDVDAct);
+	disc_menu->addAction(openDVDFolderAct);
+	disc_menu->addAction(openBluRayAct);
+	disc_menu->addAction(openBluRayFolderAct);
+	disc_menu->addAction(openVCDAct);
+	disc_menu->addAction(openAudioCDAct);
+
+	openMenu->addMenu(disc_menu);
+
+	openMenu->addAction(openURLAct);
+/* #ifndef Q_OS_WIN */
+	openMenu->addMenu(tvlist);
+	openMenu->addMenu(radiolist);
+/* #endif */
+	openMenu->addSeparator();
+	openMenu->addAction(exitAct);
+
+	// PLAY MENU
+	playMenu->addAction(playAct);
+	playMenu->addAction(pauseAct);
+	/* playMenu->addAction(playOrPauseAct); */
+	playMenu->addAction(stopAct);
+	playMenu->addAction(frameStepAct);
+	playMenu->addAction(frameBackStepAct);
+	playMenu->addSeparator();
+	playMenu->addAction(rewind1Act);
+	playMenu->addAction(forward1Act);
+	playMenu->addAction(rewind2Act);
+	playMenu->addAction(forward2Act);
+	playMenu->addAction(rewind3Act);
+	playMenu->addAction(forward3Act);
+	playMenu->addSeparator();
+
+	// Speed submenu
+	speed_menu = new QMenu(this);
+	speed_menu->menuAction()->setObjectName("speed_menu");
+	speed_menu->addAction(normalSpeedAct);
+	speed_menu->addSeparator();
+	speed_menu->addAction(halveSpeedAct);
+	speed_menu->addAction(doubleSpeedAct);
+	speed_menu->addSeparator();
+	speed_menu->addAction(decSpeed10Act);
+	speed_menu->addAction(incSpeed10Act);
+	speed_menu->addSeparator();
+	speed_menu->addAction(decSpeed4Act);
+	speed_menu->addAction(incSpeed4Act);
+	speed_menu->addSeparator();
+	speed_menu->addAction(decSpeed1Act);
+	speed_menu->addAction(incSpeed1Act);
+
+	playMenu->addMenu(speed_menu);
+
+	// A-B submenu
+	ab_menu = new QMenu(this);
+	ab_menu->menuAction()->setObjectName("ab_menu");
+	ab_menu->addAction(setAMarkerAct);
+	ab_menu->addAction(setBMarkerAct);
+	ab_menu->addAction(clearABMarkersAct);
+	ab_menu->addSeparator();
+	ab_menu->addAction(repeatAct);
+
+	playMenu->addSeparator();
+	playMenu->addMenu(ab_menu);
+
+	playMenu->addSeparator();
+	playMenu->addAction(gotoAct);
+	playMenu->addSeparator();
+	playMenu->addAction(playPrevAct);
+	playMenu->addAction(playNextAct);
+
+	// VIDEO MENU
+	videotrack_menu = new QMenu(this);
+	videotrack_menu->menuAction()->setObjectName("videotrack_menu");
+
+	videoMenu->addMenu(videotrack_menu);
+
+	videoMenu->addAction(fullscreenAct);
+	videoMenu->addAction(compactAct);
+
+#if USE_ADAPTER
+	// Screen submenu
+	screen_menu = new QMenu(this);
+	screen_menu->menuAction()->setObjectName("screen_menu");
+	screen_menu->addActions( screenGroup->actions() );
+	videoMenu->addMenu(screen_menu);
+#endif
+
+	// Size submenu
+	videosize_menu = new QMenu(this);
+	videosize_menu->menuAction()->setObjectName("videosize_menu");
+	videosize_menu->addActions( sizeGroup->actions() );
+	videosize_menu->addSeparator();
+	videosize_menu->addAction(doubleSizeAct);
+	videoMenu->addMenu(videosize_menu);
+
+	// Zoom submenu
+	zoom_menu = new QMenu(this);
+	zoom_menu->menuAction()->setObjectName("zoom_menu");
+	zoom_menu->addAction(resetZoomAct);
+	zoom_menu->addSeparator();
+	zoom_menu->addAction(autoZoomAct);
+	zoom_menu->addAction(autoZoom169Act);
+	zoom_menu->addAction(autoZoom235Act);
+	zoom_menu->addSeparator();
+	zoom_menu->addAction(decZoomAct);
+	zoom_menu->addAction(incZoomAct);
+	zoom_menu->addSeparator();
+	zoom_menu->addAction(moveLeftAct);
+	zoom_menu->addAction(moveRightAct);
+	zoom_menu->addAction(moveUpAct);
+	zoom_menu->addAction(moveDownAct);
+
+	videoMenu->addMenu(zoom_menu);
+
+	// Aspect submenu
+	aspect_menu = new QMenu(this);
+	aspect_menu->menuAction()->setObjectName("aspect_menu");
+	aspect_menu->addActions( aspectGroup->actions() );
+
+	videoMenu->addMenu(aspect_menu);
+
+	// Deinterlace submenu
+	deinterlace_menu = new QMenu(this);
+	deinterlace_menu->menuAction()->setObjectName("deinterlace_menu");
+	deinterlace_menu->addActions( deinterlaceGroup->actions() );
+
+	videoMenu->addMenu(deinterlace_menu);
+
+	// Video filter submenu
+	videofilter_menu = new QMenu(this);
+	videofilter_menu->menuAction()->setObjectName("videofilter_menu");
+	videofilter_menu->addAction(postProcessingAct);
+	videofilter_menu->addAction(deblockAct);
+	videofilter_menu->addAction(deringAct);
+	videofilter_menu->addAction(gradfunAct);
+	videofilter_menu->addAction(addNoiseAct);
+	videofilter_menu->addAction(addLetterboxAct);
+	videofilter_menu->addAction(upscaleAct);
+	videofilter_menu->addAction(phaseAct);
+
+	// Denoise submenu
+	denoise_menu = new QMenu(this);
+	denoise_menu->menuAction()->setObjectName("denoise_menu");
+	denoise_menu->addActions(denoiseGroup->actions());
+	videofilter_menu->addMenu(denoise_menu);
+
+	// Unsharp submenu
+	unsharp_menu = new QMenu(this);
+	unsharp_menu->menuAction()->setObjectName("unsharp_menu");
+	unsharp_menu->addActions(unsharpGroup->actions());
+	videofilter_menu->addMenu(unsharp_menu);
+	/*
+	videofilter_menu->addSeparator();
+	videofilter_menu->addActions(denoiseGroup->actions());
+	videofilter_menu->addSeparator();
+	videofilter_menu->addActions(unsharpGroup->actions());
+	*/
+	videoMenu->addMenu(videofilter_menu);
+
+	// Rotate submenu
+	rotate_menu = new QMenu(this);
+	rotate_menu->menuAction()->setObjectName("rotate_menu");
+	rotate_menu->addActions(rotateGroup->actions());
+
+	videoMenu->addMenu(rotate_menu);
+
+	videoMenu->addAction(flipAct);
+	videoMenu->addAction(mirrorAct);
+	videoMenu->addAction(stereo3dAct);
+	videoMenu->addSeparator();
+	videoMenu->addAction(videoEqualizerAct);
+	videoMenu->addAction(screenshotAct);
+	videoMenu->addAction(screenshotsAct);
+
+	// Ontop submenu
+	ontop_menu = new QMenu(this);
+	ontop_menu->menuAction()->setObjectName("ontop_menu");
+	ontop_menu->addActions(onTopActionGroup->actions());
+
+	videoMenu->addMenu(ontop_menu);
+
+#ifdef VIDEOPREVIEW
+	videoMenu->addSeparator();
+	videoMenu->addAction(videoPreviewAct);
+#endif
+
+	// AUDIO MENU
+
+	// Audio track submenu
+	audiotrack_menu = new QMenu(this);
+	audiotrack_menu->menuAction()->setObjectName("audiotrack_menu");
+
+	audioMenu->addMenu(audiotrack_menu);
+
+	audioMenu->addAction(loadAudioAct);
+	audioMenu->addAction(unloadAudioAct);
+
+	// Filter submenu
+	audiofilter_menu = new QMenu(this);
+	audiofilter_menu->menuAction()->setObjectName("audiofilter_menu");
+	audiofilter_menu->addAction(extrastereoAct);
+	audiofilter_menu->addAction(karaokeAct);
+	audiofilter_menu->addAction(volnormAct);
+
+	audioMenu->addMenu(audiofilter_menu);
+
+	// Audio channels submenu
+	audiochannels_menu = new QMenu(this);
+	audiochannels_menu->menuAction()->setObjectName("audiochannels_menu");
+	audiochannels_menu->addActions( channelsGroup->actions() );
+
+	audioMenu->addMenu(audiochannels_menu);
+
+	// Stereo mode submenu
+	stereomode_menu = new QMenu(this);
+	stereomode_menu->menuAction()->setObjectName("stereomode_menu");
+	stereomode_menu->addActions( stereoGroup->actions() );
+
+	audioMenu->addMenu(stereomode_menu);
+	audioMenu->addAction(audioEqualizerAct);
+	audioMenu->addSeparator();
+	audioMenu->addAction(muteAct);
+	audioMenu->addSeparator();
+	audioMenu->addAction(decVolumeAct);
+	audioMenu->addAction(incVolumeAct);
+	audioMenu->addSeparator();
+	audioMenu->addAction(decAudioDelayAct);
+	audioMenu->addAction(incAudioDelayAct);
+	audioMenu->addSeparator();
+	audioMenu->addAction(audioDelayAct);
+
+	// SUBTITLES MENU
+	// Track submenu
+	subtitles_track_menu = new QMenu(this);
+	subtitles_track_menu->menuAction()->setObjectName("subtitlestrack_menu");
+
+#ifdef MPV_SUPPORT
+	secondary_subtitles_track_menu = new QMenu(this);
+	secondary_subtitles_track_menu->menuAction()->setObjectName("secondary_subtitles_track_menu");
+#endif
+
+	subtitlesMenu->addMenu(subtitles_track_menu);
+#ifdef MPV_SUPPORT
+	subtitlesMenu->addMenu(secondary_subtitles_track_menu);
+#endif
+	subtitlesMenu->addSeparator();
+
+	subtitlesMenu->addAction(loadSubsAct);
+	subtitlesMenu->addAction(unloadSubsAct);
+
+	subfps_menu = new QMenu(this);
+	subfps_menu->menuAction()->setObjectName("subfps_menu");
+	subfps_menu->addAction( subFPSNoneAct );
+	/* subfps_menu->addAction( subFPS23Act ); */
+	subfps_menu->addAction( subFPS23976Act );
+	subfps_menu->addAction( subFPS24Act );
+	subfps_menu->addAction( subFPS25Act );
+	subfps_menu->addAction( subFPS29970Act );
+	subfps_menu->addAction( subFPS30Act );
+	subtitlesMenu->addMenu(subfps_menu);
+	subtitlesMenu->addSeparator();
+
+	closed_captions_menu = new QMenu(this);
+	closed_captions_menu->menuAction()->setObjectName("closed_captions_menu");
+	closed_captions_menu->addAction( ccNoneAct);
+	closed_captions_menu->addAction( ccChannel1Act);
+	closed_captions_menu->addAction( ccChannel2Act);
+	closed_captions_menu->addAction( ccChannel3Act);
+	closed_captions_menu->addAction( ccChannel4Act);
+	subtitlesMenu->addMenu(closed_captions_menu);
+	subtitlesMenu->addSeparator();
+
+	subtitlesMenu->addAction(decSubDelayAct);
+	subtitlesMenu->addAction(incSubDelayAct);
+	subtitlesMenu->addSeparator();
+	subtitlesMenu->addAction(subDelayAct);
+	subtitlesMenu->addSeparator();
+	subtitlesMenu->addAction(decSubPosAct);
+	subtitlesMenu->addAction(incSubPosAct);
+	subtitlesMenu->addSeparator();
+	subtitlesMenu->addAction(decSubScaleAct);
+	subtitlesMenu->addAction(incSubScaleAct);
+	subtitlesMenu->addSeparator();
+	subtitlesMenu->addAction(decSubStepAct);
+	subtitlesMenu->addAction(incSubStepAct);
+	subtitlesMenu->addSeparator();
+	subtitlesMenu->addAction(useForcedSubsOnlyAct);
+	subtitlesMenu->addSeparator();
+	subtitlesMenu->addAction(useCustomSubStyleAct);
+#ifdef FIND_SUBTITLES
+	subtitlesMenu->addSeparator(); //turbos
+	subtitlesMenu->addAction(showFindSubtitlesDialogAct);
+	subtitlesMenu->addAction(openUploadSubtitlesPageAct); //turbos
+#endif
+
+	// BROWSE MENU
+	// Titles submenu
+	titles_menu = new QMenu(this);
+	titles_menu->menuAction()->setObjectName("titles_menu");
+
+	browseMenu->addMenu(titles_menu);
+
+	// Chapters submenu
+	chapters_menu = new QMenu(this);
+	chapters_menu->menuAction()->setObjectName("chapters_menu");
+
+	browseMenu->addMenu(chapters_menu);
+
+	// Angles submenu
+	angles_menu = new QMenu(this);
+	angles_menu->menuAction()->setObjectName("angles_menu");
+
+	browseMenu->addMenu(angles_menu);
+
+	browseMenu->addSeparator();
+	browseMenu->addAction(dvdnavMenuAct);
+	browseMenu->addAction(dvdnavPrevAct);
+
+#if PROGRAM_SWITCH
+	programtrack_menu = new QMenu(this);
+	programtrack_menu->menuAction()->setObjectName("programtrack_menu");
+
+	browseMenu->addSeparator();
+	browseMenu->addMenu(programtrack_menu);
+#endif
+
+	// OPTIONS MENU
+	optionsMenu->addAction(showPropertiesAct);
+	optionsMenu->addAction(showPlaylistAct);
+#ifdef YOUTUBE_SUPPORT
+	#if 0
+	// Check if the smplayer youtube browser is installed
+	{
+		QString tube_exec = Paths::appPath() + "/smtube";
+		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+		tube_exec += ".exe";
+		#endif
+		if (QFile::exists(tube_exec)) {
+			optionsMenu->addAction(showTubeBrowserAct);
+			qDebug("Gui::TBase::createMenus: %s does exist", tube_exec.toUtf8().constData());
+		} else {
+			qDebug("Gui::TBase::createMenus: %s does not exist", tube_exec.toUtf8().constData());
+		}
+	}
+	#else
+	optionsMenu->addAction(showTubeBrowserAct);
+	#endif
+#endif
+
+	// OSD submenu
+	osd_menu = new QMenu(this);
+	osd_menu->menuAction()->setObjectName("osd_menu");
+	osd_menu->addActions(osdGroup->actions());
+	osd_menu->addSeparator();
+	osd_menu->addAction(decOSDScaleAct);
+	osd_menu->addAction(incOSDScaleAct);
+	optionsMenu->addMenu(osd_menu);
+
+	optionsMenu->addAction(showLogAct);
+	optionsMenu->addAction(showPreferencesAct);
+
+	/*
+	TFavorites * fav = new TFavorites(Paths::configPath() + "/test.fav", this);
+	connect(fav, SIGNAL(activated(QString)), this, SLOT(open(QString)));
+	optionsMenu->addMenu( fav->menu() )->setText("Favorites");
+	*/
+
+	// HELP MENU
+	// Share submenu
+#ifdef SHARE_MENU
+	share_menu = new QMenu(this);
+	share_menu->addAction(facebookAct);
+	share_menu->addAction(twitterAct);
+	share_menu->addAction(gmailAct);
+	share_menu->addAction(hotmailAct);
+	share_menu->addAction(yahooAct);
+
+	helpMenu->addMenu(share_menu);
+	helpMenu->addSeparator();
+#endif
+
+	helpMenu->addAction(showFirstStepsAct);
+	helpMenu->addAction(showFAQAct);
+	helpMenu->addAction(showCLOptionsAct);
+	helpMenu->addSeparator();
+	helpMenu->addAction(showCheckUpdatesAct);
+#if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
+	helpMenu->addAction(updateYTAct);
+#endif
+	helpMenu->addSeparator();
+	helpMenu->addAction(showConfigAct);
+	helpMenu->addSeparator();
+#ifdef REMINDER_ACTIONS
+	helpMenu->addAction(donateAct);
+	helpMenu->addSeparator();
+#endif
+	helpMenu->addAction(aboutThisAct);
+
+	// POPUP MENU
+	if (!popup)
+		popup = new QMenu(this);
+	else
+		popup->clear();
+
+	popup->addMenu( openMenu );
+	popup->addMenu( playMenu );
+	popup->addMenu( videoMenu );
+	popup->addMenu( audioMenu );
+	popup->addMenu( subtitlesMenu );
+	popup->addMenu( favorites );
+	popup->addMenu( browseMenu );
+	popup->addMenu( optionsMenu );
+}
+
+void TBase::setupNetworkProxy() {
+	qDebug("Gui::TBase::setupNetworkProxy");
+
+	QNetworkProxy proxy;
+
+	if ( (pref->use_proxy) && (!pref->proxy_host.isEmpty()) ) {
+		proxy.setType((QNetworkProxy::ProxyType) pref->proxy_type);
+		proxy.setHostName(pref->proxy_host);
+		proxy.setPort(pref->proxy_port);
+		if ( (!pref->proxy_username.isEmpty()) && (!pref->proxy_password.isEmpty()) ) {
+			proxy.setUser(pref->proxy_username);
+			proxy.setPassword(pref->proxy_password);
+		}
+		qDebug("Gui::TBase::setupNetworkProxy: using proxy: host: %s, port: %d, type: %d",
+			   pref->proxy_host.toUtf8().constData(), pref->proxy_port, pref->proxy_type);
+	} else {
+		// No proxy
+		proxy.setType(QNetworkProxy::NoProxy);
+		qDebug("Gui::TBase::setupNetworkProxy: no proxy");
+	}
+
+	QNetworkProxy::setApplicationProxy(proxy);
 }
 
 void TBase::setActionsEnabled(bool b) {
@@ -1449,8 +1987,8 @@ void TBase::enableActionsOnPlaying() {
 
 	// Screenshot option
 	bool screenshots_enabled = ( (pref->use_screenshot) && 
-                                 (!pref->screenshot_directory.isEmpty()) &&
-                                 (QFileInfo(pref->screenshot_directory).isDir()) );
+								 (!pref->screenshot_directory.isEmpty()) &&
+								 (QFileInfo(pref->screenshot_directory).isDir()) );
 
 	screenshotAct->setEnabled( screenshots_enabled );
 	screenshotsAct->setEnabled( screenshots_enabled );
@@ -1715,9 +2253,9 @@ void TBase::retranslateStrings() {
 	decSubScaleAct->change( Images::icon("dec_sub_scale"), tr("S&ize -") );
 	incSubScaleAct->change( Images::icon("inc_sub_scale"), tr("Si&ze +") );
 	decSubStepAct->change( Images::icon("dec_sub_step"), 
-                           tr("&Previous line in subtitles") );
+						   tr("&Previous line in subtitles") );
 	incSubStepAct->change( Images::icon("inc_sub_step"), 
-                           tr("N&ext line in subtitles") );
+						   tr("N&ext line in subtitles") );
 	useCustomSubStyleAct->change( Images::icon("use_custom_sub_style"), tr("Use custo&m style") );
 	useForcedSubsOnlyAct->change( Images::icon("forced_subs"), tr("&Forced subtitles only") );
 
@@ -1786,7 +2324,6 @@ void TBase::retranslateStrings() {
 	playNextAct->setIcon( Images::icon("next") );
 	playPrevAct->setIcon( Images::icon("previous") );
 
-
 	// Actions not in menus or buttons
 	// Volume 2
 #if !USE_MULTIPLE_SHORTCUTS
@@ -1823,13 +2360,11 @@ void TBase::retranslateStrings() {
 	showTimeAct->change( tr("Show playback time on OSD") );
 	toggleDeinterlaceAct->change( tr("Toggle deinterlacing") );
 
-
 	// Action groups
 	osdNoneAct->change( tr("Subtitles onl&y") );
 	osdSeekAct->change( tr("Volume + &Seek") );
 	osdTimerAct->change( tr("Volume + Seek + &Timer") );
 	osdTotalAct->change( tr("Volume + Seek + Timer + T&otal time") );
-
 
 	// MENUS
 	openMenu->menuAction()->setText( tr("&Open") );
@@ -2016,7 +2551,6 @@ void TBase::retranslateStrings() {
 	programtrack_menu->menuAction()->setIcon( Images::icon("program_track") );
 #endif
 
-
 	dvdnavUpAct->change(Images::icon("dvdnav_up"), tr("DVD menu, move up"));
 	dvdnavDownAct->change(Images::icon("dvdnav_down"), tr("DVD menu, move down"));
 	dvdnavLeftAct->change(Images::icon("dvdnav_left"), tr("DVD menu, move left"));
@@ -2073,224 +2607,8 @@ void TBase::setJumpTexts() {
 	forward3Act->setIcon( Images::icon("forward10m") );
 }
 
-void TBase::setWindowCaption(const QString & title) {
+void TBase::setWindowCaption(const QString& title) {
 	setWindowTitle(title);
-}
-
-void TBase::createCore() {
-
-	core = new TCore(playerwindow, this);
-
-	connect( core, SIGNAL(widgetsNeedUpdate()),
-             this, SLOT(updateWidgets()) );
-	connect( core, SIGNAL(videoEqualizerNeedsUpdate()),
-             this, SLOT(updateVideoEqualizer()) );
-
-	connect( core, SIGNAL(audioEqualizerNeedsUpdate()),
-             this, SLOT(updateAudioEqualizer()) );
-
-	connect( core, SIGNAL(showFrame(int)),
-             this, SIGNAL(frameChanged(int)) );
-
-	connect( core, SIGNAL(ABMarkersChanged(int,int)),
-             this, SIGNAL(ABMarkersChanged(int,int)) );
-
-	connect( core, SIGNAL(showTime(double)),
-             this, SLOT(gotCurrentTime(double)) );
-	connect( core, SIGNAL(newDuration(double)),
-			 this, SLOT(gotDuration(double)) );
-
-	connect( core, SIGNAL(needResize(int, int)),
-             this, SLOT(resizeWindow(int,int)) );
-
-	connect( core, SIGNAL(showMessage(QString,int)),
-             this, SLOT(displayMessage(QString,int)) );
-	connect( core, SIGNAL(showMessage(QString)),
-             this, SLOT(displayMessage(QString)) );
-
-	connect( core, SIGNAL(stateChanged(TCore::State)),
-             this, SLOT(displayState(TCore::State)) );
-	connect( core, SIGNAL(stateChanged(TCore::State)),
-             this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection );
-
-	connect( core, SIGNAL(mediaStartPlay()),
-             this, SLOT(enterFullscreenOnPlay()), Qt::QueuedConnection );
-	connect( core, SIGNAL(mediaStoppedByUser()),
-             this, SLOT(exitFullscreenOnStop()) );
-
-	connect( core, SIGNAL(mediaStoppedByUser()),
-			 playerwindow, SLOT(showLogo()) );
-
-	connect( core, SIGNAL(mediaLoaded()),
-             this, SLOT(enableActionsOnPlaying()) );
-
-	connect( core, SIGNAL(noFileToPlay()), this, SLOT(gotNoFileToPlay()) );
-
-	connect( core, SIGNAL(mediaFinished()),
-             this, SLOT(disableActionsOnStop()) );
-	connect( core, SIGNAL(mediaStoppedByUser()),
-             this, SLOT(disableActionsOnStop()) );
-
-	connect( core, SIGNAL(stateChanged(TCore::State)),
-             this, SLOT(togglePlayAction(TCore::State)) );
-
-	connect( core, SIGNAL(mediaStartPlay()),
-             this, SLOT(newMediaLoaded()), Qt::QueuedConnection );
-	connect( core, SIGNAL(mediaInfoChanged()),
-             this, SLOT(updateMediaInfo()) );
-
-	connect( core, SIGNAL(mediaStartPlay()),
-             this, SLOT(checkPendingActionsToRun()), Qt::QueuedConnection );
-#if REPORT_OLD_MPLAYER
-	connect( core, SIGNAL(mediaStartPlay()),
-             this, SLOT(checkMplayerVersion()), Qt::QueuedConnection );
-#endif
-	connect( core, SIGNAL(failedToParseMplayerVersion(QString)),
-             this, SLOT(askForMplayerVersion(QString)) );
-
-	connect( core, SIGNAL(playerFailed(QProcess::ProcessError)),
-			 this, SLOT(showErrorFromPlayer(QProcess::ProcessError)) );
-
-	connect( core, SIGNAL(playerFinishedWithError(int)),
-			 this, SLOT(showExitCodeFromPlayer(int)) );
-
-	connect( core, SIGNAL(noVideo()), this, SLOT(slotNoVideo()) );
-
-#ifdef YOUTUBE_SUPPORT
-	connect(core, SIGNAL(signatureNotFound(const QString &)),
-            this, SLOT(YTNoSignature(const QString &)));
-	connect(core, SIGNAL(noSslSupport()),
-            this, SLOT(YTNoSslSupport()));
-#endif
-	connect(core, SIGNAL(receivedForbidden()), this, SLOT(gotForbidden()));
-
-	connect(playerwindow, SIGNAL(moveOSD(const QPoint &)),
-			core, SLOT(setOSDPos(const QPoint &)));
-	connect(playerwindow, SIGNAL(showMessage(QString, int, int)),
-			 core, SLOT(displayMessage(QString, int, int)) );
-}
-
-void TBase::createPlayerWindow() {
-
-	playerwindow = new TPlayerWindow(panel);
-	playerwindow->setDelayLeftClick(pref->delay_left_click);
-	playerwindow->setColorKey(pref->color_key);
-
-#if LOGO_ANIMATION
-	playerwindow->setAnimatedLogo(pref->animated_logo);
-#endif
-
-#ifdef SHAREWIDGET
-	sharewidget = new ShareWidget(pref, playerwindow);
-	playerwindow->setCornerWidget(sharewidget);
-	#ifdef REMINDER_ACTIONS
-	connect(sharewidget, SIGNAL(supportClicked()), this, SLOT(helpDonate()));
-	#endif
-#endif
-
-	QVBoxLayout* layout = new QVBoxLayout;
-	layout->setSpacing(0);
-	layout->setMargin(0);
-	layout->addWidget(playerwindow);
-	panel->setLayout(layout);
-
-	// playerwindow mouse events
-	connect( playerwindow, SIGNAL(doubleClicked()),
-             this, SLOT(doubleClickFunction()) );
-	connect( playerwindow, SIGNAL(leftClicked()),
-             this, SLOT(leftClickFunction()) );
-	connect( playerwindow, SIGNAL(rightClicked()),
-             this, SLOT(rightClickFunction()) );
-	connect( playerwindow, SIGNAL(middleClicked()),
-             this, SLOT(middleClickFunction()) );
-	connect( playerwindow, SIGNAL(xbutton1Clicked()),
-             this, SLOT(xbutton1ClickFunction()) );
-	connect( playerwindow, SIGNAL(xbutton2Clicked()),
-             this, SLOT(xbutton2ClickFunction()) );
-	connect( playerwindow, SIGNAL(moveWindow(QPoint)),
-			 this, SLOT(moveWindow(QPoint)) );
-}
-
-void TBase::createVideoEqualizer() {
-	// Equalizer
-	video_equalizer = new TVideoEqualizer(this);
-	connect( video_equalizer, SIGNAL(contrastChanged(int)), 
-             core, SLOT(setContrast(int)) );
-	connect( video_equalizer, SIGNAL(brightnessChanged(int)), 
-             core, SLOT(setBrightness(int)) );
-	connect( video_equalizer, SIGNAL(hueChanged(int)), 
-             core, SLOT(setHue(int)) );
-	connect( video_equalizer, SIGNAL(saturationChanged(int)), 
-             core, SLOT(setSaturation(int)) );
-	connect( video_equalizer, SIGNAL(gammaChanged(int)), 
-             core, SLOT(setGamma(int)) );
-
-	connect( video_equalizer, SIGNAL(visibilityChanged()),
-             this, SLOT(updateWidgets()) );
-	connect( video_equalizer, SIGNAL(requestToChangeDefaultValues()),
-             this, SLOT(setDefaultValuesFromVideoEqualizer()) );
-	connect( video_equalizer, SIGNAL(bySoftwareChanged(bool)),
-             this, SLOT(changeVideoEqualizerBySoftware(bool)) );
-}
-
-void TBase::createAudioEqualizer() {
-	// Audio Equalizer
-	audio_equalizer = new TAudioEqualizer(this);
-
-	connect( audio_equalizer->eq[0], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq0(int)) );
-	connect( audio_equalizer->eq[1], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq1(int)) );
-	connect( audio_equalizer->eq[2], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq2(int)) );
-	connect( audio_equalizer->eq[3], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq3(int)) );
-	connect( audio_equalizer->eq[4], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq4(int)) );
-	connect( audio_equalizer->eq[5], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq5(int)) );
-	connect( audio_equalizer->eq[6], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq6(int)) );
-	connect( audio_equalizer->eq[7], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq7(int)) );
-	connect( audio_equalizer->eq[8], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq8(int)) );
-	connect( audio_equalizer->eq[9], SIGNAL(valueChanged(int)), 
-             core, SLOT(setAudioEq9(int)) );
-
-	connect( audio_equalizer, SIGNAL(applyClicked(TAudioEqualizerList)),
-			 core, SLOT(setAudioAudioEqualizerRestart(TAudioEqualizerList)) );
-
-	connect( audio_equalizer, SIGNAL(valuesChanged(TAudioEqualizerList)),
-			 core, SLOT(setAudioEqualizer(TAudioEqualizerList)) );
-
-	connect( audio_equalizer, SIGNAL(visibilityChanged()),
-             this, SLOT(updateWidgets()) );
-}
-
-void TBase::createPlaylist() {
-
-#if DOCK_PLAYLIST
-	playlist = new TPlaylist(core, this, 0);
-#else
-	playlist = new TPlaylist(core, 0);
-#endif
-
-	connect( playlist, SIGNAL(playlistEnded()),
-			 this, SLOT(playlistHasFinished()) );
-}
-
-void TBase::createPanel() {
-	panel = new QWidget( this );
-	panel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-	panel->setMinimumSize( QSize(1,1) );
-	panel->setFocusPolicy( Qt::StrongFocus );
-
-	// panel
-	/*
-	panel->setAutoFillBackground(true);
-	ColorUtils::setBackgroundColor( panel, QColor(0,0,0) );
-	*/
 }
 
 void TBase::createPreferencesDialog() {
@@ -2299,7 +2617,7 @@ void TBase::createPreferencesDialog() {
 	pref_dialog->setModal(false);
 	/* pref_dialog->mod_input()->setActionsList( actions_list ); */
 	connect( pref_dialog, SIGNAL(applied()),
-             this, SLOT(applyNewPreferences()) );
+			 this, SLOT(applyNewPreferences()) );
 	QApplication::restoreOverrideCursor();
 }
 
@@ -2310,455 +2628,114 @@ void TBase::createFilePropertiesDialog() {
 	file_dialog = new TFilePropertiesDialog(this, core->mdat);
 	file_dialog->setModal(false);
 	connect( file_dialog, SIGNAL(applied()),
-             this, SLOT(applyFileProperties()) );
+			 this, SLOT(applyFileProperties()) );
 	QApplication::restoreOverrideCursor();
 }
 
+#ifdef SINGLE_INSTANCE
+void TBase::handleMessageFromOtherInstances(const QString& message) {
+	qDebug("Gui::TBase::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
 
-void TBase::createMenus() {
-	// MENUS
-	openMenu = menuBar()->addMenu("Open");
-	playMenu = menuBar()->addMenu("Play");
-	videoMenu = menuBar()->addMenu("Video");
-	audioMenu = menuBar()->addMenu("Audio");
-	subtitlesMenu = menuBar()->addMenu("Subtitles");
-	/* menuBar()->addMenu(favorites); */
-	browseMenu = menuBar()->addMenu("Browse");
-	optionsMenu = menuBar()->addMenu("Options");
-	helpMenu = menuBar()->addMenu("Help");
+	int pos = message.indexOf(' ');
+	if (pos > -1) {
+		QString command = message.left(pos);
+		QString arg = message.mid(pos+1);
+		qDebug("command: '%s'", command.toUtf8().constData());
+		qDebug("arg: '%s'", arg.toUtf8().constData());
 
-	// OPEN MENU
-	openMenu->addAction(openFileAct);
-
-	recentfiles_menu = new QMenu(this);
-	/*
-	recentfiles_menu->addAction( clearRecentsAct );
-	recentfiles_menu->addSeparator();
-	*/
-
-	openMenu->addMenu( recentfiles_menu );
-	openMenu->addMenu(favorites);
-	openMenu->addAction(openDirectoryAct);
-	openMenu->addAction(openPlaylistAct);
-
-	// Disc submenu
-	disc_menu = new QMenu(this);
-	disc_menu->menuAction()->setObjectName("disc_menu");
-	disc_menu->addAction(openDVDAct);
-	disc_menu->addAction(openDVDFolderAct);
-	disc_menu->addAction(openBluRayAct);
-	disc_menu->addAction(openBluRayFolderAct);
-	disc_menu->addAction(openVCDAct);
-	disc_menu->addAction(openAudioCDAct);
-
-	openMenu->addMenu(disc_menu);
-
-	openMenu->addAction(openURLAct);
-/* #ifndef Q_OS_WIN */
-	openMenu->addMenu(tvlist);
-	openMenu->addMenu(radiolist);
-/* #endif */
-	openMenu->addSeparator();
-	openMenu->addAction(exitAct);
-	
-	// PLAY MENU
-	playMenu->addAction(playAct);
-	playMenu->addAction(pauseAct);
-	/* playMenu->addAction(playOrPauseAct); */
-	playMenu->addAction(stopAct);
-	playMenu->addAction(frameStepAct);
-	playMenu->addAction(frameBackStepAct);
-	playMenu->addSeparator();
-	playMenu->addAction(rewind1Act);
-	playMenu->addAction(forward1Act);
-	playMenu->addAction(rewind2Act);
-	playMenu->addAction(forward2Act);
-	playMenu->addAction(rewind3Act);
-	playMenu->addAction(forward3Act);
-	playMenu->addSeparator();
-
-	// Speed submenu
-	speed_menu = new QMenu(this);
-	speed_menu->menuAction()->setObjectName("speed_menu");
-	speed_menu->addAction(normalSpeedAct);
-	speed_menu->addSeparator();
-	speed_menu->addAction(halveSpeedAct);
-	speed_menu->addAction(doubleSpeedAct);
-	speed_menu->addSeparator();
-	speed_menu->addAction(decSpeed10Act);
-	speed_menu->addAction(incSpeed10Act);
-	speed_menu->addSeparator();
-	speed_menu->addAction(decSpeed4Act);
-	speed_menu->addAction(incSpeed4Act);
-	speed_menu->addSeparator();
-	speed_menu->addAction(decSpeed1Act);
-	speed_menu->addAction(incSpeed1Act);
-
-	playMenu->addMenu(speed_menu);
-
-	// A-B submenu
-	ab_menu = new QMenu(this);
-	ab_menu->menuAction()->setObjectName("ab_menu");
-	ab_menu->addAction(setAMarkerAct);
-	ab_menu->addAction(setBMarkerAct);
-	ab_menu->addAction(clearABMarkersAct);
-	ab_menu->addSeparator();
-	ab_menu->addAction(repeatAct);
-
-	playMenu->addSeparator();
-	playMenu->addMenu(ab_menu);
-
-	playMenu->addSeparator();
-	playMenu->addAction(gotoAct);
-	playMenu->addSeparator();
-	playMenu->addAction(playPrevAct);
-	playMenu->addAction(playNextAct);
-	
-	// VIDEO MENU
-	videotrack_menu = new QMenu(this);
-	videotrack_menu->menuAction()->setObjectName("videotrack_menu");
-
-	videoMenu->addMenu(videotrack_menu);
-
-	videoMenu->addAction(fullscreenAct);
-	videoMenu->addAction(compactAct);
-
-#if USE_ADAPTER
-	// Screen submenu
-	screen_menu = new QMenu(this);
-	screen_menu->menuAction()->setObjectName("screen_menu");
-	screen_menu->addActions( screenGroup->actions() );
-	videoMenu->addMenu(screen_menu);
-#endif
-
-	// Size submenu
-	videosize_menu = new QMenu(this);
-	videosize_menu->menuAction()->setObjectName("videosize_menu");
-	videosize_menu->addActions( sizeGroup->actions() );
-	videosize_menu->addSeparator();
-	videosize_menu->addAction(doubleSizeAct);
-	videoMenu->addMenu(videosize_menu);
-
-	// Zoom submenu
-	zoom_menu = new QMenu(this);
-	zoom_menu->menuAction()->setObjectName("zoom_menu");
-	zoom_menu->addAction(resetZoomAct);
-	zoom_menu->addSeparator();
-	zoom_menu->addAction(autoZoomAct);
-	zoom_menu->addAction(autoZoom169Act);
-	zoom_menu->addAction(autoZoom235Act);
-	zoom_menu->addSeparator();
-	zoom_menu->addAction(decZoomAct);
-	zoom_menu->addAction(incZoomAct);
-	zoom_menu->addSeparator();
-	zoom_menu->addAction(moveLeftAct);
-	zoom_menu->addAction(moveRightAct);
-	zoom_menu->addAction(moveUpAct);
-	zoom_menu->addAction(moveDownAct);
-
-	videoMenu->addMenu(zoom_menu);
-
-	// Aspect submenu
-	aspect_menu = new QMenu(this);
-	aspect_menu->menuAction()->setObjectName("aspect_menu");
-	aspect_menu->addActions( aspectGroup->actions() );
-
-	videoMenu->addMenu(aspect_menu);
-
-	// Deinterlace submenu
-	deinterlace_menu = new QMenu(this);
-	deinterlace_menu->menuAction()->setObjectName("deinterlace_menu");
-	deinterlace_menu->addActions( deinterlaceGroup->actions() );
-
-	videoMenu->addMenu(deinterlace_menu);
-
-	// Video filter submenu
-	videofilter_menu = new QMenu(this);
-	videofilter_menu->menuAction()->setObjectName("videofilter_menu");
-	videofilter_menu->addAction(postProcessingAct);
-	videofilter_menu->addAction(deblockAct);
-	videofilter_menu->addAction(deringAct);
-	videofilter_menu->addAction(gradfunAct);
-	videofilter_menu->addAction(addNoiseAct);
-	videofilter_menu->addAction(addLetterboxAct);
-	videofilter_menu->addAction(upscaleAct);
-	videofilter_menu->addAction(phaseAct);
-
-	// Denoise submenu
-	denoise_menu = new QMenu(this);
-	denoise_menu->menuAction()->setObjectName("denoise_menu");
-	denoise_menu->addActions(denoiseGroup->actions());
-	videofilter_menu->addMenu(denoise_menu);
-
-	// Unsharp submenu
-	unsharp_menu = new QMenu(this);
-	unsharp_menu->menuAction()->setObjectName("unsharp_menu");
-	unsharp_menu->addActions(unsharpGroup->actions());
-	videofilter_menu->addMenu(unsharp_menu);
-	/*
-	videofilter_menu->addSeparator();
-	videofilter_menu->addActions(denoiseGroup->actions());
-	videofilter_menu->addSeparator();
-	videofilter_menu->addActions(unsharpGroup->actions());
-	*/
-	videoMenu->addMenu(videofilter_menu);
-
-	// Rotate submenu
-	rotate_menu = new QMenu(this);
-	rotate_menu->menuAction()->setObjectName("rotate_menu");
-	rotate_menu->addActions(rotateGroup->actions());
-
-	videoMenu->addMenu(rotate_menu);
-
-	videoMenu->addAction(flipAct);
-	videoMenu->addAction(mirrorAct);
-	videoMenu->addAction(stereo3dAct);
-	videoMenu->addSeparator();
-	videoMenu->addAction(videoEqualizerAct);
-	videoMenu->addAction(screenshotAct);
-	videoMenu->addAction(screenshotsAct);
-
-	// Ontop submenu
-	ontop_menu = new QMenu(this);
-	ontop_menu->menuAction()->setObjectName("ontop_menu");
-	ontop_menu->addActions(onTopActionGroup->actions());
-
-	videoMenu->addMenu(ontop_menu);
-
-#ifdef VIDEOPREVIEW
-	videoMenu->addSeparator();
-	videoMenu->addAction(videoPreviewAct);
-#endif
-
-
-    // AUDIO MENU
-
-	// Audio track submenu
-	audiotrack_menu = new QMenu(this);
-	audiotrack_menu->menuAction()->setObjectName("audiotrack_menu");
-
-	audioMenu->addMenu(audiotrack_menu);
-
-	audioMenu->addAction(loadAudioAct);
-	audioMenu->addAction(unloadAudioAct);
-
-	// Filter submenu
-	audiofilter_menu = new QMenu(this);
-	audiofilter_menu->menuAction()->setObjectName("audiofilter_menu");
-	audiofilter_menu->addAction(extrastereoAct);
-	audiofilter_menu->addAction(karaokeAct);
-	audiofilter_menu->addAction(volnormAct);
-
-	audioMenu->addMenu(audiofilter_menu);
-
-	// Audio channels submenu
-	audiochannels_menu = new QMenu(this);
-	audiochannels_menu->menuAction()->setObjectName("audiochannels_menu");
-	audiochannels_menu->addActions( channelsGroup->actions() );
-
-	audioMenu->addMenu(audiochannels_menu);
-
-	// Stereo mode submenu
-	stereomode_menu = new QMenu(this);
-	stereomode_menu->menuAction()->setObjectName("stereomode_menu");
-	stereomode_menu->addActions( stereoGroup->actions() );
-
-	audioMenu->addMenu(stereomode_menu);
-	audioMenu->addAction(audioEqualizerAct);
-	audioMenu->addSeparator();
-	audioMenu->addAction(muteAct);
-	audioMenu->addSeparator();
-	audioMenu->addAction(decVolumeAct);
-	audioMenu->addAction(incVolumeAct);
-	audioMenu->addSeparator();
-	audioMenu->addAction(decAudioDelayAct);
-	audioMenu->addAction(incAudioDelayAct);
-	audioMenu->addSeparator();
-	audioMenu->addAction(audioDelayAct);
-
-
-	// SUBTITLES MENU
-	// Track submenu
-	subtitles_track_menu = new QMenu(this);
-	subtitles_track_menu->menuAction()->setObjectName("subtitlestrack_menu");
-
-#ifdef MPV_SUPPORT
-	secondary_subtitles_track_menu = new QMenu(this);
-	secondary_subtitles_track_menu->menuAction()->setObjectName("secondary_subtitles_track_menu");
-#endif
-
-	subtitlesMenu->addMenu(subtitles_track_menu);
-#ifdef MPV_SUPPORT
-	subtitlesMenu->addMenu(secondary_subtitles_track_menu);
-#endif
-	subtitlesMenu->addSeparator();
-
-	subtitlesMenu->addAction(loadSubsAct);
-	subtitlesMenu->addAction(unloadSubsAct);
-
-	subfps_menu = new QMenu(this);
-	subfps_menu->menuAction()->setObjectName("subfps_menu");
-	subfps_menu->addAction( subFPSNoneAct );
-	/* subfps_menu->addAction( subFPS23Act ); */
-	subfps_menu->addAction( subFPS23976Act );
-	subfps_menu->addAction( subFPS24Act );
-	subfps_menu->addAction( subFPS25Act );
-	subfps_menu->addAction( subFPS29970Act );
-	subfps_menu->addAction( subFPS30Act );
-	subtitlesMenu->addMenu(subfps_menu);
-	subtitlesMenu->addSeparator();
-
-	closed_captions_menu = new QMenu(this);
-	closed_captions_menu->menuAction()->setObjectName("closed_captions_menu");
-	closed_captions_menu->addAction( ccNoneAct);
-	closed_captions_menu->addAction( ccChannel1Act);
-	closed_captions_menu->addAction( ccChannel2Act);
-	closed_captions_menu->addAction( ccChannel3Act);
-	closed_captions_menu->addAction( ccChannel4Act);
-	subtitlesMenu->addMenu(closed_captions_menu);
-	subtitlesMenu->addSeparator();
-
-	subtitlesMenu->addAction(decSubDelayAct);
-	subtitlesMenu->addAction(incSubDelayAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(subDelayAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(decSubPosAct);
-	subtitlesMenu->addAction(incSubPosAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(decSubScaleAct);
-	subtitlesMenu->addAction(incSubScaleAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(decSubStepAct);
-	subtitlesMenu->addAction(incSubStepAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(useForcedSubsOnlyAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(useCustomSubStyleAct);
-#ifdef FIND_SUBTITLES
-	subtitlesMenu->addSeparator(); //turbos
-	subtitlesMenu->addAction(showFindSubtitlesDialogAct);
-	subtitlesMenu->addAction(openUploadSubtitlesPageAct); //turbos
-#endif
-
-	// BROWSE MENU
-	// Titles submenu
-	titles_menu = new QMenu(this);
-	titles_menu->menuAction()->setObjectName("titles_menu");
-
-	browseMenu->addMenu(titles_menu);
-
-	// Chapters submenu
-	chapters_menu = new QMenu(this);
-	chapters_menu->menuAction()->setObjectName("chapters_menu");
-
-	browseMenu->addMenu(chapters_menu);
-
-	// Angles submenu
-	angles_menu = new QMenu(this);
-	angles_menu->menuAction()->setObjectName("angles_menu");
-
-	browseMenu->addMenu(angles_menu);
-
-	browseMenu->addSeparator();
-	browseMenu->addAction(dvdnavMenuAct);
-	browseMenu->addAction(dvdnavPrevAct);
-
-#if PROGRAM_SWITCH
-	programtrack_menu = new QMenu(this);
-	programtrack_menu->menuAction()->setObjectName("programtrack_menu");
-
-	browseMenu->addSeparator();
-	browseMenu->addMenu(programtrack_menu);
-#endif
-
-
-	// OPTIONS MENU
-	optionsMenu->addAction(showPropertiesAct);
-	optionsMenu->addAction(showPlaylistAct);
-#ifdef YOUTUBE_SUPPORT
-	#if 0
-	// Check if the smplayer youtube browser is installed
-	{
-		QString tube_exec = Paths::appPath() + "/smtube";
-		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		tube_exec += ".exe";
-		#endif
-		if (QFile::exists(tube_exec)) {
-			optionsMenu->addAction(showTubeBrowserAct);
-			qDebug("Gui::TBase::createMenus: %s does exist", tube_exec.toUtf8().constData());
-		} else {
-			qDebug("Gui::TBase::createMenus: %s does not exist", tube_exec.toUtf8().constData());
+		if (command == "open_file") {
+			emit openFileRequested();
+			open(arg);
+		}
+		else
+		if (command == "open_files") {
+			QStringList file_list = arg.split(" <<sep>> ");
+			emit openFileRequested();
+			openFiles(file_list);
+		}
+		else
+		if (command == "add_to_playlist") {
+			QStringList file_list = arg.split(" <<sep>> ");
+			/* if (core->state() == TCore::Stopped) { emit openFileRequested(); } */
+			playlist->addFiles(file_list);
+		}
+		else
+		if (command == "media_title") {
+			QStringList list = arg.split(" <<sep>> ");
+			core->addForcedTitle(list[0], list[1]);
+		}
+		else
+		if (command == "action") {
+			processFunction(arg);
+		}
+		else
+		if (command == "load_sub") {
+			setInitialSubtitle(arg);
+			if (core->state() != TCore::Stopped) {
+				core->loadSub(arg);
+			}
 		}
 	}
-	#else
-	optionsMenu->addAction(showTubeBrowserAct);
-	#endif
+}
 #endif
 
-	// OSD submenu
-	osd_menu = new QMenu(this);
-	osd_menu->menuAction()->setObjectName("osd_menu");
-	osd_menu->addActions(osdGroup->actions());
-	osd_menu->addSeparator();
-	osd_menu->addAction(decOSDScaleAct);
-	osd_menu->addAction(incOSDScaleAct);
-	optionsMenu->addMenu(osd_menu);
+void TBase::loadConfig(const QString &group) {
+	qDebug("Gui::TBase::loadConfig");
 
-	optionsMenu->addAction(showLogAct);
-	optionsMenu->addAction(showPreferencesAct);
-
-	/*
-	TFavorites * fav = new TFavorites(Paths::configPath() + "/test.fav", this);
-	connect(fav, SIGNAL(activated(QString)), this, SLOT(open(QString)));
-	optionsMenu->addMenu( fav->menu() )->setText("Favorites");
-	*/
-
-	// HELP MENU
-	// Share submenu
-#ifdef SHARE_MENU
-	share_menu = new QMenu(this);
-	share_menu->addAction(facebookAct);
-	share_menu->addAction(twitterAct);
-	share_menu->addAction(gmailAct);
-	share_menu->addAction(hotmailAct);
-	share_menu->addAction(yahooAct);
-
-	helpMenu->addMenu(share_menu);
-	helpMenu->addSeparator();
+#if ALLOW_CHANGE_STYLESHEET
+	changeStyleSheet(pref->iconset);
 #endif
 
-	helpMenu->addAction(showFirstStepsAct);
-	helpMenu->addAction(showFAQAct);
-	helpMenu->addAction(showCLOptionsAct);
-	helpMenu->addSeparator();
-	helpMenu->addAction(showCheckUpdatesAct);
-#if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	helpMenu->addAction(updateYTAct);
-#endif
-	helpMenu->addSeparator();
-	helpMenu->addAction(showConfigAct);
-	helpMenu->addSeparator();
-#ifdef REMINDER_ACTIONS
-	helpMenu->addAction(donateAct);
-	helpMenu->addSeparator();
-#endif
-	helpMenu->addAction(aboutThisAct);
+	// Load actions from outside group derived class
+	loadActions();
 
-	// POPUP MENU
-	if (!popup)
-		popup = new QMenu(this);
-	else
-		popup->clear();
+	if (pref->save_window_size_on_exit) {
+		// Load window state from inside group derived class
+		pref->beginGroup(group);
+		QPoint p = pref->value("pos", pos()).toPoint();
+		QSize s = pref->value("size", size()).toSize();
+		int state = pref->value("state", 0).toInt();
+		pref->endGroup();
 
-	popup->addMenu( openMenu );
-	popup->addMenu( playMenu );
-	popup->addMenu( videoMenu );
-	popup->addMenu( audioMenu );
-	popup->addMenu( subtitlesMenu );
-	popup->addMenu( favorites );
-	popup->addMenu( browseMenu );
-	popup->addMenu( optionsMenu );
+		if ( (s.height() < 200) && (!pref->use_mplayer_window) ) {
+			s = pref->default_size;
+		}
+
+		move(p);
+		resize(s);
+		setWindowState((Qt::WindowStates) state);
+
+		if (!TDesktopInfo::isInsideScreen(this)) {
+			move(0,0);
+			qWarning("Gui::TBase::loadConfig: window is outside of the screen, moved to 0x0");
+		} else {
+			// Block resize of main window by loading of video
+			// TODO: reset when video fails to load
+			block_resize = true;
+		}
+	} else {
+		// Center window
+		QSize center_pos = (TDesktopInfo::desktop_size(this) - size()) / 2;
+		if (center_pos.isValid())
+			move(center_pos.width(), center_pos.height());
+	}
+
+	// Load playlist settings outside group
+	playlist->loadSettings();
+}
+
+void TBase::saveConfig(const QString &group) {
+	qDebug("Gui::TBase::saveConfig");
+
+	if (pref->save_window_size_on_exit) {
+		pref->beginGroup(group);
+		pref->setValue( "pos", pos() );
+		pref->setValue( "size", size() );
+		pref->setValue( "state", (int) windowState() );
+		pref->endGroup();
+	}
+
+	playlist->saveSettings();
 }
 
 void TBase::closeEvent( QCloseEvent * e )  {
@@ -3485,8 +3462,8 @@ void TBase::setDefaultValuesFromVideoEqualizer() {
 	pref->initial_gamma = video_equalizer->gamma();
 
 	QMessageBox::information(this, tr("Information"), 
-                             tr("The current values have been stored to be "
-                                "used as default.") );
+							 tr("The current values have been stored to be "
+								"used as default.") );
 }
 
 void TBase::changeVideoEqualizerBySoftware(bool b) {
@@ -3648,7 +3625,7 @@ void TBase::configureDiscDevices() {
 	QMessageBox::information( this, tr("SMPlayer - Information"),
 			tr("The CDROM / DVD drives are not configured yet.\n"
 			   "The configuration dialog will be shown now, "
-               "so you can do it."), QMessageBox::Ok);
+			   "so you can do it."), QMessageBox::Ok);
 	
 	showPreferencesDialog();
 	pref_dialog->showSection( Pref::TDialog::Drives );
@@ -3745,7 +3722,7 @@ void TBase::openBluRayFromFolder() {
 
 	if (playlist->maybeSave()) {
 		QString dir = QFileDialog::getExistingDirectory(this, tr("Select the Blu-ray folder"),
-                          pref->last_dvd_directory, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+			pref->last_dvd_directory, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 		if (!dir.isEmpty()) {
 			openBluRayFromFolder(dir);
 		}
@@ -3900,12 +3877,12 @@ void TBase::showAudioDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
 	int delay = QInputDialog::getInt(this, tr("SMPlayer - Audio delay"),
-                                     tr("Audio delay (in milliseconds):"), core->mset.audio_delay, 
-                                     -3600000, 3600000, 1, &ok);
+		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
+		-3600000, 3600000, 1, &ok);
 	#else
 	int delay = QInputDialog::getInteger(this, tr("SMPlayer - Audio delay"),
-                                         tr("Audio delay (in milliseconds):"), core->mset.audio_delay, 
-                                         -3600000, 3600000, 1, &ok);
+		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
+		-3600000, 3600000, 1, &ok);
 	#endif
 	if (ok) {
 		core->setAudioDelay(delay);
@@ -3916,12 +3893,12 @@ void TBase::showSubDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
 	int delay = QInputDialog::getInt(this, tr("SMPlayer - Subtitle delay"),
-                                     tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay, 
-                                     -3600000, 3600000, 1, &ok);
+		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
+		-3600000, 3600000, 1, &ok);
 	#else
 	int delay = QInputDialog::getInteger(this, tr("SMPlayer - Subtitle delay"),
-                                         tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay, 
-                                         -3600000, 3600000, 1, &ok);
+		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
+		-3600000, 3600000, 1, &ok);
 	#endif
 	if (ok) {
 		core->setSubDelay(delay);
@@ -4214,13 +4191,13 @@ void TBase::displayWarningAboutOldMplayer() {
 	if (!pref->reported_mplayer_is_old) {
 		QMessageBox::warning(this, tr("Warning - Using old MPlayer"),
 			tr("The version of MPlayer (%1) installed on your system "
-               "is obsolete. SMPlayer can't work well with it: some "
-               "options won't work, subtitle selection may fail...")
-               .arg(MplayerVersion::toString(pref->mplayer_detected_version)) +
-            "<br><br>" + 
-            tr("Please, update your MPlayer.") +
-            "<br><br>" + 
-            tr("(This warning won't be displayed anymore)") );
+			   "is obsolete. SMPlayer can't work well with it: some "
+			   "options won't work, subtitle selection may fail...")
+				.arg(MplayerVersion::toString(pref->mplayer_detected_version)) +
+			"<br><br>" +
+			tr("Please, update your MPlayer.") +
+			"<br><br>" +
+			tr("(This warning won't be displayed anymore)") );
 
 		pref->reported_mplayer_is_old = true;
 	}
@@ -4703,9 +4680,7 @@ void TBase::setStayOnTop(bool b) {
 	}
 
 	ignore_show_hide_events = true;
-
 	bool visible = isVisible();
-
 	QPoint old_pos = pos();
 
 	if (b) {
@@ -4716,15 +4691,14 @@ void TBase::setStayOnTop(bool b) {
 	}
 
 	move(old_pos);
-
 	if (visible) {
 		show();
 	}
-
 	ignore_show_hide_events = false;
 }
 
 void TBase::changeStayOnTop(int stay_on_top) {
+
 	switch (stay_on_top) {
 		case Settings::TPreferences::AlwaysOnTop : setStayOnTop(true); break;
 		case Settings::TPreferences::NeverOnTop  : setStayOnTop(false); break;
@@ -4737,7 +4711,9 @@ void TBase::changeStayOnTop(int stay_on_top) {
 
 void TBase::checkStayOnTop(TCore::State state) {
 	qDebug("Gui::TBase::checkStayOnTop");
-	if ((!pref->fullscreen) && (pref->stay_on_top == Settings::TPreferences::WhilePlayingOnTop)) {
+
+	if (!pref->fullscreen
+		&& (pref->stay_on_top == Settings::TPreferences::WhilePlayingOnTop)) {
 		setStayOnTop((state == TCore::Playing));
 	}
 }
@@ -4952,10 +4928,10 @@ void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
 		if (e == QProcess::FailedToStart) {
 			d.setText(tr("%1 failed to start.").arg(PLAYER_NAME) + " " + 
-                         tr("Please check the %1 path in preferences.").arg(PLAYER_NAME));
+					  tr("Please check the %1 path in preferences.").arg(PLAYER_NAME));
 		} else {
 			d.setText(tr("%1 has crashed.").arg(PLAYER_NAME) + " " + 
-                      tr("See the log for more info."));
+					  tr("See the log for more info."));
 		}
 		d.setLog(TLog::log->getLogLines());
 		d.exec();
@@ -4973,7 +4949,7 @@ void TBase::showFindSubtitlesDialog() {
 		find_subs_dialog->setWindowIcon(windowIcon());
 #if DOWNLOAD_SUBS
 		connect(find_subs_dialog, SIGNAL(subtitleDownloaded(const QString &)),
-                core, SLOT(loadSub(const QString &)));
+				core, SLOT(loadSub(const QString &)));
 #endif
 	}
 

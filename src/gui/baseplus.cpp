@@ -273,7 +273,6 @@ void TBasePlus::loadConfig(const QString &group) {
 	updateShowAllAct();
 }
 
-
 void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 	qDebug("Gui::TBasePlus::trayIconActivated: %d", reason);
 
@@ -366,9 +365,9 @@ void TBasePlus::updateMediaInfo() {
 	tray->setToolTip( windowTitle() );
 }
 
-void TBasePlus::setWindowCaption(const QString & title) {
-	tray->setToolTip( title );
+void TBasePlus::setWindowCaption(const QString& title) {
 
+	tray->setToolTip( title );
 	TBase::setWindowCaption( title );
 }
 
