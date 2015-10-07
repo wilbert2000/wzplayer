@@ -97,7 +97,6 @@ protected:
 	TSeekingButton * forwardbutton_action;
 
 	TAutohideWidget * floating_control;
-	TTimeLabelAction * time_label_action;
 
 	TAction * viewFrameCounterAct;
 	TAction * viewVideoInfoAct;

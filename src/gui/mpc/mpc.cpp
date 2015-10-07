@@ -60,12 +60,6 @@ void TMpc::createActions() {
 	volumeslider_action->setCustomStyle(new Mpc::VolumeSlideStyle());
 	volumeslider_action->setFixedSize(QSize(50, 18));
 	volumeslider_action->setTickPosition(QSlider::NoTicks);
-
-	time_label_action = new TTimeLabelAction(this);
-	time_label_action->setObjectName("timelabel_action");
-
-	connect( this, SIGNAL(timeChanged(QString)),
-			 time_label_action, SLOT(setText(QString)) );
 }
 
 
@@ -365,8 +359,8 @@ void TMpc::createStatusBar() {
 }
 
 void TMpc::displayTime(QString text) {
+
 	time_display->setText( text );
-	time_label_action->setText(text );
 	floating_control_time->setText(text);
 }
 

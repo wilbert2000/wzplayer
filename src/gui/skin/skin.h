@@ -66,7 +66,6 @@ protected:
 	virtual void aboutToExitCompactMode();
 
 protected slots:
-	virtual void displayTime(QString text);
 	virtual void displayState(TCore::State state);
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
@@ -84,7 +83,6 @@ protected:
 	TSeekingButton * forwardbutton_action;
 
 	TAutohideWidget * floating_control;
-	TTimeLabelAction * time_label_action;
 
 	TAction * editToolbar1Act;
 #if defined(SKIN_EDITABLE_CONTROL)

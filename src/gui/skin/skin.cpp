@@ -55,9 +55,6 @@ namespace Gui {
 TSkin::TSkin()
 	: TBasePlus() {
 
-	connect(this, SIGNAL(timeChanged(QString)),
-			this, SLOT(displayTime(QString)));
-
 	createActions();
 	createMainToolBars();
 	createControlWidget();
@@ -66,11 +63,11 @@ TSkin::TSkin()
 
 	connect(editToolbar1Act, SIGNAL(triggered()),
 			toolbar1, SLOT(edit()));
-	#if defined(SKIN_EDITABLE_CONTROL)
+#if defined(SKIN_EDITABLE_CONTROL)
 	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
 	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
-	#endif
+#endif
 }
 
 TSkin::~TSkin() {
@@ -78,10 +75,6 @@ TSkin::~TSkin() {
 
 void TSkin::createActions() {
 	qDebug("Gui::TSkin::createActions");
-
-	// Create the time label
-	time_label_action = new TTimeLabelAction(this);
-	time_label_action->setObjectName("timelabel_action");
 
 	QList<QAction*> rewind_actions;
 	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
@@ -268,10 +261,6 @@ void TSkin::retranslateStrings() {
 
 	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info") );
 	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title") );
-}
-
-void TSkin::displayTime(QString text) {
-	time_label_action->setText(text);
 }
 
 void TSkin::displayState(TCore::State state) {

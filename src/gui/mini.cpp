@@ -62,12 +62,6 @@ QMenu * TMini::createPopupMenu() {
 
 void TMini::createActions() {
 
-	time_label_action = new TTimeLabelAction(this);
-	time_label_action->setObjectName("timelabel_action");
-
-	connect( this, SIGNAL(timeChanged(QString)),
-			 time_label_action, SLOT(setText(QString)) );
-
 	editControlAct = new TAction( this, "edit_control_minigui" );
 	editFloatingControlAct = new TAction( this, "edit_floating_control_minigui" );
 }

@@ -91,10 +91,6 @@ TDefault::~TDefault() {
 void TDefault::createActions() {
 	qDebug("Gui::TDefault::createActions");
 
-	// Create the time label
-	time_label_action = new TTimeLabelAction(this);
-	time_label_action->setObjectName("timelabel_action");
-
 	QList<QAction*> rewind_actions;
 	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
 	rewindbutton_action = new TSeekingButton(rewind_actions, this);
@@ -370,8 +366,8 @@ void TDefault::retranslateStrings() {
 
 
 void TDefault::displayTime(QString text) {
-	time_display->setText( text );
-	time_label_action->setText(text);
+
+	time_display->setText(text);
 }
 
 void TDefault::displayFrame(int frame) {

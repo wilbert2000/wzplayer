@@ -720,6 +720,7 @@ protected:
 
 	TTimeSliderAction* timeslider_action;
 	TVolumeSliderAction* volumeslider_action;
+	TTimeLabelAction* time_label_action;
 
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;

@@ -81,8 +81,6 @@ protected:
 
 	TAutohideWidget * floating_control;
 	QSpacerItem * spacer;
-
-	TTimeLabelAction * time_label_action;
 };
 
 } // namespace Gui

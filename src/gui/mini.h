@@ -58,10 +58,7 @@ protected:
 
 protected:
 	TEditableToolbar * controlwidget;
-
 	TAutohideWidget * floating_control;
-
-	TTimeLabelAction * time_label_action;
 
 	TAction * editControlAct;
 	TAction * editFloatingControlAct;

@@ -1395,6 +1395,10 @@ void TBase::createActions() {
 	connect( core, SIGNAL(volumeChanged(int)),
 			 volumeslider_action, SLOT(setValue(int)) );
 
+	// Time label actions
+	time_label_action = new TTimeLabelAction(this);
+	time_label_action->setObjectName("timelabel_action");
+
 } // createActions
 
 void TBase::createMenus() {
@@ -4513,13 +4517,14 @@ void TBase::displayMessage(QString message) {
 }
 
 void TBase::gotCurrentTime(double sec) {
-	//qDebug( "Gui::TBase::displayTime: %f", sec);
+	//qDebug( "Gui::TBase::gotCurrentTime: %f", sec);
 
 	QString time =
 		Helper::formatTime((int) sec) + " / " +
 		Helper::formatTime(qRound(core->mdat.duration));
+	time_label_action->setText(time);
 
-	emit timeChanged( time );
+	emit timeChanged(time);
 }
 
 void TBase::gotDuration(double duration) {
