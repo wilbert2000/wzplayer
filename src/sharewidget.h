@@ -31,7 +31,7 @@ class ShareButton : public QPushButton
 	Q_OBJECT
 
 public:
-	ShareButton(const QString icon_name, const QString & tooltip, QWidget * parent = 0);
+	ShareButton(const QString icon_name, const QString & tooltip, QWidget* parent = 0);
 	virtual ~ShareButton() {}
 
 	QSize sizeHint() const;
@@ -49,7 +49,7 @@ class ShareWidget : public QWidget
 public:
 	enum Display { Never = 0, Random = 1, Always = 2 };
 
-	ShareWidget(QSettings * settings, QWidget * parent = 0, Qt::WindowFlags f = 0);
+	ShareWidget(QSettings* settings, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~ShareWidget();
 
 	virtual void setVisible(bool visible);
@@ -67,7 +67,7 @@ protected:
 	void setActionPerformed(int action);
 	void updateButtons();
 	void retranslateStrings();
-	virtual void changeEvent(QEvent * event);
+	virtual void changeEvent(QEvent* event);
 
 protected slots:
 	void donate();
@@ -75,12 +75,12 @@ protected slots:
 	void twitter();
 
 protected:
-	ShareButton * donate_button;
-	ShareButton * fb_button;
-	ShareButton * twitter_button;
-	QPushButton * support_button;
+	ShareButton* donate_button;
+	ShareButton* fb_button;
+	ShareButton* twitter_button;
+	QPushButton* support_button;
 
-	QSettings * set;
+	QSettings* set;
 	int actions_taken;
 	int count;
 	int display;

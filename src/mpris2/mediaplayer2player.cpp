@@ -53,7 +53,7 @@ static QByteArray makeTrackId(const QString& source)
             .toHex();
 }
 
-MediaPlayer2Player::MediaPlayer2Player(Gui::TBase * gui, QObject* parent)
+MediaPlayer2Player::MediaPlayer2Player(Gui::TBase* gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
       m_core(gui->getCore()),
       m_playlist(gui->getPlaylist())

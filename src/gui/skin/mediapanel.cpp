@@ -80,10 +80,10 @@ TMediaPanel::TMediaPanel(QWidget* parent, int pos_max) :
 	totalLabel->setAlignment((Qt::Alignment) Qt::AlignHCenter | Qt::AlignTop);
 	totalLabel->setIndent(3);
 	/*
-	layout->addWidget( mediaLabel, 0, 0, 1, 2 );
-	layout->addWidget( resolutionLabel, 0, 2, 1, 1 );
-	layout->addWidget( repeatButton, 0, 3  );
-	layout->addWidget( shuffleButton, 0, 4  );
+	layout->addWidget(mediaLabel, 0, 0, 1, 2);
+	layout->addWidget(resolutionLabel, 0, 2, 1, 1);
+	layout->addWidget(repeatButton, 0, 3 );
+	layout->addWidget(shuffleButton, 0, 4 );
 	layout->addWidget(elapsedLabel, 1, 0, 1, 1);
 	layout->addWidget(seeker, 1, 1, 1, 2);
 	layout->addWidget(totalLabel, 1, 3, 1, 2);
@@ -110,18 +110,18 @@ TMediaPanel::~TMediaPanel() {
 
 void TMediaPanel::rearrangeWidgets(bool resolution_visible) {
 	if (resolution_visible) {
-		layout->addWidget( mediaLabel, 0, 0, 1, 2 );
-		layout->addWidget( resolutionLabel, 0, 2, 1, 1 );
-		layout->addWidget( repeatButton, 0, 3  );
-		layout->addWidget( shuffleButton, 0, 4  );
+		layout->addWidget(mediaLabel, 0, 0, 1, 2);
+		layout->addWidget(resolutionLabel, 0, 2, 1, 1);
+		layout->addWidget(repeatButton, 0, 3 );
+		layout->addWidget(shuffleButton, 0, 4 );
 		layout->addWidget(elapsedLabel, 1, 0, 1, 1);
 		layout->addWidget(seeker, 1, 1, 1, 2);
 		layout->addWidget(totalLabel, 1, 3, 1, 2);
 		resolutionLabel->setVisible(true);
 	} else {
-		layout->addWidget( mediaLabel, 0, 0, 1, 2 );
-		layout->addWidget( repeatButton, 0, 2  );
-		layout->addWidget( shuffleButton, 0, 3  );
+		layout->addWidget(mediaLabel, 0, 0, 1, 2);
+		layout->addWidget(repeatButton, 0, 2 );
+		layout->addWidget(shuffleButton, 0, 3 );
 		layout->addWidget(elapsedLabel, 1, 0, 1, 1);
 		layout->addWidget(seeker, 1, 1, 1, 1);
 		layout->addWidget(totalLabel, 1, 2, 1, 2);
@@ -140,11 +140,11 @@ void TMediaPanel::setScrollingEnabled(bool b) {
 void TMediaPanel::paintEvent(QPaintEvent *) {
 	QPainter p(this);
 	p.drawPixmap(0,0,leftBackground.width(), 53, leftBackground);
-	p.drawPixmap(width() - rightBackground.width(), 0, rightBackground.width(), 53, rightBackground );
-	p.drawTiledPixmap(leftBackground.width(), 0, width() - leftBackground.width() - rightBackground.width(), 53, centerBackground  );    
+	p.drawPixmap(width() - rightBackground.width(), 0, rightBackground.width(), 53, rightBackground);
+	p.drawTiledPixmap(leftBackground.width(), 0, width() - leftBackground.width() - rightBackground.width(), 53, centerBackground );    
 }
 
-void TMediaPanel::setShuffleIcon( TIcon icon ) {
+void TMediaPanel::setShuffleIcon(TIcon icon) {
 	shuffleButton->setIcon(icon);
 	shuffleButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off));
 }
@@ -254,7 +254,7 @@ void TScrollingLabel::paintEvent(QPaintEvent *) {
 	p.setRenderHint(QPainter::TextAntialiasing, true);
 	QRect widgetRect = rect();
 	if (textRect.width() <= width()) {
-		p.drawText(widgetRect, Qt::AlignVCenter | Qt::AlignLeading, mText  );
+		p.drawText(widgetRect, Qt::AlignVCenter | Qt::AlignLeading, mText );
 	} else {
 		p.translate(-scrollPos, 0);
 		p.drawText(widgetRect.adjusted(0,0,scrollPos, 0), Qt::AlignVCenter | Qt::AlignLeading, mText);
@@ -270,7 +270,7 @@ void TScrollingLabel::setText(QString text) {
 	repaint();
 }
 
-void TScrollingLabel::changeEvent(QEvent * e) {
+void TScrollingLabel::changeEvent(QEvent* e) {
 	if (e->type() == QEvent::FontChange) {
 		updateLabel();
 	}
@@ -300,7 +300,7 @@ void TScrollingLabel::timerEvent(QTimerEvent *) {
 	update();
 }
 
-TScrollingLabel::TScrollingLabel(QWidget* parent ) {
+TScrollingLabel::TScrollingLabel(QWidget* parent) {
 	Q_UNUSED(parent)
 
 	scrollPos =0;

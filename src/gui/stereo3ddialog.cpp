@@ -37,7 +37,7 @@ TStereo3dDialog::TStereo3dDialog(QWidget* parent, Qt::WindowFlags f)
 
 	// Copy the input formats
 	for (int n = 0; n < in_combo->count(); n++) {
-		out_combo->addItem( in_combo->itemText(n), in_combo->itemData(n) );
+		out_combo->addItem(in_combo->itemText(n), in_combo->itemData(n));
 	}
 
 	out_combo->addItem(tr("Anaglyph red/cyan gray"), "arcg");

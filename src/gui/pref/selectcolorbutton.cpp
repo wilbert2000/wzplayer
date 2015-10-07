@@ -24,7 +24,7 @@
 
 namespace Gui { namespace Pref {
 
-TSelectColorButton::TSelectColorButton( QWidget * parent ) 
+TSelectColorButton::TSelectColorButton(QWidget* parent) 
 	: QPushButton(parent)
 {
 	connect(this, SIGNAL(clicked()), this, SLOT(selectColor()));
@@ -48,15 +48,15 @@ void TSelectColorButton::setColor(QColor c) {
                 "border-width: 2px; border-radius: 5px; "
                 "border-color: grey; padding: 3px; min-width: 4ex; min-height: 1.2ex; } "
                 "QPushButton:pressed { border-style: inset; }"
-                ).arg(ColorUtils::colorToRRGGBB(_color.rgb())) );
+               ).arg(ColorUtils::colorToRRGGBB(_color.rgb())));
 
 	ignore_change_event = false;
 }
 
 void TSelectColorButton::selectColor() {
-	QColor c = QColorDialog::getColor( _color, 0 );
+	QColor c = QColorDialog::getColor(_color, 0);
 	if (c.isValid()) {
-		setColor( c );
+		setColor(c);
 	}
 }
 
@@ -65,7 +65,7 @@ void TSelectColorButton::changeEvent(QEvent *e) {
 	QPushButton::changeEvent(e);
 	
 	if ((e->type() == QEvent::StyleChange) && (!ignore_change_event)) {
-		setColor( color() );
+		setColor(color());
 	}
 
 }

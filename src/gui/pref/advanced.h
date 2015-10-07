@@ -30,17 +30,17 @@ class TAdvanced : public TWidget, public Ui::TAdvanced
 	Q_OBJECT
 
 public:
-	TAdvanced( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TAdvanced(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TAdvanced();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; }
 	bool monitorAspectChanged() { return monitor_aspect_changed; }

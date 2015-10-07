@@ -48,7 +48,7 @@ public:
                    DASH_VIDEO_480p = 135, DASH_VIDEO_360p = 134,
                    DASH_VIDEO_240p = 133 };
 
-	RetrieveYoutubeUrl( QObject* parent = 0 );
+	RetrieveYoutubeUrl(QObject* parent = 0);
 	~RetrieveYoutubeUrl();
 
 	void setPreferredQuality(Quality q) { preferred_quality = q; }
@@ -60,7 +60,7 @@ public:
 	void fetchPage(const QString & url);
 
 #ifdef YT_USE_SIG
-	void setSettings(QSettings * settings);
+	void setSettings(QSettings* settings);
 #endif
 
 #ifdef YT_DASH_SUPPORT
@@ -128,16 +128,16 @@ protected:
 
 private:
 	QNetworkAccessManager* manager;
-	LoadPage * dl_video_page;
+	LoadPage* dl_video_page;
 
 #ifdef YT_GET_VIDEOINFO
-	LoadPage * dl_video_info_page;
+	LoadPage* dl_video_info_page;
 #endif
 
 #ifdef YT_USE_SIG
-	LoadPage * dl_player_page;
+	LoadPage* dl_player_page;
 	Sig sig;
-	QSettings * set;
+	QSettings* set;
 #else
 	QString html5_player;
 #endif

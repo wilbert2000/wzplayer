@@ -33,7 +33,7 @@ TLineEdit::TLineEdit(QWidget *parent)
 }
 
 void TLineEdit::setupButton() {
-	setIcon( Images::icon("clear_left") );
+	setIcon(Images::icon("clear_left"));
 }
 
 void TLineEdit::updateCloseButton(const QString& text) {

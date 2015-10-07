@@ -26,7 +26,7 @@
 
 namespace Gui {
 
-TToolbarEditor::TToolbarEditor( QWidget* parent, Qt::WindowFlags f )
+TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -37,10 +37,10 @@ TToolbarEditor::TToolbarEditor( QWidget* parent, Qt::WindowFlags f )
 	QMatrix matrix;
 	matrix.rotate(90);
 
-	right_button->setIcon( Images::icon("up").transformed(matrix) );
-	left_button->setIcon( Images::icon("down").transformed(matrix) );
+	right_button->setIcon(Images::icon("up").transformed(matrix));
+	left_button->setIcon(Images::icon("down").transformed(matrix));
 
-	QPushButton * restore = buttonBox->button(QDialogButtonBox::RestoreDefaults);
+	QPushButton* restore = buttonBox->button(QDialogButtonBox::RestoreDefaults);
 	connect(restore, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
 
 	connect(all_actions_list, SIGNAL(currentRowChanged(int)),
@@ -76,15 +76,15 @@ int TToolbarEditor::iconSize() {
 	return iconsize_spin->value();
 }
 
-void TToolbarEditor::populateList(QListWidget * w, QList<QAction *> actions_list, bool add_separators) {
+void TToolbarEditor::populateList(QListWidget* w, QList<QAction *> actions_list, bool add_separators) {
 	w->clear();
 
-	QAction * action;
+	QAction* action;
 	for (int n = 0; n < actions_list.count(); n++) {
 		action = static_cast<QAction*> (actions_list[n]);
 		if (action) {
 			if (!action->objectName().isEmpty()) {
-				QListWidgetItem * i = new QListWidgetItem;
+				QListWidgetItem* i = new QListWidgetItem;
 				QString text = fixname(action->text(), action->objectName());
 				i->setText(text + " ("+ action->objectName() +")");
 				QIcon icon = action->icon();
@@ -97,7 +97,7 @@ void TToolbarEditor::populateList(QListWidget * w, QList<QAction *> actions_list
 			}
 			else
 			if ((action->isSeparator()) && (add_separators)) {
-				QListWidgetItem * i = new QListWidgetItem;
+				QListWidgetItem* i = new QListWidgetItem;
 				//i->setText(tr("(separator)"));
 				i->setText("---------");
 				i->setData(Qt::UserRole, "separator");
@@ -118,7 +118,7 @@ void TToolbarEditor::setActiveActions(QList<QAction *> actions_list) {
 
 	// Delete actions from the "all list" which are in the active list
 	for (int n = 0; n < active_actions_list->count(); n++) {
-		int row = findItem( active_actions_list->item(n)->data(Qt::UserRole).toString(), all_actions_list );
+		int row = findItem(active_actions_list->item(n)->data(Qt::UserRole).toString(), all_actions_list);
 		if (row > -1) {
 			qDebug("found: %s", active_actions_list->item(n)->data(Qt::UserRole).toString().toUtf8().constData());
 			all_actions_list->takeItem(row);
@@ -126,7 +126,7 @@ void TToolbarEditor::setActiveActions(QList<QAction *> actions_list) {
 	}
 }
 
-int TToolbarEditor::findItem(const QString & action_name, QListWidget * w) {
+int TToolbarEditor::findItem(const QString & action_name, QListWidget* w) {
 	for (int n = 0; n < w->count(); n++) {
 		if (w->item(n)->data(Qt::UserRole).toString() == action_name) {
 			return n;
@@ -141,7 +141,7 @@ void TToolbarEditor::on_up_button_clicked() {
 
 	if (row == 0) return;
 
-	QListWidgetItem * current = active_actions_list->takeItem(row);
+	QListWidgetItem* current = active_actions_list->takeItem(row);
 	active_actions_list->insertItem(row-1, current);
 	active_actions_list->setCurrentRow(row-1);
 }
@@ -152,7 +152,7 @@ void TToolbarEditor::on_down_button_clicked() {
 
 	if ((row+1) >= active_actions_list->count()) return;
 
-	QListWidgetItem * current = active_actions_list->takeItem(row);
+	QListWidgetItem* current = active_actions_list->takeItem(row);
 	active_actions_list->insertItem(row+1, current);
 	active_actions_list->setCurrentRow(row+1);
 }
@@ -162,7 +162,7 @@ void TToolbarEditor::on_right_button_clicked() {
 	qDebug("Gui::TToolbarEditor::on_right_button_clicked: current_row: %d", row);
 
 	if (row > -1) {
-		QListWidgetItem * current = all_actions_list->takeItem(row);
+		QListWidgetItem* current = all_actions_list->takeItem(row);
 		int dest_row = active_actions_list->currentRow();
 		if (dest_row > -1) {
 			active_actions_list->insertItem(dest_row+1, current);
@@ -177,7 +177,7 @@ void TToolbarEditor::on_left_button_clicked() {
 	qDebug("Gui::TToolbarEditor::on_left_button_clicked: current_row: %d", row);
 
 	if (row > -1) {
-		QListWidgetItem * current = active_actions_list->takeItem(row);
+		QListWidgetItem* current = active_actions_list->takeItem(row);
 		if (current->data(Qt::UserRole).toString() != "separator") {
 			int dest_row = all_actions_list->currentRow();
 			if (dest_row > -1) {
@@ -192,7 +192,7 @@ void TToolbarEditor::on_left_button_clicked() {
 void TToolbarEditor::on_separator_button_clicked() {
 	qDebug("Gui::TToolbarEditor::on_separator_button_clicked");
 
-	QListWidgetItem * i = new QListWidgetItem;
+	QListWidgetItem* i = new QListWidgetItem;
 	//i->setText(tr("(separator)"));
 	i->setText("---------");
 	i->setData(Qt::UserRole, "separator");
@@ -212,10 +212,10 @@ void TToolbarEditor::restoreDefaults() {
 
 	// Create list of actions
 	QList<QAction *> actions;
-	QAction * a = 0;
+	QAction* a = 0;
 	for (int n = 0; n < default_actions.count(); n++) {
 		if (default_actions[n] == "separator") {
-			QAction * sep = new QAction(this);
+			QAction* sep = new QAction(this);
 			sep->setSeparator(true);
 			actions.push_back(sep);
 		} else {
@@ -266,12 +266,12 @@ QString TToolbarEditor::fixname(const QString & name, const QString & action_nam
 	return s;
 }
 
-QStringList TToolbarEditor::save(QWidget * w) {
+QStringList TToolbarEditor::save(QWidget* w) {
 	qDebug("Gui::TToolbarEditor::save: '%s'", w->objectName().toUtf8().data());
 
 	QList<QAction *> list = w->actions();
 	QStringList o;
-	QAction * action;
+	QAction* action;
 
 	for (int n = 0; n < list.count(); n++) {
 		action = static_cast<QAction*> (list[n]);
@@ -293,14 +293,14 @@ void TToolbarEditor::load(QWidget *w, QStringList l, QList<QAction *> actions_li
 {
 	qDebug("Gui::TToolbarEditor::load: '%s'", w->objectName().toUtf8().data());
 
-	QAction * action;
+	QAction* action;
 
 	for (int n = 0; n < l.count(); n++) {
 		//qDebug("Gui::TToolbarEditor::load: loading action %s", l[n].toUtf8().data());
 
 		if (l[n] == "separator") {
 			//qDebug("Gui::TToolbarEditor::load: adding separator");
-			QAction * sep = new QAction(w);
+			QAction* sep = new QAction(w);
 			sep->setSeparator(true);
 			w->addAction(sep);
 		} else {
@@ -309,9 +309,9 @@ void TToolbarEditor::load(QWidget *w, QStringList l, QList<QAction *> actions_li
 				w->addAction(action);
 				if (action->objectName().endsWith("_menu")) {
 					// If the action is a menu and is in a toolbar, as a toolbutton, change some of its properties
-					QToolBar * toolbar = qobject_cast<QToolBar *>(w);
+					QToolBar* toolbar = qobject_cast<QToolBar *>(w);
 					if (toolbar) {
-						QToolButton * button = qobject_cast<QToolButton *>(toolbar->widgetForAction(action));
+						QToolButton* button = qobject_cast<QToolButton *>(toolbar->widgetForAction(action));
 						if (button) {
 							//qDebug("Gui::TToolbarEditor::load: action %s is a toolbutton", action->objectName().toUtf8().constData());
 							button->setPopupMode(QToolButton::InstantPopup);
@@ -326,8 +326,8 @@ void TToolbarEditor::load(QWidget *w, QStringList l, QList<QAction *> actions_li
 	}
 }
 
-QAction * TToolbarEditor::findAction(QString s, QList<QAction *> actions_list) {
-	QAction * action;
+QAction* TToolbarEditor::findAction(QString s, QList<QAction *> actions_list) {
+	QAction* action;
 
 	for (int n = 0; n < actions_list.count(); n++) {
 		action = static_cast<QAction*> (actions_list[n]);

@@ -25,7 +25,7 @@
 
 namespace Gui {
 
-TTimeSlider::TTimeSlider(QWidget * parent, int max_pos, int drag_delay) :
+TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay) :
 	TSlider(parent),
 	dont_update(false),
 	position(0),
@@ -37,15 +37,15 @@ TTimeSlider::TTimeSlider(QWidget * parent, int max_pos, int drag_delay) :
 	setFocusPolicy(Qt::NoFocus);
 	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Fixed);
 
-	connect( this, SIGNAL( sliderPressed() ), this, SLOT( stopUpdate() ) );
-	connect( this, SIGNAL( sliderReleased() ), this, SLOT( resumeUpdate() ) );
-	connect( this, SIGNAL( sliderReleased() ), this, SLOT( mouseReleased() ) );
-	connect( this, SIGNAL( valueChanged(int) ), this, SLOT( valueChanged_slot(int) ) );
-	connect( this, SIGNAL( draggingPos(int) ), this, SLOT( checkDragging(int) ) );
+	connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));
+	connect(this, SIGNAL(sliderReleased()), this, SLOT(resumeUpdate()));
+	connect(this, SIGNAL(sliderReleased()), this, SLOT(mouseReleased()));
+	connect(this, SIGNAL(valueChanged(int)), this, SLOT(valueChanged_slot(int)));
+	connect(this, SIGNAL(draggingPos(int)), this, SLOT(checkDragging(int)));
 	
 	timer = new QTimer(this);
 	timer->setInterval(drag_delay);
-	connect( timer, SIGNAL(timeout()), this, SLOT(sendDelayedPos()) );
+	connect(timer, SIGNAL(timeout()), this, SLOT(sendDelayedPos()));
 }
 
 TTimeSlider::~TTimeSlider() {
@@ -73,7 +73,7 @@ void TTimeSlider::mouseReleased() {
 	#if DEBUG
 	qDebug("Gui::TTimeSlider::mouseReleased");
 	#endif
-	emit posChanged( value() );
+	emit posChanged(value());
 }
 
 void TTimeSlider::valueChanged_slot(int v) {
@@ -138,7 +138,7 @@ int TTimeSlider::pos() {
 	return position;
 }
 
-void TTimeSlider::wheelEvent(QWheelEvent * e) {
+void TTimeSlider::wheelEvent(QWheelEvent* e) {
 	//e->ignore();
 
 	qDebug("Gui::TTimeSlider::wheelEvent: delta: %d", e->delta());

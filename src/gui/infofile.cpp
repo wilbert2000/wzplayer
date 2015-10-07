@@ -65,71 +65,71 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		|| md.selected_type == TMediaData::TYPE_BLURAY)
 	{
 		TDiscData disc_data = TDiscName::split(md.filename);
-		s += title( icon + disc_data.protocol + "://" + QString::number(disc_data.title) );
+		s += title(icon + disc_data.protocol + "://" + QString::number(disc_data.title));
 	} else {
-		s += title( icon + md.displayName() );
+		s += title(icon + md.displayName());
 	}
 
-	s += openPar( tr("General") );
+	s += openPar(tr("General"));
 	if (fi.exists()) {
-		//s += addItem( tr("Path"), fi.dirPath() );
-		s += addItem( tr("File"), fi.absoluteFilePath() );
-		s += addItem( tr("Size"), tr("%1 KB (%2 MB)").arg(fi.size()/1024)
-                                  .arg(fi.size()/1048576) );
+		//s += addItem(tr("Path"), fi.dirPath());
+		s += addItem(tr("File"), fi.absoluteFilePath());
+		s += addItem(tr("Size"), tr("%1 KB (%2 MB)").arg(fi.size()/1024)
+                                  .arg(fi.size()/1048576));
 	} else {
 		QString url = md.filename;
-		s += addItem( tr("URL"), url );
+		s += addItem(tr("URL"), url);
 	}
-	s += addItem( tr("Length"), Helper::formatTime((int)md.duration) );
-	s += addItem( tr("Demuxer"), md.demuxer );
+	s += addItem(tr("Length"), Helper::formatTime((int)md.duration));
+	s += addItem(tr("Demuxer"), md.demuxer);
 	s += closePar();
 
 	// Clip info
 	QString c;
-	if (md.meta_data.contains("NAME")) c+= addItem( tr("Name"), md.meta_data["NAME"] );
-	if (md.meta_data.contains("ARTIST")) c+= addItem( tr("Artist"), md.meta_data["ARTIST"] );
-	if (md.meta_data.contains("AUTHOR")) c+= addItem( tr("Author"), md.meta_data["AUTHOR"] );
-	if (md.meta_data.contains("ALBUM")) c+= addItem( tr("Album"), md.meta_data["ALBUM"] );
-	if (md.meta_data.contains("GENRE")) c+= addItem( tr("Genre"), md.meta_data["GENRE"] );
-	if (md.meta_data.contains("DATE")) c+= addItem( tr("Date"), md.meta_data["DATE"] );
-	if (md.meta_data.contains("TRACK")) c+= addItem( tr("Track"), md.meta_data["TRACK"] );
-	if (md.meta_data.contains("COPYRIGHT")) c+= addItem( tr("Copyright"), md.meta_data["COPYRIGHT"] );
-	if (md.meta_data.contains("COMMENT")) c+= addItem( tr("Comment"), md.meta_data["COMMENT"] );
-	if (md.meta_data.contains("SOFTWARE")) c+= addItem( tr("Software"), md.meta_data["SOFTWARE"] );
+	if (md.meta_data.contains("NAME")) c+= addItem(tr("Name"), md.meta_data["NAME"]);
+	if (md.meta_data.contains("ARTIST")) c+= addItem(tr("Artist"), md.meta_data["ARTIST"]);
+	if (md.meta_data.contains("AUTHOR")) c+= addItem(tr("Author"), md.meta_data["AUTHOR"]);
+	if (md.meta_data.contains("ALBUM")) c+= addItem(tr("Album"), md.meta_data["ALBUM"]);
+	if (md.meta_data.contains("GENRE")) c+= addItem(tr("Genre"), md.meta_data["GENRE"]);
+	if (md.meta_data.contains("DATE")) c+= addItem(tr("Date"), md.meta_data["DATE"]);
+	if (md.meta_data.contains("TRACK")) c+= addItem(tr("Track"), md.meta_data["TRACK"]);
+	if (md.meta_data.contains("COPYRIGHT")) c+= addItem(tr("Copyright"), md.meta_data["COPYRIGHT"]);
+	if (md.meta_data.contains("COMMENT")) c+= addItem(tr("Comment"), md.meta_data["COMMENT"]);
+	if (md.meta_data.contains("SOFTWARE")) c+= addItem(tr("Software"), md.meta_data["SOFTWARE"]);
 
-	if (!md.stream_title.isEmpty()) c+= addItem( tr("Stream title"), md.stream_title );
-	if (!md.stream_url.isEmpty()) c+= addItem( tr("Stream URL"), md.stream_url );
+	if (!md.stream_title.isEmpty()) c+= addItem(tr("Stream title"), md.stream_title);
+	if (!md.stream_url.isEmpty()) c+= addItem(tr("Stream URL"), md.stream_url);
 
 	if (!c.isEmpty()) {
-		s += openPar( tr("Clip info") );
+		s += openPar(tr("Clip info"));
 		s += c;
 		s += closePar();
 	}
 
 	// Video info
 	if (!md.noVideo()) {
-		s += openPar( tr("Video") );
-		s += addItem( tr("Resolution"), QString("%1 x %2").arg(md.video_width).arg(md.video_height) );
-		s += addItem( tr("Aspect ratio"), QString::number(md.video_aspect) );
-		s += addItem( tr("Format"), md.video_format );
-		s += addItem( tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000) );
-		s += addItem( tr("Frames per second"), QString::number(md.video_fps) );
-		s += addItem( tr("Selected codec"), md.video_codec );
+		s += openPar(tr("Video"));
+		s += addItem(tr("Resolution"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
+		s += addItem(tr("Aspect ratio"), QString::number(md.video_aspect));
+		s += addItem(tr("Format"), md.video_format);
+		s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000));
+		s += addItem(tr("Frames per second"), QString::number(md.video_fps));
+		s += addItem(tr("Selected codec"), md.video_codec);
 		s += closePar();
 	}
 
 	// Audio info
-	s += openPar( tr("Initial Audio Stream") );
-	s += addItem( tr("Format"), md.audio_format );
-	s += addItem( tr("Bitrate"), tr("%1 kbps").arg(md.audio_bitrate / 1000) );
-	s += addItem( tr("Rate"), tr("%1 Hz").arg(md.audio_rate) );
-	s += addItem( tr("Channels"), QString::number(md.audio_nch) );
-	s += addItem( tr("Selected codec"), md.audio_codec );
+	s += openPar(tr("Initial Audio Stream"));
+	s += addItem(tr("Format"), md.audio_format);
+	s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.audio_bitrate / 1000));
+	s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
+	s += addItem(tr("Channels"), QString::number(md.audio_nch));
+	s += addItem(tr("Selected codec"), md.audio_codec);
 	s += closePar();
 
 	// Audio Tracks
 	if (md.audios.count() > 0) {
-		s += openPar( tr("Audio Streams") );
+		s += openPar(tr("Audio Streams"));
 		row++;
 		s += openItem();
 		s += "<td>" + tr("#", "Info for translators: this is a abbreviation for number") + "</td><td>" + 
@@ -159,7 +159,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 
 	// Subtitles
 	if (md.subs.count() > 0) {
-		s += openPar( tr("Subtitles") );
+		s += openPar(tr("Subtitles"));
 		row++;
 		s += openItem();
 		s += "<td>" + tr("#", "Info for translators: this is a abbreviation for number") + "</td><td>" + 
@@ -221,7 +221,7 @@ QString TInfoFile::closeItem() {
 	return "</tr>";
 }
 
-QString TInfoFile::addItem( QString tag, QString value ) {
+QString TInfoFile::addItem(QString tag, QString value) {
 	row++;
 	return openItem() + 
            "<td><b>" + tag + "</b></td>" +
@@ -230,11 +230,11 @@ QString TInfoFile::addItem( QString tag, QString value ) {
 }
 
 
-inline QString TInfoFile::tr( const char * sourceText, const char * comment, int n )  {
+inline QString TInfoFile::tr(const char* sourceText, const char* comment, int n)  {
 #if QT_VERSION >= 0x050000
-	return QCoreApplication::translate("TInfoFile", sourceText, comment, n );
+	return QCoreApplication::translate("TInfoFile", sourceText, comment, n);
 #else
-	return QCoreApplication::translate("TInfoFile", sourceText, comment, QCoreApplication::CodecForTr, n );
+	return QCoreApplication::translate("TInfoFile", sourceText, comment, QCoreApplication::CodecForTr, n);
 #endif
 }
 

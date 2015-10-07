@@ -64,7 +64,7 @@ void TFilters::load(QSettings *set) {
 
 	QMap<QString, TFilter>::iterator i;
 	for (i = list.begin(); i != list.end(); ++i) {
-		i.value().setOptions( set->value(i.key(), i.value().options()).toString() );
+		i.value().setOptions(set->value(i.key(), i.value().options()).toString());
 	}
 
 	set->endGroup();

@@ -55,14 +55,14 @@ protected slots:
 	void checkDragging(int);
 	void sendDelayedPos();
 
-	virtual void wheelEvent(QWheelEvent * e);
+	virtual void wheelEvent(QWheelEvent* e);
 
 private:
 	bool dont_update;
 	int position;
 	
 	int last_pos_to_send;
-	QTimer * timer;
+	QTimer* timer;
 };
 
 } // namespace Gui

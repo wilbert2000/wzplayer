@@ -31,17 +31,17 @@ class TPrefPlaylist : public TWidget, public Ui::TPrefPlaylist
 	Q_OBJECT
 
 public:
-	TPrefPlaylist( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TPrefPlaylist(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TPrefPlaylist();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 
 	void setDirectoryRecursion(bool b);

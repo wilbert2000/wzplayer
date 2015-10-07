@@ -49,8 +49,8 @@ public:
 	int marginr;
 	int marginv;
 
-	void save(QSettings * set);
-	void load(QSettings * set);
+	void save(QSettings* set);
+	void load(QSettings* set);
 
 	bool exportStyles(const QString & filename) const;
 	QString toString();

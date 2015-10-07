@@ -60,31 +60,31 @@ TBasePlus::TBasePlus()
 #endif
 {
 
-	tray = new QSystemTrayIcon( Images::icon("logo", 22), this );
-	tray->setToolTip( "SMPlayer" );
-	connect( tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), 
+	tray = new QSystemTrayIcon(Images::icon("logo", 22), this);
+	tray->setToolTip("SMPlayer");
+	connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
 	quitAct = new TAction(QKeySequence("Ctrl+Q"), this, "quit");
-	connect( quitAct, SIGNAL(triggered()), this, SLOT(quit()) );
+	connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
 	openMenu->addAction(quitAct);
 
-	showTrayAct = new TAction(this, "show_tray_icon" );
+	showTrayAct = new TAction(this, "show_tray_icon");
 	showTrayAct->setCheckable(true);
-	connect( showTrayAct, SIGNAL(toggled(bool)),
-			 tray, SLOT(setVisible(bool)) );
+	connect(showTrayAct, SIGNAL(toggled(bool)),
+			 tray, SLOT(setVisible(bool)));
 
 #ifndef Q_OS_OS2
 	optionsMenu->addAction(showTrayAct);
 #else
 	trayAvailable();
-	connect( optionsMenu, SIGNAL(aboutToShow()),
-			 this, SLOT(trayAvailable()) );
+	connect(optionsMenu, SIGNAL(aboutToShow()),
+			 this, SLOT(trayAvailable()));
 #endif
 
 	showAllAct = new TAction(this, "restore/hide");
-	connect( showAllAct, SIGNAL(triggered()),
-			 this, SLOT(toggleShowAll()) );
+	connect(showAllAct, SIGNAL(triggered()),
+			 this, SLOT(toggleShowAll()));
 
 
 	context_menu = new QMenu(this);
@@ -112,7 +112,7 @@ TBasePlus::TBasePlus()
 	context_menu->addSeparator();
 	context_menu->addAction(quitAct);
 	
-	tray->setContextMenu( context_menu );
+	tray->setContextMenu(context_menu);
 
 #if DOCK_PLAYLIST
 	// TPlaylistdock
@@ -128,13 +128,13 @@ TBasePlus::TBasePlus()
 	playlistdock->hide();
 	playlistdock->setFloating(true); // Floating by default
 
-	connect( playlistdock, SIGNAL(closed()), this, SLOT(playlistClosed()) );
+	connect(playlistdock, SIGNAL(closed()), this, SLOT(playlistClosed()));
 #if USE_DOCK_TOPLEVEL_EVENT
-	connect( playlistdock, SIGNAL(topLevelChanged(bool)), 
-			 this, SLOT(dockTopLevelChanged(bool)) );
+	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
+			 this, SLOT(dockTopLevelChanged(bool)));
 #else
-	connect( playlistdock, SIGNAL(visibilityChanged(bool)), 
-			 this, SLOT(dockVisibilityChanged(bool)) );
+	connect(playlistdock, SIGNAL(visibilityChanged(bool)),
+			 this, SLOT(dockVisibilityChanged(bool)));
 #endif // USE_DOCK_TOPLEVEL_EVENT
 
 	connect(this, SIGNAL(openFileRequested()), this, SLOT(showAll()));
@@ -148,7 +148,7 @@ bool TBasePlus::startHidden() {
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	return false;
 #else
-	if ( (!showTrayAct->isChecked()) || (mainwindow_visible) ) 
+	if ((!showTrayAct->isChecked()) || (mainwindow_visible))
 		return false;
 	else
 		return true;
@@ -163,9 +163,9 @@ void TBasePlus::switchToTray() {
 		core->stop();
 
 	if (pref->balloon_count > 0) {
-		tray->showMessage( "SMPlayer",
+		tray->showMessage("SMPlayer",
 			tr("SMPlayer is still running here"),
-			QSystemTrayIcon::Information, 3000 );
+			QSystemTrayIcon::Information, 3000);
 		pref->balloon_count--;
 	}
 }
@@ -192,21 +192,21 @@ void TBasePlus::retranslateStrings() {
 
 	TBase::retranslateStrings();
 
-	quitAct->change( Images::icon("exit"), tr("&Quit") );
-	showTrayAct->change( Images::icon("systray"), tr("S&how icon in system tray") );
+	quitAct->change(Images::icon("exit"), tr("&Quit"));
+	showTrayAct->change(Images::icon("systray"), tr("S&how icon in system tray"));
 
 	updateShowAllAct();
 
 #if DOCK_PLAYLIST
-	playlistdock->setWindowTitle( tr("Playlist") );
+	playlistdock->setWindowTitle(tr("Playlist"));
 #endif
 }
 
 void TBasePlus::updateShowAllAct() {
 	if (isVisible()) 
-		showAllAct->change( tr("&Hide") );
+		showAllAct->change(tr("&Hide"));
 	else
-		showAllAct->change( tr("&Restore") );
+		showAllAct->change(tr("&Restore"));
 }
 
 void TBasePlus::saveConfig(const QString &group) {
@@ -215,19 +215,19 @@ void TBasePlus::saveConfig(const QString &group) {
 	TBase::saveConfig(group);
 
 	// Store inside group derived class
-	pref->beginGroup( group );
-	pref->beginGroup( "base_gui_plus");
+	pref->beginGroup(group);
+	pref->beginGroup("base_gui_plus");
 
-	pref->setValue( "show_tray_icon", showTrayAct->isChecked() );
-	pref->setValue( "mainwindow_visible", isVisible() );
+	pref->setValue("show_tray_icon", showTrayAct->isChecked());
+	pref->setValue("mainwindow_visible", isVisible());
 
-	pref->setValue( "trayicon_playlist_was_visible", trayicon_playlist_was_visible );
-	pref->setValue( "widgets_size", widgets_size );
+	pref->setValue("trayicon_playlist_was_visible", trayicon_playlist_was_visible);
+	pref->setValue("widgets_size", widgets_size);
 #if DOCK_PLAYLIST
-	pref->setValue( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible );
-	pref->setValue( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating );
-	pref->setValue( "compact_playlist_was_visible", compact_playlist_was_visible );
-	pref->setValue( "ignore_playlist_events", ignore_playlist_events );
+	pref->setValue("fullscreen_playlist_was_visible", fullscreen_playlist_was_visible);
+	pref->setValue("fullscreen_playlist_was_floating", fullscreen_playlist_was_floating);
+	pref->setValue("compact_playlist_was_visible", compact_playlist_was_visible);
+	pref->setValue("ignore_playlist_events", ignore_playlist_events);
 #endif
 
 	pref->endGroup();
@@ -240,22 +240,22 @@ void TBasePlus::loadConfig(const QString &group) {
 	TBase::loadConfig(group);
 
 	// load from group derived class
-	pref->beginGroup( group );
-	pref->beginGroup( "base_gui_plus");
+	pref->beginGroup(group);
+	pref->beginGroup("base_gui_plus");
 
-	bool show_tray_icon = pref->value( "show_tray_icon", false).toBool();
-	showTrayAct->setChecked( show_tray_icon );
-	//tray->setVisible( show_tray_icon );
+	bool show_tray_icon = pref->value("show_tray_icon", false).toBool();
+	showTrayAct->setChecked(show_tray_icon);
+	//tray->setVisible(show_tray_icon);
 
 	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
 
-	trayicon_playlist_was_visible = pref->value( "trayicon_playlist_was_visible", trayicon_playlist_was_visible ).toBool();
-	widgets_size = pref->value( "widgets_size", widgets_size ).toInt();
+	trayicon_playlist_was_visible = pref->value("trayicon_playlist_was_visible", trayicon_playlist_was_visible).toBool();
+	widgets_size = pref->value("widgets_size", widgets_size).toInt();
 #if DOCK_PLAYLIST
-	fullscreen_playlist_was_visible = pref->value( "fullscreen_playlist_was_visible", fullscreen_playlist_was_visible ).toBool();
-	fullscreen_playlist_was_floating = pref->value( "fullscreen_playlist_was_floating", fullscreen_playlist_was_floating ).toBool();
-	compact_playlist_was_visible = pref->value( "compact_playlist_was_visible", compact_playlist_was_visible ).toBool();
-	ignore_playlist_events = pref->value( "ignore_playlist_events", ignore_playlist_events ).toBool();
+	fullscreen_playlist_was_visible = pref->value("fullscreen_playlist_was_visible", fullscreen_playlist_was_visible).toBool();
+	fullscreen_playlist_was_floating = pref->value("fullscreen_playlist_was_floating", fullscreen_playlist_was_floating).toBool();
+	compact_playlist_was_visible = pref->value("compact_playlist_was_visible", compact_playlist_was_visible).toBool();
+	ignore_playlist_events = pref->value("ignore_playlist_events", ignore_playlist_events).toBool();
 #endif
 
 	pref->endGroup();
@@ -281,7 +281,7 @@ void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 void TBasePlus::toggleShowAll() {
 	// Ignore if tray is not visible
 	if (tray->isVisible()) {
-		showAll( !isVisible() );
+		showAll(!isVisible());
 	}
 }
 
@@ -294,7 +294,7 @@ void TBasePlus::showAll(bool b) {
 		// Hide all
 #if DOCK_PLAYLIST
 		trayicon_playlist_was_visible = (playlistdock->isVisible() && 
-                                         playlistdock->isFloating() );
+										 playlistdock->isFloating());
 		if (trayicon_playlist_was_visible)
 			playlistdock->hide();
 
@@ -346,20 +346,20 @@ void TBasePlus::resizeWindow(int w, int h) {
 	if (tray->isVisible() && !isVisible())
 		showAll(true);
 
-	TBase::resizeWindow(w, h );
+	TBase::resizeWindow(w, h);
 }
 
 void TBasePlus::updateMediaInfo() {
 	qDebug("Gui::TBasePlus::updateMediaInfo");
 	TBase::updateMediaInfo();
 
-	tray->setToolTip( windowTitle() );
+	tray->setToolTip(windowTitle());
 }
 
 void TBasePlus::setWindowCaption(const QString& title) {
 
-	tray->setToolTip( title );
-	TBase::setWindowCaption( title );
+	tray->setToolTip(title);
+	TBase::setWindowCaption(title);
 }
 
 
@@ -382,7 +382,7 @@ void TBasePlus::aboutToEnterFullscreen() {
 
 	// Hide the playlist if it's in the same screen as the main window
 	if ((playlist_screen == mainwindow_screen) /* || 
-        (!fullscreen_playlist_was_floating) */ ) 
+		(!fullscreen_playlist_was_floating) */)
 	{
 		playlistdock->setFloating(true);
 		playlistdock->hide();
@@ -424,7 +424,7 @@ void TBasePlus::aboutToEnterCompactMode() {
 	TBase::aboutToEnterCompactMode();
 
 	if (pref->resize_method == Settings::TPreferences::Always) {
-		resize( width(), height() - widgets_size );
+		resize(width(), height() - widgets_size);
 	}
 }
 
@@ -432,7 +432,7 @@ void TBasePlus::aboutToExitCompactMode() {
 	TBase::aboutToExitCompactMode();
 
 	if (pref->resize_method == Settings::TPreferences::Always) {
-		resize( width(), height() + widgets_size );
+		resize(width(), height() + widgets_size);
 	}
 
 #if DOCK_PLAYLIST
@@ -445,7 +445,7 @@ void TBasePlus::aboutToExitCompactMode() {
 void TBasePlus::showPlaylist(bool b) {
 	qDebug("Gui::TBasePlus::showPlaylist: %d", b);
 
-	if ( !b ) {
+	if (!b) {
 		playlistdock->hide();
 	} else {
 		exitFullscreenIfNeeded();
@@ -487,10 +487,10 @@ void TBasePlus::stretchWindow() {
 	qDebug("Gui::TBasePlus::stretchWindow");
 	if (ignore_playlist_events || (pref->resize_method != Settings::TPreferences::Always)) return;
 
-	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
+	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
 
-	if ( (dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
-         (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea) )
+	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
+		 (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea))
 	{
 		int new_height = height() + playlistdock->height();
 
@@ -498,20 +498,20 @@ void TBasePlus::stretchWindow() {
 		//	new_height = TDesktopInfo::desktop_size(this).height() - 20;
 
 		qDebug("Gui::TBasePlus::stretchWindow: stretching: new height: %d", new_height);
-		resize( width(), new_height );
+		resize(width(), new_height);
 
 		//resizeWindow(core->mset.win_width, core->mset.win_height);
 	}
 
 	else
 
-	if ( (dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
-         (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea) )
+	if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
+		 (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea))
 	{
 		int new_width = width() + playlistdock->width();
 
 		qDebug("Gui::TBasePlus::stretchWindow: stretching: new width: %d", new_width);
-		resize( new_width, height() );
+		resize(new_width, height());
 	}
 }
 
@@ -521,27 +521,27 @@ void TBasePlus::shrinkWindow() {
 	if (ignore_playlist_events || (pref->resize_method != Settings::TPreferences::Always))
 		return;
 
-	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock) );
+	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
 
-	if ( (dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
-         (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea) )
+	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
+		 (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea))
 	{
 		int new_height = height() - playlistdock->height();
 		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new height: %d", new_height);
-		resize( width(), new_height );
+		resize(width(), new_height);
 
 		//resizeWindow(core->mset.win_width, core->mset.win_height);
 	}
 
 	else
 
-	if ( (dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
-         (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea) )
+	if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
+		 (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea))
 	{
 		int new_width = width() - playlistdock->width();
 
 		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new width: %d", new_width);
-		resize( new_width, height() );
+		resize(new_width, height());
 	}
 }
 

@@ -43,7 +43,7 @@ public:
     };
 
 	explicit TIcon();
-    QSize size(Mode mode, State state = Off );
+    QSize size(Mode mode, State state = Off);
     void setPixmap(QPixmap pix, Mode mode, State state = Off);
     QPixmap pixmap(Mode mode, State state =Off) const;
 

@@ -35,9 +35,9 @@
 
 namespace Gui {
 
-TSlider::TSlider( QWidget * parent ) : QSlider(parent)
+TSlider::TSlider(QWidget* parent) : QSlider(parent)
 {
-	setOrientation( Qt::Horizontal );
+	setOrientation(Qt::Horizontal);
 }
 
 TSlider::~TSlider() {
@@ -101,7 +101,7 @@ int TSlider::pixelPosToRangeValue(int pos) const
 }
 
 // Based on code from qslider.cpp
-void TSlider::mousePressEvent( QMouseEvent * e ) {
+void TSlider::mousePressEvent(QMouseEvent* e) {
 	if (e->button() == Qt::LeftButton) {
         QStyleOptionSlider opt;
         initStyleOption(&opt);
@@ -127,7 +127,7 @@ void TSlider::mousePressEvent( QMouseEvent * e ) {
 
 
 #if CODE_FOR_CLICK == 2
-void TSlider::mousePressEvent( QMouseEvent * e ) {
+void TSlider::mousePressEvent(QMouseEvent* e) {
 	// Swaps middle button click with left click
 	if (e->button() == Qt::LeftButton) {
 		QMouseEvent ev2(QEvent::MouseButtonRelease, e->pos(), e->globalPos(), Qt::MidButton, Qt::MidButton, e->modifiers());
@@ -146,7 +146,7 @@ void TSlider::mousePressEvent( QMouseEvent * e ) {
 
 
 #if CODE_FOR_CLICK == 0
-void TSlider::mousePressEvent( QMouseEvent * e ) {
+void TSlider::mousePressEvent(QMouseEvent* e) {
 	// FIXME:
 	// The code doesn't work well with right to left layout,
 	// so it's disabled.
@@ -157,16 +157,16 @@ void TSlider::mousePressEvent( QMouseEvent * e ) {
 
 	int range = maximum()-minimum();
 	int pos = (e->x() * range) / width();
-	//qDebug( "width: %d x: %d", width(), e->x());
-	//qDebug( "range: %d pos: %d value: %d", range, pos, value());
+	//qDebug("width: %d x: %d", width(), e->x());
+	//qDebug("range: %d pos: %d value: %d", range, pos, value());
 
 	// Calculate how many positions takes the slider handle
-	int metric = qApp->style()->pixelMetric( QStyle::PM_SliderLength );
+	int metric = qApp->style()->pixelMetric(QStyle::PM_SliderLength);
 	double one_tick_pixels = (double) width() / range;
 	int slider_handle_positions = (int) (metric / one_tick_pixels);
 
 	/*
-	qDebug("metric: %d", metric );
+	qDebug("metric: %d", metric);
 	qDebug("one_tick_pixels :%f", one_tick_pixels);
 	qDebug("width() :%d", width());
 	qDebug("slider_handle_positions: %d", slider_handle_positions);
@@ -174,7 +174,7 @@ void TSlider::mousePressEvent( QMouseEvent * e ) {
 
 	if (abs(pos - value()) > slider_handle_positions) { 
 		setValue(pos);
-		emit sliderMoved( pos );
+		emit sliderMoved(pos);
 	} else {
 		QSlider::mousePressEvent(e);
 	}

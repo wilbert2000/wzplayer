@@ -36,7 +36,7 @@ class TTristateCombo : public QComboBox
 	Q_OBJECT
 
 public:
-	TTristateCombo(QWidget * parent = 0);
+	TTristateCombo(QWidget* parent = 0);
 	virtual ~TTristateCombo();
 
 	void setState(TPreferences::OptionState v);
@@ -44,7 +44,7 @@ public:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent( QEvent * event );
+	virtual void changeEvent(QEvent* event);
 
 };
 

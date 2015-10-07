@@ -22,8 +22,8 @@
 
 namespace Gui { namespace Pref {
 
-TPrefPlaylist::TPrefPlaylist(QWidget * parent, Qt::WindowFlags f)
-	: TWidget(parent, f )
+TPrefPlaylist::TPrefPlaylist(QWidget* parent, Qt::WindowFlags f)
+	: TWidget(parent, f)
 {
 	setupUi(this);
 	retranslateStrings();
@@ -56,12 +56,12 @@ void TPrefPlaylist::retranslateStrings() {
 	createHelp();
 }
 
-void TPrefPlaylist::setData(Settings::TPreferences * pref) {
-	setAutoAddFilesToPlaylist( pref->auto_add_to_playlist );
-	setMediaToAdd( pref->media_to_add_to_playlist );
+void TPrefPlaylist::setData(Settings::TPreferences* pref) {
+	setAutoAddFilesToPlaylist(pref->auto_add_to_playlist);
+	setMediaToAdd(pref->media_to_add_to_playlist);
 }
 
-void TPrefPlaylist::getData(Settings::TPreferences * pref) {
+void TPrefPlaylist::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 	pref->auto_add_to_playlist = autoAddFilesToPlaylist();
@@ -83,7 +83,7 @@ void TPrefPlaylist::setMediaToAdd(int type) {
 }
 
 int TPrefPlaylist::mediaToAdd() {
-	return media_to_add_combo->itemData( media_to_add_combo->currentIndex() ).toInt();
+	return media_to_add_combo->itemData(media_to_add_combo->currentIndex()).toInt();
 }
 
 void TPrefPlaylist::setDirectoryRecursion(bool b) {
@@ -125,7 +125,7 @@ void TPrefPlaylist::createHelp() {
 		tr("If this option is enabled, every time a file is opened, SMPlayer "
            "will first clear the playlist and then add the file to it. In "
            "case of DVDs, CDs and VCDs, all titles in the disc will be added "
-           "to the playlist.") );
+           "to the playlist."));
 
 	setWhatsThis(media_to_add_combo, tr("Add files from folder"),
 		tr("This option allows to add files automatically to the playlist:") +"<br>"+
@@ -133,12 +133,12 @@ void TPrefPlaylist::createHelp() {
 		tr("<b>Video files</b>: all video files found in the folder will be added") +"<br>"+
 		tr("<b>Audio files</b>: all audio files found in the folder will be added") +"<br>"+
 		tr("<b>Video and audio files</b>: all video and audio files found in the folder will be added") +"<br>"+
-		tr("<b>Consecutive files</b>: consecutive files (like video_1.avi, video_2.avi) will be added") );
+		tr("<b>Consecutive files</b>: consecutive files (like video_1.avi, video_2.avi) will be added"));
 
 	setWhatsThis(play_from_start_check, tr("Play files from start"),
 		tr("If this option is enabled, all files from the playlist will "
            "start to play from the beginning instead of resuming from a "
-           "previous playback.") );
+           "previous playback."));
 
 	setWhatsThis(recursive_check, tr("Add files in directories recursively"),
 		tr("Check this option if you want that adding a directory will also "

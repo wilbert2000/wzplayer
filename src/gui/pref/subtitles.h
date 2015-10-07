@@ -32,17 +32,17 @@ class TSubtitles : public TWidget, public Ui::TSubtitles
 	Q_OBJECT
 
 public:
-	TSubtitles( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TSubtitles(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TSubtitles();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 protected:
 	virtual void createHelp();
@@ -85,13 +85,13 @@ protected slots:
 	void on_ass_customize_button_clicked();
 	void on_freetype_check_toggled(bool b);
 	void on_windowsfontdir_check_toggled(bool b);
-	void checkBorderStyleCombo( int index );
+	void checkBorderStyleCombo(int index);
 
 protected:
 	virtual void retranslateStrings();
 
 private:
-	Encodings * encodings;
+	Encodings* encodings;
 	QString forced_ass_style;
 };
 

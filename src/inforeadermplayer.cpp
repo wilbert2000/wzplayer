@@ -36,7 +36,7 @@ using namespace Settings;
 #define AC 5
 
 
-InfoReaderMplayer::InfoReaderMplayer( QString mplayer_bin, QObject * parent )
+InfoReaderMplayer::InfoReaderMplayer(QString mplayer_bin, QObject* parent)
 	: QObject(parent)
 	, proc(0)
 	, mplayer_svn(0)
@@ -45,7 +45,7 @@ InfoReaderMplayer::InfoReaderMplayer( QString mplayer_bin, QObject * parent )
 	mplayerbin = mplayer_bin;
 
 	proc = new QProcess(this);
-	proc->setProcessChannelMode( QProcess::MergedChannels );
+	proc->setProcessChannelMode(QProcess::MergedChannels);
 }
 
 InfoReaderMplayer::~InfoReaderMplayer() {
@@ -67,28 +67,28 @@ void InfoReaderMplayer::list() {
 	InfoList::iterator it;
 
 	qDebug(" vo_list:");
-	for ( it = vo_list.begin(); it != vo_list.end(); ++it ) {
-		qDebug( "driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = vo_list.begin(); it != vo_list.end(); ++it) {
+		qDebug("driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" ao_list:");
-	for ( it = ao_list.begin(); it != ao_list.end(); ++it ) {
-		qDebug( "driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = ao_list.begin(); it != ao_list.end(); ++it) {
+		qDebug("driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" demuxer_list:");
-	for ( it = demuxer_list.begin(); it != demuxer_list.end(); ++it ) {
-		qDebug( "demuxer: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = demuxer_list.begin(); it != demuxer_list.end(); ++it) {
+		qDebug("demuxer: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" vc_list:");
-	for ( it = vc_list.begin(); it != vc_list.end(); ++it ) {
-		qDebug( "codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = vc_list.begin(); it != vc_list.end(); ++it) {
+		qDebug("codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" ac_list:");
-	for ( it = ac_list.begin(); it != ac_list.end(); ++it ) {
-		qDebug( "codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = ac_list.begin(); it != ac_list.end(); ++it) {
+		qDebug("codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 }
 
@@ -118,16 +118,16 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 
 	if (!waiting_for_key) {
 		if ((reading_type == VO) || (reading_type == AO)) {
-			if ( rx_driver.indexIn(line) > -1 ) {
+			if (rx_driver.indexIn(line) > -1) {
 				QString name = rx_driver.cap(1);
 				QString desc = rx_driver.cap(2);
 				qDebug("InfoReaderMplayer::readLine: found driver: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
 				if (reading_type==VO) {
-					vo_list.append( InfoData(name, desc) );
+					vo_list.append(InfoData(name, desc));
 				} 
 				else
 				if (reading_type==AO) {
-					ao_list.append( InfoData(name, desc) );
+					ao_list.append(InfoData(name, desc));
 				}
 			} else {
 				qWarning("InfoReaderMplayer::readLine: can't parse output driver from line '%s'", line.toUtf8().constData());
@@ -135,18 +135,18 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 		}
 		else
 		if (reading_type == DEMUXER) {
-			if ( rx_demuxer.indexIn(line) > -1 ) {
+			if (rx_demuxer.indexIn(line) > -1) {
 				QString name = rx_demuxer.cap(1);
 				QString desc = rx_demuxer.cap(3);
 				qDebug("InfoReaderMplayer::readLine: found demuxer: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
-				demuxer_list.append( InfoData(name, desc) );
+				demuxer_list.append(InfoData(name, desc));
 			}
 			else 
-			if ( rx_demuxer2.indexIn(line) > -1 ) {
+			if (rx_demuxer2.indexIn(line) > -1) {
 				QString name = rx_demuxer2.cap(1);
 				QString desc = rx_demuxer2.cap(2);
 				qDebug("InfoReaderMplayer::readLine: found demuxer: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
-				demuxer_list.append( InfoData(name, desc) );
+				demuxer_list.append(InfoData(name, desc));
 			}
 			else {
 				qWarning("InfoReaderMplayer::readLine: can't parse demuxer from line '%s'", line.toUtf8().constData());
@@ -154,16 +154,16 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 		}
 		else
 		if ((reading_type == VC) || (reading_type == AC)) {
-			if ( rx_codec.indexIn(line) > -1 ) {
+			if (rx_codec.indexIn(line) > -1) {
 				QString name = rx_codec.cap(1);
 				QString desc = rx_codec.cap(4);
 				qDebug("InfoReaderMplayer::readLine: found codec: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
 				if (reading_type==VC) {
-					vc_list.append( InfoData(name, desc) );
+					vc_list.append(InfoData(name, desc));
 				} 
 				else
 				if (reading_type==AC) {
-					ac_list.append( InfoData(name, desc) );
+					ac_list.append(InfoData(name, desc));
 				}
 			} else {
 				qWarning("InfoReaderMplayer::readLine: can't parse codec from line '%s'", line.toUtf8().constData());
@@ -171,31 +171,31 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 		}
 	}
 
-	if ( rx_vo_key.indexIn(line) > -1 ) {
+	if (rx_vo_key.indexIn(line) > -1) {
 		reading_type = VO;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: vo");
 	}
 
-	if ( rx_ao_key.indexIn(line) > -1 ) {
+	if (rx_ao_key.indexIn(line) > -1) {
 		reading_type = AO;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: ao");
 	}
 
-	if ( rx_demuxer_key.indexIn(line) > -1 ) {
+	if (rx_demuxer_key.indexIn(line) > -1) {
 		reading_type = DEMUXER;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: demuxer");
 	}
 
-	if ( rx_ac_key.indexIn(line) > -1 ) {
+	if (rx_ac_key.indexIn(line) > -1) {
 		reading_type = AC;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: ac");
 	}
 
-	if ( rx_vc_key.indexIn(line) > -1 ) {
+	if (rx_vc_key.indexIn(line) > -1) {
 		reading_type = VC;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLines: found key: vc");
@@ -237,7 +237,7 @@ bool InfoReaderMplayer::run(QString options) {
 		ba = proc->readLine();
 		ba.replace("\n", "");
 		ba.replace("\r", "");
-		readLine( ba );
+		readLine(ba);
 	}
 
 	return true;

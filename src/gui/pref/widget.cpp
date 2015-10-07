@@ -21,7 +21,7 @@
 
 namespace Gui { namespace Pref {
 
-TWidget::TWidget(QWidget * parent, Qt::WindowFlags f )
+TWidget::TWidget(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 {
 	requires_restart = false;
@@ -43,13 +43,13 @@ void TWidget::addSectionTitle(const QString & title) {
 	help_message += "<h2>"+title+"</h2>";
 }
 
-void TWidget::setWhatsThis( QWidget *w, const QString & title,
+void TWidget::setWhatsThis(QWidget *w, const QString & title,
                                const QString & text)
 {
 	w->setWhatsThis(text);
 	help_message += "<b>"+title+"</b><br>"+text+"<br><br>";
 
-	w->setToolTip( "<qt>"+ text +"</qt>" );
+	w->setToolTip("<qt>"+ text +"</qt>");
 }
 
 void TWidget::clearHelp() {

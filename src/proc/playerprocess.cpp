@@ -55,14 +55,14 @@ TPlayerProcess::TPlayerProcess(TPlayerID::Player pid, TMediaData* mdata)
 	//qRegisterMetaType<Maps::TTracks>("Tracks");
 	//qRegisterMetaType<Chapters>("Chapters");
 
-	connect( this, SIGNAL(error(QProcess::ProcessError)),
-			 this, SLOT(processError(QProcess::ProcessError)) );
+	connect(this, SIGNAL(error(QProcess::ProcessError)),
+			 this, SLOT(processError(QProcess::ProcessError)));
 
-	connect( this, SIGNAL(finished(int,QProcess::ExitStatus)),
-			 this, SLOT(processFinished(int,QProcess::ExitStatus)) );
+	connect(this, SIGNAL(finished(int,QProcess::ExitStatus)),
+			 this, SLOT(processFinished(int,QProcess::ExitStatus)));
 
-	connect( this, SIGNAL(lineAvailable(QByteArray)),
-			 this, SLOT(parseBytes(QByteArray)) );
+	connect(this, SIGNAL(lineAvailable(QByteArray)),
+			 this, SLOT(parseBytes(QByteArray)));
 }
 
 void TPlayerProcess::writeToStdin(QString text, bool log) {
@@ -72,18 +72,18 @@ void TPlayerProcess::writeToStdin(QString text, bool log) {
 
 	if (isRunning()) {
 		#ifdef Q_OS_WIN
-		write( text.toUtf8() + "\n");
+		write(text.toUtf8() + "\n");
 		#else
-		write( text.toLocal8Bit() + "\n");
+		write(text.toLocal8Bit() + "\n");
 		#endif
 	} else {
 		qWarning("Proc::TPlayerProcess::writeToStdin: process not running");
 	}
 }
 
-TPlayerProcess * TPlayerProcess::createPlayerProcess(const QString& player_bin, TMediaData* md) {
+TPlayerProcess* TPlayerProcess::createPlayerProcess(const QString& player_bin, TMediaData* md) {
 
-	TPlayerProcess * proc = 0;
+	TPlayerProcess* proc = 0;
 
 #if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
 	if (TPlayerID::player(player_bin) == TPlayerID::MPLAYER) {
@@ -269,7 +269,7 @@ void TPlayerProcess::notifyTime(double time_sec, const QString &line) {
 	// Pass frame to GUI
 	if (frame != prev_frame) {
 		prev_frame = frame;
-		emit receivedCurrentFrame( frame );
+		emit receivedCurrentFrame(frame);
 	}
 }
 

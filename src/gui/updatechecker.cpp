@@ -36,7 +36,7 @@
 
 namespace Gui {
 
-TUpdateChecker::TUpdateChecker(QWidget * parent, UpdateCheckerData * data) : QObject(parent)
+TUpdateChecker::TUpdateChecker(QWidget* parent, UpdateCheckerData* data) : QObject(parent)
 	, net_manager(0)
 	, d(0)
 {
@@ -146,7 +146,7 @@ void TUpdateChecker::gotReplyFromUserRequest() {
 					emit noNewVersionFound(version);
 				}
 			} else {
-				emit errorOcurred(1, tr("Failed to get the latest version number") );
+				emit errorOcurred(1, tr("Failed to get the latest version number"));
 			}
 		} else {
 			int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -179,7 +179,7 @@ QString TUpdateChecker::formattedVersion(const QString & version) {
 }
 
 void TUpdateChecker::reportNewVersionAvailable(const QString & new_version) {
-	QWidget * p = qobject_cast<QWidget*>(parent());
+	QWidget* p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),
 		tr("A new version of SMPlayer is available.") + "<br><br>" +
@@ -196,7 +196,7 @@ void TUpdateChecker::reportNewVersionAvailable(const QString & new_version) {
 }
 
 void TUpdateChecker::reportNoNewVersionFound(const QString & version) {
-	QWidget * p = qobject_cast<QWidget*>(parent());
+	QWidget* p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::information(p, tr("Checking for updates"),
 		tr("Congratulations, SMPlayer is up to date.") + "<br><br>" +
@@ -205,7 +205,7 @@ void TUpdateChecker::reportNoNewVersionFound(const QString & version) {
 }
 
 void TUpdateChecker::reportError(int error_number, QString error_str) {
-	QWidget * p = qobject_cast<QWidget*>(parent());
+	QWidget* p = qobject_cast<QWidget*>(parent());
 	QMessageBox::warning(p, tr("Error"), 
 		tr("An error happened while trying to retrieve information about the latest version available.") +
 		"<br>" + tr("Error code: %1").arg(error_number) + "<br>" + error_str);

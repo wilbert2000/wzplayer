@@ -34,8 +34,8 @@ ToolbarStyle::drawControl(ControlElement control, const QStyleOption *option,
         if (const QStyleOptionToolBar *toolbar = qstyleoption_cast<const QStyleOptionToolBar *>(option)) {
             QRect rect = option->rect;
 
-            if( toolbar->toolBarArea == Qt::BottomToolBarArea &&
-                toolbar->positionOfLine == QStyleOptionToolBar::End )
+            if(toolbar->toolBarArea == Qt::BottomToolBarArea &&
+                toolbar->positionOfLine == QStyleOptionToolBar::End)
             {
                 painter->setPen(QPen(option->palette.light().color()));
                 painter->drawLine(rect.topLeft().x(),
@@ -56,8 +56,8 @@ ToolbarStyle::drawControl(ControlElement control, const QStyleOption *option,
                             rect.bottomRight().y());
 
             }
-            else if( toolbar->toolBarArea == Qt::BottomToolBarArea &&
-                toolbar->positionOfLine == QStyleOptionToolBar::Beginning )
+            else if(toolbar->toolBarArea == Qt::BottomToolBarArea &&
+                toolbar->positionOfLine == QStyleOptionToolBar::Beginning)
             {
                 painter->setPen(QPen(option->palette.light().color()));
                 painter->drawLine(rect.topLeft().x(),
@@ -93,7 +93,7 @@ ToolbarStyle::drawControl(ControlElement control, const QStyleOption *option,
 void VolumeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const
 {
-    if( cc == CC_Slider )
+    if(cc == CC_Slider)
     {
         if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(opt)) {
             QRect groove = subControlRect(CC_Slider, slider, SC_SliderGroove, widget);
@@ -104,14 +104,14 @@ void VolumeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionC
                 p->setPen(slider->palette.shadow().color());
                 if (slider->orientation == Qt::Horizontal) {
                     static QPoint points[3] = {
-                                QPoint(groove.x() , groove.y() + slider->rect.height() ),
-                                QPoint(groove.x() + groove.width() -2 , groove.y() + slider->rect.height() ),
-                                QPoint(groove.x() + groove.width() -2 , groove.y()  ),
+                                QPoint(groove.x() , groove.y() + slider->rect.height()),
+                                QPoint(groove.x() + groove.width() -2 , groove.y() + slider->rect.height()),
+                                QPoint(groove.x() + groove.width() -2 , groove.y() ),
                             };
                     QPen oldPen = p->pen();
                     
                     p->setPen(slider->palette.dark().color());
-                    p->drawLine(QPoint(points[0].x(), points[0].y() -2 ),QPoint(points[2].x(), points[2].y()));
+                    p->drawLine(QPoint(points[0].x(), points[0].y() -2),QPoint(points[2].x(), points[2].y()));
 
                     QPoint b[3] = { QPoint(points[0].x(),points[0].y()-1), QPoint(points[1].x()-1, points[1].y()-1), QPoint(points[2].x()-1,points[2].y()) };
                     p->setPen(slider->palette.light().color());
@@ -172,7 +172,7 @@ void VolumeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionC
 void TimeSlideStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt,
                                        QPainter *p, const QWidget *widget) const
 {
-    if( cc == CC_Slider )
+    if(cc == CC_Slider)
     {
         if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(opt)) {
             QRect groove = subControlRect(CC_Slider, slider, SC_SliderGroove, widget);

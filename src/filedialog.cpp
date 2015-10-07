@@ -19,42 +19,42 @@
 #include "filedialog.h"
 #include <QWidget>
 
-QString MyFileDialog::getOpenFileName( QWidget * parent, 
+QString MyFileDialog::getOpenFileName(QWidget* parent, 
 			const QString & caption, 
 			const QString & dir, const QString & filter, 
-			QString * selectedFilter, QFileDialog::Options options ) 
+			QString* selectedFilter, QFileDialog::Options options) 
 {
-	return QFileDialog::getOpenFileName( parent, caption, dir, filter,
-										 selectedFilter, options );
+	return QFileDialog::getOpenFileName(parent, caption, dir, filter,
+										 selectedFilter, options);
 }
 
-QString MyFileDialog::getExistingDirectory ( QWidget * parent, 
+QString MyFileDialog::getExistingDirectory (QWidget* parent, 
 			const QString & caption, 
 			const QString & dir, 
-			QFileDialog::Options options )
+			QFileDialog::Options options)
 {
-	return QFileDialog::getExistingDirectory( parent, caption, dir, options );
+	return QFileDialog::getExistingDirectory(parent, caption, dir, options);
 }
 
-QString MyFileDialog::getSaveFileName ( QWidget * parent, 
-			const QString & caption, 
-			const QString & dir, 
-			const QString & filter, 
-			QString * selectedFilter, 
-			QFileDialog::Options options )
-{
-	return QFileDialog::getSaveFileName( parent, caption, dir, filter,
-                                         selectedFilter, options );
-}
-
-QStringList MyFileDialog::getOpenFileNames ( QWidget * parent, 
+QString MyFileDialog::getSaveFileName (QWidget* parent, 
 			const QString & caption, 
 			const QString & dir, 
 			const QString & filter, 
-			QString * selectedFilter, 
-			QFileDialog::Options options )
+			QString* selectedFilter, 
+			QFileDialog::Options options)
 {
-	return QFileDialog::getOpenFileNames( parent, caption, dir, filter,
-                                          selectedFilter, options );
+	return QFileDialog::getSaveFileName(parent, caption, dir, filter,
+                                         selectedFilter, options);
+}
+
+QStringList MyFileDialog::getOpenFileNames (QWidget* parent, 
+			const QString & caption, 
+			const QString & dir, 
+			const QString & filter, 
+			QString* selectedFilter, 
+			QFileDialog::Options options)
+{
+	return QFileDialog::getOpenFileNames(parent, caption, dir, filter,
+                                          selectedFilter, options);
 }
 

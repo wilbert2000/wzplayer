@@ -33,22 +33,22 @@ class TEqSlider : public QWidget, public Ui::TEqSlider
 	Q_PROPERTY(int value READ value WRITE setValue)
 
 public:
-	TEqSlider( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	TEqSlider(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TEqSlider();
 
 public slots:
-	void setIcon( QPixmap i);
-	void setLabel( QString s);
+	void setIcon(QPixmap i);
+	void setLabel(QString s);
 	void setValue(int value);
 
 public:
 	int value() const;
-	const QPixmap * icon() const;
+	const QPixmap* icon() const;
 	QString label() const;
 
-	QSlider * sliderWidget() { return _slider; }
-	TVerticalText * labelWidget() { return _label; }
-	QLabel * iconWidget() { return _icon; }
+	QSlider* sliderWidget() { return _slider; }
+	TVerticalText* labelWidget() { return _label; }
+	QLabel* iconWidget() { return _icon; }
 
 signals:
 	void valueChanged(int);

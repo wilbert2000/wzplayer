@@ -47,7 +47,7 @@ public:
 
 protected:
 	virtual void retranslateStrings();
-	virtual QMenu * createPopupMenu();
+	virtual QMenu* createPopupMenu();
 
 	void createStatusBar();
 	void createMainToolBars();
@@ -79,35 +79,35 @@ protected:
 	void reconfigureFloatingControl();
 
 protected:
-	QLabel * time_display;
-	QLabel * frame_display;
-	QLabel * ab_section_display;
-	QLabel * video_info_display;
+	QLabel* time_display;
+	QLabel* frame_display;
+	QLabel* ab_section_display;
+	QLabel* video_info_display;
 
-	TEditableToolbar * controlwidget;
-	TEditableToolbar * controlwidget_mini;
+	TEditableToolbar* controlwidget;
+	TEditableToolbar* controlwidget_mini;
 
-	TEditableToolbar * toolbar1;
-	QToolBar * toolbar2;
+	TEditableToolbar* toolbar1;
+	QToolBar* toolbar2;
 
-	QPushButton * select_audio;
-	QPushButton * select_subtitle;
+	QPushButton* select_audio;
+	QPushButton* select_subtitle;
 
-	TSeekingButton * rewindbutton_action;
-	TSeekingButton * forwardbutton_action;
+	TSeekingButton* rewindbutton_action;
+	TSeekingButton* forwardbutton_action;
 
-	TAutohideWidget * floating_control;
+	TAutohideWidget* floating_control;
 
-	TAction * viewFrameCounterAct;
-	TAction * viewVideoInfoAct;
+	TAction* viewFrameCounterAct;
+	TAction* viewVideoInfoAct;
 
-	TAction * editToolbar1Act;
-	TAction * editControl1Act;
-	TAction * editControl2Act;
-	TAction * editFloatingControlAct;
+	TAction* editToolbar1Act;
+	TAction* editControl1Act;
+	TAction* editControl2Act;
+	TAction* editFloatingControlAct;
 
-	QMenu * toolbar_menu;
-	QMenu * statusbar_menu;
+	QMenu* toolbar_menu;
+	QMenu* statusbar_menu;
 
 	int last_second;
 

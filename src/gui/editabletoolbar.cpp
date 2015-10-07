@@ -22,7 +22,7 @@
 
 namespace Gui {
 
-TEditableToolbar::TEditableToolbar(QWidget * parent) : QToolBar(parent)
+TEditableToolbar::TEditableToolbar(QWidget* parent) : QToolBar(parent)
 {
 	widget = parent;
 }

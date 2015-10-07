@@ -26,7 +26,7 @@
 
 namespace Gui {
 
-TTVList::TTVList(bool check_channels_conf, Services services, QString filename, QWidget * parent)
+TTVList::TTVList(bool check_channels_conf, Services services, QString filename, QWidget* parent)
 	: TFavorites(filename,parent)
 {
 #ifndef Q_OS_WIN
@@ -41,7 +41,7 @@ TTVList::TTVList(bool check_channels_conf, Services services, QString filename, 
 TTVList::~TTVList() {
 }
 
-TFavorites * TTVList::createNewObject(QString filename, QWidget * parent) {
+TFavorites* TTVList::createNewObject(QString filename, QWidget* parent) {
 	return new TTVList(false, TV, filename, parent);
 }
 
@@ -56,7 +56,7 @@ void TTVList::parse_channels_conf(Services services) {
 		file = QDir::homePath() + "/.mplayer/channels.conf";
 	}
 
-	QFile f( file );
+	QFile f(file);
 	if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
 		qDebug("Gui::TTVList::parse_channels_conf: can't open %s", file.toUtf8().constData());
 		return;
@@ -76,11 +76,11 @@ void TTVList::parse_channels_conf(Services services) {
 			qDebug("Gui::TTVList::parse_channels_conf: channel: '%s' video_pid: %s audio_pid: %s", channel.toUtf8().constData(),video_pid.toUtf8().constData(),audio_pid.toUtf8().constData());
 			QString channel_id = "dvb://"+channel;
 			if (findFile(channel_id) == -1) {
-				if ( (services.testFlag(TTVList::TV) && is_tv) ||
+				if ((services.testFlag(TTVList::TV) && is_tv) ||
 					 (services.testFlag(TTVList::Radio) && is_radio) ||
-					 (services.testFlag(TTVList::Data) && is_data) )
+					 (services.testFlag(TTVList::Data) && is_data))
 				{
-					f_list.append( TFavorite(channel, channel_id) );
+					f_list.append(TFavorite(channel, channel_id));
 				}
 			}
 		}
@@ -111,12 +111,12 @@ void TTVList::edit() {
 
 	TFavoriteEditor e(parent_widget);
 
-	e.setWindowTitle( tr("Channel editor") );
-	e.setCaption( tr("TV/Radio list") );
-	e.setDialogIcon( Images::icon("open_tv") );
+	e.setWindowTitle(tr("Channel editor"));
+	e.setCaption(tr("TV/Radio list"));
+	e.setDialogIcon(Images::icon("open_tv"));
 
 	e.setData(f_list);
-	e.setStorePath( QFileInfo(_filename).absolutePath() );
+	e.setStorePath(QFileInfo(_filename).absolutePath());
 
 	if (e.exec() == QDialog::Accepted) {
 		f_list = e.data();

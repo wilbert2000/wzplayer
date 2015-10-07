@@ -69,7 +69,7 @@ class TPlaylist : public QWidget {
 public:
 	enum AutoGetInfo { NoGetInfo = 0, GetInfo = 1, UserDefined = 2 };
 
-	TPlaylist(TCore *c, QWidget * parent = 0, Qt::WindowFlags f = Qt::Window);
+	TPlaylist(TCore *c, QWidget* parent = 0, Qt::WindowFlags f = Qt::Window);
 	virtual ~TPlaylist();
 
 	int count();
@@ -156,8 +156,8 @@ public:
 
 /*
 public:
-	TAction * playPrevAct() { return prevAct; };
-	TAction * playNextAct() { return nextAct; };
+	TAction* playPrevAct() { return prevAct; };
+	TAction* playNextAct() { return nextAct; };
 */
 
 signals:
@@ -170,7 +170,7 @@ protected:
 	void setCurrentItem(int current);
 	void clearPlayedTag();
 	int chooseRandomItem();
-	void swapItems(int item1, int item2 );
+	void swapItems(int item1, int item2);
 	// EDIT BY NEO -->
 	void sortBy(int section, bool revert, int count);
 	// <--
@@ -194,11 +194,11 @@ protected:
 	void createToolbar();
 
 protected:
-	virtual void dragEnterEvent( QDragEnterEvent * ) ;
-	virtual void dropEvent ( QDropEvent * );
-	virtual void hideEvent ( QHideEvent * );
-	virtual void showEvent ( QShowEvent * );
-	virtual void closeEvent( QCloseEvent * e );
+	virtual void dragEnterEvent(QDragEnterEvent*) ;
+	virtual void dropEvent (QDropEvent*);
+	virtual void hideEvent (QHideEvent*);
+	virtual void showEvent (QShowEvent*);
+	virtual void closeEvent(QCloseEvent* e);
 
 protected:
 	typedef QList <TPlaylistItem> TPlaylistItemList;
@@ -208,42 +208,42 @@ protected:
 	QString playlist_path;
 	QString latest_dir;
 
-	TCore * core;
-	QMenu * add_menu;
-	QMenu * remove_menu;
-	QMenu * popup;
+	TCore* core;
+	QMenu* add_menu;
+	QMenu* remove_menu;
+	QMenu* popup;
 
-	TTableWidget * listView;
+	TTableWidget* listView;
 
-	QToolBar * toolbar;
-	QToolButton * add_button;
-	QToolButton * remove_button;
+	QToolBar* toolbar;
+	QToolButton* add_button;
+	QToolButton* remove_button;
 
-	TAction * openAct;
-	TAction * saveAct;
-	TAction * playAct;
-	TAction * prevAct;
-	TAction * nextAct;
-	TAction * repeatAct;
-	TAction * shuffleAct;
+	TAction* openAct;
+	TAction* saveAct;
+	TAction* playAct;
+	TAction* prevAct;
+	TAction* nextAct;
+	TAction* repeatAct;
+	TAction* shuffleAct;
 
-	TAction * moveUpAct;
-	TAction * moveDownAct;
-	TAction * editAct;
+	TAction* moveUpAct;
+	TAction* moveDownAct;
+	TAction* editAct;
 
-	TAction * addCurrentAct;
-	TAction * addFilesAct;
-	TAction * addDirectoryAct;
-	TAction * addUrlsAct;
+	TAction* addCurrentAct;
+	TAction* addFilesAct;
+	TAction* addDirectoryAct;
+	TAction* addUrlsAct;
 
-	TAction * removeSelectedAct;
-	TAction * removeAllAct;
+	TAction* removeSelectedAct;
+	TAction* removeAllAct;
 
-	TAction * deleteSelectedFileFromDiskAct;
+	TAction* deleteSelectedFileFromDiskAct;
 
 private:
 	bool modified;
-	QTimer * save_timer;
+	QTimer* save_timer;
 
 	//Preferences
 	bool recursive_add_directory;

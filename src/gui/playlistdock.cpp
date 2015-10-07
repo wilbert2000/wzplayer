@@ -21,29 +21,29 @@
 
 namespace Gui {
 
-TPlaylistDock::TPlaylistDock(QWidget * parent, Qt::WindowFlags flags)
+TPlaylistDock::TPlaylistDock(QWidget* parent, Qt::WindowFlags flags)
 	: QDockWidget(parent, flags)
 {
-	//setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Expanding );
+	//setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
 	setAcceptDrops(true); // Fix for Qt 4.4, otherwise the playlist doesn't accept drops...
 }
 
 TPlaylistDock::~TPlaylistDock() {
 }
 
-void TPlaylistDock::closeEvent( QCloseEvent * e ) {
+void TPlaylistDock::closeEvent(QCloseEvent* e) {
 	qDebug("Gui::TPlaylistDock::closeEvent");
 	emit closed();
 	e->accept();
 }
 
 #if QT_VERSION < 0x040300
-void TPlaylistDock::showEvent( QShowEvent * /* event */ ) {
+void TPlaylistDock::showEvent(QShowEvent* /* event */) {
 	qDebug("Gui::TPlaylistDock::showEvent");
 	emit visibilityChanged(true);
 }
 
-void TPlaylistDock::hideEvent( QHideEvent * /* event */ ) {
+void TPlaylistDock::hideEvent(QHideEvent* /* event */) {
 	qDebug("Gui::TPlaylistDock::hideEvent");
 	emit visibilityChanged(false);
 }

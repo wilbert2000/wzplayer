@@ -32,18 +32,18 @@ using namespace Settings;
 
 namespace Gui {
 
-TAbout::TAbout(QWidget * parent, Qt::WindowFlags f)
+TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
-	setWindowIcon( Images::icon("logo", 64) );
+	setWindowIcon(Images::icon("logo", 64));
 
-	logo->setPixmap( QPixmap(":/default-theme/logo.png").scaledToHeight(64, Qt::SmoothTransformation) );
-	contrib_icon->setPixmap( Images::icon("contributors" ) );
-	translators_icon->setPixmap( Images::icon("translators" ) );
-	license_icon->setPixmap( Images::icon("license" ) );
+	logo->setPixmap(QPixmap(":/default-theme/logo.png").scaledToHeight(64, Qt::SmoothTransformation));
+	contrib_icon->setPixmap(Images::icon("contributors"));
+	translators_icon->setPixmap(Images::icon("translators"));
+	license_icon->setPixmap(Images::icon("license"));
 
-	InfoReader * i = InfoReader::obj(pref->mplayer_bin);
+	InfoReader* i = InfoReader::obj(pref->mplayer_bin);
 	i->getInfo();
 	QString mplayer_version = tr("Using %1").arg(i->playerVersion());
 
@@ -112,7 +112,7 @@ TAbout::TAbout(QWidget * parent, Qt::WindowFlags f)
 	license->setOpenExternalLinks(false);
 	connect(license, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(openLink(const QUrl&)));
 
-	translators->setHtml( getTranslators() );
+	translators->setHtml(getTranslators());
 
 	contributions->setText(
         tr("SMPlayer logo by %1").arg("Charles Barcza &lt;kbarcza@blackpanther.hu&gt;") + "<br><br>" +
@@ -129,7 +129,7 @@ TAbout::TAbout(QWidget * parent, Qt::WindowFlags f)
 	license_tab->setAutoFillBackground(true);
 
 	QPalette pal = info_tab->palette();
-	pal.setColor(QPalette::Window, palette().color(QPalette::Window) );
+	pal.setColor(QPalette::Window, palette().color(QPalette::Window));
 
 	info_tab->setPalette(pal);
 	contributions_tab->setPalette(pal);

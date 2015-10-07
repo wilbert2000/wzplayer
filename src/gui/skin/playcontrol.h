@@ -56,7 +56,7 @@ public:
     void setNextTrackEnabled(bool enable) { nextButton->setEnabled(enable); updateWidths();}
     void setPlay(bool on) { playOrPause = on; playPauseButton->setState(on); }
 
-	void setBackwardIcon(TIcon icon ) { backwardButton->setIcon(icon); backwardButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths(); }
+	void setBackwardIcon(TIcon icon) { backwardButton->setIcon(icon); backwardButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths(); }
 	void setForwardIcon(TIcon icon) { forwardButton->setIcon(icon); forwardButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths(); }
 	void setPreviousIcon(TIcon icon) { previousButton->setIcon(icon); previousButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths();}
 	void setNextIcon(TIcon icon) { nextButton->setIcon(icon); nextButton->setFixedSize(icon.size(TIcon::Normal, TIcon::Off)); updateWidths();}
@@ -70,7 +70,7 @@ public:
 
 protected:
 	void resizeEvent(QResizeEvent *);
-    virtual void changeEvent (QEvent * event);
+    virtual void changeEvent (QEvent* event);
     virtual void retranslateStrings();
 
 friend class TIconSetter;

@@ -23,39 +23,39 @@
 
 namespace Gui {
 
-TTableWidget::TTableWidget( QWidget * parent ) : QTableWidget(parent) 
+TTableWidget::TTableWidget(QWidget* parent) : QTableWidget(parent) 
 {
 }
 
-TTableWidget::TTableWidget( int rows, int columns, QWidget * parent )
+TTableWidget::TTableWidget(int rows, int columns, QWidget* parent)
 	: QTableWidget(rows, columns, parent)
 {
 }
 
-QTableWidgetItem * TTableWidget::getItem(int row, int column, bool * existed ) {
+QTableWidgetItem* TTableWidget::getItem(int row, int column, bool* existed) {
 #if BE_VERBOSE
 	qDebug("Gui::TTableWidget::getItem: %d, %d", row, column);
 #endif
-	QTableWidgetItem * i = item(row, column);
+	QTableWidgetItem* i = item(row, column);
 	if (existed != 0) *existed = (i!=0); // Returns if the item already existed or not
 	if (i != 0) return i; else return createItem(column);
 }
 
-QTableWidgetItem * TTableWidget::createItem(int /*col*/) {
+QTableWidgetItem* TTableWidget::createItem(int /*col*/) {
 #if BE_VERBOSE
 	qDebug("Gui::TTableWidget::createItem");
 #endif
-	QTableWidgetItem * i = new QTableWidgetItem();
+	QTableWidgetItem* i = new QTableWidgetItem();
 	i->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
 	return i;
 }
 
-void TTableWidget::setText(int row, int column, const QString & text ) {
+void TTableWidget::setText(int row, int column, const QString & text) {
 #if BE_VERBOSE
 	qDebug("Gui::TTableWidget::setText: %d, %d", row, column);
 #endif
 	bool existed;
-	QTableWidgetItem * i = getItem(row, column, &existed);
+	QTableWidgetItem* i = getItem(row, column, &existed);
 	i->setText(text);
 	if (!existed) setItem(row, column, i);
 }
@@ -67,12 +67,12 @@ QString TTableWidget::text(int row, int column) {
 	return getItem(row, column)->text();
 }
 
-void TTableWidget::setIcon(int row, int column, const QIcon & icon ) {
+void TTableWidget::setIcon(int row, int column, const QIcon & icon) {
 #if BE_VERBOSE
 	qDebug("Gui::TTableWidget::setIcon %d, %d", row, column);
 #endif
 	bool existed;
-	QTableWidgetItem * i = getItem(row, column, &existed);
+	QTableWidgetItem* i = getItem(row, column, &existed);
 	i->setIcon(icon);
 	if (!existed) setItem(row, column, i);
 }

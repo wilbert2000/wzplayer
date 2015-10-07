@@ -36,11 +36,11 @@ class TSlider : public QSlider
 	Q_OBJECT
 
 public:
-	TSlider( QWidget * parent );
+	TSlider(QWidget* parent);
 	virtual ~TSlider();
 
 protected:
-	void mousePressEvent ( QMouseEvent * event );
+	void mousePressEvent (QMouseEvent* event);
 #if CODE_FOR_CLICK == 1
 	inline int pick(const QPoint &pt) const;
 	int pixelPosToRangeValue(int pos) const;

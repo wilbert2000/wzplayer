@@ -21,7 +21,7 @@
 
 namespace Gui {
 
-TAction::TAction ( QObject * parent, const char * name, bool autoadd ) 
+TAction::TAction (QObject* parent, const char* name, bool autoadd) 
 	: QAction(parent)
 {
 	setObjectName(name);
@@ -29,14 +29,14 @@ TAction::TAction ( QObject * parent, const char * name, bool autoadd )
 }
 
 
-TAction::TAction( QObject * parent, bool autoadd )
+TAction::TAction(QObject* parent, bool autoadd)
 	: QAction(parent)
 {
 	if (autoadd) addActionToParent();
 }
 
 TAction::TAction(const QString & text, QKeySequence accel, 
-                   QObject * parent, const char * name, bool autoadd )
+                   QObject* parent, const char* name, bool autoadd)
 	: QAction(parent)
 {
 	setObjectName(name);
@@ -45,8 +45,8 @@ TAction::TAction(const QString & text, QKeySequence accel,
 	if (autoadd) addActionToParent();
 }
 
-TAction::TAction(QKeySequence accel, QObject * parent, const char * name, 
-                   bool autoadd )
+TAction::TAction(QKeySequence accel, QObject* parent, const char* name, 
+                   bool autoadd)
 	: QAction(parent)
 {
 	setObjectName(name);
@@ -58,7 +58,7 @@ TAction::~TAction() {
 }
 
 void TAction::addShortcut(QKeySequence key) {
-	setShortcuts( shortcuts() << key);
+	setShortcuts(shortcuts() << key);
 }
 
 void TAction::addActionToParent() {
@@ -71,34 +71,34 @@ void TAction::addActionToParent() {
 }
 
 void TAction::change(const QIcon & icon, const QString & text) {
-	setIcon( icon );
+	setIcon(icon);
 	change(text);
 }
 
-void TAction::change(const QString & text ) {
-	setText( text );
+void TAction::change(const QString & text) {
+	setText(text);
 
 	QString accel_text = shortcut().toString();
 
 	QString s = text;
 	s.replace("&","");
 	if (!accel_text.isEmpty()) {
-		setToolTip( s + " ("+ accel_text +")");
-		setIconText( s );
+		setToolTip(s + " ("+ accel_text +")");
+		setIconText(s);
 	}
 
 	/*
 	if (text.isEmpty()) {
 		QString s = menuText;
 		s = s.replace("&","");
-		setText( s );
+		setText(s);
 
 		if (!accel_text.isEmpty())
-			setToolTip( s + " ("+ accel_text +")");
+			setToolTip(s + " ("+ accel_text +")");
 	} else {
-		setText( text );
+		setText(text);
 		if (!accel_text.isEmpty())
-			setToolTip( text + " ("+ accel_text +")");
+			setToolTip(text + " ("+ accel_text +")");
 	}
 	*/
 }

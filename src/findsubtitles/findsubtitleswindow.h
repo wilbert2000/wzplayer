@@ -44,7 +44,7 @@ class FindSubtitlesWindow : public QDialog, public Ui::FindSubtitlesWindow
 	Q_OBJECT
 
 public:
-	FindSubtitlesWindow( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	FindSubtitlesWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~FindSubtitlesWindow();
 
 	QString language();
@@ -81,7 +81,7 @@ protected slots:
 
 	void parseInfo();
 
-	void itemActivated(const QModelIndex & index );
+	void itemActivated(const QModelIndex & index);
 	void currentItemChanged(const QModelIndex & current, const QModelIndex & previous);
 
 	void showContextMenu(const QPoint & pos);

@@ -39,7 +39,7 @@ MaiaFault::MaiaFault(int faultCode, QString faultString, QObject *parent) : QObj
 
 QString MaiaFault::toString() {
 	QDomDocument doc;
-	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", QString("version=\"1.0\" encoding=\"UTF-8\"" )); 
+	QDomProcessingInstruction header = doc.createProcessingInstruction("xml", QString("version=\"1.0\" encoding=\"UTF-8\"")); 
 	doc.appendChild(header);
 	QDomElement methodResponse = doc.createElement("methodResponse");
 	doc.appendChild(methodResponse);

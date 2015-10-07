@@ -23,7 +23,7 @@
 
 namespace Gui {
 
-TInputMplayerVersion::TInputMplayerVersion( QWidget* parent, Qt::WindowFlags f )
+TInputMplayerVersion::TInputMplayerVersion(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);

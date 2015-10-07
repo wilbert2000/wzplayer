@@ -40,7 +40,7 @@ TAssStyles::TAssStyles() {
 	marginv = 8;
 }
 
-void TAssStyles::save(QSettings * set) {
+void TAssStyles::save(QSettings* set) {
 	qDebug("TAssStyles::save");
 
 	set->setValue("styles/fontname", fontname);
@@ -60,7 +60,7 @@ void TAssStyles::save(QSettings * set) {
 	set->setValue("styles/marginv", marginv);
 }
 
-void TAssStyles::load(QSettings * set) {
+void TAssStyles::load(QSettings* set) {
 	qDebug("TAssStyles::load");
 
 	fontname = set->value("styles/fontname", fontname).toString();

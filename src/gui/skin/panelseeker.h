@@ -32,12 +32,12 @@ class TPanelSeeker : public QAbstractSlider
 {
 Q_OBJECT
 
-Q_PROPERTY( QPixmap left READ leftIcon WRITE setLeftIcon)
-Q_PROPERTY( QPixmap center READ centerIcon WRITE setCenterIcon)
-Q_PROPERTY( QPixmap right READ rightIcon WRITE setRightIcon)
-Q_PROPERTY( QPixmap progress READ progressIcon WRITE setProgressIcon )
-Q_PROPERTY( QPixmap buffering READ bufferingIcon WRITE setBufferingIcon)
-Q_PROPERTY( QPixmap knob READ knobIcon WRITE setKnobIcon )
+Q_PROPERTY(QPixmap left READ leftIcon WRITE setLeftIcon)
+Q_PROPERTY(QPixmap center READ centerIcon WRITE setCenterIcon)
+Q_PROPERTY(QPixmap right READ rightIcon WRITE setRightIcon)
+Q_PROPERTY(QPixmap progress READ progressIcon WRITE setProgressIcon)
+Q_PROPERTY(QPixmap buffering READ bufferingIcon WRITE setBufferingIcon)
+Q_PROPERTY(QPixmap knob READ knobIcon WRITE setKnobIcon)
 
 public:
 
@@ -62,15 +62,15 @@ public:
 	QPixmap knobIcon() { return knobPix.pixmap(TIcon::Normal, TIcon::Off); }
     States states() { return state; }
 
-    void setLeftIcon( QPixmap pix) { leftPix = pix;  }
-    void setCenterIcon( QPixmap pix) { centerPix = pix; }
-    void setRightIcon( QPixmap pix) { rightPix = pix; }
-    void setProgressIcon ( QPixmap pix) { progressPix = pix; }
-    void setBufferingIcon( QPixmap pix) { bufferingPix = pix; }
-    void setKnobIcon( QPixmap pix );
+    void setLeftIcon(QPixmap pix) { leftPix = pix;  }
+    void setCenterIcon(QPixmap pix) { centerPix = pix; }
+    void setRightIcon(QPixmap pix) { rightPix = pix; }
+    void setProgressIcon (QPixmap pix) { progressPix = pix; }
+    void setBufferingIcon(QPixmap pix) { bufferingPix = pix; }
+    void setKnobIcon(QPixmap pix);
     /* void setSingleKnobIcon(QPixmap pix); */
     void setState(State st, bool on = true);
-    void setLeftRightMargin( int margin) { leftRightMargin = margin; }
+    void setLeftRightMargin(int margin) { leftRightMargin = margin; }
     void setDelayPeriod(int period) { delayPeriod = period; }
     void setFrozenPeriod(int period) { frozenPeriod = period; }    
     qreal valueForPos(int pos);
@@ -100,24 +100,24 @@ private:
     int delayPeriod;
     int frozenPeriod;
 
-    void resetKnob( bool start = true);
+    void resetKnob(bool start = true);
     void knobAdjust(qreal x, bool setValue = false);
 
 public slots:
-    void moved( int value);
+    void moved(int value);
     void setSliderValue(int value);
     void stopFreeze();
     void goToSliderPosition();
 
 protected:
 	void paintEvent(QPaintEvent *);
-    void mousePressEvent(QMouseEvent * m);
-    void mouseMoveEvent(QMouseEvent * m);
-    void mouseReleaseEvent(QMouseEvent * m);
+    void mousePressEvent(QMouseEvent* m);
+    void mouseMoveEvent(QMouseEvent* m);
+    void mouseReleaseEvent(QMouseEvent* m);
     void resizeEvent(QResizeEvent *);
     bool event(QEvent *e);
     void changeEvent(QEvent *e);
-    void timerEvent(QTimerEvent * t);
+    void timerEvent(QTimerEvent* t);
     void wheelEvent(QWheelEvent *e);
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(TPanelSeeker::States)

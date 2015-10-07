@@ -34,11 +34,11 @@ class TWidgetAction : public QWidgetAction
 	Q_OBJECT
 
 public:
-	TWidgetAction( QWidget * parent );
+	TWidgetAction(QWidget* parent);
 	~TWidgetAction();
 
-	void setCustomStyle(QStyle * style) { custom_style = style; }
-	QStyle * customStyle() { return custom_style; }
+	void setCustomStyle(QStyle* style) { custom_style = style; }
+	QStyle* customStyle() { return custom_style; }
 
 	void setStyleSheet(QString style) { custom_stylesheet = style; }
 	QString styleSheet() { return custom_stylesheet; }
@@ -51,7 +51,7 @@ protected:
 	virtual void propagate_enabled(bool);
 
 protected:
-	QStyle * custom_style;
+	QStyle* custom_style;
 	QString custom_stylesheet;
 };
 
@@ -79,7 +79,7 @@ signals:
 	void wheelDown(Settings::TPreferences::WheelFunction function = Settings::TPreferences::Seeking);
 
 protected:
-	virtual QWidget * createWidget ( QWidget * parent );
+	virtual QWidget* createWidget (QWidget* parent);
 
 private:
 	int max_pos;
@@ -92,7 +92,7 @@ class TVolumeSliderAction : public TWidgetAction
 	Q_OBJECT
 
 public:
-	TVolumeSliderAction( QWidget * parent );
+	TVolumeSliderAction(QWidget* parent);
 	~TVolumeSliderAction();
 
 	void setFixedSize(QSize size) { fixed_size = size; }
@@ -109,7 +109,7 @@ signals:
 	void valueChanged(int value);
 
 protected:
-	virtual QWidget * createWidget ( QWidget * parent );
+	virtual QWidget* createWidget (QWidget* parent);
 
 private:
 	QSize fixed_size;
@@ -122,7 +122,7 @@ class TTimeLabelAction : public TWidgetAction
 	Q_OBJECT
 
 public:
-	TTimeLabelAction( QWidget * parent );
+	TTimeLabelAction(QWidget* parent);
 	~TTimeLabelAction();
 
 	virtual QString text() { return _text; }
@@ -134,7 +134,7 @@ signals:
 	void newText(QString s);
 
 protected:
-	virtual QWidget * createWidget ( QWidget * parent );
+	virtual QWidget* createWidget (QWidget* parent);
 
 private:
 	QString _text;
@@ -146,11 +146,11 @@ class TSeekingButton : public QWidgetAction
 	Q_OBJECT
 
 public:
-	TSeekingButton( QList<QAction*> actions, QWidget * parent );
+	TSeekingButton(QList<QAction*> actions, QWidget* parent);
 	~TSeekingButton();
 
 protected:
-	virtual QWidget * createWidget ( QWidget * parent );
+	virtual QWidget* createWidget (QWidget* parent);
 
 	QList<QAction*> _actions;
 };

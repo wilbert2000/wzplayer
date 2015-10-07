@@ -36,17 +36,17 @@ class TAssociations : public TWidget, public Ui::TAssociations
 	Q_OBJECT
 
 public:
-	TAssociations( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TAssociations(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TAssociations();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(TPreferences * pref);
+	void setData(TPreferences* pref);
 
 	// Apply changes
-	void getData(TPreferences * pref);
+	void getData(TPreferences* pref);
 
 	void addItem(QString label); 
 

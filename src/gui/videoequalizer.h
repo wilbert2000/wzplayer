@@ -30,7 +30,7 @@ class TVideoEqualizer : public QWidget, public Ui::TVideoEqualizer
 	Q_OBJECT
 
 public:
-	TVideoEqualizer( QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog );
+	TVideoEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);
 	virtual ~TVideoEqualizer();
 
 public slots:
@@ -66,12 +66,12 @@ protected slots:
 	void on_reset_button_clicked();
 	void on_bysoftware_check_stateChanged(int);
 
-	virtual void hideEvent( QHideEvent * );
-	virtual void showEvent( QShowEvent * );
+	virtual void hideEvent(QHideEvent*);
+	virtual void showEvent(QShowEvent*);
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent( QEvent * event);
+	virtual void changeEvent(QEvent* event);
 };
 
 } // namespace Gui

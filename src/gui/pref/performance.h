@@ -32,17 +32,17 @@ class TPerformance : public TWidget, public Ui::TPerformance
 	Q_OBJECT
 
 public:
-	TPerformance( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TPerformance(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TPerformance();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 protected:
 	virtual void createHelp();

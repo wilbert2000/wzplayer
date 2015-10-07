@@ -20,7 +20,7 @@
 
 namespace Gui { namespace Pref {
 
-TVDPAUProperties::TVDPAUProperties(QWidget * parent, Qt::WindowFlags f)
+TVDPAUProperties::TVDPAUProperties(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f) 
 {
 	setupUi(this);

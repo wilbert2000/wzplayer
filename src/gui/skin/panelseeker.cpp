@@ -61,14 +61,14 @@ void TPanelSeeker::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
 
-    p.drawPixmap( leftRightMargin, (height()- leftPix.height())/2 , leftPix  );
+    p.drawPixmap(leftRightMargin, (height()- leftPix.height())/2 , leftPix );
     p.drawTiledPixmap(QRect(leftRightMargin + leftPix.width(), (height()- centerPix.height())/2   ,width() - 2*leftRightMargin - leftPix.width() - rightPix.width(),centerPix.height()), centerPix);
 
-    p.drawPixmap( width()-rightPix.width() - leftRightMargin , (height()- rightPix.height())/2 ,  rightPix);
+    p.drawPixmap(width()-rightPix.width() - leftRightMargin , (height()- rightPix.height())/2 ,  rightPix);
 
     if(state.testFlag(Buffering))
     {
-        p.drawTiledPixmap(QRect(leftRightMargin + leftPix.width(), (height()- bufferingPix.height())/2, width() - 2*leftRightMargin -leftPix.width() - rightPix.width(), bufferingPix.height()), bufferingPix, QPoint(bufferingPixShift, 0)  );
+        p.drawTiledPixmap(QRect(leftRightMargin + leftPix.width(), (height()- bufferingPix.height())/2, width() - 2*leftRightMargin -leftPix.width() - rightPix.width(), bufferingPix.height()), bufferingPix, QPoint(bufferingPixShift, 0) );
     }
     else
     {
@@ -76,20 +76,20 @@ void TPanelSeeker::paintEvent(QPaintEvent *)
         {
             p.drawTiledPixmap(QRect(leftRightMargin + leftPix.width(), (height()- progressPix.height())/2 , knobRect.center().x() - leftRightMargin - leftPix.width(), progressPix.height()), progressPix);
         }
-        p.drawPixmap(knobRect.toRect(), knobCurrentPix  );
+        p.drawPixmap(knobRect.toRect(), knobCurrentPix );
     }
 
 
 }
 
-void TPanelSeeker::setKnobIcon( QPixmap pix )
+void TPanelSeeker::setKnobIcon(QPixmap pix)
 {
     int w = pix.width();
     int h = pix.height();
-    knobPix.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::Off);
-    knobPix.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::Off);
-    knobPix.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::Off);
-    knobPix.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::Off);
+    knobPix.setPixmap(pix.copy(0, 0, w, h/4), TIcon::Normal, TIcon::Off);
+    knobPix.setPixmap(pix.copy(0, h/4, w, h/4), TIcon::MouseOver, TIcon::Off);
+    knobPix.setPixmap(pix.copy(0, h/2, w, h/4), TIcon::MouseDown, TIcon::Off);
+    knobPix.setPixmap(pix.copy(0, 3*h/4, w, h/4), TIcon::Disabled, TIcon::Off);
     knobCurrentPix = knobPix.pixmap(TIcon::Normal, TIcon::Off);
     /* setSliderValue(minimum()); */
     setState(Normal, true);
@@ -130,9 +130,9 @@ void TPanelSeeker::mousePressEvent(QMouseEvent *m)
         {
             isPressed = false;
             #if QT_VERSION >= 0x050000
-            knobAdjust( m->localPos().x() - knobRect.center().x(), true);
+            knobAdjust(m->localPos().x() - knobRect.center().x(), true);
             #else
-            knobAdjust( m->posF().x() - knobRect.center().x(), true);
+            knobAdjust(m->posF().x() - knobRect.center().x(), true);
             #endif
         }
     }
@@ -144,9 +144,9 @@ void TPanelSeeker::mouseMoveEvent(QMouseEvent *m)
     if(isPressed)
     {
         #if QT_VERSION >= 0x050000
-        knobAdjust(m->localPos().x() - knobRect.center().x() - mousePressDifference );
+        knobAdjust(m->localPos().x() - knobRect.center().x() - mousePressDifference);
         #else
-        knobAdjust(m->posF().x() - knobRect.center().x() - mousePressDifference );
+        knobAdjust(m->posF().x() - knobRect.center().x() - mousePressDifference);
         #endif
     }
 }
@@ -162,13 +162,13 @@ void TPanelSeeker::mouseReleaseEvent(QMouseEvent *m)
         freezeTimer->start();
         /*if(mousePressPos == m->pos())
         {            
-            knobAdjust( m->posF().x() - knobRect.center().x(), true);
+            knobAdjust(m->posF().x() - knobRect.center().x(), true);
             triggerAction(SliderMove);
         } */
     }
 }
 
-void TPanelSeeker::resetKnob( bool start)
+void TPanelSeeker::resetKnob(bool start)
 {
     if(start)
     {
@@ -183,11 +183,11 @@ void TPanelSeeker::resetKnob( bool start)
 void TPanelSeeker::knobAdjust(qreal x, bool isSetValue)
 {    
     if(state.testFlag(Buffering)) return;
-    qreal value = minimum() + (knobRect.center().x() - (leftRightMargin + knobCurrentPix.width()/2) +x ) * (maximum() - minimum()) /(width() - (leftRightMargin) - (leftRightMargin) - knobCurrentPix.width()) ;
+    qreal value = minimum() + (knobRect.center().x() - (leftRightMargin + knobCurrentPix.width()/2) +x) * (maximum() - minimum()) /(width() - (leftRightMargin) - (leftRightMargin) - knobCurrentPix.width()) ;
     if(isSetValue)
     {
         frozen = true;
-        if( state.testFlag(Stopped) ) value = minimum();
+        if(state.testFlag(Stopped)) value = minimum();
         setValue(qRound(value));
         freezeTimer->start();
     }
@@ -208,10 +208,10 @@ void TPanelSeeker::knobAdjust(qreal x, bool isSetValue)
 
 bool TPanelSeeker::event(QEvent *e)
 {    
-    if(e->type() == QEvent::HoverMove || e->type() == QEvent::HoverEnter  )
+    if(e->type() == QEvent::HoverMove || e->type() == QEvent::HoverEnter )
     {
         QHoverEvent* he = static_cast<QHoverEvent*>(e);
-        if( knobRect.contains(he->pos()) )
+        if(knobRect.contains(he->pos()))
         {
             setState(Hovered, true);
         }
@@ -229,7 +229,7 @@ bool TPanelSeeker::event(QEvent *e)
 
 qreal TPanelSeeker::valueForPos(int pos)
 {
-        qreal value = (qreal)( pos - (leftRightMargin + knobCurrentPix.width()/2) ) * maximum() /(width() - (leftRightMargin) - (leftRightMargin) - knobCurrentPix.width());
+        qreal value = (qreal)(pos - (leftRightMargin + knobCurrentPix.width()/2)) * maximum() /(width() - (leftRightMargin) - (leftRightMargin) - knobCurrentPix.width());
         return value;
 }
 
@@ -268,16 +268,16 @@ void TPanelSeeker::setState(State st, bool on)
     update();
 }
 
-void TPanelSeeker::moved( int value)
+void TPanelSeeker::moved(int value)
 {
     if(value > maximum()) value = maximum();
     if(value < minimum()) value = minimum();
-    if( state.testFlag(Stopped) ) value = minimum();
+    if(state.testFlag(Stopped)) value = minimum();
 
     qreal ratio =  (qreal)(value - minimum())/(maximum()-minimum());
-    qreal centerPixel = ratio*(width() - (leftRightMargin ) - (leftRightMargin) - knobCurrentPix.width());
+    qreal centerPixel = ratio*(width() - (leftRightMargin) - (leftRightMargin) - knobCurrentPix.width());
     QSize size = knobPix.size(TIcon::Normal, TIcon::Off);
-    knobRect = QRectF(QPointF(centerPixel + (leftRightMargin + knobCurrentPix.width()/2) - size.width()/2, ( height() - size.height())/2 ), size );
+    knobRect = QRectF(QPointF(centerPixel + (leftRightMargin + knobCurrentPix.width()/2) - size.width()/2, (height() - size.height())/2), size);
     setSliderPosition(value);
     update();
 }

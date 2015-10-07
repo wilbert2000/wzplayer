@@ -27,29 +27,29 @@
 
 namespace Gui { namespace Pref {
 
-TNetwork::TNetwork(QWidget * parent, Qt::WindowFlags f)
-	: TWidget(parent, f )
+TNetwork::TNetwork(QWidget* parent, Qt::WindowFlags f)
+	: TWidget(parent, f)
 {
 	setupUi(this);
 
-	proxy_type_combo->addItem( tr("HTTP"), QNetworkProxy::HttpProxy);
-	proxy_type_combo->addItem( tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
+	proxy_type_combo->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
+	proxy_type_combo->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
 
 #ifdef YOUTUBE_SUPPORT
-	yt_quality_combo->addItem( "240p (flv)", RetrieveYoutubeUrl::FLV_240p );
+	yt_quality_combo->addItem("240p (flv)", RetrieveYoutubeUrl::FLV_240p);
 
-	yt_quality_combo->addItem( "360p (flv)", RetrieveYoutubeUrl::FLV_360p );
-	yt_quality_combo->addItem( "360p (mp4)", RetrieveYoutubeUrl::MP4_360p );
-	yt_quality_combo->addItem( "360p (webm)", RetrieveYoutubeUrl::WEBM_360p );
+	yt_quality_combo->addItem("360p (flv)", RetrieveYoutubeUrl::FLV_360p);
+	yt_quality_combo->addItem("360p (mp4)", RetrieveYoutubeUrl::MP4_360p);
+	yt_quality_combo->addItem("360p (webm)", RetrieveYoutubeUrl::WEBM_360p);
 
-	yt_quality_combo->addItem( "480p (flv)", RetrieveYoutubeUrl::FLV_480p );
-	yt_quality_combo->addItem( "480p (webm)", RetrieveYoutubeUrl::WEBM_480p );
+	yt_quality_combo->addItem("480p (flv)", RetrieveYoutubeUrl::FLV_480p);
+	yt_quality_combo->addItem("480p (webm)", RetrieveYoutubeUrl::WEBM_480p);
 
-	yt_quality_combo->addItem( "720p (mp4)", RetrieveYoutubeUrl::MP4_720p );
-	yt_quality_combo->addItem( "720p (webm)", RetrieveYoutubeUrl::WEBM_720p );
+	yt_quality_combo->addItem("720p (mp4)", RetrieveYoutubeUrl::MP4_720p);
+	yt_quality_combo->addItem("720p (webm)", RetrieveYoutubeUrl::WEBM_720p);
 
-	yt_quality_combo->addItem( "1080p (mp4)", RetrieveYoutubeUrl::MP4_1080p );
-	yt_quality_combo->addItem( "1080p (webm)", RetrieveYoutubeUrl::WEBM_1080p );
+	yt_quality_combo->addItem("1080p (mp4)", RetrieveYoutubeUrl::MP4_1080p);
+	yt_quality_combo->addItem("1080p (webm)", RetrieveYoutubeUrl::WEBM_1080p);
 #else
 	yt_support_check->hide();
 	youtube_widget->hide();
@@ -90,8 +90,8 @@ void TNetwork::setData(Settings::TPreferences* pref) {
 
 #ifdef YOUTUBE_SUPPORT
 	yt_support_check->setChecked(pref->enable_yt_support);
-	setYTQuality( pref->yt_quality );
-	yt_user_agent_edit->setText( pref->yt_user_agent );
+	setYTQuality(pref->yt_quality);
+	yt_user_agent_edit->setText(pref->yt_user_agent);
 #endif
 #ifdef MPV_SUPPORT
 	streaming_check->setChecked(pref->enable_streaming_sites);
@@ -148,42 +148,42 @@ void TNetwork::createHelp() {
 	addSectionTitle(tr("Youtube"));
 
 	setWhatsThis(yt_support_check, tr("Enable Youtube internal support"),
-		tr("If this option is checked, SMPlayer will try to play videos from Youtube URLs.") );
+		tr("If this option is checked, SMPlayer will try to play videos from Youtube URLs."));
 
 	setWhatsThis(yt_quality_combo, tr("Youtube quality"),
-		tr("Select the preferred quality for youtube videos.") );
+		tr("Select the preferred quality for youtube videos."));
 
 	setWhatsThis(yt_user_agent_edit, tr("User agent"),
-		tr("Set the user agent that SMPlayer will use when connecting to Youtube.") );
+		tr("Set the user agent that SMPlayer will use when connecting to Youtube."));
 #endif
 
 #ifdef MPV_SUPPORT
 	setWhatsThis(streaming_check, tr("Enable MPV's support for streaming sites"),
 		tr("If this option is checked, SMPlayer will try to play videos from "
            "streaming sites like Youtube, Dailymotion, Vimeo, Vevo, etc.") + "<br>"+
-		tr("Requires mpv and youtube-dl.") );
+		tr("Requires mpv and youtube-dl."));
 #endif
 
 	addSectionTitle(tr("Proxy"));
 
 	setWhatsThis(use_proxy_check, tr("Enable proxy"),
-		tr("Enable/disable the use of the proxy.") );
+		tr("Enable/disable the use of the proxy."));
 
 	setWhatsThis(proxy_hostname_edit, tr("Host"),
-		tr("The host name of the proxy.") );
+		tr("The host name of the proxy."));
 
 	setWhatsThis(proxy_port_spin, tr("Port"),
-		tr("The port of the proxy.") );
+		tr("The port of the proxy."));
 
 	setWhatsThis(proxy_username_edit, tr("Username"),
-		tr("If the proxy requires authentication, this sets the username.") );
+		tr("If the proxy requires authentication, this sets the username."));
 
 	setWhatsThis(proxy_password_edit, tr("Password"),
 		tr("The password for the proxy. <b>Warning:</b> the password will be saved "
-           "as plain text in the configuration file.") );
+           "as plain text in the configuration file."));
 
 	setWhatsThis(proxy_type_combo, tr("Type"),
-		tr("Select the proxy type to be used.") );
+		tr("Select the proxy type to be used."));
 
 }
 

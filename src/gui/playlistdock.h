@@ -29,7 +29,7 @@ class TPlaylistDock : public QDockWidget
 	Q_OBJECT
 
 public:
-	TPlaylistDock ( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
+	TPlaylistDock (QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~TPlaylistDock();
 
 signals:
@@ -39,10 +39,10 @@ signals:
 #endif
 
 protected:
-	virtual void closeEvent( QCloseEvent * e );
+	virtual void closeEvent(QCloseEvent* e);
 #if QT_VERSION < 0x040300
-	virtual void showEvent ( QShowEvent * event );
-	virtual void hideEvent ( QHideEvent * event );
+	virtual void showEvent (QShowEvent* event);
+	virtual void hideEvent (QHideEvent* event);
 #endif
 };
 

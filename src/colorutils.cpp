@@ -21,43 +21,43 @@
 
 QString ColorUtils::colorToRRGGBBAA(unsigned int color) {
 	QColor c;
-	c.setRgb( color );
+	c.setRgb(color);
 
 	QString s;
-	return s.sprintf("%02x%02x%02x00", c.red(), c.green(), c.blue() );
+	return s.sprintf("%02x%02x%02x00", c.red(), c.green(), c.blue());
 }
 
 QString ColorUtils::colorToRRGGBB(unsigned int color) {
 	QColor c;
-	c.setRgb( color );
+	c.setRgb(color);
 
 	QString s;
-	return s.sprintf("%02x%02x%02x", c.red(), c.green(), c.blue() );
+	return s.sprintf("%02x%02x%02x", c.red(), c.green(), c.blue());
 }
 
 QString ColorUtils::colorToRGB(unsigned int color) {
 	QColor c;
-	c.setRgb( color );
+	c.setRgb(color);
 
 	QString s;
-	return s.sprintf("0x%02x%02x%02x", c.blue(), c.green(), c.red() );
+	return s.sprintf("0x%02x%02x%02x", c.blue(), c.green(), c.red());
 }
 
 QString ColorUtils::colorToAABBGGRR(unsigned int color) {
 	QColor c;
-	c.setRgb( color );
+	c.setRgb(color);
 
 	QString s;
-	return s.sprintf("00%02x%02x%02x", c.blue(), c.green(), c.red() );
+	return s.sprintf("00%02x%02x%02x", c.blue(), c.green(), c.red());
 }
 
-void ColorUtils::setForegroundColor(QWidget * w, const QColor & color) {
+void ColorUtils::setForegroundColor(QWidget* w, const QColor & color) {
 	QPalette p = w->palette(); 
 	p.setColor(w->foregroundRole(), color); 
 	w->setPalette(p);
 }
 
-void ColorUtils::setBackgroundColor(QWidget * w, const QColor & color) {
+void ColorUtils::setBackgroundColor(QWidget* w, const QColor & color) {
 	QPalette p = w->palette(); 
 	p.setColor(w->backgroundRole(), color); 
 	w->setPalette(p);

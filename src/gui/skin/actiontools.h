@@ -32,8 +32,8 @@ class TActionTools {
 
 public:
 
-	static void setActionToButton(TButton * button, const QString & name, QList<QAction*> actions);
-	static QAction * findAction(const QString & name, QList<QAction*> actions);
+	static void setActionToButton(TButton* button, const QString & name, QList<QAction*> actions);
+	static QAction* findAction(const QString & name, QList<QAction*> actions);
 };
 
 } // namespace Skin

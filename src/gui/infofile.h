@@ -40,12 +40,12 @@ protected:
 	QString openItem();
 	QString closeItem();
 
-	QString addItem( QString tag, QString value );
+	QString addItem(QString tag, QString value);
 
 	int row;
 
 private:
-	inline QString tr( const char * sourceText, const char * comment = 0, int n = -1 );
+	inline QString tr(const char* sourceText, const char* comment = 0, int n = -1);
 };
 
 } // namespace Gui

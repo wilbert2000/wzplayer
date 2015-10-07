@@ -55,14 +55,14 @@ TDefault::TDefault()
 
 	createStatusBar();
 
-	connect( this, SIGNAL(timeChanged(QString)),
-             this, SLOT(displayTime(QString)) );
-    connect( this, SIGNAL(frameChanged(int)),
-             this, SLOT(displayFrame(int)) );
-	connect( this, SIGNAL(ABMarkersChanged(int,int)),
-             this, SLOT(displayABSection(int,int)) );
-	connect( this, SIGNAL(videoInfoChanged(int,int,double)),
-             this, SLOT(displayVideoInfo(int,int,double)) );
+	connect(this, SIGNAL(timeChanged(QString)),
+			 this, SLOT(displayTime(QString)));
+	connect(this, SIGNAL(frameChanged(int)),
+			 this, SLOT(displayFrame(int)));
+	connect(this, SIGNAL(ABMarkersChanged(int,int)),
+			 this, SLOT(displayABSection(int,int)));
+	connect(this, SIGNAL(videoInfoChanged(int,int,double)),
+			 this, SLOT(displayVideoInfo(int,int,double)));
 
 	createActions();
 	createMainToolBars();
@@ -71,16 +71,16 @@ TDefault::TDefault()
 	createFloatingControl();
 	createMenus();
 
-	connect( editToolbar1Act, SIGNAL(triggered()),
-             toolbar1, SLOT(edit()) );
-	connect( editControl1Act, SIGNAL(triggered()),
-             controlwidget, SLOT(edit()) );
-	connect( editControl2Act, SIGNAL(triggered()),
-             controlwidget_mini, SLOT(edit()) );
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
+	connect(editToolbar1Act, SIGNAL(triggered()),
+			 toolbar1, SLOT(edit()));
+	connect(editControl1Act, SIGNAL(triggered()),
+			 controlwidget, SLOT(edit()));
+	connect(editControl2Act, SIGNAL(triggered()),
+			 controlwidget_mini, SLOT(edit()));
+	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
-	connect( editFloatingControlAct, SIGNAL(triggered()),
-             iw, SLOT(edit()) );
+	connect(editFloatingControlAct, SIGNAL(triggered()),
+			 iw, SLOT(edit()));
 
 	menuBar()->setObjectName("menubar");
 }
@@ -102,20 +102,20 @@ void TDefault::createActions() {
 	forwardbutton_action->setObjectName("forwardbutton_action");
 
 	// Statusbar
-	viewVideoInfoAct = new TAction(this, "toggle_video_info" );
+	viewVideoInfoAct = new TAction(this, "toggle_video_info");
 	viewVideoInfoAct->setCheckable(true);
-	connect( viewVideoInfoAct, SIGNAL(toggled(bool)),
-             video_info_display, SLOT(setVisible(bool)) );
+	connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
+			 video_info_display, SLOT(setVisible(bool)));
 
-	viewFrameCounterAct = new TAction( this, "toggle_frame_counter" );
-	viewFrameCounterAct->setCheckable( true );
-	connect( viewFrameCounterAct, SIGNAL(toggled(bool)),
-             frame_display, SLOT(setVisible(bool)) );
+	viewFrameCounterAct = new TAction(this, "toggle_frame_counter");
+	viewFrameCounterAct->setCheckable(true);
+	connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
+			 frame_display, SLOT(setVisible(bool)));
 
-	editToolbar1Act = new TAction( this, "edit_main_toolbar" );
-	editControl1Act = new TAction( this, "edit_control1" );
-	editControl2Act = new TAction( this, "edit_control2" );
-	editFloatingControlAct = new TAction( this, "edit_floating_control" );
+	editToolbar1Act = new TAction(this, "edit_main_toolbar");
+	editControl1Act = new TAction(this, "edit_control1");
+	editControl2Act = new TAction(this, "edit_control2");
+	editFloatingControlAct = new TAction(this, "edit_floating_control");
 }
 
 void TDefault::togglePlayAction(TCore::State state) {
@@ -150,8 +150,8 @@ void TDefault::createMenus() {
 	optionsMenu->addMenu(statusbar_menu);
 }
 
-QMenu * TDefault::createPopupMenu() {
-	QMenu * m = new QMenu(this);
+QMenu* TDefault::createPopupMenu() {
+	QMenu* m = new QMenu(this);
 	m->addAction(editToolbar1Act);
 	m->addAction(editControl1Act);
 	m->addAction(editControl2Act);
@@ -160,7 +160,7 @@ QMenu * TDefault::createPopupMenu() {
 }
 
 void TDefault::createMainToolBars() {
-	toolbar1 = new TEditableToolbar( this );
+	toolbar1 = new TEditableToolbar(this);
 	toolbar1->setObjectName("toolbar1");
 	//toolbar1->setMovable(false);
 	addToolBar(Qt::TopToolBarArea, toolbar1);
@@ -173,17 +173,17 @@ void TDefault::createMainToolBars() {
 
 	toolbar1->setDefaultActions(toolbar1_actions);
 
-	toolbar2 = new QToolBar( this );
+	toolbar2 = new QToolBar(this);
 	toolbar2->setObjectName("toolbar2");
 	//toolbar2->setMovable(false);
 	addToolBar(Qt::TopToolBarArea, toolbar2);
 
-	select_audio = new QPushButton( this );
-	select_audio->setMenu( audiotrack_menu );
+	select_audio = new QPushButton(this);
+	select_audio->setMenu(audiotrack_menu);
 	toolbar2->addWidget(select_audio);
 
-	select_subtitle = new QPushButton( this );
-	select_subtitle->setMenu( subtitles_track_menu );
+	select_subtitle = new QPushButton(this);
+	select_subtitle->setMenu(subtitles_track_menu);
 	toolbar2->addWidget(select_subtitle);
 
 	/*
@@ -206,12 +206,12 @@ void TDefault::createMainToolBars() {
 void TDefault::createControlWidgetMini() {
 	qDebug("Gui::TDefault::createControlWidgetMini");
 
-	controlwidget_mini = new TEditableToolbar( this );
+	controlwidget_mini = new TEditableToolbar(this);
 	controlwidget_mini->setObjectName("controlwidget_mini");
 	controlwidget_mini->setLayoutDirection(Qt::LeftToRight);
 	//controlwidget_mini->setResizeEnabled(false);
 	controlwidget_mini->setMovable(false);
-	//addDockWindow(controlwidget_mini, Qt::DockBottom );
+	//addDockWindow(controlwidget_mini, Qt::DockBottom);
 	addToolBar(Qt::BottomToolBarArea, controlwidget_mini);
 
 	QStringList controlwidget_mini_actions;
@@ -225,12 +225,12 @@ void TDefault::createControlWidgetMini() {
 void TDefault::createControlWidget() {
 	qDebug("Gui::TDefault::createControlWidget");
 
-	controlwidget = new TEditableToolbar( this );
+	controlwidget = new TEditableToolbar(this);
 	controlwidget->setObjectName("controlwidget");
 	controlwidget->setLayoutDirection(Qt::LeftToRight);
 	//controlwidget->setResizeEnabled(false);
 	controlwidget->setMovable(false);
-	//addDockWindow(controlwidget, Qt::DockBottom );
+	//addDockWindow(controlwidget, Qt::DockBottom);
 	addToolBar(Qt::BottomToolBarArea, controlwidget);
 
 	QStringList controlwidget_actions;
@@ -247,7 +247,7 @@ void TDefault::createFloatingControl() {
 	floating_control = new TAutohideWidget(panel, playerwindow);
 	floating_control->setAutoHide(true);
 
-	TEditableToolbar * iw = new TEditableToolbar(floating_control);
+	TEditableToolbar* iw = new TEditableToolbar(floating_control);
 	iw->setObjectName("floating_control");
 	connect(iw, SIGNAL(iconSizeChanged(const QSize &)), this, SLOT(adjustFloatingControlSize()));
 
@@ -276,54 +276,54 @@ void TDefault::createFloatingControl() {
 void TDefault::createStatusBar() {
 	qDebug("Gui::TDefault::createStatusBar");
 
-	time_display = new QLabel( statusBar() );
+	time_display = new QLabel(statusBar());
 	time_display->setObjectName("time_display");
 	time_display->setAlignment(Qt::AlignRight);
 	time_display->setFrameShape(QFrame::NoFrame);
 	time_display->setText(" 88:88:88 / 88:88:88 ");
 	time_display->setMinimumSize(time_display->sizeHint());
 
-	frame_display = new QLabel( statusBar() );
+	frame_display = new QLabel(statusBar());
 	frame_display->setObjectName("frame_display");
 	frame_display->setAlignment(Qt::AlignRight);
 	frame_display->setFrameShape(QFrame::NoFrame);
 	frame_display->setText("88888888");
 	frame_display->setMinimumSize(frame_display->sizeHint());
 
-	ab_section_display = new QLabel( statusBar() );
+	ab_section_display = new QLabel(statusBar());
 	ab_section_display->setObjectName("ab_section_display");
 	ab_section_display->setAlignment(Qt::AlignRight);
 	ab_section_display->setFrameShape(QFrame::NoFrame);
 //	ab_section_display->setText("A:0:00:00 B:0:00:00");
 //	ab_section_display->setMinimumSize(ab_section_display->sizeHint());
 
-	video_info_display = new QLabel( statusBar() );
+	video_info_display = new QLabel(statusBar());
 	video_info_display->setObjectName("video_info_display");
 	video_info_display->setAlignment(Qt::AlignRight);
 	video_info_display->setFrameShape(QFrame::NoFrame);
 
 	statusBar()->setAutoFillBackground(true);
 
-	ColorUtils::setBackgroundColor( statusBar(), QColor(0,0,0) );
-	ColorUtils::setForegroundColor( statusBar(), QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( time_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( time_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( frame_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( frame_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( ab_section_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( ab_section_display, QColor(255,255,255) );
-	ColorUtils::setBackgroundColor( video_info_display, QColor(0,0,0) );
-	ColorUtils::setForegroundColor( video_info_display, QColor(255,255,255) );
+	ColorUtils::setBackgroundColor(statusBar(), QColor(0,0,0));
+	ColorUtils::setForegroundColor(statusBar(), QColor(255,255,255));
+	ColorUtils::setBackgroundColor(time_display, QColor(0,0,0));
+	ColorUtils::setForegroundColor(time_display, QColor(255,255,255));
+	ColorUtils::setBackgroundColor(frame_display, QColor(0,0,0));
+	ColorUtils::setForegroundColor(frame_display, QColor(255,255,255));
+	ColorUtils::setBackgroundColor(ab_section_display, QColor(0,0,0));
+	ColorUtils::setForegroundColor(ab_section_display, QColor(255,255,255));
+	ColorUtils::setBackgroundColor(video_info_display, QColor(0,0,0));
+	ColorUtils::setForegroundColor(video_info_display, QColor(255,255,255));
 	statusBar()->setSizeGripEnabled(false);
 
-	statusBar()->addPermanentWidget( video_info_display );
-	statusBar()->addPermanentWidget( ab_section_display );
+	statusBar()->addPermanentWidget(video_info_display);
+	statusBar()->addPermanentWidget(ab_section_display);
 
-    statusBar()->showMessage( tr("Welcome to SMPlayer") );
-	statusBar()->addPermanentWidget( frame_display, 0 );
-	frame_display->setText( "0" );
+	statusBar()->showMessage(tr("Welcome to SMPlayer"));
+	statusBar()->addPermanentWidget(frame_display, 0);
+	frame_display->setText("0");
 
-    statusBar()->addPermanentWidget( time_display, 0 );
+	statusBar()->addPermanentWidget(time_display, 0);
 	time_display->setText(" 00:00:00 / 00:00:00 ");
 
 	time_display->show();
@@ -340,28 +340,28 @@ void TDefault::retranslateStrings() {
 	// Change the icon of the play/pause action
 	playOrPauseAct->setIcon(Images::icon("play"));
 
-	toolbar_menu->menuAction()->setText( tr("&Toolbars") );
-	toolbar_menu->menuAction()->setIcon( Images::icon("toolbars") );
+	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
+	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
 
-	statusbar_menu->menuAction()->setText( tr("Status&bar") );
-	statusbar_menu->menuAction()->setIcon( Images::icon("statusbar") );
+	statusbar_menu->menuAction()->setText(tr("Status&bar"));
+	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
 
-	toolbar1->setWindowTitle( tr("&Main toolbar") );
+	toolbar1->setWindowTitle(tr("&Main toolbar"));
 	toolbar1->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 
-	toolbar2->setWindowTitle( tr("&Language toolbar") );
+	toolbar2->setWindowTitle(tr("&Language toolbar"));
 	toolbar2->toggleViewAction()->setIcon(Images::icon("lang_toolbar"));
 
-	select_audio->setText( tr("Audio") );
-	select_subtitle->setText( tr("Subtitle") );
+	select_audio->setText(tr("Audio"));
+	select_subtitle->setText(tr("Subtitle"));
 
-	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info") );
-	viewFrameCounterAct->change( Images::icon("frame_counter"), tr("&Frame counter") );
+	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info"));
+	viewFrameCounterAct->change(Images::icon("frame_counter"), tr("&Frame counter"));
 
-	editToolbar1Act->change( tr("Edit main &toolbar") );
-	editControl1Act->change( tr("Edit &control bar") );
-	editControl2Act->change( tr("Edit m&ini control bar") );
-	editFloatingControlAct->change( tr("Edit &floating control") );
+	editToolbar1Act->change(tr("Edit main &toolbar"));
+	editControl1Act->change(tr("Edit &control bar"));
+	editControl2Act->change(tr("Edit m&ini control bar"));
+	editFloatingControlAct->change(tr("Edit &floating control"));
 }
 
 
@@ -372,7 +372,7 @@ void TDefault::displayTime(QString text) {
 
 void TDefault::displayFrame(int frame) {
 	if (frame_display->isVisible()) {
-		frame_display->setNum( frame );
+		frame_display->setNum(frame);
 	}
 }
 
@@ -385,9 +385,9 @@ void TDefault::displayABSection(int secs_a, int secs_b) {
 		s += tr("B:%1").arg(Helper::formatTime(secs_b));
 	}
 
-	ab_section_display->setText( s );
+	ab_section_display->setText(s);
 
-	ab_section_display->setVisible( !s.isEmpty() );
+	ab_section_display->setVisible(!s.isEmpty());
 }
 
 void TDefault::displayVideoInfo(int width, int height, double fps) {
@@ -415,7 +415,7 @@ void TDefault::reconfigureFloatingControl() {
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea( (TAutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
 }
 
@@ -459,8 +459,8 @@ void TDefault::aboutToExitFullscreen() {
 		//statusBar()->show();
 		controlwidget->show();
 
-		toolbar1->setVisible( fullscreen_toolbar1_was_visible );
-		toolbar2->setVisible( fullscreen_toolbar2_was_visible );
+		toolbar1->setVisible(fullscreen_toolbar1_was_visible);
+		toolbar2->setVisible(fullscreen_toolbar2_was_visible);
 	}
 
 	//qDebug("Gui::TDefault::aboutToExitFullscreen done");
@@ -501,18 +501,18 @@ void TDefault::aboutToExitCompactMode() {
 	//statusBar()->show();
 	controlwidget->show();
 
-	toolbar1->setVisible( compact_toolbar1_was_visible );
-	toolbar2->setVisible( compact_toolbar2_was_visible );
+	toolbar1->setVisible(compact_toolbar1_was_visible);
+	toolbar2->setVisible(compact_toolbar2_was_visible);
 
 	// Recheck size of controlwidget
-	resizeEvent( new QResizeEvent( size(), size() ) );
+	resizeEvent(new QResizeEvent(size(), size()));
 }
 
-void TDefault::resizeEvent( QResizeEvent * e ) {
+void TDefault::resizeEvent(QResizeEvent* e) {
 	/*
 	qDebug("Gui::TDefault::resizeEvent %d x %d", width(), height());
-	qDebug(" controlwidget width: %d", controlwidget->width() );
-	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width() );
+	qDebug(" controlwidget width: %d", controlwidget->width());
+	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width());
 	*/
 
 	TBasePlus::resizeEvent(e);
@@ -523,12 +523,12 @@ void TDefault::resizeEvent( QResizeEvent * e ) {
 #define LIMIT 570
 #endif
 
-	if ( (controlwidget->isVisible()) && (width() < LIMIT) ) {
+	if ((controlwidget->isVisible()) && (width() < LIMIT)) {
 		controlwidget->hide();
 		controlwidget_mini->show();
 	}
 	else
-	if ( (controlwidget_mini->isVisible()) && (width() > LIMIT) ) {
+	if ((controlwidget_mini->isVisible()) && (width() > LIMIT)) {
 		controlwidget_mini->hide();
 		controlwidget->show();
 	}
@@ -551,7 +551,7 @@ void TDefault::saveConfig(const QString &group) {
 
 	TBasePlus::saveConfig("default_gui");
 
-	pref->beginGroup( "default_gui");
+	pref->beginGroup("default_gui");
 
 	pref->setValue("video_info", viewVideoInfoAct->isChecked());
 	pref->setValue("frame_counter", viewFrameCounterAct->isChecked());
@@ -561,14 +561,14 @@ void TDefault::saveConfig(const QString &group) {
 	pref->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
 	pref->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
 
-	pref->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
+	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 
-	pref->beginGroup( "actions" );
-	pref->setValue("toolbar1", toolbar1->actionsToStringList() );
-	pref->setValue("controlwidget", controlwidget->actionsToStringList() );
-	pref->setValue("controlwidget_mini", controlwidget_mini->actionsToStringList() );
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	pref->setValue("floating_control", iw->actionsToStringList() );
+	pref->beginGroup("actions");
+	pref->setValue("toolbar1", toolbar1->actionsToStringList());
+	pref->setValue("controlwidget", controlwidget->actionsToStringList());
+	pref->setValue("controlwidget_mini", controlwidget_mini->actionsToStringList());
+	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
+	pref->setValue("floating_control", iw->actionsToStringList());
 	pref->setValue("toolbar1_version", TOOLBAR_VERSION);
 	pref->endGroup();
 
@@ -598,18 +598,18 @@ void TDefault::loadConfig(const QString &group) {
 	compact_toolbar1_was_visible = pref->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
 	compact_toolbar2_was_visible = pref->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
 
-	pref->beginGroup( "actions" );
+	pref->beginGroup("actions");
 	int toolbar_version = pref->value("toolbar1_version", 0).toInt();
 	if (toolbar_version >= TOOLBAR_VERSION) {
-		toolbar1->setActionsFromStringList( pref->value("toolbar1", toolbar1->defaultActions()).toStringList() );
+		toolbar1->setActionsFromStringList(pref->value("toolbar1", toolbar1->defaultActions()).toStringList());
 	} else {
 		qWarning("Gui::TDefault::loadConfig: toolbar too old, loading default one");
-		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
+		toolbar1->setActionsFromStringList(toolbar1->defaultActions());
 	}
-	controlwidget->setActionsFromStringList( pref->value("controlwidget", controlwidget->defaultActions()).toStringList() );
-	controlwidget_mini->setActionsFromStringList( pref->value("controlwidget_mini", controlwidget_mini->defaultActions()).toStringList() );
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList( pref->value("floating_control", iw->defaultActions()).toStringList() );
+	controlwidget->setActionsFromStringList(pref->value("controlwidget", controlwidget->defaultActions()).toStringList());
+	controlwidget_mini->setActionsFromStringList(pref->value("controlwidget_mini", controlwidget_mini->defaultActions()).toStringList());
+	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
+	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
@@ -621,7 +621,7 @@ void TDefault::loadConfig(const QString &group) {
 
 	floating_control->adjustSize();
 
-	restoreState( pref->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 
 	pref->endGroup();
 

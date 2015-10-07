@@ -46,7 +46,7 @@ public:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent (QEvent * event);
+	virtual void changeEvent (QEvent* event);
 	virtual void showEvent(QShowEvent*);
 	virtual void hideEvent(QShowEvent*);
 

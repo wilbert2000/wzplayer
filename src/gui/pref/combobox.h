@@ -30,21 +30,21 @@ namespace Gui { namespace Pref {
 class TComboBox : public QComboBox
 {
 public:
-	TComboBox( QWidget * parent = 0 );
+	TComboBox(QWidget* parent = 0);
 	virtual ~TComboBox();
 
-	void setCurrentText ( const QString & text );
-	void insertStringList ( const QStringList & list, int index = -1 );
+	void setCurrentText (const QString & text);
+	void insertStringList (const QStringList & list, int index = -1);
 };
 
 
 class TFontComboBox : public QFontComboBox
 {
 public:
-	TFontComboBox( QWidget * parent = 0 );
+	TFontComboBox(QWidget* parent = 0);
 	~TFontComboBox();
 
-	void setCurrentText ( const QString & text );
+	void setCurrentText (const QString & text);
 	void setFontsFromDir(const QString & fontdir);
 };
 

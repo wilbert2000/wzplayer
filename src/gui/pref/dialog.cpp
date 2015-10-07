@@ -28,8 +28,8 @@
 
 namespace Gui { namespace Pref {
 
-TDialog::TDialog(QWidget * parent, Qt::WindowFlags f)
-	: QDialog(parent, f )
+TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
+	: QDialog(parent, f)
 {
 	setupUi(this);
 
@@ -38,43 +38,43 @@ TDialog::TDialog(QWidget * parent, Qt::WindowFlags f)
 	cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
 	applyButton = buttonBox->button(QDialogButtonBox::Apply);
 	helpButton = buttonBox->button(QDialogButtonBox::Help);
-	connect( applyButton, SIGNAL(clicked()), this, SLOT(apply()) );
-	connect( helpButton, SIGNAL(clicked()), this, SLOT(showHelp()) );
+	connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
+	connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
 	
 
-	setWindowIcon( Images::icon("logo") );
+	setWindowIcon(Images::icon("logo"));
 
 	help_window = new QTextBrowser(this);
 	help_window->setWindowFlags(Qt::Window);
 	help_window->resize(300, 450);
 	//help_window->adjustSize();
-	help_window->setWindowTitle( tr("SMPlayer - Help") );
-	help_window->setWindowIcon( Images::icon("logo") );
+	help_window->setWindowTitle(tr("SMPlayer - Help"));
+	help_window->setWindowIcon(Images::icon("logo"));
 	help_window->setOpenExternalLinks(true);
 
 	page_general = new TGeneral;
-	addSection( page_general );
+	addSection(page_general);
 
 	page_drives = new TDrives;
-	addSection( page_drives );
+	addSection(page_drives);
 
 	page_performance = new TPerformance;
-	addSection( page_performance );
+	addSection(page_performance);
 
 	page_subtitles = new TSubtitles;
-	addSection( page_subtitles );
+	addSection(page_subtitles);
 
 	page_interface = new TInterface;
-	addSection( page_interface );
+	addSection(page_interface);
 
 	page_input = new TInput;
-	addSection( page_input );
+	addSection(page_input);
 
 	page_playlist = new TPrefPlaylist;
-	addSection( page_playlist );
+	addSection(page_playlist);
 
 	page_tv = new TTV;
-	addSection( page_tv );
+	addSection(page_tv);
 
 #if USE_ASSOCIATIONS
 	page_associations = new TAssociations;
@@ -82,15 +82,15 @@ TDialog::TDialog(QWidget * parent, Qt::WindowFlags f)
 #endif
 
 	page_updates = new TUpdates;
-	addSection( page_updates );
+	addSection(page_updates);
 
 	page_network = new TNetwork;
-	addSection( page_network );
+	addSection(page_network);
 
 	page_advanced = new TAdvanced;
-	addSection( page_advanced );
+	addSection(page_advanced);
 
-	//sections->setIconSize( QSize(22,22) );
+	//sections->setIconSize(QSize(22,22));
 	sections->setCurrentRow(General);
 
 	//adjustSize();
@@ -111,9 +111,9 @@ void TDialog::retranslateStrings() {
 	retranslateUi(this);
 
 	for (int n=0; n < pages->count(); n++) {
-		TWidget * w = (TWidget*) pages->widget(n);
-		sections->item(n)->setText( w->sectionName() );
-		sections->item(n)->setIcon( w->sectionIcon() );
+		TWidget* w = (TWidget*) pages->widget(n);
+		sections->item(n)->setText(w->sectionName());
+		sections->item(n)->setIcon(w->sectionIcon());
 	}
 
 	if (help_window->isVisible()) {
@@ -121,40 +121,40 @@ void TDialog::retranslateStrings() {
 		showHelp();
 	}
 
-	help_window->setWindowTitle( tr("SMPlayer - Help") );
+	help_window->setWindowTitle(tr("SMPlayer - Help"));
 
 	// Qt 4.2 doesn't update the buttons' text
 #if QT_VERSION < 0x040300
-	okButton->setText( tr("OK") );
-	cancelButton->setText( tr("Cancel") );
-	applyButton->setText( tr("Apply") );
-	helpButton->setText( tr("Help") );
+	okButton->setText(tr("OK"));
+	cancelButton->setText(tr("Cancel"));
+	applyButton->setText(tr("Apply"));
+	helpButton->setText(tr("Help"));
 #endif
 }
 
 void TDialog::accept() {
 	hide();
 	help_window->hide();
-	setResult( QDialog::Accepted );
+	setResult(QDialog::Accepted);
 	emit applied();
 }
 
 void TDialog::apply() {
-	setResult( QDialog::Accepted );
+	setResult(QDialog::Accepted);
 	emit applied();
 }
 
 void TDialog::reject() {
 	hide();
 	help_window->hide();
-	setResult( QDialog::Rejected );
+	setResult(QDialog::Rejected);
 
-	setResult( QDialog::Accepted );
+	setResult(QDialog::Accepted);
 }
 
 void TDialog::addSection(TWidget *w) {
-	QListWidgetItem *i = new QListWidgetItem( w->sectionIcon(), w->sectionName() );
-	sections->addItem( i );
+	QListWidgetItem *i = new QListWidgetItem(w->sectionIcon(), w->sectionName());
+	sections->addItem(i);
 	pages->addWidget(w);
 }
 
@@ -211,8 +211,8 @@ bool TDialog::requiresRestart() {
 }
 
 void TDialog::showHelp() {
-	TWidget * w = (TWidget*) pages->currentWidget();
-	help_window->setHtml( w->help() );
+	TWidget* w = (TWidget*) pages->currentWidget();
+	help_window->setHtml(w->help());
 	help_window->show();
 	help_window->raise();
 }

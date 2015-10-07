@@ -22,7 +22,7 @@
 #include "links.h"
 #include <QDesktopServices>
 
-ShareDialog::ShareDialog( QWidget* parent, Qt::WindowFlags f )
+ShareDialog::ShareDialog(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 	, actions_taken(0)
 {

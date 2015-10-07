@@ -32,17 +32,17 @@ class TUpdates : public TWidget, public Ui::TUpdates
 	Q_OBJECT
 
 public:
-	TUpdates( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TUpdates(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TUpdates();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
 	// Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 protected:
 	virtual void createHelp();

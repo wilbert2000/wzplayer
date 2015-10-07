@@ -54,7 +54,7 @@ void TIconSetter::removeInstance()
     m_instance = 0;
 }
 
-void TIconSetter::setActionIcon(QPixmap pixmap )
+void TIconSetter::setActionIcon(QPixmap pixmap)
 {
 #if 0
 //#define SAVE_ICONS 1
@@ -62,14 +62,14 @@ void TIconSetter::setActionIcon(QPixmap pixmap )
                      QString s = "/tmp/" name ".png"; \
                      p.save(s); }
 
-    for(int n = 0; n < 10; ++n )
+    for(int n = 0; n < 10; ++n)
     {
         QIcon icon;
         icon.addPixmap(pixmap.copy(n*24, 0, 24, 24), QIcon::Normal, QIcon::Off);
         icon.addPixmap(pixmap.copy(n*24, 24, 24, 24), QIcon::Active, QIcon::Off);
         icon.addPixmap(pixmap.copy(n*24, 48, 24, 24), QIcon::Selected, QIcon::Off);
         icon.addPixmap(pixmap.copy(n*24, 72, 24, 24), QIcon::Disabled, QIcon::Off);
-        QAction * action = 0;
+        QAction* action = 0;
 		//TActionTools::findAction("aaa", toolbar_actions);
         switch(n)
         {
@@ -127,15 +127,15 @@ void TIconSetter::setActionIcon(QPixmap pixmap )
 #endif
 }
 
-void TIconSetter::buttonIcon(int buttonNo, QPixmap pix )
+void TIconSetter::buttonIcon(int buttonNo, QPixmap pix)
 {
     TIcon icon;
     int w = pix.width();
     int h = pix.height();
-    icon.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::Off);
-    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::Off);
-    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::Off);
-    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 0, w, h/4), TIcon::Normal, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/4, w, h/4), TIcon::MouseOver, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/2, w, h/4), TIcon::MouseDown, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4), TIcon::Disabled, TIcon::Off);
     TIcon icon2;
     switch(buttonNo)
     {
@@ -145,15 +145,15 @@ void TIconSetter::buttonIcon(int buttonNo, QPixmap pix )
     case 2:
         playControl->setPreviousIcon(icon);break;
     case 3:        
-        icon2.setPixmap(pix.copy(0, 0, w/2, h/4 ), TIcon::Normal, TIcon::Off);
-        icon2.setPixmap(pix.copy(0, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::Off);
-        icon2.setPixmap(pix.copy(0, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::Off);
-        icon2.setPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::Off);
+        icon2.setPixmap(pix.copy(0, 0, w/2, h/4), TIcon::Normal, TIcon::Off);
+        icon2.setPixmap(pix.copy(0, h/4, w/2, h/4), TIcon::MouseOver, TIcon::Off);
+        icon2.setPixmap(pix.copy(0, h/2, w/2, h/4), TIcon::MouseDown, TIcon::Off);
+        icon2.setPixmap(pix.copy(0, 3*h/4, w/2, h/4), TIcon::Disabled, TIcon::Off);
 
-        icon2.setPixmap(pix.copy(w/2, 0, w/2, h/4 ), TIcon::Normal, TIcon::On);
-        icon2.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::On);
-        icon2.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::On);
-        icon2.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::On);
+        icon2.setPixmap(pix.copy(w/2, 0, w/2, h/4), TIcon::Normal, TIcon::On);
+        icon2.setPixmap(pix.copy(w/2, h/4, w/2, h/4), TIcon::MouseOver, TIcon::On);
+        icon2.setPixmap(pix.copy(w/2, h/2, w/2, h/4), TIcon::MouseDown, TIcon::On);
+        icon2.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4), TIcon::Disabled, TIcon::On);
 
         playControl->setPlayPauseIcon(icon2);
         break;
@@ -170,21 +170,21 @@ void TIconSetter::buttonIcon(int buttonNo, QPixmap pix )
 }
 
 
-void TIconSetter::mediaPanelButtonIcon( int n, QPixmap pix)
+void TIconSetter::mediaPanelButtonIcon(int n, QPixmap pix)
 {
     if(pix.isNull()) return;
     TIcon icon;
     int w = pix.width();
     int h = pix.height();
-    icon.setPixmap(pix.copy(0, 0, w/2, h/4 ), TIcon::Normal, TIcon::Off);
-    icon.setPixmap(pix.copy(0, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::Off);
-    icon.setPixmap(pix.copy(0, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::Off);
-    icon.setPixmap(pix.copy(0, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 0, w/2, h/4), TIcon::Normal, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/4, w/2, h/4), TIcon::MouseOver, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/2, w/2, h/4), TIcon::MouseDown, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 3*h/4, w/2, h/4), TIcon::Disabled, TIcon::Off);
 
-    icon.setPixmap(pix.copy(w/2, 0, w/2, h/4 ), TIcon::Normal, TIcon::On);
-    icon.setPixmap(pix.copy(w/2, h/4, w/2, h/4 ), TIcon::MouseOver, TIcon::On);
-    icon.setPixmap(pix.copy(w/2, h/2, w/2, h/4 ), TIcon::MouseDown, TIcon::On);
-    icon.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4 ), TIcon::Disabled, TIcon::On);
+    icon.setPixmap(pix.copy(w/2, 0, w/2, h/4), TIcon::Normal, TIcon::On);
+    icon.setPixmap(pix.copy(w/2, h/4, w/2, h/4), TIcon::MouseOver, TIcon::On);
+    icon.setPixmap(pix.copy(w/2, h/2, w/2, h/4), TIcon::MouseDown, TIcon::On);
+    icon.setPixmap(pix.copy(w/2, 3*h/4, w/2, h/4), TIcon::Disabled, TIcon::On);
 
     switch(n)
     {

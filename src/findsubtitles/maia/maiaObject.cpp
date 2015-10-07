@@ -180,12 +180,12 @@ QVariant MaiaObject::fromXml(const QDomElement &elem) {
 		else
 			return QVariant(false);
 	} else if(typeName == "base64")
-		return QVariant(QByteArray::fromBase64( typeElement.text().toLatin1()));
+		return QVariant(QByteArray::fromBase64(typeElement.text().toLatin1()));
 	else if(typeName == "datetime" || typeName == "datetime.iso8601")
 		return QVariant(QDateTime::fromString(typeElement.text(), "yyyyMMddThh:mm:ss"));
 	else if(typeName == "nil") // Non-standard extension: http://ontosys.com/xml-rpc/extensions.php
 		return QVariant();
-	else if ( typeName == "array" ) {
+	else if (typeName == "array") {
 		QList<QVariant> values;
 		QDomNode valueNode = typeElement.firstChild().firstChild();
 		while(!valueNode.isNull()) {
@@ -194,7 +194,7 @@ QVariant MaiaObject::fromXml(const QDomElement &elem) {
 		}
 		return QVariant(values);
 	}
-	else if ( typeName == "struct" ) {
+	else if (typeName == "struct") {
 		QMap<QString, QVariant> map;
 		QDomNode memberNode = typeElement.firstChild();
 		while(!memberNode.isNull())	{
@@ -216,7 +216,7 @@ QString MaiaObject::prepareCall(QString method, QList<QVariant> args) {
 
 	QDomDocument doc;
 
-	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", QString("version=\"1.0\" encoding=\"UTF-8\"" ));
+	QDomProcessingInstruction header = doc.createProcessingInstruction("xml", QString("version=\"1.0\" encoding=\"UTF-8\""));
 	doc.appendChild(header);
 	
 	QDomElement methodCall = doc.createElement("methodCall");
@@ -243,7 +243,7 @@ QString MaiaObject::prepareResponse(QVariant arg) {
 
 	QDomDocument doc;
 
-	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", QString("version=\"1.0\" encoding=\"UTF-8\"" )); 
+	QDomProcessingInstruction header = doc.createProcessingInstruction("xml", QString("version=\"1.0\" encoding=\"UTF-8\"")); 
 	doc.appendChild(header);
 	
 	QDomElement methodResponse = doc.createElement("methodResponse");
@@ -276,7 +276,7 @@ void MaiaObject::parseResponse(QString response, QNetworkReply* reply) {
 	if(doc.documentElement().firstChild().toElement().tagName().toLower() == "params") {
 		QDomNode paramNode = doc.documentElement().firstChild().firstChild();
 		if(!paramNode.isNull()) {
-			arg = fromXml( paramNode.firstChild().toElement() );
+			arg = fromXml(paramNode.firstChild().toElement());
 		}
 		emit aresponse(arg, reply);
 	} else if(doc.documentElement().firstChild().toElement().tagName().toLower() == "fault") {

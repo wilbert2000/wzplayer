@@ -43,7 +43,7 @@ class TGeneral : public TWidget, public Ui::TGeneral {
 	Q_OBJECT
 
 public:
-	TGeneral( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TGeneral(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TGeneral();
 
 	// Return the name of the section
@@ -52,10 +52,10 @@ public:
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(TPreferences * pref);
+	void setData(TPreferences* pref);
 
 	// Apply changes
-	void getData(TPreferences * pref);
+	void getData(TPreferences* pref);
 
 	bool fileSettingsMethodChanged() { return filesettings_method_changed; }
 
@@ -63,19 +63,19 @@ protected:
 	virtual void createHelp();
 
 	// Tab General
-	void setMplayerPath( QString path );
+	void setMplayerPath(QString path);
 	QString mplayerPath();
 
 	void setUseScreenshots(bool b);
 	bool useScreenshots();
 
-	void setScreenshotDir( QString path );
+	void setScreenshotDir(QString path);
 	QString screenshotDir();
 
-	void setVO( QString vo_driver );
+	void setVO(QString vo_driver);
 	QString VO();
 
-	void setAO( QString ao_driver );
+	void setAO(QString ao_driver);
 	QString AO();
 
 	void setRememberSettings(bool b);

@@ -73,14 +73,14 @@ protected:
 	QToolBar* controlwidget;
 	QToolBar* timeslidewidget;
 
-	QLabel * audiochannel_display;
-	QLabel * time_display;
-	QLabel * frame_display;
+	QLabel* audiochannel_display;
+	QLabel* time_display;
+	QLabel* frame_display;
 
-	QLabel * floating_control_time;
+	QLabel* floating_control_time;
 
-	TAutohideWidget * floating_control;
-	QSpacerItem * spacer;
+	TAutohideWidget* floating_control;
+	QSpacerItem* spacer;
 };
 
 } // namespace Gui

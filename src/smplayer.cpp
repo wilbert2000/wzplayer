@@ -157,7 +157,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	// Get config path from args
 	QString config_path;
 	int pos = args.indexOf("-config-path");
-	if ( pos >= 0) {
+	if (pos >= 0) {
 		if (pos + 1 < args.count()) {
 			pos++;
 			config_path = args[pos];
@@ -235,9 +235,9 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 			if (n+2 < args.count()) {
 				bool ok_x, ok_y;
 				n++;
-				gui_position.setX( args[n].toInt(&ok_x) );
+				gui_position.setX(args[n].toInt(&ok_x));
 				n++;
-				gui_position.setY( args[n].toInt(&ok_y) );
+				gui_position.setY(args[n].toInt(&ok_y));
 				if (ok_x && ok_y) move_gui = true;
 			} else {
 				printf("Error: expected parameter for -pos\r\n");
@@ -249,9 +249,9 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 			if (n+2 < args.count()) {
 				bool ok_width, ok_height;
 				n++;
-				gui_size.setWidth( args[n].toInt(&ok_width) );
+				gui_size.setWidth(args[n].toInt(&ok_width));
 				n++;
-				gui_size.setHeight( args[n].toInt(&ok_height) );
+				gui_size.setHeight(args[n].toInt(&ok_height));
 				if (ok_width && ok_height) resize_gui = true;
 			} else {
 				printf("Error: expected parameter for -resize\r\n");
@@ -260,7 +260,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		}
 		else
 		if ((argument == "--help") || (argument == "-help") ||
-            (argument == "-h") || (argument == "-?") ) 
+            (argument == "-h") || (argument == "-?")) 
 		{
 			show_help = true;
 		}
@@ -318,10 +318,10 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 			    argument = fUrl.toLocalFile();
 			}
 			#endif
-			if (QFile::exists( argument )) {
+			if (QFile::exists(argument)) {
 				argument = QFileInfo(argument).absoluteFilePath();
 			}
-			files_to_play.append( argument );
+			files_to_play.append(argument);
 		}
 	}
 
@@ -330,7 +330,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		return NoError;
 	}
 
-	qDebug("TSMPlayer::processArgs: files_to_play: count: %d", files_to_play.count() );
+	qDebug("TSMPlayer::processArgs: files_to_play: count: %d", files_to_play.count());
 	for (int n=0; n < files_to_play.count(); n++) {
 		qDebug("TSMPlayer::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
 	}
@@ -530,7 +530,7 @@ void TSMPlayer::showInfo() {
 #endif
 #endif
 
-	qDebug("%s", s.toUtf8().data() );
+	qDebug("%s", s.toUtf8().data());
 	qDebug("Compiled with Qt v. %s, using %s", QT_VERSION_STR, qVersion());
 
 	qDebug(" * application path: '%s'", Paths::appPath().toUtf8().data());
@@ -631,7 +631,7 @@ void TSMPlayer::showInfo() {
 #define VK_MEDIA_PLAY_PAUSE 0xB3
 #define VK_MEDIA_STOP 0xB2
 
-bool TSMPlayer::winEventFilter(MSG * msg, long * result) {
+bool TSMPlayer::winEventFilter(MSG* msg, long* result) {
 	//qDebug() << "TSMPlayer::winEventFilter" << msg->message << "lParam:" << msg->lParam;
 
 	static uint last_appcommand = 0;
@@ -689,7 +689,7 @@ bool TSMPlayer::winEventFilter(MSG * msg, long * result) {
 				last_appcommand = cmd;
 
 				QKeyEvent event(QEvent::KeyPress, key, modifier, name);
-				QWidget * w = QApplication::focusWidget();
+				QWidget* w = QApplication::focusWidget();
 				if (w) QCoreApplication::sendEvent(w, &event);
 				*result = true;
 				return true;

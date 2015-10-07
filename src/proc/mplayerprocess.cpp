@@ -880,7 +880,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 	}
 
 	// Audio/Video CD tracks
-	if (rx_cd_track.indexIn(line) >= 0 ) {
+	if (rx_cd_track.indexIn(line) >= 0) {
 		return parseCDTrack(rx_cd_track.cap(1),
 							rx_cd_track.cap(2).toInt(),
 							rx_cd_track.cap(3));
@@ -935,7 +935,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 		md->detected_type = TMediaData::TYPE_STREAM;
 		md->stream_title = s;
 		md->stream_url = url;
-		emit receivedStreamTitleAndUrl( s, url );
+		emit receivedStreamTitleAndUrl(s, url);
 		return true;
 	}
 
@@ -944,7 +944,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 		qDebug("Proc::TMplayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
 		md->detected_type = TMediaData::TYPE_STREAM;
 		md->stream_title = s;
-		emit receivedStreamTitle( s );
+		emit receivedStreamTitle(s);
 		return true;
 	}
 
@@ -952,7 +952,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 	if (rx_screenshot.indexIn(line) >= 0) {
 		QString shot = rx_screenshot.cap(1);
 		qDebug("Proc::TMplayerProcess::parseLine: screenshot: '%s'", shot.toUtf8().data());
-		emit receivedScreenshot( shot );
+		emit receivedScreenshot(shot);
 		return true;
 	}
 
@@ -960,7 +960,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 	// Program switch
 	if (rx_program.indexIn(line) >= 0) {
 		int ID = rx_program.cap(1).toInt();
-		md->programs.addID( ID );
+		md->programs.addID(ID);
 		qDebug("Proc::TMplayerProcess::parseLine: Added program: ID: %d", ID);
 		return true;
 	}
@@ -1205,13 +1205,13 @@ void TMplayerProcess::setSubtitle(SubData::Type type, int ID) {
 
 	switch (type) {
 		case SubData::Vob:
-			writeToStdin( "sub_vob " + QString::number(ID) );
+			writeToStdin("sub_vob " + QString::number(ID));
 			break;
 		case SubData::Sub:
-			writeToStdin( "sub_demux " + QString::number(ID) );
+			writeToStdin("sub_demux " + QString::number(ID));
 			break;
 		case SubData::File:
-			writeToStdin( "sub_file " + QString::number(ID) );
+			writeToStdin("sub_file " + QString::number(ID));
 			break;
 		default: {
 			qWarning("Proc::TMplayerProcess::setSubtitle: unknown type!");
@@ -1423,7 +1423,7 @@ void TMplayerProcess::setFullscreen(bool b) {
 
 #if PROGRAM_SWITCH
 void TMplayerProcess::setTSProgram(int ID) {
-	writeToStdin("set_property switch_program " + QString::number(ID) );
+	writeToStdin("set_property switch_program " + QString::number(ID));
 	writeToStdin("get_property switch_audio");
 	writeToStdin("get_property switch_video");
 }

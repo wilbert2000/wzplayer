@@ -31,7 +31,7 @@
 #define SHAREBUTTON_MIN QSize(24,24)
 #define SHAREBUTTON_MAX QSize(32,32)
 
-ShareButton::ShareButton(const QString icon_name, const QString & tooltip, QWidget * parent)
+ShareButton::ShareButton(const QString icon_name, const QString & tooltip, QWidget* parent)
 	: QPushButton("", parent)
 {
 	setAttribute(Qt::WA_Hover, true);
@@ -59,7 +59,7 @@ void ShareButton::leaveEvent(QEvent *) {
 
 
 
-ShareWidget::ShareWidget(QSettings * settings, QWidget * parent, Qt::WindowFlags f)
+ShareWidget::ShareWidget(QSettings* settings, QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent,f)
 	, set(settings)
 	, actions_taken(0)
@@ -79,7 +79,7 @@ ShareWidget::ShareWidget(QSettings * settings, QWidget * parent, Qt::WindowFlags
 	support_button->setObjectName("support_button");
 	connect(support_button, SIGNAL(clicked()), this, SIGNAL(supportClicked()));
 
-	QHBoxLayout * hlayout = new QHBoxLayout;
+	QHBoxLayout* hlayout = new QHBoxLayout;
 	hlayout->setSpacing(0);
 	//hlayout->addSpacerItem(new QSpacerItem(10,10, QSizePolicy::Expanding));
 	hlayout->addWidget(donate_button);
@@ -87,7 +87,7 @@ ShareWidget::ShareWidget(QSettings * settings, QWidget * parent, Qt::WindowFlags
 	hlayout->addWidget(twitter_button);
 	//hlayout->addSpacerItem(new QSpacerItem(10,10, QSizePolicy::Expanding));
 
-	QVBoxLayout * vlayout = new QVBoxLayout(this);
+	QVBoxLayout* vlayout = new QVBoxLayout(this);
 	vlayout->setSpacing(0);
 	vlayout->addLayout(hlayout);
 	vlayout->addWidget(support_button);
@@ -194,7 +194,7 @@ void ShareWidget::donate() {
 	qDebug("ShareWidget::donate");
 	setActionPerformed(ShareData::Donate);
 #ifndef TEST_SHAREWIDGET
-	QDesktopServices::openUrl( ShareData::donateUrl() );
+	QDesktopServices::openUrl(ShareData::donateUrl());
 #endif
 }
 
@@ -202,7 +202,7 @@ void ShareWidget::facebook() {
 	qDebug("ShareWidget::facebook");
 	setActionPerformed(ShareData::Facebook);
 #ifndef TEST_SHAREWIDGET
-	QDesktopServices::openUrl( ShareData::facebookUrl() );
+	QDesktopServices::openUrl(ShareData::facebookUrl());
 #endif
 }
 
@@ -210,7 +210,7 @@ void ShareWidget::twitter() {
 	qDebug("ShareWidget::twitter");
 	setActionPerformed(ShareData::Twitter);
 #ifndef TEST_SHAREWIDGET
-	QDesktopServices::openUrl( ShareData::twitterUrl() );
+	QDesktopServices::openUrl(ShareData::twitterUrl());
 #endif
 }
 

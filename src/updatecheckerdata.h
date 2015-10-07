@@ -30,8 +30,8 @@ public:
 	UpdateCheckerData() { enabled = true; days_to_check = 7; }
 	virtual ~UpdateCheckerData() {}
 
-	void save(QSettings * set);
-	void load(QSettings * set);
+	void save(QSettings* set);
+	void load(QSettings* set);
 
 	QDate last_checked;
 	bool enabled;

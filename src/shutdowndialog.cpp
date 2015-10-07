@@ -21,15 +21,15 @@
 #include <QTimer>
 #include <QPushButton>
 
-ShutdownDialog::ShutdownDialog( QWidget* parent, Qt::WindowFlags f )
+ShutdownDialog::ShutdownDialog(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 	, countdown(30)
 	, timer(0)
 {
 	setupUi(this);
 
-	QPushButton * ok_button = buttonBox->button(QDialogButtonBox::Ok);
-	QPushButton * cancel_button = buttonBox->button(QDialogButtonBox::Cancel);
+	QPushButton* ok_button = buttonBox->button(QDialogButtonBox::Ok);
+	QPushButton* cancel_button = buttonBox->button(QDialogButtonBox::Cancel);
 
 	if (ok_button) { ok_button->setDefault(false); ok_button->setAutoDefault(false); }
 	if (cancel_button) { cancel_button->setDefault(true); cancel_button->setAutoDefault(true); }

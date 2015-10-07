@@ -24,7 +24,7 @@
 
 QString LoadPage::default_user_agent;
 
-LoadPage::LoadPage(QNetworkAccessManager * man, QObject* parent)
+LoadPage::LoadPage(QNetworkAccessManager* man, QObject* parent)
 	: QObject(parent)
 {
 	manager = man;

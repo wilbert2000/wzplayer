@@ -63,10 +63,10 @@ QString TDiscName::join(Disc type, int title, const QString & device) {
 		case CDDA: protocol = "cdda"; break;
 		case BLURAY: protocol = "br"; break;
 	}
-	return join( TDiscData(protocol, title, device) );
+	return join(TDiscData(protocol, title, device));
 }
 
-TDiscData TDiscName::split(const QString & disc_url, bool * ok) {
+TDiscData TDiscName::split(const QString & disc_url, bool* ok) {
 	//qDebug("TDiscName::split: disc_url: '%s'", disc_url.toUtf8().constData());
 
 	// TODO: dvdread and title ranges dvd://1-99
@@ -136,7 +136,7 @@ QString TDiscName::removeTrailingSlash(const QString & device) {
 		//qDebug("TDiscName::removeTrailingSlash: drive check: '%s': regexp: %d", dev.toUtf8().data(), pos);
 		if (pos == -1)
 #endif
-			dev = dev.remove( dev.length()-1, 1);
+			dev = dev.remove(dev.length()-1, 1);
 	}
 
 	return dev;
@@ -145,48 +145,48 @@ QString TDiscName::removeTrailingSlash(const QString & device) {
 #if DISCNAME_TEST
 void TDiscName::test() {
 	TDiscData d;
-	d = split( "vcd://1//dev/dvd/" );
-	d = split( "vcd://1/E:/" );
-	d = split( "vcd://5" );
-	d = split( "vcd://" );
-	d = split( "vcd:////dev/dvdrecorder" );
+	d = split("vcd://1//dev/dvd/");
+	d = split("vcd://1/E:/");
+	d = split("vcd://5");
+	d = split("vcd://");
+	d = split("vcd:////dev/dvdrecorder");
 
-	d = split( "dvd://1//dev/dvd" );
-	d = split( "dvd://1/E:" );
-	d = split( "dvd://5" );
-	d = split( "dvd://" );
-	d = split( "dvd:" );
-	d = split( "dvd:////dev/dvdrecorder" );
+	d = split("dvd://1//dev/dvd");
+	d = split("dvd://1/E:");
+	d = split("dvd://5");
+	d = split("dvd://");
+	d = split("dvd:");
+	d = split("dvd:////dev/dvdrecorder");
 
-	d = split( "cdda://1//dev/dvd" );
-	d = split( "cdda://1/E:" );
-	d = split( "cdda://5" );
-	d = split( "cdda://" );
-	d = split( "cdda:////dev/dvdrecorder" );
+	d = split("cdda://1//dev/dvd");
+	d = split("cdda://1/E:");
+	d = split("cdda://5");
+	d = split("cdda://");
+	d = split("cdda:////dev/dvdrecorder");
 
-	d = split( "dvdnav://1//dev/dvd" );
-	d = split( "dvdnav://1/D:/" );
-	d = split( "dvdnav://5" );
-	d = split( "dvdnav://" );
-	d = split( "dvdnav:////dev/dvdrecorder/" );
+	d = split("dvdnav://1//dev/dvd");
+	d = split("dvdnav://1/D:/");
+	d = split("dvdnav://5");
+	d = split("dvdnav://");
+	d = split("dvdnav:////dev/dvdrecorder/");
 
-	d = split( "br://1//dev/dvd" );
-	d = split( "br://1/D:/" );
-	d = split( "br://5" );
-	d = split( "br://" );
-	d = split( "br:////dev/dvdrecorder/" );
+	d = split("br://1//dev/dvd");
+	d = split("br://1/D:/");
+	d = split("br://5");
+	d = split("br://");
+	d = split("br:////dev/dvdrecorder/");
 
 	QString s;
-	s = join( DVD, 4, "/dev/dvd/" );
-	s = join( DVD, 2, "E:" );
-	s = join( DVD, 3, "E:/" );
-	s = join( DVDNAV, 5, "/dev/dvdrecorder" );
-	s = join( VCD, 1, "/dev/cdrom" );
-	s = join( CDDA, 10, "/dev/cdrom" );
-	s = joinDVD( 1, "/dev/cdrom", false );
-	s = joinDVD( 2, "/dev/cdrom/", true );
-	s = joinDVD( 3, "", true );
-	s = join( VCD, 3, "" );
-	s = join( BLURAY, 2, "/dev/cdrom");
+	s = join(DVD, 4, "/dev/dvd/");
+	s = join(DVD, 2, "E:");
+	s = join(DVD, 3, "E:/");
+	s = join(DVDNAV, 5, "/dev/dvdrecorder");
+	s = join(VCD, 1, "/dev/cdrom");
+	s = join(CDDA, 10, "/dev/cdrom");
+	s = joinDVD(1, "/dev/cdrom", false);
+	s = joinDVD(2, "/dev/cdrom/", true);
+	s = joinDVD(3, "", true);
+	s = join(VCD, 3, "");
+	s = join(BLURAY, 2, "/dev/cdrom");
 }
 #endif

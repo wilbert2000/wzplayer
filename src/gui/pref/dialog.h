@@ -52,24 +52,24 @@ public:
 	enum Section { General=0, Drives=1, Performance=2,
                    Subtitles=3, Gui=4, Mouse=5, Advanced=6, Associations=7 };
 
-	TDialog( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TDialog();
 
-	TGeneral * mod_general() { return page_general; }
-	TInterface * mod_interface() { return page_interface; }
-	TInput * mod_input() { return page_input; }
-	TAdvanced * mod_advanced() { return page_advanced; }
-	TPrefPlaylist * mod_playlist() { return page_playlist; }
-	TUpdates * mod_updates() { return page_updates; }
-	TNetwork * mod_network() { return page_network; }
+	TGeneral* mod_general() { return page_general; }
+	TInterface* mod_interface() { return page_interface; }
+	TInput* mod_input() { return page_input; }
+	TAdvanced* mod_advanced() { return page_advanced; }
+	TPrefPlaylist* mod_playlist() { return page_playlist; }
+	TUpdates* mod_updates() { return page_updates; }
+	TNetwork* mod_network() { return page_network; }
 
 	void addSection(TWidget *w);
 
 	// Pass data to the standard dialogs
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
 	// Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 	// Return true if the mplayer process should be restarted.
 	bool requiresRestart();
@@ -85,36 +85,36 @@ signals:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent ( QEvent * event );
+	virtual void changeEvent (QEvent* event);
 
 protected slots:
 	void apply();
 	void showHelp();
 
 protected:
-	TGeneral * page_general;
-	TDrives * page_drives;
-	TPerformance * page_performance;
-	TSubtitles * page_subtitles;
-	TInterface * page_interface;
-	TInput * page_input;
-	TPrefPlaylist * page_playlist;
-	TTV * page_tv;
-	TUpdates * page_updates;
-	TNetwork * page_network;
-	TAdvanced * page_advanced;
+	TGeneral* page_general;
+	TDrives* page_drives;
+	TPerformance* page_performance;
+	TSubtitles* page_subtitles;
+	TInterface* page_interface;
+	TInput* page_input;
+	TPrefPlaylist* page_playlist;
+	TTV* page_tv;
+	TUpdates* page_updates;
+	TNetwork* page_network;
+	TAdvanced* page_advanced;
 
 #if USE_ASSOCIATIONS
 	TAssociations* page_associations;
 #endif
 
-	QTextBrowser * help_window;
+	QTextBrowser* help_window;
 
 private:
-	QPushButton * okButton;
-	QPushButton * cancelButton;
-	QPushButton * applyButton;
-	QPushButton * helpButton;
+	QPushButton* okButton;
+	QPushButton* cancelButton;
+	QPushButton* applyButton;
+	QPushButton* helpButton;
 };
 
 }} // namespace Gui::Pref

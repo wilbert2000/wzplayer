@@ -23,8 +23,8 @@
 
 namespace Gui { namespace Pref {
 
-TUpdates::TUpdates(QWidget * parent, Qt::WindowFlags f)
-	: TWidget(parent, f )
+TUpdates::TUpdates(QWidget* parent, Qt::WindowFlags f)
+	: TWidget(parent, f)
 {
 	setupUi(this);
 
@@ -57,7 +57,7 @@ void TUpdates::retranslateStrings() {
 	createHelp();
 }
 
-void TUpdates::setData(Settings::TPreferences * pref) {
+void TUpdates::setData(Settings::TPreferences* pref) {
 #ifdef UPDATE_CHECKER
 	updates_check->setChecked(pref->update_checker_data.enabled);
 	days_spin->setValue(pref->update_checker_data.days_to_check);
@@ -68,7 +68,7 @@ void TUpdates::setData(Settings::TPreferences * pref) {
 #endif
 }
 
-void TUpdates::getData(Settings::TPreferences * pref) {
+void TUpdates::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 #ifdef UPDATE_CHECKER
@@ -87,16 +87,16 @@ void TUpdates::createHelp() {
 #ifdef UPDATE_CHECKER
 	setWhatsThis(updates_check, tr("Check for updates"),
 		tr("If this option is enabled, SMPlayer will check for updates "
-           "and display a notification if a new version is available.") );
+           "and display a notification if a new version is available."));
 
 	setWhatsThis(days_frame, tr("Check interval"),
-		tr("You can enter here the interval (in days) for the update checks.") );
+		tr("You can enter here the interval (in days) for the update checks."));
 #endif
 
 #ifdef CHECK_UPGRADED
 	setWhatsThis(open_page_check, tr("Open an informative page after an upgrade"),
 		tr("If this option is enabled, an informative page about SMPlayer "
-           "will be opened after an upgrade.") );
+           "will be opened after an upgrade."));
 #endif
 }
 

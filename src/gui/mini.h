@@ -44,7 +44,7 @@ protected slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual QMenu * createPopupMenu();
+	virtual QMenu* createPopupMenu();
 
 	void createActions();
 	void createControlWidget();
@@ -57,11 +57,11 @@ protected:
 	virtual void aboutToExitCompactMode();
 
 protected:
-	TEditableToolbar * controlwidget;
-	TAutohideWidget * floating_control;
+	TEditableToolbar* controlwidget;
+	TAutohideWidget* floating_control;
 
-	TAction * editControlAct;
-	TAction * editFloatingControlAct;
+	TAction* editControlAct;
+	TAction* editFloatingControlAct;
 };
 
 } // namespace Gui

@@ -33,17 +33,17 @@ class TInterface : public TWidget, public Ui::TInterface
 	Q_OBJECT
 
 public:
-	TInterface( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TInterface(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TInterface();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 	bool languageChanged() { return language_changed; }
 	bool iconsetChanged() { return iconset_changed; }

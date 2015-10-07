@@ -133,11 +133,11 @@ QPixmap Images::icon(QString name, int size) {
 }
 
 QPixmap Images::resize(QPixmap *p, int size) {
-	return QPixmap::fromImage( (*p).toImage().scaled(size,size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation) );
+	return QPixmap::fromImage((*p).toImage().scaled(size,size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 }
 
 QPixmap Images::flip(QPixmap *p) {
-	return QPixmap::fromImage( (*p).toImage().mirrored(true, false) );
+	return QPixmap::fromImage((*p).toImage().mirrored(true, false));
 }
 
 QPixmap Images::flippedIcon(QString name, int size) {

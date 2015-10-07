@@ -20,7 +20,7 @@
 
 namespace Gui {
 
-TTimeDialog::TTimeDialog( QWidget* parent, Qt::WindowFlags f )
+TTimeDialog::TTimeDialog(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -41,7 +41,7 @@ int TTimeDialog::time() {
 	return t.secsTo(time_edit->time());
 }
 
-void TTimeDialog::setMaximumTime( int seconds ) {
+void TTimeDialog::setMaximumTime(int seconds) {
 	QTime t(0,0);
 	time_edit->setMaximumTime(t.addSecs(seconds));
 }

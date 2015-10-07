@@ -85,9 +85,9 @@ QNetworkReply* MaiaXmlRpcClient::call(QString method, QList<QVariant> args,
 	QString call_text = call->prepareCall(method, args);
 	//qDebug("call_text: %s", call_text.toLatin1().constData());
 
-	QNetworkReply* reply = manager.post( request,
+	QNetworkReply* reply = manager.post(request,
 		call_text.toUtf8()
-		/*call->prepareCall(method, args).toUtf8()*/ );
+		/*call->prepareCall(method, args).toUtf8()*/);
 
 	callmap[reply] = call;
 	return reply;

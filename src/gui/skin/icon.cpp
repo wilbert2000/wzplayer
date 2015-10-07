@@ -27,7 +27,7 @@ TIcon::TIcon()
 {
 }
 
-void TIcon::setPixmap(QPixmap pix, Mode mode, State state )
+void TIcon::setPixmap(QPixmap pix, Mode mode, State state)
 {
     switch(mode)
     {
@@ -62,7 +62,7 @@ QPixmap TIcon::pixmap(Mode mode, State state) const
     else return p;
 }
 
-QPixmap TIcon::actualPixmap(Mode mode, State state ) const
+QPixmap TIcon::actualPixmap(Mode mode, State state) const
 {
     switch(mode)
     {

@@ -41,7 +41,7 @@ QString TFileSettings::filenameToGroupname(const QString& filename) {
 
 	QFileInfo fi(filename);
 	if (fi.exists()) {
-		s += "_" + QString::number( fi.size() );
+		s += "_" + QString::number(fi.size());
 	}
 
 	return s;	

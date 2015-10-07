@@ -43,7 +43,7 @@ public:
 	TScrollingLabel(QWidget* parent=0);
 	~TScrollingLabel(){}
     QString text() { return mText; }
-    void setText( QString text);
+    void setText(QString text);
 
     void setScrollingEnabled(bool b);
 	bool scrollingEnabled() { return scrolling_enabled; }
@@ -78,19 +78,19 @@ public:
 	TMediaPanel(QWidget* parent, int pos_max);
 	virtual ~TMediaPanel();
     QPixmap bgLeftPix() { return leftBackground ;}
-    void setBgLeftPix( QPixmap pix){ leftBackground = pix; }
+    void setBgLeftPix(QPixmap pix){ leftBackground = pix; }
     QPixmap bgRightPix() { return rightBackground ;}
-    void setBgRightPix( QPixmap pix){ rightBackground = pix; }
+    void setBgRightPix(QPixmap pix){ rightBackground = pix; }
     QPixmap bgCenterPix() { return centerBackground ;}
-    void setBgCenterPix( QPixmap pix){ centerBackground = pix; }
-	void setShuffleIcon( TIcon icon );
+    void setBgCenterPix(QPixmap pix){ centerBackground = pix; }
+	void setShuffleIcon(TIcon icon);
 	void setRepeatIcon(TIcon icon);
     void setElapsedText(QString text) {
         elapsedLabel->setText(text);
 		if(seeker->states().testFlag(TPanelSeeker::Buffering))
             setBuffering(false);
         }
-    void setTotalText( QString text) { totalLabel->setText(text); }
+    void setTotalText(QString text) { totalLabel->setText(text); }
     void setActionCollection(QList<QAction*> actions);
     void setMediaLabelText(QString text);
     void setResolutionLabelText(QString text);
@@ -106,7 +106,7 @@ public slots:
 	void setScrollingEnabled(bool b);
 
 private:
-    QGridLayout * layout;
+    QGridLayout* layout;
     QPixmap leftBackground;
     QPixmap centerBackground;
     QPixmap rightBackground;
@@ -127,7 +127,7 @@ private slots:
 
 protected:
     void paintEvent(QPaintEvent *);
-    virtual void changeEvent (QEvent * event);
+    virtual void changeEvent (QEvent* event);
     virtual void retranslateStrings();
 
 signals:

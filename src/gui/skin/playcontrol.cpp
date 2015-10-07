@@ -49,7 +49,7 @@ TPlayControl::TPlayControl(QWidget *parent) :
     layout->addWidget(nextButton);
     layout->addSpacerItem(spacer2);
     layout->setSpacing(0);
-    layout->setContentsMargins( 0, 0, 0, 0);
+    layout->setContentsMargins(0, 0, 0, 0);
     setRecordEnabled(false);
     setLayout(layout);
     recordButton->installEventFilter(this);
@@ -87,7 +87,7 @@ void TPlayControl::updateSize()
     if(nextButton->isEnabled())
     {
         totalWidth += nextButton->minimumWidth();
-        if(width() < totalWidth ) { nextButton->hide(); return; }
+        if(width() < totalWidth) { nextButton->hide(); return; }
         else nextButton->show();
     }
     else
@@ -98,7 +98,7 @@ void TPlayControl::updateSize()
     if(previousButton->isEnabled())
     {
         totalWidth += previousButton->minimumWidth();
-        if(width() < totalWidth ) { previousButton->hide(); return; }
+        if(width() < totalWidth) { previousButton->hide(); return; }
         else previousButton->show();
     }
     else
@@ -167,7 +167,7 @@ void TPlayControl::setActionCollection(QList<QAction *> actions)
 
 bool TPlayControl::eventFilter(QObject *watched, QEvent *event)
 {
-    if((watched == recordButton || watched == previousButton || watched == nextButton ) && event->type() == QEvent::EnabledChange)
+    if((watched == recordButton || watched == previousButton || watched == nextButton) && event->type() == QEvent::EnabledChange)
     {
         updateWidths();
     }

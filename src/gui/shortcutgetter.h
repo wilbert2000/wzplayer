@@ -66,9 +66,9 @@ private:
 	QStringList lKeys;
 	bool capture;
 
-	QListWidget * list;
-	QPushButton * addItem;
-	QPushButton * removeItem;
+	QListWidget* list;
+	QPushButton* addItem;
+	QPushButton* removeItem;
 };
 
 } // namespace Gui

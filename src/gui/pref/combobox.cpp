@@ -23,7 +23,7 @@
 
 namespace Gui { namespace Pref {
 
-TComboBox::TComboBox( QWidget * parent ) : QComboBox(parent)
+TComboBox::TComboBox(QWidget* parent) : QComboBox(parent)
 {
 }
 
@@ -31,7 +31,7 @@ TComboBox::~TComboBox()
 {
 }
 
-void TComboBox::setCurrentText( const QString & text ) {
+void TComboBox::setCurrentText(const QString & text) {
 	int i = findText(text);
 	if (i != -1)
 		setCurrentIndex(i);
@@ -41,13 +41,13 @@ void TComboBox::setCurrentText( const QString & text ) {
 		setItemText(currentIndex(), text);
 }
 
-void TComboBox::insertStringList( const QStringList & list, int index ) {
+void TComboBox::insertStringList(const QStringList & list, int index) {
 	insertItems((index < 0 ? count() : index), list);
 }
 
 
 
-TFontComboBox::TFontComboBox( QWidget * parent ) : QFontComboBox(parent)
+TFontComboBox::TFontComboBox(QWidget* parent) : QFontComboBox(parent)
 {
 }
 
@@ -55,7 +55,7 @@ TFontComboBox::~TFontComboBox()
 {
 }
 
-void TFontComboBox::setCurrentText( const QString & text ) {
+void TFontComboBox::setCurrentText(const QString & text) {
 	int i = findText(text);
 	if (i != -1)
 		setCurrentIndex(i);

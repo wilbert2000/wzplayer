@@ -67,7 +67,7 @@
 using namespace Settings;
 
 TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
-	: QObject( parent ),
+	: QObject(parent),
 	  mdat(),
 	  mset(&mdat),
 	  playerwindow(mpw),
@@ -82,135 +82,135 @@ TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
 
 	proc = Proc::TPlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
 
-	connect( proc, SIGNAL(error(QProcess::ProcessError)),
-			 this, SLOT(processError(QProcess::ProcessError)) );
+	connect(proc, SIGNAL(error(QProcess::ProcessError)),
+			 this, SLOT(processError(QProcess::ProcessError)));
 
-	connect( proc, SIGNAL(processExited(bool)),
+	connect(proc, SIGNAL(processExited(bool)),
 			 this, SLOT(processFinished(bool)));
 
-	connect( proc, SIGNAL(playerFullyLoaded()),
-			 this, SLOT(playingStarted()) );
+	connect(proc, SIGNAL(playerFullyLoaded()),
+			 this, SLOT(playingStarted()));
 
-	connect( proc, SIGNAL(receivedCurrentSec(double)),
-			 this, SLOT(gotCurrentSec(double)) );
+	connect(proc, SIGNAL(receivedCurrentSec(double)),
+			 this, SLOT(gotCurrentSec(double)));
 
-	connect( proc, SIGNAL(receivedCurrentFrame(int)),
-			 this, SIGNAL(showFrame(int)) );
+	connect(proc, SIGNAL(receivedCurrentFrame(int)),
+			 this, SIGNAL(showFrame(int)));
 
-	connect( proc, SIGNAL(receivedPause()),
-			 this, SLOT(gotPause()) );
+	connect(proc, SIGNAL(receivedPause()),
+			 this, SLOT(gotPause()));
 
-	connect( proc, SIGNAL(receivedBuffering()),
+	connect(proc, SIGNAL(receivedBuffering()),
 			 this, SIGNAL(buffering()));
 
-	connect( proc, SIGNAL(receivedBufferingEnded()),
+	connect(proc, SIGNAL(receivedBufferingEnded()),
 			 this, SLOT(displayBufferingEnded()));
 
-	connect( proc, SIGNAL(receivedMessage(QString)),
-			 this, SLOT(displayMessage(QString)) );
+	connect(proc, SIGNAL(receivedMessage(QString)),
+			 this, SLOT(displayMessage(QString)));
 
-	connect( proc, SIGNAL(receivedCacheEmptyMessage(QString)),
+	connect(proc, SIGNAL(receivedCacheEmptyMessage(QString)),
 			 this, SIGNAL(buffering()));
 
-	connect( proc, SIGNAL(receivedCreatingIndex(QString)),
-			 this, SLOT(displayMessage(QString)) );
+	connect(proc, SIGNAL(receivedCreatingIndex(QString)),
+			 this, SLOT(displayMessage(QString)));
 
-	connect( proc, SIGNAL(receivedCreatingIndex(QString)),
+	connect(proc, SIGNAL(receivedCreatingIndex(QString)),
 			 this, SIGNAL(buffering()));
 
-	connect( proc, SIGNAL(receivedConnectingToMessage(QString)),
-			 this, SLOT(displayMessage(QString)) );
+	connect(proc, SIGNAL(receivedConnectingToMessage(QString)),
+			 this, SLOT(displayMessage(QString)));
 
-	connect( proc, SIGNAL(receivedConnectingToMessage(QString)),
+	connect(proc, SIGNAL(receivedConnectingToMessage(QString)),
 			 this, SIGNAL(buffering()));
 
-	connect( proc, SIGNAL(receivedResolvingMessage(QString)),
-			 this, SLOT(displayMessage(QString)) );
+	connect(proc, SIGNAL(receivedResolvingMessage(QString)),
+			 this, SLOT(displayMessage(QString)));
 
-	connect( proc, SIGNAL(receivedResolvingMessage(QString)),
+	connect(proc, SIGNAL(receivedResolvingMessage(QString)),
 			 this, SIGNAL(buffering()));
 
-	connect( proc, SIGNAL(receivedScreenshot(QString)),
-             this, SLOT(displayScreenshotName(QString)) );
+	connect(proc, SIGNAL(receivedScreenshot(QString)),
+			 this, SLOT(displayScreenshotName(QString)));
 
-	connect( proc, SIGNAL(receivedUpdatingFontCache()),
-             this, SLOT(displayUpdatingFontCache()) );
+	connect(proc, SIGNAL(receivedUpdatingFontCache()),
+			 this, SLOT(displayUpdatingFontCache()));
 
-	connect( proc, SIGNAL(receivedVideoOutResolution(int,int)),
-			 this, SLOT(gotVideoOutResolution(int,int)) );
+	connect(proc, SIGNAL(receivedVideoOutResolution(int,int)),
+			 this, SLOT(gotVideoOutResolution(int,int)));
 
-	connect( proc, SIGNAL(receivedVO(QString)),
-             this, SLOT(gotVO(QString)) );
+	connect(proc, SIGNAL(receivedVO(QString)),
+			 this, SLOT(gotVO(QString)));
 
-	connect( proc, SIGNAL(receivedAO(QString)),
-             this, SLOT(gotAO(QString)) );
+	connect(proc, SIGNAL(receivedAO(QString)),
+			 this, SLOT(gotAO(QString)));
 
-	connect( proc, SIGNAL(receivedEndOfFile()),
-             this, SLOT(fileReachedEnd()), Qt::QueuedConnection );
+	connect(proc, SIGNAL(receivedEndOfFile()),
+			 this, SLOT(fileReachedEnd()), Qt::QueuedConnection);
 
-	connect( proc, SIGNAL(receivedStreamTitle(QString)),
-             this, SLOT(streamTitleChanged(QString)) );
+	connect(proc, SIGNAL(receivedStreamTitle(QString)),
+			 this, SLOT(streamTitleChanged(QString)));
 
-	connect( proc, SIGNAL(receivedStreamTitleAndUrl(QString,QString)),
-             this, SLOT(streamTitleAndUrlChanged(QString,QString)) );
+	connect(proc, SIGNAL(receivedStreamTitleAndUrl(QString,QString)),
+			 this, SLOT(streamTitleAndUrlChanged(QString,QString)));
 
-	connect( proc, SIGNAL(failedToParseMplayerVersion(QString)),
-             this, SIGNAL(failedToParseMplayerVersion(QString)) );
+	connect(proc, SIGNAL(failedToParseMplayerVersion(QString)),
+			 this, SIGNAL(failedToParseMplayerVersion(QString)));
 
-	connect( this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection );
+	connect(this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection);
 
-	connect( proc, SIGNAL(receivedVideoTrackInfo()),
+	connect(proc, SIGNAL(receivedVideoTrackInfo()),
 			 this, SIGNAL(videoTrackInfoChanged()));
-	connect( proc, SIGNAL(receivedVideoTrackChanged(int)),
+	connect(proc, SIGNAL(receivedVideoTrackChanged(int)),
 			 this, SIGNAL(videoTrackChanged(int)));
 
-	connect( proc, SIGNAL(receivedAudioTrackInfo()),
+	connect(proc, SIGNAL(receivedAudioTrackInfo()),
 			 this, SLOT(gotAudioTrackInfo()));
-	connect( proc, SIGNAL(receivedAudioTrackChanged(int)),
+	connect(proc, SIGNAL(receivedAudioTrackChanged(int)),
 			 this, SLOT(gotAudioTrackChanged(int)));
 
-	connect( proc, SIGNAL(receivedSubtitleTrackInfo()),
+	connect(proc, SIGNAL(receivedSubtitleTrackInfo()),
 			 this, SLOT(gotSubtitleInfo()));
-	connect( proc, SIGNAL(receivedSubtitleTrackChanged()),
+	connect(proc, SIGNAL(receivedSubtitleTrackChanged()),
 			 this, SLOT(gotSubtitleChanged()));
 
-	connect( proc, SIGNAL(receivedTitleTrackInfo()),
+	connect(proc, SIGNAL(receivedTitleTrackInfo()),
 			 this, SIGNAL(titleTrackInfoChanged()));
-	connect( proc, SIGNAL(receivedTitleTrackChanged(int)),
+	connect(proc, SIGNAL(receivedTitleTrackChanged(int)),
 			 this, SIGNAL(titleTrackChanged(int)));
 
-	connect( proc, SIGNAL(receivedChapterInfo()),
+	connect(proc, SIGNAL(receivedChapterInfo()),
 			 this, SIGNAL(chapterInfoChanged()));
 
-	connect( proc, SIGNAL(durationChanged(double)),
+	connect(proc, SIGNAL(durationChanged(double)),
 			 this, SIGNAL(newDuration(double)));
 
-	connect( proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()) );
+	connect(proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()));
 
-	connect( this, SIGNAL(stateChanged(TCore::State)),
-			 this, SLOT(watchState(TCore::State)) );
+	connect(this, SIGNAL(stateChanged(TCore::State)),
+			 this, SLOT(watchState(TCore::State)));
 
-	connect( this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()) );
+	connect(this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()));
 
 	// TPlayerWindow
-	connect( this, SIGNAL(aboutToStartPlaying()),
-			 playerwindow, SLOT(aboutToStartPlaying()) );
-	connect( playerwindow, SIGNAL(mouseMoved(QPoint)),
-			 this, SLOT(dvdnavUpdateMousePos(QPoint)) );
+	connect(this, SIGNAL(aboutToStartPlaying()),
+			 playerwindow, SLOT(aboutToStartPlaying()));
+	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
+			 this, SLOT(dvdnavUpdateMousePos(QPoint)));
 
 	playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
-	playerwindow->setMonitorAspect( pref->monitor_aspect_double() );
+	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
 	// Windows or OS2 screensaver
 	win_screensaver = new WinScreenSaver();
-	connect( this, SIGNAL(aboutToStartPlaying()),
-			 this, SLOT(disableScreensaver()) );
-	connect( proc, SIGNAL(processExited(bool)),
-			 this, SLOT(enableScreensaver()), Qt::QueuedConnection );
-	connect( proc, SIGNAL(error(QProcess::ProcessError)),
-			 this, SLOT(enableScreensaver()), Qt::QueuedConnection );
+	connect(this, SIGNAL(aboutToStartPlaying()),
+			 this, SLOT(disableScreensaver()));
+	connect(proc, SIGNAL(processExited(bool)),
+			 this, SLOT(enableScreensaver()), Qt::QueuedConnection);
+	connect(proc, SIGNAL(error(QProcess::ProcessError)),
+			 this, SLOT(enableScreensaver()), Qt::QueuedConnection);
 #endif
 #endif
 
@@ -220,7 +220,7 @@ TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
 	yt->setUseHttpsVi(pref->yt_use_https_vi);
 
 	#ifdef YT_USE_SIG
-	QSettings * sigset = new QSettings(Paths::configPath() + "/sig.ini", QSettings::IniFormat, this);
+	QSettings* sigset = new QSettings(Paths::configPath() + "/sig.ini", QSettings::IniFormat, this);
 	yt->setSettings(sigset);
 	#endif
 
@@ -532,15 +532,15 @@ void TCore::openYT(const QString & url) {
 }
 
 void TCore::connectingToYT(QString host) {
-	emit showMessage( tr("Connecting to %1").arg(host) );
+	emit showMessage(tr("Connecting to %1").arg(host));
 }
 
 void TCore::YTFailed(int /*error_number*/, QString /*error_str*/) {
-	emit showMessage( tr("Unable to retrieve the Youtube page") );
+	emit showMessage(tr("Unable to retrieve the Youtube page"));
 }
 
 void TCore::YTNoVideoUrl() {
-	emit showMessage( tr("Unable to locate the URL of the video") );
+	emit showMessage(tr("Unable to locate the URL of the video"));
 }
 #endif
 
@@ -577,10 +577,10 @@ void TCore::setExternalSubs(const QString &filename) {
 	mset.sub.setFilename(filename);
 }
 
-void TCore::loadSub(const QString & sub ) {
+void TCore::loadSub(const QString & sub) {
 	qDebug("TCore::loadSub");
 
-	if ( (!sub.isEmpty()) && (QFile::exists(sub)) ) {
+	if ((!sub.isEmpty()) && (QFile::exists(sub))) {
 		setExternalSubs(sub);
 		if (!pref->fast_load_sub
 			|| mset.external_subtitles_fps != TMediaSettings::SFPS_None) {
@@ -668,12 +668,12 @@ void TCore::openStream(QString name) {
 		if (!yt_full_url.isEmpty()) {
 			qDebug("TCore::openStream: youtube url detected: %s", yt_full_url.toLatin1().constData());
 			name = yt_full_url;
-			yt->setPreferredQuality( (RetrieveYoutubeUrl::Quality) pref->yt_quality );
+			yt->setPreferredQuality((RetrieveYoutubeUrl::Quality) pref->yt_quality);
 			qDebug("TCore::openStream: user_agent: '%s'", pref->yt_user_agent.toUtf8().constData());
 			/*if (!pref->yt_user_agent.isEmpty()) yt->setUserAgent(pref->yt_user_agent); */
 			yt->setUserAgent(pref->yt_user_agent);
 			#ifdef YT_USE_YTSIG
-			YTSig::setScriptFile( Paths::configPath() + "/yt.js" );
+			YTSig::setScriptFile(Paths::configPath() + "/yt.js");
 			#endif
 			yt->fetchPage(name);
 			return;
@@ -789,7 +789,7 @@ void TCore::initPlaying(int seek) {
 	}
 #endif
 
-	startPlayer( mdat.filename, start_sec );
+	startPlayer(mdat.filename, start_sec);
 }
 
 // This is reached when a new video has just started playing
@@ -1045,31 +1045,31 @@ void TCore::frameBackStep() {
 void TCore::screenshot() {
 	qDebug("TCore::screenshot");
 
-	if ( (!pref->screenshot_directory.isEmpty()) && 
-         (QFileInfo(pref->screenshot_directory).isDir()) ) 
+	if ((!pref->screenshot_directory.isEmpty()) &&
+		 (QFileInfo(pref->screenshot_directory).isDir()))
 	{
 		proc->takeScreenshot(Proc::TPlayerProcess::Single, pref->subtitles_on_screenshots);
 		qDebug("TCore::screenshot: taken screenshot");
 	} else {
 		qDebug("TCore::screenshot: error: directory for screenshots not valid");
-		emit showMessage( tr("Screenshot NOT taken, folder not configured") );
+		emit showMessage(tr("Screenshot NOT taken, folder not configured"));
 	}
 }
 
 void TCore::screenshots() {
 	qDebug("TCore::screenshots");
 
-	if ( (!pref->screenshot_directory.isEmpty()) && 
-         (QFileInfo(pref->screenshot_directory).isDir()) ) 
+	if ((!pref->screenshot_directory.isEmpty()) &&
+		 (QFileInfo(pref->screenshot_directory).isDir()))
 	{
 		proc->takeScreenshot(Proc::TPlayerProcess::Multiple, pref->subtitles_on_screenshots);
 	} else {
 		qDebug("TCore::screenshots: error: directory for screenshots not valid");
-		emit showMessage( tr("Screenshots NOT taken, folder not configured") );
+		emit showMessage(tr("Screenshots NOT taken, folder not configured"));
 	}
 }
 
-void TCore::startPlayer( QString file, double seek ) {
+void TCore::startPlayer(QString file, double seek) {
 	qDebug() << "TCore::startPlayer:" << file << "at" << seek;
 
 	if (file.isEmpty()) {
@@ -1133,16 +1133,16 @@ void TCore::startPlayer( QString file, double seek ) {
 	}
 
 
-	bool screenshot_enabled = ( (pref->use_screenshot) && 
+	bool screenshot_enabled = ((pref->use_screenshot) &&
                                 (!pref->screenshot_directory.isEmpty()) && 
-                                (QFileInfo(pref->screenshot_directory).isDir()) );
+								(QFileInfo(pref->screenshot_directory).isDir()));
 
 	proc->clearArguments();
 
 	// Set working directory to screenshot directory
 	if (screenshot_enabled) {
 		qDebug("TCore::startPlayer: setting working directory to '%s'", pref->screenshot_directory.toUtf8().data());
-		proc->setWorkingDirectory( pref->screenshot_directory );
+		proc->setWorkingDirectory(pref->screenshot_directory);
 	}
 
 	// Use absolute path, otherwise after changing to the screenshot directory
@@ -1216,9 +1216,9 @@ void TCore::startPlayer( QString file, double seek ) {
 		// MPlayer
 		QString lavdopts;
 
-		if ( (pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
+		if ((pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
 			 ((pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) &&
-	          (mset.is264andHD)) )
+			  (mset.is264andHD)))
 		{
 			if (!lavdopts.isEmpty()) lavdopts += ":";
 			lavdopts += "skiploopfilter=all";
@@ -1235,9 +1235,9 @@ void TCore::startPlayer( QString file, double seek ) {
 	}
 	else {
 		// MPV
-		if ( (pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
+		if ((pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
 			 ((pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) &&
-	          (mset.is264andHD)) )
+			  (mset.is264andHD)))
 		{
 			proc->setOption("skiploopfilter");
 		}
@@ -1253,7 +1253,7 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	if (pref->vo != "player_default") {
 		if (!pref->vo.isEmpty()) {
-			proc->setOption("vo", pref->vo );
+			proc->setOption("vo", pref->vo);
 		} else {
 			#ifdef Q_OS_WIN
 			if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
@@ -1275,7 +1275,7 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	if (pref->ao != "player_default") {
 		if (!pref->ao.isEmpty()) {
-			proc->setOption("ao", pref->ao );
+			proc->setOption("ao", pref->ao);
 		}
 	}
 
@@ -1341,10 +1341,10 @@ void TCore::startPlayer( QString file, double seek ) {
 		proc->setOption("keepaspect", false);
 
 #if defined(Q_OS_OS2)
-		#define WINIDFROMHWND(hwnd) ( ( hwnd ) - 0x80000000UL )
-		proc->setOption("wid", QString::number( WINIDFROMHWND( (int) playerwindow->videoLayer()->winId() ) ));
+		#define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
+		proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoLayer()->winId())));
 #else
-		proc->setOption("wid", QString::number( (qint64) playerwindow->videoLayer()->winId() ) );
+		proc->setOption("wid", QString::number((qint64) playerwindow->videoLayer()->winId()));
 #endif
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -1428,7 +1428,7 @@ void TCore::startPlayer( QString file, double seek ) {
 	// Subtitle encoding
 	{
 		QString encoding;
-		if ( (pref->use_enca) && (!pref->enca_lang.isEmpty()) ) {
+		if ((pref->use_enca) && (!pref->enca_lang.isEmpty())) {
 			encoding = "enca:"+ pref->enca_lang;
 			if (!pref->subcp.isEmpty()) {
 				encoding += ":"+ pref->subcp;
@@ -1453,9 +1453,9 @@ void TCore::startPlayer( QString file, double seek ) {
 	}
 
 #if PROGRAM_SWITCH
-	if ( (mset.current_program_id != TMediaSettings::NoneSelected) /*&& 
+	if ((mset.current_program_id != TMediaSettings::NoneSelected) /*&&
          (mset.current_video_id == TMediaSettings::NoneSelected) && 
-         (mset.current_audio_id == TMediaSettings::NoneSelected)*/ )
+		 (mset.current_audio_id == TMediaSettings::NoneSelected)*/)
 	{
 		proc->setOption("tsprog", QString::number(mset.current_program_id));
 	}
@@ -1585,7 +1585,7 @@ void TCore::startPlayer( QString file, double seek ) {
 	}
 
 	if (mset.current_angle_id > 0) {
-		proc->setOption("dvdangle", QString::number( mset.current_angle_id));
+		proc->setOption("dvdangle", QString::number(mset.current_angle_id));
 	}
 
 	// TMPVProcess title and track switch code does not run nicely when caching
@@ -1735,18 +1735,18 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	// Letterbox (expand)
 	if ((mset.add_letterbox) || (pref->fullscreen && pref->add_blackborders_on_fullscreen)) {
-		proc->addVF("expand", QString("aspect=%1").arg( TDesktopInfo::desktop_aspectRatio(playerwindow)));
+		proc->addVF("expand", QString("aspect=%1").arg(TDesktopInfo::desktop_aspectRatio(playerwindow)));
 	}
 
 	// Software equalizer
-	if ( (pref->use_soft_video_eq) ) {
+	if ((pref->use_soft_video_eq)) {
 		proc->addVF("eq2");
 		proc->addVF("hue");
-		if ( (pref->vo == "gl") || (pref->vo == "gl2") || (pref->vo == "gl_tiled")
+		if ((pref->vo == "gl") || (pref->vo == "gl2") || (pref->vo == "gl_tiled")
 #ifdef Q_OS_WIN
              || (pref->vo == "directx:noaccel")
 #endif
-		    )
+		   )
 		{
 			proc->addVF("scale");
 		}
@@ -1754,11 +1754,11 @@ void TCore::startPlayer( QString file, double seek ) {
 
 	// Additional video filters, supplied by user
 	// File
-	if ( !mset.mplayer_additional_video_filters.isEmpty() ) {
+	if (!mset.mplayer_additional_video_filters.isEmpty()) {
 		proc->setOption("vf-add", mset.mplayer_additional_video_filters);
 	}
 	// Global
-	if ( !pref->mplayer_additional_video_filters.isEmpty() ) {
+	if (!pref->mplayer_additional_video_filters.isEmpty()) {
 		proc->setOption("vf-add", pref->mplayer_additional_video_filters);
 	}
 
@@ -1858,11 +1858,11 @@ void TCore::startPlayer( QString file, double seek ) {
 
 		// Additional audio filters, supplied by user
 		// File
-		if ( !pref->mplayer_additional_audio_filters.isEmpty() ) {
+		if (!pref->mplayer_additional_audio_filters.isEmpty()) {
 			proc->setOption("af-add", pref->mplayer_additional_audio_filters);
 		}
 		// Global
-		if ( !mset.mplayer_additional_audio_filters.isEmpty() ) {
+		if (!mset.mplayer_additional_audio_filters.isEmpty()) {
 			proc->setOption("af-add", mset.mplayer_additional_audio_filters);
 		}
 	} else {
@@ -2045,7 +2045,7 @@ void TCore::goToPos(double perc) {
 	seek_cmd(perc, 1);
 }
 
-void TCore::goToSec( double sec ) {
+void TCore::goToSec(double sec) {
 	qDebug("TCore::goToSec: %f", sec);
 	seek_cmd(sec, 2);
 }
@@ -2083,36 +2083,36 @@ void TCore::seek_cmd(double secs, int mode) {
 
 void TCore::sforward() {
 	qDebug("TCore::sforward");
-	seek( pref->seeking1 ); // +10s
+	seek(pref->seeking1); // +10s
 }
 
 void TCore::srewind() {
 	qDebug("TCore::srewind");
-	seek( -pref->seeking1 ); // -10s
+	seek(-pref->seeking1); // -10s
 }
 
 
 void TCore::forward() {
 	qDebug("TCore::forward");
-	seek( pref->seeking2 ); // +1m
+	seek(pref->seeking2); // +1m
 }
 
 
 void TCore::rewind() {
 	qDebug("TCore::rewind");
-	seek( -pref->seeking2 ); // -1m
+	seek(-pref->seeking2); // -1m
 }
 
 
 void TCore::fastforward() {
 	qDebug("TCore::fastforward");
-	seek( pref->seeking3 ); // +10m
+	seek(pref->seeking3); // +10m
 }
 
 
 void TCore::fastrewind() {
 	qDebug("TCore::fastrewind");
-	seek( -pref->seeking3 ); // -10m
+	seek(-pref->seeking3); // -10m
 }
 
 void TCore::forward(int secs) {
@@ -2133,7 +2133,7 @@ void TCore::wheelUp(TPreferences::WheelFunction function) {
 	switch (function) {
 		case TPreferences::Volume : incVolume(); break;
 		case TPreferences::Zoom : incZoom(); break;
-		case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? rewind( pref->seeking4 ) : forward( pref->seeking4 ); break;
+		case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? rewind(pref->seeking4) : forward(pref->seeking4); break;
 		case TPreferences::ChangeSpeed : incSpeed10(); break;
 		default : {} // do nothing
 	}
@@ -2147,7 +2147,7 @@ void TCore::wheelDown(TPreferences::WheelFunction function) {
 	switch (function) {
 		case TPreferences::Volume : decVolume(); break;
 		case TPreferences::Zoom : decZoom(); break;
-		case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? forward( pref->seeking4 ) : rewind( pref->seeking4 ); break;
+		case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? forward(pref->seeking4) : rewind(pref->seeking4); break;
 		case TPreferences::ChangeSpeed : decSpeed10(); break;
 		default : {} // do nothing
 	}
@@ -2161,7 +2161,7 @@ void TCore::setAMarker(int sec) {
 	qDebug("TCore::setAMarker: %d", sec);
 
 	mset.A_marker = sec;
-	displayMessage( tr("\"A\" marker set to %1").arg(Helper::formatTime(sec)) );
+	displayMessage(tr("\"A\" marker set to %1").arg(Helper::formatTime(sec)));
 
 	if (mset.B_marker > mset.A_marker) {
 		if (proc->isRunning()) restartPlay();
@@ -2178,7 +2178,7 @@ void TCore::setBMarker(int sec) {
 	qDebug("TCore::setBMarker: %d", sec);
 
 	mset.B_marker = sec;
-	displayMessage( tr("\"B\" marker set to %1").arg(Helper::formatTime(sec)) );
+	displayMessage(tr("\"B\" marker set to %1").arg(Helper::formatTime(sec)));
 
 	if ((mset.A_marker > -1) && (mset.A_marker < mset.B_marker)) {
 		if (proc->isRunning()) restartPlay();
@@ -2193,7 +2193,7 @@ void TCore::clearABMarkers() {
 	if ((mset.A_marker != -1) || (mset.B_marker != -1)) {
 		mset.A_marker = -1;
 		mset.B_marker = -1;
-		displayMessage( tr("A-B markers cleared") );
+		displayMessage(tr("A-B markers cleared"));
 		if (proc->isRunning()) restartPlay();
 	}
 
@@ -2202,13 +2202,13 @@ void TCore::clearABMarkers() {
 
 void TCore::toggleRepeat() {
 	qDebug("TCore::toggleRepeat");
-	toggleRepeat( !mset.loop );
+	toggleRepeat(!mset.loop);
 }
 
 void TCore::toggleRepeat(bool b) {
 	qDebug("TCore::toggleRepeat: %d", b);
 
-	if ( mset.loop != b ) {
+	if (mset.loop != b) {
 		mset.loop = b;
 		int v = -1; // no loop
 		if (mset.loop) v = 0; // infinite loop
@@ -2218,7 +2218,7 @@ void TCore::toggleRepeat(bool b) {
 
 // Audio filters
 void TCore::toggleKaraoke() {
-	toggleKaraoke( !mset.karaoke_filter );
+	toggleKaraoke(!mset.karaoke_filter);
 }
 
 void TCore::toggleKaraoke(bool b) {
@@ -2230,7 +2230,7 @@ void TCore::toggleKaraoke(bool b) {
 }
 
 void TCore::toggleExtrastereo() {
-	toggleExtrastereo( !mset.extrastereo_filter );
+	toggleExtrastereo(!mset.extrastereo_filter);
 }
 
 void TCore::toggleExtrastereo(bool b) {
@@ -2242,7 +2242,7 @@ void TCore::toggleExtrastereo(bool b) {
 }
 
 void TCore::toggleVolnorm() {
-	toggleVolnorm( !mset.volnorm_filter );
+	toggleVolnorm(!mset.volnorm_filter);
 }
 
 void TCore::toggleVolnorm(bool b) {
@@ -2256,7 +2256,7 @@ void TCore::toggleVolnorm(bool b) {
 
 void TCore::setAudioChannels(int channels) {
 	qDebug("TCore::setAudioChannels:%d", channels);
-	if (channels != mset.audio_use_channels ) {
+	if (channels != mset.audio_use_channels) {
 		mset.audio_use_channels = channels;
 		restartPlay();
 	}
@@ -2264,7 +2264,7 @@ void TCore::setAudioChannels(int channels) {
 
 void TCore::setStereoMode(int mode) {
 	qDebug("TCore::setStereoMode:%d", mode);
-	if (mode != mset.stereo_mode ) {
+	if (mode != mset.stereo_mode) {
 		mset.stereo_mode = mode;
 		restartPlay();
 	}
@@ -2282,7 +2282,7 @@ void TCore::setStereoMode(int mode) {
 
 void TCore::toggleFlip() {
 	qDebug("TCore::toggleFlip");
-	toggleFlip( !mset.flip );
+	toggleFlip(!mset.flip);
 }
 
 void TCore::toggleFlip(bool b) {
@@ -2295,7 +2295,7 @@ void TCore::toggleFlip(bool b) {
 
 void TCore::toggleMirror() {
 	qDebug("TCore::toggleMirror");
-	toggleMirror( !mset.mirror );
+	toggleMirror(!mset.mirror);
 }
 
 void TCore::toggleMirror(bool b) {
@@ -2307,79 +2307,79 @@ void TCore::toggleMirror(bool b) {
 }
 
 void TCore::toggleAutophase() {
-	toggleAutophase( !mset.phase_filter );
+	toggleAutophase(!mset.phase_filter);
 }
 
-void TCore::toggleAutophase( bool b ) {
+void TCore::toggleAutophase(bool b) {
 	qDebug("TCore::toggleAutophase: %d", b);
-	if ( b != mset.phase_filter) {
+	if (b != mset.phase_filter) {
 		mset.phase_filter = b;
 		CHANGE_VF("phase", b, "A");
 	}
 }
 
 void TCore::toggleDeblock() {
-	toggleDeblock( !mset.deblock_filter );
+	toggleDeblock(!mset.deblock_filter);
 }
 
 void TCore::toggleDeblock(bool b) {
 	qDebug("TCore::toggleDeblock: %d", b);
-	if ( b != mset.deblock_filter ) {
+	if (b != mset.deblock_filter) {
 		mset.deblock_filter = b;
 		CHANGE_VF("deblock", b, pref->filters.item("deblock").options());
 	}
 }
 
 void TCore::toggleDering() {
-	toggleDering( !mset.dering_filter );
+	toggleDering(!mset.dering_filter);
 }
 
 void TCore::toggleDering(bool b) {
 	qDebug("TCore::toggleDering: %d", b);
-	if ( b != mset.dering_filter) {
+	if (b != mset.dering_filter) {
 		mset.dering_filter = b;
 		CHANGE_VF("dering", b, QVariant());
 	}
 }
 
 void TCore::toggleGradfun() {
-	toggleGradfun( !mset.gradfun_filter );
+	toggleGradfun(!mset.gradfun_filter);
 }
 
 void TCore::toggleGradfun(bool b) {
 	qDebug("TCore::toggleGradfun: %d", b);
-	if ( b != mset.gradfun_filter) {
+	if (b != mset.gradfun_filter) {
 		mset.gradfun_filter = b;
 		CHANGE_VF("gradfun", b, pref->filters.item("gradfun").options());
 	}
 }
 
 void TCore::toggleNoise() {
-	toggleNoise( !mset.noise_filter );
+	toggleNoise(!mset.noise_filter);
 }
 
 void TCore::toggleNoise(bool b) {
 	qDebug("TCore::toggleNoise: %d", b);
-	if ( b != mset.noise_filter ) {
+	if (b != mset.noise_filter) {
 		mset.noise_filter = b;
 		CHANGE_VF("noise", b, QVariant());
 	}
 }
 
 void TCore::togglePostprocessing() {
-	togglePostprocessing( !mset.postprocessing_filter );
+	togglePostprocessing(!mset.postprocessing_filter);
 }
 
 void TCore::togglePostprocessing(bool b) {
 	qDebug("TCore::togglePostprocessing: %d", b);
-	if ( b != mset.postprocessing_filter ) {
+	if (b != mset.postprocessing_filter) {
 		mset.postprocessing_filter = b;
 		CHANGE_VF("postprocessing", b, QVariant());
 	}
 }
 
 void TCore::changeDenoise(int id) {
-	qDebug( "TCore::changeDenoise: %d", id );
+	qDebug("TCore::changeDenoise: %d", id);
 	if (id != mset.current_denoiser) {
 		if (proc->isMPlayer()) {
 			mset.current_denoiser = id;
@@ -2404,7 +2404,7 @@ void TCore::changeDenoise(int id) {
 }
 
 void TCore::changeUnsharp(int id) {
-	qDebug( "TCore::changeUnsharp: %d", id );
+	qDebug("TCore::changeUnsharp: %d", id);
 	if (id != mset.current_unsharp) {
 		if (proc->isMPlayer()) {
 			mset.current_unsharp = id;
@@ -2429,7 +2429,7 @@ void TCore::changeUnsharp(int id) {
 }
 
 void TCore::changeUpscale(bool b) {
-	qDebug( "TCore::changeUpscale: %d", b );
+	qDebug("TCore::changeUpscale: %d", b);
 	if (mset.upscaling_filter != b) {
 		mset.upscaling_filter = b;
 		int width = TDesktopInfo::desktop_size(playerwindow).width();
@@ -2470,7 +2470,7 @@ void TCore::setBrightness(int value) {
 	if (value != mset.brightness) {
 		proc->setBrightness(value);
 		mset.brightness = value;
-		displayMessage( tr("Brightness: %1").arg(value) );
+		displayMessage(tr("Brightness: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2485,7 +2485,7 @@ void TCore::setContrast(int value) {
 	if (value != mset.contrast) {
 		proc->setContrast(value);
 		mset.contrast = value;
-		displayMessage( tr("Contrast: %1").arg(value) );
+		displayMessage(tr("Contrast: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2499,7 +2499,7 @@ void TCore::setGamma(int value) {
 	if (value != mset.gamma) {
 		proc->setGamma(value);
 		mset.gamma= value;
-		displayMessage( tr("Gamma: %1").arg(value) );
+		displayMessage(tr("Gamma: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2513,7 +2513,7 @@ void TCore::setHue(int value) {
 	if (value != mset.hue) {
 		proc->setHue(value);
 		mset.hue = value;
-		displayMessage( tr("Hue: %1").arg(value) );
+		displayMessage(tr("Hue: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2527,7 +2527,7 @@ void TCore::setSaturation(int value) {
 	if (value != mset.saturation) {
 		proc->setSaturation(value);
 		mset.saturation = value;
-		displayMessage( tr("Saturation: %1").arg(value) );
+		displayMessage(tr("Saturation: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2572,7 +2572,7 @@ void TCore::decSaturation() {
 	setSaturation(mset.saturation - pref->min_step);
 }
 
-void TCore::setSpeed( double value ) {
+void TCore::setSpeed(double value) {
 	qDebug("TCore::setSpeed: %f", value);
 
 	if (value < 0.10) value = 0.10;
@@ -2581,47 +2581,47 @@ void TCore::setSpeed( double value ) {
 	mset.speed = value;
 	proc->setSpeed(value);
 
-	displayMessage( tr("Speed: %1").arg(value) );
+	displayMessage(tr("Speed: %1").arg(value));
 }
 
 void TCore::incSpeed10() {
 	qDebug("TCore::incSpeed10");
-	setSpeed( (double) mset.speed + 0.1 );
+	setSpeed((double) mset.speed + 0.1);
 }
 
 void TCore::decSpeed10() {
 	qDebug("TCore::decSpeed10");
-	setSpeed( (double) mset.speed - 0.1 );
+	setSpeed((double) mset.speed - 0.1);
 }
 
 void TCore::incSpeed4() {
 	qDebug("TCore::incSpeed4");
-	setSpeed( (double) mset.speed + 0.04 );
+	setSpeed((double) mset.speed + 0.04);
 }
 
 void TCore::decSpeed4() {
 	qDebug("TCore::decSpeed4");
-	setSpeed( (double) mset.speed - 0.04 );
+	setSpeed((double) mset.speed - 0.04);
 }
 
 void TCore::incSpeed1() {
 	qDebug("TCore::incSpeed1");
-	setSpeed( (double) mset.speed + 0.01 );
+	setSpeed((double) mset.speed + 0.01);
 }
 
 void TCore::decSpeed1() {
 	qDebug("TCore::decSpeed1");
-	setSpeed( (double) mset.speed - 0.01 );
+	setSpeed((double) mset.speed - 0.01);
 }
 
 void TCore::doubleSpeed() {
 	qDebug("TCore::doubleSpeed");
-	setSpeed( (double) mset.speed * 2 );
+	setSpeed((double) mset.speed * 2);
 }
 
 void TCore::halveSpeed() {
 	qDebug("TCore::halveSpeed");
-	setSpeed( (double) mset.speed / 2 );
+	setSpeed((double) mset.speed / 2);
 }
 
 void TCore::normalSpeed() {
@@ -2672,7 +2672,7 @@ void TCore::setVolume(int volume, bool force) {
 		mset.mute = false;
 	}
 
-	displayMessage( tr("Volume: %1").arg(current_volume) );
+	displayMessage(tr("Volume: %1").arg(current_volume));
 	if (mute_changed)
 		emit muteChanged(false);
 	emit volumeChanged(current_volume);
@@ -2716,7 +2716,7 @@ void TCore::setSubDelay(int delay) {
 
 	mset.sub_delay = delay;
 	proc->setSubDelay((double) mset.sub_delay/1000);
-	displayMessage( tr("Subtitle delay: %1 ms").arg(delay) );
+	displayMessage(tr("Subtitle delay: %1 ms").arg(delay));
 }
 
 void TCore::incSubDelay() {
@@ -2733,7 +2733,7 @@ void TCore::setAudioDelay(int delay) {
 	qDebug("TCore::setAudioDelay: %d", delay);
 	mset.audio_delay = delay;
 	proc->setAudioDelay((double) mset.audio_delay/1000);
-	displayMessage( tr("Audio delay: %1 ms").arg(delay) );
+	displayMessage(tr("Audio delay: %1 ms").arg(delay));
 }
 
 void TCore::incAudioDelay() {
@@ -2782,18 +2782,18 @@ void TCore::changeSubScale(double value) {
 		proc->setSubScale(value);
 	}
 
-	displayMessage( tr("Font scale: %1").arg(value) );
+	displayMessage(tr("Font scale: %1").arg(value));
 }
 
 void TCore::incSubScale() {
 	double step = 0.20;
 
 	if (pref->use_ass_subtitles) {
-		changeSubScale( mset.sub_scale_ass + step );
+		changeSubScale(mset.sub_scale_ass + step);
 	} else if (proc->isMPV()) {
-		changeSubScale( mset.sub_scale_mpv + step );
+		changeSubScale(mset.sub_scale_mpv + step);
 	} else {
-		changeSubScale( mset.sub_scale + step );
+		changeSubScale(mset.sub_scale + step);
 	}
 }
 
@@ -2801,11 +2801,11 @@ void TCore::decSubScale() {
 	double step = 0.20;
 
 	if (pref->use_ass_subtitles) {
-		changeSubScale( mset.sub_scale_ass - step );
+		changeSubScale(mset.sub_scale_ass - step);
 	} else if (proc->isMPV()) {
-		changeSubScale( mset.sub_scale_mpv - step );
+		changeSubScale(mset.sub_scale_mpv - step);
 	} else {
-		changeSubScale( mset.sub_scale - step );
+		changeSubScale(mset.sub_scale - step);
 	}
 }
 
@@ -3061,10 +3061,10 @@ void TCore::changeAudioTrack(int id) {
 				if (pref->mplayer_additional_options.contains("-volume")) {
 					qDebug("TCore::changeAudio: don't set volume since -volume is used");
 				} else if (pref->global_volume) {
-					setVolume( pref->volume, true);
+					setVolume(pref->volume, true);
 					if (pref->mute) mute(true);
 				} else {
-					setVolume( mset.volume, true );
+					setVolume(mset.volume, true);
 					if (mset.mute) mute(true); // if muted, mute again
 				}
 			}
@@ -3240,12 +3240,12 @@ void TCore::nextProgram() {
 }
 #endif
 
-void TCore::changeAspectRatio( int ID ) {
+void TCore::changeAspectRatio(int ID) {
 	qDebug("TCore::changeAspectRatio: %d", ID);
 
 	mset.aspect_ratio_id = ID;
 
-	double asp = mset.aspectToNum( (TMediaSettings::Aspect) ID);
+	double asp = mset.aspectToNum((TMediaSettings::Aspect) ID);
 
 	if (!pref->use_mplayer_window) {
 		// Set aspect video window. false: don't update video window
@@ -3264,8 +3264,8 @@ void TCore::changeAspectRatio( int ID ) {
 		}
 	}
 
-	QString asp_name = TMediaSettings::aspectToString( (TMediaSettings::Aspect) mset.aspect_ratio_id);
-	displayMessage( tr("Aspect ratio: %1").arg(asp_name) );
+	QString asp_name = TMediaSettings::aspectToString((TMediaSettings::Aspect) mset.aspect_ratio_id);
+	displayMessage(tr("Aspect ratio: %1").arg(asp_name));
 }
 
 void TCore::nextAspectRatio() {
@@ -3284,12 +3284,12 @@ void TCore::nextAspectRatio() {
       << TMediaSettings::Aspect169	// 1.77
       << TMediaSettings::Aspect235;	// 2.35
 
-	int i = s.indexOf( mset.aspect_ratio_id ) + 1;
+	int i = s.indexOf(mset.aspect_ratio_id) + 1;
 	if (i >= s.count()) i = 0;
 
 	int new_aspect_id = s[i];
 
-	changeAspectRatio( new_aspect_id );
+	changeAspectRatio(new_aspect_id);
 	updateWidgets();
 }
 
@@ -3297,7 +3297,7 @@ void TCore::nextWheelFunction() {
 	int a = pref->wheel_function;
 
 	bool done = false;
-	if(((int ) pref->wheel_function_cycle)==0)
+	if(((int) pref->wheel_function_cycle)==0)
 		return;
 	while(!done){
 		// get next a
@@ -3359,7 +3359,7 @@ void TCore::nextOSDLevel() {
 	} else {
 		level = pref->osd_level + 1;
 	}
-	changeOSDLevel( level );
+	changeOSDLevel(level);
 }
 
 void TCore::changeRotate(int r) {
@@ -3416,7 +3416,7 @@ void TCore::changeSize(int percentage) {
 	if (!pref->use_mplayer_window && !pref->fullscreen) {
 		pref->size_factor = (double) percentage / 100;
 		forceResize();
-		displayMessage( tr("Size %1%").arg(QString::number(percentage)) );
+		displayMessage(tr("Size %1%").arg(QString::number(percentage)));
 	}
 }
 
@@ -3438,7 +3438,7 @@ void TCore::changeZoom(double factor) {
 	playerwindow->setZoom(factor);
 	getZoomFromPlayerWindow();
 
-	displayMessage( tr("Zoom: %1").arg(playerwindow->zoom()) );
+	displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
 }
 
 void TCore::resetZoomAndPan() {
@@ -3450,7 +3450,7 @@ void TCore::resetZoomAndPan() {
 	getZoomFromPlayerWindow();
 	getPanFromPlayerWindow();
 
-	displayMessage( tr("Zoom and pan reset") );
+	displayMessage(tr("Zoom and pan reset"));
 }
 
 void TCore::pan(int dx, int dy) {
@@ -3460,28 +3460,28 @@ void TCore::pan(int dx, int dy) {
 	getPanFromPlayerWindow();
 
 	QPoint current_pan = playerwindow->pan();
-	displayMessage( tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())) );
+	displayMessage(tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())));
 }
 
 void TCore::panLeft() {
 
-	pan( PAN_STEP, 0 );
+	pan(PAN_STEP, 0);
 }
 
 void TCore::panRight() {
-	pan( -PAN_STEP, 0 );
+	pan(-PAN_STEP, 0);
 }
 
 void TCore::panUp() {
-	pan( 0, PAN_STEP );
+	pan(0, PAN_STEP);
 }
 
 void TCore::panDown() {
-	pan( 0, -PAN_STEP );
+	pan(0, -PAN_STEP);
 }
 
 void TCore::autoZoom() {
-	double video_aspect = mset.aspectToNum( (TMediaSettings::Aspect) mset.aspect_ratio_id);
+	double video_aspect = mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id);
 
 	if (video_aspect <= 0) {
 		QSize w = playerwindow->videoLayer()->size();
@@ -3510,7 +3510,7 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 
 	QSize desktop =  TDesktopInfo::desktop_size(playerwindow);
 
-	double video_aspect = mset.aspectToNum( (TMediaSettings::Aspect) mset.aspect_ratio_id);
+	double video_aspect = mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id);
 
 	if (video_aspect <= 0) {
 		QSize w = playerwindow->videoLayer()->size();
@@ -3519,19 +3519,19 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 
 	// Calculate size of the video in fullscreen
 	QSize video;
-	video.setHeight( desktop.height() );;
-	video.setWidth( (int) (video.height() * video_aspect) );
+	video.setHeight(desktop.height());;
+	video.setWidth((int) (video.height() * video_aspect));
 	if (video.width() > desktop.width()) {
-		video.setWidth( desktop.width() );;
-		video.setHeight( (int) (video.width() / video_aspect) );
+		video.setWidth(desktop.width());;
+		video.setHeight((int) (video.width() / video_aspect));
 	}
 
 	qDebug("TCore::autoZoomFromLetterbox: max. size of video: %d %d", video.width(), video.height());
 
 	// Calculate the size of the actual video inside the letterbox
 	QSize actual_video;
-	actual_video.setWidth( video.width() );
-	actual_video.setHeight( (int) (actual_video.width() / aspect) );
+	actual_video.setWidth(video.width());
+	actual_video.setHeight((int) (actual_video.width() / aspect));
 
 	qDebug("TCore::autoZoomFromLetterbox: calculated size of actual video for aspect %f: %d %d", aspect, actual_video.width(), actual_video.height());
 
@@ -3551,12 +3551,12 @@ void TCore::autoZoomFor235() {
 
 void TCore::incZoom() {
 	qDebug("TCore::incZoom");
-	changeZoom(playerwindow->zoom() + ZOOM_STEP );
+	changeZoom(playerwindow->zoom() + ZOOM_STEP);
 }
 
 void TCore::decZoom() {
 	qDebug("TCore::decZoom");
-	changeZoom(playerwindow->zoom() - ZOOM_STEP );
+	changeZoom(playerwindow->zoom() - ZOOM_STEP);
 }
 
 void TCore::showFilenameOnOSD() {
@@ -3709,7 +3709,7 @@ void TCore::displayScreenshotName(QString filename) {
 
 void TCore::displayUpdatingFontCache() {
 	qDebug("TCore::displayUpdatingFontCache");
-	emit showMessage( tr("Updating the font cache. This may take some seconds...") );
+	emit showMessage(tr("Updating the font cache. This may take some seconds..."));
 }
 
 void TCore::displayBuffering() {
@@ -3746,18 +3746,18 @@ void TCore::gotVideoOutResolution(int w, int h) {
 }
 
 void TCore::gotVO(QString vo) {
-	qDebug("TCore::gotVO: '%s'", vo.toUtf8().data() );
+	qDebug("TCore::gotVO: '%s'", vo.toUtf8().data());
 
-	if ( pref->vo.isEmpty()) {
+	if (pref->vo.isEmpty()) {
 		qDebug("TCore::gotVO: saving vo");
 		pref->vo = vo;
 	}
 }
 
 void TCore::gotAO(QString ao) {
-	qDebug("TCore::gotAO: '%s'", ao.toUtf8().data() );
+	qDebug("TCore::gotAO: '%s'", ao.toUtf8().data());
 
-	if ( pref->ao.isEmpty()) {
+	if (pref->ao.isEmpty()) {
 		qDebug("TCore::gotAO: saving ao");
 		pref->ao = ao;
 	}

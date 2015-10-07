@@ -41,10 +41,10 @@ public:
                   FullbassTreble = 8, Fulltreble = 9, Headphones = 10, LargeHall = 11, Live = 12,
                   Party = 13, Reggae = 14, Ska = 15, Soft = 16, SoftRock = 17, Techno = 18 };
 
-	TAudioEqualizer( QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog );
+	TAudioEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);
 	virtual ~TAudioEqualizer();
 
-	TEqSlider * eq[10];
+	TEqSlider* eq[10];
 
 	void setEqualizer(TAudioEqualizerList l);
 
@@ -63,9 +63,9 @@ protected slots:
 	void updatePresetCombo();
 
 protected:
-	virtual void hideEvent( QHideEvent * );
-	virtual void showEvent( QShowEvent * );
-	virtual void changeEvent( QEvent * event );
+	virtual void hideEvent(QHideEvent*);
+	virtual void showEvent(QShowEvent*);
+	virtual void changeEvent(QEvent* event);
 	virtual void retranslateStrings();
 
 	void createPresets();
@@ -73,11 +73,11 @@ protected:
 	int findPreset(TAudioEqualizerList l);
 
 protected:
-	QLabel * presets_label;
-	QComboBox * presets_combo;
-	QPushButton * apply_button;
-	QPushButton * reset_button;
-	QPushButton * set_default_button;
+	QLabel* presets_label;
+	QComboBox* presets_combo;
+	QPushButton* apply_button;
+	QPushButton* reset_button;
+	QPushButton* set_default_button;
 	QMap<int,TAudioEqualizerList> preset_list;
 };
 

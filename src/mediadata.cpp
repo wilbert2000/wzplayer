@@ -163,7 +163,7 @@ void TMediaData::list() const {
 	qDebug("  video_width: %d", video_width); 
 	qDebug("  video_height: %d", video_height); 
 	qDebug("  video_aspect: %f", video_aspect);
-	qDebug("  video_fps: '%f'", video_fps );
+	qDebug("  video_fps: '%f'", video_fps);
 
 	qDebug("  video_out_width: %d", video_out_width);
 	qDebug("  video_out_height: %d", video_out_height);
@@ -187,17 +187,17 @@ void TMediaData::list() const {
 	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
 	qDebug("  title_is_menu: '%d'", title_is_menu);
 
-	qDebug("  demuxer: '%s'", demuxer.toUtf8().data() );
-	qDebug("  mpegts: %d", mpegts );
+	qDebug("  demuxer: '%s'", demuxer.toUtf8().data());
+	qDebug("  mpegts: %d", mpegts);
 
-	qDebug("  video_format: '%s'", video_format.toUtf8().data() );
-	qDebug("  audio_format: '%s'", audio_format.toUtf8().data() );
-	qDebug("  video_codec: '%s'", video_codec.toUtf8().data() );
-	qDebug("  audio_codec: '%s'", audio_codec.toUtf8().data() );
-	qDebug("  video_bitrate: %d", video_bitrate );
-	qDebug("  audio_bitrate: %d", audio_bitrate );
-	qDebug("  audio_rate: %d", audio_rate );
-	qDebug("  audio_nch: %d", audio_nch );
+	qDebug("  video_format: '%s'", video_format.toUtf8().data());
+	qDebug("  audio_format: '%s'", audio_format.toUtf8().data());
+	qDebug("  video_codec: '%s'", video_codec.toUtf8().data());
+	qDebug("  audio_codec: '%s'", audio_codec.toUtf8().data());
+	qDebug("  video_bitrate: %d", video_bitrate);
+	qDebug("  audio_bitrate: %d", audio_bitrate);
+	qDebug("  audio_rate: %d", audio_rate);
+	qDebug("  audio_nch: %d", audio_nch);
 
 	qDebug("  Meta data:");
 	MetaData::const_iterator i = meta_data.constBegin();

@@ -21,14 +21,14 @@
 
 namespace Proc {
 
-TProcess::TProcess(QObject * parent) : QProcess(parent)
+TProcess::TProcess(QObject* parent) : QProcess(parent)
 {
 	clearArguments();
 	setProcessChannelMode(QProcess::MergedChannels);
 	
-	connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(readStdOut()) );
+	connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(readStdOut()));
 	connect(this, SIGNAL(finished(int, QProcess::ExitStatus)), 
-			this, SLOT(procFinished()) );
+			this, SLOT(procFinished()));
 }
 
 void TProcess::clearArguments() {
@@ -61,7 +61,7 @@ void TProcess::start() {
 }
 
 void TProcess::readStdOut() {
-	genericRead( readAllStandardOutput() );
+	genericRead(readAllStandardOutput());
 }
 
 void TProcess::genericRead(QByteArray buffer) {
@@ -70,7 +70,7 @@ void TProcess::genericRead(QByteArray buffer) {
 	int from_pos = 0;
 	int pos = canReadLine(ba, from_pos);
 
-	while ( pos > -1 ) {
+	while (pos > -1) {
 		QByteArray line = ba.mid(start, pos-start);
 		from_pos = pos + 1;
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -90,10 +90,10 @@ int TProcess::canReadLine(const QByteArray & ba, int from) {
 	int pos1 = ba.indexOf('\n', from);
 	int pos2 = ba.indexOf('\r', from);
 
-	if ( (pos1 == -1) && (pos2 == -1) ) return -1;
+	if ((pos1 == -1) && (pos2 == -1)) return -1;
 
 	int pos = pos1;
-	if ( (pos1 != -1) && (pos2 != -1) ) {
+	if ((pos1 != -1) && (pos2 != -1)) {
 		/*
 		if (pos2 == (pos1+1)) pos = pos2; // \r\n
 		else
@@ -115,7 +115,7 @@ void TProcess::procFinished() {
 	qDebug("Proc::TProcess::procFinished");
 
 	qDebug() << "TProcess::procFinished: Bytes available: " << bytesAvailable();
-	if ( bytesAvailable() > 0 ) readStdOut();
+	if (bytesAvailable() > 0) readStdOut();
 }
 
 QStringList TProcess::splitArguments(const QString & args) {

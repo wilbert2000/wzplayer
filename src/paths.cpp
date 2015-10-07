@@ -55,7 +55,7 @@ void Paths::setConfigPath(const QString& path) {
 		} else {
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-			const char * XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
+			const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
 			if (XDG_CONFIG_HOME != NULL) {
 				config_path = QString(XDG_CONFIG_HOME) + "/smplayer";
 			} else {

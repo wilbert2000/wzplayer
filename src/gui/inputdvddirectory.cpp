@@ -23,7 +23,7 @@
 
 namespace Gui {
 
-TInputDVDDirectory::TInputDVDDirectory( QWidget* parent, Qt::WindowFlags f )
+TInputDVDDirectory::TInputDVDDirectory(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -33,7 +33,7 @@ TInputDVDDirectory::~TInputDVDDirectory() {
 }
 
 void TInputDVDDirectory::setFolder(QString folder) {
-	dvd_directory_edit->setText( folder );
+	dvd_directory_edit->setText(folder);
 }
 
 QString TInputDVDDirectory::folder() {
@@ -43,13 +43,13 @@ QString TInputDVDDirectory::folder() {
 void TInputDVDDirectory::on_searchButton_clicked() {
 	QString s = MyFileDialog::getExistingDirectory(
                     this, tr("Choose a directory"),
-                    dvd_directory_edit->text() );
+                    dvd_directory_edit->text());
 	/*
 	QString s = QFileDialog::getOpenFileName(
                     dvd_directory_edit->text(),
                     "*.*", this,
                     "select_dvd_device_dialog",
-                    tr("Choose a directory or iso file") );
+                    tr("Choose a directory or iso file"));
 	*/
 
 	if (!s.isEmpty()) {

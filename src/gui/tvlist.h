@@ -45,7 +45,7 @@ protected:
 #endif
 
 protected:
-	virtual TFavorites * createNewObject(QString filename, QWidget* parent);
+	virtual TFavorites* createNewObject(QString filename, QWidget* parent);
 
 protected slots:
 	virtual void edit();

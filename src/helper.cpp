@@ -94,13 +94,13 @@ void Helper::setScreensaverEnabled(bool b) {
 
 	if (b) {
 		// Activate screensaver
-		SystemParametersInfo( SPI_SETSCREENSAVEACTIVE, true, 0, SPIF_SENDWININICHANGE);
-		SystemParametersInfo( SPI_SETLOWPOWERACTIVE, 1, NULL, 0);
-		SystemParametersInfo( SPI_SETPOWEROFFACTIVE, 1, NULL, 0);
+		SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, true, 0, SPIF_SENDWININICHANGE);
+		SystemParametersInfo(SPI_SETLOWPOWERACTIVE, 1, NULL, 0);
+		SystemParametersInfo(SPI_SETPOWEROFFACTIVE, 1, NULL, 0);
 	} else {
-		SystemParametersInfo( SPI_SETSCREENSAVEACTIVE, false, 0, SPIF_SENDWININICHANGE);
-		SystemParametersInfo( SPI_SETLOWPOWERACTIVE, 0, NULL, 0);
-		SystemParametersInfo( SPI_SETPOWEROFFACTIVE, 0, NULL, 0);
+		SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, false, 0, SPIF_SENDWININICHANGE);
+		SystemParametersInfo(SPI_SETLOWPOWERACTIVE, 0, NULL, 0);
+		SystemParametersInfo(SPI_SETPOWEROFFACTIVE, 0, NULL, 0);
 	}
 }
 */
@@ -189,7 +189,7 @@ QStringList Helper::searchForConsecutiveFiles(const QString & initial_file) {
 	QString next_name;
 	bool next_found = false;
 	qDebug("Helper::searchForConsecutiveFiles: trying to find consecutive files");
-	while  ( ( pos = rx.indexIn(basename, pos) ) != -1 ) {
+	while  ((pos = rx.indexIn(basename, pos)) != -1) {
 		qDebug("Helper::searchForConsecutiveFiles: captured: %s",rx.cap(1).toUtf8().constData());
 		digits = rx.cap(1).length();
 		current_number = rx.cap(1).toInt() + 1;
@@ -199,7 +199,7 @@ QStringList Helper::searchForConsecutiveFiles(const QString & initial_file) {
 		qDebug("Helper::searchForConsecutiveFiles: next name = %s",next_name.toUtf8().constData());
 		matching_files = dir.entryList((QStringList)next_name);
 
-		if ( !matching_files.isEmpty() ) {
+		if (!matching_files.isEmpty()) {
 			next_found = true;
 			break;
 		}
@@ -209,7 +209,7 @@ QStringList Helper::searchForConsecutiveFiles(const QString & initial_file) {
 
 	if (next_found) {
 		qDebug("Helper::searchForConsecutiveFiles: adding consecutive files");
-		while ( !matching_files.isEmpty() ) {
+		while (!matching_files.isEmpty()) {
 			qDebug("Helper::searchForConsecutiveFiles: '%s' exists, added to the list", matching_files[0].toUtf8().constData());
 			files_to_add << path  + "/" + matching_files[0];
 			current_number++;

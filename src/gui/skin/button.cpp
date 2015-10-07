@@ -37,7 +37,7 @@ TButton::TButton(QWidget *parent) :
 void TButton::paintEvent(QPaintEvent *)
 {
     QPixmap pix;
-    if(isEnabled() && ( isDown() || isChecked()))
+    if(isEnabled() && (isDown() || isChecked()))
     {
 		pix = icon.pixmap(TIcon::MouseDown, state ? TIcon::On : TIcon::Off);
     }
@@ -79,7 +79,7 @@ void TButton::setAction(TAction *pAction)
         setEnabled(action->isEnabled());
         action->installEventFilter(this);
         connect(this, SIGNAL(clicked()), action, SLOT(trigger()));
-        if( action->isCheckable())
+        if(action->isCheckable())
         {
             toggleImage();
             connect(action, SIGNAL(toggled(bool)), this, SLOT(toggleImage()));

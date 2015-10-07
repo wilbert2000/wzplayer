@@ -37,26 +37,26 @@ public:
 
 	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                            const QModelIndex &index) const;
-	virtual void setModelData(QWidget * editor, QAbstractItemModel * model, 
-                              const QModelIndex & index ) const;
+	virtual void setModelData(QWidget* editor, QAbstractItemModel* model, 
+                              const QModelIndex & index) const;
 };
 
 FEDelegate::FEDelegate(QObject *parent) : QItemDelegate(parent) {
 }
 
-QWidget * FEDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & option, const QModelIndex & index) const {
+QWidget* FEDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & option, const QModelIndex & index) const {
 	//qDebug("FEDelegate::createEditor");
 
 	if (index.column() == COL_FILE) {
-		FileChooser * fch = new FileChooser(parent);
+		FileChooser* fch = new FileChooser(parent);
 		fch->setOptions(QFileDialog::DontUseNativeDialog | QFileDialog::DontResolveSymlinks); // Crashes if use the KDE dialog
-		fch->setText( index.model()->data(index, Qt::DisplayRole).toString() );
+		fch->setText(index.model()->data(index, Qt::DisplayRole).toString());
 		return fch;
 	} 
 	else 
 	if (index.column() == COL_NAME) {
-		QLineEdit * e = new QLineEdit(parent);
-		e->setText( index.model()->data(index, Qt::DisplayRole).toString() );
+		QLineEdit* e = new QLineEdit(parent);
+		e->setText(index.model()->data(index, Qt::DisplayRole).toString());
 		return e;
 	}
 	else {
@@ -66,13 +66,13 @@ QWidget * FEDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &
 
 void FEDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
 	if (index.column() == COL_FILE) {
-		FileChooser * fch = static_cast<FileChooser*>(editor);
-		model->setData(index, fch->text() );
+		FileChooser* fch = static_cast<FileChooser*>(editor);
+		model->setData(index, fch->text());
 	} 
 	else 
 	if (index.column() == COL_NAME) {
-		QLineEdit * e = static_cast<QLineEdit*>(editor);
-		model->setData(index, e->text() );
+		QLineEdit* e = static_cast<QLineEdit*>(editor);
+		model->setData(index, e->text());
 	}
 }
 
@@ -80,20 +80,20 @@ namespace Gui {
 
 QString TFavoriteEditor::last_dir;
 
-TFavoriteEditor::TFavoriteEditor( QWidget* parent, Qt::WindowFlags f )
+TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
 
-	add_button->setIcon( Images::icon("bookmark_add") );
-	add_submenu_button->setIcon( Images::icon("bookmark_folder") );
-	delete_button->setIcon( Images::icon("delete") );
-	delete_all_button->setIcon( Images::icon("trash") );
-	up_button->setIcon( Images::icon("up") );
-	down_button->setIcon( Images::icon("down") );
+	add_button->setIcon(Images::icon("bookmark_add"));
+	add_submenu_button->setIcon(Images::icon("bookmark_folder"));
+	delete_button->setIcon(Images::icon("delete"));
+	delete_all_button->setIcon(Images::icon("trash"));
+	up_button->setIcon(Images::icon("up"));
+	down_button->setIcon(Images::icon("down"));
 
 	table->setColumnCount(3);
-	table->setHorizontalHeaderLabels(QStringList() << tr("Icon") << tr("Name") << tr("Media") );
+	table->setHorizontalHeaderLabels(QStringList() << tr("Icon") << tr("Name") << tr("Media"));
 
 	table->setAlternatingRowColors(true);
 #if QT_VERSION >= 0x050000
@@ -105,18 +105,18 @@ TFavoriteEditor::TFavoriteEditor( QWidget* parent, Qt::WindowFlags f )
 	table->setSelectionBehavior(QAbstractItemView::SelectRows);
 	table->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-	table->setItemDelegateForColumn( COL_NAME, new FEDelegate(table) );
-	table->setItemDelegateForColumn( COL_FILE, new FEDelegate(table) );
+	table->setItemDelegateForColumn(COL_NAME, new FEDelegate(table));
+	table->setItemDelegateForColumn(COL_FILE, new FEDelegate(table));
 
 	connect(table, SIGNAL(cellActivated(int,int)), this, SLOT(edit_icon(int,int)));
 
-	setWindowTitle( tr("Favorite editor") );
+	setWindowTitle(tr("Favorite editor"));
 
-	setCaption( tr("Favorite list") );
-	setIntro( tr("You can edit, delete, sort or add new items. Double click on "
-                 "a cell to edit its contents.") );
+	setCaption(tr("Favorite list"));
+	setIntro(tr("You can edit, delete, sort or add new items. Double click on "
+                 "a cell to edit its contents."));
 
-	setDialogIcon( Images::icon("favorite") );
+	setDialogIcon(Images::icon("favorite"));
 }
 
 TFavoriteEditor::~TFavoriteEditor() {
@@ -141,39 +141,39 @@ QString TFavoriteEditor::intro() {
 }
 
 void TFavoriteEditor::updateTitleLabel() {
-	title_label->setText( "<h1>" + caption_text + "</h1>" + intro_text );
+	title_label->setText("<h1>" + caption_text + "</h1>" + intro_text);
 }
 
-void TFavoriteEditor::setDialogIcon( const QPixmap & icon ) {
+void TFavoriteEditor::setDialogIcon(const QPixmap & icon) {
 	dialog_icon->setPixmap(icon);
 }
 
-const QPixmap * TFavoriteEditor::dialogIcon() const {
+const QPixmap* TFavoriteEditor::dialogIcon() const {
 	return dialog_icon->pixmap();
 }
 
-void TFavoriteEditor::setData( TFavoriteList list ) {
+void TFavoriteEditor::setData(TFavoriteList list) {
 	table->setRowCount(list.count());
 
 	for (int n = 0; n < list.count(); n++) {
-		QTableWidgetItem * icon_item = new QTableWidgetItem;
-		icon_item->setIcon( QIcon(list[n].icon()) );
-		icon_item->setData( Qt::UserRole, list[n].icon() );
-		icon_item->setData( Qt::ToolTipRole, list[n].icon() );
+		QTableWidgetItem* icon_item = new QTableWidgetItem;
+		icon_item->setIcon(QIcon(list[n].icon()));
+		icon_item->setData(Qt::UserRole, list[n].icon());
+		icon_item->setData(Qt::ToolTipRole, list[n].icon());
 		icon_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-		QTableWidgetItem * name_item = new QTableWidgetItem;
-		name_item->setText( list[n].name() );
+		QTableWidgetItem* name_item = new QTableWidgetItem;
+		name_item->setText(list[n].name());
 
-		QTableWidgetItem * file_item = new QTableWidgetItem;
-		file_item->setData( Qt::ToolTipRole, list[n].file() );
-		file_item->setData( Qt::UserRole, list[n].isSubentry() );
+		QTableWidgetItem* file_item = new QTableWidgetItem;
+		file_item->setData(Qt::ToolTipRole, list[n].file());
+		file_item->setData(Qt::UserRole, list[n].isSubentry());
 		if (list[n].isSubentry()) {
 			file_item->setFlags(Qt::ItemIsSelectable);
-			file_item->setData( Qt::UserRole + 1, list[n].file() );
-			file_item->setText( tr("Favorite list") );
+			file_item->setData(Qt::UserRole + 1, list[n].file());
+			file_item->setText(tr("Favorite list"));
 		} else {
-			file_item->setText( list[n].file() );
+			file_item->setText(list[n].file());
 		}
 
 		table->setItem(n, COL_ICON, icon_item);
@@ -192,13 +192,13 @@ TFavoriteList TFavoriteEditor::data() {
 
 	for (int n = 0; n < table->rowCount(); n++) {
 		TFavorite f;
-		f.setName( table->item(n, COL_NAME)->text() );
-		f.setIcon( table->item(n, COL_ICON)->data(Qt::UserRole).toString() );
-		f.setSubentry( table->item(n, COL_FILE)->data(Qt::UserRole).toBool() );
+		f.setName(table->item(n, COL_NAME)->text());
+		f.setIcon(table->item(n, COL_ICON)->data(Qt::UserRole).toString());
+		f.setSubentry(table->item(n, COL_FILE)->data(Qt::UserRole).toBool());
 		if (f.isSubentry()) {
-			f.setFile( table->item(n, COL_FILE)->data(Qt::UserRole + 1).toString() );
+			f.setFile(table->item(n, COL_FILE)->data(Qt::UserRole + 1).toString());
 		} else {
-			f.setFile( table->item(n, COL_FILE)->text() );
+			f.setFile(table->item(n, COL_FILE)->text());
 		}
 
 		list.append(f);
@@ -228,7 +228,7 @@ void TFavoriteEditor::on_add_button_clicked() {
 	row++;
 	table->insertRow(row);
 
-	QTableWidgetItem * icon_item = new QTableWidgetItem;
+	QTableWidgetItem* icon_item = new QTableWidgetItem;
 	icon_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 	table->setItem(row, COL_ICON, icon_item);
@@ -259,20 +259,20 @@ void TFavoriteEditor::on_add_submenu_button_clicked() {
 	row++;
 	table->insertRow(row);
 
-	QTableWidgetItem * icon_item = new QTableWidgetItem;
-	icon_item->setData( Qt::UserRole, Images::file("openfolder") );
-	icon_item->setIcon( Images::icon("openfolder") );
+	QTableWidgetItem* icon_item = new QTableWidgetItem;
+	icon_item->setData(Qt::UserRole, Images::file("openfolder"));
+	icon_item->setIcon(Images::icon("openfolder"));
 	icon_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 	table->setItem(row, COL_ICON, icon_item);
 	table->setItem(row, COL_NAME, new QTableWidgetItem);
 
-	QTableWidgetItem * file_item = new QTableWidgetItem;
-	file_item->setData( Qt::UserRole, true );
+	QTableWidgetItem* file_item = new QTableWidgetItem;
+	file_item->setData(Qt::UserRole, true);
 	file_item->setFlags(Qt::ItemIsSelectable);
-	file_item->setData( Qt::UserRole + 1, filename );
-	file_item->setText( tr("Favorite list") );
-	file_item->setData( Qt::ToolTipRole, filename );
+	file_item->setData(Qt::UserRole + 1, filename);
+	file_item->setText(tr("Favorite list"));
+	file_item->setData(Qt::ToolTipRole, filename);
 	table->setItem(row, COL_FILE, file_item);
 
 	table->setCurrentCell(row, table->currentColumn());
@@ -331,12 +331,12 @@ void TFavoriteEditor::setRow(int row, const QList<QTableWidgetItem*>& rowItems)
 	}
 }
 
-void TFavoriteEditor::edit_icon(int row, int column ) {
+void TFavoriteEditor::edit_icon(int row, int column) {
 	qDebug("Gui::TFavoriteEditor::edit_icon: %d, %d", row, column);
 
 	if (column != COL_ICON) return;
 
-	QTableWidgetItem * i = table->item(row, column);
+	QTableWidgetItem* i = table->item(row, column);
 	QString icon_filename = i->data(Qt::UserRole).toString();
 
 	qDebug("Gui::TFavoriteEditor::edit_icon: icon file: '%s'", icon_filename.toUtf8().constData());
@@ -348,8 +348,8 @@ void TFavoriteEditor::edit_icon(int row, int column ) {
                                                dir,
                                                tr("Images") + " (*.png *.xpm *.jpg)");
 	if (!res.isEmpty()) {
-		i->setIcon( QIcon(res) );
-		i->setData( Qt::UserRole, res );
+		i->setIcon(QIcon(res));
+		i->setData(Qt::UserRole, res);
 
 		last_dir = QFileInfo(res).absolutePath();
 	}

@@ -33,17 +33,17 @@ class TInput : public TWidget, public Ui::TInput
 	Q_OBJECT
 
 public:
-	TInput( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TInput();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 	// Pass action's list to dialog
 	/* void setActionsList(QStringList l); */

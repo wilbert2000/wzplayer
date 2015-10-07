@@ -35,7 +35,7 @@ class TToolbarEditor : public QDialog, public Ui::TToolbarEditor
 
 public:
 
-	TToolbarEditor( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	TToolbarEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TToolbarEditor();
 
 	void setAllActions(QList<QAction *> actions_list);
@@ -67,10 +67,10 @@ protected slots:
 	void checkRowsActiveList(int currentRow);
 
 protected:
-	static QAction * findAction(QString s, QList<QAction *> actions_list);
+	static QAction* findAction(QString s, QList<QAction *> actions_list);
 
-	static void populateList(QListWidget * w, QList<QAction *> actions_list, bool add_separators = false);
-	static int findItem(const QString & action_name, QListWidget * w);
+	static void populateList(QListWidget* w, QList<QAction *> actions_list, bool add_separators = false);
+	static int findItem(const QString & action_name, QListWidget* w);
 
 	static QString fixname(const QString & name, const QString & action_name);
 

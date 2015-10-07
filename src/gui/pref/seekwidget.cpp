@@ -22,7 +22,7 @@
 
 namespace Gui { namespace Pref {
 
-TSeekWidget::TSeekWidget( QWidget* parent, Qt::WindowFlags f)
+TSeekWidget::TSeekWidget(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 {
 	setupUi(this);
@@ -37,7 +37,7 @@ void TSeekWidget::setIcon(QPixmap icon) {
 	_image->setPixmap(icon);
 }
 
-const QPixmap * TSeekWidget::icon() const {
+const QPixmap* TSeekWidget::icon() const {
 	return _image->pixmap();
 }
 

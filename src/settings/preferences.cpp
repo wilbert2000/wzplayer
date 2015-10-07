@@ -546,7 +546,7 @@ void TPreferences::save() {
 	setValue("use_direct_rendering", use_direct_rendering);
 	setValue("use_double_buffer", use_double_buffer);
 	setValue("use_soft_video_eq", use_soft_video_eq);
-	setValue("use_slices", use_slices );
+	setValue("use_slices", use_slices);
 	setValue("autoq", autoq);
 	setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
 
@@ -573,8 +573,8 @@ void TPreferences::save() {
 	setValue("use_soft_vol", use_soft_vol);
 	setValue("softvol_max", softvol_max);
 	setValue("use_scaletempo", use_scaletempo);
-	setValue("use_hwac3", use_hwac3 );
-	setValue("use_audio_equalizer", use_audio_equalizer );
+	setValue("use_hwac3", use_hwac3);
+	setValue("use_audio_equalizer", use_audio_equalizer);
 
 	setValue("global_volume", global_volume);
 	setValue("volume", volume);
@@ -605,7 +605,7 @@ void TPreferences::save() {
        Drives (CD/DVD)
        *************** */
 
-	beginGroup( "drives");
+	beginGroup("drives");
 
 	setValue("dvd_device", dvd_device);
 	setValue("cdrom_device", cdrom_device);
@@ -626,7 +626,7 @@ void TPreferences::save() {
        Performance
        *********** */
 
-	beginGroup( "performance");
+	beginGroup("performance");
 
 	setValue("priority", priority);
 	setValue("frame_drop", frame_drop);
@@ -705,7 +705,7 @@ void TPreferences::save() {
        Advanced
        ******** */
 
-	beginGroup( "advanced");
+	beginGroup("advanced");
 
 #if USE_ADAPTER
 	setValue("adapter", adapter);
@@ -837,7 +837,7 @@ void TPreferences::save() {
        TV (dvb)
        ******** */
 
-	beginGroup( "tv");
+	beginGroup("tv");
 	setValue("check_channels_conf_on_startup", check_channels_conf_on_startup);
 	setValue("initial_tv_deinterlace", initial_tv_deinterlace);
 	setValue("last_dvb_channel", last_dvb_channel);
@@ -863,7 +863,7 @@ void TPreferences::save() {
        Directories
        *********** */
 
-	beginGroup( "directories");
+	beginGroup("directories");
 	if (save_dirs) {
 		setValue("latest_dir", latest_dir);
 		setValue("last_dvd_directory", last_dvd_directory);
@@ -879,7 +879,7 @@ void TPreferences::save() {
        Initial values
        ************** */
 
-	beginGroup( "defaults");
+	beginGroup("defaults");
 
 	setValue("initial_sub_scale", initial_sub_scale);
 	setValue("initial_sub_scale_mpv", initial_sub_scale_mpv);
@@ -914,7 +914,7 @@ void TPreferences::save() {
        MPlayer info
        ************ */
 
-	beginGroup( "mplayer_info");
+	beginGroup("mplayer_info");
 	setValue("mplayer_detected_version", mplayer_detected_version);
 	setValue("mplayer_user_supplied_version", mplayer_user_supplied_version);
 	setValue("is_mplayer2", mplayer_is_mplayer2);
@@ -1024,7 +1024,7 @@ void TPreferences::load() {
 	use_double_buffer = value("use_double_buffer", use_double_buffer).toBool();
 	
 	use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
-	use_slices = value("use_slices", use_slices ).toBool();
+	use_slices = value("use_slices", use_slices).toBool();
 	autoq = value("autoq", autoq).toInt();
 	add_blackborders_on_fullscreen = value("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen).toBool();
 
@@ -1051,8 +1051,8 @@ void TPreferences::load() {
 	use_soft_vol = value("use_soft_vol", use_soft_vol).toBool();
 	softvol_max = value("softvol_max", softvol_max).toInt();
 	use_scaletempo = (OptionState) value("use_scaletempo", use_scaletempo).toInt();
-	use_hwac3 = value("use_hwac3", use_hwac3 ).toBool();
-	use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer ).toBool();
+	use_hwac3 = value("use_hwac3", use_hwac3).toBool();
+	use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer).toBool();
 
 	global_volume = value("global_volume", global_volume).toBool();
 	volume = value("volume", volume).toInt();
@@ -1083,7 +1083,7 @@ void TPreferences::load() {
        Drives (CD/DVD)
        *************** */
 
-	beginGroup( "drives");
+	beginGroup("drives");
 
 	dvd_device = value("dvd_device", dvd_device).toString();
 	cdrom_device = value("cdrom_device", cdrom_device).toString();
@@ -1093,7 +1093,7 @@ void TPreferences::load() {
 	enable_audiocd_on_windows = value("enable_audiocd_on_windows", enable_audiocd_on_windows).toBool();
 #endif
 
-	vcd_initial_title = value("vcd_initial_title", vcd_initial_title ).toInt();
+	vcd_initial_title = value("vcd_initial_title", vcd_initial_title).toInt();
 
 	use_dvdnav = value("use_dvdnav", use_dvdnav).toBool();
 
@@ -1104,7 +1104,7 @@ void TPreferences::load() {
        Performance
        *********** */
 
-	beginGroup( "performance");
+	beginGroup("performance");
 
 	priority = value("priority", priority).toInt();
 	frame_drop = value("frame_drop", frame_drop).toBool();
@@ -1183,7 +1183,7 @@ void TPreferences::load() {
        Advanced
        ******** */
 
-	beginGroup( "advanced");
+	beginGroup("advanced");
 
 #if USE_ADAPTER
 	adapter = value("adapter", adapter).toInt();
@@ -1327,7 +1327,7 @@ void TPreferences::load() {
        TV (dvb)
        ******** */
 
-	beginGroup( "tv");
+	beginGroup("tv");
 	check_channels_conf_on_startup = value("check_channels_conf_on_startup", check_channels_conf_on_startup).toBool();
 	initial_tv_deinterlace = value("initial_tv_deinterlace", initial_tv_deinterlace).toInt();
 	last_dvb_channel = value("last_dvb_channel", last_dvb_channel).toString();
@@ -1353,7 +1353,7 @@ void TPreferences::load() {
        Directories
        *********** */
 
-	beginGroup( "directories");
+	beginGroup("directories");
 	save_dirs = value("save_dirs", save_dirs).toBool();
 	if (save_dirs) {
 		latest_dir = value("latest_dir", latest_dir).toString();
@@ -1366,7 +1366,7 @@ void TPreferences::load() {
        Initial values
        ************** */
 
-	beginGroup( "defaults");
+	beginGroup("defaults");
 
 	initial_sub_scale = value("initial_sub_scale", initial_sub_scale).toDouble();
 	initial_sub_scale_mpv = value("initial_sub_scale_mpv", initial_sub_scale_mpv).toDouble();
@@ -1401,7 +1401,7 @@ void TPreferences::load() {
        MPlayer info
        ************ */
 
-	beginGroup( "mplayer_info");
+	beginGroup("mplayer_info");
 	mplayer_detected_version = value("mplayer_detected_version", mplayer_detected_version).toInt();
 	mplayer_user_supplied_version = value("mplayer_user_supplied_version", mplayer_user_supplied_version).toInt();
 	mplayer_is_mplayer2 = value("is_mplayer2", mplayer_is_mplayer2).toBool();
@@ -1440,11 +1440,11 @@ void TPreferences::load() {
 
 	beginGroup("history");
 
-	history_recents.setMaxItems( value("recents/max_items", history_recents.maxItems()).toInt() );
-	history_recents.fromStringList( value("recents", history_recents).toStringList() );
+	history_recents.setMaxItems(value("recents/max_items", history_recents.maxItems()).toInt());
+	history_recents.fromStringList(value("recents", history_recents).toStringList());
 
-	history_urls.setMaxItems( value("urls/max_items", history_urls.maxItems()).toInt() );
-	history_urls.fromStringList( value("urls", history_urls).toStringList() );
+	history_urls.setMaxItems(value("urls/max_items", history_urls.maxItems()).toInt());
+	history_urls.fromStringList(value("urls", history_urls).toStringList());
 
 	endGroup(); // history
 

@@ -28,7 +28,7 @@ class TSelectColorButton : public QPushButton
 	Q_OBJECT
 
 public:
-	TSelectColorButton ( QWidget * parent = 0 );
+	TSelectColorButton (QWidget* parent = 0);
 	virtual ~TSelectColorButton();
 
 	QColor color() { return _color;}
@@ -45,7 +45,7 @@ private:
 	bool ignore_change_event;
 	
 protected:
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void changeEvent (QEvent* event) ;
 };
 
 }} // namespace Gui::Pref

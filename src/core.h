@@ -109,10 +109,10 @@ public slots:
 	//! Reopens the file (no restart)
 	void reload();
 
-	void goToPosition( int pos );
-	void goToPos( double perc );
-	// void goToPos( int perc );
-	void goToSec( double sec );
+	void goToPosition(int pos);
+	void goToPos(double perc);
+	// void goToPos(int perc);
+	void goToSec(double sec);
 
 	void setAMarker(); //!< Set A marker to current sec
 	void setAMarker(int sec);
@@ -174,7 +174,7 @@ public slots:
 	void wheelUp(Settings::TPreferences::WheelFunction function = Settings::TPreferences::DoNothing);
 	void wheelDown(Settings::TPreferences::WheelFunction function = Settings::TPreferences::DoNothing);
 
-	void setSpeed( double value );
+	void setSpeed(double value);
 	void incSpeed10();	//!< Inc speed 10%
 	void decSpeed10();	//!< Dec speed 10%
 	void incSpeed4();	//!< Inc speed 4%
@@ -397,7 +397,7 @@ protected:
 	void initPlaying(int seek=-1);
 	void newMediaPlaying();
 
-	void startPlayer(QString file, double seek = -1 );
+	void startPlayer(QString file, double seek = -1);
 	void stopPlayer();
 	void restartPlay();
 
@@ -464,17 +464,17 @@ signals:
 	void receivedForbidden();
 
 protected:
-	Proc::TPlayerProcess * proc;
-	TPlayerWindow * playerwindow;
+	Proc::TPlayerProcess* proc;
+	TPlayerWindow* playerwindow;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
-	WinScreenSaver * win_screensaver;
+	WinScreenSaver* win_screensaver;
 #endif
 #endif
 
 #ifdef YOUTUBE_SUPPORT
-	RetrieveYoutubeUrl * yt;
+	RetrieveYoutubeUrl* yt;
 #endif
 
 private:

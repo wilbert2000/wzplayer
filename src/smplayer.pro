@@ -31,7 +31,7 @@ DEFINES += MPLAYER_SUPPORT
 
 #DEFINES += SIMPLE_BUILD
 
-contains( DEFINES, SIMPLE_BUILD ) {
+contains(DEFINES, SIMPLE_BUILD) {
 	DEFINES -= SINGLE_INSTANCE
 	DEFINES -= FIND_SUBTITLES
 	DEFINES -= VIDEOPREVIEW
@@ -57,27 +57,27 @@ isEqual(QT_MAJOR_VERSION, 5) {
 contains(QT_VERSION, ^4\\.[0-3]\\..*) {
 	message("Some features requires Qt > 4.3.")
 
-	contains( DEFINES, SINGLE_INSTANCE ) {
+	contains(DEFINES, SINGLE_INSTANCE) {
 		DEFINES -= SINGLE_INSTANCE
 		message("SINGLE_INSTANCE disabled.")
 	}
 
-	contains( DEFINES, YOUTUBE_SUPPORT ) {
+	contains(DEFINES, YOUTUBE_SUPPORT) {
 		DEFINES -= YOUTUBE_SUPPORT
 		message("YOUTUBE_SUPPORT disabled.")
 	}
 
-	contains( DEFINES, SKINS ) {
+	contains(DEFINES, SKINS) {
 		DEFINES -= SKINS
 		message("SKINS disabled.")
 	}
 
-	contains( DEFINES, FIND_SUBTITLES ) {
+	contains(DEFINES, FIND_SUBTITLES) {
 		DEFINES -= FIND_SUBTITLES
 		message("FIND_SUBTITLES disabled.")
 	}
 
-	contains( DEFINES, UPDATE_CHECKER ) {
+	contains(DEFINES, UPDATE_CHECKER) {
 		DEFINES -= UPDATE_CHECKER
 		message("UPDATE_CHECKER disabled.")
 	}
@@ -296,18 +296,18 @@ FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/errordialog.ui gui/timedialog.ui gui/stereo3ddialog.ui \
         gui/toolbareditor.ui gui/multilineinputdialog.ui
 
-contains( DEFINES, MPV_SUPPORT ) {
+contains(DEFINES, MPV_SUPPORT) {
     HEADERS += proc/mpvprocess.h inforeadermpv.h
     SOURCES += proc/mpvprocess.cpp inforeadermpv.cpp
 }
 
-contains( DEFINES, MPLAYER_SUPPORT ) {
+contains(DEFINES, MPLAYER_SUPPORT) {
     HEADERS += proc/mplayerprocess.h inforeadermplayer.h
     SOURCES += proc/mplayerprocess.cpp inforeadermplayer.cpp
 }
 
 # qtsingleapplication
-contains( DEFINES, SINGLE_INSTANCE ) {
+contains(DEFINES, SINGLE_INSTANCE) {
 	INCLUDEPATH += qtsingleapplication
 	DEPENDPATH += qtsingleapplication
 
@@ -316,7 +316,7 @@ contains( DEFINES, SINGLE_INSTANCE ) {
 }
 
 # Find subtitles dialog
-contains( DEFINES, FIND_SUBTITLES ) {
+contains(DEFINES, FIND_SUBTITLES) {
 	DEFINES += DOWNLOAD_SUBS
 	DEFINES += OS_SEARCH_WORKAROUND
 	#DEFINES += USE_QUAZIP
@@ -337,7 +337,7 @@ contains( DEFINES, FIND_SUBTITLES ) {
 }
 
 # Download subtitles
-contains( DEFINES, DOWNLOAD_SUBS ) {
+contains(DEFINES, DOWNLOAD_SUBS) {
 	INCLUDEPATH += findsubtitles/filedownloader
 	DEPENDPATH += findsubtitles/filedownloader
 
@@ -346,7 +346,7 @@ contains( DEFINES, DOWNLOAD_SUBS ) {
 
 	FORMS += findsubtitles/subchooserdialog.ui
 
-	contains( DEFINES, USE_QUAZIP ) {
+	contains(DEFINES, USE_QUAZIP) {
 		INCLUDEPATH += findsubtitles/quazip
 		DEPENDPATH += findsubtitles/quazip
 
@@ -376,7 +376,7 @@ contains( DEFINES, DOWNLOAD_SUBS ) {
 }
 
 # Youtube support
-contains( DEFINES, YOUTUBE_SUPPORT ) {
+contains(DEFINES, YOUTUBE_SUPPORT) {
 	DEFINES += YT_USE_SCRIPT
 	INCLUDEPATH += youtube
 	DEPENDPATH += youtube
@@ -384,25 +384,25 @@ contains( DEFINES, YOUTUBE_SUPPORT ) {
 	HEADERS += youtube/retrieveyoutubeurl.h youtube/loadpage.h
 	SOURCES += youtube/retrieveyoutubeurl.cpp youtube/loadpage.cpp
 
-	contains( DEFINES, YT_USE_SCRIPT ) {
+	contains(DEFINES, YT_USE_SCRIPT) {
 		DEFINES += YT_USE_SIG
 		DEFINES += YT_USE_YTSIG
 		QT += script
 	}
 
-	contains( DEFINES, YT_USE_SIG ) {
+	contains(DEFINES, YT_USE_SIG) {
 		HEADERS += youtube/sig.h
 		SOURCES += youtube/sig.cpp
 	}
 
-	contains( DEFINES, YT_USE_YTSIG ) {
+	contains(DEFINES, YT_USE_YTSIG) {
 		HEADERS += youtube/ytsig.h youtube/codedownloader.h
 		SOURCES += youtube/ytsig.cpp youtube/codedownloader.cpp
 	}
 }
 
 # mpcgui
-contains( DEFINES, MPCGUI ) {
+contains(DEFINES, MPCGUI) {
 	INCLUDEPATH += gui/mpc
 	DEPENDPATH += gui/mpc
 
@@ -411,7 +411,7 @@ contains( DEFINES, MPCGUI ) {
 }
 
 # Skins support
-contains( DEFINES, SKINS ) {
+contains(DEFINES, SKINS) {
 	INCLUDEPATH += gui/skin
 	DEPENDPATH += gui/skin
 
@@ -426,7 +426,7 @@ contains( DEFINES, SKINS ) {
 	FORMS += gui/skin/mediapanel.ui gui/skin/mediabarpanel.ui
 }
 
-contains( DEFINES, MPRIS2 ) {
+contains(DEFINES, MPRIS2) {
 	INCLUDEPATH += mpris2
 	DEPENDPATH += mpris2
 
@@ -437,13 +437,13 @@ contains( DEFINES, MPRIS2 ) {
 }
 
 # Update checker
-contains( DEFINES, UPDATE_CHECKER ) {
+contains(DEFINES, UPDATE_CHECKER) {
     HEADERS += gui/updatechecker.h updatecheckerdata.h
     SOURCES += gui/updatechecker.cpp updatecheckerdata.cpp
 }
 
 # Videopreview
-contains( DEFINES, VIDEOPREVIEW ) {
+contains(DEFINES, VIDEOPREVIEW) {
 	INCLUDEPATH += videopreview
 	DEPENDPATH += videopreview
 
@@ -453,18 +453,18 @@ contains( DEFINES, VIDEOPREVIEW ) {
 	FORMS += videopreview/videopreviewconfigdialog.ui
 }
 
-contains( DEFINES, REMINDER_ACTIONS ) {
+contains(DEFINES, REMINDER_ACTIONS) {
 	HEADERS += sharedialog.h
 	SOURCES += sharedialog.cpp
 	FORMS += sharedialog.ui
 }
 
-contains( DEFINES, SHAREWIDGET|REMINDER_ACTIONS ) {
+contains(DEFINES, SHAREWIDGET|REMINDER_ACTIONS) {
 	HEADERS += sharewidget.h sharedata.h
 	SOURCES += sharewidget.cpp sharedata.cpp
 }
 
-contains( DEFINES, AUTO_SHUTDOWN_PC ) {
+contains(DEFINES, AUTO_SHUTDOWN_PC) {
 	HEADERS += shutdowndialog.h shutdown.h
 	SOURCES += shutdowndialog.cpp shutdown.cpp
 	FORMS += shutdowndialog.ui
@@ -489,16 +489,16 @@ win32 {
 	DEFINES += AVOID_SCREENSAVER
 	DEFINES += USE_FONTCONFIG_OPTIONS
 
-	contains( DEFINES, SCREENSAVER_OFF ) {
+	contains(DEFINES, SCREENSAVER_OFF) {
 		HEADERS += screensaver.h
 		SOURCES += screensaver.cpp
 	}
 
-	!contains( DEFINES, PORTABLE_APP ) {
+	!contains(DEFINES, PORTABLE_APP) {
 		DEFINES += USE_ASSOCIATIONS
 	}
 	
-	contains( DEFINES, USE_ASSOCIATIONS ) {
+	contains(DEFINES, USE_ASSOCIATIONS) {
         HEADERS += gui/pref/associations.h winfileassoc.h
         SOURCES += gui/pref/associations.cpp winfileassoc.cpp
         FORMS += gui/pref/associations.ui
@@ -520,7 +520,7 @@ win32 {
 os2 {
 	DEFINES += SCREENSAVER_OFF
 	INCLUDEPATH += .
-	contains( DEFINES, SCREENSAVER_OFF ) {
+	contains(DEFINES, SCREENSAVER_OFF) {
 		HEADERS += screensaver.h
 		SOURCES += screensaver.cpp
 	}

@@ -28,7 +28,7 @@ class TInputMplayerVersion : public QDialog, public Ui::TInputMplayerVersion
 	Q_OBJECT
 
 public:
-	TInputMplayerVersion( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	TInputMplayerVersion(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TInputMplayerVersion();
 
 	void setVersion(int current_version);

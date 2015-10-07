@@ -34,8 +34,8 @@ public:
 	QString getLang() const { return lang; }
 	QString getName() const { return name; }
 
-	void setLang( const QString& aLang ) { lang = aLang; }
-	void setName( const QString& aName ) { name = aName; }
+	void setLang(const QString& aLang) { lang = aLang; }
+	void setName(const QString& aName) { name = aName; }
 
 	void set(int id, const QString &aLang, const QString &aName) {
 		ID = id;

@@ -23,8 +23,8 @@
 
 namespace Gui {
 
-TActionGroupItem::TActionGroupItem(QObject * parent, TActionGroup *group,
-                                     const char * name, 
+TActionGroupItem::TActionGroupItem(QObject* parent, TActionGroup *group,
+                                     const char* name, 
                                      int data, bool autoadd)
 	: TAction(parent, name, autoadd)
 {
@@ -33,10 +33,10 @@ TActionGroupItem::TActionGroupItem(QObject * parent, TActionGroup *group,
 	if (group) group->addAction(this);
 }
 
-TActionGroupItem::TActionGroupItem(QObject * parent,
+TActionGroupItem::TActionGroupItem(QObject* parent,
 								   TActionGroup *group,
 								   const QString & text,
-								   const char * name,
+								   const char* name,
 								   int data,
 								   bool autoadd)
 	: TAction(parent, name, autoadd)
@@ -52,8 +52,8 @@ TActionGroup::TActionGroup(const QString& obj_name, QObject* parent) : QActionGr
 {
 	setObjectName(obj_name);
 	setExclusive(true);
-	connect( this, SIGNAL(triggered(QAction *)), 
-			 this, SLOT(itemTriggered(QAction *)) );
+	connect(this, SIGNAL(triggered(QAction *)), 
+			 this, SLOT(itemTriggered(QAction *)));
 }
 
 QAction* TActionGroup::setChecked(int ID) {
@@ -63,7 +63,7 @@ QAction* TActionGroup::setChecked(int ID) {
 	int count = l.count();
 	for (int n = 0; n < count; n++) {
 		QAction* action = l[n];
-		if ( (!action->isSeparator()) && (action->data().toInt() == ID) ) {
+		if ((!action->isSeparator()) && (action->data().toInt() == ID)) {
 			action->setChecked(true);
 			return action;
 		}
@@ -79,7 +79,7 @@ void TActionGroup::setCheckedSlot(int id) {
 }
 
 int TActionGroup::checked() {
-	QAction * a = checkedAction();
+	QAction* a = checkedAction();
 	if (a) 
 		return a->data().toInt();
 	else
@@ -102,7 +102,7 @@ void TActionGroup::setActionsEnabled(bool b) {
 
 void TActionGroup::clear(bool remove) {
 	while (actions().count() > 0) {
-		QAction * a = actions()[0];
+		QAction* a = actions()[0];
 		if (a) {
 			removeAction(a);
 			if (remove) a->deleteLater();
@@ -120,12 +120,12 @@ void TActionGroup::itemTriggered(QAction *a) {
 }
 
 void TActionGroup::addTo(QWidget *w) {
-	w->addActions( actions() );
+	w->addActions(actions());
 }
 
 void TActionGroup::removeFrom(QWidget *w) {
 	for (int n=0; n < actions().count(); n++) {
-		w->removeAction( actions()[n] );
+		w->removeAction(actions()[n]);
 	}
 }
 

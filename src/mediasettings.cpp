@@ -300,18 +300,18 @@ void TMediaSettings::list() {
 	qDebug("  is264andHD: %d", is264andHD);
 }
 
-void TMediaSettings::save(QSettings * set, int player_id) {
+void TMediaSettings::save(QSettings* set, int player_id) {
 	qDebug("TMediaSettings::save");
 
 	set->beginGroup("player_" + QString::number(player_id));
 
-	set->setValue( "current_demuxer", current_demuxer);
-	set->setValue( "forced_demuxer", forced_demuxer);
-	set->setValue( "forced_video_codec", forced_video_codec);
-	set->setValue( "forced_audio_codec", forced_audio_codec);
-	set->setValue( "original_demuxer", original_demuxer);
-	set->setValue( "original_video_codec", original_video_codec);
-	set->setValue( "original_audio_codec", original_audio_codec);
+	set->setValue("current_demuxer", current_demuxer);
+	set->setValue("forced_demuxer", forced_demuxer);
+	set->setValue("forced_video_codec", forced_video_codec);
+	set->setValue("forced_audio_codec", forced_audio_codec);
+	set->setValue("original_demuxer", original_demuxer);
+	set->setValue("original_video_codec", original_video_codec);
+	set->setValue("original_audio_codec", original_audio_codec);
 
 	// Save the tracks ID in a demuxer section
 	QString demuxer_section = QString("demuxer_%1").arg(current_demuxer);
@@ -324,19 +324,19 @@ void TMediaSettings::save(QSettings * set, int player_id) {
 	// Is this too agressive writing towards NoneSelected?
 	if (current_video_id > md->videos.firstID())
 		set->setValue("current_video_id", current_video_id);
-	else set->setValue("current_video_id", NoneSelected );
+	else set->setValue("current_video_id", NoneSelected);
 	if (current_audio_id > md->audios.firstID())
 		set->setValue("current_audio_id", current_video_id);
-	else set->setValue("current_audio_id", NoneSelected );
+	else set->setValue("current_audio_id", NoneSelected);
 
 	// Old config
 	set->remove("current_sub_id");
 
 	#ifdef MPV_SUPPORT
-	set->setValue( "current_secondary_sub_idx", current_secondary_sub_idx );
+	set->setValue("current_secondary_sub_idx", current_secondary_sub_idx);
 	#endif
 	#if PROGRAM_SWITCH
-	set->setValue( "current_program_id", current_program_id );
+	set->setValue("current_program_id", current_program_id);
 	#endif
 
 	set->endGroup();
@@ -360,86 +360,86 @@ void TMediaSettings::save(QSettings * set, int player_id) {
 	// Old config
 	set->remove("external_subtitles");
 
-	set->setValue( "external_subtitles_fps", external_subtitles_fps );
+	set->setValue("external_subtitles_fps", external_subtitles_fps);
 
-	set->setValue( "current_sec", current_sec );
+	set->setValue("current_sec", current_sec);
 
 	// Is this too agressive?
 	if (current_title_id > md->titles.firstID())
-		set->setValue( "current_title_id", current_title_id );
-	else set->setValue( "current_title_id", NoneSelected );
+		set->setValue("current_title_id", current_title_id);
+	else set->setValue("current_title_id", NoneSelected);
 
 	// Old config
-	set->remove( "current_chapter_id" );
+	set->remove("current_chapter_id");
 
-	set->setValue( "current_angle_id", current_angle_id );
+	set->setValue("current_angle_id", current_angle_id);
 
-	set->setValue( "aspect_ratio", aspect_ratio_id );
-	//set->setValue( "fullscreen", fullscreen );
-	set->setValue( "volume", volume );
-	set->setValue( "mute", mute );
-	set->setValue( "external_audio", external_audio );
-	set->setValue( "sub_delay", sub_delay);
-	set->setValue( "audio_delay", audio_delay);
-	set->setValue( "sub_pos", sub_pos);
-	set->setValue( "sub_scale", sub_scale);
-	set->setValue( "sub_scale_mpv", sub_scale_mpv);
-	set->setValue( "sub_scale_ass", sub_scale_ass);
+	set->setValue("aspect_ratio", aspect_ratio_id);
+	//set->setValue("fullscreen", fullscreen);
+	set->setValue("volume", volume);
+	set->setValue("mute", mute);
+	set->setValue("external_audio", external_audio);
+	set->setValue("sub_delay", sub_delay);
+	set->setValue("audio_delay", audio_delay);
+	set->setValue("sub_pos", sub_pos);
+	set->setValue("sub_scale", sub_scale);
+	set->setValue("sub_scale_mpv", sub_scale_mpv);
+	set->setValue("sub_scale_ass", sub_scale_ass);
 
-	set->setValue( "closed_caption_channel", closed_caption_channel);
+	set->setValue("closed_caption_channel", closed_caption_channel);
 
-	set->setValue( "brightness", brightness);
-	set->setValue( "contrast", contrast);
-	set->setValue( "gamma", gamma);
-	set->setValue( "hue", hue);
-	set->setValue( "saturation", saturation);
+	set->setValue("brightness", brightness);
+	set->setValue("contrast", contrast);
+	set->setValue("gamma", gamma);
+	set->setValue("hue", hue);
+	set->setValue("saturation", saturation);
 
-	set->setValue("audio_equalizer", audio_equalizer );
+	set->setValue("audio_equalizer", audio_equalizer);
 
-	set->setValue( "speed", speed);
+	set->setValue("speed", speed);
 
-	set->setValue( "phase_filter", phase_filter);
-	set->setValue( "deblock_filter", deblock_filter);
-	set->setValue( "dering_filter", dering_filter);
-	set->setValue( "gradfun_filter", gradfun_filter);
-	set->setValue( "noise_filter", noise_filter);
-	set->setValue( "postprocessing_filter", postprocessing_filter);
-	set->setValue( "upscaling_filter", upscaling_filter);
-	set->setValue( "current_denoiser", current_denoiser);
-	set->setValue( "current_unsharp", current_unsharp);
+	set->setValue("phase_filter", phase_filter);
+	set->setValue("deblock_filter", deblock_filter);
+	set->setValue("dering_filter", dering_filter);
+	set->setValue("gradfun_filter", gradfun_filter);
+	set->setValue("noise_filter", noise_filter);
+	set->setValue("postprocessing_filter", postprocessing_filter);
+	set->setValue("upscaling_filter", upscaling_filter);
+	set->setValue("current_denoiser", current_denoiser);
+	set->setValue("current_unsharp", current_unsharp);
 
-	set->setValue( "stereo3d_in", stereo3d_in);
-	set->setValue( "stereo3d_out", stereo3d_out);
+	set->setValue("stereo3d_in", stereo3d_in);
+	set->setValue("stereo3d_out", stereo3d_out);
 
-	set->setValue( "current_deinterlacer", current_deinterlacer);
+	set->setValue("current_deinterlacer", current_deinterlacer);
 
-	set->setValue( "add_letterbox", add_letterbox );
+	set->setValue("add_letterbox", add_letterbox);
 
-	set->setValue( "karaoke_filter", karaoke_filter);
-	set->setValue( "extrastereo_filter", extrastereo_filter);
-	set->setValue( "volnorm_filter", volnorm_filter);
+	set->setValue("karaoke_filter", karaoke_filter);
+	set->setValue("extrastereo_filter", extrastereo_filter);
+	set->setValue("volnorm_filter", volnorm_filter);
 
-	set->setValue( "audio_use_channels", audio_use_channels);
-	set->setValue( "stereo_mode", stereo_mode);
+	set->setValue("audio_use_channels", audio_use_channels);
+	set->setValue("stereo_mode", stereo_mode);
 
-	set->setValue( "zoom_factor", zoom_factor);
-	set->setValue( "zoom_factor_fullscreen", zoom_factor_fullscreen);
-	set->setValue( "pan_offset", pan_offset);
-	set->setValue( "pan_offset_fullscreen", pan_offset_fullscreen);
+	set->setValue("zoom_factor", zoom_factor);
+	set->setValue("zoom_factor_fullscreen", zoom_factor_fullscreen);
+	set->setValue("pan_offset", pan_offset);
+	set->setValue("pan_offset_fullscreen", pan_offset_fullscreen);
 
-	set->setValue( "rotate", rotate );
-	set->setValue( "flip", flip);
-	set->setValue( "mirror", mirror);
+	set->setValue("rotate", rotate);
+	set->setValue("flip", flip);
+	set->setValue("mirror", mirror);
 
-	set->setValue( "loop", loop);
-	set->setValue( "A_marker", A_marker);
-	set->setValue( "B_marker", B_marker);
+	set->setValue("loop", loop);
+	set->setValue("A_marker", A_marker);
+	set->setValue("B_marker", B_marker);
 
-	set->setValue( "mplayer_additional_options", mplayer_additional_options);
-	set->setValue( "mplayer_additional_video_filters", mplayer_additional_video_filters);
-	set->setValue( "mplayer_additional_audio_filters", mplayer_additional_audio_filters);
+	set->setValue("mplayer_additional_options", mplayer_additional_options);
+	set->setValue("mplayer_additional_video_filters", mplayer_additional_video_filters);
+	set->setValue("mplayer_additional_audio_filters", mplayer_additional_audio_filters);
 
-	set->setValue( "is264andHD", is264andHD );
+	set->setValue("is264andHD", is264andHD);
 }
 
 void TMediaSettings::convertOldSelectedTrack(int &id) {
@@ -451,19 +451,19 @@ void TMediaSettings::convertOldSelectedTrack(int &id) {
 	}
 }
 
-void TMediaSettings::load(QSettings * set, int player_id) {
+void TMediaSettings::load(QSettings* set, int player_id) {
 	qDebug("TMediaSettings::load");
 
 	set->beginGroup("player_" + QString::number(player_id));
 
-	current_demuxer = set->value( "current_demuxer", current_demuxer).toString();
-	forced_demuxer = set->value( "forced_demuxer", forced_demuxer).toString();
+	current_demuxer = set->value("current_demuxer", current_demuxer).toString();
+	forced_demuxer = set->value("forced_demuxer", forced_demuxer).toString();
 	if (pref->use_lavf_demuxer) forced_demuxer = "lavf";
-	forced_video_codec = set->value( "forced_video_codec", forced_video_codec).toString();
-	forced_audio_codec = set->value( "forced_audio_codec", forced_audio_codec).toString();
-	original_demuxer = set->value( "original_demuxer", original_demuxer).toString();
-	original_video_codec = set->value( "original_video_codec", original_video_codec).toString();
-	original_audio_codec = set->value( "original_audio_codec", original_audio_codec).toString();
+	forced_video_codec = set->value("forced_video_codec", forced_video_codec).toString();
+	forced_audio_codec = set->value("forced_audio_codec", forced_audio_codec).toString();
+	original_demuxer = set->value("original_demuxer", original_demuxer).toString();
+	original_video_codec = set->value("original_video_codec", original_video_codec).toString();
+	original_audio_codec = set->value("original_audio_codec", original_audio_codec).toString();
 
 	// Load the tracks ID from a demuxer section
 	QString demuxer_section = QString("demuxer_%1").arg(current_demuxer);
@@ -474,24 +474,24 @@ void TMediaSettings::load(QSettings * set, int player_id) {
 
 	set->beginGroup(demuxer_section);
 
-	current_video_id = set->value( "current_video_id", NoneSelected ).toInt();
+	current_video_id = set->value("current_video_id", NoneSelected).toInt();
 	convertOldSelectedTrack(current_video_id);
-	current_audio_id = set->value( "current_audio_id", NoneSelected ).toInt();
+	current_audio_id = set->value("current_audio_id", NoneSelected).toInt();
 	convertOldSelectedTrack(current_audio_id);
 
 #ifdef MPV_SUPPORT
-	current_secondary_sub_idx = set->value( "current_secondary_sub_id", NoneSelected ).toInt();
+	current_secondary_sub_idx = set->value("current_secondary_sub_id", NoneSelected).toInt();
 #endif
 
 #if PROGRAM_SWITCH
-	current_program_id = set->value( "current_program_id", NoneSelected ).toInt();
+	current_program_id = set->value("current_program_id", NoneSelected).toInt();
 #endif
 
 	set->endGroup();
 
 	current_sub_idx = NoneSelected;
-	current_sub_set_by_user = set->value( "current_sub_set_by_user", false).toBool();
-	sub.setType((SubData::Type) set->value( "sub_type", sub.type()).toInt());
+	current_sub_set_by_user = set->value("current_sub_set_by_user", false).toBool();
+	sub.setType((SubData::Type) set->value("sub_type", sub.type()).toInt());
 	sub.setID(set->value("sub_id", sub.ID()).toInt());
 	sub.setFilename(set->value("sub_filename", sub.filename()).toString());
 
@@ -502,79 +502,79 @@ void TMediaSettings::load(QSettings * set, int player_id) {
 		sub.setFilename(set->value("external_subtitles", "").toString());
 	}
 
-	current_sec = set->value( "current_sec", current_sec).toDouble();
+	current_sec = set->value("current_sec", current_sec).toDouble();
 
-	current_title_id = set->value( "current_title_id", current_title_id ).toInt();
-	current_angle_id = set->value( "current_angle_id", current_angle_id ).toInt();
+	current_title_id = set->value("current_title_id", current_title_id).toInt();
+	current_angle_id = set->value("current_angle_id", current_angle_id).toInt();
 
-	aspect_ratio_id = set->value( "aspect_ratio", aspect_ratio_id ).toInt();
-	//fullscreen = set->value( "fullscreen", fullscreen ).toBool();
-	volume = set->value( "volume", volume ).toInt();
-	mute = set->value( "mute", mute ).toBool();
-	external_subtitles_fps = set->value( "external_subtitles_fps", external_subtitles_fps ).toInt();
-	external_audio = set->value( "external_audio", external_audio ).toString();
-	sub_delay = set->value( "sub_delay", sub_delay).toInt();
-	audio_delay = set->value( "audio_delay", audio_delay).toInt();
-	sub_pos = set->value( "sub_pos", sub_pos).toInt();
-	sub_scale = set->value( "sub_scale", sub_scale).toDouble();
-	sub_scale_mpv = set->value( "sub_scale_mpv", sub_scale_mpv).toDouble();
-	sub_scale_ass = set->value( "sub_scale_ass", sub_scale_ass).toDouble();
+	aspect_ratio_id = set->value("aspect_ratio", aspect_ratio_id).toInt();
+	//fullscreen = set->value("fullscreen", fullscreen).toBool();
+	volume = set->value("volume", volume).toInt();
+	mute = set->value("mute", mute).toBool();
+	external_subtitles_fps = set->value("external_subtitles_fps", external_subtitles_fps).toInt();
+	external_audio = set->value("external_audio", external_audio).toString();
+	sub_delay = set->value("sub_delay", sub_delay).toInt();
+	audio_delay = set->value("audio_delay", audio_delay).toInt();
+	sub_pos = set->value("sub_pos", sub_pos).toInt();
+	sub_scale = set->value("sub_scale", sub_scale).toDouble();
+	sub_scale_mpv = set->value("sub_scale_mpv", sub_scale_mpv).toDouble();
+	sub_scale_ass = set->value("sub_scale_ass", sub_scale_ass).toDouble();
 
-	closed_caption_channel = set->value( "closed_caption_channel", closed_caption_channel).toInt();
+	closed_caption_channel = set->value("closed_caption_channel", closed_caption_channel).toInt();
 
-	brightness = set->value( "brightness", brightness).toInt();
-	contrast = set->value( "contrast", contrast).toInt();
-	gamma = set->value( "gamma", gamma).toInt();
-	hue = set->value( "hue", hue).toInt();
-	saturation = set->value( "saturation", saturation).toInt();
+	brightness = set->value("brightness", brightness).toInt();
+	contrast = set->value("contrast", contrast).toInt();
+	gamma = set->value("gamma", gamma).toInt();
+	hue = set->value("hue", hue).toInt();
+	saturation = set->value("saturation", saturation).toInt();
 
-	audio_equalizer = set->value("audio_equalizer", audio_equalizer ).toList();
+	audio_equalizer = set->value("audio_equalizer", audio_equalizer).toList();
 
-	speed = set->value( "speed", speed ).toDouble();
+	speed = set->value("speed", speed).toDouble();
 
-	phase_filter = set->value( "phase_filter", phase_filter ).toBool();
-	deblock_filter = set->value( "deblock_filter", deblock_filter).toBool();
-	dering_filter = set->value( "dering_filter", dering_filter).toBool();
-	gradfun_filter = set->value( "gradfun_filter", gradfun_filter).toBool();
-	noise_filter = set->value( "noise_filter", noise_filter).toBool();
-	postprocessing_filter = set->value( "postprocessing_filter", postprocessing_filter).toBool();
-	upscaling_filter = set->value( "upscaling_filter", upscaling_filter).toBool();
-	current_denoiser = set->value( "current_denoiser", current_denoiser).toInt();
-	current_unsharp = set->value( "current_unsharp", current_unsharp).toInt();
+	phase_filter = set->value("phase_filter", phase_filter).toBool();
+	deblock_filter = set->value("deblock_filter", deblock_filter).toBool();
+	dering_filter = set->value("dering_filter", dering_filter).toBool();
+	gradfun_filter = set->value("gradfun_filter", gradfun_filter).toBool();
+	noise_filter = set->value("noise_filter", noise_filter).toBool();
+	postprocessing_filter = set->value("postprocessing_filter", postprocessing_filter).toBool();
+	upscaling_filter = set->value("upscaling_filter", upscaling_filter).toBool();
+	current_denoiser = set->value("current_denoiser", current_denoiser).toInt();
+	current_unsharp = set->value("current_unsharp", current_unsharp).toInt();
 
-	stereo3d_in = set->value( "stereo3d_in", stereo3d_in).toString();
-	stereo3d_out = set->value( "stereo3d_out", stereo3d_out).toString();
+	stereo3d_in = set->value("stereo3d_in", stereo3d_in).toString();
+	stereo3d_out = set->value("stereo3d_out", stereo3d_out).toString();
 
-	current_deinterlacer = set->value( "current_deinterlacer", current_deinterlacer ).toInt();
+	current_deinterlacer = set->value("current_deinterlacer", current_deinterlacer).toInt();
 
-	add_letterbox = set->value( "add_letterbox", add_letterbox ).toBool();
+	add_letterbox = set->value("add_letterbox", add_letterbox).toBool();
 
-	karaoke_filter = set->value( "karaoke_filter", karaoke_filter).toBool();
-	extrastereo_filter = set->value( "extrastereo_filter", extrastereo_filter).toBool();
-	volnorm_filter = set->value( "volnorm_filter", volnorm_filter).toBool();
+	karaoke_filter = set->value("karaoke_filter", karaoke_filter).toBool();
+	extrastereo_filter = set->value("extrastereo_filter", extrastereo_filter).toBool();
+	volnorm_filter = set->value("volnorm_filter", volnorm_filter).toBool();
 
-	audio_use_channels = set->value( "audio_use_channels", audio_use_channels).toInt();
-	stereo_mode = set->value( "stereo_mode", stereo_mode).toInt();
+	audio_use_channels = set->value("audio_use_channels", audio_use_channels).toInt();
+	stereo_mode = set->value("stereo_mode", stereo_mode).toInt();
 
-	zoom_factor = set->value( "zoom_factor", zoom_factor).toDouble();
-	zoom_factor_fullscreen = set->value( "zoom_factor_fullscreen", zoom_factor_fullscreen).toDouble();
-	pan_offset = set->value( "pan_offset", pan_offset).toPoint();
-	pan_offset_fullscreen = set->value( "pan_offset_fullscreen", pan_offset_fullscreen).toPoint();
+	zoom_factor = set->value("zoom_factor", zoom_factor).toDouble();
+	zoom_factor_fullscreen = set->value("zoom_factor_fullscreen", zoom_factor_fullscreen).toDouble();
+	pan_offset = set->value("pan_offset", pan_offset).toPoint();
+	pan_offset_fullscreen = set->value("pan_offset_fullscreen", pan_offset_fullscreen).toPoint();
 
-	rotate = set->value( "rotate", rotate).toInt();
-	flip = set->value( "flip", flip).toBool();
-	mirror = set->value( "mirror", mirror).toBool();
+	rotate = set->value("rotate", rotate).toInt();
+	flip = set->value("flip", flip).toBool();
+	mirror = set->value("mirror", mirror).toBool();
 
-	loop = set->value( "loop", loop).toBool();
-	A_marker = set->value( "A_marker", A_marker).toInt();
-	B_marker = set->value( "B_marker", B_marker).toInt();
+	loop = set->value("loop", loop).toBool();
+	A_marker = set->value("A_marker", A_marker).toInt();
+	B_marker = set->value("B_marker", B_marker).toInt();
 
 
-	mplayer_additional_options = set->value( "mplayer_additional_options", mplayer_additional_options).toString();
-	mplayer_additional_video_filters = set->value( "mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
-	mplayer_additional_audio_filters = set->value( "mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
+	mplayer_additional_options = set->value("mplayer_additional_options", mplayer_additional_options).toString();
+	mplayer_additional_video_filters = set->value("mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
+	mplayer_additional_audio_filters = set->value("mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
 
-	is264andHD = set->value( "is264andHD", is264andHD ).toBool();
+	is264andHD = set->value("is264andHD", is264andHD).toBool();
 
 	// ChDefault not used anymore
 	if (audio_use_channels == ChDefault) audio_use_channels = ChStereo;

@@ -63,7 +63,7 @@
 #define COL_DATE 4
 #define COL_USER 5
 
-FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
+FindSubtitlesWindow::FindSubtitlesWindow(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent,f)
 {
 	setupUi(this);
@@ -74,23 +74,23 @@ FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
 
 	progress->hide();
 
-	connect( file_chooser, SIGNAL(fileChanged(QString)),
-             this, SLOT(setMovie(QString)) );
-	connect( file_chooser, SIGNAL(textChanged(const QString &)),
-             this, SLOT(updateRefreshButton()) );
+	connect(file_chooser, SIGNAL(fileChanged(QString)),
+             this, SLOT(setMovie(QString)));
+	connect(file_chooser, SIGNAL(textChanged(const QString &)),
+             this, SLOT(updateRefreshButton()));
 
-	connect( refresh_button, SIGNAL(clicked()),
-             this, SLOT(refresh()) );
+	connect(refresh_button, SIGNAL(clicked()),
+             this, SLOT(refresh()));
 
-	connect( download_button, SIGNAL(clicked()),
-             this, SLOT(download()) );
+	connect(download_button, SIGNAL(clicked()),
+             this, SLOT(download()));
 
 	/*
-	connect( language_filter, SIGNAL(editTextChanged(const QString &)),
-             this, SLOT(applyFilter(const QString &)) );
+	connect(language_filter, SIGNAL(editTextChanged(const QString &)),
+             this, SLOT(applyFilter(const QString &)));
 	*/
-	connect( language_filter, SIGNAL(activated(int)),
-             this, SLOT(applyCurrentFilter()) );
+	connect(language_filter, SIGNAL(activated(int)),
+             this, SLOT(applyCurrentFilter()));
 
 	table = new QStandardItemModel(this);
 	table->setColumnCount(COL_USER + 1);
@@ -106,62 +106,62 @@ FindSubtitlesWindow::FindSubtitlesWindow( QWidget * parent, Qt::WindowFlags f )
 	view->setAlternatingRowColors(true);
 	view->header()->setSortIndicator(COL_LANG, Qt::AscendingOrder);
 	view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	view->setContextMenuPolicy( Qt::CustomContextMenu );
+	view->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	connect(view, SIGNAL(activated(const QModelIndex &)),
-            this, SLOT(itemActivated(const QModelIndex &)) );
+            this, SLOT(itemActivated(const QModelIndex &)));
 	connect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &,const QModelIndex &)),
-            this, SLOT(currentItemChanged(const QModelIndex &,const QModelIndex &)) );
+            this, SLOT(currentItemChanged(const QModelIndex &,const QModelIndex &)));
 
 	connect(view, SIGNAL(customContextMenuRequested(const QPoint &)),
-            this, SLOT(showContextMenu(const QPoint &)) );
+            this, SLOT(showContextMenu(const QPoint &)));
 
 	/*
 	downloader = new SimpleHttp(this);
 
-	connect( downloader, SIGNAL(downloadFailed(QString)),
-             this, SLOT(showError(QString)) );
-	connect( downloader, SIGNAL(downloadFinished(QByteArray)), 
-             this, SLOT(downloadFinished()) );
-	connect( downloader, SIGNAL(downloadFinished(QByteArray)), 
-             this, SLOT(parseInfo(QByteArray)) );
-	connect( downloader, SIGNAL(stateChanged(int)),
-             this, SLOT(updateRefreshButton()) );
+	connect(downloader, SIGNAL(downloadFailed(QString)),
+             this, SLOT(showError(QString)));
+	connect(downloader, SIGNAL(downloadFinished(QByteArray)), 
+             this, SLOT(downloadFinished()));
+	connect(downloader, SIGNAL(downloadFinished(QByteArray)), 
+             this, SLOT(parseInfo(QByteArray)));
+	connect(downloader, SIGNAL(stateChanged(int)),
+             this, SLOT(updateRefreshButton()));
 
-	connect( downloader, SIGNAL(connecting(QString)),
-             this, SLOT(connecting(QString)) );
-	connect( downloader, SIGNAL(dataReadProgress(int, int)),
-             this, SLOT(updateDataReadProgress(int, int)) );
+	connect(downloader, SIGNAL(connecting(QString)),
+             this, SLOT(connecting(QString)));
+	connect(downloader, SIGNAL(dataReadProgress(int, int)),
+             this, SLOT(updateDataReadProgress(int, int)));
 	*/
 
 	osclient = new OSClient();
-	connect( osclient, SIGNAL(searchFinished()), this, SLOT(downloadFinished()) );
-	connect( osclient, SIGNAL(searchFinished()), this, SLOT(parseInfo()) );
-	connect( osclient, SIGNAL(loginFailed()), this, SLOT(showLoginFailed()) );
-	connect( osclient, SIGNAL(searchFailed()), this, SLOT(showSearchFailed()) );
-	connect( osclient, SIGNAL(errorFound(int, const QString &)), this, SLOT(showErrorOS(int, const QString &)) );
+	connect(osclient, SIGNAL(searchFinished()), this, SLOT(downloadFinished()));
+	connect(osclient, SIGNAL(searchFinished()), this, SLOT(parseInfo()));
+	connect(osclient, SIGNAL(loginFailed()), this, SLOT(showLoginFailed()));
+	connect(osclient, SIGNAL(searchFailed()), this, SLOT(showSearchFailed()));
+	connect(osclient, SIGNAL(errorFound(int, const QString &)), this, SLOT(showErrorOS(int, const QString &)));
 
 #ifdef DOWNLOAD_SUBS
 	include_lang_on_filename = true;
 
 	file_downloader = new FileDownloader(this);
 	file_downloader->setModal(false);
-	connect( file_downloader, SIGNAL(downloadFailed(QString)),
-             this, SLOT(showError(QString)), Qt::QueuedConnection );
-	connect( file_downloader, SIGNAL(downloadFinished(const QByteArray &)),
-             this, SLOT(archiveDownloaded(const QByteArray &)), Qt::QueuedConnection );
-	connect( this, SIGNAL(subtitleDownloaded(const QString &)),
-             this, SLOT(fixSubtitles(const QString &)) );
+	connect(file_downloader, SIGNAL(downloadFailed(QString)),
+             this, SLOT(showError(QString)), Qt::QueuedConnection);
+	connect(file_downloader, SIGNAL(downloadFinished(const QByteArray &)),
+             this, SLOT(archiveDownloaded(const QByteArray &)), Qt::QueuedConnection);
+	connect(this, SIGNAL(subtitleDownloaded(const QString &)),
+             this, SLOT(fixSubtitles(const QString &)));
 #endif
 
 	// Actions
 	downloadAct = new QAction(this);
 	downloadAct->setEnabled(false);
-	connect( downloadAct, SIGNAL(triggered()), this, SLOT(download()) );
+	connect(downloadAct, SIGNAL(triggered()), this, SLOT(download()));
 
 	copyLinkAct = new QAction(this);
 	copyLinkAct->setEnabled(false);
-	connect( copyLinkAct, SIGNAL(triggered()), this, SLOT(copyLink()) );
+	connect(copyLinkAct, SIGNAL(triggered()), this, SLOT(copyLink()));
 
 	context_menu = new QMenu(this);
 	context_menu->addAction(downloadAct);
@@ -225,7 +225,7 @@ void FindSubtitlesWindow::retranslateStrings() {
 	labels << tr("Language") << tr("Name") << tr("Format") 
            << tr("Files") << tr("Date") << tr("Uploaded by");
 
-	table->setHorizontalHeaderLabels( labels );
+	table->setHorizontalHeaderLabels(labels);
 
 	// Language combobox
 	//int language_index = language_filter->currentIndex();
@@ -236,9 +236,9 @@ void FindSubtitlesWindow::retranslateStrings() {
 	QMapIterator<QString, QString> i1(l1);
 	while (i1.hasNext()) {
 		i1.next();
-		language_filter->addItem( i1.value() + " (" + i1.key() + ")", i1.key() );
+		language_filter->addItem(i1.value() + " (" + i1.key() + ")", i1.key());
 	}
-	language_filter->addItem( tr("Portuguese - Brasil") + " (pb)", "pb");
+	language_filter->addItem(tr("Portuguese - Brasil") + " (pb)", "pb");
 	language_filter->model()->sort(0);
 	#if QT_VERSION >= 0x040400
 	language_filter->insertSeparator(language_filter->count());
@@ -249,11 +249,11 @@ void FindSubtitlesWindow::retranslateStrings() {
 	while (i2.hasNext()) {
 		i2.next();
 		if (language_filter->findData(i2.key()) == -1) {
-			language_filter->addItem( i2.value() + " (" + i2.key() + ")", i2.key() );
+			language_filter->addItem(i2.value() + " (" + i2.key() + ")", i2.key());
 		}
 	}
 	//language_filter->model()->sort(0);
-	language_filter->insertItem( 0, tr("All"), "*" );
+	language_filter->insertItem(0, tr("All"), "*");
 	#if QT_VERSION >= 0x040400
 	language_filter->insertSeparator(1);
 	#endif
@@ -262,21 +262,21 @@ void FindSubtitlesWindow::retranslateStrings() {
 
 #if QT_VERSION < 0x040300
 	QPushButton * close_button = buttonBox->button(QDialogButtonBox::Close);
-	close_button->setText( tr("Close") );
+	close_button->setText(tr("Close"));
 #endif
 
 	// Actions
-	downloadAct->setText( tr("&Download") );
-	copyLinkAct->setText( tr("&Copy link to clipboard") );
+	downloadAct->setText(tr("&Download"));
+	copyLinkAct->setText(tr("&Copy link to clipboard"));
 
 	// Icons
 #ifndef NO_SMPLAYER_SUPPORT
-	download_button->setIcon( Images::icon("download") );
-	configure_button->setIcon( Images::icon("prefs") );
-	refresh_button->setIcon( Images::icon("refresh") );
+	download_button->setIcon(Images::icon("download"));
+	configure_button->setIcon(Images::icon("prefs"));
+	refresh_button->setIcon(Images::icon("refresh"));
 
-	downloadAct->setIcon( Images::icon("download") );
-	copyLinkAct->setIcon( Images::icon("copy") );
+	downloadAct->setIcon(Images::icon("download"));
+	copyLinkAct->setIcon(Images::icon("copy"));
 #endif
 }
 
@@ -323,7 +323,7 @@ void FindSubtitlesWindow::applyFilter(const QString & filter) {
 
 void FindSubtitlesWindow::applyCurrentFilter() {
 	//proxy_model->setFilterWildcard(language_filter->currentText());
-	QString filter = language_filter->itemData( language_filter->currentIndex() ).toString();
+	QString filter = language_filter->itemData(language_filter->currentIndex()).toString();
 	applyFilter(filter);
 }
 
@@ -339,7 +339,7 @@ QString FindSubtitlesWindow::language() {
 }
 
 void FindSubtitlesWindow::showError(QString error) {
-	status->setText( tr("Download failed") );
+	status->setText(tr("Download failed"));
 
 	QMessageBox::information(this, tr("Error"),
                              tr("Download failed: %1.")
@@ -347,15 +347,15 @@ void FindSubtitlesWindow::showError(QString error) {
 }
 
 void FindSubtitlesWindow::connecting(QString host) {
-	status->setText( tr("Connecting to %1...").arg(host) );
+	status->setText(tr("Connecting to %1...").arg(host));
 }
 
 void FindSubtitlesWindow::showLoginFailed() {
-	status->setText( tr("Login to opensubtitles.org has failed") );
+	status->setText(tr("Login to opensubtitles.org has failed"));
 }
 
 void FindSubtitlesWindow::showSearchFailed() {
-	status->setText( tr("Search has failed") );
+	status->setText(tr("Search has failed"));
 }
 
 void FindSubtitlesWindow::showErrorOS(int, const QString & error) {
@@ -365,7 +365,7 @@ void FindSubtitlesWindow::showErrorOS(int, const QString & error) {
 void FindSubtitlesWindow::updateDataReadProgress(int done, int total) {
 	qDebug("FindSubtitlesWindow::updateDataReadProgress: %d, %d", done, total);
 
-	status->setText( tr("Downloading...") );
+	status->setText(tr("Downloading..."));
 
 	if (!progress->isVisible()) progress->show();
 	progress->setMaximum(total);
@@ -373,7 +373,7 @@ void FindSubtitlesWindow::updateDataReadProgress(int done, int total) {
 }
 
 void FindSubtitlesWindow::downloadFinished() {
-	status->setText( tr("Done.") );
+	status->setText(tr("Done."));
 	progress->setMaximum(1);
 	progress->setValue(0);
 	progress->hide();
@@ -396,9 +396,9 @@ void FindSubtitlesWindow::parseInfo() {
 			}
 
 			QStandardItem * i_name = new QStandardItem(title_name);
-			i_name->setData( l[n].link );
+			i_name->setData(l[n].link);
 			#if QT_VERSION < 0x040400
-			i_name->setToolTip( l[n].link );
+			i_name->setToolTip(l[n].link);
 			#endif
 
 			QStandardItem * i_lang = new QStandardItem(l[n].language);
@@ -407,7 +407,7 @@ void FindSubtitlesWindow::parseInfo() {
 			i_lang->setToolTip(l[n].iso639);
 			#endif
 			if (language_list.contains(l[n].iso639)) {
-				i_lang->setText( language_list[ l[n].iso639 ] );
+				i_lang->setText(language_list[ l[n].iso639 ]);
 			}
 
 			table->setItem(n, COL_LANG, i_lang);
@@ -418,22 +418,22 @@ void FindSubtitlesWindow::parseInfo() {
 			table->setItem(n, COL_USER, new QStandardItem(l[n].user));
 
 		}
-		status->setText( tr("%1 files available").arg(l.count()) );
+		status->setText(tr("%1 files available").arg(l.count()));
 		applyCurrentFilter();
 
 		qDebug("FindSubtitlesWindow::parseInfo: sort column: %d", view->header()->sortIndicatorSection());
 		qDebug("FindSubtitlesWindow::parseInfo: sort indicator: %d", view->header()->sortIndicatorOrder());
 
-		table->sort( view->header()->sortIndicatorSection(),
-                     view->header()->sortIndicatorOrder() );
+		table->sort(view->header()->sortIndicatorSection(),
+                     view->header()->sortIndicatorOrder());
 	} else {
-		status->setText( tr("Failed to parse the received data.") );
+		status->setText(tr("Failed to parse the received data."));
 	}
 
 	view->resizeColumnToContents(COL_NAME);
 }
 
-void FindSubtitlesWindow::itemActivated(const QModelIndex & index ) {
+void FindSubtitlesWindow::itemActivated(const QModelIndex & index) {
 	qDebug("FindSubtitlesWindow::itemActivated: row: %d, col %d", proxy_model->mapToSource(index).row(), proxy_model->mapToSource(index).column());
 
 	QString download_link = table->item(proxy_model->mapToSource(index).row(), COL_NAME)->data().toString();
@@ -441,10 +441,10 @@ void FindSubtitlesWindow::itemActivated(const QModelIndex & index ) {
 	qDebug("FindSubtitlesWindow::itemActivated: download link: '%s'", download_link.toLatin1().constData());
 
 #ifdef DOWNLOAD_SUBS
-	file_downloader->download( QUrl(download_link) );
+	file_downloader->download(QUrl(download_link));
 	file_downloader->show();
 #else
-	QDesktopServices::openUrl( QUrl(download_link) );
+	QDesktopServices::openUrl(QUrl(download_link));
 #endif
 }
 
@@ -468,7 +468,7 @@ void FindSubtitlesWindow::copyLink() {
 void FindSubtitlesWindow::showContextMenu(const QPoint & pos) {
 	qDebug("FindSubtitlesWindow::showContextMenu");
 
-	context_menu->move( view->viewport()->mapToGlobal(pos) );
+	context_menu->move(view->viewport()->mapToGlobal(pos));
 	context_menu->show();
 }
 
@@ -523,7 +523,7 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
                                 "Please check the permissions of that folder.").arg(fi.absolutePath()));
 	} else {
 		status->setText(tr("Subtitle saved as %1").arg(output_file));
-		emit subtitleDownloaded( output_file );
+		emit subtitleDownloaded(output_file);
 	}
 }
 
@@ -592,7 +592,7 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
 
 	if (file.open()) {
 		QString filename = file.fileName();
-		file.write( buffer );
+		file.write(buffer);
 		file.close();
 
 		qDebug("FindSubtitlesWindow::archiveDownloaded: file saved as: %s", filename.toUtf8().constData());
@@ -668,7 +668,7 @@ bool FindSubtitlesWindow::uncompressZip(const QString & filename, const QString 
 	if (sub_files.count() == 1) {
 		// If only one file, just extract it
 		QString output_name = output_path +"/"+ preferred_output_name;
-		if (extractFile(zip, sub_files[0], output_name )) {
+		if (extractFile(zip, sub_files[0], output_name)) {
 			status->setText(tr("Subtitle saved as %1").arg(preferred_output_name));
 			emit subtitleDownloaded(output_name);
 		} else {
@@ -694,7 +694,7 @@ bool FindSubtitlesWindow::uncompressZip(const QString & filename, const QString 
 		}
 		status->setText(tr("%n subtitle(s) extracted","", extracted_count));
 		if (extracted_count > 0) {
-			emit subtitleDownloaded( output_path +"/"+ files_to_extract[0] );
+			emit subtitleDownloaded(output_path +"/"+ files_to_extract[0]);
 		}
 	}
 
@@ -752,7 +752,7 @@ void FindSubtitlesWindow::fixSubtitles(const QString & filename) {
 	if (fi.suffix().toLower() == "sub") {
 		qDebug("FindSubtitlesWindow::fixSubtitles: fixing end of lines");
 		if (FixSubtitles::fix(filename) != FixSubtitles::NoError) {
-			status->setText( tr("Error fixing the subtitle lines") );
+			status->setText(tr("Error fixing the subtitle lines"));
 			qDebug("FindSubtitlesWindow::fixSubtitles: error fixing the subtitles");
 		}
 	}
@@ -765,23 +765,23 @@ void FindSubtitlesWindow::on_configure_button_clicked() {
 
 	FindSubtitlesConfigDialog d(this);
 
-	d.setServer( os_server );
+	d.setServer(os_server);
 	#ifdef OS_SEARCH_WORKAROUND
 	d.setRetries(osclient->retries());
 	#endif
 	#ifdef FS_USE_PROXY
-	d.setUseProxy( use_proxy );
-	d.setProxyHostname( proxy_host );
-	d.setProxyPort( proxy_port );
-	d.setProxyUsername( proxy_username );
-	d.setProxyPassword( proxy_password );
-	d.setProxyType( proxy_type );
+	d.setUseProxy(use_proxy);
+	d.setProxyHostname(proxy_host);
+	d.setProxyPort(proxy_port);
+	d.setProxyUsername(proxy_username);
+	d.setProxyPassword(proxy_password);
+	d.setProxyType(proxy_type);
 	#endif
 
 	if (d.exec() == QDialog::Accepted) {
 		os_server = d.server();
 		#ifdef OS_SEARCH_WORKAROUND
-		osclient->setRetries( d.retries() );
+		osclient->setRetries(d.retries());
 		#endif
 		#ifdef FS_USE_PROXY
 		use_proxy = d.useProxy();
@@ -803,11 +803,11 @@ void FindSubtitlesWindow::on_configure_button_clicked() {
 void FindSubtitlesWindow::setupProxy() {
 	QNetworkProxy proxy;
 
-	if ( (use_proxy) && (!proxy_host.isEmpty()) ) {
+	if ((use_proxy) && (!proxy_host.isEmpty())) {
 		proxy.setType((QNetworkProxy::ProxyType) proxy_type);
 		proxy.setHostName(proxy_host);
 		proxy.setPort(proxy_port);
-		if ( (!proxy_username.isEmpty()) && (!proxy_password.isEmpty()) ) {
+		if ((!proxy_username.isEmpty()) && (!proxy_password.isEmpty())) {
 			proxy.setUser(proxy_username);
 			proxy.setPassword(proxy_password);
 		}
@@ -857,12 +857,12 @@ void FindSubtitlesWindow::loadSettings() {
 
 	os_server = set->value("xmlrpc_server", os_server).toString();
 #ifdef OS_SEARCH_WORKAROUND
-	osclient->setRetries( set->value("retries", osclient->retries()).toInt() );
+	osclient->setRetries(set->value("retries", osclient->retries()).toInt());
 #endif
 
-	setLanguage( set->value("language", language()).toString() );
+	setLanguage(set->value("language", language()).toString());
 #ifdef DOWNLOAD_SUBS
-	setIncludeLangOnFilename( set->value("include_lang_on_filename", includeLangOnFilename()).toBool() );
+	setIncludeLangOnFilename(set->value("include_lang_on_filename", includeLangOnFilename()).toBool());
 #endif
 
 #ifdef FS_USE_PROXY

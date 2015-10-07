@@ -33,11 +33,11 @@ class TSeekWidget : public QWidget, public Ui::TSeekWidget
 	Q_PROPERTY(int time READ time WRITE setTime)
 
 public:
-	TSeekWidget( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	TSeekWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TSeekWidget();
 
 	int time() const;
-	const QPixmap * icon() const;
+	const QPixmap* icon() const;
 	QString label() const;
 
 public slots:

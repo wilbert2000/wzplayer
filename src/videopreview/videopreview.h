@@ -59,7 +59,7 @@ class VideoPreview : public QWidget
 public:
 	enum ExtractFormat { JPEG = 1, PNG = 2 };
 
-	VideoPreview(QString mplayer_path, QWidget * parent = 0);
+	VideoPreview(QString mplayer_path, QWidget* parent = 0);
 	~VideoPreview();
 
 	void setMplayerPath(QString mplayer_path);
@@ -91,15 +91,15 @@ public:
 	void setAspectRatio(double asp) { prop.aspect_ratio = asp; };
 	double aspectRatio() { return prop.aspect_ratio; };
 
-	void setExtractFormat( ExtractFormat format ) { prop.extract_format = format; };
+	void setExtractFormat(ExtractFormat format) { prop.extract_format = format; };
 	ExtractFormat extractFormat() { return prop.extract_format; };
 
 	bool createThumbnails();
 
-	bool showConfigDialog(QWidget * parent);
+	bool showConfigDialog(QWidget* parent);
 
-	void setSettings(QSettings * settings);
-	QSettings * settings() { return set; };
+	void setSettings(QSettings* settings);
+	QSettings* settings() { return set; };
 
 	VideoInfo getInfo(const QString & mplayer_path, const QString & filename);
 	QString errorMessage() { return error_message; };
@@ -113,7 +113,7 @@ protected slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent( QEvent * event );
+	virtual void changeEvent(QEvent* event);
 
 protected:
 	bool extractImages();
@@ -128,24 +128,24 @@ protected:
 
 	QList <QLabel *> label_list;
 
-	QGridLayout * grid_layout;
-	QLabel * info;
-	QLabel * foot;
-	QWidget * w_contents;
-	QScrollArea * scroll_area;
-	QDialogButtonBox * button_box;
+	QGridLayout* grid_layout;
+	QLabel* info;
+	QLabel* foot;
+	QWidget* w_contents;
+	QScrollArea* scroll_area;
+	QDialogButtonBox* button_box;
 
 	QString mplayer_bin;
 
 	QString output_dir;
 	QString full_output_dir;
 
-	QProgressDialog * progress;
+	QProgressDialog* progress;
 	bool canceled;
 
-	QSettings * set;
+	QSettings* set;
 
-	QAction * toggleInfoAct;
+	QAction* toggleInfoAct;
 
 	struct Properties {
 		QString input_video;

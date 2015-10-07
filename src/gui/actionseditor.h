@@ -39,7 +39,7 @@ class TActionsEditor : public QWidget
     Q_OBJECT
 
 public:
-	TActionsEditor( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TActionsEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TActionsEditor();
 
 	// Clear the actionlist
@@ -48,10 +48,10 @@ public:
 	// There are no actions yet?
 	bool isEmpty();
 
-	void addActions(QWidget * widget);
+	void addActions(QWidget* widget);
 
 	// Static functions
-	static QAction * findAction(QObject *o, const QString & name);
+	static QAction* findAction(QObject *o, const QString & name);
 	static QStringList actionsNames(QObject *o);
 
 	static void saveToConfig(QObject *o, QSettings *set);
@@ -71,7 +71,7 @@ public slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void changeEvent (QEvent* event) ;
 
 	// Find in table, not in actionslist
 	int findActionName(const QString & name);

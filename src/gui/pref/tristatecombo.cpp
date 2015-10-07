@@ -21,7 +21,7 @@
 
 namespace Gui { namespace Pref {
 
-TTristateCombo::TTristateCombo( QWidget * parent ) : QComboBox(parent) 
+TTristateCombo::TTristateCombo(QWidget* parent) : QComboBox(parent) 
 {
 	retranslateStrings();
 }
@@ -33,19 +33,19 @@ void TTristateCombo::retranslateStrings() {
 	int i = currentIndex();
 
 	clear();
-	addItem( tr("Auto"), TPreferences::Detect );
-	addItem( tr("Yes"), TPreferences::Enabled );
-	addItem( tr("No"), TPreferences::Disabled );
+	addItem(tr("Auto"), TPreferences::Detect);
+	addItem(tr("Yes"), TPreferences::Enabled);
+	addItem(tr("No"), TPreferences::Disabled);
 
 	setCurrentIndex(i);
 }
 
-void TTristateCombo::setState( TPreferences::OptionState v ) {
-	setCurrentIndex( findData(v) );
+void TTristateCombo::setState(TPreferences::OptionState v) {
+	setCurrentIndex(findData(v));
 }
 
 TPreferences::OptionState TTristateCombo::state() {
-	return (TPreferences::OptionState) itemData( currentIndex() ).toInt();
+	return (TPreferences::OptionState) itemData(currentIndex()).toInt();
 }
 
 // Language change stuff

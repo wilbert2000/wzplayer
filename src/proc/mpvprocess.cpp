@@ -758,14 +758,14 @@ void TMPVProcess::disableInput() {
 }
 
 bool TMPVProcess::isOptionAvailable(const QString & option) {
-	InfoReader * ir = InfoReader::obj(executable());
+	InfoReader* ir = InfoReader::obj(executable());
 	ir->getInfo();
 	//qDebug() << "Proc::TMPVProcess::isOptionAvailable: option_list:" << ir->optionList();
 	return ir->optionList().contains(option);
 }
 
 void TMPVProcess::addVFIfAvailable(const QString & vf, const QString & value) {
-	InfoReader * ir = InfoReader::obj(executable());
+	InfoReader* ir = InfoReader::obj(executable());
 	ir->getInfo();
 	if (ir->vfList().contains(vf)) {
 		QString s = "--vf-add=" + vf;

@@ -19,13 +19,13 @@
 #include "videopreviewconfigdialog.h"
 #include <QImageReader>
 
-VideoPreviewConfigDialog::VideoPreviewConfigDialog( QWidget* parent, Qt::WindowFlags f )
+VideoPreviewConfigDialog::VideoPreviewConfigDialog(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
 
 	connect(filename_edit, SIGNAL(textChanged(const QString &)),
-            this, SLOT(filenameChanged(const QString &)) );
+            this, SLOT(filenameChanged(const QString &)));
 
 	dvd_device_label->setVisible(false);
 	dvd_device_edit->setVisible(false);
@@ -40,17 +40,17 @@ VideoPreviewConfigDialog::VideoPreviewConfigDialog( QWidget* parent, Qt::WindowF
 		format_combo->addItem("jpg", VideoPreview::JPEG);
 	}
 
-	filename_edit->setWhatsThis( tr("The preview will be created for the video you specify here.") );
-	dvd_device_edit->setWhatsThis( tr("Enter here the DVD device or a folder with a DVD image.") );
-	columns_spin->setWhatsThis( tr("The thumbnails will be arranged on a table.") +" "+ tr("This option specifies the number of columns of the table.") );
-	rows_spin->setWhatsThis( tr("The thumbnails will be arranged on a table.") +" "+ tr("This option specifies the number of rows of the table.") );
-	osd_check->setWhatsThis( tr("If you check this option, the playing time will be displayed at the bottom of each thumbnail.") );
-	aspect_ratio_combo->setWhatsThis( tr("If the aspect ratio of the video is wrong, you can specify a different one here.") );
-	initial_step_spin->setWhatsThis( tr("Usually the first frames are black, so it's a good idea to skip some seconds at the beginning of the video. "
-                                        "This option allows to specify how many seconds will be skipped.") );
-	max_width_spin->setWhatsThis( tr("This option specifies the maximum width in pixels that the generated preview image will have.") );
-	format_combo->setWhatsThis( tr("Some frames will be extracted from the video in order to create the preview. Here you can choose "
-                                   "the image format for the extracted frames. PNG may give better quality.") );
+	filename_edit->setWhatsThis(tr("The preview will be created for the video you specify here."));
+	dvd_device_edit->setWhatsThis(tr("Enter here the DVD device or a folder with a DVD image."));
+	columns_spin->setWhatsThis(tr("The thumbnails will be arranged on a table.") +" "+ tr("This option specifies the number of columns of the table."));
+	rows_spin->setWhatsThis(tr("The thumbnails will be arranged on a table.") +" "+ tr("This option specifies the number of rows of the table."));
+	osd_check->setWhatsThis(tr("If you check this option, the playing time will be displayed at the bottom of each thumbnail."));
+	aspect_ratio_combo->setWhatsThis(tr("If the aspect ratio of the video is wrong, you can specify a different one here."));
+	initial_step_spin->setWhatsThis(tr("Usually the first frames are black, so it's a good idea to skip some seconds at the beginning of the video. "
+                                        "This option allows to specify how many seconds will be skipped."));
+	max_width_spin->setWhatsThis(tr("This option specifies the maximum width in pixels that the generated preview image will have."));
+	format_combo->setWhatsThis(tr("Some frames will be extracted from the video in order to create the preview. Here you can choose "
+                                   "the image format for the extracted frames. PNG may give better quality."));
 
 	layout()->setSizeConstraint(QLayout::SetFixedSize);
 }

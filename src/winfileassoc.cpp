@@ -299,15 +299,15 @@ public:
     virtual HRESULT STDMETHODCALLTYPE QueryCurrentDefault(LPCWSTR pszQuery,
     ASSOCIATIONTYPE atQueryType,
     ASSOCIATIONLEVEL alQueryLevel,
-    LPWSTR * ppszAssociation) = 0;
+    LPWSTR* ppszAssociation) = 0;
     virtual HRESULT STDMETHODCALLTYPE QueryAppIsDefault(LPCWSTR pszQuery,
     ASSOCIATIONTYPE atQueryType,
     ASSOCIATIONLEVEL alQueryLevel,
     LPCWSTR pszAppRegistryName,
-    BOOL * pfDefault) = 0;
+    BOOL* pfDefault) = 0;
     virtual HRESULT STDMETHODCALLTYPE QueryAppIsDefaultAll(ASSOCIATIONLEVEL alQueryLevel,
     LPCWSTR pszAppRegistryName,
-    BOOL * pfDefault) = 0;
+    BOOL* pfDefault) = 0;
     virtual HRESULT STDMETHODCALLTYPE SetAppAsDefault(LPCWSTR pszAppRegistryName,
     LPCWSTR pszSet,
     ASSOCIATIONTYPE atSetType) = 0;

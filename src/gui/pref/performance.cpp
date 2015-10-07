@@ -25,8 +25,8 @@ using namespace Settings;
 
 namespace Gui { namespace Pref {
 
-TPerformance::TPerformance(QWidget * parent, Qt::WindowFlags f)
-	: TWidget(parent, f )
+TPerformance::TPerformance(QWidget* parent, Qt::WindowFlags f)
+	: TWidget(parent, f)
 {
 	setupUi(this);
 
@@ -72,9 +72,9 @@ void TPerformance::retranslateStrings() {
 	retranslateUi(this);
 
 	loopfilter_combo->clear();
-	loopfilter_combo->addItem( tr("Enabled"), TPreferences::LoopEnabled );
-	loopfilter_combo->addItem( tr("Skip (always)"), TPreferences::LoopDisabled );
-	loopfilter_combo->addItem( tr("Skip only on HD videos"), TPreferences::LoopDisabledOnHD );
+	loopfilter_combo->addItem(tr("Enabled"), TPreferences::LoopEnabled);
+	loopfilter_combo->addItem(tr("Skip (always)"), TPreferences::LoopDisabled);
+	loopfilter_combo->addItem(tr("Skip only on HD videos"), TPreferences::LoopDisabledOnHD);
 
 	priority_combo->setCurrentIndex(priority);
 	loopfilter_combo->setCurrentIndex(loop_filter);
@@ -82,24 +82,24 @@ void TPerformance::retranslateStrings() {
 	createHelp();
 }
 
-void TPerformance::setData(TPreferences * pref) {
-	setCacheForFiles( pref->cache_for_files );
-	setCacheForStreams( pref->cache_for_streams );
-	setCacheForDVDs( pref->cache_for_dvds );
-	setCacheForAudioCDs( pref->cache_for_audiocds );
-	setCacheForVCDs( pref->cache_for_vcds );
-	setCacheForTV( pref->cache_for_tv );
+void TPerformance::setData(TPreferences* pref) {
+	setCacheForFiles(pref->cache_for_files);
+	setCacheForStreams(pref->cache_for_streams);
+	setCacheForDVDs(pref->cache_for_dvds);
+	setCacheForAudioCDs(pref->cache_for_audiocds);
+	setCacheForVCDs(pref->cache_for_vcds);
+	setCacheForTV(pref->cache_for_tv);
 
-	setPriority( pref->priority );
-	setFrameDrop( pref->frame_drop );
-	setHardFrameDrop( pref->hard_frame_drop );
-	setCoreavcUsage( pref->coreavc );
-	setSkipLoop( pref->h264_skip_loop_filter );
-	setThreads( pref->threads );
-	setHwdec( pref->hwdec );
+	setPriority(pref->priority);
+	setFrameDrop(pref->frame_drop);
+	setHardFrameDrop(pref->hard_frame_drop);
+	setCoreavcUsage(pref->coreavc);
+	setSkipLoop(pref->h264_skip_loop_filter);
+	setThreads(pref->threads);
+	setHwdec(pref->hwdec);
 }
 
-void TPerformance::getData(TPreferences * pref) {
+void TPerformance::getData(TPreferences* pref) {
 	requires_restart = false;
 
 	TEST_AND_SET(pref->cache_for_files, cacheForFiles());
@@ -239,15 +239,15 @@ void TPerformance::createHelp() {
 #endif
 
 	setWhatsThis(framedrop_check, tr("Allow frame drop"),
-		tr("Skip displaying some frames to maintain A/V sync on slow systems." ) );
+		tr("Skip displaying some frames to maintain A/V sync on slow systems."));
 
 	setWhatsThis(hardframedrop_check, tr("Allow hard frame drop"),
 		tr("More intense frame dropping (breaks decoding). "
-           "Leads to image distortion!") );
+           "Leads to image distortion!"));
 
 	setWhatsThis(threads_spin, tr("Threads for decoding"),
 		tr("Sets the number of threads to use for decoding. Only for "
-           "MPEG-1/2 and H.264") );
+           "MPEG-1/2 and H.264"));
 
 	setWhatsThis(hwdec_combo, tr("Hardware decoding"),
 		tr("Sets the hardware video decoding API. "
@@ -281,7 +281,7 @@ void TPerformance::createHelp() {
            "resolution of the video")+"<br>"+
            tr("<b>Skip only on HD videos</b>: the loop filter will be "
            "skipped only on videos which height is %1 or "
-           "greater.").arg(pref->HD_height) +"<br>" );
+           "greater.").arg(pref->HD_height) +"<br>");
 
 	setWhatsThis(coreavc_check, tr("Use CoreAVC if no other codec specified"),
 		tr("Try to use non-free CoreAVC codec when no other codec is specified "
@@ -292,24 +292,24 @@ void TPerformance::createHelp() {
 
 	setWhatsThis(cache_files_spin, tr("Cache for files"), 
 		tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching a file.") );
+           "precaching a file."));
 
 	setWhatsThis(cache_streams_spin, tr("Cache for streams"), 
 		tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching a URL.") );
+           "precaching a URL."));
 
 	setWhatsThis(cache_dvds_spin, tr("Cache for DVDs"), 
 		tr("This option specifies how much memory (in kBytes) to use when "
            "precaching a DVD.<br><b>Warning:</b> Seeking might not work "
-           "properly (including chapter switching) when using a cache for DVDs.") );
+           "properly (including chapter switching) when using a cache for DVDs."));
 
 	setWhatsThis(cache_cds_spin, tr("Cache for audio CDs"), 
 		tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching an audio CD.") );
+           "precaching an audio CD."));
 
 	setWhatsThis(cache_vcds_spin, tr("Cache for VCDs"), 
 		tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching a VCD.") );
+           "precaching a VCD."));
 }
 
 }} // namespace Gui::Pref

@@ -64,9 +64,9 @@ TSkin::TSkin()
 	connect(editToolbar1Act, SIGNAL(triggered()),
 			toolbar1, SLOT(edit()));
 #if defined(SKIN_EDITABLE_CONTROL)
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
+	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
-	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
+	connect(editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()));
 #endif
 }
 
@@ -86,17 +86,17 @@ void TSkin::createActions() {
 	forwardbutton_action = new TSeekingButton(forward_actions, this);
 	forwardbutton_action->setObjectName("forwardbutton_action");
 
-	editToolbar1Act = new TAction( this, "edit_main_toolbar" );
-	#if defined(SKIN_EDITABLE_CONTROL)
-	editFloatingControlAct = new TAction( this, "edit_floating_control" );
-	#endif
+	editToolbar1Act = new TAction(this, "edit_main_toolbar");
+#if defined(SKIN_EDITABLE_CONTROL)
+	editFloatingControlAct = new TAction(this, "edit_floating_control");
+#endif
 
 	playOrPauseAct->setCheckable(true);
 
-	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui" );
+	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui");
 	viewVideoInfoAct->setCheckable(true);
 
-	scrollTitleAct = new TAction(this, "toggle_scroll_title_skingui" );
+	scrollTitleAct = new TAction(this, "toggle_scroll_title_skingui");
 	scrollTitleAct->setCheckable(true);
 }
 
@@ -137,8 +137,8 @@ void TSkin::createMenus() {
 	optionsMenu->addMenu(statusbar_menu);
 }
 
-QMenu * TSkin::createPopupMenu() {
-	QMenu * m = new QMenu(this);
+QMenu* TSkin::createPopupMenu() {
+	QMenu* m = new QMenu(this);
 	m->addAction(editToolbar1Act);
 #if defined(SKIN_EDITABLE_CONTROL)
 	m->addAction(editFloatingControlAct);
@@ -147,7 +147,7 @@ QMenu * TSkin::createPopupMenu() {
 }
 
 void TSkin::createMainToolBars() {
-	toolbar1 = new TEditableToolbar( this );
+	toolbar1 = new TEditableToolbar(this);
 	toolbar1->setObjectName("toolbar");
 	toolbar1->setMovable(false);
 	//toolbar1->setFixedHeight(35);
@@ -170,7 +170,7 @@ void TSkin::createMainToolBars() {
 void TSkin::createControlWidget() {
 	qDebug("Gui::TSkin::createControlWidget");
 
-	controlwidget = new QToolBar( this );
+	controlwidget = new QToolBar(this);
 	controlwidget->setObjectName("controlwidget");
 	controlwidget->setLayoutDirection(Qt::LeftToRight);
 	controlwidget->setStyleSheet("QToolBar { spacing: 0px; }");
@@ -185,8 +185,8 @@ void TSkin::createControlWidget() {
 	mediaBarPanel->setPlayControlActionCollection(actions);
 
 	actions.clear();
-	QAction * shuffleAct = TActionsEditor::findAction(playlist, "pl_shuffle");
-	QAction * repeatPlaylistAct = TActionsEditor::findAction(playlist, "pl_repeat");
+	QAction* shuffleAct = TActionsEditor::findAction(playlist, "pl_shuffle");
+	QAction* repeatPlaylistAct = TActionsEditor::findAction(playlist, "pl_repeat");
 	if (shuffleAct) actions << shuffleAct;
 	if (repeatPlaylistAct) actions << repeatPlaylistAct;
 	mediaBarPanel->setMediaPanelActionCollection(actions);
@@ -204,9 +204,9 @@ void TSkin::createControlWidget() {
 	mediaBarPanel->setToolbarActionCollection(actions);
 
 	connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
-			mediaBarPanel, SLOT(setResolutionVisible(bool)) );
+			mediaBarPanel, SLOT(setResolutionVisible(bool)));
 	connect(scrollTitleAct, SIGNAL(toggled(bool)),
-			mediaBarPanel, SLOT(setScrollingEnabled(bool)) );
+			mediaBarPanel, SLOT(setScrollingEnabled(bool)));
 
 	mediaBarPanelAction = controlwidget->addWidget(mediaBarPanel);
 }
@@ -217,7 +217,7 @@ void TSkin::createFloatingControl() {
 	floating_control->setAutoHide(true);
 
 #ifdef SKIN_EDITABLE_CONTROL
-	TEditableToolbar * iw = new TEditableToolbar(floating_control);
+	TEditableToolbar* iw = new TEditableToolbar(floating_control);
 
 	QStringList floatingcontrol_actions;
 	floatingcontrol_actions << "play" << "pause" << "stop" << "separator";
@@ -245,31 +245,31 @@ void TSkin::createFloatingControl() {
 void TSkin::retranslateStrings() {
 	TBasePlus::retranslateStrings();
 
-	toolbar_menu->menuAction()->setText( tr("&Toolbars") );
-	toolbar_menu->menuAction()->setIcon( Images::icon("toolbars") );
+	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
+	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
 
-	statusbar_menu->menuAction()->setText( tr("Status&bar") );
-	statusbar_menu->menuAction()->setIcon( Images::icon("statusbar") );
+	statusbar_menu->menuAction()->setText(tr("Status&bar"));
+	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
 
-	toolbar1->setWindowTitle( tr("&Main toolbar") );
+	toolbar1->setWindowTitle(tr("&Main toolbar"));
 	toolbar1->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 
-	editToolbar1Act->change( tr("Edit main &toolbar") );
+	editToolbar1Act->change(tr("Edit main &toolbar"));
 #if defined(SKIN_EDITABLE_CONTROL)
-	editFloatingControlAct->change( tr("Edit &floating control") );
+	editFloatingControlAct->change(tr("Edit &floating control"));
 #endif
 
-	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info") );
-	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title") );
+	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info"));
+	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title"));
 }
 
 void TSkin::displayState(TCore::State state) {
 	TBasePlus::displayState(state);
 
 	switch (state) {
-		case TCore::Playing:		mediaBarPanel->displayMessage( tr("Playing %1").arg(core->mdat.filename)); break;
-		case TCore::Paused:		mediaBarPanel->displayMessage( tr("Pause") ); break;
-		case TCore::Stopped:		mediaBarPanel->displayMessage( tr("Stop") ); break;
+		case TCore::Playing:		mediaBarPanel->displayMessage(tr("Playing %1").arg(core->mdat.filename)); break;
+		case TCore::Paused:		mediaBarPanel->displayMessage(tr("Pause")); break;
+		case TCore::Stopped:		mediaBarPanel->displayMessage(tr("Stop")); break;
 	}
 }
 
@@ -297,7 +297,7 @@ void TSkin::aboutToEnterFullscreen() {
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea( (TAutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
 	QTimer::singleShot(100, floating_control, SLOT(activate()));
 
@@ -325,7 +325,7 @@ void TSkin::aboutToExitFullscreen() {
 	if (!pref->compact_mode) {
 		statusBar()->hide();
 		controlwidget->show();
-		toolbar1->setVisible( fullscreen_toolbar1_was_visible );
+		toolbar1->setVisible(fullscreen_toolbar1_was_visible);
 	}
 }
 
@@ -345,10 +345,10 @@ void TSkin::aboutToExitCompactMode() {
 
 	statusBar()->hide();
 	controlwidget->show();
-	toolbar1->setVisible( compact_toolbar1_was_visible );
+	toolbar1->setVisible(compact_toolbar1_was_visible);
 
 	// Recheck size of controlwidget
-	/* resizeEvent( new QResizeEvent( size(), size() ) ); */
+	/* resizeEvent(new QResizeEvent(size(), size())); */
 }
 
 void TSkin::saveConfig(const QString &group) {
@@ -365,13 +365,13 @@ void TSkin::saveConfig(const QString &group) {
 	pref->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
 	pref->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
 
-	pref->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
+	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 
-	pref->beginGroup( "actions" );
-	pref->setValue("toolbar1", toolbar1->actionsToStringList() );
+	pref->beginGroup("actions");
+	pref->setValue("toolbar1", toolbar1->actionsToStringList());
 #if defined(SKIN_EDITABLE_CONTROL)
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	pref->setValue("floating_control", iw->actionsToStringList() );
+	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
+	pref->setValue("floating_control", iw->actionsToStringList());
 #endif
 	pref->setValue("toolbar1_version", TOOLBAR_VERSION);
 	pref->endGroup();
@@ -400,17 +400,17 @@ void TSkin::loadConfig(const QString &group) {
 	fullscreen_toolbar1_was_visible = pref->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
 	compact_toolbar1_was_visible = pref->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
 
-	pref->beginGroup( "actions" );
+	pref->beginGroup("actions");
 	int toolbar_version = pref->value("toolbar1_version", 0).toInt();
 	if (toolbar_version >= TOOLBAR_VERSION) {
-		toolbar1->setActionsFromStringList( pref->value("toolbar1", toolbar1->defaultActions()).toStringList() );
+		toolbar1->setActionsFromStringList(pref->value("toolbar1", toolbar1->defaultActions()).toStringList());
 	} else {
 		qWarning("Gui::TSkin::loadConfig: toolbar too old, loading default one");
-		toolbar1->setActionsFromStringList( toolbar1->defaultActions() );
+		toolbar1->setActionsFromStringList(toolbar1->defaultActions());
 	}
 #if defined(SKIN_EDITABLE_CONTROL)
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList( pref->value("floating_control", iw->defaultActions()).toStringList() );
+	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
+	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
 	floating_control->adjustSize();
 #endif
 	pref->endGroup();
@@ -422,7 +422,7 @@ void TSkin::loadConfig(const QString &group) {
 #endif
 	pref->endGroup();
 
-	restoreState( pref->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 
 	pref->endGroup();
 

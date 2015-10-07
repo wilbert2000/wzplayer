@@ -32,7 +32,7 @@ class TUpdateChecker : public QObject {
 	Q_OBJECT
 
 public:
-	TUpdateChecker(QWidget * parent, UpdateCheckerData * data);
+	TUpdateChecker(QWidget* parent, UpdateCheckerData* data);
 	virtual ~TUpdateChecker();
 
 	void check();
@@ -54,8 +54,8 @@ protected:
 	static QString formattedVersion(const QString & version);
 	static QString parseVersion(const QByteArray & data, const QString & name);
 
-	QNetworkAccessManager * net_manager;
-	UpdateCheckerData * d;
+	QNetworkAccessManager* net_manager;
+	UpdateCheckerData* d;
 
 	QUrl check_url;
 	QByteArray user_agent;

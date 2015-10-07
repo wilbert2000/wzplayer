@@ -23,7 +23,7 @@
 #include <QDebug>
 
 
-InfoReaderMPV::InfoReaderMPV( QString mplayer_bin, QObject * parent )
+InfoReaderMPV::InfoReaderMPV(QString mplayer_bin, QObject* parent)
 	: QObject(parent)
 	, mplayer_svn(0)
 {
@@ -77,28 +77,28 @@ void InfoReaderMPV::list() {
 	InfoList::iterator it;
 
 	qDebug(" vo_list:");
-	for ( it = vo_list.begin(); it != vo_list.end(); ++it ) {
-		qDebug( "driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = vo_list.begin(); it != vo_list.end(); ++it) {
+		qDebug("driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" ao_list:");
-	for ( it = ao_list.begin(); it != ao_list.end(); ++it ) {
-		qDebug( "driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = ao_list.begin(); it != ao_list.end(); ++it) {
+		qDebug("driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" demuxer_list:");
-	for ( it = demuxer_list.begin(); it != demuxer_list.end(); ++it ) {
-		qDebug( "demuxer: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = demuxer_list.begin(); it != demuxer_list.end(); ++it) {
+		qDebug("demuxer: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" vc_list:");
-	for ( it = vc_list.begin(); it != vc_list.end(); ++it ) {
-		qDebug( "codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = vc_list.begin(); it != vc_list.end(); ++it) {
+		qDebug("codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 
 	qDebug(" ac_list:");
-	for ( it = ac_list.begin(); it != ac_list.end(); ++it ) {
-		qDebug( "codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
+	for (it = ac_list.begin(); it != ac_list.end(); ++it) {
+		qDebug("codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
 	}
 }
 
@@ -108,7 +108,7 @@ QList<QByteArray> InfoReaderMPV::run(QString options) {
 	QList<QByteArray> r;
 
 	QProcess proc(this);
-	proc.setProcessChannelMode( QProcess::MergedChannels );
+	proc.setProcessChannelMode(QProcess::MergedChannels);
 
 	QStringList args = options.split(" ");
 

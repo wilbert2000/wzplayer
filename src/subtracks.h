@@ -32,7 +32,7 @@ public:
 	SubData() { _ID = -1; _lang = ""; _name = ""; _filename = ""; _type = None; }
 	virtual ~SubData() {}
 
-	void setType( Type t ) { _type = t; }
+	void setType(Type t) { _type = t; }
 	void setID(int id) { _ID = id; }
 	void setLang(QString lang) { _lang = lang; }
 	void setName(QString name) { _name = name; }
@@ -82,7 +82,7 @@ public:
 	int find(SubData::Type type, int ID) const;
 	int findSelectedIdx() const;
 	int findLangIdx(QString expr) const;
-	SubData findItem( SubData::Type t, int ID ) const;
+	SubData findItem(SubData::Type t, int ID) const;
 	SubData itemAt(int n) const;
 
 	int firstID() const;
@@ -91,10 +91,10 @@ public:
 
 	int selectOne(QString preferred_lang, int default_sub = 0) const;
 
-	void add( SubData::Type t, int ID );
-	bool changeLang( SubData::Type t, int ID, QString lang );
-	bool changeName( SubData::Type t, int ID, QString name );
-	bool changeFilename( SubData::Type t, int ID, QString filename );
+	void add(SubData::Type t, int ID);
+	bool changeLang(SubData::Type t, int ID, QString lang);
+	bool changeName(SubData::Type t, int ID, QString name);
+	bool changeFilename(SubData::Type t, int ID, QString filename);
 
 	bool update(SubData::Type type, int id, const QString & lang, const QString & name, const QString &filename, bool selected);
 

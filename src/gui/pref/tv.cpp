@@ -23,8 +23,8 @@
 
 namespace Gui { namespace Pref {
 
-TTV::TTV(QWidget * parent, Qt::WindowFlags f)
-	: TWidget(parent, f )
+TTV::TTV(QWidget* parent, Qt::WindowFlags f)
+	: TWidget(parent, f)
 {
 	setupUi(this);
 
@@ -52,23 +52,23 @@ void TTV::retranslateStrings() {
 
 	int deinterlace_item = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
-	deinterlace_combo->addItem( tr("None"), TMediaSettings::NoDeinterlace );
-	deinterlace_combo->addItem( tr("Lowpass5"), TMediaSettings::L5 );
-	deinterlace_combo->addItem( tr("Yadif (normal)"), TMediaSettings::Yadif );
-	deinterlace_combo->addItem( tr("Yadif (double framerate)"), TMediaSettings::Yadif_1 );
-	deinterlace_combo->addItem( tr("Linear Blend"), TMediaSettings::LB );
-	deinterlace_combo->addItem( tr("Kerndeint"), TMediaSettings::Kerndeint );
+	deinterlace_combo->addItem(tr("None"), TMediaSettings::NoDeinterlace);
+	deinterlace_combo->addItem(tr("Lowpass5"), TMediaSettings::L5);
+	deinterlace_combo->addItem(tr("Yadif (normal)"), TMediaSettings::Yadif);
+	deinterlace_combo->addItem(tr("Yadif (double framerate)"), TMediaSettings::Yadif_1);
+	deinterlace_combo->addItem(tr("Linear Blend"), TMediaSettings::LB);
+	deinterlace_combo->addItem(tr("Kerndeint"), TMediaSettings::Kerndeint);
 	deinterlace_combo->setCurrentIndex(deinterlace_item);
 
 	createHelp();
 }
 
-void TTV::setData(Settings::TPreferences * pref) {
-	setInitialDeinterlace( pref->initial_tv_deinterlace );
-	setRescan( pref->check_channels_conf_on_startup );
+void TTV::setData(Settings::TPreferences* pref) {
+	setInitialDeinterlace(pref->initial_tv_deinterlace);
+	setRescan(pref->check_channels_conf_on_startup);
 }
 
-void TTV::getData(Settings::TPreferences * pref) {
+void TTV::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 	pref->initial_tv_deinterlace = initialDeinterlace();
@@ -86,7 +86,7 @@ void TTV::setInitialDeinterlace(int ID) {
 
 int TTV::initialDeinterlace() {
 	if (deinterlace_combo->currentIndex() != -1) {
-		return deinterlace_combo->itemData( deinterlace_combo->currentIndex() ).toInt();
+		return deinterlace_combo->itemData(deinterlace_combo->currentIndex()).toInt();
 	} else {
 		qWarning("Gui::Pref::TTV::initialDeinterlace: no item selected");
 		return 0;
@@ -105,12 +105,12 @@ void TTV::createHelp() {
 	clearHelp();
 
 	setWhatsThis(deinterlace_combo, tr("Deinterlace by default for TV"),
-        tr("Select the deinterlace filter that you want to be used for TV channels.") );
+        tr("Select the deinterlace filter that you want to be used for TV channels."));
 
 #ifndef Q_OS_WIN
 	setWhatsThis(rescan_check, tr("Rescan ~/.mplayer/channels.conf on startup"),
 		tr("If this option is enabled, SMPlayer will look for new TV and radio "
-           "channels on ~/.mplayer/channels.conf.ter or ~/.mplayer/channels.conf.") );
+           "channels on ~/.mplayer/channels.conf.ter or ~/.mplayer/channels.conf."));
 #endif
 }
 

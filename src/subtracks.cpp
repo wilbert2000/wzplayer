@@ -60,7 +60,7 @@ void SubTracks::clear() {
 int SubTracks::find(SubData::Type type, int ID) const {
 
 	for (int n = 0; n < subs.count(); n++) {
-		if ( ( subs[n].type() == type ) && ( subs[n].ID() == ID ) ) {
+		if ((subs[n].type() == type) && (subs[n].ID() == ID)) {
 			return n;
 		}
 	}
@@ -73,7 +73,7 @@ int SubTracks::findSelectedIdx() const {
 }
 
 int SubTracks::findLangIdx(QString expr) const {
-	qDebug( "SubTracks::findLangIdx: '%s'", expr.toUtf8().data());
+	qDebug("SubTracks::findLangIdx: '%s'", expr.toUtf8().data());
 
 	QRegExp rx(expr);
 
@@ -88,10 +88,10 @@ int SubTracks::findLangIdx(QString expr) const {
 	return -1;
 }
 
-SubData SubTracks::findItem( SubData::Type t, int ID ) const {
+SubData SubTracks::findItem(SubData::Type t, int ID) const {
 
 	int n = find(t, ID);
-	if ( n >= 0 )
+	if (n >= 0)
 		return subs[n];
 
 	return SubData();
@@ -161,7 +161,7 @@ int SubTracks::selectOne(QString preferred_lang, int default_sub) const {
 	return sub;
 }
 
-void SubTracks::add( SubData::Type t, int ID ) {
+void SubTracks::add(SubData::Type t, int ID) {
 	SubData d;
 	d.setType(t);
 	d.setID(ID);
@@ -169,7 +169,7 @@ void SubTracks::add( SubData::Type t, int ID ) {
 	subs.append(d);
 }
 
-bool SubTracks::changeLang( SubData::Type t, int ID, QString lang ) {
+bool SubTracks::changeLang(SubData::Type t, int ID, QString lang) {
 	int f = find(t,ID);
 	if (f == -1) return false;
 
@@ -177,7 +177,7 @@ bool SubTracks::changeLang( SubData::Type t, int ID, QString lang ) {
 	return true;
 }
 
-bool SubTracks::changeName( SubData::Type t, int ID, QString name ) {
+bool SubTracks::changeName(SubData::Type t, int ID, QString name) {
 	int f = find(t,ID);
 	if (f == -1) return false;
 
@@ -185,7 +185,7 @@ bool SubTracks::changeName( SubData::Type t, int ID, QString name ) {
 	return true;
 }
 
-bool SubTracks::changeFilename( SubData::Type t, int ID, QString filename ) {
+bool SubTracks::changeFilename(SubData::Type t, int ID, QString filename) {
 	int f = find(t,ID);
 	if (f == -1) return false;
 
@@ -265,14 +265,14 @@ void SubTracks::list() const {
 	for (int n = 0; n < subs.count(); n++) {
 		qDebug("SubTracks::list: item %d: type: %d ID: %d lang: '%s' name: '%s' filename: '%s'",
 			   n, subs[n].type(), subs[n].ID(), subs[n].lang().toUtf8().data(),
-			   subs[n].name().toUtf8().data(), subs[n].filename().toUtf8().data() );
+			   subs[n].name().toUtf8().data(), subs[n].filename().toUtf8().data());
 	}
 }
 
 void SubTracks::listNames() const {
 	for (int n = 0; n < subs.count(); n++) {
 		qDebug("SubTracks::list: item %d: '%s'",
-			   n, subs[n].displayName().toUtf8().data() );
+			   n, subs[n].displayName().toUtf8().data());
 	}
 }
 

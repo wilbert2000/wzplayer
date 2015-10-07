@@ -36,14 +36,14 @@ public:
 	/*! \a group is the group where the action will be added, \a data is
 	   the ID of the item. If \autoadd is true the action will be added to
        the parent (if it's a QWidget), so the shortcut could work. */
-	TActionGroupItem( QObject * parent, TActionGroup *group,
-                       const char * name, int data, bool autoadd = true );
+	TActionGroupItem(QObject* parent, TActionGroup *group,
+                       const char* name, int data, bool autoadd = true);
 
 	//! Creates a new item.
 	/*! \a text is the text that the item will have. */
-	TActionGroupItem( QObject * parent, TActionGroup *group,
-                       const QString & text, const char * name, 
-                       int data, bool autoadd = true );
+	TActionGroupItem(QObject* parent, TActionGroup *group,
+                       const QString & text, const char* name, 
+                       int data, bool autoadd = true);
 };
 
 
@@ -57,7 +57,7 @@ class TActionGroup : public QActionGroup
 	Q_OBJECT
 
 public:
-	TActionGroup (const QString& obj_name, QObject * parent);
+	TActionGroup (const QString& obj_name, QObject* parent);
 
 	//! Looks for the item which ID is \a ID and checks and returns it
 	//! or 0 if not found

@@ -102,7 +102,7 @@ void TChapters::list() const {
 		const TChapterData d = i.value();
 		qDebug("Maps::TChapters::list: ID: %d name: '%s' start: %g end: %g",
 			   d.getID(), d.getName().toUtf8().constData(),
-			   d.getStart(), d.getEnd() );
+			   d.getStart(), d.getEnd());
 	}
 }
 

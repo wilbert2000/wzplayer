@@ -28,7 +28,7 @@ class ShutdownDialog : public QDialog, public Ui::ShutdownDialog
 	Q_OBJECT
 
 public:
-	ShutdownDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	ShutdownDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~ShutdownDialog();
 
 private slots:
@@ -36,7 +36,7 @@ private slots:
 
 private:
 	int countdown;
-	QTimer * timer;
+	QTimer* timer;
 	QString text;
 };
 

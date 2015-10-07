@@ -29,7 +29,7 @@
 
 namespace Gui {
 
-TAutohideWidget::TAutohideWidget(QWidget * parent, QWidget * playerwindow)
+TAutohideWidget::TAutohideWidget(QWidget* parent, QWidget* playerwindow)
 	: QWidget(parent)
 	, turned_on(false)
 	, auto_hide(false)
@@ -65,7 +65,7 @@ TAutohideWidget::~TAutohideWidget() {
 #endif
 }
 
-void TAutohideWidget::setInternalWidget(QWidget * w) {
+void TAutohideWidget::setInternalWidget(QWidget* w) {
 	layout()->addWidget(w);
 	internal_widget = w;
 }
@@ -114,25 +114,25 @@ void TAutohideWidget::checkUnderMouse() {
 }
 
 void TAutohideWidget::resizeAndMove() {
-	QWidget * widget = parentWidget();
+	QWidget* widget = parentWidget();
 	int w = widget->width() * perc_width / 100;
 	int h = height();
 	resize(w, h);
 
-	int x = (widget->width() - width() ) / 2;
+	int x = (widget->width() - width()) / 2;
 	int y = widget->height() - height() - spacing;
 	move(x, y);
 }
 
-bool TAutohideWidget::eventFilter(QObject * obj, QEvent * event) {
+bool TAutohideWidget::eventFilter(QObject* obj, QEvent* event) {
 	if (turned_on) {
 		if (event->type() == QEvent::MouseMove) {
 			if (!isVisible()) {
 				if (activation_area == Anywhere) {
 					show();
 				} else {
-					QMouseEvent * mouse_event = dynamic_cast<QMouseEvent*>(event);
-					QWidget * parent = parentWidget();
+					QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
+					QWidget* parent = parentWidget();
 					QPoint p = parent->mapFromGlobal(mouse_event->globalPos());
 					if (p.y() > (parent->height() - height() - spacing)) {
 						show();

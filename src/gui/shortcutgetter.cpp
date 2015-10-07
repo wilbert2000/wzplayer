@@ -66,7 +66,7 @@ static QHash<int, const char*> keyMap;
 
 static void initKeyMap()
 {
-	if ( !keyMap.isEmpty() )
+	if (!keyMap.isEmpty())
 		return;
 	
 	/*
@@ -220,7 +220,7 @@ static void initKeyMap()
 static QString keyToString(int k)
 {
 	if (	k == Qt::Key_Shift || k == Qt::Key_Control || k == Qt::Key_Meta ||
-			k == Qt::Key_Alt || k == Qt::Key_AltGr )
+			k == Qt::Key_Alt || k == Qt::Key_AltGr)
 		return QString::null;
 
 	initKeyMap();
@@ -233,7 +233,7 @@ static QString keyToString(int k)
 static QString keyToString(int k)
 {
 	if (	k == Qt::Key_Shift || k == Qt::Key_Control || k == Qt::Key_Meta ||
-			k == Qt::Key_Alt || k == Qt::Key_AltGr )
+			k == Qt::Key_Alt || k == Qt::Key_AltGr)
 		return QString::null;
 
 	return QKeySequence(k).toString();
@@ -247,17 +247,17 @@ static QStringList modToString(Qt::KeyboardModifiers k)
 
 	QStringList l;
 	
-	if ( k & Qt::ShiftModifier )
+	if (k & Qt::ShiftModifier)
 		l << "Shift";
-	if ( k & Qt::ControlModifier )
+	if (k & Qt::ControlModifier)
 		l << "Ctrl";
-	if ( k & Qt::AltModifier )
+	if (k & Qt::AltModifier)
 		l << "Alt";
-	if ( k & Qt::MetaModifier )
+	if (k & Qt::MetaModifier)
 		l << "Meta";
-	if ( k & Qt::GroupSwitchModifier ) {
+	if (k & Qt::GroupSwitchModifier) {
 	}
-	if ( k & Qt::KeypadModifier ) {
+	if (k & Qt::KeypadModifier) {
 	}
 	
 	return l;
@@ -305,25 +305,25 @@ TShortcutGetter::TShortcutGetter(QWidget *parent) : QDialog(parent)
 	// Change by rvm: use a QDialogButtonBox instead of QPushButtons
 	// and add a clear button
 	setCaptureKeyboard(true);
-	QDialogButtonBox * buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok |
+	QDialogButtonBox* buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                      QDialogButtonBox::Cancel | 
-                                                     QDialogButtonBox::Reset );
-	QPushButton * clearbutton = buttonbox->button(QDialogButtonBox::Reset);
-	clearbutton->setText( tr("Clear") );
+                                                     QDialogButtonBox::Reset);
+	QPushButton* clearbutton = buttonbox->button(QDialogButtonBox::Reset);
+	clearbutton->setText(tr("Clear"));
 
-	QPushButton * captureButton = new QPushButton(tr("Capture"), this);
-	captureButton->setToolTip( tr("Capture keystrokes") );
-	captureButton->setCheckable( captureKeyboard() );
-	captureButton->setChecked( captureKeyboard() );
+	QPushButton* captureButton = new QPushButton(tr("Capture"), this);
+	captureButton->setToolTip(tr("Capture keystrokes"));
+	captureButton->setCheckable(captureKeyboard());
+	captureButton->setChecked(captureKeyboard());
 	connect(captureButton, SIGNAL(toggled(bool)), 
             this, SLOT(setCaptureKeyboard(bool)));
 
 
 	buttonbox->addButton(captureButton, QDialogButtonBox::ActionRole);
 
-	connect( buttonbox, SIGNAL(accepted()), this, SLOT(accept()) );
-	connect( buttonbox, SIGNAL(rejected()), this, SLOT(reject()) );
-	connect( clearbutton, SIGNAL(clicked()), leKey, SLOT(clear()) );
+	connect(buttonbox, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttonbox, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(clearbutton, SIGNAL(clicked()), leKey, SLOT(clear()));
 	vbox->addWidget(buttonbox);
 }
 
@@ -349,14 +349,14 @@ void TShortcutGetter::textChanged(const QString & text) {
 void TShortcutGetter::addItemClicked() {
 	qDebug("TShortcutGetter::addItemClicked");
 	list->addItem("");
-	list->setCurrentRow( list->count()-1 ); // Select last item
+	list->setCurrentRow(list->count()-1); // Select last item
 }
 
 // Added by rvm
 void TShortcutGetter::removeItemClicked() {
 	qDebug("Gui::TShortcutGetter::removeItemClicked");
 	if (list->count() > 1) {
-		QListWidgetItem * i = list->takeItem( list->currentRow() );
+		QListWidgetItem* i = list->takeItem(list->currentRow());
 		if (i) delete i;
 	} else {
 		list->setCurrentRow(0);
@@ -402,11 +402,11 @@ bool TShortcutGetter::event(QEvent *e)
 	QStringList mods;
 	QKeyEvent *k = static_cast<QKeyEvent*>(e);
 			
-	switch ( e->type() )
+	switch (e->type())
 	{
 		case QEvent::KeyPress :
 					
-		if ( bStop )
+		if (bStop)
 		{
 			lKeys.clear();
 			bStop = false;
@@ -417,20 +417,20 @@ bool TShortcutGetter::event(QEvent *e)
 
 		//qDebug("event: key.count: %d, mods.count: %d", key.count(), mods.count());
 
-		if ( key.count() || mods.count() )
+		if (key.count() || mods.count())
 		{
 						
-			if ( key.count() && !lKeys.contains(key) )
+			if (key.count() && !lKeys.contains(key))
 				lKeys << key;
 						
-			foreach ( key, mods )
-				if ( !lKeys.contains(key) )
+			foreach (key, mods)
+				if (!lKeys.contains(key))
 					lKeys << key;
 			
 			} else {
 				key = k->text();
 						
-				if ( !lKeys.contains(key) )
+				if (!lKeys.contains(key))
 					lKeys << key;
 			}
 					
@@ -461,7 +461,7 @@ bool TShortcutGetter::eventFilter(QObject *o, QEvent *e)
 	if (!capture) return QDialog::eventFilter(o, e);
 
 	if (	e->type() == QEvent::KeyPress ||
-			e->type() ==QEvent::KeyRelease )
+			e->type() ==QEvent::KeyRelease)
 		return event(e);
 	else
 		return QDialog::eventFilter(o, e);
@@ -471,22 +471,22 @@ void TShortcutGetter::setText()
 {
 	QStringList seq;
 			
-	if ( lKeys.contains("Shift") )
+	if (lKeys.contains("Shift"))
 		seq << "Shift";
 			
-	if ( lKeys.contains("Ctrl") )
+	if (lKeys.contains("Ctrl"))
 		seq << "Ctrl";
 				
-	if ( lKeys.contains("Alt") )
+	if (lKeys.contains("Alt"))
 		seq << "Alt";
 			
-	if ( lKeys.contains("Meta") )
+	if (lKeys.contains("Meta"))
 		seq << "Meta";
 			
-	foreach ( QString s, lKeys ) {
+	foreach (QString s, lKeys) {
 		//qDebug("setText: s: '%s'", s.toUtf8().data());
-		if ( s != "Shift" && s != "Ctrl"
-			&& s != "Alt" && s != "Meta" )
+		if (s != "Shift" && s != "Ctrl"
+			&& s != "Alt" && s != "Meta")
 			seq << s;
 	}
 			

@@ -30,7 +30,7 @@ using namespace Settings;
 
 namespace Gui {
 
-TAudioEqualizer::TAudioEqualizer( QWidget* parent, Qt::WindowFlags f)
+TAudioEqualizer::TAudioEqualizer(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 {
 	createPresets();
@@ -39,7 +39,7 @@ TAudioEqualizer::TAudioEqualizer( QWidget* parent, Qt::WindowFlags f)
 
 	for (int n = 0; n < 10; n++) {
 		eq[n] = new TEqSlider(this);
-		eq[n]->setIcon( QPixmap() );
+		eq[n]->setIcon(QPixmap());
 		eq[n]->sliderWidget()->setRange(-120, 120);
 		eq[n]->sliderWidget()->setTracking(false);
 		connect(eq[n], SIGNAL(valueChanged(int)), this, SLOT(updatePresetCombo()));
@@ -52,14 +52,14 @@ TAudioEqualizer::TAudioEqualizer( QWidget* parent, Qt::WindowFlags f)
 	presets_label = new QLabel("&Preset", this);
 	presets_label->setBuddy(presets_combo);
 
-	reset_button = new QPushButton( "&Reset", this);
-	connect( reset_button, SIGNAL(clicked()), this, SLOT(reset()) );
+	reset_button = new QPushButton("&Reset", this);
+	connect(reset_button, SIGNAL(clicked()), this, SLOT(reset()));
 
-	set_default_button = new QPushButton( "&Set as default values", this );
-	connect( set_default_button, SIGNAL(clicked()), this, SLOT(setDefaults()) );
+	set_default_button = new QPushButton("&Set as default values", this);
+	connect(set_default_button, SIGNAL(clicked()), this, SLOT(setDefaults()));
 
-	apply_button = new QPushButton( "&Apply", this );
-	connect( apply_button, SIGNAL(clicked()), this, SLOT(applyButtonClicked()) );
+	apply_button = new QPushButton("&Apply", this);
+	connect(apply_button, SIGNAL(clicked()), this, SLOT(applyButtonClicked()));
 
 	QBoxLayout *button_layout = new QHBoxLayout; //(0, 4, 2);
 	button_layout->addWidget(presets_label);
@@ -76,7 +76,7 @@ TAudioEqualizer::TAudioEqualizer( QWidget* parent, Qt::WindowFlags f)
 	retranslateStrings();
 
 	adjustSize();
-	//setFixedSize( sizeHint() );
+	//setFixedSize(sizeHint());
 }
 
 TAudioEqualizer::~TAudioEqualizer() {
@@ -179,54 +179,54 @@ void TAudioEqualizer::createPresets() {
 
 
 void TAudioEqualizer::retranslateStrings() {
-	setWindowTitle( tr("Audio Equalizer") );
-	setWindowIcon( Images::icon("logo") );
+	setWindowTitle(tr("Audio Equalizer"));
+	setWindowIcon(Images::icon("logo"));
 
-	eq[0]->setLabel( tr("%1 Hz").arg("31.25") );
-	eq[1]->setLabel( tr("%1 Hz").arg("62.50") );
-	eq[2]->setLabel( tr("%1 Hz").arg("125") );
-	eq[3]->setLabel( tr("%1 Hz").arg("250") );
-	eq[4]->setLabel( tr("%1 Hz").arg("500") );
-	eq[5]->setLabel( tr("%1 kHz").arg("1") );
-	eq[6]->setLabel( tr("%1 kHz").arg("2") );
-	eq[7]->setLabel( tr("%1 kHz").arg("4") );
-	eq[8]->setLabel( tr("%1 kHz").arg("8") );
-	eq[9]->setLabel( tr("%1 kHz").arg("16") );
+	eq[0]->setLabel(tr("%1 Hz").arg("31.25"));
+	eq[1]->setLabel(tr("%1 Hz").arg("62.50"));
+	eq[2]->setLabel(tr("%1 Hz").arg("125"));
+	eq[3]->setLabel(tr("%1 Hz").arg("250"));
+	eq[4]->setLabel(tr("%1 Hz").arg("500"));
+	eq[5]->setLabel(tr("%1 kHz").arg("1"));
+	eq[6]->setLabel(tr("%1 kHz").arg("2"));
+	eq[7]->setLabel(tr("%1 kHz").arg("4"));
+	eq[8]->setLabel(tr("%1 kHz").arg("8"));
+	eq[9]->setLabel(tr("%1 kHz").arg("16"));
 
-	presets_label->setText( tr("&Preset") );
-	apply_button->setText( tr("&Apply") );
-	reset_button->setText( tr("&Reset") );
-	set_default_button->setText( tr("&Set as default values") );
+	presets_label->setText(tr("&Preset"));
+	apply_button->setText(tr("&Apply"));
+	reset_button->setText(tr("&Reset"));
+	set_default_button->setText(tr("&Set as default values"));
 
 	int presets_combo_index = presets_combo->currentIndex();
 	if (presets_combo_index < 0) presets_combo_index = 0;
 	presets_combo->clear();
-	presets_combo->addItem( tr("Flat"), Flat);
-	presets_combo->addItem( tr("Classical"), Classical);
-	presets_combo->addItem( tr("Club"), Club);
-	presets_combo->addItem( tr("Dance"), Dance);
-	presets_combo->addItem( tr("Full bass"), Fullbass);
-	presets_combo->addItem( tr("Full bass and treble"), FullbassTreble);
-	presets_combo->addItem( tr("Full treble"), Fulltreble);
-	presets_combo->addItem( tr("Headphones"), Headphones);
-	presets_combo->addItem( tr("Large hall"), LargeHall);
-	presets_combo->addItem( tr("Live"), Live);
-	presets_combo->addItem( tr("Party"), Party);
-	presets_combo->addItem( tr("Pop"), Pop);
-	presets_combo->addItem( tr("Reggae"), Reggae);
-	presets_combo->addItem( tr("Rock"), Rock);
-	presets_combo->addItem( tr("Ska"), Ska);
-	presets_combo->addItem( tr("Soft"), Soft);
-	presets_combo->addItem( tr("Soft rock"), SoftRock);
-	presets_combo->addItem( tr("Techno"), Techno);
-	presets_combo->addItem( tr("Custom"), User_defined);
+	presets_combo->addItem(tr("Flat"), Flat);
+	presets_combo->addItem(tr("Classical"), Classical);
+	presets_combo->addItem(tr("Club"), Club);
+	presets_combo->addItem(tr("Dance"), Dance);
+	presets_combo->addItem(tr("Full bass"), Fullbass);
+	presets_combo->addItem(tr("Full bass and treble"), FullbassTreble);
+	presets_combo->addItem(tr("Full treble"), Fulltreble);
+	presets_combo->addItem(tr("Headphones"), Headphones);
+	presets_combo->addItem(tr("Large hall"), LargeHall);
+	presets_combo->addItem(tr("Live"), Live);
+	presets_combo->addItem(tr("Party"), Party);
+	presets_combo->addItem(tr("Pop"), Pop);
+	presets_combo->addItem(tr("Reggae"), Reggae);
+	presets_combo->addItem(tr("Rock"), Rock);
+	presets_combo->addItem(tr("Ska"), Ska);
+	presets_combo->addItem(tr("Soft"), Soft);
+	presets_combo->addItem(tr("Soft rock"), SoftRock);
+	presets_combo->addItem(tr("Techno"), Techno);
+	presets_combo->addItem(tr("Custom"), User_defined);
 	presets_combo->setCurrentIndex(presets_combo_index);
 
 	// What's this help:
 	set_default_button->setWhatsThis(
-			tr("Use the current values as default values for new videos.") );
+			tr("Use the current values as default values for new videos."));
 
-	reset_button->setWhatsThis( tr("Set all controls to zero.") );
+	reset_button->setWhatsThis(tr("Set all controls to zero."));
 
 }
 
@@ -244,7 +244,7 @@ void TAudioEqualizer::setDefaults() {
 
 	QMessageBox::information(this, tr("Information"), 
                              tr("The current values have been stored to be "
-                                "used as default.") );
+                                "used as default."));
 }
 
 void TAudioEqualizer::setEqualizer(TAudioEqualizerList l) {
@@ -291,7 +291,7 @@ void TAudioEqualizer::applyButtonClicked() {
 	for (int n = 0; n < 10; n++) {
 		l << eq[n]->value();
 	}
-	emit applyClicked( l );
+	emit applyClicked(l);
 }
 
 void TAudioEqualizer::updatePresetCombo() {
@@ -309,11 +309,11 @@ void TAudioEqualizer::updatePresetCombo() {
 	}
 }
 
-void TAudioEqualizer::hideEvent( QHideEvent * ) {
+void TAudioEqualizer::hideEvent(QHideEvent*) {
 	emit visibilityChanged();
 }
 
-void TAudioEqualizer::showEvent( QShowEvent * ) {
+void TAudioEqualizer::showEvent(QShowEvent*) {
 	emit visibilityChanged();
 }
 

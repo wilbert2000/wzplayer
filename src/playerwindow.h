@@ -74,7 +74,7 @@ public:
 	void restoreNormalBackground();
 
 protected:
-	virtual void paintEvent ( QPaintEvent * e );
+	virtual void paintEvent (QPaintEvent* e);
 
 private:
 	bool repaint_background;
@@ -150,8 +150,8 @@ public:
 #endif
 
 #ifdef SHAREWIDGET
-	void setCornerWidget(QWidget * w);
-	QWidget * cornerWidget() { return corner_widget; }
+	void setCornerWidget(QWidget* w);
+	QWidget* cornerWidget() { return corner_widget; }
 #endif
 
 public slots:

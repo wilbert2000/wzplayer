@@ -66,7 +66,7 @@ RetrieveYoutubeUrl::~RetrieveYoutubeUrl() {
 }
 
 #ifdef YT_USE_SIG
-void RetrieveYoutubeUrl::setSettings(QSettings * settings) {
+void RetrieveYoutubeUrl::setSettings(QSettings* settings) {
 	set = settings;
 	sig.load(set);
 }
@@ -108,9 +108,9 @@ QString RetrieveYoutubeUrl::getVideoID(QString video_url) {
 	QString ID;
 
 	#if QT_VERSION >= 0x050000
-	QUrlQuery * q = new QUrlQuery(url);
+	QUrlQuery* q = new QUrlQuery(url);
 	#else
-	const QUrl * q = &url;
+	const QUrl* q = &url;
 	#endif
 
 	if ((url.host().contains("youtube")) && (url.path().contains("watch_videos"))) {
@@ -412,7 +412,7 @@ UrlMap RetrieveYoutubeUrl::extractURLs(QString fmtArray, bool allow_https, bool 
 	failed_to_decrypt_signature = false;
 
 	#if QT_VERSION >= 0x050000
-	QUrlQuery * q = new QUrlQuery();
+	QUrlQuery* q = new QUrlQuery();
 	#endif
 
 	//qDebug() << "RetrieveYoutubeUrl::extractURLs: fmtArray:" << fmtArray;
@@ -428,20 +428,20 @@ UrlMap RetrieveYoutubeUrl::extractURLs(QString fmtArray, bool allow_https, bool 
 		#if QT_VERSION >= 0x050000
 		q->setQuery(code);
 		#else
-		QUrl * q = &line;
+		QUrl* q = &line;
 		q->setEncodedQuery(code);
 		#endif
 
 		if (q->hasQueryItem("url")) {
-			QUrl url( q->queryItemValue("url") );
+			QUrl url(q->queryItemValue("url"));
 			line.setScheme(url.scheme());
 			line.setHost(url.host());
 			line.setPath(url.path());
 			q->removeQueryItem("url");
 			#if QT_VERSION >= 0x050000
-			q->setQuery( q->query(QUrl::FullyDecoded) + "&" + url.query(QUrl::FullyDecoded) );
+			q->setQuery(q->query(QUrl::FullyDecoded) + "&" + url.query(QUrl::FullyDecoded));
 			#else
-			q->setEncodedQuery( q->encodedQuery() + "&" + url.encodedQuery() );
+			q->setEncodedQuery(q->encodedQuery() + "&" + url.encodedQuery());
 			#endif
 
 			if (q->hasQueryItem("sig")) {

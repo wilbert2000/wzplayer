@@ -33,17 +33,17 @@ class TNetwork : public TWidget, public Ui::TNetwork
 	Q_OBJECT
 
 public:
-	TNetwork( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TNetwork(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TNetwork();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
 	// Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 protected:
 	virtual void createHelp();

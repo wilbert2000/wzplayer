@@ -143,7 +143,7 @@ QString Sig::aclara(const QString & text) {
 	return res;
 }
 
-void Sig::save(QSettings * set) {
+void Sig::save(QSettings* set) {
 	qDebug() << "Sig::save";
 
 	set->beginGroup("sig");
@@ -154,7 +154,7 @@ void Sig::save(QSettings * set) {
 	set->endGroup();
 }
 
-void Sig::load(QSettings * set) {
+void Sig::load(QSettings* set) {
 	qDebug() << "Sig::load";
 
 	set->beginGroup("sig");

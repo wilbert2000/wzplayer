@@ -24,8 +24,8 @@
 #include <QString>
 
 
-#define TEST_AND_SET( Pref, Dialog ) \
-	if ( Pref != Dialog ) { Pref = Dialog; requires_restart = true; }
+#define TEST_AND_SET(Pref, Dialog) \
+	if (Pref != Dialog) { Pref = Dialog; requires_restart = true; }
 
 class QEvent;
 
@@ -35,7 +35,7 @@ class TWidget : public QWidget
 {
 
 public:
-	TWidget(QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TWidget();
 
 	// Return the name of the section
@@ -51,11 +51,11 @@ public:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent ( QEvent * event ) ;
+	virtual void changeEvent (QEvent* event) ;
 
 	// Help
 	void addSectionTitle(const QString & title);
-	void setWhatsThis( QWidget *w, const QString & title, const QString & text);
+	void setWhatsThis(QWidget *w, const QString & title, const QString & text);
 	void clearHelp();
 	
 	virtual void createHelp();

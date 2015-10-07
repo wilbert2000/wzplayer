@@ -29,7 +29,7 @@ class InfoData {
 
 public:
 	InfoData() {};
-	InfoData( QString name, QString desc) {
+	InfoData(QString name, QString desc) {
 		_name = name;
 		_desc = desc;
 	};
@@ -61,7 +61,7 @@ class InfoReader : QObject {
 	Q_OBJECT
 
 public:
-	InfoReader( QString mplayer_bin, QObject * parent = 0 );
+	InfoReader(QString mplayer_bin, QObject* parent = 0);
 	virtual ~InfoReader();
 
 	void setPlayerBin(const QString & bin);
@@ -88,7 +88,7 @@ public:
 
 	//! Returns an InfoReader object. If it didn't exist before, one
 	//! is created.
-	static InfoReader * obj(const QString & mplayer_bin = QString::null);
+	static InfoReader* obj(const QString & mplayer_bin = QString::null);
 
 protected:
 	QString mplayerbin;
@@ -108,7 +108,7 @@ protected:
 	bool is_mplayer2, is_mpv;
 
 private:
-	static InfoReader * static_obj;
+	static InfoReader* static_obj;
 	static QStringList convertInfoListToList(InfoList l);
 	static InfoList convertListToInfoList(QStringList l);
 };

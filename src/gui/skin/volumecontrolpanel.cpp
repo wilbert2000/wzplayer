@@ -78,19 +78,19 @@ TVolumeControlPanel::TVolumeControlPanel(QWidget *parent) :
 	connect(volumeBar, SIGNAL(sliderMoved(int)), this, SIGNAL(volumeSliderMoved(int)));
 }
 
-void TVolumeControlPanel::setButtonIcons( TButton* button, QPixmap pix)
+void TVolumeControlPanel::setButtonIcons(TButton* button, QPixmap pix)
 {
     TIcon icon;
     int w = pix.width();
     int h = pix.height();
-    icon.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::Off);
-    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::Off);
-    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::Off);
-    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::Off);
-    icon.setPixmap(pix.copy(0, 0, w, h/4 ), TIcon::Normal, TIcon::On);
-    icon.setPixmap(pix.copy(0, h/4, w, h/4 ), TIcon::MouseOver, TIcon::On);
-    icon.setPixmap(pix.copy(0, h/2, w, h/4 ), TIcon::MouseDown, TIcon::On);
-    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4 ), TIcon::Disabled, TIcon::On);
+    icon.setPixmap(pix.copy(0, 0, w, h/4), TIcon::Normal, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/4, w, h/4), TIcon::MouseOver, TIcon::Off);
+    icon.setPixmap(pix.copy(0, h/2, w, h/4), TIcon::MouseDown, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4), TIcon::Disabled, TIcon::Off);
+    icon.setPixmap(pix.copy(0, 0, w, h/4), TIcon::Normal, TIcon::On);
+    icon.setPixmap(pix.copy(0, h/4, w, h/4), TIcon::MouseOver, TIcon::On);
+    icon.setPixmap(pix.copy(0, h/2, w, h/4), TIcon::MouseDown, TIcon::On);
+    icon.setPixmap(pix.copy(0, 3*h/4, w, h/4), TIcon::Disabled, TIcon::On);
 	button->setIcon(icon);
     button->setFixedSize(icon.size(TIcon::Normal, TIcon::Off));
 }

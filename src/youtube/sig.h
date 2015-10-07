@@ -36,8 +36,8 @@ public:
 	QString findFunctions(const QString & text);
 	QString aclara(const QString & text);
 
-	void save(QSettings * set);
-	void load(QSettings * set);
+	void save(QSettings* set);
+	void load(QSettings* set);
 
 private:
 	static QString findText(const QString & text, const QString & begin, const QString & end);

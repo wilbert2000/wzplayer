@@ -28,7 +28,7 @@ class TTimeDialog : public QDialog, public Ui::TTimeDialog
 	Q_OBJECT
 
 public:
-	TTimeDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	TTimeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TTimeDialog();
 
 	int time();
@@ -37,7 +37,7 @@ public:
 
 public slots:
 	void setTime(int seconds);
-	void setMaximumTime( int seconds );
+	void setMaximumTime(int seconds);
 	void setLabel(const QString & label);
 };
 

@@ -22,19 +22,19 @@
 
 namespace Gui {
 
-TInputURL::TInputURL( QWidget* parent, Qt::WindowFlags f )
+TInputURL::TInputURL(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
 
-	setMinimumSize( QSize(500,140) );
-	setMaximumSize( QSize(600,170) );
+	setMinimumSize(QSize(500,140));
+	setMaximumSize(QSize(600,170));
 	//layout()->setSizeConstraint(QLayout::SetFixedSize);
 
-	url_icon->setPixmap( Images::icon("url_big", 48) );
+	url_icon->setPixmap(Images::icon("url_big", 48));
 	url_edit->setFocus();
 
-	TLineEdit * edit = new TLineEdit(this);
+	TLineEdit* edit = new TLineEdit(this);
 	url_edit->setLineEdit(edit);
 }
 

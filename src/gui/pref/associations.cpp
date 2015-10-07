@@ -35,8 +35,8 @@ namespace Gui { namespace Pref {
 static Qt::CheckState CurItemCheckState = Qt::Unchecked; 
 
 
-TAssociations::TAssociations(QWidget * parent, Qt::WindowFlags f)
-: TWidget(parent, f )
+TAssociations::TAssociations(QWidget* parent, Qt::WindowFlags f)
+: TWidget(parent, f)
 {
 	setupUi(this);
 
@@ -56,11 +56,11 @@ TAssociations::TAssociations(QWidget * parent, Qt::WindowFlags f)
 
 	TExtensions e;
 	for (int n=0; n < e.multimedia().count(); n++) {
-		addItem( e.multimedia()[n] );
+		addItem(e.multimedia()[n]);
 	}
 	// Add the playlist extensions
 	for (int n=0; n < e.playlist().count(); n++) {
-		addItem( e.playlist()[n] );
+		addItem(e.playlist()[n]);
 	}
 	retranslateStrings();
 
@@ -155,7 +155,7 @@ void TAssociations::refreshList()
 	}
 }
 
-void TAssociations::setData(TPreferences * )
+void TAssociations::setData(TPreferences*)
 {
 	refreshList(); 
 }

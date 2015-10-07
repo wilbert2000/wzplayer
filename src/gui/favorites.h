@@ -71,11 +71,11 @@ public:
 	TFavorites(QString filename, QWidget* parent = 0);
 	virtual ~TFavorites();
 
-	QAction * editAct() { return edit_act; }
-	QAction * jumpAct() { return jump_act; }
-	QAction * nextAct() { return next_act; }
-	QAction * previousAct() { return previous_act; }
-	QAction * addCurrentAct() { return add_current_act; }
+	QAction* editAct() { return edit_act; }
+	QAction* jumpAct() { return jump_act; }
+	QAction* nextAct() { return next_act; }
+	QAction* previousAct() { return previous_act; }
+	QAction* addCurrentAct() { return add_current_act; }
 
 public slots:
 	void next();
@@ -110,7 +110,7 @@ protected slots:
 
 protected:
     virtual void retranslateStrings();
-    virtual void changeEvent(QEvent * event);
+    virtual void changeEvent(QEvent* event);
 
 protected:
 	TFavoriteList f_list;

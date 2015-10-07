@@ -32,17 +32,17 @@ class TTV : public TWidget, public Ui::TTV
 	Q_OBJECT
 
 public:
-	TTV( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TTV(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TTV();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 protected:
 	virtual void createHelp();

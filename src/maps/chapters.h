@@ -32,9 +32,9 @@ public:
 	TChapterData();
 	virtual ~TChapterData() {}
 
-	void setName( const QString & n ) { name = n; }
-	void setStart( double aStart ) { start = aStart; }
-	void setEnd( double aEnd ) { end = aEnd; }
+	void setName(const QString & n) { name = n; }
+	void setStart(double aStart) { start = aStart; }
+	void setEnd(double aEnd) { end = aEnd; }
 
 	QString getName() const { return name; }
 	double getStart() const { return start; }

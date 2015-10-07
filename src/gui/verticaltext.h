@@ -13,7 +13,7 @@ namespace Gui {
 class TVerticalText : public QWidget
 {
 public:
-	TVerticalText(QWidget * parent, Qt::WindowFlags f = 0);
+	TVerticalText(QWidget* parent, Qt::WindowFlags f = 0);
 	virtual ~TVerticalText();
 
 	void setText(QString s) { _label = s; }
@@ -22,7 +22,7 @@ public:
     QSizePolicy sizePolicy () const;
 	
 protected:
-    void paintEvent ( QPaintEvent * event );
+    void paintEvent (QPaintEvent* event);
 	QString _label;
 };
 

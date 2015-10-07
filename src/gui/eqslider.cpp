@@ -24,20 +24,20 @@
 
 namespace Gui {
 
-TEqSlider::TEqSlider( QWidget* parent, Qt::WindowFlags f) 
+TEqSlider::TEqSlider(QWidget* parent, Qt::WindowFlags f) 
 	: QWidget(parent, f)
 {
 	setupUi(this);
 
-	_icon->setText( QString::null );
-	_slider->setFocusPolicy( Qt::StrongFocus );
-	_slider->setTickPosition( QSlider::TicksRight );
-	_slider->setTickInterval( 10 );
-	_slider->setSingleStep( 1 );
-	_slider->setPageStep( 10 );
+	_icon->setText(QString::null);
+	_slider->setFocusPolicy(Qt::StrongFocus);
+	_slider->setTickPosition(QSlider::TicksRight);
+	_slider->setTickInterval(10);
+	_slider->setSingleStep(1);
+	_slider->setPageStep(10);
 
-	connect( _slider, SIGNAL(valueChanged(int)),
-             this, SLOT(sliderValueChanged(int)) );
+	connect(_slider, SIGNAL(valueChanged(int)),
+             this, SLOT(sliderValueChanged(int)));
 }
 
 TEqSlider::~TEqSlider() {
@@ -48,15 +48,15 @@ void TEqSlider::languageChange() {
 }
 */
 
-void TEqSlider::setIcon( QPixmap i) {
+void TEqSlider::setIcon(QPixmap i) {
 	_icon->setPixmap(i);
 }
 
-const QPixmap * TEqSlider::icon() const {
+const QPixmap* TEqSlider::icon() const {
 	return _icon->pixmap();
 }
 
-void TEqSlider::setLabel( QString s) {
+void TEqSlider::setLabel(QString s) {
 	_label->setText(s);
 }
 
@@ -74,7 +74,7 @@ int TEqSlider::value() const {
 }
 
 void TEqSlider::sliderValueChanged(int v) {
-	emit valueChanged( v );
+	emit valueChanged(v);
 }
 
 } // namespace Gui

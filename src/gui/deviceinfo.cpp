@@ -33,7 +33,7 @@ TDeviceList TDeviceInfo::retrieveDevices(DeviceType type) {
 	
 	if (QFile::exists("dxlist.exe")) {
 		QProcess p;
-		p.setProcessChannelMode( QProcess::MergedChannels );
+		p.setProcessChannelMode(QProcess::MergedChannels);
 		QStringList arg;
 		if (type == Sound) arg << "-s"; else arg << "-d";
 		p.start("dxlist", arg);
@@ -43,11 +43,11 @@ TDeviceList TDeviceInfo::retrieveDevices(DeviceType type) {
 			while (p.canReadLine()) {
 				line = p.readLine().trimmed();
 				qDebug("Gui::TDeviceInfo::retrieveDevices: '%s'", line.constData());
-				if ( rx_device.indexIn(line) > -1 ) {
+				if (rx_device.indexIn(line) > -1) {
 					int id = rx_device.cap(1).toInt();
 					QString desc = rx_device.cap(2);
 					qDebug("Gui::TDeviceInfo::retrieveDevices: found device: '%d' '%s'", id, desc.toUtf8().constData());
-					l.append( TDeviceData(id, desc) );
+					l.append(TDeviceData(id, desc));
 				}
 			}
 		}
@@ -73,8 +73,8 @@ TDeviceList TDeviceInfo::alsaDevices() {
 	QRegExp rx_device("^card\\s([0-9]+).*\\[(.*)\\],\\sdevice\\s([0-9]+):");
 
 	QProcess p;
-	p.setProcessChannelMode( QProcess::MergedChannels );
-	p.setEnvironment( QStringList() << "LC_ALL=C" );
+	p.setProcessChannelMode(QProcess::MergedChannels);
+	p.setEnvironment(QStringList() << "LC_ALL=C");
 	p.start("aplay", QStringList() << "-l");
 
 	if (p.waitForFinished()) {
@@ -82,13 +82,13 @@ TDeviceList TDeviceInfo::alsaDevices() {
 		while (p.canReadLine()) {
 			line = p.readLine();
 			qDebug("Gui::TDeviceInfo::alsaDevices: '%s'", line.constData());
-			if ( rx_device.indexIn(line) > -1 ) {
+			if (rx_device.indexIn(line) > -1) {
 				QString id = rx_device.cap(1);
 				id.append(".");
 				id.append(rx_device.cap(3));
 				QString desc = rx_device.cap(2);
 				qDebug("Gui::TDeviceInfo::alsaDevices: found device: '%s' '%s'", id.toUtf8().constData(), desc.toUtf8().constData());
-				l.append( TDeviceData(id, desc) );
+				l.append(TDeviceData(id, desc));
 			}
 		}
 	} else {
@@ -105,8 +105,8 @@ TDeviceList TDeviceInfo::xvAdaptors() {
 	QRegExp rx_device("^.*Adaptor #([0-9]+): \"(.*)\"");
 
 	QProcess p;
-	p.setProcessChannelMode( QProcess::MergedChannels );
-	p.setEnvironment( QProcess::systemEnvironment() << "LC_ALL=C" );
+	p.setProcessChannelMode(QProcess::MergedChannels);
+	p.setEnvironment(QProcess::systemEnvironment() << "LC_ALL=C");
 	p.start("xvinfo");
 
 	if (p.waitForFinished()) {
@@ -116,11 +116,11 @@ TDeviceList TDeviceInfo::xvAdaptors() {
 			QString s = QString::fromLocal8Bit(line);
 			s = s.trimmed();
 			qDebug() << "Gui::TDeviceInfo::xvAdaptors:" << s;
-			if ( rx_device.indexIn(line) > -1 ) {
+			if (rx_device.indexIn(line) > -1) {
 				QString id = rx_device.cap(1);
 				QString desc = rx_device.cap(2);
 				qDebug("Gui::TDeviceInfo::xvAdaptors: found adaptor: '%s' '%s'", id.toUtf8().constData(), desc.toUtf8().constData());
-				l.append( TDeviceData(id, desc) );
+				l.append(TDeviceData(id, desc));
 			}
 		}
 	} else {

@@ -20,7 +20,7 @@
 #include "version.h"
 #include <QSettings>
 
-void UpdateCheckerData::save(QSettings * set) {
+void UpdateCheckerData::save(QSettings* set) {
 	set->beginGroup("update_checker");
 	set->setValue("checked_date", last_checked);
 	set->setValue("enabled", enabled);
@@ -29,7 +29,7 @@ void UpdateCheckerData::save(QSettings * set) {
 	set->endGroup();
 }
 
-void UpdateCheckerData::load(QSettings * set) {
+void UpdateCheckerData::load(QSettings* set) {
 	set->beginGroup("update_checker");
 	last_checked = set->value("checked_date", 0).toDate();
 	enabled = set->value("enabled", true).toBool();

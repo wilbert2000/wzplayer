@@ -30,7 +30,7 @@ class LoadPage : public QObject
 	Q_OBJECT
 
 public:
-	LoadPage(QNetworkAccessManager * man, QObject* parent = 0);
+	LoadPage(QNetworkAccessManager* man, QObject* parent = 0);
 	~LoadPage();
 
 	void fetchPage(const QString & url);
@@ -51,8 +51,8 @@ protected slots:
 	void gotResponse();
 
 private:
-	QNetworkAccessManager * manager;
-	QNetworkReply * reply;
+	QNetworkAccessManager* manager;
+	QNetworkReply* reply;
 	QString user_agent;
 
 	static QString default_user_agent;

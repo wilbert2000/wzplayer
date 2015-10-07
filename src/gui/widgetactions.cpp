@@ -23,7 +23,7 @@
 
 namespace Gui {
 
-TWidgetAction::TWidgetAction( QWidget * parent )
+TWidgetAction::TWidgetAction(QWidget* parent)
 	: QWidgetAction(parent)
 {
 	custom_style = 0;
@@ -51,7 +51,7 @@ void TWidgetAction::propagate_enabled(bool b) {
 }
 
 
-TTimeSliderAction::TTimeSliderAction(QWidget * parent , int max_position, int delay)
+TTimeSliderAction::TTimeSliderAction(QWidget* parent , int max_position, int delay)
 	: TWidgetAction(parent),
 	  max_pos(max_position),
 	  drag_delay(delay) {
@@ -102,12 +102,12 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 	if (custom_style) t->setStyle(custom_style);
 	if (!custom_stylesheet.isEmpty()) t->setStyleSheet(custom_stylesheet);
 
-	connect( t,    SIGNAL(posChanged(int)), 
-             this, SIGNAL(posChanged(int)) );
-	connect( t,    SIGNAL(draggingPos(int)),
-             this, SIGNAL(draggingPos(int)) );
-	connect( t,    SIGNAL(delayedDraggingPos(int)),
-	         this, SIGNAL(delayedDraggingPos(int)) );
+	connect(t,    SIGNAL(posChanged(int)), 
+             this, SIGNAL(posChanged(int)));
+	connect(t,    SIGNAL(draggingPos(int)),
+             this, SIGNAL(draggingPos(int)));
+	connect(t,    SIGNAL(delayedDraggingPos(int)),
+	         this, SIGNAL(delayedDraggingPos(int)));
 
 	connect(t, SIGNAL(wheelUp()), this, SIGNAL(wheelUp()));
 	connect(t, SIGNAL(wheelDown()), this, SIGNAL(wheelDown()));
@@ -116,7 +116,7 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 }
 
 
-TVolumeSliderAction::TVolumeSliderAction( QWidget * parent )
+TVolumeSliderAction::TVolumeSliderAction(QWidget* parent)
 	: TWidgetAction(parent)
 {
 	tick_position = QSlider::TicksBelow;
@@ -157,7 +157,7 @@ void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 	}
 }
 
-QWidget * TVolumeSliderAction::createWidget ( QWidget * parent ) {
+QWidget* TVolumeSliderAction::createWidget (QWidget* parent) {
 	TSlider *t = new TSlider(parent);
 
 	if (custom_style) t->setStyle(custom_style);
@@ -167,24 +167,24 @@ QWidget * TVolumeSliderAction::createWidget ( QWidget * parent ) {
 	t->setMinimum(0);
 	t->setMaximum(100);
 	t->setValue(50);
-	t->setOrientation( Qt::Horizontal );
-	t->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
-	t->setFocusPolicy( Qt::NoFocus );
-	t->setTickPosition( tick_position );
-	t->setTickInterval( 10 );
-	t->setSingleStep( 1 );
-	t->setPageStep( 10 );
-	t->setToolTip( tr("Volume") );
-	t->setEnabled( isEnabled() );
+	t->setOrientation(Qt::Horizontal);
+	t->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	t->setFocusPolicy(Qt::NoFocus);
+	t->setTickPosition(tick_position);
+	t->setTickInterval(10);
+	t->setSingleStep(1);
+	t->setPageStep(10);
+	t->setToolTip(tr("Volume"));
+	t->setEnabled(isEnabled());
 	t->setAttribute(Qt::WA_NoMousePropagation);
 
-	connect( t,    SIGNAL(valueChanged(int)), 
-             this, SIGNAL(valueChanged(int)) );
+	connect(t,    SIGNAL(valueChanged(int)), 
+             this, SIGNAL(valueChanged(int)));
 	return t;
 }
 
 
-TTimeLabelAction::TTimeLabelAction( QWidget * parent )
+TTimeLabelAction::TTimeLabelAction(QWidget* parent)
 	: TWidgetAction(parent)
 {
 }
@@ -197,25 +197,25 @@ void TTimeLabelAction::setText(QString s) {
 	emit newText(s);
 }
 
-QWidget * TTimeLabelAction::createWidget ( QWidget * parent ) {
-	QLabel * time_label = new QLabel(parent);
+QWidget* TTimeLabelAction::createWidget (QWidget* parent) {
+	QLabel* time_label = new QLabel(parent);
 	time_label->setObjectName("time_label");
     time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     time_label->setAutoFillBackground(true);
 
-    ColorUtils::setBackgroundColor( time_label, QColor(0,0,0) );
-    ColorUtils::setForegroundColor( time_label, QColor(255,255,255) );
-    time_label->setText( "00:00:00 / 00:00:00" );
-    time_label->setFrameShape( QFrame::Panel );
-    time_label->setFrameShadow( QFrame::Sunken );
+    ColorUtils::setBackgroundColor(time_label, QColor(0,0,0));
+    ColorUtils::setForegroundColor(time_label, QColor(255,255,255));
+    time_label->setText("00:00:00 / 00:00:00");
+    time_label->setFrameShape(QFrame::Panel);
+    time_label->setFrameShadow(QFrame::Sunken);
 
-	connect( this, SIGNAL(newText(QString)), 
-             time_label, SLOT(setText(QString)) );
+	connect(this, SIGNAL(newText(QString)), 
+             time_label, SLOT(setText(QString)));
 
 	return time_label;
 }
 
-TSeekingButton::TSeekingButton( QList<QAction*> actions, QWidget * parent )
+TSeekingButton::TSeekingButton(QList<QAction*> actions, QWidget* parent)
 	: QWidgetAction(parent)
 {
 	_actions = actions;
@@ -224,15 +224,15 @@ TSeekingButton::TSeekingButton( QList<QAction*> actions, QWidget * parent )
 TSeekingButton::~TSeekingButton() {
 }
 
-QWidget * TSeekingButton::createWidget( QWidget * parent ) {
-	QToolButton * button = new QToolButton(parent);
+QWidget* TSeekingButton::createWidget(QWidget* parent) {
+	QToolButton* button = new QToolButton(parent);
 	button->setPopupMode(QToolButton::MenuButtonPopup);
 
-	if (_actions.count() > 0 ) {
-		button->setDefaultAction( _actions[0] );
+	if (_actions.count() > 0) {
+		button->setDefaultAction(_actions[0]);
 	}
 	for (int n = 1; n < _actions.count(); n++) {
-		button->addAction( _actions[n] );
+		button->addAction(_actions[n]);
 	}
 
 	return button;

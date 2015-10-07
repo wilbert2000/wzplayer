@@ -32,28 +32,28 @@ class TDrives : public TWidget, public Ui::TDrives
 	Q_OBJECT
 
 public:
-	TDrives( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TDrives(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TDrives();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences * pref);
+	void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences * pref);
+	void getData(Settings::TPreferences* pref);
 
 protected:
 	virtual void createHelp();
 
-	void setDVDDevice( QString dir );
+	void setDVDDevice(QString dir);
 	QString dvdDevice();
 
-	void setBlurayDevice( QString dir );
+	void setBlurayDevice(QString dir);
 	QString blurayDevice();
 
-	void setCDRomDevice( QString dir );
+	void setCDRomDevice(QString dir);
 	QString cdromDevice();
 
 	void setUseDVDNav(bool b);

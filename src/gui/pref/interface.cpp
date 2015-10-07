@@ -34,18 +34,18 @@
 
 namespace Gui { namespace Pref {
 
-TInterface::TInterface(QWidget * parent, Qt::WindowFlags f)
-	: TWidget(parent, f )
+TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
+	: TWidget(parent, f)
 {
 	setupUi(this);
 	/* volume_icon->hide(); */
 
 	// Style combo
-	style_combo->addItem( "<default>" );
-	style_combo->addItems( QStyleFactory::keys() );
+	style_combo->addItem("<default>");
+	style_combo->addItems(QStyleFactory::keys());
 
 	// Icon set combo
-	iconset_combo->addItem( "Default" );
+	iconset_combo->addItem("Default");
 
 #ifdef SKINS
 	n_skins = 0;
@@ -61,12 +61,12 @@ TInterface::TInterface(QWidget * parent, Qt::WindowFlags f)
 		bool is_skin = QFile::exists(css_file);
 		//qDebug("***** %s %d", css_file.toUtf8().constData(), is_skin);
 		if (is_skin) {
-			skin_combo->addItem( iconsets[n] );
+			skin_combo->addItem(iconsets[n]);
 			n_skins++;
 		}
 		else
 		#endif
-		iconset_combo->addItem( iconsets[n] );
+		iconset_combo->addItem(iconsets[n]);
 	}
 	// Global
 	icon_dir = Paths::themesPath();
@@ -77,14 +77,14 @@ TInterface::TInterface(QWidget * parent, Qt::WindowFlags f)
 		QString css_file = Paths::themesPath() + "/" + iconsets[n] + "/main.css";
 		bool is_skin = QFile::exists(css_file);
 		//qDebug("***** %s %d", css_file.toUtf8().constData(), is_skin);
-		if ((is_skin) && (skin_combo->findText( iconsets[n] ) == -1)) {
-			skin_combo->addItem( iconsets[n] );
+		if ((is_skin) && (skin_combo->findText(iconsets[n]) == -1)) {
+			skin_combo->addItem(iconsets[n]);
 			n_skins++;
 		}
 		else
 		#endif
-		if (iconset_combo->findText( iconsets[n] ) == -1) {
-			iconset_combo->addItem( iconsets[n] );
+		if (iconset_combo->findText(iconsets[n]) == -1) {
+			iconset_combo->addItem(iconsets[n]);
 		}
 	}
 	#ifdef SKINS
@@ -132,16 +132,16 @@ void TInterface::createLanguageCombo() {
 
 	// Language combo
 	QDir translation_dir = Paths::translationPath();
-	QStringList languages = translation_dir.entryList( QStringList() << "*.qm");
+	QStringList languages = translation_dir.entryList(QStringList() << "*.qm");
 	QRegExp rx_lang("smplayer_(.*)\\.qm");
 	language_combo->clear();
-	language_combo->addItem( tr("<Autodetect>") );
+	language_combo->addItem(tr("<Autodetect>"));
 	for (int n=0; n < languages.count(); n++) {
 		if (rx_lang.indexIn(languages[n]) > -1) {
 			QString l = rx_lang.cap(1);
 			QString text = l;
 			if (m.contains(l)) text = m[l] + " ("+l+")";
-			language_combo->addItem( text, l );
+			language_combo->addItem(text, l);
 		}
 	}
 }
@@ -156,49 +156,49 @@ void TInterface::retranslateStrings() {
 	timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
 
 	// Icons
-	resize_window_icon->setPixmap( Images::icon("resize_window") );
-	/* volume_icon->setPixmap( Images::icon("speaker") ); */
+	resize_window_icon->setPixmap(Images::icon("resize_window"));
+	/* volume_icon->setPixmap(Images::icon("speaker")); */
 
 #ifdef SINGLE_INSTANCE
 	changeInstanceImages();
 #endif
 
 	// Seek widgets
-	seek1->setLabel( tr("&Short jump") );
-	seek2->setLabel( tr("&Medium jump") );
-	seek3->setLabel( tr("&Long jump") );
-	seek4->setLabel( tr("Mouse &wheel jump") );
+	seek1->setLabel(tr("&Short jump"));
+	seek2->setLabel(tr("&Medium jump"));
+	seek3->setLabel(tr("&Long jump"));
+	seek4->setLabel(tr("Mouse &wheel jump"));
 
 	if (qApp->isLeftToRight()) {
-		seek1->setIcon( Images::icon("forward10s", 32) );
-		seek2->setIcon( Images::icon("forward1m", 32) );
-		seek3->setIcon( Images::icon("forward10m", 32) );
+		seek1->setIcon(Images::icon("forward10s", 32));
+		seek2->setIcon(Images::icon("forward1m", 32));
+		seek3->setIcon(Images::icon("forward10m", 32));
 	} else {
-		seek1->setIcon( Images::flippedIcon("forward10s", 32) );
-		seek2->setIcon( Images::flippedIcon("forward1m", 32) );
-		seek3->setIcon( Images::flippedIcon("forward10m", 32) );
+		seek1->setIcon(Images::flippedIcon("forward10s", 32));
+		seek2->setIcon(Images::flippedIcon("forward1m", 32));
+		seek3->setIcon(Images::flippedIcon("forward10m", 32));
 	}
-	seek4->setIcon( Images::icon("mouse",32) );
+	seek4->setIcon(Images::icon("mouse",32));
 
 	// Language combo
 	int language_item = language_combo->currentIndex();
 	createLanguageCombo();
-	language_combo->setCurrentIndex( language_item );
+	language_combo->setCurrentIndex(language_item);
 
 	// Iconset combo
-	iconset_combo->setItemText( 0, tr("Default") );
+	iconset_combo->setItemText(0, tr("Default"));
 
-	style_combo->setItemText( 0, tr("Default") );
+	style_combo->setItemText(0, tr("Default"));
 
 	int gui_index = gui_combo->currentIndex();
 	gui_combo->clear();
-	gui_combo->addItem( tr("Basic GUI"), "DefaultGUI");
-	gui_combo->addItem( tr("Mini GUI"), "MiniGUI");
+	gui_combo->addItem(tr("Basic GUI"), "DefaultGUI");
+	gui_combo->addItem(tr("Mini GUI"), "MiniGUI");
 #ifdef MPCGUI
-	gui_combo->addItem( tr("Mpc GUI"), "MpcGUI");
+	gui_combo->addItem(tr("Mpc GUI"), "MpcGUI");
 #endif
 #ifdef SKINS
-	gui_combo->addItem( tr("Skinnable GUI"), "SkinGUI");
+	gui_combo->addItem(tr("Skinnable GUI"), "SkinGUI");
 	if (n_skins == 0) {
 		QModelIndex index = gui_combo->model()->index(gui_combo->count()-1,0);
 		gui_combo->model()->setData(index, QVariant(0), Qt::UserRole -1);
@@ -212,12 +212,12 @@ void TInterface::retranslateStrings() {
 	createHelp();
 }
 
-void TInterface::setData(Settings::TPreferences * pref) {
-	setLanguage( pref->language );
-	setIconSet( pref->iconset );
+void TInterface::setData(Settings::TPreferences* pref) {
+	setLanguage(pref->language);
+	setIconSet(pref->iconset);
 
-	setResizeMethod( pref->resize_method );
-	setSaveSize( pref->save_window_size_on_exit );
+	setResizeMethod(pref->resize_method);
+	setSaveSize(pref->save_window_size_on_exit);
 
 #ifdef SINGLE_INSTANCE
 	setUseSingleInstance(pref->use_single_instance);
@@ -253,7 +253,7 @@ void TInterface::setData(Settings::TPreferences * pref) {
 	setRememberDirs(pref->save_dirs);
 }
 
-void TInterface::getData(Settings::TPreferences * pref) {
+void TInterface::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 	language_changed = false;
 	iconset_changed = false;
@@ -299,7 +299,7 @@ void TInterface::getData(Settings::TPreferences * pref) {
 
 	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
 
-	if ( pref->style != style() ) {
+	if (pref->style != style()) {
 		pref->style = style();
 		style_changed = true;
 	}
@@ -312,12 +312,12 @@ void TInterface::getData(Settings::TPreferences * pref) {
 	pref->floating_hide_delay = floating_hide_delay_spin->value();
 
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
-		pref->history_recents.setMaxItems( recentsMaxItems() );
+		pref->history_recents.setMaxItems(recentsMaxItems());
 		recents_changed = true;
 	}
 
 	if (pref->history_urls.maxItems() != urlMaxItems()) {
-		pref->history_urls.setMaxItems( urlMaxItems() );
+		pref->history_urls.setMaxItems(urlMaxItems());
 		url_max_changed = true;
 	}
 
@@ -331,7 +331,7 @@ void TInterface::setLanguage(QString lang) {
 	else {
 		int pos = language_combo->findData(lang);
 		if (pos != -1) 
-			language_combo->setCurrentIndex( pos );
+			language_combo->setCurrentIndex(pos);
 		else
 			language_combo->setCurrentText(lang);
 	}
@@ -341,7 +341,7 @@ QString TInterface::language() {
 	if (language_combo->currentIndex()==0) 
 		return "";
 	else 
-		return language_combo->itemData( language_combo->currentIndex() ).toString();
+		return language_combo->itemData(language_combo->currentIndex()).toString();
 }
 
 void TInterface::setIconSet(QString set) {
@@ -534,19 +534,19 @@ void TInterface::on_changeFontButton_clicked() {
 	}
 
 	bool ok;
-	f = QFontDialog::getFont( &ok, f, this);
+	f = QFontDialog::getFont(&ok, f, this);
 
 	if (ok) {
-		default_font_edit->setText( f.toString() );
+		default_font_edit->setText(f.toString());
 	}
 }
 
 #ifdef SINGLE_INSTANCE
 void TInterface::changeInstanceImages() {
 	if (single_instance_check->isChecked())
-		instances_icon->setPixmap( Images::icon("instance1") );
+		instances_icon->setPixmap(Images::icon("instance1"));
 	else
-		instances_icon->setPixmap( Images::icon("instance2") );
+		instances_icon->setPixmap(Images::icon("instance2"));
 }
 #endif
 
@@ -622,17 +622,17 @@ void TInterface::createHelp() {
 
 	setWhatsThis(mainwindow_resize_combo, tr("Autoresize"),
         tr("The main window can be resized automatically. Select the option "
-           "you prefer.") );
+           "you prefer."));
 
 	setWhatsThis(save_size_check, tr("Remember position and size"),
         tr("If you check this option, the position and size of the main "
-           "window will be saved and restored when you run SMPlayer again.") );
+           "window will be saved and restored when you run SMPlayer again."));
 
 	setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
-        tr("If this option is enabled the video window will be hidden when playing audio files.") );
+        tr("If this option is enabled the video window will be hidden when playing audio files."));
 
 	setWhatsThis(language_combo, tr("Language"),
-		tr("Here you can change the language of the application.") );
+		tr("Here you can change the language of the application."));
 
 	setWhatsThis(gui_combo, tr("GUI"),
         tr("Select the graphic interface you prefer for the application.") +"<br>"+
@@ -645,60 +645,60 @@ void TInterface::createHelp() {
         +" "+
         tr("The <b>Mpc GUI</b> looks like the interface in Media Player Classic.")
 #endif
-        );
+       );
 
 	setWhatsThis(iconset_combo, tr("Icon set"),
-        tr("Select the icon set you prefer for the application.") );
+        tr("Select the icon set you prefer for the application."));
 
 #ifdef SKINS
 	setWhatsThis(skin_combo, tr("Skin"),
-        tr("Select the skin you prefer for the application. Only available with the skinnable GUI.") );
+        tr("Select the skin you prefer for the application. Only available with the skinnable GUI."));
 #endif
 
 	setWhatsThis(style_combo, tr("Style"),
-        tr("Select the style you prefer for the application.") );
+        tr("Select the style you prefer for the application."));
 
 
 	setWhatsThis(changeFontButton, tr("Default font"),
-        tr("You can change here the application's font.") );
+        tr("You can change here the application's font."));
 
 	addSectionTitle(tr("Seeking"));
 
 	setWhatsThis(seek1, tr("Short jump"),
         tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("short jump")) );
+           "choose the %1 action.").arg(tr("short jump")));
 
 	setWhatsThis(seek2, tr("Medium jump"),
         tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("medium jump")) );
+           "choose the %1 action.").arg(tr("medium jump")));
 
 	setWhatsThis(seek3, tr("Long jump"),
         tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("long jump")) );
+           "choose the %1 action.").arg(tr("long jump")));
 
 	setWhatsThis(seek4, tr("Mouse wheel jump"),
         tr("Select the time that should be go forward or backward when you "
-           "move the mouse wheel.") );
+           "move the mouse wheel."));
 
 	setWhatsThis(timeslider_behaviour_combo, tr("Behaviour of time slider"),
-        tr("Select what to do when dragging the time slider.") );
+        tr("Select what to do when dragging the time slider."));
 
 	setWhatsThis(seeking_method_group, tr("Seeking method"),
 		tr("Sets the method to be used when seeking with the slider. "
            "Absolute seeking may be a little bit more accurate, while "
-           "relative seeking may work better with files with a wrong length.") );
+           "relative seeking may work better with files with a wrong length."));
 
 	setWhatsThis(precise_seeking_check, tr("Precise seeking"),
 		tr("If this option is enabled, seeks are more accurate but they "
            "can be a little bit slower. May not work with some video formats.") +"<br>"+
-		tr("Note: this option only works with MPlayer2") );
+		tr("Note: this option only works with MPlayer2"));
 
 	setWhatsThis(reset_stop_check, tr("Pressing the stop button once resets the time position"),
 		tr("By default when the stop button is pressed the time position is remembered "
            "so if you press play button the media will resume at the same point. You need "
            "to press the stop button twice to reset the time position, but if this "
            "option is checked the time position will be set to 0 with only once "
-           "press of the stop button.") );
+           "press of the stop button."));
 
 #ifdef SINGLE_INSTANCE
 	addSectionTitle(tr("Instances"));
@@ -706,35 +706,35 @@ void TInterface::createHelp() {
 	setWhatsThis(single_instance_check, 
         tr("Use only one running instance of SMPlayer"),
         tr("Check this option if you want to use an already running instance "
-           "of SMPlayer when opening other files.") );
+           "of SMPlayer when opening other files."));
 #endif
 
 	addSectionTitle(tr("Floating control"));
 
 	setWhatsThis(floating_animated_check, tr("Animated"),
 		tr("If this option is enabled, the floating control will appear "
-           "with an animation.") );
+           "with an animation."));
 
 	setWhatsThis(floating_width_slider, tr("Width"),
-		tr("Specifies the width of the control (as a percentage).") );
+		tr("Specifies the width of the control (as a percentage)."));
 
 	setWhatsThis(floating_margin_slider, tr("Margin"),
 		tr("This option sets the number of pixels that the floating control "
            "will be away from the bottom of the screen. Useful when the "
            "screen is a TV, as the overscan might prevent the control to be "
-           "visible.") );
+           "visible."));
 
 	setWhatsThis(floating_move_bottom_check, tr("Show only when moving the mouse to the bottom of the screen"),
 		tr("If this option is checked, the floating control will only be displayed when the mouse is moved "
            "to the bottom of the screen. Otherwise the control will appear whenever the mouse is moved, no matter "
-           "its position.") );
+           "its position."));
 
 	setWhatsThis(floating_compact_check, tr("Display in compact mode too"),
 		tr("If this option is enabled, the floating control will appear "
            "in compact mode too.") +" " +
 		tr("This option only works with the basic GUI.") +" "+
 		tr("<b>Warning:</b> the floating control has not been "
-           "designed for compact mode and it might not work properly.") );
+           "designed for compact mode and it might not work properly."));
 
 	setWhatsThis(floating_hide_delay_spin, tr("Time to hide the control"),
 		tr("Sets the time (in milliseconds) to hide the control after the mouse went away from the control."));
@@ -744,15 +744,15 @@ void TInterface::createHelp() {
 	setWhatsThis(recents_max_items_spin, tr("Recent files"),
         tr("Select the maximum number of items that will be shown in the "
            "<b>Open->Recent files</b> submenu. If you set it to 0 that "
-           "menu won't be shown at all.") );
+           "menu won't be shown at all."));
 
 	setWhatsThis(url_max_items_spin, tr("Max. URLs"),
         tr("Select the maximum number of items that the <b>Open->URL</b> "
            "dialog will remember. Set it to 0 if you don't want any URL "
-           "to be stored.") );
+           "to be stored."));
 
 	setWhatsThis(save_dirs_check, tr("Remember last directory"),
-		tr("If this option is checked, SMPlayer will remember the last folder you use to open a file.") );
+		tr("If this option is checked, SMPlayer will remember the last folder you use to open a file."));
 }
 
 }} // namespace Gui::Pref

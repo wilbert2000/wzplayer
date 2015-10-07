@@ -33,11 +33,11 @@ class TAutohideWidget : public QWidget
 public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
-	TAutohideWidget(QWidget * parent, QWidget * playerwindow);
+	TAutohideWidget(QWidget* parent, QWidget* playerwindow);
 	virtual ~TAutohideWidget();
 
-	void setInternalWidget(QWidget * w);
-	QWidget * internalWidget() { return internal_widget; }
+	void setInternalWidget(QWidget* w);
+	QWidget* internalWidget() { return internal_widget; }
 
 public slots:
 	void show();
@@ -60,7 +60,7 @@ public:
 	int hideDelay();
 
 protected:
-	bool eventFilter(QObject * obj, QEvent * event);
+	bool eventFilter(QObject* obj, QEvent* event);
 
 private slots:
 	void checkUnderMouse();
@@ -76,10 +76,10 @@ private:
 	int spacing;
 	int perc_width;
 	Activation activation_area;
-	QWidget * internal_widget;
-	QTimer * timer;
+	QWidget* internal_widget;
+	QTimer* timer;
 #if QT_VERSION >= 0x040600
-	QPropertyAnimation * animation;
+	QPropertyAnimation* animation;
 #endif
 };
 

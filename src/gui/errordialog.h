@@ -28,7 +28,7 @@ class TErrorDialog : public QDialog, public Ui::TErrorDialog
 	Q_OBJECT
 
 public:
-	TErrorDialog( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+	TErrorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TErrorDialog();
 
 public slots:

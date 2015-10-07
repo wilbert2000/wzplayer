@@ -25,23 +25,23 @@
 
 namespace Gui {
 
-TVerticalText::TVerticalText(QWidget * parent,  Qt::WindowFlags f) :
+TVerticalText::TVerticalText(QWidget* parent,  Qt::WindowFlags f) :
 	QWidget(parent, f) {
-	resize(20,100 /*parent->height() */ );
+	resize(20,100 /*parent->height() */);
 	setMinimumSize(20,10); // neccesary for smooth integration into layouts (we only care for the widths).
 }
 
 TVerticalText::~TVerticalText() {
 }
 
-void TVerticalText::paintEvent ( QPaintEvent * /*event*/ ) {
+void TVerticalText::paintEvent (QPaintEvent* /*event*/) {
 
 	QPainter paint(this);
 	paint.rotate(270);
 	// Fix for bug 72520
 	//-       paint.drawText(-height()+2,width(),name());
-	//+       paint.drawText( -height()+2, width(), QString::fromUtf8(name()) );
-	paint.drawText( -height()+2, width(), _label );
+	//+       paint.drawText(-height()+2, width(), QString::fromUtf8(name()));
+	paint.drawText(-height()+2, width(), _label);
 }
 
 QSize TVerticalText::sizeHint() const {

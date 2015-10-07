@@ -20,7 +20,7 @@
 
 namespace Gui {
 
-TVideoEqualizer::TVideoEqualizer( QWidget* parent, Qt::WindowFlags f ) 
+TVideoEqualizer::TVideoEqualizer(QWidget* parent, Qt::WindowFlags f) 
 	: QWidget(parent, f)
 {
 	setupUi(this);
@@ -33,35 +33,35 @@ TVideoEqualizer::TVideoEqualizer( QWidget* parent, Qt::WindowFlags f )
 	gamma_indicator->setNum(0);
 	*/
 
-	connect( contrast_slider, SIGNAL(valueChanged(int)),
-             contrast_indicator, SLOT(setNum(int)) );
+	connect(contrast_slider, SIGNAL(valueChanged(int)),
+             contrast_indicator, SLOT(setNum(int)));
 
-	connect( brightness_slider, SIGNAL(valueChanged(int)),
-             brightness_indicator, SLOT(setNum(int)) );
+	connect(brightness_slider, SIGNAL(valueChanged(int)),
+             brightness_indicator, SLOT(setNum(int)));
 
-	connect( hue_slider, SIGNAL(valueChanged(int)),
-             hue_indicator, SLOT(setNum(int)) );
+	connect(hue_slider, SIGNAL(valueChanged(int)),
+             hue_indicator, SLOT(setNum(int)));
 
-	connect( saturation_slider, SIGNAL(valueChanged(int)),
-             saturation_indicator, SLOT(setNum(int)) );
+	connect(saturation_slider, SIGNAL(valueChanged(int)),
+             saturation_indicator, SLOT(setNum(int)));
 
-	connect( gamma_slider, SIGNAL(valueChanged(int)),
-             gamma_indicator, SLOT(setNum(int)) );
+	connect(gamma_slider, SIGNAL(valueChanged(int)),
+             gamma_indicator, SLOT(setNum(int)));
 
 	// Reemit signals
-	connect( contrast_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(contrastChanged(int)) );
-	connect( brightness_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(brightnessChanged(int)) );
-	connect( hue_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(hueChanged(int)) );
-	connect( saturation_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(saturationChanged(int)) );
-	connect( gamma_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(gammaChanged(int)) );
+	connect(contrast_slider, SIGNAL(valueChanged(int)),
+             this, SIGNAL(contrastChanged(int)));
+	connect(brightness_slider, SIGNAL(valueChanged(int)),
+             this, SIGNAL(brightnessChanged(int)));
+	connect(hue_slider, SIGNAL(valueChanged(int)),
+             this, SIGNAL(hueChanged(int)));
+	connect(saturation_slider, SIGNAL(valueChanged(int)),
+             this, SIGNAL(saturationChanged(int)));
+	connect(gamma_slider, SIGNAL(valueChanged(int)),
+             this, SIGNAL(gammaChanged(int)));
 
-	connect( makedefault_button, SIGNAL(clicked()), 
-             this, SIGNAL(requestToChangeDefaultValues()) );
+	connect(makedefault_button, SIGNAL(clicked()), 
+             this, SIGNAL(requestToChangeDefaultValues()));
 
 	adjustSize();
 }
@@ -87,11 +87,11 @@ void TVideoEqualizer::on_bysoftware_check_stateChanged(int state) {
 	emit bySoftwareChanged(state == Qt::Checked);
 }
 
-void TVideoEqualizer::hideEvent( QHideEvent * ) {
+void TVideoEqualizer::hideEvent(QHideEvent*) {
 	emit visibilityChanged();
 }
 
-void TVideoEqualizer::showEvent( QShowEvent * ) {
+void TVideoEqualizer::showEvent(QShowEvent*) {
 	emit visibilityChanged();
 }
 
@@ -100,9 +100,9 @@ void TVideoEqualizer::retranslateStrings() {
 
 	// What's this help:
 	makedefault_button->setWhatsThis(
-			tr("Use the current values as default values for new videos.") );
+			tr("Use the current values as default values for new videos."));
 
-	reset_button->setWhatsThis( tr("Set all controls to zero.") );
+	reset_button->setWhatsThis(tr("Set all controls to zero."));
 }
 
 // Language change stuff

@@ -42,10 +42,10 @@ TMini::TMini()
 	createControlWidget();
 	createFloatingControl();
 
-	connect( editControlAct, SIGNAL(triggered()), controlwidget, SLOT(edit()) );
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
+	connect(editControlAct, SIGNAL(triggered()), controlwidget, SLOT(edit()));
+	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
-	connect( editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()) );
+	connect(editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()));
 
 	statusBar()->hide();
 }
@@ -53,8 +53,8 @@ TMini::TMini()
 TMini::~TMini() {
 }
 
-QMenu * TMini::createPopupMenu() {
-	QMenu * m = new QMenu(this);
+QMenu* TMini::createPopupMenu() {
+	QMenu* m = new QMenu(this);
 	m->addAction(editControlAct);
 	m->addAction(editFloatingControlAct);
 	return m;
@@ -62,13 +62,13 @@ QMenu * TMini::createPopupMenu() {
 
 void TMini::createActions() {
 
-	editControlAct = new TAction( this, "edit_control_minigui" );
-	editFloatingControlAct = new TAction( this, "edit_floating_control_minigui" );
+	editControlAct = new TAction(this, "edit_control_minigui");
+	editFloatingControlAct = new TAction(this, "edit_floating_control_minigui");
 }
 
 
 void TMini::createControlWidget() {
-	controlwidget = new TEditableToolbar( this );
+	controlwidget = new TEditableToolbar(this);
 	controlwidget->setObjectName("controlwidget");
 	controlwidget->setLayoutDirection(Qt::LeftToRight);
 	controlwidget->setMovable(true);
@@ -86,7 +86,7 @@ void TMini::createFloatingControl() {
 	floating_control = new TAutohideWidget(panel, playerwindow);
 	floating_control->setAutoHide(true);
 
-	TEditableToolbar * iw = new TEditableToolbar(floating_control);
+	TEditableToolbar* iw = new TEditableToolbar(floating_control);
 	iw->setObjectName("floating_control");
 	connect(iw, SIGNAL(iconSizeChanged(const QSize &)), this, SLOT(adjustFloatingControlSize()));
 
@@ -110,10 +110,10 @@ void TMini::retranslateStrings() {
 	// Change the icon of the play/pause action
 	playOrPauseAct->setIcon(Images::icon("play"));
 
-	controlwidget->setWindowTitle( tr("Control bar") );
+	controlwidget->setWindowTitle(tr("Control bar"));
 
-	editControlAct->change( tr("Edit &control bar") );
-	editFloatingControlAct->change( tr("Edit &floating control") );
+	editControlAct->change(tr("Edit &control bar"));
+	editFloatingControlAct->change(tr("Edit &floating control"));
 }
 
 void TMini::togglePlayAction(TCore::State state) {
@@ -133,7 +133,7 @@ void TMini::aboutToEnterFullscreen() {
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea( (TAutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
 	QTimer::singleShot(100, floating_control, SLOT(activate()));
 
@@ -186,12 +186,12 @@ void TMini::saveConfig(const QString &group) {
 
 	pref->beginGroup("mini_gui");
 
-	pref->setValue( "toolbars_state", saveState(Helper::qtVersion()) );
+	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 
-	pref->beginGroup( "actions" );
-	pref->setValue("controlwidget", controlwidget->actionsToStringList() );
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	pref->setValue("floating_control", iw->actionsToStringList() );
+	pref->beginGroup("actions");
+	pref->setValue("controlwidget", controlwidget->actionsToStringList());
+	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
+	pref->setValue("floating_control", iw->actionsToStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
@@ -209,10 +209,10 @@ void TMini::loadConfig(const QString &group) {
 
 	pref->beginGroup("mini_gui");
 
-	pref->beginGroup( "actions" );
-	controlwidget->setActionsFromStringList( pref->value("controlwidget", controlwidget->defaultActions()).toStringList() );
-	TEditableToolbar * iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList( pref->value("floating_control", iw->defaultActions()).toStringList() );
+	pref->beginGroup("actions");
+	controlwidget->setActionsFromStringList(pref->value("controlwidget", controlwidget->defaultActions()).toStringList());
+	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
+	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
@@ -222,7 +222,7 @@ void TMini::loadConfig(const QString &group) {
 
 	floating_control->adjustSize();
 
-	restoreState( pref->value( "toolbars_state" ).toByteArray(), Helper::qtVersion() );
+	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 
 	pref->endGroup();
 

@@ -29,11 +29,11 @@
 
 namespace Gui {
 
-TLogWindow::TLogWindow( QWidget* parent )
-	: QWidget(parent, Qt::Window ) {
+TLogWindow::TLogWindow(QWidget* parent)
+	: QWidget(parent, Qt::Window) {
 
 	setupUi(this);
-	browser->setFont( QFont("fixed") );
+	browser->setFont(QFont("fixed"));
 	retranslateStrings();
 }
 
@@ -48,10 +48,10 @@ void TLogWindow::retranslateStrings() {
 	saveButton->setText("");
 	copyButton->setText("");
 
-	saveButton->setIcon( Images::icon("save") );
-	copyButton->setIcon( Images::icon("copy") );
+	saveButton->setIcon(Images::icon("save"));
+	copyButton->setIcon(Images::icon("copy"));
 
-	setWindowIcon( Images::icon("logo") );
+	setWindowIcon(Images::icon("logo"));
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
@@ -103,36 +103,36 @@ void TLogWindow::on_copyButton_clicked() {
 void TLogWindow::on_saveButton_clicked() {
 	QString s = MyFileDialog::getSaveFileName(
                     this, tr("Choose a filename to save under"), 
-                    "", tr("Logs") +" (*.log *.txt)" );
+                    "", tr("Logs") +" (*.log *.txt)");
 
 	if (!s.isEmpty()) {
 		if (QFileInfo(s).exists()) {
-			int res =QMessageBox::question( this, 
+			int res =QMessageBox::question(this, 
                                    tr("Confirm overwrite?"),
                                    tr("The file already exists.\n"
                                       "Do you want to overwrite?"),
                                    QMessageBox::Yes,
                                    QMessageBox::No,
                                    QMessageBox::NoButton);
-			if (res == QMessageBox::No ) {
+			if (res == QMessageBox::No) {
 				return;
 			}
 		}
 
-		QFile file( s );
-		if ( file.open( QIODevice::WriteOnly ) ) {
-	        QTextStream stream( &file );
+		QFile file(s);
+		if (file.open(QIODevice::WriteOnly)) {
+	        QTextStream stream(&file);
     		stream << browser->toPlainText();
 	        file.close();
 	    } else {
 			// Error opening file
 			qDebug("Gui::TLogWindow::save: error saving file");
-			QMessageBox::warning ( this, 
+			QMessageBox::warning (this, 
                                    tr("Error saving file"), 
                                    tr("The log couldn't be saved"),
                                    QMessageBox::Ok, 
                                    QMessageBox::NoButton, 
-                                   QMessageBox::NoButton );
+                                   QMessageBox::NoButton);
 
 		}
 	}

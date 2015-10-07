@@ -155,7 +155,7 @@ int TTracks::findLangID(QString expr) const {
 	qDebug("Maps::Tracks::findLang: '%s'", expr.toUtf8().data());
 
 	int id = -1;
-	QRegExp rx( expr );
+	QRegExp rx(expr);
 	TMapIterator i(*this);
 	while (i.hasNext()) {
 		i.next();

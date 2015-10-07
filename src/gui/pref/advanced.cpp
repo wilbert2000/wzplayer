@@ -28,8 +28,8 @@
 
 namespace Gui { namespace Pref {
 
-TAdvanced::TAdvanced(QWidget * parent, Qt::WindowFlags f)
-	: TWidget(parent, f )
+TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
+	: TWidget(parent, f)
 {
 	setupUi(this);
 
@@ -67,50 +67,50 @@ QPixmap TAdvanced::sectionIcon() {
 void TAdvanced::retranslateStrings() {
 	retranslateUi(this);
 
-	monitor_aspect_icon->setPixmap( Images::icon("monitor") );
+	monitor_aspect_icon->setPixmap(Images::icon("monitor"));
 
-	monitoraspect_combo->setItemText(0, tr("Auto") );
+	monitoraspect_combo->setItemText(0, tr("Auto"));
 
-	mplayer_use_window_check->setText( tr("&Run %1 in its own window").arg(PLAYER_NAME) );
-	shortnames_check->setText( tr("&Pass short filenames (8+3) to %1").arg(PLAYER_NAME) );
-	mplayer_crashes_check->setText( tr("R&eport %1 crashes").arg(PLAYER_NAME) );
-	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(PLAYER_NAME) );
-	options_info_label->setText( tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
-		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25" );
+	mplayer_use_window_check->setText(tr("&Run %1 in its own window").arg(PLAYER_NAME));
+	shortnames_check->setText(tr("&Pass short filenames (8+3) to %1").arg(PLAYER_NAME));
+	mplayer_crashes_check->setText(tr("R&eport %1 crashes").arg(PLAYER_NAME));
+	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(PLAYER_NAME));
+	options_info_label->setText(tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
+		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25");
 
 	createHelp();
 }
 
-void TAdvanced::setData(TPreferences * pref) {
-	setMonitorAspect( pref->monitor_aspect );
+void TAdvanced::setData(TPreferences* pref) {
+	setMonitorAspect(pref->monitor_aspect);
 
-	setRepaintVideoBackground( pref->repaint_video_background );
-	setUseMplayerWindow( pref->use_mplayer_window );
-	setMplayerAdditionalArguments( pref->mplayer_additional_options );
-	setMplayerAdditionalVideoFilters( pref->mplayer_additional_video_filters );
-	setMplayerAdditionalAudioFilters( pref->mplayer_additional_audio_filters );
-	setColorKey( pref->color_key );
+	setRepaintVideoBackground(pref->repaint_video_background);
+	setUseMplayerWindow(pref->use_mplayer_window);
+	setMplayerAdditionalArguments(pref->mplayer_additional_options);
+	setMplayerAdditionalVideoFilters(pref->mplayer_additional_video_filters);
+	setMplayerAdditionalAudioFilters(pref->mplayer_additional_audio_filters);
+	setColorKey(pref->color_key);
 
-	setPreferIpv4( pref->prefer_ipv4 );
-	setUseIdx( pref->use_idx );
+	setPreferIpv4(pref->prefer_ipv4);
+	setUseIdx(pref->use_idx);
 
 	setUseLavfDemuxer(pref->use_lavf_demuxer);
 
-	setUseCorrectPts( pref->use_correct_pts );
-	setActionsToRun( pref->actions_to_run );
-	setShowTagInTitle( pref->show_tag_in_window_title );
+	setUseCorrectPts(pref->use_correct_pts);
+	setActionsToRun(pref->actions_to_run);
+	setShowTagInTitle(pref->show_tag_in_window_title);
 
 	setLogEnabled(pref->log_enabled);
 	setLogVerbose(pref->log_verbose);
 	setLogFile(pref->log_file);
 	setLogFilter(pref->log_filter);
 
-	setUseShortNames( pref->use_short_pathnames );
+	setUseShortNames(pref->use_short_pathnames);
 
-	setMplayerCrashes( pref->report_mplayer_crashes );
+	setMplayerCrashes(pref->report_mplayer_crashes);
 }
 
-void TAdvanced::getData(TPreferences * pref) {
+void TAdvanced::getData(TPreferences* pref) {
 
 	requires_restart = false;
 	repaint_video_background_changed = false;
@@ -165,14 +165,14 @@ void TAdvanced::getData(TPreferences * pref) {
 
 void TAdvanced::setMonitorAspect(QString asp) {
 	if (asp.isEmpty())
-		monitoraspect_combo->setCurrentIndex( 0 );
+		monitoraspect_combo->setCurrentIndex(0);
 	else
 		monitoraspect_combo->setCurrentText(asp);
 		//monitoraspect_combo->setEditText(asp);
 }
 
 QString TAdvanced::monitorAspect() {
-	if (monitoraspect_combo->currentIndex() == 0 ) 
+	if (monitoraspect_combo->currentIndex() == 0) 
 		return "";
 	else
 		return monitoraspect_combo->currentText();
@@ -309,11 +309,11 @@ bool TAdvanced::showTagInTitle() {
 void TAdvanced::on_changeButton_clicked() {
 	//bool ok;
 	//int color = colorkey_view->text().toUInt(&ok, 16);
-	QColor color( colorkey_view->text() );
-	QColor c = QColorDialog::getColor ( color, this );
+	QColor color(colorkey_view->text());
+	QColor c = QColorDialog::getColor (color, this);
 	if (c.isValid()) {
-		//colorkey_view->setText( QString::number( c.rgb(), 16 ) );
-		colorkey_view->setText( c.name() );
+		//colorkey_view->setText(QString::number(c.rgb(), 16));
+		colorkey_view->setText(c.name());
 	}
 }
 
@@ -356,7 +356,7 @@ void TAdvanced::createHelp() {
 	addSectionTitle(tr("Advanced"));
 
 	setWhatsThis(monitoraspect_combo, tr("Monitor aspect"),
-        tr("Select the aspect ratio of your monitor.") );
+        tr("Select the aspect ratio of your monitor."));
 
 	setWhatsThis(mplayer_use_window_check, tr("Run %1 in its own window").arg(PLAYER_NAME),
         tr("If you check this option, the %1 video window won't be "
@@ -364,33 +364,33 @@ void TAdvanced::createHelp() {
            "own window. Note that mouse and keyboard events will be handled "
            "directly by %1, that means key shortcuts and mouse clicks "
            "probably won't work as expected when the %1 window has the "
-           "focus.").arg(PLAYER_NAME) );
+           "focus.").arg(PLAYER_NAME));
 
 	setWhatsThis(idx_check, tr("Rebuild index if needed"),
 		tr("Rebuilds index of files if no index was found, allowing seeking. "
 		   "Useful with broken/incomplete downloads, or badly created files. "
            "This option only works if the underlying media supports "
            "seeking (i.e. not with stdin, pipe, etc).<br> "
-           "<b>Note:</b> the creation of the index may take some time.") );
+           "<b>Note:</b> the creation of the index may take some time."));
 
 	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
 		tr("If this option is checked, the lavf demuxer will be used for all formats."));
 
 #ifdef Q_OS_WIN
 	setWhatsThis(shortnames_check, tr("Pass short filenames (8+3) to %1").arg(PLAYER_NAME),
-		tr("If this option is checked, SMPlayer will pass to %1 the short version of the filenames.").arg(PLAYER_NAME) );
+		tr("If this option is checked, SMPlayer will pass to %1 the short version of the filenames.").arg(PLAYER_NAME));
 #endif
 
 	setWhatsThis(repaint_video_background_check, 
         tr("Repaint the background of the video window"),
 		tr("Checking this option may reduce flickering, but it also might "
-           "produce that the video won't be displayed properly.") );
+           "produce that the video won't be displayed properly."));
 
 	setWhatsThis(mplayer_crashes_check, 
 		tr("Report %1 crashes").arg(PLAYER_NAME),
 		tr("If this option is checked, a window will appear to inform "
            "about %1 crashes. Otherwise those failures will be "
-           "silently ignored.").arg(PLAYER_NAME) );
+           "silently ignored.").arg(PLAYER_NAME));
 
 	setWhatsThis(correct_pts_combo, tr("Correct pts"),
 		tr("Switches %1 to an experimental mode where timestamps for "
@@ -400,7 +400,7 @@ void TAdvanced::createHelp() {
            "example when playing subtitles timed to scene changes with the "
            "SSA/ASS library enabled. Without correct pts the subtitle timing "
            "will typically be off by some frames. This option does not work "
-           "correctly with some demuxers and codecs.").arg(PLAYER_NAME) );
+           "correctly with some demuxers and codecs.").arg(PLAYER_NAME));
 
 	setWhatsThis(actions_to_run_edit, tr("Actions list"),
 		tr("Here you can specify a list of <i>actions</i> which will be "
@@ -412,17 +412,17 @@ void TAdvanced::createHelp() {
 		tr("Example:") +" <i>auto_zoom compact true</i><br>" +
 		tr("Limitation: the actions are run only when a file is opened and "
            "not when the mplayer process is restarted (e.g. you select an "
-           "audio or video filter).") );
+           "audio or video filter)."));
 
 	setWhatsThis(colorkey_view, tr("Colorkey"),
         tr("If you see parts of the video over any other window, you can "
            "change the colorkey to fix it. Try to select a color close to "
-           "black.") );
+           "black."));
 
 	setWhatsThis(show_tag_in_title_check, tr("Show tag info in window title"),
 		tr("If this option is enabled, information from tags will be "
 		   "shown in window title. "
-           "Otherwise only the filename will be shown.") );
+           "Otherwise only the filename will be shown."));
 
 	addSectionTitle(tr("Options for %1").arg(PLAYER_NAME));
 
@@ -456,25 +456,25 @@ void TAdvanced::createHelp() {
 
 	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
 		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
-          .arg( "<i>"+ Paths::configPath() + "/smplayer_log.txt</i>" ) );
+          .arg("<i>"+ Paths::configPath() + "/smplayer_log.txt</i>"));
 
 /*
 	setWhatsThis(log_mplayer_save_check, tr("Autosave %1 log").arg(PLAYER_NAME),
 		tr("If this option is checked, the %1 log will be saved to the "
            "specified file every time a new file starts to play. "
            "It's intended for external applications, so they can get "
-           "info about the file you're playing.").arg(PLAYER_NAME) );
+           "info about the file you're playing.").arg(PLAYER_NAME));
 
 	setWhatsThis(log_mplayer_save_name, tr("Autosave %1 log filename").arg(PLAYER_NAME),
  		tr("Enter here the path and filename that will be used to save the "
-           "%1 log.").arg(PLAYER_NAME) );
+           "%1 log.").arg(PLAYER_NAME));
 */
 
 	setWhatsThis(log_filter_edit, tr("Filter for log"),
 		tr("This option allows to filter the SMPlayer messages that will "
            "be stored in the log. Here you can write any regular expression.<br>"
            "For instance: <i>^TCore::.*</i> will display only the lines "
-		   "starting with <i>TCore::</i>. Warnings and errors are not filtered.") );
+		   "starting with <i>TCore::</i>. Warnings and errors are not filtered."));
 }
 
 }} // namespace Gui::Pref

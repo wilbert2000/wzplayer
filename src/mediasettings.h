@@ -187,8 +187,8 @@ public:
 
 	void list();
 
-	void save(QSettings * set, int player_id);
-	void load(QSettings * set, int player_id);
+	void save(QSettings* set, int player_id);
+	void load(QSettings* set, int player_id);
 
 private:
 	TMediaData* md;

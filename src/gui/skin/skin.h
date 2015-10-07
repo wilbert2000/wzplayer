@@ -52,7 +52,7 @@ public slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual QMenu * createPopupMenu();
+	virtual QMenu* createPopupMenu();
 
 	void createMainToolBars();
 	void createControlWidget();
@@ -74,26 +74,26 @@ protected slots:
 
 protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
-	QAction * mediaBarPanelAction;
+	QAction* mediaBarPanelAction;
 
-	TEditableToolbar * toolbar1;
-	QToolBar * controlwidget;
+	TEditableToolbar* toolbar1;
+	QToolBar* controlwidget;
 
-	TSeekingButton * rewindbutton_action;
-	TSeekingButton * forwardbutton_action;
+	TSeekingButton* rewindbutton_action;
+	TSeekingButton* forwardbutton_action;
 
-	TAutohideWidget * floating_control;
+	TAutohideWidget* floating_control;
 
-	TAction * editToolbar1Act;
+	TAction* editToolbar1Act;
 #if defined(SKIN_EDITABLE_CONTROL)
-	TAction * editFloatingControlAct;
+	TAction* editFloatingControlAct;
 #endif
 
-	TAction * viewVideoInfoAct;
-	TAction * scrollTitleAct;
+	TAction* viewVideoInfoAct;
+	TAction* scrollTitleAct;
 
-	QMenu * toolbar_menu;
-	QMenu * statusbar_menu;
+	QMenu* toolbar_menu;
+	QMenu* statusbar_menu;
 
 	int last_second;
 

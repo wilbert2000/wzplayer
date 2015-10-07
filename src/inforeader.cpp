@@ -37,9 +37,9 @@
 
 using namespace Settings;
 
-InfoReader * InfoReader::static_obj = 0;
+InfoReader* InfoReader::static_obj = 0;
 
-InfoReader * InfoReader::obj(const QString & mplayer_bin) {
+InfoReader* InfoReader::obj(const QString & mplayer_bin) {
 	QString player_bin = mplayer_bin;
 	if (player_bin.isEmpty()) {
 		player_bin = pref->mplayer_bin;
@@ -52,7 +52,7 @@ InfoReader * InfoReader::obj(const QString & mplayer_bin) {
 	return static_obj;
 }
 
-InfoReader::InfoReader(QString mplayer_bin, QObject * parent)
+InfoReader::InfoReader(QString mplayer_bin, QObject* parent)
 	: QObject(parent)
 	, mplayer_svn(0)
 	, is_mplayer2(false)

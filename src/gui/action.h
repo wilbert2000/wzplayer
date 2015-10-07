@@ -32,25 +32,25 @@ class TAction : public QAction
 public:
 	//! Creates a new TAction with name \a name. If \a autoadd is true
 	//! the action will be added to the parent
-	TAction ( QObject * parent, const char * name, bool autoadd = true );
+	TAction (QObject* parent, const char* name, bool autoadd = true);
 
 	//! Creates a new TAction. If \a autoadd is true
 	//! the action will be added to the parent
-	TAction ( QObject * parent, bool autoadd = true );
+	TAction (QObject* parent, bool autoadd = true);
 
-	TAction ( const QString & text, QKeySequence accel,
-               QObject * parent, const char * name = "",
-               bool autoadd = true );
+	TAction (const QString & text, QKeySequence accel,
+               QObject* parent, const char* name = "",
+               bool autoadd = true);
 
-	TAction ( QKeySequence accel, QObject * parent,
-               const char * name = "", bool autoadd = true );
+	TAction (QKeySequence accel, QObject* parent,
+               const char* name = "", bool autoadd = true);
 
 	virtual ~TAction();
 
 	void addShortcut(QKeySequence key);
 
 	//! Change the icon and text of the action.
-	void change(const QIcon & icon, const QString & text );
+	void change(const QIcon & icon, const QString & text);
 
 	//! Change the text of the action.
 	void change(const QString & text);

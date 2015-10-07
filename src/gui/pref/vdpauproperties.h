@@ -28,7 +28,7 @@ class TVDPAUProperties : public QDialog, public Ui::TVDPAUProperties {
 	Q_OBJECT
 
 public:
-	TVDPAUProperties( QWidget * parent = 0, Qt::WindowFlags f = 0 );
+	TVDPAUProperties(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TVDPAUProperties();
 
 	void setffh264vdpau(bool b);

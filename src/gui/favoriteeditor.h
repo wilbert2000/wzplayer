@@ -57,7 +57,7 @@ protected slots:
 	void on_add_button_clicked();
 	void on_add_submenu_button_clicked();
 
-	void edit_icon( int row, int column ); 
+	void edit_icon(int row, int column); 
 
 protected:
 	QList<QTableWidgetItem*> takeRow(int row);

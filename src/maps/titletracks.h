@@ -36,11 +36,11 @@ public:
 
 	TChapters chapters;
 
-	void setName( const QString & aName ) { name = aName; }
-	void setDuration( double d ) { duration = d; }
-	void setAngles( int n ) { angles = n; }
-	void setVTS( int n ) { vts = n; }
-	void setType( bool aTrack ) { isTrack = aTrack; }
+	void setName(const QString & aName) { name = aName; }
+	void setDuration(double d) { duration = d; }
+	void setAngles(int n) { angles = n; }
+	void setVTS(int n) { vts = n; }
+	void setType(bool aTrack) { isTrack = aTrack; }
 	void setTrack(int id, const QString &aName, double aDuration) {
 		ID = id;
 		name = aName;

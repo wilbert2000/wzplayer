@@ -49,10 +49,10 @@ TPlayerLayer::TPlayerLayer(QWidget* parent, Qt::WindowFlags f)
 
 	// If not set parent playerwindow will not get mouse move events
 	setMouseTracking(true);
-	setFocusPolicy( Qt::NoFocus );
+	setFocusPolicy(Qt::NoFocus);
 
 	setAutoFillBackground(true);
-	setMinimumSize( QSize(0,0) );
+	setMinimumSize(QSize(0,0));
 
 #ifndef Q_OS_WIN
 	#if QT_VERSION < 0x050000
@@ -75,7 +75,7 @@ void TPlayerLayer::setRepaintBackground(bool b) {
 	repaint_background = b;
 }
 
-void TPlayerLayer::paintEvent( QPaintEvent * e ) {
+void TPlayerLayer::paintEvent(QPaintEvent* e) {
 	//qDebug("TPlayerLayer::paintEvent: repaint_background: %d", repaint_background);
 
 	// repaint_background is the option to draw the background or not,
@@ -89,8 +89,8 @@ void TPlayerLayer::paintEvent( QPaintEvent * e ) {
 	if (repaint_background || normal_background) {
 		//qDebug("TPlayerLayer::paintEvent: painting");
 		QPainter painter(this);
-		painter.eraseRect( e->rect() );
-		//painter.fillRect( e->rect(), QColor(255,0,0) );
+		painter.eraseRect(e->rect());
+		//painter.fillRect(e->rect(), QColor(255,0,0));
 	}
 }
 
@@ -362,11 +362,11 @@ void TPlayerWindow::stopDragging() {
 	dragging = false;
 	setCursor(QCursor(Qt::ArrowCursor));
 
-	// qDebug( "TPlayerWindow::stopDragging: stopped dragging" );
+	// qDebug("TPlayerWindow::stopDragging: stopped dragging");
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
-	// qDebug( "TPlayerWindow::mousePressEvent" );
+	// qDebug("TPlayerWindow::mousePressEvent");
 
 	event->accept();
 
@@ -387,7 +387,7 @@ void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
-	//qDebug( "TPlayerWindow::mouseMoveEvent" );
+	//qDebug("TPlayerWindow::mouseMoveEvent");
 
 	event->accept();
 
@@ -469,7 +469,7 @@ bool TPlayerWindow::checkDragging(QMouseEvent* event) {
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
-	// qDebug( "TPlayerWindow::mouseReleaseEvent");
+	// qDebug("TPlayerWindow::mouseReleaseEvent");
 
 	event->accept();
 
@@ -480,16 +480,16 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
 			if (delay_left_click) {
 				if (double_clicked) {
 					double_clicked = false;
-					// qDebug( "TPlayerWindow::mouseReleaseEvent: ignoring event after double click" );
+					// qDebug("TPlayerWindow::mouseReleaseEvent: ignoring event after double click");
 				} else {
 					// Delay left click until double click has a chance to arrive
 					left_click_timer->start();
-					// qDebug( "TPlayerWindow::mouseReleaseEvent: delaying left click" );
+					// qDebug("TPlayerWindow::mouseReleaseEvent: delaying left click");
 				}
 			} else {
 				double_clicked = false;
 				// Click right away
-				// qDebug( "TPlayerWindow::mouseReleaseEvent: emitting left click" );
+				// qDebug("TPlayerWindow::mouseReleaseEvent: emitting left click");
 				emit leftClicked();
 			}
 		}
@@ -507,8 +507,8 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
 	autoHideCursorStartTimer();
 }
 
-void TPlayerWindow::mouseDoubleClickEvent( QMouseEvent * event ) {
-	//qDebug( "TPlayerWindow::mouseDoubleClickEvent" );
+void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
+	//qDebug("TPlayerWindow::mouseDoubleClickEvent");
 
 	event->accept();
 
@@ -522,7 +522,7 @@ void TPlayerWindow::mouseDoubleClickEvent( QMouseEvent * event ) {
 	}
 }
 
-void TPlayerWindow::wheelEvent( QWheelEvent * event ) {
+void TPlayerWindow::wheelEvent(QWheelEvent* event) {
 	//qDebug("TPlayerWindow::wheelEvent: delta: %d", event->delta());
 
 	event->accept();
@@ -699,7 +699,7 @@ void TPlayerWindow::playingStopped(bool clear_background) {
 // Called by TBase::retranslateStrings
 void TPlayerWindow::retranslateStrings() {
 	//qDebug("TPlayerWindow::retranslateStrings");
-	logo->setPixmap( Images::icon("background") );
+	logo->setPixmap(Images::icon("background"));
 }
 
 void TPlayerWindow::setLogoVisible(bool b) {
@@ -719,14 +719,14 @@ void TPlayerWindow::setLogoVisible(bool b) {
 	} else {
 		if (b) {
 			logo->show();
-			QPropertyAnimation * animation = new QPropertyAnimation(logo, "pos");
+			QPropertyAnimation* animation = new QPropertyAnimation(logo, "pos");
 			animation->setDuration(200);
 			animation->setEasingCurve(QEasingCurve::OutBounce);
 			animation->setStartValue(QPoint(logo->x(), 0 - logo->y()));
 			animation->setEndValue(logo->pos());
 			animation->start();
 		} else {
-			QPropertyAnimation * animation = new QPropertyAnimation(logo, "pos");
+			QPropertyAnimation* animation = new QPropertyAnimation(logo, "pos");
 			animation->setDuration(200);
 			animation->setEasingCurve(QEasingCurve::OutBounce);
 			animation->setEndValue(QPoint(width(), logo->y()));
@@ -754,15 +754,15 @@ void TPlayerWindow::setMouseTrackingInclChildren(QWidget *w) {
 	}
 }
 
-void TPlayerWindow::setCornerWidget(QWidget * w) {
+void TPlayerWindow::setCornerWidget(QWidget* w) {
 	corner_widget = w;
 	setMouseTrackingInclChildren(corner_widget);
 
-	QHBoxLayout * blayout = new QHBoxLayout;
+	QHBoxLayout* blayout = new QHBoxLayout;
 	blayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
 	blayout->addWidget(corner_widget);
 
-	QVBoxLayout * layout = new QVBoxLayout(this);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding));
 	layout->addLayout(blayout);
 }

@@ -35,7 +35,7 @@ class TProcess : public QProcess
 	Q_OBJECT
 
 public:
-	TProcess ( QObject * parent = 0 );
+	TProcess (QObject* parent = 0);
 	virtual ~TProcess() {}
 
 	virtual void setExecutable(const QString & p) { program = p; }

@@ -36,7 +36,7 @@ class FileChooser : public LineEditWithIcon
 public:
 	enum DialogType { GetFileName = 0, GetDirectory = 1 };
 
-    FileChooser( QWidget* parent = 0 );
+    FileChooser(QWidget* parent = 0);
 	virtual ~FileChooser();
 
 	QString caption() const { return _caption; }
@@ -47,8 +47,8 @@ public:
 public slots:
 	void setCaption(const QString & caption) { _caption = caption; }
 	void setFilter(const QString & filter) { _filter = filter; }
-	void setDialogType( DialogType type) { _type = type; }
-	void setOptions( QFileDialog::Options options) { _options = options; }
+	void setDialogType(DialogType type) { _type = type; }
+	void setOptions(QFileDialog::Options options) { _options = options; }
 
 signals:
 	void fileChanged(QString file);
