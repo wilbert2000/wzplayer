@@ -58,7 +58,6 @@ protected:
 
 protected:
 	TEditableToolbar* controlwidget;
-	TAutohideWidget* floating_control;
 
 	TAction* editControlAct;
 	TAction* editFloatingControlAct;

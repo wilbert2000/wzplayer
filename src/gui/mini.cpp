@@ -82,9 +82,6 @@ void TMini::createControlWidget() {
 }
 
 void TMini::createFloatingControl() {
-	// Floating control
-	floating_control = new TAutohideWidget(panel, playerwindow);
-	floating_control->setAutoHide(true);
 
 	TEditableToolbar* iw = new TEditableToolbar(floating_control);
 	iw->setObjectName("floating_control");
@@ -98,8 +95,6 @@ void TMini::createFloatingControl() {
 	iw->setDefaultActions(floatingcontrol_actions);
 
 	floating_control->setInternalWidget(iw);
-
-	floating_control->hide();
 }
 
 void TMini::retranslateStrings() {
@@ -128,14 +123,8 @@ void TMini::togglePlayAction(TCore::State state) {
 }
 
 void TMini::aboutToEnterFullscreen() {
-	TBasePlus::aboutToEnterFullscreen();
 
-	floating_control->setMargin(pref->floating_control_margin);
-	floating_control->setPercWidth(pref->floating_control_width);
-	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
-	floating_control->setHideDelay(pref->floating_hide_delay);
-	QTimer::singleShot(100, floating_control, SLOT(activate()));
+	TBasePlus::aboutToEnterFullscreen();
 
 	if (!pref->compact_mode) {
 		controlwidget->hide();

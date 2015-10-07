@@ -212,9 +212,6 @@ void TSkin::createControlWidget() {
 }
 
 void TSkin::createFloatingControl() {
-	// Floating control
-	floating_control = new TAutohideWidget(panel, playerwindow);
-	floating_control->setAutoHide(true);
 
 #ifdef SKIN_EDITABLE_CONTROL
 	TEditableToolbar* iw = new TEditableToolbar(floating_control);
@@ -231,15 +228,6 @@ void TSkin::createFloatingControl() {
 	floating_control->setInternalWidget(iw);
 #endif // SKIN_EDITABLE_CONTROL
 
-/*
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	// To make work the ESC key (exit fullscreen) and Ctrl-X (close) in Windows and OS2
-	floating_control->addAction(exitFullscreenAct);
-	floating_control->addAction(exitAct);
-#endif
-*/
-
-	floating_control->hide();
 }
 
 void TSkin::retranslateStrings() {
@@ -288,19 +276,12 @@ void TSkin::aboutToEnterFullscreen() {
 
 	TBasePlus::aboutToEnterFullscreen();
 
-	#ifndef SKIN_EDITABLE_CONTROL
+#ifndef SKIN_EDITABLE_CONTROL
 	controlwidget->removeAction(mediaBarPanelAction);
 	floating_control->layout()->addWidget(mediaBarPanel);
 	mediaBarPanel->show();
 	floating_control->adjustSize();
-	#endif
-	floating_control->setMargin(pref->floating_control_margin);
-	floating_control->setPercWidth(pref->floating_control_width);
-	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
-	floating_control->setHideDelay(pref->floating_hide_delay);
-	QTimer::singleShot(100, floating_control, SLOT(activate()));
-
+#endif
 
 	// Save visibility of toolbars
 	fullscreen_toolbar1_was_visible = toolbar1->isVisible();
@@ -316,11 +297,10 @@ void TSkin::aboutToExitFullscreen() {
 
 	TBasePlus::aboutToExitFullscreen();
 
-	floating_control->deactivate();
-	#ifndef SKIN_EDITABLE_CONTROL
+#ifndef SKIN_EDITABLE_CONTROL
 	floating_control->layout()->removeWidget(mediaBarPanel);
 	mediaBarPanelAction = controlwidget->addWidget(mediaBarPanel);
-	#endif
+#endif
 
 	if (!pref->compact_mode) {
 		statusBar()->hide();

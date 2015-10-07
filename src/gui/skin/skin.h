@@ -82,8 +82,6 @@ protected:
 	TSeekingButton* rewindbutton_action;
 	TSeekingButton* forwardbutton_action;
 
-	TAutohideWidget* floating_control;
-
 	TAction* editToolbar1Act;
 #if defined(SKIN_EDITABLE_CONTROL)
 	TAction* editFloatingControlAct;

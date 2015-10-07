@@ -243,9 +243,6 @@ void TDefault::createControlWidget() {
 }
 
 void TDefault::createFloatingControl() {
-	// Floating control
-	floating_control = new TAutohideWidget(panel, playerwindow);
-	floating_control->setAutoHide(true);
 
 	TEditableToolbar* iw = new TEditableToolbar(floating_control);
 	iw->setObjectName("floating_control");
@@ -260,17 +257,6 @@ void TDefault::createFloatingControl() {
 	iw->setDefaultActions(floatingcontrol_actions);
 
 	floating_control->setInternalWidget(iw);
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	// To make work the ESC key (exit fullscreen) and Ctrl-X (close) in Windows and OS2
-	/*
-	floating_control->addAction(exitFullscreenAct);
-	floating_control->addAction(exitAct);
-	*/
-	//floating_control->addActions(actions());
-#endif
-
-	floating_control->hide();
 }
 
 void TDefault::createStatusBar() {
@@ -398,45 +384,16 @@ void TDefault::displayVideoInfo(int width, int height, double fps) {
 	}
 }
 
-void TDefault::applyNewPreferences() {
-	qDebug("Gui::TDefault::applyNewPreferences");
-
-	if ((pref->compact_mode) && (pref->floating_display_in_compact_mode)) {
-		reconfigureFloatingControl();
-		floating_control->activate();
-	} else {
-		floating_control->deactivate();
-	}
-
-	TBasePlus::applyNewPreferences();
-}
-
-void TDefault::reconfigureFloatingControl() {
-	floating_control->setMargin(pref->floating_control_margin);
-	floating_control->setPercWidth(pref->floating_control_width);
-	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
-	floating_control->setHideDelay(pref->floating_hide_delay);
-}
-
 void TDefault::aboutToEnterFullscreen() {
 	//qDebug("Gui::TDefault::aboutToEnterFullscreen");
 
 	TBasePlus::aboutToEnterFullscreen();
-
-	// Show floating_control
-	reconfigureFloatingControl();
-	floating_control->deactivate(); // Hide the control in case it was running from compact mode
-	QTimer::singleShot(100, floating_control, SLOT(activate()));
-
 
 	// Save visibility of toolbars
 	fullscreen_toolbar1_was_visible = toolbar1->isVisible();
 	fullscreen_toolbar2_was_visible = toolbar2->isVisible();
 
 	if (!pref->compact_mode) {
-		//menuBar()->hide();
-		//statusBar()->hide();
 		controlwidget->hide();
 		controlwidget_mini->hide();
 		toolbar1->hide();
@@ -449,33 +406,16 @@ void TDefault::aboutToExitFullscreen() {
 
 	TBasePlus::aboutToExitFullscreen();
 
-	// Hide floating_control
-	if (!pref->compact_mode || !pref->floating_display_in_compact_mode) {
-		floating_control->deactivate();
-	}
-
 	if (!pref->compact_mode) {
-		//menuBar()->show();
-		//statusBar()->show();
 		controlwidget->show();
-
 		toolbar1->setVisible(fullscreen_toolbar1_was_visible);
 		toolbar2->setVisible(fullscreen_toolbar2_was_visible);
 	}
-
-	//qDebug("Gui::TDefault::aboutToExitFullscreen done");
 }
 
 void TDefault::aboutToEnterCompactMode() {
 
 	TBasePlus::aboutToEnterCompactMode();
-
-	// Show floating_control
-	if (pref->floating_display_in_compact_mode) {
-		reconfigureFloatingControl();
-		QTimer::singleShot(100, floating_control, SLOT(activate()));
-	}
-
 
 	// Save visibility of toolbars
 	compact_toolbar1_was_visible = toolbar1->isVisible();
@@ -490,17 +430,10 @@ void TDefault::aboutToEnterCompactMode() {
 }
 
 void TDefault::aboutToExitCompactMode() {
+
 	TBasePlus::aboutToExitCompactMode();
 
-	// Hide floating_control
-	if (pref->floating_display_in_compact_mode) {
-		floating_control->deactivate();
-	}
-
-	//menuBar()->show();
-	//statusBar()->show();
 	controlwidget->show();
-
 	toolbar1->setVisible(compact_toolbar1_was_visible);
 	toolbar2->setVisible(compact_toolbar2_was_visible);
 
@@ -631,11 +564,6 @@ void TDefault::loadConfig(const QString &group) {
 		controlwidget->hide();
 		toolbar1->hide();
 		toolbar2->hide();
-
-		if (pref->floating_display_in_compact_mode) {
-			reconfigureFloatingControl();
-			floating_control->activate();
-		}
 	}
 }
 

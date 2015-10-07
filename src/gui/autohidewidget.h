@@ -26,8 +26,7 @@ class QPropertyAnimation;
 
 namespace Gui {
 
-class TAutohideWidget : public QWidget
-{
+class TAutohideWidget : public QWidget {
 	Q_OBJECT
 
 public:

@@ -65,7 +65,6 @@ protected:
 	virtual void resizeEvent(QResizeEvent*);
 
 protected slots:
-	virtual void applyNewPreferences();
 	virtual void displayTime(QString text);
 	virtual void displayFrame(int frame);
 	virtual void displayABSection(int secs_a, int secs_b);
@@ -74,9 +73,6 @@ protected slots:
 	virtual void togglePlayAction(TCore::State state);
 
 	void adjustFloatingControlSize();
-
-protected:
-	void reconfigureFloatingControl();
 
 protected:
 	QLabel* time_display;
@@ -95,8 +91,6 @@ protected:
 
 	TSeekingButton* rewindbutton_action;
 	TSeekingButton* forwardbutton_action;
-
-	TAutohideWidget* floating_control;
 
 	TAction* viewFrameCounterAct;
 	TAction* viewVideoInfoAct;

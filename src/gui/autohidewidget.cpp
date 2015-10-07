@@ -32,7 +32,7 @@ namespace Gui {
 TAutohideWidget::TAutohideWidget(QWidget* parent, QWidget* playerwindow)
 	: QWidget(parent)
 	, turned_on(false)
-	, auto_hide(false)
+	, auto_hide(true)
 	, use_animation(false)
 	, spacing(0)
 	, perc_width(100)
@@ -57,6 +57,8 @@ TAutohideWidget::TAutohideWidget(QWidget* parent, QWidget* playerwindow)
 	layout->setSpacing(0);
 	layout->setMargin(0);
 	setLayout(layout);
+
+	hide();
 }
 
 TAutohideWidget::~TAutohideWidget() {

@@ -167,8 +167,18 @@ TBase::TBase()
 #endif
 #endif
 {
+	// Set style before changing color of widgets:
+	// TODO: from help: Warning: To ensure that the application's style is set
+	// correctly, it is best to call this function before the QApplication
+	// constructor, if possible.
+	default_style = qApp->style()->objectName();
+	if (!pref->style.isEmpty()) {
+		qApp->setStyle(pref->style);
+	}
 
 	setWindowTitle("SMPlayer");
+	setAcceptDrops(true);
+	resize(pref->default_size);
 
 	// Create objects:
 	createPanel();
@@ -180,20 +190,13 @@ TBase::TBase()
 	createVideoEqualizer();
 	createAudioEqualizer();
 
-	// Set style before changing color of widgets:
-	// TODO: from help: Warning: To ensure that the application's style is set
-	// correctly, it is best to call this function before the QApplication
-	// constructor, if possible.
-	default_style = qApp->style()->objectName();
-	if (!pref->style.isEmpty()) {
-		qApp->setStyle(pref->style);
-	}
-
 	log_window = new TLogWindow(0);
 
 	createActions();
 	createMenus();
+	createFloatingControl();
 	setActionsEnabled(false);
+
 	if (playlist->count() > 0) {
 		playAct->setEnabled(true);
 		playOrPauseAct->setEnabled(true);
@@ -204,14 +207,11 @@ TBase::TBase()
 			showPlaylistAct, SLOT(setChecked(bool)));
 #endif
 
-	setAcceptDrops(true);
-	resize(pref->default_size);
-	panel->setFocus();
-
 	setupNetworkProxy();
 
 	if (pref->compact_mode)
 		toggleCompactMode(true);
+
 	changeStayOnTop(pref->stay_on_top);
 
 	updateRecents();
@@ -1843,6 +1843,22 @@ void TBase::createMenus() {
 	popup->addMenu(favorites);
 	popup->addMenu(browseMenu);
 	popup->addMenu(optionsMenu);
+} // createMenus()
+
+
+void TBase::reconfigureFloatingControl() {
+
+	floating_control->setMargin(pref->floating_control_margin);
+	floating_control->setPercWidth(pref->floating_control_width);
+	floating_control->setAnimated(pref->floating_control_animated);
+	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setHideDelay(pref->floating_hide_delay);
+}
+
+void TBase::createFloatingControl() {
+
+	floating_control = new TAutohideWidget(panel, playerwindow);
+	reconfigureFloatingControl();
 }
 
 void TBase::setupNetworkProxy() {
@@ -2731,6 +2747,11 @@ void TBase::loadConfig(const QString &group) {
 			move(center_pos.width(), center_pos.height());
 	}
 
+	if (pref->compact_mode && pref->floating_display_in_compact_mode) {
+		reconfigureFloatingControl();
+		floating_control->activate();
+	}
+
 	// Load playlist settings outside group
 	playlist->loadSettings();
 }
@@ -2840,10 +2861,16 @@ void TBase::applyNewPreferences() {
 	qDebug("Gui::TBase::applyNewPreferences");
 
 	bool need_update_language = false;
-
 	TPlayerID::Player old_player_type = TPlayerID::player(pref->mplayer_bin);
-
 	pref_dialog->getData(pref);
+
+	// Floating control
+	if ((pref->compact_mode) && (pref->floating_display_in_compact_mode)) {
+		reconfigureFloatingControl();
+		floating_control->activate();
+	} else {
+		floating_control->deactivate();
+	}
 
 	// Setup proxy
 	setupNetworkProxy();
@@ -4010,6 +4037,11 @@ void TBase::aboutToEnterFullscreen() {
 		menuBar()->hide();
 		statusBar()->hide();
 	}
+
+	reconfigureFloatingControl();
+	 // Hide the control in case it was running from compact mode
+	floating_control->deactivate();
+	QTimer::singleShot(100, floating_control, SLOT(activate()));
 }
 
 void TBase::aboutToExitFullscreen() {
@@ -4017,11 +4049,15 @@ void TBase::aboutToExitFullscreen() {
 
 	playerwindow->aboutToExitFullscreen();
 
+	// Hide floating_control
+	if (!pref->compact_mode || !pref->floating_display_in_compact_mode) {
+		floating_control->deactivate();
+	}
+
 	if (!pref->compact_mode) {
 		menuBar()->show();
 		statusBar()->show();
 	}
-	//qDebug("Gui::TBase::aboutToExitFullscreen done");
 }
 
 
@@ -4668,11 +4704,24 @@ void TBase::toggleCompactMode(bool b) {
 }
 
 void TBase::aboutToEnterCompactMode() {
+
 	menuBar()->hide();
 	statusBar()->hide();
+
+	// Show floating_control
+	if (pref->floating_display_in_compact_mode) {
+		reconfigureFloatingControl();
+		QTimer::singleShot(100, floating_control, SLOT(activate()));
+	}
 }
 
 void TBase::aboutToExitCompactMode() {
+
+	// Hide floating_control
+	if (pref->floating_display_in_compact_mode) {
+		floating_control->deactivate();
+	}
+
 	menuBar()->show();
 	statusBar()->show();
 }

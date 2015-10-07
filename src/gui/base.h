@@ -29,6 +29,7 @@
 #include "settings/preferences.h"
 #include "gui/guiconfig.h"
 #include "gui/widgetactions.h"
+#include "gui/autohidewidget.h"
 #include "gui/playlist.h"
 #include "gui/logwindow.h"
 #include "gui/audioequalizer.h"
@@ -721,6 +722,7 @@ protected:
 	TTimeSliderAction* timeslider_action;
 	TVolumeSliderAction* volumeslider_action;
 	TTimeLabelAction* time_label_action;
+	TAutohideWidget* floating_control;
 
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;
@@ -778,6 +780,8 @@ private:
 #endif
 #endif
 
+	void reconfigureFloatingControl();
+	void createFloatingControl();
 	void hidePanel();
 };
 

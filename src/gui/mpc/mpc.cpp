@@ -112,10 +112,7 @@ void TMpc::createControlWidget() {
 }
 
 void TMpc::createFloatingControl() {
-	// Floating control
-	floating_control = new TAutohideWidget(panel, playerwindow);
-	floating_control->setAutoHide(true);
-	floating_control->hide();
+
 	spacer = new QSpacerItem(10,10);
 
 	floating_control_time = new QLabel(floating_control);
@@ -138,6 +135,7 @@ void TMpc::retranslateStrings() {
 }
 
 void TMpc::aboutToEnterFullscreen() {
+
 	TBasePlus::aboutToEnterFullscreen();
 
 	// Show floating_control
@@ -153,17 +151,7 @@ void TMpc::aboutToEnterFullscreen() {
 	timeslidewidget->show();
 	floating_control->adjustSize();
 
-	floating_control->setMargin(pref->floating_control_margin);
-	floating_control->setPercWidth(pref->floating_control_width);
-	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
-	floating_control->setHideDelay(pref->floating_hide_delay);
-	QTimer::singleShot(100, floating_control, SLOT(activate()));
-
-
 	if (!pref->compact_mode) {
-		//controlwidget->hide();
-		//timeslidewidget->hide();
 		statusBar()->hide();
 	}
 }
@@ -172,11 +160,11 @@ void TMpc::aboutToExitFullscreen() {
 	TBasePlus::aboutToExitFullscreen();
 
 	// Remove controls from the floating_control and put them back to the mainwindow
-	floating_control->deactivate();
 	floating_control->layout()->removeWidget(controlwidget);
 	floating_control->layout()->removeWidget(timeslidewidget);
 	floating_control->layout()->removeItem(spacer);
 	floating_control->layout()->removeWidget(floating_control_time);
+
 	addToolBar(Qt::BottomToolBarArea, controlwidget);
 	addToolBarBreak(Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, timeslidewidget);

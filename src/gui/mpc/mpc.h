@@ -79,7 +79,6 @@ protected:
 
 	QLabel* floating_control_time;
 
-	TAutohideWidget* floating_control;
 	QSpacerItem* spacer;
 };
 
