@@ -81,6 +81,7 @@ TDeviceList TDeviceInfo::alsaDevices() {
 		QByteArray line;
 		while (p.canReadLine()) {
 			line = p.readLine();
+			line = line.trimmed();
 			qDebug("Gui::TDeviceInfo::alsaDevices: '%s'", line.constData());
 			if (rx_device.indexIn(line) > -1) {
 				QString id = rx_device.cap(1);
