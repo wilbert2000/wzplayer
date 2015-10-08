@@ -74,10 +74,6 @@ void TMini::togglePlayAction(TCore::State state) {
 void TMini::aboutToEnterFullscreen() {
 
 	TBaseEdit::aboutToEnterFullscreen();
-
-	if (!pref->compact_mode) {
-		controlwidget->hide();
-	}
 }
 
 void TMini::aboutToExitFullscreen() {
@@ -88,20 +84,17 @@ void TMini::aboutToExitFullscreen() {
 
 	if (!pref->compact_mode) {
 		statusBar()->hide();
-		controlwidget->show();
 	}
 }
 
 void TMini::aboutToEnterCompactMode() {
 
 	TBaseEdit::aboutToEnterCompactMode();
-	controlwidget->hide();
 }
 
 void TMini::aboutToExitCompactMode() {
 
 	TBaseEdit::aboutToExitCompactMode();
-	controlwidget->show();
 	statusBar()->hide();
 }
 

@@ -19,9 +19,15 @@ public:
 
 protected:
 	TAction* editControlWidgetAct;
-	TEditableToolbar* controlwidget;
 
 	virtual void retranslateStrings();
+	virtual void aboutToEnterFullscreen();
+	virtual void aboutToExitFullscreen();
+	virtual void aboutToEnterCompactMode();
+	virtual void aboutToExitCompactMode();
+
+private:
+	TEditableToolbar* controlwidget;
 }; // class TBaseEdit
 
 } // namespace Gui

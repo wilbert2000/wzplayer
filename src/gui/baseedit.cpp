@@ -6,6 +6,7 @@ TBaseEdit::TBaseEdit() : TBasePlus() {
 
 	// Create edit control widget action
 	editControlWidgetAct = new TAction(this, "edit_controlwidget");
+
 	// Create control widget
 	controlwidget = new TEditableToolbar(this);
 	controlwidget->setObjectName("controlwidget");
@@ -46,6 +47,7 @@ void TBaseEdit::retranslateStrings() {
 } // retranslateStrings
 
 void TBaseEdit::loadConfig(const QString &gui_group) {
+	qDebug("Gui::TBaseEdit::loadConfig");
 
 	TBasePlus::loadConfig(gui_group);
 
@@ -82,6 +84,36 @@ void TBaseEdit::saveConfig(const QString& gui_group) {
 
 	pref->endGroup();
 }
+
+void TBaseEdit::aboutToEnterFullscreen() {
+
+	TBasePlus::aboutToEnterFullscreen();
+	if (!pref->compact_mode) {
+		controlwidget->hide();
+	}
+}
+
+void TBaseEdit::aboutToExitFullscreen() {
+
+	TBasePlus::aboutToExitFullscreen();
+	if (!pref->compact_mode) {
+		controlwidget->show();
+	}
+}
+
+void TBaseEdit::aboutToEnterCompactMode() {
+
+	TBasePlus::aboutToEnterCompactMode();
+	controlwidget->hide();
+}
+
+void TBaseEdit::aboutToExitCompactMode() {
+
+	TBasePlus::aboutToExitCompactMode();
+	controlwidget->show();
+}
+
+
 } // namespace Gui
 
 #include "moc_baseedit.cpp"

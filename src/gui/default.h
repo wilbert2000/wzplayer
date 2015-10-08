@@ -49,10 +49,10 @@ protected:
 	virtual void retranslateStrings();
 	virtual QMenu* createPopupMenu();
 
-    virtual void aboutToEnterFullscreen();
-    virtual void aboutToExitFullscreen();
-    virtual void aboutToEnterCompactMode();
-    virtual void aboutToExitCompactMode();
+	virtual void aboutToEnterFullscreen();
+	virtual void aboutToExitFullscreen();
+	virtual void aboutToEnterCompactMode();
+	virtual void aboutToExitCompactMode();
 
 protected slots:
 	virtual void displayTime(QString text);

@@ -318,7 +318,6 @@ void TDefault::aboutToEnterFullscreen() {
 	fullscreen_toolbar2_was_visible = toolbar2->isVisible();
 
 	if (!pref->compact_mode) {
-		controlwidget->hide();
 		toolbar1->hide();
 		toolbar2->hide();
 	}
@@ -330,7 +329,6 @@ void TDefault::aboutToExitFullscreen() {
 	TBaseEdit::aboutToExitFullscreen();
 
 	if (!pref->compact_mode) {
-		controlwidget->show();
 		toolbar1->setVisible(fullscreen_toolbar1_was_visible);
 		toolbar2->setVisible(fullscreen_toolbar2_was_visible);
 	}
@@ -344,7 +342,6 @@ void TDefault::aboutToEnterCompactMode() {
 	compact_toolbar1_was_visible = toolbar1->isVisible();
 	compact_toolbar2_was_visible = toolbar2->isVisible();
 
-	controlwidget->hide();
 	toolbar1->hide();
 	toolbar2->hide();
 }
@@ -352,13 +349,8 @@ void TDefault::aboutToEnterCompactMode() {
 void TDefault::aboutToExitCompactMode() {
 
 	TBaseEdit::aboutToExitCompactMode();
-
-	controlwidget->show();
 	toolbar1->setVisible(compact_toolbar1_was_visible);
 	toolbar2->setVisible(compact_toolbar2_was_visible);
-
-	// Recheck size of controlwidget
-	resizeEvent(new QResizeEvent(size(), size()));
 }
 
 void TDefault::saveConfig(const QString&) {
