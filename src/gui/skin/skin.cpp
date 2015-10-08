@@ -354,16 +354,13 @@ void TSkin::loadConfig(const QString &group) {
 
 	pref->endGroup();
 
-	updateWidgets();
-
 	if (pref->compact_mode) {
 		controlwidget->hide();
 		toolbar1->hide();
 	}
-
 	statusBar()->hide();
 
-	mediaBarPanel->setVolume(50);
+	updateWidgets();
 }
 
 } // namespace Gui
