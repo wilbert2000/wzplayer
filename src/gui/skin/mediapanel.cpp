@@ -172,6 +172,7 @@ void TMediaPanel::setPlayerState(TCore::State state) {
 }
 
 void TMediaPanel::setDuration(int duration) {
+
 	this->duration = duration;
 	if (duration == 0) {
 		seeker->setState(TPanelSeeker::Stopped, true);

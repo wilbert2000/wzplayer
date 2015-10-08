@@ -323,7 +323,7 @@ void TBase::createCore() {
 
 	connect(core, SIGNAL(showTime(double)),
 			 this, SLOT(gotCurrentTime(double)));
-	connect(core, SIGNAL(newDuration(double)),
+	connect(core, SIGNAL(durationChanged(double)),
 			 this, SLOT(gotDuration(double)));
 
 	connect(core, SIGNAL(needResize(int, int)),

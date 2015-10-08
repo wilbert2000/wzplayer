@@ -68,7 +68,7 @@ TMediaBarPanel::TMediaBarPanel(QWidget* parent, TCore* c) :
 	connect(core, SIGNAL(stateChanged(TCore::State)),
 			mediaPanel, SLOT(setPlayerState(TCore::State)));
 
-	connect(core, SIGNAL(newDuration(double)),
+	connect(core, SIGNAL(durationChanged(double)),
 			mediaPanel, SLOT(setDuration()));
 	connect(core, SIGNAL(showTime(double)),
 			this, SLOT(gotCurrentTime(double)));

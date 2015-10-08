@@ -83,7 +83,7 @@ int TTimeSliderAction::pos() {
 }
 
 void TTimeSliderAction::setDuration(double t) {
-	qDebug() << "Gui::TimeSliderAction::setDuration:" << t;
+	qDebug() << "Gui::TTimeSliderAction::setDuration:" << t;
 
 	total_time = t;
 	QList<QWidget*> l = createdWidgets();

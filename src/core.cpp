@@ -183,7 +183,7 @@ TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
 			 this, SIGNAL(chapterInfoChanged()));
 
 	connect(proc, SIGNAL(durationChanged(double)),
-			 this, SIGNAL(newDuration(double)));
+			 this, SIGNAL(durationChanged(double)));
 
 	connect(proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()));
 

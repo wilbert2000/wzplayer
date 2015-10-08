@@ -431,7 +431,7 @@ signals:
 	void audioEqualizerNeedsUpdate();
 	void showTime(double sec);
 	void positionChanged(int); // To connect a slider
-	void newDuration(double); // Duration has changed
+	void durationChanged(double); // Duration has changed
 	void showFrame(int frame);
 	void ABMarkersChanged(int secs_a, int secs_b);
 	void needResize(int w, int h);
