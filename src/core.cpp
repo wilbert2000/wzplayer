@@ -339,14 +339,12 @@ void TCore::saveMediaInfo() {
 	qDebug("TCore::saveMediaInfo");
 
 	if (pref->dont_remember_media_settings) {
-		qDebug("TCore::saveMediaInfo: not saving settings, disabled by user");
+		qDebug("TCore::saveMediaInfo: saving disabled by user");
 		return;
 	}
-
 	if (mdat.filename.isEmpty()) {
 		return;
 	}
-
 	if (mdat.selected_type == TMediaData::TYPE_FILE) {
 		if (pref->file_settings_method.toLower() == "hash") {
 			Settings::TFileSettingsHash settings(mdat.filename);
@@ -359,11 +357,10 @@ void TCore::saveMediaInfo() {
 		Settings::TTVSettings settings;
 		settings.saveSettingsFor(mdat.filename, mset, proc->player());
 	}
-}
+} // saveMediaInfo
 
 void TCore::updateWidgets() {
 	qDebug("TCore::updateWidgets");
-
 	emit widgetsNeedUpdate();
 }
 
@@ -373,7 +370,6 @@ void TCore::changeFullscreenMode(bool b) {
 }
 
 void TCore::clearOSD() {
-
 	displayTextOnOSD("", 0, pref->osd_level);
 }
 
@@ -390,8 +386,9 @@ void TCore::displayTextOnOSD(QString text, int duration, int level) {
 void TCore::setOSDPos(const QPoint &pos) {
 	// qDebug("TCore::setOSDPos");
 
-	if (proc->isFullyStarted())
+	if (proc->isFullyStarted()) {
 		proc->setOSDPos(pos, pref->osd_level);
+	}
 }
 
 void TCore::close() {
@@ -420,7 +417,7 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 		}
 	}
 
-	// Restart
+	// Finish current
 	close();
 
 	// Add device from prev if none specified
@@ -432,13 +429,12 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 		} else {
 			disc.device = pref->dvd_device;
 		}
-
 	}
 
 	// Test access
 	if (!QFileInfo(disc.device).exists()) {
 		qWarning() << "TCore::openDisc: could not access" << disc.device;
-		// Forgot /?
+		// Forgot a "/"?
 		if (QFileInfo("/" + disc.device).exists()) {
 			qWarning() << "TCore::openDisc: added missing /";
 			disc.device = "/" + disc.device;
@@ -462,8 +458,7 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 
 	initPlaying();
 	return;
-
-}
+} // openDisc
 
 // Generic open, autodetect type
 void TCore::open(QString file, int seek, bool fast_open) {
@@ -568,6 +563,7 @@ void TCore::setExternalSubs(const QString &filename) {
 	mset.current_sub_idx = TMediaSettings::NoneSelected;
 	mset.sub.setID(TMediaSettings::NoneSelected);
 	mset.sub.setType(SubData::File);
+	// For mplayer assume vob if file extension idx
 	if (proc->isMPlayer()) {
 		QFileInfo fi(filename);
 		if (fi.suffix().toLower() == "idx") {
@@ -608,6 +604,7 @@ void TCore::unloadSub() {
 }
 
 void TCore::loadAudioFile(const QString & audiofile) {
+
 	if (!audiofile.isEmpty()) {
 		mset.external_audio = audiofile;
 		restartPlay();
@@ -615,6 +612,7 @@ void TCore::loadAudioFile(const QString & audiofile) {
 }
 
 void TCore::unloadAudioFile() {
+
 	if (!mset.external_audio.isEmpty()) {
 		mset.external_audio = "";
 		restartPlay();
@@ -644,10 +642,9 @@ void TCore::openTV(QString channel_id) {
 	mdat.selected_type = TMediaData::TYPE_TV;
 
 	mset.reset();
-
 	// Set the default deinterlacer for TV
 	mset.current_deinterlacer = pref->initial_tv_deinterlace;
-
+	// Load settings
 	if (!pref->dont_remember_media_settings) {
 		Settings::TTVSettings settings;
 		if (settings.existSettingsFor(channel_id)) {
@@ -670,11 +667,10 @@ void TCore::openStream(QString name) {
 			name = yt_full_url;
 			yt->setPreferredQuality((RetrieveYoutubeUrl::Quality) pref->yt_quality);
 			qDebug("TCore::openStream: user_agent: '%s'", pref->yt_user_agent.toUtf8().constData());
-			/*if (!pref->yt_user_agent.isEmpty()) yt->setUserAgent(pref->yt_user_agent); */
 			yt->setUserAgent(pref->yt_user_agent);
-			#ifdef YT_USE_YTSIG
+#ifdef YT_USE_YTSIG
 			YTSig::setScriptFile(Paths::configPath() + "/yt.js");
-			#endif
+#endif
 			yt->fetchPage(name);
 			return;
 		}
@@ -698,7 +694,7 @@ void TCore::openFile(QString filename, int seek) {
 	int old_volume = mset.volume;
 	mset.reset();
 
-	// Check if we already have info about this file
+	// Check if we have info about this file
 	if (pref->dont_remember_media_settings) {
 		mset.volume = old_volume;
 	} else {
@@ -730,7 +726,6 @@ void TCore::openFile(QString filename, int seek) {
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
 
-	qDebug("TCore::openFile: volume: %d, old_volume: %d", mset.volume, old_volume);
 	initPlaying(seek);
 }
 
@@ -762,7 +757,7 @@ void TCore::initPlaying(int seek) {
 	if (we_are_restarting) {
 		qDebug("TCore::initPlaying: starting time");
 	} else {
-		// Feedback and prevent potential artifacts waiting for redraw
+		// Feedback and prevent artifacts waiting for redraw
 		playerwindow->repaint();
 		qDebug("TCore::initPlaying: entered the black hole, starting time");
 	}
@@ -774,61 +769,23 @@ void TCore::initPlaying(int seek) {
 
 	int start_sec = (int) mset.current_sec;
 	if (seek > -1) start_sec = seek;
+
 	// Cannot seek at startup in DVDNAV.
 	// See restartPlay() and restoreTitle() for DVDNAV seek.
-	if (mdat.selected_type == TMediaData::TYPE_DVDNAV) start_sec = 0;
+	if (mdat.selected_type == TMediaData::TYPE_DVDNAV)
+		start_sec = 0;
 
+	// Avoid to pass the youtube page url to player
 #ifdef YOUTUBE_SUPPORT
-	if (pref->enable_yt_support) {
-		// Avoid to pass to mplayer the youtube page url
-		if (mdat.selected_type == TMediaData::TYPE_STREAM) {
-			if (mdat.filename == yt->origUrl()) {
-				mdat.filename = yt->latestPreferredUrl();
-			}
-		}
+	if (pref->enable_yt_support
+		&& mdat.selected_type == TMediaData::TYPE_STREAM
+		&& mdat.filename == yt->origUrl()) {
+		mdat.filename = yt->latestPreferredUrl();
 	}
 #endif
 
 	startPlayer(mdat.filename, start_sec);
 }
-
-// This is reached when a new video has just started playing
-void TCore::newMediaPlaying() {
-	qDebug("TCore::newMediaPlaying");
-
-	mdat.initialized = true;
-	mdat.list();
-	mset.list();
-
-	// Switch disc to detected protocol. Not a good idea.
-	// Use detected_type and selected_type where apropriate.
-/*
-	if (0 && mdat.detectedDisc() && mdat.selected_type != mdat.detected_type) {
-		bool valid_name;
-		TDiscData disc = TDiscName::split(mdat.filename, &valid_name);
-		if (!valid_name) {
-			// Assume file
-			disc.device = mdat.filename;
-			if (mset.current_title_id < 0) disc.title = 0;
-			else disc.title = mset.current_title_id;
-		}
-		QString protocol = TMediaData::typeToString(mdat.detected_type);
-		disc.protocol = protocol;
-		mdat.filename = TDiscName::join(disc);
-		qDebug() << "TCore::newMediaPlaying: switched filename from selected protocol"
-				 << TMediaData::typeToString(mdat.selected_type)
-				 << "to detected protocol" << protocol;
-		mdat.selected_type = mdat.detected_type;
-	}
-*/
-
-	// Copy the demuxer
-	mset.current_demuxer = mdat.demuxer;
-
-	qDebug("TCore::newMediaPlaying: emit mediaStartPlay()");
-	emit mediaStartPlay();
-}
-
 
 void TCore::dvdnavSeek() {
 
@@ -899,6 +856,21 @@ void TCore::dvdnavRestoreTitle() {
 	block_dvd_nav = false;
 }
 
+// This is reached when a new file has just started playing
+void TCore::newMediaPlaying() {
+	qDebug("TCore::newMediaPlaying");
+
+	mdat.initialized = true;
+	mdat.list();
+	mset.list();
+
+	// Copy the demuxer
+	mset.current_demuxer = mdat.demuxer;
+
+	qDebug("TCore::newMediaPlaying: emit mediaStartPlay()");
+	emit mediaStartPlay();
+}
+
 // Slot called when signal playerFullyLoaded arrives.
 void TCore::playingStarted() {
 	qDebug("TCore::playingStarted");
@@ -910,11 +882,11 @@ void TCore::playingStarted() {
 		// For DVDNAV go back to where we were.
 		// Need timer to give DVDNAV time to update its current state.
 		if (title >= 0) {
-			qDebug("TCore::playingStarted: posting dvdnavRestoreTitle()");
 			title_to_select = title;
 			title = -1;
 			menus_selected = 0;
 			block_dvd_nav = true;
+			qDebug("TCore::playingStarted: posting dvdnavRestoreTitle()");
 			QTimer::singleShot(1000, this, SLOT(dvdnavRestoreTitle()));
 		}
 	} else {
