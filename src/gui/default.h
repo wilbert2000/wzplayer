@@ -22,7 +22,7 @@
 #include <QPoint>
 
 #include "gui/guiconfig.h"
-#include "gui/baseplus.h"
+#include "gui/baseedit.h"
 #include "gui/editabletoolbar.h"
 #include "gui/autohidewidget.h"
 
@@ -35,34 +35,24 @@ class TSeekingButton;
 
 namespace Gui {
 	
-class TDefault : public TBasePlus {
+class TDefault : public TBaseEdit {
 	Q_OBJECT
 
 public:
 	TDefault();
 	virtual ~TDefault();
 
-	virtual void loadConfig(const QString& group);
-	virtual void saveConfig(const QString& group);
+	virtual void loadConfig(const QString&);
+	virtual void saveConfig(const QString&);
 
 protected:
 	virtual void retranslateStrings();
 	virtual QMenu* createPopupMenu();
 
-	void createStatusBar();
-	void createMainToolBars();
-	void createControlWidget();
-	void createControlWidgetMini();
-	void createFloatingControl();
-	void createActions();
-	void createMenus();
-
     virtual void aboutToEnterFullscreen();
     virtual void aboutToExitFullscreen();
     virtual void aboutToEnterCompactMode();
     virtual void aboutToExitCompactMode();
-
-	virtual void resizeEvent(QResizeEvent*);
 
 protected slots:
 	virtual void displayTime(QString text);
@@ -72,16 +62,11 @@ protected slots:
 
 	virtual void togglePlayAction(TCore::State state);
 
-	void adjustFloatingControlSize();
-
 protected:
 	QLabel* time_display;
 	QLabel* frame_display;
 	QLabel* ab_section_display;
 	QLabel* video_info_display;
-
-	TEditableToolbar* controlwidget;
-	TEditableToolbar* controlwidget_mini;
 
 	TEditableToolbar* toolbar1;
 	QToolBar* toolbar2;
@@ -96,9 +81,6 @@ protected:
 	TAction* viewVideoInfoAct;
 
 	TAction* editToolbar1Act;
-	TAction* editControl1Act;
-	TAction* editControl2Act;
-	TAction* editFloatingControlAct;
 
 	QMenu* toolbar_menu;
 	QMenu* statusbar_menu;
@@ -109,6 +91,12 @@ protected:
 	bool fullscreen_toolbar2_was_visible;
 	bool compact_toolbar1_was_visible;
 	bool compact_toolbar2_was_visible;
+
+private:
+	void createStatusBar();
+	void createMainToolBars();
+	void createActions();
+	void createMenus();
 };
 
 } // namespace GUI

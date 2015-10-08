@@ -30,6 +30,7 @@
 #include "gui/guiconfig.h"
 #include "gui/widgetactions.h"
 #include "gui/autohidewidget.h"
+#include "gui/editabletoolbar.h"
 #include "gui/playlist.h"
 #include "gui/logwindow.h"
 #include "gui/audioequalizer.h"
@@ -89,8 +90,8 @@ public:
 	TCore* getCore() { return core; }
 	TPlaylist* getPlaylist() { return playlist; }
 
-	virtual void loadConfig(const QString& group);
-	virtual void saveConfig(const QString& group);
+	virtual void loadConfig(const QString& gui_group);
+	virtual void saveConfig(const QString& gui_group);
 
 	void retranslate() { retranslateStrings(); }
 
@@ -272,6 +273,7 @@ protected slots:
 
 	virtual void clearRecentsList();
 
+	virtual void adjustFloatingControlSize();
 	virtual void loadActions();
 	virtual void saveActions();
 
@@ -722,7 +724,9 @@ protected:
 	TTimeSliderAction* timeslider_action;
 	TVolumeSliderAction* volumeslider_action;
 	TTimeLabelAction* time_label_action;
+	TAction* editFloatingControlAct;
 	TAutohideWidget* floating_control;
+	TEditableToolbar* floating_control_editor;
 
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;

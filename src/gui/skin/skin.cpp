@@ -58,16 +58,12 @@ TSkin::TSkin()
 	createActions();
 	createMainToolBars();
 	createControlWidget();
-	createFloatingControl();
 	createMenus();
 
-	connect(editToolbar1Act, SIGNAL(triggered()),
-			toolbar1, SLOT(edit()));
-#if defined(SKIN_EDITABLE_CONTROL)
+	connect(editToolbar1Act, SIGNAL(triggered()), toolbar1, SLOT(edit()));
+
 	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
 	iw->takeAvailableActionsFrom(this);
-	connect(editFloatingControlAct, SIGNAL(triggered()), iw, SLOT(edit()));
-#endif
 }
 
 TSkin::~TSkin() {
@@ -87,9 +83,6 @@ void TSkin::createActions() {
 	forwardbutton_action->setObjectName("forwardbutton_action");
 
 	editToolbar1Act = new TAction(this, "edit_main_toolbar");
-#if defined(SKIN_EDITABLE_CONTROL)
-	editFloatingControlAct = new TAction(this, "edit_floating_control");
-#endif
 
 	playOrPauseAct->setCheckable(true);
 
@@ -124,9 +117,7 @@ void TSkin::createMenus() {
 
 	toolbar_menu->addSeparator();
 	toolbar_menu->addAction(editToolbar1Act);
-#if defined(SKIN_EDITABLE_CONTROL)
 	toolbar_menu->addAction(editFloatingControlAct);
-#endif
 
 	optionsMenu->addSeparator();
 	optionsMenu->addMenu(toolbar_menu);
@@ -140,9 +131,7 @@ void TSkin::createMenus() {
 QMenu* TSkin::createPopupMenu() {
 	QMenu* m = new QMenu(this);
 	m->addAction(editToolbar1Act);
-#if defined(SKIN_EDITABLE_CONTROL)
 	m->addAction(editFloatingControlAct);
-#endif
 	return m;
 }
 
@@ -211,25 +200,6 @@ void TSkin::createControlWidget() {
 	mediaBarPanelAction = controlwidget->addWidget(mediaBarPanel);
 }
 
-void TSkin::createFloatingControl() {
-
-#ifdef SKIN_EDITABLE_CONTROL
-	TEditableToolbar* iw = new TEditableToolbar(floating_control);
-
-	QStringList floatingcontrol_actions;
-	floatingcontrol_actions << "play" << "pause" << "stop" << "separator";
-	floatingcontrol_actions << "rewindbutton_action";
-	floatingcontrol_actions << "timeslider_action";
-	floatingcontrol_actions << "forwardbutton_action";
-	floatingcontrol_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action" << "separator" << "timelabel_action";
-
-	iw->setDefaultActions(floatingcontrol_actions);
-
-	floating_control->setInternalWidget(iw);
-#endif // SKIN_EDITABLE_CONTROL
-
-}
-
 void TSkin::retranslateStrings() {
 	TBasePlus::retranslateStrings();
 
@@ -243,9 +213,6 @@ void TSkin::retranslateStrings() {
 	toolbar1->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 
 	editToolbar1Act->change(tr("Edit main &toolbar"));
-#if defined(SKIN_EDITABLE_CONTROL)
-	editFloatingControlAct->change(tr("Edit &floating control"));
-#endif
 
 	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info"));
 	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title"));
@@ -276,12 +243,10 @@ void TSkin::aboutToEnterFullscreen() {
 
 	TBasePlus::aboutToEnterFullscreen();
 
-#ifndef SKIN_EDITABLE_CONTROL
 	controlwidget->removeAction(mediaBarPanelAction);
 	floating_control->layout()->addWidget(mediaBarPanel);
 	mediaBarPanel->show();
 	floating_control->adjustSize();
-#endif
 
 	// Save visibility of toolbars
 	fullscreen_toolbar1_was_visible = toolbar1->isVisible();
@@ -297,10 +262,8 @@ void TSkin::aboutToExitFullscreen() {
 
 	TBasePlus::aboutToExitFullscreen();
 
-#ifndef SKIN_EDITABLE_CONTROL
 	floating_control->layout()->removeWidget(mediaBarPanel);
 	mediaBarPanelAction = controlwidget->addWidget(mediaBarPanel);
-#endif
 
 	if (!pref->compact_mode) {
 		statusBar()->hide();
@@ -349,18 +312,11 @@ void TSkin::saveConfig(const QString &group) {
 
 	pref->beginGroup("actions");
 	pref->setValue("toolbar1", toolbar1->actionsToStringList());
-#if defined(SKIN_EDITABLE_CONTROL)
-	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	pref->setValue("floating_control", iw->actionsToStringList());
-#endif
 	pref->setValue("toolbar1_version", TOOLBAR_VERSION);
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
 	pref->setValue("toolbar1", toolbar1->iconSize());
-#if defined(SKIN_EDITABLE_CONTROL)
-	pref->setValue("floating_control", iw->iconSize());
-#endif
 	pref->endGroup();
 
 	pref->endGroup();
@@ -388,18 +344,10 @@ void TSkin::loadConfig(const QString &group) {
 		qWarning("Gui::TSkin::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList(toolbar1->defaultActions());
 	}
-#if defined(SKIN_EDITABLE_CONTROL)
-	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
-	floating_control->adjustSize();
-#endif
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
 	toolbar1->setIconSize(pref->value("toolbar1", toolbar1->iconSize()).toSize());
-#if defined(SKIN_EDITABLE_CONTROL)
-	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
-#endif
 	pref->endGroup();
 
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());

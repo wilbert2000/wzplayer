@@ -51,36 +51,15 @@ using namespace Settings;
 namespace Gui {
 
 TDefault::TDefault()
-	: TBasePlus() {
+	: TBaseEdit() {
 
 	createStatusBar();
-
-	connect(this, SIGNAL(timeChanged(QString)),
-			 this, SLOT(displayTime(QString)));
-	connect(this, SIGNAL(frameChanged(int)),
-			 this, SLOT(displayFrame(int)));
-	connect(this, SIGNAL(ABMarkersChanged(int,int)),
-			 this, SLOT(displayABSection(int,int)));
-	connect(this, SIGNAL(videoInfoChanged(int,int,double)),
-			 this, SLOT(displayVideoInfo(int,int,double)));
-
 	createActions();
 	createMainToolBars();
-    createControlWidget();
-    createControlWidgetMini();
-	createFloatingControl();
 	createMenus();
 
 	connect(editToolbar1Act, SIGNAL(triggered()),
-			 toolbar1, SLOT(edit()));
-	connect(editControl1Act, SIGNAL(triggered()),
-			 controlwidget, SLOT(edit()));
-	connect(editControl2Act, SIGNAL(triggered()),
-			 controlwidget_mini, SLOT(edit()));
-	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
-	iw->takeAvailableActionsFrom(this);
-	connect(editFloatingControlAct, SIGNAL(triggered()),
-			 iw, SLOT(edit()));
+			toolbar1, SLOT(edit()));
 
 	menuBar()->setObjectName("menubar");
 }
@@ -105,22 +84,19 @@ void TDefault::createActions() {
 	viewVideoInfoAct = new TAction(this, "toggle_video_info");
 	viewVideoInfoAct->setCheckable(true);
 	connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
-			 video_info_display, SLOT(setVisible(bool)));
+			video_info_display, SLOT(setVisible(bool)));
 
 	viewFrameCounterAct = new TAction(this, "toggle_frame_counter");
 	viewFrameCounterAct->setCheckable(true);
 	connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
-			 frame_display, SLOT(setVisible(bool)));
+			frame_display, SLOT(setVisible(bool)));
 
 	editToolbar1Act = new TAction(this, "edit_main_toolbar");
-	editControl1Act = new TAction(this, "edit_control1");
-	editControl2Act = new TAction(this, "edit_control2");
-	editFloatingControlAct = new TAction(this, "edit_floating_control");
 }
 
 void TDefault::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TDefault::togglePlayAction");
-	TBasePlus::togglePlayAction(state);
+	TBaseEdit::togglePlayAction(state);
 
 	if (state == TCore::Playing) {
 		playOrPauseAct->setIcon(Images::icon("pause"));
@@ -136,8 +112,7 @@ void TDefault::createMenus() {
 
 	toolbar_menu->addSeparator();
 	toolbar_menu->addAction(editToolbar1Act);
-	toolbar_menu->addAction(editControl1Act);
-	toolbar_menu->addAction(editControl2Act);
+	toolbar_menu->addAction(editControlWidgetAct);
 	toolbar_menu->addAction(editFloatingControlAct);
 
 	optionsMenu->addSeparator();
@@ -153,8 +128,7 @@ void TDefault::createMenus() {
 QMenu* TDefault::createPopupMenu() {
 	QMenu* m = new QMenu(this);
 	m->addAction(editToolbar1Act);
-	m->addAction(editControl1Act);
-	m->addAction(editControl2Act);
+	m->addAction(editControlWidgetAct);
 	m->addAction(editFloatingControlAct);
 	return m;
 }
@@ -200,63 +174,6 @@ void TDefault::createMainToolBars() {
 	tba = toolbar2->toggleViewAction();
 	tba->setObjectName("show_language_toolbar");
 	tba->setShortcut(Qt::Key_F6);
-}
-
-
-void TDefault::createControlWidgetMini() {
-	qDebug("Gui::TDefault::createControlWidgetMini");
-
-	controlwidget_mini = new TEditableToolbar(this);
-	controlwidget_mini->setObjectName("controlwidget_mini");
-	controlwidget_mini->setLayoutDirection(Qt::LeftToRight);
-	//controlwidget_mini->setResizeEnabled(false);
-	controlwidget_mini->setMovable(false);
-	//addDockWindow(controlwidget_mini, Qt::DockBottom);
-	addToolBar(Qt::BottomToolBarArea, controlwidget_mini);
-
-	QStringList controlwidget_mini_actions;
-	controlwidget_mini_actions << "play_or_pause" << "stop" << "separator" << "rewind1" << "timeslider_action" 
-                               << "forward1" << "separator" << "mute" << "volumeslider_action";
-	controlwidget_mini->setDefaultActions(controlwidget_mini_actions);
-
-	controlwidget_mini->hide();
-}
-
-void TDefault::createControlWidget() {
-	qDebug("Gui::TDefault::createControlWidget");
-
-	controlwidget = new TEditableToolbar(this);
-	controlwidget->setObjectName("controlwidget");
-	controlwidget->setLayoutDirection(Qt::LeftToRight);
-	//controlwidget->setResizeEnabled(false);
-	controlwidget->setMovable(false);
-	//addDockWindow(controlwidget, Qt::DockBottom);
-	addToolBar(Qt::BottomToolBarArea, controlwidget);
-
-	QStringList controlwidget_actions;
-	controlwidget_actions << "play_or_pause" << "stop" << "separator";
-	controlwidget_actions << "rewindbutton_action";
-	controlwidget_actions << "timeslider_action";
-	controlwidget_actions << "forwardbutton_action";
-	controlwidget_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action";
-	controlwidget->setDefaultActions(controlwidget_actions);
-}
-
-void TDefault::createFloatingControl() {
-
-	TEditableToolbar* iw = new TEditableToolbar(floating_control);
-	iw->setObjectName("floating_control");
-	connect(iw, SIGNAL(iconSizeChanged(const QSize &)), this, SLOT(adjustFloatingControlSize()));
-
-	QStringList floatingcontrol_actions;
-	floatingcontrol_actions << "play" << "pause" << "stop" << "separator";
-	floatingcontrol_actions << "rewindbutton_action";
-	floatingcontrol_actions << "timeslider_action";
-	floatingcontrol_actions << "forwardbutton_action";
-	floatingcontrol_actions << "separator" << "fullscreen" << "mute" << "volumeslider_action" << "separator" << "timelabel_action";
-	iw->setDefaultActions(floatingcontrol_actions);
-
-	floating_control->setInternalWidget(iw);
 }
 
 void TDefault::createStatusBar() {
@@ -316,12 +233,22 @@ void TDefault::createStatusBar() {
 	frame_display->hide();
 	ab_section_display->show();
 	video_info_display->hide();
+
+	connect(this, SIGNAL(timeChanged(QString)),
+			 this, SLOT(displayTime(QString)));
+	connect(this, SIGNAL(frameChanged(int)),
+			 this, SLOT(displayFrame(int)));
+	connect(this, SIGNAL(ABMarkersChanged(int,int)),
+			 this, SLOT(displayABSection(int,int)));
+	connect(this, SIGNAL(videoInfoChanged(int,int,double)),
+			 this, SLOT(displayVideoInfo(int,int,double)));
+
 }
 
 void TDefault::retranslateStrings() {
 	qDebug("Gui::TDefault::retranslateStrings");
 
-	TBasePlus::retranslateStrings();
+	TBaseEdit::retranslateStrings();
 
 	// Change the icon of the play/pause action
 	playOrPauseAct->setIcon(Images::icon("play"));
@@ -345,9 +272,6 @@ void TDefault::retranslateStrings() {
 	viewFrameCounterAct->change(Images::icon("frame_counter"), tr("&Frame counter"));
 
 	editToolbar1Act->change(tr("Edit main &toolbar"));
-	editControl1Act->change(tr("Edit &control bar"));
-	editControl2Act->change(tr("Edit m&ini control bar"));
-	editFloatingControlAct->change(tr("Edit &floating control"));
 }
 
 
@@ -387,7 +311,7 @@ void TDefault::displayVideoInfo(int width, int height, double fps) {
 void TDefault::aboutToEnterFullscreen() {
 	//qDebug("Gui::TDefault::aboutToEnterFullscreen");
 
-	TBasePlus::aboutToEnterFullscreen();
+	TBaseEdit::aboutToEnterFullscreen();
 
 	// Save visibility of toolbars
 	fullscreen_toolbar1_was_visible = toolbar1->isVisible();
@@ -395,7 +319,6 @@ void TDefault::aboutToEnterFullscreen() {
 
 	if (!pref->compact_mode) {
 		controlwidget->hide();
-		controlwidget_mini->hide();
 		toolbar1->hide();
 		toolbar2->hide();
 	}
@@ -404,7 +327,7 @@ void TDefault::aboutToEnterFullscreen() {
 void TDefault::aboutToExitFullscreen() {
 	//qDebug("Gui::TDefault::aboutToExitFullscreen");
 
-	TBasePlus::aboutToExitFullscreen();
+	TBaseEdit::aboutToExitFullscreen();
 
 	if (!pref->compact_mode) {
 		controlwidget->show();
@@ -415,23 +338,20 @@ void TDefault::aboutToExitFullscreen() {
 
 void TDefault::aboutToEnterCompactMode() {
 
-	TBasePlus::aboutToEnterCompactMode();
+	TBaseEdit::aboutToEnterCompactMode();
 
 	// Save visibility of toolbars
 	compact_toolbar1_was_visible = toolbar1->isVisible();
 	compact_toolbar2_was_visible = toolbar2->isVisible();
 
-	//menuBar()->hide();
-	//statusBar()->hide();
 	controlwidget->hide();
-	controlwidget_mini->hide();
 	toolbar1->hide();
 	toolbar2->hide();
 }
 
 void TDefault::aboutToExitCompactMode() {
 
-	TBasePlus::aboutToExitCompactMode();
+	TBaseEdit::aboutToExitCompactMode();
 
 	controlwidget->show();
 	toolbar1->setVisible(compact_toolbar1_was_visible);
@@ -441,48 +361,10 @@ void TDefault::aboutToExitCompactMode() {
 	resizeEvent(new QResizeEvent(size(), size()));
 }
 
-void TDefault::resizeEvent(QResizeEvent* e) {
-	/*
-	qDebug("Gui::TDefault::resizeEvent %d x %d", width(), height());
-	qDebug(" controlwidget width: %d", controlwidget->width());
-	qDebug(" controlwidget_mini width: %d", controlwidget_mini->width());
-	*/
-
-	TBasePlus::resizeEvent(e);
-
-#if QT_VERSION < 0x040000
-#define LIMIT 470
-#else
-#define LIMIT 570
-#endif
-
-	if ((controlwidget->isVisible()) && (width() < LIMIT)) {
-		controlwidget->hide();
-		controlwidget_mini->show();
-	}
-	else
-	if ((controlwidget_mini->isVisible()) && (width() > LIMIT)) {
-		controlwidget_mini->hide();
-		controlwidget->show();
-	}
-}
-
-void TDefault::adjustFloatingControlSize() {
-	qDebug("Gui::TDefault::adjustFloatingControlSize");
-
-	QWidget *iw = floating_control->internalWidget();
-	QSize iws = iw->size();
-	QMargins m = floating_control->contentsMargins();
-	int new_height = iws.height() + m.top() + m.bottom();
-	if (new_height < 32) new_height = 32;
-	floating_control->resize(floating_control->width(), new_height);
-}
-
-void TDefault::saveConfig(const QString &group) {
-	Q_UNUSED(group)
+void TDefault::saveConfig(const QString&) {
 	qDebug("Gui::TDefault::saveConfig");
 
-	TBasePlus::saveConfig("default_gui");
+	TBaseEdit::saveConfig("default_gui");
 
 	pref->beginGroup("default_gui");
 
@@ -498,28 +380,20 @@ void TDefault::saveConfig(const QString &group) {
 
 	pref->beginGroup("actions");
 	pref->setValue("toolbar1", toolbar1->actionsToStringList());
-	pref->setValue("controlwidget", controlwidget->actionsToStringList());
-	pref->setValue("controlwidget_mini", controlwidget_mini->actionsToStringList());
-	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
-	pref->setValue("floating_control", iw->actionsToStringList());
 	pref->setValue("toolbar1_version", TOOLBAR_VERSION);
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
 	pref->setValue("toolbar1", toolbar1->iconSize());
-	pref->setValue("controlwidget", controlwidget->iconSize());
-	pref->setValue("controlwidget_mini", controlwidget_mini->iconSize());
-	pref->setValue("floating_control", iw->iconSize());
 	pref->endGroup();
 
 	pref->endGroup();
 }
 
-void TDefault::loadConfig(const QString &group) {
-	Q_UNUSED(group)
+void TDefault::loadConfig(const QString&) {
 	qDebug("Gui::TDefault::loadConfig");
 
-	TBasePlus::loadConfig("default_gui");
+	TBaseEdit::loadConfig("default_gui");
 
 	pref->beginGroup("default_gui");
 
@@ -539,20 +413,11 @@ void TDefault::loadConfig(const QString &group) {
 		qWarning("Gui::TDefault::loadConfig: toolbar too old, loading default one");
 		toolbar1->setActionsFromStringList(toolbar1->defaultActions());
 	}
-	controlwidget->setActionsFromStringList(pref->value("controlwidget", controlwidget->defaultActions()).toStringList());
-	controlwidget_mini->setActionsFromStringList(pref->value("controlwidget_mini", controlwidget_mini->defaultActions()).toStringList());
-	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
-	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
 	toolbar1->setIconSize(pref->value("toolbar1", toolbar1->iconSize()).toSize());
-	controlwidget->setIconSize(pref->value("controlwidget", controlwidget->iconSize()).toSize());
-	controlwidget_mini->setIconSize(pref->value("controlwidget_mini", controlwidget_mini->iconSize()).toSize());
-	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
 	pref->endGroup();
-
-	floating_control->adjustSize();
 
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 
@@ -561,7 +426,6 @@ void TDefault::loadConfig(const QString &group) {
 	updateWidgets();
 
 	if (pref->compact_mode) {
-		controlwidget->hide();
 		toolbar1->hide();
 		toolbar2->hide();
 	}

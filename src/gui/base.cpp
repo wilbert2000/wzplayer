@@ -60,6 +60,7 @@
 #include "settings/urlhistory.h"
 #include "gui/timeslider.h"
 #include "gui/widgetactions.h"
+#include "gui/editabletoolbar.h"
 #include "gui/eqslider.h"
 #include "gui/videoequalizer.h"
 #include "gui/audioequalizer.h"
@@ -1399,6 +1400,9 @@ void TBase::createActions() {
 	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
+	// Floating control
+	editFloatingControlAct = new TAction(this, "edit_floating_control");
+
 } // createActions
 
 void TBase::createMenus() {
@@ -1855,10 +1859,44 @@ void TBase::reconfigureFloatingControl() {
 	floating_control->setHideDelay(pref->floating_hide_delay);
 }
 
+void TBase::adjustFloatingControlSize() {
+	qDebug("Gui::TBase::adjustFloatingControlSize");
+
+	QMargins m = floating_control->contentsMargins();
+	int new_height = floating_control_editor->height() + m.top() + m.bottom();
+	if (new_height < 32) new_height = 32;
+	floating_control->resize(floating_control->width(), new_height);
+}
+
 void TBase::createFloatingControl() {
 
 	floating_control = new TAutohideWidget(panel, playerwindow);
 	reconfigureFloatingControl();
+
+	floating_control_editor = new TEditableToolbar(floating_control);
+	floating_control_editor->setObjectName("floating_control");
+	floating_control_editor->takeAvailableActionsFrom(this);
+
+	QStringList actions;
+	actions << "play_or_pause"
+			<< "separator"
+			<< "rewindbutton_action"
+			<< "timeslider_action"
+			<< "forwardbutton_action"
+			<< "separator"
+			<< "fullscreen"
+			<< "mute"
+			<< "volumeslider_action"
+			<< "separator"
+			<< "timelabel_action";
+
+	floating_control_editor->setDefaultActions(actions);
+	floating_control->setInternalWidget(floating_control_editor);
+
+	connect(floating_control_editor, SIGNAL(iconSizeChanged(const QSize &)),
+			this, SLOT(adjustFloatingControlSize()));
+	connect(editFloatingControlAct, SIGNAL(triggered()),
+			floating_control_editor, SLOT(edit()));
 }
 
 void TBase::setupNetworkProxy() {
@@ -2596,6 +2634,9 @@ void TBase::retranslateStrings() {
 	share_menu->menuAction()->setIcon(Images::icon("share"));
 #endif
 
+	// Floating control
+	editFloatingControlAct->change(tr("Edit &floating control"));
+
 	// TODO: make sure the "<empty>" string is translated
 
 	// PlayerWindow
@@ -2706,24 +2747,21 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 }
 #endif
 
-void TBase::loadConfig(const QString &group) {
+void TBase::loadConfig(const QString& gui_group) {
 	qDebug("Gui::TBase::loadConfig");
 
 #if ALLOW_CHANGE_STYLESHEET
 	changeStyleSheet(pref->iconset);
 #endif
-
 	// Load actions from outside group derived class
 	loadActions();
+	// Load from inside group derived class
+	pref->beginGroup(gui_group);
 
 	if (pref->save_window_size_on_exit) {
-		// Load window state from inside group derived class
-		pref->beginGroup(group);
 		QPoint p = pref->value("pos", pos()).toPoint();
 		QSize s = pref->value("size", size()).toSize();
 		int state = pref->value("state", 0).toInt();
-		pref->endGroup();
-
 		if ((s.height() < 200) && (!pref->use_mplayer_window)) {
 			s = pref->default_size;
 		}
@@ -2747,25 +2785,48 @@ void TBase::loadConfig(const QString &group) {
 			move(center_pos.width(), center_pos.height());
 	}
 
+	// Floating control
+	pref->beginGroup("actions");
+	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
+	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
+	pref->endGroup();
+
+	pref->beginGroup("toolbars_icon_size");
+	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
+	pref->endGroup();
+
+	pref->endGroup();
+
+	reconfigureFloatingControl();
 	if (pref->compact_mode && pref->floating_display_in_compact_mode) {
-		reconfigureFloatingControl();
 		floating_control->activate();
 	}
+	floating_control->adjustSize();
 
 	// Load playlist settings outside group
 	playlist->loadSettings();
 }
 
-void TBase::saveConfig(const QString &group) {
+void TBase::saveConfig(const QString &gui_group) {
 	qDebug("Gui::TBase::saveConfig");
 
+	pref->beginGroup(gui_group);
 	if (pref->save_window_size_on_exit) {
-		pref->beginGroup(group);
 		pref->setValue("pos", pos());
 		pref->setValue("size", size());
 		pref->setValue("state", (int) windowState());
-		pref->endGroup();
 	}
+
+	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
+	pref->beginGroup("actions");
+	pref->setValue("floating_control", iw->actionsToStringList());
+	pref->endGroup();
+
+	pref->beginGroup("toolbars_icon_size");
+	pref->setValue("floating_control", iw->iconSize());
+	pref->endGroup();
+
+	pref->endGroup();
 
 	playlist->saveSettings();
 }
@@ -4041,6 +4102,7 @@ void TBase::aboutToEnterFullscreen() {
 	reconfigureFloatingControl();
 	 // Hide the control in case it was running from compact mode
 	floating_control->deactivate();
+	// Reactivate when idle
 	QTimer::singleShot(100, floating_control, SLOT(activate()));
 }
 

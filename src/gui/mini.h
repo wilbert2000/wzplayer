@@ -20,47 +20,34 @@
 #define _GUI_MINI_H_
 
 #include "gui/guiconfig.h"
-#include "gui/baseplus.h"
+#include "gui/baseedit.h"
 #include "gui/editabletoolbar.h"
 #include "gui/autohidewidget.h"
 
 
 namespace Gui {
 
-class TMini : public TBasePlus {
+class TMini : public TBaseEdit {
 	Q_OBJECT
 
 public:
 	TMini();
 	virtual ~TMini();
 
-	virtual void loadConfig(const QString &group);
-	virtual void saveConfig(const QString &group);
+	virtual void loadConfig(const QString& gui_group);
+	virtual void saveConfig(const QString& gui_group);
 
 protected slots:
 	virtual void togglePlayAction(TCore::State state);
-
-	void adjustFloatingControlSize();
 
 protected:
 	virtual void retranslateStrings();
 	virtual QMenu* createPopupMenu();
 
-	void createActions();
-	void createControlWidget();
-	void createFloatingControl();
-
-	// Reimplemented
 	virtual void aboutToEnterFullscreen();
 	virtual void aboutToExitFullscreen();
 	virtual void aboutToEnterCompactMode();
 	virtual void aboutToExitCompactMode();
-
-protected:
-	TEditableToolbar* controlwidget;
-
-	TAction* editControlAct;
-	TAction* editFloatingControlAct;
 };
 
 } // namespace Gui

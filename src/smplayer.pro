@@ -174,6 +174,7 @@ HEADERS += config.h \
 	gui/playlistdock.h \
     gui/base.h \
 	gui/baseplus.h \
+    gui/baseedit.h \
     gui/default.h \
     gui/mini.h \
     gui/logwindow.h \
@@ -273,6 +274,7 @@ SOURCES	+= version.cpp \
 	gui/playlistdock.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
+    gui/baseedit.cpp \
     gui/default.cpp \
     gui/mini.cpp \
     gui/logwindow.cpp \

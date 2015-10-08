@@ -147,6 +147,7 @@ void TMpc::aboutToEnterFullscreen() {
 	floating_control->layout()->addItem(spacer);
 	floating_control->layout()->addWidget(controlwidget);
 	floating_control->layout()->addWidget(floating_control_time);
+
 	controlwidget->show();
 	timeslidewidget->show();
 	floating_control->adjustSize();

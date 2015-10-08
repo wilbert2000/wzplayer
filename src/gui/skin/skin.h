@@ -32,8 +32,6 @@ class QPushButton;
 class QToolBar;
 
 
-//#define SKIN_EDITABLE_CONTROL 1
-
 namespace Gui {
 
 class TSkin : public TBasePlus
@@ -56,7 +54,6 @@ protected:
 
 	void createMainToolBars();
 	void createControlWidget();
-	void createFloatingControl();
 	void createActions();
 	void createMenus();
 
@@ -83,9 +80,6 @@ protected:
 	TSeekingButton* forwardbutton_action;
 
 	TAction* editToolbar1Act;
-#if defined(SKIN_EDITABLE_CONTROL)
-	TAction* editFloatingControlAct;
-#endif
 
 	TAction* viewVideoInfoAct;
 	TAction* scrollTitleAct;
