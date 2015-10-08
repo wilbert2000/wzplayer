@@ -45,6 +45,8 @@ public:
 	void setDefaultActions(QStringList action_names) { default_actions = action_names; }
 	QStringList defaultActions() { return default_actions; }
 
+	int getMinimumHeight() const;
+
 public slots:
 	void edit();
 

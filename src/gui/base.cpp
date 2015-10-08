@@ -1877,26 +1877,31 @@ void TBase::reconfigureFloatingControl() {
 	floating_control->setAnimated(pref->floating_control_animated);
 	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
+	floating_control->setMinimumHeight(floating_control_toolbar->getMinimumHeight());
 }
 
-void TBase::adjustFloatingControlSize() {
+void TBase::adjustFloatingControlSize(const QSize& icon_size) {
 	qDebug("Gui::TBase::adjustFloatingControlSize");
 
-	QMargins m = floating_control->contentsMargins();
-	int new_height = floating_control_editor->height() + m.top() + m.bottom();
-	if (new_height < 32) new_height = 32;
+	// Add margin to height icon
+	QMargins margins = floating_control->contentsMargins();
+	int m = margins.top() + margins.bottom();
+	int new_height = icon_size.height() + m;
+
+	// Respect toolbar min height
+	int min_height = floating_control_toolbar->getMinimumHeight() + m;
+	if (new_height < min_height)
+		new_height = min_height;
+	floating_control->setMinimumHeight(new_height);
 	floating_control->resize(floating_control->width(), new_height);
 }
 
 void TBase::createFloatingControl() {
 
 	floating_control = new TAutohideWidget(panel, playerwindow);
-	reconfigureFloatingControl();
-
-	floating_control_editor = new TEditableToolbar(floating_control);
-	floating_control_editor->setObjectName("floating_control");
-	floating_control_editor->takeAvailableActionsFrom(this);
-
+	floating_control_toolbar = new TEditableToolbar(floating_control);
+	floating_control_toolbar->setObjectName("floating_control");
+	floating_control_toolbar->takeAvailableActionsFrom(this);
 	QStringList actions;
 	actions << "play_or_pause"
 			<< "separator"
@@ -1909,14 +1914,15 @@ void TBase::createFloatingControl() {
 			<< "volumeslider_action"
 			<< "separator"
 			<< "timelabel_action";
+	floating_control_toolbar->setDefaultActions(actions);
+	floating_control->setInternalWidget(floating_control_toolbar);
 
-	floating_control_editor->setDefaultActions(actions);
-	floating_control->setInternalWidget(floating_control_editor);
+	reconfigureFloatingControl();
 
-	connect(floating_control_editor, SIGNAL(iconSizeChanged(const QSize &)),
-			this, SLOT(adjustFloatingControlSize()));
+	connect(floating_control_toolbar, SIGNAL(iconSizeChanged(const QSize&)),
+			this, SLOT(adjustFloatingControlSize(const QSize&)));
 	connect(editFloatingControlAct, SIGNAL(triggered()),
-			floating_control_editor, SLOT(edit()));
+			floating_control_toolbar, SLOT(edit()));
 }
 
 void TBase::setupNetworkProxy() {
@@ -2960,8 +2966,8 @@ void TBase::applyNewPreferences() {
 	pref_dialog->getData(pref);
 
 	// Floating control
-	if ((pref->compact_mode) && (pref->floating_display_in_compact_mode)) {
-		reconfigureFloatingControl();
+	reconfigureFloatingControl();
+	if (pref->compact_mode && pref->floating_display_in_compact_mode) {
 		floating_control->activate();
 	} else {
 		floating_control->deactivate();

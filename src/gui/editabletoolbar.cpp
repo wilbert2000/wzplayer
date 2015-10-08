@@ -30,12 +30,18 @@ TEditableToolbar::TEditableToolbar(QWidget* parent) : QToolBar(parent)
 TEditableToolbar::~TEditableToolbar() {
 }
 
-QList<QAction *> TEditableToolbar::allActions() {
+int TEditableToolbar::getMinimumHeight() const {
+
+	QMargins margins = contentsMargins();
+	return 32 + margins.top() + margins.bottom();
+}
+
+QList<QAction*> TEditableToolbar::allActions() {
 	if (!all_actions.isEmpty()) return all_actions;
 
-	QList<QAction *> actions;
+	QList<QAction*> actions;
 	if (widget) {
-		actions = widget->findChildren<QAction *>();
+		actions = widget->findChildren<QAction*>();
 	}
 	return actions;
 }

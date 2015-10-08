@@ -273,7 +273,7 @@ protected slots:
 
 	virtual void clearRecentsList();
 
-	virtual void adjustFloatingControlSize();
+	virtual void adjustFloatingControlSize(const QSize& icon_size);
 	virtual void loadActions();
 	virtual void saveActions();
 
@@ -732,7 +732,7 @@ protected:
 	TTimeLabelAction* time_label_action;
 	TAction* editFloatingControlAct;
 	TAutohideWidget* floating_control;
-	TEditableToolbar* floating_control_editor;
+	TEditableToolbar* floating_control_toolbar;
 
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;
