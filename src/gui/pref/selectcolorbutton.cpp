@@ -36,19 +36,21 @@ TSelectColorButton::~TSelectColorButton() {
 }
 
 void TSelectColorButton::setColor(QColor c) {
+
 	_color = c;
 
-	QString current_style = qApp->style()->objectName();
-	qDebug("Gui::Pref::TSelectColorButton::setColor: current style name: %s", current_style.toUtf8().constData());
+	//QString current_style = qApp->style()->objectName();
+	//qDebug("Gui::Pref::TSelectColorButton::setColor: current style name: %s",
+	//		current_style.toUtf8().constData());
 
 	ignore_change_event = true;
 
 	setStyleSheet(
 		QString("QPushButton { background-color: #%1; border-style: outset; "
-                "border-width: 2px; border-radius: 5px; "
-                "border-color: grey; padding: 3px; min-width: 4ex; min-height: 1.2ex; } "
-                "QPushButton:pressed { border-style: inset; }"
-               ).arg(ColorUtils::colorToRRGGBB(_color.rgb())));
+				"border-width: 2px; border-radius: 5px; "
+				"border-color: grey; padding: 3px; min-width: 4ex; min-height: 1.2ex; } "
+				"QPushButton:pressed { border-style: inset; }"
+				).arg(ColorUtils::colorToRRGGBB(_color.rgb())));
 
 	ignore_change_event = false;
 }
