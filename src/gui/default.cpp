@@ -415,12 +415,12 @@ void TDefault::loadConfig(const QString&) {
 
 	pref->endGroup();
 
-	updateWidgets();
-
 	if (pref->compact_mode) {
 		toolbar1->hide();
 		toolbar2->hide();
 	}
+
+	updateWidgets();
 }
 
 } // namespace Gui

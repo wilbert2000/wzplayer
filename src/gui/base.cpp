@@ -1870,6 +1870,12 @@ void TBase::createMenus() {
 } // createMenus()
 
 
+int TBase::minHeightFC() const {
+
+	QMargins margins = floating_control->contentsMargins();
+	return 32 + margins.top() + margins.bottom();
+}
+
 void TBase::reconfigureFloatingControl() {
 
 	floating_control->setMargin(pref->floating_control_margin);
@@ -1877,9 +1883,12 @@ void TBase::reconfigureFloatingControl() {
 	floating_control->setAnimated(pref->floating_control_animated);
 	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
-	floating_control->setMinimumHeight(floating_control_toolbar->getMinimumHeight());
+	int min_height = minHeightFC();
+	floating_control->setMinimumHeight(min_height);
+	qDebug("Gui::TBase::reconfigureFloatingControl: minimal height %d", min_height);
 }
 
+// Slot called when icon size changes
 void TBase::adjustFloatingControlSize(const QSize& icon_size) {
 	qDebug("Gui::TBase::adjustFloatingControlSize");
 
@@ -1889,7 +1898,7 @@ void TBase::adjustFloatingControlSize(const QSize& icon_size) {
 	int new_height = icon_size.height() + m;
 
 	// Respect toolbar min height
-	int min_height = floating_control_toolbar->getMinimumHeight() + m;
+	int min_height = minHeightFC();
 	if (new_height < min_height)
 		new_height = min_height;
 	floating_control->setMinimumHeight(new_height);
@@ -2827,17 +2836,22 @@ void TBase::loadConfig(const QString& gui_group) {
 
 	// Floating control
 	pref->beginGroup("actions");
-	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
-	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
+	floating_control_toolbar->setActionsFromStringList(
+		pref->value("floating_control",
+					floating_control_toolbar->defaultActions()
+					).toStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
-	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
+	floating_control_toolbar->setIconSize(pref->value("floating_control",
+		floating_control_toolbar->iconSize()).toSize());
 	pref->endGroup();
 
 	pref->endGroup();
+
 
 	reconfigureFloatingControl();
+
 	if (pref->compact_mode && pref->floating_display_in_compact_mode) {
 		floating_control->activate();
 	}
@@ -2851,19 +2865,20 @@ void TBase::saveConfig(const QString &gui_group) {
 	qDebug("Gui::TBase::saveConfig");
 
 	pref->beginGroup(gui_group);
+
 	if (pref->save_window_size_on_exit) {
 		pref->setValue("pos", pos());
 		pref->setValue("size", size());
 		pref->setValue("state", (int) windowState());
 	}
 
-	TEditableToolbar* iw = static_cast<TEditableToolbar*>(floating_control->internalWidget());
 	pref->beginGroup("actions");
-	pref->setValue("floating_control", iw->actionsToStringList());
+	pref->setValue("floating_control",
+				   floating_control_toolbar->actionsToStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
-	pref->setValue("floating_control", iw->iconSize());
+	pref->setValue("floating_control", floating_control_toolbar->iconSize());
 	pref->endGroup();
 
 	pref->endGroup();

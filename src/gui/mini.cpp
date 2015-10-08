@@ -105,16 +105,6 @@ void TMini::saveConfig(const QString &gui_group) {
 
 	pref->beginGroup("mini_gui");
 	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
-
-	pref->beginGroup("actions");
-	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	pref->setValue("floating_control", iw->actionsToStringList());
-	pref->endGroup();
-
-	pref->beginGroup("toolbars_icon_size");
-	pref->setValue("floating_control", iw->iconSize());
-	pref->endGroup();
-
 	pref->endGroup();
 }
 
@@ -124,22 +114,9 @@ void TMini::loadConfig(const QString &gui_group) {
 	TBaseEdit::loadConfig("mini_gui");
 
 	pref->beginGroup("mini_gui");
-
-	pref->beginGroup("actions");
-	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->setActionsFromStringList(pref->value("floating_control", iw->defaultActions()).toStringList());
-	pref->endGroup();
-
-	pref->beginGroup("toolbars_icon_size");
-	iw->setIconSize(pref->value("floating_control", iw->iconSize()).toSize());
-	pref->endGroup();
-
-	floating_control->adjustSize();
-
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
-
 	pref->endGroup();
-} // loadConfig
+}
 
 } // namespace Gui
 

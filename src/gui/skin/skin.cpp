@@ -61,9 +61,6 @@ TSkin::TSkin()
 	createMenus();
 
 	connect(editToolbar1Act, SIGNAL(triggered()), toolbar1, SLOT(edit()));
-
-	TEditableToolbar* iw = static_cast<TEditableToolbar *>(floating_control->internalWidget());
-	iw->takeAvailableActionsFrom(this);
 }
 
 TSkin::~TSkin() {
