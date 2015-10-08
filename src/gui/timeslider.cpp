@@ -157,7 +157,7 @@ bool TTimeSlider::event(QEvent* event) {
 
 	if (event->type() == QEvent::ToolTip) {
 		QHelpEvent* help_event = static_cast<QHelpEvent*>(event);
-		int time = help_event->x() * total_time / width();
+		int time = width() <= 0 ? 0 : help_event->x() * total_time / width();
 		if (time >= 0 && time <= total_time) {
 			QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
 		} else {
@@ -169,7 +169,6 @@ bool TTimeSlider::event(QEvent* event) {
 
 	return QWidget::event(event);
 }
-
 
 } // namespace Gui
 
