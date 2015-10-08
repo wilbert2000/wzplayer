@@ -41,13 +41,11 @@ public:
 
 protected:
 	void mousePressEvent (QMouseEvent* event);
-#if CODE_FOR_CLICK == 1
-	inline int pick(const QPoint &pt) const;
+	// Function copied from qslider.cpp
+	inline int pick(const QPoint &pt) const {
+		return orientation() == Qt::Horizontal ? pt.x() : pt.y();
+	}
 	int pixelPosToRangeValue(int pos) const;
-#if QT_VERSION < 0x040300
-    void initStyleOption(QStyleOptionSlider *option) const;
-#endif
-#endif
 };
 
 } // namespace Gui
