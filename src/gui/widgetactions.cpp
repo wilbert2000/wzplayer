@@ -143,9 +143,10 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 }
 
 void TVolumeSliderAction::setValue(int v) {
-	QList<QWidget *> l = createdWidgets();
+
+	QList<QWidget*> l = createdWidgets();
 	for (int n=0; n < l.count(); n++) {
-		TSlider *s = (TSlider*) l[n];
+		TSlider* s = (TSlider*) l[n];
 		bool was_blocked = s->blockSignals(true);
 		s->setValue(v);
 		s->blockSignals(was_blocked);
@@ -153,9 +154,10 @@ void TVolumeSliderAction::setValue(int v) {
 }
 
 int TVolumeSliderAction::value() {
-	QList<QWidget *> l = createdWidgets();
+
+	QList<QWidget*> l = createdWidgets();
 	if (l.count() >= 1) {
-		TSlider *s = (TSlider*) l[0];
+		TSlider* s = (TSlider*) l[0];
 		return s->value();
 	} else {
 		return -1;
@@ -163,13 +165,14 @@ int TVolumeSliderAction::value() {
 }
 
 void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
+
 	// For new widgets
 	tick_position = position; 
 
 	// Propagate changes to all existing widgets
-	QList<QWidget *> l = createdWidgets();
-	for (int n=0; n < l.count(); n++) {
-		TSlider *s = (TSlider*) l[n];
+	QList<QWidget*> l = createdWidgets();
+	for (int n = 0; n < l.count(); n++) {
+		TSlider* s = (TSlider*) l[n];
 		s->setTickPosition(tick_position);
 	}
 }

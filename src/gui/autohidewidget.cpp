@@ -62,12 +62,15 @@ TAutohideWidget::TAutohideWidget(QWidget* parent, QWidget* playerwindow)
 }
 
 TAutohideWidget::~TAutohideWidget() {
+
 #if QT_VERSION >= 0x040600
-	if (animation) delete animation;
+	if (animation)
+		delete animation;
 #endif
 }
 
 void TAutohideWidget::setInternalWidget(QWidget* w) {
+
 	layout()->addWidget(w);
 	internal_widget = w;
 }

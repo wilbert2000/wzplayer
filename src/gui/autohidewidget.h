@@ -77,6 +77,7 @@ private:
 	Activation activation_area;
 	QWidget* internal_widget;
 	QTimer* timer;
+
 #if QT_VERSION >= 0x040600
 	QPropertyAnimation* animation;
 #endif
