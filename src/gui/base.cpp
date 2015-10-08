@@ -1387,6 +1387,8 @@ void TBase::createActions() {
 			 core, SLOT(goToPosition(int)));
 	connect(core, SIGNAL(positionChanged(int)),
 			 timeslider_action, SLOT(setPos(int)));
+	connect(core, SIGNAL(durationChanged(double)),
+			 timeslider_action, SLOT(setDuration(double)));
 
 	connect(timeslider_action, SIGNAL(draggingPos(int)),
 			 this, SLOT(displayGotoTime(int)));

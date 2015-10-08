@@ -155,11 +155,9 @@ void TTimeSlider::wheelEvent(QWheelEvent* e) {
 
 bool TTimeSlider::event(QEvent* event) {
 
-	/* TODO: connect duration slot
 	if (event->type() == QEvent::ToolTip) {
 		QHelpEvent* help_event = static_cast<QHelpEvent*>(event);
-		int pos_in_slider = help_event->x() * maximum() / width();
-		int time = pos_in_slider * total_time / maximum();
+		int time = help_event->x() * total_time / width();
 		if (time >= 0 && time <= total_time) {
 			QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
 		} else {
@@ -168,7 +166,6 @@ bool TTimeSlider::event(QEvent* event) {
 		}
 		return true;
 	}
-	*/
 
 	return QWidget::event(event);
 }
