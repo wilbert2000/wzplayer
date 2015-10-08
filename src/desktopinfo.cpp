@@ -20,30 +20,30 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-QSize TDesktopInfo::desktop_size(QWidget *w) {
+QSize TDesktopInfo::desktop_size(QWidget* w) {
+
 	QDesktopWidget* dw = QApplication::desktop();
-	qDebug("TDesktopInfo::desktop_size: primary screen: %d", dw->primaryScreen());
-
+	qDebug("TDesktopInfo::desktop_size: primary screen: %d",
+		   dw->primaryScreen());
 	QSize s = dw->screen(dw->primaryScreen())->size();
-
-	qDebug("TDesktopInfo::desktop_size: size of primary screen: %d x %d", s.width(), s.height());
-	//return dw->screen(dw->primaryScreen())->size();
-
+	qDebug("TDesktopInfo::desktop_size: size of primary screen: %d x %d",
+		   s.width(), s.height());
 	QRect r = dw->screenGeometry(w);
-	qDebug("TDesktopInfo::desktop_size: size of screen: %d x %d", r.width(), r.height());
-
+	qDebug("TDesktopInfo::desktop_size: size of current screen: %d x %d",
+		   r.width(), r.height());
 	return QSize(r.width(), r.height());
 }
 
-double TDesktopInfo::desktop_aspectRatio(QWidget *w) {
+double TDesktopInfo::desktop_aspectRatio(QWidget* w) {
 	QSize s = TDesktopInfo::desktop_size(w);
-    return  (double) s.width() / s.height() ;
+	return  (double) s.width() / s.height() ;
 }
 
-bool TDesktopInfo::isInsideScreen(QWidget *w) {
+bool TDesktopInfo::isInsideScreen(QWidget* w) {
+
 	QDesktopWidget* dw = QApplication::desktop();
 	QRect r = dw->screenGeometry(w);
-
-	qDebug("TDesktopInfo::isInsideScreen: geometry of screen: x:%d y:%d w:%d h:%d", r.x(), r.y(), r.width(), r.height());
+	qDebug("TDesktopInfo::isInsideScreen: geometry of screen: x: %d y: %d w: %d h: %d",
+		   r.x(), r.y(), r.width(), r.height());
 	return r.contains(w->pos());
 }
