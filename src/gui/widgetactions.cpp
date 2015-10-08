@@ -17,9 +17,10 @@
 */
 
 #include "widgetactions.h"
-#include "colorutils.h"
+#include <QDebug>
 #include <QLabel>
 #include <QToolButton>
+#include "colorutils.h"
 
 namespace Gui {
 
@@ -78,6 +79,17 @@ int TTimeSliderAction::pos() {
 		return s->pos();
 	} else {
 		return -1;
+	}
+}
+
+void TTimeSliderAction::setDuration(double t) {
+	qDebug() << "Gui::TimeSliderAction::setDuration:" << t;
+
+	total_time = t;
+	QList<QWidget*> l = createdWidgets();
+	for (int n = 0; n < l.count(); n++) {
+		TTimeSlider* s = (TTimeSlider*) l[n];
+		s->setDuration(t);
 	}
 }
 

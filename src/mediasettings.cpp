@@ -106,8 +106,10 @@ void TMediaSettings::reset() {
 
 	add_letterbox = false;
 
-    karaoke_filter = false;
+#ifdef MPLAYER_SUPPORT
+	karaoke_filter = false;
 	extrastereo_filter = false;
+#endif
 	volnorm_filter = pref->initial_volnorm;
 
 	audio_use_channels = pref->initial_audio_channels; //ChDefault; // (0)
@@ -259,8 +261,10 @@ void TMediaSettings::list() {
 
 	qDebug("  add_letterbox: %d", add_letterbox);
 
+#ifdef MPLAYER_SUPPORT
 	qDebug("  karaoke_filter: %d", karaoke_filter);
 	qDebug("  extrastereo_filter: %d", extrastereo_filter);
+#endif
 	qDebug("  volnorm_filter: %d", volnorm_filter);
 
 	qDebug("  audio_use_channels: %d", audio_use_channels);
@@ -415,8 +419,10 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 
 	set->setValue("add_letterbox", add_letterbox);
 
+#ifdef MPLAYER_SUPPORT
 	set->setValue("karaoke_filter", karaoke_filter);
 	set->setValue("extrastereo_filter", extrastereo_filter);
+#endif
 	set->setValue("volnorm_filter", volnorm_filter);
 
 	set->setValue("audio_use_channels", audio_use_channels);
@@ -549,8 +555,10 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 
 	add_letterbox = set->value("add_letterbox", add_letterbox).toBool();
 
+#ifdef MPLAYER_SUPPORT
 	karaoke_filter = set->value("karaoke_filter", karaoke_filter).toBool();
 	extrastereo_filter = set->value("extrastereo_filter", extrastereo_filter).toBool();
+#endif
 	volnorm_filter = set->value("volnorm_filter", volnorm_filter).toBool();
 
 	audio_use_channels = set->value("audio_use_channels", audio_use_channels).toInt();

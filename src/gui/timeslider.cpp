@@ -17,20 +17,23 @@
 */
 
 #include "gui/timeslider.h"
-
+#include <QDebug>
 #include <QWheelEvent>
 #include <QTimer>
+#include <QToolTip>
+#include "helper.h"
 
 #define DEBUG 0
 
 namespace Gui {
 
-TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay) :
-	TSlider(parent),
-	dont_update(false),
-	position(0),
-	last_pos_to_send(-1) {
-
+TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
+	: TSlider(parent)
+	, dont_update(false)
+	, position(0)
+	, total_time(0)
+	, last_pos_to_send(-1)
+{
 	setMinimum(0);
 	setMaximum(max_pos);
 
@@ -149,6 +152,27 @@ void TTimeSlider::wheelEvent(QWheelEvent* e) {
 		qDebug("Gui::TTimeslider::wheelEvent: horizontal event received, doing nothing");
 	}
 }
+
+bool TTimeSlider::event(QEvent* event) {
+
+	/* TODO:
+	if (event->type() == QEvent::ToolTip) {
+		QHelpEvent* help_event = static_cast<QHelpEvent*>(event);
+		int pos_in_slider = help_event->x() * maximum() / width();
+		int time = pos_in_slider * total_time / maximum();
+		if (time >= 0 && time <= total_time) {
+			QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
+		} else {
+			QToolTip::hideText();
+			event->ignore();
+		}
+		return true;
+	}
+	*/
+
+	return QWidget::event(event);
+}
+
 
 } // namespace Gui
 

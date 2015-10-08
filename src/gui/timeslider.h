@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_TIMESLIDER_H_
-#define _GUI_TIMESLIDER_H_
+#ifndef GUI_TIMESLIDER_H
+#define GUI_TIMESLIDER_H
 
 #include "config.h"
 #include "gui/slider.h"
@@ -35,6 +35,8 @@ public:
 public slots:
 	virtual void setPos(int); // Don't use setValue!
 	virtual int pos();
+	virtual void setDuration(double t) { total_time = t; }
+	virtual double duration() { return total_time; }
 	void setDragDelay(int);
 	int dragDelay();
 
@@ -55,11 +57,14 @@ protected slots:
 	void checkDragging(int);
 	void sendDelayedPos();
 
+protected:
 	virtual void wheelEvent(QWheelEvent* e);
+	virtual bool event(QEvent *event);
 
 private:
 	bool dont_update;
 	int position;
+	double total_time;
 	
 	int last_pos_to_send;
 	QTimer* timer;
@@ -67,5 +72,5 @@ private:
 
 } // namespace Gui
 
-#endif // _GUI_TIMESLIDER_H_
+#endif // GUI_TIMESLIDER_H
 

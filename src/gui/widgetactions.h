@@ -67,6 +67,8 @@ public:
 public slots:
 	virtual void setPos(int);
 	virtual int pos();
+	virtual void setDuration(double);
+	virtual double duration() { return total_time; }
 	void setDragDelay(int);
 	int dragDelay();
 
@@ -84,6 +86,7 @@ protected:
 private:
 	int max_pos;
 	int drag_delay;
+	double total_time;
 };
 
 

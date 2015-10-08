@@ -96,10 +96,15 @@ public:
 	virtual void setSubPos(int pos) = 0;
 	virtual void setSubScale(double value) = 0;
 	virtual void setSubStep(int value) = 0;
+#ifdef MPV_SUPPORT
+	virtual void seekSub(int value) = 0;
+#endif
 	virtual void setSubForcedOnly(bool b) = 0;
 	virtual void setSpeed(double value) = 0;
+#ifdef MPLAYER_SUPPORT
 	virtual void enableKaraoke(bool b) = 0;
 	virtual void enableExtrastereo(bool b) = 0;
+#endif
 	virtual void enableVolnorm(bool b, const QString & option) = 0;
 	virtual void setAudioEqualizer(const QString & values) = 0;
 	virtual void setAudioDelay(double delay) = 0;

@@ -777,6 +777,11 @@ void TMPVProcess::addVFIfAvailable(const QString & vf, const QString & value) {
 	}
 }
 
+void TMPVProcess::messageFilterNotSupported(const QString& filter_name) {
+	QString text = tr("the '%1' filter is not supported by mpv").arg(filter_name);
+	writeToStdin(QString("show_text \"%1\" 3000").arg(text));
+}
+
 void TMPVProcess::setOption(const QString & option_name, const QVariant & value) {
 	if (option_name == "cache") {
 		int cache = value.toInt();
@@ -1047,15 +1052,15 @@ void TMPVProcess::addVF(const QString & filter_name, const QVariant & value) {
 	}
 	else
 	if (filter_name == "blur") {
-		addVFIfAvailable("unsharp", "la=-1.5:ca=-1.5");
+		addVFIfAvailable("lavfi", "[unsharp=la=-1.5:ca=-1.5]");
 	}
 	else
 	if (filter_name == "sharpen") {
-		addVFIfAvailable("unsharp", "la=1.5:ca=1.5");
+		addVFIfAvailable("lavfi", "[unsharp=la=1.5:ca=1.5]");
 	}
 	else
 	if (filter_name == "noise") {
-		arg << "--vf-add=noise=9:pattern=yes";
+		addVFIfAvailable("lavfi", "[noise=alls=9:allf=t]");
 	}
 	else
 	if (filter_name == "deblock") {
@@ -1072,6 +1077,12 @@ void TMPVProcess::addVF(const QString & filter_name, const QVariant & value) {
 	else
 	if (filter_name == "postprocessing") {
 		addVFIfAvailable("lavfi", "[pp]");
+	}
+	else
+	if (filter_name == "hqdn3d") {
+		QString o;
+		if (!option.isEmpty()) o = "=" + option;
+		addVFIfAvailable("lavfi", "[hqdn3d" + o +"]");
 	}
 	else
 	if (filter_name == "yadif") {
@@ -1120,6 +1131,8 @@ void TMPVProcess::addVF(const QString & filter_name, const QVariant & value) {
 			QString s;
 			if (option.isEmpty()) s = "[pp]"; else s = "[pp=" + option + "]";
 			addVFIfAvailable("lavfi", s);
+		} else if (filter_name == "extrastereo" || filter_name == "karaoke") {
+			/* Not supported anymore, ignore */
 		} else {
 			QString s = filter_name;
 			if (!option.isEmpty()) s += "=" + option;
@@ -1297,6 +1310,10 @@ void TMPVProcess::setSubStep(int value) {
 	writeToStdin("sub_step " + QString::number(value));
 }
 
+void TMPVProcess::seekSub(int value) {
+	writeToStdin("sub-seek " + QString::number(value));
+}
+
 void TMPVProcess::setSubForcedOnly(bool b) {
 	writeToStdin(QString("set sub-forced-only %1").arg(b ? "yes" : "no"));
 }
@@ -1305,13 +1322,21 @@ void TMPVProcess::setSpeed(double value) {
 	writeToStdin("set speed " + QString::number(value));
 }
 
+#ifdef MPLAYER_SUPPORT
 void TMPVProcess::enableKaraoke(bool b) {
+	/*
 	if (b) writeToStdin("af add karaoke"); else writeToStdin("af del karaoke");
+	*/
+	messageFilterNotSupported("karaoke");
 }
 
 void TMPVProcess::enableExtrastereo(bool b) {
+	/*
 	if (b) writeToStdin("af add extrastereo"); else writeToStdin("af del extrastereo");
+	*/
+	messageFilterNotSupported("extrastereo");
 }
+#endif
 
 void TMPVProcess::enableVolnorm(bool b, const QString & option) {
 	if (b) writeToStdin("af add drc=" + option); else writeToStdin("af del drc=" + option);
@@ -1496,15 +1521,15 @@ void TMPVProcess::changeVF(const QString & filter, bool enable, const QVariant &
 	}
 	else
 	if (filter == "noise") {
-		f = "noise=9:pattern=yes";
+		f = "lavfi=[noise=alls=9:allf=t]";
 	}
 	else
 	if (filter == "blur") {
-		f = "unsharp=la=-1.5:ca=-1.5";
+		f = "lavfi=[unsharp=la=-1.5:ca=-1.5]";
 	}
 	else
 	if (filter == "sharpen") {
-		f = "unsharp=la=1.5:ca=1.5";
+		f = "lavfi=[unsharp=la=1.5:ca=1.5]";
 	}
 	else
 	if (filter == "deblock") {
@@ -1521,6 +1546,12 @@ void TMPVProcess::changeVF(const QString & filter, bool enable, const QVariant &
 	else
 	if (filter == "postprocessing") {
 		f = "lavfi=[pp]";
+	}
+	else
+	if (filter == "hqdn3d") {
+		QString o = option.toString();
+		if (!o.isEmpty()) o = "=" + o;
+		f = "lavfi=[hqdn3d" + o +"]";
 	}
 	else
 	if (filter == "rotate") {
@@ -1546,7 +1577,7 @@ void TMPVProcess::changeVF(const QString & filter, bool enable, const QVariant &
 		f = filter;
 	}
 	else
-	if (filter == "scale" || filter == "gradfun" || filter == "hqdn3d") {
+	if (filter == "scale" || filter == "gradfun") {
 		f = filter;
 		QString o = option.toString();
 		if (!o.isEmpty()) f += "=" + o;

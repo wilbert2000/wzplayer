@@ -222,7 +222,7 @@ void TDefault::createStatusBar() {
 	statusBar()->addPermanentWidget(video_info_display);
 	statusBar()->addPermanentWidget(ab_section_display);
 
-	statusBar()->showMessage(tr("Welcome to SMPlayer"));
+	statusBar()->showMessage(tr("Ready"));
 	statusBar()->addPermanentWidget(frame_display, 0);
 	frame_display->setText("0");
 

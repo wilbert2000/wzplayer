@@ -819,6 +819,7 @@ void TBase::createActions() {
 
 
 	// Submenu Filters
+#ifdef MPLAYER_SUPPORT
 	extrastereoAct = new TAction(this, "extrastereo_filter");
 	extrastereoAct->setCheckable(true);
 	connect(extrastereoAct, SIGNAL(toggled(bool)),
@@ -828,6 +829,7 @@ void TBase::createActions() {
 	karaokeAct->setCheckable(true);
 	connect(karaokeAct, SIGNAL(toggled(bool)),
 			 core, SLOT(toggleKaraoke(bool)));
+#endif
 
 	volnormAct = new TAction(this, "volnorm_filter");
 	volnormAct->setCheckable(true);
@@ -870,7 +872,7 @@ void TBase::createActions() {
 	incSubScaleAct = new TAction(Qt::SHIFT | Qt::Key_T, this, "inc_sub_scale");
 	connect(incSubScaleAct, SIGNAL(triggered()),
 			 core, SLOT(incSubScale()));
-    
+
 	decSubStepAct = new TAction(Qt::Key_G, this, "dec_sub_step");
 	connect(decSubStepAct, SIGNAL(triggered()),
 			 core, SLOT(decSubStep()));
@@ -878,6 +880,15 @@ void TBase::createActions() {
 	incSubStepAct = new TAction(Qt::Key_Y, this, "inc_sub_step");
 	connect(incSubStepAct, SIGNAL(triggered()),
 			 core, SLOT(incSubStep()));
+
+#ifdef MPV_SUPPORT
+	seekNextSubAct = new TAction(Qt::CTRL | Qt::Key_Right, this, "seek_next_sub");
+	connect(seekNextSubAct, SIGNAL(triggered()),
+			core, SLOT(seekToNextSub()));
+	seekPrevSubAct = new TAction(Qt::CTRL | Qt::Key_Left, this, "seek_prev_sub");
+	connect(seekPrevSubAct, SIGNAL(triggered()),
+			core, SLOT(seekToPrevSub()));
+#endif
 
 	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style");
 	useCustomSubStyleAct->setCheckable(true);
@@ -1635,8 +1646,10 @@ void TBase::createMenus() {
 	// Filter submenu
 	audiofilter_menu = new QMenu(this);
 	audiofilter_menu->menuAction()->setObjectName("audiofilter_menu");
+#ifdef MPLAYER_SUPPORT
 	audiofilter_menu->addAction(extrastereoAct);
 	audiofilter_menu->addAction(karaokeAct);
+#endif
 	audiofilter_menu->addAction(volnormAct);
 
 	audioMenu->addMenu(audiofilter_menu);
@@ -1720,6 +1733,11 @@ void TBase::createMenus() {
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubStepAct);
 	subtitlesMenu->addAction(incSubStepAct);
+#ifdef MPV_SUPPORT
+	subtitlesMenu->addSeparator();
+	subtitlesMenu->addAction(seekPrevSubAct);
+	subtitlesMenu->addAction(seekNextSubAct);
+#endif
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(useForcedSubsOnlyAct);
 	subtitlesMenu->addSeparator();
@@ -1975,8 +1993,10 @@ void TBase::setActionsEnabled(bool b) {
 	decAudioDelayAct->setEnabled(b);
 	incAudioDelayAct->setEnabled(b);
 	audioDelayAct->setEnabled(b);
+#ifdef MPLAYER_SUPPORT
 	extrastereoAct->setEnabled(b);
 	karaokeAct->setEnabled(b);
+#endif
 	volnormAct->setEnabled(b);
 	loadAudioAct->setEnabled(b);
 	//unloadAudioAct->setEnabled(b);
@@ -1993,6 +2013,10 @@ void TBase::setActionsEnabled(bool b) {
 	decSubStepAct->setEnabled(b);
 	incSubScaleAct->setEnabled(b);
 	decSubScaleAct->setEnabled(b);
+#ifdef MPV_SUPPORT
+	seekNextSubAct->setEnabled(b);
+	seekPrevSubAct->setEnabled(b);
+#endif
 
 	// Actions not in menus
 	decContrastAct->setEnabled(b);
@@ -2080,8 +2104,10 @@ void TBase::enableActionsOnPlaying() {
 		decAudioDelayAct->setEnabled(false);
 		incAudioDelayAct->setEnabled(false);
 		audioDelayAct->setEnabled(false);
+#ifdef MPLAYER_SUPPORT
 		extrastereoAct->setEnabled(false);
 		karaokeAct->setEnabled(false);
+#endif
 		volnormAct->setEnabled(false);
 		channelsGroup->setActionsEnabled(false);
 		stereoGroup->setActionsEnabled(false);
@@ -2310,8 +2336,10 @@ void TBase::retranslateStrings() {
 	unloadAudioAct->change(Images::icon("unload"), tr("U&nload"));
 
 	// Submenu Filters
+#ifdef MPLAYER_SUPPORT
 	extrastereoAct->change(tr("&Extrastereo"));
 	karaokeAct->change(tr("&Karaoke"));
+#endif
 	volnormAct->change(tr("Volume &normalization"));
 
 	// Menu Subtitles
@@ -2328,6 +2356,10 @@ void TBase::retranslateStrings() {
 						   tr("&Previous line in subtitles"));
 	incSubStepAct->change(Images::icon("inc_sub_step"),
 						   tr("N&ext line in subtitles"));
+#ifdef MPV_SUPPORT
+	seekNextSubAct->change(Images::icon("seek_next_sub"), tr("Seek to next subtitle"));
+	seekPrevSubAct->change(Images::icon("seek_prev_sub"), tr("Seek to previous subtitle"));
+#endif
 	useCustomSubStyleAct->change(Images::icon("use_custom_sub_style"), tr("Use custo&m style"));
 	useForcedSubsOnlyAct->change(Images::icon("forced_subs"), tr("&Forced subtitles only"));
 
@@ -3284,6 +3316,10 @@ void TBase::updateSubtitles() {
 	incSubScaleAct->setEnabled(e);
 	decSubStepAct->setEnabled(e);
 	incSubStepAct->setEnabled(e);
+#ifdef MPV_SUPPORT
+	seekNextSubAct->setEnabled(e);
+	seekPrevSubAct->setEnabled(e);
+#endif
 }
 
 void TBase::updateTitles() {
@@ -3487,11 +3523,13 @@ void TBase::updateWidgets() {
 	// Unsharp submenu
 	unsharpGroup->setChecked(core->mset.current_unsharp);
 
+#ifdef MPLAYER_SUPPORT
 	// Karaoke menu option
 	karaokeAct->setChecked(core->mset.karaoke_filter);
 
 	// Extrastereo menu option
 	extrastereoAct->setChecked(core->mset.extrastereo_filter);
+#endif
 
 	// Volnorm menu option
 	volnormAct->setChecked(core->mset.volnorm_filter);

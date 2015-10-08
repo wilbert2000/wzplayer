@@ -43,9 +43,9 @@
   !define SMPLAYER_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SMPlayer"
 
 !ifdef WIN64
-  !define MPV_FILENAME "mpv-x86_64-20150903.7z"
+  !define MPV_FILENAME "mpv-x86_64-20150923.7z"
 !else
-  !define MPV_FILENAME "mpv-i686-20150903.7z"
+  !define MPV_FILENAME "mpv-i686-20150923.7z"
 !endif
 
   !define INSTALLER_VERSION "1"
@@ -413,7 +413,7 @@ SectionGroup $(MPlayerMPVGroupTitle)
   Section "MPlayer" SecMPlayer
 
     SetOutPath "$INSTDIR\mplayer"
-    File /r /x mplayer.exe /x mencoder.exe /x mplayer64.exe /x mencoder64.exe /x *.exe.debug /x gdb.exe /x gdb64.exe /x buildinfo /x buildinfo64 /x buildinfo-mencoder-32 /x buildinfo-mencoder-debug-32 /x buildinfo-mplayer-32 /x buildinfo-mplayer-debug-32 /x buildinfo-mencoder-64 /x buildinfo-mencoder-debug-64 /x buildinfo-mplayer-64 /x buildinfo-mplayer-debug-64 "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
+    File /r /x mplayer.exe /x mencoder.exe /x mplayer64.exe /x mencoder64.exe /x *.exe.debug /x gdb.exe /x gdb64.exe /x vfw2menc.exe /x buildinfo /x buildinfo64 /x buildinfo-mencoder-32 /x buildinfo-mencoder-debug-32 /x buildinfo-mplayer-32 /x buildinfo-mplayer-debug-32 /x buildinfo-mencoder-64 /x buildinfo-mencoder-debug-64 /x buildinfo-mplayer-64 /x buildinfo-mplayer-debug-64 "${SMPLAYER_BUILD_DIR}\mplayer\*.*"
 !ifdef WIN64
     File /oname=mplayer.exe "${SMPLAYER_BUILD_DIR}\mplayer\mplayer64.exe"
 !else

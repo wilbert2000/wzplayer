@@ -66,7 +66,7 @@ void TBaseEdit::loadConfig(const QString &gui_group) {
 	if (pref->compact_mode) {
 		controlwidget->hide();
 	}
-}
+} // loadConfig
 
 void TBaseEdit::saveConfig(const QString& gui_group) {
 	qDebug("Gui::TBaseEdit::saveConfig");
@@ -83,7 +83,7 @@ void TBaseEdit::saveConfig(const QString& gui_group) {
 	pref->endGroup();
 
 	pref->endGroup();
-}
+} // saveConfig
 
 void TBaseEdit::aboutToEnterFullscreen() {
 

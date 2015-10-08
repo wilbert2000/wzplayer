@@ -1354,6 +1354,14 @@ void TMplayerProcess::setSubStep(int value) {
 	writeToStdin("sub_step " + QString::number(value));
 }
 
+#ifdef MPV_SUPPORT
+void TMplayerProcess::seekSub(int value) {
+	Q_UNUSED(value)
+	/* Not supported */
+	showOSDText(tr("This option is not supported by MPlayer"), 3000, 1);
+}
+#endif
+
 void TMplayerProcess::setSubForcedOnly(bool b) {
 	writeToStdin(QString("forced_subs_only %1").arg(b ? 1 : 0));
 }

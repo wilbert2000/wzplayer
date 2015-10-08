@@ -430,8 +430,10 @@ protected:
 	TAction* decAudioDelayAct;
 	TAction* incAudioDelayAct;
 	TAction* audioDelayAct; // Ask for delay
+#ifdef MPLAYER_SUPPORT
 	TAction* extrastereoAct;
 	TAction* karaokeAct;
+#endif
 	TAction* volnormAct;
 	TAction* loadAudioAct;
 	TAction* unloadAudioAct;
@@ -448,6 +450,10 @@ protected:
 	TAction* decSubStepAct;
 	TAction* incSubScaleAct;
 	TAction* decSubScaleAct;
+#ifdef MPV_SUPPORT
+	TAction* seekNextSubAct;
+	TAction* seekPrevSubAct;
+#endif
 	TAction* useCustomSubStyleAct;
 	TAction* useForcedSubsOnlyAct;
 #ifdef FIND_SUBTITLES

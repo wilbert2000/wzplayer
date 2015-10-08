@@ -132,10 +132,12 @@ public slots:
 	void toggleMirror(bool b);
 
 	// Audio filters
+#ifdef MPLAYER_SUPPORT
 	void toggleKaraoke();
 	void toggleKaraoke(bool b);
 	void toggleExtrastereo();
 	void toggleExtrastereo(bool b);
+#endif
 	void toggleVolnorm();
 	void toggleVolnorm(bool b);
 
@@ -171,6 +173,10 @@ public slots:
     void fastrewind();	// - 10 minutes
 	void forward(int secs);
 	void rewind(int secs);
+#ifdef MPV_SUPPORT
+	void seekToNextSub();
+	void seekToPrevSub();
+#endif
 	void wheelUp(Settings::TPreferences::WheelFunction function = Settings::TPreferences::DoNothing);
 	void wheelDown(Settings::TPreferences::WheelFunction function = Settings::TPreferences::DoNothing);
 

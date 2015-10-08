@@ -31,8 +31,7 @@ class QStringList;
 
 namespace Proc {
 
-class TMPVProcess : public TPlayerProcess
-{
+class TMPVProcess : public TPlayerProcess {
 	Q_OBJECT
 
 public:
@@ -80,10 +79,13 @@ public:
 	void setSubPos(int pos);
 	void setSubScale(double value);
 	void setSubStep(int value);
+	void seekSub(int value);
 	void setSubForcedOnly(bool b);
 	void setSpeed(double value);
+#ifdef MPLAYER_SUPPORT
 	void enableKaraoke(bool b);
 	void enableExtrastereo(bool b);
+#endif
 	void enableVolnorm(bool b, const QString & option);
 	void setAudioEqualizer(const QString & values);
 	void setAudioDelay(double delay);
@@ -157,6 +159,7 @@ private:
 	bool parseVideoTrack(int id, const QString &codec, QString name, bool selected);
 	bool parseAudioTrack(int id, const QString &lang, const QString &codec, QString name, bool selected);
 	bool parseSubtitleTrack(int id, const QString &lang, QString name, const QString &type, bool selected);
+	void messageFilterNotSupported(const QString& filter_name);
 };
 
 } // namespace Proc

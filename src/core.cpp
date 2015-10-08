@@ -1792,9 +1792,11 @@ void TCore::startPlayer(QString file, double seek) {
 	if (!pref->use_hwac3) {
 
 		// Audio filters
+#ifdef MPLAYER_SUPPORT
 		if (mset.karaoke_filter) {
 			proc->addAF("karaoke");
 		}
+#endif
 
 		// Stereo mode
 		if (mset.stereo_mode != 0) {
@@ -1806,9 +1808,11 @@ void TCore::startPlayer(QString file, double seek) {
 			}
 		}
 
+#ifdef MPLAYER_SUPPORT
 		if (mset.extrastereo_filter) {
 			proc->addAF("extrastereo");
 		}
+#endif
 
 		if (mset.volnorm_filter) {
 			proc->addAF("volnorm", pref->filters.item("volnorm").options());
@@ -2097,6 +2101,18 @@ void TCore::rewind(int secs) {
 	seek(-secs);
 }
 
+#ifdef MPV_SUPPORT
+void TCore::seekToNextSub() {
+	qDebug("TCore::seekToNextSub");
+	proc->seekSub(1);
+}
+
+void TCore::seekToPrevSub() {
+	qDebug("TCore::seekToPrevSub");
+	proc->seekSub(-1);
+}
+#endif
+
 void TCore::wheelUp(TPreferences::WheelFunction function) {
 	qDebug("TCore::wheelUp");
 
@@ -2189,6 +2205,7 @@ void TCore::toggleRepeat(bool b) {
 }
 
 // Audio filters
+#ifdef MPLAYER_SUPPORT
 void TCore::toggleKaraoke() {
 	toggleKaraoke(!mset.karaoke_filter);
 }
@@ -2212,6 +2229,7 @@ void TCore::toggleExtrastereo(bool b) {
 		proc->enableExtrastereo(b);
 	}
 }
+#endif
 
 void TCore::toggleVolnorm() {
 	toggleVolnorm(!mset.volnorm_filter);
