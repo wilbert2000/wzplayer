@@ -17,11 +17,11 @@
 */
 
 #include "gui/autohidewidget.h"
+#include <QDebug>
 #include <QTimer>
 #include <QEvent>
-#include <QVBoxLayout>
 #include <QMouseEvent>
-#include <QDebug>
+#include <QVBoxLayout>
 
 #if QT_VERSION >= 0x040600
 #include <QPropertyAnimation>
@@ -81,11 +81,13 @@ int TAutohideWidget::hideDelay() {
 }
 
 void TAutohideWidget::activate() {
+
 	turned_on = true;
 	timer->start();
 }
 
 void TAutohideWidget::deactivate() {
+
 	turned_on = false;
 	timer->stop();
 	hide();
@@ -93,8 +95,8 @@ void TAutohideWidget::deactivate() {
 
 void TAutohideWidget::show() {
 	qDebug() << "Gui::TAutohideWidget::show";
-	resizeAndMove();
 
+	resizeAndMove();
 	if (use_animation) {
 		showAnimated();
 	} else {
@@ -102,20 +104,24 @@ void TAutohideWidget::show() {
 	}
 
 	// Restart timer
-	if (timer->isActive()) timer->start();
+	if (timer->isActive())
+		timer->start();
 }
 
 void TAutohideWidget::setAutoHide(bool b) {
 	auto_hide = b;
 }
 
+// Slot called by timer
 void TAutohideWidget::checkUnderMouse() {
+
 	if (auto_hide && isVisible() && !underMouse()) {
 		hide();
 	}
 }
 
 void TAutohideWidget::resizeAndMove() {
+
 	QWidget* widget = parentWidget();
 	int w = widget->width() * perc_width / 100;
 	int h = height();
@@ -126,28 +132,33 @@ void TAutohideWidget::resizeAndMove() {
 	move(x, y);
 }
 
+bool TAutohideWidget::insideShowArea(const QPoint& p) const {
+
+	QPoint origin = mapToGlobal(QPoint(0, 0));
+	return p.y() > origin.y() - 32;
+}
+
 bool TAutohideWidget::eventFilter(QObject* obj, QEvent* event) {
-	if (turned_on) {
-		if (event->type() == QEvent::MouseMove) {
-			if (!isVisible()) {
-				if (activation_area == Anywhere) {
-					show();
-				} else {
-					QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
-					QWidget* parent = parentWidget();
-					QPoint p = parent->mapFromGlobal(mouse_event->globalPos());
-					if (p.y() > (parent->height() - height() - spacing)) {
-						show();
-					}
-				}
+	if (turned_on
+		&& event->type() == QEvent::MouseMove
+		&& !isVisible()) {
+
+		if (activation_area == Anywhere) {
+			show();
+		} else {
+			QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
+			if (insideShowArea(mouse_event->globalPos())) {
+				show();
 			}
 		}
+
 	}
 
 	return QWidget::eventFilter(obj, event);
 }
 
 void TAutohideWidget::showAnimated() {
+
 #if QT_VERSION >= 0x040600
 	if (!animation) {
 		animation = new QPropertyAnimation(this, "pos");
