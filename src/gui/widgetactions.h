@@ -29,8 +29,7 @@ class QStyle;
 
 namespace Gui {
 
-class TWidgetAction : public QWidgetAction
-{
+class TWidgetAction : public QWidgetAction {
 	Q_OBJECT
 
 public:
@@ -38,10 +37,10 @@ public:
 	~TWidgetAction();
 
 	void setCustomStyle(QStyle* style) { custom_style = style; }
-	QStyle* customStyle() { return custom_style; }
+	QStyle* customStyle() const { return custom_style; }
 
 	void setStyleSheet(QString style) { custom_stylesheet = style; }
-	QString styleSheet() { return custom_stylesheet; }
+	QString styleSheet() const { return custom_stylesheet; }
 
 public slots:
 	virtual void enable(bool e = true); // setEnabled in QAction is not virtual :(
@@ -56,8 +55,7 @@ protected:
 };
 
 
-class TTimeSliderAction : public TWidgetAction
-{
+class TTimeSliderAction : public TWidgetAction {
 	Q_OBJECT
 
 public:
@@ -66,11 +64,7 @@ public:
 
 public slots:
 	virtual void setPos(int);
-	virtual int pos();
 	virtual void setDuration(double);
-	virtual double duration() { return total_time; }
-	void setDragDelay(int);
-	int dragDelay();
 
 signals:
 	void posChanged(int value);
@@ -81,7 +75,7 @@ signals:
 	void wheelDown(Settings::TPreferences::WheelFunction function = Settings::TPreferences::Seeking);
 
 protected:
-	virtual QWidget* createWidget (QWidget* parent);
+	virtual QWidget* createWidget(QWidget* parent);
 
 private:
 	int max_pos;
@@ -90,8 +84,7 @@ private:
 };
 
 
-class TVolumeSliderAction : public TWidgetAction
-{
+class TVolumeSliderAction : public TWidgetAction {
 	Q_OBJECT
 
 public:
@@ -99,10 +92,10 @@ public:
 	~TVolumeSliderAction();
 
 	void setFixedSize(QSize size) { fixed_size = size; }
-	QSize fixedSize() { return fixed_size; }
+	QSize fixedSize() const { return fixed_size; }
 
 	void setTickPosition(QSlider::TickPosition position);
-	QSlider::TickPosition tickPosition() { return tick_position; }
+	QSlider::TickPosition tickPosition() const { return tick_position; }
 
 public slots:
 	virtual void setValue(int);
@@ -112,7 +105,7 @@ signals:
 	void valueChanged(int value);
 
 protected:
-	virtual QWidget* createWidget (QWidget* parent);
+	virtual QWidget* createWidget(QWidget* parent);
 
 private:
 	QSize fixed_size;
@@ -120,15 +113,14 @@ private:
 };
 
 
-class TTimeLabelAction : public TWidgetAction
-{
+class TTimeLabelAction : public TWidgetAction {
 	Q_OBJECT
 
 public:
 	TTimeLabelAction(QWidget* parent);
 	~TTimeLabelAction();
 
-	virtual QString text() { return _text; }
+	virtual QString text() const { return _text; }
 
 public slots:
 	virtual void setText(QString s);
@@ -137,25 +129,26 @@ signals:
 	void newText(QString s);
 
 protected:
-	virtual QWidget* createWidget (QWidget* parent);
+	virtual QWidget* createWidget(QWidget* parent);
 
 private:
 	QString _text;
 };
 
 
-class TSeekingButton : public QWidgetAction
-{
+typedef QList<QAction*> TActionList;
+
+class TSeekingButton : public QWidgetAction {
 	Q_OBJECT
 
 public:
-	TSeekingButton(QList<QAction*> actions, QWidget* parent);
+	TSeekingButton(const TActionList& actions, QWidget* parent);
 	~TSeekingButton();
 
 protected:
-	virtual QWidget* createWidget (QWidget* parent);
+	virtual QWidget* createWidget(QWidget* parent);
 
-	QList<QAction*> _actions;
+	TActionList _actions;
 };
 
 } // namespace Gui

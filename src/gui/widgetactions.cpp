@@ -71,17 +71,6 @@ void TTimeSliderAction::setPos(int v) {
 	}
 }
 
-int TTimeSliderAction::pos() {
-
-	QList<QWidget *> l = createdWidgets();
-	if (l.count() >= 1) {
-		TTimeSlider *s = (TTimeSlider*) l[0];
-		return s->pos();
-	} else {
-		return -1;
-	}
-}
-
 void TTimeSliderAction::setDuration(double t) {
 	qDebug() << "Gui::TTimeSliderAction::setDuration:" << t;
 
@@ -91,20 +80,6 @@ void TTimeSliderAction::setDuration(double t) {
 		TTimeSlider* s = (TTimeSlider*) l[n];
 		s->setDuration(t);
 	}
-}
-
-void TTimeSliderAction::setDragDelay(int d) {
-
-	drag_delay = d;
-	QList<QWidget *> l = createdWidgets();
-	for (int n=0; n < l.count(); n++) {
-		TTimeSlider *s = (TTimeSlider*) l[n];
-		s->setDragDelay(drag_delay);
-	}
-}
-
-int TTimeSliderAction::dragDelay() {
-	return drag_delay;
 }
 
 QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
@@ -135,8 +110,7 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 
 TVolumeSliderAction::TVolumeSliderAction(QWidget* parent)
 	: TWidgetAction(parent)
-{
-	tick_position = QSlider::TicksBelow;
+	, tick_position(QSlider::TicksBelow) {
 }
 
 TVolumeSliderAction::~TVolumeSliderAction() {
@@ -145,7 +119,7 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 void TVolumeSliderAction::setValue(int v) {
 
 	QList<QWidget*> l = createdWidgets();
-	for (int n=0; n < l.count(); n++) {
+	for (int n = 0; n < l.count(); n++) {
 		TSlider* s = (TSlider*) l[n];
 		bool was_blocked = s->blockSignals(true);
 		s->setValue(v);
@@ -156,12 +130,11 @@ void TVolumeSliderAction::setValue(int v) {
 int TVolumeSliderAction::value() {
 
 	QList<QWidget*> l = createdWidgets();
-	if (l.count() >= 1) {
+	if (l.count() > 0) {
 		TSlider* s = (TSlider*) l[0];
 		return s->value();
-	} else {
-		return -1;
 	}
+	return -1;
 }
 
 void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
@@ -177,36 +150,36 @@ void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 	}
 }
 
-QWidget* TVolumeSliderAction::createWidget (QWidget* parent) {
-	TSlider *t = new TSlider(parent);
+QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 
-	if (custom_style) t->setStyle(custom_style);
-	if (!custom_stylesheet.isEmpty()) t->setStyleSheet(custom_stylesheet);
-	if (fixed_size.isValid()) t->setFixedSize(fixed_size);
+	TSlider* slider = new TSlider(parent);
 
-	t->setMinimum(0);
-	t->setMaximum(100);
-	t->setValue(50);
-	t->setOrientation(Qt::Horizontal);
-	t->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	t->setFocusPolicy(Qt::NoFocus);
-	t->setTickPosition(tick_position);
-	t->setTickInterval(10);
-	t->setSingleStep(1);
-	t->setPageStep(10);
-	t->setToolTip(tr("Volume"));
-	t->setEnabled(isEnabled());
-	t->setAttribute(Qt::WA_NoMousePropagation);
+	if (custom_style) slider->setStyle(custom_style);
+	if (!custom_stylesheet.isEmpty()) slider->setStyleSheet(custom_stylesheet);
+	if (fixed_size.isValid()) slider->setFixedSize(fixed_size);
 
-	connect(t,    SIGNAL(valueChanged(int)), 
-             this, SIGNAL(valueChanged(int)));
-	return t;
+	slider->setMinimum(0);
+	slider->setMaximum(100);
+	slider->setValue(50);
+	slider->setOrientation(Qt::Horizontal);
+	slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	slider->setFocusPolicy(Qt::NoFocus);
+	slider->setTickPosition(tick_position);
+	slider->setTickInterval(10);
+	slider->setSingleStep(1);
+	slider->setPageStep(10);
+	slider->setToolTip(tr("Volume"));
+	slider->setEnabled(isEnabled());
+	slider->setAttribute(Qt::WA_NoMousePropagation);
+
+	connect(slider, SIGNAL(valueChanged(int)), this, SIGNAL(valueChanged(int)));
+
+	return slider;
 }
 
 
 TTimeLabelAction::TTimeLabelAction(QWidget* parent)
-	: TWidgetAction(parent)
-{
+	: TWidgetAction(parent) {
 }
 
 TTimeLabelAction::~TTimeLabelAction() {
@@ -218,33 +191,35 @@ void TTimeLabelAction::setText(QString s) {
 }
 
 QWidget* TTimeLabelAction::createWidget (QWidget* parent) {
+
 	QLabel* time_label = new QLabel(parent);
 	time_label->setObjectName("time_label");
-    time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    time_label->setAutoFillBackground(true);
+	time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+	time_label->setAutoFillBackground(true);
 
-    ColorUtils::setBackgroundColor(time_label, QColor(0,0,0));
-    ColorUtils::setForegroundColor(time_label, QColor(255,255,255));
-    time_label->setText("00:00:00 / 00:00:00");
-    time_label->setFrameShape(QFrame::Panel);
-    time_label->setFrameShadow(QFrame::Sunken);
+	ColorUtils::setBackgroundColor(time_label, QColor(0,0,0));
+	ColorUtils::setForegroundColor(time_label, QColor(255,255,255));
+	time_label->setText("00:00:00 / 00:00:00");
+	time_label->setFrameShape(QFrame::Panel);
+	time_label->setFrameShadow(QFrame::Sunken);
 
 	connect(this, SIGNAL(newText(QString)), 
-             time_label, SLOT(setText(QString)));
+			time_label, SLOT(setText(QString)));
 
 	return time_label;
 }
 
-TSeekingButton::TSeekingButton(QList<QAction*> actions, QWidget* parent)
-	: QWidgetAction(parent)
-{
-	_actions = actions;
+
+TSeekingButton::TSeekingButton(const TActionList& actions, QWidget* parent)
+	: QWidgetAction(parent),
+	  _actions(actions) {
 }
 
 TSeekingButton::~TSeekingButton() {
 }
 
 QWidget* TSeekingButton::createWidget(QWidget* parent) {
+
 	QToolButton* button = new QToolButton(parent);
 	button->setPopupMode(QToolButton::MenuButtonPopup);
 
