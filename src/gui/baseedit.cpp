@@ -38,7 +38,7 @@ TBaseEdit::~TBaseEdit() {
 }
 
 void TBaseEdit::retranslateStrings() {
-	qDebug("Gui::TDefault::retranslateStrings");
+	qDebug("Gui::TBaseEdit::retranslateStrings");
 
 	TBasePlus::retranslateStrings();
 
