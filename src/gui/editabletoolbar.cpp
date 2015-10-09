@@ -22,9 +22,9 @@
 
 namespace Gui {
 
-TEditableToolbar::TEditableToolbar(QWidget* parent) : QToolBar(parent)
-{
-	widget = parent;
+TEditableToolbar::TEditableToolbar(QWidget* parent)
+	: QToolBar(parent)
+	, widget(parent) {
 }
 
 TEditableToolbar::~TEditableToolbar() {
@@ -54,7 +54,7 @@ void TEditableToolbar::edit() {
 
 	TToolbarEditor e(widget);
 	e.setAllActions(allActions());
-	e.setActiveActions(this->actions());
+	e.setActiveActions(actions());
 	e.setDefaultActions(defaultActions());
 	e.setIconSize(iconSize().width());
 
