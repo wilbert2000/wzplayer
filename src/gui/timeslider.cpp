@@ -55,6 +55,30 @@ TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
 TTimeSlider::~TTimeSlider() {
 }
 
+void TTimeSlider::setPos(int v) {
+	#if DEBUG
+	qDebug("Gui::TTimeSlider::setPos: %d", v);
+	qDebug(" dont_update: %d", dont_update);
+	#endif
+
+	if (v != pos() && !dont_update) {
+		position = v;
+		setValue(v);
+	}
+}
+
+int TTimeSlider::pos() {
+	return position;
+}
+
+void TTimeSlider::setDuration(double t) {
+	total_time = t;
+}
+
+double TTimeSlider::duration() {
+	return total_time;
+}
+
 void TTimeSlider::stopUpdate() {
 	#if DEBUG
 	qDebug("Gui::TTimeSlider::stopUpdate");
@@ -101,15 +125,6 @@ void TTimeSlider::valueChanged_slot(int v) {
 	}
 }
 
-void TTimeSlider::setDragDelay(int d) {
-	qDebug("Gui::TTimeSlider::setDragDelay: %d", d);
-	timer->setInterval(d);
-}
-
-int TTimeSlider::dragDelay() {
-	return timer->interval();
-}
-
 void TTimeSlider::checkDragging(int v) {
 	qDebug("Gui::TTimeSlider::checkDragging: %d", v);
 	last_pos_to_send = v;
@@ -122,22 +137,6 @@ void TTimeSlider::sendDelayedPos() {
 		emit delayedDraggingPos(last_pos_to_send);
 		last_pos_to_send = -1;
 	}
-}
-
-void TTimeSlider::setPos(int v) {
-	#if DEBUG
-	qDebug("Gui::TTimeSlider::setPos: %d", v);
-	qDebug(" dont_update: %d", dont_update);
-	#endif
-
-	if (v != pos() && !dont_update) {
-		position = v;
-		setValue(v);
-	}
-}
-
-int TTimeSlider::pos() {
-	return position;
 }
 
 void TTimeSlider::wheelEvent(QWheelEvent* e) {

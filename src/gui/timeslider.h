@@ -32,13 +32,12 @@ public:
 	TTimeSlider(QWidget* parent, int max_pos, int drag_delay);
 	virtual ~TTimeSlider();
 
+	virtual int pos();
+	virtual double duration();
+
 public slots:
 	virtual void setPos(int); // Don't use setValue!
-	virtual int pos();
-	virtual void setDuration(double t) { total_time = t; }
-	virtual double duration() { return total_time; }
-	void setDragDelay(int);
-	int dragDelay();
+	virtual void setDuration(double t);
 
 signals:
 	void posChanged(int);
@@ -59,7 +58,7 @@ protected slots:
 
 protected:
 	virtual void wheelEvent(QWheelEvent* e);
-	virtual bool event(QEvent *event);
+	virtual bool event(QEvent* event);
 
 private:
 	bool dont_update;
