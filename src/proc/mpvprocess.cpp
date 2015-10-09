@@ -1323,14 +1323,14 @@ void TMPVProcess::setSpeed(double value) {
 }
 
 #ifdef MPLAYER_SUPPORT
-void TMPVProcess::enableKaraoke(bool b) {
+void TMPVProcess::enableKaraoke(bool) {
 	/*
 	if (b) writeToStdin("af add karaoke"); else writeToStdin("af del karaoke");
 	*/
 	messageFilterNotSupported("karaoke");
 }
 
-void TMPVProcess::enableExtrastereo(bool b) {
+void TMPVProcess::enableExtrastereo(bool) {
 	/*
 	if (b) writeToStdin("af add extrastereo"); else writeToStdin("af del extrastereo");
 	*/

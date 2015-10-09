@@ -83,8 +83,8 @@ public:
 	void setSubForcedOnly(bool b);
 	void setSpeed(double value);
 #ifdef MPLAYER_SUPPORT
-	void enableKaraoke(bool b);
-	void enableExtrastereo(bool b);
+	void enableKaraoke(bool);
+	void enableExtrastereo(bool);
 #endif
 	void enableVolnorm(bool b, const QString & option);
 	void setAudioEqualizer(const QString & values);
