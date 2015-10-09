@@ -29,32 +29,32 @@ class QListWidget;
 
 namespace Gui {
 
-class TToolbarEditor : public QDialog, public Ui::TToolbarEditor
-{
+typedef QList<QAction*> TActionList;
+
+class TToolbarEditor : public QDialog, public Ui::TToolbarEditor {
 	Q_OBJECT
 
 public:
-
 	TToolbarEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TToolbarEditor();
 
-	void setAllActions(QList<QAction *> actions_list);
-	void setActiveActions(QList<QAction *> actions_list);
+	void setAllActions(const TActionList& actions_list);
+	void setActiveActions(const TActionList& actions_list);
 
-	QStringList activeActionsToStringList();
+	QStringList activeActionsToStringList() const;
 
-	void setDefaultActions(QStringList action_names) { default_actions = action_names; }
-	QStringList defaultActions() { return default_actions; }
+	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
+	QStringList defaultActions() const { return default_actions; }
 
 	void setIconSize(int size);
-	int iconSize();
+	int iconSize() const;
 
 	//! Save the widget's list of actions into a QStringList 
 	static QStringList save(QWidget *w);
 
-	//! Add to the widget the actions specified in l. actions_list is
-	//! the list of all available actions
-	static void load(QWidget *w, QStringList l, QList<QAction *> actions_list);
+	//! Add to the widget the actions specified in actions.
+	//! all_actions is the list of all available actions
+	static void load(QWidget* w, const QStringList& actions, const TActionList& all_actions);
 
 protected slots:
 	void on_up_button_clicked();
@@ -67,14 +67,14 @@ protected slots:
 	void checkRowsActiveList(int currentRow);
 
 protected:
-	static QAction* findAction(QString s, QList<QAction *> actions_list);
+	static QAction* findAction(const QString& action_name, const TActionList& actions_list);
 
-	static void populateList(QListWidget* w, QList<QAction *> actions_list, bool add_separators = false);
-	static int findItem(const QString & action_name, QListWidget* w);
+	static void populateList(QListWidget* w, const TActionList& actions_list, bool add_separators = false);
+	static int findItem(const QString& action_name, QListWidget* w);
 
-	static QString fixname(const QString & name, const QString & action_name);
+	static QString fixname(const QString& name, const QString& action_name);
 
-	QList<QAction *> all_actions_copy;
+	TActionList all_actions_copy;
 	QStringList default_actions;
 };
 
