@@ -34,9 +34,10 @@ class QPushButton;
 
 namespace Gui {
 
-class TActionsEditor : public QWidget
-{
-    Q_OBJECT
+typedef QList<QAction*> TActionList;
+
+class TActionsEditor : public QWidget {
+	Q_OBJECT
 
 public:
 	TActionsEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
@@ -51,33 +52,33 @@ public:
 	void addActions(QWidget* widget);
 
 	// Static functions
-	static QAction* findAction(QObject *o, const QString & name);
-	static QStringList actionsNames(QObject *o);
+	static QAction* findAction(QObject* o, const QString& name);
+	static QStringList actionsNames(QObject* o);
 
-	static void saveToConfig(QObject *o, QSettings *set);
-	static void loadFromConfig(QObject *o, QSettings *set);
+	static void saveToConfig(QObject* o, QSettings* set);
+	static void loadFromConfig(QObject* o, QSettings* set);
 
 	static QString shortcutsToString(QList <QKeySequence> shortcuts_list);
-	static QList <QKeySequence> stringToShortcuts(QString shortcuts);
+	static QList<QKeySequence> stringToShortcuts(QString shortcuts);
 
 public slots:
 	void applyChanges();
 	void saveActionsTable();
-	bool saveActionsTable(const QString & filename);
+	bool saveActionsTable(const QString& filename);
 	void loadActionsTable();
-	bool loadActionsTable(const QString & filename);
+	bool loadActionsTable(const QString& filename);
 
 	void updateView();
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent (QEvent* event) ;
+	virtual void changeEvent(QEvent* event) ;
 
 	// Find in table, not in actionslist
-	int findActionName(const QString & name);
-	int findActionAccel(const QString & accel, int ignoreRow = -1);
+	int findActionName(const QString& name);
+	int findActionAccel(const QString& accel, int ignoreRow = -1);
 	bool hasConflicts();
-	static bool containsShortcut(const QString & accel, const QString & shortcut);
+	static bool containsShortcut(const QString& accel, const QString& shortcut);
 
 protected slots:
 #if !USE_SHORTCUTGETTER
@@ -88,14 +89,14 @@ protected slots:
 #endif
 
 private:
-	QTableWidget *actionsTable;
-    QList<QAction*> actionsList;
-	QPushButton *saveButton;
-	QPushButton *loadButton;
+	QTableWidget* actionsTable;
+	TActionList actionsList;
+	QPushButton* saveButton;
+	QPushButton* loadButton;
 	QString latest_dir;
 
 #if USE_SHORTCUTGETTER
-	QPushButton *editButton;
+	QPushButton* editButton;
 #else
 	QString oldAccelText;
 	bool dont_validate;
