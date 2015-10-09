@@ -395,7 +395,7 @@ void TSMPlayer::createGUI() {
 	}
 #endif
 
-	qDebug() << "TSMPlayer::createGUI: gui to create" << gui_to_use;
+	qDebug() << "TSMPlayer::createGUI: creating" << gui_to_use;
 
 #ifdef SKINS
 	if (gui_to_use.toLower() == "skingui")
@@ -414,8 +414,9 @@ void TSMPlayer::createGUI() {
 	else
 		main_window = new Gui::TDefault();
 
+	qDebug("TSMPlayer::createGUI: loading config");
 	main_window->loadConfig("");
-	qDebug("TSMPlayer::createGUI: loadConfig done. Translating...");
+	qDebug("TSMPlayer::createGUI: translating");
 	main_window->retranslate();
 
 	main_window->setForceCloseOnFinish(close_at_end);
