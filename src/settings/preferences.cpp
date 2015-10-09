@@ -1429,7 +1429,7 @@ void TPreferences::load() {
 	floating_control_width = value("width", floating_control_width).toInt();
 	floating_control_animated = value("animated", floating_control_animated).toBool();
 	floating_display_in_compact_mode = value("display_in_compact_mode", floating_display_in_compact_mode).toBool();
-	floating_activation_area = value("activation_area", floating_activation_area).toInt();
+	floating_activation_area = (Gui::TAutohideWidget::Activation) value("activation_area", floating_activation_area).toInt();
 	floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
 	endGroup(); // floating_control
 

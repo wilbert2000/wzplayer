@@ -1869,39 +1869,22 @@ void TBase::createMenus() {
 	popup->addMenu(optionsMenu);
 } // createMenus()
 
-
-int TBase::minHeightFC() const {
-
-	QMargins margins = floating_control->contentsMargins();
-	return 32 + margins.top() + margins.bottom();
-}
-
 void TBase::reconfigureFloatingControl() {
 
 	floating_control->setMargin(pref->floating_control_margin);
 	floating_control->setPercWidth(pref->floating_control_width);
 	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea((TAutohideWidget::Activation) pref->floating_activation_area);
+	floating_control->setActivationArea(pref->floating_activation_area);
 	floating_control->setHideDelay(pref->floating_hide_delay);
-	int min_height = minHeightFC();
-	floating_control->setMinimumHeight(min_height);
-	qDebug("Gui::TBase::reconfigureFloatingControl: minimal height %d", min_height);
 }
 
 // Slot called when icon size changes
 void TBase::adjustFloatingControlSize(const QSize& icon_size) {
 	qDebug("Gui::TBase::adjustFloatingControlSize");
 
-	// Add margin to height icon
 	QMargins margins = floating_control->contentsMargins();
-	int m = margins.top() + margins.bottom();
-	int new_height = icon_size.height() + m;
+	int new_height = icon_size.height() + margins.top() + margins.bottom();
 
-	// Respect toolbar min height
-	int min_height = minHeightFC();
-	if (new_height < min_height)
-		new_height = min_height;
-	floating_control->setMinimumHeight(new_height);
 	floating_control->resize(floating_control->width(), new_height);
 }
 
@@ -4728,9 +4711,8 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 
 	// Adjust for selected size and aspect.
 	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
-
 	if (video_size == panel->size()) {
-		qDebug("Gui::TBase::resizeMainWindow: the panel size is already the required size. Doing nothing.");
+		qDebug("Gui::TBase::resizeMainWindow: the panel is already the required size. Doing nothing.");
 		return;
 	}
 
@@ -4742,11 +4724,9 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 	if (panel->size() == video_size) {
 		qDebug("Gui::TBase::resizeMainWindow: resize succeeded");
 	} else {
-		// TODO: Resizing the main window can change the height of the control
-		// bar. On my system when the volume slider becomes visible, the  control
-		// bar grows with two pixels in height. This changes the height of the
-		// panel during resize. For now, resize once again, using the new panel
-		// height.
+		// Resizing the main window can change the height of the control bar,
+		// which will change the height of the panel during the resize.
+		// Often fixed by resizing once again, using the new panel height.
 		if (try_twice) {
 			qDebug("Gui::TBase::resizeMainWindow: panel size now %d x %d. Wanted size %d x %d. Trying a second time",
 				   panel->size().width(), panel->size().height(),
@@ -4754,8 +4734,8 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 			resizeMainWindow(w, h, false);
 		} else {
 			qDebug("Gui::TBase::resizeMainWindow: resize failed. Panel size now %d x %d. Wanted size %d x %d",
-					 panel->size().width(), panel->size().height(),
-					 video_size.width(), video_size.height());
+				   panel->size().width(), panel->size().height(),
+				   video_size.width(), video_size.height());
 		}
 	}
 }

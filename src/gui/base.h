@@ -790,7 +790,6 @@ private:
 #endif
 #endif
 
-	int minHeightFC() const;
 	void reconfigureFloatingControl();
 	void createFloatingControl();
 	void hidePanel();
