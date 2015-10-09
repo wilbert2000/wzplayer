@@ -2225,7 +2225,7 @@ void TBase::retranslateStrings() {
 	// Menu File
 	openFileAct->change(Images::icon("open"), tr("&File..."));
 	openDirectoryAct->change(Images::icon("openfolder"), tr("D&irectory..."));
-	openPlaylistAct->change(Images::icon("open_playlist"), tr("&TPlaylist..."));
+	openPlaylistAct->change(Images::icon("open_playlist"), tr("&Playlist..."));
 	openVCDAct->change(Images::icon("vcd"), tr("V&CD"));
 	openAudioCDAct->change(Images::icon("cdda"), tr("&Audio CD"));
 	openDVDAct->change(Images::icon("dvd"), tr("&DVD from drive"));
@@ -2383,7 +2383,7 @@ void TBase::retranslateStrings() {
 	subFPS30Act->change("3&0");
 
 	// Menu Options
-	showPlaylistAct->change(Images::icon("playlist"), tr("&TPlaylist"));
+	showPlaylistAct->change(Images::icon("playlist"), tr("&Playlist"));
 	showPropertiesAct->change(Images::icon("info"), tr("View &info and properties..."));
 	showPreferencesAct->change(Images::icon("prefs"), tr("P&references"));
 #ifdef YOUTUBE_SUPPORT
