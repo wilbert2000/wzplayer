@@ -19,20 +19,14 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _GUI_SLIDER_H_
-#define _GUI_SLIDER_H_
+#ifndef GUI_SLIDER_H
+#define GUI_SLIDER_H
 
 #include <QSlider>
-#include "config.h"
-
-#define CODE_FOR_CLICK 1 // 0 = old code, 1 = code copied from QSlider, 2 = button swap
-
-class QTimer;
 
 namespace Gui {
 
-class TSlider : public QSlider
-{
+class TSlider : public QSlider {
 	Q_OBJECT
 
 public:
@@ -40,8 +34,8 @@ public:
 	virtual ~TSlider();
 
 protected:
-	void mousePressEvent (QMouseEvent* event);
-	// Function copied from qslider.cpp
+	void mousePressEvent(QMouseEvent* event);
+	// Copied from qslider.cpp
 	inline int pick(const QPoint &pt) const {
 		return orientation() == Qt::Horizontal ? pt.x() : pt.y();
 	}
@@ -50,5 +44,5 @@ protected:
 
 } // namespace Gui
 
-#endif // _GUI_SLIDER_H_
+#endif // GUI_SLIDER_H
 

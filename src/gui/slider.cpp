@@ -21,22 +21,21 @@
 
 #include "gui/slider.h"
 
-#include <QApplication>
 #include <QMouseEvent>
 #include <QStyle>
 #include <QStyleOption>
 
 namespace Gui {
 
-TSlider::TSlider(QWidget* parent) : QSlider(parent)
-{
+TSlider::TSlider(QWidget* parent) : QSlider(parent) {
+
 	setOrientation(Qt::Horizontal);
 }
 
 TSlider::~TSlider() {
 }
 
-// Function copied from qslider.cpp and modified to make it compile
+// Copied from qslider.cpp and modified to make it compile
 int TSlider::pixelPosToRangeValue(int pos) const
 {
 	QStyleOptionSlider opt;
@@ -59,25 +58,23 @@ int TSlider::pixelPosToRangeValue(int pos) const
 }
 
 // Based on code from qslider.cpp
-void TSlider::mousePressEvent(QMouseEvent* e) {
-	if (e->button() == Qt::LeftButton) {
+void TSlider::mousePressEvent(QMouseEvent* event) {
+
+	if (event->button() == Qt::LeftButton) {
 		QStyleOptionSlider opt;
 		initStyleOption(&opt);
 		const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-		const QPoint center = sliderRect.center() - sliderRect.topLeft();
-		// to take half of the slider off for the setSliderPosition call we use the center - topLeft
-
-		if (!sliderRect.contains(e->pos())) {
-			e->accept();
-
-			setSliderPosition(pixelPosToRangeValue(pick(e->pos() - center)));
+		if (sliderRect.contains(event->pos())) {
+			QSlider::mousePressEvent(event);
+		} else {
+			event->accept();
+			const QPoint center = sliderRect.center() - sliderRect.topLeft();
+			setSliderPosition(pixelPosToRangeValue(pick(event->pos() - center)));
 			triggerAction(SliderMove);
 			setRepeatAction(SliderNoAction);
-		} else {
-			QSlider::mousePressEvent(e);
 		}
 	} else {
-		QSlider::mousePressEvent(e);
+		QSlider::mousePressEvent(event);
 	}
 }
 
