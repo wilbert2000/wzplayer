@@ -26,12 +26,10 @@
 #include "gui/skin/playcontrol.h"
 #include "gui/skin/mediapanel.h"
 
-namespace Gui {
-namespace Skin {
+namespace Gui { namespace Skin {
 
 
-class TIconSetter : public QWidget
-{
+class TIconSetter : public QWidget {
 Q_OBJECT
 Q_PROPERTY(QPixmap toolbar READ toolbarIcon WRITE setToolbarIcon)
 
@@ -47,55 +45,56 @@ Q_PROPERTY(QPixmap shuffle READ shuffleIcon WRITE setShuffleIcon)
 Q_PROPERTY(QPixmap repeat READ repeatIcon WRITE setRepeatIcon)
 
 public:
+	// Constructor is private
+	virtual ~TIconSetter();
 
 	static TIconSetter* instance();
-    static void removeInstance();
-	~TIconSetter() {}
-    TPlayControl* playControl;
-    TMediaPanel* mediaPanel;
+	static void removeInstance();
 
-    void setToolbarIcon(QPixmap icon) { setActionIcon(icon); }
-    QPixmap toolbarIcon() { return QPixmap();}
+	TPlayControl* playControl;
+	TMediaPanel* mediaPanel;
+
+	void setToolbarIcon(QPixmap);
+	QPixmap toolbarIcon() { return QPixmap(); }
 
 
-    void setBackwardIcon(QPixmap icon) { buttonIcon(1, icon); }
-    QPixmap backwardIcon() { return playControl->backwardButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setBackwardIcon(QPixmap icon) { buttonIcon(1, icon); }
+	QPixmap backwardIcon() { return playControl->backwardButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setPreviousIcon(QPixmap icon) { buttonIcon(2, icon); }
-    QPixmap previousIcon() { return playControl->previousButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setPreviousIcon(QPixmap icon) { buttonIcon(2, icon); }
+	QPixmap previousIcon() { return playControl->previousButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setPlayPauseIcon(QPixmap icon) { buttonIcon(3, icon); }
-    QPixmap playPauseIcon() { return playControl->playPauseButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setPlayPauseIcon(QPixmap icon) { buttonIcon(3, icon); }
+	QPixmap playPauseIcon() { return playControl->playPauseButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setStopIcon(QPixmap icon) { buttonIcon(4, icon); }
-    QPixmap stopIcon() { return playControl->stopButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setStopIcon(QPixmap icon) { buttonIcon(4, icon); }
+	QPixmap stopIcon() { return playControl->stopButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setRecordIcon(QPixmap icon) { buttonIcon(5, icon); }
-    QPixmap recordIcon() { return playControl->recordButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setRecordIcon(QPixmap icon) { buttonIcon(5, icon); }
+	QPixmap recordIcon() { return playControl->recordButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setNextIcon(QPixmap icon) { buttonIcon(6, icon); }
-    QPixmap nextIcon() { return playControl->nextButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setNextIcon(QPixmap icon) { buttonIcon(6, icon); }
+	QPixmap nextIcon() { return playControl->nextButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setForwardIcon(QPixmap icon) { buttonIcon(7, icon); }
-    QPixmap forwardIcon() { return playControl->forwardButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setForwardIcon(QPixmap icon) { buttonIcon(7, icon); }
+	QPixmap forwardIcon() { return playControl->forwardButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setShuffleIcon(QPixmap icon) { mediaPanelButtonIcon(1, icon); }
-    QPixmap shuffleIcon() { return mediaPanel->shuffleButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setShuffleIcon(QPixmap icon) { mediaPanelButtonIcon(1, icon); }
+	QPixmap shuffleIcon() { return mediaPanel->shuffleButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
-    void setRepeatIcon(QPixmap icon) { mediaPanelButtonIcon(2, icon); }
-    QPixmap repeatIcon() { return mediaPanel->repeatButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
+	void setRepeatIcon(QPixmap icon) { mediaPanelButtonIcon(2, icon); }
+	QPixmap repeatIcon() { return mediaPanel->repeatButton->getIcon().pixmap(TIcon::Normal, TIcon::Off); }
 
 	void setToolbarActions(QList<QAction *>actions) { toolbar_actions = actions; }
 	QList<QAction *> toolbarActions() { return toolbar_actions; }
 
 
-private:    
-	TIconSetter(QWidget *parent = 0);
+private:
+	TIconSetter();
 
 	static TIconSetter* m_instance;
-    void setActionIcon(QPixmap pix);
-    void buttonIcon(int n, QPixmap pix);
-    void mediaPanelButtonIcon(int n, QPixmap pix);
+	void buttonIcon(int n, const QPixmap& pix);
+	void mediaPanelButtonIcon(int n, const QPixmap& pix);
 
 	QList<QAction *> toolbar_actions;
 };
