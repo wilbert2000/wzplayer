@@ -28,6 +28,8 @@ class QWidget;
 
 namespace Gui {
 
+typedef QList<QAction*> TActionList;
+
 class TEditableToolbar : public QToolBar {
 	Q_OBJECT
 
@@ -35,23 +37,22 @@ public:
 	TEditableToolbar(QWidget* parent = 0);
 	virtual ~TEditableToolbar();
 
-	void setActionsFromStringList(QStringList action_names);
+	void setActionsFromStringList(const QStringList& actions);
 	QStringList actionsToStringList();
 
-	void setAvailableActions(QList<QAction*> available_actions) { all_actions = available_actions; }
-
+	void setAvailableActions(const TActionList& available_actions) { all_actions = available_actions; }
 	void takeAvailableActionsFrom(QWidget* w) { widget = w; }
 
-	void setDefaultActions(QStringList action_names) { default_actions = action_names; }
-	QStringList defaultActions() { return default_actions; }
+	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
+	QStringList defaultActions() const { return default_actions; }
 
 public slots:
 	void edit();
 
 protected:
-	QList<QAction*> allActions();
+	TActionList allActions();
 
-	QList<QAction*> all_actions;
+	TActionList all_actions;
 	QWidget* widget;
 
 	QStringList default_actions;

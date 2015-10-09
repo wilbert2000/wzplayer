@@ -30,19 +30,18 @@ TEditableToolbar::TEditableToolbar(QWidget* parent)
 TEditableToolbar::~TEditableToolbar() {
 }
 
-QList<QAction*> TEditableToolbar::allActions() {
-	if (!all_actions.isEmpty()) return all_actions;
+TActionList TEditableToolbar::allActions() {
 
-	QList<QAction*> actions;
-	if (widget) {
-		actions = widget->findChildren<QAction*>();
+	if (all_actions.isEmpty() && widget) {
+		all_actions = widget->findChildren<QAction*>();
 	}
-	return actions;
+	return all_actions;
 }
 
-void TEditableToolbar::setActionsFromStringList(QStringList action_names) {
+void TEditableToolbar::setActionsFromStringList(const QStringList& actions) {
+
 	clear();
-	TToolbarEditor::load(this, action_names, allActions());
+	TToolbarEditor::load(this, actions, allActions());
 }
 
 QStringList TEditableToolbar::actionsToStringList() {
