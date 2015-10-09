@@ -22,36 +22,37 @@
 namespace Gui {
 
 TAction::TAction (QObject* parent, const char* name, bool autoadd) 
-	: QAction(parent)
-{
-	setObjectName(name);
-	if (autoadd) addActionToParent();
-}
+	: QAction(parent) {
 
+	setObjectName(name);
+	if (autoadd)
+		addActionToParent();
+}
 
 TAction::TAction(QObject* parent, bool autoadd)
-	: QAction(parent)
-{
-	if (autoadd) addActionToParent();
+	: QAction(parent) {
+	if (autoadd)
+		addActionToParent();
 }
 
-TAction::TAction(const QString & text, QKeySequence accel, 
-                   QObject* parent, const char* name, bool autoadd)
-	: QAction(parent)
-{
+TAction::TAction(const QString& text, QKeySequence accel,
+				 QObject* parent, const char* name, bool autoadd)
+	: QAction(parent) {
+
 	setObjectName(name);
 	setText(text);
 	setShortcut(accel);
-	if (autoadd) addActionToParent();
+	if (autoadd)
+		addActionToParent();
 }
 
-TAction::TAction(QKeySequence accel, QObject* parent, const char* name, 
-                   bool autoadd)
-	: QAction(parent)
-{
+TAction::TAction(QKeySequence accel, QObject* parent, const char* name, bool autoadd)
+	: QAction(parent) {
+
 	setObjectName(name);
 	setShortcut(accel);
-	if (autoadd) addActionToParent();
+	if (autoadd)
+		addActionToParent();
 }
 
 TAction::~TAction() {
@@ -62,28 +63,29 @@ void TAction::addShortcut(QKeySequence key) {
 }
 
 void TAction::addActionToParent() {
+
 	if (parent()) {
 		if (parent()->inherits("QWidget")) {
-			QWidget *w = static_cast<QWidget*> (parent());
+			QWidget* w = static_cast<QWidget*> (parent());
 			w->addAction(this);
 		}
 	}
 }
 
 void TAction::change(const QIcon & icon, const QString & text) {
+
 	setIcon(icon);
 	change(text);
 }
 
-void TAction::change(const QString & text) {
+void TAction::change(const QString& text) {
+
 	setText(text);
-
 	QString accel_text = shortcut().toString();
-
 	QString s = text;
-	s.replace("&","");
+	s.replace("&", "");
 	if (!accel_text.isEmpty()) {
-		setToolTip(s + " ("+ accel_text +")");
+		setToolTip(s + " (" + accel_text + ")");
 		setIconText(s);
 	}
 
