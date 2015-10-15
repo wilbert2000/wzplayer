@@ -145,8 +145,5 @@
         <file>default-theme/zoom_reset.png</file>
         <file>default-theme/empty_icon.png</file>
         <file>default-theme/style.qss</file>
-        <file>gui/mpc/mpc_toolbar.png</file>
-        <file>gui/mpc/mpc_mono.png</file>
-        <file>gui/mpc/mpc_stereo.png</file>
     </qresource>
 </RCC>

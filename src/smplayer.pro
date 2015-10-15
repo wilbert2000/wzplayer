@@ -15,7 +15,6 @@ DEFINES += FIND_SUBTITLES
 DEFINES += VIDEOPREVIEW
 DEFINES += YOUTUBE_SUPPORT
 DEFINES += OUTPUT_ON_CONSOLE
-DEFINES += MPCGUI
 DEFINES += SKINS
 DEFINES += MPRIS2
 DEFINES += UPDATE_CHECKER
@@ -35,7 +34,6 @@ contains(DEFINES, SIMPLE_BUILD) {
 	DEFINES -= SINGLE_INSTANCE
 	DEFINES -= FIND_SUBTITLES
 	DEFINES -= VIDEOPREVIEW
-	DEFINES -= MPCGUI
 	DEFINES -= SKINS
 	DEFINES -= MPRIS2
 	DEFINES -= UPDATE_CHECKER
@@ -48,7 +46,6 @@ contains(DEFINES, SIMPLE_BUILD) {
 isEqual(QT_MAJOR_VERSION, 5) {
 	QT += widgets gui
 	#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x040000
-	DEFINES -= MPCGUI
 	win32 {
 		DEFINES -= MPRIS2
 	}
@@ -397,15 +394,6 @@ contains(DEFINES, YOUTUBE_SUPPORT) {
 		HEADERS += youtube/ytsig.h youtube/codedownloader.h
 		SOURCES += youtube/ytsig.cpp youtube/codedownloader.cpp
 	}
-}
-
-# mpcgui
-contains(DEFINES, MPCGUI) {
-	INCLUDEPATH += gui/mpc
-	DEPENDPATH += gui/mpc
-
-	HEADERS += gui/mpc/mpc.h gui/mpc/styles.h
-	SOURCES += gui/mpc/mpc.cpp gui/mpc/styles.cpp
 }
 
 # Skins support

@@ -35,10 +35,6 @@
 
 #include "gui/default.h"
 
-#ifdef MPCGUI
-#include "gui/mpc/mpc.h"
-#endif
-
 #ifdef SKINS
 #include "gui/skin/skin.h"
 #endif
@@ -284,10 +280,6 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 			add_to_playlist = true;
 		}
 		else
-		if (argument == "-mpcgui") {
-			gui_to_use = "MpcGUI";
-		}
-		else
 		if (argument == "-defaultgui") {
 			gui_to_use = "DefaultGUI";
 		}
@@ -395,12 +387,6 @@ void TSMPlayer::createGUI() {
 #ifdef SKINS
 	if (gui_to_use.toLower() == "skingui")
 		main_window = new Gui::TSkin();
-	else
-#endif
-
-#ifdef MPCGUI
-	if (gui_to_use.toLower() == "mpcgui")
-		main_window = new Gui::TMpc();
 	else
 #endif
 		main_window = new Gui::TDefault();

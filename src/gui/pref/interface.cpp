@@ -194,9 +194,6 @@ void TInterface::retranslateStrings() {
 	gui_combo->clear();
 	gui_combo->addItem(tr("Basic GUI"), "DefaultGUI");
 	gui_combo->addItem(tr("Mini GUI"), "MiniGUI");
-#ifdef MPCGUI
-	gui_combo->addItem(tr("Mpc GUI"), "MpcGUI");
-#endif
 #ifdef SKINS
 	gui_combo->addItem(tr("Skinnable GUI"), "SkinGUI");
 	if (n_skins == 0) {
@@ -615,20 +612,16 @@ void TInterface::createHelp() {
 		tr("Here you can change the language of the application."));
 
 	setWhatsThis(gui_combo, tr("GUI"),
-        tr("Select the graphic interface you prefer for the application.") +"<br>"+
-        tr("The <b>Basic GUI</b> provides the traditional interface, with the "
-           "toolbar and control bar.") +" "+ 
-        tr("The <b>Mini GUI</b> provides a more simple interface, without toolbar and a control bar with few "
-           "buttons.") +" "+
-        tr("The <b>Skinnable GUI</b> provides an interface where several skins are available.")
-#ifdef MPCGUI
-        +" "+
-        tr("The <b>Mpc GUI</b> looks like the interface in Media Player Classic.")
-#endif
-       );
+		tr("Select the graphic interface you prefer for the application.") +"<br>"+
+		tr("The <b>Basic GUI</b> provides the traditional interface, with the "
+		   "toolbar and control bar.") +" "+
+		tr("The <b>Mini GUI</b> provides a more simple interface, without toolbar and a control bar with few "
+		   "buttons.") +" "+
+		tr("The <b>Skinnable GUI</b> provides an interface where several skins are available.")
+		);
 
 	setWhatsThis(iconset_combo, tr("Icon set"),
-        tr("Select the icon set you prefer for the application."));
+		tr("Select the icon set you prefer for the application."));
 
 #ifdef SKINS
 	setWhatsThis(skin_combo, tr("Skin"),
