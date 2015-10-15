@@ -193,7 +193,6 @@ void TInterface::retranslateStrings() {
 	int gui_index = gui_combo->currentIndex();
 	gui_combo->clear();
 	gui_combo->addItem(tr("Basic GUI"), "DefaultGUI");
-	gui_combo->addItem(tr("Mini GUI"), "MiniGUI");
 #ifdef SKINS
 	gui_combo->addItem(tr("Skinnable GUI"), "SkinGUI");
 	if (n_skins == 0) {
@@ -615,8 +614,6 @@ void TInterface::createHelp() {
 		tr("Select the graphic interface you prefer for the application.") +"<br>"+
 		tr("The <b>Basic GUI</b> provides the traditional interface, with the "
 		   "toolbar and control bar.") +" "+
-		tr("The <b>Mini GUI</b> provides a more simple interface, without toolbar and a control bar with few "
-		   "buttons.") +" "+
 		tr("The <b>Skinnable GUI</b> provides an interface where several skins are available.")
 		);
 
