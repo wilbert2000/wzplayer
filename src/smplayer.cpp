@@ -34,7 +34,6 @@
 #include "cleanconfig.h"
 
 #include "gui/default.h"
-#include "gui/mini.h"
 
 #ifdef MPCGUI
 #include "gui/mpc/mpc.h"
@@ -285,10 +284,6 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 			add_to_playlist = true;
 		}
 		else
-		if (argument == "-mini" || argument == "-minigui") {
-			gui_to_use = "MiniGUI";
-		}
-		else
 		if (argument == "-mpcgui") {
 			gui_to_use = "MpcGUI";
 		}
@@ -408,10 +403,6 @@ void TSMPlayer::createGUI() {
 		main_window = new Gui::TMpc();
 	else
 #endif
-
-	if (gui_to_use.toLower() == "minigui")
-		main_window = new Gui::TMini();
-	else
 		main_window = new Gui::TDefault();
 
 	qDebug("TSMPlayer::createGUI: loading config");
