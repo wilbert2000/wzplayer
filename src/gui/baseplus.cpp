@@ -50,12 +50,10 @@ TBasePlus::TBasePlus()
 	: TBase()
 	, mainwindow_visible(true)
 	, trayicon_playlist_was_visible(false)
-	, widgets_size(0)
 
 #if DOCK_PLAYLIST
 	, fullscreen_playlist_was_visible(false)
 	, fullscreen_playlist_was_floating(false)
-	, compact_playlist_was_visible(false)
 	, ignore_playlist_events(false)
 #endif
 {
@@ -222,11 +220,9 @@ void TBasePlus::saveConfig(const QString &group) {
 	pref->setValue("mainwindow_visible", isVisible());
 
 	pref->setValue("trayicon_playlist_was_visible", trayicon_playlist_was_visible);
-	pref->setValue("widgets_size", widgets_size);
 #if DOCK_PLAYLIST
 	pref->setValue("fullscreen_playlist_was_visible", fullscreen_playlist_was_visible);
 	pref->setValue("fullscreen_playlist_was_floating", fullscreen_playlist_was_floating);
-	pref->setValue("compact_playlist_was_visible", compact_playlist_was_visible);
 	pref->setValue("ignore_playlist_events", ignore_playlist_events);
 #endif
 
@@ -250,11 +246,9 @@ void TBasePlus::loadConfig(const QString &group) {
 	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
 
 	trayicon_playlist_was_visible = pref->value("trayicon_playlist_was_visible", trayicon_playlist_was_visible).toBool();
-	widgets_size = pref->value("widgets_size", widgets_size).toInt();
 #if DOCK_PLAYLIST
 	fullscreen_playlist_was_visible = pref->value("fullscreen_playlist_was_visible", fullscreen_playlist_was_visible).toBool();
 	fullscreen_playlist_was_floating = pref->value("fullscreen_playlist_was_floating", fullscreen_playlist_was_floating).toBool();
-	compact_playlist_was_visible = pref->value("compact_playlist_was_visible", compact_playlist_was_visible).toBool();
 	ignore_playlist_events = pref->value("ignore_playlist_events", ignore_playlist_events).toBool();
 #endif
 
@@ -408,37 +402,6 @@ void TBasePlus::aboutToExitFullscreen() {
 #endif
 
 	//qDebug("Gui::TBasePlus::aboutToExitFullscreen done");
-}
-
-void TBasePlus::aboutToEnterCompactMode() {
-#if DOCK_PLAYLIST
-	compact_playlist_was_visible = (playlistdock->isVisible() && 
-                                    !playlistdock->isFloating());
-	if (compact_playlist_was_visible)
-		playlistdock->hide();
-#endif
-
-    widgets_size = height() - panel->height();
-	qDebug("Gui::TBasePlus::aboutToEnterCompactMode: widgets_size: %d", widgets_size);
-
-	TBase::aboutToEnterCompactMode();
-
-	if (pref->resize_method == Settings::TPreferences::Always) {
-		resize(width(), height() - widgets_size);
-	}
-}
-
-void TBasePlus::aboutToExitCompactMode() {
-	TBase::aboutToExitCompactMode();
-
-	if (pref->resize_method == Settings::TPreferences::Always) {
-		resize(width(), height() + widgets_size);
-	}
-
-#if DOCK_PLAYLIST
-	if (compact_playlist_was_visible)
-		playlistdock->show();
-#endif
 }
 
 #if DOCK_PLAYLIST

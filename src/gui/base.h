@@ -163,9 +163,6 @@ public slots:
 	virtual void toggleFullscreen();
 	virtual void toggleFullscreen(bool);
 
-	virtual void toggleCompactMode();
-	virtual void toggleCompactMode(bool);
-
 	void setStayOnTop(bool b);
 	virtual void changeStayOnTop(int);
 	virtual void checkStayOnTop(TCore::State);
@@ -331,8 +328,6 @@ protected:
 
 	virtual void aboutToEnterFullscreen();
 	virtual void aboutToExitFullscreen();
-	virtual void aboutToEnterCompactMode();
-	virtual void aboutToExitCompactMode();
 
 protected:
 	void createCore();
@@ -401,7 +396,6 @@ protected:
 
 	// Menu Video
 	TAction* fullscreenAct;
-	TAction* compactAct;
 	TAction* videoEqualizerAct;
 	TAction* screenshotAct;
 	TAction* screenshotsAct;

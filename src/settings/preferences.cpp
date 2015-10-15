@@ -319,7 +319,6 @@ void TPreferences::reset() {
 
 	fullscreen = false;
 	start_in_fullscreen = false;
-	compact_mode = false;
 	stay_on_top = NeverOnTop;
 	size_factor = 1.0; // 100%
 
@@ -761,7 +760,6 @@ void TPreferences::save() {
 	setValue("fullscreen", fullscreen);
 	setValue("start_in_fullscreen", start_in_fullscreen);
 
-	setValue("compact_mode", compact_mode);
 	setValue("stay_on_top", (int) stay_on_top);
 	setValue("size_factor", size_factor);
 	setValue("resize_method", resize_method);
@@ -937,7 +935,6 @@ void TPreferences::save() {
 	beginGroup("floating_control");
 	setValue("margin", floating_control_margin);
 	setValue("width", floating_control_width);
-	setValue("display_in_compact_mode", floating_display_in_compact_mode);
 	setValue("activation_area", floating_activation_area);
 	setValue("hide_delay", floating_hide_delay);
 	endGroup(); // floating_control
@@ -1245,7 +1242,6 @@ void TPreferences::load() {
 	fullscreen = value("fullscreen", fullscreen).toBool();
 	start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
 
-	compact_mode = value("compact_mode", compact_mode).toBool();
 	stay_on_top = (TPreferences::OnTop) value("stay_on_top", (int) stay_on_top).toInt();
 	size_factor = value("size_factor", size_factor).toDouble();
 	// Backward compatibility. Size used to be stored as percentage.

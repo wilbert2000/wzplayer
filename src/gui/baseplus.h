@@ -47,10 +47,8 @@ protected:
 
 	void updateShowAllAct();
 
-    virtual void aboutToEnterFullscreen();
-    virtual void aboutToExitFullscreen();
-	virtual void aboutToEnterCompactMode();
-	virtual void aboutToExitCompactMode();
+	virtual void aboutToEnterFullscreen();
+	virtual void aboutToExitFullscreen();
 
 protected slots:
 	// Reimplemented methods
@@ -95,13 +93,11 @@ protected:
 	bool mainwindow_visible;
 	QPoint playlist_pos;
 	bool trayicon_playlist_was_visible;
-	int widgets_size; // To be able to restore the original size after exiting from compact mode
 
 #if DOCK_PLAYLIST
 	TPlaylistDock* playlistdock;
 	bool fullscreen_playlist_was_visible;
 	bool fullscreen_playlist_was_floating;
-	bool compact_playlist_was_visible;
 	bool ignore_playlist_events;
 #endif
 

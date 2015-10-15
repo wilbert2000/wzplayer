@@ -24,7 +24,7 @@
 #include "settings/urlhistory.h"
 #include "paths.h"
 #include "languages.h"
-#include "gui/autohidewidget.h"
+#include "gui/autohidetoolbar.h"
 
 #include <QDir>
 #include <QStyleFactory>
@@ -241,11 +241,9 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	setGUI(pref->gui);
 
-	setFloatingAnimated(pref->floating_control_animated);
 	setFloatingWidth(pref->floating_control_width);
 	setFloatingMargin(pref->floating_control_margin);
-	setDisplayFloatingInCompactMode(pref->floating_display_in_compact_mode);
-	floating_move_bottom_check->setChecked(pref->floating_activation_area == Gui::TAutohideWidget::Bottom);
+	floating_move_bottom_check->setChecked(pref->floating_activation_area == Gui::TAutohideToolbar::Bottom);
 	floating_hide_delay_spin->setValue(pref->floating_hide_delay);
 
 	setRecentsMaxItems(pref->history_recents.maxItems());
@@ -304,11 +302,9 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		style_changed = true;
 	}
 
-	pref->floating_control_animated = floatingAnimated();
 	pref->floating_control_width = floatingWidth();
 	pref->floating_control_margin = floatingMargin();
-	pref->floating_display_in_compact_mode = displayFloatingInCompactMode();
-	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? Gui::TAutohideWidget::Bottom : Gui::TAutohideWidget::Anywhere;
+	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? Gui::TAutohideToolbar::Bottom : Gui::TAutohideToolbar::Anywhere;
 	pref->floating_hide_delay = floating_hide_delay_spin->value();
 
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
@@ -559,14 +555,6 @@ bool TInterface::hideVideoOnAudioFiles() {
 }
 
 // Floating tab
-void TInterface::setFloatingAnimated(bool b) {
-	floating_animated_check->setChecked(b);
-}
-
-bool TInterface::floatingAnimated() {
-	return floating_animated_check->isChecked();
-}
-
 void TInterface::setFloatingWidth(int percentage) {
 	floating_width_slider->setValue(percentage);
 }
@@ -581,14 +569,6 @@ void TInterface::setFloatingMargin(int pixels) {
 
 int TInterface::floatingMargin() {
 	return floating_margin_slider->value();
-}
-
-void TInterface::setDisplayFloatingInCompactMode(bool b) {
-	floating_compact_check->setChecked(b);
-}
-
-bool TInterface::displayFloatingInCompactMode() {
-	return floating_compact_check->isChecked();
 }
 
 void TInterface::setRecentsMaxItems(int n) {
@@ -728,13 +708,6 @@ void TInterface::createHelp() {
 		tr("If this option is checked, the floating control will only be displayed when the mouse is moved "
            "to the bottom of the screen. Otherwise the control will appear whenever the mouse is moved, no matter "
            "its position."));
-
-	setWhatsThis(floating_compact_check, tr("Display in compact mode too"),
-		tr("If this option is enabled, the floating control will appear "
-           "in compact mode too.") +" " +
-		tr("This option only works with the basic GUI.") +" "+
-		tr("<b>Warning:</b> the floating control has not been "
-           "designed for compact mode and it might not work properly."));
 
 	setWhatsThis(floating_hide_delay_spin, tr("Time to hide the control"),
 		tr("Sets the time (in milliseconds) to hide the control after the mouse went away from the control."));

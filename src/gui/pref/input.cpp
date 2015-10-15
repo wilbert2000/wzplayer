@@ -71,7 +71,6 @@ void TInput::createMouseCombos() {
 	left_click_combo->addItem(tr("Increase volume"), "increase_volume");
 	left_click_combo->addItem(tr("Decrease volume"), "decrease_volume");
 	left_click_combo->addItem(tr("Fullscreen"), "fullscreen");
-	left_click_combo->addItem(tr("Compact"), "compact");
 	left_click_combo->addItem(tr("Screenshot"), "screenshot");
 	left_click_combo->addItem(tr("Always on top"), "on_top_always");
 	left_click_combo->addItem(tr("Never on top"), "on_top_never");

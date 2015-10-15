@@ -310,7 +310,6 @@ public:
 
 	bool fullscreen;
 	bool start_in_fullscreen;
-	bool compact_mode;
 	OnTop stay_on_top;
 	double size_factor;
 

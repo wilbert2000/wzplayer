@@ -214,9 +214,6 @@ TBase::TBase()
 
 	setupNetworkProxy();
 
-	if (pref->compact_mode)
-		toggleCompactMode(true);
-
 	changeStayOnTop(pref->stay_on_top);
 
 	updateRecents();
@@ -691,11 +688,6 @@ void TBase::createActions() {
 	fullscreenAct->setCheckable(true);
 	connect(fullscreenAct, SIGNAL(toggled(bool)),
 			 this, SLOT(toggleFullscreen(bool)));
-
-	compactAct = new TAction(QKeySequence("Ctrl+C"), this, "compact");
-	compactAct->setCheckable(true);
-	connect(compactAct, SIGNAL(toggled(bool)),
-			 this, SLOT(toggleCompactMode(bool)));
 
 	videoEqualizerAct = new TAction(QKeySequence("Ctrl+E"), this, "video_equalizer");
 	videoEqualizerAct->setCheckable(true);
@@ -1545,7 +1537,6 @@ void TBase::createMenus() {
 	videoMenu->addMenu(videotrack_menu);
 
 	videoMenu->addAction(fullscreenAct);
-	videoMenu->addAction(compactAct);
 
 #if USE_ADAPTER
 	// Screen submenu
@@ -2117,9 +2108,6 @@ void TBase::enableActionsOnPlaying() {
 	screenshotAct->setEnabled(screenshots_enabled);
 	screenshotsAct->setEnabled(screenshots_enabled);
 
-	// Disable the compact action if not using video window
-	compactAct->setEnabled(panel->isVisible());
-
 	// Enable or disable the audio equalizer
 	audioEqualizerAct->setEnabled(pref->use_audio_equalizer);
 
@@ -2318,7 +2306,6 @@ void TBase::retranslateStrings() {
 
 	// Menu Video
 	fullscreenAct->change(Images::icon("fullscreen"), tr("&Fullscreen"));
-	compactAct->change(Images::icon("compact"), tr("&Compact mode"));
 	videoEqualizerAct->change(Images::icon("equalizer"), tr("&Equalizer"));
 	screenshotAct->change(Images::icon("screenshot"), tr("&Screenshot"));
 	screenshotsAct->change(Images::icon("screenshots"), tr("Start/stop takin&g screenshots"));
@@ -3611,9 +3598,6 @@ void TBase::updateWidgets() {
 	showPlaylistAct->setChecked(playlist->isVisible());
 #endif
 
-	// Compact mode
-	compactAct->setChecked(pref->compact_mode);
-
 	// Stay on top
 	onTopActionGroup->setChecked((int) pref->stay_on_top);
 
@@ -4145,7 +4129,6 @@ void TBase::toggleFullscreen(bool b) {
 		return; // mplayer window is not used.
 
 	if (pref->fullscreen) {
-		compactAct->setEnabled(false);
 		if (pref->restore_pos_after_fullscreen) {
 			win_pos = pos();
 			win_size = size();
@@ -4174,7 +4157,6 @@ void TBase::toggleFullscreen(bool b) {
 			move(win_pos);
 			resize(win_size);
 		}
-		compactAct->setEnabled(true);
 	}
 
 	updateWidgets();
@@ -4800,17 +4782,11 @@ void TBase::hidePanel() {
 		// Exit from fullscreen mode 
 	    if (pref->fullscreen) { toggleFullscreen(false); update(); }
 
-		// Exit from compact mode first
-		if (pref->compact_mode) toggleCompactMode(false);
-
 		//resizeWindow(size().width(), 0);
 		int width = size().width();
 		if (width > pref->default_size.width()) width = pref->default_size.width();
 		resize(width, size().height() - panel->size().height());
 		panel->hide();
-
-		// Disable compact mode
-		//compactAct->setEnabled(false);
 	}
 }
 
@@ -4841,45 +4817,6 @@ void TBase::goToPosOnDragging(int t) {
 	if (pref->update_while_seeking) {
 		core->goToPosition(t);
 	}
-}
-
-void TBase::toggleCompactMode() {
-	toggleCompactMode(!pref->compact_mode);
-}
-
-void TBase::toggleCompactMode(bool b) {
-	qDebug("Gui::TBase::toggleCompactMode: %d", b);
-
-	if (b) 
-		aboutToEnterCompactMode();
-	else
-		aboutToExitCompactMode();
-
-	pref->compact_mode = b;
-	updateWidgets();
-}
-
-void TBase::aboutToEnterCompactMode() {
-
-	menuBar()->hide();
-	statusBar()->hide();
-
-	// Show floating_control
-	if (pref->floating_display_in_compact_mode) {
-		reconfigureFloatingControl();
-		QTimer::singleShot(100, floating_control, SLOT(activate()));
-	}
-}
-
-void TBase::aboutToExitCompactMode() {
-
-	// Hide floating_control
-	if (pref->floating_display_in_compact_mode) {
-		floating_control->deactivate();
-	}
-
-	menuBar()->show();
-	statusBar()->show();
 }
 
 void TBase::setStayOnTop(bool b) {

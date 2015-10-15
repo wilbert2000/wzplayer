@@ -107,17 +107,11 @@ protected:
 	bool hideVideoOnAudioFiles();
 
 	// Floating tab
-	void setFloatingAnimated(bool b);
-	bool floatingAnimated();
-
 	void setFloatingWidth(int percentage);
 	int floatingWidth();
 
 	void setFloatingMargin(int pixels);
 	int floatingMargin();
-
-	void setDisplayFloatingInCompactMode(bool b);
-	bool displayFloatingInCompactMode();
 
 	// Privacy tab
 	void setRecentsMaxItems(int n);
