@@ -39,8 +39,8 @@ public:
 	virtual ~TBasePlus();
 
 	virtual bool startHidden();
-	virtual void loadConfig(const QString& group);
-	virtual void saveConfig(const QString& group);
+	virtual void loadConfig();
+	virtual void saveConfig();
 
 protected:
 	virtual void retranslateStrings();

@@ -42,15 +42,12 @@ public:
 	TDefault();
 	virtual ~TDefault();
 
-	virtual void loadConfig(const QString&);
-	virtual void saveConfig(const QString&);
+	virtual void loadConfig();
+	virtual void saveConfig();
 
 protected:
 	virtual void retranslateStrings();
-	virtual QMenu* createPopupMenu();
-
-	virtual void aboutToEnterFullscreen();
-	virtual void aboutToExitFullscreen();
+	virtual QString settingsGroupName() { return "default_gui"; }
 
 protected slots:
 	virtual void displayTime(QString text);
@@ -66,27 +63,17 @@ protected:
 	QLabel* ab_section_display;
 	QLabel* video_info_display;
 
-	QToolBar* toolbar2;
-
-	QPushButton* select_audio;
-	QPushButton* select_subtitle;
-
 	TSeekingButton* rewindbutton_action;
 	TSeekingButton* forwardbutton_action;
 
 	TAction* viewFrameCounterAct;
 	TAction* viewVideoInfoAct;
 
-	QMenu* toolbar_menu;
-	QMenu* statusbar_menu;
-
 	int last_second;
 
 private:
 	void createStatusBar();
-	void createMainToolBars();
 	void createActions();
-	QMenu* createToolbarMenu();
 	void createMenus();
 };
 

@@ -89,8 +89,8 @@ public:
 	TCore* getCore() { return core; }
 	TPlaylist* getPlaylist() { return playlist; }
 
-	virtual void loadConfig(const QString& gui_group);
-	virtual void saveConfig(const QString& gui_group);
+	virtual void loadConfig();
+	virtual void saveConfig();
 
 	void retranslate() { retranslateStrings(); }
 
@@ -311,6 +311,7 @@ signals:
 
 protected:
 	virtual void retranslateStrings();
+	virtual void closeEvent(QCloseEvent* e);
 	virtual void changeEvent(QEvent* event);
 #if QT_VERSION < 0x050000
 	virtual void hideEvent(QHideEvent*);
@@ -325,11 +326,11 @@ protected:
 	virtual bool winEvent (MSG* m, long* result);
 	#endif
 #endif
-
+	virtual QMenu* createPopupMenu();
 	virtual void aboutToEnterFullscreen();
 	virtual void aboutToExitFullscreen();
+	virtual QString settingsGroupName() = 0;
 
-protected:
 	void createCore();
 	void createPlayerWindow();
 	void createVideoEqualizer();
@@ -345,7 +346,6 @@ protected:
 	void updateRecents();
 	void configureDiscDevices();
 	void setupNetworkProxy();
-	virtual void closeEvent(QCloseEvent* e);
 
 protected:
 	QWidget* panel;
@@ -724,6 +724,9 @@ protected:
 	TAction* editControlBarAct;
 	TAction* viewStatusBarAct;
 
+	QMenu* toolbar_menu;
+	QMenu* statusbar_menu;
+
 	TEditableToolbar* toolbar;
 
 	TTimeSliderAction* timeslider_action;
@@ -794,6 +797,7 @@ private:
 
 	void reconfigureControlBar();
 	void createToolbars();
+	QMenu* createToolbarMenu();
 	void hidePanel();
 };
 

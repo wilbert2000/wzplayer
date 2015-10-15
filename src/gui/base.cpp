@@ -145,6 +145,7 @@ TBase::TBase()
 	, was_minimized(false)
 #endif
 	, popup(0)
+	, statusbar_menu(0)
 	, clhelp_window(0)
 	, pref_dialog(0)
 	, file_dialog(0)
@@ -158,6 +159,8 @@ TBase::TBase()
 	, update_checker(0)
 #endif
 
+	, menubar_visible(true)
+	, statusbar_visible(true)
 	, fullscreen_menubar_visible(false)
 	, fullscreen_statusbar_visible(false)
 
@@ -198,8 +201,8 @@ TBase::TBase()
 	log_window = new TLogWindow(0);
 
 	createActions();
-	createMenus();
 	createToolbars();
+	createMenus();
 	setActionsEnabled(false);
 
 	if (playlist->count() > 0) {
@@ -1426,8 +1429,6 @@ void TBase::createActions() {
 	viewStatusBarAct->setCheckable(true);
 	connect(viewStatusBarAct, SIGNAL(toggled(bool)),
 			statusBar(), SLOT(setVisible(bool)));
-
-
 } // createActions
 
 void TBase::createMenus() {
@@ -1795,6 +1796,8 @@ void TBase::createMenus() {
 	// OPTIONS MENU
 	optionsMenu->addAction(showPropertiesAct);
 	optionsMenu->addAction(showPlaylistAct);
+	optionsMenu->addAction(showLogAct);
+
 #ifdef YOUTUBE_SUPPORT
 	#if 0
 	// Check if the smplayer youtube browser is installed
@@ -1816,6 +1819,7 @@ void TBase::createMenus() {
 #endif
 
 	// OSD submenu
+	optionsMenu->addSeparator();
 	osd_menu = new QMenu(this);
 	osd_menu->menuAction()->setObjectName("osd_menu");
 	osd_menu->addActions(osdGroup->actions());
@@ -1824,7 +1828,11 @@ void TBase::createMenus() {
 	osd_menu->addAction(incOSDScaleAct);
 	optionsMenu->addMenu(osd_menu);
 
-	optionsMenu->addAction(showLogAct);
+	// Toolbars
+	toolbar_menu = createToolbarMenu();
+	optionsMenu->addMenu(toolbar_menu);
+
+	optionsMenu->addSeparator();
 	optionsMenu->addAction(showPreferencesAct);
 
 	/*
@@ -1879,6 +1887,30 @@ void TBase::createMenus() {
 	popup->addMenu(browseMenu);
 	popup->addMenu(optionsMenu);
 } // createMenus()
+
+QMenu* TBase::createToolbarMenu() {
+
+	QMenu* menu = new QMenu(this);
+	menu->addAction(viewMenuBarAct);
+	menu->addAction(toolbar->toggleViewAction());
+	menu->addAction(controlbar->toggleViewAction());
+	menu->addAction(viewStatusBarAct);
+
+	menu->addSeparator();
+	menu->addAction(editToolbarAct);
+	menu->addAction(editControlBarAct);
+
+	if (statusbar_menu) {
+		menu->addSeparator();
+		menu->addMenu(statusbar_menu);
+	}
+
+	return menu;
+}
+
+QMenu* TBase::createPopupMenu() {
+	return createToolbarMenu();
+}
 
 void TBase::reconfigureControlBar() {
 
@@ -2688,6 +2720,8 @@ void TBase::retranslateStrings() {
 	toolbar->setWindowTitle(tr("&Main toolbar"));
 	toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 	editToolbarAct->change(tr("Edit main &toolbar"));
+	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
+	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
 
 	// Control bar
 	controlbar->setWindowTitle(tr("&Control bar"));
@@ -2695,6 +2729,8 @@ void TBase::retranslateStrings() {
 	editControlBarAct->change(tr("Edit control &bar"));
 
 	// Status bar
+	statusbar_menu->menuAction()->setText(tr("St&atusbar"));
+	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
 	viewStatusBarAct->change(tr("&Status bar"));
 
 	// TODO: make sure the "<empty>" string is translated
@@ -2809,7 +2845,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 }
 #endif
 
-void TBase::loadConfig(const QString& gui_group) {
+void TBase::loadConfig() {
 	qDebug("Gui::TBase::loadConfig");
 
 #if ALLOW_CHANGE_STYLESHEET
@@ -2817,8 +2853,9 @@ void TBase::loadConfig(const QString& gui_group) {
 #endif
 	// Load actions from outside group derived class
 	loadActions();
+
 	// Load from inside group derived class
-	pref->beginGroup(gui_group);
+	pref->beginGroup(settingsGroupName());
 
 	if (pref->save_window_size_on_exit) {
 		QPoint p = pref->value("pos", pos()).toPoint();
@@ -2847,7 +2884,6 @@ void TBase::loadConfig(const QString& gui_group) {
 			move(center_pos.width(), center_pos.height());
 	}
 
-	// Tool and control bar
 	pref->beginGroup("actions");
 	// Using old name "toolbar1" to pick up old toolbars
 	toolbar->setActionsFromStringList(pref->value("toolbar1",
@@ -2866,9 +2902,17 @@ void TBase::loadConfig(const QString& gui_group) {
 		controlbar->iconSize()).toSize());
 	pref->endGroup();
 
-	// State fullscreen toolbars
+	menubar_visible = pref->value("menubar_visible", menubar_visible).toBool();
 	fullscreen_menubar_visible = pref->value("fullscreen_menubar_visible", fullscreen_menubar_visible).toBool();
+	menuBar()->setVisible(menubar_visible);
+	viewMenuBarAct->setChecked(menubar_visible);
+
+	statusbar_visible = pref->value("statusbar_visible", statusbar_visible).toBool();
 	fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible", fullscreen_statusbar_visible).toBool();
+	statusBar()->setVisible(statusbar_visible);
+	viewStatusBarAct->setChecked(statusbar_visible);
+
+	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 
 	pref->endGroup();
 
@@ -2878,10 +2922,10 @@ void TBase::loadConfig(const QString& gui_group) {
 	playlist->loadSettings();
 }
 
-void TBase::saveConfig(const QString &gui_group) {
+void TBase::saveConfig() {
 	qDebug("Gui::TBase::saveConfig");
 
-	pref->beginGroup(gui_group);
+	pref->beginGroup(settingsGroupName());
 
 	if (pref->save_window_size_on_exit) {
 		pref->setValue("pos", pos());
@@ -2904,9 +2948,12 @@ void TBase::saveConfig(const QString &gui_group) {
 	pref->setValue("controlwidget", controlbar->iconSize());
 	pref->endGroup();
 
-	// Save fullscreen toolbars
+	pref->setValue("menubar_visible", !menuBar()->isHidden());
 	pref->setValue("fullscreen_menubar_visible", fullscreen_menubar_visible);
+	pref->setValue("statusbar_visible", !statusBar()->isHidden());
 	pref->setValue("fullscreen_statusbar_visible", fullscreen_statusbar_visible);
+
+	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 
 	pref->endGroup();
 
@@ -2918,7 +2965,8 @@ void TBase::closeEvent(QCloseEvent* e)  {
 
 	core->close();
 	exitFullscreen();
-	saveConfig("");
+
+	saveConfig();
 	pref->save();
 	e->accept();
 }
@@ -4177,12 +4225,19 @@ void TBase::aboutToEnterFullscreen() {
 	// Save current state
 	menubar_visible = !menuBar()->isHidden();
 	statusbar_visible = !statusBar()->isHidden();
+	pref->beginGroup(settingsGroupName());
+	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 
-	// Set fullscreen state
+	// Restore fullscreen state
 	menuBar()->setVisible(fullscreen_menubar_visible);
 	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
 	statusBar()->setVisible(fullscreen_statusbar_visible);
 	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
+	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
+					  Helper::qtVersion())) {
+		toolbar->hide();
+	}
+	pref->endGroup();
 }
 
 void TBase::aboutToExitFullscreen() {
@@ -4194,12 +4249,16 @@ void TBase::aboutToExitFullscreen() {
 	// Save fullscreen state
 	fullscreen_menubar_visible = !menuBar()->isHidden();
 	fullscreen_statusbar_visible = !statusBar()->isHidden();
+	pref->beginGroup(settingsGroupName());
+	pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
 
 	// Set normal state
 	menuBar()->setVisible(menubar_visible);
 	viewMenuBarAct->setChecked(menubar_visible);
 	statusBar()->setVisible(statusbar_visible);
 	viewStatusBarAct->setChecked(statusbar_visible);
+	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
+	pref->endGroup();
 }
 
 void TBase::leftClickFunction() {

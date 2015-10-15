@@ -392,7 +392,7 @@ void TSMPlayer::createGUI() {
 		main_window = new Gui::TDefault();
 
 	qDebug("TSMPlayer::createGUI: loading config");
-	main_window->loadConfig("");
+	main_window->loadConfig();
 	qDebug("TSMPlayer::createGUI: translating");
 	main_window->retranslate();
 

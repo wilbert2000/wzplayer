@@ -42,22 +42,18 @@ public:
 	TSkin();
 	virtual ~TSkin();
 
-	virtual void loadConfig(const QString &group);
-	virtual void saveConfig(const QString &group);
+	virtual void loadConfig();
+	virtual void saveConfig();
 
 public slots:
 	//virtual void showPlaylist(bool b);
 
 protected:
 	virtual void retranslateStrings();
-	virtual QMenu* createPopupMenu();
-
-	virtual void aboutToEnterFullscreen();
-	virtual void aboutToExitFullscreen();
+	virtual QString settingsGroupName() { return "skin_gui"; }
 
 	void createControlWidget();
 	void createActions();
-	void createMenus();
 
 protected slots:
 	virtual void displayState(TCore::State state);
@@ -76,13 +72,10 @@ protected:
 	TAction* viewVideoInfoAct;
 	TAction* scrollTitleAct;
 
-	QMenu* toolbar_menu;
-	QMenu* statusbar_menu;
-
 	int last_second;
 
 private:
-	QMenu* createToolbarMenu();
+	void createMenus();
 };
 
 } // namespace Gui

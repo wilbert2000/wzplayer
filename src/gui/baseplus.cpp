@@ -207,13 +207,13 @@ void TBasePlus::updateShowAllAct() {
 		showAllAct->change(tr("&Restore"));
 }
 
-void TBasePlus::saveConfig(const QString &group) {
+void TBasePlus::saveConfig() {
 	qDebug("Gui::TBasePlus::saveConfig");
 
-	TBase::saveConfig(group);
+	TBase::saveConfig();
 
 	// Store inside group derived class
-	pref->beginGroup(group);
+	pref->beginGroup(settingsGroupName());
 	pref->beginGroup("base_gui_plus");
 
 	pref->setValue("show_tray_icon", showTrayAct->isChecked());
@@ -230,13 +230,13 @@ void TBasePlus::saveConfig(const QString &group) {
 	pref->endGroup();
 }
 
-void TBasePlus::loadConfig(const QString &group) {
+void TBasePlus::loadConfig() {
 	qDebug("Gui::TBasePlus::loadConfig");
 
-	TBase::loadConfig(group);
+	TBase::loadConfig();
 
 	// load from group derived class
-	pref->beginGroup(group);
+	pref->beginGroup(settingsGroupName());
 	pref->beginGroup("base_gui_plus");
 
 	bool show_tray_icon = pref->value("show_tray_icon", false).toBool();

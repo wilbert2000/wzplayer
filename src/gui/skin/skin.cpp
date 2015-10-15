@@ -46,19 +46,15 @@
 #include <QApplication>
 #include <QDir>
 
-#define TOOLBAR_VERSION 1
-
 using namespace Settings;
 
 namespace Gui {
 
-TSkin::TSkin()
-	: TBasePlus()
-	, statusbar_menu(0) {
+TSkin::TSkin() : TBasePlus() {
 
 	createActions();
-	createControlWidget();
 	createMenus();
+	createControlWidget();
 }
 
 TSkin::~TSkin() {
@@ -86,6 +82,19 @@ void TSkin::createActions() {
 	scrollTitleAct->setCheckable(true);
 }
 
+void TSkin::createMenus() {
+
+	QFont font = menuBar()->font();
+	font.setPixelSize(11);
+	menuBar()->setFont(font);
+
+	statusbar_menu = new QMenu(this);
+	statusbar_menu->addAction(viewVideoInfoAct);
+	statusbar_menu->addAction(scrollTitleAct);
+	toolbar_menu->addSeparator();
+	toolbar_menu->addMenu(statusbar_menu);
+}
+
 void TSkin::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TSkin::togglePlayAction");
 	TBasePlus::togglePlayAction(state);
@@ -96,43 +105,6 @@ void TSkin::togglePlayAction(TCore::State state) {
 	else {
 		playOrPauseAct->setChecked(false);
 	}
-}
-
-QMenu* TSkin::createToolbarMenu() {
-
-	QMenu* menu = new QMenu(this);
-	menu->addAction(viewMenuBarAct);
-	menu->addAction(toolbar->toggleViewAction());
-	menu->addAction(controlbar->toggleViewAction());
-	menu->addAction(viewStatusBarAct);
-
-	menu->addSeparator();
-	menu->addAction(editToolbarAct);
-	menu->addAction(editControlBarAct);
-
-	if (!statusbar_menu) {
-		statusbar_menu = new QMenu(this);
-		statusbar_menu->addAction(viewVideoInfoAct);
-		statusbar_menu->addAction(scrollTitleAct);
-	}
-	menu->addMenu(statusbar_menu);
-
-	return menu;
-}
-
-void TSkin::createMenus() {
-
-	QFont font = menuBar()->font();
-	font.setPixelSize(11);
-	menuBar()->setFont(font);
-
-	toolbar_menu = createToolbarMenu();
-	optionsMenu->addSeparator();
-	optionsMenu->addMenu(toolbar_menu);
-}
-
-QMenu* TSkin::createPopupMenu() {
-	return createToolbarMenu();
 }
 
 void TSkin::createControlWidget() {
@@ -173,13 +145,8 @@ void TSkin::createControlWidget() {
 }
 
 void TSkin::retranslateStrings() {
+
 	TBasePlus::retranslateStrings();
-
-	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
-	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
-
-	statusbar_menu->menuAction()->setText(tr("Status&bar"));
-	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
 
 	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info"));
 	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title"));
@@ -205,58 +172,26 @@ void TSkin::displayMessage(QString message) {
 	mediaBarPanel->displayMessage(message);
 }
 
-void TSkin::aboutToEnterFullscreen() {
-	//qDebug("Gui::TSkin::aboutToEnterFullscreen");
-
-	TBasePlus::aboutToEnterFullscreen();
-
-	pref->beginGroup("skin_gui");
-	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
-	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
-					  Helper::qtVersion())) {
-		toolbar->hide();
-	}
-	pref->endGroup();
-}
-
-void TSkin::aboutToExitFullscreen() {
-	//qDebug("Gui::TSkin::aboutToExitFullscreen");
-
-	TBasePlus::aboutToExitFullscreen();
-
-	pref->beginGroup("default_gui");
-	pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
-	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
-	pref->endGroup();
-}
-
-void TSkin::saveConfig(const QString &group) {
-	Q_UNUSED(group)
+void TSkin::saveConfig() {
 	qDebug("Gui::TSkin::saveConfig");
 
-	TBasePlus::saveConfig("skin_gui");
+	TBasePlus::saveConfig();
 
-	pref->beginGroup("skin_gui");
+	pref->beginGroup(settingsGroupName());
 	pref->setValue("video_info", viewVideoInfoAct->isChecked());
 	pref->setValue("scroll_title", scrollTitleAct->isChecked());
-	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 	pref->endGroup();
 }
 
-void TSkin::loadConfig(const QString &group) {
-	Q_UNUSED(group)
+void TSkin::loadConfig() {
 	qDebug("Gui::TSkin::loadConfig");
 
-	TBasePlus::loadConfig("skin_gui");
+	TBasePlus::loadConfig();
 
-	pref->beginGroup("skin_gui");
+	pref->beginGroup(settingsGroupName());
 	viewVideoInfoAct->setChecked(pref->value("video_info", false).toBool());
 	scrollTitleAct->setChecked(pref->value("scroll_title", false).toBool());
-	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 	pref->endGroup();
-
-	viewMenuBarAct->setChecked(!menuBar()->isHidden());
-	viewStatusBarAct->setChecked(!statusBar()->isHidden());
 
 	updateWidgets();
 }
