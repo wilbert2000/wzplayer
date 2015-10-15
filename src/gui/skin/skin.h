@@ -22,7 +22,7 @@
 #include "gui/guiconfig.h"
 #include "gui/action.h"
 #include "gui/widgetactions.h"
-#include "gui/autohidewidget.h"
+#include "gui/autohidetoolbar.h"
 #include "gui/baseplus.h"
 #include "gui/skin/mediabarpanel.h"
 #include "gui/editabletoolbar.h"
@@ -52,15 +52,12 @@ protected:
 	virtual void retranslateStrings();
 	virtual QMenu* createPopupMenu();
 
-	void createMainToolBars();
+	virtual void aboutToEnterFullscreen();
+	virtual void aboutToExitFullscreen();
+
 	void createControlWidget();
 	void createActions();
 	void createMenus();
-
-	virtual void aboutToEnterFullscreen();
-	virtual void aboutToExitFullscreen();
-	virtual void aboutToEnterCompactMode();
-	virtual void aboutToExitCompactMode();
 
 protected slots:
 	virtual void displayState(TCore::State state);
@@ -73,13 +70,8 @@ protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
 	QAction* mediaBarPanelAction;
 
-	TEditableToolbar* toolbar1;
-	QToolBar* controlwidget;
-
 	TSeekingButton* rewindbutton_action;
 	TSeekingButton* forwardbutton_action;
-
-	TAction* editToolbar1Act;
 
 	TAction* viewVideoInfoAct;
 	TAction* scrollTitleAct;
@@ -89,8 +81,8 @@ protected:
 
 	int last_second;
 
-	bool fullscreen_toolbar1_was_visible;
-	bool compact_toolbar1_was_visible;
+private:
+	QMenu* createToolbarMenu();
 };
 
 } // namespace Gui

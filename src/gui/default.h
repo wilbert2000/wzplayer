@@ -22,9 +22,9 @@
 #include <QPoint>
 
 #include "gui/guiconfig.h"
-#include "gui/baseedit.h"
+#include "gui/baseplus.h"
 #include "gui/editabletoolbar.h"
-#include "gui/autohidewidget.h"
+#include "gui/autohidetoolbar.h"
 
 class QToolBar;
 class QPushButton;
@@ -35,7 +35,7 @@ class TSeekingButton;
 
 namespace Gui {
 	
-class TDefault : public TBaseEdit {
+class TDefault : public TBasePlus {
 	Q_OBJECT
 
 public:
@@ -68,7 +68,6 @@ protected:
 	QLabel* ab_section_display;
 	QLabel* video_info_display;
 
-	TEditableToolbar* toolbar1;
 	QToolBar* toolbar2;
 
 	QPushButton* select_audio;
@@ -80,22 +79,16 @@ protected:
 	TAction* viewFrameCounterAct;
 	TAction* viewVideoInfoAct;
 
-	TAction* editToolbar1Act;
-
 	QMenu* toolbar_menu;
 	QMenu* statusbar_menu;
 
 	int last_second;
 
-	bool fullscreen_toolbar1_was_visible;
-	bool fullscreen_toolbar2_was_visible;
-	bool compact_toolbar1_was_visible;
-	bool compact_toolbar2_was_visible;
-
 private:
 	void createStatusBar();
 	void createMainToolBars();
 	void createActions();
+	QMenu* createToolbarMenu();
 	void createMenus();
 };
 

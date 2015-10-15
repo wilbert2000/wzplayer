@@ -16,116 +16,44 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/autohidewidget.h"
+#include "gui/autohidetoolbar.h"
 #include <QDebug>
 #include <QTimer>
 #include <QEvent>
 #include <QMouseEvent>
-#include <QVBoxLayout>
-
-#if QT_VERSION >= 0x040600
-#include <QPropertyAnimation>
-#endif
 
 namespace Gui {
 
-TAutohideWidget::TAutohideWidget(QWidget* parent, QWidget* playerwindow)
-	: QWidget(parent)
-	, turned_on(false)
-	, auto_hide(true)
-	, use_animation(false)
+TAutohideToolbar::TAutohideToolbar(QWidget* parent, QWidget* playerwindow)
+	: TEditableToolbar(parent)
+	, auto_hide(false)
 	, spacing(0)
 	, perc_width(100)
 	, activation_area(Anywhere)
-	, internal_widget(0)
-	, timer(0)
-#if QT_VERSION >= 0x040600
-	, animation(0)
-#endif
 {
-	setBackgroundRole(QPalette::Window);
-	setAutoFillBackground(true);
-	setLayoutDirection(Qt::LeftToRight);
+	timer = new QTimer(this);
+	timer->setSingleShot(true);
+	timer->setInterval(3000);
+	connect(timer, SIGNAL(timeout()), this, SLOT(checkUnderMouse()));
 
 	playerwindow->installEventFilter(this);
-
-	timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(checkUnderMouse()));
-	timer->setInterval(3000);
-
-	QVBoxLayout *layout = new QVBoxLayout;
-	layout->setSpacing(0);
-	layout->setMargin(0);
-	setLayout(layout);
-
-	hide();
 }
 
-TAutohideWidget::~TAutohideWidget() {
-
-#if QT_VERSION >= 0x040600
-	if (animation)
-		delete animation;
-#endif
+TAutohideToolbar::~TAutohideToolbar() {
 }
 
-void TAutohideWidget::setInternalWidget(QWidget* w) {
-
-	layout()->addWidget(w);
-	internal_widget = w;
-}
-
-void TAutohideWidget::setHideDelay(int ms) {
+void TAutohideToolbar::setHideDelay(int ms) {
 	timer->setInterval(ms);
 }
 
-int TAutohideWidget::hideDelay() {
+int TAutohideToolbar::hideDelay() const {
 	return timer->interval();
 }
 
-void TAutohideWidget::activate() {
+void TAutohideToolbar::resizeAndMove() {
 
-	turned_on = true;
-	timer->start();
-}
-
-void TAutohideWidget::deactivate() {
-
-	turned_on = false;
-	timer->stop();
-	hide();
-}
-
-void TAutohideWidget::show() {
-	qDebug() << "Gui::TAutohideWidget::show";
-
-	resizeAndMove();
-	if (use_animation) {
-		showAnimated();
-	} else {
-		QWidget::show();
-	}
-
-	// Restart timer
-	if (timer->isActive())
-		timer->start();
-}
-
-void TAutohideWidget::setAutoHide(bool b) {
-	auto_hide = b;
-}
-
-// Slot called by timer
-void TAutohideWidget::checkUnderMouse() {
-
-	if (auto_hide && isVisible() && !underMouse()) {
-		hide();
-	}
-}
-
-void TAutohideWidget::resizeAndMove() {
-
-	QWidget* widget = parentWidget();
+/*
+	QWidget* widget = main_window;
 	int w = widget->width() * perc_width / 100;
 	int h = height();
 	resize(w, h);
@@ -133,25 +61,62 @@ void TAutohideWidget::resizeAndMove() {
 	int x = (widget->width() - width()) / 2;
 	int y = widget->height() - height() - spacing;
 	move(x, y);
+*/
 }
 
-bool TAutohideWidget::insideShowArea(const QPoint& p) const {
+// Slot called by timer
+void TAutohideToolbar::checkUnderMouse() {
+
+	if (auto_hide) {
+		if (isVisible()) {
+			if (underMouse()) {
+				timer->start();
+			} else {
+				hide();
+			}
+		}
+	}
+}
+
+void TAutohideToolbar::aboutToEnterFullscreen() {
+
+	auto_hide = true;
+	timer->start();
+}
+
+void TAutohideToolbar::aboutToExitFullscreen() {
+
+	timer->stop();
+	if (auto_hide && isHidden()) {
+		show();
+	}
+	auto_hide = false;
+}
+
+void TAutohideToolbar::showAuto() {
+
+	show();
+	timer->start();
+}
+
+bool TAutohideToolbar::insideShowArea(const QPoint& p) const {
 
 	QPoint origin = mapToGlobal(QPoint(0, 0));
-	return p.y() > origin.y() - 32;
+	return p.y() > origin.y() - 64 && p.y() < origin.y() + height() + 64;
 }
 
-bool TAutohideWidget::eventFilter(QObject* obj, QEvent* event) {
-	if (turned_on
+bool TAutohideToolbar::eventFilter(QObject* obj, QEvent* event) {
+
+	if (auto_hide
 		&& event->type() == QEvent::MouseMove
 		&& !isVisible()) {
 
 		if (activation_area == Anywhere) {
-			show();
+			showAuto();
 		} else {
 			QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
 			if (insideShowArea(mouse_event->globalPos())) {
-				show();
+				showAuto();
 			}
 		}
 
@@ -160,30 +125,7 @@ bool TAutohideWidget::eventFilter(QObject* obj, QEvent* event) {
 	return QWidget::eventFilter(obj, event);
 }
 
-void TAutohideWidget::showAnimated() {
-
-#if QT_VERSION >= 0x040600
-	if (!animation) {
-		animation = new QPropertyAnimation(this, "pos");
-	}
-
-	QPoint initial_position = QPoint(pos().x(), parentWidget()->size().height());
-	QPoint final_position = pos();
-	move(initial_position);
-
-	QWidget::show();
-
-	animation->setDuration(300);
-	animation->setEasingCurve(QEasingCurve::OutBounce);
-	animation->setEndValue(final_position);
-	animation->setStartValue(initial_position);
-	animation->start();
-#else
-	QWidget::show();
-#endif
-}
-
 } // namespace Gui
 
-#include "moc_autohidewidget.cpp"
+#include "moc_autohidetoolbar.cpp"
 

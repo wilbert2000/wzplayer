@@ -24,7 +24,7 @@ namespace Gui {
 
 TEditableToolbar::TEditableToolbar(QWidget* parent)
 	: QToolBar(parent)
-	, widget(parent) {
+	, main_window(parent) {
 }
 
 TEditableToolbar::~TEditableToolbar() {
@@ -32,8 +32,8 @@ TEditableToolbar::~TEditableToolbar() {
 
 TActionList TEditableToolbar::allActions() {
 
-	if (all_actions.isEmpty() && widget) {
-		all_actions = widget->findChildren<QAction*>();
+	if (all_actions.isEmpty()) {
+		all_actions = main_window->findChildren<QAction*>();
 	}
 	return all_actions;
 }
@@ -51,7 +51,7 @@ QStringList TEditableToolbar::actionsToStringList() {
 void TEditableToolbar::edit() {
 	qDebug("Gui::TEditableToolbar::edit");
 
-	TToolbarEditor e(widget);
+	TToolbarEditor e(main_window);
 	e.setAllActions(allActions());
 	e.setActiveActions(actions());
 	e.setDefaultActions(defaultActions());

@@ -21,6 +21,7 @@
 
 #include "gui/actionseditor.h"
 
+#include <QDebug>
 #include <QTableWidget>
 #include <QHeaderView>
 
@@ -93,45 +94,6 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 */
 
 namespace Gui {
-
-QString TActionsEditor::shortcutsToString(QList <QKeySequence> shortcuts_list) {
-
-	QString accelText = "";
-	for (int n = 0; n < shortcuts_list.count(); n++) {
-		accelText += shortcuts_list[n].toString(QKeySequence::PortableText);
-		if (n < shortcuts_list.count()- 1)
-			accelText += ", ";
-	}
-
-	return accelText;
-}
-
-QList <QKeySequence> TActionsEditor::stringToShortcuts(QString shortcuts) {
-	QList <QKeySequence> shortcuts_list;
-
-	QStringList l = shortcuts.split(", ");
-
-	for (int n=0; n < l.count(); n++) {
-#if QT_VERSION >= 0x040300
-		// Qt 4.3 and 4.4 (at least on linux) seems to have a problem when
-		// using Traditional Chinese. QKeysequence deletes the arrow key names
-		// from the shortcut, so this is a work-around.
-		QString s = l[n].simplified();
-#else
-		QString s = QKeySequence(l[n].simplified());
-#endif
-
-		// Work-around for Simplified-Chinese
-		s.replace(QString::fromUtf8("左"), "Left");
-		s.replace(QString::fromUtf8("下"), "Down");
-		s.replace(QString::fromUtf8("右"), "Right");
-		s.replace(QString::fromUtf8("上"), "Up");
-
-		shortcuts_list.append(s);
-	}
-
-	return shortcuts_list;
-}
 
 #define COL_CONFLICTS 0
 #define COL_SHORTCUT 1
@@ -312,16 +274,16 @@ void TActionsEditor::applyChanges() {
 void TActionsEditor::recordAction(QTableWidgetItem* i) {
 	//qDebug("Gui::TActionsEditor::recordAction");
 
-	//QTableWidgetItem* i = actionsTable->currentItem();
 	if (i->column() == COL_SHORTCUT) {
-		//qDebug("Gui::TActionsEditor::recordAction: %d %d %s", i->row(), i->column(), i->text().toUtf8().data());
 		oldAccelText = i->text();
 	}
 }
 
 void TActionsEditor::validateAction(QTableWidgetItem* i) {
 	//qDebug("Gui::TActionsEditor::validateAction");
-	if (dont_validate) return;
+
+	if (dont_validate)
+		return;
 
 	if (i->column() == COL_SHORTCUT) {
 	    QString accelText = QKeySequence(i->text()).toString();
@@ -548,6 +510,74 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
 
 // Static functions
 
+QString TActionsEditor::shortcutsToString(const TShortCutList& shortcuts) {
+
+	QString s = "";
+	for (int n = 0; n < shortcuts.count(); n++) {
+		s += shortcuts[n].toString(QKeySequence::PortableText);
+		if (n < shortcuts.count() - 1)
+			s += ", ";
+	}
+
+	return s;
+}
+
+TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
+
+	TShortCutList shortcut_list;
+	QStringList l = shortcuts.split(", ");
+
+	for (int n = 0; n < l.count(); n++) {
+#if QT_VERSION >= 0x040300
+		// Qt 4.3 and 4.4 (at least on linux) seems to have a problem when
+		// using Traditional Chinese. QKeysequence deletes the arrow key names
+		// from the shortcut, so this is a work-around.
+		QString s = l[n].simplified();
+#else
+		QString s = QKeySequence(l[n].simplified());
+#endif
+
+		// Work-around for Simplified-Chinese
+		s.replace(QString::fromUtf8("左"), "Left");
+		s.replace(QString::fromUtf8("下"), "Down");
+		s.replace(QString::fromUtf8("右"), "Right");
+		s.replace(QString::fromUtf8("上"), "Up");
+
+		shortcut_list.append(s);
+	}
+
+	return shortcut_list;
+}
+
+QString TActionsEditor::actionToString(const QAction& action) {
+
+	// Comma seperated list of shortcuts
+	return shortcutsToString(action.shortcuts());
+}
+
+void TActionsEditor::setActionFromString(QAction& action, const QString& s) {
+	//qDebug() << "TActionsEditor::setActionFromString:" << s;
+
+	// Old format: action = komma sep list of shortcuts
+	// New format action = komma sep list of shortcuts\tText\tIcon text
+	static QRegExp rx("(.*)(\\t(.*)\\t(.*))?");
+	if (rx.indexIn(s) >= 0) {
+		TShortCutList shortcuts = stringToShortcuts(rx.cap(1));
+		action.setShortcuts(shortcuts);
+
+		QString s = rx.cap(3);
+		if (!s.isEmpty()) {
+			action.setText(s);
+		}
+
+		s = rx.cap(4);
+		if (!s.isEmpty()) {
+			action.setIconText(s);
+		}
+	}
+}
+
+
 void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 	qDebug("Gui::TActionsEditor::saveToConfig");
 
@@ -557,14 +587,12 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 	for (int n = 0; n < actions.count(); n++) {
 		QAction* action = actions[n];
 		if (!action->objectName().isEmpty() && !action->inherits("QWidgetAction")) {
-			QString accelText = shortcutsToString(action->shortcuts());
-			set->setValue(action->objectName(), accelText);
+			set->setValue(action->objectName(), actionToString(*action));
 		}
 	}
 
 	set->endGroup();
 }
-
 
 void TActionsEditor::loadFromConfig(QObject* o, QSettings* set) {
 	qDebug("Gui::TActionsEditor::loadFromConfig");
@@ -575,9 +603,8 @@ void TActionsEditor::loadFromConfig(QObject* o, QSettings* set) {
 	for (int n = 0; n < actions.count(); n++) {
 		QAction* action = actions[n];
 		if (!action->objectName().isEmpty() && !action->inherits("QWidgetAction")) {
-			QString current = shortcutsToString(action->shortcuts());
-			QString accelText = set->value(action->objectName(), current).toString();
-			action->setShortcuts(stringToShortcuts(accelText));
+			setActionFromString(*action, set->value(action->objectName(),
+				shortcutsToString(action->shortcuts())).toString());
 		}
 	}
 
@@ -600,11 +627,9 @@ QStringList TActionsEditor::actionsNames(QObject* o) {
 
 	QStringList l;
 
-	QAction *action;
-
 	TActionList actions = o->findChildren<QAction *>();
 	for (int n = 0; n < actions.count(); n++) {
-		action = actions[n];
+		QAction* action = actions[n];
 		if (!action->objectName().isEmpty())
 			l.append(action->objectName());
 	}

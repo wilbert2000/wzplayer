@@ -36,7 +36,7 @@
 #include "playerwindow.h"
 #include "gui/action.h"
 #include "images.h"
-#include "autohidewidget.h"
+#include "gui/autohidetoolbar.h"
 #include "desktopinfo.h"
 #include "editabletoolbar.h"
 
@@ -51,17 +51,13 @@ using namespace Settings;
 namespace Gui {
 
 TDefault::TDefault()
-	: TBaseEdit() {
+	: TBasePlus()
+	, statusbar_menu(0) {
 
 	createStatusBar();
 	createActions();
 	createMainToolBars();
 	createMenus();
-
-	connect(editToolbar1Act, SIGNAL(triggered()),
-			toolbar1, SLOT(edit()));
-
-	menuBar()->setObjectName("menubar");
 }
 
 TDefault::~TDefault() {
@@ -90,13 +86,11 @@ void TDefault::createActions() {
 	viewFrameCounterAct->setCheckable(true);
 	connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
 			frame_display, SLOT(setVisible(bool)));
-
-	editToolbar1Act = new TAction(this, "edit_main_toolbar");
 }
 
 void TDefault::togglePlayAction(TCore::State state) {
 	qDebug("Gui::TDefault::togglePlayAction");
-	TBaseEdit::togglePlayAction(state);
+	TBasePlus::togglePlayAction(state);
 
 	if (state == TCore::Playing) {
 		playOrPauseAct->setIcon(Images::icon("pause"));
@@ -105,51 +99,44 @@ void TDefault::togglePlayAction(TCore::State state) {
 	}
 }
 
+QMenu* TDefault::createToolbarMenu() {
+
+	QMenu* menu = new QMenu(this);
+	menu->addAction(viewMenuBarAct);
+	menu->addAction(toolbar->toggleViewAction());
+	menu->addAction(toolbar2->toggleViewAction());
+	menu->addAction(controlbar->toggleViewAction());
+	menu->addAction(viewStatusBarAct);
+
+	menu->addSeparator();
+	menu->addAction(editToolbarAct);
+	menu->addAction(editControlBarAct);
+
+	if (!statusbar_menu) {
+		statusbar_menu = new QMenu(this);
+		statusbar_menu->addAction(viewVideoInfoAct);
+		statusbar_menu->addAction(viewFrameCounterAct);
+	}
+	menu->addMenu(statusbar_menu);
+
+	return menu;
+}
+
 void TDefault::createMenus() {
-	toolbar_menu = new QMenu(this);
-	toolbar_menu->addAction(toolbar1->toggleViewAction());
-	toolbar_menu->addAction(toolbar2->toggleViewAction());
 
-	toolbar_menu->addSeparator();
-	toolbar_menu->addAction(editToolbar1Act);
-	toolbar_menu->addAction(editControlWidgetAct);
-	toolbar_menu->addAction(editFloatingControlAct);
-
+	toolbar_menu = createToolbarMenu();
 	optionsMenu->addSeparator();
 	optionsMenu->addMenu(toolbar_menu);
-
-	statusbar_menu = new QMenu(this);
-	statusbar_menu->addAction(viewVideoInfoAct);
-	statusbar_menu->addAction(viewFrameCounterAct);
-
-	optionsMenu->addMenu(statusbar_menu);
 }
 
 QMenu* TDefault::createPopupMenu() {
-	QMenu* m = new QMenu(this);
-	m->addAction(editToolbar1Act);
-	m->addAction(editControlWidgetAct);
-	m->addAction(editFloatingControlAct);
-	return m;
+	return createToolbarMenu();
 }
 
 void TDefault::createMainToolBars() {
-	toolbar1 = new TEditableToolbar(this);
-	toolbar1->setObjectName("toolbar1");
-	//toolbar1->setMovable(false);
-	addToolBar(Qt::TopToolBarArea, toolbar1);
-
-	QStringList toolbar1_actions;
-	toolbar1_actions << "open_file" << "open_url" << "favorites_menu" << "separator"
-                     << "screenshot" << "separator" << "show_file_properties" << "show_playlist"
-                     << "show_tube_browser" << "separator" << "show_preferences"
-                     << "separator" << "play_prev" << "play_next";
-
-	toolbar1->setDefaultActions(toolbar1_actions);
 
 	toolbar2 = new QToolBar(this);
 	toolbar2->setObjectName("toolbar2");
-	//toolbar2->setMovable(false);
 	addToolBar(Qt::TopToolBarArea, toolbar2);
 
 	select_audio = new QPushButton(this);
@@ -160,18 +147,7 @@ void TDefault::createMainToolBars() {
 	select_subtitle->setMenu(subtitles_track_menu);
 	toolbar2->addWidget(select_subtitle);
 
-	/*
-	toolbar1->show();
-	toolbar2->show();
-	*/
-
-	// Modify toolbars' actions
-	QAction *tba;
-	tba = toolbar1->toggleViewAction();
-	tba->setObjectName("show_main_toolbar");
-	tba->setShortcut(Qt::Key_F5);
-
-	tba = toolbar2->toggleViewAction();
+	QAction* tba = toolbar2->toggleViewAction();
 	tba->setObjectName("show_language_toolbar");
 	tba->setShortcut(Qt::Key_F6);
 }
@@ -248,7 +224,7 @@ void TDefault::createStatusBar() {
 void TDefault::retranslateStrings() {
 	qDebug("Gui::TDefault::retranslateStrings");
 
-	TBaseEdit::retranslateStrings();
+	TBasePlus::retranslateStrings();
 
 	// Change the icon of the play/pause action
 	playOrPauseAct->setIcon(Images::icon("play"));
@@ -256,27 +232,21 @@ void TDefault::retranslateStrings() {
 	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
 	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
 
-	statusbar_menu->menuAction()->setText(tr("Status&bar"));
-	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
-
-	toolbar1->setWindowTitle(tr("&Main toolbar"));
-	toolbar1->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
-
 	toolbar2->setWindowTitle(tr("&Language toolbar"));
 	toolbar2->toggleViewAction()->setIcon(Images::icon("lang_toolbar"));
 
 	select_audio->setText(tr("Audio"));
 	select_subtitle->setText(tr("Subtitle"));
 
+	statusbar_menu->menuAction()->setText(tr("Status&bar"));
+	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
+
 	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info"));
 	viewFrameCounterAct->change(Images::icon("frame_counter"), tr("&Frame counter"));
-
-	editToolbar1Act->change(tr("Edit main &toolbar"));
 }
 
 
 void TDefault::displayTime(QString text) {
-
 	time_display->setText(text);
 }
 
@@ -287,20 +257,22 @@ void TDefault::displayFrame(int frame) {
 }
 
 void TDefault::displayABSection(int secs_a, int secs_b) {
-	QString s;
-	if (secs_a > -1) s = tr("A:%1").arg(Helper::formatTime(secs_a));
 
-	if (secs_b > -1) {
+	QString s;
+	if (secs_a >= 0)
+		s = tr("A:%1").arg(Helper::formatTime(secs_a));
+
+	if (secs_b >= 0) {
 		if (!s.isEmpty()) s += " ";
 		s += tr("B:%1").arg(Helper::formatTime(secs_b));
 	}
 
 	ab_section_display->setText(s);
-
 	ab_section_display->setVisible(!s.isEmpty());
 }
 
 void TDefault::displayVideoInfo(int width, int height, double fps) {
+
 	if ((width != 0) && (height != 0)) {
 		video_info_display->setText(tr("%1x%2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
 	} else {
@@ -311,114 +283,54 @@ void TDefault::displayVideoInfo(int width, int height, double fps) {
 void TDefault::aboutToEnterFullscreen() {
 	//qDebug("Gui::TDefault::aboutToEnterFullscreen");
 
-	TBaseEdit::aboutToEnterFullscreen();
+	TBasePlus::aboutToEnterFullscreen();
 
-	// Save visibility of toolbars
-	fullscreen_toolbar1_was_visible = toolbar1->isVisible();
-	fullscreen_toolbar2_was_visible = toolbar2->isVisible();
-
-	if (!pref->compact_mode) {
-		toolbar1->hide();
+	pref->beginGroup("default_gui");
+	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
+	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
+					  Helper::qtVersion())) {
+		toolbar->hide();
 		toolbar2->hide();
 	}
+	pref->endGroup();
 }
 
 void TDefault::aboutToExitFullscreen() {
 	//qDebug("Gui::TDefault::aboutToExitFullscreen");
 
-	TBaseEdit::aboutToExitFullscreen();
+	TBasePlus::aboutToExitFullscreen();
 
-	if (!pref->compact_mode) {
-		toolbar1->setVisible(fullscreen_toolbar1_was_visible);
-		toolbar2->setVisible(fullscreen_toolbar2_was_visible);
-	}
-}
-
-void TDefault::aboutToEnterCompactMode() {
-
-	TBaseEdit::aboutToEnterCompactMode();
-
-	// Save visibility of toolbars
-	compact_toolbar1_was_visible = toolbar1->isVisible();
-	compact_toolbar2_was_visible = toolbar2->isVisible();
-
-	toolbar1->hide();
-	toolbar2->hide();
-}
-
-void TDefault::aboutToExitCompactMode() {
-
-	TBaseEdit::aboutToExitCompactMode();
-	toolbar1->setVisible(compact_toolbar1_was_visible);
-	toolbar2->setVisible(compact_toolbar2_was_visible);
+	pref->beginGroup("default_gui");
+	pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
+	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
+	pref->endGroup();
 }
 
 void TDefault::saveConfig(const QString&) {
 	qDebug("Gui::TDefault::saveConfig");
 
-	TBaseEdit::saveConfig("default_gui");
+	TBasePlus::saveConfig("default_gui");
 
 	pref->beginGroup("default_gui");
-
 	pref->setValue("video_info", viewVideoInfoAct->isChecked());
 	pref->setValue("frame_counter", viewFrameCounterAct->isChecked());
-
-	pref->setValue("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible);
-	pref->setValue("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible);
-	pref->setValue("compact_toolbar1_was_visible", compact_toolbar1_was_visible);
-	pref->setValue("compact_toolbar2_was_visible", compact_toolbar2_was_visible);
-
 	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
-
-	pref->beginGroup("actions");
-	pref->setValue("toolbar1", toolbar1->actionsToStringList());
-	pref->setValue("toolbar1_version", TOOLBAR_VERSION);
-	pref->endGroup();
-
-	pref->beginGroup("toolbars_icon_size");
-	pref->setValue("toolbar1", toolbar1->iconSize());
-	pref->endGroup();
-
 	pref->endGroup();
 }
 
 void TDefault::loadConfig(const QString&) {
 	qDebug("Gui::TDefault::loadConfig");
 
-	TBaseEdit::loadConfig("default_gui");
+	TBasePlus::loadConfig("default_gui");
 
 	pref->beginGroup("default_gui");
-
 	viewVideoInfoAct->setChecked(pref->value("video_info", false).toBool());
 	viewFrameCounterAct->setChecked(pref->value("frame_counter", false).toBool());
-
-	fullscreen_toolbar1_was_visible = pref->value("fullscreen_toolbar1_was_visible", fullscreen_toolbar1_was_visible).toBool();
-	fullscreen_toolbar2_was_visible = pref->value("fullscreen_toolbar2_was_visible", fullscreen_toolbar2_was_visible).toBool();
-	compact_toolbar1_was_visible = pref->value("compact_toolbar1_was_visible", compact_toolbar1_was_visible).toBool();
-	compact_toolbar2_was_visible = pref->value("compact_toolbar2_was_visible", compact_toolbar2_was_visible).toBool();
-
-	pref->beginGroup("actions");
-	int toolbar_version = pref->value("toolbar1_version", 0).toInt();
-	if (toolbar_version >= TOOLBAR_VERSION) {
-		toolbar1->setActionsFromStringList(pref->value("toolbar1", toolbar1->defaultActions()).toStringList());
-	} else {
-		qWarning("Gui::TDefault::loadConfig: toolbar too old, loading default one");
-		toolbar1->setActionsFromStringList(toolbar1->defaultActions());
-	}
-	pref->endGroup();
-
-	pref->beginGroup("toolbars_icon_size");
-	toolbar1->setIconSize(pref->value("toolbar1", toolbar1->iconSize()).toSize());
-	pref->endGroup();
-
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
-
 	pref->endGroup();
 
-	if (pref->compact_mode) {
-		toolbar1->hide();
-		toolbar2->hide();
-	}
+	viewMenuBarAct->setChecked(!menuBar()->isHidden());
+	viewStatusBarAct->setChecked(!statusBar()->isHidden());
 
 	updateWidgets();
 }

@@ -34,14 +34,13 @@ class TEditableToolbar : public QToolBar {
 	Q_OBJECT
 
 public:
-	TEditableToolbar(QWidget* parent = 0);
+	TEditableToolbar(QWidget* parent);
 	virtual ~TEditableToolbar();
 
 	void setActionsFromStringList(const QStringList& actions);
 	QStringList actionsToStringList();
 
 	void setAvailableActions(const TActionList& available_actions) { all_actions = available_actions; }
-	void takeAvailableActionsFrom(QWidget* w) { widget = w; }
 
 	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
 	QStringList defaultActions() const { return default_actions; }
@@ -50,12 +49,13 @@ public slots:
 	void edit();
 
 protected:
+	TActionList all_actions;
+	QStringList default_actions;
+
 	TActionList allActions();
 
-	TActionList all_actions;
-	QWidget* widget;
-
-	QStringList default_actions;
+private:
+	QWidget* main_window;
 };
 
 } // namesapce Gui

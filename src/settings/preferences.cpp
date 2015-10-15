@@ -39,7 +39,7 @@
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
 #include "settings/filters.h"
-#include "gui/autohidewidget.h"
+#include "gui/autohidetoolbar.h"
 #include "helper.h"
 
 #ifdef YOUTUBE_SUPPORT
@@ -481,9 +481,7 @@ void TPreferences::reset() {
 
 	floating_control_margin = 0;
 	floating_control_width = 70; //70 %
-	floating_control_animated = true;
-	floating_display_in_compact_mode = false;
-	floating_activation_area = Gui::TAutohideWidget::Anywhere;
+	floating_activation_area = Gui::TAutohideToolbar::Anywhere;
 	floating_hide_delay = 3000;
 
 
@@ -939,7 +937,6 @@ void TPreferences::save() {
 	beginGroup("floating_control");
 	setValue("margin", floating_control_margin);
 	setValue("width", floating_control_width);
-	setValue("animated", floating_control_animated);
 	setValue("display_in_compact_mode", floating_display_in_compact_mode);
 	setValue("activation_area", floating_activation_area);
 	setValue("hide_delay", floating_hide_delay);
@@ -1427,9 +1424,7 @@ void TPreferences::load() {
 	beginGroup("floating_control");
 	floating_control_margin = value("margin", floating_control_margin).toInt();
 	floating_control_width = value("width", floating_control_width).toInt();
-	floating_control_animated = value("animated", floating_control_animated).toBool();
-	floating_display_in_compact_mode = value("display_in_compact_mode", floating_display_in_compact_mode).toBool();
-	floating_activation_area = (Gui::TAutohideWidget::Activation) value("activation_area", floating_activation_area).toInt();
+	floating_activation_area = (Gui::TAutohideToolbar::Activation) value("activation_area", floating_activation_area).toInt();
 	floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
 	endGroup(); // floating_control
 

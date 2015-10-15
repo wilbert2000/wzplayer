@@ -157,6 +157,10 @@ TBase::TBase()
 #ifdef UPDATE_CHECKER
 	, update_checker(0)
 #endif
+
+	, fullscreen_menubar_visible(false)
+	, fullscreen_statusbar_visible(false)
+
 	, arg_close_on_finish(-1)
 	, arg_start_in_fullscreen(-1)
 	, ignore_show_hide_events(false)
@@ -195,7 +199,7 @@ TBase::TBase()
 
 	createActions();
 	createMenus();
-	createFloatingControl();
+	createToolbars();
 	setActionsEnabled(false);
 
 	if (playlist->count() > 0) {
@@ -1413,8 +1417,24 @@ void TBase::createActions() {
 	time_label_action = new TTimeLabelAction(this);
 	time_label_action->setObjectName("timelabel_action");
 
-	// Floating control
-	editFloatingControlAct = new TAction(this, "edit_floating_control");
+	// Menu bar
+	viewMenuBarAct = new TAction(this, "toggle_menu");
+	viewMenuBarAct->setCheckable(true);
+	connect(viewMenuBarAct, SIGNAL(toggled(bool)),
+			menuBar(), SLOT(setVisible(bool)));
+
+	// Toolbar
+	editToolbarAct = new TAction(this, "edit_main_toolbar");
+
+	// Control bar
+	editControlBarAct = new TAction(this, "edit_controlbar");
+
+	// Status bar
+	viewStatusBarAct = new TAction(this, "toggle_status_bar");
+	viewStatusBarAct->setCheckable(true);
+	connect(viewStatusBarAct, SIGNAL(toggled(bool)),
+			statusBar(), SLOT(setVisible(bool)));
+
 
 } // createActions
 
@@ -1869,31 +1889,20 @@ void TBase::createMenus() {
 	popup->addMenu(optionsMenu);
 } // createMenus()
 
-void TBase::reconfigureFloatingControl() {
+void TBase::reconfigureControlBar() {
 
-	floating_control->setMargin(pref->floating_control_margin);
-	floating_control->setPercWidth(pref->floating_control_width);
-	floating_control->setAnimated(pref->floating_control_animated);
-	floating_control->setActivationArea(pref->floating_activation_area);
-	floating_control->setHideDelay(pref->floating_hide_delay);
+	controlbar->setMargin(pref->floating_control_margin);
+	controlbar->setPercWidth(pref->floating_control_width);
+	controlbar->setActivationArea(pref->floating_activation_area);
+	controlbar->setHideDelay(pref->floating_hide_delay);
 }
 
-// Slot called when icon size changes
-void TBase::adjustFloatingControlSize(const QSize& icon_size) {
-	qDebug("Gui::TBase::adjustFloatingControlSize");
+void TBase::createToolbars() {
 
-	QMargins margins = floating_control->contentsMargins();
-	int new_height = icon_size.height() + margins.top() + margins.bottom();
+	menuBar()->setObjectName("menubar");
 
-	floating_control->resize(floating_control->width(), new_height);
-}
-
-void TBase::createFloatingControl() {
-
-	floating_control = new TAutohideWidget(panel, playerwindow);
-	floating_control_toolbar = new TEditableToolbar(floating_control);
-	floating_control_toolbar->setObjectName("floating_control");
-	floating_control_toolbar->takeAvailableActionsFrom(this);
+	controlbar = new TAutohideToolbar(this, playerwindow);
+	controlbar->setObjectName("controlbar");
 	QStringList actions;
 	actions << "play_or_pause"
 			<< "separator"
@@ -1906,15 +1915,34 @@ void TBase::createFloatingControl() {
 			<< "volumeslider_action"
 			<< "separator"
 			<< "timelabel_action";
-	floating_control_toolbar->setDefaultActions(actions);
-	floating_control->setInternalWidget(floating_control_toolbar);
+	controlbar->setDefaultActions(actions);
+	// controlbar->setMovable(true);
+	controlbar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
+	addToolBar(Qt::BottomToolBarArea, controlbar);
 
-	reconfigureFloatingControl();
+	connect(editControlBarAct, SIGNAL(triggered()),
+			controlbar, SLOT(edit()));
 
-	connect(floating_control_toolbar, SIGNAL(iconSizeChanged(const QSize&)),
-			this, SLOT(adjustFloatingControlSize(const QSize&)));
-	connect(editFloatingControlAct, SIGNAL(triggered()),
-			floating_control_toolbar, SLOT(edit()));
+
+	toolbar = new TEditableToolbar(this);
+	toolbar->setObjectName("toolbar");
+	actions.clear();
+	actions << "open_file" << "open_url" << "favorites_menu" << "separator"
+			<< "screenshot" << "separator" << "show_file_properties" << "show_playlist"
+			<< "show_tube_browser" << "separator" << "show_preferences"
+			<< "separator" << "play_prev" << "play_next";
+	toolbar->setDefaultActions(actions);
+	addToolBar(Qt::TopToolBarArea, toolbar);
+
+	connect(editToolbarAct, SIGNAL(triggered()),
+			toolbar, SLOT(edit()));
+
+
+	// Modify toolbars' actions
+	QAction *tba;
+	tba = toolbar->toggleViewAction();
+	tba->setObjectName("show_main_toolbar");
+	tba->setShortcut(Qt::Key_F5);
 }
 
 void TBase::setupNetworkProxy() {
@@ -2666,8 +2694,21 @@ void TBase::retranslateStrings() {
 	share_menu->menuAction()->setIcon(Images::icon("share"));
 #endif
 
-	// Floating control
-	editFloatingControlAct->change(tr("Edit &floating control"));
+	// Menu bar
+	viewMenuBarAct->change(tr("Me&nu bar"));
+
+	// Toolbar
+	toolbar->setWindowTitle(tr("&Main toolbar"));
+	toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
+	editToolbarAct->change(tr("Edit main &toolbar"));
+
+	// Control bar
+	controlbar->setWindowTitle(tr("&Control bar"));
+	controlbar->toggleViewAction()->setIcon(Images::icon("controlbar"));
+	editControlBarAct->change(tr("Edit control &bar"));
+
+	// Status bar
+	viewStatusBarAct->change(tr("&Status bar"));
 
 	// TODO: make sure the "<empty>" string is translated
 
@@ -2683,10 +2724,12 @@ void TBase::retranslateStrings() {
 	updateRecents();
 	updateWidgets();
 
+	// TODO:
 	// Update actions view in preferences
 	// It has to be done, here. The actions are translated after the
 	// preferences dialog.
-	if (pref_dialog) pref_dialog->mod_input()->actions_editor->updateView();
+	if (pref_dialog)
+		pref_dialog->mod_input()->actions_editor->updateView();
 }
 
 void TBase::setJumpTexts() {
@@ -2817,28 +2860,32 @@ void TBase::loadConfig(const QString& gui_group) {
 			move(center_pos.width(), center_pos.height());
 	}
 
-	// Floating control
+	// Tool and control bar
 	pref->beginGroup("actions");
-	floating_control_toolbar->setActionsFromStringList(
-		pref->value("floating_control",
-					floating_control_toolbar->defaultActions()
-					).toStringList());
+	// Using old name "toolbar1" to pick up old toolbars
+	toolbar->setActionsFromStringList(pref->value("toolbar1",
+		toolbar->defaultActions()).toStringList());
+	// Using old name "controlwidget" to pick up old toolbars
+	controlbar->setActionsFromStringList(pref->value("controlwidget",
+		controlbar->defaultActions()).toStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
-	floating_control_toolbar->setIconSize(pref->value("floating_control",
-		floating_control_toolbar->iconSize()).toSize());
+	// Using old name "toolbar1" to pick up old toolbars
+	toolbar->setIconSize(pref->value("toolbar1",
+		toolbar->iconSize()).toSize());
+	// Using old name "controlwidget" to pick up old toolbars
+	controlbar->setIconSize(pref->value("controlwidget",
+		controlbar->iconSize()).toSize());
 	pref->endGroup();
 
+	// State fullscreen toolbars
+	fullscreen_menubar_visible = pref->value("fullscreen_menubar_visible", fullscreen_menubar_visible).toBool();
+	fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible", fullscreen_statusbar_visible).toBool();
+
 	pref->endGroup();
 
-
-	reconfigureFloatingControl();
-
-	if (pref->compact_mode && pref->floating_display_in_compact_mode) {
-		floating_control->activate();
-	}
-	floating_control->adjustSize();
+	reconfigureControlBar();
 
 	// Load playlist settings outside group
 	playlist->loadSettings();
@@ -2855,14 +2902,24 @@ void TBase::saveConfig(const QString &gui_group) {
 		pref->setValue("state", (int) windowState());
 	}
 
+	// Control bar
 	pref->beginGroup("actions");
-	pref->setValue("floating_control",
-				   floating_control_toolbar->actionsToStringList());
+	// Using old name "toolbar1" for backward compat
+	pref->setValue("toolbar1", toolbar->actionsToStringList());
+	// Using old name "controlwidget" for backward compat
+	pref->setValue("controlwidget", controlbar->actionsToStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
-	pref->setValue("floating_control", floating_control_toolbar->iconSize());
+	// Using old name "toolbar1" for backward compat
+	pref->setValue("toolbar1", toolbar->iconSize());
+	// Using old name "controlwidget" for backward compat
+	pref->setValue("controlwidget", controlbar->iconSize());
 	pref->endGroup();
+
+	// Save fullscreen toolbars
+	pref->setValue("fullscreen_menubar_visible", fullscreen_menubar_visible);
+	pref->setValue("fullscreen_statusbar_visible", fullscreen_statusbar_visible);
 
 	pref->endGroup();
 
@@ -2873,6 +2930,7 @@ void TBase::closeEvent(QCloseEvent* e)  {
 	qDebug("Gui::TBase::closeEvent");
 
 	core->close();
+	exitFullscreen();
 	saveConfig("");
 	pref->save();
 	e->accept();
@@ -2963,13 +3021,8 @@ void TBase::applyNewPreferences() {
 	TPlayerID::Player old_player_type = TPlayerID::player(pref->mplayer_bin);
 	pref_dialog->getData(pref);
 
-	// Floating control
-	reconfigureFloatingControl();
-	if (pref->compact_mode && pref->floating_display_in_compact_mode) {
-		floating_control->activate();
-	} else {
-		floating_control->deactivate();
-	}
+	// Control bar
+	reconfigureControlBar();
 
 	// Setup proxy
 	setupNetworkProxy();
@@ -4137,35 +4190,35 @@ void TBase::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBase::aboutToEnterFullscreen");
 
 	playerwindow->aboutToEnterFullscreen();
+	controlbar->aboutToEnterFullscreen();
 
-	if (!pref->compact_mode) {
-		menuBar()->hide();
-		statusBar()->hide();
-	}
+	// Save current state
+	menubar_visible = !menuBar()->isHidden();
+	statusbar_visible = !statusBar()->isHidden();
 
-	reconfigureFloatingControl();
-	 // Hide the control in case it was running from compact mode
-	floating_control->deactivate();
-	// Reactivate when idle
-	QTimer::singleShot(100, floating_control, SLOT(activate()));
+	// Set fullscreen state
+	menuBar()->setVisible(fullscreen_menubar_visible);
+	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
+	statusBar()->setVisible(fullscreen_statusbar_visible);
+	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 }
 
 void TBase::aboutToExitFullscreen() {
 	//qDebug("Gui::TBase::aboutToExitFullscreen");
 
 	playerwindow->aboutToExitFullscreen();
+	controlbar->aboutToExitFullscreen();
 
-	// Hide floating_control
-	if (!pref->compact_mode || !pref->floating_display_in_compact_mode) {
-		floating_control->deactivate();
-	}
+	// Save fullscreen state
+	fullscreen_menubar_visible = !menuBar()->isHidden();
+	fullscreen_statusbar_visible = !statusBar()->isHidden();
 
-	if (!pref->compact_mode) {
-		menuBar()->show();
-		statusBar()->show();
-	}
+	// Set normal state
+	menuBar()->setVisible(menubar_visible);
+	viewMenuBarAct->setChecked(menubar_visible);
+	statusBar()->setVisible(statusbar_visible);
+	viewStatusBarAct->setChecked(statusbar_visible);
 }
-
 
 void TBase::leftClickFunction() {
 	qDebug("Gui::TBase::leftClickFunction");

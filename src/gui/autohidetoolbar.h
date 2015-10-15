@@ -16,76 +16,57 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_AUTOHIDEWIDGET_H
-#define GUI_AUTOHIDEWIDGET_H
+#ifndef GUI_AUTOHIDETOOLBAR_H
+#define GUI_AUTOHIDETOOLBAR_H
 
-#include <QWidget>
+#include "gui/editabletoolbar.h"
 
 class QTimer;
-class QPropertyAnimation;
 
 namespace Gui {
 
-class TAutohideWidget : public QWidget {
+class TAutohideToolbar : public TEditableToolbar {
 	Q_OBJECT
 
 public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
-	TAutohideWidget(QWidget* parent, QWidget* playerwindow);
-	virtual ~TAutohideWidget();
+	TAutohideToolbar(QWidget* parent, QWidget* playerwindow);
+	virtual ~TAutohideToolbar();
 
-	void setInternalWidget(QWidget* w);
-	QWidget* internalWidget() { return internal_widget; }
+	int margin() const { return spacing; }
+	int percWidth() const { return perc_width; }
+	Activation activationArea() const { return activation_area; }
+	int hideDelay() const;
+
+	virtual void aboutToEnterFullscreen();
+	virtual void aboutToExitFullscreen();
 
 public slots:
-	void show();
-	void activate();
-	void deactivate();
-	void setAutoHide(bool b);
-	void setAnimated(bool b) { use_animation = b; }
 	void setMargin(int margin) { spacing = margin; }
 	void setPercWidth(int s) { perc_width = s;}
 	void setActivationArea(Activation m) { activation_area = m; }
 	void setHideDelay(int ms);
-
-public:
-	bool isActive() { return turned_on; }
-	bool autoHide() { return auto_hide; }
-	bool isAnimated() { return use_animation; }
-	int margin() { return spacing; }
-	int percWidth() { return perc_width; }
-	Activation activationArea() { return activation_area; }
-	int hideDelay();
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* event);
 
 private slots:
 	void checkUnderMouse();
-	void showAnimated();
 
 private:
-	void resizeAndMove();
-
-private:
-	bool turned_on;
 	bool auto_hide;
-	bool use_animation;
 	int spacing;
 	int perc_width;
 	Activation activation_area;
-	QWidget* internal_widget;
 	QTimer* timer;
 
-#if QT_VERSION >= 0x040600
-	QPropertyAnimation* animation;
-#endif
-
+	void showAuto();
 	bool insideShowArea(const QPoint& p) const;
+	void resizeAndMove();
 };
 
 } // namespace Gui
 
-#endif // GUI_AUTOHIDEWIDGET_H
+#endif // GUI_AUTOHIDETOOLBAR_H
 

@@ -29,8 +29,7 @@
 #include "settings/preferences.h"
 #include "gui/guiconfig.h"
 #include "gui/widgetactions.h"
-#include "gui/autohidewidget.h"
-#include "gui/editabletoolbar.h"
+#include "gui/autohidetoolbar.h"
 #include "gui/playlist.h"
 #include "gui/logwindow.h"
 #include "gui/audioequalizer.h"
@@ -273,7 +272,6 @@ protected slots:
 
 	virtual void clearRecentsList();
 
-	virtual void adjustFloatingControlSize(const QSize& icon_size);
 	virtual void loadActions();
 	virtual void saveActions();
 
@@ -727,12 +725,17 @@ protected:
 	QMenu* popup;
 	QMenu* recentfiles_menu;
 
+	TAction* viewMenuBarAct;
+	TAction* editToolbarAct;
+	TAction* editControlBarAct;
+	TAction* viewStatusBarAct;
+
+	TEditableToolbar* toolbar;
+
 	TTimeSliderAction* timeslider_action;
 	TVolumeSliderAction* volumeslider_action;
 	TTimeLabelAction* time_label_action;
-	TAction* editFloatingControlAct;
-	TAutohideWidget* floating_control;
-	TEditableToolbar* floating_control_toolbar;
+	TAutohideToolbar* controlbar;
 
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;
@@ -768,6 +771,11 @@ protected:
 	QString pending_actions_to_run;
 
 private:
+	bool menubar_visible;
+	bool statusbar_visible;
+	bool fullscreen_menubar_visible;
+	bool fullscreen_statusbar_visible;
+
 	// Force settings from command line
 	int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 	int arg_start_in_fullscreen; // -1 = not set, 1 = true, 0 = false
@@ -790,8 +798,8 @@ private:
 #endif
 #endif
 
-	void reconfigureFloatingControl();
-	void createFloatingControl();
+	void reconfigureControlBar();
+	void createToolbars();
 	void hidePanel();
 };
 

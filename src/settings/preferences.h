@@ -31,7 +31,7 @@
 #include "audioequalizerlist.h"
 #include "assstyles.h"
 #include "filters.h"
-#include "gui/autohidewidget.h"
+#include "gui/autohidetoolbar.h"
 
 #ifdef UPDATE_CHECKER
 #include "updatecheckerdata.h"
@@ -490,9 +490,7 @@ public:
 
 	int floating_control_margin;
 	int floating_control_width;
-	bool floating_control_animated;
-	bool floating_display_in_compact_mode;
-	Gui::TAutohideWidget::Activation floating_activation_area;
+	Gui::TAutohideToolbar::Activation floating_activation_area;
 	int floating_hide_delay;
 
 

@@ -167,7 +167,7 @@ HEADERS += config.h \
     gui/editabletoolbar.h \
 	gui/slider.h \
 	gui/timeslider.h \
-    gui/autohidewidget.h \
+    gui/autohidetoolbar.h \
 	gui/tablewidget.h \
     gui/infoprovider.h \
     gui/playlist.h \
@@ -267,7 +267,7 @@ SOURCES	+= version.cpp \
     gui/editabletoolbar.cpp \
 	gui/slider.cpp \
 	gui/timeslider.cpp \
-    gui/autohidewidget.cpp \
+    gui/autohidetoolbar.cpp \
    	gui/tablewidget.cpp \
     gui/infoprovider.cpp \
     gui/playlist.cpp \

@@ -35,6 +35,7 @@ class QPushButton;
 namespace Gui {
 
 typedef QList<QAction*> TActionList;
+typedef QList<QKeySequence> TShortCutList;
 
 class TActionsEditor : public QWidget {
 	Q_OBJECT
@@ -58,8 +59,8 @@ public:
 	static void saveToConfig(QObject* o, QSettings* set);
 	static void loadFromConfig(QObject* o, QSettings* set);
 
-	static QString shortcutsToString(QList <QKeySequence> shortcuts_list);
-	static QList<QKeySequence> stringToShortcuts(QString shortcuts);
+	static QString shortcutsToString(const TShortCutList& shortcuts);
+	static TShortCutList stringToShortcuts(const QString& shortcuts);
 
 public slots:
 	void applyChanges();
@@ -101,6 +102,9 @@ private:
 	QString oldAccelText;
 	bool dont_validate;
 #endif
+
+	static QString actionToString(const QAction& action);
+	static void setActionFromString(QAction& action, const QString& s);
 };
 
 } // namespace Gui
