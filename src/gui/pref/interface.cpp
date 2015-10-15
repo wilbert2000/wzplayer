@@ -681,10 +681,6 @@ void TInterface::createHelp() {
 
 	addSectionTitle(tr("Floating control"));
 
-	setWhatsThis(floating_animated_check, tr("Animated"),
-		tr("If this option is enabled, the floating control will appear "
-           "with an animation."));
-
 	setWhatsThis(floating_width_slider, tr("Width"),
 		tr("Specifies the width of the control (as a percentage)."));
 
