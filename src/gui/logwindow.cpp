@@ -17,6 +17,7 @@
 */
 
 #include "gui/logwindow.h"
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QFileInfo>
 #include <QFile>
@@ -55,14 +56,26 @@ void TLogWindow::retranslateStrings() {
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
+	//qDebug("TLogWindow::showEvent");
 
 	TLog::log->setLogWindow(this);
+	emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
+	//qDebug("TLogWindow::hideEvent");
 
 	TLog::log->setLogWindow(0);
 	clear();
+	emit visibilityChanged(false);
+}
+
+// Fix hideEvent() not called on close
+void TLogWindow::closeEvent(QCloseEvent* event) {
+	//qDebug("TLogWindow::closeEvent");
+
+	hideEvent(0);
+	event->accept();
 }
 
 void TLogWindow::setText(QString log) {

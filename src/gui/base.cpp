@@ -927,7 +927,11 @@ void TBase::createActions() {
 
 	// Show log
 	showLogAct = new TAction(QKeySequence("Ctrl+S"), this, "show_smplayer_log");
+	showLogAct->setCheckable(true);
 	connect(showLogAct, SIGNAL(triggered()), this, SLOT(showLog()));
+	connect(log_window, SIGNAL(visibilityChanged(bool)),
+			showLogAct, SLOT(setChecked(bool)));
+
 
 	// Menu Help
 	showFirstStepsAct = new TAction(this, "first_steps");
@@ -1795,6 +1799,17 @@ void TBase::createMenus() {
 	optionsMenu->addAction(showPropertiesAct);
 	optionsMenu->addAction(showPlaylistAct);
 	optionsMenu->addAction(showLogAct);
+	// Toolbars
+	toolbar_menu = createToolbarMenu();
+	optionsMenu->addMenu(toolbar_menu);
+	// OSD submenu
+	osd_menu = new QMenu(this);
+	osd_menu->menuAction()->setObjectName("osd_menu");
+	osd_menu->addActions(osdGroup->actions());
+	osd_menu->addSeparator();
+	osd_menu->addAction(decOSDScaleAct);
+	osd_menu->addAction(incOSDScaleAct);
+	optionsMenu->addMenu(osd_menu);
 
 #ifdef YOUTUBE_SUPPORT
 	#if 0
@@ -1816,20 +1831,7 @@ void TBase::createMenus() {
 	#endif
 #endif
 
-	// OSD submenu
-	optionsMenu->addSeparator();
-	osd_menu = new QMenu(this);
-	osd_menu->menuAction()->setObjectName("osd_menu");
-	osd_menu->addActions(osdGroup->actions());
-	osd_menu->addSeparator();
-	osd_menu->addAction(decOSDScaleAct);
-	osd_menu->addAction(incOSDScaleAct);
-	optionsMenu->addMenu(osd_menu);
-
-	// Toolbars
-	toolbar_menu = createToolbarMenu();
-	optionsMenu->addMenu(toolbar_menu);
-
+	// Preferences
 	optionsMenu->addSeparator();
 	optionsMenu->addAction(showPreferencesAct);
 
@@ -3285,10 +3287,14 @@ void TBase::gotNoFileToPlay() {
 }
 
 void TBase::showLog() {
-	qDebug("Gui::TBase::showLog");
+	//qDebug("Gui::TBase::showLog");
 
-	exitFullscreenIfNeeded();
-	log_window->show();
+	if (log_window->isVisible()) {
+		log_window->hide();
+	} else {
+		exitFullscreenIfNeeded();
+		log_window->show();
+	}
 }
 
 void TBase::updateVideoTracks() {
