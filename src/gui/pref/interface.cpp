@@ -203,7 +203,6 @@ void TInterface::retranslateStrings() {
 	gui_combo->setCurrentIndex(gui_index);
 
 	floating_width_label->setNum(floating_width_slider->value());
-	floating_margin_label->setNum(floating_margin_slider->value());
 
 	createHelp();
 }
@@ -238,7 +237,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setGUI(pref->gui);
 
 	setFloatingWidth(pref->floating_control_width);
-	setFloatingMargin(pref->floating_control_margin);
 	floating_move_bottom_check->setChecked(pref->floating_activation_area == Gui::TAutohideToolbar::Bottom);
 	floating_hide_delay_spin->setValue(pref->floating_hide_delay);
 
@@ -299,7 +297,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	}
 
 	pref->floating_control_width = floatingWidth();
-	pref->floating_control_margin = floatingMargin();
 	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? Gui::TAutohideToolbar::Bottom : Gui::TAutohideToolbar::Anywhere;
 	pref->floating_hide_delay = floating_hide_delay_spin->value();
 
@@ -559,14 +556,6 @@ int TInterface::floatingWidth() {
 	return floating_width_slider->value();
 }
 
-void TInterface::setFloatingMargin(int pixels) {
-	floating_margin_slider->setValue(pixels);
-}
-
-int TInterface::floatingMargin() {
-	return floating_margin_slider->value();
-}
-
 void TInterface::setRecentsMaxItems(int n) {
 	recents_max_items_spin->setValue(n);
 }
@@ -683,12 +672,6 @@ void TInterface::createHelp() {
 
 	setWhatsThis(floating_width_slider, tr("Width"),
 		tr("Specifies the width of the control (as a percentage)."));
-
-	setWhatsThis(floating_margin_slider, tr("Margin"),
-		tr("This option sets the number of pixels that the floating control "
-           "will be away from the bottom of the screen. Useful when the "
-           "screen is a TV, as the overscan might prevent the control to be "
-           "visible."));
 
 	setWhatsThis(floating_move_bottom_check, tr("Show only when moving the mouse to the bottom of the screen"),
 		tr("If this option is checked, the floating control will only be displayed when the mouse is moved "

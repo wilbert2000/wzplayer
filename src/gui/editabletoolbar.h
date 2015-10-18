@@ -24,7 +24,7 @@
 #include <QStringList>
 
 class QAction;
-class QWidget;
+class QMainWindow;
 
 namespace Gui {
 
@@ -34,7 +34,7 @@ class TEditableToolbar : public QToolBar {
 	Q_OBJECT
 
 public:
-	TEditableToolbar(QWidget* parent);
+	TEditableToolbar(QMainWindow* parent);
 	virtual ~TEditableToolbar();
 
 	void setActionsFromStringList(const QStringList& actions);
@@ -54,8 +54,7 @@ protected:
 
 	TActionList allActions();
 
-private:
-	QWidget* main_window;
+	QMainWindow* main_window;
 };
 
 } // namesapce Gui

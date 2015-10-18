@@ -487,7 +487,6 @@ public:
        Floating control
        **************** */
 
-	int floating_control_margin;
 	int floating_control_width;
 	Gui::TAutohideToolbar::Activation floating_activation_area;
 	int floating_hide_delay;

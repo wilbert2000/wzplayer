@@ -110,9 +110,6 @@ protected:
 	void setFloatingWidth(int percentage);
 	int floatingWidth();
 
-	void setFloatingMargin(int pixels);
-	int floatingMargin();
-
 	// Privacy tab
 	void setRecentsMaxItems(int n);
 	int recentsMaxItems();

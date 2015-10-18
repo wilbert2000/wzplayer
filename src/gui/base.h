@@ -328,7 +328,9 @@ protected:
 #endif
 	virtual QMenu* createPopupMenu();
 	virtual void aboutToEnterFullscreen();
+	virtual void didEnterFullscreen();
 	virtual void aboutToExitFullscreen();
+	virtual void didExitFullscreen();
 	virtual QString settingsGroupName() = 0;
 
 	void createCore();

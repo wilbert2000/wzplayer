@@ -19,10 +19,11 @@
 #include "gui/editabletoolbar.h"
 #include "gui/toolbareditor.h"
 #include <QAction>
+#include <QMainWindow>
 
 namespace Gui {
 
-TEditableToolbar::TEditableToolbar(QWidget* parent)
+TEditableToolbar::TEditableToolbar(QMainWindow* parent)
 	: QToolBar(parent)
 	, main_window(parent) {
 }

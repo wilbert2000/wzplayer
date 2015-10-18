@@ -49,14 +49,7 @@ namespace Gui {
 TBasePlus::TBasePlus()
 	: TBase()
 	, mainwindow_visible(true)
-	, trayicon_playlist_was_visible(false)
-
-#if DOCK_PLAYLIST
-	, fullscreen_playlist_was_visible(false)
-	, fullscreen_playlist_was_floating(false)
-	, ignore_playlist_events(false)
-#endif
-{
+	, trayicon_playlist_was_visible(false) {
 
 	tray = new QSystemTrayIcon(Images::icon("logo", 22), this);
 	tray->setToolTip("SMPlayer");
@@ -218,13 +211,7 @@ void TBasePlus::saveConfig() {
 
 	pref->setValue("show_tray_icon", showTrayAct->isChecked());
 	pref->setValue("mainwindow_visible", isVisible());
-
 	pref->setValue("trayicon_playlist_was_visible", trayicon_playlist_was_visible);
-#if DOCK_PLAYLIST
-	pref->setValue("fullscreen_playlist_was_visible", fullscreen_playlist_was_visible);
-	pref->setValue("fullscreen_playlist_was_floating", fullscreen_playlist_was_floating);
-	pref->setValue("ignore_playlist_events", ignore_playlist_events);
-#endif
 
 	pref->endGroup();
 	pref->endGroup();
@@ -244,13 +231,7 @@ void TBasePlus::loadConfig() {
 	//tray->setVisible(show_tray_icon);
 
 	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
-
 	trayicon_playlist_was_visible = pref->value("trayicon_playlist_was_visible", trayicon_playlist_was_visible).toBool();
-#if DOCK_PLAYLIST
-	fullscreen_playlist_was_visible = pref->value("fullscreen_playlist_was_visible", fullscreen_playlist_was_visible).toBool();
-	fullscreen_playlist_was_floating = pref->value("fullscreen_playlist_was_floating", fullscreen_playlist_was_floating).toBool();
-	ignore_playlist_events = pref->value("ignore_playlist_events", ignore_playlist_events).toBool();
-#endif
 
 	pref->endGroup();
 	pref->endGroup();
@@ -356,7 +337,6 @@ void TBasePlus::setWindowCaption(const QString& title) {
 	TBase::setWindowCaption(title);
 }
 
-
 // TPlaylist stuff
 void TBasePlus::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBasePlus::aboutToEnterFullscreen");
@@ -364,44 +344,40 @@ void TBasePlus::aboutToEnterFullscreen() {
 	TBase::aboutToEnterFullscreen();
 
 #if DOCK_PLAYLIST
-	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
+	fullscreen_playlist_was_visible = playlistdock->isVisible();
+	fullscreen_playlist_was_floating = playlistdock->isFloating();
 
 	int playlist_screen = QApplication::desktop()->screenNumber(playlistdock);
 	int mainwindow_screen = QApplication::desktop()->screenNumber(this);
 
-	fullscreen_playlist_was_visible = playlistdock->isVisible();
-	fullscreen_playlist_was_floating = playlistdock->isFloating();
-
-	ignore_playlist_events = true;
-
 	// Hide the playlist if it's in the same screen as the main window
-	if ((playlist_screen == mainwindow_screen) /* || 
-		(!fullscreen_playlist_was_floating) */)
-	{
-		playlistdock->setFloating(true);
+	if (playlist_screen == mainwindow_screen) {
 		playlistdock->hide();
+		playlistdock->setFloating(true);
 	}
+
+	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
 #endif
 }
 
-void TBasePlus::aboutToExitFullscreen() {
-	//qDebug("Gui::TBasePlus::aboutToExitFullscreen");
-
-	TBase::aboutToExitFullscreen();
+void TBasePlus::didExitFullscreen() {
+	//qDebug("Gui::TBasePlus::didExitFullscreen");
 
 #if DOCK_PLAYLIST
 	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
 								  | Qt::BottomDockWidgetArea
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
+#endif
+
+	TBase::didExitFullscreen();
+
+#if DOCK_PLAYLIST
+	playlistdock->setFloating(fullscreen_playlist_was_floating);
 	if (fullscreen_playlist_was_visible) {
 		playlistdock->show();
 	}
-	playlistdock->setFloating(fullscreen_playlist_was_floating);
-	ignore_playlist_events = false;
 #endif
-
-	//qDebug("Gui::TBasePlus::aboutToExitFullscreen done");
 }
 
 #if DOCK_PLAYLIST
@@ -448,7 +424,10 @@ void TBasePlus::dockTopLevelChanged(bool floating) {
 
 void TBasePlus::stretchWindow() {
 	qDebug("Gui::TBasePlus::stretchWindow");
-	if (ignore_playlist_events || (pref->resize_method != Settings::TPreferences::Always)) return;
+
+	if (pref->fullscreen
+		|| pref->resize_method != Settings::TPreferences::Always)
+		return;
 
 	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
 
@@ -481,7 +460,8 @@ void TBasePlus::stretchWindow() {
 void TBasePlus::shrinkWindow() {
 	qDebug("Gui::TBasePlus::shrinkWindow");
 
-	if (ignore_playlist_events || (pref->resize_method != Settings::TPreferences::Always))
+	if (pref->fullscreen
+		|| pref->resize_method != Settings::TPreferences::Always)
 		return;
 
 	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));

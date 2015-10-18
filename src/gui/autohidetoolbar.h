@@ -31,39 +31,43 @@ class TAutohideToolbar : public TEditableToolbar {
 public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
-	TAutohideToolbar(QWidget* parent, QWidget* playerwindow);
+	TAutohideToolbar(QMainWindow* mainwindow, QWidget* playerwindow);
 	virtual ~TAutohideToolbar();
 
-	int margin() const { return spacing; }
 	int percWidth() const { return perc_width; }
 	Activation activationArea() const { return activation_area; }
 	int hideDelay() const;
 
-	virtual void aboutToEnterFullscreen();
-	virtual void aboutToExitFullscreen();
-
-public slots:
-	void setMargin(int margin) { spacing = margin; }
 	void setPercWidth(int s) { perc_width = s;}
 	void setActivationArea(Activation m) { activation_area = m; }
 	void setHideDelay(int ms);
+	void resizeToolbar();
+	void resetPosition() { reset_pos = true; }
+
+	void didEnterFullscreen();
+	void aboutToExitFullscreen();
+
+	virtual void setVisible(bool visible);
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* event);
+	virtual void moveEvent(QMoveEvent* event);
 
 private slots:
 	void checkUnderMouse();
+	void startAutoHide();
 
 private:
 	bool auto_hide;
-	int spacing;
+	bool reset_pos;
+	bool fullscreen;
+
 	int perc_width;
 	Activation activation_area;
 	QTimer* timer;
 
-	void showAuto();
 	bool insideShowArea(const QPoint& p) const;
-	void resizeAndMove();
+	bool allowGeometryChanges() const;
 };
 
 } // namespace Gui

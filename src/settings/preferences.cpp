@@ -478,7 +478,6 @@ void TPreferences::reset() {
        Floating control
        **************** */
 
-	floating_control_margin = 0;
 	floating_control_width = 70; //70 %
 	floating_activation_area = Gui::TAutohideToolbar::Anywhere;
 	floating_hide_delay = 3000;
@@ -933,7 +932,6 @@ void TPreferences::save() {
        **************** */
 
 	beginGroup("floating_control");
-	setValue("margin", floating_control_margin);
 	setValue("width", floating_control_width);
 	setValue("activation_area", floating_activation_area);
 	setValue("hide_delay", floating_hide_delay);
@@ -1239,6 +1237,7 @@ void TPreferences::load() {
 
 	beginGroup("gui");
 
+	// TODO: do not save and restore "fullscreen" and remove it from pref, use windowstate()
 	fullscreen = value("fullscreen", fullscreen).toBool();
 	start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
 
@@ -1418,7 +1417,6 @@ void TPreferences::load() {
        **************** */
 
 	beginGroup("floating_control");
-	floating_control_margin = value("margin", floating_control_margin).toInt();
 	floating_control_width = value("width", floating_control_width).toInt();
 	floating_activation_area = (Gui::TAutohideToolbar::Activation) value("activation_area", floating_activation_area).toInt();
 	floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();

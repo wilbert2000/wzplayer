@@ -48,7 +48,7 @@ protected:
 	void updateShowAllAct();
 
 	virtual void aboutToEnterFullscreen();
-	virtual void aboutToExitFullscreen();
+	virtual void didExitFullscreen();
 
 protected slots:
 	// Reimplemented methods
@@ -98,7 +98,6 @@ protected:
 	TPlaylistDock* playlistdock;
 	bool fullscreen_playlist_was_visible;
 	bool fullscreen_playlist_was_floating;
-	bool ignore_playlist_events;
 #endif
 
 private:

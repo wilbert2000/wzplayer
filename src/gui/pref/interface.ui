@@ -679,39 +679,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>&amp;Margin:</string>
-           </property>
-           <property name="buddy">
-            <cstring>floating_margin_slider</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSlider" name="floating_margin_slider">
-           <property name="maximum">
-            <number>80</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QLabel" name="floating_margin_label">
-           <property name="frameShape">
-            <enum>QFrame::Panel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Sunken</enum>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
        <item>
@@ -937,7 +904,6 @@
   <tabstop>reset_stop_check</tabstop>
   <tabstop>single_instance_check</tabstop>
   <tabstop>floating_width_slider</tabstop>
-  <tabstop>floating_margin_slider</tabstop>
   <tabstop>floating_move_bottom_check</tabstop>
   <tabstop>floating_hide_delay_spin</tabstop>
   <tabstop>recents_max_items_spin</tabstop>
@@ -959,22 +925,6 @@
     <hint type="destinationlabel">
      <x>484</x>
      <y>137</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>floating_margin_slider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>floating_margin_label</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>332</x>
-     <y>172</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>480</x>
-     <y>150</y>
     </hint>
    </hints>
   </connection>

@@ -1914,7 +1914,6 @@ QMenu* TBase::createPopupMenu() {
 
 void TBase::reconfigureControlBar() {
 
-	controlbar->setMargin(pref->floating_control_margin);
 	controlbar->setPercWidth(pref->floating_control_width);
 	controlbar->setActivationArea(pref->floating_activation_area);
 	controlbar->setHideDelay(pref->floating_hide_delay);
@@ -3058,6 +3057,9 @@ void TBase::applyNewPreferences() {
 
 	// Control bar
 	reconfigureControlBar();
+	if (pref->fullscreen) {
+		controlbar->resizeToolbar();
+	}
 
 	// Setup proxy
 	setupNetworkProxy();
@@ -4159,11 +4161,9 @@ void TBase::toggleFullscreen(bool b) {
 	qDebug("Gui::TBase::toggleFullscreen: %d", b);
 
 	if (b == pref->fullscreen) {
-		// Nothing to do
 		qDebug("Gui::TBase::toggleFullscreen: nothing to do, returning");
 		return;
 	}
-
 	pref->fullscreen = b;
 
 	// If using mplayer window
@@ -4177,34 +4177,21 @@ void TBase::toggleFullscreen(bool b) {
 		return; // mplayer window is not used.
 
 	if (pref->fullscreen) {
-		if (pref->restore_pos_after_fullscreen) {
-			win_pos = pos();
-			win_size = size();
-		}
-		was_maximized = isMaximized();
-
 		aboutToEnterFullscreen();
 
-		#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
 		// Hack to avoid the windows taskbar to be visible on Windows XP
 		if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
 			if (!pref->pause_when_hidden) hide();
 		}
-		#endif
+#endif
 
 		showFullScreen();
-
+		didEnterFullscreen();
 	} else {
-		showNormal();
-		if (was_maximized)
-			showMaximized(); // It has to be called after showNormal()
-
 		aboutToExitFullscreen();
-
-		if (pref->restore_pos_after_fullscreen) {
-			move(win_pos);
-			resize(win_size);
-		}
+		showNormal();
+		didExitFullscreen();
 	}
 
 	updateWidgets();
@@ -4220,45 +4207,79 @@ void TBase::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBase::aboutToEnterFullscreen");
 
 	playerwindow->aboutToEnterFullscreen();
-	controlbar->aboutToEnterFullscreen();
 
 	// Save current state
+	if (pref->restore_pos_after_fullscreen) {
+		win_pos = pos();
+		win_size = size();
+	}
+	was_maximized = isMaximized();
+
 	menubar_visible = !menuBar()->isHidden();
 	statusbar_visible = !statusBar()->isHidden();
+
 	pref->beginGroup(settingsGroupName());
 	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
+	pref->endGroup();
+}
+
+void TBase::didEnterFullscreen() {
+	//qDebug("Gui::TBase::didEnterFullscreen");
 
 	// Restore fullscreen state
 	menuBar()->setVisible(fullscreen_menubar_visible);
-	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
 	statusBar()->setVisible(fullscreen_statusbar_visible);
-	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
+
+	pref->beginGroup(settingsGroupName());
 	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
 					  Helper::qtVersion())) {
 		toolbar->hide();
+		controlbar->resetPosition();
 	}
 	pref->endGroup();
+
+	controlbar->didEnterFullscreen();
+
+	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
+	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 }
 
 void TBase::aboutToExitFullscreen() {
 	//qDebug("Gui::TBase::aboutToExitFullscreen");
 
-	playerwindow->aboutToExitFullscreen();
-	controlbar->aboutToExitFullscreen();
-
 	// Save fullscreen state
 	fullscreen_menubar_visible = !menuBar()->isHidden();
 	fullscreen_statusbar_visible = !statusBar()->isHidden();
+
 	pref->beginGroup(settingsGroupName());
 	pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
+	pref->endGroup();
 
-	// Set normal state
+	playerwindow->aboutToExitFullscreen();
+	controlbar->aboutToExitFullscreen();
+}
+
+void TBase::didExitFullscreen() {
+	//qDebug("Gui::TBase::didExitFullscreen");
+
+	// Restore normal state
+	if (was_maximized) {
+		showMaximized();
+	}
+	if (pref->restore_pos_after_fullscreen) {
+		move(win_pos);
+		resize(win_size);
+	}
+
 	menuBar()->setVisible(menubar_visible);
-	viewMenuBarAct->setChecked(menubar_visible);
 	statusBar()->setVisible(statusbar_visible);
-	viewStatusBarAct->setChecked(statusbar_visible);
+
+	pref->beginGroup(settingsGroupName());
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 	pref->endGroup();
+
+	viewMenuBarAct->setChecked(menubar_visible);
+	viewStatusBarAct->setChecked(statusbar_visible);
 }
 
 void TBase::leftClickFunction() {
