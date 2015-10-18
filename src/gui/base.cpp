@@ -24,6 +24,7 @@
 #include <QMenu>
 #include <QFileInfo>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QMenuBar>
 #include <QHBoxLayout>
 #include <QCursor>
@@ -2878,7 +2879,9 @@ void TBase::loadConfig() {
 		}
 	} else {
 		// Center window
-		QSize center_pos = (TDesktopInfo::desktop_size(this) - size()) / 2;
+		// TODO: redo after load video
+		QRect desktop = QApplication::desktop()->availableGeometry(this);
+		QSize center_pos = (desktop.size() - size()) / 2;
 		if (center_pos.isValid())
 			move(center_pos.width(), center_pos.height());
 	}
