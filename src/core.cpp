@@ -1122,8 +1122,8 @@ void TCore::startPlayer(QString file, double seek) {
 	// (seems to be necessary only for linux)
 	QString mplayer_bin = pref->mplayer_bin;
 	QFileInfo fi(mplayer_bin);
-    if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-        mplayer_bin = fi.absoluteFilePath();
+	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
+		mplayer_bin = fi.absoluteFilePath();
 	}
 
 	if (fi.baseName().toLower() == "mplayer2") {
