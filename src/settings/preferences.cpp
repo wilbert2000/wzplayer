@@ -756,7 +756,6 @@ void TPreferences::save() {
 
 	beginGroup("gui");
 
-	setValue("fullscreen", fullscreen);
 	setValue("start_in_fullscreen", start_in_fullscreen);
 
 	setValue("stay_on_top", (int) stay_on_top);
@@ -1237,8 +1236,6 @@ void TPreferences::load() {
 
 	beginGroup("gui");
 
-	// TODO: do not save and restore "fullscreen" and remove it from pref, use windowstate()
-	fullscreen = value("fullscreen", fullscreen).toBool();
 	start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
 
 	stay_on_top = (TPreferences::OnTop) value("stay_on_top", (int) stay_on_top).toInt();
