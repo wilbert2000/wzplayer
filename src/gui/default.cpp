@@ -16,33 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "default.h"
+#include "gui/default.h"
 
 #include <QDebug>
 #include <QMenu>
-#include <QSettings>
 #include <QLabel>
 #include <QStatusBar>
-#include <QPushButton>
-#include <QToolButton>
-#include <QMenuBar>
-#include <QTimer>
 
-#include "helper.h"
 #include "colorutils.h"
-#include "core.h"
-#include "widgetactions.h"
-#include "playlist.h"
-#include "playerwindow.h"
-#include "gui/action.h"
 #include "images.h"
-#include "gui/autohidetoolbar.h"
-#include "desktopinfo.h"
-#include "editabletoolbar.h"
 
-#if DOCK_PLAYLIST
-#include "playlistdock.h"
-#endif
 
 using namespace Settings;
 
