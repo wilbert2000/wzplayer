@@ -187,6 +187,7 @@ void TAutohideToolbar::resizeToolbar() {
 void TAutohideToolbar::startAutoHide() {
 	//qDebug("TAutohideToolbar::startAutoHide");
 
+	// Start when still in fullscreen
 	if (fullscreen) {
 		auto_hide = true;
 		resizeToolbar();
@@ -202,7 +203,7 @@ void TAutohideToolbar::didEnterFullscreen() {
 	// enable auto_hide to prevent using the wrong screen size in
 	// resizeToolbar() and moveEvent().
 	fullscreen = true;
-	QTimer::singleShot(500, this, SLOT(startAutoHide()));
+	QTimer::singleShot(250, this, SLOT(startAutoHide()));
 }
 
 void TAutohideToolbar::aboutToExitFullscreen() {
