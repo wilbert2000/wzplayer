@@ -19,11 +19,6 @@
 #ifndef _GUI_GUICONFIG_H_
 #define _GUI_GUICONFIG_H_
 
-// DOCK_PLAYLIST
-// if 1, the playlist will be docked in the main window, instead
-// of being a top level window
-#define DOCK_PLAYLIST 1
-
 // ALLOW_CHANGE_STYLESHEET
 // if 1, the app stylesheet can be changed
 #define ALLOW_CHANGE_STYLESHEET 1

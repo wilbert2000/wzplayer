@@ -118,13 +118,7 @@ TPlaylist::TPlaylist(TCore* c, QWidget* parent, Qt::WindowFlags f) :
 	layout->addWidget(listView);
 	layout->addWidget(toolbar);
 	setLayout(layout);
-
-#if !DOCK_PLAYLIST
-	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-	adjustSize();
-#else
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-#endif
 
 	setAcceptDrops(true);
 	setAttribute(Qt::WA_NoMousePropagation);
@@ -1504,9 +1498,6 @@ void TPlaylist::saveSettings() {
 
 	set->setValue("row_spacing", row_spacing);
 
-#if !DOCK_PLAYLIST
-	set->setValue("size", size());
-#endif
 	if (save_dirs) {
 		set->setValue("latest_dir", latest_dir);
 	} else {
@@ -1549,10 +1540,6 @@ void TPlaylist::loadSettings() {
 	automatically_play_next = set->value("automatically_play_next", automatically_play_next).toBool();
 
 	row_spacing = set->value("row_spacing", row_spacing).toInt();
-
-#if !DOCK_PLAYLIST
-	resize(set->value("size", size()).toSize());
-#endif
 
 	latest_dir = set->value("latest_dir", latest_dir).toString();
 

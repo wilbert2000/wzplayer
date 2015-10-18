@@ -16,31 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "baseplus.h"
+#include "gui/baseplus.h"
 
 #include <QMenu>
-#include <QCloseEvent>
-#include <QApplication>
 #include <QDesktopWidget>
 
 #include "config.h"
 #include "gui/action.h"
 #include "images.h"
-#include "playlist.h"
-
-#ifdef Q_OS_WIN
-#include "favorites.h"
-#else
-#include "tvlist.h"
-#endif
-
-#include "widgetactions.h"
-
-#if DOCK_PLAYLIST
-#include <QDockWidget>
-#include "playlistdock.h"
 #include "desktopinfo.h"
-#endif
+
 
 using namespace Settings;
 
@@ -77,7 +62,6 @@ TBasePlus::TBasePlus()
 	connect(showAllAct, SIGNAL(triggered()),
 			 this, SLOT(toggleShowAll()));
 
-
 	context_menu = new QMenu(this);
 	context_menu->addAction(showAllAct);
 	context_menu->addSeparator();
@@ -105,8 +89,7 @@ TBasePlus::TBasePlus()
 	
 	tray->setContextMenu(context_menu);
 
-#if DOCK_PLAYLIST
-	// TPlaylistdock
+	// Playlistdock
 	playlistdock = new TPlaylistDock(this);
 	playlistdock->setObjectName("playlistdock");
 	playlistdock->setFloating(false); // To avoid that the playlist is visible for a moment
@@ -128,13 +111,13 @@ TBasePlus::TBasePlus()
 #endif // USE_DOCK_TOPLEVEL_EVENT
 
 	connect(this, SIGNAL(openFileRequested()), this, SLOT(showAll()));
-#endif // DOCK_PLAYLIST
 }
 
 TBasePlus::~TBasePlus() {
 }
 
 bool TBasePlus::startHidden() {
+
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	return false;
 #else
@@ -187,9 +170,7 @@ void TBasePlus::retranslateStrings() {
 
 	updateShowAllAct();
 
-#if DOCK_PLAYLIST
 	playlistdock->setWindowTitle(tr("Playlist"));
-#endif
 }
 
 void TBasePlus::updateShowAllAct() {
@@ -253,6 +234,7 @@ void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 }
 
 void TBasePlus::toggleShowAll() {
+
 	// Ignore if tray is not visible
 	if (tray->isVisible()) {
 		showAll(!isVisible());
@@ -260,56 +242,25 @@ void TBasePlus::toggleShowAll() {
 }
 
 void TBasePlus::showAll() {
-	if (!isVisible()) showAll(true);
+	if (!isVisible())
+		showAll(true);
 }
 
 void TBasePlus::showAll(bool b) {
+
 	if (!b) {
 		// Hide all
-#if DOCK_PLAYLIST
 		trayicon_playlist_was_visible = (playlistdock->isVisible() && 
 										 playlistdock->isFloating());
 		if (trayicon_playlist_was_visible)
 			playlistdock->hide();
-
-		/*
-		trayicon_playlist_was_visible = playlistdock->isVisible();
-		playlistdock->hide();
-		*/
-#else
-		trayicon_playlist_was_visible = playlist->isVisible();
-		playlist_pos = playlist->pos();
-		playlist->hide();
-#endif
-
 		hide();
-
-		/*
-		infowindow_visible = info_window->isVisible();
-		infowindow_pos = info_window->pos();
-		info_window->hide();
-		*/
 	} else {
 		// Show all
 		show();
-
-#if DOCK_PLAYLIST
 		if (trayicon_playlist_was_visible) {
 			playlistdock->show();
 		}
-#else
-		if (trayicon_playlist_was_visible) {
-			playlist->move(playlist_pos);
-			playlist->show();
-		}
-#endif
-
-		/*
-		if (infowindow_visible) {
-			info_window->show();
-			info_window->move(infowindow_pos);
-		}
-		*/
 	}
 	updateShowAllAct();
 }
@@ -325,8 +276,8 @@ void TBasePlus::resizeWindow(int w, int h) {
 
 void TBasePlus::updateMediaInfo() {
 	qDebug("Gui::TBasePlus::updateMediaInfo");
-	TBase::updateMediaInfo();
 
+	TBase::updateMediaInfo();
 	tray->setToolTip(windowTitle());
 }
 
@@ -336,13 +287,12 @@ void TBasePlus::setWindowCaption(const QString& title) {
 	TBase::setWindowCaption(title);
 }
 
-// TPlaylist stuff
+// Playlist stuff
 void TBasePlus::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBasePlus::aboutToEnterFullscreen");
 
 	TBase::aboutToEnterFullscreen();
 
-#if DOCK_PLAYLIST
 	fullscreen_playlist_was_visible = playlistdock->isVisible();
 	fullscreen_playlist_was_floating = playlistdock->isFloating();
 
@@ -356,30 +306,24 @@ void TBasePlus::aboutToEnterFullscreen() {
 	}
 
 	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
-#endif
 }
 
 void TBasePlus::didExitFullscreen() {
 	//qDebug("Gui::TBasePlus::didExitFullscreen");
 
-#if DOCK_PLAYLIST
 	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
 								  | Qt::BottomDockWidgetArea
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
-#endif
 
 	TBase::didExitFullscreen();
 
-#if DOCK_PLAYLIST
 	playlistdock->setFloating(fullscreen_playlist_was_floating);
 	if (fullscreen_playlist_was_visible) {
 		playlistdock->show();
 	}
-#endif
 }
 
-#if DOCK_PLAYLIST
 void TBasePlus::showPlaylist(bool b) {
 	qDebug("Gui::TBasePlus::showPlaylist: %d", b);
 
@@ -482,8 +426,6 @@ void TBasePlus::shrinkWindow() {
 		resize(new_width, height());
 	}
 }
-
-#endif
 
 #ifdef Q_OS_OS2
 // we test if xcenter is available at all. if not disable the tray action. this is possible when xcenter is not opened or crashed

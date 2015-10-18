@@ -269,9 +269,6 @@ protected slots:
 
 	virtual void clearRecentsList();
 
-	virtual void loadActions();
-	virtual void saveActions();
-
 	// Single instance stuff
 #ifdef SINGLE_INSTANCE
 	void handleMessageFromOtherInstances(const QString& message);
@@ -766,7 +763,6 @@ protected:
 	ShareWidget* sharewidget;
 #endif
 
-	QStringList actions_list;
 	QString pending_actions_to_run;
 
 private:

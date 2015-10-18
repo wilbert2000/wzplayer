@@ -406,12 +406,7 @@ void TBase::createCore() {
 
 void TBase::createPlaylist() {
 
-#if DOCK_PLAYLIST
 	playlist = new TPlaylist(core, this, 0);
-#else
-	playlist = new TPlaylist(core, 0);
-#endif
-
 	connect(playlist, SIGNAL(playlistEnded()),
 			 this, SLOT(playlistHasFinished()));
 }
@@ -2777,10 +2772,10 @@ void TBase::setWindowCaption(const QString& title) {
 }
 
 void TBase::createPreferencesDialog() {
+
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	pref_dialog = new Pref::TDialog(this);
 	pref_dialog->setModal(false);
-	/* pref_dialog->mod_input()->setActionsList(actions_list); */
 	connect(pref_dialog, SIGNAL(applied()),
 			 this, SLOT(applyNewPreferences()));
 	QApplication::restoreOverrideCursor();
@@ -2851,7 +2846,7 @@ void TBase::loadConfig() {
 	changeStyleSheet(pref->iconset);
 #endif
 	// Load actions from outside group derived class
-	loadActions();
+	TActionsEditor::loadFromConfig(this, pref);
 
 	// Load from inside group derived class
 	pref->beginGroup(settingsGroupName());
@@ -3035,9 +3030,6 @@ void TBase::showPreferencesDialog() {
 
 	pref_dialog->mod_input()->actions_editor->clear();
 	pref_dialog->mod_input()->actions_editor->addActions(this);
-#if !DOCK_PLAYLIST
-	pref_dialog->mod_input()->actions_editor->addActions(playlist);
-#endif
 
 	// Set playlist preferences
 	Pref::TPrefPlaylist* pl = pref_dialog->mod_playlist();
@@ -3146,7 +3138,7 @@ void TBase::applyNewPreferences() {
 
 	// Update actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();
-	saveActions();
+	TActionsEditor::saveToConfig(this, Settings::pref);
 	pref->save();
 
 	// Any restarts needed?
@@ -5029,28 +5021,6 @@ void TBase::changeStyleSheet(QString style) {
 	qApp->setStyleSheet(stylesheet);
 }
 #endif
-
-void TBase::loadActions() {
-	qDebug("Gui::TBase::loadActions");
-	TActionsEditor::loadFromConfig(this, Settings::pref);
-#if !DOCK_PLAYLIST
-	TActionsEditor::loadFromConfig(playlist, Settings::pref);
-#endif
-
-	actions_list = TActionsEditor::actionsNames(this);
-#if !DOCK_PLAYLIST
-	actions_list += TActionsEditor::actionsNames(playlist);
-#endif
-}
-
-void TBase::saveActions() {
-	qDebug("Gui::TBase::saveActions");
-
-	TActionsEditor::saveToConfig(this, Settings::pref);
-#if !DOCK_PLAYLIST
-	TActionsEditor::saveToConfig(playlist, Settings::pref);
-#endif
-}
 
 #if QT_VERSION < 0x050000
 void TBase::showEvent(QShowEvent*) {

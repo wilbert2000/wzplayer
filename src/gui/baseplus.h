@@ -66,7 +66,6 @@ protected slots:
 	void trayAvailable();
 #endif
 
-#if DOCK_PLAYLIST
 	virtual void showPlaylist(bool b);
 
 #if !USE_DOCK_TOPLEVEL_EVENT
@@ -77,8 +76,6 @@ protected slots:
 
 	void stretchWindow();
 	void shrinkWindow();
-#endif
-
 
 protected:
 	QSystemTrayIcon* tray;
@@ -93,11 +90,9 @@ protected:
 	QPoint playlist_pos;
 	bool trayicon_playlist_was_visible;
 
-#if DOCK_PLAYLIST
 	TPlaylistDock* playlistdock;
 	bool fullscreen_playlist_was_visible;
 	bool fullscreen_playlist_was_floating;
-#endif
 
 private:
 	void switchToTray();
