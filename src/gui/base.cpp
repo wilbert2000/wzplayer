@@ -211,11 +211,6 @@ TBase::TBase()
 		playOrPauseAct->setEnabled(true);
 	}
 
-#if !DOCK_PLAYLIST
-	connect(playlist, SIGNAL(visibilityChanged(bool)),
-			showPlaylistAct, SLOT(setChecked(bool)));
-#endif
-
 	setupNetworkProxy();
 
 	changeStayOnTop(pref->stay_on_top);
@@ -913,6 +908,8 @@ void TBase::createActions() {
 	showPlaylistAct->setCheckable(true);
 	connect(showPlaylistAct, SIGNAL(toggled(bool)),
 			 this, SLOT(showPlaylist(bool)));
+	connect(playlist, SIGNAL(visibilityChanged(bool)),
+			showPlaylistAct, SLOT(setChecked(bool)));
 
 	showPropertiesAct = new TAction(QKeySequence("Ctrl+I"), this, "show_file_properties");
 	connect(showPropertiesAct, SIGNAL(triggered()),
@@ -3645,11 +3642,6 @@ void TBase::updateWidgets() {
 
 	// Audio equalizer
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
-
-	// TPlaylist
-#if DOCK_PLAYLIST
-	showPlaylistAct->setChecked(playlist->isVisible());
-#endif
 
 	// Stay on top
 	onTopActionGroup->setChecked((int) pref->stay_on_top);

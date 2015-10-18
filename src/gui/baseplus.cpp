@@ -119,7 +119,6 @@ TBasePlus::TBasePlus()
 	playlistdock->hide();
 	playlistdock->setFloating(true); // Floating by default
 
-	connect(playlistdock, SIGNAL(closed()), this, SLOT(playlistClosed()));
 #if USE_DOCK_TOPLEVEL_EVENT
 	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
 			 this, SLOT(dockTopLevelChanged(bool)));
@@ -398,10 +397,6 @@ void TBasePlus::showPlaylist(bool b) {
 			}
 		}
 	}
-}
-
-void TBasePlus::playlistClosed() {
-	showPlaylistAct->setChecked(false);
 }
 
 #if !USE_DOCK_TOPLEVEL_EVENT

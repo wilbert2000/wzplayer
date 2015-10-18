@@ -68,7 +68,6 @@ protected slots:
 
 #if DOCK_PLAYLIST
 	virtual void showPlaylist(bool b);
-	void playlistClosed();
 
 #if !USE_DOCK_TOPLEVEL_EVENT
 	void dockVisibilityChanged(bool visible);
