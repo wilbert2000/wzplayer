@@ -17,34 +17,11 @@
 */
 
 #include "gui/skin/skin.h"
-#include "gui/action.h"
-#include "gui/widgetactions.h"
-#include "gui/editabletoolbar.h"
-#include "gui/autohidetoolbar.h"
-#include "gui/playlist.h"
-#include "helper.h"
-#include "colorutils.h"
-#include "core.h"
-#include "playerwindow.h"
-#include "images.h"
-#include "desktopinfo.h"
-#include "mediabarpanel.h"
-#include "gui/actionseditor.h"
-
-#if DOCK_PLAYLIST
-#include "gui/playlistdock.h"
-#endif
-
 #include <QMenu>
-#include <QSettings>
-#include <QLabel>
-#include <QStatusBar>
-#include <QPushButton>
-#include <QToolButton>
 #include <QMenuBar>
-#include <QLayout>
-#include <QApplication>
-#include <QDir>
+#include "gui/skin/mediabarpanel.h"
+#include "images.h"
+
 
 using namespace Settings;
 
@@ -156,9 +133,9 @@ void TSkin::displayState(TCore::State state) {
 	TBasePlus::displayState(state);
 
 	switch (state) {
-		case TCore::Playing:		mediaBarPanel->displayMessage(tr("Playing %1").arg(core->mdat.filename)); break;
-		case TCore::Paused:		mediaBarPanel->displayMessage(tr("Pause")); break;
-		case TCore::Stopped:		mediaBarPanel->displayMessage(tr("Stop")); break;
+		case TCore::Playing: mediaBarPanel->displayMessage(tr("Playing %1").arg(core->mdat.filename)); break;
+		case TCore::Paused: mediaBarPanel->displayMessage(tr("Pause")); break;
+		case TCore::Stopped: mediaBarPanel->displayMessage(tr("Stop")); break;
 	}
 }
 
