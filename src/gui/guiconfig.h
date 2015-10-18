@@ -35,10 +35,5 @@
 // a mp3 song.
 #define USE_INFOPROVIDER 1
 
-// USE_DOCK_TOPLEVEL_EVENT
-// if 1, the topLevelChanged from QDockWidget will be use to know
-// if the playlist has been docked or undocked
-#define USE_DOCK_TOPLEVEL_EVENT 0
-
 #endif // _GUI_GUICONFIG_H_
 

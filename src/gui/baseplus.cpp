@@ -102,15 +102,10 @@ TBasePlus::TBasePlus()
 	playlistdock->hide();
 	playlistdock->setFloating(true); // Floating by default
 
-#if USE_DOCK_TOPLEVEL_EVENT
-	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
-			 this, SLOT(dockTopLevelChanged(bool)));
-#else
 	connect(playlistdock, SIGNAL(visibilityChanged(bool)),
-			 this, SLOT(dockVisibilityChanged(bool)));
-#endif // USE_DOCK_TOPLEVEL_EVENT
-
-	connect(this, SIGNAL(openFileRequested()), this, SLOT(showAll()));
+			this, SLOT(dockVisibilityChanged(bool)));
+	connect(this, SIGNAL(openFileRequested()),
+			this, SLOT(showAll()));
 }
 
 TBasePlus::~TBasePlus() {
@@ -343,7 +338,6 @@ void TBasePlus::showPlaylist(bool b) {
 	}
 }
 
-#if !USE_DOCK_TOPLEVEL_EVENT
 void TBasePlus::dockVisibilityChanged(bool visible) {
 	qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
 
@@ -351,15 +345,6 @@ void TBasePlus::dockVisibilityChanged(bool visible) {
 		if (!visible) shrinkWindow(); else stretchWindow();
 	}
 }
-
-#else
-
-void TBasePlus::dockTopLevelChanged(bool floating) {
-	qDebug("Gui::TBasePlus::dockTopLevelChanged: %d", floating);
-
-	if (floating) shrinkWindow(); else stretchWindow();
-}
-#endif
 
 void TBasePlus::stretchWindow() {
 	qDebug("Gui::TBasePlus::stretchWindow");
