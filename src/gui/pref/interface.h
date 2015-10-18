@@ -49,6 +49,7 @@ public:
 	bool iconsetChanged() { return iconset_changed; }
 	bool guiChanged() { return gui_changed; }
 	bool styleChanged() { return style_changed; }
+	bool floatingControlWidthChanged() { return floating_control_width_changed; }
 	bool recentsChanged() { return recents_changed; }
 	bool urlMaxChanged() { return url_max_changed; }
 
@@ -137,6 +138,7 @@ private:
 	bool iconset_changed;
 	bool gui_changed;
 	bool style_changed;
+	bool floating_control_width_changed;
 	bool recents_changed;
 	bool url_max_changed;
 

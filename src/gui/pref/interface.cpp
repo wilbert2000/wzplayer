@@ -251,6 +251,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	iconset_changed = false;
 	gui_changed = false;
 	style_changed = false;
+	floating_control_width_changed = false;
 	recents_changed = false;
 
 	if (pref->language != language()) {
@@ -296,7 +297,10 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		style_changed = true;
 	}
 
-	pref->floating_control_width = floatingWidth();
+	if (pref->floating_control_width != floatingWidth()) {
+		floating_control_width_changed = true;
+		pref->floating_control_width = floatingWidth();
+	}
 	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? Gui::TAutohideToolbar::Bottom : Gui::TAutohideToolbar::Anywhere;
 	pref->floating_hide_delay = floating_hide_delay_spin->value();
 

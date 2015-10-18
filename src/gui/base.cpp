@@ -3057,12 +3057,6 @@ void TBase::applyNewPreferences() {
 	TPlayerID::Player old_player_type = TPlayerID::player(pref->mplayer_bin);
 	pref_dialog->getData(pref);
 
-	// Control bar
-	reconfigureControlBar();
-	if (pref->fullscreen) {
-		controlbar->resizeToolbar();
-	}
-
 	// Setup proxy
 	setupNetworkProxy();
 
@@ -3076,7 +3070,16 @@ void TBase::applyNewPreferences() {
 		}
 	}
 
-	Pref::TInterface *_interface = pref_dialog->mod_interface();
+	Pref::TInterface* _interface = pref_dialog->mod_interface();
+
+	// Control bar
+	reconfigureControlBar();
+	if (_interface->floatingControlWidthChanged()) {
+		controlbar->resetPosition();
+		if (pref->fullscreen)
+			controlbar->resizeToolbar();
+	}
+
 	if (_interface->recentsChanged()) {
 		updateRecents();
 	}
