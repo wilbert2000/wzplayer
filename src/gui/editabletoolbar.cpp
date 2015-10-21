@@ -18,31 +18,23 @@
 
 #include "gui/editabletoolbar.h"
 #include "gui/toolbareditor.h"
-#include <QAction>
-#include <QMainWindow>
+#include <QDebug>
+#include "gui/base.h"
 
 namespace Gui {
 
-TEditableToolbar::TEditableToolbar(QMainWindow* parent)
-	: QToolBar(parent)
-	, main_window(parent) {
+TEditableToolbar::TEditableToolbar(TBase* mainwindow)
+	: QToolBar(mainwindow)
+	, main_window(mainwindow) {
 }
 
 TEditableToolbar::~TEditableToolbar() {
 }
 
-TActionList TEditableToolbar::allActions() {
-
-	if (all_actions.isEmpty()) {
-		all_actions = main_window->findChildren<QAction*>();
-	}
-	return all_actions;
-}
-
-void TEditableToolbar::setActionsFromStringList(const QStringList& actions) {
+void TEditableToolbar::setActionsFromStringList(const QStringList& actions, const TActionList& all_actions) {
 
 	clear();
-	TToolbarEditor::load(this, actions, allActions());
+	TToolbarEditor::load(this, actions, all_actions);
 }
 
 QStringList TEditableToolbar::actionsToStringList() {
@@ -52,16 +44,16 @@ QStringList TEditableToolbar::actionsToStringList() {
 void TEditableToolbar::edit() {
 	qDebug("Gui::TEditableToolbar::edit");
 
+	TActionList all_actions = main_window->getAllNamedActions();
 	TToolbarEditor e(main_window);
-	e.setAllActions(allActions());
+	e.setAllActions(all_actions);
 	e.setActiveActions(actions());
 	e.setDefaultActions(defaultActions());
 	e.setIconSize(iconSize().width());
 
 	if (e.exec() == QDialog::Accepted) {
 		QStringList r = e.activeActionsToStringList();
-		qDebug("Gui::TEditableToolbar::edit: list: %s", r.join(",").toUtf8().constData());
-		setActionsFromStringList(r);
+		setActionsFromStringList(r, all_actions);
 		resize(width(), e.iconSize());
 		setIconSize(QSize(e.iconSize(), e.iconSize()));
 	}

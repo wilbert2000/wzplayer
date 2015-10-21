@@ -2839,14 +2839,30 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 }
 #endif
 
+TActionList TBase::getAllNamedActions() {
+
+	// Get all actions with a name
+	TActionList all_actions = findChildren<QAction*>();
+	for (int i = all_actions.count() - 1; i >= 0; i--) {
+		if (all_actions[i]->objectName().isEmpty()) {
+			all_actions.removeAt(i);
+		}
+	}
+
+	return all_actions;
+}
+
 void TBase::loadConfig() {
 	qDebug("Gui::TBase::loadConfig");
 
 #if ALLOW_CHANGE_STYLESHEET
 	changeStyleSheet(pref->iconset);
 #endif
-	// Load actions from outside group derived class
-	TActionsEditor::loadFromConfig(this, pref);
+
+	// Get all actions with a name
+	TActionList all_actions = getAllNamedActions();
+	// Load shortcuts actions from outside group derived class
+	TActionsEditor::loadFromConfig(all_actions, pref);
 
 	// Load from inside group derived class
 	pref->beginGroup(settingsGroupName());
@@ -2883,10 +2899,10 @@ void TBase::loadConfig() {
 	pref->beginGroup("actions");
 	// Using old name "toolbar1" to pick up old toolbars
 	toolbar->setActionsFromStringList(pref->value("toolbar1",
-		toolbar->defaultActions()).toStringList());
+		toolbar->defaultActions()).toStringList(), all_actions);
 	// Using old name "controlwidget" to pick up old toolbars
 	controlbar->setActionsFromStringList(pref->value("controlwidget",
-		controlbar->defaultActions()).toStringList());
+		controlbar->defaultActions()).toStringList(), all_actions);
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");

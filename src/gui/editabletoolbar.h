@@ -24,9 +24,10 @@
 #include <QStringList>
 
 class QAction;
-class QMainWindow;
 
 namespace Gui {
+
+class TBase;
 
 typedef QList<QAction*> TActionList;
 
@@ -34,13 +35,11 @@ class TEditableToolbar : public QToolBar {
 	Q_OBJECT
 
 public:
-	TEditableToolbar(QMainWindow* parent);
+	TEditableToolbar(TBase* mainwindow);
 	virtual ~TEditableToolbar();
 
-	void setActionsFromStringList(const QStringList& actions);
+	void setActionsFromStringList(const QStringList& actions, const TActionList& all_actions);
 	QStringList actionsToStringList();
-
-	void setAvailableActions(const TActionList& available_actions) { all_actions = available_actions; }
 
 	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
 	QStringList defaultActions() const { return default_actions; }
@@ -49,12 +48,8 @@ public slots:
 	void edit();
 
 protected:
-	TActionList all_actions;
 	QStringList default_actions;
-
-	TActionList allActions();
-
-	QMainWindow* main_window;
+	TBase* main_window;
 };
 
 } // namesapce Gui

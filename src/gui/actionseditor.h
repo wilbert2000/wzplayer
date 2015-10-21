@@ -57,7 +57,7 @@ public:
 	static QStringList actionsNames(QObject* o);
 
 	static void saveToConfig(QObject* o, QSettings* set);
-	static void loadFromConfig(QObject* o, QSettings* set);
+	static void loadFromConfig(const TActionList& all_actions, QSettings* set);
 
 	static QString shortcutsToString(const TShortCutList& shortcuts);
 	static TShortCutList stringToShortcuts(const QString& shortcuts);

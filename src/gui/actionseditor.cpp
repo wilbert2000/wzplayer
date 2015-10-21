@@ -594,15 +594,14 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 	set->endGroup();
 }
 
-void TActionsEditor::loadFromConfig(QObject* o, QSettings* set) {
+void TActionsEditor::loadFromConfig(const TActionList& all_actions, QSettings* set) {
 	qDebug("Gui::TActionsEditor::loadFromConfig");
 
 	set->beginGroup("actions");
 
-	TActionList actions = o->findChildren<QAction *>();
-	for (int n = 0; n < actions.count(); n++) {
-		QAction* action = actions[n];
-		if (!action->objectName().isEmpty() && !action->inherits("QWidgetAction")) {
+	for (int n = 0; n < all_actions.count(); n++) {
+		QAction* action = all_actions[n];
+		if (!action->inherits("QWidgetAction")) {
 			setActionFromString(*action, set->value(action->objectName(),
 				shortcutsToString(action->shortcuts())).toString());
 		}

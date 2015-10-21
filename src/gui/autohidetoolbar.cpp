@@ -22,12 +22,12 @@
 #include <QEvent>
 #include <QMouseEvent>
 #include <QApplication>
-#include <QMainWindow>
 #include <QDesktopWidget>
+#include "gui/base.h"
 
 namespace Gui {
 
-TAutohideToolbar::TAutohideToolbar(QMainWindow* mainwindow, QWidget* playerwindow)
+TAutohideToolbar::TAutohideToolbar(TBase* mainwindow, QWidget* playerwindow)
 	: TEditableToolbar(mainwindow)
 	, auto_hide(false)
 	, reset_pos(false)

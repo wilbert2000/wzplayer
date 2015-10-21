@@ -31,7 +31,7 @@ class TAutohideToolbar : public TEditableToolbar {
 public:
 	enum Activation { Anywhere = 1, Bottom = 2 };
 
-	TAutohideToolbar(QMainWindow* mainwindow, QWidget* playerwindow);
+	TAutohideToolbar(TBase* mainwindow, QWidget* playerwindow);
 	virtual ~TAutohideToolbar();
 
 	int percWidth() const { return perc_width; }

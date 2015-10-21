@@ -25,8 +25,8 @@
 #include "config.h"
 #include "mediadata.h"
 #include "mediasettings.h"
-#include "core.h"
 #include "settings/preferences.h"
+#include "core.h"
 #include "gui/guiconfig.h"
 #include "gui/widgetactions.h"
 #include "gui/autohidetoolbar.h"
@@ -88,6 +88,7 @@ public:
 
 	TCore* getCore() { return core; }
 	TPlaylist* getPlaylist() { return playlist; }
+	TActionList getAllNamedActions();
 
 	virtual void loadConfig();
 	virtual void saveConfig();
