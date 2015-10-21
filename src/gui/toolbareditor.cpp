@@ -120,7 +120,6 @@ void TToolbarEditor::setActiveActions(const TActionList& actions_list) {
 	for (int n = 0; n < active_actions_list->count(); n++) {
 		int row = findItem(active_actions_list->item(n)->data(Qt::UserRole).toString(), all_actions_list);
 		if (row > -1) {
-			qDebug("found: %s", active_actions_list->item(n)->data(Qt::UserRole).toString().toUtf8().constData());
 			all_actions_list->takeItem(row);
 		}
 	}
