@@ -58,7 +58,7 @@ TBasePlus::TBasePlus()
 			 this, SLOT(trayAvailable()));
 #endif
 
-	showAllAct = new TAction(this, "restore/hide");
+	showAllAct = new TAction(this, "restore_hide");
 	connect(showAllAct, SIGNAL(triggered()),
 			 this, SLOT(toggleShowAll()));
 
