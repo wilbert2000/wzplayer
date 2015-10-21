@@ -30,33 +30,22 @@ namespace Gui {
 
 class TFavorite {
 public:
-	TFavorite() { is_subentry = false; }
-	TFavorite(QString name,
-			  QString file,
-			  QString icon = QString::null,
-			  bool subentry = false)
-	{ 
-		_name = name; _file = file; _icon = icon; is_subentry = subentry;
-	}
+	TFavorite();
+	TFavorite(const QString& name,
+			  const QString& file,
+			  const QString& icon = QString::null,
+			  bool subentry = false);
 	virtual ~TFavorite();
 
-	void setName(QString name) { _name = name; }
-	void setFile(QString file) { _file = file; }
-	void setIcon(QString file) {
-		// Fix wrong icon
-		if (file == ":/icons-png/openfolder.png" ||
-		    file == ":/default-theme/openfolder.png.png")
-		{
-			file = ":/default-theme/openfolder.png";
-		}
-		_icon = file;
-	};
+	void setName(const QString& name) { _name = name; }
+	void setFile(const QString& file) { _file = file; }
+	void setIcon(QString file);
 	void setSubentry(bool b) { is_subentry = b; }
 
-	QString name() { return _name; }
-	QString file() { return _file; }
-	QString icon() { return _icon; }
-	bool isSubentry() { return is_subentry; }
+	QString name() const { return _name; }
+	QString file() const { return _file; }
+	QString icon() const { return _icon; }
+	bool isSubentry() const { return is_subentry; }
 
 protected:
 	QString _name, _file, _icon;

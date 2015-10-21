@@ -26,13 +26,36 @@
 #include <QInputDialog>
 #include <QFileInfo>
 
-//#define FIRST_MENU_ENTRY 4
 #define FIRST_MENU_ENTRY 3
 
 namespace Gui {
 
+TFavorite::TFavorite() : is_subentry(false) {
+}
+
+TFavorite::TFavorite(const QString& name,
+					 const QString& file,
+					 const QString& icon,
+					 bool subentry)
+	: _name(name)
+	, _file(file)
+	, _icon(icon)
+	, is_subentry(subentry) {
+}
+
 TFavorite::~TFavorite() {
 }
+
+void TFavorite::setIcon(QString file) {
+
+	// Fix wrong icon
+	if (file == ":/icons-png/openfolder.png" ||
+		file == ":/default-theme/openfolder.png.png") {
+		file = ":/default-theme/openfolder.png";
+	}
+	_icon = file;
+}
+
 
 TFavorites::TFavorites(QString filename, QWidget* parent) : QMenu(parent) {
 
