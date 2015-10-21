@@ -558,25 +558,8 @@ QString TActionsEditor::actionToString(const QAction& action) {
 void TActionsEditor::setActionFromString(QAction& action, const QString& s) {
 	//qDebug() << "TActionsEditor::setActionFromString:" << s;
 
-	// Old format: action = komma sep list of shortcuts
-	// New format action = komma sep list of shortcuts\tText\tIcon text
-	static QRegExp rx("(.*)(\\t(.*)\\t(.*))?");
-	if (rx.indexIn(s) >= 0) {
-		TShortCutList shortcuts = stringToShortcuts(rx.cap(1));
-		action.setShortcuts(shortcuts);
-
-		QString s = rx.cap(3);
-		if (!s.isEmpty()) {
-			action.setText(s);
-		}
-
-		s = rx.cap(4);
-		if (!s.isEmpty()) {
-			action.setIconText(s);
-		}
-	}
+	action.setShortcuts(stringToShortcuts(s));
 }
-
 
 void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 	qDebug("Gui::TActionsEditor::saveToConfig");
