@@ -1445,11 +1445,7 @@ void TBase::createMenus() {
 	openMenu->addAction(openFileAct);
 
 	recentfiles_menu = new QMenu(this);
-	/*
-	recentfiles_menu->addAction(clearRecentsAct);
-	recentfiles_menu->addSeparator();
-	*/
-
+	recentfiles_menu->menuAction()->setObjectName("recent_menu");
 	openMenu->addMenu(recentfiles_menu);
 	openMenu->addMenu(favorites);
 	openMenu->addAction(openDirectoryAct);
@@ -1468,10 +1464,8 @@ void TBase::createMenus() {
 	openMenu->addMenu(disc_menu);
 
 	openMenu->addAction(openURLAct);
-/* #ifndef Q_OS_WIN */
 	openMenu->addMenu(tvlist);
 	openMenu->addMenu(radiolist);
-/* #endif */
 	openMenu->addSeparator();
 	openMenu->addAction(exitAct);
 
@@ -1933,13 +1927,14 @@ void TBase::createToolbars() {
 			<< "separator"
 			<< "timelabel_action";
 	controlbar->setDefaultActions(actions);
-	// controlbar->setMovable(true);
 	controlbar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, controlbar);
-
 	connect(editControlBarAct, SIGNAL(triggered()),
 			controlbar, SLOT(edit()));
 
+	QAction* action = controlbar->toggleViewAction();
+	action->setObjectName("toggle_controlbar");
+	action->setShortcut(Qt::Key_F4);
 
 	toolbar = new TEditableToolbar(this);
 	toolbar->setObjectName("toolbar");
@@ -1950,16 +1945,12 @@ void TBase::createToolbars() {
 			<< "separator" << "play_prev" << "play_next";
 	toolbar->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar);
-
 	connect(editToolbarAct, SIGNAL(triggered()),
 			toolbar, SLOT(edit()));
 
-
-	// Modify toolbars' actions
-	QAction *tba;
-	tba = toolbar->toggleViewAction();
-	tba->setObjectName("show_main_toolbar");
-	tba->setShortcut(Qt::Key_F5);
+	action = toolbar->toggleViewAction();
+	action->setObjectName("toggle_main_toolbar");
+	action->setShortcut(Qt::Key_F5);
 }
 
 void TBase::setupNetworkProxy() {
