@@ -33,16 +33,8 @@ public:
 	//! the action will be added to the parent
 	TAction (QObject* parent, const char* name, bool autoadd = true);
 
-	//! Creates a new TAction. If \a autoadd is true
-	//! the action will be added to the parent
-	TAction (QObject* parent, bool autoadd = true);
-
-	TAction (const QString& text, QKeySequence accel,
-			 QObject* parent, const char* name = "",
-			 bool autoadd = true);
-
 	TAction (QKeySequence accel, QObject* parent,
-			 const char* name = "", bool autoadd = true);
+			 const char* name, bool autoadd = true);
 
 	virtual ~TAction();
 

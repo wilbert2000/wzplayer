@@ -29,23 +29,6 @@ TAction::TAction (QObject* parent, const char* name, bool autoadd)
 		addActionToParent();
 }
 
-TAction::TAction(QObject* parent, bool autoadd)
-	: QAction(parent) {
-	if (autoadd)
-		addActionToParent();
-}
-
-TAction::TAction(const QString& text, QKeySequence accel,
-				 QObject* parent, const char* name, bool autoadd)
-	: QAction(parent) {
-
-	setObjectName(name);
-	setText(text);
-	setShortcut(accel);
-	if (autoadd)
-		addActionToParent();
-}
-
 TAction::TAction(QKeySequence accel, QObject* parent, const char* name, bool autoadd)
 	: QAction(parent) {
 
