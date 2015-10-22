@@ -23,18 +23,18 @@
 
 #include "gui/guiconfig.h"
 #include "gui/baseplus.h"
-#include "gui/editabletoolbar.h"
-#include "gui/autohidetoolbar.h"
 
 class QToolBar;
 class QPushButton;
 class QResizeEvent;
 class QMenu;
 
-class TSeekingButton;
 
 namespace Gui {
-	
+
+class TSeekingButton;
+
+
 class TDefault : public TBasePlus {
 	Q_OBJECT
 

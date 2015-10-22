@@ -21,8 +21,6 @@
 
 #include "gui/guiconfig.h"
 #include "gui/base.h"
-#include "gui/widgetactions.h"
-#include "gui/playlistdock.h"
 
 #include <QSystemTrayIcon>
 #include <QPoint>
@@ -30,6 +28,8 @@
 class QMenu;
 
 namespace Gui {
+
+class TPlaylistDock;
 
 class TBasePlus : public TBase {
 	Q_OBJECT

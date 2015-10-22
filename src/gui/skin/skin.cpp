@@ -19,7 +19,10 @@
 #include "gui/skin/skin.h"
 #include <QMenu>
 #include <QMenuBar>
+#include "gui/action.h"
+#include "gui/playlist.h"
 #include "gui/skin/mediabarpanel.h"
+#include "gui/actionseditor.h"
 #include "images.h"
 
 

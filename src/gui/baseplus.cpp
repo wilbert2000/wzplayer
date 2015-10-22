@@ -23,6 +23,10 @@
 
 #include "config.h"
 #include "gui/action.h"
+#include "gui/playlist.h"
+#include "gui/playlistdock.h"
+#include "gui/favorites.h"
+#include "gui/tvlist.h"
 #include "images.h"
 #include "desktopinfo.h"
 

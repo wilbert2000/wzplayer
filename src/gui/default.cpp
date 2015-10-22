@@ -22,7 +22,10 @@
 #include <QMenu>
 #include <QLabel>
 #include <QStatusBar>
+#include <QList>
 
+#include "gui/action.h"
+#include "gui/widgetactions.h"
 #include "colorutils.h"
 #include "images.h"
 

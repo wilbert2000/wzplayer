@@ -23,21 +23,10 @@
 #include <QNetworkProxy>
 
 #include "config.h"
-#include "mediadata.h"
 #include "settings/mediasettings.h"
 #include "settings/preferences.h"
 #include "core.h"
 #include "gui/guiconfig.h"
-#include "gui/widgetactions.h"
-#include "gui/autohidetoolbar.h"
-#include "gui/playlist.h"
-#include "gui/logwindow.h"
-#include "gui/audioequalizer.h"
-#include "gui/videoequalizer.h"
-#include "gui/favorites.h"
-#include "gui/tvlist.h"
-#include "gui/filepropertiesdialog.h"
-#include "gui/updatechecker.h"
 #include "gui/pref/dialog.h"
 
 #ifdef Q_OS_WIN
@@ -51,7 +40,10 @@
 
 class QWidget;
 class QMenu;
+
+class TMediaData;
 class TPlayerWindow;
+class TCore;
 
 class QLabel;
 #ifdef FIND_SUBTITLES
@@ -68,7 +60,21 @@ class ShareWidget;
 
 namespace Gui {
 
+class TAction;
 class TActionGroup;
+class TTimeSliderAction;
+class TVolumeSliderAction;
+class TTimeLabelAction;
+class TAutohideToolbar;
+class TLogWindow;
+class TPlaylist;
+class TFilePropertiesDialog;
+class TAudioEqualizer;
+class TVideoEqualizer;
+class TFavorites;
+class TTVList;
+class TUpdateChecker;
+
 
 class TBase : public QMainWindow {
 	Q_OBJECT
