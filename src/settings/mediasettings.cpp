@@ -36,7 +36,7 @@ TMediaSettings::~TMediaSettings() {
 }
 
 void TMediaSettings::reset() {
-	qDebug("TMediaSettings::reset");
+	qDebug("Settings::TMediaSettings::reset");
 
 	current_sec = 0;
 
@@ -162,20 +162,20 @@ double TMediaSettings::aspectToNum(Aspect aspect) {
 	double asp;
 
 	switch (aspect) {
-		case TMediaSettings::AspectNone: asp = 0; break;
-		case TMediaSettings::Aspect43: asp = (double) 4 / 3; break;
-		case TMediaSettings::Aspect169: asp = (double) 16 / 9; break;
-		case TMediaSettings::Aspect149: asp = (double) 14 / 9; break;
-		case TMediaSettings::Aspect1610: asp = (double) 16 / 10; break;
-		case TMediaSettings::Aspect54: asp = (double) 5 / 4; break;
-		case TMediaSettings::Aspect235: asp = 2.35; break;
-		case TMediaSettings::Aspect11: asp = 1; break;
-		case TMediaSettings::Aspect32: asp = (double) 3 / 2; break;
-		case TMediaSettings::Aspect1410: asp = (double) 14 / 10; break;
-		case TMediaSettings::Aspect118: asp = (double) 11 / 8; break;
-		case TMediaSettings::AspectAuto: asp = win_aspect(); break;
+		case AspectNone: asp = 0; break;
+		case Aspect43: asp = (double) 4 / 3; break;
+		case Aspect169: asp = (double) 16 / 9; break;
+		case Aspect149: asp = (double) 14 / 9; break;
+		case Aspect1610: asp = (double) 16 / 10; break;
+		case Aspect54: asp = (double) 5 / 4; break;
+		case Aspect235: asp = 2.35; break;
+		case Aspect11: asp = 1; break;
+		case Aspect32: asp = (double) 3 / 2; break;
+		case Aspect1410: asp = (double) 14 / 10; break;
+		case Aspect118: asp = (double) 11 / 8; break;
+		case AspectAuto: asp = win_aspect(); break;
 		default: asp = win_aspect(); 
-                 qWarning("TMediaSettings::aspectToNum: invalid aspect: %d", aspect);
+				 qWarning("Settings::TMediaSettings::aspectToNum: invalid aspect: %d", aspect);
 	}
 
 	return asp;
@@ -185,18 +185,18 @@ QString TMediaSettings::aspectToString(Aspect aspect) {
 	QString asp_name;
 
 	switch (aspect) {
-		case TMediaSettings::AspectNone: asp_name = QObject::tr("disabled", "aspect_ratio"); break;
-		case TMediaSettings::Aspect43: asp_name = "4:3"; break;
-		case TMediaSettings::Aspect169: asp_name = "16:9"; break;
-		case TMediaSettings::Aspect149: asp_name = "14:9"; break;
-		case TMediaSettings::Aspect1610: asp_name = "16:10"; break;
-		case TMediaSettings::Aspect54: asp_name = "5:4"; break;
-		case TMediaSettings::Aspect235: asp_name = "2.35:1"; break;
-		case TMediaSettings::Aspect11: asp_name = "1:1"; break;
-		case TMediaSettings::Aspect32: asp_name = "3:2"; break;
-		case TMediaSettings::Aspect1410: asp_name = "14:10"; break;
-		case TMediaSettings::Aspect118: asp_name = "11:8"; break;
-		case TMediaSettings::AspectAuto: asp_name = QObject::tr("auto", "aspect_ratio"); break;
+		case AspectNone: asp_name = QObject::tr("disabled", "aspect_ratio"); break;
+		case Aspect43: asp_name = "4:3"; break;
+		case Aspect169: asp_name = "16:9"; break;
+		case Aspect149: asp_name = "14:9"; break;
+		case Aspect1610: asp_name = "16:10"; break;
+		case Aspect54: asp_name = "5:4"; break;
+		case Aspect235: asp_name = "2.35:1"; break;
+		case Aspect11: asp_name = "1:1"; break;
+		case Aspect32: asp_name = "3:2"; break;
+		case Aspect1410: asp_name = "14:10"; break;
+		case Aspect118: asp_name = "11:8"; break;
+		case AspectAuto: asp_name = QObject::tr("auto", "aspect_ratio"); break;
 		default: asp_name = QObject::tr("unknown", "aspect_ratio");
 	}
 
@@ -204,7 +204,7 @@ QString TMediaSettings::aspectToString(Aspect aspect) {
 }
 
 void TMediaSettings::list() {
-	qDebug("TMediaSettings::list");
+	qDebug("Settings::TMediaSettings::list");
 
 	qDebug("  current_sec: %f", current_sec);
 	qDebug("  current_video_id: %d", current_video_id);
@@ -307,7 +307,7 @@ void TMediaSettings::list() {
 }
 
 void TMediaSettings::save(QSettings* set, int player_id) {
-	qDebug("TMediaSettings::save");
+	qDebug("Settings::TMediaSettings::save");
 
 	set->beginGroup("player_" + QString::number(player_id));
 
@@ -460,7 +460,7 @@ void TMediaSettings::convertOldSelectedTrack(int &id) {
 }
 
 void TMediaSettings::load(QSettings* set, int player_id) {
-	qDebug("TMediaSettings::load");
+	qDebug("Settings::TMediaSettings::load");
 
 	set->beginGroup("player_" + QString::number(player_id));
 
@@ -478,7 +478,7 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	if (!forced_demuxer.isEmpty()) {
 		demuxer_section = QString("demuxer_%1").arg(forced_demuxer);
 	}
-	qDebug("TMediaSettings::load: demuxer_section: %s", demuxer_section.toUtf8().constData());
+	qDebug("Settings::TMediaSettings::load: demuxer_section: %s", demuxer_section.toUtf8().constData());
 
 	set->beginGroup(demuxer_section);
 
