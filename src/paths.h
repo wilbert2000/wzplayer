@@ -25,7 +25,7 @@ class Paths {
 
 public:
 
-	static void setAppPath(QString path);
+	static void setAppPath(const QString& path);
 	static QString appPath();
 
 	static void setConfigPath(const QString& path);
@@ -41,7 +41,7 @@ public:
 	static QString themesPath();
 	static QString shortcutsPath();
 	static QString qtTranslationPath();
-	static QString doc(QString file, QString locale = QString::null, bool english_fallback = true);
+	static QString doc(const QString& file, QString locale = QString::null, bool english_fallback = true);
 	static QString subtitleStyleFile();
 
 #ifdef Q_OS_WIN

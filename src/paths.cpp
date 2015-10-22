@@ -32,7 +32,7 @@
 QString Paths::app_path;
 QString Paths::config_path;
 
-void Paths::setAppPath(QString path) {
+void Paths::setAppPath(const QString& path) {
 	app_path = path;
 }
 
@@ -46,7 +46,7 @@ void Paths::setConfigPath(const QString& path) {
 	if (path.isEmpty()) {
 
 #ifdef PORTABLE_APP
-		config_path = Paths::appPath();
+		config_path = app_path;
 #else
 		// If a smplayer.ini exists in the app path, use that path
 		// TODO: This is the old behaviour, but should prefer ini in home dir.
@@ -89,83 +89,82 @@ void Paths::setConfigPath(const QString& path) {
 }
 
 QString Paths::dataPath() {
+
 #ifdef DATA_PATH
 	QString path = QString(DATA_PATH);
-	if (!path.isEmpty())
+	if (!path.isEmpty()) {
 		return path;
-	else
-		return appPath();
-#else
-	return appPath();
+	}
 #endif
+
+	return app_path;
 }
 
 QString Paths::translationPath() {
+
 #ifdef TRANSLATION_PATH
 	QString path = QString(TRANSLATION_PATH);
 	if (!path.isEmpty())
 		return path;
-	else
-		return appPath() + "/translations";
-#else
-	return appPath() + "/translations";
 #endif
+
+	return app_path + "/translations";
 }
 
 QString Paths::docPath() {
+
 #ifdef DOC_PATH
 	QString path = QString(DOC_PATH);
 	if (!path.isEmpty())
 		return path;
-	else
-		return appPath() + "/docs";
-#else
-	return appPath() + "/docs";
 #endif
+
+	return app_path + "/docs";
 }
 
 QString Paths::themesPath() {
+
 #ifdef THEMES_PATH
 	QString path = QString(THEMES_PATH);
 	if (!path.isEmpty())
 		return path;
-	else
-		return appPath() + "/themes";
-#else
-	return appPath() + "/themes";
 #endif
+
+	return app_path + "/themes";
 }
 
 QString Paths::shortcutsPath() {
+
 #ifdef SHORTCUTS_PATH
 	QString path = QString(SHORTCUTS_PATH);
 	if (!path.isEmpty())
 		return path;
-	else
-		return appPath() + "/shortcuts";
-#else
-	return appPath() + "/shortcuts";
 #endif
+
+	return app_path + "/shortcuts";
 }
 
 QString Paths::qtTranslationPath() {
 	return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
 }
 
-QString Paths::doc(QString file, QString locale, bool english_fallback) {
+QString Paths::doc(const QString& file, QString locale, bool english_fallback) {
+
 	if (locale.isEmpty()) {
 		locale = QLocale::system().name();
 	}
 
 	QString f = docPath() + "/" + locale + "/" + file;
 	qDebug("Helper:doc: checking '%s'", f.toUtf8().data());
-	if (QFile::exists(f)) return f;
+	if (QFile::exists(f))
+		return f;
 
-	if (locale.indexOf(QRegExp("_[A-Z]+")) != -1) {
+	if (locale.indexOf(QRegExp("_[A-Z]+")) >= 0) {
 		locale.replace(QRegExp("_[A-Z]+"), "");
 		f = docPath() + "/" + locale + "/" + file;
 		qDebug("Helper:doc: checking '%s'", f.toUtf8().data());
-		if (QFile::exists(f)) return f;
+		if (QFile::exists(f))
+			return f;
 	}
 
 	if (english_fallback) {
@@ -177,19 +176,19 @@ QString Paths::doc(QString file, QString locale, bool english_fallback) {
 }
 
 QString Paths::subtitleStyleFile() {
-	return configPath() + "/styles.ass";
+	return config_path + "/styles.ass";
 }
 
 #ifdef Q_OS_WIN
 QString Paths::fontPath() {
-	QString path = appPath() + "/mplayer/fonts";
+	QString path = app_path + "/mplayer/fonts";
 	QDir font_dir(path);
 	QStringList files = font_dir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
 	//qDebug("Paths:fontPath: files in %s: %d", path.toUtf8().constData(), files.count());
 	if (files.count() > 0) {
 		return path;
 	} else {
-		return appPath() + "/open-fonts";
+		return app_path + "/open-fonts";
 	}
 }
 
@@ -210,10 +209,10 @@ void Paths::createFontFile() {
 		}
 	}
 
-	QString input = appPath() + "/mplayer/fonts/fonts.conf";
+	QString input = app_path + "/mplayer/fonts/fonts.conf";
 	if (!QFile::exists(input)) {
 		qDebug("Paths::createFontFile: %s doesn't exist", input.toUtf8().constData());
-		input = appPath() + "/mplayer/mpv/fonts.conf";
+		input = app_path + "/mplayer/mpv/fonts.conf";
 		if (!QFile::exists(input)) {
 			qDebug("Paths::createFontFile: %s doesn't exist", input.toUtf8().constData());
 			qWarning("Paths::createFontFile: failed to create fonts.conf");
