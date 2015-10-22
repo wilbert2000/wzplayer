@@ -17,7 +17,7 @@
 */
 
 #include "gui/inputmplayerversion.h"
-#include "mplayerversion.h"
+#include "playerversion.h"
 #include <QLineEdit>
 #include <QComboBox>
 

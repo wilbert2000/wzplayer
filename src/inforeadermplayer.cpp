@@ -24,7 +24,7 @@
 
 #include "colorutils.h"
 #include "settings/preferences.h"
-#include "mplayerversion.h"
+#include "playerversion.h"
 
 using namespace Settings;
 
@@ -202,9 +202,9 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 	}
 
 	if (line.startsWith("MPlayer ") || line.startsWith("MPlayer2 ")) {
-		mplayer_svn = MplayerVersion::mplayerVersion(line);
-		mplayer2_version = MplayerVersion::mplayer2Version();
-		is_mplayer2 = MplayerVersion::isMplayer2();
+		mplayer_svn = TPlayerVersion::playerVersion(line);
+		mplayer2_version = TPlayerVersion::mplayer2Version();
+		is_mplayer2 = TPlayerVersion::isMplayer2();
 	}
 }
 

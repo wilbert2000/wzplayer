@@ -17,7 +17,7 @@
 */
 
 #include "inforeadermpv.h"
-#include "mplayerversion.h"
+#include "playerversion.h"
 #include <QStringList>
 #include <QProcess>
 #include <QDebug>
@@ -59,8 +59,8 @@ void InfoReaderMPV::getInfo() {
 	QString mpv_version_line;
 	if (lines.count() >= 1) {
 		mpv_version_line = lines[0];
-		mplayer_svn = MplayerVersion::mplayerVersion(mpv_version_line);
-		mpv_version = MplayerVersion::mpvVersion();
+		mplayer_svn = TPlayerVersion::playerVersion(mpv_version_line);
+		mpv_version = TPlayerVersion::mpvVersion();
 	}
 
 	qDebug() << "InfoReaderMPV::getInfo: version_line" << mpv_version_line;

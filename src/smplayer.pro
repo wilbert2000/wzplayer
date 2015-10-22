@@ -90,7 +90,7 @@ HEADERS += config.h \
 	discname.h \
 	extensions.h \
 	desktopinfo.h \
-	mplayerversion.h \
+    playerversion.h \
 	playerid.h \
 	proc/process.h \
 	proc/playerprocess.h \
@@ -190,7 +190,7 @@ SOURCES	+= version.cpp \
 	discname.cpp \
 	extensions.cpp \
 	desktopinfo.cpp \
-	mplayerversion.cpp \
+    playerversion.cpp \
 	playerid.cpp \
 	proc/process.cpp \
 	proc/playerprocess.cpp \

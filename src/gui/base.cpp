@@ -55,7 +55,7 @@
 #include "logwindow.h"
 #include "clhelp.h"
 #include "filedialog.h"
-#include "mplayerversion.h"
+#include "playerversion.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
@@ -4448,7 +4448,7 @@ void TBase::checkMplayerVersion() {
 	// Qt 4.3.5 is crazy, I can't popup a messagebox here, it calls 
 	// this function once and again when the messagebox is shown
 
-	//if ((pref->mplayer_detected_version > 0) && (!MplayerVersion::isMplayerAtLeast(25158))) {
+	//if ((pref->mplayer_detected_version > 0) && (!TPlayerVersion::isMplayerAtLeast(25158))) {
 	//	QTimer::singleShot(1000, this, SLOT(displayWarningAboutOldMplayer()));
 	//}
 }
@@ -4461,7 +4461,7 @@ void TBase::displayWarningAboutOldMplayer() {
 			tr("The version of MPlayer (%1) installed on your system "
 			   "is obsolete. SMPlayer can't work well with it: some "
 			   "options won't work, subtitle selection may fail...")
-				.arg(MplayerVersion::toString(pref->mplayer_detected_version)) +
+				.arg(TPlayerVersion::toString(pref->mplayer_detected_version)) +
 			"<br><br>" +
 			tr("Please, update your MPlayer.") +
 			"<br><br>" +

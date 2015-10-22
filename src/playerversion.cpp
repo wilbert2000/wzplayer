@@ -16,19 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "mplayerversion.h"
+#include "playerversion.h"
 #include "settings/preferences.h"
 
 #include <QRegExp>
 
 using namespace Settings;
 
-QString MplayerVersion::mplayer2_version;
-QString MplayerVersion::mpv_version;
-bool MplayerVersion::is_mplayer2 = false;
-bool MplayerVersion::is_mpv = false;
+QString TPlayerVersion::mplayer2_version;
+QString TPlayerVersion::mpv_version;
+bool TPlayerVersion::is_mplayer2 = false;
+bool TPlayerVersion::is_mpv = false;
 
-int MplayerVersion::mplayerVersion(QString string) {
+int TPlayerVersion::playerVersion(QString string) {
+
 	//static QRegExp rx_mplayer_revision("^MPlayer (\\S+)-SVN-r(\\d+)-(.*)");
 	static QRegExp rx_mplayer_revision("^MPlayer (.*)[-\\.]r(\\d+)(.*)");
 	static QRegExp rx_mplayer_version("^MPlayer ([a-z,0-9,.]+)-(.*)");
@@ -51,7 +52,7 @@ int MplayerVersion::mplayerVersion(QString string) {
 	// Hack to recognize mplayer 1.0rc2 from CCCP:
 	if (string.startsWith("MPlayer CCCP ")) { 
 		string.remove("CCCP "); 
-		qDebug("MplayerVersion::mplayerVersion: removing CCCP: '%s'", string.toUtf8().data()); 
+		qDebug("TPlayerVersion::playerVersion: removing CCCP: '%s'", string.toUtf8().data());
 	}
 #else
 	// Hack to recognize mplayer 1.0rc1 from Ubuntu:
@@ -61,14 +62,14 @@ int MplayerVersion::mplayerVersion(QString string) {
 		QString rest = rx_mplayer_version_ubuntu.cap(4);
 		//qDebug("%d - %d - %d", rx_mplayer_version_ubuntu.cap(1).toInt(), v1 , v2);
 		string = QString("MPlayer %1.%2%3").arg(v1).arg(v2).arg(rest);
-		qDebug("MplayerVersion::mplayerVersion: line converted to '%s'", string.toUtf8().data());
+		qDebug("TPlayerVersion::playerVersion: line converted to '%s'", string.toUtf8().data());
 	}
 	else
 	if (rx_mplayer_revision_ubuntu.indexIn(string) > -1) {
 		int svn = rx_mplayer_revision_ubuntu.cap(1).toInt();
 		QString rest = rx_mplayer_revision_ubuntu.cap(2);
 		string = QString("MPlayer SVN-r%1-%2").arg(svn).arg(rest);
-		qDebug("MplayerVersion::mplayerVersion: line converted to '%s'", string.toUtf8().data());
+		qDebug("TPlayerVersion::playerVersion: line converted to '%s'", string.toUtf8().data());
 	}
 
 	// Hack to recognize mplayer version from Mandriva:
@@ -77,23 +78,23 @@ int MplayerVersion::mplayerVersion(QString string) {
 		QString v2 = rx_mplayer_version_mandriva.cap(2);
 		QString rest = rx_mplayer_version_mandriva.cap(3);
 		string = QString("MPlayer %1%2-%3").arg(v1).arg(v2).arg(rest);
-		qDebug("MplayerVersion::mplayerVersion: line converted to '%s'", string.toUtf8().data());
+		qDebug("TPlayerVersion::playerVersion: line converted to '%s'", string.toUtf8().data());
 	}
 #endif
 
 	if (rx_mplayer_git.indexIn(string) > -1) {
-		qDebug("MplayerVersion::mplayerVersion: MPlayer from git. Assuming >= 1.0rc3");
+		qDebug("TPlayerVersion::playerVersion: MPlayer from git. Assuming >= 1.0rc3");
 		mplayer_svn = MPLAYER_1_0_RC3_SVN;
 	}
 	else
 	if (rx_mplayer_revision.indexIn(string) > -1) {
 		mplayer_svn = rx_mplayer_revision.cap(2).toInt();
-		qDebug("MplayerVersion::mplayerVersion: MPlayer SVN revision found: %d", mplayer_svn);
+		qDebug("TPlayerVersion::playerVersion: MPlayer SVN revision found: %d", mplayer_svn);
 	} 
 	else
 	if (rx_mplayer_version.indexIn(string) > -1) {
 		QString version = rx_mplayer_version.cap(1);
-		qDebug("MplayerVersion::mplayerVersion: MPlayer version found: %s", version.toUtf8().data());
+		qDebug("TPlayerVersion::playerVersion: MPlayer version found: %s", version.toUtf8().data());
 		mplayer_svn = 0;
 
 		if (version == "1.1") mplayer_svn = MPLAYER_1_1;
@@ -110,20 +111,20 @@ int MplayerVersion::mplayerVersion(QString string) {
 			mplayer_svn = MPLAYER_1_0_RC3_SVN; //version is > 1.0rc3, so treat as 1.0rc3 since support for later versions is not yet implemented
 
 		else
-			qWarning("MplayerVersion::mplayerVersion: unknown MPlayer version");
+			qWarning("TPlayerVersion::playerVersion: unknown MPlayer version");
 
 	}
 	else
 	if (rx_mplayer2_version.indexIn(string) > -1) {
 		mplayer2_version = rx_mplayer2_version.cap(1);
-		qDebug("MplayerVersion::mplayerVersion: MPlayer2 version found: %s", mplayer2_version.toUtf8().data());
+		qDebug("TPlayerVersion::playerVersion: MPlayer2 version found: %s", mplayer2_version.toUtf8().data());
 		is_mplayer2 = true;
 		mplayer_svn = MPLAYER_1_0_RC4_SVN; // simulates mplayer 1.0rc4
 	}
 	else
 	if (rx_mpv_version.indexIn(string) > -1) {
 		mpv_version = rx_mpv_version.cap(1);
-		qDebug("MplayerVersion::mplayerVersion: mpv version found: %s", mpv_version.toUtf8().data());
+		qDebug("TPlayerVersion::playerVersion: mpv version found: %s", mpv_version.toUtf8().data());
 		is_mpv = true;
 		is_mplayer2 = true;
 		mplayer_svn = MPLAYER_1_0_RC4_SVN; // simulates mplayer 1.0rc4
@@ -138,47 +139,47 @@ int MplayerVersion::mplayerVersion(QString string) {
 	return mplayer_svn;
 }
 
-bool MplayerVersion::isMplayerAtLeast(int mplayer_svn, int svn_revision) {
-	qDebug("MplayerVersion::isMplayerAtLeast: comparing %d with %d", svn_revision, mplayer_svn);
+bool TPlayerVersion::isMplayerAtLeast(int mplayer_svn, int svn_revision) {
+	qDebug("TPlayerVersion::isMplayerAtLeast: comparing %d with %d", svn_revision, mplayer_svn);
 
 	if (mplayer_svn == -1) {
-		qWarning("MplayerVersion::isMplayerAtLeast: no version found!");
+		qWarning("TPlayerVersion::isMplayerAtLeast: no version found!");
 	}
 	else
 	if (mplayer_svn == 0) {
-		qWarning("MplayerVersion::isMplayerAtLeast: version couldn't be parsed!");
+		qWarning("TPlayerVersion::isMplayerAtLeast: version couldn't be parsed!");
 	}
 
 	if (mplayer_svn <= 0) {
-		qWarning("MplayerVersion::isMplayerAtLeast: assuming that the mplayer version is less than %d", svn_revision);
+		qWarning("TPlayerVersion::isMplayerAtLeast: assuming that the mplayer version is less than %d", svn_revision);
 		return false;
 	}
 
 	return (mplayer_svn >= svn_revision);
 }
 
-bool MplayerVersion::isMplayerAtLeast(int svn_revision) {
+bool TPlayerVersion::isMplayerAtLeast(int svn_revision) {
 	if (pref->mplayer_detected_version >= MPLAYER_1_0_RC1_SVN) {
 		// SVN version seems valid
 		if (pref->mplayer_user_supplied_version != -1) {
-			qDebug("MplayerVersion::isMplayerAtLeast: using the parsed svn version from mplayer output");
-			qDebug("MplayerVersion::isMplayerAtLeast: and clearing the previously user supplied version");
+			qDebug("TPlayerVersion::isMplayerAtLeast: using the parsed svn version from mplayer output");
+			qDebug("TPlayerVersion::isMplayerAtLeast: and clearing the previously user supplied version");
 			pref->mplayer_user_supplied_version = -1;
 		}
 		return isMplayerAtLeast(pref->mplayer_detected_version, svn_revision);
 	} 
 	else 
 	if (pref->mplayer_user_supplied_version != -1) {
-		qDebug("MplayerVersion::isMplayerAtLeast: no parsed version, using user supplied version");
+		qDebug("TPlayerVersion::isMplayerAtLeast: no parsed version, using user supplied version");
 		return isMplayerAtLeast(pref->mplayer_user_supplied_version, svn_revision);
 	}
 	else {
-		qWarning("MplayerVersion::isMplayerAtLeast: there's no parsed version nor user supplied version!");
+		qWarning("TPlayerVersion::isMplayerAtLeast: there's no parsed version nor user supplied version!");
 		return isMplayerAtLeast(pref->mplayer_detected_version, svn_revision);
 	}
 }
 
-QString MplayerVersion::toString(int svn_revision) {
+QString TPlayerVersion::toString(int svn_revision) {
 	QString version;
 
 	switch (svn_revision) {

@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MPLAYERVERSION_H_
-#define _MPLAYERVERSION_H_
+#ifndef PLAYERVERSION_H
+#define PLAYERVERSION_H
 
 #include <QString>
 
@@ -27,12 +27,12 @@
 #define MPLAYER_1_0_RC4_SVN 33472
 #define MPLAYER_1_1 34992
 
-class MplayerVersion {
+class TPlayerVersion {
 public:
 
 	//! Parses the mplayer svn version from the string and returns it.
 	//! If the parsing fails, returns 0
-	static int mplayerVersion(QString string);
+	static int playerVersion(QString string);
 
 	//! Returns true if svn_revision is equal or greater than mplayer_svn
 	static bool isMplayerAtLeast(int mplayer_svn, int svn_revision);
@@ -55,5 +55,5 @@ protected:
 	static bool is_mpv;
 };
 
-#endif
+#endif // PLAYERVERSION_H
 

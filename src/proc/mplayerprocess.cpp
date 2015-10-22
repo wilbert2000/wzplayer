@@ -25,7 +25,7 @@
 #include <QDebug>
 
 #include "settings/preferences.h"
-#include "mplayerversion.h"
+#include "playerversion.h"
 #include "colorutils.h"
 #include "subtracks.h"
 #include "maps/titletracks.h"

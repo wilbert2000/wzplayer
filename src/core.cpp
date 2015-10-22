@@ -42,7 +42,7 @@
 #include "playerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
-#include "mplayerversion.h"
+#include "playerversion.h"
 #include "colorutils.h"
 #include "discname.h"
 #include "extensions.h"
