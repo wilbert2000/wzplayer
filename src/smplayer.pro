@@ -84,7 +84,6 @@ HEADERS += config.h \
 	links.h \
 	svn_revision.h \
 	version.h \
-	paths.h \
 	helper.h \
 	colorutils.h \
 	subtracks.h \
@@ -97,6 +96,7 @@ HEADERS += config.h \
 	proc/playerprocess.h \
     playerwindow.h \
 	mediadata.h \
+    settings/paths.h \
     settings/audioequalizerlist.h \
     settings/assstyles.h \
     settings/mediasettings.h \
@@ -184,7 +184,6 @@ HEADERS += config.h \
 
 
 SOURCES	+= version.cpp \
-	paths.cpp \
 	helper.cpp \
 	colorutils.cpp \
 	subtracks.cpp \
@@ -197,6 +196,7 @@ SOURCES	+= version.cpp \
 	proc/playerprocess.cpp \
     playerwindow.cpp \
 	mediadata.cpp \
+    settings/paths.cpp \
     settings/assstyles.cpp \
     settings/mediasettings.cpp \
     settings/filters.cpp \

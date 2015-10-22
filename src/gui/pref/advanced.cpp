@@ -20,7 +20,7 @@
 #include "gui/pref/advanced.h"
 #include "images.h"
 #include "settings/preferences.h"
-#include "paths.h"
+#include "settings/paths.h"
 #include "playerid.h"
 #include <QColorDialog>
 
@@ -456,7 +456,7 @@ void TAdvanced::createHelp() {
 
 	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
 		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
-          .arg("<i>"+ Paths::configPath() + "/smplayer_log.txt</i>"));
+          .arg("<i>"+ TPaths::configPath() + "/smplayer_log.txt</i>"));
 
 /*
 	setWhatsThis(log_mplayer_save_check, tr("Autosave %1 log").arg(PLAYER_NAME),

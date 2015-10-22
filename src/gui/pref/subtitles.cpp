@@ -20,7 +20,7 @@
 #include "gui/pref/subtitles.h"
 #include "images.h"
 #include "settings/preferences.h"
-#include "paths.h"
+#include "settings/paths.h"
 #include "settings/assstyles.h"
 #include "filedialog.h"
 #include "languages.h"
@@ -197,7 +197,7 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 	TEST_AND_SET(pref->ass_styles.marginr, style_marginr_spin->value());
 	TEST_AND_SET(pref->ass_styles.marginv, style_marginv_spin->value());
 
-	pref->ass_styles.exportStyles(Paths::subtitleStyleFile());
+	pref->ass_styles.exportStyles(Settings::TPaths::subtitleStyleFile());
 
 	TEST_AND_SET(pref->force_ass_styles, forceAssStyles());
 	TEST_AND_SET(pref->user_forced_ass_style, customizedAssStyle());
@@ -361,7 +361,7 @@ void TSubtitles::on_windowsfontdir_check_toggled(bool b) {
 	if (b) {
 		style_font_combo->setFontsFromDir(QString::null);
 	} else {
-		QString fontdir = Paths::fontPath();
+		QString fontdir = TPaths::fontPath();
 		//QString fontdir = "/tmp/fonts/";
 		style_font_combo->setFontsFromDir(fontdir);
 

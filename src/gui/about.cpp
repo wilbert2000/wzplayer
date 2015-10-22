@@ -21,10 +21,10 @@
 #include <QFile>
 #include <QDesktopServices>
 
+#include "settings/paths.h"
 #include "settings/preferences.h"
 #include "images.h"
 #include "version.h"
-#include "paths.h"
 #include "inforeader.h"
 #include "links.h"
 
@@ -93,14 +93,14 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 		"the Free Software Foundation; either version 2 of the License, or "
 		"(at your option) any later version."  "</i><br><br>";
 		
-	QString license_file = Paths::doc("gpl.html", "en");
+	QString license_file = TPaths::doc("gpl.html", "en");
 	if (QFile::exists(license_file)) {
 		license_file = QUrl::fromLocalFile(license_file).toString();
 		license_text += QString("<a href=\"%1\">%2</a>").arg(license_file).arg(tr("Read the entire license"));
 	}
 
 	if ((pref->language != "en") && (pref->language != "en_US")) {
-		QString license_trans_file = Paths::doc("gpl.html", pref->language, false);
+		QString license_trans_file = TPaths::doc("gpl.html", pref->language, false);
 		//qDebug("license_trans_file: %s", license_trans_file.toUtf8().constData());
 		if (QFile::exists(license_trans_file)) {
 			license_trans_file = QUrl::fromLocalFile(license_trans_file).toString();

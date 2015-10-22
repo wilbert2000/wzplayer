@@ -21,7 +21,7 @@
 #include <QFile>
 #include <QDir>
 
-#include "settings/../paths.h"
+#include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include "filehash.h" // hash function
 
@@ -34,8 +34,8 @@ QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 		return QString();
 	}
 
-	QString dir_name = Paths::configPath() + "/file_settings/" + hash[0];
-	QDir dir(Paths::configPath());
+	QString dir_name = TPaths::configPath() + "/file_settings/" + hash[0];
+	QDir dir(TPaths::configPath());
 	if (!dir.exists(dir_name)) {
 		if (!dir.mkpath(dir_name)) {
 			qWarning("Settings::TFileSettingsHash::iniFilenameFor: failed to create directory '%s'",

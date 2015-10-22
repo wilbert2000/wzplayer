@@ -17,7 +17,7 @@
 */
 
 #include "settings/tvsettings.h"
-#include "settings/../paths.h"
+#include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include <QSettings>
 #include <QFileInfo>
@@ -25,7 +25,7 @@
 namespace Settings {
 
 TTVSettings::TTVSettings() :
-	TFileSettingsBase(Paths::configPath() + "/smplayer_tv.ini") {
+	TFileSettingsBase(TPaths::configPath() + "/smplayer_tv.ini") {
 }
 
 TTVSettings::~TTVSettings() {

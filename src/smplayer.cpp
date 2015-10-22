@@ -26,7 +26,7 @@
 #include <QTranslator>
 #include <QLocale>
 
-#include "paths.h"
+#include "settings/paths.h"
 #include "settings/preferences.h"
 #include "log.h"
 #include "version.h"
@@ -64,7 +64,7 @@ TSMPlayer::TSMPlayer(int& argc, char** argv) :
 
 	// Change working directory to application path
 	QDir::setCurrent(applicationDirPath());
-	Paths::setAppPath(applicationDirPath());
+	TPaths::setAppPath(applicationDirPath());
 
 #if QT_VERSION >= 0x040400
 	// Enable icons in menus
@@ -98,12 +98,12 @@ void TSMPlayer::loadTranslation() {
 	if (locale.isEmpty()) {
 		locale = QLocale::system().name();
 	}
-	QString trans_path = Paths::translationPath();
+	QString trans_path = TPaths::translationPath();
 
 	// Try to load it first from app path (in case there's an updated
 	// translation), if it fails it will try then from the Qt path.
 	if (!loadCatalog(qt_trans, "qt", locale, trans_path)) {
-		loadCatalog(qt_trans, "qt", locale, Paths::qtTranslationPath());
+		loadCatalog(qt_trans, "qt", locale, TPaths::qtTranslationPath());
 	}
 	loadCatalog(app_trans, "smplayer", locale, trans_path);
 }
@@ -111,7 +111,7 @@ void TSMPlayer::loadTranslation() {
 void TSMPlayer::loadConfig(const QString& config_path) {
 
 	// Load preferences
-	Paths::setConfigPath(config_path);
+	TPaths::setConfigPath(config_path);
 	Settings::pref = new Settings::TPreferences();
 
 	// Reconfig log
@@ -126,7 +126,7 @@ void TSMPlayer::loadConfig(const QString& config_path) {
 
 	// Fonts
 #ifdef Q_OS_WIN
-	Paths::createFontFile();
+	TPaths::createFontFile();
 #endif
 }
 
@@ -169,7 +169,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	loadConfig(config_path);
 
 	if (args.contains("-delete-config")) {
-		TCleanConfig::clean(Paths::configPath());
+		TCleanConfig::clean(TPaths::configPath());
 		return NoError;
 	}
 
@@ -367,8 +367,8 @@ void TSMPlayer::createGUI() {
 	if (gui_to_use == "SkinGUI") {
 		QString theme = Settings::pref->iconset;
 		if (theme.isEmpty()) theme = "Gonzo";
-		QString user_theme_dir = Paths::configPath() + "/themes/" + theme;
-		QString theme_dir = Paths::themesPath() + "/" + theme;
+		QString user_theme_dir = TPaths::configPath() + "/themes/" + theme;
+		QString theme_dir = TPaths::themesPath() + "/" + theme;
 		qDebug("TSMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
 		qDebug("TSMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
 		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
@@ -511,17 +511,17 @@ void TSMPlayer::showInfo() {
 	qDebug("%s", s.toUtf8().data());
 	qDebug("Compiled with Qt v. %s, using %s", QT_VERSION_STR, qVersion());
 
-	qDebug(" * application path: '%s'", Paths::appPath().toUtf8().data());
-	qDebug(" * data path: '%s'", Paths::dataPath().toUtf8().data());
-	qDebug(" * translation path: '%s'", Paths::translationPath().toUtf8().data());
-	qDebug(" * doc path: '%s'", Paths::docPath().toUtf8().data());
-	qDebug(" * themes path: '%s'", Paths::themesPath().toUtf8().data());
-	qDebug(" * shortcuts path: '%s'", Paths::shortcutsPath().toUtf8().data());
-	qDebug(" * config path: '%s'", Paths::configPath().toUtf8().data());
-	qDebug(" * file for subtitles' styles: '%s'", Paths::subtitleStyleFile().toUtf8().data());
+	qDebug(" * application path: '%s'", TPaths::appPath().toUtf8().data());
+	qDebug(" * data path: '%s'", TPaths::dataPath().toUtf8().data());
+	qDebug(" * translation path: '%s'", TPaths::translationPath().toUtf8().data());
+	qDebug(" * doc path: '%s'", TPaths::docPath().toUtf8().data());
+	qDebug(" * themes path: '%s'", TPaths::themesPath().toUtf8().data());
+	qDebug(" * shortcuts path: '%s'", TPaths::shortcutsPath().toUtf8().data());
+	qDebug(" * config path: '%s'", TPaths::configPath().toUtf8().data());
+	qDebug(" * file for subtitles' styles: '%s'", TPaths::subtitleStyleFile().toUtf8().data());
 	qDebug(" * current path: '%s'", QDir::currentPath().toUtf8().data());
 #ifdef Q_OS_WIN
-	qDebug(" * font path: '%s'", Paths::fontPath().toUtf8().data());
+	qDebug(" * font path: '%s'", TPaths::fontPath().toUtf8().data());
 #endif
 }
 

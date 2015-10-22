@@ -22,7 +22,7 @@
 #include "settings/preferences.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
-#include "paths.h"
+#include "settings/paths.h"
 #include "languages.h"
 #include "gui/autohidetoolbar.h"
 
@@ -35,10 +35,9 @@
 namespace Gui { namespace Pref {
 
 TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
+
 	setupUi(this);
-	/* volume_icon->hide(); */
 
 	// Style combo
 	style_combo->addItem("<default>");
@@ -52,29 +51,33 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 #endif
 
 	// User
-	QDir icon_dir = Paths::configPath() + "/themes";
+	QDir icon_dir = Settings::TPaths::configPath() + "/themes";
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n=0; n < iconsets.count(); n++) {
-		#ifdef SKINS
-		QString css_file = Paths::configPath() + "/themes/" + iconsets[n] + "/main.css";
+
+#ifdef SKINS
+		QString css_file = Settings::TPaths::configPath() + "/themes/"
+						   + iconsets[n] + "/main.css";
 		bool is_skin = QFile::exists(css_file);
-		//qDebug("***** %s %d", css_file.toUtf8().constData(), is_skin);
 		if (is_skin) {
 			skin_combo->addItem(iconsets[n]);
 			n_skins++;
 		}
 		else
-		#endif
+#endif
 		iconset_combo->addItem(iconsets[n]);
 	}
+
 	// Global
-	icon_dir = Paths::themesPath();
+	icon_dir = Settings::TPaths::themesPath();
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-	for (int n=0; n < iconsets.count(); n++) {
-		#ifdef SKINS
-		QString css_file = Paths::themesPath() + "/" + iconsets[n] + "/main.css";
+	for (int n = 0; n < iconsets.count(); n++) {
+
+#ifdef SKINS
+		QString css_file = Settings::TPaths::themesPath()
+						   + "/" + iconsets[n] + "/main.css";
 		bool is_skin = QFile::exists(css_file);
 		//qDebug("***** %s %d", css_file.toUtf8().constData(), is_skin);
 		if ((is_skin) && (skin_combo->findText(iconsets[n]) == -1)) {
@@ -82,28 +85,28 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 			n_skins++;
 		}
 		else
-		#endif
+#endif
 		if (iconset_combo->findText(iconsets[n]) == -1) {
 			iconset_combo->addItem(iconsets[n]);
 		}
 	}
-	#ifdef SKINS
+#ifdef SKINS
 	if (skin_combo->itemText(0) == "Black") {
 		skin_combo->removeItem(0);
 		skin_combo->addItem("Black");
 	}
-	#endif
+#endif
 
 #ifdef SINGLE_INSTANCE
 	connect(single_instance_check, SIGNAL(toggled(bool)), 
-            this, SLOT(changeInstanceImages()));
+			this, SLOT(changeInstanceImages()));
 #else
 	tabWidget->setTabEnabled(SINGLE_INSTANCE_TAB, false);
 #endif
 
 #ifdef SKINS
 	connect(gui_combo, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(GUIChanged(int)));
+			this, SLOT(GUIChanged(int)));
 #endif
 
 #ifndef SKINS
@@ -131,7 +134,7 @@ void TInterface::createLanguageCombo() {
 	QMap <QString,QString> m = Languages::translations();
 
 	// Language combo
-	QDir translation_dir = Paths::translationPath();
+	QDir translation_dir = Settings::TPaths::translationPath();
 	QStringList languages = translation_dir.entryList(QStringList() << "*.qm");
 	QRegExp rx_lang("smplayer_(.*)\\.qm");
 	language_combo->clear();

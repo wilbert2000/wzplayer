@@ -19,7 +19,7 @@
 #include "inforeader.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
-#include "paths.h"
+#include "settings/paths.h"
 #include <QFileInfo>
 #include <QDateTime>
 #include <QSettings>
@@ -82,7 +82,7 @@ void InfoReader::setPlayerBin(const QString & bin) {
 }
 
 void InfoReader::getInfo() {
-	QString inifile = Paths::configPath() + "/player_info.ini";
+	QString inifile = TPaths::configPath() + "/player_info.ini";
 	QSettings set(inifile, QSettings::IniFormat);
 
 	QString version_group = "version_" + QString::number(INFOREADER_SAVE_VERSION);

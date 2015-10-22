@@ -44,7 +44,7 @@
 
 #include <cmath>
 
-#include "paths.h"
+#include "settings/paths.h"
 #include "log.h"
 #include "desktopinfo.h"
 #include "helper.h"
@@ -518,7 +518,7 @@ void TBase::createActions() {
 	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
 
 	// Favorites
-	favorites = new TFavorites(Paths::configPath() + "/favorites.m3u8", this);
+	favorites = new TFavorites(TPaths::configPath() + "/favorites.m3u8", this);
 	favorites->menuAction()->setObjectName("favorites_menu");
 	addAction(favorites->editAct());
 	addAction(favorites->jumpAct());
@@ -530,7 +530,7 @@ void TBase::createActions() {
 
 	// TV and Radio
 	tvlist = new TTVList(pref->check_channels_conf_on_startup, 
-						 TTVList::TV, Paths::configPath() + "/tv.m3u8", this);
+						 TTVList::TV, TPaths::configPath() + "/tv.m3u8", this);
 	tvlist->menuAction()->setObjectName("tv_menu");
 	addAction(tvlist->editAct());
 	addAction(tvlist->jumpAct());
@@ -547,7 +547,7 @@ void TBase::createActions() {
 			tvlist, SLOT(getCurrentMedia(const QString &, const QString &)));
 
 	radiolist = new TTVList(pref->check_channels_conf_on_startup, 
-							TTVList::Radio, Paths::configPath() + "/radio.m3u8", this);
+							TTVList::Radio, TPaths::configPath() + "/radio.m3u8", this);
 	radiolist->menuAction()->setObjectName("radio_menu");
 	addAction(radiolist->editAct());
 	addAction(radiolist->jumpAct());
@@ -1804,7 +1804,7 @@ void TBase::createMenus() {
 	#if 0
 	// Check if the smplayer youtube browser is installed
 	{
-		QString tube_exec = Paths::appPath() + "/smtube";
+		QString tube_exec = TPaths::appPath() + "/smtube";
 		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		tube_exec += ".exe";
 		#endif
@@ -1825,7 +1825,7 @@ void TBase::createMenus() {
 	optionsMenu->addAction(showPreferencesAct);
 
 	/*
-	TFavorites* fav = new TFavorites(Paths::configPath() + "/test.fav", this);
+	TFavorites* fav = new TFavorites(TPaths::configPath() + "/test.fav", this);
 	connect(fav, SIGNAL(activated(QString)), this, SLOT(open(QString)));
 	optionsMenu->addMenu(fav->menu())->setText("Favorites");
 	*/
@@ -4027,7 +4027,7 @@ void TBase::helpCheckUpdates() {
 }
 
 void TBase::helpShowConfig() {
-	QDesktopServices::openUrl(QUrl::fromLocalFile(Paths::configPath()));
+	QDesktopServices::openUrl(QUrl::fromLocalFile(TPaths::configPath()));
 }
 
 #ifdef REMINDER_ACTIONS
@@ -4580,7 +4580,7 @@ void TBase::YTNoSignature(const QString & title) {
 void TBase::YTUpdateScript() {
 	static CodeDownloader* downloader = 0;
 	if (!downloader) downloader = new CodeDownloader(this);
-	downloader->saveAs(Paths::configPath() + "/yt.js");
+	downloader->saveAs(TPaths::configPath() + "/yt.js");
 	downloader->show();
 	downloader->download(QUrl(URL_YT_CODE));
 }
@@ -5004,16 +5004,16 @@ void TBase::changeStyleSheet(QString style) {
 
 	if (!style.isEmpty()) {
 		// Check main.css
-		QString qss_file = Paths::configPath() + "/themes/" + pref->iconset + "/main.css";
+		QString qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/main.css";
 		if (!QFile::exists(qss_file)) {
-			qss_file = Paths::themesPath() +"/"+ pref->iconset + "/main.css";
+			qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/main.css";
 		}
 
 		// Check style.qss
 		if (!QFile::exists(qss_file)) {
-			qss_file = Paths::configPath() + "/themes/" + pref->iconset + "/style.qss";
+			qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/style.qss";
 			if (!QFile::exists(qss_file)) {
-				qss_file = Paths::themesPath() +"/"+ pref->iconset + "/style.qss";
+				qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/style.qss";
 			}
 		}
 
@@ -5214,7 +5214,7 @@ void TBase::showVideoPreviewDialog() {
 #ifdef YOUTUBE_SUPPORT
 void TBase::showTubeBrowser() {
 	qDebug("Gui::TBase::showTubeBrowser");
-	QString exec = Paths::appPath() + "/smtube";
+	QString exec = TPaths::appPath() + "/smtube";
 	qDebug("Gui::TBase::showTubeBrowser: '%s'", exec.toUtf8().constData());
 	if (!QProcess::startDetached(exec, QStringList())) {
 		QMessageBox::warning(this, "SMPlayer",

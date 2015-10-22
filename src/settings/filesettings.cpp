@@ -17,14 +17,14 @@
 */
 
 #include "settings/filesettings.h"
-#include "settings/../paths.h"
+#include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include <QFileInfo>
 
 namespace Settings {
 
 TFileSettings::TFileSettings() :
-	TFileSettingsBase(Paths::configPath() + "/smplayer_files.ini") {
+	TFileSettingsBase(TPaths::configPath() + "/smplayer_files.ini") {
 }
 
 TFileSettings::~TFileSettings() {

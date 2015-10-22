@@ -32,6 +32,7 @@
 #include <cmath>
 
 #include "config.h"
+#include "settings/paths.h"
 #include "settings/preferences.h"
 #include "settings/filesettings.h"
 #include "settings/filesettingshash.h"
@@ -40,7 +41,6 @@
 #include "playerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
-#include "paths.h"
 #include "mplayerversion.h"
 #include "colorutils.h"
 #include "discname.h"
@@ -220,7 +220,7 @@ TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
 	yt->setUseHttpsVi(pref->yt_use_https_vi);
 
 	#ifdef YT_USE_SIG
-	QSettings* sigset = new QSettings(Paths::configPath() + "/sig.ini", QSettings::IniFormat, this);
+	QSettings* sigset = new QSettings(TPaths::configPath() + "/sig.ini", QSettings::IniFormat, this);
 	yt->setSettings(sigset);
 	#endif
 
@@ -669,7 +669,7 @@ void TCore::openStream(QString name) {
 			qDebug("TCore::openStream: user_agent: '%s'", pref->yt_user_agent.toUtf8().constData());
 			yt->setUserAgent(pref->yt_user_agent);
 #ifdef YT_USE_YTSIG
-			YTSig::setScriptFile(Paths::configPath() + "/yt.js");
+			YTSig::setScriptFile(TPaths::configPath() + "/yt.js");
 #endif
 			yt->fetchPage(name);
 			return;
@@ -1375,7 +1375,7 @@ void TCore::startPlayer(QString file, double seek) {
 			} else {
 				// MPlayer
 				if (!pref->force_ass_styles) {
-					proc->setSubStyles(pref->ass_styles, Paths::subtitleStyleFile());
+					proc->setSubStyles(pref->ass_styles, TPaths::subtitleStyleFile());
 				} else {
 					proc->setOption("ass-force-style", ass_force_style);
 				}
@@ -1948,7 +1948,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 #ifdef Q_OS_WIN
 	if (!pref->use_windowsfontdir) {
-		env.insert("FONTCONFIG_FILE", Paths::configPath() + "/fonts.conf");
+		env.insert("FONTCONFIG_FILE", TPaths::configPath() + "/fonts.conf");
 	}
 #endif
 

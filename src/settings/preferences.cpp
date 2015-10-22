@@ -34,7 +34,7 @@
 #include <QDesktopServices>
 #endif
 
-#include "paths.h"
+#include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
@@ -54,7 +54,7 @@ namespace Settings {
 TPreferences* pref = 0;
 
 TPreferences::TPreferences() :
-	TSMPlayerSettings(Paths::configPath() + "/smplayer.ini") {
+	TSMPlayerSettings(TPaths::configPath() + "/smplayer.ini") {
 
 	reset();
 	load();
@@ -91,7 +91,7 @@ void TPreferences::reset() {
 	screenshot_directory= "./screenshots";
 #else
 	#if QT_VERSION < 0x040400
-	QString default_screenshot_path = Paths::configPath() + "/screenshots";
+	QString default_screenshot_path = TPaths::configPath() + "/screenshots";
 	if (QFile::exists(default_screenshot_path)) {
 		screenshot_directory = default_screenshot_path;
 	}

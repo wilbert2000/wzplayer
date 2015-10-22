@@ -28,7 +28,7 @@
 
 #ifdef SMCODE
 #include "settings/preferences.h"
-#include "paths.h"
+#include "settings/paths.h"
 using namespace Settings;
 #endif
 
@@ -56,11 +56,11 @@ void Images::setTheme(const QString & name) {
 	current_theme = name;
 
 #ifdef SMCODE
-	QString dir = Paths::configPath() + "/themes/" + name;
+	QString dir = TPaths::configPath() + "/themes/" + name;
 	if (QFile::exists(dir)) {
-		setThemesPath(Paths::configPath() + "/themes/");
+		setThemesPath(TPaths::configPath() + "/themes/");
 	} else {
-		setThemesPath(Paths::themesPath());
+		setThemesPath(TPaths::themesPath());
 	}
 #endif
 
@@ -164,9 +164,9 @@ QString Images::themesDirectory(){
 	QString skin = pref->iconset;
 	QString dirname;
 	if (!skin.isEmpty()) {
-		dirname = Paths::configPath() + "/themes/" + skin;
+		dirname = TPaths::configPath() + "/themes/" + skin;
 		if (!QFile::exists(dirname)) {
-			dirname = Paths::themesPath() + "/" + skin ;
+			dirname = TPaths::themesPath() + "/" + skin ;
 		}
 	}
 	return dirname;

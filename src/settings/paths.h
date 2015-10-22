@@ -16,17 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PATHS_H_
-#define _PATHS_H_
+#ifndef SETTINGS_PATHS_H
+#define SETTINGS_PATHS_H
 
 #include <QString>
 
-class Paths {
+
+namespace Settings {
+
+class TPaths {
 
 public:
 
-	static void setAppPath(const QString& path);
-	static QString appPath();
+	static void setAppPath(const QString& path) { app_path = path; }
+	static QString appPath() { return app_path; }
 
 	static void setConfigPath(const QString& path);
 	//! Return the path where smplayer should save its config files
@@ -54,4 +57,6 @@ private:
 	static QString config_path;
 };
 
-#endif
+} // namespace Settings
+
+#endif // SETTINGS_PATHS_H

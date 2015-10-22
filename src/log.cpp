@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <QTime>
 #include <QDateTime>
-#include "paths.h"
+#include "settings/paths.h"
 #include "gui/logwindow.h"
 
 
@@ -58,7 +58,7 @@ void TLog::setLogFileEnabled(bool log_file_enabled) {
 	if (log_file_enabled) {
 		// Open log file
 		if (!file.isOpen()) {
-			QString filename = Paths::configPath() + "/smplayer_log.txt";
+			QString filename = Settings::TPaths::configPath() + "/smplayer_log.txt";
 			file.setFileName(filename);
 			file.open(QIODevice::WriteOnly);
 			if (file.isOpen()) {

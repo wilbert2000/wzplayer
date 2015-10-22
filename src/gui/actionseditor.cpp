@@ -40,7 +40,7 @@
 
 #include "images.h"
 #include "filedialog.h"
-#include "paths.h"
+#include "settings/paths.h"
 
 #include "gui/shortcutgetter.h"
 
@@ -103,7 +103,7 @@ namespace Gui {
 TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
 {
-	latest_dir = Paths::shortcutsPath();
+	latest_dir = Settings::TPaths::shortcutsPath();
 
 	actionsTable = new QTableWidget(0, COL_NAME + 1, this);
 	actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);

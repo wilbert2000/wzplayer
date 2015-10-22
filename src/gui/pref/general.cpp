@@ -23,7 +23,7 @@
 #include "filedialog.h"
 #include "images.h"
 #include "settings/mediasettings.h"
-#include "paths.h"
+#include "settings/paths.h"
 #include "playerid.h"
 
 #if USE_ALSA_DEVICES || USE_DSOUND_DEVICES
@@ -915,9 +915,9 @@ void TGeneral::createHelp() {
 		tr("This option allows to change the way the file settings would be "
            "stored. The following options are available:") +"<ul><li>" + 
 		tr("<b>one ini file</b>: the settings for all played files will be "
-           "saved in a single ini file (%1)").arg(QString("<i>"+Paths::iniPath()+"/smplayer.ini</i>")) + "</li><li>" +
+           "saved in a single ini file (%1)").arg(QString("<i>"+TPaths::iniPath()+"/smplayer.ini</i>")) + "</li><li>" +
 		tr("<b>multiple ini files</b>: one ini file will be used for each played file. "
-           "Those ini files will be saved in the folder %1").arg(QString("<i>"+Paths::iniPath()+"/file_settings</i>")) + "</li></ul>" +
+           "Those ini files will be saved in the folder %1").arg(QString("<i>"+TPaths::iniPath()+"/file_settings</i>")) + "</li></ul>" +
 		tr("The latter method could be faster if there is info for a lot of files."));
 
 	setWhatsThis(use_screenshots_check, tr("Enable screenshots"),
