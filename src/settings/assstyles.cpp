@@ -16,11 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "assstyles.h"
+#include "settings/assstyles.h"
 #include <QSettings>
 #include <QFile>
 #include <QTextStream>
 #include "colorutils.h"
+
+namespace Settings {
 
 TAssStyles::TAssStyles() {
 	fontname = "Arial";
@@ -146,3 +148,5 @@ QString TAssStyles::toString() {
 
 	return s;
 }
+
+} // namespace Settings

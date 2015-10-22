@@ -27,7 +27,7 @@
 #include "process.h"
 #include "mediadata.h"
 #include "playerid.h"
-#include "assstyles.h"
+#include "settings/assstyles.h"
 
 
 namespace Proc {
@@ -64,7 +64,7 @@ public:
 	virtual void addVF(const QString & filter_name, const QVariant & value = QVariant()) = 0;
 	virtual void addAF(const QString & filter_name, const QVariant & value = QVariant()) = 0;
 	virtual void addStereo3DFilter(const QString & in, const QString & out) = 0;
-	virtual void setSubStyles(const TAssStyles & styles, const QString & assStylesFile = QString::null) = 0;
+	virtual void setSubStyles(const Settings::TAssStyles& styles, const QString& assStylesFile = QString::null) = 0;
 
 	// Slave commands
 	void quit(int exit_code);

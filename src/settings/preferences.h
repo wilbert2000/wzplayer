@@ -29,7 +29,7 @@
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
 #include "audioequalizerlist.h"
-#include "assstyles.h"
+#include "settings/assstyles.h"
 #include "filters.h"
 #include "gui/autohidetoolbar.h"
 

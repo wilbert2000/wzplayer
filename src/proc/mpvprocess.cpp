@@ -1612,7 +1612,9 @@ void TMPVProcess::changeStereo3DFilter(bool enable, const QString & in, const QS
 	writeToStdin(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(filter));
 }
 
-void TMPVProcess::setSubStyles(const TAssStyles & styles, const QString &) {
+void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles, const QString&) {
+
+	using namespace Settings;
 	QString font = styles.fontname;
 	//arg << "--sub-text-font=" + font.replace(" ", "");
 	arg << "--sub-text-font=" + font;

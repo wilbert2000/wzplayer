@@ -16,12 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _ASSSTYLES_H_
-#define _ASSSTYLES_H_
+#ifndef SETTINGS_ASSSTYLES_H
+#define SETTINGS_ASSSTYLES_H
 
 #include <QString>
 
 class QSettings;
+
+namespace Settings {
 
 class TAssStyles {
 
@@ -56,4 +58,6 @@ public:
 	QString toString();
 };
 
-#endif
+} // namespace Settings
+
+#endif // SETTINGS_ASSSTYLES_H

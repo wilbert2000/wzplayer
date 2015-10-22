@@ -21,7 +21,7 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "paths.h"
-#include "assstyles.h"
+#include "settings/assstyles.h"
 #include "filedialog.h"
 #include "languages.h"
 
@@ -102,6 +102,7 @@ void TSubtitles::retranslateStrings() {
 	setEncaLang(current_enca_lang);
 
 	// Ass styles
+	using namespace Settings;
 	int alignment_item = style_alignment_combo->currentIndex();
 	style_alignment_combo->clear();
 	style_alignment_combo->addItem(tr("Left", "horizontal alignment"), TAssStyles::Left);
@@ -309,7 +310,7 @@ void TSubtitles::on_ass_customize_button_clicked() {
 	QString edit = forced_ass_style;
 
 	// A copy with the current values in the dialog
-	TAssStyles ass_styles;
+	Settings::TAssStyles ass_styles;
 	ass_styles.fontname = style_font_combo->currentText();
 	ass_styles.fontsize = style_size_spin->value();
 	ass_styles.primarycolor = style_text_color_button->color().rgb();
