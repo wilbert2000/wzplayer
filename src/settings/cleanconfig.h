@@ -1,11 +1,14 @@
 
-#ifndef CLEANCONFIG_H
-#define CLEANCONFIG_H
+#ifndef SETTINGS_CLEANCONFIG_H
+#define SETTINGS_CLEANCONFIG_H
 
 #include <QString>
 #include <QStringList>
 
-class CleanConfig {
+
+namespace Settings {
+
+class TCleanConfig {
 public:
 	static void clean(const QString& config_path);
 
@@ -13,4 +16,6 @@ private:
 	static QStringList listDir(const QString& path);
 };
 
-#endif
+} // namespace Settings
+
+#endif // SETTINGS_CLEANCONFIG_H

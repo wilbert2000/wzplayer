@@ -31,7 +31,7 @@
 #include "log.h"
 #include "version.h"
 #include "clhelp.h"
-#include "cleanconfig.h"
+#include "settings/cleanconfig.h"
 
 #include "gui/default.h"
 
@@ -169,7 +169,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	loadConfig(config_path);
 
 	if (args.contains("-delete-config")) {
-		CleanConfig::clean(Paths::configPath());
+		TCleanConfig::clean(Paths::configPath());
 		return NoError;
 	}
 

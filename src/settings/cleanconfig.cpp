@@ -1,12 +1,14 @@
 
-#include "cleanconfig.h"
+#include "settings/cleanconfig.h"
 #include <QFile>
 #include <QDir>
 
 #define DO_REMOVE
 
-void CleanConfig::clean(const QString& config_path) {
-	qDebug("CleanConfig::clean");
+namespace Settings {
+
+void TCleanConfig::clean(const QString& config_path) {
+	qDebug("TCleanConfig::clean");
 
 	QStringList files_to_delete;
 
@@ -40,7 +42,7 @@ void CleanConfig::clean(const QString& config_path) {
 	}
 }
 
-QStringList CleanConfig::listDir(const QString& path) {
+QStringList TCleanConfig::listDir(const QString& path) {
 
 	QDir dir(path);
 	QStringList file_list;
@@ -55,4 +57,6 @@ QStringList CleanConfig::listDir(const QString& path) {
 
 	return file_list;
 }
+
+} // namespace Settings
 

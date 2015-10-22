@@ -110,6 +110,7 @@ HEADERS += config.h \
     settings/tvsettings.h \
     settings/recents.h \
     settings/urlhistory.h \
+    settings/cleanconfig.h \
     images.h \
 	inforeader.h \
 	core.h \
@@ -178,7 +179,6 @@ HEADERS += config.h \
     maps/titletracks.h \
     maps/chapters.h \
     clhelp.h \
-	cleanconfig.h \
 	smplayer.h \
     log.h
 
@@ -209,6 +209,7 @@ SOURCES	+= version.cpp \
     settings/tvsettings.cpp \
     settings/recents.cpp \
     settings/urlhistory.cpp \
+    settings/cleanconfig.cpp \
     images.cpp \
 	inforeader.cpp \
 	core.cpp \
@@ -276,7 +277,6 @@ SOURCES	+= version.cpp \
     maps/titletracks.cpp \
     maps/chapters.cpp \
     clhelp.cpp \
-    cleanconfig.cpp \
     smplayer.cpp \
     log.cpp \
     main.cpp
