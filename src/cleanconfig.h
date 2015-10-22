@@ -7,10 +7,10 @@
 
 class CleanConfig {
 public:
-	static void clean(const QString &config_path);
+	static void clean(const QString& config_path);
 
 private:
-	static QStringList listDir(const QString &path);
+	static QStringList listDir(const QString& path);
 };
 
 #endif

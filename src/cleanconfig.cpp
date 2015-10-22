@@ -5,7 +5,7 @@
 
 #define DO_REMOVE
 
-void CleanConfig::clean(const QString & config_path) {
+void CleanConfig::clean(const QString& config_path) {
 	qDebug("CleanConfig::clean");
 
 	QStringList files_to_delete;
@@ -40,7 +40,8 @@ void CleanConfig::clean(const QString & config_path) {
 	}
 }
 
-QStringList CleanConfig::listDir(const QString &path) {
+QStringList CleanConfig::listDir(const QString& path) {
+
 	QDir dir(path);
 	QStringList file_list;
 
