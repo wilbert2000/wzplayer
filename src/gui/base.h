@@ -68,6 +68,8 @@ class ShareWidget;
 
 namespace Gui {
 
+class TActionGroup;
+
 class TBase : public QMainWindow {
 	Q_OBJECT
 
