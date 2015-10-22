@@ -33,6 +33,7 @@
 
 #include "config.h"
 #include "settings/paths.h"
+#include "settings/mediasettings.h"
 #include "settings/preferences.h"
 #include "settings/filesettings.h"
 #include "settings/filesettingshash.h"

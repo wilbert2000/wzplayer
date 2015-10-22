@@ -19,16 +19,15 @@
 #ifndef _CORE_H_
 #define _CORE_H_
 
-#include <QObject>
 #include <QProcess> // For QProcess::ProcessError
 #include <QTime>
 
 #include "config.h"
-#include "mediadata.h"
 #include "settings/mediasettings.h"
-#include "settings/preferences.h"
 #include "proc/playerprocess.h"
-#include "playerwindow.h"
+
+class TMediaData;
+class TPlayerWindow;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -42,8 +41,7 @@ class RetrieveYoutubeUrl;
 
 using namespace Settings;
 
-class TCore : public QObject
-{
+class TCore : public QObject {
 	Q_OBJECT
 
 public:
@@ -53,7 +51,7 @@ public:
 	virtual ~TCore();
 
 	TMediaData mdat;
-	TMediaSettings mset;
+	Settings::TMediaSettings mset;
 
 	//! Return the current state
 	State state() { return _state; }
@@ -65,7 +63,9 @@ public:
 	// Stop player if running and save MediaInfo
 	void close();
 
-	void addForcedTitle(const QString & file, const QString & title) { forced_titles[file] = title; }
+	void addForcedTitle(const QString& file, const QString& title) {
+		forced_titles[file] = title;
+	}
 	bool haveExternalSubs();
 	int positionMax() { return pos_max; }
 
