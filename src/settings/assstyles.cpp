@@ -43,7 +43,7 @@ TAssStyles::TAssStyles() {
 }
 
 void TAssStyles::save(QSettings* set) {
-	qDebug("TAssStyles::save");
+	qDebug("Settings::TAssStyles::save");
 
 	set->setValue("styles/fontname", fontname);
 	set->setValue("styles/fontsize", fontsize);
@@ -63,7 +63,7 @@ void TAssStyles::save(QSettings* set) {
 }
 
 void TAssStyles::load(QSettings* set) {
-	qDebug("TAssStyles::load");
+	qDebug("Settings::TAssStyles::load");
 
 	fontname = set->value("styles/fontname", fontname).toString();
 	fontsize = set->value("styles/fontsize", fontsize).toInt();
@@ -83,7 +83,7 @@ void TAssStyles::load(QSettings* set) {
 }
 
 bool TAssStyles::exportStyles(const QString & filename) const {
-	qDebug("TAssStyles::exportStyles: filename: %s", filename.toUtf8().constData());
+	qDebug("Settings::TAssStyles::exportStyles: filename: %s", filename.toUtf8().constData());
 
 	QFile f(filename);
 	if (f.open(QFile::WriteOnly)) {
