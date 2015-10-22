@@ -38,10 +38,10 @@ public:
 	TProcess (QObject* parent = 0);
 	virtual ~TProcess() {}
 
-	virtual void setExecutable(const QString & p) { program = p; }
+	virtual void setExecutable(const QString& p) { program = p; }
 	QString executable() { return program; }
 
-	virtual void addArgument(const QString & a); 	//!< Add an argument
+	virtual void addArgument(const QString& a); 	//!< Add an argument
 
 	void clearArguments(); 		//!< Clear the list of arguments
 	QStringList arguments(); 	//!< Return the list of arguments
@@ -49,7 +49,7 @@ public:
 	void start();				//!< Start the process
 	bool isRunning();			//!< Return true if the process is running
 
-	static QStringList splitArguments(const QString & args);
+	static QStringList splitArguments(const QString& args);
 
 signals:
 	//! Emitted when there's a line available

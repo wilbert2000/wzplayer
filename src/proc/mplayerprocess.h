@@ -41,14 +41,14 @@ public:
 	virtual bool startPlayer();
 
 	// Command line options
-	void setMedia(const QString & media, bool is_playlist = false);
+	void setMedia(const QString& media, bool is_playlist = false);
 	void setFixedOptions();
 	void disableInput();
-	void setOption(const QString & option_name, const QVariant & value = QVariant());
-	void addUserOption(const QString & option);
-	void addVF(const QString & filter_name, const QVariant & value = QVariant());
-	void addAF(const QString & filter_name, const QVariant & value = QVariant());
-	void addStereo3DFilter(const QString & in, const QString & out);
+	void setOption(const QString& option_name, const QVariant& value = QVariant());
+	void addUserOption(const QString& option);
+	void addVF(const QString& filter_name, const QVariant& value = QVariant());
+	void addAF(const QString& filter_name, const QVariant& value = QVariant());
+	void addStereo3DFilter(const QString& in, const QString& out);
 	void setSubStyles(const Settings::TAssStyles& styles, const QString& assStylesFile = QString::null);
 
 	// Slave commands
@@ -66,7 +66,7 @@ public:
 	void setPause(bool pause);
 	void frameStep();
 	void frameBackStep();
-	void showOSDText(const QString & text, int duration, int level);
+	void showOSDText(const QString& text, int duration, int level);
 	void showFilenameOnOSD();
 	void showTimeOnOSD();
 	void setContrast(int value);
@@ -75,7 +75,7 @@ public:
 	void setSaturation(int value);
 	void setGamma(int value);
 	void setChapter(int ID);
-	void setExternalSubtitleFile(const QString & filename);
+	void setExternalSubtitleFile(const QString& filename);
 	void setSubPos(int pos);
 	void setSubScale(double value);
 	void setSubStep(int value);
@@ -86,18 +86,18 @@ public:
 	void setSpeed(double value);
 	void enableKaraoke(bool b);
 	void enableExtrastereo(bool b);
-	void enableVolnorm(bool b, const QString & option);
-	void setAudioEqualizer(const QString & values);
+	void enableVolnorm(bool b, const QString& option);
+	void setAudioEqualizer(const QString& values);
 	void setAudioDelay(double delay);
 	void setSubDelay(double delay);
 	void setLoop(int v);
 	void takeScreenshot(ScreenshotType t, bool include_subtitles = false);
 	void setTitle(int ID);
-	void changeVF(const QString & filter, bool enable, const QVariant & option = QVariant());
-	void changeStereo3DFilter(bool enable, const QString & in, const QString & out);
+	void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant());
+	void changeStereo3DFilter(bool enable, const QString& in, const QString& out);
 
 	void discSetMousePos(int x, int y);
-	void discButtonPressed(const QString & button_name);
+	void discButtonPressed(const QString& button_name);
 
 	void setAspect(double aspect);
 	void setFullscreen(bool b);
@@ -105,21 +105,21 @@ public:
 	void setTSProgram(int ID);
 #endif
 	void toggleDeinterlace();
-	void setOSDPos(const QPoint &pos, int);
+	void setOSDPos(const QPoint& pos, int);
 	void setOSDScale(double value);
-	void setChannelsFile(const QString &) {}
+	void setChannelsFile(const QString&) {}
 
 
 protected:
-	virtual int getFrame(double sec, const QString &line);
+	virtual int getFrame(double sec, const QString& line);
 	virtual void checkTime(double sec);
 
 	virtual void playingStarted();
-	virtual bool parseLine(QString &line);
-	virtual bool parseStatusLine(double seconds, double duration, QRegExp &rx, QString &line);
-	virtual bool parseAudioProperty(const QString &name, const QString &value);
-	virtual bool parseVideoProperty(const QString &name, const QString &value);
-	virtual bool parseProperty(const QString &name, const QString &value);
+	virtual bool parseLine(QString& line);
+	virtual bool parseStatusLine(double seconds, double duration, QRegExp& rx, QString& line);
+	virtual bool parseAudioProperty(const QString& name, const QString& value);
+	virtual bool parseVideoProperty(const QString& name, const QString& value);
+	virtual bool parseProperty(const QString& name, const QString& value);
 
 private:
 	int svn_version;
@@ -162,14 +162,14 @@ private:
 	bool parseTitleIsMovie();
 	bool vtsChanged(int vts);
 
-	bool parseVO(const QString &driver, int w, int h);
-	bool parseSubID(const QString &type, int id);
-	bool parseSubTrack(const QString &type, int id, const QString &name, const QString &value);
-	bool parseChapter(int id, const QString &type, const QString &value);
-	bool parseCDTrack(const QString &type, int id, const QString &length);
-	bool parseTitle(int id, const QString &field, const QString &value);
+	bool parseVO(const QString& driver, int w, int h);
+	bool parseSubID(const QString& type, int id);
+	bool parseSubTrack(const QString& type, int id, const QString& name, const QString& value);
+	bool parseChapter(int id, const QString& type, const QString& value);
+	bool parseCDTrack(const QString& type, int id, const QString& length);
+	bool parseTitle(int id, const QString& field, const QString& value);
 	bool parseTitleChapters(Maps::TChapters& chapters, const QString& chaps);
-	bool parseAnswer(const QString &name, const QString &value);
+	bool parseAnswer(const QString& name, const QString& value);
 	bool parsePause();
 	void convertTitlesToChapters();
 };

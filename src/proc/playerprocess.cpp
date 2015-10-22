@@ -250,7 +250,7 @@ double TPlayerProcess::playerTimeToGuiTime(double sec) {
 	return sec;
 }
 
-void TPlayerProcess::notifyTime(double time_sec, const QString &line) {
+void TPlayerProcess::notifyTime(double time_sec, const QString& line) {
 
 	// Store video timestamp
 	md->time_sec = time_sec;
@@ -288,7 +288,7 @@ bool TPlayerProcess::waitForAnswers() {
 	return false;
 }
 
-bool TPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
+bool TPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line) {
 	Q_UNUSED(rx)
 
 	// Any pending questions?
@@ -315,7 +315,7 @@ void TPlayerProcess::quit(int exit_code) {
 	writeToStdin("quit " + QString::number(exit_code));
 }
 
-bool TPlayerProcess::parseLine(QString &line) {
+bool TPlayerProcess::parseLine(QString& line) {
 
 	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
@@ -359,7 +359,7 @@ bool TPlayerProcess::parseLine(QString &line) {
 	return false;
 }
 
-bool TPlayerProcess::parseAudioProperty(const QString &name, const QString &value) {
+bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& value) {
 
 	if (name == "BITRATE") {
 		md->audio_bitrate = value.toInt();
@@ -390,7 +390,7 @@ bool TPlayerProcess::parseAudioProperty(const QString &name, const QString &valu
 	return false;
 }
 
-bool TPlayerProcess::parseVideoProperty(const QString &name, const QString &value) {
+bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
 
 	if (name == "WIDTH") {
 		md->video_width = value.toInt();
@@ -434,7 +434,7 @@ bool TPlayerProcess::parseVideoProperty(const QString &name, const QString &valu
 	return false;
 }
 
-bool TPlayerProcess::parseProperty(const QString &name, const QString &value) {
+bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "START_TIME") {
 		if (value.isEmpty() || value == "unknown") {

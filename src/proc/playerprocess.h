@@ -56,14 +56,14 @@ public:
 	void writeToStdin(QString text, bool log = true);
 
 	// Command line options
-	virtual void setMedia(const QString & media, bool is_playlist = false) = 0;
+	virtual void setMedia(const QString& media, bool is_playlist = false) = 0;
 	virtual void setFixedOptions() = 0;
 	virtual void disableInput() = 0;
-	virtual void setOption(const QString & option_name, const QVariant & value = QVariant()) = 0;
-	virtual void addUserOption(const QString & option) = 0;
-	virtual void addVF(const QString & filter_name, const QVariant & value = QVariant()) = 0;
-	virtual void addAF(const QString & filter_name, const QVariant & value = QVariant()) = 0;
-	virtual void addStereo3DFilter(const QString & in, const QString & out) = 0;
+	virtual void setOption(const QString& option_name, const QVariant& value = QVariant()) = 0;
+	virtual void addUserOption(const QString& option) = 0;
+	virtual void addVF(const QString& filter_name, const QVariant& value = QVariant()) = 0;
+	virtual void addAF(const QString& filter_name, const QVariant& value = QVariant()) = 0;
+	virtual void addStereo3DFilter(const QString& in, const QString& out) = 0;
 	virtual void setSubStyles(const Settings::TAssStyles& styles, const QString& assStylesFile = QString::null) = 0;
 
 	// Slave commands
@@ -83,7 +83,7 @@ public:
 	virtual void setPause(bool b) = 0;
 	virtual void frameStep() = 0;
 	virtual void frameBackStep() = 0;
-	virtual void showOSDText(const QString & text, int duration, int level) = 0;
+	virtual void showOSDText(const QString& text, int duration, int level) = 0;
 	virtual void showFilenameOnOSD() = 0;
 	virtual void showTimeOnOSD() = 0;
 	virtual void setContrast(int value) = 0;
@@ -92,7 +92,7 @@ public:
 	virtual void setSaturation(int value) = 0;
 	virtual void setGamma(int value) = 0;
 	virtual void setChapter(int ID) = 0;
-	virtual void setExternalSubtitleFile(const QString & filename) = 0;
+	virtual void setExternalSubtitleFile(const QString& filename) = 0;
 	virtual void setSubPos(int pos) = 0;
 	virtual void setSubScale(double value) = 0;
 	virtual void setSubStep(int value) = 0;
@@ -105,18 +105,18 @@ public:
 	virtual void enableKaraoke(bool b) = 0;
 	virtual void enableExtrastereo(bool b) = 0;
 #endif
-	virtual void enableVolnorm(bool b, const QString & option) = 0;
-	virtual void setAudioEqualizer(const QString & values) = 0;
+	virtual void enableVolnorm(bool b, const QString& option) = 0;
+	virtual void setAudioEqualizer(const QString& values) = 0;
 	virtual void setAudioDelay(double delay) = 0;
 	virtual void setSubDelay(double delay) = 0;
 	virtual void setLoop(int v) = 0;
 	virtual void takeScreenshot(ScreenshotType t, bool include_subtitles = false) = 0;
 	virtual void setTitle(int ID) = 0;
-	virtual void changeVF(const QString & filter, bool enable, const QVariant & option = QVariant()) = 0;
-	virtual void changeStereo3DFilter(bool enable, const QString & in, const QString & out) = 0;
+	virtual void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant()) = 0;
+	virtual void changeStereo3DFilter(bool enable, const QString& in, const QString& out) = 0;
 
 	virtual void discSetMousePos(int x, int y) = 0;
-	virtual void discButtonPressed(const QString & button_name) = 0;
+	virtual void discButtonPressed(const QString& button_name) = 0;
 
 	virtual void setAspect(double aspect) = 0;
 	virtual void setFullscreen(bool b) = 0;
@@ -124,7 +124,7 @@ public:
 	virtual void setTSProgram(int ID) = 0;
 #endif
 	virtual void toggleDeinterlace() = 0;
-	virtual void setOSDPos(const QPoint &pos, int current_osd_level) = 0;
+	virtual void setOSDPos(const QPoint& pos, int current_osd_level) = 0;
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
 
@@ -201,20 +201,20 @@ protected:
 	double guiTimeToPlayerTime(double sec);
 	double playerTimeToGuiTime(double sec);
 
-	virtual int getFrame(double time_sec, const QString &line) = 0;
+	virtual int getFrame(double time_sec, const QString& line) = 0;
 	void notifyTitleTrackChanged(int new_title);
 	void notifyDuration(double duration);
 	virtual void checkTime(double sec);
-	void notifyTime(double time_sec, const QString &line);
+	void notifyTime(double time_sec, const QString& line);
 	bool waitForAnswers();
 
 	virtual void playingStarted();
-	virtual bool parseLine(QString &line);
-	virtual bool parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line);
-	virtual bool parseAudioProperty(const QString &name, const QString &value);
-	virtual bool parseVideoProperty(const QString &name, const QString &value);
+	virtual bool parseLine(QString& line);
+	virtual bool parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line);
+	virtual bool parseAudioProperty(const QString& name, const QString& value);
+	virtual bool parseVideoProperty(const QString& name, const QString& value);
 	virtual bool parseMetaDataProperty(QString name, QString value);
-	virtual bool parseProperty(const QString &name, const QString &value);
+	virtual bool parseProperty(const QString& name, const QString& value);
 
 protected slots:
 	void processError(QProcess::ProcessError);

@@ -98,7 +98,7 @@ bool TMPVProcess::parseAudioTrack(int id, const QString &lang, const QString &co
 bool TMPVProcess::parseSubtitleTrack(int id,
 									const QString &lang,
 									QString name,
-									const QString &type,
+									const QString& type,
 									bool selected) {
 
 	if (name.isEmpty() && !type.isEmpty()) {
@@ -124,7 +124,7 @@ bool TMPVProcess::parseSubtitleTrack(int id,
 }
 
 
-bool TMPVProcess::parseProperty(const QString &name, const QString &value) {
+bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "MPV_VERSION") {
 		mpv_version = value;
@@ -349,7 +349,7 @@ bool TMPVProcess::parseTitleNotFound(const QString &disc_type) {
 }
 
 
-int TMPVProcess::getFrame(double time_sec, const QString &line) {
+int TMPVProcess::getFrame(double time_sec, const QString& line) {
 	Q_UNUSED(line)
 
 	// Emulate frames.
@@ -424,7 +424,7 @@ void TMPVProcess::requestBitrateInfo() {
 	writeToStdin("print_text AUDIO_BITRATE=${=audio-bitrate}");
 }
 
-bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
+bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line) {
 	// Parse custom status line
 	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
@@ -472,7 +472,7 @@ bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx,
 	return true;
 }
 
-bool TMPVProcess::parseLine(QString &line) {
+bool TMPVProcess::parseLine(QString& line) {
 
 	// Custom status line. Make sure it matches!
 	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
@@ -673,7 +673,7 @@ bool TMPVProcess::parseLine(QString &line) {
 
 // Start of what used to be mpvoptions.cpp and was pulled in with an include
 
-void TMPVProcess::setMedia(const QString & media, bool is_playlist) {
+void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 	arg << "--term-playing-msg="
 		"INFO_MPV_VERSION=${=mpv-version:}\n"
 
@@ -757,14 +757,14 @@ void TMPVProcess::disableInput() {
 	arg << "--cursor-autohide=no";
 }
 
-bool TMPVProcess::isOptionAvailable(const QString & option) {
+bool TMPVProcess::isOptionAvailable(const QString& option) {
 	InfoReader* ir = InfoReader::obj(executable());
 	ir->getInfo();
 	//qDebug() << "Proc::TMPVProcess::isOptionAvailable: option_list:" << ir->optionList();
 	return ir->optionList().contains(option);
 }
 
-void TMPVProcess::addVFIfAvailable(const QString & vf, const QString & value) {
+void TMPVProcess::addVFIfAvailable(const QString& vf, const QString& value) {
 	InfoReader* ir = InfoReader::obj(executable());
 	ir->getInfo();
 	if (ir->vfList().contains(vf)) {
@@ -782,7 +782,7 @@ void TMPVProcess::messageFilterNotSupported(const QString& filter_name) {
 	writeToStdin(QString("show_text \"%1\" 3000").arg(text));
 }
 
-void TMPVProcess::setOption(const QString & option_name, const QVariant & value) {
+void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 	if (option_name == "cache") {
 		int cache = value.toInt();
 		if (cache > 31) {
@@ -1033,14 +1033,14 @@ void TMPVProcess::setOption(const QString & option_name, const QVariant & value)
 	}
 }
 
-void TMPVProcess::addUserOption(const QString & option) {
+void TMPVProcess::addUserOption(const QString& option) {
 	arg << option;
 	if (option == "-v") {
 		verbose = true;
 	}
 }
 
-void TMPVProcess::addVF(const QString & filter_name, const QVariant & value) {
+void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
 	QString option = value.toString();
 
 	if ((filter_name == "harddup") || (filter_name == "hue")) {
@@ -1141,11 +1141,11 @@ void TMPVProcess::addVF(const QString & filter_name, const QVariant & value) {
 	}
 }
 
-void TMPVProcess::addStereo3DFilter(const QString & in, const QString & out) {
+void TMPVProcess::addStereo3DFilter(const QString& in, const QString& out) {
 	arg << "--vf-add=stereo3d=" + in + ":" + out;
 }
 
-void TMPVProcess::addAF(const QString & filter_name, const QVariant & value) {
+void TMPVProcess::addAF(const QString& filter_name, const QVariant& value) {
 	QString option = value.toString();
 
 	if (filter_name == "volnorm") {
@@ -1254,7 +1254,7 @@ void TMPVProcess::frameBackStep() {
 	writeToStdin("frame_back_step");
 }
 
-void TMPVProcess::showOSDText(const QString & text, int duration, int level) {
+void TMPVProcess::showOSDText(const QString& text, int duration, int level) {
 	QString str = QString("show_text \"%1\" %2 %3").arg(text).arg(duration).arg(level);
 	writeToStdin(str);
 }
@@ -1291,7 +1291,7 @@ void TMPVProcess::setChapter(int ID) {
 	writeToStdin("set chapter " + QString::number(ID));
 }
 
-void TMPVProcess::setExternalSubtitleFile(const QString & filename) {
+void TMPVProcess::setExternalSubtitleFile(const QString& filename) {
 
 	writeToStdin("sub_add \""+ filename +"\"");
 	// Remeber filename to add to subs when MPV is done with it
@@ -1338,11 +1338,11 @@ void TMPVProcess::enableExtrastereo(bool) {
 }
 #endif
 
-void TMPVProcess::enableVolnorm(bool b, const QString & option) {
+void TMPVProcess::enableVolnorm(bool b, const QString& option) {
 	if (b) writeToStdin("af add drc=" + option); else writeToStdin("af del drc=" + option);
 }
 
-void TMPVProcess::setAudioEqualizer(const QString & values) {
+void TMPVProcess::setAudioEqualizer(const QString& values) {
 	if (values == previous_eq) return;
 
 	if (!previous_eq.isEmpty()) {
@@ -1396,7 +1396,7 @@ void TMPVProcess::discSetMousePos(int x, int y) {
 	// writeToStdin("discnav mouse_move");
 }
 
-void TMPVProcess::discButtonPressed(const QString & button_name) {
+void TMPVProcess::discButtonPressed(const QString& button_name) {
 	writeToStdin("discnav " + button_name);
 }
 
@@ -1418,7 +1418,7 @@ void TMPVProcess::toggleDeinterlace() {
 	writeToStdin("cycle deinterlace");
 }
 
-void TMPVProcess::setOSDPos(const QPoint &pos, int current_osd_level) {
+void TMPVProcess::setOSDPos(const QPoint& pos, int current_osd_level) {
 	// mpv has no way to set the OSD position,
 	// so this hack uses osd-margin to emulate it.
 
@@ -1512,7 +1512,7 @@ void TMPVProcess::setOSDScale(double value) {
 	writeToStdin("set osd-scale " + QString::number(value));
 }
 
-void TMPVProcess::changeVF(const QString & filter, bool enable, const QVariant & option) {
+void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& option) {
 	qDebug() << "Proc::TMPVProcess::changeVF:" << filter << enable;
 
 	QString f;
@@ -1607,7 +1607,7 @@ void TMPVProcess::changeVF(const QString & filter, bool enable, const QVariant &
 	}
 }
 
-void TMPVProcess::changeStereo3DFilter(bool enable, const QString & in, const QString & out) {
+void TMPVProcess::changeStereo3DFilter(bool enable, const QString& in, const QString& out) {
 	QString filter = "stereo3d=" + in + ":" + out;
 	writeToStdin(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(filter));
 }
@@ -1650,7 +1650,7 @@ void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles, const QString
 	}
 }
 
-void TMPVProcess::setChannelsFile(const QString & filename) {
+void TMPVProcess::setChannelsFile(const QString& filename) {
 	arg << "--dvbin-file=" + filename;
 }
 

@@ -40,7 +40,7 @@ bool TProcess::isRunning() {
 	return (state() == QProcess::Running);
 }
 
-void TProcess::addArgument(const QString & a) {
+void TProcess::addArgument(const QString& a) {
 	if (program.isEmpty()) {
 		program = a;
 	} else {
@@ -118,7 +118,7 @@ void TProcess::procFinished() {
 	if (bytesAvailable() > 0) readStdOut();
 }
 
-QStringList TProcess::splitArguments(const QString & args) {
+QStringList TProcess::splitArguments(const QString& args) {
 	qDebug("Proc::TProcess::splitArguments: '%s'", args.toUtf8().constData());
 
 	QStringList l;

@@ -88,7 +88,7 @@ void TMplayerProcess::getSelectedTracks() {
 	getSelectedSub();
 }
 
-bool TMplayerProcess::parseVideoProperty(const QString &name, const QString &value) {
+bool TMplayerProcess::parseVideoProperty(const QString& name, const QString& value) {
 
 	if (name == "ID") {
 		int id = value.toInt();
@@ -106,7 +106,7 @@ bool TMplayerProcess::parseVideoProperty(const QString &name, const QString &val
 	return TPlayerProcess::parseVideoProperty(name, value);
 }
 
-bool TMplayerProcess::parseAudioProperty(const QString &name, const QString &value) {
+bool TMplayerProcess::parseAudioProperty(const QString& name, const QString& value) {
 
 	// Audio ID
 	if (name == "ID") {
@@ -125,7 +125,7 @@ bool TMplayerProcess::parseAudioProperty(const QString &name, const QString &val
 	return TPlayerProcess::parseAudioProperty(name, value);
 }
 
-bool TMplayerProcess::parseSubID(const QString &type, int id) {
+bool TMplayerProcess::parseSubID(const QString& type, int id) {
 
 	// Add new id or a sub got selected
 
@@ -157,7 +157,7 @@ bool TMplayerProcess::parseSubID(const QString &type, int id) {
 	return true;
 }
 
-bool TMplayerProcess::parseSubTrack(const QString &type, int id, const QString &name, const QString &value) {
+bool TMplayerProcess::parseSubTrack(const QString& type, int id, const QString& name, const QString& value) {
 
 	SubData::Type sub_type;
 	if (type == "VSID")	{
@@ -182,7 +182,7 @@ bool TMplayerProcess::parseSubTrack(const QString &type, int id, const QString &
 	return true;
 }
 
-bool TMplayerProcess::parseAnswer(const QString &name, const QString &value) {
+bool TMplayerProcess::parseAnswer(const QString& name, const QString& value) {
 
 	if (name == "LENGTH") {
 		double duration = value.toDouble();
@@ -408,7 +408,7 @@ bool TMplayerProcess::titleChanged(TMediaData::Type type, int title) {
 	return true;
 }
 
-bool TMplayerProcess::parseProperty(const QString &name, const QString &value) {
+bool TMplayerProcess::parseProperty(const QString& name, const QString& value) {
 
 	// Track changed
 	if (name == "CDDA_TRACK") {
@@ -450,7 +450,7 @@ bool TMplayerProcess::parseProperty(const QString &name, const QString &value) {
 	return TPlayerProcess::parseProperty(name, value);
 }
 
-bool TMplayerProcess::parseChapter(int id, const QString &type, const QString &value) {
+bool TMplayerProcess::parseChapter(int id, const QString& type, const QString& value) {
 
 	if(type == "START") {
 		double time = value.toDouble()/1000;
@@ -468,7 +468,7 @@ bool TMplayerProcess::parseChapter(int id, const QString &type, const QString &v
 	return true;
 }
 
-bool TMplayerProcess::parseCDTrack(const QString &type, int id, const QString &length) {
+bool TMplayerProcess::parseCDTrack(const QString& type, int id, const QString& length) {
 
 	static QRegExp rx_length("(\\d+):(\\d+):(\\d+)");
 
@@ -486,7 +486,7 @@ bool TMplayerProcess::parseCDTrack(const QString &type, int id, const QString &l
 	return true;
 }
 
-bool TMplayerProcess::parseTitle(int id, const QString &field, const QString &value) {
+bool TMplayerProcess::parseTitle(int id, const QString& field, const QString& value) {
 
 	// DVD/Bluray titles. Chapters handled by parseTitleChapters.
 	if (field == "LENGTH") {
@@ -525,7 +525,7 @@ bool TMplayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QStrin
 	return true;
 }
 
-bool TMplayerProcess::parseVO(const QString &driver, int w, int h) {
+bool TMplayerProcess::parseVO(const QString& driver, int w, int h) {
 
 	md->video_out_width = w;
 	md->video_out_height = h;
@@ -580,7 +580,7 @@ void TMplayerProcess::checkTime(double sec) {
 	Q_UNUSED(sec)
 }
 
-int TMplayerProcess::getFrame(double sec, const QString &line) {
+int TMplayerProcess::getFrame(double sec, const QString& line) {
 	Q_UNUSED(sec)
 
 	// Check for frame in status line
@@ -673,7 +673,7 @@ void TMplayerProcess::playingStarted() {
 	TPlayerProcess::playingStarted();
 }
 
-bool TMplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp &rx, QString &line) {
+bool TMplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line) {
 
 	if (TPlayerProcess::parseStatusLine(time_sec, duration, rx, line))
 		return true;
@@ -700,7 +700,7 @@ bool TMplayerProcess::parseStatusLine(double time_sec, double duration, QRegExp 
 	return true;
 }
 
-bool TMplayerProcess::parseLine(QString &line) {
+bool TMplayerProcess::parseLine(QString& line) {
 
 	// Status line
 	static QRegExp rx_av("^[AV]: *([0-9,:.-]+)");
@@ -1033,7 +1033,7 @@ bool TMplayerProcess::parseLine(QString &line) {
 
 // Start of what used to be mplayeroptions.cpp
 
-void TMplayerProcess::setMedia(const QString & media, bool is_playlist) {
+void TMplayerProcess::setMedia(const QString& media, bool is_playlist) {
 	if (is_playlist) arg << "-playlist";
 	arg << media;
 }
@@ -1050,7 +1050,7 @@ void TMplayerProcess::disableInput() {
 #endif
 }
 
-void TMplayerProcess::setOption(const QString & option_name, const QVariant & value) {
+void TMplayerProcess::setOption(const QString& option_name, const QVariant& value) {
 	if (option_name == "cache") {
 		int cache = value.toInt();
 		if (cache > 31) {
@@ -1117,11 +1117,11 @@ void TMplayerProcess::setOption(const QString & option_name, const QVariant & va
 	}
 }
 
-void TMplayerProcess::addUserOption(const QString & option) {
+void TMplayerProcess::addUserOption(const QString& option) {
 	arg << option;
 }
 
-void TMplayerProcess::addVF(const QString & filter_name, const QVariant & value) {
+void TMplayerProcess::addVF(const QString& filter_name, const QVariant& value) {
 	QString option = value.toString();
 
 	if (filter_name == "blur" || filter_name == "sharpen") {
@@ -1173,13 +1173,13 @@ void TMplayerProcess::addVF(const QString & filter_name, const QVariant & value)
 	}
 }
 
-void TMplayerProcess::addStereo3DFilter(const QString & in, const QString & out) {
+void TMplayerProcess::addStereo3DFilter(const QString& in, const QString& out) {
 	QString filter = "stereo3d=" + in + ":" + out;
 	filter += ",scale"; // In my PC it doesn't work without scale :?
 	arg << "-vf-add" << filter;
 }
 
-void TMplayerProcess::addAF(const QString & filter_name, const QVariant & value) {
+void TMplayerProcess::addAF(const QString& filter_name, const QVariant& value) {
 	QString s = filter_name;
 	if (!value.isNull()) s += "=" + value.toString();
 	arg << "-af-add" << s;
@@ -1294,7 +1294,7 @@ void TMplayerProcess::frameBackStep() {
 	}
 }
 
-void TMplayerProcess::showOSDText(const QString & text, int duration, int level) {
+void TMplayerProcess::showOSDText(const QString& text, int duration, int level) {
 
 	QString s = "pausing_keep_force osd_show_text \"" + text + "\" "
 			+ QString::number(duration) + " " + QString::number(level);
@@ -1334,7 +1334,7 @@ void TMplayerProcess::setChapter(int ID) {
 	writeToStdin("seek_chapter " + QString::number(ID) +" 1");
 }
 
-void TMplayerProcess::setExternalSubtitleFile(const QString & filename) {
+void TMplayerProcess::setExternalSubtitleFile(const QString& filename) {
 
 	// Load it
 	writeToStdin("sub_load \""+ filename +"\"");
@@ -1378,11 +1378,11 @@ void TMplayerProcess::enableExtrastereo(bool b) {
 	if (b) writeToStdin("af_add extrastereo"); else writeToStdin("af_del extrastereo");
 }
 
-void TMplayerProcess::enableVolnorm(bool b, const QString & option) {
+void TMplayerProcess::enableVolnorm(bool b, const QString& option) {
 	if (b) writeToStdin("af_add volnorm=" + option); else writeToStdin("af_del volnorm");
 }
 
-void TMplayerProcess::setAudioEqualizer(const QString & values) {
+void TMplayerProcess::setAudioEqualizer(const QString& values) {
 	writeToStdin("af_cmdline equalizer " + values);
 }
 
@@ -1417,7 +1417,7 @@ void TMplayerProcess::discSetMousePos(int x, int y) {
 	writeToStdin(QString("set_mouse_pos %1 %2").arg(x).arg(y), false);
 }
 
-void TMplayerProcess::discButtonPressed(const QString & button_name) {
+void TMplayerProcess::discButtonPressed(const QString& button_name) {
 	writeToStdin("dvdnav " + button_name);
 }
 
@@ -1458,7 +1458,7 @@ void TMplayerProcess::changeStereo3DFilter(bool, const QString &, const QString 
 	// not supported
 }
 
-void TMplayerProcess::setSubStyles(const TAssStyles & styles, const QString & assStylesFile) {
+void TMplayerProcess::setSubStyles(const TAssStyles & styles, const QString& assStylesFile) {
 	if (assStylesFile.isEmpty()) {
 		qWarning("Proc::TMplayerProcess::setSubStyles: assStylesFile is invalid");
 		return;
