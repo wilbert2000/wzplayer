@@ -49,7 +49,7 @@ public:
 	};
 
 	TMediaData();
-	TMediaData(const QString& fame, Type sel_type);
+	TMediaData(const QString& fname, Type sel_type);
 	virtual ~TMediaData() {}
 
 	QString filename;

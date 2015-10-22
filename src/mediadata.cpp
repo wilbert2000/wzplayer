@@ -27,7 +27,7 @@ TMediaData::TMediaData() :
 	init();
 }
 
-TMediaData::TMediaData(const QString &fname, Type sel_type) :
+TMediaData::TMediaData(const QString& fname, Type sel_type) :
 	filename(fname),
 	selected_type(sel_type) {
 	init();
