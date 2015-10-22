@@ -23,7 +23,7 @@
 #include <QWidget>
 #include <QHideEvent>
 #include <QShowEvent>
-#include "audioequalizerlist.h"
+#include "settings/audioequalizerlist.h"
 #include "gui/eqslider.h"
 
 class QLabel;
@@ -46,12 +46,12 @@ public:
 
 	TEqSlider* eq[10];
 
-	void setEqualizer(TAudioEqualizerList l);
+	void setEqualizer(const Settings::TAudioEqualizerList& l);
 
 signals:
 	void visibilityChanged();
-	void applyClicked(TAudioEqualizerList new_values);
-	void valuesChanged(TAudioEqualizerList values);
+	void applyClicked(Settings::TAudioEqualizerList new_values);
+	void valuesChanged(Settings::TAudioEqualizerList values);
 
 public slots:
 	void reset();
@@ -69,8 +69,8 @@ protected:
 	virtual void retranslateStrings();
 
 	void createPresets();
-	void setValues(TAudioEqualizerList l);
-	int findPreset(TAudioEqualizerList l);
+	void setValues(const Settings::TAudioEqualizerList& l);
+	int findPreset(const Settings::TAudioEqualizerList& l);
 
 protected:
 	QLabel* presets_label;
@@ -78,7 +78,7 @@ protected:
 	QPushButton* apply_button;
 	QPushButton* reset_button;
 	QPushButton* set_default_button;
-	QMap<int,TAudioEqualizerList> preset_list;
+	QMap<int,Settings::TAudioEqualizerList> preset_list;
 };
 
 } // namespace Gui

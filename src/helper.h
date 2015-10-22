@@ -23,7 +23,7 @@
 #include <QString>
 #include <QStringList>
 #include "settings/preferences.h"
-#include "audioequalizerlist.h"
+#include "settings/audioequalizerlist.h"
 
 #ifdef Q_OS_WIN
 #include "config.h"
@@ -59,24 +59,24 @@ public:
 
 	//! Returns a string to be passed to mplayer with the audio equalizer
 	//! values.
-	static QString equalizerListToString(TAudioEqualizerList values);
+	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
 
-	static QStringList filesForPlaylist(const QString & initial_file,
+	static QStringList filesForPlaylist(const QString& initial_file,
 										Settings::TPreferences::AutoAddToPlaylistFilter filter);
 
 #ifdef Q_OS_WIN
-	static QStringList resolveSymlinks(const QStringList & files);
+	static QStringList resolveSymlinks(const QStringList& files);
 #endif
 
 #ifdef Q_OS_LINUX
 	//! Tries to find the executable in the path.
 	//! Returns the path if found or QString::null if not.
-	static QString findExecutable(const QString & name);
+	static QString findExecutable(const QString& name);
 #endif
 
 private:
-	static QStringList searchForConsecutiveFiles(const QString & initial_file);
-	static QStringList filesInDirectory(const QString & initial_file, const QStringList & filter);
+	static QStringList searchForConsecutiveFiles(const QString& initial_file);
+	static QStringList filesInDirectory(const QString& initial_file, const QStringList& filter);
 };
 
 #endif

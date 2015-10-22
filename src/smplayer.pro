@@ -97,7 +97,7 @@ HEADERS += config.h \
 	proc/playerprocess.h \
     playerwindow.h \
 	mediadata.h \
-	audioequalizerlist.h \
+    settings/audioequalizerlist.h \
     settings/assstyles.h \
     settings/mediasettings.h \
     settings/filters.h \

@@ -16,12 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _AUDIOEQUALIZERLIST_H_
-#define _AUDIOEQUALIZERLIST_H_
+#ifndef SETTINGS_AUDIOEQUALIZERLIST_H
+#define SETTINGS_AUDIOEQUALIZERLIST_H
 
 #include <QList>
 #include <QVariant>
 
+namespace Settings {
+
 typedef QList<QVariant> TAudioEqualizerList;
 
-#endif
+} // namespace Settings
+
+#endif // SETTINGS_AUDIOEQUALIZERLIST_H

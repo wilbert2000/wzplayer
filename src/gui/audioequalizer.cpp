@@ -247,10 +247,11 @@ void TAudioEqualizer::setDefaults() {
                                 "used as default."));
 }
 
-void TAudioEqualizer::setEqualizer(TAudioEqualizerList l) {
+void TAudioEqualizer::setEqualizer(const TAudioEqualizerList& l) {
+
 	int p = findPreset(l);
 	int index = presets_combo->findData(p);
-	if (index != 1) {
+	if (index >= 0) {
 		presets_combo->setCurrentIndex(index);
 	} else {
 		qWarning("TAudioEqualizer::setEqualizer: preset not found");
@@ -258,7 +259,7 @@ void TAudioEqualizer::setEqualizer(TAudioEqualizerList l) {
 	setValues(l);
 }
 
-void TAudioEqualizer::setValues(TAudioEqualizerList l) {
+void TAudioEqualizer::setValues(const TAudioEqualizerList& l) {
 	qDebug("TAudioEqualizer::setValues");
 
 	for (int n = 0; n < 10; n++) {
@@ -278,10 +279,12 @@ void TAudioEqualizer::presetChanged(int index) {
 	}
 }
 
-int TAudioEqualizer::findPreset(TAudioEqualizerList l) {
+int TAudioEqualizer::findPreset(const TAudioEqualizerList& l) {
+
 	QMap<int,TAudioEqualizerList>::iterator i;
 	for (i = preset_list.begin(); i != preset_list.end(); ++i) {
-		if (l == i.value()) return i.key();
+		if (l == i.value())
+			return i.key();
 	}
 	return User_defined;
 }

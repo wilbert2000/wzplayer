@@ -28,7 +28,7 @@
 #include "settings/smplayersettings.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
-#include "audioequalizerlist.h"
+#include "settings/audioequalizerlist.h"
 #include "settings/assstyles.h"
 #include "filters.h"
 #include "gui/autohidetoolbar.h"
