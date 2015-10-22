@@ -22,7 +22,7 @@
 #include <QDir>
 
 #include "settings/../paths.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include "filehash.h" // hash function
 
 namespace Settings {

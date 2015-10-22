@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MEDIASETTINGS_H_
-#define _MEDIASETTINGS_H_
+#ifndef SETTINGS_MEDIASETTINGS_H
+#define SETTINGS_MEDIASETTINGS_H
 
 
 /* Settings the user has set for this file, and that we need to */
@@ -27,11 +27,14 @@
 #include <QSize>
 #include <QPoint>
 #include "config.h"
-#include "mediadata.h"
 #include "subtracks.h"
 #include "audioequalizerlist.h"
 
 class QSettings;
+class TMediaData;
+
+
+namespace Settings {
 
 class TMediaSettings {
 
@@ -197,4 +200,6 @@ private:
 	void convertOldSelectedTrack(int &id);
 };
 
-#endif
+} // namespace Settings
+
+#endif // SETTINGS_MEDIASETTINGS_H

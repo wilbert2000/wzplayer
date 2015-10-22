@@ -20,7 +20,7 @@
 #define _SETTINGS_FILESETTINGS_BASE_H_
 
 #include "settings/smplayersettings.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 
 
 namespace Settings {

@@ -18,7 +18,7 @@
 
 #include "settings/tvsettings.h"
 #include "settings/../paths.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include <QSettings>
 #include <QFileInfo>
 

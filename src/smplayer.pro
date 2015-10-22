@@ -98,8 +98,8 @@ HEADERS += config.h \
     playerwindow.h \
 	mediadata.h \
 	audioequalizerlist.h \
-	mediasettings.h \
 	assstyles.h \
+    settings/mediasettings.h \
     settings/filters.h \
     settings/smplayersettings.h \
     settings/preferences.h \
@@ -197,8 +197,8 @@ SOURCES	+= version.cpp \
 	proc/playerprocess.cpp \
     playerwindow.cpp \
 	mediadata.cpp \
-	mediasettings.cpp \
 	assstyles.cpp \
+    settings/mediasettings.cpp \
     settings/filters.cpp \
     settings/smplayersettings.cpp \
     settings/preferences.cpp \

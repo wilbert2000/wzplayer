@@ -24,7 +24,7 @@
 
 #include "config.h"
 #include "mediadata.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include "settings/preferences.h"
 #include "core.h"
 #include "gui/guiconfig.h"

@@ -25,7 +25,7 @@
 
 #include "config.h"
 #include "mediadata.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
 #include "playerwindow.h"

@@ -18,7 +18,7 @@
 
 #include "settings/filesettings.h"
 #include "settings/../paths.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include <QFileInfo>
 
 namespace Settings {

@@ -18,7 +18,7 @@
 
 
 #include "subtracks.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include <QRegExp>
 #include <QDebug>
 
@@ -141,7 +141,7 @@ SubData SubTracks::itemAt(int n) const {
 // or SubNone if there are no subtitles
 int SubTracks::selectOne(QString preferred_lang, int default_sub) const {
 
-	int sub = TMediaSettings::SubNone;
+	int sub = Settings::TMediaSettings::SubNone;
 
 	if (subs.count() > 0) {
 		// First subtitle

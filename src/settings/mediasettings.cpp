@@ -19,12 +19,14 @@
 #include <QDebug>
 #include <QSettings>
 
+#include "settings/mediasettings.h"
 #include "settings/preferences.h"
-#include "mediasettings.h"
 #include "maps/tracks.h"
 #include "subtracks.h"
+#include "mediadata.h"
 
-using namespace Settings;
+
+namespace Settings {
 
 TMediaSettings::TMediaSettings(TMediaData* mdat) : md(mdat) {
 	reset();
@@ -588,3 +590,4 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	if (audio_use_channels == ChDefault) audio_use_channels = ChStereo;
 }
 
+} // namespace Settings

@@ -19,7 +19,7 @@
 #include "gui/pref/tv.h"
 #include "settings/preferences.h"
 #include "images.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 
 namespace Gui { namespace Pref {
 
@@ -48,8 +48,10 @@ QPixmap TTV::sectionIcon() {
 }
 
 void TTV::retranslateStrings() {
+
 	retranslateUi(this);
 
+	using namespace Settings;
 	int deinterlace_item = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
 	deinterlace_combo->addItem(tr("None"), TMediaSettings::NoDeinterlace);

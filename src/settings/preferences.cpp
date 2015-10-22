@@ -35,7 +35,7 @@
 #endif
 
 #include "paths.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
 #include "settings/filters.h"

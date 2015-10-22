@@ -22,7 +22,7 @@
 #include "settings/preferences.h"
 #include "filedialog.h"
 #include "images.h"
-#include "mediasettings.h"
+#include "settings/mediasettings.h"
 #include "paths.h"
 #include "playerid.h"
 
