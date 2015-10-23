@@ -21,23 +21,9 @@
 
 #define VERSION "15.9.0"
 
-#ifdef Q_OS_WIN
-#if defined(_WIN64)
-#define SMPWIN_ARCH "(64-bit)"
-#elif defined(_WIN32)
-#define SMPWIN_ARCH "(32-bit)"
-#endif
-#endif
 
 QString Version::printable() {
-
-	QString version = QString(VERSION) + " (svn r" + SVN_REVISION + ")";
-
-#ifdef SMPWIN_ARCH
-	version += " " + QString(SMPWIN_ARCH);
-#endif
-
-	return version;
+	return QString(VERSION) + " (svn r" + SVN_REVISION + ")";
 }
 
 QString Version::stable() {
