@@ -1938,7 +1938,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	if (!proc->startPlayer()) {
 		// TODO: error handling
-		qWarning("TCore::startPlayer: mplayer process didn't start");
+		qWarning("TCore::startPlayer: player process didn't start");
 	}
 }
 
