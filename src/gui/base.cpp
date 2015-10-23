@@ -52,19 +52,24 @@
 #include "images.h"
 #include "discname.h"
 #include "playerwindow.h"
-#include "logwindow.h"
 #include "clhelp.h"
 #include "filedialog.h"
+#include "links.h"
+#include "extensions.h"
+#include "version.h"
+
 #include "settings/preferences.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
-// TODO forward defs
+
+#include "gui/action.h"
+#include "gui/actiongroup.h"
 #include "gui/timeslider.h"
 #include "gui/widgetactions.h"
+#include "gui/actionseditor.h"
 #include "gui/editabletoolbar.h"
-#include "gui/eqslider.h"
-#include "gui/videoequalizer.h"
-#include "gui/audioequalizer.h"
+#include "gui/logwindow.h"
+#include "gui/playlist.h"
 #include "gui/filepropertiesdialog.h"
 #include "gui/inputdvddirectory.h"
 #include "gui/errordialog.h"
@@ -72,7 +77,17 @@
 #include "gui/inputurl.h"
 #include "gui/timedialog.h"
 #include "gui/playlist.h"
+#include "gui/videoequalizer.h"
+#include "gui/audioequalizer.h"
 #include "gui/stereo3ddialog.h"
+#include "gui/tvlist.h"
+
+#include "gui/pref/dialog.h"
+#include "gui/pref/general.h"
+#include "gui/pref/interface.h"
+#include "gui/pref/input.h"
+#include "gui/pref/advanced.h"
+#include "gui/pref/prefplaylist.h"
 
 #ifdef FIND_SUBTITLES
 #include "findsubtitleswindow.h"
@@ -82,29 +97,9 @@
 #include "videopreview.h"
 #endif
 
-#include "gui/actionseditor.h"
-
-#include "tvlist.h"
-
-#include "gui/pref/dialog.h"
-#include "gui/pref/general.h"
-#include "gui/pref/interface.h"
-#include "gui/pref/input.h"
-#include "gui/pref/advanced.h"
-#include "gui/pref/prefplaylist.h"
-
-#include "gui/action.h"
-#include "gui/actiongroup.h"
-#include "gui/playlist.h"
-
-#include "links.h"
-
 #ifdef MPRIS2
 #include "mpris2/mpris2.h"
 #endif
-
-#include "extensions.h"
-#include "version.h"
 
 #ifdef Q_OS_WIN
 #include "gui/deviceinfo.h"
@@ -116,9 +111,9 @@
 #endif
 
 #ifdef YOUTUBE_SUPPORT
-  #ifdef YT_USE_YTSIG
-  #include "codedownloader.h"
-  #endif
+#ifdef YT_USE_YTSIG
+#include "codedownloader.h"
+#endif
 #endif
 
 #ifdef REMINDER_ACTIONS
@@ -134,10 +129,10 @@
 #include "shutdown.h"
 #endif
 
+
 using namespace Settings;
 
 namespace Gui {
-
 
 TBase::TBase()
 	: QMainWindow()

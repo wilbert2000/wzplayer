@@ -43,7 +43,6 @@ class QMenu;
 
 class TMediaData;
 class TPlayerWindow;
-class TCore;
 
 class QLabel;
 #ifdef FIND_SUBTITLES
