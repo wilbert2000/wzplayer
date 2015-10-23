@@ -17,39 +17,27 @@
 */
 
 #include "version.h"
-
-#define USE_SVN_VERSIONS 1
+#include "svn_revision.h"
 
 #define VERSION "15.9.0"
-
-#if USE_SVN_VERSIONS
-#include "svn_revision.h"
-#else
-#define SVN_REVISION "7147"
-#endif
 
 #ifdef Q_OS_WIN
 #if defined(_WIN64)
 #define SMPWIN_ARCH "(64-bit)"
-#elif defined(_WIN32) && !defined(_WIN64)
+#elif defined(_WIN32)
 #define SMPWIN_ARCH "(32-bit)"
 #endif
 #endif
 
 QString Version::printable() {
-#if USE_SVN_VERSIONS
-#ifdef Q_OS_WIN
-    return QString(QString(VERSION) + " (svn r" + QString(SVN_REVISION) + ") " + QString(SMPWIN_ARCH));
-#else
-    return QString(QString(VERSION) + " (svn r" + QString(SVN_REVISION) + ")");
+
+	QString version = QString(VERSION) + " (svn r" + SVN_REVISION + ")";
+
+#ifdef SMPWIN_ARCH
+	version += " " + QString(SMPWIN_ARCH);
 #endif
-#else
-#ifdef Q_OS_WIN
-    return QString(QString(VERSION) + " " + QString(SMPWIN_ARCH));
-#else
-    return QString(VERSION);
-#endif
-#endif
+
+	return version;
 }
 
 QString Version::stable() {
