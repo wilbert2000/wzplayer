@@ -17,7 +17,6 @@
 */
 
 #include "inforeadermpv.h"
-#include "playerversion.h"
 #include <QStringList>
 #include <QProcess>
 #include <QDebug>
@@ -25,9 +24,7 @@
 
 InfoReaderMPV::InfoReaderMPV(QString mplayer_bin, QObject* parent)
 	: QObject(parent)
-	, mplayer_svn(0)
-{
-	mplayerbin = mplayer_bin;
+	, mplayerbin(mplayer_bin) {
 }
 
 InfoReaderMPV::~InfoReaderMPV() {
@@ -40,7 +37,6 @@ void InfoReaderMPV::getInfo() {
 	vc_list.clear();
 	ac_list.clear();
 	vf_list.clear();
-	mplayer_svn = -1;
 
 	vo_list = getList(run("--vo help"));
 	ao_list = getList(run("--ao help"));
@@ -53,18 +49,6 @@ void InfoReaderMPV::getInfo() {
 			vf_list.append(list[n].name());
 		}
 	}
-
-	QList<QByteArray> lines = run("--version");
-
-	QString mpv_version_line;
-	if (lines.count() >= 1) {
-		mpv_version_line = lines[0];
-		mplayer_svn = TPlayerVersion::playerVersion(mpv_version_line);
-		mpv_version = TPlayerVersion::mpvVersion();
-	}
-
-	qDebug() << "InfoReaderMPV::getInfo: version_line" << mpv_version_line;
-	qDebug() << "InfoReaderMPV::getInfo: mplayer_svn" << mplayer_svn;
 
 	option_list = getOptionsList(run("--list-options"));
 

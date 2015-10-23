@@ -197,11 +197,7 @@ void TGeneral::setData(TPreferences* pref) {
 
 #ifdef Q_OS_OS2
 	if (ao.isEmpty()) {
-		if (pref->mplayer_detected_version >= MPLAYER_KAI_VERSION) {
-			ao = "kai";
-		} else {
-			ao = "dart";
-		}
+		ao = "kai";
 	}
 #endif
 

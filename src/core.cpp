@@ -42,7 +42,6 @@
 #include "playerwindow.h"
 #include "desktopinfo.h"
 #include "helper.h"
-#include "playerversion.h"
 #include "colorutils.h"
 #include "discname.h"
 #include "extensions.h"
@@ -154,9 +153,6 @@ TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
 
 	connect(proc, SIGNAL(receivedStreamTitleAndUrl(QString,QString)),
 			 this, SLOT(streamTitleAndUrlChanged(QString,QString)));
-
-	connect(proc, SIGNAL(failedToParseMplayerVersion(QString)),
-			 this, SIGNAL(failedToParseMplayerVersion(QString)));
 
 	connect(this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection);
 
@@ -1127,13 +1123,6 @@ void TCore::startPlayer(QString file, double seek) {
 		mplayer_bin = fi.absoluteFilePath();
 	}
 
-	if (fi.baseName().toLower() == "mplayer2") {
-		if (!pref->mplayer_is_mplayer2) {
-			qDebug("TCore::startPlayer: this seems mplayer2");
-			pref->mplayer_is_mplayer2 = true;
-		}
-	}
-
 	proc->setExecutable(mplayer_bin);
 	proc->setFixedOptions();
 
@@ -1355,9 +1344,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 		proc->setOption("ass-font-scale", QString::number(mset.sub_scale_ass));
 
-		if (!pref->mplayer_is_mplayer2) {
-			proc->setOption("flip-hebrew",false); // It seems to be necessary to display arabic subtitles correctly when using -ass
-		}
+		proc->setOption("flip-hebrew", false); // It seems to be necessary to display arabic subtitles correctly when using -ass
 
 		if (pref->enable_ass_styles) {
 			QString ass_force_style;
@@ -1898,13 +1885,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	// Global
 	if (!pref->mplayer_additional_options.isEmpty()) {
-		QString additional_options = pref->mplayer_additional_options;
-		// mplayer2 doesn't support -fontconfig and -nofontconfig
-		if (pref->mplayer_is_mplayer2) {
-			additional_options.replace("-fontconfig", "");
-			additional_options.replace("-nofontconfig", "");
-		}
-		QStringList args = Proc::TProcess::splitArguments(additional_options);
+		QStringList args = Proc::TProcess::splitArguments(pref->mplayer_additional_options);
 		for (int n = 0; n < args.count(); n++) {
 			QString arg = args[n].simplified();
 			if (!arg.isEmpty()) {

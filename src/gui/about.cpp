@@ -25,7 +25,6 @@
 #include "settings/preferences.h"
 #include "images.h"
 #include "version.h"
-#include "inforeader.h"
 #include "links.h"
 
 using namespace Settings;
@@ -43,10 +42,6 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 	translators_icon->setPixmap(Images::icon("translators"));
 	license_icon->setPixmap(Images::icon("license"));
 
-	InfoReader* i = InfoReader::obj(pref->mplayer_bin);
-	i->getInfo();
-	QString mplayer_version = tr("Using %1").arg(i->playerVersion());
-
 	info->setText(
 		"<b>SMPlayer</b> &copy; 2006-2015 Ricardo Villalba &lt;rvm@users.sourceforge.net&gt;<br><br>"
 		"<b>" + tr("Version: %1").arg(Version::printable()) + "</b>" +
@@ -57,8 +52,8 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
         "<br>Experimental branch<br>"
 #endif
         "<br>" +
-        tr("Using Qt %1 (compiled with Qt %2)").arg(qVersion()).arg(QT_VERSION_STR) + "<br>" +
-		mplayer_version + "<br><br>" +
+		tr("Using Qt %1 (compiled with Qt %2)").arg(qVersion()).arg(QT_VERSION_STR)
+		+ "<br><br>" +
 		"<b>"+ tr("Links:") +"</b><br>"+
 		tr("Official website:") +" "+  link(URL_HOMEPAGE) +"<br>"+
 		tr("Support forum:") +" "+  link(URL_FORUM) +"<br>"+

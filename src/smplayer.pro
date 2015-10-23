@@ -90,7 +90,6 @@ HEADERS += config.h \
 	discname.h \
 	extensions.h \
 	desktopinfo.h \
-    playerversion.h \
 	playerid.h \
 	proc/process.h \
 	proc/playerprocess.h \
@@ -145,7 +144,6 @@ HEADERS += config.h \
     gui/filepropertiesdialog.h \
     gui/inputdvddirectory.h \
     gui/stereo3ddialog.h \
-    gui/inputmplayerversion.h \
     gui/verticaltext.h \
     gui/favoriteeditor.h \
     gui/favorites.h \
@@ -190,7 +188,6 @@ SOURCES	+= version.cpp \
 	discname.cpp \
 	extensions.cpp \
 	desktopinfo.cpp \
-    playerversion.cpp \
 	playerid.cpp \
 	proc/process.cpp \
 	proc/playerprocess.cpp \
@@ -243,7 +240,6 @@ SOURCES	+= version.cpp \
     gui/filepropertiesdialog.cpp \
     gui/inputdvddirectory.cpp \
     gui/stereo3ddialog.cpp \
-    gui/inputmplayerversion.cpp \
     gui/verticaltext.cpp \
     gui/favoriteeditor.cpp \
     gui/favorites.cpp \
@@ -287,9 +283,8 @@ FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/pref/drives.ui gui/pref/interface.ui gui/pref/performance.ui \
         gui/pref/input.ui gui/pref/subtitles.ui gui/pref/advanced.ui \
         gui/pref/prefplaylist.ui gui/pref/tv.ui gui/pref/updates.ui gui/pref/network.ui \
-        gui/favoriteeditor.ui gui/about.ui gui/inputmplayerversion.ui \
-        gui/errordialog.ui gui/timedialog.ui gui/stereo3ddialog.ui \
-        gui/toolbareditor.ui gui/multilineinputdialog.ui
+        gui/favoriteeditor.ui gui/about.ui gui/errordialog.ui gui/timedialog.ui \
+        gui/stereo3ddialog.ui gui/toolbareditor.ui gui/multilineinputdialog.ui
 
 contains(DEFINES, MPV_SUPPORT) {
     HEADERS += proc/mpvprocess.h inforeadermpv.h

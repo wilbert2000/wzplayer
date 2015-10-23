@@ -158,8 +158,6 @@ signals:
 	void receivedStreamTitle(QString);
 	void receivedStreamTitleAndUrl(QString,QString);
 
-	void failedToParseMplayerVersion(QString line_with_mplayer_version);
-
 	//! Emitted if a new video track has been added or an old one changed
 	void receivedVideoTrackInfo();
 

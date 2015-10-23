@@ -224,11 +224,6 @@ protected slots:
 
 	void checkPendingActionsToRun();
 
-#if REPORT_OLD_MPLAYER
-	void checkMplayerVersion();
-	void displayWarningAboutOldMplayer();
-#endif
-
 #ifdef CHECK_UPGRADED
 	void checkIfUpgraded();
 #endif
@@ -282,10 +277,6 @@ protected slots:
 #ifdef SINGLE_INSTANCE
 	void handleMessageFromOtherInstances(const QString& message);
 #endif
-
-	//! Called when core can't parse the mplayer version and there's no
-	//! version supplied by the user
-	void askForMplayerVersion(QString);
 
 	void showExitCodeFromPlayer(int exit_code);
 	void showErrorFromPlayer(QProcess::ProcessError);

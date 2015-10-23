@@ -78,14 +78,6 @@ public:
 	QStringList vfList() { return vf_list; }
 	QStringList optionList() { return option_list; }
 
-	int mplayerSVN() { return mplayer_svn; }
-	QString mpvVersion() { return mpv_version; }
-	QString mplayer2Version() { return mplayer2_version; }
-	bool isMplayer2() { return is_mplayer2; }
-	bool isMPV() { return is_mpv; }
-
-	QString playerVersion();
-
 	//! Returns an InfoReader object. If it didn't exist before, one
 	//! is created.
 	static InfoReader* obj(const QString & mplayer_bin = QString::null);
@@ -101,11 +93,6 @@ protected:
 	InfoList ac_list;
 	QStringList vf_list;
 	QStringList option_list;
-
-	int mplayer_svn;
-	QString mpv_version;
-	QString mplayer2_version;
-	bool is_mplayer2, is_mpv;
 
 private:
 	static InfoReader* static_obj;

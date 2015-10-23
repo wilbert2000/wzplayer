@@ -45,9 +45,6 @@ public:
 	QStringList vfList() { return vf_list; }
 	QStringList optionList() { return option_list; }
 
-	int mplayerSVN() { return mplayer_svn; }
-	QString mpvVersion() { return mpv_version; }
-
 protected:
 	QList<QByteArray> run(QString options);
 	InfoList getList(const QList<QByteArray> &);
@@ -66,9 +63,6 @@ protected:
 
 	QStringList vf_list;
 	QStringList option_list;
-
-	int mplayer_svn;
-	QString mpv_version;
 };
 
 #endif

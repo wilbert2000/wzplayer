@@ -383,10 +383,6 @@ public:
 
 	bool report_mplayer_crashes;
 
-#if REPORT_OLD_MPLAYER
-	bool reported_mplayer_is_old;
-#endif
-
 	bool auto_add_to_playlist; //!< Add files to open to playlist
 	AutoAddToPlaylistFilter media_to_add_to_playlist;
 
@@ -459,20 +455,6 @@ public:
 
 	int initial_audio_track;
 	int initial_subtitle_track;
-
-
-    /* ************
-       MPlayer info
-       ************ */
-
-	int mplayer_detected_version; 	//!< Latest version of mplayer parsed
-
-	//! Version of mplayer supplied by the user which will be used if
-	//! the version can't be parsed from mplayer output
-	int mplayer_user_supplied_version;
-
-	bool mplayer_is_mplayer2; //! True if the detected version is mplayer2
-	QString mplayer2_detected_version;
 
 
     /* *********

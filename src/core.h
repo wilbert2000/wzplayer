@@ -459,9 +459,6 @@ signals:
 	//! Player didn't started or crashed
 	void playerFailed(QProcess::ProcessError error);
 
-	// Resend signal from mplayerprocess:
-	void failedToParseMplayerVersion(QString line_with_mplayer_version);
-
 #ifdef YOUTUBE_SUPPORT
 	void signatureNotFound(const QString &);
 	void noSslSupport();

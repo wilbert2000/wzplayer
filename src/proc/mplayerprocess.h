@@ -122,8 +122,6 @@ protected:
 	virtual bool parseProperty(const QString& name, const QString& value);
 
 private:
-	int svn_version;
-
 	int sub_source;
 	bool sub_file;
 	bool sub_vob;

@@ -24,7 +24,6 @@
 
 #include "colorutils.h"
 #include "settings/preferences.h"
-#include "playerversion.h"
 
 using namespace Settings;
 
@@ -39,10 +38,7 @@ using namespace Settings;
 InfoReaderMplayer::InfoReaderMplayer(QString mplayer_bin, QObject* parent)
 	: QObject(parent)
 	, proc(0)
-	, mplayer_svn(0)
-	, is_mplayer2(false)
-{
-	mplayerbin = mplayer_bin;
+	, mplayerbin(mplayer_bin) {
 
 	proc = new QProcess(this);
 	proc->setProcessChannelMode(QProcess::MergedChannels);
@@ -56,7 +52,6 @@ void InfoReaderMplayer::getInfo() {
 	vo_list.clear();
 	ao_list.clear();
 	demuxer_list.clear();
-	mplayer_svn = -1;
 
 	run("-identify -vo help -ao help -demuxer help -vc help -ac help");
 }
@@ -199,12 +194,6 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 		reading_type = VC;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLines: found key: vc");
-	}
-
-	if (line.startsWith("MPlayer ") || line.startsWith("MPlayer2 ")) {
-		mplayer_svn = TPlayerVersion::playerVersion(line);
-		mplayer2_version = TPlayerVersion::mplayer2Version();
-		is_mplayer2 = TPlayerVersion::isMplayer2();
 	}
 }
 

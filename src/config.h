@@ -32,12 +32,6 @@
 //#define OVERLAY_VO "xv"
 #endif
 
-// If 1, smplayer will check if mplayer is old
-// and in that case it will report to the user
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-#define REPORT_OLD_MPLAYER 1
-#endif
-
 // If 1, the background logo will be animated
 #if QT_VERSION >= 0x040600
 /* #define LOGO_ANIMATION 1 */

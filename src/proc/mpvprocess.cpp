@@ -25,7 +25,6 @@
 
 #include "proc/playerprocess.h"
 #include "settings/preferences.h"
-#include "playerversion.h"
 #include "colorutils.h"
 #include "inforeader.h"
 

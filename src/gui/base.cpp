@@ -17,7 +17,7 @@
 */
 
 #include "config.h"
-#include "base.h"
+#include "gui/base.h"
 
 #include <QMessageBox>
 #include <QLabel>
@@ -55,10 +55,10 @@
 #include "logwindow.h"
 #include "clhelp.h"
 #include "filedialog.h"
-#include "playerversion.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
+// TODO forward defs
 #include "gui/timeslider.h"
 #include "gui/widgetactions.h"
 #include "gui/editabletoolbar.h"
@@ -67,7 +67,6 @@
 #include "gui/audioequalizer.h"
 #include "gui/filepropertiesdialog.h"
 #include "gui/inputdvddirectory.h"
-#include "gui/inputmplayerversion.h"
 #include "gui/errordialog.h"
 #include "gui/about.h"
 #include "gui/inputurl.h"
@@ -365,12 +364,6 @@ void TBase::createCore() {
 
 	connect(core, SIGNAL(mediaStartPlay()),
 			 this, SLOT(checkPendingActionsToRun()), Qt::QueuedConnection);
-#if REPORT_OLD_MPLAYER
-	connect(core, SIGNAL(mediaStartPlay()),
-			 this, SLOT(checkMplayerVersion()), Qt::QueuedConnection);
-#endif
-	connect(core, SIGNAL(failedToParseMplayerVersion(QString)),
-			 this, SLOT(askForMplayerVersion(QString)));
 
 	connect(core, SIGNAL(playerFailed(QProcess::ProcessError)),
 			 this, SLOT(showErrorFromPlayer(QProcess::ProcessError)));
@@ -3551,6 +3544,7 @@ void TBase::updateRecents() {
 }
 
 void TBase::clearRecentsList() {
+
 	int ret = QMessageBox::question(this, tr("Confirm deletion - SMPlayer"),
 				tr("Delete the list of recent files?"),
 				QMessageBox::Cancel, QMessageBox::Ok);
@@ -4441,39 +4435,6 @@ void TBase::checkPendingActionsToRun() {
 	}
 }
 
-#if REPORT_OLD_MPLAYER
-void TBase::checkMplayerVersion() {
-	qDebug("Gui::TBase::checkMplayerVersion");
-
-	// Qt 4.3.5 is crazy, I can't popup a messagebox here, it calls 
-	// this function once and again when the messagebox is shown
-
-	//if ((pref->mplayer_detected_version > 0) && (!TPlayerVersion::isMplayerAtLeast(25158))) {
-	//	QTimer::singleShot(1000, this, SLOT(displayWarningAboutOldMplayer()));
-	//}
-}
-
-void TBase::displayWarningAboutOldMplayer() {
-	qDebug("Gui::TBase::displayWarningAboutOldMplayer");
-
-	if (!pref->reported_mplayer_is_old) {
-		QMessageBox::warning(this, tr("Warning - Using old MPlayer"),
-			tr("The version of MPlayer (%1) installed on your system "
-			   "is obsolete. SMPlayer can't work well with it: some "
-			   "options won't work, subtitle selection may fail...")
-				.arg(TPlayerVersion::toString(pref->mplayer_detected_version)) +
-			"<br><br>" +
-			tr("Please, update your MPlayer.") +
-			"<br><br>" +
-			tr("(This warning won't be displayed anymore)"));
-
-		pref->reported_mplayer_is_old = true;
-	}
-	//else
-	//statusBar()->showMessage(tr("Using an old MPlayer, please update it"), 10000);
-}
-#endif
-
 #ifdef CHECK_UPGRADED
 void TBase::checkIfUpgraded() {
 	qDebug("Gui::TBase::checkIfUpgraded");
@@ -5088,22 +5049,6 @@ bool TBase::event(QEvent* e) {
 	return result;
 }
 #endif
-
-void TBase::askForMplayerVersion(QString line) {
-	qDebug("Gui::TBase::askForMplayerVersion: %s", line.toUtf8().data());
-
-	if (pref->mplayer_user_supplied_version <= 0) {
-		TInputMplayerVersion d(this);
-		d.setVersion(pref->mplayer_user_supplied_version);
-		d.setVersionFromOutput(line);
-		if (d.exec() == QDialog::Accepted) {
-			pref->mplayer_user_supplied_version = d.version();
-			qDebug("Gui::TBase::askForMplayerVersion: user supplied version: %d", pref->mplayer_user_supplied_version);
-		}
-	} else {
-		qDebug("Gui::TBase::askForMplayerVersion: already have a version supplied by user, so no asking");
-	}
-}
 
 void TBase::showExitCodeFromPlayer(int exit_code) {
 	qDebug("Gui::TBase::showExitCodeFromPlayer: %d", exit_code);

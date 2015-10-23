@@ -42,10 +42,6 @@ public:
 	InfoList vcList() { return vc_list; }
 	InfoList acList() { return ac_list; }
 
-	int mplayerSVN() { return mplayer_svn; }
-	QString mplayer2Version() { return mplayer2_version; }
-	bool isMplayer2() { return is_mplayer2; }
-
 protected slots:
 	virtual void readLine(QByteArray);
 
@@ -63,10 +59,6 @@ protected:
 	InfoList demuxer_list;
 	InfoList vc_list;
 	InfoList ac_list;
-
-	int mplayer_svn;
-	QString mplayer2_version;
-	bool is_mplayer2;
 
 private:
 	bool waiting_for_key;

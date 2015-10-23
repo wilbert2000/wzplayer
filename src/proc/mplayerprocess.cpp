@@ -25,7 +25,6 @@
 #include <QDebug>
 
 #include "settings/preferences.h"
-#include "playerversion.h"
 #include "colorutils.h"
 #include "subtracks.h"
 #include "maps/titletracks.h"
@@ -38,8 +37,7 @@ const double FRAME_BACKSTEP_TIME = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
 TMplayerProcess::TMplayerProcess(TMediaData* mdata)
-	: TPlayerProcess(TPlayerID::MPLAYER, mdata),
-	svn_version(-1) {
+	: TPlayerProcess(TPlayerID::MPLAYER, mdata) {
 }
 
 TMplayerProcess::~TMplayerProcess() {
@@ -976,19 +974,6 @@ bool TMplayerProcess::parseLine(QString& line) {
 		return parseMetaDataProperty(rx_meta_data.cap(1),
 									 rx_meta_data.cap(2));
 	}
-
-/*
-	if (svn_version == -1 && (line.startsWith("MPlayer ") || line.startsWith("MPlayer2 ", Qt::CaseInsensitive))) {
-		svn_version = MplayerVersion::mplayerVersion(line);
-		qDebug("Proc::TMplayerProcess::parseLine: MPlayer SVN: %d", svn_version);
-		if (svn_version <= 0) {
-			qWarning("Proc::TMplayerProcess::parseLine: couldn't parse mplayer version!");
-			emit failedToParseMplayerVersion(line);
-			svn_version = 0;
-		}
-		return true;
-	}
-*/
 
 	// Catch cache messages
 	if (rx_cache_empty.indexIn(line) >= 0) {

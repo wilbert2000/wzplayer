@@ -382,10 +382,6 @@ void TPreferences::reset() {
 
 	report_mplayer_crashes = true;
 
-#if REPORT_OLD_MPLAYER
-	reported_mplayer_is_old = false;
-#endif
-
 	auto_add_to_playlist = true;
 	media_to_add_to_playlist = NoFiles;
 
@@ -455,15 +451,6 @@ void TPreferences::reset() {
 	initial_audio_track = 1;
 	initial_subtitle_track = 1;
 
-
-    /* ************
-       MPlayer info
-       ************ */
-
-	mplayer_detected_version = -1; //None version parsed yet
-	mplayer_user_supplied_version = -1;
-	mplayer_is_mplayer2 = false;
-	mplayer2_detected_version = QString::null;
 
 
     /* *********
@@ -813,10 +800,6 @@ void TPreferences::save() {
 
 	setValue("report_mplayer_crashes", report_mplayer_crashes);
 
-#if REPORT_OLD_MPLAYER
-	setValue("reported_mplayer_is_old", reported_mplayer_is_old);
-#endif
-
 	setValue("auto_add_to_playlist", auto_add_to_playlist);
 	setValue("media_to_add_to_playlist", media_to_add_to_playlist);
 
@@ -902,18 +885,6 @@ void TPreferences::save() {
 	setValue("initial_subtitle_track", initial_subtitle_track);
 
 	endGroup(); // defaults
-
-
-    /* ************
-       MPlayer info
-       ************ */
-
-	beginGroup("mplayer_info");
-	setValue("mplayer_detected_version", mplayer_detected_version);
-	setValue("mplayer_user_supplied_version", mplayer_user_supplied_version);
-	setValue("is_mplayer2", mplayer_is_mplayer2);
-	setValue("mplayer2_detected_version", mplayer2_detected_version);
-	endGroup(); // mplayer_info
 
 
     /* *********
@@ -1298,10 +1269,6 @@ void TPreferences::load() {
 
 	report_mplayer_crashes = value("report_mplayer_crashes", report_mplayer_crashes).toBool();
 
-#if REPORT_OLD_MPLAYER
-	reported_mplayer_is_old = value("reported_mplayer_is_old", reported_mplayer_is_old).toBool();
-#endif
-
 	auto_add_to_playlist = value("auto_add_to_playlist", auto_add_to_playlist).toBool();
 	media_to_add_to_playlist = (AutoAddToPlaylistFilter) value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
 
@@ -1385,18 +1352,6 @@ void TPreferences::load() {
 
 	endGroup(); // defaults
 
-
-    /* ************
-       MPlayer info
-       ************ */
-
-	beginGroup("mplayer_info");
-	mplayer_detected_version = value("mplayer_detected_version", mplayer_detected_version).toInt();
-	mplayer_user_supplied_version = value("mplayer_user_supplied_version", mplayer_user_supplied_version).toInt();
-	mplayer_is_mplayer2 = value("is_mplayer2", mplayer_is_mplayer2).toBool();
-	mplayer2_detected_version = value("mplayer2_detected_version", mplayer2_detected_version).toString();
-
-	endGroup(); // mplayer_info
 
 
     /* *********

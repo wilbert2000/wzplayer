@@ -53,18 +53,16 @@ InfoReader* InfoReader::obj(const QString & mplayer_bin) {
 }
 
 InfoReader::InfoReader(QString mplayer_bin, QObject* parent)
-	: QObject(parent)
-	, mplayer_svn(0)
-	, is_mplayer2(false)
-	, is_mpv(false)
-{
+	: QObject(parent) {
+
 	setPlayerBin(mplayer_bin);
 }
 
 InfoReader::~InfoReader() {
 }
 
-void InfoReader::setPlayerBin(const QString & bin) {
+void InfoReader::setPlayerBin(const QString& bin) {
+
 	mplayerbin = bin;
 
 	QFileInfo fi(mplayerbin);
@@ -82,6 +80,7 @@ void InfoReader::setPlayerBin(const QString & bin) {
 }
 
 void InfoReader::getInfo() {
+
 	QString inifile = TPaths::configPath() + "/player_info.ini";
 	QSettings set(inifile, QSettings::IniFormat);
 
@@ -107,12 +106,6 @@ void InfoReader::getInfo() {
 			ac_list = convertListToInfoList(set.value("ac_list").toStringList());
 			vf_list = set.value("vf_list").toStringList();
 			option_list = set.value("option_list").toStringList();
-			//qDebug() << "InfoReader::getInfo: option_list:" << option_list;
-			mplayer_svn = set.value("mplayer_svn").toInt();
-			mpv_version = set.value("mpv_version").toString();
-			mplayer2_version = set.value("mplayer2_version").toString();
-			is_mplayer2 = set.value("is_mplayer2").toBool();
-			is_mpv = set.value("is_mpv").toBool();
 		}
 		set.endGroup();
 		if (got_info) {
@@ -122,7 +115,7 @@ void InfoReader::getInfo() {
 	}
 
 	if (TPlayerID::player(mplayerbin) == TPlayerID::MPV) {
-		#ifdef MPV_SUPPORT
+#ifdef MPV_SUPPORT
 		qDebug("InfoReader::getInfo: mpv");
 		InfoReaderMPV ir(mplayerbin, this);
 		ir.getInfo();
@@ -133,14 +126,9 @@ void InfoReader::getInfo() {
 		ac_list = ir.acList();
 		vf_list = ir.vfList();
 		option_list = ir.optionList();
-		mplayer_svn = ir.mplayerSVN();
-		mpv_version = ir.mpvVersion();
-		mplayer2_version = "";
-		is_mplayer2 = false;
-		is_mpv = true;
-		#endif
+#endif
 	} else {
-		#ifdef MPLAYER_SUPPORT
+#ifdef MPLAYER_SUPPORT
 		qDebug("InfoReader::getInfo: mplayer");
 		InfoReaderMplayer ir(mplayerbin, this);
 		ir.getInfo();
@@ -151,12 +139,7 @@ void InfoReader::getInfo() {
 		ac_list = ir.acList();
 		vf_list.clear();
 		option_list.clear();
-		mplayer_svn = ir.mplayerSVN();
-		mpv_version = "";
-		mplayer2_version = ir.mplayer2Version();
-		is_mplayer2 = ir.isMplayer2();
-		is_mpv = false;
-		#endif
+#endif
 	}
 
 	if (fi.exists()) {
@@ -171,27 +154,8 @@ void InfoReader::getInfo() {
 		set.setValue("ac_list", convertInfoListToList(ac_list));
 		set.setValue("vf_list", vf_list);
 		set.setValue("option_list", option_list);
-		set.setValue("mplayer_svn", mplayer_svn);
-		set.setValue("mpv_version", mpv_version);
-		set.setValue("mplayer2_version", mplayer2_version);
-		set.setValue("is_mplayer2", is_mplayer2);
-		set.setValue("is_mpv", is_mpv);
 		set.endGroup();
 	}
-}
-
-QString InfoReader::playerVersion() {
-	QString player = QString("MPlayer SVN r%1").arg(mplayer_svn);
-
-	if (is_mplayer2) {
-		player = "MPlayer2 " + mplayer2_version;
-	}
-	else
-	if (is_mpv) {
-		player = "MPV " + mpv_version;
-	}
-
-	return player;
 }
 
 QStringList InfoReader::convertInfoListToList(InfoList l) {
