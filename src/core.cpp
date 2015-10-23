@@ -2834,7 +2834,7 @@ void TCore::changeExternalSubFPS(int fps_id) {
 }
 
 // Audio equalizer functions
-void TCore::setAudioEqualizer(TAudioEqualizerList values, bool restart) {
+void TCore::setAudioEqualizer(Settings::TAudioEqualizerList values, bool restart) {
 	if (pref->global_audio_equalizer) {
 		pref->audio_equalizer = values;
 	} else {
