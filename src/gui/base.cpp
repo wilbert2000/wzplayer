@@ -163,6 +163,8 @@ TBase::TBase()
 	, arg_start_in_fullscreen(-1)
 	, ignore_show_hide_events(false)
 	, block_resize(false)
+	, center_window(false)
+
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
@@ -319,6 +321,9 @@ void TBase::createCore() {
 			 this, SLOT(gotCurrentTime(double)));
 	connect(core, SIGNAL(durationChanged(double)),
 			 this, SLOT(gotDuration(double)));
+
+	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
+			 this, SLOT(videoOutResolutionChanged(int,int)));
 
 	connect(core, SIGNAL(needResize(int, int)),
 			 this, SLOT(resizeWindow(int,int)));
@@ -2864,12 +2869,9 @@ void TBase::loadConfig() {
 			block_resize = true;
 		}
 	} else {
-		// Center window
-		// TODO: redo after load video
-		QRect desktop = QApplication::desktop()->availableGeometry(this);
-		QSize center_pos = (desktop.size() - size()) / 2;
-		if (center_pos.isValid())
-			move(center_pos.width(), center_pos.height());
+		centerWindow();
+		// Need to center again after video loaded
+		center_window = true;
 	}
 
 	pref->beginGroup("actions");
@@ -4753,18 +4755,39 @@ void TBase::toggleDoubleSize() {
 	else core->changeSize(200);
 }
 
+void TBase::centerWindow() {
+
+	QRect desktop = QApplication::desktop()->availableGeometry(this);
+	QSize center_pos = (desktop.size() - size()) / 2;
+	if (center_pos.isValid()) {
+		move(center_pos.width(), center_pos.height());
+	}
+}
+
+// Slot called by signal videoOutResolutionChanged
+void TBase::videoOutResolutionChanged(int w, int h) {
+	qDebug("Gui::TBase::videoOutResolutionChanged: %d, %d", w, h);
+
+	// Set first time if pref->save_window_size_on_exit selected
+	if (block_resize) {
+		block_resize = false;
+	} else {
+		resizeWindow(w, h);
+		if (center_window) {
+			center_window = false;
+			centerWindow();
+		}
+	}
+}
+
 // Slot called by signal needResize
 void TBase::resizeWindow(int w, int h) {
 	// qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
-	// Set first time if pref->save_window_size_on_exit selected
-	bool block = block_resize;
-	block_resize = false;
-
 	if (panel->isVisible()) {
 		// Don't resize if any mouse buttons down, like when dragging.
 		// Button state is synchronized to events, so can be old.
-		if (block || (pref->resize_method == Settings::TPreferences::Never)
+		if ((pref->resize_method == Settings::TPreferences::Never)
 			|| QApplication::mouseButtons()) {
 			return;
 		}
@@ -4830,6 +4853,7 @@ void TBase::slotNoVideo() {
 	qDebug("Gui::TBase::slotNoVideo");
 
 	block_resize = false;
+	center_window = false;
 
 	if (pref->hide_video_window_on_audio_files) {
 		hidePanel();

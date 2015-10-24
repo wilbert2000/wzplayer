@@ -3710,7 +3710,7 @@ void TCore::gotVideoOutResolution(int w, int h) {
 		}
 
 		if (!we_are_restarting)
-			emit needResize(w, h);
+			emit videoOutResolutionChanged(w, h);
 
 		// If resize is canceled adjust new video to old size
 		playerwindow->updateVideoWindow();

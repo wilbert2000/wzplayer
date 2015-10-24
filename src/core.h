@@ -416,6 +416,7 @@ protected:
 signals:
 	void buffering();
 	void aboutToStartPlaying(); // Signal emited just before to start mplayer
+	void videoOutResolutionChanged(int w, int h);
 	void mediaLoaded();
 	void mediaInfoChanged();
 	//! Sends the filename and title of the stream playing in this moment

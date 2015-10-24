@@ -216,6 +216,7 @@ protected slots:
 	virtual void setDefaultValuesFromVideoEqualizer();
 	virtual void changeVideoEqualizerBySoftware(bool b);
 
+	virtual void videoOutResolutionChanged(int w, int h);
 	virtual void newMediaLoaded();
 	virtual void updateMediaInfo();
 
@@ -784,6 +785,7 @@ private:
 
 	bool ignore_show_hide_events;
 	bool block_resize;
+	bool center_window;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
@@ -796,6 +798,7 @@ private:
 	void createToolbars();
 	QMenu* createToolbarMenu();
 	void hidePanel();
+	void centerWindow();
 };
 
 } // namespace Gui
