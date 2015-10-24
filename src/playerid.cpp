@@ -32,9 +32,6 @@ TPlayerID::Player TPlayerID::player(const QString& player_bin) {
 	} else {
 		bin_name = player_bin;
 	}
-	qDebug() << "TPlayerID::Player: player_bin:" << player_bin
-			 << "filename:" << bin_name;
-
 	if (bin_name.toLower().startsWith("mplayer")) {
 		p = MPLAYER;
 	} else {
