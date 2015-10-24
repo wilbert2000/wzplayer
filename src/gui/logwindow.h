@@ -44,12 +44,12 @@ public:
 	void appendText(QString text);
 	void appendHtml(QString text);
 
+	void retranslateStrings();
+
 signals:
 	void visibilityChanged(bool visible);
 
 protected:
-	virtual void retranslateStrings();
-	virtual void changeEvent (QEvent* event);
 	virtual void showEvent(QShowEvent*);
 	virtual void hideEvent(QShowEvent*);
 	virtual void closeEvent(QCloseEvent* event);

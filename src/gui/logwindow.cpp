@@ -44,6 +44,7 @@ TLogWindow::~TLogWindow() {
 }
 
 void TLogWindow::retranslateStrings() {
+
 	retranslateUi(this);
 
 	saveButton->setText("");
@@ -52,6 +53,7 @@ void TLogWindow::retranslateStrings() {
 	saveButton->setIcon(Images::icon("save"));
 	copyButton->setIcon(Images::icon("copy"));
 
+	setWindowTitle(tr("SMPlayer log"));
 	setWindowIcon(Images::icon("logo"));
 }
 
@@ -148,15 +150,6 @@ void TLogWindow::on_saveButton_clicked() {
                                    QMessageBox::NoButton);
 
 		}
-	}
-}
-
-// Language change stuff
-void TLogWindow::changeEvent(QEvent *e) {
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QWidget::changeEvent(e);
 	}
 }
 

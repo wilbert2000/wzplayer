@@ -2710,17 +2710,14 @@ void TBase::retranslateStrings() {
 
 	// PlayerWindow
 	playerwindow->retranslateStrings();
-
 	// Playlist
 	playlist->retranslateStrings();
-
 	// Log window
-	log_window->setWindowTitle(tr("SMPlayer log"));
+	log_window->retranslateStrings();
 
 	updateRecents();
 	updateWidgets();
 
-	// TODO:
 	// Update actions view in preferences
 	// It has to be done, here. The actions are translated after the
 	// preferences dialog.
