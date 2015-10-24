@@ -108,9 +108,10 @@ void TDialog::showSection(Section s) {
 }
 
 void TDialog::retranslateStrings() {
+
 	retranslateUi(this);
 
-	for (int n=0; n < pages->count(); n++) {
+	for (int n = 0; n < pages->count(); n++) {
 		TWidget* w = (TWidget*) pages->widget(n);
 		sections->item(n)->setText(w->sectionName());
 		sections->item(n)->setIcon(w->sectionIcon());
@@ -122,14 +123,6 @@ void TDialog::retranslateStrings() {
 	}
 
 	help_window->setWindowTitle(tr("SMPlayer - Help"));
-
-	// Qt 4.2 doesn't update the buttons' text
-#if QT_VERSION < 0x040300
-	okButton->setText(tr("OK"));
-	cancelButton->setText(tr("Cancel"));
-	applyButton->setText(tr("Apply"));
-	helpButton->setText(tr("Help"));
-#endif
 }
 
 void TDialog::accept() {

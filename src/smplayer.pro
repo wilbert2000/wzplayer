@@ -50,32 +50,7 @@ isEqual(QT_MAJOR_VERSION, 5) {
 }
 
 contains(QT_VERSION, ^4\\.[0-3]\\..*) {
-	message("Some features requires Qt > 4.3.")
-
-	contains(DEFINES, SINGLE_INSTANCE) {
-		DEFINES -= SINGLE_INSTANCE
-		message("SINGLE_INSTANCE disabled.")
-	}
-
-	contains(DEFINES, YOUTUBE_SUPPORT) {
-		DEFINES -= YOUTUBE_SUPPORT
-		message("YOUTUBE_SUPPORT disabled.")
-	}
-
-	contains(DEFINES, SKINS) {
-		DEFINES -= SKINS
-		message("SKINS disabled.")
-	}
-
-	contains(DEFINES, FIND_SUBTITLES) {
-		DEFINES -= FIND_SUBTITLES
-		message("FIND_SUBTITLES disabled.")
-	}
-
-	contains(DEFINES, UPDATE_CHECKER) {
-		DEFINES -= UPDATE_CHECKER
-		message("UPDATE_CHECKER disabled.")
-	}
+    error("Qt > 4.3 required")
 }
 
 HEADERS += config.h \
