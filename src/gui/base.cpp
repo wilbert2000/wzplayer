@@ -1408,8 +1408,9 @@ void TBase::createActions() {
 	connect(viewMenuBarAct, SIGNAL(toggled(bool)),
 			menuBar(), SLOT(setVisible(bool)));
 
-	// Toolbar
+	// Toolbars
 	editToolbarAct = new TAction(this, "edit_main_toolbar");
+	editToolbar2Act = new TAction(this, "edit_extra_toolbar");
 
 	// Control bar
 	editControlBarAct = new TAction(this, "edit_controlbar");
@@ -1875,11 +1876,13 @@ QMenu* TBase::createToolbarMenu() {
 	QMenu* menu = new QMenu(this);
 	menu->addAction(viewMenuBarAct);
 	menu->addAction(toolbar->toggleViewAction());
+	menu->addAction(toolbar2->toggleViewAction());
 	menu->addAction(controlbar->toggleViewAction());
 	menu->addAction(viewStatusBarAct);
 
 	menu->addSeparator();
 	menu->addAction(editToolbarAct);
+	menu->addAction(editToolbar2Act);
 	menu->addAction(editControlBarAct);
 
 	if (statusbar_menu) {
@@ -1905,6 +1908,7 @@ void TBase::createToolbars() {
 
 	menuBar()->setObjectName("menubar");
 
+	// Control bar
 	controlbar = new TAutohideToolbar(this, playerwindow);
 	controlbar->setObjectName("controlbar");
 	QStringList actions;
@@ -1929,12 +1933,13 @@ void TBase::createToolbars() {
 	action->setObjectName("toggle_controlbar");
 	action->setShortcut(Qt::Key_F4);
 
+	// Main toolbar
 	toolbar = new TEditableToolbar(this);
 	toolbar->setObjectName("toolbar");
 	actions.clear();
 	actions << "open_file" << "open_url" << "favorites_menu" << "separator"
-			<< "screenshot" << "separator" << "show_file_properties" << "show_playlist"
-			<< "show_tube_browser" << "separator" << "show_preferences"
+			<< "screenshot" << "separator" << "show_file_properties"
+			<< "show_playlist" << "separator" << "show_preferences"
 			<< "separator" << "play_prev" << "play_next";
 	toolbar->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar);
@@ -1944,6 +1949,22 @@ void TBase::createToolbars() {
 	action = toolbar->toggleViewAction();
 	action->setObjectName("toggle_main_toolbar");
 	action->setShortcut(Qt::Key_F5);
+
+	// Extra toolbar
+	toolbar2 = new TEditableToolbar(this);
+	toolbar2->setObjectName("toolbar2");
+	actions.clear();
+	actions << "show_tube_browser";
+	toolbar2->setDefaultActions(actions);
+	addToolBar(Qt::TopToolBarArea, toolbar2);
+	connect(editToolbar2Act, SIGNAL(triggered()),
+			toolbar2, SLOT(edit()));
+
+	action = toolbar2->toggleViewAction();
+	action->setObjectName("toggle_extra_toolbar");
+	action->setShortcut(Qt::Key_F6);
+
+	toolbar2->hide();
 }
 
 void TBase::setupNetworkProxy() {
@@ -2691,15 +2712,22 @@ void TBase::retranslateStrings() {
 	share_menu->menuAction()->setIcon(Images::icon("share"));
 #endif
 
+	// Toolbars
+	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
+	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
+
 	// Menu bar
 	viewMenuBarAct->change(tr("Me&nu bar"));
 
-	// Toolbar
+	// Main toolbar
 	toolbar->setWindowTitle(tr("&Main toolbar"));
 	toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 	editToolbarAct->change(tr("Edit main &toolbar"));
-	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
-	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
+
+	// Extra toolbar
+	toolbar2->setWindowTitle(tr("&Extra toolbar"));
+	toolbar2->toggleViewAction()->setIcon(Images::icon("extra_toolbar"));
+	editToolbar2Act->change(tr("Edit extra t&oolbar"));
 
 	// Control bar
 	controlbar->setWindowTitle(tr("&Control bar"));
@@ -2875,18 +2903,20 @@ void TBase::loadConfig() {
 	}
 
 	pref->beginGroup("actions");
-	// Using old name "toolbar1" to pick up old toolbars
 	toolbar->setActionsFromStringList(pref->value("toolbar1",
 		toolbar->defaultActions()).toStringList(), all_actions);
+	toolbar2->setActionsFromStringList(pref->value("toolbar2",
+		toolbar2->defaultActions()).toStringList(), all_actions);
 	// Using old name "controlwidget" to pick up old toolbars
 	controlbar->setActionsFromStringList(pref->value("controlwidget",
 		controlbar->defaultActions()).toStringList(), all_actions);
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
-	// Using old name "toolbar1" to pick up old toolbars
 	toolbar->setIconSize(pref->value("toolbar1",
 		toolbar->iconSize()).toSize());
+	toolbar2->setIconSize(pref->value("toolbar2",
+		toolbar2->iconSize()).toSize());
 	// Using old name "controlwidget" to pick up old toolbars
 	controlbar->setIconSize(pref->value("controlwidget",
 		controlbar->iconSize()).toSize());
@@ -2923,17 +2953,17 @@ void TBase::saveConfig() {
 		pref->setValue("state", (int) windowState());
 	}
 
-	// Control bar
+	// Toolbars
 	pref->beginGroup("actions");
-	// Using old name "toolbar1" for backward compat
 	pref->setValue("toolbar1", toolbar->actionsToStringList());
+	pref->setValue("toolbar2", toolbar2->actionsToStringList());
 	// Using old name "controlwidget" for backward compat
 	pref->setValue("controlwidget", controlbar->actionsToStringList());
 	pref->endGroup();
 
 	pref->beginGroup("toolbars_icon_size");
-	// Using old name "toolbar1" for backward compat
 	pref->setValue("toolbar1", toolbar->iconSize());
+	pref->setValue("toolbar2", toolbar2->iconSize());
 	// Using old name "controlwidget" for backward compat
 	pref->setValue("controlwidget", controlbar->iconSize());
 	pref->endGroup();
@@ -2978,7 +3008,6 @@ void TBase::showPlaylist(bool b) {
 		exitFullscreenIfNeeded();
 		playlist->show();
 	}
-	//updateWidgets();
 }
 
 void TBase::showVideoEqualizer() {
@@ -3241,7 +3270,6 @@ void TBase::applyFileProperties() {
 		}
 	}
 }
-
 
 void TBase::updateMediaInfo() {
 	qDebug("Gui::TBase::updateMediaInfo");
@@ -4225,6 +4253,7 @@ void TBase::didEnterFullscreen() {
 	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
 					  Helper::qtVersion())) {
 		toolbar->hide();
+		toolbar2->hide();
 		controlbar->resetPosition();
 	}
 	pref->endGroup();

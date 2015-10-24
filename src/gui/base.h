@@ -720,6 +720,7 @@ protected:
 
 	TAction* viewMenuBarAct;
 	TAction* editToolbarAct;
+	TAction* editToolbar2Act;
 	TAction* editControlBarAct;
 	TAction* viewStatusBarAct;
 
@@ -727,6 +728,7 @@ protected:
 	QMenu* statusbar_menu;
 
 	TEditableToolbar* toolbar;
+	TEditableToolbar* toolbar2;
 
 	TTimeSliderAction* timeslider_action;
 	TVolumeSliderAction* volumeslider_action;
