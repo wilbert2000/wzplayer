@@ -55,15 +55,15 @@ public:
 	TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TDialog();
 
-	TGeneral* mod_general() { return page_general; }
-	TInterface* mod_interface() { return page_interface; }
-	TInput* mod_input() { return page_input; }
-	TAdvanced* mod_advanced() { return page_advanced; }
-	TPrefPlaylist* mod_playlist() { return page_playlist; }
-	TUpdates* mod_updates() { return page_updates; }
-	TNetwork* mod_network() { return page_network; }
+	TGeneral* mod_general() const { return page_general; }
+	TInterface* mod_interface() const { return page_interface; }
+	TInput* mod_input() const { return page_input; }
+	TAdvanced* mod_advanced() const { return page_advanced; }
+	TPrefPlaylist* mod_playlist() const { return page_playlist; }
+	TUpdates* mod_updates() const { return page_updates; }
+	TNetwork* mod_network() const { return page_network; }
 
-	void addSection(TWidget *w);
+	void addSection(TWidget* w);
 
 	// Pass data to the standard dialogs
 	void setData(Settings::TPreferences* pref);
