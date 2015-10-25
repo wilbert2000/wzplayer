@@ -597,6 +597,11 @@ void TBase::createActions() {
 	connect(rewind3Act, SIGNAL(triggered()),
 			 core, SLOT(fastrewind()));
 
+	QList<QAction*> rewind_actions;
+	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
+	rewindbutton_action = new TSeekingButton(rewind_actions, this);
+	rewindbutton_action->setObjectName("rewindbutton_action");
+
 	forward1Act = new TAction(Qt::Key_Right, this, "forward1");
 	forward1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
 	connect(forward1Act, SIGNAL(triggered()),
@@ -609,6 +614,11 @@ void TBase::createActions() {
 	forward3Act = new TAction(Qt::Key_PageUp, this, "forward3");
 	connect(forward3Act, SIGNAL(triggered()),
 			 core, SLOT(fastforward()));
+
+	QList<QAction*> forward_actions;
+	forward_actions << forward1Act << forward2Act << forward3Act;
+	forwardbutton_action = new TSeekingButton(forward_actions, this);
+	forwardbutton_action->setObjectName("forwardbutton_action");
 
 	setAMarkerAct = new TAction(this, "set_a_marker");
 	connect(setAMarkerAct, SIGNAL(triggered()),
@@ -2303,9 +2313,7 @@ void TBase::retranslateStrings() {
 	*/
 
 	// Menu Play
-	playAct->change(tr("P&lay"));
-	playAct->setIcon(Images::icon("play"));
-
+	playAct->change(Images::icon("play"), tr("P&lay"));
 	pauseAct->change(Images::icon("pause"), tr("&Pause"));
 	stopAct->change(Images::icon("stop"), tr("&Stop"));
 	frameStepAct->change(Images::icon("frame_step"), tr("&Frame step"));
@@ -2314,7 +2322,10 @@ void TBase::retranslateStrings() {
 	playOrPauseAct->change(tr("Play / Pause"));
 	playOrPauseAct->setIcon(Images::icon("play_pause"));
 
+	// Rewind/forward
 	setJumpTexts(); // Texts for rewind*Act and forward*Act
+	rewindbutton_action->setText(tr("3 in 1 rewind"));
+	forwardbutton_action->setText(tr("3 in 1 forward"));
 
 	// Submenu A-B
 	setAMarkerAct->change(Images::icon("a_marker"), tr("Set &A marker"));
@@ -2467,10 +2478,9 @@ void TBase::retranslateStrings() {
 	incOSDScaleAct->change(tr("Size &+"));
 	decOSDScaleAct->change(tr("Size &-"));
 
-	// TPlaylist
+	// Playlist
 	playNextAct->change(tr("&Next"));
 	playPrevAct->change(tr("Pre&vious"));
-
 	playNextAct->setIcon(Images::icon("next"));
 	playPrevAct->setIcon(Images::icon("previous"));
 
@@ -2562,10 +2572,6 @@ void TBase::retranslateStrings() {
 	videosize_menu->menuAction()->setText(tr("Si&ze"));
 	videosize_menu->menuAction()->setIcon(Images::icon("video_size"));
 
-	/*
-	panscan_menu->menuAction()->setText(tr("&Pan && scan"));
-	panscan_menu->menuAction()->setIcon(Images::icon("panscan"));
-	*/
 	zoom_menu->menuAction()->setText(tr("Zoo&m"));
 	zoom_menu->menuAction()->setIcon(Images::icon("zoom"));
 
@@ -2738,6 +2744,10 @@ void TBase::retranslateStrings() {
 	statusbar_menu->menuAction()->setText(tr("St&atusbar"));
 	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
 	viewStatusBarAct->change(tr("&Status bar"));
+
+	// Sliders
+	timeslider_action->setText(tr("Time slider"));
+	volumeslider_action->setText(tr("Volume slider"));
 
 	// TODO: make sure the "<empty>" string is translated
 
@@ -3682,7 +3692,6 @@ void TBase::updateWidgets() {
 	// Forced subs
 	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
 
-	// TODO:
 	panel->setFocus();
 }
 

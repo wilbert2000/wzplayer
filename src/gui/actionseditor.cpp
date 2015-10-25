@@ -549,16 +549,32 @@ TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 	return shortcut_list;
 }
 
-QString TActionsEditor::actionToString(const QAction& action) {
+QString TActionsEditor::actionTextToDescription(const QString& text, const QString& action_name) {
 
-	// Comma seperated list of shortcuts
-	return shortcutsToString(action.shortcuts());
+	// Time label uses text() to display time?
+	if (action_name == "timelabel_action") {
+		return tr("Display time");
+	}
+
+	QString s = text;
+	s = s.replace("&", "");
+	s = s.replace(".", "");
+	return s;
 }
 
-void TActionsEditor::setActionFromString(QAction& action, const QString& s) {
-	//qDebug() << "TActionsEditor::setActionFromString:" << s;
+QString TActionsEditor::actionToString(const QAction& action) {
 
-	action.setShortcuts(stringToShortcuts(s));
+	QString s = shortcutsToString(action.shortcuts());
+	QString action_text = actionTextToDescription(action.text(), action.objectName());
+	QString action_icon_text = actionTextToDescription(action.iconText(), action.objectName());
+	if (action_text != action_icon_text) {
+		qDebug() << "Gui::TActionsEditor::actionToString: name" << action.objectName()
+				 << "text" << action.text()
+				 << "icon text" << action.iconText();
+		s += "\t" + action.iconText();
+	}
+
+	return s;
 }
 
 void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
@@ -569,12 +585,38 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 	TActionList actions = o->findChildren<QAction*>();
 	for (int n = 0; n < actions.count(); n++) {
 		QAction* action = actions[n];
-		if (!action->objectName().isEmpty() && !action->inherits("QWidgetAction")) {
-			set->setValue(action->objectName(), actionToString(*action));
+		QString action_name = action->objectName();
+		if (!action_name.isEmpty()) {
+			if (action->inherits("QWidgetAction")) {
+				qDebug() << "Gui::TActionsEditor::saveToConfig: skipping QWidgetAction"
+						 << action_name;
+			} else {
+				set->setValue(action->objectName(), actionToString(*action));
+			}
 		}
 	}
 
 	set->endGroup();
+}
+
+void TActionsEditor::setActionFromString(QAction& action, const QString& s) {
+	//qDebug() << "TActionsEditor::setActionFromString:" << action.objectName() << s;
+
+	static QRegExp rx("^([^\\t]*)(\\t(.*))?");
+
+	if (rx.indexIn(s) >= 0) {
+		QString shortcuts = rx.cap(1);
+		//qDebug() << "Gui::TActionsEditor::setActionFromString: setting shortcut"
+		//		 << action.objectName() << "to" << shortcuts;
+		action.setShortcuts(stringToShortcuts(shortcuts));
+
+		QString icon_text = rx.cap(3).trimmed();
+		if (!icon_text.isEmpty()) {
+			qDebug() << "Gui::TActionsEditor::setActionFromString: setting icon text"
+					 << action.objectName() << "to" << icon_text;
+			action.setIconText(icon_text);
+		}
+	}
 }
 
 void TActionsEditor::loadFromConfig(const TActionList& all_actions, QSettings* set) {
@@ -584,9 +626,15 @@ void TActionsEditor::loadFromConfig(const TActionList& all_actions, QSettings* s
 
 	for (int n = 0; n < all_actions.count(); n++) {
 		QAction* action = all_actions[n];
-		if (!action->inherits("QWidgetAction")) {
-			setActionFromString(*action, set->value(action->objectName(),
-				shortcutsToString(action->shortcuts())).toString());
+		if (action) {
+			if (action->inherits("QWidgetAction")) {
+				qDebug() << "Gui::TActionsEditor::loadFromConfig: skipping QWidgetAction"
+						 << action->objectName();
+			} else {
+				setActionFromString(*action,
+					set->value(action->objectName(),
+						shortcutsToString(action->shortcuts())).toString());
+			}
 		}
 	}
 

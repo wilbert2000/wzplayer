@@ -64,6 +64,7 @@ class TActionGroup;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
+class TSeekingButton;
 class TAutohideToolbar;
 class TLogWindow;
 class TPlaylist;
@@ -729,11 +730,14 @@ protected:
 
 	TEditableToolbar* toolbar;
 	TEditableToolbar* toolbar2;
+	TAutohideToolbar* controlbar;
 
 	TTimeSliderAction* timeslider_action;
 	TVolumeSliderAction* volumeslider_action;
 	TTimeLabelAction* time_label_action;
-	TAutohideToolbar* controlbar;
+
+	TSeekingButton* rewindbutton_action;
+	TSeekingButton* forwardbutton_action;
 
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;

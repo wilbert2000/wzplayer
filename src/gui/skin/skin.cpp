@@ -20,6 +20,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include "gui/action.h"
+#include "gui/widgetactions.h"
 #include "gui/playlist.h"
 #include "gui/skin/mediabarpanel.h"
 #include "gui/actionseditor.h"
@@ -42,16 +43,6 @@ TSkin::~TSkin() {
 
 void TSkin::createActions() {
 	qDebug("Gui::TSkin::createActions");
-
-	QList<QAction*> rewind_actions;
-	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
-	rewindbutton_action = new TSeekingButton(rewind_actions, this);
-	rewindbutton_action->setObjectName("rewindbutton_action");
-
-	QList<QAction*> forward_actions;
-	forward_actions << forward1Act << forward2Act << forward3Act;
-	forwardbutton_action = new TSeekingButton(forward_actions, this);
-	forwardbutton_action->setObjectName("forwardbutton_action");
 
 	playOrPauseAct->setCheckable(true);
 

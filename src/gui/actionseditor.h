@@ -53,6 +53,7 @@ public:
 	void addActions(QWidget* widget);
 
 	// Static functions
+	static QString actionTextToDescription(const QString& text, const QString& action_name);
 	static QAction* findAction(QObject* o, const QString& name);
 	static QStringList actionsNames(QObject* o);
 

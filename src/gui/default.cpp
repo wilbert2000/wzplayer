@@ -25,7 +25,6 @@
 #include <QList>
 
 #include "gui/action.h"
-#include "gui/widgetactions.h"
 #include "colorutils.h"
 #include "images.h"
 
@@ -46,16 +45,6 @@ TDefault::~TDefault() {
 
 void TDefault::createActions() {
 	qDebug("Gui::TDefault::createActions");
-
-	QList<QAction*> rewind_actions;
-	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
-	rewindbutton_action = new TSeekingButton(rewind_actions, this);
-	rewindbutton_action->setObjectName("rewindbutton_action");
-
-	QList<QAction*> forward_actions;
-	forward_actions << forward1Act << forward2Act << forward3Act;
-	forwardbutton_action = new TSeekingButton(forward_actions, this);
-	forwardbutton_action->setObjectName("forwardbutton_action");
 
 	// Statusbar
 	viewVideoInfoAct = new TAction(this, "toggle_video_info");

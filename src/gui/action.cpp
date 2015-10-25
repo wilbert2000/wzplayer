@@ -55,7 +55,7 @@ void TAction::addActionToParent() {
 	}
 }
 
-void TAction::change(const QIcon & icon, const QString & text) {
+void TAction::change(const QIcon& icon, const QString& text) {
 
 	setIcon(icon);
 	change(text);
@@ -64,28 +64,13 @@ void TAction::change(const QIcon & icon, const QString & text) {
 void TAction::change(const QString& text) {
 
 	setText(text);
+
 	QString accel_text = shortcut().toString();
-	QString s = text;
-	s.replace("&", "");
 	if (!accel_text.isEmpty()) {
+		QString s = text;
+		s.replace("&", "");
 		setToolTip(s + " (" + accel_text + ")");
-		setIconText(s);
 	}
-
-	/*
-	if (text.isEmpty()) {
-		QString s = menuText;
-		s = s.replace("&","");
-		setText(s);
-
-		if (!accel_text.isEmpty())
-			setToolTip(s + " ("+ accel_text +")");
-	} else {
-		setText(text);
-		if (!accel_text.isEmpty())
-			setToolTip(text + " ("+ accel_text +")");
-	}
-	*/
 }
 
 } // namespace Gui

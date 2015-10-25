@@ -26,6 +26,7 @@
 #include "ui_toolbareditor.h"
 
 class QListWidget;
+class QToolBar;
 
 namespace Gui {
 
@@ -40,21 +41,19 @@ public:
 
 	void setAllActions(const TActionList& actions_list);
 	void setActiveActions(const TActionList& actions_list);
-
-	QStringList activeActionsToStringList() const;
-
 	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
-	QStringList defaultActions() const { return default_actions; }
-
 	void setIconSize(int size);
 	int iconSize() const;
 
-	//! Save the widget's list of actions into a QStringList 
-	static QStringList save(QWidget *w);
+	static QAction* findAction(const QString& action_name, const TActionList& actions_list);
+	QStringList saveActions(TActionList& all_actions);
 
-	//! Add to the widget the actions specified in actions.
-	//! all_actions is the list of all available actions
-	static void load(QWidget* w, const QStringList& actions, const TActionList& all_actions);
+protected:
+	TActionList all_actions_copy;
+	QStringList default_actions;
+
+	static void populateList(QListWidget* w, const TActionList& actions_list, bool add_separators = false);
+	void virtual resizeEvent(QResizeEvent*);
 
 protected slots:
 	void on_up_button_clicked();
@@ -64,18 +63,15 @@ protected slots:
 	void on_separator_button_clicked();
 	void restoreDefaults();
 	void checkRowsAllList(int currentRow);
-	void checkRowsActiveList(int currentRow);
+	void onCurrentCellChanged(int currentRow, int currentColumn,
+							  int previousRow, int previousColumn);
 
-protected:
-	static QAction* findAction(const QString& action_name, const TActionList& actions_list);
-
-	static void populateList(QListWidget* w, const TActionList& actions_list, bool add_separators = false);
-	static int findItem(const QString& action_name, QListWidget* w);
-
-	static QString fixname(const QString& name, const QString& action_name);
-
-	TActionList all_actions_copy;
-	QStringList default_actions;
+private:
+	void insertRowFromAction(int row, const QAction& action);
+	void insertRowSeparator(int row);
+	void resizeColumns();
+	void swapRows(int row1, int row2);
+	void setCurrentRow(int row);
 };
 
 } // namespace Gui

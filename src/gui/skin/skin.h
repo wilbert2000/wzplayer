@@ -21,11 +21,8 @@
 
 #include "gui/guiconfig.h"
 #include "gui/action.h"
-#include "gui/widgetactions.h"
-#include "gui/autohidetoolbar.h"
 #include "gui/baseplus.h"
 #include "gui/skin/mediabarpanel.h"
-#include "gui/editabletoolbar.h"
 
 class QMenu;
 class QPushButton;
@@ -45,9 +42,6 @@ public:
 	virtual void loadConfig();
 	virtual void saveConfig();
 
-public slots:
-	//virtual void showPlaylist(bool b);
-
 protected:
 	virtual void retranslateStrings();
 	virtual QString settingsGroupName() { return "skin_gui"; }
@@ -65,9 +59,6 @@ protected slots:
 protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
 	QAction* mediaBarPanelAction;
-
-	TSeekingButton* rewindbutton_action;
-	TSeekingButton* forwardbutton_action;
 
 	TAction* viewVideoInfoAct;
 	TAction* scrollTitleAct;

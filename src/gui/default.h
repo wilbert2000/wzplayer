@@ -63,9 +63,6 @@ protected:
 	QLabel* ab_section_display;
 	QLabel* video_info_display;
 
-	TSeekingButton* rewindbutton_action;
-	TSeekingButton* forwardbutton_action;
-
 	TAction* viewFrameCounterAct;
 	TAction* viewVideoInfoAct;
 

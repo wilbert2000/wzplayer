@@ -17,8 +17,10 @@
 */
 
 #include "gui/editabletoolbar.h"
-#include "gui/toolbareditor.h"
 #include <QDebug>
+#include "settings/preferences.h"
+#include "gui/toolbareditor.h"
+#include "gui/actionseditor.h"
 #include "gui/base.h"
 
 namespace Gui {
@@ -32,13 +34,53 @@ TEditableToolbar::~TEditableToolbar() {
 }
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& actions, const TActionList& all_actions) {
+	qDebug("Gui::TEditableToolbar::setActionsFromStringList: '%s'", objectName().toUtf8().data());
 
 	clear();
-	TToolbarEditor::load(this, actions, all_actions);
+
+	for (int n = 0; n < actions.count(); n++) {
+		QString action_name = actions[n];
+		if (action_name == "separator") {
+			QAction* action = new QAction(this);
+			action->setSeparator(true);
+			addAction(action);
+		} else {
+			QAction* action = TToolbarEditor::findAction(action_name, all_actions);
+			if (action) {
+				addAction(action);
+				if (action->objectName().endsWith("_menu")) {
+					// If the action is a menu change some of its properties
+					QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
+					if (button) {
+						button->setPopupMode(QToolButton::InstantPopup);
+					}
+				}
+			} else {
+				qWarning("Gui::TEditableToolbar::setActionsFromStringList: action %s not found",
+						 action_name.toUtf8().data());
+			}
+		}
+	}
 }
 
 QStringList TEditableToolbar::actionsToStringList() {
-	return TToolbarEditor::save(this);
+	qDebug() << "Gui::TEditableToolbar::actionsToStringList: saving" << objectName();
+
+	TActionList action_list = actions();
+	QStringList list;
+
+	for (int n = 0; n < action_list.count(); n++) {
+		QAction* action = action_list[n];
+		if (action->isSeparator()) {
+			list << "separator";
+		} else if (action->objectName().isEmpty()) {
+			qWarning("Gui::TEditableToolbar::actionsToStringList: unknown action at pos %d", n);
+		} else {
+			list << action->objectName();
+		}
+	}
+
+	return list;
 }
 
 void TEditableToolbar::edit() {
@@ -48,14 +90,18 @@ void TEditableToolbar::edit() {
 	TToolbarEditor e(main_window);
 	e.setAllActions(all_actions);
 	e.setActiveActions(actions());
-	e.setDefaultActions(defaultActions());
+	e.setDefaultActions(default_actions);
 	e.setIconSize(iconSize().width());
 
 	if (e.exec() == QDialog::Accepted) {
-		QStringList r = e.activeActionsToStringList();
-		setActionsFromStringList(r, all_actions);
+		QStringList action_names = e.saveActions(all_actions);
+		setActionsFromStringList(action_names, all_actions);
 		resize(width(), e.iconSize());
 		setIconSize(QSize(e.iconSize(), e.iconSize()));
+
+		// Save actions to pref
+		TActionsEditor::saveToConfig(main_window, Settings::pref);
+		Settings::pref->sync();
 	}
 }
 
