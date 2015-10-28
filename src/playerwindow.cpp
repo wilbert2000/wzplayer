@@ -35,11 +35,9 @@
 #include "desktopinfo.h"
 #include "colorutils.h"
 #include "images.h"
-
+#include "settings/preferences.h"
 #include "proc/playerprocess.h"
 
-
-/* ---------------------------------------------------------------------- */
 
 TPlayerLayer::TPlayerLayer(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
@@ -299,6 +297,12 @@ void TPlayerWindow::updateSizeGroup() {
 			//qDebug("TPlayerWindow::updateSizegroup: width %d%% and height %d%% factor mismatch",
 			//	   size_factor_x, size_factor_y);
 		}
+
+		// Store smallest size factor in pref
+		if (size_factor_y < size_factor_x) {
+			size_factor_x = size_factor_y;
+		}
+		Settings::pref->size_factor = (double)size_factor_x / 100;
 	}
 }
 
