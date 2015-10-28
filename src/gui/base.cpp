@@ -4267,6 +4267,8 @@ void TBase::didEnterFullscreen() {
 	}
 	pref->endGroup();
 
+	toolbar->didEnterFullscreen();
+	toolbar2->didEnterFullscreen();
 	controlbar->didEnterFullscreen();
 
 	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
@@ -4306,6 +4308,10 @@ void TBase::didExitFullscreen() {
 	pref->beginGroup(settingsGroupName());
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 	pref->endGroup();
+
+	controlbar->didExitFullscreen();
+	toolbar2->didExitFullscreen();
+	toolbar->didExitFullscreen();
 
 	viewMenuBarAct->setChecked(menubar_visible);
 	viewStatusBarAct->setChecked(statusbar_visible);

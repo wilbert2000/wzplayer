@@ -198,12 +198,14 @@ void TAutohideToolbar::startAutoHide() {
 void TAutohideToolbar::didEnterFullscreen() {
 	//qDebug("TAutohideToolbar::didEnterFullscreen");
 
+	TEditableToolbar::didEnterFullscreen();
+
 	setAllowedAreas(Qt::NoToolBarArea);
 	// The panel will not yet have its fullscreen size by now, so need to post
 	// enable auto_hide to prevent using the wrong screen size in
 	// resizeToolbar() and moveEvent().
 	fullscreen = true;
-	QTimer::singleShot(250, this, SLOT(startAutoHide()));
+	QTimer::singleShot(300, this, SLOT(startAutoHide()));
 }
 
 void TAutohideToolbar::aboutToExitFullscreen() {

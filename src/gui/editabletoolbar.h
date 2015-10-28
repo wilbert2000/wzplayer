@@ -38,18 +38,26 @@ public:
 	TEditableToolbar(TBase* mainwindow);
 	virtual ~TEditableToolbar();
 
-	void setActionsFromStringList(const QStringList& actions, const TActionList& all_actions);
-	QStringList actionsToStringList();
+	void setActionsFromStringList(const QStringList& acts, const TActionList& all_actions);
+	QStringList actionsToStringList() const { return actions; }
 
 	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
 	QStringList defaultActions() const { return default_actions; }
+
+	virtual void didEnterFullscreen();
+	virtual void didExitFullscreen();
 
 public slots:
 	void edit();
 
 protected:
-	QStringList default_actions;
 	TBase* main_window;
+
+private:
+	QStringList actions;
+	QStringList default_actions;
+
+	void reload();
 };
 
 } // namesapce Gui

@@ -33,54 +33,49 @@ TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 TEditableToolbar::~TEditableToolbar() {
 }
 
-void TEditableToolbar::setActionsFromStringList(const QStringList& actions, const TActionList& all_actions) {
-	qDebug("Gui::TEditableToolbar::setActionsFromStringList: '%s'", objectName().toUtf8().data());
+void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const TActionList& all_actions) {
+	qDebug() << "Gui::TEditableToolbar::setActionsFromStringList: loading toolbar" << objectName();
 
 	clear();
+	actions = acts;
 
-	for (int n = 0; n < actions.count(); n++) {
-		QString action_name = actions[n];
-		if (action_name == "separator") {
-			QAction* action = new QAction(this);
-			action->setSeparator(true);
-			addAction(action);
+	QString action_name;
+	bool ns, fs;
+	int i = 0;
+	while (i < actions.count()) {
+		TToolbarEditor::stringToAction(actions[i], action_name, ns, fs);
+		if (action_name.isEmpty()) {
+			qWarning() << "Gui::TEditableToolbar::setActionsFromStringList: malformed action"
+					   << actions[i] << "at pos" << i;
+			actions.removeAt(i);
 		} else {
-			QAction* action = TToolbarEditor::findAction(action_name, all_actions);
-			if (action) {
-				addAction(action);
-				if (action->objectName().endsWith("_menu")) {
-					// If the action is a menu change some of its properties
-					QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
-					if (button) {
-						button->setPopupMode(QToolButton::InstantPopup);
+			bool vis = pref->fullscreen ? fs : ns;
+			if (vis) {
+				if (action_name == "separator") {
+					QAction* action = TToolbarEditor::newSeparator(this);
+					addAction(action);
+				} else {
+					QAction* action = TToolbarEditor::findAction(action_name, all_actions);
+					if (action) {
+						addAction(action);
+						// If the action is a menu change some of its properties
+						if (action->objectName().endsWith("_menu")) {
+							QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
+							if (button) {
+								button->setPopupMode(QToolButton::InstantPopup);
+							}
+						}
+					} else {
+						qWarning() << "Gui::TEditableToolbar::setActionsFromStringList: action"
+								   << action_name << "not found";
+						actions.removeAt(i);
+						i--;
 					}
 				}
-			} else {
-				qWarning("Gui::TEditableToolbar::setActionsFromStringList: action %s not found",
-						 action_name.toUtf8().data());
-			}
+			} // if (vis)
+			i++;
 		}
 	}
-}
-
-QStringList TEditableToolbar::actionsToStringList() {
-	qDebug() << "Gui::TEditableToolbar::actionsToStringList: saving" << objectName();
-
-	TActionList action_list = actions();
-	QStringList list;
-
-	for (int n = 0; n < action_list.count(); n++) {
-		QAction* action = action_list[n];
-		if (action->isSeparator()) {
-			list << "separator";
-		} else if (action->objectName().isEmpty()) {
-			qWarning("Gui::TEditableToolbar::actionsToStringList: unknown action at pos %d", n);
-		} else {
-			list << action->objectName();
-		}
-	}
-
-	return list;
 }
 
 void TEditableToolbar::edit() {
@@ -89,20 +84,36 @@ void TEditableToolbar::edit() {
 	TActionList all_actions = main_window->getAllNamedActions();
 	TToolbarEditor e(main_window);
 	e.setAllActions(all_actions);
-	e.setActiveActions(actions());
+	e.setActiveActions(actions);
 	e.setDefaultActions(default_actions);
 	e.setIconSize(iconSize().width());
 
 	if (e.exec() == QDialog::Accepted) {
-		QStringList action_names = e.saveActions(all_actions);
-		setActionsFromStringList(action_names, all_actions);
-		resize(width(), e.iconSize());
-		setIconSize(QSize(e.iconSize(), e.iconSize()));
-
+		// Get action names and update actions in all_actions
+		QStringList new_actions = e.saveActions();
 		// Save actions to pref
 		TActionsEditor::saveToConfig(main_window, Settings::pref);
-		Settings::pref->sync();
+		// Load new actions
+		setActionsFromStringList(new_actions, all_actions);
+		resize(width(), e.iconSize());
+		setIconSize(QSize(e.iconSize(), e.iconSize()));
 	}
+}
+
+void TEditableToolbar::reload() {
+
+	TActionList all_actions = main_window->getAllNamedActions();
+	setActionsFromStringList(actions, all_actions);
+}
+
+void TEditableToolbar::didEnterFullscreen() {
+	// qDebug("TEditableToolbar::didEnterFullscreen");
+	reload();
+}
+
+void TEditableToolbar::didExitFullscreen() {
+	// qDebug("TEditableToolbar::didExitFullscreen");
+	reload();
 }
 
 } // namespace Gui

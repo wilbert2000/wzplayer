@@ -21,6 +21,8 @@
 #include <QDebug>
 #include <QToolBar>
 #include <QToolButton>
+#include <QScrollBar>
+#include <QTimer>
 #include <QMatrix>
 
 #include "gui/actionseditor.h"
@@ -38,6 +40,7 @@ enum cols {
 
 TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
+	, fix_scrollbars(true)
 {
 	setupUi(this);
 
@@ -91,51 +94,41 @@ int TToolbarEditor::iconSize() const {
 	return iconsize_spin->value();
 }
 
-void TToolbarEditor::populateList(QListWidget* w, const TActionList& actions_list, bool add_separators) {
+void TToolbarEditor::populateList(QListWidget* w, const TActionList& actions_list) {
 
 	w->clear();
 
 	for (int n = 0; n < actions_list.count(); n++) {
 		QAction* action = actions_list[n];
-		if (action) {
-			if (!action->objectName().isEmpty()) {
-				QListWidgetItem* i = new QListWidgetItem;
-				QString text = TActionsEditor::actionTextToDescription(action->text(), action->objectName());
-				i->setText(text + " ("+ action->objectName() +")");
-				QIcon icon = action->icon();
-				if (icon.isNull()) {
-					icon = Images::icon("empty_icon");
-				}
-				i->setIcon(icon);
-				i->setData(Qt::UserRole, action->objectName());
-				w->addItem(i);
-			} else if (action->isSeparator() && add_separators) {
-				QListWidgetItem* i = new QListWidgetItem;
-				//i->setText(tr("(separator)"));
-				i->setText("---------");
-				i->setData(Qt::UserRole, "separator");
-				i->setIcon(Images::icon("empty_icon"));
-				w->addItem(i);
+		if (action && !action->objectName().isEmpty() && !action->isSeparator()) {
+			QListWidgetItem* i = new QListWidgetItem;
+			QString text = TActionsEditor::actionTextToDescription(action->text(), action->objectName());
+			i->setText(text + " ("+ action->objectName() +")");
+			QIcon icon = action->icon();
+			if (icon.isNull()) {
+				icon = Images::icon("empty_icon");
 			}
+			i->setIcon(icon);
+			i->setData(Qt::UserRole, action->objectName());
+			w->addItem(i);
 		}
 	}
 }
 
 void TToolbarEditor::setAllActions(const TActionList& actions_list) {
 
-	populateList(all_actions_list, actions_list, false);
-	all_actions_copy = actions_list;
+	all_actions = &actions_list;
+	populateList(all_actions_list, actions_list);
 }
 
-Qt::ItemFlags item_flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+void TToolbarEditor::insertRowFromAction(int row, QAction* action, bool ns, bool fs) {
+	//qDebug() << "Gui::TToolbarEditor::insertRowFromAction:" << row << action->objectName();
 
-void TToolbarEditor::insertRowFromAction(int row, const QAction& action) {
-	qDebug() << "Gui::TToolbarEditor::insertRowFromAction:" << row << action.objectName();
-
+	Qt::ItemFlags item_flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 	active_actions_table->insertRow(row);
 
 	// Icon
-	QIcon icon = action.icon();
+	QIcon icon = action->icon();
 	if (icon.isNull()) {
 		icon = Images::icon("empty_icon");
 	}
@@ -144,59 +137,91 @@ void TToolbarEditor::insertRowFromAction(int row, const QAction& action) {
 	active_actions_table->setItem(row, COL_ICON, cell);
 
 	// Name
-	cell = new QTableWidgetItem(action.objectName());
+	cell = new QTableWidgetItem(action->objectName());
 	cell->setFlags(item_flags);
 	active_actions_table->setItem(row, COL_NAME, cell);
 
 	// Description
-	QString text = TActionsEditor::actionTextToDescription(action.iconText(), action.objectName());
+	QString text = TActionsEditor::actionTextToDescription(
+		action->iconText(), action->objectName());
 	cell = new QTableWidgetItem(text);
-	cell->setFlags(item_flags | Qt::ItemIsEditable);
+	if (action->isSeparator() || action->inherits("QWidgetAction")) {
+		cell->setFlags(item_flags);
+	} else {
+		cell->setFlags(item_flags | Qt::ItemIsEditable);
+	}
 	active_actions_table->setItem(row, COL_DESC, cell);
 
 	// Normal screen
 	cell = new QTableWidgetItem();
 	cell->setFlags(item_flags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-	cell->setCheckState(Qt::Checked);
+	cell->setCheckState(ns ? Qt::Checked : Qt::Unchecked);
 	active_actions_table->setItem(row, COL_NS, cell);
 
 	// Full screen
 	cell = new QTableWidgetItem();
 	cell->setFlags(item_flags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-	cell->setCheckState(Qt::Checked);
+	cell->setCheckState(fs ? Qt::Checked : Qt::Unchecked);
 	active_actions_table->setItem(row, COL_FS, cell);
 }
 
-void TToolbarEditor::insertRowSeparator(int row) {
+QAction* TToolbarEditor::newSeparator(QWidget* parent) {
 
-	active_actions_table->insertRow(row);
+	static int sep_number = 0;
 
-	// Icon
-	QTableWidgetItem* cell = new QTableWidgetItem(Images::icon("empty_icon"), "");
-	cell->setFlags(item_flags);
-	active_actions_table->setItem(row, COL_ICON, cell);
+	QAction* action = new QAction(parent);
+	action->setSeparator(true);
+	sep_number++;
+	action->setObjectName("separator" + QString::number(sep_number));
+	return action;
+}
 
-	// Name
-	cell = new QTableWidgetItem("separator");
-	cell->setFlags(item_flags);
-	active_actions_table->setItem(row, COL_NAME, cell);
+void TToolbarEditor::insertSeparator(int row, bool ns, bool fs) {
 
-	// Description
-	cell = new QTableWidgetItem("");
-	cell->setFlags(item_flags);
-	active_actions_table->setItem(row, COL_DESC, cell);
+	QAction* action = newSeparator(0);
+	insertRowFromAction(row, action, ns, fs);
+	delete action;
+}
 
-	// Normal screen
-	cell = new QTableWidgetItem();
-	cell->setFlags(item_flags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-	cell->setCheckState(Qt::Checked);
-	active_actions_table->setItem(row, COL_NS, cell);
 
-	// Full screen
-	cell = new QTableWidgetItem();
-	cell->setFlags(item_flags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-	cell->setCheckState(Qt::Checked);
-	active_actions_table->setItem(row, COL_FS, cell);
+void TToolbarEditor::stringToAction(const QString& s, QString& action_name, bool& ns, bool&fs) {
+
+	// name|0|1
+	static QRegExp rx("^([^|]+)(\\|(\\d+)\\|(\\d+))?");
+
+	if (rx.indexIn(s) >= 0) {
+		action_name = rx.cap(1);
+		ns = rx.cap(3).trimmed() != "0";
+		fs = rx.cap(4).trimmed() != "0";
+	} else {
+		action_name = "";
+	}
+}
+
+void TToolbarEditor::setActiveActions(const QStringList& actions) {
+
+	active_actions_table->clearContents();
+
+	QString action_name;
+	bool ns, fs;
+	int row = 0;
+	for(int i = 0; i < actions.count(); i++) {
+		stringToAction(actions[i], action_name, ns, fs);
+		if (action_name == "separator") {
+			insertSeparator(row, ns, fs);
+			row++;
+		} else {
+			QAction* action = findAction(action_name, *all_actions);
+			if (action) {
+				insertRowFromAction(row, action, ns, fs);
+				row++;
+			}
+		}
+	}
+
+	if (active_actions_table->rowCount() > 0) {
+		active_actions_table->setCurrentCell(0, COL_DESC);
+	}
 }
 
 void TToolbarEditor::resizeColumns() {
@@ -205,48 +230,33 @@ void TToolbarEditor::resizeColumns() {
 
 	int icon_width = active_actions_table->columnWidth(COL_ICON);
 	int check_width = active_actions_table->columnWidth(COL_NS);
-	int w = (active_actions_table->width()
-			 - icon_width
-			 - 2 * check_width
-			 - 2 * active_actions_table->columnCount()) / 2;
+
+	int w = active_actions_table->width()
+			- icon_width
+			- 2 * check_width
+			- 2 * active_actions_table->columnCount();
+
+	if (active_actions_table->verticalScrollBar()->isVisible()) {
+		w -= active_actions_table->verticalScrollBar()->width();
+		fix_scrollbars = false;
+	}
+
+	w = w / 2;
 	active_actions_table->setColumnWidth(COL_NAME, w);
 	active_actions_table->setColumnWidth(COL_DESC, w);
+
+	// Fix scrollbars not yet visible
+	if (fix_scrollbars) {
+		fix_scrollbars = false;
+		QTimer::singleShot(250, this, SLOT(resizeColumns()));
+	}
 }
 
-void TToolbarEditor::resizeEvent(QResizeEvent*) {
+void TToolbarEditor::resizeEvent(QResizeEvent* event) {
+	//qDebug("TToolbarEditor::resizeEvent");
+
+	QDialog::resizeEvent(event);
 	resizeColumns();
-}
-
-void TToolbarEditor::setActiveActions(const TActionList& actions_list) {
-
-	active_actions_table->clearContents();
-
-	int row = 0;
-	for (int n = 0; n < actions_list.count(); n++) {
-		QAction* action = actions_list[n];
-		if (action) {
-			if (!action->objectName().isEmpty()) {
-				insertRowFromAction(row, *action);
-				row++;
-			} else if (action->isSeparator()) {
-				insertRowSeparator(row);
-				row++;
-			}
-		}
-	}
-	if (active_actions_table->rowCount() > 0) {
-		active_actions_table->setCurrentCell(0, COL_DESC);
-	}
-}
-
-void TToolbarEditor::swapRows(int row1, int row2) {
-
-	for(int col = 0; col < active_actions_table->columnCount(); col++) {
-		QTableWidgetItem* cell1 = active_actions_table->takeItem(row1, col);
-		QTableWidgetItem* cell2 = active_actions_table->takeItem(row2, col);
-		active_actions_table->setItem(row1, col, cell2);
-		active_actions_table->setItem(row2, col, cell1);
-	}
 }
 
 void TToolbarEditor::setCurrentRow(int row) {
@@ -267,6 +277,16 @@ void TToolbarEditor::setCurrentRow(int row) {
 
 	if (row >= 0) {
 		active_actions_table->setCurrentCell(row, col);
+	}
+}
+
+void TToolbarEditor::swapRows(int row1, int row2) {
+
+	for(int col = 0; col < active_actions_table->columnCount(); col++) {
+		QTableWidgetItem* cell1 = active_actions_table->takeItem(row1, col);
+		QTableWidgetItem* cell2 = active_actions_table->takeItem(row2, col);
+		active_actions_table->setItem(row1, col, cell2);
+		active_actions_table->setItem(row2, col, cell1);
 	}
 }
 
@@ -298,9 +318,9 @@ void TToolbarEditor::on_right_button_clicked() {
 		QListWidgetItem* item = all_actions_list->item(row);
 		if (item) {
 			QString action_name = item->data(Qt::UserRole).toString();
-			QAction* action = findAction(action_name, all_actions_copy);
+			QAction* action = findAction(action_name, *all_actions);
 			if (action) {
-				insertRowFromAction(dest_row, *action);
+				insertRowFromAction(dest_row, action, true, true);
 				active_actions_table->setCurrentCell(dest_row, COL_DESC);
 			}
 		}
@@ -322,32 +342,24 @@ void TToolbarEditor::on_separator_button_clicked() {
 	int row = active_actions_table->currentRow();
 	if (row < 0)
 		row = 0;
-	insertRowSeparator(row);
+	insertSeparator(row, true, true);
 }
 
 void TToolbarEditor::restoreDefaults() {
 	qDebug("Gui::TToolbarEditor::restoreDefaults");
 
-	populateList(all_actions_list, all_actions_copy, false);
-
-	// Create list of actions
-	TActionList actions;
-	for (int n = 0; n < default_actions.count(); n++) {
-		QString action = default_actions[n];
-		if (action == "separator") {
-			QAction* sep = new QAction(this);
-			sep->setSeparator(true);
-			actions.push_back(sep);
-		} else {
-			QAction* found_action = findAction(action, all_actions_copy);
-			if (found_action)
-				actions.push_back(found_action);
-		}
-	}
-	setActiveActions(actions);
+	setActiveActions(default_actions);
 }
 
-QStringList TToolbarEditor::saveActions(TActionList& all_actions) {
+bool TToolbarEditor::getVis(int row, int col) {
+
+	QTableWidgetItem* item = active_actions_table->item(row, col);
+	if (item)
+		return item->checkState() != Qt::Unchecked;
+	return true;
+}
+
+QStringList TToolbarEditor::saveActions() {
 	qDebug("TToolbarEditor::saveActions");
 
 	QStringList list;
@@ -356,26 +368,44 @@ QStringList TToolbarEditor::saveActions(TActionList& all_actions) {
 		QTableWidgetItem* item = active_actions_table->item(row, COL_NAME);
 		if (item) {
 			QString action_name = item->text();
-			list << action_name;
+			if (action_name.startsWith("separator")) {
+				action_name = "separator";
+			}
+			QString s = action_name;
 
-			// Update icon text
-			QAction* action = findAction(action_name, all_actions);
-			if (action) {
-				item = active_actions_table->item(row, COL_DESC);
-				if (item) {
-					QString action_icon_text = TActionsEditor::actionTextToDescription(
-						item->text(), action_name).trimmed();
-					if (!action_icon_text.isEmpty()) {
-						QString action_text = TActionsEditor::actionTextToDescription(action->text(), action_name);
-						if (action_text != action_icon_text) {
-							action->setIconText(action_icon_text);
-							qDebug() << "Gui::TToolbarEditor::saveActions: updated icon text"
-									 << action_name << "to" << action_icon_text;
-						} else {
-							action_icon_text = TActionsEditor::actionTextToDescription(action->iconText(), action_name);
-							if (action_icon_text != action_text) {
-								action->setIconText(action_text);
-								qDebug() << "Gui::TToolbarEditor::saveActions: cleared icon text" << action_name;
+			bool ns = getVis(row, COL_NS);
+			bool fs = getVis(row, COL_FS);
+			if (ns) {
+				if (!fs) {
+					s += "|1|0";
+				}
+			} else if (fs) {
+				s += "|0|1";
+			} else {
+				s += "|0|0";
+			}
+			list << s;
+
+			if (action_name != "separator") {
+				// Update icon text
+				QAction* action = findAction(action_name, *all_actions);
+				if (action) {
+					item = active_actions_table->item(row, COL_DESC);
+					if (item) {
+						QString action_icon_text = TActionsEditor::actionTextToDescription(
+													   item->text(), action_name).trimmed();
+						if (!action_icon_text.isEmpty()) {
+							QString action_text = TActionsEditor::actionTextToDescription(action->text(), action_name);
+							if (action_text != action_icon_text) {
+								action->setIconText(action_icon_text);
+								qDebug() << "Gui::TToolbarEditor::saveActions: updated icon text"
+										 << action_name << "to" << action_icon_text;
+							} else {
+								action_icon_text = TActionsEditor::actionTextToDescription(action->iconText(), action_name);
+								if (action_icon_text != action_text) {
+									action->setIconText(action_text);
+									qDebug() << "Gui::TToolbarEditor::saveActions: cleared icon text" << action_name;
+								}
 							}
 						}
 					}

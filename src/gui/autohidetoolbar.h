@@ -44,7 +44,7 @@ public:
 	void resizeToolbar();
 	void resetPosition() { reset_pos = true; }
 
-	void didEnterFullscreen();
+	virtual void didEnterFullscreen();
 	void aboutToExitFullscreen();
 
 	virtual void setVisible(bool visible);

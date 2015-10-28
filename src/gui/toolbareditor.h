@@ -40,20 +40,19 @@ public:
 	virtual ~TToolbarEditor();
 
 	void setAllActions(const TActionList& actions_list);
-	void setActiveActions(const TActionList& actions_list);
+	void setActiveActions(const QStringList& actions);
 	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
 	void setIconSize(int size);
 	int iconSize() const;
 
+	QStringList saveActions();
 	static QAction* findAction(const QString& action_name, const TActionList& actions_list);
-	QStringList saveActions(TActionList& all_actions);
+	static QAction* newSeparator(QWidget* parent);
+	static void stringToAction(const QString& s, QString& action_name, bool& ns, bool&fs);
 
 protected:
-	TActionList all_actions_copy;
-	QStringList default_actions;
-
-	static void populateList(QListWidget* w, const TActionList& actions_list, bool add_separators = false);
-	void virtual resizeEvent(QResizeEvent*);
+	static void populateList(QListWidget* w, const TActionList& actions_list);
+	void virtual resizeEvent(QResizeEvent*event);
 
 protected slots:
 	void on_up_button_clicked();
@@ -65,11 +64,16 @@ protected slots:
 	void checkRowsAllList(int currentRow);
 	void onCurrentCellChanged(int currentRow, int currentColumn,
 							  int previousRow, int previousColumn);
+	void resizeColumns();
 
 private:
-	void insertRowFromAction(int row, const QAction& action);
-	void insertRowSeparator(int row);
-	void resizeColumns();
+	const TActionList* all_actions;
+	QStringList default_actions;
+	bool fix_scrollbars;
+
+	bool getVis(int row, int col);
+	void insertRowFromAction(int row, QAction* action, bool ns, bool fs);
+	void insertSeparator(int row, bool ns, bool fs);
 	void swapRows(int row1, int row2);
 	void setCurrentRow(int row);
 };
