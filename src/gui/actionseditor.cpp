@@ -551,7 +551,7 @@ TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 
 QString TActionsEditor::actionTextToDescription(const QString& text, const QString& action_name) {
 
-	// Time label uses text() to display time?
+	// TODO: Time label uses text() to display time?
 	if (action_name == "timelabel_action") {
 		return tr("Display time");
 	}
@@ -588,8 +588,8 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 		QString action_name = action->objectName();
 		if (!action_name.isEmpty()) {
 			if (action->inherits("QWidgetAction")) {
-				qDebug() << "Gui::TActionsEditor::saveToConfig: skipping QWidgetAction"
-						 << action_name;
+				//qDebug() << "Gui::TActionsEditor::saveToConfig: skipping QWidgetAction"
+				//		 << action_name;
 			} else {
 				set->setValue(action->objectName(), actionToString(*action));
 			}
@@ -628,8 +628,8 @@ void TActionsEditor::loadFromConfig(const TActionList& all_actions, QSettings* s
 		QAction* action = all_actions[n];
 		if (action) {
 			if (action->inherits("QWidgetAction")) {
-				qDebug() << "Gui::TActionsEditor::loadFromConfig: skipping QWidgetAction"
-						 << action->objectName();
+				//qDebug() << "Gui::TActionsEditor::loadFromConfig: skipping QWidgetAction"
+				//		 << action->objectName();
 			} else {
 				setActionFromString(*action,
 					set->value(action->objectName(),
