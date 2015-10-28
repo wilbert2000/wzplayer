@@ -151,8 +151,9 @@ void TPanelSeeker::mouseMoveEvent(QMouseEvent *m)
     }
 }
 
-void TPanelSeeker::mouseReleaseEvent(QMouseEvent *m)
-{    
+void TPanelSeeker::mouseReleaseEvent(QMouseEvent *m) {
+	Q_UNUSED(m)
+
     setSliderDown(false);        
     if(isPressed)
     {
