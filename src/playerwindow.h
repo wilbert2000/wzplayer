@@ -232,7 +232,6 @@ private:
 	bool dragging;
 	bool kill_fake_event;
 
-	bool fullscreen;
 	bool enable_messages;
 
 	bool autohide_cursor;
