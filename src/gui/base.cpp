@@ -177,6 +177,8 @@ TBase::TBase()
 	// constructor, if possible.
 	default_style = qApp->style()->objectName();
 	if (!pref->style.isEmpty()) {
+		// Remove a previous stylesheet to prevent a crash
+		qApp->setStyleSheet("");
 		qApp->setStyle(pref->style);
 	}
 
@@ -699,6 +701,13 @@ void TBase::createActions() {
 	screenshotsAct = new TAction(QKeySequence("Shift+D"), this, "multiple_screenshots");
 	connect(screenshotsAct, SIGNAL(triggered()),
 			 core, SLOT(screenshots()));
+
+#ifdef CAPTURE_STREAM
+	capturingAct = new TAction( /*Qt::Key_C,*/ this, "capture_stream");
+	connect(capturingAct, SIGNAL(triggered()),
+			core, SLOT(switchCapturing()) );
+#endif
+
 
 #ifdef VIDEOPREVIEW
 	videoPreviewAct = new TAction(this, "video_preview");
@@ -2042,6 +2051,9 @@ void TBase::setActionsEnabled(bool b) {
 	videoEqualizerAct->setEnabled(b);
 	screenshotAct->setEnabled(b);
 	screenshotsAct->setEnabled(b);
+#ifdef CAPTURE_STREAM
+	capturingAct->setEnabled(b);
+#endif
 	flipAct->setEnabled(b);
 	mirrorAct->setEnabled(b);
 	stereo3dAct->setEnabled(b);
@@ -2158,6 +2170,10 @@ void TBase::enableActionsOnPlaying() {
 	screenshotAct->setEnabled(screenshots_enabled);
 	screenshotsAct->setEnabled(screenshots_enabled);
 
+#ifdef CAPTURE_STREAM
+	capturingAct->setEnabled(!pref->capture_directory.isEmpty() && QFileInfo(pref->capture_directory).isDir());
+#endif
+
 	// Enable or disable the audio equalizer
 	audioEqualizerAct->setEnabled(pref->use_audio_equalizer);
 
@@ -2184,6 +2200,9 @@ void TBase::enableActionsOnPlaying() {
 		videoEqualizerAct->setEnabled(false);
 		screenshotAct->setEnabled(false);
 		screenshotsAct->setEnabled(false);
+#ifdef CAPTURE_STREAM
+		capturingAct->setEnabled(false);
+#endif
 		flipAct->setEnabled(false);
 		mirrorAct->setEnabled(false);
 		stereo3dAct->setEnabled(false);
@@ -2360,6 +2379,9 @@ void TBase::retranslateStrings() {
 	videoEqualizerAct->change(Images::icon("equalizer"), tr("&Equalizer"));
 	screenshotAct->change(Images::icon("screenshot"), tr("&Screenshot"));
 	screenshotsAct->change(Images::icon("screenshots"), tr("Start/stop takin&g screenshots"));
+#ifdef CAPTURE_STREAM
+	capturingAct->change(Images::icon("record"), tr("Start/stop capturing stream"));
+#endif
 #ifdef VIDEOPREVIEW
 	videoPreviewAct->change(Images::icon("video_preview"), tr("Thumb&nail Generator..."));
 #endif

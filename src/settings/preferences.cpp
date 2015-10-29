@@ -85,6 +85,7 @@ void TPreferences::reset() {
 	use_screenshot = true;
 #ifdef MPV_SUPPORT
 	screenshot_template = "cap_%F_%p_%02n";
+	screenshot_format = "jpg";
 #endif
 	screenshot_directory="";
 #ifdef PORTABLE_APP
@@ -96,6 +97,10 @@ void TPreferences::reset() {
 		screenshot_directory = default_screenshot_path;
 	}
 	#endif
+#endif
+
+#ifdef CAPTURE_STREAM
+	capture_directory = "";
 #endif
 
 	dont_remember_media_settings = false;
@@ -293,6 +298,8 @@ void TPreferences::reset() {
 #endif
 
 	use_edl_files = true;
+
+	use_playlist_option = false;
 
 	prefer_ipv4 = true;
 
@@ -511,14 +518,19 @@ void TPreferences::save() {
 	setValue("driver/audio_output", ao);
 
 	setValue("use_screenshot", use_screenshot);
-	#ifdef MPV_SUPPORT
+#ifdef MPV_SUPPORT
 	setValue("screenshot_template", screenshot_template);
-	#endif
-	#if QT_VERSION >= 0x040400
+	setValue("screenshot_format", screenshot_format);
+#endif
+#if QT_VERSION >= 0x040400
 	setValue("screenshot_folder", screenshot_directory);
-	#else
+#else
 	setValue("screenshot_directory", screenshot_directory);
-	#endif
+#endif
+
+#ifdef CAPTURE_STREAM
+	setValue("capture_directory", capture_directory);
+#endif
 
 	setValue("dont_remember_media_settings", dont_remember_media_settings);
 	setValue("dont_remember_time_pos", dont_remember_time_pos);
@@ -715,6 +727,8 @@ void TPreferences::save() {
 	setValue("repaint_video_background", repaint_video_background);
 
 	setValue("use_edl_files", use_edl_files);
+
+	setValue("use_playlist_option", use_playlist_option);
 
 	setValue("prefer_ipv4", prefer_ipv4);
 
@@ -966,15 +980,20 @@ void TPreferences::load() {
 	ao = value("driver/audio_output", ao).toString();
 
 	use_screenshot = value("use_screenshot", use_screenshot).toBool();
-	#ifdef MPV_SUPPORT
+#ifdef MPV_SUPPORT
 	screenshot_template = value("screenshot_template", screenshot_template).toString();
-	#endif
-	#if QT_VERSION >= 0x040400
+	screenshot_format = value("screenshot_format", screenshot_format).toString();
+#endif
+#if QT_VERSION >= 0x040400
 	screenshot_directory = value("screenshot_folder", screenshot_directory).toString();
 	setupScreenshotFolder();
-	#else
+#else
 	screenshot_directory = value("screenshot_directory", screenshot_directory).toString();
-	#endif
+#endif
+
+#ifdef CAPTURE_STREAM
+	capture_directory = value("capture_directory", capture_directory).toString();
+#endif
 
 	dont_remember_media_settings = value("dont_remember_media_settings", dont_remember_media_settings).toBool();
 	dont_remember_time_pos = value("dont_remember_time_pos", dont_remember_time_pos).toBool();
@@ -1181,6 +1200,8 @@ void TPreferences::load() {
 	repaint_video_background = value("repaint_video_background", repaint_video_background).toBool();
 
 	use_edl_files = value("use_edl_files", use_edl_files).toBool();
+
+	use_playlist_option = value("use_playlist_option", use_playlist_option).toBool();
 
 	prefer_ipv4 = value("prefer_ipv4", prefer_ipv4).toBool();
 

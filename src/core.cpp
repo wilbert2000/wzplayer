@@ -911,7 +911,11 @@ void TCore::playingStarted() {
 	} else {
 		int vol = (pref->global_volume ? pref->volume : mset.volume);
 		emit volumeChanged(vol);
-		if (pref->mute) mute(true);
+		if (proc->isMPlayer() && pref->mute) {
+			// Set mute here because mplayer doesn't have an option to set
+			// mute from the command line
+			mute(true);
+		}
 	}
 
 	// TODO:
@@ -1038,6 +1042,13 @@ void TCore::screenshots() {
 	}
 }
 
+#ifdef CAPTURE_STREAM
+void TCore::switchCapturing() {
+	qDebug("TCore::switchCapturing");
+	proc->switchCapturing();
+}
+#endif
+
 void TCore::startPlayer(QString file, double seek) {
 	qDebug() << "TCore::startPlayer:" << file << "at" << seek;
 
@@ -1108,11 +1119,8 @@ void TCore::startPlayer(QString file, double seek) {
 
 	proc->clearArguments();
 
-	// Set working directory to screenshot directory
-	if (screenshot_enabled) {
-		qDebug("TCore::startPlayer: setting working directory to '%s'", pref->screenshot_directory.toUtf8().data());
-		proc->setWorkingDirectory(pref->screenshot_directory);
-	}
+	// Set screenshot directory
+	proc->setScreenshotDirectory(pref->screenshot_directory);
 
 	// Use absolute path, otherwise after changing to the screenshot directory
 	// the mplayer path might not be found if it's a relative path
@@ -1544,6 +1552,10 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("volume", QString::number(vol));
 	}
 
+	if (pref->mute) {
+		proc->setOption("mute");
+	}
+
 	if (mset.current_angle_id > 0) {
 		proc->setOption("dvdangle", QString::number(mset.current_angle_id));
 	}
@@ -1759,8 +1771,13 @@ void TCore::startPlayer(QString file, double seek) {
 
 #ifdef MPV_SUPPORT
 	// Template for screenshots (only works with mpv)
-	if ((screenshot_enabled) && (!pref->screenshot_template.isEmpty())) {
-		proc->setOption("screenshot_template", pref->screenshot_template);
+	if (screenshot_enabled) {
+		if (!pref->screenshot_template.isEmpty()) {
+			proc->setOption("screenshot_template", pref->screenshot_template);
+		}
+		if (!pref->screenshot_format.isEmpty()) {
+			proc->setOption("screenshot_format", pref->screenshot_format);
+		}
 	}
 #endif
 
@@ -1851,6 +1868,11 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 #endif
 
+#ifdef CAPTURE_STREAM
+	// Set the capture directory
+	proc->setCaptureDirectory(pref->capture_directory);
+#endif
+
 	// Load edl file
 	if (pref->use_edl_files) {
 		QString edl_f;
@@ -1898,19 +1920,18 @@ void TCore::startPlayer(QString file, double seek) {
 
 	// Last checks for the file
 
-	// Open https URLs with ffmpeg
-	if (proc->isMPlayer() && file.startsWith("https")) {
-		file = "ffmpeg://" + file;
-	}
-
 #ifdef Q_OS_WIN
+	// TODO: remove pref->use_short_pathnames
 	if (pref->use_short_pathnames) {
 		file = Helper::shortPathName(file);
 	}
 #endif
 
-	// Don't use playlist with mpv
-	proc->setMedia(file, proc->isMPlayer() ? url_is_playlist : false);
+	if (proc->isMPlayer()) {
+		proc->setMedia(file, pref->use_playlist_option ? url_is_playlist : false);
+	} else {
+		proc->setMedia(file, false); // Don't use playlist with mpv
+	}
 
 	// It seems the loop option must be after the filename
 	if (mset.loop) {
@@ -3663,10 +3684,10 @@ void TCore::displayMessage(QString text, int duration, int osd_level) {
 }
 
 void TCore::displayScreenshotName(QString filename) {
-	qDebug("TCore::displayScreenshotName");
+	qDebug("TCore::displayScreenshotName: %s", filename.toUtf8().constData());
 
-	//QString text = tr("Screenshot saved as %1").arg(filename);
-	QString text = QString("Screenshot saved as %1").arg(filename);
+	QFileInfo fi(filename);
+	QString text = tr("Screenshot saved as %1").arg(fi.fileName());
 	displayMessage(text);
 }
 

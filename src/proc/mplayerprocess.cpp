@@ -18,11 +18,11 @@
 
 #include "proc/mplayerprocess.h"
 
-//#include <cmath>
+#include <QDebug>
+#include <QDir>
 #include <QRegExp>
 #include <QStringList>
 #include <QApplication>
-#include <QDebug>
 
 #include "settings/preferences.h"
 #include "colorutils.h"
@@ -1035,6 +1035,16 @@ void TMplayerProcess::disableInput() {
 #endif
 }
 
+#ifdef CAPTURE_STREAM
+void TMplayerProcess::setCaptureDirectory(const QString& dir) {
+
+	TPlayerProcess::setCaptureDirectory(dir);
+	if (!capture_filename.isEmpty()) {
+		arg << "-capture" << "-dumpfile" << capture_filename;
+	}
+}
+#endif
+
 void TMplayerProcess::setOption(const QString& option_name, const QVariant& value) {
 	if (option_name == "cache") {
 		int cache = value.toInt();
@@ -1071,7 +1081,7 @@ void TMplayerProcess::setOption(const QString& option_name, const QVariant& valu
 		arg << "-v";
 	}
 	else
-	if (option_name == "screenshot_template") {
+	if (option_name == "screenshot_template" || option_name == "screenshot_format") {
 		// Not supported
 	}
 	else
@@ -1086,6 +1096,10 @@ void TMplayerProcess::setOption(const QString& option_name, const QVariant& valu
 	if (option_name == "fontconfig") {
 		bool b = value.toBool();
 		if (b) arg << "-fontconfig"; else arg << "-nofontconfig";
+	}
+	else
+	if (option_name == "mute") {
+		// Not supported
 	}
 	else
 	if (option_name == "keepaspect" ||
@@ -1135,6 +1149,14 @@ void TMplayerProcess::addVF(const QString& filter_name, const QVariant& value) {
 		} else {
 			arg << "-vf-add" << "expand=osd=1";
 		}
+	}
+	else
+	if (filter_name == "screenshot") {
+		QString f = "screenshot";
+		if (!screenshot_dir.isEmpty()) {
+			f += "="+ QDir::toNativeSeparators(screenshot_dir + "/shot");
+		}
+		arg << "-vf-add" << f;
 	}
 	else
 	if (filter_name == "flip") {
@@ -1393,6 +1415,12 @@ void TMplayerProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
 	}
 }
 
+#ifdef CAPTURE_STREAM
+void TMplayerProcess::switchCapturing() {
+	writeToStdin("capturing");
+}
+#endif
+
 void TMplayerProcess::setTitle(int ID) {
 	title_hint = ID;
 	writeToStdin("switch_title " + QString::number(ID));
@@ -1435,11 +1463,11 @@ void TMplayerProcess::setOSDScale(double) {
 	//writeToStdin("set_property subfont-osd-scale " + QString::number(value));
 }
 
-void TMplayerProcess::changeVF(const QString &, bool, const QVariant &) {
+void TMplayerProcess::changeVF(const QString&, bool, const QVariant&) {
 	// not supported
 }
 
-void TMplayerProcess::changeStereo3DFilter(bool, const QString &, const QString &) {
+void TMplayerProcess::changeStereo3DFilter(bool, const QString&, const QString&) {
 	// not supported
 }
 

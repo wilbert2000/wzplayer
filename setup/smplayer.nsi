@@ -42,10 +42,11 @@
   !define SMPLAYER_UNINST_EXE "uninst.exe"
   !define SMPLAYER_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SMPlayer"
 
+  !define MPV_VERSION "20150923"
 !ifdef WIN64
-  !define MPV_FILENAME "mpv-x86_64-20150923.7z"
+  !define MPV_FILENAME "mpv-x86_64-${MPV_VERSION}.7z"
 !else
-  !define MPV_FILENAME "mpv-i686-20150923.7z"
+  !define MPV_FILENAME "mpv-i686-${MPV_VERSION}.7z"
 !endif
 
   !define INSTALLER_VERSION "1"
@@ -122,6 +123,8 @@
   Var YTDL_Version_Remote
   Var YTDL_Version_Remote_File
   Var YTDL_Previous_Version_State
+
+  Var MPV_Version
 
 ;--------------------------------
 ;Interface Settings
@@ -467,6 +470,7 @@ SectionGroup $(MPlayerMPVGroupTitle)
 
     IfFileExists "$INSTDIR\mplayer\mpv*.exe" 0 mpvInstFailed
         WriteRegDWORD HKLM "${SMPLAYER_REG_KEY}" Installed_MPV 0x1
+        WriteRegStr   HKLM "${SMPLAYER_REG_KEY}" "MPV_Version" "${MPV_VERSION}"
         Goto dl_youtube-dl
       mpvInstFailed:
         Abort $(MPV_Inst_Failed)
@@ -540,7 +544,21 @@ Section -RestorePrograms
     CopyFiles /SILENT "$PLUGINSDIR\smtubebak\smtube.exe" "$INSTDIR"
     CopyFiles /SILENT "$PLUGINSDIR\smtubebak\docs\smtube\*" "$INSTDIR\docs\smtube"
     CopyFiles /SILENT "$PLUGINSDIR\smtubebak\translations\*" "$INSTDIR\translations"
+    ; Qt4
     CopyFiles /SILENT "$PLUGINSDIR\smtubebak\QtWebKit4.dll" "$INSTDIR"
+    ; Qt5
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5WebKit.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5Sql.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5Qml.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5Quick.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5Positioning.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5Multimedia.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5Sensors.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5WebChannel.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5WebKitWidgets.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5OpenGL.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5PrintSupport.dll" "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\smtubebak\Qt5MultimediaWidgets.dll" "$INSTDIR"
   ${EndIf}
 
 !ifndef WIN64
@@ -943,6 +961,13 @@ Function Backup_MPV
     Return
   ${EndIf}
 
+  ClearErrors
+  ReadRegStr $MPV_Version HKLM "${SMPLAYER_REG_KEY}" "MPV_Version"
+  IfErrors NoBackup 0
+    IntCmp $MPV_Version ${MPV_VERSION} +3 0 +3
+      DetailPrint "A newer version of MPV is available and will be downloaded."
+      Goto NoBackup
+
   IfFileExists "$SMPlayer_Path\mplayer\mpv*.exe" 0 NoBackup
     DetailPrint $(Info_MPV_Backup)
     CreateDirectory "$PLUGINSDIR\mpvbak"
@@ -963,7 +988,21 @@ Function Backup_SMTube
     CopyFiles /SILENT "$SMPlayer_Path\smtube.exe" "$PLUGINSDIR\smtubebak"
     CopyFiles /SILENT "$SMPlayer_Path\docs\smtube\*" "$PLUGINSDIR\smtubebak\docs\smtube"
     CopyFiles /SILENT "$SMPlayer_Path\translations\smtube*.qm" "$PLUGINSDIR\smtubebak\translations"
-	CopyFiles /SILENT "$SMPlayer_Path\QtWebKit4.dll" "$PLUGINSDIR\smtubebak"
+    ; Qt4
+    CopyFiles /SILENT "$SMPlayer_Path\QtWebKit4.dll" "$PLUGINSDIR\smtubebak"
+    ; Qt5
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5WebKit.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5Sql.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5Qml.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5Quick.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5Positioning.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5Multimedia.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5Sensors.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5WebChannel.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5WebKitWidgets.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5OpenGL.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5PrintSupport.dll" "$PLUGINSDIR\smtubebak"
+    CopyFiles /SILENT "$SMPlayer_Path\Qt5MultimediaWidgets.dll" "$PLUGINSDIR\smtubebak"
     StrCpy $Restore_SMTube 1
     Return
   NoBackup:

@@ -102,6 +102,9 @@ public slots:
 	void frameBackStep();
 	void screenshot();	//!< Take a screenshot of current frame
 	void screenshots();	//!< Start/stop taking screenshot of each frame
+#ifdef CAPTURE_STREAM
+	void switchCapturing();
+#endif
 
 	//! Public restart, for the GUI.
 	void restart();

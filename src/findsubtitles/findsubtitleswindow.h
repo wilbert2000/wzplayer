@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _FINDSUBTITLESWINDOW_H_
-#define _FINDSUBTITLESWINDOW_H_
+#ifndef FINDSUBTITLESWINDOW_H
+#define FINDSUBTITLESWINDOW_H
 
 #include "ui_findsubtitleswindow.h"
 
@@ -49,7 +49,7 @@ public:
 
 	QString language();
 #ifdef DOWNLOAD_SUBS
-	bool includeLangOnFilename() { return include_lang_on_filename; };
+	bool includeLangOnFilename() { return include_lang_on_filename; }
 #endif
 
 	void setSettings(QSettings * settings);
@@ -62,7 +62,7 @@ public slots:
 	void download();
 	void copyLink();
 #ifdef DOWNLOAD_SUBS
-	void setIncludeLangOnFilename(bool b) { include_lang_on_filename = b; };
+	void setIncludeLangOnFilename(bool b) { include_lang_on_filename = b; }
 #endif
 
 protected slots:

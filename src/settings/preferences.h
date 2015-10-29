@@ -81,8 +81,12 @@ public:
 	bool use_screenshot;
 #ifdef MPV_SUPPORT
 	QString screenshot_template;
+	QString screenshot_format;
 #endif
 	QString screenshot_directory;
+#ifdef CAPTURE_STREAM
+	QString capture_directory;
+#endif
 
 	// SMPlayer will remember all media settings for all videos.
 	// This options allow to disable it:
@@ -278,6 +282,9 @@ public:
 	//! If true it will autoload edl files with the same name of the file
     //! to play
 	bool use_edl_files;
+
+	//! If true it will pass to mplayer the -playlist option
+	bool use_playlist_option;
 
 	//! Preferred connection method: ipv4 or ipv6
 	bool prefer_ipv4;

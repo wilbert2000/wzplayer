@@ -18,10 +18,11 @@
 
 #include "proc/mpvprocess.h"
 
+#include <QDebug>
+#include <QDir>
 #include <QRegExp>
 #include <QStringList>
 #include <QApplication>
-#include <QDebug>
 
 #include "proc/playerprocess.h"
 #include "settings/preferences.h"
@@ -737,6 +738,10 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 	} else {
 		arg << url;
 	}
+
+#ifdef CAPTURE_STREAM
+	capturing = false;
+#endif
 }
 
 void TMPVProcess::setFixedOptions() {
@@ -936,6 +941,10 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 		arg << "--screenshot-template=" + value.toString();
 	}
 	else
+	if (option_name == "screenshot_format") {
+		arg << "--screenshot-format=" + value.toString();
+	}
+	else
 	if (option_name == "threads") {
 		arg << "--vd-lavc-threads=" + value.toString();
 	}
@@ -989,6 +998,10 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 	if (option_name == "verbose") {
 		arg << "-v";
 		verbose = true;
+	}
+	else
+	if (option_name == "mute") {
+		arg << "--mute=yes";
 	}
 	else
 	if (option_name == "vf-add") {
@@ -1105,7 +1118,9 @@ void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
 	}
 	else
 	if (filter_name == "screenshot") {
-		//arg << "--screenshot-template=%{filename:shot}-%p-%04n";
+		if (!screenshot_dir.isEmpty() && isOptionAvailable("--screenshot-directory")) {
+			arg << "--screenshot-directory=" + QDir::toNativeSeparators(screenshot_dir);
+		}
 	}
 	else
 	if (filter_name == "rotate") {
@@ -1372,6 +1387,25 @@ void TMPVProcess::setLoop(int v) {
 void TMPVProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
 	writeToStdin(QString("screenshot %1 %2").arg(include_subtitles ? "subtitles" : "video").arg(t == Single ? "single" : "each-frame"));
 }
+
+#ifdef CAPTURE_STREAM
+void TMPVProcess::switchCapturing() {
+
+	if (!capture_filename.isEmpty()) {
+		if (!capturing) {
+			QString f = capture_filename;
+#ifdef Q_OS_WIN
+			// I hate Windows
+			f = f.replace("\\", "\\\\");
+#endif
+			writeToStdin("set stream-capture \"" + f + "\"");
+		} else {
+			writeToStdin("set stream-capture \"\"");
+		}
+		capturing = !capturing;
+	}
+}
+#endif
 
 void TMPVProcess::setTitle(int ID) {
 	writeToStdin("set disc-title " + QString::number(ID));

@@ -400,6 +400,9 @@ protected:
 	TAction* videoEqualizerAct;
 	TAction* screenshotAct;
 	TAction* screenshotsAct;
+#ifdef CAPTURE_STREAM
+	TAction * capturingAct;
+#endif
 #ifdef VIDEOPREVIEW
 	TAction* videoPreviewAct;
 #endif

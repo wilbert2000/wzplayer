@@ -146,6 +146,8 @@ FindSubtitlesWindow::FindSubtitlesWindow(QWidget * parent, Qt::WindowFlags f)
 
 	file_downloader = new FileDownloader(this);
 	file_downloader->setModal(false);
+	file_downloader->hide();
+
 	connect(file_downloader, SIGNAL(downloadFailed(QString)),
              this, SLOT(showError(QString)), Qt::QueuedConnection);
 	connect(file_downloader, SIGNAL(downloadFinished(const QByteArray &)),
@@ -766,36 +768,44 @@ void FindSubtitlesWindow::on_configure_button_clicked() {
 	FindSubtitlesConfigDialog d(this);
 
 	d.setServer(os_server);
-	#ifdef OS_SEARCH_WORKAROUND
+#ifdef OS_SEARCH_WORKAROUND
 	d.setRetries(osclient->retries());
-	#endif
-	#ifdef FS_USE_PROXY
+#endif
+#ifdef FS_USE_PROXY
 	d.setUseProxy(use_proxy);
 	d.setProxyHostname(proxy_host);
 	d.setProxyPort(proxy_port);
 	d.setProxyUsername(proxy_username);
 	d.setProxyPassword(proxy_password);
 	d.setProxyType(proxy_type);
-	#endif
+#endif
+
+#ifdef DOWNLOAD_SUBS
+	d.setAppendLang(include_lang_on_filename);
+#endif
 
 	if (d.exec() == QDialog::Accepted) {
 		os_server = d.server();
-		#ifdef OS_SEARCH_WORKAROUND
+#ifdef OS_SEARCH_WORKAROUND
 		osclient->setRetries(d.retries());
-		#endif
-		#ifdef FS_USE_PROXY
+#endif
+#ifdef FS_USE_PROXY
 		use_proxy = d.useProxy();
 		proxy_host = d.proxyHostname();
 		proxy_port = d.proxyPort();
 		proxy_username = d.proxyUsername();
 		proxy_password = d.proxyPassword();
 		proxy_type = d.proxyType();
-		#endif
+#endif
 
 		osclient->setServer(os_server);
-		#ifdef FS_USE_PROXY
+#ifdef FS_USE_PROXY
 		setupProxy();
-		#endif
+#endif
+
+#ifdef DOWNLOAD_SUBS
+		include_lang_on_filename = d.appendLang();
+#endif
 	}
 }
 
