@@ -551,7 +551,7 @@ TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 
 QString TActionsEditor::actionTextToDescription(const QString& text, const QString& action_name) {
 
-	// TODO: Time label uses text() to display time?
+	// Time label uses text() to display time
 	if (action_name == "timelabel_action") {
 		return tr("Display time");
 	}
