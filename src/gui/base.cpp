@@ -139,7 +139,6 @@ TBase::TBase()
 #if QT_VERSION >= 0x050000
 	, was_minimized(false)
 #endif
-	, popup(0)
 	, statusbar_menu(0)
 	, clhelp_window(0)
 	, pref_dialog(0)
@@ -1866,11 +1865,7 @@ void TBase::createMenus() {
 	helpMenu->addAction(aboutThisAct);
 
 	// POPUP MENU
-	if (!popup)
-		popup = new QMenu(this);
-	else
-		popup->clear();
-
+	popup = new QMenu(this);
 	popup->addMenu(openMenu);
 	popup->addMenu(playMenu);
 	popup->addMenu(videoMenu);
@@ -1903,14 +1898,15 @@ QMenu* TBase::createToolbarMenu() {
 	return menu;
 }
 
+// Called by main window when it wants to show context popup
+// not caught by other popup handlers. Takes ownership of menu.
 QMenu* TBase::createPopupMenu() {
-	qDebug("Gui::TBase::createPopupMenu");
+	//qDebug("Gui::TBase::createPopupMenu");
 	return createToolbarMenu();
 }
 
 void TBase::showStatusBarPopup(const QPoint& pos) {
-	qDebug("Gui::TBase::showStatusBarPopup: x: %d y: %d", pos.x(), pos.y());
-
+	//qDebug("Gui::TBase::showStatusBarPopup: x: %d y: %d", pos.x(), pos.y());
 	toolbar_menu->exec(statusBar()->mapToGlobal(pos));
 }
 
@@ -1938,8 +1934,8 @@ void TBase::createToolbars() {
 			<< "fullscreen"
 			<< "mute"
 			<< "volumeslider_action"
-			<< "separator"
-			<< "timelabel_action";
+			<< "separator|0|1"
+			<< "timelabel_action|0|1";
 	controlbar->setDefaultActions(actions);
 	controlbar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, controlbar);
@@ -4664,54 +4660,9 @@ void TBase::showPopupMenu() {
 }
 
 void TBase::showPopupMenu(QPoint p) {
-	qDebug("Gui::TBase::showPopupMenu: %d, %d", p.x(), p.y());
+	//qDebug("Gui::TBase::showPopupMenu: %d, %d", p.x(), p.y());
 	popup->exec(p);
 }
-
-/*
-void TBase::mouseReleaseEvent(QMouseEvent* e) {
-	qDebug("Gui::TBase::mouseReleaseEvent");
-
-	if (e->button() == Qt::LeftButton) {
-		e->accept();
-		emit leftClicked();
-	}
-	else
-	if (e->button() == Qt::MidButton) {
-		e->accept();
-		emit middleClicked();
-	}
-	//
-	//else
-	//if (e->button() == Qt::RightButton) {
-	//	showPopupMenu(e->globalPos());
-    //}
-	//
-	else 
-		e->ignore();
-}
-
-void TBase::mouseDoubleClickEvent(QMouseEvent* e) {
-	e->accept();
-	emit doubleClicked();
-}
-*/
-
-/*
-void TBase::wheelEvent(QWheelEvent* e) {
-	qDebug("Gui::TBase::wheelEvent: delta: %d", e->delta());
-	e->accept();
-
-	if (e->orientation() == Qt::Vertical) {
-	    if (e->delta() >= 0)
-	        emit wheelUp();
-	    else
-	        emit wheelDown();
-	} else {
-		qDebug("Gui::TBase::wheelEvent: horizontal event received, doing nothing");
-	}
-}
-*/
 
 // Called when a video has started to play
 void TBase::enterFullscreenOnPlay() {
