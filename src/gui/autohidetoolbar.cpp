@@ -156,8 +156,7 @@ void TAutohideToolbar::resizeToolbar() {
 	//qDebug() << "TAutohideToolbar::resizeToolbar: panel" << origin << panel->size();
 
 	int w = panel->width() * perc_width / 100;
-	int h = height();
-	int max_y = origin.y() + panel->height() - h;
+	int max_y = origin.y() + panel->height() - frameGeometry().height();
 	int x, y;
 	if (reset_pos) {
 		reset_pos = false;
@@ -180,8 +179,8 @@ void TAutohideToolbar::resizeToolbar() {
 			y = max_y;
 		}
 	}
-	//qDebug() << "TAutohideToolbar::resizeToolbar: resizing to" << x << y << w << h;
-	setGeometry(x, y, w, h);
+	//qDebug() << "TAutohideToolbar::resizeToolbar: resizing to" << x << y << w;
+	setGeometry(x, y, w, height());
 }
 
 void TAutohideToolbar::startAutoHide() {
