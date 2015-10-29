@@ -360,26 +360,13 @@ void TBasePlus::stretchWindow() {
 	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
 
 	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
-		 (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea))
-	{
+		(dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea)) {
 		int new_height = height() + playlistdock->height();
-
-		//if (new_height > TDesktopInfo::desktop_size(this).height()) 
-		//	new_height = TDesktopInfo::desktop_size(this).height() - 20;
-
 		qDebug("Gui::TBasePlus::stretchWindow: stretching: new height: %d", new_height);
 		resize(width(), new_height);
-
-		//resizeWindow(core->mset.win_width, core->mset.win_height);
-	}
-
-	else
-
-	if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
-		 (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea))
-	{
+	} else if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
+			   (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea)) {
 		int new_width = width() + playlistdock->width();
-
 		qDebug("Gui::TBasePlus::stretchWindow: stretching: new width: %d", new_width);
 		resize(new_width, height());
 	}
@@ -394,23 +381,14 @@ void TBasePlus::shrinkWindow() {
 
 	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
 
-	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
-		 (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea))
-	{
+	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea)
+		|| (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea)) {
 		int new_height = height() - playlistdock->height();
 		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new height: %d", new_height);
 		resize(width(), new_height);
-
-		//resizeWindow(core->mset.win_width, core->mset.win_height);
-	}
-
-	else
-
-	if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
-		 (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea))
-	{
+	} else if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea)
+			   || (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea)) {
 		int new_width = width() - playlistdock->width();
-
 		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new width: %d", new_width);
 		resize(new_width, height());
 	}
