@@ -447,8 +447,6 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 
 	// Clear settings
 	mset.reset();
-	// TODO: check use of current_title_id
-	mset.current_title_id = disc.title;
 	if (disc.title > 0 && TMediaData::isCD(mdat.selected_type)) {
 		mset.playing_single_track = true;
 	}
@@ -3169,11 +3167,7 @@ void TCore::changeTitle(int title) {
 void TCore::changeChapter(int id) {
 	qDebug("TCore::changeChapter: ID: %d", id);
 
-	int firstID = mdat.chapters.firstID();
-	if (id >= firstID) {
-		if (TMediaData::isCD(mdat.detected_type)) {
-			mset.current_title_id = id - firstID + mdat.titles.firstID();
-		}
+	if (id >= mdat.chapters.firstID()) {
 		proc->setChapter(id);
 	}
 }

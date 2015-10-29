@@ -58,7 +58,6 @@ void TMediaSettings::reset() {
 	current_secondary_sub_idx = NoneSelected;
 #endif
 
-	current_title_id = NoneSelected;
 	playing_single_track = false;
 	current_angle_id = NoneSelected;
 
@@ -221,7 +220,6 @@ void TMediaSettings::list() {
 #if PROGRAM_SWITCH
 	qDebug("  current_program_id: %d", current_program_id);
 #endif
-	qDebug("  current_title_id: %d", current_title_id);
 	qDebug("  current_angle_id: %d", current_angle_id);
 
 	qDebug("  aspect_ratio_id: %d", aspect_ratio_id);
@@ -370,12 +368,8 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 
 	set->setValue("current_sec", current_sec);
 
-	// Is this too agressive?
-	if (current_title_id > md->titles.firstID())
-		set->setValue("current_title_id", current_title_id);
-	else set->setValue("current_title_id", NoneSelected);
-
 	// Old config
+	set->remove("current_title_id");
 	set->remove("current_chapter_id");
 
 	set->setValue("current_angle_id", current_angle_id);
@@ -512,7 +506,6 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 
 	current_sec = set->value("current_sec", current_sec).toDouble();
 
-	current_title_id = set->value("current_title_id", current_title_id).toInt();
 	current_angle_id = set->value("current_angle_id", current_angle_id).toInt();
 
 	aspect_ratio_id = set->value("aspect_ratio", aspect_ratio_id).toInt();
