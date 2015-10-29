@@ -248,7 +248,6 @@ protected slots:
 	virtual void togglePlayAction(TCore::State);
 
 	void toggleDoubleSize();
-	void resizeMainWindow(int w, int h, bool try_twice = true);
 	virtual void resizeWindow(int w, int h);
 
 	virtual void displayGotoTime(int);
@@ -809,6 +808,7 @@ private:
 	void centerWindow();
 	bool optimizeSizeFactor(double factor);
 	void optimizeSizeFactor(int w, int h);
+	void resizeMainWindow(int w, int h, bool try_twice = true);
 };
 
 } // namespace Gui
