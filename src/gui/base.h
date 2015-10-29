@@ -805,6 +805,8 @@ private:
 	QMenu* createToolbarMenu();
 	void hidePanel();
 	void centerWindow();
+	bool optimizeSizeFactor(double factor);
+	void optimizeSizeFactor(int w, int h);
 };
 
 } // namespace Gui

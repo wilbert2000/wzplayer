@@ -4808,6 +4808,49 @@ void TBase::centerWindow() {
 	}
 }
 
+bool TBase::optimizeSizeFactor(double factor) {
+
+	if (qAbs(factor - pref->size_factor) < 0.05) {
+		qDebug("Gui::TBase::optimizeSizeFactor: optimizing size factor from %f to predefined value %f",
+			   pref->size_factor, factor);
+		pref->size_factor = factor;
+		return true;
+	}
+	return false;
+}
+
+void TBase::optimizeSizeFactor(int w, int h) {
+
+	if (optimizeSizeFactor(0.50))
+		return;
+	if (optimizeSizeFactor(0.75))
+		return;
+	if (optimizeSizeFactor(1.00))
+		return;
+	if (optimizeSizeFactor(1.25))
+		return;
+	if (optimizeSizeFactor(1.50))
+		return;
+	if (optimizeSizeFactor(1.75))
+		return;
+	if (optimizeSizeFactor(2.00))
+		return;
+	if (optimizeSizeFactor(3.00))
+		return;
+	if (optimizeSizeFactor(4.00))
+		return;
+
+	// Make width multiple of 16
+	if (w > 0) {
+		QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
+		int new_w = ((video_size.width() + 8) / 16) * 16;
+		double factor = (double) new_w / w;
+		qDebug("TBase::optimizeSizeFactor: optimizing size factor from width %d factor %f to width %d factor %f",
+			   video_size.width(), pref->size_factor, new_w, factor);
+		pref->size_factor = factor;
+	}
+}
+
 // Slot called by signal videoOutResolutionChanged
 void TBase::videoOutResolutionChanged(int w, int h) {
 	qDebug("Gui::TBase::videoOutResolutionChanged: %d, %d", w, h);
@@ -4816,7 +4859,10 @@ void TBase::videoOutResolutionChanged(int w, int h) {
 	if (block_resize) {
 		block_resize = false;
 	} else {
-		resizeWindow(w, h);
+		if (pref->resize_method != Settings::TPreferences::Never) {
+			optimizeSizeFactor(w, h);
+			resizeWindow(w, h);
+		}
 		if (center_window) {
 			center_window = false;
 			centerWindow();
@@ -4828,20 +4874,14 @@ void TBase::videoOutResolutionChanged(int w, int h) {
 void TBase::resizeWindow(int w, int h) {
 	// qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
-	if (panel->isVisible()) {
-		// Don't resize if any mouse buttons down, like when dragging.
-		// Button state is synchronized to events, so can be old.
-		if ((pref->resize_method == Settings::TPreferences::Never)
-			|| QApplication::mouseButtons()) {
-			return;
-		}
-	} else {
+	if (!panel->isVisible()) {
 		panel->show();
 	}
 
-	// If fullscreen, don't resize!
-	if (!pref->fullscreen)
+	// If fullscreen, don't resize
+	if (!pref->fullscreen) {
 		resizeMainWindow(w, h);
+	}
 }
 
 void TBase::resizeMainWindow(int w, int h, bool try_twice) {
@@ -4862,7 +4902,7 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 	if (panel->size() == video_size) {
 		qDebug("Gui::TBase::resizeMainWindow: resize succeeded");
 	} else {
-		// Resizing the main window can change the height of the control bar,
+		// Resizing the main window can change the height of the tool bars,
 		// which will change the height of the panel during the resize.
 		// Often fixed by resizing once again, using the new panel height.
 		if (try_twice) {
@@ -4883,12 +4923,16 @@ void TBase::hidePanel() {
 
 	if (panel->isVisible()) {
 		// Exit from fullscreen mode 
-	    if (pref->fullscreen) { toggleFullscreen(false); update(); }
+		if (pref->fullscreen) {
+			toggleFullscreen(false);
+			update();
+		}
 
-		//resizeWindow(size().width(), 0);
-		int width = size().width();
-		if (width > pref->default_size.width()) width = pref->default_size.width();
-		resize(width, size().height() - panel->size().height());
+
+		int width = this->width();
+		if (width > pref->default_size.width())
+			width = pref->default_size.width();
+		resize(width, height() - panel->height());
 		panel->hide();
 	}
 }

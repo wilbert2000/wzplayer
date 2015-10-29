@@ -3373,21 +3373,12 @@ void TCore::changeAdapter(int n) {
 }
 #endif
 
-void TCore::forceResize() {
-
-	// Overide user setting
-	int old_resize_method = pref->resize_method;
-	pref->resize_method = TPreferences::Always;
-	emit needResize(mset.win_width, mset.win_height);
-	pref->resize_method = old_resize_method;
-}
-
 void TCore::changeSize(int percentage) {
 	qDebug("TCore::changeSize: %d", percentage);
 
 	if (!pref->use_mplayer_window && !pref->fullscreen) {
 		pref->size_factor = (double) percentage / 100;
-		forceResize();
+		emit needResize(mset.win_width, mset.win_height);
 		displayMessage(tr("Size %1%").arg(QString::number(percentage)));
 	}
 }

@@ -507,7 +507,6 @@ private:
 	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(QString filename, int seek = -1);
 
-	void forceResize();
 	void getZoomFromPlayerWindow();
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);
