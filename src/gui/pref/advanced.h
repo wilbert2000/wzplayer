@@ -62,10 +62,6 @@ protected:
 	void setUseMplayerWindow(bool v);
 	bool useMplayerWindow();
 
-	// Windows only: pass to mplayer short filenames (8+3)
-	void setUseShortNames(bool b);
-	bool useShortNames();
-
 	void setMplayerCrashes(bool b);
 	bool mplayerCrashes();
 

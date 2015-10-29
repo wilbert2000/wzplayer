@@ -1919,14 +1919,6 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Last checks for the file
-
-#ifdef Q_OS_WIN
-	// TODO: remove pref->use_short_pathnames
-	if (pref->use_short_pathnames) {
-		file = Helper::shortPathName(file);
-	}
-#endif
-
 	if (proc->isMPlayer()) {
 		proc->setMedia(file, pref->use_playlist_option ? url_is_playlist : false);
 	} else {

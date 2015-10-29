@@ -303,8 +303,6 @@ void TPreferences::reset() {
 
 	prefer_ipv4 = true;
 
-	use_short_pathnames = false;
-
 	change_video_equalizer_on_startup = true;
 
 	use_correct_pts = Detect;
@@ -731,8 +729,6 @@ void TPreferences::save() {
 	setValue("use_playlist_option", use_playlist_option);
 
 	setValue("prefer_ipv4", prefer_ipv4);
-
-	setValue("use_short_pathnames", use_short_pathnames);
 
 	setValue("change_video_equalizer_on_startup", change_video_equalizer_on_startup);
 
@@ -1204,8 +1200,6 @@ void TPreferences::load() {
 	use_playlist_option = value("use_playlist_option", use_playlist_option).toBool();
 
 	prefer_ipv4 = value("prefer_ipv4", prefer_ipv4).toBool();
-
-	use_short_pathnames = value("use_short_pathnames", use_short_pathnames).toBool();
 
 	use_correct_pts = (OptionState) value("correct_pts", use_correct_pts).toInt();
 

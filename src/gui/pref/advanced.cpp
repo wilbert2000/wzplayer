@@ -33,10 +33,6 @@ TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
 {
 	setupUi(this);
 
-#ifndef Q_OS_WIN
-	shortnames_check->hide();
-#endif
-
 	colorkey_label->hide();
 	colorkey_view->hide();
 	changeButton->hide();
@@ -72,7 +68,6 @@ void TAdvanced::retranslateStrings() {
 	monitoraspect_combo->setItemText(0, tr("Auto"));
 
 	mplayer_use_window_check->setText(tr("&Run %1 in its own window").arg(PLAYER_NAME));
-	shortnames_check->setText(tr("&Pass short filenames (8+3) to %1").arg(PLAYER_NAME));
 	mplayer_crashes_check->setText(tr("R&eport %1 crashes").arg(PLAYER_NAME));
 	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(PLAYER_NAME));
 	options_info_label->setText(tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
@@ -104,8 +99,6 @@ void TAdvanced::setData(TPreferences* pref) {
 	setLogVerbose(pref->log_verbose);
 	setLogFile(pref->log_file);
 	setLogFilter(pref->log_filter);
-
-	setUseShortNames(pref->use_short_pathnames);
 
 	setMplayerCrashes(pref->report_mplayer_crashes);
 }
@@ -158,8 +151,6 @@ void TAdvanced::getData(TPreferences* pref) {
 	pref->log_file = pref->log_enabled && logFile();
 	pref->log_filter = logFilter();
 
-	pref->use_short_pathnames = useShortNames();
-
 	pref->report_mplayer_crashes = mplayerCrashes();
 }
 
@@ -192,14 +183,6 @@ void TAdvanced::setUseMplayerWindow(bool v) {
 
 bool TAdvanced::useMplayerWindow() {
 	return mplayer_use_window_check->isChecked();
-}
-
-void TAdvanced::setUseShortNames(bool b) {
-	shortnames_check->setChecked(b);
-}
-
-bool TAdvanced::useShortNames() {
-	return shortnames_check->isChecked();
 }
 
 void TAdvanced::setMplayerCrashes(bool b) {
@@ -375,11 +358,6 @@ void TAdvanced::createHelp() {
 
 	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
 		tr("If this option is checked, the lavf demuxer will be used for all formats."));
-
-#ifdef Q_OS_WIN
-	setWhatsThis(shortnames_check, tr("Pass short filenames (8+3) to %1").arg(PLAYER_NAME),
-		tr("If this option is checked, SMPlayer will pass to %1 the short version of the filenames.").arg(PLAYER_NAME));
-#endif
 
 	setWhatsThis(repaint_video_background_check, 
         tr("Repaint the background of the video window"),

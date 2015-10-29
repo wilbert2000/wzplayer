@@ -67,45 +67,6 @@ QString Helper::timeForJumps(int secs) {
 	}
 }
 
-#ifdef Q_OS_WIN
-// This function has been copied (and modified a little bit) from Scribus (program under GPL license):
-// http://docs.scribus.net/devel/util_8cpp-source.html#l00112
-QString Helper::shortPathName(QString long_path) {
-	if (QFile::exists(long_path)) {
-		QString short_path = long_path;
-
-		const int max_path = 4096;
-		WCHAR shortName[max_path];
-
-		QString nativePath = QDir::toNativeSeparators(long_path);
-		int ret = GetShortPathNameW((LPCWSTR) nativePath.utf16(), shortName, max_path);
-		if (ret != ERROR_INVALID_PARAMETER && ret < MAX_PATH)
-			short_path = QString::fromUtf16((const ushort*) shortName);
-
-		return short_path;
-	} else {
-		return long_path;
-	}
-}
-
-/*
-void Helper::setScreensaverEnabled(bool b) {
-	qDebug("Helper::setScreensaverEnabled: %d", b);
-
-	if (b) {
-		// Activate screensaver
-		SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, true, 0, SPIF_SENDWININICHANGE);
-		SystemParametersInfo(SPI_SETLOWPOWERACTIVE, 1, NULL, 0);
-		SystemParametersInfo(SPI_SETPOWEROFFACTIVE, 1, NULL, 0);
-	} else {
-		SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, false, 0, SPIF_SENDWININICHANGE);
-		SystemParametersInfo(SPI_SETLOWPOWERACTIVE, 0, NULL, 0);
-		SystemParametersInfo(SPI_SETPOWEROFFACTIVE, 0, NULL, 0);
-	}
-}
-*/
-#endif
-
 QString Helper::changeSlashes(QString filename) {
 	// Only change if file exists (it's a local file)
 	if (QFileInfo(filename).exists())

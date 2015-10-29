@@ -38,16 +38,6 @@ public:
 
 	static QString timeForJumps(int secs);
 
-	// Give a name for config (group name) based on dvd id
-	/* static QString dvdForPref(const QString & dvd_id, int title); */
-
-#ifdef Q_OS_WIN
-	static QString shortPathName(QString long_path);
-
-	//! Enable or disables the screensaver
-	/* static void setScreensaverEnabled(bool b); */
-#endif
-
 	//! Change filenames like "C:/Program Files/" to "C:\Program Files\"
 	static QString changeSlashes(QString filename);
 
