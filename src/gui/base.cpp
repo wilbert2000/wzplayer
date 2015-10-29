@@ -4765,9 +4765,30 @@ void TBase::toggleDoubleSize() {
 void TBase::centerWindow() {
 
 	QRect desktop = QApplication::desktop()->availableGeometry(this);
-	QSize center_pos = (desktop.size() - size()) / 2;
+	QSize center_pos = (desktop.size() - frameGeometry().size()) / 2;
 	if (center_pos.isValid()) {
 		move(center_pos.width(), center_pos.height());
+	}
+}
+
+void TBase::keepInsideDesktop() {
+
+	QRect desktop_size = QApplication::desktop()->availableGeometry(this);
+	QPoint p = pos();
+	QSize s = frameGeometry().size();
+
+	if (p.x() < 0)
+		p.rx() = 0;
+	else if (p.x() + s.width() > desktop_size.width())
+		p.rx() = desktop_size.width() - s.width();
+	if (p.y() < 0)
+		p.ry() = 0;
+	else if (p.y() + s.height() > desktop_size.height())
+		p.ry() = desktop_size.height() - s.height();
+
+	if (p != pos()) {
+		qDebug("Gui::TBase::keepInsideDesktop: keeping window inside desktop");
+		move(p);
 	}
 }
 
@@ -4844,6 +4865,7 @@ void TBase::resizeWindow(int w, int h) {
 	// If fullscreen, don't resize
 	if (!pref->fullscreen) {
 		resizeMainWindow(w, h);
+		keepInsideDesktop();
 	}
 }
 
