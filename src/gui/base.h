@@ -97,6 +97,7 @@ public:
 	TCore* getCore() { return core; }
 	TPlaylist* getPlaylist() { return playlist; }
 	TActionList getAllNamedActions();
+	QMenu* getToolbarMenu() { return toolbar_menu; }
 
 	virtual void loadConfig();
 	virtual void saveConfig();
@@ -256,6 +257,7 @@ protected slots:
 
 	virtual void showPopupMenu();
 	virtual void showPopupMenu(QPoint p);
+	void showStatusBarPopup(const QPoint& pos);
 
 	virtual void leftClickFunction();
 	virtual void rightClickFunction();

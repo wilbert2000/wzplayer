@@ -58,6 +58,9 @@ private:
 	QStringList default_actions;
 
 	void reload();
+
+private slots:
+	void showPopup(const QPoint& pos);
 };
 
 } // namesapce Gui

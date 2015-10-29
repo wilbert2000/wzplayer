@@ -1904,7 +1904,14 @@ QMenu* TBase::createToolbarMenu() {
 }
 
 QMenu* TBase::createPopupMenu() {
+	qDebug("Gui::TBase::createPopupMenu");
 	return createToolbarMenu();
+}
+
+void TBase::showStatusBarPopup(const QPoint& pos) {
+	qDebug("Gui::TBase::showStatusBarPopup: x: %d y: %d", pos.x(), pos.y());
+
+	toolbar_menu->exec(statusBar()->mapToGlobal(pos));
 }
 
 void TBase::reconfigureControlBar() {
@@ -1975,6 +1982,12 @@ void TBase::createToolbars() {
 	action->setShortcut(Qt::Key_F6);
 
 	toolbar2->hide();
+
+	// Statusbar
+	statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(statusBar(), SIGNAL(customContextMenuRequested(const QPoint&)),
+			this, SLOT(showStatusBarPopup(const QPoint&)));
+
 }
 
 void TBase::setupNetworkProxy() {
@@ -4651,9 +4664,8 @@ void TBase::showPopupMenu() {
 }
 
 void TBase::showPopupMenu(QPoint p) {
-	//qDebug("Gui::TBase::showPopupMenu: %d, %d", p.x(), p.y());
-	popup->move(p);
-	popup->show();
+	qDebug("Gui::TBase::showPopupMenu: %d, %d", p.x(), p.y());
+	popup->exec(p);
 }
 
 /*

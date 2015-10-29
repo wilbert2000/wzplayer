@@ -308,6 +308,7 @@ public:
 	   GUI stuff
 	   ********* */
 
+	// TODO: fullscreen is not a preference...
 	bool fullscreen;
 	bool start_in_fullscreen;
 	OnTop stay_on_top;

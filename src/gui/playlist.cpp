@@ -859,8 +859,7 @@ void TPlaylist::showPopup(const QPoint & pos) {
 	qDebug("Gui::TPlaylist::showPopup: x: %d y: %d", pos.x(), pos.y());
 
 	if (!popup->isVisible()) {
-		popup->move(listView->viewport()->mapToGlobal(pos));
-		popup->show();
+		popup->exec(listView->viewport()->mapToGlobal(pos));
 	}
 }
 

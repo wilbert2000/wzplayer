@@ -18,6 +18,7 @@
 
 #include "gui/editabletoolbar.h"
 #include <QDebug>
+#include <QMenu>
 #include "settings/preferences.h"
 #include "gui/toolbareditor.h"
 #include "gui/actionseditor.h"
@@ -28,6 +29,11 @@ namespace Gui {
 TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 	: QToolBar(mainwindow)
 	, main_window(mainwindow) {
+
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+			this, SLOT(showPopup(const QPoint&)));
+
 }
 
 TEditableToolbar::~TEditableToolbar() {
@@ -107,13 +113,20 @@ void TEditableToolbar::reload() {
 }
 
 void TEditableToolbar::didEnterFullscreen() {
-	// qDebug("TEditableToolbar::didEnterFullscreen");
 	reload();
 }
 
 void TEditableToolbar::didExitFullscreen() {
-	// qDebug("TEditableToolbar::didExitFullscreen");
 	reload();
+}
+
+void TEditableToolbar::showPopup(const QPoint& pos) {
+	qDebug("Gui::TEditableToolbar::showPopup: x: %d y: %d", pos.x(), pos.y());
+
+	QMenu* popup = main_window->getToolbarMenu();
+	if (popup) {
+		popup->exec(mapToGlobal(pos));
+	}
 }
 
 } // namespace Gui
