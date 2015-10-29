@@ -121,7 +121,7 @@ void TEditableToolbar::didExitFullscreen() {
 }
 
 void TEditableToolbar::showPopup(const QPoint& pos) {
-	qDebug("Gui::TEditableToolbar::showPopup: x: %d y: %d", pos.x(), pos.y());
+	//qDebug("Gui::TEditableToolbar::showPopup: x: %d y: %d", pos.x(), pos.y());
 
 	QMenu* popup = main_window->getToolbarMenu();
 	if (popup) {
