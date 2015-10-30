@@ -872,13 +872,6 @@ void TCore::newMediaPlaying() {
 void TCore::playingStarted() {
 	qDebug("TCore::playingStarted");
 
-	// Set mute here because mplayer doesn't have an option
-	// to set mute from the command line
-	// TODO: move to TMplayerProcess
-	if (proc->isMPlayer() && getMute()) {
-		proc->mute(true);
-	}
-
 	setState(Playing);
 
 	if (we_are_restarting) {
@@ -1547,7 +1540,7 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("volume", QString::number(vol));
 	}
 
-	if (pref->mute) {
+	if (getMute()) {
 		proc->setOption("mute");
 	}
 

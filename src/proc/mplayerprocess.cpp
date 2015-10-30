@@ -37,7 +37,8 @@ const double FRAME_BACKSTEP_TIME = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
 TMplayerProcess::TMplayerProcess(TMediaData* mdata)
-	: TPlayerProcess(TPlayerID::MPLAYER, mdata) {
+	: TPlayerProcess(TPlayerID::MPLAYER, mdata)
+	, mute_option_set(false) {
 }
 
 TMplayerProcess::~TMplayerProcess() {
@@ -632,6 +633,13 @@ void TMplayerProcess::playingStarted() {
 	// ...
 	want_pause = false;
 
+	// Set mute here because mplayer doesn't have an option
+	// to set mute from the command line
+	if (mute_option_set) {
+		mute_option_set = false;
+		mute(true);
+	}
+
 	// Clear notifications
 	video_tracks_changed = false;
 	get_selected_video_track = false;
@@ -1099,7 +1107,8 @@ void TMplayerProcess::setOption(const QString& option_name, const QVariant& valu
 	}
 	else
 	if (option_name == "mute") {
-		// Not supported
+		// Emulate mute, executed by playingStarted()
+		mute_option_set = true;
 	}
 	else
 	if (option_name == "keepaspect" ||

@@ -150,6 +150,7 @@ private:
 	int title_hint;
 
 	bool want_pause;
+	bool mute_option_set;
 
 	void clearStartTime();
 	void clearSubSources();
