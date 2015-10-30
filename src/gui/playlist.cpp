@@ -105,7 +105,7 @@ TPlaylist::TPlaylist(TCore* c, QWidget* parent, Qt::WindowFlags f) :
 	createActions();
 	createToolbar();
 
-	connect(core, SIGNAL(mediaStartPlay()),
+	connect(core, SIGNAL(newMediaStartedPlaying()),
 			this, SLOT(newMediaLoaded()));
 	connect(core, SIGNAL(mediaLoaded()),
 			this, SLOT(getMediaInfo()));

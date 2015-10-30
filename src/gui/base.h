@@ -195,7 +195,6 @@ protected slots:
 	virtual void setWindowCaption(const QString& title);
 
 	virtual void openRecent();
-	virtual void enterFullscreenOnPlay();
 	virtual void exitFullscreenOnStop();
 	virtual void exitFullscreenIfNeeded();
 	virtual void playlistHasFinished();
@@ -223,8 +222,6 @@ protected slots:
 	virtual void updateMediaInfo();
 
 	void gotNoFileToPlay();
-
-	void checkPendingActionsToRun();
 
 #ifdef CHECK_UPGRADED
 	void checkIfUpgraded();
@@ -807,12 +804,16 @@ private:
 	void reconfigureControlBar();
 	void createToolbars();
 	QMenu* createToolbarMenu();
+
 	void hidePanel();
 	void centerWindow();
 	void keepInsideDesktop();
 	bool optimizeSizeFactor(double factor);
 	void optimizeSizeFactor(int w, int h);
 	void resizeMainWindow(int w, int h, bool try_twice = true);
+
+	void enterFullscreenOnPlay();
+	void checkPendingActionsToRun();
 };
 
 } // namespace Gui

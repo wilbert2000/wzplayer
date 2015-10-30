@@ -425,9 +425,9 @@ signals:
 	void mediaLoaded();
 	void mediaInfoChanged();
 	//! Sends the filename and title of the stream playing in this moment
-	void mediaPlaying(const QString & filename, const QString & title);
+	void mediaPlaying(const QString& filename, const QString& title);
 	void stateChanged(TCore::State state);
-	void mediaStartPlay();
+	void newMediaStartedPlaying();
 	void mediaFinished(); // Media has arrived to the end.
 	void mediaStoppedByUser();
 	void showMessage(QString text);

@@ -859,13 +859,13 @@ void TCore::newMediaPlaying() {
 
 	mdat.initialized = true;
 	mdat.list();
-	mset.list();
 
 	// Copy the demuxer
 	mset.current_demuxer = mdat.demuxer;
+	mset.list();
 
-	qDebug("TCore::newMediaPlaying: emit mediaStartPlay()");
-	emit mediaStartPlay();
+	qDebug("TCore::newMediaPlaying: emit newMediaStartedPlaying()");
+	emit newMediaStartedPlaying();
 }
 
 // Slot called when signal playerFullyLoaded arrives.

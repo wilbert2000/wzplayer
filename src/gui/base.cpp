@@ -339,8 +339,6 @@ void TBase::createCore() {
 	connect(core, SIGNAL(stateChanged(TCore::State)),
 			 this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection);
 
-	connect(core, SIGNAL(mediaStartPlay()),
-			 this, SLOT(enterFullscreenOnPlay()), Qt::QueuedConnection);
 	connect(core, SIGNAL(mediaStoppedByUser()),
 			 this, SLOT(exitFullscreenOnStop()));
 
@@ -358,13 +356,10 @@ void TBase::createCore() {
 	connect(core, SIGNAL(stateChanged(TCore::State)),
 			 this, SLOT(togglePlayAction(TCore::State)));
 
-	connect(core, SIGNAL(mediaStartPlay()),
+	connect(core, SIGNAL(newMediaStartedPlaying()),
 			 this, SLOT(newMediaLoaded()), Qt::QueuedConnection);
 	connect(core, SIGNAL(mediaInfoChanged()),
 			 this, SLOT(updateMediaInfo()));
-
-	connect(core, SIGNAL(mediaStartPlay()),
-			 this, SLOT(checkPendingActionsToRun()), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(playerFailed(QProcess::ProcessError)),
 			 this, SLOT(showErrorFromPlayer(QProcess::ProcessError)));
@@ -519,8 +514,8 @@ void TBase::createActions() {
 	addAction(favorites->nextAct());
 	addAction(favorites->previousAct());
 	connect(favorites, SIGNAL(activated(QString)), this, SLOT(openFavorite(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString &, const QString &)),
-			favorites, SLOT(getCurrentMedia(const QString &, const QString &)));
+	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+			favorites, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 	// TV and Radio
 	tvlist = new TTVList(pref->check_channels_conf_on_startup, 
@@ -537,8 +532,8 @@ void TBase::createActions() {
 	tvlist->editAct()->setObjectName("edit_tv_list");
 	tvlist->jumpAct()->setObjectName("jump_tv_list");
 	connect(tvlist, SIGNAL(activated(QString)), this, SLOT(open(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString &, const QString &)),
-			tvlist, SLOT(getCurrentMedia(const QString &, const QString &)));
+	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+			tvlist, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 	radiolist = new TTVList(pref->check_channels_conf_on_startup, 
 							TTVList::Radio, TPaths::configPath() + "/radio.m3u8", this);
@@ -554,8 +549,8 @@ void TBase::createActions() {
 	radiolist->editAct()->setObjectName("edit_radio_list");
 	radiolist->jumpAct()->setObjectName("jump_radio_list");
 	connect(radiolist, SIGNAL(activated(QString)), this, SLOT(open(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString &, const QString &)),
-			radiolist, SLOT(getCurrentMedia(const QString &, const QString &)));
+	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+			radiolist, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 
 	// Menu Play
@@ -3313,8 +3308,8 @@ void TBase::applyFileProperties() {
 void TBase::updateMediaInfo() {
 	qDebug("Gui::TBase::updateMediaInfo");
 
-	if (file_dialog) {
-		if (file_dialog->isVisible()) setDataToFileProperties();
+	if (file_dialog && file_dialog->isVisible()) {
+		setDataToFileProperties();
 	}
 
 	setWindowCaption(core->mdat.displayName(pref->show_tag_in_window_title) + " - SMPlayer");
@@ -3325,6 +3320,8 @@ void TBase::updateMediaInfo() {
 void TBase::newMediaLoaded() {
 	qDebug("Gui::TBase::newMediaLoaded");
 
+	enterFullscreenOnPlay();
+
 	// Recents
 	QString filename = core->mdat.filename;
 	QString stream_title = core->mdat.stream_title;
@@ -3334,6 +3331,8 @@ void TBase::newMediaLoaded() {
 		pref->history_recents.addItem(filename);
 	}
 	updateRecents();
+
+	checkPendingActionsToRun();
 }
 
 void TBase::gotNoFileToPlay() {
@@ -4686,18 +4685,21 @@ void TBase::showPopupMenu(QPoint p) {
 
 // Called when a video has started to play
 void TBase::enterFullscreenOnPlay() {
-	qDebug("Gui::TBase::enterFullscreenOnPlay: arg_start_in_fullscreen: %d, pref->start_in_fullscreen: %d", arg_start_in_fullscreen, pref->start_in_fullscreen);
+	qDebug("Gui::TBase::enterFullscreenOnPlay: arg_start_in_fullscreen: %d, pref->start_in_fullscreen: %d",
+		   arg_start_in_fullscreen, pref->start_in_fullscreen);
 
 	if (arg_start_in_fullscreen != 0) {
 		if ((arg_start_in_fullscreen == 1) || (pref->start_in_fullscreen)) {
-			if (!pref->fullscreen) toggleFullscreen(true);
+			if (!pref->fullscreen)
+				toggleFullscreen(true);
 		}
 	}
 }
 
 // Called when the playlist has stopped
 void TBase::exitFullscreenOnStop() {
-    if (pref->fullscreen) {
+
+	if (pref->fullscreen) {
 		toggleFullscreen(false);
 	}
 }
