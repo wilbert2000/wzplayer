@@ -1033,6 +1033,9 @@ void TPreferences::load() {
 
 	global_volume = value("global_volume", global_volume).toBool();
 	volume = value("volume", volume).toInt();
+	if (volume < 0) volume = 0;
+	if (volume > 100) volume = 100;
+
 	mute = value("mute", mute).toBool();
 
 	global_audio_equalizer = value("global_audio_equalizer", global_audio_equalizer).toBool();
@@ -1343,6 +1346,8 @@ void TPreferences::load() {
 	initial_sub_scale_mpv = value("initial_sub_scale_mpv", initial_sub_scale_mpv).toDouble();
 	initial_sub_scale_ass = value("initial_sub_scale_ass", initial_sub_scale_ass).toDouble();
 	initial_volume = value("initial_volume", initial_volume).toInt();
+	if (initial_volume < 0) initial_volume = 0;
+	if (initial_volume > 100) initial_volume = 100;
 	initial_contrast = value("initial_contrast", initial_contrast).toInt();
 	initial_brightness = value("initial_brightness", initial_brightness).toInt();
 	initial_hue = value("initial_hue", initial_hue).toInt();

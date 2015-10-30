@@ -511,6 +511,8 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	aspect_ratio_id = set->value("aspect_ratio", aspect_ratio_id).toInt();
 	//fullscreen = set->value("fullscreen", fullscreen).toBool();
 	volume = set->value("volume", volume).toInt();
+	if (volume < 0) volume = 0;
+	if (volume > 100) volume = 100;
 	mute = set->value("mute", mute).toBool();
 	external_subtitles_fps = set->value("external_subtitles_fps", external_subtitles_fps).toInt();
 	external_audio = set->value("external_audio", external_audio).toString();
