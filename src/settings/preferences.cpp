@@ -161,7 +161,7 @@ void TPreferences::reset() {
 	mc_value = 0;
 
 	autoload_m4a = true;
-	min_step = 4;
+	min_step = 5;
 
 	osd_level = None;
 	osd_scale = 1;
@@ -1468,6 +1468,8 @@ void TPreferences::load() {
 			use_dvdnav = true;
 			if (time_slider_drag_delay < 200)
 				time_slider_drag_delay = 200;
+			if (min_step < 5)
+				min_step = 5;
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;
