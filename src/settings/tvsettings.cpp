@@ -59,7 +59,6 @@ void TTVSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset,
 
 	QString group_name = filenameToGroupname(filename);
 	qDebug("TTVSettings::loadSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
-	mset.reset();
 	beginGroup(group_name);
 	mset.load(this, player);
 	endGroup();

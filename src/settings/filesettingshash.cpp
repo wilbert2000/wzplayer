@@ -65,7 +65,6 @@ bool TFileSettingsHash::existSettingsFor(const QString& filename) {
 void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings& mset, int player) {
 	qDebug("FileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
 
-	mset.reset();
 	beginGroup("file_settings");
 	mset.load(this, player);
 	endGroup();
