@@ -91,10 +91,11 @@ public:
 
 	int aspect_ratio_id;
 
-	//bool fullscreen;
-
 	int volume;
+	int old_volume;
 	bool mute;
+	bool old_mute;
+	bool restore_volume;
 
 	int brightness, contrast, gamma, hue, saturation;
 

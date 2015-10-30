@@ -1408,9 +1408,8 @@ void TBase::createActions() {
 			core, SLOT(wheelDown(Settings::TPreferences::WheelFunction)));
 
 	// Volume slider action
-	volumeslider_action = new TVolumeSliderAction(this);
+	volumeslider_action = new TVolumeSliderAction(this, core->getVolume());
 	volumeslider_action->setObjectName("volumeslider_action");
-
 	connect(volumeslider_action, SIGNAL(valueChanged(int)),
 			 core, SLOT(setVolume(int)));
 	connect(core, SIGNAL(volumeChanged(int)),
@@ -1938,13 +1937,12 @@ void TBase::createToolbars() {
 			<< "separator"
 			<< "rewindbutton_action"
 			<< "timeslider_action"
+			<< "timelabel_action|0|1"
 			<< "forwardbutton_action"
 			<< "separator"
 			<< "fullscreen"
 			<< "mute"
-			<< "volumeslider_action"
-			<< "separator|0|1"
-			<< "timelabel_action|0|1";
+			<< "volumeslider_action";
 	controlbar->setDefaultActions(actions);
 	controlbar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, controlbar);

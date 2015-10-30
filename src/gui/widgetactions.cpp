@@ -108,8 +108,9 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 }
 
 
-TVolumeSliderAction::TVolumeSliderAction(QWidget* parent)
+TVolumeSliderAction::TVolumeSliderAction(QWidget* parent, int vol)
 	: TWidgetAction(parent)
+	, volume(vol)
 	, tick_position(QSlider::TicksBelow) {
 }
 
@@ -118,6 +119,7 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 
 void TVolumeSliderAction::setValue(int v) {
 
+	volume = v;
 	QList<QWidget*> l = createdWidgets();
 	for (int n = 0; n < l.count(); n++) {
 		TSlider* s = (TSlider*) l[n];
@@ -128,13 +130,7 @@ void TVolumeSliderAction::setValue(int v) {
 }
 
 int TVolumeSliderAction::value() {
-
-	QList<QWidget*> l = createdWidgets();
-	if (l.count() > 0) {
-		TSlider* s = (TSlider*) l[0];
-		return s->value();
-	}
-	return -1;
+	return volume;
 }
 
 void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
@@ -150,6 +146,12 @@ void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 	}
 }
 
+void TVolumeSliderAction::valueSliderChanged(int value) {
+
+	volume = value;
+	emit valueChanged(value);
+}
+
 QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 
 	TSlider* slider = new TSlider(parent);
@@ -160,7 +162,7 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 
 	slider->setMinimum(0);
 	slider->setMaximum(100);
-	slider->setValue(50);
+	slider->setValue(volume);
 	slider->setOrientation(Qt::Horizontal);
 	slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	slider->setFocusPolicy(Qt::NoFocus);
@@ -172,7 +174,7 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 	slider->setEnabled(isEnabled());
 	slider->setAttribute(Qt::WA_NoMousePropagation);
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SIGNAL(valueChanged(int)));
+	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(valueSliderChanged(int)));
 
 	return slider;
 }

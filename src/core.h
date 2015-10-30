@@ -68,6 +68,8 @@ public:
 	}
 	bool haveExternalSubs();
 	int positionMax() { return pos_max; }
+	int getVolume();
+	bool getMute();
 
 protected:
 	//! Change the current state (Stopped, Playing or Paused)
@@ -194,8 +196,7 @@ public slots:
 	void halveSpeed();
 	void normalSpeed();
 
-    void setVolume(int volume, bool force = false);
-	void switchMute();
+	void setVolume(int volume, bool force = false);
 	void mute(bool b);
 	void incVolume();
 	void decVolume();
@@ -403,7 +404,8 @@ protected slots:
 #endif
 
 protected:
-	void initPlaying(int seek=-1);
+	void initVolume();
+	void initPlaying(int seek = -1);
 	void newMediaPlaying();
 
 	void startPlayer(QString file, double seek = -1);
@@ -414,7 +416,7 @@ protected:
 
 	void updateWidgets();
 
-	int adjustVolume(int v, int max_vol);
+	int adjustVolume(int volume);
 
 signals:
 	void buffering();

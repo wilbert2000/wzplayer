@@ -88,7 +88,7 @@ class TVolumeSliderAction : public TWidgetAction {
 	Q_OBJECT
 
 public:
-	TVolumeSliderAction(QWidget* parent);
+	TVolumeSliderAction(QWidget* parent, int vol);
 	~TVolumeSliderAction();
 
 	void setFixedSize(QSize size) { fixed_size = size; }
@@ -108,8 +108,12 @@ protected:
 	virtual QWidget* createWidget(QWidget* parent);
 
 private:
+	int volume;
 	QSize fixed_size;
 	QSlider::TickPosition tick_position;
+
+private slots:
+	void valueSliderChanged(int value);
 };
 
 

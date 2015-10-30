@@ -28,7 +28,11 @@
 
 namespace Settings {
 
-TMediaSettings::TMediaSettings(TMediaData* mdat) : md(mdat) {
+TMediaSettings::TMediaSettings(TMediaData* mdat)
+	: volume(pref->initial_volume)
+	, mute(false)
+	, md(mdat) {
+
 	reset();
 }
 
@@ -67,9 +71,12 @@ void TMediaSettings::reset() {
 
 	aspect_ratio_id = AspectAuto;
 
-	//fullscreen = false;
+	restore_volume = true;
+	old_volume = volume;
 	volume = pref->initial_volume;
+	old_mute = mute;
 	mute = false;
+
 	sub_delay=0;
 	audio_delay=0;
 	sub_pos = pref->initial_sub_pos; // 100% by default
@@ -336,12 +343,12 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 	// Old config
 	set->remove("current_sub_id");
 
-	#ifdef MPV_SUPPORT
+#ifdef MPV_SUPPORT
 	set->setValue("current_secondary_sub_idx", current_secondary_sub_idx);
-	#endif
-	#if PROGRAM_SWITCH
+#endif
+#if PROGRAM_SWITCH
 	set->setValue("current_program_id", current_program_id);
-	#endif
+#endif
 
 	set->endGroup();
 
@@ -375,7 +382,6 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 	set->setValue("current_angle_id", current_angle_id);
 
 	set->setValue("aspect_ratio", aspect_ratio_id);
-	//set->setValue("fullscreen", fullscreen);
 	set->setValue("volume", volume);
 	set->setValue("mute", mute);
 	set->setValue("external_audio", external_audio);
@@ -509,7 +515,7 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	current_angle_id = set->value("current_angle_id", current_angle_id).toInt();
 
 	aspect_ratio_id = set->value("aspect_ratio", aspect_ratio_id).toInt();
-	//fullscreen = set->value("fullscreen", fullscreen).toBool();
+	restore_volume = false;
 	volume = set->value("volume", volume).toInt();
 	if (volume < 0) volume = 0;
 	if (volume > 100) volume = 100;

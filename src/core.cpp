@@ -685,26 +685,19 @@ void TCore::openFile(QString filename, int seek) {
 	close();
 	mdat.filename = filename;
 	mdat.selected_type = TMediaData::TYPE_FILE;
-	int old_volume = mset.volume;
 	mset.reset();
 
 	// Check if we have info about this file
-	if (pref->dont_remember_media_settings) {
-		mset.volume = old_volume;
-	} else {
+	if (!pref->dont_remember_media_settings) {
 		if (pref->file_settings_method.toLower() == "hash") {
 			Settings::TFileSettingsHash settings(mdat.filename);
 			if (settings.existSettingsFor(mdat.filename)) {
 				settings.loadSettingsFor(mdat.filename, mset, proc->player());
-			} else {
-				mset.volume = old_volume;
 			}
 		} else {
 			Settings::TFileSettings settings;
 			if (settings.existSettingsFor(mdat.filename)) {
 				settings.loadSettingsFor(mdat.filename, mset, proc->player());
-			} else {
-				mset.volume = old_volume;
 			}
 		}
 
@@ -713,12 +706,6 @@ void TCore::openFile(QString filename, int seek) {
 			qDebug("TCore::openFile: Time pos reset to 0");
 		}
 	}
-
-	// Apply settings to playerwindow
-	playerwindow->set(
-		mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id),
-		mset.zoom_factor, mset.zoom_factor_fullscreen,
-		mset.pan_offset, mset.pan_offset_fullscreen);
 
 	initPlaying(seek);
 }
@@ -744,21 +731,37 @@ void TCore::restartPlay() {
 	initPlaying();
 }
 
+void TCore::initVolume() {
+
+	// Keep currrent volume if no media settings are loaded.
+	// restore_volume is set to true by mset.reset and set
+	// to false by mset.load
+	if (mset.restore_volume) {
+		mset.volume = mset.old_volume;
+		mset.mute = mset.old_mute;
+	} else if (!pref->global_volume) {
+		if (mset.old_volume != mset.volume)
+			emit volumeChanged(mset.volume);
+		if (mset.old_mute != mset.mute)
+			emit muteChanged(mset.mute);
+	}
+}
+
 void TCore::initPlaying(int seek) {
 	qDebug("TCore::initPlaying");
 
+	time.start();
 	playerwindow->hideLogo();
-	if (we_are_restarting) {
-		qDebug("TCore::initPlaying: starting time");
-	} else {
+	if (!we_are_restarting) {
+		// Restore old volume or emit new volume
+		initVolume();
+		// Apply settings to playerwindow
+		playerwindow->set(
+			mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id),
+			mset.zoom_factor, mset.zoom_factor_fullscreen,
+			mset.pan_offset, mset.pan_offset_fullscreen);
 		// Feedback and prevent artifacts waiting for redraw
 		playerwindow->repaint();
-		qDebug("TCore::initPlaying: entered the black hole, starting time");
-	}
-	time.start();
-
-	if (proc->isRunning()) {
-		stopPlayer();
 	}
 
 	int start_sec = (int) mset.current_sec;
@@ -869,6 +872,13 @@ void TCore::newMediaPlaying() {
 void TCore::playingStarted() {
 	qDebug("TCore::playingStarted");
 
+	// Set mute here because mplayer doesn't have an option
+	// to set mute from the command line
+	// TODO: move to TMplayerProcess
+	if (proc->isMPlayer() && getMute()) {
+		proc->mute(true);
+	}
+
 	setState(Playing);
 
 	if (we_are_restarting) {
@@ -902,18 +912,6 @@ void TCore::playingStarted() {
 		}
 	}
 #endif
-
-	if (pref->mplayer_additional_options.contains("-volume")) {
-		qDebug("TCore::playingStarted: don't set volume since -volume is used");
-	} else {
-		int vol = (pref->global_volume ? pref->volume : mset.volume);
-		emit volumeChanged(vol);
-		if (proc->isMPlayer() && pref->mute) {
-			// Set mute here because mplayer doesn't have an option to set
-			// mute from the command line
-			mute(true);
-		}
-	}
 
 	// TODO:
 #if 0
@@ -1542,9 +1540,9 @@ void TCore::startPlayer(QString file, double seek) {
 	if (pref->mplayer_additional_options.contains("-volume")) {
 		qDebug("TCore::startPlayer: don't set volume since -volume is used");
 	} else {
-		int vol = (pref->global_volume ? pref->volume : mset.volume);
+		int vol = getVolume();
 		if (proc->isMPV()) {
-			vol = adjustVolume(vol, pref->use_soft_vol ? pref->softvol_max : 100);
+			vol = adjustVolume(vol);
 		}
 		proc->setOption("volume", QString::number(vol));
 	}
@@ -2610,27 +2608,32 @@ void TCore::normalSpeed() {
 	setSpeed(1);
 }
 
-int TCore::adjustVolume(int v, int max_vol) {
-	//qDebug() << "TCore::adjustVolume: v:" << v << "max_vol:" << max_vol;
-	if (max_vol < 100) max_vol = 100;
-	int vol = v * max_vol / 100;
-	return vol;
+int TCore::adjustVolume(int volume) {
+
+	if (pref->use_soft_vol) {
+		int max = pref->softvol_max;
+		if (max < 100) max = 100;
+		return volume * max / 100;
+	}
+
+	return volume;
+}
+
+int TCore::getVolume() {
+	return pref->global_volume ? pref->volume : mset.volume;
 }
 
 void TCore::setVolume(int volume, bool force) {
 	qDebug("TCore::setVolume: %d", volume);
 
-	int current_volume = (pref->global_volume ? pref->volume : mset.volume);
-
-	if ((volume == current_volume) && (!force)) return;
-
-	current_volume = volume;
-	if (current_volume > 100) current_volume = 100;
-	if (current_volume < 0) current_volume = 0;
+	if (volume > 100) volume = 100;
+	if (volume < 0) volume = 0;
+	if (!force && volume == getVolume())
+		return;
 
 	if (proc->isMPV()) {
 		if (proc->isRunning()) {
-			int vol = adjustVolume(current_volume, pref->use_soft_vol ? pref->softvol_max : 100);
+			int vol = adjustVolume(volume);
 			proc->setVolume(vol);
 		}
 	} else {
@@ -2639,32 +2642,29 @@ void TCore::setVolume(int volume, bool force) {
 			// Change volume later, after quiting pause
 			change_volume_after_unpause = true;
 		} else if (proc->isRunning()) {
-			proc->setVolume(current_volume);
+			proc->setVolume(volume);
 		}
 	}
 
 	bool mute_changed;
 	if (pref->global_volume) {
-		pref->volume = current_volume;
+		pref->volume = volume;
 		mute_changed = pref->mute;
 		pref->mute = false;
 	} else {
-		mset.volume = current_volume;
+		mset.volume = volume;
 		mute_changed = mset.mute;
 		mset.mute = false;
 	}
 
-	displayMessage(tr("Volume: %1").arg(current_volume));
+	displayMessage(tr("Volume: %1").arg(volume));
 	if (mute_changed)
 		emit muteChanged(false);
-	emit volumeChanged(current_volume);
+	emit volumeChanged(volume);
 }
 
-void TCore::switchMute() {
-	qDebug("TCore::switchMute");
-
-	mset.mute = !mset.mute;
-	mute(mset.mute);
+bool TCore::getMute() {
+	return pref->global_volume ? pref->mute : mset.mute;
 }
 
 void TCore::mute(bool b) {
@@ -2681,16 +2681,12 @@ void TCore::mute(bool b) {
 
 void TCore::incVolume() {
 	qDebug("TCore::incVolume");
-
-	int new_vol = (pref->global_volume ? pref->volume + pref->min_step : mset.volume + pref->min_step);
-	setVolume(new_vol);
+	setVolume(getVolume() + pref->min_step);
 }
 
 void TCore::decVolume() {
 	qDebug("TCore::incVolume");
-
-	int new_vol = (pref->global_volume ? pref->volume - pref->min_step : mset.volume - pref->min_step);
-	setVolume(new_vol);
+	setVolume(getVolume() - pref->min_step);
 }
 
 void TCore::setSubDelay(int delay) {
@@ -3752,11 +3748,10 @@ void TCore::sendMediaInfo() {
 void TCore::watchState(TCore::State state) {
 
 	// Delayed volume change
-	if ((proc->isMPlayer()) && (state == Playing) && (change_volume_after_unpause)) {
+	if (proc->isMPlayer() && (state == Playing) && change_volume_after_unpause) {
 		qDebug("TCore::watchState: delayed volume change");
 		change_volume_after_unpause = false;
-		int volume = (pref->global_volume ? pref->volume : mset.volume);
-		proc->setVolume(volume);
+		proc->setVolume(getVolume());
 	}
 }
 
