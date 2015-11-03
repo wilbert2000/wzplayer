@@ -67,6 +67,7 @@ void TAutohideToolbar::didEnterFullscreen() {
 
 	TEditableToolbar::didEnterFullscreen();
 	auto_hide = true;
+	show();
 }
 
 void TAutohideToolbar::aboutToExitFullscreen() {
