@@ -1103,7 +1103,7 @@ void TBase::createActions() {
 
 	showContextMenuAct = new TAction(this, "show_context_menu");
 	connect(showContextMenuAct, SIGNAL(triggered()),
-			 this, SLOT(showPopupMenu()));
+			 this, SLOT(showContextMenu()));
 
 	nextAspectAct = new TAction(Qt::Key_A, this, "next_aspect");
 	connect(nextAspectAct, SIGNAL(triggered()),
@@ -4674,12 +4674,12 @@ void TBase::dropEvent(QDropEvent *e) {
 	openFiles(files);
 }
 
-void TBase::showPopupMenu() {
-	showPopupMenu(QCursor::pos());
+void TBase::showContextMenu() {
+	showContextMenu(QCursor::pos());
 }
 
-void TBase::showPopupMenu(QPoint p) {
-	//qDebug("Gui::TBase::showPopupMenu: %d, %d", p.x(), p.y());
+void TBase::showContextMenu(QPoint p) {
+	//qDebug("Gui::TBase::showContextMenu: %d, %d", p.x(), p.y());
 	popup->exec(p);
 }
 

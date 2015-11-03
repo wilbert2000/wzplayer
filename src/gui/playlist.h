@@ -180,7 +180,7 @@ protected:
 protected slots:
 	virtual void playCurrent();
 	virtual void itemDoubleClicked(int row);
-	virtual void showPopup(const QPoint & pos);
+	virtual void showContextMenu(const QPoint & pos);
 	virtual void upItem();
 	virtual void downItem();
 	virtual void editCurrentItem();

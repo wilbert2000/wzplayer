@@ -251,8 +251,8 @@ protected slots:
 	//! You can call this slot to jump to the specified percentage in the video, while dragging the slider.
 	virtual void goToPosOnDragging(int);
 
-	virtual void showPopupMenu();
-	virtual void showPopupMenu(QPoint p);
+	virtual void showContextMenu();
+	virtual void showContextMenu(QPoint p);
 	void showStatusBarPopup(const QPoint& pos);
 
 	virtual void leftClickFunction();

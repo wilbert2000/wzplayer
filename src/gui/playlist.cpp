@@ -289,7 +289,7 @@ void TPlaylist::createToolbar() {
 	popup->addAction(deleteSelectedFileFromDiskAct);
 
 	connect(listView, SIGNAL(customContextMenuRequested(const QPoint &)),
-             this, SLOT(showPopup(const QPoint &)));
+			 this, SLOT(showContextMenu(const QPoint &)));
 }
 
 void TPlaylist::retranslateStrings() {
@@ -855,8 +855,8 @@ void TPlaylist::itemDoubleClicked(int row) {
 	playItem(row);
 }
 
-void TPlaylist::showPopup(const QPoint & pos) {
-	qDebug("Gui::TPlaylist::showPopup: x: %d y: %d", pos.x(), pos.y());
+void TPlaylist::showContextMenu(const QPoint & pos) {
+	qDebug("Gui::TPlaylist::showContextMenu: x: %d y: %d", pos.x(), pos.y());
 
 	if (!popup->isVisible()) {
 		popup->exec(listView->viewport()->mapToGlobal(pos));
