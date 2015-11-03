@@ -35,11 +35,11 @@
 #endif
 
 #include "settings/paths.h"
+#include "settings/assstyles.h"
 #include "settings/mediasettings.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
 #include "settings/filters.h"
-#include "gui/autohidetoolbar.h"
 #include "helper.h"
 
 #ifdef YOUTUBE_SUPPORT
@@ -470,8 +470,7 @@ void TPreferences::reset() {
        Floating control
        **************** */
 
-	floating_control_width = 70; //70 %
-	floating_activation_area = Gui::TAutohideToolbar::Anywhere;
+	floating_activation_area = Anywhere;
 	floating_hide_delay = 3000;
 
 
@@ -912,7 +911,6 @@ void TPreferences::save() {
        **************** */
 
 	beginGroup("floating_control");
-	setValue("width", floating_control_width);
 	setValue("activation_area", floating_activation_area);
 	setValue("hide_delay", floating_hide_delay);
 	endGroup(); // floating_control
@@ -1389,8 +1387,10 @@ void TPreferences::load() {
        **************** */
 
 	beginGroup("floating_control");
-	floating_control_width = value("width", floating_control_width).toInt();
-	floating_activation_area = (Gui::TAutohideToolbar::Activation) value("activation_area", floating_activation_area).toInt();
+	// Old config
+	int found = value("width", 0).toInt();
+	if (found) remove("width");
+	floating_activation_area = (ToolbarActivation) value("activation_area", floating_activation_area).toInt();
 	floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
 	endGroup(); // floating_control
 

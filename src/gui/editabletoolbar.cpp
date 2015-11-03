@@ -19,21 +19,28 @@
 #include "gui/editabletoolbar.h"
 #include <QDebug>
 #include <QMenu>
-#include "settings/preferences.h"
-#include "gui/toolbareditor.h"
 #include "gui/actionseditor.h"
+#include "gui/toolbareditor.h"
 #include "gui/base.h"
+#include "gui/sizegrip.h"
 
 namespace Gui {
 
+
 TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 	: QToolBar(mainwindow)
-	, main_window(mainwindow) {
+	, main_window(mainwindow)
+	, size_grip(0)
+	, space_eater(0) {
 
+	// Context menu
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
-			this, SLOT(showPopup(const QPoint&)));
+			this, SLOT(showContextMenu(const QPoint&)));
 
+	// Update size grip when top level changes
+	connect(this, SIGNAL(topLevelChanged(bool)),
+			this, SLOT(onTopLevelChanged(bool)));
 }
 
 TEditableToolbar::~TEditableToolbar() {
@@ -43,6 +50,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 	qDebug() << "Gui::TEditableToolbar::setActionsFromStringList: loading toolbar" << objectName();
 
 	clear();
+	space_eater = 0;
 	actions = acts;
 
 	QString action_name;
@@ -58,18 +66,21 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 			bool vis = pref->fullscreen ? fs : ns;
 			if (vis) {
 				if (action_name == "separator") {
-					QAction* action = TToolbarEditor::newSeparator(this);
-					addAction(action);
+					addAction(TToolbarEditor::newSeparator(this));
 				} else {
 					QAction* action = TToolbarEditor::findAction(action_name, all_actions);
 					if (action) {
 						addAction(action);
-						// If the action is a menu change some of its properties
+						// Set QToolButton::InstantPopup if the action is a menu
 						if (action->objectName().endsWith("_menu")) {
 							QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
 							if (button) {
 								button->setPopupMode(QToolButton::InstantPopup);
 							}
+						} else if (action_name == "timeslider_action") {
+							qDebug() << "Gui::TEditableToolbar::setActionsFromStringList: found space eater"
+									 << action_name;
+							space_eater = widgetForAction(action);
 						}
 					} else {
 						qWarning() << "Gui::TEditableToolbar::setActionsFromStringList: action"
@@ -81,7 +92,16 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 			} // if (vis)
 			i++;
 		}
-	}
+	} // while
+
+	addSizeGrip();
+} // TEditableToolbar::setActionsFromStringList()
+
+QStringList TEditableToolbar::actionsToStringList(bool remove_size_grip) {
+
+	if (remove_size_grip)
+		removeSizeGrip();
+	return actions;
 }
 
 void TEditableToolbar::edit() {
@@ -97,12 +117,13 @@ void TEditableToolbar::edit() {
 	if (e.exec() == QDialog::Accepted) {
 		// Get action names and update actions in all_actions
 		QStringList new_actions = e.saveActions();
-		// Save actions to pref
-		TActionsEditor::saveToConfig(main_window, Settings::pref);
 		// Load new actions
 		setActionsFromStringList(new_actions, all_actions);
 		resize(width(), e.iconSize());
 		setIconSize(QSize(e.iconSize(), e.iconSize()));
+
+		// Save icon text of actions to pref
+		TActionsEditor::saveToConfig(main_window, Settings::pref);
 	}
 }
 
@@ -120,8 +141,8 @@ void TEditableToolbar::didExitFullscreen() {
 	reload();
 }
 
-void TEditableToolbar::showPopup(const QPoint& pos) {
-	//qDebug("Gui::TEditableToolbar::showPopup: x: %d y: %d", pos.x(), pos.y());
+void TEditableToolbar::showContextMenu(const QPoint& pos) {
+	//qDebug("Gui::TEditableToolbar::showContextMenu: x: %d y: %d", pos.x(), pos.y());
 
 	QMenu* popup = main_window->getToolbarMenu();
 	if (popup) {
@@ -129,6 +150,63 @@ void TEditableToolbar::showPopup(const QPoint& pos) {
 	}
 }
 
+void TEditableToolbar::moveEvent(QMoveEvent* event) {
+	//qDebug("Gui::TEditableToolbar::moveEvent");
+
+	QToolBar::moveEvent(event);
+	if (size_grip)
+		size_grip->follow();
+}
+
+void TEditableToolbar::resizeEvent(QResizeEvent* event) {
+	//qDebug("Gui::TEditableToolbar::resizeEvent");
+
+	QToolBar::resizeEvent(event);
+	if (size_grip)
+		size_grip->follow();
+}
+
+void TEditableToolbar::setVisible(bool visible) {
+	//qDebug("TEditableToolbar::setVisible: %d", visible);
+
+	QToolBar::setVisible(visible);
+	if (size_grip) {
+		size_grip->setVisible(visible);
+	}
+}
+
+void TEditableToolbar::removeSizeGrip() {
+
+	if (size_grip) {
+		qDebug("Gui::TEditableToolbar::removeSizeGrip: removing size grip");
+		size_grip->close();
+		delete size_grip;
+		size_grip = 0;
+	}
+}
+
+void TEditableToolbar::addSizeGrip() {
+
+	if (space_eater && isFloating()) {
+		if (size_grip) {
+			qDebug("Gui::TEditableToolbar::addSizeGrip: size grip already added");
+		} else {
+			qDebug("Gui::TEditableToolbar::addSizeGrip: adding size grip");
+			size_grip = new TSizeGrip(this);
+			size_grip->show();
+		}
+	} else {
+		removeSizeGrip();
+	}
+}
+
+void TEditableToolbar::onTopLevelChanged(bool) {
+	qDebug("TEditableToolbar::onTopLevelChanged");
+
+	addSizeGrip();
+}
+
 } // namespace Gui
+
 #include "moc_editabletoolbar.cpp"
 

@@ -205,8 +205,6 @@ void TInterface::retranslateStrings() {
 #endif
 	gui_combo->setCurrentIndex(gui_index);
 
-	floating_width_label->setNum(floating_width_slider->value());
-
 	createHelp();
 }
 
@@ -239,8 +237,7 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	setGUI(pref->gui);
 
-	setFloatingWidth(pref->floating_control_width);
-	floating_move_bottom_check->setChecked(pref->floating_activation_area == Gui::TAutohideToolbar::Bottom);
+	floating_activation_area_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	floating_hide_delay_spin->setValue(pref->floating_hide_delay);
 
 	setRecentsMaxItems(pref->history_recents.maxItems());
@@ -254,7 +251,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	iconset_changed = false;
 	gui_changed = false;
 	style_changed = false;
-	floating_control_width_changed = false;
 	recents_changed = false;
 
 	if (pref->language != language()) {
@@ -300,11 +296,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		style_changed = true;
 	}
 
-	if (pref->floating_control_width != floatingWidth()) {
-		floating_control_width_changed = true;
-		pref->floating_control_width = floatingWidth();
-	}
-	pref->floating_activation_area = floating_move_bottom_check->isChecked() ? Gui::TAutohideToolbar::Bottom : Gui::TAutohideToolbar::Anywhere;
+	pref->floating_activation_area = floating_activation_area_check->isChecked() ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->floating_hide_delay = floating_hide_delay_spin->value();
 
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
@@ -554,15 +546,6 @@ bool TInterface::hideVideoOnAudioFiles() {
 	return hide_video_window_on_audio_check->isChecked();
 }
 
-// Floating tab
-void TInterface::setFloatingWidth(int percentage) {
-	floating_width_slider->setValue(percentage);
-}
-
-int TInterface::floatingWidth() {
-	return floating_width_slider->value();
-}
-
 void TInterface::setRecentsMaxItems(int n) {
 	recents_max_items_spin->setValue(n);
 }
@@ -677,10 +660,7 @@ void TInterface::createHelp() {
 
 	addSectionTitle(tr("Floating control"));
 
-	setWhatsThis(floating_width_slider, tr("Width"),
-		tr("Specifies the width of the control (as a percentage)."));
-
-	setWhatsThis(floating_move_bottom_check, tr("Show only when moving the mouse to the bottom of the screen"),
+	setWhatsThis(floating_activation_area_check, tr("Show only when moving the mouse to the bottom of the screen"),
 		tr("If this option is checked, the floating control will only be displayed when the mouse is moved "
            "to the bottom of the screen. Otherwise the control will appear whenever the mouse is moved, no matter "
            "its position."));

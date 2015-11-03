@@ -133,6 +133,7 @@ HEADERS += config.h \
 	gui/actiongroup.h \
 	gui/widgetactions.h \
     gui/toolbareditor.h \
+    gui/sizegrip.h \
     gui/editabletoolbar.h \
 	gui/slider.h \
 	gui/timeslider.h \
@@ -229,6 +230,7 @@ SOURCES	+= version.cpp \
 	gui/actiongroup.cpp \
 	gui/widgetactions.cpp \
     gui/toolbareditor.cpp \
+    gui/sizegrip.cpp \
     gui/editabletoolbar.cpp \
 	gui/slider.cpp \
 	gui/timeslider.cpp \

@@ -30,7 +30,6 @@
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
 #include "filters.h"
-#include "gui/autohidetoolbar.h"
 
 #ifdef UPDATE_CHECKER
 #include "updatecheckerdata.h"
@@ -54,6 +53,7 @@ public:
 	enum OptionState { Detect = -1, Disabled = 0, Enabled = 1 };
 	enum H264LoopFilter { LoopDisabled = 0, LoopEnabled = 1, LoopDisabledOnHD = 2 };
 	enum AutoAddToPlaylistFilter { NoFiles = 0, VideoFiles = 1, AudioFiles = 2, MultimediaFiles = 3, ConsecutiveFiles = 4 };
+	enum ToolbarActivation { Anywhere = 1, NearToolbar = 2 };
 
 	Q_DECLARE_FLAGS(WheelFunctions, WheelFunction)
 
@@ -474,8 +474,7 @@ public:
        Floating control
        **************** */
 
-	int floating_control_width;
-	Gui::TAutohideToolbar::Activation floating_activation_area;
+	ToolbarActivation floating_activation_area;
 	int floating_hide_delay;
 
 

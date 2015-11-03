@@ -23,11 +23,10 @@
 #include <QList>
 #include <QStringList>
 
-class QAction;
-
 namespace Gui {
 
 class TBase;
+class TSizeGrip;
 
 typedef QList<QAction*> TActionList;
 
@@ -39,7 +38,7 @@ public:
 	virtual ~TEditableToolbar();
 
 	void setActionsFromStringList(const QStringList& acts, const TActionList& all_actions);
-	QStringList actionsToStringList() const { return actions; }
+	QStringList actionsToStringList(bool remove_size_grip = true);
 
 	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
 	QStringList defaultActions() const { return default_actions; }
@@ -47,20 +46,30 @@ public:
 	virtual void didEnterFullscreen();
 	virtual void didExitFullscreen();
 
+	virtual void setVisible(bool visible);
+
 public slots:
 	void edit();
 
 protected:
 	TBase* main_window;
 
+	virtual void resizeEvent(QResizeEvent* event);
+	virtual void moveEvent(QMoveEvent* event);
+
 private:
 	QStringList actions;
 	QStringList default_actions;
+	TSizeGrip* size_grip;
+	QWidget* space_eater;
 
 	void reload();
+	void addSizeGrip();
+	void removeSizeGrip();
 
 private slots:
-	void showPopup(const QPoint& pos);
+	void showContextMenu(const QPoint& pos);
+	void onTopLevelChanged(bool);
 };
 
 } // namesapce Gui

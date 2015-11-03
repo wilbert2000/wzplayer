@@ -65,6 +65,7 @@ class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
 class TSeekingButton;
+class TEditableToolbar;
 class TAutohideToolbar;
 class TLogWindow;
 class TPlaylist;
@@ -801,7 +802,6 @@ private:
 #endif
 #endif
 
-	void reconfigureControlBar();
 	void createToolbars();
 	QMenu* createToolbarMenu();
 

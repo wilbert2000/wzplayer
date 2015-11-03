@@ -52,6 +52,7 @@
 #include "images.h"
 #include "discname.h"
 #include "playerwindow.h"
+#include "core.h"
 #include "clhelp.h"
 #include "filedialog.h"
 #include "links.h"
@@ -68,6 +69,7 @@
 #include "gui/widgetactions.h"
 #include "gui/actionseditor.h"
 #include "gui/editabletoolbar.h"
+#include "gui/autohidetoolbar.h"
 #include "gui/logwindow.h"
 #include "gui/playlist.h"
 #include "gui/filepropertiesdialog.h"
@@ -1913,13 +1915,6 @@ void TBase::showStatusBarPopup(const QPoint& pos) {
 	toolbar_menu->exec(statusBar()->mapToGlobal(pos));
 }
 
-void TBase::reconfigureControlBar() {
-
-	controlbar->setPercWidth(pref->floating_control_width);
-	controlbar->setActivationArea(pref->floating_activation_area);
-	controlbar->setHideDelay(pref->floating_hide_delay);
-}
-
 void TBase::createToolbars() {
 
 	menuBar()->setObjectName("menubar");
@@ -2970,8 +2965,6 @@ void TBase::loadConfig() {
 
 	pref->endGroup();
 
-	reconfigureControlBar();
-
 	// Load playlist settings outside group
 	playlist->loadSettings();
 }
@@ -3120,15 +3113,6 @@ void TBase::applyNewPreferences() {
 	}
 
 	Pref::TInterface* _interface = pref_dialog->mod_interface();
-
-	// Control bar
-	reconfigureControlBar();
-	if (_interface->floatingControlWidthChanged()) {
-		controlbar->resetPosition();
-		if (pref->fullscreen)
-			controlbar->resizeToolbar();
-	}
-
 	if (_interface->recentsChanged()) {
 		updateRecents();
 	}
@@ -4149,6 +4133,7 @@ void TBase::shareSMPlayer() {
 #endif
 
 void TBase::showGotoDialog() {
+
 	TTimeDialog d(this);
 	d.setLabel(tr("&Jump to:"));
 	d.setWindowTitle(tr("SMPlayer - Seek"));
@@ -4291,7 +4276,6 @@ void TBase::didEnterFullscreen() {
 					  Helper::qtVersion())) {
 		toolbar->hide();
 		toolbar2->hide();
-		controlbar->resetPosition();
 	}
 	pref->endGroup();
 
@@ -4892,7 +4876,8 @@ void TBase::resizeWindow(int w, int h) {
 }
 
 void TBase::resizeMainWindow(int w, int h, bool try_twice) {
-	qDebug("Gui::TBase::resizeMainWindow: size to scale: %d, %d", w, h);
+	qDebug("Gui::TBase::resizeMainWindow: size to scale: %d x %d, size factor %f",
+		   w, h, pref->size_factor);
 
 	// Adjust for selected size and aspect.
 	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);

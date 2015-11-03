@@ -645,44 +645,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>&amp;Width:</string>
-           </property>
-           <property name="buddy">
-            <cstring>floating_width_slider</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QSlider" name="floating_width_slider">
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="floating_width_label">
-           <property name="frameShape">
-            <enum>QFrame::Panel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Sunken</enum>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="floating_move_bottom_check">
+        <widget class="QCheckBox" name="floating_activation_area_check">
          <property name="text">
           <string>Show only when moving the mouse to the &amp;bottom of the screen</string>
          </property>
@@ -903,30 +866,12 @@
   <tabstop>precise_seeking_check</tabstop>
   <tabstop>reset_stop_check</tabstop>
   <tabstop>single_instance_check</tabstop>
-  <tabstop>floating_width_slider</tabstop>
-  <tabstop>floating_move_bottom_check</tabstop>
+  <tabstop>floating_activation_area_check</tabstop>
   <tabstop>floating_hide_delay_spin</tabstop>
   <tabstop>recents_max_items_spin</tabstop>
   <tabstop>url_max_items_spin</tabstop>
   <tabstop>save_dirs_check</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>floating_width_slider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>floating_width_label</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>282</x>
-     <y>137</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>484</x>
-     <y>137</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

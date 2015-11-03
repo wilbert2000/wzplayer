@@ -23,20 +23,17 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QDesktopWidget>
+#include "settings/preferences.h"
 #include "gui/base.h"
 
 namespace Gui {
 
 TAutohideToolbar::TAutohideToolbar(TBase* mainwindow, QWidget* playerwindow)
 	: TEditableToolbar(mainwindow)
-	, auto_hide(false)
-	, reset_pos(false)
-	, perc_width(100)
-	, activation_area(Anywhere) {
+	, auto_hide(false) {
 
 	timer = new QTimer(this);
 	timer->setSingleShot(true);
-	timer->setInterval(3000);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkUnderMouse()));
 
 	playerwindow->installEventFilter(this);
@@ -45,12 +42,10 @@ TAutohideToolbar::TAutohideToolbar(TBase* mainwindow, QWidget* playerwindow)
 TAutohideToolbar::~TAutohideToolbar() {
 }
 
-void TAutohideToolbar::setHideDelay(int ms) {
-	timer->setInterval(ms);
-}
+void TAutohideToolbar::startUnderMouseTimer() {
 
-int TAutohideToolbar::hideDelay() const {
-	return timer->interval();
+	timer->setInterval(pref->floating_hide_delay);
+	timer->start();
 }
 
 // Slot called by timer
@@ -58,8 +53,8 @@ void TAutohideToolbar::checkUnderMouse() {
 
 	if (auto_hide) {
 		if (isVisible()) {
-			if (underMouse()) {
-				timer->start();
+			if (underMouse() || QApplication::mouseButtons()) {
+				startUnderMouseTimer();
 			} else {
 				hide();
 			}
@@ -67,144 +62,11 @@ void TAutohideToolbar::checkUnderMouse() {
 	}
 }
 
-bool TAutohideToolbar::allowGeometryChanges() const {
-
-	if (auto_hide && isFloating()) {
-		int current_screen = QApplication::desktop()->screenNumber(this);
-		int main_window_screen = QApplication::desktop()->screenNumber(main_window);
-		return current_screen == main_window_screen;
-	}
-	return false;
-}
-
-void TAutohideToolbar::moveEvent(QMoveEvent* event) {
-	//qDebug() << "TAutohideToolbar::moveEvent" << event->oldPos() << event->pos();
-
-	TEditableToolbar::moveEvent(event);
-
-	if (!allowGeometryChanges()) {
-		return;
-	}
-
-	QWidget* panel = main_window->centralWidget();
-	QPoint origin = main_window->mapToGlobal(panel->pos());
-	//qDebug() << "TAutohideToolbar::moveEvent: panel" << origin << panel->size();
-
-	int x = event->pos().x();
-	if (x < origin.x()) {
-		x = origin.x();
-	} else if (x > panel->width() - width()) {
-		x = panel->width() - width();
-	}
-
-	int y = event->pos().y();
-	if (y < origin.y()) {
-		//qDebug("TAutohideToolbar::moveEvent: moving to (%d, %d)", x, origin.y());
-		move(x, origin.y());
-		return;
-	}
-
-	int max_y = origin.y() + panel->height() - height();
-	if (y > max_y) {
-		//qDebug("TAutohideToolbar::moveEvent: moving to (%d, %d)", x, max_y);
-		move(x, max_y);
-		return;
-	}
-
-	static bool block_move = false;
-	if (block_move) {
-		block_move = false;
-		//qDebug("TAutohideToolbar::moveEvent: blocked");
-		return;
-	}
-
-	// Qt centers the toolbar when it is outside its allowed area. On my system
-	// (KDE 4.14.9 / Qt 4.8) when in fullscreen mode the floating toolbar seems
-	// not to be allowed into the docking area at the bottom of the screen.
-	// This hack tries to detect that behaviour and puts the bar in a more
-	// reasonable place.
-	int center = max_y / 2;
-	int old_y = event->oldPos().y();
-	if (qAbs(old_y - y) >= center && qAbs(y - center) < height()) {
-		// Moved almost half a screen to the center, assume centered
-		qDebug("TAutohideToolbar::moveEvent: undo center control bar");
-		block_move = true;
-		// Need to use old x, otherwise still centered horizontally
-		int x = event->oldPos().x();
-		if (x < origin.x()) {
-			x = origin.x();
-		} else if (x > panel->width() - width()) {
-			x = panel->width() - width();
-		}
-		if (old_y < center) {
-			move(x, origin.y());
-		} else {
-			move(x, max_y);
-		}
-	}
-}
-
-void TAutohideToolbar::resizeToolbar() {
-	//qDebug("TAutohideToolbar::resizeToolbar");
-
-	if (!allowGeometryChanges()) {
-		return;
-	}
-
-	QWidget* panel = main_window->centralWidget();
-	QPoint origin = main_window->mapToGlobal(panel->pos());
-	//qDebug() << "TAutohideToolbar::resizeToolbar: panel" << origin << panel->size();
-
-	int w = panel->width() * perc_width / 100;
-	int max_y = origin.y() + panel->height() - frameGeometry().height();
-	int x, y;
-	if (reset_pos) {
-		reset_pos = false;
-		x = origin.x() + (panel->width() - w) / 2;
-		y = max_y;
-	} else {
-		x = pos().x();
-		if (x < origin.x()) {
-			x = origin.x();
-		} else {
-			int max_x = origin.x() + panel->width() - w;
-			if (x > max_x) {
-				x = max_x;
-			}
-		}
-		y = pos().y();
-		if (y < origin.y()) {
-			y = origin.y();
-		} else if (y > max_y) {
-			y = max_y;
-		}
-	}
-	//qDebug() << "TAutohideToolbar::resizeToolbar: resizing to" << x << y << w;
-	setGeometry(x, y, w, height());
-}
-
-void TAutohideToolbar::startAutoHide() {
-	//qDebug("TAutohideToolbar::startAutoHide");
-
-	// Start when still in fullscreen
-	if (fullscreen) {
-		auto_hide = true;
-		resizeToolbar();
-		show();
-	}
-}
-
 void TAutohideToolbar::didEnterFullscreen() {
 	//qDebug("TAutohideToolbar::didEnterFullscreen");
 
 	TEditableToolbar::didEnterFullscreen();
-
-	setAllowedAreas(Qt::NoToolBarArea);
-	// The panel will not yet have its fullscreen size by now, so need to post
-	// enable auto_hide to prevent using the wrong screen size in
-	// resizeToolbar() and moveEvent().
-	fullscreen = true;
-	QTimer::singleShot(300, this, SLOT(startAutoHide()));
+	auto_hide = true;
 }
 
 void TAutohideToolbar::aboutToExitFullscreen() {
@@ -212,8 +74,6 @@ void TAutohideToolbar::aboutToExitFullscreen() {
 
 	timer->stop();
 	auto_hide = false;
-	fullscreen = false;
-	setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
 }
 
 void TAutohideToolbar::setVisible(bool visible) {
@@ -222,7 +82,7 @@ void TAutohideToolbar::setVisible(bool visible) {
 	TEditableToolbar::setVisible(visible);
 	if (auto_hide) {
 		if (visible) {
-			timer->start();
+			startUnderMouseTimer();
 		} else {
 			timer->stop();
 		}
@@ -242,7 +102,7 @@ bool TAutohideToolbar::eventFilter(QObject* obj, QEvent* event) {
 	if (auto_hide) {
 		if (event->type() == QEvent::MouseMove) {
 			if (!isVisible()) {
-				if (activation_area == Anywhere) {
+				if (pref->floating_activation_area == Settings::TPreferences::Anywhere) {
 					show();
 				} else {
 					QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
@@ -251,8 +111,6 @@ bool TAutohideToolbar::eventFilter(QObject* obj, QEvent* event) {
 					}
 				}
 			}
-		} else if (event->type() == QEvent::Resize) {
-			resizeToolbar();
 		}
 	}
 
