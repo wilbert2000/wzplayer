@@ -755,6 +755,10 @@ void TCore::initVolume() {
 void TCore::initPlaying(int seek) {
 	qDebug("TCore::initPlaying: starting time");
 
+	if (proc->isRunning()) {
+		stopPlayer();
+	}
+
 	time.start();
 	playerwindow->hideLogo();
 	if (!we_are_restarting) {

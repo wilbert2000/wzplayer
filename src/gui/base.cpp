@@ -80,6 +80,7 @@
 #include "gui/timedialog.h"
 #include "gui/playlist.h"
 #include "gui/videoequalizer.h"
+#include "gui/eqslider.h"
 #include "gui/audioequalizer.h"
 #include "gui/stereo3ddialog.h"
 #include "gui/tvlist.h"
