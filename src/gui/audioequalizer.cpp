@@ -31,19 +31,22 @@ using namespace Settings;
 namespace Gui {
 
 TAudioEqualizer::TAudioEqualizer(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f)
-{
+	: QWidget(parent, f) {
+
 	createPresets();
 
 	QBoxLayout *bl = new QHBoxLayout; //(0, 4, 2);
 
 	for (int n = 0; n < 10; n++) {
-		eq[n] = new TEqSlider(this);
-		eq[n]->setIcon(QPixmap());
-		eq[n]->sliderWidget()->setRange(-120, 120);
-		eq[n]->sliderWidget()->setTracking(false);
-		connect(eq[n], SIGNAL(valueChanged(int)), this, SLOT(updatePresetCombo()));
-		bl->addWidget(eq[n]);
+		TEqSlider* slider = new TEqSlider(this);
+		slider->setIcon(QPixmap());
+		slider->sliderWidget()->setRange(-120, 120);
+		slider->sliderWidget()->setTracking(false);
+		eq[n] = slider;
+
+		connect(slider, SIGNAL(valueChanged(int)),
+				this, SLOT(updatePresetCombo()));
+		bl->addWidget(slider);
 	}
 
 	presets_combo = new QComboBox(this);
@@ -290,6 +293,7 @@ int TAudioEqualizer::findPreset(const TAudioEqualizerList& l) {
 }
 
 void TAudioEqualizer::applyButtonClicked() {
+
 	TAudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {
 		l << eq[n]->value();

@@ -37,16 +37,11 @@ TEqSlider::TEqSlider(QWidget* parent, Qt::WindowFlags f)
 	_slider->setPageStep(10);
 
 	connect(_slider, SIGNAL(valueChanged(int)),
-             this, SLOT(sliderValueChanged(int)));
+			this, SIGNAL(valueChanged(int)));
 }
 
 TEqSlider::~TEqSlider() {
 }
-
-/*
-void TEqSlider::languageChange() {
-}
-*/
 
 void TEqSlider::setIcon(QPixmap i) {
 	_icon->setPixmap(i);
@@ -56,7 +51,7 @@ const QPixmap* TEqSlider::icon() const {
 	return _icon->pixmap();
 }
 
-void TEqSlider::setLabel(QString s) {
+void TEqSlider::setLabel(const QString& s) {
 	_label->setText(s);
 }
 
@@ -73,7 +68,7 @@ int TEqSlider::value() const {
 	return _slider->value();
 }
 
-void TEqSlider::sliderValueChanged(int v) {
+void TEqSlider::onValueChanged(int v) {
 	emit valueChanged(v);
 }
 

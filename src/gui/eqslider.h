@@ -36,12 +36,6 @@ public:
 	TEqSlider(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TEqSlider();
 
-public slots:
-	void setIcon(QPixmap i);
-	void setLabel(QString s);
-	void setValue(int value);
-
-public:
 	int value() const;
 	const QPixmap* icon() const;
 	QString label() const;
@@ -50,15 +44,16 @@ public:
 	TVerticalText* labelWidget() { return _label; }
 	QLabel* iconWidget() { return _icon; }
 
+public slots:
+	void setIcon(QPixmap i);
+	void setLabel(const QString& s);
+	void setValue(int value);
+
 signals:
 	void valueChanged(int);
 
 protected slots:
-	void sliderValueChanged(int);
-
-protected:
-	/* virtual void languageChange(); */
-
+	void onValueChanged(int);
 };
 
 } // namespace Gui

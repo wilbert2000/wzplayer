@@ -23,8 +23,9 @@
 #include <QWidget>
 #include <QHideEvent>
 #include <QShowEvent>
-#include "settings/audioequalizerlist.h"
-#include "gui/eqslider.h"
+#include "settings/preferences.h"
+
+//#include "gui/eqslider.h"
 
 class QLabel;
 class QComboBox;
@@ -32,14 +33,16 @@ class QPushButton;
 
 namespace Gui {
 
+class TEqSlider;
+
 class TAudioEqualizer : public QWidget
 {
 	Q_OBJECT
 
 public:
 	enum Preset { User_defined = 0, Flat = 1, Pop = 2, Rock = 3, Classical = 4, Club = 5, Dance = 6, Fullbass = 7,
-                  FullbassTreble = 8, Fulltreble = 9, Headphones = 10, LargeHall = 11, Live = 12,
-                  Party = 13, Reggae = 14, Ska = 15, Soft = 16, SoftRock = 17, Techno = 18 };
+				  FullbassTreble = 8, Fulltreble = 9, Headphones = 10, LargeHall = 11, Live = 12,
+				  Party = 13, Reggae = 14, Ska = 15, Soft = 16, SoftRock = 17, Techno = 18 };
 
 	TAudioEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);
 	virtual ~TAudioEqualizer();
@@ -50,19 +53,21 @@ public:
 
 signals:
 	void visibilityChanged();
-	void applyClicked(Settings::TAudioEqualizerList new_values);
-	void valuesChanged(Settings::TAudioEqualizerList values);
+	void applyClicked(const Settings::TAudioEqualizerList& new_values);
+	void valuesChanged(const Settings::TAudioEqualizerList& values);
 
 public slots:
 	void reset();
 	void setDefaults();
 
-protected slots:
-	void applyButtonClicked();
-	void presetChanged(int index);
-	void updatePresetCombo();
-
 protected:
+	QLabel* presets_label;
+	QComboBox* presets_combo;
+	QPushButton* apply_button;
+	QPushButton* reset_button;
+	QPushButton* set_default_button;
+	QMap<int,Settings::TAudioEqualizerList> preset_list;
+
 	virtual void hideEvent(QHideEvent*);
 	virtual void showEvent(QShowEvent*);
 	virtual void changeEvent(QEvent* event);
@@ -72,13 +77,10 @@ protected:
 	void setValues(const Settings::TAudioEqualizerList& l);
 	int findPreset(const Settings::TAudioEqualizerList& l);
 
-protected:
-	QLabel* presets_label;
-	QComboBox* presets_combo;
-	QPushButton* apply_button;
-	QPushButton* reset_button;
-	QPushButton* set_default_button;
-	QMap<int,Settings::TAudioEqualizerList> preset_list;
+protected slots:
+	void applyButtonClicked();
+	void presetChanged(int index);
+	void updatePresetCombo();
 };
 
 } // namespace Gui

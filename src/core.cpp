@@ -737,29 +737,36 @@ void TCore::initVolume() {
 	// restore_volume is set to true by mset.reset and set
 	// to false by mset.load
 	if (mset.restore_volume) {
+		qDebug("TCore::initVolume: keeping current volume");
 		mset.volume = mset.old_volume;
 		mset.mute = mset.old_mute;
 	} else if (!pref->global_volume) {
-		if (mset.old_volume != mset.volume)
+		if (mset.old_volume != mset.volume) {
+			qDebug("TCore::initVolume: emit volumeChanged()");
 			emit volumeChanged(mset.volume);
-		if (mset.old_mute != mset.mute)
+		}
+		if (mset.old_mute != mset.mute) {
+			qDebug("TCore::initVolume: emit muteChanged()");
 			emit muteChanged(mset.mute);
+		}
 	}
 }
 
 void TCore::initPlaying(int seek) {
-	qDebug("TCore::initPlaying");
+	qDebug("TCore::initPlaying: starting time");
 
 	time.start();
 	playerwindow->hideLogo();
 	if (!we_are_restarting) {
 		// Restore old volume or emit new volume
 		initVolume();
+
 		// Apply settings to playerwindow
 		playerwindow->set(
 			mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id),
 			mset.zoom_factor, mset.zoom_factor_fullscreen,
 			mset.pan_offset, mset.pan_offset_fullscreen);
+
 		// Feedback and prevent artifacts waiting for redraw
 		playerwindow->repaint();
 	}
@@ -2833,17 +2840,18 @@ void TCore::changeExternalSubFPS(int fps_id) {
 }
 
 // Audio equalizer functions
-void TCore::setAudioEqualizer(Settings::TAudioEqualizerList values, bool restart) {
+void TCore::setAudioEqualizer(const TAudioEqualizerList& values, bool restart) {
+
 	if (pref->global_audio_equalizer) {
 		pref->audio_equalizer = values;
 	} else {
 		mset.audio_equalizer = values;
 	}
 
-	if (!restart) {
-		proc->setAudioEqualizer(Helper::equalizerListToString(values));
-	} else {
+	if (restart) {
 		restartPlay();
+	} else {
+		proc->setAudioEqualizer(Helper::equalizerListToString(values));
 	}
 
 	// Infinite recursion
@@ -2855,12 +2863,15 @@ void TCore::updateAudioEqualizer() {
 }
 
 void TCore::setAudioEq(int eq, int value) {
+	qDebug("TCore::setAudioEq: eq %d value %d", eq, value);
+
 	if (pref->global_audio_equalizer) {
 		pref->audio_equalizer[eq] = value;
+		setAudioEqualizer(pref->audio_equalizer);
 	} else {
 		mset.audio_equalizer[eq] = value;
+		setAudioEqualizer(mset.audio_equalizer);
 	}
-	updateAudioEqualizer();
 }
 
 void TCore::setAudioEq0(int value) {

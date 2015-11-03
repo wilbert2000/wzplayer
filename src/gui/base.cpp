@@ -447,10 +447,10 @@ void TBase::createAudioEqualizer() {
 	connect(audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
 			 core, SLOT(setAudioEq9(int)));
 
-	connect(audio_equalizer, SIGNAL(applyClicked(Settings::TAudioEqualizerList)),
-			 core, SLOT(setAudioAudioEqualizerRestart(Settings::TAudioEqualizerList)));
-	connect(audio_equalizer, SIGNAL(valuesChanged(Settings::TAudioEqualizerList)),
-			 core, SLOT(setAudioEqualizer(Settings::TAudioEqualizerList)));
+	connect(audio_equalizer, SIGNAL(applyClicked(const Settings::TAudioEqualizerList&)),
+			 core, SLOT(setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&)));
+	connect(audio_equalizer, SIGNAL(valuesChanged(const Settings::TAudioEqualizerList&)),
+			 core, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
 	connect(audio_equalizer, SIGNAL(visibilityChanged()),
 			 this, SLOT(updateWidgets()));
 }

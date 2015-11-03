@@ -246,8 +246,10 @@ public slots:
 	void changeExternalSubFPS(int fps_id);
 
 	//! Audio equalizer
-	void setAudioEqualizer(Settings::TAudioEqualizerList values, bool restart = false);
-	void setAudioAudioEqualizerRestart(Settings::TAudioEqualizerList values) { setAudioEqualizer(values, true); }
+	void setAudioEqualizer(const Settings::TAudioEqualizerList& values, bool restart = false);
+	void setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList& values) {
+		setAudioEqualizer(values, true);
+	}
 	void updateAudioEqualizer();
 
 	void setAudioEq(int eq, int value);
