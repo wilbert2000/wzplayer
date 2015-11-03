@@ -59,6 +59,8 @@ protected slots:
 protected:
 	virtual void wheelEvent(QWheelEvent* e);
 	virtual bool event(QEvent* event);
+	virtual QSize sizeHint() const;
+
 
 private:
 	bool dont_update;

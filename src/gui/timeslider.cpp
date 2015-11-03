@@ -38,8 +38,7 @@ TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
 	setMaximum(max_pos);
 
 	setFocusPolicy(Qt::NoFocus);
-	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Fixed);
-	setMinimumWidth(80);
+	setSizePolicy(QSizePolicy::MinimumExpanding , QSizePolicy::Fixed);
 
 	connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));
 	connect(this, SIGNAL(sliderReleased()), this, SLOT(resumeUpdate()));
@@ -53,6 +52,10 @@ TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
 }
 
 TTimeSlider::~TTimeSlider() {
+}
+
+QSize TTimeSlider::sizeHint() const {
+	return QSize(80, height());
 }
 
 void TTimeSlider::setPos(int v) {
