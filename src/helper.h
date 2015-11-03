@@ -17,17 +17,12 @@
 */
 
 
-#ifndef _HELPER_H_
-#define _HELPER_H_
+#ifndef HELPER_H
+#define HELPER_H
 
 #include <QString>
 #include <QStringList>
 #include "settings/preferences.h"
-#include "settings/audioequalizerlist.h"
-
-#ifdef Q_OS_WIN
-#include "config.h"
-#endif
 
 class Helper {
 
@@ -69,4 +64,4 @@ private:
 	static QStringList filesInDirectory(const QString& initial_file, const QStringList& filter);
 };
 
-#endif
+#endif // HELPER_H

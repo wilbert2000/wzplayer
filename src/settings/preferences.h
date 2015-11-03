@@ -26,10 +26,9 @@
 
 #include "config.h"
 #include "settings/smplayersettings.h"
+#include "settings/assstyles.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
-#include "settings/audioequalizerlist.h"
-#include "settings/assstyles.h"
 #include "filters.h"
 #include "gui/autohidetoolbar.h"
 
@@ -39,6 +38,8 @@
 
 
 namespace Settings {
+
+typedef QList<QVariant> TAudioEqualizerList;
 
 class TPreferences : public TSMPlayerSettings {
 

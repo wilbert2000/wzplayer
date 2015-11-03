@@ -70,7 +70,6 @@ HEADERS += config.h \
     playerwindow.h \
 	mediadata.h \
     settings/paths.h \
-    settings/audioequalizerlist.h \
     settings/assstyles.h \
     settings/mediasettings.h \
     settings/filters.h \

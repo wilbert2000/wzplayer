@@ -25,7 +25,7 @@
 #include <QTextCodec>
 #include <QWidget>
 #include <QDebug>
-#include "config.h"
+#include "settings/preferences.h"
 #include "extensions.h"
 
 #ifdef Q_OS_WIN
@@ -40,9 +40,9 @@ QString Helper::formatTime(int secs) {
 
 	int t = secs;
 	int hours = (int) t / 3600;
-	t -= hours*3600;
+	t -= hours * 3600;
 	int minutes = (int) t / 60;
-	t -= minutes*60;
+	t -= minutes * 60;
 	int seconds = t;
 
 	//qDebug() << "Helper::formatTime:" << hours << ":" << minutes << ":" << seconds;

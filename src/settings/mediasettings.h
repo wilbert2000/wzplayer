@@ -28,7 +28,8 @@
 #include <QPoint>
 #include "config.h"
 #include "subtracks.h"
-#include "settings/audioequalizerlist.h"
+#include "settings/preferences.h"
+
 
 class QSettings;
 class TMediaData;
