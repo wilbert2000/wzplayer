@@ -16,18 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "widgetactions.h"
+#include "gui/widgetactions.h"
 #include <QDebug>
 #include <QLabel>
 #include <QToolButton>
 #include "colorutils.h"
+#include "gui/timeslider.h"
 
 namespace Gui {
 
 TWidgetAction::TWidgetAction(QWidget* parent)
 	: QWidgetAction(parent)
-	, custom_style(0)
-{}
+	, custom_style(0) {
+}
 
 TWidgetAction::~TWidgetAction() {
 }
@@ -42,10 +43,9 @@ void TWidgetAction::disable() {
 
 void TWidgetAction::propagate_enabled(bool b) {
 
-	QList<QWidget *> l = createdWidgets();
-	for (int n=0; n < l.count(); n++) {
-		TTimeSlider *s = (TTimeSlider*) l[n];
-		s->setEnabled(b);;
+	QList<QWidget*> l = createdWidgets();
+	for (int n = 0; n < l.count(); n++) {
+		l[n]->setEnabled(b);;
 	}
 	setEnabled(b);
 }
@@ -72,7 +72,7 @@ void TTimeSliderAction::setPos(int v) {
 }
 
 void TTimeSliderAction::setDuration(double t) {
-	qDebug() << "Gui::TTimeSliderAction::setDuration:" << t;
+	//qDebug() << "Gui::TTimeSliderAction::setDuration:" << t;
 
 	total_time = t;
 	QList<QWidget*> l = createdWidgets();
@@ -118,6 +118,7 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 }
 
 void TVolumeSliderAction::setValue(int v) {
+	//qDebug("Gui::TVolumeSliderAction::setValue: %d", v);
 
 	volume = v;
 	QList<QWidget*> l = createdWidgets();
@@ -147,6 +148,7 @@ void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 }
 
 void TVolumeSliderAction::valueSliderChanged(int value) {
+	//qDebug("Gui::TVolumeSliderAction::valueSliderChanged: %d", value);
 
 	volume = value;
 	emit valueChanged(value);

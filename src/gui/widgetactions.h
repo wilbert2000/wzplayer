@@ -20,9 +20,8 @@
 #define _GUI_WIDGETACTIONS_H_
 
 #include <QWidgetAction>
+#include <QSlider>
 #include "config.h"
-#include "gui/guiconfig.h"
-#include "timeslider.h"
 #include "settings/preferences.h"
 
 class QStyle;
@@ -39,7 +38,7 @@ public:
 	void setCustomStyle(QStyle* style) { custom_style = style; }
 	QStyle* customStyle() const { return custom_style; }
 
-	void setStyleSheet(QString style) { custom_stylesheet = style; }
+	void setStyleSheet(const QString& style) { custom_stylesheet = style; }
 	QString styleSheet() const { return custom_stylesheet; }
 
 public slots:
@@ -97,9 +96,10 @@ public:
 	void setTickPosition(QSlider::TickPosition position);
 	QSlider::TickPosition tickPosition() const { return tick_position; }
 
+	virtual int value();
+
 public slots:
 	virtual void setValue(int);
-	virtual int value();
 
 signals:
 	void valueChanged(int value);
