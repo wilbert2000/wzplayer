@@ -1163,7 +1163,7 @@ void TBase::createActions() {
 	size400 = new TActionGroupItem(this, sizeGroup, "&400%", "size_400", 400);
 	size100->setShortcut(Qt::CTRL | Qt::Key_1);
 	size200->setShortcut(Qt::CTRL | Qt::Key_2);
-	connect(sizeGroup, SIGNAL(activated(int)), core, SLOT(changeSize(int)));
+	connect(sizeGroup, SIGNAL(activated(int)), this, SLOT(changeSize(int)));
 	// playerwindow updates group when size changed
 	playerwindow->setSizeGroup(sizeGroup);
 
@@ -4763,6 +4763,18 @@ void TBase::gotDuration(double duration) {
 	gotCurrentTime(core->mset.current_sec);
 }
 
+void TBase::changeSize(int precentage) {
+
+	bool center = false;
+	if (isMaximized()) {
+		showNormal();
+		center = true;
+	}
+	core->changeSize(precentage);
+	if (center)
+		centerWindow();
+}
+
 void TBase::toggleDoubleSize() {
 	if (pref->size_factor != 1.0)
 		core->changeSize(100);
@@ -4784,17 +4796,17 @@ void TBase::keepInsideDesktop() {
 	QPoint p = pos();
 	QSize s = frameGeometry().size();
 
+	if (p.x() + s.width() > desktop_size.width())
+		p.rx() = desktop_size.width() - s.width();
 	if (p.x() < 0)
 		p.rx() = 0;
-	else if (p.x() + s.width() > desktop_size.width())
-		p.rx() = desktop_size.width() - s.width();
+	if (p.y() + s.height() > desktop_size.height())
+		p.ry() = desktop_size.height() - s.height();
 	if (p.y() < 0)
 		p.ry() = 0;
-	else if (p.y() + s.height() > desktop_size.height())
-		p.ry() = desktop_size.height() - s.height();
 
 	if (p != pos()) {
-		qDebug("Gui::TBase::keepInsideDesktop: keeping window inside desktop");
+		qDebug() << "Gui::TBase::keepInsideDesktop: moving window from" << pos() << "to" << p;
 		move(p);
 	}
 }
@@ -4811,6 +4823,30 @@ bool TBase::optimizeSizeFactor(double factor) {
 }
 
 void TBase::optimizeSizeFactor(int w, int h) {
+
+
+	if (w <= 0 || h <= 0)
+		return;
+
+	// Limit size to 0.8 of available size
+	const double f = 0.8;
+	QSize available_size = QApplication::desktop()->availableGeometry(this).size() - frameGeometry().size() + panel->size();
+	qDebug() << available_size;
+	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
+	double max = f * available_size.height();
+	if (video_size.height() > max) {
+		pref->size_factor = max / h;
+		qDebug("TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor to %f",
+			   f, pref->size_factor);
+		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
+	}
+	max = f * available_size.width();
+	if (video_size.width() > max) {
+		pref->size_factor = max / w;
+		qDebug("TBase::optimizeSizeFactor: width larger as %f desktop, reducing size factor to %f",
+			   f, pref->size_factor);
+		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
+	}
 
 	if (optimizeSizeFactor(0.50))
 		return;
@@ -4832,23 +4868,26 @@ void TBase::optimizeSizeFactor(int w, int h) {
 		return;
 
 	// Make width multiple of 16
-	if (w > 0) {
-		QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
-		int new_w = ((video_size.width() + 8) / 16) * 16;
-		double factor = (double) new_w / w;
-		qDebug("TBase::optimizeSizeFactor: optimizing size factor from width %d factor %f to width %d factor %f",
-			   video_size.width(), pref->size_factor, new_w, factor);
-		pref->size_factor = factor;
-	}
+	int new_w = ((video_size.width() + 8) / 16) * 16;
+	double factor = (double) new_w / w;
+	qDebug("TBase::optimizeSizeFactor: optimizing size factor from width %d factor %f to width %d factor %f",
+		   video_size.width(), pref->size_factor, new_w, factor);
+	pref->size_factor = factor;
 }
 
 // Slot called by signal videoOutResolutionChanged
 void TBase::videoOutResolutionChanged(int w, int h) {
 	qDebug("Gui::TBase::videoOutResolutionChanged: %d, %d", w, h);
 
+	if (!panel->isVisible()) {
+		panel->show();
+	}
+
 	// Set first time if pref->save_window_size_on_exit selected
 	if (block_resize) {
 		block_resize = false;
+	} else if (isMaximized()) {
+		center_window = false;
 	} else {
 		if (pref->resize_method != Settings::TPreferences::Never) {
 			optimizeSizeFactor(w, h);
@@ -4865,12 +4904,7 @@ void TBase::videoOutResolutionChanged(int w, int h) {
 void TBase::resizeWindow(int w, int h) {
 	// qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
-	if (!panel->isVisible()) {
-		panel->show();
-	}
-
-	// If fullscreen, don't resize
-	if (!pref->fullscreen) {
+	if (!pref->fullscreen && !isMaximized()) {
 		resizeMainWindow(w, h);
 		keepInsideDesktop();
 	}

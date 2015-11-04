@@ -245,6 +245,7 @@ protected slots:
 	virtual void disableActionsOnStop();
 	virtual void togglePlayAction(TCore::State);
 
+	void changeSize(int precentage);
 	void toggleDoubleSize();
 	virtual void resizeWindow(int w, int h);
 
