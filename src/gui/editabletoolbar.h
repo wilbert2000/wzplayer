@@ -62,6 +62,8 @@ private:
 	QStringList default_actions;
 	TSizeGrip* size_grip;
 	QWidget* space_eater;
+	bool fixing_size;
+	int fix_size;
 
 	void reload();
 	void addSizeGrip();

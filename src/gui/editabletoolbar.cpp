@@ -31,7 +31,10 @@ TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 	: QToolBar(mainwindow)
 	, main_window(mainwindow)
 	, size_grip(0)
-	, space_eater(0) {
+	, space_eater(0)
+	, fixing_size(false) {
+
+	fix_size = height() - iconSize().height();
 
 	// Context menu
 	setContextMenuPolicy(Qt::CustomContextMenu);
@@ -159,9 +162,34 @@ void TEditableToolbar::moveEvent(QMoveEvent* event) {
 }
 
 void TEditableToolbar::resizeEvent(QResizeEvent* event) {
-	//qDebug("Gui::TEditableToolbar::resizeEvent");
+	//qDebug() << "Gui::TEditableToolbar::resizeEvent:" << objectName() << size()
+	//		 << (orientation() == Qt::Horizontal);
 
 	QToolBar::resizeEvent(event);
+
+	// Fix the dark and uncontrollable ways of Qt's layout engine.
+	// 84 is the minimum returned by TTimeSlider::sizeHint, which sometimes seems to
+	// be used by the floating toolbar, but with the wrong orientation.
+	// TODO: find out why the wrong orientation is used and remove this kludge.
+	if (isFloating()) {
+		QSize s = size();
+		if (orientation() == Qt::Horizontal) {
+			if (s.height() == 84 && !fixing_size) {
+				qDebug("Gui::TEditableToolbar::resizeEvent: fixing height");
+				fixing_size = true;
+				resize(s.width(), iconSize().height() + fix_size);
+				fixing_size = false;
+				qDebug() << "Gui::TEditableToolbar::resizeEvent: size after fix" << size();
+			}
+		} else if (s.width() == 84 && !fixing_size) {
+			qDebug("Gui::TEditableToolbar::resizeEvent: fixing width");
+			fixing_size = true;
+			resize(iconSize().width() + fix_size, height());
+			fixing_size = false;
+			qDebug() << "Gui::TEditableToolbar::resizeEvent: size after fix" << size();
+		}
+	}
+
 	if (size_grip)
 		size_grip->follow();
 }

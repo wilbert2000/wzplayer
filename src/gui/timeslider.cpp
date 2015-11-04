@@ -21,9 +21,9 @@
 #include <QWheelEvent>
 #include <QTimer>
 #include <QToolTip>
+#include <QStyleOptionSlider>
 #include "helper.h"
 
-#define DEBUG 0
 
 namespace Gui {
 
@@ -36,9 +36,8 @@ TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
 {
 	setMinimum(0);
 	setMaximum(max_pos);
-
 	setFocusPolicy(Qt::NoFocus);
-	setSizePolicy(QSizePolicy::MinimumExpanding , QSizePolicy::Fixed);
+	setSizePol();
 
 	connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));
 	connect(this, SIGNAL(sliderReleased()), this, SLOT(resumeUpdate()));
@@ -55,14 +54,31 @@ TTimeSlider::~TTimeSlider() {
 }
 
 QSize TTimeSlider::sizeHint() const {
-	return QSize(80, height());
+
+	QSize s = TSlider::sizeHint();
+	if (orientation() == Qt::Horizontal)
+		s.rwidth() = 84;
+	else
+		s.rheight() = 84;
+	return s;
+}
+
+void TTimeSlider::setSizePol() {
+
+	if (orientation() == Qt::Horizontal)
+		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+	else setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+}
+
+void TTimeSlider::onOrientationChanged(Qt::Orientation orientation) {
+
+	if (orientation != this->orientation()) {
+		setOrientation(orientation);
+		setSizePol();
+	}
 }
 
 void TTimeSlider::setPos(int v) {
-	#if DEBUG
-	qDebug("Gui::TTimeSlider::setPos: %d", v);
-	qDebug(" dont_update: %d", dont_update);
-	#endif
 
 	if (v != pos() && !dont_update) {
 		position = v;
@@ -83,60 +99,42 @@ double TTimeSlider::duration() {
 }
 
 void TTimeSlider::stopUpdate() {
-	#if DEBUG
-	qDebug("Gui::TTimeSlider::stopUpdate");
-	#endif
+
 	dont_update = true;
 	last_pos_to_send = -1;
 	timer->start();
 }
 
 void TTimeSlider::resumeUpdate() {
-	#if DEBUG
-	qDebug("Gui::TTimeSlider::resumeUpdate");
-	#endif
+
 	dont_update = false;
 	timer->stop();
 	last_pos_to_send = -1;
 }
 
 void TTimeSlider::mouseReleased() {
-	#if DEBUG
-	qDebug("Gui::TTimeSlider::mouseReleased");
-	#endif
 	emit posChanged(value());
 }
 
 void TTimeSlider::valueChanged_slot(int v) {
-	#if DEBUG
-	qDebug("Gui::TTimeSlider::changedValue_slot: %d", v);
-	#endif
 
 	bool dragging = dont_update;
 	if (!dragging) {
 		if (v != position) {
-			#if DEBUG
-			qDebug(" emitting posChanged");
-			#endif
 			emit posChanged(v);
 		}
 	} else {
-		#if DEBUG
-		qDebug(" emitting draggingPos");
-		#endif
 		emit draggingPos(v);
 	}
 }
 
 void TTimeSlider::checkDragging(int v) {
-	qDebug("Gui::TTimeSlider::checkDragging: %d", v);
 	last_pos_to_send = v;
 }
 
 void TTimeSlider::sendDelayedPos() {
 
 	if (last_pos_to_send != -1) {
-		qDebug("Gui::TTimeSlider::sendDelayedPos: %d", last_pos_to_send);
 		emit delayedDraggingPos(last_pos_to_send);
 		last_pos_to_send = -1;
 	}
@@ -160,13 +158,14 @@ bool TTimeSlider::event(QEvent* event) {
 
 	if (event->type() == QEvent::ToolTip) {
 		QHelpEvent* help_event = static_cast<QHelpEvent*>(event);
-		int time = width() <= 0 ? 0 : help_event->x() * total_time / width();
-		if (time >= 0 && time <= total_time) {
-			QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
-		} else {
-			QToolTip::hideText();
-			event->ignore();
-		}
+		QStyleOptionSlider opt;
+		initStyleOption(&opt);
+		const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+		const QPoint center = sliderRect.center() - sliderRect.topLeft();
+		int val = pixelPosToRangeValue(pick(help_event->pos() - center));
+		int time = val * total_time / maximum();
+		QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
+		event->accept();
 		return true;
 	}
 

@@ -1935,7 +1935,6 @@ void TBase::createToolbars() {
 			<< "mute"
 			<< "volumeslider_action";
 	controlbar->setDefaultActions(actions);
-	controlbar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
 	addToolBar(Qt::BottomToolBarArea, controlbar);
 	connect(editControlBarAct, SIGNAL(triggered()),
 			controlbar, SLOT(edit()));

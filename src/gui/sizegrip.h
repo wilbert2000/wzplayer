@@ -8,6 +8,7 @@ class QStyleOptionToolBar;
 namespace Gui {
 
 class TSizeGrip : public QToolBar {
+	Q_OBJECT
 
 public:
 	TSizeGrip(QToolBar* tb);
@@ -27,6 +28,10 @@ private:
 	QRect r;
 
 	void followToolbar();
+
+private slots:
+	void onOrientationChanged(Qt::Orientation orientation);
+
 };
 
 } // namespace Gui

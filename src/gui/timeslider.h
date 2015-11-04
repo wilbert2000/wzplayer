@@ -38,6 +38,7 @@ public:
 public slots:
 	virtual void setPos(int); // Don't use setValue!
 	virtual void setDuration(double t);
+	void onOrientationChanged(Qt::Orientation orientation);
 
 signals:
 	void posChanged(int);
@@ -61,7 +62,6 @@ protected:
 	virtual bool event(QEvent* event);
 	virtual QSize sizeHint() const;
 
-
 private:
 	bool dont_update;
 	int position;
@@ -69,6 +69,8 @@ private:
 	
 	int last_pos_to_send;
 	QTimer* timer;
+
+	void setSizePol();
 };
 
 } // namespace Gui

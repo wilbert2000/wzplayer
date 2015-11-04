@@ -15,7 +15,18 @@ TSizeGrip::TSizeGrip(QToolBar* tb)
 	, resizing(false) {
 
 	setWindowFlags(toolbar->windowFlags());
-	setCursor(Qt::SizeHorCursor);
+	onOrientationChanged(toolbar->orientation());
+	connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
+			this, SLOT(onOrientationChanged(Qt::Orientation)));
+}
+
+void TSizeGrip::onOrientationChanged(Qt::Orientation orientation) {
+	qDebug("TSizeGrip::onOrientationChanged");
+
+	setOrientation(orientation);
+	if (orientation == Qt::Horizontal)
+		setCursor(Qt::SizeHorCursor);
+	else setCursor(Qt::SizeVerCursor);
 	followToolbar();
 }
 
@@ -33,13 +44,19 @@ void TSizeGrip::mousePressEvent(QMouseEvent* event) {
 
 void TSizeGrip::followToolbar() {
 
-	int w = style()->pixelMetric(QStyle::PM_ToolBarHandleExtent) + 2;
+	int wh = style()->pixelMetric(QStyle::PM_ToolBarHandleExtent) + 2;
 	int d = 1;
 	QRect t = toolbar->geometry();
-	if (isLeftToRight())
-		setGeometry(t.right() - d, t.top(), w, t.height());
+	if (orientation() == Qt::Horizontal)
+		if (isLeftToRight())
+			setGeometry(t.right() - d, t.top(), wh, t.height());
+		else
+			setGeometry(t.left() - wh + d, t.top(), wh, t.height());
 	else
-		setGeometry(t.left() - w + d, t.top(), w, t.height());
+		if (isLeftToRight())
+			setGeometry(t.left(), t.bottom() - d, t.width(), wh);
+		else
+			setGeometry(t.left(), t.top() - wh + d, t.width(), wh);
 }
 
 void TSizeGrip::follow() {
@@ -61,20 +78,35 @@ void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 	QPoint np(event->globalPos());
 
 	QSize ns;
-	ns.rheight() = toolbar->height();
-	if (isLeftToRight())
-		ns.rwidth() = r.width() + np.x() - p.x();
-	else
-		ns.rwidth() = r.width() - (np.x() - p.x());
+	if (orientation() == Qt::Horizontal) {
+		ns.rheight() = toolbar->height();
+		if (isLeftToRight())
+			ns.rwidth() = r.width() + np.x() - p.x();
+		else
+			ns.rwidth() = r.width() - (np.x() - p.x());
+	} else {
+		ns.rwidth() = toolbar->width();
+		if (isLeftToRight())
+			ns.rheight() = r.height() + np.y() - p.y();
+		else
+			ns.rheight() = r.height() - (np.y() - p.y());
+	}
 
 	ns = ns.expandedTo(toolbar->minimumSize()).expandedTo(toolbar->minimumSizeHint()).boundedTo(toolbar->maximumSize());
 
 	QPoint o;
 	QRect nr(o, ns);
-	if (isLeftToRight())
-		nr.moveTopLeft(r.topLeft());
-	else
-		nr.moveTopRight(r.topRight());
+	if (orientation() == Qt::Horizontal) {
+		if (isLeftToRight())
+			nr.moveTopLeft(r.topLeft());
+		else
+			nr.moveTopRight(r.topRight());
+	} else {
+		if (isLeftToRight())
+			nr.moveBottomLeft(r.bottomLeft());
+		else
+			nr.moveBottomRight(r.bottomRight());
+	}
 
 	toolbar->setGeometry(nr);
 	followToolbar();
@@ -84,11 +116,15 @@ void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 
 bool TSizeGrip::event(QEvent* e) {
 
+	// Events for QToolbar
+	if (e->type() == QEvent::StyleChange) {
+		return QToolBar::event(e);
+	}
+
+	// Events hidden for QToolbar
 	if (e->type() == QEvent::MouseButtonRelease) {
 		resizing = false;
 	}
-
-	// Not QToolbar!!
 	return QWidget::event(e);
 }
 

@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QToolButton>
+#include <QToolBar>
 #include "colorutils.h"
 #include "gui/timeslider.h"
 
@@ -91,6 +92,13 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 		t->setStyle(custom_style);
 	if (!custom_stylesheet.isEmpty())
 		t->setStyleSheet(custom_stylesheet);
+
+	QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
+	if (toolbar) {
+		t->onOrientationChanged(toolbar->orientation());
+		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
+				t, SLOT(onOrientationChanged(Qt::Orientation)));
+	}
 
 	connect(t, SIGNAL(posChanged(int)),
 			this, SIGNAL(posChanged(int)));
@@ -165,7 +173,6 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 	slider->setMinimum(0);
 	slider->setMaximum(100);
 	slider->setValue(volume);
-	slider->setOrientation(Qt::Horizontal);
 	slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	slider->setFocusPolicy(Qt::NoFocus);
 	slider->setTickPosition(tick_position);
@@ -175,6 +182,13 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 	slider->setToolTip(tr("Volume"));
 	slider->setEnabled(isEnabled());
 	slider->setAttribute(Qt::WA_NoMousePropagation);
+
+	QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
+	if (toolbar) {
+		slider->setOrientation(toolbar->orientation());
+		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
+				slider, SLOT(setOrientation(Qt::Orientation)));
+	}
 
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(valueSliderChanged(int)));
 
