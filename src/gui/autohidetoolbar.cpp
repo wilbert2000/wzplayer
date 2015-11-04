@@ -94,8 +94,12 @@ bool TAutohideToolbar::insideShowArea(const QPoint& p) const {
 
 	QPoint origin = mapToGlobal(QPoint(0, 0));
 	int margin = 4 * height();
-	return p.y() > origin.y() - margin
-			&& p.y() < origin.y() + height() + margin;
+	// Check around toolbar
+	if (p.y() > origin.y() - margin
+		&& p.y() < origin.y() + height() + margin)
+		return true;
+	// Check bottom of screen
+	return p.y() > QApplication::desktop()->screenGeometry(this).height() - margin;
 }
 
 bool TAutohideToolbar::eventFilter(QObject* obj, QEvent* event) {
