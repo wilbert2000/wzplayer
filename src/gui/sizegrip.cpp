@@ -116,15 +116,21 @@ void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 
 bool TSizeGrip::event(QEvent* e) {
 
-	// Events for QToolbar
-	if (e->type() == QEvent::StyleChange) {
-		return QToolBar::event(e);
+	switch (e->type()) {
+		// Events to hide for QToolbar, so it won't change the mouse cursor
+		case QEvent::CursorChange:
+		case QEvent::HoverEnter:
+		case QEvent::HoverMove:
+		case QEvent::HoverLeave:
+			break;
+
+		// Stop resizing
+		case QEvent::MouseButtonRelease:
+			resizing = false;
+		default:
+			return QToolBar::event(e);
 	}
 
-	// Events hidden for QToolbar
-	if (e->type() == QEvent::MouseButtonRelease) {
-		resizing = false;
-	}
 	return QWidget::event(e);
 }
 
