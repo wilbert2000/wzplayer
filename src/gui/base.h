@@ -311,13 +311,14 @@ protected:
 	virtual void retranslateStrings();
 	virtual void closeEvent(QCloseEvent* e);
 	virtual void changeEvent(QEvent* event);
-#if QT_VERSION < 0x050000
-	virtual void hideEvent(QHideEvent*);
-	virtual void showEvent(QShowEvent*);
-#else
+	virtual void hideEvent(QHideEvent* event);
+	virtual void showEvent(QShowEvent* event);
+
+#if QT_VERSION >= 0x050000
 	virtual bool event(QEvent* e);
 	bool was_minimized;
 #endif
+
 #ifdef Q_OS_WIN
 	#ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */

@@ -139,9 +139,6 @@ namespace Gui {
 
 TBase::TBase()
 	: QMainWindow()
-#if QT_VERSION >= 0x050000
-	, was_minimized(false)
-#endif
 	, statusbar_menu(0)
 	, clhelp_window(0)
 	, pref_dialog(0)
@@ -174,6 +171,11 @@ TBase::TBase()
 #endif
 #endif
 {
+
+#if QT_VERSION >= 0x050000
+	was_minimized = isMinimized();
+#endif
+
 	// Set style before changing color of widgets:
 	// TODO: from help: Warning: To ensure that the application's style is set
 	// correctly, it is best to call this function before the QApplication
@@ -5120,59 +5122,72 @@ void TBase::changeStyleSheet(QString style) {
 }
 #endif
 
-#if QT_VERSION < 0x050000
-void TBase::showEvent(QShowEvent*) {
+void TBase::showEvent(QShowEvent* event) {
 	qDebug("Gui::TBase::showEvent");
 
-	if (ignore_show_hide_events) return;
+	if (event) {
+		QMainWindow::showEvent(event);
+	}
 
 	//qDebug("Gui::TBase::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
-	if ((pref->pause_when_hidden) && (core->state() == TCore::Paused)) {
+	if (pref->pause_when_hidden && core->state() == TCore::Paused && !ignore_show_hide_events) {
 		qDebug("Gui::TBase::showEvent: unpausing");
 		core->play();
 	}
+
+	if (toolbar->isFloating()) {
+		toolbar->show();
+	}
+	if (toolbar2->isFloating()) {
+		toolbar2->show();
+	}
+	if (controlbar->isFloating()) {
+		controlbar->show();
+	}
 }
 
-void TBase::hideEvent(QHideEvent*) {
+void TBase::hideEvent(QHideEvent* event) {
 	qDebug("Gui::TBase::hideEvent");
 
-	if (ignore_show_hide_events) return;
+	if (event) {
+		QMainWindow::hideEvent(event);
+	}
 
 	//qDebug("Gui::TBase::hideEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
-	if ((pref->pause_when_hidden) && (core->state() == TCore::Playing)) {
+	if (pref->pause_when_hidden && core->state() == TCore::Playing && !ignore_show_hide_events) {
 		qDebug("Gui::TBase::hideEvent: pausing");
 		core->pause();
 	}
+
+	if (toolbar->isFloating()) {
+		toolbar->hide();
+	}
+	if (toolbar2->isFloating()) {
+		toolbar2->hide();
+	}
+	if (controlbar->isFloating()) {
+		controlbar->hide();
+	}
 }
-#else
+
+#if QT_VERSION >= 0x050000
 // Qt 5 doesn't call showEvent / hideEvent when the window is minimized or unminimized
 bool TBase::event(QEvent* e) {
 	//qDebug("Gui::TBase::event: %d", e->type());
 
-	bool result = QWidget::event(e);
-	if ((ignore_show_hide_events) || (!pref->pause_when_hidden)) return result;
+	bool result = QMainWindow::event(e);
 
 	if (e->type() == QEvent::WindowStateChange) {
 		qDebug("Gui::TBase::event: WindowStateChange");
-
-		if (isMinimized()) {
+		if (isMinimized() && !was_minimized) {
 			was_minimized = true;
-			if (core->state() == TCore::Playing) {
-				qDebug("Gui::TBase::event: pausing");
-				core->pause();
-			}
+			hideEvent(0);
 		}
-	}
-
-	if ((e->type() == QEvent::ActivationChange) && (isActiveWindow())) {
+	} else if (e->type() == QEvent::ActivationChange && isActiveWindow()) {
 		qDebug("Gui::TBase::event: ActivationChange: %d", was_minimized);
-
-		if ((!isMinimized()) && (was_minimized)) {
+		if (!isMinimized() && was_minimized) {
 			was_minimized = false;
-			if (core->state() == TCore::Paused) {
-				qDebug("Gui::TBase::showEvent: unpausing");
-				core->play();
-			}
+			showEvent(0);
 		}
 	}
 
