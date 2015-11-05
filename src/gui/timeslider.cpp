@@ -71,6 +71,8 @@ void TTimeSlider::setSizePol() {
 }
 
 void TTimeSlider::onOrientationChanged(Qt::Orientation orientation) {
+	//qDebug() << "TTimeSlider::onOrientationChanged"
+	//		 << (orientation == Qt::Horizontal);
 
 	if (orientation != this->orientation()) {
 		setOrientation(orientation);

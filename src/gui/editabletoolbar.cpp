@@ -163,30 +163,29 @@ void TEditableToolbar::moveEvent(QMoveEvent* event) {
 
 void TEditableToolbar::resizeEvent(QResizeEvent* event) {
 	//qDebug() << "Gui::TEditableToolbar::resizeEvent:" << objectName() << size()
-	//		 << (orientation() == Qt::Horizontal);
+	//		 << minimumSizeHint();
 
 	QToolBar::resizeEvent(event);
 
 	// Fix the dark and uncontrollable ways of Qt's layout engine.
-	// 84 is the minimum returned by TTimeSlider::sizeHint, which sometimes seems to
-	// be used by the floating toolbar, but with the wrong orientation.
-	// TODO: find out why the wrong orientation is used and remove this kludge.
+	// It looks like that with an orientation change the resize is done first,
+	// then the orientation changed signal is sent and received by TTImeslider
+	// changing its minimum size and then another resize arrives, based on the
+	// old minimum size hint from before the orientation change.
+	// 84 is the minimum returned by TTimeSlider::sizeHint.
 	if (isFloating()) {
-		QSize s = size();
 		if (orientation() == Qt::Horizontal) {
-			if (s.height() == 84 && !fixing_size) {
-				qDebug("Gui::TEditableToolbar::resizeEvent: fixing height");
+			if (height() == 84 && !fixing_size) {
+				qDebug() << "Gui::TEditableToolbar::resizeEvent: fixing height";
 				fixing_size = true;
-				resize(s.width(), iconSize().height() + fix_size);
+				resize(width(), iconSize().height() + fix_size);
 				fixing_size = false;
-				qDebug() << "Gui::TEditableToolbar::resizeEvent: size after fix" << size();
 			}
-		} else if (s.width() == 84 && !fixing_size) {
-			qDebug("Gui::TEditableToolbar::resizeEvent: fixing width");
+		} else if (width() == 84 && !fixing_size) {
+			qDebug() << "Gui::TEditableToolbar::resizeEvent: fixing width";
 			fixing_size = true;
 			resize(iconSize().width() + fix_size, height());
 			fixing_size = false;
-			qDebug() << "Gui::TEditableToolbar::resizeEvent: size after fix" << size();
 		}
 	}
 
