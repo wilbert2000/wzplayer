@@ -16,40 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/playlistdock.h"
-#include <QCloseEvent>
 
-namespace Gui {
+#ifndef DESKTOP_H
+#define DESKTOP_H
 
-TPlaylistDock::TPlaylistDock(QWidget* parent, Qt::WindowFlags flags)
-	: QDockWidget(parent, flags)
-{
-	//setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
-	setAcceptDrops(true); // Fix for Qt 4.4, otherwise the playlist doesn't accept drops...
-}
+#include <QSize>
 
-TPlaylistDock::~TPlaylistDock() {
-}
+class QWidget;
 
-void TPlaylistDock::closeEvent(QCloseEvent* e) {
-	qDebug("Gui::TPlaylistDock::closeEvent");
-	emit closed();
-	e->accept();
-}
+class TDesktop {
+public:
+	static QSize size(QWidget* w);
+	static double aspectRatio(QWidget* w);
+	static void keepInsideDesktop(QWidget* w);
+};
 
-#if QT_VERSION < 0x040300
-void TPlaylistDock::showEvent(QShowEvent* /* event */) {
-	qDebug("Gui::TPlaylistDock::showEvent");
-	emit visibilityChanged(true);
-}
-
-void TPlaylistDock::hideEvent(QHideEvent* /* event */) {
-	qDebug("Gui::TPlaylistDock::hideEvent");
-	emit visibilityChanged(false);
-}
-#endif
-
-} // namespace Gui
-
-#include "moc_playlistdock.cpp"
-
+#endif // DESKTOP_H

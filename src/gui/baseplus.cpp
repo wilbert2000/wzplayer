@@ -20,15 +20,15 @@
 
 #include <QMenu>
 #include <QDesktopWidget>
+#include <QDockWidget>
 
 #include "config.h"
 #include "gui/action.h"
 #include "gui/playlist.h"
-#include "gui/playlistdock.h"
 #include "gui/favorites.h"
 #include "gui/tvlist.h"
 #include "images.h"
-#include "desktopinfo.h"
+#include "desktop.h"
 
 
 using namespace Settings;
@@ -94,16 +94,16 @@ TBasePlus::TBasePlus()
 	tray->setContextMenu(context_menu);
 
 	// Playlistdock
-	playlistdock = new TPlaylistDock(this);
+	playlistdock = new QDockWidget(this);
+	playlistdock->hide();
 	playlistdock->setObjectName("playlistdock");
-	playlistdock->setFloating(false); // To avoid that the playlist is visible for a moment
+	playlistdock->setAcceptDrops(true);
 	playlistdock->setWidget(playlist);
 	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
 								  | Qt::BottomDockWidgetArea
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
-	playlistdock->hide();
 	playlistdock->setFloating(true); // Floating by default
 
 	connect(playlistdock, SIGNAL(visibilityChanged(bool)),
@@ -207,7 +207,6 @@ void TBasePlus::loadConfig() {
 
 	bool show_tray_icon = pref->value("show_tray_icon", false).toBool();
 	showTrayAct->setChecked(show_tray_icon);
-	//tray->setVisible(show_tray_icon);
 
 	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
 	trayicon_playlist_was_visible = pref->value("trayicon_playlist_was_visible", trayicon_playlist_was_visible).toBool();
@@ -326,19 +325,14 @@ void TBasePlus::didExitFullscreen() {
 void TBasePlus::showPlaylist(bool b) {
 	qDebug("Gui::TBasePlus::showPlaylist: %d", b);
 
-	if (!b) {
-		playlistdock->hide();
-	} else {
+	if (b) {
 		exitFullscreenIfNeeded();
 		playlistdock->show();
-
-		// Check if playlist is outside of the screen
 		if (playlistdock->isFloating()) {
-			if (!TDesktopInfo::isInsideScreen(playlistdock)) {
-				qWarning("Gui::TBasePlus::showPlaylist: playlist is outside of the screen");
-				playlistdock->move(0,0);
-			}
+			TDesktop::keepInsideDesktop(playlistdock);
 		}
+	} else {
+		playlistdock->hide();
 	}
 }
 
@@ -346,7 +340,10 @@ void TBasePlus::dockVisibilityChanged(bool visible) {
 	qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
 
 	if (!playlistdock->isFloating()) {
-		if (!visible) shrinkWindow(); else stretchWindow();
+		if (visible)
+			stretchWindow();
+		else
+			shrinkWindow();
 	}
 }
 
@@ -370,7 +367,7 @@ void TBasePlus::stretchWindow() {
 		qDebug("Gui::TBasePlus::stretchWindow: stretching: new width: %d", new_width);
 		resize(new_width, height());
 	}
-	keepInsideDesktop();
+	TDesktop::keepInsideDesktop(this);
 }
 
 void TBasePlus::shrinkWindow() {

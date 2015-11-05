@@ -32,7 +32,7 @@
 #include <QPropertyAnimation>
 #endif
 
-#include "desktopinfo.h"
+#include "desktop.h"
 #include "colorutils.h"
 #include "images.h"
 #include "settings/preferences.h"
@@ -190,7 +190,7 @@ void TPlayerWindow::setAspect(double aspect, bool updateVideoWindow) {
 	// monitorpixelaspect=1, so aspect changes don't require a restart of the player,
 	// hence monitor aspect needs to be handled here.
 	if (monitoraspect != 0) {
-		aspect = aspect / monitoraspect * TDesktopInfo::desktop_aspectRatio(this);
+		aspect = aspect / monitoraspect * TDesktop::aspectRatio(this);
 	}
 
 	this->aspect = aspect;

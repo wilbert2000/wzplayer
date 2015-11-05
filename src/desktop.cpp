@@ -16,34 +16,44 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "desktopinfo.h"
+#include "desktop.h"
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QDebug>
 
-QSize TDesktopInfo::desktop_size(QWidget* w) {
-
-	QDesktopWidget* dw = QApplication::desktop();
-	qDebug("TDesktopInfo::desktop_size: primary screen: %d",
-		   dw->primaryScreen());
-	QSize s = dw->screen(dw->primaryScreen())->size();
-	qDebug("TDesktopInfo::desktop_size: size of primary screen: %d x %d",
-		   s.width(), s.height());
-	QRect r = dw->screenGeometry(w);
-	qDebug("TDesktopInfo::desktop_size: size of current screen: %d x %d",
-		   r.width(), r.height());
-	return QSize(r.width(), r.height());
+QSize TDesktop::size(QWidget* w) {
+	return QApplication::desktop()->screenGeometry(w).size();
 }
 
-double TDesktopInfo::desktop_aspectRatio(QWidget* w) {
-	QSize s = TDesktopInfo::desktop_size(w);
+double TDesktop::aspectRatio(QWidget* w) {
+
+	QSize s = size(w);
 	return  (double) s.width() / s.height() ;
 }
 
-bool TDesktopInfo::isInsideScreen(QWidget* w) {
+void TDesktop::keepInsideDesktop(QWidget* w) {
 
-	QDesktopWidget* dw = QApplication::desktop();
-	QRect r = dw->screenGeometry(w);
-	qDebug("TDesktopInfo::isInsideScreen: geometry of screen: x: %d y: %d w: %d h: %d",
-		   r.x(), r.y(), r.width(), r.height());
-	return r.contains(w->pos());
+	if (w->isMaximized())
+		return;
+
+	QSize desktop_size = size(w);
+	QPoint p = w->pos();
+	QSize s = w->frameGeometry().size();
+
+	if (p.x() + s.width() > desktop_size.width())
+		p.rx() = desktop_size.width() - s.width();
+	if (p.x() < 0)
+		p.rx() = 0;
+	if (p.y() + s.height() > desktop_size.height())
+		p.ry() = desktop_size.height() - s.height();
+	if (p.y() < 0)
+		p.ry() = 0;
+
+	if (p != w->pos()) {
+		qDebug() << "Gui::TDesktop::keepInsideDesktop: moving window from"
+				 << w->pos() << "to" << p;
+		w->move(p);
+	}
 }
+
+

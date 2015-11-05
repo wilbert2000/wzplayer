@@ -63,7 +63,7 @@ HEADERS += config.h \
 	subtracks.h \
 	discname.h \
 	extensions.h \
-	desktopinfo.h \
+    desktop.h \
 	playerid.h \
 	proc/process.h \
 	proc/playerprocess.h \
@@ -141,7 +141,6 @@ HEADERS += config.h \
 	gui/tablewidget.h \
     gui/infoprovider.h \
     gui/playlist.h \
-	gui/playlistdock.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
@@ -161,7 +160,7 @@ SOURCES	+= version.cpp \
 	subtracks.cpp \
 	discname.cpp \
 	extensions.cpp \
-	desktopinfo.cpp \
+    desktop.cpp \
 	playerid.cpp \
 	proc/process.cpp \
 	proc/playerprocess.cpp \
@@ -238,7 +237,6 @@ SOURCES	+= version.cpp \
    	gui/tablewidget.cpp \
     gui/infoprovider.cpp \
     gui/playlist.cpp \
-	gui/playlistdock.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \

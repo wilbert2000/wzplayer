@@ -26,10 +26,9 @@
 #include <QPoint>
 
 class QMenu;
+class QDockWidget;
 
 namespace Gui {
-
-class TPlaylistDock;
 
 class TBasePlus : public TBase {
 	Q_OBJECT
@@ -85,7 +84,7 @@ protected:
 	QPoint playlist_pos;
 	bool trayicon_playlist_was_visible;
 
-	TPlaylistDock* playlistdock;
+	QDockWidget* playlistdock;
 	bool fullscreen_playlist_was_visible;
 	bool fullscreen_playlist_was_floating;
 

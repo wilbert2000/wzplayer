@@ -45,8 +45,8 @@
 #include <cmath>
 
 #include "settings/paths.h"
+#include "desktop.h"
 #include "log.h"
-#include "desktopinfo.h"
 #include "helper.h"
 #include "colorutils.h"
 #include "images.h"
@@ -2918,15 +2918,11 @@ void TBase::loadConfig() {
 		move(p);
 		resize(s);
 		setWindowState((Qt::WindowStates) state);
+		TDesktop::keepInsideDesktop(this);
 
-		if (!TDesktopInfo::isInsideScreen(this)) {
-			move(0,0);
-			qWarning("Gui::TBase::loadConfig: window is outside of the screen, moved to 0x0");
-		} else {
-			// Block resize of main window by loading of video
-			// TODO: reset when video fails to load
-			block_resize = true;
-		}
+		// Block resize of main window by loading of video
+		// TODO: reset when video fails to load
+		block_resize = true;
 	} else {
 		centerWindow();
 		// Need to center again after video loaded
@@ -4791,27 +4787,6 @@ void TBase::centerWindow() {
 	}
 }
 
-void TBase::keepInsideDesktop() {
-
-	QRect desktop_size = QApplication::desktop()->availableGeometry(this);
-	QPoint p = pos();
-	QSize s = frameGeometry().size();
-
-	if (p.x() + s.width() > desktop_size.width())
-		p.rx() = desktop_size.width() - s.width();
-	if (p.x() < 0)
-		p.rx() = 0;
-	if (p.y() + s.height() > desktop_size.height())
-		p.ry() = desktop_size.height() - s.height();
-	if (p.y() < 0)
-		p.ry() = 0;
-
-	if (p != pos()) {
-		qDebug() << "Gui::TBase::keepInsideDesktop: moving window from" << pos() << "to" << p;
-		move(p);
-	}
-}
-
 bool TBase::optimizeSizeFactor(double factor) {
 
 	if (qAbs(factor - pref->size_factor) < 0.05) {
@@ -4907,7 +4882,7 @@ void TBase::resizeWindow(int w, int h) {
 
 	if (!pref->fullscreen && !isMaximized()) {
 		resizeMainWindow(w, h);
-		keepInsideDesktop();
+		TDesktop::keepInsideDesktop(this);
 	}
 }
 
@@ -5025,6 +5000,7 @@ void TBase::setStayOnTop(bool b) {
 }
 
 void TBase::changeStayOnTop(int stay_on_top) {
+	qDebug("Gui::TBase::changeStayOnTop");
 
 	switch (stay_on_top) {
 		case Settings::TPreferences::AlwaysOnTop : setStayOnTop(true); break;

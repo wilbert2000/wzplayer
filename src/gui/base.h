@@ -347,7 +347,6 @@ protected:
 	void updateRecents();
 	void configureDiscDevices();
 	void setupNetworkProxy();
-	void keepInsideDesktop();
 
 protected:
 	QWidget* panel;
