@@ -14,6 +14,7 @@ TSizeGrip::TSizeGrip(QToolBar* tb)
 	, toolbar(tb)
 	, resizing(false) {
 
+	// Needed to copy stay on top
 	setWindowFlags(toolbar->windowFlags());
 	onOrientationChanged(toolbar->orientation());
 	connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
@@ -118,6 +119,8 @@ bool TSizeGrip::event(QEvent* e) {
 
 	switch (e->type()) {
 		// Events to hide for QToolbar, so it won't change the mouse cursor
+		case QEvent::Enter:
+		case QEvent::Leave:
 		case QEvent::CursorChange:
 		case QEvent::HoverEnter:
 		case QEvent::HoverMove:
