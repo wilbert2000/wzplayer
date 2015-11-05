@@ -347,6 +347,7 @@ protected:
 	void updateRecents();
 	void configureDiscDevices();
 	void setupNetworkProxy();
+	void keepInsideDesktop();
 
 protected:
 	QWidget* panel;
@@ -809,7 +810,6 @@ private:
 
 	void hidePanel();
 	void centerWindow();
-	void keepInsideDesktop();
 	bool optimizeSizeFactor(double factor);
 	void optimizeSizeFactor(int w, int h);
 	void resizeMainWindow(int w, int h, bool try_twice = true);

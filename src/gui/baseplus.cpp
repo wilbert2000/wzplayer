@@ -370,6 +370,7 @@ void TBasePlus::stretchWindow() {
 		qDebug("Gui::TBasePlus::stretchWindow: stretching: new width: %d", new_width);
 		resize(new_width, height());
 	}
+	keepInsideDesktop();
 }
 
 void TBasePlus::shrinkWindow() {
