@@ -36,7 +36,7 @@ void TDesktop::keepInsideDesktop(QWidget* w) {
 	if (w->isMaximized())
 		return;
 
-	QSize desktop_size = size(w);
+	QSize desktop_size = QApplication::desktop()->availableGeometry(w).size();
 	QPoint p = w->pos();
 	QSize s = w->frameGeometry().size();
 
