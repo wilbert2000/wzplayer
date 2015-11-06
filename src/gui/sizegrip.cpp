@@ -22,7 +22,7 @@ TSizeGrip::TSizeGrip(QToolBar* tb)
 }
 
 void TSizeGrip::onOrientationChanged(Qt::Orientation orientation) {
-	qDebug("TSizeGrip::onOrientationChanged");
+	//qDebug("TSizeGrip::onOrientationChanged");
 
 	setOrientation(orientation);
 	if (orientation == Qt::Horizontal)

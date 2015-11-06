@@ -228,7 +228,7 @@ void TEditableToolbar::addSizeGrip() {
 }
 
 void TEditableToolbar::onTopLevelChanged(bool) {
-	qDebug("TEditableToolbar::onTopLevelChanged");
+	//qDebug("TEditableToolbar::onTopLevelChanged");
 
 	addSizeGrip();
 }
