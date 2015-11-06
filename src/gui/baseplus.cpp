@@ -160,7 +160,7 @@ void TBasePlus::quit() {
 }
 
 void TBasePlus::retranslateStrings() {
-	qDebug("Gui::TBasePlus::retranslateStrings");
+	//qDebug("Gui::TBasePlus::retranslateStrings");
 
 	TBase::retranslateStrings();
 

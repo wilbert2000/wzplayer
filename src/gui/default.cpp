@@ -148,7 +148,7 @@ void TDefault::createStatusBar() {
 }
 
 void TDefault::retranslateStrings() {
-	qDebug("Gui::TDefault::retranslateStrings");
+	//qDebug("Gui::TDefault::retranslateStrings");
 
 	TBasePlus::retranslateStrings();
 

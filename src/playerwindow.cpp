@@ -685,7 +685,7 @@ void TPlayerWindow::setAutoHideCursor(bool enable) {
 }
 
 void TPlayerWindow::aboutToStartPlaying() {
-	qDebug("TPlayerWindow::aboutToStartPlaying");
+	//qDebug("TPlayerWindow::aboutToStartPlaying");
 
 	playerlayer->setFastBackground();
 	setAutoHideCursor(true);

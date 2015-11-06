@@ -2293,7 +2293,7 @@ void TBase::togglePlayAction(TCore::State state) {
 }
 
 void TBase::retranslateStrings() {
-	qDebug("Gui::TBase::retranslateStrings");
+	//qDebug("Gui::TBase::retranslateStrings");
 
 	setWindowIcon(Images::icon("logo", 64));
 

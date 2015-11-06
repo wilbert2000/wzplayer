@@ -293,7 +293,7 @@ void TPlaylist::createToolbar() {
 }
 
 void TPlaylist::retranslateStrings() {
-	qDebug("Gui::TPlaylist::retranslateStrings");
+	//qDebug("Gui::TPlaylist::retranslateStrings");
 
 	listView->setHorizontalHeaderLabels(QStringList() << "   " <<
         tr("Name") << tr("Length"));
