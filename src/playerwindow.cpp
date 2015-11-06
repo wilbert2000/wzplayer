@@ -38,30 +38,19 @@
 
 using namespace Settings;
 
-TPlayerLayer::TPlayerLayer(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f)
+TPlayerLayer::TPlayerLayer(QWidget* parent)
+	: QWidget(parent)
 	, repaint_background(false)
-	, normal_background(true)
-{
-
-	// If not set parent playerwindow will not get mouse move events
-	setMouseTracking(true);
-	setFocusPolicy(Qt::NoFocus);
-
-	setAutoFillBackground(true);
-	setMinimumSize(QSize(0,0));
+	, normal_background(true) {
 
 #ifndef Q_OS_WIN
-	#if QT_VERSION < 0x050000
+#if QT_VERSION < 0x050000
 	setAttribute(Qt::WA_OpaquePaintEvent);
-	#if QT_VERSION >= 0x040400
 	setAttribute(Qt::WA_NativeWindow);
-	#endif
 	setAttribute(Qt::WA_PaintUnclipped);
 	//setAttribute(Qt::WA_PaintOnScreen);
-	#endif
 #endif
-
+#endif
 }
 
 TPlayerLayer::~TPlayerLayer() {
@@ -79,10 +68,9 @@ void TPlayerLayer::paintEvent(QPaintEvent* e) {
 	// preventing flicker and speeding up redraws when set to false.
 	// When repaint background is false the background still needs to be
 	// repainted when no video is loaded, which is controlled by normal_background.
-	// TPlayerWindow::aboutToStartPlaying calls setFastBackground to set it and
-	// TPlayerWindow::playingStopped calls restoreNormalBackground to clear it,
-	// together with the Qt::WA_PaintOnScreen attribute (when not on Windows).
-
+	// TPlayerWindow::aboutToStartPlaying calls setFastBackground() to set it
+	// and TPlayerWindow::playingStopped() calls restoreNormalBackground() to
+	// clear it.
 	if (repaint_background || normal_background) {
 		QPainter painter(this);
 		painter.eraseRect(e->rect());
@@ -127,17 +115,19 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	, enable_messages(false)
 	, size_group(0) {
 
+	setMinimumSize(QSize(0, 0));
+	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
+	ColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
+	setAutoFillBackground(true);
 	setFocusPolicy(Qt::StrongFocus);
 	setMouseTracking(true);
 
-	setMinimumSize(QSize(0, 0));
-	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
-
-	setAutoFillBackground(true);
-	ColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
-
 	playerlayer = new TPlayerLayer(this);
-	playerlayer->setObjectName("playerwindow");
+	playerlayer->setObjectName("playerlayer");
+	playerlayer->setMinimumSize(QSize(0,0));
+	playerlayer->setAutoFillBackground(false);
+	playerlayer->setFocusPolicy(Qt::NoFocus);
+	playerlayer->setMouseTracking(true);
 
 	logo = new QLabel();
 	logo->setObjectName("logo");

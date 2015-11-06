@@ -44,7 +44,7 @@ class TPlayerLayer : public QWidget {
 	Q_OBJECT
 
 public:
-	TPlayerLayer(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	explicit TPlayerLayer(QWidget* parent);
 	virtual ~TPlayerLayer();
 
 	//! If b is true, the background of the widget will be repainted as usual.
