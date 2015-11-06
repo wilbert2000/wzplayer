@@ -333,15 +333,17 @@ void TCore::reload() {
 }
 
 void TCore::saveMediaInfo() {
-	qDebug("TCore::saveMediaInfo");
 
 	if (pref->dont_remember_media_settings) {
 		qDebug("TCore::saveMediaInfo: saving disabled by user");
 		return;
 	}
 	if (mdat.filename.isEmpty()) {
+		qDebug("TCore::saveMediaInfo: nothing to save");
 		return;
 	}
+	qDebug() << "TCore::saveMediaInfo: saving settings for" << mdat.filename;
+
 	if (mdat.selected_type == TMediaData::TYPE_FILE) {
 		if (pref->file_settings_method.toLower() == "hash") {
 			Settings::TFileSettingsHash settings(mdat.filename);

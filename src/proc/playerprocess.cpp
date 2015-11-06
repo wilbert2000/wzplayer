@@ -334,8 +334,8 @@ bool TPlayerProcess::parseLine(QString& line) {
 	if (rx_kill_line.indexIn(line) >= 0)
 		return true;
 
-	// Output line to console+
-	qDebug("Proc::TPlayerProcess::parseLine [%f]: '%s'", md->time_sec, line.toUtf8().data());
+	// Output line to console++
+	qDebug("Proc::TPlayerProcess::parseLine: '%s'", line.toUtf8().data());
 
 	if (quit_send) {
 		qDebug("Proc::TPlayerProcess::parseLine: ignored, waiting for quit to arrive");

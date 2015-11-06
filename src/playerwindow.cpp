@@ -308,50 +308,51 @@ void TPlayerWindow::updateSizeGroup() {
 }
 
 void TPlayerWindow::updateVideoWindow() {
-	/*
-	qDebug() << "TPlayerWindow::updateVideoWindow: in: size"
-			<< width() << "x" << height()
-			<< " aspect" << aspect
-			<< " zoom" << zoom()
-			<< " pan" << pan();
-	*/
+	qDebug() << "TPlayerWindow::updateVideoWindow: in: video size"
+			 << video_width << "x" << video_height
+			 << "window size" << size()
+			 << "desktop size" << TDesktop::size(this)
+			 << "zoom" << zoom()
+			 << "pan" << pan()
+			 << "aspect" << aspect
+			 << "fullscreen" << pref->fullscreen;
 
-	QSize s = Settings::pref->fullscreen ? TDesktop::size(this) : size();
+	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
 	QSize video_size = getAdjustedSize(s.width(), s.height(), zoom());
 
 	// Center
 	s = (s - video_size) / 2;
-	QPoint pos(s.width(), s.height());
+	QPoint p(s.width(), s.height());
 
 	// Move
-	pos += pan();
+	p += pan();
 
-	if (Settings::pref->fullscreen) {
-		pos = mapFromGlobal(pos);
-	}
+	// Return to local coords in fullscreen
+	if (pref->fullscreen)
+		p = mapFromGlobal(p);
 
-	playerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
+	// Set geo video layer
+	playerlayer->setGeometry(p.x(), p.y(), video_size.width(), video_size.height());
 
 	// Keep OSD in sight. Need the offset as seen by player.
 	QPoint osd_pos(Proc::default_osd_pos);
-	if (pos.x() < 0)
-		osd_pos.rx() -= pos.x();
-	if (pos.y() < 0)
-		osd_pos.ry() -= pos.y();
+	if (p.x() < 0)
+		osd_pos.rx() -= p.x();
+	if (p.y() < 0)
+		osd_pos.ry() -= p.y();
 	emit moveOSD(osd_pos);
 
 	// Update status with new size
-	if (enable_messages && !Settings::pref->fullscreen
-		&& video_size != last_video_size) {
+	if (enable_messages && !pref->fullscreen && video_size != last_video_size) {
 		emit showMessage(tr("Video size %1 x %2").arg(video_size.width()).arg(video_size.height()),
-						 2000, 1); // 2 sec, osd_level 1
+						 2500, 1); // 2.5 sec, osd_level 1
 		last_video_size = video_size;
 	}
 
+	// Check size menu
 	updateSizeGroup();
 
-	//qDebug("TPlayerWindow::updateVideoWindow: out: pos (%d, %d)  size %d x %d",
-	//	   pos.x(), pos.y(), video_size.width(), video_size.height());
+	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent *) {
@@ -688,7 +689,7 @@ void TPlayerWindow::aboutToStartPlaying() {
 }
 
 void TPlayerWindow::playingStopped(bool clear_background) {
-	qDebug("TPlayerWindow::playingStopped");
+	//qDebug("TPlayerWindow::playingStopped");
 
 	playerlayer->restoreNormalBackground();
 	// Clear background right away.
