@@ -228,9 +228,9 @@ void TPlayerWindow::set(double aspect,
 	setPan(pan, pan_fullscreen, false);
 }
 
-QSize TPlayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
+QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
 	//qDebug("TPlayerWindow::getAdjustedSize: in: %d x %d zoom %f aspect %f",
-	//	   w, h, desired_zoom, aspect);
+	//	   w, h, zoom, aspect);
 
 	// Select best fit: height adjusted or width adjusted,
 	// in case video aspect does not match the window aspect ratio.
@@ -248,7 +248,7 @@ QSize TPlayerWindow::getAdjustedSize(int w, int h, double desired_zoom) const {
 	}
 
 	// Zoom
-	QSize size = QSize(w, h) * desired_zoom;
+	QSize size = QSize(w, h) * zoom;
 
 	//qDebug("TPlayerWindow::getAdjustedSize: out: %d x %d", size.width(), size.height());
 	return size;
@@ -314,13 +314,20 @@ void TPlayerWindow::updateVideoWindow() {
 			<< " zoom" << zoom()
 			<< " pan" << pan();
 	*/
-	QSize video_size = getAdjustedSize(width(), height(), zoom());
+
+	QSize s = Settings::pref->fullscreen ? TDesktop::size(this) : size();
+	QSize video_size = getAdjustedSize(s.width(), s.height(), zoom());
 
 	// Center
-	QPoint pos((width() - video_size.width()) / 2, (height() - video_size.height()) / 2);
+	s = (s - video_size) / 2;
+	QPoint pos(s.width(), s.height());
 
 	// Move
 	pos += pan();
+
+	if (Settings::pref->fullscreen) {
+		pos = mapFromGlobal(pos);
+	}
 
 	playerlayer->setGeometry(pos.x(), pos.y(), video_size.width(), video_size.height());
 

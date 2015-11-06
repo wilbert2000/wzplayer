@@ -130,7 +130,7 @@ public:
 	void setDelayLeftClick(bool b) { delay_left_click = b; }
 
 	// Get size adjusted for monitor aspect and desired zoom
-	QSize getAdjustedSize(int w, int h, double desired_zoom) const;
+	QSize getAdjustedSize(int w, int h, double zoom) const;
 
 	// Keep track off full screen state
 	void aboutToEnterFullscreen();
