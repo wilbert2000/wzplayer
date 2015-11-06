@@ -408,7 +408,7 @@ protected slots:
 protected:
 	void initVolume();
 	void initPlaying(int seek = -1);
-	void newMediaPlaying();
+	void newMediaPlayingStarted();
 
 	void startPlayer(QString file, double seek = -1);
 	void stopPlayer();
