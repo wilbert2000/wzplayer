@@ -21,7 +21,7 @@
 #include <QMenuBar>
 #include "gui/action.h"
 #include "gui/widgetactions.h"
-#include "gui/autohidetoolbar.h"
+#include "gui/editabletoolbar.h"
 #include "gui/playlist.h"
 #include "gui/skin/mediabarpanel.h"
 #include "gui/actionseditor.h"

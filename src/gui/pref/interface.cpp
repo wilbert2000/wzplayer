@@ -18,17 +18,17 @@
 
 
 #include "gui/pref/interface.h"
+#include <QDir>
+#include <QStyleFactory>
+#include <QFontDialog>
+
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
 #include "settings/paths.h"
 #include "languages.h"
-#include "gui/autohidetoolbar.h"
 
-#include <QDir>
-#include <QStyleFactory>
-#include <QFontDialog>
 
 #define SINGLE_INSTANCE_TAB 2
 
