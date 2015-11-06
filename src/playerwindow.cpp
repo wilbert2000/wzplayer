@@ -354,7 +354,6 @@ void TPlayerWindow::updateVideoWindow() {
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent *) {
-	//qDebug("TPlayerWindow::resizeEvent");
 	updateVideoWindow();
 }
 
@@ -364,17 +363,13 @@ void TPlayerWindow::startDragging() {
 	// Cancel pending left click
 	if (delay_left_click)
 		left_click_timer->stop();
-	setCursor(QCursor(Qt::DragMoveCursor));
-
-	// qDebug("TPlayerWindow::startDragging: started drag");
+	QApplication::setOverrideCursor(QCursor(Qt::DragMoveCursor));
 }
 
 void TPlayerWindow::stopDragging() {
 
 	dragging = false;
-	setCursor(QCursor(Qt::ArrowCursor));
-
-	// qDebug("TPlayerWindow::stopDragging: stopped dragging");
+	QApplication::restoreOverrideCursor();
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
