@@ -38,6 +38,8 @@
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
 
+using namespace Settings;
+
 
 TPlayerLayer::TPlayerLayer(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
@@ -269,15 +271,14 @@ void TPlayerWindow::uncheckSizeGroup() {
 
 void TPlayerWindow::enableSizeGroup() {
 
-	size_group->setEnabled(!Settings::pref->fullscreen
-						   && video_width > 0 && video_height > 0);
+	size_group->setEnabled(!pref->fullscreen && video_width > 0 && video_height > 0);
 	uncheckSizeGroup();
 }
 
 void TPlayerWindow::updateSizeGroup() {
 	// qDebug("TPlayerWindow::updateSizegroup");
 
-	if (!Settings::pref->fullscreen && video_width > 0 && video_height > 0) {
+	if (!pref->fullscreen && video_width > 0 && video_height > 0) {
 		// Update size group with new size factor
 		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
 		int size_factor_x = qRound((double) width() * 100 / video_size.width());
@@ -302,7 +303,7 @@ void TPlayerWindow::updateSizeGroup() {
 		if (size_factor_y < size_factor_x) {
 			size_factor_x = size_factor_y;
 		}
-		Settings::pref->size_factor = (double)size_factor_x / 100;
+		pref->size_factor = (double)size_factor_x / 100;
 	}
 }
 
@@ -418,7 +419,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 
 		if (dragging) {
 			drag_pos = pos;
-			if (Settings::pref->fullscreen) {
+			if (pref->fullscreen) {
 				moveVideo(diff);
 			} else {
 				emit moveWindow(diff);
@@ -580,7 +581,7 @@ void TPlayerWindow::setZoom(double factor,
 
 	if (factor_fullscreen == 0.0) {
 		// Set only current zoom
-		if (Settings::pref->fullscreen)
+		if (pref->fullscreen)
 			zoom_factor_fullscreen = factor;
 		else zoom_factor = factor;
 	} else {
@@ -599,7 +600,7 @@ void TPlayerWindow::setZoom(double factor,
 }
 
 double TPlayerWindow::zoom() {
-	return Settings::pref->fullscreen ? zoom_factor_fullscreen : zoom_factor;
+	return pref->fullscreen ? zoom_factor_fullscreen : zoom_factor;
 }
 
 void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWindow) {
@@ -614,7 +615,7 @@ void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWi
 
 void TPlayerWindow::moveVideo(QPoint delta) {
 
-	if (Settings::pref->fullscreen)
+	if (pref->fullscreen)
 		pan_offset_fullscreen += delta;
 	else pan_offset += delta;
 	updateVideoWindow();
@@ -625,7 +626,7 @@ void TPlayerWindow::moveVideo(int dx, int dy) {
 }
 
 QPoint TPlayerWindow::pan() {
-	return Settings::pref->fullscreen ? pan_offset_fullscreen : pan_offset;
+	return pref->fullscreen ? pan_offset_fullscreen : pan_offset;
 }
 
 void TPlayerWindow::resetZoomAndPan() {
