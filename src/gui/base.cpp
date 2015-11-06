@@ -1421,20 +1421,20 @@ void TBase::createActions() {
 	time_label_action->setObjectName("timelabel_action");
 
 	// Menu bar
-	viewMenuBarAct = new TAction(this, "toggle_menu");
+	viewMenuBarAct = new TAction(Qt::Key_F2, this, "toggle_menubar");
 	viewMenuBarAct->setCheckable(true);
 	connect(viewMenuBarAct, SIGNAL(toggled(bool)),
 			menuBar(), SLOT(setVisible(bool)));
 
 	// Toolbars
-	editToolbarAct = new TAction(this, "edit_main_toolbar");
-	editToolbar2Act = new TAction(this, "edit_extra_toolbar");
+	editToolbarAct = new TAction(this, "edit_toolbar1");
+	editToolbar2Act = new TAction(this, "edit_toolbar2");
 
 	// Control bar
 	editControlBarAct = new TAction(this, "edit_controlbar");
 
 	// Status bar
-	viewStatusBarAct = new TAction(this, "toggle_status_bar");
+	viewStatusBarAct = new TAction(Qt::Key_F6, this, "toggle_statusbar");
 	viewStatusBarAct->setCheckable(true);
 	connect(viewStatusBarAct, SIGNAL(toggled(bool)),
 			statusBar(), SLOT(setVisible(bool)));
@@ -1944,11 +1944,11 @@ void TBase::createToolbars() {
 
 	QAction* action = controlbar->toggleViewAction();
 	action->setObjectName("toggle_controlbar");
-	action->setShortcut(Qt::Key_F4);
+	action->setShortcut(Qt::Key_F5);
 
 	// Main toolbar
 	toolbar = new TEditableToolbar(this);
-	toolbar->setObjectName("toolbar");
+	toolbar->setObjectName("toolbar1");
 	actions.clear();
 	actions << "open_file" << "open_url" << "favorites_menu" << "separator"
 			<< "screenshot" << "separator" << "show_file_properties"
@@ -1960,8 +1960,8 @@ void TBase::createToolbars() {
 			toolbar, SLOT(edit()));
 
 	action = toolbar->toggleViewAction();
-	action->setObjectName("toggle_main_toolbar");
-	action->setShortcut(Qt::Key_F5);
+	action->setObjectName("toggle_toolbar1");
+	action->setShortcut(Qt::Key_F3);
 
 	// Extra toolbar
 	toolbar2 = new TEditableToolbar(this);
@@ -1974,12 +1974,13 @@ void TBase::createToolbars() {
 			toolbar2, SLOT(edit()));
 
 	action = toolbar2->toggleViewAction();
-	action->setObjectName("toggle_extra_toolbar");
-	action->setShortcut(Qt::Key_F6);
+	action->setObjectName("toggle_toolbar2");
+	action->setShortcut(Qt::Key_F4);
 
 	toolbar2->hide();
 
 	// Statusbar
+	statusBar()->setObjectName("statusbar");
 	statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(statusBar(), SIGNAL(customContextMenuRequested(const QPoint&)),
 			this, SLOT(showStatusBarPopup(const QPoint&)));
@@ -4795,8 +4796,7 @@ void TBase::toggleDoubleSize() {
 
 void TBase::centerWindow() {
 
-	QRect desktop = QApplication::desktop()->availableGeometry(this);
-	QSize center_pos = (desktop.size() - frameGeometry().size()) / 2;
+	QSize center_pos = (TDesktop::availableSize(this) - frameGeometry().size()) / 2;
 	if (center_pos.isValid()) {
 		move(center_pos.width(), center_pos.height());
 	}
@@ -4821,8 +4821,8 @@ void TBase::optimizeSizeFactor(int w, int h) {
 
 	// Limit size to 0.8 of available size
 	const double f = 0.8;
-	QSize available_size = QApplication::desktop()->availableGeometry(this).size() - frameGeometry().size() + panel->size();
-	qDebug() << available_size;
+	QSize available_size = TDesktop::availableSize(this)
+						   - frameGeometry().size() + panel->size();
 	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	double max = f * available_size.height();
 	if (video_size.height() > max) {
