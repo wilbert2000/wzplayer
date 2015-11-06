@@ -582,16 +582,21 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 
 	set->beginGroup("actions");
 
+	// Clear group to remove actions from previous versions no longer existing
+	set->remove("");
+
 	TActionList actions = o->findChildren<QAction*>();
 	for (int n = 0; n < actions.count(); n++) {
 		QAction* action = actions[n];
-		QString action_name = action->objectName();
-		if (!action_name.isEmpty()) {
-			if (action->inherits("QWidgetAction")) {
-				//qDebug() << "Gui::TActionsEditor::saveToConfig: skipping QWidgetAction"
-				//		 << action_name;
-			} else {
-				set->setValue(action->objectName(), actionToString(*action));
+		if (!action->isSeparator()) {
+			QString action_name = action->objectName();
+			if (!action_name.isEmpty()) {
+				if (action->inherits("QWidgetAction")) {
+					//qDebug() << "Gui::TActionsEditor::saveToConfig: skipping QWidgetAction"
+					//		 << action_name;
+				} else {
+					set->setValue(action->objectName(), actionToString(*action));
+				}
 			}
 		}
 	}
@@ -599,7 +604,29 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 	set->endGroup();
 }
 
-void TActionsEditor::setActionFromString(QAction& action, const QString& s) {
+void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action) {
+
+	for(int i = 0; i < actions.size(); i++) {
+		QAction* action = actions[i];
+		if (action != skip_action) {
+			TShortCutList l = action->shortcuts();
+			bool removed = false;
+			for(int n = 0; n < shortcuts.size(); n++) {
+				if (l.removeOne(shortcuts[n])) {
+					qDebug() << "Gui::TActionsEditor::removeShortcuts: removing shortcut"
+							 << shortcuts[n] << "from" << action->objectName()
+							 << "to assign it to" << skip_action->objectName();
+					removed = true;
+				}
+			}
+			if (removed) {
+				action->setShortcuts(l);
+			}
+		}
+	}
+}
+
+void TActionsEditor::setActionFromString(QAction& action, const QString& s, const TActionList& actions) {
 	//qDebug() << "TActionsEditor::setActionFromString:" << action.objectName() << s;
 
 	static QRegExp rx("^([^\\t]*)(\\t(.*))?");
@@ -608,7 +635,9 @@ void TActionsEditor::setActionFromString(QAction& action, const QString& s) {
 		QString shortcuts = rx.cap(1);
 		//qDebug() << "Gui::TActionsEditor::setActionFromString: setting shortcut"
 		//		 << action.objectName() << "to" << shortcuts;
-		action.setShortcuts(stringToShortcuts(shortcuts));
+		TShortCutList l = stringToShortcuts(shortcuts);
+		removeShortcuts(actions, l, &action);
+		action.setShortcuts(l);
 
 		QString icon_text = rx.cap(3).trimmed();
 		if (!icon_text.isEmpty()) {
@@ -626,15 +655,13 @@ void TActionsEditor::loadFromConfig(const TActionList& all_actions, QSettings* s
 
 	for (int n = 0; n < all_actions.count(); n++) {
 		QAction* action = all_actions[n];
-		if (action) {
-			if (action->inherits("QWidgetAction")) {
-				//qDebug() << "Gui::TActionsEditor::loadFromConfig: skipping QWidgetAction"
-				//		 << action->objectName();
-			} else {
-				setActionFromString(*action,
-					set->value(action->objectName(),
-						shortcutsToString(action->shortcuts())).toString());
-			}
+		if (action->inherits("QWidgetAction")) {
+			//qDebug() << "Gui::TActionsEditor::loadFromConfig: skipping QWidgetAction"
+			//		 << action->objectName();
+		} else {
+			setActionFromString(*action,
+				set->value(action->objectName(), shortcutsToString(action->shortcuts())).toString(),
+				all_actions);
 		}
 	}
 

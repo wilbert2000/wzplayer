@@ -105,7 +105,8 @@ private:
 #endif
 
 	static QString actionToString(const QAction& action);
-	static void setActionFromString(QAction& action, const QString& s);
+	static void setActionFromString(QAction& action, const QString& s, const TActionList& actions);
+	static void removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action);
 };
 
 } // namespace Gui
