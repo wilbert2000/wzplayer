@@ -163,7 +163,6 @@ TBase::TBase()
 	, ignore_show_hide_events(false)
 	, block_resize(false)
 	, center_window(false)
-	, auto_hide_timer(0)
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
@@ -1906,11 +1905,14 @@ QMenu* TBase::createToolbarMenu() {
 		menu->addMenu(statusbar_menu);
 	}
 
-	return menu;
-}
+	connect(menu, SIGNAL(aboutToShow()), auto_hide_timer, SLOT(disable()));
+	connect(menu, SIGNAL(aboutToHide()), auto_hide_timer, SLOT(enable()));
 
-// Called by main window when it wants to show context popup
-// not caught by other popup handlers. Takes ownership of menu.
+	return menu;
+} // createToolbarMenu
+
+// Called by main window to show context popup.
+// Main window takes ownership of menu.
 QMenu* TBase::createPopupMenu() {
 	//qDebug("Gui::TBase::createPopupMenu");
 	return createToolbarMenu();
@@ -1987,6 +1989,13 @@ void TBase::createToolbars() {
 	connect(statusBar(), SIGNAL(customContextMenuRequested(const QPoint&)),
 			this, SLOT(showStatusBarPopup(const QPoint&)));
 
+
+	auto_hide_timer = new TAutoHideTimer(this, playerwindow);
+	auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
+	auto_hide_timer->add(toolbar->toggleViewAction(), toolbar);
+	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
+	auto_hide_timer->add(viewMenuBarAct, menuBar());
+	auto_hide_timer->add(viewStatusBarAct, statusBar());
 }
 
 void TBase::setupNetworkProxy() {
@@ -3125,9 +3134,8 @@ void TBase::applyNewPreferences() {
 		if (!_interface->guiChanged()) changeStyleSheet(pref->iconset);
 		#endif
 	}
-	if (auto_hide_timer) {
-		auto_hide_timer->setInterval(pref->floating_hide_delay);
-	}
+	auto_hide_timer->setInterval(pref->floating_hide_delay);
+
 
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
@@ -4286,12 +4294,6 @@ void TBase::didEnterFullscreen() {
 	toolbar2->didEnterFullscreen();
 	controlbar->didEnterFullscreen();
 
-	auto_hide_timer = new TAutoHideTimer(this, playerwindow);
-	auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
-	auto_hide_timer->add(toolbar->toggleViewAction(), toolbar);
-	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
-	auto_hide_timer->add(viewMenuBarAct, menuBar());
-	auto_hide_timer->add(viewStatusBarAct, statusBar());
 	auto_hide_timer->start();
 }
 
@@ -4299,8 +4301,6 @@ void TBase::aboutToExitFullscreen() {
 	//qDebug("Gui::TBase::aboutToExitFullscreen");
 
 	auto_hide_timer->stop();
-	delete auto_hide_timer;
-	auto_hide_timer = 0;
 
 	// Save fullscreen state
 	fullscreen_menubar_visible = !menuBar()->isHidden();

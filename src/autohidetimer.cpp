@@ -12,6 +12,7 @@ using namespace Settings;
 TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
 	: QTimer(parent)
 	, autoHide(false)
+	, enabled(true)
 	, settingVisible(false)
 	, playerWindow(playerwin) {
 
@@ -35,8 +36,25 @@ void TAutoHideTimer::stop() {
 
 	autoHide = false;
 	QTimer::stop();
+
 	// Show the widgets to save their visible state
 	setVisible(true);
+}
+
+void TAutoHideTimer::enable() {
+
+	enabled = true;
+	if (autoHide)
+		QTimer::start();
+}
+
+void TAutoHideTimer::disable() {
+
+	enabled = false;
+	if (autoHide) {
+		QTimer::stop();
+		setVisible(true);
+	}
 }
 
 void TAutoHideTimer::add(QAction* action, QWidget* w) {
@@ -92,9 +110,9 @@ bool TAutoHideTimer::insideShowArea(const QPoint& p) const {
 	// Check around widgets
 	for (int i = 0; i < widgets.size(); i++) {
 		QWidget* w = widgets[i];
-		QRect sa(w->mapToGlobal(QPoint(0, 0)) - QPoint(margin, margin),
-				 w->size() + QSize(margin, margin));
-		if (sa.contains(p)) {
+		QRect showArea(w->mapToGlobal(QPoint(0, 0)) - QPoint(margin, margin),
+					   w->size() + QSize(margin, margin));
+		if (showArea.contains(p)) {
 			return true;
 		}
 	}
@@ -107,30 +125,31 @@ void TAutoHideTimer::onActionToggled(bool visible) {
 	if (settingVisible)
 		return;
 
-	QString name = QObject::sender()->objectName();
-	TItemMap::const_iterator i = items.find(name);
+	QString actioName = QObject::sender()->objectName();
+	TItemMap::const_iterator i = items.find(actioName);
 	if (i == items.end()) {
-		qWarning() << "TAutoHideTimer::onActionToggled: action" << name << "not found";
-	} else {
-		TAutoHideItem item = i.value();
-		if (visible) {
-			actions.append(item.action);
-			widgets.append(item.widget);
-			// Show the other widgets too
-			setVisible(true);
-			start();
-		} else {
-			actions.removeOne(item.action);
-			widgets.removeOne(item.widget);
+		qWarning() << "TAutoHideTimer::onActionToggled: action" << actioName << "not found";
+		return;
+	}
+
+	TAutoHideItem item = i.value();
+	if (visible) {
+		actions.append(item.action);
+		widgets.append(item.widget);
+		if (autoHide && enabled) {
+			QTimer::start();
 		}
+	} else {
+		actions.removeOne(item.action);
+		widgets.removeOne(item.widget);
 	}
 }
 
 void TAutoHideTimer::onTimeOut() {
 
-	if (autoHide && visibleWidget()) {
+	if (autoHide && enabled && visibleWidget()) {
 		if (QApplication::mouseButtons() || insideShowArea(QCursor::pos())) {
-			start();
+			QTimer::start();
 		} else {
 			setVisible(false);
 		}
@@ -140,17 +159,20 @@ void TAutoHideTimer::onTimeOut() {
 bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 
 	if (autoHide
-		&& (event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonPress)
+		&& enabled
+		&& (event->type() == QEvent::MouseMove
+			|| event->type() == QEvent::MouseButtonPress)
 		&& hiddenWidget()) {
-		if (event->type() == QEvent::MouseButtonPress
-			|| pref->floating_activation_area == Settings::TPreferences::Anywhere) {
+
+		if (pref->floating_activation_area == Settings::TPreferences::Anywhere
+			|| event->type() == QEvent::MouseButtonPress) {
 			setVisible(true);
-			start();
+			QTimer::start();
 		} else {
 			QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
 			if (insideShowArea(mouse_event->globalPos())) {
 				setVisible(true);
-				start();
+				QTimer::start();
 			}
 		}
 	}
