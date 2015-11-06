@@ -4394,39 +4394,38 @@ void TBase::moveWindow(QPoint diff) {
 }
 
 void TBase::processFunction(QString function) {
-	qDebug("Gui::TBase::processFunction: '%s'", function.toUtf8().data());
 
-	//parse args for checkable actions
-	QRegExp func_rx("(.*) (true|false)");
+	// Check function for checkable actions
+	static QRegExp func_rx("(.*) (true|false)");
 	bool value = false;
 	bool checkableFunction = false;
 
-	if(func_rx.indexIn(function) > -1){
+	if (func_rx.indexIn(function) >= 0) {
 		function = func_rx.cap(1);
-		value = (func_rx.cap(2) == "true");
+		value = func_rx.cap(2) == "true";
 		checkableFunction = true;
-	} //end if
+	}
 
 	QAction* action = TActionsEditor::findAction(this, function);
-	if (!action) action = TActionsEditor::findAction(playlist, function);
+	if (!action)
+		action = TActionsEditor::findAction(playlist, function);
 
 	if (action) {
-		qDebug("Gui::TBase::processFunction: action found");
-
-		if (!action->isEnabled()) {
-			qDebug("Gui::TBase::processFunction: action is disabled, doing nothing");
-			return;
-		}
-
-		if (action->isCheckable()){
-			if(checkableFunction)
+		if (action->isEnabled()) {
+			if (action->isCheckable() && checkableFunction) {
+				qDebug() << "Gui::TBase::processFunction: setting checked action"
+						 << function << value;
 				action->setChecked(value);
-			else
-				//action->toggle();
+			} else {
+				qDebug() << "Gui::TBase::processFunction: triggering action" << function;
 				action->trigger();
-		}else{
-			action->trigger();
+			}
+		} else {
+			qDebug() << "Gui::TBase::processFunction: canceling disabled action"
+					 << function;
 		}
+	} else {
+		qWarning() << "Gui::TBase::processFunction: action" << function << "not found";
 	}
 }
 
@@ -4821,14 +4820,14 @@ void TBase::optimizeSizeFactor(int w, int h) {
 	double max = f * available_size.height();
 	if (video_size.height() > max) {
 		pref->size_factor = max / h;
-		qDebug("TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor to %f",
+		qDebug("Gui::TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor to %f",
 			   f, pref->size_factor);
 		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	}
 	max = f * available_size.width();
 	if (video_size.width() > max) {
 		pref->size_factor = max / w;
-		qDebug("TBase::optimizeSizeFactor: width larger as %f desktop, reducing size factor to %f",
+		qDebug("Gui::TBase::optimizeSizeFactor: width larger as %f desktop, reducing size factor to %f",
 			   f, pref->size_factor);
 		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	}
@@ -4855,7 +4854,7 @@ void TBase::optimizeSizeFactor(int w, int h) {
 	// Make width multiple of 16
 	int new_w = ((video_size.width() + 8) / 16) * 16;
 	double factor = (double) new_w / w;
-	qDebug("TBase::optimizeSizeFactor: optimizing size factor from width %d factor %f to width %d factor %f",
+	qDebug("Gui::TBase::optimizeSizeFactor: optimizing width %d factor %f to multiple of 16 %d factor %f",
 		   video_size.width(), pref->size_factor, new_w, factor);
 	pref->size_factor = factor;
 }
