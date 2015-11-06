@@ -21,11 +21,15 @@
 #include <QDesktopWidget>
 #include <QDebug>
 
-QSize TDesktop::size(QWidget* w) {
+QSize TDesktop::size(const QWidget* w) {
 	return QApplication::desktop()->screenGeometry(w).size();
 }
 
-double TDesktop::aspectRatio(QWidget* w) {
+QSize TDesktop::availableSize(const QWidget* w) {
+	return QApplication::desktop()->availableGeometry(w).size();
+}
+
+double TDesktop::aspectRatio(const QWidget* w) {
 
 	QSize s = size(w);
 	return  (double) s.width() / s.height() ;
@@ -36,7 +40,7 @@ void TDesktop::keepInsideDesktop(QWidget* w) {
 	if (w->isMaximized())
 		return;
 
-	QSize desktop_size = QApplication::desktop()->availableGeometry(w).size();
+	QSize desktop_size = availableSize(w);
 	QPoint p = w->pos();
 	QSize s = w->frameGeometry().size();
 
