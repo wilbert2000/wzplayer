@@ -54,26 +54,28 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 
 	clear();
 	space_eater = 0;
+	// Copy actions
 	actions = acts;
 
-	QString action_name;
-	bool ns, fs;
 	int i = 0;
 	while (i < actions.count()) {
+
+		QString action_name;
+		bool ns, fs;
 		TToolbarEditor::stringToAction(actions[i], action_name, ns, fs);
 		if (action_name.isEmpty()) {
 			qWarning() << "Gui::TEditableToolbar::setActionsFromStringList: malformed action"
 					   << actions[i] << "at pos" << i;
 			actions.removeAt(i);
 		} else {
-			bool vis = pref->fullscreen ? fs : ns;
-			if (vis) {
+			if (pref->fullscreen ? fs : ns) {
 				if (action_name == "separator") {
 					addAction(TToolbarEditor::newSeparator(this));
 				} else {
 					QAction* action = TToolbarEditor::findAction(action_name, all_actions);
 					if (action) {
 						addAction(action);
+
 						// Set QToolButton::InstantPopup if the action is a menu
 						if (action->objectName().endsWith("_menu")) {
 							QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
@@ -93,6 +95,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 					}
 				}
 			} // if (vis)
+
 			i++;
 		}
 	} // while
