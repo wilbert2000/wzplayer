@@ -137,7 +137,6 @@ HEADERS += config.h \
     gui/editabletoolbar.h \
 	gui/slider.h \
 	gui/timeslider.h \
-    gui/autohidetoolbar.h \
 	gui/tablewidget.h \
     gui/infoprovider.h \
     gui/playlist.h \
@@ -151,7 +150,8 @@ HEADERS += config.h \
     maps/chapters.h \
     clhelp.h \
 	smplayer.h \
-    log.h
+    log.h \
+    autohidetimer.h
 
 
 SOURCES	+= version.cpp \
@@ -233,7 +233,6 @@ SOURCES	+= version.cpp \
     gui/editabletoolbar.cpp \
 	gui/slider.cpp \
 	gui/timeslider.cpp \
-    gui/autohidetoolbar.cpp \
    	gui/tablewidget.cpp \
     gui/infoprovider.cpp \
     gui/playlist.cpp \
@@ -248,7 +247,8 @@ SOURCES	+= version.cpp \
     clhelp.cpp \
     smplayer.cpp \
     log.cpp \
-    main.cpp
+    main.cpp \
+    autohidetimer.cpp
 
 FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/eqslider.ui gui/inputurl.ui gui/videoequalizer.ui gui/pref/seekwidget.ui\

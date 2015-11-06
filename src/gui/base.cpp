@@ -51,6 +51,7 @@
 #include "colorutils.h"
 #include "images.h"
 #include "discname.h"
+#include "autohidetimer.h"
 #include "playerwindow.h"
 #include "core.h"
 #include "clhelp.h"
@@ -69,7 +70,6 @@
 #include "gui/widgetactions.h"
 #include "gui/actionseditor.h"
 #include "gui/editabletoolbar.h"
-#include "gui/autohidetoolbar.h"
 #include "gui/logwindow.h"
 #include "gui/playlist.h"
 #include "gui/filepropertiesdialog.h"
@@ -163,6 +163,7 @@ TBase::TBase()
 	, ignore_show_hide_events(false)
 	, block_resize(false)
 	, center_window(false)
+	, auto_hide_timer(0)
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
@@ -1923,7 +1924,7 @@ void TBase::createToolbars() {
 	menuBar()->setObjectName("menubar");
 
 	// Control bar
-	controlbar = new TAutohideToolbar(this, playerwindow);
+	controlbar = new TEditableToolbar(this);
 	controlbar->setObjectName("controlbar");
 	QStringList actions;
 	actions << "play_or_pause"
@@ -3123,6 +3124,9 @@ void TBase::applyNewPreferences() {
 		if (!_interface->guiChanged()) changeStyleSheet(pref->iconset);
 		#endif
 	}
+	if (auto_hide_timer) {
+		auto_hide_timer->setInterval(pref->floating_hide_delay);
+	}
 
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
@@ -3177,7 +3181,7 @@ void TBase::applyNewPreferences() {
 
 	// Update actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();
-	TActionsEditor::saveToConfig(this, Settings::pref);
+	TActionsEditor::saveToConfig(this, pref);
 	pref->save();
 
 	// Any restarts needed?
@@ -4283,10 +4287,22 @@ void TBase::didEnterFullscreen() {
 
 	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
 	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
+
+	auto_hide_timer = new TAutoHideTimer(this, playerwindow);
+	auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
+	auto_hide_timer->add(toolbar->toggleViewAction(), toolbar);
+	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
+	auto_hide_timer->add(viewMenuBarAct, menuBar());
+	auto_hide_timer->add(viewStatusBarAct, statusBar());
+	auto_hide_timer->start();
 }
 
 void TBase::aboutToExitFullscreen() {
 	//qDebug("Gui::TBase::aboutToExitFullscreen");
+
+	auto_hide_timer->stop();
+	delete auto_hide_timer;
+	auto_hide_timer = 0;
 
 	// Save fullscreen state
 	fullscreen_menubar_visible = !menuBar()->isHidden();
@@ -4297,7 +4313,6 @@ void TBase::aboutToExitFullscreen() {
 	pref->endGroup();
 
 	playerwindow->aboutToExitFullscreen();
-	controlbar->aboutToExitFullscreen();
 }
 
 void TBase::didExitFullscreen() {

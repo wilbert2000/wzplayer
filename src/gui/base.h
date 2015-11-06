@@ -43,6 +43,7 @@ class QMenu;
 
 class TMediaData;
 class TPlayerWindow;
+class TAutoHideTimer;
 
 class QLabel;
 #ifdef FIND_SUBTITLES
@@ -66,7 +67,6 @@ class TVolumeSliderAction;
 class TTimeLabelAction;
 class TSeekingButton;
 class TEditableToolbar;
-class TAutohideToolbar;
 class TLogWindow;
 class TPlaylist;
 class TFilePropertiesDialog;
@@ -734,7 +734,7 @@ protected:
 
 	TEditableToolbar* toolbar;
 	TEditableToolbar* toolbar2;
-	TAutohideToolbar* controlbar;
+	TEditableToolbar* controlbar;
 
 	TTimeSliderAction* timeslider_action;
 	TVolumeSliderAction* volumeslider_action;
@@ -796,6 +796,8 @@ private:
 	bool ignore_show_hide_events;
 	bool block_resize;
 	bool center_window;
+
+	TAutoHideTimer* auto_hide_timer;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
