@@ -73,4 +73,10 @@ void TAction::change(const QString& text) {
 	}
 }
 
+void TAction::update(bool check) {
+
+	if (check != isChecked())
+		trigger();
+}
+
 } // namespace Gui

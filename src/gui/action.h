@@ -46,6 +46,8 @@ public:
 	//! Change the text of the action.
 	void change(const QString& text);
 
+	void update(bool check);
+
 protected:
 	//! Checks if the parent is a QWidget and adds the action to it.
 	void addActionToParent();

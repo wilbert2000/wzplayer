@@ -1423,6 +1423,7 @@ void TBase::createActions() {
 	// Menu bar
 	viewMenuBarAct = new TAction(Qt::Key_F2, this, "toggle_menubar");
 	viewMenuBarAct->setCheckable(true);
+	viewMenuBarAct->setChecked(true);
 	connect(viewMenuBarAct, SIGNAL(toggled(bool)),
 			menuBar(), SLOT(setVisible(bool)));
 
@@ -1436,6 +1437,7 @@ void TBase::createActions() {
 	// Status bar
 	viewStatusBarAct = new TAction(Qt::Key_F6, this, "toggle_statusbar");
 	viewStatusBarAct->setCheckable(true);
+	viewStatusBarAct->setChecked(true);
 	connect(viewStatusBarAct, SIGNAL(toggled(bool)),
 			statusBar(), SLOT(setVisible(bool)));
 } // createActions
@@ -2952,14 +2954,12 @@ void TBase::loadConfig() {
 	pref->endGroup();
 
 	menubar_visible = pref->value("menubar_visible", menubar_visible).toBool();
+	viewMenuBarAct->update(menubar_visible);
 	fullscreen_menubar_visible = pref->value("fullscreen_menubar_visible", fullscreen_menubar_visible).toBool();
-	menuBar()->setVisible(menubar_visible);
-	viewMenuBarAct->setChecked(menubar_visible);
 
 	statusbar_visible = pref->value("statusbar_visible", statusbar_visible).toBool();
+	viewStatusBarAct->update(statusbar_visible);
 	fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible", fullscreen_statusbar_visible).toBool();
-	statusBar()->setVisible(statusbar_visible);
-	viewStatusBarAct->setChecked(statusbar_visible);
 
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
 
@@ -4271,8 +4271,8 @@ void TBase::didEnterFullscreen() {
 	//qDebug("Gui::TBase::didEnterFullscreen");
 
 	// Restore fullscreen state
-	menuBar()->setVisible(fullscreen_menubar_visible);
-	statusBar()->setVisible(fullscreen_statusbar_visible);
+	viewMenuBarAct->update(fullscreen_menubar_visible);
+	viewStatusBarAct->update(fullscreen_statusbar_visible);
 
 	pref->beginGroup(settingsGroupName());
 	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
@@ -4285,9 +4285,6 @@ void TBase::didEnterFullscreen() {
 	toolbar->didEnterFullscreen();
 	toolbar2->didEnterFullscreen();
 	controlbar->didEnterFullscreen();
-
-	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
-	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 
 	auto_hide_timer = new TAutoHideTimer(this, playerwindow);
 	auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
@@ -4328,8 +4325,8 @@ void TBase::didExitFullscreen() {
 		resize(win_size);
 	}
 
-	menuBar()->setVisible(menubar_visible);
-	statusBar()->setVisible(statusbar_visible);
+	viewMenuBarAct->update(menubar_visible);
+	viewStatusBarAct->update(statusbar_visible);
 
 	pref->beginGroup(settingsGroupName());
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
@@ -4338,9 +4335,6 @@ void TBase::didExitFullscreen() {
 	controlbar->didExitFullscreen();
 	toolbar2->didExitFullscreen();
 	toolbar->didExitFullscreen();
-
-	viewMenuBarAct->setChecked(menubar_visible);
-	viewStatusBarAct->setChecked(statusbar_visible);
 }
 
 void TBase::leftClickFunction() {
