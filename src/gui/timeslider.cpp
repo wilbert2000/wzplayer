@@ -77,6 +77,8 @@ void TTimeSlider::onOrientationChanged(Qt::Orientation orientation) {
 	if (orientation != this->orientation()) {
 		setOrientation(orientation);
 		setSizePol();
+		// TODO: does not work. See Teditable toolbar::resizeEvent for details
+		// updateGeometry();
 	}
 }
 
