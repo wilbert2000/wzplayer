@@ -21,34 +21,21 @@
 #define PLAYERWINDOW_H
 
 #include <QWidget>
-#include <QSize>
 #include <QPoint>
-
-#include <QResizeEvent>
-#include <QWheelEvent>
-#include <QMouseEvent>
-#include <QKeyEvent>
+#include <QSize>
 #include <QPaintEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
+#include <QResizeEvent>
 #include <QTime>
 
-#include "config.h"
-#include "gui/actiongroup.h"
-
-
-class QWidget;
-class QLabel;
-class QKeyEvent;
 class QTimer;
+class QLabel;
 
-// Zooming
-const double ZOOM_MIN = 0.05;
-const double ZOOM_MAX = 8.0; // High max can blow up surface
-const double ZOOM_STEP = 0.05;
-
-const int PAN_STEP = 8;
-
-// Distance the mouse must travel before it is shown if not clicked
-#define SHOW_MOUSE_TRESHOLD 4
+namespace Gui {
+class TActionGroup;
+}
 
 
 //! TPlayerLayer can be instructed to not delete the background.
@@ -96,7 +83,6 @@ public:
 			 double zoom_factor_fullscreen,
 			 QPoint pan,
 			 QPoint pan_fullscreen);
-
 	void setAspect(double aspect, bool updateVideoWindow = true);
 	void setMonitorAspect(double asp);
 	void setResolution(int width, int height);
@@ -104,7 +90,6 @@ public:
 	// Zoom
 	// Sets current zoom to factor if factor_fullscreen == 0.0
 	// else sets both zoom for normal and full screen.
-	// Kept between ZOOM_MIN and ZOOM_MAX
 	void setZoom(double factor,
 				 double factor_fullscreen = 0.0,
 				 bool updateVideoWindow = true);
@@ -128,31 +113,19 @@ public:
 	void resetZoomAndPan();
 
 	void setDelayLeftClick(bool b) { delay_left_click = b; }
+	void setColorKey(QColor c);
+	void setSizeGroup(Gui::TActionGroup* group);
 
-	// Get size adjusted for monitor aspect and desired zoom
+	// Get size adjusted for aspect and desired zoom
 	QSize getAdjustedSize(int w, int h, double zoom) const;
-
-	// Keep track off full screen state
-	void aboutToEnterFullscreen();
-	void aboutToExitFullscreen();
 
 	void updateVideoWindow();
 	void moveVideo(int dx, int dy);
 
-	void setSizeGroup(Gui::TActionGroup* group);
+	void aboutToEnterFullscreen();
+	void aboutToExitFullscreen();
 
 	void retranslateStrings();
-
-	void setColorKey(QColor c);
-
-#if LOGO_ANIMATION
-	bool animatedLogo() { return animated_logo; }
-#endif
-
-#ifdef SHAREWIDGET
-	void setCornerWidget(QWidget* w);
-	QWidget* cornerWidget() { return corner_widget; }
-#endif
 
 public slots:
 	void aboutToStartPlaying();
@@ -161,23 +134,6 @@ public slots:
 	void setLogoVisible(bool b);
 	void showLogo() { setLogoVisible(true); }
 	void hideLogo() { setLogoVisible(false); }
-
-#if LOGO_ANIMATION
-	void setAnimatedLogo(bool b) { animated_logo = b; };
-#endif
-
-protected slots:
-	void checkHideMouse();
-	void enableMessages();
-
-protected:
-	virtual void resizeEvent(QResizeEvent*);
-
-	virtual void mousePressEvent(QMouseEvent* e);
-	virtual void mouseMoveEvent(QMouseEvent* e);
-	virtual void mouseReleaseEvent(QMouseEvent* e);
-	virtual void mouseDoubleClickEvent(QMouseEvent* e);
-	virtual void wheelEvent(QWheelEvent* e);
 
 signals:
 	void doubleClicked();
@@ -196,48 +152,50 @@ signals:
 	void moveOSD(QPoint pos);
 
 protected:
-	double aspect;
-	double monitoraspect;
+	virtual void resizeEvent(QResizeEvent*);
+	virtual void mousePressEvent(QMouseEvent* e);
+	virtual void mouseMoveEvent(QMouseEvent* e);
+	virtual void mouseReleaseEvent(QMouseEvent* e);
+	virtual void mouseDoubleClickEvent(QMouseEvent* e);
+	virtual void wheelEvent(QWheelEvent* e);
 
-	QLabel* logo;
-
-	// Zoom and pan
-	double zoom_factor;
-	double zoom_factor_fullscreen;
-	QPoint pan_offset;
-	QPoint pan_offset_fullscreen;
-
-	// Delay left click event
-	bool delay_left_click;
-	QTimer* left_click_timer;
-	bool double_clicked;
-
-#if LOGO_ANIMATION
-	bool animated_logo;
-#endif
-
-	QWidget* corner_widget;
+protected slots:
+	void checkHideMouse();
+	void enableMessages();
 
 private:
 	TPlayerLayer* playerlayer;
 
 	int video_width;
 	int video_height;
-	Gui::TActionGroup* size_group;
-
 	QSize last_video_size;
 
+	double zoom_factor;
+	double zoom_factor_fullscreen;
+	QPoint pan_offset;
+	QPoint pan_offset_fullscreen;
+
+	double aspect;
+	double monitoraspect;
+
+	bool double_clicked;
+	bool delay_left_click;
+	QTimer* left_click_timer;
 	QTime left_button_pressed_time;
 	QPoint drag_pos;
 	bool dragging;
 	bool kill_fake_event;
 
+	bool autohide_cursor;
+	int autohide_interval;
+	QPoint check_hide_mouse_last_position;
+	QTimer* check_hide_mouse_timer;
+
 	bool enable_messages;
 
-	bool autohide_cursor;
-	QTimer* check_hide_mouse_timer;
-	QPoint check_hide_mouse_last_position;
-	int autohide_interval;
+	Gui::TActionGroup* size_group;
+	QLabel* logo;
+
 
 	void autoHideCursorStartTimer();
 	void showHiddenCursor(bool startTimer);

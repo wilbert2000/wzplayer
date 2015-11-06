@@ -18,7 +18,7 @@
 
 #include "playerwindow.h"
 
-#include <QLabel>
+#include <QDebug>
 #include <QTimer>
 #include <QCursor>
 #include <QEvent>
@@ -26,20 +26,17 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QApplication>
-#include <QDebug>
-
-#if LOGO_ANIMATION
-#include <QPropertyAnimation>
-#endif
+#include <QLabel>
 
 #include "desktop.h"
 #include "colorutils.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
+#include "gui/actiongroup.h"
+
 
 using namespace Settings;
-
 
 TPlayerLayer::TPlayerLayer(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
@@ -87,15 +84,14 @@ void TPlayerLayer::paintEvent(QPaintEvent* e) {
 	// together with the Qt::WA_PaintOnScreen attribute (when not on Windows).
 
 	if (repaint_background || normal_background) {
-		//qDebug("TPlayerLayer::paintEvent: painting");
 		QPainter painter(this);
 		painter.eraseRect(e->rect());
-		//painter.fillRect(e->rect(), QColor(255,0,0));
 	}
 }
 
 void TPlayerLayer::setFastBackground() {
 	qDebug("TPlayerLayer::setFastBackground");
+
 	normal_background = false;
 
 #ifndef Q_OS_WIN
@@ -114,36 +110,22 @@ void TPlayerLayer::restoreNormalBackground() {
 }
 
 
-/* ---------------------------------------------------------------------- */
-
 TPlayerWindow::TPlayerWindow(QWidget* parent)
 	: QWidget(parent)
-	, aspect(0)
-	, monitoraspect(0)
-	, zoom_factor(1.0)
-	, zoom_factor_fullscreen(1.0)
-	, pan_offset()
-	, pan_offset_fullscreen()
-	, delay_left_click(false)
-	, double_clicked(false)
-#if LOGO_ANIMATION
-	, animated_logo(false)
-#endif
-#ifdef SHAREWIDGET
-	, corner_widget(0)
-#endif
 	, video_width(0)
 	, video_height(0)
-	, size_group(0)
-	, last_video_size()
-	, drag_pos()
+	, zoom_factor(1.0)
+	, zoom_factor_fullscreen(1.0)
+	, aspect(0)
+	, monitoraspect(0)
+	, double_clicked(false)
+	, delay_left_click(true)
 	, dragging(false)
 	, kill_fake_event(false)
-	, enable_messages(false)
 	, autohide_cursor(false)
-	, check_hide_mouse_last_position()
 	, autohide_interval(1000)
-{
+	, enable_messages(false)
+	, size_group(0) {
 
 	setFocusPolicy(Qt::StrongFocus);
 	setMouseTracking(true);
@@ -575,6 +557,9 @@ void TPlayerWindow::setZoom(double factor,
 							bool updateVideoWindow) {
 	qDebug("TPlayerWindow::setZoom: normal screen %f, full screen %f", factor, factor_fullscreen);
 
+	const double ZOOM_MIN = 0.05;
+	const double ZOOM_MAX = 8.0; // High max can blow up surface
+
 	if (factor < ZOOM_MIN)
 		factor = ZOOM_MIN;
 	else if (factor > ZOOM_MAX)
@@ -612,7 +597,6 @@ void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWi
 	if (updateVideoWindow)
 		this->updateVideoWindow();
 }
-
 
 void TPlayerWindow::moveVideo(QPoint delta) {
 
@@ -661,6 +645,10 @@ void TPlayerWindow::showHiddenCursor(bool startTimer) {
 
 // Called by timer
 void TPlayerWindow::checkHideMouse() {
+
+	// Distance the mouse must travel before it is shown
+	const int SHOW_MOUSE_TRESHOLD = 4;
+
 	if (!autohide_cursor
 		|| ((QCursor::pos() - check_hide_mouse_last_position).manhattanLength()
 			> SHOW_MOUSE_TRESHOLD)) {
@@ -712,67 +700,7 @@ void TPlayerWindow::retranslateStrings() {
 void TPlayerWindow::setLogoVisible(bool b) {
 	qDebug("TPlayerWindow::setLogoVisible: %d", b);
 
-#ifdef SHAREWIDGET
-	if (corner_widget) {
-		corner_widget->setVisible(b);
-	}
-#endif
-
-#if !LOGO_ANIMATION
 	logo->setVisible(b);
-#else
-	if (!animated_logo) {
-		logo->setVisible(b);
-	} else {
-		if (b) {
-			logo->show();
-			QPropertyAnimation* animation = new QPropertyAnimation(logo, "pos");
-			animation->setDuration(200);
-			animation->setEasingCurve(QEasingCurve::OutBounce);
-			animation->setStartValue(QPoint(logo->x(), 0 - logo->y()));
-			animation->setEndValue(logo->pos());
-			animation->start();
-		} else {
-			QPropertyAnimation* animation = new QPropertyAnimation(logo, "pos");
-			animation->setDuration(200);
-			animation->setEasingCurve(QEasingCurve::OutBounce);
-			animation->setEndValue(QPoint(width(), logo->y()));
-			animation->setStartValue(logo->pos());
-			animation->start();
-			connect(animation, SIGNAL(finished()), logo, SLOT(hide()));
-			//logo->hide();
-		}
-	}
-#endif
 }
-
-#ifdef SHAREWIDGET
-void TPlayerWindow::setMouseTrackingInclChildren(QWidget *w) {
-	//qDebug() << "TPlayerWindow::setMouseTrackingInclChildren: " << w->objectName();
-
-	w->setMouseTracking(true);
-
-	QObjectList children = w->children();
-	for (int n = 0; n < children.count(); n++) {
-		QObject* child = children[n];
-		if (child->isWidgetType()) {
-			setMouseTrackingInclChildren(static_cast<QWidget *>(child));
-		}
-	}
-}
-
-void TPlayerWindow::setCornerWidget(QWidget* w) {
-	corner_widget = w;
-	setMouseTrackingInclChildren(corner_widget);
-
-	QHBoxLayout* blayout = new QHBoxLayout;
-	blayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
-	blayout->addWidget(corner_widget);
-
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding));
-	layout->addLayout(blayout);
-}
-#endif
 
 #include "moc_playerwindow.cpp"

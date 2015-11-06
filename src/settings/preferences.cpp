@@ -390,10 +390,6 @@ void TPreferences::reset() {
 	auto_add_to_playlist = true;
 	media_to_add_to_playlist = NoFiles;
 
-#if LOGO_ANIMATION
-	animated_logo = true;
-#endif
-
 
     /* ********
        TV (dvb)
@@ -811,10 +807,6 @@ void TPreferences::save() {
 
 	setValue("auto_add_to_playlist", auto_add_to_playlist);
 	setValue("media_to_add_to_playlist", media_to_add_to_playlist);
-
-#if LOGO_ANIMATION
-	setValue("animated_logo", animated_logo);
-#endif
 
 	endGroup(); // gui
 
@@ -1287,10 +1279,6 @@ void TPreferences::load() {
 
 	auto_add_to_playlist = value("auto_add_to_playlist", auto_add_to_playlist).toBool();
 	media_to_add_to_playlist = (AutoAddToPlaylistFilter) value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
-
-#if LOGO_ANIMATION
-	animated_logo = value("animated_logo", animated_logo).toBool();
-#endif
 
 	endGroup(); // gui
 

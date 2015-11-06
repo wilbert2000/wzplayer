@@ -33,6 +33,11 @@
 
 #include "config.h"
 #include "desktop.h"
+#include "discname.h"
+#include "mediadata.h"
+#include "extensions.h"
+#include "colorutils.h"
+#include "helper.h"
 #include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include "settings/preferences.h"
@@ -40,11 +45,9 @@
 #include "settings/filesettingshash.h"
 #include "settings/tvsettings.h"
 #include "settings/filters.h"
+
+#include "proc/playerprocess.h"
 #include "playerwindow.h"
-#include "helper.h"
-#include "colorutils.h"
-#include "discname.h"
-#include "extensions.h"
 #include "gui/tvlist.h"
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -63,6 +66,7 @@
   #include "ytsig.h"
   #endif
 #endif
+
 
 using namespace Settings;
 
@@ -3438,6 +3442,9 @@ void TCore::pan(int dx, int dy) {
 	displayMessage(tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())));
 }
 
+
+const int PAN_STEP = 8;
+
 void TCore::panLeft() {
 
 	pan(PAN_STEP, 0);
@@ -3523,6 +3530,9 @@ void TCore::autoZoomFor169() {
 void TCore::autoZoomFor235() {
 	autoZoomFromLetterbox(2.35);
 }
+
+
+const double ZOOM_STEP = 0.05;
 
 void TCore::incZoom() {
 	qDebug("TCore::incZoom");

@@ -16,18 +16,23 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _CORE_H_
-#define _CORE_H_
+#ifndef CORE_H
+#define CORE_H
 
 #include <QProcess> // For QProcess::ProcessError
 #include <QTime>
 
 #include "config.h"
+#include "mediadata.h"
 #include "settings/mediasettings.h"
-#include "proc/playerprocess.h"
 
+class TDiscData;
 class TMediaData;
 class TPlayerWindow;
+
+namespace Proc {
+class TPlayerProcess;
+}
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
@@ -39,7 +44,6 @@ class WinScreenSaver;
 class RetrieveYoutubeUrl;
 #endif
 
-using namespace Settings;
 
 class TCore : public QObject {
 	Q_OBJECT

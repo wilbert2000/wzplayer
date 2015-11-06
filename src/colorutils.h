@@ -42,10 +42,10 @@ public:
 	static QString colorToAABBGGRR(unsigned int color);
 
 	//! Changes the foreground color of the specified widget
-	static void setForegroundColor(QWidget* w, const QColor & color);
+	static void setForegroundColor(QWidget* w, const QColor& color);
 
 	//! Changes the background color of the specified widget
-	static void setBackgroundColor(QWidget* w, const QColor & color);
+	static void setBackgroundColor(QWidget* w, const QColor& color);
 
     /**
      ** \brief Strip colors and tags from MPlayer output lines

@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include <Qt>
 
@@ -29,12 +29,6 @@
 #ifdef Q_OS_WIN
 #define USE_ADAPTER 1
 #define OVERLAY_VO "directx"
-//#define OVERLAY_VO "xv"
-#endif
-
-// If 1, the background logo will be animated
-#if QT_VERSION >= 0x040600
-/* #define LOGO_ANIMATION 1 */
 #endif
 
 #endif

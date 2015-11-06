@@ -44,22 +44,24 @@
 
 #include <cmath>
 
-#include "settings/paths.h"
+#include "version.h"
+#include "playerid.h"
+#include "links.h"
 #include "desktop.h"
+#include "discname.h"
+#include "extensions.h"
 #include "log.h"
-#include "helper.h"
 #include "colorutils.h"
 #include "images.h"
-#include "discname.h"
+#include "helper.h"
+#include "mediadata.h"
 #include "autohidetimer.h"
 #include "playerwindow.h"
 #include "core.h"
 #include "clhelp.h"
 #include "filedialog.h"
-#include "links.h"
-#include "extensions.h"
-#include "version.h"
 
+#include "settings/paths.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
@@ -269,10 +271,6 @@ void TBase::createPlayerWindow() {
 	playerwindow->setObjectName("playerwindow");
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
 	playerwindow->setColorKey(pref->color_key);
-
-#if LOGO_ANIMATION
-	playerwindow->setAnimatedLogo(pref->animated_logo);
-#endif
 
 #ifdef SHAREWIDGET
 	sharewidget = new ShareWidget(pref, playerwindow);
