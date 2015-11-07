@@ -22,7 +22,7 @@
 #include <QToolButton>
 #include <QToolBar>
 #include "colorutils.h"
-#include "gui/timeslider.h"
+#include "gui/action/timeslider.h"
 
 namespace Gui {
 

@@ -19,7 +19,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "gui/slider.h"
+#include "gui/action/slider.h"
 
 #include <QMouseEvent>
 #include <QStyle>

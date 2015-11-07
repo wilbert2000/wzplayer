@@ -68,7 +68,7 @@
 
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
-#include "gui/timeslider.h"
+#include "gui/action/timeslider.h"
 #include "gui/action/widgetactions.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"

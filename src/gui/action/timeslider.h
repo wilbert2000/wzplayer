@@ -20,7 +20,7 @@
 #define GUI_TIMESLIDER_H
 
 #include "config.h"
-#include "gui/slider.h"
+#include "gui/action/slider.h"
 
 namespace Gui {
 

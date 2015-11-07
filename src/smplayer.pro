@@ -93,6 +93,8 @@ HEADERS += config.h \
     gui/guiconfig.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
+    gui/action/slider.h \
+    gui/action/timeslider.h \
     gui/action/widgetactions.h \
     gui/action/shortcutgetter.h \
     gui/action/actionseditor.h \
@@ -135,8 +137,6 @@ HEADERS += config.h \
     gui/timedialog.h \
     gui/lineedit.h \
     gui/inputurl.h \
-    gui/slider.h \
-	gui/timeslider.h \
 	gui/tablewidget.h \
     gui/infoprovider.h \
     gui/playlist.h \
@@ -189,6 +189,8 @@ SOURCES	+= version.cpp \
 	languages.cpp \
     gui/action/action.cpp \
     gui/action/actiongroup.cpp \
+    gui/action/slider.cpp \
+    gui/action/timeslider.cpp \
     gui/action/widgetactions.cpp \
     gui/action/shortcutgetter.cpp \
     gui/action/actionseditor.cpp \
@@ -231,8 +233,6 @@ SOURCES	+= version.cpp \
     gui/timedialog.cpp \
     gui/lineedit.cpp \
     gui/inputurl.cpp \
-	gui/slider.cpp \
-	gui/timeslider.cpp \
    	gui/tablewidget.cpp \
     gui/infoprovider.cpp \
     gui/playlist.cpp \
