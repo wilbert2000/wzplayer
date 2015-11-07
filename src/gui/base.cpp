@@ -4101,13 +4101,16 @@ void TBase::toggleFullscreen(bool b) {
 	if (!panel->isVisible())
 		return; // mplayer window is not used.
 
+	//panel->setUpdatesEnabled(false);
+
 	if (pref->fullscreen) {
 		aboutToEnterFullscreen();
 
 #ifdef Q_OS_WIN
 		// Hack to avoid the windows taskbar to be visible on Windows XP
 		if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
-			if (!pref->pause_when_hidden) hide();
+			if (!pref->pause_when_hidden)
+				hide();
 		}
 #endif
 
@@ -4126,6 +4129,9 @@ void TBase::toggleFullscreen(bool b) {
 	}
 
 	setFocus(); // Fixes bug #2493415
+
+	//panel->setUpdatesEnabled(true);
+	//panel->update();
 }
 
 void TBase::aboutToEnterFullscreen() {

@@ -9,6 +9,11 @@ const int MOUSE_MOVED_TRESHOLD = 4;
 
 using namespace Settings;
 
+
+TAutoHideItem::~TAutoHideItem() {
+}
+
+
 TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
 	: QTimer(parent)
 	, autoHide(false)
@@ -85,13 +90,13 @@ void TAutoHideTimer::setVisible(bool visible) {
 
 	settingVisible = true;
 
-	// Disable updates main window
-	QWidget* w = qobject_cast<QWidget*>(parent());
-	bool updates = true;
-	if (w) {
-		updates = w->updatesEnabled();
-		w->setUpdatesEnabled(false);
-	}
+	// Disable updates of main window
+	//QWidget* w = qobject_cast<QWidget*>(parent());
+	//bool updates = true;
+	//if (w) {
+	//	updates = w->updatesEnabled();
+	//	w->setUpdatesEnabled(false);
+	//}
 
 	for(int i = 0; i < actions.size(); i++) {
 		QAction* action = actions[i];
@@ -100,9 +105,11 @@ void TAutoHideTimer::setVisible(bool visible) {
 		}
 	}
 
-	if (w) {
-		w->setUpdatesEnabled(updates);
-	}
+	//if (w) {
+	//	w->setUpdatesEnabled(updates);
+	//	if (updates)
+	//		w->update();
+	//}
 
 	settingVisible = false;
 }

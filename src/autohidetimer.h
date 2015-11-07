@@ -13,7 +13,7 @@ public:
 
 	TAutoHideItem() : action(0), widget(0) {}
 	TAutoHideItem(QAction* a, QWidget* w) : action(a), widget(w) {}
-	virtual ~TAutoHideItem() {}
+	virtual ~TAutoHideItem();
 };
 
 class TAutoHideTimer : public QTimer {
