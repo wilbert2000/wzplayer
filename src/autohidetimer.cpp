@@ -211,7 +211,7 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 
 	bool button = event->type() == QEvent::MouseButtonPress
 				  || event->type() == QEvent::MouseButtonRelease;
-	bool mouse = event->type() == QEvent::MouseMove || button;
+	bool mouse = button || event->type() == QEvent::MouseMove;
 
 	// Handle mouse
 	if (mouse) {
