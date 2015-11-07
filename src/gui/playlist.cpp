@@ -42,7 +42,7 @@
 #include <QMimeData>
 #include <QDebug>
 
-#include "gui/action.h"
+#include "gui/action/action.h"
 #include "gui/tablewidget.h"
 #include "filedialog.h"
 #include "helper.h"

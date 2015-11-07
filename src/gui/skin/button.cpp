@@ -21,7 +21,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QDebug>
-#include "gui/action.h"
+#include "gui/action/action.h"
 
 namespace Gui {
 namespace Skin {

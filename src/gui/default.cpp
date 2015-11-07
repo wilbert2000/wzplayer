@@ -24,7 +24,7 @@
 #include <QStatusBar>
 #include <QList>
 
-#include "gui/action.h"
+#include "gui/action/action.h"
 #include "colorutils.h"
 #include "images.h"
 

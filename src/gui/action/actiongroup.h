@@ -21,7 +21,7 @@
 
 #include <QActionGroup>
 #include <QWidget>
-#include "gui/action.h"
+#include "gui/action/action.h"
 
 namespace Gui {
 

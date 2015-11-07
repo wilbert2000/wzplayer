@@ -90,10 +90,16 @@ HEADERS += config.h \
     filedialog.h \
     filechooser.h \
 	languages.h \
-    gui/deviceinfo.h \
     gui/guiconfig.h \
-    gui/shortcutgetter.h \
-    gui/actionseditor.h \
+    gui/action/action.h \
+    gui/action/actiongroup.h \
+    gui/action/widgetactions.h \
+    gui/action/shortcutgetter.h \
+    gui/action/actionseditor.h \
+    gui/action/toolbareditor.h \
+    gui/action/sizegrip.h \
+    gui/action/editabletoolbar.h \
+    gui/deviceinfo.h \
     gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
     gui/pref/selectcolorbutton.h \
@@ -129,13 +135,7 @@ HEADERS += config.h \
     gui/timedialog.h \
     gui/lineedit.h \
     gui/inputurl.h \
-    gui/action.h \
-	gui/actiongroup.h \
-	gui/widgetactions.h \
-    gui/toolbareditor.h \
-    gui/sizegrip.h \
-    gui/editabletoolbar.h \
-	gui/slider.h \
+    gui/slider.h \
 	gui/timeslider.h \
 	gui/tablewidget.h \
     gui/infoprovider.h \
@@ -187,9 +187,15 @@ SOURCES	+= version.cpp \
     filedialog.cpp \
     filechooser.cpp \
 	languages.cpp \
+    gui/action/action.cpp \
+    gui/action/actiongroup.cpp \
+    gui/action/widgetactions.cpp \
+    gui/action/shortcutgetter.cpp \
+    gui/action/actionseditor.cpp \
+    gui/action/toolbareditor.cpp \
+    gui/action/sizegrip.cpp \
+    gui/action/editabletoolbar.cpp \
     gui/deviceinfo.cpp \
-    gui/shortcutgetter.cpp \
-    gui/actionseditor.cpp \
     gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \
     gui/pref/selectcolorbutton.cpp \
@@ -225,12 +231,6 @@ SOURCES	+= version.cpp \
     gui/timedialog.cpp \
     gui/lineedit.cpp \
     gui/inputurl.cpp \
-    gui/action.cpp \
-	gui/actiongroup.cpp \
-	gui/widgetactions.cpp \
-    gui/toolbareditor.cpp \
-    gui/sizegrip.cpp \
-    gui/editabletoolbar.cpp \
 	gui/slider.cpp \
 	gui/timeslider.cpp \
    	gui/tablewidget.cpp \
@@ -251,13 +251,15 @@ SOURCES	+= version.cpp \
     autohidetimer.cpp
 
 FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
-        gui/eqslider.ui gui/inputurl.ui gui/videoequalizer.ui gui/pref/seekwidget.ui\
-        gui/pref/vdpauproperties.ui gui/pref/dialog.ui gui/pref/general.ui \
-        gui/pref/drives.ui gui/pref/interface.ui gui/pref/performance.ui \
-        gui/pref/input.ui gui/pref/subtitles.ui gui/pref/advanced.ui \
-        gui/pref/prefplaylist.ui gui/pref/tv.ui gui/pref/updates.ui gui/pref/network.ui \
+        gui/eqslider.ui gui/inputurl.ui gui/videoequalizer.ui \
         gui/favoriteeditor.ui gui/about.ui gui/errordialog.ui gui/timedialog.ui \
-        gui/stereo3ddialog.ui gui/toolbareditor.ui gui/multilineinputdialog.ui
+        gui/stereo3ddialog.ui gui/multilineinputdialog.ui \
+        gui/action/toolbareditor.ui \
+        gui/pref/seekwidget.ui gui/pref/vdpauproperties.ui gui/pref/dialog.ui \
+        gui/pref/general.ui gui/pref/drives.ui gui/pref/interface.ui \
+        gui/pref/performance.ui gui/pref/input.ui gui/pref/subtitles.ui \
+        gui/pref/advanced.ui gui/pref/prefplaylist.ui gui/pref/tv.ui \
+        gui/pref/updates.ui gui/pref/network.ui \
 
 contains(DEFINES, MPV_SUPPORT) {
     HEADERS += proc/mpvprocess.h inforeadermpv.h

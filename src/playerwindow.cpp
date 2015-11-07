@@ -33,7 +33,7 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
-#include "gui/actiongroup.h"
+#include "gui/action/actiongroup.h"
 
 
 using namespace Settings;

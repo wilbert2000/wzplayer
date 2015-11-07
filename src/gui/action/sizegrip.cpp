@@ -1,4 +1,4 @@
-#include "gui/sizegrip.h"
+#include "gui/action/sizegrip.h"
 #include <QApplication>
 #include <QEvent>
 #include <QMouseEvent>

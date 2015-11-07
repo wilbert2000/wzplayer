@@ -445,7 +445,7 @@
   <customwidget>
    <class>Gui::TActionsEditor</class>
    <extends>QWidget</extends>
-   <header>gui/actionseditor.h</header>
+   <header>gui/action/actionseditor.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

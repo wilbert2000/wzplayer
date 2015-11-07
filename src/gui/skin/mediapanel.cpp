@@ -31,7 +31,7 @@
 #include <QDebug>
 
 #include "config.h"
-#include "gui/widgetactions.h"
+#include "gui/action/widgetactions.h"
 #include "gui/skin/actiontools.h"
 #include "gui/skin/iconsetter.h"
 #include "core.h"

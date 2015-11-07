@@ -16,13 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/editabletoolbar.h"
+#include "gui/action/editabletoolbar.h"
 #include <QDebug>
 #include <QMenu>
-#include "gui/actionseditor.h"
-#include "gui/toolbareditor.h"
+#include "gui/action/actionseditor.h"
+#include "gui/action/toolbareditor.h"
 #include "gui/base.h"
-#include "gui/sizegrip.h"
+#include "gui/action/sizegrip.h"
 
 namespace Gui {
 

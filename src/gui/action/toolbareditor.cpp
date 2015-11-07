@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/toolbareditor.h"
+#include "gui/action/toolbareditor.h"
 
 #include <QDebug>
 #include <QToolBar>
@@ -25,7 +25,7 @@
 #include <QTimer>
 #include <QMatrix>
 
-#include "gui/actionseditor.h"
+#include "gui/action/actionseditor.h"
 #include "images.h"
 
 namespace Gui {

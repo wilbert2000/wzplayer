@@ -19,7 +19,7 @@
 /* This is based on qq14-actioneditor-code.zip from Qt */
 
 
-#include "gui/actionseditor.h"
+#include "gui/action/actionseditor.h"
 
 #include <QDebug>
 #include <QTableWidget>
@@ -42,7 +42,7 @@
 #include "filedialog.h"
 #include "settings/paths.h"
 
-#include "gui/shortcutgetter.h"
+#include "gui/action/shortcutgetter.h"
 
 
 /*

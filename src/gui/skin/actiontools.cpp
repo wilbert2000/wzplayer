@@ -17,7 +17,7 @@
 */
 
 #include "gui/skin/actiontools.h"
-#include "gui/action.h"
+#include "gui/action/action.h"
 
 namespace Gui {
 namespace Skin {

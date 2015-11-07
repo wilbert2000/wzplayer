@@ -45,7 +45,7 @@
 ****************************************************************************/
 
 
-#include "gui/shortcutgetter.h"
+#include "gui/action/shortcutgetter.h"
 #include "images.h"
 
 #include <QLayout>

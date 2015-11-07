@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/widgetactions.h"
+#include "gui/action/widgetactions.h"
 #include <QDebug>
 #include <QLabel>
 #include <QToolButton>

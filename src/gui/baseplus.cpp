@@ -23,7 +23,7 @@
 #include <QDockWidget>
 
 #include "config.h"
-#include "gui/action.h"
+#include "gui/action/action.h"
 #include "gui/playlist.h"
 #include "gui/favorites.h"
 #include "gui/tvlist.h"

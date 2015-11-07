@@ -23,7 +23,7 @@
 #include <QList>
 #include <QStringList>
 #include <QWidget>
-#include "gui/action.h"
+#include "gui/action/action.h"
 #include "gui/tablewidget.h"
 
 class QToolBar;

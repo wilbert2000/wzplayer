@@ -20,7 +20,7 @@
 #define _GUI_SKIN_H_
 
 #include "gui/guiconfig.h"
-#include "gui/action.h"
+#include "gui/action/action.h"
 #include "gui/baseplus.h"
 #include "gui/skin/mediabarpanel.h"
 
