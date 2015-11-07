@@ -123,9 +123,6 @@ public slots:
 	virtual void helpFAQ();
 	virtual void helpCLOptions();
 	virtual void helpCheckUpdates();
-#ifdef REMINDER_ACTIONS
-	virtual void helpDonate();
-#endif
 	virtual void helpShowConfig();
 	virtual void helpAbout();
 
@@ -462,9 +459,6 @@ protected:
 	TAction* updateYTAct;
 #endif
 	TAction* showConfigAct;
-#ifdef REMINDER_ACTIONS
-	TAction* donateAct;
-#endif
 	TAction* aboutThisAct;
 
 	// OSD

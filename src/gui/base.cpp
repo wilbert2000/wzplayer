@@ -944,12 +944,6 @@ void TBase::createActions() {
 	connect(showConfigAct, SIGNAL(triggered()),
 			 this, SLOT(helpShowConfig()));
 
-#ifdef REMINDER_ACTIONS
-	donateAct = new TAction(this, "donate");
-	connect(donateAct, SIGNAL(triggered()),
-			 this, SLOT(helpDonate()));
-#endif
-
 	aboutThisAct = new TAction(this, "about_smplayer");
 	connect(aboutThisAct, SIGNAL(triggered()),
 			 this, SLOT(helpAbout()));
@@ -1814,10 +1808,6 @@ void TBase::createMenus() {
 	helpMenu->addSeparator();
 	helpMenu->addAction(showConfigAct);
 	helpMenu->addSeparator();
-#ifdef REMINDER_ACTIONS
-	helpMenu->addAction(donateAct);
-	helpMenu->addSeparator();
-#endif
 	helpMenu->addAction(aboutThisAct);
 
 	// POPUP MENU
@@ -2450,9 +2440,6 @@ void TBase::retranslateStrings() {
 #endif
 
 	showConfigAct->change(Images::icon("show_config"), tr("&Open configuration folder"));
-#ifdef REMINDER_ACTIONS
-	donateAct->change(Images::icon("donate"), tr("&Donate / Share with your friends"));
-#endif
 	aboutThisAct->change(Images::icon("logo"), tr("About &SMPlayer"));
 
 	// OSD
