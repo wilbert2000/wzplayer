@@ -2124,7 +2124,7 @@ void TBase::setActionsEnabled(bool b) {
 	nextSubtitleAct->setEnabled(b);
 	nextChapterAct->setEnabled(b);
 	prevChapterAct->setEnabled(b);
-	doubleSizeAct->setEnabled(b);
+	doubleSizeAct->setEnabled(b && !pref->fullscreen);
 
 	// Moving and zoom
 	moveUpAct->setEnabled(b);
@@ -4302,6 +4302,8 @@ void TBase::didEnterFullscreen() {
 	toolbar2->didEnterFullscreen();
 	controlbar->didEnterFullscreen();
 
+	doubleSizeAct->setEnabled(false);
+
 	auto_hide_timer->start();
 }
 
@@ -4343,6 +4345,8 @@ void TBase::didExitFullscreen() {
 	controlbar->didExitFullscreen();
 	toolbar2->didExitFullscreen();
 	toolbar->didExitFullscreen();
+
+	doubleSizeAct->setEnabled(!core->mdat.noVideo());
 }
 
 void TBase::leftClickFunction() {
