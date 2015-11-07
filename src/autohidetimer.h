@@ -61,7 +61,6 @@ private:
 	bool mouseInsideShowArea() const;
 	void setVisible(bool visible);
 
-	void autoHideMouseStart();
 	void showHiddenMouse();
 	void hideMouse();
 

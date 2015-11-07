@@ -46,6 +46,7 @@ void TAutoHideTimer::stop() {
 void TAutoHideTimer::enable() {
 
 	enabled = true;
+	autoHideMouseLastPosition = QCursor::pos();
 	if (autoHide || autoHideMouse)
 		QTimer::start();
 }
@@ -53,20 +54,20 @@ void TAutoHideTimer::enable() {
 void TAutoHideTimer::disable() {
 
 	enabled = false;
-	if (autoHide) {
-		QTimer::stop();
+	if (autoHide)
 		setVisible(true);
-	} else if (autoHideMouse) {
-		QTimer::stop();
-	}
+	showHiddenMouse();
+	QTimer::stop();
 }
 
 void TAutoHideTimer::setAutoHideMouse(bool on) {
 
 	autoHideMouse = on;
+	autoHideMouseLastPosition = QCursor::pos();
 	if (autoHideMouse)
-		autoHideMouseStart();
-	else showHiddenMouse();
+		QTimer::start();
+	else
+		showHiddenMouse();
 }
 
 void TAutoHideTimer::add(QAction* action, QWidget* w) {
@@ -83,12 +84,26 @@ void TAutoHideTimer::add(QAction* action, QWidget* w) {
 void TAutoHideTimer::setVisible(bool visible) {
 
 	settingVisible = true;
+
+	// Disable updates main window
+	QWidget* mainWindow = qobject_cast<QWidget*>(parent());
+	bool updates = true;
+	if (mainWindow) {
+		updates = mainWindow->updatesEnabled();
+		mainWindow->setUpdatesEnabled(false);
+	}
+
 	for(int i = 0; i < actions.size(); i++) {
 		QAction* action = actions[i];
 		if (action->isChecked() != visible) {
 			action->trigger();
 		}
 	}
+
+	if (mainWindow) {
+		mainWindow->setUpdatesEnabled(updates);
+	}
+
 	settingVisible = false;
 }
 
@@ -158,12 +173,6 @@ void TAutoHideTimer::onActionToggled(bool visible) {
 	}
 }
 
-void TAutoHideTimer::autoHideMouseStart() {
-
-	autoHideMouseLastPosition = QCursor::pos();
-	QTimer::start();
-}
-
 void TAutoHideTimer::showHiddenMouse() {
 
 	if (mouseHidden) {
@@ -189,13 +198,14 @@ void TAutoHideTimer::onTimeOut() {
 		if ((QCursor::pos() - autoHideMouseLastPosition).manhattanLength()
 			> SHOW_MOUSE_TRESHOLD) {
 			showHiddenMouse();
-			autoHideMouseStart();
-		} else {
+			QTimer::start();
+		} else if (enabled) {
 			hideMouse();
 		}
 	} else {
 		showHiddenMouse();
 	}
+	autoHideMouseLastPosition = QCursor::pos();
 
 	// Handle widgets
 	if (autoHide && enabled && visibleWidget()) {
@@ -216,10 +226,10 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 	// Handle mouse
 	if (mouse) {
 		showHiddenMouse();
-		autoHideMouseLastPosition = QCursor::pos();
 		if (autoHideMouse && enabled) {
 			QTimer::start();
 		}
+		autoHideMouseLastPosition = QCursor::pos();
 	}
 
 	// Handle widgets
@@ -229,11 +239,9 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 				|| button) {
 				setVisible(true);
 				QTimer::start();
-			} else {
-				if (mouseInsideShowArea()) {
-					setVisible(true);
-					QTimer::start();
-				}
+			} else if (mouseInsideShowArea()) {
+				setVisible(true);
+				QTimer::start();
 			}
 		}
 	}
