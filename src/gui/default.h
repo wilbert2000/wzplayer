@@ -52,7 +52,7 @@ protected:
 protected slots:
 	virtual void displayTime(QString text);
 	virtual void displayFrame(int frame);
-	virtual void displayABSection(int secs_a, int secs_b);
+	virtual void displayABSection();
 	virtual void displayVideoInfo(int width, int height, double fps);
 
 	virtual void togglePlayAction(TCore::State state);

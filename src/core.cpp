@@ -734,6 +734,10 @@ void TCore::restartPlay() {
 		title = -1;
 	}
 
+	if (proc->isRunning()) {
+		stopPlayer();
+	}
+
 	initPlaying();
 }
 
@@ -760,10 +764,6 @@ void TCore::initVolume() {
 
 void TCore::initPlaying(int seek) {
 	qDebug("TCore::initPlaying: starting time");
-
-	if (proc->isRunning()) {
-		stopPlayer();
-	}
 
 	time.start();
 	playerwindow->hideLogo();
@@ -922,16 +922,6 @@ void TCore::playingStarted() {
 		}
 	}
 #endif
-
-	// TODO:
-#if 0
-	// Hack to be sure that the equalizers are up to date
-	emit videoEqualizerNeedsUpdate();
-	emit audioEqualizerNeedsUpdate();
-#endif
-
-	// A-B marker
-	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
 
 	qDebug("TCore::playingStarted: emit mediaLoaded()");
 	emit mediaLoaded();
@@ -2155,7 +2145,7 @@ void TCore::setAMarker(int sec) {
 		if (proc->isRunning()) restartPlay();
 	}
 
-	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
+	emit ABMarkersChanged();
 }
 
 void TCore::setBMarker() {
@@ -2172,7 +2162,7 @@ void TCore::setBMarker(int sec) {
 		if (proc->isRunning()) restartPlay();
 	}
 
-	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
+	emit ABMarkersChanged();
 }
 
 void TCore::clearABMarkers() {
@@ -2185,7 +2175,7 @@ void TCore::clearABMarkers() {
 		if (proc->isRunning()) restartPlay();
 	}
 
-	emit ABMarkersChanged(mset.A_marker, mset.B_marker);
+	emit ABMarkersChanged();
 }
 
 void TCore::toggleRepeat() {
@@ -2863,13 +2853,6 @@ void TCore::setAudioEqualizer(const TAudioEqualizerList& values, bool restart) {
 	} else {
 		proc->setAudioEqualizer(Helper::equalizerListToString(values));
 	}
-
-	// Infinite recursion
-	//emit audioEqualizerNeedsUpdate();
-}
-
-void TCore::updateAudioEqualizer() {
-	setAudioEqualizer(pref->global_audio_equalizer ? pref->audio_equalizer : mset.audio_equalizer);
 }
 
 void TCore::setAudioEq(int eq, int value) {

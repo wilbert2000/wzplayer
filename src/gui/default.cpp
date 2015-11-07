@@ -140,8 +140,12 @@ void TDefault::createStatusBar() {
 			 this, SLOT(displayTime(QString)));
 	connect(this, SIGNAL(frameChanged(int)),
 			 this, SLOT(displayFrame(int)));
-	connect(this, SIGNAL(ABMarkersChanged(int,int)),
-			 this, SLOT(displayABSection(int,int)));
+
+	connect(core, SIGNAL(ABMarkersChanged()),
+			 this, SLOT(displayABSection()));
+	connect(core, SIGNAL(mediaLoaded()),
+			 this, SLOT(displayABSection()));
+
 	connect(this, SIGNAL(videoInfoChanged(int,int,double)),
 			 this, SLOT(displayVideoInfo(int,int,double)));
 
@@ -169,15 +173,17 @@ void TDefault::displayFrame(int frame) {
 	}
 }
 
-void TDefault::displayABSection(int secs_a, int secs_b) {
+void TDefault::displayABSection() {
 
 	QString s;
-	if (secs_a >= 0)
-		s = tr("A:%1").arg(Helper::formatTime(secs_a));
+	int secs = core->mset.A_marker;
+	if (secs >= 0)
+		s = tr("A:%1").arg(Helper::formatTime(secs));
 
-	if (secs_b >= 0) {
+	secs = core->mset.B_marker;
+	if (secs >= 0) {
 		if (!s.isEmpty()) s += " ";
-		s += tr("B:%1").arg(Helper::formatTime(secs_b));
+		s += tr("B:%1").arg(Helper::formatTime(secs));
 	}
 
 	ab_section_display->setText(s);

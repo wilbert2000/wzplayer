@@ -17,14 +17,17 @@
 */
 
 #include "gui/audioequalizer.h"
-#include "gui/eqslider.h"
-#include "images.h"
-#include "settings/preferences.h"
+#include <QDebug>
 #include <QLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QComboBox>
 #include <QMessageBox>
+
+#include "images.h"
+#include "settings/preferences.h"
+#include "gui/eqslider.h"
+
 
 using namespace Settings;
 
@@ -251,6 +254,7 @@ void TAudioEqualizer::setDefaults() {
 }
 
 void TAudioEqualizer::setEqualizer(const TAudioEqualizerList& l) {
+	//qDebug() << "Gui::TAudioEqualizer::setEqualizer" << l;
 
 	int p = findPreset(l);
 	int index = presets_combo->findData(p);
@@ -259,10 +263,10 @@ void TAudioEqualizer::setEqualizer(const TAudioEqualizerList& l) {
 	} else {
 		qWarning("TAudioEqualizer::setEqualizer: preset not found");
 	}
-	setValues(l);
+	setValues(l, false);
 }
 
-void TAudioEqualizer::setValues(const TAudioEqualizerList& l) {
+void TAudioEqualizer::setValues(const TAudioEqualizerList& l, bool emitValuesChanged) {
 	qDebug("TAudioEqualizer::setValues");
 
 	for (int n = 0; n < 10; n++) {
@@ -271,7 +275,8 @@ void TAudioEqualizer::setValues(const TAudioEqualizerList& l) {
 		eq[n]->blockSignals(false);
 	}
 
-	emit valuesChanged(l);
+	if (emitValuesChanged)
+		emit valuesChanged(l);
 }
 
 void TAudioEqualizer::presetChanged(int index) {

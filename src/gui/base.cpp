@@ -309,17 +309,9 @@ void TBase::createCore() {
 
 	connect(core, SIGNAL(widgetsNeedUpdate()),
 			 this, SLOT(updateWidgets()));
-	connect(core, SIGNAL(videoEqualizerNeedsUpdate()),
-			 this, SLOT(updateVideoEqualizer()));
-
-	connect(core, SIGNAL(audioEqualizerNeedsUpdate()),
-			 this, SLOT(updateAudioEqualizer()));
 
 	connect(core, SIGNAL(showFrame(int)),
 			 this, SIGNAL(frameChanged(int)));
-
-	connect(core, SIGNAL(ABMarkersChanged(int,int)),
-			 this, SIGNAL(ABMarkersChanged(int,int)));
 
 	connect(core, SIGNAL(showTime(double)),
 			 this, SLOT(gotCurrentTime(double)));
@@ -422,6 +414,11 @@ void TBase::createVideoEqualizer() {
 			 this, SLOT(setDefaultValuesFromVideoEqualizer()));
 	connect(video_equalizer, SIGNAL(bySoftwareChanged(bool)),
 			 this, SLOT(changeVideoEqualizerBySoftware(bool)));
+
+	connect(core, SIGNAL(videoEqualizerNeedsUpdate()),
+			 this, SLOT(updateVideoEqualizer()));
+	connect(core, SIGNAL(mediaLoaded()),
+			 this, SLOT(updateVideoEqualizer()));
 }
 
 void TBase::createAudioEqualizer() {
@@ -455,6 +452,9 @@ void TBase::createAudioEqualizer() {
 			 core, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
 	connect(audio_equalizer, SIGNAL(visibilityChanged()),
 			 this, SLOT(updateWidgets()));
+
+	connect(core, SIGNAL(mediaLoaded()),
+			 this, SLOT(updateAudioEqualizer()));
 }
 
 void TBase::createActions() {
@@ -1996,7 +1996,7 @@ void TBase::createToolbars() {
 
 	connect(core, SIGNAL(aboutToStartPlaying()),
 			auto_hide_timer, SLOT(startAutoHideMouse()));
-	connect(core, SIGNAL(playerFailed(int)),
+	connect(core, SIGNAL(playerFailed(QProcess::ProcessError)),
 			auto_hide_timer, SLOT(stopAutoHideMouse()));
 	connect(core, SIGNAL(mediaEOF()),
 			auto_hide_timer, SLOT(stopAutoHideMouse()));
@@ -3725,7 +3725,8 @@ void TBase::updateWidgets() {
 }
 
 void TBase::updateVideoEqualizer() {
-	// Equalizer
+	qDebug("Gui::TBase::updateVideoEqualizer");
+
 	video_equalizer->setContrast(core->mset.contrast);
 	video_equalizer->setBrightness(core->mset.brightness);
 	video_equalizer->setHue(core->mset.hue);
@@ -3734,8 +3735,9 @@ void TBase::updateVideoEqualizer() {
 }
 
 void TBase::updateAudioEqualizer() {
-	// Audio Equalizer
-	TAudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : core->mset.audio_equalizer;
+	qDebug("Gui::TBase::updateAudioEqualizer");
+
+	const TAudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : core->mset.audio_equalizer;
 	audio_equalizer->setEqualizer(l);
 }
 

@@ -17,15 +17,13 @@
 */
 
 
-#ifndef _GUI_AUDIOOEQUALIZER_H_
-#define _GUI_AUDIOOEQUALIZER_H_
+#ifndef GUI_AUDIOOEQUALIZER_H
+#define GUI_AUDIOOEQUALIZER_H
 
 #include <QWidget>
 #include <QHideEvent>
 #include <QShowEvent>
 #include "settings/preferences.h"
-
-//#include "gui/eqslider.h"
 
 class QLabel;
 class QComboBox;
@@ -74,7 +72,7 @@ protected:
 	virtual void retranslateStrings();
 
 	void createPresets();
-	void setValues(const Settings::TAudioEqualizerList& l);
+	void setValues(const Settings::TAudioEqualizerList& l, bool emitValuesChanged = true);
 	int findPreset(const Settings::TAudioEqualizerList& l);
 
 protected slots:
@@ -85,4 +83,4 @@ protected slots:
 
 } // namespace Gui
 
-#endif // _GUI_AUDIOOEQUALIZER_H_
+#endif // GUI_AUDIOOEQUALIZER_H
