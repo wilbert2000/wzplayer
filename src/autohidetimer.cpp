@@ -86,11 +86,11 @@ void TAutoHideTimer::setVisible(bool visible) {
 	settingVisible = true;
 
 	// Disable updates main window
-	QWidget* mainWindow = qobject_cast<QWidget*>(parent());
+	QWidget* w = qobject_cast<QWidget*>(parent());
 	bool updates = true;
-	if (mainWindow) {
-		updates = mainWindow->updatesEnabled();
-		mainWindow->setUpdatesEnabled(false);
+	if (w) {
+		updates = w->updatesEnabled();
+		w->setUpdatesEnabled(false);
 	}
 
 	for(int i = 0; i < actions.size(); i++) {
@@ -100,8 +100,8 @@ void TAutoHideTimer::setVisible(bool visible) {
 		}
 	}
 
-	if (mainWindow) {
-		mainWindow->setUpdatesEnabled(updates);
+	if (w) {
+		w->setUpdatesEnabled(updates);
 	}
 
 	settingVisible = false;
