@@ -16,34 +16,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef SHAREDIALOG_H
-#define SHAREDIALOG_H
+#ifndef LINKS_H
+#define LINKS_H
 
-#include "ui_sharedialog.h"
-
-class ShareDialog : public QDialog, public Ui::ShareDialog
-{
-	Q_OBJECT
-
-public:
-	ShareDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~ShareDialog();
-
-	bool isRemindChecked();
-
-	void setActions(int a) { actions_taken = a; }
-	int actions() { return actions_taken; }
-
-	void showRemindCheck(bool b);
-
-private slots:
-	void on_donate_button_clicked();
-	void on_facebook_button_clicked();
-	void on_twitter_button_clicked();
-
-private:
-	int actions_taken;
-	QString share_url;
-};
+#define URL_HOMEPAGE "http://www.smplayer.info"
+#define URL_FORUM "http://forum.smplayer.info"
+#define URL_TRANSLATORS URL_HOMEPAGE"/translators.php"
+#define URL_FIRST_STEPS URL_HOMEPAGE"/first-steps.php"
+#define URL_FAQ URL_HOMEPAGE"/faq.php"
+#define URL_CHANGES URL_HOMEPAGE"/changes.php"
+#define URL_THANK_YOU URL_HOMEPAGE"/thank-you.php"
+#define URL_OPENSSL_INFO URL_HOMEPAGE"/openssl.php"
+#define URL_YT_CODE "http://updates.smplayer.info/yt.js"
+#define URL_VERSION_INFO "http://updates.smplayer.info/version_info.ini"
 
 #endif

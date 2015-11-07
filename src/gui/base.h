@@ -36,7 +36,6 @@
 #endif
 #endif
 
-//#define SHARE_MENU
 
 class QWidget;
 class QMenu;
@@ -54,9 +53,6 @@ class FindSubtitlesWindow;
 class VideoPreview;
 #endif
 
-#ifdef SHAREWIDGET
-class ShareWidget;
-#endif
 
 namespace Gui {
 
@@ -132,10 +128,6 @@ public slots:
 #endif
 	virtual void helpShowConfig();
 	virtual void helpAbout();
-
-#ifdef SHARE_MENU
-	virtual void shareSMPlayer();
-#endif
 
 	virtual void loadSub();
 	virtual void loadAudioFile(); // Load external audio file
@@ -226,10 +218,6 @@ protected slots:
 
 #ifdef CHECK_UPGRADED
 	void checkIfUpgraded();
-#endif
-
-#if defined(REMINDER_ACTIONS) && !defined(SHAREWIDGET)
-	void checkReminder();
 #endif
 
 #ifdef YOUTUBE_SUPPORT
@@ -479,14 +467,6 @@ protected:
 #endif
 	TAction* aboutThisAct;
 
-#ifdef SHARE_MENU
-	TAction* facebookAct;
-	TAction* twitterAct;
-	TAction* gmailAct;
-	TAction* hotmailAct;
-	TAction* yahooAct;
-#endif
-
 	// OSD
 	TAction* incOSDScaleAct;
 	TAction* decOSDScaleAct;
@@ -715,10 +695,6 @@ protected:
 	QMenu* closed_captions_menu;
 	QMenu* subfps_menu;
 
-#ifdef SHARE_MENU
-	QMenu* share_menu;
-#endif
-
 	QMenu* popup;
 	QMenu* recentfiles_menu;
 
@@ -766,10 +742,6 @@ protected:
 
 #ifdef UPDATE_CHECKER
 	TUpdateChecker* update_checker;
-#endif
-
-#ifdef SHAREWIDGET
-	ShareWidget* sharewidget;
 #endif
 
 	QString pending_actions_to_run;

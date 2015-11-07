@@ -19,7 +19,7 @@
 #include "gui/updatechecker.h"
 #include "updatecheckerdata.h"
 #include "version.h"
-#include "links.h"
+#include "gui/links.h"
 #include <QUrl>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>

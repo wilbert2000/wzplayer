@@ -21,9 +21,6 @@ DEFINES += CHECK_UPGRADED
 DEFINES += AUTO_SHUTDOWN_PC
 DEFINES += CAPTURE_STREAM
 
-#DEFINES += REMINDER_ACTIONS
-#DEFINES += SHAREWIDGET
-
 DEFINES += MPV_SUPPORT
 DEFINES += MPLAYER_SUPPORT
 
@@ -37,8 +34,6 @@ contains(DEFINES, SIMPLE_BUILD) {
 	DEFINES -= MPRIS2
 	DEFINES -= UPDATE_CHECKER
 	DEFINES -= CHECK_UPGRADED
-	DEFINES -= REMINDER_ACTIONS
-	DEFINES -= SHAREWIDGET
 	DEFINES -= AUTO_SHUTDOWN_PC
 }
 
@@ -55,7 +50,6 @@ contains(QT_VERSION, ^4\\.[0-3]\\..*) {
 }
 
 HEADERS += config.h \
-	links.h \
 	svn_revision.h \
 	version.h \
 	helper.h \
@@ -91,6 +85,7 @@ HEADERS += config.h \
     filechooser.h \
 	languages.h \
     gui/guiconfig.h \
+    gui/links.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
     gui/action/slider.h \
@@ -407,17 +402,6 @@ contains(DEFINES, VIDEOPREVIEW) {
 	SOURCES += videopreview/videopreview.cpp videopreview/videopreviewconfigdialog.cpp
 
 	FORMS += videopreview/videopreviewconfigdialog.ui
-}
-
-contains(DEFINES, REMINDER_ACTIONS) {
-	HEADERS += sharedialog.h
-	SOURCES += sharedialog.cpp
-	FORMS += sharedialog.ui
-}
-
-contains(DEFINES, SHAREWIDGET|REMINDER_ACTIONS) {
-	HEADERS += sharewidget.h sharedata.h
-	SOURCES += sharewidget.cpp sharedata.cpp
 }
 
 contains(DEFINES, AUTO_SHUTDOWN_PC) {

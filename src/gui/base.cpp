@@ -46,7 +46,7 @@
 
 #include "version.h"
 #include "playerid.h"
-#include "links.h"
+#include "gui/links.h"
 #include "desktop.h"
 #include "discname.h"
 #include "extensions.h"
@@ -72,11 +72,12 @@
 #include "gui/action/widgetactions.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
+
+#include "gui/errordialog.h"
 #include "gui/logwindow.h"
 #include "gui/playlist.h"
 #include "gui/filepropertiesdialog.h"
 #include "gui/inputdvddirectory.h"
-#include "gui/errordialog.h"
 #include "gui/about.h"
 #include "gui/inputurl.h"
 #include "gui/timedialog.h"
@@ -119,14 +120,6 @@
 #ifdef YT_USE_YTSIG
 #include "codedownloader.h"
 #endif
-#endif
-
-#ifdef REMINDER_ACTIONS
-#include "sharedialog.h"
-#endif
-
-#ifdef SHAREWIDGET
-#include "sharewidget.h"
 #endif
 
 #ifdef AUTO_SHUTDOWN_PC
@@ -229,10 +222,6 @@ TBase::TBase()
 	QTimer::singleShot(30000, this, SLOT(checkIfUpgraded()));
 #endif
 
-#if defined(REMINDER_ACTIONS) && !defined(SHAREWIDGET)
-	QTimer::singleShot(10000, this, SLOT(checkReminder()));
-#endif
-
 #ifdef MPRIS2
 	if (pref->use_mpris2)
 		new Mpris2(this, this);
@@ -272,21 +261,13 @@ void TBase::createPlayerWindow() {
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
 	playerwindow->setColorKey(pref->color_key);
 
-#ifdef SHAREWIDGET
-	sharewidget = new ShareWidget(pref, playerwindow);
-	playerwindow->setCornerWidget(sharewidget);
-	#ifdef REMINDER_ACTIONS
-	connect(sharewidget, SIGNAL(supportClicked()), this, SLOT(helpDonate()));
-	#endif
-#endif
-
 	QVBoxLayout* layout = new QVBoxLayout;
 	layout->setSpacing(0);
 	layout->setMargin(0);
 	layout->addWidget(playerwindow);
 	panel->setLayout(layout);
 
-	// playerwindow mouse events
+	// Connect to player window mouse events
 	connect(playerwindow, SIGNAL(doubleClicked()),
 			 this, SLOT(doubleClickFunction()));
 	connect(playerwindow, SIGNAL(leftClicked()),
@@ -972,25 +953,6 @@ void TBase::createActions() {
 	aboutThisAct = new TAction(this, "about_smplayer");
 	connect(aboutThisAct, SIGNAL(triggered()),
 			 this, SLOT(helpAbout()));
-
-#ifdef SHARE_MENU
-	facebookAct = new TAction (this, "facebook");
-	twitterAct = new TAction (this, "twitter");
-	gmailAct = new TAction (this, "gmail");
-	hotmailAct = new TAction (this, "hotmail");
-	yahooAct = new TAction (this, "yahoo");
-
-	connect(facebookAct, SIGNAL(triggered()),
-			 this, SLOT(shareSMPlayer()));
-	connect(twitterAct, SIGNAL(triggered()),
-			 this, SLOT(shareSMPlayer()));
-	connect(gmailAct, SIGNAL(triggered()),
-			 this, SLOT(shareSMPlayer()));
-	connect(hotmailAct, SIGNAL(triggered()),
-			 this, SLOT(shareSMPlayer()));
-	connect(yahooAct, SIGNAL(triggered()),
-			 this, SLOT(shareSMPlayer()));
-#endif
 
 	// OSD
 	incOSDScaleAct = new TAction(Qt::SHIFT | Qt::Key_U, this, "inc_osd_scale");
@@ -1841,19 +1803,6 @@ void TBase::createMenus() {
 	*/
 
 	// HELP MENU
-	// Share submenu
-#ifdef SHARE_MENU
-	share_menu = new QMenu(this);
-	share_menu->addAction(facebookAct);
-	share_menu->addAction(twitterAct);
-	share_menu->addAction(gmailAct);
-	share_menu->addAction(hotmailAct);
-	share_menu->addAction(yahooAct);
-
-	helpMenu->addMenu(share_menu);
-	helpMenu->addSeparator();
-#endif
-
 	helpMenu->addAction(showFirstStepsAct);
 	helpMenu->addAction(showFAQAct);
 	helpMenu->addAction(showCLOptionsAct);
@@ -2506,14 +2455,6 @@ void TBase::retranslateStrings() {
 #endif
 	aboutThisAct->change(Images::icon("logo"), tr("About &SMPlayer"));
 
-#ifdef SHARE_MENU
-	facebookAct->change("&Facebook");
-	twitterAct->change("&Twitter");
-	gmailAct->change("&Gmail");
-	hotmailAct->change("&Hotmail");
-	yahooAct->change("&Yahoo!");
-#endif
-
 	// OSD
 	incOSDScaleAct->change(tr("Size &+"));
 	decOSDScaleAct->change(tr("Size &-"));
@@ -2749,14 +2690,9 @@ void TBase::retranslateStrings() {
 	dvdnavPrevAct->change(Images::icon("dvdnav_prev"), tr("DVD &previous menu"));
 	dvdnavMouseAct->change(Images::icon("dvdnav_mouse"), tr("DVD menu, mouse click"));
 
-	// Menu Options
+	// OSD
 	osd_menu->menuAction()->setText(tr("&OSD"));
 	osd_menu->menuAction()->setIcon(Images::icon("osd"));
-
-#ifdef SHARE_MENU
-	share_menu->menuAction()->setText(tr("S&hare SMPlayer with your friends"));
-	share_menu->menuAction()->setIcon(Images::icon("share"));
-#endif
 
 	// Toolbars
 	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
@@ -2793,8 +2729,10 @@ void TBase::retranslateStrings() {
 
 	// PlayerWindow
 	playerwindow->retranslateStrings();
+
 	// Playlist
 	playlist->retranslateStrings();
+
 	// Log window
 	log_window->retranslateStrings();
 
@@ -4086,70 +4024,10 @@ void TBase::helpShowConfig() {
 	QDesktopServices::openUrl(QUrl::fromLocalFile(TPaths::configPath()));
 }
 
-#ifdef REMINDER_ACTIONS
-void TBase::helpDonate() {
-	ShareDialog d(this);
-	d.showRemindCheck(false);
-
-	#ifdef SHAREWIDGET
-	d.setActions(sharewidget->actions());
-	#endif
-
-	d.exec();
-	int action = d.actions();
-	qDebug("Gui::TBase::helpDonate: action: %d", action);
-
-	if (action > 0) {
-		#ifdef SHAREWIDGET
-		sharewidget->setActions(action);
-		#else
-		QSettings* set = Global::settings;
-		set->beginGroup("reminder");
-		set->setValue("action", action);
-		set->endGroup();
-		#endif
-	}
-}
-#endif
-
 void TBase::helpAbout() {
 	TAbout d(this);
 	d.exec();
 }
-
-#ifdef SHARE_MENU
-void TBase::shareSMPlayer() {
-	QString text = QString("SMPlayer - Free Media Player with built-in codecs that can play and download Youtube videos").replace(" ","+");
-	QString url = URL_HOMEPAGE;
-
-	if (sender() == twitterAct) {
-		QDesktopServices::openUrl(QUrl("http://twitter.com/intent/tweet?text=" + text + "&url=" + url + "/&via=smplayer_dev"));
-	}
-	else
-	if (sender() == gmailAct) {
-		QDesktopServices::openUrl(QUrl("https://mail.google.com/mail/?view=cm&fs=1&to&su=" + text + "&body=" + url + "&ui=2&tf=1&shva=1"));
-	}
-	else
-	if (sender() == yahooAct) {
-		QDesktopServices::openUrl(QUrl("http://compose.mail.yahoo.com/?To=&Subject=" + text + "&body=" + url));
-	}
-	else
-	if (sender() == hotmailAct) {
-		QDesktopServices::openUrl(QUrl("http://www.hotmail.msn.com/secure/start?action=compose&to=&subject=" + text + "&body=" + url));
-	}
-	else
-	if (sender() == facebookAct) {
-		QDesktopServices::openUrl(QUrl("http://www.facebook.com/sharer.php?u=" + url + "&t=" + text));
-
-		#ifdef REMINDER_ACTIONS
-		QSettings* set = Global::settings;
-		set->beginGroup("reminder");
-		set->setValue("action", 2);
-		set->endGroup();
-		#endif
-	}
-}
-#endif
 
 void TBase::showGotoDialog() {
 
@@ -4521,50 +4399,6 @@ void TBase::checkIfUpgraded() {
 		QDesktopServices::openUrl(QString(URL_THANK_YOU "?version=%1&so=%2").arg(Version::printable()).arg(os));
 	}
 	pref->smplayer_stable_version = Version::stable();
-}
-#endif
-
-#if defined(REMINDER_ACTIONS) && !defined(SHAREWIDGET)
-void TBase::checkReminder() {
-	qDebug("Gui::TBase::checkReminder");
-
-	if (core->state() == TCore::Playing) return;
-
-	QSettings* set = Global::settings;
-	set->beginGroup("reminder");
-	int count = set->value("count", 0).toInt();
-	count++;
-	set->setValue("count", count);
-	int action = set->value("action", 0).toInt();
-	bool dont_show = set->value("dont_show_anymore", false).toBool();
-	set->endGroup();
-
-#if 1
-	if (dont_show) return;
-
-	if (action != 0) return;
-	if ((count != 25) && (count != 45)) return;
-#endif
-
-	ShareDialog d(this);
-	//d.showRemindCheck(false);
-	d.exec();
-	action = d.actions();
-	qDebug("Gui::TBase::checkReminder: action: %d", action);
-
-	if (!d.isRemindChecked()) {
-		set->beginGroup("reminder");
-		set->setValue("dont_show_anymore", true);
-		set->endGroup();
-	}
-
-	if (action > 0) {
-		set->beginGroup("reminder");
-		set->setValue("action", action);
-		set->endGroup();
-	}
-
-	//qDebug() << "size:" << d.size();
 }
 #endif
 

@@ -25,7 +25,7 @@
 #include "settings/preferences.h"
 #include "images.h"
 #include "version.h"
-#include "links.h"
+#include "gui/links.h"
 
 using namespace Settings;
 
