@@ -907,7 +907,7 @@ void TBase::createActions() {
 #endif
 
 	// Menu Options
-	showPlaylistAct = new TAction(QKeySequence("Ctrl+L"), this, "show_playlist");
+	showPlaylistAct = new TAction(QKeySequence("Ctrl+P"), this, "show_playlist");
 	showPlaylistAct->setCheckable(true);
 	connect(showPlaylistAct, SIGNAL(toggled(bool)),
 			 this, SLOT(showPlaylist(bool)));
@@ -918,7 +918,7 @@ void TBase::createActions() {
 	connect(showPropertiesAct, SIGNAL(triggered()),
 			 this, SLOT(showFilePropertiesDialog()));
 
-	showPreferencesAct = new TAction(QKeySequence("Ctrl+P"), this, "show_preferences");
+	showPreferencesAct = new TAction(QKeySequence("Ctrl+S"), this, "show_preferences");
 	connect(showPreferencesAct, SIGNAL(triggered()),
 			 this, SLOT(showPreferencesDialog()));
 
@@ -929,7 +929,7 @@ void TBase::createActions() {
 #endif
 
 	// Show log
-	showLogAct = new TAction(QKeySequence("Ctrl+S"), this, "show_smplayer_log");
+	showLogAct = new TAction(QKeySequence("Ctrl+L"), this, "show_smplayer_log");
 	showLogAct->setCheckable(true);
 	connect(showLogAct, SIGNAL(triggered()), this, SLOT(showLog()));
 	connect(log_window, SIGNAL(visibilityChanged(bool)),
