@@ -122,7 +122,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 
 	playerlayer = new TPlayerLayer(this);
 	playerlayer->setObjectName("playerlayer");
-	playerlayer->setMinimumSize(QSize(0,0));
+	playerlayer->setMinimumSize(QSize(0, 0));
 	playerlayer->setAutoFillBackground(false);
 	playerlayer->setFocusPolicy(Qt::NoFocus);
 	playerlayer->setMouseTracking(true);
