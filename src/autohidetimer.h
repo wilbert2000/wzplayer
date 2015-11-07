@@ -31,6 +31,10 @@ public slots:
 	void enable();
 	void disable();
 
+	void setAutoHideMouse(bool on);
+	void startAutoHideMouse() { setAutoHideMouse(true); }
+	void stopAutoHideMouse() { setAutoHideMouse(false); }
+
 protected:
 	bool eventFilter(QObject* obj, QEvent* event);
 
@@ -38,6 +42,10 @@ private:
 	bool autoHide;
 	bool enabled;
 	bool settingVisible;
+
+	bool autoHideMouse;
+	bool mouseHidden;
+	QPoint autoHideMouseLastPosition;
 
 	QWidget* playerWindow;
 
@@ -50,8 +58,12 @@ private:
 	bool hiddenWidget() const;
 	bool visibleWidget() const;
 
-	bool insideShowArea(const QPoint& p) const;
+	bool mouseInsideShowArea() const;
 	void setVisible(bool visible);
+
+	void autoHideMouseStart();
+	void showHiddenMouse();
+	void hideMouse();
 
 private slots:
 	void onActionToggled(bool visible);

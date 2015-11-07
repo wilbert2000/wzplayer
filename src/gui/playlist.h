@@ -135,7 +135,7 @@ public slots:
 
 	virtual void newMediaLoaded();
 	virtual void getMediaInfo();
-	virtual void mediaFinished();
+	virtual void mediaEOF();
 	void playerSwitchedTitle(int id);
 
 	void setModified(bool);

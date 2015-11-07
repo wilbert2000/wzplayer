@@ -110,8 +110,6 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	, delay_left_click(true)
 	, dragging(false)
 	, kill_fake_event(false)
-	, autohide_cursor(false)
-	, autohide_interval(1000)
 	, enable_messages(false)
 	, size_group(0) {
 
@@ -143,11 +141,6 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	left_click_timer->setSingleShot(true);
 	left_click_timer->setInterval(qApp->doubleClickInterval() + 10);
 	connect(left_click_timer, SIGNAL(timeout()), this, SIGNAL(leftClicked()));
-
-	check_hide_mouse_timer = new QTimer(this);
-	check_hide_mouse_timer->setSingleShot(true);
-	check_hide_mouse_timer->setInterval(autohide_interval);
-	connect(check_hide_mouse_timer, SIGNAL(timeout()), this, SLOT(checkHideMouse()));
 }
 
 TPlayerWindow::~TPlayerWindow() {
@@ -353,7 +346,6 @@ void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
 
 	// Ignore second press event after a double click.
 	if (!double_clicked) {
-		showHiddenCursor(false);
 
 		if ((event->button() == Qt::LeftButton)
 				&& (event->modifiers() == Qt::NoModifier)) {
@@ -376,8 +368,8 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 	kill_fake_event = false;
 
 	if ((event->buttons() == Qt::LeftButton)
-			&& (event->modifiers() == Qt::NoModifier)
-			&& !double_clicked) {
+		&& (event->modifiers() == Qt::NoModifier)
+		&& !double_clicked) {
 
 		QPoint pos = event->globalPos();
 		QPoint diff = pos - drag_pos;
@@ -398,8 +390,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 				emit moveWindow(diff);
 			}
 		}
-	} else if (event->buttons() == Qt::NoButton)
-		showHiddenCursor(autohide_cursor);
+	}
 
 	// For DVDNAV
 	if (!dragging && playerlayer->underMouse()) {
@@ -483,9 +474,6 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
 	} else if (event->button() == Qt::RightButton) {
 		emit rightClicked();
 	}
-
-	// autoHideCursor will detect if it is not wanted
-	autoHideCursorStartTimer();
 }
 
 void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -617,53 +605,10 @@ void TPlayerWindow::setColorKey(QColor c) {
 	ColorUtils::setBackgroundColor(playerlayer, c);
 }
 
-void TPlayerWindow::autoHideCursorStartTimer() {
-	check_hide_mouse_last_position = QCursor::pos();
-	check_hide_mouse_timer->start();
-}
-
-void TPlayerWindow::showHiddenCursor(bool startTimer) {
-	if (cursor().shape() == Qt::BlankCursor) {
-		setCursor(QCursor(Qt::ArrowCursor));
-	}
-	if (startTimer) {
-		autoHideCursorStartTimer();
-	} else {
-		check_hide_mouse_timer->stop();
-	}
-}
-
-// Called by timer
-void TPlayerWindow::checkHideMouse() {
-
-	// Distance the mouse must travel before it is shown
-	const int SHOW_MOUSE_TRESHOLD = 4;
-
-	if (!autohide_cursor
-		|| ((QCursor::pos() - check_hide_mouse_last_position).manhattanLength()
-			> SHOW_MOUSE_TRESHOLD)) {
-		showHiddenCursor(true);
-	} else {
-		if (cursor().shape() == Qt::ArrowCursor) {
-			setCursor(QCursor(Qt::BlankCursor));
-		}
-		autoHideCursorStartTimer();
-	}
-}
-
-// Start and stop toggle autohide_cursor. Pause hides.
-void TPlayerWindow::setAutoHideCursor(bool enable) {
-	autohide_cursor = enable;
-	if (autohide_cursor)
-		autoHideCursorStartTimer();
-	else showHiddenCursor(false);
-}
-
 void TPlayerWindow::aboutToStartPlaying() {
 	//qDebug("TPlayerWindow::aboutToStartPlaying");
 
 	playerlayer->setFastBackground();
-	setAutoHideCursor(true);
 }
 
 void TPlayerWindow::playingStopped(bool clear_background) {
@@ -677,7 +622,6 @@ void TPlayerWindow::playingStopped(bool clear_background) {
 		repaint();
 	else qDebug("TPlayerWindow::playingStopped: not clearing background");
 
-	setAutoHideCursor(false);
 	setResolution(0, 0);
 }
 
@@ -689,7 +633,6 @@ void TPlayerWindow::retranslateStrings() {
 
 void TPlayerWindow::setLogoVisible(bool b) {
 	qDebug("TPlayerWindow::setLogoVisible: %d", b);
-
 	logo->setVisible(b);
 }
 

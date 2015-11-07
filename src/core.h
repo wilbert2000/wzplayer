@@ -434,8 +434,8 @@ signals:
 	void mediaPlaying(const QString& filename, const QString& title);
 	void stateChanged(TCore::State state);
 	void newMediaStartedPlaying();
-	void mediaFinished(); // Media has arrived to the end.
-	void mediaStoppedByUser();
+	void mediaEOF(); // Media has arrived to the end.
+	void mediaStopped();
 	void showMessage(QString text);
 	void showMessage(QString text, int time);
 	void widgetsNeedUpdate();

@@ -292,8 +292,8 @@ void TCore::fileReachedEnd() {
 	// If we're at the end of the movie, reset to 0
 	gotCurrentSec(0);
 
-	qDebug("TCore::fileReachedEnd: emit mediaFinished()");
-	emit mediaFinished();
+	qDebug("TCore::fileReachedEnd: emit mediaEOF()");
+	emit mediaEOF();
 }
 
 void TCore::setState(State s) {
@@ -956,7 +956,7 @@ void TCore::stop()
 		gotCurrentSec(0);
 	}
 
-	emit mediaStoppedByUser();
+	emit mediaStopped();
 }
 
 void TCore::play() {

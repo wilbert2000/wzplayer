@@ -111,8 +111,8 @@ TPlaylist::TPlaylist(TCore* c, QWidget* parent, Qt::WindowFlags f) :
 			this, SLOT(getMediaInfo()));
 	connect(core, SIGNAL(titleTrackChanged(int)),
 			this, SLOT(playerSwitchedTitle(int)));
-	connect(core, SIGNAL(mediaFinished()),
-			this, SLOT(mediaFinished()), Qt::QueuedConnection);
+	connect(core, SIGNAL(mediaEOF()),
+			this, SLOT(mediaEOF()), Qt::QueuedConnection);
 
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->addWidget(listView);
@@ -1066,8 +1066,8 @@ void TPlaylist::getMediaInfo() {
 	updateView();
 }
 
-void TPlaylist::mediaFinished() {
-	qDebug("Gui::Tplaylist::mediaFinished");
+void TPlaylist::mediaEOF() {
+	qDebug("Gui::Tplaylist::mediaEOF");
 
 	if (automatically_play_next) {
 		playNext();

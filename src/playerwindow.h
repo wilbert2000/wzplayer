@@ -160,7 +160,6 @@ protected:
 	virtual void wheelEvent(QWheelEvent* e);
 
 protected slots:
-	void checkHideMouse();
 	void enableMessages();
 
 private:
@@ -186,21 +185,10 @@ private:
 	bool dragging;
 	bool kill_fake_event;
 
-	bool autohide_cursor;
-	int autohide_interval;
-	QPoint check_hide_mouse_last_position;
-	QTimer* check_hide_mouse_timer;
-
 	bool enable_messages;
 
 	Gui::TActionGroup* size_group;
 	QLabel* logo;
-
-
-	void autoHideCursorStartTimer();
-	void showHiddenCursor(bool startTimer);
-	void setAutoHideCursor(bool enable);
-	void setMouseTrackingInclChildren(QWidget* w);
 
 	void moveVideo(QPoint delta);
 

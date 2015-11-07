@@ -14,6 +14,8 @@ TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
 	, autoHide(false)
 	, enabled(true)
 	, settingVisible(false)
+	, autoHideMouse(true)
+	, mouseHidden(false)
 	, playerWindow(playerwin) {
 
 	setSingleShot(true);
@@ -44,7 +46,7 @@ void TAutoHideTimer::stop() {
 void TAutoHideTimer::enable() {
 
 	enabled = true;
-	if (autoHide)
+	if (autoHide || autoHideMouse)
 		QTimer::start();
 }
 
@@ -54,7 +56,17 @@ void TAutoHideTimer::disable() {
 	if (autoHide) {
 		QTimer::stop();
 		setVisible(true);
+	} else if (autoHideMouse) {
+		QTimer::stop();
 	}
+}
+
+void TAutoHideTimer::setAutoHideMouse(bool on) {
+
+	autoHideMouse = on;
+	if (autoHideMouse)
+		autoHideMouseStart();
+	else showHiddenMouse();
 }
 
 void TAutoHideTimer::add(QAction* action, QWidget* w) {
@@ -98,12 +110,13 @@ bool TAutoHideTimer::hiddenWidget() const {
 	return false;
 }
 
-bool TAutoHideTimer::insideShowArea(const QPoint& p) const {
+bool TAutoHideTimer::mouseInsideShowArea() const {
 
 	const int margin = 100;
 
 	// Check bottom of screen
-	if (pref->fullscreen && p.y() > TDesktop::size(playerWindow).height() - margin) {
+	if (pref->fullscreen
+		&& QCursor::pos().y() > TDesktop::size(playerWindow).height() - margin) {
 		return true;
 	}
 
@@ -112,7 +125,7 @@ bool TAutoHideTimer::insideShowArea(const QPoint& p) const {
 		QWidget* w = widgets[i];
 		QRect showArea(w->mapToGlobal(QPoint(0, 0)) - QPoint(margin, margin),
 					   w->size() + QSize(margin, margin));
-		if (showArea.contains(p)) {
+		if (showArea.contains(QCursor::pos())) {
 			return true;
 		}
 	}
@@ -145,10 +158,48 @@ void TAutoHideTimer::onActionToggled(bool visible) {
 	}
 }
 
+void TAutoHideTimer::autoHideMouseStart() {
+
+	autoHideMouseLastPosition = QCursor::pos();
+	QTimer::start();
+}
+
+void TAutoHideTimer::showHiddenMouse() {
+
+	if (mouseHidden) {
+		mouseHidden = false;
+		playerWindow->setCursor(QCursor(Qt::ArrowCursor));
+	}
+}
+
+void TAutoHideTimer::hideMouse() {
+
+	if (!mouseHidden) {
+		mouseHidden = true;
+		playerWindow->setCursor(QCursor(Qt::BlankCursor));
+	}
+}
+
 void TAutoHideTimer::onTimeOut() {
 
+	// Handle mouse
+	const int SHOW_MOUSE_TRESHOLD = 4;
+
+	if (autoHideMouse) {
+		if ((QCursor::pos() - autoHideMouseLastPosition).manhattanLength()
+			> SHOW_MOUSE_TRESHOLD) {
+			showHiddenMouse();
+			autoHideMouseStart();
+		} else {
+			hideMouse();
+		}
+	} else {
+		showHiddenMouse();
+	}
+
+	// Handle widgets
 	if (autoHide && enabled && visibleWidget()) {
-		if (QApplication::mouseButtons() || insideShowArea(QCursor::pos())) {
+		if (QApplication::mouseButtons() || mouseInsideShowArea()) {
 			QTimer::start();
 		} else {
 			setVisible(false);
@@ -158,21 +209,31 @@ void TAutoHideTimer::onTimeOut() {
 
 bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 
-	if (autoHide
-		&& enabled
-		&& (event->type() == QEvent::MouseMove
-			|| event->type() == QEvent::MouseButtonPress)
-		&& hiddenWidget()) {
+	bool button = event->type() == QEvent::MouseButtonPress
+				  || event->type() == QEvent::MouseButtonRelease;
+	bool mouse = event->type() == QEvent::MouseMove || button;
 
-		if (pref->floating_activation_area == Settings::TPreferences::Anywhere
-			|| event->type() == QEvent::MouseButtonPress) {
-			setVisible(true);
+	// Handle mouse
+	if (mouse) {
+		showHiddenMouse();
+		autoHideMouseLastPosition = QCursor::pos();
+		if (autoHideMouse && enabled) {
 			QTimer::start();
-		} else {
-			QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
-			if (insideShowArea(mouse_event->globalPos())) {
+		}
+	}
+
+	// Handle widgets
+	if (autoHide && enabled) {
+		if (mouse && hiddenWidget()) {
+			if (pref->floating_activation_area == Settings::TPreferences::Anywhere
+				|| button) {
 				setVisible(true);
 				QTimer::start();
+			} else {
+				if (mouseInsideShowArea()) {
+					setVisible(true);
+					QTimer::start();
+				}
 			}
 		}
 	}

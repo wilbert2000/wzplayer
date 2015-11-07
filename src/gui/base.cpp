@@ -158,7 +158,7 @@ TBase::TBase()
 	, menubar_visible(true)
 	, statusbar_visible(true)
 	, fullscreen_menubar_visible(false)
-	, fullscreen_statusbar_visible(false)
+	, fullscreen_statusbar_visible(true)
 
 	, arg_close_on_finish(-1)
 	, arg_start_in_fullscreen(-1)
@@ -340,9 +340,11 @@ void TBase::createCore() {
 	connect(core, SIGNAL(stateChanged(TCore::State)),
 			 this, SLOT(displayState(TCore::State)));
 	connect(core, SIGNAL(stateChanged(TCore::State)),
+			 this, SLOT(togglePlayAction(TCore::State)));
+	connect(core, SIGNAL(stateChanged(TCore::State)),
 			 this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection);
 
-	connect(core, SIGNAL(mediaStoppedByUser()),
+	connect(core, SIGNAL(mediaStopped()),
 			 this, SLOT(exitFullscreenOnStop()));
 
 	connect(core, SIGNAL(mediaLoaded()),
@@ -351,13 +353,10 @@ void TBase::createCore() {
 	connect(core, SIGNAL(noFileToPlay()),
 			 this, SLOT(gotNoFileToPlay()));
 
-	connect(core, SIGNAL(mediaFinished()),
+	connect(core, SIGNAL(mediaEOF()),
 			 this, SLOT(disableActionsOnStop()));
-	connect(core, SIGNAL(mediaStoppedByUser()),
+	connect(core, SIGNAL(mediaStopped()),
 			 this, SLOT(disableActionsOnStop()));
-
-	connect(core, SIGNAL(stateChanged(TCore::State)),
-			 this, SLOT(togglePlayAction(TCore::State)));
 
 	connect(core, SIGNAL(newMediaStartedPlaying()),
 			 this, SLOT(newMediaLoaded()), Qt::QueuedConnection);
@@ -388,7 +387,7 @@ void TBase::createCore() {
 	connect(playerwindow, SIGNAL(wheelDown()),
 			 core, SLOT(wheelDown()));
 
-	connect(core, SIGNAL(mediaStoppedByUser()),
+	connect(core, SIGNAL(mediaStopped()),
 			 playerwindow, SLOT(showLogo()));
 	connect(playerwindow, SIGNAL(moveOSD(const QPoint &)),
 			 core, SLOT(setOSDPos(const QPoint &)));
@@ -1987,13 +1986,22 @@ void TBase::createToolbars() {
 	connect(statusBar(), SIGNAL(customContextMenuRequested(const QPoint&)),
 			this, SLOT(showStatusBarPopup(const QPoint&)));
 
-
+	// Add toolbars to auto_hide_timer
 	auto_hide_timer = new TAutoHideTimer(this, playerwindow);
 	auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
 	auto_hide_timer->add(toolbar->toggleViewAction(), toolbar);
 	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
 	auto_hide_timer->add(viewMenuBarAct, menuBar());
 	auto_hide_timer->add(viewStatusBarAct, statusBar());
+
+	connect(core, SIGNAL(aboutToStartPlaying()),
+			auto_hide_timer, SLOT(startAutoHideMouse()));
+	connect(core, SIGNAL(playerFailed(int)),
+			auto_hide_timer, SLOT(stopAutoHideMouse()));
+	connect(core, SIGNAL(mediaEOF()),
+			auto_hide_timer, SLOT(stopAutoHideMouse()));
+	connect(core, SIGNAL(mediaStopped()),
+			auto_hide_timer, SLOT(stopAutoHideMouse()));
 }
 
 void TBase::setupNetworkProxy() {
