@@ -61,6 +61,7 @@ protected:
 	virtual void wheelEvent(QWheelEvent* e);
 	virtual bool event(QEvent* event);
 	virtual QSize sizeHint() const;
+	virtual QSize minimumSizeHint() const;
 
 private:
 	bool dont_update;
@@ -69,8 +70,6 @@ private:
 	
 	int last_pos_to_send;
 	QTimer* timer;
-
-	void setSizePol();
 };
 
 } // namespace Gui

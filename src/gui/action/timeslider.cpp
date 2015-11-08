@@ -37,7 +37,6 @@ TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
 	setMinimum(0);
 	setMaximum(max_pos);
 	setFocusPolicy(Qt::NoFocus);
-	setSizePol();
 
 	connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));
 	connect(this, SIGNAL(sliderReleased()), this, SLOT(resumeUpdate()));
@@ -55,19 +54,28 @@ TTimeSlider::~TTimeSlider() {
 
 QSize TTimeSlider::sizeHint() const {
 
+	const int sliderMin = 256;
+
 	QSize s = TSlider::sizeHint();
-	if (orientation() == Qt::Horizontal)
-		s.rwidth() = 84;
-	else
-		s.rheight() = 84;
+	if (orientation() == Qt::Horizontal) {
+		if (s.width() < sliderMin)
+			s.rwidth() = sliderMin;
+	} else if (s.height() < sliderMin) {
+		s.rheight() = sliderMin;
+	}
 	return s;
 }
 
-void TTimeSlider::setSizePol() {
+QSize TTimeSlider::minimumSizeHint() const {
 
+	const int sliderMin = 64;
+
+	QSize s = TSlider::sizeHint();
 	if (orientation() == Qt::Horizontal)
-		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-	else setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+		s.rwidth() = sliderMin;
+	else
+		s.rheight() = sliderMin;
+	return s;
 }
 
 void TTimeSlider::onOrientationChanged(Qt::Orientation orientation) {
@@ -76,9 +84,8 @@ void TTimeSlider::onOrientationChanged(Qt::Orientation orientation) {
 
 	if (orientation != this->orientation()) {
 		setOrientation(orientation);
-		setSizePol();
 		// TODO: does not work. See Teditable toolbar::resizeEvent for details
-		// updateGeometry();
+		updateGeometry();
 	}
 }
 
