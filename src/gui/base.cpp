@@ -288,59 +288,48 @@ void TBase::createCore() {
 
 	core = new TCore(playerwindow, this);
 
-	connect(core, SIGNAL(widgetsNeedUpdate()),
-			 this, SLOT(updateWidgets()));
-
-	connect(core, SIGNAL(showFrame(int)),
-			 this, SIGNAL(frameChanged(int)));
-
 	connect(core, SIGNAL(showTime(double)),
 			 this, SLOT(gotCurrentTime(double)));
+	connect(core, SIGNAL(showFrame(int)),
+			 this, SIGNAL(frameChanged(int)));
 	connect(core, SIGNAL(durationChanged(double)),
 			 this, SLOT(gotDuration(double)));
 
-	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
-			 this, SLOT(videoOutResolutionChanged(int,int)));
-
-	connect(core, SIGNAL(needResize(int, int)),
-			 this, SLOT(resizeWindow(int,int)));
-
-	connect(core, SIGNAL(showMessage(QString,int)),
-			 this, SLOT(displayMessage(QString,int)));
-	connect(core, SIGNAL(showMessage(QString)),
-			 this, SLOT(displayMessage(QString)));
-
 	connect(core, SIGNAL(stateChanged(TCore::State)),
-			 this, SLOT(displayState(TCore::State)));
-	connect(core, SIGNAL(stateChanged(TCore::State)),
-			 this, SLOT(togglePlayAction(TCore::State)));
+			 this, SLOT(onStateChanged(TCore::State)));
 	connect(core, SIGNAL(stateChanged(TCore::State)),
 			 this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection);
 
-	connect(core, SIGNAL(mediaStopped()),
-			 this, SLOT(exitFullscreenOnStop()));
+	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
+			 this, SLOT(videoOutResolutionChanged(int,int)));
+	connect(core, SIGNAL(noVideo()),
+			 this, SLOT(slotNoVideo()));
+	connect(core, SIGNAL(needResize(int, int)),
+			 this, SLOT(resizeWindow(int, int)));
+	connect(core, SIGNAL(widgetsNeedUpdate()),
+			 this, SLOT(updateWidgets()));
+
+	connect(core, SIGNAL(showMessage(QString, int)),
+			 this, SLOT(displayMessage(QString, int)));
+	connect(core, SIGNAL(showMessage(QString)),
+			 this, SLOT(displayMessage(QString)));
+
+	connect(core, SIGNAL(newMediaStartedPlaying()),
+			 this, SLOT(newMediaLoaded()), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaLoaded()),
 			 this, SLOT(enableActionsOnPlaying()));
 
-	connect(core, SIGNAL(mediaEOF()),
-			 this, SLOT(disableActionsOnStop()));
-	connect(core, SIGNAL(mediaStopped()),
-			 this, SLOT(disableActionsOnStop()));
-
-	connect(core, SIGNAL(newMediaStartedPlaying()),
-			 this, SLOT(newMediaLoaded()), Qt::QueuedConnection);
 	connect(core, SIGNAL(mediaInfoChanged()),
 			 this, SLOT(updateMediaInfo()));
 
+	connect(core, SIGNAL(mediaStopped()),
+			 this, SLOT(exitFullscreenOnStop()));
+
 	connect(core, SIGNAL(playerFailed(QProcess::ProcessError)),
 			 this, SLOT(showErrorFromPlayer(QProcess::ProcessError)));
-
 	connect(core, SIGNAL(playerFinishedWithError(int)),
 			 this, SLOT(showExitCodeFromPlayer(int)));
-
-	connect(core, SIGNAL(noVideo()),
-			 this, SLOT(slotNoVideo()));
 
 #ifdef YOUTUBE_SUPPORT
 	connect(core, SIGNAL(signatureNotFound(const QString &)),
@@ -351,7 +340,6 @@ void TBase::createCore() {
 	connect(core, SIGNAL(receivedForbidden()),
 			 this, SLOT(gotForbidden()));
 
-	// Mouse wheel
 	connect(playerwindow, SIGNAL(wheelUp()),
 			 core, SLOT(wheelUp()));
 	connect(playerwindow, SIGNAL(wheelDown()),
@@ -1929,15 +1917,6 @@ void TBase::createToolbars() {
 	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
 	auto_hide_timer->add(viewMenuBarAct, menuBar());
 	auto_hide_timer->add(viewStatusBarAct, statusBar());
-
-	connect(core, SIGNAL(aboutToStartPlaying()),
-			auto_hide_timer, SLOT(startAutoHideMouse()));
-	connect(core, SIGNAL(playerFailed(QProcess::ProcessError)),
-			auto_hide_timer, SLOT(stopAutoHideMouse()));
-	connect(core, SIGNAL(mediaEOF()),
-			auto_hide_timer, SLOT(stopAutoHideMouse()));
-	connect(core, SIGNAL(mediaStopped()),
-			auto_hide_timer, SLOT(stopAutoHideMouse()));
 }
 
 void TBase::setupNetworkProxy() {
@@ -2234,15 +2213,6 @@ void TBase::disableActionsOnStop() {
 	playAct->setEnabled(true);
 	playOrPauseAct->setEnabled(true);
 	stopAct->setEnabled(true);
-}
-
-void TBase::togglePlayAction(TCore::State state) {
-	qDebug("Gui::TBase::togglePlayAction");
-
-	if (state == TCore::Playing)
-		playAct->setEnabled(false);
-	else
-		playAct->setEnabled(true);
 }
 
 void TBase::retranslateStrings() {
@@ -4550,20 +4520,33 @@ void TBase::playlistHasFinished() {
 	}
 }
 
-void TBase::displayState(TCore::State state) {
-	qDebug("Gui::TBase::displayState: %s", core->stateToString().toUtf8().data());
+void TBase::onStateChanged(TCore::State state) {
+	qDebug("Gui::TBase::onStateChanged: %s", core->stateToString().toUtf8().data());
+
 	switch (state) {
-		case TCore::Playing:	statusBar()->showMessage(tr("Playing %1").arg(core->mdat.filename), 2000); break;
-		case TCore::Paused:	statusBar()->showMessage(tr("Pause")); break;
-		case TCore::Stopped:	statusBar()->showMessage(tr("Stop") , 2000); break;
+		case TCore::Playing:
+			playAct->setEnabled(false);
+			displayMessage(tr("Playing %1").arg(core->mdat.filename), 3000);
+			auto_hide_timer->startAutoHideMouse();
+			break;
+		case TCore::Paused:
+			playAct->setEnabled(true);
+			displayMessage(tr("Pause"), 0);
+			auto_hide_timer->stopAutoHideMouse();
+			break;
+		case TCore::Stopped:
+			disableActionsOnStop();
+			setWindowCaption("SMPlayer");
+			displayMessage(tr("Stop") , 3000);
+			auto_hide_timer->stopAutoHideMouse();
+			break;
 	}
-	if (state == TCore::Stopped) setWindowCaption("SMPlayer");
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
 	just_stopped = false;
-	
+
 	if (state == TCore::Stopped) {
 		just_stopped = true;
 		int time = 1000 * 60; // 1 minute

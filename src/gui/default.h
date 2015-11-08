@@ -50,12 +50,11 @@ protected:
 	virtual QString settingsGroupName() { return "default_gui"; }
 
 protected slots:
+	virtual void onStateChanged(TCore::State state);
 	virtual void displayTime(QString text);
 	virtual void displayFrame(int frame);
 	virtual void displayABSection();
 	virtual void displayVideoInfo(int width, int height, double fps);
-
-	virtual void togglePlayAction(TCore::State state);
 
 protected:
 	QLabel* time_display;

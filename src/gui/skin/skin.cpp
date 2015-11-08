@@ -67,18 +67,6 @@ void TSkin::createMenus() {
 	toolbar_menu->addMenu(statusbar_menu);
 }
 
-void TSkin::togglePlayAction(TCore::State state) {
-	qDebug("Gui::TSkin::togglePlayAction");
-	TBasePlus::togglePlayAction(state);
-
-	if (state == TCore::Playing) {
-		playOrPauseAct->setChecked(true);
-	}
-	else {
-		playOrPauseAct->setChecked(false);
-	}
-}
-
 void TSkin::createControlWidget() {
 	qDebug("Gui::TSkin::createControlWidget");
 
@@ -124,13 +112,23 @@ void TSkin::retranslateStrings() {
 	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title"));
 }
 
-void TSkin::displayState(TCore::State state) {
-	TBasePlus::displayState(state);
+void TSkin::onStateChanged(TCore::State state) {
+
+	TBasePlus::onStateChanged(state);
 
 	switch (state) {
-		case TCore::Playing: mediaBarPanel->displayMessage(tr("Playing %1").arg(core->mdat.filename)); break;
-		case TCore::Paused: mediaBarPanel->displayMessage(tr("Pause")); break;
-		case TCore::Stopped: mediaBarPanel->displayMessage(tr("Stop")); break;
+		case TCore::Playing:
+			playOrPauseAct->setChecked(true);
+			mediaBarPanel->displayMessage(tr("Playing %1").arg(core->mdat.filename));
+			break;
+		case TCore::Paused:
+			playOrPauseAct->setChecked(false);
+			mediaBarPanel->displayMessage(tr("Pause"));
+			break;
+		case TCore::Stopped:
+			playOrPauseAct->setChecked(false);
+			mediaBarPanel->displayMessage(tr("Stop"));
+			break;
 	}
 }
 

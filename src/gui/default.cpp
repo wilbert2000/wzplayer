@@ -67,9 +67,10 @@ void TDefault::createMenus() {
 	toolbar_menu->addMenu(statusbar_menu);
 }
 
-void TDefault::togglePlayAction(TCore::State state) {
-	qDebug("Gui::TDefault::togglePlayAction");
-	TBasePlus::togglePlayAction(state);
+void TDefault::onStateChanged(TCore::State state) {
+	qDebug("Gui::TDefault::onStateChanged");
+
+	TBasePlus::onStateChanged(state);
 
 	if (state == TCore::Playing) {
 		playOrPauseAct->setIcon(Images::icon("pause"));

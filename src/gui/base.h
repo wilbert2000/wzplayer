@@ -189,7 +189,7 @@ protected slots:
 	virtual void exitFullscreenIfNeeded();
 	virtual void playlistHasFinished();
 
-	virtual void displayState(TCore::State state);
+	virtual void onStateChanged(TCore::State state);
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 	virtual void gotCurrentTime(double);
@@ -226,7 +226,6 @@ protected slots:
 
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
-	virtual void togglePlayAction(TCore::State);
 
 	void changeSize(int precentage);
 	void toggleDoubleSize();

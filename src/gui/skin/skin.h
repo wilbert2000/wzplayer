@@ -50,11 +50,9 @@ protected:
 	void createActions();
 
 protected slots:
-	virtual void displayState(TCore::State state);
+	virtual void onStateChanged(TCore::State state);
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
-
-	virtual void togglePlayAction(TCore::State);
 
 protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
