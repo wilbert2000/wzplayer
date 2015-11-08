@@ -211,8 +211,6 @@ protected slots:
 	virtual void newMediaLoaded();
 	virtual void updateMediaInfo();
 
-	void gotNoFileToPlay();
-
 #ifdef CHECK_UPGRADED
 	void checkIfUpgraded();
 #endif

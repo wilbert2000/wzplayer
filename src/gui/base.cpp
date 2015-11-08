@@ -323,9 +323,6 @@ void TBase::createCore() {
 	connect(core, SIGNAL(mediaLoaded()),
 			 this, SLOT(enableActionsOnPlaying()));
 
-	connect(core, SIGNAL(noFileToPlay()),
-			 this, SLOT(gotNoFileToPlay()));
-
 	connect(core, SIGNAL(mediaEOF()),
 			 this, SLOT(disableActionsOnStop()));
 	connect(core, SIGNAL(mediaStopped()),
@@ -3259,12 +3256,6 @@ void TBase::newMediaLoaded() {
 	updateRecents();
 
 	checkPendingActionsToRun();
-}
-
-void TBase::gotNoFileToPlay() {
-	qDebug("Gui::TBase::gotNoFileToPlay");
-
-	playlist->resumePlay();
 }
 
 void TBase::showLog() {

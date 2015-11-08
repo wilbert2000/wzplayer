@@ -113,6 +113,8 @@ TPlaylist::TPlaylist(TCore* c, QWidget* parent, Qt::WindowFlags f) :
 			this, SLOT(playerSwitchedTitle(int)));
 	connect(core, SIGNAL(mediaEOF()),
 			this, SLOT(mediaEOF()), Qt::QueuedConnection);
+	connect(core, SIGNAL(noFileToPlay()),
+			this, SLOT(resumePlay()));
 
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->addWidget(listView);
