@@ -19,7 +19,7 @@ TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
 	, autoHide(false)
 	, enabled(true)
 	, settingVisible(false)
-	, autoHideMouse(true)
+	, autoHideMouse(false)
 	, mouseHidden(false)
 	, playerWindow(playerwin) {
 
