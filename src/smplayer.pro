@@ -96,6 +96,7 @@ HEADERS += config.h \
     gui/action/toolbareditor.h \
     gui/action/sizegrip.h \
     gui/action/editabletoolbar.h \
+    gui/action/videosize.h \
     gui/deviceinfo.h \
     gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
@@ -192,6 +193,7 @@ SOURCES	+= version.cpp \
     gui/action/toolbareditor.cpp \
     gui/action/sizegrip.cpp \
     gui/action/editabletoolbar.cpp \
+    gui/action/videosize.cpp \
     gui/deviceinfo.cpp \
     gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \

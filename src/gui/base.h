@@ -58,6 +58,7 @@ namespace Gui {
 
 class TAction;
 class TActionGroup;
+class TVideoSizeMenu;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
@@ -484,7 +485,6 @@ protected:
 	TAction* nextSubtitleAct;
 	TAction* nextChapterAct;
 	TAction* prevChapterAct;
-	TAction* doubleSizeAct;
 	TAction* resetVideoEqualizerAct;
 	TAction* resetAudioEqualizerAct;
 	TAction* showContextMenuAct;
@@ -525,18 +525,6 @@ protected:
 	TAction* unsharpNoneAct;
 	TAction* blurAct;
 	TAction* sharpenAct;
-
-	// Window Size Action Group
-	TActionGroup* sizeGroup;
-	TAction* size50;
-	TAction* size75;
-	TAction* size100;
-	TAction* size125;
-	TAction* size150;
-	TAction* size175;
-	TAction* size200;
-	TAction* size300;
-	TAction* size400;
 
 	// Deinterlace Action Group
 	TActionGroup* deinterlaceGroup;
@@ -669,7 +657,7 @@ protected:
 	QMenu* deinterlace_menu;
 	QMenu* denoise_menu;
 	QMenu* unsharp_menu;
-	QMenu* videosize_menu;
+	TVideoSizeMenu* videosize_menu;
 	QMenu* audiochannels_menu;
 	QMenu* stereomode_menu;
 

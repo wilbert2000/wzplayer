@@ -33,10 +33,6 @@
 class QTimer;
 class QLabel;
 
-namespace Gui {
-class TActionGroup;
-}
-
 
 //! TPlayerLayer can be instructed to not delete the background.
 
@@ -86,6 +82,7 @@ public:
 	void setAspect(double aspect, bool updateVideoWindow = true);
 	void setMonitorAspect(double asp);
 	void setResolution(int width, int height);
+	QSize resolution() const { return QSize(video_width, video_height); }
 
 	// Zoom
 	// Sets current zoom to factor if factor_fullscreen == 0.0
@@ -114,7 +111,6 @@ public:
 
 	void setDelayLeftClick(bool b) { delay_left_click = b; }
 	void setColorKey(QColor c);
-	void setSizeGroup(Gui::TActionGroup* group);
 
 	// Get size adjusted for aspect and desired zoom
 	QSize getAdjustedSize(int w, int h, double zoom) const;
@@ -122,7 +118,6 @@ public:
 	void updateVideoWindow();
 	void moveVideo(int dx, int dy);
 
-	void aboutToEnterFullscreen();
 	void aboutToExitFullscreen();
 
 	void retranslateStrings();
@@ -187,7 +182,6 @@ private:
 
 	bool enable_messages;
 
-	Gui::TActionGroup* size_group;
 	QLabel* logo;
 
 	void moveVideo(QPoint delta);
@@ -196,11 +190,8 @@ private:
 	void stopDragging();
 	bool checkDragging(QMouseEvent* event);
 
-	void uncheckSizeGroup();
-	void enableSizeGroup();
-	void updateSizeGroup();
-
 	void pauseMessages(int msec);
+	void updateSizeFactor();
 };
 
 #endif // PLAYERWINDOW_H

@@ -46,7 +46,6 @@
 
 #include "version.h"
 #include "playerid.h"
-#include "gui/links.h"
 #include "desktop.h"
 #include "discname.h"
 #include "extensions.h"
@@ -72,7 +71,9 @@
 #include "gui/action/widgetactions.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
+#include "gui/action/videosize.h"
 
+#include "gui/links.h"
 #include "gui/errordialog.h"
 #include "gui/logwindow.h"
 #include "gui/playlist.h"
@@ -1035,9 +1036,6 @@ void TBase::createActions() {
 	prevChapterAct = new TAction(Qt::Key_Exclam, this, "prev_chapter");
 	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
 
-	doubleSizeAct = new TAction(Qt::CTRL | Qt::Key_D, this, "toggle_double_size");
-	connect(doubleSizeAct, SIGNAL(triggered()), this, SLOT(toggleDoubleSize()));
-
 	resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer");
 	connect(resetVideoEqualizerAct, SIGNAL(triggered()), video_equalizer, SLOT(reset()));
 
@@ -1089,23 +1087,6 @@ void TBase::createActions() {
 	blurAct = new TActionGroupItem(this, unsharpGroup, "blur", 1);
 	sharpenAct = new TActionGroupItem(this, unsharpGroup, "sharpen", 2);
 	connect(unsharpGroup, SIGNAL(activated(int)), core, SLOT(changeUnsharp(int)));
-
-	// Video size
-	sizeGroup = new TActionGroup("size", this);
-	size50 = new TActionGroupItem(this, sizeGroup, "5&0%", "size_50", 50);
-	size75 = new TActionGroupItem(this, sizeGroup, "7&5%", "size_75", 75);
-	size100 = new TActionGroupItem(this, sizeGroup, "&100%", "size_100", 100);
-	size125 = new TActionGroupItem(this, sizeGroup, "1&25%", "size_125", 125);
-	size150 = new TActionGroupItem(this, sizeGroup, "15&0%", "size_150", 150);
-	size175 = new TActionGroupItem(this, sizeGroup, "1&75%", "size_175", 175);
-	size200 = new TActionGroupItem(this, sizeGroup, "&200%", "size_200", 200);
-	size300 = new TActionGroupItem(this, sizeGroup, "&300%", "size_300", 300);
-	size400 = new TActionGroupItem(this, sizeGroup, "&400%", "size_400", 400);
-	size100->setShortcut(Qt::CTRL | Qt::Key_1);
-	size200->setShortcut(Qt::CTRL | Qt::Key_2);
-	connect(sizeGroup, SIGNAL(activated(int)), this, SLOT(changeSize(int)));
-	// playerwindow updates group when size changed
-	playerwindow->setSizeGroup(sizeGroup);
 
 	// Deinterlace
 	deinterlaceGroup = new TActionGroup("deinterlace", this);
@@ -1490,11 +1471,7 @@ void TBase::createMenus() {
 #endif
 
 	// Size submenu
-	videosize_menu = new QMenu(this);
-	videosize_menu->menuAction()->setObjectName("videosize_menu");
-	videosize_menu->addActions(sizeGroup->actions());
-	videosize_menu->addSeparator();
-	videosize_menu->addAction(doubleSizeAct);
+	videosize_menu = new TVideoSizeMenu(this, playerwindow);
 	videoMenu->addMenu(videosize_menu);
 
 	// Zoom submenu
@@ -1972,6 +1949,7 @@ void TBase::setActionsEnabled(bool b) {
 	incSpeed1Act->setEnabled(b);
 
 	// Menu Video
+	videosize_menu->enableVideoSize(b);
 	videoEqualizerAct->setEnabled(b);
 	screenshotAct->setEnabled(b);
 	screenshotsAct->setEnabled(b);
@@ -2039,7 +2017,6 @@ void TBase::setActionsEnabled(bool b) {
 	nextSubtitleAct->setEnabled(b);
 	nextChapterAct->setEnabled(b);
 	prevChapterAct->setEnabled(b);
-	doubleSizeAct->setEnabled(b && !pref->fullscreen);
 
 	// Moving and zoom
 	moveUpAct->setEnabled(b);
@@ -2065,7 +2042,6 @@ void TBase::setActionsEnabled(bool b) {
 	// Groups
 	denoiseGroup->setActionsEnabled(b);
 	unsharpGroup->setActionsEnabled(b);
-	// sizeGroup handled by playerwindow
 	deinterlaceGroup->setActionsEnabled(b);
 	aspectGroup->setActionsEnabled(b);
 	rotateGroup->setActionsEnabled(b);
@@ -2138,7 +2114,6 @@ void TBase::enableActionsOnPlaying() {
 		addNoiseAct->setEnabled(false);
 		addLetterboxAct->setEnabled(false);
 		upscaleAct->setEnabled(false);
-		doubleSizeAct->setEnabled(false);
 
 		// Moving and zoom
 		moveUpAct->setEnabled(false);
@@ -2154,7 +2129,6 @@ void TBase::enableActionsOnPlaying() {
 
 		denoiseGroup->setActionsEnabled(false);
 		unsharpGroup->setActionsEnabled(false);
-		// sizeGroup handled by playerwindow
 		deinterlaceGroup->setActionsEnabled(false);
 		aspectGroup->setActionsEnabled(false);
 		rotateGroup->setActionsEnabled(false);
@@ -2193,7 +2167,7 @@ void TBase::enableActionsOnPlaying() {
 	}
 #endif
 
-	if (!core->mdat.detected_type == TMediaData::TYPE_DVDNAV) {
+	if (core->mdat.detected_type != TMediaData::TYPE_DVDNAV) {
 		dvdnavUpAct->setEnabled(false);
 		dvdnavDownAct->setEnabled(false);
 		dvdnavLeftAct->setEnabled(false);
@@ -2437,7 +2411,6 @@ void TBase::retranslateStrings() {
 	nextSubtitleAct->change(tr("Next subtitle"));
 	nextChapterAct->change(tr("Next chapter"));
 	prevChapterAct->change(tr("Previous chapter"));
-	doubleSizeAct->change(tr("&Toggle double size"));
 	resetVideoEqualizerAct->change(tr("Reset video equalizer"));
 	resetAudioEqualizerAct->change(tr("Reset audio equalizer"));
 	showContextMenuAct->change(tr("Show context menu"));
@@ -2504,8 +2477,7 @@ void TBase::retranslateStrings() {
 	videotrack_menu->menuAction()->setText(tr("&Track", "video"));
 	videotrack_menu->menuAction()->setIcon(Images::icon("video_track"));
 
-	videosize_menu->menuAction()->setText(tr("Si&ze"));
-	videosize_menu->menuAction()->setIcon(Images::icon("video_size"));
+	videosize_menu->retranslateStrings();
 
 	zoom_menu->menuAction()->setText(tr("Zoo&m"));
 	zoom_menu->menuAction()->setIcon(Images::icon("zoom"));
@@ -4098,7 +4070,7 @@ void TBase::toggleFullscreen(bool b) {
 void TBase::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBase::aboutToEnterFullscreen");
 
-	playerwindow->aboutToEnterFullscreen();
+	videosize_menu->enableVideoSize(false);
 
 	// Save current state
 	if (pref->restore_pos_after_fullscreen) {
@@ -4134,8 +4106,6 @@ void TBase::didEnterFullscreen() {
 	toolbar2->didEnterFullscreen();
 	controlbar->didEnterFullscreen();
 
-	doubleSizeAct->setEnabled(false);
-
 	auto_hide_timer->start();
 }
 
@@ -4151,6 +4121,8 @@ void TBase::aboutToExitFullscreen() {
 	pref->beginGroup(settingsGroupName());
 	pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
 	pref->endGroup();
+
+	videosize_menu->enableVideoSize(true);
 
 	playerwindow->aboutToExitFullscreen();
 }
@@ -4177,8 +4149,6 @@ void TBase::didExitFullscreen() {
 	controlbar->didExitFullscreen();
 	toolbar2->didExitFullscreen();
 	toolbar->didExitFullscreen();
-
-	doubleSizeAct->setEnabled(!core->mdat.noVideo());
 }
 
 void TBase::leftClickFunction() {

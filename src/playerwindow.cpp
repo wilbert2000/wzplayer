@@ -33,7 +33,6 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
-#include "gui/action/actiongroup.h"
 
 
 using namespace Settings;
@@ -110,8 +109,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	, delay_left_click(true)
 	, dragging(false)
 	, kill_fake_event(false)
-	, enable_messages(false)
-	, size_group(0) {
+	, enable_messages(false) {
 
 	setMinimumSize(QSize(0, 0));
 	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
@@ -172,8 +170,6 @@ void TPlayerWindow::setResolution(int width, int height) {
 	video_height = height;
 	last_video_size = QSize(width, height);
 
-	enableSizeGroup();
-
 	// Disable messages and post enable if video
 	enable_messages = false;
 	if (width > 0) {
@@ -221,66 +217,31 @@ QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
 	return size;
 }
 
-void TPlayerWindow::setSizeGroup(Gui::TActionGroup* group) {
-
-	size_group = group;
-	size_group->setEnabled(false);
-};
-
-void TPlayerWindow::uncheckSizeGroup() {
-
-	QAction* current = size_group->checkedAction();
-	if (current)
-		current->setChecked(false);
-}
-
-void TPlayerWindow::enableSizeGroup() {
-
-	size_group->setEnabled(!pref->fullscreen && video_width > 0 && video_height > 0);
-	uncheckSizeGroup();
-}
-
-void TPlayerWindow::updateSizeGroup() {
-	// qDebug("TPlayerWindow::updateSizegroup");
+void TPlayerWindow::updateSizeFactor() {
 
 	if (!pref->fullscreen && video_width > 0 && video_height > 0) {
-		// Update size group with new size factor
 		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
-		int size_factor_x = qRound((double) width() * 100 / video_size.width());
-		int size_factor_y = qRound((double) height() * 100/ video_size.height());
-
-		uncheckSizeGroup();
-		// Set when x and y factor agree
-		if (size_factor_x == size_factor_y) {
-			if (size_group->setChecked(size_factor_x)) {
-				//qDebug("TPlayerWindow::updateSizegroup: set size group to %d%%",
-				//		size_factor_x);
-			} else {
-				//qDebug("TPlayerWindow::updateSizegroup: no size group action for %d%%",
-				//	   size_factor_x);
-			}
+		double factor_x = (double) width() / video_size.width();
+		double factor_y = (double) height() / video_size.height();
+		// Store smallest factor in pref
+		if (factor_y < factor_x) {
+			pref->size_factor = factor_y;
 		} else {
-			//qDebug("TPlayerWindow::updateSizegroup: width %d%% and height %d%% factor mismatch",
-			//	   size_factor_x, size_factor_y);
+			pref->size_factor = factor_x;
 		}
-
-		// Store smallest size factor in pref
-		if (size_factor_y < size_factor_x) {
-			size_factor_x = size_factor_y;
-		}
-		pref->size_factor = (double)size_factor_x / 100;
 	}
 }
 
+
 void TPlayerWindow::updateVideoWindow() {
-	qDebug() << "TPlayerWindow::updateVideoWindow: in: video size"
+	qDebug() << "TPlayerWindow::updateVideoWindow: video size:"
 			 << video_width << "x" << video_height
-			 << "window size" << size()
-			 << "desktop size" << TDesktop::size(this)
-			 << "zoom" << zoom()
-			 << "pan" << pan()
-			 << "aspect" << aspect
-			 << "fullscreen" << pref->fullscreen;
+			 << " window size:" << size()
+			 << " desktop size:" << TDesktop::size(this)
+			 << " zoom:" << zoom()
+			 << " pan:" << pan()
+			 << " aspect:" << aspect
+			 << " fs:" << pref->fullscreen;
 
 	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
 	QSize video_size = getAdjustedSize(s.width(), s.height(), zoom());
@@ -314,8 +275,8 @@ void TPlayerWindow::updateVideoWindow() {
 		last_video_size = video_size;
 	}
 
-	// Check size menu
-	updateSizeGroup();
+	// Update pref->size_factor
+	updateSizeFactor();
 
 	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
 }
@@ -506,12 +467,6 @@ void TPlayerWindow::wheelEvent(QWheelEvent* event) {
 	}
 }
 
-void TPlayerWindow::aboutToEnterFullscreen() {
-	//qDebug("TPlayerWindow::aboutToEnterFullscreen");
-
-	enableSizeGroup();
-}
-
 void TPlayerWindow::enableMessages() {
 	enable_messages = true;
 }
@@ -526,7 +481,6 @@ void TPlayerWindow::pauseMessages(int msec) {
 void TPlayerWindow::aboutToExitFullscreen() {
 	//qDebug("TPlayerWindow::aboutToExitFullscreen");
 
-	enableSizeGroup();
 	pauseMessages(500);
 }
 
