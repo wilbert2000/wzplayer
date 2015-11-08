@@ -23,37 +23,42 @@
 
 namespace Gui {
 
-TActionGroupItem::TActionGroupItem(QObject* parent, TActionGroup *group,
-                                     const char* name, 
-                                     int data, bool autoadd)
-	: TAction(parent, name, autoadd)
-{
-	setData(data);
-	setCheckable(true);
-	if (group) group->addAction(this);
-}
-
 TActionGroupItem::TActionGroupItem(QObject* parent,
-								   TActionGroup *group,
-								   const QString & text,
+								   TActionGroup* group,
 								   const char* name,
 								   int data,
 								   bool autoadd)
-	: TAction(parent, name, autoadd)
-{
+	: TAction(parent, name, autoadd) {
+
+	setData(data);
+	setCheckable(true);
+	if (group)
+		group->addAction(this);
+}
+
+TActionGroupItem::TActionGroupItem(QObject* parent,
+								   TActionGroup* group,
+								   const QString& text,
+								   const char* name,
+								   int data,
+								   bool autoadd)
+	: TAction(parent, name, autoadd) {
+
 	setData(data);
 	setText(text);
 	setCheckable(true);
-	if (group) group->addAction(this);
+	if (group)
+		group->addAction(this);
 }
 
 
-TActionGroup::TActionGroup(const QString& obj_name, QObject* parent) : QActionGroup(parent)
-{
-	setObjectName(obj_name);
+TActionGroup::TActionGroup(const QString& name, QObject* parent)
+	: QActionGroup(parent) {
+
+	setObjectName(name);
 	setExclusive(true);
-	connect(this, SIGNAL(triggered(QAction *)), 
-			 this, SLOT(itemTriggered(QAction *)));
+	connect(this, SIGNAL(triggered(QAction *)),
+			this, SLOT(itemTriggered(QAction *)));
 }
 
 QAction* TActionGroup::setChecked(int ID) {
@@ -87,15 +92,17 @@ int TActionGroup::checked() {
 }
 
 void TActionGroup::uncheckAll() {
+
 	QList <QAction *> l = actions();
-	for (int n=0; n < l.count(); n++) {
+	for (int n = 0; n < l.count(); n++) {
 		l[n]->setChecked(false);
 	}
 }
 
 void TActionGroup::setActionsEnabled(bool b) {
+
 	QList <QAction *> l = actions();
-	for (int n=0; n < l.count(); n++) {
+	for (int n = 0; n < l.count(); n++) {
 		l[n]->setEnabled(b);
 	}
 }
@@ -112,8 +119,8 @@ void TActionGroup::clear(bool remove) {
 
 void TActionGroup::itemTriggered(QAction *a) {
 	qDebug("Gui::TActionGroup::itemTriggered: '%s'", a->objectName().toUtf8().data());
-	int value = a->data().toInt();
 
+	int value = a->data().toInt();
 	qDebug("Gui::TActionGroup::itemTriggered: ID: %d", value);
 
 	emit activated(value);
@@ -124,7 +131,8 @@ void TActionGroup::addTo(QWidget *w) {
 }
 
 void TActionGroup::removeFrom(QWidget *w) {
-	for (int n=0; n < actions().count(); n++) {
+
+	for (int n = 0; n < actions().count(); n++) {
 		w->removeAction(actions()[n]);
 	}
 }

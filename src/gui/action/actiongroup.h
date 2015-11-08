@@ -16,11 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_ACTIONGROUP_H_
-#define _GUI_ACTIONGROUP_H_
+#ifndef GUI_ACTIONGROUP_H
+#define GUI_ACTIONGROUP_H
 
-#include <QActionGroup>
 #include <QWidget>
+#include <QActionGroup>
 #include "gui/action/action.h"
 
 namespace Gui {
@@ -29,35 +29,36 @@ class TActionGroup;
 
 //! This class makes easy to create actions for TActionGroup
 
-class TActionGroupItem : public TAction
-{
+class TActionGroupItem : public TAction {
 public:
 	//! Creates a new item.
 	/*! \a group is the group where the action will be added, \a data is
 	   the ID of the item. If \autoadd is true the action will be added to
        the parent (if it's a QWidget), so the shortcut could work. */
-	TActionGroupItem(QObject* parent, TActionGroup *group,
-                       const char* name, int data, bool autoadd = true);
+	TActionGroupItem(QObject* parent,
+					 TActionGroup* group,
+					 const char* name,
+					 int data,
+					 bool autoadd = true);
 
 	//! Creates a new item.
 	/*! \a text is the text that the item will have. */
-	TActionGroupItem(QObject* parent, TActionGroup *group,
-                       const QString & text, const char* name, 
-                       int data, bool autoadd = true);
+	TActionGroupItem(QObject* parent,
+					 TActionGroup* group,
+					 const QString& text,
+					 const char* name,
+					 int data,
+					 bool autoadd = true);
 };
-
 
 
 //! TActionGroup makes easier to create exclusive menus based on items
 //! with an integer data.
-
-
-class TActionGroup : public QActionGroup
-{
+class TActionGroup : public QActionGroup {
 	Q_OBJECT
 
 public:
-	TActionGroup (const QString& obj_name, QObject* parent);
+	TActionGroup (const QString& name, QObject* parent);
 
 	//! Looks for the item which ID is \a ID and checks and returns it
 	//! or 0 if not found
@@ -74,10 +75,10 @@ public:
 	void setActionsEnabled(bool);
 
 	//! Adds all actions to the widget
-	void addTo(QWidget *);
+	void addTo(QWidget*);
 
 	//! Remove all actions from the widget
-	void removeFrom(QWidget *);
+	void removeFrom(QWidget*);
 
 	//! unchecks all items
 	void uncheckAll();
@@ -87,10 +88,10 @@ signals:
 	void activated(int);
 
 protected slots:
-	void itemTriggered(QAction *);
+	void itemTriggered(QAction*);
 	void setCheckedSlot(int id);
 };
 
 } // namespace Gui
 
-#endif // _GUI_ACTIONGROUP_H_
+#endif // GUI_ACTIONGROUP_H

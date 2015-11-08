@@ -287,7 +287,6 @@ void TCore::processFinished(bool normal_exit) {
 }
 
 void TCore::fileReachedEnd() {
-	qDebug("TCore::fileReachedEnd");
 
 	// If we're at the end of the movie, reset to 0
 	gotCurrentSec(0);
@@ -297,6 +296,7 @@ void TCore::fileReachedEnd() {
 }
 
 void TCore::setState(State s) {
+
 	if (s != _state) {
 		_state = s;
 		qDebug() << "TCore::setState: set state to" << stateToString()
@@ -933,8 +933,7 @@ void TCore::playingStarted() {
 	qDebug() << "TCore::playingStarted: done in" << time.elapsed() << "ms";
 }
 
-void TCore::stop()
-{
+void TCore::stop() {
 	qDebug() << "TCore::stop: current state:" << stateToString();
 
 	State prev_state = _state;
@@ -3691,8 +3690,7 @@ void TCore::displayBufferingEnded() {
 void TCore::gotVideoOutResolution(int w, int h) {
 	qDebug("TCore::gotVideoOutResolution: %d x %d", w, h);
 
-	// w x h should be the output resolution selected by player with
-	// aspect and filters applied.
+	// w x h is output resolution selected by player with aspect and filters applied
 	mset.win_width = w;
 	mset.win_height = h;
 	playerwindow->setResolution(w, h);
