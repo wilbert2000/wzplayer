@@ -59,6 +59,8 @@ namespace Gui {
 class TAction;
 class TActionGroup;
 class TVideoSizeMenu;
+class TOnTopMenu;
+class TCCMenu;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
@@ -556,26 +558,11 @@ protected:
 	TAction* rotateCounterclockwiseAct;
 	TAction* rotateCounterclockwiseFlipAct;
 
-	// Menu StayOnTop
-	TActionGroup* onTopActionGroup;
-	TAction* onTopAlwaysAct;
-	TAction* onTopNeverAct;
-	TAction* onTopWhilePlayingAct;
-	TAction* toggleStayOnTopAct;
-
 #if USE_ADAPTER
 	// Screen Group
 	TActionGroup* screenGroup;
 	TAction* screenDefaultAct;
 #endif
-
-	// Closed Captions Group
-	TActionGroup* ccGroup;
-	TAction* ccNoneAct;
-	TAction* ccChannel1Act;
-	TAction* ccChannel2Act;
-	TAction* ccChannel3Act;
-	TAction* ccChannel4Act;
 
 	// External sub fps Group
 	TActionGroup* subFPSGroup;
@@ -665,11 +652,11 @@ protected:
 	QMenu* audiofilter_menu;
 	QMenu* zoom_menu;
 	QMenu* rotate_menu;
-	QMenu* ontop_menu;
+	TOnTopMenu* ontop_menu;
 #if USE_ADAPTER
 	QMenu* screen_menu;
 #endif
-	QMenu* closed_captions_menu;
+	TCCMenu* closed_captions_menu;
 	QMenu* subfps_menu;
 
 	QMenu* popup;

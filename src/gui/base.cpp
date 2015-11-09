@@ -71,7 +71,7 @@
 #include "gui/action/widgetactions.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
-#include "gui/action/videosize.h"
+#include "gui/action/menus.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
@@ -204,15 +204,8 @@ TBase::TBase()
 	createMenus();
 	setActionsEnabled(false);
 
-	if (playlist->count() > 0) {
-		playAct->setEnabled(true);
-		playOrPauseAct->setEnabled(true);
-	}
-
 	setupNetworkProxy();
-
 	changeStayOnTop(pref->stay_on_top);
-
 	updateRecents();
 
 #ifdef UPDATE_CHECKER
@@ -1150,18 +1143,6 @@ void TBase::createActions() {
 	connect(rotateGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeRotate(int)));
 
-	// On Top
-	onTopActionGroup = new TActionGroup("ontop", this);
-	onTopAlwaysAct = new TActionGroupItem(this,onTopActionGroup,"on_top_always",Settings::TPreferences::AlwaysOnTop);
-	onTopNeverAct = new TActionGroupItem(this,onTopActionGroup,"on_top_never",Settings::TPreferences::NeverOnTop);
-	onTopWhilePlayingAct = new TActionGroupItem(this,onTopActionGroup,"on_top_playing",Settings::TPreferences::WhilePlayingOnTop);
-	connect(onTopActionGroup , SIGNAL(activated(int)),
-			 this, SLOT(changeStayOnTop(int)));
-
-	toggleStayOnTopAct = new TAction(this, "toggle_stay_on_top");
-	connect(toggleStayOnTopAct, SIGNAL(triggered()), this, SLOT(toggleStayOnTop()));
-
-
 #if USE_ADAPTER
 	screenGroup = new TActionGroup("screen", this);
 	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", -1);
@@ -1255,16 +1236,6 @@ void TBase::createActions() {
 	connect(angleGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeAngle(int)));
 	// Update done by updateTitles
-
-
-	ccGroup = new TActionGroup("cc", this);
-	ccNoneAct = new TActionGroupItem(this, ccGroup, "cc_none", 0);
-	ccChannel1Act = new TActionGroupItem(this, ccGroup, "cc_ch_1", 1);
-	ccChannel2Act = new TActionGroupItem(this, ccGroup, "cc_ch_2", 2);
-	ccChannel3Act = new TActionGroupItem(this, ccGroup, "cc_ch_3", 3);
-	ccChannel4Act = new TActionGroupItem(this, ccGroup, "cc_ch_4", 4);
-	connect(ccGroup, SIGNAL(activated(int)),
-			 core, SLOT(changeClosedCaptionChannel(int)));
 
 	subFPSGroup = new TActionGroup("subfps", this);
 	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", TMediaSettings::SFPS_None);
@@ -1552,10 +1523,7 @@ void TBase::createMenus() {
 	videoMenu->addAction(screenshotsAct);
 
 	// Ontop submenu
-	ontop_menu = new QMenu(this);
-	ontop_menu->menuAction()->setObjectName("ontop_menu");
-	ontop_menu->addActions(onTopActionGroup->actions());
-
+	ontop_menu = new TOnTopMenu(this);
 	videoMenu->addMenu(ontop_menu);
 
 #ifdef VIDEOPREVIEW
@@ -1641,13 +1609,7 @@ void TBase::createMenus() {
 	subtitlesMenu->addMenu(subfps_menu);
 	subtitlesMenu->addSeparator();
 
-	closed_captions_menu = new QMenu(this);
-	closed_captions_menu->menuAction()->setObjectName("closed_captions_menu");
-	closed_captions_menu->addAction(ccNoneAct);
-	closed_captions_menu->addAction(ccChannel1Act);
-	closed_captions_menu->addAction(ccChannel2Act);
-	closed_captions_menu->addAction(ccChannel3Act);
-	closed_captions_menu->addAction(ccChannel4Act);
+	closed_captions_menu = new TCCMenu(this, core);
 	subtitlesMenu->addMenu(closed_captions_menu);
 	subtitlesMenu->addSeparator();
 
@@ -2343,12 +2305,6 @@ void TBase::retranslateStrings() {
 	openUploadSubtitlesPageAct->change(Images::icon("upload_subs"), tr("Upload su&btitles to OpenSubtitles.org..."));
 #endif
 
-	ccNoneAct->change(tr("&Off", "closed captions menu"));
-	ccChannel1Act->change("&1");
-	ccChannel2Act->change("&2");
-	ccChannel3Act->change("&3");
-	ccChannel4Act->change("&4");
-
 	subFPSNoneAct->change(tr("&Default", "subfps menu"));
 	/* subFPS23Act->change("2&3"); */
 	subFPS23976Act->change("23.9&76");
@@ -2492,8 +2448,7 @@ void TBase::retranslateStrings() {
 	rotate_menu->menuAction()->setText(tr("&Rotate"));
 	rotate_menu->menuAction()->setIcon(Images::icon("rotate"));
 
-	ontop_menu->menuAction()->setText(tr("S&tay on top"));
-	ontop_menu->menuAction()->setIcon(Images::icon("ontop"));
+	ontop_menu->retranslateStrings();
 
 #if USE_ADAPTER
 	screen_menu->menuAction()->setText(tr("Scree&n"));
@@ -2540,11 +2495,6 @@ void TBase::retranslateStrings() {
 	rotateCounterclockwiseAct->change(tr("Rotate by 90 degrees counterclock&wise"));
 	rotateCounterclockwiseFlipAct->change(tr("Rotate by 90 degrees counterclockwise and &flip"));
 
-	onTopAlwaysAct->change(tr("&Always"));
-	onTopNeverAct->change(tr("&Never"));
-	onTopWhilePlayingAct->change(tr("While &playing"));
-	toggleStayOnTopAct->change(tr("Toggle stay on top"));
-
 #if USE_ADAPTER
 	screenDefaultAct->change(tr("&Default"));
 #endif
@@ -2584,8 +2534,7 @@ void TBase::retranslateStrings() {
 	secondary_subtitles_track_menu->menuAction()->setIcon(Images::icon("secondary_sub"));
 #endif
 
-	closed_captions_menu->menuAction()->setText(tr("&Closed captions"));
-	closed_captions_menu->menuAction()->setIcon(Images::icon("closed_caption"));
+	closed_captions_menu->retranslateStrings();
 
 	subfps_menu->menuAction()->setText(tr("F&rames per second"));
 	subfps_menu->menuAction()->setIcon(Images::icon("subfps"));
@@ -3476,8 +3425,6 @@ void TBase::clearRecentsList() {
 void TBase::updateWidgets() {
 	qDebug("Gui::TBase::updateWidgets");
 
-	// Closed caption menu
-	ccGroup->setChecked(core->mset.closed_caption_channel);
 	// Subfps menu
 	subFPSGroup->setChecked(core->mset.external_subtitles_fps);
 
@@ -3561,9 +3508,6 @@ void TBase::updateWidgets() {
 
 	// Audio equalizer
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
-
-	// Stay on top
-	onTopActionGroup->setChecked((int) pref->stay_on_top);
 
 	// Flip
 	flipAct->setChecked(core->mset.flip);
@@ -4114,7 +4058,6 @@ void TBase::aboutToExitFullscreen() {
 	pref->endGroup();
 
 	videosize_menu->enableVideoSize(true);
-
 	playerwindow->aboutToExitFullscreen();
 }
 
@@ -4761,8 +4704,7 @@ void TBase::setStayOnTop(bool b) {
 
 	if (b) {
 		setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-	}
-	else {
+	} else {
 		setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
 	}
 

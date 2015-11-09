@@ -1,14 +1,92 @@
-#include "gui/action/videosize.h"
+#include "gui/action/menus.h"
 #include <QDebug>
-#include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
-#include "playerwindow.h"
+#include "gui/action/actiongroup.h"
 #include "images.h"
+#include "playerwindow.h"
+#include "core.h"
 
 
 using namespace Settings;
 
 namespace Gui {
+
+TCCMenu::TCCMenu(QWidget *parent, TCore* c)
+	: QMenu(parent)
+	, core(c) {
+
+	setObjectName("closed_captions_menu");
+	ccGroup = new TActionGroup("cc", this);
+	ccNoneAct = new TActionGroupItem(this, ccGroup, "cc_none", 0);
+	ccChannel1Act = new TActionGroupItem(this, ccGroup, "cc_ch_1", 1);
+	ccChannel2Act = new TActionGroupItem(this, ccGroup, "cc_ch_2", 2);
+	ccChannel3Act = new TActionGroupItem(this, ccGroup, "cc_ch_3", 3);
+	ccChannel4Act = new TActionGroupItem(this, ccGroup, "cc_ch_4", 4);
+	addActions(ccGroup->actions());
+	connect(ccGroup, SIGNAL(activated(int)),
+			core, SLOT(changeClosedCaptionChannel(int)));
+
+	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
+}
+
+TCCMenu::~TCCMenu() {
+}
+
+void TCCMenu::retranslateStrings() {
+
+	menuAction()->setText(tr("&Closed captions"));
+	menuAction()->setIcon(Images::icon("closed_caption"));
+
+	ccNoneAct->change(tr("&Off", "closed captions menu"));
+	ccChannel1Act->change("&1");
+	ccChannel2Act->change("&2");
+	ccChannel3Act->change("&3");
+	ccChannel4Act->change("&4");
+}
+
+void TCCMenu::onAboutToShow() {
+	ccGroup->setChecked(core->mset.closed_caption_channel);
+}
+
+
+TOnTopMenu::TOnTopMenu(QWidget *parent) :
+	QMenu(parent) {
+
+	menuAction()->setObjectName("ontop_menu");
+
+	onTopActionGroup = new TActionGroup("ontop", this);
+	onTopAlwaysAct = new TActionGroupItem(this, onTopActionGroup, "on_top_always", TPreferences::AlwaysOnTop);
+	onTopNeverAct = new TActionGroupItem(this, onTopActionGroup, "on_top_never", TPreferences::NeverOnTop);
+	onTopWhilePlayingAct = new TActionGroupItem(this, onTopActionGroup, "on_top_playing", TPreferences::WhilePlayingOnTop);
+	addActions(onTopActionGroup->actions());
+	connect(onTopActionGroup , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
+
+	toggleStayOnTopAct = new TAction(this, "toggle_stay_on_top");
+	connect(toggleStayOnTopAct, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
+
+	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
+}
+
+TOnTopMenu::~TOnTopMenu() {
+}
+
+void TOnTopMenu::retranslateStrings() {
+
+	menuAction()->setText(tr("S&tay on top"));
+	menuAction()->setIcon(Images::icon("ontop"));
+
+	onTopAlwaysAct->change(tr("&Always"));
+	onTopNeverAct->change(tr("&Never"));
+	onTopWhilePlayingAct->change(tr("While &playing"));
+
+	toggleStayOnTopAct->change(tr("Toggle stay on top"));
+}
+
+void TOnTopMenu::onAboutToShow() {
+
+	onTopActionGroup->setChecked((int) pref->stay_on_top);
+}
+
 
 TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
 	: TActionGroup("size", parent)

@@ -5,8 +5,54 @@
 #include <QMenu>
 
 class TPlayerWindow;
+class TCore;
 
 namespace Gui {
+
+class TCCMenu : public QMenu {
+	Q_OBJECT
+
+public:
+	explicit TCCMenu(QWidget* parent, TCore* c);
+	virtual ~TCCMenu();
+
+	void retranslateStrings();
+
+private:
+	TCore* core;
+
+	TActionGroup* ccGroup;
+	TActionGroupItem* ccNoneAct;
+	TActionGroupItem* ccChannel1Act;
+	TActionGroupItem* ccChannel2Act;
+	TActionGroupItem* ccChannel3Act;
+	TActionGroupItem* ccChannel4Act;
+
+private slots:
+	void onAboutToShow();
+};
+
+class TOnTopMenu : public QMenu {
+	Q_OBJECT
+
+public:
+	explicit TOnTopMenu(QWidget* parent);
+	virtual ~TOnTopMenu();
+
+	void retranslateStrings();
+
+private:
+	TActionGroup* onTopActionGroup;
+	TActionGroupItem* onTopAlwaysAct;
+	TActionGroupItem* onTopNeverAct;
+	TActionGroupItem* onTopWhilePlayingAct;
+
+	TAction* toggleStayOnTopAct;
+
+private slots:
+	void onAboutToShow();
+};
+
 
 class TVideoSizeGroup : public TActionGroup {
 	Q_OBJECT
