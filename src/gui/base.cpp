@@ -2794,7 +2794,7 @@ void TBase::loadConfig() {
 		QPoint p = pref->value("pos", pos()).toPoint();
 		QSize s = pref->value("size", size()).toSize();
 		int state = pref->value("state", 0).toInt();
-		if ((s.height() < 200) && (!pref->use_mplayer_window)) {
+		if (s.width() < 200 || s.height() < 200) {
 			s = pref->default_size;
 		}
 
@@ -4023,13 +4023,6 @@ void TBase::toggleFullscreen(bool b) {
 		return;
 	}
 	pref->fullscreen = b;
-
-	// If using mplayer window
-	if (pref->use_mplayer_window) {
-		core->changeFullscreenMode(b);
-		updateWidgets();
-		return;
-	}
 
 	if (!panel->isVisible())
 		return; // mplayer window is not used.

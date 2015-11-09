@@ -59,9 +59,6 @@ protected:
 	void setRepaintVideoBackground(bool b);
 	bool repaintVideoBackground();
 
-	void setUseMplayerWindow(bool v);
-	bool useMplayerWindow();
-
 	void setMplayerCrashes(bool b);
 	bool mplayerCrashes();
 

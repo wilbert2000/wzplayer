@@ -1132,13 +1132,6 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("verbose");
 	}
 
-	if (pref->fullscreen && pref->use_mplayer_window) {
-		proc->setOption("fs", true);
-	} else {
-		// No mplayer fullscreen mode
-		proc->setOption("fs", false);
-	}
-
 	// Demuxer and audio and video codecs:
 	if (!mset.forced_demuxer.isEmpty()) {
 		proc->setOption("demuxer", mset.forced_demuxer);
@@ -1300,32 +1293,24 @@ void TCore::startPlayer(QString file, double seek) {
 	proc->setOption("stop-xscreensaver", pref->disable_screensaver);
 #endif
 
-	if (!pref->use_mplayer_window) {
-		proc->disableInput();
-		proc->setOption("keepaspect", false);
+	proc->disableInput();
+	proc->setOption("keepaspect", false);
 
 #if defined(Q_OS_OS2)
-		#define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
-		proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoLayer()->winId())));
+#define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
+	proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoLayer()->winId())));
 #else
-		proc->setOption("wid", QString::number((qint64) playerwindow->videoLayer()->winId()));
+	proc->setOption("wid", QString::number((qint64) playerwindow->videoLayer()->winId()));
 #endif
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		if ((pref->vo.startsWith("directx")) || (pref->vo.startsWith("kva")) || (pref->vo.isEmpty())) {
-			proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
-		}
+	if ((pref->vo.startsWith("directx")) || (pref->vo.startsWith("kva")) || (pref->vo.isEmpty())) {
+		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
+	}
 #endif
 
-		// Square pixels
-		proc->setOption("monitorpixelaspect", "1");
-	} else {
-		// no -wid
-		proc->setOption("keepaspect", true);
-		if (!pref->monitor_aspect.isEmpty()) {
-			proc->setOption("monitoraspect", pref->monitor_aspect);
-		}
-	}
+	// Square pixels
+	proc->setOption("monitorpixelaspect", "1");
 
 	// OSD
 	proc->setOption("osdlevel", pref->osd_level);
@@ -3217,22 +3202,12 @@ void TCore::changeAspectRatio(int ID) {
 
 	double asp = mset.aspectToNum((TMediaSettings::Aspect) ID);
 
-	if (!pref->use_mplayer_window) {
-		// Set aspect video window. false: don't update video window
-		playerwindow->setAspect(asp, false);
-		// Resize with new aspect, normally updates video window
-		emit needResize(mset.win_width, mset.win_height);
-		// Adjust video window if resize canceled
-		playerwindow->updateVideoWindow();
-	} else {
-		// Using mplayer own window
-		if (!mdat.noVideo()) {
-			if (ID == TMediaSettings::AspectAuto) {
-				asp = mdat.video_aspect;
-			}
-			proc->setAspect(asp);
-		}
-	}
+	// Set aspect video window. false: don't update video window
+	playerwindow->setAspect(asp, false);
+	// Resize with new aspect, normally updates video window
+	emit needResize(mset.win_width, mset.win_height);
+	// Adjust video window if resize canceled
+	playerwindow->updateVideoWindow();
 
 	QString asp_name = TMediaSettings::aspectToString((TMediaSettings::Aspect) mset.aspect_ratio_id);
 	displayMessage(tr("Aspect ratio: %1").arg(asp_name));
@@ -3374,7 +3349,7 @@ void TCore::changeAdapter(int n) {
 void TCore::changeSize(int percentage) {
 	qDebug("TCore::changeSize: %d", percentage);
 
-	if (!pref->use_mplayer_window && !pref->fullscreen) {
+	if (!pref->fullscreen) {
 		pref->size_factor = (double) percentage / 100;
 		emit needResize(mset.win_width, mset.win_height);
 		displayMessage(tr("Size %1%").arg(QString::number(percentage)));
@@ -3695,7 +3670,7 @@ void TCore::gotVideoOutResolution(int w, int h) {
 	mset.win_height = h;
 	playerwindow->setResolution(w, h);
 
-	if (pref->use_mplayer_window || w <= 0) {
+	if (w <= 0 || h <= 0) {
 		emit noVideo();
 	} else {
 		if (mset.aspect_ratio_id == TMediaSettings::AspectAuto) {

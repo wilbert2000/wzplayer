@@ -259,8 +259,6 @@ public:
 
 	unsigned int color_key;
 
-	bool use_mplayer_window;
-
 	QString monitor_aspect;
 
 	bool use_idx; //!< Use -idx

@@ -67,7 +67,6 @@ void TAdvanced::retranslateStrings() {
 
 	monitoraspect_combo->setItemText(0, tr("Auto"));
 
-	mplayer_use_window_check->setText(tr("&Run %1 in its own window").arg(PLAYER_NAME));
 	mplayer_crashes_check->setText(tr("R&eport %1 crashes").arg(PLAYER_NAME));
 	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(PLAYER_NAME));
 	options_info_label->setText(tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
@@ -80,7 +79,6 @@ void TAdvanced::setData(TPreferences* pref) {
 	setMonitorAspect(pref->monitor_aspect);
 
 	setRepaintVideoBackground(pref->repaint_video_background);
-	setUseMplayerWindow(pref->use_mplayer_window);
 	setMplayerAdditionalArguments(pref->mplayer_additional_options);
 	setMplayerAdditionalVideoFilters(pref->mplayer_additional_video_filters);
 	setMplayerAdditionalAudioFilters(pref->mplayer_additional_audio_filters);
@@ -136,7 +134,6 @@ void TAdvanced::getData(TPreferences* pref) {
 		repaint_video_background_changed = true;
     }
 
-	TEST_AND_SET(pref->use_mplayer_window, useMplayerWindow());
 	TEST_AND_SET(pref->mplayer_additional_options, mplayerAdditionalArguments());
 	TEST_AND_SET(pref->mplayer_additional_video_filters, mplayerAdditionalVideoFilters());
 	TEST_AND_SET(pref->mplayer_additional_audio_filters, mplayerAdditionalAudioFilters());
@@ -175,14 +172,6 @@ void TAdvanced::setRepaintVideoBackground(bool b) {
 
 bool TAdvanced::repaintVideoBackground() {
 	return repaint_video_background_check->isChecked();
-}
-
-void TAdvanced::setUseMplayerWindow(bool v) {
-	mplayer_use_window_check->setChecked(v);
-}
-
-bool TAdvanced::useMplayerWindow() {
-	return mplayer_use_window_check->isChecked();
 }
 
 void TAdvanced::setMplayerCrashes(bool b) {
@@ -340,14 +329,6 @@ void TAdvanced::createHelp() {
 
 	setWhatsThis(monitoraspect_combo, tr("Monitor aspect"),
         tr("Select the aspect ratio of your monitor."));
-
-	setWhatsThis(mplayer_use_window_check, tr("Run %1 in its own window").arg(PLAYER_NAME),
-        tr("If you check this option, the %1 video window won't be "
-           "embedded in SMPlayer's main window but instead it will use its "
-           "own window. Note that mouse and keyboard events will be handled "
-           "directly by %1, that means key shortcuts and mouse clicks "
-           "probably won't work as expected when the %1 window has the "
-           "focus.").arg(PLAYER_NAME));
 
 	setWhatsThis(idx_check, tr("Rebuild index if needed"),
 		tr("Rebuilds index of files if no index was found, allowing seeking. "

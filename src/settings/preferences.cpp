@@ -271,8 +271,6 @@ void TPreferences::reset() {
 
 	color_key = 0x020202;
 
-	use_mplayer_window = false;
-
 	monitor_aspect=""; // Autodetect
 
 	use_idx = false;
@@ -700,8 +698,6 @@ void TPreferences::save() {
 #endif
 
 	setValue("color_key", QString::number(color_key, 16));
-
-	setValue("use_mplayer_window", use_mplayer_window);
 
 	setValue("monitor_aspect", monitor_aspect);
 
@@ -1165,8 +1161,6 @@ void TPreferences::load() {
 	if (ok)
 		color_key = temp_color_key;
 
-	use_mplayer_window = value("use_mplayer_window", use_mplayer_window).toBool();
-
 	monitor_aspect = value("monitor_aspect", monitor_aspect).toString();
 
 	use_idx = value("use_idx", use_idx).toBool();
@@ -1375,9 +1369,6 @@ void TPreferences::load() {
        **************** */
 
 	beginGroup("floating_control");
-	// Old config
-	int found = value("width", 0).toInt();
-	if (found) remove("width");
 	floating_activation_area = (ToolbarActivation) value("activation_area", floating_activation_area).toInt();
 	floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
 	endGroup(); // floating_control
@@ -1430,18 +1421,6 @@ void TPreferences::load() {
 	// Fix some values if config is old
 	if (config_version < CURRENT_CONFIG_VERSION) {
 		qDebug("TPreferences::load: config version is old, updating it");
-		/*
-		if (config_version <= 2) {
-			use_slices = false;
-		}
-		if (config_version <= 3) {
-			osd = None;
-			frame_drop = false;
-			cache_for_files = 2048;
-			cache_for_streams = 2048;
-			time_to_kill_mplayer = 1000;
-		}
-		*/
 		if (config_version < 4) {
 			use_slices = false;
 			osd_level = None;
@@ -1458,6 +1437,12 @@ void TPreferences::load() {
 				time_slider_drag_delay = 200;
 			if (min_step < 5)
 				min_step = 5;
+			beginGroup("floating_control");
+			remove("width");
+			endGroup();
+			beginGroup("advanced");
+			remove("use_mplayer_window");
+			endGroup();
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;

@@ -100,13 +100,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="mplayer_use_window_check">
-         <property name="text">
-          <string notr="true">&amp;Run PLAYER in its own window</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="idx_check">
          <property name="text">
           <string>Rebuild &amp;index if needed</string>
@@ -708,7 +701,6 @@ Example: extrastereo,karaoke</string>
  </customwidgets>
  <tabstops>
   <tabstop>monitoraspect_combo</tabstop>
-  <tabstop>mplayer_use_window_check</tabstop>
   <tabstop>idx_check</tabstop>
   <tabstop>lavf_demuxer_check</tabstop>
   <tabstop>repaint_video_background_check</tabstop>
