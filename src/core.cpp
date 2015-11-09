@@ -2220,9 +2220,11 @@ void TCore::toggleVolnorm(bool b) {
 
 void TCore::setAudioChannels(int channels) {
 	qDebug("TCore::setAudioChannels:%d", channels);
+
 	if (channels != mset.audio_use_channels) {
 		mset.audio_use_channels = channels;
-		restartPlay();
+		if (proc->isRunning())
+			restartPlay();
 	}
 }
 

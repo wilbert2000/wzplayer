@@ -59,8 +59,10 @@ namespace Gui {
 class TAction;
 class TActionGroup;
 class TVideoSizeMenu;
+class TAudioChannelMenu;
 class TOnTopMenu;
 class TCCMenu;
+class TSubFPSMenu;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
@@ -564,25 +566,6 @@ protected:
 	TAction* screenDefaultAct;
 #endif
 
-	// External sub fps Group
-	TActionGroup* subFPSGroup;
-	TAction* subFPSNoneAct;
-	/* TAction* subFPS23Act; */
-	TAction* subFPS23976Act;
-	TAction* subFPS24Act;
-	TAction* subFPS25Act;
-	TAction* subFPS29970Act;
-	TAction* subFPS30Act;
-
-	// Audio Channels Action Group
-	TActionGroup* channelsGroup;
-	/* TAction* channelsDefaultAct; */
-	TAction* channelsStereoAct;
-	TAction* channelsSurroundAct;
-	TAction* channelsFull51Act;
-	TAction* channelsFull61Act;
-	TAction* channelsFull71Act;
-
 	// Stereo Mode Action Group
 	TActionGroup* stereoGroup;
 	TAction* stereoAct;
@@ -643,7 +626,7 @@ protected:
 	QMenu* denoise_menu;
 	QMenu* unsharp_menu;
 	TVideoSizeMenu* videosize_menu;
-	QMenu* audiochannels_menu;
+	TAudioChannelMenu* audiochannels_menu;
 	QMenu* stereomode_menu;
 
 	QMenu* speed_menu;
@@ -657,7 +640,7 @@ protected:
 	QMenu* screen_menu;
 #endif
 	TCCMenu* closed_captions_menu;
-	QMenu* subfps_menu;
+	TSubFPSMenu* subfps_menu;
 
 	QMenu* popup;
 	QMenu* recentfiles_menu;

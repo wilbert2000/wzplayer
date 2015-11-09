@@ -1090,17 +1090,6 @@ void TBase::createActions() {
 	connect(deinterlaceGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeDeinterlace(int)));
 
-	// Audio channels
-	channelsGroup = new TActionGroup("channels", this);
-	/* channelsDefaultAct = new TActionGroupItem(this, channelsGroup, "channels_default", TMediaSettings::ChDefault); */
-	channelsStereoAct = new TActionGroupItem(this, channelsGroup, "channels_stereo", TMediaSettings::ChStereo);
-	channelsSurroundAct = new TActionGroupItem(this, channelsGroup, "channels_surround", TMediaSettings::ChSurround);
-	channelsFull51Act = new TActionGroupItem(this, channelsGroup, "channels_ful51", TMediaSettings::ChFull51);
-	channelsFull61Act = new TActionGroupItem(this, channelsGroup, "channels_ful61", TMediaSettings::ChFull61);
-	channelsFull71Act = new TActionGroupItem(this, channelsGroup, "channels_ful71", TMediaSettings::ChFull71);
-	connect(channelsGroup, SIGNAL(activated(int)),
-			 core, SLOT(setAudioChannels(int)));
-
 	// Stereo mode
 	stereoGroup = new TActionGroup("stereo", this);
 	stereoAct = new TActionGroupItem(this, stereoGroup, "stereo", TMediaSettings::Stereo);
@@ -1236,18 +1225,6 @@ void TBase::createActions() {
 	connect(angleGroup, SIGNAL(activated(int)),
 			 core, SLOT(changeAngle(int)));
 	// Update done by updateTitles
-
-	subFPSGroup = new TActionGroup("subfps", this);
-	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", TMediaSettings::SFPS_None);
-	/* subFPS23Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23", TMediaSettings::SFPS_23); */
-	subFPS23976Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23976", TMediaSettings::SFPS_23976);
-	subFPS24Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_24", TMediaSettings::SFPS_24);
-	subFPS25Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_25", TMediaSettings::SFPS_25);
-	subFPS29970Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_29970", TMediaSettings::SFPS_29970);
-	subFPS30Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_30", TMediaSettings::SFPS_30);
-	connect(subFPSGroup, SIGNAL(activated(int)),
-			 core, SLOT(changeExternalSubFPS(int)));
-
 
 	dvdnavUpAct = new TAction(Qt::SHIFT | Qt::Key_Up, this, "dvdnav_up");
 	connect(dvdnavUpAct, SIGNAL(triggered()), core, SLOT(dvdnavUp()));
@@ -1554,10 +1531,7 @@ void TBase::createMenus() {
 	audioMenu->addMenu(audiofilter_menu);
 
 	// Audio channels submenu
-	audiochannels_menu = new QMenu(this);
-	audiochannels_menu->menuAction()->setObjectName("audiochannels_menu");
-	audiochannels_menu->addActions(channelsGroup->actions());
-
+	audiochannels_menu = new TAudioChannelMenu(this, core);
 	audioMenu->addMenu(audiochannels_menu);
 
 	// Stereo mode submenu
@@ -1597,15 +1571,7 @@ void TBase::createMenus() {
 	subtitlesMenu->addAction(loadSubsAct);
 	subtitlesMenu->addAction(unloadSubsAct);
 
-	subfps_menu = new QMenu(this);
-	subfps_menu->menuAction()->setObjectName("subfps_menu");
-	subfps_menu->addAction(subFPSNoneAct);
-	/* subfps_menu->addAction(subFPS23Act); */
-	subfps_menu->addAction(subFPS23976Act);
-	subfps_menu->addAction(subFPS24Act);
-	subfps_menu->addAction(subFPS25Act);
-	subfps_menu->addAction(subFPS29970Act);
-	subfps_menu->addAction(subFPS30Act);
+	subfps_menu = new TSubFPSMenu(this, core);
 	subtitlesMenu->addMenu(subfps_menu);
 	subtitlesMenu->addSeparator();
 
@@ -2008,7 +1974,7 @@ void TBase::setActionsEnabled(bool b) {
 #if USE_ADAPTER
 	screenGroup->setActionsEnabled(b);
 #endif
-	channelsGroup->setActionsEnabled(b);
+	audiochannels_menu->channelsGroup->setActionsEnabled(true);
 	stereoGroup->setActionsEnabled(b);
 
 	// Time slider
@@ -2051,7 +2017,7 @@ void TBase::enableActionsOnPlaying() {
 		karaokeAct->setEnabled(false);
 #endif
 		volnormAct->setEnabled(false);
-		channelsGroup->setActionsEnabled(false);
+		audiochannels_menu->channelsGroup->setActionsEnabled(false);
 		stereoGroup->setActionsEnabled(false);
 	}
 
@@ -2305,14 +2271,6 @@ void TBase::retranslateStrings() {
 	openUploadSubtitlesPageAct->change(Images::icon("upload_subs"), tr("Upload su&btitles to OpenSubtitles.org..."));
 #endif
 
-	subFPSNoneAct->change(tr("&Default", "subfps menu"));
-	/* subFPS23Act->change("2&3"); */
-	subFPS23976Act->change("23.9&76");
-	subFPS24Act->change("2&4");
-	subFPS25Act->change("2&5");
-	subFPS29970Act->change("29.&970");
-	subFPS30Act->change("3&0");
-
 	// Menu Options
 	showPlaylistAct->change(Images::icon("playlist"), tr("&Playlist"));
 	showPropertiesAct->change(Images::icon("info"), tr("View &info and properties..."));
@@ -2506,18 +2464,10 @@ void TBase::retranslateStrings() {
 	audiofilter_menu->menuAction()->setText(tr("&Filters"));
 	audiofilter_menu->menuAction()->setIcon(Images::icon("audio_filters"));
 
-	audiochannels_menu->menuAction()->setText(tr("&Channels"));
-	audiochannels_menu->menuAction()->setIcon(Images::icon("audio_channels"));
+	audiochannels_menu->retranslateStrings();
 
 	stereomode_menu->menuAction()->setText(tr("&Stereo mode"));
 	stereomode_menu->menuAction()->setIcon(Images::icon("stereo_mode"));
-
-	/* channelsDefaultAct->change(tr("&Default")); */
-	channelsStereoAct->change(tr("&Stereo"));
-	channelsSurroundAct->change(tr("&4.0 Surround"));
-	channelsFull51Act->change(tr("&5.1 Surround"));
-	channelsFull61Act->change(tr("&6.1 Surround"));
-	channelsFull71Act->change(tr("&7.1 Surround"));
 
 	stereoAct->change(tr("&Stereo"));
 	leftChannelAct->change(tr("&Left channel"));
@@ -2535,9 +2485,7 @@ void TBase::retranslateStrings() {
 #endif
 
 	closed_captions_menu->retranslateStrings();
-
-	subfps_menu->menuAction()->setText(tr("F&rames per second"));
-	subfps_menu->menuAction()->setIcon(Images::icon("subfps"));
+	subfps_menu->retranslateStrings();
 
 	// Menu Browse 
 	titles_menu->menuAction()->setText(tr("&Title"));
@@ -3263,7 +3211,7 @@ void TBase::updateSubtitles() {
 	// or for mplayer externally loaded vob subs
 	bool have_ext_subs = core->haveExternalSubs();
 	unloadSubsAct->setEnabled(have_ext_subs);
-	subFPSGroup->setEnabled(have_ext_subs);
+	subfps_menu->subFPSGroup->setEnabled(have_ext_subs);
 
 	// Enable or disable subtitle options
 	bool e = core->mset.current_sub_idx >= 0;
@@ -3425,11 +3373,7 @@ void TBase::clearRecentsList() {
 void TBase::updateWidgets() {
 	qDebug("Gui::TBase::updateWidgets");
 
-	// Subfps menu
-	subFPSGroup->setChecked(core->mset.external_subtitles_fps);
-
 	// Audio menu
-	channelsGroup->setChecked(core->mset.audio_use_channels);
 	stereoGroup->setChecked(core->mset.stereo_mode);
 	// Disable the unload audio file action if there's no external audio file
 	unloadAudioAct->setEnabled(!core->mset.external_audio.isEmpty());

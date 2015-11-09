@@ -9,12 +9,33 @@ class TCore;
 
 namespace Gui {
 
+class TAudioChannelMenu : public QMenu {
+	Q_OBJECT
+
+public:
+	explicit TAudioChannelMenu(QWidget* parent, TCore* c);
+
+	TActionGroup* channelsGroup;
+	void retranslateStrings();
+
+private:
+	TCore* core;
+
+	TActionGroupItem* channelsStereoAct;
+	TActionGroupItem* channelsSurroundAct;
+	TActionGroupItem* channelsFull51Act;
+	TActionGroupItem* channelsFull61Act;
+	TActionGroupItem* channelsFull71Act;
+
+private slots:
+	void onAboutToShow();
+};
+
 class TCCMenu : public QMenu {
 	Q_OBJECT
 
 public:
 	explicit TCCMenu(QWidget* parent, TCore* c);
-	virtual ~TCCMenu();
 
 	void retranslateStrings();
 
@@ -32,12 +53,34 @@ private slots:
 	void onAboutToShow();
 };
 
+class TSubFPSMenu : public QMenu {
+	Q_OBJECT
+
+public:
+	explicit TSubFPSMenu(QWidget* parent, TCore* c);
+
+	TActionGroup* subFPSGroup;
+	void retranslateStrings();
+
+private:
+	TCore* core;
+
+	TActionGroupItem* subFPSNoneAct;
+	TActionGroupItem* subFPS23976Act;
+	TActionGroupItem* subFPS24Act;
+	TActionGroupItem* subFPS25Act;
+	TActionGroupItem* subFPS29970Act;
+	TActionGroupItem* subFPS30Act;
+
+private slots:
+	void onAboutToShow();
+};
+
 class TOnTopMenu : public QMenu {
 	Q_OBJECT
 
 public:
 	explicit TOnTopMenu(QWidget* parent);
-	virtual ~TOnTopMenu();
 
 	void retranslateStrings();
 
@@ -59,7 +102,6 @@ class TVideoSizeGroup : public TActionGroup {
 
 public:
 	explicit TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw);
-	virtual ~TVideoSizeGroup();
 
 public slots:
 	void enableVideoSizeGroup(bool on);
@@ -76,7 +118,6 @@ class TVideoSizeMenu : public QMenu {
 
 public:
 	TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw);
-	virtual ~TVideoSizeMenu();
 
 	void enableVideoSize(bool on);
 	void retranslateStrings();

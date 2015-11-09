@@ -11,11 +11,48 @@ using namespace Settings;
 
 namespace Gui {
 
+TAudioChannelMenu::TAudioChannelMenu(QWidget *parent, TCore* c)
+	: QMenu(parent)
+	, core(c) {
+
+	menuAction()->setObjectName("audiochannels_menu");
+	channelsGroup = new TActionGroup("channels", this);
+	/* channelsDefaultAct = new TActionGroupItem(this, channelsGroup, "channels_default", TMediaSettings::ChDefault); */
+	channelsStereoAct = new TActionGroupItem(this, channelsGroup, "channels_stereo", TMediaSettings::ChStereo);
+	channelsSurroundAct = new TActionGroupItem(this, channelsGroup, "channels_surround", TMediaSettings::ChSurround);
+	channelsFull51Act = new TActionGroupItem(this, channelsGroup, "channels_ful51", TMediaSettings::ChFull51);
+	channelsFull61Act = new TActionGroupItem(this, channelsGroup, "channels_ful61", TMediaSettings::ChFull61);
+	channelsFull71Act = new TActionGroupItem(this, channelsGroup, "channels_ful71", TMediaSettings::ChFull71);
+	addActions(channelsGroup->actions());
+	connect(channelsGroup, SIGNAL(activated(int)),
+			core, SLOT(setAudioChannels(int)));
+
+	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
+}
+
+void TAudioChannelMenu::retranslateStrings() {
+
+	menuAction()->setText(tr("&Channels"));
+	menuAction()->setIcon(Images::icon("audio_channels"));
+
+	/* channelsDefaultAct->change(tr("&Default")); */
+	channelsStereoAct->change(tr("&Stereo"));
+	channelsSurroundAct->change(tr("&4.0 Surround"));
+	channelsFull51Act->change(tr("&5.1 Surround"));
+	channelsFull61Act->change(tr("&6.1 Surround"));
+	channelsFull71Act->change(tr("&7.1 Surround"));
+}
+
+void TAudioChannelMenu::onAboutToShow() {
+	channelsGroup->setChecked(core->mset.audio_use_channels);
+}
+
+
 TCCMenu::TCCMenu(QWidget *parent, TCore* c)
 	: QMenu(parent)
 	, core(c) {
 
-	setObjectName("closed_captions_menu");
+	menuAction()->setObjectName("closed_captions_menu");
 	ccGroup = new TActionGroup("cc", this);
 	ccNoneAct = new TActionGroupItem(this, ccGroup, "cc_none", 0);
 	ccChannel1Act = new TActionGroupItem(this, ccGroup, "cc_ch_1", 1);
@@ -27,9 +64,6 @@ TCCMenu::TCCMenu(QWidget *parent, TCore* c)
 			core, SLOT(changeClosedCaptionChannel(int)));
 
 	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
-}
-
-TCCMenu::~TCCMenu() {
 }
 
 void TCCMenu::retranslateStrings() {
@@ -46,6 +80,46 @@ void TCCMenu::retranslateStrings() {
 
 void TCCMenu::onAboutToShow() {
 	ccGroup->setChecked(core->mset.closed_caption_channel);
+}
+
+
+TSubFPSMenu::TSubFPSMenu(QWidget *parent, TCore* c)
+	: QMenu(parent)
+	, core(c) {
+
+	menuAction()->setObjectName("subfps_menu");
+	subFPSGroup = new TActionGroup("subfps", this);
+	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", TMediaSettings::SFPS_None);
+	/* subFPS23Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23", TMediaSettings::SFPS_23); */
+	subFPS23976Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23976", TMediaSettings::SFPS_23976);
+	subFPS24Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_24", TMediaSettings::SFPS_24);
+	subFPS25Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_25", TMediaSettings::SFPS_25);
+	subFPS29970Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_29970", TMediaSettings::SFPS_29970);
+	subFPS30Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_30", TMediaSettings::SFPS_30);
+	addActions(subFPSGroup->actions());
+	connect(subFPSGroup, SIGNAL(activated(int)),
+			core, SLOT(changeExternalSubFPS(int)));
+
+	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
+}
+
+void TSubFPSMenu::retranslateStrings() {
+
+	menuAction()->setText(tr("F&rames per second"));
+	menuAction()->setIcon(Images::icon("subfps"));
+
+	subFPSNoneAct->change(tr("&Default", "subfps menu"));
+	/* subFPS23Act->change("2&3"); */
+	subFPS23976Act->change("23.9&76");
+	subFPS24Act->change("2&4");
+	subFPS25Act->change("2&5");
+	subFPS29970Act->change("29.&970");
+	subFPS30Act->change("3&0");
+}
+
+void TSubFPSMenu::onAboutToShow() {
+	subFPSGroup->setEnabled(core->haveExternalSubs());
+	subFPSGroup->setChecked(core->mset.external_subtitles_fps);
 }
 
 
@@ -67,9 +141,6 @@ TOnTopMenu::TOnTopMenu(QWidget *parent) :
 	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
 }
 
-TOnTopMenu::~TOnTopMenu() {
-}
-
 void TOnTopMenu::retranslateStrings() {
 
 	menuAction()->setText(tr("S&tay on top"));
@@ -83,7 +154,6 @@ void TOnTopMenu::retranslateStrings() {
 }
 
 void TOnTopMenu::onAboutToShow() {
-
 	onTopActionGroup->setChecked((int) pref->stay_on_top);
 }
 
@@ -106,9 +176,6 @@ TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
 	a->setShortcut(Qt::CTRL | Qt::Key_2);
 	a = new TActionGroupItem(this, this, "&300%", "size_300", 300);
 	a = new TActionGroupItem(this, this, "&400%", "size_400", 400);
-}
-
-TVideoSizeGroup::~TVideoSizeGroup() {
 }
 
 void TVideoSizeGroup::uncheck() {
@@ -163,9 +230,6 @@ TVideoSizeMenu::TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw)
 	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
 }
 
-TVideoSizeMenu::~TVideoSizeMenu() {
-}
-
 void TVideoSizeMenu::retranslateStrings() {
 
 	menuAction()->setText(tr("Si&ze"));
@@ -187,5 +251,4 @@ void TVideoSizeMenu::onAboutToShow() {
 }
 
 } // namespace Gui
-
 
