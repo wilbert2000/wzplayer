@@ -232,7 +232,6 @@ void TPlayerWindow::updateSizeFactor() {
 	}
 }
 
-
 void TPlayerWindow::updateVideoWindow() {
 	qDebug() << "TPlayerWindow::updateVideoWindow: video size:"
 			 << video_width << "x" << video_height

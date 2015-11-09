@@ -303,8 +303,6 @@ void TBase::createCore() {
 
 	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
 			 this, SLOT(videoOutResolutionChanged(int,int)));
-	connect(core, SIGNAL(noVideo()),
-			 this, SLOT(slotNoVideo()));
 	connect(core, SIGNAL(needResize(int, int)),
 			 this, SLOT(resizeWindow(int, int)));
 	connect(core, SIGNAL(widgetsNeedUpdate()),
@@ -4635,29 +4633,53 @@ void TBase::optimizeSizeFactor(int w, int h) {
 	pref->size_factor = factor;
 }
 
+void TBase::hidePanel() {
+	qDebug("Gui::TBase::hidePanel");
+
+	if (panel->isVisible()) {
+		// Exit from fullscreen mode
+		if (pref->fullscreen) {
+			toggleFullscreen(false);
+			update();
+		}
+
+		int width = this->width();
+		if (width > pref->default_size.width())
+			width = pref->default_size.width();
+		resize(width, height() - panel->height());
+		panel->hide();
+	}
+}
+
 // Slot called by signal videoOutResolutionChanged
 void TBase::videoOutResolutionChanged(int w, int h) {
 	qDebug("Gui::TBase::videoOutResolutionChanged: %d, %d", w, h);
 
-	if (!panel->isVisible()) {
-		panel->show();
+	if (w <= 0 || h <= 0) {
+		// No video
+		if (pref->hide_video_window_on_audio_files) {
+			hidePanel();
+		} else {
+			playerwindow->showLogo();
+		}
+	} else {
+		if (!panel->isVisible()) {
+			panel->show();
+		}
+		// block_resize set if pref->save_window_size_on_exit selected
+		if (!block_resize && !isMaximized()) {
+			if (pref->resize_method != Settings::TPreferences::Never) {
+				optimizeSizeFactor(w, h);
+				resizeWindow(w, h);
+			}
+			if (center_window) {
+				centerWindow();
+			}
+		}
 	}
 
-	// Set first time if pref->save_window_size_on_exit selected
-	if (block_resize) {
-		block_resize = false;
-	} else if (isMaximized()) {
-		center_window = false;
-	} else {
-		if (pref->resize_method != Settings::TPreferences::Never) {
-			optimizeSizeFactor(w, h);
-			resizeWindow(w, h);
-		}
-		if (center_window) {
-			center_window = false;
-			centerWindow();
-		}
-	}
+	block_resize = false;
+	center_window = false;
 }
 
 // Slot called by signal needResize
@@ -4702,38 +4724,6 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 				   panel->size().width(), panel->size().height(),
 				   video_size.width(), video_size.height());
 		}
-	}
-}
-
-void TBase::hidePanel() {
-	qDebug("Gui::TBase::hidePanel");
-
-	if (panel->isVisible()) {
-		// Exit from fullscreen mode 
-		if (pref->fullscreen) {
-			toggleFullscreen(false);
-			update();
-		}
-
-
-		int width = this->width();
-		if (width > pref->default_size.width())
-			width = pref->default_size.width();
-		resize(width, height() - panel->height());
-		panel->hide();
-	}
-}
-
-void TBase::slotNoVideo() {
-	qDebug("Gui::TBase::slotNoVideo");
-
-	block_resize = false;
-	center_window = false;
-
-	if (pref->hide_video_window_on_audio_files) {
-		hidePanel();
-	} else {
-		playerwindow->showLogo();
 	}
 }
 

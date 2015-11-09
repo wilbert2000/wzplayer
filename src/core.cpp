@@ -3669,21 +3669,15 @@ void TCore::gotVideoOutResolution(int w, int h) {
 	mset.win_width = w;
 	mset.win_height = h;
 	playerwindow->setResolution(w, h);
-
-	if (w <= 0 || h <= 0) {
-		emit noVideo();
-	} else {
-		if (mset.aspect_ratio_id == TMediaSettings::AspectAuto) {
-			// Set aspect to w/h. false = do not update video window.
-			playerwindow->setAspect(mset.win_aspect(), false);
-		}
-
-		if (!we_are_restarting)
-			emit videoOutResolutionChanged(w, h);
-
-		// If resize is canceled adjust new video to old size
-		playerwindow->updateVideoWindow();
+	if (mset.aspect_ratio_id == TMediaSettings::AspectAuto) {
+		// Set aspect to w/h. false = do not update video window.
+		playerwindow->setAspect(mset.win_aspect(), false);
 	}
+	if (!we_are_restarting)
+		emit videoOutResolutionChanged(w, h);
+
+	// If resize is canceled adjust new video to old size
+	playerwindow->updateVideoWindow();
 }
 
 void TCore::gotVO(QString vo) {

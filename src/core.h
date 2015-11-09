@@ -445,7 +445,6 @@ signals:
 	void showFrame(int frame);
 	void ABMarkersChanged();
 	void needResize(int w, int h);
-	void noVideo();
 	void volumeChanged(int);
 	void muteChanged(bool);
 	void videoTrackInfoChanged();

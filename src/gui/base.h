@@ -175,8 +175,6 @@ public slots:
 	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; }
 	int forceStartInFullscreen() { return arg_start_in_fullscreen; }
 
-	void slotNoVideo();
-
 protected slots:
 	virtual void closeWindow();
 
