@@ -102,7 +102,7 @@ void TVideoSizeMenu::enableVideoSize(bool on) {
 }
 
 void TVideoSizeMenu::onAboutToShow() {
-	qDebug("TVideoSizeMenu::onAboutToShow");
+	//qDebug("TVideoSizeMenu::onAboutToShow");
 
 	sizeGroup->updateVideoSizeGroup();
 	doubleSizeAct->setEnabled(sizeGroup->isEnabled());
