@@ -223,12 +223,14 @@ void TPlayerWindow::updateSizeFactor() {
 		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
 		double factor_x = (double) width() / video_size.width();
 		double factor_y = (double) height() / video_size.height();
+
 		// Store smallest factor in pref
 		if (factor_y < factor_x) {
-			pref->size_factor = factor_y;
-		} else {
-			pref->size_factor = factor_x;
+			factor_x = factor_y;
 		}
+		qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
+			   pref->size_factor, factor_x);
+		pref->size_factor = factor_x;
 	}
 }
 
@@ -273,9 +275,6 @@ void TPlayerWindow::updateVideoWindow() {
 						 2500, 1); // 2.5 sec, osd_level 1
 		last_video_size = video_size;
 	}
-
-	// Update pref->size_factor
-	updateSizeFactor();
 
 	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
 }

@@ -290,6 +290,7 @@ protected:
 	virtual void changeEvent(QEvent* event);
 	virtual void hideEvent(QHideEvent* event);
 	virtual void showEvent(QShowEvent* event);
+	virtual void resizeEvent(QResizeEvent* event);
 
 #if QT_VERSION >= 0x050000
 	virtual bool event(QEvent* e);

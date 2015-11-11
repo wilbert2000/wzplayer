@@ -116,10 +116,9 @@ public:
 	QSize getAdjustedSize(int w, int h, double zoom) const;
 
 	void updateVideoWindow();
+	void updateSizeFactor();
 	void moveVideo(int dx, int dy);
-
 	void aboutToExitFullscreen();
-
 	void retranslateStrings();
 
 public slots:
@@ -191,7 +190,6 @@ private:
 	bool checkDragging(QMouseEvent* event);
 
 	void pauseMessages(int msec);
-	void updateSizeFactor();
 };
 
 #endif // PLAYERWINDOW_H

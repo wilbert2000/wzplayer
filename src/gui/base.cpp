@@ -185,7 +185,7 @@ TBase::TBase()
 	setWindowTitle("SMPlayer");
 	setAcceptDrops(true);
 
-	// Reset size factor to 1.0
+	// Reset size factor to 1.0 and window to default size
 	pref->size_factor = 1.0;
 	resize(pref->default_size);
 
@@ -3863,7 +3863,7 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 	}
 
 	QSize new_size = size() + video_size - panel->size();
-	qDebug("Gui::TBase::resizeMainWindow: resizing from %d x %d to %d x %d",
+	qDebug("Gui::TBase::resizeMainWindow: resizing window from %d x %d to %d x %d",
 		   width(), height(), new_size.width(), new_size.height());
 	resize(new_size);
 
@@ -3883,6 +3883,18 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 				   panel->size().width(), panel->size().height(),
 				   video_size.width(), video_size.height());
 		}
+	}
+
+}
+
+void TBase::resizeEvent(QResizeEvent* event) {
+	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous();
+
+	QMainWindow::resizeEvent(event);
+
+	// Update size factor after window resized by user
+	if (event->spontaneous()) {
+		playerwindow->updateSizeFactor();
 	}
 }
 
