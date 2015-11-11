@@ -189,5 +189,14 @@ private:
 	TAction* doubleSizeAct;
 };
 
+
+class TVideoZoomAndPanMenu : public TMenu {
+public:
+	explicit TVideoZoomAndPanMenu(QWidget* parent, TCore* c);
+	QActionGroup* group;
+private:
+	TCore* core;
+};
+
 } // namespace Gui
 #endif // VIDEOSIZEGROUP_H

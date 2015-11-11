@@ -812,39 +812,6 @@ void TBase::createActions() {
 	playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
 	connect(playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()));
 
-	// Pan
-	moveUpAct = new TAction(this, "move_up", QT_TR_NOOP("Move &up"), Qt::ALT | Qt::Key_Up);
-	connect(moveUpAct, SIGNAL(triggered()), core, SLOT(panDown()));
-
-	moveDownAct = new TAction(this, "move_down", QT_TR_NOOP("Move &down"), Qt::ALT | Qt::Key_Down);
-	connect(moveDownAct, SIGNAL(triggered()), core, SLOT(panUp()));
-
-	moveLeftAct = new TAction(this, "move_left", QT_TR_NOOP("Move &left"), Qt::ALT | Qt::Key_Left);
-	connect(moveLeftAct, SIGNAL(triggered()), core, SLOT(panRight()));
-
-	moveRightAct = new TAction(this, "move_right", QT_TR_NOOP("Move &right"), Qt::ALT | Qt::Key_Right);
-	connect(moveRightAct, SIGNAL(triggered()), core, SLOT(panLeft()));
-
-	// Zoom
-	incZoomAct = new TAction(this, "inc_zoom", QT_TR_NOOP("Zoom &+"), Qt::Key_E);
-	connect(incZoomAct, SIGNAL(triggered()), core, SLOT(incZoom()));
-
-	decZoomAct = new TAction(this, "dec_zoom", QT_TR_NOOP("Zoom &-"), Qt::Key_W);
-	connect(decZoomAct, SIGNAL(triggered()), core, SLOT(decZoom()));
-
-	resetZoomAct = new TAction(this, "reset_zoom", QT_TR_NOOP("&Reset"), "zoom_reset", Qt::SHIFT | Qt::Key_E);
-	connect(resetZoomAct, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()));
-
-	autoZoomAct = new TAction(this, "auto_zoom", QT_TR_NOOP("&Auto zoom"), Qt::SHIFT | Qt::Key_W);
-	connect(autoZoomAct, SIGNAL(triggered()), core, SLOT(autoZoom()));
-
-	autoZoom169Act = new TAction(this, "zoom_169", QT_TR_NOOP("Zoom for &16:9"), Qt::SHIFT | Qt::Key_A);
-	connect(autoZoom169Act, SIGNAL(triggered()), core, SLOT(autoZoomFor169()));
-
-	autoZoom235Act = new TAction(this, "zoom_235", QT_TR_NOOP("Zoom for &2.35:1"), Qt::SHIFT | Qt::Key_S);
-	connect(autoZoom235Act, SIGNAL(triggered()), core, SLOT(autoZoomFor235()));
-
-
 	// Actions not in menus or buttons
 	exitFullscreenAct = new TAction(this, "exit_fullscreen", QT_TR_NOOP("Exit fullscreen"), Qt::Key_Escape);
 	connect(exitFullscreenAct, SIGNAL(triggered()), this, SLOT(exitFullscreen()));
@@ -1184,23 +1151,8 @@ void TBase::createMenus() {
 	videoMenu->addMenu(videosize_menu);
 
 	// Zoom submenu
-	zoom_menu = new QMenu(this);
-	zoom_menu->menuAction()->setObjectName("zoom_menu");
-	zoom_menu->addAction(resetZoomAct);
-	zoom_menu->addSeparator();
-	zoom_menu->addAction(autoZoomAct);
-	zoom_menu->addAction(autoZoom169Act);
-	zoom_menu->addAction(autoZoom235Act);
-	zoom_menu->addSeparator();
-	zoom_menu->addAction(decZoomAct);
-	zoom_menu->addAction(incZoomAct);
-	zoom_menu->addSeparator();
-	zoom_menu->addAction(moveLeftAct);
-	zoom_menu->addAction(moveRightAct);
-	zoom_menu->addAction(moveUpAct);
-	zoom_menu->addAction(moveDownAct);
-
-	videoMenu->addMenu(zoom_menu);
+	zoom_and_pan_menu = new TVideoZoomAndPanMenu(this, core);
+	videoMenu->addMenu(zoom_and_pan_menu);
 
 	// Aspect submenu
 	aspect_menu = new TAspectMenu(this, core);
@@ -1591,7 +1543,11 @@ void TBase::setActionsEnabled(bool b) {
 
 	// Menu Video
 	videosize_menu->enableVideoSize(b);
+	zoom_and_pan_menu->group->setEnabled(b);
+	aspect_menu->group->setActionsEnabled(b);
+	deinterlace_menu->group->setActionsEnabled(b);
 	videofilter_menu->setEnabledX(b);
+	rotate_menu->group->setActionsEnabled(b);
 	videoEqualizerAct->setEnabled(b);
 	screenshotAct->setEnabled(b);
 	screenshotsAct->setEnabled(b);
@@ -1652,18 +1608,6 @@ void TBase::setActionsEnabled(bool b) {
 	nextChapterAct->setEnabled(b);
 	prevChapterAct->setEnabled(b);
 
-	// Moving and zoom
-	moveUpAct->setEnabled(b);
-	moveDownAct->setEnabled(b);
-	moveLeftAct->setEnabled(b);
-	moveRightAct->setEnabled(b);
-	incZoomAct->setEnabled(b);
-	decZoomAct->setEnabled(b);
-	resetZoomAct->setEnabled(b);
-	autoZoomAct->setEnabled(b);
-	autoZoom169Act->setEnabled(b);
-	autoZoom235Act->setEnabled(b);
-
 	dvdnavUpAct->setEnabled(b);
 	dvdnavDownAct->setEnabled(b);
 	dvdnavLeftAct->setEnabled(b);
@@ -1674,9 +1618,6 @@ void TBase::setActionsEnabled(bool b) {
 	dvdnavMouseAct->setEnabled(b);
 
 	// Groups
-	deinterlace_menu->group->setActionsEnabled(b);
-	aspect_menu->group->setActionsEnabled(b);
-	rotate_menu->group->setActionsEnabled(b);
 #if USE_ADAPTER
 	screenGroup->setActionsEnabled(b);
 #endif
@@ -1739,18 +1680,7 @@ void TBase::enableActionsOnPlaying() {
 		mirrorAct->setEnabled(false);
 		stereo3dAct->setEnabled(false);
 
-		// Moving and zoom
-		moveUpAct->setEnabled(false);
-		moveDownAct->setEnabled(false);
-		moveLeftAct->setEnabled(false);
-		moveRightAct->setEnabled(false);
-		incZoomAct->setEnabled(false);
-		decZoomAct->setEnabled(false);
-		resetZoomAct->setEnabled(false);
-		autoZoomAct->setEnabled(false);
-		autoZoom169Act->setEnabled(false);
-		autoZoom235Act->setEnabled(false);
-
+		zoom_and_pan_menu->group->setEnabled(false);
 		deinterlace_menu->group->setActionsEnabled(false);
 		aspect_menu->group->setActionsEnabled(false);
 		rotate_menu->group->setActionsEnabled(false);
@@ -1772,7 +1702,6 @@ void TBase::enableActionsOnPlaying() {
 		mirrorAct->setEnabled(false);
 		stereo3dAct->setEnabled(false);
 		videofilter_menu->setEnabledX(false);
-
 		deinterlace_menu->group->setActionsEnabled(false);
 		rotate_menu->group->setActionsEnabled(false);
 
@@ -1860,9 +1789,6 @@ void TBase::retranslateStrings() {
 	// Menu Video
 	videotrack_menu->menuAction()->setText(tr("&Track", "video"));
 	videotrack_menu->menuAction()->setIcon(Images::icon("video_track"));
-
-	zoom_menu->menuAction()->setText(tr("Zoo&m"));
-	zoom_menu->menuAction()->setIcon(Images::icon("zoom"));
 
 #if USE_ADAPTER
 	screen_menu->menuAction()->setText(tr("Scree&n"));

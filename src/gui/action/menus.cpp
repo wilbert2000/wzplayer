@@ -411,5 +411,52 @@ void TVideoSizeMenu::onAboutToShow() {
 	doubleSizeAct->setEnabled(group->isEnabled());
 }
 
+
+TVideoZoomAndPanMenu::TVideoZoomAndPanMenu(QWidget* parent, TCore* c)
+	: TMenu(parent, this, "zoom_and_pan_menu", QT_TR_NOOP("Zoo&m and pan"), "zoom_and_pan")
+	, core(c) {
+
+	group = new QActionGroup(this);
+	group->setExclusive(false);
+
+	// Zoom
+	// TODO: rename to reset_zoom_and_pan
+	TAction* a = new TAction(this, "reset_zoom", QT_TR_NOOP("&Reset"), "zoom_reset", Qt::SHIFT | Qt::Key_E);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()));
+	addSeparator();
+	a = new TAction(this, "auto_zoom", QT_TR_NOOP("&Auto zoom"), Qt::SHIFT | Qt::Key_W);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(autoZoom()));
+	a = new TAction(this, "zoom_169", QT_TR_NOOP("Zoom for &16:9"), Qt::SHIFT | Qt::Key_A);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(autoZoomFor169()));
+	a = new TAction(this, "zoom_235", QT_TR_NOOP("Zoom for &2.35:1"), Qt::SHIFT | Qt::Key_S);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(autoZoomFor235()));
+	addSeparator();
+	a = new TAction(this, "dec_zoom", QT_TR_NOOP("Zoom &-"), Qt::Key_W);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(decZoom()));
+	a = new TAction(this, "inc_zoom", QT_TR_NOOP("Zoom &+"), Qt::Key_E);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(incZoom()));
+
+	// Pan
+	addSeparator();
+	a = new TAction(this, "move_left", QT_TR_NOOP("Move &left"), Qt::ALT | Qt::Key_Left);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(panRight()));
+	a = new TAction(this, "move_right", QT_TR_NOOP("Move &right"), Qt::ALT | Qt::Key_Right);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(panLeft()));
+	a = new TAction(this, "move_up", QT_TR_NOOP("Move &up"), Qt::ALT | Qt::Key_Up);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(panDown()));
+	a = new TAction(this, "move_down", QT_TR_NOOP("Move &down"), Qt::ALT | Qt::Key_Down);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(panUp()));
+};
+
 } // namespace Gui
 

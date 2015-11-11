@@ -478,26 +478,6 @@ protected:
 	TAction* showTimeAct;
 	TAction* toggleDeinterlaceAct;
 
-	// Moving and zoom
-	TAction* moveUpAct;
-	TAction* moveDownAct;
-	TAction* moveLeftAct;
-	TAction* moveRightAct;
-	TAction* incZoomAct;
-	TAction* decZoomAct;
-	TAction* resetZoomAct;
-	TAction* autoZoomAct;
-	TAction* autoZoom169Act;
-	TAction* autoZoom235Act;
-
-	// Rotate Group
-	TActionGroup* rotateGroup;
-	TAction* rotateNoneAct;
-	TAction* rotateClockwiseFlipAct;
-	TAction* rotateClockwiseAct;
-	TAction* rotateCounterclockwiseAct;
-	TAction* rotateCounterclockwiseFlipAct;
-
 #if USE_ADAPTER
 	// Screen Group
 	TActionGroup* screenGroup;
@@ -561,7 +541,7 @@ protected:
 	QMenu* ab_menu; // A-B menu
 	TVideoFilterMenu* videofilter_menu;
 	QMenu* audiofilter_menu;
-	QMenu* zoom_menu;
+	TVideoZoomAndPanMenu* zoom_and_pan_menu;
 	TRotateMenu* rotate_menu;
 	TOnTopMenu* ontop_menu;
 #if USE_ADAPTER
