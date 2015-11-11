@@ -9,125 +9,184 @@ class TCore;
 
 namespace Gui {
 
-class TAudioChannelMenu : public QMenu {
-	Q_OBJECT
 
+class TMenu : public QMenu {
+	Q_OBJECT
+public:
+	TMenu(QWidget* parent,
+		  QObject* atranslator,
+		  const QString& name,
+		  const QString& text,
+		  const QString& icon);
+protected:
+	virtual void changeEvent(QEvent* event);
+protected slots:
+	virtual void onAboutToShow();
+private:
+	QString text_en;
+	QObject* translator;
+	void retranslateStrings();
+};
+
+
+class TAspectMenu : public TMenu {
+public:
+	explicit TAspectMenu(QWidget* parent, TCore* c);
+	TActionGroup* group;
+protected:
+	virtual void onAboutToShow();
+private:
+	TCore* core;
+};
+
+
+class TAudioChannelMenu : public TMenu {
 public:
 	explicit TAudioChannelMenu(QWidget* parent, TCore* c);
-
-	TActionGroup* channelsGroup;
-	void retranslateStrings();
-
+	TActionGroup* group;
+protected:
+	virtual void onAboutToShow();
 private:
 	TCore* core;
-
-	TActionGroupItem* channelsStereoAct;
-	TActionGroupItem* channelsSurroundAct;
-	TActionGroupItem* channelsFull51Act;
-	TActionGroupItem* channelsFull61Act;
-	TActionGroupItem* channelsFull71Act;
-
-private slots:
-	void onAboutToShow();
 };
 
-class TCCMenu : public QMenu {
-	Q_OBJECT
 
+class TCCMenu : public TMenu {
 public:
 	explicit TCCMenu(QWidget* parent, TCore* c);
-
-	void retranslateStrings();
-
+protected:
+	virtual void onAboutToShow();
 private:
 	TCore* core;
-
-	TActionGroup* ccGroup;
-	TActionGroupItem* ccNoneAct;
-	TActionGroupItem* ccChannel1Act;
-	TActionGroupItem* ccChannel2Act;
-	TActionGroupItem* ccChannel3Act;
-	TActionGroupItem* ccChannel4Act;
-
-private slots:
-	void onAboutToShow();
+	TActionGroup* group;
 };
 
-class TSubFPSMenu : public QMenu {
-	Q_OBJECT
 
+class TDeinterlaceMenu : public TMenu {
 public:
-	explicit TSubFPSMenu(QWidget* parent, TCore* c);
-
-	TActionGroup* subFPSGroup;
-	void retranslateStrings();
-
+	explicit TDeinterlaceMenu(QWidget* parent, TCore* c);
+	TActionGroup* group;
+protected:
+	virtual void onAboutToShow();
 private:
 	TCore* core;
-
-	TActionGroupItem* subFPSNoneAct;
-	TActionGroupItem* subFPS23976Act;
-	TActionGroupItem* subFPS24Act;
-	TActionGroupItem* subFPS25Act;
-	TActionGroupItem* subFPS29970Act;
-	TActionGroupItem* subFPS30Act;
-
-private slots:
-	void onAboutToShow();
 };
 
-class TOnTopMenu : public QMenu {
-	Q_OBJECT
 
+class TOnTopMenu : public TMenu {
 public:
 	explicit TOnTopMenu(QWidget* parent);
-
-	void retranslateStrings();
-
+protected:
+	virtual void onAboutToShow();
 private:
-	TActionGroup* onTopActionGroup;
-	TActionGroupItem* onTopAlwaysAct;
-	TActionGroupItem* onTopNeverAct;
-	TActionGroupItem* onTopWhilePlayingAct;
+	TActionGroup* group;
+};
 
-	TAction* toggleStayOnTopAct;
+
+class TOSDMenu : public TMenu {
+public:
+	explicit TOSDMenu(QWidget* parent, TCore* c);
+protected:
+	virtual void onAboutToShow();
+private:
+	TCore* core;
+	TActionGroup* group;
+};
+
+
+class TRotateMenu : public TMenu {
+public:
+	explicit TRotateMenu(QWidget* parent, TCore* c);
+	TActionGroup* group;
+protected:
+	virtual void onAboutToShow();
+private:
+	TCore* core;
+};
+
+
+class TStereoMenu : public TMenu {
+public:
+	explicit TStereoMenu(QWidget* parent, TCore* c);
+	TActionGroup* group;
+protected:
+	virtual void onAboutToShow();
+private:
+	TCore* core;
+};
+
+
+class TSubFPSMenu : public TMenu {
+public:
+	explicit TSubFPSMenu(QWidget* parent, TCore* c);
+	TActionGroup* group;
+protected:
+	virtual void onAboutToShow();
+private:
+	TCore* core;
+};
+
+
+class TVideoFilterMenu : public TMenu {
+	Q_OBJECT
+public:
+	explicit TVideoFilterMenu(QWidget* parent, TCore* c);
+	void setEnabledX(bool enable);
+protected:
+	virtual void onAboutToShow();
+private:
+	TCore* core;
+
+	QActionGroup* group;
+	TAction* postProcessingAct;
+	TAction* deblockAct;
+	TAction* deringAct;
+	TAction* gradfunAct;
+	TAction* addNoiseAct;
+	TAction* addLetterboxAct;
+	TAction* upscaleAct;
+	TAction* phaseAct;
+
+	// Denoise Action Group
+	TActionGroup* denoiseGroup;
+	TAction* denoiseNoneAct;
+	TAction* denoiseNormalAct;
+	TAction* denoiseSoftAct;
+
+	// Blur-sharpen group
+	TActionGroup* unsharpGroup;
+	TAction* unsharpNoneAct;
+	TAction* blurAct;
+	TAction* sharpenAct;
 
 private slots:
-	void onAboutToShow();
+	void onAboutToShowDenoise();
+	void onAboutToShowUnSharp();
 };
 
 
 class TVideoSizeGroup : public TActionGroup {
 	Q_OBJECT
-
 public:
 	explicit TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw);
-
 public slots:
 	void enableVideoSizeGroup(bool on);
 	void updateVideoSizeGroup();
-
 private:
 	TPlayerWindow* playerWindow;
-
 	void uncheck();
 };
 
-class TVideoSizeMenu : public QMenu {
-	Q_OBJECT
 
+class TVideoSizeMenu : public TMenu {
 public:
 	TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw);
-
 	void enableVideoSize(bool on);
-	void retranslateStrings();
-
+protected:
+	virtual void onAboutToShow();
 private:
-	TVideoSizeGroup* sizeGroup;
+	TVideoSizeGroup* group;
 	TAction* doubleSizeAct;
-
-private slots:
-	void onAboutToShow();
 };
 
 } // namespace Gui

@@ -28,6 +28,7 @@
 #include "core.h"
 #include "gui/guiconfig.h"
 #include "gui/pref/dialog.h"
+#include "gui/action/menus.h"
 
 #ifdef Q_OS_WIN
 #ifdef AVOID_SCREENSAVER
@@ -58,11 +59,6 @@ namespace Gui {
 
 class TAction;
 class TActionGroup;
-class TVideoSizeMenu;
-class TAudioChannelMenu;
-class TOnTopMenu;
-class TCCMenu;
-class TSubFPSMenu;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
@@ -103,8 +99,6 @@ public:
 
 	virtual void loadConfig();
 	virtual void saveConfig();
-
-	void retranslate() { retranslateStrings(); }
 
 public slots:
 	virtual void open(const QString& file); // Generic open, autodetect type.
@@ -292,7 +286,6 @@ signals:
 	void requestRestart();
 
 protected:
-	virtual void retranslateStrings();
 	virtual void closeEvent(QCloseEvent* e);
 	virtual void changeEvent(QEvent* event);
 	virtual void hideEvent(QHideEvent* event);
@@ -393,14 +386,6 @@ protected:
 	TAction* flipAct;
 	TAction* mirrorAct;
 	TAction* stereo3dAct;
-	TAction* postProcessingAct;
-	TAction* phaseAct;
-	TAction* deblockAct;
-	TAction* deringAct;
-	TAction* gradfunAct;
-	TAction* addNoiseAct;
-	TAction* addLetterboxAct;
-	TAction* upscaleAct;
 
 	// Menu Audio
 	TAction* audioEqualizerAct;
@@ -461,10 +446,6 @@ protected:
 	TAction* showConfigAct;
 	TAction* aboutThisAct;
 
-	// OSD
-	TAction* incOSDScaleAct;
-	TAction* decOSDScaleAct;
-
 	// TPlaylist
 	TAction* playPrevAct;
 	TAction* playNextAct;
@@ -509,49 +490,6 @@ protected:
 	TAction* autoZoom169Act;
 	TAction* autoZoom235Act;
 
-	// OSD Action Group 
-	TActionGroup* osdGroup;
-	TAction* osdNoneAct;
-	TAction* osdSeekAct;
-	TAction* osdTimerAct;
-	TAction* osdTotalAct;
-
-	// Denoise Action Group
-	TActionGroup* denoiseGroup;
-	TAction* denoiseNoneAct;
-	TAction* denoiseNormalAct;
-	TAction* denoiseSoftAct;
-
-	// Blur-sharpen group
-	TActionGroup* unsharpGroup;
-	TAction* unsharpNoneAct;
-	TAction* blurAct;
-	TAction* sharpenAct;
-
-	// Deinterlace Action Group
-	TActionGroup* deinterlaceGroup;
-	TAction* deinterlaceNoneAct;
-	TAction* deinterlaceL5Act;
-	TAction* deinterlaceYadif0Act;
-	TAction* deinterlaceYadif1Act;
-	TAction* deinterlaceLBAct;
-	TAction* deinterlaceKernAct;
-
-	// Aspect Action Group
-	TActionGroup* aspectGroup;
-	TAction* aspectDetectAct;
-	TAction* aspectNoneAct;
-	TAction* aspect11Act;		// 1:1
-	TAction* aspect32Act;		// 3:2
-	TAction* aspect43Act;		// 4:3
-	TAction* aspect118Act;		// 11:8
-	TAction* aspect54Act;		// 5:4
-	TAction* aspect149Act;		// 14:9
-	TAction* aspect1410Act;	// 14:10
-	TAction* aspect169Act;		// 16:9
-	TAction* aspect1610Act;	// 16:10
-	TAction* aspect235Act;		// 2.35:1
-
 	// Rotate Group
 	TActionGroup* rotateGroup;
 	TAction* rotateNoneAct;
@@ -565,14 +503,6 @@ protected:
 	TActionGroup* screenGroup;
 	TAction* screenDefaultAct;
 #endif
-
-	// Stereo Mode Action Group
-	TActionGroup* stereoGroup;
-	TAction* stereoAct;
-	TAction* leftChannelAct;
-	TAction* rightChannelAct;
-	TAction* monoAct;
-	TAction* reverseAct;
 
 	// Other groups
 #if PROGRAM_SWITCH
@@ -620,21 +550,19 @@ protected:
 	QMenu* titles_menu;
 	QMenu* chapters_menu;
 	QMenu* angles_menu;
-	QMenu* aspect_menu;
+	TAspectMenu* aspect_menu;
 	QMenu* osd_menu;
-	QMenu* deinterlace_menu;
-	QMenu* denoise_menu;
-	QMenu* unsharp_menu;
+	TDeinterlaceMenu* deinterlace_menu;
 	TVideoSizeMenu* videosize_menu;
 	TAudioChannelMenu* audiochannels_menu;
-	QMenu* stereomode_menu;
+	TStereoMenu* stereomode_menu;
 
 	QMenu* speed_menu;
 	QMenu* ab_menu; // A-B menu
-	QMenu* videofilter_menu;
+	TVideoFilterMenu* videofilter_menu;
 	QMenu* audiofilter_menu;
 	QMenu* zoom_menu;
-	QMenu* rotate_menu;
+	TRotateMenu* rotate_menu;
 	TOnTopMenu* ontop_menu;
 #if USE_ADAPTER
 	QMenu* screen_menu;
@@ -735,6 +663,7 @@ private:
 
 	void enterFullscreenOnPlay();
 	void checkPendingActionsToRun();
+	void retranslateStrings();
 };
 
 } // namespace Gui

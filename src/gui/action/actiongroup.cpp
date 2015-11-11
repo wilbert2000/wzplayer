@@ -25,40 +25,26 @@ namespace Gui {
 
 TActionGroupItem::TActionGroupItem(QObject* parent,
 								   TActionGroup* group,
-								   const char* name,
-								   int data,
-								   bool autoadd)
-	: TAction(parent, name, autoadd) {
-
-	setData(data);
-	setCheckable(true);
-	if (group)
-		group->addAction(this);
-}
-
-TActionGroupItem::TActionGroupItem(QObject* parent,
-								   TActionGroup* group,
+								   const QString& name,
 								   const QString& text,
-								   const char* name,
 								   int data,
 								   bool autoadd)
-	: TAction(parent, name, autoadd) {
+	: TAction(parent, name, text, autoadd) {
 
 	setData(data);
-	setText(text);
 	setCheckable(true);
 	if (group)
 		group->addAction(this);
 }
 
 
-TActionGroup::TActionGroup(const QString& name, QObject* parent)
+TActionGroup::TActionGroup(QObject* parent, const QString& name)
 	: QActionGroup(parent) {
 
 	setObjectName(name);
 	setExclusive(true);
-	connect(this, SIGNAL(triggered(QAction *)),
-			this, SLOT(itemTriggered(QAction *)));
+	connect(this, SIGNAL(triggered(QAction*)),
+			this, SLOT(itemTriggered(QAction*)));
 }
 
 QAction* TActionGroup::setChecked(int ID) {

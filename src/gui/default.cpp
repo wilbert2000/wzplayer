@@ -37,7 +37,6 @@ TDefault::TDefault() : TBasePlus() {
 
 	createStatusBar();
 	createActions();
-	createMenus();
 }
 
 TDefault::~TDefault() {
@@ -47,24 +46,19 @@ void TDefault::createActions() {
 	qDebug("Gui::TDefault::createActions");
 
 	// Statusbar
-	viewVideoInfoAct = new TAction(this, "toggle_video_info");
+	viewVideoInfoAct = new TAction(this, "toggle_video_info", QT_TR_NOOP("&Video info"), "view_video_info");
 	viewVideoInfoAct->setCheckable(true);
+	statusbar_menu->addAction(viewVideoInfoAct);
 	connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
 			video_info_display, SLOT(setVisible(bool)));
 
-	viewFrameCounterAct = new TAction(this, "toggle_frame_counter");
+	viewFrameCounterAct = new TAction(this, "toggle_frame_counter", QT_TR_NOOP("&Frame counter"), "frame_counter");
 	viewFrameCounterAct->setCheckable(true);
+	statusbar_menu->addAction(viewFrameCounterAct);
 	connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
 			frame_display, SLOT(setVisible(bool)));
-}
 
-void TDefault::createMenus() {
-
-	statusbar_menu = new QMenu(this);
-	statusbar_menu->addAction(viewVideoInfoAct);
-	statusbar_menu->addAction(viewFrameCounterAct);
-	toolbar_menu->addSeparator();
-	toolbar_menu->addMenu(statusbar_menu);
+	playOrPauseAct->setIcon(Images::icon("play"));
 }
 
 void TDefault::onStateChanged(TCore::State state) {
@@ -150,18 +144,6 @@ void TDefault::createStatusBar() {
 	connect(this, SIGNAL(videoInfoChanged(int,int,double)),
 			 this, SLOT(displayVideoInfo(int,int,double)));
 
-}
-
-void TDefault::retranslateStrings() {
-	//qDebug("Gui::TDefault::retranslateStrings");
-
-	TBasePlus::retranslateStrings();
-
-	// Change the icon of the play/pause action
-	playOrPauseAct->setIcon(Images::icon("play"));
-
-	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info"));
-	viewFrameCounterAct->change(Images::icon("frame_counter"), tr("&Frame counter"));
 }
 
 void TDefault::displayTime(QString text) {

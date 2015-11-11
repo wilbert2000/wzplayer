@@ -11,171 +11,344 @@ using namespace Settings;
 
 namespace Gui {
 
-TAudioChannelMenu::TAudioChannelMenu(QWidget *parent, TCore* c)
+TMenu::TMenu(QWidget* parent,
+			 QObject* atranslator,
+			 const QString& name,
+			 const QString& text,
+			 const QString& icon)
 	: QMenu(parent)
-	, core(c) {
+	, text_en(text)
+	, translator(atranslator) {
 
-	menuAction()->setObjectName("audiochannels_menu");
-	channelsGroup = new TActionGroup("channels", this);
-	/* channelsDefaultAct = new TActionGroupItem(this, channelsGroup, "channels_default", TMediaSettings::ChDefault); */
-	channelsStereoAct = new TActionGroupItem(this, channelsGroup, "channels_stereo", TMediaSettings::ChStereo);
-	channelsSurroundAct = new TActionGroupItem(this, channelsGroup, "channels_surround", TMediaSettings::ChSurround);
-	channelsFull51Act = new TActionGroupItem(this, channelsGroup, "channels_ful51", TMediaSettings::ChFull51);
-	channelsFull61Act = new TActionGroupItem(this, channelsGroup, "channels_ful61", TMediaSettings::ChFull61);
-	channelsFull71Act = new TActionGroupItem(this, channelsGroup, "channels_ful71", TMediaSettings::ChFull71);
-	addActions(channelsGroup->actions());
-	connect(channelsGroup, SIGNAL(activated(int)),
-			core, SLOT(setAudioChannels(int)));
-
+	menuAction()->setObjectName(name);
+	menuAction()->setIcon(Images::icon(icon));
 	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
+	retranslateStrings();
 }
 
-void TAudioChannelMenu::retranslateStrings() {
+void TMenu::retranslateStrings() {
+	menuAction()->setText(translator->tr(text_en.toUtf8().constData()));
+}
 
-	menuAction()->setText(tr("&Channels"));
-	menuAction()->setIcon(Images::icon("audio_channels"));
+void TMenu::changeEvent(QEvent* e) {
 
-	/* channelsDefaultAct->change(tr("&Default")); */
-	channelsStereoAct->change(tr("&Stereo"));
-	channelsSurroundAct->change(tr("&4.0 Surround"));
-	channelsFull51Act->change(tr("&5.1 Surround"));
-	channelsFull61Act->change(tr("&6.1 Surround"));
-	channelsFull71Act->change(tr("&7.1 Surround"));
+	if (e->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	} else {
+		QMenu::changeEvent(e);
+	}
+}
+
+void TMenu::onAboutToShow() {
+}
+
+TAspectMenu::TAspectMenu(QWidget* parent, TCore* c)
+	: TMenu(parent, this, "aspect_menu", QT_TR_NOOP("&Aspect ratio"), "aspect")
+	, core(c) {
+
+	group = new TActionGroup(this, "aspect");
+	new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TMediaSettings::AspectAuto);
+	new TActionGroupItem(this, group, "aspect_1:1", QT_TR_NOOP("1&:1"), TMediaSettings::Aspect11);
+	new TActionGroupItem(this, group, "aspect_5:4", QT_TR_NOOP("&5:4"), TMediaSettings::Aspect54);
+	new TActionGroupItem(this, group, "aspect_4:3", QT_TR_NOOP("&4:3"), TMediaSettings::Aspect43);
+	new TActionGroupItem(this, group, "aspect_11:8", QT_TR_NOOP("11:&8"), TMediaSettings::Aspect118);
+	new TActionGroupItem(this, group, "aspect_14:10", QT_TR_NOOP("1&4:10"), TMediaSettings::Aspect1410);
+	new TActionGroupItem(this, group, "aspect_3:2", QT_TR_NOOP("&3:2"), TMediaSettings::Aspect32);
+	new TActionGroupItem(this, group, "aspect_14:9", QT_TR_NOOP("&14:9"), TMediaSettings::Aspect149);
+	new TActionGroupItem(this, group, "aspect_16:10", QT_TR_NOOP("1&6:10"), TMediaSettings::Aspect1610);
+	new TActionGroupItem(this, group, "aspect_16:9", QT_TR_NOOP("16:&9"), TMediaSettings::Aspect169);
+	new TActionGroupItem(this, group, "aspect_2.35:1", QT_TR_NOOP("&2.35:1"), TMediaSettings::Aspect235);
+	addSeparator();
+	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TMediaSettings::AspectNone);
+
+	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
+}
+
+void TAspectMenu::onAboutToShow() {
+	group->setChecked(core->mset.aspect_ratio_id);
+}
+
+
+TAudioChannelMenu::TAudioChannelMenu(QWidget *parent, TCore* c)
+	: TMenu(parent, this, "audiochannels_menu", QT_TR_NOOP("&Channels"), "audio_channels")
+	, core(c) {
+
+	group = new TActionGroup(this, "channels");
+	new TActionGroupItem(this, group, "channels_stereo", QT_TR_NOOP("&Stereo"), TMediaSettings::ChStereo);
+	new TActionGroupItem(this, group, "channels_surround", QT_TR_NOOP("&4.0 Surround"), TMediaSettings::ChSurround);
+	new TActionGroupItem(this, group, "channels_ful51", QT_TR_NOOP("&5.1 Surround"), TMediaSettings::ChFull51);
+	new TActionGroupItem(this, group, "channels_ful61", QT_TR_NOOP("&6.1 Surround"), TMediaSettings::ChFull61);
+	new TActionGroupItem(this, group, "channels_ful71", QT_TR_NOOP("&7.1 Surround"), TMediaSettings::ChFull71);
+
+	connect(group, SIGNAL(activated(int)), core, SLOT(setAudioChannels(int)));
 }
 
 void TAudioChannelMenu::onAboutToShow() {
-	channelsGroup->setChecked(core->mset.audio_use_channels);
+	group->setEnabled(core->state() != TCore::Stopped && core->mdat.audios.count() > 0);
+	group->setChecked(core->mset.audio_use_channels);
 }
 
 
 TCCMenu::TCCMenu(QWidget *parent, TCore* c)
-	: QMenu(parent)
+	: TMenu(parent, this, "closed_captions_menu", QT_TR_NOOP("&Closed captions"), "closed_caption")
 	, core(c) {
 
-	menuAction()->setObjectName("closed_captions_menu");
-	ccGroup = new TActionGroup("cc", this);
-	ccNoneAct = new TActionGroupItem(this, ccGroup, "cc_none", 0);
-	ccChannel1Act = new TActionGroupItem(this, ccGroup, "cc_ch_1", 1);
-	ccChannel2Act = new TActionGroupItem(this, ccGroup, "cc_ch_2", 2);
-	ccChannel3Act = new TActionGroupItem(this, ccGroup, "cc_ch_3", 3);
-	ccChannel4Act = new TActionGroupItem(this, ccGroup, "cc_ch_4", 4);
-	addActions(ccGroup->actions());
-	connect(ccGroup, SIGNAL(activated(int)),
+	group = new TActionGroup(this, "cc");
+	new TActionGroupItem(this, group, "cc_none", QT_TR_NOOP("&Off"), 0);
+	new TActionGroupItem(this, group, "cc_ch_1", QT_TR_NOOP("&1"), 1);
+	new TActionGroupItem(this, group, "cc_ch_2", QT_TR_NOOP("&2"), 2);
+	new TActionGroupItem(this, group, "cc_ch_3", QT_TR_NOOP("&3"), 3);
+	new TActionGroupItem(this, group, "cc_ch_4", QT_TR_NOOP("&4"), 4);
+
+	connect(group, SIGNAL(activated(int)),
 			core, SLOT(changeClosedCaptionChannel(int)));
-
-	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
-}
-
-void TCCMenu::retranslateStrings() {
-
-	menuAction()->setText(tr("&Closed captions"));
-	menuAction()->setIcon(Images::icon("closed_caption"));
-
-	ccNoneAct->change(tr("&Off", "closed captions menu"));
-	ccChannel1Act->change("&1");
-	ccChannel2Act->change("&2");
-	ccChannel3Act->change("&3");
-	ccChannel4Act->change("&4");
 }
 
 void TCCMenu::onAboutToShow() {
-	ccGroup->setChecked(core->mset.closed_caption_channel);
+	group->setChecked(core->mset.closed_caption_channel);
 }
 
 
-TSubFPSMenu::TSubFPSMenu(QWidget *parent, TCore* c)
-	: QMenu(parent)
+TDeinterlaceMenu::TDeinterlaceMenu(QWidget* parent, TCore* c)
+	: TMenu(parent, this, "deinterlace_menu", QT_TR_NOOP("&Deinterlace"), "deinterlace")
 	, core(c) {
 
-	menuAction()->setObjectName("subfps_menu");
-	subFPSGroup = new TActionGroup("subfps", this);
-	subFPSNoneAct = new TActionGroupItem(this, subFPSGroup, "sub_fps_none", TMediaSettings::SFPS_None);
-	/* subFPS23Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23", TMediaSettings::SFPS_23); */
-	subFPS23976Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_23976", TMediaSettings::SFPS_23976);
-	subFPS24Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_24", TMediaSettings::SFPS_24);
-	subFPS25Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_25", TMediaSettings::SFPS_25);
-	subFPS29970Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_29970", TMediaSettings::SFPS_29970);
-	subFPS30Act = new TActionGroupItem(this, subFPSGroup, "sub_fps_30", TMediaSettings::SFPS_30);
-	addActions(subFPSGroup->actions());
-	connect(subFPSGroup, SIGNAL(activated(int)),
-			core, SLOT(changeExternalSubFPS(int)));
-
-	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
+	group = new TActionGroup(this, "deinterlace");
+	new TActionGroupItem(this, group, "deinterlace_none", QT_TR_NOOP("&None"), TMediaSettings::NoDeinterlace);
+	new TActionGroupItem(this, group, "deinterlace_l5", QT_TR_NOOP("&Lowpass5"), TMediaSettings::L5);
+	new TActionGroupItem(this, group, "deinterlace_yadif0", QT_TR_NOOP("&Yadif (normal)"), TMediaSettings::Yadif);
+	new TActionGroupItem(this, group, "deinterlace_yadif1", QT_TR_NOOP("Y&adif (double framerate)"), TMediaSettings::Yadif_1);
+	new TActionGroupItem(this, group, "deinterlace_lb", QT_TR_NOOP("Linear &Blend"), TMediaSettings::LB);
+	new TActionGroupItem(this, group, "deinterlace_kern", QT_TR_NOOP("&Kerndeint"), TMediaSettings::Kerndeint);
+	connect(group, SIGNAL(activated(int)), core, SLOT(changeDeinterlace(int)));
 }
 
-void TSubFPSMenu::retranslateStrings() {
-
-	menuAction()->setText(tr("F&rames per second"));
-	menuAction()->setIcon(Images::icon("subfps"));
-
-	subFPSNoneAct->change(tr("&Default", "subfps menu"));
-	/* subFPS23Act->change("2&3"); */
-	subFPS23976Act->change("23.9&76");
-	subFPS24Act->change("2&4");
-	subFPS25Act->change("2&5");
-	subFPS29970Act->change("29.&970");
-	subFPS30Act->change("3&0");
-}
-
-void TSubFPSMenu::onAboutToShow() {
-	subFPSGroup->setEnabled(core->haveExternalSubs());
-	subFPSGroup->setChecked(core->mset.external_subtitles_fps);
+void TDeinterlaceMenu::onAboutToShow() {
+	group->setChecked(core->mset.current_deinterlacer);
 }
 
 
 TOnTopMenu::TOnTopMenu(QWidget *parent) :
-	QMenu(parent) {
+	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("S&tay on top"), "ontop") {
 
-	menuAction()->setObjectName("ontop_menu");
+	group = new TActionGroup(this, "ontop");
+	new TActionGroupItem(this, group, "on_top_always", QT_TR_NOOP("&Always"), TPreferences::AlwaysOnTop);
+	new TActionGroupItem(this, group, "on_top_never", QT_TR_NOOP("&Never"), TPreferences::NeverOnTop);
+	new TActionGroupItem(this, group, "on_top_playing", QT_TR_NOOP("While &playing"), TPreferences::WhilePlayingOnTop);
+	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
 
-	onTopActionGroup = new TActionGroup("ontop", this);
-	onTopAlwaysAct = new TActionGroupItem(this, onTopActionGroup, "on_top_always", TPreferences::AlwaysOnTop);
-	onTopNeverAct = new TActionGroupItem(this, onTopActionGroup, "on_top_never", TPreferences::NeverOnTop);
-	onTopWhilePlayingAct = new TActionGroupItem(this, onTopActionGroup, "on_top_playing", TPreferences::WhilePlayingOnTop);
-	addActions(onTopActionGroup->actions());
-	connect(onTopActionGroup , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
-
-	toggleStayOnTopAct = new TAction(this, "toggle_stay_on_top");
+	TAction* toggleStayOnTopAct = new TAction(this, QT_TR_NOOP("toggle_stay_on_top"), "Toggle stay on top");
 	connect(toggleStayOnTopAct, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
-
-	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
-}
-
-void TOnTopMenu::retranslateStrings() {
-
-	menuAction()->setText(tr("S&tay on top"));
-	menuAction()->setIcon(Images::icon("ontop"));
-
-	onTopAlwaysAct->change(tr("&Always"));
-	onTopNeverAct->change(tr("&Never"));
-	onTopWhilePlayingAct->change(tr("While &playing"));
-
-	toggleStayOnTopAct->change(tr("Toggle stay on top"));
 }
 
 void TOnTopMenu::onAboutToShow() {
-	onTopActionGroup->setChecked((int) pref->stay_on_top);
+	group->setChecked((int) pref->stay_on_top);
 }
 
 
+TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
+	: TMenu(parent, this, "osd_menu", QT_TR_NOOP("&OSD"), "osd")
+	, core(c) {
+
+	group = new TActionGroup(this, "osd");
+	new TActionGroupItem(this, group, "osd_none", QT_TR_NOOP("Subtitles onl&y"), Settings::TPreferences::None);
+	new TActionGroupItem(this, group, "osd_seek", QT_TR_NOOP("Volume + &Seek"), Settings::TPreferences::Seek);
+	new TActionGroupItem(this, group, "osd_timer", QT_TR_NOOP("Volume + Seek + &Timer"), Settings::TPreferences::SeekTimer);
+	new TActionGroupItem(this, group, "osd_total", QT_TR_NOOP("Volume + Seek + Timer + T&otal time"), Settings::TPreferences::SeekTimerTotal);
+	connect(group, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)));
+
+	addSeparator();
+	TAction* a = new TAction(this, "inc_osd_scale", QT_TR_NOOP("Size &+"), Qt::SHIFT | Qt::Key_U);
+	connect(a, SIGNAL(triggered()), core, SLOT(incOSDScale()));
+	a = new TAction(this, "dec_osd_scale", QT_TR_NOOP("Size &-"), Qt::SHIFT | Qt::Key_Y);
+	connect(a, SIGNAL(triggered()), core, SLOT(decOSDScale()));
+}
+
+void TOSDMenu::onAboutToShow() {
+	group->setChecked((int) pref->osd_level);
+}
+
+TRotateMenu::TRotateMenu(QWidget* parent, TCore* c)
+	: TMenu(parent, this, "rotate_menu", QT_TR_NOOP("&Rotate"), "rotate")
+	, core(c) {
+
+	group = new TActionGroup(this, "rotate");
+	new TActionGroupItem(this, group, "rotate_none", QT_TR_NOOP("&Off"), TMediaSettings::NoRotate);
+	new TActionGroupItem(this, group, "rotate_clockwise_flip", QT_TR_NOOP("&Rotate by 90 degrees clockwise and flip"), TMediaSettings::Clockwise_flip);
+	new TActionGroupItem(this, group, "rotate_clockwise", QT_TR_NOOP("Rotate by 90 degrees &clockwise"), TMediaSettings::Clockwise);
+	new TActionGroupItem(this, group, "rotate_counterclockwise", QT_TR_NOOP("Rotate by 90 degrees counterclock&wise"), TMediaSettings::Counterclockwise);
+	new TActionGroupItem(this, group, "rotate_counterclockwise_flip", QT_TR_NOOP("Rotate by 90 degrees counterclockwise and &flip"), TMediaSettings::Counterclockwise_flip);
+	connect(group, SIGNAL(activated(int)), core, SLOT(changeRotate(int)));
+}
+
+void TRotateMenu::onAboutToShow() {
+	group->setChecked(core->mset.rotate);
+}
+
+TStereoMenu::TStereoMenu(QWidget *parent, TCore* c)
+	: TMenu(parent, this, "stereomode_menu", QT_TR_NOOP("&Stereo mode"), "stereo_mode")
+	, core(c) {
+
+	group = new TActionGroup(this, "stereo");
+	new TActionGroupItem(this, group, "stereo", QT_TR_NOOP("&Stereo"), TMediaSettings::Stereo);
+	new TActionGroupItem(this, group, "left_channel", QT_TR_NOOP("&Left channel"), TMediaSettings::Left);
+	new TActionGroupItem(this, group, "right_channel", QT_TR_NOOP("&Right channel"), TMediaSettings::Right);
+	new TActionGroupItem(this, group, "mono", QT_TR_NOOP("&Mono"), TMediaSettings::Mono);
+	new TActionGroupItem(this, group, "reverse_channels", QT_TR_NOOP("Re&verse"), TMediaSettings::Reverse);
+
+	connect(group, SIGNAL(activated(int)), core, SLOT(setStereoMode(int)));
+}
+
+void TStereoMenu::onAboutToShow() {
+	group->setEnabled(core->state() != TCore::Stopped && core->mdat.audios.count() > 0);
+	group->setChecked(core->mset.stereo_mode);
+}
+
+
+TSubFPSMenu::TSubFPSMenu(QWidget *parent, TCore* c)
+	: TMenu(parent, this, "subfps_menu", QT_TR_NOOP("F&rames per second"), "subfps")
+	, core(c) {
+
+	group = new TActionGroup(this, "subfps");
+	new TActionGroupItem(this, group, "sub_fps_none", QT_TR_NOOP("&Default"), TMediaSettings::SFPS_None);
+	new TActionGroupItem(this, group, "sub_fps_23976", QT_TR_NOOP("23.9&76"), TMediaSettings::SFPS_23976);
+	new TActionGroupItem(this, group, "sub_fps_24", QT_TR_NOOP("2&4"), TMediaSettings::SFPS_24);
+	new TActionGroupItem(this, group, "sub_fps_25", QT_TR_NOOP("2&5"), TMediaSettings::SFPS_25);
+	new TActionGroupItem(this, group, "sub_fps_29970", QT_TR_NOOP("29.&970"), TMediaSettings::SFPS_29970);
+	new TActionGroupItem(this, group, "sub_fps_30", QT_TR_NOOP("3&0"), TMediaSettings::SFPS_30);
+
+	connect(group, SIGNAL(activated(int)), core, SLOT(changeExternalSubFPS(int)));
+}
+
+void TSubFPSMenu::onAboutToShow() {
+	group->setEnabled(core->haveExternalSubs());
+	group->setChecked(core->mset.external_subtitles_fps);
+}
+
+TVideoFilterMenu::TVideoFilterMenu(QWidget *parent, TCore *c)
+	: TMenu(parent, this, "videofilter_menu", QT_TR_NOOP("F&ilters"), "video_filters")
+	, core(c) {
+
+	group = new QActionGroup(this);
+	group->setExclusive(false);
+
+	postProcessingAct = new TAction(this, "postprocessing", QT_TR_NOOP("&Postprocessing"));
+	postProcessingAct->setCheckable(true);
+	group->addAction(postProcessingAct);
+	connect(postProcessingAct, SIGNAL(toggled(bool)),
+			 core, SLOT(togglePostprocessing(bool)));
+
+	deblockAct = new TAction(this, "deblock", QT_TR_NOOP("&Deblock"));
+	deblockAct->setCheckable(true);
+	group->addAction(deblockAct);
+	connect(deblockAct, SIGNAL(toggled(bool)),
+			 core, SLOT(toggleDeblock(bool)));
+
+	deringAct = new TAction(this, "dering", QT_TR_NOOP("De&ring"));
+	deringAct->setCheckable(true);
+	group->addAction(deringAct);
+	connect(deringAct, SIGNAL(toggled(bool)),
+			 core, SLOT(toggleDering(bool)));
+
+	gradfunAct = new TAction(this, "gradfun", QT_TR_NOOP("Debanding (&gradfun)"));
+	gradfunAct->setCheckable(true);
+	group->addAction(gradfunAct);
+	connect(gradfunAct, SIGNAL(toggled(bool)),
+			 core, SLOT(toggleGradfun(bool)));
+
+	addNoiseAct = new TAction(this, "add_noise", QT_TR_NOOP("Add n&oise"));
+	addNoiseAct->setCheckable(true);
+	group->addAction(addNoiseAct);
+	connect(addNoiseAct, SIGNAL(toggled(bool)),
+			 core, SLOT(toggleNoise(bool)));
+
+	addLetterboxAct = new TAction(this, "add_letterbox", QT_TR_NOOP("Add &black borders"), "letterbox");
+	addLetterboxAct->setCheckable(true);
+	group->addAction(addLetterboxAct);
+	connect(addLetterboxAct, SIGNAL(toggled(bool)),
+			 core, SLOT(changeLetterbox(bool)));
+
+	upscaleAct = new TAction(this, "upscaling", QT_TR_NOOP("Soft&ware scaling"), "upscaling");
+	upscaleAct->setCheckable(true);
+	group->addAction(upscaleAct);
+	connect(upscaleAct, SIGNAL(toggled(bool)),
+			 core, SLOT(changeUpscale(bool)));
+
+	phaseAct = new TAction(this, "autodetect_phase", QT_TR_NOOP("&Autodetect phase"));
+	phaseAct->setCheckable(true);
+	group->addAction(phaseAct);
+	connect(phaseAct, SIGNAL(toggled(bool)),
+			 core, SLOT(toggleAutophase(bool)));
+
+	// Denoise
+	TMenu* menu = new TMenu(this, this, "denoise_menu", QT_TR_NOOP("De&noise"), "denoise");
+	denoiseGroup = new TActionGroup(this, "denoise");
+	denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none", QT_TR_NOOP("&Off"), TMediaSettings::NoDenoise, false);
+	denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", QT_TR_NOOP("&Normal"), TMediaSettings::DenoiseNormal, false);
+	denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", QT_TR_NOOP("&Soft"), TMediaSettings::DenoiseSoft, false);
+	menu->addActions(denoiseGroup->actions());
+	addMenu(menu);
+	connect(denoiseGroup, SIGNAL(activated(int)), core, SLOT(changeDenoise(int)));
+	connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowDenoise()));
+
+	// Unsharp group
+	menu = new TMenu(this, this, "unsharp_menu", QT_TR_NOOP("Blur/S&harp"), "unsharp");
+	unsharpGroup = new TActionGroup(this, "unsharp");
+	unsharpNoneAct = new TActionGroupItem(this, unsharpGroup, "unsharp_off", QT_TR_NOOP("&None"), 0, false);
+	blurAct = new TActionGroupItem(this, unsharpGroup, "blur", QT_TR_NOOP("&Blur"), 1, false);
+	sharpenAct = new TActionGroupItem(this, unsharpGroup, "sharpen", QT_TR_NOOP("&Sharpen"), 2, false);
+	menu->addActions(unsharpGroup->actions());
+	addMenu(menu);
+	connect(unsharpGroup, SIGNAL(activated(int)), core, SLOT(changeUnsharp(int)));
+	connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowUnSharp()));
+}
+
+void TVideoFilterMenu::setEnabledX(bool enable) {
+
+	enable = enable && !core->mdat.noVideo();
+	group->setEnabled(enable);
+	denoiseGroup->setEnabled(enable);
+	unsharpGroup->setEnabled(enable);
+}
+
+void TVideoFilterMenu::onAboutToShow() {
+
+	postProcessingAct->setChecked(core->mset.postprocessing_filter);
+	deblockAct->setChecked(core->mset.deblock_filter);
+	deringAct->setChecked(core->mset.dering_filter);
+	gradfunAct->setChecked(core->mset.gradfun_filter);
+	addNoiseAct->setChecked(core->mset.noise_filter);
+	addLetterboxAct->setChecked(core->mset.add_letterbox);
+	upscaleAct->setChecked(core->mset.upscaling_filter);
+	phaseAct->setChecked(core->mset.phase_filter);
+}
+
+void TVideoFilterMenu::onAboutToShowDenoise() {
+	denoiseGroup->setChecked(core->mset.current_denoiser);
+}
+
+void TVideoFilterMenu::onAboutToShowUnSharp() {
+	unsharpGroup->setChecked(core->mset.current_unsharp);
+}
+
 TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
-	: TActionGroup("size", parent)
+	: TActionGroup(parent, "size")
 	, playerWindow(pw) {
 
 	setEnabled(false);
 
 	TActionGroupItem* a;
-	a = new TActionGroupItem(this, this, "5&0%", "size_50", 50);
-	a = new TActionGroupItem(this, this, "7&5%", "size_75", 75);
-	a = new TActionGroupItem(this, this, "&100%", "size_100", 100);
+	new TActionGroupItem(this, this, "size_50", QT_TR_NOOP("5&0%"), 50, false);
+	new TActionGroupItem(this, this, "size_75", QT_TR_NOOP("7&5%"), 75, false);
+	a = new TActionGroupItem(this, this, "size_100", QT_TR_NOOP("&100%"), 100, false);
 	a->setShortcut(Qt::CTRL | Qt::Key_1);
-	a = new TActionGroupItem(this, this, "1&25%", "size_125", 125);
-	a = new TActionGroupItem(this, this, "15&0%", "size_150", 150);
-	a = new TActionGroupItem(this, this, "1&75%", "size_175", 175);
-	a = new TActionGroupItem(this, this, "&200%", "size_200", 200);
+	new TActionGroupItem(this, this, "size_125", QT_TR_NOOP("1&25%"), 125, false);
+	new TActionGroupItem(this, this, "size_150", QT_TR_NOOP("15&0%"), 150, false);
+	new TActionGroupItem(this, this, "size_175", QT_TR_NOOP("1&75%"), 175, false);
+	a = new TActionGroupItem(this, this, "size_200", QT_TR_NOOP("&200%"), 200, false);
 	a->setShortcut(Qt::CTRL | Qt::Key_2);
-	a = new TActionGroupItem(this, this, "&300%", "size_300", 300);
-	a = new TActionGroupItem(this, this, "&400%", "size_400", 400);
+	new TActionGroupItem(this, this, "size_300", QT_TR_NOOP("&300%"), 300, false);
+	new TActionGroupItem(this, this, "size_400", QT_TR_NOOP("&400%"), 400, false);
 }
 
 void TVideoSizeGroup::uncheck() {
@@ -215,39 +388,27 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 
 
 TVideoSizeMenu::TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw)
-	: QMenu(parent) {
+	: TMenu(parent, this, "videosize_menu", QT_TR_NOOP("Si&ze"), "video_size") {
 
-	menuAction()->setObjectName("videosize_menu");
-	sizeGroup = new TVideoSizeGroup(this, pw);
-	addActions(sizeGroup->actions());
-	connect(sizeGroup, SIGNAL(activated(int)), parent, SLOT(changeSize(int)));
+	group = new TVideoSizeGroup(this, pw);
+	addActions(group->actions());
+	connect(group, SIGNAL(activated(int)), parent, SLOT(changeSize(int)));
 
 	addSeparator();
-	doubleSizeAct = new TAction(Qt::CTRL | Qt::Key_D, this, "toggle_double_size");
-	addAction(doubleSizeAct);
+	doubleSizeAct = new TAction(this, "toggle_double_size", QT_TR_NOOP("&Toggle double size"), Qt::CTRL | Qt::Key_D);
 	connect(doubleSizeAct, SIGNAL(triggered()), parent, SLOT(toggleDoubleSize()));
-
-	connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
-}
-
-void TVideoSizeMenu::retranslateStrings() {
-
-	menuAction()->setText(tr("Si&ze"));
-	menuAction()->setIcon(Images::icon("video_size"));
-	doubleSizeAct->change(tr("&Toggle double size"));
 }
 
 void TVideoSizeMenu::enableVideoSize(bool on) {
 
-	sizeGroup->enableVideoSizeGroup(on);
-	doubleSizeAct->setEnabled(sizeGroup->isEnabled());
+	group->enableVideoSizeGroup(on);
+	doubleSizeAct->setEnabled(group->isEnabled());
 }
 
 void TVideoSizeMenu::onAboutToShow() {
-	//qDebug("TVideoSizeMenu::onAboutToShow");
 
-	sizeGroup->updateVideoSizeGroup();
-	doubleSizeAct->setEnabled(sizeGroup->isEnabled());
+	group->updateVideoSizeGroup();
+	doubleSizeAct->setEnabled(group->isEnabled());
 }
 
 } // namespace Gui

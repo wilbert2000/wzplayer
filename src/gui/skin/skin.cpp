@@ -47,10 +47,10 @@ void TSkin::createActions() {
 
 	playOrPauseAct->setCheckable(true);
 
-	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui");
+	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui", QT_TR_NOOP("&Video info"), "view_video_info");
 	viewVideoInfoAct->setCheckable(true);
 
-	scrollTitleAct = new TAction(this, "toggle_scroll_title_skingui");
+	scrollTitleAct = new TAction(this, "toggle_scroll_title_skingui", QT_TR_NOOP("&Scroll title"), "scroll_title");
 	scrollTitleAct->setCheckable(true);
 }
 
@@ -60,11 +60,8 @@ void TSkin::createMenus() {
 	font.setPixelSize(11);
 	menuBar()->setFont(font);
 
-	statusbar_menu = new QMenu(this);
 	statusbar_menu->addAction(viewVideoInfoAct);
 	statusbar_menu->addAction(scrollTitleAct);
-	toolbar_menu->addSeparator();
-	toolbar_menu->addMenu(statusbar_menu);
 }
 
 void TSkin::createControlWidget() {
@@ -102,14 +99,6 @@ void TSkin::createControlWidget() {
 			mediaBarPanel, SLOT(setScrollingEnabled(bool)));
 
 	mediaBarPanelAction = controlbar->addWidget(mediaBarPanel);
-}
-
-void TSkin::retranslateStrings() {
-
-	TBasePlus::retranslateStrings();
-
-	viewVideoInfoAct->change(Images::icon("view_video_info"), tr("&Video info"));
-	scrollTitleAct->change(Images::icon("scroll_title"), tr("&Scroll title"));
 }
 
 void TSkin::onStateChanged(TCore::State state) {

@@ -27,21 +27,36 @@
 namespace Gui {
 
 class TAction : public QAction {
-
 public:
 	//! Creates a new TAction with name \a name. If \a autoadd is true
 	//! the action will be added to the parent
-	TAction (QObject* parent, const char* name, bool autoadd = true);
+	TAction(QObject* parent,
+			const QString& name,
+			const QString& text,
+			bool autoadd = true);
 
-	TAction (QKeySequence accel, QObject* parent,
-			 const char* name, bool autoadd = true);
+	TAction(QObject* parent,
+			const QString& name,
+			const QString& text,
+			const QString& icon,
+			bool autoadd = true);
+
+	TAction(QObject* parent,
+			const QString& name,
+			const QString& text,
+			const QString& icon,
+			QKeySequence accel,
+			bool autoadd = true);
+
+	TAction(QObject* parent,
+			const QString& name,
+			const QString& text,
+			QKeySequence accel,
+			bool autoadd = true);
 
 	virtual ~TAction();
 
 	void addShortcut(QKeySequence key);
-
-	//! Change the icon and text of the action.
-	void change(const QIcon& icon, const QString& text);
 
 	//! Change the text of the action.
 	void change(const QString& text);
@@ -49,8 +64,15 @@ public:
 	void update(bool check);
 
 protected:
+	virtual bool event(QEvent* event);
+
 	//! Checks if the parent is a QWidget and adds the action to it.
 	void addActionToParent();
+
+private:
+	QString text_en;
+
+	void retranslateStrings();
 };
 
 } // namespace Gui

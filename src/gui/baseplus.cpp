@@ -45,11 +45,11 @@ TBasePlus::TBasePlus()
 	connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
-	quitAct = new TAction(QKeySequence("Ctrl+Q"), this, "quit");
+	quitAct = new TAction(this, "quit", QT_TR_NOOP("&Quit"), "exit", QKeySequence("Ctrl+Q"));
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
 	openMenu->addAction(quitAct);
 
-	showTrayAct = new TAction(this, "show_tray_icon");
+	showTrayAct = new TAction(this, "show_tray_icon", QT_TR_NOOP("S&how icon in system tray"), "systray");
 	showTrayAct->setCheckable(true);
 	connect(showTrayAct, SIGNAL(toggled(bool)),
 			 tray, SLOT(setVisible(bool)));
@@ -62,7 +62,7 @@ TBasePlus::TBasePlus()
 			 this, SLOT(trayAvailable()));
 #endif
 
-	showAllAct = new TAction(this, "restore_hide");
+	showAllAct = new TAction(this, "restore_hide", QT_TR_NOOP("&Hide"));
 	connect(showAllAct, SIGNAL(triggered()),
 			 this, SLOT(toggleShowAll()));
 
@@ -110,6 +110,8 @@ TBasePlus::TBasePlus()
 			this, SLOT(dockVisibilityChanged(bool)));
 	connect(this, SIGNAL(openFileRequested()),
 			this, SLOT(showAll()));
+
+	retranslateStrings();
 }
 
 TBasePlus::~TBasePlus() {
@@ -160,16 +162,17 @@ void TBasePlus::quit() {
 }
 
 void TBasePlus::retranslateStrings() {
-	//qDebug("Gui::TBasePlus::retranslateStrings");
-
-	TBase::retranslateStrings();
-
-	quitAct->change(Images::icon("exit"), tr("&Quit"));
-	showTrayAct->change(Images::icon("systray"), tr("S&how icon in system tray"));
-
-	updateShowAllAct();
 
 	playlistdock->setWindowTitle(tr("Playlist"));
+	updateShowAllAct();
+}
+
+void TBasePlus::changeEvent(QEvent* e) {
+	if (e->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	} else {
+		QMainWindow::changeEvent(e);
+	}
 }
 
 void TBasePlus::updateShowAllAct() {

@@ -393,8 +393,6 @@ void TSMPlayer::createGUI() {
 
 	qDebug("TSMPlayer::createGUI: loading config");
 	main_window->loadConfig();
-	qDebug("TSMPlayer::createGUI: translating");
-	main_window->retranslate();
 
 	main_window->setForceCloseOnFinish(close_at_end);
 	main_window->setForceStartInFullscreen(start_in_fullscreen);

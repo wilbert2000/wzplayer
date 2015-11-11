@@ -17,28 +17,89 @@
 */
 
 #include "gui/action/action.h"
+#include <QDebug>
+#include <QEvent>
 #include <QWidget>
+#include "images.h"
+
 
 namespace Gui {
 
-TAction::TAction (QObject* parent, const char* name, bool autoadd) 
-	: QAction(parent) {
+TAction::TAction (QObject* parent,
+				  const QString& name,
+				  const QString& text,
+				  bool autoadd)
+	: QAction(parent)
+	, text_en(text) {
 
 	setObjectName(name);
+	retranslateStrings();
 	if (autoadd)
 		addActionToParent();
 }
 
-TAction::TAction(QKeySequence accel, QObject* parent, const char* name, bool autoadd)
-	: QAction(parent) {
+TAction::TAction (QObject* parent,
+				  const QString& name,
+				  const QString& text,
+				  const QString& icon,
+				  bool autoadd)
+	: QAction(parent)
+	, text_en(text) {
+
+	setObjectName(name);
+	setIcon(Images::icon(icon));
+	retranslateStrings();
+	if (autoadd)
+		addActionToParent();
+}
+
+TAction::TAction (QObject* parent,
+				  const QString& name,
+				  const QString& text,
+				  const QString& icon,
+				  QKeySequence accel,
+				  bool autoadd)
+	: QAction(parent)
+	, text_en(text) {
+
+	setObjectName(name);
+	setIcon(Images::icon(icon));
+	setShortcut(accel);
+	retranslateStrings();
+	if (autoadd)
+		addActionToParent();
+}
+
+TAction::TAction(QObject* parent,
+				 const QString& name,
+				 const QString& text,
+				 QKeySequence accel,
+				 bool autoadd)
+	: QAction(parent)
+	, text_en(text) {
 
 	setObjectName(name);
 	setShortcut(accel);
+	retranslateStrings();
 	if (autoadd)
 		addActionToParent();
 }
 
 TAction::~TAction() {
+}
+
+void TAction::retranslateStrings() {
+	// Translate with parent
+	if (!text_en.isEmpty())
+		change(parent()->tr(text_en.toUtf8().constData()));
+}
+
+bool TAction::event(QEvent* e) {
+
+	if (e->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	}
+	return QAction::event(e);
 }
 
 void TAction::addShortcut(QKeySequence key) {
@@ -53,12 +114,6 @@ void TAction::addActionToParent() {
 			w->addAction(this);
 		}
 	}
-}
-
-void TAction::change(const QIcon& icon, const QString& text) {
-
-	setIcon(icon);
-	change(text);
 }
 
 void TAction::change(const QString& text) {

@@ -187,58 +187,58 @@ void TPlaylist::createTable() {
 }
 
 void TPlaylist::createActions() {
-	openAct = new Gui::TAction(this, "pl_open", false);
+	openAct = new TAction(this, "pl_open", QT_TR_NOOP("&Load"), "open", false);
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
 
-	saveAct = new Gui::TAction(this, "pl_save", false);
+	saveAct = new Gui::TAction(this, "pl_save", QT_TR_NOOP("&Save"), "save", false);
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-	playAct = new Gui::TAction(this, "pl_play", false);
+	playAct = new Gui::TAction(this, "pl_play", QT_TR_NOOP("&Play"), "play", false);
 	connect(playAct, SIGNAL(triggered()), this, SLOT(playCurrent()));
 
-	nextAct = new Gui::TAction(Qt::Key_N /*Qt::Key_Greater*/, this, "pl_next", false);
+	nextAct = new Gui::TAction(this, "pl_next", QT_TR_NOOP("&Next"), "next", Qt::Key_N, false);
 	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
-	prevAct = new Gui::TAction(Qt::Key_P /*Qt::Key_Less*/, this, "pl_prev", false);
+	prevAct = new Gui::TAction(this, "pl_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_P, false);
 	connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
-	moveUpAct = new Gui::TAction(this, "pl_move_up", false);
+	moveUpAct = new Gui::TAction(this, "pl_move_up", QT_TR_NOOP("Move &up"), "up", false);
 	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(upItem()));
 
-	moveDownAct = new Gui::TAction(this, "pl_move_down", false);
+	moveDownAct = new Gui::TAction(this, "pl_move_down", QT_TR_NOOP("Move &down"), "down", false);
 	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(downItem()));
 
-	repeatAct = new Gui::TAction(this, "pl_repeat", false);
+	repeatAct = new Gui::TAction(this, "pl_repeat", QT_TR_NOOP("&Repeat"), "repeat", false);
 	repeatAct->setCheckable(true);
 
-	shuffleAct = new Gui::TAction(this, "pl_shuffle", false);
+	shuffleAct = new Gui::TAction(this, "pl_shuffle", QT_TR_NOOP("S&huffle"), "shuffle", false);
 	shuffleAct->setCheckable(true);
 
 	// Add actions
-	addCurrentAct = new Gui::TAction(this, "pl_add_current", false);
+	addCurrentAct = new Gui::TAction(this, "pl_add_current", QT_TR_NOOP("Add &current file"), false);
 	connect(addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()));
 
-	addFilesAct = new Gui::TAction(this, "pl_add_files", false);
+	addFilesAct = new Gui::TAction(this, "pl_add_files", QT_TR_NOOP("Add &file(s)"), false);
 	connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
 
-	addDirectoryAct = new Gui::TAction(this, "pl_add_directory", false);
+	addDirectoryAct = new Gui::TAction(this, "pl_add_directory", QT_TR_NOOP("Add &directory"), false);
 	connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
 
-	addUrlsAct = new Gui::TAction(this, "pl_add_urls", false);
+	addUrlsAct = new Gui::TAction(this, "pl_add_urls", QT_TR_NOOP("Add &URL(s)"), false);
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
 	// Remove actions
-	removeSelectedAct = new Gui::TAction(this, "pl_remove_selected", false);
+	removeSelectedAct = new Gui::TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected"), false);
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
 
-	removeAllAct = new Gui::TAction(this, "pl_remove_all", false);
+	removeAllAct = new Gui::TAction(this, "pl_remove_all", QT_TR_NOOP("Remove &all"), false);
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
 	// Edit
-	editAct = new Gui::TAction(this, "pl_edit", false);
+	editAct = new Gui::TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), false);
 	connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
-	deleteSelectedFileFromDiskAct = new Gui::TAction(this, "pl_delete_from_disk");
+	deleteSelectedFileFromDiskAct = new Gui::TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete file from disk"), false);
 	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 }
 
@@ -299,39 +299,6 @@ void TPlaylist::retranslateStrings() {
 
 	listView->setHorizontalHeaderLabels(QStringList() << "   " <<
         tr("Name") << tr("Length"));
-
-	openAct->change(Images::icon("open"), tr("&Load"));
-	saveAct->change(Images::icon("save"), tr("&Save"));
-
-	playAct->change(tr("&Play"));
-
-	nextAct->change(tr("&Next"));
-	prevAct->change(tr("Pre&vious"));
-
-	playAct->setIcon(Images::icon("play"));
-	nextAct->setIcon(Images::icon("next"));
-	prevAct->setIcon(Images::icon("previous"));
-
-	moveUpAct->change(Images::icon("up"), tr("Move &up"));
-	moveDownAct->change(Images::icon("down"), tr("Move &down"));
-
-	repeatAct->change(Images::icon("repeat"), tr("&Repeat"));
-	shuffleAct->change(Images::icon("shuffle"), tr("S&huffle"));
-
-	// Add actions
-	addCurrentAct->change(tr("Add &current file"));
-	addFilesAct->change(tr("Add &file(s)"));
-	addDirectoryAct->change(tr("Add &directory"));
-	addUrlsAct->change(tr("Add &URL(s)"));
-
-	// Remove actions
-	removeSelectedAct->change(tr("Remove &selected"));
-	removeAllAct->change(tr("Remove &all"));
-
-	deleteSelectedFileFromDiskAct->change(tr("&Delete file from disk"));
-
-	// Edit
-	editAct->change(tr("&Edit"));
 
 	// Tool buttons
 	add_button->setIcon(Images::icon("plus"));

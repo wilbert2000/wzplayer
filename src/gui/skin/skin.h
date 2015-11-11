@@ -43,7 +43,6 @@ public:
 	virtual void saveConfig();
 
 protected:
-	virtual void retranslateStrings();
 	virtual QString settingsGroupName() { return "skin_gui"; }
 
 	void createControlWidget();

@@ -32,9 +32,6 @@ class QMenu;
 
 namespace Gui {
 
-class TSeekingButton;
-
-
 class TDefault : public TBasePlus {
 	Q_OBJECT
 
@@ -46,7 +43,6 @@ public:
 	virtual void saveConfig();
 
 protected:
-	virtual void retranslateStrings();
 	virtual QString settingsGroupName() { return "default_gui"; }
 
 protected slots:

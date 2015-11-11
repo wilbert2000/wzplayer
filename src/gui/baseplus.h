@@ -42,12 +42,11 @@ public:
 	virtual void saveConfig();
 
 protected:
-	virtual void retranslateStrings();
-
-	void updateShowAllAct();
-
+	virtual void changeEvent(QEvent* event);
 	virtual void aboutToEnterFullscreen();
 	virtual void didExitFullscreen();
+
+	void updateShowAllAct();
 
 protected slots:
 	// Reimplemented methods
@@ -90,6 +89,7 @@ protected:
 
 private:
 	void switchToTray();
+	void retranslateStrings();
 };
 
 } // namespace Gui
