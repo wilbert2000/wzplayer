@@ -2232,7 +2232,8 @@ void TCore::setStereoMode(int mode) {
 	qDebug("TCore::setStereoMode:%d", mode);
 	if (mode != mset.stereo_mode) {
 		mset.stereo_mode = mode;
-		restartPlay();
+		if (proc->isRunning())
+			restartPlay();
 	}
 }
 
@@ -2781,12 +2782,14 @@ void TCore::changeOSDScale(double value) {
 	if (proc->isMPlayer()) {
 		if (value != pref->subfont_osd_scale) {
 			pref->subfont_osd_scale = value;
-			restartPlay();
+			if (proc->isRunning())
+				restartPlay();
 		}
 	} else {
 		if (value != pref->osd_scale) {
 			pref->osd_scale = value;
-			proc->setOSDScale(pref->osd_scale);
+			if (proc->isRunning())
+				proc->setOSDScale(pref->osd_scale);
 		}
 	}
 }
@@ -3293,9 +3296,8 @@ void TCore::changeOSDLevel(int level) {
 	qDebug("TCore::changeOSDLevel: %d", level);
 
 	pref->osd_level = (TPreferences::OSDLevel) level;
-	proc->setOSDLevel(level);
-
-	updateWidgets();
+	if (proc->isRunning())
+		proc->setOSDLevel(level);
 }
 
 void TCore::nextOSDLevel() {
