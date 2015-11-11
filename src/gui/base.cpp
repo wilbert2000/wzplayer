@@ -184,6 +184,9 @@ TBase::TBase()
 
 	setWindowTitle("SMPlayer");
 	setAcceptDrops(true);
+
+	// Reset size factor to 1.0
+	pref->size_factor = 1.0;
 	resize(pref->default_size);
 
 	// Create objects:
