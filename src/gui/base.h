@@ -180,6 +180,7 @@ protected slots:
 
 	virtual void onStateChanged(TCore::State state);
 
+	virtual void onMediaSettingsChanged();
 	virtual void onVideoOutResolutionChanged(int w, int h);
 	virtual void gotCurrentTime(double);
 	virtual void gotDuration(double);
@@ -364,17 +365,6 @@ protected:
 	TAction* clearABMarkersAct;
 	TAction* gotoAct;
 
-	// Menu Speed
-	TAction* normalSpeedAct;
-	TAction* halveSpeedAct;
-	TAction* doubleSpeedAct;
-	TAction* decSpeed10Act;
-	TAction* incSpeed10Act;
-	TAction* decSpeed4Act;
-	TAction* incSpeed4Act;
-	TAction* decSpeed1Act;
-	TAction* incSpeed1Act;
-
 	// Menu Video
 	TAction* fullscreenAct;
 	TAction* videoEqualizerAct;
@@ -540,7 +530,7 @@ protected:
 	TAudioChannelMenu* audiochannels_menu;
 	TStereoMenu* stereomode_menu;
 
-	QMenu* speed_menu;
+	TPlaySpeedMenu* speed_menu;
 	QMenu* ab_menu; // A-B menu
 	TVideoFilterMenu* videofilter_menu;
 	QMenu* audiofilter_menu;

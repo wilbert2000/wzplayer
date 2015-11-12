@@ -299,6 +299,8 @@ void TBase::createCore() {
 	connect(core, SIGNAL(stateChanged(TCore::State)),
 			 this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection);
 
+	connect(core, SIGNAL(mediaSettingsChanged()),
+			 this, SLOT(onMediaSettingsChanged()));
 	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
 			 this, SLOT(onVideoOutResolutionChanged(int,int)));
 	connect(core, SIGNAL(needResize(int, int)),
@@ -576,34 +578,6 @@ void TBase::createActions() {
 
 	gotoAct = new TAction(this, "jump_to", QT_TR_NOOP("&Jump to..."), "jumpto", QKeySequence("Ctrl+J"));
 	connect(gotoAct, SIGNAL(triggered()), this, SLOT(showGotoDialog()));
-
-	// Submenu Speed
-	normalSpeedAct = new TAction(this, "normal_speed", QT_TR_NOOP("&Normal speed"), Qt::Key_Backspace);
-	connect(normalSpeedAct, SIGNAL(triggered()), core, SLOT(normalSpeed()));
-
-	halveSpeedAct = new TAction(this, "halve_speed", QT_TR_NOOP("&Half speed"), Qt::Key_BraceLeft);
-	connect(halveSpeedAct, SIGNAL(triggered()), core, SLOT(halveSpeed()));
-
-	doubleSpeedAct = new TAction(this, "double_speed", QT_TR_NOOP("&Double speed"), Qt::Key_BraceRight);
-	connect(doubleSpeedAct, SIGNAL(triggered()), core, SLOT(doubleSpeed()));
-
-	decSpeed10Act = new TAction(this, "dec_speed", QT_TR_NOOP("Speed &-10%"), Qt::Key_BracketLeft);
-	connect(decSpeed10Act, SIGNAL(triggered()), core, SLOT(decSpeed10()));
-
-	incSpeed10Act = new TAction(this, "inc_speed", QT_TR_NOOP("Speed &+10%"), Qt::Key_BracketRight);
-	connect(incSpeed10Act, SIGNAL(triggered()), core, SLOT(incSpeed10()));
-
-	decSpeed4Act = new TAction(this, "dec_speed_4", QT_TR_NOOP("Speed -&4%"));
-	connect(decSpeed4Act, SIGNAL(triggered()), core, SLOT(decSpeed4()));
-
-	incSpeed4Act = new TAction(this, "inc_speed_4", QT_TR_NOOP("&Speed +4%"));
-	connect(incSpeed4Act, SIGNAL(triggered()), core, SLOT(incSpeed4()));
-
-	decSpeed1Act = new TAction(this, "dec_speed_1", QT_TR_NOOP("Speed -&1%"));
-	connect(decSpeed1Act, SIGNAL(triggered()), core, SLOT(decSpeed1()));
-
-	incSpeed1Act = new TAction(this, "inc_speed_1", QT_TR_NOOP("S&peed +1%"));
-	connect(incSpeed1Act, SIGNAL(triggered()), core, SLOT(incSpeed1()));
 
 
 	// Menu Video
@@ -1101,22 +1075,7 @@ void TBase::createMenus() {
 	playMenu->addSeparator();
 
 	// Speed submenu
-	speed_menu = new QMenu(this);
-	speed_menu->menuAction()->setObjectName("speed_menu");
-	speed_menu->addAction(normalSpeedAct);
-	speed_menu->addSeparator();
-	speed_menu->addAction(halveSpeedAct);
-	speed_menu->addAction(doubleSpeedAct);
-	speed_menu->addSeparator();
-	speed_menu->addAction(decSpeed10Act);
-	speed_menu->addAction(incSpeed10Act);
-	speed_menu->addSeparator();
-	speed_menu->addAction(decSpeed4Act);
-	speed_menu->addAction(incSpeed4Act);
-	speed_menu->addSeparator();
-	speed_menu->addAction(decSpeed1Act);
-	speed_menu->addAction(incSpeed1Act);
-
+	speed_menu = new TPlaySpeedMenu(this, core);
 	playMenu->addMenu(speed_menu);
 
 	// A-B submenu
@@ -1208,11 +1167,12 @@ void TBase::createMenus() {
 	// Filter submenu
 	audiofilter_menu = new QMenu(this);
 	audiofilter_menu->menuAction()->setObjectName("audiofilter_menu");
+	audiofilter_menu->addAction(volnormAct);
+
 #ifdef MPLAYER_SUPPORT
 	audiofilter_menu->addAction(extrastereoAct);
 	audiofilter_menu->addAction(karaokeAct);
 #endif
-	audiofilter_menu->addAction(volnormAct);
 
 	audioMenu->addMenu(audiofilter_menu);
 
@@ -1521,6 +1481,7 @@ void TBase::setupNetworkProxy() {
 }
 
 void TBase::setActionsEnabled(bool b) {
+
 	// Menu Play
 	playAct->setEnabled(b);
 	playOrPauseAct->setEnabled(b);
@@ -1534,19 +1495,11 @@ void TBase::setActionsEnabled(bool b) {
 	forward1Act->setEnabled(b);
 	forward2Act->setEnabled(b);
 	forward3Act->setEnabled(b);
-	//repeatAct->setEnabled(b);
 	gotoAct->setEnabled(b);
-
 	// Menu Speed
-	normalSpeedAct->setEnabled(b);
-	halveSpeedAct->setEnabled(b);
-	doubleSpeedAct->setEnabled(b);
-	decSpeed10Act->setEnabled(b);
-	incSpeed10Act->setEnabled(b);
-	decSpeed4Act->setEnabled(b);
-	incSpeed4Act->setEnabled(b);
-	decSpeed1Act->setEnabled(b);
-	incSpeed1Act->setEnabled(b);
+	speed_menu->group->setEnabled(b);
+	// A-B Section
+	//repeatAct->setEnabled(b);
 
 	// Menu Video
 	bool enableVideo = b && !core->mdat.noVideo();
@@ -1596,22 +1549,26 @@ void TBase::setActionsEnabled(bool b) {
 	// Menu Audio
 	loadAudioAct->setEnabled(b);
 	unloadAudioAct->setEnabled(b && !core->mset.external_audio.isEmpty());
+
 	bool enableAudio = b && core->mdat.audios.count() > 0;
+	// Filters
+	volnormAct->setEnabled(enableAudio);
+
+#ifdef MPLAYER_SUPPORT
+	extrastereoAct->setEnabled(enableAudio);
+	karaokeAct->setEnabled(enableAudio);
+#endif
+
 	audiochannels_menu->group->setActionsEnabled(enableAudio);
 	stereomode_menu->group->setActionsEnabled(enableAudio);
 	audioEqualizerAct->setEnabled(enableAudio && pref->use_audio_equalizer);
+
 	muteAct->setEnabled(enableAudio);
 	decVolumeAct->setEnabled(enableAudio);
 	incVolumeAct->setEnabled(enableAudio);
 	decAudioDelayAct->setEnabled(enableAudio);
 	incAudioDelayAct->setEnabled(enableAudio);
 	audioDelayAct->setEnabled(enableAudio);
-	// Sub menu filters
-#ifdef MPLAYER_SUPPORT
-	extrastereoAct->setEnabled(enableAudio);
-	karaokeAct->setEnabled(enableAudio);
-#endif
-	volnormAct->setEnabled(enableAudio);
 
 
 	// Menu Subtitles
@@ -1729,9 +1686,6 @@ void TBase::retranslateStrings() {
 	radiolist->menuAction()->setIcon(Images::icon("open_radio"));
 
 	// Menu Play
-	speed_menu->menuAction()->setText(tr("Sp&eed"));
-	speed_menu->menuAction()->setIcon(Images::icon("speed"));
-
 	ab_menu->menuAction()->setText(tr("&A-B section"));
 	ab_menu->menuAction()->setIcon(Images::icon("ab_menu"));
 
@@ -2644,20 +2598,6 @@ void TBase::updateWidgets() {
 	screenGroup->setChecked(pref->adapter);
 #endif
 
-#ifdef MPLAYER_SUPPORT
-	// Karaoke menu option
-	karaokeAct->setChecked(core->mset.karaoke_filter);
-
-	// Extrastereo menu option
-	extrastereoAct->setChecked(core->mset.extrastereo_filter);
-#endif
-
-	// Volnorm menu option
-	volnormAct->setChecked(core->mset.volnorm_filter);
-
-	// Repeat menu option
-	repeatAct->setChecked(core->mset.loop);
-
 	// Fullscreen action
 	fullscreenAct->setChecked(pref->fullscreen);
 
@@ -2667,12 +2607,6 @@ void TBase::updateWidgets() {
 
 	// Audio equalizer
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
-
-	// Flip
-	flipAct->setChecked(core->mset.flip);
-
-	// Mirror
-	mirrorAct->setChecked(core->mset.mirror);
 
 	// Use custom style
 	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
@@ -3756,6 +3690,35 @@ void TBase::hidePanel() {
 		resize(width, height() - panel->height());
 		panel->hide();
 	}
+}
+
+// Slot called when media settings reset or loaded
+void TBase::onMediaSettingsChanged() {
+	qDebug("Gui::TBase::onMediaSettingsChanged");
+
+	// Play
+	// Speed
+	// TODO: make checkable
+	// speed_menu->normalSpeedAct->setChecked(core->mset.speed == 1.0);
+	// A-B section
+	repeatAct->setChecked(core->mset.loop);
+
+	// Video
+	// Filters
+	flipAct->setChecked(core->mset.flip);
+	mirrorAct->setChecked(core->mset.mirror);
+
+	// Audio
+	// Filters
+	// Volume normalization filter
+	volnormAct->setChecked(core->mset.volnorm_filter);
+
+#ifdef MPLAYER_SUPPORT
+	// Karaoke
+	karaokeAct->setChecked(core->mset.karaoke_filter);
+	// Extra stereo
+	extrastereoAct->setChecked(core->mset.extrastereo_filter);
+#endif
 }
 
 // Slot called by signal videoOutResolutionChanged

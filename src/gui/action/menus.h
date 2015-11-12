@@ -85,6 +85,15 @@ private:
 };
 
 
+class TPlaySpeedMenu : public TMenu {
+public:
+	explicit TPlaySpeedMenu(QWidget* parent, TCore* c);
+	QActionGroup* group;
+private:
+	TCore* core;
+};
+
+
 class TRotateMenu : public TMenu {
 public:
 	explicit TRotateMenu(QWidget* parent, TCore* c);

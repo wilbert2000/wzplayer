@@ -192,6 +192,52 @@ void TOSDMenu::onAboutToShow() {
 	group->setChecked((int) pref->osd_level);
 }
 
+
+TPlaySpeedMenu::TPlaySpeedMenu(QWidget *parent, TCore *c)
+	: TMenu(parent, this, "speed_menu", QT_TR_NOOP("Sp&eed"), "speed")
+	, core(c) {
+
+	group = new QActionGroup(this);
+	group->setExclusive(false);
+	group->setEnabled(false);
+
+	TAction* a = new TAction(this, "normal_speed", QT_TR_NOOP("&Normal speed"), Qt::Key_Backspace);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(normalSpeed()));
+
+	addSeparator();
+	a = new TAction(this, "halve_speed", QT_TR_NOOP("&Half speed"), Qt::Key_BraceLeft);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(halveSpeed()));
+	a = new TAction(this, "double_speed", QT_TR_NOOP("&Double speed"), Qt::Key_BraceRight);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(doubleSpeed()));
+
+	addSeparator();
+	a = new TAction(this, "dec_speed", QT_TR_NOOP("Speed &-10%"), Qt::Key_BracketLeft);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed10()));
+	a = new TAction(this, "inc_speed", QT_TR_NOOP("Speed &+10%"), Qt::Key_BracketRight);
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed10()));
+
+	addSeparator();
+	a = new TAction(this, "dec_speed_4", QT_TR_NOOP("Speed -&4%"));
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed4()));
+	a = new TAction(this, "inc_speed_4", QT_TR_NOOP("&Speed +4%"));
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed4()));
+
+	addSeparator();
+	a = new TAction(this, "dec_speed_1", QT_TR_NOOP("Speed -&1%"));
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed1()));
+	a = new TAction(this, "inc_speed_1", QT_TR_NOOP("S&peed +1%"));
+	group->addAction(a);
+	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed1()));
+}
+
 TRotateMenu::TRotateMenu(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "rotate_menu", QT_TR_NOOP("&Rotate"), "rotate")
 	, core(c) {
