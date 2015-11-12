@@ -623,6 +623,7 @@ private:
 	bool ignore_show_hide_events;
 	bool block_resize;
 	bool center_window;
+	int block_update_size_factor;
 
 	TAutoHideTimer* auto_hide_timer;
 
@@ -645,6 +646,9 @@ private:
 	void enterFullscreenOnPlay();
 	void checkPendingActionsToRun();
 	void retranslateStrings();
+
+private slots:
+	void unlockSizeFactor();
 };
 
 } // namespace Gui

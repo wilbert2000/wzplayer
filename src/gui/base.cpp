@@ -158,6 +158,7 @@ TBase::TBase()
 	, ignore_show_hide_events(false)
 	, block_resize(false)
 	, center_window(false)
+	, block_update_size_factor(0)
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
@@ -3173,6 +3174,11 @@ void TBase::toggleFullscreen() {
 	toggleFullscreen(!pref->fullscreen);
 }
 
+void TBase::unlockSizeFactor() {
+	qDebug("Gui::TBase::unlockSizeFactor");
+	block_update_size_factor--;
+}
+
 void TBase::toggleFullscreen(bool b) {
 	qDebug("Gui::TBase::toggleFullscreen: %d", b);
 
@@ -3182,10 +3188,8 @@ void TBase::toggleFullscreen(bool b) {
 	}
 	pref->fullscreen = b;
 
-	if (!panel->isVisible())
-		return; // mplayer window is not used.
-
-	//panel->setUpdatesEnabled(false);
+	//setUpdatesEnabled(false);
+	block_update_size_factor++;
 
 	if (pref->fullscreen) {
 		aboutToEnterFullscreen();
@@ -3212,10 +3216,11 @@ void TBase::toggleFullscreen(bool b) {
 		core->changeLetterboxOnFullscreen(b);
 	}
 
-	setFocus(); // Fixes bug #2493415
+	QTimer::singleShot(250, this, SLOT(unlockSizeFactor()));
+	//setUpdatesEnabled(true);
+	//update();
 
-	//panel->setUpdatesEnabled(true);
-	//panel->update();
+	setFocus(); // Fixes bug #2493415
 }
 
 void TBase::aboutToEnterFullscreen() {
@@ -3895,7 +3900,7 @@ void TBase::resizeEvent(QResizeEvent* event) {
 	// Update size factor after window resized by user.
 	// In TPlayerWindow::resizeEvent() event->spontaneous() does not become
 	// true during an user induces resize, so its needs to be here.
-	if (event->spontaneous()) {
+	if (event->spontaneous() && block_update_size_factor == 0) {
 		playerwindow->updateSizeFactor();
 	}
 }
