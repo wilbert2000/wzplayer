@@ -384,8 +384,6 @@ void TBase::createVideoEqualizer() {
 
 	connect(core, SIGNAL(videoEqualizerNeedsUpdate()),
 			 this, SLOT(updateVideoEqualizer()));
-	connect(core, SIGNAL(mediaLoaded()),
-			 this, SLOT(updateVideoEqualizer()));
 }
 
 void TBase::createAudioEqualizer() {
@@ -419,9 +417,6 @@ void TBase::createAudioEqualizer() {
 			 core, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
 	connect(audio_equalizer, SIGNAL(visibilityChanged()),
 			 this, SLOT(updateWidgets()));
-
-	connect(core, SIGNAL(mediaLoaded()),
-			 this, SLOT(updateAudioEqualizer()));
 }
 
 void TBase::createActions() {
@@ -616,7 +611,7 @@ void TBase::createActions() {
 	mirrorAct->setCheckable(true);
 	connect(mirrorAct, SIGNAL(toggled(bool)), core, SLOT(toggleMirror(bool)));
 
-	stereo3dAct = new TAction(this, "stereo_3d_filter", QT_TR_NOOP("Stereo &3D filter"), "stereo3d");
+	stereo3dAct = new TAction(this, "stereo_3d_filter", QT_TR_NOOP("Stereo &3D filter..."), "stereo3d");
 	connect(stereo3dAct, SIGNAL(triggered()), this, SLOT(showStereo3dDialog()));
 
 
@@ -3696,29 +3691,40 @@ void TBase::hidePanel() {
 void TBase::onMediaSettingsChanged() {
 	qDebug("Gui::TBase::onMediaSettingsChanged");
 
+	TMediaSettings* mset = &core->mset;
+
 	// Play
 	// Speed
 	// TODO: make checkable
 	// speed_menu->normalSpeedAct->setChecked(core->mset.speed == 1.0);
 	// A-B section
-	repeatAct->setChecked(core->mset.loop);
+	repeatAct->setChecked(mset->loop);
 
 	// Video
-	// Filters
-	flipAct->setChecked(core->mset.flip);
-	mirrorAct->setChecked(core->mset.mirror);
+	// Aspectratio
+	aspect_menu->group->setChecked(mset->aspect_ratio_id);
+	// Video filters
+	deinterlace_menu->group->setChecked(mset->current_deinterlacer);
+	videofilter_menu->updateFilters();
+	rotate_menu->group->setChecked(mset->rotate);
+	flipAct->setChecked(mset->flip);
+	mirrorAct->setChecked(mset->mirror);
+	updateVideoEqualizer();
 
-	// Audio
-	// Filters
+	// Audio filters
 	// Volume normalization filter
-	volnormAct->setChecked(core->mset.volnorm_filter);
+	volnormAct->setChecked(mset->volnorm_filter);
 
 #ifdef MPLAYER_SUPPORT
 	// Karaoke
-	karaokeAct->setChecked(core->mset.karaoke_filter);
+	karaokeAct->setChecked(mset->karaoke_filter);
 	// Extra stereo
-	extrastereoAct->setChecked(core->mset.extrastereo_filter);
+	extrastereoAct->setChecked(mset->extrastereo_filter);
 #endif
+
+	audiochannels_menu->group->setChecked(mset->audio_use_channels);
+	stereomode_menu->group->setChecked(mset->stereo_mode);
+	updateAudioEqualizer();
 }
 
 // Slot called by signal videoOutResolutionChanged
