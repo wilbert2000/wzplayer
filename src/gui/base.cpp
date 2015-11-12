@@ -2584,11 +2584,7 @@ void TBase::clearRecentsList() {
 void TBase::updateWidgets() {
 	qDebug("Gui::TBase::updateWidgets");
 
-#if PROGRAM_SWITCH
-	// Program menu
-	programTrackGroup->setChecked(core->mset.current_program_id);
-#endif
-
+	// TODO: screenGroup
 #if USE_ADAPTER
 	screenGroup->setChecked(pref->adapter);
 #endif
@@ -2596,7 +2592,6 @@ void TBase::updateWidgets() {
 	// Video equalizer
 	videoEqualizerAct->setChecked(video_equalizer->isVisible());
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
-
 	// Audio equalizer
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
 
