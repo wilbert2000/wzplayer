@@ -238,6 +238,7 @@ TPlaySpeedMenu::TPlaySpeedMenu(QWidget *parent, TCore *c)
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed1()));
 }
 
+
 TRotateMenu::TRotateMenu(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "rotate_menu", QT_TR_NOOP("&Rotate"), "rotate")
 	, core(c) {
@@ -314,6 +315,7 @@ void TSubFPSMenu::onAboutToShow() {
 	group->setEnabled(core->haveExternalSubs());
 	group->setChecked(core->mset.external_subtitles_fps);
 }
+
 
 TVideoFilterMenu::TVideoFilterMenu(QWidget *parent, TCore *c)
 	: TMenu(parent, this, "videofilter_menu", QT_TR_NOOP("F&ilters"), "video_filters")
@@ -401,7 +403,7 @@ void TVideoFilterMenu::setEnabledX(bool enable) {
 	unsharpGroup->setEnabled(enable);
 }
 
-void TVideoFilterMenu::onAboutToShow() {
+void TVideoFilterMenu::updateFilters() {
 
 	postProcessingAct->setChecked(core->mset.postprocessing_filter);
 	deblockAct->setChecked(core->mset.deblock_filter);
@@ -411,6 +413,10 @@ void TVideoFilterMenu::onAboutToShow() {
 	addLetterboxAct->setChecked(core->mset.add_letterbox);
 	upscaleAct->setChecked(core->mset.upscaling_filter);
 	phaseAct->setChecked(core->mset.phase_filter);
+}
+
+void TVideoFilterMenu::onAboutToShow() {
+	updateFilters();
 }
 
 void TVideoFilterMenu::onAboutToShowDenoise() {

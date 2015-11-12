@@ -141,6 +141,7 @@ class TVideoFilterMenu : public TMenu {
 	Q_OBJECT
 public:
 	explicit TVideoFilterMenu(QWidget* parent, TCore* c);
+	void updateFilters();
 	void setEnabledX(bool enable);
 protected:
 	virtual void onAboutToShow();
