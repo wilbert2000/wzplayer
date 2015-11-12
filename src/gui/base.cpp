@@ -355,6 +355,8 @@ void TBase::createPlaylist() {
 	playlist = new TPlaylist(core, this, 0);
 	connect(playlist, SIGNAL(playlistEnded()),
 			 this, SLOT(playlistHasFinished()));
+	connect(playlist, SIGNAL(displayMessage(QString,int)),
+			this, SLOT(displayMessage(QString,int)));
 }
 
 void TBase::createVideoEqualizer() {
@@ -2046,6 +2048,7 @@ void TBase::closeEvent(QCloseEvent* e)  {
 	core->close();
 	exitFullscreen();
 
+	displayMessage(tr("Saving settings"), 0);
 	saveConfig();
 	pref->save();
 	e->accept();

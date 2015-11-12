@@ -346,6 +346,7 @@ void TCore::saveMediaInfo() {
 		return;
 	}
 	qDebug() << "TCore::saveMediaInfo: saving settings for" << mdat.filename;
+	emit showMessage(tr("Saving settings for %1").arg(mdat.filename), 0);
 
 	if (mdat.selected_type == TMediaData::TYPE_FILE) {
 		if (pref->file_settings_method.toLower() == "hash") {
@@ -359,6 +360,8 @@ void TCore::saveMediaInfo() {
 		Settings::TTVSettings settings;
 		settings.saveSettingsFor(mdat.filename, mset, proc->player());
 	}
+
+	emit showMessage(tr("Saved settings for %1").arg(mdat.filename), 3000);
 } // saveMediaInfo
 
 void TCore::updateWidgets() {
@@ -467,6 +470,7 @@ void TCore::open(QString file, int seek, bool fast_open) {
 	if (file.startsWith("file:")) {
 		file = QUrl(file).toLocalFile();
 	}
+	emit showMessage(tr("Opening %1").arg(file), 0);
 
 	bool disc_url_valid;
 	TDiscData disc = TDiscName::split(file, &disc_url_valid);
@@ -516,7 +520,6 @@ void TCore::open(QString file, int seek, bool fast_open) {
 		openStream(file);
 	}
 }
-
 
 #ifdef YOUTUBE_SUPPORT
 void TCore::openYT(const QString & url) {
@@ -2222,6 +2225,7 @@ void TCore::toggleVolnorm() {
 
 void TCore::toggleVolnorm(bool b) {
 	qDebug("TCore::toggleVolnorm: %d", b);
+
 	if (b != mset.volnorm_filter) {
 		mset.volnorm_filter = b;
 		QString f = pref->filters.item("volnorm").filter();

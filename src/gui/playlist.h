@@ -69,17 +69,23 @@ class TPlaylist : public QWidget {
 public:
 	enum AutoGetInfo { NoGetInfo = 0, GetInfo = 1, UserDefined = 2 };
 
+	typedef QList<TPlaylistItem> TPlaylistItemList;
+
 	TPlaylist(TCore *c, QWidget* parent = 0, Qt::WindowFlags f = Qt::Window);
 	virtual ~TPlaylist();
 
 	int count();
 	bool isEmpty();
-	QString print(QString seperator);
-
 	bool isModified() { return modified; }
+	bool directoryRecursion() { return recursive_add_directory; }
+	bool autoGetInfo() { return automatically_get_info; }
+	bool savePlaylistOnExit() { return save_playlist_in_config; }
+	bool playFilesFromStart() { return play_files_from_start; }
+	TPlaylistItemList playlist() { return pl; }
 
 	void clear();
 	void list();
+	QString print(QString seperator);
 
 	void loadSettings();
 	void retranslateStrings();
@@ -146,24 +152,11 @@ public slots:
 	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; }
 	void setPlayFilesFromStart(bool b) { play_files_from_start = b; }
 
-public:
-	bool directoryRecursion() { return recursive_add_directory; }
-	bool autoGetInfo() { return automatically_get_info; }
-	bool savePlaylistOnExit() { return save_playlist_in_config; }
-	bool playFilesFromStart() { return play_files_from_start; }
-
-	QList<TPlaylistItem> playlist() { return pl; }
-
-/*
-public:
-	TAction* playPrevAct() { return prevAct; };
-	TAction* playNextAct() { return nextAct; };
-*/
-
 signals:
 	void playlistEnded();
 	void visibilityChanged(bool visible);
 	void modifiedChanged(bool);
+	void displayMessage(const QString&, int);
 
 protected:
 	void addItem(QString filename, QString name, double duration);
@@ -177,6 +170,16 @@ protected:
 	QString lastDir();
 	void updateView();
 
+	void createTable();
+	void createActions();
+	void createToolbar();
+
+	virtual void dragEnterEvent(QDragEnterEvent*) ;
+	virtual void dropEvent (QDropEvent*);
+	virtual void hideEvent (QHideEvent*);
+	virtual void showEvent (QShowEvent*);
+	virtual void closeEvent(QCloseEvent* e);
+
 protected slots:
 	virtual void playCurrent();
 	virtual void itemDoubleClicked(int row);
@@ -189,19 +192,6 @@ protected slots:
 	virtual void maybeSaveSettings();
 
 protected:
-	void createTable();
-	void createActions();
-	void createToolbar();
-
-protected:
-	virtual void dragEnterEvent(QDragEnterEvent*) ;
-	virtual void dropEvent (QDropEvent*);
-	virtual void hideEvent (QHideEvent*);
-	virtual void showEvent (QShowEvent*);
-	virtual void closeEvent(QCloseEvent* e);
-
-protected:
-	typedef QList <TPlaylistItem> TPlaylistItemList;
 	TPlaylistItemList pl;
 	int current_item;
 
@@ -252,6 +242,8 @@ private:
 	bool play_files_from_start;
 	bool automatically_play_next;
 	int row_spacing;
+
+	QString adding_msg;
 };
 
 } // namespace Gui
