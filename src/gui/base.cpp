@@ -300,7 +300,7 @@ void TBase::createCore() {
 			 this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
-			 this, SLOT(videoOutResolutionChanged(int,int)));
+			 this, SLOT(onVideoOutResolutionChanged(int,int)));
 	connect(core, SIGNAL(needResize(int, int)),
 			 this, SLOT(resizeWindow(int, int)));
 	connect(core, SIGNAL(widgetsNeedUpdate()),
@@ -3816,8 +3816,8 @@ void TBase::hidePanel() {
 }
 
 // Slot called by signal videoOutResolutionChanged
-void TBase::videoOutResolutionChanged(int w, int h) {
-	qDebug("Gui::TBase::videoOutResolutionChanged: %d, %d", w, h);
+void TBase::onVideoOutResolutionChanged(int w, int h) {
+	qDebug("Gui::TBase::onVideoOutResolutionChanged: %d, %d", w, h);
 
 	if (w <= 0 || h <= 0) {
 		// No video

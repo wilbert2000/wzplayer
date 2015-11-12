@@ -180,6 +180,7 @@ protected slots:
 
 	virtual void onStateChanged(TCore::State state);
 
+	virtual void onVideoOutResolutionChanged(int w, int h);
 	virtual void gotCurrentTime(double);
 	virtual void gotDuration(double);
 	virtual void newMediaLoaded();
@@ -199,7 +200,6 @@ protected slots:
 	virtual void setDefaultValuesFromVideoEqualizer();
 	virtual void changeVideoEqualizerBySoftware(bool b);
 
-	virtual void videoOutResolutionChanged(int w, int h);
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 
