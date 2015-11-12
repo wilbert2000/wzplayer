@@ -546,7 +546,7 @@ protected:
 	QMenu* audiofilter_menu;
 	TVideoZoomAndPanMenu* zoom_and_pan_menu;
 	TRotateMenu* rotate_menu;
-	TOnTopMenu* ontop_menu;
+	TStayOnTopMenu* stay_on_top_menu;
 #if USE_ADAPTER
 	QMenu* screen_menu;
 #endif

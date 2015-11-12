@@ -897,7 +897,8 @@ void TBase::createActions() {
 	// TODO: convert to new action syntax
 	screenGroup = new TActionGroup(this, "screen");
 	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", -1);
-	#ifdef Q_OS_WIN
+
+#ifdef Q_OS_WIN
 	TDeviceList display_devices = TDeviceInfo::displayDevices();
 	if (!display_devices.isEmpty()) {
 		for (int n = 0; n < display_devices.count(); n++) {
@@ -908,15 +909,15 @@ void TBase::createActions() {
 		}
 	}
 	else
-	#endif // Q_OS_WIN
+#endif // Q_OS_WIN
+
 	for (int n = 1; n <= 4; n++) {
 		TAction* screen_item = new TActionGroupItem(this, screenGroup, QString("screen_%1").arg(n).toLatin1().constData(), n);
 		screen_item->change("&"+QString::number(n));
 	}
 
-	connect(screenGroup, SIGNAL(activated(int)),
-			 core, SLOT(changeAdapter(int)));
-#endif
+	connect(screenGroup, SIGNAL(activated(int)), core, SLOT(changeAdapter(int)));
+#endif // USE_ADAPTER
 
 #if PROGRAM_SWITCH
 	// Program track
@@ -1183,8 +1184,8 @@ void TBase::createMenus() {
 	videoMenu->addAction(screenshotsAct);
 
 	// Ontop submenu
-	ontop_menu = new TOnTopMenu(this);
-	videoMenu->addMenu(ontop_menu);
+	stay_on_top_menu = new TStayOnTopMenu(this);
+	videoMenu->addMenu(stay_on_top_menu);
 
 #ifdef VIDEOPREVIEW
 	videoMenu->addSeparator();
@@ -1546,21 +1547,49 @@ void TBase::setActionsEnabled(bool b) {
 	incSpeed1Act->setEnabled(b);
 
 	// Menu Video
-	videosize_menu->enableVideoSize(b);
-	zoom_and_pan_menu->group->setEnabled(b);
-	aspect_menu->group->setActionsEnabled(b);
-	deinterlace_menu->group->setActionsEnabled(b);
-	videofilter_menu->setEnabledX(b);
-	rotate_menu->group->setActionsEnabled(b);
-	videoEqualizerAct->setEnabled(b);
-	screenshotAct->setEnabled(b);
-	screenshotsAct->setEnabled(b);
-#ifdef CAPTURE_STREAM
-	capturingAct->setEnabled(b);
+	bool enableVideo = b && !core->mdat.noVideo();
+	videosize_menu->enableVideoSize(enableVideo);
+	zoom_and_pan_menu->group->setEnabled(enableVideo);
+	aspect_menu->group->setActionsEnabled(enableVideo);
+
+	// Disable video filters if using vdpau
+	bool enableFilters = enableVideo;
+
+#ifndef Q_OS_WIN
+	if (enableVideo
+		&& pref->vdpau.disable_video_filters
+		&& pref->vo.startsWith("vdpau")) {
+		enableFilters = false;
+		displayMessage(tr("Video filters are disabled when using vdpau"));
+	}
 #endif
-	flipAct->setEnabled(b);
-	mirrorAct->setEnabled(b);
-	stereo3dAct->setEnabled(b);
+
+	deinterlace_menu->group->setActionsEnabled(enableFilters);
+	videofilter_menu->setEnabledX(enableFilters);
+	rotate_menu->group->setActionsEnabled(enableFilters);
+	flipAct->setEnabled(enableFilters);
+	mirrorAct->setEnabled(enableFilters);
+	stereo3dAct->setEnabled(enableFilters);
+	videoEqualizerAct->setEnabled(enableFilters);
+
+	bool enableScreenShots = enableFilters
+							 && pref->use_screenshot
+							 && !pref->screenshot_directory.isEmpty()
+							 && QFileInfo(pref->screenshot_directory).isDir();
+	screenshotAct->setEnabled(enableScreenShots);
+	screenshotsAct->setEnabled(enableScreenShots);
+
+#ifdef CAPTURE_STREAM
+	capturingAct->setEnabled(enableVideo
+							 && !pref->capture_directory.isEmpty()
+							 && QFileInfo(pref->capture_directory).isDir());
+#endif
+
+#if USE_ADAPTER
+	screenGroup->setActionsEnabled(enableVideo
+								   && pref->vo.startsWith(OVERLAY_VO));
+#endif
+
 
 	// Menu Audio
 	loadAudioAct->setEnabled(b);
@@ -1617,19 +1646,16 @@ void TBase::setActionsEnabled(bool b) {
 	nextChapterAct->setEnabled(b);
 	prevChapterAct->setEnabled(b);
 
-	dvdnavUpAct->setEnabled(b);
-	dvdnavDownAct->setEnabled(b);
-	dvdnavLeftAct->setEnabled(b);
-	dvdnavRightAct->setEnabled(b);
-	dvdnavMenuAct->setEnabled(b);
-	dvdnavSelectAct->setEnabled(b);
-	dvdnavPrevAct->setEnabled(b);
-	dvdnavMouseAct->setEnabled(b);
+	bool enableDVDNav = b && core->mdat.detected_type == TMediaData::TYPE_DVDNAV;
+	dvdnavUpAct->setEnabled(enableDVDNav);
+	dvdnavDownAct->setEnabled(enableDVDNav);
+	dvdnavLeftAct->setEnabled(enableDVDNav);
+	dvdnavRightAct->setEnabled(enableDVDNav);
+	dvdnavMenuAct->setEnabled(enableDVDNav);
+	dvdnavSelectAct->setEnabled(enableDVDNav);
+	dvdnavPrevAct->setEnabled(enableDVDNav);
+	dvdnavMouseAct->setEnabled(enableDVDNav);
 
-	// Groups
-#if USE_ADAPTER
-	screenGroup->setActionsEnabled(b);
-#endif
 
 	// Time slider
 	timeslider_action->enable(b);
@@ -1640,71 +1666,6 @@ void TBase::enableActionsOnPlaying() {
 
 	setActionsEnabled(true);
 	playAct->setEnabled(false);
-
-	// Screenshot option
-	bool screenshots_enabled = pref->use_screenshot
-							   && !pref->screenshot_directory.isEmpty()
-							   && QFileInfo(pref->screenshot_directory).isDir();
-	screenshotAct->setEnabled(screenshots_enabled);
-	screenshotsAct->setEnabled(screenshots_enabled);
-
-#ifdef CAPTURE_STREAM
-	capturingAct->setEnabled(!pref->capture_directory.isEmpty()
-							 && QFileInfo(pref->capture_directory).isDir());
-#endif
-
-	// Disable video actions if it's an audio file
-	if (core->mdat.noVideo()) {
-		videoEqualizerAct->setEnabled(false);
-		screenshotAct->setEnabled(false);
-		screenshotsAct->setEnabled(false);
-#ifdef CAPTURE_STREAM
-		capturingAct->setEnabled(false);
-#endif
-		flipAct->setEnabled(false);
-		mirrorAct->setEnabled(false);
-		stereo3dAct->setEnabled(false);
-
-		zoom_and_pan_menu->group->setEnabled(false);
-		deinterlace_menu->group->setActionsEnabled(false);
-		aspect_menu->group->setActionsEnabled(false);
-		rotate_menu->group->setActionsEnabled(false);
-#if USE_ADAPTER
-		screenGroup->setActionsEnabled(false);
-#endif
-	}
-
-#if USE_ADAPTER
-	screenGroup->setActionsEnabled(pref->vo.startsWith(OVERLAY_VO));
-#endif
-
-#ifndef Q_OS_WIN
-	// Disable video filters if using vdpau
-	if ((pref->vdpau.disable_video_filters) && (pref->vo.startsWith("vdpau"))) {
-		screenshotAct->setEnabled(false);
-		screenshotsAct->setEnabled(false);
-		flipAct->setEnabled(false);
-		mirrorAct->setEnabled(false);
-		stereo3dAct->setEnabled(false);
-		videofilter_menu->setEnabledX(false);
-		deinterlace_menu->group->setActionsEnabled(false);
-		rotate_menu->group->setActionsEnabled(false);
-
-		displayMessage(tr("Video filters are disabled when using vdpau"));
-	}
-#endif
-
-	// Disable DVDNAV
-	if (core->mdat.detected_type != TMediaData::TYPE_DVDNAV) {
-		dvdnavUpAct->setEnabled(false);
-		dvdnavDownAct->setEnabled(false);
-		dvdnavLeftAct->setEnabled(false);
-		dvdnavRightAct->setEnabled(false);
-		dvdnavMenuAct->setEnabled(false);
-		dvdnavSelectAct->setEnabled(false);
-		dvdnavPrevAct->setEnabled(false);
-		dvdnavMouseAct->setEnabled(false);
-	}
 }
 
 void TBase::disableActionsOnStop() {
@@ -3188,15 +3149,16 @@ void TBase::toggleFullscreen(bool b) {
 		didExitFullscreen();
 	}
 
-	updateWidgets();
-
-	if (pref->add_blackborders_on_fullscreen &&  !core->mset.add_letterbox) {
-		core->changeLetterboxOnFullscreen(b);
+	if (pref->add_blackborders_on_fullscreen && !core->mset.add_letterbox) {
+		core->changeLetterboxOnFullscreen(pref->fullscreen);
 	}
 
+	// Risky?
 	QTimer::singleShot(250, this, SLOT(unlockSizeFactor()));
 	//setUpdatesEnabled(true);
 	//update();
+
+	updateWidgets();
 
 	setFocus(); // Fixes bug #2493415
 }

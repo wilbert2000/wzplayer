@@ -170,24 +170,6 @@ void TDeinterlaceMenu::onAboutToShow() {
 }
 
 
-TOnTopMenu::TOnTopMenu(QWidget *parent) :
-	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("S&tay on top"), "ontop") {
-
-	group = new TActionGroup(this, "ontop");
-	new TActionGroupItem(this, group, "on_top_always", QT_TR_NOOP("&Always"), TPreferences::AlwaysOnTop);
-	new TActionGroupItem(this, group, "on_top_never", QT_TR_NOOP("&Never"), TPreferences::NeverOnTop);
-	new TActionGroupItem(this, group, "on_top_playing", QT_TR_NOOP("While &playing"), TPreferences::WhilePlayingOnTop);
-	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
-
-	TAction* toggleStayOnTopAct = new TAction(this, QT_TR_NOOP("toggle_stay_on_top"), "Toggle stay on top");
-	connect(toggleStayOnTopAct, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
-}
-
-void TOnTopMenu::onAboutToShow() {
-	group->setChecked((int) pref->stay_on_top);
-}
-
-
 TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "osd_menu", QT_TR_NOOP("&OSD"), "osd")
 	, core(c) {
@@ -226,6 +208,26 @@ TRotateMenu::TRotateMenu(QWidget* parent, TCore* c)
 void TRotateMenu::onAboutToShow() {
 	group->setChecked(core->mset.rotate);
 }
+
+
+TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
+	// TODO: rename to stay_on_top_menu?
+	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("S&tay on top"), "ontop") {
+
+	group = new TActionGroup(this, "ontop");
+	new TActionGroupItem(this, group, "on_top_always", QT_TR_NOOP("&Always"), TPreferences::AlwaysOnTop);
+	new TActionGroupItem(this, group, "on_top_never", QT_TR_NOOP("&Never"), TPreferences::NeverOnTop);
+	new TActionGroupItem(this, group, "on_top_playing", QT_TR_NOOP("While &playing"), TPreferences::WhilePlayingOnTop);
+	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
+
+	TAction* toggleStayOnTopAct = new TAction(this, QT_TR_NOOP("toggle_stay_on_top"), "Toggle stay on top");
+	connect(toggleStayOnTopAct, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
+}
+
+void TStayOnTopMenu::onAboutToShow() {
+	group->setChecked((int) pref->stay_on_top);
+}
+
 
 TStereoMenu::TStereoMenu(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "stereomode_menu", QT_TR_NOOP("&Stereo mode"), "stereo_mode")

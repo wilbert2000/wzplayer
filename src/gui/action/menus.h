@@ -74,16 +74,6 @@ private:
 };
 
 
-class TOnTopMenu : public TMenu {
-public:
-	explicit TOnTopMenu(QWidget* parent);
-protected:
-	virtual void onAboutToShow();
-private:
-	TActionGroup* group;
-};
-
-
 class TOSDMenu : public TMenu {
 public:
 	explicit TOSDMenu(QWidget* parent, TCore* c);
@@ -103,6 +93,16 @@ protected:
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+};
+
+
+class TStayOnTopMenu : public TMenu {
+public:
+	explicit TStayOnTopMenu(QWidget* parent);
+protected:
+	virtual void onAboutToShow();
+private:
+	TActionGroup* group;
 };
 
 
