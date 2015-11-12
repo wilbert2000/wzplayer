@@ -903,6 +903,7 @@ void TCore::playingStarted() {
 
 	if (we_are_restarting) {
 		we_are_restarting = false;
+
 		// For DVDNAV go back to where we were.
 		// Need timer to give DVDNAV time to update its current state.
 		if (title >= 0) {
@@ -913,7 +914,9 @@ void TCore::playingStarted() {
 			qDebug("TCore::playingStarted: posting dvdnavRestoreTitle()");
 			QTimer::singleShot(1000, this, SLOT(dvdnavRestoreTitle()));
 		}
+
 	} else {
+		// Handle new media
 		newMediaPlayingStarted();
 	} 
 
@@ -3222,7 +3225,7 @@ void TCore::changeAspectRatio(int ID) {
 
 	double asp = mset.aspectToNum((TMediaSettings::Aspect) ID);
 
-	// Set aspect video window. false: don't update video window
+	// Set aspect video window, don't update video window
 	playerwindow->setAspect(asp, false);
 	// Resize with new aspect, normally updates video window
 	emit needResize(mset.win_width, mset.win_height);
@@ -3234,23 +3237,25 @@ void TCore::changeAspectRatio(int ID) {
 }
 
 void TCore::nextAspectRatio() {
+
 	// Ordered list
 	QList<int> s;
 	s << TMediaSettings::AspectNone 
-      << TMediaSettings::AspectAuto
-      << TMediaSettings::Aspect11	// 1
-      << TMediaSettings::Aspect54	// 1.25
-      << TMediaSettings::Aspect43	// 1.33
-      << TMediaSettings::Aspect118	// 1.37
-      << TMediaSettings::Aspect1410	// 1.4
-      << TMediaSettings::Aspect32	// 1.5
-      << TMediaSettings::Aspect149	// 1.55
-      << TMediaSettings::Aspect1610	// 1.6
-      << TMediaSettings::Aspect169	// 1.77
-      << TMediaSettings::Aspect235;	// 2.35
+	  << TMediaSettings::AspectAuto
+	  << TMediaSettings::Aspect11	// 1
+	  << TMediaSettings::Aspect54	// 1.25
+	  << TMediaSettings::Aspect43	// 1.33
+	  << TMediaSettings::Aspect118	// 1.37
+	  << TMediaSettings::Aspect1410	// 1.4
+	  << TMediaSettings::Aspect32	// 1.5
+	  << TMediaSettings::Aspect149	// 1.55
+	  << TMediaSettings::Aspect1610	// 1.6
+	  << TMediaSettings::Aspect169	// 1.77
+	  << TMediaSettings::Aspect235;	// 2.35
 
 	int i = s.indexOf(mset.aspect_ratio_id) + 1;
-	if (i >= s.count()) i = 0;
+	if (i >= s.count())
+		i = 0;
 
 	int new_aspect_id = s[i];
 
