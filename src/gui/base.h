@@ -175,22 +175,16 @@ public slots:
 
 protected slots:
 	virtual void closeWindow();
-
-	virtual void setJumpTexts();
-
 	// Replace for setCaption (in Qt 4 it's not virtual)
 	virtual void setWindowCaption(const QString& title);
 
-	virtual void openRecent();
-	virtual void exitFullscreenOnStop();
-	virtual void exitFullscreenIfNeeded();
-	virtual void playlistHasFinished();
-
 	virtual void onStateChanged(TCore::State state);
-	virtual void displayMessage(QString message, int time);
-	virtual void displayMessage(QString message);
+
 	virtual void gotCurrentTime(double);
 	virtual void gotDuration(double);
+	virtual void newMediaLoaded();
+	virtual void updateMediaInfo();
+	void gotForbidden();
 
 	virtual void updateWidgets();
 	virtual void updateVideoTracks();
@@ -199,14 +193,22 @@ protected slots:
 	virtual void updateTitles();
 	virtual void updateChapters();
 	virtual void updateAngles();
+
 	virtual void updateVideoEqualizer();
 	virtual void updateAudioEqualizer();
 	virtual void setDefaultValuesFromVideoEqualizer();
 	virtual void changeVideoEqualizerBySoftware(bool b);
 
 	virtual void videoOutResolutionChanged(int w, int h);
-	virtual void newMediaLoaded();
-	virtual void updateMediaInfo();
+	virtual void displayMessage(QString message, int time);
+	virtual void displayMessage(QString message);
+
+	virtual void setJumpTexts();
+
+	virtual void openRecent();
+	virtual void exitFullscreenOnStop();
+	virtual void exitFullscreenIfNeeded();
+	virtual void playlistHasFinished();
 
 #ifdef CHECK_UPGRADED
 	void checkIfUpgraded();
@@ -219,13 +221,13 @@ protected slots:
 	void YTUpdateScript();
 	#endif
 #endif
-	void gotForbidden();
 
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
 
 	void changeSize(int precentage);
 	void toggleDoubleSize();
+
 	virtual void resizeWindow(int w, int h);
 
 	virtual void displayGotoTime(int);
