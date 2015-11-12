@@ -151,8 +151,6 @@ void TSkin::loadConfig() {
 	viewVideoInfoAct->setChecked(pref->value("video_info", false).toBool());
 	scrollTitleAct->setChecked(pref->value("scroll_title", false).toBool());
 	pref->endGroup();
-
-	updateWidgets();
 }
 
 } // namespace Gui

@@ -202,8 +202,6 @@ void TDefault::loadConfig() {
 	viewVideoInfoAct->setChecked(pref->value("video_info", false).toBool());
 	viewFrameCounterAct->setChecked(pref->value("frame_counter", false).toBool());
 	pref->endGroup();
-
-	updateWidgets();
 }
 
 } // namespace Gui

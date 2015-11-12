@@ -388,7 +388,6 @@ signals:
 	void videoEqualizerNeedsUpdate();
 
 	void needResize(int w, int h);
-	void widgetsNeedUpdate();
 
 #ifdef YOUTUBE_SUPPORT
 	void signatureNotFound(const QString &);
@@ -409,7 +408,6 @@ protected:
 
 	void newMediaPlayingStarted();
 	void saveMediaInfo();
-	void updateWidgets();
 
 	int adjustVolume(int volume);
 	void seek_cmd(double secs, int mode);

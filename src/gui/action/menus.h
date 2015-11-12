@@ -108,10 +108,9 @@ private:
 class TStayOnTopMenu : public TMenu {
 public:
 	explicit TStayOnTopMenu(QWidget* parent);
+	TActionGroup* group;
 protected:
 	virtual void onAboutToShow();
-private:
-	TActionGroup* group;
 };
 
 

@@ -364,12 +364,6 @@ void TCore::saveMediaInfo() {
 	emit showMessage(tr("Saved settings for %1").arg(mdat.filename), 3000);
 } // saveMediaInfo
 
-void TCore::updateWidgets() {
-	qDebug("TCore::updateWidgets");
-	emit widgetsNeedUpdate();
-}
-
-
 void TCore::changeFullscreenMode(bool b) {
 	proc->setFullscreen(b);
 }
@@ -940,8 +934,6 @@ void TCore::playingStarted() {
 	emit mediaLoaded();
 	qDebug("TCore::playingStarted: emit mediaInfoChanged()");
 	emit mediaInfoChanged();
-
-	updateWidgets();
 
 	qDebug() << "TCore::playingStarted: done in" << time.elapsed() << "ms";
 }
@@ -3257,11 +3249,9 @@ void TCore::nextAspectRatio() {
 	int i = s.indexOf(mset.aspect_ratio_id) + 1;
 	if (i >= s.count())
 		i = 0;
-
 	int new_aspect_id = s[i];
 
 	changeAspectRatio(new_aspect_id);
-	updateWidgets();
 }
 
 void TCore::nextWheelFunction() {
@@ -3544,7 +3534,8 @@ void TCore::changeUseCustomSubStyle(bool b) {
 
 	if (pref->enable_ass_styles != b) {
 		pref->enable_ass_styles = b;
-		if (proc->isRunning()) restartPlay();
+		if (proc->isRunning())
+			restartPlay();
 	}
 }
 

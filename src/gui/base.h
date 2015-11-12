@@ -145,7 +145,6 @@ public slots:
 
 	virtual void showPlaylist();
 	virtual void showPlaylist(bool b);
-	virtual void showVideoEqualizer();
 	virtual void showVideoEqualizer(bool b);
 	virtual void showAudioEqualizer();
 	virtual void showAudioEqualizer(bool b);
@@ -188,7 +187,6 @@ protected slots:
 	virtual void updateMediaInfo();
 	void gotForbidden();
 
-	virtual void updateWidgets();
 	virtual void updateVideoTracks();
 	virtual void updateAudioTracks();
 	virtual void updateSubtitles();

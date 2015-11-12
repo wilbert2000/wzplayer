@@ -305,8 +305,6 @@ void TBase::createCore() {
 			 this, SLOT(onVideoOutResolutionChanged(int,int)));
 	connect(core, SIGNAL(needResize(int, int)),
 			 this, SLOT(resizeWindow(int, int)));
-	connect(core, SIGNAL(widgetsNeedUpdate()),
-			 this, SLOT(updateWidgets()));
 
 	connect(core, SIGNAL(showMessage(QString, int)),
 			 this, SLOT(displayMessage(QString, int)));
@@ -364,6 +362,8 @@ void TBase::createPlaylist() {
 void TBase::createVideoEqualizer() {
 
 	video_equalizer = new TVideoEqualizer(this);
+	video_equalizer->setBySoftware(pref->use_soft_video_eq);
+
 	connect(video_equalizer, SIGNAL(contrastChanged(int)),
 			 core, SLOT(setContrast(int)));
 	connect(video_equalizer, SIGNAL(brightnessChanged(int)),
@@ -375,8 +375,6 @@ void TBase::createVideoEqualizer() {
 	connect(video_equalizer, SIGNAL(gammaChanged(int)),
 			 core, SLOT(setGamma(int)));
 
-	connect(video_equalizer, SIGNAL(visibilityChanged()),
-			 this, SLOT(updateWidgets()));
 	connect(video_equalizer, SIGNAL(requestToChangeDefaultValues()),
 			 this, SLOT(setDefaultValuesFromVideoEqualizer()));
 	connect(video_equalizer, SIGNAL(bySoftwareChanged(bool)),
@@ -415,8 +413,6 @@ void TBase::createAudioEqualizer() {
 			 core, SLOT(setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&)));
 	connect(audio_equalizer, SIGNAL(valuesChanged(const Settings::TAudioEqualizerList&)),
 			 core, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
-	connect(audio_equalizer, SIGNAL(visibilityChanged()),
-			 this, SLOT(updateWidgets()));
 }
 
 void TBase::createActions() {
@@ -583,7 +579,9 @@ void TBase::createActions() {
 
 	videoEqualizerAct = new TAction(this, "video_equalizer", QT_TR_NOOP("&Equalizer"), "equalizer", QKeySequence("Ctrl+E"));
 	videoEqualizerAct->setCheckable(true);
+	videoEqualizerAct->setChecked(video_equalizer->isVisible());
 	connect(videoEqualizerAct, SIGNAL(toggled(bool)), this, SLOT(showVideoEqualizer(bool)));
+	connect(video_equalizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
 
 	// Single screenshot
 	screenshotAct = new TAction(this, "screenshot", QT_TR_NOOP("&Screenshot"), "screenshot", Qt::Key_S);
@@ -618,7 +616,9 @@ void TBase::createActions() {
 	// Menu Audio
 	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("E&qualizer"), "audio_equalizer");
 	audioEqualizerAct->setCheckable(true);
+	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
 	connect(audioEqualizerAct, SIGNAL(toggled(bool)), this, SLOT(showAudioEqualizer(bool)));
+	connect(audio_equalizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
 
 	muteAct = new TAction(this, "mute", QT_TR_NOOP("&Mute"), Qt::Key_M);
 	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
@@ -716,10 +716,12 @@ void TBase::createActions() {
 
 	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", QT_TR_NOOP("Use custo&m style"), "use_custom_sub_style");
 	useCustomSubStyleAct->setCheckable(true);
+	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
 	connect(useCustomSubStyleAct, SIGNAL(toggled(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
 
 	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", QT_TR_NOOP("&Forced subtitles only"), "forced_subs");
 	useForcedSubsOnlyAct->setCheckable(true);
+	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
 	connect(useForcedSubsOnlyAct, SIGNAL(toggled(bool)), core, SLOT(toggleForcedSubsOnly(bool)));
 
 #ifdef FIND_SUBTITLES
@@ -887,6 +889,7 @@ void TBase::createActions() {
 		screen_item->change("&"+QString::number(n));
 	}
 
+	screenGroup->setChecked(pref->adapter);
 	connect(screenGroup, SIGNAL(activated(int)), core, SLOT(changeAdapter(int)));
 #endif // USE_ADAPTER
 
@@ -1768,7 +1771,6 @@ void TBase::retranslateStrings() {
 	log_window->retranslateStrings();
 
 	updateRecents();
-	updateWidgets();
 
 	// Update actions view in preferences
 	// It has to be done, here. The actions are translated after the
@@ -2022,19 +2024,15 @@ void TBase::showPlaylist(bool b) {
 	}
 }
 
-void TBase::showVideoEqualizer() {
-	showVideoEqualizer(!video_equalizer->isVisible());
-}
-
 void TBase::showVideoEqualizer(bool b) {
-	if (!b) {
-		video_equalizer->hide();
-	} else {
+
+	if (b) {
 		// Exit fullscreen, otherwise dialog is not visible
 		exitFullscreenIfNeeded();
 		video_equalizer->show();
+	} else {
+		video_equalizer->hide();
 	}
-	updateWidgets();
 }
 
 void TBase::showAudioEqualizer() {
@@ -2049,7 +2047,6 @@ void TBase::showAudioEqualizer(bool b) {
 	} else {
 		audio_equalizer->hide();
 	}
-	updateWidgets();
 }
 
 void TBase::showPreferencesDialog() {
@@ -2084,6 +2081,19 @@ void TBase::applyNewPreferences() {
 	TPlayerID::Player old_player_type = TPlayerID::player(pref->mplayer_bin);
 	pref_dialog->getData(pref);
 
+	// Video equalizer
+	video_equalizer->setBySoftware(pref->use_soft_video_eq);
+	// Screenshots
+
+	bool enableScreenShots = core->state() != TCore::Stopped
+							 && !core->mdat.noVideo()
+							 // TODO: vdpau see setActionsEnabled()
+							 && pref->use_screenshot
+							 && !pref->screenshot_directory.isEmpty()
+							 && QFileInfo(pref->screenshot_directory).isDir();
+	screenshotAct->setEnabled(enableScreenShots);
+	screenshotsAct->setEnabled(enableScreenShots);
+
 	// Setup proxy
 	setupNetworkProxy();
 
@@ -2096,6 +2106,8 @@ void TBase::applyNewPreferences() {
 			QApplication::setFont(f);
 		}
 	}
+	// Use custom style
+	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
 
 	Pref::TInterface* _interface = pref_dialog->mod_interface();
 	if (_interface->recentsChanged()) {
@@ -2152,7 +2164,6 @@ void TBase::applyNewPreferences() {
 	}
 
 	setJumpTexts(); // Update texts in menus
-	updateWidgets(); // Update the screenshot action
 
 	if (_interface->styleChanged()) {
 		qDebug("Gui::TBase::applyNewPreferences: selected style: '%s'", pref->style.toUtf8().data());
@@ -2579,29 +2590,6 @@ void TBase::clearRecentsList() {
 		pref->history_recents.clear();
 		updateRecents();
 	}
-}
-
-void TBase::updateWidgets() {
-	qDebug("Gui::TBase::updateWidgets");
-
-	// TODO: screenGroup
-#if USE_ADAPTER
-	screenGroup->setChecked(pref->adapter);
-#endif
-
-	// Video equalizer
-	videoEqualizerAct->setChecked(video_equalizer->isVisible());
-	video_equalizer->setBySoftware(pref->use_soft_video_eq);
-	// Audio equalizer
-	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
-
-	// Use custom style
-	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
-
-	// Forced subs
-	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
-
-	panel->setFocus();
 }
 
 void TBase::updateVideoEqualizer() {
@@ -3077,14 +3065,13 @@ void TBase::toggleFullscreen(bool b) {
 		core->changeLetterboxOnFullscreen(pref->fullscreen);
 	}
 
+	// Update fullscreen action
+	fullscreenAct->setChecked(pref->fullscreen);
+
 	// Risky?
 	QTimer::singleShot(350, this, SLOT(unlockSizeFactor()));
 	//setUpdatesEnabled(true);
 	//update();
-
-	// Update fullscreen action
-	fullscreenAct->setChecked(pref->fullscreen);
-	updateWidgets();
 
 	setFocus(); // Fixes bug #2493415
 }
@@ -3866,7 +3853,7 @@ void TBase::changeStayOnTop(int stay_on_top) {
 	}
 
 	pref->stay_on_top = (Settings::TPreferences::OnTop) stay_on_top;
-	updateWidgets();
+	stay_on_top_menu->group->setChecked(pref->stay_on_top);
 }
 
 void TBase::checkStayOnTop(TCore::State state) {

@@ -50,7 +50,7 @@ public:
 	void setEqualizer(const Settings::TAudioEqualizerList& l);
 
 signals:
-	void visibilityChanged();
+	void visibilityChanged(bool visible);
 	void applyClicked(const Settings::TAudioEqualizerList& new_values);
 	void valuesChanged(const Settings::TAudioEqualizerList& values);
 

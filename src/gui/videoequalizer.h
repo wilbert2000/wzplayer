@@ -58,7 +58,7 @@ signals:
 	void saturationChanged(int);
 	void gammaChanged(int);
 
-	void visibilityChanged();
+	void visibilityChanged(bool visible);
 	void requestToChangeDefaultValues();
 	void bySoftwareChanged(bool);
 

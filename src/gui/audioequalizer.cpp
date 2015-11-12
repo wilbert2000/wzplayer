@@ -322,11 +322,11 @@ void TAudioEqualizer::updatePresetCombo() {
 }
 
 void TAudioEqualizer::hideEvent(QHideEvent*) {
-	emit visibilityChanged();
+	emit visibilityChanged(false);
 }
 
 void TAudioEqualizer::showEvent(QShowEvent*) {
-	emit visibilityChanged();
+	emit visibilityChanged(true);
 }
 
 // Language change stuff

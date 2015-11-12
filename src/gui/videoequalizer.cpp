@@ -88,11 +88,11 @@ void TVideoEqualizer::on_bysoftware_check_stateChanged(int state) {
 }
 
 void TVideoEqualizer::hideEvent(QHideEvent*) {
-	emit visibilityChanged();
+	emit visibilityChanged(false);
 }
 
 void TVideoEqualizer::showEvent(QShowEvent*) {
-	emit visibilityChanged();
+	emit visibilityChanged(true);
 }
 
 void TVideoEqualizer::retranslateStrings() {
