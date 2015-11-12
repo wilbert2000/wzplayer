@@ -1415,7 +1415,7 @@ QMenu* TBase::createPopupMenu() {
 
 void TBase::showStatusBarPopup(const QPoint& pos) {
 	//qDebug("Gui::TBase::showStatusBarPopup: x: %d y: %d", pos.x(), pos.y());
-	toolbar_menu->exec(statusBar()->mapToGlobal(pos));
+	execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
 }
 
 void TBase::createToolbars() {
@@ -3596,7 +3596,7 @@ void TBase::showContextMenu() {
 
 void TBase::showContextMenu(QPoint p) {
 	//qDebug("Gui::TBase::showContextMenu: %d, %d", p.x(), p.y());
-	popup->exec(p);
+	execPopup(this, popup, p);
 }
 
 // Called when a video has started to play

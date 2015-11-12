@@ -9,6 +9,7 @@ class TCore;
 
 namespace Gui {
 
+void execPopup(QWidget* w, QMenu* popup, QPoint p);
 
 class TMenu : public QMenu {
 	Q_OBJECT

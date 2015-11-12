@@ -152,7 +152,7 @@ void TEditableToolbar::showContextMenu(const QPoint& pos) {
 
 	QMenu* popup = main_window->getToolbarMenu();
 	if (popup) {
-		popup->exec(mapToGlobal(pos));
+		execPopup(this, popup, mapToGlobal(pos));
 	}
 }
 

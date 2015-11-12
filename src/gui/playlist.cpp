@@ -43,6 +43,7 @@
 #include <QDebug>
 
 #include "gui/action/action.h"
+#include "gui/action/menus.h"
 #include "gui/tablewidget.h"
 #include "filedialog.h"
 #include "helper.h"
@@ -828,7 +829,7 @@ void TPlaylist::showContextMenu(const QPoint & pos) {
 	qDebug("Gui::TPlaylist::showContextMenu: x: %d y: %d", pos.x(), pos.y());
 
 	if (!popup->isVisible()) {
-		popup->exec(listView->viewport()->mapToGlobal(pos));
+		execPopup(this, popup, listView->viewport()->mapToGlobal(pos));
 	}
 }
 

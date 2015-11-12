@@ -2,6 +2,7 @@
 #include <QDebug>
 #include "settings/preferences.h"
 #include "gui/action/actiongroup.h"
+#include "desktop.h"
 #include "images.h"
 #include "playerwindow.h"
 #include "core.h"
@@ -10,6 +11,47 @@
 using namespace Settings;
 
 namespace Gui {
+
+void execPopup(QWidget* w, QMenu* popup, QPoint p) {
+	//qDebug() << "Gui::execPopup:" << p << popup->size();
+
+	// Evade mouse
+	// TODO: size popup not yet valid. Use abotToShow()?
+	QSize s(popup->size());
+	QSize desktop = TDesktop::size(w);
+	if (p.x() < 0) p.rx() = 0;
+	else if (p.x() + s.width() > desktop.width()) {
+		p.rx() = desktop.width() - s.width();
+	}
+	if (p.y() < 0) p.ry() = 0;
+	else if (p.y() + s.height() > desktop.height()) {
+		p.ry() = desktop.height() - s.height();
+	}
+	//qDebug() << "Gui::execPopup:" << p;
+
+	if (QCursor::pos().x() > p.x() && QCursor::pos().x() < p.x() + s.width()) {
+		if (QCursor::pos().x() >= desktop.width() - s.width()) {
+			// Place menu to the left of mouse
+			p.rx() = QCursor::pos().x() - s.width();
+		} else {
+			// Place menu to the right of mouse
+			p.rx() = QCursor::pos().x();
+		}
+	}
+	if (QCursor::pos().y() > p.y() && QCursor::pos().y() < p.y() + s.height()) {
+		if (QCursor::pos().y() >= desktop.height() - s.height()) {
+			// Place menu above mouse
+			p.ry() = QCursor::pos().y() - s.height();
+		} else {
+			// Place menu below mouse
+			p.ry() = QCursor::pos().y();
+		}
+	}
+	//qDebug() << "Gui::execPopup:" << p;
+
+	// Popup exec keeps menu inside screen too
+	popup->exec(p);
+}
 
 TMenu::TMenu(QWidget* parent,
 			 QObject* atranslator,
