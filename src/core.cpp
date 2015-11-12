@@ -3218,12 +3218,11 @@ void TCore::nextProgram() {
 }
 #endif
 
-void TCore::changeAspectRatio(int ID) {
-	qDebug("TCore::changeAspectRatio: %d", ID);
+void TCore::changeAspectRatio(int id) {
+	qDebug("TCore::changeAspectRatio: %d", id);
 
-	mset.aspect_ratio_id = ID;
-
-	double asp = mset.aspectToNum((TMediaSettings::Aspect) ID);
+	mset.aspect_ratio_id = id;
+	double asp = mset.aspectToNum((TMediaSettings::Aspect) id);
 
 	// Set aspect video window, don't update video window
 	playerwindow->setAspect(asp, false);
@@ -3231,6 +3230,8 @@ void TCore::changeAspectRatio(int ID) {
 	emit needResize(mset.win_width, mset.win_height);
 	// Adjust video window if resize canceled
 	playerwindow->updateVideoWindow();
+
+	emit aspectRatioChanged(id);
 
 	QString asp_name = TMediaSettings::aspectToString((TMediaSettings::Aspect) mset.aspect_ratio_id);
 	displayMessage(tr("Aspect ratio: %1").arg(asp_name));

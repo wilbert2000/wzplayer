@@ -104,6 +104,7 @@ TAspectMenu::TAspectMenu(QWidget* parent, TCore* c)
 	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TMediaSettings::AspectNone);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
+	connect(core, SIGNAL(aspectRatioChanged(int)), group, SLOT(setCheckedSlot(int)));
 }
 
 void TAspectMenu::onAboutToShow() {

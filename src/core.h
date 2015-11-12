@@ -281,7 +281,7 @@ public slots:
 	void prevChapter();
 	void nextChapter();
 	void changeAngle(int);
-	void changeAspectRatio(int);
+	void changeAspectRatio(int id);
 	void nextAspectRatio();
 	void changeOSDLevel(int level);
 	void nextOSDLevel();
@@ -348,6 +348,7 @@ signals:
 	void aboutToStartPlaying(); // Signal emited just before starting player
 	void buffering();
 	void receivedForbidden();
+	void aspectRatioChanged(int id);
 	void videoOutResolutionChanged(int w, int h);
 	void newMediaStartedPlaying();
 	void mediaLoaded();
