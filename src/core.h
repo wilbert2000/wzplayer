@@ -344,6 +344,7 @@ public slots:
 
 signals:
 	void stateChanged(TCore::State state);
+	void mediaSettingsChanged();
 	void aboutToStartPlaying(); // Signal emited just before starting player
 	void buffering();
 	void receivedForbidden();
@@ -399,6 +400,7 @@ protected:
 	void setState(State s);
 
 	void initVolume();
+	void initMediaSettings();
 	void initPlaying(int seek = -1);
 	void startPlayer(QString file, double seek = -1);
 	void stopPlayer();

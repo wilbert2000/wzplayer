@@ -761,27 +761,35 @@ void TCore::initVolume() {
 	}
 }
 
+void TCore::initMediaSettings() {
+	qDebug("TCore::initMediaSettings");
+
+	// Restore old volume or emit new volume
+	initVolume();
+
+	// Apply settings to playerwindow
+	playerwindow->set(
+		mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id),
+		mset.zoom_factor, mset.zoom_factor_fullscreen,
+		mset.pan_offset, mset.pan_offset_fullscreen);
+
+	// Feedback and prevent artifacts waiting for redraw
+	playerwindow->repaint();
+
+	emit mediaSettingsChanged();
+}
+
 void TCore::initPlaying(int seek) {
 	qDebug("TCore::initPlaying: starting time");
 
 	time.start();
 	playerwindow->hideLogo();
-	if (!we_are_restarting) {
-		// Restore old volume or emit new volume
-		initVolume();
-
-		// Apply settings to playerwindow
-		playerwindow->set(
-			mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id),
-			mset.zoom_factor, mset.zoom_factor_fullscreen,
-			mset.pan_offset, mset.pan_offset_fullscreen);
-
-		// Feedback and prevent artifacts waiting for redraw
-		playerwindow->repaint();
-	}
+	if (!we_are_restarting)
+		initMediaSettings();
 
 	int start_sec = (int) mset.current_sec;
-	if (seek > -1) start_sec = seek;
+	if (seek >= 0)
+		start_sec = seek;
 
 	// Cannot seek at startup in DVDNAV.
 	// See restartPlay() and restoreTitle() for DVDNAV seek.
