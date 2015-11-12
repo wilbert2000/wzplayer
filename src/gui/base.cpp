@@ -1563,20 +1563,25 @@ void TBase::setActionsEnabled(bool b) {
 	stereo3dAct->setEnabled(b);
 
 	// Menu Audio
-	audioEqualizerAct->setEnabled(b);
-	muteAct->setEnabled(b);
-	decVolumeAct->setEnabled(b);
-	incVolumeAct->setEnabled(b);
-	decAudioDelayAct->setEnabled(b);
-	incAudioDelayAct->setEnabled(b);
-	audioDelayAct->setEnabled(b);
-#ifdef MPLAYER_SUPPORT
-	extrastereoAct->setEnabled(b);
-	karaokeAct->setEnabled(b);
-#endif
-	volnormAct->setEnabled(b);
 	loadAudioAct->setEnabled(b);
-	//unloadAudioAct->setEnabled(b);
+	unloadAudioAct->setEnabled(b && !core->mset.external_audio.isEmpty());
+	bool enableAudio = b && core->mdat.audios.count() > 0;
+	audiochannels_menu->group->setActionsEnabled(enableAudio);
+	stereomode_menu->group->setActionsEnabled(enableAudio);
+	audioEqualizerAct->setEnabled(enableAudio && pref->use_audio_equalizer);
+	muteAct->setEnabled(enableAudio);
+	decVolumeAct->setEnabled(enableAudio);
+	incVolumeAct->setEnabled(enableAudio);
+	decAudioDelayAct->setEnabled(enableAudio);
+	incAudioDelayAct->setEnabled(enableAudio);
+	audioDelayAct->setEnabled(enableAudio);
+	// Sub menu filters
+#ifdef MPLAYER_SUPPORT
+	extrastereoAct->setEnabled(enableAudio);
+	karaokeAct->setEnabled(enableAudio);
+#endif
+	volnormAct->setEnabled(enableAudio);
+
 
 	// Menu Subtitles
 	loadSubsAct->setEnabled(b);
@@ -1625,8 +1630,6 @@ void TBase::setActionsEnabled(bool b) {
 #if USE_ADAPTER
 	screenGroup->setActionsEnabled(b);
 #endif
-	audiochannels_menu->group->setActionsEnabled(b);
-	stereomode_menu->group->setActionsEnabled(b);
 
 	// Time slider
 	timeslider_action->enable(b);
@@ -1636,41 +1639,19 @@ void TBase::enableActionsOnPlaying() {
 	qDebug("Gui::TBase::enableActionsOnPlaying");
 
 	setActionsEnabled(true);
-
 	playAct->setEnabled(false);
 
 	// Screenshot option
-	bool screenshots_enabled = ((pref->use_screenshot) &&
-								 (!pref->screenshot_directory.isEmpty()) &&
-								 (QFileInfo(pref->screenshot_directory).isDir()));
-
+	bool screenshots_enabled = pref->use_screenshot
+							   && !pref->screenshot_directory.isEmpty()
+							   && QFileInfo(pref->screenshot_directory).isDir();
 	screenshotAct->setEnabled(screenshots_enabled);
 	screenshotsAct->setEnabled(screenshots_enabled);
 
 #ifdef CAPTURE_STREAM
-	capturingAct->setEnabled(!pref->capture_directory.isEmpty() && QFileInfo(pref->capture_directory).isDir());
+	capturingAct->setEnabled(!pref->capture_directory.isEmpty()
+							 && QFileInfo(pref->capture_directory).isDir());
 #endif
-
-	// Enable or disable the audio equalizer
-	audioEqualizerAct->setEnabled(pref->use_audio_equalizer);
-
-	// Disable audio actions if there's not audio track
-	if ((core->mdat.audios.count() == 0) && (core->mset.external_audio.isEmpty())) {
-		audioEqualizerAct->setEnabled(false);
-		muteAct->setEnabled(false);
-		decVolumeAct->setEnabled(false);
-		incVolumeAct->setEnabled(false);
-		decAudioDelayAct->setEnabled(false);
-		incAudioDelayAct->setEnabled(false);
-		audioDelayAct->setEnabled(false);
-#ifdef MPLAYER_SUPPORT
-		extrastereoAct->setEnabled(false);
-		karaokeAct->setEnabled(false);
-#endif
-		volnormAct->setEnabled(false);
-		audiochannels_menu->group->setActionsEnabled(false);
-		stereomode_menu->group->setActionsEnabled(false);
-	}
 
 	// Disable video actions if it's an audio file
 	if (core->mdat.noVideo()) {
@@ -1713,6 +1694,7 @@ void TBase::enableActionsOnPlaying() {
 	}
 #endif
 
+	// Disable DVDNAV
 	if (core->mdat.detected_type != TMediaData::TYPE_DVDNAV) {
 		dvdnavUpAct->setEnabled(false);
 		dvdnavDownAct->setEnabled(false);
@@ -2147,12 +2129,12 @@ void TBase::showAudioEqualizer() {
 }
 
 void TBase::showAudioEqualizer(bool b) {
-	if (!b) {
-		audio_equalizer->hide();
-	} else {
-		// Exit fullscreen, otherwise dialog is not visible
+
+	if (b) {
 		exitFullscreenIfNeeded();
 		audio_equalizer->show();
+	} else {
+		audio_equalizer->hide();
 	}
 	updateWidgets();
 }
@@ -2688,10 +2670,6 @@ void TBase::clearRecentsList() {
 
 void TBase::updateWidgets() {
 	qDebug("Gui::TBase::updateWidgets");
-
-	// Audio menu
-	// Disable the unload audio file action if there's no external audio file
-	unloadAudioAct->setEnabled(!core->mset.external_audio.isEmpty());
 
 #if PROGRAM_SWITCH
 	// Program menu
