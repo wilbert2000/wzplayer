@@ -2593,9 +2593,6 @@ void TBase::updateWidgets() {
 	screenGroup->setChecked(pref->adapter);
 #endif
 
-	// Fullscreen action
-	fullscreenAct->setChecked(pref->fullscreen);
-
 	// Video equalizer
 	videoEqualizerAct->setChecked(video_equalizer->isVisible());
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
@@ -3086,10 +3083,12 @@ void TBase::toggleFullscreen(bool b) {
 	}
 
 	// Risky?
-	QTimer::singleShot(250, this, SLOT(unlockSizeFactor()));
+	QTimer::singleShot(350, this, SLOT(unlockSizeFactor()));
 	//setUpdatesEnabled(true);
 	//update();
 
+	// Update fullscreen action
+	fullscreenAct->setChecked(pref->fullscreen);
 	updateWidgets();
 
 	setFocus(); // Fixes bug #2493415
