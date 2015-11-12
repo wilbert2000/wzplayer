@@ -119,11 +119,11 @@ public:
 	void updateSizeFactor();
 	void moveVideo(int dx, int dy);
 	void aboutToExitFullscreen();
+	void playingStopped(bool clear_background = true);
 	void retranslateStrings();
 
 public slots:
 	void aboutToStartPlaying();
-	void playingStopped(bool clear_background = true);
 
 	void setLogoVisible(bool b);
 	void showLogo() { setLogoVisible(true); }
