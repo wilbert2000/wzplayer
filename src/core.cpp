@@ -280,7 +280,6 @@ void TCore::processFinished(bool normal_exit) {
 	if (!normal_exit) {
 		int exit_code = proc->exitCode();
 		qWarning("TCore::processFinished: player crash or error (%d)", exit_code);
-
 		playerwindow->showLogo();
 		emit playerFinishedWithError(exit_code);
 	}
@@ -603,7 +602,7 @@ void TCore::unloadSub() {
 	restartPlay();
 }
 
-void TCore::loadAudioFile(const QString & audiofile) {
+void TCore::loadAudioFile(const QString& audiofile) {
 
 	if (!audiofile.isEmpty()) {
 		mset.external_audio = audiofile;
@@ -1087,7 +1086,8 @@ void TCore::startPlayer(QString file, double seek) {
 	qDebug("TCore::startPlayer: url_is_playlist: %d", url_is_playlist);
 
 
-	// Check if a m4a file exists with the same name of file, in that cause if will be used as audio
+	// Check if a m4a file exists with the same name of file,
+	// in that cause if will be used as audio
 	if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
 		QFileInfo fi(file);
 		if (fi.exists() && !fi.isDir()) {
@@ -1099,7 +1099,8 @@ void TCore::startPlayer(QString file, double seek) {
 					file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
 				}
 				if (QFile::exists(file2)) {
-					qDebug("TCore::startPlayer: found %s, so it will be used as audio file", file2.toUtf8().constData());
+					qDebug("TCore::startPlayer: found %s, so it will be used as audio file",
+						   file2.toUtf8().constData());
 					mset.external_audio = file2;
 				}
 			}
@@ -1107,9 +1108,9 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 
-	bool screenshot_enabled = ((pref->use_screenshot) &&
-                                (!pref->screenshot_directory.isEmpty()) && 
-								(QFileInfo(pref->screenshot_directory).isDir()));
+	bool screenshot_enabled = pref->use_screenshot
+							  && !pref->screenshot_directory.isEmpty()
+							  && QFileInfo(pref->screenshot_directory).isDir();
 
 	proc->clearArguments();
 
@@ -2156,7 +2157,8 @@ void TCore::clearABMarkers() {
 		mset.A_marker = -1;
 		mset.B_marker = -1;
 		displayMessage(tr("A-B markers cleared"));
-		if (proc->isRunning()) restartPlay();
+		if (proc->isRunning())
+			restartPlay();
 	}
 
 	emit ABMarkersChanged();
@@ -2173,7 +2175,8 @@ void TCore::toggleRepeat(bool b) {
 	if (mset.loop != b) {
 		mset.loop = b;
 		int v = -1; // no loop
-		if (mset.loop) v = 0; // infinite loop
+		if (mset.loop)
+			v = 0; // infinite loop
 		proc->setLoop(v);
 	}
 }

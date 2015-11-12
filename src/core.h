@@ -75,11 +75,6 @@ public:
 	int getVolume();
 	bool getMute();
 
-protected:
-	//! Change the current state (Stopped, Playing or Paused)
-	//! And sends the stateChanged() signal.
-	void setState(State s);
-
 public slots:
 	//! Generic open, with autodetection of type
 	void open(QString file, int seek = -1, bool fast_open = true);
@@ -128,9 +123,7 @@ public slots:
 
 	void setBMarker(); //!< Set B marker to current sec
 	void setBMarker(int sec);
-
 	void clearABMarkers();
-
 	void toggleRepeat();
 	void toggleRepeat(bool b);
 
@@ -349,7 +342,73 @@ public slots:
 						  int level = 1);
 	void clearOSD();
 
+signals:
+	void stateChanged(TCore::State state);
+	void aboutToStartPlaying(); // Signal emited just before starting player
+	void buffering();
+	void receivedForbidden();
+	void videoOutResolutionChanged(int w, int h);
+	void newMediaStartedPlaying();
+	void mediaLoaded();
+	void mediaInfoChanged();
+	//! Sends the filename and title of the stream playing in this moment
+	void mediaPlaying(const QString& filename, const QString& title);
+	void mediaStopped();
+	void mediaEOF(); // Media has arrived to the end.
+	//! Player started but finished with exit code != 0
+	void playerFinishedWithError(int exitCode);
+	//! Player didn't started or crashed
+	void playerFailed(QProcess::ProcessError error);
+	//! Sent when requested to play, but there is no file to play
+	void noFileToPlay();
+
+	void showTime(double sec);
+	void positionChanged(int); // To connect a slider
+	void durationChanged(double); // Duration has changed
+	void showFrame(int frame);
+
+	void showMessage(QString text);
+	void showMessage(QString text, int time);
+
+	void volumeChanged(int);
+	void muteChanged(bool);
+	void videoTrackInfoChanged();
+	void videoTrackChanged(int);
+	void audioTrackInfoChanged();
+	void audioTrackChanged(int);
+	void subtitleInfoChanged();
+	void subtitleTrackChanged(int);
+	void titleTrackInfoChanged();
+	void titleTrackChanged(int);
+	void chapterInfoChanged();
+	void chapterChanged(int);
+	void ABMarkersChanged();
+	void videoEqualizerNeedsUpdate();
+
+	void needResize(int w, int h);
+	void widgetsNeedUpdate();
+
+#ifdef YOUTUBE_SUPPORT
+	void signatureNotFound(const QString &);
+	void noSslSupport();
+#endif
+
 protected:
+	//! Change the current state (Stopped, Playing or Paused)
+	//! And sends the stateChanged() signal.
+	void setState(State s);
+
+	void initVolume();
+	void initPlaying(int seek = -1);
+	void startPlayer(QString file, double seek = -1);
+	void stopPlayer();
+	void restartPlay();
+
+	void newMediaPlayingStarted();
+	void saveMediaInfo();
+	void updateWidgets();
+
+	int adjustVolume(int volume);
 	void seek_cmd(double secs, int mode);
 
 protected slots:
@@ -407,73 +466,6 @@ protected slots:
 	void disableScreensaver();
 #endif
 #endif
-
-protected:
-	void initVolume();
-	void initPlaying(int seek = -1);
-	void newMediaPlayingStarted();
-
-	void startPlayer(QString file, double seek = -1);
-	void stopPlayer();
-	void restartPlay();
-
-	void saveMediaInfo();
-
-	void updateWidgets();
-
-	int adjustVolume(int volume);
-
-signals:
-	void buffering();
-	void aboutToStartPlaying(); // Signal emited just before to start mplayer
-	void videoOutResolutionChanged(int w, int h);
-	void mediaLoaded();
-	void mediaInfoChanged();
-	//! Sends the filename and title of the stream playing in this moment
-	void mediaPlaying(const QString& filename, const QString& title);
-	void stateChanged(TCore::State state);
-	void newMediaStartedPlaying();
-	void mediaEOF(); // Media has arrived to the end.
-	void mediaStopped();
-	void showMessage(QString text);
-	void showMessage(QString text, int time);
-	void widgetsNeedUpdate();
-	void videoEqualizerNeedsUpdate();
-	void showTime(double sec);
-	void positionChanged(int); // To connect a slider
-	void durationChanged(double); // Duration has changed
-	void showFrame(int frame);
-	void ABMarkersChanged();
-	void needResize(int w, int h);
-	void volumeChanged(int);
-	void muteChanged(bool);
-	void videoTrackInfoChanged();
-	void videoTrackChanged(int);
-	void audioTrackInfoChanged();
-	void audioTrackChanged(int);
-	void subtitleInfoChanged();
-	void subtitleTrackChanged(int);
-	void titleTrackInfoChanged();
-	void titleTrackChanged(int);
-	void chapterInfoChanged();
-	void chapterChanged(int);
-
-
-	//! Sent when requested to play, but there is no file to play
-	void noFileToPlay();
-
-	//! Player started but finished with exit code != 0
-	void playerFinishedWithError(int exitCode);
-
-	//! Player didn't started or crashed
-	void playerFailed(QProcess::ProcessError error);
-
-#ifdef YOUTUBE_SUPPORT
-	void signatureNotFound(const QString &);
-	void noSslSupport();
-#endif
-
-	void receivedForbidden();
 
 protected:
 	Proc::TPlayerProcess* proc;
