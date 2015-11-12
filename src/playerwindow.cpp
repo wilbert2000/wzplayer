@@ -279,7 +279,7 @@ void TPlayerWindow::updateVideoWindow() {
 	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
 }
 
-void TPlayerWindow::resizeEvent(QResizeEvent *) {
+void TPlayerWindow::resizeEvent(QResizeEvent*) {
 	updateVideoWindow();
 }
 

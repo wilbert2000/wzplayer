@@ -3892,7 +3892,9 @@ void TBase::resizeEvent(QResizeEvent* event) {
 
 	QMainWindow::resizeEvent(event);
 
-	// Update size factor after window resized by user
+	// Update size factor after window resized by user.
+	// In TPlayerWindow::resizeEvent() event->spontaneous() does not become
+	// true during an user induces resize, so its needs to be here.
 	if (event->spontaneous()) {
 		playerwindow->updateSizeFactor();
 	}
