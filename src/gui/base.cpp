@@ -2083,16 +2083,6 @@ void TBase::applyNewPreferences() {
 
 	// Video equalizer
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
-	// Screenshots
-
-	bool enableScreenShots = core->state() != TCore::Stopped
-							 && !core->mdat.noVideo()
-							 // TODO: vdpau see setActionsEnabled()
-							 && pref->use_screenshot
-							 && !pref->screenshot_directory.isEmpty()
-							 && QFileInfo(pref->screenshot_directory).isDir();
-	screenshotAct->setEnabled(enableScreenShots);
-	screenshotsAct->setEnabled(enableScreenShots);
 
 	// Setup proxy
 	setupNetworkProxy();
@@ -2179,6 +2169,8 @@ void TBase::applyNewPreferences() {
 	pref_dialog->mod_input()->actions_editor->applyChanges();
 	TActionsEditor::saveToConfig(this, pref);
 	pref->save();
+	setActionsEnabled(core->state() != TCore::Stopped);
+
 
 	// Any restarts needed?
 	if (_interface->guiChanged()
