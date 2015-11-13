@@ -1059,8 +1059,9 @@ void TBase::createMenus() {
 	playMenu->addAction(pauseAct);
 	/* playMenu->addAction(playOrPauseAct); */
 	playMenu->addAction(stopAct);
-	playMenu->addAction(frameStepAct);
+	playMenu->addSeparator();
 	playMenu->addAction(frameBackStepAct);
+	playMenu->addAction(frameStepAct);
 	playMenu->addSeparator();
 	playMenu->addAction(rewind1Act);
 	playMenu->addAction(forward1Act);
@@ -1069,12 +1070,11 @@ void TBase::createMenus() {
 	playMenu->addAction(rewind3Act);
 	playMenu->addAction(forward3Act);
 	playMenu->addSeparator();
-
-	// Speed submenu
-	speed_menu = new TPlaySpeedMenu(this, core);
-	playMenu->addMenu(speed_menu);
+	playMenu->addAction(playPrevAct);
+	playMenu->addAction(playNextAct);
 
 	// A-B submenu
+	playMenu->addSeparator();
 	ab_menu = new QMenu(this);
 	ab_menu->menuAction()->setObjectName("ab_menu");
 	ab_menu->addAction(setAMarkerAct);
@@ -1082,15 +1082,16 @@ void TBase::createMenus() {
 	ab_menu->addAction(clearABMarkersAct);
 	ab_menu->addSeparator();
 	ab_menu->addAction(repeatAct);
-
-	playMenu->addSeparator();
 	playMenu->addMenu(ab_menu);
 
+	// Speed submenu
+	playMenu->addSeparator();
+	speed_menu = new TPlaySpeedMenu(this, core);
+	playMenu->addMenu(speed_menu);
+
+	// Goto
 	playMenu->addSeparator();
 	playMenu->addAction(gotoAct);
-	playMenu->addSeparator();
-	playMenu->addAction(playPrevAct);
-	playMenu->addAction(playNextAct);
 
 
 	// VIDEO MENU
@@ -1870,7 +1871,7 @@ void TBase::loadConfig() {
 
 	// Get all actions with a name
 	TActionList all_actions = getAllNamedActions();
-	// Load shortcuts actions from outside group derived class
+	// Load actions from outside group derived class
 	TActionsEditor::loadFromConfig(all_actions, pref);
 
 	// Load from inside group derived class
@@ -3639,46 +3640,6 @@ void TBase::hidePanel() {
 	}
 }
 
-// Slot called when media settings reset or loaded
-void TBase::onMediaSettingsChanged() {
-	qDebug("Gui::TBase::onMediaSettingsChanged");
-
-	TMediaSettings* mset = &core->mset;
-
-	// Play
-	// Speed
-	// TODO: make checkable
-	// speed_menu->normalSpeedAct->setChecked(core->mset.speed == 1.0);
-	// A-B section
-	repeatAct->setChecked(mset->loop);
-
-	// Video
-	// Aspectratio
-	aspect_menu->group->setChecked(mset->aspect_ratio_id);
-	// Video filters
-	deinterlace_menu->group->setChecked(mset->current_deinterlacer);
-	videofilter_menu->updateFilters();
-	rotate_menu->group->setChecked(mset->rotate);
-	flipAct->setChecked(mset->flip);
-	mirrorAct->setChecked(mset->mirror);
-	updateVideoEqualizer();
-
-	// Audio filters
-	// Volume normalization filter
-	volnormAct->setChecked(mset->volnorm_filter);
-
-#ifdef MPLAYER_SUPPORT
-	// Karaoke
-	karaokeAct->setChecked(mset->karaoke_filter);
-	// Extra stereo
-	extrastereoAct->setChecked(mset->extrastereo_filter);
-#endif
-
-	audiochannels_menu->group->setChecked(mset->audio_use_channels);
-	stereomode_menu->group->setChecked(mset->stereo_mode);
-	updateAudioEqualizer();
-}
-
 // Slot called by signal videoOutResolutionChanged
 void TBase::onVideoOutResolutionChanged(int w, int h) {
 	qDebug("Gui::TBase::onVideoOutResolutionChanged: %d, %d", w, h);
@@ -3767,6 +3728,46 @@ void TBase::resizeEvent(QResizeEvent* event) {
 	if (event->spontaneous() && block_update_size_factor == 0) {
 		playerwindow->updateSizeFactor();
 	}
+}
+
+// Slot called when media settings reset or loaded
+void TBase::onMediaSettingsChanged() {
+	qDebug("Gui::TBase::onMediaSettingsChanged");
+
+	TMediaSettings* mset = &core->mset;
+
+	// Play
+	// Speed
+	// TODO: make checkable
+	// speed_menu->normalSpeedAct->setChecked(core->mset.speed == 1.0);
+	// A-B section
+	repeatAct->setChecked(mset->loop);
+
+	// Video
+	// Aspectratio
+	aspect_menu->group->setChecked(mset->aspect_ratio_id);
+	// Video filters
+	deinterlace_menu->group->setChecked(mset->current_deinterlacer);
+	videofilter_menu->updateFilters();
+	rotate_menu->group->setChecked(mset->rotate);
+	flipAct->setChecked(mset->flip);
+	mirrorAct->setChecked(mset->mirror);
+	updateVideoEqualizer();
+
+	// Audio filters
+	// Volume normalization filter
+	volnormAct->setChecked(mset->volnorm_filter);
+
+#ifdef MPLAYER_SUPPORT
+	// Karaoke
+	karaokeAct->setChecked(mset->karaoke_filter);
+	// Extra stereo
+	extrastereoAct->setChecked(mset->extrastereo_filter);
+#endif
+
+	audiochannels_menu->group->setChecked(mset->audio_use_channels);
+	stereomode_menu->group->setChecked(mset->stereo_mode);
+	updateAudioEqualizer();
 }
 
 void TBase::displayGotoTime(int t) {
