@@ -268,6 +268,7 @@ TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
 	new TActionGroupItem(this, group, "on_top_playing", QT_TR_NOOP("While &playing"), TPreferences::WhilePlayingOnTop);
 	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
 
+	addSeparator();
 	TAction* toggleStayOnTopAct = new TAction(this, QT_TR_NOOP("toggle_stay_on_top"), "Toggle stay on top");
 	connect(toggleStayOnTopAct, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
 }
