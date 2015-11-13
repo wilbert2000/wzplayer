@@ -46,7 +46,7 @@
 #include "retrieveyoutubeurl.h"
 #endif
 
-#define CURRENT_CONFIG_VERSION 5
+#define CURRENT_CONFIG_VERSION 6
 
 
 namespace Settings {
@@ -1431,7 +1431,7 @@ void TPreferences::load() {
 			cache_for_streams = 2048;
 			resize_method = Never;
 		}
-		if (config_version <= 4) {
+		if (config_version <= 5) {
 			if (time_to_kill_mplayer < 5000)
 				time_to_kill_mplayer = 5000;
 			use_dvdnav = true;
@@ -1439,12 +1439,15 @@ void TPreferences::load() {
 				time_slider_drag_delay = 200;
 			if (min_step < 5)
 				min_step = 5;
+
+			// Settings no longer used
 			beginGroup("floating_control");
 			remove("width");
 			endGroup();
 			beginGroup("advanced");
 			remove("use_mplayer_window");
 			endGroup();
+			remove("mplayer_info");
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;
