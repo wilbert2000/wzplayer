@@ -15,10 +15,11 @@ class TMenu : public QMenu {
 	Q_OBJECT
 public:
 	TMenu(QWidget* parent,
-		  QObject* atranslator,
+		  QObject* aTranslator,
 		  const QString& name,
 		  const QString& text,
 		  const QString& icon);
+	void addActionsTo(QWidget* w);
 protected:
 	virtual void changeEvent(QEvent* event);
 protected slots:
@@ -71,6 +72,12 @@ protected:
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+};
+
+
+class TDiscMenu : public TMenu {
+public:
+	explicit TDiscMenu(QWidget* parent);
 };
 
 

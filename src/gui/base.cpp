@@ -424,32 +424,13 @@ void TBase::createActions() {
 	openDirectoryAct = new TAction(this, "open_directory", QT_TR_NOOP("D&irectory..."), "openfolder");
 	connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openDirectory()));
 
-	openPlaylistAct = new TAction(this, "open_playlist", QT_TR_NOOP("&Playlist..."), "open_playlist");
+	openPlaylistAct = new TAction(this, "open_playlist", QT_TR_NOOP("&Playlist..."));
 	connect(openPlaylistAct, SIGNAL(triggered()), playlist, SLOT(load()));
-
-	openVCDAct = new TAction(this, "open_vcd", QT_TR_NOOP("V&CD"), "vcd");
-	connect(openVCDAct, SIGNAL(triggered()), this, SLOT(openVCD()));
-
-	openAudioCDAct = new TAction(this, "open_audio_cd", QT_TR_NOOP("&Audio CD"), "cdda");
-	connect(openAudioCDAct, SIGNAL(triggered()), this, SLOT(openAudioCD()));
-
-	openDVDAct = new TAction(this, "open_dvd", QT_TR_NOOP("&DVD from drive"), "dvd");
-	connect(openDVDAct, SIGNAL(triggered()), this, SLOT(openDVD()));
-
-	openDVDFolderAct = new TAction(this, "open_dvd_folder", QT_TR_NOOP("D&VD from folder..."), "dvd_hd");
-	connect(openDVDFolderAct, SIGNAL(triggered()), this, SLOT(openDVDFromFolder()));
-
-	// Bluray section.
-	openBluRayAct = new TAction(this, "open_bluray", QT_TR_NOOP("&Blu-ray from drive"), "bluray");
-	connect(openBluRayAct, SIGNAL(triggered()), this, SLOT(openBluRay()));
-
-	openBluRayFolderAct = new TAction(this, "open_bluray_folder", QT_TR_NOOP("Blu-&ray from folder..."), "bluray_hd");
-	connect(openBluRayFolderAct, SIGNAL(triggered()), this, SLOT(openBluRayFromFolder()));
 
 	openURLAct = new TAction(this, "open_url", QT_TR_NOOP("&URL..."), "url", QKeySequence("Ctrl+U"));
 	connect(openURLAct, SIGNAL(triggered()), this, SLOT(openURL()));
 
-	exitAct = new TAction(this, "close", QT_TR_NOOP("C&lose"), "close", QKeySequence("Ctrl+X"));
+	exitAct = new TAction(this, "close", QT_TR_NOOP("C&lose"), "", QKeySequence("Ctrl+X"));
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(closeWindow()));
 
 	clearRecentsAct = new TAction(this, "clear_recents", QT_TR_NOOP("&Clear"), "delete");
@@ -503,24 +484,24 @@ void TBase::createActions() {
 
 
 	// Menu Play
-	playAct = new TAction(this, "play", QT_TR_NOOP("P&lay"), "play");
+	playAct = new TAction(this, "play", QT_TR_NOOP("P&lay"));
 	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
 
-	playOrPauseAct = new TAction(this, "play_or_pause", QT_TR_NOOP("Play / Pause"), "play_pause", Qt::Key_MediaPlay);
+	playOrPauseAct = new TAction(this, "play_or_pause", QT_TR_NOOP("Play / Pause"), "noicon", Qt::Key_MediaPlay);
 	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
 	connect(playOrPauseAct, SIGNAL(triggered()), core, SLOT(playOrPause()));
 
-	pauseAct = new TAction(this, "pause", QT_TR_NOOP("&Pause"), "pause", Qt::Key_Space);
+	pauseAct = new TAction(this, "pause", QT_TR_NOOP("&Pause"), "", Qt::Key_Space);
 	pauseAct->addShortcut(QKeySequence("Media Pause")); // MCE remote key
 	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
 
-	stopAct = new TAction(this, "stop", QT_TR_NOOP("&Stop"), "stop", Qt::Key_MediaStop);
+	stopAct = new TAction(this, "stop", QT_TR_NOOP("&Stop"), "", Qt::Key_MediaStop);
 	connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
 
-	frameStepAct = new TAction(this, "frame_step", QT_TR_NOOP("&Frame step"), "frame_step", Qt::Key_Period);
+	frameStepAct = new TAction(this, "frame_step", QT_TR_NOOP("&Frame step"), "", Qt::Key_Period);
 	connect(frameStepAct, SIGNAL(triggered()), core, SLOT(frameStep()));
 
-	frameBackStepAct = new TAction(this, "frame_back_step", QT_TR_NOOP("Fra&me back step"), "frame_back_step", Qt::Key_Comma);
+	frameBackStepAct = new TAction(this, "frame_back_step", QT_TR_NOOP("Fra&me back step"), "", Qt::Key_Comma);
 	connect(frameBackStepAct, SIGNAL(triggered()), core, SLOT(frameBackStep()));
 
 	rewind1Act = new TAction(this, "rewind1", "", "rewind10s", Qt::Key_Left);
@@ -562,7 +543,7 @@ void TBase::createActions() {
 	clearABMarkersAct = new TAction(this, "clear_ab_markers", QT_TR_NOOP("&Clear A-B markers"), "clear_ab_markers");
 	connect(clearABMarkersAct, SIGNAL(triggered()), core, SLOT(clearABMarkers()));
 
-	repeatAct = new TAction(this, "repeat", QT_TR_NOOP("&Repeat"), "repeat");
+	repeatAct = new TAction(this, "repeat", QT_TR_NOOP("&Repeat"));
 	repeatAct->setCheckable(true);
 	connect(repeatAct, SIGNAL(toggled(bool)), core, SLOT(toggleRepeat(bool)));
 
@@ -571,7 +552,7 @@ void TBase::createActions() {
 
 
 	// Menu Video
-	fullscreenAct = new TAction(this, "fullscreen", QT_TR_NOOP("&Fullscreen"), "fullscreen", Qt::Key_F);
+	fullscreenAct = new TAction(this, "fullscreen", QT_TR_NOOP("&Fullscreen"), "", Qt::Key_F);
 	fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
 	fullscreenAct->setCheckable(true);
 	connect(fullscreenAct, SIGNAL(toggled(bool)), this, SLOT(toggleFullscreen(bool)));
@@ -583,7 +564,7 @@ void TBase::createActions() {
 	connect(video_equalizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
 
 	// Single screenshot
-	screenshotAct = new TAction(this, "screenshot", QT_TR_NOOP("&Screenshot"), "screenshot", Qt::Key_S);
+	screenshotAct = new TAction(this, "screenshot", QT_TR_NOOP("&Screenshot"), "", Qt::Key_S);
 	connect(screenshotAct, SIGNAL(triggered()), core, SLOT(screenshot()));
 
 	// Multiple screenshots
@@ -596,15 +577,15 @@ void TBase::createActions() {
 #endif
 
 #ifdef VIDEOPREVIEW
-	videoPreviewAct = new TAction(this, "video_preview", QT_TR_NOOP("Thumb&nail generator..."), "video_preview");
+	videoPreviewAct = new TAction(this, "video_preview", QT_TR_NOOP("Thumb&nail generator..."));
 	connect(videoPreviewAct, SIGNAL(triggered()), this, SLOT(showVideoPreviewDialog()));
 #endif
 
-	flipAct = new TAction(this, "flip", QT_TR_NOOP("Fli&p image"), "flip");
+	flipAct = new TAction(this, "flip", QT_TR_NOOP("Fli&p image"));
 	flipAct->setCheckable(true);
 	connect(flipAct, SIGNAL(toggled(bool)), core, SLOT(toggleFlip(bool)));
 
-	mirrorAct = new TAction(this, "mirror", QT_TR_NOOP("Mirr&or image"), "mirror");
+	mirrorAct = new TAction(this, "mirror", QT_TR_NOOP("Mirr&or image"));
 	mirrorAct->setCheckable(true);
 	connect(mirrorAct, SIGNAL(toggled(bool)), core, SLOT(toggleMirror(bool)));
 
@@ -613,13 +594,13 @@ void TBase::createActions() {
 
 
 	// Menu Audio
-	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("E&qualizer"), "audio_equalizer");
+	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("E&qualizer"));
 	audioEqualizerAct->setCheckable(true);
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
 	connect(audioEqualizerAct, SIGNAL(toggled(bool)), this, SLOT(showAudioEqualizer(bool)));
 	connect(audio_equalizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
 
-	muteAct = new TAction(this, "mute", QT_TR_NOOP("&Mute"), Qt::Key_M);
+	muteAct = new TAction(this, "mute", QT_TR_NOOP("&Mute"), "noicon", Qt::Key_M);
 	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
 	muteAct->setCheckable(true);
 
@@ -646,7 +627,7 @@ void TBase::createActions() {
 	incAudioDelayAct = new TAction(this, "inc_audio_delay", QT_TR_NOOP("D&elay +"), "delay_up", Qt::Key_Plus);
 	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
 
-	audioDelayAct = new TAction(this, "audio_delay", QT_TR_NOOP("Set dela&y..."), "audio_delay");
+	audioDelayAct = new TAction(this, "audio_delay", QT_TR_NOOP("Set dela&y..."));
 	connect(audioDelayAct, SIGNAL(triggered()), this, SLOT(showAudioDelayDialog()));
 
 	loadAudioAct = new TAction(this, "load_audio_file", QT_TR_NOOP("&Load external file..."), "open");
@@ -694,26 +675,26 @@ void TBase::createActions() {
 	incSubPosAct = new TAction(this, "inc_sub_pos", QT_TR_NOOP("&Down"), "sub_down", Qt::Key_T);
 	connect(incSubPosAct, SIGNAL(triggered()), core, SLOT(incSubPos()));
 
-	decSubScaleAct = new TAction(this, "dec_sub_scale", QT_TR_NOOP("S&ize -"), "dec_sub_scale", Qt::SHIFT | Qt::Key_R);
+	decSubScaleAct = new TAction(this, "dec_sub_scale", QT_TR_NOOP("S&ize -"), "", Qt::SHIFT | Qt::Key_R);
 	connect(decSubScaleAct, SIGNAL(triggered()), core, SLOT(decSubScale()));
 
-	incSubScaleAct = new TAction(this, "inc_sub_scale", QT_TR_NOOP("Si&ze +"), "inc_sub_scale", Qt::SHIFT | Qt::Key_T);
+	incSubScaleAct = new TAction(this, "inc_sub_scale", QT_TR_NOOP("Si&ze +"), "", Qt::SHIFT | Qt::Key_T);
 	connect(incSubScaleAct, SIGNAL(triggered()), core, SLOT(incSubScale()));
 
-	decSubStepAct = new TAction(this, "dec_sub_step", QT_TR_NOOP("&Previous line in subtitles"), "dec_sub_step", Qt::Key_G);
+	decSubStepAct = new TAction(this, "dec_sub_step", QT_TR_NOOP("&Previous line in subtitles"), "", Qt::Key_G);
 	connect(decSubStepAct, SIGNAL(triggered()), core, SLOT(decSubStep()));
 
-	incSubStepAct = new TAction(this, "inc_sub_step", QT_TR_NOOP("N&ext line in subtitles"), "inc_sub_step", Qt::Key_Y);
+	incSubStepAct = new TAction(this, "inc_sub_step", QT_TR_NOOP("N&ext line in subtitles"), "", Qt::Key_Y);
 	connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
 
 #ifdef MPV_SUPPORT
-	seekNextSubAct = new TAction(this, "seek_next_sub", QT_TR_NOOP("Seek to next subtitle"), "seek_next_sub", Qt::CTRL | Qt::Key_Right);
+	seekNextSubAct = new TAction(this, "seek_next_sub", QT_TR_NOOP("Seek to next subtitle"), "", Qt::CTRL | Qt::Key_Right);
 	connect(seekNextSubAct, SIGNAL(triggered()), core, SLOT(seekToNextSub()));
-	seekPrevSubAct = new TAction(this, "seek_prev_sub", QT_TR_NOOP("Seek to previous subtitle"), "seek_prev_sub", Qt::CTRL | Qt::Key_Left);
+	seekPrevSubAct = new TAction(this, "seek_prev_sub", QT_TR_NOOP("Seek to previous subtitle"), "", Qt::CTRL | Qt::Key_Left);
 	connect(seekPrevSubAct, SIGNAL(triggered()), core, SLOT(seekToPrevSub()));
 #endif
 
-	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", QT_TR_NOOP("Use custo&m style"), "use_custom_sub_style");
+	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", QT_TR_NOOP("Use custo&m style"));
 	useCustomSubStyleAct->setCheckable(true);
 	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
 	connect(useCustomSubStyleAct, SIGNAL(toggled(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
@@ -758,21 +739,21 @@ void TBase::createActions() {
 	showFirstStepsAct = new TAction(this, "first_steps", QT_TR_NOOP("First Steps &Guide"), "guide");
 	connect(showFirstStepsAct, SIGNAL(triggered()), this, SLOT(helpFirstSteps()));
 
-	showFAQAct = new TAction(this, "faq", QT_TR_NOOP("&FAQ"), "faq");
+	showFAQAct = new TAction(this, "faq", QT_TR_NOOP("&FAQ"));
 	connect(showFAQAct, SIGNAL(triggered()), this, SLOT(helpFAQ()));
 
 	showCLOptionsAct = new TAction(this, "cl_options", QT_TR_NOOP("&Command line options"), "cl_help");
 	connect(showCLOptionsAct, SIGNAL(triggered()), this, SLOT(helpCLOptions()));
 
-	showCheckUpdatesAct = new TAction(this, "check_updates", QT_TR_NOOP("Check for &updates"), "check_updates");
+	showCheckUpdatesAct = new TAction(this, "check_updates", QT_TR_NOOP("Check for &updates"));
 	connect(showCheckUpdatesAct, SIGNAL(triggered()), this, SLOT(helpCheckUpdates()));
 
 #if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	updateYTAct = new TAction(this, "update_youtube", QT_TR_NOOP("Update &Youtube code"), "update_youtube");
+	updateYTAct = new TAction(this, "update_youtube", QT_TR_NOOP("Update &Youtube code"));
 	connect(updateYTAct, SIGNAL(triggered()), this, SLOT(YTUpdateScript()));
 #endif
 
-	showConfigAct = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder"), "show_config");
+	showConfigAct = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder"));
 	connect(showConfigAct, SIGNAL(triggered()), this, SLOT(helpShowConfig()));
 
 	aboutThisAct = new TAction(this, "about_smplayer", QT_TR_NOOP("About &SMPlayer"), "logo");
@@ -789,34 +770,34 @@ void TBase::createActions() {
 	connect(playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()));
 
 	// Actions not in menus or buttons
-	exitFullscreenAct = new TAction(this, "exit_fullscreen", QT_TR_NOOP("Exit fullscreen"), Qt::Key_Escape);
+	exitFullscreenAct = new TAction(this, "exit_fullscreen", QT_TR_NOOP("Exit fullscreen"), "", Qt::Key_Escape);
 	connect(exitFullscreenAct, SIGNAL(triggered()), this, SLOT(exitFullscreen()));
 
-	nextOSDLevelAct = new TAction(this, "next_osd", QT_TR_NOOP("OSD - Next level"), Qt::Key_O);
+	nextOSDLevelAct = new TAction(this, "next_osd", QT_TR_NOOP("OSD - Next level"), "", Qt::Key_O);
 	connect(nextOSDLevelAct, SIGNAL(triggered()), core, SLOT(nextOSDLevel()));
 
-	decContrastAct = new TAction(this, "dec_contrast", QT_TR_NOOP("Dec contrast"), Qt::Key_1);
+	decContrastAct = new TAction(this, "dec_contrast", QT_TR_NOOP("Dec contrast"), "", Qt::Key_1);
 	connect(decContrastAct, SIGNAL(triggered()), core, SLOT(decContrast()));
 
-	incContrastAct = new TAction(this, "inc_contrast", QT_TR_NOOP("Inc contrast"), Qt::Key_2);
+	incContrastAct = new TAction(this, "inc_contrast", QT_TR_NOOP("Inc contrast"), "", Qt::Key_2);
 	connect(incContrastAct, SIGNAL(triggered()), core, SLOT(incContrast()));
 
-	decBrightnessAct = new TAction(this, "dec_brightness", QT_TR_NOOP("Dec brightness"), Qt::Key_3);
+	decBrightnessAct = new TAction(this, "dec_brightness", QT_TR_NOOP("Dec brightness"), "", Qt::Key_3);
 	connect(decBrightnessAct, SIGNAL(triggered()), core, SLOT(decBrightness()));
 
-	incBrightnessAct = new TAction(this, "inc_brightness", QT_TR_NOOP("Inc brightness"), Qt::Key_4);
+	incBrightnessAct = new TAction(this, "inc_brightness", QT_TR_NOOP("Inc brightness"), "", Qt::Key_4);
 	connect(incBrightnessAct, SIGNAL(triggered()), core, SLOT(incBrightness()));
 
-	decHueAct = new TAction(this, "dec_hue", QT_TR_NOOP("Dec hue"), Qt::Key_5);
+	decHueAct = new TAction(this, "dec_hue", QT_TR_NOOP("Dec hue"), "", Qt::Key_5);
 	connect(decHueAct, SIGNAL(triggered()), core, SLOT(decHue()));
 
-	incHueAct = new TAction(this, "inc_hue", QT_TR_NOOP("Inc hue"), Qt::Key_6);
+	incHueAct = new TAction(this, "inc_hue", QT_TR_NOOP("Inc hue"), "", Qt::Key_6);
 	connect(incHueAct, SIGNAL(triggered()), core, SLOT(incHue()));
 
-	decSaturationAct = new TAction(this, "dec_saturation", QT_TR_NOOP("Dec saturation"), Qt::Key_7);
+	decSaturationAct = new TAction(this, "dec_saturation", QT_TR_NOOP("Dec saturation"), "", Qt::Key_7);
 	connect(decSaturationAct, SIGNAL(triggered()), core, SLOT(decSaturation()));
 
-	incSaturationAct = new TAction(this, "inc_saturation", QT_TR_NOOP("Inc saturation"), Qt::Key_8);
+	incSaturationAct = new TAction(this, "inc_saturation", QT_TR_NOOP("Inc saturation"), "", Qt::Key_8);
 	connect(incSaturationAct, SIGNAL(triggered()), core, SLOT(incSaturation()));
 
 	decGammaAct = new TAction(this, "dec_gamma", QT_TR_NOOP("Dec gamma"));
@@ -828,16 +809,16 @@ void TBase::createActions() {
 	nextVideoAct = new TAction(this, "next_video", QT_TR_NOOP("Next video"));
 	connect(nextVideoAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()));
 
-	nextAudioAct = new TAction(this, "next_audio", QT_TR_NOOP("Next audio"), Qt::Key_K);
+	nextAudioAct = new TAction(this, "next_audio", QT_TR_NOOP("Next audio"), "", Qt::Key_K);
 	connect(nextAudioAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
 
-	nextSubtitleAct = new TAction(this, "next_subtitle", QT_TR_NOOP("Next subtitle"), Qt::Key_J);
+	nextSubtitleAct = new TAction(this, "next_subtitle", QT_TR_NOOP("Next subtitle"), "", Qt::Key_J);
 	connect(nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()));
 
-	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), Qt::Key_At);
+	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_At);
 	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
 
-	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), Qt::Key_Exclam);
+	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_Exclam);
 	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
 
 	resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", QT_TR_NOOP("Reset video equalizer"));
@@ -849,26 +830,25 @@ void TBase::createActions() {
 	showContextMenuAct = new TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
 
-	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("Next aspect ratio"), "next_aspect", Qt::Key_A);
+	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("Next aspect ratio"), "", Qt::Key_A);
 	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
 
-	nextWheelFunctionAct = new TAction(this, "next_wheel_function", QT_TR_NOOP("Next wheel function"), "next_wheel_function");
+	nextWheelFunctionAct = new TAction(this, "next_wheel_function", QT_TR_NOOP("Next wheel function"));
 	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
 
-	showFilenameAct = new TAction(this, "show_filename", QT_TR_NOOP("Show filename on OSD"), Qt::SHIFT | Qt::Key_I);
+	showFilenameAct = new TAction(this, "show_filename", QT_TR_NOOP("Show filename on OSD"), "", Qt::SHIFT | Qt::Key_I);
 	connect(showFilenameAct, SIGNAL(triggered()), core, SLOT(showFilenameOnOSD()));
 
-	showTimeAct = new TAction(this, "show_time", QT_TR_NOOP("Show playback time on OSD"), Qt::Key_I);
+	showTimeAct = new TAction(this, "show_time", QT_TR_NOOP("Show playback time on OSD"), "", Qt::Key_I);
 	connect(showTimeAct, SIGNAL(triggered()), core, SLOT(showTimeOnOSD()));
 
-	toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", QT_TR_NOOP("Toggle deinterlacing"), Qt::Key_D);
+	toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", QT_TR_NOOP("Toggle deinterlacing"), "", Qt::Key_D);
 	connect(toggleDeinterlaceAct, SIGNAL(triggered()), core, SLOT(toggleDeinterlace()));
 
 
 #if USE_ADAPTER
-	// TODO: convert to new action syntax
 	screenGroup = new TActionGroup(this, "screen");
-	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", -1);
+	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", QT_TR_NOOP("Default screen"), -1);
 
 #ifdef Q_OS_WIN
 	TDeviceList display_devices = TDeviceInfo::displayDevices();
@@ -876,16 +856,18 @@ void TBase::createActions() {
 		for (int n = 0; n < display_devices.count(); n++) {
 			int id = display_devices[n].ID().toInt();
 			QString desc = display_devices[n].desc();
-			TAction* screen_item = new TActionGroupItem(this, screenGroup, QString("screen_%1").arg(n).toLatin1().constData(), id);
-			screen_item->change("&"+QString::number(n) + " - " + desc);
+			TAction* screen_item = new TActionGroupItem(this, screenGroup,
+				QString("screen_%1").arg(n),
+				"&" + QString::number(n) + " - " + desc,
+				id);
 		}
 	}
 	else
 #endif // Q_OS_WIN
 
 	for (int n = 1; n <= 4; n++) {
-		TAction* screen_item = new TActionGroupItem(this, screenGroup, QString("screen_%1").arg(n).toLatin1().constData(), n);
-		screen_item->change("&"+QString::number(n));
+		TAction* screen_item = new TActionGroupItem(this, screenGroup,
+			QString("screen_%1").arg(n), "&" + QString::number(n), n);
 	}
 
 	screenGroup->setChecked(pref->adapter);
@@ -944,28 +926,28 @@ void TBase::createActions() {
 	connect(angleGroup, SIGNAL(activated(int)), core, SLOT(changeAngle(int)));
 	// Update done by updateTitles
 
-	dvdnavUpAct = new TAction(this, "dvdnav_up", QT_TR_NOOP("DVD menu, move up"), "dvdnav_up", Qt::SHIFT | Qt::Key_Up);
+	dvdnavUpAct = new TAction(this, "dvdnav_up", QT_TR_NOOP("DVD menu, move up"), "", Qt::SHIFT | Qt::Key_Up);
 	connect(dvdnavUpAct, SIGNAL(triggered()), core, SLOT(dvdnavUp()));
 
-	dvdnavDownAct = new TAction(this, "dvdnav_down", QT_TR_NOOP("DVD menu, move down"), "dvdnav_down", Qt::SHIFT | Qt::Key_Down);
+	dvdnavDownAct = new TAction(this, "dvdnav_down", QT_TR_NOOP("DVD menu, move down"), "", Qt::SHIFT | Qt::Key_Down);
 	connect(dvdnavDownAct, SIGNAL(triggered()), core, SLOT(dvdnavDown()));
 
-	dvdnavLeftAct = new TAction(this, "dvdnav_left", QT_TR_NOOP("DVD menu, move left"), "dvdnav_left", Qt::SHIFT | Qt::Key_Left);
+	dvdnavLeftAct = new TAction(this, "dvdnav_left", QT_TR_NOOP("DVD menu, move left"), "", Qt::SHIFT | Qt::Key_Left);
 	connect(dvdnavLeftAct, SIGNAL(triggered()), core, SLOT(dvdnavLeft()));
 
-	dvdnavRightAct = new TAction(this, "dvdnav_right", QT_TR_NOOP("DVD menu, move right"), "dvdnav_right", Qt::SHIFT | Qt::Key_Right);
+	dvdnavRightAct = new TAction(this, "dvdnav_right", QT_TR_NOOP("DVD menu, move right"), "", Qt::SHIFT | Qt::Key_Right);
 	connect(dvdnavRightAct, SIGNAL(triggered()), core, SLOT(dvdnavRight()));
 
-	dvdnavMenuAct = new TAction(this, "dvdnav_menu", QT_TR_NOOP("DVD &menu"), "dvdnav_menu", Qt::SHIFT | Qt::Key_Return);
+	dvdnavMenuAct = new TAction(this, "dvdnav_menu", QT_TR_NOOP("DVD &menu"), "", Qt::SHIFT | Qt::Key_Return);
 	connect(dvdnavMenuAct, SIGNAL(triggered()), core, SLOT(dvdnavMenu()));
 
-	dvdnavSelectAct = new TAction(this, "dvdnav_select", QT_TR_NOOP("DVD menu, select option"), "dvdnav_select", Qt::Key_Return);
+	dvdnavSelectAct = new TAction(this, "dvdnav_select", QT_TR_NOOP("DVD menu, select option"), "", Qt::Key_Return);
 	connect(dvdnavSelectAct, SIGNAL(triggered()), core, SLOT(dvdnavSelect()));
 
-	dvdnavPrevAct = new TAction(this, "dvdnav_prev", QT_TR_NOOP("DVD &previous menu"), "dvdnav_prev", Qt::SHIFT | Qt::Key_Escape);
+	dvdnavPrevAct = new TAction(this, "dvdnav_prev", QT_TR_NOOP("DVD &previous menu"), "", Qt::SHIFT | Qt::Key_Escape);
 	connect(dvdnavPrevAct, SIGNAL(triggered()), core, SLOT(dvdnavPrev()));
 
-	dvdnavMouseAct = new TAction(this, "dvdnav_mouse", QT_TR_NOOP("DVD menu, mouse click"), "dvdnav_mouse");
+	dvdnavMouseAct = new TAction(this, "dvdnav_mouse", QT_TR_NOOP("DVD menu, mouse click"), "");
 	connect(dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()));
 
 	// Time slider action
@@ -995,7 +977,7 @@ void TBase::createActions() {
 	time_label_action->setObjectName("timelabel_action");
 
 	// Menu bar
-	viewMenuBarAct = new TAction(this, "toggle_menubar", QT_TR_NOOP("Me&nu bar"), Qt::Key_F2);
+	viewMenuBarAct = new TAction(this, "toggle_menubar", QT_TR_NOOP("Me&nu bar"), "", Qt::Key_F2);
 	viewMenuBarAct->setCheckable(true);
 	viewMenuBarAct->setChecked(true);
 	connect(viewMenuBarAct, SIGNAL(toggled(bool)), menuBar(), SLOT(setVisible(bool)));
@@ -1008,7 +990,7 @@ void TBase::createActions() {
 	editControlBarAct = new TAction(this, "edit_controlbar", QT_TR_NOOP("Edit control &bar"));
 
 	// Status bar
-	viewStatusBarAct = new TAction(this, "toggle_statusbar", QT_TR_NOOP("&Status bar"), Qt::Key_F6);
+	viewStatusBarAct = new TAction(this, "toggle_statusbar", QT_TR_NOOP("&Status bar"), "", Qt::Key_F6);
 	viewStatusBarAct->setCheckable(true);
 	viewStatusBarAct->setChecked(true);
 	connect(viewStatusBarAct, SIGNAL(toggled(bool)), statusBar(), SLOT(setVisible(bool)));
@@ -1036,14 +1018,7 @@ void TBase::createMenus() {
 	openMenu->addAction(openPlaylistAct);
 
 	// Disc submenu
-	disc_menu = new QMenu(this);
-	disc_menu->menuAction()->setObjectName("disc_menu");
-	disc_menu->addAction(openDVDAct);
-	disc_menu->addAction(openDVDFolderAct);
-	disc_menu->addAction(openBluRayAct);
-	disc_menu->addAction(openBluRayFolderAct);
-	disc_menu->addAction(openVCDAct);
-	disc_menu->addAction(openAudioCDAct);
+	disc_menu = new TDiscMenu(this);
 	openMenu->addMenu(disc_menu);
 
 	openMenu->addAction(openURLAct);
@@ -1280,6 +1255,7 @@ void TBase::createMenus() {
 	optionsMenu->addAction(showPlaylistAct);
 	optionsMenu->addAction(showLogAct);
 
+	optionsMenu->addSeparator();
 	statusbar_menu = new QMenu(this);
 	// statusbar_menu added to toolbar_menu by createToolbarMenu()
 	// and filled by descendants::createMenus()
@@ -1290,6 +1266,7 @@ void TBase::createMenus() {
 	optionsMenu->addMenu(osd_menu);
 
 #ifdef YOUTUBE_SUPPORT
+	optionsMenu->addSeparator();
 	optionsMenu->addAction(showTubeBrowserAct);
 #endif
 
@@ -1644,9 +1621,6 @@ void TBase::retranslateStrings() {
 
 
 	// Menu Open
-	disc_menu->menuAction()->setText(tr("&Disc"));
-	disc_menu->menuAction()->setIcon(Images::icon("open_disc"));
-
 	/* favorites->menuAction()->setText(tr("&Favorites")); */
 	favorites->menuAction()->setText(tr("F&avorites"));
 	favorites->menuAction()->setIcon(Images::icon("open_favorites"));
@@ -1678,7 +1652,7 @@ void TBase::retranslateStrings() {
 #endif
 
 #if USE_ADAPTER
-	screenDefaultAct->change(tr("&Default"));
+	screenDefaultAct->setTextAndTip(tr("&Default"));
 #endif
 
 
@@ -1767,13 +1741,13 @@ void TBase::changeEvent(QEvent* e) {
 }
 
 void TBase::setJumpTexts() {
-	rewind1Act->change(tr("-%1").arg(Helper::timeForJumps(pref->seeking1)));
-	rewind2Act->change(tr("-%1").arg(Helper::timeForJumps(pref->seeking2)));
-	rewind3Act->change(tr("-%1").arg(Helper::timeForJumps(pref->seeking3)));
+	rewind1Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking1)));
+	rewind2Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking2)));
+	rewind3Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking3)));
 
-	forward1Act->change(tr("+%1").arg(Helper::timeForJumps(pref->seeking1)));
-	forward2Act->change(tr("+%1").arg(Helper::timeForJumps(pref->seeking2)));
-	forward3Act->change(tr("+%1").arg(Helper::timeForJumps(pref->seeking3)));
+	forward1Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking1)));
+	forward2Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking2)));
+	forward3Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking3)));
 }
 
 void TBase::setWindowCaption(const QString& title) {
@@ -1853,7 +1827,8 @@ TActionList TBase::getAllNamedActions() {
 	// Get all actions with a name
 	TActionList all_actions = findChildren<QAction*>();
 	for (int i = all_actions.count() - 1; i >= 0; i--) {
-		if (all_actions[i]->objectName().isEmpty()) {
+		QAction* a = all_actions[i];
+		if (a->objectName().isEmpty() || a->isSeparator()) {
 			all_actions.removeAt(i);
 		}
 	}

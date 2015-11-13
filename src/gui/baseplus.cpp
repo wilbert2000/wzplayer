@@ -72,7 +72,7 @@ TBasePlus::TBasePlus()
 	context_menu->addAction(openFileAct);
 	context_menu->addMenu(recentfiles_menu);
 	context_menu->addAction(openDirectoryAct);
-	context_menu->addAction(openDVDAct);
+	context_menu->addMenu(disc_menu);
 	context_menu->addAction(openURLAct);
 	context_menu->addMenu(favorites);
 #ifndef Q_OS_WIN
@@ -177,9 +177,9 @@ void TBasePlus::changeEvent(QEvent* e) {
 
 void TBasePlus::updateShowAllAct() {
 	if (isVisible()) 
-		showAllAct->change(tr("&Hide"));
+		showAllAct->setTextAndTip(tr("&Hide"));
 	else
-		showAllAct->change(tr("&Restore"));
+		showAllAct->setTextAndTip(tr("&Restore"));
 }
 
 void TBasePlus::saveConfig() {

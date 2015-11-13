@@ -54,13 +54,13 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 }
 
 TMenu::TMenu(QWidget* parent,
-			 QObject* atranslator,
+			 QObject* aTranslator,
 			 const QString& name,
 			 const QString& text,
 			 const QString& icon)
 	: QMenu(parent)
 	, text_en(text)
-	, translator(atranslator) {
+	, translator(aTranslator) {
 
 	menuAction()->setObjectName(name);
 	menuAction()->setIcon(Images::icon(icon));
@@ -84,27 +84,41 @@ void TMenu::changeEvent(QEvent* e) {
 void TMenu::onAboutToShow() {
 }
 
+void TMenu::addActionsTo(QWidget* w) {
+
+	w->addAction(menuAction());
+
+	QList<QAction*> acts = actions();
+	for(int i = 0; i < acts.count(); i++) {
+		QAction* a = acts[i];
+		if (!a->isSeparator()) {
+			w->addAction(a);
+		}
+	}
+}
+
 TAspectMenu::TAspectMenu(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "aspect_menu", QT_TR_NOOP("&Aspect ratio"), "aspect")
 	, core(c) {
 
 	group = new TActionGroup(this, "aspect");
 	new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TMediaSettings::AspectAuto);
-	new TActionGroupItem(this, group, "aspect_1:1", QT_TR_NOOP("1&:1"), TMediaSettings::Aspect11);
-	new TActionGroupItem(this, group, "aspect_5:4", QT_TR_NOOP("&5:4"), TMediaSettings::Aspect54);
-	new TActionGroupItem(this, group, "aspect_4:3", QT_TR_NOOP("&4:3"), TMediaSettings::Aspect43);
-	new TActionGroupItem(this, group, "aspect_11:8", QT_TR_NOOP("11:&8"), TMediaSettings::Aspect118);
-	new TActionGroupItem(this, group, "aspect_14:10", QT_TR_NOOP("1&4:10"), TMediaSettings::Aspect1410);
-	new TActionGroupItem(this, group, "aspect_3:2", QT_TR_NOOP("&3:2"), TMediaSettings::Aspect32);
-	new TActionGroupItem(this, group, "aspect_14:9", QT_TR_NOOP("&14:9"), TMediaSettings::Aspect149);
-	new TActionGroupItem(this, group, "aspect_16:10", QT_TR_NOOP("1&6:10"), TMediaSettings::Aspect1610);
-	new TActionGroupItem(this, group, "aspect_16:9", QT_TR_NOOP("16:&9"), TMediaSettings::Aspect169);
-	new TActionGroupItem(this, group, "aspect_2.35:1", QT_TR_NOOP("&2.35:1"), TMediaSettings::Aspect235);
+	new TActionGroupItem(this, group, "aspect_1_1", QT_TR_NOOP("1&:1"), TMediaSettings::Aspect11);
+	new TActionGroupItem(this, group, "aspect_5_4", QT_TR_NOOP("&5:4"), TMediaSettings::Aspect54);
+	new TActionGroupItem(this, group, "aspect_4_3", QT_TR_NOOP("&4:3"), TMediaSettings::Aspect43);
+	new TActionGroupItem(this, group, "aspect_11_8", QT_TR_NOOP("11:&8"), TMediaSettings::Aspect118);
+	new TActionGroupItem(this, group, "aspect_14_10", QT_TR_NOOP("1&4:10"), TMediaSettings::Aspect1410);
+	new TActionGroupItem(this, group, "aspect_3_2", QT_TR_NOOP("&3:2"), TMediaSettings::Aspect32);
+	new TActionGroupItem(this, group, "aspect_14_9", QT_TR_NOOP("&14:9"), TMediaSettings::Aspect149);
+	new TActionGroupItem(this, group, "aspect_16_10", QT_TR_NOOP("1&6:10"), TMediaSettings::Aspect1610);
+	new TActionGroupItem(this, group, "aspect_16_9", QT_TR_NOOP("16:&9"), TMediaSettings::Aspect169);
+	new TActionGroupItem(this, group, "aspect_2.35_1", QT_TR_NOOP("&2.35:1"), TMediaSettings::Aspect235);
 	addSeparator();
 	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TMediaSettings::AspectNone);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
 	connect(core, SIGNAL(aspectRatioChanged(int)), group, SLOT(setCheckedSlot(int)));
+	addActionsTo(parent);
 }
 
 void TAspectMenu::onAboutToShow() {
@@ -124,6 +138,7 @@ TAudioChannelMenu::TAudioChannelMenu(QWidget *parent, TCore* c)
 	new TActionGroupItem(this, group, "channels_ful71", QT_TR_NOOP("&7.1 Surround"), TMediaSettings::ChFull71);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(setAudioChannels(int)));
+	addActionsTo(parent);
 }
 
 void TAudioChannelMenu::onAboutToShow() {
@@ -143,8 +158,8 @@ TCCMenu::TCCMenu(QWidget *parent, TCore* c)
 	new TActionGroupItem(this, group, "cc_ch_3", QT_TR_NOOP("&3"), 3);
 	new TActionGroupItem(this, group, "cc_ch_4", QT_TR_NOOP("&4"), 4);
 
-	connect(group, SIGNAL(activated(int)),
-			core, SLOT(changeClosedCaptionChannel(int)));
+	connect(group, SIGNAL(activated(int)), core, SLOT(changeClosedCaptionChannel(int)));
+	addActionsTo(parent);
 }
 
 void TCCMenu::onAboutToShow() {
@@ -163,11 +178,36 @@ TDeinterlaceMenu::TDeinterlaceMenu(QWidget* parent, TCore* c)
 	new TActionGroupItem(this, group, "deinterlace_yadif1", QT_TR_NOOP("Y&adif (double framerate)"), TMediaSettings::Yadif_1);
 	new TActionGroupItem(this, group, "deinterlace_lb", QT_TR_NOOP("Linear &Blend"), TMediaSettings::LB);
 	new TActionGroupItem(this, group, "deinterlace_kern", QT_TR_NOOP("&Kerndeint"), TMediaSettings::Kerndeint);
+
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeDeinterlace(int)));
+	addActionsTo(parent);
 }
 
 void TDeinterlaceMenu::onAboutToShow() {
 	group->setChecked(core->mset.current_deinterlacer);
+}
+
+
+TDiscMenu::TDiscMenu(QWidget* parent)
+	: TMenu(parent, this, "disc_menu", QT_TR_NOOP("&Disc"), "open_disc") {
+
+	// DVD
+	TAction* a = new TAction(this, "open_dvd", QT_TR_NOOP("&DVD from drive"), "dvd");
+	connect(a, SIGNAL(triggered()), parent, SLOT(openDVD()));
+	a = new TAction(this, "open_dvd_folder", QT_TR_NOOP("D&VD from folder..."), "dvd_hd");
+	connect(a, SIGNAL(triggered()), parent, SLOT(openDVDFromFolder()));
+	// BluRay
+	a = new TAction(this, "open_bluray", QT_TR_NOOP("&Blu-ray from drive"), "bluray");
+	connect(a, SIGNAL(triggered()), parent, SLOT(openBluRay()));
+	a = new TAction(this, "open_bluray_folder", QT_TR_NOOP("Blu-&ray from folder..."), "bluray_hd");
+	connect(a, SIGNAL(triggered()), parent, SLOT(openBluRayFromFolder()));
+	// VCD and audio
+	a = new TAction(this, "open_vcd", QT_TR_NOOP("V&CD"), "vcd");
+	connect(a, SIGNAL(triggered()), parent, SLOT(openVCD()));
+	a = new TAction(this, "open_audio_cd", QT_TR_NOOP("&Audio CD"), "cdda");
+	connect(a, SIGNAL(triggered()), parent, SLOT(openAudioCD()));
+
+	addActionsTo(parent);
 }
 
 
@@ -183,10 +223,12 @@ TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)));
 
 	addSeparator();
-	TAction* a = new TAction(this, "inc_osd_scale", QT_TR_NOOP("Size &+"), Qt::SHIFT | Qt::Key_U);
+	TAction* a = new TAction(this, "inc_osd_scale", QT_TR_NOOP("Size &+"), "", Qt::SHIFT | Qt::Key_U);
 	connect(a, SIGNAL(triggered()), core, SLOT(incOSDScale()));
-	a = new TAction(this, "dec_osd_scale", QT_TR_NOOP("Size &-"), Qt::SHIFT | Qt::Key_Y);
+	a = new TAction(this, "dec_osd_scale", QT_TR_NOOP("Size &-"), "", Qt::SHIFT | Qt::Key_Y);
 	connect(a, SIGNAL(triggered()), core, SLOT(decOSDScale()));
+
+	addActionsTo(parent);
 }
 
 void TOSDMenu::onAboutToShow() {
@@ -202,41 +244,43 @@ TPlaySpeedMenu::TPlaySpeedMenu(QWidget *parent, TCore *c)
 	group->setExclusive(false);
 	group->setEnabled(false);
 
-	TAction* a = new TAction(this, "normal_speed", QT_TR_NOOP("&Normal speed"), Qt::Key_Backspace);
+	TAction* a = new TAction(this, "normal_speed", QT_TR_NOOP("&Normal speed"), "", Qt::Key_Backspace);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(normalSpeed()));
 
 	addSeparator();
-	a = new TAction(this, "halve_speed", QT_TR_NOOP("&Half speed"), Qt::Key_BraceLeft);
+	a = new TAction(this, "halve_speed", QT_TR_NOOP("&Half speed"), "", Qt::Key_BraceLeft);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(halveSpeed()));
-	a = new TAction(this, "double_speed", QT_TR_NOOP("&Double speed"), Qt::Key_BraceRight);
+	a = new TAction(this, "double_speed", QT_TR_NOOP("&Double speed"), "", Qt::Key_BraceRight);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(doubleSpeed()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed", QT_TR_NOOP("Speed &-10%"), Qt::Key_BracketLeft);
+	a = new TAction(this, "dec_speed", QT_TR_NOOP("Speed &-10%"), "", Qt::Key_BracketLeft);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed10()));
-	a = new TAction(this, "inc_speed", QT_TR_NOOP("Speed &+10%"), Qt::Key_BracketRight);
+	a = new TAction(this, "inc_speed", QT_TR_NOOP("Speed &+10%"), "", Qt::Key_BracketRight);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed10()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed_4", QT_TR_NOOP("Speed -&4%"));
+	a = new TAction(this, "dec_speed_4", QT_TR_NOOP("Speed -&4%"), "");
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed4()));
-	a = new TAction(this, "inc_speed_4", QT_TR_NOOP("&Speed +4%"));
+	a = new TAction(this, "inc_speed_4", QT_TR_NOOP("&Speed +4%"), "");
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed4()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed_1", QT_TR_NOOP("Speed -&1%"));
+	a = new TAction(this, "dec_speed_1", QT_TR_NOOP("Speed -&1%"), "");
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed1()));
-	a = new TAction(this, "inc_speed_1", QT_TR_NOOP("S&peed +1%"));
+	a = new TAction(this, "inc_speed_1", QT_TR_NOOP("S&peed +1%"), "");
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed1()));
+
+	addActionsTo(parent);
 }
 
 
@@ -251,6 +295,7 @@ TRotateMenu::TRotateMenu(QWidget* parent, TCore* c)
 	new TActionGroupItem(this, group, "rotate_counterclockwise", QT_TR_NOOP("Rotate by 90 degrees counterclock&wise"), TMediaSettings::Counterclockwise);
 	new TActionGroupItem(this, group, "rotate_counterclockwise_flip", QT_TR_NOOP("Rotate by 90 degrees counterclockwise and &flip"), TMediaSettings::Counterclockwise_flip);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeRotate(int)));
+	addActionsTo(parent);
 }
 
 void TRotateMenu::onAboutToShow() {
@@ -269,8 +314,10 @@ TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
 	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
 
 	addSeparator();
-	TAction* toggleStayOnTopAct = new TAction(this, QT_TR_NOOP("toggle_stay_on_top"), "Toggle stay on top");
-	connect(toggleStayOnTopAct, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
+	TAction* a = new TAction(this, "toggle_stay_on_top", QT_TR_NOOP("Toggle stay on top"), "");
+	connect(a, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
+
+	addActionsTo(parent);
 }
 
 void TStayOnTopMenu::onAboutToShow() {
@@ -288,8 +335,8 @@ TStereoMenu::TStereoMenu(QWidget *parent, TCore* c)
 	new TActionGroupItem(this, group, "right_channel", QT_TR_NOOP("&Right channel"), TMediaSettings::Right);
 	new TActionGroupItem(this, group, "mono", QT_TR_NOOP("&Mono"), TMediaSettings::Mono);
 	new TActionGroupItem(this, group, "reverse_channels", QT_TR_NOOP("Re&verse"), TMediaSettings::Reverse);
-
 	connect(group, SIGNAL(activated(int)), core, SLOT(setStereoMode(int)));
+	addActionsTo(parent);
 }
 
 void TStereoMenu::onAboutToShow() {
@@ -309,8 +356,8 @@ TSubFPSMenu::TSubFPSMenu(QWidget *parent, TCore* c)
 	new TActionGroupItem(this, group, "sub_fps_25", QT_TR_NOOP("2&5"), TMediaSettings::SFPS_25);
 	new TActionGroupItem(this, group, "sub_fps_29970", QT_TR_NOOP("29.&970"), TMediaSettings::SFPS_29970);
 	new TActionGroupItem(this, group, "sub_fps_30", QT_TR_NOOP("3&0"), TMediaSettings::SFPS_30);
-
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeExternalSubFPS(int)));
+	addActionsTo(parent);
 }
 
 void TSubFPSMenu::onAboutToShow() {
@@ -329,50 +376,42 @@ TVideoFilterMenu::TVideoFilterMenu(QWidget *parent, TCore *c)
 	postProcessingAct = new TAction(this, "postprocessing", QT_TR_NOOP("&Postprocessing"));
 	postProcessingAct->setCheckable(true);
 	group->addAction(postProcessingAct);
-	connect(postProcessingAct, SIGNAL(toggled(bool)),
-			 core, SLOT(togglePostprocessing(bool)));
+	connect(postProcessingAct, SIGNAL(toggled(bool)), core, SLOT(togglePostprocessing(bool)));
 
 	deblockAct = new TAction(this, "deblock", QT_TR_NOOP("&Deblock"));
 	deblockAct->setCheckable(true);
 	group->addAction(deblockAct);
-	connect(deblockAct, SIGNAL(toggled(bool)),
-			 core, SLOT(toggleDeblock(bool)));
+	connect(deblockAct, SIGNAL(toggled(bool)), core, SLOT(toggleDeblock(bool)));
 
 	deringAct = new TAction(this, "dering", QT_TR_NOOP("De&ring"));
 	deringAct->setCheckable(true);
 	group->addAction(deringAct);
-	connect(deringAct, SIGNAL(toggled(bool)),
-			 core, SLOT(toggleDering(bool)));
+	connect(deringAct, SIGNAL(toggled(bool)), core, SLOT(toggleDering(bool)));
 
 	gradfunAct = new TAction(this, "gradfun", QT_TR_NOOP("Debanding (&gradfun)"));
 	gradfunAct->setCheckable(true);
 	group->addAction(gradfunAct);
-	connect(gradfunAct, SIGNAL(toggled(bool)),
-			 core, SLOT(toggleGradfun(bool)));
+	connect(gradfunAct, SIGNAL(toggled(bool)), core, SLOT(toggleGradfun(bool)));
 
 	addNoiseAct = new TAction(this, "add_noise", QT_TR_NOOP("Add n&oise"));
 	addNoiseAct->setCheckable(true);
 	group->addAction(addNoiseAct);
-	connect(addNoiseAct, SIGNAL(toggled(bool)),
-			 core, SLOT(toggleNoise(bool)));
+	connect(addNoiseAct, SIGNAL(toggled(bool)), core, SLOT(toggleNoise(bool)));
 
 	addLetterboxAct = new TAction(this, "add_letterbox", QT_TR_NOOP("Add &black borders"), "letterbox");
 	addLetterboxAct->setCheckable(true);
 	group->addAction(addLetterboxAct);
-	connect(addLetterboxAct, SIGNAL(toggled(bool)),
-			 core, SLOT(changeLetterbox(bool)));
+	connect(addLetterboxAct, SIGNAL(toggled(bool)), core, SLOT(changeLetterbox(bool)));
 
-	upscaleAct = new TAction(this, "upscaling", QT_TR_NOOP("Soft&ware scaling"), "upscaling");
+	upscaleAct = new TAction(this, "upscaling", QT_TR_NOOP("Soft&ware scaling"));
 	upscaleAct->setCheckable(true);
 	group->addAction(upscaleAct);
-	connect(upscaleAct, SIGNAL(toggled(bool)),
-			 core, SLOT(changeUpscale(bool)));
+	connect(upscaleAct, SIGNAL(toggled(bool)), core, SLOT(changeUpscale(bool)));
 
 	phaseAct = new TAction(this, "autodetect_phase", QT_TR_NOOP("&Autodetect phase"));
 	phaseAct->setCheckable(true);
 	group->addAction(phaseAct);
-	connect(phaseAct, SIGNAL(toggled(bool)),
-			 core, SLOT(toggleAutophase(bool)));
+	connect(phaseAct, SIGNAL(toggled(bool)), core, SLOT(toggleAutophase(bool)));
 
 	// Denoise
 	TMenu* menu = new TMenu(this, this, "denoise_menu", QT_TR_NOOP("De&noise"), "denoise");
@@ -381,6 +420,7 @@ TVideoFilterMenu::TVideoFilterMenu(QWidget *parent, TCore *c)
 	denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", QT_TR_NOOP("&Normal"), TMediaSettings::DenoiseNormal, false);
 	denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", QT_TR_NOOP("&Soft"), TMediaSettings::DenoiseSoft, false);
 	menu->addActions(denoiseGroup->actions());
+	menu->addActionsTo(parent);
 	addMenu(menu);
 	connect(denoiseGroup, SIGNAL(activated(int)), core, SLOT(changeDenoise(int)));
 	connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowDenoise()));
@@ -392,6 +432,7 @@ TVideoFilterMenu::TVideoFilterMenu(QWidget *parent, TCore *c)
 	blurAct = new TActionGroupItem(this, unsharpGroup, "blur", QT_TR_NOOP("&Blur"), 1, false);
 	sharpenAct = new TActionGroupItem(this, unsharpGroup, "sharpen", QT_TR_NOOP("&Sharpen"), 2, false);
 	menu->addActions(unsharpGroup->actions());
+	menu->addActionsTo(parent);
 	addMenu(menu);
 	connect(unsharpGroup, SIGNAL(activated(int)), core, SLOT(changeUnsharp(int)));
 	connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowUnSharp()));
@@ -493,8 +534,10 @@ TVideoSizeMenu::TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw)
 	connect(group, SIGNAL(activated(int)), parent, SLOT(changeSize(int)));
 
 	addSeparator();
-	doubleSizeAct = new TAction(this, "toggle_double_size", QT_TR_NOOP("&Toggle double size"), Qt::CTRL | Qt::Key_D);
+	doubleSizeAct = new TAction(this, "toggle_double_size", QT_TR_NOOP("&Toggle double size"), "", Qt::CTRL | Qt::Key_D);
 	connect(doubleSizeAct, SIGNAL(triggered()), parent, SLOT(toggleDoubleSize()));
+
+	addActionsTo(parent);
 }
 
 void TVideoSizeMenu::enableVideoSize(bool on) {
@@ -518,43 +561,44 @@ TVideoZoomAndPanMenu::TVideoZoomAndPanMenu(QWidget* parent, TCore* c)
 	group->setExclusive(false);
 
 	// Zoom
-	// TODO: rename to reset_zoom_and_pan
 	TAction* a = new TAction(this, "reset_zoom", QT_TR_NOOP("&Reset"), "zoom_reset", Qt::SHIFT | Qt::Key_E);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()));
 	addSeparator();
-	a = new TAction(this, "auto_zoom", QT_TR_NOOP("&Auto zoom"), Qt::SHIFT | Qt::Key_W);
+	a = new TAction(this, "auto_zoom", QT_TR_NOOP("&Auto zoom"), "", Qt::SHIFT | Qt::Key_W);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(autoZoom()));
-	a = new TAction(this, "zoom_169", QT_TR_NOOP("Zoom for &16:9"), Qt::SHIFT | Qt::Key_A);
+	a = new TAction(this, "zoom_169", QT_TR_NOOP("Zoom for &16:9"), "", Qt::SHIFT | Qt::Key_A);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(autoZoomFor169()));
-	a = new TAction(this, "zoom_235", QT_TR_NOOP("Zoom for &2.35:1"), Qt::SHIFT | Qt::Key_S);
+	a = new TAction(this, "zoom_235", QT_TR_NOOP("Zoom for &2.35:1"), "", Qt::SHIFT | Qt::Key_S);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(autoZoomFor235()));
 	addSeparator();
-	a = new TAction(this, "dec_zoom", QT_TR_NOOP("Zoom &-"), Qt::Key_W);
+	a = new TAction(this, "dec_zoom", QT_TR_NOOP("Zoom &-"), "", Qt::Key_W);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decZoom()));
-	a = new TAction(this, "inc_zoom", QT_TR_NOOP("Zoom &+"), Qt::Key_E);
+	a = new TAction(this, "inc_zoom", QT_TR_NOOP("Zoom &+"), "", Qt::Key_E);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incZoom()));
 
 	// Pan
 	addSeparator();
-	a = new TAction(this, "move_left", QT_TR_NOOP("Move &left"), Qt::ALT | Qt::Key_Left);
+	a = new TAction(this, "move_left", QT_TR_NOOP("Move &left"), "", Qt::ALT | Qt::Key_Left);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(panRight()));
-	a = new TAction(this, "move_right", QT_TR_NOOP("Move &right"), Qt::ALT | Qt::Key_Right);
+	a = new TAction(this, "move_right", QT_TR_NOOP("Move &right"), "", Qt::ALT | Qt::Key_Right);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(panLeft()));
-	a = new TAction(this, "move_up", QT_TR_NOOP("Move &up"), Qt::ALT | Qt::Key_Up);
+	a = new TAction(this, "move_up", QT_TR_NOOP("Move &up"), "", Qt::ALT | Qt::Key_Up);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(panDown()));
-	a = new TAction(this, "move_down", QT_TR_NOOP("Move &down"), Qt::ALT | Qt::Key_Down);
+	a = new TAction(this, "move_down", QT_TR_NOOP("Move &down"), "", Qt::ALT | Qt::Key_Down);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(panUp()));
-};
+
+	addActionsTo(parent);
+}
 
 } // namespace Gui
 

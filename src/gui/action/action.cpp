@@ -28,70 +28,49 @@ namespace Gui {
 TAction::TAction (QObject* parent,
 				  const QString& name,
 				  const QString& text,
+				  const QString& iconName,
 				  bool autoadd)
 	: QAction(parent)
 	, text_en(text) {
 
-	setObjectName(name);
-	retranslateStrings();
-	if (autoadd)
-		addActionToParent();
+	init(name, iconName, autoadd);
 }
 
 TAction::TAction (QObject* parent,
 				  const QString& name,
 				  const QString& text,
-				  const QString& icon,
-				  bool autoadd)
-	: QAction(parent)
-	, text_en(text) {
-
-	setObjectName(name);
-	setIcon(Images::icon(icon));
-	retranslateStrings();
-	if (autoadd)
-		addActionToParent();
-}
-
-TAction::TAction (QObject* parent,
-				  const QString& name,
-				  const QString& text,
-				  const QString& icon,
+				  const QString& iconName,
 				  QKeySequence accel,
 				  bool autoadd)
 	: QAction(parent)
 	, text_en(text) {
 
-	setObjectName(name);
-	setIcon(Images::icon(icon));
 	setShortcut(accel);
-	retranslateStrings();
-	if (autoadd)
-		addActionToParent();
-}
-
-TAction::TAction(QObject* parent,
-				 const QString& name,
-				 const QString& text,
-				 QKeySequence accel,
-				 bool autoadd)
-	: QAction(parent)
-	, text_en(text) {
-
-	setObjectName(name);
-	setShortcut(accel);
-	retranslateStrings();
-	if (autoadd)
-		addActionToParent();
+	init(name, iconName, autoadd);
 }
 
 TAction::~TAction() {
 }
 
+void TAction::init(const QString& name,
+			  QString iconName,
+			  bool autoadd) {
+
+	setObjectName(name);
+	if (iconName != "noicon") {
+		if (iconName.isEmpty())
+			iconName = name;
+		setIcon(Images::icon(iconName));
+	}
+	retranslateStrings();
+	if (autoadd)
+		addActionToParent();
+}
+
 void TAction::retranslateStrings() {
 	// Translate with parent
 	if (!text_en.isEmpty())
-		change(parent()->tr(text_en.toUtf8().constData()));
+		setTextAndTip(parent()->tr(text_en.toUtf8().constData()));
 }
 
 bool TAction::event(QEvent* e) {
@@ -116,7 +95,7 @@ void TAction::addActionToParent() {
 	}
 }
 
-void TAction::change(const QString& text) {
+void TAction::setTextAndTip(const QString& text) {
 
 	setText(text);
 

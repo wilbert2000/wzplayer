@@ -188,58 +188,59 @@ void TPlaylist::createTable() {
 }
 
 void TPlaylist::createActions() {
-	openAct = new TAction(this, "pl_open", QT_TR_NOOP("&Load"), "open", false);
+
+	openAct = new TAction(this, "pl_open", QT_TR_NOOP("&Load"), "open");
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
 
-	saveAct = new Gui::TAction(this, "pl_save", QT_TR_NOOP("&Save"), "save", false);
+	saveAct = new Gui::TAction(this, "pl_save", QT_TR_NOOP("&Save"), "save");
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-	playAct = new Gui::TAction(this, "pl_play", QT_TR_NOOP("&Play"), "play", false);
+	playAct = new Gui::TAction(this, "pl_play", QT_TR_NOOP("&Play"), "play");
 	connect(playAct, SIGNAL(triggered()), this, SLOT(playCurrent()));
 
-	nextAct = new Gui::TAction(this, "pl_next", QT_TR_NOOP("&Next"), "next", Qt::Key_N, false);
+	nextAct = new Gui::TAction(this, "pl_next", QT_TR_NOOP("&Next"), "next", Qt::Key_N);
 	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
-	prevAct = new Gui::TAction(this, "pl_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_P, false);
+	prevAct = new Gui::TAction(this, "pl_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_P);
 	connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
-	moveUpAct = new Gui::TAction(this, "pl_move_up", QT_TR_NOOP("Move &up"), "up", false);
+	moveUpAct = new Gui::TAction(this, "pl_move_up", QT_TR_NOOP("Move &up"), "up");
 	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(upItem()));
 
-	moveDownAct = new Gui::TAction(this, "pl_move_down", QT_TR_NOOP("Move &down"), "down", false);
+	moveDownAct = new Gui::TAction(this, "pl_move_down", QT_TR_NOOP("Move &down"), "down");
 	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(downItem()));
 
-	repeatAct = new Gui::TAction(this, "pl_repeat", QT_TR_NOOP("&Repeat"), "repeat", false);
+	repeatAct = new Gui::TAction(this, "pl_repeat", QT_TR_NOOP("&Repeat"), "repeat");
 	repeatAct->setCheckable(true);
 
-	shuffleAct = new Gui::TAction(this, "pl_shuffle", QT_TR_NOOP("S&huffle"), "shuffle", false);
+	shuffleAct = new Gui::TAction(this, "pl_shuffle", QT_TR_NOOP("S&huffle"), "shuffle");
 	shuffleAct->setCheckable(true);
 
 	// Add actions
-	addCurrentAct = new Gui::TAction(this, "pl_add_current", QT_TR_NOOP("Add &current file"), false);
+	addCurrentAct = new Gui::TAction(this, "pl_add_current", QT_TR_NOOP("Add &current file"), "noicon");
 	connect(addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()));
 
-	addFilesAct = new Gui::TAction(this, "pl_add_files", QT_TR_NOOP("Add &file(s)"), false);
+	addFilesAct = new Gui::TAction(this, "pl_add_files", QT_TR_NOOP("Add &file(s)"), "noicon");
 	connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
 
-	addDirectoryAct = new Gui::TAction(this, "pl_add_directory", QT_TR_NOOP("Add &directory"), false);
+	addDirectoryAct = new Gui::TAction(this, "pl_add_directory", QT_TR_NOOP("Add &directory"), "noicon");
 	connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
 
-	addUrlsAct = new Gui::TAction(this, "pl_add_urls", QT_TR_NOOP("Add &URL(s)"), false);
+	addUrlsAct = new Gui::TAction(this, "pl_add_urls", QT_TR_NOOP("Add &URL(s)"), "noicon");
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
 	// Remove actions
-	removeSelectedAct = new Gui::TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected"), false);
+	removeSelectedAct = new Gui::TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected"), "noicon");
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
 
-	removeAllAct = new Gui::TAction(this, "pl_remove_all", QT_TR_NOOP("Remove &all"), false);
+	removeAllAct = new Gui::TAction(this, "pl_remove_all", QT_TR_NOOP("Remove &all"), "noicon");
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
 	// Edit
-	editAct = new Gui::TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), false);
+	editAct = new Gui::TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), "noicon");
 	connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
-	deleteSelectedFileFromDiskAct = new Gui::TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete file from disk"), false);
+	deleteSelectedFileFromDiskAct = new Gui::TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete file from disk"), "noicon");
 	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 }
 

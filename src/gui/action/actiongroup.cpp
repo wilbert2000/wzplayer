@@ -29,7 +29,7 @@ TActionGroupItem::TActionGroupItem(QObject* parent,
 								   const QString& text,
 								   int data,
 								   bool autoadd)
-	: TAction(parent, name, text, autoadd) {
+	: TAction(parent, name, text, "noicon", autoadd) {
 
 	setData(data);
 	setCheckable(true);
@@ -98,7 +98,8 @@ void TActionGroup::clear(bool remove) {
 		QAction* a = actions()[0];
 		if (a) {
 			removeAction(a);
-			if (remove) a->deleteLater();
+			if (remove)
+				a->deleteLater();
 		}
 	}
 }

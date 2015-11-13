@@ -334,12 +334,6 @@ protected:
 	TAction* openFileAct;
 	TAction* openDirectoryAct;
 	TAction* openPlaylistAct;
-	TAction* openVCDAct;
-	TAction* openAudioCDAct;
-	TAction* openDVDAct;
-	TAction* openDVDFolderAct;
-	TAction* openBluRayAct;
-	TAction* openBluRayFolderAct;
 	TAction* openURLAct;
 	TAction* exitAct;
 	TAction* clearRecentsAct;

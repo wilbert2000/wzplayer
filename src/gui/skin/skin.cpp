@@ -86,7 +86,7 @@ void TSkin::createControlWidget() {
 	mediaBarPanel->setVolumeControlActionCollection(actions);
 
 	actions.clear();
-	actions << openFileAct << openDirectoryAct << openDVDAct << openURLAct << screenshotAct << showPropertiesAct;
+	actions << openFileAct << openDirectoryAct << openURLAct << screenshotAct << showPropertiesAct;
 #ifdef FIND_SUBTITLES
 	actions << showFindSubtitlesDialogAct;
 #endif

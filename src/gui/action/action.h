@@ -33,24 +33,13 @@ public:
 	TAction(QObject* parent,
 			const QString& name,
 			const QString& text,
+			const QString& iconName = QString(),
 			bool autoadd = true);
 
 	TAction(QObject* parent,
 			const QString& name,
 			const QString& text,
-			const QString& icon,
-			bool autoadd = true);
-
-	TAction(QObject* parent,
-			const QString& name,
-			const QString& text,
-			const QString& icon,
-			QKeySequence accel,
-			bool autoadd = true);
-
-	TAction(QObject* parent,
-			const QString& name,
-			const QString& text,
+			const QString& iconName,
 			QKeySequence accel,
 			bool autoadd = true);
 
@@ -59,7 +48,7 @@ public:
 	void addShortcut(QKeySequence key);
 
 	//! Change the text of the action.
-	void change(const QString& text);
+	void setTextAndTip(const QString& text);
 
 	void update(bool check);
 
@@ -72,6 +61,7 @@ protected:
 private:
 	QString text_en;
 
+	void init(const QString& name, QString iconName, bool autoadd);
 	void retranslateStrings();
 };
 

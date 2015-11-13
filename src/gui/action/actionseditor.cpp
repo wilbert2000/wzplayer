@@ -196,7 +196,8 @@ void TActionsEditor::addActions(QWidget* widget) {
 	TActionList actions = widget->findChildren<QAction *>();
 	for (int n = 0; n < actions.count(); n++) {
 		QAction* action = actions[n];
-		if (!action->objectName().isEmpty()
+		if (!action->isSeparator()
+			&& !action->objectName().isEmpty()
 			&& !action->inherits("QWidgetAction")
 			&& (action->menu() == 0))
 			actionsList.append(action);
