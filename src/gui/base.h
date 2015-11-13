@@ -629,7 +629,7 @@ private:
 
 	void hidePanel();
 	void centerWindow();
-	bool optimizeSizeFactor(double factor);
+	bool optimizeSizeFactorPreDef(double factor);
 	void optimizeSizeFactor(int w, int h);
 	void resizeMainWindow(int w, int h, bool try_twice = true);
 

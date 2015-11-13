@@ -186,8 +186,7 @@ TBase::TBase()
 	setWindowTitle("SMPlayer");
 	setAcceptDrops(true);
 
-	// Reset size factor to 1.0 and window to default size
-	pref->size_factor = 1.0;
+	// Resize window to default size
 	resize(pref->default_size);
 
 	// Create objects:
@@ -3558,10 +3557,10 @@ void TBase::centerWindow() {
 	}
 }
 
-bool TBase::optimizeSizeFactor(double factor) {
+bool TBase::optimizeSizeFactorPreDef(double factor) {
 
 	if (qAbs(factor - pref->size_factor) < 0.05) {
-		qDebug("Gui::TBase::optimizeSizeFactor: optimizing size factor from %f to predefined value %f",
+		qDebug("Gui::TBase::optimizeSizeFactorPreDef: optimizing size factor from %f to predefined value %f",
 			   pref->size_factor, factor);
 		pref->size_factor = factor;
 		return true;
@@ -3571,22 +3570,20 @@ bool TBase::optimizeSizeFactor(double factor) {
 
 void TBase::optimizeSizeFactor(int w, int h) {
 
-
-	if (w <= 0 || h <= 0)
-		return;
-
 	// Limit size to 0.8 of available size
 	const double f = 0.8;
 	QSize available_size = TDesktop::availableSize(this)
 						   - frameGeometry().size() + panel->size();
 	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	double max = f * available_size.height();
+	// Adjust height first
 	if (video_size.height() > max) {
 		pref->size_factor = max / h;
 		qDebug("Gui::TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor to %f",
 			   f, pref->size_factor);
 		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	}
+	// Adjust width
 	max = f * available_size.width();
 	if (video_size.width() > max) {
 		pref->size_factor = max / w;
@@ -3595,24 +3592,13 @@ void TBase::optimizeSizeFactor(int w, int h) {
 		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	}
 
-	if (optimizeSizeFactor(0.50))
-		return;
-	if (optimizeSizeFactor(0.75))
-		return;
-	if (optimizeSizeFactor(1.00))
-		return;
-	if (optimizeSizeFactor(1.25))
-		return;
-	if (optimizeSizeFactor(1.50))
-		return;
-	if (optimizeSizeFactor(1.75))
-		return;
-	if (optimizeSizeFactor(2.00))
-		return;
-	if (optimizeSizeFactor(3.00))
-		return;
-	if (optimizeSizeFactor(4.00))
-		return;
+	// Round to predefined values
+	const double factors[] = {0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00, 3.00, 4.00 };
+	for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
+		if (optimizeSizeFactorPreDef(factors[i])) {
+			return;
+		}
+	}
 
 	// Make width multiple of 16
 	int new_w = ((video_size.width() + 8) / 16) * 16;
@@ -3652,23 +3638,31 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 			playerwindow->showLogo();
 		}
 	} else {
+		// Have video
+		// Show panel
 		if (!panel->isVisible()) {
 			panel->show();
 		}
-		// block_resize set if pref->save_window_size_on_exit selected
-		if (!block_resize && !isMaximized()) {
-			if (pref->resize_method != Settings::TPreferences::Never) {
+		if (!isMaximized()) {
+			// Block_resize set if pref->save_window_size_on_exit selected
+			if (block_resize || pref->resize_method == Settings::TPreferences::Never) {
+				// Adjust size factor to window size
+				playerwindow->updateSizeFactor();
+			} else {
+				// Keep size in range
 				optimizeSizeFactor(w, h);
 				resizeWindow(w, h);
-			}
-			if (center_window) {
-				centerWindow();
 			}
 		}
 	}
 
+	if (center_window) {
+		center_window = false;
+		if (!isMaximized()) {
+			centerWindow();
+		}
+	}
 	block_resize = false;
-	center_window = false;
 }
 
 // Slot called by signal needResize

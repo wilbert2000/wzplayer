@@ -1215,6 +1215,8 @@ void TPreferences::load() {
 	size_factor = value("size_factor", size_factor).toDouble();
 	// Backward compatibility. Size used to be stored as percentage.
 	if (size_factor > 24.0) size_factor = size_factor / 100;
+	if (size_factor < 0.1) size_factor = 0.1;
+	if (size_factor > 4.0) size_factor = 4.0;
 	resize_method = value("resize_method", resize_method).toInt();
 
 	style = value("style", style).toString();
