@@ -67,8 +67,8 @@ protected:
 class TTitleTracks : public TMap<TTitleData> {
 
 public:
-	TTitleTracks() : selectedVTS(-1), vtsCount(0) {}
-	virtual ~TTitleTracks() {}
+	TTitleTracks();
+	virtual ~TTitleTracks();
 
 	typedef QMapIterator<int, TTitleData> TTitleTrackIterator;
 

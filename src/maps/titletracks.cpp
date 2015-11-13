@@ -17,7 +17,7 @@
 */
 
 #include "titletracks.h"
-
+#include <QApplication>
 #include "helper.h"
 
 namespace Maps {
@@ -37,11 +37,10 @@ QString TTitleData::getDisplayName(bool add_duration) const {
 	QString dname = QString::number(ID);
 
 	if (name.isEmpty()) {
-		// TODO: translate
 		if (isTrack) {
-			dname = "Track " + dname;
+			dname = qApp->translate("Maps::TTitleData", "Track %1").arg(dname);
 		} else {
-			dname = "Title " + dname;
+			dname = qApp->translate("Maps::TTitleData", "Title %1").arg(dname);
 		}
 	} else {
 		dname += " " + name;
@@ -52,6 +51,13 @@ QString TTitleData::getDisplayName(bool add_duration) const {
 	}
 
 	return dname;
+}
+
+
+TTitleTracks::TTitleTracks() : selectedVTS(-1), vtsCount(0) {
+}
+
+TTitleTracks::~TTitleTracks() {
 }
 
 void TTitleTracks::addName(int ID, const QString &name) {
