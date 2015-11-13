@@ -305,7 +305,7 @@ void TRotateMenu::onAboutToShow() {
 
 TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
 	// TODO: rename to stay_on_top_menu?
-	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("S&tay on top"), "ontop") {
+	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("&Stay on top"), "ontop") {
 
 	group = new TActionGroup(this, "ontop");
 	new TActionGroupItem(this, group, "on_top_always", QT_TR_NOOP("&Always"), TPreferences::AlwaysOnTop);
@@ -527,7 +527,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 
 
 TVideoSizeMenu::TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw)
-	: TMenu(parent, this, "videosize_menu", QT_TR_NOOP("Si&ze"), "video_size") {
+	: TMenu(parent, this, "videosize_menu", QT_TR_NOOP("&Size"), "video_size") {
 
 	group = new TVideoSizeGroup(this, pw);
 	addActions(group->actions());
@@ -554,7 +554,7 @@ void TVideoSizeMenu::onAboutToShow() {
 
 
 TVideoZoomAndPanMenu::TVideoZoomAndPanMenu(QWidget* parent, TCore* c)
-	: TMenu(parent, this, "zoom_and_pan_menu", QT_TR_NOOP("Zoo&m and pan"), "zoom_and_pan")
+	: TMenu(parent, this, "zoom_and_pan_menu", QT_TR_NOOP("&Zoom and pan"), "zoom_and_pan")
 	, core(c) {
 
 	group = new QActionGroup(this);

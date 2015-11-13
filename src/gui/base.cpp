@@ -564,7 +564,7 @@ void TBase::createActions() {
 	connect(video_equalizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
 
 	// Single screenshot
-	screenshotAct = new TAction(this, "screenshot", QT_TR_NOOP("&Screenshot"), "", Qt::Key_S);
+	screenshotAct = new TAction(this, "screenshot", QT_TR_NOOP("S&creenshot"), "", Qt::Key_S);
 	connect(screenshotAct, SIGNAL(triggered()), core, SLOT(screenshot()));
 
 	// Multiple screenshots
@@ -585,7 +585,7 @@ void TBase::createActions() {
 	flipAct->setCheckable(true);
 	connect(flipAct, SIGNAL(toggled(bool)), core, SLOT(toggleFlip(bool)));
 
-	mirrorAct = new TAction(this, "mirror", QT_TR_NOOP("Mirr&or image"));
+	mirrorAct = new TAction(this, "mirror", QT_TR_NOOP("&Mirror image"));
 	mirrorAct->setCheckable(true);
 	connect(mirrorAct, SIGNAL(toggled(bool)), core, SLOT(toggleMirror(bool)));
 
@@ -594,7 +594,7 @@ void TBase::createActions() {
 
 
 	// Menu Audio
-	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("E&qualizer"));
+	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("&Equalizer"));
 	audioEqualizerAct->setCheckable(true);
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
 	connect(audioEqualizerAct, SIGNAL(toggled(bool)), this, SLOT(showAudioEqualizer(bool)));
@@ -624,7 +624,7 @@ void TBase::createActions() {
 	decAudioDelayAct = new TAction(this, "dec_audio_delay", QT_TR_NOOP("&Delay -"), "delay_down", Qt::Key_Minus);
 	connect(decAudioDelayAct, SIGNAL(triggered()), core, SLOT(decAudioDelay()));
 
-	incAudioDelayAct = new TAction(this, "inc_audio_delay", QT_TR_NOOP("D&elay +"), "delay_up", Qt::Key_Plus);
+	incAudioDelayAct = new TAction(this, "inc_audio_delay", QT_TR_NOOP("Del&ay +"), "delay_up", Qt::Key_Plus);
 	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
 
 	audioDelayAct = new TAction(this, "audio_delay", QT_TR_NOOP("Set dela&y..."));
@@ -633,7 +633,7 @@ void TBase::createActions() {
 	loadAudioAct = new TAction(this, "load_audio_file", QT_TR_NOOP("&Load external file..."), "open");
 	connect(loadAudioAct, SIGNAL(triggered()), this, SLOT(loadAudioFile()));
 
-	unloadAudioAct = new TAction(this, "unload_audio_file", QT_TR_NOOP("U&nload"), "unload");
+	unloadAudioAct = new TAction(this, "unload_audio_file", QT_TR_NOOP("&Unload"), "unload");
 	connect(unloadAudioAct, SIGNAL(triggered()), core, SLOT(unloadAudioFile()));
 
 
@@ -1059,7 +1059,6 @@ void TBase::createMenus() {
 	playMenu->addMenu(ab_menu);
 
 	// Speed submenu
-	playMenu->addSeparator();
 	speed_menu = new TPlaySpeedMenu(this, core);
 	playMenu->addMenu(speed_menu);
 
@@ -1071,9 +1070,9 @@ void TBase::createMenus() {
 	// VIDEO MENU
 	videotrack_menu = new QMenu(this);
 	videotrack_menu->menuAction()->setObjectName("videotrack_menu");
-
 	videoMenu->addMenu(videotrack_menu);
 
+	videoMenu->addSeparator();
 	videoMenu->addAction(fullscreenAct);
 
 #if USE_ADAPTER
@@ -1084,41 +1083,40 @@ void TBase::createMenus() {
 	videoMenu->addMenu(screen_menu);
 #endif
 
-	// Size submenu
-	videosize_menu = new TVideoSizeMenu(this, playerwindow);
-	videoMenu->addMenu(videosize_menu);
-
-	// Zoom submenu
-	zoom_and_pan_menu = new TVideoZoomAndPanMenu(this, core);
-	videoMenu->addMenu(zoom_and_pan_menu);
-
 	// Aspect submenu
 	aspect_menu = new TAspectMenu(this, core);
 	videoMenu->addMenu(aspect_menu);
 
+	// Size submenu
+	videosize_menu = new TVideoSizeMenu(this, playerwindow);
+	videoMenu->addMenu(videosize_menu);
+
+	// Zoom and pan submenu
+	zoom_and_pan_menu = new TVideoZoomAndPanMenu(this, core);
+	videoMenu->addMenu(zoom_and_pan_menu);
+
+	// Equalizer
+	videoMenu->addSeparator();
+	videoMenu->addAction(videoEqualizerAct);
 	// Deinterlace submenu
 	deinterlace_menu = new TDeinterlaceMenu(this, core);
 	videoMenu->addMenu(deinterlace_menu);
-
 	// Video filter submenu
 	videofilter_menu = new TVideoFilterMenu(this, core);
 	videoMenu->addMenu(videofilter_menu);
+	videoMenu->addAction(stereo3dAct);
 
 	// Rotate submenu
+	videoMenu->addSeparator();
 	rotate_menu = new TRotateMenu(this, core);
 	videoMenu->addMenu(rotate_menu);
-
 	videoMenu->addAction(flipAct);
 	videoMenu->addAction(mirrorAct);
-	videoMenu->addAction(stereo3dAct);
+
+	// Screenshots
 	videoMenu->addSeparator();
-	videoMenu->addAction(videoEqualizerAct);
 	videoMenu->addAction(screenshotAct);
 	videoMenu->addAction(screenshotsAct);
-
-	// Ontop submenu
-	stay_on_top_menu = new TStayOnTopMenu(this);
-	videoMenu->addMenu(stay_on_top_menu);
 
 #ifdef VIDEOPREVIEW
 	videoMenu->addSeparator();
@@ -1130,11 +1128,18 @@ void TBase::createMenus() {
 	// Audio track submenu
 	audiotrack_menu = new QMenu(this);
 	audiotrack_menu->menuAction()->setObjectName("audiotrack_menu");
-
 	audioMenu->addMenu(audiotrack_menu);
 
+	audioMenu->addSeparator();
 	audioMenu->addAction(loadAudioAct);
 	audioMenu->addAction(unloadAudioAct);
+
+	audioMenu->addSeparator();
+	audioMenu->addAction(audioEqualizerAct);
+	stereomode_menu = new TStereoMenu(this, core);
+	audioMenu->addMenu(stereomode_menu);
+	audiochannels_menu = new TAudioChannelMenu(this, core);
+	audioMenu->addMenu(audiochannels_menu);
 
 	// Filter submenu
 	audiofilter_menu = new QMenu(this);
@@ -1148,20 +1153,13 @@ void TBase::createMenus() {
 
 	audioMenu->addMenu(audiofilter_menu);
 
-	audiochannels_menu = new TAudioChannelMenu(this, core);
-	audioMenu->addMenu(audiochannels_menu);
-	stereomode_menu = new TStereoMenu(this, core);
-	audioMenu->addMenu(stereomode_menu);
-	audioMenu->addAction(audioEqualizerAct);
 	audioMenu->addSeparator();
 	audioMenu->addAction(muteAct);
-	audioMenu->addSeparator();
 	audioMenu->addAction(decVolumeAct);
 	audioMenu->addAction(incVolumeAct);
 	audioMenu->addSeparator();
 	audioMenu->addAction(decAudioDelayAct);
 	audioMenu->addAction(incAudioDelayAct);
-	audioMenu->addSeparator();
 	audioMenu->addAction(audioDelayAct);
 
 
@@ -1256,12 +1254,16 @@ void TBase::createMenus() {
 	optionsMenu->addAction(showLogAct);
 
 	optionsMenu->addSeparator();
+	// Ontop submenu
+	stay_on_top_menu = new TStayOnTopMenu(this);
+	optionsMenu->addMenu(stay_on_top_menu);
+	// Toolbars
 	statusbar_menu = new QMenu(this);
 	// statusbar_menu added to toolbar_menu by createToolbarMenu()
 	// and filled by descendants::createMenus()
 	toolbar_menu = createToolbarMenu();
 	optionsMenu->addMenu(toolbar_menu);
-
+	// OSD
 	osd_menu = new TOSDMenu(this, core);
 	optionsMenu->addMenu(osd_menu);
 
@@ -3687,7 +3689,8 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 }
 
 void TBase::resizeEvent(QResizeEvent* event) {
-	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous();
+	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous()
+			 << "lock:" << block_update_size_factor;
 
 	QMainWindow::resizeEvent(event);
 
