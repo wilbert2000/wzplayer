@@ -1023,7 +1023,6 @@ void TBase::createMenus() {
 	videoMenu = menuBar()->addMenu("Video");
 	audioMenu = menuBar()->addMenu("Audio");
 	subtitlesMenu = menuBar()->addMenu("Subtitles");
-	/* menuBar()->addMenu(favorites); */
 	browseMenu = menuBar()->addMenu("Browse");
 	optionsMenu = menuBar()->addMenu("Options");
 	helpMenu = menuBar()->addMenu("Help");
@@ -1031,8 +1030,7 @@ void TBase::createMenus() {
 	// OPEN MENU
 	openMenu->addAction(openFileAct);
 
-	recentfiles_menu = new QMenu(this);
-	recentfiles_menu->menuAction()->setObjectName("recent_menu");
+	recentfiles_menu = new TMenu(this, this, "recent_menu", QT_TR_NOOP("&Recent files"), "recents");
 	openMenu->addMenu(recentfiles_menu);
 	openMenu->addMenu(favorites);
 	openMenu->addAction(openDirectoryAct);
@@ -1047,7 +1045,6 @@ void TBase::createMenus() {
 	disc_menu->addAction(openBluRayFolderAct);
 	disc_menu->addAction(openVCDAct);
 	disc_menu->addAction(openAudioCDAct);
-
 	openMenu->addMenu(disc_menu);
 
 	openMenu->addAction(openURLAct);
@@ -1055,6 +1052,7 @@ void TBase::createMenus() {
 	openMenu->addMenu(radiolist);
 	openMenu->addSeparator();
 	openMenu->addAction(exitAct);
+
 
 	// PLAY MENU
 	playMenu->addAction(playAct);
@@ -1093,6 +1091,7 @@ void TBase::createMenus() {
 	playMenu->addSeparator();
 	playMenu->addAction(playPrevAct);
 	playMenu->addAction(playNextAct);
+
 
 	// VIDEO MENU
 	videotrack_menu = new QMenu(this);
@@ -1151,8 +1150,8 @@ void TBase::createMenus() {
 	videoMenu->addAction(videoPreviewAct);
 #endif
 
-	// AUDIO MENU
 
+	// AUDIO MENU
 	// Audio track submenu
 	audiotrack_menu = new QMenu(this);
 	audiotrack_menu->menuAction()->setObjectName("audiotrack_menu");
@@ -1174,13 +1173,9 @@ void TBase::createMenus() {
 
 	audioMenu->addMenu(audiofilter_menu);
 
-	// Audio channels submenu
 	audiochannels_menu = new TAudioChannelMenu(this, core);
 	audioMenu->addMenu(audiochannels_menu);
-
-	// Stereo mode submenu
 	stereomode_menu = new TStereoMenu(this, core);
-
 	audioMenu->addMenu(stereomode_menu);
 	audioMenu->addAction(audioEqualizerAct);
 	audioMenu->addSeparator();
@@ -1194,33 +1189,28 @@ void TBase::createMenus() {
 	audioMenu->addSeparator();
 	audioMenu->addAction(audioDelayAct);
 
+
 	// SUBTITLES MENU
 	// Track submenu
 	subtitles_track_menu = new QMenu(this);
 	subtitles_track_menu->menuAction()->setObjectName("subtitlestrack_menu");
+	subtitlesMenu->addMenu(subtitles_track_menu);
 
 #ifdef MPV_SUPPORT
 	secondary_subtitles_track_menu = new QMenu(this);
 	secondary_subtitles_track_menu->menuAction()->setObjectName("secondary_subtitles_track_menu");
-#endif
-
-	subtitlesMenu->addMenu(subtitles_track_menu);
-#ifdef MPV_SUPPORT
 	subtitlesMenu->addMenu(secondary_subtitles_track_menu);
 #endif
-	subtitlesMenu->addSeparator();
 
+	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(loadSubsAct);
 	subtitlesMenu->addAction(unloadSubsAct);
-
 	subfps_menu = new TSubFPSMenu(this, core);
 	subtitlesMenu->addMenu(subfps_menu);
 	subtitlesMenu->addSeparator();
-
 	closed_captions_menu = new TCCMenu(this, core);
 	subtitlesMenu->addMenu(closed_captions_menu);
 	subtitlesMenu->addSeparator();
-
 	subtitlesMenu->addAction(decSubDelayAct);
 	subtitlesMenu->addAction(incSubDelayAct);
 	subtitlesMenu->addSeparator();
@@ -1234,20 +1224,24 @@ void TBase::createMenus() {
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubStepAct);
 	subtitlesMenu->addAction(incSubStepAct);
+
 #ifdef MPV_SUPPORT
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(seekPrevSubAct);
 	subtitlesMenu->addAction(seekNextSubAct);
 #endif
+
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(useForcedSubsOnlyAct);
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(useCustomSubStyleAct);
+
 #ifdef FIND_SUBTITLES
 	subtitlesMenu->addSeparator(); //turbos
 	subtitlesMenu->addAction(showFindSubtitlesDialogAct);
 	subtitlesMenu->addAction(openUploadSubtitlesPageAct); //turbos
 #endif
+
 
 	// BROWSE MENU
 	// Titles submenu
@@ -1280,6 +1274,7 @@ void TBase::createMenus() {
 	browseMenu->addMenu(programtrack_menu);
 #endif
 
+
 	// OPTIONS MENU
 	optionsMenu->addAction(showPropertiesAct);
 	optionsMenu->addAction(showPlaylistAct);
@@ -1295,28 +1290,13 @@ void TBase::createMenus() {
 	optionsMenu->addMenu(osd_menu);
 
 #ifdef YOUTUBE_SUPPORT
-	#if 0
-	// Check if the smplayer youtube browser is installed
-	{
-		QString tube_exec = TPaths::appPath() + "/smtube";
-		#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		tube_exec += ".exe";
-		#endif
-		if (QFile::exists(tube_exec)) {
-			optionsMenu->addAction(showTubeBrowserAct);
-			qDebug("Gui::TBase::createMenus: %s does exist", tube_exec.toUtf8().constData());
-		} else {
-			qDebug("Gui::TBase::createMenus: %s does not exist", tube_exec.toUtf8().constData());
-		}
-	}
-	#else
 	optionsMenu->addAction(showTubeBrowserAct);
-	#endif
 #endif
 
 	// Preferences
 	optionsMenu->addSeparator();
 	optionsMenu->addAction(showPreferencesAct);
+
 
 	// HELP MENU
 	helpMenu->addAction(showFirstStepsAct);
@@ -1331,6 +1311,7 @@ void TBase::createMenus() {
 	helpMenu->addAction(showConfigAct);
 	helpMenu->addSeparator();
 	helpMenu->addAction(aboutThisAct);
+
 
 	// POPUP MENU
 	popup = new QMenu(this);
@@ -1640,11 +1621,6 @@ void TBase::retranslateStrings() {
 
 	setWindowIcon(Images::icon("logo", 64));
 
-	// Rewind/forward
-	setJumpTexts(); // Texts for rewind*Act and forward*Act
-	rewindbutton_action->setText(tr("3 in 1 rewind"));
-	forwardbutton_action->setText(tr("3 in 1 forward"));
-
 	// MENUS
 	openMenu->menuAction()->setText(tr("&Open"));
 	playMenu->menuAction()->setText(tr("&Play"));
@@ -1666,10 +1642,8 @@ void TBase::retranslateStrings() {
 	helpMenuAct->setIcon(Images::icon("help_menu"));
 	*/
 
-	// Menu Open
-	recentfiles_menu->menuAction()->setText(tr("&Recent files"));
-	recentfiles_menu->menuAction()->setIcon(Images::icon("recents"));
 
+	// Menu Open
 	disc_menu->menuAction()->setText(tr("&Disc"));
 	disc_menu->menuAction()->setIcon(Images::icon("open_disc"));
 
@@ -1683,9 +1657,16 @@ void TBase::retranslateStrings() {
 	radiolist->menuAction()->setText(tr("Radi&o"));
 	radiolist->menuAction()->setIcon(Images::icon("open_radio"));
 
+
 	// Menu Play
 	ab_menu->menuAction()->setText(tr("&A-B section"));
 	ab_menu->menuAction()->setIcon(Images::icon("ab_menu"));
+
+	// Rewind/forward
+	setJumpTexts(); // Texts for rewind*Act and forward*Act
+	rewindbutton_action->setText(tr("3 in 1 rewind"));
+	forwardbutton_action->setText(tr("3 in 1 forward"));
+
 
 	// Menu Video
 	videotrack_menu->menuAction()->setText(tr("&Track", "video"));
@@ -1700,12 +1681,14 @@ void TBase::retranslateStrings() {
 	screenDefaultAct->change(tr("&Default"));
 #endif
 
+
 	// Menu Audio
 	audiotrack_menu->menuAction()->setText(tr("&Track", "audio"));
 	audiotrack_menu->menuAction()->setIcon(Images::icon("audio_track"));
 
 	audiofilter_menu->menuAction()->setText(tr("&Filters"));
 	audiofilter_menu->menuAction()->setIcon(Images::icon("audio_filters"));
+
 
 	// Menu Subtitle
 	subtitles_track_menu->menuAction()->setText(tr("&Select"));
@@ -1730,10 +1713,6 @@ void TBase::retranslateStrings() {
 	programtrack_menu->menuAction()->setText(tr("P&rogram", "program"));
 	programtrack_menu->menuAction()->setIcon(Images::icon("program_track"));
 #endif
-
-	// OSD
-	osd_menu->menuAction()->setText(tr("&OSD"));
-	osd_menu->menuAction()->setIcon(Images::icon("osd"));
 
 	// Toolbars
 	toolbar_menu->menuAction()->setText(tr("&Toolbars"));

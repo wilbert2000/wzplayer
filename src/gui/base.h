@@ -542,7 +542,7 @@ protected:
 	TSubFPSMenu* subfps_menu;
 
 	QMenu* popup;
-	QMenu* recentfiles_menu;
+	TMenu* recentfiles_menu;
 
 	TAction* viewMenuBarAct;
 	TAction* editToolbarAct;
