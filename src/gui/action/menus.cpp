@@ -232,6 +232,7 @@ TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 }
 
 void TOSDMenu::onAboutToShow() {
+	// Always enabled
 	group->setChecked((int) pref->osd_level);
 }
 
