@@ -560,7 +560,7 @@ void TBase::createActions() {
 	videoEqualizerAct = new TAction(this, "video_equalizer", QT_TR_NOOP("&Equalizer"), "equalizer", QKeySequence("Ctrl+E"));
 	videoEqualizerAct->setCheckable(true);
 	videoEqualizerAct->setChecked(video_equalizer->isVisible());
-	connect(videoEqualizerAct, SIGNAL(toggled(bool)), this, SLOT(showVideoEqualizer(bool)));
+	connect(videoEqualizerAct, SIGNAL(toggled(bool)), video_equalizer, SLOT(setVisible(bool)));
 	connect(video_equalizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
 
 	// Single screenshot
@@ -597,7 +597,7 @@ void TBase::createActions() {
 	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("&Equalizer"));
 	audioEqualizerAct->setCheckable(true);
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
-	connect(audioEqualizerAct, SIGNAL(toggled(bool)), this, SLOT(showAudioEqualizer(bool)));
+	connect(audioEqualizerAct, SIGNAL(toggled(bool)), audio_equalizer, SLOT(setVisible(bool)));
 	connect(audio_equalizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
 
 	muteAct = new TAction(this, "mute", QT_TR_NOOP("&Mute"), "noicon", Qt::Key_M);
@@ -731,7 +731,7 @@ void TBase::createActions() {
 	// Show log
 	showLogAct = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log"), "log", QKeySequence("Ctrl+L"));
 	showLogAct->setCheckable(true);
-	connect(showLogAct, SIGNAL(triggered()), this, SLOT(showLog()));
+	connect(showLogAct, SIGNAL(toggled(bool)), log_window, SLOT(setVisible(bool)));
 	connect(log_window, SIGNAL(visibilityChanged(bool)), showLogAct, SLOT(setChecked(bool)));
 
 
@@ -1461,9 +1461,9 @@ void TBase::setActionsEnabled(bool b) {
 
 	// Menu Video
 	bool enableVideo = b && !core->mdat.noVideo();
+	aspect_menu->group->setActionsEnabled(enableVideo);
 	videosize_menu->enableVideoSize(enableVideo);
 	zoom_and_pan_menu->group->setEnabled(enableVideo);
-	aspect_menu->group->setActionsEnabled(enableVideo);
 
 	// Disable video filters if using vdpau
 	bool enableFilters = enableVideo;
@@ -1610,20 +1610,7 @@ void TBase::retranslateStrings() {
 	optionsMenu->menuAction()->setText(tr("Op&tions"));
 	helpMenu->menuAction()->setText(tr("&Help"));
 
-	/*
-	openMenuAct->setIcon(Images::icon("open_menu"));
-	playMenuAct->setIcon(Images::icon("play_menu"));
-	videoMenuAct->setIcon(Images::icon("video_menu"));
-	audioMenuAct->setIcon(Images::icon("audio_menu"));
-	subtitlesMenuAct->setIcon(Images::icon("subtitles_menu"));
-	browseMenuAct->setIcon(Images::icon("browse_menu"));
-	optionsMenuAct->setIcon(Images::icon("options_menu"));
-	helpMenuAct->setIcon(Images::icon("help_menu"));
-	*/
-
-
 	// Menu Open
-	/* favorites->menuAction()->setText(tr("&Favorites")); */
 	favorites->menuAction()->setText(tr("F&avorites"));
 	favorites->menuAction()->setIcon(Images::icon("open_favorites"));
 
@@ -1651,9 +1638,6 @@ void TBase::retranslateStrings() {
 #if USE_ADAPTER
 	screen_menu->menuAction()->setText(tr("Scree&n"));
 	screen_menu->menuAction()->setIcon(Images::icon("screen"));
-#endif
-
-#if USE_ADAPTER
 	screenDefaultAct->setTextAndTip(tr("&Default"));
 #endif
 
@@ -1967,49 +1951,14 @@ void TBase::closeWindow() {
 	close();
 }
 
-void TBase::showPlaylist() {
-	showPlaylist(!playlist->isVisible());
-}
-
+// Overriden by TBasePlus
 void TBase::showPlaylist(bool b) {
-	if (!b) {
-		playlist->hide();
-	} else {
-		exitFullscreenIfNeeded();
-		playlist->show();
-	}
-}
-
-void TBase::showVideoEqualizer(bool b) {
-
-	if (b) {
-		// Exit fullscreen, otherwise dialog is not visible
-		exitFullscreenIfNeeded();
-		video_equalizer->show();
-	} else {
-		video_equalizer->hide();
-	}
-}
-
-void TBase::showAudioEqualizer() {
-	showAudioEqualizer(!audio_equalizer->isVisible());
-}
-
-void TBase::showAudioEqualizer(bool b) {
-
-	if (b) {
-		exitFullscreenIfNeeded();
-		audio_equalizer->show();
-	} else {
-		audio_equalizer->hide();
-	}
+	playlist->setVisible(b);
 }
 
 void TBase::showPreferencesDialog() {
 	qDebug("Gui::TBase::showPreferencesDialog");
 
-	exitFullscreenIfNeeded();
-	
 	if (!pref_dialog) {
 		createPreferencesDialog();
 	}
@@ -2140,18 +2089,13 @@ void TBase::applyNewPreferences() {
 	}
 }
 
-
 void TBase::showFilePropertiesDialog() {
 	qDebug("Gui::TBase::showFilePropertiesDialog");
-
-	exitFullscreenIfNeeded();
 
 	if (!file_dialog) {
 		createFilePropertiesDialog();
 	}
-
 	setDataToFileProperties();
-
 	file_dialog->show();
 }
 
@@ -2265,17 +2209,6 @@ void TBase::newMediaLoaded() {
 	checkPendingActionsToRun();
 }
 
-void TBase::showLog() {
-	//qDebug("Gui::TBase::showLog");
-
-	if (log_window->isVisible()) {
-		log_window->hide();
-	} else {
-		exitFullscreenIfNeeded();
-		log_window->show();
-	}
-}
-
 void TBase::updateVideoTracks() {
 	qDebug("Gui::TBase::updateVideoTracks");
 
@@ -2386,7 +2319,7 @@ void TBase::updateSubtitles() {
 	// Enable or disable subtitle options
 	bool e = core->mset.current_sub_idx >= 0;
 
-	if (core->mset.closed_caption_channel !=0) e = true; // Enable if using closed captions
+	if (core->mset.closed_caption_channel != 0) e = true; // Enable if using closed captions
 
 	decSubDelayAct->setEnabled(e);
 	incSubDelayAct->setEnabled(e);
@@ -2641,9 +2574,9 @@ void TBase::openFiles(QStringList files) {
 		return;
 	}
 
-	#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
 	files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
-	#endif
+#endif
 
 	if (files.count() == 1) {
 		open(files[0]);
@@ -2658,8 +2591,6 @@ void TBase::openFiles(QStringList files) {
 
 void TBase::openFile() {
 	qDebug("Gui::TBase::openFile");
-
-	exitFullscreenIfNeeded();
 
 	TExtensions e;
 	QString s = MyFileDialog::getOpenFileName(
@@ -2695,8 +2626,6 @@ void TBase::openFavorite(QString file) {
 
 void TBase::openURL() {
 	qDebug("Gui::TBase::openURL");
-
-	exitFullscreenIfNeeded();
 
 	TInputURL d(this);
 
@@ -2837,13 +2766,11 @@ void TBase::openBluRayFromFolder() {
 void TBase::loadSub() {
 	qDebug("Gui::TBase::loadSub");
 
-	exitFullscreenIfNeeded();
-
 	TExtensions e;
-    QString s = MyFileDialog::getOpenFileName(
-        this, tr("Choose a file"), 
-	    pref->latest_dir, 
-        tr("Subtitles") + e.subtitles().forFilter()+ ";;" +
+	QString s = MyFileDialog::getOpenFileName(
+		this, tr("Choose a file"),
+		pref->latest_dir,
+		tr("Subtitles") + e.subtitles().forFilter()+ ";;" +
 		tr("All files") +" (*.*)");
 
 	if (!s.isEmpty()) core->loadSub(s);
@@ -2858,13 +2785,11 @@ void TBase::setInitialSubtitle(const QString & subtitle_file) {
 void TBase::loadAudioFile() {
 	qDebug("Gui::TBase::loadAudioFile");
 
-	exitFullscreenIfNeeded();
-
 	TExtensions e;
 	QString s = MyFileDialog::getOpenFileName(
-        this, tr("Choose a file"), 
-	    pref->latest_dir, 
-        tr("Audio") + e.audio().forFilter()+";;" +
+		this, tr("Choose a file"),
+		pref->latest_dir,
+		tr("Audio") + e.audio().forFilter()+";;" +
 		tr("All files") +" (*.*)");
 
 	if (!s.isEmpty()) core->loadAudioFile(s);
@@ -3158,8 +3083,8 @@ void TBase::xbutton2ClickFunction() {
 	}
 }
 
+// Called by playerwindow when dragging main window
 void TBase::moveWindow(QPoint diff) {
-
 	move(pos() + diff);
 }
 
@@ -3815,15 +3740,6 @@ void TBase::toggleStayOnTop() {
 	else
 	if (pref->stay_on_top == Settings::TPreferences::NeverOnTop)
 		changeStayOnTop(Settings::TPreferences::AlwaysOnTop);
-}
-
-// Called when a new window (equalizer, preferences..) is opened.
-void TBase::exitFullscreenIfNeeded() {
-	/*
-	if (pref->fullscreen) {
-		toggleFullscreen(false);
-	}
-	*/
 }
 
 #if ALLOW_CHANGE_STYLESHEET

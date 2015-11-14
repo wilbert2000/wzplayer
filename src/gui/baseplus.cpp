@@ -328,14 +328,9 @@ void TBasePlus::didExitFullscreen() {
 void TBasePlus::showPlaylist(bool b) {
 	qDebug("Gui::TBasePlus::showPlaylist: %d", b);
 
-	if (b) {
-		exitFullscreenIfNeeded();
-		playlistdock->show();
-		if (playlistdock->isFloating()) {
-			TDesktop::keepInsideDesktop(playlistdock);
-		}
-	} else {
-		playlistdock->hide();
+	playlistdock->setVisible(b);
+	if (b && playlistdock->isFloating()) {
+		TDesktop::keepInsideDesktop(playlistdock);
 	}
 }
 

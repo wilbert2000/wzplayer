@@ -143,12 +143,7 @@ public slots:
 	virtual void showTubeBrowser();
 #endif
 
-	virtual void showPlaylist();
 	virtual void showPlaylist(bool b);
-	virtual void showVideoEqualizer(bool b);
-	virtual void showAudioEqualizer();
-	virtual void showAudioEqualizer(bool b);
-	virtual void showLog();
 	virtual void showPreferencesDialog();
 	virtual void showFilePropertiesDialog();
 
@@ -206,7 +201,6 @@ protected slots:
 
 	virtual void openRecent();
 	virtual void exitFullscreenOnStop();
-	virtual void exitFullscreenIfNeeded();
 	virtual void playlistHasFinished();
 
 #ifdef CHECK_UPGRADED
@@ -299,10 +293,10 @@ protected:
 #endif
 
 #ifdef Q_OS_WIN
-	#ifdef AVOID_SCREENSAVER
+#ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
 	virtual bool winEvent (MSG* m, long* result);
-	#endif
+#endif
 #endif
 	virtual QMenu* createPopupMenu();
 	virtual void aboutToEnterFullscreen();
