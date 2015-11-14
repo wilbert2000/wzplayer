@@ -510,7 +510,7 @@ protected:
 	QMenu* chapters_menu;
 	QMenu* angles_menu;
 	TAspectMenu* aspect_menu;
-	QMenu* osd_menu;
+	TOSDMenu* osd_menu;
 	TDeinterlaceMenu* deinterlace_menu;
 	TVideoSizeMenu* videosize_menu;
 	TAudioChannelMenu* audiochannels_menu;

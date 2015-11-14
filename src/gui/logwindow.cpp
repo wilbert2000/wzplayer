@@ -30,8 +30,9 @@
 
 namespace Gui {
 
-TLogWindow::TLogWindow(QWidget* parent)
-	: QWidget(parent, Qt::Window) {
+TLogWindow::TLogWindow(QWidget* parent, bool isLog)
+	: QWidget(parent, Qt::Window)
+	, log(isLog) {
 
 	setupUi(this);
 	browser->setFont(QFont("fixed"));
@@ -40,7 +41,8 @@ TLogWindow::TLogWindow(QWidget* parent)
 
 TLogWindow::~TLogWindow() {
 
-	TLog::log->setLogWindow(0);
+	if (log)
+		TLog::log->setLogWindow(0);
 }
 
 void TLogWindow::retranslateStrings() {
@@ -60,14 +62,16 @@ void TLogWindow::retranslateStrings() {
 void TLogWindow::showEvent(QShowEvent*) {
 	//qDebug("TLogWindow::showEvent");
 
-	TLog::log->setLogWindow(this);
+	if (log)
+		TLog::log->setLogWindow(this);
 	emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
 	//qDebug("TLogWindow::hideEvent");
 
-	TLog::log->setLogWindow(0);
+	if (log)
+		TLog::log->setLogWindow(0);
 	clear();
 	emit visibilityChanged(false);
 }

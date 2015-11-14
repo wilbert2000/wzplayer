@@ -30,7 +30,7 @@ class TLogWindow : public QWidget, public Ui::TLogWindow
 	Q_OBJECT
 
 public:
-	TLogWindow(QWidget* parent = 0);
+	TLogWindow(QWidget* parent, bool isLog);
 	virtual ~TLogWindow();
 
 	void setText(QString log);
@@ -57,6 +57,9 @@ protected:
 protected slots:
 	void on_copyButton_clicked();
     void on_saveButton_clicked();
+
+private:
+	bool log;
 };
 
 } // namespace Gui

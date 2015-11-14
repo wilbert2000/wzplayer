@@ -199,7 +199,7 @@ TBase::TBase()
 	createVideoEqualizer();
 	createAudioEqualizer();
 
-	log_window = new TLogWindow(0);
+	log_window = new TLogWindow(this, true);
 
 	createActions();
 	createToolbars();
@@ -1220,19 +1220,16 @@ void TBase::createMenus() {
 	// Titles submenu
 	titles_menu = new QMenu(this);
 	titles_menu->menuAction()->setObjectName("titles_menu");
-
 	browseMenu->addMenu(titles_menu);
 
 	// Chapters submenu
 	chapters_menu = new QMenu(this);
 	chapters_menu->menuAction()->setObjectName("chapters_menu");
-
 	browseMenu->addMenu(chapters_menu);
 
 	// Angles submenu
 	angles_menu = new QMenu(this);
 	angles_menu->menuAction()->setObjectName("angles_menu");
-
 	browseMenu->addMenu(angles_menu);
 
 	browseMenu->addSeparator();
@@ -2807,7 +2804,7 @@ void TBase::helpFAQ() {
 
 void TBase::helpCLOptions() {
 	if (clhelp_window == 0) {
-		clhelp_window = new TLogWindow(this);
+		clhelp_window = new TLogWindow(this, false);
 	}
 	clhelp_window->setWindowTitle(tr("SMPlayer command line options"));
 	clhelp_window->setHtml(CLHelp::help(true));
