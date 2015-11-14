@@ -85,34 +85,34 @@ void TTimeSliderAction::setDuration(double t) {
 
 QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 
-	TTimeSlider* t = new TTimeSlider(parent, max_pos, drag_delay);
-	t->setEnabled(isEnabled());
+	TTimeSlider* slider = new TTimeSlider(parent, max_pos, drag_delay);
+	slider->setEnabled(isEnabled());
 
 	if (custom_style)
-		t->setStyle(custom_style);
+		slider->setStyle(custom_style);
 	if (!custom_stylesheet.isEmpty())
-		t->setStyleSheet(custom_stylesheet);
+		slider->setStyleSheet(custom_stylesheet);
 
 	QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
 	if (toolbar) {
-		t->onOrientationChanged(toolbar->orientation());
+		slider->setOrientation(toolbar->orientation());
 		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
-				t, SLOT(onOrientationChanged(Qt::Orientation)));
+				slider, SLOT(setOrientation(Qt::Orientation)));
 	}
 
-	connect(t, SIGNAL(posChanged(int)),
+	connect(slider, SIGNAL(posChanged(int)),
 			this, SIGNAL(posChanged(int)));
-	connect(t, SIGNAL(draggingPos(int)),
+	connect(slider, SIGNAL(draggingPos(int)),
 			this, SIGNAL(draggingPos(int)));
-	connect(t, SIGNAL(delayedDraggingPos(int)),
+	connect(slider, SIGNAL(delayedDraggingPos(int)),
 			this, SIGNAL(delayedDraggingPos(int)));
 
-	connect(t, SIGNAL(wheelUp()),
+	connect(slider, SIGNAL(wheelUp()),
 			this, SIGNAL(wheelUp()));
-	connect(t, SIGNAL(wheelDown()),
+	connect(slider, SIGNAL(wheelDown()),
 			this, SIGNAL(wheelDown()));
 
-	return t;
+	return slider;
 }
 
 

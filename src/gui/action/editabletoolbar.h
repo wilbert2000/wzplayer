@@ -30,6 +30,7 @@ class TSizeGrip;
 
 typedef QList<QAction*> TActionList;
 
+
 class TEditableToolbar : public QToolBar {
 	Q_OBJECT
 

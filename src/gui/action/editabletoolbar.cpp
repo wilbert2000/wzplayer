@@ -19,13 +19,15 @@
 #include "gui/action/editabletoolbar.h"
 #include <QDebug>
 #include <QMenu>
+#include <QResizeEvent>
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
 #include "gui/base.h"
 #include "gui/action/sizegrip.h"
+#include "gui/action/timeslider.h"
+
 
 namespace Gui {
-
 
 TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 	: QToolBar(mainwindow)
@@ -165,26 +167,27 @@ void TEditableToolbar::moveEvent(QMoveEvent* event) {
 }
 
 void TEditableToolbar::resizeEvent(QResizeEvent* event) {
-	//qDebug() << "Gui::TEditableToolbar::resizeEvent:" << objectName() << size()
-	//		 << minimumSizeHint();
+	//qDebug() << "Gui::TEditableToolbar::resizeEvent:" << objectName()
+	//		 << "from" << event->oldSize() << "to" << size()
+	//		 << "min" << minimumSizeHint();
 
 	QToolBar::resizeEvent(event);
 
 	// Fix the dark and uncontrollable ways of Qt's layout engine.
 	// It looks like that with an orientation change the resize is done first,
-	// then the orientation changed signal is sent and received by TTImeslider
+	// than the orientation changed signal is sent and received by TTImeslider
 	// changing its minimum size and then another resize arrives, based on the
 	// old minimum size hint from before the orientation change.
-	// 84 is the minimum returned by TTimeSlider::sizeHint.
-	if (isFloating()) {
+	// Might be volume slider as well.
+	if (isFloating() && !fixing_size) {
 		if (orientation() == Qt::Horizontal) {
-			if (height() == 84 && !fixing_size) {
+			if (height() == TTimeSlider::SLIDER_MIN_SIZE) {
 				qDebug() << "Gui::TEditableToolbar::resizeEvent: fixing height";
 				fixing_size = true;
 				resize(width(), iconSize().height() + fix_size);
 				fixing_size = false;
 			}
-		} else if (width() == 84 && !fixing_size) {
+		} else if (width() == TTimeSlider::SLIDER_MIN_SIZE) {
 			qDebug() << "Gui::TEditableToolbar::resizeEvent: fixing width";
 			fixing_size = true;
 			resize(iconSize().width() + fix_size, height());
@@ -231,8 +234,6 @@ void TEditableToolbar::addSizeGrip() {
 }
 
 void TEditableToolbar::onTopLevelChanged(bool) {
-	//qDebug("TEditableToolbar::onTopLevelChanged");
-
 	addSizeGrip();
 }
 

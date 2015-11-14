@@ -22,6 +22,8 @@
 #include "config.h"
 #include "gui/action/slider.h"
 
+class QToolBar;
+
 namespace Gui {
 
 class TTimeSlider : public TSlider
@@ -32,13 +34,16 @@ public:
 	TTimeSlider(QWidget* parent, int max_pos, int drag_delay);
 	virtual ~TTimeSlider();
 
+	// See TEditableToolbar::resizeEvent() for details.
+	// Probably needs to be the size returned by TSlider::sizeHint()...
+	static const int SLIDER_MIN_SIZE = 84;
+
 	virtual int pos();
 	virtual double duration();
 
 public slots:
 	virtual void setPos(int); // Don't use setValue!
 	virtual void setDuration(double t);
-	void onOrientationChanged(Qt::Orientation orientation);
 
 signals:
 	void posChanged(int);
@@ -62,6 +67,7 @@ protected:
 	virtual bool event(QEvent* event);
 	virtual QSize sizeHint() const;
 	virtual QSize minimumSizeHint() const;
+	virtual void resizeEvent(QResizeEvent* event);
 
 private:
 	bool dont_update;
@@ -70,6 +76,11 @@ private:
 	
 	int last_pos_to_send;
 	QTimer* timer;
+
+	QSize savedSize;
+	QToolBar* toolbar;
+
+	void saveSizeHint();
 };
 
 } // namespace Gui
