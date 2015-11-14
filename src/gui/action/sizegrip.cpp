@@ -111,6 +111,7 @@ void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 
 	toolbar->setGeometry(nr);
 	followToolbar();
+	emit saveSizeHint();
 
 	event->accept();
 }
@@ -130,6 +131,7 @@ bool TSizeGrip::event(QEvent* e) {
 		// Stop resizing
 		case QEvent::MouseButtonRelease:
 			resizing = false;
+			// Fall through
 		default:
 			return QToolBar::event(e);
 	}

@@ -44,6 +44,7 @@ public:
 public slots:
 	virtual void setPos(int); // Don't use setValue!
 	virtual void setDuration(double t);
+	void saveSizeHint();
 
 signals:
 	void posChanged(int);
@@ -67,7 +68,6 @@ protected:
 	virtual bool event(QEvent* event);
 	virtual QSize sizeHint() const;
 	virtual QSize minimumSizeHint() const;
-	virtual void resizeEvent(QResizeEvent* event);
 
 private:
 	bool dont_update;
@@ -77,10 +77,7 @@ private:
 	int last_pos_to_send;
 	QTimer* timer;
 
-	QSize savedSize;
-	QToolBar* toolbar;
-
-	void saveSizeHint();
+	int savedSize;
 };
 
 } // namespace Gui

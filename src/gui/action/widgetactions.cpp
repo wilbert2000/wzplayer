@@ -93,13 +93,6 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 	if (!custom_stylesheet.isEmpty())
 		slider->setStyleSheet(custom_stylesheet);
 
-	QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
-	if (toolbar) {
-		slider->setOrientation(toolbar->orientation());
-		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
-				slider, SLOT(setOrientation(Qt::Orientation)));
-	}
-
 	connect(slider, SIGNAL(posChanged(int)),
 			this, SIGNAL(posChanged(int)));
 	connect(slider, SIGNAL(draggingPos(int)),
@@ -182,13 +175,6 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 	slider->setToolTip(tr("Volume"));
 	slider->setEnabled(isEnabled());
 	slider->setAttribute(Qt::WA_NoMousePropagation);
-
-	QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
-	if (toolbar) {
-		slider->setOrientation(toolbar->orientation());
-		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
-				slider, SLOT(setOrientation(Qt::Orientation)));
-	}
 
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(valueSliderChanged(int)));
 

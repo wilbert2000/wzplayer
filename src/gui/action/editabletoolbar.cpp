@@ -56,6 +56,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 
 	clear();
 	space_eater = 0;
+	removeSizeGrip();
 	// Copy actions
 	actions = acts;
 
@@ -211,7 +212,7 @@ void TEditableToolbar::setVisible(bool visible) {
 void TEditableToolbar::removeSizeGrip() {
 
 	if (size_grip) {
-		qDebug("Gui::TEditableToolbar::removeSizeGrip: removing size grip");
+		//qDebug("Gui::TEditableToolbar::removeSizeGrip: removing size grip");
 		size_grip->close();
 		delete size_grip;
 		size_grip = 0;
@@ -222,11 +223,13 @@ void TEditableToolbar::addSizeGrip() {
 
 	if (space_eater && isFloating()) {
 		if (size_grip) {
-			qDebug("Gui::TEditableToolbar::addSizeGrip: size grip already added");
+			//qDebug("Gui::TEditableToolbar::addSizeGrip: size grip already added");
 		} else {
-			qDebug("Gui::TEditableToolbar::addSizeGrip: adding size grip");
+			//qDebug("Gui::TEditableToolbar::addSizeGrip: adding size grip");
 			size_grip = new TSizeGrip(this);
 			size_grip->show();
+			connect(size_grip, SIGNAL(saveSizeHint()),
+					space_eater, SLOT(saveSizeHint()));
 		}
 	} else {
 		removeSizeGrip();

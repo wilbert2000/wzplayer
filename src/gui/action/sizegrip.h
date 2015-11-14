@@ -16,6 +16,9 @@ public:
 
 	void follow();
 
+signals:
+	void saveSizeHint();
+
 protected:
 	virtual void mousePressEvent(QMouseEvent* event);
 	virtual void mouseMoveEvent(QMouseEvent* event);

@@ -22,7 +22,6 @@
 #include <QTimer>
 #include <QToolTip>
 #include <QStyleOptionSlider>
-#include <QToolBar>
 #include "helper.h"
 
 
@@ -34,9 +33,7 @@ TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
 	, position(0)
 	, total_time(0)
 	, last_pos_to_send(-1)
-	, savedSize(256, 256) {
-
-	toolbar = qobject_cast<QToolBar*>(parent);
+	, savedSize(256) {
 
 	setMinimum(0);
 	setMaximum(max_pos);
@@ -59,56 +56,31 @@ TTimeSlider::~TTimeSlider() {
 QSize TTimeSlider::sizeHint() const {
 
 	QSize s = TSlider::sizeHint();
-	if (toolbar && toolbar->isFloating()) {
-		if (orientation() == Qt::Horizontal) {
-			s.rwidth() = savedSize.width();
-		} else {
-			s.rheight() = savedSize.height();
-		}
-	}
-
-	//qDebug() << "Gui::TTimeSlider::sizeHint:" << s;
+	if (orientation() == Qt::Horizontal)
+		s.rwidth() = savedSize;
+	else
+		s.rheight() = savedSize;
+	//qDebug() << "Gui::TTimeSlider::sizeHint: size" << size() << "hint" << s;
 	return s;
 }
 
 QSize TTimeSlider::minimumSizeHint() const {
 
 	QSize s = TSlider::sizeHint();
-	//qDebug() << "Gui::TTimeSlider::minimumSizeHint: B" << s;
 	if (orientation() == Qt::Horizontal)
 		s.rwidth() = SLIDER_MIN_SIZE;
 	else
 		s.rheight() = SLIDER_MIN_SIZE;
-
-	//qDebug() << "Gui::TTimeSlider::minimumSizeHint: A" << s;
+	//qDebug() << "Gui::TTimeSlider::minimumSizeHint: size" << size() << "hint" << s;
 	return s;
 }
 
 void TTimeSlider::saveSizeHint() {
 
-	if (orientation() == Qt::Horizontal) {
-		if (width() < SLIDER_MIN_SIZE) {
-			savedSize.rwidth() = SLIDER_MIN_SIZE;
-		} else {
-			savedSize.rwidth() = width();
-		}
-	} else if (height() < SLIDER_MIN_SIZE) {
-		savedSize.rheight() = SLIDER_MIN_SIZE;
-	} else {
-		savedSize.rheight() = height();
-	}
-
-	//qDebug() << "Gui::TTimeSlider::saveSizeHint:" << size() << savedSize;
-}
-
-void TTimeSlider::resizeEvent(QResizeEvent* event) {
-	qDebug() << "Gui::TTimeSlider::resizeEvent:"
-			 << "from" << event->oldSize() << "to" << size();
-
-	TSlider::resizeEvent(event);
-	if (toolbar && toolbar->isFloating()) {
-		saveSizeHint();
-	}
+	savedSize = orientation() == Qt::Horizontal ? width() : height();
+	if (savedSize < SLIDER_MIN_SIZE)
+		savedSize = SLIDER_MIN_SIZE;
+	//qDebug() << "Gui::TTimeSlider::saveSizeHint: size" << size() << "saved size" << savedSize;
 }
 
 void TTimeSlider::setPos(int v) {

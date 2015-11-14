@@ -24,6 +24,7 @@
 
 #include <QSlider>
 
+
 namespace Gui {
 
 class TSlider : public QSlider {

@@ -20,16 +20,26 @@
 */
 
 #include "gui/action/slider.h"
-
+#include <QDebug>
 #include <QMouseEvent>
 #include <QStyle>
 #include <QStyleOption>
+#include <QToolBar>
+
 
 namespace Gui {
 
 TSlider::TSlider(QWidget* parent) : QSlider(parent) {
 
-	setOrientation(Qt::Horizontal);
+	QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
+	if (toolbar) {
+		setOrientation(toolbar->orientation());
+		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
+				this, SLOT(setOrientation(Qt::Orientation)));
+	} else {
+		qDebug() << "Gui::TSlider::TSlider: Got non toolbar as parent" << parent;
+		setOrientation(Qt::Horizontal);
+	}
 }
 
 TSlider::~TSlider() {
