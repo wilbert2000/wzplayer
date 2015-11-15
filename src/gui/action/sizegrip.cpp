@@ -126,17 +126,15 @@ bool TSizeGrip::event(QEvent* e) {
 		case QEvent::HoverEnter:
 		case QEvent::HoverMove:
 		case QEvent::HoverLeave:
-			break;
+			return QWidget::event(e);
 
 		// Stop resizing
 		case QEvent::MouseButtonRelease:
 			resizing = false;
-			// Fall through
-		default:
-			return QToolBar::event(e);
+		default: ;
 	}
 
-	return QWidget::event(e);
+	return QToolBar::event(e);
 }
 
 } // namespace Gui

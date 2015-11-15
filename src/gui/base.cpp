@@ -3669,9 +3669,8 @@ void TBase::goToPosOnDragging(int t) {
 void TBase::setStayOnTop(bool b) {
 	qDebug("Gui::TBase::setStayOnTop: %d", b);
 
-	if ((b && (windowFlags() & Qt::WindowStaysOnTopHint)) ||
-		 (!b && (!(windowFlags() & Qt::WindowStaysOnTopHint))))
-	{
+	bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
+	if (b == stay_on_top) {
 		// identical do nothing
 		qDebug("Gui::TBase::setStayOnTop: nothing to do");
 		return;
@@ -3784,6 +3783,19 @@ void TBase::changeStyleSheet(QString style) {
 }
 #endif
 
+void TBase::setFloatingToolbarsVisible(bool visible) {
+
+	if (toolbar->isFloating()) {
+		toolbar->setVisible(visible);
+	}
+	if (toolbar2->isFloating()) {
+		toolbar2->setVisible(visible);
+	}
+	if (controlbar->isFloating()) {
+		controlbar->setVisible(visible);
+	}
+}
+
 void TBase::showEvent(QShowEvent* event) {
 	qDebug("Gui::TBase::showEvent");
 
@@ -3797,15 +3809,7 @@ void TBase::showEvent(QShowEvent* event) {
 		core->play();
 	}
 
-	if (toolbar->isFloating()) {
-		toolbar->show();
-	}
-	if (toolbar2->isFloating()) {
-		toolbar2->show();
-	}
-	if (controlbar->isFloating()) {
-		controlbar->show();
-	}
+	setFloatingToolbarsVisible(true);
 }
 
 void TBase::hideEvent(QHideEvent* event) {
@@ -3815,25 +3819,17 @@ void TBase::hideEvent(QHideEvent* event) {
 		QMainWindow::hideEvent(event);
 	}
 
-	//qDebug("Gui::TBase::hideEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
 	if (pref->pause_when_hidden && core->state() == TCore::Playing && !ignore_show_hide_events) {
 		qDebug("Gui::TBase::hideEvent: pausing");
 		core->pause();
 	}
 
-	if (toolbar->isFloating()) {
-		toolbar->hide();
-	}
-	if (toolbar2->isFloating()) {
-		toolbar2->hide();
-	}
-	if (controlbar->isFloating()) {
-		controlbar->hide();
-	}
+	setFloatingToolbarsVisible(false);
 }
 
 #if QT_VERSION >= 0x050000
 // Qt 5 doesn't call showEvent / hideEvent when the window is minimized or unminimized
+// TODO: handle with changeEvent instead
 bool TBase::event(QEvent* e) {
 	//qDebug("Gui::TBase::event: %d", e->type());
 

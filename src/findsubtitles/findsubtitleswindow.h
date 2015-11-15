@@ -52,12 +52,12 @@ public:
 	bool includeLangOnFilename() { return include_lang_on_filename; }
 #endif
 
-	void setSettings(QSettings * settings);
-	QSettings * settings() { return set; };
+	void setSettings(QSettings* settings);
+	QSettings* settings() { return set; }
 
 public slots:
 	void setMovie(QString filename);
-	void setLanguage(const QString & lang);
+	void setLanguage(const QString& lang);
 	void refresh();
 	void download();
 	void copyLink();
@@ -66,14 +66,14 @@ public slots:
 #endif
 
 protected slots:
-	void applyFilter(const QString & filter);
+	void applyFilter(const QString& filter);
 	void applyCurrentFilter();
 
 	void showError(QString error);
 	void connecting(QString host);
 	void showLoginFailed();
 	void showSearchFailed();
-	void showErrorOS(int, const QString &);
+	void showErrorOS(int, const QString&);
 	void updateDataReadProgress(int done, int total);
 	void downloadFinished();
 
@@ -81,20 +81,20 @@ protected slots:
 
 	void parseInfo();
 
-	void itemActivated(const QModelIndex & index);
-	void currentItemChanged(const QModelIndex & current, const QModelIndex & previous);
+	void itemActivated(const QModelIndex& index);
+	void currentItemChanged(const QModelIndex& current, const QModelIndex& previous);
 
-	void showContextMenu(const QPoint & pos);
+	void showContextMenu(const QPoint& pos);
 
 #ifdef DOWNLOAD_SUBS
-	void archiveDownloaded(const QByteArray & buffer);
+	void archiveDownloaded(const QByteArray& buffer);
 #endif
 
 	void on_configure_button_clicked();
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent * event);
+	virtual void changeEvent(QEvent* event);
 
 #ifdef FS_USE_PROXY
 	void setProxy(QNetworkProxy proxy);
@@ -106,18 +106,18 @@ protected:
 
 #ifdef DOWNLOAD_SUBS
 signals:
-	void subtitleDownloaded(const QString & filename);
+	void subtitleDownloaded(const QString& filename);
 
 protected:
 	#ifdef USE_QUAZIP
-	bool uncompressZip(const QString & filename, const QString & output_path, const QString & preferred_output_name);
-	bool extractFile(QuaZip & zip, const QString & filename, const QString & output_name);
+	bool uncompressZip(const QString& filename, const QString& output_path, const QString& preferred_output_name);
+	bool extractFile(QuaZip& zip, const QString& filename, const QString& output_name);
 	#else
-	QByteArray gUncompress(const QByteArray &data);
+	QByteArray gUncompress(const QByteArray&data);
 	#endif
 
 protected slots:
-	void fixSubtitles(const QString & filename);
+	void fixSubtitles(const QString& filename);
 #endif
 
 protected:

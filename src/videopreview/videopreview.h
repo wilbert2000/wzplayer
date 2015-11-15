@@ -63,46 +63,46 @@ public:
 	~VideoPreview();
 
 	void setMplayerPath(QString mplayer_path);
-	QString mplayerPath() { return mplayer_bin; };
+	QString mplayerPath() { return mplayer_bin; }
 
-	void setVideoFile(QString file) { prop.input_video = file; };
-	QString videoFile() { return prop.input_video; };
+	void setVideoFile(QString file) { prop.input_video = file; }
+	QString videoFile() { return prop.input_video; }
 
-	void setDVDDevice(const QString & dvd_device) { prop.dvd_device = dvd_device; };
-	QString DVDDevice() { return prop.dvd_device; };
+	void setDVDDevice(const QString& dvd_device) { prop.dvd_device = dvd_device; }
+	QString DVDDevice() { return prop.dvd_device; }
 
-	void setCols(int cols) { prop.n_cols = cols; };
-	int cols() { return prop.n_cols; };
+	void setCols(int cols) { prop.n_cols = cols; }
+	int cols() { return prop.n_cols; }
 
-	void setRows(int rows) { prop.n_rows = rows; };
+	void setRows(int rows) { prop.n_rows = rows; }
 	int rows() { return prop.n_rows; };
 
-	void setGrid(int cols, int rows) { prop.n_cols = cols; prop.n_rows = rows; };
+	void setGrid(int cols, int rows) { prop.n_cols = cols; prop.n_rows = rows; }
 
-	void setInitialStep(int step) { prop.initial_step = step; };
-	int initialStep() { return prop.initial_step; };
+	void setInitialStep(int step) { prop.initial_step = step; }
+	int initialStep() { return prop.initial_step; }
 
-	void setMaxWidth(int w) { prop.max_width = w; };
-	int maxWidth() { return prop.max_width; };
+	void setMaxWidth(int w) { prop.max_width = w; }
+	int maxWidth() { return prop.max_width; }
 
-	void setDisplayOSD(bool b) { prop.display_osd = b; };
-	bool displayOSD() { return prop.display_osd; };
+	void setDisplayOSD(bool b) { prop.display_osd = b; }
+	bool displayOSD() { return prop.display_osd; }
 
-	void setAspectRatio(double asp) { prop.aspect_ratio = asp; };
-	double aspectRatio() { return prop.aspect_ratio; };
+	void setAspectRatio(double asp) { prop.aspect_ratio = asp; }
+	double aspectRatio() { return prop.aspect_ratio; }
 
-	void setExtractFormat(ExtractFormat format) { prop.extract_format = format; };
-	ExtractFormat extractFormat() { return prop.extract_format; };
+	void setExtractFormat(ExtractFormat format) { prop.extract_format = format; }
+	ExtractFormat extractFormat() { return prop.extract_format; }
 
 	bool createThumbnails();
 
 	bool showConfigDialog(QWidget* parent);
 
 	void setSettings(QSettings* settings);
-	QSettings* settings() { return set; };
+	QSettings* settings() { return set; }
 
-	VideoInfo getInfo(const QString & mplayer_path, const QString & filename);
-	QString errorMessage() { return error_message; };
+	VideoInfo getInfo(const QString& mplayer_path, const QString& filename);
+	QString errorMessage() { return error_message; }
 
 	void adjustWindowSize();
 
@@ -118,8 +118,8 @@ protected:
 protected:
 	bool extractImages();
 	bool runPlayer(int seek, double aspect_ratio);
-	bool addPicture(const QString & filename, int num, int time); 
-	void displayVideoInfo(const VideoInfo & i);
+	bool addPicture(const QString& filename, int num, int time);
+	void displayVideoInfo(const VideoInfo& i);
 	void cleanDir(QString directory);
 	void clearThumbnails();
 	QString framePicture();

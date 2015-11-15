@@ -615,6 +615,7 @@ private:
 	void createToolbars();
 	QMenu* createToolbarMenu();
 
+	void setFloatingToolbarsVisible(bool visible);
 	void hidePanel();
 	void centerWindow();
 	bool optimizeSizeFactorPreDef(double factor);
