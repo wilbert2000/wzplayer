@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <QResizeEvent>
+#include <QTimer>
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
 #include "gui/base.h"
@@ -204,7 +205,7 @@ void TEditableToolbar::setVisible(bool visible) {
 	//qDebug("TEditableToolbar::setVisible: %d", visible);
 
 	QToolBar::setVisible(visible);
-	if (size_grip) {
+	if (size_grip && (!visible || underMouse())) {
 		size_grip->setVisible(visible);
 	}
 }
@@ -226,8 +227,7 @@ void TEditableToolbar::addSizeGrip() {
 			//qDebug("Gui::TEditableToolbar::addSizeGrip: size grip already added");
 		} else {
 			//qDebug() << "Gui::TEditableToolbar::addSizeGrip: adding size grip";
-			size_grip = new TSizeGrip(this);
-			size_grip->show();
+			size_grip = new TSizeGrip(main_window, this);
 			connect(size_grip, SIGNAL(saveSizeHint()),
 					space_eater, SLOT(saveSizeHint()));
 		}
@@ -238,6 +238,22 @@ void TEditableToolbar::addSizeGrip() {
 
 void TEditableToolbar::onTopLevelChanged(bool) {
 	addSizeGrip();
+}
+
+void TEditableToolbar::enterEvent(QEvent* event) {
+	//qDebug() << "TEditableToolbar::enterEvent";
+
+	QToolBar::enterEvent(event);
+	if (size_grip)
+		size_grip->show();
+}
+
+void TEditableToolbar::leaveEvent(QEvent* event) {
+	//qDebug() << "TEditableToolbar::leaveEvent";
+
+	QToolBar::leaveEvent(event);
+	if (size_grip)
+		QTimer::singleShot(0, size_grip, SLOT(delayedHide()));
 }
 
 } // namespace Gui

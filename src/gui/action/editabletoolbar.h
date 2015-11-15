@@ -58,6 +58,8 @@ protected:
 
 	virtual void resizeEvent(QResizeEvent* event);
 	virtual void moveEvent(QMoveEvent* event);
+	virtual void enterEvent(QEvent* event);
+	virtual void leaveEvent(QEvent* event);
 
 private:
 	QStringList actions;

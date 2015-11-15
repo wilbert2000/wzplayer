@@ -11,10 +11,13 @@ class TSizeGrip : public QToolBar {
 	Q_OBJECT
 
 public:
-	TSizeGrip(QToolBar* tb);
+	TSizeGrip(QWidget* parent, QToolBar* tb);
 	virtual ~TSizeGrip();
 
 	void follow();
+
+public slots:
+	void delayedHide();
 
 signals:
 	void saveSizeHint();

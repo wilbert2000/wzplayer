@@ -9,12 +9,12 @@
 
 namespace Gui {
 
-TSizeGrip::TSizeGrip(QToolBar* tb)
-	: QToolBar(0)
+TSizeGrip::TSizeGrip(QWidget* parent, QToolBar* tb)
+	: QToolBar(parent)
 	, toolbar(tb)
 	, resizing(false) {
 
-	// Needed to copy stay on top
+	// Copy stay on top and floating
 	setWindowFlags(toolbar->windowFlags());
 	onOrientationChanged(toolbar->orientation());
 	connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
@@ -27,7 +27,8 @@ void TSizeGrip::onOrientationChanged(Qt::Orientation orientation) {
 	setOrientation(orientation);
 	if (orientation == Qt::Horizontal)
 		setCursor(Qt::SizeHorCursor);
-	else setCursor(Qt::SizeVerCursor);
+	else
+		setCursor(Qt::SizeVerCursor);
 	followToolbar();
 }
 
@@ -69,11 +70,7 @@ void TSizeGrip::follow() {
 void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 	//qDebug("TSizeGrip::mouseMoveEvent");
 
-	if (event->buttons() != Qt::LeftButton)
-		return;
-	if (!resizing)
-		return;
-	if (toolbar->testAttribute(Qt::WA_WState_ConfigPending))
+	if (!resizing || toolbar->testAttribute(Qt::WA_WState_ConfigPending))
 		return;
 
 	QPoint np(event->globalPos());
@@ -116,21 +113,34 @@ void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 	event->accept();
 }
 
+void TSizeGrip::delayedHide() {
+
+	if (!underMouse() && !toolbar->underMouse())
+		hide();
+}
+
 bool TSizeGrip::event(QEvent* e) {
 
 	switch (e->type()) {
+		case QEvent::MouseButtonRelease:
+			resizing = false;
+			return true;
+		case QEvent::Leave:
+			hide();
+			return true;
+
+		// Events to hide for QToolBar, but passed to QWidget
+		case QEvent::MouseMove:
+		case QEvent::MouseButtonPress:
+
 		// Events to hide for QToolbar, so it won't change the mouse cursor
 		case QEvent::Enter:
-		case QEvent::Leave:
 		case QEvent::CursorChange:
 		case QEvent::HoverEnter:
 		case QEvent::HoverMove:
 		case QEvent::HoverLeave:
 			return QWidget::event(e);
 
-		// Stop resizing
-		case QEvent::MouseButtonRelease:
-			resizing = false;
 		default: ;
 	}
 
