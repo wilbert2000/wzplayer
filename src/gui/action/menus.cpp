@@ -13,11 +13,10 @@ using namespace Settings;
 namespace Gui {
 
 void execPopup(QWidget* w, QMenu* popup, QPoint p) {
-	//qDebug() << "Gui::execPopup:" << p << popup->size();
+	//qDebug() << "Gui::execPopup:" << p;
 
-	// Evade mouse
-	// TODO: size popup not yet valid. Use abotToShow()?
-	QSize s(popup->size());
+	// Keep inside desktop
+	QSize s = popup->sizeHint();
 	QSize desktop = TDesktop::size(w);
 	if (p.x() < 0) p.rx() = 0;
 	else if (p.x() + s.width() > desktop.width()) {
@@ -27,8 +26,8 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 	else if (p.y() + s.height() > desktop.height()) {
 		p.ry() = desktop.height() - s.height();
 	}
-	//qDebug() << "Gui::execPopup:" << p;
 
+	// Evade mouse
 	if (QCursor::pos().x() > p.x() && QCursor::pos().x() < p.x() + s.width()) {
 		if (QCursor::pos().x() >= desktop.width() - s.width()) {
 			// Place menu to the left of mouse
@@ -47,7 +46,6 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 			p.ry() = QCursor::pos().y();
 		}
 	}
-	//qDebug() << "Gui::execPopup:" << p;
 
 	// Popup exec keeps menu inside screen too
 	popup->exec(p);
