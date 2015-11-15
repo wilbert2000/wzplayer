@@ -27,6 +27,7 @@ namespace Gui {
 
 class TBase;
 class TSizeGrip;
+class TTimeSlider;
 
 typedef QList<QAction*> TActionList;
 
@@ -62,7 +63,7 @@ private:
 	QStringList actions;
 	QStringList default_actions;
 	TSizeGrip* size_grip;
-	QWidget* space_eater;
+	TTimeSlider* space_eater;
 	bool fixing_size;
 	int fix_size;
 

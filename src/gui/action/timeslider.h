@@ -68,6 +68,7 @@ protected:
 	virtual bool event(QEvent* event);
 	virtual QSize sizeHint() const;
 	virtual QSize minimumSizeHint() const;
+	virtual void resizeEvent(QResizeEvent* e);
 
 private:
 	bool dont_update;
@@ -78,6 +79,7 @@ private:
 	QTimer* timer;
 
 	int savedSize;
+	bool getInitialSize;
 };
 
 } // namespace Gui

@@ -88,7 +88,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 						} else if (action_name == "timeslider_action") {
 							qDebug() << "Gui::TEditableToolbar::setActionsFromStringList: found space eater"
 									 << action_name;
-							space_eater = widgetForAction(action);
+							space_eater = qobject_cast<TTimeSlider*>(widgetForAction(action));
 						}
 					} else {
 						qWarning() << "Gui::TEditableToolbar::setActionsFromStringList: action"
@@ -225,7 +225,7 @@ void TEditableToolbar::addSizeGrip() {
 		if (size_grip) {
 			//qDebug("Gui::TEditableToolbar::addSizeGrip: size grip already added");
 		} else {
-			//qDebug("Gui::TEditableToolbar::addSizeGrip: adding size grip");
+			//qDebug() << "Gui::TEditableToolbar::addSizeGrip: adding size grip";
 			size_grip = new TSizeGrip(this);
 			size_grip->show();
 			connect(size_grip, SIGNAL(saveSizeHint()),
