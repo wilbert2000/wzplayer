@@ -3611,8 +3611,8 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 }
 
 void TBase::resizeEvent(QResizeEvent* event) {
-	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous()
-			 << "lock:" << block_update_size_factor;
+	//qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous()
+	//		 << "lock:" << block_update_size_factor;
 
 	QMainWindow::resizeEvent(event);
 

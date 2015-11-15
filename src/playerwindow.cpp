@@ -228,8 +228,8 @@ void TPlayerWindow::updateSizeFactor() {
 		if (factor_y < factor_x) {
 			factor_x = factor_y;
 		}
-		qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
-			   pref->size_factor, factor_x);
+		//qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
+		//	   pref->size_factor, factor_x);
 		pref->size_factor = factor_x;
 	}
 }
