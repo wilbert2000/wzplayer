@@ -70,7 +70,7 @@
 
 using namespace Settings;
 
-TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
+TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	: QObject(parent),
 	  mdat(),
 	  mset(&mdat),
@@ -84,7 +84,7 @@ TCore::TCore(TPlayerWindow *mpw, QWidget* parent)
 {
 	qRegisterMetaType<TCore::State>("TCore::State");
 
-	proc = Proc::TPlayerProcess::createPlayerProcess(pref->mplayer_bin, &mdat);
+	proc = Proc::TPlayerProcess::createPlayerProcess(this, pref->mplayer_bin, &mdat);
 
 	connect(proc, SIGNAL(error(QProcess::ProcessError)),
 			 this, SLOT(processError(QProcess::ProcessError)));
@@ -241,17 +241,11 @@ TCore::~TCore() {
 	stopPlayer();
 	proc->terminate();
 
-#ifdef YOUTUBE_SUPPORT
-	delete yt;
-#endif
-
-#if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
 	delete win_screensaver;
 #endif
 #endif
-
-	delete proc;
 }
 
 void TCore::processError(QProcess::ProcessError error) {

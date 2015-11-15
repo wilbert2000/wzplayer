@@ -44,8 +44,8 @@ namespace Proc {
 const int waiting_for_answers_safe_guard_init = 100;
 
 
-TPlayerProcess::TPlayerProcess(TPlayerID::Player pid, TMediaData* mdata)
-	: TProcess(0)
+TPlayerProcess::TPlayerProcess(QObject* parent, TPlayerID::Player pid, TMediaData* mdata)
+	: TProcess(parent)
 	, player_id(pid)
 	, md(mdata)
 	, notified_player_is_running(false)
@@ -82,17 +82,17 @@ void TPlayerProcess::writeToStdin(QString text, bool log) {
 	}
 }
 
-TPlayerProcess* TPlayerProcess::createPlayerProcess(const QString& player_bin, TMediaData* md) {
+TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, const QString& player_bin, TMediaData* md) {
 
 	TPlayerProcess* proc = 0;
 
 #if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
 	if (TPlayerID::player(player_bin) == TPlayerID::MPLAYER) {
 		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMplayerProcess";
-		proc = new TMplayerProcess(md);
+		proc = new TMplayerProcess(parent, md);
 	} else {
 		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMPVProcess";
-		proc = new TMPVProcess(md);
+		proc = new TMPVProcess(parent, md);
 	}
 #else
 	#ifdef MPV_SUPPORT

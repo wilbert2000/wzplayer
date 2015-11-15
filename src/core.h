@@ -51,7 +51,7 @@ class TCore : public QObject {
 public:
 	enum State { Stopped = 0, Playing = 1, Paused = 2 };
 
-	TCore(TPlayerWindow *mpw, QWidget* parent);
+	TCore(QWidget* parent, TPlayerWindow *mpw);
 	virtual ~TCore();
 
 	TMediaData mdat;

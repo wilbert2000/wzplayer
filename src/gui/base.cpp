@@ -226,22 +226,7 @@ TBase::TBase()
 	retranslateStrings();
 }
 
-// TODO: check leaking and ownership
 TBase::~TBase() {
-
-#ifdef VIDEOPREVIEW
-	delete video_preview;
-#endif
-#ifdef FIND_SUBTITLES
-	delete find_subs_dialog;
-#endif
-
-	delete radiolist;
-	delete tvlist;
-	delete favorites;
-	delete log_window;
-	delete playlist;
-	delete core;
 }
 
 void TBase::createPanel() {
@@ -284,7 +269,7 @@ void TBase::createPlayerWindow() {
 
 void TBase::createCore() {
 
-	core = new TCore(playerwindow, this);
+	core = new TCore(this, playerwindow);
 
 	connect(core, SIGNAL(showTime(double)),
 			 this, SLOT(gotCurrentTime(double)));
@@ -351,7 +336,7 @@ void TBase::createCore() {
 
 void TBase::createPlaylist() {
 
-	playlist = new TPlaylist(core, this, 0);
+	playlist = new TPlaylist(this, core, 0);
 	connect(playlist, SIGNAL(playlistEnded()),
 			 this, SLOT(playlistHasFinished()));
 	connect(playlist, SIGNAL(displayMessage(QString,int)),
@@ -437,7 +422,7 @@ void TBase::createActions() {
 	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
 
 	// Favorites
-	favorites = new TFavorites(TPaths::configPath() + "/favorites.m3u8", this);
+	favorites = new TFavorites(this, TPaths::configPath() + "/favorites.m3u8");
 	favorites->menuAction()->setObjectName("favorites_menu");
 	addAction(favorites->editAct());
 	addAction(favorites->jumpAct());
@@ -448,8 +433,8 @@ void TBase::createActions() {
 			favorites, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 	// TV and Radio
-	tvlist = new TTVList(pref->check_channels_conf_on_startup, 
-						 TTVList::TV, TPaths::configPath() + "/tv.m3u8", this);
+	tvlist = new TTVList(this, pref->check_channels_conf_on_startup,
+						 TTVList::TV, TPaths::configPath() + "/tv.m3u8");
 	tvlist->menuAction()->setObjectName("tv_menu");
 	addAction(tvlist->editAct());
 	addAction(tvlist->jumpAct());
@@ -465,8 +450,8 @@ void TBase::createActions() {
 	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
 			tvlist, SLOT(getCurrentMedia(const QString&, const QString&)));
 
-	radiolist = new TTVList(pref->check_channels_conf_on_startup, 
-							TTVList::Radio, TPaths::configPath() + "/radio.m3u8", this);
+	radiolist = new TTVList(this, pref->check_channels_conf_on_startup,
+							TTVList::Radio, TPaths::configPath() + "/radio.m3u8");
 	radiolist->menuAction()->setObjectName("radio_menu");
 	addAction(radiolist->editAct());
 	addAction(radiolist->jumpAct());
@@ -3946,7 +3931,7 @@ void TBase::showVideoPreviewDialog() {
 	qDebug("Gui::TBase::showVideoPreviewDialog");
 
 	if (video_preview == 0) {
-		video_preview = new VideoPreview(pref->mplayer_bin, this);
+		video_preview = new VideoPreview(this, pref->mplayer_bin);
 		video_preview->setSettings(Settings::pref);
 	}
 

@@ -46,7 +46,7 @@
 // MPlayer2 doesn't support png outdir
 /* #define VP_USE_PNG_OUTDIR */
 
-VideoPreview::VideoPreview(QString mplayer_path, QWidget* parent) : QWidget(parent, Qt::Window)
+VideoPreview::VideoPreview(QWidget* parent, const QString& mplayer_path) : QWidget(parent, Qt::Window)
 {
 	setMplayerPath(mplayer_path);
 

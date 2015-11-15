@@ -57,7 +57,7 @@ typedef QList<TFavorite> TFavoriteList;
 class TFavorites : public QMenu {
 	Q_OBJECT
 public:
-	TFavorites(QString filename, QWidget* parent = 0);
+	TFavorites(QWidget* parent, const QString& filename);
 	virtual ~TFavorites();
 
 	QAction* editAct() { return edit_act; }
@@ -82,7 +82,7 @@ protected:
 	virtual void load();
 	virtual void updateMenu();
 	virtual void populateMenu();
-	virtual TFavorites* createNewObject(QString filename, QWidget* parent);
+	virtual TFavorites* createNewObject(QWidget* parent, const QString& filename);
 	void delete_children();
 
 	int findFile(QString filename);

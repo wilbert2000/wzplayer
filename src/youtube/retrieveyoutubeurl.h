@@ -52,7 +52,7 @@ public:
                    DASH_VIDEO_480p = 135, DASH_VIDEO_360p = 134,
                    DASH_VIDEO_240p = 133 };
 
-	RetrieveYoutubeUrl(QObject* parent = 0);
+	RetrieveYoutubeUrl(QObject* parent);
 	~RetrieveYoutubeUrl();
 
 	void setPreferredQuality(Quality q) { preferred_quality = q; }

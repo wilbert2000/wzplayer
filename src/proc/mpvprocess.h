@@ -35,7 +35,7 @@ class TMPVProcess : public TPlayerProcess {
 	Q_OBJECT
 
 public:
-	TMPVProcess(TMediaData* mdata);
+	TMPVProcess(QObject* parent, TMediaData* mdata);
 	~TMPVProcess();
 
 	virtual bool startPlayer();

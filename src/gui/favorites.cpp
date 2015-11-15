@@ -57,7 +57,7 @@ void TFavorite::setIcon(QString file) {
 }
 
 
-TFavorites::TFavorites(QString filename, QWidget* parent) : QMenu(parent) {
+TFavorites::TFavorites(QWidget* parent, const QString& filename) : QMenu(parent) {
 
 	_filename = filename;
 
@@ -120,8 +120,8 @@ void TFavorites::retranslateStrings() {
 	add_current_act->setText(tr("&Add current media"));
 }
 
-TFavorites* TFavorites::createNewObject(QString filename, QWidget* parent) {
-	return new TFavorites(filename, parent);
+TFavorites* TFavorites::createNewObject(QWidget* parent, const QString& filename) {
+	return new TFavorites(parent, filename);
 }
 
 void TFavorites::populateMenu() {
@@ -135,10 +135,10 @@ void TFavorites::populateMenu() {
 				break;
 			}
 
-			TFavorites* new_fav = createNewObject(f_list[n].file(), parent_widget);
+			TFavorites* new_fav = createNewObject(parent_widget, f_list[n].file());
 			new_fav->getCurrentMedia(received_file_playing, received_title);
-			connect(this, SIGNAL(sendCurrentMedia(const QString &, const QString &)), 
-                    new_fav, SLOT(getCurrentMedia(const QString &, const QString &)));
+			connect(this, SIGNAL(sendCurrentMedia(const QString&, const QString&)),
+					new_fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 			/*
 			new_fav->editAct()->setText(editAct()->text());
 			new_fav->jumpAct()->setText(jumpAct()->text());

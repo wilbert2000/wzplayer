@@ -36,8 +36,8 @@ namespace Proc {
 // TODO: get from player too
 static const QPoint max_osd_pos(300, 600);
 
-TMPVProcess::TMPVProcess(TMediaData* mdata)
-	: TPlayerProcess(TPlayerID::MPV, mdata)
+TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata)
+	: TPlayerProcess(parent, TPlayerID::MPV, mdata)
 	, verbose(false)
 	, osd_pos()
 	, osd_centered_x(false)

@@ -36,8 +36,8 @@ namespace Proc {
 const double FRAME_BACKSTEP_TIME = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
-TMplayerProcess::TMplayerProcess(TMediaData* mdata)
-	: TPlayerProcess(TPlayerID::MPLAYER, mdata)
+TMplayerProcess::TMplayerProcess(QObject* parent, TMediaData* mdata)
+	: TPlayerProcess(parent, TPlayerID::MPLAYER, mdata)
 	, mute_option_set(false) {
 }
 

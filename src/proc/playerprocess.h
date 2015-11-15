@@ -43,7 +43,7 @@ class TPlayerProcess : public TProcess
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	TPlayerProcess(TPlayerID::Player pid, TMediaData* mdata);
+	TPlayerProcess(QObject* parent, TPlayerID::Player pid, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
 	TPlayerID::Player player() { return player_id; }
@@ -138,7 +138,7 @@ public:
 	virtual void setCaptureDirectory(const QString& dir);
 #endif
 
-	static TPlayerProcess* createPlayerProcess(const QString& player_bin, TMediaData* md);
+	static TPlayerProcess* createPlayerProcess(QObject* parent, const QString& player_bin, TMediaData* md);
 
 // Signals
 signals:
