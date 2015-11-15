@@ -2881,7 +2881,7 @@ void TBase::toggleFullscreen() {
 }
 
 void TBase::unlockSizeFactor() {
-	qDebug("Gui::TBase::unlockSizeFactor");
+	//qDebug("Gui::TBase::unlockSizeFactor");
 	block_update_size_factor--;
 }
 
