@@ -74,6 +74,7 @@ public:
 	int positionMax() { return pos_max; }
 	int getVolume();
 	bool getMute();
+	bool videoFiltersEnabled();
 
 public slots:
 	//! Generic open, with autodetection of type
@@ -124,7 +125,6 @@ public slots:
 	void setBMarker(); //!< Set B marker to current sec
 	void setBMarker(int sec);
 	void clearABMarkers();
-	void toggleRepeat();
 	void toggleRepeat(bool b);
 
 	void toggleFlip();

@@ -1042,6 +1042,26 @@ void TCore::switchCapturing() {
 }
 #endif
 
+bool TCore::videoFiltersEnabled() {
+
+#ifndef Q_OS_WIN
+	if (proc->isMPlayer()) {
+		if (pref->vdpau.disable_video_filters && pref->vo.startsWith("vdpau")) {
+			qDebug("TCore::videoFiltersEnabled: using vdpau, video filters are ignored");
+			return false;
+		}
+	} else {
+		// MPV
+		if (!pref->hwdec.isEmpty() && pref->hwdec != "no") {
+			qDebug("TCore::videoFiltersEnabled: hardware decoding is enabled. The video filters will be ignored");
+			return false;
+		}
+	}
+#endif
+
+	return true;
+}
+
 void TCore::startPlayer(QString file, double seek) {
 	qDebug() << "TCore::startPlayer:" << file << "at" << seek;
 
@@ -1597,20 +1617,8 @@ void TCore::startPlayer(QString file, double seek) {
 
 	bool force_noslices = false;
 
-#ifndef Q_OS_WIN
-	if (proc->isMPlayer()) {
-		if ((pref->vdpau.disable_video_filters) && (pref->vo.startsWith("vdpau"))) {
-			qDebug("TCore::startPlayer: using vdpau, video filters are ignored");
-			goto end_video_filters;
-		}
-	} else {
-		// MPV
-		if (!pref->hwdec.isEmpty() && pref->hwdec != "no") {
-			qDebug("TCore::startPlayer: hardware decoding is enabled. The video filters will be ignored");
-			goto end_video_filters;
-		}
-	}
-#endif
+	if (!videoFiltersEnabled())
+		goto end_video_filters;
 
 	// Video filters:
 	// Phase
@@ -1622,8 +1630,8 @@ void TCore::startPlayer(QString file, double seek) {
 	if (mset.current_deinterlacer != TMediaSettings::NoDeinterlace) {
 		switch (mset.current_deinterlacer) {
 			case TMediaSettings::L5: 		proc->addVF("l5"); break;
-			case TMediaSettings::Yadif: 		proc->addVF("yadif"); break;
-			case TMediaSettings::LB:			proc->addVF("lb"); break;
+			case TMediaSettings::Yadif: 	proc->addVF("yadif"); break;
+			case TMediaSettings::LB:		proc->addVF("lb"); break;
 			case TMediaSettings::Yadif_1:	proc->addVF("yadif", "1"); break;
 			case TMediaSettings::Kerndeint:	proc->addVF("kerndeint", "5"); break;
 		}
@@ -2162,11 +2170,6 @@ void TCore::clearABMarkers() {
 	}
 
 	emit ABMarkersChanged();
-}
-
-void TCore::toggleRepeat() {
-	qDebug("TCore::toggleRepeat");
-	toggleRepeat(!mset.loop);
 }
 
 void TCore::toggleRepeat(bool b) {
@@ -2826,6 +2829,7 @@ void TCore::decSubStep() {
 
 void TCore::changeExternalSubFPS(int fps_id) {
 	qDebug("TCore::setExternalSubFPS: %d", fps_id);
+
 	mset.external_subtitles_fps = fps_id;
 	if (haveExternalSubs()) {
 		restartPlay();
@@ -2972,18 +2976,18 @@ void TCore::changeDeinterlace(int ID) {
 			// MPV
 			// Remove previous filter
 			switch (mset.current_deinterlacer) {
-				case TMediaSettings::L5:			proc->changeVF("l5", false); break;
+				case TMediaSettings::L5:		proc->changeVF("l5", false); break;
 				case TMediaSettings::Yadif:		proc->changeVF("yadif", false); break;
-				case TMediaSettings::LB:			proc->changeVF("lb", false); break;
+				case TMediaSettings::LB:		proc->changeVF("lb", false); break;
 				case TMediaSettings::Yadif_1:	proc->changeVF("yadif", false, "1"); break;
 				case TMediaSettings::Kerndeint:	proc->changeVF("kerndeint", false, "5"); break;
 			}
 			mset.current_deinterlacer = ID;
 			// New filter
 			switch (mset.current_deinterlacer) {
-				case TMediaSettings::L5:			proc->changeVF("l5", true); break;
+				case TMediaSettings::L5:		proc->changeVF("l5", true); break;
 				case TMediaSettings::Yadif:		proc->changeVF("yadif", true); break;
-				case TMediaSettings::LB:			proc->changeVF("lb", true); break;
+				case TMediaSettings::LB:		proc->changeVF("lb", true); break;
 				case TMediaSettings::Yadif_1:	proc->changeVF("yadif", true, "1"); break;
 				case TMediaSettings::Kerndeint:	proc->changeVF("kerndeint", true, "5"); break;
 			}
@@ -3545,9 +3549,11 @@ void TCore::toggleForcedSubsOnly(bool b) {
 
 void TCore::changeClosedCaptionChannel(int c) {
 	qDebug("TCore::changeClosedCaptionChannel: %d", c);
+
 	if (c != mset.closed_caption_channel) {
 		mset.closed_caption_channel = c;
-		if (proc->isRunning()) restartPlay();
+		if (proc->isRunning())
+			restartPlay();
 	}
 }
 
