@@ -530,12 +530,12 @@ void TBase::createActions() {
 	fullscreenAct = new TAction(this, "fullscreen", QT_TR_NOOP("&Fullscreen"), "", Qt::Key_F);
 	fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
 	fullscreenAct->setCheckable(true);
-	connect(fullscreenAct, SIGNAL(toggled(bool)), this, SLOT(toggleFullscreen(bool)));
+	connect(fullscreenAct, SIGNAL(triggered(bool)), this, SLOT(toggleFullscreen(bool)));
 
 	videoEqualizerAct = new TAction(this, "video_equalizer", QT_TR_NOOP("&Equalizer"), "equalizer", QKeySequence("Ctrl+E"));
 	videoEqualizerAct->setCheckable(true);
 	videoEqualizerAct->setChecked(video_equalizer->isVisible());
-	connect(videoEqualizerAct, SIGNAL(toggled(bool)), video_equalizer, SLOT(setVisible(bool)));
+	connect(videoEqualizerAct, SIGNAL(triggered(bool)), video_equalizer, SLOT(setVisible(bool)));
 	connect(video_equalizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
 
 	// Single screenshot
@@ -558,11 +558,11 @@ void TBase::createActions() {
 
 	flipAct = new TAction(this, "flip", QT_TR_NOOP("Fli&p image"));
 	flipAct->setCheckable(true);
-	connect(flipAct, SIGNAL(toggled(bool)), core, SLOT(toggleFlip(bool)));
+	connect(flipAct, SIGNAL(triggered(bool)), core, SLOT(toggleFlip(bool)));
 
 	mirrorAct = new TAction(this, "mirror", QT_TR_NOOP("&Mirror image"));
 	mirrorAct->setCheckable(true);
-	connect(mirrorAct, SIGNAL(toggled(bool)), core, SLOT(toggleMirror(bool)));
+	connect(mirrorAct, SIGNAL(triggered(bool)), core, SLOT(toggleMirror(bool)));
 
 	stereo3dAct = new TAction(this, "stereo_3d_filter", QT_TR_NOOP("Stereo &3D filter..."), "stereo3d");
 	connect(stereo3dAct, SIGNAL(triggered()), this, SLOT(showStereo3dDialog()));
@@ -572,18 +572,19 @@ void TBase::createActions() {
 	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("&Equalizer"));
 	audioEqualizerAct->setCheckable(true);
 	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
-	connect(audioEqualizerAct, SIGNAL(toggled(bool)), audio_equalizer, SLOT(setVisible(bool)));
+	connect(audioEqualizerAct, SIGNAL(triggered(bool)), audio_equalizer, SLOT(setVisible(bool)));
 	connect(audio_equalizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
 
 	muteAct = new TAction(this, "mute", QT_TR_NOOP("&Mute"), "noicon", Qt::Key_M);
 	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
 	muteAct->setCheckable(true);
+	muteAct->setChecked(core->getMute());
 
 	QIcon icset(Images::icon("volume"));
 	icset.addPixmap(Images::icon("mute"), QIcon::Normal, QIcon::On);
 	muteAct->setIcon(icset);
 
-	connect(muteAct, SIGNAL(toggled(bool)), core, SLOT(mute(bool)));
+	connect(muteAct, SIGNAL(triggered(bool)), core, SLOT(mute(bool)));
 	connect(core, SIGNAL(muteChanged(bool)), muteAct, SLOT(setChecked(bool)));
 
 	decVolumeAct = new TAction(this, "decrease_volume", QT_TR_NOOP("Volume &-"), "audio_down");
@@ -615,16 +616,16 @@ void TBase::createActions() {
 	// Audio Filters
 	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"));
 	volnormAct->setCheckable(true);
-	connect(volnormAct, SIGNAL(toggled(bool)), core, SLOT(toggleVolnorm(bool)));
+	connect(volnormAct, SIGNAL(triggered(bool)), core, SLOT(toggleVolnorm(bool)));
 
 #ifdef MPLAYER_SUPPORT
 	extrastereoAct = new TAction(this, "extrastereo_filter", QT_TR_NOOP("&Extrastereo"));
 	extrastereoAct->setCheckable(true);
-	connect(extrastereoAct, SIGNAL(toggled(bool)), core, SLOT(toggleExtrastereo(bool)));
+	connect(extrastereoAct, SIGNAL(triggered(bool)), core, SLOT(toggleExtrastereo(bool)));
 
 	karaokeAct = new TAction(this, "karaoke_filter", QT_TR_NOOP("&Karaoke"));
 	karaokeAct->setCheckable(true);
-	connect(karaokeAct, SIGNAL(toggled(bool)), core, SLOT(toggleKaraoke(bool)));
+	connect(karaokeAct, SIGNAL(triggered(bool)), core, SLOT(toggleKaraoke(bool)));
 #endif
 
 	// Menu Subtitles
@@ -671,12 +672,12 @@ void TBase::createActions() {
 	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", QT_TR_NOOP("Use custo&m style"));
 	useCustomSubStyleAct->setCheckable(true);
 	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
-	connect(useCustomSubStyleAct, SIGNAL(toggled(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
+	connect(useCustomSubStyleAct, SIGNAL(triggered(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
 
 	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", QT_TR_NOOP("&Forced subtitles only"), "forced_subs");
 	useForcedSubsOnlyAct->setCheckable(true);
 	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
-	connect(useForcedSubsOnlyAct, SIGNAL(toggled(bool)), core, SLOT(toggleForcedSubsOnly(bool)));
+	connect(useForcedSubsOnlyAct, SIGNAL(triggered(bool)), core, SLOT(toggleForcedSubsOnly(bool)));
 
 #ifdef FIND_SUBTITLES
 	showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog", QT_TR_NOOP("Find subtitles at &OpenSubtitles.org..."), "download_subs");
@@ -689,7 +690,7 @@ void TBase::createActions() {
 	// Menu Options
 	showPlaylistAct = new TAction(this, "show_playlist", QT_TR_NOOP("&Playlist"), "playlist", QKeySequence("Ctrl+P"));
 	showPlaylistAct->setCheckable(true);
-	connect(showPlaylistAct, SIGNAL(toggled(bool)), this, SLOT(showPlaylist(bool)));
+	connect(showPlaylistAct, SIGNAL(triggered(bool)), this, SLOT(showPlaylist(bool)));
 	connect(playlist, SIGNAL(visibilityChanged(bool)), showPlaylistAct, SLOT(setChecked(bool)));
 
 	showPropertiesAct = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
@@ -705,7 +706,7 @@ void TBase::createActions() {
 	// Show log
 	showLogAct = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log"), "log", QKeySequence("Ctrl+L"));
 	showLogAct->setCheckable(true);
-	connect(showLogAct, SIGNAL(toggled(bool)), log_window, SLOT(setVisible(bool)));
+	connect(showLogAct, SIGNAL(triggered(bool)), log_window, SLOT(setVisible(bool)));
 	connect(log_window, SIGNAL(visibilityChanged(bool)), showLogAct, SLOT(setChecked(bool)));
 
 
