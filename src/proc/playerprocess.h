@@ -47,8 +47,8 @@ public:
 	virtual ~TPlayerProcess() {}
 
 	TPlayerID::Player player() { return player_id; }
-	bool isMPlayer() { return (player_id == TPlayerID::MPLAYER); }
-	bool isMPV() { return (player_id == TPlayerID::MPV); }
+	bool isMPlayer() { return player_id == TPlayerID::MPLAYER; }
+	bool isMPV() { return player_id == TPlayerID::MPV; }
 	bool isFullyStarted() { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();
