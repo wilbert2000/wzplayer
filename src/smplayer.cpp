@@ -299,12 +299,12 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 #endif
 		else {
 			// File
-			#if QT_VERSION >= 0x040600
+#if QT_VERSION >= 0x040600
 			QUrl fUrl = QUrl::fromUserInput(argument);
 			if (fUrl.isValid() && fUrl.scheme().toLower() == "file") {
-			    argument = fUrl.toLocalFile();
+				argument = fUrl.toLocalFile();
 			}
-			#endif
+#endif
 			if (QFile::exists(argument)) {
 				argument = QFileInfo(argument).absoluteFilePath();
 			}
