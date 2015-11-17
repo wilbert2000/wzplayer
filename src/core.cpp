@@ -1051,13 +1051,13 @@ bool TCore::videoFiltersEnabled() {
 #ifndef Q_OS_WIN
 	if (proc->isMPlayer()) {
 		if (pref->vdpau.disable_video_filters && pref->vo.startsWith("vdpau")) {
-			qDebug("TCore::videoFiltersEnabled: using vdpau, video filters are ignored");
+			qDebug("TCore::videoFiltersEnabled: using vdpau, the video filters will be ignored");
 			return false;
 		}
 	} else {
 		// MPV
 		if (!pref->hwdec.isEmpty() && pref->hwdec != "no") {
-			qDebug("TCore::videoFiltersEnabled: hardware decoding is enabled. The video filters will be ignored");
+			qDebug("TCore::videoFiltersEnabled: hardware decoding is enabled, the video filters will be ignored");
 			return false;
 		}
 	}
@@ -3704,6 +3704,7 @@ void TCore::gotVideoOutResolution(int w, int h) {
 void TCore::gotVO(QString vo) {
 	qDebug("TCore::gotVO: '%s'", vo.toUtf8().data());
 
+	// TODO: check saving and use vo/ao against sys changes
 	if (pref->vo.isEmpty()) {
 		qDebug("TCore::gotVO: saving vo");
 		pref->vo = vo;
@@ -3713,6 +3714,7 @@ void TCore::gotVO(QString vo) {
 void TCore::gotAO(QString ao) {
 	qDebug("TCore::gotAO: '%s'", ao.toUtf8().data());
 
+	// TODO: check saving and use vo/ao against sys changes
 	if (pref->ao.isEmpty()) {
 		qDebug("TCore::gotAO: saving ao");
 		pref->ao = ao;
