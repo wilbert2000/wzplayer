@@ -51,16 +51,14 @@ TBasePlus::TBasePlus()
 
 	showTrayAct = new TAction(this, "show_tray_icon", QT_TR_NOOP("S&how icon in system tray"), "systray");
 	showTrayAct->setCheckable(true);
-	connect(showTrayAct, SIGNAL(toggled(bool)),
-			 tray, SLOT(setVisible(bool)));
+	connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
 
 #ifndef Q_OS_OS2
 	optionsMenu->addSeparator();
 	optionsMenu->addAction(showTrayAct);
 #else
 	trayAvailable();
-	connect(optionsMenu, SIGNAL(aboutToShow()),
-			 this, SLOT(trayAvailable()));
+	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(trayAvailable()));
 #endif
 
 	showAllAct = new TAction(this, "restore_hide", QT_TR_NOOP("&Hide"));

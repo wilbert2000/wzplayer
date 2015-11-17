@@ -49,14 +49,12 @@ void TDefault::createActions() {
 	viewVideoInfoAct = new TAction(this, "toggle_video_info", QT_TR_NOOP("&Video info"), "view_video_info");
 	viewVideoInfoAct->setCheckable(true);
 	statusbar_menu->addAction(viewVideoInfoAct);
-	connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
-			video_info_display, SLOT(setVisible(bool)));
+	connect(viewVideoInfoAct, SIGNAL(toggled(bool)), video_info_display, SLOT(setVisible(bool)));
 
 	viewFrameCounterAct = new TAction(this, "toggle_frame_counter", QT_TR_NOOP("&Frame counter"), "frame_counter");
 	viewFrameCounterAct->setCheckable(true);
 	statusbar_menu->addAction(viewFrameCounterAct);
-	connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
-			frame_display, SLOT(setVisible(bool)));
+	connect(viewFrameCounterAct, SIGNAL(toggled(bool)), frame_display, SLOT(setVisible(bool)));
 
 	playOrPauseAct->setIcon(Images::icon("play"));
 }
