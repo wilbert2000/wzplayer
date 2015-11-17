@@ -45,9 +45,6 @@ public:
 	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
 	QStringList defaultActions() const { return default_actions; }
 
-	virtual void didEnterFullscreen();
-	virtual void didExitFullscreen();
-
 	virtual void setVisible(bool visible);
 
 public slots:
@@ -69,13 +66,13 @@ private:
 	bool fixing_size;
 	int fix_size;
 
-	void reload();
 	void addSizeGrip();
 	void removeSizeGrip();
 
 private slots:
 	void showContextMenu(const QPoint& pos);
 	void onTopLevelChanged(bool);
+	void reload();
 };
 
 } // namesapce Gui

@@ -118,7 +118,6 @@ public:
 	void updateVideoWindow();
 	void updateSizeFactor();
 	void moveVideo(int dx, int dy);
-	void aboutToExitFullscreen();
 	void playingStopped(bool clear_background = true);
 	void retranslateStrings();
 
@@ -128,6 +127,8 @@ public slots:
 	void setLogoVisible(bool b);
 	void showLogo() { setLogoVisible(true); }
 	void hideLogo() { setLogoVisible(false); }
+
+	void pauseMessages();
 
 signals:
 	void doubleClicked();
@@ -188,8 +189,6 @@ private:
 	void startDragging();
 	void stopDragging();
 	bool checkDragging(QMouseEvent* event);
-
-	void pauseMessages(int msec);
 };
 
 #endif // PLAYERWINDOW_H

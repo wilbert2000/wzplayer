@@ -270,9 +270,18 @@ protected slots:
 #endif
 
 signals:
+	void enableActions(bool stopped, bool video, bool audio);
+	void mediaSettingsChanged(Settings::TMediaSettings* mset);
+
 	void frameChanged(int);
 	void videoInfoChanged(int width, int height, double fps);
 	void timeChanged(QString time_ready_to_print);
+
+	void aboutToEnterFullscreenSignal();
+	void didEnterFullscreenSignal();
+	void aboutToExitFullscreenSignal();
+	void didExitFullscreenSignal();
+	void stayOnTopChanged(int);
 
 	//! Sent when another instance requested to play a file
 	void openFileRequested();
@@ -345,10 +354,6 @@ protected:
 	TAction* forward1Act;
 	TAction* forward2Act;
 	TAction* forward3Act;
-	TAction* repeatAct;
-	TAction* setAMarkerAct;
-	TAction* setBMarkerAct;
-	TAction* clearABMarkersAct;
 	TAction* gotoAct;
 
 	// Menu Video
@@ -509,24 +514,11 @@ protected:
 	QMenu* titles_menu;
 	QMenu* chapters_menu;
 	QMenu* angles_menu;
-	TAspectMenu* aspect_menu;
-	TOSDMenu* osd_menu;
-	TDeinterlaceMenu* deinterlace_menu;
-	TVideoSizeMenu* videosize_menu;
-	TAudioChannelMenu* audiochannels_menu;
-	TStereoMenu* stereomode_menu;
 
-	TPlaySpeedMenu* speed_menu;
-	QMenu* ab_menu; // A-B menu
-	TVideoFilterMenu* videofilter_menu;
-	QMenu* audiofilter_menu;
-	TVideoZoomAndPanMenu* zoom_and_pan_menu;
-	TRotateMenu* rotate_menu;
-	TStayOnTopMenu* stay_on_top_menu;
 #if USE_ADAPTER
 	QMenu* screen_menu;
 #endif
-	TCCMenu* closed_captions_menu;
+	QMenu* audiofilter_menu;
 	TSubFPSMenu* subfps_menu;
 
 	QMenu* popup;

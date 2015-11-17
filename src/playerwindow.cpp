@@ -173,7 +173,7 @@ void TPlayerWindow::setResolution(int width, int height) {
 	// Disable messages and post enable if video
 	enable_messages = false;
 	if (width > 0) {
-		pauseMessages(500);
+		pauseMessages();
 	}
 }
 
@@ -471,17 +471,11 @@ void TPlayerWindow::enableMessages() {
 	enable_messages = true;
 }
 
-void TPlayerWindow::pauseMessages(int msec) {
+void TPlayerWindow::pauseMessages() {
 
 	// Disable messages and post enable
 	enable_messages = false;
-	QTimer::singleShot(msec, this, SLOT(enableMessages()));
-}
-
-void TPlayerWindow::aboutToExitFullscreen() {
-	//qDebug("TPlayerWindow::aboutToExitFullscreen");
-
-	pauseMessages(500);
+	QTimer::singleShot(500, this, SLOT(enableMessages()));
 }
 
 void TPlayerWindow::setZoom(double factor,

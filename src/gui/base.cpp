@@ -204,6 +204,7 @@ TBase::TBase()
 	createActions();
 	createToolbars();
 	createMenus();
+	// TODO: move?
 	setActionsEnabled(false);
 
 	setupNetworkProxy();
@@ -265,6 +266,9 @@ void TBase::createPlayerWindow() {
 			 this, SLOT(xbutton2ClickFunction()));
 	connect(playerwindow, SIGNAL(moveWindow(QPoint)),
 			 this, SLOT(moveWindow(QPoint)));
+
+	connect(this, SIGNAL(aboutToExitFullscreenSignal()),
+			playerwindow, SLOT(pauseMessages()));
 }
 
 void TBase::createCore() {
@@ -518,19 +522,6 @@ void TBase::createActions() {
 	forward_actions << forward1Act << forward2Act << forward3Act;
 	forwardbutton_action = new TSeekingButton(forward_actions, this);
 	forwardbutton_action->setObjectName("forwardbutton_action");
-
-	setAMarkerAct = new TAction(this, "set_a_marker", QT_TR_NOOP("Set &A marker"), "a_marker");
-	connect(setAMarkerAct, SIGNAL(triggered()), core, SLOT(setAMarker()));
-
-	setBMarkerAct = new TAction(this, "set_b_marker", QT_TR_NOOP("Set &B marker"), "b_marker");
-	connect(setBMarkerAct, SIGNAL(triggered()), core, SLOT(setBMarker()));
-
-	clearABMarkersAct = new TAction(this, "clear_ab_markers", QT_TR_NOOP("&Clear A-B markers"), "clear_ab_markers");
-	connect(clearABMarkersAct, SIGNAL(triggered()), core, SLOT(clearABMarkers()));
-
-	repeatAct = new TAction(this, "repeat", QT_TR_NOOP("&Repeat"));
-	repeatAct->setCheckable(true);
-	connect(repeatAct, SIGNAL(toggled(bool)), core, SLOT(toggleRepeat(bool)));
 
 	gotoAct = new TAction(this, "jump_to", QT_TR_NOOP("&Jump to..."), "jumpto", QKeySequence("Ctrl+J"));
 	connect(gotoAct, SIGNAL(triggered()), this, SLOT(showGotoDialog()));
@@ -1031,22 +1022,11 @@ void TBase::createMenus() {
 	playMenu->addSeparator();
 	playMenu->addAction(playPrevAct);
 	playMenu->addAction(playNextAct);
-
 	// A-B submenu
 	playMenu->addSeparator();
-	ab_menu = new QMenu(this);
-	ab_menu->menuAction()->setObjectName("ab_menu");
-	ab_menu->addAction(setAMarkerAct);
-	ab_menu->addAction(setBMarkerAct);
-	ab_menu->addAction(clearABMarkersAct);
-	ab_menu->addSeparator();
-	ab_menu->addAction(repeatAct);
-	playMenu->addMenu(ab_menu);
-
+	playMenu->addMenu(new TABMenu(this, core));
 	// Speed submenu
-	speed_menu = new TPlaySpeedMenu(this, core);
-	playMenu->addMenu(speed_menu);
-
+	playMenu->addMenu(new TPlaySpeedMenu(this, core));
 	// Goto
 	playMenu->addSeparator();
 	playMenu->addAction(gotoAct);
@@ -1069,32 +1049,24 @@ void TBase::createMenus() {
 #endif
 
 	// Aspect submenu
-	aspect_menu = new TAspectMenu(this, core);
-	videoMenu->addMenu(aspect_menu);
-
+	videoMenu->addMenu(new TAspectMenu(this, core));
 	// Size submenu
-	videosize_menu = new TVideoSizeMenu(this, playerwindow);
-	videoMenu->addMenu(videosize_menu);
-
+	videoMenu->addMenu(new TVideoSizeMenu(this, playerwindow));
 	// Zoom and pan submenu
-	zoom_and_pan_menu = new TVideoZoomAndPanMenu(this, core);
-	videoMenu->addMenu(zoom_and_pan_menu);
+	videoMenu->addMenu(new TVideoZoomAndPanMenu(this, core));
 
 	// Equalizer
 	videoMenu->addSeparator();
 	videoMenu->addAction(videoEqualizerAct);
 	// Deinterlace submenu
-	deinterlace_menu = new TDeinterlaceMenu(this, core);
-	videoMenu->addMenu(deinterlace_menu);
+	videoMenu->addMenu(new TDeinterlaceMenu(this, core));
 	// Video filter submenu
-	videofilter_menu = new TVideoFilterMenu(this, core);
-	videoMenu->addMenu(videofilter_menu);
+	videoMenu->addMenu(new TVideoFilterMenu(this, core));
 	videoMenu->addAction(stereo3dAct);
 
 	// Rotate submenu
 	videoMenu->addSeparator();
-	rotate_menu = new TRotateMenu(this, core);
-	videoMenu->addMenu(rotate_menu);
+	videoMenu->addMenu(new TRotateMenu(this, core));
 	videoMenu->addAction(flipAct);
 	videoMenu->addAction(mirrorAct);
 
@@ -1121,11 +1093,8 @@ void TBase::createMenus() {
 
 	audioMenu->addSeparator();
 	audioMenu->addAction(audioEqualizerAct);
-	stereomode_menu = new TStereoMenu(this, core);
-	audioMenu->addMenu(stereomode_menu);
-	audiochannels_menu = new TAudioChannelMenu(this, core);
-	audioMenu->addMenu(audiochannels_menu);
-
+	audioMenu->addMenu(new TStereoMenu(this, core));
+	audioMenu->addMenu(new TAudioChannelMenu(this, core));
 	// Filter submenu
 	audiofilter_menu = new QMenu(this);
 	audiofilter_menu->menuAction()->setObjectName("audiofilter_menu");
@@ -1165,20 +1134,25 @@ void TBase::createMenus() {
 	subtitlesMenu->addAction(unloadSubsAct);
 	subfps_menu = new TSubFPSMenu(this, core);
 	subtitlesMenu->addMenu(subfps_menu);
+
 	subtitlesMenu->addSeparator();
-	closed_captions_menu = new TCCMenu(this, core);
-	subtitlesMenu->addMenu(closed_captions_menu);
+	subtitlesMenu->addMenu(new TCCMenu(this, core));
+
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubDelayAct);
 	subtitlesMenu->addAction(incSubDelayAct);
+
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(subDelayAct);
+
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubPosAct);
 	subtitlesMenu->addAction(incSubPosAct);
+
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubScaleAct);
 	subtitlesMenu->addAction(incSubScaleAct);
+
 	subtitlesMenu->addSeparator();
 	subtitlesMenu->addAction(decSubStepAct);
 	subtitlesMenu->addAction(incSubStepAct);
@@ -1206,12 +1180,10 @@ void TBase::createMenus() {
 	titles_menu = new QMenu(this);
 	titles_menu->menuAction()->setObjectName("titles_menu");
 	browseMenu->addMenu(titles_menu);
-
 	// Chapters submenu
 	chapters_menu = new QMenu(this);
 	chapters_menu->menuAction()->setObjectName("chapters_menu");
 	browseMenu->addMenu(chapters_menu);
-
 	// Angles submenu
 	angles_menu = new QMenu(this);
 	angles_menu->menuAction()->setObjectName("angles_menu");
@@ -1231,23 +1203,22 @@ void TBase::createMenus() {
 
 
 	// OPTIONS MENU
-	optionsMenu->addAction(showPropertiesAct);
-	optionsMenu->addAction(showPlaylistAct);
-	optionsMenu->addAction(showLogAct);
-
-	optionsMenu->addSeparator();
 	// Ontop submenu
-	stay_on_top_menu = new TStayOnTopMenu(this);
-	optionsMenu->addMenu(stay_on_top_menu);
+	optionsMenu->addMenu(new TStayOnTopMenu(this));
 	// Toolbars
-	statusbar_menu = new QMenu(this);
 	// statusbar_menu added to toolbar_menu by createToolbarMenu()
 	// and filled by descendants::createMenus()
+	statusbar_menu = new QMenu(this);
 	toolbar_menu = createToolbarMenu();
 	optionsMenu->addMenu(toolbar_menu);
 	// OSD
-	osd_menu = new TOSDMenu(this, core);
-	optionsMenu->addMenu(osd_menu);
+	optionsMenu->addMenu(new TOSDMenu(this, core));
+
+	// Show X
+	optionsMenu->addSeparator();
+	optionsMenu->addAction(showPropertiesAct);
+	optionsMenu->addAction(showPlaylistAct);
+	optionsMenu->addAction(showLogAct);
 
 #ifdef YOUTUBE_SUPPORT
 	optionsMenu->addSeparator();
@@ -1257,19 +1228,20 @@ void TBase::createMenus() {
 	// Preferences
 	optionsMenu->addSeparator();
 	optionsMenu->addAction(showPreferencesAct);
+	optionsMenu->addAction(showConfigAct);
 
 
 	// HELP MENU
 	helpMenu->addAction(showFirstStepsAct);
 	helpMenu->addAction(showFAQAct);
 	helpMenu->addAction(showCLOptionsAct);
+
 	helpMenu->addSeparator();
 	helpMenu->addAction(showCheckUpdatesAct);
 #if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
 	helpMenu->addAction(updateYTAct);
 #endif
-	helpMenu->addSeparator();
-	helpMenu->addAction(showConfigAct);
+
 	helpMenu->addSeparator();
 	helpMenu->addAction(aboutThisAct);
 
@@ -1422,6 +1394,8 @@ void TBase::setupNetworkProxy() {
 
 void TBase::setActionsEnabled(bool b) {
 
+	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
+
 	// Menu Play
 	playAct->setEnabled(b);
 	playOrPauseAct->setEnabled(b);
@@ -1436,32 +1410,13 @@ void TBase::setActionsEnabled(bool b) {
 	forward2Act->setEnabled(b);
 	forward3Act->setEnabled(b);
 	gotoAct->setEnabled(b);
-	// Menu Speed
-	speed_menu->group->setEnabled(b);
-	// A-B Section
-	//repeatAct->setEnabled(b);
+
 
 	// Menu Video
 	bool enableVideo = b && !core->mdat.noVideo();
-	aspect_menu->group->setActionsEnabled(enableVideo);
-	videosize_menu->enableVideoSize(enableVideo);
-	zoom_and_pan_menu->group->setEnabled(enableVideo);
-
 	// Disable video filters if using vdpau
-	bool enableFilters = enableVideo;
+	bool enableFilters = enableVideo && core->videoFiltersEnabled();
 
-#ifndef Q_OS_WIN
-	if (enableVideo
-		&& pref->vdpau.disable_video_filters
-		&& pref->vo.startsWith("vdpau")) {
-		enableFilters = false;
-		displayMessage(tr("Video filters are disabled when using vdpau"));
-	}
-#endif
-
-	deinterlace_menu->group->setActionsEnabled(enableFilters);
-	videofilter_menu->setEnabledX(enableFilters);
-	rotate_menu->group->setActionsEnabled(enableFilters);
 	flipAct->setEnabled(enableFilters);
 	mirrorAct->setEnabled(enableFilters);
 	stereo3dAct->setEnabled(enableFilters);
@@ -1487,10 +1442,10 @@ void TBase::setActionsEnabled(bool b) {
 
 
 	// Menu Audio
-	loadAudioAct->setEnabled(b);
-	unloadAudioAct->setEnabled(b && !core->mset.external_audio.isEmpty());
-
 	bool enableAudio = b && core->mdat.audios.count() > 0;
+	loadAudioAct->setEnabled(b);
+	unloadAudioAct->setEnabled(enableAudio && core->haveExternalSubs());
+
 	// Filters
 	volnormAct->setEnabled(enableAudio);
 
@@ -1499,8 +1454,6 @@ void TBase::setActionsEnabled(bool b) {
 	karaokeAct->setEnabled(enableAudio);
 #endif
 
-	audiochannels_menu->group->setActionsEnabled(enableAudio);
-	stereomode_menu->group->setActionsEnabled(enableAudio);
 	audioEqualizerAct->setEnabled(enableAudio && pref->use_audio_equalizer);
 
 	muteAct->setEnabled(enableAudio);
@@ -1604,9 +1557,6 @@ void TBase::retranslateStrings() {
 
 
 	// Menu Play
-	ab_menu->menuAction()->setText(tr("&A-B section"));
-	ab_menu->menuAction()->setIcon(Images::icon("ab_menu"));
-
 	// Rewind/forward
 	setJumpTexts(); // Texts for rewind*Act and forward*Act
 	rewindbutton_action->setText(tr("3 in 1 rewind"));
@@ -2894,7 +2844,6 @@ void TBase::toggleFullscreen(bool b) {
 	}
 	pref->fullscreen = b;
 
-	//setUpdatesEnabled(false);
 	block_update_size_factor++;
 
 	if (pref->fullscreen) {
@@ -2925,8 +2874,6 @@ void TBase::toggleFullscreen(bool b) {
 
 	// Risky?
 	QTimer::singleShot(350, this, SLOT(unlockSizeFactor()));
-	//setUpdatesEnabled(true);
-	//update();
 
 	setFocus(); // Fixes bug #2493415
 }
@@ -2934,7 +2881,7 @@ void TBase::toggleFullscreen(bool b) {
 void TBase::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBase::aboutToEnterFullscreen");
 
-	videosize_menu->enableVideoSize(false);
+	emit aboutToEnterFullscreenSignal();
 
 	// Save current state
 	if (pref->restore_pos_after_fullscreen) {
@@ -2961,14 +2908,14 @@ void TBase::didEnterFullscreen() {
 	pref->beginGroup(settingsGroupName());
 	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
 					  Helper::qtVersion())) {
+		// First time there is no fullscreen toolbar state
+		qWarning("Gui::TBase::didEnterFullscreen: failed to restore fullscreen toolbar state");
 		toolbar->hide();
 		toolbar2->hide();
 	}
 	pref->endGroup();
 
-	toolbar->didEnterFullscreen();
-	toolbar2->didEnterFullscreen();
-	controlbar->didEnterFullscreen();
+	emit didEnterFullscreenSignal();
 
 	auto_hide_timer->start();
 }
@@ -2978,6 +2925,8 @@ void TBase::aboutToExitFullscreen() {
 
 	auto_hide_timer->stop();
 
+	emit aboutToExitFullscreenSignal();
+
 	// Save fullscreen state
 	fullscreen_menubar_visible = !menuBar()->isHidden();
 	fullscreen_statusbar_visible = !statusBar()->isHidden();
@@ -2985,9 +2934,6 @@ void TBase::aboutToExitFullscreen() {
 	pref->beginGroup(settingsGroupName());
 	pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
 	pref->endGroup();
-
-	videosize_menu->enableVideoSize(true);
-	playerwindow->aboutToExitFullscreen();
 }
 
 void TBase::didExitFullscreen() {
@@ -3006,12 +2952,11 @@ void TBase::didExitFullscreen() {
 	viewStatusBarAct->update(statusbar_visible);
 
 	pref->beginGroup(settingsGroupName());
-	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
+	if (!restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion()))
+		qWarning("Gui::TBase::didExitFullscreen: failed to restore toolbar state");
 	pref->endGroup();
 
-	controlbar->didExitFullscreen();
-	toolbar2->didExitFullscreen();
-	toolbar->didExitFullscreen();
+	emit didExitFullscreenSignal();
 }
 
 void TBase::leftClickFunction() {
@@ -3614,21 +3559,10 @@ void TBase::onMediaSettingsChanged() {
 	qDebug("Gui::TBase::onMediaSettingsChanged");
 
 	TMediaSettings* mset = &core->mset;
-
-	// Play
-	// Speed
-	// TODO: make checkable
-	// speed_menu->normalSpeedAct->setChecked(core->mset.speed == 1.0);
-	// A-B section
-	repeatAct->setChecked(mset->loop);
+	emit mediaSettingsChanged(mset);
 
 	// Video
-	// Aspectratio
-	aspect_menu->group->setChecked(mset->aspect_ratio_id);
 	// Video filters
-	deinterlace_menu->group->setChecked(mset->current_deinterlacer);
-	videofilter_menu->updateFilters();
-	rotate_menu->group->setChecked(mset->rotate);
 	flipAct->setChecked(mset->flip);
 	mirrorAct->setChecked(mset->mirror);
 	updateVideoEqualizer();
@@ -3644,8 +3578,6 @@ void TBase::onMediaSettingsChanged() {
 	extrastereoAct->setChecked(mset->extrastereo_filter);
 #endif
 
-	audiochannels_menu->group->setChecked(mset->audio_use_channels);
-	stereomode_menu->group->setChecked(mset->stereo_mode);
 	updateAudioEqualizer();
 }
 
@@ -3703,7 +3635,7 @@ void TBase::changeStayOnTop(int stay_on_top) {
 	}
 
 	pref->stay_on_top = (Settings::TPreferences::OnTop) stay_on_top;
-	stay_on_top_menu->group->setChecked(pref->stay_on_top);
+	emit stayOnTopChanged(stay_on_top);
 }
 
 void TBase::checkStayOnTop(TCore::State state) {

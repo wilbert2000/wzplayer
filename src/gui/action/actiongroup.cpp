@@ -33,8 +33,7 @@ TActionGroupItem::TActionGroupItem(QObject* parent,
 
 	setData(data);
 	setCheckable(true);
-	if (group)
-		group->addAction(this);
+	group->addAction(this);
 }
 
 
@@ -54,7 +53,7 @@ QAction* TActionGroup::setChecked(int ID) {
 	int count = l.count();
 	for (int n = 0; n < count; n++) {
 		QAction* action = l[n];
-		if ((!action->isSeparator()) && (action->data().toInt() == ID)) {
+		if (!action->isSeparator() && action->data().toInt() == ID) {
 			action->setChecked(true);
 			return action;
 		}
@@ -85,6 +84,7 @@ void TActionGroup::uncheckAll() {
 	}
 }
 
+// TODO: remove, use setEnabled
 void TActionGroup::setActionsEnabled(bool b) {
 
 	QList <QAction *> l = actions();

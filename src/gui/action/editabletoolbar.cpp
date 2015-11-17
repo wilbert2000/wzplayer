@@ -47,6 +47,10 @@ TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 	// Update size grip when top level changes
 	connect(this, SIGNAL(topLevelChanged(bool)),
 			this, SLOT(onTopLevelChanged(bool)));
+
+	// Reload toolbars when entering and exiting fullscreen
+	connect(main_window, SIGNAL(didEnterFullscreenSignal()), this, SLOT(reload()));
+	connect(main_window, SIGNAL(didExitFullscreenSignal()), this, SLOT(reload()));
 }
 
 TEditableToolbar::~TEditableToolbar() {
@@ -141,14 +145,6 @@ void TEditableToolbar::reload() {
 
 	TActionList all_actions = main_window->getAllNamedActions();
 	setActionsFromStringList(actions, all_actions);
-}
-
-void TEditableToolbar::didEnterFullscreen() {
-	reload();
-}
-
-void TEditableToolbar::didExitFullscreen() {
-	reload();
 }
 
 void TEditableToolbar::showContextMenu(const QPoint& pos) {

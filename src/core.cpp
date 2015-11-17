@@ -3307,6 +3307,7 @@ void TCore::changeOSDLevel(int level) {
 	pref->osd_level = (TPreferences::OSDLevel) level;
 	if (proc->isRunning())
 		proc->setOSDLevel(level);
+	emit osdLevelChanged(level);
 }
 
 void TCore::nextOSDLevel() {

@@ -385,6 +385,7 @@ signals:
 	void chapterInfoChanged();
 	void chapterChanged(int);
 	void ABMarkersChanged();
+	void osdLevelChanged(int);
 	void videoEqualizerNeedsUpdate();
 
 	void needResize(int w, int h);

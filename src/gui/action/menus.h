@@ -7,23 +7,39 @@
 class TPlayerWindow;
 class TCore;
 
+namespace Settings {
+class TMediaSettings;
+}
+
+
 namespace Gui {
 
+class TBase;
+
 void execPopup(QWidget* w, QMenu* popup, QPoint p);
+
 
 class TMenu : public QMenu {
 	Q_OBJECT
 public:
-	TMenu(QWidget* parent,
-		  QObject* aTranslator,
-		  const QString& name,
-		  const QString& text,
-		  const QString& icon);
+	explicit TMenu(QWidget* parent,
+				   QObject* aTranslator,
+				   const QString& name,
+				   const QString& text,
+				   const QString& icon = QString());
+	virtual ~TMenu();
+
 	void addActionsTo(QWidget* w);
+
 protected:
 	virtual void changeEvent(QEvent* event);
-protected slots:
 	virtual void onAboutToShow();
+	virtual void setVisible(bool visible);
+
+protected slots:
+	virtual void enableActions(bool stopped, bool video, bool audio);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+
 private:
 	QString text_en;
 	QObject* translator;
@@ -31,25 +47,43 @@ private:
 };
 
 
-class TAspectMenu : public TMenu {
+class TABMenu : public TMenu {
 public:
-	explicit TAspectMenu(QWidget* parent, TCore* c);
-	TActionGroup* group;
+	explicit TABMenu(QWidget* parent, TCore* c);
 protected:
+	virtual void enableActions(bool stopped, bool, bool);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+	QActionGroup* group;
+	TAction* repeatAct;
+};
+
+
+class TAspectMenu : public TMenu {
+public:
+	explicit TAspectMenu(QWidget* parent, TCore* c);
+protected:
+	virtual void enableActions(bool stopped, bool video, bool audio);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+	virtual void onAboutToShow();
+private:
+	TCore* core;
+	TActionGroup* group;
 };
 
 
 class TAudioChannelMenu : public TMenu {
 public:
 	explicit TAudioChannelMenu(QWidget* parent, TCore* c);
-	TActionGroup* group;
 protected:
+	virtual void enableActions(bool stopped, bool video, bool audio);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+	TActionGroup* group;
 };
 
 
@@ -57,6 +91,8 @@ class TCCMenu : public TMenu {
 public:
 	explicit TCCMenu(QWidget* parent, TCore* c);
 protected:
+	virtual void enableActions(bool stopped, bool video, bool audio);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
@@ -67,11 +103,13 @@ private:
 class TDeinterlaceMenu : public TMenu {
 public:
 	explicit TDeinterlaceMenu(QWidget* parent, TCore* c);
-	TActionGroup* group;
 protected:
+	virtual void enableActions(bool stopped, bool video, bool audio);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+	TActionGroup* group;
 };
 
 
@@ -95,20 +133,24 @@ private:
 class TPlaySpeedMenu : public TMenu {
 public:
 	explicit TPlaySpeedMenu(QWidget* parent, TCore* c);
-	QActionGroup* group;
+protected:
+	virtual void enableActions(bool stopped, bool, bool);
 private:
 	TCore* core;
+	QActionGroup* group;
 };
 
 
 class TRotateMenu : public TMenu {
 public:
 	explicit TRotateMenu(QWidget* parent, TCore* c);
-	TActionGroup* group;
 protected:
+	virtual void enableActions(bool stopped, bool video, bool);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+	TActionGroup* group;
 };
 
 
@@ -124,11 +166,13 @@ protected:
 class TStereoMenu : public TMenu {
 public:
 	explicit TStereoMenu(QWidget* parent, TCore* c);
-	TActionGroup* group;
 protected:
+	virtual void enableActions(bool stopped, bool, bool audio);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+	TActionGroup* group;
 };
 
 
@@ -137,6 +181,8 @@ public:
 	explicit TSubFPSMenu(QWidget* parent, TCore* c);
 	TActionGroup* group;
 protected:
+	virtual void enableActions(bool stopped, bool, bool audio);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
@@ -147,9 +193,9 @@ class TVideoFilterMenu : public TMenu {
 	Q_OBJECT
 public:
 	explicit TVideoFilterMenu(QWidget* parent, TCore* c);
-	void updateFilters();
-	void setEnabledX(bool enable);
 protected:
+	virtual void enableActions(bool stopped, bool video, bool);
+	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
@@ -176,6 +222,8 @@ private:
 	TAction* blurAct;
 	TAction* sharpenAct;
 
+	void updateFilters();
+
 private slots:
 	void onAboutToShowDenoise();
 	void onAboutToShowUnSharp();
@@ -196,23 +244,28 @@ private:
 
 
 class TVideoSizeMenu : public TMenu {
+	Q_OBJECT
 public:
-	TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw);
-	void enableVideoSize(bool on);
+	TVideoSizeMenu(TBase* parent, TPlayerWindow* pw);
 protected:
+	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onAboutToShow();
 private:
 	TVideoSizeGroup* group;
 	TAction* doubleSizeAct;
+private slots:
+	virtual void fullscreenChanged();
 };
 
 
 class TVideoZoomAndPanMenu : public TMenu {
 public:
 	explicit TVideoZoomAndPanMenu(QWidget* parent, TCore* c);
-	QActionGroup* group;
+protected:
+	virtual void enableActions(bool stopped, bool video, bool);
 private:
 	TCore* core;
+	QActionGroup* group;
 };
 
 } // namespace Gui
