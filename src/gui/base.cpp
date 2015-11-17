@@ -1812,11 +1812,11 @@ void TBase::loadConfig() {
 	pref->endGroup();
 
 	menubar_visible = pref->value("menubar_visible", menubar_visible).toBool();
-	viewMenuBarAct->update(menubar_visible);
+	viewMenuBarAct->setChecked(menubar_visible);
 	fullscreen_menubar_visible = pref->value("fullscreen_menubar_visible", fullscreen_menubar_visible).toBool();
 
 	statusbar_visible = pref->value("statusbar_visible", statusbar_visible).toBool();
-	viewStatusBarAct->update(statusbar_visible);
+	viewStatusBarAct->setChecked(statusbar_visible);
 	fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible", fullscreen_statusbar_visible).toBool();
 
 	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
@@ -2909,8 +2909,8 @@ void TBase::didEnterFullscreen() {
 	//qDebug("Gui::TBase::didEnterFullscreen");
 
 	// Restore fullscreen state
-	viewMenuBarAct->update(fullscreen_menubar_visible);
-	viewStatusBarAct->update(fullscreen_statusbar_visible);
+	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
+	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 
 	pref->beginGroup(settingsGroupName());
 	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
@@ -2955,8 +2955,8 @@ void TBase::didExitFullscreen() {
 		resize(win_size);
 	}
 
-	viewMenuBarAct->update(menubar_visible);
-	viewStatusBarAct->update(statusbar_visible);
+	viewMenuBarAct->setChecked(menubar_visible);
+	viewStatusBarAct->setChecked(statusbar_visible);
 
 	pref->beginGroup(settingsGroupName());
 	if (!restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion()))

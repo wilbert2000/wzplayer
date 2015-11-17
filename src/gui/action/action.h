@@ -50,8 +50,6 @@ public:
 	//! Change the text of the action.
 	void setTextAndTip(const QString& text);
 
-	void update(bool check);
-
 protected:
 	virtual bool event(QEvent* event);
 
