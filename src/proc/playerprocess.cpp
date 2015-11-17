@@ -96,10 +96,10 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, const QStri
 	}
 #else
 	#ifdef MPV_SUPPORT
-	proc = new TMPVProcess(md);
+	proc = new TMPVProcess(parent, md);
 	#endif
 	#ifdef MPLAYER_SUPPORT
-	proc = new TMplayerProcess(md);
+	proc = new TMplayerProcess(parent, md);
 	#endif
 #endif
 
