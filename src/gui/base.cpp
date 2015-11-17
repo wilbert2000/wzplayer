@@ -1407,6 +1407,8 @@ void TBase::setActionsEnabled(bool b) {
 	forward1Act->setEnabled(b);
 	forward2Act->setEnabled(b);
 	forward3Act->setEnabled(b);
+	playPrevAct->setEnabled(playlist->count() > 0);
+	playNextAct->setEnabled(playlist->count() > 0);
 	gotoAct->setEnabled(b);
 
 
@@ -1824,7 +1826,7 @@ void TBase::loadConfig() {
 	// Load playlist settings outside group
 	playlist->loadSettings();
 
-	disableActionsOnStop();
+	setActionsEnabled(false);
 }
 
 void TBase::saveConfig() {
