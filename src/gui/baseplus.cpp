@@ -55,6 +55,7 @@ TBasePlus::TBasePlus()
 			 tray, SLOT(setVisible(bool)));
 
 #ifndef Q_OS_OS2
+	optionsMenu->addSeparator();
 	optionsMenu->addAction(showTrayAct);
 #else
 	trayAvailable();
@@ -292,20 +293,18 @@ void TBasePlus::setWindowCaption(const QString& title) {
 void TBasePlus::aboutToEnterFullscreen() {
 	//qDebug("Gui::TBasePlus::aboutToEnterFullscreen");
 
-	TBase::aboutToEnterFullscreen();
-
 	fullscreen_playlist_was_visible = playlistdock->isVisible();
 	fullscreen_playlist_was_floating = playlistdock->isFloating();
-
 	int playlist_screen = QApplication::desktop()->screenNumber(playlistdock);
 	int mainwindow_screen = QApplication::desktop()->screenNumber(this);
+
+	TBase::aboutToEnterFullscreen();
 
 	// Hide the playlist if it's in the same screen as the main window
 	if (playlist_screen == mainwindow_screen) {
 		playlistdock->hide();
 		playlistdock->setFloating(true);
 	}
-
 	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
 }
 
