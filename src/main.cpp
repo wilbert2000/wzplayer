@@ -24,7 +24,6 @@ int main(int argc, char** argv) {
 	TSMPlayer app(argc, argv);
 	int exit_code = app.processArgs();
 	if (exit_code == TSMPlayer::NoExit) {
-		qDebug("main: calling execWithRestart()");
 		exit_code = app.execWithRestart();
 	}
 
