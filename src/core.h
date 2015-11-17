@@ -74,7 +74,7 @@ public:
 	int positionMax() { return pos_max; }
 	int getVolume();
 	bool getMute();
-	bool videoFiltersEnabled();
+	bool videoFiltersEnabled(bool displayMessage = false);
 	bool isMPlayer();
 
 public slots:

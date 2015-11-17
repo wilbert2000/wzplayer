@@ -1046,20 +1046,23 @@ void TCore::switchCapturing() {
 }
 #endif
 
-bool TCore::videoFiltersEnabled() {
+bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 #ifndef Q_OS_WIN
+	QString msg;
 	if (proc->isMPlayer()) {
 		if (pref->vdpau.disable_video_filters && pref->vo.startsWith("vdpau")) {
-			qDebug("TCore::videoFiltersEnabled: using vdpau, the video filters will be ignored");
-			return false;
+			msg = tr("Using vdpau, the video filters will be ignored");
 		}
 	} else {
-		// MPV
 		if (!pref->hwdec.isEmpty() && pref->hwdec != "no") {
-			qDebug("TCore::videoFiltersEnabled: hardware decoding is enabled, the video filters will be ignored");
-			return false;
+			msg = tr("Hardware decoding is enabled, the video filters will be ignored");
 		}
+	}
+
+	if (displayMessage && !msg.isEmpty()) {
+		qDebug("TCore::videoFiltersEnabled: %s", msg.toUtf8().constData());
+		emit showMessage(msg, 4000);
 	}
 #endif
 
@@ -1621,7 +1624,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	bool force_noslices = false;
 
-	if (!videoFiltersEnabled())
+	if (!videoFiltersEnabled(true))
 		goto end_video_filters;
 
 	// Video filters:
