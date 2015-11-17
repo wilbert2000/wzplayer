@@ -1482,7 +1482,7 @@ void TBase::setActionsEnabled(bool b) {
 
 #if USE_ADAPTER
 	screenGroup->setActionsEnabled(enableVideo
-								   && pref->vo.startsWith(OVERLAY_VO));
+								   && pref->vo.startsWith("directx"));
 #endif
 
 
