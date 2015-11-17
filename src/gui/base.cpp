@@ -1477,8 +1477,8 @@ void TBase::setActionsEnabled(bool b) {
 	incSubScaleAct->setEnabled(b);
 	decSubScaleAct->setEnabled(b);
 #ifdef MPV_SUPPORT
-	seekNextSubAct->setEnabled(b);
-	seekPrevSubAct->setEnabled(b);
+	seekNextSubAct->setEnabled(b && !core->isMPlayer());
+	seekPrevSubAct->setEnabled(b && !core->isMPlayer());
 #endif
 
 	// Actions not in menus
