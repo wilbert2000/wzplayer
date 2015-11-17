@@ -193,7 +193,7 @@ TAspectMenu::TAspectMenu(QWidget* parent, TCore* c)
 	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TMediaSettings::AspectNone);
 	group->setChecked(core->mset.aspect_ratio_id);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
-	connect(core, SIGNAL(aspectRatioChanged(int)), group, SLOT(setCheckedSlot(int)));
+	connect(core, SIGNAL(aspectRatioChanged(int)), group, SLOT(setChecked(int)));
 	addActionsTo(parent);
 }
 
@@ -341,7 +341,7 @@ TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 	new TActionGroupItem(this, group, "osd_total", QT_TR_NOOP("Volume + Seek + Timer + T&otal time"), Settings::TPreferences::SeekTimerTotal);
 	group->setChecked(pref->osd_level);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)));
-	connect(core, SIGNAL(osdLevelChanged(int)), group, SLOT(setCheckedSlot(int)));
+	connect(core, SIGNAL(osdLevelChanged(int)), group, SLOT(setChecked(int)));
 
 	addSeparator();
 	TAction* a = new TAction(this, "inc_osd_scale", QT_TR_NOOP("Size &+"), "", Qt::SHIFT | Qt::Key_U);
@@ -453,7 +453,7 @@ TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
 	new TActionGroupItem(this, group, "on_top_playing", QT_TR_NOOP("While &playing"), Settings::TPreferences::WhilePlayingOnTop);
 	group->setChecked((int) pref->stay_on_top);
 	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
-	connect(parent , SIGNAL(stayOnTopChanged(int)), group, SLOT(setCheckedSlot(int)));
+	connect(parent , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
 
 	addSeparator();
 	TAction* a = new TAction(this, "toggle_stay_on_top", QT_TR_NOOP("Toggle stay on top"), "");

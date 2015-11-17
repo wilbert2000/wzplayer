@@ -858,39 +858,35 @@ void TBase::createActions() {
 	videoTrackGroup = new TActionGroup(this, "videotrack");
 	connect(videoTrackGroup, SIGNAL(activated(int)), core, SLOT(changeVideoTrack(int)));
 	connect(core, SIGNAL(videoTrackInfoChanged()), this, SLOT(updateVideoTracks()));
-	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setCheckedSlot(int)));
+	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
 
 	// Audio track
 	audioTrackGroup = new TActionGroup(this, "audiotrack");
 	connect(audioTrackGroup, SIGNAL(activated(int)), core, SLOT(changeAudioTrack(int)));
 	connect(core, SIGNAL(audioTrackInfoChanged()), this, SLOT(updateAudioTracks()));
-	connect(core, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setCheckedSlot(int)));
+	connect(core, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
 
 	subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
 	connect(subtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSubtitle(int)));
 	connect(core, SIGNAL(subtitleInfoChanged()), this, SLOT(updateSubtitles()));
-	connect(core, SIGNAL(subtitleTrackChanged(int)), subtitleTrackGroup, SLOT(setCheckedSlot(int)));
+	connect(core, SIGNAL(subtitleTrackChanged(int)), subtitleTrackGroup, SLOT(setChecked(int)));
 
 #ifdef MPV_SUPPORT
 	// Secondary subtitle track
 	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
 	connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSecondarySubtitle(int)));
-	// InfoChanged already connected by subtitleTrackGroup
-	// checked not needed
-	// connect(core, SIGNAL(secondarySubtitleTrackChanged(int)),
-	//		 secondarySubtitleTrackGroup, SLOT(setCheckedSlot(int)));
 #endif
 
 	// Titles
 	titleGroup = new TActionGroup(this, "title");
 	connect(titleGroup, SIGNAL(activated(int)), core, SLOT(changeTitle(int)));
-	connect(core, SIGNAL(titleTrackChanged(int)), titleGroup, SLOT(setCheckedSlot(int)));
+	connect(core, SIGNAL(titleTrackChanged(int)), titleGroup, SLOT(setChecked(int)));
 	connect(core, SIGNAL(titleTrackInfoChanged()), this, SLOT(updateTitles()));
 
 	// Chapters
 	chapterGroup = new TActionGroup(this, "chapter");
 	connect(chapterGroup, SIGNAL(activated(int)), core, SLOT(changeChapter(int)));
-	connect(core, SIGNAL(chapterChanged(int)), chapterGroup, SLOT(setCheckedSlot(int)));
+	connect(core, SIGNAL(chapterChanged(int)), chapterGroup, SLOT(setChecked(int)));
 	// Update chapter info done by updateTitles.
 	// DVDNAV only:
 	connect(core, SIGNAL(chapterInfoChanged()), this, SLOT(updateChapters()));
@@ -2151,7 +2147,7 @@ void TBase::newMediaLoaded() {
 void TBase::updateVideoTracks() {
 	qDebug("Gui::TBase::updateVideoTracks");
 
-	videoTrackGroup->clear(true);
+	videoTrackGroup->clear();
 
 	Maps::TTracks* videos = &core->mdat.videos;
 	if (videos->count() == 0) {
@@ -2177,7 +2173,7 @@ void TBase::updateVideoTracks() {
 void TBase::updateAudioTracks() {
 	qDebug("Gui::TBase::updateAudioTracks");
 
-	audioTrackGroup->clear(true);
+	audioTrackGroup->clear();
 
 	Maps::TTracks* audios = &core->mdat.audios;
 	if (audios->count() == 0) {
@@ -2204,9 +2200,9 @@ void TBase::updateSubtitles() {
 	qDebug("Gui::TBase::updateSubtitles");
 
 	// Note: use idx not ID
-	subtitleTrackGroup->clear(true);
+	subtitleTrackGroup->clear();
 #ifdef MPV_SUPPORT
-	secondarySubtitleTrackGroup->clear(true);
+	secondarySubtitleTrackGroup->clear();
 #endif
 
 	QAction* subNoneAct = subtitleTrackGroup->addAction(tr("&None"));
@@ -2278,7 +2274,7 @@ void TBase::updateSubtitles() {
 void TBase::updateTitles() {
 	qDebug("Gui::TBase::updateTitles");
 
-	titleGroup->clear(true);
+	titleGroup->clear();
 	if (core->mdat.titles.count() == 0) {
 		QAction* a = titleGroup->addAction(tr("<empty>"));
 		a->setEnabled(false);
@@ -2307,7 +2303,7 @@ void TBase::updateTitles() {
 void TBase::updateChapters() {
 	qDebug("Gui::TBase::updateChapters");
 
-	chapterGroup->clear(true);
+	chapterGroup->clear();
 	if (core->mdat.chapters.count() > 0) {
 		int selected_id = core->mdat.chapters.getSelectedID();
 		Maps::TChapters::TChapterIterator i = core->mdat.chapters.getIterator();
@@ -2334,7 +2330,7 @@ void TBase::updateChapters() {
 void TBase::updateAngles() {
 	qDebug("Gui::TBase::updateAngels");
 
-	angleGroup->clear(true);
+	angleGroup->clear();
 	int n_angles = 0;
 	int sel_title_id = core->mdat.titles.getSelectedID();
 	if (sel_title_id >= 0) {

@@ -46,82 +46,36 @@ TActionGroup::TActionGroup(QObject* parent, const QString& name)
 			this, SLOT(itemTriggered(QAction*)));
 }
 
-QAction* TActionGroup::setChecked(int ID) {
+void TActionGroup::setChecked(int ID) {
 	//qDebug("Gui::TActionGroup::setChecked: ID: %d", ID);
 
 	QList <QAction *> l = actions();
-	int count = l.count();
-	for (int n = 0; n < count; n++) {
+	for (int n = 0; n < l.count(); n++) {
 		QAction* action = l[n];
 		if (!action->isSeparator() && action->data().toInt() == ID) {
 			action->setChecked(true);
-			return action;
-		}
-	}
-	return 0;
-}
-
-void TActionGroup::setCheckedSlot(int id) {
-	qDebug("Gui::TActionGroup::setCheckedSlot: group %s id %d",
-		   objectName().toUtf8().data(), id);
-
-	setChecked(id);
-}
-
-int TActionGroup::checked() {
-	QAction* a = checkedAction();
-	if (a) 
-		return a->data().toInt();
-	else
-		return -1;
-}
-
-void TActionGroup::uncheckAll() {
-
-	QList <QAction *> l = actions();
-	for (int n = 0; n < l.count(); n++) {
-		l[n]->setChecked(false);
-	}
-}
-
-// TODO: remove, use setEnabled
-void TActionGroup::setActionsEnabled(bool b) {
-
-	QList <QAction *> l = actions();
-	for (int n = 0; n < l.count(); n++) {
-		l[n]->setEnabled(b);
-	}
-}
-
-void TActionGroup::clear(bool remove) {
-	while (actions().count() > 0) {
-		QAction* a = actions()[0];
-		if (a) {
-			removeAction(a);
-			if (remove)
-				a->deleteLater();
+			return;
 		}
 	}
 }
 
-void TActionGroup::itemTriggered(QAction *a) {
-	qDebug("Gui::TActionGroup::itemTriggered: '%s'", a->objectName().toUtf8().data());
+void TActionGroup::clear() {
+
+	QList <QAction*> acts = actions();
+	for (int i = acts.count() - 1; i >= 0; i--) {
+		QAction* action = acts[i];
+		removeAction(action);
+		action->deleteLater();
+	}
+}
+
+void TActionGroup::itemTriggered(QAction* a) {
 
 	int value = a->data().toInt();
-	qDebug("Gui::TActionGroup::itemTriggered: ID: %d", value);
+	qDebug("Gui::TActionGroup::itemTriggered: '%s' ID: %d",
+		   a->objectName().toUtf8().data(), value);
 
 	emit activated(value);
-}
-
-void TActionGroup::addTo(QWidget *w) {
-	w->addActions(actions());
-}
-
-void TActionGroup::removeFrom(QWidget *w) {
-
-	for (int n = 0; n < actions().count(); n++) {
-		w->removeAction(actions()[n]);
-	}
 }
 
 } // namespace Gui

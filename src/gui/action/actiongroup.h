@@ -48,28 +48,11 @@ class TActionGroup : public QActionGroup {
 public:
 	TActionGroup (QObject* parent, const QString& name);
 
-	//! Looks for the item which ID is \a ID and checks and returns it
-	//! or 0 if not found
-	QAction* setChecked(int ID);
-
-	//! Returns the ID of the item checked or -1 if none
-	//! is checked
-	int checked();
-
-	//! Remove all items. If \a remove is true the actions are also deleted.
-	void clear(bool remove);
-
-	//! Enable or disable all actions in the group
-	void setActionsEnabled(bool);
-
-	//! Adds all actions to the widget
-	void addTo(QWidget*);
-
-	//! Remove all actions from the widget
-	void removeFrom(QWidget*);
-
-	//! unchecks all items
-	void uncheckAll();
+	//! Remove and delete all items.
+	void clear();
+public slots:
+	//! Looks for the item which ID is \a ID and checks it
+	void setChecked(int ID);
 
 signals:
 	//! Emitted when an item has been checked
@@ -77,7 +60,6 @@ signals:
 
 protected slots:
 	void itemTriggered(QAction*);
-	void setCheckedSlot(int id);
 };
 
 } // namespace Gui
