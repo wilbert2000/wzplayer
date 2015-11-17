@@ -983,10 +983,7 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 	}
 	else
 	if (option_name == "fontconfig") {
-		if (isOptionAvailable("--use-text-osd")) {
-			bool b = value.toBool();
-			if (b) arg << "--use-text-osd=yes"; else arg << "--use-text-osd=no";
-		}
+		// Not supported, nor needed anymore
 	}
 	else
 	if (option_name == "verbose") {
