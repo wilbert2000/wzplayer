@@ -894,10 +894,13 @@ void TPlaylist::playNext() {
 
 void TPlaylist::playPrev() {
 	qDebug("Gui::TPlaylist::playPrev");
-	if (current_item > 0) {
-		playItem(current_item - 1);
-	} else {
-		if (pl.count() > 1) playItem(pl.count() - 1);
+
+	if (count() > 0) {
+		if (current_item > 0) {
+			playItem(current_item - 1);
+		} else {
+			playItem(count() - 1);
+		}
 	}
 }
 
