@@ -1411,7 +1411,7 @@ void TBase::setActionsEnabled(bool b) {
 
 	// Menu Video
 	bool enableVideo = b && !core->mdat.noVideo();
-	// Disable video filters if using vdpau
+	// Disable video filters if using vdpau or hwdec
 	bool enableFilters = enableVideo && core->videoFiltersEnabled();
 
 	flipAct->setEnabled(enableFilters);
@@ -1441,7 +1441,7 @@ void TBase::setActionsEnabled(bool b) {
 	// Menu Audio
 	bool enableAudio = b && core->mdat.audios.count() > 0;
 	loadAudioAct->setEnabled(b);
-	unloadAudioAct->setEnabled(enableAudio && core->haveExternalSubs());
+	unloadAudioAct->setEnabled(enableAudio && !core->mset.external_audio.isEmpty());
 
 	// Filters
 	volnormAct->setEnabled(enableAudio);
@@ -1463,7 +1463,7 @@ void TBase::setActionsEnabled(bool b) {
 
 	// Menu Subtitles
 	loadSubsAct->setEnabled(b);
-	//unloadSubsAct->setEnabled(b);
+	unloadSubsAct->setEnabled(b && core->haveExternalSubs());
 	decSubDelayAct->setEnabled(b);
 	incSubDelayAct->setEnabled(b);
 	subDelayAct->setEnabled(b);
