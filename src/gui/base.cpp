@@ -1336,7 +1336,7 @@ void TBase::createToolbars() {
 	toolbar2 = new TEditableToolbar(this);
 	toolbar2->setObjectName("toolbar2");
 	actions.clear();
-	actions << "show_tube_browser";
+	actions << "audiotrack_menu" << "subtitlestrack_menu";
 	toolbar2->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar2);
 	connect(editToolbar2Act, SIGNAL(triggered()),
