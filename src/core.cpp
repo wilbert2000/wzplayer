@@ -329,6 +329,10 @@ void TCore::reload() {
 	initPlaying();
 }
 
+bool TCore::isMPlayer() {
+	return proc->isMPlayer();
+}
+
 void TCore::saveMediaInfo() {
 
 	if (pref->dont_remember_media_settings) {

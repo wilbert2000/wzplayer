@@ -75,6 +75,7 @@ public:
 	int getVolume();
 	bool getMute();
 	bool videoFiltersEnabled();
+	bool isMPlayer();
 
 public slots:
 	//! Generic open, with autodetection of type

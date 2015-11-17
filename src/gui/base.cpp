@@ -613,7 +613,11 @@ void TBase::createActions() {
 	connect(unloadAudioAct, SIGNAL(triggered()), core, SLOT(unloadAudioFile()));
 
 
-	// Submenu Filters
+	// Audio Filters
+	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"));
+	volnormAct->setCheckable(true);
+	connect(volnormAct, SIGNAL(toggled(bool)), core, SLOT(toggleVolnorm(bool)));
+
 #ifdef MPLAYER_SUPPORT
 	extrastereoAct = new TAction(this, "extrastereo_filter", QT_TR_NOOP("&Extrastereo"));
 	extrastereoAct->setCheckable(true);
@@ -623,11 +627,6 @@ void TBase::createActions() {
 	karaokeAct->setCheckable(true);
 	connect(karaokeAct, SIGNAL(toggled(bool)), core, SLOT(toggleKaraoke(bool)));
 #endif
-
-	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"));
-	volnormAct->setCheckable(true);
-	connect(volnormAct, SIGNAL(toggled(bool)), core, SLOT(toggleVolnorm(bool)));
-
 
 	// Menu Subtitles
 	loadSubsAct = new TAction(this, "load_subs", QT_TR_NOOP("&Load..."), "open");
@@ -1450,8 +1449,8 @@ void TBase::setActionsEnabled(bool b) {
 	volnormAct->setEnabled(enableAudio);
 
 #ifdef MPLAYER_SUPPORT
-	extrastereoAct->setEnabled(enableAudio);
-	karaokeAct->setEnabled(enableAudio);
+	extrastereoAct->setEnabled(enableAudio && core->isMPlayer());
+	karaokeAct->setEnabled(enableAudio && core->isMPlayer());
 #endif
 
 	audioEqualizerAct->setEnabled(enableAudio && pref->use_audio_equalizer);
