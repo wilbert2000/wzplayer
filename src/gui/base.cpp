@@ -204,8 +204,6 @@ TBase::TBase()
 	createActions();
 	createToolbars();
 	createMenus();
-	// TODO: move?
-	setActionsEnabled(false);
 
 	setupNetworkProxy();
 	changeStayOnTop(pref->stay_on_top);
@@ -267,6 +265,7 @@ void TBase::createPlayerWindow() {
 	connect(playerwindow, SIGNAL(moveWindow(QPoint)),
 			 this, SLOT(moveWindow(QPoint)));
 
+	// Pause messages before exiting fullscreen
 	connect(this, SIGNAL(aboutToExitFullscreenSignal()),
 			playerwindow, SLOT(pauseMessages()));
 }
@@ -1824,6 +1823,8 @@ void TBase::loadConfig() {
 
 	// Load playlist settings outside group
 	playlist->loadSettings();
+
+	disableActionsOnStop();
 }
 
 void TBase::saveConfig() {
@@ -2005,8 +2006,13 @@ void TBase::applyNewPreferences() {
 	pref_dialog->mod_input()->actions_editor->applyChanges();
 	TActionsEditor::saveToConfig(this, pref);
 	pref->save();
-	setActionsEnabled(core->state() != TCore::Stopped);
 
+	// Reenable actions
+	if (core->state() == TCore::Stopped) {
+		disableActionsOnStop();
+	} else {
+		enableActionsOnPlaying();
+	}
 
 	// Any restarts needed?
 	if (_interface->guiChanged()
@@ -3560,7 +3566,6 @@ void TBase::onMediaSettingsChanged() {
 	TMediaSettings* mset = &core->mset;
 	emit mediaSettingsChanged(mset);
 
-	// Video
 	// Video filters
 	flipAct->setChecked(mset->flip);
 	mirrorAct->setChecked(mset->mirror);
