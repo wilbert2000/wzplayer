@@ -558,7 +558,7 @@ void TCore::setExternalSubs(const QString &filename) {
 	mset.sub.setID(TMediaSettings::NoneSelected);
 	mset.sub.setType(SubData::File);
 	// For mplayer assume vob if file extension idx
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		QFileInfo fi(filename);
 		if (fi.suffix().toLower() == "idx") {
 			mset.sub.setType(SubData::Vob);
@@ -1050,7 +1050,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 #ifndef Q_OS_WIN
 	QString msg;
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		if (pref->vdpau.disable_video_filters && pref->vo.startsWith("vdpau")) {
 			msg = tr("Using vdpau, the video filters will be ignored");
 		}
@@ -1197,7 +1197,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		// MPlayer
 		QString lavdopts;
 
@@ -1342,7 +1342,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	// OSD
 	proc->setOption("osdlevel", pref->osd_level);
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		proc->setOption("osd-scale", pref->subfont_osd_scale);
 	} else {
 		proc->setOption("osd-scale", pref->osd_scale);
@@ -1571,7 +1571,7 @@ void TCore::startPlayer(QString file, double seek) {
 	// is set. Seeks inside the cache don't notify track or title changes.
 	// So instead of honouring some cache settings and not others, for now,
 	// declare them MPlayer only.
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		switch (mdat.selected_type) {
 			case TMediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
 			case TMediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
@@ -1914,7 +1914,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Last checks for the file
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		proc->setMedia(file, pref->use_playlist_option ? url_is_playlist : false);
 	} else {
 		proc->setMedia(file, false); // Don't use playlist with mpv
@@ -2362,7 +2362,7 @@ void TCore::togglePostprocessing(bool b) {
 void TCore::changeDenoise(int id) {
 	qDebug("TCore::changeDenoise: %d", id);
 	if (id != mset.current_denoiser) {
-		if (proc->isMPlayer()) {
+		if (isMPlayer()) {
 			mset.current_denoiser = id;
 			restartPlay();
 		} else {
@@ -2387,7 +2387,7 @@ void TCore::changeDenoise(int id) {
 void TCore::changeUnsharp(int id) {
 	qDebug("TCore::changeUnsharp: %d", id);
 	if (id != mset.current_unsharp) {
-		if (proc->isMPlayer()) {
+		if (isMPlayer()) {
 			mset.current_unsharp = id;
 			restartPlay();
 		} else {
@@ -2422,7 +2422,7 @@ void TCore::changeStereo3d(const QString & in, const QString & out) {
 	qDebug("TCore::changeStereo3d: in: %s out: %s", in.toUtf8().constData(), out.toUtf8().constData());
 
 	if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
-		if (proc->isMPlayer()) {
+		if (isMPlayer()) {
 			mset.stereo3d_in = in;
 			mset.stereo3d_out = out;
 			restartPlay();
@@ -2793,7 +2793,7 @@ void TCore::changeOSDScale(double value) {
 
 	if (value < 0) value = 0;
 
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		if (value != pref->subfont_osd_scale) {
 			pref->subfont_osd_scale = value;
 			if (proc->isRunning())
@@ -2809,7 +2809,7 @@ void TCore::changeOSDScale(double value) {
 }
 
 void TCore::incOSDScale() {
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale + 1);
 	} else {
 		changeOSDScale(pref->osd_scale + 0.10);
@@ -2817,7 +2817,7 @@ void TCore::incOSDScale() {
 }
 
 void TCore::decOSDScale() {
-	if (proc->isMPlayer()) {
+	if (isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale - 1);
 	} else {
 		changeOSDScale(pref->osd_scale - 0.10);
@@ -2976,7 +2976,7 @@ void TCore::changeDeinterlace(int ID) {
 	qDebug("TCore::changeDeinterlace: %d", ID);
 
 	if (ID != mset.current_deinterlacer) {
-		if (proc->isMPlayer()) {
+		if (isMPlayer()) {
 			mset.current_deinterlacer = ID;
 			restartPlay();
 		} else {
@@ -3036,7 +3036,7 @@ void TCore::changeAudioTrack(int id) {
 			// Workaround too for a mplayer problem in linux,
 			// the volume is reduced if using -softvol-max.
 
-			if (proc->isMPlayer()) {
+			if (isMPlayer()) {
 				if (pref->mplayer_additional_options.contains("-volume")) {
 					qDebug("TCore::changeAudio: don't set volume since -volume is used");
 				} else if (pref->global_volume) {
@@ -3332,7 +3332,7 @@ void TCore::changeRotate(int r) {
 	qDebug("TCore::changeRotate: %d", r);
 
 	if (mset.rotate != r) {
-		if (proc->isMPlayer()) {
+		if (isMPlayer()) {
 			mset.rotate = r;
 			restartPlay();
 		} else {
@@ -3744,7 +3744,7 @@ void TCore::sendMediaInfo() {
 void TCore::watchState(TCore::State state) {
 
 	// Delayed volume change
-	if (proc->isMPlayer() && (state == Playing) && change_volume_after_unpause) {
+	if (isMPlayer() && (state == Playing) && change_volume_after_unpause) {
 		qDebug("TCore::watchState: delayed volume change");
 		change_volume_after_unpause = false;
 		proc->setVolume(getVolume());
@@ -3845,7 +3845,7 @@ void TCore::gotSubtitleInfo() {
 		int wanted_sub_idx = pref->initial_subtitle_track - 1;
 		wanted_sub_idx = mdat.subs.selectOne(pref->language, wanted_sub_idx);
 		if (wanted_sub_idx >= 0) {
-			if (proc->isMPlayer()) {
+			if (isMPlayer()) {
 				// mplayers selected sub will not yet be updated, que the update.
 				qDebug("TCore::gotSubtitleInfo: posting update subtitle idx %d", wanted_sub_idx);
 				QTimer::singleShot(500, this, SLOT(selectPreferredSub()));
