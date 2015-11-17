@@ -426,7 +426,7 @@ protected slots:
 	void gotVO(QString);
 	void gotAO(QString);
 
-	void displayMessage(QString text, int duration = 3000, int osd_level = 1);
+	void displayMessage(QString text, int duration = 3500, int osd_level = 1);
 	void displayScreenshotName(QString filename);
 	void displayUpdatingFontCache();
 	void displayBuffering();
