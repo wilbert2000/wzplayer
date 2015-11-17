@@ -982,12 +982,6 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 		if (s == "hwac3") arg << "--ad=spdif:ac3,spdif:dts";
 	}
 	else
-	if (option_name == "enable_streaming_sites_support") {
-		if (isOptionAvailable("--ytdl")) {
-			if (value.toBool()) arg << "--ytdl"; else arg << "--ytdl=no";
-		}
-	}
-	else
 	if (option_name == "fontconfig") {
 		if (isOptionAvailable("--use-text-osd")) {
 			bool b = value.toBool();

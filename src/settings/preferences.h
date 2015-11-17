@@ -207,9 +207,6 @@ public:
 	bool yt_use_https_main;
 	bool yt_use_https_vi;
 #endif
-#ifdef MPV_SUPPORT
-	bool enable_streaming_sites;
-#endif
 
 
 	/* *********

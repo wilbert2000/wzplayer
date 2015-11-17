@@ -1093,10 +1093,6 @@ void TMplayerProcess::setOption(const QString& option_name, const QVariant& valu
 		// Not supported
 	}
 	else
-	if (option_name == "enable_streaming_sites_support") {
-		// Not supported
-	}
-	else
 	if (option_name == "hwdec") {
 		// Not supported
 	}

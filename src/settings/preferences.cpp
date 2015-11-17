@@ -221,9 +221,6 @@ void TPreferences::reset() {
 	yt_use_https_main = false;
 	yt_use_https_vi = false;
 #endif
-#ifdef MPV_SUPPORT
-	enable_streaming_sites = false;
-#endif
 
 
     /* *********
@@ -642,13 +639,6 @@ void TPreferences::save() {
 	setValue("yt_use_https_vi", yt_use_https_vi);
 	endGroup();
 #endif
-
-#ifdef MPV_SUPPORT
-	beginGroup("streaming");
-	setValue("enable_streaming_sites", enable_streaming_sites);
-	endGroup();
-#endif
-
 
 
     /* *********
@@ -1101,12 +1091,6 @@ void TPreferences::load() {
 	endGroup();
 #endif
 
-#ifdef MPV_SUPPORT
-	beginGroup("streaming");
-	enable_streaming_sites = value("enable_streaming_sites", enable_streaming_sites).toBool();
-	endGroup();
-#endif
-
 
     /* *********
        Subtitles
@@ -1448,6 +1432,7 @@ void TPreferences::load() {
 			remove("use_mplayer_window");
 			endGroup();
 			remove("mplayer_info");
+			remove("streaming");
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;
