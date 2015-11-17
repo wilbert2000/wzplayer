@@ -3409,19 +3409,22 @@ void TBase::optimizeSizeFactor(int w, int h) {
 						   - frameGeometry().size() + panel->size();
 	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	double max = f * available_size.height();
+	double factor;
 	// Adjust height first
 	if (video_size.height() > max) {
-		pref->size_factor = max / h;
-		qDebug("Gui::TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor to %f",
-			   f, pref->size_factor);
+		factor = max / h;
+		qDebug("Gui::TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor from %f to %f",
+			   f, pref->size_factor, factor);
+		pref->size_factor = factor;
 		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	}
 	// Adjust width
 	max = f * available_size.width();
 	if (video_size.width() > max) {
-		pref->size_factor = max / w;
-		qDebug("Gui::TBase::optimizeSizeFactor: width larger as %f desktop, reducing size factor to %f",
-			   f, pref->size_factor);
+		factor = max / w;
+		qDebug("Gui::TBase::optimizeSizeFactor: width larger as %f desktop, reducing size factor from %f to %f",
+			   f, pref->size_factor, factor);
+		pref->size_factor = factor;
 		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	}
 
@@ -3435,7 +3438,7 @@ void TBase::optimizeSizeFactor(int w, int h) {
 
 	// Make width multiple of 16
 	int new_w = ((video_size.width() + 8) / 16) * 16;
-	double factor = (double) new_w / w;
+	factor = (double) new_w / w;
 	qDebug("Gui::TBase::optimizeSizeFactor: optimizing width %d factor %f to multiple of 16 %d factor %f",
 		   video_size.width(), pref->size_factor, new_w, factor);
 	pref->size_factor = factor;
