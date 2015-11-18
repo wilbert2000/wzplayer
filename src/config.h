@@ -21,6 +21,18 @@
 
 #include <Qt>
 
+// USE_SHORTCUTGETTER
+// if 1, a new dialog will be used to ask the user for a
+// keyshortcut.
+#define USE_SHORTCUTGETTER 1
+
+// USE_INFOPROVIDER
+// if 1, the playlist will read info about the files when they are added
+// to the list.
+// It's slow but allows the user to see the length and even the name of
+// a mp3 song.
+#define USE_INFOPROVIDER 1
+
 // PROGRAM_SWITCH
 // support for program switch in ts files
 #define PROGRAM_SWITCH 0
@@ -30,4 +42,4 @@
 #define USE_ADAPTER 1
 #endif
 
-#endif
+#endif // CONFIG_H

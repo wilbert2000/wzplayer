@@ -18,13 +18,13 @@
 
 /* This is based on qq14-actioneditor-code.zip from Qt */
 
-#ifndef _GUI_ACTIONSEDITOR_H_
-#define _GUI_ACTIONSEDITOR_H_
+#ifndef GUI_ACTIONSEDITOR_H
+#define GUI_ACTIONSEDITOR_H
 
 #include <QWidget>
 #include <QList>
 #include <QStringList>
-#include "gui/guiconfig.h"
+#include "config.h"
 
 class QTableWidget;
 class QTableWidgetItem;
@@ -111,4 +111,4 @@ private:
 
 } // namespace Gui
 
-#endif // _GUI_ACTIONSEDITOR_H_
+#endif // GUI_ACTIONSEDITOR_H

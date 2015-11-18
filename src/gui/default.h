@@ -16,12 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_DEFAULT_H_
-#define _GUI_DEFAULT_H_
+#ifndef GUI_DEFAULT_H
+#define GUI_DEFAULT_H
 
 #include <QPoint>
 
-#include "gui/guiconfig.h"
 #include "gui/baseplus.h"
 
 class QToolBar;
@@ -71,4 +70,4 @@ private:
 
 } // namespace GUI
 
-#endif // _GUI_DEFAULT_H_
+#endif // GUI_DEFAULT_H

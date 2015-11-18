@@ -16,10 +16,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_BASEPLUS_H_
-#define _GUI_BASEPLUS_H_
+#ifndef GUI_BASEPLUS_H
+#define GUI_BASEPLUS_H
 
-#include "gui/guiconfig.h"
 #include "gui/base.h"
 
 #include <QSystemTrayIcon>
@@ -94,4 +93,4 @@ private:
 
 } // namespace Gui
 
-#endif // _GUI_BASEPLUS_H_
+#endif // GUI_BASEPLUS_H

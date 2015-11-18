@@ -84,7 +84,6 @@ HEADERS += config.h \
     filedialog.h \
     filechooser.h \
 	languages.h \
-    gui/guiconfig.h \
     gui/links.h \
     gui/action/action.h \
     gui/action/actiongroup.h \

@@ -18,6 +18,7 @@
 
 #include "gui/playlist.h"
 
+#include <QDebug>
 #include <QToolBar>
 #include <QFile>
 #include <QTextStream>
@@ -40,8 +41,8 @@
 #include <QTextCodec>
 #include <QApplication>
 #include <QMimeData>
-#include <QDebug>
 
+#include "config.h"
 #include "gui/action/action.h"
 #include "gui/action/menus.h"
 #include "gui/tablewidget.h"
@@ -53,7 +54,6 @@
 #include "version.h"
 #include "core.h"
 #include "extensions.h"
-#include "gui/guiconfig.h"
 
 #include <stdlib.h>
 

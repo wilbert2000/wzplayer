@@ -25,7 +25,6 @@
 #include "config.h"
 #include "settings/preferences.h"
 #include "core.h"
-#include "gui/guiconfig.h"
 #include "gui/pref/dialog.h"
 #include "gui/action/menus.h"
 

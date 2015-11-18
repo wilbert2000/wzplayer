@@ -19,12 +19,10 @@
 #ifndef _PREF_INPUT_H_
 #define _PREF_INPUT_H_
 
+#include "gui/pref/widget.h"
 #include "ui_input.h"
 #include "settings/preferences.h"
-#include "gui/pref/widget.h"
-#include <QStringList>
 
-class TPreferences;
 
 namespace Gui { namespace Pref {
 
@@ -39,14 +37,11 @@ public:
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
 
-    // Pass data to the dialog
+	// Pass data to the dialog
 	void setData(Settings::TPreferences* pref);
 
-    // Apply changes
+	// Apply changes
 	void getData(Settings::TPreferences* pref);
-
-	// Pass action's list to dialog
-	/* void setActionsList(QStringList l); */
 
 protected:
 	virtual void createHelp();

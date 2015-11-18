@@ -16,10 +16,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_SKIN_H_
-#define _GUI_SKIN_H_
+#ifndef GUI_SKIN_H
+#define GUI_SKIN_H
 
-#include "gui/guiconfig.h"
 #include "gui/action/action.h"
 #include "gui/baseplus.h"
 #include "gui/skin/mediabarpanel.h"
@@ -68,4 +67,4 @@ private:
 
 } // namespace Gui
 
-#endif // _GUI_SKIN_H_
+#endif // GUI_SKIN_H

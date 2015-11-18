@@ -17,12 +17,11 @@
 */
 
 
-#ifndef _SETTINGS_PREFERENCES_H_
-#define _SETTINGS_PREFERENCES_H_
+#ifndef SETTINGS_PREFERENCES_H
+#define SETTINGS_PREFERENCES_H
 
 #include <QSize>
 #include <QString>
-#include <QStringList>
 
 #include "config.h"
 #include "settings/smplayersettings.h"
@@ -508,4 +507,4 @@ extern TPreferences* pref;
 
 } // namespace Settings
 
-#endif // _SETTINGS_PREFERENCES_H_
+#endif // SETTINGS_PREFERENCES_H
