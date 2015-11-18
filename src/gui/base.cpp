@@ -1353,11 +1353,11 @@ void TBase::createToolbars() {
 }
 
 void TBase::setupNetworkProxy() {
-	qDebug("Gui::TBase::setupNetworkProxy");
+	//qDebug("Gui::TBase::setupNetworkProxy");
 
 	QNetworkProxy proxy;
 
-	if ((pref->use_proxy) && (!pref->proxy_host.isEmpty())) {
+	if (pref->use_proxy && !pref->proxy_host.isEmpty()) {
 		proxy.setType((QNetworkProxy::ProxyType) pref->proxy_type);
 		proxy.setHostName(pref->proxy_host);
 		proxy.setPort(pref->proxy_port);

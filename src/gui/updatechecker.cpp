@@ -59,11 +59,10 @@ TUpdateChecker::TUpdateChecker(QWidget* parent, UpdateCheckerData* data) : QObje
 	//now = now.addDays(27);
 	int days = QDateTime(d->last_checked).daysTo(QDateTime(now));
 
-	qDebug("TUpdateChecker::TUpdateChecker: enabled: %d", d->enabled);
-	qDebug("TUpdateChecker::TUpdateChecker: days_to_check: %d", d->days_to_check);
-	qDebug("TUpdateChecker::TUpdateChecker: days since last check: %d", days);
-
-	if ((!d->enabled) || (days < d->days_to_check)) return;
+	qDebug("TUpdateChecker::TUpdateChecker: enabled: %d, days_to_check: %d, days since last check: %d",
+		   d->enabled, d->days_to_check, days);
+	if (!d->enabled || days < d->days_to_check)
+		return;
 
 	QNetworkRequest req(check_url);
 	req.setRawHeader("User-Agent", user_agent);
