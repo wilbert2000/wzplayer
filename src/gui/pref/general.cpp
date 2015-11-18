@@ -272,7 +272,7 @@ void TGeneral::getData(TPreferences* pref) {
 	if (pref->player_bin != playerPath()) {
 		requires_restart = true;
 		pref->player_bin = playerPath();
-		pref->setPlayerID();
+		pref->setPlayerBin();
 
 		qDebug("Gui::Pref::TGeneral::getData: mplayer binary has changed, getting version number");
 		// Forces to get info from mplayer to update version number

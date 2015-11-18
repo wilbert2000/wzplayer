@@ -246,13 +246,20 @@ QStringList Helper::resolveSymlinks(const QStringList & files) {
 #endif
 
 #ifdef Q_OS_LINUX
-QString Helper::findExecutable(const QString & name) {
+QString Helper::findExecutable(const QString& name) {
+
+	QFileInfo info(name);
+	if (info.isFile() && info.isExecutable()) {
+		qDebug("Helper::findExecutable: executable found: %s", name.toUtf8().constData());
+		return name;
+	}
+
 	QByteArray env = qgetenv("PATH");
 	QStringList search_paths = QString::fromLocal8Bit(env.constData()).split(':', QString::SkipEmptyParts);
 	for (int n = 0; n < search_paths.count(); n++) {
 		QString candidate = search_paths[n] + "/" + name;
 		qDebug("Helper::findExecutable: candidate: %s", candidate.toUtf8().constData());
-		QFileInfo info(candidate);
+		info.setFile(candidate);
 		if (info.isFile() && info.isExecutable()) {
 			qDebug("Helper::findExecutable: executable found: %s", candidate.toUtf8().constData());
 			return candidate;

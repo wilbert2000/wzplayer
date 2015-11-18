@@ -957,36 +957,39 @@ QString TPreferences::playerName() const {
 }
 
 QString TPreferences::playerAbsolutePath() const {
-
-	QString path = player_bin;
-
-#ifdef Q_OS_LINUX
-	QString player = Helper::findExecutable(path);
-	if (!player.isEmpty())
-		path = player;
-#endif
-
-	QFileInfo fi(path);
-	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-		path = fi.absoluteFilePath();
-	}
-
-	qDebug("Settings::TPreferences::playerAbsolutePath: '%s'",
-		   path.toUtf8().constData());
-	return path;
+	return abs_path;
 }
 
-void TPreferences::setPlayerBin() {
+void TPreferences::setAbsolutePath() {
+
+	abs_path = player_bin;
+
+#ifdef Q_OS_LINUX
+	QString player = Helper::findExecutable(abs_path);
+	if (!player.isEmpty())
+		abs_path = player;
+#endif
+
+	QFileInfo fi(abs_path);
+	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
+		abs_path = fi.absoluteFilePath();
+	}
+
+	qDebug("Settings::TPreferences::setAbsolutePath: '%s'",
+		   abs_path.toUtf8().constData());
+}
+
+void TPreferences::setPlayerBin0() {
 
 	QString bin = value("player_bin", "").toString();
 	if (bin.isEmpty()) {
 		// Try old config
 		bin = value("mplayer_bin", "").toString();
 		if (bin.isEmpty()) {
-			// Use default
+			// Keep current
 			bin = player_bin;
 		} else {
-			// Remove old value
+			// Remove old one
 			remove("mplayer_bin");
 		}
 	}
@@ -1032,6 +1035,13 @@ void TPreferences::setPlayerBin() {
 	player_bin = bin;
 }
 
+void TPreferences::setPlayerBin() {
+
+	setPlayerBin0();
+	setPlayerID();
+	setAbsolutePath();
+}
+
 void TPreferences::load() {
 	qDebug("Settings::TPreferences::load");
 
@@ -1043,7 +1053,6 @@ void TPreferences::load() {
 
 	config_version = value("config_version", 0).toInt();
 	setPlayerBin();
-	setPlayerID();
 
 	vo = value("driver/vo", vo).toString();
 	ao = value("driver/audio_output", ao).toString();

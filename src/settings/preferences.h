@@ -60,8 +60,8 @@ public:
 	TPreferences();
 	virtual ~TPreferences();
 
+	void setPlayerBin();
 	virtual void reset();
-	void setPlayerID();
 
 	void save();
 	void load();
@@ -78,6 +78,7 @@ public:
 
 	QString player_bin;
 	TPlayerID player_id;
+	QString abs_path;
 	bool isMPlayer() const { return player_id == MPLAYER; }
 	bool isMPV() const { return player_id == MPV; }
 	QString playerName() const;
@@ -509,7 +510,9 @@ public:
 #endif
 
 private:
-	void setPlayerBin();
+	void setPlayerBin0();
+	void setPlayerID();
+	void setAbsolutePath();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::WheelFunctions)
