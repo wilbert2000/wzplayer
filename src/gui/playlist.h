@@ -242,8 +242,6 @@ private:
 	bool play_files_from_start;
 	bool automatically_play_next;
 	int row_spacing;
-
-	QString adding_msg;
 };
 
 } // namespace Gui

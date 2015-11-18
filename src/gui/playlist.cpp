@@ -311,8 +311,6 @@ void TPlaylist::retranslateStrings() {
 	// Icon
 	setWindowIcon(Images::icon("logo", 64));
 	setWindowTitle(tr("SMPlayer - Playlist"));
-
-	adding_msg = tr("Adding");
 }
 
 void TPlaylist::list() {
@@ -1106,7 +1104,7 @@ void TPlaylist::addDirectory(const QString &dir, bool get_info) {
 	static TExtensions ext;
 	static QRegExp rx_ext(ext.multimedia().forRegExp(), Qt::CaseInsensitive);
 
-	emit displayMessage(adding_msg + " " + dir, 0);
+	emit displayMessage(dir, 0);
 
 	QStringList dir_list = QDir(dir).entryList();
 	QStringList::Iterator it = dir_list.begin();
@@ -1126,8 +1124,6 @@ void TPlaylist::addDirectory(const QString &dir, bool get_info) {
 		}
 		++it;
 	}
-
-	emit displayMessage("", 0);
 }
 
 void TPlaylist::addFileOrDir(const QString &filename, bool get_info) {
