@@ -23,7 +23,6 @@
 #include <QNetworkProxy>
 
 #include "config.h"
-#include "settings/mediasettings.h"
 #include "settings/preferences.h"
 #include "core.h"
 #include "gui/guiconfig.h"
@@ -45,7 +44,6 @@ class TMediaData;
 class TPlayerWindow;
 class TAutoHideTimer;
 
-class QLabel;
 #ifdef FIND_SUBTITLES
 class FindSubtitlesWindow;
 #endif
@@ -414,6 +412,7 @@ protected:
 	TAction* showPlaylistAct;
 	TAction* showPropertiesAct;
 	TAction* showPreferencesAct;
+	TAction* showConfigAct;
 #ifdef YOUTUBE_SUPPORT
 	TAction* showTubeBrowserAct;
 #endif
@@ -427,7 +426,6 @@ protected:
 #if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
 	TAction* updateYTAct;
 #endif
-	TAction* showConfigAct;
 	TAction* aboutThisAct;
 
 	// TPlaylist
@@ -492,14 +490,14 @@ protected:
 	TAction* dvdnavMouseAct;
 
 	// MENUS
-	QMenu *openMenu;
-	QMenu *playMenu;
-	QMenu *videoMenu;
-	QMenu *audioMenu;
-	QMenu *subtitlesMenu;
-	QMenu *browseMenu;
-	QMenu *optionsMenu;
-	QMenu *helpMenu;
+	QMenu* openMenu;
+	QMenu* playMenu;
+	QMenu* videoMenu;
+	QMenu* audioMenu;
+	QMenu* subtitlesMenu;
+	QMenu* browseMenu;
+	QMenu* optionsMenu;
+	QMenu* helpMenu;
 
 	QMenu* disc_menu;
 	QMenu* subtitles_track_menu;
@@ -524,6 +522,7 @@ protected:
 	QMenu* popup;
 	TMenu* recentfiles_menu;
 
+	// Toolbar menu
 	TAction* viewMenuBarAct;
 	TAction* editToolbarAct;
 	TAction* editToolbar2Act;

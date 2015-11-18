@@ -121,7 +121,7 @@ bool TBasePlus::startHidden() {
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	return false;
 #else
-	if ((!showTrayAct->isChecked()) || (mainwindow_visible))
+	if (!showTrayAct->isChecked() || mainwindow_visible)
 		return false;
 	else
 		return true;
