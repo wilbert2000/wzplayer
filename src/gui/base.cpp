@@ -2267,6 +2267,7 @@ void TBase::updateSubtitles() {
 	decSubStepAct->setEnabled(e);
 	incSubStepAct->setEnabled(e);
 #ifdef MPV_SUPPORT
+	e = e && !core->isMPlayer();
 	seekNextSubAct->setEnabled(e);
 	seekPrevSubAct->setEnabled(e);
 #endif
