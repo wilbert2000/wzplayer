@@ -345,7 +345,8 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 
 				if (!files_to_play.isEmpty()) {
 					QString command = "open_files";
-					if (add_to_playlist) command = "add_to_playlist";
+					if (add_to_playlist)
+						command = "add_to_playlist";
 					sendMessage(command + " " + files_to_play.join(" <<sep>> "));
 				}
 			}

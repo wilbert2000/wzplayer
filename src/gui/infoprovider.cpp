@@ -40,9 +40,6 @@ void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
 
 	proc->setMedia(filename);
 
-	QString commandline = player_bin + " " + proc->arguments().join(" ");
-	qDebug("Gui::TInfoProvider::getInfo: command: '%s'", commandline.toUtf8().data());
-
 	proc->startPlayer();
 	if (!proc->waitForFinished()) {
 		qWarning("Gui::TInfoProvider::getInfo: process didn't finish. Killing it...");

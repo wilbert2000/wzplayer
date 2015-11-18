@@ -1921,11 +1921,10 @@ void TCore::startPlayer(QString file, double seek) {
 
 	emit aboutToStartPlaying();
 
-	QString commandline = proc->arguments().join(" ");
-	qDebug("TCore::startPlayer: command: '%s'", commandline.toUtf8().data());
-
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-	if ((pref->use_proxy) && (pref->proxy_type == QNetworkProxy::HttpProxy) && (!pref->proxy_host.isEmpty())) {
+	if (pref->use_proxy
+		&& pref->proxy_type == QNetworkProxy::HttpProxy
+		&& !pref->proxy_host.isEmpty()) {
 		QString proxy = QString("http://%1:%2@%3:%4").arg(pref->proxy_username).arg(pref->proxy_password).arg(pref->proxy_host).arg(pref->proxy_port);
 		env.insert("http_proxy", proxy);
 	}
@@ -1942,7 +1941,7 @@ void TCore::startPlayer(QString file, double seek) {
 		// TODO: error handling
 		qWarning("TCore::startPlayer: player process didn't start");
 	}
-}
+} //startPlayer()
 
 void TCore::stopPlayer() {
 

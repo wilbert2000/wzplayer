@@ -57,6 +57,7 @@ QStringList TProcess::arguments() {
 void TProcess::start() {
 
 	remaining_output.clear();
+	qDebug() << "TProcess::start" << program << arg;
 	QProcess::start(program, arg);
 }
 
