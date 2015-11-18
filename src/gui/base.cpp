@@ -54,7 +54,7 @@
 #include "images.h"
 #include "helper.h"
 #include "mediadata.h"
-#include "autohidetimer.h"
+#include "gui/autohidetimer.h"
 #include "playerwindow.h"
 #include "core.h"
 #include "clhelp.h"

@@ -41,7 +41,6 @@ class QMenu;
 
 class TMediaData;
 class TPlayerWindow;
-class TAutoHideTimer;
 
 #ifdef FIND_SUBTITLES
 class FindSubtitlesWindow;
@@ -61,6 +60,7 @@ class TVolumeSliderAction;
 class TTimeLabelAction;
 class TSeekingButton;
 class TEditableToolbar;
+class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;
 class TFilePropertiesDialog;
