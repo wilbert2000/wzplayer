@@ -58,7 +58,6 @@ HEADERS += config.h \
 	discname.h \
 	extensions.h \
     desktop.h \
-	playerid.h \
 	proc/process.h \
 	proc/playerprocess.h \
     playerwindow.h \
@@ -135,6 +134,7 @@ HEADERS += config.h \
 	gui/tablewidget.h \
     gui/infoprovider.h \
     gui/playlist.h \
+    gui/autohidetimer.h \
     gui/base.h \
 	gui/baseplus.h \
     gui/default.h \
@@ -144,9 +144,8 @@ HEADERS += config.h \
     maps/titletracks.h \
     maps/chapters.h \
     clhelp.h \
-	smplayer.h \
     log.h \
-    autohidetimer.h
+    smplayer.h
 
 
 SOURCES	+= version.cpp \
@@ -156,7 +155,6 @@ SOURCES	+= version.cpp \
 	discname.cpp \
 	extensions.cpp \
     desktop.cpp \
-	playerid.cpp \
 	proc/process.cpp \
 	proc/playerprocess.cpp \
     playerwindow.cpp \
@@ -232,6 +230,7 @@ SOURCES	+= version.cpp \
    	gui/tablewidget.cpp \
     gui/infoprovider.cpp \
     gui/playlist.cpp \
+    gui/autohidetimer.cpp \
     gui/base.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
@@ -243,8 +242,7 @@ SOURCES	+= version.cpp \
     clhelp.cpp \
     smplayer.cpp \
     log.cpp \
-    main.cpp \
-    autohidetimer.cpp
+    main.cpp
 
 FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/eqslider.ui gui/inputurl.ui gui/videoequalizer.ui \

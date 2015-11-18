@@ -24,7 +24,6 @@
 #include "images.h"
 #include "settings/mediasettings.h"
 #include "settings/paths.h"
-#include "playerid.h"
 
 #if USE_ALSA_DEVICES || USE_DSOUND_DEVICES
 #include "gui/deviceinfo.h"
@@ -37,7 +36,7 @@ TGeneral::TGeneral(QWidget* parent, Qt::WindowFlags f)
 {
 	setupUi(this);
 
-	mplayerbin_edit->setDialogType(FileChooser::GetFileName);
+	playerbin_edit->setDialogType(FileChooser::GetFileName);
 	screenshot_edit->setDialogType(FileChooser::GetDirectory);
 
 	// Read driver info from InfoReader:
@@ -147,11 +146,11 @@ void TGeneral::retranslateStrings() {
     volume_icon->setPixmap(Images::icon("speaker"));
 	*/
 
-	mplayerbin_edit->setCaption(tr("Select the mplayer executable"));
+	playerbin_edit->setCaption(tr("Select the mplayer executable"));
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	mplayerbin_edit->setFilter(tr("Executables") +" (*.exe)");
+	playerbin_edit->setFilter(tr("Executables") +" (*.exe)");
 #else
-	mplayerbin_edit->setFilter(tr("All files") +" (*)");
+	playerbin_edit->setFilter(tr("All files") +" (*)");
 #endif
 	screenshot_edit->setCaption(tr("Select a directory"));
 
@@ -165,13 +164,14 @@ void TGeneral::retranslateStrings() {
            "Example: <b>es|esp|spa</b> will select the track if it matches with "
             "<i>es</i>, <i>esp</i> or <i>spa</i>."));
 
-	executable_label->setText(tr("%1 &executable:").arg(PLAYER_NAME));
+	executable_label->setText(tr("%1 &executable:").arg(pref->playerName()));
 
 	createHelp();
 }
 
 void TGeneral::setData(TPreferences* pref) {
-	setMplayerPath(pref->mplayer_bin);
+
+	setPlayerPath(pref->player_bin);
 
 	setUseScreenshots(pref->use_screenshot);
 	setScreenshotDir(pref->screenshot_directory);
@@ -265,12 +265,14 @@ void TGeneral::setData(TPreferences* pref) {
 }
 
 void TGeneral::getData(TPreferences* pref) {
+
 	requires_restart = false;
 	filesettings_method_changed = false;
 
-	if (pref->mplayer_bin != mplayerPath()) {
+	if (pref->player_bin != playerPath()) {
 		requires_restart = true;
-		pref->mplayer_bin = mplayerPath();
+		pref->player_bin = playerPath();
+		pref->setPlayerID();
 
 		qDebug("Gui::Pref::TGeneral::getData: mplayer binary has changed, getting version number");
 		// Forces to get info from mplayer to update version number
@@ -468,12 +470,12 @@ void TGeneral::updateDriverCombos() {
 	setAO(current_ao);
 }
 
-void TGeneral::setMplayerPath(QString path) {
-	mplayerbin_edit->setText(path);
+void TGeneral::setPlayerPath(QString path) {
+	playerbin_edit->setText(path);
 }
 
-QString TGeneral::mplayerPath() {
-	return mplayerbin_edit->text();
+QString TGeneral::playerPath() {
+	return playerbin_edit->text();
 }
 
 void TGeneral::setUseScreenshots(bool b) {
@@ -910,9 +912,9 @@ void TGeneral::createHelp() {
 
 	addSectionTitle(tr("General"));
 
-	setWhatsThis(mplayerbin_edit, tr("%1 executable").arg(PLAYER_NAME),
+	setWhatsThis(playerbin_edit, tr("%1 executable").arg(pref->playerName()),
 		tr("Here you must specify the %1 "
-           "executable that SMPlayer will use.").arg(PLAYER_NAME) + "<br><b>" +
+           "executable that SMPlayer will use.").arg(pref->playerName()) + "<br><b>" +
         tr("If this setting is wrong, SMPlayer won't be able to play "
            "anything!") + "</b>");
 

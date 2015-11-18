@@ -24,7 +24,6 @@
 #include "gui/pref/widget.h"
 #include "config.h"
 
-class TPreferences;
 
 namespace Gui { namespace Pref {
 

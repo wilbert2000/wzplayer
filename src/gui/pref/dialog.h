@@ -39,7 +39,6 @@
 class QTextBrowser;
 class QPushButton;
 
-class TPreferences;
 
 namespace Gui { namespace Pref {
 

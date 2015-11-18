@@ -24,6 +24,7 @@
 #include <QFileInfo>
 
 #include "config.h"
+#include "settings/preferences.h"
 
 #ifdef MPV_SUPPORT
 #include "proc/mpvprocess.h"
@@ -44,9 +45,9 @@ namespace Proc {
 const int waiting_for_answers_safe_guard_init = 100;
 
 
-TPlayerProcess::TPlayerProcess(QObject* parent, TPlayerID::Player pid, TMediaData* mdata)
+TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata)
 	: TProcess(parent)
-	, player_id(pid)
+	, player_id(Settings::pref->player_id)
 	, md(mdata)
 	, notified_player_is_running(false)
 	, received_end_of_file(false)
@@ -82,12 +83,12 @@ void TPlayerProcess::writeToStdin(QString text, bool log) {
 	}
 }
 
-TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, const QString& player_bin, TMediaData* md) {
+TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData* md) {
 
 	TPlayerProcess* proc = 0;
 
 #if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
-	if (TPlayerID::player(player_bin) == TPlayerID::MPLAYER) {
+	if (Settings::pref->isMPlayer()) {
 		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMplayerProcess";
 		proc = new TMplayerProcess(parent, md);
 	} else {

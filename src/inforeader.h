@@ -28,24 +28,24 @@
 class InfoData {
 
 public:
-	InfoData() {};
-	InfoData(QString name, QString desc) {
+	InfoData() {}
+	InfoData(const QString& name, const QString& desc) {
 		_name = name;
 		_desc = desc;
 	};
 	virtual ~InfoData() {}
 
-	void setName(QString name) { _name = name; }
-	void setDesc(QString desc) { _desc = desc; }
+	void setName(const QString& name) { _name = name; }
+	void setDesc(const QString& desc) { _desc = desc; }
 
 	QString name() const { return _name; }
 	QString desc() const { return _desc; }
 
-	bool operator<(const InfoData & other) const {
+	bool operator<(const InfoData& other) const {
 		return name() < other.name();
 	}
 
-	bool operator==(const InfoData & other) const {
+	bool operator==(const InfoData& other) const {
 		return name() == other.name();
 	}
 
@@ -61,11 +61,8 @@ class InfoReader : QObject {
 	Q_OBJECT
 
 public:
-	InfoReader(QString mplayer_bin, QObject* parent = 0);
+	InfoReader(QObject* parent = 0);
 	virtual ~InfoReader();
-
-	void setPlayerBin(const QString & bin);
-	QString playerBin() { return mplayerbin; }
 
 	void getInfo();
 
@@ -80,11 +77,9 @@ public:
 
 	//! Returns an InfoReader object. If it didn't exist before, one
 	//! is created.
-	static InfoReader* obj(const QString & mplayer_bin = QString::null);
+	static InfoReader* obj();
 
 protected:
-	QString mplayerbin;
-
 	InfoList vo_list;
 	InfoList ao_list;
 

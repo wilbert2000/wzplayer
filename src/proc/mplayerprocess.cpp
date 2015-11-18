@@ -37,7 +37,7 @@ const double FRAME_BACKSTEP_TIME = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
 TMplayerProcess::TMplayerProcess(QObject* parent, TMediaData* mdata)
-	: TPlayerProcess(parent, TPlayerID::MPLAYER, mdata)
+	: TPlayerProcess(parent, mdata)
 	, mute_option_set(false) {
 }
 

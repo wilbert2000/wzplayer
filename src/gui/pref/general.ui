@@ -38,12 +38,12 @@
             <bool>false</bool>
            </property>
            <property name="buddy">
-            <cstring>mplayerbin_edit</cstring>
+            <cstring>playerbin_edit</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="FileChooser" name="mplayerbin_edit"/>
+          <widget class="FileChooser" name="playerbin_edit"/>
          </item>
         </layout>
        </item>
@@ -1286,7 +1286,7 @@ For translators: don't translate this text, it will be replaced with another one
  </customwidgets>
  <tabstops>
   <tabstop>general_tab</tabstop>
-  <tabstop>mplayerbin_edit</tabstop>
+  <tabstop>playerbin_edit</tabstop>
   <tabstop>remember_all_check</tabstop>
   <tabstop>remember_time_check</tabstop>
   <tabstop>filesettings_method_combo</tabstop>

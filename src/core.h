@@ -75,7 +75,6 @@ public:
 	int getVolume();
 	bool getMute();
 	bool videoFiltersEnabled(bool displayMessage = false);
-	bool isMPlayer();
 
 public slots:
 	//! Generic open, with autodetection of type
@@ -510,6 +509,8 @@ private:
 	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(QString filename, int seek = -1);
 
+	bool isMPlayer();
+	bool isMPV();
 	void getZoomFromPlayerWindow();
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);

@@ -24,10 +24,9 @@
 #include <QRegExp>
 
 #include "config.h"
-#include "process.h"
 #include "mediadata.h"
-#include "playerid.h"
-#include "settings/assstyles.h"
+#include "proc/process.h"
+#include "settings/preferences.h"
 
 
 namespace Proc {
@@ -36,20 +35,19 @@ namespace Proc {
 extern QPoint default_osd_pos;
 
 	
-class TPlayerProcess : public TProcess
-{
+class TPlayerProcess : public TProcess {
 	Q_OBJECT
 
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	TPlayerProcess(QObject* parent, TPlayerID::Player pid, TMediaData* mdata);
+	TPlayerProcess(QObject* parent, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
-	TPlayerID::Player player() { return player_id; }
-	bool isMPlayer() { return player_id == TPlayerID::MPLAYER; }
-	bool isMPV() { return player_id == TPlayerID::MPV; }
-	bool isFullyStarted() { return isRunning() && notified_player_is_running; }
+	Settings::TPreferences::TPlayerID player() const { return player_id; }
+	bool isMPlayer() const { return player_id == Settings::TPreferences::MPLAYER; }
+	bool isMPV() const { return player_id == Settings::TPreferences::MPV; }
+	bool isFullyStarted() const { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();
 
@@ -138,7 +136,7 @@ public:
 	virtual void setCaptureDirectory(const QString& dir);
 #endif
 
-	static TPlayerProcess* createPlayerProcess(QObject* parent, const QString& player_bin, TMediaData* md);
+	static TPlayerProcess* createPlayerProcess(QObject* parent, TMediaData* md);
 
 // Signals
 signals:
@@ -197,7 +195,7 @@ public slots:
 	void parseBytes(QByteArray ba);
 
 protected:
-	TPlayerID::Player player_id;
+	Settings::TPreferences::TPlayerID player_id;
 
 	TMediaData* md;
 

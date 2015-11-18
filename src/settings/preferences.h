@@ -42,6 +42,7 @@ typedef QList<QVariant> TAudioEqualizerList;
 class TPreferences : public TSMPlayerSettings {
 
 public:
+	enum TPlayerID { MPLAYER = 0, MPV = 1 };
 	enum OSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
 	enum OnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
 	enum Resize { Never = 0, Always = 1, Afterload = 2 };
@@ -60,6 +61,7 @@ public:
 	virtual ~TPreferences();
 
 	virtual void reset();
+	void setPlayerID();
 
 	void save();
 	void load();
@@ -74,7 +76,13 @@ public:
 
 	int config_version;
 
-	QString mplayer_bin;
+	QString player_bin;
+	TPlayerID player_id;
+	bool isMPlayer() const { return player_id == MPLAYER; }
+	bool isMPV() const { return player_id == MPV; }
+	QString playerName() const;
+	QString playerAbsolutePath() const;
+
 	QString vo; // video output
 	QString ao; // audio output
 
@@ -499,6 +507,9 @@ public:
 #ifdef UPDATE_CHECKER
 	UpdateCheckerData update_checker_data;
 #endif
+
+private:
+	void setPlayerBin();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::WheelFunctions)

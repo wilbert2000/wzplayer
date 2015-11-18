@@ -46,7 +46,7 @@
 #include "retrieveyoutubeurl.h"
 #endif
 
-#define CURRENT_CONFIG_VERSION 6
+#define CURRENT_CONFIG_VERSION 7
 
 
 namespace Settings {
@@ -74,9 +74,9 @@ void TPreferences::reset() {
 	config_version = CURRENT_CONFIG_VERSION;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	mplayer_bin= "mplayer/mplayer.exe";
+	player_bin= "mplayer/mplayer.exe";
 #else
-	mplayer_bin = "mplayer";
+	player_bin = "mplayer";
 #endif
 
 	vo = ""; 
@@ -501,7 +501,7 @@ void TPreferences::save() {
 
 	setValue("config_version", config_version);
 
-	setValue("mplayer_bin", mplayer_bin);
+	setValue("player_bin", player_bin);
 	setValue("driver/vo", vo);
 	setValue("driver/audio_output", ao);
 
@@ -936,6 +936,102 @@ void TPreferences::save() {
 	sync();
 }
 
+void TPreferences::setPlayerID() {
+
+	QString name;
+	QFileInfo fi(player_bin);
+	name = fi.fileName();
+	if (name.isEmpty())
+		name = player_bin;
+	if (name.toLower().startsWith("mplayer"))
+		player_id = MPLAYER;
+	else
+		player_id = MPV;
+}
+
+QString TPreferences::playerName() const {
+
+	if (player_id == MPLAYER)
+		return "MPlayer";
+	return "mpv";
+}
+
+QString TPreferences::playerAbsolutePath() const {
+
+	QString path = player_bin;
+
+#ifdef Q_OS_LINUX
+	QString player = Helper::findExecutable(path);
+	if (!player.isEmpty())
+		path = player;
+#endif
+
+	QFileInfo fi(path);
+	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
+		path = fi.absoluteFilePath();
+	}
+
+	qDebug("Settings::TPreferences::playerAbsolutePath: '%s'",
+		   path.toUtf8().constData());
+	return path;
+}
+
+void TPreferences::setPlayerBin() {
+
+	QString bin = value("player_bin", "").toString();
+	if (bin.isEmpty()) {
+		// Try old config
+		bin = value("mplayer_bin", "").toString();
+		if (bin.isEmpty()) {
+			// Use default
+			bin = player_bin;
+		} else {
+			// Remove old value
+			remove("mplayer_bin");
+		}
+	}
+
+#ifdef Q_OS_WIN
+	// Check if the mplayer binary exists and try to fix it
+	if (!QFile::exists(bin)) {
+		qWarning("player_bin '%s' doesn't exist", bin.toLatin1().constData());
+		bool fixed = false;
+		if (QFile::exists("mplayer/mplayer.exe")) {
+			bin = "mplayer/mplayer.exe";
+			fixed = true;
+		} else if (QFile::exists("mplayer/mpv.exe")) {
+			player_bin = "mplayer/mpv.exe";
+			fixed = true;
+		}
+		if (fixed) {
+			qWarning("TPreferences::setPlayerBin: changing player to '%s'", bin.toLatin1().constData());
+		}
+	}
+#endif
+#ifdef Q_OS_LINUX
+	if (!QFile::exists(bin)) {
+		QString app_path = Helper::findExecutable(bin);
+		if (!app_path.isEmpty()) {
+			bin = app_path;
+		} else {
+			// Executable not found, try to find an alternative
+			if (bin.startsWith("mplayer")) {
+				app_path = Helper::findExecutable("mpv");
+				if (!app_path.isEmpty())
+					bin = app_path;
+			} else if (bin.startsWith("mpv")) {
+				app_path = Helper::findExecutable("mplayer");
+				if (!app_path.isEmpty())
+					bin = app_path;
+			}
+		}
+	}
+#endif
+
+	qDebug() << "TSettings::TPreferences::setPlayerBin: selected player executable:" << bin;
+	player_bin = bin;
+}
+
 void TPreferences::load() {
 	qDebug("Settings::TPreferences::load");
 
@@ -946,8 +1042,9 @@ void TPreferences::load() {
 	beginGroup("General");
 
 	config_version = value("config_version", 0).toInt();
+	setPlayerBin();
+	setPlayerID();
 
-	mplayer_bin = value("mplayer_bin", mplayer_bin).toString();
 	vo = value("driver/vo", vo).toString();
 	ao = value("driver/audio_output", ao).toString();
 
@@ -1436,52 +1533,9 @@ void TPreferences::load() {
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;
+		sync();
 	}
-
-#ifdef Q_OS_WIN
-	// Check if the mplayer binary exists and try to fix it
-	if (!QFile::exists(mplayer_bin)) {
-		qWarning("mplayer_bin '%s' doesn't exist", mplayer_bin.toLatin1().constData());
-		bool fixed = false;
-		if (QFile::exists("mplayer/mplayer.exe")) {
-			mplayer_bin = "mplayer/mplayer.exe";
-			fixed = true;
-		}
-		else
-		if (QFile::exists("mplayer/mplayer2.exe")) {
-			mplayer_bin = "mplayer/mplayer2.exe";
-			fixed = true;
-		}
-		else
-		if (QFile::exists("mplayer/mpv.exe")) {
-			mplayer_bin = "mplayer/mpv.exe";
-			fixed = true;
-		}
-		if (fixed) {
-			qWarning("mplayer_bin changed to '%s'", mplayer_bin.toLatin1().constData());
-		}
-	}
-#endif
-#ifdef Q_OS_LINUX
-	if (!QFile::exists(mplayer_bin)) {
-		QString app_path = Helper::findExecutable(mplayer_bin);
-		if (!app_path.isEmpty()) {
-			mplayer_bin = app_path;
-		} else {
-			// Executable not found, try to find an alternative
-			if (mplayer_bin.startsWith("mplayer")) {
-				app_path = Helper::findExecutable("mpv");
-				if (!app_path.isEmpty()) mplayer_bin = app_path;
-			}
-			else
-			if (mplayer_bin.startsWith("mpv")) {
-				app_path = Helper::findExecutable("mplayer");
-				if (!app_path.isEmpty()) mplayer_bin = app_path;
-			}
-		}
-	}
-#endif
-}
+} // load()
 
 double TPreferences::monitor_aspect_double() {
 

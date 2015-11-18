@@ -18,11 +18,11 @@
 
 
 #include "gui/pref/advanced.h"
+#include <QColorDialog>
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/paths.h"
-#include "playerid.h"
-#include <QColorDialog>
+
 
 #define LOGS_TAB 3
 
@@ -67,9 +67,9 @@ void TAdvanced::retranslateStrings() {
 
 	monitoraspect_combo->setItemText(0, tr("Auto"));
 
-	mplayer_crashes_check->setText(tr("R&eport %1 crashes").arg(PLAYER_NAME));
-	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(PLAYER_NAME));
-	options_info_label->setText(tr("Here you can pass extra options to %1.").arg(PLAYER_NAME) +"<br>"+
+	mplayer_crashes_check->setText(tr("R&eport %1 crashes").arg(pref->playerName()));
+	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(pref->playerName()));
+	options_info_label->setText(tr("Here you can pass extra options to %1.").arg(pref->playerName()) +"<br>"+
 		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25");
 
 	createHelp();
@@ -346,10 +346,10 @@ void TAdvanced::createHelp() {
            "produce that the video won't be displayed properly."));
 
 	setWhatsThis(mplayer_crashes_check, 
-		tr("Report %1 crashes").arg(PLAYER_NAME),
+		tr("Report %1 crashes").arg(pref->playerName()),
 		tr("If this option is checked, a window will appear to inform "
            "about %1 crashes. Otherwise those failures will be "
-           "silently ignored.").arg(PLAYER_NAME));
+           "silently ignored.").arg(pref->playerName()));
 
 	setWhatsThis(correct_pts_combo, tr("Correct pts"),
 		tr("Switches %1 to an experimental mode where timestamps for "
@@ -359,7 +359,7 @@ void TAdvanced::createHelp() {
            "example when playing subtitles timed to scene changes with the "
            "SSA/ASS library enabled. Without correct pts the subtitle timing "
            "will typically be off by some frames. This option does not work "
-           "correctly with some demuxers and codecs.").arg(PLAYER_NAME));
+           "correctly with some demuxers and codecs.").arg(pref->playerName()));
 
 	setWhatsThis(actions_to_run_edit, tr("Actions list"),
 		tr("Here you can specify a list of <i>actions</i> which will be "
@@ -383,18 +383,18 @@ void TAdvanced::createHelp() {
 		   "shown in window title. "
            "Otherwise only the filename will be shown."));
 
-	addSectionTitle(tr("Options for %1").arg(PLAYER_NAME));
+	addSectionTitle(tr("Options for %1").arg(pref->playerName()));
 
 	setWhatsThis(mplayer_args_edit, tr("Options"),
-        tr("Here you can type options for %1.").arg(PLAYER_NAME) +" "+
+        tr("Here you can type options for %1.").arg(pref->playerName()) +" "+
         tr("Write them separated by spaces."));
 
 	setWhatsThis(mplayer_vfilters_edit, tr("Video filters"),
-        tr("Here you can add video filters for %1.").arg(PLAYER_NAME) +" "+
+        tr("Here you can add video filters for %1.").arg(pref->playerName()) +" "+
         tr("Write them separated by commas. Don't use spaces!"));
 
 	setWhatsThis(mplayer_afilters_edit, tr("Audio filters"),
-        tr("Here you can add audio filters for %1.").arg(PLAYER_NAME) +" "+
+        tr("Here you can add audio filters for %1.").arg(pref->playerName()) +" "+
         tr("Write them separated by commas. Don't use spaces!"));
 
 	addSectionTitle(tr("Network"));
@@ -418,15 +418,15 @@ void TAdvanced::createHelp() {
           .arg("<i>"+ TPaths::configPath() + "/smplayer_log.txt</i>"));
 
 /*
-	setWhatsThis(log_mplayer_save_check, tr("Autosave %1 log").arg(PLAYER_NAME),
+	setWhatsThis(log_mplayer_save_check, tr("Autosave %1 log").arg(pref->playerName()),
 		tr("If this option is checked, the %1 log will be saved to the "
            "specified file every time a new file starts to play. "
            "It's intended for external applications, so they can get "
-           "info about the file you're playing.").arg(PLAYER_NAME));
+           "info about the file you're playing.").arg(pref->playerName()));
 
-	setWhatsThis(log_mplayer_save_name, tr("Autosave %1 log filename").arg(PLAYER_NAME),
+	setWhatsThis(log_mplayer_save_name, tr("Autosave %1 log filename").arg(pref->playerName()),
  		tr("Enter here the path and filename that will be used to save the "
-           "%1 log.").arg(PLAYER_NAME));
+           "%1 log.").arg(pref->playerName()));
 */
 
 	setWhatsThis(log_filter_edit, tr("Filter for log"),

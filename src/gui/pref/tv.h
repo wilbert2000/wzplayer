@@ -23,7 +23,6 @@
 #include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
-class TPreferences;
 
 namespace Gui { namespace Pref {
 

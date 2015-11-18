@@ -18,27 +18,22 @@
 
 //! Reads info about a file (resolution, length...)
 
-#ifndef _GUI_INFOPROVIDER_H_
-#define _GUI_INFOPROVIDER_H_
+#ifndef GUI_INFOPROVIDER_H
+#define GUI_INFOPROVIDER_H
 
 #include <QString>
 #include "mediadata.h"
 
 namespace Gui {
 
-class TInfoProvider
-{
+class TInfoProvider {
 
 public:
-	//! Gets info about the specified filename.
-	static void getInfo(QString mplayer_bin, const QString& filename, TMediaData& md);
-
-	//! Gets info about the specified filename. The mplayer executable will be
-    // obtained from the global preferences.
+	//! Get info about the specified filename.
 	static void getInfo(const QString& filename, TMediaData& md);
 };
 
 } // namespace Gui
 
-#endif // _GUI_INFOPROVIDER_H_
+#endif // GUI_INFOPROVIDER_H
 

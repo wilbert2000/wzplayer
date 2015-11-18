@@ -31,7 +31,7 @@ class InfoReaderMPV : QObject {
 	Q_OBJECT
 
 public:
-	InfoReaderMPV(QString mplayer_bin, QObject* parent = 0);
+	InfoReaderMPV(QObject* parent = 0);
 	virtual ~InfoReaderMPV();
 
 	void getInfo();
@@ -52,8 +52,6 @@ protected:
 	void list();
 
 protected:
-	QString mplayerbin;
-
 	InfoList vo_list;
 	InfoList ao_list;
 

@@ -1,4 +1,4 @@
-#include "autohidetimer.h"
+#include "gui/autohidetimer.h"
 #include <QDebug>
 #include <QApplication>
 #include <QMouseEvent>
@@ -9,6 +9,7 @@ const int MOUSE_MOVED_TRESHOLD = 4;
 
 using namespace Settings;
 
+namespace Gui {
 
 TAutoHideItem::~TAutoHideItem() {
 }
@@ -255,4 +256,6 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 
 	return QTimer::eventFilter(obj, event);
 }
+
+} //namespace Gui
 

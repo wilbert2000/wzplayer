@@ -37,7 +37,7 @@ namespace Proc {
 static const QPoint max_osd_pos(300, 600);
 
 TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata)
-	: TPlayerProcess(parent, TPlayerID::MPV, mdata)
+	: TPlayerProcess(parent, mdata)
 	, verbose(false)
 	, osd_pos()
 	, osd_centered_x(false)
@@ -762,14 +762,16 @@ void TMPVProcess::disableInput() {
 }
 
 bool TMPVProcess::isOptionAvailable(const QString& option) {
-	InfoReader* ir = InfoReader::obj(executable());
+
+	InfoReader* ir = InfoReader::obj();
 	ir->getInfo();
 	//qDebug() << "Proc::TMPVProcess::isOptionAvailable: option_list:" << ir->optionList();
 	return ir->optionList().contains(option);
 }
 
 void TMPVProcess::addVFIfAvailable(const QString& vf, const QString& value) {
-	InfoReader* ir = InfoReader::obj(executable());
+
+	InfoReader* ir = InfoReader::obj();
 	ir->getInfo();
 	if (ir->vfList().contains(vf)) {
 		QString s = "--vf-add=" + vf;

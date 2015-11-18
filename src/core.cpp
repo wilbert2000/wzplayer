@@ -84,7 +84,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 {
 	qRegisterMetaType<TCore::State>("TCore::State");
 
-	proc = Proc::TPlayerProcess::createPlayerProcess(this, pref->mplayer_bin, &mdat);
+	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
 
 	connect(proc, SIGNAL(error(QProcess::ProcessError)),
 			 this, SLOT(processError(QProcess::ProcessError)));
@@ -331,6 +331,10 @@ void TCore::reload() {
 
 bool TCore::isMPlayer() {
 	return proc->isMPlayer();
+}
+
+bool TCore::isMPV() {
+	return proc->isMPV();
 }
 
 void TCore::saveMediaInfo() {
@@ -1134,26 +1138,8 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	}
 
-
-	bool screenshot_enabled = pref->use_screenshot
-							  && !pref->screenshot_directory.isEmpty()
-							  && QFileInfo(pref->screenshot_directory).isDir();
-
 	proc->clearArguments();
-
-	// Set screenshot directory
-	proc->setScreenshotDirectory(pref->screenshot_directory);
-
-	// Use absolute path, otherwise after changing to the screenshot directory
-	// the mplayer path might not be found if it's a relative path
-	// (seems to be necessary only for linux)
-	QString mplayer_bin = pref->mplayer_bin;
-	QFileInfo fi(mplayer_bin);
-	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-		mplayer_bin = fi.absoluteFilePath();
-	}
-
-	proc->setExecutable(mplayer_bin);
+	proc->setExecutable(pref->playerAbsolutePath());
 	proc->setFixedOptions();
 
 	if (pref->log_verbose) {
@@ -1170,8 +1156,8 @@ void TCore::startPlayer(QString file, double seek) {
 	if (!mset.forced_video_codec.isEmpty()) {
 		proc->setOption("vc", mset.forced_video_codec);
 	} else {
+
 #ifndef Q_OS_WIN
-		/* if (pref->vo.startsWith("x11")) { */ // My card doesn't support vdpau, I use x11 to test
 		if (pref->vo.startsWith("vdpau")) {
 			QString c;
 			if (pref->vdpau.ffh264vdpau) c += "ffh264vdpau,";
@@ -1184,33 +1170,35 @@ void TCore::startPlayer(QString file, double seek) {
 			}
 		} else {
 #endif
+
 			if (pref->coreavc) {
 				proc->setOption("vc", "coreserve,");
 			}
+
 #ifndef Q_OS_WIN
 		}
 #endif
+
 	}
 
-	if (pref->use_hwac3) {
+	if (pref->use_hwac3)
 		proc->setOption("afm", "hwac3");
-	}
-
 
 	if (isMPlayer()) {
-		// MPlayer
 		QString lavdopts;
 
-		if ((pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
-			 ((pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) &&
-			  (mset.is264andHD)))
-		{
-			if (!lavdopts.isEmpty()) lavdopts += ":";
+		if (pref->h264_skip_loop_filter == TPreferences::LoopDisabled
+			|| (pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD
+				&& mset.is264andHD)) {
+
+			if (!lavdopts.isEmpty())
+				lavdopts += ":";
 			lavdopts += "skiploopfilter=all";
 		}
 
 		if (pref->threads > 1) {
-			if (!lavdopts.isEmpty()) lavdopts += ":";
+			if (!lavdopts.isEmpty())
+				lavdopts += ":";
 			lavdopts += "threads=" + QString::number(pref->threads);
 		}
 
@@ -1220,10 +1208,9 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 	else {
 		// MPV
-		if ((pref->h264_skip_loop_filter == TPreferences::LoopDisabled) ||
-			 ((pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) &&
-			  (mset.is264andHD)))
-		{
+		if (pref->h264_skip_loop_filter == TPreferences::LoopDisabled
+			|| (pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD
+				&& mset.is264andHD)) {
 			proc->setOption("skiploopfilter");
 		}
 
@@ -1232,7 +1219,16 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	}
 
-	if (!pref->hwdec.isEmpty()) proc->setOption("hwdec", pref->hwdec);
+	if (!pref->hwdec.isEmpty())
+		proc->setOption("hwdec", pref->hwdec);
+
+	// Set screenshot directory
+	bool screenshot_enabled = pref->use_screenshot
+							  && !pref->screenshot_directory.isEmpty()
+							  && QFileInfo(pref->screenshot_directory).isDir();
+	if (screenshot_enabled)
+		proc->setScreenshotDirectory(pref->screenshot_directory);
+
 
 	proc->setOption("sub-fuzziness", pref->subfuzziness);
 
@@ -1240,15 +1236,17 @@ void TCore::startPlayer(QString file, double seek) {
 		if (!pref->vo.isEmpty()) {
 			proc->setOption("vo", pref->vo);
 		} else {
-			#ifdef Q_OS_WIN
+
+#ifdef Q_OS_WIN
 			if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
 				proc->setOption("vo", "direct3d,");
 			} else {
 				proc->setOption("vo", "directx,");
 			}
-			#else
+#else
 			proc->setOption("vo", "xv,");
-			#endif
+#endif
+
 		}
 	}
 
@@ -1271,7 +1269,7 @@ void TCore::startPlayer(QString file, double seek) {
 #endif
 
 	// Performance options
-	#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
 	QString p;
 	int app_p = NORMAL_PRIORITY_CLASS;
 	switch (pref->priority) {
@@ -1296,7 +1294,7 @@ void TCore::startPlayer(QString file, double seek) {
 	SetPriorityClass(GetCurrentProcess(), app_p);
 	qDebug("TCore::startPlayer: priority of smplayer process set to %d", app_p);
 	*/
-	#endif
+#endif
 
 	if (pref->frame_drop && pref->hard_frame_drop) {
 		proc->setOption("framedrop", "decoder+vo");
@@ -1369,7 +1367,7 @@ void TCore::startPlayer(QString file, double seek) {
 				ass_force_style = pref->ass_styles.toString();
 			}
 
-			if (proc->isMPV()) {
+			if (isMPV()) {
 				// MPV
 				proc->setSubStyles(pref->ass_styles);
 				if (pref->force_ass_styles) {
@@ -1393,7 +1391,7 @@ void TCore::startPlayer(QString file, double seek) {
 	} else {
 		// NO ASS:
 		if (pref->freetype_support) proc->setOption("noass");
-		if (proc->isMPV()) {
+		if (isMPV()) {
 			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
 		} else {
 			proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
@@ -1553,7 +1551,7 @@ void TCore::startPlayer(QString file, double seek) {
 		qDebug("TCore::startPlayer: don't set volume since -volume is used");
 	} else {
 		int vol = getVolume();
-		if (proc->isMPV()) {
+		if (isMPV()) {
 			vol = adjustVolume(vol);
 		}
 		proc->setOption("volume", QString::number(vol));
@@ -1852,7 +1850,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 #ifndef Q_OS_WIN
-	if (proc->isMPV() && file.startsWith("dvb:")) {
+	if (isMPV() && file.startsWith("dvb:")) {
 		QString channels_file = Gui::TTVList::findChannelsFile();
 		qDebug("TCore::startPlayer: channels_file: %s", channels_file.toUtf8().constData());
 		if (!channels_file.isEmpty()) proc->setChannelsFile(channels_file);
@@ -2251,7 +2249,7 @@ void TCore::setStereoMode(int mode) {
 // Video filters
 
 #define CHANGE_VF(Filter, Enable, Option) \
-	if (proc->isMPV()) { \
+	if (isMPV()) { \
 		proc->changeVF(Filter, Enable, Option); \
 	} else { \
 		restartPlay(); \
@@ -2628,7 +2626,7 @@ void TCore::setVolume(int volume, bool force) {
 	if (!force && volume == getVolume())
 		return;
 
-	if (proc->isMPV()) {
+	if (isMPV()) {
 		if (proc->isRunning()) {
 			int vol = adjustVolume(volume);
 			proc->setVolume(vol);
@@ -2747,7 +2745,7 @@ void TCore::changeSubScale(double value) {
 			mset.sub_scale_ass = value;
 			proc->setSubScale(mset.sub_scale_ass);
 		}
-	} else if (proc->isMPV()) {
+	} else if (isMPV()) {
 		if (value != mset.sub_scale_mpv) {
 			mset.sub_scale_mpv = value;
 			proc->setSubScale(value);
@@ -2765,7 +2763,7 @@ void TCore::incSubScale() {
 
 	if (pref->use_ass_subtitles) {
 		changeSubScale(mset.sub_scale_ass + step);
-	} else if (proc->isMPV()) {
+	} else if (isMPV()) {
 		changeSubScale(mset.sub_scale_mpv + step);
 	} else {
 		changeSubScale(mset.sub_scale + step);
@@ -2777,7 +2775,7 @@ void TCore::decSubScale() {
 
 	if (pref->use_ass_subtitles) {
 		changeSubScale(mset.sub_scale_ass - step);
-	} else if (proc->isMPV()) {
+	} else if (isMPV()) {
 		changeSubScale(mset.sub_scale_mpv - step);
 	} else {
 		changeSubScale(mset.sub_scale - step);

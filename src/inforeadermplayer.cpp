@@ -35,10 +35,9 @@ using namespace Settings;
 #define AC 5
 
 
-InfoReaderMplayer::InfoReaderMplayer(QString mplayer_bin, QObject* parent)
+InfoReaderMplayer::InfoReaderMplayer(QObject* parent)
 	: QObject(parent)
-	, proc(0)
-	, mplayerbin(mplayer_bin) {
+	, proc(0) {
 
 	proc = new QProcess(this);
 	proc->setProcessChannelMode(QProcess::MergedChannels);
@@ -207,7 +206,7 @@ bool InfoReaderMplayer::run(QString options) {
 
 	QStringList args = options.split(" ");
 
-	proc->start(mplayerbin, args);
+	proc->start(Settings::pref->playerAbsolutePath(), args);
 	if (!proc->waitForStarted()) {
 		qWarning("InfoReaderMplayer::run: process can't start!");
 		return false;

@@ -45,7 +45,6 @@
 #include <cmath>
 
 #include "version.h"
-#include "playerid.h"
 #include "desktop.h"
 #include "discname.h"
 #include "extensions.h"
@@ -54,7 +53,6 @@
 #include "images.h"
 #include "helper.h"
 #include "mediadata.h"
-#include "gui/autohidetimer.h"
 #include "playerwindow.h"
 #include "core.h"
 #include "clhelp.h"
@@ -77,6 +75,7 @@
 #include "gui/errordialog.h"
 #include "gui/logwindow.h"
 #include "gui/playlist.h"
+#include "gui/autohidetimer.h"
 #include "gui/filepropertiesdialog.h"
 #include "gui/inputdvddirectory.h"
 #include "gui/about.h"
@@ -1436,8 +1435,8 @@ void TBase::setActionsEnabled(bool b) {
 	volnormAct->setEnabled(enableAudio);
 
 #ifdef MPLAYER_SUPPORT
-	extrastereoAct->setEnabled(enableAudio && core->isMPlayer());
-	karaokeAct->setEnabled(enableAudio && core->isMPlayer());
+	extrastereoAct->setEnabled(enableAudio && pref->isMPlayer());
+	karaokeAct->setEnabled(enableAudio && pref->isMPlayer());
 #endif
 
 	audioEqualizerAct->setEnabled(enableAudio && pref->use_audio_equalizer);
@@ -1463,8 +1462,8 @@ void TBase::setActionsEnabled(bool b) {
 	incSubScaleAct->setEnabled(b);
 	decSubScaleAct->setEnabled(b);
 #ifdef MPV_SUPPORT
-	seekNextSubAct->setEnabled(b && !core->isMPlayer());
-	seekPrevSubAct->setEnabled(b && !core->isMPlayer());
+	seekNextSubAct->setEnabled(b && pref->isMPV());
+	seekPrevSubAct->setEnabled(b && pref->isMPV());
 #endif
 
 	// Actions not in menus
@@ -1898,7 +1897,7 @@ void TBase::showPreferencesDialog() {
 void TBase::applyNewPreferences() {
 	qDebug("Gui::TBase::applyNewPreferences");
 
-	TPlayerID::Player old_player_id = TPlayerID::player(pref->mplayer_bin);
+	TPreferences::TPlayerID old_player_id = pref->player_id;
 
 	// Update pref from dialog
 	pref_dialog->getData(pref);
@@ -1923,31 +1922,68 @@ void TBase::applyNewPreferences() {
 	TLog::log->setLogFileEnabled(pref->log_file);
 	TLog::log->setFilter(pref->log_filter);
 
-	// Style changed?
+	// Interface tab first for needed restarts
 	Pref::TInterface* _interface = pref_dialog->mod_interface();
-	if (_interface->styleChanged()) {
-		emit requestRestart(pref->style.isEmpty());
-		close();
-		return;
-	}
 
-	// Gui, icon set or player changed?
-	if (_interface->guiChanged()
-		|| _interface->iconsetChanged()
-		|| old_player_id != TPlayerID::player(pref->mplayer_bin)) {
-		emit requestRestart(false);
-		close();
-		return;
-	}
-
-	// New language?
+	// Load translation if language changed
 	if (_interface->languageChanged()) {
 		emit loadTranslation();
 	}
+
+	// Style changes need recreation of main window
+	if (_interface->styleChanged()) {
+		// Request restart and optional reset of style to default
+		emit requestRestart(pref->style.isEmpty());
+		// Close and restart with the new settings
+		close();
+		return;
+	}
+
+	// Gui, icon or player change needs restart smplayer
+	if (_interface->guiChanged()
+		|| _interface->iconsetChanged()
+		|| old_player_id != pref->player_id) {
+		// Request restart
+		emit requestRestart(false);
+		// Close and restart with the new settings
+		close();
+		return;
+	}
+
+	// Keeping main window
+
+	// Update application font
+	if (!pref->default_font.isEmpty()) {
+		QFont f;
+		f.fromString(pref->default_font);
+		if (QApplication::font() != f) {
+			qDebug("Gui::TBase::applyNewPreferences: setting new font: %s",
+				   pref->default_font.toLatin1().constData());
+			QApplication::setFont(f);
+		}
+	}
+
+	// Recents
 	if (_interface->recentsChanged()) {
 		updateRecents();
 	}
 
+	// Show panel
+	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
+		resize(width(), height() + 200);
+		panel->show();
+	}
+
+	// Video equalizer
+	video_equalizer->setBySoftware(pref->use_soft_video_eq);
+
+	// Hide toolbars delay
+	auto_hide_timer->setInterval(pref->floating_hide_delay);
+
+	// Subtitles
+	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
+
+	// Advanced tab
 	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();
 	if (advanced->repaintVideoBackgroundChanged()) {
 		playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
@@ -1963,27 +1999,10 @@ void TBase::applyNewPreferences() {
 	}
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
-	// Change application font
-	if (!pref->default_font.isEmpty()) {
-		QFont f;
-		f.fromString(pref->default_font);
-		if (QApplication::font() != f) {
-			qDebug("Gui::TBase::applyNewPreferences: setting new font: %s",
-				   pref->default_font.toLatin1().constData());
-			QApplication::setFont(f);
-		}
-	}
-
-	auto_hide_timer->setInterval(pref->floating_hide_delay);
-	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
-	video_equalizer->setBySoftware(pref->use_soft_video_eq);
 	setJumpTexts(); // Update texts in menus
-	setupNetworkProxy();
 
-	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
-		resize(width(), height() + 200);
-		panel->show();
-	}
+	// Network
+	setupNetworkProxy();
 
 	// Reenable actions
 	if (core->state() == TCore::Stopped) {
@@ -1992,7 +2011,7 @@ void TBase::applyNewPreferences() {
 		enableActionsOnPlaying();
 	}
 
-	// Restart video?
+	// Restart video if needed
 	if (pref_dialog->requiresRestart()) {
 		core->restart();
 	}
@@ -2240,7 +2259,7 @@ void TBase::updateSubtitles() {
 	decSubStepAct->setEnabled(e);
 	incSubStepAct->setEnabled(e);
 #ifdef MPV_SUPPORT
-	e = e && !core->isMPlayer();
+	e = e && pref->isMPV();
 	seekNextSubAct->setEnabled(e);
 	seekPrevSubAct->setEnabled(e);
 #endif
@@ -3708,7 +3727,7 @@ bool TBase::event(QEvent* e) {
 void TBase::showExitCodeFromPlayer(int exit_code) {
 	qDebug("Gui::TBase::showExitCodeFromPlayer: %d", exit_code);
 
-	QString msg = tr("%1 has finished unexpectedly.").arg(PLAYER_NAME)
+	QString msg = tr("%1 has finished unexpectedly.").arg(pref->playerName())
 			+ " " + tr("Exit code: %1").arg(exit_code);
 
 	if (!pref->report_mplayer_crashes) {
@@ -3719,7 +3738,7 @@ void TBase::showExitCodeFromPlayer(int exit_code) {
 
 	if (exit_code != 255) {
 		TErrorDialog d(this);
-		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
+		d.setWindowTitle(tr("%1 Error").arg(pref->playerName()));
 		d.setText(msg);
 		d.setLog(TLog::log->getLogLines());
 		d.exec();
@@ -3737,12 +3756,12 @@ void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 
 	if ((e == QProcess::FailedToStart) || (e == QProcess::Crashed)) {
 		TErrorDialog d(this);
-		d.setWindowTitle(tr("%1 Error").arg(PLAYER_NAME));
+		d.setWindowTitle(tr("%1 Error").arg(pref->playerName()));
 		if (e == QProcess::FailedToStart) {
-			d.setText(tr("%1 failed to start.").arg(PLAYER_NAME) + " " + 
-					  tr("Please check the %1 path in preferences.").arg(PLAYER_NAME));
+			d.setText(tr("%1 failed to start.").arg(pref->playerName()) + " " + 
+					  tr("Please check the %1 path in preferences.").arg(pref->playerName()));
 		} else {
-			d.setText(tr("%1 has crashed.").arg(PLAYER_NAME) + " " + 
+			d.setText(tr("%1 has crashed.").arg(pref->playerName()) + " " + 
 					  tr("See the log for more info."));
 		}
 		d.setLog(TLog::log->getLogLines());
@@ -3779,8 +3798,7 @@ void TBase::showVideoPreviewDialog() {
 	qDebug("Gui::TBase::showVideoPreviewDialog");
 
 	if (video_preview == 0) {
-		video_preview = new VideoPreview(this, pref->mplayer_bin);
-		video_preview->setSettings(Settings::pref);
+		video_preview = new VideoPreview(this);
 	}
 
 	if (!core->mdat.filename.isEmpty()) {
@@ -3802,9 +3820,7 @@ void TBase::showVideoPreviewDialog() {
 		}
 	}
 
-	video_preview->setMplayerPath(pref->mplayer_bin);
-
-	if ((video_preview->showConfigDialog(this)) && (video_preview->createThumbnails())) {
+	if (video_preview->showConfigDialog(this) && video_preview->createThumbnails()) {
 		video_preview->show();
 		video_preview->adjustWindowSize();
 	}

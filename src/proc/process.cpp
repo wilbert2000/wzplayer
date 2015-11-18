@@ -36,8 +36,8 @@ void TProcess::clearArguments() {
 	arg.clear();
 }
 
-bool TProcess::isRunning() {
-	return (state() == QProcess::Running);
+bool TProcess::isRunning() const {
+	return state() == QProcess::Running;
 }
 
 void TProcess::addArgument(const QString& a) {

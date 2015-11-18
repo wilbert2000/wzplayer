@@ -39,44 +39,19 @@ using namespace Settings;
 
 InfoReader* InfoReader::static_obj = 0;
 
-InfoReader* InfoReader::obj(const QString & mplayer_bin) {
-	QString player_bin = mplayer_bin;
-	if (player_bin.isEmpty()) {
-		player_bin = pref->mplayer_bin;
-	}
+InfoReader* InfoReader::obj() {
+
 	if (!static_obj) {
-		static_obj = new InfoReader(player_bin);
-	} else {
-		static_obj->setPlayerBin(player_bin);
+		static_obj = new InfoReader();
 	}
 	return static_obj;
 }
 
-InfoReader::InfoReader(QString mplayer_bin, QObject* parent)
+InfoReader::InfoReader(QObject* parent)
 	: QObject(parent) {
-
-	setPlayerBin(mplayer_bin);
 }
 
 InfoReader::~InfoReader() {
-}
-
-void InfoReader::setPlayerBin(const QString& bin) {
-
-	mplayerbin = bin;
-
-	QFileInfo fi(mplayerbin);
-	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-		// mplayerbin = fi.absoluteFilePath();
-	}
-#ifdef Q_OS_LINUX
-	else {
-		QString fplayer = Helper::findExecutable(mplayerbin);
-		qDebug() << "InfoReader::setPlayerBin: fplayer:" << fplayer;
-		if (!fplayer.isEmpty()) mplayerbin = fplayer;
-	}
-#endif
-	qDebug() << "InfoReader::setPlayerBin: mplayerbin:" << mplayerbin;
 }
 
 void InfoReader::getInfo() {
@@ -86,12 +61,12 @@ void InfoReader::getInfo() {
 
 	QString version_group = "version_" + QString::number(INFOREADER_SAVE_VERSION);
 
-	QString sname = mplayerbin;
+	QString bin = Settings::pref->playerAbsolutePath();
+	QString sname = bin;
 	sname = sname.replace("/", "_").replace("\\", "_").replace(".", "_").replace(":", "_");
-	QFileInfo fi(mplayerbin);
+	QFileInfo fi(bin);
 	if (fi.exists()) {
 		sname += "_" + QString::number(fi.size());
-
 		qDebug() << "InfoReader::getInfo: sname:" << sname;
 
 		// Check if we already have info about the player in the ini file
@@ -114,10 +89,10 @@ void InfoReader::getInfo() {
 		}
 	}
 
-	if (TPlayerID::player(mplayerbin) == TPlayerID::MPV) {
+	if (pref->player_id == TPreferences::MPV) {
 #ifdef MPV_SUPPORT
 		qDebug("InfoReader::getInfo: mpv");
-		InfoReaderMPV ir(mplayerbin, this);
+		InfoReaderMPV ir(this);
 		ir.getInfo();
 		vo_list = ir.voList();
 		ao_list = ir.aoList();
@@ -130,7 +105,7 @@ void InfoReader::getInfo() {
 	} else {
 #ifdef MPLAYER_SUPPORT
 		qDebug("InfoReader::getInfo: mplayer");
-		InfoReaderMplayer ir(mplayerbin, this);
+		InfoReaderMplayer ir(this);
 		ir.getInfo();
 		vo_list = ir.voList();
 		ao_list = ir.aoList();

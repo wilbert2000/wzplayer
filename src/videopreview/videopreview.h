@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _VIDEOPREVIEW_H_
-#define _VIDEOPREVIEW_H_
+#ifndef VIDEOPREVIEW_H
+#define VIDEOPREVIEW_H
 
 #include <QWidget>
 #include <QString>
@@ -28,16 +28,11 @@ class QGridLayout;
 class QLabel;
 class QScrollArea;
 class QDialogButtonBox;
-class QSettings;
 class QAction;
 
-class VideoInfo 
-{
+class VideoInfo {
 public:
-	VideoInfo() { filename.clear(); width = 0; height = 0; length = 0; 
-                  size = 0; fps = 0; aspect = 0; video_bitrate = 0; 
-                  audio_bitrate = 0; audio_rate = 0; video_format.clear(); };
-	~VideoInfo() {};
+	VideoInfo();
 
 	QString filename;
 	int width;
@@ -52,18 +47,14 @@ public:
 	QString video_format;
 };
 
-class VideoPreview : public QWidget
-{
+class VideoPreview : public QWidget {
 	Q_OBJECT
 
 public:
 	enum ExtractFormat { JPEG = 1, PNG = 2 };
 
-	VideoPreview(QWidget* parent, const QString& mplayer_path);
-	~VideoPreview();
-
-	void setMplayerPath(QString mplayer_path);
-	QString mplayerPath() { return mplayer_bin; }
+	VideoPreview(QWidget* parent);
+	virtual ~VideoPreview();
 
 	void setVideoFile(QString file) { prop.input_video = file; }
 	QString videoFile() { return prop.input_video; }
@@ -75,7 +66,7 @@ public:
 	int cols() { return prop.n_cols; }
 
 	void setRows(int rows) { prop.n_rows = rows; }
-	int rows() { return prop.n_rows; };
+	int rows() { return prop.n_rows; }
 
 	void setGrid(int cols, int rows) { prop.n_cols = cols; prop.n_rows = rows; }
 
@@ -98,10 +89,7 @@ public:
 
 	bool showConfigDialog(QWidget* parent);
 
-	void setSettings(QSettings* settings);
-	QSettings* settings() { return set; }
-
-	VideoInfo getInfo(const QString& mplayer_path, const QString& filename);
+	VideoInfo getInfo(const QString& filename);
 	QString errorMessage() { return error_message; }
 
 	void adjustWindowSize();
@@ -120,13 +108,14 @@ protected:
 	bool runPlayer(int seek, double aspect_ratio);
 	bool addPicture(const QString& filename, int num, int time);
 	void displayVideoInfo(const VideoInfo& i);
-	void cleanDir(QString directory);
+	void cleanDir(const QString& directory);
 	void clearThumbnails();
 	QString framePicture();
+
 	void saveSettings();
 	void loadSettings();
 
-	QList <QLabel *> label_list;
+	QList <QLabel*> label_list;
 
 	QGridLayout* grid_layout;
 	QLabel* info;
@@ -135,15 +124,11 @@ protected:
 	QScrollArea* scroll_area;
 	QDialogButtonBox* button_box;
 
-	QString mplayer_bin;
-
 	QString output_dir;
 	QString full_output_dir;
 
 	QProgressDialog* progress;
 	bool canceled;
-
-	QSettings* set;
 
 	QAction* toggleInfoAct;
 
@@ -165,4 +150,4 @@ protected:
 	QString error_message;
 };
 
-#endif
+#endif // VIDEOPREVIEW_H

@@ -6,6 +6,8 @@
 #include <QAction>
 #include <QList>
 
+namespace Gui {
+
 class TAutoHideItem {
 public:
 	QAction* action;
@@ -68,5 +70,7 @@ private slots:
 	void onActionToggled(bool visible);
 	void onTimeOut();
 };
+
+} // namespace Gui
 
 #endif // AUTOHIDETIMER_H

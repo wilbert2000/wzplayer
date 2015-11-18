@@ -63,8 +63,8 @@ protected:
 	virtual void createHelp();
 
 	// Tab General
-	void setMplayerPath(QString path);
-	QString mplayerPath();
+	void setPlayerPath(QString path);
+	QString playerPath();
 
 	void setUseScreenshots(bool b);
 	bool useScreenshots();

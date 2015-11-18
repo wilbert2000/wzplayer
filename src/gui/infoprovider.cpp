@@ -17,33 +17,30 @@
 */
 
 #include "gui/infoprovider.h"
+#include <QFileInfo>
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
-#include "playerid.h"
-#include <QFileInfo>
 
 namespace Gui {
 
-void TInfoProvider::getInfo(QString mplayer_bin, const QString& filename, TMediaData& md) {
+void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
 	qDebug("Gui::TInfoProvider::getInfo: %s", filename.toUtf8().data());
 
-	QFileInfo fi(mplayer_bin);
-	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-		mplayer_bin = fi.absoluteFilePath();
-	}
-	Proc::TPlayerProcess* proc = Proc::TPlayerProcess::createPlayerProcess(0, mplayer_bin, &md);
-
-	proc->setExecutable(mplayer_bin);
+	Proc::TPlayerProcess* proc = Proc::TPlayerProcess::createPlayerProcess(0, &md);
+	QString player_bin = Settings::pref->playerAbsolutePath();
+	proc->setExecutable(player_bin);
 	proc->setFixedOptions();
 	proc->setOption("frames", "1");
 	proc->setOption("vo", "null");
 	proc->setOption("ao", "null");
-	#ifdef Q_OS_WIN
+
+#ifdef Q_OS_WIN
 	proc->setOption("fontconfig", false);
-	#endif
+#endif
+
 	proc->setMedia(filename);
 
-	QString commandline = proc->arguments().join(" ");
+	QString commandline = player_bin + " " + proc->arguments().join(" ");
 	qDebug("Gui::TInfoProvider::getInfo: command: '%s'", commandline.toUtf8().data());
 
 	proc->startPlayer();
@@ -53,10 +50,6 @@ void TInfoProvider::getInfo(QString mplayer_bin, const QString& filename, TMedia
 	}
 
 	delete proc;
-}
-
-void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
-	getInfo(Settings::pref->mplayer_bin, filename, md);
 }
 
 } // namespace Gui
