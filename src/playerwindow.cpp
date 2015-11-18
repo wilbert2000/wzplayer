@@ -560,7 +560,7 @@ void TPlayerWindow::aboutToStartPlaying() {
 }
 
 void TPlayerWindow::playingStopped(bool clear_background) {
-	//qDebug("TPlayerWindow::playingStopped");
+	qDebug("TPlayerWindow::playingStopped: clear_background %d", clear_background);
 
 	playerlayer->restoreNormalBackground();
 	// Clear background right away.
@@ -568,7 +568,6 @@ void TPlayerWindow::playingStopped(bool clear_background) {
 	// Against: longer black flicker when restarting or switching bright videos
 	if (clear_background)
 		repaint();
-	else qDebug("TPlayerWindow::playingStopped: not clearing background");
 
 	setResolution(0, 0);
 }
