@@ -2503,6 +2503,9 @@ void TBase::openFiles(QStringList files) {
 		return;
 	}
 
+	// Hack to keep logo from flashing at startup
+	playerwindow->hideLogo();
+
 #ifdef Q_OS_WIN
 	files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
 #endif
