@@ -65,7 +65,7 @@ public:
 
 private slots:
 	void loadTranslation();
-	void setRequestedRestart();
+	void setRequestedRestart(bool reset_style);
 
 private:
 	TLog log;
@@ -73,6 +73,7 @@ private:
 	QTranslator qt_trans;
 	Gui::TBase* main_window;
 	bool requested_restart;
+	bool reset_style;
 
 	QStringList files_to_play;
 	QString subtitle_file;
@@ -90,14 +91,19 @@ private:
 	int close_at_end; // -1 = not set, 1 = true, 0 false
 	int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
 
+	QString default_style;
+
 	bool loadCatalog(QTranslator& translator,
 					 const QString& name,
 					 const QString& locale,
 					 const QString& dir);
 	void loadConfig(const QString& config_path);
+	QString loadStyleSheet(const QString& filename);
+	void changeStyleSheet(const QString& style);
+	void changeStyle();
 	void createGUI();
-	void showInfo();
 	void start();
+	void showInfo();
 };
 
 #endif

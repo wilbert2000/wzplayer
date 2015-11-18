@@ -23,12 +23,8 @@
 #include <QPixmap>
 #include <QIcon>
 
-#define USE_RESOURCES
-#define SMCODE
 
-class Images
-{
-
+class Images {
 public:
 	static void setThemesPath(const QString& folder);
 	static void setTheme(const QString& name);
@@ -39,14 +35,10 @@ public:
 	//! Returns the filename of the icon
 	static QString file(const QString& icon_name);
 
-#ifdef SMCODE
 	static QString styleSheet();
 	static QString themesDirectory();
-#endif
 
-#ifdef USE_RESOURCES
 	static bool has_rcc;
-#endif
 
 private:
 	static QPixmap resize(QPixmap* p, int size = 20);
@@ -55,10 +47,8 @@ private:
 	static QString current_theme;
 	static QString themes_path;
 
-#ifdef USE_RESOURCES
 	static QString resourceFilename();
 	static QString last_resource_loaded;
-#endif
 };
 
 #endif

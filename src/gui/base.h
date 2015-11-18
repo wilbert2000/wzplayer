@@ -254,12 +254,6 @@ protected slots:
 	void showExitCodeFromPlayer(int exit_code);
 	void showErrorFromPlayer(QProcess::ProcessError);
 
-	// stylesheet
-#if ALLOW_CHANGE_STYLESHEET
-	virtual QString loadQss(QString filename);
-	virtual void changeStyleSheet(QString style);
-#endif
-
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
 	/* Disable screensaver by event */
@@ -285,7 +279,7 @@ signals:
 	void openFileRequested();
 
 	void loadTranslation();
-	void requestRestart();
+	void requestRestart(bool);
 
 protected:
 	virtual void closeEvent(QCloseEvent* e);
@@ -580,8 +574,6 @@ private:
 	// Force settings from command line
 	int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 	int arg_start_in_fullscreen; // -1 = not set, 1 = true, 0 = false
-
-	QString default_style;
 
 	// Variables to restore pos and size of the window
 	// when exiting from fullscreen mode.

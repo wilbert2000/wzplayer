@@ -21,22 +21,17 @@
 #include <QString>
 #include <QFile>
 #include <QPixmap>
-
-#ifdef USE_RESOURCES
 #include <QResource>
-#endif
 
-#ifdef SMCODE
 #include "settings/preferences.h"
 #include "settings/paths.h"
-using namespace Settings;
-#endif
 
+
+using namespace Settings;
 
 QString Images::current_theme;
 QString Images::themes_path;
 
-#ifdef USE_RESOURCES
 QString Images::last_resource_loaded;
 bool Images::has_rcc = false;
 
@@ -51,22 +46,18 @@ QString Images::resourceFilename() {
 	qDebug() << "Images::resourceFilename:" << filename;
 	return filename;
 }
-#endif
 
 void Images::setTheme(const QString& name) {
 
 	current_theme = name;
 
-#ifdef SMCODE
 	QString dir = TPaths::configPath() + "/themes/" + name;
 	if (QFile::exists(dir)) {
 		setThemesPath(TPaths::configPath() + "/themes/");
 	} else {
 		setThemesPath(TPaths::themesPath());
 	}
-#endif
 
-#ifdef USE_RESOURCES
 	if (!last_resource_loaded.isEmpty()) {
 		qDebug() << "Images::setTheme: unloading" << last_resource_loaded;
 		QResource::unregisterResource(last_resource_loaded);
@@ -74,7 +65,7 @@ void Images::setTheme(const QString& name) {
 	}
 
 	QString rs_file = resourceFilename();
-	if ((!rs_file.isEmpty()) && (QFile::exists(rs_file))) {
+	if (!rs_file.isEmpty() && QFile::exists(rs_file)) {
 		qDebug() << "Images::setTheme: loading" << rs_file;
 		QResource::registerResource(rs_file);
 		last_resource_loaded = rs_file;
@@ -83,12 +74,11 @@ void Images::setTheme(const QString& name) {
 		has_rcc = false;
 	}
 	qDebug() << "Images::setTheme: has_rcc:" << has_rcc;
-#endif
 }
 
-void Images::setThemesPath(const QString & folder) {
+void Images::setThemesPath(const QString& folder) {
+	qDebug() << "Images::setThemesPath:" << folder;
 	themes_path = folder;
-	qDebug() << "Images::setThemesPath:" << themes_path;
 }
 
 QString Images::file(const QString& name) {
@@ -96,20 +86,15 @@ QString Images::file(const QString& name) {
 	if (name.isEmpty())
 		return "";
 
-#ifdef SMCODE
 	if (current_theme != pref->iconset) {
 		setTheme(pref->iconset);
 	}
-#endif
 
 	QString icon_name;
 	if (!current_theme.isEmpty()) {
-
-#ifdef USE_RESOURCES
 		if (has_rcc)
 			icon_name = ":/" + current_theme + "/"+ name + ".png";
 		else
-#endif
 			icon_name = themes_path +"/"+ current_theme + "/"+ name + ".png";
 	}
 
@@ -152,7 +137,6 @@ QPixmap Images::flippedIcon(const QString& name, int size) {
 	return p;
 }
 
-#ifdef SMCODE
 QString Images::styleSheet() {
 
 	QString css;
@@ -177,4 +161,4 @@ QString Images::themesDirectory() {
 	}
 	return dirname;
 }
-#endif // SMCODE
+

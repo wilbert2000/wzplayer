@@ -172,17 +172,6 @@ TBase::TBase()
 	was_minimized = isMinimized();
 #endif
 
-	// Set style before changing color of widgets:
-	// TODO: from help: Warning: To ensure that the application's style is set
-	// correctly, it is best to call this function before the QApplication
-	// constructor, if possible.
-	default_style = qApp->style()->objectName();
-	if (!pref->style.isEmpty()) {
-		// Remove a previous stylesheet to prevent a crash
-		qApp->setStyleSheet("");
-		qApp->setStyle(pref->style);
-	}
-
 	setWindowTitle("SMPlayer");
 	setAcceptDrops(true);
 
@@ -1754,10 +1743,6 @@ TActionList TBase::getAllNamedActions() {
 void TBase::loadConfig() {
 	qDebug("Gui::TBase::loadConfig");
 
-#if ALLOW_CHANGE_STYLESHEET
-	changeStyleSheet(pref->iconset);
-#endif
-
 	// Get all actions with a name
 	TActionList all_actions = getAllNamedActions();
 	// Load actions from outside group derived class
@@ -1913,49 +1898,54 @@ void TBase::showPreferencesDialog() {
 void TBase::applyNewPreferences() {
 	qDebug("Gui::TBase::applyNewPreferences");
 
-	bool need_update_language = false;
-	TPlayerID::Player old_player_type = TPlayerID::player(pref->mplayer_bin);
+	TPlayerID::Player old_player_id = TPlayerID::player(pref->mplayer_bin);
+
+	// Update pref from dialog
 	pref_dialog->getData(pref);
 
-	// Video equalizer
-	video_equalizer->setBySoftware(pref->use_soft_video_eq);
+	// Update and save playlist preferences
+	Pref::TPrefPlaylist* pl = pref_dialog->mod_playlist();
+	playlist->setDirectoryRecursion(pl->directoryRecursion());
+	playlist->setAutoGetInfo(pl->autoGetInfo());
+	playlist->setSavePlaylistOnExit(pl->savePlaylistOnExit());
+	playlist->setPlayFilesFromStart(pl->playFilesFromStart());
+	playlist->saveSettings();
 
-	// Setup proxy
-	setupNetworkProxy();
+	// Update actions
+	pref_dialog->mod_input()->actions_editor->applyChanges();
+	TActionsEditor::saveToConfig(this, pref);
 
-	// Change application font
-	if (!pref->default_font.isEmpty()) {
-		QFont f;
-		f.fromString(pref->default_font);
-		if (QApplication::font() != f) {
-			qDebug("Gui::TBase::applyNewPreferences: setting new font: %s", pref->default_font.toLatin1().constData());
-			QApplication::setFont(f);
-		}
-	}
-	// Use custom style
-	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
+	// Commit changes
+	pref->save();
 
+	// Update logging
+	TLog::log->setEnabled(pref->log_enabled);
+	TLog::log->setLogFileEnabled(pref->log_file);
+	TLog::log->setFilter(pref->log_filter);
+
+	// Style changed?
 	Pref::TInterface* _interface = pref_dialog->mod_interface();
+	if (_interface->styleChanged()) {
+		emit requestRestart(pref->style.isEmpty());
+		close();
+		return;
+	}
+
+	// Gui, icon set or player changed?
+	if (_interface->guiChanged()
+		|| _interface->iconsetChanged()
+		|| old_player_id != TPlayerID::player(pref->mplayer_bin)) {
+		emit requestRestart(false);
+		close();
+		return;
+	}
+
+	// New language?
+	if (_interface->languageChanged()) {
+		emit loadTranslation();
+	}
 	if (_interface->recentsChanged()) {
 		updateRecents();
-	}
-	if (_interface->languageChanged()) need_update_language = true;
-
-	if (_interface->iconsetChanged()) { 
-		need_update_language = true;
-		// Stylesheet
-		#if ALLOW_CHANGE_STYLESHEET
-		if (!_interface->guiChanged()) changeStyleSheet(pref->iconset);
-		#endif
-	}
-	auto_hide_timer->setInterval(pref->floating_hide_delay);
-
-
-	playerwindow->setDelayLeftClick(pref->delay_left_click);
-
-	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
-		resize(width(), height() + 200);
-		panel->show();
 	}
 
 	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();
@@ -1971,40 +1961,29 @@ void TBase::applyNewPreferences() {
 	if (advanced->lavfDemuxerChanged()) {
 		core->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
 	}
+	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
-	// Update logging
-	TLog::log->setEnabled(pref->log_enabled);
-	// log_verbose sets requires_restart
-	TLog::log->setLogFileEnabled(pref->log_file);
-	TLog::log->setFilter(pref->log_filter);
-
-	// Update playlist preferences
-	Pref::TPrefPlaylist* pl = pref_dialog->mod_playlist();
-	playlist->setDirectoryRecursion(pl->directoryRecursion());
-	playlist->setAutoGetInfo(pl->autoGetInfo());
-	playlist->setSavePlaylistOnExit(pl->savePlaylistOnExit());
-	playlist->setPlayFilesFromStart(pl->playFilesFromStart());
-
-	if (need_update_language) {
-		emit loadTranslation();
-	}
-
-	setJumpTexts(); // Update texts in menus
-
-	if (_interface->styleChanged()) {
-		qDebug("Gui::TBase::applyNewPreferences: selected style: '%s'", pref->style.toUtf8().data());
-		if (!pref->style.isEmpty()) {
-			qApp->setStyle(pref->style);
-		} else {
-			qDebug("Gui::TBase::applyNewPreferences: setting default style: '%s'", default_style.toUtf8().data());
-			qApp->setStyle(default_style);
+	// Change application font
+	if (!pref->default_font.isEmpty()) {
+		QFont f;
+		f.fromString(pref->default_font);
+		if (QApplication::font() != f) {
+			qDebug("Gui::TBase::applyNewPreferences: setting new font: %s",
+				   pref->default_font.toLatin1().constData());
+			QApplication::setFont(f);
 		}
 	}
 
-	// Update actions
-	pref_dialog->mod_input()->actions_editor->applyChanges();
-	TActionsEditor::saveToConfig(this, pref);
-	pref->save();
+	auto_hide_timer->setInterval(pref->floating_hide_delay);
+	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
+	video_equalizer->setBySoftware(pref->use_soft_video_eq);
+	setJumpTexts(); // Update texts in menus
+	setupNetworkProxy();
+
+	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
+		resize(width(), height() + 200);
+		panel->show();
+	}
 
 	// Reenable actions
 	if (core->state() == TCore::Stopped) {
@@ -2013,14 +1992,8 @@ void TBase::applyNewPreferences() {
 		enableActionsOnPlaying();
 	}
 
-	// Any restarts needed?
-	if (_interface->guiChanged()
-		|| old_player_type != TPlayerID::player(pref->mplayer_bin)) {
-		// Recreate the main window
-		emit requestRestart();
-		close();
-	} else if (pref_dialog->requiresRestart()) {
-		// Restart the video
+	// Restart video?
+	if (pref_dialog->requiresRestart()) {
 		core->restart();
 	}
 }
@@ -3661,66 +3634,6 @@ void TBase::toggleStayOnTop() {
 	if (pref->stay_on_top == Settings::TPreferences::NeverOnTop)
 		changeStayOnTop(Settings::TPreferences::AlwaysOnTop);
 }
-
-#if ALLOW_CHANGE_STYLESHEET
-QString TBase::loadQss(QString filename) {
-	QFile file(filename);
-	file.open(QFile::ReadOnly);
-	QString stylesheet = QLatin1String(file.readAll());
-
-#ifdef USE_RESOURCES
-	Images::setTheme(pref->iconset);
-	QString path;
-	if (Images::has_rcc) {
-		path = ":/" + pref->iconset;
-	} else {
-		QDir current = QDir::current();
-		QString td = Images::themesDirectory();
-		path = current.relativeFilePath(td);
-	}
-#else
-	QDir current = QDir::current();
-	QString td = Images::themesDirectory();
-	QString path = current.relativeFilePath(td);
-#endif
-	stylesheet.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)", Qt::CaseSensitive, QRegExp::RegExp2),
-						QString("url(%1\\1)").arg(path + "/"));
-	//qDebug("Gui::TBase::loadQss: styleSheet: %s", stylesheet.toUtf8().constData());
-	return stylesheet;
-}
-
-void TBase::changeStyleSheet(QString style) {
-	qDebug("Gui::TBase::changeStyleSheet: %s", style.toUtf8().constData());
-
-	// Load default stylesheet
-	QString stylesheet = loadQss(":/default-theme/style.qss");
-
-	if (!style.isEmpty()) {
-		// Check main.css
-		QString qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/main.css";
-		if (!QFile::exists(qss_file)) {
-			qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/main.css";
-		}
-
-		// Check style.qss
-		if (!QFile::exists(qss_file)) {
-			qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/style.qss";
-			if (!QFile::exists(qss_file)) {
-				qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/style.qss";
-			}
-		}
-
-		// Load style file
-		if (QFile::exists(qss_file)) {
-			qDebug("Gui::TBase::changeStyleSheet: '%s'", qss_file.toUtf8().data());
-			stylesheet += loadQss(qss_file);
-		}
-	}
-
-	//qDebug("Gui::TBase::changeStyleSheet: styleSheet: %s", stylesheet.toUtf8().constData());
-	qApp->setStyleSheet(stylesheet);
-}
-#endif
 
 void TBase::setFloatingToolbarsVisible(bool visible) {
 

@@ -31,6 +31,7 @@
 #include "log.h"
 #include "version.h"
 #include "clhelp.h"
+#include "images.h"
 #include "settings/cleanconfig.h"
 
 #include "gui/default.h"
@@ -47,29 +48,31 @@
 #endif
 
 
-TSMPlayer::TSMPlayer(int& argc, char** argv) :
-	TBaseApp(
+TSMPlayer::TSMPlayer(int& argc, char** argv)
+	: TBaseApp(
 #ifdef SINGLE_INSTANCE
 		"smplayer", // AppID
 #endif
-		argc, argv),
-	log(true, false, ".*"),
-	main_window(0),
-	requested_restart(false),
-	gui_to_use("DefaultGUI"),
-	move_gui(false),
-	resize_gui(false),
-	close_at_end(-1),
-	start_in_fullscreen(-1) {
+		argc, argv)
+	, log(true, false, ".*")
+	, main_window(0)
+	, requested_restart(false)
+	, reset_style(false)
+	, gui_to_use("DefaultGUI")
+	, move_gui(false)
+	, resize_gui(false)
+	, close_at_end(-1)
+	, start_in_fullscreen(-1) {
 
 	// Change working directory to application path
 	QDir::setCurrent(applicationDirPath());
 	TPaths::setAppPath(applicationDirPath());
 
-#if QT_VERSION >= 0x040400
+	// Save default style
+	default_style = style()->objectName();
+
 	// Enable icons in menus
 	setAttribute(Qt::AA_DontShowIconsInMenus, false);
-#endif
 }
 
 TSMPlayer::~TSMPlayer() {
@@ -352,12 +355,6 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	}
 #endif
 
-	if (!Settings::pref->default_font.isEmpty()) {
-		QFont f;
-		f.fromString(Settings::pref->default_font);
-		setFont(f);
-	}
-
 	return TSMPlayer::NoExit;
 }
 
@@ -399,8 +396,8 @@ void TSMPlayer::createGUI() {
 
 	connect(main_window, SIGNAL(loadTranslation()),
 			this, SLOT(loadTranslation()));
-	connect(main_window, SIGNAL(requestRestart()),
-			this, SLOT(setRequestedRestart()));
+	connect(main_window, SIGNAL(requestRestart(bool)),
+			this, SLOT(setRequestedRestart(bool)));
 
 #if SINGLE_INSTANCE
 	connect(this, SIGNAL(messageReceived(const QString&)),
@@ -418,30 +415,97 @@ void TSMPlayer::createGUI() {
 	}
 
 	qDebug() << "TSMPlayer::createGUI: created" << gui_to_use;
+} // createGUI()
+
+QString TSMPlayer::loadStyleSheet(const QString& filename) {
+	qDebug("TSMPlayer::loadStyleSheet: %s", filename.toUtf8().constData());
+
+	QFile file(filename);
+	file.open(QFile::ReadOnly);
+	QString stylesheet = QLatin1String(file.readAll());
+
+	QString path;
+	if (Images::has_rcc) {
+		path = ":/" + pref->iconset;
+	} else {
+		QDir current = QDir::current();
+		QString td = Images::themesDirectory();
+		path = current.relativeFilePath(td);
+	}
+
+	stylesheet.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)",
+							   Qt::CaseSensitive, QRegExp::RegExp2),
+						QString("url(%1\\1)").arg(path + "/"));
+	//qDebug("TSMPlayer::loadStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
+	return stylesheet;
 }
 
-void TSMPlayer::setRequestedRestart() {
-	qDebug("TSMPlayer::setRequestedRestart");
+void TSMPlayer::changeStyleSheet(const QString& style) {
+	qDebug("TSMPlayer::changeStyleSheet: %s", style.toUtf8().constData());
 
-	requested_restart = true;
+	// Load default stylesheet
+	QString stylesheet = loadStyleSheet(":/default-theme/style.qss");
+
+	if (!style.isEmpty()) {
+		// Check main.css
+		QString qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/main.css";
+		if (!QFile::exists(qss_file)) {
+			qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/main.css";
+		}
+
+		// Check style.qss
+		if (!QFile::exists(qss_file)) {
+			qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/style.qss";
+			if (!QFile::exists(qss_file)) {
+				qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/style.qss";
+			}
+		}
+
+		// Load style file
+		if (QFile::exists(qss_file)) {
+			stylesheet += loadStyleSheet(qss_file);
+		}
+	}
+
+	//qDebug("TSMPlayer::changeStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
+	setStyleSheet(stylesheet);
 }
 
-int TSMPlayer::execWithRestart() {
+void TSMPlayer::changeStyle() {
+	qDebug("TSMPlayer::changeStyle");
 
-	int exit_code;
-	do {
-		requested_restart = false;
-		start();
-		qDebug("TSMPlayer::execWithRestart: calling exec()");
-		exit_code = exec();
-		qDebug("TSMPlayer::execWithRestart: exec() returned %d", exit_code);
-	} while (requested_restart);
+	// Set font
+	if (!Settings::pref->default_font.isEmpty()) {
+		QFont f;
+		f.fromString(Settings::pref->default_font);
+		setFont(f);
+	}
 
-	return exit_code;
+	// Set application style
+	// TODO: from help: Warning: To ensure that the application's style is set
+	// correctly, it is best to call this function before the QApplication
+	// constructor, if possible.
+	if (!pref->style.isEmpty()) {
+		// Remove a previous stylesheet to prevent a crash
+		setStyleSheet("");
+		setStyle(pref->style);
+	} else if (reset_style) {
+		setStyleSheet("");
+		setStyle(default_style);
+	}
+
+	// Set theme
+	Images::setTheme(pref->iconset);
+
+	// Set stylesheets
+	changeStyleSheet(pref->iconset);
 }
 
 void TSMPlayer::start() {
 	qDebug("TSMPlayer::start");
+
+	// Setup style
+	changeStyle();
 
 	// Create the main window. It will be destoyed when leaving exec().
 	createGUI();
@@ -464,6 +528,27 @@ void TSMPlayer::start() {
 			main_window->runActionsLater(actions_list);
 		}
 	}
+}
+
+void TSMPlayer::setRequestedRestart(bool reset_style) {
+	qDebug("TSMPlayer::setRequestedRestart");
+
+	requested_restart = true;
+	this->reset_style = reset_style;
+}
+
+int TSMPlayer::execWithRestart() {
+
+	int exit_code;
+	do {
+		requested_restart = false;
+		start();
+		qDebug("TSMPlayer::execWithRestart: calling exec()");
+		exit_code = exec();
+		qDebug("TSMPlayer::execWithRestart: exec() returned %d", exit_code);
+	} while (requested_restart);
+
+	return exit_code;
 }
 
 void TSMPlayer::showInfo() {

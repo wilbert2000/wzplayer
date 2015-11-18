@@ -19,10 +19,6 @@
 #ifndef _GUI_GUICONFIG_H_
 #define _GUI_GUICONFIG_H_
 
-// ALLOW_CHANGE_STYLESHEET
-// if 1, the app stylesheet can be changed
-#define ALLOW_CHANGE_STYLESHEET 1
-
 // USE_SHORTCUTGETTER
 // if 1, a new dialog will be used to ask the user for a
 // keyshortcut.
