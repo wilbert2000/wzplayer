@@ -753,6 +753,7 @@ bool TMplayerProcess::parseLine(QString& line) {
 	static QRegExp rx_stream_title("^.*StreamTitle='(.*)';");
 	static QRegExp rx_stream_title_and_url("^.*StreamTitle='(.*)';StreamUrl='(.*)';");
 
+	// Screen shot
 	static QRegExp rx_screenshot("^\\*\\*\\* screenshot '(.*)'");
 
 	// Program switch

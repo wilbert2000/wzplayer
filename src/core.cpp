@@ -281,7 +281,7 @@ void TCore::processFinished(bool normal_exit) {
 
 void TCore::fileReachedEnd() {
 
-	// If we're at the end of the movie, reset to 0
+	// Reset current time to 0
 	gotCurrentSec(0);
 
 	qDebug("TCore::fileReachedEnd: emit mediaEOF()");

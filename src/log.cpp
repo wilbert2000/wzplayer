@@ -43,7 +43,7 @@ TLog::~TLog() {
 	// Don't pass messages to window
 	log_window = 0;
 
-	qDebug("TLog::~Tlog: stopping log at %s",
+	qDebug("TLog::~Tlog: closing log at %s",
 			QDateTime::currentDateTime().toString().toUtf8().data());
 
 	// Close log file

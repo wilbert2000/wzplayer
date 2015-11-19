@@ -1807,6 +1807,7 @@ void TBase::loadConfig() {
 	// Load playlist settings outside group
 	playlist->loadSettings();
 
+	// Disable actions
 	setActionsEnabled(false);
 }
 
@@ -2481,18 +2482,21 @@ void TBase::open(const QString &file) {
 	if (!playlist->maybeSave()) {
 		return;
 	}
+
 	if (QFile::exists(file)) {
 		QFileInfo fi(file);
 		if (fi.isDir()) {
+			// Create playlist for a directory
 			openDirectory(file);
 			return;
 		}
+		// Set latest directory for existing file
 		pref->latest_dir = fi.absolutePath();
 	}
 
 	core->open(file);
 
-	qDebug("Gui::TBase::open done");
+	qDebug("Gui::TBase::open: done");
 }
 
 void TBase::openFiles(QStringList files) {
@@ -2502,9 +2506,6 @@ void TBase::openFiles(QStringList files) {
 		qWarning("Gui::TBase::openFiles: no files in list to open");
 		return;
 	}
-
-	// TODO: Hack to keep logo from flashing at startup
-	// playerwindow->hideLogo();
 
 #ifdef Q_OS_WIN
 	files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
@@ -3399,7 +3400,7 @@ bool TBase::optimizeSizeFactorPreDef(double factor) {
 
 void TBase::optimizeSizeFactor(int w, int h) {
 
-	// Limit size to 0.8 of available size
+	// Limit size to 0.8 of available desktop
 	const double f = 0.8;
 	QSize available_size = TDesktop::availableSize(this)
 						   - frameGeometry().size() + panel->size();
