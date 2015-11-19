@@ -87,17 +87,25 @@ bool TMediaData::selectedDisc() const {
 
 
 QString TMediaData::displayName(bool show_tag) const {
+
 	if (show_tag) {
 		QString name = meta_data.value("NAME");
 		if (!name.isEmpty())
 			return name;
+
 		name = meta_data.value("TITLE");
 		if (!name.isEmpty())
 			return name;
+
 		if (!stream_title.isEmpty())
 			return stream_title;
 	}
 
+	if (detectedDisc()) {
+		return filename;
+	}
+
+	// Remove path
 	QFileInfo fi(filename);
 	if (fi.exists()) 
 		return fi.fileName(); // filename without path
