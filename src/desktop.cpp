@@ -43,13 +43,15 @@ void TDesktop::keepInsideDesktop(QWidget* w) {
 	QSize desktop_size = availableSize(w);
 	QPoint p = w->pos();
 	QSize s = w->frameGeometry().size();
-
-	if (p.x() + s.width() > desktop_size.width())
-		p.rx() = desktop_size.width() - s.width();
+	int max = desktop_size.width() - s.width();
+	if (p.x() > max)
+		p.rx() = max;
 	if (p.x() < 0)
 		p.rx() = 0;
-	if (p.y() + s.height() > desktop_size.height())
-		p.ry() = desktop_size.height() - s.height();
+
+	max = desktop_size.height() - s.height();
+	if (p.y() > max)
+		p.ry() = max;
 	if (p.y() < 0)
 		p.ry() = 0;
 
