@@ -60,7 +60,25 @@ bool TMplayerProcess::startPlayer() {
 	title_needs_update = false;
 	title_hint = -2;
 
+	exit_code_override = 0;
+
 	return TPlayerProcess::startPlayer();
+}
+
+int TMplayerProcess::exitCodeOverride() {
+	return exit_code_override ? exit_code_override : TPlayerProcess::exitCodeOverride();
+}
+
+void TMplayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
+	qDebug("TMplayerProcess::processFinished");
+
+	if (exit_code_override) {
+		qDebug("TMplayerProcess::processFinished: overriding exit code from %d to %d",
+			   exitCode, exit_code_override);
+		exitCode = exit_code_override;
+	}
+
+	TPlayerProcess::processFinished(exitCode, exitStatus);
 }
 
 void TMplayerProcess::getSelectedSub() {
@@ -794,6 +812,9 @@ bool TMplayerProcess::parseLine(QString& line) {
 	// General messages to pass on to core
 	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file)");
 
+	// File not found
+	static QRegExp rx_file_not_found("^File not found");
+
 
 	// Parse A: V: status line
 	if (rx_av.indexIn(line) >= 0) {
@@ -1023,6 +1044,14 @@ bool TMplayerProcess::parseLine(QString& line) {
 
 	// Messages to display
 	if (rx_message.indexIn(line) >= 0) {
+		emit receivedMessage(line);
+		return true;
+	}
+
+	// File not found
+	if (rx_file_not_found.indexIn(line) >= 0) {
+		qDebug("Proc::TMplayerProcess::parseLine: setting exit code 2");
+		exit_code_override = 2;
 		emit receivedMessage(line);
 		return true;
 	}

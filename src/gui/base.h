@@ -597,6 +597,8 @@ private:
 	void createToolbars();
 	QMenu* createToolbarMenu();
 
+	QString exitCodeToMessage(int exit_code);
+
 	void setFloatingToolbarsVisible(bool visible);
 	void hidePanel();
 	void centerWindow();

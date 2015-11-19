@@ -272,8 +272,8 @@ void TCore::processFinished(bool normal_exit) {
 	setState(Stopped);
 
 	if (!normal_exit) {
-		int exit_code = proc->exitCode();
-		qWarning("TCore::processFinished: player crash or error (%d)", exit_code);
+		int exit_code = proc->exitCodeOverride();
+		qWarning("TCore::processFinished: player error (%d)", exit_code);
 		playerwindow->showLogo();
 		emit playerFinishedWithError(exit_code);
 	}

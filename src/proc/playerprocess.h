@@ -41,7 +41,9 @@ class TPlayerProcess : public TProcess {
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	TPlayerProcess(QObject* parent, TMediaData* mdata);
+	static TPlayerProcess* createPlayerProcess(QObject* parent, TMediaData* md);
+
+	explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
 	Settings::TPreferences::TPlayerID player() const { return player_id; }
@@ -50,6 +52,7 @@ public:
 	bool isFullyStarted() const { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();
+	virtual int exitCodeOverride();
 
 	void writeToStdin(QString text, bool log = true);
 
@@ -135,8 +138,6 @@ public:
 #ifdef CAPTURE_STREAM
 	virtual void setCaptureDirectory(const QString& dir);
 #endif
-
-	static TPlayerProcess* createPlayerProcess(QObject* parent, TMediaData* md);
 
 // Signals
 signals:
@@ -230,7 +231,7 @@ protected:
 
 protected slots:
 	void processError(QProcess::ProcessError);
-	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+	virtual void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
 	int line_count;

@@ -132,17 +132,25 @@ void TPlayerProcess::processError(QProcess::ProcessError error) {
 	qWarning("Proc::TPlayerProcess::processError: %d", error);
 }
 
+int TPlayerProcess::exitCodeOverride() {
+	return exitCode();
+}
+
 // Slot called when the process is finished
 void TPlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-	qDebug("Proc::TPlayerProcess::processFinished: exitCode: %d, status: %d", exitCode, (int) exitStatus);
+	qDebug("Proc::TPlayerProcess::processFinished: exitCode: %d, status: %d",
+		   exitCode, (int) exitStatus);
 
-	// Send this signal before the endoffile one, otherwise
-	// the playlist will start to play next file before all
-	// objects are notified that the process has exited.
+	// Send processExited signal before the EOF one, otherwise the playlist
+	// will start to play the next file before all objects are notified that
+	// the process has exited.
+	bool normal_exit = exitCode == 0 && exitStatus == QProcess::NormalExit;
+	emit processExited(normal_exit);
 
-	emit processExited(exitCode == 0 && exitStatus == QProcess::NormalExit);
-
-	if (received_end_of_file)
+	// Send EOF when there are no errors.
+	// Change of behaviour since 2015-11-19 (was send always).
+	// Trying to make MPV and MPlayer behave the same.
+	if (normal_exit && received_end_of_file)
 		emit receivedEndOfFile();
 }
 
@@ -345,8 +353,8 @@ bool TPlayerProcess::parseLine(QString& line) {
 
 	if (rx_no_disk.indexIn(line) >= 0) {
 		qWarning("Proc::TPlayerProcess::parseLine: no disc in device");
-		// ENOMEDIUM 159 is linux specific
-		quit(1);
+		// ENOMEDIUM 159 is linux specific, caught by exitCodeToMessage()
+		quit(159);
 		return true;
 	}
 

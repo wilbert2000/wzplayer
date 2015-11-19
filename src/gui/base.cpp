@@ -3729,25 +3729,36 @@ bool TBase::event(QEvent* e) {
 }
 #endif
 
+QString TBase::exitCodeToMessage(int exit_code) {
+
+	// TODO: use Player/Qt/sys msgs
+	QString msg;
+	switch (exit_code) {
+		case 2: msg = tr("File not found: '%1'").arg(core->mdat.filename); break;
+		case 159: msg = tr("No disk in device for '%1'").arg(core->mdat.filename); break;
+		default: msg = tr("%1 has finished unexpectedly.").arg(pref->playerName())
+					   + " " + tr("Exit code: %1").arg(exit_code);
+	}
+
+	qDebug() << "Gui::TBase::exitCodeToMessage:" << msg;
+	return msg;
+}
+
 void TBase::showExitCodeFromPlayer(int exit_code) {
 	qDebug("Gui::TBase::showExitCodeFromPlayer: %d", exit_code);
 
-	QString msg = tr("%1 has finished unexpectedly.").arg(pref->playerName())
-			+ " " + tr("Exit code: %1").arg(exit_code);
+	QString msg = exitCodeToMessage(exit_code);
+	displayMessage(msg, 0);
 
-	if (!pref->report_mplayer_crashes) {
-		qDebug("Gui::TBase::showExitCodeFromPlayer: error reporting is turned off");
-		displayMessage(msg, 6000);
-		return;
-	}
-
-	if (exit_code != 255) {
+	if (pref->report_mplayer_crashes) {
 		TErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(pref->playerName()));
 		d.setText(msg);
 		d.setLog(TLog::log->getLogLines());
 		d.exec();
-	} 
+	} else {
+		qDebug("Gui::TBase::showExitCodeFromPlayer: error reporting is turned off");
+	}
 }
 
 void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
