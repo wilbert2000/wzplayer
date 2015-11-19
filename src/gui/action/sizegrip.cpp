@@ -46,7 +46,7 @@ void TSizeGrip::mousePressEvent(QMouseEvent* event) {
 
 void TSizeGrip::followToolbar() {
 
-	int wh = style()->pixelMetric(QStyle::PM_ToolBarHandleExtent) + 2;
+	int wh = style()->pixelMetric(QStyle::PM_ToolBarHandleExtent) + 3;
 	int d = 1;
 	QRect t = toolbar->geometry();
 	if (orientation() == Qt::Horizontal)
