@@ -46,6 +46,7 @@ protected:
 
 private:
 	inline QString tr(const char* sourceText, const char* comment = 0, int n = -1);
+	QString formatSize(qint64 size);
 };
 
 } // namespace Gui

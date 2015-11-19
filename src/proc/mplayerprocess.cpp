@@ -776,7 +776,12 @@ bool TMplayerProcess::parseLine(QString& line) {
 								"comment|"
 								"software|"
 								"creation date|"
-								"year):(.*)", Qt::CaseInsensitive);
+								"year|"
+								"major_brand|"
+								"isom|"
+								"minor_version|"
+								"compatible_brands|"
+								"encoder):(.*)", Qt::CaseInsensitive);
 
 	// Messages with side effects
 	static QRegExp rx_cache_empty("^Cache empty.*|^Cache not filling.*");
@@ -786,15 +791,16 @@ bool TMplayerProcess::parseLine(QString& line) {
 	static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
 	static QRegExp rx_forbidden("Server returned 403: Forbidden");
 
-	// General messages to pass on
+	// General messages to pass on to core
 	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file)");
 
 
 	// Parse A: V: status line
-	if (rx_av.indexIn(line) >=0) {
+	if (rx_av.indexIn(line) >= 0) {
 		return parseStatusLine(rx_av.cap(1).toDouble(), 0, rx_av, line);
 	}
 
+	// First ask your mom
 	if (TPlayerProcess::parseLine(line))
 		return true;
 
