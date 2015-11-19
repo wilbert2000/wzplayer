@@ -953,7 +953,7 @@ QString TPreferences::playerName() const {
 
 	if (player_id == MPLAYER)
 		return "MPlayer";
-	return "mpv";
+	return "MPV";
 }
 
 QString TPreferences::playerAbsolutePath() const {
