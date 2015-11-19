@@ -2034,24 +2034,25 @@ void TBase::setDataToFileProperties() {
 	i->getInfo();
 	file_dialog->setCodecs(i->vcList(), i->acList(), i->demuxerList());
 
-	// Save a copy of the original values
+	// Save a copy of the demuxer, video and audio codec
 	if (core->mset.original_demuxer.isEmpty()) 
 		core->mset.original_demuxer = core->mdat.demuxer;
-
 	if (core->mset.original_video_codec.isEmpty()) 
 		core->mset.original_video_codec = core->mdat.video_codec;
-
 	if (core->mset.original_audio_codec.isEmpty()) 
 		core->mset.original_audio_codec = core->mdat.audio_codec;
 
+
+	// Set demuxer, vide and audio codec
 	QString demuxer = core->mset.forced_demuxer;
-	if (demuxer.isEmpty()) demuxer = core->mdat.demuxer;
-
-	QString ac = core->mset.forced_audio_codec;
-	if (ac.isEmpty()) ac = core->mdat.audio_codec;
-
+	if (demuxer.isEmpty())
+		demuxer = core->mdat.demuxer;
 	QString vc = core->mset.forced_video_codec;
-	if (vc.isEmpty()) vc = core->mdat.video_codec;
+	if (vc.isEmpty())
+		vc = core->mdat.video_codec;
+	QString ac = core->mset.forced_audio_codec;
+	if (ac.isEmpty())
+		ac = core->mdat.audio_codec;
 
 	file_dialog->setDemuxer(demuxer, core->mset.original_demuxer);
 	file_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
