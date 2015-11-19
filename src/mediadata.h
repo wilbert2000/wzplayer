@@ -80,6 +80,10 @@ public:
 		return video_out_width <= 0 || video_out_height <= 0;
 	}
 
+	bool noAudio() const {
+		return audios.count() <= 0;
+	}
+
 	Maps::TTracks videos;
 	Maps::TTracks audios;
 	SubTracks subs;
