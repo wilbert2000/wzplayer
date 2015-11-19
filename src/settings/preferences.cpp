@@ -957,26 +957,26 @@ QString TPreferences::playerName() const {
 }
 
 QString TPreferences::playerAbsolutePath() const {
-	return abs_path;
+	return player_abs_path;
 }
 
 void TPreferences::setAbsolutePath() {
 
-	abs_path = player_bin;
+	player_abs_path = player_bin;
 
 #ifdef Q_OS_LINUX
-	QString player = Helper::findExecutable(abs_path);
+	QString player = Helper::findExecutable(player_abs_path);
 	if (!player.isEmpty())
-		abs_path = player;
+		player_abs_path = player;
 #endif
 
-	QFileInfo fi(abs_path);
+	QFileInfo fi(player_abs_path);
 	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-		abs_path = fi.absoluteFilePath();
+		player_abs_path = fi.absoluteFilePath();
 	}
 
 	qDebug("Settings::TPreferences::setAbsolutePath: '%s'",
-		   abs_path.toUtf8().constData());
+		   player_abs_path.toUtf8().constData());
 }
 
 void TPreferences::setPlayerBin0() {

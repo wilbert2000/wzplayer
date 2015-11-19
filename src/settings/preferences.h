@@ -76,9 +76,10 @@ public:
 
 	int config_version;
 
+	// Player
 	QString player_bin;
 	TPlayerID player_id;
-	QString abs_path;
+	QString player_abs_path;
 	bool isMPlayer() const { return player_id == MPLAYER; }
 	bool isMPV() const { return player_id == MPV; }
 	QString playerName() const;
