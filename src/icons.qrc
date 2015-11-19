@@ -121,11 +121,9 @@
         <file>default-theme/open_radio.png</file>
         <file>default-theme/favorite.png</file>
         <file>default-theme/open_favorites.png</file>
-        <file>default-theme/a_marker.png</file>
-        <file>default-theme/b_marker.png</file>
+        <file>default-theme/set_a_marker.png</file>
+        <file>default-theme/set_b_marker.png</file>
         <file>default-theme/ab_menu.png</file>
-        <file>default-theme/donate.png</file>
-        <file>default-theme/donate_big.png</file>
         <file>default-theme/update_youtube.png</file>
         <file>default-theme/bookmark_add.png</file>
         <file>default-theme/bookmark_folder.png</file>
@@ -134,12 +132,8 @@
         <file>default-theme/folder_open.png</file>
         <file>default-theme/tubebrowser.png</file>
         <file>default-theme/show_config.png</file>
-        <file>default-theme/share.png</file>
         <file>default-theme/guide.png</file>
         <file>default-theme/crash.png</file>
-        <file>default-theme/social_facebook.png</file>
-        <file>default-theme/social_twitter.png</file>
-        <file>default-theme/paypal.png</file>
         <file>default-theme/shutdown.png</file>
         <file>default-theme/stereo3d.png</file>
         <file>default-theme/zoom_reset.png</file>

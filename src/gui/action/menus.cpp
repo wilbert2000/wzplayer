@@ -135,11 +135,11 @@ TABMenu::TABMenu(QWidget* parent, TCore* c)
 	group->setExclusive(false);
 	group->setEnabled(false);
 
-	TAction* a  = new TAction(this, "set_a_marker", QT_TR_NOOP("Set &A marker"), "a_marker");
+	TAction* a  = new TAction(this, "set_a_marker", QT_TR_NOOP("Set &A marker"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(setAMarker()));
 
-	a = new TAction(this, "set_b_marker", QT_TR_NOOP("Set &B marker"), "b_marker");
+	a = new TAction(this, "set_b_marker", QT_TR_NOOP("Set &B marker"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(setBMarker()));
 
