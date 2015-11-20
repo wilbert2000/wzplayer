@@ -133,7 +133,7 @@ void TPlaySpeedMenu::enableActions(bool stopped, bool, bool) {
 
 
 TPlayMenu::TPlayMenu(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
-	: TMenu(parent, this,"play_menu", QT_TR_NOOP("&Play"), "noicon")
+	: TMenu(parent, this, "play_menu", QT_TR_NOOP("&Play"), "noicon")
 	, core(c)
 	, playlist(plist)
 	, pauseIcon(Images::icon("pause"))
