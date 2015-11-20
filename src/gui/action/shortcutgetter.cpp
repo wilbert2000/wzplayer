@@ -347,7 +347,7 @@ void TShortcutGetter::textChanged(const QString & text) {
 
 // Added by rvm
 void TShortcutGetter::addItemClicked() {
-	qDebug("TShortcutGetter::addItemClicked");
+	qDebug("Gui::TShortcutGetter::addItemClicked");
 	list->addItem("");
 	list->setCurrentRow(list->count()-1); // Select last item
 }

@@ -253,7 +253,7 @@ void TToolbarEditor::resizeColumns() {
 }
 
 void TToolbarEditor::resizeEvent(QResizeEvent* event) {
-	//qDebug("TToolbarEditor::resizeEvent");
+	//qDebug("Gui::TToolbarEditor::resizeEvent");
 
 	QDialog::resizeEvent(event);
 	resizeColumns();
@@ -360,7 +360,7 @@ bool TToolbarEditor::getVis(int row, int col) {
 }
 
 QStringList TToolbarEditor::saveActions() {
-	qDebug("TToolbarEditor::saveActions");
+	qDebug("Gui::TToolbarEditor::saveActions");
 
 	QStringList list;
 

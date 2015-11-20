@@ -103,7 +103,7 @@ void TMenu::enableActions(bool stopped, bool video, bool audio) {
 	Q_UNUSED(stopped)
 	Q_UNUSED(video)
 	Q_UNUSED(audio)
-	qDebug() << "TMenu::enableActions:" << menuAction()->objectName() << "always enabled";
+	qDebug() << "Gui::TMenu::enableActions:" << menuAction()->objectName() << "always enabled";
 }
 
 void TMenu::onMediaSettingsChanged(Settings::TMediaSettings*) {
