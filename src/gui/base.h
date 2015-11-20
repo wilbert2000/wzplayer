@@ -59,6 +59,8 @@ class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
 class TEditableToolbar;
+class TOpenMenu;
+class TPlayMenu;
 class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;

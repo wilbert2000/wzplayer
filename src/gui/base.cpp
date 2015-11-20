@@ -70,6 +70,8 @@
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
 #include "gui/action/menus.h"
+#include "gui/action/openmenu.h"
+#include "gui/action/playmenu.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
