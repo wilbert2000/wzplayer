@@ -27,10 +27,14 @@
 namespace Gui {
 
 TTVList::TTVList(QWidget* parent,
+				 QObject* aTranslator,
+				 const QString& name,
+				 const QString& text,
+				 const QString& icon,
+				 const QString& filename,
 				 bool check_channels_conf,
-				 Services services,
-				 const QString& filename)
-	: TFavorites(parent, filename)
+				 Services services)
+	: TFavorites(parent, aTranslator, name, text, icon, filename)
 {
 #ifndef Q_OS_WIN
 	if (check_channels_conf) {
@@ -44,8 +48,9 @@ TTVList::TTVList(QWidget* parent,
 TTVList::~TTVList() {
 }
 
-TFavorites* TTVList::createNewObject(QWidget* parent, const QString& filename) {
-	return new TTVList(parent, false, TV, filename);
+TFavorites* TTVList::createNewObject(const QString& filename) {
+	return new TTVList(parent_widget, translator, "", "", "noicon", filename,
+					   false, TV);
 }
 
 #ifndef Q_OS_WIN

@@ -55,20 +55,6 @@ void TDefault::createActions() {
 	viewFrameCounterAct->setCheckable(true);
 	statusbar_menu->addAction(viewFrameCounterAct);
 	connect(viewFrameCounterAct, SIGNAL(toggled(bool)), frame_display, SLOT(setVisible(bool)));
-
-	playOrPauseAct->setIcon(Images::icon("play"));
-}
-
-void TDefault::onStateChanged(TCore::State state) {
-	qDebug("Gui::TDefault::onStateChanged");
-
-	TBasePlus::onStateChanged(state);
-
-	if (state == TCore::Playing) {
-		playOrPauseAct->setIcon(Images::icon("pause"));
-	} else {
-		playOrPauseAct->setIcon(Images::icon("play"));
-	}
 }
 
 void TDefault::createStatusBar() {

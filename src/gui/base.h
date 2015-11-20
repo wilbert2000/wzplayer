@@ -58,7 +58,6 @@ class TActionGroup;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
-class TSeekingButton;
 class TEditableToolbar;
 class TAutoHideTimer;
 class TLogWindow;
@@ -66,8 +65,6 @@ class TPlaylist;
 class TFilePropertiesDialog;
 class TAudioEqualizer;
 class TVideoEqualizer;
-class TFavorites;
-class TTVList;
 class TUpdateChecker;
 
 
@@ -194,8 +191,6 @@ protected slots:
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 
-	virtual void setJumpTexts();
-
 	virtual void openRecent();
 	virtual void exitFullscreenOnStop();
 	virtual void playlistHasFinished();
@@ -242,8 +237,6 @@ protected slots:
 
 	virtual void applyNewPreferences();
 	virtual void applyFileProperties();
-
-	virtual void clearRecentsList();
 
 	// Single instance stuff
 #ifdef SINGLE_INSTANCE
@@ -316,36 +309,13 @@ protected:
 	void setDataToFileProperties();
 	void createActions();
 	void setActionsEnabled(bool);
+	TAction* findAction(const QString& name);
 	void createMenus();
-	void updateRecents();
 	void configureDiscDevices();
 	void setupNetworkProxy();
 
 protected:
 	QWidget* panel;
-
-	// Menu File
-	TAction* openFileAct;
-	TAction* openDirectoryAct;
-	TAction* openPlaylistAct;
-	TAction* openURLAct;
-	TAction* exitAct;
-	TAction* clearRecentsAct;
-
-	// Menu Play
-	TAction* playAct;
-	TAction* playOrPauseAct;
-	TAction* pauseAct;
-	TAction* stopAct;
-	TAction* frameStepAct;
-	TAction* frameBackStepAct;
-	TAction* rewind1Act;
-	TAction* rewind2Act;
-	TAction* rewind3Act;
-	TAction* forward1Act;
-	TAction* forward2Act;
-	TAction* forward3Act;
-	TAction* gotoAct;
 
 	// Menu Video
 	TAction* fullscreenAct;
@@ -421,10 +391,6 @@ protected:
 #endif
 	TAction* aboutThisAct;
 
-	// TPlaylist
-	TAction* playPrevAct;
-	TAction* playNextAct;
-
 	// Actions not in menus
 	TAction* exitFullscreenAct;
 	TAction* nextOSDLevelAct;
@@ -483,8 +449,8 @@ protected:
 	TAction* dvdnavMouseAct;
 
 	// MENUS
-	QMenu* openMenu;
-	QMenu* playMenu;
+	TOpenMenu* openMenu;
+	TPlayMenu* playMenu;
 	QMenu* videoMenu;
 	QMenu* audioMenu;
 	QMenu* subtitlesMenu;
@@ -492,7 +458,6 @@ protected:
 	QMenu* optionsMenu;
 	QMenu* helpMenu;
 
-	QMenu* disc_menu;
 	QMenu* subtitles_track_menu;
 #ifdef MPV_SUPPORT
 	QMenu* secondary_subtitles_track_menu;
@@ -513,7 +478,6 @@ protected:
 	TSubFPSMenu* subfps_menu;
 
 	QMenu* popup;
-	TMenu* recentfiles_menu;
 
 	// Toolbar menu
 	TAction* viewMenuBarAct;
@@ -533,9 +497,6 @@ protected:
 	TVolumeSliderAction* volumeslider_action;
 	TTimeLabelAction* time_label_action;
 
-	TSeekingButton* rewindbutton_action;
-	TSeekingButton* forwardbutton_action;
-
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;
 
@@ -553,10 +514,6 @@ protected:
 
 	TCore* core;
 	TPlayerWindow* playerwindow;
-
-	TFavorites* favorites;
-	TTVList* tvlist;
-	TTVList* radiolist;
 
 #ifdef UPDATE_CHECKER
 	TUpdateChecker* update_checker;

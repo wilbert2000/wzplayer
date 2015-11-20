@@ -45,7 +45,6 @@ protected:
 	virtual QString settingsGroupName() { return "default_gui"; }
 
 protected slots:
-	virtual void onStateChanged(TCore::State state);
 	virtual void displayTime(QString text);
 	virtual void displayFrame(int frame);
 	virtual void displayABSection();

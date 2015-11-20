@@ -19,7 +19,7 @@
 #ifndef _GUI_FAVORITES_H_
 #define _GUI_FAVORITES_H_
 
-#include <QMenu>
+#include "gui/action/menus.h"
 #include <QString>
 #include <QList>
 
@@ -54,17 +54,22 @@ protected:
 
 typedef QList<TFavorite> TFavoriteList;
 
-class TFavorites : public QMenu {
+class TFavorites : public TMenu {
 	Q_OBJECT
 public:
-	TFavorites(QWidget* parent, const QString& filename);
+	TFavorites(QWidget* parent,
+			   QObject* aTranslator,
+			   const QString& name,
+			   const QString& text,
+			   const QString& icon,
+			   const QString& filename);
 	virtual ~TFavorites();
 
-	QAction* editAct() { return edit_act; }
-	QAction* jumpAct() { return jump_act; }
-	QAction* nextAct() { return next_act; }
-	QAction* previousAct() { return previous_act; }
-	QAction* addCurrentAct() { return add_current_act; }
+	TAction* editAct() { return edit_act; }
+	TAction* jumpAct() { return jump_act; }
+	TAction* nextAct() { return next_act; }
+	TAction* previousAct() { return previous_act; }
+	TAction* addCurrentAct() { return add_current_act; }
 
 public slots:
 	void next();
@@ -82,7 +87,7 @@ protected:
 	virtual void load();
 	virtual void updateMenu();
 	virtual void populateMenu();
-	virtual TFavorites* createNewObject(QWidget* parent, const QString& filename);
+	virtual TFavorites* createNewObject(const QString& filename);
 	void delete_children();
 
 	int findFile(QString filename);
@@ -98,17 +103,13 @@ protected slots:
 	virtual void addCurrentPlaying(); // Adds to menu current (or last played) file
 
 protected:
-    virtual void retranslateStrings();
-    virtual void changeEvent(QEvent* event);
-
-protected:
 	TFavoriteList f_list;
 	QString _filename;
-	QAction* edit_act;
-	QAction* jump_act;
-	QAction* next_act;
-	QAction* previous_act;
-	QAction* add_current_act;
+	TAction* edit_act;
+	TAction* jump_act;
+	TAction* next_act;
+	TAction* previous_act;
+	TAction* add_current_act;
 
 	QWidget* parent_widget;
 

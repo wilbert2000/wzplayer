@@ -56,6 +56,7 @@ protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
 	QAction* mediaBarPanelAction;
 
+	TAction* playOrPauseAct;
 	TAction* viewVideoInfoAct;
 	TAction* scrollTitleAct;
 

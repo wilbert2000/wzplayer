@@ -32,7 +32,14 @@ public:
 	enum Service { TV = 1, Radio = 2, Data = 4 };
 	Q_DECLARE_FLAGS(Services, Service)
 
-	TTVList(QWidget* parent, bool check_channels_conf, Services services, const QString& filename);
+	TTVList(QWidget* parent,
+			QObject* aTranslator,
+			const QString& name,
+			const QString& text,
+			const QString& icon,
+			const QString& filename,
+			bool check_channels_conf,
+			Services services);
 	virtual ~TTVList();
 
 #ifndef Q_OS_WIN
@@ -45,7 +52,7 @@ protected:
 #endif
 
 protected:
-	virtual TFavorites* createNewObject(QWidget* parent, const QString& filename);
+	virtual TFavorites* createNewObject(const QString& filename);
 
 protected slots:
 	virtual void edit();

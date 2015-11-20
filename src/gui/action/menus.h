@@ -3,9 +3,9 @@
 
 #include "gui/action/actiongroup.h"
 #include <QMenu>
+#include "core.h"
 
 class TPlayerWindow;
-class TCore;
 
 namespace Settings {
 class TMediaSettings;
@@ -14,8 +14,13 @@ class TMediaSettings;
 
 namespace Gui {
 
+class TSeekingButton;
+class TFavorites;
+class TTVList;
+class TPlaylist;
 class TBase;
 
+// Evade mouse before popping up
 void execPopup(QWidget* w, QMenu* popup, QPoint p);
 
 
@@ -32,6 +37,8 @@ public:
 	void addActionsTo(QWidget* w);
 
 protected:
+	QObject* translator;
+
 	virtual void changeEvent(QEvent* event);
 	virtual void onAboutToShow();
 	virtual void setVisible(bool visible);
@@ -42,7 +49,6 @@ protected slots:
 
 private:
 	QString text_en;
-	QObject* translator;
 	void retranslateStrings();
 };
 
@@ -119,6 +125,23 @@ public:
 };
 
 
+class TOpenMenu : public TMenu {
+	Q_OBJECT
+public:
+	explicit TOpenMenu(TBase* parent, TCore* core, QWidget* playlist);
+	void updateRecents();
+private:
+	TBase* main_window;
+	TMenu* recentfiles_menu;
+	TAction* clearRecentsAct;
+	TFavorites* favorites;
+	TTVList* tvlist;
+	TTVList* radiolist;
+private slots:
+	void clearRecentsList();
+};
+
+
 class TOSDMenu : public TMenu {
 public:
 	explicit TOSDMenu(QWidget* parent, TCore* c);
@@ -129,6 +152,41 @@ private:
 	TActionGroup* group;
 };
 
+
+class TPlayMenu : public TMenu {
+	Q_OBJECT
+public:
+	explicit TPlayMenu(QWidget* parent, TCore* c, Gui::TPlaylist* plist);
+	void setJumpTexts();
+	void retranslateStrings();
+protected:
+	virtual void enableActions(bool stopped, bool, bool);
+private:
+	TCore* core;
+	Gui::TPlaylist* playlist;
+
+	TAction* playAct;
+	TAction* playOrPauseAct;
+	QIcon pauseIcon;
+	QIcon playIcon;
+	TAction* pauseAct;
+	TAction* stopAct;
+	TAction* frameBackStepAct;
+	TAction* frameStepAct;
+	TAction* rewind1Act;
+	TAction* forward1Act;
+	TAction* rewind2Act;
+	TAction* forward2Act;
+	TAction* rewind3Act;
+	TAction* forward3Act;
+	TSeekingButton* rewindbutton_action;
+	TSeekingButton* forwardbutton_action;
+	TAction* playPrevAct;
+	TAction* playNextAct;
+	TAction* gotoAct;
+private slots:
+	void onStateChanged(TCore::State state);
+};
 
 class TPlaySpeedMenu : public TMenu {
 public:

@@ -1,12 +1,19 @@
 #include "gui/action/menus.h"
 #include <QDebug>
+#include <QMessageBox>
 #include "desktop.h"
 #include "images.h"
 #include "settings/preferences.h"
+#include "settings/paths.h"
 #include "settings/mediasettings.h"
-#include "gui/action/actiongroup.h"
 #include "playerwindow.h"
-#include "core.h"
+#include "gui/action/actiongroup.h"
+#include "gui/action/widgetactions.h"
+#include "gui/playlist.h"
+
+// TODO: move fav and TV to action sub dir
+#include "gui/favorites.h"
+#include "gui/tvlist.h"
 #include "gui/base.h"
 
 
@@ -60,11 +67,13 @@ TMenu::TMenu(QWidget* parent,
 			 const QString& text,
 			 const QString& icon)
 	: QMenu(parent)
-	, text_en(text)
-	, translator(aTranslator) {
+	, translator(aTranslator)
+	, text_en(text) {
 
 	menuAction()->setObjectName(name);
-	menuAction()->setIcon(Images::icon(icon.isEmpty() ? name : icon));
+	QString iconName = icon.isEmpty() ? name : icon;
+	if (iconName != "noicon")
+		menuAction()->setIcon(Images::icon(iconName));
 
 	TBase* main_window = qobject_cast<TBase*>(parent);
 	if (main_window) {
@@ -81,7 +90,8 @@ TMenu::~TMenu() {
 }
 
 void TMenu::retranslateStrings() {
-	menuAction()->setText(translator->tr(text_en.toUtf8().constData()));
+	if (!text_en.isEmpty())
+		menuAction()->setText(translator->tr(text_en.toUtf8().constData()));
 }
 
 void TMenu::changeEvent(QEvent* e) {
@@ -329,6 +339,170 @@ TDiscMenu::TDiscMenu(QWidget* parent)
 }
 
 
+TOpenMenu::TOpenMenu(TBase* parent, TCore* core, QWidget* playlist)
+	: TMenu(parent, this, "open_menu", QT_TR_NOOP("&Open"), "noicon")
+	, main_window(parent) {
+
+	// Open
+	TAction* a = new TAction(this, "open_file", QT_TR_NOOP("&File..."), "open", QKeySequence("Ctrl+F"));
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
+
+	// Recents
+	recentfiles_menu = new TMenu(main_window, this, "recent_menu", QT_TR_NOOP("&Recent files"), "recents");
+	clearRecentsAct = new TAction(this, "clear_recents", QT_TR_NOOP("&Clear"), "delete", false);
+	main_window->addAction(clearRecentsAct);
+	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
+	addMenu(recentfiles_menu);
+	updateRecents();
+
+	// Favorites
+	favorites = new TFavorites(main_window, this, "favorites_menu",
+							   QT_TR_NOOP("F&avorites"), "open_favorites",
+							   TPaths::configPath() + "/favorites.m3u8");
+	favorites->editAct()->setObjectName("edit_fav_list");
+	favorites->jumpAct()->setObjectName("jump_fav_list");
+	favorites->nextAct()->setObjectName("next_fav");
+	favorites->previousAct()->setObjectName("previous_fav");
+	favorites->addCurrentAct()->setObjectName("add_current_fav");
+	main_window->addAction(favorites->editAct());
+	main_window->addAction(favorites->jumpAct());
+	main_window->addAction(favorites->nextAct());
+	main_window->addAction(favorites->previousAct());
+	main_window->addAction(favorites->addCurrentAct());
+	addMenu(favorites);
+	connect(favorites, SIGNAL(activated(QString)),
+			main_window, SLOT(openFavorite(QString)));
+	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+			favorites, SLOT(getCurrentMedia(const QString&, const QString&)));
+
+	// Open dir
+	a = new TAction(this, "open_directory", QT_TR_NOOP("D&irectory..."), "openfolder");
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
+
+	// Open playlist
+	a = new TAction(this, "open_playlist", QT_TR_NOOP("&Playlist..."));
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
+
+	// Disc submenu
+	addMenu(new TDiscMenu(main_window));
+
+	// URL
+	a = new TAction(this, "open_url", QT_TR_NOOP("&URL..."), "url", QKeySequence("Ctrl+U"));
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
+
+	// TV
+	tvlist = new TTVList(main_window, this, "tv_menu", QT_TR_NOOP("&TV"), "open_tv",
+						 TPaths::configPath() + "/tv.m3u8",
+						 pref->check_channels_conf_on_startup,
+						 TTVList::TV);
+	tvlist->editAct()->setObjectName("edit_tv_list");
+	tvlist->jumpAct()->setObjectName("jump_tv_list");
+	tvlist->nextAct()->setObjectName("next_tv");
+	tvlist->nextAct()->setShortcut(Qt::Key_H);
+	tvlist->previousAct()->setObjectName("previous_tv");
+	tvlist->previousAct()->setShortcut(Qt::Key_L);
+	tvlist->addCurrentAct()->setObjectName("add_current_tv");
+	main_window->addAction(tvlist->editAct());
+	main_window->addAction(tvlist->jumpAct());
+	main_window->addAction(tvlist->nextAct());
+	main_window->addAction(tvlist->previousAct());
+	main_window->addAction(tvlist->addCurrentAct());
+	connect(tvlist, SIGNAL(activated(QString)), main_window, SLOT(open(QString)));
+	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+			tvlist, SLOT(getCurrentMedia(const QString&, const QString&)));
+	addMenu(tvlist);
+
+	// Radio
+	radiolist = new TTVList(main_window, this, "radio_menu", QT_TR_NOOP("Radi&o"), "open_radio",
+							TPaths::configPath() + "/radio.m3u8",
+							pref->check_channels_conf_on_startup,
+							TTVList::Radio);
+	radiolist->editAct()->setObjectName("edit_radio_list");
+	radiolist->jumpAct()->setObjectName("jump_radio_list");
+	radiolist->nextAct()->setObjectName("next_radio");
+	radiolist->nextAct()->setShortcut(Qt::SHIFT | Qt::Key_H);
+	radiolist->previousAct()->setObjectName("previous_radio");
+	radiolist->previousAct()->setShortcut(Qt::SHIFT | Qt::Key_L);
+	radiolist->addCurrentAct()->setObjectName("add_current_radio");
+	main_window->addAction(radiolist->editAct());
+	main_window->addAction(radiolist->jumpAct());
+	main_window->addAction(radiolist->nextAct());
+	main_window->addAction(radiolist->previousAct());
+	main_window->addAction(radiolist->addCurrentAct());
+	connect(radiolist, SIGNAL(activated(QString)), main_window, SLOT(open(QString)));
+	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+			radiolist, SLOT(getCurrentMedia(const QString&, const QString&)));
+	addMenu(radiolist);
+
+	// Close
+	addSeparator();
+	a = new TAction(this, "close", QT_TR_NOOP("C&lose"), "", QKeySequence("Ctrl+X"));
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
+}
+
+void TOpenMenu::updateRecents() {
+	qDebug("Gui::TOpenMenu::updateRecents");
+
+	recentfiles_menu->clear();
+
+	int current_items = 0;
+
+	if (pref->history_recents.count() > 0) {
+		for (int n = 0; n < pref->history_recents.count(); n++) {
+			QString i = QString::number(n+1);
+			QString fullname = pref->history_recents.item(n);
+			QString filename = fullname;
+			QFileInfo fi(fullname);
+			// Let's see if it looks like a file (no dvd://1 or something)
+			if (fullname.indexOf(QRegExp("^.*://.*")) == -1) {
+				filename = fi.fileName();
+			}
+			if (filename.size() > 85) {
+				filename = filename.left(80) + "...";
+			}
+
+			QString show_name = filename;
+			QString title = pref->history_recents.title(n);
+			if (!title.isEmpty())
+				show_name = title;
+
+			QAction* a = recentfiles_menu->addAction(QString("%1. " + show_name).arg(i.insert(i.size()-1, '&'), 3, ' '));
+			a->setStatusTip(fullname);
+			a->setData(n);
+			connect(a, SIGNAL(triggered()), main_window, SLOT(openRecent()));
+			current_items++;
+		}
+	} else {
+		QAction* a = recentfiles_menu->addAction(tr("<empty>"));
+		a->setEnabled(false);
+	}
+
+	recentfiles_menu->menuAction()->setVisible(current_items > 0);
+	if (current_items  > 0) {
+		recentfiles_menu->addSeparator();
+		recentfiles_menu->addAction(clearRecentsAct);
+	}
+}
+
+void TOpenMenu::clearRecentsList() {
+
+	int ret = QMessageBox::question(main_window, tr("Confirm deletion - SMPlayer"),
+				tr("Delete the list of recent files?"),
+				QMessageBox::Cancel, QMessageBox::Ok);
+
+	if (ret == QMessageBox::Ok) {
+		// Delete items in menu
+		pref->history_recents.clear();
+		updateRecents();
+	}
+}
+
+
 TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "osd_menu", QT_TR_NOOP("&OSD"), "osd")
 	, core(c) {
@@ -354,6 +528,148 @@ TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 
 void TOSDMenu::onAboutToShow() {
 	group->setChecked((int) pref->osd_level);
+}
+
+
+TPlayMenu::TPlayMenu(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
+	: TMenu(parent, this,"play_menu", QT_TR_NOOP("&Play"), "noicon")
+	, core(c)
+	, playlist(plist)
+	, pauseIcon(Images::icon("pause"))
+	, playIcon(Images::icon("play")) {
+
+	playAct = new TAction(this, "play", QT_TR_NOOP("P&lay"));
+	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
+
+	playOrPauseAct = new TAction(this, "play_or_pause", QT_TR_NOOP("Play / Pause"),
+								 "play", Qt::Key_MediaPlay, false);
+	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
+	parent->addAction(playOrPauseAct);
+	connect(playOrPauseAct, SIGNAL(triggered()), core, SLOT(playOrPause()));
+
+	pauseAct = new TAction(this, "pause", QT_TR_NOOP("&Pause"), "", Qt::Key_Space);
+	pauseAct->addShortcut(QKeySequence("Media Pause")); // MCE remote key
+	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
+
+	stopAct = new TAction(this, "stop", QT_TR_NOOP("&Stop"), "", Qt::Key_MediaStop);
+	connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
+
+	connect(core, SIGNAL(stateChanged(TCore::State)), this, SLOT(onStateChanged(TCore::State)));
+
+	addSeparator();
+	frameBackStepAct = new TAction(this, "frame_back_step", QT_TR_NOOP("Fra&me back step"), "", Qt::Key_Comma);
+	connect(frameBackStepAct, SIGNAL(triggered()), core, SLOT(frameBackStep()));
+
+	frameStepAct = new TAction(this, "frame_step", QT_TR_NOOP("&Frame step"), "", Qt::Key_Period);
+	connect(frameStepAct, SIGNAL(triggered()), core, SLOT(frameStep()));
+
+	addSeparator();
+	rewind1Act = new TAction(this, "rewind1", "", "rewind10s", Qt::Key_Left);
+	rewind1Act->addShortcut(QKeySequence("Shift+Ctrl+B")); // MCE remote key
+	connect(rewind1Act, SIGNAL(triggered()), core, SLOT(srewind()));
+
+	forward1Act = new TAction(this, "forward1", "", "forward10s", Qt::Key_Right);
+	forward1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
+	connect(forward1Act, SIGNAL(triggered()), core, SLOT(sforward()));
+
+	rewind2Act = new TAction(this, "rewind2", "", "rewind1m", Qt::Key_Down);
+	connect(rewind2Act, SIGNAL(triggered()), core, SLOT(rewind()));
+
+	forward2Act = new TAction(this, "forward2", "", "forward1m", Qt::Key_Up);
+	connect(forward2Act, SIGNAL(triggered()), core, SLOT(forward()));
+
+	rewind3Act = new TAction(this, "rewind3", "", "rewind10m", Qt::Key_PageDown);
+	connect(rewind3Act, SIGNAL(triggered()), core, SLOT(fastrewind()));
+
+	forward3Act = new TAction(this, "forward3", "", "forward10m", Qt::Key_PageUp);
+	connect(forward3Act, SIGNAL(triggered()), core, SLOT(fastforward()));
+
+	QList<QAction*> rewind_actions;
+	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
+	rewindbutton_action = new TSeekingButton(rewind_actions, this);
+	rewindbutton_action->setObjectName("rewindbutton_action");
+	parent->addAction(rewindbutton_action);
+
+	QList<QAction*> forward_actions;
+	forward_actions << forward1Act << forward2Act << forward3Act;
+	forwardbutton_action = new TSeekingButton(forward_actions, this);
+	forwardbutton_action->setObjectName("forwardbutton_action");
+	parent->addAction(rewindbutton_action);
+
+	// TODO: doubles playlist next prev action. Add this one to playlist?
+	addSeparator();
+	playNextAct = new TAction(this, "play_next", QT_TR_NOOP("&Next"), "next", Qt::Key_Greater);
+	playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
+	connect(playNextAct, SIGNAL(triggered()), playlist, SLOT(playNext()));
+
+	playPrevAct = new TAction(this, "play_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_Less);
+	playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
+	connect(playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()));
+
+	// A-B submenu
+	addSeparator();
+	addMenu(new TABMenu(parent, core));
+	// Speed submenu
+	addMenu(new TPlaySpeedMenu(parent, core));
+
+	addSeparator();
+	gotoAct = new TAction(this, "jump_to", QT_TR_NOOP("&Jump to..."), "jumpto", QKeySequence("Ctrl+J"));
+	connect(gotoAct, SIGNAL(triggered()), parent, SLOT(showGotoDialog()));
+
+	addActionsTo(parent);
+}
+
+void TPlayMenu::onStateChanged(TCore::State state) {
+
+	playAct->setEnabled(state != TCore::Playing);
+	// playOrPauseAct always enabled
+	if (state == TCore::Playing) {
+		playOrPauseAct->setIcon(pauseIcon);
+	} else {
+		playOrPauseAct->setIcon(playIcon);
+	}
+	pauseAct->setEnabled(state == TCore::Playing);
+	// Allowed to push stop twice...
+	// stopAct->setEnabled(core->state() != TCore::Stopped);
+}
+
+void TPlayMenu::enableActions(bool stopped, bool, bool) {
+
+	playAct->setEnabled(core->state() != TCore::Playing);
+	// playOrPauseAct always enabled
+	pauseAct->setEnabled(core->state() == TCore::Playing);
+	// Allowed to push stop twice...
+	// stopAct->setEnabled(core->state() != TCore::Stopped);
+	bool e = !stopped;
+	frameStepAct->setEnabled(e);
+	frameBackStepAct->setEnabled(e);
+	rewind1Act->setEnabled(e);
+	rewind2Act->setEnabled(e);
+	rewind3Act->setEnabled(e);
+	forward1Act->setEnabled(e);
+	forward2Act->setEnabled(e);
+	forward3Act->setEnabled(e);
+	playPrevAct->setEnabled(playlist->count() > 0);
+	playNextAct->setEnabled(playlist->count() > 0);
+	gotoAct->setEnabled(e);
+}
+
+void TPlayMenu::setJumpTexts() {
+
+	rewind1Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking1)));
+	rewind2Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking2)));
+	rewind3Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking3)));
+
+	forward1Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking1)));
+	forward2Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking2)));
+	forward3Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking3)));
+}
+
+void TPlayMenu::retranslateStrings() {
+
+	rewindbutton_action->setText(tr("3 in 1 rewind"));
+	forwardbutton_action->setText(tr("3 in 1 forward"));
+	setJumpTexts();
 }
 
 

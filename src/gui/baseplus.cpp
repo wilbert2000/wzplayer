@@ -68,22 +68,8 @@ TBasePlus::TBasePlus()
 	context_menu = new QMenu(this);
 	context_menu->addAction(showAllAct);
 	context_menu->addSeparator();
-	context_menu->addAction(openFileAct);
-	context_menu->addMenu(recentfiles_menu);
-	context_menu->addAction(openDirectoryAct);
-	context_menu->addMenu(disc_menu);
-	context_menu->addAction(openURLAct);
-	context_menu->addMenu(favorites);
-#ifndef Q_OS_WIN
-	context_menu->addMenu(tvlist);
-	context_menu->addMenu(radiolist);
-#endif
-	context_menu->addSeparator();
-	context_menu->addAction(playOrPauseAct);
-	context_menu->addAction(stopAct);
-	context_menu->addSeparator();
-	context_menu->addAction(playPrevAct);
-	context_menu->addAction(playNextAct);
+	context_menu->addMenu(openMenu);
+	context_menu->addMenu(playMenu);
 	context_menu->addSeparator();
 	context_menu->addAction(showPlaylistAct);
 	context_menu->addAction(showPreferencesAct);

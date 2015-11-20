@@ -45,6 +45,7 @@ TSkin::~TSkin() {
 void TSkin::createActions() {
 	qDebug("Gui::TSkin::createActions");
 
+	playOrPauseAct = findAction("play_or_pause");
 	playOrPauseAct->setCheckable(true);
 
 	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui", QT_TR_NOOP("&Video info"), "view_video_info");
@@ -71,7 +72,9 @@ void TSkin::createControlWidget() {
 	mediaBarPanel->setObjectName("mediabar-panel");
 
 	QList<QAction*> actions;
-	actions << rewind1Act << playPrevAct << playOrPauseAct << stopAct << playNextAct << forward1Act;
+	actions << findAction("rewind1") << findAction("play_prev")
+			<< playOrPauseAct << findAction("stop")
+			<< findAction("play_next") << findAction("forward1");
 	mediaBarPanel->setPlayControlActionCollection(actions);
 
 	actions.clear();
@@ -86,7 +89,8 @@ void TSkin::createControlWidget() {
 	mediaBarPanel->setVolumeControlActionCollection(actions);
 
 	actions.clear();
-	actions << openFileAct << openDirectoryAct << openURLAct << screenshotAct << showPropertiesAct;
+	actions << findAction("open_file") << findAction("open_directory")
+			<< findAction("open_url") << screenshotAct << showPropertiesAct;
 #ifdef FIND_SUBTITLES
 	actions << showFindSubtitlesDialogAct;
 #endif

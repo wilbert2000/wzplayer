@@ -57,11 +57,10 @@ void TAction::init(const QString& name,
 			  bool autoadd) {
 
 	setObjectName(name);
-	if (iconName != "noicon") {
-		if (iconName.isEmpty())
-			iconName = name;
+	if (iconName.isEmpty())
+		iconName = name;
+	if (iconName != "noicon")
 		setIcon(Images::icon(iconName));
-	}
 	retranslateStrings();
 	if (autoadd)
 		addActionToParent();

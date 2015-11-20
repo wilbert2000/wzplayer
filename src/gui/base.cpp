@@ -195,7 +195,6 @@ TBase::TBase()
 
 	setupNetworkProxy();
 	changeStayOnTop(pref->stay_on_top);
-	updateRecents();
 
 #ifdef UPDATE_CHECKER
 	update_checker = new TUpdateChecker(this, &pref->update_checker_data);
@@ -392,127 +391,6 @@ void TBase::createAudioEqualizer() {
 
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
-
-	// Menu File
-	openFileAct = new TAction(this, "open_file", QT_TR_NOOP("&File..."), "open", QKeySequence("Ctrl+F"));
-	connect(openFileAct, SIGNAL(triggered()), this, SLOT(openFile()));
-
-	openDirectoryAct = new TAction(this, "open_directory", QT_TR_NOOP("D&irectory..."), "openfolder");
-	connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openDirectory()));
-
-	openPlaylistAct = new TAction(this, "open_playlist", QT_TR_NOOP("&Playlist..."));
-	connect(openPlaylistAct, SIGNAL(triggered()), playlist, SLOT(load()));
-
-	openURLAct = new TAction(this, "open_url", QT_TR_NOOP("&URL..."), "url", QKeySequence("Ctrl+U"));
-	connect(openURLAct, SIGNAL(triggered()), this, SLOT(openURL()));
-
-	exitAct = new TAction(this, "close", QT_TR_NOOP("C&lose"), "", QKeySequence("Ctrl+X"));
-	connect(exitAct, SIGNAL(triggered()), this, SLOT(closeWindow()));
-
-	clearRecentsAct = new TAction(this, "clear_recents", QT_TR_NOOP("&Clear"), "delete");
-	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
-
-	// Favorites
-	favorites = new TFavorites(this, TPaths::configPath() + "/favorites.m3u8");
-	favorites->menuAction()->setObjectName("favorites_menu");
-	addAction(favorites->editAct());
-	addAction(favorites->jumpAct());
-	addAction(favorites->nextAct());
-	addAction(favorites->previousAct());
-	connect(favorites, SIGNAL(activated(QString)), this, SLOT(openFavorite(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
-			favorites, SLOT(getCurrentMedia(const QString&, const QString&)));
-
-	// TV and Radio
-	tvlist = new TTVList(this, pref->check_channels_conf_on_startup,
-						 TTVList::TV, TPaths::configPath() + "/tv.m3u8");
-	tvlist->menuAction()->setObjectName("tv_menu");
-	addAction(tvlist->editAct());
-	addAction(tvlist->jumpAct());
-	addAction(tvlist->nextAct());
-	addAction(tvlist->previousAct());
-	tvlist->nextAct()->setShortcut(Qt::Key_H);
-	tvlist->previousAct()->setShortcut(Qt::Key_L);
-	tvlist->nextAct()->setObjectName("next_tv");
-	tvlist->previousAct()->setObjectName("previous_tv");
-	tvlist->editAct()->setObjectName("edit_tv_list");
-	tvlist->jumpAct()->setObjectName("jump_tv_list");
-	connect(tvlist, SIGNAL(activated(QString)), this, SLOT(open(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
-			tvlist, SLOT(getCurrentMedia(const QString&, const QString&)));
-
-	radiolist = new TTVList(this, pref->check_channels_conf_on_startup,
-							TTVList::Radio, TPaths::configPath() + "/radio.m3u8");
-	radiolist->menuAction()->setObjectName("radio_menu");
-	addAction(radiolist->editAct());
-	addAction(radiolist->jumpAct());
-	addAction(radiolist->nextAct());
-	addAction(radiolist->previousAct());
-	radiolist->nextAct()->setShortcut(Qt::SHIFT | Qt::Key_H);
-	radiolist->previousAct()->setShortcut(Qt::SHIFT | Qt::Key_L);
-	radiolist->nextAct()->setObjectName("next_radio");
-	radiolist->previousAct()->setObjectName("previous_radio");
-	radiolist->editAct()->setObjectName("edit_radio_list");
-	radiolist->jumpAct()->setObjectName("jump_radio_list");
-	connect(radiolist, SIGNAL(activated(QString)), this, SLOT(open(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
-			radiolist, SLOT(getCurrentMedia(const QString&, const QString&)));
-
-
-	// Menu Play
-	playAct = new TAction(this, "play", QT_TR_NOOP("P&lay"));
-	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
-
-	playOrPauseAct = new TAction(this, "play_or_pause", QT_TR_NOOP("Play / Pause"), "noicon", Qt::Key_MediaPlay);
-	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
-	connect(playOrPauseAct, SIGNAL(triggered()), core, SLOT(playOrPause()));
-
-	pauseAct = new TAction(this, "pause", QT_TR_NOOP("&Pause"), "", Qt::Key_Space);
-	pauseAct->addShortcut(QKeySequence("Media Pause")); // MCE remote key
-	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
-
-	stopAct = new TAction(this, "stop", QT_TR_NOOP("&Stop"), "", Qt::Key_MediaStop);
-	connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
-
-	frameStepAct = new TAction(this, "frame_step", QT_TR_NOOP("&Frame step"), "", Qt::Key_Period);
-	connect(frameStepAct, SIGNAL(triggered()), core, SLOT(frameStep()));
-
-	frameBackStepAct = new TAction(this, "frame_back_step", QT_TR_NOOP("Fra&me back step"), "", Qt::Key_Comma);
-	connect(frameBackStepAct, SIGNAL(triggered()), core, SLOT(frameBackStep()));
-
-	rewind1Act = new TAction(this, "rewind1", "", "rewind10s", Qt::Key_Left);
-	rewind1Act->addShortcut(QKeySequence("Shift+Ctrl+B")); // MCE remote key
-	connect(rewind1Act, SIGNAL(triggered()), core, SLOT(srewind()));
-
-	rewind2Act = new TAction(this, "rewind2", "", "rewind1m", Qt::Key_Down);
-	connect(rewind2Act, SIGNAL(triggered()), core, SLOT(rewind()));
-
-	rewind3Act = new TAction(this, "rewind3", "", "rewind10m", Qt::Key_PageDown);
-	connect(rewind3Act, SIGNAL(triggered()), core, SLOT(fastrewind()));
-
-	QList<QAction*> rewind_actions;
-	rewind_actions << rewind1Act << rewind2Act << rewind3Act;
-	rewindbutton_action = new TSeekingButton(rewind_actions, this);
-	rewindbutton_action->setObjectName("rewindbutton_action");
-
-	forward1Act = new TAction(this, "forward1", "", "forward10s", Qt::Key_Right);
-	forward1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
-	connect(forward1Act, SIGNAL(triggered()), core, SLOT(sforward()));
-
-	forward2Act = new TAction(this, "forward2", "", "forward1m", Qt::Key_Up);
-	connect(forward2Act, SIGNAL(triggered()), core, SLOT(forward()));
-
-	forward3Act = new TAction(this, "forward3", "", "forward10m", Qt::Key_PageUp);
-	connect(forward3Act, SIGNAL(triggered()), core, SLOT(fastforward()));
-
-	QList<QAction*> forward_actions;
-	forward_actions << forward1Act << forward2Act << forward3Act;
-	forwardbutton_action = new TSeekingButton(forward_actions, this);
-	forwardbutton_action->setObjectName("forwardbutton_action");
-
-	gotoAct = new TAction(this, "jump_to", QT_TR_NOOP("&Jump to..."), "jumpto", QKeySequence("Ctrl+J"));
-	connect(gotoAct, SIGNAL(triggered()), this, SLOT(showGotoDialog()));
-
 
 	// Menu Video
 	fullscreenAct = new TAction(this, "fullscreen", QT_TR_NOOP("&Fullscreen"), "", Qt::Key_F);
@@ -721,16 +599,6 @@ void TBase::createActions() {
 
 	aboutThisAct = new TAction(this, "about_smplayer", QT_TR_NOOP("About &SMPlayer"), "logo");
 	connect(aboutThisAct, SIGNAL(triggered()), this, SLOT(helpAbout()));
-
-
-	// Playlist
-	playNextAct = new TAction(this, "play_next", QT_TR_NOOP("&Next"), "next", Qt::Key_Greater);
-	playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
-	connect(playNextAct, SIGNAL(triggered()), playlist, SLOT(playNext()));
-
-	playPrevAct = new TAction(this, "play_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_Less);
-	playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
-	connect(playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()));
 
 	// Actions not in menus or buttons
 	exitFullscreenAct = new TAction(this, "exit_fullscreen", QT_TR_NOOP("Exit fullscreen"), "", Qt::Key_Escape);
@@ -958,61 +826,16 @@ void TBase::createActions() {
 void TBase::createMenus() {
 
 	// MENUS
-	openMenu = menuBar()->addMenu("Open");
-	playMenu = menuBar()->addMenu("Play");
+	openMenu = new TOpenMenu(this, core, playlist);
+	menuBar()->addMenu(openMenu);
+	playMenu = new TPlayMenu(this, core, playlist);
+	menuBar()->addMenu(playMenu);
 	videoMenu = menuBar()->addMenu("Video");
 	audioMenu = menuBar()->addMenu("Audio");
 	subtitlesMenu = menuBar()->addMenu("Subtitles");
 	browseMenu = menuBar()->addMenu("Browse");
 	optionsMenu = menuBar()->addMenu("Options");
 	helpMenu = menuBar()->addMenu("Help");
-
-	// OPEN MENU
-	openMenu->addAction(openFileAct);
-
-	recentfiles_menu = new TMenu(this, this, "recent_menu", QT_TR_NOOP("&Recent files"), "recents");
-	openMenu->addMenu(recentfiles_menu);
-	openMenu->addMenu(favorites);
-	openMenu->addAction(openDirectoryAct);
-	openMenu->addAction(openPlaylistAct);
-
-	// Disc submenu
-	disc_menu = new TDiscMenu(this);
-	openMenu->addMenu(disc_menu);
-
-	openMenu->addAction(openURLAct);
-	openMenu->addMenu(tvlist);
-	openMenu->addMenu(radiolist);
-	openMenu->addSeparator();
-	openMenu->addAction(exitAct);
-
-
-	// PLAY MENU
-	playMenu->addAction(playAct);
-	playMenu->addAction(pauseAct);
-	/* playMenu->addAction(playOrPauseAct); */
-	playMenu->addAction(stopAct);
-	playMenu->addSeparator();
-	playMenu->addAction(frameBackStepAct);
-	playMenu->addAction(frameStepAct);
-	playMenu->addSeparator();
-	playMenu->addAction(rewind1Act);
-	playMenu->addAction(forward1Act);
-	playMenu->addAction(rewind2Act);
-	playMenu->addAction(forward2Act);
-	playMenu->addAction(rewind3Act);
-	playMenu->addAction(forward3Act);
-	playMenu->addSeparator();
-	playMenu->addAction(playPrevAct);
-	playMenu->addAction(playNextAct);
-	// A-B submenu
-	playMenu->addSeparator();
-	playMenu->addMenu(new TABMenu(this, core));
-	// Speed submenu
-	playMenu->addMenu(new TPlaySpeedMenu(this, core));
-	// Goto
-	playMenu->addSeparator();
-	playMenu->addAction(gotoAct);
 
 
 	// VIDEO MENU
@@ -1236,7 +1059,6 @@ void TBase::createMenus() {
 	popup->addMenu(videoMenu);
 	popup->addMenu(audioMenu);
 	popup->addMenu(subtitlesMenu);
-	popup->addMenu(favorites);
 	popup->addMenu(browseMenu);
 	popup->addMenu(optionsMenu);
 } // createMenus()
@@ -1379,24 +1201,6 @@ void TBase::setActionsEnabled(bool b) {
 
 	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
 
-	// Menu Play
-	playAct->setEnabled(b);
-	playOrPauseAct->setEnabled(b);
-	pauseAct->setEnabled(b);
-	stopAct->setEnabled(b);
-	frameStepAct->setEnabled(b);
-	frameBackStepAct->setEnabled(b);
-	rewind1Act->setEnabled(b);
-	rewind2Act->setEnabled(b);
-	rewind3Act->setEnabled(b);
-	forward1Act->setEnabled(b);
-	forward2Act->setEnabled(b);
-	forward3Act->setEnabled(b);
-	playPrevAct->setEnabled(playlist->count() > 0);
-	playNextAct->setEnabled(playlist->count() > 0);
-	gotoAct->setEnabled(b);
-
-
 	// Menu Video
 	bool enableVideo = b && !core->mdat.noVideo();
 	// Disable video filters if using vdpau or hwdec
@@ -1500,19 +1304,12 @@ void TBase::setActionsEnabled(bool b) {
 
 void TBase::enableActionsOnPlaying() {
 	qDebug("Gui::TBase::enableActionsOnPlaying");
-
 	setActionsEnabled(true);
-	playAct->setEnabled(false);
 }
 
 void TBase::disableActionsOnStop() {
 	qDebug("Gui::TBase::disableActionsOnStop");
-
 	setActionsEnabled(false);
-
-	playAct->setEnabled(true);
-	playOrPauseAct->setEnabled(true);
-	stopAct->setEnabled(true);
 }
 
 void TBase::retranslateStrings() {
@@ -1521,8 +1318,6 @@ void TBase::retranslateStrings() {
 	setWindowIcon(Images::icon("logo", 64));
 
 	// MENUS
-	openMenu->menuAction()->setText(tr("&Open"));
-	playMenu->menuAction()->setText(tr("&Play"));
 	videoMenu->menuAction()->setText(tr("&Video"));
 	audioMenu->menuAction()->setText(tr("&Audio"));
 	subtitlesMenu->menuAction()->setText(tr("&Subtitles"));
@@ -1530,23 +1325,8 @@ void TBase::retranslateStrings() {
 	optionsMenu->menuAction()->setText(tr("Op&tions"));
 	helpMenu->menuAction()->setText(tr("&Help"));
 
-	// Menu Open
-	favorites->menuAction()->setText(tr("F&avorites"));
-	favorites->menuAction()->setIcon(Images::icon("open_favorites"));
-
-	tvlist->menuAction()->setText(tr("&TV"));
-	tvlist->menuAction()->setIcon(Images::icon("open_tv"));
-
-	radiolist->menuAction()->setText(tr("Radi&o"));
-	radiolist->menuAction()->setIcon(Images::icon("open_radio"));
-
-
 	// Menu Play
-	// Rewind/forward
-	setJumpTexts(); // Texts for rewind*Act and forward*Act
-	rewindbutton_action->setText(tr("3 in 1 rewind"));
-	forwardbutton_action->setText(tr("3 in 1 forward"));
-
+	playMenu->retranslateStrings();
 
 	// Menu Video
 	videotrack_menu->menuAction()->setText(tr("&Track", "video"));
@@ -1626,8 +1406,6 @@ void TBase::retranslateStrings() {
 	// Log window
 	log_window->retranslateStrings();
 
-	updateRecents();
-
 	// Update actions view in preferences
 	// It has to be done, here. The actions are translated after the
 	// preferences dialog.
@@ -1641,16 +1419,6 @@ void TBase::changeEvent(QEvent* e) {
 	} else {
 		QMainWindow::changeEvent(e);
 	}
-}
-
-void TBase::setJumpTexts() {
-	rewind1Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking1)));
-	rewind2Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking2)));
-	rewind3Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking3)));
-
-	forward1Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking1)));
-	forward2Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking2)));
-	forward3Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking3)));
 }
 
 void TBase::setWindowCaption(const QString& title) {
@@ -1737,6 +1505,18 @@ TActionList TBase::getAllNamedActions() {
 	}
 
 	return all_actions;
+}
+
+TAction* TBase::findAction(const QString& name) {
+
+	QList<TAction*> actions = findChildren<TAction*>(name);
+	if (actions.count() == 0) {
+		qWarning("Gui::TBase::findAction: action '%s' not found",
+				 name.toUtf8().constData());
+		return new TAction(this, name, name);
+	}
+
+	return actions[0];
 }
 
 void TBase::loadConfig() {
@@ -1966,7 +1746,7 @@ void TBase::applyNewPreferences() {
 
 	// Recents
 	if (_interface->recentsChanged()) {
-		updateRecents();
+		openMenu->updateRecents();
 	}
 
 	// Show panel
@@ -2000,7 +1780,7 @@ void TBase::applyNewPreferences() {
 	}
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
-	setJumpTexts(); // Update texts in menus
+	playMenu->setJumpTexts(); // Update texts in menus
 
 	// Network
 	setupNetworkProxy();
@@ -2134,7 +1914,7 @@ void TBase::newMediaLoaded() {
 	} else {
 		pref->history_recents.addItem(filename);
 	}
-	updateRecents();
+	openMenu->updateRecents();
 
 	checkPendingActionsToRun();
 }
@@ -2345,63 +2125,6 @@ void TBase::updateAngles() {
 		a->setEnabled(false);
 	}
 	angles_menu->addActions(angleGroup->actions());
-}
-
-void TBase::updateRecents() {
-	qDebug("Gui::TBase::updateRecents");
-
-	recentfiles_menu->clear();
-
-	int current_items = 0;
-
-	if (pref->history_recents.count() > 0) {
-		for (int n=0; n < pref->history_recents.count(); n++) {
-			QString i = QString::number(n+1);
-			QString fullname = pref->history_recents.item(n);
-			QString filename = fullname;
-			QFileInfo fi(fullname);
-			//if (fi.exists()) filename = fi.fileName(); // Can be slow
-
-			// Let's see if it looks like a file (no dvd://1 or something)
-			if (fullname.indexOf(QRegExp("^.*://.*")) == -1) filename = fi.fileName();
-
-			if (filename.size() > 85) {
-				filename = filename.left(80) + "...";
-			}
-
-			QString show_name = filename;
-			QString title = pref->history_recents.title(n);
-			if (!title.isEmpty()) show_name = title;
-
-			QAction* a = recentfiles_menu->addAction(QString("%1. " + show_name).arg(i.insert(i.size()-1, '&'), 3, ' '));
-			a->setStatusTip(fullname);
-			a->setData(n);
-			connect(a, SIGNAL(triggered()), this, SLOT(openRecent()));
-			current_items++;
-		}
-	} else {
-		QAction* a = recentfiles_menu->addAction(tr("<empty>"));
-		a->setEnabled(false);
-	}
-
-	recentfiles_menu->menuAction()->setVisible(current_items > 0);
-	if (current_items  > 0) {
-		recentfiles_menu->addSeparator();
-		recentfiles_menu->addAction(clearRecentsAct);
-	}
-}
-
-void TBase::clearRecentsList() {
-
-	int ret = QMessageBox::question(this, tr("Confirm deletion - SMPlayer"),
-				tr("Delete the list of recent files?"),
-				QMessageBox::Cancel, QMessageBox::Ok);
-
-	if (ret == QMessageBox::Ok) {
-		// Delete items in menu
-		pref->history_recents.clear();
-		updateRecents();
-	}
 }
 
 void TBase::updateVideoEqualizer() {
@@ -3305,12 +3028,10 @@ void TBase::onStateChanged(TCore::State state) {
 
 	switch (state) {
 		case TCore::Playing:
-			playAct->setEnabled(false);
 			displayMessage(tr("Playing %1").arg(core->mdat.filename), 3000);
 			auto_hide_timer->startAutoHideMouse();
 			break;
 		case TCore::Paused:
-			playAct->setEnabled(true);
 			displayMessage(tr("Pause"), 0);
 			auto_hide_timer->stopAutoHideMouse();
 			break;
