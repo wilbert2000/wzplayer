@@ -6,7 +6,6 @@
 #include "core.h"
 
 class QActionGroup;
-class TPlayerWindow;
 
 namespace Settings {
 class TMediaSettings;
@@ -16,9 +15,6 @@ class TMediaSettings;
 namespace Gui {
 
 class TAction;
-class TSeekingButton;
-class TPlaylist;
-class TBase;
 
 // Evade mouse before popping up
 void execPopup(QWidget* w, QMenu* popup, QPoint p);
@@ -53,19 +49,6 @@ private:
 };
 
 
-class TAspectMenu : public TMenu {
-public:
-	explicit TAspectMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
-};
-
-
 class TAudioChannelMenu : public TMenu {
 public:
 	explicit TAudioChannelMenu(QWidget* parent, TCore* c);
@@ -92,36 +75,10 @@ private:
 };
 
 
-class TDeinterlaceMenu : public TMenu {
-public:
-	explicit TDeinterlaceMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
-};
-
-
 class TOSDMenu : public TMenu {
 public:
 	explicit TOSDMenu(QWidget* parent, TCore* c);
 protected:
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
-};
-
-
-class TRotateMenu : public TMenu {
-public:
-	explicit TRotateMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
@@ -161,86 +118,6 @@ protected:
 	virtual void onAboutToShow();
 private:
 	TCore* core;
-};
-
-
-class TVideoFilterMenu : public TMenu {
-	Q_OBJECT
-public:
-	explicit TVideoFilterMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-
-	QActionGroup* group;
-	TAction* postProcessingAct;
-	TAction* deblockAct;
-	TAction* deringAct;
-	TAction* gradfunAct;
-	TAction* addNoiseAct;
-	TAction* addLetterboxAct;
-	TAction* upscaleAct;
-	TAction* phaseAct;
-
-	// Denoise Action Group
-	TActionGroup* denoiseGroup;
-	TAction* denoiseNoneAct;
-	TAction* denoiseNormalAct;
-	TAction* denoiseSoftAct;
-
-	// Blur-sharpen group
-	TActionGroup* unsharpGroup;
-	TAction* unsharpNoneAct;
-	TAction* blurAct;
-	TAction* sharpenAct;
-
-	void updateFilters();
-
-private slots:
-	void onAboutToShowDenoise();
-	void onAboutToShowUnSharp();
-};
-
-
-class TVideoSizeGroup : public TActionGroup {
-	Q_OBJECT
-public:
-	explicit TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw);
-public slots:
-	void enableVideoSizeGroup(bool on);
-	void updateVideoSizeGroup();
-private:
-	TPlayerWindow* playerWindow;
-	void uncheck();
-};
-
-
-class TVideoSizeMenu : public TMenu {
-	Q_OBJECT
-public:
-	TVideoSizeMenu(TBase* parent, TPlayerWindow* pw);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool);
-	virtual void onAboutToShow();
-private:
-	TVideoSizeGroup* group;
-	TAction* doubleSizeAct;
-private slots:
-	virtual void fullscreenChanged();
-};
-
-
-class TVideoZoomAndPanMenu : public TMenu {
-public:
-	explicit TVideoZoomAndPanMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool);
-private:
-	TCore* core;
-	QActionGroup* group;
 };
 
 } // namespace Gui

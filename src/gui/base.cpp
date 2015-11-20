@@ -72,6 +72,7 @@
 #include "gui/action/menus.h"
 #include "gui/action/openmenu.h"
 #include "gui/action/playmenu.h"
+#include "gui/action/videomenu.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
@@ -394,48 +395,6 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	// Menu Video
-	fullscreenAct = new TAction(this, "fullscreen", QT_TR_NOOP("&Fullscreen"), "", Qt::Key_F);
-	fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
-	fullscreenAct->setCheckable(true);
-	connect(fullscreenAct, SIGNAL(triggered(bool)), this, SLOT(toggleFullscreen(bool)));
-
-	videoEqualizerAct = new TAction(this, "video_equalizer", QT_TR_NOOP("&Equalizer"), "equalizer", QKeySequence("Ctrl+E"));
-	videoEqualizerAct->setCheckable(true);
-	videoEqualizerAct->setChecked(video_equalizer->isVisible());
-	connect(videoEqualizerAct, SIGNAL(triggered(bool)), video_equalizer, SLOT(setVisible(bool)));
-	connect(video_equalizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
-
-	// Single screenshot
-	screenshotAct = new TAction(this, "screenshot", QT_TR_NOOP("S&creenshot"), "", Qt::Key_S);
-	connect(screenshotAct, SIGNAL(triggered()), core, SLOT(screenshot()));
-
-	// Multiple screenshots
-	screenshotsAct = new TAction(this, "multiple_screenshots", QT_TR_NOOP("Start/stop takin&g screenshots"), "screenshots", QKeySequence("Shift+D"));
-	connect(screenshotsAct, SIGNAL(triggered()), core, SLOT(screenshots()));
-
-#ifdef CAPTURE_STREAM
-	capturingAct = new TAction(this, "capture_stream", QT_TR_NOOP("Start/stop capturing stream"), "record");
-	connect(capturingAct, SIGNAL(triggered()), core, SLOT(switchCapturing()) );
-#endif
-
-#ifdef VIDEOPREVIEW
-	videoPreviewAct = new TAction(this, "video_preview", QT_TR_NOOP("Thumb&nail generator..."));
-	connect(videoPreviewAct, SIGNAL(triggered()), this, SLOT(showVideoPreviewDialog()));
-#endif
-
-	flipAct = new TAction(this, "flip", QT_TR_NOOP("Fli&p image"));
-	flipAct->setCheckable(true);
-	connect(flipAct, SIGNAL(triggered(bool)), core, SLOT(toggleFlip(bool)));
-
-	mirrorAct = new TAction(this, "mirror", QT_TR_NOOP("&Mirror image"));
-	mirrorAct->setCheckable(true);
-	connect(mirrorAct, SIGNAL(triggered(bool)), core, SLOT(toggleMirror(bool)));
-
-	stereo3dAct = new TAction(this, "stereo_3d_filter", QT_TR_NOOP("Stereo &3D filter..."), "stereo3d");
-	connect(stereo3dAct, SIGNAL(triggered()), this, SLOT(showStereo3dDialog()));
-
-
 	// Menu Audio
 	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("&Equalizer"));
 	audioEqualizerAct->setCheckable(true);
@@ -678,46 +637,11 @@ void TBase::createActions() {
 	toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", QT_TR_NOOP("Toggle deinterlacing"), "", Qt::Key_D);
 	connect(toggleDeinterlaceAct, SIGNAL(triggered()), core, SLOT(toggleDeinterlace()));
 
-
-#if USE_ADAPTER
-	screenGroup = new TActionGroup(this, "screen");
-	screenDefaultAct = new TActionGroupItem(this, screenGroup, "screen_default", QT_TR_NOOP("Default screen"), -1);
-
-#ifdef Q_OS_WIN
-	TDeviceList display_devices = TDeviceInfo::displayDevices();
-	if (!display_devices.isEmpty()) {
-		for (int n = 0; n < display_devices.count(); n++) {
-			int id = display_devices[n].ID().toInt();
-			QString desc = display_devices[n].desc();
-			TAction* screen_item = new TActionGroupItem(this, screenGroup,
-				QString("screen_%1").arg(n),
-				"&" + QString::number(n) + " - " + desc,
-				id);
-		}
-	}
-	else
-#endif // Q_OS_WIN
-
-	for (int n = 1; n <= 4; n++) {
-		TAction* screen_item = new TActionGroupItem(this, screenGroup,
-			QString("screen_%1").arg(n), "&" + QString::number(n), n);
-	}
-
-	screenGroup->setChecked(pref->adapter);
-	connect(screenGroup, SIGNAL(activated(int)), core, SLOT(changeAdapter(int)));
-#endif // USE_ADAPTER
-
 #if PROGRAM_SWITCH
 	// Program track
 	programTrackGroup = new TActionGroup(this, "programtrack");
 	connect(programTrackGroup, SIGNAL(activated(int)), core, SLOT(changeProgram(int)));
 #endif
-
-	// Video track
-	videoTrackGroup = new TActionGroup(this, "videotrack");
-	connect(videoTrackGroup, SIGNAL(activated(int)), core, SLOT(changeVideoTrack(int)));
-	connect(core, SIGNAL(videoTrackInfoChanged()), this, SLOT(updateVideoTracks()));
-	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
 
 	// Audio track
 	audioTrackGroup = new TActionGroup(this, "audiotrack");
@@ -832,61 +756,14 @@ void TBase::createMenus() {
 	menuBar()->addMenu(openMenu);
 	playMenu = new TPlayMenu(this, core, playlist);
 	menuBar()->addMenu(playMenu);
-	videoMenu = menuBar()->addMenu("Video");
+	videoMenu = new TVideoMenu(this, core, playerwindow, video_equalizer);
+	menuBar()->addMenu(videoMenu);
+
 	audioMenu = menuBar()->addMenu("Audio");
 	subtitlesMenu = menuBar()->addMenu("Subtitles");
 	browseMenu = menuBar()->addMenu("Browse");
 	optionsMenu = menuBar()->addMenu("Options");
 	helpMenu = menuBar()->addMenu("Help");
-
-
-	// VIDEO MENU
-	videotrack_menu = new QMenu(this);
-	videotrack_menu->menuAction()->setObjectName("videotrack_menu");
-	videoMenu->addMenu(videotrack_menu);
-
-	videoMenu->addSeparator();
-	videoMenu->addAction(fullscreenAct);
-
-#if USE_ADAPTER
-	// Screen submenu
-	screen_menu = new QMenu(this);
-	screen_menu->menuAction()->setObjectName("screen_menu");
-	screen_menu->addActions(screenGroup->actions());
-	videoMenu->addMenu(screen_menu);
-#endif
-
-	// Aspect submenu
-	videoMenu->addMenu(new TAspectMenu(this, core));
-	// Size submenu
-	videoMenu->addMenu(new TVideoSizeMenu(this, playerwindow));
-	// Zoom and pan submenu
-	videoMenu->addMenu(new TVideoZoomAndPanMenu(this, core));
-
-	// Equalizer
-	videoMenu->addSeparator();
-	videoMenu->addAction(videoEqualizerAct);
-	// Deinterlace submenu
-	videoMenu->addMenu(new TDeinterlaceMenu(this, core));
-	// Video filter submenu
-	videoMenu->addMenu(new TVideoFilterMenu(this, core));
-	videoMenu->addAction(stereo3dAct);
-
-	// Rotate submenu
-	videoMenu->addSeparator();
-	videoMenu->addMenu(new TRotateMenu(this, core));
-	videoMenu->addAction(flipAct);
-	videoMenu->addAction(mirrorAct);
-
-	// Screenshots
-	videoMenu->addSeparator();
-	videoMenu->addAction(screenshotAct);
-	videoMenu->addAction(screenshotsAct);
-
-#ifdef VIDEOPREVIEW
-	videoMenu->addSeparator();
-	videoMenu->addAction(videoPreviewAct);
-#endif
 
 
 	// AUDIO MENU
@@ -1203,35 +1080,6 @@ void TBase::setActionsEnabled(bool b) {
 
 	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
 
-	// Menu Video
-	bool enableVideo = b && !core->mdat.noVideo();
-	// Disable video filters if using vdpau or hwdec
-	bool enableFilters = enableVideo && core->videoFiltersEnabled();
-
-	flipAct->setEnabled(enableFilters);
-	mirrorAct->setEnabled(enableFilters);
-	stereo3dAct->setEnabled(enableFilters);
-	videoEqualizerAct->setEnabled(enableFilters);
-
-	bool enableScreenShots = enableFilters
-							 && pref->use_screenshot
-							 && !pref->screenshot_directory.isEmpty()
-							 && QFileInfo(pref->screenshot_directory).isDir();
-	screenshotAct->setEnabled(enableScreenShots);
-	screenshotsAct->setEnabled(enableScreenShots);
-
-#ifdef CAPTURE_STREAM
-	capturingAct->setEnabled(enableVideo
-							 && !pref->capture_directory.isEmpty()
-							 && QFileInfo(pref->capture_directory).isDir());
-#endif
-
-#if USE_ADAPTER
-	screenGroup->setActionsEnabled(enableVideo
-								   && pref->vo.startsWith("directx"));
-#endif
-
-
 	// Menu Audio
 	bool enableAudio = b && core->mdat.audios.count() > 0;
 	loadAudioAct->setEnabled(b);
@@ -1320,7 +1168,6 @@ void TBase::retranslateStrings() {
 	setWindowIcon(Images::icon("logo", 64));
 
 	// MENUS
-	videoMenu->menuAction()->setText(tr("&Video"));
 	audioMenu->menuAction()->setText(tr("&Audio"));
 	subtitlesMenu->menuAction()->setText(tr("&Subtitles"));
 	browseMenu->menuAction()->setText(tr("&Browse"));
@@ -1329,17 +1176,6 @@ void TBase::retranslateStrings() {
 
 	// Menu Play
 	playMenu->retranslateStrings();
-
-	// Menu Video
-	videotrack_menu->menuAction()->setText(tr("&Track", "video"));
-	videotrack_menu->menuAction()->setIcon(Images::icon("video_track"));
-
-#if USE_ADAPTER
-	screen_menu->menuAction()->setText(tr("Scree&n"));
-	screen_menu->menuAction()->setIcon(Images::icon("screen"));
-	screenDefaultAct->setTextAndTip(tr("&Default"));
-#endif
-
 
 	// Menu Audio
 	audiotrack_menu->menuAction()->setText(tr("&Track", "audio"));
@@ -1919,32 +1755,6 @@ void TBase::newMediaLoaded() {
 	openMenu->updateRecents();
 
 	checkPendingActionsToRun();
-}
-
-void TBase::updateVideoTracks() {
-	qDebug("Gui::TBase::updateVideoTracks");
-
-	videoTrackGroup->clear();
-
-	Maps::TTracks* videos = &core->mdat.videos;
-	if (videos->count() == 0) {
-		QAction* a = videoTrackGroup->addAction(tr("<empty>"));
-		a->setEnabled(false);
-	} else {
-		Maps::TTracks::TTrackIterator i = videos->getIterator();
-		while (i.hasNext()) {
-			i.next();
-			Maps::TTrackData track = i.value();
-			QAction* action = new QAction(videoTrackGroup);
-			action->setCheckable(true);
-			action->setText(track.getDisplayName());
-			action->setData(track.getID());
-			if (track.getID() == videos->getSelectedID())
-				action->setChecked(true);
-		}
-	}
-
-	videotrack_menu->addActions(videoTrackGroup->actions());
 }
 
 void TBase::updateAudioTracks() {
@@ -2597,7 +2407,7 @@ void TBase::toggleFullscreen(bool b) {
 	}
 
 	// Update fullscreen action
-	fullscreenAct->setChecked(pref->fullscreen);
+	videoMenu->fullscreenAct->setChecked(pref->fullscreen);
 
 	// Risky?
 	QTimer::singleShot(350, this, SLOT(unlockSizeFactor()));
@@ -3290,8 +3100,6 @@ void TBase::onMediaSettingsChanged() {
 	emit mediaSettingsChanged(mset);
 
 	// Video filters
-	flipAct->setChecked(mset->flip);
-	mirrorAct->setChecked(mset->mirror);
 	updateVideoEqualizer();
 
 	// Audio filters

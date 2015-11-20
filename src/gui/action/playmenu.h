@@ -6,6 +6,10 @@
 
 namespace Gui {
 
+class TPlaylist;
+class TSeekingButton;
+
+
 class TPlayMenu : public TMenu {
 	Q_OBJECT
 public:

@@ -1,5 +1,5 @@
-#ifndef OPENMENU_H
-#define OPENMENU_H
+#ifndef GUI_OPENMENU_H
+#define GUI_OPENMENU_H
 
 #include "gui/action/menus.h"
 
@@ -9,6 +9,7 @@ class TAction;
 // TODO: move fav and tv to actions
 class TFavorites;
 class TTVList;
+class TBase;
 
 class TOpenMenu : public TMenu {
 	Q_OBJECT
@@ -25,4 +26,4 @@ private slots:
 
 } // namespace Gui
 
-#endif // OPENMENU_H
+#endif // GUI_OPENMENU_H

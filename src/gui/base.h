@@ -61,6 +61,7 @@ class TTimeLabelAction;
 class TEditableToolbar;
 class TOpenMenu;
 class TPlayMenu;
+class TVideoMenu;
 class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;
@@ -178,7 +179,6 @@ protected slots:
 	virtual void updateMediaInfo();
 	void gotForbidden();
 
-	virtual void updateVideoTracks();
 	virtual void updateAudioTracks();
 	virtual void updateSubtitles();
 	virtual void updateTitles();
@@ -319,21 +319,6 @@ protected:
 protected:
 	QWidget* panel;
 
-	// Menu Video
-	TAction* fullscreenAct;
-	TAction* videoEqualizerAct;
-	TAction* screenshotAct;
-	TAction* screenshotsAct;
-#ifdef CAPTURE_STREAM
-	TAction * capturingAct;
-#endif
-#ifdef VIDEOPREVIEW
-	TAction* videoPreviewAct;
-#endif
-	TAction* flipAct;
-	TAction* mirrorAct;
-	TAction* stereo3dAct;
-
 	// Menu Audio
 	TAction* audioEqualizerAct;
 	TAction* muteAct;
@@ -421,17 +406,10 @@ protected:
 	TAction* showTimeAct;
 	TAction* toggleDeinterlaceAct;
 
-#if USE_ADAPTER
-	// Screen Group
-	TActionGroup* screenGroup;
-	TAction* screenDefaultAct;
-#endif
-
 	// Other groups
 #if PROGRAM_SWITCH
 	TActionGroup* programTrackGroup;
 #endif
-	TActionGroup* videoTrackGroup;
 	TActionGroup* audioTrackGroup;
 	TActionGroup* subtitleTrackGroup;
 #ifdef MPV_SUPPORT
@@ -453,7 +431,7 @@ protected:
 	// MENUS
 	TOpenMenu* openMenu;
 	TPlayMenu* playMenu;
-	QMenu* videoMenu;
+	TVideoMenu* videoMenu;
 	QMenu* audioMenu;
 	QMenu* subtitlesMenu;
 	QMenu* browseMenu;
@@ -467,15 +445,11 @@ protected:
 #if PROGRAM_SWITCH
 	QMenu* programtrack_menu;
 #endif
-	QMenu* videotrack_menu;
 	QMenu* audiotrack_menu;
 	QMenu* titles_menu;
 	QMenu* chapters_menu;
 	QMenu* angles_menu;
 
-#if USE_ADAPTER
-	QMenu* screen_menu;
-#endif
 	QMenu* audiofilter_menu;
 	TSubFPSMenu* subfps_menu;
 

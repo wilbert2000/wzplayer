@@ -85,12 +85,13 @@ void TSkin::createControlWidget() {
 	mediaBarPanel->setMediaPanelActionCollection(actions);
 
 	actions.clear();
-	actions << volumeslider_action << showPlaylistAct << fullscreenAct << videoEqualizerAct;
+	actions << volumeslider_action << showPlaylistAct << findAction("fullscreen")
+			<< findAction("video_equalizer");
 	mediaBarPanel->setVolumeControlActionCollection(actions);
 
 	actions.clear();
 	actions << findAction("open_file") << findAction("open_directory")
-			<< findAction("open_url") << screenshotAct << showPropertiesAct;
+			<< findAction("open_url") << findAction("screenshot") << showPropertiesAct;
 #ifdef FIND_SUBTITLES
 	actions << showFindSubtitlesDialogAct;
 #endif
