@@ -1,7 +1,5 @@
 #include "gui/action/videomenu.h"
 #include "settings/mediasettings.h"
-#include "playerwindow.h"
-#include "core.h"
 #include "gui/action/videofiltermenu.h"
 #include "gui/action/videosizemenu.h"
 #include "gui/videoequalizer.h"
