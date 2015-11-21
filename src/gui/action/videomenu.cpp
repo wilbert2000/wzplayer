@@ -220,16 +220,6 @@ TVideoMenu::TVideoMenu(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	: TMenu(parent, this, "video_menu", QT_TR_NOOP("&Video"), "noicon")
 	, core(c) {
 
-	// Video track
-	videoTrackGroup = new TActionGroup(this, "videotrack");
-	connect(videoTrackGroup, SIGNAL(activated(int)), core, SLOT(changeVideoTrack(int)));
-	connect(core, SIGNAL(videoTrackInfoChanged()), this, SLOT(updateVideoTracks()));
-	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
-
-	videoTrackMenu = new TMenu(parent, this, "videotrack_menu", QT_TR_NOOP("&Track"), "video_track");
-	addMenu(videoTrackMenu);
-
-	addSeparator();
 	fullscreenAct = new TAction(this, "fullscreen", QT_TR_NOOP("&Fullscreen"), "", Qt::Key_F);
 	fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
 	fullscreenAct->setCheckable(true);
@@ -302,6 +292,20 @@ TVideoMenu::TVideoMenu(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	mirrorAct->setCheckable(true);
 	connect(mirrorAct, SIGNAL(triggered(bool)), core, SLOT(toggleMirror(bool)));
 
+	// Video track
+	addSeparator();
+	// Next video track
+	nextVideoTrackAct = new TAction(this, "next_video_track", QT_TR_NOOP("Next video track"));
+	connect(nextVideoTrackAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()));
+
+	videoTrackGroup = new TActionGroup(this, "videotrack");
+	connect(videoTrackGroup, SIGNAL(activated(int)), core, SLOT(changeVideoTrack(int)));
+	connect(core, SIGNAL(videoTrackInfoChanged()), this, SLOT(updateVideoTracks()));
+	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
+
+	videoTrackMenu = new TMenu(parent, this, "videotrack_menu", QT_TR_NOOP("&Track"), "video_track");
+	addMenu(videoTrackMenu);
+
 	// Screenshots
 	addSeparator();
 	// Single
@@ -328,6 +332,8 @@ TVideoMenu::TVideoMenu(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 void TVideoMenu::enableActions(bool stopped, bool video, bool) {
 
 	bool enableVideo = !stopped && video;
+	nextVideoTrackAct->setEnabled(enableVideo && core->mdat.videos.count() > 1);
+
 	bool enableFilters = enableVideo && core->videoFiltersEnabled();
 
 	flipAct->setEnabled(enableFilters);

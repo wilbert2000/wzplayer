@@ -49,19 +49,6 @@ private:
 };
 
 
-class TAudioChannelMenu : public TMenu {
-public:
-	explicit TAudioChannelMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
-};
-
-
 class TCCMenu : public TMenu {
 public:
 	explicit TCCMenu(QWidget* parent, TCore* c);
@@ -92,19 +79,6 @@ public:
 	TActionGroup* group;
 protected:
 	virtual void onAboutToShow();
-};
-
-
-class TStereoMenu : public TMenu {
-public:
-	explicit TStereoMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool, bool audio);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
 };
 
 

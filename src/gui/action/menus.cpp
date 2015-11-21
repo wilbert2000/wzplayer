@@ -133,37 +133,6 @@ void TMenu::addActionsTo(QWidget* w) {
 }
 
 
-TAudioChannelMenu::TAudioChannelMenu(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "audiochannels_menu", QT_TR_NOOP("&Channels"), "audio_channels")
-	, core(c) {
-
-	group = new TActionGroup(this, "channels");
-	group->setEnabled(false);
-	new TActionGroupItem(this, group, "channels_stereo", QT_TR_NOOP("&Stereo"), TMediaSettings::ChStereo);
-	new TActionGroupItem(this, group, "channels_surround", QT_TR_NOOP("&4.0 Surround"), TMediaSettings::ChSurround);
-	new TActionGroupItem(this, group, "channels_ful51", QT_TR_NOOP("&5.1 Surround"), TMediaSettings::ChFull51);
-	new TActionGroupItem(this, group, "channels_ful61", QT_TR_NOOP("&6.1 Surround"), TMediaSettings::ChFull61);
-	new TActionGroupItem(this, group, "channels_ful71", QT_TR_NOOP("&7.1 Surround"), TMediaSettings::ChFull71);
-	group->setChecked(core->mset.audio_use_channels);
-	connect(group, SIGNAL(activated(int)), core, SLOT(setAudioChannels(int)));
-	// No one else sets it
-	addActionsTo(parent);
-}
-
-void TAudioChannelMenu::enableActions(bool stopped, bool, bool audio) {
-	// Uses mset, so useless to set if stopped or no audio
-	group->setEnabled(!stopped && audio);
-}
-
-void TAudioChannelMenu::onMediaSettingsChanged(TMediaSettings* mset) {
-	group->setChecked(mset->audio_use_channels);
-}
-
-void TAudioChannelMenu::onAboutToShow() {
-	group->setChecked(core->mset.audio_use_channels);
-}
-
-
 TCCMenu::TCCMenu(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "closed_captions_menu", QT_TR_NOOP("&Closed captions"), "closed_caption")
 	, core(c) {
@@ -246,36 +215,6 @@ TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
 
 void TStayOnTopMenu::onAboutToShow() {
 	group->setChecked((int) pref->stay_on_top);
-}
-
-
-TStereoMenu::TStereoMenu(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "stereomode_menu", QT_TR_NOOP("&Stereo mode"), "stereo_mode")
-	, core(c) {
-
-	group = new TActionGroup(this, "stereo");
-	group->setEnabled(false);
-	new TActionGroupItem(this, group, "stereo", QT_TR_NOOP("&Stereo"), TMediaSettings::Stereo);
-	new TActionGroupItem(this, group, "left_channel", QT_TR_NOOP("&Left channel"), TMediaSettings::Left);
-	new TActionGroupItem(this, group, "right_channel", QT_TR_NOOP("&Right channel"), TMediaSettings::Right);
-	new TActionGroupItem(this, group, "mono", QT_TR_NOOP("&Mono"), TMediaSettings::Mono);
-	new TActionGroupItem(this, group, "reverse_channels", QT_TR_NOOP("Re&verse"), TMediaSettings::Reverse);
-	group->setChecked(core->mset.stereo_mode);
-	connect(group, SIGNAL(activated(int)), core, SLOT(setStereoMode(int)));
-	// No one else changes it
-	addActionsTo(parent);
-}
-
-void TStereoMenu::enableActions(bool stopped, bool, bool audio) {
-	group->setEnabled(!stopped && audio);
-}
-
-void TStereoMenu::onMediaSettingsChanged(TMediaSettings* mset) {
-	group->setChecked(mset->stereo_mode);
-}
-
-void TStereoMenu::onAboutToShow() {
-	group->setChecked(core->mset.stereo_mode);
 }
 
 

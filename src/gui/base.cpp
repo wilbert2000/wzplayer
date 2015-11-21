@@ -73,6 +73,7 @@
 #include "gui/action/openmenu.h"
 #include "gui/action/playmenu.h"
 #include "gui/action/videomenu.h"
+#include "gui/action/audiomenu.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
@@ -395,66 +396,6 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	// Menu Audio
-	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("&Equalizer"));
-	audioEqualizerAct->setCheckable(true);
-	audioEqualizerAct->setChecked(audio_equalizer->isVisible());
-	connect(audioEqualizerAct, SIGNAL(triggered(bool)), audio_equalizer, SLOT(setVisible(bool)));
-	connect(audio_equalizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
-
-	muteAct = new TAction(this, "mute", QT_TR_NOOP("&Mute"), "noicon", Qt::Key_M);
-	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
-	muteAct->setCheckable(true);
-	muteAct->setChecked(core->getMute());
-
-	QIcon icset(Images::icon("volume"));
-	icset.addPixmap(Images::icon("mute"), QIcon::Normal, QIcon::On);
-	muteAct->setIcon(icset);
-
-	connect(muteAct, SIGNAL(triggered(bool)), core, SLOT(mute(bool)));
-	connect(core, SIGNAL(muteChanged(bool)), muteAct, SLOT(setChecked(bool)));
-
-	decVolumeAct = new TAction(this, "decrease_volume", QT_TR_NOOP("Volume &-"), "audio_down");
-	decVolumeAct->setShortcuts(TActionsEditor::stringToShortcuts("9,/"));
-	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
-	connect(decVolumeAct, SIGNAL(triggered()), core, SLOT(decVolume()));
-
-	incVolumeAct = new TAction(this, "increase_volume", QT_TR_NOOP("Volume &+"), "audio_up");
-	incVolumeAct->setShortcuts(TActionsEditor::stringToShortcuts("0,*"));
-	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
-	connect(incVolumeAct, SIGNAL(triggered()), core, SLOT(incVolume()));
-
-	decAudioDelayAct = new TAction(this, "dec_audio_delay", QT_TR_NOOP("&Delay -"), "delay_down", Qt::Key_Minus);
-	connect(decAudioDelayAct, SIGNAL(triggered()), core, SLOT(decAudioDelay()));
-
-	incAudioDelayAct = new TAction(this, "inc_audio_delay", QT_TR_NOOP("Del&ay +"), "delay_up", Qt::Key_Plus);
-	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
-
-	audioDelayAct = new TAction(this, "audio_delay", QT_TR_NOOP("Set dela&y..."));
-	connect(audioDelayAct, SIGNAL(triggered()), this, SLOT(showAudioDelayDialog()));
-
-	loadAudioAct = new TAction(this, "load_audio_file", QT_TR_NOOP("&Load external file..."), "open");
-	connect(loadAudioAct, SIGNAL(triggered()), this, SLOT(loadAudioFile()));
-
-	unloadAudioAct = new TAction(this, "unload_audio_file", QT_TR_NOOP("&Unload"), "unload");
-	connect(unloadAudioAct, SIGNAL(triggered()), core, SLOT(unloadAudioFile()));
-
-
-	// Audio Filters
-	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"));
-	volnormAct->setCheckable(true);
-	connect(volnormAct, SIGNAL(triggered(bool)), core, SLOT(toggleVolnorm(bool)));
-
-#ifdef MPLAYER_SUPPORT
-	extrastereoAct = new TAction(this, "extrastereo_filter", QT_TR_NOOP("&Extrastereo"));
-	extrastereoAct->setCheckable(true);
-	connect(extrastereoAct, SIGNAL(triggered(bool)), core, SLOT(toggleExtrastereo(bool)));
-
-	karaokeAct = new TAction(this, "karaoke_filter", QT_TR_NOOP("&Karaoke"));
-	karaokeAct->setCheckable(true);
-	connect(karaokeAct, SIGNAL(triggered(bool)), core, SLOT(toggleKaraoke(bool)));
-#endif
-
 	// Menu Subtitles
 	loadSubsAct = new TAction(this, "load_subs", QT_TR_NOOP("&Load..."), "open");
 	connect(loadSubsAct, SIGNAL(triggered()), this, SLOT(loadSub()));
@@ -598,12 +539,6 @@ void TBase::createActions() {
 	incGammaAct = new TAction(this, "inc_gamma", QT_TR_NOOP("Inc gamma"));
 	connect(incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()));
 
-	nextVideoAct = new TAction(this, "next_video", QT_TR_NOOP("Next video"));
-	connect(nextVideoAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()));
-
-	nextAudioAct = new TAction(this, "next_audio", QT_TR_NOOP("Next audio"), "", Qt::Key_K);
-	connect(nextAudioAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
-
 	nextSubtitleAct = new TAction(this, "next_subtitle", QT_TR_NOOP("Next subtitle"), "", Qt::Key_J);
 	connect(nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()));
 
@@ -642,12 +577,6 @@ void TBase::createActions() {
 	programTrackGroup = new TActionGroup(this, "programtrack");
 	connect(programTrackGroup, SIGNAL(activated(int)), core, SLOT(changeProgram(int)));
 #endif
-
-	// Audio track
-	audioTrackGroup = new TActionGroup(this, "audiotrack");
-	connect(audioTrackGroup, SIGNAL(activated(int)), core, SLOT(changeAudioTrack(int)));
-	connect(core, SIGNAL(audioTrackInfoChanged()), this, SLOT(updateAudioTracks()));
-	connect(core, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
 
 	subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
 	connect(subtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSubtitle(int)));
@@ -758,49 +687,14 @@ void TBase::createMenus() {
 	menuBar()->addMenu(playMenu);
 	videoMenu = new TVideoMenu(this, core, playerwindow, video_equalizer);
 	menuBar()->addMenu(videoMenu);
+	audioMenu = new TAudioMenu(this, core, audio_equalizer);
+	menuBar()->addMenu(audioMenu);
 
-	audioMenu = menuBar()->addMenu("Audio");
+
 	subtitlesMenu = menuBar()->addMenu("Subtitles");
 	browseMenu = menuBar()->addMenu("Browse");
 	optionsMenu = menuBar()->addMenu("Options");
 	helpMenu = menuBar()->addMenu("Help");
-
-
-	// AUDIO MENU
-	// Audio track submenu
-	audiotrack_menu = new QMenu(this);
-	audiotrack_menu->menuAction()->setObjectName("audiotrack_menu");
-	audioMenu->addMenu(audiotrack_menu);
-
-	audioMenu->addSeparator();
-	audioMenu->addAction(loadAudioAct);
-	audioMenu->addAction(unloadAudioAct);
-
-	audioMenu->addSeparator();
-	audioMenu->addAction(audioEqualizerAct);
-	audioMenu->addMenu(new TStereoMenu(this, core));
-	audioMenu->addMenu(new TAudioChannelMenu(this, core));
-	// Filter submenu
-	audiofilter_menu = new QMenu(this);
-	audiofilter_menu->menuAction()->setObjectName("audiofilter_menu");
-	audiofilter_menu->addAction(volnormAct);
-
-#ifdef MPLAYER_SUPPORT
-	audiofilter_menu->addAction(extrastereoAct);
-	audiofilter_menu->addAction(karaokeAct);
-#endif
-
-	audioMenu->addMenu(audiofilter_menu);
-
-	audioMenu->addSeparator();
-	audioMenu->addAction(muteAct);
-	audioMenu->addAction(decVolumeAct);
-	audioMenu->addAction(incVolumeAct);
-	audioMenu->addSeparator();
-	audioMenu->addAction(decAudioDelayAct);
-	audioMenu->addAction(incAudioDelayAct);
-	audioMenu->addAction(audioDelayAct);
-
 
 	// SUBTITLES MENU
 	// Track submenu
@@ -1080,29 +974,6 @@ void TBase::setActionsEnabled(bool b) {
 
 	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
 
-	// Menu Audio
-	bool enableAudio = b && core->mdat.audios.count() > 0;
-	loadAudioAct->setEnabled(b);
-	unloadAudioAct->setEnabled(enableAudio && !core->mset.external_audio.isEmpty());
-
-	// Filters
-	volnormAct->setEnabled(enableAudio);
-
-#ifdef MPLAYER_SUPPORT
-	extrastereoAct->setEnabled(enableAudio && pref->isMPlayer());
-	karaokeAct->setEnabled(enableAudio && pref->isMPlayer());
-#endif
-
-	audioEqualizerAct->setEnabled(enableAudio && pref->use_audio_equalizer);
-
-	muteAct->setEnabled(enableAudio);
-	decVolumeAct->setEnabled(enableAudio);
-	incVolumeAct->setEnabled(enableAudio);
-	decAudioDelayAct->setEnabled(enableAudio);
-	incAudioDelayAct->setEnabled(enableAudio);
-	audioDelayAct->setEnabled(enableAudio);
-
-
 	// Menu Subtitles
 	loadSubsAct->setEnabled(b);
 	unloadSubsAct->setEnabled(b && core->haveExternalSubs());
@@ -1131,8 +1002,6 @@ void TBase::setActionsEnabled(bool b) {
 	incSaturationAct->setEnabled(b);
 	decGammaAct->setEnabled(b);
 	incGammaAct->setEnabled(b);
-	nextVideoAct->setEnabled(b);
-	nextAudioAct->setEnabled(b);
 	nextSubtitleAct->setEnabled(b);
 	nextChapterAct->setEnabled(b);
 	prevChapterAct->setEnabled(b);
@@ -1168,7 +1037,6 @@ void TBase::retranslateStrings() {
 	setWindowIcon(Images::icon("logo", 64));
 
 	// MENUS
-	audioMenu->menuAction()->setText(tr("&Audio"));
 	subtitlesMenu->menuAction()->setText(tr("&Subtitles"));
 	browseMenu->menuAction()->setText(tr("&Browse"));
 	optionsMenu->menuAction()->setText(tr("Op&tions"));
@@ -1176,14 +1044,6 @@ void TBase::retranslateStrings() {
 
 	// Menu Play
 	playMenu->retranslateStrings();
-
-	// Menu Audio
-	audiotrack_menu->menuAction()->setText(tr("&Track", "audio"));
-	audiotrack_menu->menuAction()->setIcon(Images::icon("audio_track"));
-
-	audiofilter_menu->menuAction()->setText(tr("&Filters"));
-	audiofilter_menu->menuAction()->setIcon(Images::icon("audio_filters"));
-
 
 	// Menu Subtitle
 	subtitles_track_menu->menuAction()->setText(tr("&Select"));
@@ -1755,32 +1615,6 @@ void TBase::newMediaLoaded() {
 	openMenu->updateRecents();
 
 	checkPendingActionsToRun();
-}
-
-void TBase::updateAudioTracks() {
-	qDebug("Gui::TBase::updateAudioTracks");
-
-	audioTrackGroup->clear();
-
-	Maps::TTracks* audios = &core->mdat.audios;
-	if (audios->count() == 0) {
-		QAction* a = audioTrackGroup->addAction(tr("<empty>"));
-		a->setEnabled(false);
-	} else {
-		Maps::TTracks::TTrackIterator i = audios->getIterator();
-		while (i.hasNext()) {
-			i.next();
-			Maps::TTrackData track = i.value();
-			QAction* action = new QAction(audioTrackGroup);
-			action->setCheckable(true);
-			action->setText(track.getDisplayName());
-			action->setData(track.getID());
-			if (track.getID() == audios->getSelectedID())
-				action->setChecked(true);
-		}
-	}
-
-	audiotrack_menu->addActions(audioTrackGroup->actions());
 }
 
 void TBase::updateSubtitles() {
@@ -3096,23 +2930,9 @@ void TBase::resizeEvent(QResizeEvent* event) {
 void TBase::onMediaSettingsChanged() {
 	qDebug("Gui::TBase::onMediaSettingsChanged");
 
-	TMediaSettings* mset = &core->mset;
-	emit mediaSettingsChanged(mset);
+	emit mediaSettingsChanged(&core->mset);
 
-	// Video filters
 	updateVideoEqualizer();
-
-	// Audio filters
-	// Volume normalization filter
-	volnormAct->setChecked(mset->volnorm_filter);
-
-#ifdef MPLAYER_SUPPORT
-	// Karaoke
-	karaokeAct->setChecked(mset->karaoke_filter);
-	// Extra stereo
-	extrastereoAct->setChecked(mset->extrastereo_filter);
-#endif
-
 	updateAudioEqualizer();
 }
 

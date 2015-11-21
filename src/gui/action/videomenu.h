@@ -24,8 +24,6 @@ protected:
 
 private:
 	TCore* core;
-	TActionGroup* videoTrackGroup;
-	TMenu* videoTrackMenu;
 
 #if USE_ADAPTER
 	TMenu* screenMenu;
@@ -36,6 +34,11 @@ private:
 	TAction* stereo3dAct;
 	TAction* flipAct;
 	TAction* mirrorAct;
+
+	TAction* nextVideoTrackAct;
+	TActionGroup* videoTrackGroup;
+	TMenu* videoTrackMenu;
+
 	TAction* screenshotAct;
 	TAction* screenshotsAct;
 

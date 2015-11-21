@@ -62,6 +62,7 @@ class TEditableToolbar;
 class TOpenMenu;
 class TPlayMenu;
 class TVideoMenu;
+class TAudioMenu;
 class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;
@@ -179,7 +180,6 @@ protected slots:
 	virtual void updateMediaInfo();
 	void gotForbidden();
 
-	virtual void updateAudioTracks();
 	virtual void updateSubtitles();
 	virtual void updateTitles();
 	virtual void updateChapters();
@@ -319,22 +319,6 @@ protected:
 protected:
 	QWidget* panel;
 
-	// Menu Audio
-	TAction* audioEqualizerAct;
-	TAction* muteAct;
-	TAction* decVolumeAct;
-	TAction* incVolumeAct;
-	TAction* decAudioDelayAct;
-	TAction* incAudioDelayAct;
-	TAction* audioDelayAct; // Ask for delay
-#ifdef MPLAYER_SUPPORT
-	TAction* extrastereoAct;
-	TAction* karaokeAct;
-#endif
-	TAction* volnormAct;
-	TAction* loadAudioAct;
-	TAction* unloadAudioAct;
-
 	// Menu Subtitles
 	TAction* loadSubsAct;
 	TAction* unloadSubsAct;
@@ -391,8 +375,6 @@ protected:
 	TAction* incSaturationAct;
 	TAction* decGammaAct;
 	TAction* incGammaAct;
-	TAction* nextVideoAct;
-	TAction* nextAudioAct;
 	TAction* nextSubtitleAct;
 	TAction* nextChapterAct;
 	TAction* prevChapterAct;
@@ -410,7 +392,6 @@ protected:
 #if PROGRAM_SWITCH
 	TActionGroup* programTrackGroup;
 #endif
-	TActionGroup* audioTrackGroup;
 	TActionGroup* subtitleTrackGroup;
 #ifdef MPV_SUPPORT
 	TActionGroup* secondarySubtitleTrackGroup;
@@ -432,7 +413,7 @@ protected:
 	TOpenMenu* openMenu;
 	TPlayMenu* playMenu;
 	TVideoMenu* videoMenu;
-	QMenu* audioMenu;
+	TAudioMenu* audioMenu;
 	QMenu* subtitlesMenu;
 	QMenu* browseMenu;
 	QMenu* optionsMenu;
@@ -445,12 +426,10 @@ protected:
 #if PROGRAM_SWITCH
 	QMenu* programtrack_menu;
 #endif
-	QMenu* audiotrack_menu;
 	QMenu* titles_menu;
 	QMenu* chapters_menu;
 	QMenu* angles_menu;
 
-	QMenu* audiofilter_menu;
 	TSubFPSMenu* subfps_menu;
 
 	QMenu* popup;
