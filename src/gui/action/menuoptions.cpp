@@ -1,4 +1,4 @@
-#include "gui/action/optionsmenu.h"
+#include "gui/action/menuoptions.h"
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
 #include "core.h"
@@ -8,9 +8,9 @@ using namespace Settings;
 
 namespace Gui {
 
-class TOSDMenu : public TMenu {
+class TMenuOSD : public TMenu {
 public:
-	explicit TOSDMenu(QWidget* parent, TCore* c);
+	explicit TMenuOSD(QWidget* parent, TCore* c);
 protected:
 	virtual void onAboutToShow();
 private:
@@ -18,7 +18,7 @@ private:
 	TActionGroup* group;
 };
 
-TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
+TMenuOSD::TMenuOSD(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "osd_menu", QT_TR_NOOP("&OSD"), "osd")
 	, core(c) {
 
@@ -41,20 +41,20 @@ TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TOSDMenu::onAboutToShow() {
+void TMenuOSD::onAboutToShow() {
 	group->setChecked((int) pref->osd_level);
 }
 
 
-class TStayOnTopMenu : public TMenu {
+class TMenuStayOnTop : public TMenu {
 public:
-	explicit TStayOnTopMenu(QWidget* parent);
+	explicit TMenuStayOnTop(QWidget* parent);
 	TActionGroup* group;
 protected:
 	virtual void onAboutToShow();
 };
 
-TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
+TMenuStayOnTop::TMenuStayOnTop(QWidget *parent) :
 	// TODO: rename to stay_on_top_menu?
 	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("&Stay on top"), "ontop") {
 
@@ -74,11 +74,11 @@ TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
 	addActionsTo(parent);
 }
 
-void TStayOnTopMenu::onAboutToShow() {
+void TMenuStayOnTop::onAboutToShow() {
 	group->setChecked((int) pref->stay_on_top);
 }
 
-TOptionsMenu::TOptionsMenu(QWidget* parent,
+TMenuOptions::TMenuOptions(QWidget* parent,
 						   TCore* core,
 						   QMenu* toolBarMenu,
 						   QWidget* playlist,
@@ -86,11 +86,11 @@ TOptionsMenu::TOptionsMenu(QWidget* parent,
 	: TMenu(parent, this, "options_menu", QT_TR_NOOP("Op&tions"), "noicon") {
 
 	// Ontop submenu
-	addMenu(new TStayOnTopMenu(parent));
+	addMenu(new TMenuStayOnTop(parent));
 	// Toolbars
 	addMenu(toolBarMenu);
 	// OSD
-	addMenu(new TOSDMenu(parent, core));
+	addMenu(new TMenuOSD(parent, core));
 
 	// Show properties
 	addSeparator();

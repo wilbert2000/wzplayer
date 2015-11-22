@@ -7,9 +7,9 @@ namespace Gui {
 
 class TAction;
 
-class THelpMenu : public TMenu {
+class TMenuHelp : public TMenu {
 public:
-	explicit THelpMenu(QWidget* parent);
+	explicit TMenuHelp(QWidget* parent);
 };
 
 } // namespace Gui

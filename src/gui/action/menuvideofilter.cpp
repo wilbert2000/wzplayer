@@ -1,4 +1,4 @@
-#include "gui/action/videofiltermenu.h"
+#include "gui/action/menuvideofilter.h"
 #include "settings/mediasettings.h"
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
@@ -9,7 +9,7 @@ using namespace Settings;
 
 namespace Gui {
 
-TVideoFilterMenu::TVideoFilterMenu(QWidget *parent, TCore *c)
+TMenuVideoFilter::TMenuVideoFilter(QWidget *parent, TCore *c)
 	: TMenu(parent, this, "videofilter_menu", QT_TR_NOOP("F&ilters"), "video_filters")
 	, core(c) {
 
@@ -86,7 +86,7 @@ TVideoFilterMenu::TVideoFilterMenu(QWidget *parent, TCore *c)
 	updateFilters();
 }
 
-void TVideoFilterMenu::updateFilters() {
+void TMenuVideoFilter::updateFilters() {
 
 	postProcessingAct->setChecked(core->mset.postprocessing_filter);
 	deblockAct->setChecked(core->mset.deblock_filter);
@@ -101,7 +101,7 @@ void TVideoFilterMenu::updateFilters() {
 	unsharpGroup->setChecked(core->mset.current_unsharp);
 }
 
-void TVideoFilterMenu::enableActions(bool stopped, bool video, bool) {
+void TMenuVideoFilter::enableActions(bool stopped, bool video, bool) {
 
 	bool enable = !stopped && video && core->videoFiltersEnabled();
 	group->setEnabled(enable);
@@ -109,19 +109,19 @@ void TVideoFilterMenu::enableActions(bool stopped, bool video, bool) {
 	unsharpGroup->setEnabled(enable);
 }
 
-void TVideoFilterMenu::onMediaSettingsChanged(Settings::TMediaSettings*) {
+void TMenuVideoFilter::onMediaSettingsChanged(Settings::TMediaSettings*) {
 	updateFilters();
 }
 
-void TVideoFilterMenu::onAboutToShow() {
+void TMenuVideoFilter::onAboutToShow() {
 	updateFilters();
 }
 
-void TVideoFilterMenu::onAboutToShowDenoise() {
+void TMenuVideoFilter::onAboutToShowDenoise() {
 	denoiseGroup->setChecked(core->mset.current_denoiser);
 }
 
-void TVideoFilterMenu::onAboutToShowUnSharp() {
+void TMenuVideoFilter::onAboutToShowUnSharp() {
 	unsharpGroup->setChecked(core->mset.current_unsharp);
 }
 

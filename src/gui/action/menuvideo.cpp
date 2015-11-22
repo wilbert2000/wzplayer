@@ -1,7 +1,7 @@
-#include "gui/action/videomenu.h"
+#include "gui/action/menuvideo.h"
 #include "settings/mediasettings.h"
-#include "gui/action/videofiltermenu.h"
-#include "gui/action/videosizemenu.h"
+#include "gui/action/menuvideofilter.h"
+#include "gui/action/menuvideosize.h"
 #include "gui/videoequalizer.h"
 #include "gui/base.h"
 
@@ -11,9 +11,9 @@ using namespace Settings;
 namespace Gui {
 
 
-class TAspectMenu : public TMenu {
+class TtMenuAspec : public TMenu {
 public:
-	explicit TAspectMenu(QWidget* parent, TCore* c);
+	explicit TtMenuAspec(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -24,7 +24,7 @@ private:
 };
 
 
-TAspectMenu::TAspectMenu(QWidget* parent, TCore* c)
+TtMenuAspec::TtMenuAspec(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "aspect_menu", QT_TR_NOOP("&Aspect ratio"), "aspect")
 	, core(c) {
 
@@ -49,23 +49,23 @@ TAspectMenu::TAspectMenu(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TAspectMenu::enableActions(bool stopped, bool video, bool) {
+void TtMenuAspec::enableActions(bool stopped, bool video, bool) {
 	// Uses mset, so useless to set if stopped or no video
 	group->setEnabled(!stopped && video);
 }
 
-void TAspectMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TtMenuAspec::onMediaSettingsChanged(TMediaSettings* mset) {
 	group->setChecked(mset->aspect_ratio_id);
 }
 
-void TAspectMenu::onAboutToShow() {
+void TtMenuAspec::onAboutToShow() {
 	group->setChecked(core->mset.aspect_ratio_id);
 }
 
 
-class TDeinterlaceMenu : public TMenu {
+class TMenuDeinterlace : public TMenu {
 public:
-	explicit TDeinterlaceMenu(QWidget* parent, TCore* c);
+	explicit TMenuDeinterlace(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -76,7 +76,7 @@ private:
 };
 
 
-TDeinterlaceMenu::TDeinterlaceMenu(QWidget* parent, TCore* c)
+TMenuDeinterlace::TMenuDeinterlace(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "deinterlace_menu", QT_TR_NOOP("&Deinterlace"), "deinterlace")
 	, core(c) {
 
@@ -94,23 +94,23 @@ TDeinterlaceMenu::TDeinterlaceMenu(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TDeinterlaceMenu::enableActions(bool stopped, bool video, bool) {
+void TMenuDeinterlace::enableActions(bool stopped, bool video, bool) {
 	// Using mset, so useless to set if stopped or no video
 	group->setEnabled(!stopped && video && core->videoFiltersEnabled());
 }
 
-void TDeinterlaceMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuDeinterlace::onMediaSettingsChanged(TMediaSettings* mset) {
 	group->setChecked(mset->current_deinterlacer);
 }
 
-void TDeinterlaceMenu::onAboutToShow() {
+void TMenuDeinterlace::onAboutToShow() {
 	group->setChecked(core->mset.current_deinterlacer);
 }
 
 
-class TRotateMenu : public TMenu {
+class TMenuRotate : public TMenu {
 public:
-	explicit TRotateMenu(QWidget* parent, TCore* c);
+	explicit TMenuRotate(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
@@ -121,7 +121,7 @@ private:
 };
 
 
-TRotateMenu::TRotateMenu(QWidget* parent, TCore* c)
+TMenuRotate::TMenuRotate(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "rotate_menu", QT_TR_NOOP("&Rotate"), "rotate")
 	, core(c) {
 
@@ -138,23 +138,23 @@ TRotateMenu::TRotateMenu(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TRotateMenu::enableActions(bool stopped, bool video, bool) {
+void TMenuRotate::enableActions(bool stopped, bool video, bool) {
 	// Using mset, so useless to set if stopped or no video
 	group->setEnabled(!stopped && video && core->videoFiltersEnabled());
 }
 
-void TRotateMenu::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
+void TMenuRotate::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
 	group->setChecked(mset->rotate);
 }
 
-void TRotateMenu::onAboutToShow() {
+void TMenuRotate::onAboutToShow() {
 	group->setChecked(core->mset.rotate);
 }
 
 
-class TVideoZoomAndPanMenu : public TMenu {
+class TMenuVideoZoomAndPan : public TMenu {
 public:
-	explicit TVideoZoomAndPanMenu(QWidget* parent, TCore* c);
+	explicit TMenuVideoZoomAndPan(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 private:
@@ -163,7 +163,7 @@ private:
 };
 
 
-TVideoZoomAndPanMenu::TVideoZoomAndPanMenu(QWidget* parent, TCore* c)
+TMenuVideoZoomAndPan::TMenuVideoZoomAndPan(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "zoom_and_pan_menu", QT_TR_NOOP("&Zoom and pan"), "zoom_and_pan")
 	, core(c) {
 
@@ -211,12 +211,12 @@ TVideoZoomAndPanMenu::TVideoZoomAndPanMenu(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TVideoZoomAndPanMenu::enableActions(bool stopped, bool video, bool) {
+void TMenuVideoZoomAndPan::enableActions(bool stopped, bool video, bool) {
 	group->setEnabled(!stopped && video);
 }
 
 
-TVideoMenu::TVideoMenu(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVideoEqualizer* videoEqualizer)
+TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVideoEqualizer* videoEqualizer)
 	: TMenu(parent, this, "video_menu", QT_TR_NOOP("&Video"), "noicon")
 	, core(c) {
 
@@ -258,11 +258,11 @@ TVideoMenu::TVideoMenu(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 #endif
 
 	// Aspect submenu
-	addMenu(new TAspectMenu(parent, core));
+	addMenu(new TtMenuAspec(parent, core));
 	// Size submenu
-	addMenu(new TVideoSizeMenu(parent, playerwindow));
+	addMenu(new TMenuVideoSize(parent, playerwindow));
 	// Zoom and pan submenu
-	addMenu(new TVideoZoomAndPanMenu(parent, core));
+	addMenu(new TMenuVideoZoomAndPan(parent, core));
 
 	// Equalizer
 	addSeparator();
@@ -273,16 +273,16 @@ TVideoMenu::TVideoMenu(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	connect(videoEqualizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
 
 	// Deinterlace submenu
-	addMenu(new TDeinterlaceMenu(parent, core));
+	addMenu(new TMenuDeinterlace(parent, core));
 	// Video filter submenu
-	addMenu(new TVideoFilterMenu(parent, core));
+	addMenu(new TMenuVideoFilter(parent, core));
 	// Stereo 3D
 	stereo3dAct = new TAction(this, "stereo_3d_filter", QT_TR_NOOP("Stereo &3D filter..."), "stereo3d");
 	connect(stereo3dAct, SIGNAL(triggered()), parent, SLOT(showStereo3dDialog()));
 
 	// Rotate submenu
 	addSeparator();
-	addMenu(new TRotateMenu(parent, core));
+	addMenu(new TMenuRotate(parent, core));
 
 	flipAct = new TAction(this, "flip", QT_TR_NOOP("Fli&p image"));
 	flipAct->setCheckable(true);
@@ -329,7 +329,7 @@ TVideoMenu::TVideoMenu(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	addActionsTo(parent);
 }
 
-void TVideoMenu::enableActions(bool stopped, bool video, bool) {
+void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
 	bool enableVideo = !stopped && video;
 	nextVideoTrackAct->setEnabled(enableVideo && core->mdat.videos.count() > 1);
@@ -360,15 +360,15 @@ void TVideoMenu::enableActions(bool stopped, bool video, bool) {
 #endif
 }
 
-void TVideoMenu::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
+void TMenuVideo::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
 
 	flipAct->setChecked(mset->flip);
 	mirrorAct->setChecked(mset->mirror);
 }
 
 
-void TVideoMenu::updateVideoTracks() {
-	qDebug("Gui::TVideoMenu::updateVideoTracks");
+void TMenuVideo::updateVideoTracks() {
+	qDebug("Gui::TMenuVideo::updateVideoTracks");
 
 	videoTrackGroup->clear();
 

@@ -12,10 +12,10 @@ class TAction;
 class TActionGroup;
 class TAudioEqualizer;
 
-class TAudioMenu : public TMenu {
+class TMenuAudio : public TMenu {
 	Q_OBJECT
 public:
-	explicit TAudioMenu(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer);
+	explicit TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer);
 
 protected:
 	virtual void enableActions(bool stopped, bool, bool audio);

@@ -1,9 +1,9 @@
-#include "gui/action/helpmenu.h"
+#include "gui/action/menuhelp.h"
 #include "gui/action/action.h"
 
 namespace Gui {
 
-THelpMenu::THelpMenu(QWidget* parent)
+TMenuHelp::TMenuHelp(QWidget* parent)
 	: TMenu(parent, this, "help_menu", QT_TR_NOOP("&Help"), "noicon") {
 
 	// Menu Help

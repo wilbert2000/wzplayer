@@ -11,10 +11,10 @@ namespace Gui {
 class TAction;
 class TActionGroup;
 
-class TVideoFilterMenu : public TMenu {
+class TMenuVideoFilter : public TMenu {
 	Q_OBJECT
 public:
-	explicit TVideoFilterMenu(QWidget* parent, TCore* c);
+	explicit TMenuVideoFilter(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);

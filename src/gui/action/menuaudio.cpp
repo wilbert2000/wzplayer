@@ -1,4 +1,4 @@
-#include "gui/action/audiomenu.h"
+#include "gui/action/menuaudio.h"
 #include <QWidget>
 #include "images.h"
 #include "settings/mediasettings.h"
@@ -12,9 +12,9 @@ using namespace Settings;
 
 namespace Gui {
 
-class TAudioChannelMenu : public TMenu {
+class TMenuAudioChannel : public TMenu {
 public:
-	explicit TAudioChannelMenu(QWidget* parent, TCore* c);
+	explicit TMenuAudioChannel(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -25,7 +25,7 @@ private:
 };
 
 
-TAudioChannelMenu::TAudioChannelMenu(QWidget *parent, TCore* c)
+TMenuAudioChannel::TMenuAudioChannel(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "audiochannels_menu", QT_TR_NOOP("&Channels"), "audio_channels")
 	, core(c) {
 
@@ -42,23 +42,23 @@ TAudioChannelMenu::TAudioChannelMenu(QWidget *parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TAudioChannelMenu::enableActions(bool stopped, bool, bool audio) {
+void TMenuAudioChannel::enableActions(bool stopped, bool, bool audio) {
 	// Uses mset, so useless to set if stopped or no audio
 	group->setEnabled(!stopped && audio);
 }
 
-void TAudioChannelMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuAudioChannel::onMediaSettingsChanged(TMediaSettings* mset) {
 	group->setChecked(mset->audio_use_channels);
 }
 
-void TAudioChannelMenu::onAboutToShow() {
+void TMenuAudioChannel::onAboutToShow() {
 	group->setChecked(core->mset.audio_use_channels);
 }
 
 
-class TStereoMenu : public TMenu {
+class TMenuStereo : public TMenu {
 public:
-	explicit TStereoMenu(QWidget* parent, TCore* c);
+	explicit TMenuStereo(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
@@ -68,7 +68,7 @@ private:
 	TActionGroup* group;
 };
 
-TStereoMenu::TStereoMenu(QWidget *parent, TCore* c)
+TMenuStereo::TMenuStereo(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "stereomode_menu", QT_TR_NOOP("&Stereo mode"), "stereo_mode")
 	, core(c) {
 
@@ -85,20 +85,20 @@ TStereoMenu::TStereoMenu(QWidget *parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TStereoMenu::enableActions(bool stopped, bool, bool audio) {
+void TMenuStereo::enableActions(bool stopped, bool, bool audio) {
 	group->setEnabled(!stopped && audio);
 }
 
-void TStereoMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuStereo::onMediaSettingsChanged(TMediaSettings* mset) {
 	group->setChecked(mset->stereo_mode);
 }
 
-void TStereoMenu::onAboutToShow() {
+void TMenuStereo::onAboutToShow() {
 	group->setChecked(core->mset.stereo_mode);
 }
 
 
-TAudioMenu::TAudioMenu(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer)
+TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer)
 	: TMenu(parent, this, "audio_menu", QT_TR_NOOP("&Audio"), "noicon")
 	, core(c) {
 
@@ -143,8 +143,8 @@ TAudioMenu::TAudioMenu(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	connect(audioEqualizerAct, SIGNAL(triggered(bool)), audioEqualizer, SLOT(setVisible(bool)));
 	connect(audioEqualizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
 	// Stereo and channel subs
-	addMenu(new TStereoMenu(parent, core));
-	addMenu(new TAudioChannelMenu(parent, core));
+	addMenu(new TMenuStereo(parent, core));
+	addMenu(new TMenuAudioChannel(parent, core));
 	// Filter sub
 	audioFilterMenu = new TMenu(parent, this, "audiofilter_menu", QT_TR_NOOP("&Filters"), "audio_filters");
 	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"), "", false);
@@ -190,7 +190,7 @@ TAudioMenu::TAudioMenu(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	addActionsTo(parent);
 }
 
-void TAudioMenu::enableActions(bool stopped, bool, bool audio) {
+void TMenuAudio::enableActions(bool stopped, bool, bool audio) {
 
 	bool enableAudio = !stopped && audio;
 	nextAudioTrackAct->setEnabled(enableAudio && core->mdat.audios.count() > 1);
@@ -217,7 +217,7 @@ void TAudioMenu::enableActions(bool stopped, bool, bool audio) {
 	audioDelayAct->setEnabled(enableAudio);
 }
 
-void TAudioMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {
 
 	// Filters
 	volnormAct->setChecked(mset->volnorm_filter);
@@ -230,8 +230,8 @@ void TAudioMenu::onMediaSettingsChanged(TMediaSettings* mset) {
 #endif
 }
 
-void TAudioMenu::updateAudioTracks() {
-	qDebug("Gui::TAudioMenu::updateAudioTracks");
+void TMenuAudio::updateAudioTracks() {
+	qDebug("Gui::TMenuAudio::updateAudioTracks");
 
 	audioTrackGroup->clear();
 

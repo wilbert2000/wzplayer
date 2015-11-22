@@ -95,16 +95,16 @@ HEADERS += config.h \
     gui/action/sizegrip.h \
     gui/action/editabletoolbar.h \
     gui/action/menu.h \
-    gui/action/openmenu.h \
-    gui/action/playmenu.h \
-    gui/action/videofiltermenu.h \
-    gui/action/videosizemenu.h \
-    gui/action/videomenu.h \
-    gui/action/audiomenu.h \
-    gui/action/subtitlemenu.h \
-    gui/action/browsemenu.h \
-    gui/action/optionsmenu.h \
-    gui/action/helpmenu.h \
+    gui/action/menuopen.h \
+    gui/action/menuplay.h \
+    gui/action/menuvideofilter.h \
+    gui/action/menuvideosize.h \
+    gui/action/menuvideo.h \
+    gui/action/menuaudio.h \
+    gui/action/menusubtitle.h \
+    gui/action/menubrowse.h \
+    gui/action/menuoptions.h \
+    gui/action/menuhelp.h \
     gui/deviceinfo.h \
     gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
@@ -201,16 +201,16 @@ SOURCES	+= version.cpp \
     gui/action/sizegrip.cpp \
     gui/action/editabletoolbar.cpp \
     gui/action/menu.cpp \
-    gui/action/openmenu.cpp \
-    gui/action/playmenu.cpp \
-    gui/action/videofiltermenu.cpp \
-    gui/action/videosizemenu.cpp \
-    gui/action/videomenu.cpp \
-    gui/action/audiomenu.cpp \
-    gui/action/subtitlemenu.cpp \
-    gui/action/browsemenu.cpp \
-    gui/action/optionsmenu.cpp \
-    gui/action/helpmenu.cpp \
+    gui/action/menuopen.cpp \
+    gui/action/menuplay.cpp \
+    gui/action/menuvideofilter.cpp \
+    gui/action/menuvideosize.cpp \
+    gui/action/menuvideo.cpp \
+    gui/action/menuaudio.cpp \
+    gui/action/menusubtitle.cpp \
+    gui/action/menubrowse.cpp \
+    gui/action/menuoptions.cpp \
+    gui/action/menuhelp.cpp \
     gui/deviceinfo.cpp \
     gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \

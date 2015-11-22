@@ -1,4 +1,4 @@
-#include "gui/action/browsemenu.h"
+#include "gui/action/menubrowse.h"
 #include <QWidget>
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
@@ -9,7 +9,7 @@ using namespace Settings;
 
 namespace Gui {
 
-TBrowseMenu::TBrowseMenu(QWidget* parent, TCore* c)
+TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "browse_menu", QT_TR_NOOP("&Browse"), "noicon")
 	, core(c) {
 
@@ -96,7 +96,7 @@ TBrowseMenu::TBrowseMenu(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TBrowseMenu::enableActions(bool stopped, bool, bool) {
+void TMenuBrowse::enableActions(bool stopped, bool, bool) {
 
 	bool enableChapters = !stopped && core->mdat.chapters.count() > 0;
 	prevChapterAct->setEnabled(enableChapters);
@@ -114,8 +114,8 @@ void TBrowseMenu::enableActions(bool stopped, bool, bool) {
 	dvdnavMouseAct->setEnabled(enableDVDNav);
 }
 
-void TBrowseMenu::updateTitles() {
-	qDebug("Gui::TBrowseMenu::updateTitles");
+void TMenuBrowse::updateTitles() {
+	qDebug("Gui::TMenuBrowse::updateTitles");
 
 	titleGroup->clear();
 	if (core->mdat.titles.count() == 0) {
@@ -143,8 +143,8 @@ void TBrowseMenu::updateTitles() {
 	updateAngles();
 }
 
-void TBrowseMenu::updateChapters() {
-	qDebug("Gui::TBrowseMenu::updateChapters");
+void TMenuBrowse::updateChapters() {
+	qDebug("Gui::TMenuBrowse::updateChapters");
 
 	chapterGroup->clear();
 	if (core->mdat.chapters.count() > 0) {
@@ -169,8 +169,8 @@ void TBrowseMenu::updateChapters() {
 	chaptersMenu->addActions(chapterGroup->actions());
 }
 
-void TBrowseMenu::updateAngles() {
-	qDebug("Gui::TBrowseMenu::updateAngels");
+void TMenuBrowse::updateAngles() {
+	qDebug("Gui::TMenuBrowse::updateAngels");
 
 	angleGroup->clear();
 	int n_angles = 0;

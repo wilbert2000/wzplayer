@@ -70,14 +70,14 @@
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
 #include "gui/action/menu.h"
-#include "gui/action/openmenu.h"
-#include "gui/action/playmenu.h"
-#include "gui/action/videomenu.h"
-#include "gui/action/audiomenu.h"
-#include "gui/action/subtitlemenu.h"
-#include "gui/action/browsemenu.h"
-#include "gui/action/optionsmenu.h"
-#include "gui/action/helpmenu.h"
+#include "gui/action/menuopen.h"
+#include "gui/action/menuplay.h"
+#include "gui/action/menuvideo.h"
+#include "gui/action/menuaudio.h"
+#include "gui/action/menusubtitle.h"
+#include "gui/action/menubrowse.h"
+#include "gui/action/menuoptions.h"
+#include "gui/action/menuhelp.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
@@ -511,27 +511,27 @@ void TBase::createActions() {
 void TBase::createMenus() {
 
 	// MENUS
-	openMenu = new TOpenMenu(this, core, playlist);
+	openMenu = new TMenuOpen(this, core, playlist);
 	menuBar()->addMenu(openMenu);
-	playMenu = new TPlayMenu(this, core, playlist);
+	playMenu = new TMenuPlay(this, core, playlist);
 	menuBar()->addMenu(playMenu);
-	videoMenu = new TVideoMenu(this, core, playerwindow, video_equalizer);
+	videoMenu = new TMenuVideo(this, core, playerwindow, video_equalizer);
 	menuBar()->addMenu(videoMenu);
-	audioMenu = new TAudioMenu(this, core, audio_equalizer);
+	audioMenu = new TMenuAudio(this, core, audio_equalizer);
 	menuBar()->addMenu(audioMenu);
-	subtitleMenu = new TSubtitleMenu(this, core);
+	subtitleMenu = new TMenuSubtitle(this, core);
 	menuBar()->addMenu(subtitleMenu);
-	browseMenu = new TBrowseMenu(this, core);
+	browseMenu = new TMenuBrowse(this, core);
 	menuBar()->addMenu(browseMenu);
 
 	// statusbar_menu added to toolbar_menu by createToolbarMenu()
 	// and filled by descendants::createMenus()
 	statusbar_menu = new QMenu(this);
 	toolbar_menu = createToolbarMenu();
-	optionsMenu = new TOptionsMenu(this, core, toolbar_menu, playlist, log_window);
+	optionsMenu = new TMenuOptions(this, core, toolbar_menu, playlist, log_window);
 	menuBar()->addMenu(optionsMenu);
 
-	helpMenu = new THelpMenu(this);
+	helpMenu = new TMenuHelp(this);
 	menuBar()->addMenu(helpMenu);
 
 	// POPUP MENU

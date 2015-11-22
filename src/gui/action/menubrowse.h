@@ -12,11 +12,11 @@ namespace Gui {
 class TAction;
 class TActionGroup;
 
-class TBrowseMenu : public TMenu {
+class TMenuBrowse : public TMenu {
 	Q_OBJECT
 
 public:
-	TBrowseMenu(QWidget* parent, TCore* c);
+	TMenuBrowse(QWidget* parent, TCore* c);
 
 protected:
 	virtual void enableActions(bool stopped, bool, bool);

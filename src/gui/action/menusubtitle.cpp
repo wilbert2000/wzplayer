@@ -1,4 +1,4 @@
-#include "gui/action/subtitlemenu.h"
+#include "gui/action/menusubtitle.h"
 #include <QWidget>
 #include "settings/mediasettings.h"
 #include "gui/action/actiongroup.h"
@@ -8,9 +8,9 @@ using namespace Settings;
 
 namespace Gui {
 
-class TCCMenu : public TMenu {
+class TMenuCC : public TMenu {
 public:
-	explicit TCCMenu(QWidget* parent, TCore* c);
+	explicit TMenuCC(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -20,7 +20,7 @@ private:
 	TActionGroup* group;
 };
 
-TCCMenu::TCCMenu(QWidget *parent, TCore* c)
+TMenuCC::TMenuCC(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "closed_captions_menu", QT_TR_NOOP("&Closed captions"), "closed_caption")
 	, core(c) {
 
@@ -37,22 +37,22 @@ TCCMenu::TCCMenu(QWidget *parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TCCMenu::enableActions(bool stopped, bool, bool) {
+void TMenuCC::enableActions(bool stopped, bool, bool) {
 	// Using mset, so useless to set if stopped.
 	// Assuming you can have closed captions on audio...
 	group->setEnabled(!stopped);
 }
 
-void TCCMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuCC::onMediaSettingsChanged(TMediaSettings* mset) {
 	group->setChecked(mset->closed_caption_channel);
 }
 
-void TCCMenu::onAboutToShow() {
+void TMenuCC::onAboutToShow() {
 	group->setChecked(core->mset.closed_caption_channel);
 }
 
 
-TSubFPSMenu::TSubFPSMenu(QWidget *parent, TCore* c)
+TMenuSubFPS::TMenuSubFPS(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "subfps_menu", QT_TR_NOOP("F&rames per second external subtitles"), "subfps")
 	, core(c) {
 
@@ -70,20 +70,20 @@ TSubFPSMenu::TSubFPSMenu(QWidget *parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TSubFPSMenu::enableActions(bool stopped, bool, bool) {
+void TMenuSubFPS::enableActions(bool stopped, bool, bool) {
 	group->setEnabled(!stopped && core->haveExternalSubs());
 }
 
-void TSubFPSMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuSubFPS::onMediaSettingsChanged(TMediaSettings* mset) {
 	group->setChecked(mset->external_subtitles_fps);
 }
 
-void TSubFPSMenu::onAboutToShow() {
+void TMenuSubFPS::onAboutToShow() {
 	group->setChecked(core->mset.external_subtitles_fps);
 }
 
 
-TSubtitleMenu::TSubtitleMenu(QWidget* parent, TCore* c)
+TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "subtitle_menu", QT_TR_NOOP("&Subtitles"), "noicon")
 	, core(c) {
 
@@ -144,7 +144,7 @@ TSubtitleMenu::TSubtitleMenu(QWidget* parent, TCore* c)
 	connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSecondarySubtitle(int)));
 #endif
 
-	addMenu(new TCCMenu(parent, core));
+	addMenu(new TMenuCC(parent, core));
 
 	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", QT_TR_NOOP("&Forced subtitles only"), "forced_subs");
 	useForcedSubsOnlyAct->setCheckable(true);
@@ -156,7 +156,7 @@ TSubtitleMenu::TSubtitleMenu(QWidget* parent, TCore* c)
 	connect(loadSubsAct, SIGNAL(triggered()), parent, SLOT(loadSub()));
 	unloadSubsAct = new TAction(this, "unload_subs", QT_TR_NOOP("U&nload subtitles"), "unload");
 	connect(unloadSubsAct, SIGNAL(triggered()), core, SLOT(unloadSub()));
-	subFPSMenu = new TSubFPSMenu(parent, core);
+	subFPSMenu = new TMenuSubFPS(parent, core);
 	addMenu(subFPSMenu);
 
 	addSeparator();
@@ -177,7 +177,7 @@ TSubtitleMenu::TSubtitleMenu(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TSubtitleMenu::enableActions(bool stopped, bool, bool) {
+void TMenuSubtitle::enableActions(bool stopped, bool, bool) {
 
 	bool e = !stopped
 			 && (core->mdat.subs.count() > 0
@@ -213,13 +213,13 @@ void TSubtitleMenu::enableActions(bool stopped, bool, bool) {
 	// openUploadSubtitlesPageAct always enabled
 }
 
-void TSubtitleMenu::onMediaSettingsChanged(Settings::TMediaSettings*) {
+void TMenuSubtitle::onMediaSettingsChanged(Settings::TMediaSettings*) {
 	// mset.closed_caption_channel changes enable,
 	// but already handled by updateSubtitles
 }
 
-void TSubtitleMenu::updateSubtitles() {
-	qDebug("Gui::TSubtitleMenu::updateSubtitles");
+void TMenuSubtitle::updateSubtitles() {
+	qDebug("Gui::TMenuSubtitle::updateSubtitles");
 
 	// Note: use idx not ID
 	subtitleTrackGroup->clear();

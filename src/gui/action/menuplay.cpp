@@ -1,4 +1,4 @@
-#include "gui/action/playmenu.h"
+#include "gui/action/menuplay.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "gui/action/widgetactions.h"
@@ -9,9 +9,9 @@ using namespace Settings;
 
 namespace Gui {
 
-class TABMenu : public TMenu {
+class TMenuAB : public TMenu {
 public:
-	explicit TABMenu(QWidget* parent, TCore* c);
+	explicit TMenuAB(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -22,7 +22,7 @@ private:
 	TAction* repeatAct;
 };
 
-TABMenu::TABMenu(QWidget* parent, TCore* c)
+TMenuAB::TMenuAB(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "ab_menu", QT_TR_NOOP("&A-B section"))
 	, core(c) {
 
@@ -53,23 +53,23 @@ TABMenu::TABMenu(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TABMenu::enableActions(bool stopped, bool, bool) {
+void TMenuAB::enableActions(bool stopped, bool, bool) {
 	// Uses mset, so useless to set if stopped
 	group->setEnabled(!stopped);
 }
 
-void TABMenu::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuAB::onMediaSettingsChanged(TMediaSettings* mset) {
 	repeatAct->setChecked(mset->loop);
 }
 
-void TABMenu::onAboutToShow() {
+void TMenuAB::onAboutToShow() {
 	repeatAct->setChecked(core->mset.loop);
 }
 
 
-class TPlaySpeedMenu : public TMenu {
+class TMenuPlaySpeed : public TMenu {
 public:
-	explicit TPlaySpeedMenu(QWidget* parent, TCore* c);
+	explicit TMenuPlaySpeed(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
 private:
@@ -78,7 +78,7 @@ private:
 };
 
 
-TPlaySpeedMenu::TPlaySpeedMenu(QWidget *parent, TCore *c)
+TMenuPlaySpeed::TMenuPlaySpeed(QWidget *parent, TCore *c)
 	: TMenu(parent, this, "speed_menu", QT_TR_NOOP("Sp&eed"), "speed")
 	, core(c) {
 
@@ -126,13 +126,13 @@ TPlaySpeedMenu::TPlaySpeedMenu(QWidget *parent, TCore *c)
 	addActionsTo(parent);
 }
 
-void TPlaySpeedMenu::enableActions(bool stopped, bool, bool) {
+void TMenuPlaySpeed::enableActions(bool stopped, bool, bool) {
 	// Using mset, so useless to set if stopped
 	group->setEnabled(!stopped);
 }
 
 
-TPlayMenu::TPlayMenu(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
+TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	: TMenu(parent, this, "play_menu", QT_TR_NOOP("&Play"), "noicon")
 	, core(c)
 	, playlist(plist)
@@ -209,9 +209,9 @@ TPlayMenu::TPlayMenu(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 
 	// A-B submenu
 	addSeparator();
-	addMenu(new TABMenu(parent, core));
+	addMenu(new TMenuAB(parent, core));
 	// Speed submenu
-	addMenu(new TPlaySpeedMenu(parent, core));
+	addMenu(new TMenuPlaySpeed(parent, core));
 
 	addSeparator();
 	gotoAct = new TAction(this, "jump_to", QT_TR_NOOP("&Jump to..."), "jumpto", QKeySequence("Ctrl+J"));
@@ -220,7 +220,7 @@ TPlayMenu::TPlayMenu(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	addActionsTo(parent);
 }
 
-void TPlayMenu::onStateChanged(TCore::State state) {
+void TMenuPlay::onStateChanged(TCore::State state) {
 
 	playAct->setEnabled(state != TCore::Playing);
 	// playOrPauseAct always enabled
@@ -234,7 +234,7 @@ void TPlayMenu::onStateChanged(TCore::State state) {
 	// stopAct->setEnabled(core->state() != TCore::Stopped);
 }
 
-void TPlayMenu::enableActions(bool stopped, bool, bool) {
+void TMenuPlay::enableActions(bool stopped, bool, bool) {
 
 	playAct->setEnabled(core->state() != TCore::Playing);
 	// playOrPauseAct always enabled
@@ -255,7 +255,7 @@ void TPlayMenu::enableActions(bool stopped, bool, bool) {
 	gotoAct->setEnabled(e);
 }
 
-void TPlayMenu::setJumpTexts() {
+void TMenuPlay::setJumpTexts() {
 
 	rewind1Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking1)));
 	rewind2Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking2)));
@@ -266,7 +266,7 @@ void TPlayMenu::setJumpTexts() {
 	forward3Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking3)));
 }
 
-void TPlayMenu::retranslateStrings() {
+void TMenuPlay::retranslateStrings() {
 
 	rewindbutton_action->setText(tr("3 in 1 rewind"));
 	forwardbutton_action->setText(tr("3 in 1 forward"));

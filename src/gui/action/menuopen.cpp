@@ -1,4 +1,4 @@
-#include "gui/action/openmenu.h"
+#include "gui/action/menuopen.h"
 #include <QMessageBox>
 #include "settings/paths.h"
 #include "gui/action/action.h"
@@ -10,12 +10,12 @@
 
 namespace Gui {
 
-class TDiscMenu : public TMenu {
+class TMenuDisc : public TMenu {
 public:
-	explicit TDiscMenu(TBase* parent);
+	explicit TMenuDisc(TBase* parent);
 };
 
-TDiscMenu::TDiscMenu(TBase* parent)
+TMenuDisc::TMenuDisc(TBase* parent)
 	: TMenu(parent, this, "disc_menu", QT_TR_NOOP("&Disc"), "open_disc") {
 
 	// DVD
@@ -38,7 +38,7 @@ TDiscMenu::TDiscMenu(TBase* parent)
 }
 
 
-TOpenMenu::TOpenMenu(TBase* parent, TCore* core, QWidget* playlist)
+TMenuOpen::TMenuOpen(TBase* parent, TCore* core, QWidget* playlist)
 	: TMenu(parent, this, "open_menu", QT_TR_NOOP("&Open"), "noicon")
 	, main_window(parent) {
 
@@ -86,7 +86,7 @@ TOpenMenu::TOpenMenu(TBase* parent, TCore* core, QWidget* playlist)
 	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
 
 	// Disc submenu
-	addMenu(new TDiscMenu(main_window));
+	addMenu(new TMenuDisc(main_window));
 
 	// URL
 	a = new TAction(this, "open_url", QT_TR_NOOP("&URL..."), "url", QKeySequence("Ctrl+U"));
@@ -144,8 +144,8 @@ TOpenMenu::TOpenMenu(TBase* parent, TCore* core, QWidget* playlist)
 	connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
 }
 
-void TOpenMenu::updateRecents() {
-	qDebug("Gui::TOpenMenu::updateRecents");
+void TMenuOpen::updateRecents() {
+	qDebug("Gui::TMenuOpen::updateRecents");
 
 	recentfiles_menu->clear();
 
@@ -188,7 +188,7 @@ void TOpenMenu::updateRecents() {
 	}
 }
 
-void TOpenMenu::clearRecentsList() {
+void TMenuOpen::clearRecentsList() {
 
 	int ret = QMessageBox::question(main_window, tr("Confirm deletion - SMPlayer"),
 				tr("Delete the list of recent files?"),

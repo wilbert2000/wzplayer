@@ -11,9 +11,9 @@ namespace Gui {
 class TAction;
 class TActionGroup;
 
-class TSubFPSMenu : public TMenu {
+class TMenuSubFPS : public TMenu {
 public:
-	explicit TSubFPSMenu(QWidget* parent, TCore* c);
+	explicit TMenuSubFPS(QWidget* parent, TCore* c);
 	TActionGroup* group;
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
@@ -21,13 +21,13 @@ protected:
 	virtual void onAboutToShow();
 private:
 	TCore* core;
-	friend class TSubtitleMenu;
+	friend class TMenuSubtitle;
 };
 
-class TSubtitleMenu : public TMenu {
+class TMenuSubtitle : public TMenu {
 	Q_OBJECT
 public:
-	TSubtitleMenu(QWidget* parent, TCore* c);
+	TMenuSubtitle(QWidget* parent, TCore* c);
 	TAction* useForcedSubsOnlyAct;
 	TAction* useCustomSubStyleAct;
 
@@ -65,7 +65,7 @@ private:
 
 	TAction* loadSubsAct;
 	TAction* unloadSubsAct;
-	TSubFPSMenu* subFPSMenu;
+	TMenuSubFPS* subFPSMenu;
 
 #ifdef FIND_SUBTITLES
 	TAction* showFindSubtitlesDialogAct;

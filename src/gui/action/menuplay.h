@@ -10,10 +10,10 @@ class TAction;
 class TPlaylist;
 class TSeekingButton;
 
-class TPlayMenu : public TMenu {
+class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
-	explicit TPlayMenu(QWidget* parent, TCore* c, Gui::TPlaylist* plist);
+	explicit TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist);
 	void setJumpTexts();
 	void retranslateStrings();
 protected:

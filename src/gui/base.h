@@ -58,12 +58,12 @@ class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
 class TEditableToolbar;
-class TOpenMenu;
-class TPlayMenu;
-class TVideoMenu;
-class TAudioMenu;
-class TSubtitleMenu;
-class TBrowseMenu;
+class TMenuOpen;
+class TMenuPlay;
+class TMenuVideo;
+class TMenuAudio;
+class TMenuSubtitle;
+class TMenuBrowse;
 class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;
@@ -340,12 +340,12 @@ protected:
 	TAction* toggleDeinterlaceAct;
 
 	// MENUS
-	TOpenMenu* openMenu;
-	TPlayMenu* playMenu;
-	TVideoMenu* videoMenu;
-	TAudioMenu* audioMenu;
-	TSubtitleMenu* subtitleMenu;
-	TBrowseMenu* browseMenu;
+	TMenuOpen* openMenu;
+	TMenuPlay* playMenu;
+	TMenuVideo* videoMenu;
+	TMenuAudio* audioMenu;
+	TMenuSubtitle* subtitleMenu;
+	TMenuBrowse* browseMenu;
 	QMenu* optionsMenu;
 	QMenu* helpMenu;
 

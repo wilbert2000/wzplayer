@@ -22,10 +22,10 @@ private:
 };
 
 
-class TVideoSizeMenu : public TMenu {
+class TMenuVideoSize : public TMenu {
 	Q_OBJECT
 public:
-	TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw);
+	TMenuVideoSize(QWidget* parent, TPlayerWindow* pw);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onAboutToShow();

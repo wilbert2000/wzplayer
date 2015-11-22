@@ -1,4 +1,4 @@
-#include "gui/action/videosizemenu.h"
+#include "gui/action/menuvideosize.h"
 #include "settings/preferences.h"
 #include "playerwindow.h"
 
@@ -64,7 +64,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 }
 
 
-TVideoSizeMenu::TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw)
+TMenuVideoSize::TMenuVideoSize(QWidget* parent, TPlayerWindow* pw)
 	: TMenu(parent, this, "videosize_menu", QT_TR_NOOP("&Size"), "video_size") {
 
 	group = new TVideoSizeGroup(this, pw);
@@ -81,19 +81,19 @@ TVideoSizeMenu::TVideoSizeMenu(QWidget* parent, TPlayerWindow* pw)
 	addActionsTo(parent);
 }
 
-void TVideoSizeMenu::enableActions(bool stopped, bool video, bool) {
+void TMenuVideoSize::enableActions(bool stopped, bool video, bool) {
 
 	group->enableVideoSizeGroup(!stopped && video);
 	doubleSizeAct->setEnabled(group->isEnabled());
 }
 
-void TVideoSizeMenu::fullscreenChanged() {
+void TMenuVideoSize::fullscreenChanged() {
 
 	group->enableVideoSizeGroup(true);
 	doubleSizeAct->setEnabled(group->isEnabled());
 }
 
-void TVideoSizeMenu::onAboutToShow() {
+void TMenuVideoSize::onAboutToShow() {
 
 	group->updateVideoSizeGroup();
 	doubleSizeAct->setEnabled(group->isEnabled());

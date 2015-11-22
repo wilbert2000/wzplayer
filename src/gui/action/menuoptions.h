@@ -10,9 +10,9 @@ namespace Gui {
 
 class TAction;
 
-class TOptionsMenu : public TMenu {
+class TMenuOptions : public TMenu {
 public:
-	TOptionsMenu(QWidget* parent,
+	TMenuOptions(QWidget* parent,
 				 TCore* core,
 				 QMenu* toolBarMenu,
 				 QWidget* playlist,

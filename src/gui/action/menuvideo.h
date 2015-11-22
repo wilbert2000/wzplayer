@@ -14,10 +14,10 @@ class TActionGroup;
 class TBase;
 class TVideoEqualizer;
 
-class TVideoMenu : public TMenu {
+class TMenuVideo : public TMenu {
 	Q_OBJECT
 public:
-	TVideoMenu(TBase* parent,
+	TMenuVideo(TBase* parent,
 			   TCore* c,
 			   TPlayerWindow* playerwindow,
 			   TVideoEqualizer* videoEqualizer);
