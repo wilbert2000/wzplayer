@@ -482,12 +482,6 @@ void TBase::createActions() {
 	incGammaAct = new TAction(this, "inc_gamma", QT_TR_NOOP("Inc gamma"));
 	connect(incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()));
 
-	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_At);
-	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
-
-	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_Exclam);
-	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
-
 	resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", QT_TR_NOOP("Reset video equalizer"));
 	connect(resetVideoEqualizerAct, SIGNAL(triggered()), video_equalizer, SLOT(reset()));
 
@@ -785,8 +779,6 @@ void TBase::setActionsEnabled(bool b) {
 	incSaturationAct->setEnabled(b);
 	decGammaAct->setEnabled(b);
 	incGammaAct->setEnabled(b);
-	nextChapterAct->setEnabled(b);
-	prevChapterAct->setEnabled(b);
 
 	// Time slider
 	timeslider_action->enable(b);

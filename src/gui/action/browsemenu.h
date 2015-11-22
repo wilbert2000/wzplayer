@@ -21,8 +21,12 @@ private:
 
 	TMenu* titlesMenu;
 	TActionGroup* titleGroup;
+
+	TAction* prevChapterAct;
+	TAction* nextChapterAct;
 	TMenu* chaptersMenu;
 	TActionGroup* chapterGroup;
+
 	TMenu* anglesMenu;
 	TActionGroup* angleGroup;
 

@@ -13,7 +13,7 @@ TBrowseMenu::TBrowseMenu(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "browse_menu", QT_TR_NOOP("&Browse"), "noicon")
 	, core(c) {
 
-	// Titles submenu
+	// Titles
 	titlesMenu = new TMenu(parent, this, "titles_menu", QT_TR_NOOP("&Title"), "title");
 	addMenu(titlesMenu);
 	titleGroup = new TActionGroup(this, "title");
@@ -21,7 +21,13 @@ TBrowseMenu::TBrowseMenu(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(titleTrackChanged(int)), titleGroup, SLOT(setChecked(int)));
 	connect(core, SIGNAL(titleTrackInfoChanged()), this, SLOT(updateTitles()));
 
-	// Chapters submenu
+	// Chapters
+	addSeparator();
+	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_Exclam);
+	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
+	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_At);
+	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
+
 	chaptersMenu = new TMenu(parent, this, "chapters_menu", QT_TR_NOOP("&Chapter"), "chapter");
 	addMenu(chaptersMenu);
 	chapterGroup = new TActionGroup(this, "chapter");
@@ -31,6 +37,7 @@ TBrowseMenu::TBrowseMenu(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(chapterInfoChanged()), this, SLOT(updateChapters()));
 
 	// Angles submenu
+	addSeparator();
 	anglesMenu = new TMenu(parent, this, "angles_menu", QT_TR_NOOP("&Angle"), "angle");
 	addMenu(anglesMenu);
 	angleGroup = new TActionGroup(this, "angle");
@@ -90,6 +97,10 @@ TBrowseMenu::TBrowseMenu(QWidget* parent, TCore* c)
 }
 
 void TBrowseMenu::enableActions(bool stopped, bool, bool) {
+
+	bool enableChapters = !stopped && core->mdat.chapters.count() > 0;
+	prevChapterAct->setEnabled(enableChapters);
+	nextChapterAct->setEnabled(enableChapters);
 
 	bool enableDVDNav = !stopped && core->mdat.detected_type == TMediaData::TYPE_DVDNAV;
 	dvdnavUpAct->setEnabled(enableDVDNav);

@@ -349,8 +349,6 @@ protected:
 	TAction* incSaturationAct;
 	TAction* decGammaAct;
 	TAction* incGammaAct;
-	TAction* nextChapterAct;
-	TAction* prevChapterAct;
 	TAction* resetVideoEqualizerAct;
 	TAction* resetAudioEqualizerAct;
 	TAction* showContextMenuAct;
