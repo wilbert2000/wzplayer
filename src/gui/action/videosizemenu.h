@@ -5,6 +5,8 @@
 #include "gui/action/menus.h"
 
 
+class TPlayerWindow;
+
 namespace Gui {
 
 class TVideoSizeGroup : public TActionGroup {

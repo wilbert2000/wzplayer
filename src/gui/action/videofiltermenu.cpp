@@ -1,5 +1,8 @@
 #include "gui/action/videofiltermenu.h"
 #include "settings/mediasettings.h"
+#include "gui/action/action.h"
+#include "gui/action/actiongroup.h"
+#include "core.h"
 
 
 using namespace Settings;

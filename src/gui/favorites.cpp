@@ -17,14 +17,14 @@
 */
 
 #include "gui/favorites.h"
-#include "gui/favoriteeditor.h"
-
 #include <QAction>
 #include <QSettings>
 #include <QFile>
 #include <QTextStream>
 #include <QInputDialog>
 #include <QFileInfo>
+#include "gui/action/action.h"
+#include "gui/favoriteeditor.h"
 
 #define FIRST_MENU_ENTRY 3
 

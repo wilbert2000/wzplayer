@@ -2,7 +2,7 @@
 #define GUI_PLAYMENU_H
 
 #include "gui/action/menus.h"
-
+#include "core.h"
 
 namespace Gui {
 

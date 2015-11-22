@@ -1,6 +1,7 @@
 #include "gui/action/subtitlemenu.h"
 #include <QWidget>
 #include "settings/mediasettings.h"
+#include "gui/action/actiongroup.h"
 #include "core.h"
 
 using namespace Settings;

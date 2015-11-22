@@ -64,6 +64,7 @@ class TPlayMenu;
 class TVideoMenu;
 class TAudioMenu;
 class TSubtitleMenu;
+class TBrowseMenu;
 class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;
@@ -180,10 +181,6 @@ protected slots:
 	virtual void newMediaLoaded();
 	virtual void updateMediaInfo();
 	void gotForbidden();
-
-	virtual void updateTitles();
-	virtual void updateChapters();
-	virtual void updateAngles();
 
 	virtual void updateVideoEqualizer();
 	virtual void updateAudioEqualizer();
@@ -364,43 +361,15 @@ protected:
 	TAction* showTimeAct;
 	TAction* toggleDeinterlaceAct;
 
-	// Other groups
-#if PROGRAM_SWITCH
-	TActionGroup* programTrackGroup;
-#endif
-	TActionGroup* titleGroup;
-	TActionGroup* angleGroup;
-	TActionGroup* chapterGroup;
-
-	TAction* dvdnavUpAct;
-	TAction* dvdnavDownAct;
-	TAction* dvdnavLeftAct;
-	TAction* dvdnavRightAct;
-	TAction* dvdnavMenuAct;
-	TAction* dvdnavSelectAct;
-	TAction* dvdnavPrevAct;
-	TAction* dvdnavMouseAct;
-
 	// MENUS
 	TOpenMenu* openMenu;
 	TPlayMenu* playMenu;
 	TVideoMenu* videoMenu;
 	TAudioMenu* audioMenu;
 	TSubtitleMenu* subtitleMenu;
-	QMenu* browseMenu;
+	TBrowseMenu* browseMenu;
 	QMenu* optionsMenu;
 	QMenu* helpMenu;
-
-	QMenu* subtitles_track_menu;
-#ifdef MPV_SUPPORT
-	QMenu* secondary_subtitles_track_menu;
-#endif
-#if PROGRAM_SWITCH
-	QMenu* programtrack_menu;
-#endif
-	QMenu* titles_menu;
-	QMenu* chapters_menu;
-	QMenu* angles_menu;
 
 	QMenu* popup;
 

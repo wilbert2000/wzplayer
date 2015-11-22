@@ -3,6 +3,7 @@
 #include "images.h"
 #include "settings/mediasettings.h"
 #include "core.h"
+#include "gui/action/actiongroup.h"
 #include "gui/action/actionseditor.h"
 #include "gui/audioequalizer.h"
 

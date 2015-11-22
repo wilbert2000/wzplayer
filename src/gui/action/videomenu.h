@@ -3,11 +3,13 @@
 
 #include "gui/action/menus.h"
 
+
+class TPlayerWindow;
+
 namespace Gui {
 
 class TBase;
 class TVideoEqualizer;
-
 
 class TVideoMenu : public TMenu {
 	Q_OBJECT

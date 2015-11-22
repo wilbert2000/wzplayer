@@ -2,19 +2,17 @@
 #define GUI_MENUS_H
 
 #include <QMenu>
-#include "gui/action/actiongroup.h"
-#include "core.h"
 
-class QActionGroup;
+class TCore;
 
 namespace Settings {
 class TMediaSettings;
 }
 
-
 namespace Gui {
 
 class TAction;
+class TActionGroup;
 
 // Evade mouse before popping up
 void execPopup(QWidget* w, QMenu* popup, QPoint p);
