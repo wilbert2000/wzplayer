@@ -1,4 +1,4 @@
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 #include <QDebug>
 #include <QMessageBox>
 #include "desktop.h"
@@ -130,59 +130,6 @@ void TMenu::addActionsTo(QWidget* w) {
 			w->addAction(a);
 		}
 	}
-}
-
-
-TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "osd_menu", QT_TR_NOOP("&OSD"), "osd")
-	, core(c) {
-
-	group = new TActionGroup(this, "osd");
-	// Always enabled
-	new TActionGroupItem(this, group, "osd_none", QT_TR_NOOP("Subtitles onl&y"), Settings::TPreferences::None);
-	new TActionGroupItem(this, group, "osd_seek", QT_TR_NOOP("Volume + &Seek"), Settings::TPreferences::Seek);
-	new TActionGroupItem(this, group, "osd_timer", QT_TR_NOOP("Volume + Seek + &Timer"), Settings::TPreferences::SeekTimer);
-	new TActionGroupItem(this, group, "osd_total", QT_TR_NOOP("Volume + Seek + Timer + T&otal time"), Settings::TPreferences::SeekTimerTotal);
-	group->setChecked(pref->osd_level);
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)));
-	connect(core, SIGNAL(osdLevelChanged(int)), group, SLOT(setChecked(int)));
-
-	addSeparator();
-	TAction* a = new TAction(this, "inc_osd_scale", QT_TR_NOOP("Size &+"), "", Qt::SHIFT | Qt::Key_U);
-	connect(a, SIGNAL(triggered()), core, SLOT(incOSDScale()));
-	a = new TAction(this, "dec_osd_scale", QT_TR_NOOP("Size &-"), "", Qt::SHIFT | Qt::Key_Y);
-	connect(a, SIGNAL(triggered()), core, SLOT(decOSDScale()));
-
-	addActionsTo(parent);
-}
-
-void TOSDMenu::onAboutToShow() {
-	group->setChecked((int) pref->osd_level);
-}
-
-
-TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
-	// TODO: rename to stay_on_top_menu?
-	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("&Stay on top"), "ontop") {
-
-	group = new TActionGroup(this, "ontop");
-	// Always enabled
-	new TActionGroupItem(this, group, "on_top_always", QT_TR_NOOP("&Always"), Settings::TPreferences::AlwaysOnTop);
-	new TActionGroupItem(this, group, "on_top_never", QT_TR_NOOP("&Never"), Settings::TPreferences::NeverOnTop);
-	new TActionGroupItem(this, group, "on_top_playing", QT_TR_NOOP("While &playing"), Settings::TPreferences::WhilePlayingOnTop);
-	group->setChecked((int) pref->stay_on_top);
-	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
-	connect(parent , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
-
-	addSeparator();
-	TAction* a = new TAction(this, "toggle_stay_on_top", QT_TR_NOOP("Toggle stay on top"), "");
-	connect(a, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
-
-	addActionsTo(parent);
-}
-
-void TStayOnTopMenu::onAboutToShow() {
-	group->setChecked((int) pref->stay_on_top);
 }
 
 } // namespace Gui

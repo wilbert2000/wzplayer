@@ -26,7 +26,6 @@
 #include "settings/preferences.h"
 #include "core.h"
 #include "gui/pref/dialog.h"
-#include "gui/action/menus.h"
 
 #ifdef Q_OS_WIN
 #ifdef AVOID_SCREENSAVER
@@ -118,11 +117,12 @@ public slots:
 	virtual void openDirectory();
 	virtual void openDirectory(QString directory);
 
+	virtual void showConfigFolder();
+
 	virtual void helpFirstSteps();
 	virtual void helpFAQ();
 	virtual void helpCLOptions();
 	virtual void helpCheckUpdates();
-	virtual void helpShowConfig();
 	virtual void helpAbout();
 
 	virtual void loadSub();
@@ -315,16 +315,6 @@ protected:
 
 protected:
 	QWidget* panel;
-
-	// Menu Options
-	TAction* showPlaylistAct;
-	TAction* showPropertiesAct;
-	TAction* showPreferencesAct;
-	TAction* showConfigAct;
-#ifdef YOUTUBE_SUPPORT
-	TAction* showTubeBrowserAct;
-#endif
-	TAction* showLogAct;
 
 	// Menu Help
 	TAction* showFirstStepsAct;

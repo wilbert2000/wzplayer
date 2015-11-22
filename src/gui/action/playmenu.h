@@ -1,14 +1,14 @@
 #ifndef GUI_PLAYMENU_H
 #define GUI_PLAYMENU_H
 
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 #include "core.h"
 
 namespace Gui {
 
+class TAction;
 class TPlaylist;
 class TSeekingButton;
-
 
 class TPlayMenu : public TMenu {
 	Q_OBJECT

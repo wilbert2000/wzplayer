@@ -1,18 +1,14 @@
-#ifndef GUI_MENUS_H
-#define GUI_MENUS_H
+#ifndef GUI_MENU_H
+#define GUI_MENU_H
 
 #include <QMenu>
 
-class TCore;
 
 namespace Settings {
 class TMediaSettings;
 }
 
 namespace Gui {
-
-class TAction;
-class TActionGroup;
 
 // Evade mouse before popping up
 void execPopup(QWidget* w, QMenu* popup, QPoint p);
@@ -46,26 +42,6 @@ private:
 	void retranslateStrings();
 };
 
-
-class TOSDMenu : public TMenu {
-public:
-	explicit TOSDMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
-};
-
-
-class TStayOnTopMenu : public TMenu {
-public:
-	explicit TStayOnTopMenu(QWidget* parent);
-	TActionGroup* group;
-protected:
-	virtual void onAboutToShow();
-};
-
 } // namespace Gui
 
-#endif // GUI_MENUS_H
+#endif // GUI_MENU_H

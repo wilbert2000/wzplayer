@@ -1,9 +1,15 @@
 #ifndef GUI_SUBTITLEMENU_H
 #define GUI_SUBTITLEMENU_H
 
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
+
+
+class TCore;
 
 namespace Gui {
+
+class TAction;
+class TActionGroup;
 
 class TSubFPSMenu : public TMenu {
 public:

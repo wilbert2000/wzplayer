@@ -94,7 +94,7 @@ HEADERS += config.h \
     gui/action/toolbareditor.h \
     gui/action/sizegrip.h \
     gui/action/editabletoolbar.h \
-    gui/action/menus.h \
+    gui/action/menu.h \
     gui/action/openmenu.h \
     gui/action/playmenu.h \
     gui/action/videofiltermenu.h \
@@ -103,6 +103,7 @@ HEADERS += config.h \
     gui/action/audiomenu.h \
     gui/action/subtitlemenu.h \
     gui/action/browsemenu.h \
+    gui/action/optionsmenu.h \
     gui/deviceinfo.h \
     gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
@@ -198,7 +199,7 @@ SOURCES	+= version.cpp \
     gui/action/toolbareditor.cpp \
     gui/action/sizegrip.cpp \
     gui/action/editabletoolbar.cpp \
-    gui/action/menus.cpp \
+    gui/action/menu.cpp \
     gui/action/openmenu.cpp \
     gui/action/playmenu.cpp \
     gui/action/videofiltermenu.cpp \
@@ -207,6 +208,7 @@ SOURCES	+= version.cpp \
     gui/action/audiomenu.cpp \
     gui/action/subtitlemenu.cpp \
     gui/action/browsemenu.cpp \
+    gui/action/optionsmenu.cpp \
     gui/deviceinfo.cpp \
     gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \

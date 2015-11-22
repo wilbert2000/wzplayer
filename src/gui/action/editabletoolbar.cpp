@@ -23,6 +23,7 @@
 #include <QTimer>
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
+#include "gui/action/menu.h"
 #include "gui/base.h"
 #include "gui/action/sizegrip.h"
 #include "gui/action/timeslider.h"

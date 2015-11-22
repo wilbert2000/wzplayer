@@ -44,7 +44,7 @@
 
 #include "config.h"
 #include "gui/action/action.h"
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 #include "gui/tablewidget.h"
 #include "filedialog.h"
 #include "helper.h"

@@ -2,10 +2,15 @@
 #define GUI_BROWSEMENU_H
 
 #include "config.h"
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 
+
+class TCore;
 
 namespace Gui {
+
+class TAction;
+class TActionGroup;
 
 class TBrowseMenu : public TMenu {
 	Q_OBJECT

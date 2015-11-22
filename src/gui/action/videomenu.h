@@ -1,13 +1,16 @@
 #ifndef GUI_VIDEOMENU_H
 #define GUI_VIDEOMENU_H
 
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 
 
+class TCore;
 class TPlayerWindow;
 
 namespace Gui {
 
+class TAction;
+class TActionGroup;
 class TBase;
 class TVideoEqualizer;
 

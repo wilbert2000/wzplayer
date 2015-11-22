@@ -2,7 +2,7 @@
 #define GUI_VIDEOSIZEMENU_H
 
 #include "gui/action/actiongroup.h"
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 
 
 class TPlayerWindow;

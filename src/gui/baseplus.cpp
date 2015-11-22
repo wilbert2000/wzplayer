@@ -66,14 +66,12 @@ TBasePlus::TBasePlus()
 			 this, SLOT(toggleShowAll()));
 
 	context_menu = new QMenu(this);
-	context_menu->addAction(showAllAct);
 	context_menu->addSeparator();
 	context_menu->addMenu(openMenu);
 	context_menu->addMenu(playMenu);
+	context_menu->addMenu(optionsMenu);
 	context_menu->addSeparator();
-	context_menu->addAction(showPlaylistAct);
-	context_menu->addAction(showPreferencesAct);
-	context_menu->addSeparator();
+	context_menu->addAction(showAllAct);
 	context_menu->addAction(quitAct);
 	
 	tray->setContextMenu(context_menu);

@@ -19,7 +19,7 @@
 #ifndef _GUI_FAVORITES_H_
 #define _GUI_FAVORITES_H_
 
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 #include <QString>
 #include <QList>
 
@@ -27,6 +27,8 @@ class QAction;
 class QWidget;
 
 namespace Gui {
+
+class TAction;
 
 class TFavorite {
 public:

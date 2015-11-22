@@ -1,10 +1,15 @@
 #ifndef GUI_VIDEOFILTERMENU_H
 #define GUI_VIDEOFILTERMENU_H
 
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 
+
+class TCore;
 
 namespace Gui {
+
+class TAction;
+class TActionGroup;
 
 class TVideoFilterMenu : public TMenu {
 	Q_OBJECT

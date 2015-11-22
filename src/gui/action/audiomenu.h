@@ -1,10 +1,15 @@
 #ifndef GUI_AUDIOMENU_H
 #define GUI_AUDIOMENU_H
 
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
+
+
+class TCore;
 
 namespace Gui {
 
+class TAction;
+class TActionGroup;
 class TAudioEqualizer;
 
 class TAudioMenu : public TMenu {

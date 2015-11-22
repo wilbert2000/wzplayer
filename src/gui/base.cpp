@@ -69,13 +69,14 @@
 #include "gui/action/widgetactions.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
-#include "gui/action/menus.h"
+#include "gui/action/menu.h"
 #include "gui/action/openmenu.h"
 #include "gui/action/playmenu.h"
 #include "gui/action/videomenu.h"
 #include "gui/action/audiomenu.h"
 #include "gui/action/subtitlemenu.h"
 #include "gui/action/browsemenu.h"
+#include "gui/action/optionsmenu.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
@@ -398,29 +399,6 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	// Menu Options
-	showPlaylistAct = new TAction(this, "show_playlist", QT_TR_NOOP("&Playlist"), "playlist", QKeySequence("Ctrl+P"));
-	showPlaylistAct->setCheckable(true);
-	connect(showPlaylistAct, SIGNAL(triggered(bool)), this, SLOT(showPlaylist(bool)));
-	connect(playlist, SIGNAL(visibilityChanged(bool)), showPlaylistAct, SLOT(setChecked(bool)));
-
-	showPropertiesAct = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
-	connect(showPropertiesAct, SIGNAL(triggered()), this, SLOT(showFilePropertiesDialog()));
-
-	showPreferencesAct = new TAction(this, "show_preferences", QT_TR_NOOP("P&references"), "prefs", QKeySequence("Ctrl+S"));
-	connect(showPreferencesAct, SIGNAL(triggered()), this, SLOT(showPreferencesDialog()));
-
-#ifdef YOUTUBE_SUPPORT
-	showTubeBrowserAct = new TAction(this, "show_tube_browser", QT_TR_NOOP("&YouTube browser"), "tubebrowser", Qt::Key_F11);
-	connect(showTubeBrowserAct, SIGNAL(triggered()), this, SLOT(showTubeBrowser()));
-#endif
-	// Show log
-	showLogAct = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log"), "log", QKeySequence("Ctrl+L"));
-	showLogAct->setCheckable(true);
-	connect(showLogAct, SIGNAL(triggered(bool)), log_window, SLOT(setVisible(bool)));
-	connect(log_window, SIGNAL(visibilityChanged(bool)), showLogAct, SLOT(setChecked(bool)));
-
-
 	// Menu Help
 	showFirstStepsAct = new TAction(this, "first_steps", QT_TR_NOOP("First Steps &Guide"), "guide");
 	connect(showFirstStepsAct, SIGNAL(triggered()), this, SLOT(helpFirstSteps()));
@@ -439,8 +417,6 @@ void TBase::createActions() {
 	connect(updateYTAct, SIGNAL(triggered()), this, SLOT(YTUpdateScript()));
 #endif
 
-	showConfigAct = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder"));
-	connect(showConfigAct, SIGNAL(triggered()), this, SLOT(helpShowConfig()));
 
 	aboutThisAct = new TAction(this, "about_smplayer", QT_TR_NOOP("About &SMPlayer"), "logo");
 	connect(aboutThisAct, SIGNAL(triggered()), this, SLOT(helpAbout()));
@@ -569,40 +545,16 @@ void TBase::createMenus() {
 	browseMenu = new TBrowseMenu(this, core);
 	menuBar()->addMenu(browseMenu);
 
-
-
-	optionsMenu = menuBar()->addMenu("Options");
-	helpMenu = menuBar()->addMenu("Help");
-
-
-	// OPTIONS MENU
-	// Ontop submenu
-	optionsMenu->addMenu(new TStayOnTopMenu(this));
-	// Toolbars
 	// statusbar_menu added to toolbar_menu by createToolbarMenu()
 	// and filled by descendants::createMenus()
 	statusbar_menu = new QMenu(this);
 	toolbar_menu = createToolbarMenu();
-	optionsMenu->addMenu(toolbar_menu);
-	// OSD
-	optionsMenu->addMenu(new TOSDMenu(this, core));
+	optionsMenu = new TOptionsMenu(this, core, toolbar_menu, playlist, log_window);
+	menuBar()->addMenu(optionsMenu);
 
-	// Show X
-	optionsMenu->addSeparator();
-	optionsMenu->addAction(showPropertiesAct);
-	optionsMenu->addAction(showPlaylistAct);
-	optionsMenu->addAction(showLogAct);
 
-#ifdef YOUTUBE_SUPPORT
-	optionsMenu->addSeparator();
-	optionsMenu->addAction(showTubeBrowserAct);
-#endif
 
-	// Preferences
-	optionsMenu->addSeparator();
-	optionsMenu->addAction(showPreferencesAct);
-	optionsMenu->addAction(showConfigAct);
-
+	helpMenu = menuBar()->addMenu("Help");
 
 	// HELP MENU
 	helpMenu->addAction(showFirstStepsAct);
@@ -1708,7 +1660,7 @@ void TBase::helpCheckUpdates() {
 #endif
 }
 
-void TBase::helpShowConfig() {
+void TBase::showConfigFolder() {
 	QDesktopServices::openUrl(QUrl::fromLocalFile(TPaths::configPath()));
 }
 
