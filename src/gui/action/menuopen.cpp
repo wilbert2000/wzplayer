@@ -49,7 +49,7 @@ TMenuOpen::TMenuOpen(TBase* parent, TCore* core, QWidget* playlist)
 
 	// Recents
 	recentfiles_menu = new TMenu(main_window, this, "recent_menu", QT_TR_NOOP("&Recent files"), "recents");
-	clearRecentsAct = new TAction(this, "clear_recents", QT_TR_NOOP("&Clear"), "delete", false);
+	clearRecentsAct = new TAction(this, "clear_recents", QT_TR_NOOP("&Clear"), "delete", 0, false);
 	main_window->addAction(clearRecentsAct);
 	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
 	addMenu(recentfiles_menu);

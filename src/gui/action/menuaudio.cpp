@@ -147,18 +147,18 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	addMenu(new TMenuAudioChannel(parent, core));
 	// Filter sub
 	audioFilterMenu = new TMenu(parent, this, "audiofilter_menu", QT_TR_NOOP("&Filters"), "audio_filters");
-	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"), "", false);
+	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"), "", 0, false);
 	volnormAct->setCheckable(true);
 	audioFilterMenu->addAction(volnormAct);
 	connect(volnormAct, SIGNAL(triggered(bool)), core, SLOT(toggleVolnorm(bool)));
 
 #ifdef MPLAYER_SUPPORT
-	extrastereoAct = new TAction(this, "extrastereo_filter", QT_TR_NOOP("&Extrastereo"), "", false);
+	extrastereoAct = new TAction(this, "extrastereo_filter", QT_TR_NOOP("&Extrastereo"), "", 0, false);
 	extrastereoAct->setCheckable(true);
 	audioFilterMenu->addAction(extrastereoAct);
 	connect(extrastereoAct, SIGNAL(triggered(bool)), core, SLOT(toggleExtrastereo(bool)));
 
-	karaokeAct = new TAction(this, "karaoke_filter", QT_TR_NOOP("&Karaoke"), "", false);
+	karaokeAct = new TAction(this, "karaoke_filter", QT_TR_NOOP("&Karaoke"), "", 0, false);
 	karaokeAct->setCheckable(true);
 	audioFilterMenu->addAction(karaokeAct);
 	connect(karaokeAct, SIGNAL(triggered(bool)), core, SLOT(toggleKaraoke(bool)));

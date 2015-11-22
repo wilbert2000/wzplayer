@@ -401,12 +401,6 @@ void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
 	// Actions not in menus or buttons
-	exitFullscreenAct = new TAction(this, "exit_fullscreen", QT_TR_NOOP("Exit fullscreen"), "", Qt::Key_Escape);
-	connect(exitFullscreenAct, SIGNAL(triggered()), this, SLOT(exitFullscreen()));
-
-	nextOSDLevelAct = new TAction(this, "next_osd", QT_TR_NOOP("OSD - Next level"), "", Qt::Key_O);
-	connect(nextOSDLevelAct, SIGNAL(triggered()), core, SLOT(nextOSDLevel()));
-
 	decContrastAct = new TAction(this, "dec_contrast", QT_TR_NOOP("Dec contrast"), "", Qt::Key_1);
 	connect(decContrastAct, SIGNAL(triggered()), core, SLOT(decContrast()));
 
@@ -1710,6 +1704,9 @@ void TBase::toggleFullscreen(bool b) {
 
 	block_update_size_factor++;
 
+	// Update fullscreen actions
+	videoMenu->fullscreenChanged(pref->fullscreen);
+
 	if (pref->fullscreen) {
 		aboutToEnterFullscreen();
 
@@ -1732,9 +1729,6 @@ void TBase::toggleFullscreen(bool b) {
 	if (pref->add_blackborders_on_fullscreen && !core->mset.add_letterbox) {
 		core->changeLetterboxOnFullscreen(pref->fullscreen);
 	}
-
-	// Update fullscreen action
-	videoMenu->fullscreenAct->setChecked(pref->fullscreen);
 
 	// Risky?
 	QTimer::singleShot(350, this, SLOT(unlockSizeFactor()));

@@ -45,9 +45,6 @@ TSkin::~TSkin() {
 void TSkin::createActions() {
 	qDebug("Gui::TSkin::createActions");
 
-	playOrPauseAct = findAction("play_or_pause");
-	playOrPauseAct->setCheckable(true);
-
 	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui", QT_TR_NOOP("&Video info"), "view_video_info");
 	viewVideoInfoAct->setCheckable(true);
 
@@ -73,7 +70,7 @@ void TSkin::createControlWidget() {
 
 	QList<QAction*> actions;
 	actions << findAction("rewind1") << findAction("play_prev")
-			<< playOrPauseAct << findAction("stop")
+			<< findAction("play_or_pause") << findAction("stop")
 			<< findAction("play_next") << findAction("forward1");
 	mediaBarPanel->setPlayControlActionCollection(actions);
 
@@ -102,26 +99,6 @@ void TSkin::createControlWidget() {
 			mediaBarPanel, SLOT(setScrollingEnabled(bool)));
 
 	mediaBarPanelAction = controlbar->addWidget(mediaBarPanel);
-}
-
-void TSkin::onStateChanged(TCore::State state) {
-
-	TBasePlus::onStateChanged(state);
-
-	switch (state) {
-		case TCore::Playing:
-			playOrPauseAct->setChecked(true);
-			mediaBarPanel->displayMessage(tr("Playing %1").arg(core->mdat.filename));
-			break;
-		case TCore::Paused:
-			playOrPauseAct->setChecked(false);
-			mediaBarPanel->displayMessage(tr("Pause"));
-			break;
-		case TCore::Stopped:
-			playOrPauseAct->setChecked(false);
-			mediaBarPanel->displayMessage(tr("Stop"));
-			break;
-	}
 }
 
 void TSkin::displayMessage(QString message, int time) {

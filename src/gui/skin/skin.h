@@ -48,7 +48,6 @@ protected:
 	void createActions();
 
 protected slots:
-	virtual void onStateChanged(TCore::State state);
 	virtual void displayMessage(QString message, int time);
 	virtual void displayMessage(QString message);
 
@@ -56,7 +55,6 @@ protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
 	QAction* mediaBarPanelAction;
 
-	TAction* playOrPauseAct;
 	TAction* viewVideoInfoAct;
 	TAction* scrollTitleAct;
 

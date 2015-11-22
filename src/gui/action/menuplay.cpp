@@ -108,18 +108,18 @@ TMenuPlaySpeed::TMenuPlaySpeed(QWidget *parent, TCore *c)
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed10()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed_4", QT_TR_NOOP("Speed -&4%"), "");
+	a = new TAction(this, "dec_speed_4", QT_TR_NOOP("Speed -&4%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed4()));
-	a = new TAction(this, "inc_speed_4", QT_TR_NOOP("&Speed +4%"), "");
+	a = new TAction(this, "inc_speed_4", QT_TR_NOOP("&Speed +4%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed4()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed_1", QT_TR_NOOP("Speed -&1%"), "");
+	a = new TAction(this, "dec_speed_1", QT_TR_NOOP("Speed -&1%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed1()));
-	a = new TAction(this, "inc_speed_1", QT_TR_NOOP("S&peed +1%"), "");
+	a = new TAction(this, "inc_speed_1", QT_TR_NOOP("S&peed +1%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed1()));
 
@@ -139,17 +139,18 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	, pauseIcon(Images::icon("pause"))
 	, playIcon(Images::icon("play")) {
 
-	playAct = new TAction(this, "play", QT_TR_NOOP("P&lay"));
+	playAct = new TAction(this, "play", QT_TR_NOOP("Play"), "", 0, false);
+	parent->addAction(playAct);
 	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
 
-	playOrPauseAct = new TAction(this, "play_or_pause", QT_TR_NOOP("Play / Pause"),
-								 "play", Qt::Key_MediaPlay, false);
+	playOrPauseAct = new TAction(this, "play_or_pause", QT_TR_NOOP("&Play"), "play", Qt::Key_Space);
+	playOrPauseAct->addShortcut(Qt::Key_MediaPlay);
 	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
-	parent->addAction(playOrPauseAct);
 	connect(playOrPauseAct, SIGNAL(triggered()), core, SLOT(playOrPause()));
 
-	pauseAct = new TAction(this, "pause", QT_TR_NOOP("&Pause"), "", Qt::Key_Space);
-	pauseAct->addShortcut(QKeySequence("Media Pause")); // MCE remote key
+	pauseAct = new TAction(this, "pause", QT_TR_NOOP("Pause"), "",
+						   QKeySequence("Media Pause"), false); // MCE remote key
+	parent->addAction(pauseAct);
 	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
 
 	stopAct = new TAction(this, "stop", QT_TR_NOOP("&Stop"), "", Qt::Key_MediaStop);
@@ -225,8 +226,10 @@ void TMenuPlay::onStateChanged(TCore::State state) {
 	playAct->setEnabled(state != TCore::Playing);
 	// playOrPauseAct always enabled
 	if (state == TCore::Playing) {
+		playOrPauseAct->setTextAndTip(tr("&Pause"));
 		playOrPauseAct->setIcon(pauseIcon);
 	} else {
+		playOrPauseAct->setTextAndTip(tr("&Play"));
 		playOrPauseAct->setIcon(playIcon);
 	}
 	pauseAct->setEnabled(state == TCore::Playing);

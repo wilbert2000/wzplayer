@@ -71,13 +71,13 @@ TFavorites::TFavorites(QWidget* parent,
 	edit_act = new TAction(this, "", QT_TR_NOOP("&Edit..."), "noicon");
 	connect(edit_act, SIGNAL(triggered()), this, SLOT(edit()));
 
-	jump_act = new TAction(this, "", QT_TR_NOOP("&Jump..."), "noicon", false);
+	jump_act = new TAction(this, "", QT_TR_NOOP("&Jump..."), "noicon", 0, false);
 	connect(jump_act, SIGNAL(triggered()), this, SLOT(jump()));
 
-	next_act = new TAction(this, "", QT_TR_NOOP("&Next"), "noicon", false);
+	next_act = new TAction(this, "", QT_TR_NOOP("&Next"), "noicon", 0, false);
 	connect(next_act, SIGNAL(triggered()), this, SLOT(next()));
 
-	previous_act = new TAction(this, "", QT_TR_NOOP("&Previous"), "noicon", false);
+	previous_act = new TAction(this, "", QT_TR_NOOP("&Previous"), "noicon", 0, false);
 	connect(previous_act, SIGNAL(triggered()), this, SLOT(previous()));
 
 	add_current_act = new TAction(this, "", QT_TR_NOOP("&Add current media"), "noicon");

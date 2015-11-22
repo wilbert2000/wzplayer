@@ -17,17 +17,6 @@ public:
 				 QMenu* toolBarMenu,
 				 QWidget* playlist,
 				 QWidget* logWindow);
-
-private:
-	TAction* showPropertiesAct;
-	TAction* showPlaylistAct;
-	TAction* showLogAct;
-
-#ifdef YOUTUBE_SUPPORT
-	TAction* showTubeBrowserAct;
-#endif
-	TAction* showPreferencesAct;
-	TAction* showConfigAct;
 };
 
 } // namespace Gui

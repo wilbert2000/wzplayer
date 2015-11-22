@@ -517,7 +517,7 @@ QString TActionsEditor::shortcutsToString(const TShortCutList& shortcuts) {
 	for (int n = 0; n < shortcuts.count(); n++) {
 		s += shortcuts[n].toString(QKeySequence::PortableText);
 		if (n < shortcuts.count() - 1)
-			s += ", ";
+			s += ",";
 	}
 
 	return s;
@@ -526,7 +526,7 @@ QString TActionsEditor::shortcutsToString(const TShortCutList& shortcuts) {
 TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 
 	TShortCutList shortcut_list;
-	QStringList l = shortcuts.split(", ");
+	QStringList l = shortcuts.split(",", QString::SkipEmptyParts);
 
 	for (int n = 0; n < l.count(); n++) {
 #if QT_VERSION >= 0x040300
@@ -606,6 +606,15 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 }
 
 void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action) {
+
+	if (shortcuts.isEmpty()) {
+		TShortCutList remove = skip_action->shortcuts();
+		if (!remove.isEmpty()) {
+			qDebug() << "Gui::TActionsEditor::removeShortcuts: removing shortcuts"
+					 << remove << "from" << skip_action->objectName();
+		}
+		return;
+	}
 
 	for(int i = 0; i < actions.size(); i++) {
 		QAction* action = actions[i];

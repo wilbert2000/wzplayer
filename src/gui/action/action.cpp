@@ -28,42 +28,23 @@ namespace Gui {
 TAction::TAction (QObject* parent,
 				  const QString& name,
 				  const QString& text,
-				  const QString& iconName,
-				  bool autoadd)
+				  const QString& icon,
+				  const QKeySequence& shortCut,
+				  bool autoAdd)
 	: QAction(parent)
 	, text_en(text) {
 
-	init(name, iconName, autoadd);
-}
-
-TAction::TAction (QObject* parent,
-				  const QString& name,
-				  const QString& text,
-				  const QString& iconName,
-				  QKeySequence accel,
-				  bool autoadd)
-	: QAction(parent)
-	, text_en(text) {
-
-	setShortcut(accel);
-	init(name, iconName, autoadd);
+	setObjectName(name);
+	QString iconName = icon.isEmpty() ? name : icon;
+	if (!iconName.isEmpty() && iconName != "noicon")
+		setIcon(Images::icon(iconName));
+	setShortcut(shortCut);
+	retranslateStrings();
+	if (autoAdd)
+		addActionToParent();
 }
 
 TAction::~TAction() {
-}
-
-void TAction::init(const QString& name,
-			  QString iconName,
-			  bool autoadd) {
-
-	setObjectName(name);
-	if (iconName.isEmpty())
-		iconName = name;
-	if (iconName != "noicon")
-		setIcon(Images::icon(iconName));
-	retranslateStrings();
-	if (autoadd)
-		addActionToParent();
 }
 
 void TAction::retranslateStrings() {
@@ -86,11 +67,9 @@ void TAction::addShortcut(QKeySequence key) {
 
 void TAction::addActionToParent() {
 
-	if (parent()) {
-		if (parent()->inherits("QWidget")) {
-			QWidget* w = static_cast<QWidget*> (parent());
-			w->addAction(this);
-		}
+	QWidget* w = qobject_cast<QWidget*>(parent());
+	if (w) {
+		w->addAction(this);
 	}
 }
 

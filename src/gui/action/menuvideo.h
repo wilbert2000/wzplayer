@@ -21,7 +21,7 @@ public:
 			   TCore* c,
 			   TPlayerWindow* playerwindow,
 			   TVideoEqualizer* videoEqualizer);
-	TAction* fullscreenAct;
+	void fullscreenChanged(bool fullscreen);
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
@@ -29,6 +29,9 @@ protected:
 
 private:
 	TCore* core;
+
+	TAction* fullscreenAct;
+	TAction* exitFullscreenAct;
 
 #if USE_ADAPTER
 	TMenu* screenMenu;

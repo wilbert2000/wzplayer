@@ -89,40 +89,46 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 	addMenu(new TMenuStayOnTop(parent));
 	// Toolbars
 	addMenu(toolBarMenu);
+
 	// OSD
+	addSeparator();
+	TAction* a = new TAction(this, "next_osd", QT_TR_NOOP("OSD - Next level"), "", Qt::Key_O);
+	connect(a, SIGNAL(triggered()), core, SLOT(nextOSDLevel()));
 	addMenu(new TMenuOSD(parent, core));
 
 	// Show properties
 	addSeparator();
-	showPropertiesAct = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
-	connect(showPropertiesAct, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
+	a = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
+	connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
 
 	// Show playlist
-	showPlaylistAct = new TAction(this, "show_playlist", QT_TR_NOOP("&Playlist"), "playlist", QKeySequence("Ctrl+P"));
-	showPlaylistAct->setCheckable(true);
-	connect(showPlaylistAct, SIGNAL(triggered(bool)), parent, SLOT(showPlaylist(bool)));
-	connect(playlist, SIGNAL(visibilityChanged(bool)), showPlaylistAct, SLOT(setChecked(bool)));
+	a = new TAction(this, "show_playlist", QT_TR_NOOP("&Playlist"), "playlist", QKeySequence("Ctrl+P"));
+	a->setCheckable(true);
+	connect(a, SIGNAL(triggered(bool)), parent, SLOT(showPlaylist(bool)));
+	connect(playlist, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
 
 	// Show log
-	showLogAct = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log"), "log", QKeySequence("Ctrl+L"));
-	showLogAct->setCheckable(true);
-	connect(showLogAct, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
-	connect(logWindow, SIGNAL(visibilityChanged(bool)), showLogAct, SLOT(setChecked(bool)));
+	a = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log"), "log", QKeySequence("Ctrl+L"));
+	a->setCheckable(true);
+	connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
+	connect(logWindow, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
 
 	// Youtube browser
 #ifdef YOUTUBE_SUPPORT
 	addSeparator();
-	showTubeBrowserAct = new TAction(this, "show_tube_browser", QT_TR_NOOP("&YouTube browser"), "tubebrowser", Qt::Key_F11);
-	connect(showTubeBrowserAct, SIGNAL(triggered()), parent, SLOT(showTubeBrowser()));
+	a = new TAction(this, "show_tube_browser", QT_TR_NOOP("&YouTube browser"), "tubebrowser", Qt::Key_F11);
+	connect(a, SIGNAL(triggered()), parent, SLOT(showTubeBrowser()));
 #endif
 
 	// Preferences
 	addSeparator();
-	showPreferencesAct = new TAction(this, "show_preferences", QT_TR_NOOP("P&references"), "prefs", QKeySequence("Ctrl+S"));
-	connect(showPreferencesAct, SIGNAL(triggered()), parent, SLOT(showPreferencesDialog()));
+	a = new TAction(this, "show_preferences", QT_TR_NOOP("P&references"), "prefs", QKeySequence("Ctrl+S"));
+	connect(a, SIGNAL(triggered()), parent, SLOT(showPreferencesDialog()));
 
-	showConfigAct = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder"));
-	connect(showConfigAct, SIGNAL(triggered()), parent, SLOT(showConfigFolder()));
+	a = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder"));
+	connect(a, SIGNAL(triggered()), parent, SLOT(showConfigFolder()));
+
+	addActionsTo(parent);
 }
 
 } // namespace Gui

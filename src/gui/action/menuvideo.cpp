@@ -225,8 +225,13 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	fullscreenAct->setCheckable(true);
 	connect(fullscreenAct, SIGNAL(triggered(bool)), parent, SLOT(toggleFullscreen(bool)));
 
-#if USE_ADAPTER
+	exitFullscreenAct = new TAction(this, "exit_fullscreen", QT_TR_NOOP("Exit fullscreen"), "", Qt::Key_Escape, false);
+	exitFullscreenAct->setEnabled(false);
+	parent->addAction(exitFullscreenAct);
+	connect(exitFullscreenAct, SIGNAL(triggered()), parent, SLOT(exitFullscreen()));
+
 	// Screen submenu
+#if USE_ADAPTER
 	screenMenu = new TMenu(parent, this, "screen_menu", QT_TR_NOOP("Scree&n"), "screen");
 	screenGroup = new TActionGroup(this, "screen");
 	new TActionGroupItem(this, screenGroup, "screen_default", QT_TR_NOOP("Default screen"), -1, false);
@@ -358,6 +363,12 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 	screenGroup->setActionsEnabled(enableVideo
 								   && pref->vo.startsWith("directx"));
 #endif
+}
+
+void TMenuVideo::fullscreenChanged(bool fullscreen) {
+
+	fullscreenAct->setChecked(fullscreen);
+	exitFullscreenAct->setEnabled(fullscreen);
 }
 
 void TMenuVideo::onMediaSettingsChanged(Settings::TMediaSettings* mset) {

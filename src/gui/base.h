@@ -317,8 +317,6 @@ protected:
 	QWidget* panel;
 
 	// Actions not in menus
-	TAction* exitFullscreenAct;
-	TAction* nextOSDLevelAct;
 	TAction* decContrastAct;
 	TAction* incContrastAct;
 	TAction* decBrightnessAct;

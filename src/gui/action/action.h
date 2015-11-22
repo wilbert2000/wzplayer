@@ -33,15 +33,9 @@ public:
 	TAction(QObject* parent,
 			const QString& name,
 			const QString& text,
-			const QString& iconName = QString(),
-			bool autoadd = true);
-
-	TAction(QObject* parent,
-			const QString& name,
-			const QString& text,
-			const QString& iconName,
-			QKeySequence accel,
-			bool autoadd = true);
+			const QString& icon = 0,
+			const QKeySequence& shortCut = 0,
+			bool autoAdd = true);
 
 	virtual ~TAction();
 
@@ -59,7 +53,6 @@ protected:
 private:
 	QString text_en;
 
-	void init(const QString& name, QString iconName, bool autoadd);
 	void retranslateStrings();
 };
 
