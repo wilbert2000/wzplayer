@@ -574,7 +574,7 @@ void TCore::setExternalSubs(const QString &filename) {
 void TCore::loadSub(const QString & sub) {
 	qDebug("TCore::loadSub");
 
-	if ((!sub.isEmpty()) && (QFile::exists(sub))) {
+	if (!sub.isEmpty() && QFile::exists(sub)) {
 		setExternalSubs(sub);
 		if (!pref->fast_load_sub
 			|| mset.external_subtitles_fps != TMediaSettings::SFPS_None) {
@@ -3543,8 +3543,8 @@ void TCore::toggleForcedSubsOnly(bool b) {
 
 	if (pref->use_forced_subs_only != b) {
 		pref->use_forced_subs_only = b;
-		//if (proc->isRunning()) restartPlay();
-		proc->setSubForcedOnly(b);
+		if (proc->isRunning())
+			proc->setSubForcedOnly(b);
 	}
 }
 

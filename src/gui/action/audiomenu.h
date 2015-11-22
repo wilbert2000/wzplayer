@@ -23,13 +23,11 @@ private:
 	TAction* decVolumeAct;
 	TAction* incVolumeAct;
 
-
 	TAction* decAudioDelayAct;
 	TAction* incAudioDelayAct;
 	TAction* audioDelayAct;
 
 	TAction* audioEqualizerAct;
-
 	QMenu* audioFilterMenu;
 	TAction* volnormAct;
 #ifdef MPLAYER_SUPPORT

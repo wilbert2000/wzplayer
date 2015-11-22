@@ -49,19 +49,6 @@ private:
 };
 
 
-class TCCMenu : public TMenu {
-public:
-	explicit TCCMenu(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
-};
-
-
 class TOSDMenu : public TMenu {
 public:
 	explicit TOSDMenu(QWidget* parent, TCore* c);
@@ -79,19 +66,6 @@ public:
 	TActionGroup* group;
 protected:
 	virtual void onAboutToShow();
-};
-
-
-class TSubFPSMenu : public TMenu {
-public:
-	explicit TSubFPSMenu(QWidget* parent, TCore* c);
-	TActionGroup* group;
-protected:
-	virtual void enableActions(bool stopped, bool, bool audio);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
 };
 
 } // namespace Gui

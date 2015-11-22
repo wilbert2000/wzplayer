@@ -168,7 +168,7 @@ TAudioMenu::TAudioMenu(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	// Audio track
 	addSeparator();
 	// Next audio track
-	nextAudioTrackAct = new TAction(this, "next_audio_track", QT_TR_NOOP("Next track"), "", Qt::Key_K);
+	nextAudioTrackAct = new TAction(this, "next_audio_track", QT_TR_NOOP("Next audio track"), "", Qt::Key_K);
 	connect(nextAudioTrackAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
 
 	audioTrackGroup = new TActionGroup(this, "audiotrack");

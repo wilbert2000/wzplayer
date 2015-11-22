@@ -101,6 +101,7 @@ HEADERS += config.h \
     gui/action/videosizemenu.h \
     gui/action/videomenu.h \
     gui/action/audiomenu.h \
+    gui/action/subtitlemenu.h \
     gui/deviceinfo.h \
     gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
@@ -203,6 +204,7 @@ SOURCES	+= version.cpp \
     gui/action/videosizemenu.cpp \
     gui/action/videomenu.cpp \
     gui/action/audiomenu.cpp \
+    gui/action/subtitlemenu.cpp \
     gui/deviceinfo.cpp \
     gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \

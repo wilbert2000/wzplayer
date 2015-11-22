@@ -63,6 +63,7 @@ public:
 
 	void clear();
 
+	// TODO: support for MPV secondary subs
 	int selectedID() const { return _selected_ID; }
 	SubData::Type selectedType() const { return _selected_type; }
 	void setSelected(SubData::Type type, int id) {

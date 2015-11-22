@@ -63,6 +63,7 @@ class TOpenMenu;
 class TPlayMenu;
 class TVideoMenu;
 class TAudioMenu;
+class TSubtitleMenu;
 class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;
@@ -180,7 +181,6 @@ protected slots:
 	virtual void updateMediaInfo();
 	void gotForbidden();
 
-	virtual void updateSubtitles();
 	virtual void updateTitles();
 	virtual void updateChapters();
 	virtual void updateAngles();
@@ -319,29 +319,6 @@ protected:
 protected:
 	QWidget* panel;
 
-	// Menu Subtitles
-	TAction* loadSubsAct;
-	TAction* unloadSubsAct;
-	TAction* decSubDelayAct;
-	TAction* incSubDelayAct;
-	TAction* subDelayAct; // Ask for delay
-	TAction* decSubPosAct;
-	TAction* incSubPosAct;
-	TAction* incSubStepAct;
-	TAction* decSubStepAct;
-	TAction* incSubScaleAct;
-	TAction* decSubScaleAct;
-#ifdef MPV_SUPPORT
-	TAction* seekNextSubAct;
-	TAction* seekPrevSubAct;
-#endif
-	TAction* useCustomSubStyleAct;
-	TAction* useForcedSubsOnlyAct;
-#ifdef FIND_SUBTITLES
-	TAction* showFindSubtitlesDialogAct;
-	TAction* openUploadSubtitlesPageAct;//turbos
-#endif
-
 	// Menu Options
 	TAction* showPlaylistAct;
 	TAction* showPropertiesAct;
@@ -375,7 +352,6 @@ protected:
 	TAction* incSaturationAct;
 	TAction* decGammaAct;
 	TAction* incGammaAct;
-	TAction* nextSubtitleAct;
 	TAction* nextChapterAct;
 	TAction* prevChapterAct;
 	TAction* resetVideoEqualizerAct;
@@ -391,10 +367,6 @@ protected:
 	// Other groups
 #if PROGRAM_SWITCH
 	TActionGroup* programTrackGroup;
-#endif
-	TActionGroup* subtitleTrackGroup;
-#ifdef MPV_SUPPORT
-	TActionGroup* secondarySubtitleTrackGroup;
 #endif
 	TActionGroup* titleGroup;
 	TActionGroup* angleGroup;
@@ -414,7 +386,7 @@ protected:
 	TPlayMenu* playMenu;
 	TVideoMenu* videoMenu;
 	TAudioMenu* audioMenu;
-	QMenu* subtitlesMenu;
+	TSubtitleMenu* subtitleMenu;
 	QMenu* browseMenu;
 	QMenu* optionsMenu;
 	QMenu* helpMenu;
@@ -429,8 +401,6 @@ protected:
 	QMenu* titles_menu;
 	QMenu* chapters_menu;
 	QMenu* angles_menu;
-
-	TSubFPSMenu* subfps_menu;
 
 	QMenu* popup;
 

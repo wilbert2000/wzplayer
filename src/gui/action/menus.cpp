@@ -133,38 +133,6 @@ void TMenu::addActionsTo(QWidget* w) {
 }
 
 
-TCCMenu::TCCMenu(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "closed_captions_menu", QT_TR_NOOP("&Closed captions"), "closed_caption")
-	, core(c) {
-
-	group = new TActionGroup(this, "cc");
-	group->setEnabled(false);
-	new TActionGroupItem(this, group, "cc_none", QT_TR_NOOP("&Off"), 0);
-	new TActionGroupItem(this, group, "cc_ch_1", QT_TR_NOOP("&1"), 1);
-	new TActionGroupItem(this, group, "cc_ch_2", QT_TR_NOOP("&2"), 2);
-	new TActionGroupItem(this, group, "cc_ch_3", QT_TR_NOOP("&3"), 3);
-	new TActionGroupItem(this, group, "cc_ch_4", QT_TR_NOOP("&4"), 4);
-	group->setChecked(core->mset.closed_caption_channel);
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeClosedCaptionChannel(int)));
-	// Currently no one else sets it
-	addActionsTo(parent);
-}
-
-void TCCMenu::enableActions(bool stopped, bool, bool) {
-	// Using mset, so useless to set if stopped.
-	// Assuming you can have closed captions on audio...
-	group->setEnabled(!stopped);
-}
-
-void TCCMenu::onMediaSettingsChanged(TMediaSettings* mset) {
-	group->setChecked(mset->closed_caption_channel);
-}
-
-void TCCMenu::onAboutToShow() {
-	group->setChecked(core->mset.closed_caption_channel);
-}
-
-
 TOSDMenu::TOSDMenu(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "osd_menu", QT_TR_NOOP("&OSD"), "osd")
 	, core(c) {
@@ -215,37 +183,6 @@ TStayOnTopMenu::TStayOnTopMenu(QWidget *parent) :
 
 void TStayOnTopMenu::onAboutToShow() {
 	group->setChecked((int) pref->stay_on_top);
-}
-
-
-TSubFPSMenu::TSubFPSMenu(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "subfps_menu", QT_TR_NOOP("F&rames per second"), "subfps")
-	, core(c) {
-
-	group = new TActionGroup(this, "subfps");
-	group->setEnabled(false);
-	new TActionGroupItem(this, group, "sub_fps_none", QT_TR_NOOP("&Default"), TMediaSettings::SFPS_None);
-	new TActionGroupItem(this, group, "sub_fps_23976", QT_TR_NOOP("23.9&76"), TMediaSettings::SFPS_23976);
-	new TActionGroupItem(this, group, "sub_fps_24", QT_TR_NOOP("2&4"), TMediaSettings::SFPS_24);
-	new TActionGroupItem(this, group, "sub_fps_25", QT_TR_NOOP("2&5"), TMediaSettings::SFPS_25);
-	new TActionGroupItem(this, group, "sub_fps_29970", QT_TR_NOOP("29.&970"), TMediaSettings::SFPS_29970);
-	new TActionGroupItem(this, group, "sub_fps_30", QT_TR_NOOP("3&0"), TMediaSettings::SFPS_30);
-	group->setChecked(core->mset.external_subtitles_fps);
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeExternalSubFPS(int)));
-	// No one else sets it
-	addActionsTo(parent);
-}
-
-void TSubFPSMenu::enableActions(bool stopped, bool, bool audio) {
-	group->setEnabled(!stopped && audio && core->haveExternalSubs());
-}
-
-void TSubFPSMenu::onMediaSettingsChanged(TMediaSettings* mset) {
-	group->setChecked(mset->external_subtitles_fps);
-}
-
-void TSubFPSMenu::onAboutToShow() {
-	group->setChecked(core->mset.external_subtitles_fps);
 }
 
 } // namespace Gui

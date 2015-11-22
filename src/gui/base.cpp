@@ -74,6 +74,7 @@
 #include "gui/action/playmenu.h"
 #include "gui/action/videomenu.h"
 #include "gui/action/audiomenu.h"
+#include "gui/action/subtitlemenu.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
@@ -396,65 +397,6 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	// Menu Subtitles
-	loadSubsAct = new TAction(this, "load_subs", QT_TR_NOOP("&Load..."), "open");
-	connect(loadSubsAct, SIGNAL(triggered()), this, SLOT(loadSub()));
-
-	unloadSubsAct = new TAction(this, "unload_subs", QT_TR_NOOP("U&nload"), "unload");
-	connect(unloadSubsAct, SIGNAL(triggered()), core, SLOT(unloadSub()));
-
-	decSubDelayAct = new TAction(this, "dec_sub_delay", QT_TR_NOOP("Delay &-"), "delay_down", Qt::Key_Z);
-	connect(decSubDelayAct, SIGNAL(triggered()), core, SLOT(decSubDelay()));
-
-	incSubDelayAct = new TAction(this, "inc_sub_delay", QT_TR_NOOP("Delay &+"), "delay_up", Qt::Key_X);
-	connect(incSubDelayAct, SIGNAL(triggered()),
-			 core, SLOT(incSubDelay()));
-
-	subDelayAct = new TAction(this, "sub_delay", QT_TR_NOOP("Se&t delay..."), "sub_delay");
-	connect(subDelayAct, SIGNAL(triggered()), this, SLOT(showSubDelayDialog()));
-
-	decSubPosAct = new TAction(this, "dec_sub_pos", QT_TR_NOOP("&Up"), "sub_up", Qt::Key_R);
-	connect(decSubPosAct, SIGNAL(triggered()), core, SLOT(decSubPos()));
-	incSubPosAct = new TAction(this, "inc_sub_pos", QT_TR_NOOP("&Down"), "sub_down", Qt::Key_T);
-	connect(incSubPosAct, SIGNAL(triggered()), core, SLOT(incSubPos()));
-
-	decSubScaleAct = new TAction(this, "dec_sub_scale", QT_TR_NOOP("S&ize -"), "", Qt::SHIFT | Qt::Key_R);
-	connect(decSubScaleAct, SIGNAL(triggered()), core, SLOT(decSubScale()));
-
-	incSubScaleAct = new TAction(this, "inc_sub_scale", QT_TR_NOOP("Si&ze +"), "", Qt::SHIFT | Qt::Key_T);
-	connect(incSubScaleAct, SIGNAL(triggered()), core, SLOT(incSubScale()));
-
-	decSubStepAct = new TAction(this, "dec_sub_step", QT_TR_NOOP("&Previous line in subtitles"), "", Qt::Key_G);
-	connect(decSubStepAct, SIGNAL(triggered()), core, SLOT(decSubStep()));
-
-	incSubStepAct = new TAction(this, "inc_sub_step", QT_TR_NOOP("N&ext line in subtitles"), "", Qt::Key_Y);
-	connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
-
-#ifdef MPV_SUPPORT
-	seekNextSubAct = new TAction(this, "seek_next_sub", QT_TR_NOOP("Seek to next subtitle"), "", Qt::CTRL | Qt::Key_Right);
-	connect(seekNextSubAct, SIGNAL(triggered()), core, SLOT(seekToNextSub()));
-	seekPrevSubAct = new TAction(this, "seek_prev_sub", QT_TR_NOOP("Seek to previous subtitle"), "", Qt::CTRL | Qt::Key_Left);
-	connect(seekPrevSubAct, SIGNAL(triggered()), core, SLOT(seekToPrevSub()));
-#endif
-
-	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", QT_TR_NOOP("Use custo&m style"));
-	useCustomSubStyleAct->setCheckable(true);
-	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
-	connect(useCustomSubStyleAct, SIGNAL(triggered(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
-
-	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", QT_TR_NOOP("&Forced subtitles only"), "forced_subs");
-	useForcedSubsOnlyAct->setCheckable(true);
-	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
-	connect(useForcedSubsOnlyAct, SIGNAL(triggered(bool)), core, SLOT(toggleForcedSubsOnly(bool)));
-
-#ifdef FIND_SUBTITLES
-	showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog", QT_TR_NOOP("Find subtitles at &OpenSubtitles.org..."), "download_subs");
-	connect(showFindSubtitlesDialogAct, SIGNAL(triggered()), this, SLOT(showFindSubtitlesDialog()));
-
-	openUploadSubtitlesPageAct = new TAction(this, "upload_subtitles", QT_TR_NOOP("Upload su&btitles to OpenSubtitles.org..."), "upload_subs");
-	connect(openUploadSubtitlesPageAct, SIGNAL(triggered()), this, SLOT(openUploadSubtitlesPage()));
-#endif
-
 	// Menu Options
 	showPlaylistAct = new TAction(this, "show_playlist", QT_TR_NOOP("&Playlist"), "playlist", QKeySequence("Ctrl+P"));
 	showPlaylistAct->setCheckable(true);
@@ -539,9 +481,6 @@ void TBase::createActions() {
 	incGammaAct = new TAction(this, "inc_gamma", QT_TR_NOOP("Inc gamma"));
 	connect(incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()));
 
-	nextSubtitleAct = new TAction(this, "next_subtitle", QT_TR_NOOP("Next subtitle"), "", Qt::Key_J);
-	connect(nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()));
-
 	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_At);
 	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
 
@@ -576,17 +515,6 @@ void TBase::createActions() {
 	// Program track
 	programTrackGroup = new TActionGroup(this, "programtrack");
 	connect(programTrackGroup, SIGNAL(activated(int)), core, SLOT(changeProgram(int)));
-#endif
-
-	subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
-	connect(subtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSubtitle(int)));
-	connect(core, SIGNAL(subtitleInfoChanged()), this, SLOT(updateSubtitles()));
-	connect(core, SIGNAL(subtitleTrackChanged(int)), subtitleTrackGroup, SLOT(setChecked(int)));
-
-#ifdef MPV_SUPPORT
-	// Secondary subtitle track
-	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
-	connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSecondarySubtitle(int)));
 #endif
 
 	// Titles
@@ -689,69 +617,13 @@ void TBase::createMenus() {
 	menuBar()->addMenu(videoMenu);
 	audioMenu = new TAudioMenu(this, core, audio_equalizer);
 	menuBar()->addMenu(audioMenu);
+	subtitleMenu = new TSubtitleMenu(this, core);
+	menuBar()->addMenu(subtitleMenu);
 
 
-	subtitlesMenu = menuBar()->addMenu("Subtitles");
 	browseMenu = menuBar()->addMenu("Browse");
 	optionsMenu = menuBar()->addMenu("Options");
 	helpMenu = menuBar()->addMenu("Help");
-
-	// SUBTITLES MENU
-	// Track submenu
-	subtitles_track_menu = new QMenu(this);
-	subtitles_track_menu->menuAction()->setObjectName("subtitlestrack_menu");
-	subtitlesMenu->addMenu(subtitles_track_menu);
-
-#ifdef MPV_SUPPORT
-	secondary_subtitles_track_menu = new QMenu(this);
-	secondary_subtitles_track_menu->menuAction()->setObjectName("secondary_subtitles_track_menu");
-	subtitlesMenu->addMenu(secondary_subtitles_track_menu);
-#endif
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(loadSubsAct);
-	subtitlesMenu->addAction(unloadSubsAct);
-	subfps_menu = new TSubFPSMenu(this, core);
-	subtitlesMenu->addMenu(subfps_menu);
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addMenu(new TCCMenu(this, core));
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(decSubDelayAct);
-	subtitlesMenu->addAction(incSubDelayAct);
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(subDelayAct);
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(decSubPosAct);
-	subtitlesMenu->addAction(incSubPosAct);
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(decSubScaleAct);
-	subtitlesMenu->addAction(incSubScaleAct);
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(decSubStepAct);
-	subtitlesMenu->addAction(incSubStepAct);
-
-#ifdef MPV_SUPPORT
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(seekPrevSubAct);
-	subtitlesMenu->addAction(seekNextSubAct);
-#endif
-
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(useForcedSubsOnlyAct);
-	subtitlesMenu->addSeparator();
-	subtitlesMenu->addAction(useCustomSubStyleAct);
-
-#ifdef FIND_SUBTITLES
-	subtitlesMenu->addSeparator(); //turbos
-	subtitlesMenu->addAction(showFindSubtitlesDialogAct);
-	subtitlesMenu->addAction(openUploadSubtitlesPageAct); //turbos
-#endif
 
 
 	// BROWSE MENU
@@ -831,7 +703,7 @@ void TBase::createMenus() {
 	popup->addMenu(playMenu);
 	popup->addMenu(videoMenu);
 	popup->addMenu(audioMenu);
-	popup->addMenu(subtitlesMenu);
+	popup->addMenu(subtitleMenu);
 	popup->addMenu(browseMenu);
 	popup->addMenu(optionsMenu);
 } // createMenus()
@@ -974,23 +846,6 @@ void TBase::setActionsEnabled(bool b) {
 
 	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
 
-	// Menu Subtitles
-	loadSubsAct->setEnabled(b);
-	unloadSubsAct->setEnabled(b && core->haveExternalSubs());
-	decSubDelayAct->setEnabled(b);
-	incSubDelayAct->setEnabled(b);
-	subDelayAct->setEnabled(b);
-	decSubPosAct->setEnabled(b);
-	incSubPosAct->setEnabled(b);
-	incSubStepAct->setEnabled(b);
-	decSubStepAct->setEnabled(b);
-	incSubScaleAct->setEnabled(b);
-	decSubScaleAct->setEnabled(b);
-#ifdef MPV_SUPPORT
-	seekNextSubAct->setEnabled(b && pref->isMPV());
-	seekPrevSubAct->setEnabled(b && pref->isMPV());
-#endif
-
 	// Actions not in menus
 	decContrastAct->setEnabled(b);
 	incContrastAct->setEnabled(b);
@@ -1002,7 +857,6 @@ void TBase::setActionsEnabled(bool b) {
 	incSaturationAct->setEnabled(b);
 	decGammaAct->setEnabled(b);
 	incGammaAct->setEnabled(b);
-	nextSubtitleAct->setEnabled(b);
 	nextChapterAct->setEnabled(b);
 	prevChapterAct->setEnabled(b);
 
@@ -1037,22 +891,12 @@ void TBase::retranslateStrings() {
 	setWindowIcon(Images::icon("logo", 64));
 
 	// MENUS
-	subtitlesMenu->menuAction()->setText(tr("&Subtitles"));
 	browseMenu->menuAction()->setText(tr("&Browse"));
 	optionsMenu->menuAction()->setText(tr("Op&tions"));
 	helpMenu->menuAction()->setText(tr("&Help"));
 
 	// Menu Play
 	playMenu->retranslateStrings();
-
-	// Menu Subtitle
-	subtitles_track_menu->menuAction()->setText(tr("&Select"));
-	subtitles_track_menu->menuAction()->setIcon(Images::icon("sub"));
-
-#ifdef MPV_SUPPORT
-	secondary_subtitles_track_menu->menuAction()->setText(tr("Secondary trac&k"));
-	secondary_subtitles_track_menu->menuAction()->setIcon(Images::icon("secondary_sub"));
-#endif
 
 	// Menu Browse 
 	titles_menu->menuAction()->setText(tr("&Title"));
@@ -1460,7 +1304,8 @@ void TBase::applyNewPreferences() {
 	auto_hide_timer->setInterval(pref->floating_hide_delay);
 
 	// Subtitles
-	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
+	subtitleMenu->useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
+	subtitleMenu->useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
 
 	// Advanced tab
 	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();
@@ -1615,82 +1460,6 @@ void TBase::newMediaLoaded() {
 	openMenu->updateRecents();
 
 	checkPendingActionsToRun();
-}
-
-void TBase::updateSubtitles() {
-	qDebug("Gui::TBase::updateSubtitles");
-
-	// Note: use idx not ID
-	subtitleTrackGroup->clear();
-#ifdef MPV_SUPPORT
-	secondarySubtitleTrackGroup->clear();
-#endif
-
-	QAction* subNoneAct = subtitleTrackGroup->addAction(tr("&None"));
-	subNoneAct->setData(SubData::None);
-	subNoneAct->setCheckable(true);
-	if (core->mset.current_sub_idx < 0) {
-		subNoneAct->setChecked(true);
-	}
-#ifdef MPV_SUPPORT
-	subNoneAct = secondarySubtitleTrackGroup->addAction(tr("&None"));
-	subNoneAct->setData(SubData::None);
-	subNoneAct->setCheckable(true);
-	if (core->mset.current_secondary_sub_idx < 0) {
-		subNoneAct->setChecked(true);
-	}
-#endif
-
-	for (int idx = 0; idx < core->mdat.subs.count(); idx++) {
-		SubData sub = core->mdat.subs.itemAt(idx);
-		QAction *a = new QAction(subtitleTrackGroup);
-		a->setCheckable(true);
-		a->setText(sub.displayName());
-		a->setData(idx);
-		if (idx == core->mset.current_sub_idx) {
-			a->setChecked(true);
-		}
-#ifdef MPV_SUPPORT
-		a = new QAction(secondarySubtitleTrackGroup);
-		a->setCheckable(true);
-		a->setText(sub.displayName());
-		a->setData(idx);
-		if (idx == core->mset.current_secondary_sub_idx) {
-			a->setChecked(true);
-		}
-#endif
-	}
-
-	subtitles_track_menu->addActions(subtitleTrackGroup->actions());
-#ifdef MPV_SUPPORT
-	secondary_subtitles_track_menu->addActions(secondarySubtitleTrackGroup->actions());
-#endif
-
-	// Enable or disable the unload subs action if there are file subs
-	// or for mplayer externally loaded vob subs
-	bool have_ext_subs = core->haveExternalSubs();
-	unloadSubsAct->setEnabled(have_ext_subs);
-	subfps_menu->group->setEnabled(have_ext_subs);
-
-	// Enable or disable subtitle options
-	bool e = core->mset.current_sub_idx >= 0;
-
-	if (core->mset.closed_caption_channel != 0) e = true; // Enable if using closed captions
-
-	decSubDelayAct->setEnabled(e);
-	incSubDelayAct->setEnabled(e);
-	subDelayAct->setEnabled(e);
-	decSubPosAct->setEnabled(e);
-	incSubPosAct->setEnabled(e);
-	decSubScaleAct->setEnabled(e);
-	incSubScaleAct->setEnabled(e);
-	decSubStepAct->setEnabled(e);
-	incSubStepAct->setEnabled(e);
-#ifdef MPV_SUPPORT
-	e = e && pref->isMPV();
-	seekNextSubAct->setEnabled(e);
-	seekPrevSubAct->setEnabled(e);
-#endif
 }
 
 void TBase::updateTitles() {
