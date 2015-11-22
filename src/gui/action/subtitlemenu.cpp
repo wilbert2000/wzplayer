@@ -133,6 +133,8 @@ TSubtitleMenu::TSubtitleMenu(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(subtitleTrackChanged(int)), subtitleTrackGroup, SLOT(setChecked(int)));
 
 	// Secondary subtitle track
+	// Need to create sec subs if player is MPlayer, otherwise we'll crash when
+	// player is changed to MPV
 #ifdef MPV_SUPPORT
 	secondarySubtitleTrackMenu = new TMenu(parent, this, "secondary_subtitles_track_menu", QT_TR_NOOP("Secondary trac&k"), "secondary_sub");
 	if (pref->isMPV())
