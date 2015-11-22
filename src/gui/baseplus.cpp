@@ -26,6 +26,11 @@
 #include "gui/action/action.h"
 #include "gui/action/openmenu.h"
 #include "gui/action/playmenu.h"
+#include "gui/action/videomenu.h"
+#include "gui/action/audiomenu.h"
+#include "gui/action/subtitlemenu.h"
+#include "gui/action/browsemenu.h"
+#include "gui/action/optionsmenu.h"
 #include "gui/playlist.h"
 #include "images.h"
 #include "desktop.h"
@@ -69,7 +74,12 @@ TBasePlus::TBasePlus()
 	context_menu->addSeparator();
 	context_menu->addMenu(openMenu);
 	context_menu->addMenu(playMenu);
+	context_menu->addMenu(videoMenu);
+	context_menu->addMenu(audioMenu);
+	context_menu->addMenu(subtitleMenu);
+	context_menu->addMenu(browseMenu);
 	context_menu->addMenu(optionsMenu);
+	context_menu->addMenu(helpMenu);
 	context_menu->addSeparator();
 	context_menu->addAction(showAllAct);
 	context_menu->addAction(quitAct);
