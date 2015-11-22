@@ -316,16 +316,6 @@ protected:
 protected:
 	QWidget* panel;
 
-	// Menu Help
-	TAction* showFirstStepsAct;
-	TAction* showFAQAct;
-	TAction* showCLOptionsAct; // Command line options
-	TAction* showCheckUpdatesAct;
-#if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	TAction* updateYTAct;
-#endif
-	TAction* aboutThisAct;
-
 	// Actions not in menus
 	TAction* exitFullscreenAct;
 	TAction* nextOSDLevelAct;

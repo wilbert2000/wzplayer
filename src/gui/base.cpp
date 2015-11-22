@@ -77,6 +77,7 @@
 #include "gui/action/subtitlemenu.h"
 #include "gui/action/browsemenu.h"
 #include "gui/action/optionsmenu.h"
+#include "gui/action/helpmenu.h"
 
 #include "gui/links.h"
 #include "gui/errordialog.h"
@@ -399,28 +400,6 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	// Menu Help
-	showFirstStepsAct = new TAction(this, "first_steps", QT_TR_NOOP("First Steps &Guide"), "guide");
-	connect(showFirstStepsAct, SIGNAL(triggered()), this, SLOT(helpFirstSteps()));
-
-	showFAQAct = new TAction(this, "faq", QT_TR_NOOP("&FAQ"));
-	connect(showFAQAct, SIGNAL(triggered()), this, SLOT(helpFAQ()));
-
-	showCLOptionsAct = new TAction(this, "cl_options", QT_TR_NOOP("&Command line options"), "cl_help");
-	connect(showCLOptionsAct, SIGNAL(triggered()), this, SLOT(helpCLOptions()));
-
-	showCheckUpdatesAct = new TAction(this, "check_updates", QT_TR_NOOP("Check for &updates"));
-	connect(showCheckUpdatesAct, SIGNAL(triggered()), this, SLOT(helpCheckUpdates()));
-
-#if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	updateYTAct = new TAction(this, "update_youtube", QT_TR_NOOP("Update &Youtube code"));
-	connect(updateYTAct, SIGNAL(triggered()), this, SLOT(YTUpdateScript()));
-#endif
-
-
-	aboutThisAct = new TAction(this, "about_smplayer", QT_TR_NOOP("About &SMPlayer"), "logo");
-	connect(aboutThisAct, SIGNAL(triggered()), this, SLOT(helpAbout()));
-
 	// Actions not in menus or buttons
 	exitFullscreenAct = new TAction(this, "exit_fullscreen", QT_TR_NOOP("Exit fullscreen"), "", Qt::Key_Escape);
 	connect(exitFullscreenAct, SIGNAL(triggered()), this, SLOT(exitFullscreen()));
@@ -552,24 +531,8 @@ void TBase::createMenus() {
 	optionsMenu = new TOptionsMenu(this, core, toolbar_menu, playlist, log_window);
 	menuBar()->addMenu(optionsMenu);
 
-
-
-	helpMenu = menuBar()->addMenu("Help");
-
-	// HELP MENU
-	helpMenu->addAction(showFirstStepsAct);
-	helpMenu->addAction(showFAQAct);
-	helpMenu->addAction(showCLOptionsAct);
-
-	helpMenu->addSeparator();
-	helpMenu->addAction(showCheckUpdatesAct);
-#if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	helpMenu->addAction(updateYTAct);
-#endif
-
-	helpMenu->addSeparator();
-	helpMenu->addAction(aboutThisAct);
-
+	helpMenu = new THelpMenu(this);
+	menuBar()->addMenu(helpMenu);
 
 	// POPUP MENU
 	popup = new QMenu(this);
@@ -750,10 +713,6 @@ void TBase::retranslateStrings() {
 	qDebug("Gui::TBase::retranslateStrings");
 
 	setWindowIcon(Images::icon("logo", 64));
-
-	// MENUS
-	optionsMenu->menuAction()->setText(tr("Op&tions"));
-	helpMenu->menuAction()->setText(tr("&Help"));
 
 	// Menu Play
 	playMenu->retranslateStrings();
