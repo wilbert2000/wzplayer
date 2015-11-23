@@ -9,11 +9,9 @@ class TCore;
 namespace Gui {
 
 class TAction;
-class TActionGroup;
 class TAudioEqualizer;
 
 class TMenuAudio : public TMenu {
-	Q_OBJECT
 public:
 	explicit TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer);
 
@@ -40,15 +38,8 @@ private:
 	TAction* karaokeAct;
 #endif
 
-	TAction* nextAudioTrackAct;
-	TActionGroup* audioTrackGroup;
-	TMenu* audioTrackMenu;
-
 	TAction* loadAudioAct;
 	TAction* unloadAudioAct;
-
-private slots:
-	void updateAudioTracks();
 };
 
 } // namespace Gui

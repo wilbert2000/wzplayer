@@ -5,6 +5,7 @@
 #include "core.h"
 #include "gui/action/actiongroup.h"
 #include "gui/action/actionseditor.h"
+#include "gui/action/menuaudiotracks.h"
 #include "gui/audioequalizer.h"
 
 
@@ -166,19 +167,9 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 
 	addMenu(audioFilterMenu);
 
-	// Audio track
+	// Audio tracks
 	addSeparator();
-	// Next audio track
-	nextAudioTrackAct = new TAction(this, "next_audio_track", QT_TR_NOOP("Next audio track"), "", Qt::Key_K);
-	connect(nextAudioTrackAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
-
-	audioTrackGroup = new TActionGroup(this, "audiotrack");
-	connect(audioTrackGroup, SIGNAL(activated(int)), core, SLOT(changeAudioTrack(int)));
-	connect(core, SIGNAL(audioTrackInfoChanged()), this, SLOT(updateAudioTracks()));
-	connect(core, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
-
-	audioTrackMenu = new TMenu(parent, this, "audiotrack_menu", QT_TR_NOOP("&Track"), "audio_track");
-	addMenu(audioTrackMenu);
+	addMenu(new TMenuAudioTracks(parent, core));
 
 	// Load/unload
 	addSeparator();
@@ -193,10 +184,8 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 void TMenuAudio::enableActions(bool stopped, bool, bool audio) {
 
 	bool enableAudio = !stopped && audio;
-	nextAudioTrackAct->setEnabled(enableAudio && core->mdat.audios.count() > 1);
 
 	loadAudioAct->setEnabled(!stopped);
-
 	unloadAudioAct->setEnabled(enableAudio && !core->mset.external_audio.isEmpty());
 
 	// Filters
@@ -229,32 +218,5 @@ void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {
 	extrastereoAct->setChecked(mset->extrastereo_filter);
 #endif
 }
-
-void TMenuAudio::updateAudioTracks() {
-	qDebug("Gui::TMenuAudio::updateAudioTracks");
-
-	audioTrackGroup->clear();
-
-	Maps::TTracks* audios = &core->mdat.audios;
-	if (audios->count() == 0) {
-		QAction* a = audioTrackGroup->addAction(tr("<empty>"));
-		a->setEnabled(false);
-	} else {
-		Maps::TTracks::TTrackIterator i = audios->getIterator();
-		while (i.hasNext()) {
-			i.next();
-			Maps::TTrackData track = i.value();
-			QAction* action = new QAction(audioTrackGroup);
-			action->setCheckable(true);
-			action->setText(track.getDisplayName());
-			action->setData(track.getID());
-			if (track.getID() == audios->getSelectedID())
-				action->setChecked(true);
-		}
-	}
-
-	audioTrackMenu->addActions(audioTrackGroup->actions());
-}
-
 
 } // namesapce Gui

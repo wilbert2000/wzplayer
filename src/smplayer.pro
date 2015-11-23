@@ -100,6 +100,7 @@ HEADERS += config.h \
     gui/action/menuvideofilter.h \
     gui/action/menuvideosize.h \
     gui/action/menuvideo.h \
+    gui/action/menuaudiotracks.h \
     gui/action/menuaudio.h \
     gui/action/menusubtitle.h \
     gui/action/menubrowse.h \
@@ -206,6 +207,7 @@ SOURCES	+= version.cpp \
     gui/action/menuvideofilter.cpp \
     gui/action/menuvideosize.cpp \
     gui/action/menuvideo.cpp \
+    gui/action/menuaudiotracks.cpp \
     gui/action/menuaudio.cpp \
     gui/action/menusubtitle.cpp \
     gui/action/menubrowse.cpp \
