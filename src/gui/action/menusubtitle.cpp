@@ -123,11 +123,14 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 
 	// Subtitle tracks
 	addSeparator();
-	nextSubtitleAct = new TAction(this, "next_subtitle", QT_TR_NOOP("Next subtitle track"), "", Qt::Key_J);
+	subtitleTrackMenu = new TMenu(parent, this, "subtitlestrack_menu", QT_TR_NOOP("Subtitle &track"), "sub");
+	nextSubtitleAct = new TAction(this, "next_subtitle", QT_TR_NOOP("Next subtitle"), "", Qt::Key_J, false);
+	subtitleTrackMenu->addAction(nextSubtitleAct);
+	subtitleTrackMenu->addSeparator();
+	parent->addAction(nextSubtitleAct);
+	addMenu(subtitleTrackMenu);
 	connect(nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()));
 
-	subtitleTrackMenu = new TMenu(parent, this, "subtitlestrack_menu", QT_TR_NOOP("&Track"), "sub");
-	addMenu(subtitleTrackMenu);
 	subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
 	connect(subtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSubtitle(int)));
 	connect(core, SIGNAL(subtitleInfoChanged()), this, SLOT(updateSubtitles()));
