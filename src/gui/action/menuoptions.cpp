@@ -33,7 +33,11 @@ TMenuOSD::TMenuOSD(QWidget *parent, TCore* c)
 	connect(core, SIGNAL(osdLevelChanged(int)), group, SLOT(setChecked(int)));
 
 	addSeparator();
-	TAction* a = new TAction(this, "inc_osd_scale", QT_TR_NOOP("Size &+"), "", Qt::SHIFT | Qt::Key_U);
+	TAction* a = new TAction(this, "next_osd", QT_TR_NOOP("OSD - Next level"), "", Qt::Key_O);
+	connect(a, SIGNAL(triggered()), core, SLOT(nextOSDLevel()));
+
+	addSeparator();
+	a = new TAction(this, "inc_osd_scale", QT_TR_NOOP("Size &+"), "", Qt::SHIFT | Qt::Key_U);
 	connect(a, SIGNAL(triggered()), core, SLOT(incOSDScale()));
 	a = new TAction(this, "dec_osd_scale", QT_TR_NOOP("Size &-"), "", Qt::SHIFT | Qt::Key_Y);
 	connect(a, SIGNAL(triggered()), core, SLOT(decOSDScale()));
@@ -89,16 +93,12 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 	addMenu(new TMenuStayOnTop(parent));
 	// Toolbars
 	addMenu(toolBarMenu);
-
 	// OSD
-	addSeparator();
-	TAction* a = new TAction(this, "next_osd", QT_TR_NOOP("OSD - Next level"), "", Qt::Key_O);
-	connect(a, SIGNAL(triggered()), core, SLOT(nextOSDLevel()));
 	addMenu(new TMenuOSD(parent, core));
 
 	// Show properties
 	addSeparator();
-	a = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
+	TAction* a = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
 	connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
 
 	// Show playlist
