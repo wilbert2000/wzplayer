@@ -2,6 +2,7 @@
 #include "settings/mediasettings.h"
 #include "gui/action/menuvideofilter.h"
 #include "gui/action/menuvideosize.h"
+#include "gui/action/menuvideotracks.h"
 #include "gui/videoequalizer.h"
 #include "gui/base.h"
 
@@ -11,9 +12,9 @@ using namespace Settings;
 namespace Gui {
 
 
-class TtMenuAspec : public TMenu {
+class TtMenuAspect : public TMenu {
 public:
-	explicit TtMenuAspec(QWidget* parent, TCore* c);
+	explicit TtMenuAspect(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -24,7 +25,7 @@ private:
 };
 
 
-TtMenuAspec::TtMenuAspec(QWidget* parent, TCore* c)
+TtMenuAspect::TtMenuAspect(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "aspect_menu", QT_TR_NOOP("&Aspect ratio"), "aspect")
 	, core(c) {
 
@@ -49,16 +50,16 @@ TtMenuAspec::TtMenuAspec(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TtMenuAspec::enableActions(bool stopped, bool video, bool) {
+void TtMenuAspect::enableActions(bool stopped, bool video, bool) {
 	// Uses mset, so useless to set if stopped or no video
 	group->setEnabled(!stopped && video);
 }
 
-void TtMenuAspec::onMediaSettingsChanged(TMediaSettings* mset) {
+void TtMenuAspect::onMediaSettingsChanged(TMediaSettings* mset) {
 	group->setChecked(mset->aspect_ratio_id);
 }
 
-void TtMenuAspec::onAboutToShow() {
+void TtMenuAspect::onAboutToShow() {
 	group->setChecked(core->mset.aspect_ratio_id);
 }
 
@@ -152,9 +153,9 @@ void TMenuRotate::onAboutToShow() {
 }
 
 
-class TMenuVideoZoomAndPan : public TMenu {
+class TMenuZoomAndPan : public TMenu {
 public:
-	explicit TMenuVideoZoomAndPan(QWidget* parent, TCore* c);
+	explicit TMenuZoomAndPan(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 private:
@@ -163,7 +164,7 @@ private:
 };
 
 
-TMenuVideoZoomAndPan::TMenuVideoZoomAndPan(QWidget* parent, TCore* c)
+TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "zoom_and_pan_menu", QT_TR_NOOP("&Zoom and pan"), "zoom_and_pan")
 	, core(c) {
 
@@ -211,7 +212,7 @@ TMenuVideoZoomAndPan::TMenuVideoZoomAndPan(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TMenuVideoZoomAndPan::enableActions(bool stopped, bool video, bool) {
+void TMenuZoomAndPan::enableActions(bool stopped, bool video, bool) {
 	group->setEnabled(!stopped && video);
 }
 
@@ -263,11 +264,11 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 #endif
 
 	// Aspect submenu
-	addMenu(new TtMenuAspec(parent, core));
+	addMenu(new TtMenuAspect(parent, core));
 	// Size submenu
 	addMenu(new TMenuVideoSize(parent, playerwindow));
 	// Zoom and pan submenu
-	addMenu(new TMenuVideoZoomAndPan(parent, core));
+	addMenu(new TMenuZoomAndPan(parent, core));
 
 	// Equalizer
 	addSeparator();
@@ -297,19 +298,9 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	mirrorAct->setCheckable(true);
 	connect(mirrorAct, SIGNAL(triggered(bool)), core, SLOT(toggleMirror(bool)));
 
-	// Video track
+	// Video tracks
 	addSeparator();
-	// Next video track
-	nextVideoTrackAct = new TAction(this, "next_video_track", QT_TR_NOOP("Next video track"));
-	connect(nextVideoTrackAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()));
-
-	videoTrackGroup = new TActionGroup(this, "videotrack");
-	connect(videoTrackGroup, SIGNAL(activated(int)), core, SLOT(changeVideoTrack(int)));
-	connect(core, SIGNAL(videoTrackInfoChanged()), this, SLOT(updateVideoTracks()));
-	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
-
-	videoTrackMenu = new TMenu(parent, this, "videotrack_menu", QT_TR_NOOP("&Track"), "video_track");
-	addMenu(videoTrackMenu);
+	addMenu(new TMenuVideoTracks(parent, core));
 
 	// Screenshots
 	addSeparator();
@@ -337,14 +328,17 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
 	bool enableVideo = !stopped && video;
-	nextVideoTrackAct->setEnabled(enableVideo && core->mdat.videos.count() > 1);
+
+#if USE_ADAPTER
+	screenGroup->setActionsEnabled(enableVideo && pref->vo.startsWith("directx"));
+#endif
 
 	bool enableFilters = enableVideo && core->videoFiltersEnabled();
 
+	videoEqualizerAct->setEnabled(enableFilters);
+	stereo3dAct->setEnabled(enableFilters);
 	flipAct->setEnabled(enableFilters);
 	mirrorAct->setEnabled(enableFilters);
-	stereo3dAct->setEnabled(enableFilters);
-	videoEqualizerAct->setEnabled(enableFilters);
 
 	bool enableScreenShots = enableFilters
 							 && pref->use_screenshot
@@ -357,11 +351,6 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 	capturingAct->setEnabled(enableVideo
 							 && !pref->capture_directory.isEmpty()
 							 && QFileInfo(pref->capture_directory).isDir());
-#endif
-
-#if USE_ADAPTER
-	screenGroup->setActionsEnabled(enableVideo
-								   && pref->vo.startsWith("directx"));
 #endif
 }
 
@@ -376,33 +365,5 @@ void TMenuVideo::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
 	flipAct->setChecked(mset->flip);
 	mirrorAct->setChecked(mset->mirror);
 }
-
-
-void TMenuVideo::updateVideoTracks() {
-	qDebug("Gui::TMenuVideo::updateVideoTracks");
-
-	videoTrackGroup->clear();
-
-	Maps::TTracks* videos = &core->mdat.videos;
-	if (videos->count() == 0) {
-		QAction* a = videoTrackGroup->addAction(tr("<empty>"));
-		a->setEnabled(false);
-	} else {
-		Maps::TTracks::TTrackIterator i = videos->getIterator();
-		while (i.hasNext()) {
-			i.next();
-			Maps::TTrackData track = i.value();
-			QAction* action = new QAction(videoTrackGroup);
-			action->setCheckable(true);
-			action->setText(track.getDisplayName());
-			action->setData(track.getID());
-			if (track.getID() == videos->getSelectedID())
-				action->setChecked(true);
-		}
-	}
-
-	videoTrackMenu->addActions(videoTrackGroup->actions());
-}
-
 
 } // namespace Gui

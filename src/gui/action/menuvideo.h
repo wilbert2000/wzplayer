@@ -15,7 +15,6 @@ class TBase;
 class TVideoEqualizer;
 
 class TMenuVideo : public TMenu {
-	Q_OBJECT
 public:
 	TMenuVideo(TBase* parent,
 			   TCore* c,
@@ -43,22 +42,16 @@ private:
 	TAction* flipAct;
 	TAction* mirrorAct;
 
-	TAction* nextVideoTrackAct;
-	TActionGroup* videoTrackGroup;
-	TMenu* videoTrackMenu;
-
 	TAction* screenshotAct;
 	TAction* screenshotsAct;
 
 #ifdef CAPTURE_STREAM
 	TAction * capturingAct;
 #endif
+
 #ifdef VIDEOPREVIEW
 	TAction* videoPreviewAct;
 #endif
-
-private slots:
-	void updateVideoTracks();
 };
 
 } // namespace Gui
