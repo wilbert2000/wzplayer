@@ -71,7 +71,6 @@ TBasePlus::TBasePlus()
 			 this, SLOT(toggleShowAll()));
 
 	context_menu = new QMenu(this);
-	context_menu->addSeparator();
 	context_menu->addMenu(openMenu);
 	context_menu->addMenu(playMenu);
 	context_menu->addMenu(videoMenu);
@@ -79,7 +78,6 @@ TBasePlus::TBasePlus()
 	context_menu->addMenu(subtitleMenu);
 	context_menu->addMenu(browseMenu);
 	context_menu->addMenu(optionsMenu);
-	context_menu->addMenu(helpMenu);
 	context_menu->addSeparator();
 	context_menu->addAction(showAllAct);
 	context_menu->addAction(quitAct);
