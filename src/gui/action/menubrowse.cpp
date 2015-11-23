@@ -22,14 +22,19 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(titleTrackInfoChanged()), this, SLOT(updateTitles()));
 
 	// Chapters
-	addSeparator();
-	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_Exclam);
+	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_Exclam, false);
 	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
-	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_At);
+	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_At, false);
 	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
 
 	chaptersMenu = new TMenu(parent, this, "chapters_menu", QT_TR_NOOP("&Chapter"), "chapter");
+	chaptersMenu->addAction(prevChapterAct);
+	chaptersMenu->addAction(nextChapterAct);
+	chaptersMenu->addSeparator();
 	addMenu(chaptersMenu);
+	parent->addAction(prevChapterAct);
+	parent->addAction(nextChapterAct);
+
 	chapterGroup = new TActionGroup(this, "chapter");
 	connect(chapterGroup, SIGNAL(activated(int)), core, SLOT(changeChapter(int)));
 	connect(core, SIGNAL(chapterChanged(int)), chapterGroup, SLOT(setChecked(int)));
@@ -37,7 +42,6 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(chapterInfoChanged()), this, SLOT(updateChapters()));
 
 	// Angles submenu
-	addSeparator();
 	anglesMenu = new TMenu(parent, this, "angles_menu", QT_TR_NOOP("&Angle"), "angle");
 	addMenu(anglesMenu);
 	angleGroup = new TActionGroup(this, "angle");
