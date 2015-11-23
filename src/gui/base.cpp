@@ -674,8 +674,6 @@ void TBase::retranslateStrings() {
 	timeslider_action->setText(tr("Time slider"));
 	volumeslider_action->setText(tr("Volume slider"));
 
-	// TODO: make sure the "<empty>" string is translated
-
 	// PlayerWindow
 	playerwindow->retranslateStrings();
 
