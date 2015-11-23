@@ -401,37 +401,6 @@ void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
 	// Actions not in menus or buttons
-	decContrastAct = new TAction(this, "dec_contrast", QT_TR_NOOP("Dec contrast"), "", Qt::Key_1);
-	connect(decContrastAct, SIGNAL(triggered()), core, SLOT(decContrast()));
-
-	incContrastAct = new TAction(this, "inc_contrast", QT_TR_NOOP("Inc contrast"), "", Qt::Key_2);
-	connect(incContrastAct, SIGNAL(triggered()), core, SLOT(incContrast()));
-
-	decBrightnessAct = new TAction(this, "dec_brightness", QT_TR_NOOP("Dec brightness"), "", Qt::Key_3);
-	connect(decBrightnessAct, SIGNAL(triggered()), core, SLOT(decBrightness()));
-
-	incBrightnessAct = new TAction(this, "inc_brightness", QT_TR_NOOP("Inc brightness"), "", Qt::Key_4);
-	connect(incBrightnessAct, SIGNAL(triggered()), core, SLOT(incBrightness()));
-
-	decHueAct = new TAction(this, "dec_hue", QT_TR_NOOP("Dec hue"), "", Qt::Key_5);
-	connect(decHueAct, SIGNAL(triggered()), core, SLOT(decHue()));
-
-	incHueAct = new TAction(this, "inc_hue", QT_TR_NOOP("Inc hue"), "", Qt::Key_6);
-	connect(incHueAct, SIGNAL(triggered()), core, SLOT(incHue()));
-
-	decSaturationAct = new TAction(this, "dec_saturation", QT_TR_NOOP("Dec saturation"), "", Qt::Key_7);
-	connect(decSaturationAct, SIGNAL(triggered()), core, SLOT(decSaturation()));
-
-	incSaturationAct = new TAction(this, "inc_saturation", QT_TR_NOOP("Inc saturation"), "", Qt::Key_8);
-	connect(incSaturationAct, SIGNAL(triggered()), core, SLOT(incSaturation()));
-
-	decGammaAct = new TAction(this, "dec_gamma", QT_TR_NOOP("Dec gamma"));
-	connect(decGammaAct, SIGNAL(triggered()), core, SLOT(decGamma()));
-
-	incGammaAct = new TAction(this, "inc_gamma", QT_TR_NOOP("Inc gamma"));
-	connect(incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()));
-
-
 	showContextMenuAct = new TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
 
@@ -658,21 +627,6 @@ void TBase::setupNetworkProxy() {
 void TBase::setActionsEnabled(bool b) {
 
 	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
-
-	// Actions not in menus
-
-	// Depending on mset, so useless to set if no video
-	bool enableVideo = b && !core->mdat.noVideo();
-	decContrastAct->setEnabled(enableVideo);
-	incContrastAct->setEnabled(enableVideo);
-	decBrightnessAct->setEnabled(enableVideo);
-	incBrightnessAct->setEnabled(enableVideo);
-	decHueAct->setEnabled(enableVideo);
-	incHueAct->setEnabled(enableVideo);
-	decSaturationAct->setEnabled(enableVideo);
-	incSaturationAct->setEnabled(enableVideo);
-	decGammaAct->setEnabled(enableVideo);
-	incGammaAct->setEnabled(enableVideo);
 
 	// Time slider
 	timeslider_action->enable(b);

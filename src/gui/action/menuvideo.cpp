@@ -301,6 +301,47 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", QT_TR_NOOP("Reset video equalizer"));
 	connect(resetVideoEqualizerAct, SIGNAL(triggered()), videoEqualizer, SLOT(reset()));
 
+	// Short cuts equalizer (not in menu)
+	decContrastAct = new TAction(this, "dec_contrast", QT_TR_NOOP("Dec contrast"), "", Qt::Key_1, false);
+	parent->addAction(decContrastAct);
+	connect(decContrastAct, SIGNAL(triggered()), core, SLOT(decContrast()));
+
+	incContrastAct = new TAction(this, "inc_contrast", QT_TR_NOOP("Inc contrast"), "", Qt::Key_2, false);
+	parent->addAction(incContrastAct);
+	connect(incContrastAct, SIGNAL(triggered()), core, SLOT(incContrast()));
+
+	decBrightnessAct = new TAction(this, "dec_brightness", QT_TR_NOOP("Dec brightness"), "", Qt::Key_3, false);
+	parent->addAction(decBrightnessAct);
+	connect(decBrightnessAct, SIGNAL(triggered()), core, SLOT(decBrightness()));
+
+	incBrightnessAct = new TAction(this, "inc_brightness", QT_TR_NOOP("Inc brightness"), "", Qt::Key_4, false);
+	parent->addAction(incBrightnessAct);
+	connect(incBrightnessAct, SIGNAL(triggered()), core, SLOT(incBrightness()));
+
+	decHueAct = new TAction(this, "dec_hue", QT_TR_NOOP("Dec hue"), "", Qt::Key_5, false);
+	parent->addAction(decHueAct);
+	connect(decHueAct, SIGNAL(triggered()), core, SLOT(decHue()));
+
+	incHueAct = new TAction(this, "inc_hue", QT_TR_NOOP("Inc hue"), "", Qt::Key_6, false);
+	parent->addAction(incHueAct);
+	connect(incHueAct, SIGNAL(triggered()), core, SLOT(incHue()));
+
+	decSaturationAct = new TAction(this, "dec_saturation", QT_TR_NOOP("Dec saturation"), "", Qt::Key_7, false);
+	parent->addAction(decSaturationAct);
+	connect(decSaturationAct, SIGNAL(triggered()), core, SLOT(decSaturation()));
+
+	incSaturationAct = new TAction(this, "inc_saturation", QT_TR_NOOP("Inc saturation"), "", Qt::Key_8, false);
+	parent->addAction(incSaturationAct);
+	connect(incSaturationAct, SIGNAL(triggered()), core, SLOT(incSaturation()));
+
+	decGammaAct = new TAction(this, "dec_gamma", QT_TR_NOOP("Dec gamma"), "", Qt::Key_9, false);
+	parent->addAction(decGammaAct);
+	connect(decGammaAct, SIGNAL(triggered()), core, SLOT(decGamma()));
+
+	incGammaAct = new TAction(this, "inc_gamma", QT_TR_NOOP("Inc gamma"), "", Qt::Key_0, false);
+	parent->addAction(incGammaAct);
+	connect(incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()));
+
 	// Deinterlace submenu
 	addSeparator();
 	addMenu(new TMenuDeinterlace(parent, core));
@@ -352,7 +393,7 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 
 void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
-	// All depending on mset, so useless to set if no video
+	// Depending on mset, so useless to set if no video
 	bool enableVideo = !stopped && video;
 
 #if USE_ADAPTER
@@ -361,6 +402,17 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
 	equalizerAct->setEnabled(enableVideo);
 	resetVideoEqualizerAct->setEnabled(enableVideo);
+
+	decContrastAct->setEnabled(enableVideo);
+	incContrastAct->setEnabled(enableVideo);
+	decBrightnessAct->setEnabled(enableVideo);
+	incBrightnessAct->setEnabled(enableVideo);
+	decHueAct->setEnabled(enableVideo);
+	incHueAct->setEnabled(enableVideo);
+	decSaturationAct->setEnabled(enableVideo);
+	incSaturationAct->setEnabled(enableVideo);
+	decGammaAct->setEnabled(enableVideo);
+	incGammaAct->setEnabled(enableVideo);
 
 	bool enableFilters = enableVideo && core->videoFiltersEnabled();
 	stereo3DAct->setEnabled(enableFilters);

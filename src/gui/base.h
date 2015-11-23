@@ -316,18 +316,6 @@ protected:
 protected:
 	QWidget* panel;
 
-	// Actions not in menus
-	TAction* decContrastAct;
-	TAction* incContrastAct;
-	TAction* decBrightnessAct;
-	TAction* incBrightnessAct;
-	TAction* decHueAct;
-	TAction* incHueAct;
-	TAction* decSaturationAct;
-	TAction* incSaturationAct;
-	TAction* decGammaAct;
-	TAction* incGammaAct;
-
 	TAction* showContextMenuAct;
 	TAction* nextWheelFunctionAct;
 
@@ -369,9 +357,11 @@ protected:
 	TPlaylist* playlist;
 	TVideoEqualizer* video_equalizer;
 	TAudioEqualizer* audio_equalizer;
+
 #ifdef FIND_SUBTITLES
 	FindSubtitlesWindow* find_subs_dialog;
 #endif
+
 #ifdef VIDEOPREVIEW
 	VideoPreview* video_preview;
 #endif

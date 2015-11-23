@@ -39,6 +39,18 @@ private:
 
 	TAction* equalizerAct;
 	TAction* resetVideoEqualizerAct;
+
+	TAction* decContrastAct;
+	TAction* incContrastAct;
+	TAction* decBrightnessAct;
+	TAction* incBrightnessAct;
+	TAction* decHueAct;
+	TAction* incHueAct;
+	TAction* decSaturationAct;
+	TAction* incSaturationAct;
+	TAction* decGammaAct;
+	TAction* incGammaAct;
+
 	TAction* stereo3DAct;
 	TAction* flipAct;
 	TAction* mirrorAct;
