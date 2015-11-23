@@ -1221,10 +1221,11 @@ void TCore::startPlayer(QString file, double seek) {
 		if (pref->threads > 1) {
 			proc->setOption("threads", QString::number(pref->threads));
 		}
-	}
 
-	if (!pref->hwdec.isEmpty())
-		proc->setOption("hwdec", pref->hwdec);
+		if (!pref->hwdec.isEmpty()) {
+			proc->setOption("hwdec", pref->hwdec);
+		}
+	}
 
 	// Set screenshot directory
 	bool screenshot_enabled = pref->use_screenshot
