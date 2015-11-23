@@ -1052,15 +1052,19 @@ void TCore::switchCapturing() {
 
 bool TCore::videoFiltersEnabled(bool displayMessage) {
 
+	bool enabled = true;
+
 #ifndef Q_OS_WIN
 	QString msg;
 	if (isMPlayer()) {
 		if (pref->vdpau.disable_video_filters && pref->vo.startsWith("vdpau")) {
 			msg = tr("Using vdpau, the video filters will be ignored");
+			enabled = false;
 		}
 	} else {
 		if (!pref->hwdec.isEmpty() && pref->hwdec != "no") {
 			msg = tr("Hardware decoding is enabled, the video filters will be ignored");
+			enabled = false;
 		}
 	}
 
@@ -1070,7 +1074,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 	}
 #endif
 
-	return true;
+	return enabled;
 }
 
 void TCore::startPlayer(QString file, double seek) {
