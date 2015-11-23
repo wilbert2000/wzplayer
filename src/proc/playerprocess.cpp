@@ -129,7 +129,18 @@ bool TPlayerProcess::startPlayer() {
 }
 
 void TPlayerProcess::processError(QProcess::ProcessError error) {
-	qWarning("Proc::TPlayerProcess::processError: %d", error);
+
+	QString msg;
+	switch (error) {
+		case QProcess::FailedToStart: msg = "player failed to start"; break;
+		case QProcess::Crashed: msg = "player quit unexpectedly"; break;
+		case QProcess::Timedout: msg = "timeout waiting for player"; break;
+		case QProcess::WriteError: msg = "error trying to write to player"; break;
+		case QProcess::ReadError: msg = "error trying to read from player"; break;
+		default: msg = "unknown error";
+	}
+
+	qWarning("Proc::TPlayerProcess::processError: %s (%d)", msg.toUtf8().constData(), error);
 }
 
 int TPlayerProcess::exitCodeOverride() {
