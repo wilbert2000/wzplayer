@@ -883,7 +883,6 @@ void TGeneral::ao_combo_changed(int idx) {
 void TGeneral::on_vdpau_button_clicked() {
 	qDebug("Gui::Pref::TGeneral::on_vdpau_button_clicked");
 
-/*
 	TVDPAUProperties d(this);
 
 	d.setffh264vdpau(vdpau.ffh264vdpau);
@@ -903,7 +902,6 @@ void TGeneral::on_vdpau_button_clicked() {
 
 		vdpau.disable_video_filters = d.disableFilters();
 	}
-*/
 }
 #endif
 
