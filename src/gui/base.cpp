@@ -434,9 +434,6 @@ void TBase::createActions() {
 	resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", QT_TR_NOOP("Reset video equalizer"));
 	connect(resetVideoEqualizerAct, SIGNAL(triggered()), video_equalizer, SLOT(reset()));
 
-	resetAudioEqualizerAct = new TAction(this, "reset_audio_equalizer", QT_TR_NOOP("Reset audio equalizer"));
-	connect(resetAudioEqualizerAct, SIGNAL(triggered()), audio_equalizer, SLOT(reset()));
-
 	showContextMenuAct = new TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
 

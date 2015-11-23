@@ -143,7 +143,12 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	audioEqualizerAct->setChecked(audioEqualizer->isVisible());
 	connect(audioEqualizerAct, SIGNAL(triggered(bool)), audioEqualizer, SLOT(setVisible(bool)));
 	connect(audioEqualizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
+
+	resetAudioEqualizerAct = new TAction(this, "reset_audio_equalizer", QT_TR_NOOP("Reset audio equalizer"));
+	connect(resetAudioEqualizerAct, SIGNAL(triggered()), audioEqualizer, SLOT(reset()));
+
 	// Stereo and channel subs
+	addSeparator();
 	addMenu(new TMenuStereo(parent, core));
 	addMenu(new TMenuAudioChannel(parent, core));
 	// Filter sub
@@ -185,8 +190,16 @@ void TMenuAudio::enableActions(bool stopped, bool, bool audio) {
 
 	bool enableAudio = !stopped && audio;
 
-	loadAudioAct->setEnabled(!stopped);
-	unloadAudioAct->setEnabled(enableAudio && !core->mset.external_audio.isEmpty());
+	muteAct->setEnabled(enableAudio);
+	decVolumeAct->setEnabled(enableAudio);
+	incVolumeAct->setEnabled(enableAudio);
+	decAudioDelayAct->setEnabled(enableAudio);
+	incAudioDelayAct->setEnabled(enableAudio);
+	audioDelayAct->setEnabled(enableAudio);
+
+	bool enableEqualizer = enableAudio && pref->use_audio_equalizer;
+	audioEqualizerAct->setEnabled(enableEqualizer);
+	resetAudioEqualizerAct->setEnabled(enableEqualizer);
 
 	// Filters
 	volnormAct->setEnabled(enableAudio);
@@ -196,14 +209,8 @@ void TMenuAudio::enableActions(bool stopped, bool, bool audio) {
 	karaokeAct->setEnabled(enableAudio && pref->isMPlayer());
 #endif
 
-	audioEqualizerAct->setEnabled(enableAudio && pref->use_audio_equalizer);
-
-	muteAct->setEnabled(enableAudio);
-	decVolumeAct->setEnabled(enableAudio);
-	incVolumeAct->setEnabled(enableAudio);
-	decAudioDelayAct->setEnabled(enableAudio);
-	incAudioDelayAct->setEnabled(enableAudio);
-	audioDelayAct->setEnabled(enableAudio);
+	loadAudioAct->setEnabled(!stopped);
+	unloadAudioAct->setEnabled(enableAudio && !core->mset.external_audio.isEmpty());
 }
 
 void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {

@@ -328,7 +328,6 @@ protected:
 	TAction* decGammaAct;
 	TAction* incGammaAct;
 	TAction* resetVideoEqualizerAct;
-	TAction* resetAudioEqualizerAct;
 	TAction* showContextMenuAct;
 	TAction* nextAspectAct;
 	TAction* nextWheelFunctionAct;

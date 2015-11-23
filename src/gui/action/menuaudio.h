@@ -31,6 +31,8 @@ private:
 	TAction* audioDelayAct;
 
 	TAction* audioEqualizerAct;
+	TAction* resetAudioEqualizerAct;
+
 	QMenu* audioFilterMenu;
 	TAction* volnormAct;
 #ifdef MPLAYER_SUPPORT
