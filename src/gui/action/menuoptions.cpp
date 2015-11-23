@@ -12,10 +12,13 @@ class TMenuOSD : public TMenu {
 public:
 	explicit TMenuOSD(QWidget* parent, TCore* c);
 protected:
+	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
 	TActionGroup* group;
+	TAction* showFilenameAct;
+	TAction* showTimeAct;
 };
 
 TMenuOSD::TMenuOSD(QWidget *parent, TCore* c)
@@ -42,7 +45,21 @@ TMenuOSD::TMenuOSD(QWidget *parent, TCore* c)
 	a = new TAction(this, "dec_osd_scale", QT_TR_NOOP("Size &-"), "", Qt::SHIFT | Qt::Key_Y);
 	connect(a, SIGNAL(triggered()), core, SLOT(decOSDScale()));
 
+	addSeparator();
+	showFilenameAct = new TAction(this, "show_filename", QT_TR_NOOP("Show filename on OSD"), "", Qt::SHIFT | Qt::Key_I);
+	connect(showFilenameAct, SIGNAL(triggered()), core, SLOT(showFilenameOnOSD()));
+
+	showTimeAct = new TAction(this, "show_time", QT_TR_NOOP("Show playback time on OSD"), "", Qt::Key_I);
+	connect(showTimeAct, SIGNAL(triggered()), core, SLOT(showTimeOnOSD()));
+
 	addActionsTo(parent);
+}
+
+void TMenuOSD::enableActions(bool stopped, bool video, bool) {
+
+	bool enabled = !stopped && video;
+	showFilenameAct->setEnabled(enabled);
+	showTimeAct->setEnabled(enabled);
 }
 
 void TMenuOSD::onAboutToShow() {
@@ -91,10 +108,10 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 
 	// Ontop submenu
 	addMenu(new TMenuStayOnTop(parent));
-	// Toolbars
-	addMenu(toolBarMenu);
 	// OSD
 	addMenu(new TMenuOSD(parent, core));
+	// Toolbars
+	addMenu(toolBarMenu);
 
 	// Show properties
 	addSeparator();

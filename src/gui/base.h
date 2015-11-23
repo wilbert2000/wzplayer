@@ -331,9 +331,6 @@ protected:
 	TAction* showContextMenuAct;
 	TAction* nextWheelFunctionAct;
 
-	TAction* showFilenameAct;
-	TAction* showTimeAct;
-
 	// MENUS
 	TMenuOpen* openMenu;
 	TMenuPlay* playMenu;

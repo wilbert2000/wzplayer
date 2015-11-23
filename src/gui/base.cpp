@@ -438,12 +438,6 @@ void TBase::createActions() {
 	nextWheelFunctionAct = new TAction(this, "next_wheel_function", QT_TR_NOOP("Next wheel function"));
 	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
 
-	showFilenameAct = new TAction(this, "show_filename", QT_TR_NOOP("Show filename on OSD"), "", Qt::SHIFT | Qt::Key_I);
-	connect(showFilenameAct, SIGNAL(triggered()), core, SLOT(showFilenameOnOSD()));
-
-	showTimeAct = new TAction(this, "show_time", QT_TR_NOOP("Show playback time on OSD"), "", Qt::Key_I);
-	connect(showTimeAct, SIGNAL(triggered()), core, SLOT(showTimeOnOSD()));
-
 	// Time slider action
 	timeslider_action = new TTimeSliderAction(this, core->positionMax(), pref->time_slider_drag_delay);
 	timeslider_action->setObjectName("timeslider_action");
