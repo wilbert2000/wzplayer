@@ -16,14 +16,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_BASE_H_
-#define _GUI_BASE_H_
+#ifndef GUI_BASE_H
+#define GUI_BASE_H
 
 #include <QMainWindow>
-#include <QNetworkProxy>
-
-#include "config.h"
-#include "settings/preferences.h"
 #include "core.h"
 #include "gui/pref/dialog.h"
 
@@ -38,7 +34,6 @@
 class QWidget;
 class QMenu;
 
-class TMediaData;
 class TPlayerWindow;
 
 #ifdef FIND_SUBTITLES
@@ -53,7 +48,6 @@ class VideoPreview;
 namespace Gui {
 
 class TAction;
-class TActionGroup;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
@@ -167,6 +161,26 @@ public slots:
 	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; }
 	int forceStartInFullscreen() { return arg_start_in_fullscreen; }
 
+signals:
+	void enableActions(bool stopped, bool video, bool audio);
+	void mediaSettingsChanged(Settings::TMediaSettings* mset);
+
+	void frameChanged(int);
+	void videoInfoChanged(int width, int height, double fps);
+	void timeChanged(QString time_ready_to_print);
+
+	void aboutToEnterFullscreenSignal();
+	void didEnterFullscreenSignal();
+	void aboutToExitFullscreenSignal();
+	void didExitFullscreenSignal();
+	void stayOnTopChanged(int);
+
+	//! Sent when another instance requested to play a file
+	void openFileRequested();
+
+	void loadTranslation();
+	void requestRestart(bool);
+
 protected slots:
 	virtual void closeWindow();
 	// Replace for setCaption (in Qt 4 it's not virtual)
@@ -252,26 +266,6 @@ protected slots:
 #endif
 #endif
 
-signals:
-	void enableActions(bool stopped, bool video, bool audio);
-	void mediaSettingsChanged(Settings::TMediaSettings* mset);
-
-	void frameChanged(int);
-	void videoInfoChanged(int width, int height, double fps);
-	void timeChanged(QString time_ready_to_print);
-
-	void aboutToEnterFullscreenSignal();
-	void didEnterFullscreenSignal();
-	void aboutToExitFullscreenSignal();
-	void didExitFullscreenSignal();
-	void stayOnTopChanged(int);
-
-	//! Sent when another instance requested to play a file
-	void openFileRequested();
-
-	void loadTranslation();
-	void requestRestart(bool);
-
 protected:
 	virtual void closeEvent(QCloseEvent* e);
 	virtual void changeEvent(QEvent* event);
@@ -315,6 +309,8 @@ protected:
 
 protected:
 	QWidget* panel;
+	TPlayerWindow* playerwindow;
+	TCore* core;
 
 	TAction* showContextMenuAct;
 	TAction* nextWheelFunctionAct;
@@ -349,12 +345,12 @@ protected:
 	TVolumeSliderAction* volumeslider_action;
 	TTimeLabelAction* time_label_action;
 
+	TPlaylist* playlist;
 	TLogWindow* log_window;
 	TLogWindow* clhelp_window;
 
 	Pref::TDialog* pref_dialog;
 	TFilePropertiesDialog* file_dialog;
-	TPlaylist* playlist;
 	TVideoEqualizer* video_equalizer;
 	TAudioEqualizer* audio_equalizer;
 
@@ -365,9 +361,6 @@ protected:
 #ifdef VIDEOPREVIEW
 	VideoPreview* video_preview;
 #endif
-
-	TCore* core;
-	TPlayerWindow* playerwindow;
 
 #ifdef UPDATE_CHECKER
 	TUpdateChecker* update_checker;
@@ -427,5 +420,5 @@ private slots:
 
 } // namespace Gui
 
-#endif // _GUI_BASE_H_
+#endif // GUI_BASE_H
 
