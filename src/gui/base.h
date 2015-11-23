@@ -327,14 +327,12 @@ protected:
 	TAction* incSaturationAct;
 	TAction* decGammaAct;
 	TAction* incGammaAct;
-	TAction* resetVideoEqualizerAct;
+
 	TAction* showContextMenuAct;
-	TAction* nextAspectAct;
 	TAction* nextWheelFunctionAct;
 
 	TAction* showFilenameAct;
 	TAction* showTimeAct;
-	TAction* toggleDeinterlaceAct;
 
 	// MENUS
 	TMenuOpen* openMenu;

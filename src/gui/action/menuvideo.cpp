@@ -22,6 +22,7 @@ protected:
 private:
 	TCore* core;
 	TActionGroup* group;
+	TAction* nextAspectAct;
 };
 
 
@@ -32,6 +33,7 @@ TtMenuAspect::TtMenuAspect(QWidget* parent, TCore* c)
 	group = new TActionGroup(this, "aspect");
 	group->setEnabled(false);
 	new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TMediaSettings::AspectAuto);
+	addSeparator();
 	new TActionGroupItem(this, group, "aspect_1_1", QT_TR_NOOP("1&:1"), TMediaSettings::Aspect11);
 	new TActionGroupItem(this, group, "aspect_5_4", QT_TR_NOOP("&5:4"), TMediaSettings::Aspect54);
 	new TActionGroupItem(this, group, "aspect_4_3", QT_TR_NOOP("&4:3"), TMediaSettings::Aspect43);
@@ -44,15 +46,23 @@ TtMenuAspect::TtMenuAspect(QWidget* parent, TCore* c)
 	new TActionGroupItem(this, group, "aspect_2.35_1", QT_TR_NOOP("&2.35:1"), TMediaSettings::Aspect235);
 	addSeparator();
 	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TMediaSettings::AspectNone);
+
 	group->setChecked(core->mset.aspect_ratio_id);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
 	connect(core, SIGNAL(aspectRatioChanged(int)), group, SLOT(setChecked(int)));
+
+	addSeparator();
+	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("Next aspect ratio"), "", Qt::Key_A);
+	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
+
 	addActionsTo(parent);
 }
 
 void TtMenuAspect::enableActions(bool stopped, bool video, bool) {
 	// Uses mset, so useless to set if stopped or no video
-	group->setEnabled(!stopped && video);
+	bool enabled = !stopped && video;
+	group->setEnabled(enabled);
+	nextAspectAct->setEnabled(enabled);
 }
 
 void TtMenuAspect::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -74,6 +84,7 @@ protected:
 private:
 	TCore* core;
 	TActionGroup* group;
+	TAction* toggleDeinterlaceAct;
 };
 
 
@@ -92,12 +103,20 @@ TMenuDeinterlace::TMenuDeinterlace(QWidget* parent, TCore* c)
 	group->setChecked(core->mset.current_deinterlacer);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeDeinterlace(int)));
 	// No one else sets it
+
+	addSeparator();
+	toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", QT_TR_NOOP("Toggle deinterlacing"), "", Qt::Key_D);
+	connect(toggleDeinterlaceAct, SIGNAL(triggered()), core, SLOT(toggleDeinterlace()));
+
 	addActionsTo(parent);
 }
 
 void TMenuDeinterlace::enableActions(bool stopped, bool video, bool) {
+
 	// Using mset, so useless to set if stopped or no video
-	group->setEnabled(!stopped && video && core->videoFiltersEnabled());
+	bool enabled = !stopped && video && core->videoFiltersEnabled();
+	group->setEnabled(enabled);
+	toggleDeinterlaceAct->setEnabled(enabled);
 }
 
 void TMenuDeinterlace::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -264,6 +283,7 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 #endif
 
 	// Aspect submenu
+	addSeparator();
 	addMenu(new TtMenuAspect(parent, core));
 	// Size submenu
 	addMenu(new TMenuVideoSize(parent, playerwindow));
@@ -272,19 +292,24 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 
 	// Equalizer
 	addSeparator();
-	videoEqualizerAct = new TAction(this, "video_equalizer", QT_TR_NOOP("&Equalizer"), "equalizer", QKeySequence("Ctrl+E"));
-	videoEqualizerAct->setCheckable(true);
-	videoEqualizerAct->setChecked(videoEqualizer->isVisible());
-	connect(videoEqualizerAct, SIGNAL(triggered(bool)), videoEqualizer, SLOT(setVisible(bool)));
-	connect(videoEqualizer, SIGNAL(visibilityChanged(bool)), videoEqualizerAct, SLOT(setChecked(bool)));
+	equalizerAct = new TAction(this, "video_equalizer", QT_TR_NOOP("&Equalizer"), "equalizer", QKeySequence("Ctrl+E"));
+	equalizerAct->setCheckable(true);
+	equalizerAct->setChecked(videoEqualizer->isVisible());
+	connect(equalizerAct, SIGNAL(triggered(bool)), videoEqualizer, SLOT(setVisible(bool)));
+	connect(videoEqualizer, SIGNAL(visibilityChanged(bool)), equalizerAct, SLOT(setChecked(bool)));
+
+	resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", QT_TR_NOOP("Reset video equalizer"));
+	connect(resetVideoEqualizerAct, SIGNAL(triggered()), videoEqualizer, SLOT(reset()));
 
 	// Deinterlace submenu
+	addSeparator();
 	addMenu(new TMenuDeinterlace(parent, core));
 	// Video filter submenu
 	addMenu(new TMenuVideoFilter(parent, core));
+
 	// Stereo 3D
-	stereo3dAct = new TAction(this, "stereo_3d_filter", QT_TR_NOOP("Stereo &3D filter..."), "stereo3d");
-	connect(stereo3dAct, SIGNAL(triggered()), parent, SLOT(showStereo3dDialog()));
+	stereo3DAct = new TAction(this, "stereo_3d_filter", QT_TR_NOOP("Stereo &3D filter..."), "stereo3d");
+	connect(stereo3DAct, SIGNAL(triggered()), parent, SLOT(showStereo3dDialog()));
 
 	// Rotate submenu
 	addSeparator();
@@ -318,8 +343,8 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 
 #ifdef VIDEOPREVIEW
 	addSeparator();
-	videoPreviewAct = new TAction(this, "video_preview", QT_TR_NOOP("Thumb&nail generator..."));
-	connect(videoPreviewAct, SIGNAL(triggered()), parent, SLOT(showVideoPreviewDialog()));
+	TAction* a = new TAction(this, "video_preview", QT_TR_NOOP("Thumb&nail generator..."));
+	connect(a, SIGNAL(triggered()), parent, SLOT(showVideoPreviewDialog()));
 #endif
 
 	addActionsTo(parent);
@@ -327,16 +352,18 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 
 void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
+	// All depending on mset, so useless to set if no video
 	bool enableVideo = !stopped && video;
 
 #if USE_ADAPTER
 	screenGroup->setActionsEnabled(enableVideo && pref->vo.startsWith("directx"));
 #endif
 
-	bool enableFilters = enableVideo && core->videoFiltersEnabled();
+	equalizerAct->setEnabled(enableVideo);
+	resetVideoEqualizerAct->setEnabled(enableVideo);
 
-	videoEqualizerAct->setEnabled(enableFilters);
-	stereo3dAct->setEnabled(enableFilters);
+	bool enableFilters = enableVideo && core->videoFiltersEnabled();
+	stereo3DAct->setEnabled(enableFilters);
 	flipAct->setEnabled(enableFilters);
 	mirrorAct->setEnabled(enableFilters);
 
@@ -352,6 +379,8 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 							 && !pref->capture_directory.isEmpty()
 							 && QFileInfo(pref->capture_directory).isDir());
 #endif
+
+	// video preview always enabled
 }
 
 void TMenuVideo::fullscreenChanged(bool fullscreen) {

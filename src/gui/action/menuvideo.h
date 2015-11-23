@@ -37,8 +37,9 @@ private:
 	TActionGroup* screenGroup;
 #endif
 
-	TAction* videoEqualizerAct;
-	TAction* stereo3dAct;
+	TAction* equalizerAct;
+	TAction* resetVideoEqualizerAct;
+	TAction* stereo3DAct;
 	TAction* flipAct;
 	TAction* mirrorAct;
 
@@ -47,10 +48,6 @@ private:
 
 #ifdef CAPTURE_STREAM
 	TAction * capturingAct;
-#endif
-
-#ifdef VIDEOPREVIEW
-	TAction* videoPreviewAct;
 #endif
 };
 

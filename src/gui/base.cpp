@@ -431,14 +431,9 @@ void TBase::createActions() {
 	incGammaAct = new TAction(this, "inc_gamma", QT_TR_NOOP("Inc gamma"));
 	connect(incGammaAct, SIGNAL(triggered()), core, SLOT(incGamma()));
 
-	resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", QT_TR_NOOP("Reset video equalizer"));
-	connect(resetVideoEqualizerAct, SIGNAL(triggered()), video_equalizer, SLOT(reset()));
 
 	showContextMenuAct = new TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
-
-	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("Next aspect ratio"), "", Qt::Key_A);
-	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
 
 	nextWheelFunctionAct = new TAction(this, "next_wheel_function", QT_TR_NOOP("Next wheel function"));
 	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
@@ -448,10 +443,6 @@ void TBase::createActions() {
 
 	showTimeAct = new TAction(this, "show_time", QT_TR_NOOP("Show playback time on OSD"), "", Qt::Key_I);
 	connect(showTimeAct, SIGNAL(triggered()), core, SLOT(showTimeOnOSD()));
-
-	toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", QT_TR_NOOP("Toggle deinterlacing"), "", Qt::Key_D);
-	connect(toggleDeinterlaceAct, SIGNAL(triggered()), core, SLOT(toggleDeinterlace()));
-
 
 	// Time slider action
 	timeslider_action = new TTimeSliderAction(this, core->positionMax(), pref->time_slider_drag_delay);
@@ -675,16 +666,19 @@ void TBase::setActionsEnabled(bool b) {
 	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
 
 	// Actions not in menus
-	decContrastAct->setEnabled(b);
-	incContrastAct->setEnabled(b);
-	decBrightnessAct->setEnabled(b);
-	incBrightnessAct->setEnabled(b);
-	decHueAct->setEnabled(b);
-	incHueAct->setEnabled(b);
-	decSaturationAct->setEnabled(b);
-	incSaturationAct->setEnabled(b);
-	decGammaAct->setEnabled(b);
-	incGammaAct->setEnabled(b);
+
+	// Depending on mset, so useless to set if no video
+	bool enableVideo = b && !core->mdat.noVideo();
+	decContrastAct->setEnabled(enableVideo);
+	incContrastAct->setEnabled(enableVideo);
+	decBrightnessAct->setEnabled(enableVideo);
+	incBrightnessAct->setEnabled(enableVideo);
+	decHueAct->setEnabled(enableVideo);
+	incHueAct->setEnabled(enableVideo);
+	decSaturationAct->setEnabled(enableVideo);
+	incSaturationAct->setEnabled(enableVideo);
+	decGammaAct->setEnabled(enableVideo);
+	incGammaAct->setEnabled(enableVideo);
 
 	// Time slider
 	timeslider_action->enable(b);
