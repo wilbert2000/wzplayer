@@ -37,25 +37,27 @@ public:
 	virtual ~TFilePropertiesDialog();
 
 	// Call it as soon as possible
-	void setCodecs(InfoList vc, InfoList ac, InfoList demuxer);
+	void setCodecs(const InfoList& vc, const InfoList& ac, const InfoList& demuxer);
 
-	void setDemuxer(QString demuxer, QString original_demuxer="");
+	void setDemuxer(const QString& demuxer, const QString& original_demuxer="");
 	QString demuxer();
 
-	void setVideoCodec(QString vc, QString original_vc="");
+	void setVideoCodec(const QString& vc, const QString& original_vc = "");
 	QString videoCodec();
 
-	void setAudioCodec(QString ac, QString original_ac="");
+	void setAudioCodec(const QString& ac, const QString& original_ac="");
 	QString audioCodec();
 
-	void setMplayerAdditionalArguments(QString args);
+	void setMplayerAdditionalArguments(const QString& args);
 	QString mplayerAdditionalArguments();
 
-	void setMplayerAdditionalVideoFilters(QString s);
+	void setMplayerAdditionalVideoFilters(const QString& s);
 	QString mplayerAdditionalVideoFilters();
 
-	void setMplayerAdditionalAudioFilters(QString s);
+	void setMplayerAdditionalAudioFilters(const QString& s);
 	QString mplayerAdditionalAudioFilters();
+
+	void showInfo();
 
 public slots:
 	void accept(); // Reimplemented to send a signal
@@ -71,8 +73,7 @@ protected slots:
 
 protected:
 	bool hasCodecsList() { return codecs_set; }
-	int find(QString s, InfoList &list);
-	void showInfo();
+	int find(const QString s, InfoList &list);
 
 protected:
 	virtual void retranslateStrings();
@@ -82,6 +83,9 @@ private:
 	bool codecs_set;
 	InfoList vclist, aclist, demuxerlist;
 	QString orig_demuxer, orig_ac, orig_vc;
+	QString demuxer_description;
+	QString video_codec_description;
+	QString audio_codec_description;
 	const TMediaData* media_data;
 
 	QPushButton* okButton;

@@ -49,7 +49,10 @@ QString TInfoFile::formatSize(qint64 size) {
 	return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2), locale.toString(size));
 }
 
-QString TInfoFile::getInfo(const TMediaData& md) {
+QString TInfoFile::getInfo(const TMediaData& md,
+						   const QString& demuxerDescription,
+						   const QString& videoCodecDescription,
+						   const QString& audioCodecDescription) {
 
 	QString s;
 
@@ -90,7 +93,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += addItem(tr("URL"), url);
 	}
 	s += addItem(tr("Length"), Helper::formatTime((int)md.duration));
-	s += addItem(tr("Demuxer"), md.demuxer);
+	s += addItem(tr("Demuxer"), md.demuxer + " - " + demuxerDescription);
 	s += closePar();
 
 	// Clip info
@@ -103,8 +106,10 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		c += addItem(i.key(), i.value());
 	 }
 
-	if (!md.stream_title.isEmpty()) c+= addItem(tr("Stream title"), md.stream_title);
-	if (!md.stream_url.isEmpty()) c+= addItem(tr("Stream URL"), md.stream_url);
+	if (!md.stream_title.isEmpty())
+		c+= addItem(tr("Stream title"), md.stream_title);
+	if (!md.stream_url.isEmpty())
+		c+= addItem(tr("Stream URL"), md.stream_url);
 
 	if (!c.isEmpty()) {
 		s += openPar(tr("Clip info"));
@@ -120,7 +125,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += addItem(tr("Format"), md.video_format);
 		s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000));
 		s += addItem(tr("Frames per second"), QString::number(md.video_fps));
-		s += addItem(tr("Selected codec"), md.video_codec);
+		s += addItem(tr("Selected codec"), md.video_codec + " - " + videoCodecDescription);
 		s += closePar();
 	}
 
@@ -130,7 +135,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.audio_bitrate / 1000));
 	s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
 	s += addItem(tr("Channels"), QString::number(md.audio_nch));
-	s += addItem(tr("Selected codec"), md.audio_codec);
+	s += addItem(tr("Selected codec"), md.audio_codec + " - " + audioCodecDescription);
 	s += closePar();
 
 	// Audio Tracks
@@ -229,10 +234,10 @@ QString TInfoFile::closeItem() {
 
 QString TInfoFile::addItem(QString tag, QString value) {
 	row++;
-	return openItem() + 
-           "<td><b>" + tag + "</b></td>" +
-           "<td>" + value + "</td>" +
-           closeItem();
+	return openItem()
+			+ "<td><b>" + tag + "</b></td>"
+			+ "<td>" + value + "</td>"
+			+ closeItem();
 }
 
 

@@ -1086,6 +1086,7 @@ void TBase::showFilePropertiesDialog() {
 }
 
 void TBase::setDataToFileProperties() {
+	qDebug("TBase::setDataToFileProperties");
 
 	InfoReader *i = InfoReader::obj();
 	i->getInfo();
@@ -1100,7 +1101,7 @@ void TBase::setDataToFileProperties() {
 		core->mset.original_audio_codec = core->mdat.audio_codec;
 
 
-	// Set demuxer, vide and audio codec
+	// Set demuxer, video and audio codec
 	QString demuxer = core->mset.forced_demuxer;
 	if (demuxer.isEmpty())
 		demuxer = core->mdat.demuxer;
@@ -1118,6 +1119,8 @@ void TBase::setDataToFileProperties() {
 	file_dialog->setMplayerAdditionalArguments(core->mset.mplayer_additional_options);
 	file_dialog->setMplayerAdditionalVideoFilters(core->mset.mplayer_additional_video_filters);
 	file_dialog->setMplayerAdditionalAudioFilters(core->mset.mplayer_additional_audio_filters);
+
+	file_dialog->showInfo();
 }
 
 void TBase::applyFileProperties() {

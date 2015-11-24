@@ -31,7 +31,10 @@ public:
 	TInfoFile();
 	virtual ~TInfoFile();
 
-	QString getInfo(const TMediaData& md);
+	QString getInfo(const TMediaData& md,
+					const QString& demuxerDescription,
+					const QString& videoCodecDescription,
+					const QString& audioCodecDescription);
 
 protected:
 	QString title(QString text);
