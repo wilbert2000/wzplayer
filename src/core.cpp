@@ -1838,11 +1838,7 @@ void TCore::startPlayer(QString file, double seek) {
 			proc->addAF("volnorm", pref->filters.item("volnorm").options());
 		}
 
-		bool use_scaletempo = pref->use_scaletempo == TPreferences::Enabled;
-		if (pref->use_scaletempo == TPreferences::Detect) {
-			use_scaletempo = true;
-		}
-		if (use_scaletempo) {
+		if (pref->use_scaletempo == TPreferences::Enabled) {
 			proc->addAF("scaletempo");
 		}
 
