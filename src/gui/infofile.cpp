@@ -39,15 +39,14 @@ QString TInfoFile::formatSize(qint64 size) {
 
 	const qint64 MB = 1024 * 1024;
 
-	// Qt formatting hell, still selects wrong locale
 	QLocale locale;
 	if (size < MB) {
-		double d = (double) size / 1024;
-		return tr("%1 bytes (%2 KiB)").arg(locale.toString(size), locale.toString(d, 'f', 2));
+		double kb = (double) size / 1024;
+		return tr("%1 KiB (%2 bytes)").arg(locale.toString(kb, 'f', 2), locale.toString(size));
 	}
 
-	double d = (double) size / MB;
-	return tr("%1 bytes (%2 MiB)").arg(locale.toString(size), locale.toString(d, 'f', 2));
+	double mb = (double) size / MB;
+	return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2), locale.toString(size));
 }
 
 QString TInfoFile::getInfo(const TMediaData& md) {
