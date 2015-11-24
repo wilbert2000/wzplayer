@@ -881,9 +881,12 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 		arg << "--audio-channels=" + value.toString();
 	}
 	else
-	if (option_name == "sub-scale" || option_name == "subfont-text-scale" || option_name == "ass-font-scale") {
+	if (option_name == "sub-scale"
+		|| option_name == "subfont-text-scale"
+		|| option_name == "ass-font-scale") {
 		QString scale = value.toString();
-		if (scale != "1") arg << "--sub-scale=" + scale;
+		if (scale != "1")
+			arg << "--sub-scale=" + scale;
 	}
 	else
 	if (option_name == "stop-xscreensaver") {

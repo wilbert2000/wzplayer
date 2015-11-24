@@ -1125,14 +1125,6 @@ void TMplayerProcess::setOption(const QString& option_name, const QVariant& valu
 		arg << "-v";
 	}
 	else
-	if (option_name == "screenshot_template" || option_name == "screenshot_format") {
-		// Not supported
-	}
-	else
-	if (option_name == "hwdec") {
-		// Not supported
-	}
-	else
 	if (option_name == "fontconfig") {
 		bool b = value.toBool();
 		if (b) arg << "-fontconfig"; else arg << "-nofontconfig";
@@ -1143,13 +1135,24 @@ void TMplayerProcess::setOption(const QString& option_name, const QVariant& valu
 		mute_option_set = true;
 	}
 	else
-	if (option_name == "keepaspect" ||
-		option_name == "dr" || option_name == "double" ||
-		option_name == "fs" || option_name == "slices" ||
-		option_name == "flip-hebrew")
+	if (option_name == "double")
+	{
+		if (!value.toBool())
+			arg << "-nodouble";
+	}
+	else
+	if (option_name == "keepaspect" || option_name == "fs"
+		|| option_name == "slices" || option_name == "flip-hebrew"
+		|| option_name == "dr")
 	{
 		bool b = value.toBool();
 		if (b) arg << "-" + option_name; else arg << "-no" + option_name;
+	}
+	else
+	if (option_name == "screenshot_template"
+		|| option_name == "screenshot_format"
+		|| option_name == "hwdec") {
+		// Not supported
 	}
 	else {
 		arg << "-" + option_name;
