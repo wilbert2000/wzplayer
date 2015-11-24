@@ -2,7 +2,6 @@
 #include <QMessageBox>
 #include "settings/paths.h"
 #include "gui/action/action.h"
-// TODO: move fav and tvlist to action sub dir
 #include "gui/action/favorites.h"
 #include "gui/action/tvlist.h"
 #include "gui/base.h"
