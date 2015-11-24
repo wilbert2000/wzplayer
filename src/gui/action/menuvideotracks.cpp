@@ -7,7 +7,6 @@
 namespace Gui {
 
 TMenuVideoTracks::TMenuVideoTracks(QWidget *parent, TCore* c)
-// TODO
 	: TMenu(parent, this, "videotrack_menu", QT_TR_NOOP("&Video track"), "video_track")
 	, core(c) {
 
