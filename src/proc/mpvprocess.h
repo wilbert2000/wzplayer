@@ -58,7 +58,7 @@ public:
 	void setVideo(int ID);
 	void setSubtitle(SubData::Type type, int ID);
 	void disableSubtitles();
-	void setSecondarySubtitle(int ID);
+	void setSecondarySubtitle(SubData::Type type, int ID);
 	void disableSecondarySubtitles();
 	void setSubtitlesVisibility(bool b);
 	void seekPlayerTime(double secs, int mode, bool precise, bool currently_paused);

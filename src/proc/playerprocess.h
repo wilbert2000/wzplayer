@@ -75,7 +75,7 @@ public:
 	virtual void setVideo(int ID) = 0;
 	virtual void setSubtitle(SubData::Type type, int ID) = 0;
 	virtual void disableSubtitles() = 0;
-	virtual void setSecondarySubtitle(int ID) = 0;
+	virtual void setSecondarySubtitle(SubData::Type type, int ID) = 0;
 	virtual void disableSecondarySubtitles() = 0;
 	virtual void setSubtitlesVisibility(bool b) = 0;
 	virtual void seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) = 0;

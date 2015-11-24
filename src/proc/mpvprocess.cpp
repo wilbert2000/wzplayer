@@ -114,7 +114,19 @@ bool TMPVProcess::parseSubtitleTrack(int id,
 		sub_type = SubData::Sub;
 	}
 
-	if (md->subs.update(sub_type, id, lang, name, filename, selected)) {
+	SubData::Type sec_type = md->subs.selectedSecondaryType();
+	int sec_ID = md->subs.selectedSecondaryID();
+	bool sec_selected = sec_type != SubData::None && sec_ID >= 0;
+
+	if (sub_type == sec_type && id == sec_ID) {
+		qDebug("TMPVProcess::parseSubtitleTrack: found secondary subtitle track");
+		// Secondary sub, don't select the primary sub
+		selected = false;
+	}
+
+	if (md->subs.update(sub_type, id, sec_type, sec_ID,
+						lang, name, filename,
+						selected, sec_selected)) {
 		if (notified_player_is_running)
 			emit receivedSubtitleTrackInfo();
 		return true;
@@ -122,7 +134,6 @@ bool TMPVProcess::parseSubtitleTrack(int id,
 
 	return false;
 }
-
 
 bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
@@ -1220,16 +1231,16 @@ void TMPVProcess::disableSubtitles() {
 	emit receivedSubtitleTrackChanged();
 }
 
-void TMPVProcess::setSecondarySubtitle(int ID) {
+void TMPVProcess::setSecondarySubtitle(SubData::Type type, int ID) {
+
+	md->subs.setSelectedSecondary(type, ID);
 	writeToStdin("set secondary-sid " + QString::number(ID));
-	md->subs.setSelectedSecondaryID(ID);
-	//emit receivedSecondarySubtitleTrackChanged(ID);
 }
 
 void TMPVProcess::disableSecondarySubtitles() {
+
+	md->subs.setSelectedSecondary(SubData::None, -1);
 	writeToStdin("set secondary-sid no");
-	md->subs.setSelectedSecondaryID(-1);
-	//emit receivedSecondarySubtitleTrackChanged(ID);
 }
 
 void TMPVProcess::setSubtitlesVisibility(bool b) {

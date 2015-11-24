@@ -3099,21 +3099,32 @@ void TCore::nextSubtitle() {
 
 #ifdef MPV_SUPPORT
 void TCore::changeSecondarySubtitle(int idx) {
-	// MPV only
 	qDebug("TCore::changeSecondarySubtitle: idx %d", idx);
 
+	bool clr = true;
+
 	if (idx >= 0 && idx < mdat.subs.count()) {
-		mset.current_secondary_sub_idx = idx;
-		int id = mdat.subs.itemAt(idx).ID();
-		if (id != mdat.subs.selectedSecondaryID()) {
-			proc->setSecondarySubtitle(id);
+		SubData sub = mdat.subs.itemAt(idx);
+		// Secondary may not be the same as the first
+		if (sub.type() != mdat.subs.selectedType()
+			|| sub.ID() != mdat.subs.selectedID()) {
+			mset.current_secondary_sub_idx = idx;
+			clr = false;
+			if (sub.type() != mdat.subs.selectedSecondaryType()
+				|| sub.ID() != mdat.subs.selectedSecondaryID()) {
+				proc->setSecondarySubtitle(sub.type(), sub.ID());
+			}
 		}
-	} else {
+	}
+
+	if (clr) {
 		mset.current_secondary_sub_idx = TMediaSettings::SubNone;
 		if (mdat.subs.selectedSecondaryID() >= 0) {
 			proc->disableSecondarySubtitles();
 		}
 	}
+
+	emit secondarySubtitleTrackChanged(mset.current_secondary_sub_idx);
 }
 #endif
 
@@ -3849,6 +3860,11 @@ void TCore::gotSubtitleInfo() {
 
 	// Need to set current_sub_idx, the subtitle action group checks on it.
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
+
+#ifdef MPV_SUPPORT
+	mset.current_secondary_sub_idx = mdat.subs.findSelectedSecondaryIdx();
+#endif
+
 	emit subtitleInfoChanged();
 
 	if (pref->autoload_sub && mdat.subs.count() > 0) {
@@ -3877,6 +3893,10 @@ void TCore::gotSubtitleChanged() {
 	// Need to set current_sub_idx, the subtitle group checks on it.
 	int selected_idx = mdat.subs.findSelectedIdx();
 	mset.current_sub_idx = selected_idx;
+
+#ifdef MPV_SUPPORT
+	mset.current_secondary_sub_idx = mdat.subs.findSelectedSecondaryIdx();
+#endif
 
 	emit subtitleTrackChanged(selected_idx);
 }

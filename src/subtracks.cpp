@@ -22,6 +22,26 @@
 #include <QRegExp>
 #include <QDebug>
 
+SubData::SubData()
+	: _type(None)
+	, _ID(-1) {
+}
+
+SubData::SubData(Type type,
+				 int id,
+				 const QString& lang,
+				 const QString& name,
+				 const QString& filename)
+	: _type(type)
+	, _ID(id)
+	, _lang(lang)
+	, _name(name)
+	, _filename(filename) {
+}
+
+SubData::~SubData() {
+}
+
 // TODO: shorten if too long
 QString SubData::displayName() const {
 
@@ -42,11 +62,15 @@ QString SubData::displayName() const {
 	return dname;
 }
 
-SubTracks::SubTracks() {
-	_selected_type = SubData::None;
-	_selected_ID = -1;
-}
+SubTracks::SubTracks()
+	: _selected_type(SubData::None)
+	, _selected_ID(-1)
 
+#ifdef MPV_SUPPORT
+	, _selected_secondary_type(SubData::None)
+	,  _selected_secondary_ID(-1)
+#endif
+{}
 
 SubTracks::~SubTracks() {
 }
@@ -54,6 +78,12 @@ SubTracks::~SubTracks() {
 void SubTracks::clear() {
 	_selected_type = SubData::None;
 	_selected_ID = -1;
+
+#ifdef MPV_SUPPORT
+	_selected_secondary_type = SubData::None;
+	_selected_secondary_ID = -1;
+#endif
+
 	subs.clear();
 }
 
@@ -71,6 +101,12 @@ int SubTracks::find(SubData::Type type, int ID) const {
 int SubTracks::findSelectedIdx() const {
 	return find(_selected_type, _selected_ID);
 }
+
+#ifdef MPV_SUPPORT
+int SubTracks::findSelectedSecondaryIdx() const {
+	return find(_selected_secondary_type, _selected_secondary_ID);
+}
+#endif
 
 int SubTracks::findLangIdx(QString expr) const {
 	qDebug("SubTracks::findLangIdx: '%s'", expr.toUtf8().data());
@@ -193,30 +229,32 @@ bool SubTracks::changeFilename(SubData::Type t, int ID, QString filename) {
 	return true;
 }
 
-// Used by mpvprocess
+#ifdef MPV_SUPPORT
 bool SubTracks::update(SubData::Type type,
 					   int id,
+					   SubData::Type sec_type,
+					   int sec_id,
 					   const QString & lang,
 					   const QString & name,
 					   const QString & filename,
-					   bool selected) {
+					   bool selected,
+					   bool sec_selected) {
 
 	bool changed = false;
 
 	int idx = find(type, id);
-	if (idx == -1) {
+	if (idx < 0) {
 		changed = true;
-		SubData sub;
-		sub.setType(type);
-		sub.setID(id);
-		sub.setLang(lang);
-		sub.setName(name);
-		sub.setFilename(filename);
+		SubData sub(type, id, lang, name, filename);
 		subs.append(sub);
 
 		if (selected) {
-			_selected_ID = id;
 			_selected_type = type;
+			_selected_ID = id;
+		}
+		if (sec_selected) {
+			_selected_secondary_type = sec_type;
+			_selected_secondary_ID = sec_id;
 		}
 	} else {
 		// Track already existed, so type and id match
@@ -235,30 +273,61 @@ bool SubTracks::update(SubData::Type type,
 		}
 
 		if (selected) {
-			if (_selected_ID != id) {
-				qDebug() << "SubTracks::update: changed selected id from"
-						 << _selected_ID << "to" << id;
-				_selected_ID = id;
+			if (_selected_type != type || _selected_ID != id) {
+				qDebug() << "SubTracks::update: changed selected subtitle from"
+						 << _selected_type << _selected_ID
+						 << "to" << type << id;
 				_selected_type = type;
+				_selected_ID = id;
 				changed = true;
 			}
-		} else if (_selected_ID == id) {
-			qDebug() << "SubTracks::update: changed selected id from"
-					 << id << "to -1";
+		} else if (_selected_type == type && _selected_ID == id) {
+			qDebug() << "SubTracks::update: changed selected subtitle from"
+					 << type << id << "to none selected";
+			_selected_type = SubData::None;
 			_selected_ID = -1;
 			changed = true;
 		}
+
+		// Secondary subtitle
+		if (sec_selected) {
+			if (_selected_secondary_type != sec_type
+				|| _selected_secondary_ID != sec_id) {
+				qDebug() << "SubTracks::update: changed selected secondary subtitle from"
+						 << _selected_secondary_type << _selected_secondary_ID
+						 << "to" << sec_type << sec_id;
+				_selected_secondary_type = sec_type;
+				_selected_secondary_ID = sec_id;
+				changed = true;
+			}
+		} else if (sec_id >= 0
+				   && _selected_secondary_type == sec_type
+				   && _selected_secondary_ID == sec_id) {
+			qDebug() << "SubTracks::update: changed selected secondary subtitle from"
+					 << sec_type << sec_id << "to none selected";
+			_selected_secondary_type = SubData::None;
+			_selected_secondary_ID = -1;
+			changed = true;
+		}
+
 	}
 
 	if (changed) {
-		qDebug() << "SubTracks::update: updated subtitle track id" << id
-				 << "lang" << lang << "name" << name << "filename" << filename
-				 << "selected" << selected;
+		qDebug() << "SubTracks::update: updated subtitle track type:" << type
+				 << "id:" << id
+				 << "sec type:" << sec_type
+				 << "sec id:" << sec_id
+				 << "lang:" << lang
+				 << "name:" << name
+				 << "filename:" << filename
+				 << "selected:" << selected
+				 << "sec selected:" << sec_selected;
 	} else {
-		qDebug("SubTracks::update:: subtitle track id %d already up to date", id);
+		qDebug("SubTracks::update:: subtitle track type %d id %d was up to date", type, id);
 	}
 	return changed;
 }
+#endif
 
 void SubTracks::list() const {
 	qDebug("SubTracks::list: selected subtitle track ID: %d", _selected_ID);

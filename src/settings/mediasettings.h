@@ -74,14 +74,15 @@ public:
 
 	int current_sub_idx;
 	bool current_sub_set_by_user;
-	// Only used for loading settings for local files
-	// and external subs during restart
-	SubData sub;
-	int external_subtitles_fps;
 
 #ifdef MPV_SUPPORT
 	int current_secondary_sub_idx;
 #endif
+
+	// Only used for loading settings for local files
+	// and external subs during restart
+	SubData sub;
+	int external_subtitles_fps;
 
 	bool playing_single_track;
 	int current_angle_id;

@@ -380,6 +380,9 @@ signals:
 	void audioTrackChanged(int);
 	void subtitleInfoChanged();
 	void subtitleTrackChanged(int);
+#ifdef MPV_SUPPORT
+	void secondarySubtitleTrackChanged(int);
+#endif
 	void titleTrackInfoChanged();
 	void titleTrackChanged(int);
 	void chapterInfoChanged();

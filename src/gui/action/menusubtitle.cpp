@@ -134,7 +134,7 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 	subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
 	connect(subtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSubtitle(int)));
 	connect(core, SIGNAL(subtitleInfoChanged()), this, SLOT(updateSubtitles()));
-	connect(core, SIGNAL(subtitleTrackChanged(int)), subtitleTrackGroup, SLOT(setChecked(int)));
+	connect(core, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
 	// Secondary subtitle track
 	// Need to create sec subs if player is MPlayer, otherwise we'll crash when
@@ -145,6 +145,7 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 		addMenu(secondarySubtitleTrackMenu);
 	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
 	connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSecondarySubtitle(int)));
+	connect(core, SIGNAL(secondarySubtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 #endif
 
 	addMenu(new TMenuCC(parent, core));
@@ -217,8 +218,7 @@ void TMenuSubtitle::enableActions(bool stopped, bool, bool) {
 }
 
 void TMenuSubtitle::onMediaSettingsChanged(Settings::TMediaSettings*) {
-	// mset.closed_caption_channel changes enable,
-	// but already handled by updateSubtitles
+	// Already handled by updateSubtitles
 }
 
 void TMenuSubtitle::updateSubtitles() {
@@ -254,14 +254,22 @@ void TMenuSubtitle::updateSubtitles() {
 		if (idx == core->mset.current_sub_idx) {
 			a->setChecked(true);
 		}
+
 #ifdef MPV_SUPPORT
 		if (pref->isMPV()) {
+			if (idx == core->mset.current_secondary_sub_idx) {
+				a->setEnabled(false);
+			}
+
 			a = new QAction(secondarySubtitleTrackGroup);
 			a->setCheckable(true);
 			a->setText(sub.displayName());
 			a->setData(idx);
 			if (idx == core->mset.current_secondary_sub_idx) {
 				a->setChecked(true);
+			}
+			if (idx == core->mset.current_sub_idx) {
+				a->setEnabled(false);
 			}
 		}
 #endif
