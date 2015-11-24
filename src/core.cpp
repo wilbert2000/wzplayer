@@ -1421,7 +1421,7 @@ void TCore::startPlayer(QString file, double seek) {
 			proc->setOption("noass");
 		if (isMPV()) {
 			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
-		} else {
+		} else if (mset.sub_scale != 5) {
 			proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
 		}
 	}
@@ -1536,7 +1536,8 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("audiofile", mset.external_audio);
 	}
 
-	proc->setOption("subpos", QString::number(mset.sub_pos));
+	if (mset.sub_pos != 100)
+		proc->setOption("subpos", QString::number(mset.sub_pos));
 
 	if (mset.audio_delay != 0) {
 		proc->setOption("delay", QString::number((double) mset.audio_delay/1000));
