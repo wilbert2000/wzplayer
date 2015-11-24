@@ -1345,6 +1345,7 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("mc", QString::number(pref->mc_value));
 	}
 
+	// MPlayer only
 	proc->setOption("dr", pref->use_direct_rendering);
 	proc->setOption("double", pref->use_double_buffer);
 
