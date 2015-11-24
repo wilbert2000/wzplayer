@@ -107,17 +107,21 @@ TDiscData TDiscName::split(const QString & disc_url, bool* ok) {
 		success = true;
 	}
 
-	if (!d.device.isEmpty()) d.device = removeTrailingSlash(d.device);
+	if (!d.device.isEmpty())
+		d.device = removeTrailingSlash(d.device);
 
+	/*
 	if (success) {
-		//qDebug("TDiscName::split: protocol: '%s'", d.protocol.toUtf8().constData());
-		//qDebug("TDiscName::split: title: '%d'", d.title);
-		//qDebug("TDiscName::split: device: '%s'", d.device.toUtf8().constData());
+		qDebug("TDiscName::split: protocol: '%s'", d.protocol.toUtf8().constData());
+		qDebug("TDiscName::split: title: '%d'", d.title);
+		qDebug("TDiscName::split: device: '%s'", d.device.toUtf8().constData());
 	} else {
 		qDebug("TDiscName::split: invalid url '%s'", disc_url.toUtf8().constData());
 	}
+	*/
 
-	if (ok != 0) (*ok) = success;
+	if (ok != 0)
+		(*ok) = success;
 
 	return d;
 }
