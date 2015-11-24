@@ -22,17 +22,18 @@
 namespace Gui {
 namespace Skin {
 
-void TActionTools::setActionToButton(TButton* button, const QString & name, QList<QAction*> actions) {
+void TActionTools::setActionToButton(TButton* button, const QString& name, QList<QAction*> actions) {
 	TAction* a = static_cast<TAction*>(findAction(name, actions));
 	if (a) button->setAction(a);
 }
 
-QAction* TActionTools::findAction(const QString & name, QList<QAction*> actions) {
+QAction* TActionTools::findAction(const QString& name, QList<QAction*> actions) {
+
 	QAction* a = 0;
-	for (int n=0; n < actions.count(); n++) {
+	for (int n = 0; n < actions.count(); n++) {
 		a = actions.at(n);
-		/* qDebug("**** name: %s", a->objectName().toLatin1().constData()); */
-		if (a->objectName() == name) return a;
+		if (a->objectName() == name)
+			return a;
 	}
 	return 0;
 }

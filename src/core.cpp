@@ -1957,7 +1957,7 @@ void TCore::startPlayer(QString file, double seek) {
 	proc->setProcessEnvironment(env);
 
 	if (!proc->startPlayer()) {
-		// TODO: error handling
+		// Error already reported by processError()
 		qWarning("TCore::startPlayer: player process didn't start");
 	}
 } //startPlayer()
@@ -3719,7 +3719,6 @@ void TCore::gotVideoOutResolution(int w, int h) {
 void TCore::gotVO(QString vo) {
 	qDebug("TCore::gotVO: '%s'", vo.toUtf8().data());
 
-	// TODO: check saving and use vo/ao against sys changes
 	if (pref->vo.isEmpty()) {
 		qDebug("TCore::gotVO: saving vo");
 		pref->vo = vo;
@@ -3729,7 +3728,6 @@ void TCore::gotVO(QString vo) {
 void TCore::gotAO(QString ao) {
 	qDebug("TCore::gotAO: '%s'", ao.toUtf8().data());
 
-	// TODO: check saving and use vo/ao against sys changes
 	if (pref->ao.isEmpty()) {
 		qDebug("TCore::gotAO: saving ao");
 		pref->ao = ao;

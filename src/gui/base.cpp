@@ -2488,7 +2488,7 @@ void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 		return;
 	}
 
-	if ((e == QProcess::FailedToStart) || (e == QProcess::Crashed)) {
+	if (e == QProcess::FailedToStart || e == QProcess::Crashed) {
 		TErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(pref->playerName()));
 		if (e == QProcess::FailedToStart) {
