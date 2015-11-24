@@ -75,15 +75,14 @@ protected:
 	virtual void onAboutToShow();
 };
 
-TMenuStayOnTop::TMenuStayOnTop(QWidget *parent) :
-	// TODO: rename to stay_on_top_menu?
-	TMenu(parent, this, "ontop_menu", QT_TR_NOOP("&Stay on top"), "ontop") {
+TMenuStayOnTop::TMenuStayOnTop(QWidget *parent)
+	: TMenu(parent, this, "stay_on_top_menu", QT_TR_NOOP("&Stay on top"), "ontop") {
 
 	group = new TActionGroup(this, "ontop");
 	// Always enabled
-	new TActionGroupItem(this, group, "on_top_always", QT_TR_NOOP("&Always"), Settings::TPreferences::AlwaysOnTop);
-	new TActionGroupItem(this, group, "on_top_never", QT_TR_NOOP("&Never"), Settings::TPreferences::NeverOnTop);
-	new TActionGroupItem(this, group, "on_top_playing", QT_TR_NOOP("While &playing"), Settings::TPreferences::WhilePlayingOnTop);
+	new TActionGroupItem(this, group, "stay_on_top_always", QT_TR_NOOP("&Always"), Settings::TPreferences::AlwaysOnTop);
+	new TActionGroupItem(this, group, "stay_on_top_never", QT_TR_NOOP("&Never"), Settings::TPreferences::NeverOnTop);
+	new TActionGroupItem(this, group, "stay_on_top_playing", QT_TR_NOOP("While &playing"), Settings::TPreferences::WhilePlayingOnTop);
 	group->setChecked((int) pref->stay_on_top);
 	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
 	connect(parent , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
