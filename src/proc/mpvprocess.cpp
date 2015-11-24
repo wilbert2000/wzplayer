@@ -65,14 +65,16 @@ bool TMPVProcess::startPlayer() {
 }
 
 bool TMPVProcess::parseVideoTrack(int id,
-								 const QString &codec,
+								 QString codec,
 								 QString name,
 								 bool selected) {
 
 	// Note lang "". Track info has lang.
-
+	if (codec.startsWith("*) (")) {
+		codec = codec.mid(4);
+	}
 	if (name.isEmpty() && !codec.isEmpty()) {
-		name = "(" + codec + ")";
+		name = codec;
 	}
 	if (md->videos.updateTrack(id, "", name, selected)) {
 		if (notified_player_is_running)
@@ -82,10 +84,17 @@ bool TMPVProcess::parseVideoTrack(int id,
 	return false;
 }
 
-bool TMPVProcess::parseAudioTrack(int id, const QString &lang, const QString &codec, QString name, bool selected) {
+bool TMPVProcess::parseAudioTrack(int id,
+								  const QString& lang,
+								  QString codec,
+								  QString name,
+								  bool selected) {
 
+	if (codec.startsWith("*) (")) {
+		codec = codec.mid(4);
+	}
 	if (name.isEmpty() && !codec.isEmpty()) {
-		name = "(" + codec + ")";
+		name = codec;
 	}
 	if (md->audios.updateTrack(id, lang, name, selected)) {
 		if (notified_player_is_running)
@@ -98,11 +107,14 @@ bool TMPVProcess::parseAudioTrack(int id, const QString &lang, const QString &co
 bool TMPVProcess::parseSubtitleTrack(int id,
 									const QString &lang,
 									QString name,
-									const QString& type,
+									QString type,
 									bool selected) {
 
+	if (type.startsWith("*) (")) {
+		type = type.mid(4);
+	}
 	if (name.isEmpty() && !type.isEmpty()) {
-		name = "(" + type + ")";
+		name = type;
 	}
 
 	SubData::Type sub_type;
