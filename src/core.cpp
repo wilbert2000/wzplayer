@@ -1269,9 +1269,6 @@ void TCore::startPlayer(QString file, double seek) {
 	if (screenshot_enabled)
 		proc->setScreenshotDirectory(pref->screenshot_directory);
 
-
-	proc->setOption("sub-fuzziness", pref->subfuzziness);
-
 	if (pref->vo != "player_default") {
 		if (!pref->vo.isEmpty()) {
 			proc->setOption("vo", pref->vo);
@@ -1383,16 +1380,16 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("osd-scale-by-window", "no");
 	}
 
+	// Subtitle search fuzziness
+	proc->setOption("sub-fuzziness", pref->subfuzziness);
+
 	// Subtitles fonts
 	if (pref->use_ass_subtitles && pref->freetype_support) {
 		// ASS:
 		proc->setOption("ass");
 		proc->setOption("embeddedfonts");
-
 		proc->setOption("ass-line-spacing", QString::number(pref->ass_line_spacing));
-
 		proc->setOption("ass-font-scale", QString::number(mset.sub_scale_ass));
-
 		proc->setOption("flip-hebrew", false); // It seems to be necessary to display arabic subtitles correctly when using -ass
 
 		if (pref->enable_ass_styles) {
