@@ -1394,26 +1394,21 @@ void TBase::configureDiscDevices() {
 void TBase::openVCD() {
 	qDebug("Gui::TBase::openVCD");
 
-	if (pref->dvd_device.isEmpty()
-		|| pref->cdrom_device.isEmpty()) {
+	if (pref->dvd_device.isEmpty() || pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
-		// TODO: remove pref->vcd_initial_title?
-		core->open(TDiscName::join(TDiscName::VCD, 0, pref->cdrom_device));
+		core->open(TDiscName::join(TDiscName::VCD, pref->vcd_initial_title,
+								   pref->cdrom_device));
 	}
 }
 
 void TBase::openAudioCD() {
 	qDebug("Gui::TBase::openAudioCD");
 
-	if ((pref->dvd_device.isEmpty()) ||
-		 (pref->cdrom_device.isEmpty()))
-	{
+	if (pref->dvd_device.isEmpty() || pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
-	} else {
-		if (playlist->maybeSave()) {
-			core->open("cdda://");
-		}
+	} else if (playlist->maybeSave()) {
+		core->open("cdda://");
 	}
 }
 
