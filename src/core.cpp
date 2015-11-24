@@ -440,7 +440,7 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 			qWarning() << "TCore::openDisc: added missing /";
 			disc.device = "/" + disc.device;
 		} else {
-			emit showMessage(tr("File not found: %1").arg(disc.device), 10000);
+			emit showMessage(tr("File not found: %1").arg(disc.device), 0);
 			return;
 		}
 	}
