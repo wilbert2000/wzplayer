@@ -820,7 +820,6 @@ void TBase::loadConfig() {
 		TDesktop::keepInsideDesktop(this);
 
 		// Block resize of main window by loading of video
-		// TODO: reset when video fails to load
 		block_resize = true;
 	} else {
 		centerWindow();
@@ -2465,6 +2464,8 @@ QString TBase::exitCodeToMessage(int exit_code) {
 void TBase::showExitCodeFromPlayer(int exit_code) {
 	qDebug("Gui::TBase::showExitCodeFromPlayer: %d", exit_code);
 
+	block_resize = false;
+
 	QString msg = exitCodeToMessage(exit_code);
 	displayMessage(msg, 0);
 
@@ -2481,6 +2482,8 @@ void TBase::showExitCodeFromPlayer(int exit_code) {
 
 void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 	qDebug("Gui::TBase::showErrorFromPlayer");
+
+	block_resize = false;
 
 	if (!pref->report_mplayer_crashes) {
 		qDebug("Gui::TBase::showErrorFromPlayer: error reporting is turned off");
