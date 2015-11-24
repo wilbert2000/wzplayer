@@ -400,7 +400,6 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	// Actions not in menus or buttons
 	showContextMenuAct = new TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
 
@@ -955,7 +954,7 @@ void TBase::showPreferencesDialog() {
 void TBase::applyNewPreferences() {
 	qDebug("Gui::TBase::applyNewPreferences");
 
-	TPreferences::TPlayerID old_player_id = pref->player_id;
+	QString old_player_bin = pref->player_bin;
 
 	// Update pref from dialog
 	pref_dialog->getData(pref);
@@ -980,7 +979,7 @@ void TBase::applyNewPreferences() {
 	TLog::log->setLogFileEnabled(pref->log_file);
 	TLog::log->setFilter(pref->log_filter);
 
-	// Interface tab first for needed restarts
+	// Interface tab first to check for needed restarts
 	Pref::TInterface* _interface = pref_dialog->mod_interface();
 
 	// Load translation if language changed
@@ -1000,7 +999,7 @@ void TBase::applyNewPreferences() {
 	// Gui, icon or player change needs restart smplayer
 	if (_interface->guiChanged()
 		|| _interface->iconsetChanged()
-		|| old_player_id != pref->player_id) {
+		|| old_player_bin != pref->player_bin) {
 		// Request restart
 		emit requestRestart(false);
 		// Close and restart with the new settings
@@ -1008,7 +1007,7 @@ void TBase::applyNewPreferences() {
 		return;
 	}
 
-	// Keeping main window
+	// Keeping the current main window
 
 	// Update application font
 	if (!pref->default_font.isEmpty()) {
@@ -1063,7 +1062,7 @@ void TBase::applyNewPreferences() {
 	// Network
 	setupNetworkProxy();
 
-	// Reenable actions
+	// Reenable actions to reflect changes
 	if (core->state() == TCore::Stopped) {
 		disableActionsOnStop();
 	} else {
