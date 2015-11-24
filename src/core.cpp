@@ -1092,7 +1092,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 	if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
 		qDebug("TCore::videoFiltersEnabled: %s", msg.toUtf8().constData());
-		emit showMessage(msg, 4000);
+		emit showMessage(msg, 0);
 	}
 #endif
 
@@ -1384,7 +1384,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Subtitles fonts
-	if ((pref->use_ass_subtitles) && (pref->freetype_support)) {
+	if (pref->use_ass_subtitles && pref->freetype_support) {
 		// ASS:
 		proc->setOption("ass");
 		proc->setOption("embeddedfonts");
@@ -1418,15 +1418,10 @@ void TCore::startPlayer(QString file, double seek) {
 				}
 			}
 		}
-
-		// Use the same font for OSD
-		// deleted
-
-		// Set the size of OSD
-		// deleted
 	} else {
 		// NO ASS:
-		if (pref->freetype_support) proc->setOption("noass");
+		if (pref->freetype_support)
+			proc->setOption("noass");
 		if (isMPV()) {
 			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
 		} else {
@@ -1437,14 +1432,12 @@ void TCore::startPlayer(QString file, double seek) {
 	// Subtitle encoding
 	{
 		QString encoding;
-		if ((pref->use_enca) && (!pref->enca_lang.isEmpty())) {
+		if (pref->use_enca && !pref->enca_lang.isEmpty()) {
 			encoding = "enca:"+ pref->enca_lang;
 			if (!pref->subcp.isEmpty()) {
 				encoding += ":"+ pref->subcp;
 			}
-		}
-		else
-		if (!pref->subcp.isEmpty()) {
+		} else if (!pref->subcp.isEmpty()) {
 			encoding = pref->subcp;
 		}
 
@@ -1462,10 +1455,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 #if PROGRAM_SWITCH
-	if ((mset.current_program_id != TMediaSettings::NoneSelected) /*&&
-         (mset.current_video_id == TMediaSettings::NoneSelected) && 
-		 (mset.current_audio_id == TMediaSettings::NoneSelected)*/)
-	{
+	if (mset.current_program_id != TMediaSettings::NoneSelected) {
 		proc->setOption("tsprog", QString::number(mset.current_program_id));
 	}
 	// Don't set video and audio track if using -tsprog

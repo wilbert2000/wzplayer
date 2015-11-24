@@ -346,6 +346,7 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 #ifdef MPV_SUPPORT
 	set->setValue("current_secondary_sub_idx", current_secondary_sub_idx);
 #endif
+
 #if PROGRAM_SWITCH
 	set->setValue("current_program_id", current_program_id);
 #endif
