@@ -511,6 +511,7 @@ private:
 
 	bool isMPlayer();
 	bool isMPV();
+	bool haveVideoFilters();
 	void getZoomFromPlayerWindow();
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);

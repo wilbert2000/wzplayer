@@ -1050,25 +1050,47 @@ void TCore::switchCapturing() {
 }
 #endif
 
+bool TCore::haveVideoFilters() {
+
+	return mset.phase_filter
+		|| mset.current_deinterlacer != TMediaSettings::NoDeinterlace
+		|| (mset.stereo3d_in != "none" && !mset.stereo3d_out.isEmpty())
+		|| mset.current_denoiser != TMediaSettings::NoDenoise
+		|| mset.current_unsharp
+		|| mset.deblock_filter
+		|| mset.dering_filter
+		|| mset.gradfun_filter
+		|| mset.upscaling_filter
+		|| mset.noise_filter
+		|| mset.postprocessing_filter
+		|| mset.add_letterbox
+		|| pref->use_soft_video_eq
+		|| !mset.mplayer_additional_video_filters.isEmpty()
+		|| !pref->mplayer_additional_video_filters.isEmpty()
+		|| mset.rotate != TMediaSettings::NoRotate
+		|| mset.flip
+		|| mset.mirror;
+}
+
 bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 	bool enabled = true;
 
 #ifndef Q_OS_WIN
 	QString msg;
-	if (isMPlayer()) {
-		if (pref->vdpau.disable_video_filters && pref->vo.startsWith("vdpau")) {
+	if (pref->vo.startsWith("vdpau")) {
+		enabled = !pref->vdpau.disable_video_filters;
+		if (enabled) {
+			msg = tr("The video driver settings for vdpau allow filters, this might not work...");
+		} else {
 			msg = tr("Using vdpau, the video filters will be ignored");
-			enabled = false;
 		}
-	} else {
-		if (!pref->hwdec.isEmpty() && pref->hwdec != "no") {
-			msg = tr("Hardware decoding is enabled, the video filters will be ignored");
-			enabled = false;
-		}
+	} else if (isMPV() && !pref->hwdec.isEmpty() && pref->hwdec != "no") {
+		msg = tr("Hardware decoding is enabled, the video filters will be ignored");
+		enabled = false;
 	}
 
-	if (displayMessage && !msg.isEmpty()) {
+	if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
 		qDebug("TCore::videoFiltersEnabled: %s", msg.toUtf8().constData());
 		emit showMessage(msg, 4000);
 	}
@@ -1163,14 +1185,26 @@ void TCore::startPlayer(QString file, double seek) {
 
 #ifndef Q_OS_WIN
 		if (pref->vo.startsWith("vdpau")) {
-			QString c;
-			if (pref->vdpau.ffh264vdpau) c += "ffh264vdpau,";
-			if (pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
-			if (pref->vdpau.ffwmv3vdpau) c += "ffwmv3vdpau,";
-			if (pref->vdpau.ffvc1vdpau) c += "ffvc1vdpau,";
-			if (pref->vdpau.ffodivxvdpau) c += "ffodivxvdpau,";
-			if (!c.isEmpty()) {
-				proc->setOption("vc", c);
+			if (isMPlayer()) {
+				QString c;
+				if (pref->vdpau.ffh264vdpau) c = "ffh264vdpau,";
+				if (pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
+				if (pref->vdpau.ffwmv3vdpau) c += "ffwmv3vdpau,";
+				if (pref->vdpau.ffvc1vdpau) c += "ffvc1vdpau,";
+				if (pref->vdpau.ffodivxvdpau) c += "ffodivxvdpau,";
+				if (!c.isEmpty()) {
+					proc->setOption("vc", c);
+				}
+			} else {
+				QString c;
+				if (pref->vdpau.ffh264vdpau) c = ",h264";
+				if (pref->vdpau.ffmpeg12vdpau) c += ",mpeg1video,mpeg2video";
+				if (pref->vdpau.ffwmv3vdpau) c += ",wmv3";
+				if (pref->vdpau.ffvc1vdpau) c += ",vc1";
+				if (pref->vdpau.ffodivxvdpau) c += ",mpeg4";
+				if (!c.isEmpty()) {
+					proc->setOption("hwdec-codecs", c.mid(1));
+				}
 			}
 		} else {
 #endif
@@ -1701,12 +1735,12 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Letterbox (expand)
-	if ((mset.add_letterbox) || (pref->fullscreen && pref->add_blackborders_on_fullscreen)) {
+	if (mset.add_letterbox || (pref->fullscreen && pref->add_blackborders_on_fullscreen)) {
 		proc->addVF("expand", QString("aspect=%1").arg(TDesktop::aspectRatio(playerwindow)));
 	}
 
 	// Software equalizer
-	if ((pref->use_soft_video_eq)) {
+	if (pref->use_soft_video_eq) {
 		proc->addVF("eq2");
 		proc->addVF("hue");
 		if ((pref->vo == "gl") || (pref->vo == "gl2") || (pref->vo == "gl_tiled")

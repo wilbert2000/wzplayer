@@ -1026,7 +1026,8 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 		option_name == "dvd-device" || option_name == "cdrom-device" ||
 		option_name == "demuxer" ||
 		option_name == "shuffle" ||
-		option_name == "frames")
+		option_name == "frames" ||
+		option_name == "hwdec-codecs")
 	{
 		QString s = "--" + option_name;
 		if (!value.isNull()) s += "=" + value.toString();
