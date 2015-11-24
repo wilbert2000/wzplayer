@@ -2178,60 +2178,6 @@ void TBase::centerWindow() {
 	}
 }
 
-bool TBase::optimizeSizeFactorPreDef(double factor) {
-
-	if (qAbs(factor - pref->size_factor) < 0.05) {
-		qDebug("Gui::TBase::optimizeSizeFactorPreDef: optimizing size factor from %f to predefined value %f",
-			   pref->size_factor, factor);
-		pref->size_factor = factor;
-		return true;
-	}
-	return false;
-}
-
-void TBase::optimizeSizeFactor(int w, int h) {
-
-	// Limit size to 0.8 of available desktop
-	const double f = 0.8;
-	QSize available_size = TDesktop::availableSize(this)
-						   - frameGeometry().size() + panel->size();
-	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
-	double max = f * available_size.height();
-	double factor;
-	// Adjust height first
-	if (video_size.height() > max) {
-		factor = max / h;
-		qDebug("Gui::TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor from %f to %f",
-			   f, pref->size_factor, factor);
-		pref->size_factor = factor;
-		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
-	}
-	// Adjust width
-	max = f * available_size.width();
-	if (video_size.width() > max) {
-		factor = max / w;
-		qDebug("Gui::TBase::optimizeSizeFactor: width larger as %f desktop, reducing size factor from %f to %f",
-			   f, pref->size_factor, factor);
-		pref->size_factor = factor;
-		video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
-	}
-
-	// Round to predefined values
-	const double factors[] = {0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00, 3.00, 4.00 };
-	for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
-		if (optimizeSizeFactorPreDef(factors[i])) {
-			return;
-		}
-	}
-
-	// Make width multiple of 16
-	int new_w = ((video_size.width() + 8) / 16) * 16;
-	factor = (double) new_w / w;
-	qDebug("Gui::TBase::optimizeSizeFactor: optimizing width %d factor %f to multiple of 16 %d factor %f",
-		   video_size.width(), pref->size_factor, new_w, factor);
-	pref->size_factor = factor;
-}
-
 void TBase::hidePanel() {
 	qDebug("Gui::TBase::hidePanel");
 
@@ -2273,8 +2219,7 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 				// Adjust size factor to window size
 				playerwindow->updateSizeFactor();
 			} else {
-				// Keep size in range
-				optimizeSizeFactor(w, h);
+				pref->size_factor = 1.0;
 				resizeWindow(w, h);
 			}
 		}
@@ -2417,7 +2362,7 @@ void TBase::changeStayOnTop(int stay_on_top) {
 }
 
 void TBase::checkStayOnTop(TCore::State state) {
-	qDebug("Gui::TBase::checkStayOnTop");
+	//qDebug("Gui::TBase::checkStayOnTop");
 
 	if (!pref->fullscreen
 		&& (pref->stay_on_top == Settings::TPreferences::WhilePlayingOnTop)) {
@@ -2426,6 +2371,7 @@ void TBase::checkStayOnTop(TCore::State state) {
 }
 
 void TBase::toggleStayOnTop() {
+
 	if (pref->stay_on_top == Settings::TPreferences::AlwaysOnTop)
 		changeStayOnTop(Settings::TPreferences::NeverOnTop);
 	else
