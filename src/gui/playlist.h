@@ -76,7 +76,6 @@ public:
 
 	int count();
 	bool isEmpty();
-	bool isModified() { return modified; }
 	bool directoryRecursion() { return recursive_add_directory; }
 	bool autoGetInfo() { return automatically_get_info; }
 	bool savePlaylistOnExit() { return save_playlist_in_config; }
@@ -88,6 +87,7 @@ public:
 	QString print(QString seperator);
 
 	void loadSettings();
+	void saveSettings();
 	void retranslateStrings();
 
 public slots:
@@ -131,7 +131,6 @@ public slots:
 	virtual bool maybeSave();
     virtual void load();
     virtual bool save();
-	virtual void saveSettings();
 
 	virtual void load_m3u(const QString &file, bool clear = true, bool play = true);
 	virtual bool save_m3u(QString file);
@@ -144,8 +143,6 @@ public slots:
 	virtual void mediaEOF();
 	void playerSwitchedTitle(int id);
 
-	void setModified(bool);
-
 	// Preferences
 	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
 	void setAutoGetInfo(bool b) { automatically_get_info = b; }
@@ -155,7 +152,6 @@ public slots:
 signals:
 	void playlistEnded();
 	void visibilityChanged(bool visible);
-	void modifiedChanged(bool);
 	void displayMessage(const QString&, int);
 
 protected:
@@ -188,8 +184,6 @@ protected slots:
 	virtual void downItem();
 	virtual void editCurrentItem();
 	virtual void editItem(int item);
-
-	virtual void maybeSaveSettings();
 
 protected:
 	TPlaylistItemList pl;
@@ -233,7 +227,6 @@ protected:
 
 private:
 	bool modified;
-	QTimer* save_timer;
 
 	//Preferences
 	bool recursive_add_directory;

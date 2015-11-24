@@ -131,21 +131,9 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f)
 	QTime t;
 	t.start();
 	srand(t.hour() * 3600 + t.minute() * 60 + t.second());
-
-	// Save config every 5 minutes.
-	save_timer = new QTimer(this);
-	connect(save_timer, SIGNAL(timeout()), this, SLOT(maybeSaveSettings()));
-	save_timer->start(5 * 60000);
 }
 
 TPlaylist::~TPlaylist() {
-}
-
-void TPlaylist::setModified(bool mod) {
-	//qDebug("Gui::TPlaylist::setModified: %d", mod);
-
-	modified = mod;
-	emit modifiedChanged(modified);
 }
 
 void TPlaylist::createTable() {
@@ -402,7 +390,7 @@ void TPlaylist::clear() {
 	listView->clearContents();
 	listView->setRowCount(0);
 	setCurrentItem(0);
-	setModified(false);
+	modified = false;
 }
 
 void TPlaylist::remove(int i) {
@@ -411,7 +399,7 @@ void TPlaylist::remove(int i) {
 		pl.removeAt(i);
 		if(current_item == i && i == (pl.count() - 1))
 			setCurrentItem(i - 1);
-		setModified(true);
+		modified = true;
 		updateView();
 	}
 }
@@ -689,7 +677,7 @@ bool TPlaylist::save_m3u(QString file) {
 		}
 		f.close();
 
-		setModified(false);
+		modified = false;
 		return true;
 	} else {
 		return false;
@@ -739,7 +727,8 @@ bool TPlaylist::save_pls(QString file) {
 	set.sync();
 
 	bool ok = (set.status() == QSettings::NoError);
-	if (ok) setModified(false);
+	if (ok)
+		modified = false;
 
 	return ok;
 }
@@ -798,7 +787,9 @@ bool TPlaylist::save() {
 }
 
 bool TPlaylist::maybeSave() {
-	if (!isModified()) return true;
+
+	if (!modified)
+		return true;
 
 	int res = QMessageBox::question(this,
 				tr("Playlist modified"),
@@ -918,7 +909,7 @@ void TPlaylist::playDirectory(const QString &dir) {
 	sortBy(1);
 	// sortBy() can change current_item and modified
 	setCurrentItem(0);
-	setModified(false);
+	modified = false;
 	latest_dir = dir;
 	startPlay();
 }
@@ -1219,16 +1210,17 @@ void TPlaylist::removeSelected() {
 			qDebug("Remove '%s'", (*it).filename().toUtf8().data());
 			it = pl.erase(it);
 			it--;
-			setModified(true);
+			modified = true;
 		}
 	}
 
 
-    if (first_selected < current_item) {
-        current_item -= number_previous_item;
-    }
+	if (first_selected < current_item) {
+		current_item -= number_previous_item;
+	}
 
-	if (isEmpty()) setModified(false);
+	if (isEmpty())
+		modified = false;
 	updateView();
 
 	if (first_selected >= listView->rowCount()) 
@@ -1275,7 +1267,7 @@ int TPlaylist::chooseRandomItem() {
 void TPlaylist::swapItems(int item1, int item2) {
 
 	pl.swap(item1, item2);
-	setModified(true);
+	modified = true;
 }
 
 
@@ -1349,7 +1341,7 @@ void TPlaylist::editItem(int item) {
 		// user entered something and pressed OK
 		pl[item].setEdited(true);
 		pl[item].setName(text);
-		setModified(true);
+		modified = true;
 		updateView();
     } 
 }
@@ -1448,13 +1440,6 @@ void TPlaylist::closeEvent(QCloseEvent* e)  {
 	e->accept();
 }
 
-void TPlaylist::maybeSaveSettings() {
-	qDebug("Gui::TPlaylist::maybeSaveSettings");
-
-	if (modified)
-		saveSettings();
-}
-
 void TPlaylist::saveSettings() {
 	qDebug("Gui::TPlaylist::saveSettings");
 
@@ -1538,7 +1523,7 @@ void TPlaylist::loadSettings() {
 			addItem(filename, name, duration);
 		}
 		setCurrentItem(set->value("current_item", 0).toInt());
-		setModified(set->value("modified", false).toBool());
+		modified = set->value("modified", false).toBool();
 		updateView();
 
 		set->endGroup();
