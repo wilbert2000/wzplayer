@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/favorites.h"
+#include "gui/action/favorites.h"
 #include <QAction>
 #include <QSettings>
 #include <QFile>
@@ -24,7 +24,7 @@
 #include <QInputDialog>
 #include <QFileInfo>
 #include "gui/action/action.h"
-#include "gui/favoriteeditor.h"
+#include "gui/action/favoriteeditor.h"
 
 #define FIRST_MENU_ENTRY 3
 

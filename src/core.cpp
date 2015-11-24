@@ -48,7 +48,7 @@
 
 #include "proc/playerprocess.h"
 #include "playerwindow.h"
-#include "gui/tvlist.h"
+#include "gui/action/tvlist.h"
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef Q_OS_WIN

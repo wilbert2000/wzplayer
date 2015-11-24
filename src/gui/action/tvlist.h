@@ -16,10 +16,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_TVLIST_H_
-#define _GUI_TVLIST_H_
+#ifndef GUI_TVLIST_H
+#define GUI_TVLIST_H
 
-#include "gui/favorites.h"
+#include "gui/action/favorites.h"
 
 class QWidget;
 
@@ -62,5 +62,5 @@ protected slots:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::TTVList::Services)
 
-#endif // _GUI_TVLIST_H_
+#endif // GUI_TVLIST_H
 

@@ -94,7 +94,7 @@
 #include "gui/eqslider.h"
 #include "gui/audioequalizer.h"
 #include "gui/stereo3ddialog.h"
-#include "gui/tvlist.h"
+#include "gui/action/tvlist.h"
 
 #include "gui/pref/dialog.h"
 #include "gui/pref/general.h"

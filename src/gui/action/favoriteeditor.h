@@ -16,11 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_FAVORITEEDITOR_H_
-#define _GUI_FAVORITEEDITOR_H_
+#ifndef GUI_FAVORITEEDITOR_H
+#define GUI_FAVORITEEDITOR_H
 
 #include "ui_favoriteeditor.h"
-#include "gui/favorites.h"
+#include "gui/action/favorites.h"
 
 class QPixmap;
 
@@ -72,4 +72,4 @@ protected:
 
 } // namespace Gui
 
-#endif // _GUI_FAVORITEEDITOR_H_
+#endif // GUI_FAVORITEEDITOR_H

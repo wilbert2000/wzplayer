@@ -107,6 +107,9 @@ HEADERS += config.h \
     gui/action/menubrowse.h \
     gui/action/menuoptions.h \
     gui/action/menuhelp.h \
+    gui/action/favoriteeditor.h \
+    gui/action/favorites.h \
+    gui/action/tvlist.h \
     gui/deviceinfo.h \
     gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
@@ -132,9 +135,6 @@ HEADERS += config.h \
     gui/inputdvddirectory.h \
     gui/stereo3ddialog.h \
     gui/verticaltext.h \
-    gui/favoriteeditor.h \
-    gui/favorites.h \
-    gui/tvlist.h \
     gui/eqslider.h \
     gui/videoequalizer.h \
     gui/audioequalizer.h \
@@ -215,6 +215,9 @@ SOURCES	+= version.cpp \
     gui/action/menubrowse.cpp \
     gui/action/menuoptions.cpp \
     gui/action/menuhelp.cpp \
+    gui/action/favoriteeditor.cpp \
+    gui/action/favorites.cpp \
+    gui/action/tvlist.cpp \
     gui/deviceinfo.cpp \
     gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \
@@ -240,9 +243,6 @@ SOURCES	+= version.cpp \
     gui/inputdvddirectory.cpp \
     gui/stereo3ddialog.cpp \
     gui/verticaltext.cpp \
-    gui/favoriteeditor.cpp \
-    gui/favorites.cpp \
-    gui/tvlist.cpp \
     gui/eqslider.cpp \
     gui/videoequalizer.cpp \
     gui/audioequalizer.cpp \
@@ -270,9 +270,9 @@ SOURCES	+= version.cpp \
 
 FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/eqslider.ui gui/inputurl.ui gui/videoequalizer.ui \
-        gui/favoriteeditor.ui gui/about.ui gui/errordialog.ui gui/timedialog.ui \
+        gui/about.ui gui/errordialog.ui gui/timedialog.ui \
         gui/stereo3ddialog.ui gui/multilineinputdialog.ui \
-        gui/action/toolbareditor.ui \
+        gui/action/toolbareditor.ui gui/action/favoriteeditor.ui \
         gui/pref/seekwidget.ui gui/pref/vdpauproperties.ui gui/pref/dialog.ui \
         gui/pref/general.ui gui/pref/drives.ui gui/pref/interface.ui \
         gui/pref/performance.ui gui/pref/input.ui gui/pref/subtitles.ui \

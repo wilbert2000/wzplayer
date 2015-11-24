@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/tvlist.h"
-#include "gui/favoriteeditor.h"
+#include "gui/action/tvlist.h"
+#include "gui/action/favoriteeditor.h"
 #include "images.h"
 
 #include <QFile>
