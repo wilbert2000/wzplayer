@@ -116,13 +116,11 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	connect(muteAct, SIGNAL(triggered(bool)), core, SLOT(mute(bool)));
 	connect(core, SIGNAL(muteChanged(bool)), muteAct, SLOT(setChecked(bool)));
 
-	decVolumeAct = new TAction(this, "decrease_volume", QT_TR_NOOP("Volume &-"), "audio_down");
-	decVolumeAct->setShortcuts(TActionsEditor::stringToShortcuts("9,/"));
+	decVolumeAct = new TAction(this, "decrease_volume", QT_TR_NOOP("Volume &-"), "audio_down", Qt::Key_Slash);
 	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
 	connect(decVolumeAct, SIGNAL(triggered()), core, SLOT(decVolume()));
 
-	incVolumeAct = new TAction(this, "increase_volume", QT_TR_NOOP("Volume &+"), "audio_up");
-	incVolumeAct->setShortcuts(TActionsEditor::stringToShortcuts("0,*"));
+	incVolumeAct = new TAction(this, "increase_volume", QT_TR_NOOP("Volume &+"), "audio_up", Qt::Key_multiply);
 	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
 	connect(incVolumeAct, SIGNAL(triggered()), core, SLOT(incVolume()));
 
