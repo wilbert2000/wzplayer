@@ -1221,10 +1221,11 @@ void TCore::startPlayer(QString file, double seek) {
 		if (pref->threads > 1) {
 			proc->setOption("threads", QString::number(pref->threads));
 		}
+	}
 
-		if (!pref->hwdec.isEmpty()) {
-			proc->setOption("hwdec", pref->hwdec);
-		}
+	// MPV only
+	if (!pref->hwdec.isEmpty()) {
+		proc->setOption("hwdec", pref->hwdec);
 	}
 
 	// Set screenshot directory
@@ -1295,10 +1296,6 @@ void TCore::startPlayer(QString file, double seek) {
 		default: 						p = "normal";
 	}
 	proc->setOption("priority", p);
-	/*
-	SetPriorityClass(GetCurrentProcess(), app_p);
-	qDebug("TCore::startPlayer: priority of smplayer process set to %d", app_p);
-	*/
 #endif
 
 	if (pref->frame_drop && pref->hard_frame_drop) {
@@ -1714,10 +1711,9 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->addVF("hue");
 		if ((pref->vo == "gl") || (pref->vo == "gl2") || (pref->vo == "gl_tiled")
 #ifdef Q_OS_WIN
-             || (pref->vo == "directx:noaccel")
+			|| (pref->vo == "directx:noaccel")
 #endif
-		   )
-		{
+			) {
 			proc->addVF("scale");
 		}
 	}
@@ -1733,8 +1729,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Filters for subtitles on screenshots
-	if ((screenshot_enabled) && (pref->subtitles_on_screenshots)) 
-	{
+	if (screenshot_enabled && pref->subtitles_on_screenshots) {
 		if (pref->use_ass_subtitles) {
 			proc->addVF("subs_on_screenshots", "ass");
 		} else {
@@ -1780,7 +1775,7 @@ void TCore::startPlayer(QString file, double seek) {
 #endif
 
 	// slices
-	if ((pref->use_slices) && (!force_noslices)) {
+	if (pref->use_slices && !force_noslices) {
 		proc->setOption("slices", true);
 	} else {
 		proc->setOption("slices", false);

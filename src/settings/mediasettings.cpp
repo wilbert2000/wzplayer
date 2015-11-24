@@ -77,8 +77,8 @@ void TMediaSettings::reset() {
 	old_mute = mute;
 	mute = false;
 
-	sub_delay=0;
-	audio_delay=0;
+	sub_delay = 0;
+	audio_delay = 0;
 	sub_pos = pref->initial_sub_pos; // 100% by default
 	sub_scale = pref->initial_sub_scale; 
 	sub_scale_mpv = pref->initial_sub_scale_mpv;
@@ -140,19 +140,19 @@ void TMediaSettings::reset() {
 
 	current_demuxer = "unknown";
 
-	forced_demuxer="";
+	forced_demuxer = "";
 	if (pref->use_lavf_demuxer) forced_demuxer = "lavf";
 
-	forced_video_codec="";
-	forced_audio_codec="";
+	forced_video_codec = "";
+	forced_audio_codec = "";
 
-	original_demuxer="";
-	original_video_codec="";
-	original_audio_codec="";
+	original_demuxer = "";
+	original_video_codec = "";
+	original_audio_codec = "";
 
-	mplayer_additional_options="";
-	mplayer_additional_video_filters="";
-	mplayer_additional_audio_filters="";
+	mplayer_additional_options = "";
+	mplayer_additional_video_filters = "";
+	mplayer_additional_audio_filters = "";
 
 	win_width = 0;
 	win_height = 0;
