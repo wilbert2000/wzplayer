@@ -118,12 +118,17 @@ void TFilePropertiesDialog::setCodecs(const InfoList& vc,
 void TFilePropertiesDialog::setDemuxer(const QString& demuxer, const QString& original_demuxer) {
 	qDebug("Gui::TFilePropertiesDialog::setDemuxer");
 
-	if (!original_demuxer.isEmpty())
+	if (!original_demuxer.isEmpty()) {
 		orig_demuxer = original_demuxer;
+		int pos = find(orig_demuxer, demuxerlist);
+		if (pos >= 0) {
+			media_data->demuxer_description = demuxerlist[pos].desc();
+		}
+	}
+
 	int pos = find(demuxer, demuxerlist);
 	if (pos >= 0) {
 		demuxer_listbox->setCurrentRow(pos);
-		media_data->demuxer_description = demuxerlist[pos].desc();
 	}
 
 	qDebug(" * demuxer: '%s', pos: %d", demuxer.toUtf8().data(), pos);
@@ -140,12 +145,16 @@ QString TFilePropertiesDialog::demuxer() {
 void TFilePropertiesDialog::setVideoCodec(const QString& vc, const QString& original_vc) {
 	qDebug("Gui::TFilePropertiesDialog::setVideoCodec");
 
-	if (!original_vc.isEmpty())
+	if (!original_vc.isEmpty()) {
 		orig_vc = original_vc;
+		int pos = find(orig_vc, vclist);
+		if (pos >= 0) {
+			media_data->video_codec_description = vclist[pos].desc();
+		}
+	}
 	int pos = find(vc, vclist);
 	if (pos >= 0) {
 		vc_listbox->setCurrentRow(pos);
-		media_data->video_codec_description = vclist[pos].desc();
 	}
 
 	qDebug(" * vc: '%s', pos: %d", vc.toUtf8().data(), pos);
@@ -162,12 +171,16 @@ QString TFilePropertiesDialog::videoCodec() {
 void TFilePropertiesDialog::setAudioCodec(const QString& ac, const QString& original_ac) {
 	qDebug("Gui::TFilePropertiesDialog::setAudioCodec");
 
-	if (!original_ac.isEmpty())
+	if (!original_ac.isEmpty()) {
 		orig_ac = original_ac;
+		int pos = find(orig_ac, aclist);
+		if (pos >= 0) {
+			media_data->audio_codec_description = aclist[pos].desc();
+		}
+	}
 	int pos = find(ac, aclist);
 	if (pos >= 0) {
 		ac_listbox->setCurrentRow(pos);
-		media_data->audio_codec_description = aclist[pos].desc();
 	}
 
 	qDebug(" * ac: '%s', pos: %d", ac.toUtf8().data(), pos);
