@@ -75,6 +75,7 @@ public:
 	int video_width;
 	int video_height;
 	double video_aspect;
+	bool video_aspect_set;
 	double video_fps;
 
 	// Resolution with aspect and filters applied

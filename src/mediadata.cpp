@@ -47,6 +47,7 @@ void TMediaData::init() {
 	video_width = 0;
 	video_height = 0;
 	video_aspect = 0;
+	video_aspect_set = false;
 	video_fps = 0;
 	video_out_width = 0;
 	video_out_height = 0;
@@ -183,6 +184,7 @@ void TMediaData::list() const {
 	qDebug("  video_width: %d", video_width);
 	qDebug("  video_height: %d", video_height); 
 	qDebug("  video_aspect: %f", video_aspect);
+	qDebug("  video_aspect_set: %d", video_aspect_set);
 	qDebug("  video_fps: '%f'", video_fps);
 
 	qDebug("  video_out_width: %d", video_out_width);

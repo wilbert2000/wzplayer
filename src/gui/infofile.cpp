@@ -123,6 +123,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += openPar(tr("Video"));
 		s += addItem(tr("Resolution"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
 		s += addItem(tr("Aspect ratio"), QString::number(md.video_aspect));
+		s += addItem(tr("Aspect ratio specified"), md.video_aspect_set ? tr("yes") : tr("no"));
 		s += addItem(tr("Format"), md.video_format);
 		s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000));
 		s += addItem(tr("Frames per second"), QString::number(md.video_fps));

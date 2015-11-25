@@ -425,8 +425,22 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 	}
 	if (name == "ASPECT") {
 		md->video_aspect = value.toDouble();
-		if (md->video_aspect == 0.0 && md->video_height != 0) {
-			md->video_aspect = (double) md->video_width / md->video_height;
+		if (md->video_aspect == 0.0) {
+			qDebug("Proc::TPlayerProcess::parseVideoProperty: video_aspect not set");
+			md->video_aspect_set = false;
+			if (md->video_height != 0) {
+				md->video_aspect = (double) md->video_width / md->video_height;
+			}
+		} else {
+			// Precision
+			if (md->video_aspect == 1.3333) {
+				qDebug("Proc::TPlayerProcess::parseVideoProperty: upgrading precision 4:3");
+				md->video_aspect = 4.0 / 3;
+			} else if (md->video_aspect == 1.7778) {
+				qDebug("Proc::TPlayerProcess::parseVideoProperty: upgrading precision 16:9");
+				md->video_aspect = 16.0 / 9;
+			}
+			md->video_aspect_set = true;
 		}
 		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_aspect set to %f", md->video_aspect);
 		return true;
