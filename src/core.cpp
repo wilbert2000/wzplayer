@@ -917,7 +917,7 @@ void TCore::playingStarted() {
 	} 
 
 	if (forced_titles.contains(mdat.filename)) {
-		mdat.meta_data["NAME"] = forced_titles[mdat.filename];
+		mdat.title = forced_titles[mdat.filename];
 	}
 
 #ifdef YOUTUBE_SUPPORT

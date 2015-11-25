@@ -99,6 +99,10 @@ QString TInfoFile::getInfo(const TMediaData& md,
 	// Clip info
 	QString c;
 
+	// Title
+	if (!md.title.isEmpty())
+		c += addItem(tr("Title"), md.title);
+
 	// Add meta data
 	QMapIterator<QString, QString> i(md.meta_data);
 	while (i.hasNext()) {

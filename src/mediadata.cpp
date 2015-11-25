@@ -42,21 +42,21 @@ void TMediaData::init() {
 	duration = 0;
 	start_sec_set = false;
 
+	mpegts = false;
+
 	video_width = 0;
 	video_height = 0;
 	video_aspect = 0;
 	video_fps = 0;
-
 	video_out_width = 0;
 	video_out_height = 0;
-
-	title_is_menu = false;
-	mpegts = false;
-
 	video_bitrate = 0;
+
 	audio_bitrate = 0;
 	audio_rate = 0;
 	audio_nch = 0;
+
+	title_is_menu = false;
 
 	initialized = false;
 }
@@ -88,29 +88,39 @@ bool TMediaData::selectedDisc() const {
 
 QString TMediaData::displayName(bool show_tag) const {
 
-	if (show_tag) {
-		QString name = meta_data.value("NAME");
-		if (!name.isEmpty())
-			return name;
+	if (filename.isEmpty())
+		return "";
 
-		name = meta_data.value("TITLE");
-		if (!name.isEmpty())
-			return name;
+	if (show_tag) {
+		QString title = this->title;
+		if (!title.isEmpty())
+			return title;
+
+		title = meta_data.value("TITLE");
+		if (!title.isEmpty())
+			return title;
+
+		title = meta_data.value("NAME");
+		if (!title.isEmpty())
+			return title;
 
 		if (!stream_title.isEmpty())
 			return stream_title;
 	}
 
+	// Don't parse disc
 	if (detectedDisc()) {
 		return filename;
 	}
 
 	// Remove path
 	QFileInfo fi(filename);
-	if (fi.exists()) 
-		return fi.fileName(); // filename without path
-	else
-		return filename;
+	if (fi.exists()) {
+		// Return filename without path
+		return fi.fileName();
+	}
+
+	return filename;
 }
 
 QString TMediaData::typeToString(Type type) {
@@ -155,7 +165,6 @@ TMediaData::Type TMediaData::stringToType(QString type) {
 	return TYPE_UNKNOWN;
 }
 
-
 void TMediaData::list() const {
 	qDebug("TMediaData::list");
 
@@ -168,7 +177,10 @@ void TMediaData::list() const {
 	qDebug("  time_sec: %f", time_sec);
 	qDebug("  duration: %f", duration);
 
-	qDebug("  video_width: %d", video_width); 
+	qDebug("  demuxer: '%s'", demuxer.toUtf8().data());
+	qDebug("  mpegts: %d", mpegts);
+
+	qDebug("  video_width: %d", video_width);
 	qDebug("  video_height: %d", video_height); 
 	qDebug("  video_aspect: %f", video_aspect);
 	qDebug("  video_fps: '%f'", video_fps);
@@ -176,11 +188,21 @@ void TMediaData::list() const {
 	qDebug("  video_out_width: %d", video_out_width);
 	qDebug("  video_out_height: %d", video_out_height);
 
-	qDebug("  Videos:");
+	qDebug("  video_format: '%s'", video_format.toUtf8().data());
+	qDebug("  video_codec: '%s'", video_codec.toUtf8().data());
+	qDebug("  video_bitrate: %d", video_bitrate);
+	qDebug("  Video tracks:");
 	videos.list();
-	qDebug("  Audios:");
+
+	qDebug("  audio_format: '%s'", audio_format.toUtf8().data());
+	qDebug("  audio_codec: '%s'", audio_codec.toUtf8().data());
+	qDebug("  audio_bitrate: %d", audio_bitrate);
+	qDebug("  audio_rate: %d", audio_rate);
+	qDebug("  audio_nch: %d", audio_nch);
+	qDebug("  Audio tracks:");
 	audios.list();
-	qDebug("  Subs:");
+
+	qDebug("  Subtitles:");
 	subs.list();
 	qDebug("  Titles:");
 	titles.list();
@@ -192,27 +214,19 @@ void TMediaData::list() const {
 	programs.list();
 #endif
 
-	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
-	qDebug("  title_is_menu: '%d'", title_is_menu);
-
-	qDebug("  demuxer: '%s'", demuxer.toUtf8().data());
-	qDebug("  mpegts: %d", mpegts);
-
-	qDebug("  video_format: '%s'", video_format.toUtf8().data());
-	qDebug("  audio_format: '%s'", audio_format.toUtf8().data());
-	qDebug("  video_codec: '%s'", video_codec.toUtf8().data());
-	qDebug("  audio_codec: '%s'", audio_codec.toUtf8().data());
-	qDebug("  video_bitrate: %d", video_bitrate);
-	qDebug("  audio_bitrate: %d", audio_bitrate);
-	qDebug("  audio_rate: %d", audio_rate);
-	qDebug("  audio_nch: %d", audio_nch);
-
+	qDebug("  Title: '%s'", title.toUtf8().constData());
 	qDebug("  Meta data:");
 	MetaData::const_iterator i = meta_data.constBegin();
 	while (i != meta_data.constEnd()) {
 		qDebug() << i.key() << "=" << i.value();
 		i++;
 	}
+
+	qDebug("  stream_title: '%s'", stream_title.toUtf8().constData());
+	qDebug("  stream_url: '%s'", stream_title.toUtf8().constData());
+
+	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
+	qDebug("  title_is_menu: %d", title_is_menu);
 
 	qDebug("  initialized: %d", initialized);
 }

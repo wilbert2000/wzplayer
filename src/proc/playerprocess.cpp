@@ -475,6 +475,7 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	if (name == "DEMUXER") {
 		md->demuxer = value;
 		qDebug() << "Proc::TPlayerProcess::parseProperty: demuxer set to" << md->demuxer;
+		// TODO: mpeg TS detection
 		if (md->demuxer == "mpegts") {
 			md->mpegts = true;
 			qDebug("Proc::TPlayerProcess::parseProperty: detected mpegts");
@@ -487,6 +488,7 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
 bool TPlayerProcess::parseMetaDataProperty(QString name, QString value, bool skip_empty) {
 
+	// TODO: No longer uppercase name for searches
 	name = name.toUpper();
 	value = value.trimmed();
 

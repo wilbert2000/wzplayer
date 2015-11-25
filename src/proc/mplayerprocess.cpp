@@ -191,8 +191,10 @@ bool TMPlayerProcess::parseSubTrack(const QString& type, int id, const QString& 
 		md->subs.add(sub_type, id);
 	}
 
-	if (name == "NAME")	md->subs.changeName(sub_type, id, value);
-	else md->subs.changeLang(sub_type, id, value);
+	if (name == "NAME")
+		md->subs.changeName(sub_type, id, value);
+	else
+		md->subs.changeLang(sub_type, id, value);
 	subtitles_changed = true;
 
 	qDebug() << "Proc::TMPlayerProcess::parseSubTrack: updated subtitle id" << id
@@ -457,7 +459,7 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
 		return titleChanged(TMediaData::TYPE_VCD, value.toInt());
 	}
 
-	// Title changed. DVDNAV uses its own reg expr
+	// DVD/Bluray title changed. DVDNAV uses its own reg expr
 	if (name == "DVD_CURRENT_TITLE") {
 		return titleChanged(TMediaData::TYPE_DVD, value.toInt());
 	}
@@ -479,10 +481,10 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
 		return false;
 	}
 
-	// DVD disc id (DVD_VOLUME_ID is not the same)
+	// DVD disc ID (DVD_VOLUME_ID is not the same)
 	if (name == "DVD_DISC_ID") {
 		md->dvd_id = value;
-		qDebug("Proc::TMPlayerProcess::parseProperty: DVD id set to '%s'", md->dvd_id.toUtf8().data());
+		qDebug("Proc::TMPlayerProcess::parseProperty: DVD ID set to '%s'", md->dvd_id.toUtf8().data());
 		return true;
 	}
 

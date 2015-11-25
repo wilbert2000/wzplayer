@@ -207,24 +207,22 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 	}
 
 	if (name == "MEDIA_TITLE") {
-		if (!value.isEmpty() && value != "mp4" && !value.startsWith("mp4&")) {
-			md->meta_data["NAME"] = value;
-			qDebug() << "Proc::TMPVProcess::parseProperty: set meta_data[\"NAME\"] to" << value;
-		}
+		md->title = value.trimmed();
+		qDebug() << "Proc::TMPVProcess::parseProperty: title set to" << md->title;
 		return true;
 	}
 
 	if (name == "OSD_X") {
 		default_osd_pos.rx() = value.toInt();
 		osd_pos.rx() = default_osd_pos.x();
-		qDebug("Proc::TMPVProcess::parseProperty: set OSD x margin to %d", default_osd_pos.x());
+		qDebug("Proc::TMPVProcess::parseProperty: OSD x margin set to %d", default_osd_pos.x());
 		return true;
 	}
 
 	if (name == "OSD_Y") {
 		default_osd_pos.ry() = value.toInt();
 		osd_pos.ry() = default_osd_pos.y();
-		qDebug("Proc::TMPVProcess::parseProperty: set OSD y margin to %d", default_osd_pos.y());
+		qDebug("Proc::TMPVProcess::parseProperty: OSD y margin set to %d", default_osd_pos.y());
 		return true;
 	}
 

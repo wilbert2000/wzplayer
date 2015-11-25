@@ -55,6 +55,7 @@ public:
 	QString filename;
 
 	Type selected_type;
+	// Detected type only set for disc types
 	Type detected_type;
 
 	// Start time reported by player
@@ -65,7 +66,11 @@ public:
 	double duration;
 	bool start_sec_set;
 
-	//Resolution of the video
+	// Demuxer
+	QString demuxer;
+	bool mpegts;
+
+	// Video
 	int video_width;
 	int video_height;
 	double video_aspect;
@@ -80,12 +85,24 @@ public:
 		return video_out_width <= 0 || video_out_height <= 0;
 	}
 
+	QString video_format;
+	QString video_codec;
+	int video_bitrate;
+	Maps::TTracks videos;
+
+	// Audio
+	QString audio_format;
+	QString audio_codec;
+	int audio_bitrate;
+	int audio_rate;
+	int audio_nch;
+	Maps::TTracks audios;
+
 	bool noAudio() const {
 		return audios.count() <= 0;
 	}
 
-	Maps::TTracks videos;
-	Maps::TTracks audios;
+	// Subtitles, titles and chapters
 	SubTracks subs;
 	Maps::TTitleTracks titles;
 	Maps::TChapters chapters;
@@ -94,31 +111,20 @@ public:
 	Tracks programs;
 #endif
 
-	QString dvd_id;
-
-	// DVDNAV
-	bool title_is_menu;
-
-	QString stream_title;
-	QString stream_url;
-
-	QString demuxer;
-	bool mpegts;
-
-	// Other data not really useful for us,
-	// just to show info to the user.
-	QString video_format;
-	QString audio_format;
-	QString video_codec;
-	QString audio_codec;
-	int video_bitrate;
-	int audio_bitrate;
-	int audio_rate;
-	int audio_nch;
-
+	// Clip info
+	QString title;
 	// Meta data names and values
 	typedef QMap<QString, QString> MetaData;
 	MetaData meta_data;
+
+	// Streams
+	QString stream_title;
+	QString stream_url;
+
+	// DVD ID
+	QString dvd_id;
+	// DVDNAV
+	bool title_is_menu;
 
 	bool initialized;
 

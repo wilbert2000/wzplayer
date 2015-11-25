@@ -996,35 +996,25 @@ void TPlaylist::getMediaInfo() {
 	}
 
 	QString filename = core->mdat.filename;
-	double duration = core->mdat.duration;
-	QString artist = core->mdat.meta_data.value("ARTIST");
-
-	QString name = core->mdat.meta_data.value("NAME", core->mdat.stream_title);
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	filename = Helper::changeSlashes(filename);
 #endif
 
-	if (name.isEmpty()) {
-		QFileInfo fi(filename);
-		if (fi.exists()) {
-			// Local file
-			name = fi.fileName();
-		} else {
-			// Stream
-			name = filename;
-		}
-	}
+	double duration = core->mdat.duration;
+	QString title = core->mdat.displayName();
+	QString artist = core->mdat.meta_data.value("ARTIST");
 	if (!artist.isEmpty())
-		name = artist + " - " + name;
+		title = artist + " - " + title;
 
 	for (int n = 0; n < pl.count(); n++) {
 		TPlaylistItem& item = pl[n];
 		if (item.filename() == filename) {
-			// Protect playlist by only updating items with duration 0
+			// Protect titles loaded from an external playlist
+			// by only updating items with duration 0
 			if (item.duration() == 0) {
-				if (!name.isEmpty() && !item.edited()) {
-					item.setName(name);
+				if (!item.edited()) {
+					item.setName(title);
 				}
 				item.setDuration(duration);
 			}
