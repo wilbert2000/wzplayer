@@ -207,7 +207,7 @@ void TFilePropertiesDialog::on_resetVCButton_clicked() {
 }
 
 int TFilePropertiesDialog::find(const QString s, InfoList &list) {
-	qDebug("Gui::TFilePropertiesDialog::find");
+	qDebug("Gui::TFilePropertiesDialog::find: '%s'", s.toUtf8().constData());
 
 	int n = 0;
 	InfoList::iterator it;

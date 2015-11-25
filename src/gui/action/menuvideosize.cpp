@@ -109,6 +109,7 @@ void TMenuVideoSize::fullscreenChanged() {
 }
 
 void TMenuVideoSize::upd() {
+	qDebug("Gui::TMenuVideoSize:upd: %f", pref->size_factor);
 
 	group->updateVideoSizeGroup();
 	doubleSizeAct->setEnabled(group->isEnabled());
