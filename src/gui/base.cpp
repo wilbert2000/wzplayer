@@ -2308,6 +2308,7 @@ void TBase::resizeEvent(QResizeEvent* event) {
 	// true during an user induces resize, so its needs to be here.
 	if (event->spontaneous() && block_update_size_factor == 0) {
 		playerwindow->updateSizeFactor();
+		emit videoSizeFactorChanged();
 	}
 }
 
