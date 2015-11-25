@@ -28,9 +28,9 @@
 
 namespace Gui {
 
-TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, const TMediaData& md)
+TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, TMediaData* md)
 	: QDialog(parent),
-	  media_data(&md) {
+	  media_data(md) {
 
 	setupUi(this);
 
@@ -51,10 +51,7 @@ TFilePropertiesDialog::~TFilePropertiesDialog() {
 void TFilePropertiesDialog::showInfo() {
 
 	TInfoFile info;
-	info_edit->setText(info.getInfo(*media_data,
-									demuxer_description,
-									video_codec_description,
-									audio_codec_description));
+	info_edit->setText(info.getInfo(*media_data));
 }
 
 void TFilePropertiesDialog::retranslateStrings() {
@@ -126,7 +123,7 @@ void TFilePropertiesDialog::setDemuxer(const QString& demuxer, const QString& or
 	int pos = find(demuxer, demuxerlist);
 	if (pos >= 0) {
 		demuxer_listbox->setCurrentRow(pos);
-		demuxer_description = demuxerlist[pos].desc();
+		media_data->demuxer_description = demuxerlist[pos].desc();
 	}
 
 	qDebug(" * demuxer: '%s', pos: %d", demuxer.toUtf8().data(), pos);
@@ -148,7 +145,7 @@ void TFilePropertiesDialog::setVideoCodec(const QString& vc, const QString& orig
 	int pos = find(vc, vclist);
 	if (pos >= 0) {
 		vc_listbox->setCurrentRow(pos);
-		video_codec_description = vclist[pos].desc();
+		media_data->video_codec_description = vclist[pos].desc();
 	}
 
 	qDebug(" * vc: '%s', pos: %d", vc.toUtf8().data(), pos);
@@ -170,7 +167,7 @@ void TFilePropertiesDialog::setAudioCodec(const QString& ac, const QString& orig
 	int pos = find(ac, aclist);
 	if (pos >= 0) {
 		ac_listbox->setCurrentRow(pos);
-		audio_codec_description = aclist[pos].desc();
+		media_data->audio_codec_description = aclist[pos].desc();
 	}
 
 	qDebug(" * ac: '%s', pos: %d", ac.toUtf8().data(), pos);

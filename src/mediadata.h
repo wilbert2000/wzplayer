@@ -60,14 +60,15 @@ public:
 
 	// Start time reported by player
 	double start_sec;
+	bool start_sec_set;
 	// Current time video, without start time substracted
 	// See TMediaSettings for time with start time substracted
 	double time_sec;
 	double duration;
-	bool start_sec_set;
 
 	// Demuxer
 	QString demuxer;
+	QString demuxer_description;
 	bool mpegts;
 
 	// Video
@@ -87,12 +88,14 @@ public:
 
 	QString video_format;
 	QString video_codec;
+	QString video_codec_description;
 	int video_bitrate;
 	Maps::TTracks videos;
 
 	// Audio
 	QString audio_format;
 	QString audio_codec;
+	QString audio_codec_description;
 	int audio_bitrate;
 	int audio_rate;
 	int audio_nch;
@@ -112,6 +115,7 @@ public:
 #endif
 
 	// Clip info
+	// TODO: set title by mplayer
 	QString title;
 	// Meta data names and values
 	typedef QMap<QString, QString> MetaData;

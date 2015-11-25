@@ -49,10 +49,7 @@ QString TInfoFile::formatSize(qint64 size) {
 	return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2), locale.toString(size));
 }
 
-QString TInfoFile::getInfo(const TMediaData& md,
-						   const QString& demuxerDescription,
-						   const QString& videoCodecDescription,
-						   const QString& audioCodecDescription) {
+QString TInfoFile::getInfo(const TMediaData& md) {
 
 	QString s;
 
@@ -93,7 +90,7 @@ QString TInfoFile::getInfo(const TMediaData& md,
 		s += addItem(tr("URL"), url);
 	}
 	s += addItem(tr("Length"), Helper::formatTime((int)md.duration));
-	s += addItem(tr("Demuxer"), md.demuxer + " - " + demuxerDescription);
+	s += addItem(tr("Demuxer"), md.demuxer + " - " + md.demuxer_description);
 	s += closePar();
 
 	// Clip info
@@ -129,7 +126,7 @@ QString TInfoFile::getInfo(const TMediaData& md,
 		s += addItem(tr("Format"), md.video_format);
 		s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000));
 		s += addItem(tr("Frames per second"), QString::number(md.video_fps));
-		s += addItem(tr("Selected codec"), md.video_codec + " - " + videoCodecDescription);
+		s += addItem(tr("Selected codec"), md.video_codec + " - " + md.video_codec_description);
 		s += closePar();
 	}
 
@@ -139,7 +136,7 @@ QString TInfoFile::getInfo(const TMediaData& md,
 	s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.audio_bitrate / 1000));
 	s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
 	s += addItem(tr("Channels"), QString::number(md.audio_nch));
-	s += addItem(tr("Selected codec"), md.audio_codec + " - " + audioCodecDescription);
+	s += addItem(tr("Selected codec"), md.audio_codec + " - " + md.audio_codec_description);
 	s += closePar();
 
 	// Audio Tracks

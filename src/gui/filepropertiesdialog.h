@@ -33,7 +33,7 @@ class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog
 	Q_OBJECT
 
 public:
-	TFilePropertiesDialog(QWidget* parent, const TMediaData& md);
+	TFilePropertiesDialog(QWidget* parent, TMediaData* md);
 	virtual ~TFilePropertiesDialog();
 
 	// Call it as soon as possible
@@ -83,10 +83,7 @@ private:
 	bool codecs_set;
 	InfoList vclist, aclist, demuxerlist;
 	QString orig_demuxer, orig_ac, orig_vc;
-	QString demuxer_description;
-	QString video_codec_description;
-	QString audio_codec_description;
-	const TMediaData* media_data;
+	TMediaData* media_data;
 
 	QPushButton* okButton;
 	QPushButton* cancelButton;

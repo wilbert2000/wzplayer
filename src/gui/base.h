@@ -350,7 +350,7 @@ protected:
 	TLogWindow* clhelp_window;
 
 	Pref::TDialog* pref_dialog;
-	TFilePropertiesDialog* file_dialog;
+	TFilePropertiesDialog* file_properties_dialog;
 	TVideoEqualizer* video_equalizer;
 	TAudioEqualizer* audio_equalizer;
 

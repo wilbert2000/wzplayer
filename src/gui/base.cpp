@@ -144,7 +144,7 @@ TBase::TBase()
 	: QMainWindow()
 	, clhelp_window(0)
 	, pref_dialog(0)
-	, file_dialog(0)
+	, file_properties_dialog(0)
 #ifdef FIND_SUBTITLES
 	, find_subs_dialog(0)
 #endif
@@ -715,9 +715,9 @@ void TBase::createFilePropertiesDialog() {
 	qDebug("Gui::TBase::createFilePropertiesDialog");
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	file_dialog = new TFilePropertiesDialog(this, core->mdat);
-	file_dialog->setModal(false);
-	connect(file_dialog, SIGNAL(applied()),
+	file_properties_dialog = new TFilePropertiesDialog(this, &core->mdat);
+	file_properties_dialog->setModal(false);
+	connect(file_properties_dialog, SIGNAL(applied()),
 			 this, SLOT(applyFileProperties()));
 	QApplication::restoreOverrideCursor();
 }
@@ -1077,11 +1077,11 @@ void TBase::applyNewPreferences() {
 void TBase::showFilePropertiesDialog() {
 	qDebug("Gui::TBase::showFilePropertiesDialog");
 
-	if (!file_dialog) {
+	if (!file_properties_dialog) {
 		createFilePropertiesDialog();
 	}
 	setDataToFileProperties();
-	file_dialog->show();
+	file_properties_dialog->show();
 }
 
 void TBase::setDataToFileProperties() {
@@ -1089,7 +1089,7 @@ void TBase::setDataToFileProperties() {
 
 	InfoReader *i = InfoReader::obj();
 	i->getInfo();
-	file_dialog->setCodecs(i->vcList(), i->acList(), i->demuxerList());
+	file_properties_dialog->setCodecs(i->vcList(), i->acList(), i->demuxerList());
 
 	// Save a copy of the demuxer, video and audio codec
 	if (core->mset.original_demuxer.isEmpty()) 
@@ -1098,7 +1098,6 @@ void TBase::setDataToFileProperties() {
 		core->mset.original_video_codec = core->mdat.video_codec;
 	if (core->mset.original_audio_codec.isEmpty()) 
 		core->mset.original_audio_codec = core->mdat.audio_codec;
-
 
 	// Set demuxer, video and audio codec
 	QString demuxer = core->mset.forced_demuxer;
@@ -1111,15 +1110,15 @@ void TBase::setDataToFileProperties() {
 	if (ac.isEmpty())
 		ac = core->mdat.audio_codec;
 
-	file_dialog->setDemuxer(demuxer, core->mset.original_demuxer);
-	file_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
-	file_dialog->setVideoCodec(vc, core->mset.original_video_codec);
+	file_properties_dialog->setDemuxer(demuxer, core->mset.original_demuxer);
+	file_properties_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
+	file_properties_dialog->setVideoCodec(vc, core->mset.original_video_codec);
 
-	file_dialog->setMplayerAdditionalArguments(core->mset.mplayer_additional_options);
-	file_dialog->setMplayerAdditionalVideoFilters(core->mset.mplayer_additional_video_filters);
-	file_dialog->setMplayerAdditionalAudioFilters(core->mset.mplayer_additional_audio_filters);
+	file_properties_dialog->setMplayerAdditionalArguments(core->mset.mplayer_additional_options);
+	file_properties_dialog->setMplayerAdditionalVideoFilters(core->mset.mplayer_additional_video_filters);
+	file_properties_dialog->setMplayerAdditionalAudioFilters(core->mset.mplayer_additional_audio_filters);
 
-	file_dialog->showInfo();
+	file_properties_dialog->showInfo();
 }
 
 void TBase::applyFileProperties() {
@@ -1135,7 +1134,7 @@ void TBase::applyFileProperties() {
 
 	QString prev_demuxer = core->mset.forced_demuxer;
 
-	QString demuxer = file_dialog->demuxer();
+	QString demuxer = file_properties_dialog->demuxer();
 	if (demuxer == core->mset.original_demuxer) demuxer="";
 	TEST_AND_SET(core->mset.forced_demuxer, demuxer);
 
@@ -1146,17 +1145,17 @@ void TBase::applyFileProperties() {
 		core->mset.current_sub_idx = TMediaSettings::NoneSelected;
 	}
 
-	QString ac = file_dialog->audioCodec();
+	QString ac = file_properties_dialog->audioCodec();
 	if (ac == core->mset.original_audio_codec) ac="";
 	TEST_AND_SET(core->mset.forced_audio_codec, ac);
 
-	QString vc = file_dialog->videoCodec();
+	QString vc = file_properties_dialog->videoCodec();
 	if (vc == core->mset.original_video_codec) vc="";
 	TEST_AND_SET(core->mset.forced_video_codec, vc);
 
-	TEST_AND_SET(core->mset.mplayer_additional_options, file_dialog->mplayerAdditionalArguments());
-	TEST_AND_SET(core->mset.mplayer_additional_video_filters, file_dialog->mplayerAdditionalVideoFilters());
-	TEST_AND_SET(core->mset.mplayer_additional_audio_filters, file_dialog->mplayerAdditionalAudioFilters());
+	TEST_AND_SET(core->mset.mplayer_additional_options, file_properties_dialog->mplayerAdditionalArguments());
+	TEST_AND_SET(core->mset.mplayer_additional_video_filters, file_properties_dialog->mplayerAdditionalVideoFilters());
+	TEST_AND_SET(core->mset.mplayer_additional_audio_filters, file_properties_dialog->mplayerAdditionalAudioFilters());
 
 	// Restart the video to apply
 	if (need_restart) {
@@ -1171,7 +1170,7 @@ void TBase::applyFileProperties() {
 void TBase::updateMediaInfo() {
 	qDebug("Gui::TBase::updateMediaInfo");
 
-	if (file_dialog && file_dialog->isVisible()) {
+	if (file_properties_dialog && file_properties_dialog->isVisible()) {
 		setDataToFileProperties();
 	}
 

@@ -38,9 +38,9 @@ void TMediaData::init() {
 	detected_type = TYPE_UNKNOWN;
 
 	start_sec = 0;
+	start_sec_set = false;
 	time_sec = 0;
 	duration = 0;
-	start_sec_set = false;
 
 	mpegts = false;
 
