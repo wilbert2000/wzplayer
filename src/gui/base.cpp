@@ -182,6 +182,13 @@ TBase::TBase()
 	setWindowTitle("SMPlayer");
 	setAcceptDrops(true);
 
+	// Reset size factor
+	if (pref->save_window_size_on_exit) {
+		force_resize = false;
+	} else {
+		force_resize = true;
+		pref->size_factor = 1.0;
+	}
 	// Resize window to default size
 	resize(pref->default_size);
 
@@ -288,10 +295,10 @@ void TBase::createCore() {
 	connect(core, SIGNAL(needResize(int, int)),
 			 this, SLOT(resizeWindow(int, int)));
 
-	connect(core, SIGNAL(showMessage(QString, int)),
-			 this, SLOT(displayMessage(QString, int)));
-	connect(core, SIGNAL(showMessage(QString)),
-			 this, SLOT(displayMessage(QString)));
+	connect(core, SIGNAL(showMessage(const QString&, int)),
+			 this, SLOT(displayMessage(const QString&, int)));
+	connect(core, SIGNAL(showMessage(const QString&)),
+			 this, SLOT(displayMessage(const QString&)));
 
 	connect(core, SIGNAL(newMediaStartedPlaying()),
 			 this, SLOT(newMediaLoaded()), Qt::QueuedConnection);
@@ -326,10 +333,10 @@ void TBase::createCore() {
 
 	connect(core, SIGNAL(mediaStopped()),
 			 playerwindow, SLOT(showLogo()));
-	connect(playerwindow, SIGNAL(moveOSD(const QPoint &)),
-			 core, SLOT(setOSDPos(const QPoint &)));
-	connect(playerwindow, SIGNAL(showMessage(QString, int, int)),
-			 core, SLOT(displayMessage(QString, int, int)));
+	connect(playerwindow, SIGNAL(moveOSD(const QPoint&)),
+			 core, SLOT(setOSDPos(const QPoint&)));
+	connect(playerwindow, SIGNAL(showMessage(const QString&, int, int)),
+			 core, SLOT(displayMessage(const QString&, int, int)));
 }
 
 void TBase::createPlaylist() {
@@ -337,8 +344,8 @@ void TBase::createPlaylist() {
 	playlist = new TPlaylist(this, core, 0);
 	connect(playlist, SIGNAL(playlistEnded()),
 			 this, SLOT(playlistHasFinished()));
-	connect(playlist, SIGNAL(displayMessage(QString,int)),
-			this, SLOT(displayMessage(QString,int)));
+	connect(playlist, SIGNAL(displayMessage(const QString&, int)),
+			this, SLOT(displayMessage(const QString&, int)));
 }
 
 void TBase::createVideoEqualizer() {
@@ -2122,12 +2129,12 @@ void TBase::onStateChanged(TCore::State state) {
 #endif
 }
 
-void TBase::displayMessage(QString message, int time) {
+void TBase::displayMessage(const QString& message, int time) {
 	statusBar()->showMessage(message, time);
 }
 
-void TBase::displayMessage(QString message) {
-	displayMessage(message, 2000);
+void TBase::displayMessage(const QString& message) {
+	displayMessage(message, 3000);
 }
 
 void TBase::gotCurrentTime(double sec) {
@@ -2148,22 +2155,33 @@ void TBase::gotDuration(double duration) {
 	gotCurrentTime(core->mset.current_sec);
 }
 
-void TBase::changeSize(int precentage) {
+void TBase::changeSize(int percentage) {
+	qDebug("TBase::changeSize: %d", percentage);
 
-	bool center = false;
-	if (isMaximized()) {
-		showNormal();
-		center = true;
+	if (!pref->fullscreen) {
+		bool center = false;
+		if (isMaximized()) {
+			showNormal();
+			center = true;
+		}
+
+		pref->size_factor = (double) percentage / 100;
+		resizeWindow(core->mset.win_width, core->mset.win_height);
+		emit videoSizeFactorChanged();
+
+		core->displayMessage(tr("Size %1%").arg(QString::number(percentage)));
+
+		if (center) {
+			centerWindow();
+		}
 	}
-	core->changeSize(precentage);
-	if (center)
-		centerWindow();
 }
 
 void TBase::toggleDoubleSize() {
+
 	if (pref->size_factor != 1.0)
-		core->changeSize(100);
-	else core->changeSize(200);
+		changeSize(100);
+	else changeSize(200);
 }
 
 void TBase::centerWindow() {
@@ -2211,7 +2229,8 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		}
 		if (!isMaximized()) {
 			// Block_resize set if pref->save_window_size_on_exit selected
-			if (block_resize || pref->resize_method == Settings::TPreferences::Never) {
+			if (!force_resize
+				&& (block_resize || pref->resize_method == TPreferences::Never)) {
 				// Adjust size factor to window size
 				playerwindow->updateSizeFactor();
 			} else {
@@ -2227,6 +2246,8 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 			centerWindow();
 		}
 	}
+
+	force_resize = false;
 	block_resize = false;
 }
 

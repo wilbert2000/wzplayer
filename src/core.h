@@ -19,7 +19,7 @@
 #ifndef CORE_H
 #define CORE_H
 
-#include <QProcess> // For QProcess::ProcessError
+#include <QProcess>
 #include <QTime>
 
 #include "config.h"
@@ -83,23 +83,24 @@ public slots:
 	void openTV(QString channel_id);
 
 #ifdef YOUTUBE_SUPPORT
-	void openYT(const QString & url);
+	void openYT(const QString& url);
 #endif
 
-	void loadSub(const QString & sub);
+	void loadSub(const QString& sub);
 	void unloadSub();
 
 	//! Forces to use the specified subtitle file. It's not loaded immediately but stored
 	//! and will be used for the next video. After that the variable is cleared.  
-	void setInitialSubtitle(const QString & subtitle_file) { initial_subtitle = subtitle_file; }
+	void setInitialSubtitle(const QString& subtitle_file) { initial_subtitle = subtitle_file; }
 
-	void loadAudioFile(const QString & audiofile);
+	void loadAudioFile(const QString& audiofile);
 	void unloadAudioFile();
 
 	void stop();
     void play();
 	void playOrPause();
 	void pause();
+
 	void frameStep();
 	void frameBackStep();
 	void screenshot();	//!< Take a screenshot of current frame
@@ -107,6 +108,8 @@ public slots:
 #ifdef CAPTURE_STREAM
 	void switchCapturing();
 #endif
+
+	void displayMessage(const QString& text, int duration = 3500, int osd_level = 1);
 
 	//! Public restart, for the GUI.
 	void restart();
@@ -164,7 +167,7 @@ public slots:
 	void changeLetterbox(bool);
 	void changeLetterboxOnFullscreen(bool);
 	void changeUpscale(bool);
-	void changeStereo3d(const QString & in, const QString & out);
+	void changeStereo3d(const QString& in, const QString& out);
 
 	void seek(int secs);
 	void sforward(); 	// + 10 seconds
@@ -287,7 +290,6 @@ public slots:
 	void nextOSDLevel();
 	void nextWheelFunction();
 
-	void changeSize(int percentage); // Size of the window
 	void changeZoom(double); // Zoom on playerwindow
 
 	void changeRotate(int r);
@@ -337,7 +339,7 @@ public slots:
 	void changeFullscreenMode(bool b);
 
 	//! Wrapper for the osd_show_text slave command
-	void displayTextOnOSD(QString text,
+	void displayTextOnOSD(const QString& text,
 						  int duration = 3000,
 						  int level = 1);
 	void clearOSD();
@@ -369,8 +371,8 @@ signals:
 	void durationChanged(double); // Duration has changed
 	void showFrame(int frame);
 
-	void showMessage(QString text);
-	void showMessage(QString text, int time);
+	void showMessage(const QString& text);
+	void showMessage(const QString& text, int time);
 
 	void volumeChanged(int);
 	void muteChanged(bool);
@@ -394,7 +396,7 @@ signals:
 	void needResize(int w, int h);
 
 #ifdef YOUTUBE_SUPPORT
-	void signatureNotFound(const QString &);
+	void signatureNotFound(const QString&);
 	void noSslSupport();
 #endif
 
@@ -425,17 +427,16 @@ protected slots:
 	void gotCurrentSec(double sec);
 	void gotPause();
 	void gotVideoOutResolution(int w, int h);
-	void gotVO(QString);
-	void gotAO(QString);
+	void gotVO(const QString&);
+	void gotAO(const QString&);
 
-	void displayMessage(QString text, int duration = 3500, int osd_level = 1);
-	void displayScreenshotName(QString filename);
+	void displayScreenshotName(const QString& filename);
 	void displayUpdatingFontCache();
 	void displayBuffering();
 	void displayBufferingEnded();
 
-	void streamTitleChanged(QString);
-	void streamTitleAndUrlChanged(QString,QString);
+	void streamTitleChanged(const QString&);
+	void streamTitleAndUrlChanged(const QString&, const QString&);
 
 	// Catches mediaInfoChanged and sends mediaPlaying signal
 	void sendMediaInfo();
@@ -460,8 +461,8 @@ protected slots:
 	void changeTitleLeaveMenu();
 
 #ifdef YOUTUBE_SUPPORT
-	void connectingToYT(QString host);
-	void YTFailed(int error_number, QString error_str);
+	void connectingToYT(const QString& host);
+	void YTFailed(int error_number, const QString& error_str);
 	void YTNoVideoUrl();
 #endif
 
@@ -510,7 +511,7 @@ private:
 	int cache_size;
 
 	void openDisc(TDiscData &disc, bool fast_open);
-	void openFile(QString filename, int seek = -1);
+	void openFile(const QString& filename, int seek = -1);
 
 	bool isMPlayer();
 	bool isMPV();
@@ -518,7 +519,7 @@ private:
 	void getZoomFromPlayerWindow();
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);
-	void setExternalSubs(const QString &filename);
+	void setExternalSubs(const QString& filename);
 	bool setPreferredAudio();
 };
 

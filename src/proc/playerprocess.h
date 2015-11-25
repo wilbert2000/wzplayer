@@ -149,23 +149,23 @@ signals:
 	void receivedCurrentSec(double sec);
 	void receivedCurrentFrame(int frame);
 	void receivedPause();
-	void receivedVO(QString);
-	void receivedAO(QString);
+	void receivedVO(const QString&);
+	void receivedAO(const QString&);
 	void receivedEndOfFile();
 
-	void receivedMessage(QString);
-	void receivedCacheEmptyMessage(QString);
-	void receivedCreatingIndex(QString);
-	void receivedConnectingToMessage(QString);
-	void receivedResolvingMessage(QString);
+	void receivedMessage(const QString&);
+	void receivedCacheEmptyMessage(const QString&);
+	void receivedCreatingIndex(const QString&);
+	void receivedConnectingToMessage(const QString&);
+	void receivedResolvingMessage(const QString&);
 	void receivedBuffering();
 	void receivedBufferingEnded();
-	void receivedScreenshot(QString);
+	void receivedScreenshot(const QString&);
 	void receivedUpdatingFontCache();
 	void receivedForbiddenText();
 
-	void receivedStreamTitle(QString);
-	void receivedStreamTitleAndUrl(QString,QString);
+	void receivedStreamTitle(const QString&);
+	void receivedStreamTitleAndUrl(const QString&, const QString&);
 
 	//! Emitted if a new video track has been added or an old one changed
 	void receivedVideoTrackInfo();

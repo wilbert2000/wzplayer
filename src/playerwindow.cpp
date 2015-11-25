@@ -192,8 +192,8 @@ void TPlayerWindow::set(double aspect,
 }
 
 QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
-	//qDebug("TPlayerWindow::getAdjustedSize: in: %d x %d zoom %f aspect %f",
-	//	   w, h, zoom, aspect);
+	qDebug("TPlayerWindow::getAdjustedSize: in: %d x %d zoom %f aspect %f",
+		   w, h, zoom, aspect);
 
 	// Select best fit: height adjusted or width adjusted,
 	// in case video aspect does not match the window aspect ratio.
@@ -213,7 +213,7 @@ QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
 	// Zoom
 	QSize size = QSize(w, h) * zoom;
 
-	//qDebug("TPlayerWindow::getAdjustedSize: out: %d x %d", size.width(), size.height());
+	qDebug("TPlayerWindow::getAdjustedSize: out: %d x %d", size.width(), size.height());
 	return size;
 }
 
@@ -225,17 +225,14 @@ void TPlayerWindow::updateSizeFactor() {
 		double factor_y = (double) height() / video_size.height();
 
 		// Store smallest factor in pref
-		if (factor_y < factor_x) {
-			factor_x = factor_y;
-		}
-		//qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
-		//	   pref->size_factor, factor_x);
-		pref->size_factor = factor_x;
+		double factor = factor_y < factor_x ? factor_y : factor_x;
+		qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f (w: %d vw: %d factor x: %f, h: %d vh %d factor y: %f)",
+				pref->size_factor, factor, width(), video_width, factor_x, height(), video_height, factor_y);
+		pref->size_factor = factor;
 	}
 }
 
 void TPlayerWindow::updateVideoWindow() {
-	/*
 	qDebug() << "TPlayerWindow::updateVideoWindow: video size:"
 			 << video_width << "x" << video_height
 			 << " window size:" << size()
@@ -244,7 +241,6 @@ void TPlayerWindow::updateVideoWindow() {
 			 << " pan:" << pan()
 			 << " aspect:" << aspect
 			 << " fs:" << pref->fullscreen;
-	*/
 
 	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
 	QSize video_size = getAdjustedSize(s.width(), s.height(), zoom());
@@ -260,7 +256,7 @@ void TPlayerWindow::updateVideoWindow() {
 	if (pref->fullscreen)
 		p = mapFromGlobal(p);
 
-	// Set geo video layer
+	// Set geometry video layer
 	playerlayer->setGeometry(p.x(), p.y(), video_size.width(), video_size.height());
 
 	// Keep OSD in sight. Need the offset as seen by player.
@@ -278,7 +274,7 @@ void TPlayerWindow::updateVideoWindow() {
 		last_video_size = video_size;
 	}
 
-	//qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
+	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent*) {

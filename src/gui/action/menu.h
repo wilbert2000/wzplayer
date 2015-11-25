@@ -28,6 +28,7 @@ public:
 
 protected:
 	QObject* translator;
+	QString text_en;
 
 	virtual void changeEvent(QEvent* event);
 	virtual void onAboutToShow();
@@ -38,7 +39,6 @@ protected slots:
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 
 private:
-	QString text_en;
 	void retranslateStrings();
 };
 

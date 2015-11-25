@@ -101,12 +101,12 @@ void TSkin::createControlWidget() {
 	mediaBarPanelAction = controlbar->addWidget(mediaBarPanel);
 }
 
-void TSkin::displayMessage(QString message, int time) {
+void TSkin::displayMessage(const QString& message, int time) {
 	TBasePlus::displayMessage(message, time);
 	mediaBarPanel->displayMessage(message, time);
 }
 
-void TSkin::displayMessage(QString message) {
+void TSkin::displayMessage(const QString& message) {
 	TBasePlus::displayMessage(message);
 	mediaBarPanel->displayMessage(message);
 }

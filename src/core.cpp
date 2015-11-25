@@ -110,32 +110,32 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedBufferingEnded()),
 			 this, SLOT(displayBufferingEnded()));
 
-	connect(proc, SIGNAL(receivedMessage(QString)),
-			 this, SLOT(displayMessage(QString)));
+	connect(proc, SIGNAL(receivedMessage(const QString&)),
+			 this, SLOT(displayMessage(const QString&)));
 
-	connect(proc, SIGNAL(receivedCacheEmptyMessage(QString)),
+	connect(proc, SIGNAL(receivedCacheEmptyMessage(const QString&)),
 			 this, SIGNAL(buffering()));
 
-	connect(proc, SIGNAL(receivedCreatingIndex(QString)),
-			 this, SLOT(displayMessage(QString)));
+	connect(proc, SIGNAL(receivedCreatingIndex(const QString&)),
+			 this, SLOT(displayMessage(const QString&)));
 
-	connect(proc, SIGNAL(receivedCreatingIndex(QString)),
+	connect(proc, SIGNAL(receivedCreatingIndex(const QString&)),
 			 this, SIGNAL(buffering()));
 
-	connect(proc, SIGNAL(receivedConnectingToMessage(QString)),
-			 this, SLOT(displayMessage(QString)));
+	connect(proc, SIGNAL(receivedConnectingToMessage(const QString&)),
+			 this, SLOT(displayMessage(const QString&)));
 
-	connect(proc, SIGNAL(receivedConnectingToMessage(QString)),
+	connect(proc, SIGNAL(receivedConnectingToMessage(const QString&)),
 			 this, SIGNAL(buffering()));
 
-	connect(proc, SIGNAL(receivedResolvingMessage(QString)),
-			 this, SLOT(displayMessage(QString)));
+	connect(proc, SIGNAL(receivedResolvingMessage(const QString&)),
+			 this, SLOT(displayMessage(const QString&)));
 
-	connect(proc, SIGNAL(receivedResolvingMessage(QString)),
+	connect(proc, SIGNAL(receivedResolvingMessage(const QString&)),
 			 this, SIGNAL(buffering()));
 
-	connect(proc, SIGNAL(receivedScreenshot(QString)),
-			 this, SLOT(displayScreenshotName(QString)));
+	connect(proc, SIGNAL(receivedScreenshot(const QString&)),
+			 this, SLOT(displayScreenshotName(const QString&)));
 
 	connect(proc, SIGNAL(receivedUpdatingFontCache()),
 			 this, SLOT(displayUpdatingFontCache()));
@@ -143,20 +143,20 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedVideoOutResolution(int,int)),
 			 this, SLOT(gotVideoOutResolution(int,int)));
 
-	connect(proc, SIGNAL(receivedVO(QString)),
-			 this, SLOT(gotVO(QString)));
+	connect(proc, SIGNAL(receivedVO(const QString&)),
+			 this, SLOT(gotVO(const QString&)));
 
-	connect(proc, SIGNAL(receivedAO(QString)),
-			 this, SLOT(gotAO(QString)));
+	connect(proc, SIGNAL(receivedAO(const QString&)),
+			 this, SLOT(gotAO(const QString&)));
 
 	connect(proc, SIGNAL(receivedEndOfFile()),
 			 this, SLOT(fileReachedEnd()), Qt::QueuedConnection);
 
-	connect(proc, SIGNAL(receivedStreamTitle(QString)),
-			 this, SLOT(streamTitleChanged(QString)));
+	connect(proc, SIGNAL(receivedStreamTitle(const QString&)),
+			 this, SLOT(streamTitleChanged(const QString&)));
 
-	connect(proc, SIGNAL(receivedStreamTitleAndUrl(QString,QString)),
-			 this, SLOT(streamTitleAndUrlChanged(QString,QString)));
+	connect(proc, SIGNAL(receivedStreamTitleAndUrl(const QString&, const QString&)),
+			 this, SLOT(streamTitleAndUrlChanged(const QString&, const QString&)));
 
 	connect(this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection);
 
@@ -225,9 +225,9 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	yt->setSettings(sigset);
 	#endif
 
-	connect(yt, SIGNAL(gotPreferredUrl(const QString &, int)), this, SLOT(openYT(const QString &)));
-	connect(yt, SIGNAL(connecting(QString)), this, SLOT(connectingToYT(QString)));
-	connect(yt, SIGNAL(errorOcurred(int,QString)), this, SLOT(YTFailed(int,QString)));
+	connect(yt, SIGNAL(gotPreferredUrl(const QString&, int)), this, SLOT(openYT(const QString&)));
+	connect(yt, SIGNAL(connecting(const QString&)), this, SLOT(connectingToYT(const QString&)));
+	connect(yt, SIGNAL(errorOcurred(int, const QString&)), this, SLOT(YTFailed(int, const QString&)));
 	connect(yt, SIGNAL(noSslSupport()), this, SIGNAL(noSslSupport()));
 	connect(yt, SIGNAL(signatureNotFound(const QString&)), this, SIGNAL(signatureNotFound(const QString&)));
 	connect(yt, SIGNAL(gotEmptyList()), this, SLOT(YTNoVideoUrl()));
@@ -374,7 +374,7 @@ void TCore::clearOSD() {
 	displayTextOnOSD("", 0, pref->osd_level);
 }
 
-void TCore::displayTextOnOSD(QString text, int duration, int level) {
+void TCore::displayTextOnOSD(const QString& text, int duration, int level) {
 	//qDebug("TCore::displayTextOnOSD: '%s'", text.toUtf8().constData());
 
 	if (proc->isFullyStarted()
@@ -524,11 +524,11 @@ void TCore::openYT(const QString & url) {
 	yt->close();
 }
 
-void TCore::connectingToYT(QString host) {
+void TCore::connectingToYT(const QString& host) {
 	emit showMessage(tr("Connecting to %1").arg(host));
 }
 
-void TCore::YTFailed(int /*error_number*/, QString /*error_str*/) {
+void TCore::YTFailed(int /*error_number*/, const QString& /*error_str*/) {
 	emit showMessage(tr("Unable to retrieve the Youtube page"));
 }
 
@@ -683,7 +683,7 @@ void TCore::openStream(QString name) {
 	initPlaying();
 }
 
-void TCore::openFile(QString filename, int seek) {
+void TCore::openFile(const QString& filename, int seek) {
 	qDebug("TCore::openFile: '%s'", filename.toUtf8().data());
 
 	close();
@@ -1116,12 +1116,6 @@ void TCore::startPlayer(QString file, double seek) {
 
 #ifdef YOUTUBE_SUPPORT
 	// Stop any pending request
-	#if 0
-	qDebug("TCore::startPlayer: yt state: %d", yt->state());
-	if (yt->state() != QHttp::Unconnected) {
-		//yt->abort(); /* Make the app to crash, don't know why */
-	}
-	#endif
 	yt->close();
 #endif
 
@@ -3390,16 +3384,6 @@ void TCore::changeAdapter(int n) {
 }
 #endif
 
-void TCore::changeSize(int percentage) {
-	qDebug("TCore::changeSize: %d", percentage);
-
-	if (!pref->fullscreen) {
-		pref->size_factor = (double) percentage / 100;
-		emit needResize(mset.win_width, mset.win_height);
-		displayMessage(tr("Size %1%").arg(QString::number(percentage)));
-	}
-}
-
 void TCore::getZoomFromPlayerWindow() {
 	mset.zoom_factor = playerwindow->zoomNormalScreen();
 	mset.zoom_factor_fullscreen = playerwindow->zoomFullScreen();
@@ -3681,14 +3665,14 @@ void TCore::dvdnavUpdateMousePos(QPoint pos) {
 	}
 }
 
-void TCore::displayMessage(QString text, int duration, int osd_level) {
+void TCore::displayMessage(const QString& text, int duration, int osd_level) {
 	//qDebug("TCore::displayMessage");
 
 	emit showMessage(text);
 	displayTextOnOSD(text, duration, osd_level);
 }
 
-void TCore::displayScreenshotName(QString filename) {
+void TCore::displayScreenshotName(const QString& filename) {
 	qDebug("TCore::displayScreenshotName: %s", filename.toUtf8().constData());
 
 	QFileInfo fi(filename);
@@ -3727,7 +3711,7 @@ void TCore::gotVideoOutResolution(int w, int h) {
 	playerwindow->updateVideoWindow();
 }
 
-void TCore::gotVO(QString vo) {
+void TCore::gotVO(const QString& vo) {
 	qDebug("TCore::gotVO: '%s'", vo.toUtf8().data());
 
 	if (pref->vo.isEmpty()) {
@@ -3736,7 +3720,7 @@ void TCore::gotVO(QString vo) {
 	}
 }
 
-void TCore::gotAO(QString ao) {
+void TCore::gotAO(const QString& ao) {
 	qDebug("TCore::gotAO: '%s'", ao.toUtf8().data());
 
 	if (pref->ao.isEmpty()) {
@@ -3745,12 +3729,12 @@ void TCore::gotAO(QString ao) {
 	}
 }
 
-void TCore::streamTitleChanged(QString title) {
+void TCore::streamTitleChanged(const QString& title) {
 	mdat.stream_title = title;
 	emit mediaInfoChanged();
 }
 
-void TCore::streamTitleAndUrlChanged(QString title, QString url) {
+void TCore::streamTitleAndUrlChanged(const QString& title, const QString& url) {
 	mdat.stream_title = title;
 	mdat.stream_url = url;
 	emit mediaInfoChanged();

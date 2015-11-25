@@ -58,10 +58,10 @@ public:
 	void setPreferredQuality(Quality q) { preferred_quality = q; }
 	Quality preferredQuality() { return preferred_quality; }
 
-	void setUserAgent(const QString & s) { LoadPage::setDefaultUserAgent(s); };
-	QString userAgent() { return LoadPage::defaultUserAgent(); };
+	void setUserAgent(const QString& s) { LoadPage::setDefaultUserAgent(s); }
+	QString userAgent() { return LoadPage::defaultUserAgent(); }
 
-	void fetchPage(const QString & url);
+	void fetchPage(const QString& url);
 
 #ifdef YT_USE_SIG
 	void setSettings(QSettings* settings);
@@ -71,32 +71,32 @@ public:
 	static int findBestAudio(const QMap<int, QString>& url_map); // Returns the itag
 #endif
 
-	QString urlTitle() { return url_title; }
-	QString origUrl() { return yt_url; }
+	QString urlTitle() const { return url_title; }
+	QString origUrl() const { return yt_url; }
 
-	QString latestPreferredUrl() { return latest_preferred_url; }
+	QString latestPreferredUrl() const { return latest_preferred_url; }
 
-	bool isUrlSupported(const QString & url);
-	QString fullUrl(const QString & url);
+	bool isUrlSupported(const QString& url);
+	QString fullUrl(const QString& url);
 
-	void setUseHttpsMain(bool b) { use_https_main = b; };
-	void setUseHttpsVi(bool b) { use_https_vi = b; };
-	bool useHttpsMain() { return use_https_main; };
-	bool useHttpsVi() { return use_https_vi; };
+	void setUseHttpsMain(bool b) { use_https_main = b; }
+	void setUseHttpsVi(bool b) { use_https_vi = b; }
+	bool useHttpsMain() const { return use_https_main; }
+	bool useHttpsVi() const { return use_https_vi; }
 
-	static int findPreferredUrl(const UrlMap & url_map, Quality q); // Returns the itag
+	static int findPreferredUrl(const UrlMap& url_map, Quality q); // Returns the itag
 	static QString extensionForItag(int itag);
 
-	void close() { /* FIXME: do something */ };
+	void close() { /* TODO: FIXME: do something */ }
 
 signals:
 	void gotUrls(const QMap<int, QString>&);
 	//void gotPreferredUrl(const QString &);
-	void gotPreferredUrl(const QString & url, int itag);
+	void gotPreferredUrl(const QString& url, int itag);
 	void gotEmptyList();
-	void connecting(QString host);
-	void errorOcurred(int error_number, QString error_str);
-	void signatureNotFound(const QString & title);
+	void connecting(const QString& host);
+	void errorOcurred(int error_number, const QString& error_str);
+	void signatureNotFound(const QString& title);
 	void noSslSupport();
 
 protected slots:
@@ -111,12 +111,12 @@ protected slots:
 	void processVideoPage();
 
 protected:
-	void fetchVideoPage(const QString & url);
+	void fetchVideoPage(const QString& url);
 #ifdef YT_GET_VIDEOINFO
-	void fetchVideoInfoPage(const QString & url);
+	void fetchVideoInfoPage(const QString& url);
 #endif
 #ifdef YT_USE_SIG
-	void fetchPlayerPage(const QString & player_name);
+	void fetchPlayerPage(const QString& player_name);
 #endif
 
 	QString getVideoID(QString video_url);
@@ -125,7 +125,7 @@ protected:
 	void finish(const UrlMap & url_map);
 
 #ifdef YT_USE_SCRIPT
-	QString aclara(const QString & text, const QString & player = "");
+	QString aclara(const QString& text, const QString& player = "");
 #endif
 
 	static QString sanitizeForUnicodePoint(QString string);

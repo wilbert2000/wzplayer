@@ -143,7 +143,7 @@ signals:
 	void mouseMoved(QPoint);
 	void moveWindow(QPoint);
 
-	void showMessage(QString text, int duration, int osd_level);
+	void showMessage(const QString& text, int duration, int osd_level);
 	void moveOSD(QPoint pos);
 
 protected:

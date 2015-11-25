@@ -136,17 +136,17 @@ void TMediaBarPanel::updateMediaInfo()
     }
 }
 
-void TMediaBarPanel::displayMessage(QString status, int time)
+void TMediaBarPanel::displayMessage(const QString& status, int time)
 {
     mediaPanel->setStatusText(status, time);
 }
 
-void TMediaBarPanel::displayMessage(QString status)
+void TMediaBarPanel::displayMessage(const QString& status)
 {
     mediaPanel->setStatusText(status);
 }
 
-void TMediaBarPanel::displayPermanentMessage(QString status)
+void TMediaBarPanel::displayPermanentMessage(const QString& status)
 {
     mediaPanel->setStatusText(status, 0);
 }

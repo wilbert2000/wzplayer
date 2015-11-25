@@ -62,9 +62,9 @@ private:
 public slots:
 	void gotCurrentTime(double time);
 	void updateMediaInfo();
-	void displayMessage(QString status, int time);
-	void displayMessage(QString status);
-	void displayPermanentMessage(QString status);
+	void displayMessage(const QString& status, int time);
+	void displayMessage(const QString& status);
+	void displayPermanentMessage(const QString& status);
 	void setBuffering();
 	void setResolutionVisible(bool b);
 	void setScrollingEnabled(bool b);

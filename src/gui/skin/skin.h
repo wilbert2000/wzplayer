@@ -48,8 +48,8 @@ protected:
 	void createActions();
 
 protected slots:
-	virtual void displayMessage(QString message, int time);
-	virtual void displayMessage(QString message);
+	virtual void displayMessage(const QString& message, int time);
+	virtual void displayMessage(const QString& message);
 
 protected:
 	Skin::TMediaBarPanel* mediaBarPanel;

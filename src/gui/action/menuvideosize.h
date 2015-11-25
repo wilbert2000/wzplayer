@@ -9,15 +9,18 @@ class TPlayerWindow;
 
 namespace Gui {
 
+class TBase;
+
 class TVideoSizeGroup : public TActionGroup {
 	Q_OBJECT
 public:
 	explicit TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw);
+	int size_percentage;
+	TPlayerWindow* playerWindow;
 public slots:
 	void enableVideoSizeGroup(bool on);
 	void updateVideoSizeGroup();
 private:
-	TPlayerWindow* playerWindow;
 	void uncheck();
 };
 
@@ -25,15 +28,23 @@ private:
 class TMenuVideoSize : public TMenu {
 	Q_OBJECT
 public:
-	TMenuVideoSize(QWidget* parent, TPlayerWindow* pw);
+	TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onAboutToShow();
 private:
+	TBase* mainWindow;
 	TVideoSizeGroup* group;
 	TAction* doubleSizeAct;
+	TAction* currentSizeAct;
+
+	bool optimizeSizeFactorPreDef(int& factor, int predef_factor);
+	void upd();
+
 private slots:
 	virtual void fullscreenChanged();
+	void optimizeSizeFactor();
+	void onVideoSizeChanged();
 };
 
 } // namespace Gui

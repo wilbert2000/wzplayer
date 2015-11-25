@@ -155,6 +155,8 @@ public slots:
 	virtual void checkStayOnTop(TCore::State);
 	void toggleStayOnTop();
 
+	void changeSize(int percentage);
+
 	void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
 	int forceCloseOnFinish() { return arg_close_on_finish; }
 
@@ -169,6 +171,7 @@ signals:
 	void videoInfoChanged(int width, int height, double fps);
 	void timeChanged(QString time_ready_to_print);
 
+	void videoSizeFactorChanged();
 	void aboutToEnterFullscreenSignal();
 	void didEnterFullscreenSignal();
 	void aboutToExitFullscreenSignal();
@@ -201,8 +204,8 @@ protected slots:
 	virtual void setDefaultValuesFromVideoEqualizer();
 	virtual void changeVideoEqualizerBySoftware(bool b);
 
-	virtual void displayMessage(QString message, int time);
-	virtual void displayMessage(QString message);
+	virtual void displayMessage(const QString& message, int time);
+	virtual void displayMessage(const QString& message);
 
 	virtual void openRecent();
 	virtual void exitFullscreenOnStop();
@@ -223,7 +226,6 @@ protected slots:
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
 
-	void changeSize(int precentage);
 	void toggleDoubleSize();
 
 	virtual void resizeWindow(int w, int h);
@@ -385,6 +387,8 @@ private:
 	bool was_maximized;
 
 	bool ignore_show_hide_events;
+
+	bool force_resize;
 	bool block_resize;
 	bool center_window;
 	int block_update_size_factor;

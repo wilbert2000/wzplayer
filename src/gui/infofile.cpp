@@ -96,7 +96,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	// Clip info
 	QString c;
 
-	// Title
+	// Title MPV only
 	if (!md.title.isEmpty())
 		c += addItem(tr("Title"), md.title);
 

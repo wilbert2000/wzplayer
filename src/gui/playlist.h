@@ -71,16 +71,16 @@ public:
 
 	typedef QList<TPlaylistItem> TPlaylistItemList;
 
-	TPlaylist(QWidget* parent, TCore *c, Qt::WindowFlags f = Qt::Window);
+	TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f = Qt::Window);
 	virtual ~TPlaylist();
 
 	int count();
 	bool isEmpty();
-	bool directoryRecursion() { return recursive_add_directory; }
-	bool autoGetInfo() { return automatically_get_info; }
-	bool savePlaylistOnExit() { return save_playlist_in_config; }
-	bool playFilesFromStart() { return play_files_from_start; }
-	TPlaylistItemList playlist() { return pl; }
+	bool directoryRecursion() const { return recursive_add_directory; }
+	bool autoGetInfo() const { return automatically_get_info; }
+	bool savePlaylistOnExit() const { return save_playlist_in_config; }
+	bool playFilesFromStart() const { return play_files_from_start; }
+	TPlaylistItemList playlist() const { return pl; }
 
 	void clear();
 	void list();
@@ -96,7 +96,7 @@ public slots:
 	void startPlay();
 
 	void playItem(int n);
-	void playDirectory(const QString &dir);
+	void playDirectory(const QString& dir);
 
 	virtual void playNext();
 	virtual void playPrev();
@@ -115,12 +115,12 @@ public slots:
 	virtual void addDirectory();
 	virtual void addUrls();
 
-	virtual void addFile(const QString &filename, bool get_info = false);
-	virtual void addFiles(const QStringList &files, bool get_info = false);
-	void addFileOrDir(const QString &filename, bool get_info = false);
+	virtual void addFile(const QString& filename, bool get_info = false);
+	virtual void addFiles(const QStringList& files, bool get_info = false);
+	void addFileOrDir(const QString& filename, bool get_info = false);
 
 	// Adds a directory, maybe with recursion (depends on user config)
-	virtual void addDirectory(const QString &dir, bool get_info = false);
+	virtual void addDirectory(const QString& dir, bool get_info = false);
 
 	// EDIT BY NEO -->
 	virtual void sortBy(int section);
@@ -132,10 +132,10 @@ public slots:
     virtual void load();
     virtual bool save();
 
-	virtual void load_m3u(const QString &file, bool clear = true, bool play = true);
+	virtual void load_m3u(const QString& file, bool clear = true, bool play = true);
 	virtual bool save_m3u(QString file);
 
-	virtual void load_pls(const QString &file, bool clear = true, bool play = true);
+	virtual void load_pls(const QString& file, bool clear = true, bool play = true);
 	virtual bool save_pls(QString file);
 
 	virtual void newMediaLoaded();
