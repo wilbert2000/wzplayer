@@ -30,13 +30,13 @@ class QStringList;
 
 namespace Proc {
 
-class TMplayerProcess : public TPlayerProcess
+class TMPlayerProcess : public TPlayerProcess
 {
 	Q_OBJECT
 
 public:
-	TMplayerProcess(QObject* parent, TMediaData* mdata);
-	virtual ~TMplayerProcess();
+	TMPlayerProcess(QObject* parent, TMediaData* mdata);
+	virtual ~TMPlayerProcess();
 
 	virtual bool startPlayer();
 	virtual int exitCodeOverride();

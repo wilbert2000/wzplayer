@@ -89,8 +89,8 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData*
 
 #if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
 	if (Settings::pref->isMPlayer()) {
-		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMplayerProcess";
-		proc = new TMplayerProcess(parent, md);
+		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMPlayerProcess";
+		proc = new TMPlayerProcess(parent, md);
 	} else {
 		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMPVProcess";
 		proc = new TMPVProcess(parent, md);
@@ -100,7 +100,7 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData*
 	proc = new TMPVProcess(parent, md);
 	#endif
 	#ifdef MPLAYER_SUPPORT
-	proc = new TMplayerProcess(parent, md);
+	proc = new TMPlayerProcess(parent, md);
 	#endif
 #endif
 
@@ -342,7 +342,7 @@ bool TPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
 	// Emitted on DVDNAV menus when image not mpeg2 compliant
-	// TODO: move to TMplayerProcess?
+	// TODO: move to TMPlayerProcess?
 	static QRegExp rx_kill_line("Invalid horizontal or vertical size value");
 
 	// Trim line
