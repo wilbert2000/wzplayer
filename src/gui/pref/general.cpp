@@ -861,7 +861,8 @@ TPreferences::OptionState TGeneral::scaleTempoFilter() {
 }
 
 void TGeneral::vo_combo_changed(int idx) {
-	qDebug("Gui::Pref::TGeneral::vo_combo_changed: %d", idx);
+	//qDebug("Gui::Pref::TGeneral::vo_combo_changed: %d", idx);
+
 	bool visible = (vo_combo->itemData(idx).toString() == "user_defined");
 	vo_user_defined_edit->setVisible(visible);
 	vo_user_defined_edit->setFocus();
@@ -873,7 +874,8 @@ void TGeneral::vo_combo_changed(int idx) {
 }
 
 void TGeneral::ao_combo_changed(int idx) {
-	qDebug("Gui::Pref::TGeneral::ao_combo_changed: %d", idx);
+	//qDebug("Gui::Pref::TGeneral::ao_combo_changed: %d", idx);
+
 	bool visible = (ao_combo->itemData(idx).toString() == "user_defined");
 	ao_user_defined_edit->setVisible(visible);
 	ao_user_defined_edit->setFocus();
