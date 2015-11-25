@@ -662,7 +662,9 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// Meta data METADATA_name and value
 	if (rx_meta_data.indexIn(line) >= 0) {
-		return parseMetaDataProperty(rx_meta_data.cap(1), rx_meta_data.cap(2));
+		return parseMetaDataProperty(rx_meta_data.cap(1),
+									 rx_meta_data.cap(2),
+									 true);
 	}
 
 	// Switch title

@@ -57,6 +57,7 @@ bool TMPlayerProcess::startPlayer() {
 
 	clearSubSources();
 	frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
+	clip_info_id = -1;
 	title_needs_update = false;
 	title_hint = -2;
 
@@ -285,6 +286,27 @@ bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 			   << name << "=" << value;
 
 	return false;
+}
+
+bool TMPlayerProcess::parseClipInfoName(int id, const QString& name) {
+
+	clip_info_id = id;
+	clip_info_name = name;
+	return true;
+}
+
+bool TMPlayerProcess::parseClipInfoValue(int id, const QString& value) {
+
+	bool result;
+	if (id == clip_info_id) {
+		result = parseMetaDataProperty(clip_info_name, value, false);
+	} else {
+		qWarning("TMPlayerProcess::parseClipInfoValue: unexpected value id %d", id);
+		result = false;
+	}
+	clip_info_id = -1;
+	clip_info_name = "";
+	return result;
 }
 
 void TMPlayerProcess::clearStartTime() {
@@ -767,6 +789,10 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_dvdnav_title_is_movie("^DVDNAV_TITLE_IS_MOVIE");
 	static QRegExp rx_dvdread_vts_count("Found (\\d+) VTS", Qt::CaseInsensitive);
 
+	// Clip info
+	static QRegExp rx_clip_info_name("^ID_CLIP_INFO_NAME(\\d+)=(.+)");
+	static QRegExp rx_clip_info_value("^ID_CLIP_INFO_VALUE(\\d+)=(.*)");
+
 	// Stream title and url
 	static QRegExp rx_stream_title("^.*StreamTitle='(.*)';");
 	static QRegExp rx_stream_title_and_url("^.*StreamTitle='(.*)';StreamUrl='(.*)';");
@@ -781,25 +807,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 	// Catch all props
 	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
-
-	// Meta data
-	static QRegExp rx_meta_data("^(name|"
-								"title|"
-								"artist|"
-								"author|"
-								"album|"
-								"genre|"
-								"track|"
-								"copyright|"
-								"comment|"
-								"software|"
-								"creation date|"
-								"year|"
-								"major_brand|"
-								"isom|"
-								"minor_version|"
-								"compatible_brands|"
-								"encoder):(.*)", Qt::CaseInsensitive);
 
 	// Messages with side effects
 	static QRegExp rx_cache_empty("^Cache empty.*|^Cache not filling.*");
@@ -960,6 +967,16 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		return true;
 	}
 
+	// Clip info
+	if (rx_clip_info_name.indexIn(line) >= 0) {
+		return parseClipInfoName(rx_clip_info_name.cap(1).toInt(),
+								 rx_clip_info_name.cap(2));
+	}
+	if (rx_clip_info_value.indexIn(line) >= 0) {
+		return parseClipInfoValue(rx_clip_info_value.cap(1).toInt(),
+								  rx_clip_info_value.cap(2));
+	}
+
 	// Stream title
 	if (rx_stream_title_and_url.indexIn(line) >= 0) {
 		QString s = rx_stream_title_and_url.cap(1);
@@ -1003,12 +1020,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// Catch all property ID_name = value
 	if (rx_prop.indexIn(line) >= 0) {
 		return parseProperty(rx_prop.cap(1), rx_prop.cap(2));
-	}
-
-	// Meta data
-	if (rx_meta_data.indexIn(line) >= 0) {
-		return parseMetaDataProperty(rx_meta_data.cap(1),
-									 rx_meta_data.cap(2));
 	}
 
 	// Catch cache messages

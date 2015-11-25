@@ -138,6 +138,7 @@ private:
 
 	double check_duration_time;
 	int check_duration_time_diff;
+
 	double frame_backstep_time_start;
 	double frame_backstep_time_requested;
 
@@ -147,6 +148,9 @@ private:
 	bool get_selected_audio_track;
 	bool subtitles_changed;
 	bool get_selected_subtitle;
+
+	int clip_info_id;
+	QString clip_info_name;
 
 	bool title_needs_update;
 	int title_hint;
@@ -175,6 +179,8 @@ private:
 	bool parseSubID(const QString& type, int id);
 	bool parseSubTrack(const QString& type, int id, const QString& name, const QString& value);
 	bool parseChapter(int id, const QString& type, const QString& value);
+	bool parseClipInfoName(int id, const QString& name);
+	bool parseClipInfoValue(int id, const QString& value);
 	bool parseCDTrack(const QString& type, int id, const QString& length);
 	bool parseTitle(int id, const QString& field, const QString& value);
 	bool parseTitleChapters(Maps::TChapters& chapters, const QString& chaps);

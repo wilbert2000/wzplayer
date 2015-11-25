@@ -485,12 +485,12 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	return false;
 }
 
-bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
+bool TPlayerProcess::parseMetaDataProperty(QString name, QString value, bool skip_empty) {
 
 	name = name.toUpper();
 	value = value.trimmed();
 
-	if (value.isEmpty()) {
+	if (skip_empty && value.isEmpty()) {
 		qDebug("Proc::TPlayerProcess::parseMetaDataProperty: value empty");
 		return false;
 	}
