@@ -2237,6 +2237,7 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 				pref->size_factor = 1.0;
 				resizeWindow(w, h);
 			}
+			emit videoSizeFactorChanged();
 		}
 	}
 
