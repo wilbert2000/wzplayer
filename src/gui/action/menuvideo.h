@@ -15,6 +15,7 @@ class TBase;
 class TVideoEqualizer;
 
 class TMenuVideo : public TMenu {
+	Q_OBJECT
 public:
 	TMenuVideo(TBase* parent,
 			   TCore* c,
