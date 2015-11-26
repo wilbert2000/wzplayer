@@ -91,9 +91,10 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
 
 	currentSizeAct = new TAction(this, "video_size", "");
 	connect(currentSizeAct, SIGNAL(triggered()), this, SLOT(optimizeSizeFactor()));
-	connect(mainWindow, SIGNAL(videoSizeFactorChanged()), this, SLOT(onVideoSizeFactorChanged()));
 
-	connect(mainWindow, SIGNAL(fullscreenChanged()), this, SLOT(onFullscreenChanged()));
+	connect(mainWindow, SIGNAL(videoSizeFactorChanged()), this, SLOT(onVideoSizeFactorChanged()));
+	// Only enter. Exit is caught by TBase::unlockSizeFactor emitting videoSizeFactorChanged()
+	connect(mainWindow, SIGNAL(aboutToEnterFullscreenSignal()), this, SLOT(onFullscreenChanged()));
 
 	addActionsTo(mainWindow);
 	upd();

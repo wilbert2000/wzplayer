@@ -1636,7 +1636,9 @@ void TBase::toggleFullscreen() {
 
 void TBase::unlockSizeFactor() {
 	qDebug("Gui::TBase::unlockSizeFactor");
+
 	block_update_size_factor--;
+	emit videoSizeFactorChanged();
 }
 
 void TBase::toggleFullscreen(bool b) {
@@ -2306,7 +2308,9 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 }
 
 void TBase::mergeVideoSizeFactorChangedSignals() {
-	qDebug("Gui::TBase:mergeVideoSizeFactorChangedSignals: emit videoSizeFactorChanged()");
+	qDebug("Gui::TBase:mergeVideoSizeFactorChangedSignals");
+
+	playerwindow->updateSizeFactor();
 	emit videoSizeFactorChanged();
 }
 
@@ -2320,7 +2324,6 @@ void TBase::resizeEvent(QResizeEvent* event) {
 	// In TPlayerWindow::resizeEvent() event->spontaneous() does not become
 	// true during an user induces resize, so its needs to be here.
 	if (event->spontaneous() && block_update_size_factor == 0) {
-		playerwindow->updateSizeFactor();
 		// Delay emit videoSizeFactorChanged(), so multiple resizes
 		// get merged into 1 signal
 		video_size_factor_changed_timer.start();
