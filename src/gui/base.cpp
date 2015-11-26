@@ -192,7 +192,7 @@ TBase::TBase()
 
 	// Setup video size factor changed timer
 	video_size_factor_changed_timer.setSingleShot(true);
-	video_size_factor_changed_timer.setInterval(500);
+	video_size_factor_changed_timer.setInterval(1000);
 	connect(&video_size_factor_changed_timer, SIGNAL(timeout()),
 			this, SLOT(mergeVideoSizeFactorChangedSignals()));
 
