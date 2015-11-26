@@ -70,7 +70,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 		if (factor_y < factor_x) {
 			factor_x = factor_y;
 		}
-		qDebug("Gui::TVideoSizeGroup::updateVideoSizeGroup: updating factor from %d to %d",
+		qDebug("Gui::TVideoSizeGroup::updateVideoSizeGroup: updating size factor from %d to %d",
 			   size_percentage, factor_x);
 		size_percentage = factor_x;
 	}
