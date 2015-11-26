@@ -430,7 +430,7 @@ bool TPlayerProcess::setAspectRatio(const QString& value) {
 	double source_aspect = md->video_height ? (double) md->video_width / md->video_height : 0.0;
 
 	if (aspect < 0.001) {
-		qDebug("Proc::TPlayerProcess::setAspectRatio: aspect ratio not set");
+		qDebug("Proc::TPlayerProcess::setAspectRatio: aspect ratio not set, using source aspect");
 		md->video_aspect_set = false;
 		aspect = source_aspect;
 	} else {

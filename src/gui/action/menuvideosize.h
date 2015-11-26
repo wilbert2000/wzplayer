@@ -38,7 +38,7 @@ private:
 	TAction* doubleSizeAct;
 	TAction* currentSizeAct;
 
-	bool optimizeSizeFactorPreDef(int& factor, int predef_factor);
+	bool optimizeSizeFactorPreDef(int factor, int predef_factor);
 	void upd();
 
 private slots:
