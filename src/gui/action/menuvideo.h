@@ -20,7 +20,6 @@ public:
 			   TCore* c,
 			   TPlayerWindow* playerwindow,
 			   TVideoEqualizer* videoEqualizer);
-	void fullscreenChanged(bool fullscreen);
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
@@ -61,6 +60,9 @@ private:
 #ifdef CAPTURE_STREAM
 	TAction * capturingAct;
 #endif
+
+private slots:
+	void onFullscreenChanged();
 };
 
 } // namespace Gui

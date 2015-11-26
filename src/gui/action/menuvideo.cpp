@@ -250,6 +250,8 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	parent->addAction(exitFullscreenAct);
 	connect(exitFullscreenAct, SIGNAL(triggered()), parent, SLOT(exitFullscreen()));
 
+	connect(parent, SIGNAL(fullscreenChanged()), this, SLOT(onFullscreenChanged()));
+
 	// Screen submenu
 #if USE_ADAPTER
 	screenMenu = new TMenu(parent, this, "screen_menu", QT_TR_NOOP("Scree&n"), "screen");
@@ -435,10 +437,10 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 	// video preview always enabled
 }
 
-void TMenuVideo::fullscreenChanged(bool fullscreen) {
+void TMenuVideo::onFullscreenChanged() {
 
-	fullscreenAct->setChecked(fullscreen);
-	exitFullscreenAct->setEnabled(fullscreen);
+	fullscreenAct->setChecked(pref->fullscreen);
+	exitFullscreenAct->setEnabled(pref->fullscreen);
 }
 
 void TMenuVideo::onMediaSettingsChanged(Settings::TMediaSettings* mset) {

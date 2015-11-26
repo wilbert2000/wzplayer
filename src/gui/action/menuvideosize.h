@@ -42,9 +42,9 @@ private:
 	void upd();
 
 private slots:
-	virtual void fullscreenChanged();
+	void onVideoSizeFactorChanged();
+	void onFullscreenChanged();
 	void optimizeSizeFactor();
-	void onVideoSizeChanged();
 };
 
 } // namespace Gui

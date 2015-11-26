@@ -66,10 +66,16 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 			setChecked(factor_x);
 		}
 
-		// Store size for TMenuVideoSize::currentSizeAct
-		size_percentage = factor_x < factor_y ? factor_x : factor_y;
+		// Store smallest for use by TMenuVideoSize::currentSizeAct
+		if (factor_y < factor_x) {
+			factor_x = factor_y;
+		}
+		qDebug("Gui::TVideoSizeGroup::updateVideoSizeGroup: updating factor from %d to %d",
+			   size_percentage, factor_x);
+		size_percentage = factor_x;
 	}
 }
+
 
 TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
 	: TMenu(mw, this, "videosize_menu", QT_TR_NOOP("&Size"), "video_size")
@@ -85,10 +91,9 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
 
 	currentSizeAct = new TAction(this, "video_size", "");
 	connect(currentSizeAct, SIGNAL(triggered()), this, SLOT(optimizeSizeFactor()));
-	connect(mainWindow, SIGNAL(videoSizeFactorChanged()), this, SLOT(onVideoSizeChanged()));
+	connect(mainWindow, SIGNAL(videoSizeFactorChanged()), this, SLOT(onVideoSizeFactorChanged()));
 
-	connect(mainWindow, SIGNAL(aboutToEnterFullscreenSignal()), this, SLOT(fullscreenChanged()));
-	connect(mainWindow, SIGNAL(didExitFullscreenSignal()), this, SLOT(fullscreenChanged()));
+	connect(mainWindow, SIGNAL(fullscreenChanged()), this, SLOT(onFullscreenChanged()));
 
 	addActionsTo(mainWindow);
 	upd();
@@ -101,13 +106,6 @@ void TMenuVideoSize::enableActions(bool stopped, bool video, bool) {
 	currentSizeAct->setEnabled(group->isEnabled());
 }
 
-void TMenuVideoSize::fullscreenChanged() {
-
-	group->enableVideoSizeGroup(true);
-	doubleSizeAct->setEnabled(group->isEnabled());
-	currentSizeAct->setEnabled(group->isEnabled());
-}
-
 void TMenuVideoSize::upd() {
 	qDebug("Gui::TMenuVideoSize:upd: %f", pref->size_factor);
 
@@ -115,7 +113,9 @@ void TMenuVideoSize::upd() {
 	doubleSizeAct->setEnabled(group->isEnabled());
 	currentSizeAct->setEnabled(group->isEnabled());
 
-	QString txt = translator->tr("&Size %1%").arg(QString::number(group->size_percentage));
+	// Update text and tips
+	int s = pref->fullscreen ? 100 : group->size_percentage;
+	QString txt = translator->tr("&Size %1%").arg(QString::number(s));
 	currentSizeAct->setTextAndTip(txt);
 
 	txt.replace("&", "");
@@ -126,11 +126,15 @@ void TMenuVideoSize::upd() {
 	menuAction()->setToolTip(txt);
 }
 
-void TMenuVideoSize::onVideoSizeChanged() {
+void TMenuVideoSize::onAboutToShow() {
 	upd();
 }
 
-void TMenuVideoSize::onAboutToShow() {
+void TMenuVideoSize::onVideoSizeFactorChanged() {
+	upd();
+}
+
+void TMenuVideoSize::onFullscreenChanged() {
 	upd();
 }
 

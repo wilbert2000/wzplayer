@@ -189,6 +189,13 @@ TBase::TBase()
 		force_resize = true;
 		pref->size_factor = 1.0;
 	}
+
+	// Setup video size factor changed timer
+	video_size_factor_changed_timer.setSingleShot(true);
+	video_size_factor_changed_timer.setInterval(500);
+	connect(&video_size_factor_changed_timer, SIGNAL(timeout()),
+			this, SLOT(mergeVideoSizeFactorChangedSignals()));
+
 	// Resize window to default size
 	resize(pref->default_size);
 
@@ -1628,7 +1635,7 @@ void TBase::toggleFullscreen() {
 }
 
 void TBase::unlockSizeFactor() {
-	//qDebug("Gui::TBase::unlockSizeFactor");
+	qDebug("Gui::TBase::unlockSizeFactor");
 	block_update_size_factor--;
 }
 
@@ -1641,10 +1648,10 @@ void TBase::toggleFullscreen(bool b) {
 	}
 	pref->fullscreen = b;
 
+	// Don't update size factor during all the resizing
 	block_update_size_factor++;
 
-	// Update fullscreen actions
-	videoMenu->fullscreenChanged(pref->fullscreen);
+	emit fullscreenChanged();
 
 	if (pref->fullscreen) {
 		aboutToEnterFullscreen();
@@ -1669,8 +1676,8 @@ void TBase::toggleFullscreen(bool b) {
 		core->changeLetterboxOnFullscreen(pref->fullscreen);
 	}
 
-	// Risky?
-	QTimer::singleShot(350, this, SLOT(unlockSizeFactor()));
+	// Risky
+	QTimer::singleShot(500, this, SLOT(unlockSizeFactor()));
 
 	setFocus(); // Fixes bug #2493415
 }
@@ -2298,9 +2305,14 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 
 }
 
+void TBase::mergeVideoSizeFactorChangedSignals() {
+	qDebug("Gui::TBase:mergeVideoSizeFactorChangedSignals: emit videoSizeFactorChanged()");
+	emit videoSizeFactorChanged();
+}
+
 void TBase::resizeEvent(QResizeEvent* event) {
-	//qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous()
-	//		 << "lock:" << block_update_size_factor;
+	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous()
+			 << "lock:" << block_update_size_factor;
 
 	QMainWindow::resizeEvent(event);
 
@@ -2309,7 +2321,9 @@ void TBase::resizeEvent(QResizeEvent* event) {
 	// true during an user induces resize, so its needs to be here.
 	if (event->spontaneous() && block_update_size_factor == 0) {
 		playerwindow->updateSizeFactor();
-		emit videoSizeFactorChanged();
+		// Delay emit videoSizeFactorChanged(), so multiple resizes
+		// get merged into 1 signal
+		video_size_factor_changed_timer.start();
 	}
 }
 

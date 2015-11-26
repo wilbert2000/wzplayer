@@ -19,6 +19,7 @@
 #ifndef GUI_BASE_H
 #define GUI_BASE_H
 
+#include <QTimer>
 #include <QMainWindow>
 #include "core.h"
 #include "gui/pref/dialog.h"
@@ -165,17 +166,20 @@ public slots:
 
 signals:
 	void enableActions(bool stopped, bool video, bool audio);
-	void mediaSettingsChanged(Settings::TMediaSettings* mset);
 
-	void frameChanged(int);
-	void videoInfoChanged(int width, int height, double fps);
 	void timeChanged(QString time_ready_to_print);
+	void frameChanged(int);
 
-	void videoSizeFactorChanged();
+	void mediaSettingsChanged(Settings::TMediaSettings* mset);
+	void videoInfoChanged(int width, int height, double fps);
+
+	void fullscreenChanged();
 	void aboutToEnterFullscreenSignal();
 	void didEnterFullscreenSignal();
 	void aboutToExitFullscreenSignal();
 	void didExitFullscreenSignal();
+
+	void videoSizeFactorChanged();
 	void stayOnTopChanged(int);
 
 	//! Sent when another instance requested to play a file
@@ -392,6 +396,7 @@ private:
 	bool block_resize;
 	bool center_window;
 	int block_update_size_factor;
+	QTimer video_size_factor_changed_timer;
 
 	TAutoHideTimer* auto_hide_timer;
 
@@ -418,6 +423,7 @@ private:
 
 private slots:
 	void unlockSizeFactor();
+	void mergeVideoSizeFactorChangedSignals();
 };
 
 } // namespace Gui
