@@ -237,6 +237,8 @@ private:
 	int line_count;
 	int waiting_for_answers_safe_guard;
 	int prev_frame;
+
+	bool setAspectRatio(const QString& value);
 };
 
 } // namespace Proc

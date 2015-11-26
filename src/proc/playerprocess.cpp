@@ -411,6 +411,56 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 	return false;
 }
 
+bool TPlayerProcess::setAspectRatio(const QString& value) {
+
+	// Arbitrary list of aspect ratios to upgrade precision
+	static const double ASPS[] = {
+		(double) 4 / 3,
+		(double) 16 / 9,
+		(double) 14 / 9,
+		(double) 16 / 10,
+		(double) 5 / 4,
+		2.35,
+		1.0,
+		(double) 3 / 2,
+		(double) 14 / 10,
+		(double) 11 / 8 };
+
+	double aspect = value.toDouble();
+	double source_aspect = md->video_height ? (double) md->video_width / md->video_height : 0.0;
+
+	if (aspect < 0.001) {
+		qDebug("Proc::TPlayerProcess::setAspectRatio: aspect ratio not set");
+		md->video_aspect_set = false;
+		aspect = source_aspect;
+	} else {
+		md->video_aspect_set = true;
+		// MPlayer prints 4 digits precision, aka 1.3333, MPV 6 aka 1.333333
+		// Prefer source aspect
+		if (qAbs(aspect - source_aspect) < 0.0001) {
+			qDebug("Proc::TPlayerProcess::setAspectRatio: upgrading precision from %f to source aspect %f",
+				   aspect, source_aspect);
+			aspect = source_aspect;
+		} else {
+			// Check against arbitrary list
+			for (unsigned int i = 0; i < sizeof(ASPS) / sizeof(ASPS[0]); i++) {
+				const double predef = ASPS[i];
+				if (qAbs(predef - aspect) < 0.0001) {
+					qDebug("Proc::TPlayerProcess::setAspectRatio: upgrading precision from %f to predefined aspect %f",
+						   aspect, predef);
+					aspect = predef;
+					break;
+				}
+			}
+		}
+	}
+
+	qDebug("Proc::TPlayerProcess::setAspectRatio: video aspect ratio changed from %f to %f",
+		   md->video_aspect, aspect);
+	md->video_aspect = aspect;
+	return true;
+}
+
 bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
 
 	if (name == "WIDTH") {
@@ -424,26 +474,7 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 		return true;
 	}
 	if (name == "ASPECT") {
-		md->video_aspect = value.toDouble();
-		if (md->video_aspect == 0.0) {
-			qDebug("Proc::TPlayerProcess::parseVideoProperty: video_aspect not set");
-			md->video_aspect_set = false;
-			if (md->video_height != 0) {
-				md->video_aspect = (double) md->video_width / md->video_height;
-			}
-		} else {
-			// Precision
-			if (md->video_aspect == 1.3333) {
-				qDebug("Proc::TPlayerProcess::parseVideoProperty: upgrading precision 4:3");
-				md->video_aspect = 4.0 / 3;
-			} else if (md->video_aspect == 1.7778) {
-				qDebug("Proc::TPlayerProcess::parseVideoProperty: upgrading precision 16:9");
-				md->video_aspect = 16.0 / 9;
-			}
-			md->video_aspect_set = true;
-		}
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_aspect set to %f", md->video_aspect);
-		return true;
+		return setAspectRatio(value);
 	}
 	if (name == "FPS") {
 		md->video_fps = value.toDouble();
