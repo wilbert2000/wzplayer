@@ -516,6 +516,7 @@ private:
 	bool isMPlayer();
 	bool isMPV();
 	bool haveVideoFilters();
+	void changeVF(const QString& filter, bool enable, const QVariant& option);
 	void getZoomFromPlayerWindow();
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);

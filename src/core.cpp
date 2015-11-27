@@ -1287,10 +1287,8 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 #endif
 
-	if (pref->ao != "player_default") {
-		if (!pref->ao.isEmpty()) {
-			proc->setOption("ao", pref->ao);
-		}
+	if (pref->ao != "player_default" && !pref->ao.isEmpty()) {
+		proc->setOption("ao", pref->ao);
 	}
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
@@ -1547,24 +1545,19 @@ void TCore::startPlayer(QString file, double seek) {
 		if (mset.contrast != 0) {
 			proc->setOption("contrast", QString::number(mset.contrast));
 		}
-	
 		if (mset.brightness != 0) {
 			proc->setOption("brightness", QString::number(mset.brightness));
 		}
-
 		if (mset.hue != 0) {
 			proc->setOption("hue", QString::number(mset.hue));
 		}
-
 		if (mset.saturation != 0) {
 			proc->setOption("saturation", QString::number(mset.saturation));
 		}
-
 		if (mset.gamma != 0) {
 			proc->setOption("gamma", QString::number(mset.gamma));
 		}
 	}
-
 
 	if (pref->mplayer_additional_options.contains("-volume")) {
 		qDebug("TCore::startPlayer: don't set volume since -volume is used");
@@ -1618,7 +1611,7 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 		else
 		// If seek < 5 it's better to allow the video to start from the beginning
-		if ((seek >= 5) && (!mset.loop)) {
+		if (seek >= 5 && !mset.loop) {
 			proc->setOption("ss", QString::number(seek));
 		}
 	}
@@ -1636,7 +1629,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	if (pref->use_correct_pts != TPreferences::Detect) {
-		proc->setOption("correct-pts", (pref->use_correct_pts == TPreferences::Enabled));
+		proc->setOption("correct-pts", pref->use_correct_pts == TPreferences::Enabled);
 	}
 
 	bool force_noslices = false;
@@ -1866,7 +1859,8 @@ void TCore::startPlayer(QString file, double seek) {
 	if (isMPV() && file.startsWith("dvb:")) {
 		QString channels_file = Gui::TTVList::findChannelsFile();
 		qDebug("TCore::startPlayer: channels_file: %s", channels_file.toUtf8().constData());
-		if (!channels_file.isEmpty()) proc->setChannelsFile(channels_file);
+		if (!channels_file.isEmpty())
+			proc->setChannelsFile(channels_file);
 	}
 #endif
 
@@ -1881,13 +1875,11 @@ void TCore::startPlayer(QString file, double seek) {
 		QFileInfo f(file);
 		QString basename = f.path() + "/" + f.completeBaseName();
 
-		//qDebug("TCore::startPlayer: file basename: '%s'", basename.toUtf8().data());
-
-		if (QFile::exists(basename+".edl")) 
-			edl_f = basename+".edl";
+		if (QFile::exists(basename + ".edl"))
+			edl_f = basename + ".edl";
 		else
-		if (QFile::exists(basename+".EDL")) 
-			edl_f = basename+".EDL";
+		if (QFile::exists(basename + ".EDL"))
+			edl_f = basename + ".EDL";
 
 		qDebug("TCore::startPlayer: edl file: '%s'", edl_f.toUtf8().data());
 		if (!edl_f.isEmpty()) {
@@ -2002,8 +1994,10 @@ void TCore::stopPlayer() {
 void TCore::goToPosition(int pos) {
 	qDebug("TCore::goToPosition: %d/%d", pos, pos_max);
 
-	if (pos < 0) pos = 0;
-	else if (pos >= pos_max) pos = pos_max - 1;
+	if (pos < 0)
+		pos = 0;
+	else if (pos >= pos_max)
+		pos = pos_max - 1;
 
 	if (pref->relative_seeking || mdat.duration <= 0) {
 		goToPos((double) pos / ((double) pos_max / 100));
@@ -2260,12 +2254,14 @@ void TCore::setStereoMode(int mode) {
 
 // Video filters
 
-#define CHANGE_VF(Filter, Enable, Option) \
+void TCore::changeVF(const QString& filter, bool enable, const QVariant& option) {
+
 	if (isMPV()) { \
-		proc->changeVF(Filter, Enable, Option); \
+		proc->changeVF(filter, enable, option); \
 	} else { \
 		restartPlay(); \
 	}
+}
 
 void TCore::toggleFlip() {
 	qDebug("TCore::toggleFlip");
@@ -2274,9 +2270,10 @@ void TCore::toggleFlip() {
 
 void TCore::toggleFlip(bool b) {
 	qDebug("TCore::toggleFlip: %d", b);
+
 	if (mset.flip != b) {
 		mset.flip = b;
-		CHANGE_VF("flip", b, QVariant());
+		changeVF("flip", b, QVariant());
 	}
 }
 
@@ -2287,9 +2284,10 @@ void TCore::toggleMirror() {
 
 void TCore::toggleMirror(bool b) {
 	qDebug("TCore::toggleMirror: %d", b);
+
 	if (mset.mirror != b) {
 		mset.mirror = b;
-		CHANGE_VF("mirror", b, QVariant());
+		changeVF("mirror", b, QVariant());
 	}
 }
 
@@ -2299,9 +2297,10 @@ void TCore::toggleAutophase() {
 
 void TCore::toggleAutophase(bool b) {
 	qDebug("TCore::toggleAutophase: %d", b);
+
 	if (b != mset.phase_filter) {
 		mset.phase_filter = b;
-		CHANGE_VF("phase", b, "A");
+		changeVF("phase", b, "A");
 	}
 }
 
@@ -2311,9 +2310,10 @@ void TCore::toggleDeblock() {
 
 void TCore::toggleDeblock(bool b) {
 	qDebug("TCore::toggleDeblock: %d", b);
+
 	if (b != mset.deblock_filter) {
 		mset.deblock_filter = b;
-		CHANGE_VF("deblock", b, pref->filters.item("deblock").options());
+		changeVF("deblock", b, pref->filters.item("deblock").options());
 	}
 }
 
@@ -2323,9 +2323,10 @@ void TCore::toggleDering() {
 
 void TCore::toggleDering(bool b) {
 	qDebug("TCore::toggleDering: %d", b);
+
 	if (b != mset.dering_filter) {
 		mset.dering_filter = b;
-		CHANGE_VF("dering", b, QVariant());
+		changeVF("dering", b, QVariant());
 	}
 }
 
@@ -2335,9 +2336,10 @@ void TCore::toggleGradfun() {
 
 void TCore::toggleGradfun(bool b) {
 	qDebug("TCore::toggleGradfun: %d", b);
+
 	if (b != mset.gradfun_filter) {
 		mset.gradfun_filter = b;
-		CHANGE_VF("gradfun", b, pref->filters.item("gradfun").options());
+		changeVF("gradfun", b, pref->filters.item("gradfun").options());
 	}
 }
 
@@ -2347,9 +2349,10 @@ void TCore::toggleNoise() {
 
 void TCore::toggleNoise(bool b) {
 	qDebug("TCore::toggleNoise: %d", b);
+
 	if (b != mset.noise_filter) {
 		mset.noise_filter = b;
-		CHANGE_VF("noise", b, QVariant());
+		changeVF("noise", b, QVariant());
 	}
 }
 
@@ -2359,14 +2362,16 @@ void TCore::togglePostprocessing() {
 
 void TCore::togglePostprocessing(bool b) {
 	qDebug("TCore::togglePostprocessing: %d", b);
+
 	if (b != mset.postprocessing_filter) {
 		mset.postprocessing_filter = b;
-		CHANGE_VF("postprocessing", b, QVariant());
+		changeVF("postprocessing", b, QVariant());
 	}
 }
 
 void TCore::changeDenoise(int id) {
 	qDebug("TCore::changeDenoise: %d", id);
+
 	if (id != mset.current_denoiser) {
 		if (isMPlayer()) {
 			mset.current_denoiser = id;
@@ -2392,6 +2397,7 @@ void TCore::changeDenoise(int id) {
 
 void TCore::changeUnsharp(int id) {
 	qDebug("TCore::changeUnsharp: %d", id);
+
 	if (id != mset.current_unsharp) {
 		if (isMPlayer()) {
 			mset.current_unsharp = id;
@@ -2417,10 +2423,11 @@ void TCore::changeUnsharp(int id) {
 
 void TCore::changeUpscale(bool b) {
 	qDebug("TCore::changeUpscale: %d", b);
+
 	if (mset.upscaling_filter != b) {
 		mset.upscaling_filter = b;
 		int width = TDesktop::size(playerwindow).width();
-		CHANGE_VF("scale", b, QString::number(width) + ":-2");
+		changeVF("scale", b, QString::number(width) + ":-2");
 	}
 }
 
@@ -2461,7 +2468,6 @@ void TCore::setBrightness(int value) {
 		emit videoEqualizerNeedsUpdate();
 	}
 }
-
 
 void TCore::setContrast(int value) {
 	qDebug("TCore::setContrast: %d", value);
@@ -2716,6 +2722,7 @@ void TCore::decSubDelay() {
 
 void TCore::setAudioDelay(int delay) {
 	qDebug("TCore::setAudioDelay: %d", delay);
+
 	mset.audio_delay = delay;
 	proc->setAudioDelay((double) mset.audio_delay/1000);
 	displayMessage(tr("Audio delay: %1 ms").arg(delay));
@@ -2771,6 +2778,7 @@ void TCore::changeSubScale(double value) {
 }
 
 void TCore::incSubScale() {
+
 	double step = 0.20;
 
 	if (pref->use_ass_subtitles) {
@@ -2783,6 +2791,7 @@ void TCore::incSubScale() {
 }
 
 void TCore::decSubScale() {
+
 	double step = 0.20;
 
 	if (pref->use_ass_subtitles) {
@@ -2815,6 +2824,7 @@ void TCore::changeOSDScale(double value) {
 }
 
 void TCore::incOSDScale() {
+
 	if (isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale + 1);
 	} else {
@@ -2823,6 +2833,7 @@ void TCore::incOSDScale() {
 }
 
 void TCore::decOSDScale() {
+
 	if (isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale - 1);
 	} else {
@@ -3277,16 +3288,16 @@ void TCore::nextAspectRatio() {
 }
 
 void TCore::nextWheelFunction() {
+
 	int a = pref->wheel_function;
 
 	bool done = false;
-	if(((int) pref->wheel_function_cycle)==0)
+	if(((int) pref->wheel_function_cycle) == 0)
 		return;
 	while(!done){
 		// get next a
-
-		a = a*2;
-		if(a==32)
+		a = a * 2;
+		if(a == 32)
 			a = 2;
 		// See if we are done
 		if (pref->wheel_function_cycle.testFlag((TPreferences::WheelFunction)a))
@@ -3316,13 +3327,13 @@ void TCore::changeLetterbox(bool b) {
 
 	if (mset.add_letterbox != b) {
 		mset.add_letterbox = b;
-		CHANGE_VF("letterbox", b, TDesktop::aspectRatio(playerwindow));
+		changeVF("letterbox", b, TDesktop::aspectRatio(playerwindow));
 	}
 }
 
 void TCore::changeLetterboxOnFullscreen(bool b) {
 	qDebug("TCore::changeLetterboxOnFullscreen: %d", b);
-	CHANGE_VF("letterbox", b, TDesktop::aspectRatio(playerwindow));
+	changeVF("letterbox", b, TDesktop::aspectRatio(playerwindow));
 }
 
 void TCore::changeOSDLevel(int level) {
@@ -3448,6 +3459,7 @@ void TCore::panDown() {
 }
 
 void TCore::autoZoom() {
+
 	double video_aspect = mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id);
 
 	if (video_aspect <= 0) {
