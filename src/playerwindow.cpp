@@ -192,8 +192,8 @@ void TPlayerWindow::set(double aspect,
 }
 
 QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
-	qDebug("TPlayerWindow::getAdjustedSize: in: %d x %d zoom %f aspect %f",
-		   w, h, zoom, aspect);
+	//qDebug("TPlayerWindow::getAdjustedSize: in: %d x %d zoom %f aspect %f",
+	//	   w, h, zoom, aspect);
 
 	// Select best fit: height adjusted or width adjusted,
 	// in case video aspect does not match the window aspect ratio.
@@ -213,7 +213,7 @@ QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
 	// Zoom
 	QSize size = QSize(w, h) * zoom;
 
-	qDebug("TPlayerWindow::getAdjustedSize: out: %d x %d", size.width(), size.height());
+	//qDebug("TPlayerWindow::getAdjustedSize: out: %d x %d", size.width(), size.height());
 	return size;
 }
 
