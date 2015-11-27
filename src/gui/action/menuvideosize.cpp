@@ -141,7 +141,10 @@ void TMenuVideoSize::onFullscreenChanged() {
 
 bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {
 
-	if (qAbs(factor - predef_factor) < 10) {
+	int d = predef_factor / 10;
+	if (d < 10)
+		d = 10;
+	if (qAbs(factor - predef_factor) < d) {
 		qDebug("Gui::TMenuVideoSize::optimizeSizeFactorPreDef: optimizing size factor from %f to predefined value %f",
 			   pref->size_factor, (double) predef_factor / 100);
 		mainWindow->changeSize(predef_factor);
