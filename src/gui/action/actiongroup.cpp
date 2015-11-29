@@ -46,7 +46,7 @@ TActionGroup::TActionGroup(QObject* parent, const QString& name)
 			this, SLOT(itemTriggered(QAction*)));
 }
 
-void TActionGroup::setChecked(int ID) {
+QAction* TActionGroup::setChecked(int ID) {
 	//qDebug("Gui::TActionGroup::setChecked: ID: %d", ID);
 
 	QList <QAction *> l = actions();
@@ -54,9 +54,11 @@ void TActionGroup::setChecked(int ID) {
 		QAction* action = l[n];
 		if (!action->isSeparator() && action->data().toInt() == ID) {
 			action->setChecked(true);
-			return;
+			return action;
 		}
 	}
+
+	return 0;
 }
 
 void TActionGroup::clear() {

@@ -1,15 +1,8 @@
 #include "gui/action/menu.h"
 #include <QDebug>
-#include <QMessageBox>
 #include "desktop.h"
 #include "images.h"
-#include "settings/preferences.h"
-#include "settings/paths.h"
 #include "settings/mediasettings.h"
-#include "gui/action/actiongroup.h"
-#include "gui/action/widgetactions.h"
-#include "playerwindow.h"
-#include "gui/playlist.h"
 #include "gui/base.h"
 
 

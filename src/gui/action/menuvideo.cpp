@@ -1,5 +1,6 @@
 #include "gui/action/menuvideo.h"
 #include "settings/mediasettings.h"
+#include "gui/action/menuaspect.h"
 #include "gui/action/menuvideofilter.h"
 #include "gui/action/menuvideosize.h"
 #include "gui/action/menuvideotracks.h"
@@ -10,69 +11,6 @@
 using namespace Settings;
 
 namespace Gui {
-
-
-class TtMenuAspect : public TMenu {
-public:
-	explicit TtMenuAspect(QWidget* parent, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	TActionGroup* group;
-	TAction* nextAspectAct;
-};
-
-
-TtMenuAspect::TtMenuAspect(QWidget* parent, TCore* c)
-	: TMenu(parent, this, "aspect_menu", QT_TR_NOOP("&Aspect ratio"), "aspect")
-	, core(c) {
-
-	group = new TActionGroup(this, "aspect");
-	group->setEnabled(false);
-	new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TMediaSettings::AspectAuto);
-	addSeparator();
-	new TActionGroupItem(this, group, "aspect_1_1", QT_TR_NOOP("1&:1"), TMediaSettings::Aspect11);
-	new TActionGroupItem(this, group, "aspect_5_4", QT_TR_NOOP("&5:4"), TMediaSettings::Aspect54);
-	new TActionGroupItem(this, group, "aspect_4_3", QT_TR_NOOP("&4:3"), TMediaSettings::Aspect43);
-	new TActionGroupItem(this, group, "aspect_11_8", QT_TR_NOOP("11:&8"), TMediaSettings::Aspect118);
-	new TActionGroupItem(this, group, "aspect_14_10", QT_TR_NOOP("1&4:10"), TMediaSettings::Aspect1410);
-	new TActionGroupItem(this, group, "aspect_3_2", QT_TR_NOOP("&3:2"), TMediaSettings::Aspect32);
-	new TActionGroupItem(this, group, "aspect_14_9", QT_TR_NOOP("&14:9"), TMediaSettings::Aspect149);
-	new TActionGroupItem(this, group, "aspect_16_10", QT_TR_NOOP("1&6:10"), TMediaSettings::Aspect1610);
-	new TActionGroupItem(this, group, "aspect_16_9", QT_TR_NOOP("16:&9"), TMediaSettings::Aspect169);
-	new TActionGroupItem(this, group, "aspect_2.35_1", QT_TR_NOOP("&2.35:1"), TMediaSettings::Aspect235);
-	addSeparator();
-	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TMediaSettings::AspectNone);
-
-	group->setChecked(core->mset.aspect_ratio_id);
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
-	connect(core, SIGNAL(aspectRatioChanged(int)), group, SLOT(setChecked(int)));
-
-	addSeparator();
-	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("Next aspect ratio"), "", Qt::Key_A);
-	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
-
-	addActionsTo(parent);
-}
-
-void TtMenuAspect::enableActions(bool stopped, bool video, bool) {
-	// Uses mset, so useless to set if stopped or no video
-	bool enabled = !stopped && video;
-	group->setEnabled(enabled);
-	nextAspectAct->setEnabled(enabled);
-}
-
-void TtMenuAspect::onMediaSettingsChanged(TMediaSettings* mset) {
-	group->setChecked(mset->aspect_ratio_id);
-}
-
-void TtMenuAspect::onAboutToShow() {
-	group->setChecked(core->mset.aspect_ratio_id);
-}
-
 
 class TMenuDeinterlace : public TMenu {
 public:
@@ -286,7 +224,7 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 
 	// Aspect submenu
 	addSeparator();
-	addMenu(new TtMenuAspect(parent, core));
+	addMenu(new TMenuAspect(parent, core));
 	// Size submenu
 	addMenu(new TMenuVideoSize(parent, playerwindow));
 	// Zoom and pan submenu

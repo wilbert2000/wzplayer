@@ -52,7 +52,7 @@ public:
 	void clear();
 public slots:
 	//! Looks for the item which ID is \a ID and checks it
-	void setChecked(int ID);
+	QAction* setChecked(int ID);
 
 signals:
 	//! Emitted when an item has been checked
