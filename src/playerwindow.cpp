@@ -301,18 +301,13 @@ void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
 
 	event->accept();
 
-	// Ignore second press event after a double click.
-	if (!double_clicked) {
-
-		if ((event->button() == Qt::LeftButton)
-				&& (event->modifiers() == Qt::NoModifier)) {
-			left_button_pressed_time.start();
-			drag_pos = event->globalPos();
-			dragging = false;
-			// Catch release_events with button still down
-			// Happens only when mouse capture is released?
-			kill_fake_event = true;
-		}
+	if (event->button() == Qt::LeftButton && !double_clicked) {
+		left_button_pressed_time.start();
+		drag_pos = event->globalPos();
+		dragging = false;
+		// Catch release_events with button still down
+		// Happens only when mouse capture is released?
+		kill_fake_event = true;
 	}
 }
 
@@ -324,9 +319,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 	// No longer kill release event with button down
 	kill_fake_event = false;
 
-	if ((event->buttons() == Qt::LeftButton)
-		&& (event->modifiers() == Qt::NoModifier)
-		&& !double_clicked) {
+	if (event->buttons() == Qt::LeftButton && !double_clicked) {
 
 		QPoint pos = event->globalPos();
 		QPoint diff = pos - drag_pos;
@@ -341,7 +334,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 
 		if (dragging) {
 			drag_pos = pos;
-			if (pref->fullscreen) {
+			if (pref->fullscreen || event->modifiers() != Qt::NoModifier) {
 				moveVideo(diff);
 			} else {
 				emit moveWindow(diff);
@@ -403,10 +396,10 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
 	event->accept();
 
 	if (event->button() == Qt::LeftButton) {
-		if (event->modifiers() != Qt::NoModifier) {
-			qDebug("TPlayerWindow::mouseReleaseEvent: ignoring modified event");
-		} else if (checkDragging(event)) {
-			if (delay_left_click) {
+		if (checkDragging(event)) {
+			if (event->modifiers() != Qt::NoModifier) {
+				qDebug("TPlayerWindow::mouseReleaseEvent: ignoring modified event");
+			} else if (delay_left_click) {
 				if (double_clicked) {
 					double_clicked = false;
 					// qDebug("TPlayerWindow::mouseReleaseEvent: ignoring event after double click");
@@ -438,8 +431,8 @@ void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
 
 	event->accept();
 
-	if ((event->button() == Qt::LeftButton)
-			&& (event->modifiers() == Qt::NoModifier)) {
+	if (event->button() == Qt::LeftButton
+		&& event->modifiers() == Qt::NoModifier) {
 		double_clicked = true;
 		if (delay_left_click) {
 			left_click_timer->stop();
