@@ -160,7 +160,7 @@ void TTimeSlider::sendDelayedPos() {
 }
 
 void TTimeSlider::wheelEvent(QWheelEvent* e) {
-	qDebug("Gui::TTimeSlider::wheelEvent: delta: %d", e->delta());
+	//qDebug("Gui::TTimeSlider::wheelEvent: delta: %d", e->delta());
 
 	e->accept();
 	if (e->orientation() == Qt::Vertical) {
