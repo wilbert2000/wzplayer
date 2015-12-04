@@ -79,7 +79,9 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 
 TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
 	: TMenu(mw, this, "videosize_menu", QT_TR_NOOP("&Size"), "video_size")
-	, mainWindow(mw) {
+	, mainWindow(mw)
+	, playerWindow(pw)
+	, block_update_size_factor(0) {
 
 	group = new TVideoSizeGroup(this, pw);
 	addActions(group->actions());
@@ -92,9 +94,20 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
 	currentSizeAct = new TAction(this, "video_size", "");
 	connect(currentSizeAct, SIGNAL(triggered()), this, SLOT(optimizeSizeFactor()));
 
-	connect(mainWindow, SIGNAL(videoSizeFactorChanged()), this, SLOT(onVideoSizeFactorChanged()));
-	// Only enter. Exit is caught by TBase::unlockSizeFactor emitting videoSizeFactorChanged()
-	connect(mainWindow, SIGNAL(aboutToEnterFullscreenSignal()), this, SLOT(onFullscreenChanged()));
+	connect(mainWindow, SIGNAL(videoSizeFactorChanged()),
+			this, SLOT(onVideoSizeFactorChanged()));
+	connect(mainWindow, SIGNAL(fullscreenChanged()),
+			this, SLOT(onFullscreenChanged()));
+	connect(mainWindow, SIGNAL(fullscreenChangedDone()),
+			this, SLOT(onFullscreenChangedDone()));
+	connect(mainWindow, SIGNAL(mainWindowResizeEvent(QResizeEvent*)),
+			this, SLOT(onMainWindowResizeEvent(QResizeEvent*)));
+
+	// Setup size factor changed timer
+	update_size_factor_timer.setSingleShot(true);
+	update_size_factor_timer.setInterval(750);
+	connect(&update_size_factor_timer, SIGNAL(timeout()),
+			this, SLOT(updateSizeFactor()));
 
 	addActionsTo(mainWindow);
 	upd();
@@ -116,7 +129,7 @@ void TMenuVideoSize::upd() {
 
 	// Update text and tips
 	int s = pref->fullscreen ? 100 : group->size_percentage;
-	QString txt = translator->tr("&Round size %1%").arg(QString::number(s));
+	QString txt = translator->tr("&Optimize size %1%").arg(QString::number(s));
 	currentSizeAct->setTextAndTip(txt);
 
 	txt = translator->tr("Size %1%").arg(QString::number(s));
@@ -127,15 +140,53 @@ void TMenuVideoSize::upd() {
 	menuAction()->setToolTip(txt);
 }
 
+void TMenuVideoSize::onFullscreenChanged() {
+
+	// Don't update size factor during all the resizing
+	block_update_size_factor++;
+
+	// Update when entering fullscreen. Exit by unlockSizeFactor()
+	if (pref->fullscreen) {
+		upd();
+	}
+}
+
+void TMenuVideoSize::unlockSizeFactor() {
+	qDebug("Gui::TMenuVideoSize::unlockSizeFactor");
+
+	// Remove lock and upd. OK to not test lock
+	block_update_size_factor--;
+	upd();
+}
+
+void TMenuVideoSize::onFullscreenChangedDone() {
+
+	// Delay update until resizing settles down
+	QTimer::singleShot(500, this, SLOT(unlockSizeFactor()));
+}
+
+void TMenuVideoSize::onMainWindowResizeEvent(QResizeEvent* event) {
+
+	// Update size factor if user induced
+	if (event->spontaneous() && block_update_size_factor == 0) {
+		// Delay update size factor, so multiple resizes get merged into
+		// 1 call to updateSizeFactor()
+		update_size_factor_timer.start();
+	}
+}
+
+void TMenuVideoSize::updateSizeFactor() {
+	qDebug("Gui::TMenuVideoSize:updateSizeFactor");
+
+	playerWindow->updateSizeFactor();
+	upd();
+}
+
 void TMenuVideoSize::onAboutToShow() {
 	upd();
 }
 
 void TMenuVideoSize::onVideoSizeFactorChanged() {
-	upd();
-}
-
-void TMenuVideoSize::onFullscreenChanged() {
 	upd();
 }
 
@@ -160,7 +211,6 @@ void TMenuVideoSize::optimizeSizeFactor() {
 
 	// Limit size to 0.5 of available desktop
 	const double f = 0.5;
-	TPlayerWindow* playerWindow = group->playerWindow;
 	QSize available_size = TDesktop::availableSize(playerWindow);
 	QSize res = playerWindow->resolution();
 	QSize video_size = playerWindow->getAdjustedSize(res.width(), res.height(), size_factor);

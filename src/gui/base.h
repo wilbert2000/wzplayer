@@ -174,12 +174,14 @@ signals:
 	void videoInfoChanged(int width, int height, double fps);
 
 	void fullscreenChanged();
+	void fullscreenChangedDone();
 	void aboutToEnterFullscreenSignal();
 	void didEnterFullscreenSignal();
 	void aboutToExitFullscreenSignal();
 	void didExitFullscreenSignal();
 
 	void videoSizeFactorChanged();
+	void mainWindowResizeEvent(QResizeEvent* event);
 	void stayOnTopChanged(int);
 
 	//! Sent when another instance requested to play a file
@@ -395,8 +397,9 @@ private:
 	bool force_resize;
 	bool block_resize;
 	bool center_window;
-	int block_update_size_factor;
-	QTimer video_size_factor_changed_timer;
+
+	QPoint move_window_diff;
+	QTimer move_window_timer;
 
 	TAutoHideTimer* auto_hide_timer;
 
@@ -422,8 +425,7 @@ private:
 	void retranslateStrings();
 
 private slots:
-	void unlockSizeFactor();
-	void mergeVideoSizeFactorChangedSignals();
+	void moveWindowMerged();
 };
 
 } // namespace Gui

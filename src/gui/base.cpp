@@ -165,7 +165,6 @@ TBase::TBase()
 	, ignore_show_hide_events(false)
 	, block_resize(false)
 	, center_window(false)
-	, block_update_size_factor(0)
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef AVOID_SCREENSAVER
@@ -190,14 +189,14 @@ TBase::TBase()
 		pref->size_factor = 1.0;
 	}
 
-	// Setup video size factor changed timer
-	video_size_factor_changed_timer.setSingleShot(true);
-	video_size_factor_changed_timer.setInterval(1000);
-	connect(&video_size_factor_changed_timer, SIGNAL(timeout()),
-			this, SLOT(mergeVideoSizeFactorChangedSignals()));
-
 	// Resize window to default size
 	resize(pref->default_size);
+
+	// Setup move window timer merging multiple move requests into one
+	move_window_timer.setSingleShot(true);
+	move_window_timer.setInterval(0);
+	connect(&move_window_timer, SIGNAL(timeout()),
+			this, SLOT(moveWindowMerged()));
 
 	// Create objects:
 	createPanel();
@@ -1634,13 +1633,6 @@ void TBase::toggleFullscreen() {
 	toggleFullscreen(!pref->fullscreen);
 }
 
-void TBase::unlockSizeFactor() {
-	qDebug("Gui::TBase::unlockSizeFactor");
-
-	block_update_size_factor--;
-	emit videoSizeFactorChanged();
-}
-
 void TBase::toggleFullscreen(bool b) {
 	qDebug("Gui::TBase::toggleFullscreen: %d", b);
 
@@ -1649,9 +1641,6 @@ void TBase::toggleFullscreen(bool b) {
 		return;
 	}
 	pref->fullscreen = b;
-
-	// Don't update size factor during all the resizing
-	block_update_size_factor++;
 
 	emit fullscreenChanged();
 
@@ -1678,8 +1667,7 @@ void TBase::toggleFullscreen(bool b) {
 		core->changeLetterboxOnFullscreen(pref->fullscreen);
 	}
 
-	// Risky
-	QTimer::singleShot(500, this, SLOT(unlockSizeFactor()));
+	emit fullscreenChangedDone();
 
 	setFocus(); // Fixes bug #2493415
 }
@@ -1816,9 +1804,19 @@ void TBase::xbutton2ClickFunction() {
 	}
 }
 
+void TBase::moveWindowMerged() {
+
+	move(pos() + move_window_diff);
+	move_window_diff = QPoint(0, 0);
+}
+
 // Called by playerwindow when dragging main window
 void TBase::moveWindow(QPoint diff) {
-	move(pos() + diff);
+
+	// Merge multiple moves into one for machines that cannot keep up
+	move_window_diff += diff;
+	// Zero timeout, calls moveWindowMerged()
+	move_window_timer.start();
 }
 
 void TBase::processFunction(QString function) {
@@ -2307,27 +2305,11 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 
 }
 
-void TBase::mergeVideoSizeFactorChangedSignals() {
-	qDebug("Gui::TBase:mergeVideoSizeFactorChangedSignals");
-
-	playerwindow->updateSizeFactor();
-	emit videoSizeFactorChanged();
-}
-
 void TBase::resizeEvent(QResizeEvent* event) {
-	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous()
-			 << "lock:" << block_update_size_factor;
+	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous();
 
 	QMainWindow::resizeEvent(event);
-
-	// Update size factor after window resized by user.
-	// In TPlayerWindow::resizeEvent() event->spontaneous() does not become
-	// true during an user induces resize, so its needs to be here.
-	if (event->spontaneous() && block_update_size_factor == 0) {
-		// Delay emit videoSizeFactorChanged(), so multiple resizes
-		// get merged into 1 signal
-		video_size_factor_changed_timer.start();
-	}
+	emit mainWindowResizeEvent(event);
 }
 
 // Slot called when media settings reset or loaded
