@@ -64,6 +64,7 @@ HEADERS += config.h \
 	mediadata.h \
     settings/paths.h \
     settings/assstyles.h \
+    settings/aspectratio.h \
     settings/mediasettings.h \
     settings/filters.h \
     settings/smplayersettings.h \
@@ -174,6 +175,7 @@ SOURCES	+= version.cpp \
 	mediadata.cpp \
     settings/paths.cpp \
     settings/assstyles.cpp \
+    settings/aspectratio.cpp \
     settings/mediasettings.cpp \
     settings/filters.cpp \
     settings/smplayersettings.cpp \

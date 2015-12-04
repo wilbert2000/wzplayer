@@ -1,5 +1,6 @@
 #include "gui/action/menuaspect.h"
 #include "gui/action/actiongroup.h"
+#include "settings/aspectratio.h"
 #include "settings/mediasettings.h"
 #include "core.h"
 
@@ -14,23 +15,24 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 
 	group = new TActionGroup(this, "aspect");
 	group->setEnabled(false);
-	new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TMediaSettings::AspectAuto);
+	new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TAspectRatio::AspectAuto);
 	addSeparator();
-	new TActionGroupItem(this, group, "aspect_1_1", QT_TR_NOOP("1&:1"), TMediaSettings::Aspect11);
-	new TActionGroupItem(this, group, "aspect_5_4", QT_TR_NOOP("&5:4"), TMediaSettings::Aspect54);
-	new TActionGroupItem(this, group, "aspect_4_3", QT_TR_NOOP("&4:3"), TMediaSettings::Aspect43);
-	new TActionGroupItem(this, group, "aspect_11_8", QT_TR_NOOP("11:&8"), TMediaSettings::Aspect118);
-	new TActionGroupItem(this, group, "aspect_14_10", QT_TR_NOOP("1&4:10"), TMediaSettings::Aspect1410);
-	new TActionGroupItem(this, group, "aspect_3_2", QT_TR_NOOP("&3:2"), TMediaSettings::Aspect32);
-	new TActionGroupItem(this, group, "aspect_14_9", QT_TR_NOOP("&14:9"), TMediaSettings::Aspect149);
-	new TActionGroupItem(this, group, "aspect_16_10", QT_TR_NOOP("1&6:10"), TMediaSettings::Aspect1610);
-	new TActionGroupItem(this, group, "aspect_16_9", QT_TR_NOOP("16:&9"), TMediaSettings::Aspect169);
-	new TActionGroupItem(this, group, "aspect_2.35_1", QT_TR_NOOP("&2.35:1"), TMediaSettings::Aspect235);
+	new TActionGroupItem(this, group, "aspect_1_1", TAspectRatio::RATIO_NAMES[0], TAspectRatio::Aspect11);
+	new TActionGroupItem(this, group, "aspect_5_4", TAspectRatio::RATIO_NAMES[1], TAspectRatio::Aspect54);
+	new TActionGroupItem(this, group, "aspect_4_3", TAspectRatio::RATIO_NAMES[2], TAspectRatio::Aspect43);
+	new TActionGroupItem(this, group, "aspect_11_8", TAspectRatio::RATIO_NAMES[3], TAspectRatio::Aspect118);
+	new TActionGroupItem(this, group, "aspect_14_10", TAspectRatio::RATIO_NAMES[4], TAspectRatio::Aspect1410);
+	new TActionGroupItem(this, group, "aspect_3_2", TAspectRatio::RATIO_NAMES[5], TAspectRatio::Aspect32);
+	new TActionGroupItem(this, group, "aspect_14_9", TAspectRatio::RATIO_NAMES[6], TAspectRatio::Aspect149);
+	new TActionGroupItem(this, group, "aspect_16_10", TAspectRatio::RATIO_NAMES[7], TAspectRatio::Aspect1610);
+	new TActionGroupItem(this, group, "aspect_16_9", TAspectRatio::RATIO_NAMES[8], TAspectRatio::Aspect169);
+	new TActionGroupItem(this, group, "aspect_2.35_1", TAspectRatio::RATIO_NAMES[9], TAspectRatio::Aspect235);
 	addSeparator();
-	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TMediaSettings::AspectNone);
+	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TAspectRatio::AspectNone);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
-	connect(core, SIGNAL(aspectRatioChanged(int)), this, SLOT(onAspectRatioChanged(int)));
+	connect(core, SIGNAL(aspectRatioChanged(Settings::TAspectRatio::TMenuID)),
+			this, SLOT(onAspectRatioChanged(Settings::TAspectRatio::TMenuID)));
 
 	addSeparator();
 	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("Next aspect ratio"), "", Qt::Key_A);
@@ -41,12 +43,12 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 
 void TMenuAspect::upd() {
 
-	int id = core->mset.aspect_ratio_id;
+	TAspectRatio::TMenuID id = core->mset.aspect_ratio.ID();
 	QAction* action = group->setChecked(id);
 
 	QString tip;
-	if (id == TMediaSettings::AspectAuto && core->mdat.video_aspect != 0) {
-		tip = tr("Aspect ratio %1").arg(QString::number(core->mdat.video_aspect));
+	if (id == TAspectRatio::AspectAuto && core->mdat.video_aspect != 0) {
+		tip = TAspectRatio::doubleToString(core->mdat.video_aspect);
 	} else {
 		if (action) {
 			tip = action->text();
@@ -75,7 +77,7 @@ void TMenuAspect::onAboutToShow() {
 	upd();
 }
 
-void TMenuAspect::onAspectRatioChanged(int) {
+void TMenuAspect::onAspectRatioChanged(Settings::TAspectRatio::TMenuID) {
 	upd();
 }
 

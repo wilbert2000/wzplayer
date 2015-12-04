@@ -39,6 +39,7 @@
 #include "colorutils.h"
 #include "helper.h"
 #include "settings/paths.h"
+#include "settings/aspectratio.h"
 #include "settings/mediasettings.h"
 #include "settings/preferences.h"
 #include "settings/filesettings.h"
@@ -768,7 +769,7 @@ void TCore::initMediaSettings() {
 
 	// Apply settings to playerwindow
 	playerwindow->set(
-		mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id),
+		mset.aspect_ratio.toDouble(mset.win_width, mset.win_height),
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
 
@@ -3246,45 +3247,29 @@ void TCore::nextProgram() {
 void TCore::changeAspectRatio(int id) {
 	qDebug("TCore::changeAspectRatio: %d", id);
 
-	mset.aspect_ratio_id = id;
-	double asp = mset.aspectToNum((TMediaSettings::Aspect) id);
+	// Keep id in range
+	TAspectRatio::TMenuID new_id;
+	if (id < 0 || id > TAspectRatio::MAX_MENU_ID)
+		new_id = TAspectRatio::AspectAuto;
+	else
+		new_id = (TAspectRatio::TMenuID) id;
+	mset.aspect_ratio.setID(new_id);
+	double aspect = mset.aspect_ratio.toDouble(mset.win_width, mset.win_height);
 
-	// Set aspect video window, don't update video window
-	playerwindow->setAspect(asp, false);
+	// Set aspect video window, don't update it
+	playerwindow->setAspect(aspect, false);
 	// Resize with new aspect, normally updates video window
 	emit needResize(mset.win_width, mset.win_height);
-	// Adjust video window if resize canceled
+	// Adjust video window in case the resize has been canceled or failed
 	playerwindow->updateVideoWindow();
 
-	emit aspectRatioChanged(id);
+	emit aspectRatioChanged(new_id);
 
-	QString asp_name = TMediaSettings::aspectToString((TMediaSettings::Aspect) mset.aspect_ratio_id);
-	displayMessage(tr("Aspect ratio: %1").arg(asp_name));
+	displayMessage(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
 }
 
 void TCore::nextAspectRatio() {
-
-	// Ordered list
-	QList<int> s;
-	s << TMediaSettings::AspectNone 
-	  << TMediaSettings::AspectAuto
-	  << TMediaSettings::Aspect11	// 1
-	  << TMediaSettings::Aspect54	// 1.25
-	  << TMediaSettings::Aspect43	// 1.33
-	  << TMediaSettings::Aspect118	// 1.37
-	  << TMediaSettings::Aspect1410	// 1.4
-	  << TMediaSettings::Aspect32	// 1.5
-	  << TMediaSettings::Aspect149	// 1.55
-	  << TMediaSettings::Aspect1610	// 1.6
-	  << TMediaSettings::Aspect169	// 1.77
-	  << TMediaSettings::Aspect235;	// 2.35
-
-	int i = s.indexOf(mset.aspect_ratio_id) + 1;
-	if (i >= s.count())
-		i = 0;
-	int new_aspect_id = s[i];
-
-	changeAspectRatio(new_aspect_id);
+	changeAspectRatio(mset.aspect_ratio.nextMenuID());
 }
 
 void TCore::nextWheelFunction() {
@@ -3460,7 +3445,7 @@ void TCore::panDown() {
 
 void TCore::autoZoom() {
 
-	double video_aspect = mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id);
+	double video_aspect = mset.aspect_ratio.toDouble(mset.win_width, mset.win_height);
 
 	if (video_aspect <= 0) {
 		QSize w = playerwindow->videoLayer()->size();
@@ -3489,7 +3474,7 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 
 	QSize desktop =  TDesktop::size(playerwindow);
 
-	double video_aspect = mset.aspectToNum((TMediaSettings::Aspect) mset.aspect_ratio_id);
+	double video_aspect = mset.aspect_ratio.toDouble(mset.win_width, mset.win_height);
 
 	if (video_aspect <= 0) {
 		QSize w = playerwindow->videoLayer()->size();
@@ -3712,7 +3697,7 @@ void TCore::gotVideoOutResolution(int w, int h) {
 	mset.win_width = w;
 	mset.win_height = h;
 	playerwindow->setResolution(w, h);
-	if (mset.aspect_ratio_id == TMediaSettings::AspectAuto) {
+	if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
 		// Set aspect to w/h. false = do not update video window.
 		playerwindow->setAspect(mset.win_aspect(), false);
 	}

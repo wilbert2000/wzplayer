@@ -350,7 +350,7 @@ signals:
 	void aboutToStartPlaying(); // Signal emited just before starting player
 	void buffering();
 	void receivedForbidden();
-	void aspectRatioChanged(int id);
+	void aspectRatioChanged(Settings::TAspectRatio::TMenuID id);
 	void videoOutResolutionChanged(int w, int h);
 	void newMediaStartedPlaying();
 	void mediaLoaded();

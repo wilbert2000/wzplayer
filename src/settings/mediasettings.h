@@ -28,6 +28,7 @@
 #include <QPoint>
 #include "config.h"
 #include "subtracks.h"
+#include "settings/aspectratio.h"
 #include "settings/preferences.h"
 
 
@@ -41,10 +42,6 @@ class TMediaSettings {
 
 public:
 	enum Denoise { NoDenoise = 0, DenoiseNormal = 1, DenoiseSoft = 2 };
-	enum Aspect { AspectAuto = 1, Aspect43 = 2, Aspect54 = 3, Aspect149 = 4,
-                  Aspect169 = 5, Aspect1610 = 6, Aspect235 = 7, Aspect11 = 8, 
-                  Aspect32 = 9, Aspect1410 = 10, Aspect118 = 11,
-                  AspectNone = 0 };
 	enum Deinterlace { NoDeinterlace = 0, L5 = 1, Yadif = 2, LB = 3, 
                        Yadif_1 = 4, Kerndeint = 5 };
 	enum AudioChannels { ChDefault = 0, ChStereo = 2, ChSurround = 4, 
@@ -90,8 +87,6 @@ public:
 #if PROGRAM_SWITCH
 	int current_program_id;
 #endif
-
-	int aspect_ratio_id;
 
 	int volume;
 	int old_volume;
@@ -144,7 +139,7 @@ public:
 	int audio_use_channels;
 	int stereo_mode;
 
-	// playerwindow
+	// Settings playerwindow
 	double zoom_factor;
 	double zoom_factor_fullscreen;
 	QPoint pan_offset;
@@ -178,19 +173,14 @@ public:
 	QString mplayer_additional_video_filters;
 	QString mplayer_additional_audio_filters;
 
-	// Some things that were before in mediadata
-	// They can vary, because of filters, so better here
+	// Resolution used by player
+	// Can be bigger than video resolution
+	// because of the aspect ratio or expand filter
+	int win_width;
+	int win_height;
+	double win_aspect();
 
-	//Resolution used by player
-    //Can be bigger that video resolution
-    //because of the aspect ratio or expand filter
-    int win_width;
-    int win_height;
-    double win_aspect();
-
-	//! Returns the aspect as a double. Returns 0 if aspect == AspectNone.
-	double aspectToNum(Aspect aspect);
-	static QString aspectToString(Aspect aspect);
+	TAspectRatio aspect_ratio;
 
 	void list();
 

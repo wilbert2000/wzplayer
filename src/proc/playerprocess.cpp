@@ -24,6 +24,7 @@
 #include <QFileInfo>
 
 #include "config.h"
+#include "settings/aspectratio.h"
 #include "settings/preferences.h"
 
 #ifdef MPV_SUPPORT
@@ -413,19 +414,7 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 
 bool TPlayerProcess::setAspectRatio(const QString& value) {
 
-	// Arbitrary list of aspect ratios to upgrade precision
-	static const double ASPS[] = {
-		(double) 4 / 3,
-		(double) 16 / 9,
-		(double) 14 / 9,
-		(double) 16 / 10,
-		(double) 5 / 4,
-		2.35,
-		1.0,
-		(double) 3 / 2,
-		(double) 14 / 10,
-		(double) 11 / 8 };
-
+	// Try to increase the precision
 	double aspect = value.toDouble();
 	double source_aspect = md->video_height ? (double) md->video_width / md->video_height : 0.0;
 
@@ -438,20 +427,20 @@ bool TPlayerProcess::setAspectRatio(const QString& value) {
 		// MPlayer prints 4 digits precision, aka 1.3333, MPV 6 aka 1.333333
 		// Prefer source aspect
 		if (qAbs(aspect - source_aspect) < 0.0001) {
-			qDebug("Proc::TPlayerProcess::setAspectRatio: upgrading precision from %f to source aspect %f",
-				   aspect, source_aspect);
+			qDebug("Proc::TPlayerProcess::setAspectRatio: selecting source aspect %f for aspect %f",
+				   source_aspect, aspect);
 			aspect = source_aspect;
 		} else {
 			// Check against arbitrary list
-			for (unsigned int i = 0; i < sizeof(ASPS) / sizeof(ASPS[0]); i++) {
-				const double predef = ASPS[i];
+			for (unsigned int i = 0; i < Settings::TAspectRatio::RATIOS_COUNT; i++) {
+				const double predef = Settings::TAspectRatio::RATIOS[i];
 				if (qAbs(predef - aspect) < 0.0001) {
-					qDebug("Proc::TPlayerProcess::setAspectRatio: upgrading precision from %f to predefined aspect %f",
-						   aspect, predef);
+					qDebug("Proc::TPlayerProcess::setAspectRatio: selecting predefined aspect %f for aspect %f",
+						   predef, aspect);
 					aspect = predef;
 					break;
 				}
-			}
+			} // for
 		}
 	}
 

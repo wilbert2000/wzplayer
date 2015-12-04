@@ -19,6 +19,7 @@
 #include <QDebug>
 #include <QSettings>
 
+#include "settings/aspectratio.h"
 #include "settings/mediasettings.h"
 #include "settings/preferences.h"
 #include "maps/tracks.h"
@@ -69,7 +70,7 @@ void TMediaSettings::reset() {
 	current_program_id = NoneSelected;
 #endif
 
-	aspect_ratio_id = AspectAuto;
+	aspect_ratio.setID(TAspectRatio::AspectAuto);
 
 	restore_volume = true;
 	old_volume = volume;
@@ -164,51 +165,6 @@ double TMediaSettings::win_aspect() {
 	return (double) win_width / win_height;
 }
 
-double TMediaSettings::aspectToNum(Aspect aspect) {
-	double asp;
-
-	switch (aspect) {
-		case AspectNone: asp = 0; break;
-		case Aspect43: asp = (double) 4 / 3; break;
-		case Aspect169: asp = (double) 16 / 9; break;
-		case Aspect149: asp = (double) 14 / 9; break;
-		case Aspect1610: asp = (double) 16 / 10; break;
-		case Aspect54: asp = (double) 5 / 4; break;
-		case Aspect235: asp = 2.35; break;
-		case Aspect11: asp = 1; break;
-		case Aspect32: asp = (double) 3 / 2; break;
-		case Aspect1410: asp = (double) 14 / 10; break;
-		case Aspect118: asp = (double) 11 / 8; break;
-		case AspectAuto: asp = win_aspect(); break;
-		default: asp = win_aspect(); 
-				 qWarning("Settings::TMediaSettings::aspectToNum: invalid aspect: %d", aspect);
-	}
-
-	return asp;
-}
-
-QString TMediaSettings::aspectToString(Aspect aspect) {
-	QString asp_name;
-
-	switch (aspect) {
-		case AspectNone: asp_name = QObject::tr("disabled", "aspect_ratio"); break;
-		case Aspect43: asp_name = "4:3"; break;
-		case Aspect169: asp_name = "16:9"; break;
-		case Aspect149: asp_name = "14:9"; break;
-		case Aspect1610: asp_name = "16:10"; break;
-		case Aspect54: asp_name = "5:4"; break;
-		case Aspect235: asp_name = "2.35:1"; break;
-		case Aspect11: asp_name = "1:1"; break;
-		case Aspect32: asp_name = "3:2"; break;
-		case Aspect1410: asp_name = "14:10"; break;
-		case Aspect118: asp_name = "11:8"; break;
-		case AspectAuto: asp_name = QObject::tr("auto", "aspect_ratio"); break;
-		default: asp_name = QObject::tr("unknown", "aspect_ratio");
-	}
-
-	return asp_name;
-}
-
 void TMediaSettings::list() {
 	qDebug("Settings::TMediaSettings::list");
 
@@ -229,11 +185,11 @@ void TMediaSettings::list() {
 #endif
 	qDebug("  current_angle_id: %d", current_angle_id);
 
-	qDebug("  aspect_ratio_id: %d", aspect_ratio_id);
-	//qDebug("  fullscreen: %d", fullscreen);
+	qDebug("  aspect_ratio: %s", aspect_ratio.toString().toUtf8().constData());
+
 	qDebug("  volume: %d", volume);
 	qDebug("  mute: %d", mute);
-	qDebug("  external_audio: '%s'", external_audio.toUtf8().data());
+	qDebug("  external_audio: '%s'", external_audio.toUtf8().constData());
 	qDebug("  sub_delay: %d", sub_delay);
 	qDebug("  audio_delay: %d", sub_delay);
 	qDebug("  sub_pos: %d", sub_pos);
@@ -382,7 +338,7 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 
 	set->setValue("current_angle_id", current_angle_id);
 
-	set->setValue("aspect_ratio", aspect_ratio_id);
+	set->setValue("aspect_ratio", aspect_ratio.toInt());
 	set->setValue("volume", volume);
 	set->setValue("mute", mute);
 	set->setValue("external_audio", external_audio);
@@ -515,7 +471,7 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 
 	current_angle_id = set->value("current_angle_id", current_angle_id).toInt();
 
-	aspect_ratio_id = set->value("aspect_ratio", aspect_ratio_id).toInt();
+	aspect_ratio.setID(TAspectRatio::toTMenuID(set->value("aspect_ratio", aspect_ratio.toInt())));
 	restore_volume = false;
 	volume = set->value("volume", volume).toInt();
 	if (volume < 0) volume = 0;
