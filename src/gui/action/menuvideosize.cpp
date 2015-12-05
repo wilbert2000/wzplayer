@@ -205,7 +205,7 @@ bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {
 }
 
 void TMenuVideoSize::optimizeSizeFactor() {
-	qDebug("TMenuVideoSize::optimizeSizeFactor()");
+	qDebug("Gui::TMenuVideoSize::optimizeSizeFactor()");
 
 	double size_factor = pref->size_factor;
 
@@ -220,7 +220,7 @@ void TMenuVideoSize::optimizeSizeFactor() {
 	// Adjust height first
 	if (video_size.height() > max) {
 		factor = max / res.height();
-		qDebug("Gui::TBase::optimizeSizeFactor: height larger as %f desktop, reducing size factor from %f to %f",
+		qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: height larger as %f desktop, reducing size factor from %f to %f",
 			   f, size_factor, factor);
 		size_factor = factor;
 		video_size = playerWindow->getAdjustedSize(res.width(), res.height(), size_factor);
@@ -229,7 +229,7 @@ void TMenuVideoSize::optimizeSizeFactor() {
 	max = f * available_size.width();
 	if (video_size.width() > max) {
 		factor = max / res.width();
-		qDebug("Gui::TBase::optimizeSizeFactor: width larger as %f desktop, reducing size factor from %f to %f",
+		qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: width larger as %f desktop, reducing size factor from %f to %f",
 			   f, size_factor, factor);
 		size_factor = factor;
 		video_size = playerWindow->getAdjustedSize(res.width(), res.height(), size_factor);
@@ -248,11 +248,11 @@ void TMenuVideoSize::optimizeSizeFactor() {
 	int new_w = ((video_size.width() + 8) / 16) * 16;
 	if (new_w != video_size.width()) {
 		int new_factor = qRound(((double) (new_w * 100)) / res.width());
-		qDebug("Gui::TBase::optimizeSizeFactor: optimizing width %d factor %d to multiple of 16 %d factor %d",
+		qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: optimizing width %d factor %d to multiple of 16 %d factor %d",
 			   video_size.width(), factor_int, new_w, new_factor);
 		mainWindow->changeSize(new_factor);
 	} else {
-		qDebug("Gui::TBase::optimizeSizeFactor: video size already multiple of 16");
+		qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: video size already multiple of 16");
 	}
 }
 
