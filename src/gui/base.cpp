@@ -2217,6 +2217,54 @@ void TBase::hidePanel() {
 	}
 }
 
+double TBase::getNewSizeFactor() {
+
+	double size_factor = 1.0;
+
+	if (pref->fullscreen) {
+		return size_factor;
+	}
+
+	// Limit size to 0.6 of available desktop
+	const double f = 0.6;
+	QSize available_size = TDesktop::availableSize(playerwindow);
+	QSize res = playerwindow->resolution();
+	QSize video_size = playerwindow->getAdjustedSize(res.width(), res.height(), size_factor);
+
+	double factor;
+	double max = f * available_size.height();
+	// Adjust height first
+	if (video_size.height() > max) {
+		factor = max / res.height();
+		qDebug("Gui::TBase::getNewSizeFactor: height larger as %f desktop, reducing size factor from %f to %f",
+			   f, size_factor, factor);
+		size_factor = factor;
+		video_size = playerwindow->getAdjustedSize(res.width(), res.height(), size_factor);
+	}
+	// Adjust width
+	max = f * available_size.width();
+	if (video_size.width() > max) {
+		factor = max / res.width();
+		qDebug("Gui::TBase::getNewSizeFactor: width larger as %f desktop, reducing size factor from %f to %f",
+			   f, size_factor, factor);
+		size_factor = factor;
+		video_size = playerwindow->getAdjustedSize(res.width(), res.height(), size_factor);
+	}
+
+	if (size_factor != 1.0) {
+		// Make width multiple of 16
+		int new_w = ((video_size.width() + 8) / 16) * 16;
+		if (new_w != video_size.width()) {
+			size_factor = qRound((double) new_w / res.width());
+			qDebug("Gui::TBase::getNewSizeFactor: optimizing size_factor to %f for width %d",
+				   size_factor, new_w);
+		}
+	}
+
+	qDebug("Gui::TBase::getNewSizeFactor: selected size factor %f", size_factor);
+	return size_factor;
+}
+
 // Slot called by signal videoOutResolutionChanged
 void TBase::onVideoOutResolutionChanged(int w, int h) {
 	qDebug("Gui::TBase::onVideoOutResolutionChanged: %d, %d", w, h);
@@ -2234,14 +2282,18 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		if (!panel->isVisible()) {
 			panel->show();
 		}
+		// Leave maximized window as is
 		if (!isMaximized()) {
-			// Block_resize set if pref->save_window_size_on_exit selected
+			// force_resize only set for the first video
+			// if pref->save_window_size_on_exit not set.
+			// block_resize only set for the first video
+			// if pref->save_window_size_on_exit is set.
 			if (!force_resize
 				&& (block_resize || pref->resize_method == TPreferences::Never)) {
 				// Adjust size factor to window size
 				playerwindow->updateSizeFactor();
 			} else {
-				pref->size_factor = 1.0;
+				pref->size_factor = getNewSizeFactor();
 				resizeWindow(w, h);
 			}
 			emit videoSizeFactorChanged();

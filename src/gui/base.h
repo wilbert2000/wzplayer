@@ -416,6 +416,7 @@ private:
 	QString exitCodeToMessage(int exit_code);
 
 	void setFloatingToolbarsVisible(bool visible);
+	double getNewSizeFactor();
 	void hidePanel();
 	void centerWindow();
 	void resizeMainWindow(int w, int h, bool try_twice = true);
