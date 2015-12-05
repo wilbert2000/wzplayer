@@ -2569,6 +2569,7 @@ void TCore::decSaturation() {
 void TCore::setSpeed(double value) {
 	qDebug("TCore::setSpeed: %f", value);
 
+	// Min and max used by players
 	if (value < 0.10) value = 0.10;
 	if (value > 100) value = 100;
 
