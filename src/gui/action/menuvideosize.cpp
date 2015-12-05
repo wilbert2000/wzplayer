@@ -18,11 +18,12 @@ TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
 	setEnabled(false);
 
 	TActionGroupItem* a;
+	new TActionGroupItem(this, this, "size_25", QT_TR_NOOP("25%"), 25, false);
 	new TActionGroupItem(this, this, "size_50", QT_TR_NOOP("5&0%"), 50, false);
 	new TActionGroupItem(this, this, "size_75", QT_TR_NOOP("7&5%"), 75, false);
 	a = new TActionGroupItem(this, this, "size_100", QT_TR_NOOP("&100%"), 100, false);
 	a->setShortcut(Qt::CTRL | Qt::Key_1);
-	new TActionGroupItem(this, this, "size_125", QT_TR_NOOP("1&25%"), 125, false);
+	new TActionGroupItem(this, this, "size_125", QT_TR_NOOP("125%"), 125, false);
 	new TActionGroupItem(this, this, "size_150", QT_TR_NOOP("15&0%"), 150, false);
 	new TActionGroupItem(this, this, "size_175", QT_TR_NOOP("1&75%"), 175, false);
 	a = new TActionGroupItem(this, this, "size_200", QT_TR_NOOP("&200%"), 200, false);
@@ -47,7 +48,7 @@ void TVideoSizeGroup::enableVideoSizeGroup(bool on) {
 }
 
 void TVideoSizeGroup::updateVideoSizeGroup() {
-	qDebug("Gui::TVideoSizeGroup::updateVideoSizeGroup");
+	//qDebug("Gui::TVideoSizeGroup::updateVideoSizeGroup");
 
 	uncheck();
 	QSize s = playerWindow->resolution();
@@ -237,7 +238,7 @@ void TMenuVideoSize::optimizeSizeFactor() {
 
 	// Round to predefined values
 	int factor_int = qRound(size_factor * 100);
-	const int factors[] = {50, 75, 100, 125, 150, 175, 200, 300, 400 };
+	const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400 };
 	for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
 		if (optimizeSizeFactorPreDef(factor_int, factors[i])) {
 			return;
