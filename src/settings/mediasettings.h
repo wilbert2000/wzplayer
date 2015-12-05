@@ -173,14 +173,8 @@ public:
 	QString mplayer_additional_video_filters;
 	QString mplayer_additional_audio_filters;
 
-	// Resolution used by player
-	// Can be bigger than video resolution
-	// because of the aspect ratio or expand filter
-	int win_width;
-	int win_height;
-	double win_aspect();
-
 	TAspectRatio aspect_ratio;
+	double aspectToDouble();
 
 	void list();
 

@@ -81,7 +81,12 @@ double TAspectRatio::toDouble(int w, int h) const {
 		case Aspect32: asp = (double) 3 / 2; break;
 		case Aspect1410: asp = (double) 14 / 10; break;
 		case Aspect118: asp = (double) 11 / 8; break;
-		default: asp = (double) w / h;
+		default:
+			if (h == 0) {
+				asp = 0;
+			} else {
+				asp = (double) w / h;
+			}
 	}
 
 	return asp;

@@ -2173,7 +2173,7 @@ void TBase::changeSize(int percentage) {
 		}
 
 		pref->size_factor = (double) percentage / 100;
-		resizeWindow(core->mset.win_width, core->mset.win_height);
+		resizeWindow(core->mdat.video_out_width, core->mdat.video_out_height);
 		emit videoSizeFactorChanged();
 
 		core->displayMessage(tr("Size %1%").arg(QString::number(percentage)));

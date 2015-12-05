@@ -43,21 +43,10 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 
 void TMenuAspect::upd() {
 
-	TAspectRatio::TMenuID id = core->mset.aspect_ratio.ID();
-	QAction* action = group->setChecked(id);
+	group->setChecked(core->mset.aspect_ratio.ID());
 
-	QString tip;
-	if (id == TAspectRatio::AspectAuto && core->mdat.video_aspect != 0) {
-		tip = TAspectRatio::doubleToString(core->mdat.video_aspect);
-	} else {
-		if (action) {
-			tip = action->text();
-			tip.replace("&", "");
-			tip = tr("Aspect ratio %1").arg(tip.toLower());
-		} else {
-			tip = tr("Aspect ratio");
-		}
-	}
+	double aspect = core->mset.aspectToDouble();
+	QString tip = TAspectRatio::doubleToString(aspect);
 	menuAction()->setToolTip(tip);
 }
 

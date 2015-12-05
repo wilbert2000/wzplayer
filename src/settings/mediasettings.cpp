@@ -154,15 +154,10 @@ void TMediaSettings::reset() {
 	mplayer_additional_options = "";
 	mplayer_additional_video_filters = "";
 	mplayer_additional_audio_filters = "";
-
-	win_width = 0;
-	win_height = 0;
 }
 
-double TMediaSettings::win_aspect() {
-	if (win_height == 0)
-		return 0.0;
-	return (double) win_width / win_height;
+double TMediaSettings::aspectToDouble() {
+	return aspect_ratio.toDouble(md->video_out_width, md->video_out_height);
 }
 
 void TMediaSettings::list() {
@@ -259,10 +254,6 @@ void TMediaSettings::list() {
 	qDebug("  mplayer_additional_options: '%s'", mplayer_additional_options.toUtf8().data());
 	qDebug("  mplayer_additional_video_filters: '%s'", mplayer_additional_video_filters.toUtf8().data());
 	qDebug("  mplayer_additional_audio_filters: '%s'", mplayer_additional_audio_filters.toUtf8().data());
-
-	qDebug("  win_width: %d", win_width);
-	qDebug("  win_height: %d", win_height); 
-	qDebug("  win_aspect(): %f", win_aspect()); 
 
 	qDebug("  is264andHD: %d", is264andHD);
 }

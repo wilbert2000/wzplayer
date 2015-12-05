@@ -769,7 +769,7 @@ void TCore::initMediaSettings() {
 
 	// Apply settings to playerwindow
 	playerwindow->set(
-		mset.aspect_ratio.toDouble(mset.win_width, mset.win_height),
+		mset.aspectToDouble(),
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
 
@@ -3255,12 +3255,12 @@ void TCore::changeAspectRatio(int id) {
 	else
 		new_id = (TAspectRatio::TMenuID) id;
 	mset.aspect_ratio.setID(new_id);
-	double aspect = mset.aspect_ratio.toDouble(mset.win_width, mset.win_height);
+	double aspect = mset.aspectToDouble();
 
 	// Set aspect video window, don't update it
 	playerwindow->setAspect(aspect, false);
 	// Resize with new aspect, normally updates video window
-	emit needResize(mset.win_width, mset.win_height);
+	emit needResize(mdat.video_out_width, mdat.video_out_height);
 	// Adjust video window in case the resize has been canceled or failed
 	playerwindow->updateVideoWindow();
 
@@ -3446,7 +3446,7 @@ void TCore::panDown() {
 
 void TCore::autoZoom() {
 
-	double video_aspect = mset.aspect_ratio.toDouble(mset.win_width, mset.win_height);
+	double video_aspect = mset.aspectToDouble();
 
 	if (video_aspect <= 0) {
 		QSize w = playerwindow->videoLayer()->size();
@@ -3475,7 +3475,7 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 
 	QSize desktop =  TDesktop::size(playerwindow);
 
-	double video_aspect = mset.aspect_ratio.toDouble(mset.win_width, mset.win_height);
+	double video_aspect = mset.aspectToDouble();
 
 	if (video_aspect <= 0) {
 		QSize w = playerwindow->videoLayer()->size();
@@ -3695,12 +3695,16 @@ void TCore::gotVideoOutResolution(int w, int h) {
 	qDebug("TCore::gotVideoOutResolution: %d x %d", w, h);
 
 	// w x h is output resolution selected by player with aspect and filters applied
-	mset.win_width = w;
-	mset.win_height = h;
 	playerwindow->setResolution(w, h);
 	if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
-		// Set aspect to w/h. false = do not update video window.
-		playerwindow->setAspect(mset.win_aspect(), false);
+		double aspect;
+		if (h == 0) {
+			aspect = 0;
+		} else {
+			aspect = (double) w / h;
+		}
+		// Set aspect, false = do not update video window.
+		playerwindow->setAspect(aspect, false);
 	}
 	if (!we_are_restarting)
 		emit videoOutResolutionChanged(w, h);
@@ -3758,7 +3762,7 @@ void TCore::checkIfVideoIsHD() {
 	qDebug("TCore::checkIfVideoIsHD");
 
 	// Check if the video is in HD and uses ffh264 codec.
-	if ((mdat.video_codec=="ffh264") && (mset.win_height >= pref->HD_height)) {
+	if ((mdat.video_codec == "ffh264") && (mdat.video_out_height >= pref->HD_height)) {
 		qDebug("TCore::checkIfVideoIsHD: video == ffh264 and height >= %d", pref->HD_height);
 		if (!mset.is264andHD) {
 			mset.is264andHD = true;
