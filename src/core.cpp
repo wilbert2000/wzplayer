@@ -1087,7 +1087,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 			msg = tr("Using vdpau, the video filters will be ignored");
 		}
 	} else if (isMPV() && !pref->hwdec.isEmpty() && pref->hwdec != "no") {
-		msg = tr("Hardware decoding is enabled, the video filters will be ignored");
+		msg = tr("Hardware decoding is enabled in the performance settings, the video filters will be ignored");
 		enabled = false;
 	}
 
