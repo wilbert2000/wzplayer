@@ -22,14 +22,16 @@
 #include <QDebug>
 
 
-TMediaData::TMediaData() :
-	selected_type(TYPE_UNKNOWN) {
+TMediaData::TMediaData()
+	: selected_type(TYPE_UNKNOWN)
+	, video_hwdec(false) {
 	init();
 }
 
-TMediaData::TMediaData(const QString& fname, Type sel_type) :
-	filename(fname),
-	selected_type(sel_type) {
+TMediaData::TMediaData(const QString& fname, Type sel_type, bool hwdec)
+	: filename(fname)
+	, selected_type(sel_type)
+	, video_hwdec(hwdec) {
 	init();
 }
 
@@ -52,6 +54,7 @@ void TMediaData::init() {
 	video_out_width = 0;
 	video_out_height = 0;
 	video_bitrate = 0;
+	//video_hwdec = false;
 
 	audio_bitrate = 0;
 	audio_rate = 0;
@@ -193,6 +196,7 @@ void TMediaData::list() const {
 	qDebug("  video_format: '%s'", video_format.toUtf8().data());
 	qDebug("  video_codec: '%s'", video_codec.toUtf8().data());
 	qDebug("  video_bitrate: %d", video_bitrate);
+	qDebug("  video_hwdec: %d", video_hwdec);
 	qDebug("  Video tracks:");
 	videos.list();
 

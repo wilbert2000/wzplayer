@@ -32,17 +32,17 @@ TPerformance::TPerformance(QWidget* parent, Qt::WindowFlags f)
 
 	hwdec_combo->addItem(tr("None"), "no");
 	hwdec_combo->addItem(tr("Auto"), "auto");
-	#ifdef Q_OS_LINUX
+#ifdef Q_OS_LINUX
 	hwdec_combo->addItem("vdpau", "vdpau");
 	hwdec_combo->addItem("vaapi", "vaapi");
 	hwdec_combo->addItem("vaapi-copy", "vaapi-copy");
-	#endif
-	#ifdef Q_OS_OSX
+#endif
+#ifdef Q_OS_OSX
 	hwdec_combo->addItem("vda", "vda");
-	#endif
-	#ifdef Q_OS_WIN
+#endif
+#ifdef Q_OS_WIN
 	hwdec_combo->addItem("dxva2-copy", "dxva2-copy");
-	#endif
+#endif
 
 	// Priority is only for windows, so we disable for other systems
 #ifndef Q_OS_WIN

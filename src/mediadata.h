@@ -49,7 +49,7 @@ public:
 	};
 
 	TMediaData();
-	TMediaData(const QString& fname, Type sel_type);
+	TMediaData(const QString& fname, Type sel_type, bool hwdec);
 	virtual ~TMediaData() {}
 
 	QString filename;
@@ -91,6 +91,7 @@ public:
 	QString video_codec;
 	QString video_codec_description;
 	int video_bitrate;
+	bool video_hwdec;
 	Maps::TTracks videos;
 
 	// Audio

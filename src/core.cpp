@@ -1078,22 +1078,21 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 	bool enabled = true;
 
 #ifndef Q_OS_WIN
-	QString msg;
-	if (pref->vo.startsWith("vdpau")) {
-		enabled = !pref->vdpau.disable_video_filters;
-		if (enabled) {
-			msg = tr("The video driver settings for vdpau allow filters, this might not work...");
-		} else {
-			msg = tr("Using vdpau, the video filters will be ignored");
+	if (isMPlayer()) {
+		QString msg;
+		if (pref->vo.startsWith("vdpau")) {
+			enabled = !pref->vdpau.disable_video_filters;
+			if (enabled) {
+				msg = tr("The video driver settings for vdpau allow filters, this might not work...");
+			} else {
+				msg = tr("Using vdpau, the video filters will be ignored");
+			}
 		}
-	} else if (isMPV() && !pref->hwdec.isEmpty() && pref->hwdec != "no") {
-		msg = tr("Hardware decoding is enabled in the performance settings, the video filters will be ignored");
-		enabled = false;
-	}
 
-	if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
-		qDebug("TCore::videoFiltersEnabled: %s", msg.toUtf8().constData());
-		emit showMessage(msg, 0);
+		if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
+			qDebug("TCore::videoFiltersEnabled: %s", msg.toUtf8().constData());
+			emit showMessage(msg, 0);
+		}
 	}
 #endif
 
@@ -1111,7 +1110,7 @@ void TCore::startPlayer(QString file, double seek) {
 	if (proc->isRunning()) {
 		qWarning("TCore::startPlayer: MPlayer still running!");
 		return;
-    }
+	}
 
 	emit showMessage(tr("Starting player..."), 5000);
 
@@ -1167,6 +1166,20 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("verbose");
 	}
 
+	// Setup hardware decoding for MPV
+	QString hwdec = pref->hwdec;
+	if (isMPV()) {
+		if (hwdec != "no" && haveVideoFilters()) {
+			hwdec = "no";
+			QString msg = tr("Disabled hardware decoding for video filters");
+			qDebug("TCore::startPlayer: %s", msg.toUtf8().constData());
+			emit showMessage(msg, 0);
+		}
+		mdat.video_hwdec = hwdec != "no";
+	} else {
+		mdat.video_hwdec = false;
+	}
+
 	// Demuxer and audio and video codecs:
 	if (!mset.forced_demuxer.isEmpty()) {
 		proc->setOption("demuxer", mset.forced_demuxer);
@@ -1190,7 +1203,7 @@ void TCore::startPlayer(QString file, double seek) {
 				if (!c.isEmpty()) {
 					proc->setOption("vc", c);
 				}
-			} else {
+			} else if (mdat.video_hwdec) {
 				QString c;
 				if (pref->vdpau.ffh264vdpau) c = ",h264";
 				if (pref->vdpau.ffmpeg12vdpau) c += ",mpeg1video,mpeg2video";
@@ -1212,6 +1225,11 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 #endif
 
+	}
+
+	// MPV only
+	if (!hwdec.isEmpty()) {
+		proc->setOption("hwdec", hwdec);
 	}
 
 	if (pref->use_hwac3)
@@ -1252,10 +1270,6 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	}
 
-	// MPV only
-	if (!pref->hwdec.isEmpty()) {
-		proc->setOption("hwdec", pref->hwdec);
-	}
 
 	// Set screenshot directory
 	bool screenshot_enabled = pref->use_screenshot
@@ -2257,7 +2271,7 @@ void TCore::setStereoMode(int mode) {
 
 void TCore::changeVF(const QString& filter, bool enable, const QVariant& option) {
 
-	if (isMPV()) { \
+	if (isMPV() && !mdat.video_hwdec) { \
 		proc->changeVF(filter, enable, option); \
 	} else { \
 		restartPlay(); \
@@ -2374,7 +2388,7 @@ void TCore::changeDenoise(int id) {
 	qDebug("TCore::changeDenoise: %d", id);
 
 	if (id != mset.current_denoiser) {
-		if (isMPlayer()) {
+		if (isMPlayer() || mdat.video_hwdec) {
 			mset.current_denoiser = id;
 			restartPlay();
 		} else {
@@ -2400,7 +2414,7 @@ void TCore::changeUnsharp(int id) {
 	qDebug("TCore::changeUnsharp: %d", id);
 
 	if (id != mset.current_unsharp) {
-		if (isMPlayer()) {
+		if (isMPlayer() || mdat.video_hwdec) {
 			mset.current_unsharp = id;
 			restartPlay();
 		} else {
@@ -2436,7 +2450,7 @@ void TCore::changeStereo3d(const QString & in, const QString & out) {
 	qDebug("TCore::changeStereo3d: in: %s out: %s", in.toUtf8().constData(), out.toUtf8().constData());
 
 	if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
-		if (isMPlayer()) {
+		if (isMPlayer() || mdat.video_hwdec) {
 			mset.stereo3d_in = in;
 			mset.stereo3d_out = out;
 			restartPlay();
