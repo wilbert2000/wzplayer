@@ -217,17 +217,22 @@ QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
 	return size;
 }
 
+double TPlayerWindow::getSizeFactor() {
+
+	if (video_width > 0 && video_height > 0) {
+		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
+		return (double) playerlayer->width() / video_size.width();
+	}
+
+	return 0;
+}
+
 void TPlayerWindow::updateSizeFactor() {
 
-	if (!pref->fullscreen && video_width > 0 && video_height > 0) {
-		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
-		double factor_x = (double) width() / video_size.width();
-		double factor_y = (double) height() / video_size.height();
-
-		// Store smallest factor in pref
-		double factor = factor_y < factor_x ? factor_y : factor_x;
-		qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f (w: %d vw: %d factor x: %f, h: %d vh %d factor y: %f)",
-				pref->size_factor, factor, width(), video_width, factor_x, height(), video_height, factor_y);
+	if (video_width > 0 && video_height > 0) {
+		double factor = getSizeFactor();
+		qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
+			   pref->size_factor, factor);
 		pref->size_factor = factor;
 	}
 }
@@ -268,7 +273,7 @@ void TPlayerWindow::updateVideoWindow() {
 	emit moveOSD(osd_pos);
 
 	// Update status with new size
-	if (enable_messages && !pref->fullscreen && video_size != last_video_size) {
+	if (enable_messages && video_size != last_video_size) {
 		emit showMessage(tr("Video size %1 x %2").arg(video_size.width()).arg(video_size.height()),
 						 2500, 1); // 2.5 sec, osd_level 1
 		last_video_size = video_size;

@@ -44,7 +44,7 @@ void TVideoSizeGroup::uncheck() {
 void TVideoSizeGroup::enableVideoSizeGroup(bool on) {
 
 	QSize s = playerWindow->resolution();
-	setEnabled(on && !pref->fullscreen && s.width() > 0 && s.height() > 0);
+	setEnabled(on && s.width() > 0 && s.height() > 0);
 }
 
 void TVideoSizeGroup::updateVideoSizeGroup() {
@@ -52,28 +52,15 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 
 	uncheck();
 	QSize s = playerWindow->resolution();
-	if (pref->fullscreen || s.width() <= 0 || s.height() <= 0) {
+	if (s.width() <= 0 || s.height() <= 0) {
 		setEnabled(false);
 	} else {
 		setEnabled(true);
-
-		// Update size factor
-		QSize video_size = playerWindow->getAdjustedSize(s.width(), s.height(), 1.0);
-		int factor_x = qRound(((double) (playerWindow->width() * 100)) / video_size.width());
-		int factor_y = qRound(((double) (playerWindow->height() * 100)) / video_size.height());
-
-		// Set when x and y factor agree
-		if (factor_x == factor_y) {
-			setChecked(factor_x);
-		}
-
-		// Store smallest for use by TMenuVideoSize::currentSizeAct
-		if (factor_y < factor_x) {
-			factor_x = factor_y;
-		}
+		int factor = qRound(playerWindow->getSizeFactor() * 100);
+		setChecked(factor);
 		qDebug("Gui::TVideoSizeGroup::updateVideoSizeGroup: updating size factor from %d to %d",
-			   size_percentage, factor_x);
-		size_percentage = factor_x;
+			   size_percentage, factor);
+		size_percentage = factor;
 	}
 }
 
@@ -129,11 +116,10 @@ void TMenuVideoSize::upd() {
 	currentSizeAct->setEnabled(group->isEnabled());
 
 	// Update text and tips
-	int s = pref->fullscreen ? 100 : group->size_percentage;
-	QString txt = translator->tr("&Optimize size %1%").arg(QString::number(s));
+	QString txt = translator->tr("&Optimize size %1%").arg(QString::number(group->size_percentage));
 	currentSizeAct->setTextAndTip(txt);
 
-	txt = translator->tr("Size %1%").arg(QString::number(s));
+	txt = translator->tr("Size %1%").arg(QString::number(group->size_percentage));
 	QString scut = menuAction()->shortcut().toString();
 	if (!scut.isEmpty()) {
 		txt += " (" + scut + ")";
@@ -145,11 +131,6 @@ void TMenuVideoSize::onFullscreenChanged() {
 
 	// Don't update size factor during all the resizing
 	block_update_size_factor++;
-
-	// Update when entering fullscreen. Exit by unlockSizeFactor()
-	if (pref->fullscreen) {
-		upd();
-	}
 }
 
 void TMenuVideoSize::unlockSizeFactor() {
@@ -197,8 +178,8 @@ bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {
 	if (d < 10)
 		d = 10;
 	if (qAbs(factor - predef_factor) < d) {
-		qDebug("Gui::TMenuVideoSize::optimizeSizeFactorPreDef: optimizing size factor from %f to predefined value %f",
-			   pref->size_factor, (double) predef_factor / 100);
+		qDebug("Gui::TMenuVideoSize::optimizeSizeFactorPreDef: optimizing size from %d%% to predefined value %d%%",
+			   factor, predef_factor);
 		mainWindow->changeSize(predef_factor);
 		return true;
 	}
@@ -206,18 +187,29 @@ bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {
 }
 
 void TMenuVideoSize::optimizeSizeFactor() {
-	qDebug("Gui::TMenuVideoSize::optimizeSizeFactor()");
+	qDebug("Gui::TMenuVideoSize::optimizeSizeFactor");
+
+	double factor;
+
+	if (pref->fullscreen) {
+		playerWindow->setZoom(1.0);
+		factor = playerWindow->getSizeFactor();
+		qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: updating size factor from %f to %f",
+			   pref->size_factor, factor);
+		pref->size_factor = factor;
+		upd();
+		return;
+	}
 
 	double size_factor = pref->size_factor;
 
-	// Limit size to 0.5 of available desktop
-	const double f = 0.5;
+	// Limit size to 0.6 of available desktop
+	const double f = 0.6;
 	QSize available_size = TDesktop::availableSize(playerWindow);
 	QSize res = playerWindow->resolution();
 	QSize video_size = playerWindow->getAdjustedSize(res.width(), res.height(), size_factor);
 
 	double max = f * available_size.height();
-	double factor;
 	// Adjust height first
 	if (video_size.height() > max) {
 		factor = max / res.height();
@@ -247,14 +239,10 @@ void TMenuVideoSize::optimizeSizeFactor() {
 
 	// Make width multiple of 16
 	int new_w = ((video_size.width() + 8) / 16) * 16;
-	if (new_w != video_size.width()) {
-		int new_factor = qRound(((double) (new_w * 100)) / res.width());
-		qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: optimizing width %d factor %d to multiple of 16 %d factor %d",
-			   video_size.width(), factor_int, new_w, new_factor);
-		mainWindow->changeSize(new_factor);
-	} else {
-		qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: video size already multiple of 16");
-	}
+	factor = (double) new_w / res.width();
+	qDebug("Gui::TMenuVideoSize::optimizeSizeFactor: optimizing width %d factor %f to multiple of 16 %d factor %f",
+		   video_size.width(), size_factor, new_w, factor);
+	mainWindow->changeSize(factor);
 }
 
 } // namespace Gui

@@ -156,6 +156,7 @@ public slots:
 	virtual void checkStayOnTop(TCore::State);
 	void toggleStayOnTop();
 
+	void changeSize(double factor);
 	void changeSize(int percentage);
 
 	void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }

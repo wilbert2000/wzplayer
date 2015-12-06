@@ -115,8 +115,11 @@ public:
 	// Get size adjusted for aspect and desired zoom
 	QSize getAdjustedSize(int w, int h, double zoom) const;
 
-	void updateVideoWindow();
+	// Calculate size factor for current view
+	double getSizeFactor();
 	void updateSizeFactor();
+
+	void updateVideoWindow();
 	void moveVideo(int dx, int dy);
 	void playingStopped(bool clear_background = true);
 	void retranslateStrings();

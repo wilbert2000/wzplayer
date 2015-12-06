@@ -2162,26 +2162,40 @@ void TBase::gotDuration(double duration) {
 	gotCurrentTime(core->mset.current_sec);
 }
 
-void TBase::changeSize(int percentage) {
-	qDebug("TBase::changeSize: %d", percentage);
+void TBase::changeSize(double factor) {
+	qDebug("TBase::changeSize: %f", factor);
 
-	if (!pref->fullscreen) {
+	pref->size_factor = factor;
+
+	if (pref->fullscreen) {
+		// Adjust zoom to match the requested size
+		QSize video_size = playerwindow->getAdjustedSize(
+							   core->mdat.video_out_width,
+							   core->mdat.video_out_height,
+							   pref->size_factor);
+		QSize desktop_size = TDesktop::size(this);
+		double zoom = (double) video_size.width() / desktop_size.width();
+		playerwindow->setZoom(zoom);
+	} else {
+		// Normal screen
 		bool center = false;
 		if (isMaximized()) {
 			showNormal();
 			center = true;
 		}
-
-		pref->size_factor = (double) percentage / 100;
 		resizeWindow(core->mdat.video_out_width, core->mdat.video_out_height);
-		emit videoSizeFactorChanged();
-
-		core->displayMessage(tr("Size %1%").arg(QString::number(percentage)));
-
 		if (center) {
 			centerWindow();
 		}
 	}
+
+	emit videoSizeFactorChanged();
+	core->displayMessage(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
+}
+
+void TBase::changeSize(int percentage) {
+	qDebug("TBase::changeSize: %d%%", percentage);
+	changeSize((double) percentage / 100);
 }
 
 void TBase::toggleDoubleSize() {
@@ -2220,17 +2234,16 @@ void TBase::hidePanel() {
 double TBase::getNewSizeFactor() {
 
 	double size_factor = 1.0;
-
-	if (pref->fullscreen) {
-		return size_factor;
-	}
-
-	// Limit size to 0.6 of available desktop
-	const double f = 0.6;
 	QSize available_size = TDesktop::availableSize(playerwindow);
 	QSize res = playerwindow->resolution();
 	QSize video_size = playerwindow->getAdjustedSize(res.width(), res.height(), size_factor);
 
+	if (pref->fullscreen) {
+		return (double) available_size.width() / video_size.width();
+	}
+
+	// Limit size to 0.6 of available desktop
+	const double f = 0.6;
 	double factor;
 	double max = f * available_size.height();
 	// Adjust height first
@@ -2252,6 +2265,21 @@ double TBase::getNewSizeFactor() {
 	}
 
 	if (size_factor != 1.0) {
+		// Round to predefined values
+		int factor_int = qRound(size_factor * 100);
+		const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400 };
+		for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
+			int predef = factors[i];
+			int d = predef / 10;
+			if (d < 10) d = 10;
+			if (qAbs(factor_int - predef) < d) {
+				factor = (double) predef / 100;
+				qDebug("Gui::TBase::getNewSizeFactor: rounding size factor from %f to %f",
+					   size_factor, factor);
+				return factor;
+			}
+		}
+
 		// Make width multiple of 16
 		int new_w = ((video_size.width() + 8) / 16) * 16;
 		if (new_w != video_size.width()) {
@@ -2278,7 +2306,6 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		}
 	} else {
 		// Have video
-		// Show panel
 		if (!panel->isVisible()) {
 			panel->show();
 		}
@@ -2293,6 +2320,7 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 				// Adjust size factor to window size
 				playerwindow->updateSizeFactor();
 			} else {
+				// Try size factor 1.0
 				pref->size_factor = getNewSizeFactor();
 				resizeWindow(w, h);
 			}
