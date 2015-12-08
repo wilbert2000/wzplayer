@@ -3413,6 +3413,7 @@ void TCore::changeZoom(double factor) {
 	playerwindow->setZoom(factor);
 	getZoomFromPlayerWindow();
 
+	emit zoomChanged(playerwindow->zoom());
 	displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
 }
 

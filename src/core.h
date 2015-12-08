@@ -350,7 +350,6 @@ signals:
 	void aboutToStartPlaying(); // Signal emited just before starting player
 	void buffering();
 	void receivedForbidden();
-	void aspectRatioChanged(Settings::TAspectRatio::TMenuID id);
 	void videoOutResolutionChanged(int w, int h);
 	void newMediaStartedPlaying();
 	void mediaLoaded();
@@ -374,8 +373,12 @@ signals:
 	void showMessage(const QString& text);
 	void showMessage(const QString& text, int time);
 
+	void aspectRatioChanged(Settings::TAspectRatio::TMenuID id);
+	void zoomChanged(double);
+
 	void volumeChanged(int);
 	void muteChanged(bool);
+
 	void videoTrackInfoChanged();
 	void videoTrackChanged(int);
 	void audioTrackInfoChanged();

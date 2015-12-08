@@ -226,7 +226,7 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	addSeparator();
 	addMenu(new TMenuAspect(parent, core));
 	// Size submenu
-	addMenu(new TMenuVideoSize(parent, playerwindow));
+	addMenu(new TMenuVideoSize(parent, core, playerwindow));
 	// Zoom and pan submenu
 	addMenu(new TMenuZoomAndPan(parent, core));
 

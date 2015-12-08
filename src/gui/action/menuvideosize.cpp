@@ -65,7 +65,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 }
 
 
-TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
+TMenuVideoSize::TMenuVideoSize(TBase* mw, TCore* core, TPlayerWindow* pw)
 	: TMenu(mw, this, "videosize_menu", QT_TR_NOOP("&Size"), "video_size")
 	, mainWindow(mw)
 	, playerWindow(pw)
@@ -84,6 +84,8 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
 
 	connect(mainWindow, SIGNAL(videoSizeFactorChanged()),
 			this, SLOT(onVideoSizeFactorChanged()));
+	connect(core, SIGNAL(zoomChanged(double)),
+			this, SLOT(onZoomChanged(double)));
 	connect(mainWindow, SIGNAL(fullscreenChanged()),
 			this, SLOT(onFullscreenChanged()));
 	connect(mainWindow, SIGNAL(fullscreenChangedDone()),
@@ -170,6 +172,13 @@ void TMenuVideoSize::onAboutToShow() {
 
 void TMenuVideoSize::onVideoSizeFactorChanged() {
 	upd();
+}
+
+void TMenuVideoSize::onZoomChanged(double) {
+
+	if (pref->fullscreen) {
+		upd();
+	}
 }
 
 bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {

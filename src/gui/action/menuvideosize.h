@@ -6,6 +6,7 @@
 #include "gui/action/menu.h"
 
 
+class TCore;
 class TPlayerWindow;
 
 namespace Gui {
@@ -32,7 +33,7 @@ private:
 class TMenuVideoSize : public TMenu {
 	Q_OBJECT
 public:
-	TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
+	TMenuVideoSize(TBase* mw, TCore* core, TPlayerWindow* pw);
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
@@ -57,6 +58,7 @@ private slots:
 	void onFullscreenChanged();
 	void onFullscreenChangedDone();
 	void onVideoSizeFactorChanged();
+	void onZoomChanged(double);
 	void onMainWindowResizeEvent(QResizeEvent* event);
 	void optimizeSizeFactor();
 };
