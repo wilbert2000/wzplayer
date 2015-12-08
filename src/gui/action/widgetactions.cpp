@@ -87,6 +87,7 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 
 	TTimeSlider* slider = new TTimeSlider(parent, max_pos, drag_delay);
 	slider->setEnabled(isEnabled());
+	slider->setDuration(total_time);
 
 	if (custom_style)
 		slider->setStyle(custom_style);
