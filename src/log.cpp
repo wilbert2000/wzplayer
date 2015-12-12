@@ -110,7 +110,6 @@ void TLog::logLine(QtMsgType type, QString line) {
 #ifdef OUTPUT_ON_CONSOLE
 	QByteArray bytes = line.toUtf8();
 	fwrite(bytes.constData(), 1, bytes.size(), stderr);
-	//fflush(stderr);
 #endif
 
 	// Output to log file
