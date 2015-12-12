@@ -106,7 +106,7 @@ void TLog::logLine(QtMsgType type, QString line) {
 	}
 	lines.append(line);
 
-	// Output to console
+	// Output to console on stderr
 #ifdef OUTPUT_ON_CONSOLE
 	QByteArray bytes = line.toUtf8();
 	fwrite(bytes.constData(), 1, bytes.size(), stderr);
