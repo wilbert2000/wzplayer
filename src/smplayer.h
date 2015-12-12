@@ -65,7 +65,7 @@ public:
 
 private slots:
 	void loadTranslation();
-	void onRequestRestart(bool reset_style);
+	void onRequestRestart(const QString& filename, bool reset_style);
 
 private:
 	QString initial_config_path;

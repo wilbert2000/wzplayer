@@ -987,13 +987,13 @@ void TBase::applyNewPreferences() {
 	pref->save();
 
 
-	// Handle interface tab first to check for changes that need a restart
+	// Handle interface tab first to check for changes that need a restart of TSMPlayer
 	Pref::TInterface* interface = pref_dialog->mod_interface();
 
 	// Style change needs recreation of the main window
 	if (interface->styleChanged()) {
-		// Request restart and optional reset of style to default
-		emit requestRestart(pref->style.isEmpty());
+		// Request restart and optional reset style to default
+		emit requestRestart(core->mdat.filename, pref->style.isEmpty());
 		// Close and restart with the new settings
 		close();
 		return;
@@ -1003,8 +1003,8 @@ void TBase::applyNewPreferences() {
 	if (interface->guiChanged()
 		|| interface->iconsetChanged()
 		|| old_player_bin != pref->player_bin) {
-		// Request restart
-		emit requestRestart(false);
+		// Request restart, don't reset style
+		emit requestRestart(core->mdat.filename, false);
 		// Close and restart with the new settings
 		close();
 		return;

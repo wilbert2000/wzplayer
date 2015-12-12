@@ -397,8 +397,8 @@ void TSMPlayer::createGUI() {
 
 	connect(main_window, SIGNAL(loadTranslation()),
 			this, SLOT(loadTranslation()));
-	connect(main_window, SIGNAL(requestRestart(bool)),
-			this, SLOT(onRequestRestart(bool)));
+	connect(main_window, SIGNAL(requestRestart(const QString&, bool)),
+			this, SLOT(onRequestRestart(const QString&, bool)));
 
 #if SINGLE_INSTANCE
 	connect(this, SIGNAL(messageReceived(const QString&)),
@@ -531,12 +531,14 @@ void TSMPlayer::start() {
 	}
 }
 
-void TSMPlayer::onRequestRestart(bool reset_style) {
+void TSMPlayer::onRequestRestart(const QString& filename, bool reset_style) {
 	qDebug("TSMPlayer::onRequestRestart");
 
 	requested_restart = true;
 	this->reset_style = reset_style;
-
+	if (!filename.isEmpty() && !files_to_play.contains(filename)) {
+		files_to_play.prepend(filename);
+	}
 }
 
 int TSMPlayer::execWithRestart() {

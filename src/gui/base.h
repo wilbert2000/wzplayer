@@ -189,7 +189,7 @@ signals:
 	void openFileRequested();
 
 	void loadTranslation();
-	void requestRestart(bool);
+	void requestRestart(const QString&, bool);
 
 protected slots:
 	virtual void closeWindow();
