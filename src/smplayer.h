@@ -65,9 +65,10 @@ public:
 
 private slots:
 	void loadTranslation();
-	void setRequestedRestart(bool reset_style);
+	void onRequestRestart(bool reset_style);
 
 private:
+	QString initial_config_path;
 	TLog log;
 	QTranslator app_trans;
 	QTranslator qt_trans;
@@ -97,7 +98,7 @@ private:
 					 const QString& name,
 					 const QString& locale,
 					 const QString& dir);
-	void loadConfig(const QString& config_path);
+	void loadConfig();
 	QString loadStyleSheet(const QString& filename);
 	void changeStyleSheet(const QString& style);
 	void changeStyle();

@@ -111,10 +111,11 @@ void TSMPlayer::loadTranslation() {
 	loadCatalog(app_trans, "smplayer", locale, trans_path);
 }
 
-void TSMPlayer::loadConfig(const QString& config_path) {
+void TSMPlayer::loadConfig() {
 
-	// Load preferences
-	TPaths::setConfigPath(config_path);
+	// Setup config directory
+	TPaths::setConfigPath(initial_config_path);
+	// Load new settings
 	Settings::pref = new Settings::TPreferences();
 
 	// Reconfig log
@@ -153,12 +154,11 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 #endif
 
 	// Get config path from args
-	QString config_path;
 	int pos = args.indexOf("-config-path");
 	if (pos >= 0) {
 		if (pos + 1 < args.count()) {
 			pos++;
-			config_path = args[pos];
+			initial_config_path = args[pos];
 			// Delete from list
 			args.removeAt(pos);
 			args.removeAt(pos - 1);
@@ -169,7 +169,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	}
 
 	// Load preferences, setup logging and translation
-	loadConfig(config_path);
+	loadConfig();
 
 	if (args.contains("-delete-config")) {
 		TCleanConfig::clean(TPaths::configPath());
@@ -258,7 +258,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		}
 		else
 		if ((argument == "--help") || (argument == "-help") ||
-            (argument == "-h") || (argument == "-?")) 
+			(argument == "-h") || (argument == "-?"))
 		{
 			show_help = true;
 		}
@@ -398,7 +398,7 @@ void TSMPlayer::createGUI() {
 	connect(main_window, SIGNAL(loadTranslation()),
 			this, SLOT(loadTranslation()));
 	connect(main_window, SIGNAL(requestRestart(bool)),
-			this, SLOT(setRequestedRestart(bool)));
+			this, SLOT(onRequestRestart(bool)));
 
 #if SINGLE_INSTANCE
 	connect(this, SIGNAL(messageReceived(const QString&)),
@@ -531,11 +531,12 @@ void TSMPlayer::start() {
 	}
 }
 
-void TSMPlayer::setRequestedRestart(bool reset_style) {
-	qDebug("TSMPlayer::setRequestedRestart");
+void TSMPlayer::onRequestRestart(bool reset_style) {
+	qDebug("TSMPlayer::onRequestRestart");
 
 	requested_restart = true;
 	this->reset_style = reset_style;
+
 }
 
 int TSMPlayer::execWithRestart() {
@@ -547,6 +548,13 @@ int TSMPlayer::execWithRestart() {
 		qDebug("TSMPlayer::execWithRestart: calling exec()");
 		exit_code = exec();
 		qDebug("TSMPlayer::execWithRestart: exec() returned %d", exit_code);
+		if (requested_restart) {
+			qDebug("TSMPlayer::execWithRestart: restarting");
+			// Free current settings
+			delete Settings::pref;
+			// Reload configuration
+			loadConfig();
+		}
 	} while (requested_restart);
 
 	return exit_code;

@@ -986,21 +986,12 @@ void TBase::applyNewPreferences() {
 	// Commit changes
 	pref->save();
 
-	// Update logging
-	TLog::log->setEnabled(pref->log_enabled);
-	TLog::log->setLogFileEnabled(pref->log_file);
-	TLog::log->setFilter(pref->log_filter);
 
-	// Interface tab first to check for needed restarts
-	Pref::TInterface* _interface = pref_dialog->mod_interface();
+	// Handle interface tab first to check for changes that need a restart
+	Pref::TInterface* interface = pref_dialog->mod_interface();
 
-	// Load translation if language changed
-	if (_interface->languageChanged()) {
-		emit loadTranslation();
-	}
-
-	// Style changes need recreation of main window
-	if (_interface->styleChanged()) {
+	// Style change needs recreation of the main window
+	if (interface->styleChanged()) {
 		// Request restart and optional reset of style to default
 		emit requestRestart(pref->style.isEmpty());
 		// Close and restart with the new settings
@@ -1008,9 +999,9 @@ void TBase::applyNewPreferences() {
 		return;
 	}
 
-	// Gui, icon or player change needs restart smplayer
-	if (_interface->guiChanged()
-		|| _interface->iconsetChanged()
+	// Gui, icon or player change needs restart TSMPlayer
+	if (interface->guiChanged()
+		|| interface->iconsetChanged()
 		|| old_player_bin != pref->player_bin) {
 		// Request restart
 		emit requestRestart(false);
@@ -1019,7 +1010,18 @@ void TBase::applyNewPreferences() {
 		return;
 	}
 
-	// Keeping the current main window
+	// Not restarting and keeping the current main window
+
+	// Update logging
+	TLog::log->setEnabled(pref->log_enabled);
+	TLog::log->setLogFileEnabled(pref->log_file);
+	TLog::log->setFilter(pref->log_filter);
+
+	// Load translation if language changed.
+	if (interface->languageChanged()) {
+		// Handled by TSMPlayer::loadTranslation()
+		emit loadTranslation();
+	}
 
 	// Update application font
 	if (!pref->default_font.isEmpty()) {
@@ -1033,7 +1035,7 @@ void TBase::applyNewPreferences() {
 	}
 
 	// Recents
-	if (_interface->recentsChanged()) {
+	if (interface->recentsChanged()) {
 		openMenu->updateRecents();
 	}
 
