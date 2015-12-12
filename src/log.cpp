@@ -6,8 +6,8 @@
 #include "settings/paths.h"
 #include "gui/logwindow.h"
 
-
-const int LOG_BUF_LENGTH = 32768;
+// Size one log buffer, allocated twice
+const int LOG_BUF_LENGTH = 65536 - 512;
 
 TLog* TLog::log = 0;
 
