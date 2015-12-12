@@ -39,6 +39,7 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
 
 	addActionsTo(parent);
+	upd();
 }
 
 void TMenuAspect::upd() {
