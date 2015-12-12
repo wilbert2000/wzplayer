@@ -47,11 +47,19 @@ QString TAspectRatio::doubleToString(double aspect) {
 		if (aspect == RATIOS[i]) {
 			QString s = RATIO_NAMES[i];
 			s.replace("&", "");
-			return tr("Aspect ratio %1 (%2)").arg(s, QString::number(aspect));
+			return tr("%1 (%2)").arg(s, QString::number(aspect));
 		}
 	}
 	return QString::number(aspect);
 }
+
+QString TAspectRatio::aspectIDToString(int id) {
+
+	QString name = tr(RATIO_NAMES[id]);
+	double aspect = RATIOS[id];
+	return tr("%1 (%2)").arg(name, QString::number(aspect));
+}
+
 
 TAspectRatio::TAspectRatio()
 	: QObject()
@@ -77,7 +85,7 @@ TAspectRatio::TMenuID TAspectRatio::nextMenuID() const {
 	}
 }
 
-double TAspectRatio::toDouble(int w, int h) const {
+double TAspectRatio::menuIDToDouble(TMenuID id, int w, int h) {
 
 	double asp;
 
@@ -102,6 +110,10 @@ double TAspectRatio::toDouble(int w, int h) const {
 	}
 
 	return asp;
+}
+
+double TAspectRatio::toDouble(int w, int h) const {
+	return menuIDToDouble(id, w, h);
 }
 
 QString TAspectRatio::toString() const {

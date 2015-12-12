@@ -33,6 +33,8 @@ public:
 	static const char* RATIO_NAMES[RATIOS_COUNT];
 	static TMenuID toTMenuID(const QVariant& id);
 	static QString doubleToString(double aspect);
+	static QString aspectIDToString(int id);
+	static double menuIDToDouble(TMenuID id, int w, int h);
 
 	TAspectRatio();
 

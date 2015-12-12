@@ -24,6 +24,7 @@ protected:
 private:
 	TCore* core;
 	TActionGroup* group;
+	TAction* aspectAutoAct;
 	TAction* nextAspectAct;
 
 	void upd();
