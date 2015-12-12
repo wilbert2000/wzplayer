@@ -142,6 +142,7 @@ namespace Gui {
 
 TBase::TBase()
 	: QMainWindow()
+	, toolbar_menu(0)
 	, clhelp_window(0)
 	, pref_dialog(0)
 	, file_properties_dialog(0)
@@ -452,11 +453,11 @@ void TBase::createActions() {
 	connect(viewMenuBarAct, SIGNAL(toggled(bool)), menuBar(), SLOT(setVisible(bool)));
 
 	// Toolbars
-	editToolbarAct = new TAction(this, "edit_toolbar1", QT_TR_NOOP("Edit main &toolbar"));
-	editToolbar2Act = new TAction(this, "edit_toolbar2", QT_TR_NOOP("Edit extra t&oolbar"));
+	editToolbarAct = new TAction(this, "edit_toolbar1", QT_TR_NOOP("Edit main &toolbar..."));
+	editToolbar2Act = new TAction(this, "edit_toolbar2", QT_TR_NOOP("Edit extra t&oolbar..."));
 
 	// Control bar
-	editControlBarAct = new TAction(this, "edit_controlbar", QT_TR_NOOP("Edit control &bar"));
+	editControlBarAct = new TAction(this, "edit_controlbar", QT_TR_NOOP("Edit control &bar.."));
 
 	// Status bar
 	viewStatusBarAct = new TAction(this, "toggle_statusbar", QT_TR_NOOP("&Status bar"), "", Qt::Key_F6);
@@ -504,7 +505,10 @@ void TBase::createMenus() {
 
 QMenu* TBase::createToolbarMenu() {
 
-	QMenu* menu = new QMenu(this);
+	// Use name "toolbar_menu" only for first
+	QString name = toolbar_menu ? "" : "toolbar_menu";
+	QMenu* menu = new TMenu(this, this, name, QT_TR_NOOP("&Toolbars"), "toolbars");
+
 	menu->addAction(viewMenuBarAct);
 	menu->addAction(toolbar->toggleViewAction());
 	menu->addAction(toolbar2->toggleViewAction());

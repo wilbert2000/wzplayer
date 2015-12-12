@@ -105,26 +105,26 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 						   QWidget* logWindow)
 	: TMenu(parent, this, "options_menu", QT_TR_NOOP("Op&tions"), "noicon") {
 
-	// Ontop submenu
-	addMenu(new TMenuStayOnTop(parent));
 	// OSD
 	addMenu(new TMenuOSD(parent, core));
 	// Toolbars
 	addMenu(toolBarMenu);
+	// Ontop submenu
+	addMenu(new TMenuStayOnTop(parent));
 
-	// Show properties
 	addSeparator();
-	TAction* a = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
-	connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
-
 	// Show playlist
-	a = new TAction(this, "show_playlist", QT_TR_NOOP("&Playlist"), "playlist", QKeySequence("Ctrl+P"));
+	TAction* a = new TAction(this, "show_playlist", QT_TR_NOOP("&Playlist..."), "playlist", QKeySequence("Ctrl+P"));
 	a->setCheckable(true);
 	connect(a, SIGNAL(triggered(bool)), parent, SLOT(showPlaylist(bool)));
 	connect(playlist, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
 
+	// Show properties
+	a = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
+	connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
+
 	// Show log
-	a = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log"), "log", QKeySequence("Ctrl+L"));
+	a = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log..."), "log", QKeySequence("Ctrl+L"));
 	a->setCheckable(true);
 	connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
 	connect(logWindow, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
@@ -132,17 +132,17 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 	// Youtube browser
 #ifdef YOUTUBE_SUPPORT
 	addSeparator();
-	a = new TAction(this, "show_tube_browser", QT_TR_NOOP("&YouTube browser"), "tubebrowser", Qt::Key_F11);
+	a = new TAction(this, "show_tube_browser", QT_TR_NOOP("&YouTube browser..."), "tubebrowser", Qt::Key_F11);
 	connect(a, SIGNAL(triggered()), parent, SLOT(showTubeBrowser()));
 #endif
 
 	// Preferences
 	addSeparator();
-	a = new TAction(this, "show_preferences", QT_TR_NOOP("P&references"), "prefs", QKeySequence("Ctrl+S"));
-	connect(a, SIGNAL(triggered()), parent, SLOT(showPreferencesDialog()));
-
-	a = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder"));
+	a = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder..."));
 	connect(a, SIGNAL(triggered()), parent, SLOT(showConfigFolder()));
+
+	a = new TAction(this, "show_preferences", QT_TR_NOOP("P&references..."), "prefs", QKeySequence("Ctrl+S"));
+	connect(a, SIGNAL(triggered()), parent, SLOT(showPreferencesDialog()));
 
 	addActionsTo(parent);
 }
