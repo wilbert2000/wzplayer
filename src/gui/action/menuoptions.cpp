@@ -138,7 +138,7 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 
 	// Preferences
 	addSeparator();
-	a = new TAction(this, "show_config", QT_TR_NOOP("&Open configuration folder..."));
+	a = new TAction(this, "show_config", QT_TR_NOOP("Open &configuration folder..."));
 	connect(a, SIGNAL(triggered()), parent, SLOT(showConfigFolder()));
 
 	a = new TAction(this, "show_preferences", QT_TR_NOOP("P&references..."), "prefs", QKeySequence("Ctrl+S"));
