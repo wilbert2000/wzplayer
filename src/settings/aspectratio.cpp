@@ -60,9 +60,21 @@ TAspectRatio::TAspectRatio()
 
 TAspectRatio::TMenuID TAspectRatio::nextMenuID() const {
 
-	if (id == MAX_MENU_ID)
-		return AspectNone;
-	return static_cast<TMenuID>(id + 1);
+	switch(id) {
+		case AspectAuto: return Aspect11;
+		case Aspect43: return Aspect118;
+		case Aspect54: return Aspect43;
+		case Aspect149: return Aspect1610;
+		case Aspect169: return Aspect235;
+		case Aspect1610: return Aspect169;
+		case Aspect235: return AspectNone;
+		case Aspect11: return Aspect54;
+		case Aspect32: return Aspect149;
+		case Aspect1410: return Aspect32;
+		case Aspect118: return Aspect1410;
+		//case AspectNone: return AspectAuto;
+		default: return AspectAuto;
+	}
 }
 
 double TAspectRatio::toDouble(int w, int h) const {
