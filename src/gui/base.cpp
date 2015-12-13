@@ -179,6 +179,7 @@ TBase::TBase()
 	was_minimized = isMinimized();
 #endif
 
+	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("SMPlayer");
 	setAcceptDrops(true);
 
@@ -966,6 +967,16 @@ void TBase::showPreferencesDialog() {
 	pref_dialog->show();
 }
 
+void TBase::restartSMPlayer(bool reset_style) {
+	qDebug("Gui::TBase::restartSMPlayer");
+
+	// TODO: handle disc
+	emit requestRestart(*playlist, reset_style);
+	// Close and restart with the new settings
+	close();
+	return;
+}
+
 // The user has pressed OK in preferences dialog
 void TBase::applyNewPreferences() {
 	qDebug("Gui::TBase::applyNewPreferences");
@@ -997,9 +1008,7 @@ void TBase::applyNewPreferences() {
 	// Style change needs recreation of the main window
 	if (interface->styleChanged()) {
 		// Request restart and optional reset style to default
-		emit requestRestart(core->mdat.filename, pref->style.isEmpty());
-		// Close and restart with the new settings
-		close();
+		restartSMPlayer(pref->style.isEmpty());
 		return;
 	}
 
@@ -1008,9 +1017,7 @@ void TBase::applyNewPreferences() {
 		|| interface->iconsetChanged()
 		|| old_player_bin != pref->player_bin) {
 		// Request restart, don't reset style
-		emit requestRestart(core->mdat.filename, false);
-		// Close and restart with the new settings
-		close();
+		restartSMPlayer(false);
 		return;
 	}
 
@@ -1312,7 +1319,7 @@ void TBase::open(const QString &file) {
 	qDebug("Gui::TBase::open: done");
 }
 
-void TBase::openFiles(QStringList files) {
+void TBase::openFiles(QStringList files, int item) {
 	qDebug("Gui::TBase::openFiles");
 
 	if (files.empty()) {
@@ -1328,10 +1335,15 @@ void TBase::openFiles(QStringList files) {
 		open(files[0]);
 	} else if (playlist->maybeSave()) {
 		qDebug("Gui::TBase::openFiles: starting new playlist");
-		files.sort();
+		if (item < 0)
+			files.sort();
 		playlist->clear();
 		playlist->addFiles(files);
-		playlist->startPlay();
+		if (item >= 0) {
+			playlist->playItem(item);
+		} else {
+			playlist->startPlay();
+		}
 	}
 }
 

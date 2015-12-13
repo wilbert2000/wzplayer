@@ -97,7 +97,7 @@ public:
 public slots:
 	virtual void open(const QString& file); // Generic open, autodetect type.
 	virtual void openFile();
-	virtual void openFiles(QStringList files);
+	virtual void openFiles(QStringList files, int item = -1);
 	virtual void openFavorite(QString file);
 	virtual void openURL();
 	virtual void openURL(QString url);
@@ -189,7 +189,7 @@ signals:
 	void openFileRequested();
 
 	void loadTranslation();
-	void requestRestart(const QString&, bool);
+	void requestRestart(const Gui::TPlaylist&, bool);
 
 protected slots:
 	virtual void closeWindow();
@@ -413,6 +413,8 @@ private:
 
 	void createToolbars();
 	QMenu* createToolbarMenu();
+
+	void restartSMPlayer(bool reset_style);
 
 	QString exitCodeToMessage(int exit_code);
 

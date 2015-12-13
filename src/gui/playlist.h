@@ -80,11 +80,11 @@ public:
 	bool autoGetInfo() const { return automatically_get_info; }
 	bool savePlaylistOnExit() const { return save_playlist_in_config; }
 	bool playFilesFromStart() const { return play_files_from_start; }
-	TPlaylistItemList playlist() const { return pl; }
+	const TPlaylistItemList* playlist() const { return &pl; }
+	int currentItem() const { return current_item; }
 
 	void clear();
 	void list();
-	QString print(QString seperator);
 
 	void loadSettings();
 	void saveSettings();

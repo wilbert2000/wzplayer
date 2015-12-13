@@ -58,6 +58,7 @@ TSMPlayer::TSMPlayer(int& argc, char** argv)
 	, main_window(0)
 	, requested_restart(false)
 	, reset_style(false)
+	, current_file(-1)
 	, gui_to_use("DefaultGUI")
 	, move_gui(false)
 	, resize_gui(false)
@@ -397,8 +398,8 @@ void TSMPlayer::createGUI() {
 
 	connect(main_window, SIGNAL(loadTranslation()),
 			this, SLOT(loadTranslation()));
-	connect(main_window, SIGNAL(requestRestart(const QString&, bool)),
-			this, SLOT(onRequestRestart(const QString&, bool)));
+	connect(main_window, SIGNAL(requestRestart(const Gui::TPlaylist&, bool)),
+			this, SLOT(onRequestRestart(const Gui::TPlaylist&, bool)));
 
 #if SINGLE_INSTANCE
 	connect(this, SIGNAL(messageReceived(const QString&)),
@@ -519,7 +520,7 @@ void TSMPlayer::start() {
 			main_window->setInitialSubtitle(subtitle_file);
 		if (!media_title.isEmpty())
 			main_window->getCore()->addForcedTitle(files_to_play[0], media_title);
-		main_window->openFiles(files_to_play);
+		main_window->openFiles(files_to_play, current_file);
 	}
 
 	if (!actions_list.isEmpty()) {
@@ -529,16 +530,25 @@ void TSMPlayer::start() {
 			main_window->runActionsLater(actions_list);
 		}
 	}
+
+	// Free files_to_play
+	files_to_play.clear();
 }
 
-void TSMPlayer::onRequestRestart(const QString& filename, bool reset_style) {
+void TSMPlayer::onRequestRestart(const Gui::TPlaylist& playlist, bool reset_style) {
 	qDebug("TSMPlayer::onRequestRestart");
 
 	requested_restart = true;
 	this->reset_style = reset_style;
-	if (!filename.isEmpty() && !files_to_play.contains(filename)) {
-		files_to_play.prepend(filename);
+
+	const Gui::TPlaylist::TPlaylistItemList* pl = playlist.playlist();
+	Gui::TPlaylist::TPlaylistItemList::const_iterator i;
+	for (i = pl->constBegin(); i != pl->constEnd(); i++) {
+		files_to_play.append((*i).filename());
 	}
+
+	current_file = playlist.currentItem();
+	// TODO: current time
 }
 
 int TSMPlayer::execWithRestart() {

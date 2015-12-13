@@ -26,6 +26,7 @@
 #include <QTranslator>
 
 #include "log.h"
+#include "gui/playlist.h"
 #include "gui/base.h"
 
 #ifdef Q_OS_WIN
@@ -65,7 +66,7 @@ public:
 
 private slots:
 	void loadTranslation();
-	void onRequestRestart(const QString& filename, bool reset_style);
+	void onRequestRestart(const Gui::TPlaylist& playlist, bool reset_style);
 
 private:
 	QString initial_config_path;
@@ -73,8 +74,10 @@ private:
 	QTranslator app_trans;
 	QTranslator qt_trans;
 	Gui::TBase* main_window;
+
 	bool requested_restart;
 	bool reset_style;
+	int current_file;
 
 	QStringList files_to_play;
 	QString subtitle_file;

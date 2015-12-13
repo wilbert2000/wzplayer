@@ -315,19 +315,6 @@ void TPlaylist::list() {
 	}
 }
 
-QString TPlaylist::print(QString seperator){
-	qDebug("Gui::TPlaylist::print");
-
-	QString output = "";
-
-	TPlaylistItemList::iterator it;
-	for (it = pl.begin(); it != pl.end(); ++it) {
-		output += it->filename() + seperator + it->name() + seperator + QString::number(it->duration()) + "\r\n";
-	}
-
-	return output;
-}
-
 void TPlaylist::updateView() {
 	qDebug("Gui::TPlaylist::updateView");
 
@@ -339,7 +326,8 @@ void TPlaylist::updateView() {
 	for (int n = 0; n < pl.count(); n++) {
 		TPlaylistItem& item = pl[n];
 		name = item.name();
-		if (name.isEmpty()) name = item.filename();
+		if (name.isEmpty())
+			name = item.filename();
 		time = Helper::formatTime(qRound(item.duration()));
 		
 		listView->setText(n, COL_NAME, name);
@@ -351,8 +339,9 @@ void TPlaylist::updateView() {
 			listView->setIcon(n, COL_PLAY, QPixmap());
 		}
 
-		if (row_spacing >= 0)
+		if (row_spacing >= 0) {
 			listView->setRowHeight(n, listView->font().pointSize() + row_spacing);
+		}
 	}
 
 	listView->resizeColumnToContents(COL_PLAY);
@@ -829,7 +818,7 @@ void TPlaylist::showContextMenu(const QPoint & pos) {
 void TPlaylist::startPlay() {
 	qDebug("Gui::TPlaylist::startPlay");
 
-	if (shuffleAct->isChecked()) 
+	if (shuffleAct->isChecked())
 		playItem(chooseRandomItem());
 	else
 		playItem(0);
