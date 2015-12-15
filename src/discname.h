@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _DISCNAME_H_
-#define _DISCNAME_H_
+#ifndef DISCNAME_H
+#define DISCNAME_H
 
 #include <QString>
 
@@ -32,7 +32,7 @@ public:
 		device = ""; 
 		title = 0; 
 	};
-	TDiscData(const QString & protocol, int title, const QString & device) {
+	TDiscData(const QString& protocol, int title, const QString& device) {
 		this->protocol = protocol; 
 		this->title = title; 
 		this->device = device; 
@@ -51,17 +51,17 @@ public:
 
 	static Disc protocolToDisc(QString protocol);
 
-	static QString join(Disc type, int title, const QString & device);
-	static QString join(const TDiscData & d, bool add_zero_title = false);
-	static QString joinDVD(const QString & device, bool use_dvdnav);
-	static TDiscData split(const QString & disc_url, bool *ok = 0);
+	static QString join(Disc type, int title, const QString& device);
+	static QString join(const TDiscData& d, bool add_zero_title = false);
+	static QString joinDVD(const QString& device, bool use_dvdnav);
+	static TDiscData split(const QString& disc_url, bool *ok = 0);
 
 #if DISCNAME_TEST
 	static void test();
 #endif
 
 protected:
-	static QString removeTrailingSlash(const QString & device);
+	static QString removeTrailingSlash(const QString& device);
 };
 
 #endif
