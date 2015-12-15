@@ -38,9 +38,9 @@ QString TTitleData::getDisplayName(bool add_duration) const {
 
 	if (name.isEmpty()) {
 		if (isTrack) {
-			dname = qApp->translate("Maps::TTitleData", "Track %1").arg(dname);
+			dname = qApp->translate("Gui::TPlaylist", "Track %1").arg(dname);
 		} else {
-			dname = qApp->translate("Maps::TTitleData", "Title %1").arg(dname);
+			dname = qApp->translate("Gui::TPlaylist", "Title %1").arg(dname);
 		}
 	} else {
 		dname += " " + name;
