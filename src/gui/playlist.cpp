@@ -1061,20 +1061,31 @@ void TPlaylist::addFile(const QString &filename, bool get_info) {
 		} else if (ext == "pls") {
 			load_pls(filename, false, false);
 		} else {
-			TMediaData media_data;
 
 #if USE_INFOPROVIDER
 			if (get_info) {
+				TMediaData media_data;
 				TInfoProvider::getInfo(filename, media_data);
-			}
+				addItem(filename, media_data.displayName(), media_data.duration);
+			} else
 #endif
-
-			addItem(filename, media_data.displayName(), media_data.duration);
+			addItem(filename, fi.fileName(), 0);
 		}
 
 		latest_dir = fi.absolutePath();
 	} else {
-		addItem(filename, "", 0);
+		QString name;
+		bool ok;
+		TDiscData disc = TDiscName::split(filename, &ok);
+		if (ok) {
+			// See also TTitleData::getDisplayName() from titletracks.cpp
+			if (disc.protocol == "cdda" || disc.protocol == "vcd") {
+				name = tr("Track %1").arg(QString::number(disc.title));
+			} else {
+				name = tr("Title %1").arg(QString::number(disc.title));
+			}
+		}
+		addItem(filename, name, 0);
 	}
 }
 
