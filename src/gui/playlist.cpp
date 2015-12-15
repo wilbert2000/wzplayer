@@ -92,7 +92,7 @@ TPlaylistItem::TPlaylistItem(const QString &filename, const QString &name,
 
 TPlaylist::TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f)
 	: QWidget(parent, f)
-	, current_item(0)
+	, current_item(-1)
 	, core(c)
 	, modified(false)
 	, recursive_add_directory(true)
@@ -359,9 +359,10 @@ void TPlaylist::updateView() {
 }
 
 void TPlaylist::setCurrentItem(int current) {
+	qDebug("Gui::TPlaylist::setCurrentItem: from %d to %d", current_item, current);
 
 	// Give old current_item an icon
-	if ((current_item >= 0) && (current_item < listView->rowCount())) {
+	if (current_item >= 0 && current_item < listView->rowCount()) {
 		if (current_item < pl.count() && pl[current_item].played()) {
 			listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
 		} else {
@@ -386,7 +387,7 @@ void TPlaylist::clear() {
 	pl.clear();
 	listView->clearContents();
 	listView->setRowCount(0);
-	setCurrentItem(0);
+	setCurrentItem(-1);
 	modified = false;
 }
 
@@ -894,7 +895,8 @@ void TPlaylist::playPrev() {
 void TPlaylist::resumePlay() {
 
 	if (pl.count() > 0) {
-		if (current_item < 0) current_item = 0;
+		if (current_item < 0)
+			current_item = 0;
 		playItem(current_item);
 	}
 }
