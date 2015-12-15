@@ -987,11 +987,6 @@ void TPlaylist::newMediaLoaded() {
 void TPlaylist::getMediaInfo() {
 	qDebug("Gui::TPlaylist::getMediaInfo");
 
-	// Already have info for dics
-	if (core->mdat.detectedDisc()) {
-		return;
-	}
-
 	QString filename = core->mdat.filename;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -1004,6 +999,7 @@ void TPlaylist::getMediaInfo() {
 	if (!artist.isEmpty())
 		title = artist + " - " + title;
 
+	bool need_update = false;
 	for (int n = 0; n < pl.count(); n++) {
 		TPlaylistItem& item = pl[n];
 		if (item.filename() == filename) {
@@ -1014,11 +1010,13 @@ void TPlaylist::getMediaInfo() {
 					item.setName(title);
 				}
 				item.setDuration(duration);
+				need_update = true;
 			}
 		}
 	}
 
-	updateView();
+	if (need_update)
+		updateView();
 }
 
 void TPlaylist::mediaEOF() {
