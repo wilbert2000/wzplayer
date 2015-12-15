@@ -17,6 +17,7 @@
 */
 
 #include "mediadata.h"
+#include <QApplication>
 #include <QFileInfo>
 #include <cmath>
 #include <QDebug>
@@ -89,6 +90,22 @@ bool TMediaData::selectedDisc() const {
 	return isDisc(selected_type);
 }
 
+QString TMediaData::displayNameAddTitleOrTrack(const QString& title) const {
+
+	if (detectedDisc()) {
+		bool ok;
+		TDiscData disc = TDiscName::split(filename, &ok);
+		if (ok) {
+			// TODO: fix translation
+			// See also Gui::TPlaylist::addFile() and TTitleData::getDisplayName()
+			if (isCD(detected_type)) {
+				return qApp->translate("TMediaData", "%1 track %2").arg(title, QString::number(disc.title));
+			}
+			return qApp->translate("TMediaData", "%1 title %2").arg(title, QString::number(disc.title));
+		}
+	}
+	return title;
+}
 
 QString TMediaData::displayName(bool show_tag) const {
 
@@ -98,18 +115,30 @@ QString TMediaData::displayName(bool show_tag) const {
 	if (show_tag) {
 		QString title = this->title;
 		if (!title.isEmpty())
-			return title;
+			return displayNameAddTitleOrTrack(title);
 
 		title = meta_data.value("TITLE");
 		if (!title.isEmpty())
-			return title;
+			return displayNameAddTitleOrTrack(title);
 
 		title = meta_data.value("NAME");
 		if (!title.isEmpty())
-			return title;
+			return displayNameAddTitleOrTrack(title);
 
 		if (!stream_title.isEmpty())
 			return stream_title;
+
+		if (detectedDisc()) {
+			bool ok;
+			TDiscData disc = TDiscName::split(filename, &ok);
+			if (ok) {
+				if (isCD(detected_type)) {
+					return qApp->translate("Gui::TPlaylist", "Track %1").arg(QString::number(disc.title));
+				}
+				return qApp->translate("Gui::TPlaylist", "Title %1").arg(QString::number(disc.title));
+			}
+			return filename;
+		}
 	}
 
 	// Don't parse disc
