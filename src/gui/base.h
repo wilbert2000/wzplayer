@@ -189,7 +189,7 @@ signals:
 	void openFileRequested();
 
 	void loadTranslation();
-	void requestRestart(const Gui::TPlaylist&, bool);
+	void requestRestart(bool);
 
 protected slots:
 	virtual void closeWindow();

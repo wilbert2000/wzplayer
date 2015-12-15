@@ -304,6 +304,14 @@ void TPlaylist::retranslateStrings() {
 	setWindowTitle(tr("SMPlayer - Playlist"));
 }
 
+void TPlaylist::appendFiles(QStringList& files) const {
+
+	TPlaylistItemList::const_iterator i;
+	for (i = pl.constBegin(); i != pl.constEnd(); i++) {
+		files.append((*i).filename());
+	}
+}
+
 void TPlaylist::list() {
 	qDebug("Gui::TPlaylist::list");
 

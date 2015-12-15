@@ -28,12 +28,13 @@
 
 #include "settings/paths.h"
 #include "settings/preferences.h"
+#include "settings/cleanconfig.h"
 #include "log.h"
 #include "version.h"
 #include "clhelp.h"
 #include "images.h"
-#include "settings/cleanconfig.h"
 
+#include "gui/playlist.h"
 #include "gui/default.h"
 
 #ifdef SKINS
@@ -398,8 +399,8 @@ void TSMPlayer::createGUI() {
 
 	connect(main_window, SIGNAL(loadTranslation()),
 			this, SLOT(loadTranslation()));
-	connect(main_window, SIGNAL(requestRestart(const Gui::TPlaylist&, bool)),
-			this, SLOT(onRequestRestart(const Gui::TPlaylist&, bool)));
+	connect(main_window, SIGNAL(requestRestart(bool)),
+			this, SLOT(onRequestRestart(bool)));
 
 #if SINGLE_INSTANCE
 	connect(this, SIGNAL(messageReceived(const QString&)),
@@ -535,20 +536,30 @@ void TSMPlayer::start() {
 	files_to_play.clear();
 }
 
-void TSMPlayer::onRequestRestart(const Gui::TPlaylist& playlist, bool reset_style) {
+void TSMPlayer::onRequestRestart(bool reset_style) {
 	qDebug("TSMPlayer::onRequestRestart");
 
 	requested_restart = true;
 	this->reset_style = reset_style;
 
-	const Gui::TPlaylist::TPlaylistItemList* pl = playlist.playlist();
-	Gui::TPlaylist::TPlaylistItemList::const_iterator i;
-	for (i = pl->constBegin(); i != pl->constEnd(); i++) {
-		files_to_play.append((*i).filename());
-	}
+	Gui::TPlaylist* playlist = main_window->getPlaylist();
+	playlist->appendFiles(files_to_play);
+	current_file = playlist->currentItem();
 
-	current_file = playlist.currentItem();
-	// TODO: current time
+	// Rebuild playlist from scratch when restarting a disc. Playing the whole
+	// disc gives less problems as playing the seperate tracks from the
+	// playlist, especially for DVDNAV.
+	if (files_to_play.count() > 1) {
+		int i = current_file >= 0 && current_file < files_to_play.count() ? current_file : 0;
+		bool is_disc;
+		TDiscData disc = TDiscName::split(files_to_play[i], &is_disc);
+		if (is_disc) {
+			files_to_play.clear();
+			disc.title = 0;
+			files_to_play.append(TDiscName::join(disc));
+			current_file = -1;
+		}
+	}
 }
 
 int TSMPlayer::execWithRestart() {

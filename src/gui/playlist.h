@@ -80,7 +80,8 @@ public:
 	bool autoGetInfo() const { return automatically_get_info; }
 	bool savePlaylistOnExit() const { return save_playlist_in_config; }
 	bool playFilesFromStart() const { return play_files_from_start; }
-	const TPlaylistItemList* playlist() const { return &pl; }
+
+	void appendFiles(QStringList& files) const;
 	int currentItem() const { return current_item; }
 
 	void clear();

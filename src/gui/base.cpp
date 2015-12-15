@@ -970,8 +970,7 @@ void TBase::showPreferencesDialog() {
 void TBase::restartSMPlayer(bool reset_style) {
 	qDebug("Gui::TBase::restartSMPlayer");
 
-	// TODO: handle disc
-	emit requestRestart(*playlist, reset_style);
+	emit requestRestart(reset_style);
 	// Close and restart with the new settings
 	close();
 	return;
