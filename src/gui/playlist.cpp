@@ -1030,11 +1030,22 @@ void TPlaylist::mediaEOF() {
 void TPlaylist::playerSwitchedTitle(int id) {
 	qDebug("Gui::TPlaylist::playerSwitchedTitle: %d", id);
 
-	id -= core->mdat.titles.firstID();
-	if (id >= 0 && id < pl.count()) {
-		setCurrentItem(id);
-		pl[id].setPlayed(true);
+	// current item = id - core->mdat.titles.firstID() only works if
+	// mdat.titles is identical to playlist. Saver to search for title.
+	TDiscData disc = TDiscName::split(core->mdat.filename);
+	disc.title = id;
+	QString filename = TDiscName::join(disc);
+
+	for(int i = 0; i < pl.count(); i++) {
+		if (pl[i].filename() == filename) {
+			setCurrentItem(i);
+			pl[i].setPlayed(true);
+			return;
+		}
 	}
+
+	// TODO: Add title?
+	qDebug("Gui::TPlaylist::playerSwitchedTitle: title %d not found", id);
 }
 
 // Add current file to playlist
