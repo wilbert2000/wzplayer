@@ -19,7 +19,6 @@
 #include "mediadata.h"
 #include <QApplication>
 #include <QFileInfo>
-#include <cmath>
 #include <QDebug>
 
 
