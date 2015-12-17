@@ -96,12 +96,12 @@ QString TMediaData::displayNameAddTitleOrTrack(const QString& title) const {
 		bool ok;
 		TDiscData disc = TDiscName::split(filename, &ok);
 		if (ok) {
-			// TODO: fix translation
-			// See also Gui::TPlaylist::addFile() and TTitleData::getDisplayName()
 			if (isCD(detected_type)) {
-				return qApp->translate("TMediaData", "%1 track %2").arg(title, QString::number(disc.title));
+				static const char* format = QT_TRANSLATE_NOOP("TMediaData", "%1 track %2");
+				return qApp->translate("TMediaData", format).arg(title, QString::number(disc.title));
 			}
-			return qApp->translate("TMediaData", "%1 title %2").arg(title, QString::number(disc.title));
+			static const char* format = QT_TRANSLATE_NOOP("TMediaData", "%1 title %2");
+			return qApp->translate("TMediaData", format).arg(title, QString::number(disc.title));
 		}
 	}
 	return title;
@@ -132,6 +132,7 @@ QString TMediaData::displayName(bool show_tag) const {
 			bool ok;
 			TDiscData disc = TDiscName::split(filename, &ok);
 			if (ok) {
+				// See also Gui::TPlaylist::addFile() and TTitleData::getDisplayName()
 				if (isCD(detected_type)) {
 					return qApp->translate("Gui::TPlaylist", "Track %1").arg(QString::number(disc.title));
 				}
