@@ -238,6 +238,7 @@ void TPlayerWindow::updateSizeFactor() {
 }
 
 void TPlayerWindow::updateVideoWindow() {
+	/*
 	qDebug() << "TPlayerWindow::updateVideoWindow: video size:"
 			 << video_width << "x" << video_height
 			 << " window size:" << size()
@@ -246,6 +247,7 @@ void TPlayerWindow::updateVideoWindow() {
 			 << " pan:" << pan()
 			 << " aspect:" << aspect
 			 << " fs:" << pref->fullscreen;
+	*/
 
 	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
 	QSize video_size = getAdjustedSize(s.width(), s.height(), zoom());
@@ -279,7 +281,7 @@ void TPlayerWindow::updateVideoWindow() {
 		last_video_size = video_size;
 	}
 
-	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
+	//qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent*) {
