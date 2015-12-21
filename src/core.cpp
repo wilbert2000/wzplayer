@@ -2675,20 +2675,18 @@ void TCore::setVolume(int volume, bool force) {
 		}
 	}
 
-	bool mute_changed;
+	bool is_mute;
 	if (pref->global_volume) {
 		pref->volume = volume;
-		mute_changed = pref->mute;
-		pref->mute = false;
+		is_mute = pref->mute;
 	} else {
 		mset.volume = volume;
-		mute_changed = mset.mute;
-		mset.mute = false;
+		is_mute = mset.mute;
 	}
+	if (is_mute)
+		mute(false);
 
 	displayMessage(tr("Volume: %1").arg(volume));
-	if (mute_changed)
-		emit muteChanged(false);
 	emit volumeChanged(volume);
 }
 
