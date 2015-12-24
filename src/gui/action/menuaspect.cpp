@@ -48,8 +48,13 @@ void TMenuAspect::upd() {
 
 	double aspect = core->mset.aspectToDouble();
 	QString tip = TAspectRatio::doubleToString(aspect);
-	aspectAutoAct->setTextAndTip(tr("Au&to %1").arg(tip));
 	menuAction()->setToolTip(tr("Aspect ratio %1").arg(tip));
+
+	aspect = TAspectRatio::menuIDToDouble(TAspectRatio::AspectAuto,
+										  core->mdat.video_out_width,
+										  core->mdat.video_out_height);
+	tip = TAspectRatio::doubleToString(aspect);
+	aspectAutoAct->setTextAndTip(tr("Au&to %1").arg(tip));
 }
 
 void TMenuAspect::enableActions(bool stopped, bool video, bool) {
