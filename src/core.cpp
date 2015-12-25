@@ -103,7 +103,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			 this, SIGNAL(showFrame(int)));
 
 	connect(proc, SIGNAL(receivedPause()),
-			 this, SLOT(gotPause()));
+			 this, SLOT(onReceivedPause()));
 
 	connect(proc, SIGNAL(receivedBuffering()),
 			 this, SIGNAL(buffering()));
@@ -293,7 +293,7 @@ void TCore::setState(State s) {
 
 	if (s != _state) {
 		_state = s;
-		qDebug() << "TCore::setState: set state to" << stateToString()
+		qDebug() << "TCore::setState: state set to" << stateToString()
 				 << "at" << mset.current_sec;
 		qDebug() << "TCore::setState: emit stateChanged()";
 		emit stateChanged(_state);
@@ -301,13 +301,12 @@ void TCore::setState(State s) {
 }
 
 QString TCore::stateToString() {
-	if (state()==Playing) return "Playing";
-	else
-	if (state()==Stopped) return "Stopped";
-	else
-	if (state()==Paused) return "Paused";
-	else
-	return "Unknown";
+
+	if (_state == Playing)
+		return "Playing";
+	if (_state == Paused)
+		return "Paused";
+	return "Stopped";
 }
 
 // Public restart
@@ -2999,8 +2998,19 @@ void TCore::gotCurrentSec(double sec) {
 	}
 }
 
-void TCore::gotPause() {
-	setState(Paused);
+void TCore::onReceivedPause() {
+	//qDebug("TCore::onReceivedPause");
+
+	if (isMPV()) {
+		// MPlayer sends one receivedPause
+		setState(Paused);
+	} else {
+		// TMPVProcess repeats sending receivedPause signals which creates a
+		// race. When it is paused and play is triggered, play can be followed
+		// by a still pending receivedPause from before triggering play, which
+		// would, if passed to setState(), wrongly return the state back from
+		// playing to paused.
+	}
 }
 
 void TCore::changeDeinterlace(int ID) {

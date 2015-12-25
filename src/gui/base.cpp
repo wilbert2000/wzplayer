@@ -2120,7 +2120,7 @@ void TBase::playlistHasFinished() {
 }
 
 void TBase::onStateChanged(TCore::State state) {
-	qDebug("Gui::TBase::onStateChanged: %s", core->stateToString().toUtf8().data());
+	qDebug("Gui::TBase::onStateChanged: new state \"%s\"", core->stateToString().toUtf8().data());
 
 	switch (state) {
 		case TCore::Playing:

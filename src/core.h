@@ -428,7 +428,7 @@ protected slots:
 	void fileReachedEnd();
 
 	void gotCurrentSec(double sec);
-	void gotPause();
+	void onReceivedPause();
 	void gotVideoOutResolution(int w, int h);
 	void gotVO(const QString&);
 	void gotAO(const QString&);
