@@ -298,6 +298,7 @@ void TPlayerWindow::startDragging() {
 }
 
 void TPlayerWindow::stopDragging() {
+	qDebug("TPlayerWindow::stopDragging");
 
 	dragging = false;
 	QApplication::restoreOverrideCursor();
@@ -361,9 +362,11 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 // Returning false will cancel the event.
 bool TPlayerWindow::checkDragging(QMouseEvent* event) {
 
+	// Don't kill double click
 	if (double_clicked)
 		return true;
 
+	// Clear kill_fake_event
 	bool kill = kill_fake_event;
 	kill_fake_event = false;
 
@@ -375,20 +378,20 @@ bool TPlayerWindow::checkDragging(QMouseEvent* event) {
 	// After the mouse has been captured, mouse release events sometimes
 	// do not come through until the mouse moved (on Qt 4.8 KDE 4.1.14.9).
 	if (left_button_pressed_time.elapsed() >= QApplication::startDragTime()) {
-		//qDebug("TPlayerWindow::mouseReleaseEvent: canceled release event taking longer as %d ms",
-		//	   QApplication::startDragTime());
+		qDebug("TPlayerWindow::mouseReleaseEvent: canceled release event taking longer as %d ms",
+			   QApplication::startDragTime());
 		return false;
 	}
 
 	// Dragging the mouse more then startDragDistance delivers a mouse release event,
-	// before the first mouse move event, while the left mouse is still down.
-	// (on Qt 4.8, KDE 4.1.14.9), Like an end-of-drag or what?
-	// Only when mouse not captured. Kill it.
+	// before the first mouse move event, while the left mouse is still down
+	// (on Qt 4.8, KDE 4.1.14.9). Like an end-of-capture or what? Kill it.
 	if (kill) {
 		QPoint pos = event->globalPos();
 		QPoint diff = pos - drag_pos;
 		if (diff.manhattanLength() > QApplication::startDragDistance()) {
-			//qDebug("TPlayerWindow::mouseReleaseEvent: killed release event");
+			qDebug("TPlayerWindow::mouseReleaseEvent: canceled release event with drag distance larger than %d",
+				   QApplication::startDragDistance());
 			return false;
 		}
 	}
