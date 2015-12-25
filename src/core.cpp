@@ -1019,11 +1019,11 @@ void TCore::frameBackStep() {
 void TCore::screenshot() {
 	qDebug("TCore::screenshot");
 
-	if ((!pref->screenshot_directory.isEmpty()) &&
-		 (QFileInfo(pref->screenshot_directory).isDir()))
-	{
-		proc->takeScreenshot(Proc::TPlayerProcess::Single, pref->subtitles_on_screenshots);
-		qDebug("TCore::screenshot: taken screenshot");
+	if (!pref->screenshot_directory.isEmpty()
+		&& QFileInfo(pref->screenshot_directory).isDir()) {
+		proc->takeScreenshot(Proc::TPlayerProcess::Single,
+							 pref->subtitles_on_screenshots);
+		qDebug("TCore::screenshot: took screenshot");
 	} else {
 		qDebug("TCore::screenshot: error: directory for screenshots not valid");
 		emit showMessage(tr("Screenshot NOT taken, folder not configured"));
@@ -1033,9 +1033,8 @@ void TCore::screenshot() {
 void TCore::screenshots() {
 	qDebug("TCore::screenshots");
 
-	if ((!pref->screenshot_directory.isEmpty()) &&
-		 (QFileInfo(pref->screenshot_directory).isDir()))
-	{
+	if (!pref->screenshot_directory.isEmpty()
+		&& QFileInfo(pref->screenshot_directory).isDir()) {
 		proc->takeScreenshot(Proc::TPlayerProcess::Multiple, pref->subtitles_on_screenshots);
 	} else {
 		qDebug("TCore::screenshots: error: directory for screenshots not valid");

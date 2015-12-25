@@ -87,16 +87,10 @@ void TPreferences::reset() {
 	screenshot_template = "cap_%F_%p_%02n";
 	screenshot_format = "jpg";
 #endif
-	screenshot_directory="";
 #ifdef PORTABLE_APP
 	screenshot_directory= "./screenshots";
 #else
-	#if QT_VERSION < 0x040400
-	QString default_screenshot_path = TPaths::configPath() + "/screenshots";
-	if (QFile::exists(default_screenshot_path)) {
-		screenshot_directory = default_screenshot_path;
-	}
-	#endif
+	screenshot_directory = "";
 #endif
 
 #ifdef CAPTURE_STREAM
@@ -414,7 +408,7 @@ void TPreferences::reset() {
        *********** */
 
 	latest_dir = QDir::homePath();
-	last_dvd_directory="";
+	last_dvd_directory = "";
 	save_dirs = true;
 
     /* **************
@@ -510,11 +504,9 @@ void TPreferences::save() {
 	setValue("screenshot_template", screenshot_template);
 	setValue("screenshot_format", screenshot_format);
 #endif
-#if QT_VERSION >= 0x040400
+	// Note: "screenshot_folder" used to be "screenshot_directory"
+	// before QT_VERSION 0x040400
 	setValue("screenshot_folder", screenshot_directory);
-#else
-	setValue("screenshot_directory", screenshot_directory);
-#endif
 
 #ifdef CAPTURE_STREAM
 	setValue("capture_directory", capture_directory);
@@ -1058,16 +1050,15 @@ void TPreferences::load() {
 	ao = value("driver/audio_output", ao).toString();
 
 	use_screenshot = value("use_screenshot", use_screenshot).toBool();
+
 #ifdef MPV_SUPPORT
 	screenshot_template = value("screenshot_template", screenshot_template).toString();
 	screenshot_format = value("screenshot_format", screenshot_format).toString();
 #endif
-#if QT_VERSION >= 0x040400
+
+	// Note: "screenshot_folder" used to be "screenshot_directory" before Qt 4.4
 	screenshot_directory = value("screenshot_folder", screenshot_directory).toString();
 	setupScreenshotFolder();
-#else
-	screenshot_directory = value("screenshot_directory", screenshot_directory).toString();
-#endif
 
 #ifdef CAPTURE_STREAM
 	capture_directory = value("capture_directory", capture_directory).toString();
@@ -1568,18 +1559,21 @@ double TPreferences::monitor_aspect_double() {
 }
 
 void TPreferences::setupScreenshotFolder() {
-#if QT_VERSION >= 0x040400
+
 	if (screenshot_directory.isEmpty()) {
-		#if QT_VERSION >= 0x050000
+
+#if QT_VERSION >= 0x050000
 		QString pdir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 		if (pdir.isEmpty()) pdir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 		if (pdir.isEmpty()) pdir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-		#else
+#else
 		QString pdir = QDesktopServices::storageLocation(QDesktopServices::PicturesLocation);
 		if (pdir.isEmpty()) pdir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
 		if (pdir.isEmpty()) pdir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-		#endif
-		if (pdir.isEmpty()) pdir = "/tmp";
+#endif
+
+		if (pdir.isEmpty())
+			pdir = "/tmp";
 		if (!QFile::exists(pdir)) {
 			qWarning("Settings::TPreferences::setupScreenshotFolder: folder '%s' does not exist. Using /tmp as fallback", pdir.toUtf8().constData());
 			pdir = "/tmp";
@@ -1594,11 +1588,9 @@ void TPreferences::setupScreenshotFolder() {
 		if (QFile::exists(default_screenshot_path)) {
 			screenshot_directory = default_screenshot_path;
 		}
-	}
-	else {
+	} else {
 		screenshot_directory = QDir::toNativeSeparators(screenshot_directory);
 	}
-#endif
 }
 
 } // namespace Settings

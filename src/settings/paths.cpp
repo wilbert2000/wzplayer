@@ -38,51 +38,46 @@ QString TPaths::config_path;
 
 void TPaths::setConfigPath(const QString& path) {
 
-	// Set config path
+	// Set config_path
 	if (path.isEmpty()) {
 
 #ifdef PORTABLE_APP
 		config_path = app_path;
 #else
-		// If a smplayer.ini exists in the app path, use that path
-		// TODO: This is the old behaviour, but should prefer ini in home dir.
-		if (QFile::exists(app_path + "/smplayer.ini")) {
-			config_path = app_path;
-		} else {
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-			const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
-			if (XDG_CONFIG_HOME != NULL) {
-				config_path = QString(XDG_CONFIG_HOME) + "/smplayer";
-			} else {
-				config_path = QDir::homePath() + "/.config/smplayer";
-			}
+		// Normal use case, use home
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+		// TODO: use APPDATA
+		config_path = QDir::homePath() + "/.smplayer";
 #else
-			config_path = QDir::homePath() + "/.smplayer";
-#endif
+		const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
+		if (XDG_CONFIG_HOME != NULL) {
+			config_path = QString(XDG_CONFIG_HOME) + "/smplayer";
+		} else {
+			config_path = QDir::homePath() + "/.config/smplayer";
 		}
 #endif
+
+#endif
+
+	} else {
+		config_path = path;
 	}
+	qDebug("Settings::TPaths::setConfigPath: config directory set to \"%s\"", config_path.toUtf8().constData());
 
 	// Create config directory
 #ifndef PORTABLE_APP
 	if (!QFile::exists(config_path)) {
 		QDir d;
-		if (!d.mkdir(config_path)) {
-			qWarning("Settings::TPaths::setConfigPath: failed to create %s", config_path.toUtf8().data());
+		if (d.mkdir(config_path)) {
+			qDebug("Settings::TPaths::setConfigPath: created config dir \"%s\"", config_path.toUtf8().constData());
+		} else {
+			qWarning("Settings::TPaths::setConfigPath: failed to create \"%s\"", config_path.toUtf8().constData());
 		}
-
-		// Screenshot folder already created in preferences.cpp if Qt >= 4.4
-#if QT_VERSION < 0x040400
-		QString s = config_path + "/screenshots";
-		if (!d.mkdir(s)) {
-			qWarning("Settings::TPaths::setConfigPath: failed to create %s", s.toUtf8().data());
-		}
-#endif
 	}
 #endif
 
-}
+} // void TPaths::setConfigPath(const QString& path)
 
 QString TPaths::dataPath() {
 
