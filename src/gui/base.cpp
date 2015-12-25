@@ -1939,21 +1939,21 @@ void TBase::checkPendingActionsToRun() {
 void TBase::checkIfUpgraded() {
 	qDebug("Gui::TBase::checkIfUpgraded");
 
-	if ((pref->check_if_upgraded) && (pref->smplayer_stable_version != Version::stable())) {
+	if (pref->check_if_upgraded && pref->smplayer_stable_version != Version::stable()) {
 		// Running a new version
 		qDebug("Gui::TBase::checkIfUpgraded: running a new version: %s", Version::stable().toUtf8().constData());
 		QString os = "other";
-		#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
 		os = "win";
-		#endif
-		#ifdef Q_OS_LINUX
+#endif
+#ifdef Q_OS_LINUX
 		os = "linux";
-		#endif
+#endif
 		QDesktopServices::openUrl(QString(URL_THANK_YOU "?version=%1&so=%2").arg(Version::printable()).arg(os));
 	}
 	pref->smplayer_stable_version = Version::stable();
 }
-#endif
+#endif // ifdef CHECK_UPGRADED
 
 #ifdef YOUTUBE_SUPPORT
 void TBase::YTNoSslSupport() {
