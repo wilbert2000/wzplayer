@@ -203,7 +203,8 @@ void TAutoHideTimer::onTimeOut() {
 
 	// Handle widgets
 	if (autoHide && enabled && visibleWidget()) {
-		if (QApplication::mouseButtons() || mouseInsideShowArea()) {
+		if ((QApplication::mouseButtons() & Qt::RightButton)
+			|| mouseInsideShowArea()) {
 			QTimer::start();
 		} else {
 			setVisible(false);
@@ -227,8 +228,10 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 	}
 
 	// Handle widgets
-	if (autoHide && enabled) {
-		if (mouse && hiddenWidget()) {
+	if (autoHide && enabled && mouse) {
+		// Don't show when left button still down, like when dragging
+		if (((QApplication::mouseButtons() & Qt::LeftButton) == 0)
+			&& hiddenWidget()) {
 			if (pref->floating_activation_area == Settings::TPreferences::Anywhere
 				|| button) {
 				setVisible(true);
