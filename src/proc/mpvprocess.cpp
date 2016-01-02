@@ -458,8 +458,7 @@ bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx,
 	bool idle = rx.cap(5) == "yes";
 
 	if (paused) {
-		//qDebug("Proc::TMPVProcess::parseStatusLine: paused");
-		emit receivedPause();
+		// Don't emit signal receivedPause(): it is racy and not needed for MPV
 		return true;
 	}
 

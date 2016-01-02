@@ -2997,19 +2997,11 @@ void TCore::gotCurrentSec(double sec) {
 	}
 }
 
+// MPlayer only
 void TCore::onReceivedPause() {
-	//qDebug("TCore::onReceivedPause");
+	qDebug("TCore::onReceivedPause");
 
-	if (isMPV()) {
-		// MPlayer sends one receivedPause
-		setState(Paused);
-	} else {
-		// TMPVProcess repeats sending receivedPause signals which creates a
-		// race. When it is paused and play is triggered, play can be followed
-		// by a still pending receivedPause from before triggering play, which
-		// would, if passed to setState(), wrongly return the state back from
-		// playing to paused.
-	}
+	setState(Paused);
 }
 
 void TCore::changeDeinterlace(int ID) {
