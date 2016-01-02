@@ -91,26 +91,12 @@ void TAutoHideTimer::setVisible(bool visible) {
 
 	settingVisible = true;
 
-	// Disable updates of main window
-	//QWidget* w = qobject_cast<QWidget*>(parent());
-	//bool updates = true;
-	//if (w) {
-	//	updates = w->updatesEnabled();
-	//	w->setUpdatesEnabled(false);
-	//}
-
 	for(int i = 0; i < actions.size(); i++) {
 		QAction* action = actions[i];
 		if (action->isChecked() != visible) {
 			action->trigger();
 		}
 	}
-
-	//if (w) {
-	//	w->setUpdatesEnabled(updates);
-	//	if (updates)
-	//		w->update();
-	//}
 
 	settingVisible = false;
 }
