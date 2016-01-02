@@ -47,7 +47,7 @@ void TPaths::setConfigPath(const QString& path) {
 
 		// Normal use case, use home
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		// TODO: use APPDATA
+		// TODO: use APPDATA or QDesktopServices::DataLocation
 		config_path = QDir::homePath() + "/.smplayer";
 #else
 		const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
