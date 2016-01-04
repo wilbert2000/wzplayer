@@ -2403,7 +2403,7 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 }
 
 void TBase::resizeEvent(QResizeEvent* event) {
-	qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous();
+	//qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous();
 
 	QMainWindow::resizeEvent(event);
 	emit mainWindowResizeEvent(event);
