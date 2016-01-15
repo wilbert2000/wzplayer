@@ -46,11 +46,11 @@ TLog::~TLog() {
 	qDebug("TLog::~Tlog: closing log at %s",
 			QDateTime::currentDateTime().toString().toUtf8().data());
 
-	// Close log file
-	file.close();
-
 	// Stop handling messages
 	log = 0;
+
+	// Close log file
+	file.close();
 }
 
 void TLog::setLogFileEnabled(bool log_file_enabled) {
@@ -137,7 +137,9 @@ void TLog::msgHandler(QtMsgType type, const char* p_msg) {
 	QString msg = QString::fromUtf8(p_msg);
 #endif
 
-	if (log && (type != QtDebugMsg || (log->isEnabled() && log->passesFilter(msg)))) {
+	if (log
+		&& (type != QtDebugMsg
+			|| (log->isEnabled() && log->passesFilter(msg)))) {
 		log->logLine(type, msg);
 	}
 }
