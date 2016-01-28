@@ -1870,7 +1870,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 #ifndef Q_OS_WIN
 	if (isMPV() && file.startsWith("dvb:")) {
-		QString channels_file = Gui::TTVList::findChannelsFile();
+		QString channels_file = Gui::Action::TTVList::findChannelsFile();
 		qDebug("TCore::startPlayer: channels_file: %s", channels_file.toUtf8().constData());
 		if (!channels_file.isEmpty())
 			proc->setChannelsFile(channels_file);

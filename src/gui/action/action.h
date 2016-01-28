@@ -25,6 +25,7 @@
 #include <QKeySequence>
 
 namespace Gui {
+namespace Action {
 
 class TAction : public QAction {
 public:
@@ -54,7 +55,9 @@ private:
 	QString text_en;
 
 	void retranslateStrings();
-};
+}; // class TAction
+
+} // namespace Action
 
 } // namespace Gui
 

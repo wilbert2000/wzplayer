@@ -13,6 +13,8 @@ namespace Gui {
 
 class TBase;
 
+namespace Action {
+
 class TVideoSizeGroup : public TActionGroup {
 	Q_OBJECT
 public:
@@ -61,8 +63,9 @@ private slots:
 	void onZoomChanged(double);
 	void onMainWindowResizeEvent(QResizeEvent* event);
 	void optimizeSizeFactor();
-};
+}; // class TMenuVideoSize
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_VIDEOSIZEMENU_H

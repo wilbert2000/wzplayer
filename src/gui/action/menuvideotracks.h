@@ -7,6 +7,8 @@
 class TCore;
 
 namespace Gui {
+namespace Action {
+
 
 class TAction;
 class TActionGroup;
@@ -23,8 +25,9 @@ private:
 	TActionGroup* videoTrackGroup;
 private slots:
 	void updateVideoTracks();
-};
+}; // class TMenuVideoTracks
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_MENUVIDEOTRACKS_H

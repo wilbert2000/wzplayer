@@ -11,6 +11,8 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
+
 
 class TMenuDeinterlace : public TMenu {
 public:
@@ -387,4 +389,5 @@ void TMenuVideo::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
 	mirrorAct->setChecked(mset->mirror);
 }
 
+} // namespace Action
 } // namespace Gui

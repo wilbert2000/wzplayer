@@ -59,6 +59,7 @@
 #include <QDialogButtonBox>
 
 namespace Gui {
+namespace Action {
 
 #if 1
 
@@ -347,14 +348,14 @@ void TShortcutGetter::textChanged(const QString & text) {
 
 // Added by rvm
 void TShortcutGetter::addItemClicked() {
-	qDebug("Gui::TShortcutGetter::addItemClicked");
+	qDebug("Gui::Action::TShortcutGetter::addItemClicked");
 	list->addItem("");
 	list->setCurrentRow(list->count()-1); // Select last item
 }
 
 // Added by rvm
 void TShortcutGetter::removeItemClicked() {
-	qDebug("Gui::TShortcutGetter::removeItemClicked");
+	qDebug("Gui::Action::TShortcutGetter::removeItemClicked");
 	if (list->count() > 1) {
 		QListWidgetItem* i = list->takeItem(list->currentRow());
 		if (i) delete i;
@@ -382,7 +383,7 @@ QString TShortcutGetter::exec(const QString& s)
 		for (int n = 0; n < list->count(); n++) {
 			QString shortcut = list->item(n)->text();
 			if (!shortcut.isEmpty()) {
-				//qDebug("Gui::TShortcutGetter::exec: shortcut: '%s'", shortcut.toUtf8().constData());
+				//qDebug("Gui::Action::TShortcutGetter::exec: shortcut: '%s'", shortcut.toUtf8().constData());
 				l << shortcut;
 			}
 		}
@@ -494,6 +495,7 @@ void TShortcutGetter::setText()
 	//leKey->selectAll();
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_shortcutgetter.cpp"

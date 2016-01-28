@@ -8,6 +8,8 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
+
 
 TMenuVideoFilter::TMenuVideoFilter(QWidget *parent, TCore *c)
 	: TMenu(parent, this, "videofilter_menu", QT_TR_NOOP("F&ilters"), "video_filters")
@@ -125,4 +127,5 @@ void TMenuVideoFilter::onAboutToShowUnSharp() {
 	unsharpGroup->setChecked(core->mset.current_unsharp);
 }
 
+} // namespace Action
 } // namespace Gui

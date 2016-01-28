@@ -8,6 +8,8 @@
 #include <QDebug>
 
 namespace Gui {
+namespace Action {
+
 
 TSizeGrip::TSizeGrip(QWidget* parent, QToolBar* tb)
 	: QToolBar(parent)
@@ -147,4 +149,5 @@ bool TSizeGrip::event(QEvent* e) {
 	return QToolBar::event(e);
 }
 
+} // namespace Action
 } // namespace Gui

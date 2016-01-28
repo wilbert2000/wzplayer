@@ -94,6 +94,7 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 */
 
 namespace Gui {
+namespace Action {
 
 #define COL_CONFLICTS 0
 #define COL_SHORTCUT 1
@@ -262,7 +263,7 @@ void TActionsEditor::updateView() {
 
 
 void TActionsEditor::applyChanges() {
-	qDebug("Gui::TActionsEditor::applyChanges");
+	qDebug("Gui::Action::TActionsEditor::applyChanges");
 
 	for (int row = 0; row < (int)actionsList.size(); ++row) {
 		QAction* action = actionsList[row];
@@ -273,7 +274,7 @@ void TActionsEditor::applyChanges() {
 
 #if !USE_SHORTCUTGETTER
 void TActionsEditor::recordAction(QTableWidgetItem* i) {
-	//qDebug("Gui::TActionsEditor::recordAction");
+	//qDebug("Gui::Action::TActionsEditor::recordAction");
 
 	if (i->column() == COL_SHORTCUT) {
 		oldAccelText = i->text();
@@ -281,7 +282,7 @@ void TActionsEditor::recordAction(QTableWidgetItem* i) {
 }
 
 void TActionsEditor::validateAction(QTableWidgetItem* i) {
-	//qDebug("Gui::TActionsEditor::validateAction");
+	//qDebug("Gui::Action::TActionsEditor::validateAction");
 
 	if (dont_validate)
 		return;
@@ -429,7 +430,7 @@ void TActionsEditor::saveActionsTable() {
 }
 
 bool TActionsEditor::saveActionsTable(const QString & filename) {
-	qDebug("Gui::TActionsEditor::saveActions: '%s'", filename.toUtf8().data());
+	qDebug("Gui::Action::TActionsEditor::saveActions: '%s'", filename.toUtf8().data());
 
 	QFile f(filename);
 	if (f.open(QIODevice::WriteOnly)) {
@@ -463,7 +464,7 @@ void TActionsEditor::loadActionsTable() {
 }
 
 bool TActionsEditor::loadActionsTable(const QString& filename) {
-	qDebug("Gui::TActionsEditor::loadActions: '%s'", filename.toUtf8().data());
+	qDebug("Gui::Action::TActionsEditor::loadActions: '%s'", filename.toUtf8().data());
 
 	QRegExp rx("^(.*)\\t(.*)");
 	int row;
@@ -569,7 +570,7 @@ QString TActionsEditor::actionToString(const QAction& action) {
 	QString action_text = actionTextToDescription(action.text(), action.objectName());
 	QString action_icon_text = actionTextToDescription(action.iconText(), action.objectName());
 	if (action_text != action_icon_text) {
-		qDebug() << "Gui::TActionsEditor::actionToString: name" << action.objectName()
+		qDebug() << "Gui::Action::TActionsEditor::actionToString: name" << action.objectName()
 				 << "text" << action.text()
 				 << "icon text" << action.iconText();
 		s += "\t" + action.iconText();
@@ -579,7 +580,7 @@ QString TActionsEditor::actionToString(const QAction& action) {
 }
 
 void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
-	qDebug("Gui::TActionsEditor::saveToConfig");
+	qDebug("Gui::Action::TActionsEditor::saveToConfig");
 
 	set->beginGroup("actions");
 
@@ -593,7 +594,7 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 			QString action_name = action->objectName();
 			if (!action_name.isEmpty()) {
 				if (action->inherits("QWidgetAction")) {
-					//qDebug() << "Gui::TActionsEditor::saveToConfig: skipping QWidgetAction"
+					//qDebug() << "Gui::Action::TActionsEditor::saveToConfig: skipping QWidgetAction"
 					//		 << action_name;
 				} else {
 					set->setValue(action->objectName(), actionToString(*action));
@@ -610,7 +611,7 @@ void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCut
 	if (shortcuts.isEmpty()) {
 		TShortCutList remove = skip_action->shortcuts();
 		if (!remove.isEmpty()) {
-			qDebug() << "Gui::TActionsEditor::removeShortcuts: removing shortcuts"
+			qDebug() << "Gui::Action::TActionsEditor::removeShortcuts: removing shortcuts"
 					 << remove << "from" << skip_action->objectName();
 		}
 		return;
@@ -623,7 +624,7 @@ void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCut
 			bool removed = false;
 			for(int n = 0; n < shortcuts.size(); n++) {
 				if (l.removeOne(shortcuts[n])) {
-					qDebug() << "Gui::TActionsEditor::removeShortcuts: removing shortcut"
+					qDebug() << "Gui::Action::TActionsEditor::removeShortcuts: removing shortcut"
 							 << shortcuts[n] << "from" << action->objectName()
 							 << "to assign it to" << skip_action->objectName();
 					removed = true;
@@ -643,7 +644,7 @@ void TActionsEditor::setActionFromString(QAction& action, const QString& s, cons
 
 	if (rx.indexIn(s) >= 0) {
 		QString shortcuts = rx.cap(1);
-		//qDebug() << "Gui::TActionsEditor::setActionFromString: setting shortcut"
+		//qDebug() << "Gui::Action::TActionsEditor::setActionFromString: setting shortcut"
 		//		 << action.objectName() << "to" << shortcuts;
 		TShortCutList l = stringToShortcuts(shortcuts);
 		removeShortcuts(actions, l, &action);
@@ -651,7 +652,7 @@ void TActionsEditor::setActionFromString(QAction& action, const QString& s, cons
 
 		QString icon_text = rx.cap(3).trimmed();
 		if (!icon_text.isEmpty()) {
-			qDebug() << "Gui::TActionsEditor::setActionFromString: setting icon text"
+			qDebug() << "Gui::Action::TActionsEditor::setActionFromString: setting icon text"
 					 << action.objectName() << "to" << icon_text;
 			action.setIconText(icon_text);
 		}
@@ -659,14 +660,14 @@ void TActionsEditor::setActionFromString(QAction& action, const QString& s, cons
 }
 
 void TActionsEditor::loadFromConfig(const TActionList& all_actions, QSettings* set) {
-	qDebug("Gui::TActionsEditor::loadFromConfig");
+	qDebug("Gui::Action::TActionsEditor::loadFromConfig");
 
 	set->beginGroup("actions");
 
 	for (int n = 0; n < all_actions.count(); n++) {
 		QAction* action = all_actions[n];
 		if (action->inherits("QWidgetAction")) {
-			//qDebug() << "Gui::TActionsEditor::loadFromConfig: skipping QWidgetAction"
+			//qDebug() << "Gui::Action::TActionsEditor::loadFromConfig: skipping QWidgetAction"
 			//		 << action->objectName();
 		} else {
 			setActionFromString(*action,
@@ -715,6 +716,7 @@ void TActionsEditor::changeEvent(QEvent* e) {
 	}
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_actionseditor.cpp"

@@ -29,8 +29,10 @@ class QListWidget;
 class QToolBar;
 
 namespace Gui {
+namespace Action {
 
 typedef QList<QAction*> TActionList;
+
 
 class TToolbarEditor : public QDialog, public Ui::TToolbarEditor {
 	Q_OBJECT
@@ -76,8 +78,9 @@ private:
 	void insertSeparator(int row, bool ns, bool fs);
 	void swapRows(int row1, int row2);
 	void setCurrentRow(int row);
-};
+}; // class TToolbarEditor
 
+} // namespace Action
 } // namespace Gui
 
 #endif // _GUI_TOOLBAR_EDITOR_H_

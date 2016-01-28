@@ -27,6 +27,9 @@
 namespace Gui {
 
 class TBase;
+
+namespace Action {
+
 class TSizeGrip;
 class TTimeSlider;
 
@@ -74,8 +77,9 @@ private slots:
 	void showContextMenu(const QPoint& pos);
 	void onTopLevelChanged(bool);
 	void reload();
-};
+}; // class TEditableToolbar
 
+} // namespace Action
 } // namesapce Gui
 
 #endif // GUI_EDITABLETOOLBAR_H

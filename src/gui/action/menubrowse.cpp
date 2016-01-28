@@ -8,6 +8,8 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
+
 
 TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "browse_menu", QT_TR_NOOP("&Browse"), "noicon")
@@ -119,7 +121,7 @@ void TMenuBrowse::enableActions(bool stopped, bool, bool) {
 }
 
 void TMenuBrowse::updateTitles() {
-	qDebug("Gui::TMenuBrowse::updateTitles");
+	qDebug("Gui::Action::TMenuBrowse::updateTitles");
 
 	titleGroup->clear();
 	if (core->mdat.titles.count() == 0) {
@@ -148,7 +150,7 @@ void TMenuBrowse::updateTitles() {
 }
 
 void TMenuBrowse::updateChapters() {
-	qDebug("Gui::TMenuBrowse::updateChapters");
+	qDebug("Gui::Action::TMenuBrowse::updateChapters");
 
 	chapterGroup->clear();
 	if (core->mdat.chapters.count() > 0) {
@@ -174,7 +176,7 @@ void TMenuBrowse::updateChapters() {
 }
 
 void TMenuBrowse::updateAngles() {
-	qDebug("Gui::TMenuBrowse::updateAngels");
+	qDebug("Gui::Action::TMenuBrowse::updateAngels");
 
 	angleGroup->clear();
 	int n_angles = 0;
@@ -197,4 +199,5 @@ void TMenuBrowse::updateAngles() {
 	anglesMenu->addActions(angleGroup->actions());
 }
 
+} // namespace Action
 } // namespace Gui

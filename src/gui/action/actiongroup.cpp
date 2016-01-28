@@ -22,6 +22,7 @@
 #include <QWidget>
 
 namespace Gui {
+namespace Action {
 
 TActionGroupItem::TActionGroupItem(QObject* parent,
 								   TActionGroup* group,
@@ -47,7 +48,7 @@ TActionGroup::TActionGroup(QObject* parent, const QString& name)
 }
 
 QAction* TActionGroup::setChecked(int ID) {
-	//qDebug("Gui::TActionGroup::setChecked: ID: %d", ID);
+	//qDebug("Gui::Action::TActionGroup::setChecked: ID: %d", ID);
 
 	QList <QAction *> l = actions();
 	for (int n = 0; n < l.count(); n++) {
@@ -74,12 +75,13 @@ void TActionGroup::clear() {
 void TActionGroup::itemTriggered(QAction* a) {
 
 	int value = a->data().toInt();
-	qDebug("Gui::TActionGroup::itemTriggered: '%s' ID: %d",
+	qDebug("Gui::Action::TActionGroup::itemTriggered: '%s' ID: %d",
 		   a->objectName().toUtf8().data(), value);
 
 	emit activated(value);
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_actiongroup.cpp"

@@ -56,8 +56,8 @@ protected:
 	QLabel* ab_section_display;
 	QLabel* video_info_display;
 
-	TAction* viewFrameCounterAct;
-	TAction* viewVideoInfoAct;
+	Action::TAction* viewFrameCounterAct;
+	Action::TAction* viewVideoInfoAct;
 
 	int last_second;
 

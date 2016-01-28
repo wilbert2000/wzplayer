@@ -7,8 +7,12 @@ class TCore;
 
 namespace Gui {
 
-class TAction;
 class TBase;
+
+namespace Action {
+
+class TAction;
+
 
 class TMenuOpen : public TMenu {
 	Q_OBJECT
@@ -21,8 +25,9 @@ private:
 	TAction* clearRecentsAct;
 private slots:
 	void clearRecentsList();
-};
+}; // class TmenuOpen
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_OPENMENU_H

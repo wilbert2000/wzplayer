@@ -8,6 +8,7 @@
 
 
 namespace Gui {
+namespace Action {
 
 class TMenuDisc : public TMenu {
 public:
@@ -144,7 +145,7 @@ TMenuOpen::TMenuOpen(TBase* parent, TCore* core, QWidget* playlist)
 }
 
 void TMenuOpen::updateRecents() {
-	qDebug("Gui::TMenuOpen::updateRecents");
+	qDebug("Gui::Action::TMenuOpen::updateRecents");
 
 	recentfiles_menu->clear();
 
@@ -200,4 +201,5 @@ void TMenuOpen::clearRecentsList() {
 	}
 }
 
+} // namespace Action
 } // namespace Gui

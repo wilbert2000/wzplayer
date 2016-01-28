@@ -7,9 +7,11 @@
 class TCore;
 
 namespace Gui {
+namespace Action {
 
 class TAction;
 class TActionGroup;
+
 
 class TMenuVideoFilter : public TMenu {
 	Q_OBJECT
@@ -49,8 +51,9 @@ private:
 private slots:
 	void onAboutToShowDenoise();
 	void onAboutToShowUnSharp();
-};
+}; // class TMenuVideoFilter
 
+} // namespace Action
 } // namespace GUI
 
 #endif // GUI_VIDEOFILTERMENU_H

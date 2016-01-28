@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>Gui::TFavoriteEditor</class>
- <widget class="QDialog" name="Gui::TFavoriteEditor" >
+ <class>Gui::Action::TFavoriteEditor</class>
+ <widget class="QDialog" name="Gui::Action::TFavoriteEditor" >
   <property name="geometry" >
    <rect>
     <x>0</x>

@@ -9,9 +9,11 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
+
 
 void execPopup(QWidget* w, QMenu* popup, QPoint p) {
-	//qDebug() << "Gui::execPopup:" << p;
+	//qDebug() << "Gui::Action::execPopup:" << p;
 
 	// Keep inside desktop
 	QSize s = popup->sizeHint();
@@ -96,7 +98,7 @@ void TMenu::enableActions(bool stopped, bool video, bool audio) {
 	Q_UNUSED(stopped)
 	Q_UNUSED(video)
 	Q_UNUSED(audio)
-	//qDebug() << "Gui::TMenu::enableActions:" << menuAction()->objectName() << "always enabled";
+	//qDebug() << "Gui::Action::TMenu::enableActions:" << menuAction()->objectName() << "always enabled";
 }
 
 void TMenu::onMediaSettingsChanged(Settings::TMediaSettings*) {
@@ -125,5 +127,6 @@ void TMenu::addActionsTo(QWidget* w) {
 	}
 }
 
+} // namespace Action
 } // namespace Gui
 

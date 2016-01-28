@@ -28,6 +28,8 @@
 
 
 namespace Gui {
+namespace Action {
+
 
 TSlider::TSlider(QWidget* parent) : QSlider(parent) {
 
@@ -37,7 +39,7 @@ TSlider::TSlider(QWidget* parent) : QSlider(parent) {
 		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
 				this, SLOT(setOrientation(Qt::Orientation)));
 	} else {
-		//qDebug() << "Gui::TSlider::TSlider: Got non toolbar as parent" << parent;
+		//qDebug() << "Gui::Action::TSlider::TSlider: Got non toolbar as parent" << parent;
 		setOrientation(Qt::Horizontal);
 	}
 }
@@ -88,6 +90,7 @@ void TSlider::mousePressEvent(QMouseEvent* event) {
 	}
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_slider.cpp"

@@ -33,6 +33,7 @@ class QSettings;
 class QPushButton;
 
 namespace Gui {
+namespace Action {
 
 typedef QList<QAction*> TActionList;
 typedef QList<QKeySequence> TShortCutList;
@@ -109,6 +110,7 @@ private:
 	static void removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action);
 };
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_ACTIONSEDITOR_H

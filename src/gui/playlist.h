@@ -24,7 +24,6 @@
 #include <QStringList>
 #include <QWidget>
 #include "gui/action/action.h"
-#include "gui/tablewidget.h"
 
 class QToolBar;
 class TCore;
@@ -34,6 +33,9 @@ class QToolButton;
 class QTimer;
 
 namespace Gui {
+
+class TTableWidget;
+
 
 class TPlaylistItem {
 
@@ -204,27 +206,27 @@ protected:
 	QToolButton* add_button;
 	QToolButton* remove_button;
 
-	TAction* openAct;
-	TAction* saveAct;
-	TAction* playAct;
-	TAction* prevAct;
-	TAction* nextAct;
-	TAction* repeatAct;
-	TAction* shuffleAct;
+	Action::TAction* openAct;
+	Action::TAction* saveAct;
+	Action::TAction* playAct;
+	Action::TAction* prevAct;
+	Action::TAction* nextAct;
+	Action::TAction* repeatAct;
+	Action::TAction* shuffleAct;
 
-	TAction* moveUpAct;
-	TAction* moveDownAct;
-	TAction* editAct;
+	Action::TAction* moveUpAct;
+	Action::TAction* moveDownAct;
+	Action::TAction* editAct;
 
-	TAction* addCurrentAct;
-	TAction* addFilesAct;
-	TAction* addDirectoryAct;
-	TAction* addUrlsAct;
+	Action::TAction* addCurrentAct;
+	Action::TAction* addFilesAct;
+	Action::TAction* addDirectoryAct;
+	Action::TAction* addUrlsAct;
 
-	TAction* removeSelectedAct;
-	TAction* removeAllAct;
+	Action::TAction* removeSelectedAct;
+	Action::TAction* removeAllAct;
 
-	TAction* deleteSelectedFileFromDiskAct;
+	Action::TAction* deleteSelectedFileFromDiskAct;
 
 private:
 	bool modified;

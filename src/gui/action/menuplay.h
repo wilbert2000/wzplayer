@@ -6,9 +6,13 @@
 
 namespace Gui {
 
-class TAction;
 class TPlaylist;
+
+namespace Action {
+
+class TAction;
 class TSeekingButton;
+
 
 class TMenuPlay : public TMenu {
 	Q_OBJECT
@@ -43,8 +47,9 @@ private:
 	TAction* gotoAct;
 private slots:
 	void onStateChanged(TCore::State state);
-};
+}; // class TMenuPlay
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_PLAYMENU_H

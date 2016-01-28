@@ -34,9 +34,10 @@
 class QLineEdit;
 
 namespace Gui {
+namespace Action {
 
-class TShortcutGetter : public QDialog
-{
+
+class TShortcutGetter : public QDialog {
 	Q_OBJECT
 
 public:
@@ -69,8 +70,9 @@ private:
 	QListWidget* list;
 	QPushButton* addItem;
 	QPushButton* removeItem;
-};
+}; // class TShortcutGetter
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_SHORTCUTGETTER_H

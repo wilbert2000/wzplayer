@@ -9,6 +9,8 @@ class TMediaSettings;
 }
 
 namespace Gui {
+namespace Action {
+
 
 // Evade mouse before popping up
 void execPopup(QWidget* w, QMenu* popup, QPoint p);
@@ -40,8 +42,9 @@ protected slots:
 
 private:
 	void retranslateStrings();
-};
+}; // class TMenu
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_MENU_H

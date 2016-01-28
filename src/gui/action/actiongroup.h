@@ -24,6 +24,7 @@
 #include "gui/action/action.h"
 
 namespace Gui {
+namespace Action {
 
 class TActionGroup;
 
@@ -62,6 +63,7 @@ protected slots:
 	void itemTriggered(QAction*);
 };
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_ACTIONGROUP_H

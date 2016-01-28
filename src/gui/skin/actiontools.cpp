@@ -23,7 +23,7 @@ namespace Gui {
 namespace Skin {
 
 void TActionTools::setActionToButton(TButton* button, const QString& name, QList<QAction*> actions) {
-	TAction* a = static_cast<TAction*>(findAction(name, actions));
+	Action::TAction* a = static_cast<Action::TAction*>(findAction(name, actions));
 	if (a) button->setAction(a);
 }
 

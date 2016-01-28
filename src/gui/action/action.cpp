@@ -24,6 +24,7 @@
 
 
 namespace Gui {
+namespace Action {
 
 TAction::TAction (QObject* parent,
 				  const QString& name,
@@ -85,4 +86,5 @@ void TAction::setTextAndTip(const QString& text) {
 	}
 }
 
+} // namespace Action
 } // namespace Gui

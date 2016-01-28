@@ -71,6 +71,9 @@ using namespace Settings;
 
 namespace Gui {
 
+using namespace Action;
+
+
 TPlaylistItem::TPlaylistItem()
 	: _duration(0)
 	, _played(false)
@@ -232,6 +235,7 @@ void TPlaylist::createActions() {
 
 	deleteSelectedFileFromDiskAct = new Gui::TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete file from disk"), "noicon");
 	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
+
 }
 
 void TPlaylist::createToolbar() {
@@ -820,7 +824,7 @@ void TPlaylist::showContextMenu(const QPoint & pos) {
 	qDebug("Gui::TPlaylist::showContextMenu: x: %d y: %d", pos.x(), pos.y());
 
 	if (!popup->isVisible()) {
-		execPopup(this, popup, listView->viewport()->mapToGlobal(pos));
+		Action::execPopup(this, popup, listView->viewport()->mapToGlobal(pos));
 	}
 }
 

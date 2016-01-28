@@ -20,14 +20,15 @@
 #define _PREF_INPUT_H_
 
 #include "gui/pref/widget.h"
-#include "ui_input.h"
 #include "settings/preferences.h"
+#include "ui_input.h"
 
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
-class TInput : public TWidget, public Ui::TInput
-{
+
+class TInput : public TWidget, public Ui::TInput {
 	Q_OBJECT
 
 public:
@@ -77,8 +78,9 @@ protected:
 
 protected:
 	virtual void retranslateStrings();
-};
+}; // class TInput
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
 #endif // _PREF_INPUT_H_

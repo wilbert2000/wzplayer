@@ -7,6 +7,7 @@
 class TCore;
 
 namespace Gui {
+namespace Action {
 
 class TAction;
 class TActionGroup;
@@ -23,8 +24,9 @@ private:
 	TActionGroup* audioTrackGroup;
 private slots:
 	void updateAudioTracks();
-};
+}; // class TMenuAudioTracks
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_MENUAUDIOTRACKS_H

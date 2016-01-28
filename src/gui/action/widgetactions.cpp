@@ -25,6 +25,7 @@
 #include "gui/action/timeslider.h"
 
 namespace Gui {
+namespace Action {
 
 TWidgetAction::TWidgetAction(QWidget* parent)
 	: QWidgetAction(parent)
@@ -73,7 +74,7 @@ void TTimeSliderAction::setPos(int v) {
 }
 
 void TTimeSliderAction::setDuration(double t) {
-	//qDebug() << "Gui::TTimeSliderAction::setDuration:" << t;
+	//qDebug() << "Gui::Action::TTimeSliderAction::setDuration:" << t;
 
 	total_time = t;
 	QList<QWidget*> l = createdWidgets();
@@ -120,7 +121,7 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 }
 
 void TVolumeSliderAction::setValue(int v) {
-	//qDebug("Gui::TVolumeSliderAction::setValue: %d", v);
+	//qDebug("Gui::Action::TVolumeSliderAction::setValue: %d", v);
 
 	volume = v;
 	QList<QWidget*> l = createdWidgets();
@@ -150,7 +151,7 @@ void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 }
 
 void TVolumeSliderAction::valueSliderChanged(int value) {
-	//qDebug("Gui::TVolumeSliderAction::valueSliderChanged: %d", value);
+	//qDebug("Gui::Action::TVolumeSliderAction::valueSliderChanged: %d", value);
 
 	volume = value;
 	emit valueChanged(value);
@@ -238,6 +239,7 @@ QWidget* TSeekingButton::createWidget(QWidget* parent) {
 	return button;
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_widgetactions.cpp"

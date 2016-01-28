@@ -50,11 +50,11 @@ TBasePlus::TBasePlus()
 	connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
-	quitAct = new TAction(this, "quit", QT_TR_NOOP("&Quit"), "exit", QKeySequence("Ctrl+Q"));
+	quitAct = new Action::TAction(this, "quit", QT_TR_NOOP("&Quit"), "exit", QKeySequence("Ctrl+Q"));
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
 	openMenu->addAction(quitAct);
 
-	showTrayAct = new TAction(this, "show_tray_icon", QT_TR_NOOP("S&how icon in system tray"), "systray");
+	showTrayAct = new Action::TAction(this, "show_tray_icon", QT_TR_NOOP("S&how icon in system tray"), "systray");
 	showTrayAct->setCheckable(true);
 	connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
 
@@ -66,7 +66,7 @@ TBasePlus::TBasePlus()
 	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(trayAvailable()));
 #endif
 
-	showAllAct = new TAction(this, "restore_hide", QT_TR_NOOP("&Hide"));
+	showAllAct = new Action::TAction(this, "restore_hide", QT_TR_NOOP("&Hide"));
 	connect(showAllAct, SIGNAL(triggered()),
 			 this, SLOT(toggleShowAll()));
 

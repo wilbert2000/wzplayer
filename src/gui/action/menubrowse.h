@@ -8,9 +8,11 @@
 class TCore;
 
 namespace Gui {
+namespace Action {
 
 class TAction;
 class TActionGroup;
+
 
 class TMenuBrowse : public TMenu {
 	Q_OBJECT
@@ -54,8 +56,9 @@ private slots:
 	void updateTitles();
 	void updateChapters();
 	void updateAngles();
-};
+}; // class TMenuBrowse
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_BROWSEMENU_H

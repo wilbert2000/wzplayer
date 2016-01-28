@@ -7,6 +7,7 @@
 class TCore;
 
 namespace Gui {
+namespace Action {
 
 class TAction;
 
@@ -19,6 +20,7 @@ public:
 				 QWidget* logWindow);
 };
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_OPTIONSMENU_H

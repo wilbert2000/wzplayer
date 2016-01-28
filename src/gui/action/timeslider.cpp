@@ -26,6 +26,8 @@
 
 
 namespace Gui {
+namespace Action {
+
 
 TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
 	: TSlider(parent)
@@ -61,7 +63,7 @@ QSize TTimeSlider::sizeHint() const {
 		s.rwidth() = savedSize;
 	else
 		s.rheight() = savedSize;
-	//qDebug() << "Gui::TTimeSlider::sizeHint: size" << size() << "hint" << s;
+	//qDebug() << "Gui::Action::TTimeSlider::sizeHint: size" << size() << "hint" << s;
 	return s;
 }
 
@@ -72,7 +74,7 @@ QSize TTimeSlider::minimumSizeHint() const {
 		s.rwidth() = SLIDER_MIN_SIZE;
 	else
 		s.rheight() = SLIDER_MIN_SIZE;
-	//qDebug() << "Gui::TTimeSlider::minimumSizeHint: size" << size() << "hint" << s;
+	//qDebug() << "Gui::Action::TTimeSlider::minimumSizeHint: size" << size() << "hint" << s;
 	return s;
 }
 
@@ -82,11 +84,11 @@ void TTimeSlider::saveSizeHint() {
 	savedSize = orientation() == Qt::Horizontal ? width() : height();
 	if (savedSize < SLIDER_MIN_SIZE)
 		savedSize = SLIDER_MIN_SIZE;
-	//qDebug() << "Gui::TTimeSlider::saveSizeHint: size" << size() << "saved size" << savedSize;
+	//qDebug() << "Gui::Action::TTimeSlider::saveSizeHint: size" << size() << "saved size" << savedSize;
 }
 
 void TTimeSlider::resizeEvent(QResizeEvent* event) {
-	//qDebug() << "Gui::TTimeSlider::resizeEvent:"
+	//qDebug() << "Gui::Action::TTimeSlider::resizeEvent:"
 	//		 << "from" << event->oldSize() << "to" << size();
 
 	TSlider::resizeEvent(event);
@@ -160,7 +162,7 @@ void TTimeSlider::sendDelayedPos() {
 }
 
 void TTimeSlider::wheelEvent(QWheelEvent* e) {
-	//qDebug("Gui::TTimeSlider::wheelEvent: delta: %d", e->delta());
+	//qDebug("Gui::Action::TTimeSlider::wheelEvent: delta: %d", e->delta());
 
 	e->accept();
 	if (e->orientation() == Qt::Vertical) {
@@ -169,7 +171,7 @@ void TTimeSlider::wheelEvent(QWheelEvent* e) {
 		else
 			emit wheelDown();
 	} else {
-		qDebug("Gui::TTimeslider::wheelEvent: horizontal event received, doing nothing");
+		qDebug("Gui::Action::TTimeslider::wheelEvent: horizontal event received, doing nothing");
 	}
 }
 
@@ -191,6 +193,7 @@ bool TTimeSlider::event(QEvent* event) {
 	return QWidget::event(event);
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_timeslider.cpp"

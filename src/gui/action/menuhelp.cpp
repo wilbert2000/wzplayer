@@ -2,6 +2,7 @@
 #include "gui/action/action.h"
 
 namespace Gui {
+namespace Action {
 
 TMenuHelp::TMenuHelp(QWidget* parent)
 	: TMenu(parent, this, "help_menu", QT_TR_NOOP("&Help"), "noicon") {
@@ -30,5 +31,6 @@ TMenuHelp::TMenuHelp(QWidget* parent)
 	addActionsTo(parent);
 }
 
+} // namespace Action
 } // namespace Gui
 

@@ -29,6 +29,7 @@
 #include "images.h"
 
 namespace Gui {
+namespace Action {
 
 enum cols {
 	COL_ICON = 0,
@@ -122,7 +123,7 @@ void TToolbarEditor::setAllActions(const TActionList& actions_list) {
 }
 
 void TToolbarEditor::insertRowFromAction(int row, QAction* action, bool ns, bool fs) {
-	//qDebug() << "Gui::TToolbarEditor::insertRowFromAction:" << row << action->objectName();
+	//qDebug() << "Gui::Action::TToolbarEditor::insertRowFromAction:" << row << action->objectName();
 
 	Qt::ItemFlags item_flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 	active_actions_table->insertRow(row);
@@ -253,7 +254,7 @@ void TToolbarEditor::resizeColumns() {
 }
 
 void TToolbarEditor::resizeEvent(QResizeEvent* event) {
-	//qDebug("Gui::TToolbarEditor::resizeEvent");
+	//qDebug("Gui::Action::TToolbarEditor::resizeEvent");
 
 	QDialog::resizeEvent(event);
 	resizeColumns();
@@ -337,7 +338,7 @@ void TToolbarEditor::on_left_button_clicked() {
 }
 
 void TToolbarEditor::on_separator_button_clicked() {
-	//qDebug("Gui::TToolbarEditor::on_separator_button_clicked");
+	//qDebug("Gui::Action::TToolbarEditor::on_separator_button_clicked");
 
 	int row = active_actions_table->currentRow();
 	if (row < 0)
@@ -346,7 +347,7 @@ void TToolbarEditor::on_separator_button_clicked() {
 }
 
 void TToolbarEditor::restoreDefaults() {
-	qDebug("Gui::TToolbarEditor::restoreDefaults");
+	qDebug("Gui::Action::TToolbarEditor::restoreDefaults");
 
 	setActiveActions(default_actions);
 }
@@ -360,7 +361,7 @@ bool TToolbarEditor::getVis(int row, int col) {
 }
 
 QStringList TToolbarEditor::saveActions() {
-	qDebug("Gui::TToolbarEditor::saveActions");
+	qDebug("Gui::Action::TToolbarEditor::saveActions");
 
 	QStringList list;
 
@@ -398,13 +399,13 @@ QStringList TToolbarEditor::saveActions() {
 							QString action_text = TActionsEditor::actionTextToDescription(action->text(), action_name);
 							if (action_text != action_icon_text) {
 								action->setIconText(action_icon_text);
-								qDebug() << "Gui::TToolbarEditor::saveActions: updated icon text"
+								qDebug() << "Gui::Action::TToolbarEditor::saveActions: updated icon text"
 										 << action_name << "to" << action_icon_text;
 							} else {
 								action_icon_text = TActionsEditor::actionTextToDescription(action->iconText(), action_name);
 								if (action_icon_text != action_text) {
 									action->setIconText(action_text);
-									qDebug() << "Gui::TToolbarEditor::saveActions: cleared icon text" << action_name;
+									qDebug() << "Gui::Action::TToolbarEditor::saveActions: cleared icon text" << action_name;
 								}
 							}
 						}
@@ -418,7 +419,7 @@ QStringList TToolbarEditor::saveActions() {
 }
 
 void TToolbarEditor::checkRowsAllList(int currentRow) {
-	// qDebug("Gui::TToolbarEditor::checkRowsAllList: current row: %d", currentRow);
+	// qDebug("Gui::Action::TToolbarEditor::checkRowsAllList: current row: %d", currentRow);
 	right_button->setEnabled(currentRow > -1);
 }
 
@@ -427,7 +428,7 @@ void TToolbarEditor::onCurrentCellChanged(int currentRow, int currentColumn,
 	Q_UNUSED(currentColumn)
 	Q_UNUSED(previousRow)
 	Q_UNUSED(previousColumn)
-	//qDebug("Gui::TToolbarEditor::onCurrentCellChanged");
+	//qDebug("Gui::Action::TToolbarEditor::onCurrentCellChanged");
 
 	left_button->setEnabled(currentRow >= 0);
 	if (currentRow < 0) {
@@ -450,6 +451,7 @@ QAction* TToolbarEditor::findAction(const QString& action_name, const TActionLis
 	return 0;
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_toolbareditor.cpp"

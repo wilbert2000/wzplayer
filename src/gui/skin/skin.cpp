@@ -45,10 +45,10 @@ TSkin::~TSkin() {
 void TSkin::createActions() {
 	qDebug("Gui::TSkin::createActions");
 
-	viewVideoInfoAct = new TAction(this, "toggle_video_info_skingui", QT_TR_NOOP("&Video info"), "view_video_info");
+	viewVideoInfoAct = new Action::TAction(this, "toggle_video_info_skingui", QT_TR_NOOP("&Video info"), "view_video_info");
 	viewVideoInfoAct->setCheckable(true);
 
-	scrollTitleAct = new TAction(this, "toggle_scroll_title_skingui", QT_TR_NOOP("&Scroll title"), "scroll_title");
+	scrollTitleAct = new Action::TAction(this, "toggle_scroll_title_skingui", QT_TR_NOOP("&Scroll title"), "scroll_title");
 	scrollTitleAct->setCheckable(true);
 }
 
@@ -75,8 +75,8 @@ void TSkin::createControlWidget() {
 	mediaBarPanel->setPlayControlActionCollection(actions);
 
 	actions.clear();
-	QAction* shuffleAct = TActionsEditor::findAction(playlist, "pl_shuffle");
-	QAction* repeatPlaylistAct = TActionsEditor::findAction(playlist, "pl_repeat");
+	QAction* shuffleAct = Action::TActionsEditor::findAction(playlist, "pl_shuffle");
+	QAction* repeatPlaylistAct = Action::TActionsEditor::findAction(playlist, "pl_repeat");
 	if (shuffleAct) actions << shuffleAct;
 	if (repeatPlaylistAct) actions << repeatPlaylistAct;
 	mediaBarPanel->setMediaPanelActionCollection(actions);

@@ -140,6 +140,9 @@ using namespace Settings;
 
 namespace Gui {
 
+using namespace Action;
+
+
 TBase::TBase()
 	: QMainWindow()
 	, toolbar_menu(0)
@@ -415,7 +418,7 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	showContextMenuAct = new TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
+	showContextMenuAct = new Action::TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
 
 	nextWheelFunctionAct = new TAction(this, "next_wheel_function", QT_TR_NOOP("Next wheel function"));
@@ -819,7 +822,7 @@ void TBase::loadConfig() {
 	// Get all actions with a name
 	TActionList all_actions = getAllNamedActions();
 	// Load actions from outside group derived class
-	TActionsEditor::loadFromConfig(all_actions, pref);
+	Action::TActionsEditor::loadFromConfig(all_actions, pref);
 
 	// Load from inside group derived class
 	pref->beginGroup(settingsGroupName());
@@ -995,7 +998,7 @@ void TBase::applyNewPreferences() {
 
 	// Update actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();
-	TActionsEditor::saveToConfig(this, pref);
+	Action::TActionsEditor::saveToConfig(this, pref);
 
 	// Commit changes
 	pref->save();
@@ -1849,9 +1852,9 @@ void TBase::processFunction(QString function) {
 		checkableFunction = true;
 	}
 
-	QAction* action = TActionsEditor::findAction(this, function);
+	QAction* action = Action::TActionsEditor::findAction(this, function);
 	if (!action)
-		action = TActionsEditor::findAction(playlist, function);
+		action = Action::TActionsEditor::findAction(playlist, function);
 
 	if (action) {
 		if (action->isEnabled()) {
@@ -1892,8 +1895,9 @@ void TBase::runActions(QString actions) {
 			} //end if
 		} //end if
 
-		action = TActionsEditor::findAction(this, actionStr);
-		if (!action) action = TActionsEditor::findAction(playlist, actionStr);
+		action = Action::TActionsEditor::findAction(this, actionStr);
+		if (!action)
+			action = Action::TActionsEditor::findAction(playlist, actionStr);
 
 		if (action) {
 			qDebug("Gui::TBase::runActions: running action: '%s' (par: '%s')",

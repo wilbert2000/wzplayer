@@ -34,7 +34,6 @@
 
 class QWidget;
 class QMenu;
-
 class TPlayerWindow;
 
 #ifdef FIND_SUBTITLES
@@ -48,17 +47,22 @@ class VideoPreview;
 
 namespace Gui {
 
+namespace Action {
+
 class TAction;
-class TTimeSliderAction;
-class TVolumeSliderAction;
-class TTimeLabelAction;
-class TEditableToolbar;
 class TMenuOpen;
 class TMenuPlay;
 class TMenuVideo;
 class TMenuAudio;
 class TMenuSubtitle;
 class TMenuBrowse;
+class TEditableToolbar;
+class TTimeSliderAction;
+class TVolumeSliderAction;
+class TTimeLabelAction;
+
+}
+
 class TAutoHideTimer;
 class TLogWindow;
 class TPlaylist;
@@ -88,7 +92,7 @@ public:
 
 	TCore* getCore() { return core; }
 	TPlaylist* getPlaylist() { return playlist; }
-	TActionList getAllNamedActions();
+	Action::TActionList getAllNamedActions();
 	QMenu* getToolbarMenu() { return toolbar_menu; }
 
 	virtual void loadConfig();
@@ -311,7 +315,7 @@ protected:
 	void setDataToFileProperties();
 	void createActions();
 	void setActionsEnabled(bool);
-	TAction* findAction(const QString& name);
+	Action::TAction* findAction(const QString& name);
 	void createMenus();
 	void configureDiscDevices();
 	void setupNetworkProxy();
@@ -321,38 +325,38 @@ protected:
 	TPlayerWindow* playerwindow;
 	TCore* core;
 
-	TAction* showContextMenuAct;
-	TAction* nextWheelFunctionAct;
+	Action::TAction* showContextMenuAct;
+	Action::TAction* nextWheelFunctionAct;
 
 	// MENUS
-	TMenuOpen* openMenu;
-	TMenuPlay* playMenu;
-	TMenuVideo* videoMenu;
-	TMenuAudio* audioMenu;
-	TMenuSubtitle* subtitleMenu;
-	TMenuBrowse* browseMenu;
+	Action::TMenuOpen* openMenu;
+	Action::TMenuPlay* playMenu;
+	Action::TMenuVideo* videoMenu;
+	Action::TMenuAudio* audioMenu;
+	Action::TMenuSubtitle* subtitleMenu;
+	Action::TMenuBrowse* browseMenu;
 	QMenu* optionsMenu;
 	QMenu* helpMenu;
 
 	QMenu* popup;
 
 	// Toolbar menu
-	TAction* viewMenuBarAct;
-	TAction* editToolbarAct;
-	TAction* editToolbar2Act;
-	TAction* editControlBarAct;
-	TAction* viewStatusBarAct;
+	Action::TAction* viewMenuBarAct;
+	Action::TAction* editToolbarAct;
+	Action::TAction* editToolbar2Act;
+	Action::TAction* editControlBarAct;
+	Action::TAction* viewStatusBarAct;
 
 	QMenu* toolbar_menu;
 	QMenu* statusbar_menu;
 
-	TEditableToolbar* toolbar;
-	TEditableToolbar* toolbar2;
-	TEditableToolbar* controlbar;
+	Action::TEditableToolbar* toolbar;
+	Action::TEditableToolbar* toolbar2;
+	Action::TEditableToolbar* controlbar;
 
-	TTimeSliderAction* timeslider_action;
-	TVolumeSliderAction* volumeslider_action;
-	TTimeLabelAction* time_label_action;
+	Action::TTimeSliderAction* timeslider_action;
+	Action::TVolumeSliderAction* volumeslider_action;
+	Action::TTimeLabelAction* time_label_action;
 
 	TPlaylist* playlist;
 	TLogWindow* log_window;

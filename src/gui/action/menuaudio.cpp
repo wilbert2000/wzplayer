@@ -12,6 +12,8 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
+
 
 class TMenuAudioChannel : public TMenu {
 public:
@@ -224,4 +226,5 @@ void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {
 #endif
 }
 
+} // namespace Action
 } // namesapce Gui

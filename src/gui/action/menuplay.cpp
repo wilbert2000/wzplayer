@@ -8,6 +8,7 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
 
 class TMenuAB : public TMenu {
 public:
@@ -276,5 +277,6 @@ void TMenuPlay::retranslateStrings() {
 	setJumpTexts();
 }
 
+} // namespace Action
 } // namespace Gui
 

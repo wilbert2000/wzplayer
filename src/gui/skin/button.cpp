@@ -71,7 +71,7 @@ void TButton::leaveEvent(QEvent *)
     update();
 }
 
-void TButton::setAction(TAction *pAction)
+void TButton::setAction(Action::TAction *pAction)
 {
     action = pAction;
     if(action)

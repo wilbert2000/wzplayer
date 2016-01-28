@@ -27,6 +27,8 @@ class QAction;
 class QWidget;
 
 namespace Gui {
+namespace Action {
+
 
 class TAction;
 
@@ -125,8 +127,9 @@ protected:
 	QString received_title;
 
 	QList<TFavorites*> child;
-};
+}; // class TFavorites
 
+} // namespace Action
 } // namespace Gui
 
 #endif // _GUI_FAVORITES_H_

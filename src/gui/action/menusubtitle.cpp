@@ -7,6 +7,8 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
+
 
 class TMenuCC : public TMenu {
 public:
@@ -222,7 +224,7 @@ void TMenuSubtitle::onMediaSettingsChanged(Settings::TMediaSettings*) {
 }
 
 void TMenuSubtitle::updateSubtitles() {
-	qDebug("Gui::TMenuSubtitle::updateSubtitles");
+	qDebug("Gui::Action::TMenuSubtitle::updateSubtitles");
 
 	// Note: use idx not ID
 	subtitleTrackGroup->clear();
@@ -285,4 +287,5 @@ void TMenuSubtitle::updateSubtitles() {
 	subFPSMenu->enableActions(false, true, true);
 }
 
+} // namespace Action
 } // namespace Gui

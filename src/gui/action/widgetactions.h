@@ -27,6 +27,8 @@
 class QStyle;
 
 namespace Gui {
+namespace Action {
+
 
 class TWidgetAction : public QWidgetAction {
 	Q_OBJECT
@@ -155,6 +157,7 @@ protected:
 	TActionList _actions;
 };
 
+} // namespace Action
 } // namespace Gui
 
 #endif // _GUI_WIDGETACTIONS_H_

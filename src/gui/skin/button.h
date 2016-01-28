@@ -35,14 +35,14 @@ public:
     void setState(bool on) {state = on; }
 	void setIcon(TIcon p_icon) { icon = p_icon; }
 	TIcon getIcon() { return icon;}
-	void setAction(TAction* pAction);
+	void setAction(Action::TAction* pAction);
     bool eventFilter(QObject *watched, QEvent *event);
 
 private:
 	TIcon icon;
     bool mouseHover;
     bool state;
-	TAction* action;
+	Action::TAction* action;
 
 protected:
 	virtual void paintEvent(QPaintEvent *);

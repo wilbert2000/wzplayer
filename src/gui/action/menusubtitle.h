@@ -7,9 +7,11 @@
 class TCore;
 
 namespace Gui {
+namespace Action {
 
 class TAction;
 class TActionGroup;
+
 
 class TMenuSubFPS : public TMenu {
 public:
@@ -76,6 +78,7 @@ private slots:
 	void updateSubtitles();
 };
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_SUBTITLEMENU_H

@@ -9,10 +9,14 @@ class TPlayerWindow;
 
 namespace Gui {
 
-class TAction;
-class TActionGroup;
 class TBase;
 class TVideoEqualizer;
+
+namespace Action {
+
+class TAction;
+class TActionGroup;
+
 
 class TMenuVideo : public TMenu {
 	Q_OBJECT
@@ -64,8 +68,9 @@ private:
 
 private slots:
 	void onFullscreenChanged();
-};
+}; // class TMenuVideo
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_VIDEOMENU_H

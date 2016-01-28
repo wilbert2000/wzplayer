@@ -5,6 +5,8 @@
 
 
 namespace Gui {
+namespace Action {
+
 
 TMenuAudioTracks::TMenuAudioTracks(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "audiotrack_menu", QT_TR_NOOP("Audio &track"), "audio_track")
@@ -28,7 +30,7 @@ void TMenuAudioTracks::enableActions(bool stopped, bool, bool audio) {
 }
 
 void TMenuAudioTracks::updateAudioTracks() {
-		qDebug("Gui::TMenuAudio::updateAudioTracks");
+		qDebug("Gui::Action::TMenuAudio::updateAudioTracks");
 
 		audioTrackGroup->clear();
 
@@ -53,4 +55,5 @@ void TMenuAudioTracks::updateAudioTracks() {
 		addActions(audioTrackGroup->actions());
 	}
 
+} // namespace Action
 } // namespace Gui

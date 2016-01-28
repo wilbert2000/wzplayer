@@ -30,6 +30,8 @@
 
 
 namespace Gui {
+namespace Action {
+
 
 TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 	: QToolBar(mainwindow)
@@ -58,7 +60,7 @@ TEditableToolbar::~TEditableToolbar() {
 }
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const TActionList& all_actions) {
-	qDebug() << "Gui::TEditableToolbar::setActionsFromStringList: loading toolbar" << objectName();
+	qDebug() << "Gui::Action::TEditableToolbar::setActionsFromStringList: loading toolbar" << objectName();
 
 	clear();
 	space_eater = 0;
@@ -73,7 +75,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 		bool ns, fs;
 		TToolbarEditor::stringToAction(actions[i], action_name, ns, fs);
 		if (action_name.isEmpty()) {
-			qWarning() << "Gui::TEditableToolbar::setActionsFromStringList: malformed action"
+			qWarning() << "Gui::Action::TEditableToolbar::setActionsFromStringList: malformed action"
 					   << actions[i] << "at pos" << i;
 			actions.removeAt(i);
 		} else {
@@ -92,12 +94,12 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 								button->setPopupMode(QToolButton::InstantPopup);
 							}
 						} else if (action_name == "timeslider_action") {
-							qDebug() << "Gui::TEditableToolbar::setActionsFromStringList: found space eater"
+							qDebug() << "Gui::Action::TEditableToolbar::setActionsFromStringList: found space eater"
 									 << action_name;
 							space_eater = qobject_cast<TTimeSlider*>(widgetForAction(action));
 						}
 					} else {
-						qWarning() << "Gui::TEditableToolbar::setActionsFromStringList: action"
+						qWarning() << "Gui::Action::TEditableToolbar::setActionsFromStringList: action"
 								   << action_name << "not found";
 						actions.removeAt(i);
 						i--;
@@ -120,7 +122,7 @@ QStringList TEditableToolbar::actionsToStringList(bool remove_size_grip) {
 }
 
 void TEditableToolbar::edit() {
-	qDebug("Gui::TEditableToolbar::edit");
+	qDebug("Gui::Action::TEditableToolbar::edit");
 
 	TActionList all_actions = main_window->getAllNamedActions();
 	TToolbarEditor e(main_window);
@@ -149,7 +151,7 @@ void TEditableToolbar::reload() {
 }
 
 void TEditableToolbar::showContextMenu(const QPoint& pos) {
-	//qDebug("Gui::TEditableToolbar::showContextMenu: x: %d y: %d", pos.x(), pos.y());
+	//qDebug("Gui::Action::TEditableToolbar::showContextMenu: x: %d y: %d", pos.x(), pos.y());
 
 	QMenu* popup = main_window->getToolbarMenu();
 	if (popup) {
@@ -158,7 +160,7 @@ void TEditableToolbar::showContextMenu(const QPoint& pos) {
 }
 
 void TEditableToolbar::moveEvent(QMoveEvent* event) {
-	//qDebug("Gui::TEditableToolbar::moveEvent");
+	//qDebug("Gui::Action::TEditableToolbar::moveEvent");
 
 	QToolBar::moveEvent(event);
 	if (size_grip)
@@ -166,7 +168,7 @@ void TEditableToolbar::moveEvent(QMoveEvent* event) {
 }
 
 void TEditableToolbar::resizeEvent(QResizeEvent* event) {
-	//qDebug() << "Gui::TEditableToolbar::resizeEvent:" << objectName()
+	//qDebug() << "Gui::Action::TEditableToolbar::resizeEvent:" << objectName()
 	//		 << "from" << event->oldSize() << "to" << size()
 	//		 << "min" << minimumSizeHint();
 
@@ -181,13 +183,13 @@ void TEditableToolbar::resizeEvent(QResizeEvent* event) {
 	if (isFloating() && !fixing_size) {
 		if (orientation() == Qt::Horizontal) {
 			if (height() == TTimeSlider::SLIDER_MIN_SIZE) {
-				qDebug() << "Gui::TEditableToolbar::resizeEvent: fixing height";
+				qDebug() << "Gui::Action::TEditableToolbar::resizeEvent: fixing height";
 				fixing_size = true;
 				resize(width(), iconSize().height() + fix_size);
 				fixing_size = false;
 			}
 		} else if (width() == TTimeSlider::SLIDER_MIN_SIZE) {
-			qDebug() << "Gui::TEditableToolbar::resizeEvent: fixing width";
+			qDebug() << "Gui::Action::TEditableToolbar::resizeEvent: fixing width";
 			fixing_size = true;
 			resize(iconSize().width() + fix_size, height());
 			fixing_size = false;
@@ -210,7 +212,7 @@ void TEditableToolbar::setVisible(bool visible) {
 void TEditableToolbar::removeSizeGrip() {
 
 	if (size_grip) {
-		//qDebug("Gui::TEditableToolbar::removeSizeGrip: removing size grip");
+		//qDebug("Gui::Action::TEditableToolbar::removeSizeGrip: removing size grip");
 		size_grip->close();
 		delete size_grip;
 		size_grip = 0;
@@ -221,9 +223,9 @@ void TEditableToolbar::addSizeGrip() {
 
 	if (space_eater && isFloating()) {
 		if (size_grip) {
-			//qDebug("Gui::TEditableToolbar::addSizeGrip: size grip already added");
+			//qDebug("Gui::Action::TEditableToolbar::addSizeGrip: size grip already added");
 		} else {
-			//qDebug() << "Gui::TEditableToolbar::addSizeGrip: adding size grip";
+			//qDebug() << "Gui::Action::TEditableToolbar::addSizeGrip: adding size grip";
 			size_grip = new TSizeGrip(main_window, this);
 			connect(size_grip, SIGNAL(saveSizeHint()),
 					space_eater, SLOT(saveSizeHint()));
@@ -253,6 +255,7 @@ void TEditableToolbar::leaveEvent(QEvent* event) {
 		QTimer::singleShot(0, size_grip, SLOT(delayedHide()));
 }
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_editabletoolbar.cpp"

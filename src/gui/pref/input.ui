@@ -70,7 +70,7 @@
         </layout>
        </item>
        <item>
-        <widget class="Gui::TActionsEditor" name="actions_editor" native="true">
+        <widget class="Gui::Action::TActionsEditor" name="actions_editor" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -443,7 +443,7 @@
    <header>gui/pref/combobox.h</header>
   </customwidget>
   <customwidget>
-   <class>Gui::TActionsEditor</class>
+   <class>Gui::Action::TActionsEditor</class>
    <extends>QWidget</extends>
    <header>gui/action/actionseditor.h</header>
   </customwidget>

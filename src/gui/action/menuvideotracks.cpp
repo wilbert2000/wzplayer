@@ -5,6 +5,8 @@
 
 
 namespace Gui {
+namespace Action {
+
 
 TMenuVideoTracks::TMenuVideoTracks(QWidget *parent, TCore* c)
 	: TMenu(parent, this, "videotrack_menu", QT_TR_NOOP("&Video track"), "video_track")
@@ -28,7 +30,7 @@ void TMenuVideoTracks::enableActions(bool stopped, bool video, bool) {
 }
 
 void TMenuVideoTracks::updateVideoTracks() {
-	qDebug("Gui::TMenuVideoTracks::updateVideoTracks");
+	qDebug("Gui::Action::TMenuVideoTracks::updateVideoTracks");
 
 	videoTrackGroup->clear();
 
@@ -53,4 +55,5 @@ void TMenuVideoTracks::updateVideoTracks() {
 	addActions(videoTrackGroup->actions());
 }
 
+} // namespace Action
 } // namespace Gui

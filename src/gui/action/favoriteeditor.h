@@ -25,6 +25,8 @@
 class QPixmap;
 
 namespace Gui {
+namespace Action {
+
 
 class TFavoriteEditor : public QDialog, public Ui::TFavoriteEditor {
 	Q_OBJECT
@@ -70,6 +72,7 @@ protected:
 	QString store_path;
 };
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_FAVORITEEDITOR_H

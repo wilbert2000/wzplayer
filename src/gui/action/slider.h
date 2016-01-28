@@ -26,6 +26,8 @@
 
 
 namespace Gui {
+namespace Action {
+
 
 class TSlider : public QSlider {
 	Q_OBJECT
@@ -41,8 +43,10 @@ protected:
 		return orientation() == Qt::Horizontal ? pt.x() : pt.y();
 	}
 	int pixelPosToRangeValue(int pos) const;
-};
+}; // class TSlider
 
+
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_SLIDER_H

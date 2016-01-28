@@ -30,8 +30,7 @@ class QToolBar;
 
 namespace Gui {
 
-class TSkin : public TBasePlus
-{
+class TSkin : public TBasePlus {
 	Q_OBJECT
 
 public:
@@ -55,8 +54,8 @@ protected:
 	Skin::TMediaBarPanel* mediaBarPanel;
 	QAction* mediaBarPanelAction;
 
-	TAction* viewVideoInfoAct;
-	TAction* scrollTitleAct;
+	Action::TAction* viewVideoInfoAct;
+	Action::TAction* scrollTitleAct;
 
 	int last_second;
 

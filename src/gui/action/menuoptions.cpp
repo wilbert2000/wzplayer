@@ -7,6 +7,7 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
 
 class TMenuOSD : public TMenu {
 public:
@@ -147,4 +148,5 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 	addActionsTo(parent);
 }
 
+} // namespace Action
 } // namespace Gui

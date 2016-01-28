@@ -25,9 +25,10 @@
 class QToolBar;
 
 namespace Gui {
+namespace Action {
 
-class TTimeSlider : public TSlider
-{
+
+class TTimeSlider : public TSlider {
 	Q_OBJECT
 
 public:
@@ -80,8 +81,9 @@ private:
 
 	int savedSize;
 	bool getInitialSize;
-};
+}; // class TTimeSlider
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_TIMESLIDER_H

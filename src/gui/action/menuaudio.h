@@ -8,8 +8,12 @@ class TCore;
 
 namespace Gui {
 
-class TAction;
 class TAudioEqualizer;
+
+namespace Action {
+
+class TAction;
+
 
 class TMenuAudio : public TMenu {
 public:
@@ -42,8 +46,9 @@ private:
 
 	TAction* loadAudioAct;
 	TAction* unloadAudioAct;
-};
+}; // class TMenuAudio
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_AUDIOMENU_H

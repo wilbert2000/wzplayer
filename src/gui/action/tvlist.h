@@ -24,6 +24,8 @@
 class QWidget;
 
 namespace Gui {
+namespace Action {
+
 
 class TTVList : public TFavorites {
 	Q_OBJECT
@@ -56,11 +58,12 @@ protected:
 
 protected slots:
 	virtual void edit();
-};
+}; // class TTVList
 
+} // namespace Action
 } // namespace Gui
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::TTVList::Services)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::Action::TTVList::Services)
 
 #endif // GUI_TVLIST_H
 

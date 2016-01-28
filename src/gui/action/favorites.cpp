@@ -29,6 +29,7 @@
 #define FIRST_MENU_ENTRY 3
 
 namespace Gui {
+namespace Action {
 
 TFavorite::TFavorite() : is_subentry(false) {
 }
@@ -94,7 +95,7 @@ TFavorites::TFavorites(QWidget* parent,
 }
 
 TFavorites::~TFavorites() {
-	/* qDebug("Gui::TFavorites::~TFavorites"); */
+	/* qDebug("Gui::Action::TFavorites::~TFavorites"); */
 
 	save();
 	delete_children();
@@ -122,7 +123,7 @@ void TFavorites::populateMenu() {
 		if (f_list[n].isSubentry()) {
 
 			if (f_list[n].file() == _filename) {
-				qDebug("Gui::TFavorites::populateMenu: infinite recursion detected. Ignoring item.");
+				qDebug("Gui::Action::TFavorites::populateMenu: infinite recursion detected. Ignoring item.");
 				break;
 			}
 
@@ -225,7 +226,7 @@ bool TFavorites::anyItemAvailable() {
 }
 
 void TFavorites::next() {
-	qDebug("Gui::TFavorites::next");
+	qDebug("Gui::Action::TFavorites::next");
 
 	if (!anyItemAvailable())
 		return;
@@ -251,7 +252,7 @@ void TFavorites::next() {
 }
 
 void TFavorites::previous() {
-	qDebug("Gui::TFavorites::previous");
+	qDebug("Gui::Action::TFavorites::previous");
 
 	if (!anyItemAvailable())
 		return;
@@ -277,7 +278,7 @@ void TFavorites::previous() {
 }
 
 void TFavorites::getCurrentMedia(const QString& filename, const QString& title) {
-	qDebug("Gui::TFavorites::getCurrentMedia: '%s', '%s'",
+	qDebug("Gui::Action::TFavorites::getCurrentMedia: '%s', '%s'",
 		   filename.toUtf8().constData(), title.toUtf8().constData());
 
 	if (!filename.isEmpty()) {
@@ -293,7 +294,7 @@ void TFavorites::getCurrentMedia(const QString& filename, const QString& title) 
 void TFavorites::addCurrentPlaying() {
 
 	if (received_file_playing.isEmpty()) {
-		qDebug("Gui::TFavorites::addCurrentPlaying: received file is empty, doing nothing");
+		qDebug("Gui::Action::TFavorites::addCurrentPlaying: received file is empty, doing nothing");
 	} else {
 		TFavorite fav;
 		fav.setName(received_title.replace(",", ""));
@@ -305,7 +306,7 @@ void TFavorites::addCurrentPlaying() {
 }
 
 void TFavorites::save() {
-	qDebug("Gui::TFavorites::save");
+	qDebug("Gui::Action::TFavorites::save");
 
 	QFile f(_filename);
 	if (f.open(QIODevice::WriteOnly)) {
@@ -325,7 +326,7 @@ void TFavorites::save() {
 }
 
 void TFavorites::load() {
-	qDebug("Gui::TFavorites::load");
+	qDebug("Gui::Action::TFavorites::load");
 
 	QRegExp m3u_id("^#EXTM3U|^#M3U");
 	QRegExp info1("^#EXTINF:(.*),(.*),(.*)");
@@ -372,7 +373,7 @@ void TFavorites::load() {
 			} else {
 				fav.setFile(line);
 				if (fav.name().isEmpty()) fav.setName(line);
-				//qDebug("Gui::TFavorites::load: adding '%s' '%s'", fav.name().toUtf8().constData(), fav.file().toUtf8().constData());
+				//qDebug("Gui::Action::TFavorites::load: adding '%s' '%s'", fav.name().toUtf8().constData(), fav.file().toUtf8().constData());
 				f_list.append(fav);
 
 				// Clear data
@@ -387,7 +388,7 @@ void TFavorites::load() {
 }
 
 void TFavorites::edit() {
-	qDebug("Gui::TFavorites::edit");
+	qDebug("Gui::Action::TFavorites::edit");
 
 	TFavoriteEditor e(parent_widget);
 
@@ -402,7 +403,7 @@ void TFavorites::edit() {
 }
 
 void TFavorites::jump() {
-	qDebug("Gui::TFavorites::jump");
+	qDebug("Gui::Action::TFavorites::jump");
 
 	bool ok;
 #if QT_VERSION >= 0x050000
@@ -419,8 +420,9 @@ void TFavorites::jump() {
 		item--;
 		actions()[item + FIRST_MENU_ENTRY]->trigger();
 	}
-}
+} // class TFavorites::jump()
 
+} // namespace Action
 } // namespace Gui
 
 #include "moc_favorites.cpp"

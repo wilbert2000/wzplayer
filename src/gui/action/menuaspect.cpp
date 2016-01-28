@@ -8,6 +8,8 @@
 using namespace Settings;
 
 namespace Gui {
+namespace Action {
+
 
 TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 	: TMenu(parent, this, "aspect_menu", QT_TR_NOOP("&Aspect ratio"), "aspect")
@@ -77,4 +79,5 @@ void TMenuAspect::onAspectRatioChanged(Settings::TAspectRatio::TMenuID) {
 	upd();
 }
 
+} // namespace Action
 } // namespace Gui

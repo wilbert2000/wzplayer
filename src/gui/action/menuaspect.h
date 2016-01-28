@@ -7,6 +7,7 @@
 class TCore;
 
 namespace Gui {
+namespace Action {
 
 class TAction;
 class TActionGroup;
@@ -33,6 +34,7 @@ private slots:
 	void onAspectRatioChanged(Settings::TAspectRatio::TMenuID);
 };
 
+} // namespace Action
 } // namespace Gui
 
 #endif // GUI_MENUASPECT_H
