@@ -46,7 +46,7 @@
 #include "retrieveyoutubeurl.h"
 #endif
 
-#define CURRENT_CONFIG_VERSION 7
+#define CURRENT_CONFIG_VERSION 8
 
 
 namespace Settings {
@@ -365,7 +365,6 @@ void TPreferences::reset() {
 
 	pause_when_hidden = false;
 
-	gui = "DefaultGUI";
 	iconset = "H2O";
 
 	// Used to be default_size = QSize(683, 509);
@@ -774,8 +773,6 @@ void TPreferences::save() {
 	setValue("default_font", default_font);
 
 	setValue("pause_when_hidden", pause_when_hidden);
-
-	setValue("gui", gui);
 
 	setValue("default_size", default_size);
 
@@ -1346,8 +1343,6 @@ void TPreferences::load() {
 
 	pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
 
-	gui = value("gui", gui).toString();
-
 	default_size = value("default_size", default_size).toSize();
 
 	hide_video_window_on_audio_files = value("hide_video_window_on_audio_files", hide_video_window_on_audio_files).toBool();
@@ -1530,6 +1525,10 @@ void TPreferences::load() {
 			endGroup();
 			remove("mplayer_info");
 			remove("streaming");
+		}
+
+		if (config_version < 8) {
+			remove("gui");
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;

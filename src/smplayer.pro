@@ -18,7 +18,6 @@ DEFINES += FIND_SUBTITLES
 DEFINES += VIDEOPREVIEW
 DEFINES += YOUTUBE_SUPPORT
 DEFINES += OUTPUT_ON_CONSOLE
-DEFINES += SKINS
 DEFINES += MPRIS2
 DEFINES += UPDATE_CHECKER
 DEFINES += CHECK_UPGRADED
@@ -34,7 +33,6 @@ contains(DEFINES, SIMPLE_BUILD) {
 	DEFINES -= SINGLE_INSTANCE
 	DEFINES -= FIND_SUBTITLES
 	DEFINES -= VIDEOPREVIEW
-	DEFINES -= SKINS
 	DEFINES -= MPRIS2
 	DEFINES -= UPDATE_CHECKER
 	DEFINES -= CHECK_UPGRADED
@@ -390,22 +388,6 @@ contains(DEFINES, YOUTUBE_SUPPORT) {
 		HEADERS += youtube/ytsig.h youtube/codedownloader.h
 		SOURCES += youtube/ytsig.cpp youtube/codedownloader.cpp
 	}
-}
-
-# Skins support
-contains(DEFINES, SKINS) {
-	INCLUDEPATH += gui/skin
-	DEPENDPATH += gui/skin
-
-    HEADERS += gui/skin/icon.h gui/skin/button.h gui/skin/panelseeker.h \
-               gui/skin/playcontrol.h gui/skin/mediapanel.h \
-               gui/skin/volumecontrolpanel.h gui/skin/mediabarpanel.h \
-               gui/skin/iconsetter.h gui/skin/actiontools.h gui/skin/skin.h
-    SOURCES += gui/skin/icon.cpp gui/skin/button.cpp gui/skin/panelseeker.cpp \
-               gui/skin/playcontrol.cpp gui/skin/mediapanel.cpp \
-               gui/skin/volumecontrolpanel.cpp gui/skin/mediabarpanel.cpp \
-               gui/skin/iconsetter.cpp gui/skin/actiontools.cpp gui/skin/skin.cpp
-	FORMS += gui/skin/mediapanel.ui gui/skin/mediabarpanel.ui
 }
 
 contains(DEFINES, MPRIS2) {

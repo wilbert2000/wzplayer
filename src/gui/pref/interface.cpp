@@ -46,73 +46,26 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 	// Icon set combo
 	iconset_combo->addItem("Default");
 
-#ifdef SKINS
-	n_skins = 0;
-#endif
-
 	// User
 	QDir icon_dir = Settings::TPaths::configPath() + "/themes";
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-	for (int n=0; n < iconsets.count(); n++) {
-
-#ifdef SKINS
-		QString css_file = Settings::TPaths::configPath() + "/themes/"
-						   + iconsets[n] + "/main.css";
-		bool is_skin = QFile::exists(css_file);
-		if (is_skin) {
-			skin_combo->addItem(iconsets[n]);
-			n_skins++;
-		}
-		else
-#endif
-		iconset_combo->addItem(iconsets[n]);
-	}
 
 	// Global
 	icon_dir = Settings::TPaths::themesPath();
 	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
 	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n = 0; n < iconsets.count(); n++) {
-
-#ifdef SKINS
-		QString css_file = Settings::TPaths::themesPath()
-						   + "/" + iconsets[n] + "/main.css";
-		bool is_skin = QFile::exists(css_file);
-		//qDebug("***** %s %d", css_file.toUtf8().constData(), is_skin);
-		if ((is_skin) && (skin_combo->findText(iconsets[n]) == -1)) {
-			skin_combo->addItem(iconsets[n]);
-			n_skins++;
-		}
-		else
-#endif
 		if (iconset_combo->findText(iconsets[n]) == -1) {
 			iconset_combo->addItem(iconsets[n]);
 		}
 	}
-#ifdef SKINS
-	if (skin_combo->itemText(0) == "Black") {
-		skin_combo->removeItem(0);
-		skin_combo->addItem("Black");
-	}
-#endif
 
 #ifdef SINGLE_INSTANCE
 	connect(single_instance_check, SIGNAL(toggled(bool)), 
 			this, SLOT(changeInstanceImages()));
 #else
 	tabWidget->setTabEnabled(SINGLE_INSTANCE_TAB, false);
-#endif
-
-#ifdef SKINS
-	connect(gui_combo, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(GUIChanged(int)));
-#endif
-
-#ifndef SKINS
-	skin_combo->hide();
-	skin_label->hide();
-	skin_sp->hide();
 #endif
 
 	retranslateStrings();
@@ -193,18 +146,6 @@ void TInterface::retranslateStrings() {
 
 	style_combo->setItemText(0, tr("Default"));
 
-	int gui_index = gui_combo->currentIndex();
-	gui_combo->clear();
-	gui_combo->addItem(tr("Basic GUI"), "DefaultGUI");
-#ifdef SKINS
-	gui_combo->addItem(tr("Skinnable GUI"), "SkinGUI");
-	if (n_skins == 0) {
-		QModelIndex index = gui_combo->model()->index(gui_combo->count()-1,0);
-		gui_combo->model()->setData(index, QVariant(0), Qt::UserRole -1);
-	}
-#endif
-	gui_combo->setCurrentIndex(gui_index);
-
 	createHelp();
 }
 
@@ -235,8 +176,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	setStyle(pref->style);
 
-	setGUI(pref->gui);
-
 	floating_activation_area_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	floating_hide_delay_spin->setValue(pref->floating_hide_delay);
 
@@ -246,10 +185,10 @@ void TInterface::setData(Settings::TPreferences* pref) {
 }
 
 void TInterface::getData(Settings::TPreferences* pref) {
+
 	requires_restart = false;
 	language_changed = false;
 	iconset_changed = false;
-	gui_changed = false;
 	style_changed = false;
 	recents_changed = false;
 
@@ -262,11 +201,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	if (pref->iconset != iconSet()) {
 		pref->iconset = iconSet();
 		iconset_changed = true;
-	}
-
-	if (pref->gui != GUI()) {
-		pref->gui = GUI();
-		gui_changed = true;
 	}
 
 	pref->resize_method = resizeMethod();
@@ -333,39 +267,19 @@ QString TInterface::language() {
 }
 
 void TInterface::setIconSet(QString set) {
-	/*
-	if (set.isEmpty())
-		iconset_combo->setCurrentIndex(0);
-	else
-		iconset_combo->setCurrentText(set);
-	*/
+
 	iconset_combo->setCurrentIndex(0);
-	for (int n=0; n < iconset_combo->count(); n++) {
+	for (int n = 0; n < iconset_combo->count(); n++) {
 		if (iconset_combo->itemText(n) == set) {
 			iconset_combo->setCurrentIndex(n);
 			break;
 		}
 	}
-#ifdef SKINS
-	skin_combo->setCurrentIndex(0);
-	for (int n=0; n < skin_combo->count(); n++) {
-		if (skin_combo->itemText(n) == set) {
-			skin_combo->setCurrentIndex(n);
-			break;
-		}
-	}
-#endif
 }
 
 QString TInterface::iconSet() {
-#ifdef SKINS
-	QString GUI = gui_combo->itemData(gui_combo->currentIndex()).toString();
-	if (GUI == "SkinGUI") {
-		return skin_combo->currentText();
-	}
-	else
-#endif
-	if (iconset_combo->currentIndex()==0) 
+
+	if (iconset_combo->currentIndex() == 0)
 		return "";
 	else
 		return iconset_combo->currentText();
@@ -401,39 +315,6 @@ QString TInterface::style() {
 	else 
 		return style_combo->currentText();
 }
-
-void TInterface::setGUI(QString gui_name) {
-#ifdef SKINS
-	if ((n_skins == 0) && (gui_name == "SkinGUI")) gui_name = "DefaultGUI";
-#endif
-	int i = gui_combo->findData(gui_name);
-	if (i < 0) i=0;
-	gui_combo->setCurrentIndex(i);
-}
-
-QString TInterface::GUI() {
-	return gui_combo->itemData(gui_combo->currentIndex()).toString();
-}
-
-#ifdef SKINS
-void TInterface::GUIChanged(int index) {
-	if (gui_combo->itemData(index).toString() == "SkinGUI") {
-		iconset_combo->hide();
-		iconset_label->hide();
-		iconset_sp->hide();
-		skin_combo->show();
-		skin_label->show();
-		skin_sp->show();
-	} else {
-		iconset_combo->show();
-		iconset_label->show();
-		iconset_sp->show();
-		skin_combo->hide();
-		skin_label->hide();
-		skin_sp->hide();
-	}
-}
-#endif
 
 #ifdef SINGLE_INSTANCE
 void TInterface::setUseSingleInstance(bool b) {
@@ -589,20 +470,8 @@ void TInterface::createHelp() {
 	setWhatsThis(language_combo, tr("Language"),
 		tr("Here you can change the language of the application."));
 
-	setWhatsThis(gui_combo, tr("GUI"),
-		tr("Select the graphic interface you prefer for the application.") +"<br>"+
-		tr("The <b>Basic GUI</b> provides the traditional interface, with the "
-		   "toolbar and control bar.") +" "+
-		tr("The <b>Skinnable GUI</b> provides an interface where several skins are available.")
-		);
-
 	setWhatsThis(iconset_combo, tr("Icon set"),
 		tr("Select the icon set you prefer for the application."));
-
-#ifdef SKINS
-	setWhatsThis(skin_combo, tr("Skin"),
-        tr("Select the skin you prefer for the application. Only available with the skinnable GUI."));
-#endif
 
 	setWhatsThis(style_combo, tr("Style"),
         tr("Select the style you prefer for the application."));

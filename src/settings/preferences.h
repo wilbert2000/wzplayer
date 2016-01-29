@@ -384,8 +384,6 @@ public:
 	//!< Pause the current file when the main window is not visible
 	bool pause_when_hidden; 
 
-	QString gui; //!< The name of the GUI to use
-
 	QSize default_size; // Default size of the main window
 
 	bool hide_video_window_on_audio_files;

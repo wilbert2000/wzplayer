@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_INTERFACE_H_
-#define _PREF_INTERFACE_H_
+#ifndef PREF_INTERFACE_H
+#define PREF_INTERFACE_H
 
 #include "ui_interface.h"
 #include "settings/preferences.h"
@@ -27,8 +27,7 @@
 
 namespace Gui { namespace Pref {
 
-class TInterface : public TWidget, public Ui::TInterface
-{
+class TInterface : public TWidget, public Ui::TInterface {
 	Q_OBJECT
 
 public:
@@ -46,7 +45,6 @@ public:
 
 	bool languageChanged() { return language_changed; }
 	bool iconsetChanged() { return iconset_changed; }
-	bool guiChanged() { return gui_changed; }
 	bool styleChanged() { return style_changed; }
 	bool recentsChanged() { return recents_changed; }
 	bool urlMaxChanged() { return url_max_changed; }
@@ -66,9 +64,6 @@ protected:
 
 	void setSaveSize(bool b);
 	bool saveSize();
-
-	void setGUI(QString gui_name);
-	QString GUI();
 
 	void setStyle(QString style);
 	QString style();
@@ -120,9 +115,6 @@ protected slots:
 #ifdef SINGLE_INSTANCE
 	void changeInstanceImages();
 #endif
-#ifdef SKINS
-	void GUIChanged(int index);
-#endif
 
 protected:
 	virtual void retranslateStrings();
@@ -130,16 +122,11 @@ protected:
 private:
 	bool language_changed;
 	bool iconset_changed;
-	bool gui_changed;
 	bool style_changed;
 	bool recents_changed;
 	bool url_max_changed;
-
-#ifdef SKINS
-	int n_skins;
-#endif
 };
 
 }} // namespace Gui::Pref
 
-#endif // _PREF_INTERFACE_H_
+#endif // PREF_INTERFACE_H

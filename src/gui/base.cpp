@@ -1014,9 +1014,8 @@ void TBase::applyNewPreferences() {
 		return;
 	}
 
-	// Gui, icon or player change needs restart TSMPlayer
-	if (interface->guiChanged()
-		|| interface->iconsetChanged()
+	// Icon or player bin change needs restart TSMPlayer
+	if (interface->iconsetChanged()
 		|| old_player_bin != pref->player_bin) {
 		// Request restart, don't reset style
 		restartSMPlayer(false);

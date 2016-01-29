@@ -37,10 +37,6 @@
 #include "gui/playlist.h"
 #include "gui/default.h"
 
-#ifdef SKINS
-#include "gui/skin/skin.h"
-#endif
-
 #ifdef Q_OS_WIN
 #if USE_ASSOCIATIONS
 #include "extensions.h"
@@ -60,7 +56,6 @@ TSMPlayer::TSMPlayer(int& argc, char** argv)
 	, requested_restart(false)
 	, reset_style(false)
 	, current_file(-1)
-	, gui_to_use("DefaultGUI")
 	, move_gui(false)
 	, resize_gui(false)
 	, close_at_end(-1)
@@ -183,7 +178,6 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	QString action; // Action to be passed to running instance
 	bool show_help = false;
 
-	if (!Settings::pref->gui.isEmpty()) gui_to_use = Settings::pref->gui;
 	bool add_to_playlist = false;
 
 	for (int n = 1; n < args.count(); n++) {
@@ -285,10 +279,6 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 			add_to_playlist = true;
 		}
 		else
-		if (argument == "-defaultgui") {
-			gui_to_use = "DefaultGUI";
-		}
-		else
 		if (argument == "-ontop") {
 			Settings::pref->stay_on_top = Settings::TPreferences::AlwaysOnTop;
 		}
@@ -296,12 +286,6 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		if (argument == "-no-ontop") {
 			Settings::pref->stay_on_top = Settings::TPreferences::NeverOnTop;
 		}
-#ifdef SKINS
-		else
-		if (argument == "-skingui") {
-			gui_to_use = "SkinGUI";
-		}
-#endif
 		else {
 			// File
 #if QT_VERSION >= 0x040600
@@ -362,34 +346,9 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 }
 
 void TSMPlayer::createGUI() {
+	qDebug() << "TSMPlayer::createGUI: creating main window Gui::TDefault";
 
-#ifdef SKINS
-	if (gui_to_use == "SkinGUI") {
-		QString theme = Settings::pref->iconset;
-		if (theme.isEmpty()) theme = "Gonzo";
-		QString user_theme_dir = TPaths::configPath() + "/themes/" + theme;
-		QString theme_dir = TPaths::themesPath() + "/" + theme;
-		qDebug("TSMPlayer::createGUI: user_theme_dir: %s", user_theme_dir.toUtf8().constData());
-		qDebug("TSMPlayer::createGUI: theme_dir: %s", theme_dir.toUtf8().constData());
-		if ((QDir(theme_dir).exists()) || (QDir(user_theme_dir).exists())) {
-			if (Settings::pref->iconset.isEmpty()) Settings::pref->iconset = theme;
-		} else {
-			qWarning("TSMPlayer::createGUI: skin folder doesn't exist. Falling back to default gui.");
-			gui_to_use = "DefaultGUI";
-			Settings::pref->iconset = "";
-			Settings::pref->gui = gui_to_use;
-		}
-	}
-#endif
-
-	qDebug() << "TSMPlayer::createGUI: creating" << gui_to_use;
-
-#ifdef SKINS
-	if (gui_to_use.toLower() == "skingui")
-		main_window = new Gui::TSkin();
-	else
-#endif
-		main_window = new Gui::TDefault();
+	main_window = new Gui::TDefault();
 
 	qDebug("TSMPlayer::createGUI: loading config");
 	main_window->loadConfig();
@@ -417,7 +376,7 @@ void TSMPlayer::createGUI() {
 		main_window->resize(gui_size);
 	}
 
-	qDebug() << "TSMPlayer::createGUI: created" << gui_to_use;
+	qDebug() << "TSMPlayer::createGUI: created main window Gui::TDefault";
 } // createGUI()
 
 QString TSMPlayer::loadStyleSheet(const QString& filename) {
