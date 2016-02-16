@@ -15,6 +15,7 @@ TLog* TLog::log = 0;
 
 TLog::TLog(bool debug_enabled, bool log_file_enabled) :
 	log_debug_messages(debug_enabled),
+	log_debug_messages_to_console(debug_enabled),
 	log_window(0) {
 
 	// Reserve a buf for logLine()
@@ -110,7 +111,8 @@ void TLog::logLine(QtMsgType type, QString line) {
 	// Output to console on stderr
 #ifdef OUTPUT_ON_CONSOLE
 	QByteArray bytes = line.toUtf8();
-	fwrite(bytes.constData(), 1, bytes.size(), stderr);
+	if ((type != QtDebugMsg) || log_debug_messages_to_console)
+		fwrite(bytes.constData(), 1, bytes.size(), stderr);
 #endif
 
 	// Output to log file

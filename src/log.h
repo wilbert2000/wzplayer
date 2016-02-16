@@ -27,6 +27,7 @@ public:
 
 private:
 	bool log_debug_messages;
+	bool log_debug_messages_to_console;
 	QString lines_back;
 	QString lines;
 	QFile file;
