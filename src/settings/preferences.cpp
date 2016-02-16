@@ -274,7 +274,7 @@ void TPreferences::reset() {
     mplayer_additional_video_filters="";
     mplayer_additional_audio_filters="";
 
-	log_debug_enabled = false;
+	log_debug_enabled = true;
 	log_verbose = false;
 	log_file = false;
 
