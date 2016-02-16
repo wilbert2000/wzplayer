@@ -9,11 +9,12 @@
 // Size one log buffer, allocated twice
 const int LOG_BUF_LENGTH = 65536 - 512;
 
+// Static instance log
 TLog* TLog::log = 0;
 
-TLog::TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter) :
-	enabled(log_enabled),
-	filter(debug_filter),
+
+TLog::TLog(bool debug_enabled, bool log_file_enabled) :
+	log_debug_messages(debug_enabled),
 	log_window(0) {
 
 	// Reserve a buf for logLine()
@@ -137,9 +138,7 @@ void TLog::msgHandler(QtMsgType type, const char* p_msg) {
 	QString msg = QString::fromUtf8(p_msg);
 #endif
 
-	if (log
-		&& (type != QtDebugMsg
-			|| (log->isEnabled() && log->passesFilter(msg)))) {
+	if (log && ((type != QtDebugMsg) || log->logDebugMessages())) {
 		log->logLine(type, msg);
 	}
 }

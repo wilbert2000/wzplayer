@@ -276,9 +276,8 @@ public:
 	QString mplayer_additional_audio_filters;
 
 	// Logging
-	bool log_enabled;
+	bool log_debug_enabled;
 	bool log_verbose;
-	QString log_filter;
 	bool log_file;
 
 	//! If true, playerlayer erases its background

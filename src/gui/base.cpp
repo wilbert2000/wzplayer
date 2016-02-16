@@ -1025,9 +1025,8 @@ void TBase::applyNewPreferences() {
 	// Not restarting and keeping the current main window
 
 	// Update logging
-	TLog::log->setEnabled(pref->log_enabled);
+	TLog::log->setLogDebugMessages(pref->log_debug_enabled);
 	TLog::log->setLogFileEnabled(pref->log_file);
-	TLog::log->setFilter(pref->log_filter);
 
 	// Load translation if language changed.
 	if (interface->languageChanged()) {

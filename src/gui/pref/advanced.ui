@@ -527,142 +527,42 @@ Example: extrastereo,karaoke</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item alignment="Qt::AlignTop">
-           <widget class="QCheckBox" name="log_enabled_check">
+           <widget class="QCheckBox" name="log_debug_enabled_check">
             <property name="text">
-             <string>&amp;Enable logging</string>
+             <string>&amp;Log debug messages</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="log_enable_box">
+           <widget class="QCheckBox" name="log_verbose_check">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="title">
-             <string notr="true"/>
+            <property name="text">
+             <string>&amp;Verbose</string>
             </property>
-            <property name="flat">
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="log_file_check">
+            <property name="enabled">
              <bool>true</bool>
             </property>
-            <widget class="QCheckBox" name="log_verbose_check">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>10</y>
-               <width>439</width>
-               <height>21</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&amp;Verbose</string>
-             </property>
-            </widget>
-            <widget class="QCheckBox" name="log_file_check">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>40</y>
-               <width>439</width>
-               <height>21</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&amp;Save log to a file</string>
-             </property>
-            </widget>
-            <widget class="QLabel" name="log_filter_label1">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>80</y>
-               <width>439</width>
-               <height>13</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&amp;Filter for log:</string>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-             <property name="buddy">
-              <cstring>log_filter_edit</cstring>
-             </property>
-            </widget>
-            <widget class="QLabel" name="log_filter_label2">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>100</y>
-               <width>439</width>
-               <height>13</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>This option is mainly intended for debugging the application.</string>
-             </property>
-             <property name="wordWrap">
-              <bool>false</bool>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="log_filter_edit">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>120</y>
-               <width>339</width>
-               <height>22</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&amp;Save log to a file</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -715,89 +615,8 @@ Example: extrastereo,karaoke</string>
   <tabstop>mplayer_afilters_edit</tabstop>
   <tabstop>ipv4_button</tabstop>
   <tabstop>ipv6_button</tabstop>
-  <tabstop>log_enabled_check</tabstop>
+  <tabstop>log_debug_enabled_check</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>log_enabled_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>log_verbose_check</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>256</x>
-     <y>65</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>244</x>
-     <y>100</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>log_enabled_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>log_file_check</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>256</x>
-     <y>65</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>244</x>
-     <y>130</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>log_enabled_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>log_filter_edit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>256</x>
-     <y>65</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>244</x>
-     <y>210</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>log_enabled_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>log_filter_label1</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>256</x>
-     <y>65</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>244</x>
-     <y>166</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>log_enabled_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>log_filter_label2</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>256</x>
-     <y>65</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>244</x>
-     <y>186</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -16,11 +16,33 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "smplayer.h"
 #include <QDebug>
+#include "log.h"
+#include "smplayer.h"
+
+bool processArgName(const QString& name, char* arg) {
+
+	return (arg == "--" + name)
+		|| (arg == "-" + name)
+#ifdef Q_OS_WIN
+		|| (arg == "/" + name)
+#endif
+		;
+}
 
 int main(int argc, char** argv) {
 
+	// Setup initial logging
+	bool log_debug = false;
+	for(int i = 0; i < argc; i++) {
+		if (processArgName("debug", argv[i])) {
+			log_debug = true;
+			break;
+		}
+	}
+	TLog log(log_debug, false);
+
+	// Create and exec app
 	TSMPlayer app(argc, argv);
 	int exit_code = app.processArgs();
 	if (exit_code == TSMPlayer::NoExit) {

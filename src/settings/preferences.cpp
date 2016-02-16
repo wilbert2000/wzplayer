@@ -46,7 +46,7 @@
 #include "retrieveyoutubeurl.h"
 #endif
 
-#define CURRENT_CONFIG_VERSION 8
+#define CURRENT_CONFIG_VERSION 9
 
 
 namespace Settings {
@@ -274,9 +274,8 @@ void TPreferences::reset() {
     mplayer_additional_video_filters="";
     mplayer_additional_audio_filters="";
 
-	log_enabled = true;
+	log_debug_enabled = false;
 	log_verbose = false;
-	log_filter = ".*";
 	log_file = false;
 
 	// "Repaint video background" in the preferences dialog
@@ -689,10 +688,9 @@ void TPreferences::save() {
 	setValue("mplayer_additional_video_filters", mplayer_additional_video_filters);
 	setValue("mplayer_additional_audio_filters", mplayer_additional_audio_filters);
 
-	setValue("log_enabled", log_enabled);
+	setValue("log_debug_enabled", log_debug_enabled);
 	setValue("log_verbose", log_verbose);
 	setValue("log_file", log_file);
-	setValue("log_filter", log_filter);
 
 	setValue("repaint_video_background", repaint_video_background);
 
@@ -1248,15 +1246,10 @@ void TPreferences::load() {
 	mplayer_additional_video_filters = value("mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
 	mplayer_additional_audio_filters = value("mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
 
-	log_enabled = value("log_enabled", log_enabled).toBool();
-	if (log_enabled) {
-		log_verbose = value("log_verbose", log_verbose).toBool();
-		log_file = value("log_file", log_file).toBool();
-	} else {
-		log_verbose = false;
-		log_file = false;
-	}
-	log_filter = value("log_filter", log_filter).toString();
+	// Load log settings
+	log_debug_enabled = value("log_debug_enabled", log_debug_enabled).toBool();
+	log_verbose = value("log_verbose", log_verbose).toBool();
+	log_file = value("log_file", log_file).toBool();
 
 	repaint_video_background = value("repaint_video_background", repaint_video_background).toBool();
 
@@ -1527,8 +1520,10 @@ void TPreferences::load() {
 			remove("streaming");
 		}
 
-		if (config_version < 8) {
+		if (config_version < 9) {
 			remove("gui");
+			remove("advanced/log_enabled");
+			remove("advanced/log_filter");
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;

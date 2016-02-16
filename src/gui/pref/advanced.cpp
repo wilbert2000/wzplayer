@@ -93,10 +93,9 @@ void TAdvanced::setData(TPreferences* pref) {
 	setActionsToRun(pref->actions_to_run);
 	setShowTagInTitle(pref->show_tag_in_window_title);
 
-	setLogEnabled(pref->log_enabled);
+	setLogDebugEnabled(pref->log_debug_enabled);
 	setLogVerbose(pref->log_verbose);
 	setLogFile(pref->log_file);
-	setLogFilter(pref->log_filter);
 
 	setMplayerCrashes(pref->report_mplayer_crashes);
 }
@@ -143,10 +142,9 @@ void TAdvanced::getData(TPreferences* pref) {
 		requires_restart = true;
 	}
 
-	pref->log_enabled = logEnabled();
-	TEST_AND_SET(pref->log_verbose, pref->log_enabled && logVerbose());
-	pref->log_file = pref->log_enabled && logFile();
-	pref->log_filter = logFilter();
+	pref->log_debug_enabled = logDebugEnabled();
+	TEST_AND_SET(pref->log_verbose, logVerbose());
+	pref->log_file = logFile();
 
 	pref->report_mplayer_crashes = mplayerCrashes();
 }
@@ -290,12 +288,12 @@ void TAdvanced::on_changeButton_clicked() {
 }
 
 // Log options
-void TAdvanced::setLogEnabled(bool b) {
-	log_enabled_check->setChecked(b);
+void TAdvanced::setLogDebugEnabled(bool b) {
+	log_debug_enabled_check->setChecked(b);
 }
 
-bool TAdvanced::logEnabled() {
-	return log_enabled_check->isChecked();
+bool TAdvanced::logDebugEnabled() {
+	return log_debug_enabled_check->isChecked();
 }
 
 void TAdvanced::setLogVerbose(bool b) {
@@ -312,14 +310,6 @@ void TAdvanced::setLogFile(bool b) {
 
 bool TAdvanced::logFile() {
 	return log_file_check->isChecked();
-}
-
-void TAdvanced::setLogFilter(QString filter) {
-	log_filter_edit->setText(filter);
-}
-
-QString TAdvanced::logFilter() {
-	return log_filter_edit->text();
 }
 
 void TAdvanced::createHelp() {
@@ -407,33 +397,15 @@ void TAdvanced::createHelp() {
 
 	addSectionTitle(tr("Logs"));
 
-	setWhatsThis(log_enabled_check, tr("Enable logging"),
-		tr("If checked, SMPlayer will log its actions "
-		   "(you can see it in <b>Options -> View log</b>). "
-		   "In case of problems this log can contain important information, "
-		   "so it's recommended to keep this option checked."));
+	setWhatsThis(log_debug_enabled_check, tr("Log debug messages"),
+		tr("If checked, SMPlayer will log debug messages, "
+		   "which might give additional information in case of trouble. "
+		   "Non-debug messages are always logged. "
+		   "You can view the log with menu <b>Options -> View log</b>."));
 
 	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
 		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
           .arg("<i>"+ TPaths::configPath() + "/smplayer_log.txt</i>"));
-
-/*
-	setWhatsThis(log_mplayer_save_check, tr("Autosave %1 log").arg(pref->playerName()),
-		tr("If this option is checked, the %1 log will be saved to the "
-           "specified file every time a new file starts to play. "
-           "It's intended for external applications, so they can get "
-           "info about the file you're playing.").arg(pref->playerName()));
-
-	setWhatsThis(log_mplayer_save_name, tr("Autosave %1 log filename").arg(pref->playerName()),
- 		tr("Enter here the path and filename that will be used to save the "
-           "%1 log.").arg(pref->playerName()));
-*/
-
-	setWhatsThis(log_filter_edit, tr("Filter for log"),
-		tr("This option allows to filter the SMPlayer messages that will "
-           "be stored in the log. Here you can write any regular expression.<br>"
-           "For instance: <i>^TCore::.*</i> will display only the lines "
-		   "starting with <i>TCore::</i>. Warnings and errors are not filtered."));
 }
 
 }} // namespace Gui::Pref

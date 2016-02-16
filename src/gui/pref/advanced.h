@@ -93,17 +93,14 @@ protected:
 	bool showTagInTitle();
 
 	// Log options
-	void setLogEnabled(bool b);
-	bool logEnabled();
+	void setLogDebugEnabled(bool b);
+	bool logDebugEnabled();
 
 	void setLogVerbose(bool b);
 	bool logVerbose();
 
 	void setLogFile(bool b);
 	bool logFile();
-
-	void setLogFilter(QString filter);
-	QString logFilter();
 
 protected:
 	virtual void retranslateStrings();

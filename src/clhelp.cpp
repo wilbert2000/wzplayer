@@ -83,12 +83,12 @@ QString CLHelp::formatHelp(QString parameter, QString help, bool html) {
 QString CLHelp::help(bool html) {
 	QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
 
-	QString options = QString("%1 [-defaultgui] [-config-path %2] "
-                        "[-send-action %3] [-actions %4] "
-                        "[-close-at-end] [-no-close-at-end] [-fullscreen] [-no-fullscreen] "
-                        "[-ontop] [-no-ontop] "
-                        "[-sub %5] [-pos x y] [-size %6 %7] "
-                        "[-add-to-playlist] [-help|--help|-h|-?] "
+	QString options = QString("%1 [--debug] [--defaultgui] [--config-path %2] "
+						"[--send-action %3] [--actions %4] "
+						"[--close-at-end] [--no-close-at-end] [--fullscreen] [--no-fullscreen] "
+						"[--ontop] [--no-ontop] "
+						"[--sub %5] [--pos x y] [--size %6 %7] "
+						"[--add-to-playlist] [--help|-help|-h|-?] "
                         "[%8] [%8]...")
                         .arg(app_name)
                         .arg(QObject::tr("directory"))
@@ -108,23 +108,27 @@ QString CLHelp::help(bool html) {
 		s += "\n\n";
 	}
 
+	s += formatHelp("--debug", QObject::tr(
+		"Log debug messages. Overrides the setting from advanced preferences."
+		"Shows startup debug messages, unlike the setting from advanced preferences."), html);
+
 #ifdef Q_OS_WIN	
-	s += formatHelp("-uninstall", QObject::tr(
+	s += formatHelp("--uninstall", QObject::tr(
 		"Restores the old associations and cleans up the registry."), html);
 #endif
 
-	s += formatHelp("-config-path", QObject::tr(
+	s += formatHelp("--config-path", QObject::tr(
 		"specifies the directory where smplayer will store its configuration "
         "files (smplayer.ini, smplayer_files.ini...)"), html);
 
-	s += formatHelp("-send-action", QObject::tr(
+	s += formatHelp("--send-action", QObject::tr(
 		"tries to make a connection to another running instance "
         "and send to it the specified action. Example: -send-action pause "
         "The rest of options (if any) will be ignored and the "
         "application will exit. It will return 0 on success or -1 "
         "on failure."), html);
 
-	s += formatHelp("-actions", QObject::tr(
+	s += formatHelp("--actions", QObject::tr(
 		"action_list is a list of actions separated by spaces. "
 		"The actions will be executed just after loading the file (if any) "
 		"in the same order you entered. For checkable actions you can pass "
@@ -132,40 +136,40 @@ QString CLHelp::help(bool html) {
 		"-actions \"fullscreen true\". Quotes are necessary in "
 		"case you pass more than one action."), html);
 
-	s += formatHelp("-close-at-end", QObject::tr(
+	s += formatHelp("--close-at-end", QObject::tr(
 		"the main window will be closed when the file/playlist finishes."), html);
 
-	s += formatHelp("-no-close-at-end", QObject::tr(
+	s += formatHelp("--no-close-at-end", QObject::tr(
 		"the main window won't be closed when the file/playlist finishes."), html);
 
-	s += formatHelp("-fullscreen", QObject::tr(
+	s += formatHelp("--fullscreen", QObject::tr(
 		"the video will be played in fullscreen mode."), html);
 
-	s += formatHelp("-no-fullscreen", QObject::tr(
+	s += formatHelp("--no-fullscreen", QObject::tr(
 		"the video will be played in window mode."), html);
 
-	s += formatHelp("-ontop", QObject::tr(
+	s += formatHelp("--ontop", QObject::tr(
 		"sets the stay on top option to always."), html);
 
-	s += formatHelp("-no-ontop", QObject::tr(
+	s += formatHelp("--no-ontop", QObject::tr(
 		"sets the stay on top option to never."), html);
 
-	s += formatHelp("-sub", QObject::tr(
+	s += formatHelp("--sub", QObject::tr(
 		"specifies the subtitle file to be loaded for the first video."), html);
 
-	s += formatHelp("-media-title", QObject::tr(
+	s += formatHelp("--media-title", QObject::tr(
 		"sets the media title for the first video."), html);
 
-	s += formatHelp("-pos", QObject::tr(
+	s += formatHelp("--pos", QObject::tr(
 		"specifies the coordinates where the main window will be displayed."), html);
 
-	s += formatHelp("-size", QObject::tr(
+	s += formatHelp("--size", QObject::tr(
 		"specifies the size of the main window."), html);
 
-	s += formatHelp("-help", QObject::tr(
+	s += formatHelp("--help", QObject::tr(
 		"will show this message and then will exit."), html);
 
-	s += formatHelp("-add-to-playlist", QObject::tr(
+	s += formatHelp("--add-to-playlist", QObject::tr(
 		"if there's another instance running, the media will be added "
         "to that instance's playlist. If there's no other instance, "
         "this option will be ignored and the "
@@ -176,7 +180,8 @@ QString CLHelp::help(bool html) {
         "be a local file, a DVD (e.g. dvd://1), an Internet stream "
         "(e.g. mms://....) or a local playlist in format m3u or pls."), html);
 
-	if (html) s += "</table>";
+	if (html)
+		s += "</table>";
 
 	return s;
 }

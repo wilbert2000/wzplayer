@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QFile>
-#include <QRegExp>
 
 #if QT_VERSION >= 0x050000
 #include <QMessageLogContext>
@@ -13,27 +12,24 @@
 
 class TLog {
 public:
-	TLog(bool log_enabled, bool log_file_enabled, const QString& debug_filter);
+	TLog(bool debug_enabled, bool log_file_enabled);
 	virtual ~TLog();
 
 	static TLog* log;
 
-	bool isEnabled() const { return enabled; }
-	void setEnabled(bool enable_log) { enabled = enable_log; }
+	bool logDebugMessages() const { return log_debug_messages; }
+	void setLogDebugMessages(bool enable) { log_debug_messages = enable; }
 	void setLogFileEnabled(bool log_file_enabled);
-	void setFilter(const QString& filter_str) { filter = QRegExp(filter_str); }
-	bool passesFilter(const QString& msg) { return filter.indexIn(msg) >= 0; }
 	void setLogWindow(Gui::TLogWindow* window);
 
 	void logLine(QtMsgType type, QString line);
 	QString getLogLines() { return lines_back + lines; }
 
 private:
-	bool enabled;
+	bool log_debug_messages;
 	QString lines_back;
 	QString lines;
 	QFile file;
-	QRegExp filter;
 	Gui::TLogWindow* log_window;
 
 #if QT_VERSION >= 0x050000

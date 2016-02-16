@@ -51,7 +51,6 @@ TSMPlayer::TSMPlayer(int& argc, char** argv)
 		"smplayer", // AppID
 #endif
 		argc, argv)
-	, log(true, false, ".*")
 	, main_window(0)
 	, requested_restart(false)
 	, reset_style(false)
@@ -116,9 +115,11 @@ void TSMPlayer::loadConfig() {
 	Settings::pref = new Settings::TPreferences();
 
 	// Reconfig log
-	log.setEnabled(pref->log_enabled);
-	log.setLogFileEnabled(pref->log_file);
-	log.setFilter(pref->log_filter);
+	// --debug from the command line overrides preferences
+	if (!TLog::log->logDebugMessages()) {
+		TLog::log->setLogDebugMessages(pref->log_debug_enabled);
+	}
+	TLog::log->setLogFileEnabled(pref->log_file);
 
 	// Load translation
 	loadTranslation();
@@ -131,36 +132,84 @@ void TSMPlayer::loadConfig() {
 #endif
 }
 
+QString getArgName(const QString& arg) {
+
+	if (arg.left(2) == "--") {
+		return arg.mid(2);
+	}
+	if (arg.left(1) == "-") {
+		return arg.mid(1);
+	}
+
+#ifdef Q_OS_WIN
+	if (arg.left(1) == "/") {
+		return arg.mid(1);
+	}
+#endif
+
+	return "";
+}
+
+bool TSMPlayer::processArgName(const QString& name, const QStringList& args) const {
+
+	for (int i = 0; i < args.size(); i++) {
+		if (getArgName(args.at(i)) == name) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int TSMPlayer::processArgPos(const QString& name, const QStringList& args) const {
+
+	int pos = args.indexOf("--" + name);
+	if (pos < 0) {
+		pos = args.indexOf("-" + name);
+
+#ifdef Q_OS_WIN
+		if (pos < 0) {
+			pos = args.indexOf("/" + name);
+		}
+#endif
+
+	}
+
+	return pos;
+}
+
 TSMPlayer::ExitCode TSMPlayer::processArgs() {
 
 	QStringList args = arguments();
 
+	// Uninstall Windows file associations
 #ifdef Q_OS_WIN
-	if (args.contains("-uninstall")) {
-		#if USE_ASSOCIATIONS
-		//Called by uninstaller. Will restore old associations.
+	if (processArgName("uninstall"), args) {
+#if USE_ASSOCIATIONS
+		// Called by uninstaller. Will restore old associations.
 		WinFileAssoc RegAssoc; 
 		TExtensions exts;
 		QStringList regExts; 
 		RegAssoc.GetRegisteredExtensions(exts.multimedia(), regExts); 
-		RegAssoc.RestoreFileAssociations(regExts); 
+		RegAssoc.RestoreFileAssociations(regExts);
+		// TODO: send to log
 		printf("TSMPlayer::processArgs: restored associations\n");
-		#endif
+#endif
 		return NoError;
 	}
 #endif
 
 	// Get config path from args
-	int pos = args.indexOf("-config-path");
+	int pos = processArgPos("config-path", args);
 	if (pos >= 0) {
-		if (pos + 1 < args.count()) {
-			pos++;
+		pos++;
+		if (pos < args.count()) {
 			initial_config_path = args[pos];
 			// Delete from list
 			args.removeAt(pos);
 			args.removeAt(pos - 1);
 		} else {
-			printf("TSMPlayer::processArgs: error: expected parameter for -config-path\r\n");
+			printf("TSMPlayer::processArgs: error: expected path after --config-path\r\n");
 			return TSMPlayer::ErrorArgument;
 		}
 	}
@@ -168,7 +217,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	// Load preferences, setup logging and translation
 	loadConfig();
 
-	if (args.contains("-delete-config")) {
+	if (processArgName("delete-config", args)) {
 		TCleanConfig::clean(TPaths::configPath());
 		return NoError;
 	}
@@ -177,33 +226,31 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 
 	QString action; // Action to be passed to running instance
 	bool show_help = false;
-
 	bool add_to_playlist = false;
 
 	for (int n = 1; n < args.count(); n++) {
 		QString argument = args[n];
+		QString name = getArgName(argument);
 
-		if (argument == "-send-action") {
+		if (name == "debug") {
+
+		} else if (name == "send-action") {
 			if (n+1 < args.count()) {
 				n++;
 				action = args[n];
 			} else {
-				printf("Error: expected parameter for -send-action\r\n");
+				printf("Error: expected parameter for --send-action\r\n");
 				return ErrorArgument;
 			}
-		}
-		else
-		if (argument == "-actions") {
+		} else if (name == "actions") {
 			if (n+1 < args.count()) {
 				n++;
 				actions_list = args[n];
 			} else {
-				printf("Error: expected parameter for -actions\r\n");
+				printf("Error: expected parameter for --actions\r\n");
 				return ErrorArgument;
 			}
-		}
-		else
-		if (argument == "-sub") {
+		} else if (name == "sub") {
 			if (n+1 < args.count()) {
 				n++;
 				QString file = args[n];
@@ -213,20 +260,16 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 					printf("Error: file '%s' doesn't exists\r\n", file.toUtf8().constData());
 				}
 			} else {
-				printf("Error: expected parameter for -sub\r\n");
+				printf("Error: expected parameter for --sub\r\n");
 				return ErrorArgument;
 			}
-		}
-		else
-		if (argument == "-media-title") {
+		} else if (name == "media-title") {
 			if (n+1 < args.count()) {
 				n++;
 				if (media_title.isEmpty()) media_title = args[n];
 			}
-		}
-		else
-		if (argument == "-pos") {
-			if (n+2 < args.count()) {
+		} else if (name == "pos") {
+			if (n + 2 < args.count()) {
 				bool ok_x, ok_y;
 				n++;
 				gui_position.setX(args[n].toInt(&ok_x));
@@ -234,12 +277,10 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 				gui_position.setY(args[n].toInt(&ok_y));
 				if (ok_x && ok_y) move_gui = true;
 			} else {
-				printf("Error: expected parameter for -pos\r\n");
+				printf("Error: expected parameter for --pos\r\n");
 				return ErrorArgument;
 			}
-		}
-		else
-		if (argument == "-size") {
+		} else if (name == "size") {
 			if (n+2 < args.count()) {
 				bool ok_width, ok_height;
 				n++;
@@ -248,45 +289,26 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 				gui_size.setHeight(args[n].toInt(&ok_height));
 				if (ok_width && ok_height) resize_gui = true;
 			} else {
-				printf("Error: expected parameter for -resize\r\n");
+				printf("Error: expected 2 parameters for --size\r\n");
 				return ErrorArgument;
 			}
-		}
-		else
-		if ((argument == "--help") || (argument == "-help") ||
-			(argument == "-h") || (argument == "-?"))
-		{
+		} else if (name == "help" || name == "h" || name == "?") {
 			show_help = true;
-		}
-		else
-		if (argument == "-close-at-end") {
+		} else if (name == "close-at-end") {
 			close_at_end = 1;
-		}
-		else
-		if (argument == "-no-close-at-end") {
+		} else if (name == "no-close-at-end") {
 			close_at_end = 0;
-		}
-		else
-		if (argument == "-fullscreen") {
+		} else if (name == "fullscreen") {
 			start_in_fullscreen = 1;
-		}
-		else
-		if (argument == "-no-fullscreen") {
+		} else if (name == "no-fullscreen") {
 			start_in_fullscreen = 0;
-		}
-		else
-		if (argument == "-add-to-playlist") {
+		} else if (name == "add-to-playlist") {
 			add_to_playlist = true;
-		}
-		else
-		if (argument == "-ontop") {
+		} else if (name == "ontop") {
 			Settings::pref->stay_on_top = Settings::TPreferences::AlwaysOnTop;
-		}
-		else
-		if (argument == "-no-ontop") {
+		} else if (name == "no-ontop") {
 			Settings::pref->stay_on_top = Settings::TPreferences::NeverOnTop;
-		}
-		else {
+		} else {
 			// File
 #if QT_VERSION >= 0x040600
 			QUrl fUrl = QUrl::fromUserInput(argument);

@@ -25,7 +25,6 @@
 #include <QSettings>
 #include <QTranslator>
 
-#include "log.h"
 #include "gui/base.h"
 
 #ifdef Q_OS_WIN
@@ -69,7 +68,6 @@ private slots:
 
 private:
 	QString initial_config_path;
-	TLog log;
 	QTranslator app_trans;
 	QTranslator qt_trans;
 	Gui::TBase* main_window;
@@ -104,6 +102,8 @@ private:
 	void changeStyleSheet(const QString& style);
 	void changeStyle();
 	void createGUI();
+	bool processArgName(const QString& arg, const QStringList& args) const;
+	int processArgPos(const QString& name, const QStringList& args) const;
 	void start();
 	void showInfo();
 };
