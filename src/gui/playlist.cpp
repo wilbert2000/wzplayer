@@ -343,6 +343,10 @@ void TPlaylist::updateView() {
 		time = Helper::formatTime(qRound(item.duration()));
 		
 		listView->setText(n, COL_NAME, name);
+		QTableWidgetItem* i = listView->item(n, COL_NAME);
+		if (i) {
+			i->setToolTip(item.filename());
+		}
 		listView->setText(n, COL_TIME, time);
 
 		if (item.played()) {
