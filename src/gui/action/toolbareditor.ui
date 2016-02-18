@@ -213,7 +213,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Gui::TToolbarEditor</receiver>
+   <receiver>Gui::Action::TToolbarEditor</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -229,7 +229,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Gui::TToolbarEditor</receiver>
+   <receiver>Gui::Action::TToolbarEditor</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
