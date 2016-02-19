@@ -124,20 +124,21 @@ QStringList TEditableToolbar::actionsToStringList(bool remove_size_grip) {
 void TEditableToolbar::edit() {
 	qDebug("Gui::Action::TEditableToolbar::edit");
 
+	// Create toolbar editor dialog
 	TActionList all_actions = main_window->getAllNamedActions();
-	TToolbarEditor e(main_window);
-	e.setAllActions(all_actions);
-	e.setActiveActions(actions);
-	e.setDefaultActions(default_actions);
-	e.setIconSize(iconSize().width());
+	TToolbarEditor editor(main_window);
+	editor.setAllActions(all_actions);
+	editor.setActiveActions(actions);
+	editor.setDefaultActions(default_actions);
+	editor.setIconSize(iconSize().width());
 
-	if (e.exec() == QDialog::Accepted) {
+	if (editor.exec() == QDialog::Accepted) {
 		// Get action names and update actions in all_actions
-		QStringList new_actions = e.saveActions();
+		QStringList new_actions = editor.saveActions();
 		// Load new actions
 		setActionsFromStringList(new_actions, all_actions);
-		resize(width(), e.iconSize());
-		setIconSize(QSize(e.iconSize(), e.iconSize()));
+		resize(width(), editor.iconSize());
+		setIconSize(QSize(editor.iconSize(), editor.iconSize()));
 
 		// Save icon text of actions to pref
 		TActionsEditor::saveToConfig(main_window, Settings::pref);
