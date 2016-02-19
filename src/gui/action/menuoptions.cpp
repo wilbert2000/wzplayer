@@ -121,11 +121,11 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 	connect(playlist, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
 
 	// Show properties
-	a = new TAction(this, "show_file_properties", QT_TR_NOOP("View &info and properties..."), "info", QKeySequence("Ctrl+I"));
+	a = new TAction(this, "show_file_properties", QT_TR_NOOP("&View properties..."), "info", QKeySequence("Ctrl+I"));
 	connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
 
 	// Show log
-	a = new TAction(this, "show_smplayer_log", QT_TR_NOOP("&View log..."), "log", QKeySequence("Ctrl+L"));
+	a = new TAction(this, "show_smplayer_log", QT_TR_NOOP("View &log..."), "log", QKeySequence("Ctrl+L"));
 	a->setCheckable(true);
 	connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
 	connect(logWindow, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
