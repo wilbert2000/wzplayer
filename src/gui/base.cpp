@@ -703,6 +703,11 @@ void TBase::retranslateStrings() {
 	// Log window
 	log_window->retranslateStrings();
 
+	// Help window
+	if (clhelp_window) {
+		clhelp_window->retranslateStrings();
+	}
+
 	// Update actions view in preferences
 	// It has to be done, here. The actions are translated after the
 	// preferences dialog.
@@ -1098,7 +1103,7 @@ void TBase::applyNewPreferences() {
 	if (pref_dialog->requiresRestart()) {
 		core->restart();
 	}
-}
+} // TBase::applyNewPreferences()
 
 void TBase::showFilePropertiesDialog() {
 	qDebug("Gui::TBase::showFilePropertiesDialog");
