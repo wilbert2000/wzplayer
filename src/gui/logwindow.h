@@ -33,7 +33,7 @@ public:
 	TLogWindow(QWidget* parent, bool isLog);
 	virtual ~TLogWindow();
 
-	void setText(QString log);
+	void setText(const QString& log);
 	QString text();
 
 	void setHtml(QString text);

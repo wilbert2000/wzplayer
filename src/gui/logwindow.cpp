@@ -85,8 +85,9 @@ void TLogWindow::closeEvent(QCloseEvent* event) {
 	event->accept();
 }
 
-void TLogWindow::setText(QString log) {
+void TLogWindow::setText(const QString& log) {
 	browser->setPlainText(log);
+	browser->moveCursor(QTextCursor::End);
 }
 
 QString TLogWindow::text() {
