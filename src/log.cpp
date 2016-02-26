@@ -81,6 +81,9 @@ void TLog::setLogWindow(Gui::TLogWindow *window) {
 	log_window = window;
 	if (log_window) {
 		log_window->setText(lines_back + lines);
+		qDebug("TLog::setLogWindow: forwarding log to log window");
+	} else {
+		qDebug("TLog::setLogWindow: stopped logging to log window");
 	}
 }
 
