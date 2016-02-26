@@ -32,7 +32,7 @@ namespace Gui {
 
 TLogWindow::TLogWindow(QWidget* parent, bool isLog)
 	: QWidget(parent, Qt::Window)
-	, log(isLog) {
+	, is_log_window(isLog) {
 
 	setupUi(this);
 	browser->setFont(QFont("fixed"));
@@ -40,8 +40,9 @@ TLogWindow::TLogWindow(QWidget* parent, bool isLog)
 }
 
 TLogWindow::~TLogWindow() {
+	qDebug("Gui::TLogWindow::~TLogWindow");
 
-	if (log)
+	if (is_log_window)
 		TLog::log->setLogWindow(0);
 }
 
@@ -60,17 +61,17 @@ void TLogWindow::retranslateStrings() {
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
-	//qDebug("TLogWindow::showEvent");
+	qDebug("Gui::TLogWindow::showEvent");
 
-	if (log)
+	if (is_log_window)
 		TLog::log->setLogWindow(this);
 	emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
-	//qDebug("TLogWindow::hideEvent");
+	qDebug("Gui::TLogWindow::hideEvent");
 
-	if (log)
+	if (is_log_window)
 		TLog::log->setLogWindow(0);
 	clear();
 	emit visibilityChanged(false);
@@ -78,7 +79,7 @@ void TLogWindow::hideEvent(QShowEvent*) {
 
 // Fix hideEvent() not called on close
 void TLogWindow::closeEvent(QCloseEvent* event) {
-	//qDebug("TLogWindow::closeEvent");
+	qDebug("Gui::TLogWindow::closeEvent");
 
 	hideEvent(0);
 	event->accept();

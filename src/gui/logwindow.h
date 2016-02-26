@@ -59,7 +59,7 @@ protected slots:
     void on_saveButton_clicked();
 
 private:
-	bool log;
+	bool is_log_window;
 };
 
 } // namespace Gui
