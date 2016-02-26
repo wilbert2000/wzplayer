@@ -8,9 +8,14 @@
 #include <QMessageLogContext>
 #endif
 
-#include "gui/logwindow.h"
+
+namespace Gui {
+class TLogWindow;
+}
+
 
 class TLog {
+
 public:
 	TLog(bool debug_enabled, bool log_file_enabled);
 	virtual ~TLog();
@@ -40,6 +45,5 @@ private:
 #endif
 
 }; // class TLog
-
 
 #endif // LOG_H
