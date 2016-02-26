@@ -21,7 +21,7 @@ public:
 	TMenuBrowse(QWidget* parent, TCore* c);
 
 protected:
-	virtual void enableActions(bool stopped, bool, bool);
+	virtual void enableActions(bool stopped, bool video, bool);
 
 private:
 	TCore* core;
@@ -34,6 +34,7 @@ private:
 	TMenu* chaptersMenu;
 	TActionGroup* chapterGroup;
 
+	TAction* nextAngleAct;
 	TMenu* anglesMenu;
 	TActionGroup* angleGroup;
 

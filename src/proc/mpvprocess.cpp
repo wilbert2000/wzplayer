@@ -959,6 +959,7 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 	}
 	else
 	if (option_name == "dvdangle") {
+		// TODO:
 		/*
 		arg << "--dvd-angle=" + value.toString();
 		*/
@@ -1322,6 +1323,14 @@ void TMPVProcess::setGamma(int value) {
 
 void TMPVProcess::setChapter(int ID) {
 	writeToStdin("set chapter " + QString::number(ID));
+}
+
+void TMPVProcess::setAngle(int ID) {
+	writeToStdin("set angle " + QString::number(ID));
+}
+
+void TMPVProcess::nextAngle() {
+	writeToStdin("cycle angle");
 }
 
 void TMPVProcess::setExternalSubtitleFile(const QString& filename) {

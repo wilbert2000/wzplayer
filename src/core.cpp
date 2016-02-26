@@ -3230,10 +3230,12 @@ void TCore::nextChapter() {
 void TCore::changeAngle(int ID) {
 	qDebug("TCore::changeAngle: ID: %d", ID);
 
-	if (ID != mset.current_angle_id) {
-		mset.current_angle_id = ID;
-		restartPlay();
-	}
+	mset.current_angle_id = ID;
+	proc->setAngle(ID);
+}
+
+void TCore::nextAngle() {
+	proc->nextAngle();
 }
 
 #if PROGRAM_SWITCH

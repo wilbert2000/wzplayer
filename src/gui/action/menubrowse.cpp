@@ -24,9 +24,9 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(titleTrackInfoChanged()), this, SLOT(updateTitles()));
 
 	// Chapters
-	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_Exclam, false);
+	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_AsciiTilde, false);
 	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
-	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_At, false);
+	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_Exclam, false);
 	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
 
 	chaptersMenu = new TMenu(parent, this, "chapters_menu", QT_TR_NOOP("&Chapter"), "chapter");
@@ -44,7 +44,11 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(chapterInfoChanged()), this, SLOT(updateChapters()));
 
 	// Angles submenu
+	nextAngleAct = new TAction(this, "next_angle", QT_TR_NOOP("Next angle"), "", Qt::Key_At, false);
+	connect(nextAngleAct, SIGNAL(triggered()), core, SLOT(nextAngle()));
 	anglesMenu = new TMenu(parent, this, "angles_menu", QT_TR_NOOP("&Angle"), "angle");
+	anglesMenu->addAction(nextAngleAct);
+	anglesMenu->addSeparator();
 	addMenu(anglesMenu);
 	angleGroup = new TActionGroup(this, "angle");
 	connect(angleGroup, SIGNAL(activated(int)), core, SLOT(changeAngle(int)));
@@ -102,11 +106,13 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TMenuBrowse::enableActions(bool stopped, bool, bool) {
+void TMenuBrowse::enableActions(bool stopped, bool video, bool) {
 
 	bool enableChapters = !stopped && core->mdat.chapters.count() > 0;
 	prevChapterAct->setEnabled(enableChapters);
 	nextChapterAct->setEnabled(enableChapters);
+
+	nextAngleAct->setEnabled(!stopped && video);
 
 	bool enableDVDNav = !stopped && core->mdat.detected_type == TMediaData::TYPE_DVDNAV;
 	dvdnavUpAct->setEnabled(enableDVDNav);

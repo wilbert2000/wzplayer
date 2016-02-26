@@ -1398,6 +1398,15 @@ void TMPlayerProcess::setChapter(int ID) {
 	writeToStdin("seek_chapter " + QString::number(ID) +" 1");
 }
 
+void TMPlayerProcess::setAngle(int ID) {
+	writeToStdin("switch_angle " + QString::number(ID));
+}
+
+void TMPlayerProcess::nextAngle() {
+	// switch_angle -1 swicthes to next angle too
+	writeToStdin("switch_angle");
+}
+
 void TMPlayerProcess::setExternalSubtitleFile(const QString& filename) {
 
 	// Load it

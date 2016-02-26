@@ -284,6 +284,7 @@ public slots:
 	void prevChapter();
 	void nextChapter();
 	void changeAngle(int);
+	void nextAngle();
 	void changeAspectRatio(int id);
 	void nextAspectRatio();
 	void changeOSDLevel(int level);
