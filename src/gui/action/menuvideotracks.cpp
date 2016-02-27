@@ -20,7 +20,7 @@ TMenuVideoTracks::TMenuVideoTracks(QWidget *parent, TCore* c)
 	addSeparator();
 	videoTrackGroup = new TActionGroup(this, "videotrack");
 	connect(videoTrackGroup, SIGNAL(activated(int)), core, SLOT(changeVideoTrack(int)));
-	connect(core, SIGNAL(videoTrackInfoChanged()), this, SLOT(updateVideoTracks()));
+	connect(core, SIGNAL(videoTracksChanged()), this, SLOT(updateVideoTracks()));
 	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
 }
 

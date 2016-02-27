@@ -203,10 +203,10 @@ void TPlayerProcess::playingStarted() {
 
 	emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
 
-	emit receivedVideoTrackInfo();
-	emit receivedAudioTrackInfo();
-	emit receivedSubtitleTrackInfo();
-	emit receivedTitleTrackInfo();
+	emit receivedVideoTracks();
+	emit receivedAudioTracks();
+	emit receivedSubtitleTracks();
+	emit receivedTitleTracks();
 
 	qDebug("Proc::TPlayerProcess::playingStarted: emit playerFullyLoaded()");
 	emit playerFullyLoaded();

@@ -20,7 +20,7 @@ TMenuAudioTracks::TMenuAudioTracks(QWidget *parent, TCore* c)
 	addSeparator();
 	audioTrackGroup = new TActionGroup(this, "audiotrack");
 	connect(audioTrackGroup, SIGNAL(activated(int)), core, SLOT(changeAudioTrack(int)));
-	connect(core, SIGNAL(audioTrackInfoChanged()), this, SLOT(updateAudioTracks()));
+	connect(core, SIGNAL(audioTracksChanged()), this, SLOT(updateAudioTracks()));
 	connect(core, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
 }
 

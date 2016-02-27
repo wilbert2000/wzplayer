@@ -380,18 +380,18 @@ signals:
 	void volumeChanged(int);
 	void muteChanged(bool);
 
-	void videoTrackInfoChanged();
+	void videoTracksChanged();
 	void videoTrackChanged(int);
-	void audioTrackInfoChanged();
+	void audioTracksChanged();
 	void audioTrackChanged(int);
-	void subtitleInfoChanged();
+	void subtitlesChanged();
 	void subtitleTrackChanged(int);
 #ifdef MPV_SUPPORT
 	void secondarySubtitleTrackChanged(int);
 #endif
-	void titleTrackInfoChanged();
+	void titleTracksChanged();
 	void titleTrackChanged(int);
-	void chapterInfoChanged();
+	void chaptersChanged();
 	void chapterChanged(int);
 	void ABMarkersChanged();
 	void osdLevelChanged(int);
@@ -452,12 +452,12 @@ protected slots:
 	//! the resolution is HD
 	void checkIfVideoIsHD();
 
-	void gotAudioTrackInfo();
-	void gotAudioTrackChanged(int id);
+	void onAudioTracksChanged();
+	void onAudioTrackChanged(int id);
 
 	void selectPreferredSub();
-	void gotSubtitleInfo();
-	void gotSubtitleChanged();
+	void onSubtitlesChanged();
+	void onSubtitleChanged();
 
 	void dvdnavUpdateMousePos(QPoint);
 	void dvdnavSeek();

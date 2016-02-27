@@ -334,7 +334,7 @@ void TMPlayerProcess::dvdnavTitleChanged(int oldTitle) {
 	// Chapters
 	md->chapters = title.chapters;
 	if (notified_player_is_running) {
-		emit receivedChapterInfo();
+		emit receivedChapters();
 	}
 }
 
@@ -639,8 +639,8 @@ void TMPlayerProcess::notifyChanges() {
 
 	if (video_tracks_changed) {
 		video_tracks_changed = false;
-		qDebug("Proc::TMPlayerProcess::notifyChanges: emit videoTrackInfoChanged");
-		emit receivedVideoTrackInfo();
+		qDebug("Proc::TMPlayerProcess::notifyChanges: emit receivedVideoTracks()");
+		emit receivedVideoTracks();
 		get_selected_video_track = true;
 	}
 	if (get_selected_video_track) {
@@ -649,8 +649,8 @@ void TMPlayerProcess::notifyChanges() {
 	}
 	if (audio_tracks_changed) {
 		audio_tracks_changed = false;
-		qDebug("Proc::TMPlayerProcess::notifyChanges: emit audioTrackInfoChanged");
-		emit receivedAudioTrackInfo();
+		qDebug("Proc::TMPlayerProcess::notifyChanges: emit receivedAudioTracks()");
+		emit receivedAudioTracks();
 		get_selected_audio_track = true;
 	}
 	if (get_selected_audio_track) {
@@ -659,8 +659,8 @@ void TMPlayerProcess::notifyChanges() {
 	}
 	if (subtitles_changed) {
 		subtitles_changed = false;
-		qDebug("Proc::TMPlayerProcess::notifyChanges: emit receivedSubtitleTrackInfo");
-		emit receivedSubtitleTrackInfo();
+		qDebug("Proc::TMPlayerProcess::notifyChanges: emit receivedSubtitleTracks()");
+		emit receivedSubtitleTracks();
 		get_selected_subtitle = true;
 	}
 	if (get_selected_subtitle) {

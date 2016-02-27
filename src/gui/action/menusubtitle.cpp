@@ -135,7 +135,7 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 
 	subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
 	connect(subtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSubtitle(int)));
-	connect(core, SIGNAL(subtitleInfoChanged()), this, SLOT(updateSubtitles()));
+	connect(core, SIGNAL(subtitlesChanged()), this, SLOT(updateSubtitles()));
 	connect(core, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
 	// Secondary subtitle track

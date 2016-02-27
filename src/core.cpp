@@ -161,44 +161,45 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 
 	connect(this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection);
 
-	connect(proc, SIGNAL(receivedVideoTrackInfo()),
-			 this, SIGNAL(videoTrackInfoChanged()));
+	connect(proc, SIGNAL(receivedVideoTracks()),
+			this, SIGNAL(videoTracksChanged()));
 	connect(proc, SIGNAL(receivedVideoTrackChanged(int)),
-			 this, SIGNAL(videoTrackChanged(int)));
+			this, SIGNAL(videoTrackChanged(int)));
 
-	connect(proc, SIGNAL(receivedAudioTrackInfo()),
-			 this, SLOT(gotAudioTrackInfo()));
+	connect(proc, SIGNAL(receivedAudioTracks()),
+			this, SLOT(onAudioTracksChanged()));
 	connect(proc, SIGNAL(receivedAudioTrackChanged(int)),
-			 this, SLOT(gotAudioTrackChanged(int)));
+			this, SLOT(onAudioTrackChanged(int)));
 
-	connect(proc, SIGNAL(receivedSubtitleTrackInfo()),
-			 this, SLOT(gotSubtitleInfo()));
+	connect(proc, SIGNAL(receivedSubtitleTracks()),
+			this, SLOT(onSubtitlesChanged()));
 	connect(proc, SIGNAL(receivedSubtitleTrackChanged()),
-			 this, SLOT(gotSubtitleChanged()));
+			this, SLOT(onSubtitleChanged()));
 
-	connect(proc, SIGNAL(receivedTitleTrackInfo()),
-			 this, SIGNAL(titleTrackInfoChanged()));
+	connect(proc, SIGNAL(receivedTitleTracks()),
+			this, SIGNAL(titleTracksChanged()));
 	connect(proc, SIGNAL(receivedTitleTrackChanged(int)),
-			 this, SIGNAL(titleTrackChanged(int)));
+			this, SIGNAL(titleTrackChanged(int)));
 
-	connect(proc, SIGNAL(receivedChapterInfo()),
-			 this, SIGNAL(chapterInfoChanged()));
+	connect(proc, SIGNAL(receivedChapters()),
+			this, SIGNAL(chaptersChanged()));
 
 	connect(proc, SIGNAL(durationChanged(double)),
-			 this, SIGNAL(durationChanged(double)));
+			this, SIGNAL(durationChanged(double)));
 
 	connect(proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()));
 
 	connect(this, SIGNAL(stateChanged(TCore::State)),
-			 this, SLOT(watchState(TCore::State)));
+			this, SLOT(watchState(TCore::State)));
 
-	connect(this, SIGNAL(mediaInfoChanged()), this, SLOT(sendMediaInfo()));
+	connect(this, SIGNAL(mediaInfoChanged()),
+			this, SLOT(sendMediaInfo()));
 
 	// TPlayerWindow
 	connect(this, SIGNAL(aboutToStartPlaying()),
-			 playerwindow, SLOT(aboutToStartPlaying()));
+			playerwindow, SLOT(aboutToStartPlaying()));
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
-			 this, SLOT(dvdnavUpdateMousePos(QPoint)));
+			this, SLOT(dvdnavUpdateMousePos(QPoint)));
 
 	playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
 	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
@@ -3812,27 +3813,27 @@ bool TCore::setPreferredAudio() {
 	return false;
 }
 
-void TCore::gotAudioTrackInfo() {
-	qDebug("TCore::gotAudioTrackInfo");
+void TCore::onAudioTracksChanged() {
+	qDebug("TCore::onAudioTracksChanged");
 
 	// First update the tracks, so a possible track change will arrive
 	// on defined actions
-	emit audioTrackInfoChanged();
+	emit audioTracksChanged();
 
 	// Check if one of the audio tracks matches the preferred language.
 	// If there is no audio selected, we have to wait for the audio to be
-	// selected and set the preferred language in gotAudioTrackChanged()
+	// selected and set the preferred language in onAudioTrackChanged()
 	if (mdat.audios.getSelectedID() >= 0) {
 		setPreferredAudio();
 	} else {
-		// Let gotAudioTrackChanged() have a look at it
+		// Let onAudioTrackChanged() have a look at it
 		mset.preferred_language_audio_set = false;
 	}
 
 }
 
-void TCore::gotAudioTrackChanged(int id) {
-	qDebug("TCore::gotAudioTrackChanged: id %d", id);
+void TCore::onAudioTrackChanged(int id) {
+	qDebug("TCore::onAudioTrackChanged: id %d", id);
 
 	// Check if one of the audio tracks matches the preferred language.
 	if (!mset.preferred_language_audio_set && mdat.audios.count() > 0) {
@@ -3857,8 +3858,8 @@ void TCore::selectPreferredSub() {
 	}
 }
 
-void TCore::gotSubtitleInfo() {
-	qDebug("TCore::gotSubtitleInfo");
+void TCore::onSubtitlesChanged() {
+	qDebug("TCore::onSubtitlesChanged");
 
 	// Need to set current_sub_idx, the subtitle action group checks on it.
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
@@ -3867,7 +3868,7 @@ void TCore::gotSubtitleInfo() {
 	mset.current_secondary_sub_idx = mdat.subs.findSelectedSecondaryIdx();
 #endif
 
-	emit subtitleInfoChanged();
+	emit subtitlesChanged();
 
 	if (pref->autoload_sub && mdat.subs.count() > 0) {
 		int wanted_sub_idx = pref->initial_subtitle_track - 1;
@@ -3875,22 +3876,22 @@ void TCore::gotSubtitleInfo() {
 		if (wanted_sub_idx >= 0) {
 			if (isMPlayer()) {
 				// mplayers selected sub will not yet be updated, que the update.
-				qDebug("TCore::gotSubtitleInfo: posting update subtitle idx %d", wanted_sub_idx);
+				qDebug("TCore::onSubtitlesChanged: posting update subtitle idx %d", wanted_sub_idx);
 				QTimer::singleShot(500, this, SLOT(selectPreferredSub()));
 			} else {
-				qDebug("TCore::gotSubtitleInfo: selecting subtitle idx %d", wanted_sub_idx);
+				qDebug("TCore::onSubtitlesChanged: selecting subtitle idx %d", wanted_sub_idx);
 				changeSubtitle(wanted_sub_idx, false);
 			}
 			return;
 		}
 	}
 
-	qDebug("TCore::gotSubtitleInfo: no player overrides");
+	qDebug("TCore::onSubtitlesChanged: no player overrides");
 }
 
 // Called when player changed subtitle track
-void TCore::gotSubtitleChanged() {
-	qDebug("TCore::gotSubtitleChanged");
+void TCore::onSubtitleChanged() {
+	qDebug("TCore::onSubtitleChanged");
 
 	// Need to set current_sub_idx, the subtitle group checks on it.
 	int selected_idx = mdat.subs.findSelectedIdx();

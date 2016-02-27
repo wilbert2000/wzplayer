@@ -21,7 +21,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	titleGroup = new TActionGroup(this, "title");
 	connect(titleGroup, SIGNAL(activated(int)), core, SLOT(changeTitle(int)));
 	connect(core, SIGNAL(titleTrackChanged(int)), titleGroup, SLOT(setChecked(int)));
-	connect(core, SIGNAL(titleTrackInfoChanged()), this, SLOT(updateTitles()));
+	connect(core, SIGNAL(titleTracksChanged()), this, SLOT(updateTitles()));
 
 	// Chapters
 	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_AsciiTilde, false);
@@ -41,7 +41,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	connect(chapterGroup, SIGNAL(activated(int)), core, SLOT(changeChapter(int)));
 	connect(core, SIGNAL(chapterChanged(int)), chapterGroup, SLOT(setChecked(int)));
 	// Update done by updateTitles. For DVDNAV only:
-	connect(core, SIGNAL(chapterInfoChanged()), this, SLOT(updateChapters()));
+	connect(core, SIGNAL(chaptersChanged()), this, SLOT(updateChapters()));
 
 	// Angles submenu
 	nextAngleAct = new TAction(this, "next_angle", QT_TR_NOOP("Next angle"), "", Qt::Key_At, false);

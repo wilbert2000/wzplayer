@@ -169,28 +169,28 @@ signals:
 	void receivedStreamTitle(const QString&);
 	void receivedStreamTitleAndUrl(const QString&, const QString&);
 
-	//! Emitted if a new video track has been added or an old one changed
-	void receivedVideoTrackInfo();
+	//! Emitted if one or more video track(s) added or changed
+	void receivedVideoTracks();
 
 	//! Emitted if player changed video track
 	void receivedVideoTrackChanged(int);
 
-	//! Emitted if a new audio track has been added or an old one changed
-	void receivedAudioTrackInfo();
+	//! Emitted if audio track(s) added or changed
+	void receivedAudioTracks();
 
 	//! Emitted if player changed audio track
 	void receivedAudioTrackChanged(int);
 
 	//! Emitted if a new subtitle has been added or an old one changed
-	void receivedSubtitleTrackInfo();
+	void receivedSubtitleTracks();
 
 	//! Emitted if player changed subtitle track
 	void receivedSubtitleTrackChanged();
 
-	void receivedTitleTrackInfo();
+	void receivedTitleTracks();
 	void receivedTitleTrackChanged(int);
 
-	void receivedChapterInfo();
+	void receivedChapters();
 
 	void durationChanged(double);
 

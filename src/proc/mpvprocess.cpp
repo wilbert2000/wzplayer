@@ -78,7 +78,7 @@ bool TMPVProcess::parseVideoTrack(int id,
 	}
 	if (md->videos.updateTrack(id, "", name, selected)) {
 		if (notified_player_is_running)
-			emit receivedVideoTrackInfo();
+			emit receivedVideoTracks();
 		return true;
 	}
 	return false;
@@ -98,7 +98,7 @@ bool TMPVProcess::parseAudioTrack(int id,
 	}
 	if (md->audios.updateTrack(id, lang, name, selected)) {
 		if (notified_player_is_running)
-			emit receivedAudioTrackInfo();
+			emit receivedAudioTracks();
 		return true;
 	}
 	return false;
@@ -140,7 +140,7 @@ bool TMPVProcess::parseSubtitleTrack(int id,
 						lang, name, filename,
 						selected, sec_selected)) {
 		if (notified_player_is_running)
-			emit receivedSubtitleTrackInfo();
+			emit receivedSubtitleTracks();
 		return true;
 	}
 
