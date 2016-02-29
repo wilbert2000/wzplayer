@@ -60,6 +60,9 @@ void TMediaData::init() {
 	audio_rate = 0;
 	audio_nch = 0;
 
+	angle = 0;
+	angles = 0;
+
 	title_is_menu = false;
 
 	initialized = false;
@@ -248,6 +251,8 @@ void TMediaData::list() const {
 	qDebug("  Programs:");
 	programs.list();
 #endif
+
+	qDebug("  Angle: %d/%d", angle, angles);
 
 	qDebug("  Title: '%s'", title.toUtf8().constData());
 	qDebug("  Meta data:");

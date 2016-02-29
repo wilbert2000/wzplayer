@@ -44,7 +44,7 @@ public:
 	void setMedia(const QString& media, bool is_playlist = false);
 	void disableInput();
 	void setFixedOptions();
-	void setOption(const QString& option_name, const QVariant& value = QVariant());
+	void setOption(const QString& name, const QVariant& value = QVariant());
 	void addUserOption(const QString& option);
 	void addVF(const QString& filter_name, const QVariant& value = QVariant());
 	void addAF(const QString& filter_name, const QVariant& value = QVariant());
@@ -114,8 +114,6 @@ public:
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &);
 
-	QString mpvVersion() { return mpv_version; }
-
 protected:
 	virtual void playingStarted();
 	virtual int getFrame(double time_sec, const QString& line);
@@ -132,7 +130,6 @@ protected slots:
 	void requestBitrateInfo();
 
 private:
-	QString mpv_version;
 	bool verbose;
 
 	bool received_buffering;

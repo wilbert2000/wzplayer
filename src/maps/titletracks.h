@@ -38,7 +38,6 @@ public:
 
 	void setName(const QString & aName) { name = aName; }
 	void setDuration(double d) { duration = d; }
-	void setAngles(int n) { angles = n; }
 	void setVTS(int n) { vts = n; }
 	void setType(bool aTrack) { isTrack = aTrack; }
 	void setTrack(int id, const QString &aName, double aDuration) {
@@ -50,7 +49,6 @@ public:
 
 	QString getName() const { return name; }
 	double getDuration() const { return duration; }
-	int getAngles() const { return angles; }
 	int getVTS() const { return vts; }
 
 	QString getDisplayName(bool add_duration = true) const;
@@ -58,7 +56,6 @@ public:
 protected:
 	QString name;
 	double duration;
-	int angles;
 	int vts;
 	bool isTrack;
 };
@@ -83,7 +80,6 @@ public:
 	void addName(int ID, const QString &name);
 	void addDuration(int ID, double duration, bool is_track = false);
 	void addChapters(int ID, int n);
-	void addAngles(int ID, int n);
 	void addTrack(int ID, const QString &name, double duration);
 
 protected:

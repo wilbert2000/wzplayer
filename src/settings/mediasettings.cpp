@@ -64,7 +64,7 @@ void TMediaSettings::reset() {
 #endif
 
 	playing_single_track = false;
-	current_angle_id = NoneSelected;
+	current_angle_id = 0;
 
 #if PROGRAM_SWITCH
 	current_program_id = NoneSelected;
@@ -443,7 +443,7 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	current_program_id = set->value("current_program_id", NoneSelected).toInt();
 #endif
 
-	set->endGroup();
+	set->endGroup(); // demuxer
 
 	current_sub_idx = NoneSelected;
 	current_sub_set_by_user = set->value("current_sub_set_by_user", false).toBool();
@@ -461,6 +461,9 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	current_sec = set->value("current_sec", current_sec).toDouble();
 
 	current_angle_id = set->value("current_angle_id", current_angle_id).toInt();
+	if (current_angle_id < 0) {
+		current_angle_id = 0;
+	}
 
 	aspect_ratio.setID(TAspectRatio::toTMenuID(set->value("aspect_ratio", aspect_ratio.toInt())));
 	restore_volume = false;

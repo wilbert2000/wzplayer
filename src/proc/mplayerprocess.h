@@ -166,6 +166,7 @@ private:
 	void clearSubSources();
 	void getSelectedSub();
 	void getSelectedTracks();
+	void getSelectedAngle();
 	void notifyChanges();
 
 	bool titleChanged(TMediaData::Type type, int title);
@@ -184,7 +185,7 @@ private:
 	bool parseClipInfoName(int id, const QString& name);
 	bool parseClipInfoValue(int id, const QString& value);
 	bool parseCDTrack(const QString& type, int id, const QString& length);
-	bool parseTitle(int id, const QString& field, const QString& value);
+	bool parseTitleLength(int id, const QString& value);
 	bool parseTitleChapters(Maps::TChapters& chapters, const QString& chaps);
 	bool parseAnswer(const QString& name, const QString& value);
 	bool parsePause();

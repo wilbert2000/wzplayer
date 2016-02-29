@@ -116,6 +116,9 @@ public:
 	Tracks programs;
 #endif
 
+	int angle;
+	int angles;
+
 	// Clip info
 	// TODO: set title by mplayer
 	QString title;

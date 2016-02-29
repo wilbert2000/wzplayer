@@ -27,7 +27,6 @@ TTitleData::TTitleData() :
 	chapters(),
 	name(),
 	duration(-1),
-	angles(-1),
 	vts(-1),
 	isTrack(false) {
 }
@@ -75,12 +74,6 @@ void TTitleTracks::addDuration(int ID, double duration, bool is_track) {
 
 void TTitleTracks::addTrack(int ID, const QString &name, double duration) {
 	(*this)[ID].setTrack(ID, name, duration);
-}
-
-void TTitleTracks::addAngles(int ID, int n) {
-	TTitleData& title = (*this)[ID];
-	title.setID(ID);
-	title.setAngles(n);
 }
 
 void TTitleTracks::setVTSTitle(int title) {
@@ -147,9 +140,9 @@ void TTitleTracks::list() const {
 	while (i.hasNext()) {
 		i.next();
 		TTitleData d = i.value();
-		qDebug("Maps::TTitleTracks::list: ID: %d name: '%s' duration %f chapters: %d angles: %d",
+		qDebug("Maps::TTitleTracks::list: ID: %d name: '%s' duration %f chapters: %d",
 			   d.getID(), d.getName().toUtf8().constData(), d.getDuration(),
-			   d.chapters.count(), d.getAngles());
+			   d.chapters.count());
 	}
 }
 

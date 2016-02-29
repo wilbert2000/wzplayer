@@ -40,7 +40,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	chapterGroup = new TActionGroup(this, "chapter");
 	connect(chapterGroup, SIGNAL(activated(int)), core, SLOT(changeChapter(int)));
 	connect(core, SIGNAL(chapterChanged(int)), chapterGroup, SLOT(setChecked(int)));
-	// Update done by updateTitles. For DVDNAV only:
+	// Update normally done by updateTitles. For DVDNAV only:
 	connect(core, SIGNAL(chaptersChanged()), this, SLOT(updateChapters()));
 
 	// Angles submenu
@@ -52,7 +52,8 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	addMenu(anglesMenu);
 	angleGroup = new TActionGroup(this, "angle");
 	connect(angleGroup, SIGNAL(activated(int)), core, SLOT(changeAngle(int)));
-	// Update done by updateTitles
+	// Update normally done by updateTitles. For DVDNAV only:
+	connect(core, SIGNAL(anglesChanged()), this, SLOT(updateAngles()));
 
 #if PROGRAM_SWITCH
 	programMenu = new TMenu(parent, this, "program_menu", QT_TR_NOOP("P&rogram"), "program");
@@ -106,13 +107,13 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	addActionsTo(parent);
 }
 
-void TMenuBrowse::enableActions(bool stopped, bool video, bool) {
+void TMenuBrowse::enableActions(bool stopped, bool, bool) {
 
 	bool enableChapters = !stopped && core->mdat.chapters.count() > 0;
 	prevChapterAct->setEnabled(enableChapters);
 	nextChapterAct->setEnabled(enableChapters);
 
-	nextAngleAct->setEnabled(!stopped && video);
+	nextAngleAct->setEnabled(!stopped && core->mdat.angles > 1);
 
 	bool enableDVDNav = !stopped && core->mdat.detected_type == TMediaData::TYPE_DVDNAV;
 	dvdnavUpAct->setEnabled(enableDVDNav);
@@ -185,21 +186,29 @@ void TMenuBrowse::updateAngles() {
 	qDebug("Gui::Action::TMenuBrowse::updateAngels");
 
 	angleGroup->clear();
-	int n_angles = 0;
-	int sel_title_id = core->mdat.titles.getSelectedID();
-	if (sel_title_id >= 0) {
-		Maps::TTitleData title = core->mdat.titles.value(sel_title_id);
-		n_angles = title.getAngles();
-	}
-	if (n_angles > 0) {
-		for (int n = 1; n <= n_angles; n++) {
+
+	// Add angles to menu
+	int angles = core->mdat.angles;
+	if (angles > 1) {
+		nextAngleAct->setEnabled(true);
+		int angle = core->mdat.angle;
+		for (int n = 1; n <= angles; n++) {
 			QAction *a = new QAction(angleGroup);
 			a->setCheckable(true);
 			a->setText(QString::number(n));
 			a->setData(n);
+			if (n == angle) {
+				a->setChecked(true);
+			}
 		}
 	} else {
-		QAction* a = angleGroup->addAction(tr("<empty>"));
+		// No angles
+		nextAngleAct->setEnabled(false);
+		QAction* a = new QAction(angleGroup);
+		a->setCheckable(true);
+		a->setText("1");
+		a->setData(1);
+		a->setChecked(true);
 		a->setEnabled(false);
 	}
 	anglesMenu->addActions(angleGroup->actions());

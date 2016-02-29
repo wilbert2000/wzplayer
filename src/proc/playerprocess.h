@@ -148,6 +148,7 @@ signals:
 	void playerFullyLoaded();
 
 	void receivedVideoOutResolution(int, int);
+	void durationChanged(double);
 	void receivedCurrentSec(double sec);
 	void receivedCurrentFrame(int frame);
 	void receivedPause();
@@ -171,19 +172,16 @@ signals:
 
 	//! Emitted if one or more video track(s) added or changed
 	void receivedVideoTracks();
-
 	//! Emitted if player changed video track
 	void receivedVideoTrackChanged(int);
 
 	//! Emitted if audio track(s) added or changed
 	void receivedAudioTracks();
-
 	//! Emitted if player changed audio track
 	void receivedAudioTrackChanged(int);
 
 	//! Emitted if a new subtitle has been added or an old one changed
 	void receivedSubtitleTracks();
-
 	//! Emitted if player changed subtitle track
 	void receivedSubtitleTrackChanged();
 
@@ -191,8 +189,7 @@ signals:
 	void receivedTitleTrackChanged(int);
 
 	void receivedChapters();
-
-	void durationChanged(double);
+	void receivedAngles();
 
 public slots:
 	void parseBytes(QByteArray ba);
@@ -240,6 +237,7 @@ private:
 	int waiting_for_answers_safe_guard;
 	int prev_frame;
 
+	bool parseAngle(const QString& value);
 	bool setAspectRatio(const QString& value);
 };
 

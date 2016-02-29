@@ -184,6 +184,9 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedChapters()),
 			this, SIGNAL(chaptersChanged()));
 
+	connect(proc, SIGNAL(receivedAngles()),
+			this, SIGNAL(anglesChanged()));
+
 	connect(proc, SIGNAL(durationChanged(double)),
 			this, SIGNAL(durationChanged(double)));
 
@@ -1587,7 +1590,7 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("mute");
 	}
 
-	if (mset.current_angle_id > 0) {
+	if (mset.current_angle_id > 1) {
 		proc->setOption("dvdangle", QString::number(mset.current_angle_id));
 	}
 
@@ -1597,14 +1600,14 @@ void TCore::startPlayer(QString file, double seek) {
 	// declare them MPlayer only.
 	if (isMPlayer()) {
 		switch (mdat.selected_type) {
-			case TMediaData::TYPE_FILE	: cache_size = pref->cache_for_files; break;
-			case TMediaData::TYPE_DVD 	: cache_size = pref->cache_for_dvds; break;
-			case TMediaData::TYPE_DVDNAV	: cache_size = 0; break;
-			case TMediaData::TYPE_STREAM	: cache_size = pref->cache_for_streams; break;
-			case TMediaData::TYPE_VCD 	: cache_size = pref->cache_for_vcds; break;
-			case TMediaData::TYPE_CDDA	: cache_size = pref->cache_for_audiocds; break;
-			case TMediaData::TYPE_TV		: cache_size = pref->cache_for_tv; break;
-			case TMediaData::TYPE_BLURAY	: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
+			case TMediaData::TYPE_FILE  : cache_size = pref->cache_for_files; break;
+			case TMediaData::TYPE_DVD   : cache_size = pref->cache_for_dvds; break;
+			case TMediaData::TYPE_DVDNAV: cache_size = 0; break;
+			case TMediaData::TYPE_STREAM: cache_size = pref->cache_for_streams; break;
+			case TMediaData::TYPE_VCD   : cache_size = pref->cache_for_vcds; break;
+			case TMediaData::TYPE_CDDA  : cache_size = pref->cache_for_audiocds; break;
+			case TMediaData::TYPE_TV    : cache_size = pref->cache_for_tv; break;
+			case TMediaData::TYPE_BLURAY: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
 			default: cache_size = 0;
 		} // switch
 
@@ -3236,6 +3239,15 @@ void TCore::changeAngle(int ID) {
 }
 
 void TCore::nextAngle() {
+
+	// Use nextAngle() because on mplayer 4.8 setAngle(last angle) often fails,
+	// while nextAngle() to the last angle succeeds...
+	if (mdat.angle == mdat.angles) {
+		// Clear angle
+		mset.current_angle_id = 0;
+	} else {
+		mset.current_angle_id = mdat.angle + 1;
+	}
 	proc->nextAngle();
 }
 

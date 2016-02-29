@@ -149,12 +149,6 @@ bool TMPVProcess::parseSubtitleTrack(int id,
 
 bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
-	if (name == "MPV_VERSION") {
-		mpv_version = value;
-		qDebug() << "Proc::TMPVProcess::parseProperty: mpv_version set to" << mpv_version;
-		return true;
-	}
-
 /*
 	if (name == "TRACKS_COUNT") {
 		int tracks = value.toInt();
@@ -697,8 +691,6 @@ bool TMPVProcess::parseLine(QString& line) {
 
 void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 	arg << "--term-playing-msg="
-		"INFO_MPV_VERSION=${=mpv-version:}\n"
-
 		"VIDEO_WIDTH=${=width}\n"
 		"VIDEO_HEIGHT=${=height}\n"
 		"VIDEO_ASPECT=${=video-aspect}\n"
@@ -720,6 +712,7 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 
 		"INFO_TITLES=${=disc-titles}\n"
 		"INFO_CHAPTERS=${=chapters}\n"
+		"INFO_ANGLE=${angle}\n"
 //		"INFO_TRACKS_COUNT=${=track-list/count}\n"
 
 		// TODO: check name, author, comment etc.
@@ -810,43 +803,67 @@ void TMPVProcess::messageFilterNotSupported(const QString& filter_name) {
 	writeToStdin(QString("show_text \"%1\" 3000").arg(text));
 }
 
-void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
-	if (option_name == "cache") {
+void TMPVProcess::setOption(const QString& name, const QVariant& value) {
+
+	// Options without translation
+	if (name == "wid"
+		|| name == "vo"
+		|| name == "aid"
+		|| name == "vid"
+		|| name == "volume"
+		|| name == "ass-styles"
+		|| name == "ass-force-style"
+		|| name == "ass-line-spacing"
+		|| name == "embeddedfonts"
+		|| name == "osd-scale-by-window"
+		|| name == "osd-scale"
+		|| name == "speed"
+		|| name == "contrast"
+		|| name == "brightness"
+		|| name == "hue"
+		|| name == "saturation"
+		|| name == "gamma"
+		|| name == "monitorpixelaspect"
+		|| name == "monitoraspect"
+		|| name == "mc"
+		|| name == "framedrop"
+		|| name == "priority"
+		|| name == "hwdec"
+		|| name == "autosync"
+		|| name == "dvd-device"
+		|| name == "cdrom-device"
+		|| name == "demuxer"
+		|| name == "shuffle"
+		|| name == "frames"
+		|| name == "hwdec-codecs") {
+
+		QString s = "--" + name;
+		if (!value.isNull())
+			s += "=" + value.toString();
+		arg << s;
+	} else if (name == "cache") {
 		int cache = value.toInt();
 		if (cache > 31) {
 			arg << "--cache=" + value.toString();
 		} else {
 			arg << "--cache=no";
 		}
-	}
-	else
-	if (option_name == "ss") {
+	} else if (name == "ss") {
 		arg << "--start=" + value.toString();
-	}
-	else
-	if (option_name == "endpos") {
+	} else if (name == "endpos") {
 		arg << "--length=" + value.toString();
-	}
-	else
-	if (option_name == "loop") {
+	} else if (name == "loop") {
 		QString o = value.toString();
-		if (o == "0") o = "inf";
+		if (o == "0")
+			o = "inf";
 		arg << "--loop=" + o;
-	}
-	else
-	if (option_name == "ass") {
+	} else if (name == "ass") {
 		arg << "--sub-ass";
-	}
-	else
-	if (option_name == "noass") {
+	} else if (name == "noass") {
 		arg << "--no-sub-ass";
-	}
-	else
-	if (option_name == "nosub") {
+	} else if (name == "nosub") {
 		arg << "--no-sub";
-	}
-	else
-	if (option_name == "sub-fuzziness") {
+	} else if (name == "sub-fuzziness") {
 		QString v;
 		switch (value.toInt()) {
 			case 1: v = "fuzzy"; break;
@@ -854,214 +871,95 @@ void TMPVProcess::setOption(const QString& option_name, const QVariant& value) {
 			default: v = "exact";
 		}
 		arg << "--sub-auto=" + v;
-	}
-	else
-	if (option_name == "audiofile") {
+	} else if (name == "audiofile") {
 		arg << "--audio-file=" + value.toString();
-	}
-	else
-	if (option_name == "delay") {
+	} else if (name == "delay") {
 		arg << "--audio-delay=" + value.toString();
-	}
-	else
-	if (option_name == "subdelay") {
+	} else if (name == "subdelay") {
 		arg << "--sub-delay=" + value.toString();
-	}
-	else
-	if (option_name == "sid") {
+	} else if (name == "sid") {
 		arg << "--sid=" + value.toString();
-	}
-	else
-	if (option_name == "sub") {
+	} else if (name == "sub") {
 		sub_file = value.toString();
 		arg << "--sub-file=" + sub_file;
-	}
-	else
-	if (option_name == "subpos") {
+	} else if (name == "subpos") {
 		arg << "--sub-pos=" + value.toString();
-	}
-	else
-	if (option_name == "font") {
+	} else if (name == "font") {
 		arg << "--osd-font=" + value.toString();
-	}
-	else
-	if (option_name == "subcp") {
+	} else if (name == "subcp") {
 		QString cp = value.toString();
-		if (!cp.startsWith("enca")) cp = "utf8:" + cp;
+		if (!cp.startsWith("enca"))
+			cp = "utf8:" + cp;
 		arg << "--sub-codepage=" + cp;
-	}
-	else
-	if (option_name == "osdlevel") {
+	} else if (name == "osdlevel") {
 		arg << "--osd-level=" + value.toString();
-	}
-	else
-	if (option_name == "sws") {
+	} else if (name == "sws") {
 		arg << "--sws-scaler=lanczos";
-	}
-	else
-	if (option_name == "channels") {
+	} else if (name == "channels") {
 		arg << "--audio-channels=" + value.toString();
-	}
-	else
-	if (option_name == "sub-scale"
-		|| option_name == "subfont-text-scale"
-		|| option_name == "ass-font-scale") {
+	} else if (name == "sub-scale"
+			   || name == "subfont-text-scale"
+			   || name == "ass-font-scale") {
 		QString scale = value.toString();
 		if (scale != "1")
 			arg << "--sub-scale=" + scale;
-	}
-	else
-	if (option_name == "stop-xscreensaver") {
+	} else if (name == "stop-xscreensaver") {
 		bool stop_ss = value.toBool();
 		if (stop_ss) arg << "--stop-screensaver"; else arg << "--no-stop-screensaver";
-	}
-	else
-	if (option_name == "correct-pts") {
+	} else if (name == "correct-pts") {
 		bool b = value.toBool();
 		if (b) arg << "--correct-pts"; else arg << "--no-correct-pts";
-	}
-	else
-	if (option_name == "idx") {
+	} else if (name == "idx") {
 		arg << "--index=default";
-	}
-	else
-	if (option_name == "softvol") {
+	} else if (name == "softvol") {
 		arg << "--softvol=yes";
-	}
-	else
-	if (option_name == "softvol-max") {
+	} else if (name == "softvol-max") {
 		int v = value.toInt();
-		if (v < 100) v = 100;
+		if (v < 100)
+			v = 100;
 		arg << "--softvol-max=" + QString::number(v);
-	}
-	else
-	if (option_name == "subfps") {
+	} else if (name == "subfps") {
 		arg << "--sub-fps=" + value.toString();
-	}
-	else
-	if (option_name == "forcedsubsonly") {
+	} else if (name == "forcedsubsonly") {
 		arg << "--sub-forced-only";
-	}
-	else
-	if (option_name == "prefer-ipv4" || option_name == "prefer-ipv6" ||
-		option_name == "dr" || option_name == "double" ||
-		option_name == "adapter" || option_name == "edl" ||
-		option_name == "slices" || option_name == "colorkey" ||
-		option_name == "subcc" || option_name == "vobsub" ||
-		option_name == "zoom" || option_name == "flip-hebrew" ||
-		option_name == "autoq")
-	{
-		// Ignore
-	}
-	else
-	if (option_name == "tsprog") {
-		// Unsupported
-	}
-	else
-	if (option_name == "dvdangle") {
-		// TODO:
-		/*
+	} else if (name == "dvdangle") {
 		arg << "--dvd-angle=" + value.toString();
-		*/
-	}
-	else
-	if (option_name == "screenshot_template") {
+	} else if (name == "screenshot_template") {
 		arg << "--screenshot-template=" + value.toString();
-	}
-	else
-	if (option_name == "screenshot_format") {
+	} else if (name == "screenshot_format") {
 		arg << "--screenshot-format=" + value.toString();
-	}
-	else
-	if (option_name == "threads") {
+	} else if (name == "threads") {
 		arg << "--vd-lavc-threads=" + value.toString();
-	}
-	else
-	if (option_name == "skiploopfilter") {
+	} else if (name == "skiploopfilter") {
 		arg << "--vd-lavc-skiploopfilter=all";
-	}
-	else
-	if (option_name == "keepaspect" || option_name == "fs") {
+	} else if (name == "keepaspect" || name == "fs") {
 		bool b = value.toBool();
-		if (b) arg << "--" + option_name; else arg << "--no-" + option_name;
-	}
-	else
-	if (option_name == "ao") {
+		if (b) arg << "--" + name; else arg << "--no-" + name;
+	} else if (name == "ao") {
 		QString o = value.toString();
 		if (o.startsWith("alsa:device=")) {
 			QString device = o.mid(12);
-			//qDebug() << "Proc::TMPVProcess::setOption: alsa device:" << device;
 			device = device.replace("=", ":").replace(".", ",");
 			o = "alsa:device=[" + device + "]";
 		}
 		arg << "--ao=" + o;
-	}
-	else
-	if (option_name == "vc") {
-		qDebug() << "Proc::TMPVProcess::setOption: video codec ignored";
-	}
-	else
-	if (option_name == "ac") {
-		qDebug() << "Proc::TMPVProcess::setOption: audio codec ignored";
-	}
-	else
-	if (option_name == "afm") {
+	} else if (name == "afm") {
 		QString s = value.toString();
-		if (s == "hwac3") arg << "--ad=spdif:ac3,spdif:dts";
-	}
-	else
-	if (option_name == "fontconfig") {
-		// Not supported, nor needed anymore
-	}
-	else
-	if (option_name == "verbose") {
+		if (s == "hwac3")
+			arg << "--ad=spdif:ac3,spdif:dts";
+	} else if (name == "verbose") {
 		arg << "-v";
 		verbose = true;
-	}
-	else
-	if (option_name == "mute") {
+	} else if (name == "mute") {
 		arg << "--mute=yes";
-	}
-	else
-	if (option_name == "vf-add") {
-		if (!value.isNull()) arg << "--vf-add=" + value.toString();
-	}
-	else
-	if (option_name == "af-add") {
-		if (!value.isNull()) arg << "--af-add=" + value.toString();
-	}
-	else
-	if (option_name == "wid" ||
-		option_name == "vo" ||
-		option_name == "aid" || option_name == "vid" ||
-		option_name == "volume" ||
-		option_name == "ass-styles" || option_name == "ass-force-style" ||
-		option_name == "ass-line-spacing" ||
-		option_name == "embeddedfonts" ||
-		option_name == "osd-scale-by-window" ||
-		option_name == "osd-scale" ||
-		option_name == "speed" ||
-		option_name == "contrast" || option_name == "brightness" ||
-		option_name == "hue" || option_name == "saturation" || option_name == "gamma" ||
-		option_name == "monitorpixelaspect" || option_name == "monitoraspect" ||
-		option_name == "mc" ||
-		option_name == "framedrop" ||
-		option_name == "priority" ||
-		option_name == "hwdec" ||
-		option_name == "autosync" ||
-		option_name == "dvd-device" || option_name == "cdrom-device" ||
-		option_name == "demuxer" ||
-		option_name == "shuffle" ||
-		option_name == "frames" ||
-		option_name == "hwdec-codecs")
-	{
-		QString s = "--" + option_name;
-		if (!value.isNull()) s += "=" + value.toString();
-		arg << s;
-	}
-	else
-	{
-		qDebug() << "Proc::TMPVProcess::setOption: unknown option:" << option_name;
+	} else if (name == "vf-add") {
+		if (!value.isNull())
+			arg << "--vf-add=" + value.toString();
+	} else if (name == "af-add") {
+		if (!value.isNull())
+			arg << "--af-add=" + value.toString();
+	} else {
+		qDebug() << "Proc::TMPVProcess::setOption: ignored option" << name << value;
 	}
 }
 
@@ -1331,6 +1229,7 @@ void TMPVProcess::setAngle(int ID) {
 
 void TMPVProcess::nextAngle() {
 	writeToStdin("cycle angle");
+	writeToStdin("print_text INFO_ANGLE=${angle}");
 }
 
 void TMPVProcess::setExternalSubtitleFile(const QString& filename) {

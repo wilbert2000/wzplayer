@@ -489,6 +489,27 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 	return false;
 }
 
+bool TPlayerProcess::parseAngle(const QString& value) {
+
+	static QRegExp rx_angles("(\\d+)/(\\d+)");
+	if (rx_angles.indexIn(value) >= 0) {
+		md->angle = rx_angles.cap(1).toInt();
+		md->angles = rx_angles.cap(2).toInt();
+	} else {
+		md->angle = 0;
+		md->angles = 0;
+	}
+	qDebug("Proc::TPlayerProcess::parseAngle: selected angle %d/%d",
+		   md->angle, md->angles);
+
+	if (notified_player_is_running) {
+		qDebug("Proc::TPlayerProcess::parseAngle: emit receivedAngles()");
+		emit receivedAngles();
+	}
+
+	return true;
+}
+
 bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "START_TIME") {
@@ -515,6 +536,9 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 			qDebug("Proc::TPlayerProcess::parseProperty: detected mpegts");
 		}
 		return true;
+	}
+	if (name == "ANGLE") {
+		return parseAngle(value);
 	}
 
 	return false;

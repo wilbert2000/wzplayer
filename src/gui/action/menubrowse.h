@@ -21,7 +21,7 @@ public:
 	TMenuBrowse(QWidget* parent, TCore* c);
 
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+	virtual void enableActions(bool stopped, bool, bool);
 
 private:
 	TCore* core;

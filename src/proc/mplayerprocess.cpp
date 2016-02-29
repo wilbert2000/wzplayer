@@ -106,6 +106,15 @@ void TMPlayerProcess::getSelectedTracks() {
 	getSelectedSub();
 }
 
+void TMPlayerProcess::getSelectedAngle() {
+
+	if (md->videos.count() > 0) {
+		// Need "angle/number of angles", hence use run instead of
+		// get_property angle, which only gives current angle
+		writeToStdin("run \"echo ID_ANGLE=${angle}\"");
+	}
+}
+
 bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
 
 	if (name == "ID") {
@@ -284,8 +293,10 @@ bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 		return true;
 	}
 
-	qWarning() << "Proc::TMPlayerProcess::parseAnswer: unexpected answer"
-			   << name << "=" << value;
+	if (name != "ERROR") {
+		qWarning() << "Proc::TMPlayerProcess::parseAnswer: unexpected answer"
+				   << name << "=" << value;
+	}
 
 	return false;
 }
@@ -321,9 +332,9 @@ void TMPlayerProcess::clearStartTime() {
 }
 
 void TMPlayerProcess::dvdnavTitleChanged(int oldTitle) {
-
 	qDebug("Proc::TMPlayerProcess::dvdnavTitleChanged: title changed from %d to %d VTS %d",
 		   oldTitle, md->titles.getSelectedID(), md->titles.getSelectedVTS());
+
 	if (notified_player_is_running) {
 		emit receivedTitleTrackChanged(md->titles.getSelectedID());
 	}
@@ -336,6 +347,8 @@ void TMPlayerProcess::dvdnavTitleChanged(int oldTitle) {
 	if (notified_player_is_running) {
 		emit receivedChapters();
 	}
+
+	// Angles already handled by calling getSelectedAngle() in dvdnavGetTitle()
 }
 
 void TMPlayerProcess::updateTitleFromDuration(double duration) {
@@ -375,6 +388,8 @@ bool TMPlayerProcess::failedToGetLength() {
 
 void TMPlayerProcess::dvdnavGetTitle() {
 
+	clearStartTime();
+
 	if (md->titles.count() == md->titles.getVTSCount()) {
 		// 1 title per VTS
 		int old_title = md->titles.getSelectedID();
@@ -387,13 +402,17 @@ void TMPlayerProcess::dvdnavGetTitle() {
 		title_needs_update = true;
 		writeToStdin("get_property length");
 	}
+
+	// Update angles
+	if (notified_player_is_running) {
+		getSelectedAngle();
+	}
 }
 
 bool TMPlayerProcess::parseTitleIsMenu() {
 	qDebug("Proc::TMPlayerProcess::parseTitleIsMenu");
 
 	md->title_is_menu = true;
-	clearStartTime();
 	dvdnavGetTitle();
 
 	// Menus can have a length. If the menu has no length we get
@@ -408,7 +427,6 @@ bool TMPlayerProcess::parseTitleIsMovie() {
 	qDebug("Proc::TMPlayerProcess::parseTitleIsMovie");
 
 	md->title_is_menu = false;
-	clearStartTime();
 	dvdnavGetTitle();
 
 	return true;
@@ -527,18 +545,12 @@ bool TMPlayerProcess::parseCDTrack(const QString& type, int id, const QString& l
 	return true;
 }
 
-bool TMPlayerProcess::parseTitle(int id, const QString& field, const QString& value) {
+bool TMPlayerProcess::parseTitleLength(int id, const QString& value) {
 
-	// DVD/Bluray titles. Chapters handled by parseTitleChapters.
-	if (field == "LENGTH") {
-		md->titles.addDuration(id, value.toDouble());
-	} else {
-		md->titles.addAngles(id, value.toInt());
-	}
-
-	qDebug() << "Proc::TMPlayerProcess::parseTitle:" << field
-			 << "for title" << id
-			 << "set to" << value;
+	// DVD/Bluray title length
+	md->titles.addDuration(id, value.toDouble());
+	qDebug() << "Proc::TMPlayerProcess::parseTitleLength: length for title"
+			 << id << "set to" << value;
 	return true;
 }
 
@@ -780,7 +792,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_cd_track("^ID_(CDDA|VCD)_TRACK_(\\d+)_MSF=(.*)");
 
 	// DVD/BLURAY titles
-	static QRegExp rx_title("^ID_(DVD|BLURAY)_TITLE_(\\d+)_(LENGTH|ANGLES)=(.*)");
+	static QRegExp rx_title_length("^ID_(DVD|BLURAY)_TITLE_(\\d+)_LENGTH=(.*)");
 	// DVD/BLURAY chapters
 	static QRegExp rx_title_chapters("^CHAPTERS: (.*)");
 
@@ -929,19 +941,18 @@ bool TMPlayerProcess::parseLine(QString& line) {
 							rx_cd_track.cap(3));
 	}
 
-	// DVD/Bluray titles
-	if (rx_title.indexIn(line) >= 0) {
-		return parseTitle(rx_title.cap(2).toInt(),
-						  rx_title.cap(3),
-						  rx_title.cap(4));
+	// DVD/Bluray title length
+	if (rx_title_length.indexIn(line) >= 0) {
+		return parseTitleLength(rx_title_length.cap(2).toInt(),
+								rx_title_length.cap(3));
 	}
 
-	// DVD/Bluray title chapters
+	// DVD/Bluray chapters for title only stored in md->chapters
 	if (rx_title_chapters.indexIn(line) >= 0) {
 		return parseTitleChapters(md->chapters, rx_title_chapters.cap(1));
 	}
 
-	// DVDNAV
+	// DVDNAV chapters for title stored in md->titles[title].chapters
 	if (rx_dvdnav_chapters.indexIn(line) >= 0) {
 		int title = rx_dvdnav_chapters.cap(1).toInt();
 		if (md->titles.contains(title))
@@ -1076,7 +1087,11 @@ bool TMPlayerProcess::parseLine(QString& line) {
 // Start of what used to be mplayeroptions.cpp
 
 void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
-	if (is_playlist) arg << "-playlist";
+
+	// TODO: Add "late" props like video/audio/sub track?
+	arg << "-playing-msg" << "ID_ANGLE=${angle}\n";
+	if (is_playlist)
+		arg << "-playlist";
 	arg << media;
 }
 
@@ -1400,11 +1415,14 @@ void TMPlayerProcess::setChapter(int ID) {
 
 void TMPlayerProcess::setAngle(int ID) {
 	writeToStdin("switch_angle " + QString::number(ID));
+	// Switch angle does not always succeed, so verify new angle
+	getSelectedAngle();
 }
 
 void TMPlayerProcess::nextAngle() {
 	// switch_angle -1 swicthes to next angle too
 	writeToStdin("switch_angle");
+	getSelectedAngle();
 }
 
 void TMPlayerProcess::setExternalSubtitleFile(const QString& filename) {

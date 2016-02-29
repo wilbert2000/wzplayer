@@ -393,6 +393,7 @@ signals:
 	void titleTrackChanged(int);
 	void chaptersChanged();
 	void chapterChanged(int);
+	void anglesChanged();
 	void ABMarkersChanged();
 	void osdLevelChanged(int);
 	void videoEqualizerNeedsUpdate();
