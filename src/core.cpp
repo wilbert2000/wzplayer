@@ -3041,7 +3041,9 @@ void TCore::changeDeinterlace(int ID) {
 void TCore::changeVideoTrack(int id) {
 	qDebug("TCore::changeVideoTrack: id: %d", id);
 
-	// TODO: restore fast change after overwriting video out fixed
+	// TODO: fix video tracks having different dimensions. The video out
+	// dimension will be the dimension of the last selected video track.
+	// When fixed use proc->setVideo() instead of restartPlay().
 	if (id != mset.current_video_id) {
 		mset.current_video_id = id;
 		if (id >= 0 && id != mdat.videos.getSelectedID()) {
