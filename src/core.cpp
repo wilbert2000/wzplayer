@@ -169,7 +169,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedAudioTracks()),
 			this, SLOT(onAudioTracksChanged()));
 	connect(proc, SIGNAL(receivedAudioTrackChanged(int)),
-			this, SLOT(onAudioTrackChanged(int)));
+			this, SIGNAL(audioTrackChanged(int)));
 
 	connect(proc, SIGNAL(receivedSubtitleTracks()),
 			this, SLOT(onSubtitlesChanged()));
@@ -3808,16 +3808,17 @@ void TCore::checkIfVideoIsHD() {
 }
 
 bool TCore::setPreferredAudio() {
-	qDebug("TCore::setPreferredAudio");
-
-	mset.preferred_language_audio_set = true;
 
 	if (!pref->audio_lang.isEmpty()) {
-		int wanted_id = mdat.audios.findLangID(pref->audio_lang);
-		if (wanted_id >= 0 && wanted_id != mdat.audios.getSelectedID()) {
-			mset.current_audio_id = TMediaSettings::NoneSelected;
-			changeAudioTrack(wanted_id);
-			return true;
+		int selected_id = mdat.audios.getSelectedID();
+		if (selected_id >= 0) {
+			int wanted_id = mdat.audios.findLangID(pref->audio_lang);
+			if (wanted_id >= 0 && wanted_id != selected_id) {
+				mset.current_audio_id = TMediaSettings::NoneSelected;
+				qDebug("TCore::setPreferredAudio: selecting preferred audio with id %d", wanted_id);
+				changeAudioTrack(wanted_id);
+				return true;
+			}
 		}
 	}
 
@@ -3828,34 +3829,12 @@ bool TCore::setPreferredAudio() {
 void TCore::onAudioTracksChanged() {
 	qDebug("TCore::onAudioTracksChanged");
 
-	// First update the tracks, so a possible track change will arrive
-	// on defined actions
+	// First update the track actions, so a possible track change by
+	// setpreferredAudio() will arrive on defined actions
 	emit audioTracksChanged();
 
-	// Check if one of the audio tracks matches the preferred language.
-	// If there is no audio selected, we have to wait for the audio to be
-	// selected and set the preferred language in onAudioTrackChanged()
-	if (mdat.audios.getSelectedID() >= 0) {
-		setPreferredAudio();
-	} else {
-		// Let onAudioTrackChanged() have a look at it
-		mset.preferred_language_audio_set = false;
-	}
-
-}
-
-void TCore::onAudioTrackChanged(int id) {
-	qDebug("TCore::onAudioTrackChanged: id %d", id);
-
-	// Check if one of the audio tracks matches the preferred language.
-	if (!mset.preferred_language_audio_set && mdat.audios.count() > 0) {
-		if (setPreferredAudio()) {
-			// audioTrackChanged() already emitted, so return
-			return;
-		}
-	}
-
-	emit audioTrackChanged(id);
+	// Check if one of the audio tracks matches the preferred language
+	setPreferredAudio();
 }
 
 void TCore::selectPreferredSub() {

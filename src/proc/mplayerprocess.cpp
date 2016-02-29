@@ -82,8 +82,8 @@ void TMPlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitSta
 	TPlayerProcess::processFinished(exitCode, exitStatus);
 }
 
-void TMPlayerProcess::getSelectedSub() {
-	qDebug("Proc::TMPlayerProcess::getSelectedSub");
+void TMPlayerProcess::getSelectedSubtitles() {
+	qDebug("Proc::TMPlayerProcess::getSelectedSubtitles");
 
 	if (md->subs.count() > 0) {
 		writeToStdin("get_property sub_source");
@@ -103,14 +103,14 @@ void TMPlayerProcess::getSelectedTracks() {
 		writeToStdin("get_property switch_video");
 	if (md->audios.count() > 0)
 		writeToStdin("get_property switch_audio");
-	getSelectedSub();
+	getSelectedSubtitles();
 }
 
 void TMPlayerProcess::getSelectedAngle() {
 
 	if (md->videos.count() > 0) {
 		// Need "angle/number of angles", hence use run instead of
-		// get_property angle, which only gives current angle
+		// get_property angle, which only gives the current angle
 		writeToStdin("run \"echo ID_ANGLE=${angle}\"");
 	}
 }
@@ -130,6 +130,18 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& val
 		return true;
 	}
 
+	if (name == "TRACK") {
+		static QRegExp rx_track(".*(\\d+)");
+		if (rx_track.indexIn(value) >= 0) {
+			return setVideoTrack(rx_track.cap(1).toInt());
+		}
+		if (value != "disabled") {
+			qWarning() << "Proc::TMPlayerProcess:parseVideoProperty: failed to parse video track ID"
+					   << value;
+		}
+		return false;
+	}
+
 	return TPlayerProcess::parseVideoProperty(name, value);
 }
 
@@ -147,6 +159,18 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name, const QString& val
 			qDebug("Proc::TMPlayerProcess::parseAudioProperty: added audio track id %d", id);
 		}
 		return true;
+	}
+
+	if (name == "TRACK") {
+		static QRegExp rx_track(".*(\\d+)");
+		if (rx_track.indexIn(value) >= 0) {
+			return setAudioTrack(rx_track.cap(1).toInt());
+		}
+		if (value != "disabled") {
+			qWarning() << "Proc::TMPlayerProcess:parseAudioProperty: failed to parse audio track ID"
+					   << value;
+		}
+		return false;
 	}
 
 	return TPlayerProcess::parseAudioProperty(name, value);
@@ -211,6 +235,36 @@ bool TMPlayerProcess::parseSubTrack(const QString& type, int id, const QString& 
 	return true;
 }
 
+bool TMPlayerProcess::setVideoTrack(int id) {
+
+	if (id != md->videos.getSelectedID()) {
+		qDebug("Proc::TMPlayerProcess::setVideoTrack: selecting video track with id %d", id);
+		md->videos.setSelectedID(id);
+		if (notified_player_is_running) {
+			emit receivedVideoTrackChanged(id);
+		}
+		return true;
+	}
+
+	qDebug("Proc::TMPlayerProcess::setVideoTrack: video track with id %d already selected", id);
+	return false;
+}
+
+bool TMPlayerProcess::setAudioTrack(int id) {
+
+	if (id != md->audios.getSelectedID()) {
+		qDebug("Proc::TMPlayerProcess::setAudioTrack: selecting audio track with id %d", id);
+		md->audios.setSelectedID(id);
+		if (notified_player_is_running) {
+			emit receivedAudioTrackChanged(id);
+		}
+		return true;
+	}
+
+	qDebug("Proc::TMPlayerProcess::setAudioTrack: audio track with id %d already selected", id);
+	return false;
+}
+
 bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 
 	if (name == "LENGTH") {
@@ -227,26 +281,12 @@ bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 
 	// Video track
 	if (name == "SWITCH_VIDEO") {
-		if (i != md->videos.getSelectedID()) {
-			qDebug("Proc::TMPlayerProcess::parseAnswer: selected video track id %d", i);
-			md->videos.setSelectedID(i);
-			emit receivedVideoTrackChanged(i);
-		} else {
-			qDebug("Proc::TMPlayerProcess::parseAnswer: video track id %d already selected", i);
-		}
-		return true;
+		return setVideoTrack(i);
 	}
 
 	// Audio track
 	if (name == "SWITCH_AUDIO") {
-		if (i != md->audios.getSelectedID()) {
-			qDebug("Proc::TMPlayerProcess::parseAnswer: selected audio track id %d", i);
-			md->audios.setSelectedID(i);
-			emit receivedAudioTrackChanged(i);
-		} else {
-			qDebug("Proc::TMPlayerProcess::parseAnswer: audio track id %d already selected", i);
-		}
-		return true;
+		return setAudioTrack(i);
 	}
 
 	// Subtitle track
@@ -677,14 +717,14 @@ void TMPlayerProcess::notifyChanges() {
 	}
 	if (get_selected_subtitle) {
 		get_selected_subtitle = false;
-		getSelectedSub();
+		getSelectedSubtitles();
 	}
 }
 
 void TMPlayerProcess::playingStarted() {
 	qDebug("Proc::TMPlayerProcess::playingStarted");
 
-	// ...
+	// Not used yet...
 	want_pause = false;
 
 	// Set mute here because mplayer doesn't have an option
@@ -721,8 +761,8 @@ void TMPlayerProcess::playingStarted() {
 		writeToStdin("get_property length");
 	}
 
-	// Get selected video, audio and subtitle tracks
-	getSelectedTracks();
+	// Get selected subtitles
+	getSelectedSubtitles();
 
 	// Create chapters from titles for vcd or audio CD
 	if (TMediaData::isCD(md->detected_type)) {
@@ -1089,7 +1129,10 @@ bool TMPlayerProcess::parseLine(QString& line) {
 void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
 
 	// TODO: Add "late" props like video/audio/sub track?
-	arg << "-playing-msg" << "ID_ANGLE=${angle}\n";
+	arg << "-playing-msg"
+		<< "ID_VIDEO_TRACK=${switch_video}\n"
+		   "ID_AUDIO_TRACK=${switch_audio}\n"
+		   "ID_ANGLE=${angle}\n";
 	if (is_playlist)
 		arg << "-playlist";
 	arg << media;
@@ -1529,8 +1572,8 @@ void TMPlayerProcess::setFullscreen(bool b) {
 #if PROGRAM_SWITCH
 void TMPlayerProcess::setTSProgram(int ID) {
 	writeToStdin("set_property switch_program " + QString::number(ID));
-	writeToStdin("get_property switch_audio");
-	writeToStdin("get_property switch_video");
+	// TODO: check
+	getSelectedTracks();
 }
 #endif
 

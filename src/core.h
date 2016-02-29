@@ -454,7 +454,6 @@ protected slots:
 	void checkIfVideoIsHD();
 
 	void onAudioTracksChanged();
-	void onAudioTrackChanged(int id);
 
 	void selectPreferredSub();
 	void onSubtitlesChanged();

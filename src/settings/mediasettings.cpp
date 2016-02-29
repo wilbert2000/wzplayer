@@ -48,7 +48,6 @@ void TMediaSettings::reset() {
 	current_video_id = NoneSelected;
 	current_audio_id = NoneSelected;
 	external_audio = "";
-	preferred_language_audio_set = false;
 	current_sub_idx = NoneSelected;
 	current_sub_set_by_user = false;
 

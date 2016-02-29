@@ -164,10 +164,13 @@ private:
 
 	void clearStartTime();
 	void clearSubSources();
-	void getSelectedSub();
+	void getSelectedSubtitles();
 	void getSelectedTracks();
 	void getSelectedAngle();
 	void notifyChanges();
+
+	bool setVideoTrack(int id);
+	bool setAudioTrack(int id);
 
 	bool titleChanged(TMediaData::Type type, int title);
 	void dvdnavTitleChanged(int old_title);
