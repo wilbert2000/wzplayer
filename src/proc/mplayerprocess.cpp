@@ -1128,7 +1128,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
 
-	// TODO: Add "late" props like video/audio/sub track?
+	// TODO: Add sub_source?
 	arg << "-playing-msg"
 		<< "ID_VIDEO_TRACK_EX=${switch_video}\n"
 		   "ID_AUDIO_TRACK_EX=${switch_audio}\n"
