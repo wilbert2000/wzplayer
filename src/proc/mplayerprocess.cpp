@@ -130,7 +130,7 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& val
 		return true;
 	}
 
-	if (name == "TRACK") {
+	if (name == "TRACK_EX") {
 		static QRegExp rx_track(".*(\\d+)");
 		if (rx_track.indexIn(value) >= 0) {
 			return setVideoTrack(rx_track.cap(1).toInt());
@@ -161,7 +161,7 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name, const QString& val
 		return true;
 	}
 
-	if (name == "TRACK") {
+	if (name == "TRACK_EX") {
 		static QRegExp rx_track(".*(\\d+)");
 		if (rx_track.indexIn(value) >= 0) {
 			return setAudioTrack(rx_track.cap(1).toInt());
@@ -817,8 +817,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_audio_track("^ID_AID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_track_alt("^audio stream: \\d+ format: (.*) language: (.*) aid: (\\d+)");
 	// Video and audio properties
-	static QRegExp rx_video_prop("^ID_VIDEO_([A-Z]+)\\s*=\\s*(.*)");
-	static QRegExp rx_audio_prop("^ID_AUDIO_([A-Z]+)\\s*=\\s*(.*)");
+	static QRegExp rx_video_prop("^ID_VIDEO_([A-Z_]+)\\s*=\\s*(.*)");
+	static QRegExp rx_audio_prop("^ID_AUDIO_([A-Z_]+)\\s*=\\s*(.*)");
 
 	// Subtitles
 	static QRegExp rx_sub_id("^ID_(SUBTITLE|FILE_SUB|VOBSUB)_ID=(\\d+)");
@@ -1130,8 +1130,8 @@ void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
 
 	// TODO: Add "late" props like video/audio/sub track?
 	arg << "-playing-msg"
-		<< "ID_VIDEO_TRACK=${switch_video}\n"
-		   "ID_AUDIO_TRACK=${switch_audio}\n"
+		<< "ID_VIDEO_TRACK_EX=${switch_video}\n"
+		   "ID_AUDIO_TRACK_EX=${switch_audio}\n"
 		   "ID_ANGLE=${angle}\n";
 	if (is_playlist)
 		arg << "-playlist";
