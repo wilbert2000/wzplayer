@@ -16,23 +16,24 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_WIDGET_H_
-#define _PREF_WIDGET_H_
+#ifndef PREF_WIDGET_H
+#define PREF_WIDGET_H
 
 #include <QWidget>
 #include <QPixmap>
 #include <QString>
 
 
+// TODO: remove
 #define TEST_AND_SET(Pref, Dialog) \
 	if (Pref != Dialog) { Pref = Dialog; requires_restart = true; }
 
 class QEvent;
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
-class TWidget : public QWidget
-{
+class TWidget : public QWidget {
 
 public:
 	TWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
@@ -50,22 +51,30 @@ public:
 	virtual QString help() { return help_message; }
 
 protected:
+	bool requires_restart;
+
 	virtual void retranslateStrings();
 	virtual void changeEvent (QEvent* event) ;
 
+	// Request restart if changed
+	void restartIfBoolChanged(bool& old_value, bool new_value);
+	void restartIfIntChanged(int& old_value, int new_value);
+	void restartIfUIntChanged(unsigned int& old_value, unsigned int new_value);
+	void restartIfDoubleChanged(double& old_value, const double& new_value);
+	void restartIfStringChanged(QString& old_value, const QString& new_value);
+
 	// Help
-	void addSectionTitle(const QString & title);
-	void setWhatsThis(QWidget *w, const QString & title, const QString & text);
+	void addSectionTitle(const QString& title);
+	void setWhatsThis(QWidget* w, const QString& title, const QString& text);
 	void clearHelp();
 	
 	virtual void createHelp();
-
-	bool requires_restart;
 
 private:
 	QString help_message;
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_WIDGET_H_
+#endif // PREF_WIDGET_H

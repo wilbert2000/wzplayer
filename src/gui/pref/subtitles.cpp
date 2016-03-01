@@ -170,39 +170,39 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 	pref->initial_sub_scale_ass = assFontScale();
-	TEST_AND_SET(pref->autoload_sub, autoloadSub());
-	TEST_AND_SET(pref->subfuzziness, fontFuzziness());
-	TEST_AND_SET(pref->subcp, fontEncoding());
-	TEST_AND_SET(pref->use_enca, useEnca());
-	TEST_AND_SET(pref->enca_lang, encaLang());
-	TEST_AND_SET(pref->ass_line_spacing, assLineSpacing());
-	TEST_AND_SET(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
-	TEST_AND_SET(pref->freetype_support, freetypeSupport());
-	TEST_AND_SET(pref->use_ass_subtitles, use_ass_check->isChecked());
+	restartIfBoolChanged(pref->autoload_sub, autoloadSub());
+	restartIfIntChanged(pref->subfuzziness, fontFuzziness());
+	restartIfStringChanged(pref->subcp, fontEncoding());
+	restartIfBoolChanged(pref->use_enca, useEnca());
+	restartIfStringChanged(pref->enca_lang, encaLang());
+	restartIfIntChanged(pref->ass_line_spacing, assLineSpacing());
+	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
+	restartIfBoolChanged(pref->freetype_support, freetypeSupport());
+	restartIfBoolChanged(pref->use_ass_subtitles, use_ass_check->isChecked());
 
 	// Save ass styles
-	TEST_AND_SET(pref->ass_styles.fontname, style_font_combo->currentText());
-	TEST_AND_SET(pref->ass_styles.fontsize, style_size_spin->value());
-	TEST_AND_SET(pref->ass_styles.primarycolor, style_text_color_button->color().rgb());
-	TEST_AND_SET(pref->ass_styles.outlinecolor, style_border_color_button->color().rgb());
-	TEST_AND_SET(pref->ass_styles.backcolor, style_shadow_color_button->color().rgb());
-	TEST_AND_SET(pref->ass_styles.bold, style_bold_check->isChecked());
-	TEST_AND_SET(pref->ass_styles.italic, style_italic_check->isChecked());
-	TEST_AND_SET(pref->ass_styles.halignment, style_alignment_combo->itemData(style_alignment_combo->currentIndex()).toInt());
-	TEST_AND_SET(pref->ass_styles.valignment, style_valignment_combo->currentIndex());
-	TEST_AND_SET(pref->ass_styles.borderstyle, style_border_style_combo->itemData(style_border_style_combo->currentIndex()).toInt());
-	TEST_AND_SET(pref->ass_styles.outline, style_outline_spin->value());
-	TEST_AND_SET(pref->ass_styles.shadow, style_shadow_spin->value());
-	TEST_AND_SET(pref->ass_styles.marginl, style_marginl_spin->value());
-	TEST_AND_SET(pref->ass_styles.marginr, style_marginr_spin->value());
-	TEST_AND_SET(pref->ass_styles.marginv, style_marginv_spin->value());
+	restartIfStringChanged(pref->ass_styles.fontname, style_font_combo->currentText());
+	restartIfIntChanged(pref->ass_styles.fontsize, style_size_spin->value());
+	restartIfUIntChanged(pref->ass_styles.primarycolor, style_text_color_button->color().rgb());
+	restartIfUIntChanged(pref->ass_styles.outlinecolor, style_border_color_button->color().rgb());
+	restartIfUIntChanged(pref->ass_styles.backcolor, style_shadow_color_button->color().rgb());
+	restartIfBoolChanged(pref->ass_styles.bold, style_bold_check->isChecked());
+	restartIfBoolChanged(pref->ass_styles.italic, style_italic_check->isChecked());
+	restartIfIntChanged(pref->ass_styles.halignment, style_alignment_combo->itemData(style_alignment_combo->currentIndex()).toInt());
+	restartIfIntChanged(pref->ass_styles.valignment, style_valignment_combo->currentIndex());
+	restartIfIntChanged(pref->ass_styles.borderstyle, style_border_style_combo->itemData(style_border_style_combo->currentIndex()).toInt());
+	restartIfDoubleChanged(pref->ass_styles.outline, style_outline_spin->value());
+	restartIfDoubleChanged(pref->ass_styles.shadow, style_shadow_spin->value());
+	restartIfIntChanged(pref->ass_styles.marginl, style_marginl_spin->value());
+	restartIfIntChanged(pref->ass_styles.marginr, style_marginr_spin->value());
+	restartIfIntChanged(pref->ass_styles.marginv, style_marginv_spin->value());
 
 	pref->ass_styles.exportStyles(Settings::TPaths::subtitleStyleFile());
 
-	TEST_AND_SET(pref->force_ass_styles, forceAssStyles());
-	TEST_AND_SET(pref->user_forced_ass_style, customizedAssStyle());
+	restartIfBoolChanged(pref->force_ass_styles, forceAssStyles());
+	restartIfStringChanged(pref->user_forced_ass_style, customizedAssStyle());
 
-	TEST_AND_SET(pref->enable_ass_styles, ass_custom_check->isChecked());
+	restartIfBoolChanged(pref->enable_ass_styles, ass_custom_check->isChecked());
 
 #ifdef Q_OS_WIN
 	pref->use_windowsfontdir = windowsfontdir_check->isChecked();

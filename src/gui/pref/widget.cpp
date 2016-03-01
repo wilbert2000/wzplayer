@@ -18,8 +18,10 @@
 
 #include "gui/pref/widget.h"
 #include <QEvent>
+#include "settings/assstyles.h"
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
 TWidget::TWidget(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
@@ -43,9 +45,48 @@ void TWidget::addSectionTitle(const QString & title) {
 	help_message += "<h2>"+title+"</h2>";
 }
 
-void TWidget::setWhatsThis(QWidget *w, const QString & title,
-                               const QString & text)
-{
+void TWidget::restartIfBoolChanged(bool& old_value, bool new_value) {
+
+	if (old_value != new_value) {
+		old_value = new_value;
+		requires_restart = true;
+	}
+}
+
+void TWidget::restartIfIntChanged(int& old_value, int new_value) {
+
+	if (old_value != new_value) {
+		old_value = new_value;
+		requires_restart = true;
+	}
+}
+
+void TWidget::restartIfUIntChanged(unsigned int& old_value, unsigned int new_value) {
+
+	if (old_value != new_value) {
+		old_value = new_value;
+		requires_restart = true;
+	}
+}
+
+void TWidget::restartIfDoubleChanged(double& old_value, const double& new_value) {
+
+	if (old_value != new_value) {
+		old_value = new_value;
+		requires_restart = true;
+	}
+}
+
+void TWidget::restartIfStringChanged(QString& old_value, const QString& new_value) {
+
+	if (old_value != new_value) {
+		old_value = new_value;
+		requires_restart = true;
+	}
+}
+
+void TWidget::setWhatsThis(QWidget *w, const QString & title, const QString & text) {
+
 	w->setWhatsThis(text);
 	help_message += "<b>"+title+"</b><br>"+text+"<br><br>";
 
@@ -71,4 +112,5 @@ void TWidget::changeEvent(QEvent *e) {
 void TWidget::retranslateStrings() {
 }
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
