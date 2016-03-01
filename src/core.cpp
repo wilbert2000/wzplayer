@@ -77,7 +77,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	  mset(&mdat),
 	  playerwindow(mpw),
 	  _state(Stopped),
-	  we_are_restarting(false),
+	  restarting(0),
 	  title(-1),
 	  block_dvd_nav(false),
 	  change_volume_after_unpause(false),
@@ -263,13 +263,18 @@ void TCore::processError(QProcess::ProcessError error) {
 }
 
 void TCore::processFinished(bool normal_exit) {
-	qDebug("TCore::processFinished");
+	qDebug("TCore::processFinished: normal exit %d", normal_exit);
+
+	// Cancel restarting to enter the stopped state in case the already
+	// restarted player unexpectedly finished
+	if (restarting == 2)
+		restarting = 0;
 
 	// Restore normal window background
-	playerwindow->playingStopped(!we_are_restarting);
+	playerwindow->playingStopped(restarting == 0);
 
-	if (we_are_restarting) {
-		qDebug("TCore::processFinished: something tells me we are restarting...");
+	if (restarting) {
+		qDebug("TCore::processFinished: restarting...");
 		return;
 	}
 
@@ -328,7 +333,7 @@ void TCore::reload() {
 	qDebug("TCore::reload");
 
 	stopPlayer();
-	we_are_restarting = false;
+	restarting = 0;
 
 	initPlaying();
 }
@@ -400,7 +405,7 @@ void TCore::close() {
 	qDebug("TCore::close()");
 
 	stopPlayer();
-	we_are_restarting = false;
+	restarting = 0;
 	// Save data previous file:
 	saveMediaInfo();
 	// Clear media data
@@ -720,7 +725,6 @@ void TCore::openFile(const QString& filename, int seek) {
 
 
 void TCore::restartPlay() {
-	we_are_restarting = true;
 
 	// For DVDNAV remember the current title, pos and menu.
 	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
@@ -737,9 +741,11 @@ void TCore::restartPlay() {
 	}
 
 	if (proc->isRunning()) {
+		restarting = 1;
 		stopPlayer();
 	}
 
+	restarting = 2;
 	initPlaying();
 }
 
@@ -787,7 +793,7 @@ void TCore::initPlaying(int seek) {
 
 	time.start();
 	playerwindow->hideLogo();
-	if (!we_are_restarting)
+	if (restarting == 0)
 		initMediaSettings();
 
 	int start_sec = (int) mset.current_sec;
@@ -901,8 +907,8 @@ void TCore::playingStarted() {
 
 	setState(Playing);
 
-	if (we_are_restarting) {
-		we_are_restarting = false;
+	if (restarting) {
+		restarting = 0;
 
 		// For DVDNAV go back to where we were.
 		// Need timer to give DVDNAV time to update its current state.
@@ -3736,7 +3742,7 @@ void TCore::gotVideoOutResolution(int w, int h) {
 		// Set aspect, false = do not update video window.
 		playerwindow->setAspect(aspect, false);
 	}
-	if (!we_are_restarting)
+	if (restarting == 0)
 		emit videoOutResolutionChanged(w, h);
 
 	// If resize is canceled adjust new video to old size

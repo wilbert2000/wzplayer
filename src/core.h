@@ -494,7 +494,7 @@ protected:
 private:
 	State _state;
 
-	bool we_are_restarting;
+	int restarting;
 	// Get DVDNAV to restart
 	int title;
 	int title_to_select;
