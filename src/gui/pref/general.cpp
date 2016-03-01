@@ -73,10 +73,6 @@ TGeneral::TGeneral(QWidget* parent, Qt::WindowFlags f)
 	vdpau_button->hide();
 #endif
 
-#ifndef AUTO_SHUTDOWN_PC
-	shutdown_widget->hide();
-#endif
-
 #ifdef MPV_SUPPORT
 	screenshot_format_combo->addItems(QStringList() << "png" << "ppm" << "pgm" << "pgmyuv" << "tga" << "jpg" << "jpeg");
 #else
@@ -217,9 +213,6 @@ void TGeneral::setData(TPreferences* pref) {
 	setSubtitleTrack(pref->initial_subtitle_track);
 	setCloseOnFinish(pref->close_on_finish);
 	setPauseWhenHidden(pref->pause_when_hidden);
-#ifdef AUTO_SHUTDOWN_PC
-	shutdown_check->setChecked(pref->auto_shutdown_pc);
-#endif
 
 	setEq2(pref->use_soft_video_eq);
 	setUseAudioEqualizer(pref->use_audio_equalizer);
@@ -313,10 +306,6 @@ void TGeneral::getData(TPreferences* pref) {
 
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
-
-#ifdef AUTO_SHUTDOWN_PC
-	pref->auto_shutdown_pc = shutdown_check->isChecked();
-#endif
 
 	TEST_AND_SET(pref->use_soft_video_eq, eq2());
 	TEST_AND_SET(pref->use_soft_vol, softVol());
@@ -970,11 +959,6 @@ void TGeneral::createHelp() {
 	setWhatsThis(close_on_finish_check, tr("Close when finished"),
 		tr("If this option is checked, the main window will be automatically "
 		   "closed when the current file/playlist finishes."));
-
-#ifdef AUTO_SHUTDOWN_PC
-	setWhatsThis(shutdown_check, tr("Shut down computer"),
-		tr("If this option is enabled, the computer will shut down just after SMPlayer is closed."));
-#endif
 
 	// Video tab
 	addSectionTitle(tr("Video"));

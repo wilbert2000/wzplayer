@@ -20,7 +20,6 @@ DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += MPRIS2
 DEFINES += UPDATE_CHECKER
 DEFINES += CHECK_UPGRADED
-DEFINES += AUTO_SHUTDOWN_PC
 DEFINES += CAPTURE_STREAM
 
 DEFINES += MPV_SUPPORT
@@ -34,7 +33,6 @@ contains(DEFINES, SIMPLE_BUILD) {
 	DEFINES -= MPRIS2
 	DEFINES -= UPDATE_CHECKER
 	DEFINES -= CHECK_UPGRADED
-	DEFINES -= AUTO_SHUTDOWN_PC
 }
 
 isEqual(QT_MAJOR_VERSION, 5) {
@@ -402,14 +400,6 @@ contains(DEFINES, MPRIS2) {
 contains(DEFINES, UPDATE_CHECKER) {
     HEADERS += gui/updatechecker.h updatecheckerdata.h
     SOURCES += gui/updatechecker.cpp updatecheckerdata.cpp
-}
-
-contains(DEFINES, AUTO_SHUTDOWN_PC) {
-	HEADERS += shutdowndialog.h shutdown.h
-	SOURCES += shutdowndialog.cpp shutdown.cpp
-	FORMS += shutdowndialog.ui
-
-	unix { QT += dbus }
 }
 
 unix {

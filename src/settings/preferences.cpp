@@ -356,10 +356,6 @@ void TPreferences::reset() {
 
 	close_on_finish = false;
 
-#ifdef AUTO_SHUTDOWN_PC
-	auto_shutdown_pc = false;
-#endif
-
 	default_font = "";
 
 	pause_when_hidden = false;
@@ -763,10 +759,6 @@ void TPreferences::save() {
 	setValue("save_window_size_on_exit", save_window_size_on_exit);
 
 	setValue("close_on_finish", close_on_finish);
-
-#ifdef AUTO_SHUTDOWN_PC
-	setValue("auto_shutdown_pc", auto_shutdown_pc);
-#endif
 
 	setValue("default_font", default_font);
 
@@ -1328,10 +1320,6 @@ void TPreferences::load() {
 
 	close_on_finish = value("close_on_finish", close_on_finish).toBool();
 
-#ifdef AUTO_SHUTDOWN_PC
-	auto_shutdown_pc = value("auto_shutdown_pc", auto_shutdown_pc).toBool();
-#endif
-
 	default_font = value("default_font", default_font).toString();
 
 	pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
@@ -1525,6 +1513,8 @@ void TPreferences::load() {
 			remove("advanced/log_enabled");
 			remove("advanced/log_filter");
 		}
+
+		//remove("gui/auto_shutdown_pc");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

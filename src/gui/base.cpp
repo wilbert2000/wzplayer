@@ -126,11 +126,6 @@
 #endif
 #endif
 
-#ifdef AUTO_SHUTDOWN_PC
-#include "shutdowndialog.h"
-#include "shutdown.h"
-#endif
-
 
 using namespace Settings;
 
@@ -2103,17 +2098,6 @@ void TBase::playlistHasFinished() {
 
 	if (arg_close_on_finish != 0) {
 		if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
-			#ifdef AUTO_SHUTDOWN_PC
-			if (pref->auto_shutdown_pc) {
-				ShutdownDialog d(this);
-				if (d.exec() == QDialog::Accepted) {
-					qDebug("Gui::TBase::playlistHasFinished: the PC will shut down");
-					Shutdown::shutdown();
-				} else {
-					qDebug("Gui::TBase::playlistHasFinished: shutdown aborted");
-				}
-			}
-			#endif
 			close();
 		}
 	}
