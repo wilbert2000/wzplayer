@@ -33,7 +33,7 @@ public:
 	enum BorderStyle { Outline = 1, Opaque = 3 };
 
 	TAssStyles();
-	virtual ~TAssStyles() {}
+	virtual ~TAssStyles();
 
 	QString fontname;
 	int fontsize;
@@ -54,7 +54,7 @@ public:
 	void save(QSettings* set);
 	void load(QSettings* set);
 
-	bool exportStyles(const QString & filename) const;
+	bool exportStyles(const QString& filename) const;
 	QString toString();
 };
 

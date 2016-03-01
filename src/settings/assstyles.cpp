@@ -42,6 +42,9 @@ TAssStyles::TAssStyles() {
 	marginv = 8;
 }
 
+TAssStyles::~TAssStyles() {
+}
+
 void TAssStyles::save(QSettings* set) {
 	qDebug("Settings::TAssStyles::save");
 
@@ -82,7 +85,7 @@ void TAssStyles::load(QSettings* set) {
 	marginv = set->value("styles/marginv", marginv).toInt();
 }
 
-bool TAssStyles::exportStyles(const QString & filename) const {
+bool TAssStyles::exportStyles(const QString& filename) const {
 	qDebug("Settings::TAssStyles::exportStyles: filename: %s", filename.toUtf8().constData());
 
 	QFile f(filename);
@@ -90,9 +93,10 @@ bool TAssStyles::exportStyles(const QString & filename) const {
 		QTextStream out(&f);
 
 		int alignment = halignment;
-		if (valignment == 1) alignment += 3; // Middle
-		else
-		if (valignment == 2) alignment += 6; // Top
+		if (valignment == 1)
+			alignment += 3; // Middle
+		else if (valignment == 2)
+			alignment += 6; // Top
 
 		out << "[Script Info]" << endl;
 		out << "ScriptType: v4.00+" << endl;

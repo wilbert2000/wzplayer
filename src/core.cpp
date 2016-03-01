@@ -3070,7 +3070,6 @@ void TCore::changeAudioTrack(int id) {
 
 			// Workaround for a mplayer problem in windows,
 			// volume is too loud after changing audio.
-
 			// Workaround too for a mplayer problem in linux,
 			// the volume is reduced if using -softvol-max.
 
