@@ -324,12 +324,6 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	connect(capturingAct, SIGNAL(triggered()), core, SLOT(switchCapturing()) );
 #endif
 
-#ifdef VIDEOPREVIEW
-	addSeparator();
-	TAction* a = new TAction(this, "video_preview", QT_TR_NOOP("Thumb&nail generator..."));
-	connect(a, SIGNAL(triggered()), parent, SLOT(showVideoPreviewDialog()));
-#endif
-
 	addActionsTo(parent);
 }
 

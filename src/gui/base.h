@@ -40,10 +40,6 @@ class TPlayerWindow;
 class FindSubtitlesWindow;
 #endif
 
-#ifdef VIDEOPREVIEW
-class VideoPreview;
-#endif
-
 
 namespace Gui {
 
@@ -132,10 +128,6 @@ public slots:
 #ifdef FIND_SUBTITLES
 	virtual void showFindSubtitlesDialog();
 	virtual void openUploadSubtitlesPage(); //turbos
-#endif
-
-#ifdef VIDEOPREVIEW
-	virtual void showVideoPreviewDialog();
 #endif
 
 #ifdef YOUTUBE_SUPPORT
@@ -369,10 +361,6 @@ protected:
 
 #ifdef FIND_SUBTITLES
 	FindSubtitlesWindow* find_subs_dialog;
-#endif
-
-#ifdef VIDEOPREVIEW
-	VideoPreview* video_preview;
 #endif
 
 #ifdef UPDATE_CHECKER

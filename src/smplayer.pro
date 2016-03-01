@@ -15,7 +15,6 @@ RESOURCES = icons.qrc
 
 DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
-DEFINES += VIDEOPREVIEW
 DEFINES += YOUTUBE_SUPPORT
 DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += MPRIS2
@@ -32,7 +31,6 @@ DEFINES += MPLAYER_SUPPORT
 contains(DEFINES, SIMPLE_BUILD) {
 	DEFINES -= SINGLE_INSTANCE
 	DEFINES -= FIND_SUBTITLES
-	DEFINES -= VIDEOPREVIEW
 	DEFINES -= MPRIS2
 	DEFINES -= UPDATE_CHECKER
 	DEFINES -= CHECK_UPGRADED
@@ -404,17 +402,6 @@ contains(DEFINES, MPRIS2) {
 contains(DEFINES, UPDATE_CHECKER) {
     HEADERS += gui/updatechecker.h updatecheckerdata.h
     SOURCES += gui/updatechecker.cpp updatecheckerdata.cpp
-}
-
-# Videopreview
-contains(DEFINES, VIDEOPREVIEW) {
-	INCLUDEPATH += videopreview
-	DEPENDPATH += videopreview
-
-	HEADERS += videopreview/videopreview.h videopreview/videopreviewconfigdialog.h
-	SOURCES += videopreview/videopreview.cpp videopreview/videopreviewconfigdialog.cpp
-
-	FORMS += videopreview/videopreviewconfigdialog.ui
 }
 
 contains(DEFINES, AUTO_SHUTDOWN_PC) {

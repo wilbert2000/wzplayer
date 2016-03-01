@@ -107,10 +107,6 @@
 #include "findsubtitleswindow.h"
 #endif
 
-#ifdef VIDEOPREVIEW
-#include "videopreview.h"
-#endif
-
 #ifdef MPRIS2
 #include "mpris2/mpris2.h"
 #endif
@@ -151,9 +147,6 @@ TBase::TBase()
 	, file_properties_dialog(0)
 #ifdef FIND_SUBTITLES
 	, find_subs_dialog(0)
-#endif
-#ifdef VIDEOPREVIEW
-	, video_preview(0)
 #endif
 #ifdef UPDATE_CHECKER
 	, update_checker(0)
@@ -2652,40 +2645,6 @@ void TBase::showFindSubtitlesDialog() {
 
 void TBase::openUploadSubtitlesPage() {	
 	QDesktopServices::openUrl(QUrl("http://www.opensubtitles.org/upload"));
-}
-#endif
-
-#ifdef VIDEOPREVIEW
-void TBase::showVideoPreviewDialog() {
-	qDebug("Gui::TBase::showVideoPreviewDialog");
-
-	if (video_preview == 0) {
-		video_preview = new VideoPreview(this);
-	}
-
-	if (!core->mdat.filename.isEmpty()) {
-		video_preview->setVideoFile(core->mdat.filename);
-
-		// DVD
-		if (TMediaData::isDVD(core->mdat.selected_type)) {
-			QString file = core->mdat.filename;
-			TDiscData disc_data = TDiscName::split(file);
-			QString dvd_folder = disc_data.device;
-			if (dvd_folder.isEmpty()) dvd_folder = pref->dvd_device;
-			int dvd_title = disc_data.title;
-			file = disc_data.protocol + "://" + QString::number(dvd_title);
-
-			video_preview->setVideoFile(file);
-			video_preview->setDVDDevice(dvd_folder);
-		} else {
-			video_preview->setDVDDevice("");
-		}
-	}
-
-	if (video_preview->showConfigDialog(this) && video_preview->createThumbnails()) {
-		video_preview->show();
-		video_preview->adjustWindowSize();
-	}
 }
 #endif
 
