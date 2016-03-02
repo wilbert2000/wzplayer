@@ -136,8 +136,6 @@ void TMediaSettings::reset() {
 	A_marker = -1;
 	B_marker = -1;
 
-	is264andHD = false;
-
 	current_demuxer = "unknown";
 
 	forced_demuxer = "";
@@ -253,8 +251,6 @@ void TMediaSettings::list() {
 	qDebug("  mplayer_additional_options: '%s'", mplayer_additional_options.toUtf8().data());
 	qDebug("  mplayer_additional_video_filters: '%s'", mplayer_additional_video_filters.toUtf8().data());
 	qDebug("  mplayer_additional_audio_filters: '%s'", mplayer_additional_audio_filters.toUtf8().data());
-
-	qDebug("  is264andHD: %d", is264andHD);
 }
 
 void TMediaSettings::save(QSettings* set, int player_id) {
@@ -393,8 +389,6 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 	set->setValue("mplayer_additional_options", mplayer_additional_options);
 	set->setValue("mplayer_additional_video_filters", mplayer_additional_video_filters);
 	set->setValue("mplayer_additional_audio_filters", mplayer_additional_audio_filters);
-
-	set->setValue("is264andHD", is264andHD);
 }
 
 void TMediaSettings::convertOldSelectedTrack(int &id) {
@@ -534,8 +528,6 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	mplayer_additional_options = set->value("mplayer_additional_options", mplayer_additional_options).toString();
 	mplayer_additional_video_filters = set->value("mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
 	mplayer_additional_audio_filters = set->value("mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
-
-	is264andHD = set->value("is264andHD", is264andHD).toBool();
 
 	// ChDefault not used anymore
 	if (audio_use_channels == ChDefault) audio_use_channels = ChStereo;

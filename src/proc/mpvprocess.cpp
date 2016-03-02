@@ -928,10 +928,6 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		arg << "--screenshot-template=" + value.toString();
 	} else if (name == "screenshot_format") {
 		arg << "--screenshot-format=" + value.toString();
-	} else if (name == "threads") {
-		arg << "--vd-lavc-threads=" + value.toString();
-	} else if (name == "skiploopfilter") {
-		arg << "--vd-lavc-skiploopfilter=all";
 	} else if (name == "keepaspect" || name == "fs") {
 		bool b = value.toBool();
 		if (b) arg << "--" + name; else arg << "--no-" + name;

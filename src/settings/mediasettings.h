@@ -152,9 +152,6 @@ public:
 	int A_marker;
 	int B_marker;
 
-	//! The codec of the video is ffh264 and it's high definition
-	bool is264andHD;
-
 	QString current_demuxer;
 
 	// Advanced settings

@@ -159,8 +159,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedStreamTitleAndUrl(const QString&, const QString&)),
 			 this, SLOT(streamTitleAndUrlChanged(const QString&, const QString&)));
 
-	connect(this, SIGNAL(mediaLoaded()), this, SLOT(checkIfVideoIsHD()), Qt::QueuedConnection);
-
 	connect(proc, SIGNAL(receivedVideoTracks()),
 			this, SIGNAL(videoTracksChanged()));
 	connect(proc, SIGNAL(receivedVideoTrackChanged(int)),
@@ -1200,6 +1198,7 @@ void TCore::startPlayer(QString file, double seek) {
 	} else {
 
 #ifndef Q_OS_WIN
+		// Set codecs for VDPAU
 		if (pref->vo.startsWith("vdpau")) {
 			if (isMPlayer()) {
 				QString c;
@@ -1222,14 +1221,6 @@ void TCore::startPlayer(QString file, double seek) {
 					proc->setOption("hwdec-codecs", c.mid(1));
 				}
 			}
-		} else {
-#endif
-
-			if (pref->coreavc) {
-				proc->setOption("vc", "coreserve,");
-			}
-
-#ifndef Q_OS_WIN
 		}
 #endif
 
@@ -1242,42 +1233,6 @@ void TCore::startPlayer(QString file, double seek) {
 
 	if (pref->use_hwac3)
 		proc->setOption("afm", "hwac3");
-
-	if (isMPlayer()) {
-		QString lavdopts;
-
-		if (pref->h264_skip_loop_filter == TPreferences::LoopDisabled
-			|| (pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD
-				&& mset.is264andHD)) {
-
-			if (!lavdopts.isEmpty())
-				lavdopts += ":";
-			lavdopts += "skiploopfilter=all";
-		}
-
-		if (pref->threads > 1) {
-			if (!lavdopts.isEmpty())
-				lavdopts += ":";
-			lavdopts += "threads=" + QString::number(pref->threads);
-		}
-
-		if (!lavdopts.isEmpty()) {
-			proc->setOption("lavdopts", lavdopts);
-		}
-	}
-	else {
-		// MPV
-		if (pref->h264_skip_loop_filter == TPreferences::LoopDisabled
-			|| (pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD
-				&& mset.is264andHD)) {
-			proc->setOption("skiploopfilter");
-		}
-
-		if (pref->threads > 1) {
-			proc->setOption("threads", QString::number(pref->threads));
-		}
-	}
-
 
 	// Set screenshot directory
 	bool screenshot_enabled = pref->use_screenshot
@@ -3791,26 +3746,6 @@ void TCore::watchState(TCore::State state) {
 		qDebug("TCore::watchState: delayed volume change");
 		change_volume_after_unpause = false;
 		proc->setVolume(getVolume());
-	}
-}
-
-void TCore::checkIfVideoIsHD() {
-	qDebug("TCore::checkIfVideoIsHD");
-
-	// Check if the video is in HD and uses ffh264 codec.
-	if ((mdat.video_codec == "ffh264") && (mdat.video_out_height >= pref->HD_height)) {
-		qDebug("TCore::checkIfVideoIsHD: video == ffh264 and height >= %d", pref->HD_height);
-		if (!mset.is264andHD) {
-			mset.is264andHD = true;
-			if (pref->h264_skip_loop_filter == TPreferences::LoopDisabledOnHD) {
-				qDebug("TCore::checkIfVideoIsHD: we're about to restart the video");
-				restartPlay();
-			}
-		}
-	} else {
-		mset.is264andHD = false;
-		// FIXME: if the video was previously marked as HD, and now it's not
-		// then the video should restart too.
 	}
 }
 

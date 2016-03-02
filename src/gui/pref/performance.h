@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_PERFORMANCE_H_
-#define _PREF_PERFORMANCE_H_
+#ifndef PREF_PERFORMANCE_H
+#define PREF_PERFORMANCE_H
 
 #include "ui_performance.h"
 #include "gui/pref/widget.h"
 
-#include "settings/preferences.h"
-#include "config.h"
 
-namespace Gui { namespace Pref {
+namespace Settings {
+class TPreferences;
+}
 
-class TPerformance : public TWidget, public Ui::TPerformance
-{
+namespace Gui {
+namespace Pref {
+
+class TPerformance : public TWidget, public Ui::TPerformance {
 	Q_OBJECT
 
 public:
@@ -74,15 +76,6 @@ protected:
 	void setHardFrameDrop(bool b);
 	bool hardFrameDrop();
 
-	void setSkipLoop(Settings::TPreferences::H264LoopFilter value);
-	Settings::TPreferences::H264LoopFilter skipLoop();
-
-	void setThreads(int v);
-	int threads();
-
-	void setCoreavcUsage(bool b);
-	bool coreavcUsage();
-
 	void setHwdec(const QString & v);
 	QString hwdec();
 
@@ -90,6 +83,7 @@ protected:
 	virtual void retranslateStrings();
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_PERFORMANCE_H_
+#endif // PREF_PERFORMANCE_H

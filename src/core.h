@@ -448,11 +448,6 @@ protected slots:
 	
 	void watchState(TCore::State state);
 
-	//! Called when a video has just started to play.
-	//! This function checks if the codec of video is ffh264 and if
-	//! the resolution is HD
-	void checkIfVideoIsHD();
-
 	void onAudioTracksChanged();
 
 	void selectPreferredSub();

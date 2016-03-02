@@ -193,11 +193,7 @@ void TPreferences::reset() {
 	priority = AboveNormal; // Option only for windows
 	frame_drop = false;
 	hard_frame_drop = false;
-	coreavc = false;
-	h264_skip_loop_filter = LoopEnabled;
-	HD_height = 720;
 
-	threads = 1;
 	hwdec = "no";
 
 	cache_for_files = 2048;
@@ -600,11 +596,6 @@ void TPreferences::save() {
 	setValue("priority", priority);
 	setValue("frame_drop", frame_drop);
 	setValue("hard_frame_drop", hard_frame_drop);
-	setValue("coreavc", coreavc);
-	setValue("h264_skip_loop_filter", h264_skip_loop_filter);
-	setValue("HD_height", HD_height);
-
-	setValue("threads", threads);
 	setValue("hwdec", hwdec);
 
 	setValue("cache_for_files", cache_for_files);
@@ -1149,11 +1140,7 @@ void TPreferences::load() {
 	priority = value("priority", priority).toInt();
 	frame_drop = value("frame_drop", frame_drop).toBool();
 	hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
-	coreavc = value("coreavc", coreavc).toBool();
-	h264_skip_loop_filter = (H264LoopFilter) value("h264_skip_loop_filter", h264_skip_loop_filter).toInt();
-	HD_height = value("HD_height", HD_height).toInt();
 
-	threads = value("threads", threads).toInt();
 	hwdec = value("hwdec", hwdec).toString();
 
 	cache_for_files = value("cache_for_files", cache_for_files).toInt();
@@ -1514,7 +1501,11 @@ void TPreferences::load() {
 			remove("advanced/log_filter");
 		}
 
-		//remove("gui/auto_shutdown_pc");
+		remove("gui/auto_shutdown_pc");
+		remove("performance/h264_skip_loop_filter");
+		remove("performance/HD_height");
+		remove("performance/coreavc");
+		remove("performance/threads");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

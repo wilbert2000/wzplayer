@@ -66,23 +66,16 @@ QPixmap TPerformance::sectionIcon() {
 
 
 void TPerformance::retranslateStrings() {
+
 	int priority = priority_combo->currentIndex();
-	int loop_filter = loopfilter_combo->currentIndex();
-
 	retranslateUi(this);
-
-	loopfilter_combo->clear();
-	loopfilter_combo->addItem(tr("Enabled"), TPreferences::LoopEnabled);
-	loopfilter_combo->addItem(tr("Skip (always)"), TPreferences::LoopDisabled);
-	loopfilter_combo->addItem(tr("Skip only on HD videos"), TPreferences::LoopDisabledOnHD);
-
 	priority_combo->setCurrentIndex(priority);
-	loopfilter_combo->setCurrentIndex(loop_filter);
 
 	createHelp();
 }
 
 void TPerformance::setData(TPreferences* pref) {
+
 	setCacheForFiles(pref->cache_for_files);
 	setCacheForStreams(pref->cache_for_streams);
 	setCacheForDVDs(pref->cache_for_dvds);
@@ -93,9 +86,6 @@ void TPerformance::setData(TPreferences* pref) {
 	setPriority(pref->priority);
 	setFrameDrop(pref->frame_drop);
 	setHardFrameDrop(pref->hard_frame_drop);
-	setCoreavcUsage(pref->coreavc);
-	setSkipLoop(pref->h264_skip_loop_filter);
-	setThreads(pref->threads);
 	setHwdec(pref->hwdec);
 }
 
@@ -112,9 +102,6 @@ void TPerformance::getData(TPreferences* pref) {
 	TEST_AND_SET(pref->priority, priority());
 	TEST_AND_SET(pref->frame_drop, frameDrop());
 	TEST_AND_SET(pref->hard_frame_drop, hardFrameDrop());
-	TEST_AND_SET(pref->coreavc, coreavcUsage())
-	TEST_AND_SET(pref->h264_skip_loop_filter, skipLoop());
-	TEST_AND_SET(pref->threads, threads());
 	TEST_AND_SET(pref->hwdec, hwdec());
 }
 
@@ -190,30 +177,6 @@ bool TPerformance::hardFrameDrop() {
 	return hardframedrop_check->isChecked();
 }
 
-void TPerformance::setCoreavcUsage(bool b) {
-	coreavc_check->setChecked(b);
-}
-
-bool TPerformance::coreavcUsage() {
-	return coreavc_check->isChecked();
-}
-
-void TPerformance::setSkipLoop(TPreferences::H264LoopFilter value) {
-	loopfilter_combo->setCurrentIndex(loopfilter_combo->findData(value));
-}
-
-TPreferences::H264LoopFilter TPerformance::skipLoop() {
-	return (TPreferences::H264LoopFilter) loopfilter_combo->itemData(loopfilter_combo->currentIndex()).toInt();
-}
-
-void TPerformance::setThreads(int v) {
-	threads_spin->setValue(v);
-}
-
-int TPerformance::threads() {
-	return threads_spin->value();
-}
-
 void TPerformance::setHwdec(const QString & v) {
 	int idx = hwdec_combo->findData(v);
 	if (idx < 0) idx = 0;
@@ -245,10 +208,6 @@ void TPerformance::createHelp() {
 		tr("More intense frame dropping (breaks decoding). "
            "Leads to image distortion!"));
 
-	setWhatsThis(threads_spin, tr("Threads for decoding"),
-		tr("Sets the number of threads to use for decoding. Only for "
-           "MPEG-1/2 and H.264"));
-
 	setWhatsThis(hwdec_combo, tr("Hardware decoding"),
 		tr("Sets the hardware video decoding API. "
 		   "If hardware decoding is not possible, software decoding will be used instead.") + " " +
@@ -266,26 +225,6 @@ void TPerformance::createHelp() {
 			#endif
 			"</ul>" +
 		tr("This option only works with mpv."));
-
-	setWhatsThis(loopfilter_combo, tr("Skip loop filter"),
-		tr("This option allows to skips the loop filter (AKA deblocking) "
-           "during H.264 decoding. "
-           "Since the filtered frame is supposed to be used as reference "
-           "for decoding dependent frames this has a worse effect on quality "
-           "than not doing deblocking on e.g. MPEG-2 video. But at least for "
-           "high bitrate HDTV this provides a big speedup with no visible "
-           "quality loss.") +"<br>"+
-           tr("Possible values:") +"<br>" +
-           tr("<b>Enabled</b>: the loop filter is not skipped")+"<br>"+
-           tr("<b>Skip (always)</b>: the loop filter is skipped no matter the "
-           "resolution of the video")+"<br>"+
-           tr("<b>Skip only on HD videos</b>: the loop filter will be "
-           "skipped only on videos which height is %1 or "
-           "greater.").arg(pref->HD_height) +"<br>");
-
-	setWhatsThis(coreavc_check, tr("Use CoreAVC if no other codec specified"),
-		tr("Try to use non-free CoreAVC codec when no other codec is specified "
-           "and non-VDPAU video output selected. Requires MPlayer build with CoreAVC support."));
 
 
 	addSectionTitle(tr("Cache"));

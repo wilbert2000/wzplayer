@@ -51,7 +51,6 @@ public:
 	enum WheelFunction { DoNothing = 1, Seeking = 2, Volume = 4, Zoom = 8,
                          ChangeSpeed = 16 };
 	enum OptionState { Detect = -1, Disabled = 0, Enabled = 1 };
-	enum H264LoopFilter { LoopDisabled = 0, LoopEnabled = 1, LoopDisabledOnHD = 2 };
 	enum AutoAddToPlaylistFilter { NoFiles = 0, VideoFiles = 1, AudioFiles = 2, MultimediaFiles = 3, ConsecutiveFiles = 4 };
 	enum ToolbarActivation { Anywhere = 1, NearToolbar = 2 };
 
@@ -195,11 +194,8 @@ public:
 	int priority;
 	bool frame_drop;
 	bool hard_frame_drop;
-	bool coreavc;
-	H264LoopFilter h264_skip_loop_filter;
-	int HD_height; //!< An HD is a video which height is equal or greater than this.
 
-	int threads; //!< number of threads to use for decoding (-lavdopts threads <1-8>)
+	// TODO: move from performance to video?
 	QString hwdec; //!< hardware video decoding (mpv only)
 
 	int cache_for_files;
