@@ -136,32 +136,6 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="1" column="2">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="textLabel1_18">
-           <property name="text">
-            <string>L&amp;anguage:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-           <property name="buddy">
-            <cstring>language_combo</cstring>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="Gui::Pref::TComboBox" name="language_combo">
            <property name="sizePolicy">
@@ -185,41 +159,8 @@
            </property>
           </spacer>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>&amp;GUI</string>
-           </property>
-           <property name="buddy">
-            <cstring>gui_combo</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="gui_combo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="iconset_label">
-           <property name="text">
-            <string>Ico&amp;n set:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-           <property name="buddy">
-            <cstring>iconset_combo</cstring>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="1">
-          <widget class="Gui::Pref::TComboBox" name="iconset_combo">
+          <widget class="Gui::Pref::TComboBox" name="style_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -229,6 +170,19 @@
           </widget>
          </item>
          <item row="2" column="2">
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="2">
           <widget class="QWidget" name="iconset_sp" native="true">
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <property name="spacing">
@@ -253,7 +207,7 @@
            </layout>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="style_label">
            <property name="text">
             <string>St&amp;yle:</string>
@@ -266,8 +220,8 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="Gui::Pref::TComboBox" name="style_combo">
+         <item row="1" column="1">
+          <widget class="Gui::Pref::TComboBox" name="iconset_combo">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -276,18 +230,31 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="2">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+         <item row="0" column="0">
+          <widget class="QLabel" name="textLabel1_18">
+           <property name="text">
+            <string>L&amp;anguage:</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
+           <property name="wordWrap">
+            <bool>false</bool>
            </property>
-          </spacer>
+           <property name="buddy">
+            <cstring>language_combo</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="iconset_label">
+           <property name="text">
+            <string>Ico&amp;n set:</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+           <property name="buddy">
+            <cstring>iconset_combo</cstring>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -806,7 +773,6 @@
   <tabstop>save_size_check</tabstop>
   <tabstop>hide_video_window_on_audio_check</tabstop>
   <tabstop>language_combo</tabstop>
-  <tabstop>gui_combo</tabstop>
   <tabstop>iconset_combo</tabstop>
   <tabstop>style_combo</tabstop>
   <tabstop>default_font_edit</tabstop>
