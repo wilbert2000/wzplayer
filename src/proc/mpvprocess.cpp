@@ -971,103 +971,73 @@ void TMPVProcess::addUserOption(const QString& option) {
 }
 
 void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
+
 	QString option = value.toString();
 
 	if ((filter_name == "harddup") || (filter_name == "hue")) {
 		// ignore
-	}
-	else
-	if (filter_name == "eq2") {
+	} else if (filter_name == "eq2") {
 		arg << "--vf-add=eq";
-	}
-	else
-	if (filter_name == "blur") {
+	} else if (filter_name == "blur") {
 		addVFIfAvailable("lavfi", "[unsharp=la=-1.5:ca=-1.5]");
-	}
-	else
-	if (filter_name == "sharpen") {
+	} else if (filter_name == "sharpen") {
 		addVFIfAvailable("lavfi", "[unsharp=la=1.5:ca=1.5]");
-	}
-	else
-	if (filter_name == "noise") {
+	} else if (filter_name == "noise") {
 		addVFIfAvailable("lavfi", "[noise=alls=9:allf=t]");
-	}
-	else
-	if (filter_name == "deblock") {
+	} else if (filter_name == "deblock") {
 		addVFIfAvailable("lavfi", "[pp=" + option +"]");
-	}
-	else
-	if (filter_name == "dering") {
+	} else if (filter_name == "dering") {
 		addVFIfAvailable("lavfi", "[pp=dr]");
-	}
-	else
-	if (filter_name == "phase") {
+	} else if (filter_name == "phase") {
 		addVFIfAvailable("lavfi", "[phase=" + option +"]");
-	}
-	else
-	if (filter_name == "postprocessing") {
+	} else if (filter_name == "postprocessing") {
 		addVFIfAvailable("lavfi", "[pp]");
-	}
-	else
-	if (filter_name == "hqdn3d") {
+	} else if (filter_name == "hqdn3d") {
 		QString o;
-		if (!option.isEmpty()) o = "=" + option;
+		if (!option.isEmpty())
+			o = "=" + option;
 		addVFIfAvailable("lavfi", "[hqdn3d" + o +"]");
-	}
-	else
-	if (filter_name == "yadif") {
+	} else if (filter_name == "yadif") {
 		if (option == "1") {
 			arg << "--vf-add=yadif=field";
 		} else {
 			arg << "--vf-add=yadif";
 		}
-	}
-	else
-	if (filter_name == "kerndeint") {
+	} else if (filter_name == "kerndeint") {
 		addVFIfAvailable("lavfi", "[kerndeint=" + option +"]");
-	}
-	else
-	if (filter_name == "lb" || filter_name == "l5") {
+	} else if (filter_name == "lb" || filter_name == "l5") {
 		addVFIfAvailable("lavfi", "[pp=" + filter_name +"]");
-	}
-	else
-	if (filter_name == "subs_on_screenshots") {
+	} else if (filter_name == "subs_on_screenshots") {
 		// Ignore
-	}
-	else
-	if (filter_name == "screenshot") {
+	} else if (filter_name == "screenshot") {
 		if (!screenshot_dir.isEmpty() && isOptionAvailable("--screenshot-directory")) {
 			arg << "--screenshot-directory=" + QDir::toNativeSeparators(screenshot_dir);
 		}
-	}
-	else
-	if (filter_name == "rotate") {
+	} else if (filter_name == "rotate") {
 		if (option == "0") {
 			arg << "--vf-add=rotate=270,flip";
-		}
-		else
-		if (option == "1") {
+		} else if (option == "1") {
 			arg << "--vf-add=rotate=90";
-		}
-		else
-		if (option == "2") {
+		} else if (option == "2") {
 			arg << "--vf-add=rotate=270";
-		}
-		else
-		if (option == "3") {
+		} else if (option == "3") {
 			arg << "--vf-add=rotate=90,flip";
 		}
-	}
-	else {
+	} else {
 		if (filter_name == "pp") {
 			QString s;
-			if (option.isEmpty()) s = "[pp]"; else s = "[pp=" + option + "]";
+			if (option.isEmpty()) {
+				s = "[pp]";
+			} else {
+				s = "[pp=" + option + "]";
+			}
 			addVFIfAvailable("lavfi", s);
 		} else if (filter_name == "extrastereo" || filter_name == "karaoke") {
 			/* Not supported anymore, ignore */
 		} else {
 			QString s = filter_name;
-			if (!option.isEmpty()) s += "=" + option;
+			if (!option.isEmpty())
+				s += "=" + option;
 			arg << "--vf-add=" + s;
 		}
 	}

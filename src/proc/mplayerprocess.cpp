@@ -1236,61 +1236,45 @@ void TMPlayerProcess::addUserOption(const QString& option) {
 }
 
 void TMPlayerProcess::addVF(const QString& filter_name, const QVariant& value) {
+
 	QString option = value.toString();
 
 	if (filter_name == "blur" || filter_name == "sharpen") {
 		arg << "-vf-add" << "unsharp=" + option;
-	}
-	else
-	if (filter_name == "deblock") {
+	} else if (filter_name == "deblock") {
 		arg << "-vf-add" << "pp=" + option;
-	}
-	else
-	if (filter_name == "dering") {
+	} else if (filter_name == "dering") {
 		arg << "-vf-add" << "pp=dr";
-	}
-	else
-	if (filter_name == "postprocessing") {
+	} else if (filter_name == "postprocessing") {
 		arg << "-vf-add" << "pp";
-	}
-	else
-	if (filter_name == "lb" || filter_name == "l5") {
+	} else if (filter_name == "lb" || filter_name == "l5") {
 		arg << "-vf-add" << "pp=" + filter_name;
-	}
-	else
-	if (filter_name == "subs_on_screenshots") {
+	} else if (filter_name == "subs_on_screenshots") {
 		if (option == "ass") {
 			arg << "-vf-add" << "ass";
 		} else {
 			arg << "-vf-add" << "expand=osd=1";
 		}
-	}
-	else
-	if (filter_name == "screenshot") {
+	} else if (filter_name == "screenshot") {
 		QString f = "screenshot";
 		if (!screenshot_dir.isEmpty()) {
 			f += "="+ QDir::toNativeSeparators(screenshot_dir + "/shot");
 		}
 		arg << "-vf-add" << f;
-	}
-	else
-	if (filter_name == "flip") {
+	} else if (filter_name == "flip") {
 		// expand + flip doesn't work well, a workaround is to add another
 		// filter between them, so that's why harddup is here
 		arg << "-vf-add" << "harddup,flip";
-	}
-	else
-	if (filter_name == "expand") {
+	} else if (filter_name == "expand") {
 		arg << "-vf-add" << "expand=" + option + ",harddup";
 		// Note: on some videos (h264 for instance) the subtitles doesn't disappear,
 		// appearing the new ones on top of the old ones. It seems adding another
 		// filter after expand fixes the problem. I chose harddup 'cos I think
 		// it will be harmless in mplayer.
-	}
-	else {
+	} else {
 		QString s = filter_name;
-		QString option = value.toString();
-		if (!option.isEmpty()) s += "=" + option;
+		if (!option.isEmpty())
+			s += "=" + option;
 		arg << "-vf-add" << s;
 	}
 }
