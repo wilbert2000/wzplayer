@@ -24,7 +24,6 @@
 #include <QWidget>
 #include <QList>
 #include <QStringList>
-#include "config.h"
 
 class QTableWidget;
 class QTableWidgetItem;
@@ -84,26 +83,15 @@ protected:
 	static bool containsShortcut(const QString& accel, const QString& shortcut);
 
 protected slots:
-#if !USE_SHORTCUTGETTER
-	void recordAction(QTableWidgetItem*);
-	void validateAction(QTableWidgetItem*);
-#else
 	void editShortcut();
-#endif
 
 private:
 	QTableWidget* actionsTable;
 	TActionList actionsList;
 	QPushButton* saveButton;
 	QPushButton* loadButton;
-	QString latest_dir;
-
-#if USE_SHORTCUTGETTER
 	QPushButton* editButton;
-#else
-	QString oldAccelText;
-	bool dont_validate;
-#endif
+	QString latest_dir;
 
 	static QString actionToString(const QAction& action);
 	static void setActionFromString(QAction& action, const QString& s, const TActionList& actions);

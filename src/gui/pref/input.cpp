@@ -19,7 +19,6 @@
 
 #include "gui/pref/input.h"
 #include "images.h"
-#include "config.h"
 #include "settings/preferences.h"
 
 using namespace Settings;
@@ -27,15 +26,13 @@ using namespace Settings;
 namespace Gui { namespace Pref {
 
 TInput::TInput(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
-	setupUi(this);
+	: TWidget(parent, f) {
 
+	setupUi(this);
 	retranslateStrings();
 }
 
-TInput::~TInput()
-{
+TInput::~TInput() {
 }
 
 QString TInput::sectionName() {
@@ -154,14 +151,6 @@ void TInput::retranslateStrings() {
 	wheel_function_zoom->setText(tr("&Zoom video"));
 	wheel_function_volume->setText(tr("&Volume control"));
 	wheel_function_speed->setText(tr("&Change speed"));
-
-#if !USE_SHORTCUTGETTER
-	actioneditor_desc->setText(
-		tr("Here you can change any key shortcut. To do it double click or "
-           "start typing over a shortcut cell. Optionally you can also save "
-           "the list to share it with other people or load it in another "
-           "computer."));
-#endif
 
 	createHelp();
 }

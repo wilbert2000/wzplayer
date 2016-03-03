@@ -119,21 +119,11 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f)
 #endif
 
 	actionsTable->setAlternatingRowColors(true);
-#if USE_SHORTCUTGETTER
 	actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 	actionsTable->setSelectionMode(QAbstractItemView::ExtendedSelection);
-#endif
-	//actionsTable->setItemDelegateForColumn(COL_SHORTCUT, new MyDelegate(actionsTable));
 
-#if !USE_SHORTCUTGETTER
-	connect(actionsTable, SIGNAL(currentItemChanged(QTableWidgetItem*, QTableWidgetItem*)),
-			this, SLOT(recordAction(QTableWidgetItem*)));
-	connect(actionsTable, SIGNAL(itemChanged(QTableWidgetItem*)),
-			this, SLOT(validateAction(QTableWidgetItem*)));
-#else
 	connect(actionsTable, SIGNAL(itemActivated(QTableWidgetItem*)),
 			this, SLOT(editShortcut()));
-#endif
 
 	saveButton = new QPushButton(this);
 	loadButton = new QPushButton(this);
@@ -141,16 +131,12 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f)
 	connect(saveButton, SIGNAL(clicked()), this, SLOT(saveActionsTable()));
 	connect(loadButton, SIGNAL(clicked()), this, SLOT(loadActionsTable()));
 
-#if USE_SHORTCUTGETTER
 	editButton = new QPushButton(this);
 	connect(editButton, SIGNAL(clicked()), this, SLOT(editShortcut()));
-#endif
 
 	QHBoxLayout* buttonLayout = new QHBoxLayout;
 	buttonLayout->setSpacing(8);
-#if USE_SHORTCUTGETTER
 	buttonLayout->addWidget(editButton);
-#endif
 	buttonLayout->addStretch(1);
 	buttonLayout->addWidget(loadButton);
 	buttonLayout->addWidget(saveButton);
@@ -177,9 +163,7 @@ void TActionsEditor::retranslateStrings() {
 	loadButton->setText(tr("&Load"));
 	loadButton->setIcon(Images::icon("open"));
 
-#if USE_SHORTCUTGETTER
 	editButton->setText(tr("&Change shortcut..."));
-#endif
 
 	//updateView(); // The actions are translated later, so it's useless
 }
@@ -211,10 +195,6 @@ void TActionsEditor::updateView() {
 
 	actionsTable->setRowCount(actionsList.count());
 
-#if !USE_SHORTCUTGETTER
-	dont_validate = true;
-#endif
-
 	for (int n = 0; n < actionsList.count(); n++) {
 		QAction* action = actionsList[n];
 		QString accelText = shortcutsToString(action->shortcuts());
@@ -233,16 +213,10 @@ void TActionsEditor::updateView() {
 		QTableWidgetItem* i_shortcut = new QTableWidgetItem(accelText);
 
 		// Set flags
-#if !USE_SHORTCUTGETTER
-		i_conf->setFlags(Qt::ItemIsEnabled);
-		i_name->setFlags(Qt::ItemIsEnabled);
-		i_desc->setFlags(Qt::ItemIsEnabled);
-#else
 		i_conf->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		i_name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		i_desc->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		i_shortcut->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-#endif
 
 		// Add items to table
 		actionsTable->setItem(n, COL_CONFLICTS, i_conf);
@@ -255,12 +229,7 @@ void TActionsEditor::updateView() {
 
 	actionsTable->resizeColumnsToContents();
 	actionsTable->setCurrentCell(0, COL_SHORTCUT);
-
-#if !USE_SHORTCUTGETTER
-	dont_validate = false;
-#endif
 }
-
 
 void TActionsEditor::applyChanges() {
 	qDebug("Gui::Action::TActionsEditor::applyChanges");
@@ -271,41 +240,6 @@ void TActionsEditor::applyChanges() {
 		action->setShortcuts(stringToShortcuts(i->text()));
 	}
 }
-
-#if !USE_SHORTCUTGETTER
-void TActionsEditor::recordAction(QTableWidgetItem* i) {
-	//qDebug("Gui::Action::TActionsEditor::recordAction");
-
-	if (i->column() == COL_SHORTCUT) {
-		oldAccelText = i->text();
-	}
-}
-
-void TActionsEditor::validateAction(QTableWidgetItem* i) {
-	//qDebug("Gui::Action::TActionsEditor::validateAction");
-
-	if (dont_validate)
-		return;
-
-	if (i->column() == COL_SHORTCUT) {
-	    QString accelText = QKeySequence(i->text()).toString();
-
-	    if (accelText.isEmpty() && !i->text().isEmpty()) {
-			/*
-			QAction* action = static_cast<QAction*> (actionsList[i->row()]);
-			QString oldAccelText= action->accel().toString();
-			*/
-	        i->setText(oldAccelText);
-		}
-	    else {
-	        i->setText(accelText);
-		}
-
-		if (hasConflicts()) qApp->beep();
-	}
-}
-
-#else
 
 void TActionsEditor::editShortcut() {
 
@@ -322,7 +256,6 @@ void TActionsEditor::editShortcut() {
 		}
 	}
 }
-#endif
 
 int TActionsEditor::findActionName(const QString& name) {
 
@@ -471,11 +404,6 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
 
 	QFile f(filename);
 	if (f.open(QIODevice::ReadOnly)) {
-
-#if !USE_SHORTCUTGETTER
-		dont_validate = true;
-#endif
-
 		QTextStream stream(&f);
 		stream.setCodec("UTF-8");
 
@@ -498,11 +426,6 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
 		}
 		f.close();
 		hasConflicts(); // Check for conflicts
-
-#if !USE_SHORTCUTGETTER
-		dont_validate = false;
-#endif
-
 		return true;
 	} else {
 		return false;
