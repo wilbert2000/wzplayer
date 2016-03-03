@@ -42,9 +42,6 @@
 #include "settings/filters.h"
 #include "helper.h"
 
-#ifdef YOUTUBE_SUPPORT
-#include "retrieveyoutubeurl.h"
-#endif
 
 #define CURRENT_CONFIG_VERSION 9
 
@@ -202,15 +199,6 @@ void TPreferences::reset() {
 	cache_for_vcds = 1024;
 	cache_for_audiocds = 1024;
 	cache_for_tv = 3000;
-
-#ifdef YOUTUBE_SUPPORT
-	enable_yt_support = true;
-	yt_quality = RetrieveYoutubeUrl::MP4_720p;
-	//yt_user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:5.0.1) Gecko/20100101 Firefox/5.0.1";
-	yt_user_agent = "";
-	yt_use_https_main = false;
-	yt_use_https_vi = false;
-#endif
 
 
     /* *********
@@ -606,16 +594,6 @@ void TPreferences::save() {
 	setValue("cache_for_tv", cache_for_tv);
 
 	endGroup(); // performance
-
-#ifdef YOUTUBE_SUPPORT
-	beginGroup("youtube");
-	setValue("enable_yt_support", enable_yt_support);
-	setValue("quality", yt_quality);
-	setValue("user_agent", yt_user_agent);
-	setValue("yt_use_https_main", yt_use_https_main);
-	setValue("yt_use_https_vi", yt_use_https_vi);
-	endGroup();
-#endif
 
 
     /* *********
@@ -1152,16 +1130,6 @@ void TPreferences::load() {
 
 	endGroup(); // performance
 
-#ifdef YOUTUBE_SUPPORT
-	beginGroup("youtube");
-	enable_yt_support = value("enable_yt_support", enable_yt_support).toBool();
-	yt_quality = value("quality", yt_quality).toInt();
-	yt_user_agent = value("user_agent", yt_user_agent).toString();
-	yt_use_https_main = value("yt_use_https_main", yt_use_https_main).toBool();
-	yt_use_https_vi = value("yt_use_https_vi", yt_use_https_vi).toBool();
-	endGroup();
-#endif
-
 
     /* *********
        Subtitles
@@ -1496,7 +1464,8 @@ void TPreferences::load() {
 		}
 
 		if (config_version < 9) {
-			remove("gui");
+			// TODO Check gui
+			// remove("gui");
 			remove("advanced/log_enabled");
 			remove("advanced/log_filter");
 		}
@@ -1506,6 +1475,7 @@ void TPreferences::load() {
 		remove("performance/HD_height");
 		remove("performance/coreavc");
 		remove("performance/threads");
+		remove("youtube");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

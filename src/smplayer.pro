@@ -15,7 +15,6 @@ RESOURCES = icons.qrc
 
 DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
-DEFINES += YOUTUBE_SUPPORT
 DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += MPRIS2
 DEFINES += UPDATE_CHECKER
@@ -357,32 +356,6 @@ contains(DEFINES, DOWNLOAD_SUBS) {
 	win32 {
 		INCLUDEPATH += ..\\zlib
 		LIBS += -L..\\zlib
-	}
-}
-
-# Youtube support
-contains(DEFINES, YOUTUBE_SUPPORT) {
-	DEFINES += YT_USE_SCRIPT
-	INCLUDEPATH += youtube
-	DEPENDPATH += youtube
-
-	HEADERS += youtube/retrieveyoutubeurl.h youtube/loadpage.h
-	SOURCES += youtube/retrieveyoutubeurl.cpp youtube/loadpage.cpp
-
-	contains(DEFINES, YT_USE_SCRIPT) {
-		DEFINES += YT_USE_SIG
-		DEFINES += YT_USE_YTSIG
-		QT += script
-	}
-
-	contains(DEFINES, YT_USE_SIG) {
-		HEADERS += youtube/sig.h
-		SOURCES += youtube/sig.cpp
-	}
-
-	contains(DEFINES, YT_USE_YTSIG) {
-		HEADERS += youtube/ytsig.h youtube/codedownloader.h
-		SOURCES += youtube/ytsig.cpp youtube/codedownloader.cpp
 	}
 }
 

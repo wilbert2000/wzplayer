@@ -205,14 +205,6 @@ public:
 	int cache_for_audiocds;
 	int cache_for_tv;
 
-#ifdef YOUTUBE_SUPPORT
-	bool enable_yt_support;
-	int yt_quality;
-	QString yt_user_agent;
-	bool yt_use_https_main;
-	bool yt_use_https_vi;
-#endif
-
 
 	/* *********
 	   Subtitles

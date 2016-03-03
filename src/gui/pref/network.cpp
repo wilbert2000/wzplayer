@@ -21,9 +21,6 @@
 #include "images.h"
 #include <QNetworkProxy>
 
-#ifdef YOUTUBE_SUPPORT
-#include "retrieveyoutubeurl.h"
-#endif
 
 namespace Gui { namespace Pref {
 
@@ -35,31 +32,10 @@ TNetwork::TNetwork(QWidget* parent, Qt::WindowFlags f)
 	proxy_type_combo->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
 	proxy_type_combo->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
 
-#ifdef YOUTUBE_SUPPORT
-	yt_quality_combo->addItem("240p (flv)", RetrieveYoutubeUrl::FLV_240p);
-
-	yt_quality_combo->addItem("360p (flv)", RetrieveYoutubeUrl::FLV_360p);
-	yt_quality_combo->addItem("360p (mp4)", RetrieveYoutubeUrl::MP4_360p);
-	yt_quality_combo->addItem("360p (webm)", RetrieveYoutubeUrl::WEBM_360p);
-
-	yt_quality_combo->addItem("480p (flv)", RetrieveYoutubeUrl::FLV_480p);
-	yt_quality_combo->addItem("480p (webm)", RetrieveYoutubeUrl::WEBM_480p);
-
-	yt_quality_combo->addItem("720p (mp4)", RetrieveYoutubeUrl::MP4_720p);
-	yt_quality_combo->addItem("720p (webm)", RetrieveYoutubeUrl::WEBM_720p);
-
-	yt_quality_combo->addItem("1080p (mp4)", RetrieveYoutubeUrl::MP4_1080p);
-	yt_quality_combo->addItem("1080p (webm)", RetrieveYoutubeUrl::WEBM_1080p);
-#else
-	yt_support_check->hide();
-	youtube_widget->hide();
-#endif
-
 	createHelp();
 }
 
-TNetwork::~TNetwork()
-{
+TNetwork::~TNetwork() {
 }
 
 QString TNetwork::sectionName() {
@@ -83,12 +59,6 @@ void TNetwork::setData(Settings::TPreferences* pref) {
 	proxy_password_edit->setText(pref->proxy_password);
 
 	setProxyType(pref->proxy_type);
-
-#ifdef YOUTUBE_SUPPORT
-	yt_support_check->setChecked(pref->enable_yt_support);
-	setYTQuality(pref->yt_quality);
-	yt_user_agent_edit->setText(pref->yt_user_agent);
-#endif
 }
 
 void TNetwork::getData(Settings::TPreferences* pref) {
@@ -101,12 +71,6 @@ void TNetwork::getData(Settings::TPreferences* pref) {
 	pref->proxy_password = proxy_password_edit->text();
 
 	pref->proxy_type = proxyType();
-
-#ifdef YOUTUBE_SUPPORT
-	pref->enable_yt_support = yt_support_check->isChecked();
-	pref->yt_quality = YTQuality();
-	pref->yt_user_agent = yt_user_agent_edit->text();
-#endif
 }
 
 void TNetwork::setProxyType(int type) {
@@ -120,32 +84,8 @@ int TNetwork::proxyType() {
 	return proxy_type_combo->itemData(index).toInt();
 }
 
-#ifdef YOUTUBE_SUPPORT
-void TNetwork::setYTQuality(int q) {
-	yt_quality_combo->setCurrentIndex(yt_quality_combo->findData(q));
-}
-
-int TNetwork::YTQuality() {
-	int index = yt_quality_combo->currentIndex();
-    return yt_quality_combo->itemData(index).toInt();
-}
-#endif
-
 void TNetwork::createHelp() {
 	clearHelp();
-
-#ifdef YOUTUBE_SUPPORT
-	addSectionTitle(tr("Youtube"));
-
-	setWhatsThis(yt_support_check, tr("Enable Youtube internal support"),
-		tr("If this option is checked, SMPlayer will try to play videos from Youtube URLs."));
-
-	setWhatsThis(yt_quality_combo, tr("Youtube quality"),
-		tr("Select the preferred quality for youtube videos."));
-
-	setWhatsThis(yt_user_agent_edit, tr("User agent"),
-		tr("Set the user agent that SMPlayer will use when connecting to Youtube."));
-#endif
 
 	addSectionTitle(tr("Proxy"));
 

@@ -40,10 +40,6 @@ class WinScreenSaver;
 #endif
 #endif
 
-#ifdef YOUTUBE_SUPPORT
-class RetrieveYoutubeUrl;
-#endif
-
 
 class TCore : public QObject {
 	Q_OBJECT
@@ -81,10 +77,6 @@ public slots:
 	void open(QString file, int seek = -1, bool fast_open = true);
 	void openStream(QString name);
 	void openTV(QString channel_id);
-
-#ifdef YOUTUBE_SUPPORT
-	void openYT(const QString& url);
-#endif
 
 	void loadSub(const QString& sub);
 	void unloadSub();
@@ -400,11 +392,6 @@ signals:
 
 	void needResize(int w, int h);
 
-#ifdef YOUTUBE_SUPPORT
-	void signatureNotFound(const QString&);
-	void noSslSupport();
-#endif
-
 protected:
 	//! Change the current state (Stopped, Playing or Paused)
 	//! And sends the stateChanged() signal.
@@ -459,12 +446,6 @@ protected slots:
 	void dvdnavRestoreTitle();
 	void changeTitleLeaveMenu();
 
-#ifdef YOUTUBE_SUPPORT
-	void connectingToYT(const QString& host);
-	void YTFailed(int error_number, const QString& error_str);
-	void YTNoVideoUrl();
-#endif
-
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
 	void enableScreensaver();
@@ -480,10 +461,6 @@ protected:
 #ifdef SCREENSAVER_OFF
 	WinScreenSaver* win_screensaver;
 #endif
-#endif
-
-#ifdef YOUTUBE_SUPPORT
-	RetrieveYoutubeUrl* yt;
 #endif
 
 private:

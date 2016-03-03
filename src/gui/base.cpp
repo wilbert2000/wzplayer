@@ -19,6 +19,7 @@
 #include "config.h"
 #include "gui/base.h"
 
+#include <QDebug>
 #include <QMessageBox>
 #include <QLabel>
 #include <QMenu>
@@ -40,7 +41,7 @@
 #include <QInputDialog>
 #include <QClipboard>
 #include <QMimeData>
-#include <QDebug>
+#include <QNetworkProxy>
 
 #include <cmath>
 
@@ -118,12 +119,6 @@
 
 #ifdef UPDATE_CHECKER
 #include "gui/updatechecker.h"
-#endif
-
-#ifdef YOUTUBE_SUPPORT
-#ifdef YT_USE_YTSIG
-#include "codedownloader.h"
-#endif
 #endif
 
 
@@ -316,12 +311,6 @@ void TBase::createCore() {
 	connect(core, SIGNAL(playerFinishedWithError(int)),
 			 this, SLOT(showExitCodeFromPlayer(int)));
 
-#ifdef YOUTUBE_SUPPORT
-	connect(core, SIGNAL(signatureNotFound(const QString &)),
-			 this, SLOT(YTNoSignature(const QString &)));
-	connect(core, SIGNAL(noSslSupport()),
-			 this, SLOT(YTNoSslSupport()));
-#endif
 	connect(core, SIGNAL(receivedForbidden()),
 			 this, SLOT(gotForbidden()));
 
@@ -1950,55 +1939,6 @@ void TBase::checkIfUpgraded() {
 }
 #endif // ifdef CHECK_UPGRADED
 
-#ifdef YOUTUBE_SUPPORT
-void TBase::YTNoSslSupport() {
-	qDebug("Gui::TBase::YTNoSslSupport");
-	QMessageBox::warning(this, tr("Connection failed"),
-		tr("The video you requested needs to open a HTTPS connection.") +"<br>"+
-		tr("Unfortunately the OpenSSL component, required for it, is not available in your system.") +"<br>"+
-		tr("Please, visit %1 to know how to fix this problem.")
-			.arg("<a href=\"" URL_OPENSSL_INFO "\">" + tr("this link") + "</a>"));
-}
-
-void TBase::YTNoSignature(const QString & title) {
-	qDebug("Gui::TBase::YTNoSignature: %s", title.toUtf8().constData());
-
-	QString t = title;
-
-	QString info_text;
-	if (title.isEmpty()) {
-		info_text = tr("Unfortunately due to changes in the Youtube page, this video can't be played.");
-	} else {
-		t.replace(" - YouTube", "");
-		info_text = tr("Unfortunately due to changes in the Youtube page, the video '%1' can't be played.").arg(t);
-	}
-
-	#ifdef YT_USE_YTSIG
-	int ret = QMessageBox::question(this, tr("Problems with Youtube"),
-				info_text + "<br><br>" +
-				tr("Do you want to update the Youtube code? This may fix the problem."),
-				QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-	if (ret == QMessageBox::Yes) {
-		YTUpdateScript();
-	}
-	#else
-	QMessageBox::warning(this, tr("Problems with Youtube"),
-		info_text + "<br><br>" +
-		tr("Maybe updating SMPlayer could fix the problem."));
-	#endif
-}
-
-#ifdef YT_USE_YTSIG
-void TBase::YTUpdateScript() {
-	static CodeDownloader* downloader = 0;
-	if (!downloader) downloader = new CodeDownloader(this);
-	downloader->saveAs(TPaths::configPath() + "/yt.js");
-	downloader->show();
-	downloader->download(QUrl(URL_YT_CODE));
-}
-#endif // YT_USE_YTSIG
-#endif //YOUTUBE_SUPPORT
-
 void TBase::gotForbidden() {
 	qDebug("Gui::TBase::gotForbidden");
 
@@ -2008,20 +1948,13 @@ void TBase::gotForbidden() {
 	}
 
 	static bool busy = false;
-
-	if (busy) return;
+	if (busy)
+		return;
 
 	busy = true;
-#ifdef YOUTUBE_SUPPORT
-	if (core->mdat.filename.contains("youtube.com")) {
-		YTNoSignature("");
-	} else
-#endif
-	{
-		QMessageBox::warning(this, tr("Error detected"), 
-			tr("Unfortunately this video can't be played.") +"<br>"+
-			tr("The server returned '%1'").arg("403: Forbidden"));
-	}
+	QMessageBox::warning(this, tr("Error detected"),
+		tr("Unfortunately this video can't be played.") +"<br>"+
+		tr("The server returned '%1'").arg("403: Forbidden"));
 	busy = false;
 }
 
@@ -2629,19 +2562,6 @@ void TBase::showFindSubtitlesDialog() {
 
 void TBase::openUploadSubtitlesPage() {	
 	QDesktopServices::openUrl(QUrl("http://www.opensubtitles.org/upload"));
-}
-#endif
-
-#ifdef YOUTUBE_SUPPORT
-void TBase::showTubeBrowser() {
-	qDebug("Gui::TBase::showTubeBrowser");
-	QString exec = TPaths::appPath() + "/smtube";
-	qDebug("Gui::TBase::showTubeBrowser: '%s'", exec.toUtf8().constData());
-	if (!QProcess::startDetached(exec, QStringList())) {
-		QMessageBox::warning(this, "SMPlayer",
-			tr("The YouTube Browser is not installed.") +"<br>"+ 
-			tr("Visit %1 to get it.").arg("<a href=http://www.smtube.org>http://www.smtube.org</a>"));
-	}
 }
 #endif
 

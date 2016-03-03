@@ -61,13 +61,6 @@
 #endif
 #endif
 
-#ifdef YOUTUBE_SUPPORT
-#include "retrieveyoutubeurl.h"
-  #ifdef YT_USE_YTSIG
-  #include "ytsig.h"
-  #endif
-#endif
-
 
 using namespace Settings;
 
@@ -216,24 +209,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(error(QProcess::ProcessError)),
 			 this, SLOT(enableScreensaver()), Qt::QueuedConnection);
 #endif
-#endif
-
-#ifdef YOUTUBE_SUPPORT
-	yt = new RetrieveYoutubeUrl(this);
-	yt->setUseHttpsMain(pref->yt_use_https_main);
-	yt->setUseHttpsVi(pref->yt_use_https_vi);
-
-	#ifdef YT_USE_SIG
-	QSettings* sigset = new QSettings(TPaths::configPath() + "/sig.ini", QSettings::IniFormat, this);
-	yt->setSettings(sigset);
-	#endif
-
-	connect(yt, SIGNAL(gotPreferredUrl(const QString&, int)), this, SLOT(openYT(const QString&)));
-	connect(yt, SIGNAL(connecting(const QString&)), this, SLOT(connectingToYT(const QString&)));
-	connect(yt, SIGNAL(errorOcurred(int, const QString&)), this, SLOT(YTFailed(int, const QString&)));
-	connect(yt, SIGNAL(noSslSupport()), this, SIGNAL(noSslSupport()));
-	connect(yt, SIGNAL(signatureNotFound(const QString&)), this, SIGNAL(signatureNotFound(const QString&)));
-	connect(yt, SIGNAL(gotEmptyList()), this, SLOT(YTNoVideoUrl()));
 #endif
 
 	connect(this, SIGNAL(buffering()), this, SLOT(displayBuffering()));
@@ -524,26 +499,6 @@ void TCore::open(QString file, int seek, bool fast_open) {
 	}
 }
 
-#ifdef YOUTUBE_SUPPORT
-void TCore::openYT(const QString & url) {
-	qDebug("TCore::openYT: %s", url.toUtf8().constData());
-	openStream(url);
-	yt->close();
-}
-
-void TCore::connectingToYT(const QString& host) {
-	emit showMessage(tr("Connecting to %1").arg(host));
-}
-
-void TCore::YTFailed(int /*error_number*/, const QString& /*error_str*/) {
-	emit showMessage(tr("Unable to retrieve the Youtube page"));
-}
-
-void TCore::YTNoVideoUrl() {
-	emit showMessage(tr("Unable to locate the URL of the video"));
-}
-#endif
-
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
 void TCore::enableScreensaver() {
@@ -662,25 +617,6 @@ void TCore::openTV(QString channel_id) {
 
 void TCore::openStream(QString name) {
 	qDebug("TCore::openStream: '%s'", name.toUtf8().data());
-
-#ifdef YOUTUBE_SUPPORT
-	if (pref->enable_yt_support) {
-		// Check if the stream is a youtube url
-		QString yt_full_url = yt->fullUrl(name);
-		if (!yt_full_url.isEmpty()) {
-			qDebug("TCore::openStream: youtube url detected: %s", yt_full_url.toLatin1().constData());
-			name = yt_full_url;
-			yt->setPreferredQuality((RetrieveYoutubeUrl::Quality) pref->yt_quality);
-			qDebug("TCore::openStream: user_agent: '%s'", pref->yt_user_agent.toUtf8().constData());
-			yt->setUserAgent(pref->yt_user_agent);
-#ifdef YT_USE_YTSIG
-			YTSig::setScriptFile(TPaths::configPath() + "/yt.js");
-#endif
-			yt->fetchPage(name);
-			return;
-		}
-	}
-#endif
 
 	close();
 	mdat.filename = name;
@@ -803,15 +739,6 @@ void TCore::initPlaying(int seek) {
 	if (mdat.selected_type == TMediaData::TYPE_DVDNAV)
 		start_sec = 0;
 
-	// Avoid to pass the youtube page url to player
-#ifdef YOUTUBE_SUPPORT
-	if (pref->enable_yt_support
-		&& mdat.selected_type == TMediaData::TYPE_STREAM
-		&& mdat.filename == yt->origUrl()) {
-		mdat.filename = yt->latestPreferredUrl();
-	}
-#endif
-
 	startPlayer(mdat.filename, start_sec);
 }
 
@@ -927,18 +854,6 @@ void TCore::playingStarted() {
 	if (forced_titles.contains(mdat.filename)) {
 		mdat.title = forced_titles[mdat.filename];
 	}
-
-#ifdef YOUTUBE_SUPPORT
-	if (pref->enable_yt_support) {
-		// Change the real url with the youtube page url and set the title
-		if (mdat.selected_type == TMediaData::TYPE_STREAM) {
-			if (mdat.filename == yt->latestPreferredUrl()) {
-				mdat.filename = yt->origUrl();
-				mdat.stream_title = yt->urlTitle();
-			}
-		}
-	}
-#endif
 
 	qDebug("TCore::playingStarted: emit mediaLoaded()");
 	emit mediaLoaded();
@@ -1119,11 +1034,6 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	emit showMessage(tr("Starting player..."), 5000);
-
-#ifdef YOUTUBE_SUPPORT
-	// Stop any pending request
-	yt->close();
-#endif
 
 	// Check URL playlist
 	bool url_is_playlist = false;

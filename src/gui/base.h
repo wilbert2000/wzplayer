@@ -130,10 +130,6 @@ public slots:
 	virtual void openUploadSubtitlesPage(); //turbos
 #endif
 
-#ifdef YOUTUBE_SUPPORT
-	virtual void showTubeBrowser();
-#endif
-
 	virtual void showPlaylist(bool b);
 	virtual void showPreferencesDialog();
 	virtual void showFilePropertiesDialog();
@@ -216,14 +212,6 @@ protected slots:
 
 #ifdef CHECK_UPGRADED
 	void checkIfUpgraded();
-#endif
-
-#ifdef YOUTUBE_SUPPORT
-	void YTNoSslSupport();
-	void YTNoSignature(const QString&);
-	#ifdef YT_USE_YTSIG
-	void YTUpdateScript();
-	#endif
 #endif
 
 	virtual void enableActionsOnPlaying();

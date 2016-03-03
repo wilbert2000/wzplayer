@@ -20,11 +20,6 @@ TMenuHelp::TMenuHelp(QWidget* parent)
 	a = new TAction(this, "check_updates", QT_TR_NOOP("Check for &updates"));
 	connect(a, SIGNAL(triggered()), parent, SLOT(helpCheckUpdates()));
 
-#if defined(YOUTUBE_SUPPORT) && defined(YT_USE_YTSIG)
-	a = new TAction(this, "update_youtube", QT_TR_NOOP("Update &Youtube code"));
-	connect(a, SIGNAL(triggered()), parent, SLOT(YTUpdateScript()));
-#endif
-
 	a = new TAction(this, "about_smplayer", QT_TR_NOOP("About &SMPlayer"), "logo");
 	connect(a, SIGNAL(triggered()), parent, SLOT(helpAbout()));
 

@@ -130,13 +130,6 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 	connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
 	connect(logWindow, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
 
-	// Youtube browser
-#ifdef YOUTUBE_SUPPORT
-	addSeparator();
-	a = new TAction(this, "show_tube_browser", QT_TR_NOOP("&YouTube browser..."), "tubebrowser", Qt::Key_F11);
-	connect(a, SIGNAL(triggered()), parent, SLOT(showTubeBrowser()));
-#endif
-
 	// Preferences
 	addSeparator();
 	a = new TAction(this, "show_config", QT_TR_NOOP("Open &configuration folder..."));
