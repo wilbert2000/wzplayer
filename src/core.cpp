@@ -2501,6 +2501,20 @@ void TCore::normalSpeed() {
 	setSpeed(1);
 }
 
+/*
+ Notes on volume:
+
+ Mplayer always uses 0 - 100 for volume, where 100 is the maximum volume.
+ If soft volume is enabled MPlayer will amplify this value by softvol-max.
+
+ MPV uses 0 - 100, where 100 is no amplification.
+ MPV scale is cubic as it should be.
+ MPV softvol-max seems to only serve as the max for amplification
+ and according to the docs doubles volume with softvol-max 130.
+
+ TODO: move MPV conversion to TMPVProcess
+*/
+
 int TCore::adjustVolume(int volume) {
 
 	if (pref->use_soft_vol) {

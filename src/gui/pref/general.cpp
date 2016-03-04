@@ -1119,6 +1119,7 @@ void TGeneral::createHelp() {
 		tr("Check this option to use the software mixer, instead of "
            "using the sound card mixer."));
 
+	// TODO: update for MPV 130 vs 200
 	setWhatsThis(softvol_amp_spin, tr("Amplification"),
 		tr("Sets the amplification level in percent (default: 110). "
 		   "A value of 200 allows you to double the volume normally available."));

@@ -1058,6 +1058,8 @@ void TPreferences::load() {
 	softvol_amplification = value("softvol_amplification", softvol_amplification).toInt();
 	if (softvol_amplification < 100)
 		softvol_amplification = 100;
+	else if (softvol_amplification > 1000)
+		softvol_amplification = 1000;
 	use_scaletempo = (OptionState) value("use_scaletempo", use_scaletempo).toInt();
 	use_hwac3 = value("use_hwac3", use_hwac3).toBool();
 	use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer).toBool();
