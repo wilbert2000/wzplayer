@@ -412,8 +412,9 @@ win32 {
 		LIBS += libole32
 	}
 	
-	RC_FILE = smplayer.rc
     DEFINES -= OUTPUT_ON_CONSOLE
+    DEFINES += USE_ADAPTER
+	RC_FILE = smplayer.rc
 }
 
 os2 {

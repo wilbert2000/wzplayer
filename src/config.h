@@ -25,9 +25,4 @@
 // support for program switch in ts files
 #define PROGRAM_SWITCH 0
 
-// Enables/disables the use of -adapter
-#ifdef Q_OS_WIN
-#define USE_ADAPTER 1
-#endif
-
 #endif // CONFIG_H
