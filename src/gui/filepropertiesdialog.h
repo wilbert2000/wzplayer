@@ -22,7 +22,7 @@
 #include "ui_filepropertiesdialog.h"
 #include "inforeader.h"
 #include "mediadata.h"
-#include "config.h"
+
 
 class QPushButton;
 

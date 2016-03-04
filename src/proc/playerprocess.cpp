@@ -23,7 +23,6 @@
 #include <QDir>
 #include <QFileInfo>
 
-#include "config.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
 

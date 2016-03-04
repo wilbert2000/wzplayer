@@ -31,7 +31,6 @@
 
 #include <cmath>
 
-#include "config.h"
 #include "desktop.h"
 #include "discname.h"
 #include "mediadata.h"

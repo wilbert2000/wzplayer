@@ -22,7 +22,6 @@
 #include <QObject>
 #include <QString>
 
-#include "config.h"
 #include "proc/playerprocess.h"
 #include "mediadata.h"
 

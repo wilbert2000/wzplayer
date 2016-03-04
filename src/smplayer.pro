@@ -21,6 +21,9 @@ DEFINES += UPDATE_CHECKER
 DEFINES += CHECK_UPGRADED
 DEFINES += CAPTURE_STREAM
 
+# Support for program switch in TS files
+#DEFINES += PROGRAM_SWITCH
+
 DEFINES += MPV_SUPPORT
 DEFINES += MPLAYER_SUPPORT
 
@@ -46,8 +49,7 @@ contains(QT_VERSION, ^4\\.[0-3]\\..*) {
     error("Qt > 4.3 required")
 }
 
-HEADERS += config.h \
-	svn_revision.h \
+HEADERS += svn_revision.h \
 	version.h \
 	helper.h \
 	colorutils.h \

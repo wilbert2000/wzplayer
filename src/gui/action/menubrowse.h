@@ -1,7 +1,6 @@
 #ifndef GUI_BROWSEMENU_H
 #define GUI_BROWSEMENU_H
 
-#include "config.h"
 #include "gui/action/menu.h"
 
 

@@ -24,7 +24,6 @@
 #include <QString>
 #include <QTime>
 
-#include "config.h"
 #include "proc/playerprocess.h"
 
 class QStringList;

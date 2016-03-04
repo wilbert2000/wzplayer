@@ -22,9 +22,9 @@
 #include <QProcess>
 #include <QTime>
 
-#include "config.h"
 #include "mediadata.h"
 #include "settings/mediasettings.h"
+
 
 class TDiscData;
 class TMediaData;

@@ -16,13 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_WIDGETACTIONS_H_
-#define _GUI_WIDGETACTIONS_H_
+#ifndef GUI_WIDGETACTIONS_H
+#define GUI_WIDGETACTIONS_H
 
 #include <QWidgetAction>
 #include <QSlider>
-#include "config.h"
 #include "settings/preferences.h"
+
 
 class QStyle;
 
@@ -160,5 +160,5 @@ protected:
 } // namespace Action
 } // namespace Gui
 
-#endif // _GUI_WIDGETACTIONS_H_
+#endif // GUI_WIDGETACTIONS_H
 

@@ -22,7 +22,6 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 
-#include "config.h"
 #include "gui/action/action.h"
 #include "gui/action/menuopen.h"
 #include "gui/action/menuplay.h"

@@ -22,7 +22,6 @@
 #include <QString>
 #include <QSettings>
 
-#include "config.h"
 #include "discname.h"
 #include "maps/tracks.h"
 #include "subtracks.h"

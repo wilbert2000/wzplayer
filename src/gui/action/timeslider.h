@@ -19,8 +19,8 @@
 #ifndef GUI_TIMESLIDER_H
 #define GUI_TIMESLIDER_H
 
-#include "config.h"
 #include "gui/action/slider.h"
+
 
 class QToolBar;
 

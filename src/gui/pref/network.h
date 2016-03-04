@@ -22,7 +22,6 @@
 #include "ui_network.h"
 #include "settings/preferences.h"
 #include "gui/pref/widget.h"
-#include "config.h"
 
 
 namespace Gui { namespace Pref {

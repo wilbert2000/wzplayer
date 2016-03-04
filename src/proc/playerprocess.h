@@ -23,7 +23,6 @@
 #include <QVariant>
 #include <QRegExp>
 
-#include "config.h"
 #include "mediadata.h"
 #include "proc/process.h"
 #include "settings/preferences.h"

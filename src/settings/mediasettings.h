@@ -26,7 +26,6 @@
 #include <QString>
 #include <QSize>
 #include <QPoint>
-#include "config.h"
 #include "subtracks.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
