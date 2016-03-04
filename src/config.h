@@ -21,13 +21,6 @@
 
 #include <Qt>
 
-// USE_INFOPROVIDER
-// if 1, the playlist will read info about the files when they are added
-// to the list.
-// It's slow but allows the user to see the length and even the name of
-// a mp3 song.
-#define USE_INFOPROVIDER 1
-
 // PROGRAM_SWITCH
 // support for program switch in ts files
 #define PROGRAM_SWITCH 0

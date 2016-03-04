@@ -42,24 +42,21 @@
 #include <QApplication>
 #include <QMimeData>
 
-#include "config.h"
+#include "version.h"
+#include "helper.h"
+#include "images.h"
+#include "core.h"
+#include "extensions.h"
+#include "filedialog.h"
+#include "settings/preferences.h"
 #include "gui/action/action.h"
 #include "gui/action/menu.h"
 #include "gui/tablewidget.h"
-#include "filedialog.h"
-#include "helper.h"
-#include "images.h"
-#include "settings/preferences.h"
 #include "gui/multilineinputdialog.h"
-#include "version.h"
-#include "core.h"
-#include "extensions.h"
+//#include "gui/infoprovider.h"
 
 #include <stdlib.h>
 
-#if USE_INFOPROVIDER
-#include "gui/infoprovider.h"
-#endif
 
 #define DRAG_ITEMS 0
 
@@ -1068,7 +1065,7 @@ void TPlaylist::addCurrentFile() {
 	}
 }
 
-void TPlaylist::addFile(const QString &filename, bool get_info) {
+void TPlaylist::addFile(const QString &filename) {
 	qDebug() << "Gui::TPlaylist::addFile:" << filename;
 	// Note: currently addFile loads playlists and addDirectory skips them,
 	// giving a nice balance. Load if the individual file is requested,
@@ -1081,15 +1078,13 @@ void TPlaylist::addFile(const QString &filename, bool get_info) {
 			load_m3u(filename, false, false);
 		} else if (ext == "pls") {
 			load_pls(filename, false, false);
-		} else {
-
-#if USE_INFOPROVIDER
-			if (get_info) {
-				TMediaData media_data;
-				TInfoProvider::getInfo(filename, media_data);
-				addItem(filename, media_data.displayName(), media_data.duration);
-			} else
-#endif
+		} /* else if (get_info) {
+			// TODO: currently get_info is always false
+			// Move it to a seperate thread before enabling
+			TMediaData media_data;
+			TInfoProvider::getInfo(filename, media_data);
+			addItem(filename, media_data.displayName(), media_data.duration);
+		} */ else {
 			addItem(filename, fi.fileName(), 0);
 		}
 
@@ -1110,7 +1105,7 @@ void TPlaylist::addFile(const QString &filename, bool get_info) {
 	}
 }
 
-void TPlaylist::addDirectory(const QString &dir, bool get_info) {
+void TPlaylist::addDirectory(const QString &dir) {
 	qDebug() << "Gui::TPlaylist::addDirectory:" << dir;
 
 	static TExtensions ext;
@@ -1129,42 +1124,37 @@ void TPlaylist::addDirectory(const QString &dir, bool get_info) {
 			QFileInfo fi(filename);
 			if (fi.isDir()) {
 				if (recursive_add_directory)
-					addDirectory(filename, get_info);
+					addDirectory(filename);
 			} else if (rx_ext.indexIn(fi.suffix()) >= 0) {
-				addFile(filename, get_info);
+				addFile(filename);
 			}
 		}
 		++it;
 	}
 }
 
-void TPlaylist::addFileOrDir(const QString &filename, bool get_info) {
+void TPlaylist::addFileOrDir(const QString &filename) {
 
 	if (QFileInfo(filename).isDir()) {
-		addDirectory(filename, get_info);
+		addDirectory(filename);
 	} else {
-		addFile(filename, get_info);
+		addFile(filename);
 	}
 }
 
-void TPlaylist::addFiles(const QStringList &files, bool get_info) {
+void TPlaylist::addFiles(const QStringList &files) {
 	qDebug("Gui::TPlaylist::addFiles");
 
-#if USE_INFOPROVIDER
 	setCursor(Qt::WaitCursor);
-#endif
 
 	QStringList::ConstIterator it = files.constBegin();
 	while(it != files.constEnd()) {
-		addFileOrDir(*it, get_info);
+		addFileOrDir(*it);
 		++it;
 	}
 
-#if USE_INFOPROVIDER
-	unsetCursor();
-#endif
-
 	updateView();
+	unsetCursor();
 
 	qDebug("Gui::TPlaylist::addFiles: done");
 }
@@ -1188,7 +1178,7 @@ void TPlaylist::addDirectory() {
 					lastDir());
 
 	if (!s.isEmpty()) {
-		addDirectory(s, true);
+		addDirectory(s);
 		latest_dir = s;
 	}
 }

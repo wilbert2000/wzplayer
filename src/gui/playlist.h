@@ -101,6 +101,7 @@ public slots:
 	void playItem(int n);
 	void playDirectory(const QString& dir);
 
+	// TODO: remove virtual from following methods where it's not needed
 	virtual void playNext();
 	virtual void playPrev();
 
@@ -118,12 +119,12 @@ public slots:
 	virtual void addDirectory();
 	virtual void addUrls();
 
-	virtual void addFile(const QString& filename, bool get_info = false);
-	virtual void addFiles(const QStringList& files, bool get_info = false);
-	void addFileOrDir(const QString& filename, bool get_info = false);
+	virtual void addFile(const QString& filename);
+	virtual void addFiles(const QStringList& files);
+	void addFileOrDir(const QString& filename);
 
 	// Adds a directory, maybe with recursion (depends on user config)
-	virtual void addDirectory(const QString& dir, bool get_info = false);
+	virtual void addDirectory(const QString& dir);
 
 	// EDIT BY NEO -->
 	virtual void sortBy(int section);
