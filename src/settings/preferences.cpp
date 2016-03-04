@@ -43,7 +43,7 @@
 #include "helper.h"
 
 
-#define CURRENT_CONFIG_VERSION 9
+#define CURRENT_CONFIG_VERSION 10
 
 
 namespace Settings {
@@ -1454,31 +1454,31 @@ void TPreferences::load() {
 			if (min_step < 5)
 				min_step = 5;
 
-			// Settings no longer used
-			beginGroup("floating_control");
-			remove("width");
-			endGroup();
-			beginGroup("advanced");
-			remove("use_mplayer_window");
-			endGroup();
+			remove("floating_control/width");
+			remove("advanced/use_mplayer_window");
 			remove("mplayer_info");
-			remove("streaming");
 		}
 
 		if (config_version < 9) {
-			// TODO Check gui
-			// remove("gui");
 			remove("advanced/log_enabled");
 			remove("advanced/log_filter");
 		}
 
-		remove("general/softvol_max");
-		remove("gui/auto_shutdown_pc");
-		remove("performance/h264_skip_loop_filter");
-		remove("performance/HD_height");
-		remove("performance/coreavc");
-		remove("performance/threads");
-		remove("youtube");
+		if (config_version < 10) {
+			remove("general/softvol_max");
+			remove("gui/gui");
+			remove("skin_gui");
+			remove("mini_gui");
+			remove("mpc_gui");
+			remove("gui/auto_shutdown_pc");
+			remove("performance/h264_skip_loop_filter");
+			remove("performance/HD_height");
+			remove("performance/coreavc");
+			remove("performance/threads");
+			remove("youtube");
+			remove("videopreview");
+			remove("streaming");
+		}
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();
