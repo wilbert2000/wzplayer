@@ -23,7 +23,6 @@
 #include <QSize>
 #include <QString>
 
-// TODO: make forward decls?
 #include "settings/smplayersettings.h"
 #include "settings/assstyles.h"
 #include "settings/recents.h"
