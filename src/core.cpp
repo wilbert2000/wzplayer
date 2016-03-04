@@ -72,7 +72,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	  restarting(0),
 	  title(-1),
 	  block_dvd_nav(false),
-	  change_volume_after_unpause(false),
 	  pos_max(1000)
 {
 	qRegisterMetaType<TCore::State>("TCore::State");
@@ -181,9 +180,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			this, SIGNAL(durationChanged(double)));
 
 	connect(proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()));
-
-	connect(this, SIGNAL(stateChanged(TCore::State)),
-			this, SLOT(watchState(TCore::State)));
 
 	connect(this, SIGNAL(mediaInfoChanged()),
 			this, SLOT(sendMediaInfo()));
@@ -2524,38 +2520,32 @@ int TCore::getVolume() {
 	return pref->global_volume ? pref->volume : mset.volume;
 }
 
-void TCore::setVolume(int volume, bool force) {
-	qDebug("TCore::setVolume: %d", volume);
+void TCore::setVolume(int volume) {
+	//qDebug("TCore::setVolume: %d", volume);
 
-	if (volume > 100) volume = 100;
-	if (volume < 0) volume = 0;
-	if (!force && volume == getVolume())
-		return;
+	if (volume < 0)
+		volume = 0;
+	if (volume > 100)
+		volume = 100;
 
-	if (isMPV()) {
-		if (proc->isRunning()) {
-			int vol = adjustVolume(volume);
-			proc->setVolume(vol);
-		}
-	} else {
-		// MPlayer
-		if (state() == Paused) {
-			// Change volume later, after quiting pause
-			change_volume_after_unpause = true;
-		} else if (proc->isRunning()) {
+	if (proc->isRunning()) {
+		if (isMPV()) {
+			proc->setVolume(adjustVolume(volume));
+		} else {
 			proc->setVolume(volume);
 		}
 	}
 
-	bool is_mute;
+	bool muted;
 	if (pref->global_volume) {
 		pref->volume = volume;
-		is_mute = pref->mute;
+		muted = pref->mute;
 	} else {
 		mset.volume = volume;
-		is_mute = mset.mute;
+		muted = mset.mute;
 	}
-	if (is_mute)
+	// Unmute audio if it was muted
+	if (muted)
 		mute(false);
 
 	displayMessage(tr("Volume: %1").arg(volume));
@@ -2942,16 +2932,13 @@ void TCore::changeAudioTrack(int id) {
 			// volume is too loud after changing audio.
 			// Workaround too for a mplayer problem in linux,
 			// the volume is reduced if using -softvol-max.
-
-			if (isMPlayer()) {
-				if (pref->mplayer_additional_options.contains("-volume")) {
-					qDebug("TCore::changeAudio: don't set volume since -volume is used");
-				} else if (pref->global_volume) {
-					setVolume(pref->volume, true);
-					if (pref->mute) mute(true);
-				} else {
-					setVolume(mset.volume, true);
-					if (mset.mute) mute(true); // if muted, mute again
+			if (isMPlayer()
+				&& !pref->mplayer_additional_options.contains("-volume")) {
+				bool muted = pref->mute;
+				setVolume(getVolume());
+				// if muted, mute again
+				if (muted) {
+					mute(true);
 				}
 			}
 		}
@@ -3645,17 +3632,6 @@ void TCore::streamTitleAndUrlChanged(const QString& title, const QString& url) {
 void TCore::sendMediaInfo() {
 	qDebug("TCore::sendMediaInfo");
 	emit mediaPlaying(mdat.filename, mdat.displayName(pref->show_tag_in_window_title));
-}
-
-//!  Called when the state changes
-void TCore::watchState(TCore::State state) {
-
-	// Delayed volume change
-	if (isMPlayer() && (state == Playing) && change_volume_after_unpause) {
-		qDebug("TCore::watchState: delayed volume change");
-		change_volume_after_unpause = false;
-		proc->setVolume(getVolume());
-	}
 }
 
 bool TCore::setPreferredAudio() {

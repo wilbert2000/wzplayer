@@ -1292,7 +1292,7 @@ void TMPlayerProcess::addAF(const QString& filter_name, const QVariant& value) {
 }
 
 void TMPlayerProcess::setVolume(int v) {
-	writeToStdin("volume " + QString::number(v) + " 1");
+	writeToStdin("pausing_keep_force volume " + QString::number(v) + " 1");
 }
 
 void TMPlayerProcess::setOSDLevel(int level) {

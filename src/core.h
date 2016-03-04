@@ -188,7 +188,7 @@ public slots:
 	void halveSpeed();
 	void normalSpeed();
 
-	void setVolume(int volume, bool force = false);
+	void setVolume(int volume);
 	void mute(bool b);
 	void incVolume();
 	void decVolume();
@@ -433,8 +433,6 @@ protected slots:
 	// Catches mediaInfoChanged and sends mediaPlaying signal
 	void sendMediaInfo();
 	
-	void watchState(TCore::State state);
-
 	void onAudioTracksChanged();
 
 	void selectPreferredSub();
@@ -475,7 +473,6 @@ private:
 	bool block_dvd_nav;
 	int menus_selected;
 
-	bool change_volume_after_unpause;
 	QTime time;
 
 	QString initial_subtitle;
