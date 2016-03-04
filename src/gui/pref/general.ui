@@ -819,26 +819,29 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Ma&amp;x. Amplification:</string>
+               <string>A&amp;mplification:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
               </property>
               <property name="buddy">
-               <cstring>softvol_max_spin</cstring>
+               <cstring>softvol_amp_spin</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="softvol_max_spin">
+             <widget class="QSpinBox" name="softvol_amp_spin">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="minimum">
-               <number>10</number>
+               <number>100</number>
               </property>
               <property name="maximum">
                <number>10000</number>
+              </property>
+              <property name="value">
+               <number>110</number>
               </property>
              </widget>
             </item>
@@ -1273,7 +1276,7 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>scaletempo_combo</tabstop>
   <tabstop>global_volume_check</tabstop>
   <tabstop>softvol_check</tabstop>
-  <tabstop>softvol_max_spin</tabstop>
+  <tabstop>softvol_amp_spin</tabstop>
   <tabstop>volnorm_check</tabstop>
   <tabstop>autosync_check</tabstop>
   <tabstop>autosync_spin</tabstop>
@@ -1289,7 +1292,7 @@ For translators: don't translate this text, it will be replaced with another one
   <connection>
    <sender>softvol_check</sender>
    <signal>toggled(bool)</signal>
-   <receiver>softvol_max_spin</receiver>
+   <receiver>softvol_amp_spin</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

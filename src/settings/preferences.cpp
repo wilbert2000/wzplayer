@@ -133,7 +133,7 @@ void TPreferences::reset() {
 #else
 	use_soft_vol = true;
 #endif
-	softvol_max = 110; // 110 = default value in mplayer
+	softvol_amplification = 110; // 110 = default value in mplayer
 	use_scaletempo = Detect;
 	use_hwac3 = false;
 	use_audio_equalizer = true;
@@ -524,7 +524,7 @@ void TPreferences::save() {
 #endif
 
 	setValue("use_soft_vol", use_soft_vol);
-	setValue("softvol_max", softvol_max);
+	setValue("softvol_amplification", softvol_amplification);
 	setValue("use_scaletempo", use_scaletempo);
 	setValue("use_hwac3", use_hwac3);
 	setValue("use_audio_equalizer", use_audio_equalizer);
@@ -1055,7 +1055,9 @@ void TPreferences::load() {
 #endif
 
 	use_soft_vol = value("use_soft_vol", use_soft_vol).toBool();
-	softvol_max = value("softvol_max", softvol_max).toInt();
+	softvol_amplification = value("softvol_amplification", softvol_amplification).toInt();
+	if (softvol_amplification < 100)
+		softvol_amplification = 100;
 	use_scaletempo = (OptionState) value("use_scaletempo", use_scaletempo).toInt();
 	use_hwac3 = value("use_hwac3", use_hwac3).toBool();
 	use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer).toBool();
@@ -1470,6 +1472,7 @@ void TPreferences::load() {
 			remove("advanced/log_filter");
 		}
 
+		remove("general/softvol_max");
 		remove("gui/auto_shutdown_pc");
 		remove("performance/h264_skip_loop_filter");
 		remove("performance/HD_height");

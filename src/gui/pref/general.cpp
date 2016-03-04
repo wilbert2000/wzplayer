@@ -221,7 +221,7 @@ void TGeneral::setData(TPreferences* pref) {
 	setSoftVol(pref->use_soft_vol);
 	setAc3DTSPassthrough(pref->use_hwac3);
 	setInitialVolNorm(pref->initial_volnorm);
-	setAmplification(pref->softvol_max);
+	setAmplification(pref->softvol_amplification);
 	setInitialPostprocessing(pref->initial_postprocessing);
 	setInitialDeinterlace(pref->initial_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
@@ -314,7 +314,7 @@ void TGeneral::getData(TPreferences* pref) {
 	pref->global_audio_equalizer = global_audio_equalizer_check->isChecked();
 	TEST_AND_SET(pref->use_hwac3, Ac3DTSPassthrough());
 	pref->initial_volnorm = initialVolNorm();
-	TEST_AND_SET(pref->softvol_max, amplification());
+	TEST_AND_SET(pref->softvol_amplification, amplification());
 	pref->initial_postprocessing = initialPostprocessing();
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_zoom_factor = initialZoom();
@@ -761,11 +761,11 @@ bool TGeneral::useSlices() {
 }
 
 void TGeneral::setAmplification(int n) {
-	softvol_max_spin->setValue(n);
+	softvol_amp_spin->setValue(n);
 }
 
 int TGeneral::amplification() {
-	return softvol_max_spin->value();
+	return softvol_amp_spin->value();
 }
 
 void TGeneral::setAudioChannels(int ID) {
@@ -1119,12 +1119,9 @@ void TGeneral::createHelp() {
 		tr("Check this option to use the software mixer, instead of "
            "using the sound card mixer."));
 
-	setWhatsThis(softvol_max_spin, tr("Max. Amplification"),
-		tr("Sets the maximum amplification level in percent (default: 110). "
-           "A value of 200 will allow you to adjust the volume up to a "
-           "maximum of double the current level. With values below 100 the "
-           "initial volume (which is 100%) will be above the maximum, which "
-           "e.g. the OSD cannot display correctly."));
+	setWhatsThis(softvol_amp_spin, tr("Amplification"),
+		tr("Sets the amplification level in percent (default: 110). "
+		   "A value of 200 allows you to double the volume normally available."));
 
 	setWhatsThis(volnorm_check, tr("Volume normalization by default"),
 		tr("Maximizes the volume without distorting the sound."));

@@ -1735,7 +1735,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	if (pref->use_soft_vol) {
 		proc->setOption("softvol");
-		proc->setOption("softvol-max", QString::number(pref->softvol_max));
+		proc->setOption("softvol-max", QString::number(pref->softvol_amplification));
 	}
 
 #ifndef Q_OS_WIN
@@ -2508,11 +2508,8 @@ void TCore::normalSpeed() {
 int TCore::adjustVolume(int volume) {
 
 	if (pref->use_soft_vol) {
-		int max = pref->softvol_max;
-		if (max < 100) max = 100;
-		return volume * max / 100;
+		return volume * pref->softvol_amplification / 100;
 	}
-
 	return volume;
 }
 
