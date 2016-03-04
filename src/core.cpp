@@ -1037,16 +1037,13 @@ void TCore::startPlayer(QString file, double seek) {
 		file = file.remove("|playlist");
 	} else {
 		QUrl url(file);
-		qDebug("TCore::startPlayer: checking if stream is a playlist");
 		qDebug("TCore::startPlayer: url path: '%s'", url.path().toUtf8().constData());
-
 		if (url.scheme().toLower() != "ffmpeg") {
 			QRegExp rx("\\.ram$|\\.asx$|\\.m3u$|\\.m3u8$|\\.pls$", Qt::CaseInsensitive);
 			url_is_playlist = (rx.indexIn(url.path()) != -1);
 		}
 	}
 	qDebug("TCore::startPlayer: url_is_playlist: %d", url_is_playlist);
-
 
 	// Check if a m4a file exists with the same name of file,
 	// in that cause if will be used as audio
@@ -1055,7 +1052,6 @@ void TCore::startPlayer(QString file, double seek) {
 		if (fi.exists() && !fi.isDir()) {
 			if (fi.suffix().toLower() == "mp4") {
 				QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
-				//qDebug("TCore::startPlayer: file2: %s", file2.toUtf8().constData());
 				if (!QFile::exists(file2)) {
 					// Check for upper case
 					file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
