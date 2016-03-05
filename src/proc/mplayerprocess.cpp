@@ -1160,72 +1160,56 @@ void TMPlayerProcess::setCaptureDirectory(const QString& dir) {
 }
 #endif
 
-void TMPlayerProcess::setOption(const QString& option_name, const QVariant& value) {
-	if (option_name == "cache") {
+void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
+
+	if (name == "cache") {
 		int cache = value.toInt();
 		if (cache > 31) {
 			arg << "-cache" << value.toString();
 		} else {
 			arg << "-nocache";
 		}
-	}
-	else
-	if (option_name == "stop-xscreensaver") {
-		bool stop_ss = value.toBool();
-		if (stop_ss) arg << "-stop-xscreensaver"; else arg << "-nostop-xscreensaver";
-	}
-	else
-	if (option_name == "correct-pts") {
-		bool b = value.toBool();
-		if (b) arg << "-correct-pts"; else arg << "-nocorrect-pts";
-	}
-	else
-	if (option_name == "framedrop") {
+	} else if (name == "framedrop") {
 		QString o = value.toString();
-		if (o.contains("vo"))  arg << "-framedrop";
-		if (o.contains("decoder")) arg << "-hardframedrop";
-	}
-	else
-	if (option_name == "osd-scale") {
+		if (o.contains("vo"))
+			arg << "-framedrop";
+		if (o.contains("decoder"))
+			arg << "-hardframedrop";
+	} else if (name == "osd-scale") {
 		QString scale = value.toString();
-		if (scale != "6")
+		if (scale != "6") {
 			arg << "-subfont-osd-scale" << scale;
-	}
-	else
-	if (option_name == "verbose") {
+		}
+	} else if (name == "verbose") {
 		arg << "-v";
-	}
-	else
-	if (option_name == "fontconfig") {
-		bool b = value.toBool();
-		if (b) arg << "-fontconfig"; else arg << "-nofontconfig";
-	}
-	else
-	if (option_name == "mute") {
+	} else if (name == "mute") {
 		// Emulate mute, executed by playingStarted()
 		mute_option_set = true;
-	}
-	else
-	if (option_name == "double")
-	{
+	} else if (name == "double") {
 		if (!value.toBool())
 			arg << "-nodouble";
-	}
-	else
-	if (option_name == "keepaspect" || option_name == "fs"
-		|| option_name == "slices" || option_name == "flip-hebrew") {
+	} else if (name == "keepaspect"
+			   || name == "fs"
+			   || name == "slices"
+			   || name == "flip-hebrew"
+			   || name == "stop-xscreensaver"
+			   || name == "correct-pts"
+			   || name == "fontconfig") {
 		bool b = value.toBool();
-		if (b) arg << "-" + option_name; else arg << "-no" + option_name;
-	}
-	else
-	if (option_name == "screenshot_template"
-		|| option_name == "screenshot_format"
-		|| option_name == "hwdec") {
+		if (b) {
+			arg << "-" + name;
+		} else {
+			arg << "-no" + name;
+		}
+	} else if (name == "screenshot_template"
+			   || name == "screenshot_format"
+			   || name == "hwdec") {
 		// Not supported
-	}
-	else {
-		arg << "-" + option_name;
-		if (!value.isNull()) arg << value.toString();
+	} else {
+		arg << "-" + name;
+		if (!value.isNull()) {
+			arg << value.toString();
+		}
 	}
 }
 
