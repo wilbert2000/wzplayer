@@ -136,7 +136,7 @@ public:
 
 	// Audio
 	bool use_soft_vol;
-	int softvol_amplification;
+	int softvol_max;
 	OptionState use_scaletempo;
 	bool use_hwac3; // -afm hwac3
 	bool use_audio_equalizer;

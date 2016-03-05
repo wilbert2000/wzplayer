@@ -188,7 +188,7 @@ public slots:
 	void halveSpeed();
 	void normalSpeed();
 
-	void setVolume(int volume);
+	void setVolume(int volume, bool unmute = true);
 	void mute(bool b);
 	void incVolume();
 	void decVolume();
@@ -407,7 +407,6 @@ protected:
 	void newMediaPlayingStarted();
 	void saveMediaInfo();
 
-	int adjustVolume(int volume);
 	void seek_cmd(double secs, int mode);
 
 protected slots:
@@ -495,6 +494,7 @@ private:
 	void pan(int dx, int dy);
 	void setExternalSubs(const QString& filename);
 	bool setPreferredAudio();
+	int getVolumeForPlayer();
 };
 
 #endif

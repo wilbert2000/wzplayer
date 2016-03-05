@@ -1087,7 +1087,7 @@ void TCore::startPlayer(QString file, double seek) {
 		mdat.video_hwdec = false;
 	}
 
-	// Demuxer and audio and video codecs:
+	// Demuxer, audio and video codecs:
 	if (!mset.forced_demuxer.isEmpty()) {
 		proc->setOption("demuxer", mset.forced_demuxer);
 	}
@@ -1131,9 +1131,6 @@ void TCore::startPlayer(QString file, double seek) {
 	if (!hwdec.isEmpty()) {
 		proc->setOption("hwdec", hwdec);
 	}
-
-	if (pref->use_hwac3)
-		proc->setOption("afm", "hwac3");
 
 	// Set screenshot directory
 	bool screenshot_enabled = pref->use_screenshot
@@ -1438,20 +1435,6 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	}
 
-	if (pref->mplayer_additional_options.contains("-volume")) {
-		qDebug("TCore::startPlayer: don't set volume since -volume is used");
-	} else {
-		int vol = getVolume();
-		if (isMPV()) {
-			vol = adjustVolume(vol);
-		}
-		proc->setOption("volume", QString::number(vol));
-	}
-
-	if (getMute()) {
-		proc->setOption("mute");
-	}
-
 	if (mset.current_angle_id > 1) {
 		proc->setOption("dvdangle", QString::number(mset.current_angle_id));
 	}
@@ -1671,12 +1654,31 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 
+	// Volume
+	if (pref->mplayer_additional_options.contains("-volume")) {
+		qDebug("TCore::startPlayer: don't set volume since -volume is used");
+	} else {
+		proc->setOption("volume", QString::number(getVolumeForPlayer()));
+	}
+
+	if (getMute()) {
+		proc->setOption("mute");
+	}
+
+	if (pref->use_soft_vol) {
+		proc->setOption("softvol");
+		proc->setOption("softvol-max", QString::number(pref->softvol_max));
+	}
+
 	// Audio channels
 	if (mset.audio_use_channels != 0) {
 		proc->setOption("channels", QString::number(mset.audio_use_channels));
 	}
 
-	if (!pref->use_hwac3) {
+	if (pref->use_hwac3) {
+		proc->setOption("afm", "hwac3");
+		qDebug("TCore::startPlayer: audio filters are disabled when using the S/PDIF output");
+	} else {
 
 		// Audio filters
 #ifdef MPLAYER_SUPPORT
@@ -1724,14 +1726,6 @@ void TCore::startPlayer(QString file, double seek) {
 		if (!mset.mplayer_additional_audio_filters.isEmpty()) {
 			proc->setOption("af-add", mset.mplayer_additional_audio_filters);
 		}
-	} else {
-		// Don't use audio filters if using the S/PDIF output
-			qDebug("TCore::startPlayer: audio filters are disabled when using the S/PDIF output!");
-	}
-
-	if (pref->use_soft_vol) {
-		proc->setOption("softvol");
-		proc->setOption("softvol-max", QString::number(pref->softvol_amplification));
 	}
 
 #ifndef Q_OS_WIN
@@ -2501,47 +2495,37 @@ void TCore::normalSpeed() {
 	setSpeed(1);
 }
 
-/*
- Notes on volume:
-
- Mplayer always uses 0 - 100 for volume, where 100 is the maximum volume.
- If soft volume is enabled MPlayer will amplify this value by softvol-max.
-
- MPV uses 0 - 100, where 100 is no amplification.
- MPV scale is cubic as it should be.
- MPV softvol-max seems to only serve as the max for amplification
- and according to the docs doubles volume with softvol-max 130.
-
- TODO: move MPV conversion to TMPVProcess
-*/
-
-int TCore::adjustVolume(int volume) {
-
-	if (pref->use_soft_vol) {
-		return volume * pref->softvol_amplification / 100;
-	}
-	return volume;
-}
-
 int TCore::getVolume() {
 	return pref->global_volume ? pref->volume : mset.volume;
 }
 
-void TCore::setVolume(int volume) {
+/*
+ Notes on volume:
+
+ Mplayer uses 0 - 100 for volume, where 100 is the maximum volume.
+ If soft volume is enabled MPlayer will amplify this value by softvol-max.
+ A value of 200 for softvol-max will double the volume.
+
+ MPV uses 0 - 100, where 100 is no amplification.
+ MPV softvol-max serves as max and scale for amplification
+ and according to the docs doubles volume with softvol-max 130.
+*/
+int TCore::getVolumeForPlayer() {
+
+	int volume = getVolume();
+	if (isMPV() && pref->use_soft_vol) {
+		volume = qRound(volume * pref->softvol_max / 100);
+	}
+	return volume;
+}
+
+void TCore::setVolume(int volume, bool unmute) {
 	//qDebug("TCore::setVolume: %d", volume);
 
 	if (volume < 0)
 		volume = 0;
 	if (volume > 100)
 		volume = 100;
-
-	if (proc->isRunning()) {
-		if (isMPV()) {
-			proc->setVolume(adjustVolume(volume));
-		} else {
-			proc->setVolume(volume);
-		}
-	}
 
 	bool muted;
 	if (pref->global_volume) {
@@ -2551,8 +2535,12 @@ void TCore::setVolume(int volume) {
 		mset.volume = volume;
 		muted = mset.mute;
 	}
+
+	if (proc->isRunning()) {
+		proc->setVolume(getVolumeForPlayer());
+	}
 	// Unmute audio if it was muted
-	if (muted)
+	if (muted && unmute)
 		mute(false);
 
 	displayMessage(tr("Volume: %1").arg(volume));
@@ -2566,12 +2554,16 @@ bool TCore::getMute() {
 void TCore::mute(bool b) {
 	qDebug("TCore::mute: %d", b);
 
-	proc->mute(b);
 	if (pref->global_volume) {
 		pref->mute = b;
 	} else {
 		mset.mute = b;
 	}
+	if (proc->isRunning()) {
+		proc->mute(b);
+	}
+
+	displayMessage(tr("Mute: %1").arg(b ? tr("yes") : tr("no")));
 	emit muteChanged(b);
 }
 
@@ -2941,12 +2933,7 @@ void TCore::changeAudioTrack(int id) {
 			// the volume is reduced if using -softvol-max.
 			if (isMPlayer()
 				&& !pref->mplayer_additional_options.contains("-volume")) {
-				bool muted = pref->mute;
-				setVolume(getVolume());
-				// if muted, mute again
-				if (muted) {
-					mute(true);
-				}
+				setVolume(getVolume(), false);
 			}
 		}
 	}

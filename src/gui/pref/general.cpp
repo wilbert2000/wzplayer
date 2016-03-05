@@ -221,7 +221,7 @@ void TGeneral::setData(TPreferences* pref) {
 	setSoftVol(pref->use_soft_vol);
 	setAc3DTSPassthrough(pref->use_hwac3);
 	setInitialVolNorm(pref->initial_volnorm);
-	setAmplification(pref->softvol_amplification);
+	setAmplification(pref->softvol_max);
 	setInitialPostprocessing(pref->initial_postprocessing);
 	setInitialDeinterlace(pref->initial_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
@@ -314,7 +314,7 @@ void TGeneral::getData(TPreferences* pref) {
 	pref->global_audio_equalizer = global_audio_equalizer_check->isChecked();
 	TEST_AND_SET(pref->use_hwac3, Ac3DTSPassthrough());
 	pref->initial_volnorm = initialVolNorm();
-	TEST_AND_SET(pref->softvol_amplification, amplification());
+	TEST_AND_SET(pref->softvol_max, amplification());
 	pref->initial_postprocessing = initialPostprocessing();
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_zoom_factor = initialZoom();
@@ -1116,13 +1116,13 @@ void TGeneral::createHelp() {
         tr("This option also applies for the mute control."));
 
 	setWhatsThis(softvol_check, tr("Software volume control"),
-		tr("Check this option to use the software mixer, instead of "
-           "using the sound card mixer."));
+		tr("Force using the software mixer instead of the sound card mixer."));
 
-	// TODO: update for MPV 130 vs 200
 	setWhatsThis(softvol_amp_spin, tr("Amplification"),
-		tr("Sets the amplification level in percent (default: 110). "
-		   "A value of 200 allows you to double the volume normally available."));
+		tr("Sets the amplification level in percent.<br>"
+		   "100 is no amplification.<br>"
+		   "For MPlayer a value of 200 doubles the volume (linear scale).<br>"
+		   "For MPV a value of 130 doubles the volume (cubic scale)."));
 
 	setWhatsThis(volnorm_check, tr("Volume normalization by default"),
 		tr("Maximizes the volume without distorting the sound."));

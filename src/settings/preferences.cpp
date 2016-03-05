@@ -128,12 +128,10 @@ void TPreferences::reset() {
 	vdpau.disable_video_filters = true;
 #endif
 
-#ifdef Q_OS_WIN
 	use_soft_vol = false;
-#else
-	use_soft_vol = true;
-#endif
-	softvol_amplification = 110; // 110 = default value in mplayer
+	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
+	softvol_max = 100;
+
 	use_scaletempo = Detect;
 	use_hwac3 = false;
 	use_audio_equalizer = true;
@@ -524,7 +522,7 @@ void TPreferences::save() {
 #endif
 
 	setValue("use_soft_vol", use_soft_vol);
-	setValue("softvol_amplification", softvol_amplification);
+	setValue("softvol_max", softvol_max);
 	setValue("use_scaletempo", use_scaletempo);
 	setValue("use_hwac3", use_hwac3);
 	setValue("use_audio_equalizer", use_audio_equalizer);
@@ -1055,11 +1053,11 @@ void TPreferences::load() {
 #endif
 
 	use_soft_vol = value("use_soft_vol", use_soft_vol).toBool();
-	softvol_amplification = value("softvol_amplification", softvol_amplification).toInt();
-	if (softvol_amplification < 100)
-		softvol_amplification = 100;
-	else if (softvol_amplification > 1000)
-		softvol_amplification = 1000;
+	softvol_max = value("softvol_max", softvol_max).toInt();
+	if (softvol_max < 100)
+		softvol_max = 100;
+	else if (softvol_max > 1000)
+		softvol_max = 1000;
 	use_scaletempo = (OptionState) value("use_scaletempo", use_scaletempo).toInt();
 	use_hwac3 = value("use_hwac3", use_hwac3).toBool();
 	use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer).toBool();
@@ -1467,7 +1465,6 @@ void TPreferences::load() {
 		}
 
 		if (config_version < 10) {
-			remove("general/softvol_max");
 			remove("gui/gui");
 			remove("skin_gui");
 			remove("mini_gui");
