@@ -131,7 +131,7 @@ using namespace Action;
 TBase::TBase()
 	: QMainWindow()
 	, toolbar_menu(0)
-	, clhelp_window(0)
+	, help_window(0)
 	, pref_dialog(0)
 	, file_properties_dialog(0)
 #ifdef FIND_SUBTITLES
@@ -195,7 +195,7 @@ TBase::TBase()
 	createVideoEqualizer();
 	createAudioEqualizer();
 
-	log_window = new TLogWindow(this, true);
+	log_window = new TLogWindow(this, "logwindow");
 
 	createActions();
 	createToolbars();
@@ -680,8 +680,8 @@ void TBase::retranslateStrings() {
 	log_window->retranslateStrings();
 
 	// Help window
-	if (clhelp_window) {
-		clhelp_window->retranslateStrings();
+	if (help_window) {
+		help_window->retranslateStrings();
 	}
 
 	// Update actions view in preferences
@@ -805,7 +805,7 @@ void TBase::loadConfig() {
 	// Load actions from outside group derived class
 	Action::TActionsEditor::loadFromConfig(all_actions, pref);
 
-	// Load from inside group derived class
+	// Load from inside group derived class for backwards compatibility
 	pref->beginGroup(settingsGroupName());
 
 	if (pref->save_window_size_on_exit) {
@@ -861,8 +861,8 @@ void TBase::loadConfig() {
 
 	pref->endGroup();
 
-	// Load playlist settings outside group
 	playlist->loadSettings();
+	log_window->loadConfig();
 
 	// Disable actions
 	setActionsEnabled(false);
@@ -904,6 +904,10 @@ void TBase::saveConfig() {
 	pref->endGroup();
 
 	playlist->saveSettings();
+	log_window->saveConfig();
+	if (help_window) {
+		help_window->saveConfig();
+	}
 }
 
 void TBase::closeEvent(QCloseEvent* e)  {
@@ -1540,12 +1544,16 @@ void TBase::helpFAQ() {
 }
 
 void TBase::helpCLOptions() {
-	if (clhelp_window == 0) {
-		clhelp_window = new TLogWindow(this, false);
+
+	if (help_window == 0) {
+		help_window = new TLogWindow(this, "helpwindow");
+		help_window->setWindowTitle(tr("SMPlayer command line options"));
+		help_window->loadConfig();
 	}
-	clhelp_window->setWindowTitle(tr("SMPlayer command line options"));
-	clhelp_window->setHtml(CLHelp::help(true));
-	clhelp_window->show();
+
+	// Hide event clears the help window content, so recreate it
+	help_window->setHtml(CLHelp::help(true));
+	help_window->show();
 }
 
 void TBase::helpCheckUpdates() {

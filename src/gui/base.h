@@ -340,7 +340,7 @@ protected:
 
 	TPlaylist* playlist;
 	TLogWindow* log_window;
-	TLogWindow* clhelp_window;
+	TLogWindow* help_window;
 
 	Pref::TDialog* pref_dialog;
 	TFilePropertiesDialog* file_properties_dialog;

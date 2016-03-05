@@ -24,17 +24,23 @@
 #include <QTextStream>
 #include <QTextEdit>
 #include <QPushButton>
+
 #include "log.h"
+#include "desktop.h"
 #include "images.h"
 #include "filedialog.h"
+#include "settings/preferences.h"
+
+
+using namespace Settings;
 
 namespace Gui {
 
-TLogWindow::TLogWindow(QWidget* parent, bool isLog)
-	: QWidget(parent, Qt::Window)
-	, is_log_window(isLog) {
+TLogWindow::TLogWindow(QWidget* parent, const QString& name)
+	: QWidget(parent, Qt::Window) {
 
 	setupUi(this);
+	setObjectName(name);
 	browser->setFont(QFont("fixed"));
 	retranslateStrings();
 }
@@ -42,7 +48,7 @@ TLogWindow::TLogWindow(QWidget* parent, bool isLog)
 TLogWindow::~TLogWindow() {
 	qDebug("Gui::TLogWindow::~TLogWindow");
 
-	if (is_log_window)
+	if (objectName() == "logwindow")
 		TLog::log->setLogWindow(0);
 }
 
@@ -56,23 +62,53 @@ void TLogWindow::retranslateStrings() {
 	saveButton->setIcon(Images::icon("save"));
 	copyButton->setIcon(Images::icon("copy"));
 
+	// Title changed by TBase::helpCLOptions()
 	setWindowTitle(tr("SMPlayer log"));
 	setWindowIcon(Images::icon("logo"));
+}
+
+void TLogWindow::loadConfig() {
+	qDebug("Gui::TLogWindow::loadConfig");
+
+	pref->beginGroup(objectName());
+	QPoint p = pref->value("pos", QPoint()).toPoint();
+	QSize s = pref->value("size", QPoint()).toSize();
+	int state = pref->value("state", 0).toInt();
+	pref->endGroup();
+
+	if (s.width() > 200 && s.height() > 200) {
+		move(p);
+		resize(s);
+		setWindowState((Qt::WindowStates) state);
+		TDesktop::keepInsideDesktop(this);
+	}
+}
+
+void TLogWindow::saveConfig() {
+	qDebug("Gui::TLogWindow::saveConfig");
+
+	pref->beginGroup(objectName());
+	pref->setValue("pos", pos());
+	pref->setValue("size", size());
+	pref->setValue("state", (int) windowState());
+	pref->endGroup();
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
 	qDebug("Gui::TLogWindow::showEvent");
 
-	if (is_log_window)
+	if (objectName() == "logwindow") {
 		TLog::log->setLogWindow(this);
+	}
 	emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
 	qDebug("Gui::TLogWindow::hideEvent");
 
-	if (is_log_window)
+	if (objectName() == "logwindow") {
 		TLog::log->setLogWindow(0);
+	}
 	clear();
 	emit visibilityChanged(false);
 }
@@ -94,7 +130,7 @@ QString TLogWindow::text() {
 	return browser->toPlainText();
 }
 
-void TLogWindow::setHtml(QString text) {
+void TLogWindow::setHtml(const QString& text) {
 	browser->setHtml(text);
 }
 
@@ -106,12 +142,12 @@ void TLogWindow::clear() {
 	browser->clear();
 }
 
-void TLogWindow::appendText(QString text) {
+void TLogWindow::appendText(const QString& text) {
 	browser->moveCursor(QTextCursor::End);
 	browser->insertPlainText(text);
 }
 
-void TLogWindow::appendHtml(QString text) {
+void TLogWindow::appendHtml(const QString& text) {
 	browser->moveCursor(QTextCursor::End);
 	browser->insertHtml(text);
 }

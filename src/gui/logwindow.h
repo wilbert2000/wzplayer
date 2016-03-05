@@ -21,28 +21,31 @@
 
 #include "ui_logwindow.h"
 
+
 class QTextEdit;
 
 namespace Gui {
 
-class TLogWindow : public QWidget, public Ui::TLogWindow
-{
+class TLogWindow : public QWidget, public Ui::TLogWindow {
 	Q_OBJECT
 
 public:
-	TLogWindow(QWidget* parent, bool isLog);
+	TLogWindow(QWidget* parent, const QString& name);
 	virtual ~TLogWindow();
+
+	virtual void loadConfig();
+	virtual void saveConfig();
 
 	void setText(const QString& log);
 	QString text();
 
-	void setHtml(QString text);
+	void setHtml(const QString& text);
 	QString html();
 
 	void clear();
 
-	void appendText(QString text);
-	void appendHtml(QString text);
+	void appendText(const QString& text);
+	void appendHtml(const QString& text);
 
 	void retranslateStrings();
 
@@ -57,9 +60,6 @@ protected:
 protected slots:
 	void on_copyButton_clicked();
     void on_saveButton_clicked();
-
-private:
-	bool is_log_window;
 };
 
 } // namespace Gui
