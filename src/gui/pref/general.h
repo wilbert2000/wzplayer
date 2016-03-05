@@ -173,9 +173,6 @@ protected:
 	void setInitialZoom(double v);
 	double initialZoom();
 
-	void setDirectRendering(bool b);
-	bool directRendering();
-
 	void setDoubleBuffer(bool b);
 	bool doubleBuffer();
 

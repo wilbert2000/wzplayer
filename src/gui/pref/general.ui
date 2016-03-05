@@ -493,13 +493,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="direct_rendering_check">
-         <property name="text">
-          <string>D&amp;irect rendering</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="double_buffer_check">
          <property name="text">
           <string>Dou&amp;ble buffering</string>
@@ -1259,7 +1252,6 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>deinterlace_combo</tabstop>
   <tabstop>zoom_spin</tabstop>
   <tabstop>eq2_check</tabstop>
-  <tabstop>direct_rendering_check</tabstop>
   <tabstop>double_buffer_check</tabstop>
   <tabstop>use_slices_check</tabstop>
   <tabstop>start_fullscreen_check</tabstop>

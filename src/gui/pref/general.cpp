@@ -225,7 +225,6 @@ void TGeneral::setData(TPreferences* pref) {
 	setInitialPostprocessing(pref->initial_postprocessing);
 	setInitialDeinterlace(pref->initial_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
-	setDirectRendering(pref->use_direct_rendering);
 	setDoubleBuffer(pref->use_double_buffer);
 	setUseSlices(pref->use_slices);
 	setStartInFullscreen(pref->start_in_fullscreen);
@@ -318,7 +317,6 @@ void TGeneral::getData(TPreferences* pref) {
 	pref->initial_postprocessing = initialPostprocessing();
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_zoom_factor = initialZoom();
-	TEST_AND_SET(pref->use_direct_rendering, directRendering());
 	TEST_AND_SET(pref->use_double_buffer, doubleBuffer());
 	TEST_AND_SET(pref->use_slices, useSlices());
 	pref->start_in_fullscreen = startInFullscreen();
@@ -736,14 +734,6 @@ double TGeneral::initialZoom() {
 	return zoom_spin->value();
 }
 
-void TGeneral::setDirectRendering(bool b) {
-	direct_rendering_check->setChecked(b);
-}
-
-bool TGeneral::directRendering() {
-	return direct_rendering_check->isChecked();
-}
-
 void TGeneral::setDoubleBuffer(bool b) {
 	double_buffer_check->setChecked(b);
 }
@@ -1006,11 +996,6 @@ void TGeneral::createHelp() {
            "your graphic card or the selected video output driver.<br>"
            "<b>Note:</b> this option can be incompatible with some video "
            "output drivers."));
-
-	setWhatsThis(direct_rendering_check, tr("Direct rendering"),
-		tr("If checked, turns on direct rendering (not supported by all "
-           "codecs and video outputs)<br>"
-           "<b>Warning:</b> May cause OSD/SUB corruption!"));
 
 	setWhatsThis(double_buffer_check, tr("Double buffering"),
 		tr("Double buffering fixes flicker by storing two frames in memory, "

@@ -1214,7 +1214,6 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// MPlayer only
-	proc->setOption("dr", pref->use_direct_rendering);
 	proc->setOption("double", pref->use_double_buffer);
 
 #ifdef Q_WS_X11
