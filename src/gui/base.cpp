@@ -208,10 +208,6 @@ TBase::TBase()
 	update_checker = new TUpdateChecker(this, &pref->update_checker_data);
 #endif
 
-#ifdef CHECK_UPGRADED
-	QTimer::singleShot(30000, this, SLOT(checkIfUpgraded()));
-#endif
-
 #ifdef MPRIS2
 	if (pref->use_mpris2)
 		new Mpris2(this, this);
@@ -1925,26 +1921,6 @@ void TBase::checkPendingActionsToRun() {
 		runActions(actions);
 	}
 }
-
-#ifdef CHECK_UPGRADED
-void TBase::checkIfUpgraded() {
-	qDebug("Gui::TBase::checkIfUpgraded");
-
-	if (pref->check_if_upgraded && pref->smplayer_stable_version != Version::stable()) {
-		// Running a new version
-		qDebug("Gui::TBase::checkIfUpgraded: running a new version: %s", Version::stable().toUtf8().constData());
-		QString os = "other";
-#ifdef Q_OS_WIN
-		os = "win";
-#endif
-#ifdef Q_OS_LINUX
-		os = "linux";
-#endif
-		QDesktopServices::openUrl(QString(URL_THANK_YOU "?version=%1&so=%2").arg(Version::printable()).arg(os));
-	}
-	pref->smplayer_stable_version = Version::stable();
-}
-#endif // ifdef CHECK_UPGRADED
 
 void TBase::gotForbidden() {
 	qDebug("Gui::TBase::gotForbidden");

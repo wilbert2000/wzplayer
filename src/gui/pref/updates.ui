@@ -93,19 +93,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="open_page_check">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>&amp;Open an informative page after an upgrade</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -128,7 +115,6 @@
   <tabstop>updates_tab</tabstop>
   <tabstop>updates_check</tabstop>
   <tabstop>days_spin</tabstop>
-  <tabstop>open_page_check</tabstop>
  </tabstops>
  <resources/>
  <connections>

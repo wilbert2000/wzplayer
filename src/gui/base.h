@@ -210,10 +210,6 @@ protected slots:
 	virtual void exitFullscreenOnStop();
 	virtual void playlistHasFinished();
 
-#ifdef CHECK_UPGRADED
-	void checkIfUpgraded();
-#endif
-
 	virtual void enableActionsOnPlaying();
 	virtual void disableActionsOnStop();
 

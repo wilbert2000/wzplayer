@@ -35,13 +35,9 @@ TUpdates::TUpdates(QWidget* parent, Qt::WindowFlags f)
 	days_frame->hide();
 #endif
 
-#ifndef CHECK_UPGRADED
-	open_page_check->hide();
-#endif
 }
 
-TUpdates::~TUpdates()
-{
+TUpdates::~TUpdates() {
 }
 
 QString TUpdates::sectionName() {
@@ -58,14 +54,12 @@ void TUpdates::retranslateStrings() {
 }
 
 void TUpdates::setData(Settings::TPreferences* pref) {
+
 #ifdef UPDATE_CHECKER
 	updates_check->setChecked(pref->update_checker_data.enabled);
 	days_spin->setValue(pref->update_checker_data.days_to_check);
 #endif
 
-#ifdef CHECK_UPGRADED
-	open_page_check->setChecked(pref->check_if_upgraded);
-#endif
 }
 
 void TUpdates::getData(Settings::TPreferences* pref) {
@@ -76,9 +70,6 @@ void TUpdates::getData(Settings::TPreferences* pref) {
 	pref->update_checker_data.days_to_check = days_spin->value();
 #endif
 
-#ifdef CHECK_UPGRADED
-	pref->check_if_upgraded = open_page_check->isChecked();
-#endif
 }
 
 void TUpdates::createHelp() {
@@ -93,11 +84,6 @@ void TUpdates::createHelp() {
 		tr("You can enter here the interval (in days) for the update checks."));
 #endif
 
-#ifdef CHECK_UPGRADED
-	setWhatsThis(open_page_check, tr("Open an informative page after an upgrade"),
-		tr("If this option is enabled, an informative page about SMPlayer "
-           "will be opened after an upgrade."));
-#endif
 }
 
 }} // namespace Gui::Pref
