@@ -1073,9 +1073,19 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("verbose");
 	}
 
-	// Setup hardware decoding for MPV
+	// Set screenshot directory
+	bool screenshot_enabled = pref->use_screenshot
+							  && !pref->screenshot_directory.isEmpty()
+							  && QFileInfo(pref->screenshot_directory).isDir();
+	if (screenshot_enabled) {
+		proc->setScreenshotDirectory(pref->screenshot_directory);
+	}
+
+	// Setup hardware decoding for MPV.
+	// First set mdat.video_hwdec, handle proc later
 	QString hwdec = pref->hwdec;
 	if (isMPV()) {
+		// Disable hardware decoding when there are filters in use
 		if (hwdec != "no" && haveVideoFilters()) {
 			hwdec = "no";
 			QString msg = tr("Disabled hardware decoding for video filters");
@@ -1087,19 +1097,21 @@ void TCore::startPlayer(QString file, double seek) {
 		mdat.video_hwdec = false;
 	}
 
-	// Demuxer, audio and video codecs:
+	// Forced demuxer
 	if (!mset.forced_demuxer.isEmpty()) {
 		proc->setOption("demuxer", mset.forced_demuxer);
 	}
+	// Forced audio codec
 	if (!mset.forced_audio_codec.isEmpty()) {
 		proc->setOption("ac", mset.forced_audio_codec);
 	}
+	// Forced video codec
 	if (!mset.forced_video_codec.isEmpty()) {
 		proc->setOption("vc", mset.forced_video_codec);
 	} else {
 
 #ifndef Q_OS_WIN
-		// Set codecs for VDPAU
+		// VDPAU codecs
 		if (pref->vo.startsWith("vdpau")) {
 			if (isMPlayer()) {
 				QString c;
@@ -1131,13 +1143,13 @@ void TCore::startPlayer(QString file, double seek) {
 	if (!hwdec.isEmpty()) {
 		proc->setOption("hwdec", hwdec);
 	}
-
-	// Set screenshot directory
-	bool screenshot_enabled = pref->use_screenshot
-							  && !pref->screenshot_directory.isEmpty()
-							  && QFileInfo(pref->screenshot_directory).isDir();
-	if (screenshot_enabled)
-		proc->setScreenshotDirectory(pref->screenshot_directory);
+	if (pref->frame_drop && pref->hard_frame_drop) {
+		proc->setOption("framedrop", "decoder+vo");
+	} else if (pref->frame_drop) {
+		proc->setOption("framedrop", "vo");
+	} else if (pref->hard_frame_drop) {
+		proc->setOption("framedrop", "decoder");
+	}
 
 	if (pref->vo != "player_default") {
 		if (!pref->vo.isEmpty()) {
@@ -1163,15 +1175,16 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 #endif
 
-	if (pref->ao != "player_default" && !pref->ao.isEmpty()) {
-		proc->setOption("ao", pref->ao);
-	}
-
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	if (pref->vo.startsWith("x11")) {
 		proc->setOption("zoom");
 	}
 #endif
+
+	if (pref->ao != "player_default" && !pref->ao.isEmpty()) {
+		proc->setOption("ao", pref->ao);
+	}
+
 
 	// Performance options
 #ifdef Q_OS_WIN
@@ -1196,14 +1209,6 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 	proc->setOption("priority", p);
 #endif
-
-	if (pref->frame_drop && pref->hard_frame_drop) {
-		proc->setOption("framedrop", "decoder+vo");
-	} else if (pref->frame_drop) {
-		proc->setOption("framedrop", "vo");
-	} else if (pref->hard_frame_drop) {
-		proc->setOption("framedrop", "decoder");
-	}
 
 	if (pref->autosync) {
 		proc->setOption("autosync", QString::number(pref->autosync_factor));

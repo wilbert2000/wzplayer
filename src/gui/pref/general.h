@@ -83,6 +83,15 @@ protected:
 	void setAO(QString ao_driver);
 	QString AO();
 
+	void setHwdec(const QString & v);
+	QString hwdec();
+
+	void setFrameDrop(bool b);
+	bool frameDrop();
+
+	void setHardFrameDrop(bool b);
+	bool hardFrameDrop();
+
 	void setRememberSettings(bool b);
 	bool rememberSettings();
 

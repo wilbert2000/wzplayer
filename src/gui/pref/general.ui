@@ -18,11 +18,11 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QTabWidget" name="general_tab">
+    <widget class="QTabWidget" name="general_tab_widget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="general_tab">
       <attribute name="title">
        <string>&amp;General</string>
       </attribute>
@@ -32,7 +32,7 @@
          <item>
           <widget class="QLabel" name="executable_label">
            <property name="text">
-            <string notr="true">PLAYER &amp;executable:</string>
+            <string notr="true">Player &amp;executable:</string>
            </property>
            <property name="wordWrap">
             <bool>false</bool>
@@ -262,7 +262,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="video_tab">
       <attribute name="title">
        <string>&amp;Video</string>
       </attribute>
@@ -272,7 +272,7 @@
          <item>
           <widget class="QLabel" name="vo_label">
            <property name="text">
-            <string>Ou&amp;tput driver:</string>
+            <string>&amp;Output driver:</string>
            </property>
            <property name="wordWrap">
             <bool>false</bool>
@@ -301,7 +301,7 @@
          <item>
           <widget class="QPushButton" name="vdpau_button">
            <property name="text">
-            <string>Configu&amp;re...</string>
+            <string>&amp;Configure...</string>
            </property>
           </widget>
          </item>
@@ -321,15 +321,53 @@
         </layout>
        </item>
        <item>
-        <widget class="Line" name="line_5">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <layout class="QHBoxLayout" name="hwdec_layout">
+         <item>
+          <widget class="QLabel" name="hwdec_label">
+           <property name="text">
+            <string>&amp;Hardware decoding:</string>
+           </property>
+           <property name="buddy">
+            <cstring>hwdec_combo</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="hwdec_combo"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="framedrop_check">
+         <property name="text">
+          <string>A&amp;llow frame drop</string>
          </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="hardframedrop_check">
+         <property name="text">
+          <string>All&amp;ow hard frame drop (can lead to image distortion)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="eq2_check">
+         <property name="text">
+          <string>&amp;Use software video equalizer</string>
          </property>
         </widget>
        </item>
@@ -387,7 +425,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="deinterlace_layout">
          <property name="spacing">
           <number>6</number>
          </property>
@@ -397,7 +435,7 @@
          <item>
           <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>Dei&amp;nterlace by default (except for TV):</string>
+            <string>&amp;Deinterlace by default (except for TV):</string>
            </property>
            <property name="buddy">
             <cstring>deinterlace_combo</cstring>
@@ -430,9 +468,9 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="zoom_layout">
          <item>
-          <widget class="QLabel" name="label_8">
+          <widget class="QLabel" name="zoom_label">
            <property name="text">
             <string>Default &amp;zoom:</string>
            </property>
@@ -473,39 +511,6 @@
         </layout>
        </item>
        <item>
-        <widget class="Line" name="line_4">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="eq2_check">
-         <property name="text">
-          <string>Use s&amp;oftware video equalizer</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="Line" name="line_3">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="start_fullscreen_check">
          <property name="text">
           <string>Start videos in &amp;fullscreen</string>
@@ -535,14 +540,14 @@
           <item>
            <widget class="QCheckBox" name="turn_screensaver_off_check">
             <property name="text">
-             <string>Swit&amp;ch screensaver off</string>
+             <string>S&amp;witch screensaver off</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="avoid_screensaver_check">
             <property name="text">
-             <string>Avoid &amp;screensaver</string>
+             <string>A&amp;void screensaver</string>
             </property>
            </widget>
           </item>
@@ -550,7 +555,7 @@
         </widget>
        </item>
        <item>
-        <spacer>
+        <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -564,9 +569,9 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="video_and_audio_tab">
+     <widget class="QWidget" name="audio_tab">
       <attribute name="title">
-       <string>A&amp;udio</string>
+       <string>&amp;Audio</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -978,9 +983,9 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="preferred_tab">
       <attribute name="title">
-       <string>Preferre&amp;d audio and subtitles</string>
+       <string>&amp;Preferred audio and subtitles</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
@@ -1219,7 +1224,7 @@ For translators: don't translate this text, it will be replaced with another one
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>general_tab</tabstop>
+  <tabstop>general_tab_widget</tabstop>
   <tabstop>playerbin_edit</tabstop>
   <tabstop>remember_all_check</tabstop>
   <tabstop>remember_time_check</tabstop>
@@ -1237,7 +1242,6 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>autoq_spin</tabstop>
   <tabstop>deinterlace_combo</tabstop>
   <tabstop>zoom_spin</tabstop>
-  <tabstop>eq2_check</tabstop>
   <tabstop>start_fullscreen_check</tabstop>
   <tabstop>blackborders_on_fs_check</tabstop>
   <tabstop>screensaver_check</tabstop>

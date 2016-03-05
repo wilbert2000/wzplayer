@@ -70,15 +70,6 @@ protected:
 	void setPriority(int n);
 	int priority();
 
-	void setFrameDrop(bool b);
-	bool frameDrop();
-
-	void setHardFrameDrop(bool b);
-	bool hardFrameDrop();
-
-	void setHwdec(const QString & v);
-	QString hwdec();
-
 protected:
 	virtual void retranslateStrings();
 };

@@ -29,50 +29,25 @@
 #include "gui/deviceinfo.h"
 #endif
 
+
 namespace Gui { namespace Pref {
 
 TGeneral::TGeneral(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
+
 	setupUi(this);
 
+	// General tab
 	playerbin_edit->setDialogType(FileChooser::GetFileName);
 	screenshot_edit->setDialogType(FileChooser::GetDirectory);
 
-	// Read driver info from InfoReader:
+	// Get VO and AO driver lists from InfoReader:
 	InfoReader* i = InfoReader::obj();
 	i->getInfo();
 	vo_list = i->voList();
 	ao_list = i->aoList();
 
-#if USE_DSOUND_DEVICES
-	dsound_devices = TDeviceInfo::dsoundDevices();
-#endif
-
-#if USE_ALSA_DEVICES
-	alsa_devices = TDeviceInfo::alsaDevices();
-#endif
-#if USE_XV_ADAPTORS
-	xv_adaptors = TDeviceInfo::xvAdaptors();
-#endif
-
-	// Screensaver
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	screensaver_check->hide();
-	#ifndef SCREENSAVER_OFF
-	turn_screensaver_off_check->hide();
-	#endif
-	#ifndef AVOID_SCREENSAVER
-	avoid_screensaver_check->hide();
-	#endif
-#else
-	screensaver_group->hide();
-#endif
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	vdpau_button->hide();
-#endif
-
+	// Screenshots
 #ifdef MPV_SUPPORT
 	screenshot_format_combo->addItems(QStringList() << "png" << "ppm" << "pgm" << "pgmyuv" << "tga" << "jpg" << "jpeg");
 #else
@@ -80,6 +55,58 @@ TGeneral::TGeneral(QWidget* parent, Qt::WindowFlags f)
 	screenshot_template_edit->hide();
 	screenshot_format_label->hide();
 	screenshot_format_combo->hide();
+#endif
+
+
+	// Video tab
+#if USE_XV_ADAPTORS
+	xv_adaptors = TDeviceInfo::xvAdaptors();
+#endif
+
+	// Hardware decoding combo
+	hwdec_combo->addItem(tr("None"), "no");
+	hwdec_combo->addItem(tr("Auto"), "auto");
+
+#ifdef Q_OS_LINUX
+	hwdec_combo->addItem("vdpau", "vdpau");
+	hwdec_combo->addItem("vaapi", "vaapi");
+	hwdec_combo->addItem("vaapi-copy", "vaapi-copy");
+#endif
+
+#ifdef Q_OS_OSX
+	hwdec_combo->addItem("vda", "vda");
+#endif
+
+#ifdef Q_OS_WIN
+	hwdec_combo->addItem("dxva2-copy", "dxva2-copy");
+#endif
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+	vdpau_button->hide();
+#endif
+
+	// Screensaver
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+	screensaver_check->hide();
+#ifndef SCREENSAVER_OFF
+	turn_screensaver_off_check->hide();
+#endif
+#ifndef AVOID_SCREENSAVER
+	avoid_screensaver_check->hide();
+#endif
+#else
+	screensaver_group->hide();
+#endif
+
+
+	// Audio tab
+
+#if USE_DSOUND_DEVICES
+	dsound_devices = TDeviceInfo::dsoundDevices();
+#endif
+
+#if USE_ALSA_DEVICES
+	alsa_devices = TDeviceInfo::alsaDevices();
 #endif
 
 	// Channels combo
@@ -97,8 +124,7 @@ TGeneral::TGeneral(QWidget* parent, Qt::WindowFlags f)
 	retranslateStrings();
 }
 
-TGeneral::~TGeneral()
-{
+TGeneral::~TGeneral() {
 }
 
 QString TGeneral::sectionName() {
@@ -171,6 +197,7 @@ void TGeneral::setData(TPreferences* pref) {
 
 	setUseScreenshots(pref->use_screenshot);
 	setScreenshotDir(pref->screenshot_directory);
+
 #ifdef MPV_SUPPORT
 	screenshot_template_edit->setText(pref->screenshot_template);
 	setScreenshotFormat(pref->screenshot_format);
@@ -178,6 +205,7 @@ void TGeneral::setData(TPreferences* pref) {
 
 	QString vo = pref->vo;
 	if (vo.isEmpty()) {
+
 #ifdef Q_OS_WIN
 		if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
 			vo = "direct3d,";
@@ -193,6 +221,9 @@ void TGeneral::setData(TPreferences* pref) {
 #endif
 	}
 	setVO(vo);
+	setHwdec(pref->hwdec);
+	setFrameDrop(pref->frame_drop);
+	setHardFrameDrop(pref->hard_frame_drop);
 
 	QString ao = pref->ao;
 
@@ -282,6 +313,10 @@ void TGeneral::getData(TPreferences* pref) {
 #endif
 
 	TEST_AND_SET(pref->vo, VO());
+	TEST_AND_SET(pref->hwdec, hwdec());
+	TEST_AND_SET(pref->frame_drop, frameDrop());
+	TEST_AND_SET(pref->hard_frame_drop, hardFrameDrop());
+
 	TEST_AND_SET(pref->ao, AO());
 
 	bool dont_remember_ms = !rememberSettings();
@@ -538,6 +573,33 @@ QString TGeneral::AO() {
 		*/
 	}
 	return ao;
+}
+
+void TGeneral::setHwdec(const QString & v) {
+	int idx = hwdec_combo->findData(v);
+	if (idx < 0) idx = 0;
+	hwdec_combo->setCurrentIndex(idx);
+}
+
+QString TGeneral::hwdec() {
+	int idx = hwdec_combo->currentIndex();
+	return hwdec_combo->itemData(idx).toString();
+}
+
+void TGeneral::setFrameDrop(bool b) {
+	framedrop_check->setChecked(b);
+}
+
+bool TGeneral::frameDrop() {
+	return framedrop_check->isChecked();
+}
+
+void TGeneral::setHardFrameDrop(bool b) {
+	hardframedrop_check->setChecked(b);
+}
+
+bool TGeneral::hardFrameDrop() {
+	return hardframedrop_check->isChecked();
 }
 
 void TGeneral::setRememberSettings(bool b) {
@@ -946,13 +1008,34 @@ void TGeneral::createHelp() {
 #endif
 		);
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-	/*
-	setWhatsThis(vdpau_filters_check, tr("Disable video filters when using vdpau"),
-		tr("Usually video filters won't work when using vdpau as video output "
-           "driver, so it's wise to keep this option checked."));
-	*/
+	setWhatsThis(hwdec_combo, tr("Hardware decoding"),
+		tr("Sets the hardware video decoding API."
+		   "If hardware decoding is not possible, software decoding will be used instead.")
+			+ " "
+			+ tr("Available options:")
+			+ "<ul>"
+			"<li>" + tr("None: only software decoding will be used.") + "</li>"
+			"<li>" + tr("Auto: tries to automatically enable hardware decoding.") + "</li>"
+
+#ifdef Q_OS_LINUX
+			"<li>" + tr("vdpau: for the vdpau and opengl video outputs.") + "</li>"
+			"<li>" + tr("vaapi: for the opengl and vaapi video outputs. For Intel GPUs only.") + "</li>"
+			"<li>" + tr("vaapi-copy: it copies video back into system RAM. For Intel GPUs only.") + "</li>"
 #endif
+
+#ifdef Q_OS_WIN
+			"<li>" + tr("dxva2-copy: copies video back to system RAM.") + "</li>"
+#endif
+
+			"</ul>"
+			+ tr("This option only works with mpv."));
+
+	setWhatsThis(framedrop_check, tr("Allow frame drop"),
+		tr("Skip displaying some frames to maintain A/V sync on slow systems."));
+
+	setWhatsThis(hardframedrop_check, tr("Allow hard frame drop"),
+		tr("More intense frame dropping (breaks decoding). "
+		   "Leads to image distortion!"));
 
 	setWhatsThis(postprocessing_check, tr("Enable postprocessing by default"),
 		tr("Postprocessing will be used by default on new opened files."));

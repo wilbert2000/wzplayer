@@ -105,17 +105,20 @@ public:
 	QString subtitle_lang;		// Preferred subtitle language
 
 	// Video
+	QString hwdec; //!< hardware video decoding (mpv only)
+	bool frame_drop;
+	bool hard_frame_drop;
 	bool use_soft_video_eq;
 	int autoq; 	//!< Postprocessing quality
 	bool add_blackborders_on_fullscreen;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
+#ifdef SCREENSAVER_OFF
 	bool turn_screensaver_off;
-	#endif
-	#ifdef AVOID_SCREENSAVER
+#endif
+#ifdef AVOID_SCREENSAVER
 	bool avoid_screensaver;
-	#endif
+#endif
 #else
 	bool disable_screensaver;
 #endif
@@ -188,11 +191,6 @@ public:
        *********** */
 
 	int priority;
-	bool frame_drop;
-	bool hard_frame_drop;
-
-	// TODO: move from performance to video?
-	QString hwdec; //!< hardware video decoding (mpv only)
 
 	int cache_for_files;
 	int cache_for_streams;
@@ -467,16 +465,6 @@ public:
        Filters
        ******* */
 	TFilters filters;
-
-
-    /* *********
-       SMPlayer info
-       ********* */
-
-#ifdef CHECK_UPGRADED
-	QString smplayer_stable_version;
-	bool check_if_upgraded;
-#endif
 
 
     /* *********

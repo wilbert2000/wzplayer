@@ -21,30 +21,17 @@
 #include "images.h"
 #include "settings/preferences.h"
 
+
 using namespace Settings;
 
 namespace Gui { namespace Pref {
 
 TPerformance::TPerformance(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
+
 	setupUi(this);
 
-	hwdec_combo->addItem(tr("None"), "no");
-	hwdec_combo->addItem(tr("Auto"), "auto");
-#ifdef Q_OS_LINUX
-	hwdec_combo->addItem("vdpau", "vdpau");
-	hwdec_combo->addItem("vaapi", "vaapi");
-	hwdec_combo->addItem("vaapi-copy", "vaapi-copy");
-#endif
-#ifdef Q_OS_OSX
-	hwdec_combo->addItem("vda", "vda");
-#endif
-#ifdef Q_OS_WIN
-	hwdec_combo->addItem("dxva2-copy", "dxva2-copy");
-#endif
-
-	// Priority is only for windows, so we disable for other systems
+	// Priority only for windows
 #ifndef Q_OS_WIN
 	priority_group->hide();
 #endif
@@ -52,8 +39,7 @@ TPerformance::TPerformance(QWidget* parent, Qt::WindowFlags f)
 	retranslateStrings();
 }
 
-TPerformance::~TPerformance()
-{
+TPerformance::~TPerformance() {
 }
 
 QString TPerformance::sectionName() {
@@ -84,9 +70,6 @@ void TPerformance::setData(TPreferences* pref) {
 	setCacheForTV(pref->cache_for_tv);
 
 	setPriority(pref->priority);
-	setFrameDrop(pref->frame_drop);
-	setHardFrameDrop(pref->hard_frame_drop);
-	setHwdec(pref->hwdec);
 }
 
 void TPerformance::getData(TPreferences* pref) {
@@ -100,9 +83,6 @@ void TPerformance::getData(TPreferences* pref) {
 	TEST_AND_SET(pref->cache_for_tv, cacheForTV());
 
 	TEST_AND_SET(pref->priority, priority());
-	TEST_AND_SET(pref->frame_drop, frameDrop());
-	TEST_AND_SET(pref->hard_frame_drop, hardFrameDrop());
-	TEST_AND_SET(pref->hwdec, hwdec());
 }
 
 void TPerformance::setCacheForFiles(int n) {
@@ -161,33 +141,6 @@ int TPerformance::priority() {
 	return priority_combo->currentIndex();
 }
 
-void TPerformance::setFrameDrop(bool b) {
-	framedrop_check->setChecked(b);
-}
-
-bool TPerformance::frameDrop() {
-	return framedrop_check->isChecked();
-}
-
-void TPerformance::setHardFrameDrop(bool b) {
-	hardframedrop_check->setChecked(b);
-}
-
-bool TPerformance::hardFrameDrop() {
-	return hardframedrop_check->isChecked();
-}
-
-void TPerformance::setHwdec(const QString & v) {
-	int idx = hwdec_combo->findData(v);
-	if (idx < 0) idx = 0;
-	hwdec_combo->setCurrentIndex(idx);
-}
-
-QString TPerformance::hwdec() {
-	int idx = hwdec_combo->currentIndex();
-	return hwdec_combo->itemData(idx).toString();
-}
-
 void TPerformance::createHelp() {
 	clearHelp();
 
@@ -200,31 +153,6 @@ void TPerformance::createHelp() {
            "priorities available under Windows.<br>"
            "<b>Warning:</b> Using realtime priority can cause system lockup."));
 #endif
-
-	setWhatsThis(framedrop_check, tr("Allow frame drop"),
-		tr("Skip displaying some frames to maintain A/V sync on slow systems."));
-
-	setWhatsThis(hardframedrop_check, tr("Allow hard frame drop"),
-		tr("More intense frame dropping (breaks decoding). "
-           "Leads to image distortion!"));
-
-	setWhatsThis(hwdec_combo, tr("Hardware decoding"),
-		tr("Sets the hardware video decoding API. "
-		   "If hardware decoding is not possible, software decoding will be used instead.") + " " +
-		tr("Available options:") +
-			"<ul>"
-			"<li>" + tr("None: only software decoding will be used.") + "</li>"
-			"<li>" + tr("Auto: it tries to automatically enable hardware decoding using the first available method.") + "</li>"
-			#ifdef Q_OS_LINUX
-			"<li>" + tr("vdpau: for the vdpau and opengl video outputs.") + "</li>"
-			"<li>" + tr("vaapi: for the opengl and vaapi video outputs. For Intel GPUs only.") + "</li>"
-			"<li>" + tr("vaapi-copy: it copies video back into system RAM. For Intel GPUs only.") + "</li>"
-			#endif
-			#ifdef Q_OS_WIN
-			"<li>" + tr("dxva2-copy: it copies video back to system RAM. Experimental.") + "</li>"
-			#endif
-			"</ul>" +
-		tr("This option only works with mpv."));
 
 
 	addSectionTitle(tr("Cache"));

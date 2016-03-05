@@ -64,6 +64,7 @@ TPreferences::~TPreferences() {
 }
 
 void TPreferences::reset() {
+
     /* *******
        General
        ******* */
@@ -76,8 +77,8 @@ void TPreferences::reset() {
 	player_bin = "mplayer";
 #endif
 
-	vo = ""; 
-	ao = "";
+	dont_remember_media_settings = false;
+	dont_remember_time_pos = false;
 
 	use_screenshot = true;
 #ifdef MPV_SUPPORT
@@ -94,12 +95,11 @@ void TPreferences::reset() {
 	capture_directory = "";
 #endif
 
-	dont_remember_media_settings = false;
-	dont_remember_time_pos = false;
-
-	audio_lang = "";
-	subtitle_lang = "";
-
+	// Video
+	vo = "";
+	hwdec = "no";
+	frame_drop = false;
+	hard_frame_drop = false;
 	use_soft_video_eq = false;
 	autoq = 6;
 	add_blackborders_on_fullscreen = false;
@@ -124,6 +124,8 @@ void TPreferences::reset() {
 	vdpau.disable_video_filters = true;
 #endif
 
+	// Audio
+	ao = "";
 	use_soft_vol = false;
 	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
 	softvol_max = 100;
@@ -154,6 +156,9 @@ void TPreferences::reset() {
 
 	file_settings_method = "hash"; // Possible values: normal & hash
 
+	// Preferred
+	audio_lang = "";
+	subtitle_lang = "";
 
     /* ***************
        Drives (CD/DVD)
@@ -182,10 +187,6 @@ void TPreferences::reset() {
        *********** */
 
 	priority = AboveNormal; // Option only for windows
-	frame_drop = false;
-	hard_frame_drop = false;
-
-	hwdec = "no";
 
 	cache_for_files = 2048;
 	cache_for_streams = 2048;
@@ -444,16 +445,6 @@ void TPreferences::reset() {
        ******* */
 
 	filters.init();
-
-
-    /* *********
-       SMPlayer info
-       ********* */
-
-#ifdef CHECK_UPGRADED
-	smplayer_stable_version = "";
-	check_if_upgraded = true;
-#endif
 }
 
 void TPreferences::save() {
@@ -462,7 +453,6 @@ void TPreferences::save() {
     /* *******
        General
        ******* */
-
 	beginGroup("General");
 
 	setValue("config_version", config_version);
@@ -490,6 +480,9 @@ void TPreferences::save() {
 	setValue("audio_lang", audio_lang);
 	setValue("subtitle_lang", subtitle_lang);
 
+	setValue("hwdec", hwdec);
+	setValue("frame_drop", frame_drop);
+	setValue("hard_frame_drop", hard_frame_drop);
 	setValue("use_soft_video_eq", use_soft_video_eq);
 	setValue("autoq", autoq);
 	setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
@@ -548,7 +541,6 @@ void TPreferences::save() {
     /* ***************
        Drives (CD/DVD)
        *************** */
-
 	beginGroup("drives");
 
 	setValue("dvd_device", dvd_device);
@@ -569,13 +561,9 @@ void TPreferences::save() {
     /* ***********
        Performance
        *********** */
-
 	beginGroup("performance");
 
 	setValue("priority", priority);
-	setValue("frame_drop", frame_drop);
-	setValue("hard_frame_drop", hard_frame_drop);
-	setValue("hwdec", hwdec);
 
 	setValue("cache_for_files", cache_for_files);
 	setValue("cache_for_streams", cache_for_streams);
@@ -590,7 +578,6 @@ void TPreferences::save() {
     /* *********
        Subtitles
        ********* */
-
 	beginGroup("subtitles");
 
 	setValue("subcp", subcp);
@@ -626,7 +613,6 @@ void TPreferences::save() {
     /* ********
        Advanced
        ******** */
-
 	beginGroup("advanced");
 
 #if USE_ADAPTER
@@ -676,7 +662,6 @@ void TPreferences::save() {
     /* *********
        GUI stuff
        ********* */
-
 	beginGroup("gui");
 
 	setValue("start_in_fullscreen", start_in_fullscreen);
@@ -739,7 +724,6 @@ void TPreferences::save() {
     /* ********
        TV (dvb)
        ******** */
-
 	beginGroup("tv");
 	setValue("check_channels_conf_on_startup", check_channels_conf_on_startup);
 	setValue("initial_tv_deinterlace", initial_tv_deinterlace);
@@ -751,7 +735,6 @@ void TPreferences::save() {
     /* ********
        Network
        ******** */
-
 	beginGroup("proxy");
 	setValue("use_proxy", use_proxy);
 	setValue("type", proxy_type);
@@ -765,7 +748,6 @@ void TPreferences::save() {
     /* ***********
        Directories
        *********** */
-
 	beginGroup("directories");
 	if (save_dirs) {
 		setValue("latest_dir", latest_dir);
@@ -781,7 +763,6 @@ void TPreferences::save() {
     /* **************
        Initial values
        ************** */
-
 	beginGroup("defaults");
 
 	setValue("initial_sub_scale", initial_sub_scale);
@@ -826,7 +807,6 @@ void TPreferences::save() {
     /* ****************
        Floating control
        **************** */
-
 	beginGroup("floating_control");
 	setValue("activation_area", floating_activation_area);
 	setValue("hide_delay", floating_hide_delay);
@@ -836,7 +816,6 @@ void TPreferences::save() {
     /* *******
        History
        ******* */
-
 	beginGroup("history");
 	setValue("recents", history_recents);
 	setValue("recents/max_items", history_recents.maxItems());
@@ -848,26 +827,12 @@ void TPreferences::save() {
     /* *******
        Filters
        ******* */
-
 	filters.save(this);
-
-
-    /* *********
-       SMPlayer info
-       ********* */
-
-	beginGroup("smplayer");
-#ifdef CHECK_UPGRADED
-	setValue("stable_version", smplayer_stable_version);
-	setValue("check_if_upgraded", check_if_upgraded);
-#endif
-	endGroup();
 
 
     /* *********
        Update
        ********* */
-
 #ifdef UPDATE_CHECKER
 	update_checker_data.save(this);
 #endif
@@ -1017,6 +982,10 @@ void TPreferences::load() {
 	audio_lang = value("audio_lang", audio_lang).toString();
 	subtitle_lang = value("subtitle_lang", subtitle_lang).toString();
 
+	// Video
+	hwdec = value("hwdec", hwdec).toString();
+	frame_drop = value("frame_drop", frame_drop).toBool();
+	hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
 	use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
 	autoq = value("autoq", autoq).toInt();
 	add_blackborders_on_fullscreen = value("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen).toBool();
@@ -1107,10 +1076,6 @@ void TPreferences::load() {
 	beginGroup("performance");
 
 	priority = value("priority", priority).toInt();
-	frame_drop = value("frame_drop", frame_drop).toBool();
-	hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
-
-	hwdec = value("hwdec", hwdec).toString();
 
 	cache_for_files = value("cache_for_files", cache_for_files).toInt();
 	cache_for_streams = value("cache_for_streams", cache_for_streams).toInt();
@@ -1402,18 +1367,6 @@ void TPreferences::load() {
 
 
     /* *********
-       SMPlayer info
-       ********* */
-
-	beginGroup("smplayer");
-#ifdef CHECK_UPGRADED
-	smplayer_stable_version = value("stable_version", smplayer_stable_version).toString();
-	check_if_upgraded = value("check_if_upgraded", check_if_upgraded).toBool();
-#endif
-	endGroup();
-
-
-    /* *********
        Update
        ********* */
 
@@ -1467,9 +1420,14 @@ void TPreferences::load() {
 			remove("streaming");
 		}
 
+		remove("smplayer");
 		remove("General/use_direct_rendering");
 		remove("General/use_double_buffer");
 		remove("General/use_slices");
+
+		remove("Performance/hwdec");
+		remove("Performance/frame_drop");
+		remove("Performance/hard_frame_drop");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();
