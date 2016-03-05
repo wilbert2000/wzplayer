@@ -1490,8 +1490,6 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("correct-pts", pref->use_correct_pts == TPreferences::Enabled);
 	}
 
-	bool force_noslices = false;
-
 	if (!videoFiltersEnabled(true))
 		goto end_video_filters;
 
@@ -1602,7 +1600,6 @@ void TCore::startPlayer(QString file, double seek) {
 			proc->addVF("subs_on_screenshots", "ass");
 		} else {
 			proc->addVF("subs_on_screenshots");
-			force_noslices = true;
 		}
 	}
 
@@ -1641,13 +1638,6 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	}
 #endif
-
-	// slices
-	if (pref->use_slices && !force_noslices) {
-		proc->setOption("slices", true);
-	} else {
-		proc->setOption("slices", false);
-	}
 
 
 	// Volume

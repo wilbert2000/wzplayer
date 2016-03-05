@@ -101,7 +101,6 @@ void TPreferences::reset() {
 	subtitle_lang = "";
 
 	use_soft_video_eq = false;
-	use_slices = false;
 	autoq = 6;
 	add_blackborders_on_fullscreen = false;
 
@@ -492,7 +491,6 @@ void TPreferences::save() {
 	setValue("subtitle_lang", subtitle_lang);
 
 	setValue("use_soft_video_eq", use_soft_video_eq);
-	setValue("use_slices", use_slices);
 	setValue("autoq", autoq);
 	setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
 
@@ -1020,7 +1018,6 @@ void TPreferences::load() {
 	subtitle_lang = value("subtitle_lang", subtitle_lang).toString();
 
 	use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
-	use_slices = value("use_slices", use_slices).toBool();
 	autoq = value("autoq", autoq).toInt();
 	add_blackborders_on_fullscreen = value("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen).toBool();
 
@@ -1430,7 +1427,6 @@ void TPreferences::load() {
 	if (config_version < CURRENT_CONFIG_VERSION) {
 		qDebug("TPreferences::load: config version is old, updating it");
 		if (config_version < 4) {
-			use_slices = false;
 			osd_level = None;
 			frame_drop = false;
 			cache_for_files = 2048;
@@ -1473,6 +1469,7 @@ void TPreferences::load() {
 
 		remove("General/use_direct_rendering");
 		remove("General/use_double_buffer");
+		remove("General/use_slices");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

@@ -225,7 +225,6 @@ void TGeneral::setData(TPreferences* pref) {
 	setInitialPostprocessing(pref->initial_postprocessing);
 	setInitialDeinterlace(pref->initial_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
-	setUseSlices(pref->use_slices);
 	setStartInFullscreen(pref->start_in_fullscreen);
 	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
 	setAutoq(pref->autoq);
@@ -316,7 +315,6 @@ void TGeneral::getData(TPreferences* pref) {
 	pref->initial_postprocessing = initialPostprocessing();
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_zoom_factor = initialZoom();
-	TEST_AND_SET(pref->use_slices, useSlices());
 	pref->start_in_fullscreen = startInFullscreen();
 	if (pref->add_blackborders_on_fullscreen != blackbordersOnFullscreen()) {
 		pref->add_blackborders_on_fullscreen = blackbordersOnFullscreen();
@@ -732,14 +730,6 @@ double TGeneral::initialZoom() {
 	return zoom_spin->value();
 }
 
-void TGeneral::setUseSlices(bool b) {
-	use_slices_check->setChecked(b);
-}
-
-bool TGeneral::useSlices() {
-	return use_slices_check->isChecked();
-}
-
 void TGeneral::setAmplification(int n) {
 	softvol_amp_spin->setValue(n);
 }
@@ -986,12 +976,6 @@ void TGeneral::createHelp() {
            "your graphic card or the selected video output driver.<br>"
            "<b>Note:</b> this option can be incompatible with some video "
            "output drivers."));
-
-	setWhatsThis(use_slices_check, tr("Draw video using slices"),
-		tr("Enable/disable drawing video by 16-pixel height slices/bands. "
-           "If disabled, the whole frame is drawn in a single run. "
-           "May be faster or slower, depending on video card and available "
-           "cache. It has effect only with libmpeg2 and libavcodec codecs."));
 
 	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
 		tr("If this option is checked, all videos will start to play in "

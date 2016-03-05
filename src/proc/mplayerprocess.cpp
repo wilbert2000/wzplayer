@@ -1187,7 +1187,6 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 		mute_option_set = true;
 	} else if (name == "keepaspect"
 			   || name == "fs"
-			   || name == "slices"
 			   || name == "flip-hebrew"
 			   || name == "stop-xscreensaver"
 			   || name == "correct-pts"

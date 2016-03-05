@@ -106,7 +106,6 @@ public:
 
 	// Video
 	bool use_soft_video_eq;
-	bool use_slices;
 	int autoq; 	//!< Postprocessing quality
 	bool add_blackborders_on_fullscreen;
 
