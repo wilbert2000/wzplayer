@@ -1213,9 +1213,6 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("mc", QString::number(pref->mc_value));
 	}
 
-	// MPlayer only
-	proc->setOption("double", pref->use_double_buffer);
-
 #ifdef Q_WS_X11
 	proc->setOption("stop-xscreensaver", pref->disable_screensaver);
 #endif

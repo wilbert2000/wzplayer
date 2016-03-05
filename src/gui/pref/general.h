@@ -173,9 +173,6 @@ protected:
 	void setInitialZoom(double v);
 	double initialZoom();
 
-	void setDoubleBuffer(bool b);
-	bool doubleBuffer();
-
 	void setUseSlices(bool b);
 	bool useSlices();
 

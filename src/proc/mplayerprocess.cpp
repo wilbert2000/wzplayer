@@ -1185,9 +1185,6 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 	} else if (name == "mute") {
 		// Emulate mute, executed by playingStarted()
 		mute_option_set = true;
-	} else if (name == "double") {
-		if (!value.toBool())
-			arg << "-nodouble";
 	} else if (name == "keepaspect"
 			   || name == "fs"
 			   || name == "slices"

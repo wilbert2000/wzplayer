@@ -105,7 +105,6 @@ public:
 	QString subtitle_lang;		// Preferred subtitle language
 
 	// Video
-	bool use_double_buffer;
 	bool use_soft_video_eq;
 	bool use_slices;
 	int autoq; 	//!< Postprocessing quality

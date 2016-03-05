@@ -225,7 +225,6 @@ void TGeneral::setData(TPreferences* pref) {
 	setInitialPostprocessing(pref->initial_postprocessing);
 	setInitialDeinterlace(pref->initial_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
-	setDoubleBuffer(pref->use_double_buffer);
 	setUseSlices(pref->use_slices);
 	setStartInFullscreen(pref->start_in_fullscreen);
 	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
@@ -317,7 +316,6 @@ void TGeneral::getData(TPreferences* pref) {
 	pref->initial_postprocessing = initialPostprocessing();
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_zoom_factor = initialZoom();
-	TEST_AND_SET(pref->use_double_buffer, doubleBuffer());
 	TEST_AND_SET(pref->use_slices, useSlices());
 	pref->start_in_fullscreen = startInFullscreen();
 	if (pref->add_blackborders_on_fullscreen != blackbordersOnFullscreen()) {
@@ -734,14 +732,6 @@ double TGeneral::initialZoom() {
 	return zoom_spin->value();
 }
 
-void TGeneral::setDoubleBuffer(bool b) {
-	double_buffer_check->setChecked(b);
-}
-
-bool TGeneral::doubleBuffer() {
-	return double_buffer_check->isChecked();
-}
-
 void TGeneral::setUseSlices(bool b) {
 	use_slices_check->setChecked(b);
 }
@@ -996,11 +986,6 @@ void TGeneral::createHelp() {
            "your graphic card or the selected video output driver.<br>"
            "<b>Note:</b> this option can be incompatible with some video "
            "output drivers."));
-
-	setWhatsThis(double_buffer_check, tr("Double buffering"),
-		tr("Double buffering fixes flicker by storing two frames in memory, "
-           "and displaying one while decoding another. If disabled it can "
-           "affect OSD negatively, but often removes OSD flickering."));
 
 	setWhatsThis(use_slices_check, tr("Draw video using slices"),
 		tr("Enable/disable drawing video by 16-pixel height slices/bands. "

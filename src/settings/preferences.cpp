@@ -100,8 +100,6 @@ void TPreferences::reset() {
 	audio_lang = "";
 	subtitle_lang = "";
 
-	use_double_buffer = true;
-
 	use_soft_video_eq = false;
 	use_slices = false;
 	autoq = 6;
@@ -493,7 +491,6 @@ void TPreferences::save() {
 	setValue("audio_lang", audio_lang);
 	setValue("subtitle_lang", subtitle_lang);
 
-	setValue("use_double_buffer", use_double_buffer);
 	setValue("use_soft_video_eq", use_soft_video_eq);
 	setValue("use_slices", use_slices);
 	setValue("autoq", autoq);
@@ -1022,8 +1019,6 @@ void TPreferences::load() {
 	audio_lang = value("audio_lang", audio_lang).toString();
 	subtitle_lang = value("subtitle_lang", subtitle_lang).toString();
 
-	use_double_buffer = value("use_double_buffer", use_double_buffer).toBool();
-	
 	use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
 	use_slices = value("use_slices", use_slices).toBool();
 	autoq = value("autoq", autoq).toInt();
@@ -1477,6 +1472,7 @@ void TPreferences::load() {
 		}
 
 		remove("General/use_direct_rendering");
+		remove("General/use_double_buffer");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();
