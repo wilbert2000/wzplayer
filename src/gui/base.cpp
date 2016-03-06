@@ -407,10 +407,10 @@ void TBase::createActions() {
 	connect(timeslider_action, SIGNAL(draggingPos(int)), this, SLOT(displayGotoTime(int)));
 	connect(timeslider_action, SIGNAL(delayedDraggingPos(int)), this, SLOT(goToPosOnDragging(int)));
 
-	connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::WheelFunction)),
-			core, SLOT(wheelUp(Settings::TPreferences::WheelFunction)));
-	connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::WheelFunction)),
-			core, SLOT(wheelDown(Settings::TPreferences::WheelFunction)));
+	connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
+			core, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
+	connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
+			core, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
 
 	// Volume slider action
 	volumeslider_action = new TVolumeSliderAction(this, core->getVolume());
@@ -2372,7 +2372,7 @@ void TBase::changeStayOnTop(int stay_on_top) {
 		case Settings::TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == TCore::Playing)); break;
 	}
 
-	pref->stay_on_top = (Settings::TPreferences::OnTop) stay_on_top;
+	pref->stay_on_top = (Settings::TPreferences::TOnTop) stay_on_top;
 	emit stayOnTopChanged(stay_on_top);
 }
 

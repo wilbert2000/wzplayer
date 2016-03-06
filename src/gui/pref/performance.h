@@ -49,6 +49,9 @@ public:
 protected:
 	virtual void createHelp();
 
+	void setPriority(int n);
+	int priority();
+
 	void setCacheForFiles(int n);
 	int cacheForFiles();
 
@@ -66,9 +69,6 @@ protected:
 
 	void setCacheForTV(int n);
 	int cacheForTV();
-
-	void setPriority(int n);
-	int priority();
 
 protected:
 	virtual void retranslateStrings();

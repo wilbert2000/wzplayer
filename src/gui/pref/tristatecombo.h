@@ -39,8 +39,8 @@ public:
 	TTristateCombo(QWidget* parent = 0);
 	virtual ~TTristateCombo();
 
-	void setState(TPreferences::OptionState v);
-	TPreferences::OptionState state();
+	void setState(TPreferences::TOptionState v);
+	TPreferences::TOptionState state();
 
 protected:
 	virtual void retranslateStrings();

@@ -47,7 +47,7 @@ public:
 	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
 
 	static QStringList filesForPlaylist(const QString& initial_file,
-										Settings::TPreferences::AutoAddToPlaylistFilter filter);
+										Settings::TPreferences::TAutoAddToPlaylistFilter filter);
 
 #ifdef Q_OS_WIN
 	static QStringList resolveSymlinks(const QStringList& files);

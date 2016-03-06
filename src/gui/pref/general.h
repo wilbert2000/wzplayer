@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_GENERAL_H_
-#define _PREF_GENERAL_H_
+#ifndef PREF_GENERAL_H
+#define PREF_GENERAL_H
 
 #include <QObject>
 #include "ui_general.h"
@@ -37,7 +37,9 @@
 #define MPLAYER_KAI_VERSION 30994
 #endif
 
-namespace Gui { namespace Pref {
+
+namespace Gui {
+namespace Pref {
 
 class TGeneral : public TWidget, public Ui::TGeneral {
 	Q_OBJECT
@@ -89,11 +91,30 @@ protected:
 	QString screenshotFormat();
 #endif
 
+	void setPauseWhenHidden(bool b);
+	bool pauseWhenHidden();
+
+	void setCloseOnFinish(bool b);
+	bool closeOnFinish();
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef SCREENSAVER_OFF
+	void setTurnScreensaverOff(bool b);
+	bool turnScreensaverOff();
+#endif
+#ifdef AVOID_SCREENSAVER
+	void setAvoidScreensaver(bool b);
+	bool avoidScreensaver();
+#endif
+#else
+	void setDisableScreensaver(bool b);
+	bool disableScreensaver();
+#endif
+
+
+	// Video tab
 	void setVO(QString vo_driver);
 	QString VO();
-
-	void setAO(QString ao_driver);
-	QString AO();
 
 	void setHwdec(const QString & v);
 	QString hwdec();
@@ -104,9 +125,55 @@ protected:
 	void setHardFrameDrop(bool b);
 	bool hardFrameDrop();
 
+	void setSoftwareVideoEqualizer(bool b);
+	bool softwareVideoEqualizer();
+
+	void setPostprocessingQuality(int n);
+	int postprocessingQuality();
+
+	void setInitialPostprocessing(bool b);
+	bool initialPostprocessing();
+
+	void setInitialDeinterlace(int ID);
+	int initialDeinterlace();
+
+	void setInitialZoom(double v);
+	double initialZoom();
+
+	void setStartInFullscreen(bool b);
+	bool startInFullscreen();
+
+	void setBlackbordersOnFullscreen(bool b);
+	bool blackbordersOnFullscreen();
 
 
+	// Audio tab
+	void setAO(QString ao_driver);
+	QString AO();
 
+	void setUseAudioEqualizer(bool b);
+	bool useAudioEqualizer();
+
+	void setAc3DTSPassthrough(bool b);
+	bool Ac3DTSPassthrough();
+
+	void setGlobalVolume(bool b);
+	bool globalVolume();
+
+	void setSoftVol(bool b);
+	bool softVol();
+
+	void setAmplification(int n);
+	int amplification();
+
+	void setAudioChannels(int ID);
+	int audioChannels();
+
+	void setInitialVolNorm(bool b);
+	bool initialVolNorm();
+
+
+	// Preferred tab
 	void setAudioLang(QString lang);
 	QString audioLang();
 
@@ -118,42 +185,6 @@ protected:
 
 	void setSubtitleTrack(int track);
 	int subtitleTrack();
-
-	void setCloseOnFinish(bool b);
-	bool closeOnFinish();
-
-	void setPauseWhenHidden(bool b);
-	bool pauseWhenHidden();
-
-	// Tab video and audio
-	void setEq2(bool b);
-	bool eq2();
-
-	void setStartInFullscreen(bool b);
-	bool startInFullscreen();
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
-	void setTurnScreensaverOff(bool b);
-	bool turnScreensaverOff();
-	#endif
-	#ifdef AVOID_SCREENSAVER
-	void setAvoidScreensaver(bool b);
-	bool avoidScreensaver();
-	#endif
-#else
-	void setDisableScreensaver(bool b);
-	bool disableScreensaver();
-#endif
-
-	void setBlackbordersOnFullscreen(bool b);
-	bool blackbordersOnFullscreen();
-
-	void setAutoq(int n);
-	int autoq();
-
-	void setGlobalVolume(bool b);
-	bool globalVolume();
 
 	void setAutoSyncFactor(int factor);
 	int autoSyncFactor();
@@ -167,38 +198,8 @@ protected:
 	void setMcActivated(bool b);
 	bool mcActivated();
 
-	void setSoftVol(bool b);
-	bool softVol();
-
-	void setUseAudioEqualizer(bool b);
-	bool useAudioEqualizer();
-
-	void setAc3DTSPassthrough(bool b);
-	bool Ac3DTSPassthrough();
-
-	void setInitialVolNorm(bool b);
-	bool initialVolNorm();
-
-	void setInitialPostprocessing(bool b);
-	bool initialPostprocessing();
-
-	void setInitialDeinterlace(int ID);
-	int initialDeinterlace();
-
-	void setInitialZoom(double v);
-	double initialZoom();
-
-	void setUseSlices(bool b);
-	bool useSlices();
-
-	void setAmplification(int n);
-	int amplification();
-
-	void setAudioChannels(int ID);
-	int audioChannels();
-
-	void setScaleTempoFilter(TPreferences::OptionState value);
-	TPreferences::OptionState scaleTempoFilter();
+	void setScaleTempoFilter(TPreferences::TOptionState value);
+	TPreferences::TOptionState scaleTempoFilter();
 
 protected slots:
 	void vo_combo_changed(int);
@@ -235,6 +236,7 @@ private:
 
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_GENERAL_H_
+#endif // PREF_GENERAL_H

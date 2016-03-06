@@ -41,40 +41,52 @@ typedef QList<QVariant> TAudioEqualizerList;
 class TPreferences : public TSMPlayerSettings {
 
 public:
-	enum TPlayerID { MPLAYER = 0, MPV = 1 };
-	enum OSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
-	enum OnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
-	enum Resize { Never = 0, Always = 1, Afterload = 2 };
-	enum Priority { Realtime = 0, High = 1, AboveNormal = 2, Normal = 3,
-                    BelowNormal = 4, Idle = 5 };
-	enum WheelFunction { DoNothing = 1, Seeking = 2, Volume = 4, Zoom = 8,
-                         ChangeSpeed = 16 };
-	enum OptionState { Detect = -1, Disabled = 0, Enabled = 1 };
-	enum AutoAddToPlaylistFilter { NoFiles = 0, VideoFiles = 1, AudioFiles = 2, MultimediaFiles = 3, ConsecutiveFiles = 4 };
-	enum ToolbarActivation { Anywhere = 1, NearToolbar = 2 };
+	enum TPlayerID {
+		MPLAYER = 0, MPV = 1
+	};
+	enum TOSDLevel {
+		None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3
+	};
+	enum TOnTop {
+		NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2
+	};
+	enum TResize {
+		Never = 0, Always = 1, Afterload = 2
+	};
+	enum TPriority {
+		Realtime = 0, High = 1, AboveNormal = 2, Normal = 3, BelowNormal = 4,
+		Idle = 5
+	};
+	enum TWheelFunction {
+		DoNothing = 1, Seeking = 2, Volume = 4, Zoom = 8, ChangeSpeed = 16
+	};
+	enum TOptionState {
+		Detect = -1, Disabled = 0, Enabled = 1
+	};
+	enum TAutoAddToPlaylistFilter {
+		NoFiles = 0, VideoFiles = 1, AudioFiles = 2, MultimediaFiles = 3,
+		ConsecutiveFiles = 4
+	};
+	enum TToolbarActivation {
+		Anywhere = 1, NearToolbar = 2
+	};
 
-	Q_DECLARE_FLAGS(WheelFunctions, WheelFunction)
+	Q_DECLARE_FLAGS(TWheelFunctions, TWheelFunction)
 
 	TPreferences();
 	virtual ~TPreferences();
 
-	void setPlayerBin();
-	virtual void reset();
+	void reset();
 
-	void save();
 	void load();
-
-	double monitor_aspect_double();
-	void setupScreenshotFolder();
+	void save();
 
 
-    /* *******
-       General
-       ******* */
-
+	// General tab
+	// Version config file
 	int config_version;
 
-	// Player
+	// Media player
 	QString player_bin;
 	TPlayerID player_id;
 	QString player_abs_path;
@@ -82,14 +94,14 @@ public:
 	bool isMPV() const { return player_id == MPV; }
 	QString playerName() const;
 	QString playerAbsolutePath() const;
+	void setPlayerBin();
 
 	// Media settings per file
 	bool remember_media_settings;
 	bool remember_time_pos;
 	QString file_settings_method; //!< Method to be used for saving file settings
-	QString vo; // video output
-	QString ao; // audio output
 
+	// Screenshot
 	bool use_screenshot;
 #ifdef MPV_SUPPORT
 	QString screenshot_template;
@@ -99,19 +111,9 @@ public:
 #ifdef CAPTURE_STREAM
 	QString capture_directory;
 #endif
+	void setupScreenshotFolder();
 
-
-	QString audio_lang; 		// Preferred audio language
-	QString subtitle_lang;		// Preferred subtitle language
-
-	// Video
-	QString hwdec; //!< hardware video decoding (mpv only)
-	bool frame_drop;
-	bool hard_frame_drop;
-	bool use_soft_video_eq;
-	int autoq; 	//!< Postprocessing quality
-	bool add_blackborders_on_fullscreen;
-
+	// Screensaver
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef SCREENSAVER_OFF
 	bool turn_screensaver_off;
@@ -122,6 +124,17 @@ public:
 #else
 	bool disable_screensaver;
 #endif
+
+
+	// Video tab
+	QString vo; // video output
+	QString hwdec; //!< hardware video decoding (mpv only)
+	bool frame_drop;
+	bool hard_frame_drop;
+	bool use_soft_video_eq;
+	int postprocessing_quality; 	//!< Postprocessing quality
+
+	bool add_blackborders_on_fullscreen;
 
 #ifndef Q_OS_WIN
 	struct VDPAU_settings {
@@ -134,10 +147,12 @@ public:
 	} vdpau;
 #endif
 
-	// Audio
+
+	// Audio tab
+	QString ao;
 	bool use_soft_vol;
 	int softvol_max;
-	OptionState use_scaletempo;
+	TOptionState use_scaletempo;
 	bool use_hwac3; // -afm hwac3
 	bool use_audio_equalizer;
 
@@ -161,17 +176,18 @@ public:
 	bool autoload_m4a;
 	int min_step; //<! Step to increase of decrease the controls for color, contrast, brightness and so on
 
-	// Misc
-	OSDLevel osd_level;
+
+	// Preferred tab
+	QString audio_lang; 		// Preferred audio language
+	QString subtitle_lang;		// Preferred subtitle language
+
+	// OSD
+	TOSDLevel osd_level;
 	double osd_scale; // mpv
 	double subfont_osd_scale; // mplayer
 
 
-
-    /* ***************
-       Drives (CD/DVD)
-       *************** */
-
+	// Drives
 	QString dvd_device;
 	QString cdrom_device;
 	QString bluray_device;
@@ -185,10 +201,7 @@ public:
 	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:
 
 
-    /* ***********
-       Performance
-       *********** */
-
+	// Performance tab
 	int priority;
 
 	int cache_for_files;
@@ -214,7 +227,7 @@ public:
 
 	bool subtitles_on_screenshots;
 
-	OptionState change_sub_scale_should_restart;
+	TOptionState change_sub_scale_should_restart;
 
 	//! If true, loading an external subtitle will be done
 	//! by using the sub_load slave command. Otherwise
@@ -233,17 +246,15 @@ public:
 #endif
 
 
-    /* ********
-       Advanced
-       ******** */
+	// Advanced tab
+	QString monitor_aspect;
+	double monitor_aspect_double();
 
 #if USE_ADAPTER
 	int adapter; //Screen for overlay. If -1 it won't be used.
 #endif
 
 	unsigned int color_key;
-
-	QString monitor_aspect;
 
 	bool use_idx; //!< Use -idx
 	bool use_lavf_demuxer;
@@ -253,7 +264,8 @@ public:
 	QString mplayer_additional_video_filters;
 	QString mplayer_additional_audio_filters;
 
-	// Logging
+
+	// Logging tab
 	bool log_debug_enabled;
 	bool log_verbose;
 	bool log_file;
@@ -275,7 +287,7 @@ public:
 	//! mplayer. It seems that some graphic cards don't support those options.
 	bool change_video_equalizer_on_startup;
 
-	OptionState use_correct_pts; //!< Pass -correct-pts to mplayer
+	TOptionState use_correct_pts; //!< Pass -correct-pts to mplayer
 
 	QString actions_to_run; //!< List of actions to run every time a video loads.
 
@@ -296,7 +308,7 @@ public:
 	// TODO: fullscreen is not a preference...
 	bool fullscreen;
 	bool start_in_fullscreen;
-	OnTop stay_on_top;
+	TOnTop stay_on_top;
 	double size_factor;
 
 	int resize_method; 	//!< Mainwindow resize method
@@ -312,7 +324,7 @@ public:
 	QString mouse_xbutton2_click_function;
 	int wheel_function;
 
-	WheelFunctions wheel_function_cycle;
+	TWheelFunctions wheel_function_cycle;
 	bool wheel_function_seeking_reverse;
 
 	// Configurable seeking
@@ -364,7 +376,7 @@ public:
 	bool report_mplayer_crashes;
 
 	bool auto_add_to_playlist; //!< Add files to open to playlist
-	AutoAddToPlaylistFilter media_to_add_to_playlist;
+	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
 
     /* ********
@@ -445,7 +457,7 @@ public:
        Floating control
        **************** */
 
-	ToolbarActivation floating_activation_area;
+	TToolbarActivation floating_activation_area;
 	int floating_hide_delay;
 
 
@@ -477,7 +489,7 @@ private:
 	void setAbsolutePath();
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::WheelFunctions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::TWheelFunctions)
 
 extern TPreferences* pref;
 

@@ -40,12 +40,12 @@ void TTristateCombo::retranslateStrings() {
 	setCurrentIndex(i);
 }
 
-void TTristateCombo::setState(TPreferences::OptionState v) {
+void TTristateCombo::setState(TPreferences::TOptionState v) {
 	setCurrentIndex(findData(v));
 }
 
-TPreferences::OptionState TTristateCombo::state() {
-	return (TPreferences::OptionState) itemData(currentIndex()).toInt();
+TPreferences::TOptionState TTristateCombo::state() {
+	return (TPreferences::TOptionState) itemData(currentIndex()).toInt();
 }
 
 // Language change stuff

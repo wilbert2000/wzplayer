@@ -136,13 +136,26 @@ QPixmap TGeneral::sectionIcon() {
 }
 
 void TGeneral::retranslateStrings() {
+
 	retranslateUi(this);
 
-	channels_combo->setItemText(0, tr("2 (Stereo)"));
-	channels_combo->setItemText(1, tr("4 (4.0 Surround)"));
-	channels_combo->setItemText(2, tr("6 (5.1 Surround)"));
-	channels_combo->setItemText(3, tr("7 (6.1 Surround)"));
-	channels_combo->setItemText(4, tr("8 (7.1 Surround)"));
+	playerbin_edit->setCaption(tr("Select the player executable"));
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+	playerbin_edit->setFilter(tr("Executables") +" (*.exe)");
+#else
+	playerbin_edit->setFilter(tr("All files") +" (*)");
+#endif
+
+	int filesettings_method_item = filesettings_method_combo->currentIndex();
+	filesettings_method_combo->clear();
+	filesettings_method_combo->addItem(tr("one ini file"), "normal");
+	filesettings_method_combo->addItem(tr("multiple ini files"), "hash");
+	filesettings_method_combo->setCurrentIndex(filesettings_method_item);
+
+	screenshot_edit->setCaption(tr("Select a directory"));
+
+	updateDriverCombos();
 
 	int deinterlace_item = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
@@ -154,39 +167,21 @@ void TGeneral::retranslateStrings() {
 	deinterlace_combo->addItem(tr("Kerndeint"), TMediaSettings::Kerndeint);
 	deinterlace_combo->setCurrentIndex(deinterlace_item);
 
-	int filesettings_method_item = filesettings_method_combo->currentIndex();
-	filesettings_method_combo->clear();
-	filesettings_method_combo->addItem(tr("one ini file"), "normal");
-	filesettings_method_combo->addItem(tr("multiple ini files"), "hash");
-	filesettings_method_combo->setCurrentIndex(filesettings_method_item);
-
-	updateDriverCombos();
-
-    // Icons
-	/*
-    resize_window_icon->setPixmap(Images::icon("resize_window"));
-    volume_icon->setPixmap(Images::icon("speaker"));
-	*/
-
-	playerbin_edit->setCaption(tr("Select the mplayer executable"));
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	playerbin_edit->setFilter(tr("Executables") +" (*.exe)");
-#else
-	playerbin_edit->setFilter(tr("All files") +" (*)");
-#endif
-	screenshot_edit->setCaption(tr("Select a directory"));
+	channels_combo->setItemText(0, tr("2 (Stereo)"));
+	channels_combo->setItemText(1, tr("4 (4.0 Surround)"));
+	channels_combo->setItemText(2, tr("6 (5.1 Surround)"));
+	channels_combo->setItemText(3, tr("7 (6.1 Surround)"));
+	channels_combo->setItemText(4, tr("8 (7.1 Surround)"));
 
 	preferred_desc->setText(
 		tr("Here you can type your preferred language for the audio "
-           "and subtitle streams. When a media with multiple audio or "
-           "subtitle streams is found, SMPlayer will try to use your "
-           "preferred language. This only will work with media that offer "
-           "info about the language of audio and subtitle streams, like DVDs "
-           "or mkv files.<br>These fields accept regular expressions. "
+		   "and subtitle streams. When multiple audio or subtitle streams "
+		   "are found, SMPlayer will try to use your preferred language. "
+		   "This only will work with media that offer info about the language "
+		   "of audio and subtitle streams, like DVDs or mkv files.<br>"
+		   "These fields accept regular expressions. "
            "Example: <b>es|esp|spa</b> will select the track if it matches with "
             "<i>es</i>, <i>esp</i> or <i>spa</i>."));
-
-	executable_label->setText(tr("%1 &executable:").arg(pref->playerName()));
 
 	createHelp();
 }
@@ -210,6 +205,24 @@ void TGeneral::setData(TPreferences* pref) {
 	setScreenshotFormat(pref->screenshot_format);
 #endif
 
+	setPauseWhenHidden(pref->pause_when_hidden);
+	setCloseOnFinish(pref->close_on_finish);
+
+	// Screensaver
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef SCREENSAVER_OFF
+	setTurnScreensaverOff(pref->turn_screensaver_off);
+#endif
+#ifdef AVOID_SCREENSAVER
+	setAvoidScreensaver(pref->avoid_screensaver);
+#endif
+#else
+	setDisableScreensaver(pref->disable_screensaver);
+#endif
+
+
+	// Video tab
+	// Video out driver
 	QString vo = pref->vo;
 	if (vo.isEmpty()) {
 
@@ -226,12 +239,27 @@ void TGeneral::setData(TPreferences* pref) {
 		vo = "xv,";
 #endif
 #endif
-	}
+
+	} // if (vo.isEmpty())
 	setVO(vo);
+
+#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+	vdpau = pref->vdpau;
+#endif
+
 	setHwdec(pref->hwdec);
 	setFrameDrop(pref->frame_drop);
 	setHardFrameDrop(pref->hard_frame_drop);
+	setSoftwareVideoEqualizer(pref->use_soft_video_eq);
+	setInitialPostprocessing(pref->initial_postprocessing);
+	setPostprocessingQuality(pref->postprocessing_quality);
+	setInitialDeinterlace(pref->initial_deinterlace);
+	setInitialZoom(pref->initial_zoom_factor);
 
+	setStartInFullscreen(pref->start_in_fullscreen);
+	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
+
+	// Audio tab
 	QString ao = pref->ao;
 
 #ifdef Q_OS_OS2
@@ -241,51 +269,32 @@ void TGeneral::setData(TPreferences* pref) {
 #endif
 
 	setAO(ao);
-	setAudioLang(pref->audio_lang);
-	setSubtitleLang(pref->subtitle_lang);
-	setAudioTrack(pref->initial_audio_track);
-	setSubtitleTrack(pref->initial_subtitle_track);
-	setCloseOnFinish(pref->close_on_finish);
-	setPauseWhenHidden(pref->pause_when_hidden);
-
-	setEq2(pref->use_soft_video_eq);
 	setUseAudioEqualizer(pref->use_audio_equalizer);
 	global_audio_equalizer_check->setChecked(pref->global_audio_equalizer);
-	setGlobalVolume(pref->global_volume);
-	setSoftVol(pref->use_soft_vol);
 	setAc3DTSPassthrough(pref->use_hwac3);
-	setInitialVolNorm(pref->initial_volnorm);
-	setAmplification(pref->softvol_max);
-	setInitialPostprocessing(pref->initial_postprocessing);
-	setInitialDeinterlace(pref->initial_deinterlace);
-	setInitialZoom(pref->initial_zoom_factor);
-	setStartInFullscreen(pref->start_in_fullscreen);
-	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
-	setAutoq(pref->autoq);
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
-	setTurnScreensaverOff(pref->turn_screensaver_off);
-	#endif
-	#ifdef AVOID_SCREENSAVER
-	setAvoidScreensaver(pref->avoid_screensaver);
-	#endif
-#else
-	setDisableScreensaver(pref->disable_screensaver);
-#endif
-
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-	vdpau = pref->vdpau;
-#endif
-
 	setAudioChannels(pref->initial_audio_channels);
 	setScaleTempoFilter(pref->use_scaletempo);
 
+	// Volume
+	setGlobalVolume(pref->global_volume);
+	setSoftVol(pref->use_soft_vol);
+	setAmplification(pref->softvol_max);
+	setInitialVolNorm(pref->initial_volnorm);
+
+	// Synchronization
 	setAutoSyncActivated(pref->autosync);
 	setAutoSyncFactor(pref->autosync_factor);
 
 	setMcActivated(pref->use_mc);
 	setMc(pref->mc_value);
+
+
+	// Preferred tab
+	setAudioLang(pref->audio_lang);
+	setSubtitleLang(pref->subtitle_lang);
+
+	setAudioTrack(pref->initial_audio_track);
+	setSubtitleTrack(pref->initial_subtitle_track);
 }
 
 void TGeneral::getData(TPreferences* pref) {
@@ -293,6 +302,8 @@ void TGeneral::getData(TPreferences* pref) {
 	requires_restart = false;
 	filesettings_method_changed = false;
 
+
+	// General tab
 	if (pref->player_bin != playerPath()) {
 		requires_restart = true;
 		pref->player_bin = playerPath();
@@ -325,40 +336,10 @@ void TGeneral::getData(TPreferences* pref) {
 	TEST_AND_SET(pref->screenshot_format, screenshotFormat());
 #endif
 
-	TEST_AND_SET(pref->vo, VO());
-	TEST_AND_SET(pref->hwdec, hwdec());
-	TEST_AND_SET(pref->frame_drop, frameDrop());
-	TEST_AND_SET(pref->hard_frame_drop, hardFrameDrop());
-
-	TEST_AND_SET(pref->ao, AO());
-
-	pref->audio_lang = audioLang();
-	pref->subtitle_lang = subtitleLang();
-
-	pref->initial_audio_track = audioTrack();
-	pref->initial_subtitle_track = subtitleTrack();
-
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
 
-	TEST_AND_SET(pref->use_soft_video_eq, eq2());
-	TEST_AND_SET(pref->use_soft_vol, softVol());
-	pref->global_volume = globalVolume();
-	TEST_AND_SET(pref->use_audio_equalizer, useAudioEqualizer());
-	pref->global_audio_equalizer = global_audio_equalizer_check->isChecked();
-	TEST_AND_SET(pref->use_hwac3, Ac3DTSPassthrough());
-	pref->initial_volnorm = initialVolNorm();
-	TEST_AND_SET(pref->softvol_max, amplification());
-	pref->initial_postprocessing = initialPostprocessing();
-	pref->initial_deinterlace = initialDeinterlace();
-	pref->initial_zoom_factor = initialZoom();
-	pref->start_in_fullscreen = startInFullscreen();
-	if (pref->add_blackborders_on_fullscreen != blackbordersOnFullscreen()) {
-		pref->add_blackborders_on_fullscreen = blackbordersOnFullscreen();
-		if (pref->fullscreen) requires_restart = true;
-	}
-	TEST_AND_SET(pref->autoq, autoq());
-
+	// Screensaver
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	#ifdef SCREENSAVER_OFF
 	TEST_AND_SET(pref->turn_screensaver_off, turnScreensaverOff());
@@ -370,21 +351,61 @@ void TGeneral::getData(TPreferences* pref) {
 	TEST_AND_SET(pref->disable_screensaver, disableScreensaver());
 #endif
 
+
+	// Video tab
+	TEST_AND_SET(pref->vo, VO());
+
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	pref->vdpau = vdpau;
 #endif
 
+	TEST_AND_SET(pref->hwdec, hwdec());
+	TEST_AND_SET(pref->frame_drop, frameDrop());
+	TEST_AND_SET(pref->hard_frame_drop, hardFrameDrop());
+	TEST_AND_SET(pref->use_soft_video_eq, softwareVideoEqualizer());
+	pref->initial_postprocessing = initialPostprocessing();
+	TEST_AND_SET(pref->postprocessing_quality, postprocessingQuality());
+	pref->initial_deinterlace = initialDeinterlace();
+	pref->initial_zoom_factor = initialZoom();
+
+	pref->start_in_fullscreen = startInFullscreen();
+	if (pref->add_blackborders_on_fullscreen != blackbordersOnFullscreen()) {
+		pref->add_blackborders_on_fullscreen = blackbordersOnFullscreen();
+		if (pref->fullscreen) requires_restart = true;
+	}
+
+
+	// Audio tab
+	TEST_AND_SET(pref->ao, AO());
+	TEST_AND_SET(pref->use_audio_equalizer, useAudioEqualizer());
+	pref->global_audio_equalizer = global_audio_equalizer_check->isChecked();
+	TEST_AND_SET(pref->use_hwac3, Ac3DTSPassthrough());
 	pref->initial_audio_channels = audioChannels();
 	TEST_AND_SET(pref->use_scaletempo, scaleTempoFilter());
+
+	pref->global_volume = globalVolume();
+	TEST_AND_SET(pref->use_soft_vol, softVol());
+	pref->initial_volnorm = initialVolNorm();
+	TEST_AND_SET(pref->softvol_max, amplification());
+
 
 	TEST_AND_SET(pref->autosync, autoSyncActivated());
 	TEST_AND_SET(pref->autosync_factor, autoSyncFactor());
 
 	TEST_AND_SET(pref->use_mc, mcActivated());
 	TEST_AND_SET(pref->mc_value, mc());
+
+
+	// Preferred tab
+	pref->audio_lang = audioLang();
+	pref->subtitle_lang = subtitleLang();
+
+	pref->initial_audio_track = audioTrack();
+	pref->initial_subtitle_track = subtitleTrack();
 }
 
 void TGeneral::updateDriverCombos() {
+
 	QString current_vo = VO();
 	QString current_ao = AO();
 
@@ -681,13 +702,12 @@ bool TGeneral::pauseWhenHidden() {
 	return pause_if_hidden_check->isChecked();
 }
 
-
-void TGeneral::setEq2(bool b) {
-	eq2_check->setChecked(b);
+void TGeneral::setSoftwareVideoEqualizer(bool b) {
+	software_video_equalizer_check->setChecked(b);
 }
 
-bool TGeneral::eq2() {
-	return eq2_check->isChecked();
+bool TGeneral::softwareVideoEqualizer() {
+	return software_video_equalizer_check->isChecked();
 }
 
 void TGeneral::setSoftVol(bool b) {
@@ -869,19 +889,19 @@ bool TGeneral::blackbordersOnFullscreen() {
 	return blackborders_on_fs_check->isChecked();
 }
 
-void TGeneral::setAutoq(int n) {
-	autoq_spin->setValue(n);
+void TGeneral::setPostprocessingQuality(int n) {
+	postprocessing_quality_spin->setValue(n);
 }
 
-int TGeneral::autoq() {
-	return autoq_spin->value();
+int TGeneral::postprocessingQuality() {
+	return postprocessing_quality_spin->value();
 }
 
-void TGeneral::setScaleTempoFilter(TPreferences::OptionState value) {
+void TGeneral::setScaleTempoFilter(TPreferences::TOptionState value) {
 	scaletempo_combo->setState(value);
 }
 
-TPreferences::OptionState TGeneral::scaleTempoFilter() {
+TPreferences::TOptionState TGeneral::scaleTempoFilter() {
 	return scaletempo_combo->state();
 }
 
@@ -1044,7 +1064,7 @@ void TGeneral::createHelp() {
 	setWhatsThis(postprocessing_check, tr("Enable postprocessing by default"),
 		tr("Postprocessing will be used by default on new opened files."));
 
-	setWhatsThis(autoq_spin, tr("Postprocessing quality"),
+	setWhatsThis(postprocessing_quality_spin, tr("Postprocessing quality"),
 		tr("Dynamically changes the level of postprocessing depending on the "
            "available spare CPU time. The number you specify will be the "
            "maximum level used. Usually you can use some big number."));
@@ -1058,8 +1078,8 @@ void TGeneral::createHelp() {
 		tr("This option sets the default zoom which will be used for "
            "new videos."));
 
-	setWhatsThis(eq2_check, tr("Software video equalizer"),
-		tr("You can check this option if video equalizer is not supported by "
+	setWhatsThis(software_video_equalizer_check, tr("Software video equalizer"),
+		tr("You can check this option if video equalizing is not supported by "
            "your graphic card or the selected video output driver.<br>"
            "<b>Note:</b> this option can be incompatible with some video "
            "output drivers."));

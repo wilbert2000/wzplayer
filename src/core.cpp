@@ -1570,7 +1570,7 @@ void TCore::startPlayer(QString file, double seek) {
 	// Postprocessing
 	if (mset.postprocessing_filter) {
 		proc->addVF("postprocessing");
-		proc->setOption("autoq", QString::number(pref->autoq));
+		proc->setOption("autoq", QString::number(pref->postprocessing_quality));
 	}
 
 	// Letterbox (expand)
@@ -1969,11 +1969,12 @@ void TCore::seekToPrevSub() {
 }
 #endif
 
-void TCore::wheelUp(TPreferences::WheelFunction function) {
+void TCore::wheelUp(TPreferences::TWheelFunction function) {
 	qDebug("TCore::wheelUp");
 
-	if (function == TPreferences::DoNothing)
-		function = (TPreferences::WheelFunction) pref->wheel_function;
+	if (function == TPreferences::DoNothing) {
+		function = (TPreferences::TWheelFunction) pref->wheel_function;
+	}
 	switch (function) {
 		case TPreferences::Volume : incVolume(); break;
 		case TPreferences::Zoom : incZoom(); break;
@@ -1983,11 +1984,12 @@ void TCore::wheelUp(TPreferences::WheelFunction function) {
 	}
 }
 
-void TCore::wheelDown(TPreferences::WheelFunction function) {
+void TCore::wheelDown(TPreferences::TWheelFunction function) {
 	qDebug("TCore::wheelDown");
 
-	if (function == TPreferences::DoNothing)
-		function = (TPreferences::WheelFunction) pref->wheel_function;
+	if (function == TPreferences::DoNothing) {
+		function = (TPreferences::TWheelFunction) pref->wheel_function;
+	}
 	switch (function) {
 		case TPreferences::Volume : decVolume(); break;
 		case TPreferences::Zoom : decZoom(); break;
@@ -3159,7 +3161,7 @@ void TCore::nextWheelFunction() {
 		if(a == 32)
 			a = 2;
 		// See if we are done
-		if (pref->wheel_function_cycle.testFlag((TPreferences::WheelFunction)a))
+		if (pref->wheel_function_cycle.testFlag((TPreferences::TWheelFunction)a))
 			done = true;
 	}
 	pref->wheel_function = a;
@@ -3198,7 +3200,7 @@ void TCore::changeLetterboxOnFullscreen(bool b) {
 void TCore::changeOSDLevel(int level) {
 	qDebug("TCore::changeOSDLevel: %d", level);
 
-	pref->osd_level = (TPreferences::OSDLevel) level;
+	pref->osd_level = (TPreferences::TOSDLevel) level;
 	if (proc->isRunning())
 		proc->setOSDLevel(level);
 	emit osdLevelChanged(level);

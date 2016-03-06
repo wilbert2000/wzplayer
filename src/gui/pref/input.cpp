@@ -260,19 +260,21 @@ int TInput::wheelFunction() {
 	return wheel_function_combo->itemData(wheel_function_combo->currentIndex()).toInt();
 }
 
-void TInput::setWheelFunctionCycle(TPreferences::WheelFunctions flags){
+void TInput::setWheelFunctionCycle(TPreferences::TWheelFunctions flags){
+
 	wheel_function_seek->setChecked(flags.testFlag(TPreferences::Seeking));
 	wheel_function_volume->setChecked(flags.testFlag(TPreferences::Volume));
 	wheel_function_zoom->setChecked(flags.testFlag(TPreferences::Zoom));
 	wheel_function_speed->setChecked(flags.testFlag(TPreferences::ChangeSpeed));
 }
 
-Settings::TPreferences::WheelFunctions TInput::wheelFunctionCycle(){
-	Settings::TPreferences::WheelFunctions seekflags (QFlag ((int) TPreferences::Seeking)) ;
-	Settings::TPreferences::WheelFunctions volumeflags (QFlag ((int) TPreferences::Volume)) ;
-	Settings::TPreferences::WheelFunctions zoomflags (QFlag ((int) TPreferences::Zoom)) ;
-	Settings::TPreferences::WheelFunctions speedflags (QFlag ((int) TPreferences::ChangeSpeed)) ;
-	Settings::TPreferences::WheelFunctions out (QFlag (0));
+Settings::TPreferences::TWheelFunctions TInput::wheelFunctionCycle() {
+
+	Settings::TPreferences::TWheelFunctions seekflags (QFlag ((int) TPreferences::Seeking)) ;
+	Settings::TPreferences::TWheelFunctions volumeflags (QFlag ((int) TPreferences::Volume)) ;
+	Settings::TPreferences::TWheelFunctions zoomflags (QFlag ((int) TPreferences::Zoom)) ;
+	Settings::TPreferences::TWheelFunctions speedflags (QFlag ((int) TPreferences::ChangeSpeed)) ;
+	Settings::TPreferences::TWheelFunctions out (QFlag (0));
 	if(wheel_function_seek->isChecked()){
 		out = out | seekflags;
 	}

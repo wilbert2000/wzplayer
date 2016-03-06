@@ -252,11 +252,11 @@ bool TAdvanced::useLavfDemuxer() {
 	return lavf_demuxer_check->isChecked();
 }
 
-void TAdvanced::setUseCorrectPts(TPreferences::OptionState value) {
+void TAdvanced::setUseCorrectPts(TPreferences::TOptionState value) {
 	correct_pts_combo->setState(value);
 }
 
-TPreferences::OptionState TAdvanced::useCorrectPts() {
+TPreferences::TOptionState TAdvanced::useCorrectPts() {
 	return correct_pts_combo->state();
 }
 

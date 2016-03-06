@@ -65,12 +65,9 @@ TPreferences::~TPreferences() {
 
 void TPreferences::reset() {
 
-    /* *******
-       General
-       ******* */
-
 	config_version = CURRENT_CONFIG_VERSION;
 
+	// General tab
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	player_bin= "mplayer/mplayer.exe";
 #else
@@ -97,25 +94,27 @@ void TPreferences::reset() {
 	capture_directory = "";
 #endif
 
-	// Video
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef SCREENSAVER_OFF
+	turn_screensaver_off = false;
+#endif
+#ifdef AVOID_SCREENSAVER
+	avoid_screensaver = true;
+#endif
+#else
+	disable_screensaver = true;
+#endif
+
+
+	// Video tab
 	vo = "";
 	hwdec = "no";
 	frame_drop = false;
 	hard_frame_drop = false;
 	use_soft_video_eq = false;
-	autoq = 6;
-	add_blackborders_on_fullscreen = false;
+	postprocessing_quality = 6;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
-	turn_screensaver_off = false;
-	#endif
-	#ifdef AVOID_SCREENSAVER
-	avoid_screensaver = true;
-	#endif
-#else
-	disable_screensaver = true;
-#endif
+	add_blackborders_on_fullscreen = false;
 
 #ifndef Q_OS_WIN
 	vdpau.ffh264vdpau = true;
@@ -477,17 +476,6 @@ void TPreferences::save() {
 	setValue("capture_directory", capture_directory);
 #endif
 
-
-	setValue("audio_lang", audio_lang);
-	setValue("subtitle_lang", subtitle_lang);
-
-	setValue("hwdec", hwdec);
-	setValue("frame_drop", frame_drop);
-	setValue("hard_frame_drop", hard_frame_drop);
-	setValue("use_soft_video_eq", use_soft_video_eq);
-	setValue("autoq", autoq);
-	setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
-
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	#ifdef SCREENSAVER_OFF
 	setValue("turn_screensaver_off", turn_screensaver_off);
@@ -498,6 +486,15 @@ void TPreferences::save() {
 #else
 	setValue("disable_screensaver", disable_screensaver);
 #endif
+
+
+	// Video tab
+	setValue("hwdec", hwdec);
+	setValue("frame_drop", frame_drop);
+	setValue("hard_frame_drop", hard_frame_drop);
+	setValue("use_soft_video_eq", use_soft_video_eq);
+	setValue("postprocessing_quality", postprocessing_quality);
+	setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
 
 #ifndef Q_OS_WIN
 	setValue("vdpau_ffh264vdpau", vdpau.ffh264vdpau);
@@ -529,6 +526,11 @@ void TPreferences::save() {
 
 	setValue("autoload_m4a", autoload_m4a);
 	setValue("min_step", min_step);
+
+
+	// Preferred tab
+	setValue("audio_lang", audio_lang);
+	setValue("subtitle_lang", subtitle_lang);
 
 	setValue("osd_level", osd_level);
 	setValue("osd_scale", osd_scale);
@@ -948,10 +950,7 @@ void TPreferences::setPlayerBin() {
 void TPreferences::load() {
 	qDebug("Settings::TPreferences::load");
 
-    /* *******
-       General
-       ******* */
-
+	// General tab
 	beginGroup("General");
 
 	config_version = value("config_version", 0).toInt();
@@ -961,9 +960,8 @@ void TPreferences::load() {
 	remember_media_settings = !value("dont_remember_media_settings", !remember_media_settings).toBool();
 	remember_time_pos = !value("dont_remember_time_pos", !remember_time_pos).toBool();
 	file_settings_method = value("file_settings_method", file_settings_method).toString();
-	vo = value("driver/vo", vo).toString();
-	ao = value("driver/audio_output", ao).toString();
 
+	// Screenshots
 	use_screenshot = value("use_screenshot", use_screenshot).toBool();
 
 #ifdef MPV_SUPPORT
@@ -979,28 +977,26 @@ void TPreferences::load() {
 	capture_directory = value("capture_directory", capture_directory).toString();
 #endif
 
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef SCREENSAVER_OFF
+	turn_screensaver_off = value("turn_screensaver_off", turn_screensaver_off).toBool();
+#endif
+#ifdef AVOID_SCREENSAVER
+	avoid_screensaver = value("avoid_screensaver", avoid_screensaver).toBool();
+#endif
+#else
+	disable_screensaver = value("disable_screensaver", disable_screensaver).toBool();
+#endif
 
-	audio_lang = value("audio_lang", audio_lang).toString();
-	subtitle_lang = value("subtitle_lang", subtitle_lang).toString();
 
-	// Video
+	// Video tab
+	vo = value("driver/vo", vo).toString();
 	hwdec = value("hwdec", hwdec).toString();
 	frame_drop = value("frame_drop", frame_drop).toBool();
 	hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
 	use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
-	autoq = value("autoq", autoq).toInt();
+	postprocessing_quality = value("postprocessing_quality", postprocessing_quality).toInt();
 	add_blackborders_on_fullscreen = value("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen).toBool();
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
-	turn_screensaver_off = value("turn_screensaver_off", turn_screensaver_off).toBool();
-	#endif
-	#ifdef AVOID_SCREENSAVER
-	avoid_screensaver = value("avoid_screensaver", avoid_screensaver).toBool();
-	#endif
-#else
-	disable_screensaver = value("disable_screensaver", disable_screensaver).toBool();
-#endif
 
 #ifndef Q_OS_WIN
 	vdpau.ffh264vdpau = value("vdpau_ffh264vdpau", vdpau.ffh264vdpau).toBool();
@@ -1011,13 +1007,17 @@ void TPreferences::load() {
 	vdpau.disable_video_filters = value("vdpau_disable_video_filters", vdpau.disable_video_filters).toBool();
 #endif
 
+
+	// Audio tab
+	ao = value("driver/audio_output", ao).toString();
+
 	use_soft_vol = value("use_soft_vol", use_soft_vol).toBool();
 	softvol_max = value("softvol_max", softvol_max).toInt();
 	if (softvol_max < 100)
 		softvol_max = 100;
 	else if (softvol_max > 1000)
 		softvol_max = 1000;
-	use_scaletempo = (OptionState) value("use_scaletempo", use_scaletempo).toInt();
+	use_scaletempo = (TOptionState) value("use_scaletempo", use_scaletempo).toInt();
 	use_hwac3 = value("use_hwac3", use_hwac3).toBool();
 	use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer).toBool();
 
@@ -1040,17 +1040,20 @@ void TPreferences::load() {
 	autoload_m4a = value("autoload_m4a", autoload_m4a).toBool();
 	min_step = value("min_step", min_step).toInt();
 
-	osd_level = (OSDLevel) value("osd_level", (int) osd_level).toInt();
+
+	// Preferred tab
+	audio_lang = value("audio_lang", audio_lang).toString();
+	subtitle_lang = value("subtitle_lang", subtitle_lang).toString();
+
+	// OSD
+	osd_level = (TOSDLevel) value("osd_level", (int) osd_level).toInt();
 	osd_scale = value("osd_scale", osd_scale).toDouble();
 	subfont_osd_scale = value("subfont_osd_scale", subfont_osd_scale).toDouble();
 
 	endGroup(); // General
 
 
-    /* ***************
-       Drives (CD/DVD)
-       *************** */
-
+	// Drives (CD/DVD)
 	beginGroup("drives");
 
 	dvd_device = value("dvd_device", dvd_device).toString();
@@ -1061,6 +1064,7 @@ void TPreferences::load() {
 	enable_audiocd_on_windows = value("enable_audiocd_on_windows", enable_audiocd_on_windows).toBool();
 #endif
 
+	// TODO: move to Preferred??
 	vcd_initial_title = value("vcd_initial_title", vcd_initial_title).toInt();
 
 	use_dvdnav = value("use_dvdnav", use_dvdnav).toBool();
@@ -1106,7 +1110,7 @@ void TPreferences::load() {
 
 	subtitles_on_screenshots = value("subtitles_on_screenshots", subtitles_on_screenshots).toBool();
 
-	change_sub_scale_should_restart = (OptionState) value("change_sub_scale_should_restart", change_sub_scale_should_restart).toInt();
+	change_sub_scale_should_restart = (TOptionState) value("change_sub_scale_should_restart", change_sub_scale_should_restart).toInt();
 
 	fast_load_sub = value("fast_load_sub", fast_load_sub).toBool();
 
@@ -1161,7 +1165,7 @@ void TPreferences::load() {
 
 	prefer_ipv4 = value("prefer_ipv4", prefer_ipv4).toBool();
 
-	use_correct_pts = (OptionState) value("correct_pts", use_correct_pts).toInt();
+	use_correct_pts = (TOptionState) value("correct_pts", use_correct_pts).toInt();
 
 	actions_to_run = value("actions_to_run", actions_to_run).toString();
 
@@ -1184,7 +1188,7 @@ void TPreferences::load() {
 
 	start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
 
-	stay_on_top = (TPreferences::OnTop) value("stay_on_top", (int) stay_on_top).toInt();
+	stay_on_top = (TPreferences::TOnTop) value("stay_on_top", (int) stay_on_top).toInt();
 	size_factor = value("size_factor", size_factor).toDouble();
 	// Backward compatibility. Size used to be stored as percentage.
 	if (size_factor > 24.0) size_factor = size_factor / 100;
@@ -1203,7 +1207,7 @@ void TPreferences::load() {
 	wheel_function = value("mouse_wheel_function", wheel_function).toInt();
 	{
 		int wheel_function_cycle_int = value("wheel_function_cycle", (int) wheel_function_cycle).toInt();
-		wheel_function_cycle = (WheelFunctions) wheel_function_cycle_int;
+		wheel_function_cycle = (TWheelFunctions) wheel_function_cycle_int;
 	}
 	wheel_function_seeking_reverse = value("wheel_function_seeking_reverse", wheel_function_seeking_reverse).toBool();
 
@@ -1241,7 +1245,7 @@ void TPreferences::load() {
 	report_mplayer_crashes = value("report_mplayer_crashes", report_mplayer_crashes).toBool();
 
 	auto_add_to_playlist = value("auto_add_to_playlist", auto_add_to_playlist).toBool();
-	media_to_add_to_playlist = (AutoAddToPlaylistFilter) value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
+	media_to_add_to_playlist = (TAutoAddToPlaylistFilter) value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
 
 	endGroup(); // gui
 
@@ -1338,7 +1342,7 @@ void TPreferences::load() {
        **************** */
 
 	beginGroup("floating_control");
-	floating_activation_area = (ToolbarActivation) value("activation_area", floating_activation_area).toInt();
+	floating_activation_area = (TToolbarActivation) value("activation_area", floating_activation_area).toInt();
 	floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
 	endGroup(); // floating_control
 
@@ -1423,6 +1427,7 @@ void TPreferences::load() {
 		remove("General/use_direct_rendering");
 		remove("General/use_double_buffer");
 		remove("General/use_slices");
+		remove("General/autoq");
 
 		remove("Performance/hwdec");
 		remove("Performance/frame_drop");

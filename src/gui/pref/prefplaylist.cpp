@@ -65,7 +65,7 @@ void TPrefPlaylist::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 	pref->auto_add_to_playlist = autoAddFilesToPlaylist();
-	pref->media_to_add_to_playlist = (Settings::TPreferences::AutoAddToPlaylistFilter) mediaToAdd();
+	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
 }
 
 void TPrefPlaylist::setAutoAddFilesToPlaylist(bool b) {

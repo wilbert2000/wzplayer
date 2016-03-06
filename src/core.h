@@ -174,8 +174,8 @@ public slots:
 	void seekToNextSub();
 	void seekToPrevSub();
 #endif
-	void wheelUp(Settings::TPreferences::WheelFunction function = Settings::TPreferences::DoNothing);
-	void wheelDown(Settings::TPreferences::WheelFunction function = Settings::TPreferences::DoNothing);
+	void wheelUp(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::DoNothing);
+	void wheelDown(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::DoNothing);
 
 	void setSpeed(double value);
 	void incSpeed10();	//!< Inc speed 10%

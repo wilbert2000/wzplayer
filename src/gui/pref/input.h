@@ -70,8 +70,8 @@ protected:
 	void setWheelFunction(int function);
 	int wheelFunction();
 
-	void setWheelFunctionCycle(Settings::TPreferences::WheelFunctions flags);
-	Settings::TPreferences::WheelFunctions wheelFunctionCycle();
+	void setWheelFunctionCycle(Settings::TPreferences::TWheelFunctions flags);
+	Settings::TPreferences::TWheelFunctions wheelFunctionCycle();
 
 	void setWheelFunctionSeekingReverse(bool b);
 	bool wheelFunctionSeekingReverse();

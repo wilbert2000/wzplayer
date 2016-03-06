@@ -83,8 +83,8 @@ protected:
 	void setUseLavfDemuxer(bool);
 	bool useLavfDemuxer();
 
-	void setUseCorrectPts(Settings::TPreferences::OptionState value);
-	Settings::TPreferences::OptionState useCorrectPts();
+	void setUseCorrectPts(Settings::TPreferences::TOptionState value);
+	Settings::TPreferences::TOptionState useCorrectPts();
 
 	void setActionsToRun(QString actions);
 	QString actionsToRun();

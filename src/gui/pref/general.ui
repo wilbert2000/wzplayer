@@ -28,9 +28,9 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="playerbin_layout">
          <item>
-          <widget class="QLabel" name="executable_label">
+          <widget class="QLabel" name="playerbin_label">
            <property name="text">
             <string notr="true">Player &amp;executable:</string>
            </property>
@@ -48,7 +48,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="media_settings_group">
          <property name="title">
           <string>Media settings</string>
          </property>
@@ -137,7 +137,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="screenshots_group">
          <property name="title">
           <string>Screenshots</string>
          </property>
@@ -151,6 +151,22 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Preferred</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item>
              <widget class="QLabel" name="screenshots_dir_label">
               <property name="enabled">
@@ -178,6 +194,22 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Preferred</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item>
              <widget class="QLabel" name="screenshot_template_label">
               <property name="enabled">
@@ -233,15 +265,45 @@
        <item>
         <widget class="QCheckBox" name="pause_if_hidden_check">
          <property name="text">
-          <string>&amp;Pause when minimized</string>
+          <string>Pause &amp;when minimized</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="close_on_finish_check">
          <property name="text">
-          <string>&amp;Close when finished playback</string>
+          <string>&amp;Close when playback finished</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="screensaver_check">
+         <property name="text">
+          <string>&amp;Disable screensaver</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="screensaver_group">
+         <property name="title">
+          <string>Screensaver</string>
+         </property>
+         <layout class="QVBoxLayout">
+          <item>
+           <widget class="QCheckBox" name="turn_screensaver_off_check">
+            <property name="text">
+             <string>Switch screensaver &amp;off</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="avoid_screensaver_check">
+            <property name="text">
+             <string>A&amp;void screensaver</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -268,7 +330,7 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="vo_layout">
          <item>
           <widget class="QLabel" name="vo_label">
            <property name="text">
@@ -365,7 +427,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="eq2_check">
+        <widget class="QCheckBox" name="software_video_equalizer_check">
          <property name="text">
           <string>&amp;Use software video equalizer</string>
          </property>
@@ -400,7 +462,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="textLabel1_5">
+          <widget class="QLabel" name="postprocessing_quality_label">
            <property name="text">
             <string>&amp;Quality:</string>
            </property>
@@ -408,12 +470,12 @@
             <bool>false</bool>
            </property>
            <property name="buddy">
-            <cstring>autoq_spin</cstring>
+            <cstring>postprocessing_quality_spin</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="autoq_spin">
+          <widget class="QSpinBox" name="postprocessing_quality_spin">
            <property name="minimum">
             <number>1</number>
            </property>
@@ -522,36 +584,6 @@
          <property name="text">
           <string>&amp;Add black borders on fullscreen</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="screensaver_check">
-         <property name="text">
-          <string>Disable &amp;screensaver</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="screensaver_group">
-         <property name="title">
-          <string>Screensaver</string>
-         </property>
-         <layout class="QVBoxLayout">
-          <item>
-           <widget class="QCheckBox" name="turn_screensaver_off_check">
-            <property name="text">
-             <string>S&amp;witch screensaver off</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="avoid_screensaver_check">
-            <property name="text">
-             <string>A&amp;void screensaver</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
        </item>
        <item>
@@ -1235,18 +1267,18 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>screenshot_format_combo</tabstop>
   <tabstop>pause_if_hidden_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
+  <tabstop>screensaver_check</tabstop>
+  <tabstop>turn_screensaver_off_check</tabstop>
+  <tabstop>avoid_screensaver_check</tabstop>
   <tabstop>vo_combo</tabstop>
   <tabstop>vo_user_defined_edit</tabstop>
   <tabstop>vdpau_button</tabstop>
   <tabstop>postprocessing_check</tabstop>
-  <tabstop>autoq_spin</tabstop>
+  <tabstop>postprocessing_quality_spin</tabstop>
   <tabstop>deinterlace_combo</tabstop>
   <tabstop>zoom_spin</tabstop>
   <tabstop>start_fullscreen_check</tabstop>
   <tabstop>blackborders_on_fs_check</tabstop>
-  <tabstop>screensaver_check</tabstop>
-  <tabstop>turn_screensaver_off_check</tabstop>
-  <tabstop>avoid_screensaver_check</tabstop>
   <tabstop>ao_combo</tabstop>
   <tabstop>ao_user_defined_edit</tabstop>
   <tabstop>audio_equalizer_check</tabstop>
