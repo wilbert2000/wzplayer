@@ -61,46 +61,60 @@ void FileChooser::openFileDialog() {
 	QString f;
 
 	if (dialogType() == GetFileName) {
-		QFileDialog::Options opts = options();
-		if (opts == 0) opts = QFileDialog::DontResolveSymlinks;
+		QFileDialog::Options opts = _options;
+		if (opts == 0)
+			opts = QFileDialog::DontResolveSymlinks;
 
 		QString dir = QFileInfo(text()).absolutePath();
-		if (dir.isEmpty()) dir = last_dir;
-		if (dir.isEmpty()) dir = QDir::homePath();
+		if (dir.isEmpty())
+			dir = last_dir;
+		if (dir.isEmpty())
+			dir = QDir::homePath();
 
 #ifndef NO_SMPLAYER_SUPPORT
 		result = MyFileDialog::getOpenFileName(
 #else
 		result = QFileDialog::getOpenFileName(
 #endif
-                        this, caption(),
-                        dir,
-                        filter(), &f, opts);
-		if (!result.isEmpty()) last_dir = QFileInfo(result).absolutePath();
-	}
-	else
-	if (dialogType() == GetDirectory) {
+					 this,
+					 _caption,
+					 dir,
+					 _filter,
+					 &f,
+					 opts);
+		if (!result.isEmpty()) {
+			last_dir = QFileInfo(result).absolutePath();
+		}
+	} else if (dialogType() == GetDirectory) {
 		QFileDialog::Options opts = options();
-		if (opts == 0) opts = QFileDialog::ShowDirsOnly;
+		if (opts == 0)
+			opts = QFileDialog::ShowDirsOnly;
 
 		QString dir = text();
-		if (dir.isEmpty()) dir = last_dir;
-		if (dir.isEmpty()) dir = QDir::homePath();
+		if (dir.isEmpty())
+			dir = last_dir;
+		if (dir.isEmpty())
+			dir = QDir::homePath();
 
 #ifndef NO_SMPLAYER_SUPPORT
 		result = MyFileDialog::getExistingDirectory(
 #else
 		result = QFileDialog::getExistingDirectory(
 #endif
-                    this, caption(),
-                    dir, opts);
-		if (!result.isEmpty()) last_dir = result;
+					 this,
+					 _caption,
+					 dir,
+					 opts);
+		if (!result.isEmpty()) {
+			last_dir = result;
+		}
 	}
 
 	if (!result.isEmpty()) {
 		QString old_file = text();
 		setText(result);
-		if (old_file != result) emit fileChanged(result);
+		if (old_file != result)
+			emit fileChanged(result);
 	}
 }
 
