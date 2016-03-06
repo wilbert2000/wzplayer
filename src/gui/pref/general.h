@@ -66,6 +66,18 @@ protected:
 	void setPlayerPath(QString path);
 	QString playerPath();
 
+	// Media settings
+	void setRememberSettings(bool b);
+	bool rememberSettings();
+
+	void setRememberTimePos(bool b);
+	bool rememberTimePos();
+
+	void setFileSettingsMethod(QString method);
+	QString fileSettingsMethod();
+
+
+	// Screenshots
 	void setUseScreenshots(bool b);
 	bool useScreenshots();
 
@@ -92,14 +104,8 @@ protected:
 	void setHardFrameDrop(bool b);
 	bool hardFrameDrop();
 
-	void setRememberSettings(bool b);
-	bool rememberSettings();
 
-	void setRememberTimePos(bool b);
-	bool rememberTimePos();
 
-	void setFileSettingsMethod(QString method);
-	QString fileSettingsMethod();
 
 	void setAudioLang(QString lang);
 	QString audioLang();

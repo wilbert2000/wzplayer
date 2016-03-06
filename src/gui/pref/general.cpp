@@ -193,8 +193,15 @@ void TGeneral::retranslateStrings() {
 
 void TGeneral::setData(TPreferences* pref) {
 
+	// General tab
 	setPlayerPath(pref->player_bin);
 
+	// Media settings group
+	setRememberSettings(pref->remember_media_settings);
+	setRememberTimePos(!pref->remember_time_pos);
+	setFileSettingsMethod(pref->file_settings_method);
+
+	// Screenshots group
 	setUseScreenshots(pref->use_screenshot);
 	setScreenshotDir(pref->screenshot_directory);
 
@@ -234,10 +241,6 @@ void TGeneral::setData(TPreferences* pref) {
 #endif
 
 	setAO(ao);
-
-	setRememberSettings(!pref->dont_remember_media_settings);
-	setRememberTimePos(!pref->dont_remember_time_pos);
-	setFileSettingsMethod(pref->file_settings_method);
 	setAudioLang(pref->audio_lang);
 	setSubtitleLang(pref->subtitle_lang);
 	setAudioTrack(pref->initial_audio_track);
@@ -305,6 +308,16 @@ void TGeneral::getData(TPreferences* pref) {
 		updateDriverCombos();
 	}
 
+	bool remember_ms = rememberSettings();
+	TEST_AND_SET(pref->remember_media_settings, remember_ms);
+	bool remember_time = rememberTimePos();
+	TEST_AND_SET(pref->remember_time_pos, remember_time);
+	if (pref->file_settings_method != fileSettingsMethod()) {
+		pref->file_settings_method = fileSettingsMethod();
+		filesettings_method_changed = true;
+	}
+
+	// Screenshots
 	TEST_AND_SET(pref->use_screenshot, useScreenshots());
 	TEST_AND_SET(pref->screenshot_directory, screenshotDir());
 #ifdef MPV_SUPPORT
@@ -318,17 +331,6 @@ void TGeneral::getData(TPreferences* pref) {
 	TEST_AND_SET(pref->hard_frame_drop, hardFrameDrop());
 
 	TEST_AND_SET(pref->ao, AO());
-
-	bool dont_remember_ms = !rememberSettings();
-    TEST_AND_SET(pref->dont_remember_media_settings, dont_remember_ms);
-
-	bool dont_remember_time = !rememberTimePos();
-	TEST_AND_SET(pref->dont_remember_time_pos, dont_remember_time);
-
-	if (pref->file_settings_method != fileSettingsMethod()) {
-		pref->file_settings_method = fileSettingsMethod();
-		filesettings_method_changed = true;
-	}
 
 	pref->audio_lang = audioLang();
 	pref->subtitle_lang = subtitleLang();
@@ -620,8 +622,10 @@ bool TGeneral::rememberTimePos() {
 }
 
 void TGeneral::setFileSettingsMethod(QString method) {
+
 	int index = filesettings_method_combo->findData(method);
-	if (index < 0) index = 0;
+	if (index < 0)
+		index = 0;
 	filesettings_method_combo->setCurrentIndex(index);
 }
 

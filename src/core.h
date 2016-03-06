@@ -405,7 +405,7 @@ protected:
 	void restartPlay();
 
 	void newMediaPlayingStarted();
-	void saveMediaInfo();
+	void saveMediaSettings();
 
 	void seek_cmd(double secs, int mode);
 

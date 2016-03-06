@@ -314,17 +314,17 @@ bool TCore::isMPV() {
 	return proc->isMPV();
 }
 
-void TCore::saveMediaInfo() {
+void TCore::saveMediaSettings() {
 
-	if (pref->dont_remember_media_settings) {
-		qDebug("TCore::saveMediaInfo: saving disabled by user");
+	if (!pref->remember_media_settings) {
+		qDebug("TCore::saveMediaSettings: save settings per file is disabled");
 		return;
 	}
 	if (mdat.filename.isEmpty()) {
-		qDebug("TCore::saveMediaInfo: nothing to save");
+		qDebug("TCore::saveMediaSettings: nothing to save");
 		return;
 	}
-	qDebug() << "TCore::saveMediaInfo: saving settings for" << mdat.filename;
+	qDebug() << "TCore::saveMediaSettings: saving settings for" << mdat.filename;
 	emit showMessage(tr("Saving settings for %1").arg(mdat.filename), 0);
 
 	if (mdat.selected_type == TMediaData::TYPE_FILE) {
@@ -341,7 +341,7 @@ void TCore::saveMediaInfo() {
 	}
 
 	emit showMessage(tr("Saved settings for %1").arg(mdat.filename), 3000);
-} // saveMediaInfo
+} // saveMediaSettings
 
 void TCore::changeFullscreenMode(bool b) {
 	proc->setFullscreen(b);
@@ -375,7 +375,7 @@ void TCore::close() {
 	stopPlayer();
 	restarting = 0;
 	// Save data previous file:
-	saveMediaInfo();
+	saveMediaSettings();
 	// Clear media data
 	mdat = TMediaData();
 }
@@ -600,7 +600,7 @@ void TCore::openTV(QString channel_id) {
 	// Set the default deinterlacer for TV
 	mset.current_deinterlacer = pref->initial_tv_deinterlace;
 	// Load settings
-	if (!pref->dont_remember_media_settings) {
+	if (pref->remember_media_settings) {
 		Settings::TTVSettings settings;
 		if (settings.existSettingsFor(channel_id)) {
 			settings.loadSettingsFor(channel_id, mset, proc->player());
@@ -630,7 +630,7 @@ void TCore::openFile(const QString& filename, int seek) {
 	mset.reset();
 
 	// Check if we have info about this file
-	if (!pref->dont_remember_media_settings) {
+	if (pref->remember_media_settings) {
 		if (pref->file_settings_method.toLower() == "hash") {
 			Settings::TFileSettingsHash settings(mdat.filename);
 			if (settings.existSettingsFor(mdat.filename)) {
@@ -643,7 +643,7 @@ void TCore::openFile(const QString& filename, int seek) {
 			}
 		}
 
-		if (pref->dont_remember_time_pos) {
+		if (!pref->remember_time_pos) {
 			mset.current_sec = 0;
 			qDebug("TCore::openFile: Time pos reset to 0");
 		}

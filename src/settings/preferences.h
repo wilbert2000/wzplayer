@@ -83,6 +83,10 @@ public:
 	QString playerName() const;
 	QString playerAbsolutePath() const;
 
+	// Media settings per file
+	bool remember_media_settings;
+	bool remember_time_pos;
+	QString file_settings_method; //!< Method to be used for saving file settings
 	QString vo; // video output
 	QString ao; // audio output
 
@@ -96,10 +100,6 @@ public:
 	QString capture_directory;
 #endif
 
-	// SMPlayer will remember all media settings for all videos.
-	// This options allow to disable it:
-	bool dont_remember_media_settings; 	// Will not remember anything
-	bool dont_remember_time_pos;		// Will not remember time pos
 
 	QString audio_lang; 		// Preferred audio language
 	QString subtitle_lang;		// Preferred subtitle language
@@ -166,7 +166,6 @@ public:
 	double osd_scale; // mpv
 	double subfont_osd_scale; // mplayer
 
-	QString file_settings_method; //!< Method to be used for saving file settings
 
 
     /* ***************

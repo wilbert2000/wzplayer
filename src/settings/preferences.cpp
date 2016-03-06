@@ -77,14 +77,16 @@ void TPreferences::reset() {
 	player_bin = "mplayer";
 #endif
 
-	dont_remember_media_settings = false;
-	dont_remember_time_pos = false;
+	remember_media_settings = false;
+	remember_time_pos = false;
 
 	use_screenshot = true;
+
 #ifdef MPV_SUPPORT
 	screenshot_template = "cap_%F_%p_%02n";
 	screenshot_format = "jpg";
 #endif
+
 #ifdef PORTABLE_APP
 	screenshot_directory= "./screenshots";
 #else
@@ -461,6 +463,10 @@ void TPreferences::save() {
 	setValue("driver/vo", vo);
 	setValue("driver/audio_output", ao);
 
+	setValue("dont_remember_media_settings", !remember_media_settings);
+	setValue("dont_remember_time_pos", !remember_time_pos);
+	setValue("file_settings_method", file_settings_method);
+
 	setValue("use_screenshot", use_screenshot);
 #ifdef MPV_SUPPORT
 	setValue("screenshot_template", screenshot_template);
@@ -474,8 +480,6 @@ void TPreferences::save() {
 	setValue("capture_directory", capture_directory);
 #endif
 
-	setValue("dont_remember_media_settings", dont_remember_media_settings);
-	setValue("dont_remember_time_pos", dont_remember_time_pos);
 
 	setValue("audio_lang", audio_lang);
 	setValue("subtitle_lang", subtitle_lang);
@@ -532,8 +536,6 @@ void TPreferences::save() {
 	setValue("osd_level", osd_level);
 	setValue("osd_scale", osd_scale);
 	setValue("subfont_osd_scale", subfont_osd_scale);
-
-	setValue("file_settings_method", file_settings_method);
 
 	endGroup(); // General
 
@@ -958,6 +960,10 @@ void TPreferences::load() {
 	config_version = value("config_version", 0).toInt();
 	setPlayerBin();
 
+	// Media settings per file
+	remember_media_settings = !value("dont_remember_media_settings", !remember_media_settings).toBool();
+	remember_time_pos = !value("dont_remember_time_pos", !remember_time_pos).toBool();
+	file_settings_method = value("file_settings_method", file_settings_method).toString();
 	vo = value("driver/vo", vo).toString();
 	ao = value("driver/audio_output", ao).toString();
 
@@ -976,8 +982,6 @@ void TPreferences::load() {
 	capture_directory = value("capture_directory", capture_directory).toString();
 #endif
 
-	dont_remember_media_settings = value("dont_remember_media_settings", dont_remember_media_settings).toBool();
-	dont_remember_time_pos = value("dont_remember_time_pos", dont_remember_time_pos).toBool();
 
 	audio_lang = value("audio_lang", audio_lang).toString();
 	subtitle_lang = value("subtitle_lang", subtitle_lang).toString();
@@ -1042,8 +1046,6 @@ void TPreferences::load() {
 	osd_level = (OSDLevel) value("osd_level", (int) osd_level).toInt();
 	osd_scale = value("osd_scale", osd_scale).toDouble();
 	subfont_osd_scale = value("subfont_osd_scale", subfont_osd_scale).toDouble();
-
-	file_settings_method = value("file_settings_method", file_settings_method).toString();
 
 	endGroup(); // General
 
