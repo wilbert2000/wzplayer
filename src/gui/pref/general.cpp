@@ -85,22 +85,8 @@ TGeneral::TGeneral(QWidget* parent, Qt::WindowFlags f)
 	vdpau_button->hide();
 #endif
 
-	// Screensaver
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	screensaver_check->hide();
-#ifndef SCREENSAVER_OFF
-	turn_screensaver_off_check->hide();
-#endif
-#ifndef AVOID_SCREENSAVER
-	avoid_screensaver_check->hide();
-#endif
-#else
-	screensaver_group->hide();
-#endif
-
 
 	// Audio tab
-
 #if USE_DSOUND_DEVICES
 	dsound_devices = TDeviceInfo::dsoundDevices();
 #endif
@@ -207,18 +193,6 @@ void TGeneral::setData(TPreferences* pref) {
 
 	setPauseWhenHidden(pref->pause_when_hidden);
 	setCloseOnFinish(pref->close_on_finish);
-
-	// Screensaver
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
-	setTurnScreensaverOff(pref->turn_screensaver_off);
-#endif
-#ifdef AVOID_SCREENSAVER
-	setAvoidScreensaver(pref->avoid_screensaver);
-#endif
-#else
-	setDisableScreensaver(pref->disable_screensaver);
-#endif
 
 
 	// Video tab
@@ -338,18 +312,6 @@ void TGeneral::getData(TPreferences* pref) {
 
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
-
-	// Screensaver
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
-	TEST_AND_SET(pref->turn_screensaver_off, turnScreensaverOff());
-	#endif
-	#ifdef AVOID_SCREENSAVER
-	pref->avoid_screensaver = avoidScreensaver();
-	#endif
-#else
-	TEST_AND_SET(pref->disable_screensaver, disableScreensaver());
-#endif
 
 
 	// Video tab
@@ -850,36 +812,6 @@ bool TGeneral::startInFullscreen() {
 	return start_fullscreen_check->isChecked();
 }
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef AVOID_SCREENSAVER
-void TGeneral::setAvoidScreensaver(bool b) {
-	avoid_screensaver_check->setChecked(b);
-}
-
-bool TGeneral::avoidScreensaver() {
-	return avoid_screensaver_check->isChecked();
-}
-#endif
-
-#ifdef SCREENSAVER_OFF
-void TGeneral::setTurnScreensaverOff(bool b) {
-	turn_screensaver_off_check->setChecked(b);
-}
-
-bool TGeneral::turnScreensaverOff() {
-	return turn_screensaver_off_check->isChecked();
-}
-#endif
-
-#else
-void TGeneral::setDisableScreensaver(bool b) {
-	screensaver_check->setChecked(b);
-}
-
-bool TGeneral::disableScreensaver() {
-	return screensaver_check->isChecked();
-}
-#endif
 
 void TGeneral::setBlackbordersOnFullscreen(bool b) {
 	blackborders_on_fs_check->setChecked(b);
@@ -1096,28 +1028,6 @@ void TGeneral::createHelp() {
            "some video drivers (like gl) are already able to display the "
            "subtitles automatically in the black borders.") */);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
-	setWhatsThis(turn_screensaver_off_check, tr("Switch screensaver off"),
-		tr("This option switches the screensaver off just before starting to "
-           "play a file and switches it on when playback finishes. If this "
-           "option is enabled, the screensaver won't appear even if playing "
-           "audio files or when a file is paused."));
-	#endif
-	#ifdef AVOID_SCREENSAVER
-	setWhatsThis(avoid_screensaver_check, tr("Avoid screensaver"),
-		tr("When this option is checked, SMPlayer will try to prevent the "
-           "screensaver to be shown when playing a video file. The screensaver "
-           "will be allowed to be shown if playing an audio file or in pause "
-           "mode. This option only works if the SMPlayer window is in "
-		   "the foreground."));
-	#endif
-#else
-	setWhatsThis(screensaver_check, tr("Disable screensaver"),
-		tr("Check this option to disable the screensaver while playing.<br>"
-           "The screensaver will enabled again when play finishes.")
-		);
-#endif
 
 	// Audio tab
 	addSectionTitle(tr("Audio"));

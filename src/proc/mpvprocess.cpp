@@ -903,9 +903,6 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		QString scale = value.toString();
 		if (scale != "1")
 			arg << "--sub-scale=" + scale;
-	} else if (name == "stop-xscreensaver") {
-		bool stop_ss = value.toBool();
-		if (stop_ss) arg << "--stop-screensaver"; else arg << "--no-stop-screensaver";
 	} else if (name == "correct-pts") {
 		bool b = value.toBool();
 		if (b) arg << "--correct-pts"; else arg << "--no-correct-pts";

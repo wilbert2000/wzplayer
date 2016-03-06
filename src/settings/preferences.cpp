@@ -94,17 +94,6 @@ void TPreferences::reset() {
 	capture_directory = "";
 #endif
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
-	turn_screensaver_off = false;
-#endif
-#ifdef AVOID_SCREENSAVER
-	avoid_screensaver = true;
-#endif
-#else
-	disable_screensaver = true;
-#endif
-
 
 	// Video tab
 	vo = "";
@@ -474,17 +463,6 @@ void TPreferences::save() {
 
 #ifdef CAPTURE_STREAM
 	setValue("capture_directory", capture_directory);
-#endif
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	#ifdef SCREENSAVER_OFF
-	setValue("turn_screensaver_off", turn_screensaver_off);
-	#endif
-	#ifdef AVOID_SCREENSAVER
-	setValue("avoid_screensaver", avoid_screensaver);
-	#endif
-#else
-	setValue("disable_screensaver", disable_screensaver);
 #endif
 
 
@@ -975,17 +953,6 @@ void TPreferences::load() {
 
 #ifdef CAPTURE_STREAM
 	capture_directory = value("capture_directory", capture_directory).toString();
-#endif
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
-	turn_screensaver_off = value("turn_screensaver_off", turn_screensaver_off).toBool();
-#endif
-#ifdef AVOID_SCREENSAVER
-	avoid_screensaver = value("avoid_screensaver", avoid_screensaver).toBool();
-#endif
-#else
-	disable_screensaver = value("disable_screensaver", disable_screensaver).toBool();
 #endif
 
 

@@ -1188,7 +1188,6 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 	} else if (name == "keepaspect"
 			   || name == "fs"
 			   || name == "flip-hebrew"
-			   || name == "stop-xscreensaver"
 			   || name == "correct-pts"
 			   || name == "fontconfig") {
 		bool b = value.toBool();

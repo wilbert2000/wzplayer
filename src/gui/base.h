@@ -24,11 +24,9 @@
 #include "core.h"
 #include "gui/pref/dialog.h"
 
-#ifdef Q_OS_WIN
-#ifdef AVOID_SCREENSAVER
+#if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 /* Disable screensaver by event */
 #include <windows.h>
-#endif
 #endif
 
 
@@ -248,13 +246,6 @@ protected slots:
 	void showExitCodeFromPlayer(int exit_code);
 	void showErrorFromPlayer(QProcess::ProcessError);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef AVOID_SCREENSAVER
-	/* Disable screensaver by event */
-	void clear_just_stopped();
-#endif
-#endif
-
 protected:
 	virtual void closeEvent(QCloseEvent* e);
 	virtual void changeEvent(QEvent* event);
@@ -267,12 +258,11 @@ protected:
 	bool was_minimized;
 #endif
 
-#ifdef Q_OS_WIN
-#ifdef AVOID_SCREENSAVER
+#if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 	/* Disable screensaver by event */
 	virtual bool winEvent (MSG* m, long* result);
 #endif
-#endif
+
 	virtual QMenu* createPopupMenu();
 	virtual void aboutToEnterFullscreen();
 	virtual void didEnterFullscreen();
@@ -380,12 +370,6 @@ private:
 
 	TAutoHideTimer* auto_hide_timer;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef AVOID_SCREENSAVER
-	/* Disable screensaver by event */
-	bool just_stopped;
-#endif
-#endif
 
 	void createToolbars();
 	QMenu* createToolbarMenu();

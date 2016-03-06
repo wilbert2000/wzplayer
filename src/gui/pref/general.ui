@@ -277,36 +277,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="screensaver_check">
-         <property name="text">
-          <string>&amp;Disable screensaver</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="screensaver_group">
-         <property name="title">
-          <string>Screensaver</string>
-         </property>
-         <layout class="QVBoxLayout">
-          <item>
-           <widget class="QCheckBox" name="turn_screensaver_off_check">
-            <property name="text">
-             <string>Switch screensaver &amp;off</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="avoid_screensaver_check">
-            <property name="text">
-             <string>A&amp;void screensaver</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1267,9 +1237,6 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>screenshot_format_combo</tabstop>
   <tabstop>pause_if_hidden_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
-  <tabstop>screensaver_check</tabstop>
-  <tabstop>turn_screensaver_off_check</tabstop>
-  <tabstop>avoid_screensaver_check</tabstop>
   <tabstop>vo_combo</tabstop>
   <tabstop>vo_user_defined_edit</tabstop>
   <tabstop>vdpau_button</tabstop>

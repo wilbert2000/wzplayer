@@ -388,10 +388,9 @@ unix {
 }
 
 win32 {
-	DEFINES += SCREENSAVER_OFF
-	DEFINES += AVOID_SCREENSAVER
+    DEFINES += DISABLE_SCREENSAVER
 
-	contains(DEFINES, SCREENSAVER_OFF) {
+    contains(DEFINES, DISABLE_SCREENSAVER) {
 		HEADERS += screensaver.h
 		SOURCES += screensaver.cpp
 	}
@@ -418,9 +417,9 @@ win32 {
 }
 
 os2 {
-	DEFINES += SCREENSAVER_OFF
+    DEFINES += DISABLE_SCREENSAVER
 	INCLUDEPATH += .
-	contains(DEFINES, SCREENSAVER_OFF) {
+    contains(DEFINES, DISABLE_SCREENSAVER) {
 		HEADERS += screensaver.h
 		SOURCES += screensaver.cpp
 	}

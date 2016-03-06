@@ -35,7 +35,7 @@ class TPlayerProcess;
 }
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
+#ifdef DISABLE_SCREENSAVER
 class WinScreenSaver;
 #endif
 #endif
@@ -444,7 +444,7 @@ protected slots:
 	void changeTitleLeaveMenu();
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
+#ifdef DISABLE_SCREENSAVER
 	void enableScreensaver();
 	void disableScreensaver();
 #endif
@@ -455,7 +455,7 @@ protected:
 	TPlayerWindow* playerwindow;
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
+#ifdef DISABLE_SCREENSAVER
 	WinScreenSaver* win_screensaver;
 #endif
 #endif

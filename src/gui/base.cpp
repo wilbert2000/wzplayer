@@ -150,15 +150,7 @@ TBase::TBase()
 	, arg_start_in_fullscreen(-1)
 	, ignore_show_hide_events(false)
 	, block_resize(false)
-	, center_window(false)
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef AVOID_SCREENSAVER
-	/* Disable screensaver by event */
-	, just_stopped(false)
-#endif
-#endif
-{
+	, center_window(false) {
 
 #if QT_VERSION >= 0x050000
 	was_minimized = isMinimized();
@@ -2038,19 +2030,6 @@ void TBase::onStateChanged(TCore::State state) {
 			auto_hide_timer->stopAutoHideMouse();
 			break;
 	}
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef AVOID_SCREENSAVER
-	/* Disable screensaver by event */
-	just_stopped = false;
-
-	if (state == TCore::Stopped) {
-		just_stopped = true;
-		int time = 1000 * 60; // 1 minute
-		QTimer::singleShot(time, this, SLOT(clear_just_stopped()));
-	}
-#endif
-#endif
 }
 
 void TBase::displayMessage(const QString& message, int time) {
@@ -2548,46 +2527,29 @@ void TBase::openUploadSubtitlesPage() {
 }
 #endif
 
-#ifdef Q_OS_WIN
-#ifdef AVOID_SCREENSAVER
-/* Disable screensaver by event */
+#if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 bool TBase::winEvent (MSG* m, long* result) {
 	//qDebug("Gui::TBase::winEvent");
-	if (m->message==WM_SYSCOMMAND) {
-		if ((m->wParam & 0xFFF0)==SC_SCREENSAVE || (m->wParam & 0xFFF0)==SC_MONITORPOWER) {
+
+	if (m->message == WM_SYSCOMMAND) {
+		if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
+			|| ((m->wParam & 0xFFF0) == SC_MONITORPOWER) {
 			qDebug("Gui::TBase::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
-			qDebug("Gui::TBase::winEvent: avoid_screensaver: %d", pref->avoid_screensaver);
-			qDebug("Gui::TBase::winEvent: playing: %d", core->state()==TCore::Playing);
-			qDebug("Gui::TBase::winEvent: video: %d", !core->mdat.novideo);
+			qDebug("Gui::TBase::winEvent: playing: %d", core->state() == TCore::Playing);
+			qDebug("Gui::TBase::winEvent: video: %d", !core->mdat.noVideo());
 			
-			if ((pref->avoid_screensaver) && (core->state()==TCore::Playing) && (!core->mdat.novideo)) {
+			if (core->state() == TCore::Playing && !core->mdat.noVideo())) {
 				qDebug("Gui::TBase::winEvent: not allowing screensaver");
 				(*result) = 0;
 				return true;
-			} else {
-				if ((pref->avoid_screensaver) && (just_stopped)) {
-					qDebug("Gui::TBase::winEvent: file just stopped, so not allowing screensaver for a while");
-					(*result) = 0;
-					return true;
-				} else {
-					qDebug("Gui::TBase::winEvent: allowing screensaver");
-					return false;
-				}
 			}
+
+			qDebug("Gui::TBase::winEvent: allowing screensaver");
+			return false;
 		}
 	}
 	return false;
 }
-#endif
-#endif
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef AVOID_SCREENSAVER
-void TBase::clear_just_stopped() {
-	qDebug("Gui::TBase::clear_just_stopped");
-	just_stopped = false;
-}
-#endif
 #endif
 
 } // namespace Gui

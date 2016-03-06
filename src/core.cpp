@@ -55,7 +55,7 @@
 #include <windows.h> // To change app priority
 #include <QSysInfo> // To get Windows version
 #endif
-#ifdef SCREENSAVER_OFF
+#ifdef DISABLE_SCREENSAVER
 #include "screensaver.h"
 #endif
 #endif
@@ -194,7 +194,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
+#ifdef DISABLE_SCREENSAVER
 	// Windows or OS2 screensaver
 	win_screensaver = new WinScreenSaver();
 	connect(this, SIGNAL(aboutToStartPlaying()),
@@ -215,7 +215,7 @@ TCore::~TCore() {
 	proc->terminate();
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
+#ifdef DISABLE_SCREENSAVER
 	delete win_screensaver;
 #endif
 #endif
@@ -495,19 +495,15 @@ void TCore::open(QString file, int seek, bool fast_open) {
 }
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
+#ifdef DISABLE_SCREENSAVER
 void TCore::enableScreensaver() {
 	qDebug("TCore::enableScreensaver");
-	if (pref->turn_screensaver_off) {
-		win_screensaver->enable();
-	}
+	win_screensaver->enable();
 }
 
 void TCore::disableScreensaver() {
 	qDebug("TCore::disableScreensaver");
-	if (pref->turn_screensaver_off) {
-		win_screensaver->disable();
-	}
+	win_screensaver->disable();
 }
 #endif
 #endif
@@ -1217,10 +1213,6 @@ void TCore::startPlayer(QString file, double seek) {
 	if (pref->use_mc) {
 		proc->setOption("mc", QString::number(pref->mc_value));
 	}
-
-#ifdef Q_WS_X11
-	proc->setOption("stop-xscreensaver", pref->disable_screensaver);
-#endif
 
 	proc->disableInput();
 	proc->setOption("keepaspect", false);

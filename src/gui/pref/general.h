@@ -97,20 +97,6 @@ protected:
 	void setCloseOnFinish(bool b);
 	bool closeOnFinish();
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
-	void setTurnScreensaverOff(bool b);
-	bool turnScreensaverOff();
-#endif
-#ifdef AVOID_SCREENSAVER
-	void setAvoidScreensaver(bool b);
-	bool avoidScreensaver();
-#endif
-#else
-	void setDisableScreensaver(bool b);
-	bool disableScreensaver();
-#endif
-
 
 	// Video tab
 	void setVO(QString vo_driver);

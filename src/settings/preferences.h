@@ -113,18 +113,6 @@ public:
 #endif
 	void setupScreenshotFolder();
 
-	// Screensaver
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef SCREENSAVER_OFF
-	bool turn_screensaver_off;
-#endif
-#ifdef AVOID_SCREENSAVER
-	bool avoid_screensaver;
-#endif
-#else
-	bool disable_screensaver;
-#endif
-
 
 	// Video tab
 	QString vo; // video output
