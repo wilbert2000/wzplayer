@@ -1297,21 +1297,23 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Subtitle encoding
-	{
-		QString encoding;
-		if (pref->use_enca && !pref->enca_lang.isEmpty()) {
-			encoding = "enca:"+ pref->enca_lang;
-			if (!pref->subcp.isEmpty()) {
-				encoding += ":"+ pref->subcp;
-			}
-		} else if (!pref->subcp.isEmpty()) {
-			encoding = pref->subcp;
+{
+	QString encoding;
+	if (pref->use_enca && !pref->enca_lang.isEmpty()) {
+		// Add subtitle language
+		encoding = "enca:"+ pref->enca_lang;
+		// Add subtitle code page
+		if (!pref->sub_code_page.isEmpty()) {
+			encoding += ":"+ pref->sub_code_page;
 		}
-
-		if (!encoding.isEmpty()) {
-			proc->setOption("subcp", encoding);
-		}
+	} else if (!pref->sub_code_page.isEmpty()) {
+		encoding = pref->sub_code_page;
 	}
+
+	if (!encoding.isEmpty()) {
+		proc->setOption("subcp", encoding);
+	}
+}
 
 	if (mset.closed_caption_channel > 0) {
 		proc->setOption("subcc", QString::number(mset.closed_caption_channel));

@@ -127,10 +127,11 @@ void TSubtitles::retranslateStrings() {
 }
 
 void TSubtitles::setData(Settings::TPreferences* pref) {
+
 	setAssFontScale(pref->initial_sub_scale_ass);
 	setAutoloadSub(pref->autoload_sub);
 	setFontFuzziness(pref->subfuzziness);
-	setFontEncoding(pref->subcp);
+	setFontEncoding(pref->sub_code_page);
 	setUseEnca(pref->use_enca);
 	setEncaLang(pref->enca_lang);
 	setAssLineSpacing(pref->ass_line_spacing);
@@ -172,7 +173,7 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 	pref->initial_sub_scale_ass = assFontScale();
 	restartIfBoolChanged(pref->autoload_sub, autoloadSub());
 	restartIfIntChanged(pref->subfuzziness, fontFuzziness());
-	restartIfStringChanged(pref->subcp, fontEncoding());
+	restartIfStringChanged(pref->sub_code_page, fontEncoding());
 	restartIfBoolChanged(pref->use_enca, useEnca());
 	restartIfStringChanged(pref->enca_lang, encaLang());
 	restartIfIntChanged(pref->ass_line_spacing, assLineSpacing());

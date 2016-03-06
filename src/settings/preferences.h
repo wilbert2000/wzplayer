@@ -199,13 +199,10 @@ public:
 	int cache_for_tv;
 
 
-	/* *********
-	   Subtitles
-	   ********* */
-
-	QString subcp; // -subcp
-	bool use_enca;
-	QString enca_lang;
+	// Subtitles
+	QString sub_code_page; // Code page subtitles
+	bool use_enca; // Pass subtitle encoding to player
+	QString enca_lang; // Subtitle language
 	int subfuzziness;
 	bool autoload_sub;
 

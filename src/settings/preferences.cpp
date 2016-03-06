@@ -198,11 +198,8 @@ void TPreferences::reset() {
 	cache_for_tv = 3000;
 
 
-    /* *********
-       Subtitles
-       ********* */
-
-	subcp = "ISO-8859-1";
+	// Subtitles
+	sub_code_page = "ISO-8859-1";
 	use_enca = false;
 	enca_lang = QString(QLocale::system().name()).section("_",0,0);
 	subfuzziness = 1;
@@ -582,7 +579,7 @@ void TPreferences::save() {
        ********* */
 	beginGroup("subtitles");
 
-	setValue("subcp", subcp);
+	setValue("subcp", sub_code_page);
 	setValue("use_enca", use_enca);
 	setValue("enca_lang", enca_lang);
 	setValue("subfuzziness", subfuzziness);
@@ -1095,7 +1092,7 @@ void TPreferences::load() {
 
 	beginGroup("subtitles");
 
-	subcp = value("subcp", subcp).toString();
+	sub_code_page = value("subcp", sub_code_page).toString();
 	use_enca = value("use_enca", use_enca).toBool();
 	enca_lang = value("enca_lang", enca_lang).toString();
 	subfuzziness = value("subfuzziness", subfuzziness).toInt();
