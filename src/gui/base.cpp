@@ -1029,6 +1029,9 @@ void TBase::applyNewPreferences() {
 		panel->show();
 	}
 
+	// Show tags
+	setWindowCaption(core->mdat.displayName(pref->show_tag_in_window_title) + " - SMPlayer");
+
 	// Video equalizer
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
 

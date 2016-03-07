@@ -155,6 +155,7 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	setResizeMethod(pref->resize_method);
 	setSaveSize(pref->save_window_size_on_exit);
+	setShowTagInTitle(pref->show_tag_in_window_title);
 
 #ifdef SINGLE_INSTANCE
 	setUseSingleInstance(pref->use_single_instance);
@@ -205,6 +206,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 
 	pref->resize_method = resizeMethod();
 	pref->save_window_size_on_exit = saveSize();
+	pref->show_tag_in_window_title = showTagInTitle();
 
 #ifdef SINGLE_INSTANCE
 	pref->use_single_instance = useSingleInstance();
@@ -301,6 +303,13 @@ bool TInterface::saveSize() {
 	return save_size_check->isChecked();
 }
 
+void TInterface::setShowTagInTitle(bool b) {
+	use_filename_in_title_check->setChecked(!b);
+}
+
+bool TInterface::showTagInTitle() {
+	return !use_filename_in_title_check->isChecked();
+}
 
 void TInterface::setStyle(QString style) {
 	if (style.isEmpty()) 
@@ -466,6 +475,10 @@ void TInterface::createHelp() {
 
 	setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
         tr("If this option is enabled the video window will be hidden when playing audio files."));
+
+	setWhatsThis(use_filename_in_title_check, tr("Always use file name in window title"),
+		tr("If media provides a title it will be used for the window title, "
+		   "unless this option is checked, then the file name will always be used."));
 
 	setWhatsThis(language_combo, tr("Language"),
 		tr("Here you can change the language of the application."));

@@ -57,7 +57,7 @@
             <item>
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>Auto&amp;resize:</string>
+               <string>&amp;Resize:</string>
               </property>
               <property name="buddy">
                <cstring>mainwindow_resize_combo</cstring>
@@ -100,6 +100,13 @@
              <widget class="QCheckBox" name="hide_video_window_on_audio_check">
               <property name="text">
                <string>&amp;Hide video window when playing audio files</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="use_filename_in_title_check">
+              <property name="text">
+               <string>&amp;Always use file name in window title</string>
               </property>
              </widget>
             </item>
@@ -210,7 +217,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="style_label">
            <property name="text">
-            <string>St&amp;yle:</string>
+            <string>S&amp;tyle:</string>
            </property>
            <property name="wordWrap">
             <bool>false</bool>
@@ -233,7 +240,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="textLabel1_18">
            <property name="text">
-            <string>L&amp;anguage:</string>
+            <string>&amp;Language:</string>
            </property>
            <property name="wordWrap">
             <bool>false</bool>
@@ -772,6 +779,7 @@
   <tabstop>mainwindow_resize_combo</tabstop>
   <tabstop>save_size_check</tabstop>
   <tabstop>hide_video_window_on_audio_check</tabstop>
+  <tabstop>use_filename_in_title_check</tabstop>
   <tabstop>language_combo</tabstop>
   <tabstop>iconset_combo</tabstop>
   <tabstop>style_combo</tabstop>

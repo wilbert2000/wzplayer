@@ -88,7 +88,6 @@ void TAdvanced::setData(TPreferences* pref) {
 
 	setUseCorrectPts(pref->use_correct_pts);
 	setActionsToRun(pref->actions_to_run);
-	setShowTagInTitle(pref->show_tag_in_window_title);
 
 	setLogDebugEnabled(pref->log_debug_enabled);
 	setLogVerbose(pref->log_verbose);
@@ -115,8 +114,6 @@ void TAdvanced::getData(TPreferences* pref) {
 
 	TEST_AND_SET(pref->use_correct_pts, useCorrectPts());
 	pref->actions_to_run = actionsToRun();
-	//TEST_AND_SET(pref->show_tag_in_window_title, showTagInTitle());
-	pref->show_tag_in_window_title = showTagInTitle(); // TODO: detect change and apply
 
 	if (pref->monitor_aspect != monitorAspect()) {
 		pref->monitor_aspect = monitorAspect();
@@ -253,14 +250,6 @@ QString TAdvanced::actionsToRun() {
 	return actions_to_run_edit->text();
 }
 
-void TAdvanced::setShowTagInTitle(bool b) {
-	show_tag_in_title_check->setChecked(b);
-}
-
-bool TAdvanced::showTagInTitle() {
-	return show_tag_in_title_check->isChecked();
-}
-
 void TAdvanced::on_changeButton_clicked() {
 	//bool ok;
 	//int color = colorkey_view->text().toUInt(&ok, 16);
@@ -352,11 +341,6 @@ void TAdvanced::createHelp() {
         tr("If you see parts of the video over any other window, you can "
            "change the colorkey to fix it. Try to select a color close to "
            "black."));
-
-	setWhatsThis(show_tag_in_title_check, tr("Show tag info in window title"),
-		tr("If this option is enabled, information from tags will be "
-		   "shown in window title. "
-           "Otherwise only the filename will be shown."));
 
 	addSectionTitle(tr("Options for %1").arg(pref->playerName()));
 

@@ -86,9 +86,6 @@ protected:
 	void setActionsToRun(QString actions);
 	QString actionsToRun();
 
-	void setShowTagInTitle(bool b);
-	bool showTagInTitle();
-
 	// Log options
 	void setLogDebugEnabled(bool b);
 	bool logDebugEnabled();
