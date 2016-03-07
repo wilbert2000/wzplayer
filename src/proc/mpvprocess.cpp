@@ -521,6 +521,8 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
 
+	static QRegExp rx_verbose("^\\[(statusline|term-msg|cplayer)\\] (.*)");
+
 
 	if (quit_at_end_of_title && !quit_send
 		&& quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
@@ -532,9 +534,9 @@ bool TMPVProcess::parseLine(QString& line) {
 		return true;
 	}
 
-	if (verbose) {
-		line = line.replace("[statusline] ", "");
-		line = line.replace("[cplayer] ", "");
+	// Remove sender when using verbose
+	if (verbose && rx_verbose.indexIn(line) >= 0) {
+		line = rx_verbose.cap(2);
 	}
 
 	// Parse custom status line
