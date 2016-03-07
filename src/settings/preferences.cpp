@@ -303,7 +303,6 @@ void TPreferences::reset() {
 	relative_seeking = false;
 	precise_seeking = true;
 
-	reset_stop = false;
 	delay_left_click = false;
 
 	language = "";
@@ -667,7 +666,6 @@ void TPreferences::save() {
 	setValue("relative_seeking", relative_seeking);
 	setValue("precise_seeking", precise_seeking);
 
-	setValue("reset_stop", reset_stop);
 	setValue("delay_left_click", delay_left_click);
 
 	setValue("language", language);
@@ -1182,7 +1180,6 @@ void TPreferences::load() {
 	relative_seeking = value("relative_seeking", relative_seeking).toBool();
 	precise_seeking = value("precise_seeking", precise_seeking).toBool();
 
-	reset_stop = value("reset_stop", reset_stop).toBool();
 	delay_left_click = value("delay_left_click", delay_left_click).toBool();
 
 	language = value("language", language).toString();
@@ -1389,6 +1386,8 @@ void TPreferences::load() {
 		remove("General/use_double_buffer");
 		remove("General/use_slices");
 		remove("General/autoq");
+
+		remove("gui/reset_stop");
 
 		remove("performance/hwdec");
 		remove("performance/frame_drop");

@@ -861,7 +861,7 @@ void TCore::stop() {
 	stopPlayer();
 
 	// if pressed stop twice, reset video to the beginning
-	if ((prev_state == Stopped || pref->reset_stop) && mset.current_sec != 0) {
+	if (prev_state == Stopped && mset.current_sec != 0) {
 		qDebug("TCore::stop: resetting current_sec %f to 0", mset.current_sec);
 		gotCurrentSec(0);
 	}

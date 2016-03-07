@@ -326,8 +326,6 @@ public:
 	bool relative_seeking;  
 	bool precise_seeking; //! Enable precise_seeking (only available with mplayer2)
 
-	bool reset_stop; //! Pressing the stop button resets the position
-
 	//! If true, the left click in the video is delayed some ms
 	//! to check if the user double clicked
 	bool delay_left_click;
