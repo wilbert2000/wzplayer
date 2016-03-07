@@ -1477,14 +1477,6 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("idx");
 	}
 
-	if (mdat.selected_type == TMediaData::TYPE_STREAM) {
-		if (pref->prefer_ipv4) {
-			proc->setOption("prefer-ipv4");
-		} else {
-			proc->setOption("prefer-ipv6");
-		}
-	}
-
 	if (pref->use_correct_pts != TPreferences::Detect) {
 		proc->setOption("correct-pts", pref->use_correct_pts == TPreferences::Enabled);
 	}

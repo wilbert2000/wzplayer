@@ -268,9 +268,6 @@ public:
 	//! If true it will pass to mplayer the -playlist option
 	bool use_playlist_option;
 
-	//! Preferred connection method: ipv4 or ipv6
-	bool prefer_ipv4;
-
 	//! If false, -brightness, -contrast and so on, won't be passed to
 	//! mplayer. It seems that some graphic cards don't support those options.
 	bool change_video_equalizer_on_startup;

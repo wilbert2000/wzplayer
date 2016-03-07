@@ -255,8 +255,6 @@ void TPreferences::reset() {
 
 	use_playlist_option = false;
 
-	prefer_ipv4 = true;
-
 	change_video_equalizer_on_startup = true;
 
 	use_correct_pts = Detect;
@@ -618,8 +616,6 @@ void TPreferences::save() {
 	setValue("use_edl_files", use_edl_files);
 
 	setValue("use_playlist_option", use_playlist_option);
-
-	setValue("prefer_ipv4", prefer_ipv4);
 
 	setValue("change_video_equalizer_on_startup", change_video_equalizer_on_startup);
 
@@ -1130,8 +1126,6 @@ void TPreferences::load() {
 
 	use_playlist_option = value("use_playlist_option", use_playlist_option).toBool();
 
-	prefer_ipv4 = value("prefer_ipv4", prefer_ipv4).toBool();
-
 	use_correct_pts = (TOptionState) value("correct_pts", use_correct_pts).toInt();
 
 	actions_to_run = value("actions_to_run", actions_to_run).toString();
@@ -1396,9 +1390,11 @@ void TPreferences::load() {
 		remove("General/use_slices");
 		remove("General/autoq");
 
-		remove("Performance/hwdec");
-		remove("Performance/frame_drop");
-		remove("Performance/hard_frame_drop");
+		remove("performance/hwdec");
+		remove("performance/frame_drop");
+		remove("performance/hard_frame_drop");
+
+		remove("advanced/prefer_ipv4");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

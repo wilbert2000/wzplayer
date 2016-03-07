@@ -24,8 +24,6 @@
 #include "settings/paths.h"
 
 
-#define LOGS_TAB 3
-
 namespace Gui { namespace Pref {
 
 TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
@@ -47,8 +45,7 @@ TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
 	retranslateStrings();
 }
 
-TAdvanced::~TAdvanced()
-{
+TAdvanced::~TAdvanced() {
 }
 
 QString TAdvanced::sectionName() {
@@ -61,6 +58,7 @@ QPixmap TAdvanced::sectionIcon() {
 
 
 void TAdvanced::retranslateStrings() {
+
 	retranslateUi(this);
 
 	monitor_aspect_icon->setPixmap(Images::icon("monitor"));
@@ -84,7 +82,6 @@ void TAdvanced::setData(TPreferences* pref) {
 	setMplayerAdditionalAudioFilters(pref->mplayer_additional_audio_filters);
 	setColorKey(pref->color_key);
 
-	setPreferIpv4(pref->prefer_ipv4);
 	setUseIdx(pref->use_idx);
 
 	setUseLavfDemuxer(pref->use_lavf_demuxer);
@@ -108,7 +105,6 @@ void TAdvanced::getData(TPreferences* pref) {
 	colorkey_changed = false;
 	lavf_demuxer_changed = false;
 
-	pref->prefer_ipv4 = preferIpv4();
 	TEST_AND_SET(pref->use_idx, useIdx());
 
 	if (pref->use_lavf_demuxer != useLavfDemuxer()) {
@@ -223,17 +219,6 @@ unsigned int TAdvanced::colorKey() {
 
 	qDebug("Gui::Pref::TAdvanced::colorKey: color: %s", QString::number(color, 16).toUtf8().data());
 	return color;
-}
-
-void TAdvanced::setPreferIpv4(bool b) {
-	if (b) 
-		ipv4_button->setChecked(true);
-	else 
-		ipv6_button->setChecked(true);
-}
-
-bool TAdvanced::preferIpv4() {
-	return ipv4_button->isChecked();
 }
 
 void TAdvanced::setUseIdx(bool b) {
@@ -387,13 +372,6 @@ void TAdvanced::createHelp() {
         tr("Here you can add audio filters for %1.").arg(pref->playerName()) +" "+
         tr("Write them separated by commas. Don't use spaces!"));
 
-	addSectionTitle(tr("Network"));
-
-	setWhatsThis(ipv4_button, tr("IPv4"),
-		tr("Use IPv4 on network connections. Falls back on IPv6 automatically."));
-
-	setWhatsThis(ipv6_button, tr("IPv6"),
-		tr("Use IPv6 on network connections. Falls back on IPv4 automatically."));
 
 	addSectionTitle(tr("Logs"));
 

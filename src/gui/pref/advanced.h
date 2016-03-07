@@ -16,17 +16,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_ADVANCED_H_
-#define _PREF_ADVANCED_H_
+#ifndef PREF_ADVANCED_H
+#define PREF_ADVANCED_H
 
 #include "ui_advanced.h"
 #include "gui/pref/widget.h"
 #include "settings/preferences.h"
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
-class TAdvanced : public TWidget, public Ui::TAdvanced
-{
+class TAdvanced : public TWidget, public Ui::TAdvanced {
 	Q_OBJECT
 
 public:
@@ -74,9 +74,6 @@ protected:
 	void setColorKey(unsigned int c);
 	unsigned int colorKey();
 
-	void setPreferIpv4(bool b);
-	bool preferIpv4();
-
 	void setUseIdx(bool);
 	bool useIdx();
 
@@ -115,6 +112,7 @@ private:
 	bool lavf_demuxer_changed;
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_ADVANCED_H_
+#endif // PREF_ADVANCED_H
