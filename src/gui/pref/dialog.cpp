@@ -26,11 +26,13 @@
 
 #include "images.h"
 
-namespace Gui { namespace Pref {
+
+namespace Gui {
+namespace Pref {
 
 TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
-	: QDialog(parent, f)
-{
+	: QDialog(parent, f) {
+
 	setupUi(this);
 
 	// Setup buttons
@@ -47,22 +49,12 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	help_window = new QTextBrowser(this);
 	help_window->setWindowFlags(Qt::Window);
 	help_window->resize(300, 450);
-	//help_window->adjustSize();
 	help_window->setWindowTitle(tr("SMPlayer - Help"));
 	help_window->setWindowIcon(Images::icon("logo"));
 	help_window->setOpenExternalLinks(true);
 
 	page_general = new TGeneral;
 	addSection(page_general);
-
-	page_drives = new TDrives;
-	addSection(page_drives);
-
-	page_performance = new TPerformance;
-	addSection(page_performance);
-
-	page_subtitles = new TSubtitles;
-	addSection(page_subtitles);
 
 	page_interface = new TInterface;
 	addSection(page_interface);
@@ -73,38 +65,45 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	page_playlist = new TPrefPlaylist;
 	addSection(page_playlist);
 
+	page_subtitles = new TSubtitles;
+	addSection(page_subtitles);
+
+	page_drives = new TDrives;
+	addSection(page_drives);
+
+	page_performance = new TPerformance;
+	addSection(page_performance);
+
 	page_tv = new TTV;
 	addSection(page_tv);
+
+	page_network = new TNetwork;
+	addSection(page_network);
+
+	page_updates = new TUpdates;
+	addSection(page_updates);
 
 #if USE_ASSOCIATIONS
 	page_associations = new TAssociations;
 	addSection(page_associations);
 #endif
 
-	page_updates = new TUpdates;
-	addSection(page_updates);
-
-	page_network = new TNetwork;
-	addSection(page_network);
-
 	page_advanced = new TAdvanced;
 	addSection(page_advanced);
 
 	//sections->setIconSize(QSize(22,22));
-	sections->setCurrentRow(General);
+	sections->setCurrentRow(SECTION_GENERAL);
 
-	//adjustSize();
 	retranslateStrings();
 }
 
-TDialog::~TDialog()
-{
+TDialog::~TDialog() {
 }
 
-void TDialog::showSection(Section s) {
-	qDebug("Gui::Pref::TDialog::showSection: %d", s);
+void TDialog::showSection(TSection section) {
+	qDebug("Gui::Pref::TDialog::showSection: %d", section);
 
-	sections->setCurrentRow(s);
+	sections->setCurrentRow(section);
 }
 
 void TDialog::retranslateStrings() {
@@ -126,6 +125,7 @@ void TDialog::retranslateStrings() {
 }
 
 void TDialog::accept() {
+
 	hide();
 	help_window->hide();
 	setResult(QDialog::Accepted);
@@ -133,11 +133,13 @@ void TDialog::accept() {
 }
 
 void TDialog::apply() {
+
 	setResult(QDialog::Accepted);
 	emit applied();
 }
 
 void TDialog::reject() {
+
 	hide();
 	help_window->hide();
 	setResult(QDialog::Rejected);
@@ -146,64 +148,71 @@ void TDialog::reject() {
 }
 
 void TDialog::addSection(TWidget *w) {
+
 	QListWidgetItem *i = new QListWidgetItem(w->sectionIcon(), w->sectionName());
 	sections->addItem(i);
 	pages->addWidget(w);
 }
 
 void TDialog::setData(Settings::TPreferences* pref) {
+
 	page_general->setData(pref);
-	page_drives->setData(pref);
 	page_interface->setData(pref);
-	page_performance->setData(pref);
 	page_input->setData(pref);
-	page_subtitles->setData(pref);
-	page_advanced->setData(pref);
 	page_playlist->setData(pref);
+	page_subtitles->setData(pref);
+	page_drives->setData(pref);
+	page_performance->setData(pref);
 	page_tv->setData(pref);
-	page_updates->setData(pref);
 	page_network->setData(pref);
+	page_updates->setData(pref);
 
 #if USE_ASSOCIATIONS
 	page_associations->setData(pref);
 #endif
+
+	page_advanced->setData(pref);
 }
 
 void TDialog::getData(Settings::TPreferences* pref) {
+
 	page_general->getData(pref);
-	page_drives->getData(pref);
 	page_interface->getData(pref);
-	page_performance->getData(pref);
 	page_input->getData(pref);
-	page_subtitles->getData(pref);
-	page_advanced->getData(pref);
 	page_playlist->getData(pref);
+	page_subtitles->getData(pref);
+	page_drives->getData(pref);
+	page_performance->getData(pref);
 	page_tv->getData(pref);
-	page_updates->getData(pref);
 	page_network->getData(pref);
+	page_updates->getData(pref);
 
 #if USE_ASSOCIATIONS
 	page_associations->getData(pref);
 #endif
+
+	page_advanced->getData(pref);
 }
 
 bool TDialog::requiresRestart() {
+
 	bool need_restart = page_general->requiresRestart();
-	if (!need_restart) need_restart = page_drives->requiresRestart();
 	if (!need_restart) need_restart = page_interface->requiresRestart();
-	if (!need_restart) need_restart = page_performance->requiresRestart();
 	if (!need_restart) need_restart = page_input->requiresRestart();
-	if (!need_restart) need_restart = page_subtitles->requiresRestart();
-	if (!need_restart) need_restart = page_advanced->requiresRestart();
 	if (!need_restart) need_restart = page_playlist->requiresRestart();
+	if (!need_restart) need_restart = page_subtitles->requiresRestart();
+	if (!need_restart) need_restart = page_drives->requiresRestart();
+	if (!need_restart) need_restart = page_performance->requiresRestart();
 	if (!need_restart) need_restart = page_tv->requiresRestart();
-	if (!need_restart) need_restart = page_updates->requiresRestart();
 	if (!need_restart) need_restart = page_network->requiresRestart();
+	if (!need_restart) need_restart = page_updates->requiresRestart();
+	if (!need_restart) need_restart = page_advanced->requiresRestart();
 
 	return need_restart;
 }
 
 void TDialog::showHelp() {
+
 	TWidget* w = (TWidget*) pages->currentWidget();
 	help_window->setHtml(w->help());
 	help_window->show();
@@ -219,6 +228,7 @@ void TDialog::changeEvent(QEvent *e) {
 	}
 }
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
 #include "moc_dialog.cpp"

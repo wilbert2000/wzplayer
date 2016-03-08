@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_DIALOG_H_
-#define _PREF_DIALOG_H_
+#ifndef PREF_DIALOG_H
+#define PREF_DIALOG_H
 
 #include "ui_dialog.h"
 #include "gui/pref/widget.h"
@@ -36,33 +36,42 @@
 #include "gui/pref/associations.h"
 #endif
 
+
 class QTextBrowser;
 class QPushButton;
 
+namespace Gui {
+namespace Pref {
 
-namespace Gui { namespace Pref {
 
-
-class TDialog : public QDialog, public Ui::TDialog
-{
+class TDialog : public QDialog, public Ui::TDialog {
 	Q_OBJECT
 
 public:
-	enum Section { General=0, Drives=1, Performance=2,
-                   Subtitles=3, Gui=4, Mouse=5, Advanced=6, Associations=7 };
+	enum TSection {
+		SECTION_GENERAL = 0,
+		SECTION_GUI,
+		SECTION_INPUT,
+		SECTION_PLAYLIST,
+		SECTION_SUBTITLES,
+		SECTION_DRIVES,
+		SECTION_PERFORMANCE,
+		SECTION_TV,
+		SECTION_NETWORK,
+		SECTION_UPDATES,
+#if USE_ASSOCIATIONS
+		SECTION_ASSOCIATIONS,
+#endif
+		SECTION_ADVANCED
+	};
 
 	TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~TDialog();
 
-	TGeneral* mod_general() const { return page_general; }
 	TInterface* mod_interface() const { return page_interface; }
 	TInput* mod_input() const { return page_input; }
-	TAdvanced* mod_advanced() const { return page_advanced; }
 	TPrefPlaylist* mod_playlist() const { return page_playlist; }
-	TUpdates* mod_updates() const { return page_updates; }
-	TNetwork* mod_network() const { return page_network; }
-
-	void addSection(TWidget* w);
+	TAdvanced* mod_advanced() const { return page_advanced; }
 
 	// Pass data to the standard dialogs
 	void setData(Settings::TPreferences* pref);
@@ -73,9 +82,9 @@ public:
 	// Return true if the mplayer process should be restarted.
 	bool requiresRestart();
 
-public slots:
-	void showSection(Section s);
+	void showSection(TSection section);
 
+public slots:
 	virtual void accept(); // Reimplemented to send a signal
 	virtual void reject();
 
@@ -92,20 +101,21 @@ protected slots:
 
 protected:
 	TGeneral* page_general;
-	TDrives* page_drives;
-	TPerformance* page_performance;
-	TSubtitles* page_subtitles;
 	TInterface* page_interface;
 	TInput* page_input;
 	TPrefPlaylist* page_playlist;
+	TSubtitles* page_subtitles;
+	TDrives* page_drives;
+	TPerformance* page_performance;
 	TTV* page_tv;
-	TUpdates* page_updates;
 	TNetwork* page_network;
-	TAdvanced* page_advanced;
+	TUpdates* page_updates;
 
 #if USE_ASSOCIATIONS
 	TAssociations* page_associations;
 #endif
+
+	TAdvanced* page_advanced;
 
 	QTextBrowser* help_window;
 
@@ -114,8 +124,11 @@ private:
 	QPushButton* cancelButton;
 	QPushButton* applyButton;
 	QPushButton* helpButton;
+
+	void addSection(TWidget* w);
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
 #endif // _PREF_DIALOG_H_

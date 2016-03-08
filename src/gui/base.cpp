@@ -1396,7 +1396,7 @@ void TBase::configureDiscDevices() {
 			   "so you can do it."), QMessageBox::Ok);
 	
 	showPreferencesDialog();
-	pref_dialog->showSection(Pref::TDialog::Drives);
+	pref_dialog->showSection(Pref::TDialog::SECTION_DRIVES);
 }
 
 void TBase::openVCD() {
