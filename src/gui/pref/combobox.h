@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_COMBOBOX_H_
-#define _PREF_COMBOBOX_H_
+#ifndef GUI_PREF_COMBOBOX_H
+#define GUI_PREF_COMBOBOX_H
 
 #include <QComboBox>
 #include <QFontComboBox>
@@ -25,29 +25,28 @@
 //! This class adds some Qt 3 compatibility functions which don't have a
 //! direct equivalent in Qt 4.
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
-class TComboBox : public QComboBox
-{
+class TComboBox : public QComboBox {
 public:
 	TComboBox(QWidget* parent = 0);
 	virtual ~TComboBox();
 
-	void setCurrentText (const QString & text);
-	void insertStringList (const QStringList & list, int index = -1);
+	void setCurrentText (const QString& text);
+	void insertStringList (const QStringList& list, int index = -1);
 };
 
-
-class TFontComboBox : public QFontComboBox
-{
+class TFontComboBox : public QFontComboBox {
 public:
 	TFontComboBox(QWidget* parent = 0);
 	~TFontComboBox();
 
-	void setCurrentText (const QString & text);
-	void setFontsFromDir(const QString & fontdir);
+	void setCurrentText (const QString& text);
+	void setFontsFromDir(const QString& fontdir);
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_COMBOBOX_H_
+#endif // GUI_PREF_COMBOBOX_H

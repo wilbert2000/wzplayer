@@ -16,18 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PREF_UPDATES_H
-#define PREF_UPDATES_H
+#ifndef GUI_PREF_UPDATES_H
+#define GUI_PREF_UPDATES_H
 
 #include "ui_updates.h"
-#include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
 
+namespace Settings {
+class TPreferences;
+}
+
 namespace Gui { namespace Pref {
 
-class TUpdates : public TWidget, public Ui::TUpdates
-{
+class TUpdates : public TWidget, public Ui::TUpdates {
 	Q_OBJECT
 
 public:
@@ -45,12 +47,9 @@ public:
 
 protected:
 	virtual void createHelp();
-
-
-protected:
 	virtual void retranslateStrings();
 };
 
 }} // namespace Gui::Pref
 
-#endif // PREF_UPDATES_H
+#endif // GUI_PREF_UPDATES_H

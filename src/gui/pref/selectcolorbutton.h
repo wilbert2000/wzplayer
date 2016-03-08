@@ -16,39 +16,37 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_SELECTCOLORBUTTON_H_
-#define _PREF_SELECTCOLORBUTTON_H_
+#ifndef GUI_PREF_SELECTCOLORBUTTON_H
+#define GUI_PREF_SELECTCOLORBUTTON_H
 
 #include <QPushButton>
 
 namespace Gui { namespace Pref {
 
-class TSelectColorButton : public QPushButton
-{
+class TSelectColorButton : public QPushButton {
 	Q_OBJECT
 
 public:
-	TSelectColorButton (QWidget* parent = 0);
+	TSelectColorButton(QWidget* parent = 0);
 	virtual ~TSelectColorButton();
 
-	QColor color() { return _color;}
+	QColor color() const { return _color;}
 
 public slots:
 	void setColor(QColor c);
 
-private slots:
-	void selectColor();
+protected:
+	virtual void changeEvent(QEvent* event) ;
 
 private:
 	QColor _color;
-
 	bool ignore_change_event;
 	
-protected:
-	virtual void changeEvent (QEvent* event) ;
+private slots:
+	void selectColor();
 };
 
 }} // namespace Gui::Pref
 
-#endif // _PREF_SELECTCOLORBUTTON_H_
+#endif // GUI_PREF_SELECTCOLORBUTTON_H
 

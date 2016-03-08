@@ -19,10 +19,10 @@
 #ifndef GUI_DEFAULT_H
 #define GUI_DEFAULT_H
 
-#include <QPoint>
-
 #include "gui/baseplus.h"
 
+
+class QLabel;
 class QToolBar;
 class QPushButton;
 class QResizeEvent;

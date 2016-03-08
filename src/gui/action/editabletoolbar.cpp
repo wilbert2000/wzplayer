@@ -17,14 +17,18 @@
 */
 
 #include "gui/action/editabletoolbar.h"
+
 #include <QDebug>
 #include <QMenu>
 #include <QResizeEvent>
 #include <QTimer>
+
+#include "settings/preferences.h"
+#include "gui/base.h"
+#include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
 #include "gui/action/menu.h"
-#include "gui/base.h"
 #include "gui/action/sizegrip.h"
 #include "gui/action/timeslider.h"
 
@@ -79,7 +83,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 					   << actions[i] << "at pos" << i;
 			actions.removeAt(i);
 		} else {
-			if (pref->fullscreen ? fs : ns) {
+			if (Settings::pref->fullscreen ? fs : ns) {
 				if (action_name == "separator") {
 					addAction(TToolbarEditor::newSeparator(this));
 				} else {

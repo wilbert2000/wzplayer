@@ -244,7 +244,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	pref->save_dirs = rememberDirs();
 }
 
-void TInterface::setLanguage(QString lang) {
+void TInterface::setLanguage(const QString& lang) {
 	if (lang.isEmpty()) {
 		language_combo->setCurrentIndex(0);
 	}
@@ -264,7 +264,7 @@ QString TInterface::language() {
 		return language_combo->itemData(language_combo->currentIndex()).toString();
 }
 
-void TInterface::setIconSet(QString set) {
+void TInterface::setIconSet(const QString& set) {
 
 	iconset_combo->setCurrentIndex(0);
 	for (int n = 0; n < iconset_combo->count(); n++) {
@@ -307,7 +307,7 @@ bool TInterface::showTagInTitle() {
 	return !use_filename_in_title_check->isChecked();
 }
 
-void TInterface::setStyle(QString style) {
+void TInterface::setStyle(const QString& style) {
 	if (style.isEmpty()) 
 		style_combo->setCurrentIndex(0);
 	else
@@ -392,7 +392,7 @@ bool TInterface::preciseSeeking() {
 	return precise_seeking_check->isChecked();
 }
 
-void TInterface::setDefaultFont(QString font_desc) {
+void TInterface::setDefaultFont(const QString& font_desc) {
 	default_font_edit->setText(font_desc);
 }
 

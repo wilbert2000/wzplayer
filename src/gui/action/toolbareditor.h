@@ -16,22 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_TOOLBAR_EDITOR_H_
-#define _GUI_TOOLBAR_EDITOR_H_
+#ifndef GUI_ACTION_TOOLBAR_EDITOR_H
+#define GUI_ACTION_TOOLBAR_EDITOR_H
 
 #include <QStringList>
-#include <QWidget>
-#include <QList>
-#include <QAction>
 #include "ui_toolbareditor.h"
+#include "gui/action/actionlist.h"
 
+
+class QWidget;
 class QListWidget;
-class QToolBar;
 
 namespace Gui {
 namespace Action {
-
-typedef QList<QAction*> TActionList;
 
 
 class TToolbarEditor : public QDialog, public Ui::TToolbarEditor {
@@ -54,7 +51,7 @@ public:
 
 protected:
 	static void populateList(QListWidget* w, const TActionList& actions_list);
-	void virtual resizeEvent(QResizeEvent*event);
+	void virtual resizeEvent(QResizeEvent* event);
 
 protected slots:
 	void on_up_button_clicked();
@@ -83,5 +80,5 @@ private:
 } // namespace Action
 } // namespace Gui
 
-#endif // _GUI_TOOLBAR_EDITOR_H_
+#endif // GUI_ACTION_TOOLBAR_EDITOR_H
 

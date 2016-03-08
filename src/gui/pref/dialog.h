@@ -16,32 +16,39 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PREF_DIALOG_H
-#define PREF_DIALOG_H
+#ifndef GUI_PREF_DIALOG_H
+#define GUI_PREF_DIALOG_H
 
 #include "ui_dialog.h"
-#include "gui/pref/widget.h"
-#include "gui/pref/general.h"
-#include "gui/pref/drives.h"
-#include "gui/pref/interface.h"
-#include "gui/pref/performance.h"
-#include "gui/pref/input.h"
-#include "gui/pref/subtitles.h"
-#include "gui/pref/advanced.h"
-#include "gui/pref/prefplaylist.h"
-#include "gui/pref/tv.h"
-#include "gui/pref/updates.h"
-#include "gui/pref/network.h"
-#if USE_ASSOCIATIONS
-#include "gui/pref/associations.h"
-#endif
 
 
 class QTextBrowser;
 class QPushButton;
 
+namespace Settings {
+class TPreferences;
+}
+
 namespace Gui {
 namespace Pref {
+
+class TWidget;
+class TGeneral;
+class TInterface;
+class TInput;
+class TPrefPlaylist;
+class TSubtitles;
+class TDrives;
+class TPerformance;
+class TTV;
+class TNetwork;
+class TUpdates;
+
+#if USE_ASSOCIATIONS
+class TAssociations;
+#endif
+
+class TAdvanced;
 
 
 class TDialog : public QDialog, public Ui::TDialog {
@@ -131,4 +138,4 @@ private:
 } // namespace Pref
 } // namespace Gui
 
-#endif // _PREF_DIALOG_H_
+#endif // GUI_PREF_DIALOG_H

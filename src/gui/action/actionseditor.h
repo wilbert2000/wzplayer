@@ -18,23 +18,21 @@
 
 /* This is based on qq14-actioneditor-code.zip from Qt */
 
-#ifndef GUI_ACTIONSEDITOR_H
-#define GUI_ACTIONSEDITOR_H
+#ifndef GUI_ACTION_ACTIONSEDITOR_H
+#define GUI_ACTION_ACTIONSEDITOR_H
 
 #include <QWidget>
-#include <QList>
 #include <QStringList>
+#include <gui/action/actionlist.h>
 
 class QTableWidget;
 class QTableWidgetItem;
-class QAction;
 class QSettings;
 class QPushButton;
 
 namespace Gui {
 namespace Action {
 
-typedef QList<QAction*> TActionList;
 typedef QList<QKeySequence> TShortCutList;
 
 class TActionsEditor : public QWidget {
@@ -101,4 +99,4 @@ private:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTIONSEDITOR_H
+#endif // GUI_ACTION_ACTIONSEDITOR_H

@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_PREF_SEEKWIDGET_H_
-#define _GUI_PREF_SEEKWIDGET_H_
+#ifndef GUI_PREF_SEEKWIDGET_H
+#define GUI_PREF_SEEKWIDGET_H
 
 #include "ui_seekwidget.h"
 #include <QPixmap>
@@ -44,9 +44,8 @@ public slots:
 	void setIcon(QPixmap icon);
 	void setLabel(QString text);
 	void setTime(int secs);
-
 };
 
 }} // namespace Gui::Pref
 
-#endif // _GUI_PREF_SEEKWIDGET_H_
+#endif // GUI_PREF_SEEKWIDGET_H

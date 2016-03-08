@@ -143,7 +143,7 @@ void TDrives::getData(Settings::TPreferences* pref) {
 	pref->use_dvdnav = useDVDNav();
 }
 
-void TDrives::setDVDDevice(QString dir) {
+void TDrives::setDVDDevice(const QString& dir) {
 	dvd_device_combo->setCurrentText(dir);
 }
 
@@ -151,7 +151,7 @@ QString TDrives::dvdDevice() {
 	return dvd_device_combo->currentText();
 }
 
-void TDrives::setBlurayDevice(QString dir) {
+void TDrives::setBlurayDevice(const QString& dir) {
 	bluray_device_combo->setCurrentText(dir);
 }
 
@@ -159,7 +159,7 @@ QString TDrives::blurayDevice() {
 	return bluray_device_combo->currentText();
 }
 
-void TDrives::setCDRomDevice(QString dir) {
+void TDrives::setCDRomDevice(const QString& dir) {
 	cdrom_device_combo->setCurrentText(dir);
 }
 

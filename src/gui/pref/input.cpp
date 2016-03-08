@@ -190,7 +190,7 @@ void TInput::setActionsList(QStringList l) {
 }
 */
 
-void TInput::setLeftClickFunction(QString f) {
+void TInput::setLeftClickFunction(const QString& f) {
 	int pos = left_click_combo->findData(f);
 	if (pos == -1) pos = 0; //None
 	left_click_combo->setCurrentIndex(pos);
@@ -200,7 +200,7 @@ QString TInput::leftClickFunction() {
 	return left_click_combo->itemData(left_click_combo->currentIndex()).toString();
 }
 
-void TInput::setRightClickFunction(QString f) {
+void TInput::setRightClickFunction(const QString& f) {
 	int pos = right_click_combo->findData(f);
 	if (pos == -1) pos = 0; //None
 	right_click_combo->setCurrentIndex(pos);
@@ -210,7 +210,7 @@ QString TInput::rightClickFunction() {
 	return right_click_combo->itemData(right_click_combo->currentIndex()).toString();
 }
 
-void TInput::setDoubleClickFunction(QString f) {
+void TInput::setDoubleClickFunction(const QString& f) {
 	int pos = double_click_combo->findData(f);
 	if (pos == -1) pos = 0; //None
 	double_click_combo->setCurrentIndex(pos);
@@ -220,7 +220,7 @@ QString TInput::doubleClickFunction() {
 	return double_click_combo->itemData(double_click_combo->currentIndex()).toString();
 }
 
-void TInput::setMiddleClickFunction(QString f) {
+void TInput::setMiddleClickFunction(const QString& f) {
 	int pos = middle_click_combo->findData(f);
 	if (pos == -1) pos = 0; //None
 	middle_click_combo->setCurrentIndex(pos);
@@ -230,7 +230,7 @@ QString TInput::middleClickFunction() {
 	return middle_click_combo->itemData(middle_click_combo->currentIndex()).toString();
 }
 
-void TInput::setXButton1ClickFunction(QString f) {
+void TInput::setXButton1ClickFunction(const QString& f) {
 	int pos = xbutton1_click_combo->findData(f);
 	if (pos == -1) pos = 0; //None
 	xbutton1_click_combo->setCurrentIndex(pos);
@@ -240,7 +240,7 @@ QString TInput::xButton1ClickFunction() {
 	return xbutton1_click_combo->itemData(xbutton1_click_combo->currentIndex()).toString();
 }
 
-void TInput::setXButton2ClickFunction(QString f) {
+void TInput::setXButton2ClickFunction(const QString& f) {
 	int pos = xbutton2_click_combo->findData(f);
 	if (pos == -1) pos = 0; //None
 	xbutton2_click_combo->setCurrentIndex(pos);

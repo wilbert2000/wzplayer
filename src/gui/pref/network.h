@@ -20,14 +20,16 @@
 #define PREF_NETWORK_H
 
 #include "ui_network.h"
-#include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
 
+namespace Settings {
+class TPreferences;
+}
+
 namespace Gui { namespace Pref {
 
-class TNetwork : public TWidget, public Ui::TNetwork
-{
+class TNetwork : public TWidget, public Ui::TNetwork {
 	Q_OBJECT
 
 public:

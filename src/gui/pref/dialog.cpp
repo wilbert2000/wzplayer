@@ -18,13 +18,24 @@
 
 
 #include "gui/pref/dialog.h"
-
-#include "settings/preferences.h"
-
-#include <QVBoxLayout>
 #include <QTextBrowser>
-
 #include "images.h"
+#include "settings/preferences.h"
+#include "gui/pref/widget.h"
+#include "gui/pref/general.h"
+#include "gui/pref/drives.h"
+#include "gui/pref/interface.h"
+#include "gui/pref/performance.h"
+#include "gui/pref/input.h"
+#include "gui/pref/subtitles.h"
+#include "gui/pref/advanced.h"
+#include "gui/pref/prefplaylist.h"
+#include "gui/pref/tv.h"
+#include "gui/pref/updates.h"
+#include "gui/pref/network.h"
+#if USE_ASSOCIATIONS
+#include "gui/pref/associations.h"
+#endif
 
 
 namespace Gui {

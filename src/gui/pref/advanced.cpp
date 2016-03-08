@@ -24,6 +24,8 @@
 #include "settings/paths.h"
 
 
+using namespace Settings;
+
 namespace Gui { namespace Pref {
 
 TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)

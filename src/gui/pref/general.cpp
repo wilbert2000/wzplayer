@@ -30,6 +30,8 @@
 #endif
 
 
+using namespace Settings;
+
 namespace Gui { namespace Pref {
 
 TGeneral::TGeneral(QWidget* parent, Qt::WindowFlags f)
@@ -473,7 +475,7 @@ void TGeneral::updateDriverCombos() {
 	setAO(current_ao);
 }
 
-void TGeneral::setPlayerPath(QString path) {
+void TGeneral::setPlayerPath(const QString& path) {
 	playerbin_edit->setText(path);
 }
 
@@ -489,7 +491,7 @@ bool TGeneral::useScreenshots() {
 	return use_screenshots_check->isChecked();
 }
 
-void TGeneral::setScreenshotDir(QString path) {
+void TGeneral::setScreenshotDir(const QString& path) {
 	screenshot_edit->setText(path);
 }
 
@@ -498,10 +500,11 @@ QString TGeneral::screenshotDir() {
 }
 
 #ifdef MPV_SUPPORT
-void TGeneral::setScreenshotFormat(const QString format) {
+void TGeneral::setScreenshotFormat(const QString& format) {
 
 	int i = screenshot_format_combo->findText(format);
-	if (i < 0) i = 0;
+	if (i < 0)
+		i = 0;
 	screenshot_format_combo->setCurrentIndex(i);
 }
 
@@ -510,7 +513,8 @@ QString TGeneral::screenshotFormat() {
 }
 #endif
 
-void TGeneral::setVO(QString vo_driver) {
+void TGeneral::setVO(const QString& vo_driver) {
+
 	int idx = vo_combo->findData(vo_driver);
 	if (idx != -1) {
 		vo_combo->setCurrentIndex(idx);
@@ -521,7 +525,8 @@ void TGeneral::setVO(QString vo_driver) {
 	vo_combo_changed(vo_combo->currentIndex());
 }
 
-void TGeneral::setAO(QString ao_driver) {
+void TGeneral::setAO(const QString& ao_driver) {
+
 	int idx = ao_combo->findData(ao_driver);
 	if (idx != -1) {
 		ao_combo->setCurrentIndex(idx);
@@ -604,7 +609,7 @@ bool TGeneral::rememberTimePos() {
 	return remember_time_check->isChecked();
 }
 
-void TGeneral::setFileSettingsMethod(QString method) {
+void TGeneral::setFileSettingsMethod(const QString& method) {
 
 	int index = filesettings_method_combo->findData(method);
 	if (index < 0)
@@ -616,7 +621,7 @@ QString TGeneral::fileSettingsMethod() {
 	return filesettings_method_combo->itemData(filesettings_method_combo->currentIndex()).toString();
 }
 
-void TGeneral::setAudioLang(QString lang) {
+void TGeneral::setAudioLang(const QString& lang) {
 	audio_lang_edit->setText(lang);
 }
 
@@ -624,7 +629,7 @@ QString TGeneral::audioLang() {
 	return audio_lang_edit->text();
 }
 
-void TGeneral::setSubtitleLang(QString lang) {
+void TGeneral::setSubtitleLang(const QString& lang) {
 	subtitle_lang_edit->setText(lang);
 }
 

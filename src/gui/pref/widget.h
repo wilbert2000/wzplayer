@@ -16,12 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PREF_WIDGET_H
-#define PREF_WIDGET_H
+#ifndef GUI_PREF_WIDGET_H
+#define GUI_PREF_WIDGET_H
 
 #include <QWidget>
-#include <QPixmap>
 #include <QString>
+#include <QPixmap>
 
 
 // TODO: remove
@@ -77,4 +77,4 @@ private:
 } // namespace Pref
 } // namespace Gui
 
-#endif // PREF_WIDGET_H
+#endif // GUI_PREF_WIDGET_H

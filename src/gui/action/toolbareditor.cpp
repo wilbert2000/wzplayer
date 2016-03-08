@@ -25,6 +25,7 @@
 #include <QTimer>
 #include <QMatrix>
 
+#include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "images.h"
 

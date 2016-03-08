@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_VDPAUPROPERTIES_H_
-#define _PREF_VDPAUPROPERTIES_H_
+#ifndef GUI_PREF_VDPAUPROPERTIES_H
+#define GUI_PREF_VDPAUPROPERTIES_H
 
 #include <QDialog>
 #include "ui_vdpauproperties.h"
@@ -50,4 +50,4 @@ public:
 
 }} // namespace Gui::Pref
 
-#endif // _PREF_VDPAUPROPERTIES_H_
+#endif // GUI_PREF_VDPAUPROPERTIES_H

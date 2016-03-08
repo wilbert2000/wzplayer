@@ -16,12 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_WIDGETACTIONS_H
-#define GUI_WIDGETACTIONS_H
+#ifndef GUI_ACTION_WIDGETACTIONS_H
+#define GUI_ACTION_WIDGETACTIONS_H
 
 #include <QWidgetAction>
 #include <QSlider>
 #include "settings/preferences.h"
+#include "gui/action/actionlist.h"
 
 
 class QStyle;
@@ -142,8 +143,6 @@ private:
 };
 
 
-typedef QList<QAction*> TActionList;
-
 class TSeekingButton : public QWidgetAction {
 	Q_OBJECT
 
@@ -160,5 +159,5 @@ protected:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_WIDGETACTIONS_H
+#endif // GUI_ACTION_WIDGETACTIONS_H
 

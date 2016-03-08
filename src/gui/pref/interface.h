@@ -20,9 +20,11 @@
 #define PREF_INTERFACE_H
 
 #include "ui_interface.h"
-#include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
+namespace Settings{
+class TPreferences;
+}
 
 namespace Gui { namespace Pref {
 
@@ -42,20 +44,20 @@ public:
     // Apply changes
 	void getData(Settings::TPreferences* pref);
 
-	bool languageChanged() { return language_changed; }
-	bool iconsetChanged() { return iconset_changed; }
-	bool styleChanged() { return style_changed; }
-	bool recentsChanged() { return recents_changed; }
-	bool urlMaxChanged() { return url_max_changed; }
+	bool languageChanged() const { return language_changed; }
+	bool iconsetChanged() const { return iconset_changed; }
+	bool styleChanged() const { return style_changed; }
+	bool recentsChanged() const { return recents_changed; }
+	bool urlMaxChanged() const { return url_max_changed; }
 
 protected:
 	virtual void createHelp();
 	void createLanguageCombo();
 
-	void setLanguage(QString lang);
+	void setLanguage(const QString& lang);
 	QString language();
 
-	void setIconSet(QString set);
+	void setIconSet(const QString& set);
 	QString iconSet();
 
 	void setResizeMethod(int v);
@@ -67,7 +69,7 @@ protected:
 	void setShowTagInTitle(bool b);
 	bool showTagInTitle();
 
-	void setStyle(QString style);
+	void setStyle(const QString& style);
 	QString style();
 
 #ifdef SINGLE_INSTANCE
@@ -96,7 +98,7 @@ protected:
 	void setPreciseSeeking(bool);
 	bool preciseSeeking();
 
-	void setDefaultFont(QString font_desc);
+	void setDefaultFont(const QString& font_desc);
 	QString defaultFont();
 
 	void setHideVideoOnAudioFiles(bool b);

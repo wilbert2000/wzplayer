@@ -84,6 +84,7 @@ HEADERS += svn_revision.h \
     gui/links.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
+    gui/action/actionlist.h \
     gui/action/slider.h \
     gui/action/timeslider.h \
     gui/action/widgetactions.h \

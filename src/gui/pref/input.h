@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_INPUT_H_
-#define _PREF_INPUT_H_
+#ifndef GUI_PREF_INPUT_H
+#define GUI_PREF_INPUT_H
 
 #include "gui/pref/widget.h"
 #include "settings/preferences.h"
@@ -49,22 +49,22 @@ protected:
 
 	void createMouseCombos();
 
-	void setLeftClickFunction(QString f);
+	void setLeftClickFunction(const QString& f);
 	QString leftClickFunction();
 
-	void setRightClickFunction(QString f);
+	void setRightClickFunction(const QString& f);
 	QString rightClickFunction();
 
-	void setDoubleClickFunction(QString f);
+	void setDoubleClickFunction(const QString& f);
 	QString doubleClickFunction();
 
-	void setMiddleClickFunction(QString f);
+	void setMiddleClickFunction(const QString& f);
 	QString middleClickFunction();
 
-	void setXButton1ClickFunction(QString f);
+	void setXButton1ClickFunction(const QString& f);
 	QString xButton1ClickFunction();
 
-	void setXButton2ClickFunction(QString f);
+	void setXButton2ClickFunction(const QString& f);
 	QString xButton2ClickFunction();
 
 	void setWheelFunction(int function);
@@ -83,4 +83,4 @@ protected:
 } // namespace Pref
 } // namespace Gui
 
-#endif // _PREF_INPUT_H_
+#endif // GUI_PREF_INPUT_H

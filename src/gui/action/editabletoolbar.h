@@ -16,13 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_EDITABLETOOLBAR_H
-#define GUI_EDITABLETOOLBAR_H
+#ifndef GUI_ACTION_EDITABLETOOLBAR_H
+#define GUI_ACTION_EDITABLETOOLBAR_H
 
 #include <QToolBar>
-#include <QList>
 #include <QStringList>
-
+#include <gui/action/actionlist.h>
 
 namespace Gui {
 
@@ -32,8 +31,6 @@ namespace Action {
 
 class TSizeGrip;
 class TTimeSlider;
-
-typedef QList<QAction*> TActionList;
 
 
 class TEditableToolbar : public QToolBar {
@@ -82,4 +79,4 @@ private slots:
 } // namespace Action
 } // namesapce Gui
 
-#endif // GUI_EDITABLETOOLBAR_H
+#endif // GUI_ACTION_EDITABLETOOLBAR_H

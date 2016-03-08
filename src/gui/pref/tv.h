@@ -16,13 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_TV_H_
-#define _PREF_TV_H_
+#ifndef GUI_PREF_TV_H
+#define GUI_PREF_TV_H
 
 #include "ui_tv.h"
-#include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
+
+namespace Settings {
+class TPreferences;
+}
 
 namespace Gui { namespace Pref {
 
@@ -59,4 +62,4 @@ protected:
 
 }} // namespace Gui::Pref
 
-#endif // _PREF_TV_H_
+#endif // GUI_PREF_TV_H

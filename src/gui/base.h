@@ -22,7 +22,7 @@
 #include <QTimer>
 #include <QMainWindow>
 #include "core.h"
-#include "gui/pref/dialog.h"
+#include "gui/action/actionlist.h"
 
 #if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 /* Disable screensaver by event */
@@ -42,7 +42,6 @@ class FindSubtitlesWindow;
 namespace Gui {
 
 namespace Action {
-
 class TAction;
 class TMenuOpen;
 class TMenuPlay;
@@ -54,7 +53,10 @@ class TEditableToolbar;
 class TTimeSliderAction;
 class TVolumeSliderAction;
 class TTimeLabelAction;
+}
 
+namespace Pref {
+class TDialog;
 }
 
 class TAutoHideTimer;

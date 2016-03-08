@@ -21,18 +21,26 @@
 	Author: Florin Braghis (florin@libertv.ro)
 */
 
-#ifndef _PREF_ASSOCIATIONS_H_
-#define _PREF_ASSOCIATIONS_H_
+#ifndef GUI_PREF_ASSOCIATIONS_H
+#define GUI_PREF_ASSOCIATIONS_H
 
 #include "ui_associations.h"
 #include "gui/pref/widget.h"
+#include <QStringList>
 
+class QWidget;
+class QString;
+class QPixmap;
+class QListWidgetItem;
+
+namespace Settings {
 class TPreferences;
+}
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
-class TAssociations : public TWidget, public Ui::TAssociations
-{
+class TAssociations : public TWidget, public Ui::TAssociations {
 	Q_OBJECT
 
 public:
@@ -43,10 +51,10 @@ public:
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(TPreferences* pref);
+	void setData(Settings::TPreferences* pref);
 
 	// Apply changes
-	void getData(TPreferences* pref);
+	void getData(Settings::TPreferences* pref);
 
 	void addItem(QString label); 
 
@@ -71,6 +79,7 @@ protected:
 	bool something_changed;
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_ASSOCIATIONS_H_
+#endif // GUI_PREF_ASSOCIATIONS_H

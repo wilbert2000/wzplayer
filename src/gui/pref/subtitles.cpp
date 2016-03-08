@@ -236,7 +236,7 @@ bool TSubtitles::autoloadSub() {
 	return font_autoload_check->isChecked();
 }
 
-void TSubtitles::setFontEncoding(QString s) {
+void TSubtitles::setFontEncoding(const QString& s) {
 	int i = font_encoding_combo->findData(s);
 	font_encoding_combo->setCurrentIndex(i);
 }

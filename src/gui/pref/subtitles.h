@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_SUBTITLES_H_
-#define _PREF_SUBTITLES_H_
+#ifndef GUI_PREF_SUBTITLES_H
+#define GUI_PREF_SUBTITLES_H
 
 #include "ui_subtitles.h"
-#include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
 class Encodings;
 
+namespace Settings {
+class TPreferences;
+}
+
 namespace Gui { namespace Pref {
 
-class TSubtitles : public TWidget, public Ui::TSubtitles
-{
+class TSubtitles : public TWidget, public Ui::TSubtitles {
 	Q_OBJECT
 
 public:
@@ -53,7 +55,7 @@ protected:
 	void setAutoloadSub(bool v);
 	bool autoloadSub();
 
-	void setFontEncoding(QString s);
+	void setFontEncoding(const QString& s);
 	QString fontEncoding();
 
 	void setUseEnca(bool v);
@@ -68,8 +70,8 @@ protected:
 	void setForceAssStyles(bool b);
 	bool forceAssStyles();
 
-	void setCustomizedAssStyle(QString style) { forced_ass_style = style; }
-	QString customizedAssStyle() { return forced_ass_style; }
+	void setCustomizedAssStyle(const QString& style) { forced_ass_style = style; }
+	QString customizedAssStyle() const { return forced_ass_style; }
 
 	void setFontFuzziness(int n);
 	int fontFuzziness();
@@ -97,4 +99,4 @@ private:
 
 }} // namespace Gui::Pref
 
-#endif // _PREF_SUBTITLES_H_
+#endif // GUI_PREF_SUBTITLES_H

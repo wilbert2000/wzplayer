@@ -7,6 +7,8 @@
 #include "gui/base.h"
 
 
+using namespace Settings;
+
 namespace Gui {
 namespace Action {
 

@@ -21,26 +21,25 @@
     values: true, false or autodetect
 */
 
-#ifndef _PREF_TRISTATE_COMBO_H_
-#define _PREF_TRISTATE_COMBO_H_
+#ifndef GUI_PREF_TRISTATE_COMBO_H
+#define GUI_PREF_TRISTATE_COMBO_H
 
 #include <QComboBox>
 #include "settings/preferences.h"
 
-using namespace Settings;
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
-class TTristateCombo : public QComboBox
-{
+class TTristateCombo : public QComboBox {
 	Q_OBJECT
 
 public:
 	TTristateCombo(QWidget* parent = 0);
 	virtual ~TTristateCombo();
 
-	void setState(TPreferences::TOptionState v);
-	TPreferences::TOptionState state();
+	void setState(Settings::TPreferences::TOptionState v);
+	Settings::TPreferences::TOptionState state();
 
 protected:
 	virtual void retranslateStrings();
@@ -48,6 +47,7 @@ protected:
 
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_TRISTATE_COMBO_H_
+#endif // GUI_PREF_TRISTATE_COMBO_H

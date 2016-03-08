@@ -16,15 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PREF_GENERAL_H
-#define PREF_GENERAL_H
+#ifndef GUI_PREF_GENERAL_H
+#define GUI_PREF_GENERAL_H
 
-#include <QObject>
 #include "ui_general.h"
 #include "gui/pref/widget.h"
 #include "inforeader.h"
-#include "gui/deviceinfo.h"
 #include "settings/preferences.h"
+#include "gui/deviceinfo.h"
 
 #ifdef Q_OS_WIN
 #define USE_DSOUND_DEVICES 1
@@ -54,10 +53,10 @@ public:
 	virtual QPixmap sectionIcon();
 
 	// Pass data to the dialog
-	void setData(TPreferences* pref);
+	void setData(Settings::TPreferences* pref);
 
 	// Apply changes
-	void getData(TPreferences* pref);
+	void getData(Settings::TPreferences* pref);
 
 	bool fileSettingsMethodChanged() { return filesettings_method_changed; }
 
@@ -65,7 +64,7 @@ protected:
 	virtual void createHelp();
 
 	// Tab General
-	void setPlayerPath(QString path);
+	void setPlayerPath(const QString& path);
 	QString playerPath();
 
 	// Media settings
@@ -75,7 +74,7 @@ protected:
 	void setRememberTimePos(bool b);
 	bool rememberTimePos();
 
-	void setFileSettingsMethod(QString method);
+	void setFileSettingsMethod(const QString& method);
 	QString fileSettingsMethod();
 
 
@@ -83,11 +82,11 @@ protected:
 	void setUseScreenshots(bool b);
 	bool useScreenshots();
 
-	void setScreenshotDir(QString path);
+	void setScreenshotDir(const QString& path);
 	QString screenshotDir();
 
 #ifdef MPV_SUPPORT
-	void setScreenshotFormat(const QString format);
+	void setScreenshotFormat(const QString& format);
 	QString screenshotFormat();
 #endif
 
@@ -99,10 +98,10 @@ protected:
 
 
 	// Video tab
-	void setVO(QString vo_driver);
+	void setVO(const QString& vo_driver);
 	QString VO();
 
-	void setHwdec(const QString & v);
+	void setHwdec(const QString& v);
 	QString hwdec();
 
 	void setFrameDrop(bool b);
@@ -134,7 +133,7 @@ protected:
 
 
 	// Audio tab
-	void setAO(QString ao_driver);
+	void setAO(const QString& ao_driver);
 	QString AO();
 
 	void setUseAudioEqualizer(bool b);
@@ -160,10 +159,10 @@ protected:
 
 
 	// Preferred tab
-	void setAudioLang(QString lang);
+	void setAudioLang(const QString& lang);
 	QString audioLang();
 
-	void setSubtitleLang(QString lang);
+	void setSubtitleLang(const QString& lang);
 	QString subtitleLang();
 
 	void setAudioTrack(int track);
@@ -184,8 +183,8 @@ protected:
 	void setMcActivated(bool b);
 	bool mcActivated();
 
-	void setScaleTempoFilter(TPreferences::TOptionState value);
-	TPreferences::TOptionState scaleTempoFilter();
+	void setScaleTempoFilter(Settings::TPreferences::TOptionState value);
+	Settings::TPreferences::TOptionState scaleTempoFilter();
 
 protected slots:
 	void vo_combo_changed(int);
@@ -217,7 +216,7 @@ private:
 	bool filesettings_method_changed;
 
 #ifndef Q_OS_WIN
-	struct TPreferences::VDPAU_settings vdpau;
+	struct Settings::TPreferences::VDPAU_settings vdpau;
 #endif
 
 };
@@ -225,4 +224,4 @@ private:
 } // namespace Pref
 } // namespace Gui
 
-#endif // PREF_GENERAL_H
+#endif // GUI_PREF_GENERAL_H

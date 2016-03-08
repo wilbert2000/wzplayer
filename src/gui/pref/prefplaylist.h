@@ -16,18 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_PLAYLIST_H_
-#define _PREF_PLAYLIST_H_
+#ifndef GUI_PREF_PLAYLIST_H
+#define GUI_PREF_PLAYLIST_H
 
 #include "ui_prefplaylist.h"
-#include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
 
+namespace Settings {
+class TPreferences;
+}
+
 namespace Gui { namespace Pref {
 
-class TPrefPlaylist : public TWidget, public Ui::TPrefPlaylist
-{
+class TPrefPlaylist : public TWidget, public Ui::TPrefPlaylist {
 	Q_OBJECT
 
 public:
@@ -71,4 +73,4 @@ protected:
 
 }} // namespace Gui::Pref
 
-#endif // _PREF_PLAYLIST_H_
+#endif // GUI_PREF_PLAYLIST_H

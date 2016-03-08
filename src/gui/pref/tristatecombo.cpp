@@ -33,19 +33,19 @@ void TTristateCombo::retranslateStrings() {
 	int i = currentIndex();
 
 	clear();
-	addItem(tr("Auto"), TPreferences::Detect);
-	addItem(tr("Yes"), TPreferences::Enabled);
-	addItem(tr("No"), TPreferences::Disabled);
+	addItem(tr("Auto"), Settings::TPreferences::Detect);
+	addItem(tr("Yes"), Settings::TPreferences::Enabled);
+	addItem(tr("No"), Settings::TPreferences::Disabled);
 
 	setCurrentIndex(i);
 }
 
-void TTristateCombo::setState(TPreferences::TOptionState v) {
+void TTristateCombo::setState(Settings::TPreferences::TOptionState v) {
 	setCurrentIndex(findData(v));
 }
 
-TPreferences::TOptionState TTristateCombo::state() {
-	return (TPreferences::TOptionState) itemData(currentIndex()).toInt();
+Settings::TPreferences::TOptionState TTristateCombo::state() {
+	return (Settings::TPreferences::TOptionState) itemData(currentIndex()).toInt();
 }
 
 // Language change stuff

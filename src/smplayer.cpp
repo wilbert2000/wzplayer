@@ -24,6 +24,7 @@
 #include <QUrl>
 #include <QTranslator>
 #include <QLocale>
+#include <QStyle>
 
 #include "settings/paths.h"
 #include "settings/preferences.h"
@@ -43,6 +44,8 @@
 #endif
 #endif
 
+
+using namespace Settings;
 
 TSMPlayer::TSMPlayer(int& argc, char** argv)
 	: TBaseApp(

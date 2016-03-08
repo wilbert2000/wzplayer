@@ -18,7 +18,9 @@
 
 #include "gui/baseplus.h"
 
+#include <QEvent>
 #include <QMenu>
+#include <QApplication>
 #include <QDesktopWidget>
 #include <QDockWidget>
 

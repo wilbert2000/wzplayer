@@ -16,18 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PREF_DRIVES_H_
-#define _PREF_DRIVES_H_
+#ifndef GUI_PREF_DRIVES_H
+#define GUI_PREF_DRIVES_H
 
 #include "ui_drives.h"
-#include "settings/preferences.h"
 #include "gui/pref/widget.h"
 
 
-namespace Gui { namespace Pref {
+namespace Settings {
+class TPreferences;
+}
 
-class TDrives : public TWidget, public Ui::TDrives
-{
+namespace Gui {
+namespace Pref {
+
+class TDrives : public TWidget, public Ui::TDrives {
 	Q_OBJECT
 
 public:
@@ -46,13 +49,13 @@ public:
 protected:
 	virtual void createHelp();
 
-	void setDVDDevice(QString dir);
+	void setDVDDevice(const QString& dir);
 	QString dvdDevice();
 
-	void setBlurayDevice(QString dir);
+	void setBlurayDevice(const QString& dir);
 	QString blurayDevice();
 
-	void setCDRomDevice(QString dir);
+	void setCDRomDevice(const QString& dir);
 	QString cdromDevice();
 
 	void setUseDVDNav(bool b);
@@ -67,6 +70,7 @@ protected:
 	virtual void retranslateStrings();
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
-#endif // _PREF_DRIVES_H_
+#endif // GUI_PREF_DRIVES_H

@@ -1,5 +1,6 @@
 #include "gui/action/menu.h"
 #include <QDebug>
+#include <QEvent>
 #include "desktop.h"
 #include "images.h"
 #include "settings/mediasettings.h"
