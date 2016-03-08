@@ -1,4 +1,5 @@
 #include "gui/action/menuvideo.h"
+#include "core.h"
 #include "settings/mediasettings.h"
 #include "gui/action/menuaspect.h"
 #include "gui/action/menuvideofilter.h"

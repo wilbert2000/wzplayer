@@ -22,6 +22,7 @@
 #include <QProcess>
 #include <QTime>
 
+#include "corestate.h"
 #include "mediadata.h"
 #include "settings/mediasettings.h"
 
@@ -30,23 +31,21 @@ class TDiscData;
 class TMediaData;
 class TPlayerWindow;
 
-namespace Proc {
-class TPlayerProcess;
-}
-
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef DISABLE_SCREENSAVER
 class WinScreenSaver;
 #endif
 #endif
 
+namespace Proc {
+class TPlayerProcess;
+}
+
 
 class TCore : public QObject {
 	Q_OBJECT
 
 public:
-	enum State { Stopped = 0, Playing = 1, Paused = 2 };
-
 	TCore(QWidget* parent, TPlayerWindow *mpw);
 	virtual ~TCore();
 
@@ -54,11 +53,11 @@ public:
 	Settings::TMediaSettings mset;
 
 	//! Return the current state
-	State state() { return _state; }
+	TCoreState state() const { return _state; }
 
 	//! Return a string with the name of the current state,
 	//! so it can be printed on debugging messages.
-	QString stateToString();
+	QString stateToString() const;
 
 	// Stop player if running and save MediaInfo
 	void close();
@@ -66,16 +65,16 @@ public:
 	void addForcedTitle(const QString& file, const QString& title) {
 		forced_titles[file] = title;
 	}
-	bool haveExternalSubs();
-	int positionMax() { return pos_max; }
-	int getVolume();
-	bool getMute();
+	bool haveExternalSubs() const;
+	int positionMax() const { return pos_max; }
+	int getVolume() const;
+	bool getMute() const;
 	bool videoFiltersEnabled(bool displayMessage = false);
 
 public slots:
 	//! Generic open, with autodetection of type
 	void open(QString file, int seek = -1, bool fast_open = true);
-	void openStream(QString name);
+	void openStream(const QString& name);
 	void openTV(QString channel_id);
 
 	void loadSub(const QString& sub);
@@ -338,7 +337,7 @@ public slots:
 	void clearOSD();
 
 signals:
-	void stateChanged(TCore::State state);
+	void stateChanged(TCoreState state);
 	void mediaSettingsChanged();
 	void aboutToStartPlaying(); // Signal emited just before starting player
 	void buffering();
@@ -395,7 +394,7 @@ signals:
 protected:
 	//! Change the current state (Stopped, Playing or Paused)
 	//! And sends the stateChanged() signal.
-	void setState(State s);
+	void setState(TCoreState s);
 
 	void initVolume();
 	void initMediaSettings();
@@ -461,7 +460,7 @@ protected:
 #endif
 
 private:
-	State _state;
+	TCoreState _state;
 
 	int restarting;
 	// Get DVDNAV to restart
@@ -485,16 +484,16 @@ private:
 	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(const QString& filename, int seek = -1);
 
-	bool isMPlayer();
-	bool isMPV();
-	bool haveVideoFilters();
+	bool isMPlayer() const;
+	bool isMPV() const;
+	bool haveVideoFilters() const;
 	void changeVF(const QString& filter, bool enable, const QVariant& option);
 	void getZoomFromPlayerWindow();
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);
 	void setExternalSubs(const QString& filename);
 	bool setPreferredAudio();
-	int getVolumeForPlayer();
+	int getVolumeForPlayer() const;
 };
 
 #endif

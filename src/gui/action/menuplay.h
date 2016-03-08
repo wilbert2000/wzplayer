@@ -2,7 +2,10 @@
 #define GUI_PLAYMENU_H
 
 #include "gui/action/menu.h"
-#include "core.h"
+#include "corestate.h"
+
+
+class TCore;
 
 namespace Gui {
 
@@ -46,7 +49,7 @@ private:
 	TAction* playNextAct;
 	TAction* gotoAct;
 private slots:
-	void onStateChanged(TCore::State state);
+	void onStateChanged(TCoreState state);
 }; // class TMenuPlay
 
 } // namespace Action

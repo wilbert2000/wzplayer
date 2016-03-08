@@ -76,6 +76,7 @@ HEADERS += svn_revision.h \
     settings/cleanconfig.h \
     images.h \
 	inforeader.h \
+    corestate.h \
 	core.h \
     lineedit_with_icon.h \
     filedialog.h \

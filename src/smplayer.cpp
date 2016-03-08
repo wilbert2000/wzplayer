@@ -33,6 +33,7 @@
 #include "version.h"
 #include "clhelp.h"
 #include "images.h"
+#include "core.h"
 
 #include "gui/playlist.h"
 #include "gui/default.h"

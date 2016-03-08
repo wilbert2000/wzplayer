@@ -264,10 +264,10 @@ void TBase::createCore() {
 	connect(core, SIGNAL(durationChanged(double)),
 			 this, SLOT(gotDuration(double)));
 
-	connect(core, SIGNAL(stateChanged(TCore::State)),
-			 this, SLOT(onStateChanged(TCore::State)));
-	connect(core, SIGNAL(stateChanged(TCore::State)),
-			 this, SLOT(checkStayOnTop(TCore::State)), Qt::QueuedConnection);
+	connect(core, SIGNAL(stateChanged(TCoreState)),
+			 this, SLOT(onStateChanged(TCoreState)));
+	connect(core, SIGNAL(stateChanged(TCoreState)),
+			 this, SLOT(checkStayOnTop(TCoreState)), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaSettingsChanged()),
 			 this, SLOT(onMediaSettingsChanged()));
@@ -736,7 +736,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "add_to_playlist") {
 			QStringList file_list = arg.split(" <<sep>> ");
-			/* if (core->state() == TCore::Stopped) { emit openFileRequested(); } */
+			/* if (core->state() == STATE_STOPPED) { emit openFileRequested(); } */
 			playlist->addFiles(file_list);
 		}
 		else
@@ -751,7 +751,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "load_sub") {
 			setInitialSubtitle(arg);
-			if (core->state() != TCore::Stopped) {
+			if (core->state() != STATE_STOPPED) {
 				core->loadSub(arg);
 			}
 		}
@@ -1064,7 +1064,7 @@ void TBase::applyNewPreferences() {
 	setupNetworkProxy();
 
 	// Reenable actions to reflect changes
-	if (core->state() == TCore::Stopped) {
+	if (core->state() == STATE_STOPPED) {
 		disableActionsOnStop();
 	} else {
 		enableActionsOnPlaying();
@@ -2014,19 +2014,19 @@ void TBase::playlistHasFinished() {
 	}
 }
 
-void TBase::onStateChanged(TCore::State state) {
+void TBase::onStateChanged(TCoreState state) {
 	qDebug("Gui::TBase::onStateChanged: new state \"%s\"", core->stateToString().toUtf8().data());
 
 	switch (state) {
-		case TCore::Playing:
+		case STATE_PLAYING:
 			displayMessage(tr("Playing %1").arg(core->mdat.filename), 3000);
 			auto_hide_timer->startAutoHideMouse();
 			break;
-		case TCore::Paused:
+		case STATE_PAUSED:
 			displayMessage(tr("Pause"), 0);
 			auto_hide_timer->stopAutoHideMouse();
 			break;
-		case TCore::Stopped:
+		case STATE_STOPPED:
 			disableActionsOnStop();
 			setWindowCaption("SMPlayer");
 			displayMessage(tr("Stop") , 3000);
@@ -2351,19 +2351,19 @@ void TBase::changeStayOnTop(int stay_on_top) {
 	switch (stay_on_top) {
 		case Settings::TPreferences::AlwaysOnTop : setStayOnTop(true); break;
 		case Settings::TPreferences::NeverOnTop  : setStayOnTop(false); break;
-		case Settings::TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == TCore::Playing)); break;
+		case Settings::TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == STATE_PLAYING)); break;
 	}
 
 	pref->stay_on_top = (Settings::TPreferences::TOnTop) stay_on_top;
 	emit stayOnTopChanged(stay_on_top);
 }
 
-void TBase::checkStayOnTop(TCore::State state) {
+void TBase::checkStayOnTop(TCoreState state) {
 	//qDebug("Gui::TBase::checkStayOnTop");
 
 	if (!pref->fullscreen
 		&& (pref->stay_on_top == Settings::TPreferences::WhilePlayingOnTop)) {
-		setStayOnTop((state == TCore::Playing));
+		setStayOnTop((state == STATE_PLAYING));
 	}
 }
 
@@ -2397,7 +2397,7 @@ void TBase::showEvent(QShowEvent* event) {
 	}
 
 	//qDebug("Gui::TBase::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
-	if (pref->pause_when_hidden && core->state() == TCore::Paused && !ignore_show_hide_events) {
+	if (pref->pause_when_hidden && core->state() == STATE_PAUSED && !ignore_show_hide_events) {
 		qDebug("Gui::TBase::showEvent: unpausing");
 		core->play();
 	}
@@ -2412,7 +2412,7 @@ void TBase::hideEvent(QHideEvent* event) {
 		QMainWindow::hideEvent(event);
 	}
 
-	if (pref->pause_when_hidden && core->state() == TCore::Playing && !ignore_show_hide_events) {
+	if (pref->pause_when_hidden && core->state() == STATE_PLAYING && !ignore_show_hide_events) {
 		qDebug("Gui::TBase::hideEvent: pausing");
 		core->pause();
 	}
@@ -2538,10 +2538,10 @@ bool TBase::winEvent (MSG* m, long* result) {
 		if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
 			|| ((m->wParam & 0xFFF0) == SC_MONITORPOWER) {
 			qDebug("Gui::TBase::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
-			qDebug("Gui::TBase::winEvent: playing: %d", core->state() == TCore::Playing);
+			qDebug("Gui::TBase::winEvent: playing: %d", core->state() == STATE_PLAYING);
 			qDebug("Gui::TBase::winEvent: video: %d", !core->mdat.noVideo());
 			
-			if (core->state() == TCore::Playing && !core->mdat.noVideo())) {
+			if (core->state() == STATE_PLAYING && !core->mdat.noVideo())) {
 				qDebug("Gui::TBase::winEvent: not allowing screensaver");
 				(*result) = 0;
 				return true;

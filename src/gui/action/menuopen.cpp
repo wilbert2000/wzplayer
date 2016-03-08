@@ -1,5 +1,6 @@
 #include "gui/action/menuopen.h"
 #include <QMessageBox>
+#include "core.h"
 #include "settings/paths.h"
 #include "gui/action/action.h"
 #include "gui/action/favorites.h"

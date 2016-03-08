@@ -68,13 +68,13 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	  mdat(),
 	  mset(&mdat),
 	  playerwindow(mpw),
-	  _state(Stopped),
+	  _state(STATE_STOPPED),
 	  restarting(0),
 	  title(-1),
 	  block_dvd_nav(false),
 	  pos_max(1000)
 {
-	qRegisterMetaType<TCore::State>("TCore::State");
+	qRegisterMetaType<TCoreState>("TCoreState");
 
 	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
 
@@ -247,7 +247,7 @@ void TCore::processFinished(bool normal_exit) {
 	}
 
 	qDebug("TCore::processFinished: entering the stopped state");
-	setState(Stopped);
+	setState(STATE_STOPPED);
 
 	if (!normal_exit) {
 		int exit_code = proc->exitCodeOverride();
@@ -266,7 +266,7 @@ void TCore::fileReachedEnd() {
 	emit mediaEOF();
 }
 
-void TCore::setState(State s) {
+void TCore::setState(TCoreState s) {
 
 	if (s != _state) {
 		_state = s;
@@ -277,11 +277,11 @@ void TCore::setState(State s) {
 	}
 }
 
-QString TCore::stateToString() {
+QString TCore::stateToString() const {
 
-	if (_state == Playing)
+	if (_state == STATE_PLAYING)
 		return "Playing";
-	if (_state == Paused)
+	if (_state == STATE_PAUSED)
 		return "Paused";
 	return "Stopped";
 }
@@ -306,11 +306,11 @@ void TCore::reload() {
 	initPlaying();
 }
 
-bool TCore::isMPlayer() {
+bool TCore::isMPlayer() const {
 	return proc->isMPlayer();
 }
 
-bool TCore::isMPV() {
+bool TCore::isMPV() const {
 	return proc->isMPV();
 }
 
@@ -383,7 +383,7 @@ void TCore::close() {
 void TCore::openDisc(TDiscData &disc, bool fast_open) {
 
 	// Change title if already playing
-	if (fast_open && _state != Stopped && disc.title > 0
+	if (fast_open && _state != STATE_STOPPED && disc.title > 0
 		&& !mset.playing_single_track) {
 		bool current_url_valid;
 		TDiscData current_disc = TDiscName::split(mdat.filename, &current_url_valid);
@@ -540,7 +540,7 @@ void TCore::loadSub(const QString & sub) {
 	}
 }
 
-bool TCore::haveExternalSubs() {
+bool TCore::haveExternalSubs() const {
 	return mdat.subs.hasFileSubs()
 		|| (mset.sub.type() == SubData::Vob && !mset.sub.filename().isEmpty());
 }
@@ -606,7 +606,7 @@ void TCore::openTV(QString channel_id) {
 	initPlaying();
 }
 
-void TCore::openStream(QString name) {
+void TCore::openStream(const QString& name) {
 	qDebug("TCore::openStream: '%s'", name.toUtf8().data());
 
 	close();
@@ -821,7 +821,7 @@ void TCore::newMediaPlayingStarted() {
 void TCore::playingStarted() {
 	qDebug("TCore::playingStarted");
 
-	setState(Playing);
+	setState(STATE_PLAYING);
 
 	if (restarting) {
 		restarting = 0;
@@ -857,11 +857,11 @@ void TCore::playingStarted() {
 void TCore::stop() {
 	qDebug() << "TCore::stop: current state:" << stateToString();
 
-	State prev_state = _state;
+	TCoreState prev_state = _state;
 	stopPlayer();
 
 	// if pressed stop twice, reset video to the beginning
-	if (prev_state == Stopped && mset.current_sec != 0) {
+	if (prev_state == STATE_STOPPED && mset.current_sec != 0) {
 		qDebug("TCore::stop: resetting current_sec %f to 0", mset.current_sec);
 		gotCurrentSec(0);
 	}
@@ -873,9 +873,9 @@ void TCore::play() {
 	qDebug() << "TCore::play: current state: " << stateToString();
 
 	if (proc->isRunning()) {
-		if (_state == Paused) {
+		if (_state == STATE_PAUSED) {
 			proc->setPause(false);
-			setState(Playing);
+			setState(STATE_PLAYING);
 		}
 	} else {
 		// if we're stopped, play it again
@@ -890,16 +890,16 @@ void TCore::play() {
 void TCore::pause() {
 	qDebug() << "TCore::pause: current state:" << stateToString();
 
-	if (proc->isRunning() && _state != Paused) {
+	if (proc->isRunning() && _state != STATE_PAUSED) {
 		proc->setPause(true);
-		setState(Paused);
+		setState(STATE_PAUSED);
 	}
 }
 
 void TCore::playOrPause() {
 	qDebug() << "TCore::playOrPause: current state:" << stateToString();
 
-	if (_state == Playing) {
+	if (_state == STATE_PLAYING) {
 		pause();
 	} else {
 		play();
@@ -910,7 +910,7 @@ void TCore::frameStep() {
 	qDebug() << "TCore::frameStep at" <<  mset.current_sec;
 
 	if (proc->isRunning()) {
-		if (_state == Paused) {
+		if (_state == STATE_PAUSED) {
 			proc->frameStep();
 		} else {
 			pause();
@@ -922,7 +922,7 @@ void TCore::frameBackStep() {
 	qDebug() << "TCore::frameBackStep at" <<  mset.current_sec;
 
 	if (proc->isRunning()) {
-		if (_state == Paused) {
+		if (_state == STATE_PAUSED) {
 			proc->frameBackStep();
 		} else {
 			pause();
@@ -963,7 +963,7 @@ void TCore::switchCapturing() {
 }
 #endif
 
-bool TCore::haveVideoFilters() {
+bool TCore::haveVideoFilters() const {
 
 	return mset.phase_filter
 		|| mset.current_deinterlacer != TMediaSettings::NoDeinterlace
@@ -1894,7 +1894,7 @@ void TCore::seek_cmd(double secs, int mode) {
 	}
 
 	if (proc->isFullyStarted())
-		proc->seek(secs, mode, pref->precise_seeking, _state == Paused);
+		proc->seek(secs, mode, pref->precise_seeking, _state == STATE_PAUSED);
 }
 
 void TCore::sforward() {
@@ -2474,7 +2474,7 @@ void TCore::normalSpeed() {
 	setSpeed(1);
 }
 
-int TCore::getVolume() {
+int TCore::getVolume() const {
 	return pref->global_volume ? pref->volume : mset.volume;
 }
 
@@ -2489,7 +2489,7 @@ int TCore::getVolume() {
  MPV softvol-max serves as max and scale for amplification
  and according to the docs doubles volume with softvol-max 130.
 */
-int TCore::getVolumeForPlayer() {
+int TCore::getVolumeForPlayer() const {
 
 	int volume = getVolume();
 	if (isMPV() && pref->use_soft_vol) {
@@ -2526,7 +2526,7 @@ void TCore::setVolume(int volume, bool unmute) {
 	emit volumeChanged(volume);
 }
 
-bool TCore::getMute() {
+bool TCore::getMute() const {
 	return pref->global_volume ? pref->mute : mset.mute;
 }
 
@@ -2843,7 +2843,7 @@ void TCore::gotCurrentSec(double sec) {
 void TCore::onReceivedPause() {
 	qDebug("TCore::onReceivedPause");
 
-	setState(Paused);
+	setState(STATE_PAUSED);
 }
 
 void TCore::changeDeinterlace(int ID) {
@@ -3482,10 +3482,10 @@ void TCore::dvdnavSelect() {
 	qDebug("TCore::dvdnavSelect");
 
 	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
-		if (_state == Paused) {
+		if (_state == STATE_PAUSED) {
 			play();
 		}
-		if (_state == Playing) {
+		if (_state == STATE_PLAYING) {
 			proc->discButtonPressed("select");
 		}
 	}
@@ -3496,10 +3496,10 @@ void TCore::dvdnavMouse() {
 	qDebug("TCore::dvdnavMouse");
 
 	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
-		if (_state == Paused) {
+		if (_state == STATE_PAUSED) {
 			play();
 		}
-		if (_state == Playing) {
+		if (_state == STATE_PLAYING) {
 			// Give a last update on the mouse position
 			QPoint pos = playerwindow->videoLayer()->mapFromGlobal(QCursor::pos());
 			dvdnavUpdateMousePos(pos);
@@ -3514,10 +3514,10 @@ void TCore::dvdnavUpdateMousePos(QPoint pos) {
 
 	if (mdat.detected_type == TMediaData::TYPE_DVDNAV && !block_dvd_nav) {
 		// MPlayer won't act if paused. Play if menu not animated.
-		if (_state == Paused && mdat.title_is_menu && mdat.duration == 0) {
+		if (_state == STATE_PAUSED && mdat.title_is_menu && mdat.duration == 0) {
 			play();
 		}
-		if (_state == Playing) {
+		if (_state == STATE_PLAYING) {
 			proc->discSetMousePos(pos.x(), pos.y());
 		}
 	}

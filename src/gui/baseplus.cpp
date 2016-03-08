@@ -24,6 +24,9 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 
+#include "images.h"
+#include "desktop.h"
+#include "core.h"
 #include "gui/action/action.h"
 #include "gui/action/menuopen.h"
 #include "gui/action/menuplay.h"
@@ -33,8 +36,6 @@
 #include "gui/action/menubrowse.h"
 #include "gui/action/menuoptions.h"
 #include "gui/playlist.h"
-#include "images.h"
-#include "desktop.h"
 
 
 using namespace Settings;
@@ -125,7 +126,7 @@ void TBasePlus::switchToTray() {
 
 	exitFullscreen();
 	showAll(false); // Hide windows
-	if (core->state() == TCore::Playing)
+	if (core->state() == STATE_PLAYING)
 		core->stop();
 
 	if (pref->balloon_count > 0) {

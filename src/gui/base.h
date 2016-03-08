@@ -21,7 +21,8 @@
 
 #include <QTimer>
 #include <QMainWindow>
-#include "core.h"
+#include <QProcess>
+#include "corestate.h"
 #include "gui/action/actionlist.h"
 
 #if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
@@ -32,11 +33,17 @@
 
 class QWidget;
 class QMenu;
+
+class TCore;
 class TPlayerWindow;
 
 #ifdef FIND_SUBTITLES
 class FindSubtitlesWindow;
 #endif
+
+namespace Settings {
+class TMediaSettings;
+}
 
 
 namespace Gui {
@@ -145,7 +152,7 @@ public slots:
 
 	void setStayOnTop(bool b);
 	virtual void changeStayOnTop(int);
-	virtual void checkStayOnTop(TCore::State);
+	virtual void checkStayOnTop(TCoreState);
 	void toggleStayOnTop();
 
 	void changeSize(double factor);
@@ -188,7 +195,7 @@ protected slots:
 	// Replace for setCaption (in Qt 4 it's not virtual)
 	virtual void setWindowCaption(const QString& title);
 
-	virtual void onStateChanged(TCore::State state);
+	virtual void onStateChanged(TCoreState state);
 
 	virtual void onMediaSettingsChanged();
 	virtual void onVideoOutResolutionChanged(int w, int h);

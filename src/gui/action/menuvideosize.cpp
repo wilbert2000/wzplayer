@@ -1,6 +1,7 @@
 #include "gui/action/menuvideosize.h"
 #include <QDebug>
 #include "desktop.h"
+#include "core.h"
 #include "settings/preferences.h"
 #include "playerwindow.h"
 #include "gui/base.h"

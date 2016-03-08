@@ -24,9 +24,10 @@
 #include <QStatusBar>
 #include <QList>
 
-#include "gui/action/action.h"
 #include "colorutils.h"
 #include "images.h"
+#include "core.h"
+#include "gui/action/action.h"
 
 
 using namespace Settings;

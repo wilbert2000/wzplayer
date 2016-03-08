@@ -1,5 +1,6 @@
 #include "gui/action/menuplay.h"
 #include "images.h"
+#include "core.h"
 #include "settings/preferences.h"
 #include "gui/action/widgetactions.h"
 #include "gui/playlist.h"
@@ -157,7 +158,7 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	stopAct = new TAction(this, "stop", QT_TR_NOOP("&Stop"), "", Qt::Key_MediaStop);
 	connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
 
-	connect(core, SIGNAL(stateChanged(TCore::State)), this, SLOT(onStateChanged(TCore::State)));
+	connect(core, SIGNAL(stateChanged(TCoreState)), this, SLOT(onStateChanged(TCoreState)));
 
 	addSeparator();
 	frameBackStepAct = new TAction(this, "frame_back_step", QT_TR_NOOP("Fra&me back step"), "", Qt::Key_Comma);
@@ -222,29 +223,29 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	addActionsTo(parent);
 }
 
-void TMenuPlay::onStateChanged(TCore::State state) {
+void TMenuPlay::onStateChanged(TCoreState state) {
 
-	playAct->setEnabled(state != TCore::Playing);
+	playAct->setEnabled(state != STATE_PLAYING);
 	// playOrPauseAct always enabled
-	if (state == TCore::Playing) {
+	if (state == STATE_PLAYING) {
 		playOrPauseAct->setTextAndTip(tr("&Pause"));
 		playOrPauseAct->setIcon(pauseIcon);
 	} else {
 		playOrPauseAct->setTextAndTip(tr("&Play"));
 		playOrPauseAct->setIcon(playIcon);
 	}
-	pauseAct->setEnabled(state == TCore::Playing);
+	pauseAct->setEnabled(state == STATE_PLAYING);
 	// Allowed to push stop twice...
-	// stopAct->setEnabled(core->state() != TCore::Stopped);
+	// stopAct->setEnabled(core->state() != STATE_STOPPED);
 }
 
 void TMenuPlay::enableActions(bool stopped, bool, bool) {
 
-	playAct->setEnabled(core->state() != TCore::Playing);
+	playAct->setEnabled(core->state() != STATE_PLAYING);
 	// playOrPauseAct always enabled
-	pauseAct->setEnabled(core->state() == TCore::Playing);
+	pauseAct->setEnabled(core->state() == STATE_PLAYING);
 	// Allowed to push stop twice...
-	// stopAct->setEnabled(core->state() != TCore::Stopped);
+	// stopAct->setEnabled(core->state() != STATE_STOPPED);
 	bool e = !stopped;
 	frameStepAct->setEnabled(e);
 	frameBackStepAct->setEnabled(e);
