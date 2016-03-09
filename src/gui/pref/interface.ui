@@ -99,7 +99,7 @@
             <item>
              <widget class="QCheckBox" name="hide_video_window_on_audio_check">
               <property name="text">
-               <string>&amp;Hide video window when playing audio files</string>
+               <string>Hide &amp;video window when playing audio files</string>
               </property>
              </widget>
             </item>
@@ -624,7 +624,7 @@
      </widget>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
-       <string>Privac&amp;y</string>
+       <string>&amp;History</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>

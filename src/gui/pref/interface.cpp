@@ -539,7 +539,7 @@ void TInterface::createHelp() {
 	setWhatsThis(floating_hide_delay_spin, tr("Time to hide the control"),
 		tr("Sets the time (in milliseconds) to hide the control after the mouse went away from the control."));
 
-	addSectionTitle(tr("Privacy"));
+	addSectionTitle(tr("History"));
 
 	setWhatsThis(recents_max_items_spin, tr("Recent files"),
         tr("Select the maximum number of items that will be shown in the "

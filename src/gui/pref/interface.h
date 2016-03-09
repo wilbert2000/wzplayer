@@ -104,7 +104,7 @@ protected:
 	void setHideVideoOnAudioFiles(bool b);
 	bool hideVideoOnAudioFiles();
 
-	// Privacy tab
+	// History tab
 	void setRecentsMaxItems(int n);
 	int recentsMaxItems();
 
