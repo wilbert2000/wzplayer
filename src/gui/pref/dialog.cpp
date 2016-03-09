@@ -23,6 +23,8 @@
 #include "settings/preferences.h"
 #include "gui/pref/widget.h"
 #include "gui/pref/general.h"
+#include "gui/pref/video.h"
+#include "gui/pref/audio.h"
 #include "gui/pref/drives.h"
 #include "gui/pref/interface.h"
 #include "gui/pref/performance.h"
@@ -64,7 +66,12 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	help_window->setWindowIcon(Images::icon("logo"));
 	help_window->setOpenExternalLinks(true);
 
-	page_general = new TGeneral;
+	// Get VO and AO driver lists from InfoReader:
+	InfoReader* i = InfoReader::obj();
+	i->getInfo();
+
+	// TODO: parent
+	page_general = new TGeneral(0);
 	addSection(page_general);
 
 	page_interface = new TInterface;
@@ -75,6 +82,12 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 
 	page_playlist = new TPrefPlaylist;
 	addSection(page_playlist);
+
+	page_video = new TVideo(0, i->voList());
+	addSection(page_video);
+
+	page_audio = new TAudio(0, i->aoList());
+	addSection(page_audio);
 
 	page_subtitles = new TSubtitles;
 	addSection(page_subtitles);
@@ -171,6 +184,8 @@ void TDialog::setData(Settings::TPreferences* pref) {
 	page_interface->setData(pref);
 	page_input->setData(pref);
 	page_playlist->setData(pref);
+	page_video->setData(pref);
+	page_audio->setData(pref);
 	page_subtitles->setData(pref);
 	page_drives->setData(pref);
 	page_performance->setData(pref);
@@ -191,6 +206,8 @@ void TDialog::getData(Settings::TPreferences* pref) {
 	page_interface->getData(pref);
 	page_input->getData(pref);
 	page_playlist->getData(pref);
+	page_video->getData(pref);
+	page_audio->getData(pref);
 	page_subtitles->getData(pref);
 	page_drives->getData(pref);
 	page_performance->getData(pref);
@@ -211,6 +228,8 @@ bool TDialog::requiresRestart() {
 	if (!need_restart) need_restart = page_interface->requiresRestart();
 	if (!need_restart) need_restart = page_input->requiresRestart();
 	if (!need_restart) need_restart = page_playlist->requiresRestart();
+	if (!need_restart) need_restart = page_video->requiresRestart();
+	if (!need_restart) need_restart = page_audio->requiresRestart();
 	if (!need_restart) need_restart = page_subtitles->requiresRestart();
 	if (!need_restart) need_restart = page_drives->requiresRestart();
 	if (!need_restart) need_restart = page_performance->requiresRestart();
@@ -232,6 +251,7 @@ void TDialog::showHelp() {
 
 // Language change stuff
 void TDialog::changeEvent(QEvent *e) {
+
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {

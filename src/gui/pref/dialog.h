@@ -34,6 +34,8 @@ namespace Pref {
 
 class TWidget;
 class TGeneral;
+class TVideo;
+class TAudio;
 class TInterface;
 class TInput;
 class TPrefPlaylist;
@@ -60,6 +62,8 @@ public:
 		SECTION_GUI,
 		SECTION_INPUT,
 		SECTION_PLAYLIST,
+		SECTION_VIDEO,
+		SECTION_AUDIO,
 		SECTION_SUBTITLES,
 		SECTION_DRIVES,
 		SECTION_PERFORMANCE,
@@ -111,6 +115,8 @@ protected:
 	TInterface* page_interface;
 	TInput* page_input;
 	TPrefPlaylist* page_playlist;
+	TVideo* page_video;
+	TAudio* page_audio;
 	TSubtitles* page_subtitles;
 	TDrives* page_drives;
 	TPerformance* page_performance;
