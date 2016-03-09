@@ -52,7 +52,6 @@
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef Q_OS_WIN
-#include <windows.h> // To change app priority
 #include <QSysInfo> // To get Windows version
 #endif
 #ifdef DISABLE_SCREENSAVER
@@ -1183,29 +1182,6 @@ void TCore::startPlayer(QString file, double seek) {
 
 
 	// Performance options
-#ifdef Q_OS_WIN
-	QString p;
-	int app_p = NORMAL_PRIORITY_CLASS;
-	switch (pref->priority) {
-		case TPreferences::Realtime: 	p = "realtime";
-										app_p = REALTIME_PRIORITY_CLASS;
-										break;
-		case TPreferences::High:			p = "high";
-										app_p = REALTIME_PRIORITY_CLASS;
-										break;
-		case TPreferences::AboveNormal:	p = "abovenormal";
-										app_p = HIGH_PRIORITY_CLASS;
-										break;
-		case TPreferences::Normal: 		p = "normal";
-										app_p = ABOVE_NORMAL_PRIORITY_CLASS; 
-										break;
-		case TPreferences::BelowNormal: 	p = "belownormal"; break;
-		case TPreferences::Idle: 		p = "idle"; break;
-		default: 						p = "normal";
-	}
-	proc->setOption("priority", p);
-#endif
-
 	if (pref->autosync) {
 		proc->setOption("autosync", QString::number(pref->autosync_factor));
 	}

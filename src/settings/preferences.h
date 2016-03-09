@@ -190,8 +190,6 @@ public:
 
 
 	// Performance tab
-	int priority;
-
 	int cache_for_files;
 	int cache_for_streams;
 	int cache_for_dvds;

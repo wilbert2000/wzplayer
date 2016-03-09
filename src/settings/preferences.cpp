@@ -176,8 +176,6 @@ void TPreferences::reset() {
        Performance
        *********** */
 
-	priority = AboveNormal; // Option only for windows
-
 	cache_for_files = 2048;
 	cache_for_streams = 2048;
 	cache_for_dvds = 0; // not recommended to use cache for dvds
@@ -538,8 +536,6 @@ void TPreferences::save() {
        Performance
        *********** */
 	beginGroup("performance");
-
-	setValue("priority", priority);
 
 	setValue("cache_for_files", cache_for_files);
 	setValue("cache_for_streams", cache_for_streams);
@@ -1039,8 +1035,6 @@ void TPreferences::load() {
 
 	beginGroup("performance");
 
-	priority = value("priority", priority).toInt();
-
 	cache_for_files = value("cache_for_files", cache_for_files).toInt();
 	cache_for_streams = value("cache_for_streams", cache_for_streams).toInt();
 	cache_for_dvds = value("cache_for_dvds", cache_for_dvds).toInt();
@@ -1392,6 +1386,7 @@ void TPreferences::load() {
 		remove("performance/hwdec");
 		remove("performance/frame_drop");
 		remove("performance/hard_frame_drop");
+		remove("performance/priority");
 
 		remove("advanced/prefer_ipv4");
 

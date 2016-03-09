@@ -24,8 +24,8 @@ namespace Gui {
 namespace Pref {
 
 TWidget::TWidget(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f)
-{
+	: QWidget(parent, f) {
+
 	requires_restart = false;
 	help_message = "";
 }
@@ -41,8 +41,8 @@ QPixmap TWidget::sectionIcon() {
 	return QPixmap();
 }
 
-void TWidget::addSectionTitle(const QString & title) {
-	help_message += "<h2>"+title+"</h2>";
+void TWidget::addSectionTitle(const QString& title) {
+	help_message += "<h2>" + title + "</h2>";
 }
 
 void TWidget::restartIfBoolChanged(bool& old_value, bool new_value) {

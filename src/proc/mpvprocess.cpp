@@ -829,7 +829,6 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		|| name == "monitoraspect"
 		|| name == "mc"
 		|| name == "framedrop"
-		|| name == "priority"
 		|| name == "hwdec"
 		|| name == "autosync"
 		|| name == "dvd-device"

@@ -30,12 +30,6 @@ TPerformance::TPerformance(QWidget* parent, Qt::WindowFlags f)
 	: TWidget(parent, f) {
 
 	setupUi(this);
-
-	// Priority only for windows
-#ifndef Q_OS_WIN
-	priority_group->hide();
-#endif
-
 	retranslateStrings();
 }
 
@@ -53,10 +47,7 @@ QPixmap TPerformance::sectionIcon() {
 
 void TPerformance::retranslateStrings() {
 
-	int priority = priority_combo->currentIndex();
 	retranslateUi(this);
-	priority_combo->setCurrentIndex(priority);
-
 	createHelp();
 }
 
@@ -68,11 +59,10 @@ void TPerformance::setData(TPreferences* pref) {
 	setCacheForAudioCDs(pref->cache_for_audiocds);
 	setCacheForVCDs(pref->cache_for_vcds);
 	setCacheForTV(pref->cache_for_tv);
-
-	setPriority(pref->priority);
 }
 
 void TPerformance::getData(TPreferences* pref) {
+
 	requires_restart = false;
 
 	TEST_AND_SET(pref->cache_for_files, cacheForFiles());
@@ -81,8 +71,6 @@ void TPerformance::getData(TPreferences* pref) {
 	TEST_AND_SET(pref->cache_for_audiocds, cacheForAudioCDs());
 	TEST_AND_SET(pref->cache_for_vcds, cacheForVCDs());
 	TEST_AND_SET(pref->cache_for_tv, cacheForTV());
-
-	TEST_AND_SET(pref->priority, priority());
 }
 
 void TPerformance::setCacheForFiles(int n) {
@@ -133,27 +121,9 @@ int TPerformance::cacheForTV() {
 	return cache_tv_spin->value();
 }
 
-void TPerformance::setPriority(int n) {
-	priority_combo->setCurrentIndex(n);
-}
-
-int TPerformance::priority() {
-	return priority_combo->currentIndex();
-}
-
 void TPerformance::createHelp() {
+
 	clearHelp();
-
-	addSectionTitle(tr("Performance"));
-	
-	// Performance tab
-#ifdef Q_OS_WIN
-	setWhatsThis(priority_combo, tr("Priority"), 
-		tr("Set process priority for mplayer according to the predefined "
-           "priorities available under Windows.<br>"
-           "<b>Warning:</b> Using realtime priority can cause system lockup."));
-#endif
-
 
 	addSectionTitle(tr("Cache"));
 

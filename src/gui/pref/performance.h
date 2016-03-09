@@ -49,9 +49,6 @@ public:
 protected:
 	virtual void createHelp();
 
-	void setPriority(int n);
-	int priority();
-
 	void setCacheForFiles(int n);
 	int cacheForFiles();
 
