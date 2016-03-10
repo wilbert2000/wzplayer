@@ -61,10 +61,11 @@ class InfoReader : QObject {
 	Q_OBJECT
 
 public:
-	InfoReader(QObject* parent = 0);
+	InfoReader();
 	virtual ~InfoReader();
 
 	void getInfo();
+	void getInfo(const QString& path);
 
 	InfoList voList() { return vo_list; }
 	InfoList aoList() { return ao_list; }
@@ -80,6 +81,9 @@ public:
 	static InfoReader* obj();
 
 protected:
+	QString bin;
+	qint64 bin_size;
+
 	InfoList vo_list;
 	InfoList ao_list;
 
@@ -93,6 +97,8 @@ private:
 	static InfoReader* static_obj;
 	static QStringList convertInfoListToList(InfoList l);
 	static InfoList convertListToInfoList(QStringList l);
+	QString getGroup();
+	void clearInfo();
 };
 
 #endif

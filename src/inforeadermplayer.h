@@ -31,7 +31,7 @@ class InfoReaderMplayer : QObject {
 	Q_OBJECT
 
 public:
-	InfoReaderMplayer(QObject* parent = 0);
+	InfoReaderMplayer(const QString& path);
 	virtual ~InfoReaderMplayer();
 
 	void getInfo();
@@ -50,6 +50,8 @@ protected:
 	void list();
 
 protected:
+	QString bin;
+
 	QProcess* proc;
 
 	InfoList vo_list;

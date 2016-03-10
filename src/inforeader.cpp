@@ -33,7 +33,7 @@
 #include "inforeadermplayer.h"
 #endif
 
-#define INFOREADER_SAVE_VERSION 2
+#define INFOREADER_SAVE_VERSION 3
 
 using namespace Settings;
 
@@ -47,65 +47,78 @@ InfoReader* InfoReader::obj() {
 	return static_obj;
 }
 
-InfoReader::InfoReader(QObject* parent)
-	: QObject(parent) {
+InfoReader::InfoReader()
+	: QObject()
+	, bin_size(0) {
 }
 
 InfoReader::~InfoReader() {
 }
 
 void InfoReader::getInfo() {
+	getInfo(Settings::pref->playerAbsolutePath());
+}
 
-	QString inifile = TPaths::configPath() + "/player_info.ini";
-	QSettings set(inifile, QSettings::IniFormat);
+QString InfoReader::getGroup() {
+	return bin.replace("/", "_").replace("\\", "_").replace(".", "_").replace(":", "_");
+}
 
-	QString version_group = "version_" + QString::number(INFOREADER_SAVE_VERSION);
+void InfoReader::clearInfo() {
 
-	QString bin = Settings::pref->playerAbsolutePath();
-	QString sname = bin;
-	sname = sname.replace("/", "_").replace("\\", "_").replace(".", "_").replace(":", "_");
-	QFileInfo fi(bin);
-	if (fi.exists()) {
-		sname += "_" + QString::number(fi.size());
-		qDebug() << "InfoReader::getInfo: sname:" << sname;
+	vo_list.clear();
+	ao_list.clear();
+	demuxerList().clear();
+	vc_list.clear();
+	ac_list.clear();
+	vf_list.clear();
+	option_list.clear();
+}
 
-		// Check if we already have info about the player in the ini file
-		bool got_info = false;
-		set.beginGroup(version_group +"/"+ sname);
-		if (set.value("size", -1).toInt() == fi.size()) {
-			got_info = true;
-			vo_list = convertListToInfoList(set.value("vo_list").toStringList());
-			ao_list = convertListToInfoList(set.value("ao_list").toStringList());
-			demuxer_list = convertListToInfoList(set.value("demuxer_list").toStringList());
-			vc_list = convertListToInfoList(set.value("vc_list").toStringList());
-			ac_list = convertListToInfoList(set.value("ac_list").toStringList());
-			vf_list = set.value("vf_list").toStringList();
-			option_list = set.value("option_list").toStringList();
-		}
-		set.endGroup();
-		if (got_info) {
-			qDebug() << "InfoReader::getInfo: loaded info from" << inifile;
-			return;
-		}
+void InfoReader::getInfo(const QString& path) {
+
+	// Player not existing
+	QFileInfo fi(path);
+	if (!fi.exists()) {
+		bin = path;
+		bin_size = 0;
+		clearInfo();
+		return;
 	}
 
-	if (pref->player_id == TPreferences::MPV) {
-#ifdef MPV_SUPPORT
-		qDebug("InfoReader::getInfo: mpv");
-		InfoReaderMPV ir(this);
-		ir.getInfo();
-		vo_list = ir.voList();
-		ao_list = ir.aoList();
-		demuxer_list = ir.demuxerList();
-		vc_list = ir.vcList();
-		ac_list = ir.acList();
-		vf_list = ir.vfList();
-		option_list = ir.optionList();
-#endif
-	} else {
+	// Already loaded info
+	qint64 size = fi.size();
+	if (path == bin && size == bin_size) {
+		return;
+	}
+
+	bin = path;
+	bin_size = size;
+
+	// Get info from ini file
+	QString inifile = TPaths::configPath() + "/player_info_version_"
+					  + QString::number(INFOREADER_SAVE_VERSION) + ".ini";
+	QSettings set(inifile, QSettings::IniFormat);
+	set.beginGroup(getGroup());
+
+	if (set.value("size", -1).toInt() == bin_size) {
+		vo_list = convertListToInfoList(set.value("vo_list").toStringList());
+		ao_list = convertListToInfoList(set.value("ao_list").toStringList());
+		demuxer_list = convertListToInfoList(set.value("demuxer_list").toStringList());
+		vc_list = convertListToInfoList(set.value("vc_list").toStringList());
+		ac_list = convertListToInfoList(set.value("ac_list").toStringList());
+		vf_list = set.value("vf_list").toStringList();
+		option_list = set.value("option_list").toStringList();
+
+		qDebug() << "InfoReader::getInfo: loaded info from" << inifile;
+		return;
+	}
+
+	// Get info from player
+	bool save = false;
+	if (TPreferences::getPlayerID(bin) == TPreferences::ID_MPLAYER) {
 #ifdef MPLAYER_SUPPORT
 		qDebug("InfoReader::getInfo: mplayer");
-		InfoReaderMplayer ir(this);
+		InfoReaderMplayer ir(bin);
 		ir.getInfo();
 		vo_list = ir.voList();
 		ao_list = ir.aoList();
@@ -114,13 +127,27 @@ void InfoReader::getInfo() {
 		ac_list = ir.acList();
 		vf_list.clear();
 		option_list.clear();
+		save = true;
+#endif
+	} else {
+#ifdef MPV_SUPPORT
+		qDebug("InfoReader::getInfo: mpv");
+		InfoReaderMPV ir(bin);
+		ir.getInfo();
+		vo_list = ir.voList();
+		ao_list = ir.aoList();
+		demuxer_list = ir.demuxerList();
+		vc_list = ir.vcList();
+		ac_list = ir.acList();
+		vf_list = ir.vfList();
+		option_list = ir.optionList();
+		save = true;
 #endif
 	}
 
-	if (fi.exists()) {
+	if (save) {
 		qDebug() << "InfoReader::getInfo: saving info to" << inifile;
-		set.beginGroup(version_group +"/"+ sname);
-		set.setValue("size", fi.size());
+		set.setValue("size", bin_size);
 		set.setValue("date", fi.lastModified());
 		set.setValue("vo_list", convertInfoListToList(vo_list));
 		set.setValue("ao_list", convertInfoListToList(ao_list));
@@ -129,7 +156,9 @@ void InfoReader::getInfo() {
 		set.setValue("ac_list", convertInfoListToList(ac_list));
 		set.setValue("vf_list", vf_list);
 		set.setValue("option_list", option_list);
-		set.endGroup();
+	} else {
+		clearInfo();
+		qWarning("InfoReader::getInfo: support for player not compiled");
 	}
 }
 

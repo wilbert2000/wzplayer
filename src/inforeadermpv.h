@@ -31,7 +31,7 @@ class InfoReaderMPV : QObject {
 	Q_OBJECT
 
 public:
-	InfoReaderMPV(QObject* parent = 0);
+	InfoReaderMPV(const QString& path);
 	virtual ~InfoReaderMPV();
 
 	void getInfo();
@@ -52,6 +52,8 @@ protected:
 	void list();
 
 protected:
+	QString bin;
+
 	InfoList vo_list;
 	InfoList ao_list;
 

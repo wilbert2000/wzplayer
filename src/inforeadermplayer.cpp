@@ -23,9 +23,6 @@
 #include <QProcess>
 
 #include "colorutils.h"
-#include "settings/preferences.h"
-
-using namespace Settings;
 
 #define NOME 0
 #define VO 1
@@ -35,9 +32,9 @@ using namespace Settings;
 #define AC 5
 
 
-InfoReaderMplayer::InfoReaderMplayer(QObject* parent)
-	: QObject(parent)
-	, proc(0) {
+InfoReaderMplayer::InfoReaderMplayer(const QString& path)
+	: QObject()
+	, bin(path) {
 
 	proc = new QProcess(this);
 	proc->setProcessChannelMode(QProcess::MergedChannels);
@@ -99,6 +96,7 @@ static QRegExp rx_demuxer2("^\\s+([A-Z,a-z,0-9]+)\\s+(\\S.*)");
 static QRegExp rx_codec("^([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]+)\\s+(\\S.*)");
 
 void InfoReaderMplayer::readLine(QByteArray ba) {
+
 #if COLOR_OUTPUT_SUPPORT
     QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
 #else
@@ -206,7 +204,7 @@ bool InfoReaderMplayer::run(QString options) {
 
 	QStringList args = options.split(" ");
 
-	proc->start(Settings::pref->playerAbsolutePath(), args);
+	proc->start(bin, args);
 	if (!proc->waitForStarted()) {
 		qWarning("InfoReaderMplayer::run: process can't start!");
 		return false;

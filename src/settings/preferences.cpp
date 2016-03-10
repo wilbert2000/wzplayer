@@ -809,22 +809,25 @@ void TPreferences::save() {
 	sync();
 }
 
+TPreferences::TPlayerID TPreferences::getPlayerID(const QString& player) {
+
+	QFileInfo fi(player);
+	QString name = fi.fileName();
+	if (name.isEmpty())
+		name = player;
+	if (name.toLower().startsWith("mplayer"))
+		return ID_MPLAYER;
+	return ID_MPV;
+}
+
 void TPreferences::setPlayerID() {
 
-	QString name;
-	QFileInfo fi(player_bin);
-	name = fi.fileName();
-	if (name.isEmpty())
-		name = player_bin;
-	if (name.toLower().startsWith("mplayer"))
-		player_id = MPLAYER;
-	else
-		player_id = MPV;
+	player_id = getPlayerID(player_bin);
 }
 
 QString TPreferences::playerName() const {
 
-	if (player_id == MPLAYER)
+	if (player_id == ID_MPLAYER)
 		return "MPlayer";
 	return "MPV";
 }
@@ -833,39 +836,32 @@ QString TPreferences::playerAbsolutePath() const {
 	return player_abs_path;
 }
 
-void TPreferences::setAbsolutePath() {
+QString TPreferences::getAbsolutePathPlayer(const QString& player) {
 
-	player_abs_path = player_bin;
+	QString path = player;
 
 #ifdef Q_OS_LINUX
-	QString player = Helper::findExecutable(player_abs_path);
-	if (!player.isEmpty())
-		player_abs_path = player;
+	QString found_player = Helper::findExecutable(path);
+	if (!found_player.isEmpty())
+		path = found_player;
 #endif
 
-	QFileInfo fi(player_abs_path);
+	QFileInfo fi(path);
 	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-		player_abs_path = fi.absoluteFilePath();
+		path = fi.absoluteFilePath();
 	}
 
-	qDebug("Settings::TPreferences::setAbsolutePath: '%s'",
-		   player_abs_path.toUtf8().constData());
+	qDebug("Settings::TPreferences::getAbsolutePathPlayer: '%s'",
+		   path.toUtf8().constData());
+	return path;
 }
 
-void TPreferences::setPlayerBin0() {
+void TPreferences::setAbsolutePath() {
 
-	QString bin = value("player_bin", "").toString();
-	if (bin.isEmpty()) {
-		// Try old config
-		bin = value("mplayer_bin", "").toString();
-		if (bin.isEmpty()) {
-			// Keep current
-			bin = player_bin;
-		} else {
-			// Remove old one
-			remove("mplayer_bin");
-		}
-	}
+	player_abs_path = getAbsolutePathPlayer(player_bin);
+}
+
+void TPreferences::setPlayerBin0(QString bin) {
 
 #ifdef Q_OS_WIN
 	// Check if the mplayer binary exists and try to fix it
@@ -884,6 +880,7 @@ void TPreferences::setPlayerBin0() {
 		}
 	}
 #endif
+
 #ifdef Q_OS_LINUX
 	if (!QFile::exists(bin)) {
 		QString app_path = Helper::findExecutable(bin);
@@ -908,9 +905,9 @@ void TPreferences::setPlayerBin0() {
 	player_bin = bin;
 }
 
-void TPreferences::setPlayerBin() {
+void TPreferences::setPlayerBin(const QString& bin) {
 
-	setPlayerBin0();
+	setPlayerBin0(bin);
 	setPlayerID();
 	setAbsolutePath();
 }
@@ -922,7 +919,20 @@ void TPreferences::load() {
 	beginGroup("General");
 
 	config_version = value("config_version", 0).toInt();
-	setPlayerBin();
+
+	QString bin = value("player_bin", "").toString();
+	if (bin.isEmpty()) {
+		// Try old config
+		bin = value("mplayer_bin", "").toString();
+		if (bin.isEmpty()) {
+			// Keep current
+			bin = player_bin;
+		} else {
+			// Remove old one
+			remove("mplayer_bin");
+		}
+	}
+	setPlayerBin(bin);
 
 	// Media settings per file
 	remember_media_settings = !value("dont_remember_media_settings", !remember_media_settings).toBool();

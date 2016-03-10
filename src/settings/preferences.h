@@ -42,7 +42,7 @@ class TPreferences : public TSMPlayerSettings {
 
 public:
 	enum TPlayerID {
-		MPLAYER = 0, MPV = 1
+		ID_MPLAYER = 0, ID_MPV = 1
 	};
 	enum TOSDLevel {
 		None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3
@@ -90,11 +90,14 @@ public:
 	QString player_bin;
 	TPlayerID player_id;
 	QString player_abs_path;
-	bool isMPlayer() const { return player_id == MPLAYER; }
-	bool isMPV() const { return player_id == MPV; }
+
+	bool isMPlayer() const { return player_id == ID_MPLAYER; }
+	bool isMPV() const { return player_id == ID_MPV; }
 	QString playerName() const;
 	QString playerAbsolutePath() const;
-	void setPlayerBin();
+	static QString getAbsolutePathPlayer(const QString& player);
+	static TPlayerID getPlayerID(const QString& player);
+	void setPlayerBin(const QString& bin);
 
 	// Media settings per file
 	bool remember_media_settings;
@@ -465,7 +468,7 @@ public:
 #endif
 
 private:
-	void setPlayerBin0();
+	void setPlayerBin0(QString bin);
 	void setPlayerID();
 	void setAbsolutePath();
 };

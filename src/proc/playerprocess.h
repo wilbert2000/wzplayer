@@ -46,8 +46,8 @@ public:
 	virtual ~TPlayerProcess() {}
 
 	Settings::TPreferences::TPlayerID player() const { return player_id; }
-	bool isMPlayer() const { return player_id == Settings::TPreferences::MPLAYER; }
-	bool isMPV() const { return player_id == Settings::TPreferences::MPV; }
+	bool isMPlayer() const { return player_id == Settings::TPreferences::ID_MPLAYER; }
+	bool isMPV() const { return player_id == Settings::TPreferences::ID_MPV; }
 	bool isFullyStarted() const { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();

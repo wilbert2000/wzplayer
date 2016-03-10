@@ -20,11 +20,11 @@
 #include <QDebug>
 #include <QStringList>
 #include <QProcess>
-#include "settings/preferences.h"
 
 
-InfoReaderMPV::InfoReaderMPV(QObject* parent)
-	: QObject(parent) {
+InfoReaderMPV::InfoReaderMPV(const QString& path)
+	: QObject()
+	, bin(path) {
 }
 
 InfoReaderMPV::~InfoReaderMPV() {
@@ -94,7 +94,7 @@ QList<QByteArray> InfoReaderMPV::run(QString options) {
 	QProcess proc(this);
 	proc.setProcessChannelMode(QProcess::MergedChannels);
 	QStringList args = options.split(" ");
-	proc.start(Settings::pref->playerAbsolutePath(), args);
+	proc.start(bin, args);
 	if (!proc.waitForStarted()) {
 		qWarning("InfoReaderMPV::run: process can't start!");
 		return r;
