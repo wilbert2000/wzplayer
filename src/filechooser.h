@@ -58,6 +58,7 @@ protected:
 
 protected slots:
 	virtual void openFileDialog();
+	void onEditingFinished();
 
 protected:
 	QString _caption;

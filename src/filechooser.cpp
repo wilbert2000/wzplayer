@@ -31,8 +31,8 @@
 
 QString FileChooser::last_dir;
 
-FileChooser::FileChooser(QWidget* parent) : LineEditWithIcon(parent) 
-{
+FileChooser::FileChooser(QWidget* parent) : LineEditWithIcon(parent) {
+
 	setDialogType(GetFileName);
 	setOptions(0);
 
@@ -40,12 +40,15 @@ FileChooser::FileChooser(QWidget* parent) : LineEditWithIcon(parent)
 	button->setCursor(Qt::PointingHandCursor);
 
 	connect(button, SIGNAL(clicked()), this, SLOT(openFileDialog()));
+	connect(this, SIGNAL(editingFinished()),
+			this, SLOT(onEditingFinished()));
 }
 
 FileChooser::~FileChooser() {
 }
 
 void FileChooser::setupButton() {
+
 #ifdef NO_SMPLAYER_SUPPORT
 	setIcon(QPixmap(":/folder_open"));
 #else
@@ -115,6 +118,13 @@ void FileChooser::openFileDialog() {
 		setText(result);
 		if (old_file != result)
 			emit fileChanged(result);
+	}
+}
+
+void FileChooser::onEditingFinished() {
+
+	if (isModified()) {
+		emit fileChanged(text());
 	}
 }
 
