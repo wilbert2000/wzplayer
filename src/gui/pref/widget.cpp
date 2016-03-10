@@ -97,9 +97,6 @@ void TWidget::clearHelp() {
 	help_message = "<h1>" + sectionName() + "</h1>";
 }
 
-void TWidget::createHelp() {
-}
-
 // Language change stuff
 void TWidget::changeEvent(QEvent *e) {
 	if (e->type() == QEvent::LanguageChange) {

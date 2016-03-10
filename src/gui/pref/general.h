@@ -48,9 +48,13 @@ public:
 	// Apply changes
 	void getData(Settings::TPreferences* pref);
 
-	bool fileSettingsMethodChanged() { return filesettings_method_changed; }
+signals:
+	void binChanged(const QString& path);
 
 protected:
+	virtual void retranslateStrings();
+
+private:
 	virtual void createHelp();
 
 	// Tab General
@@ -66,7 +70,6 @@ protected:
 
 	void setFileSettingsMethod(const QString& method);
 	QString fileSettingsMethod();
-
 
 	// Screenshots
 	void setUseScreenshots(bool b);
@@ -100,11 +103,8 @@ protected:
 	void setSubtitleTrack(int track);
 	int subtitleTrack();
 
-protected:
-	virtual void retranslateStrings();
-
-private:
-	bool filesettings_method_changed;
+private slots:
+	void fileChanged(QString file);
 };
 
 } // namespace Pref

@@ -43,6 +43,8 @@ class TAudio : public TWidget, public Ui::TAudio {
 	Q_OBJECT
 
 public:
+	InfoList ao_list;
+
 	TAudio(QWidget* parent, InfoList aol);
 	virtual ~TAudio();
 
@@ -57,10 +59,24 @@ public:
 	// Apply changes
 	void getData(Settings::TPreferences* pref);
 
-protected:
-	virtual void createHelp();
+	void updateDriverCombo(bool allow_user_defined_ao);
 
-	void setAO(const QString& ao_driver);
+protected:
+	virtual void retranslateStrings();
+
+private:
+
+#if USE_DSOUND_DEVICES
+	TDeviceList dsound_devices;
+#endif
+
+#if USE_ALSA_DEVICES
+	TDeviceList alsa_devices;
+#endif
+
+	void createHelp();
+
+	void setAO(const QString& ao_driver, bool allow_user_defined);
 	QString AO();
 
 	void setUseAudioEqualizer(bool b);
@@ -99,23 +115,8 @@ protected:
 	void setScaleTempoFilter(Settings::TPreferences::TOptionState value);
 	Settings::TPreferences::TOptionState scaleTempoFilter();
 
-protected slots:
+private slots:
 	void ao_combo_changed(int);
-
-protected:
-	virtual void retranslateStrings();
-	void updateDriverCombo();
-
-	InfoList ao_list;
-	
-#if USE_DSOUND_DEVICES
-	TDeviceList dsound_devices;
-#endif
-
-#if USE_ALSA_DEVICES
-	TDeviceList alsa_devices;
-#endif
-
 };
 
 } // namespace Pref

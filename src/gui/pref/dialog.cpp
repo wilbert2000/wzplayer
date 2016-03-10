@@ -18,6 +18,7 @@
 
 
 #include "gui/pref/dialog.h"
+#include <QDebug>
 #include <QTextBrowser>
 #include "images.h"
 #include "settings/preferences.h"
@@ -35,6 +36,7 @@
 #include "gui/pref/tv.h"
 #include "gui/pref/updates.h"
 #include "gui/pref/network.h"
+
 #if USE_ASSOCIATIONS
 #include "gui/pref/associations.h"
 #endif
@@ -73,6 +75,8 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	// TODO: parent
 	page_general = new TGeneral(0);
 	addSection(page_general);
+	connect(page_general, SIGNAL(binChanged(const QString&)),
+			this, SLOT(binChanged(const QString&)));
 
 	page_interface = new TInterface;
 	addSection(page_interface);
@@ -169,6 +173,17 @@ void TDialog::reject() {
 	setResult(QDialog::Rejected);
 
 	setResult(QDialog::Accepted);
+}
+
+void TDialog::binChanged(const QString& path) {
+	qDebug() << "Gui::Pref::TDialog::binChanged:" << path;
+
+	InfoReader* i = InfoReader::obj();
+	i->getInfo(path);
+	page_video->vo_list = i->voList();
+	page_video->updateDriverCombo(false);
+	page_audio->ao_list = i->aoList();
+	page_audio->updateDriverCombo(false);
 }
 
 void TDialog::addSection(TWidget *w) {

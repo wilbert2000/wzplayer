@@ -139,6 +139,9 @@ private:
 	QPushButton* helpButton;
 
 	void addSection(TWidget* w);
+
+private slots:
+	void binChanged(const QString& path);
 };
 
 } // namespace Pref

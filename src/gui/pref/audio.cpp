@@ -75,7 +75,7 @@ void TAudio::retranslateStrings() {
 
 	retranslateUi(this);
 
-	updateDriverCombo();
+	updateDriverCombo(true);
 
 	channels_combo->setItemText(0, tr("2 (Stereo)"));
 	channels_combo->setItemText(1, tr("4 (4.0 Surround)"));
@@ -96,7 +96,7 @@ void TAudio::setData(TPreferences* pref) {
 	}
 #endif
 
-	setAO(ao);
+	setAO(ao, true);
 	setUseAudioEqualizer(pref->use_audio_equalizer);
 	global_audio_equalizer_check->setChecked(pref->global_audio_equalizer);
 	setAc3DTSPassthrough(pref->use_hwac3);
@@ -144,7 +144,7 @@ void TAudio::getData(TPreferences* pref) {
 	restartIfDoubleChanged(pref->mc_value, mc());
 }
 
-void TAudio::updateDriverCombo() {
+void TAudio::updateDriverCombo(bool allow_user_defined_ao) {
 
 	QString current_ao = AO();
 	ao_combo->clear();
@@ -179,17 +179,19 @@ void TAudio::updateDriverCombo() {
 	}
 	ao_combo->addItem(tr("User defined..."), "user_defined");
 
-	setAO(current_ao);
+	setAO(current_ao, allow_user_defined_ao);
 }
 
-void TAudio::setAO(const QString& ao_driver) {
+void TAudio::setAO(const QString& ao_driver, bool allow_user_defined) {
 
 	int idx = ao_combo->findData(ao_driver);
 	if (idx >= 0) {
 		ao_combo->setCurrentIndex(idx);
-	} else {
+	} else if (allow_user_defined && !ao_driver.isEmpty()) {
 		ao_combo->setCurrentIndex(ao_combo->findData("user_defined"));
 		ao_user_defined_edit->setText(ao_driver);
+	} else {
+		ao_combo->setCurrentIndex(0);
 	}
 	ao_combo_changed(ao_combo->currentIndex());
 }
@@ -199,12 +201,9 @@ QString TAudio::AO() {
 	QString ao = ao_combo->itemData(ao_combo->currentIndex()).toString();
 	if (ao == "user_defined") {
 		ao = ao_user_defined_edit->text();
-		/*
 		if (ao.isEmpty()) {
 			ao = ao_combo->itemData(0).toString();
-			qDebug("Gui::Pref::TAudio::AO: user defined ao is empty, using %s", ao.toUtf8().constData());
 		}
-		*/
 	}
 	return ao;
 }

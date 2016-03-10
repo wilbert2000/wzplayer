@@ -41,6 +41,8 @@ class TVideo : public TWidget, public Ui::TVideo {
 	Q_OBJECT
 
 public:
+	InfoList vo_list;
+
 	TVideo(QWidget* parent, InfoList vol);
 	virtual ~TVideo();
 
@@ -53,19 +55,10 @@ public:
     // Apply changes
 	void getData(Settings::TPreferences* pref);
 
+	void updateDriverCombo(bool allow_user_defined_vo);
+
 protected:
-	InfoList vo_list;
-
-#if USE_XV_ADAPTORS
-	TDeviceList xv_adaptors;
-#endif
-
-	virtual void createHelp();
 	virtual void retranslateStrings();
-	void updateDriverCombo();
-
-	void setVO(const QString& vo_driver);
-	QString VO();
 
 protected slots:
 	void vo_combo_changed(int);
@@ -73,6 +66,21 @@ protected slots:
 #ifndef Q_OS_WIN
 	void on_vdpau_button_clicked();
 #endif
+
+private:
+
+#if USE_XV_ADAPTORS
+	TDeviceList xv_adaptors;
+#endif
+
+#ifndef Q_OS_WIN
+	struct Settings::TPreferences::VDPAU_settings vdpau;
+#endif
+
+	void createHelp();
+
+	void setVO(const QString& vo_driver, bool allow_user_defined);
+	QString VO();
 
 	void setHwdec(const QString& v);
 	QString hwdec();
@@ -103,13 +111,6 @@ protected slots:
 
 	void setBlackbordersOnFullscreen(bool b);
 	bool blackbordersOnFullscreen();
-
-private:
-
-#ifndef Q_OS_WIN
-	struct Settings::TPreferences::VDPAU_settings vdpau;
-#endif
-
 };
 
 } // namespace Pref

@@ -82,7 +82,7 @@ void TVideo::retranslateStrings() {
 
 	retranslateUi(this);
 
-	updateDriverCombo();
+	updateDriverCombo(true);
 
 	int deinterlace_item = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
@@ -118,7 +118,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 #endif
 
 	} // if (vo.isEmpty())
-	setVO(vo);
+	setVO(vo, true);
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	vdpau = pref->vdpau;
@@ -138,8 +138,6 @@ void TVideo::setData(Settings::TPreferences* pref) {
 }
 
 void TVideo::getData(Settings::TPreferences* pref) {
-
-	requires_restart = false;
 
 	restartIfStringChanged(pref->vo, VO());
 
@@ -164,7 +162,7 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	}
 }
 
-void TVideo::updateDriverCombo() {
+void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
 
 	QString current_vo = VO();
 	vo_combo->clear();
@@ -230,17 +228,19 @@ void TVideo::updateDriverCombo() {
 	}
 	vo_combo->addItem(tr("User defined..."), "user_defined");
 
-	setVO(current_vo);
+	setVO(current_vo, allow_user_defined_vo);
 }
 
-void TVideo::setVO(const QString& vo_driver) {
+void TVideo::setVO(const QString& vo_driver, bool allow_user_defined) {
 
 	int idx = vo_combo->findData(vo_driver);
 	if (idx >= 0) {
 		vo_combo->setCurrentIndex(idx);
-	} else {
+	} else if (allow_user_defined && !vo_driver.isEmpty()) {
 		vo_combo->setCurrentIndex(vo_combo->findData("user_defined"));
 		vo_user_defined_edit->setText(vo_driver);
+	} else {
+		vo_combo->setCurrentIndex(0);
 	}
 	vo_combo_changed(vo_combo->currentIndex());
 }
@@ -250,6 +250,9 @@ QString TVideo::VO() {
 	QString vo = vo_combo->itemData(vo_combo->currentIndex()).toString();
 	if (vo == "user_defined") {
 		vo = vo_user_defined_edit->text();
+		if (vo.isEmpty()) {
+			vo = vo_combo->itemData(0).toString();
+		}
 	}
 	return vo;
 }
@@ -381,13 +384,13 @@ void TVideo::on_vdpau_button_clicked() {
 	d.setDisableFilters(vdpau.disable_video_filters);
 
 	if (d.exec() == QDialog::Accepted) {
-		vdpau.ffh264vdpau = d.ffh264vdpau();
-		vdpau.ffmpeg12vdpau = d.ffmpeg12vdpau();
-		vdpau.ffwmv3vdpau = d.ffwmv3vdpau();
-		vdpau.ffvc1vdpau = d.ffvc1vdpau();
-		vdpau.ffodivxvdpau = d.ffodivxvdpau();
+		restartIfBoolChanged(vdpau.ffh264vdpau, d.ffh264vdpau());
+		restartIfBoolChanged(vdpau.ffmpeg12vdpau, d.ffmpeg12vdpau());
+		restartIfBoolChanged(vdpau.ffwmv3vdpau, d.ffwmv3vdpau());
+		restartIfBoolChanged(vdpau.ffvc1vdpau, d.ffvc1vdpau());
+		restartIfBoolChanged(vdpau.ffodivxvdpau, d.ffodivxvdpau());
 
-		vdpau.disable_video_filters = d.disableFilters();
+		restartIfBoolChanged(vdpau.disable_video_filters, d.disableFilters());
 	}
 }
 #endif

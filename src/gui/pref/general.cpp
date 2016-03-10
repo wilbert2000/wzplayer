@@ -18,6 +18,7 @@
 
 
 #include "gui/pref/general.h"
+#include <QDebug>
 #include "settings/preferences.h"
 #include "filedialog.h"
 #include "images.h"
@@ -36,6 +37,9 @@ TGeneral::TGeneral(QWidget* parent)
 
 	// General tab
 	playerbin_edit->setDialogType(FileChooser::GetFileName);
+	connect(playerbin_edit, SIGNAL(fileChanged(QString)),
+			this, SLOT(fileChanged(QString)));
+
 	screenshot_edit->setDialogType(FileChooser::GetDirectory);
 
 	// Screenshots
@@ -123,47 +127,31 @@ void TGeneral::setData(TPreferences* pref) {
 
 	setAudioTrack(pref->initial_audio_track);
 	setSubtitleTrack(pref->initial_subtitle_track);
+
+	requires_restart = false;
 }
 
 void TGeneral::getData(TPreferences* pref) {
 
-	requires_restart = false;
-	filesettings_method_changed = false;
-
 	// General tab
 	if (pref->player_bin != playerPath()) {
 		requires_restart = true;
-		// TODO: fix
-		pref->player_bin = playerPath();
-		pref->setPlayerBin();
-
-		qDebug("Gui::Pref::TGeneral::getData: mplayer binary has changed, getting version number");
-		// TODO: fix
-		// Forces to get info from mplayer to update version number
-		// InfoReader* i = InfoReader::obj();
-		// i->getInfo();
-		// Update the drivers list at the same time
-		// TODO: add playerbin changed event handler
-		// vo_list = i->voList();
-		// ao_list = i->aoList();
-		// updateDriverCombos();
+		pref->setPlayerBin(playerPath());
+		// TODO: check fileChanged triggered if changed without exit of edit
+		// emit binChanged(pref->playerAbsolutePath());
 	}
 
-	bool remember_ms = rememberSettings();
-	TEST_AND_SET(pref->remember_media_settings, remember_ms);
-	bool remember_time = rememberTimePos();
-	TEST_AND_SET(pref->remember_time_pos, remember_time);
-	if (pref->file_settings_method != fileSettingsMethod()) {
-		pref->file_settings_method = fileSettingsMethod();
-		filesettings_method_changed = true;
-	}
+	pref->remember_media_settings = rememberSettings();
+	pref->remember_time_pos = rememberTimePos();
+	pref->file_settings_method = fileSettingsMethod();
 
 	// Screenshots
-	TEST_AND_SET(pref->use_screenshot, useScreenshots());
-	TEST_AND_SET(pref->screenshot_directory, screenshotDir());
+	restartIfBoolChanged(pref->use_screenshot, useScreenshots());
+	restartIfStringChanged(pref->screenshot_directory, screenshotDir());
+
 #ifdef MPV_SUPPORT
-	TEST_AND_SET(pref->screenshot_template, screenshot_template_edit->text());
-	TEST_AND_SET(pref->screenshot_format, screenshotFormat());
+	restartIfStringChanged(pref->screenshot_template, screenshot_template_edit->text());
+	restartIfStringChanged(pref->screenshot_format, screenshotFormat());
 #endif
 
 	pref->close_on_finish = closeOnFinish();
@@ -184,6 +172,12 @@ void TGeneral::setPlayerPath(const QString& path) {
 
 QString TGeneral::playerPath() {
 	return playerbin_edit->text();
+}
+
+void TGeneral::fileChanged(QString file) {
+	qDebug() << "Gui::Pref::TGeneral::fileChanged:" << file;
+
+	emit binChanged(pref->getAbsolutePathPlayer(file));
 }
 
 void TGeneral::setUseScreenshots(bool b) {
@@ -218,7 +212,6 @@ QString TGeneral::screenshotFormat() {
 
 void TGeneral::setRememberSettings(bool b) {
 	remember_all_check->setChecked(b);
-	//rememberAllButtonToggled(b);
 }
 
 bool TGeneral::rememberSettings() {
@@ -294,6 +287,7 @@ bool TGeneral::pauseWhenHidden() {
 }
 
 void TGeneral::createHelp() {
+
 	clearHelp();
 
 	addSectionTitle(tr("General"));

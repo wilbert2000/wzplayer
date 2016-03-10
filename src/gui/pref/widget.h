@@ -68,8 +68,6 @@ protected:
 	void setWhatsThis(QWidget* w, const QString& title, const QString& text);
 	void clearHelp();
 	
-	virtual void createHelp();
-
 private:
 	QString help_message;
 };
