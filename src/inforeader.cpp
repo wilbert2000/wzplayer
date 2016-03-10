@@ -60,7 +60,8 @@ void InfoReader::getInfo() {
 }
 
 QString InfoReader::getGroup() {
-	return bin.replace("/", "_").replace("\\", "_").replace(".", "_").replace(":", "_");
+	QString group = bin;
+	return group.replace("/", "_").replace("\\", "_").replace(".", "_").replace(":", "_");
 }
 
 void InfoReader::clearInfo() {
@@ -75,6 +76,7 @@ void InfoReader::clearInfo() {
 }
 
 void InfoReader::getInfo(const QString& path) {
+	qDebug() << "InfoReader::getInfo:" << path;
 
 	// Player not existing
 	QFileInfo fi(path);
@@ -82,12 +84,14 @@ void InfoReader::getInfo(const QString& path) {
 		bin = path;
 		bin_size = 0;
 		clearInfo();
+		qWarning() << "InforReader::getInfo: player" << path << "not found";
 		return;
 	}
 
 	// Already loaded info
 	qint64 size = fi.size();
 	if (path == bin && size == bin_size) {
+		qDebug("InfoReader::getInfo: reusing player info");
 		return;
 	}
 
@@ -109,7 +113,7 @@ void InfoReader::getInfo(const QString& path) {
 		vf_list = set.value("vf_list").toStringList();
 		option_list = set.value("option_list").toStringList();
 
-		qDebug() << "InfoReader::getInfo: loaded info from" << inifile;
+		qDebug() << "InfoReader::getInfo: loaded player info from" << inifile;
 		return;
 	}
 
@@ -117,7 +121,6 @@ void InfoReader::getInfo(const QString& path) {
 	bool save = false;
 	if (TPreferences::getPlayerID(bin) == TPreferences::ID_MPLAYER) {
 #ifdef MPLAYER_SUPPORT
-		qDebug("InfoReader::getInfo: mplayer");
 		InfoReaderMplayer ir(bin);
 		ir.getInfo();
 		vo_list = ir.voList();
@@ -131,7 +134,6 @@ void InfoReader::getInfo(const QString& path) {
 #endif
 	} else {
 #ifdef MPV_SUPPORT
-		qDebug("InfoReader::getInfo: mpv");
 		InfoReaderMPV ir(bin);
 		ir.getInfo();
 		vo_list = ir.voList();

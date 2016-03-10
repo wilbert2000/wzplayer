@@ -31,6 +31,7 @@ InfoReaderMPV::~InfoReaderMPV() {
 }
 
 void InfoReaderMPV::getInfo() {
+
 	vo_list.clear();
 	ao_list.clear();
 	demuxer_list.clear();
@@ -87,13 +88,15 @@ void InfoReaderMPV::list() {
 }
 
 QList<QByteArray> InfoReaderMPV::run(QString options) {
-	qDebug("InfoReaderMPV::run: '%s'", options.toUtf8().data());
+	qDebug("InfoReaderMPV::run: '%s %s'",
+		   bin.toUtf8().constData(),
+		   options.toUtf8().constData());
 
 	QList<QByteArray> r;
 
-	QProcess proc(this);
-	proc.setProcessChannelMode(QProcess::MergedChannels);
 	QStringList args = options.split(" ");
+	QProcess proc;
+	proc.setProcessChannelMode(QProcess::MergedChannels);
 	proc.start(bin, args);
 	if (!proc.waitForStarted()) {
 		qWarning("InfoReaderMPV::run: process can't start!");
