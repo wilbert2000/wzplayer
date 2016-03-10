@@ -97,9 +97,6 @@ private:
 	void setSubtitleLang(const QString& lang);
 	QString subtitleLang();
 
-	void setSubtitleTrack(int track);
-	int subtitleTrack();
-
 private slots:
 	void fileChanged(QString file);
 };

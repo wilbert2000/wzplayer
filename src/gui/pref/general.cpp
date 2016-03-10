@@ -125,8 +125,6 @@ void TGeneral::setData(TPreferences* pref) {
 	setAudioLang(pref->audio_lang);
 	setSubtitleLang(pref->subtitle_lang);
 
-	setSubtitleTrack(pref->initial_subtitle_track);
-
 	requires_restart = false;
 }
 
@@ -160,8 +158,6 @@ void TGeneral::getData(TPreferences* pref) {
 	// Preferred tab
 	pref->audio_lang = audioLang();
 	pref->subtitle_lang = subtitleLang();
-
-	pref->initial_subtitle_track = subtitleTrack();
 }
 
 void TGeneral::setPlayerPath(const QString& path) {
@@ -250,14 +246,6 @@ void TGeneral::setSubtitleLang(const QString& lang) {
 
 QString TGeneral::subtitleLang() {
 	return subtitle_lang_edit->text();
-}
-
-void TGeneral::setSubtitleTrack(int track) {
-	subtitle_track_spin->setValue(track);
-}
-
-int TGeneral::subtitleTrack() {
-	return subtitle_track_spin->value();
 }
 
 void TGeneral::setCloseOnFinish(bool b) {
@@ -363,13 +351,6 @@ void TGeneral::createHelp() {
            "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
            "will select the subtitle stream if it matches with <i>es</i>, "
            "<i>esp</i> or <i>spa</i>."));
-
-	setWhatsThis(subtitle_track_spin, tr("Subtitle track"),
-		tr("Specifies the default subtitle track which will be used when "
-           "playing new files. If the track doesn't exist, the first one "
-           "will be used. <br><b>Note:</b> the <i>\"preferred subtitle "
-           "language\"</i> has preference over this option."));
-
 }
 
 }} // namespace Gui::Pref

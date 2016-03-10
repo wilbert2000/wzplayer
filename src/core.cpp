@@ -3615,8 +3615,7 @@ void TCore::onAudioTracksChanged() {
 
 void TCore::selectPreferredSub() {
 
-	int wanted_sub_idx = pref->initial_subtitle_track - 1;
-	wanted_sub_idx = mdat.subs.selectOne(pref->language, wanted_sub_idx);
+	int wanted_sub_idx = mdat.subs.selectOne(pref->language, 0);
 	if (wanted_sub_idx >= 0) {
 		qDebug("TCore::selectPreferredSub: selecting subtitle idx %d", wanted_sub_idx);
 		changeSubtitle(wanted_sub_idx, false);
@@ -3637,16 +3636,18 @@ void TCore::onSubtitlesChanged() {
 
 	emit subtitlesChanged();
 
+	// TODO: Fix logic, rename load first to auto load in config dialog?
 	if (pref->autoload_sub && mdat.subs.count() > 0) {
-		int wanted_sub_idx = pref->initial_subtitle_track - 1;
-		wanted_sub_idx = mdat.subs.selectOne(pref->language, wanted_sub_idx);
+		int wanted_sub_idx = mdat.subs.selectOne(pref->language, 0);
 		if (wanted_sub_idx >= 0) {
 			if (isMPlayer()) {
 				// mplayers selected sub will not yet be updated, que the update.
-				qDebug("TCore::onSubtitlesChanged: posting update subtitle idx %d", wanted_sub_idx);
+				qDebug("TCore::onSubtitlesChanged: posting update subtitle idx %d",
+					   wanted_sub_idx);
 				QTimer::singleShot(500, this, SLOT(selectPreferredSub()));
 			} else {
-				qDebug("TCore::onSubtitlesChanged: selecting subtitle idx %d", wanted_sub_idx);
+				qDebug("TCore::onSubtitlesChanged: selecting subtitle idx %d",
+					   wanted_sub_idx);
 				changeSubtitle(wanted_sub_idx, false);
 			}
 			return;

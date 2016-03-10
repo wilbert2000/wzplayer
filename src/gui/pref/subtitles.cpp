@@ -218,8 +218,6 @@ void TSubtitles::checkBorderStyleCombo(int index) {
 	style_shadow_label->setEnabled(b);
 }
 
-
-
 void TSubtitles::setAssFontScale(double n) {
 	ass_font_scale_spin->setValue(n);
 }
@@ -229,11 +227,11 @@ double TSubtitles::assFontScale() {
 }
 
 void TSubtitles::setAutoloadSub(bool v) {
-	font_autoload_check->setChecked(v);
+	autoload_check->setChecked(v);
 }
 
 bool TSubtitles::autoloadSub() {
-	return font_autoload_check->isChecked();
+	return autoload_check->isChecked();
 }
 
 void TSubtitles::setFontEncoding(const QString& s) {
@@ -388,7 +386,7 @@ void TSubtitles::createHelp() {
 	setWhatsThis(font_autoload_combo, tr("Autoload"), 
         tr("Select the subtitle autoload method."));
 
-	setWhatsThis(font_autoload_check, tr("Select first available subtitle"), 
+	setWhatsThis(autoload_check, tr("Select first available subtitle"),
         tr("If there are one or more subtitle tracks available, one of them "
            "will be automatically selected, usually the first one, although if "
            "one of them matches the user's preferred language that one will "

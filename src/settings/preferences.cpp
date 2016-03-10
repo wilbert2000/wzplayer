@@ -393,8 +393,6 @@ void TPreferences::reset() {
 	initial_audio_channels = TMediaSettings::ChDefault;
 	initial_stereo_mode = TMediaSettings::Stereo;
 
-	initial_subtitle_track = 1;
-
 
 
     /* *********
@@ -755,8 +753,6 @@ void TPreferences::save() {
 
 	setValue("initial_audio_channels", initial_audio_channels);
 	setValue("initial_stereo_mode", initial_stereo_mode);
-
-	setValue("initial_subtitle_track", initial_subtitle_track);
 
 	endGroup(); // defaults
 
@@ -1280,8 +1276,6 @@ void TPreferences::load() {
 	initial_audio_channels = value("initial_audio_channels", initial_audio_channels).toInt();
 	initial_stereo_mode = value("initial_stereo_mode", initial_stereo_mode).toInt();
 
-	initial_subtitle_track = value("initial_subtitle_track", initial_subtitle_track).toInt();
-
 	endGroup(); // defaults
 
 
@@ -1396,7 +1390,9 @@ void TPreferences::load() {
 		remove("performance/priority");
 
 		remove("advanced/prefer_ipv4");
+
 		remove("defaults/initial_audio_track");
+		remove("defaults/initial_subtitle_track");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

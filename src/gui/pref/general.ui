@@ -418,56 +418,6 @@ For translators: don't translate this text, it will be replaced with another one
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout">
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <property name="spacing">
-          <number>6</number>
-         </property>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>&amp;Subtitle:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="buddy">
-            <cstring>subtitle_track_spin</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>151</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="subtitle_track_spin">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Or choose a track number:</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -507,7 +457,6 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>close_on_finish_check</tabstop>
   <tabstop>audio_lang_edit</tabstop>
   <tabstop>subtitle_lang_edit</tabstop>
-  <tabstop>subtitle_track_spin</tabstop>
  </tabstops>
  <resources/>
  <connections>

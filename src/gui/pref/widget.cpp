@@ -24,10 +24,8 @@ namespace Gui {
 namespace Pref {
 
 TWidget::TWidget(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f) {
-
-	requires_restart = false;
-	help_message = "";
+	: QWidget(parent, f)
+	, requires_restart(false) {
 }
 
 TWidget::~TWidget() {

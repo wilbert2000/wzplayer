@@ -426,8 +426,6 @@ public:
 	int initial_audio_channels;
 	int initial_stereo_mode;
 
-	int initial_subtitle_track;
-
 
     /* *********
        Instances
