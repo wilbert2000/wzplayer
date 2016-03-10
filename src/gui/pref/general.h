@@ -97,9 +97,6 @@ private:
 	void setSubtitleLang(const QString& lang);
 	QString subtitleLang();
 
-	void setAudioTrack(int track);
-	int audioTrack();
-
 	void setSubtitleTrack(int track);
 	int subtitleTrack();
 

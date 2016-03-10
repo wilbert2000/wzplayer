@@ -425,30 +425,7 @@ For translators: don't translate this text, it will be replaced with another one
          <property name="spacing">
           <number>6</number>
          </property>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="audio_track_spin">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>99</number>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Audi&amp;o:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="buddy">
-            <cstring>audio_track_spin</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>&amp;Subtitle:</string>
@@ -460,19 +437,6 @@ For translators: don't translate this text, it will be replaced with another one
             <cstring>subtitle_track_spin</cstring>
            </property>
           </widget>
-         </item>
-         <item row="2" column="2">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>151</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
          <item row="1" column="2">
           <spacer>
@@ -487,7 +451,7 @@ For translators: don't translate this text, it will be replaced with another one
            </property>
           </spacer>
          </item>
-         <item row="2" column="1">
+         <item row="1" column="1">
           <widget class="QSpinBox" name="subtitle_track_spin">
            <property name="minimum">
             <number>1</number>
@@ -543,7 +507,6 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>close_on_finish_check</tabstop>
   <tabstop>audio_lang_edit</tabstop>
   <tabstop>subtitle_lang_edit</tabstop>
-  <tabstop>audio_track_spin</tabstop>
   <tabstop>subtitle_track_spin</tabstop>
  </tabstops>
  <resources/>

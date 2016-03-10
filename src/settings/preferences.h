@@ -95,6 +95,7 @@ public:
 	bool isMPV() const { return player_id == ID_MPV; }
 	QString playerName() const;
 	QString playerAbsolutePath() const;
+
 	static QString getAbsolutePathPlayer(const QString& player);
 	static TPlayerID getPlayerID(const QString& player);
 	void setPlayerBin(const QString& bin);
@@ -425,7 +426,6 @@ public:
 	int initial_audio_channels;
 	int initial_stereo_mode;
 
-	int initial_audio_track;
 	int initial_subtitle_track;
 
 
