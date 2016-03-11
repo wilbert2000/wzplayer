@@ -30,8 +30,7 @@
 namespace Gui { namespace Pref {
 
 TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
 	setupUi(this);
 
 	ass_subs->setEnabled(false);
@@ -54,8 +53,7 @@ TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f)
 	retranslateStrings();
 }
 
-TSubtitles::~TSubtitles()
-{
+TSubtitles::~TSubtitles() {
 }
 
 QString TSubtitles::sectionName() {
@@ -129,7 +127,7 @@ void TSubtitles::retranslateStrings() {
 void TSubtitles::setData(Settings::TPreferences* pref) {
 
 	setAssFontScale(pref->initial_sub_scale_ass);
-	setAutoloadSub(pref->autoload_sub);
+	setSelectFirstSub(pref->select_first_sub);
 	setFontFuzziness(pref->subfuzziness);
 	setFontEncoding(pref->sub_code_page);
 	setUseEnca(pref->use_enca);
@@ -171,7 +169,7 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 	pref->initial_sub_scale_ass = assFontScale();
-	restartIfBoolChanged(pref->autoload_sub, autoloadSub());
+	restartIfBoolChanged(pref->select_first_sub, selectFirstSub());
 	restartIfIntChanged(pref->subfuzziness, fontFuzziness());
 	restartIfStringChanged(pref->sub_code_page, fontEncoding());
 	restartIfBoolChanged(pref->use_enca, useEnca());
@@ -226,12 +224,12 @@ double TSubtitles::assFontScale() {
 	return ass_font_scale_spin->value();
 }
 
-void TSubtitles::setAutoloadSub(bool v) {
-	autoload_check->setChecked(v);
+void TSubtitles::setSelectFirstSub(bool v) {
+	select_first_sub_check->setChecked(v);
 }
 
-bool TSubtitles::autoloadSub() {
-	return autoload_check->isChecked();
+bool TSubtitles::selectFirstSub() {
+	return select_first_sub_check->isChecked();
 }
 
 void TSubtitles::setFontEncoding(const QString& s) {
@@ -386,7 +384,7 @@ void TSubtitles::createHelp() {
 	setWhatsThis(font_autoload_combo, tr("Autoload"), 
         tr("Select the subtitle autoload method."));
 
-	setWhatsThis(autoload_check, tr("Select first available subtitle"),
+	setWhatsThis(select_first_sub_check, tr("Select first available subtitle"),
         tr("If there are one or more subtitle tracks available, one of them "
            "will be automatically selected, usually the first one, although if "
            "one of them matches the user's preferred language that one will "

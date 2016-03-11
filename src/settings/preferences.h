@@ -207,7 +207,7 @@ public:
 	bool use_enca; // Pass subtitle encoding to player
 	QString enca_lang; // Subtitle language
 	int subfuzziness;
-	bool autoload_sub;
+	bool select_first_sub;
 
 	bool use_ass_subtitles;
 	bool enable_ass_styles;

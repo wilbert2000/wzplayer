@@ -433,7 +433,7 @@ protected slots:
 	
 	void onAudioTracksChanged();
 
-	void selectPreferredSub();
+	void selectPreferredSubtitles();
 	void onSubtitlesChanged();
 	void onSubtitleChanged();
 

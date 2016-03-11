@@ -173,30 +173,6 @@ SubData SubTracks::itemAt(int n) const {
 	return SubData();
 }
 
-// Return first subtitle idx or the user preferred (if found)
-// or SubNone if there are no subtitles
-int SubTracks::selectOne(QString preferred_lang, int default_sub) const {
-
-	int sub = Settings::TMediaSettings::SubNone;
-
-	if (subs.count() > 0) {
-		// First subtitle
-		sub = 0;
-		// Default
-		if (default_sub > 0 && default_sub < subs.count()) {
-			sub = default_sub;
-		}
-		// Check language
-		if (!preferred_lang.isEmpty()) {
-			int idx = findLangIdx(preferred_lang);
-			if (idx != -1)
-				sub = idx;
-		}
-	}
-
-	return sub;
-}
-
 void SubTracks::add(SubData::Type t, int ID) {
 	SubData d;
 	d.setType(t);

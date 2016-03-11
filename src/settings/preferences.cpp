@@ -189,7 +189,7 @@ void TPreferences::reset() {
 	use_enca = false;
 	enca_lang = QString(QLocale::system().name()).section("_",0,0);
 	subfuzziness = 1;
-	autoload_sub = false;
+	select_first_sub = false;
 
 	use_ass_subtitles = true;
 	enable_ass_styles = true;
@@ -553,7 +553,7 @@ void TPreferences::save() {
 	setValue("use_enca", use_enca);
 	setValue("enca_lang", enca_lang);
 	setValue("subfuzziness", subfuzziness);
-	setValue("autoload_sub", autoload_sub);
+	setValue("select_first_sub", select_first_sub);
 
 	setValue("use_ass_subtitles", use_ass_subtitles);
 	setValue("enable_ass_styles", enable_ass_styles);
@@ -1059,7 +1059,7 @@ void TPreferences::load() {
 	use_enca = value("use_enca", use_enca).toBool();
 	enca_lang = value("enca_lang", enca_lang).toString();
 	subfuzziness = value("subfuzziness", subfuzziness).toInt();
-	autoload_sub = value("autoload_sub", autoload_sub).toBool();
+	select_first_sub = value("select_first_sub", select_first_sub).toBool();
 
 	use_ass_subtitles = value("use_ass_subtitles", use_ass_subtitles).toBool();
 	enable_ass_styles = value("enable_ass_styles", enable_ass_styles).toBool();
@@ -1383,6 +1383,9 @@ void TPreferences::load() {
 		remove("General/autoq");
 
 		remove("gui/reset_stop");
+
+		select_first_sub = value("autoload_sub", select_first_sub).toBool();
+		remove("subtitles/autoload_sub");
 
 		remove("performance/hwdec");
 		remove("performance/frame_drop");

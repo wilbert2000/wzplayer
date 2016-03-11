@@ -3613,14 +3613,32 @@ void TCore::onAudioTracksChanged() {
 	setPreferredAudio();
 }
 
-void TCore::selectPreferredSub() {
+void TCore::selectPreferredSubtitles() {
 
-	int wanted_sub_idx = mdat.subs.selectOne(pref->language, 0);
-	if (wanted_sub_idx >= 0) {
-		qDebug("TCore::selectPreferredSub: selecting subtitle idx %d", wanted_sub_idx);
-		changeSubtitle(wanted_sub_idx, false);
+	// Select no subtitles
+	int wanted_idx = -1;
+	if (mdat.subs.count() > 0) {
+		// Select subtitles with preferred language
+		if (!pref->language.isEmpty()) {
+			wanted_idx = mdat.subs.findLangIdx(pref->language);
+		}
+		// Keep subtitles selected by the player
+		if (wanted_idx < 0 && mset.current_sub_idx >= 0) {
+			wanted_idx = mset.current_sub_idx;
+		}
+		// Select first subtitles
+		if (wanted_idx < 0 && pref->select_first_sub) {
+			wanted_idx = 0;
+		}
+	}
+
+	if (wanted_idx < 0) {
+		qDebug("TCore::selectPreferredSubtitles: no player overrides");
+	} else if (wanted_idx == mset.current_sub_idx) {
+		qDebug("TCore::selectPreferredSubtitles: keeping selected subtitles");
 	} else {
-		qDebug("TCore::selectPreferredSub: no player overrides");
+		qDebug("TCore::selectPreferredSubtitles: selecting preferred subtitles");
+		changeSubtitle(wanted_idx, false);
 	}
 }
 
@@ -3636,25 +3654,13 @@ void TCore::onSubtitlesChanged() {
 
 	emit subtitlesChanged();
 
-	// TODO: Fix logic, rename load first to auto load in config dialog?
-	if (pref->autoload_sub && mdat.subs.count() > 0) {
-		int wanted_sub_idx = mdat.subs.selectOne(pref->language, 0);
-		if (wanted_sub_idx >= 0) {
-			if (isMPlayer()) {
-				// mplayers selected sub will not yet be updated, que the update.
-				qDebug("TCore::onSubtitlesChanged: posting update subtitle idx %d",
-					   wanted_sub_idx);
-				QTimer::singleShot(500, this, SLOT(selectPreferredSub()));
-			} else {
-				qDebug("TCore::onSubtitlesChanged: selecting subtitle idx %d",
-					   wanted_sub_idx);
-				changeSubtitle(wanted_sub_idx, false);
-			}
-			return;
-		}
+	if (isMPlayer()) {
+		// MPlayer selected sub will not yet be updated, que the subtitle selection
+		qDebug("TCore::onSubtitlesChanged: posting selectPreferredSubtitles()");
+		QTimer::singleShot(500, this, SLOT(selectPreferredSubtitles()));
+	} else {
+		selectPreferredSubtitles();
 	}
-
-	qDebug("TCore::onSubtitlesChanged: no player overrides");
 }
 
 // Called when player changed subtitle track

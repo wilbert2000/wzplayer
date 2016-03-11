@@ -52,8 +52,8 @@ protected:
 	void setAssFontScale(double n);
 	double assFontScale();
 
-	void setAutoloadSub(bool v);
-	bool autoloadSub();
+	void setSelectFirstSub(bool v);
+	bool selectFirstSub();
 
 	void setFontEncoding(const QString& s);
 	QString fontEncoding();

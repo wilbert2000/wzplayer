@@ -102,8 +102,6 @@ public:
 	int nextID() const;
 	bool hasFileSubs() const;
 
-	int selectOne(QString preferred_lang, int default_sub = 0) const;
-
 	void add(SubData::Type t, int ID);
 	bool changeLang(SubData::Type t, int ID, QString lang);
 	bool changeName(SubData::Type t, int ID, QString name);
