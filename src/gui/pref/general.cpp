@@ -96,6 +96,7 @@ void TGeneral::setData(TPreferences* pref) {
 	// Media settings group
 	setRememberSettings(pref->remember_media_settings);
 	setRememberTimePos(!pref->remember_time_pos);
+	setGlobalVolume(pref->global_volume);
 	setFileSettingsMethod(pref->file_settings_method);
 
 	// Screenshots group
@@ -124,6 +125,7 @@ void TGeneral::getData(TPreferences* pref) {
 
 	pref->remember_media_settings = rememberSettings();
 	pref->remember_time_pos = rememberTimePos();
+	pref->global_volume = globalVolume();
 	pref->file_settings_method = fileSettingsMethod();
 
 	// Screenshots
@@ -199,6 +201,14 @@ bool TGeneral::rememberTimePos() {
 	return remember_time_check->isChecked();
 }
 
+void TGeneral::setGlobalVolume(bool b) {
+	remember_volume_check->setChecked(!b);
+}
+
+bool TGeneral::globalVolume() {
+	return !remember_volume_check->isChecked();
+}
+
 void TGeneral::setFileSettingsMethod(const QString& method) {
 
 	int index = filesettings_method_combo->findData(method);
@@ -242,10 +252,16 @@ void TGeneral::createHelp() {
            "play (audio track selected, volume, filters...). Disable this "
            "option if you don't like this feature."));
 
-	setWhatsThis(remember_time_check, tr("Remember time position"),
+	setWhatsThis(remember_time_check, tr("Remember time position for every file"),
 		tr("If you check this option, SMPlayer will remember the last position "
            "of the file when you open it again. This option works only with "
            "regular files (not with DVDs, CDs, URLs...)."));
+
+	setWhatsThis(remember_volume_check, tr("Remember volume for every file"),
+		tr("If this option is not checked, the same volume will be used for "
+		   "all files you play. If the option is checked each "
+		   "file uses its own volume.") + "<br>" +
+		tr("This option also applies to the mute state."));
 
 	setWhatsThis(filesettings_method_combo, tr("Method to store the file settings"),
 		tr("This option allows to change the way the file settings would be "

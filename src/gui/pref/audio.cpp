@@ -104,7 +104,6 @@ void TAudio::setData(TPreferences* pref) {
 	setScaleTempoFilter(pref->use_scaletempo);
 
 	// Volume
-	setGlobalVolume(pref->global_volume);
 	setSoftVol(pref->use_soft_vol);
 	setAmplification(pref->softvol_max);
 	setInitialVolNorm(pref->initial_volnorm);
@@ -135,7 +134,6 @@ void TAudio::getData(TPreferences* pref) {
 		requires_restart = true;
 	}
 
-	pref->global_volume = globalVolume();
 	restartIfBoolChanged(pref->use_soft_vol, softVol());
 	pref->initial_volnorm = initialVolNorm();
 	restartIfIntChanged(pref->softvol_max, amplification());
@@ -215,14 +213,6 @@ QString TAudio::AO() {
 
 void TAudio::setSoftVol(bool b) {
 	softvol_check->setChecked(b);
-}
-
-void TAudio::setGlobalVolume(bool b) {
-	global_volume_check->setChecked(b);
-}
-
-bool TAudio::globalVolume() {
-	return global_volume_check->isChecked();
 }
 
 bool TAudio::softVol() {
@@ -392,12 +382,6 @@ void TAudio::createHelp() {
 	setWhatsThis(scaletempo_combo, tr("High speed playback without altering pitch"),
 		tr("Allows to change the playback speed without altering pitch. "
            "Requires at least MPlayer dev-SVN-r24924."));
-
-	setWhatsThis(global_volume_check, tr("Global volume"),
-		tr("If this option is checked, the same volume will be used for "
-           "all files you play. If the option is not checked each "
-           "file uses its own volume.") + "<br>" +
-        tr("This option also applies for the mute control."));
 
 	setWhatsThis(softvol_check, tr("Software volume control"),
 		tr("Force using the software mixer instead of the sound card mixer."));

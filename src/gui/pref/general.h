@@ -57,7 +57,6 @@ protected:
 private:
 	virtual void createHelp();
 
-	// Tab General
 	void setPlayerPath(const QString& path);
 	QString playerPath();
 
@@ -67,6 +66,9 @@ private:
 
 	void setRememberTimePos(bool b);
 	bool rememberTimePos();
+
+	void setGlobalVolume(bool b);
+	bool globalVolume();
 
 	void setFileSettingsMethod(const QString& method);
 	QString fileSettingsMethod();

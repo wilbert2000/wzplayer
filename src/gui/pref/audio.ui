@@ -212,13 +212,6 @@
            <number>4</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="global_volume_check">
-            <property name="text">
-             <string>&amp;Global volume</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <layout class="QHBoxLayout">
             <property name="spacing">
              <number>6</number>
@@ -474,7 +467,6 @@
   <tabstop>global_audio_equalizer_check</tabstop>
   <tabstop>hwac3_check</tabstop>
   <tabstop>scaletempo_combo</tabstop>
-  <tabstop>global_volume_check</tabstop>
   <tabstop>softvol_check</tabstop>
   <tabstop>softvol_amp_spin</tabstop>
   <tabstop>volnorm_check</tabstop>
