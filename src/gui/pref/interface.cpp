@@ -150,12 +150,16 @@ void TInterface::retranslateStrings() {
 }
 
 void TInterface::setData(Settings::TPreferences* pref) {
+
 	setLanguage(pref->language);
 	setIconSet(pref->iconset);
 
 	setResizeMethod(pref->resize_method);
 	setSaveSize(pref->save_window_size_on_exit);
 	setShowTagInTitle(pref->show_tag_in_window_title);
+
+	hide_toolbars_spin->setValue(pref->floating_hide_delay);
+	show_toolbars_bottom_only_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 
 #ifdef SINGLE_INSTANCE
 	setUseSingleInstance(pref->use_single_instance);
@@ -174,9 +178,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
 
 	setStyle(pref->style);
-
-	floating_activation_area_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
-	floating_hide_delay_spin->setValue(pref->floating_hide_delay);
 
 	setRecentsMaxItems(pref->history_recents.maxItems());
 	setURLMaxItems(pref->history_urls.maxItems());
@@ -206,6 +207,10 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	pref->save_window_size_on_exit = saveSize();
 	pref->show_tag_in_window_title = showTagInTitle();
 
+	pref->floating_hide_delay = hide_toolbars_spin->value();
+	pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked() ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
+
+
 #ifdef SINGLE_INSTANCE
 	pref->use_single_instance = useSingleInstance();
 #endif
@@ -227,9 +232,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		pref->style = style();
 		style_changed = true;
 	}
-
-	pref->floating_activation_area = floating_activation_area_check->isChecked() ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
-	pref->floating_hide_delay = floating_hide_delay_spin->value();
 
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
 		pref->history_recents.setMaxItems(recentsMaxItems());
@@ -489,6 +491,16 @@ void TInterface::createHelp() {
 	setWhatsThis(changeFontButton, tr("Default font"),
         tr("You can change here the application's font."));
 
+	addSectionTitle(tr("Fullscreen"));
+
+	setWhatsThis(hide_toolbars_spin, tr("Hide toolbars after"),
+		tr("Sets the time (in milliseconds) to hide the toolbars after the mouse went away from the control."));
+
+	setWhatsThis(show_toolbars_bottom_only_check, tr("Show toolbars only when moving the mouse to the bottom of the screen"),
+		tr("If this option is checked, the toolbars will only be displayed when the mouse is moved "
+		   "to the bottom of the screen. Otherwise the control will appear whenever the mouse is moved, no matter "
+		   "its position."));
+
 	addSectionTitle(tr("Seeking"));
 
 	setWhatsThis(seek1, tr("Short jump"),
@@ -528,16 +540,6 @@ void TInterface::createHelp() {
         tr("Check this option if you want to use an already running instance "
            "of SMPlayer when opening other files."));
 #endif
-
-	addSectionTitle(tr("Floating control"));
-
-	setWhatsThis(floating_activation_area_check, tr("Show only when moving the mouse to the bottom of the screen"),
-		tr("If this option is checked, the floating control will only be displayed when the mouse is moved "
-           "to the bottom of the screen. Otherwise the control will appear whenever the mouse is moved, no matter "
-           "its position."));
-
-	setWhatsThis(floating_hide_delay_spin, tr("Time to hide the control"),
-		tr("Sets the time (in milliseconds) to hide the control after the mouse went away from the control."));
 
 	addSectionTitle(tr("History"));
 

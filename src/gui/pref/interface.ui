@@ -55,44 +55,16 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>&amp;Resize:</string>
-              </property>
-              <property name="buddy">
-               <cstring>mainwindow_resize_combo</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="mainwindow_resize_combo">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <item>
-               <property name="text">
-                <string>Never</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Whenever it's needed</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Only after loading a new video</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
              <widget class="QCheckBox" name="save_size_check">
               <property name="text">
-               <string>R&amp;emember position and size</string>
+               <string>&amp;Remember position and size</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="use_filename_in_title_check">
+              <property name="text">
+               <string>&amp;Always use the file name in window title</string>
               </property>
              </widget>
             </item>
@@ -104,11 +76,46 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="use_filename_in_title_check">
-              <property name="text">
-               <string>&amp;Always use file name in window title</string>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <property name="bottomMargin">
+               <number>0</number>
               </property>
-             </widget>
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Resize &amp;window:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>mainwindow_resize_combo</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="mainwindow_resize_combo">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Never</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Whenever it's needed</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Only after loading a new video</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -308,6 +315,72 @@
           </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="fullscreen_toolbars_group">
+         <property name="title">
+          <string>Fullscreen</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="hide_toolbars_label">
+              <property name="text">
+               <string>Hide toolbars after</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="hide_toolbars_spin">
+              <property name="minimum">
+               <number>500</number>
+              </property>
+              <property name="maximum">
+               <number>36000000</number>
+              </property>
+              <property name="singleStep">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>1000</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="ms_label">
+              <property name="text">
+               <string>milliseconds</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="show_toolbars_bottom_only_check">
+            <property name="text">
+             <string>Show toolbars only when moving the mouse to the bottom of the screen</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
         <spacer>
@@ -548,80 +621,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_4">
-      <attribute name="title">
-       <string>&amp;Floating control</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>The floating control appears in fullscreen mode when the mouse is moved.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="floating_activation_area_check">
-         <property name="text">
-          <string>Show only when moving the mouse to the &amp;bottom of the screen</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Tim&amp;e (in milliseconds) to hide the control:</string>
-           </property>
-           <property name="buddy">
-            <cstring>floating_hide_delay_spin</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="floating_hide_delay_spin">
-           <property name="minimum">
-            <number>100</number>
-           </property>
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
        <string>&amp;History</string>
@@ -769,22 +768,26 @@
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>mainwindow_resize_combo</tabstop>
   <tabstop>save_size_check</tabstop>
-  <tabstop>hide_video_window_on_audio_check</tabstop>
   <tabstop>use_filename_in_title_check</tabstop>
+  <tabstop>hide_video_window_on_audio_check</tabstop>
+  <tabstop>mainwindow_resize_combo</tabstop>
   <tabstop>language_combo</tabstop>
   <tabstop>iconset_combo</tabstop>
   <tabstop>style_combo</tabstop>
   <tabstop>default_font_edit</tabstop>
   <tabstop>changeFontButton</tabstop>
+  <tabstop>hide_toolbars_spin</tabstop>
+  <tabstop>show_toolbars_bottom_only_check</tabstop>
+  <tabstop>seek1</tabstop>
+  <tabstop>seek2</tabstop>
+  <tabstop>seek3</tabstop>
+  <tabstop>seek4</tabstop>
   <tabstop>timeslider_behaviour_combo</tabstop>
   <tabstop>absolute_seeking_button</tabstop>
   <tabstop>relative_seeking_button</tabstop>
   <tabstop>precise_seeking_check</tabstop>
   <tabstop>single_instance_check</tabstop>
-  <tabstop>floating_activation_area_check</tabstop>
-  <tabstop>floating_hide_delay_spin</tabstop>
   <tabstop>recents_max_items_spin</tabstop>
   <tabstop>url_max_items_spin</tabstop>
   <tabstop>save_dirs_check</tabstop>
