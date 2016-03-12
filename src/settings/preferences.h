@@ -164,13 +164,12 @@ public:
 	bool use_mc;
 	double mc_value;
 
+	QString audio_lang; // Preferred audio language
+
 	// When playing a mp4 file, it will use a m4a file for audio if a there's a file with same name but extension m4a
 	bool autoload_m4a;
 	int min_step; //<! Step to increase of decrease the controls for color, contrast, brightness and so on
 
-
-	// Preferred tab
-	QString audio_lang; 		// Preferred audio language
 
 	// OSD
 	TOSDLevel osd_level;

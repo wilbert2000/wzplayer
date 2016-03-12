@@ -496,12 +496,10 @@ void TPreferences::save() {
 	setValue("use_mc", use_mc);
 	setValue("mc_value", mc_value);
 
+	setValue("audio_lang", audio_lang);
+
 	setValue("autoload_m4a", autoload_m4a);
 	setValue("min_step", min_step);
-
-
-	// Preferred tab
-	setValue("audio_lang", audio_lang);
 
 	setValue("osd_level", osd_level);
 	setValue("osd_scale", osd_scale);
@@ -1000,12 +998,10 @@ void TPreferences::load() {
 	use_mc = value("use_mc", use_mc).toBool();
 	mc_value = value("mc_value", mc_value).toDouble();
 
+	audio_lang = value("audio_lang", audio_lang).toString();
+
 	autoload_m4a = value("autoload_m4a", autoload_m4a).toBool();
 	min_step = value("min_step", min_step).toInt();
-
-
-	// Preferred tab
-	audio_lang = value("audio_lang", audio_lang).toString();
 
 	// OSD
 	osd_level = (TOSDLevel) value("osd_level", (int) osd_level).toInt();

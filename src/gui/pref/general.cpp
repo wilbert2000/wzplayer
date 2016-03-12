@@ -35,7 +35,6 @@ TGeneral::TGeneral(QWidget* parent)
 
 	setupUi(this);
 
-	// General tab
 	playerbin_edit->setDialogType(FileChooser::GetFileName);
 	connect(playerbin_edit, SIGNAL(fileChanged(QString)),
 			this, SLOT(fileChanged(QString)));
@@ -86,16 +85,6 @@ void TGeneral::retranslateStrings() {
 
 	screenshot_edit->setCaption(tr("Select a directory"));
 
-	preferred_desc->setText(
-		tr("Here you can type your preferred language for the audio "
-		   "and subtitle streams. When multiple audio or subtitle streams "
-		   "are found, SMPlayer will try to use your preferred language. "
-		   "This only will work with media that offer info about the language "
-		   "of audio and subtitle streams, like DVDs or mkv files.<br>"
-		   "These fields accept regular expressions. "
-           "Example: <b>es|esp|spa</b> will select the track if it matches with "
-            "<i>es</i>, <i>esp</i> or <i>spa</i>."));
-
 	createHelp();
 }
 
@@ -121,15 +110,11 @@ void TGeneral::setData(TPreferences* pref) {
 	setPauseWhenHidden(pref->pause_when_hidden);
 	setCloseOnFinish(pref->close_on_finish);
 
-	// Preferred tab
-	setAudioLang(pref->audio_lang);
-
 	requires_restart = false;
 }
 
 void TGeneral::getData(TPreferences* pref) {
 
-	// General tab
 	if (pref->player_bin != playerPath()) {
 		requires_restart = true;
 		pref->setPlayerBin(playerPath());
@@ -152,9 +137,6 @@ void TGeneral::getData(TPreferences* pref) {
 
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
-
-	// Preferred tab
-	pref->audio_lang = audioLang();
 }
 
 void TGeneral::setPlayerPath(const QString& path) {
@@ -229,14 +211,6 @@ QString TGeneral::fileSettingsMethod() {
 	return filesettings_method_combo->itemData(filesettings_method_combo->currentIndex()).toString();
 }
 
-void TGeneral::setAudioLang(const QString& lang) {
-	audio_lang_edit->setText(lang);
-}
-
-QString TGeneral::audioLang() {
-	return audio_lang_edit->text();
-}
-
 void TGeneral::setCloseOnFinish(bool b) {
 	close_on_finish_check->setChecked(b);
 }
@@ -256,8 +230,6 @@ bool TGeneral::pauseWhenHidden() {
 void TGeneral::createHelp() {
 
 	clearHelp();
-
-	addSectionTitle(tr("General"));
 
 	setWhatsThis(playerbin_edit, tr("%1 executable").arg(pref->playerName()),
 		tr("Here you must specify the %1 "
@@ -317,20 +289,6 @@ void TGeneral::createHelp() {
 	setWhatsThis(close_on_finish_check, tr("Close when finished"),
 		tr("If this option is checked, the main window will be automatically "
 		   "closed when the current file/playlist finishes."));
-
-
-	addSectionTitle(tr("Preferred audio and subtitles"));
-
-	setWhatsThis(audio_lang_edit, tr("Preferred audio language"),
-		tr("Here you can type your preferred language for the audio streams. "
-           "When a media with multiple audio streams is found, SMPlayer will "
-           "try to use your preferred language.<br>"
-           "This only will work with media that offer info about the language "
-           "of the audio streams, like DVDs or mkv files.<br>"
-           "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
-           "will select the audio track if it matches with <i>es</i>, "
-           "<i>esp</i> or <i>spa</i>."));
-
 }
 
 }} // namespace Gui::Pref

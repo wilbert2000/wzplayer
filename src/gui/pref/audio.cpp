@@ -115,6 +115,9 @@ void TAudio::setData(TPreferences* pref) {
 
 	setMcActivated(pref->use_mc);
 	setMc(pref->mc_value);
+
+	// Language
+	setAudioLang(pref->audio_lang);
 }
 
 void TAudio::getData(TPreferences* pref) {
@@ -142,6 +145,8 @@ void TAudio::getData(TPreferences* pref) {
 
 	restartIfBoolChanged(pref->use_mc, mcActivated());
 	restartIfDoubleChanged(pref->mc_value, mc());
+
+	pref->audio_lang = audioLang();
 }
 
 void TAudio::updateDriverCombo(bool allow_user_defined_ao) {
@@ -316,6 +321,15 @@ TPreferences::TOptionState TAudio::scaleTempoFilter() {
 	return scaletempo_combo->state();
 }
 
+void TAudio::setAudioLang(const QString& lang) {
+	language_edit->setText(lang);
+}
+
+QString TAudio::audioLang() {
+	return language_edit->text();
+}
+
+
 void TAudio::ao_combo_changed(int idx) {
 	//qDebug("Gui::Pref::TAudio::ao_combo_changed: %d", idx);
 
@@ -404,6 +418,15 @@ void TAudio::createHelp() {
 	setWhatsThis(mc_spin, tr("A-V sync correction"),
 		tr("Maximum A-V sync correction per frame (in seconds)"));
 
+	setWhatsThis(language_edit, tr("Language override"),
+		tr("Here you can type your preferred language for the audio streams. "
+		   "When a media with multiple audio streams is found, SMPlayer will "
+		   "try to use your preferred language.<br>"
+		   "This only will work with media that offer info about the language "
+		   "of the audio streams, like DVDs or mkv files.<br>"
+		   "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
+		   "will select the audio track if it matches with <i>es</i>, "
+		   "<i>esp</i> or <i>spa</i>."));
 }
 
 }} // namespace Gui::Pref

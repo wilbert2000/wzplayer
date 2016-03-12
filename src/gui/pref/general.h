@@ -89,11 +89,6 @@ private:
 	void setCloseOnFinish(bool b);
 	bool closeOnFinish();
 
-
-	// Preferred tab
-	void setAudioLang(const QString& lang);
-	QString audioLang();
-
 private slots:
 	void fileChanged(QString file);
 };

@@ -79,11 +79,17 @@ private:
 	void setAO(const QString& ao_driver, bool allow_user_defined);
 	QString AO();
 
+	void setAudioChannels(int ID);
+	int audioChannels();
+
 	void setUseAudioEqualizer(bool b);
 	bool useAudioEqualizer();
 
 	void setAc3DTSPassthrough(bool b);
 	bool Ac3DTSPassthrough();
+
+	void setScaleTempoFilter(Settings::TPreferences::TOptionState value);
+	Settings::TPreferences::TOptionState scaleTempoFilter();
 
 	void setGlobalVolume(bool b);
 	bool globalVolume();
@@ -94,26 +100,23 @@ private:
 	void setAmplification(int n);
 	int amplification();
 
-	void setAudioChannels(int ID);
-	int audioChannels();
-
 	void setInitialVolNorm(bool b);
 	bool initialVolNorm();
-
-	void setAutoSyncFactor(int factor);
-	int autoSyncFactor();
 
 	void setAutoSyncActivated(bool b);
 	bool autoSyncActivated();
 
-	void setMc(double value);
-	double mc();
+	void setAutoSyncFactor(int factor);
+	int autoSyncFactor();
 
 	void setMcActivated(bool b);
 	bool mcActivated();
 
-	void setScaleTempoFilter(Settings::TPreferences::TOptionState value);
-	Settings::TPreferences::TOptionState scaleTempoFilter();
+	void setMc(double value);
+	double mc();
+
+	void setAudioLang(const QString& lang);
+	QString audioLang();
 
 private slots:
 	void ao_combo_changed(int);
