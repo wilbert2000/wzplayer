@@ -171,7 +171,6 @@ public:
 
 	// Preferred tab
 	QString audio_lang; 		// Preferred audio language
-	QString subtitle_lang;		// Preferred subtitle language
 
 	// OSD
 	TOSDLevel osd_level;
@@ -203,11 +202,12 @@ public:
 
 
 	// Subtitles
-	QString sub_code_page; // Code page subtitles
-	bool use_enca; // Pass subtitle encoding to player
-	QString enca_lang; // Subtitle language
-	int subfuzziness;
-	bool select_first_sub;
+	int subtitle_fuzziness;
+	QString subtitle_language; // Preferred subtitle language
+	bool select_first_subtitle;
+
+	QString subtitle_enca_language;
+	QString subtitle_encoding_fallback;
 
 	bool use_ass_subtitles;
 	bool enable_ass_styles;

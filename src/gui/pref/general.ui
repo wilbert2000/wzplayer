@@ -350,22 +350,6 @@ For translators: don't translate this text, it will be replaced with another one
            </property>
           </spacer>
          </item>
-         <item row="2" column="2">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="subtitle_lang_edit"/>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="textLabel1_20">
            <property name="text">
@@ -384,22 +368,6 @@ For translators: don't translate this text, it will be replaced with another one
          </item>
          <item row="1" column="1">
           <widget class="QLineEdit" name="audio_lang_edit"/>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="textLabel2_11">
-           <property name="text">
-            <string>Su&amp;btitles:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-           <property name="buddy">
-            <cstring>subtitle_lang_edit</cstring>
-           </property>
-          </widget>
          </item>
          <item row="0" column="0" colspan="3">
           <widget class="QLabel" name="label_5">
@@ -456,7 +424,6 @@ For translators: don't translate this text, it will be replaced with another one
   <tabstop>pause_if_hidden_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
   <tabstop>audio_lang_edit</tabstop>
-  <tabstop>subtitle_lang_edit</tabstop>
  </tabstops>
  <resources/>
  <connections>

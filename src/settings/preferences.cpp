@@ -43,7 +43,7 @@
 #include "helper.h"
 
 
-#define CURRENT_CONFIG_VERSION 10
+#define CURRENT_CONFIG_VERSION 11
 
 
 namespace Settings {
@@ -148,7 +148,6 @@ void TPreferences::reset() {
 
 	// Preferred
 	audio_lang = "";
-	subtitle_lang = "";
 
     /* ***************
        Drives (CD/DVD)
@@ -185,11 +184,14 @@ void TPreferences::reset() {
 
 
 	// Subtitles
-	sub_code_page = "ISO-8859-1";
-	use_enca = false;
-	enca_lang = QString(QLocale::system().name()).section("_",0,0);
-	subfuzziness = 1;
-	select_first_sub = false;
+	subtitle_fuzziness = 1;
+	subtitle_language = "";
+	select_first_subtitle = false;
+
+	subtitle_enca_language = ""; // Auto detect subtitle encoding language
+	// To use lang from system:
+	// subtitle_enca_language = QString(QLocale::system().name()).section("_" , 0, 0);
+	subtitle_encoding_fallback = ""; // Auto detect subtitle encoding
 
 	use_ass_subtitles = true;
 	enable_ass_styles = true;
@@ -500,7 +502,6 @@ void TPreferences::save() {
 
 	// Preferred tab
 	setValue("audio_lang", audio_lang);
-	setValue("subtitle_lang", subtitle_lang);
 
 	setValue("osd_level", osd_level);
 	setValue("osd_scale", osd_scale);
@@ -549,11 +550,12 @@ void TPreferences::save() {
        ********* */
 	beginGroup("subtitles");
 
-	setValue("subcp", sub_code_page);
-	setValue("use_enca", use_enca);
-	setValue("enca_lang", enca_lang);
-	setValue("subfuzziness", subfuzziness);
-	setValue("select_first_sub", select_first_sub);
+	setValue("subtitle_fuzziness", subtitle_fuzziness);
+	setValue("subtitle_language", subtitle_language);
+	setValue("select_first_subtitle", select_first_subtitle);
+
+	setValue("subtitle_enca_language", subtitle_enca_language);
+	setValue("subtitle_encoding_fallback", subtitle_encoding_fallback);
 
 	setValue("use_ass_subtitles", use_ass_subtitles);
 	setValue("enable_ass_styles", enable_ass_styles);
@@ -1004,7 +1006,6 @@ void TPreferences::load() {
 
 	// Preferred tab
 	audio_lang = value("audio_lang", audio_lang).toString();
-	subtitle_lang = value("subtitle_lang", subtitle_lang).toString();
 
 	// OSD
 	osd_level = (TOSDLevel) value("osd_level", (int) osd_level).toInt();
@@ -1055,11 +1056,12 @@ void TPreferences::load() {
 
 	beginGroup("subtitles");
 
-	sub_code_page = value("subcp", sub_code_page).toString();
-	use_enca = value("use_enca", use_enca).toBool();
-	enca_lang = value("enca_lang", enca_lang).toString();
-	subfuzziness = value("subfuzziness", subfuzziness).toInt();
-	select_first_sub = value("select_first_sub", select_first_sub).toBool();
+	subtitle_fuzziness = value("subtitle_fuzziness", subtitle_fuzziness).toInt();
+	subtitle_language = value("subtitle_language", subtitle_language).toString();
+	select_first_subtitle = value("select_first_subtitle", select_first_subtitle).toBool();
+
+	subtitle_enca_language = value("subtitle_enca_language", subtitle_enca_language).toString();
+	subtitle_encoding_fallback = value("subtitle_encoding_fallback", subtitle_encoding_fallback).toString();
 
 	use_ass_subtitles = value("use_ass_subtitles", use_ass_subtitles).toBool();
 	enable_ass_styles = value("enable_ass_styles", enable_ass_styles).toBool();
@@ -1376,26 +1378,36 @@ void TPreferences::load() {
 			remove("streaming");
 		}
 
-		remove("smplayer");
-		remove("General/use_direct_rendering");
-		remove("General/use_double_buffer");
-		remove("General/use_slices");
-		remove("General/autoq");
+		if (config_version < 11) {
+			remove("smplayer");
+			remove("General/use_direct_rendering");
+			remove("General/use_double_buffer");
+			remove("General/use_slices");
+			remove("General/autoq");
 
-		remove("gui/reset_stop");
+			subtitle_language = value("General/subtitle_lang", subtitle_language).toString();
+			remove("General/subtitle_lang");
 
-		select_first_sub = value("autoload_sub", select_first_sub).toBool();
-		remove("subtitles/autoload_sub");
+			remove("gui/reset_stop");
 
-		remove("performance/hwdec");
-		remove("performance/frame_drop");
-		remove("performance/hard_frame_drop");
-		remove("performance/priority");
+			subtitle_fuzziness = value("subtitles/subfuzziness", subtitle_fuzziness).toInt();
+			remove("subtitles/subfuzziness");
+			remove("subtitles/autoload_sub");
 
-		remove("advanced/prefer_ipv4");
+			remove("subtitles/use_enca");
+			remove("subtitles/enca_lang");
+			remove("subtitles/subcp");
 
-		remove("defaults/initial_audio_track");
-		remove("defaults/initial_subtitle_track");
+			remove("performance/hwdec");
+			remove("performance/frame_drop");
+			remove("performance/hard_frame_drop");
+			remove("performance/priority");
+
+			remove("advanced/prefer_ipv4");
+
+			remove("defaults/initial_audio_track");
+			remove("defaults/initial_subtitle_track");
+		}
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

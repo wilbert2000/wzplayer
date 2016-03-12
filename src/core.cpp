@@ -1219,7 +1219,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Subtitle search fuzziness
-	proc->setOption("sub-fuzziness", pref->subfuzziness);
+	proc->setOption("sub-fuzziness", pref->subtitle_fuzziness);
 
 	// Subtitles fonts
 	if (pref->use_ass_subtitles && pref->freetype_support) {
@@ -1265,23 +1265,25 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Subtitle encoding
-{
-	QString encoding;
-	if (pref->use_enca && !pref->enca_lang.isEmpty()) {
-		// Add subtitle language
-		encoding = "enca:"+ pref->enca_lang;
-		// Add subtitle code page
-		if (!pref->sub_code_page.isEmpty()) {
-			encoding += ":"+ pref->sub_code_page;
+	if (pref->subtitle_enca_language.isEmpty()) {
+		// No encoding language, set fallback code page
+		if (!pref->subtitle_encoding_fallback.isEmpty()) {
+			if (isMPlayer()) {
+				proc->setOption("subcp", pref->subtitle_encoding_fallback);
+			} else if (pref->subtitle_encoding_fallback != "UTF-8") {
+				// Use pref->subtitle_encoding_fallback if encoding is not utf8
+				proc->setOption("subcp", "utf8:" + pref->subtitle_encoding_fallback);
+			}
 		}
-	} else if (!pref->sub_code_page.isEmpty()) {
-		encoding = pref->sub_code_page;
-	}
-
-	if (!encoding.isEmpty()) {
+	} else {
+		// Add subtitle encoding enca language
+		QString encoding = "enca:"+ pref->subtitle_enca_language;
+		// Add subtitle encoding fallback
+		if (!pref->subtitle_encoding_fallback.isEmpty()) {
+			encoding += ":"+ pref->subtitle_encoding_fallback;
+		}
 		proc->setOption("subcp", encoding);
 	}
-}
 
 	if (mset.closed_caption_channel > 0) {
 		proc->setOption("subcc", QString::number(mset.closed_caption_channel));
@@ -3627,7 +3629,7 @@ void TCore::selectPreferredSubtitles() {
 			wanted_idx = mset.current_sub_idx;
 		}
 		// Select first subtitles
-		if (wanted_idx < 0 && pref->select_first_sub) {
+		if (wanted_idx < 0 && pref->select_first_subtitle) {
 			wanted_idx = 0;
 		}
 	}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>541</width>
-    <height>439</height>
+    <width>580</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,12 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="minimumSize">
+      <size>
+       <width>580</width>
+       <height>500</height>
+      </size>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -34,57 +40,50 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="selection_group">
          <property name="title">
-          <string>Autoload</string>
+          <string>Subtitle selection</string>
          </property>
          <layout class="QGridLayout">
           <property name="margin">
-           <number>9</number>
+           <number>8</number>
           </property>
           <property name="spacing">
            <number>6</number>
           </property>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="autoload_combo">
+            <item>
+             <property name="text">
+              <string>with same name as movie</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>containing name of movie</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>in same directory as movie</string>
+             </property>
+            </item>
+           </widget>
+          </item>
           <item row="0" column="0">
-           <widget class="QLabel" name="textLabel5">
+           <widget class="QLabel" name="autoload_label">
             <property name="text">
-             <string>Au&amp;toload subtitles files (*.srt, *.sub...):</string>
+             <string>&amp;Automatically load subtitle files (*.srt, *.sub...):</string>
             </property>
             <property name="wordWrap">
              <bool>false</bool>
             </property>
             <property name="buddy">
-             <cstring>font_autoload_combo</cstring>
+             <cstring>autoload_combo</cstring>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QCheckBox" name="select_first_sub_check">
-            <property name="text">
-             <string>S&amp;elect first available subtitle</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QComboBox" name="font_autoload_combo">
-            <item>
-             <property name="text">
-              <string>Same name as movie</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>All subs containing movie name</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>All subs in directory</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="1">
+          <item row="0" column="2">
            <spacer>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -100,15 +99,127 @@
             </property>
            </spacer>
           </item>
+          <item row="3" column="0" colspan="3">
+           <layout class="QHBoxLayout" name="language_layout">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="language_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>&amp;Preferred language:</string>
+              </property>
+              <property name="buddy">
+               <cstring>language_edit</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="language_edit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QLabel" name="language_desc_label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Automatically select the first subtitle track matching the preferred language. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes. This field accepts regular expressions.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects a subtitle track if it matches &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="QCheckBox" name="select_first_subtitle_check">
+            <property name="text">
+             <string>Sele&amp;ct the first available subtitle when the preferred language does not match</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="encoding_group">
          <property name="title">
-          <string>Encoding</string>
+          <string>Subtitle encoding</string>
          </property>
          <layout class="QVBoxLayout">
+          <property name="margin">
+           <number>8</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="enca_lang_label">
+              <property name="text">
+               <string>&amp;Language:</string>
+              </property>
+              <property name="buddy">
+               <cstring>enca_lang_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="enca_lang_combo">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
           <item>
            <layout class="QHBoxLayout">
             <property name="spacing">
@@ -118,20 +229,20 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QLabel" name="textLabel4">
+             <widget class="QLabel" name="encoding_fallback_label">
               <property name="text">
-               <string>&amp;Default subtitle encoding:</string>
+               <string>&amp;Encoding:when detection fails</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
               </property>
               <property name="buddy">
-               <cstring>font_encoding_combo</cstring>
+               <cstring>encoding_fallback_combo</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="font_encoding_combo">
+             <widget class="QComboBox" name="encoding_fallback_combo">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -155,46 +266,6 @@
                <size>
                 <width>161</width>
                 <height>31</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout">
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="use_enca_check">
-              <property name="text">
-               <string>Try to a&amp;utodetect for this language:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="enca_lang_combo">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
                </size>
               </property>
              </spacer>
@@ -227,7 +298,7 @@
        <item>
         <widget class="QCheckBox" name="use_ass_check">
          <property name="text">
-          <string>Use the &amp;ASS library</string>
+          <string>&amp;Use the ASS library</string>
          </property>
         </widget>
        </item>
@@ -809,11 +880,11 @@
  </customwidgets>
  <tabstops>
   <tabstop>subtitles_tab</tabstop>
-  <tabstop>font_autoload_combo</tabstop>
-  <tabstop>select_first_sub_check</tabstop>
-  <tabstop>font_encoding_combo</tabstop>
-  <tabstop>use_enca_check</tabstop>
+  <tabstop>autoload_combo</tabstop>
+  <tabstop>language_edit</tabstop>
+  <tabstop>select_first_subtitle_check</tabstop>
   <tabstop>enca_lang_combo</tabstop>
+  <tabstop>encoding_fallback_combo</tabstop>
   <tabstop>subtitles_on_screeshots_check</tabstop>
   <tabstop>use_ass_check</tabstop>
   <tabstop>freetype_check</tabstop>
@@ -841,22 +912,6 @@
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>use_enca_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>enca_lang_combo</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>118</x>
-     <y>245</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>258</x>
-     <y>245</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>force_ass_styles</sender>
    <signal>toggled(bool)</signal>

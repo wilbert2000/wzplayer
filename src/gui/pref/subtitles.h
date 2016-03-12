@@ -28,7 +28,8 @@ namespace Settings {
 class TPreferences;
 }
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
 class TSubtitles : public TWidget, public Ui::TSubtitles {
 	Q_OBJECT
@@ -47,22 +48,8 @@ public:
 	void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void createHelp();
-
 	void setAssFontScale(double n);
 	double assFontScale();
-
-	void setSelectFirstSub(bool v);
-	bool selectFirstSub();
-
-	void setFontEncoding(const QString& s);
-	QString fontEncoding();
-
-	void setUseEnca(bool v);
-	bool useEnca();
-
-	void setEncaLang(QString s);
-	QString encaLang();
 
 	void setAssLineSpacing(int spacing);
 	int assLineSpacing();
@@ -73,30 +60,44 @@ protected:
 	void setCustomizedAssStyle(const QString& style) { forced_ass_style = style; }
 	QString customizedAssStyle() const { return forced_ass_style; }
 
-	void setFontFuzziness(int n);
-	int fontFuzziness();
-
 	void setSubtitlesOnScreenshots(bool b);
 	bool subtitlesOnScreenshots();
 
 	void setFreetypeSupport(bool b);
 	bool freetypeSupport();
 
+protected:
+	virtual void retranslateStrings();
+
 protected slots:
-	/* void on_ass_subs_button_toggled(bool b); */
 	void on_ass_customize_button_clicked();
 	void on_freetype_check_toggled(bool b);
 	void on_windowsfontdir_check_toggled(bool b);
 	void checkBorderStyleCombo(int index);
 
-protected:
-	virtual void retranslateStrings();
-
 private:
 	Encodings* encodings;
 	QString forced_ass_style;
+
+	void createHelp();
+
+	void setFuzziness(int n);
+	int fuzziness();
+
+	void setSubtitleLanguage(const QString& lang);
+	QString subtitleLanguage();
+
+	void setSelectFirstSubtitle(bool v);
+	bool selectFirstSubtitle();
+
+	void setEncaLang(const QString& s);
+	QString encaLang();
+
+	void setEncodingFallback(const QString& s);
+	QString encodingFallback();
 };
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
 #endif // GUI_PREF_SUBTITLES_H

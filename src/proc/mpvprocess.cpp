@@ -888,10 +888,7 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 	} else if (name == "font") {
 		arg << "--osd-font=" + value.toString();
 	} else if (name == "subcp") {
-		QString cp = value.toString();
-		if (!cp.startsWith("enca"))
-			cp = "utf8:" + cp;
-		arg << "--sub-codepage=" + cp;
+		arg << "--sub-codepage=" + value.toString();
 	} else if (name == "osdlevel") {
 		arg << "--osd-level=" + value.toString();
 	} else if (name == "sws") {

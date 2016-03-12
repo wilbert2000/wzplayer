@@ -230,42 +230,23 @@ void FindSubtitlesWindow::retranslateStrings() {
 	table->setHorizontalHeaderLabels(labels);
 
 	// Language combobox
-	//int language_index = language_filter->currentIndex();
 	QString current_language = language_filter->itemData(language_filter->currentIndex()).toString();
 	language_filter->clear();
 
-	QMap<QString,QString> l1 = Languages::most_used_list();
+	QMap<QString,QString> l1 = Languages::list();
 	QMapIterator<QString, QString> i1(l1);
 	while (i1.hasNext()) {
 		i1.next();
 		language_filter->addItem(i1.value() + " (" + i1.key() + ")", i1.key());
 	}
-	language_filter->addItem(tr("Portuguese - Brasil") + " (pb)", "pb");
 	language_filter->model()->sort(0);
-	#if QT_VERSION >= 0x040400
-	language_filter->insertSeparator(language_filter->count());
-	#endif
-
-	QMap<QString,QString> l2 = Languages::list();
-	QMapIterator<QString, QString> i2(l2);
-	while (i2.hasNext()) {
-		i2.next();
-		if (language_filter->findData(i2.key()) == -1) {
-			language_filter->addItem(i2.value() + " (" + i2.key() + ")", i2.key());
-		}
-	}
-	//language_filter->model()->sort(0);
 	language_filter->insertItem(0, tr("All"), "*");
-	#if QT_VERSION >= 0x040400
-	language_filter->insertSeparator(1);
-	#endif
-	//language_filter->setCurrentIndex(language_index);
-	language_filter->setCurrentIndex(language_filter->findData(current_language));
 
-#if QT_VERSION < 0x040300
-	QPushButton * close_button = buttonBox->button(QDialogButtonBox::Close);
-	close_button->setText(tr("Close"));
+#if QT_VERSION >= 0x040400
+	language_filter->insertSeparator(1);
 #endif
+
+	language_filter->setCurrentIndex(language_filter->findData(current_language));
 
 	// Actions
 	downloadAct->setText(tr("&Download"));
@@ -399,15 +380,17 @@ void FindSubtitlesWindow::parseInfo() {
 
 			QStandardItem * i_name = new QStandardItem(title_name);
 			i_name->setData(l[n].link);
-			#if QT_VERSION < 0x040400
+
+#if QT_VERSION < 0x040400
 			i_name->setToolTip(l[n].link);
-			#endif
+#endif
 
 			QStandardItem * i_lang = new QStandardItem(l[n].language);
 			i_lang->setData(l[n].iso639, Qt::UserRole);
-			#if QT_VERSION < 0x040400
+
+#if QT_VERSION < 0x040400
 			i_lang->setToolTip(l[n].iso639);
-			#endif
+#endif
 			if (language_list.contains(l[n].iso639)) {
 				i_lang->setText(language_list[ l[n].iso639 ]);
 			}

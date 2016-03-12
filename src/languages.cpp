@@ -149,6 +149,7 @@ QMap<QString,QString> Languages::list() {
 	l["or"] = tr("Oriya");
 	l["os"] = tr("Ossetian");
 	l["pa"] = tr("Panjabi");
+	l["pb"] = tr("Portuguese - Brasil");
 	l["pi"] = tr("Pali");
 	l["pl"] = tr("Polish");
 	l["ps"] = tr("Pushto");
@@ -210,26 +211,6 @@ QMap<QString,QString> Languages::list() {
 	return l;
 }
 
-QMap<QString,QString> Languages::most_used_list() {
-	QMap<QString,QString> l;
-
-	l["de"] = tr("German");
-	l["en"] = tr("English");
-	l["es"] = tr("Spanish");
-	l["fi"] = tr("Finnish");
-	l["fr"] = tr("French");
-	l["it"] = tr("Italian");
-	l["ja"] = tr("Japanese");
-	l["nl"] = tr("Dutch");
-	l["no"] = tr("Norwegian");
-	l["pt"] = tr("Portuguese");
-	l["ru"] = tr("Russian");
-	l["sv"] = tr("Swedish");
-	l["zh"] = tr("Chinese");
-
-	return l;
-}
-
 QMap<QString,QString> Languages::translations() {
 	QMap <QString,QString> m;
 	m["ar"] = QString::fromUtf8("العربية"); //tr("Arabic");
@@ -286,8 +267,8 @@ QMap<QString,QString> Languages::translations() {
 QMap<QString,QString> Languages::encodings() {
 	QMap<QString,QString> l;
 
-	l["UTF-16"] = tr("Unicode");
-	l["UTF-8"] = tr("UTF-8");
+	l["UTF-16"] = tr("UTF-16 Unicode");
+	l["UTF-8"] = tr("UTF-8 Unicode");
 	l["ISO-8859-1"] = tr("Western European Languages");
 	l["ISO-8859-15"] = tr("Western European Languages with Euro");
 	l["ISO-8859-2"] = tr("Slavic/Central European Languages");
@@ -312,27 +293,6 @@ QMap<QString,QString> Languages::encodings() {
 	l["CP1250"] = tr("Slavic/Central European Windows");
 	l["CP1256"] = tr("Arabic Windows");
 	l["CP1253"] = tr("Modern Greek Windows");
-
-	return l;
-}
-
-QMap<QString,QString> Languages::enca() {
-	QMap<QString,QString> l;
-
-	l["be"] = tr("Belarusian");
-	l["bg"] = tr("Bulgarian");
-	l["cs"] = tr("Czech");
-	l["et"] = tr("Estonian");
-	l["hr"] = tr("Croatian");
-	l["hu"] = tr("Hungarian");
-	l["lt"] = tr("Lithuanian");
-	l["lv"] = tr("Latvian");
-	l["pl"] = tr("Polish");
-	l["ru"] = tr("Russian");
-	l["sk"] = tr("Slovak");
-	l["sl"] = tr("Slovene");
-	l["uk"] = tr("Ukrainian");
-	l["zh"] = tr("Chinese");
 
 	return l;
 }

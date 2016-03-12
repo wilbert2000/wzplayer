@@ -123,7 +123,6 @@ void TGeneral::setData(TPreferences* pref) {
 
 	// Preferred tab
 	setAudioLang(pref->audio_lang);
-	setSubtitleLang(pref->subtitle_lang);
 
 	requires_restart = false;
 }
@@ -154,10 +153,8 @@ void TGeneral::getData(TPreferences* pref) {
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
 
-
 	// Preferred tab
 	pref->audio_lang = audioLang();
-	pref->subtitle_lang = subtitleLang();
 }
 
 void TGeneral::setPlayerPath(const QString& path) {
@@ -238,14 +235,6 @@ void TGeneral::setAudioLang(const QString& lang) {
 
 QString TGeneral::audioLang() {
 	return audio_lang_edit->text();
-}
-
-void TGeneral::setSubtitleLang(const QString& lang) {
-	subtitle_lang_edit->setText(lang);
-}
-
-QString TGeneral::subtitleLang() {
-	return subtitle_lang_edit->text();
 }
 
 void TGeneral::setCloseOnFinish(bool b) {
@@ -342,15 +331,6 @@ void TGeneral::createHelp() {
            "will select the audio track if it matches with <i>es</i>, "
            "<i>esp</i> or <i>spa</i>."));
 
-	setWhatsThis(subtitle_lang_edit, tr("Preferred subtitle language"),
-		tr("Here you can type your preferred language for the subtitle stream. "
-           "When a media with multiple subtitle streams is found, SMPlayer will "
-           "try to use your preferred language.<br>"
-           "This only will work with media that offer info about the language "
-           "of the subtitle streams, like DVDs or mkv files.<br>"
-           "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
-           "will select the subtitle stream if it matches with <i>es</i>, "
-           "<i>esp</i> or <i>spa</i>."));
 }
 
 }} // namespace Gui::Pref

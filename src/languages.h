@@ -31,15 +31,11 @@ public:
 	//! Returns the ISO_639-1 language list
 	static QMap<QString,QString> list();
 
-	//! List with the most used languages
-	static QMap<QString,QString> most_used_list();
-
 	//! Returns the list of translations available
 	static QMap<QString,QString> translations();
 
+	//! Returns the list of subtitle encodings
 	static QMap<QString,QString> encodings();
-
-	static QMap<QString,QString> enca();
 };
 
 #endif

@@ -18,6 +18,8 @@
 
 
 #include "gui/pref/subtitles.h"
+#include <QDebug>
+#include <QInputDialog>
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/paths.h"
@@ -25,12 +27,13 @@
 #include "filedialog.h"
 #include "languages.h"
 
-#include <QInputDialog>
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
 TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f)
 	: TWidget(parent, f) {
+
 	setupUi(this);
 
 	ass_subs->setEnabled(false);
@@ -64,74 +67,73 @@ QPixmap TSubtitles::sectionIcon() {
     return Images::icon("pref_subtitles", 22);
 }
 
-
 void TSubtitles::retranslateStrings() {
-	int font_autoload_item = font_autoload_combo->currentIndex();
 
+	int autoload = autoload_combo->currentIndex();
 	retranslateUi(this);
+	autoload_combo->setCurrentIndex(autoload);
 
-	font_autoload_combo->setCurrentIndex(font_autoload_item);
-
-	// Encodings combo
-	//int font_encoding_item = font_encoding_combo->currentIndex();
-	QString current_encoding = fontEncoding();
-	QString current_enca_lang = encaLang();
-	font_encoding_combo->clear();
+	// Subtitle encoding language
+	QString current = encaLang();
 	enca_lang_combo->clear();
-
-	QMap<QString,QString> l = Languages::encodings();
+	QMap<QString,QString> l = Languages::list();
 	QMapIterator<QString, QString> i(l);
-	while (i.hasNext()) {
-		i.next();
-		font_encoding_combo->addItem(i.value() + " (" + i.key() + ")", i.key());
-	}
-
-	l = Languages::enca(); 
-	i = l;
 	while (i.hasNext()) {
 		i.next();
 		enca_lang_combo->addItem(i.value() + " (" + i.key() + ")", i.key());
 	}
-
-	font_encoding_combo->model()->sort(0);
 	enca_lang_combo->model()->sort(0);
-	//font_encoding_combo->setCurrentIndex(font_encoding_item);
-	setFontEncoding(current_encoding);
-	setEncaLang(current_enca_lang);
+	enca_lang_combo->insertItem(0, tr("Auto detect"), "");
+	setEncaLang(current);
+
+	// Fallback encoding code page
+	current = encodingFallback();
+	encoding_fallback_combo->clear();
+	l = Languages::encodings();
+	i = l;
+	while (i.hasNext()) {
+		i.next();
+		encoding_fallback_combo->addItem(i.value() + " (" + i.key() + ")", i.key());
+	}
+	encoding_fallback_combo->model()->sort(0);
+	encoding_fallback_combo->insertItem(0, tr("Auto detect"), "");
+	setEncodingFallback(current);
 
 	// Ass styles
 	using namespace Settings;
-	int alignment_item = style_alignment_combo->currentIndex();
+	int current_idx = style_alignment_combo->currentIndex();
 	style_alignment_combo->clear();
 	style_alignment_combo->addItem(tr("Left", "horizontal alignment"), TAssStyles::Left);
 	style_alignment_combo->addItem(tr("Centered", "horizontal alignment"), TAssStyles::HCenter);
 	style_alignment_combo->addItem(tr("Right", "horizontal alignment"), TAssStyles::Right);
-	style_alignment_combo->setCurrentIndex(alignment_item);
+	style_alignment_combo->setCurrentIndex(current_idx);
 
-	int valignment_item = style_valignment_combo->currentIndex();
+	current_idx = style_valignment_combo->currentIndex();
 	style_valignment_combo->clear();
 	style_valignment_combo->addItem(tr("Bottom", "vertical alignment"), TAssStyles::Bottom);
 	style_valignment_combo->addItem(tr("Middle", "vertical alignment"), TAssStyles::VCenter);
 	style_valignment_combo->addItem(tr("Top", "vertical alignment"), TAssStyles::Top);
-	style_valignment_combo->setCurrentIndex(valignment_item);
+	style_valignment_combo->setCurrentIndex(current_idx);
 
-	int borderstyle_item = style_border_style_combo->currentIndex();
+	current_idx = style_border_style_combo->currentIndex();
 	style_border_style_combo->clear();
 	style_border_style_combo->addItem(tr("Outline", "border style"), TAssStyles::Outline);
 	style_border_style_combo->addItem(tr("Opaque box", "border style"), TAssStyles::Opaque);
-	style_border_style_combo->setCurrentIndex(borderstyle_item);
+	style_border_style_combo->setCurrentIndex(current_idx);
 
 	createHelp();
 }
 
 void TSubtitles::setData(Settings::TPreferences* pref) {
 
+	setFuzziness(pref->subtitle_fuzziness);
+	setSubtitleLanguage(pref->subtitle_language);
+	setSelectFirstSubtitle(pref->select_first_subtitle);
+
+	setEncaLang(pref->subtitle_enca_language);
+	setEncodingFallback(pref->subtitle_encoding_fallback);
+
 	setAssFontScale(pref->initial_sub_scale_ass);
-	setSelectFirstSub(pref->select_first_sub);
-	setFontFuzziness(pref->subfuzziness);
-	setFontEncoding(pref->sub_code_page);
-	setUseEnca(pref->use_enca);
-	setEncaLang(pref->enca_lang);
 	setAssLineSpacing(pref->ass_line_spacing);
 	setSubtitlesOnScreenshots(pref->subtitles_on_screenshots);
 	setFreetypeSupport(pref->freetype_support);
@@ -168,12 +170,14 @@ void TSubtitles::setData(Settings::TPreferences* pref) {
 void TSubtitles::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
+	restartIfIntChanged(pref->subtitle_fuzziness, fuzziness());
+	pref->subtitle_language = subtitleLanguage();
+	restartIfBoolChanged(pref->select_first_subtitle, selectFirstSubtitle());
+
+	restartIfStringChanged(pref->subtitle_enca_language, encaLang());
+	restartIfStringChanged(pref->subtitle_encoding_fallback, encodingFallback());
+
 	pref->initial_sub_scale_ass = assFontScale();
-	restartIfBoolChanged(pref->select_first_sub, selectFirstSub());
-	restartIfIntChanged(pref->subfuzziness, fontFuzziness());
-	restartIfStringChanged(pref->sub_code_page, fontEncoding());
-	restartIfBoolChanged(pref->use_enca, useEnca());
-	restartIfStringChanged(pref->enca_lang, encaLang());
 	restartIfIntChanged(pref->ass_line_spacing, assLineSpacing());
 	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
 	restartIfBoolChanged(pref->freetype_support, freetypeSupport());
@@ -216,34 +220,38 @@ void TSubtitles::checkBorderStyleCombo(int index) {
 	style_shadow_label->setEnabled(b);
 }
 
-void TSubtitles::setAssFontScale(double n) {
-	ass_font_scale_spin->setValue(n);
+void TSubtitles::setFuzziness(int n) {
+	autoload_combo->setCurrentIndex(n);
 }
 
-double TSubtitles::assFontScale() {
-	return ass_font_scale_spin->value();
+int TSubtitles::fuzziness() {
+	return autoload_combo->currentIndex();
 }
 
-void TSubtitles::setSelectFirstSub(bool v) {
-	select_first_sub_check->setChecked(v);
+void TSubtitles::setSubtitleLanguage(const QString& lang) {
+	language_edit->setText(lang);
 }
 
-bool TSubtitles::selectFirstSub() {
-	return select_first_sub_check->isChecked();
+QString TSubtitles::subtitleLanguage() {
+	return language_edit->text();
 }
 
-void TSubtitles::setFontEncoding(const QString& s) {
-	int i = font_encoding_combo->findData(s);
-	font_encoding_combo->setCurrentIndex(i);
+void TSubtitles::setSelectFirstSubtitle(bool v) {
+	select_first_subtitle_check->setChecked(v);
 }
 
-QString TSubtitles::fontEncoding() {
-	int index = font_encoding_combo->currentIndex();
-	return font_encoding_combo->itemData(index).toString();
+bool TSubtitles::selectFirstSubtitle() {
+	return select_first_subtitle_check->isChecked();
 }
 
-void TSubtitles::setEncaLang(QString s) {
+void TSubtitles::setEncaLang(const QString& s) {
+
 	int i = enca_lang_combo->findData(s);
+	if (i < 0) {
+		qWarning() << "Gui::Pref::TSubtitles::setEncaLang: encoding lannguage"
+				   << s << "not found, falling back to auto detect";
+		i = enca_lang_combo->findData("");
+	}
 	enca_lang_combo->setCurrentIndex(i);
 }
 
@@ -252,20 +260,21 @@ QString TSubtitles::encaLang() {
 	return enca_lang_combo->itemData(index).toString();
 }
 
-void TSubtitles::setUseEnca(bool b) {
-	use_enca_check->setChecked(b);
+void TSubtitles::setEncodingFallback(const QString& s) {
+
+	int i = encoding_fallback_combo->findData(s);
+	if (i < 0) {
+		qWarning() << "Gui::Pref::TSubtitles::setEncodingFallback: encoding"
+				   << s << "not found, falling back to auto detect";
+		i = encoding_fallback_combo->findData("");
+	}
+	encoding_fallback_combo->setCurrentIndex(i);
 }
 
-bool TSubtitles::useEnca() {
-	return use_enca_check->isChecked();
-}
+QString TSubtitles::encodingFallback() {
 
-void TSubtitles::setFontFuzziness(int n) {
-	font_autoload_combo->setCurrentIndex(n);
-}
-
-int TSubtitles::fontFuzziness() {
-	return font_autoload_combo->currentIndex();
+	int index = encoding_fallback_combo->currentIndex();
+	return encoding_fallback_combo->itemData(index).toString();
 }
 
 void TSubtitles::setSubtitlesOnScreenshots(bool b) {
@@ -274,6 +283,14 @@ void TSubtitles::setSubtitlesOnScreenshots(bool b) {
 
 bool TSubtitles::subtitlesOnScreenshots() {
 	return subtitles_on_screeshots_check->isChecked();
+}
+
+void TSubtitles::setAssFontScale(double n) {
+	ass_font_scale_spin->setValue(n);
+}
+
+double TSubtitles::assFontScale() {
+	return ass_font_scale_spin->value();
 }
 
 void TSubtitles::setAssLineSpacing(int spacing) {
@@ -381,29 +398,34 @@ void TSubtitles::createHelp() {
 
 	addSectionTitle(tr("Subtitles"));
 
-	setWhatsThis(font_autoload_combo, tr("Autoload"), 
+	setWhatsThis(autoload_combo, tr("Autoload"),
         tr("Select the subtitle autoload method."));
 
-	setWhatsThis(select_first_sub_check, tr("Select first available subtitle"),
+	setWhatsThis(language_edit, tr("Preferred subtitle language"),
+		tr("Here you can type your preferred language for the subtitle stream. "
+		   "When a media with multiple subtitle streams is found, SMPlayer will "
+		   "try to use your preferred language.<br>"
+		   "This only will work with media that offer info about the language "
+		   "of the subtitle streams, like DVDs or mkv files.<br>"
+		   "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
+		   "will select the subtitle stream if it matches with <i>es</i>, "
+		   "<i>esp</i> or <i>spa</i>."));
+
+	setWhatsThis(select_first_subtitle_check, tr("Select first available subtitle"),
         tr("If there are one or more subtitle tracks available, one of them "
            "will be automatically selected, usually the first one, although if "
            "one of them matches the user's preferred language that one will "
            "be used instead."));
 
-	setWhatsThis(font_encoding_combo, tr("Default subtitle encoding"), 
-        tr("Select the encoding which will be used for subtitle files "
-           "by default."));
-
-	setWhatsThis(use_enca_check, tr("Try to autodetect for this language"),
-		tr("When this option is on, the encoding of the subtitles will be "
-           "tried to be autodetected for the given language. "
-           "It will fall back to the default encoding if the autodetection "
-           "fails. This option requires a MPlayer compiled with ENCA "
-           "support."));
-
+	// TODO:
 	setWhatsThis(enca_lang_combo, tr("Subtitle language"),
 		tr("Select the language for which you want the encoding to be guessed "
-           "automatically."));
+		   "automatically."));
+
+	// TODO:
+	setWhatsThis(encoding_fallback_combo, tr("Default subtitle encoding"),
+        tr("Select the encoding which will be used for subtitle files "
+           "by default."));
 
 	setWhatsThis(subtitles_on_screeshots_check, 
         tr("Include subtitles on screenshots"), 
