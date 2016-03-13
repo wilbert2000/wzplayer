@@ -273,20 +273,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="pause_if_hidden_check">
-         <property name="text">
-          <string>Pause &amp;when minimized</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="close_on_finish_check">
-         <property name="text">
-          <string>&amp;Close when playback finished</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -326,8 +312,6 @@
   <tabstop>screenshot_edit</tabstop>
   <tabstop>screenshot_template_edit</tabstop>
   <tabstop>screenshot_format_combo</tabstop>
-  <tabstop>pause_if_hidden_check</tabstop>
-  <tabstop>close_on_finish_check</tabstop>
  </tabstops>
  <resources/>
  <connections>

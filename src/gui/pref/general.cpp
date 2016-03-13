@@ -108,9 +108,6 @@ void TGeneral::setData(TPreferences* pref) {
 	setScreenshotFormat(pref->screenshot_format);
 #endif
 
-	setPauseWhenHidden(pref->pause_when_hidden);
-	setCloseOnFinish(pref->close_on_finish);
-
 	requires_restart = false;
 }
 
@@ -137,8 +134,6 @@ void TGeneral::getData(TPreferences* pref) {
 	restartIfStringChanged(pref->screenshot_format, screenshotFormat());
 #endif
 
-	pref->close_on_finish = closeOnFinish();
-	pref->pause_when_hidden = pauseWhenHidden();
 }
 
 void TGeneral::setPlayerPath(const QString& path) {
@@ -221,22 +216,6 @@ QString TGeneral::fileSettingsMethod() {
 	return filesettings_method_combo->itemData(filesettings_method_combo->currentIndex()).toString();
 }
 
-void TGeneral::setCloseOnFinish(bool b) {
-	close_on_finish_check->setChecked(b);
-}
-
-bool TGeneral::closeOnFinish() {
-	return close_on_finish_check->isChecked();
-}
-
-void TGeneral::setPauseWhenHidden(bool b) {
-	pause_if_hidden_check->setChecked(b);
-}
-
-bool TGeneral::pauseWhenHidden() {
-	return pause_if_hidden_check->isChecked();
-}
-
 void TGeneral::createHelp() {
 
 	clearHelp();
@@ -297,14 +276,6 @@ void TGeneral::createHelp() {
 		tr("This option only works with mpv.") );
 #endif
 
-	setWhatsThis(pause_if_hidden_check, tr("Pause when minimized"),
-		tr("If this option is enabled, the file will be paused when the "
-           "main window is hidden. When the window is restored, playback "
-           "will be resumed."));
-
-	setWhatsThis(close_on_finish_check, tr("Close when finished"),
-		tr("If this option is checked, the main window will be automatically "
-		   "closed when the current file/playlist finishes."));
 }
 
 }} // namespace Gui::Pref

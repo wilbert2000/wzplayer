@@ -85,12 +85,6 @@ private:
 	QString screenshotFormat();
 #endif
 
-	void setPauseWhenHidden(bool b);
-	bool pauseWhenHidden();
-
-	void setCloseOnFinish(bool b);
-	bool closeOnFinish();
-
 private slots:
 	void fileChanged(QString file);
 };

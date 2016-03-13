@@ -103,12 +103,12 @@ void TInterface::createLanguageCombo() {
 }
 
 void TInterface::retranslateStrings() {
-	int mainwindow_resize = mainwindow_resize_combo->currentIndex();
+	int mainwindow_resize = resize_window_combo->currentIndex();
 	int timeslider_pos = timeslider_behaviour_combo->currentIndex();
 
 	retranslateUi(this);
 
-	mainwindow_resize_combo->setCurrentIndex(mainwindow_resize);
+	resize_window_combo->setCurrentIndex(mainwindow_resize);
 	timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
 
 	// Icons
@@ -156,6 +156,8 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	setResizeMethod(pref->resize_method);
 	setSaveSize(pref->save_window_size_on_exit);
+	setPauseWhenHidden(pref->pause_when_hidden);
+	setCloseOnFinish(pref->close_on_finish);
 	setShowTagInTitle(pref->show_tag_in_window_title);
 
 	hide_toolbars_spin->setValue(pref->floating_hide_delay);
@@ -205,6 +207,8 @@ void TInterface::getData(Settings::TPreferences* pref) {
 
 	pref->resize_method = resizeMethod();
 	pref->save_window_size_on_exit = saveSize();
+	pref->close_on_finish = closeOnFinish();
+	pref->pause_when_hidden = pauseWhenHidden();
 	pref->show_tag_in_window_title = showTagInTitle();
 
 	pref->floating_hide_delay = hide_toolbars_spin->value();
@@ -286,11 +290,11 @@ QString TInterface::iconSet() {
 }
 
 void TInterface::setResizeMethod(int v) {
-	mainwindow_resize_combo->setCurrentIndex(v);
+	resize_window_combo->setCurrentIndex(v);
 }
 
 int TInterface::resizeMethod() {
-	return mainwindow_resize_combo->currentIndex();
+	return resize_window_combo->currentIndex();
 }
 
 void TInterface::setSaveSize(bool b) {
@@ -426,6 +430,22 @@ void TInterface::changeInstanceImages() {
 }
 #endif
 
+void TInterface::setCloseOnFinish(bool b) {
+	close_on_finish_check->setChecked(b);
+}
+
+bool TInterface::closeOnFinish() {
+	return close_on_finish_check->isChecked();
+}
+
+void TInterface::setPauseWhenHidden(bool b) {
+	pause_on_minimize_check->setChecked(b);
+}
+
+bool TInterface::pauseWhenHidden() {
+	return pause_on_minimize_check->isChecked();
+}
+
 void TInterface::setHideVideoOnAudioFiles(bool b) {
 	hide_video_window_on_audio_check->setChecked(b);
 }
@@ -463,13 +483,22 @@ void TInterface::createHelp() {
 
 	addSectionTitle(tr("Interface"));
 
-	setWhatsThis(mainwindow_resize_combo, tr("Autoresize"),
+	setWhatsThis(resize_window_combo, tr("Autoresize"),
         tr("The main window can be resized automatically. Select the option "
            "you prefer."));
 
 	setWhatsThis(save_size_check, tr("Remember position and size"),
         tr("If you check this option, the position and size of the main "
            "window will be saved and restored when you run SMPlayer again."));
+
+	setWhatsThis(pause_on_minimize_check, tr("Pause when minimized"),
+		tr("If this option is enabled, the file will be paused when the "
+		   "main window is hidden. When the window is restored, playback "
+		   "will be resumed."));
+
+	setWhatsThis(close_on_finish_check, tr("Close when finished"),
+		tr("If this option is checked, the main window will be automatically "
+		   "closed when the current file/playlist finishes."));
 
 	setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
         tr("If this option is enabled the video window will be hidden when playing audio files."));

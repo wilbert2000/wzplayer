@@ -129,6 +129,12 @@ private:
 	bool style_changed;
 	bool recents_changed;
 	bool url_max_changed;
+
+	void setPauseWhenHidden(bool b);
+	bool pauseWhenHidden();
+
+	void setCloseOnFinish(bool b);
+	bool closeOnFinish();
 };
 
 }} // namespace Gui::Pref
