@@ -28,24 +28,36 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QHBoxLayout" name="playerbin_layout">
-         <item>
-          <widget class="QLabel" name="playerbin_label">
-           <property name="text">
-            <string notr="true">Player &amp;executable:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-           <property name="buddy">
-            <cstring>playerbin_edit</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="FileChooser" name="playerbin_edit"/>
-         </item>
-        </layout>
+        <widget class="QGroupBox" name="player_group">
+         <property name="title">
+          <string>Player</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="margin">
+           <number>8</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="playerbin_layout">
+            <item>
+             <widget class="QLabel" name="playerbin_label">
+              <property name="text">
+               <string notr="true">&amp;Executable:</string>
+              </property>
+              <property name="wordWrap">
+               <bool>false</bool>
+              </property>
+              <property name="buddy">
+               <cstring>playerbin_edit</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="FileChooser" name="playerbin_edit"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
         <widget class="QGroupBox" name="media_settings_group">
@@ -53,6 +65,9 @@
           <string>Media settings</string>
          </property>
          <layout class="QVBoxLayout">
+          <property name="margin">
+           <number>8</number>
+          </property>
           <item>
            <widget class="QCheckBox" name="remember_all_check">
             <property name="text">
