@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>378</width>
-    <height>367</height>
+    <width>490</width>
+    <height>400</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
   </property>
   <layout class="QVBoxLayout">
    <property name="spacing">
@@ -28,247 +34,295 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <layout class="QHBoxLayout" name="vo_layout">
-         <item>
-          <widget class="QLabel" name="vo_label">
-           <property name="text">
-            <string>&amp;Output driver:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-           <property name="buddy">
-            <cstring>vo_combo</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="vo_combo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="editable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="vo_user_defined_edit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="vdpau_button">
-           <property name="text">
-            <string>&amp;Configure...</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>81</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="hwdec_layout">
-         <item>
-          <widget class="QLabel" name="hwdec_label">
-           <property name="text">
-            <string>&amp;Hardware decoding:</string>
-           </property>
-           <property name="buddy">
-            <cstring>hwdec_combo</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="hwdec_combo"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="software_video_equalizer_check">
-         <property name="text">
-          <string>&amp;Use software video equalizer</string>
+        <widget class="QGroupBox" name="output_group">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
+         <property name="title">
+          <string>Output</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="margin">
+           <number>8</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="vo_layout">
+            <item>
+             <widget class="QLabel" name="vo_label">
+              <property name="text">
+               <string>&amp;Driver:</string>
+              </property>
+              <property name="wordWrap">
+               <bool>false</bool>
+              </property>
+              <property name="buddy">
+               <cstring>vo_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="vo_combo">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="editable">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="vo_user_defined_edit"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="vdpau_button">
+              <property name="text">
+               <string>&amp;Configure...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>81</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="hwdec_layout">
+            <item>
+             <widget class="QLabel" name="hwdec_label">
+              <property name="text">
+               <string>&amp;Hardware decoding:</string>
+              </property>
+              <property name="buddy">
+               <cstring>hwdec_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="hwdec_combo"/>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="software_video_equalizer_check">
+            <property name="text">
+             <string>&amp;Use software video equalizer</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="framedrop_check">
-         <property name="text">
-          <string>A&amp;llow frame drop</string>
+        <widget class="QGroupBox" name="synchronization">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
+         <property name="title">
+          <string>Synchronization</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QCheckBox" name="framedrop_check">
+            <property name="text">
+             <string>&amp;Allow frame drop</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="hardframedrop_check">
+            <property name="text">
+             <string>A&amp;llow hard frame drop (can lead to image distortion)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="hardframedrop_check">
-         <property name="text">
-          <string>All&amp;ow hard frame drop (can lead to image distortion)</string>
+        <widget class="QGroupBox" name="defaults_group">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
          </property>
+         <property name="title">
+          <string>Defaults</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QHBoxLayout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="postprocessing_check">
+              <property name="text">
+               <string>Add &amp;post processing filter</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="postprocessing_quality_label">
+              <property name="text">
+               <string>&amp;Quality:</string>
+              </property>
+              <property name="wordWrap">
+               <bool>false</bool>
+              </property>
+              <property name="buddy">
+               <cstring>postprocessing_quality_spin</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="postprocessing_quality_spin">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>6</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="deinterlace_layout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>De&amp;interlace (except for TV):</string>
+              </property>
+              <property name="buddy">
+               <cstring>deinterlace_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="deinterlace_combo">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="zoom_layout">
+            <item>
+             <widget class="QLabel" name="zoom_label">
+              <property name="text">
+               <string>&amp;Zoom:</string>
+              </property>
+              <property name="buddy">
+               <cstring>zoom_spin</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="zoom_spin">
+              <property name="minimum">
+               <double>0.500000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout">
-         <property name="spacing">
-          <number>6</number>
-         </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QCheckBox" name="postprocessing_check">
-           <property name="text">
-            <string>&amp;Enable postprocessing by default</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="postprocessing_quality_label">
-           <property name="text">
-            <string>&amp;Quality:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-           <property name="buddy">
-            <cstring>postprocessing_quality_spin</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="postprocessing_quality_spin">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>6</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="deinterlace_layout">
-         <property name="spacing">
-          <number>6</number>
-         </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>&amp;Deinterlace by default (except for TV):</string>
-           </property>
-           <property name="buddy">
-            <cstring>deinterlace_combo</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="deinterlace_combo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="zoom_layout">
-         <item>
-          <widget class="QLabel" name="zoom_label">
-           <property name="text">
-            <string>Default &amp;zoom:</string>
-           </property>
-           <property name="buddy">
-            <cstring>zoom_spin</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="zoom_spin">
-           <property name="minimum">
-            <double>0.500000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>10.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
        </item>
        <item>
         <spacer name="verticalSpacer">
