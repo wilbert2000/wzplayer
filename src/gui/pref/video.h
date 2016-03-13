@@ -105,12 +105,6 @@ private:
 
 	void setInitialZoom(double v);
 	double initialZoom();
-
-	void setStartInFullscreen(bool b);
-	bool startInFullscreen();
-
-	void setBlackbordersOnFullscreen(bool b);
-	bool blackbordersOnFullscreen();
 };
 
 } // namespace Pref

@@ -470,6 +470,9 @@ Example: extrastereo,karaoke</string>
           <string>Log options</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="margin">
+           <number>8</number>
+          </property>
           <item alignment="Qt::AlignTop">
            <widget class="QCheckBox" name="log_debug_enabled_check">
             <property name="text">
@@ -533,14 +536,14 @@ Example: extrastereo,karaoke</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Gui::Pref::TTristateCombo</class>
-   <extends>QComboBox</extends>
-   <header>gui/pref/tristatecombo.h</header>
-  </customwidget>
-  <customwidget>
    <class>Gui::Pref::TComboBox</class>
    <extends>QComboBox</extends>
    <header>gui/pref/combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::Pref::TTristateCombo</class>
+   <extends>QComboBox</extends>
+   <header>gui/pref/tristatecombo.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

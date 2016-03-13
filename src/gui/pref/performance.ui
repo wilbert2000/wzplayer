@@ -30,6 +30,9 @@
           <string>Cache (MPlayer only)</string>
          </property>
          <layout class="QGridLayout">
+          <property name="margin">
+           <number>8</number>
+          </property>
           <item row="0" column="0" colspan="4">
            <widget class="QLabel" name="cache_label">
             <property name="text">

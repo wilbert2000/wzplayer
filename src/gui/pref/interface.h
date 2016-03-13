@@ -135,6 +135,12 @@ private:
 
 	void setCloseOnFinish(bool b);
 	bool closeOnFinish();
+
+	void setStartInFullscreen(bool b);
+	bool startInFullscreen();
+
+	void setBlackbordersOnFullscreen(bool b);
+	bool blackbordersOnFullscreen();
 };
 
 }} // namespace Gui::Pref

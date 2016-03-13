@@ -154,14 +154,19 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setLanguage(pref->language);
 	setIconSet(pref->iconset);
 
+	// Main window
 	setResizeMethod(pref->resize_method);
 	setSaveSize(pref->save_window_size_on_exit);
 	setPauseWhenHidden(pref->pause_when_hidden);
 	setCloseOnFinish(pref->close_on_finish);
 	setShowTagInTitle(pref->show_tag_in_window_title);
 
+	// Fullscreen
 	hide_toolbars_spin->setValue(pref->floating_hide_delay);
 	show_toolbars_bottom_only_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
+	setStartInFullscreen(pref->start_in_fullscreen);
+	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
+
 
 #ifdef SINGLE_INSTANCE
 	setUseSingleInstance(pref->use_single_instance);
@@ -205,15 +210,22 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		iconset_changed = true;
 	}
 
+	// Main window
 	pref->resize_method = resizeMethod();
 	pref->save_window_size_on_exit = saveSize();
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
 	pref->show_tag_in_window_title = showTagInTitle();
 
+	// Fullscreen
 	pref->floating_hide_delay = hide_toolbars_spin->value();
 	pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked() ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
-
+	pref->start_in_fullscreen = startInFullscreen();
+	if (pref->add_blackborders_on_fullscreen != blackbordersOnFullscreen()) {
+		pref->add_blackborders_on_fullscreen = blackbordersOnFullscreen();
+		if (pref->fullscreen)
+			requires_restart = true;
+	}
 
 #ifdef SINGLE_INSTANCE
 	pref->use_single_instance = useSingleInstance();
@@ -325,6 +337,23 @@ QString TInterface::style() {
 		return "";
 	else 
 		return style_combo->currentText();
+}
+
+void TInterface::setStartInFullscreen(bool b) {
+	start_fullscreen_check->setChecked(b);
+}
+
+bool TInterface::startInFullscreen() {
+	return start_fullscreen_check->isChecked();
+}
+
+
+void TInterface::setBlackbordersOnFullscreen(bool b) {
+	blackborders_on_fs_check->setChecked(b);
+}
+
+bool TInterface::blackbordersOnFullscreen() {
+	return blackborders_on_fs_check->isChecked();
 }
 
 #ifdef SINGLE_INSTANCE
@@ -483,6 +512,22 @@ void TInterface::createHelp() {
 
 	addSectionTitle(tr("Interface"));
 
+	setWhatsThis(language_combo, tr("Language"),
+		tr("Here you can change the language of the application."));
+
+	setWhatsThis(iconset_combo, tr("Icon set"),
+		tr("Select the icon set you prefer for the application."));
+
+	setWhatsThis(style_combo, tr("Style"),
+		tr("Select the style you prefer for the application."));
+
+
+	setWhatsThis(changeFontButton, tr("Default font"),
+		tr("You can change the application's font."));
+
+
+	addSectionTitle(tr("Main window"));
+
 	setWhatsThis(resize_window_combo, tr("Autoresize"),
         tr("The main window can be resized automatically. Select the option "
            "you prefer."));
@@ -507,18 +552,6 @@ void TInterface::createHelp() {
 		tr("If media provides a title it will be used for the window title, "
 		   "unless this option is checked, then the file name will always be used."));
 
-	setWhatsThis(language_combo, tr("Language"),
-		tr("Here you can change the language of the application."));
-
-	setWhatsThis(iconset_combo, tr("Icon set"),
-		tr("Select the icon set you prefer for the application."));
-
-	setWhatsThis(style_combo, tr("Style"),
-        tr("Select the style you prefer for the application."));
-
-
-	setWhatsThis(changeFontButton, tr("Default font"),
-        tr("You can change here the application's font."));
 
 	addSectionTitle(tr("Fullscreen"));
 
@@ -529,6 +562,16 @@ void TInterface::createHelp() {
 		tr("If this option is checked, the toolbars will only be displayed when the mouse is moved "
 		   "to the bottom of the screen. Otherwise the control will appear whenever the mouse is moved, no matter "
 		   "its position."));
+
+	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
+		tr("If this option is checked, all videos will start to play in "
+		   "fullscreen mode."));
+
+	setWhatsThis(blackborders_on_fs_check, tr("Add black borders on fullscreen"),
+		tr("If this option is enabled, black borders will be added to the "
+		   "image in fullscreen mode. This allows subtitles to be displayed "
+		   "on the black borders."));
+
 
 	addSectionTitle(tr("Seeking"));
 

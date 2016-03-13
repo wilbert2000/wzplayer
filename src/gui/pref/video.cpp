@@ -132,9 +132,6 @@ void TVideo::setData(Settings::TPreferences* pref) {
 	setPostprocessingQuality(pref->postprocessing_quality);
 	setInitialDeinterlace(pref->initial_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
-
-	setStartInFullscreen(pref->start_in_fullscreen);
-	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
 }
 
 void TVideo::getData(Settings::TPreferences* pref) {
@@ -153,13 +150,6 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	restartIfIntChanged(pref->postprocessing_quality, postprocessingQuality());
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_zoom_factor = initialZoom();
-
-	pref->start_in_fullscreen = startInFullscreen();
-	if (pref->add_blackborders_on_fullscreen != blackbordersOnFullscreen()) {
-		pref->add_blackborders_on_fullscreen = blackbordersOnFullscreen();
-		if (pref->fullscreen)
-			requires_restart = true;
-	}
 }
 
 void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
@@ -331,23 +321,6 @@ double TVideo::initialZoom() {
 	return zoom_spin->value();
 }
 
-void TVideo::setStartInFullscreen(bool b) {
-	start_fullscreen_check->setChecked(b);
-}
-
-bool TVideo::startInFullscreen() {
-	return start_fullscreen_check->isChecked();
-}
-
-
-void TVideo::setBlackbordersOnFullscreen(bool b) {
-	blackborders_on_fs_check->setChecked(b);
-}
-
-bool TVideo::blackbordersOnFullscreen() {
-	return blackborders_on_fs_check->isChecked();
-}
-
 void TVideo::setPostprocessingQuality(int n) {
 	postprocessing_quality_spin->setValue(n);
 }
@@ -465,18 +438,6 @@ void TVideo::createHelp() {
 		   "your graphic card or the selected video output driver.<br>"
 		   "<b>Note:</b> this option can be incompatible with some video "
 		   "output drivers."));
-
-	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
-		tr("If this option is checked, all videos will start to play in "
-		   "fullscreen mode."));
-
-	setWhatsThis(blackborders_on_fs_check, tr("Add black borders on fullscreen"),
-		tr("If this option is enabled, black borders will be added to the "
-		   "image in fullscreen mode. This allows subtitles to be displayed "
-		   "on the black borders.") /* + "<br>" +
-		tr("This option will be ignored if MPlayer uses its own window, as "
-			"some video drivers (like gl) are already able to display the "
-			"subtitles automatically in the black borders.") */);
 }
 
 }} // namespace Gui::Pref

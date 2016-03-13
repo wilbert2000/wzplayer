@@ -271,20 +271,6 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="start_fullscreen_check">
-         <property name="text">
-          <string>Start videos in &amp;fullscreen</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="blackborders_on_fs_check">
-         <property name="text">
-          <string>&amp;Add black borders on fullscreen</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -316,8 +302,6 @@
   <tabstop>postprocessing_quality_spin</tabstop>
   <tabstop>deinterlace_combo</tabstop>
   <tabstop>zoom_spin</tabstop>
-  <tabstop>start_fullscreen_check</tabstop>
-  <tabstop>blackborders_on_fs_check</tabstop>
  </tabstops>
  <resources/>
  <connections/>
