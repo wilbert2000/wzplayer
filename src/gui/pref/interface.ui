@@ -151,7 +151,7 @@
             <item row="1" column="0">
              <widget class="QLabel" name="iconset_label">
               <property name="text">
-               <string>Ico&amp;n set:</string>
+               <string>I&amp;con set:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -174,7 +174,10 @@
             <item>
              <widget class="QLabel" name="default_font_label">
               <property name="text">
-               <string>Default font:</string>
+               <string>Default &amp;font:</string>
+              </property>
+              <property name="buddy">
+               <cstring>default_font_edit</cstring>
               </property>
              </widget>
             </item>
@@ -188,7 +191,7 @@
             <item>
              <widget class="QPushButton" name="changeFontButton">
               <property name="text">
-               <string>&amp;Change...</string>
+               <string>C&amp;hange...</string>
               </property>
              </widget>
             </item>
@@ -232,7 +235,7 @@
               <item>
                <widget class="QLabel" name="resize_window_label">
                 <property name="text">
-                 <string>Resize &amp;window:</string>
+                 <string>&amp;Resize window:</string>
                 </property>
                 <property name="buddy">
                  <cstring>resize_window_combo</cstring>
@@ -269,21 +272,21 @@
             <item>
              <widget class="QCheckBox" name="save_size_check">
               <property name="text">
-               <string>&amp;Remember position and size</string>
+               <string>R&amp;emember position and size</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="pause_on_minimize_check">
               <property name="text">
-               <string>Pause when minimized</string>
+               <string>&amp;Pause when minimized</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="close_on_finish_check">
               <property name="text">
-               <string>Close when playback finished</string>
+               <string>Cl&amp;ose when playback finished</string>
               </property>
              </widget>
             </item>
@@ -333,7 +336,10 @@
             <item>
              <widget class="QLabel" name="hide_toolbars_label">
               <property name="text">
-               <string>Hide toolbars after</string>
+               <string>Hide tool&amp;bars after</string>
+              </property>
+              <property name="buddy">
+               <cstring>hide_toolbars_spin</cstring>
               </property>
              </widget>
             </item>
@@ -378,7 +384,7 @@
           <item>
            <widget class="QCheckBox" name="show_toolbars_bottom_only_check">
             <property name="text">
-             <string>Show toolbars only when moving the mouse to the bottom of the screen</string>
+             <string>Sho&amp;w toolbars only when moving the mouse to the bottom of the screen</string>
             </property>
            </widget>
           </item>
