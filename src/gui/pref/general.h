@@ -85,6 +85,9 @@ private:
 	QString screenshotFormat();
 #endif
 
+	void setSubtitlesOnScreenshots(bool b);
+	bool subtitlesOnScreenshots();
+
 private slots:
 	void fileChanged(QString file);
 };

@@ -60,9 +60,6 @@ protected:
 	void setCustomizedAssStyle(const QString& style) { forced_ass_style = style; }
 	QString customizedAssStyle() const { return forced_ass_style; }
 
-	void setSubtitlesOnScreenshots(bool b);
-	bool subtitlesOnScreenshots();
-
 	void setFreetypeSupport(bool b);
 	bool freetypeSupport();
 

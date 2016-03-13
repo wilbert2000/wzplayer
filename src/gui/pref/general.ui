@@ -167,7 +167,7 @@
                <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
+               <enum>QSizePolicy::Fixed</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -210,7 +210,7 @@
                <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
+               <enum>QSizePolicy::Fixed</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -257,6 +257,39 @@
              <widget class="QComboBox" name="screenshot_format_combo">
               <property name="enabled">
                <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="subtitles_on_screeshots_check">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>&amp;Include subtitles on screenshots</string>
               </property>
              </widget>
             </item>
@@ -312,6 +345,7 @@
   <tabstop>screenshot_edit</tabstop>
   <tabstop>screenshot_template_edit</tabstop>
   <tabstop>screenshot_format_combo</tabstop>
+  <tabstop>subtitles_on_screeshots_check</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -472,6 +506,22 @@
     <hint type="destinationlabel">
      <x>257</x>
      <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>use_screenshots_check</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>subtitles_on_screeshots_check</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>245</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>257</x>
+     <y>315</y>
     </hint>
    </hints>
   </connection>

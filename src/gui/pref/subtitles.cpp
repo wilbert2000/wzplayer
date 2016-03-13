@@ -135,7 +135,6 @@ void TSubtitles::setData(Settings::TPreferences* pref) {
 
 	setAssFontScale(pref->initial_sub_scale_ass);
 	setAssLineSpacing(pref->ass_line_spacing);
-	setSubtitlesOnScreenshots(pref->subtitles_on_screenshots);
 	setFreetypeSupport(pref->freetype_support);
 	use_ass_check->setChecked(pref->use_ass_subtitles);
 
@@ -179,7 +178,6 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 
 	pref->initial_sub_scale_ass = assFontScale();
 	restartIfIntChanged(pref->ass_line_spacing, assLineSpacing());
-	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
 	restartIfBoolChanged(pref->freetype_support, freetypeSupport());
 	restartIfBoolChanged(pref->use_ass_subtitles, use_ass_check->isChecked());
 
@@ -275,14 +273,6 @@ QString TSubtitles::encodingFallback() {
 
 	int index = encoding_fallback_combo->currentIndex();
 	return encoding_fallback_combo->itemData(index).toString();
-}
-
-void TSubtitles::setSubtitlesOnScreenshots(bool b) {
-	subtitles_on_screeshots_check->setChecked(b);
-}
-
-bool TSubtitles::subtitlesOnScreenshots() {
-	return subtitles_on_screeshots_check->isChecked();
 }
 
 void TSubtitles::setAssFontScale(double n) {
@@ -426,11 +416,6 @@ void TSubtitles::createHelp() {
 	setWhatsThis(encoding_fallback_combo, tr("Default subtitle encoding"),
         tr("Select the encoding which will be used for subtitle files "
            "by default."));
-
-	setWhatsThis(subtitles_on_screeshots_check, 
-        tr("Include subtitles on screenshots"), 
-        tr("If this option is checked, the subtitles will appear in the "
-           "screenshots. <b>Note:</b> it may cause some troubles sometimes."));
 
 	setWhatsThis(use_ass_check, tr("Use the ASS library"),
 		tr("This option enables the ASS library, which allows to display "

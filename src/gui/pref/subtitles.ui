@@ -276,13 +276,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="subtitles_on_screeshots_check">
-         <property name="text">
-          <string>&amp;Include subtitles on screenshots</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="Line" name="line">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -885,7 +878,6 @@
   <tabstop>select_first_subtitle_check</tabstop>
   <tabstop>enca_lang_combo</tabstop>
   <tabstop>encoding_fallback_combo</tabstop>
-  <tabstop>subtitles_on_screeshots_check</tabstop>
   <tabstop>use_ass_check</tabstop>
   <tabstop>freetype_check</tabstop>
   <tabstop>windowsfontdir_check</tabstop>

@@ -108,6 +108,8 @@ void TGeneral::setData(TPreferences* pref) {
 	setScreenshotFormat(pref->screenshot_format);
 #endif
 
+	setSubtitlesOnScreenshots(pref->subtitles_on_screenshots);
+
 	requires_restart = false;
 }
 
@@ -134,6 +136,7 @@ void TGeneral::getData(TPreferences* pref) {
 	restartIfStringChanged(pref->screenshot_format, screenshotFormat());
 #endif
 
+	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
 }
 
 void TGeneral::setPlayerPath(const QString& path) {
@@ -179,6 +182,15 @@ QString TGeneral::screenshotFormat() {
 	return screenshot_format_combo->currentText();
 }
 #endif
+
+void TGeneral::setSubtitlesOnScreenshots(bool b) {
+	subtitles_on_screeshots_check->setChecked(b);
+}
+
+bool TGeneral::subtitlesOnScreenshots() {
+	return subtitles_on_screeshots_check->isChecked();
+}
+
 
 void TGeneral::setRememberSettings(bool b) {
 	remember_all_check->setChecked(b);
@@ -276,6 +288,10 @@ void TGeneral::createHelp() {
 		tr("This option only works with mpv.") );
 #endif
 
+	setWhatsThis(subtitles_on_screeshots_check,
+		tr("Include subtitles on screenshots"),
+		tr("If this option is checked, the subtitles will appear in the "
+		   "screenshots. <b>Note:</b> it may cause some troubles sometimes."));
 }
 
 }} // namespace Gui::Pref
