@@ -60,13 +60,6 @@ public:
 protected:
 	virtual void retranslateStrings();
 
-protected slots:
-	void vo_combo_changed(int);
-
-#ifndef Q_OS_WIN
-	void on_vdpau_button_clicked();
-#endif
-
 private:
 
 #if USE_XV_ADAPTORS
@@ -85,26 +78,49 @@ private:
 	void setHwdec(const QString& v);
 	QString hwdec();
 
+	void setSoftwareVideoEqualizer(bool b);
+	bool softwareVideoEqualizer();
+
 	void setFrameDrop(bool b);
 	bool frameDrop();
 
 	void setHardFrameDrop(bool b);
 	bool hardFrameDrop();
 
-	void setSoftwareVideoEqualizer(bool b);
-	bool softwareVideoEqualizer();
+	void setInitialPostprocessing(bool b);
+	bool initialPostprocessing();
 
 	void setPostprocessingQuality(int n);
 	int postprocessingQuality();
-
-	void setInitialPostprocessing(bool b);
-	bool initialPostprocessing();
 
 	void setInitialDeinterlace(int ID);
 	int initialDeinterlace();
 
 	void setInitialZoom(double v);
 	double initialZoom();
+
+	// Screenshots
+	void setUseScreenshots(bool b);
+	bool useScreenshots();
+
+	void setScreenshotDir(const QString& path);
+	QString screenshotDir();
+
+#ifdef MPV_SUPPORT
+	void setScreenshotFormat(const QString& format);
+	QString screenshotFormat();
+#endif
+
+	void setSubtitlesOnScreenshots(bool b);
+	bool subtitlesOnScreenshots();
+
+private slots:
+	void vo_combo_changed(int);
+
+#ifndef Q_OS_WIN
+	void on_vdpau_button_clicked();
+#endif
+
 };
 
 } // namespace Pref

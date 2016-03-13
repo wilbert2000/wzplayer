@@ -73,21 +73,6 @@ private:
 	void setFileSettingsMethod(const QString& method);
 	QString fileSettingsMethod();
 
-	// Screenshots
-	void setUseScreenshots(bool b);
-	bool useScreenshots();
-
-	void setScreenshotDir(const QString& path);
-	QString screenshotDir();
-
-#ifdef MPV_SUPPORT
-	void setScreenshotFormat(const QString& format);
-	QString screenshotFormat();
-#endif
-
-	void setSubtitlesOnScreenshots(bool b);
-	bool subtitlesOnScreenshots();
-
 private slots:
 	void fileChanged(QString file);
 };
