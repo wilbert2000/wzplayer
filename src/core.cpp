@@ -1668,8 +1668,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 		// Audio equalizer
 		if (pref->use_audio_equalizer) {
-			TAudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : mset.audio_equalizer;
-			proc->addAF("equalizer", Helper::equalizerListToString(l));
+			proc->addAF("equalizer", Helper::equalizerListToString(getAudioEqualizer()));
 		}
 
 		// Additional audio filters, supplied by user
@@ -2532,6 +2531,10 @@ void TCore::incVolume() {
 void TCore::decVolume() {
 	qDebug("TCore::incVolume");
 	setVolume(getVolume() - pref->min_step);
+}
+
+TAudioEqualizerList TCore::getAudioEqualizer() const {
+	return pref->global_audio_equalizer ? pref->audio_equalizer : mset.audio_equalizer;
 }
 
 void TCore::setSubDelay(int delay) {

@@ -69,6 +69,7 @@ public:
 	int positionMax() const { return pos_max; }
 	int getVolume() const;
 	bool getMute() const;
+	Settings::TAudioEqualizerList getAudioEqualizer() const;
 	bool videoFiltersEnabled(bool displayMessage = false);
 
 public slots:

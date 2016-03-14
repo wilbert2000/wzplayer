@@ -1212,8 +1212,7 @@ void TBase::updateVideoEqualizer() {
 void TBase::updateAudioEqualizer() {
 	qDebug("Gui::TBase::updateAudioEqualizer");
 
-	const TAudioEqualizerList l = pref->global_audio_equalizer ? pref->audio_equalizer : core->mset.audio_equalizer;
-	audio_equalizer->setEqualizer(l);
+	audio_equalizer->setEqualizer(core->getAudioEqualizer());
 }
 
 void TBase::setDefaultValuesFromVideoEqualizer() {
