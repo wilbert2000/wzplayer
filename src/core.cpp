@@ -1061,7 +1061,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	proc->clearArguments();
-	proc->setExecutable(pref->playerAbsolutePath());
+	proc->setExecutable(pref->player_bin);
 	proc->setFixedOptions();
 
 	if (pref->log_verbose) {

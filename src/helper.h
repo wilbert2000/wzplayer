@@ -53,11 +53,9 @@ public:
 	static QStringList resolveSymlinks(const QStringList& files);
 #endif
 
-#ifdef Q_OS_LINUX
 	//! Tries to find the executable in the path.
-	//! Returns the path if found or QString::null if not.
+	//! Returns the path if found or empty string if not.
 	static QString findExecutable(const QString& name);
-#endif
 
 private:
 	static QStringList searchForConsecutiveFiles(const QString& initial_file);

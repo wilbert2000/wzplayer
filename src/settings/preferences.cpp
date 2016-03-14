@@ -63,19 +63,27 @@ TPreferences::~TPreferences() {
 	pref = 0;
 }
 
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+QString default_mplayer_bin = "mplayer.exe";
+QString default_mpv_bin = "mpv.exe";
+#else
+QString default_mplayer_bin = "mplayer";
+QString default_mpv_bin = "mpv";
+#endif
+
 void TPreferences::reset() {
 
 	config_version = CURRENT_CONFIG_VERSION;
 
 	// General tab
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	player_bin= "mplayer/mplayer.exe";
-#else
-	player_bin = "mplayer";
-#endif
+	player_id = ID_MPLAYER;
+	player_bin = default_mplayer_bin;
+	mplayer_bin = default_mplayer_bin;
+	mpv_bin = default_mpv_bin;
 
 	remember_media_settings = false;
 	remember_time_pos = false;
+	global_volume = true;
 
 	use_screenshot = true;
 
@@ -93,7 +101,6 @@ void TPreferences::reset() {
 #ifdef CAPTURE_STREAM
 	capture_directory = "";
 #endif
-
 
 	// Video tab
 	vo = "";
@@ -114,7 +121,7 @@ void TPreferences::reset() {
 	vdpau.disable_video_filters = true;
 #endif
 
-	// Audio
+	// Audio tab
 	ao = "";
 	use_soft_vol = false;
 	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
@@ -124,7 +131,6 @@ void TPreferences::reset() {
 	use_hwac3 = false;
 	use_audio_equalizer = true;
 
-	global_volume = true;
 	volume = 50;
 	mute = false;
 
@@ -438,6 +444,8 @@ void TPreferences::save() {
 
 	setValue("config_version", config_version);
 
+	setValue("mplayer_bin", mplayer_bin);
+	setValue("mpv_bin", mpv_bin);
 	setValue("player_bin", player_bin);
 	setValue("driver/vo", vo);
 	setValue("driver/audio_output", ao);
@@ -807,10 +815,12 @@ TPreferences::TPlayerID TPreferences::getPlayerID(const QString& player) {
 
 	QFileInfo fi(player);
 	QString name = fi.fileName();
-	if (name.isEmpty())
+	if (name.isEmpty()) {
 		name = player;
-	if (name.toLower().startsWith("mplayer"))
+	}
+	if (name.toLower().startsWith("mplayer")) {
 		return ID_MPLAYER;
+	}
 	return ID_MPV;
 }
 
@@ -826,84 +836,75 @@ QString TPreferences::playerName() const {
 	return "MPV";
 }
 
-QString TPreferences::playerAbsolutePath() const {
-	return player_abs_path;
-}
-
 QString TPreferences::getAbsolutePathPlayer(const QString& player) {
 
 	QString path = player;
-
-#ifdef Q_OS_LINUX
 	QString found_player = Helper::findExecutable(path);
-	if (!found_player.isEmpty())
+	if (!found_player.isEmpty()) {
 		path = found_player;
-#endif
-
-	QFileInfo fi(path);
-	if (fi.exists() && fi.isExecutable() && !fi.isDir()) {
-		path = fi.absoluteFilePath();
 	}
-
-	qDebug("Settings::TPreferences::getAbsolutePathPlayer: '%s'",
-		   path.toUtf8().constData());
+	qDebug() << "Settings::TPreferences::getAbsolutePathPlayer:" << path;
 	return path;
 }
 
-void TPreferences::setAbsolutePath() {
+void TPreferences::setPlayerBin(QString bin) {
 
-	player_abs_path = getAbsolutePathPlayer(player_bin);
-}
-
-void TPreferences::setPlayerBin0(QString bin) {
-
-#ifdef Q_OS_WIN
-	// Check if the mplayer binary exists and try to fix it
-	if (!QFile::exists(bin)) {
-		qWarning("player_bin '%s' doesn't exist", bin.toLatin1().constData());
-		bool fixed = false;
-		if (QFile::exists("mplayer/mplayer.exe")) {
-			bin = "mplayer/mplayer.exe";
-			fixed = true;
-		} else if (QFile::exists("mplayer/mpv.exe")) {
-			player_bin = "mplayer/mpv.exe";
-			fixed = true;
-		}
-		if (fixed) {
-			qWarning("TPreferences::setPlayerBin: changing player to '%s'", bin.toLatin1().constData());
-		}
+	// Check binary and try to fix it
+	if (bin.isEmpty()) {
+		bin = default_mplayer_bin;
 	}
-#endif
 
-#ifdef Q_OS_LINUX
-	if (!QFile::exists(bin)) {
-		QString app_path = Helper::findExecutable(bin);
-		if (!app_path.isEmpty()) {
-			bin = app_path;
+	QString found_bin = Helper::findExecutable(bin);
+
+	// Try to find an alternative if not found
+	if (found_bin.isEmpty()) {
+		QFileInfo fi(bin);
+		if (fi.baseName().startsWith("mpv")) {
+			// Wanted mpv, try default mpv first
+			if (bin != default_mpv_bin) {
+				found_bin = Helper::findExecutable(default_mpv_bin);
+			}
+			if (found_bin.isEmpty()) {
+				// Try default mplayer
+				found_bin = Helper::findExecutable(default_mplayer_bin);
+			}
 		} else {
-			// Executable not found, try to find an alternative
-			if (bin.startsWith("mplayer")) {
-				app_path = Helper::findExecutable("mpv");
-				if (!app_path.isEmpty())
-					bin = app_path;
-			} else if (bin.startsWith("mpv")) {
-				app_path = Helper::findExecutable("mplayer");
-				if (!app_path.isEmpty())
-					bin = app_path;
+			// Try default mplayer
+			if (bin != default_mplayer_bin) {
+				found_bin = Helper::findExecutable(default_mplayer_bin);
+			}
+			if (found_bin.isEmpty()) {
+				// Try default mpv
+				found_bin = Helper::findExecutable(default_mpv_bin);
 			}
 		}
+
+		if (found_bin.isEmpty()) {
+			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
+					   << bin;
+		} else {
+			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
+					   << bin << "Selecting" << found_bin << "instead";
+			bin = found_bin;
+		}
+	} else {
+		bin = found_bin;
 	}
-#endif
 
-	qDebug() << "TSettings::TPreferences::setPlayerBin: selected player executable:" << bin;
+	qDebug() << "Settings::TPreferences::setPlayerBin: selected player"
+			 << bin;
 	player_bin = bin;
-}
 
-void TPreferences::setPlayerBin(const QString& bin) {
-
-	setPlayerBin0(bin);
 	setPlayerID();
-	setAbsolutePath();
+
+	// Store bin for player
+	if (!found_bin.isEmpty()) {
+		if (player_id == ID_MPLAYER) {
+			mplayer_bin = player_bin;
+		} else {
+			mpv_bin = player_bin;
+		}
+	}
 }
 
 void TPreferences::load() {
@@ -914,19 +915,15 @@ void TPreferences::load() {
 
 	config_version = value("config_version", 0).toInt();
 
-	QString bin = value("player_bin", "").toString();
-	if (bin.isEmpty()) {
-		// Try old config
-		bin = value("mplayer_bin", "").toString();
-		if (bin.isEmpty()) {
-			// Keep current
-			bin = player_bin;
-		} else {
-			// Remove old one
-			remove("mplayer_bin");
-		}
+	mplayer_bin = value("mplayer_bin", mplayer_bin).toString();
+	// Handle old config which used mplayer_bin to store player_bin
+	if (config_version < 11 && getPlayerID(mplayer_bin) != ID_MPLAYER) {
+		qWarning() << "Settings::TPreferences::load: resetting MPlayer bin from"
+				   << mplayer_bin << "to" << default_mplayer_bin;
+		mplayer_bin = default_mplayer_bin;
 	}
-	setPlayerBin(bin);
+	mpv_bin = value("mpv_bin", mpv_bin).toString();
+	setPlayerBin(value("player_bin", player_bin).toString());
 
 	// Media settings per file
 	remember_media_settings = !value("dont_remember_media_settings", !remember_media_settings).toBool();

@@ -56,7 +56,7 @@ InfoReader::~InfoReader() {
 }
 
 void InfoReader::getInfo() {
-	getInfo(Settings::pref->playerAbsolutePath());
+	getInfo(Settings::pref->player_bin);
 }
 
 QString InfoReader::getGroup() {

@@ -88,17 +88,19 @@ public:
 
 	// Media player
 	QString player_bin;
+	QString mplayer_bin;
+	QString mpv_bin;
 	TPlayerID player_id;
-	QString player_abs_path;
 
 	bool isMPlayer() const { return player_id == ID_MPLAYER; }
 	bool isMPV() const { return player_id == ID_MPV; }
+
 	QString playerName() const;
-	QString playerAbsolutePath() const;
 
 	static QString getAbsolutePathPlayer(const QString& player);
 	static TPlayerID getPlayerID(const QString& player);
-	void setPlayerBin(const QString& bin);
+
+	void setPlayerBin(QString bin);
 
 	// Media settings per file
 	bool remember_media_settings;
@@ -467,7 +469,6 @@ public:
 private:
 	void setPlayerBin0(QString bin);
 	void setPlayerID();
-	void setAbsolutePath();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::TWheelFunctions)

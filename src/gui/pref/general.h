@@ -21,11 +21,8 @@
 
 #include "ui_general.h"
 #include "gui/pref/widget.h"
+#include "settings/preferences.h"
 
-
-namespace Settings {
-class TPreferences;
-}
 
 namespace Gui {
 namespace Pref {
@@ -57,8 +54,10 @@ protected:
 private:
 	virtual void createHelp();
 
-	void setPlayerPath(const QString& path);
-	QString playerPath();
+	void setPlayerID(Settings::TPreferences::TPlayerID id);
+	Settings::TPreferences::TPlayerID playerID();
+
+	void setPlayerPath(const QString& mplayer, const QString& mpv);
 
 	// Media settings
 	void setRememberSettings(bool b);
@@ -74,7 +73,9 @@ private:
 	QString fileSettingsMethod();
 
 private slots:
-	void fileChanged(QString file);
+	void onMPlayerFileChanged(QString file);
+	void onMPVFileChanged(QString file);
+	void onRadioClicked(bool);
 };
 
 } // namespace Pref

@@ -27,7 +27,7 @@ void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
 	qDebug("Gui::TInfoProvider::getInfo: %s", filename.toUtf8().data());
 
 	Proc::TPlayerProcess* proc = Proc::TPlayerProcess::createPlayerProcess(0, &md);
-	proc->setExecutable(Settings::pref->playerAbsolutePath());
+	proc->setExecutable(Settings::pref->player_bin);
 	proc->setFixedOptions();
 	proc->setOption("frames", "1");
 	proc->setOption("vo", "null");

@@ -19,25 +19,33 @@
 
 #include "gui/pref/general.h"
 #include <QDebug>
-#include "settings/preferences.h"
 #include "filedialog.h"
 #include "images.h"
-#include "settings/mediasettings.h"
 #include "settings/paths.h"
+#include "settings/preferences.h"
+#include "settings/mediasettings.h"
 
 
 using namespace Settings;
 
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
 TGeneral::TGeneral(QWidget* parent)
 	: TWidget(parent, 0) {
 
 	setupUi(this);
 
-	playerbin_edit->setDialogType(FileChooser::GetFileName);
-	connect(playerbin_edit, SIGNAL(fileChanged(QString)),
-			this, SLOT(fileChanged(QString)));
+	mplayer_edit->setDialogType(FileChooser::GetFileName);
+	mpv_edit->setDialogType(FileChooser::GetFileName);
+	connect(mplayer_edit, SIGNAL(fileChanged(QString)),
+			this, SLOT(onMPlayerFileChanged(QString)));
+	connect(mpv_edit, SIGNAL(fileChanged(QString)),
+			this, SLOT(onMPVFileChanged(QString)));
+	connect(mplayer_radio, SIGNAL(clicked(bool)),
+			this, SLOT(onRadioClicked(bool)));
+	connect(mpv_radio, SIGNAL(clicked(bool)),
+			this, SLOT(onRadioClicked(bool)));
 
 	retranslateStrings();
 }
@@ -57,12 +65,19 @@ void TGeneral::retranslateStrings() {
 
 	retranslateUi(this);
 
-	playerbin_edit->setCaption(tr("Select the player executable"));
+	// Icons
+	mplayer_icon_label->setPixmap(Images::icon("mplayer"));
+	mpv_icon_label->setPixmap(Images::icon("mpv"));
+
+	mplayer_edit->setCaption(tr("Select the MPlayer executable"));
+	mpv_edit->setCaption(tr("Select the MPV executable"));
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	playerbin_edit->setFilter(tr("Executables") +" (*.exe)");
+	mplayer_edit->setFilter(tr("Executables") +" (*.exe)");
+	mpv_edit->setFilter(tr("Executables") +" (*.exe)");
 #else
-	playerbin_edit->setFilter(tr("All files") +" (*)");
+	mplayer_edit->setFilter(tr("All files") +" (*)");
+	mpv_edit->setFilter(tr("All files") +" (*)");
 #endif
 
 	int filesettings_method_item = filesettings_method_combo->currentIndex();
@@ -76,8 +91,9 @@ void TGeneral::retranslateStrings() {
 
 void TGeneral::setData(TPreferences* pref) {
 
-	// General tab
-	setPlayerPath(pref->player_bin);
+	// Player
+	setPlayerID(pref->player_id);
+	setPlayerPath(pref->mplayer_bin, pref->mpv_bin);
 
 	// Media settings group
 	setRememberSettings(pref->remember_media_settings);
@@ -91,11 +107,13 @@ void TGeneral::setData(TPreferences* pref) {
 
 void TGeneral::getData(TPreferences* pref) {
 
-	if (pref->player_bin != playerPath()) {
+	// Update player
+	pref->mplayer_bin = mplayer_edit->text();
+	pref->mpv_bin = mpv_edit->text();
+	QString bin = mplayer_radio->isChecked() ? pref->mplayer_bin : pref->mpv_bin;
+	if (pref->player_bin != bin) {
 		requires_restart = true;
-		pref->setPlayerBin(playerPath());
-		// TODO: check fileChanged triggered if changed without exit of edit
-		// emit binChanged(pref->playerAbsolutePath());
+		pref->setPlayerBin(bin);
 	}
 
 	pref->remember_media_settings = rememberSettings();
@@ -106,17 +124,56 @@ void TGeneral::getData(TPreferences* pref) {
 	pref->file_settings_method = fileSettingsMethod();
 }
 
-void TGeneral::setPlayerPath(const QString& path) {
-	playerbin_edit->setText(path);
+void TGeneral::setPlayerID(Settings::TPreferences::TPlayerID id) {
+
+	if (id == Settings::TPreferences::ID_MPLAYER) {
+		mplayer_radio->setChecked(true);
+		mpv_radio->setChecked(false);
+	} else {
+		mplayer_radio->setChecked(false);
+		mpv_radio->setChecked(true);
+	}
 }
 
-QString TGeneral::playerPath() {
-	return playerbin_edit->text();
+Settings::TPreferences::TPlayerID TGeneral::playerID() {
+
+	if (mplayer_radio->isChecked()) {
+		return Settings::TPreferences::ID_MPLAYER;
+	}
+	return Settings::TPreferences::ID_MPV;
 }
 
-void TGeneral::fileChanged(QString file) {
-	qDebug() << "Gui::Pref::TGeneral::fileChanged:" << file;
+void TGeneral::setPlayerPath(const QString& mplayer, const QString& mpv) {
 
+	mplayer_edit->setText(mplayer);
+	mpv_edit->setText(mpv);
+}
+
+void TGeneral::onMPlayerFileChanged(QString file) {
+	qDebug() << "Gui::Pref::TGeneral::onMPlayerFileChanged:" << file;
+
+	if (mplayer_radio->isChecked()) {
+		emit binChanged(pref->getAbsolutePathPlayer(file));
+	}
+}
+
+void TGeneral::onMPVFileChanged(QString file) {
+	qDebug() << "Gui::Pref::TGeneral::onMPVFileChanged:" << file;
+
+	if (mpv_radio->isChecked()) {
+		emit binChanged(pref->getAbsolutePathPlayer(file));
+	}
+}
+
+void TGeneral::onRadioClicked(bool) {
+	qDebug() << "Gui::Pref::TGeneral::onRadioClicked";
+
+	QString file;
+	if (mplayer_radio->isChecked()) {
+		file = mplayer_edit->text();
+	} else {
+		file = mpv_edit->text();
+	}
 	emit binChanged(pref->getAbsolutePathPlayer(file));
 }
 
@@ -160,11 +217,23 @@ void TGeneral::createHelp() {
 
 	clearHelp();
 
-	setWhatsThis(playerbin_edit, tr("%1 executable").arg(pref->playerName()),
-		tr("Here you must specify the %1 "
-           "executable that SMPlayer will use.").arg(pref->playerName()) + "<br><b>" +
-        tr("If this setting is wrong, SMPlayer won't be able to play "
-           "anything!") + "</b>");
+	setWhatsThis(mplayer_radio, tr("MPlayer"),
+		tr("Select MPlayer as the media player to use by SMPlayer."));
+
+	setWhatsThis(mplayer_edit, tr("MPlayer executable"),
+		tr("The path to the MPlayer executable file.")
+		+ "<br><b>"
+		+ tr("If this setting is wrong, SMPlayer won't be able to play anything!")
+		+ "</b>");
+
+	setWhatsThis(mpv_radio, tr("MPV"),
+		tr("Select MPV as the media player to use by SMPlayer."));
+
+	setWhatsThis(mpv_edit, tr("MPV executable"),
+		tr("The path to the MPV executable file.")
+		+ "<br><b>"
+		+ tr("If this setting is wrong, SMPlayer won't be able to play anything!")
+		+ "</b>");
 
 	setWhatsThis(remember_all_check, tr("Remember settings"),
 		tr("When checked SMPlayer will remember the settings you make for each file"
@@ -196,6 +265,7 @@ void TGeneral::createHelp() {
 		tr("The latter method could be faster if there is info for a lot of files."));
 }
 
-}} // namespace Gui::Pref
+} // namespace Pref
+} // namespace Gui
 
 #include "moc_general.cpp"

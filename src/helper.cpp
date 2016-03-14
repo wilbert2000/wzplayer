@@ -25,6 +25,7 @@
 #include <QTextCodec>
 #include <QWidget>
 #include <QDebug>
+#include "settings/paths.h"
 #include "settings/preferences.h"
 #include "extensions.h"
 
@@ -245,26 +246,46 @@ QStringList Helper::resolveSymlinks(const QStringList & files) {
 }
 #endif
 
-#ifdef Q_OS_LINUX
 QString Helper::findExecutable(const QString& name) {
 
-	QFileInfo info(name);
-	if (info.isFile() && info.isExecutable()) {
-		qDebug("Helper::findExecutable: executable found: %s", name.toUtf8().constData());
-		return name;
+	// Name is executable?
+	QFileInfo fi(name);
+	if (fi.isFile() && fi.isExecutable()) {
+		qDebug() << "Helper::findExecutable: found" << name;
+		return fi.absoluteFilePath();
 	}
 
+	// Search PATH
+	char sep =
+#ifdef Q_OS_LINUX
+		':';
+#else
+		';';
+#endif
 	QByteArray env = qgetenv("PATH");
-	QStringList search_paths = QString::fromLocal8Bit(env.constData()).split(':', QString::SkipEmptyParts);
+	QStringList search_paths = QString::fromLocal8Bit(env.constData()).split(sep, QString::SkipEmptyParts);
+
+#ifdef Q_OS_WIN
+	// Add mplayer subdir of app dir to end of PATH
+	search_paths << TPaths::appPath() + "/mplayer";
+	// TODO: add some more...
+#endif
+
+	// Add app dir to end of PATH
+	search_paths << TPaths::appPath();
+
 	for (int n = 0; n < search_paths.count(); n++) {
 		QString candidate = search_paths[n] + "/" + name;
-		qDebug("Helper::findExecutable: candidate: %s", candidate.toUtf8().constData());
-		info.setFile(candidate);
-		if (info.isFile() && info.isExecutable()) {
-			qDebug("Helper::findExecutable: executable found: %s", candidate.toUtf8().constData());
-			return candidate;
+		fi.setFile(candidate);
+		if (fi.isFile() && fi.isExecutable()) {
+			qDebug() << "Helper::findExecutable: found" << fi.absoluteFilePath();
+			return fi.absoluteFilePath();
 		}
+		qDebug() << "Helper::findExecutable:" << candidate << "not accepted";
 	}
-	return QString::null;
+
+	// Name not found
+	qDebug() << "Helper::findExecutable: name" << name << "not found";
+	return QString();
 }
-#endif
+
