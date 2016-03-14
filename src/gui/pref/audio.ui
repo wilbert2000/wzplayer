@@ -140,16 +140,6 @@
               </property>
              </spacer>
             </item>
-            <item>
-             <widget class="QCheckBox" name="global_audio_equalizer_check">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Global audio e&amp;qualizer</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item>
@@ -470,7 +460,6 @@
   <tabstop>ao_user_defined_edit</tabstop>
   <tabstop>channels_combo</tabstop>
   <tabstop>audio_equalizer_check</tabstop>
-  <tabstop>global_audio_equalizer_check</tabstop>
   <tabstop>hwac3_check</tabstop>
   <tabstop>scaletempo_combo</tabstop>
   <tabstop>softvol_check</tabstop>
@@ -577,22 +566,6 @@
     <hint type="destinationlabel">
      <x>432</x>
      <y>407</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>audio_equalizer_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>global_audio_equalizer_check</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>115</x>
-     <y>95</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>389</x>
-     <y>95</y>
     </hint>
    </hints>
   </connection>

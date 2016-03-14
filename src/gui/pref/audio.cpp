@@ -97,10 +97,9 @@ void TAudio::setData(TPreferences* pref) {
 #endif
 
 	setAO(ao, true);
-	setUseAudioEqualizer(pref->use_audio_equalizer);
-	global_audio_equalizer_check->setChecked(pref->global_audio_equalizer);
-	setAc3DTSPassthrough(pref->use_hwac3);
 	setAudioChannels(pref->initial_audio_channels);
+	setUseAudioEqualizer(pref->use_audio_equalizer);
+	setAc3DTSPassthrough(pref->use_hwac3);
 	setScaleTempoFilter(pref->use_scaletempo);
 
 	// Volume
@@ -125,7 +124,6 @@ void TAudio::getData(TPreferences* pref) {
 
 	restartIfStringChanged(pref->ao, AO());
 	restartIfBoolChanged(pref->use_audio_equalizer, useAudioEqualizer());
-	pref->global_audio_equalizer = global_audio_equalizer_check->isChecked();
 	restartIfBoolChanged(pref->use_hwac3, Ac3DTSPassthrough());
 	pref->initial_audio_channels = audioChannels();
 	TPreferences::TOptionState scale = scaleTempoFilter();
@@ -357,11 +355,6 @@ void TAudio::createHelp() {
 
 	setWhatsThis(audio_equalizer_check, tr("Enable the audio equalizer"),
 		tr("Check this option if you want to use the audio equalizer."));
-
-	setWhatsThis(global_audio_equalizer_check, tr("Global audio equalizer"),
-		tr("If this option is checked, all media files share the audio equalizer.") +" "+
-		tr("If it's not checked, the audio equalizer values are saved along each file "
-           "and loaded back when the file is played later."));
 
 	setWhatsThis(hwac3_check, tr("AC3/DTS pass-through S/PDIF"),
 		tr("Uses hardware AC3 passthrough.") + "<br>" +

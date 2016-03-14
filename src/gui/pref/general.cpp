@@ -83,6 +83,7 @@ void TGeneral::setData(TPreferences* pref) {
 	setRememberSettings(pref->remember_media_settings);
 	setRememberTimePos(!pref->remember_time_pos);
 	setGlobalVolume(pref->global_volume);
+	remember_audio_eq_check->setChecked(!pref->global_audio_equalizer);
 	setFileSettingsMethod(pref->file_settings_method);
 
 	requires_restart = false;
@@ -99,7 +100,9 @@ void TGeneral::getData(TPreferences* pref) {
 
 	pref->remember_media_settings = rememberSettings();
 	pref->remember_time_pos = rememberTimePos();
-	pref->global_volume = globalVolume();
+	pref->global_volume = !pref->remember_media_settings || globalVolume();
+	pref->global_audio_equalizer = !pref->remember_media_settings
+								   || !remember_audio_eq_check->isChecked();
 	pref->file_settings_method = fileSettingsMethod();
 }
 
@@ -164,9 +167,8 @@ void TGeneral::createHelp() {
            "anything!") + "</b>");
 
 	setWhatsThis(remember_all_check, tr("Remember settings"),
-		tr("Usually SMPlayer will remember the settings for each file you "
-           "play (audio track selected, volume, filters...). Disable this "
-           "option if you don't like this feature."));
+		tr("When checked SMPlayer will remember the settings you make for each file"
+		   " and reload them when you play the file again."));
 
 	setWhatsThis(remember_time_check, tr("Remember time position for every file"),
 		tr("If you check this option, SMPlayer will remember the last position "
@@ -174,10 +176,15 @@ void TGeneral::createHelp() {
            "regular files (not with DVDs, CDs, URLs...)."));
 
 	setWhatsThis(remember_volume_check, tr("Remember volume for every file"),
-		tr("If this option is not checked, the same volume will be used for "
-		   "all files you play. If the option is checked each "
-		   "file uses its own volume.") + "<br>" +
-		tr("This option also applies to the mute state."));
+		tr("If not checked, the same volume will be used for all files you play."
+		   " If checked each file uses its own volume.")
+		+ "<br>"
+		+ tr("This option also applies to the mute state."));
+
+	setWhatsThis(remember_audio_eq_check, tr("Remember audio equalizer for every file"),
+		tr("If this option is not checked, all media files share the same audio equalizer.") +" "+
+		tr("If it is checked, the audio equalizer values are saved along each file "
+		   "and loaded back when the file is played later."));
 
 	setWhatsThis(filesettings_method_combo, tr("Method to store the file settings"),
 		tr("This option allows to change the way the file settings would be "
