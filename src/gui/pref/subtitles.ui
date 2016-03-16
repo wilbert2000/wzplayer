@@ -120,7 +120,7 @@
             <item>
              <widget class="QLabel" name="language_desc_label">
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the player does not select subtitles in your language, you can override the players selection here. Overriding the selected subtitle track, and even more so, unconditionally selecting the first available subtitle track, can lead to undesirable effects with streams using subtitle tracks for say, graphics, like on a DVD.&lt;/p&gt;&lt;p&gt;The language override selects the first subtitle track matching the given language regular expression. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names.&lt;/p&gt;&lt;p&gt;Examples:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; will select the first subtitle track marked with the language &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;An empty override lets the player select subtitles (default).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can override the players selection of subtitles. Overriding the selected track, and even more so, unconditionally selecting the first available track, can lead to undesirable effects with streams using tracks for say, graphics, like on a DVD. You can always manually select a subtitle with the &lt;span style=&quot; font-weight:600;&quot;&gt;Subtitles - Tracks&lt;/span&gt; menu.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Language&lt;/span&gt; selects the first subtitle track matching the given regular expression. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names.&lt;/p&gt;&lt;p&gt;Examples:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; will select the first subtitle track with language &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;An empty language lets the player select subtitles (default), unless the &lt;span style=&quot; font-weight:600;&quot;&gt;Select first subtitle&lt;/span&gt; options is checked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
@@ -146,7 +146,10 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>L&amp;anguage override:</string>
+               <string>&amp;Language:</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::PlainText</enum>
               </property>
               <property name="buddy">
                <cstring>language_edit</cstring>
@@ -181,7 +184,7 @@
           <item>
            <widget class="QCheckBox" name="select_first_subtitle_check">
             <property name="text">
-             <string>S&amp;elect the first subtitle if the language override does not match</string>
+             <string>S&amp;elect first subtitle track if language does not match</string>
             </property>
            </widget>
           </item>
