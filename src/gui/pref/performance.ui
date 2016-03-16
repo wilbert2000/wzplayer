@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
-    <height>591</height>
+    <width>480</width>
+    <height>500</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -24,14 +24,29 @@
        <string>Performance</string>
       </attribute>
       <layout class="QVBoxLayout">
+       <property name="margin">
+        <number>16</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="cache_group">
          <property name="title">
           <string>Cache (MPlayer only)</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QGridLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
           </property>
           <item row="0" column="0" colspan="4">
            <widget class="QLabel" name="cache_label">
@@ -83,19 +98,6 @@
              <number>100000</number>
             </property>
            </widget>
-          </item>
-          <item row="10" column="2">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item row="7" column="1">
            <widget class="QSpinBox" name="cache_cds_spin">
@@ -280,6 +282,19 @@
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

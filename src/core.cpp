@@ -1223,19 +1223,22 @@ void TCore::startPlayer(QString file, double seek) {
 
 	// Subtitles fonts
 	if (pref->use_ass_subtitles && pref->freetype_support) {
-		// ASS:
+		// Use ASS options
 		proc->setOption("ass");
 		proc->setOption("embeddedfonts");
-		proc->setOption("ass-line-spacing", QString::number(pref->ass_line_spacing));
 		proc->setOption("ass-font-scale", QString::number(mset.sub_scale_ass));
-		proc->setOption("flip-hebrew", false); // It seems to be necessary to display arabic subtitles correctly when using -ass
+		proc->setOption("ass-line-spacing", QString::number(pref->ass_line_spacing));
+		// When using -ass, -no-flip-hebrew seems to be necessary to display
+		// arabic subtitles correctly
+		proc->setOption("flip-hebrew", false);
 
-		if (pref->enable_ass_styles) {
+		// Custom ASS style
+		if (pref->use_custom_ass_style) {
 			QString ass_force_style;
-			if (!pref->user_forced_ass_style.isEmpty()) {
-				ass_force_style = pref->user_forced_ass_style;
-			} else {
+			if (pref->user_forced_ass_style.isEmpty()) {
 				ass_force_style = pref->ass_styles.toString();
+			} else {
+				ass_force_style = pref->user_forced_ass_style;
 			}
 
 			if (isMPV()) {
@@ -1246,17 +1249,18 @@ void TCore::startPlayer(QString file, double seek) {
 				}
 			} else {
 				// MPlayer
-				if (!pref->force_ass_styles) {
-					proc->setSubStyles(pref->ass_styles, TPaths::subtitleStyleFile());
-				} else {
+				if (pref->force_ass_styles) {
 					proc->setOption("ass-force-style", ass_force_style);
+				} else {
+					proc->setSubStyles(pref->ass_styles, TPaths::subtitleStyleFile());
 				}
 			}
 		}
 	} else {
-		// NO ASS:
-		if (pref->freetype_support)
-			proc->setOption("noass");
+		// NO ASS
+		// TODO: Check passing -noass, seems to create more problems then it solves?
+		// if (pref->freetype_support)
+		//	proc->setOption("noass");
 		if (isMPV()) {
 			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
 		} else if (mset.sub_scale != 5) {
@@ -3384,8 +3388,8 @@ void TCore::toggleDeinterlace() {
 void TCore::changeUseCustomSubStyle(bool b) {
 	qDebug("TCore::changeUseCustomSubStyle: %d", b);
 
-	if (pref->enable_ass_styles != b) {
-		pref->enable_ass_styles = b;
+	if (pref->use_custom_ass_style != b) {
+		pref->use_custom_ass_style = b;
 		if (proc->isRunning())
 			restartPlay();
 	}

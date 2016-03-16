@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>294</height>
+    <height>500</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -24,6 +24,9 @@
        <string>&amp;Proxy</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="margin">
+        <number>16</number>
+       </property>
        <item>
         <widget class="QCheckBox" name="use_proxy_check">
          <property name="text">

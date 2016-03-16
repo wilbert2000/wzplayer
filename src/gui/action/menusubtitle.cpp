@@ -168,7 +168,7 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 	addSeparator();
 	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", QT_TR_NOOP("Use custo&m style"));
 	useCustomSubStyleAct->setCheckable(true);
-	useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
+	useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 	connect(useCustomSubStyleAct, SIGNAL(triggered(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
 
 #ifdef FIND_SUBTITLES

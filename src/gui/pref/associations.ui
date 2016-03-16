@@ -1,83 +1,84 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>TAssociations</class>
- <widget class="QWidget" name="TAssociations" >
-  <property name="geometry" >
+ <widget class="QWidget" name="TAssociations">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>489</height>
+    <width>480</width>
+    <height>500</height>
    </rect>
   </property>
-  <layout class="QGridLayout" >
-   <property name="margin" >
+  <layout class="QGridLayout">
+   <property name="margin">
     <number>0</number>
    </property>
-   <property name="spacing" >
+   <property name="spacing">
     <number>0</number>
    </property>
-   <item row="0" column="0" >
-    <widget class="QTabWidget" name="tabWidget" >
-     <property name="currentIndex" >
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab_2" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
        <string>File types</string>
       </attribute>
-      <layout class="QGridLayout" >
-       <property name="margin" >
-        <number>9</number>
+      <layout class="QGridLayout">
+       <property name="horizontalSpacing">
+        <number>16</number>
        </property>
-       <property name="spacing" >
-        <number>6</number>
+       <property name="margin">
+        <number>16</number>
        </property>
-       <item row="0" column="0" >
-        <widget class="QLabel" name="textLabel" >
-         <property name="text" >
+       <item row="0" column="0">
+        <widget class="QLabel" name="textLabel">
+         <property name="text">
           <string>Media files handled by SMPlayer:</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignVCenter</set>
          </property>
-         <property name="wordWrap" >
+         <property name="wordWrap">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" >
-        <widget class="QListWidget" name="listWidget" >
-         <property name="editTriggers" >
-          <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::NoEditTriggers</set>
+       <item row="1" column="0">
+        <widget class="QListWidget" name="listWidget">
+         <property name="editTriggers">
+          <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
          </property>
-         <property name="selectionMode" >
+         <property name="selectionMode">
           <enum>QAbstractItemView::MultiSelection</enum>
          </property>
-         <property name="viewMode" >
+         <property name="viewMode">
           <enum>QListView::ListMode</enum>
          </property>
-         <property name="uniformItemSizes" >
+         <property name="uniformItemSizes">
           <bool>true</bool>
          </property>
-         <property name="sortingEnabled" >
+         <property name="sortingEnabled">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" >
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+       <item row="2" column="0">
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>6</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
          </property>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>311</width>
              <height>20</height>
@@ -86,15 +87,15 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="selectAll" >
-           <property name="text" >
+          <widget class="QPushButton" name="selectAll">
+           <property name="text">
             <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="selectNone" >
-           <property name="text" >
+          <widget class="QPushButton" name="selectNone">
+           <property name="text">
             <string>Select None</string>
            </property>
           </widget>

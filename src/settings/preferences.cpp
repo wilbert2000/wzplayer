@@ -200,7 +200,7 @@ void TPreferences::reset() {
 	subtitle_encoding_fallback = ""; // Auto detect subtitle encoding
 
 	use_ass_subtitles = true;
-	enable_ass_styles = true;
+	use_custom_ass_style = true;
 	ass_line_spacing = 0;
 
 	use_forced_subs_only = false;
@@ -564,7 +564,7 @@ void TPreferences::save() {
 	setValue("subtitle_encoding_fallback", subtitle_encoding_fallback);
 
 	setValue("use_ass_subtitles", use_ass_subtitles);
-	setValue("enable_ass_styles", enable_ass_styles);
+	setValue("use_custom_ass_style", use_custom_ass_style);
 	setValue("ass_line_spacing", ass_line_spacing);
 	setValue("use_forced_subs_only", use_forced_subs_only);
 
@@ -1057,7 +1057,7 @@ void TPreferences::load() {
 	subtitle_encoding_fallback = value("subtitle_encoding_fallback", subtitle_encoding_fallback).toString();
 
 	use_ass_subtitles = value("use_ass_subtitles", use_ass_subtitles).toBool();
-	enable_ass_styles = value("enable_ass_styles", enable_ass_styles).toBool();
+	use_custom_ass_style = value("use_custom_ass_style", use_custom_ass_style).toBool();
 	ass_line_spacing = value("ass_line_spacing", ass_line_spacing).toInt();
 
 	use_forced_subs_only = value("use_forced_subs_only", use_forced_subs_only).toBool();
@@ -1401,6 +1401,9 @@ void TPreferences::load() {
 			remove("defaults/initial_audio_track");
 			remove("defaults/initial_subtitle_track");
 		}
+
+		use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
+		remove("subtitles/enable_ass_styles");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

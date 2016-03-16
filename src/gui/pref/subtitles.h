@@ -48,33 +48,19 @@ public:
 	void getData(Settings::TPreferences* pref);
 
 protected:
-	void setAssFontScale(double n);
-	double assFontScale();
-
-	void setAssLineSpacing(int spacing);
-	int assLineSpacing();
-
 	void setForceAssStyles(bool b);
 	bool forceAssStyles();
 
 	void setCustomizedAssStyle(const QString& style) { forced_ass_style = style; }
 	QString customizedAssStyle() const { return forced_ass_style; }
 
-	void setFreetypeSupport(bool b);
-	bool freetypeSupport();
-
 protected:
 	virtual void retranslateStrings();
-
-protected slots:
-	void on_ass_customize_button_clicked();
-	void on_freetype_check_toggled(bool b);
-	void on_windowsfontdir_check_toggled(bool b);
-	void checkBorderStyleCombo(int index);
 
 private:
 	Encodings* encodings;
 	QString forced_ass_style;
+	bool enable_border_spins;
 
 	void createHelp();
 
@@ -92,6 +78,21 @@ private:
 
 	void setEncodingFallback(const QString& s);
 	QString encodingFallback();
+
+	void setFreetypeSupport(bool b);
+	bool freetypeSupport();
+
+	void setAssFontScale(double n);
+	double assFontScale();
+
+	void setAssLineSpacing(int spacing);
+	int assLineSpacing();
+
+private slots:
+	void onWindowsFontDirCheckToggled(bool b);
+	void onUseCustomStyleToggled(bool b);
+	void onBorderStyleCurrentIndexChanged(int index);
+	void onAssCustomizeButtonClicked();
 };
 
 } // namespace Pref

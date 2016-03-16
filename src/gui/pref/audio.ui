@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>491</width>
-    <height>554</height>
+    <width>480</width>
+    <height>620</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -27,14 +27,29 @@
        <string>Audio</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="margin">
+        <number>16</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="output_group">
          <property name="title">
           <string>Output</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
           <item>
            <layout class="QHBoxLayout">
@@ -200,9 +215,21 @@
          <property name="title">
           <string>Volume</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
           <item>
            <layout class="QHBoxLayout">
@@ -281,9 +308,21 @@
          <property name="title">
           <string>Synchronization</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
           <item>
            <layout class="QHBoxLayout">
@@ -405,14 +444,26 @@
          <property name="title">
           <string>Language overrides</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
           </property>
           <item>
            <widget class="QLabel" name="language_label">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When media has audio in different languages and the player does not select your preferred language, you can override the player selection by specifying your preferred language here. This field accepts regular expressions.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects an audio track if it matches &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When a stream has audio in different languages and the player does not automatically select your preferred language, you can override the player selection by specifying your preferred language here. This field accepts regular expressions.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects an audio track if its language matches &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

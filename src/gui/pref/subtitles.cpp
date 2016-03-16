@@ -28,26 +28,21 @@
 #include "languages.h"
 
 
+using namespace Settings;
+
 namespace Gui {
 namespace Pref {
 
 TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f) {
+	: TWidget(parent, f)
+	, enable_border_spins(false) {
 
 	setupUi(this);
 
-	ass_subs->setEnabled(false);
-
-	connect(ass_custom_check, SIGNAL(toggled(bool)),
-            ass_subs, SLOT(setEnabled(bool)));
-
-	/*
-	connect(use_ass_check, SIGNAL(toggled(bool)),
-            tab2, SLOT(setEnabled(bool)));
-	*/
-
+	connect(custom_style_group, SIGNAL(toggled(bool)),
+			this, SLOT(onUseCustomStyleToggled(bool)));
 	connect(style_border_style_combo, SIGNAL(currentIndexChanged(int)),
-             this, SLOT(checkBorderStyleCombo(int)));
+			this, SLOT(onBorderStyleCurrentIndexChanged(int)));
 
 #ifndef Q_OS_WIN
 	windowsfontdir_check->hide();
@@ -100,7 +95,6 @@ void TSubtitles::retranslateStrings() {
 	setEncodingFallback(current);
 
 	// Ass styles
-	using namespace Settings;
 	int current_idx = style_alignment_combo->currentIndex();
 	style_alignment_combo->clear();
 	style_alignment_combo->addItem(tr("Left", "horizontal alignment"), TAssStyles::Left);
@@ -115,17 +109,20 @@ void TSubtitles::retranslateStrings() {
 	style_valignment_combo->addItem(tr("Top", "vertical alignment"), TAssStyles::Top);
 	style_valignment_combo->setCurrentIndex(current_idx);
 
+	enable_border_spins = false;
 	current_idx = style_border_style_combo->currentIndex();
 	style_border_style_combo->clear();
 	style_border_style_combo->addItem(tr("Outline", "border style"), TAssStyles::Outline);
 	style_border_style_combo->addItem(tr("Opaque box", "border style"), TAssStyles::Opaque);
 	style_border_style_combo->setCurrentIndex(current_idx);
+	enable_border_spins = true;
 
 	createHelp();
 }
 
 void TSubtitles::setData(Settings::TPreferences* pref) {
 
+	// Subtitles tab
 	setFuzziness(pref->subtitle_fuzziness);
 	setSubtitleLanguage(pref->subtitle_language);
 	setSelectFirstSubtitle(pref->select_first_subtitle);
@@ -133,42 +130,57 @@ void TSubtitles::setData(Settings::TPreferences* pref) {
 	setEncaLang(pref->subtitle_enca_language);
 	setEncodingFallback(pref->subtitle_encoding_fallback);
 
+#ifdef Q_OS_WIN
+	windowsfontdir_check->setChecked(pref->use_windowsfontdir);
+	if (!windowsfontdir_check->isChecked())
+		on_windowsfontdir_check_toggled(false);
+#endif
+
+	// Libraries tab
+	setFreetypeSupport(pref->freetype_support);
+	// Clear use ASS when freetype support is off
+	ass_group->setChecked(pref->freetype_support && pref->use_ass_subtitles);
+
+	// Ass group
 	setAssFontScale(pref->initial_sub_scale_ass);
 	setAssLineSpacing(pref->ass_line_spacing);
-	setFreetypeSupport(pref->freetype_support);
-	use_ass_check->setChecked(pref->use_ass_subtitles);
 
-	// Load ass styles
+	// Custom style group
+	// Clear custom style if not freetype and ASS enabled
+	custom_style_group->setChecked(pref->freetype_support
+								   && pref->use_ass_subtitles
+								   && pref->use_custom_ass_style);
+
 	style_font_combo->setCurrentText(pref->ass_styles.fontname);
 	style_size_spin->setValue(pref->ass_styles.fontsize);
+	style_bold_check->setChecked(pref->ass_styles.bold);
+	style_italic_check->setChecked(pref->ass_styles.italic);
+
 	style_text_color_button->setColor(pref->ass_styles.primarycolor);
 	style_border_color_button->setColor(pref->ass_styles.outlinecolor);
 	style_shadow_color_button->setColor(pref->ass_styles.backcolor);
-	style_bold_check->setChecked(pref->ass_styles.bold);
-	style_italic_check->setChecked(pref->ass_styles.italic);
-	style_alignment_combo->setCurrentIndex(style_alignment_combo->findData(pref->ass_styles.halignment));
-	style_valignment_combo->setCurrentIndex(pref->ass_styles.valignment);
-	style_border_style_combo->setCurrentIndex(style_border_style_combo->findData(pref->ass_styles.borderstyle));
-	style_outline_spin->setValue(pref->ass_styles.outline);
-	style_shadow_spin->setValue(pref->ass_styles.shadow);
+
 	style_marginl_spin->setValue(pref->ass_styles.marginl);
 	style_marginr_spin->setValue(pref->ass_styles.marginr);
 	style_marginv_spin->setValue(pref->ass_styles.marginv);
 
-	setForceAssStyles(pref->force_ass_styles);
+	style_alignment_combo->setCurrentIndex(style_alignment_combo->findData(pref->ass_styles.halignment));
+	style_valignment_combo->setCurrentIndex(pref->ass_styles.valignment);
+
+	style_border_style_combo->setCurrentIndex(style_border_style_combo->findData(pref->ass_styles.borderstyle));
+	style_outline_spin->setValue(pref->ass_styles.outline);
+	style_shadow_spin->setValue(pref->ass_styles.shadow);
+
 	setCustomizedAssStyle(pref->user_forced_ass_style);
 
-	ass_custom_check->setChecked(pref->enable_ass_styles);
-
-#ifdef Q_OS_WIN
-	windowsfontdir_check->setChecked(pref->use_windowsfontdir);
-	if (!windowsfontdir_check->isChecked()) on_windowsfontdir_check_toggled(false);
-#endif
+	setForceAssStyles(pref->force_ass_styles);
 }
 
 void TSubtitles::getData(Settings::TPreferences* pref) {
+
 	requires_restart = false;
 
+	// Subtitles tab
 	restartIfIntChanged(pref->subtitle_fuzziness, fuzziness());
 	pref->subtitle_language = subtitleLanguage();
 	restartIfBoolChanged(pref->select_first_subtitle, selectFirstSubtitle());
@@ -176,12 +188,20 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 	restartIfStringChanged(pref->subtitle_enca_language, encaLang());
 	restartIfStringChanged(pref->subtitle_encoding_fallback, encodingFallback());
 
+#ifdef Q_OS_WIN
+	pref->use_windowsfontdir = windowsfontdir_check->isChecked();
+#endif
+
+	// Library tab
+	restartIfBoolChanged(pref->freetype_support, freetypeSupport());
+	restartIfBoolChanged(pref->use_ass_subtitles, pref->freetype_support && ass_group->isChecked());
+
 	pref->initial_sub_scale_ass = assFontScale();
 	restartIfIntChanged(pref->ass_line_spacing, assLineSpacing());
-	restartIfBoolChanged(pref->freetype_support, freetypeSupport());
-	restartIfBoolChanged(pref->use_ass_subtitles, use_ass_check->isChecked());
 
-	// Save ass styles
+	// Custom style
+	restartIfBoolChanged(pref->use_custom_ass_style, custom_style_group->isChecked());
+
 	restartIfStringChanged(pref->ass_styles.fontname, style_font_combo->currentText());
 	restartIfIntChanged(pref->ass_styles.fontsize, style_size_spin->value());
 	restartIfUIntChanged(pref->ass_styles.primarycolor, style_text_color_button->color().rgb());
@@ -202,20 +222,27 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 
 	restartIfBoolChanged(pref->force_ass_styles, forceAssStyles());
 	restartIfStringChanged(pref->user_forced_ass_style, customizedAssStyle());
-
-	restartIfBoolChanged(pref->enable_ass_styles, ass_custom_check->isChecked());
-
-#ifdef Q_OS_WIN
-	pref->use_windowsfontdir = windowsfontdir_check->isChecked();
-#endif
 }
 
-void TSubtitles::checkBorderStyleCombo(int index) {
-	bool b = (index == 0);
-	style_outline_spin->setEnabled(b);
-	style_shadow_spin->setEnabled(b);
-	style_outline_label->setEnabled(b);
-	style_shadow_label->setEnabled(b);
+void TSubtitles::onBorderStyleCurrentIndexChanged(int index) {
+
+	if (enable_border_spins && custom_style_group->isChecked()) {
+		bool e = index == 0;
+		if (e != style_outline_spin->isEnabled()) {
+			style_outline_label->setEnabled(e);
+			style_outline_spin->setEnabled(e);
+			style_shadow_spin->setEnabled(e);
+			style_shadow_label->setEnabled(e);
+		}
+	}
+}
+
+void TSubtitles::onUseCustomStyleToggled(bool b) {
+
+	if (b) {
+		// Update the enabled state of the outline and shadow spins
+		onBorderStyleCurrentIndexChanged(style_border_style_combo->currentIndex());
+	}
 }
 
 void TSubtitles::setFuzziness(int n) {
@@ -299,17 +326,7 @@ bool TSubtitles::forceAssStyles() {
 	return force_ass_styles->isChecked();
 }
 
-/*
-void TSubtitles::on_ass_subs_button_toggled(bool b) {
-	if (b)
-		stackedWidget->setCurrentIndex(1);
-	 else 
-		stackedWidget->setCurrentIndex(0);
-}
-*/
-
-void TSubtitles::on_ass_customize_button_clicked() {
-	bool ok;
+void TSubtitles::onAssCustomizeButtonClicked() {
 
 	QString edit = forced_ass_style;
 
@@ -335,13 +352,15 @@ void TSubtitles::on_ass_customize_button_clicked() {
 		edit = ass_styles.toString();
 	}
 
+	bool ok;
 	QString s = QInputDialog::getText(this, tr("Customize SSA/ASS style"),
                                       tr("Here you can enter your customized SSA/ASS style.") +"<br>"+
                                       tr("Clear the edit line to disable the customized style."), 
                                       QLineEdit::Normal, 
                                       edit, &ok);
 	if (ok) {
-		if (s == ass_styles.toString()) s.clear(); // Clear string if it wasn't changed by the user
+		if (s == ass_styles.toString())
+			s.clear(); // Clear string if it wasn't changed by the user
 		setCustomizedAssStyle(s);
 	}
 }
@@ -354,12 +373,8 @@ bool TSubtitles::freetypeSupport() {
 	return freetype_check->isChecked();
 }
 
-void TSubtitles::on_freetype_check_toggled(bool b) {
-	qDebug("Gui::Pref::TSubtitles:on_freetype_check_toggled: %d", b);
-}
-
-void TSubtitles::on_windowsfontdir_check_toggled(bool b) {
-	qDebug("Gui::Pref::TSubtitles::on_windowsfontdir_check_toggled: %d", b);
+void TSubtitles::onWindowsFontDirCheckToggled(bool b) {
+	qDebug("Gui::Pref::TSubtitles::onWindowsFontDirCheckToggled: %d", b);
 
 #ifdef Q_OS_WIN
 	if (b) {
@@ -407,55 +422,52 @@ void TSubtitles::createHelp() {
            "one of them matches the user's preferred language that one will "
            "be used instead."));
 
-	// TODO:
-	setWhatsThis(enca_lang_combo, tr("Subtitle language"),
+	setWhatsThis(enca_lang_combo, tr("Guess the encoding for language"),
 		tr("Select the language for which you want the encoding to be guessed "
 		   "automatically."));
 
-	// TODO:
-	setWhatsThis(encoding_fallback_combo, tr("Default subtitle encoding"),
+	setWhatsThis(encoding_fallback_combo, tr("Encoding when detection fails"),
         tr("Select the encoding which will be used for subtitle files "
            "by default."));
 
-	setWhatsThis(use_ass_check, tr("Use the ASS library"),
-		tr("This option enables the ASS library, which allows to display "
-           "subtitles with multiple colors, fonts..."));
-
-	setWhatsThis(freetype_check, tr("Freetype support"), 
-		tr("You should normally not disable this option. Do it only if your "
-           "MPlayer is compiled without freetype support. "
-           "<b>Disabling this option could make subtitles not to work "
-           "at all!</b>"));
-
 #ifdef Q_OS_WIN
-	setWhatsThis(windowsfontdir_check, tr("Enable Windows fonts"), 
+	setWhatsThis(windowsfontdir_check, tr("Enable Windows fonts"),
 		tr("If this option is enabled the Windows system fonts will be "
-           "available for subtitles. There's an inconvenience: a font cache have "
-           "to be created which can take some time.") +"<br>"+
+		   "available for subtitles. There's an inconvenience: a font cache have "
+		   "to be created which can take some time.") +"<br>"+
 		tr("If this option is not checked then only a few fonts bundled with SMPlayer "
-           "can be used, but this is faster."));
+		   "can be used, but this is faster."));
 #endif
 
-	addSectionTitle(tr("Font"));
+	addSectionTitle(tr("Libraries"));
 
-	QString scale_note = tr("This option does NOT change the size of the "
-           "subtitles in the current video. To do so, use the options "
-           "<i>Size+</i> and <i>Size-</i> in the subtitles menu.");
+	setWhatsThis(freetype_check, tr("Freetype support"),
+		tr("You should normally not disable this option. Do it only if your "
+		   "player is compiled without freetype support. "
+		   "<b>Disabling this option could make subtitles not to work "
+		   "at all!</b>"));
+
+	setWhatsThis(ass_group, tr("Use the ASS subtitle library"),
+		tr("This option enables the ASS subtitle library for displaying "
+		   "subtitles in different colors, fonts, alignment, etc."));
 
 	setWhatsThis(ass_font_scale_spin, tr("Default scale"),
 		tr("This option specifies the default font scale for SSA/ASS "
-           "subtitles which will be used for new opened files.") +"<br>"+
-		scale_note);
+		   "subtitles which will be used for new opened files.")
+		+ "<br>"
+		+ tr("This option does NOT change the size of the "
+		  "subtitles in the current video. To do so, use the options "
+		  "<i>Size +</i> and <i>Size -</i> in the subtitles menu."));
 
 	setWhatsThis(ass_line_spacing_spin, tr("Line spacing"),
 		tr("This specifies the spacing that will be used to separate "
            "multiple lines. It can have negative values."));
 
-	setWhatsThis(styles_container, tr("SSA/ASS style"), 
-		tr("The following options allows you to define the style to "
-           "be used for non-styled subtitles (srt, sub...)."));
-       
-	setWhatsThis(style_font_combo, tr("Font"), 
+	// Custom style
+	setWhatsThis(custom_style_group, tr("Use custom style for unstyled subtitles"),
+		tr("Use the ASS library to apply the following style to unstyled subtitles (srt, sub...)."));
+
+	setWhatsThis(style_font_combo, tr("Font"),
 		tr("Select the font for the subtitles."));
 
 	setWhatsThis(style_size_spin, tr("Size"), 
@@ -505,7 +517,7 @@ void TSubtitles::createHelp() {
         tr("If border style is set to <i>outline</i>, this option specifies "
            "the depth of the drop shadow behind the text in pixels."));
 
-	setWhatsThis(force_ass_styles, tr("Apply style to ASS files too"), 
+	setWhatsThis(force_ass_styles, tr("Apply custom style to ASS files too"),
         tr("If this option is checked, the style defined above will be "
            "applied to ass subtitles too."));
 }

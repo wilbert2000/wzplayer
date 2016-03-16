@@ -1040,7 +1040,7 @@ void TBase::applyNewPreferences() {
 
 	// Subtitles
 	subtitleMenu->useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
-	subtitleMenu->useCustomSubStyleAct->setChecked(pref->enable_ass_styles);
+	subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
 	// Advanced tab
 	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();

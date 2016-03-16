@@ -211,7 +211,7 @@ public:
 	QString subtitle_encoding_fallback;
 
 	bool use_ass_subtitles;
-	bool enable_ass_styles;
+	bool use_custom_ass_style;
 	int ass_line_spacing;
 
 	bool use_forced_subs_only;

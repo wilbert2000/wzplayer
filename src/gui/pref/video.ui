@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>550</height>
+    <width>480</width>
+    <height>600</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -27,6 +27,9 @@
        <string>Video</string>
       </attribute>
       <layout class="QVBoxLayout">
+       <property name="margin">
+        <number>16</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="output_group">
          <property name="minimumSize">
@@ -38,9 +41,21 @@
          <property name="title">
           <string>Output</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout" name="output_verticalLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="vo_layout">
@@ -146,9 +161,21 @@
          <property name="title">
           <string>Synchronization</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout" name="synchronization_verticalLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
           <item>
            <widget class="QCheckBox" name="framedrop_check">
@@ -178,9 +205,21 @@
          <property name="title">
           <string>Defaults</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout" name="defaults_verticalLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
           <item>
            <layout class="QHBoxLayout">
@@ -329,7 +368,22 @@
          <property name="title">
           <string>Screenshots</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout" name="screenshots_verticalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QCheckBox" name="use_screenshots_check">
             <property name="text">

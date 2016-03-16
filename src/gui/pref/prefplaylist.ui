@@ -24,6 +24,9 @@
        <string>&amp;Playlist</string>
       </attribute>
       <layout class="QVBoxLayout">
+       <property name="margin">
+        <number>16</number>
+       </property>
        <item>
         <widget class="QCheckBox" name="auto_add_to_playlist_check">
          <property name="text">

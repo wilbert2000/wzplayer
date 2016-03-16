@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
-    <height>600</height>
+    <width>516</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,12 +22,6 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
-     <property name="minimumSize">
-      <size>
-       <width>580</width>
-       <height>500</height>
-      </size>
-     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -36,22 +30,31 @@
        <string>&amp;Subtitles</string>
       </attribute>
       <layout class="QVBoxLayout">
-       <property name="spacing">
-        <number>6</number>
+       <property name="margin">
+        <number>16</number>
        </property>
        <item>
         <widget class="QGroupBox" name="selection_group">
          <property name="title">
           <string>Subtitle selection</string>
          </property>
-         <layout class="QGridLayout">
-          <property name="margin">
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
           </property>
-          <property name="spacing">
-           <number>6</number>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
-          <item row="1" column="0">
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <property name="bottomMargin">
              <number>0</number>
@@ -59,7 +62,7 @@
             <item>
              <widget class="QLabel" name="autoload_label">
               <property name="text">
-               <string>&amp;Automatically load subtitle files (*.srt, *.sub...):</string>
+               <string>L&amp;oad subtitle files (*.srt, *.sub...):</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -106,14 +109,27 @@
             </item>
            </layout>
           </item>
-          <item row="5" column="0" colspan="2">
-           <widget class="QCheckBox" name="select_first_subtitle_check">
-            <property name="text">
-             <string>Sele&amp;ct the first available subtitle track when the language override does not match</string>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="topMargin">
+             <number>16</number>
             </property>
-           </widget>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="language_desc_label">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the player does not select subtitles in your language, you can override the players selection here. Overriding the selected subtitle track, and even more so, unconditionally selecting the first available subtitle track, can lead to undesirable effects with streams using subtitle tracks for say, graphics, like on a DVD.&lt;/p&gt;&lt;p&gt;The language override selects the first subtitle track matching the given language regular expression. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names.&lt;/p&gt;&lt;p&gt;Examples:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; will select the first subtitle track marked with the language &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;An empty override lets the player select subtitles (default).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="4" column="0" colspan="3">
+          <item>
            <layout class="QHBoxLayout" name="language_layout">
             <property name="sizeConstraint">
              <enum>QLayout::SetDefaultConstraint</enum>
@@ -130,7 +146,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&amp;Language override:</string>
+               <string>L&amp;anguage override:</string>
               </property>
               <property name="buddy">
                <cstring>language_edit</cstring>
@@ -162,13 +178,10 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="0" colspan="3">
-           <widget class="QLabel" name="language_desc_label">
+          <item>
+           <widget class="QCheckBox" name="select_first_subtitle_check">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normally the player should select your language. You can override the selected subtitle track here. Overriding the track selected by the player, and even more so, just selecting the first available track, can lead to undesirable effects with streams using subtitles for advanced applications, like the buttons on a DVD.&lt;/p&gt;&lt;p&gt;The language override selects the first subtitle track matching the given language. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names. This field accepts regular expressions.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; will select the first subtitle track marked with the language code &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
+             <string>S&amp;elect the first subtitle if the language override does not match</string>
             </property>
            </widget>
           </item>
@@ -180,9 +193,21 @@
          <property name="title">
           <string>Subtitle encoding</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
          <layout class="QVBoxLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -204,7 +229,7 @@
               <item row="1" column="1">
                <widget class="QLabel" name="encoding_fallback_label">
                 <property name="text">
-                 <string>&amp;Encoding:when detection fails</string>
+                 <string>E&amp;ncoding:when detection fails:</string>
                 </property>
                 <property name="wordWrap">
                  <bool>false</bool>
@@ -258,55 +283,10 @@
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QCheckBox" name="windowsfontdir_check">
+         <property name="text">
+          <string>Enable &amp;Windows fonts</string>
          </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="lib_group">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="title">
-          <string>Libraries</string>
-         </property>
-         <layout class="QVBoxLayout" name="lib_verticalLayout">
-          <property name="margin">
-           <number>8</number>
-          </property>
-          <item>
-           <widget class="QCheckBox" name="use_ass_check">
-            <property name="text">
-             <string>&amp;Use the ASS library</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="freetype_check">
-            <property name="text">
-             <string>Freet&amp;ype support</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="windowsfontdir_check">
-            <property name="text">
-             <string>Enable &amp;Windows fonts</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
        </item>
        <item>
@@ -324,531 +304,607 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="font_tab">
+     <widget class="QWidget" name="ass_tab">
       <property name="enabled">
        <bool>true</bool>
       </property>
       <attribute name="title">
-       <string>&amp;Font and colors</string>
+       <string>&amp;Libraries</string>
       </attribute>
       <layout class="QGridLayout">
-       <item row="1" column="0" colspan="2">
-        <widget class="QStackedWidget" name="stackedWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <property name="margin">
+        <number>16</number>
+       </property>
+       <item row="3" column="0">
+        <widget class="QGroupBox" name="custom_style_group">
+         <property name="title">
+          <string>Use custom style for unstyled subtitles</string>
          </property>
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+         <property name="flat">
+          <bool>true</bool>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="ass_subs">
-          <layout class="QVBoxLayout">
-           <item>
-            <layout class="QHBoxLayout">
+         <layout class="QGridLayout" name="cutom_style_gridlayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="horizontalSpacing">
+           <number>16</number>
+          </property>
+          <item row="4" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="force_ass_layout">
+            <property name="topMargin">
+             <number>8</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="force_ass_styles">
+              <property name="text">
+               <string>A&amp;pply this custom style to ASS files too</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="ass_customize_button">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Custo&amp;mize...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="border_layout">
+            <property name="bottomMargin">
+             <number>8</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="style_border_style_label">
+              <property name="text">
+               <string>Border st&amp;yle:</string>
+              </property>
+              <property name="buddy">
+               <cstring>style_border_style_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="style_border_style_combo"/>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="style_outline_label">
+              <property name="text">
+               <string>O&amp;utline:</string>
+              </property>
+              <property name="buddy">
+               <cstring>style_outline_spin</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="style_outline_spin">
+              <property name="maximum">
+               <double>4.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="style_shadow_label">
+              <property name="text">
+               <string>Shado&amp;w:</string>
+              </property>
+              <property name="buddy">
+               <cstring>style_shadow_spin</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="style_shadow_spin">
+              <property name="maximum">
+               <double>4.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="font_group">
+            <property name="title">
+             <string>Font</string>
+            </property>
+            <layout class="QVBoxLayout">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>8</number>
+             </property>
+             <property name="bottomMargin">
+              <number>32</number>
+             </property>
              <item>
-              <widget class="QLabel" name="ass_scale_label">
+              <layout class="QHBoxLayout">
+               <item>
+                <widget class="Gui::Pref::TFontComboBox" name="style_font_combo"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout">
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Si&amp;ze:</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>style_size_spin</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="style_size_spin">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>10</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Preferred</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>60</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="style_bold_check">
+                 <property name="text">
+                  <string>&amp;Bold</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="style_italic_check">
+                 <property name="text">
+                  <string>&amp;Italic</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QGroupBox" name="colors_group">
+            <property name="title">
+             <string>Colors</string>
+            </property>
+            <layout class="QGridLayout">
+             <property name="leftMargin">
+              <number>8</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>8</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>Defa&amp;ult scale:</string>
+                <string>B&amp;order:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
                <property name="buddy">
-                <cstring>ass_font_scale_spin</cstring>
+                <cstring>style_border_color_button</cstring>
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="ass_font_scale_spin">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>&amp;Text:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>style_text_color_button</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="Gui::Pref::TSelectColorButton" name="style_border_color_button">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <property name="maximum">
-                <double>100.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.200000000000000</double>
+               <property name="text">
+                <string/>
                </property>
               </widget>
              </item>
-             <item>
-              <spacer>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+             <item row="0" column="1">
+              <widget class="Gui::Pref::TSelectColorButton" name="style_text_color_button">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>121</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_11">
                <property name="text">
-                <string>&amp;Line spacing:</string>
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="Gui::Pref::TSelectColorButton" name="style_shadow_color_button">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Sh&amp;adow:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
                <property name="buddy">
-                <cstring>ass_line_spacing_spin</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="ass_line_spacing_spin">
-               <property name="minimum">
-                <number>-20</number>
-               </property>
-               <property name="maximum">
-                <number>20</number>
+                <cstring>style_shadow_color_button</cstring>
                </property>
               </widget>
              </item>
             </layout>
-           </item>
-           <item>
-            <widget class="QWidget" name="styles_container" native="true">
-             <property name="enabled">
-              <bool>true</bool>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="margins_group">
+            <property name="title">
+             <string>Margins</string>
+            </property>
+            <layout class="QGridLayout">
+             <property name="leftMargin">
+              <number>0</number>
              </property>
-             <layout class="QGridLayout">
-              <property name="margin">
-               <number>2</number>
-              </property>
-              <item row="0" column="0">
-               <widget class="QGroupBox" name="groupBox_4">
-                <property name="title">
-                 <string>Font</string>
-                </property>
-                <layout class="QVBoxLayout">
-                 <property name="margin">
-                  <number>4</number>
-                 </property>
-                 <item>
-                  <layout class="QHBoxLayout">
-                   <item>
-                    <widget class="Gui::Pref::TFontComboBox" name="style_font_combo"/>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout">
-                   <item>
-                    <widget class="QLabel" name="label">
-                     <property name="text">
-                      <string>Si&amp;ze:</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>style_size_spin</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QSpinBox" name="style_size_spin">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimum">
-                      <number>1</number>
-                     </property>
-                     <property name="value">
-                      <number>10</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer>
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeType">
-                      <enum>QSizePolicy::Preferred</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>60</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QCheckBox" name="style_bold_check">
-                     <property name="text">
-                      <string>Bol&amp;d</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QCheckBox" name="style_italic_check">
-                     <property name="text">
-                      <string>&amp;Italic</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QGroupBox" name="groupBox_7">
-                <property name="title">
-                 <string>Colors</string>
-                </property>
-                <layout class="QGridLayout">
-                 <property name="margin">
-                  <number>4</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_2">
-                   <property name="text">
-                    <string>&amp;Text:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                   <property name="buddy">
-                    <cstring>style_text_color_button</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="Gui::Pref::TSelectColorButton" name="style_text_color_button">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_3">
-                   <property name="text">
-                    <string>&amp;Border:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                   <property name="buddy">
-                    <cstring>style_border_color_button</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="Gui::Pref::TSelectColorButton" name="style_border_color_button">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_12">
-                   <property name="text">
-                    <string>Shadow:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="Gui::Pref::TSelectColorButton" name="style_shadow_color_button">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QGroupBox" name="groupBox_8">
-                <property name="title">
-                 <string>Margins</string>
-                </property>
-                <layout class="QGridLayout">
-                 <property name="margin">
-                  <number>4</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_7">
-                   <property name="text">
-                    <string>L&amp;eft:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                   <property name="buddy">
-                    <cstring>style_marginl_spin</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QSpinBox" name="style_marginl_spin"/>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QLabel" name="label_8">
-                   <property name="text">
-                    <string>&amp;Right:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                   <property name="buddy">
-                    <cstring>style_marginr_spin</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="3">
-                  <widget class="QSpinBox" name="style_marginr_spin"/>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_9">
-                   <property name="text">
-                    <string>Verti&amp;cal:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                   <property name="buddy">
-                    <cstring>style_marginv_spin</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QSpinBox" name="style_marginv_spin"/>
-                 </item>
-                 <item row="1" column="2" colspan="2">
-                  <spacer>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>101</width>
-                     <height>25</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QGroupBox" name="groupBox_9">
-                <property name="title">
-                 <string>Alignment</string>
-                </property>
-                <layout class="QGridLayout">
-                 <property name="margin">
-                  <number>4</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_4">
-                   <property name="text">
-                    <string>&amp;Horizontal:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                   <property name="buddy">
-                    <cstring>style_alignment_combo</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QComboBox" name="style_alignment_combo"/>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_6">
-                   <property name="text">
-                    <string>&amp;Vertical:</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                   <property name="buddy">
-                    <cstring>style_valignment_combo</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QComboBox" name="style_valignment_combo"/>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="2" column="0" colspan="2">
-               <layout class="QHBoxLayout">
-                <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="text">
-                   <string>Border st&amp;yle:</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>style_border_style_combo</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="style_border_style_combo"/>
-                </item>
-                <item>
-                 <spacer>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QLabel" name="style_outline_label">
-                  <property name="text">
-                   <string>&amp;Outline:</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>style_outline_spin</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="style_outline_spin">
-                  <property name="maximum">
-                   <double>4.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.100000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="style_shadow_label">
-                  <property name="text">
-                   <string>Shado&amp;w:</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>style_shadow_spin</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="style_shadow_spin">
-                  <property name="maximum">
-                   <double>4.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.100000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="Line" name="line_3">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+             <property name="topMargin">
+              <number>0</number>
              </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+             <property name="rightMargin">
+              <number>8</number>
              </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout">
-             <item>
-              <widget class="QCheckBox" name="force_ass_styles">
+             <property name="bottomMargin">
+              <number>16</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_7">
                <property name="text">
-                <string>A&amp;pply style to ASS files too</string>
+                <string>L&amp;eft:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>style_marginl_spin</cstring>
                </property>
               </widget>
              </item>
-             <item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="style_marginl_spin"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>&amp;Right:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>style_marginr_spin</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QSpinBox" name="style_marginr_spin"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Verti&amp;cal:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>style_marginv_spin</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="style_marginv_spin"/>
+             </item>
+             <item row="1" column="2" colspan="2">
               <spacer>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>101</width>
+                 <height>25</height>
                 </size>
                </property>
               </spacer>
              </item>
-             <item>
-              <widget class="QPushButton" name="ass_customize_button">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QGroupBox" name="align_group">
+            <property name="title">
+             <string>Alignment</string>
+            </property>
+            <layout class="QGridLayout">
+             <property name="leftMargin">
+              <number>8</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>8</number>
+             </property>
+             <property name="bottomMargin">
+              <number>16</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_4">
                <property name="text">
-                <string>Custo&amp;mize...</string>
+                <string>&amp;Horizontal:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>style_alignment_combo</cstring>
                </property>
               </widget>
              </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>&amp;Vertical:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>style_valignment_combo</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="style_alignment_combo"/>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="style_valignment_combo"/>
+             </item>
             </layout>
-           </item>
-           <item>
-            <spacer>
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>497</width>
-               <height>16</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="ass_custom_check">
-         <property name="text">
-          <string>Use custo&amp;m style</string>
+       <item row="8" column="0">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="ass_group">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Use the ASS subtitle library</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="ass_gridlayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="ass_line_spacing_spin">
+            <property name="minimum">
+             <number>-20</number>
+            </property>
+            <property name="maximum">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="ass_scale_mplayer_label">
+            <property name="text">
+             <string>&amp;Default scale::</string>
+            </property>
+            <property name="buddy">
+             <cstring>ass_font_scale_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>&amp;Line spacing:</string>
+            </property>
+            <property name="buddy">
+             <cstring>ass_line_spacing_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="ass_font_scale_spin">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.200000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </widget>
+       </item>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="freetype_layout">
+         <property name="bottomMargin">
+          <number>16</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="freetype_check">
+           <property name="text">
+            <string>&amp;Freetype support</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -875,12 +931,12 @@
   <tabstop>select_first_subtitle_check</tabstop>
   <tabstop>enca_lang_combo</tabstop>
   <tabstop>encoding_fallback_combo</tabstop>
-  <tabstop>use_ass_check</tabstop>
-  <tabstop>freetype_check</tabstop>
   <tabstop>windowsfontdir_check</tabstop>
-  <tabstop>ass_custom_check</tabstop>
+  <tabstop>freetype_check</tabstop>
+  <tabstop>ass_group</tabstop>
   <tabstop>ass_font_scale_spin</tabstop>
   <tabstop>ass_line_spacing_spin</tabstop>
+  <tabstop>custom_style_group</tabstop>
   <tabstop>style_font_combo</tabstop>
   <tabstop>style_size_spin</tabstop>
   <tabstop>style_bold_check</tabstop>
@@ -914,6 +970,54 @@
     <hint type="destinationlabel">
      <x>474</x>
      <y>377</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>freetype_check</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ass_group</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>251</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>126</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>freetype_check</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>custom_style_group</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>251</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>332</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ass_group</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>custom_style_group</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>252</x>
+     <y>126</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>332</y>
     </hint>
    </hints>
   </connection>
