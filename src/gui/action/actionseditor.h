@@ -84,6 +84,15 @@ protected slots:
 	void editShortcut();
 
 private:
+
+	enum TActionCols {
+		COL_CONFLICTS = 0,
+		COL_ACTION = 1,
+		COL_DESC = 2,
+		COL_SHORTCUT = 3,
+		COL_COUNT = 4
+	};
+
 	QTableWidget* actionsTable;
 	TActionList actionsList;
 	QPushButton* saveButton;

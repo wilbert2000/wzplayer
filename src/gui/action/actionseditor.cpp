@@ -96,26 +96,21 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 namespace Gui {
 namespace Action {
 
-#define COL_CONFLICTS 0
-#define COL_SHORTCUT 1
-#define COL_DESC 2
-#define COL_NAME 3
-
 TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f)
-{
+	: QWidget(parent, f) {
+
 	latest_dir = Settings::TPaths::shortcutsPath();
 
-	actionsTable = new QTableWidget(0, COL_NAME + 1, this);
+	actionsTable = new QTableWidget(0, COL_COUNT, this);
 	actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);
 	actionsTable->verticalHeader()->hide();
 
 #if QT_VERSION >= 0x050000
+	actionsTable->horizontalHeader()->setSectionResizeMode(COL_ACTION, QHeaderView::Stretch);
 	actionsTable->horizontalHeader()->setSectionResizeMode(COL_DESC, QHeaderView::Stretch);
-	actionsTable->horizontalHeader()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
 #else
+	actionsTable->horizontalHeader()->setResizeMode(COL_ACTION, QHeaderView::Stretch);
 	actionsTable->horizontalHeader()->setResizeMode(COL_DESC, QHeaderView::Stretch);
-	actionsTable->horizontalHeader()->setResizeMode(COL_NAME, QHeaderView::Stretch);
 #endif
 
 	actionsTable->setAlternatingRowColors(true);
@@ -135,15 +130,16 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f)
 	connect(editButton, SIGNAL(clicked()), this, SLOT(editShortcut()));
 
 	QHBoxLayout* buttonLayout = new QHBoxLayout;
-	buttonLayout->setSpacing(8);
+	buttonLayout->setContentsMargins(22, 8, 16, 0);
+	buttonLayout->setSpacing(6);
 	buttonLayout->addWidget(editButton);
 	buttonLayout->addStretch(1);
 	buttonLayout->addWidget(loadButton);
 	buttonLayout->addWidget(saveButton);
 
 	QVBoxLayout* mainLayout = new QVBoxLayout(this);
-	mainLayout->setMargin(8);
-	mainLayout->setSpacing(8);
+	mainLayout->setMargin(0);
+	mainLayout->setSpacing(0);
 	mainLayout->addWidget(actionsTable);
 	mainLayout->addLayout(buttonLayout);
 
@@ -154,8 +150,9 @@ TActionsEditor::~TActionsEditor() {
 }
 
 void TActionsEditor::retranslateStrings() {
+
 	actionsTable->setHorizontalHeaderLabels(QStringList() << "" <<
-		tr("Shortcut") << tr("Description") << tr("Name"));
+		tr("Action") << tr("Description") << tr("Shortcut"));
 
 	saveButton->setText(tr("&Save"));
 	saveButton->setIcon(Images::icon("save"));
@@ -202,7 +199,7 @@ void TActionsEditor::updateView() {
 		// Conflict column
 		QTableWidgetItem* i_conf = new QTableWidgetItem();
 
-		// Name column
+		// Action column
 		QTableWidgetItem* i_name = new QTableWidgetItem(action->objectName());
 
 		// Desc column
@@ -220,11 +217,11 @@ void TActionsEditor::updateView() {
 
 		// Add items to table
 		actionsTable->setItem(n, COL_CONFLICTS, i_conf);
-		actionsTable->setItem(n, COL_NAME, i_name);
+		actionsTable->setItem(n, COL_ACTION, i_name);
 		actionsTable->setItem(n, COL_DESC, i_desc);
 		actionsTable->setItem(n, COL_SHORTCUT, i_shortcut);
-
 	}
+
 	hasConflicts(); // Check for conflicts
 
 	actionsTable->resizeColumnsToContents();
@@ -260,7 +257,7 @@ void TActionsEditor::editShortcut() {
 int TActionsEditor::findActionName(const QString& name) {
 
 	for (int row = 0; row < actionsTable->rowCount(); row++) {
-		if (actionsTable->item(row, COL_NAME)->text() == name)
+		if (actionsTable->item(row, COL_ACTION)->text() == name)
 			return row;
 	}
 	return -1;
@@ -371,7 +368,7 @@ bool TActionsEditor::saveActionsTable(const QString & filename) {
 		stream.setCodec("UTF-8");
 
 		for (int row = 0; row < actionsTable->rowCount(); row++) {
-			stream << actionsTable->item(row, COL_NAME)->text() << "\t" 
+			stream << actionsTable->item(row, COL_ACTION)->text() << "\t"
 				   << actionsTable->item(row, COL_SHORTCUT)->text() << "\n";
 		}
 		f.close();

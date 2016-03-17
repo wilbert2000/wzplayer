@@ -85,15 +85,15 @@ void TInput::createMouseCombos() {
 	left_click_combo->addItem(tr("Show video equalizer"), "video_equalizer");
 	left_click_combo->addItem(tr("Show audio equalizer"), "audio_equalizer");
 	left_click_combo->addItem(tr("Show context menu"), "show_context_menu");
-	left_click_combo->addItem(tr("Change function of wheel"), "next_wheel_function");
-	left_click_combo->addItem(tr("Activate option under mouse in DVD menus"), "dvdnav_mouse");
-	left_click_combo->addItem(tr("Return to main DVD menu"), "dvdnav_menu");
-	left_click_combo->addItem(tr("Return to previous menu in DVD menus"), "dvdnav_prev");
-	left_click_combo->addItem(tr("Move cursor up in DVD menus"), "dvdnav_up");
-	left_click_combo->addItem(tr("Move cursor down in DVD menus"), "dvdnav_down");
-	left_click_combo->addItem(tr("Move cursor left in DVD menus"), "dvdnav_left");
-	left_click_combo->addItem(tr("Move cursor right in DVD menus"), "dvdnav_right");
-	left_click_combo->addItem(tr("Activate highlighted option in DVD menus"), "dvdnav_select");
+	left_click_combo->addItem(tr("Next wheel action"), "next_wheel_function");
+	left_click_combo->addItem(tr("DVD mouse click"), "dvdnav_mouse");
+	left_click_combo->addItem(tr("DVD return to main menu"), "dvdnav_menu");
+	left_click_combo->addItem(tr("DVD return to previous menu"), "dvdnav_prev");
+	left_click_combo->addItem(tr("DVD move cursor up"), "dvdnav_up");
+	left_click_combo->addItem(tr("DVD move cursor down"), "dvdnav_down");
+	left_click_combo->addItem(tr("DVD move cursor left"), "dvdnav_left");
+	left_click_combo->addItem(tr("DVD move cursor right"), "dvdnav_right");
+	left_click_combo->addItem(tr("DVD select button"), "dvdnav_select");
 
 	// Copy to other combos
 	for (int n=0; n < left_click_combo->count(); n++) {
@@ -156,6 +156,7 @@ void TInput::retranslateStrings() {
 }
 
 void TInput::setData(Settings::TPreferences* pref) {
+
 	setLeftClickFunction(pref->mouse_left_click_function);
 	setRightClickFunction(pref->mouse_right_click_function);
 	setDoubleClickFunction(pref->mouse_double_click_function);
@@ -165,12 +166,12 @@ void TInput::setData(Settings::TPreferences* pref) {
 	setWheelFunction(pref->wheel_function);
 	setWheelFunctionCycle(pref->wheel_function_cycle);
 	setWheelFunctionSeekingReverse(pref->wheel_function_seeking_reverse);
-	delay_left_check->setChecked(pref->delay_left_click);
+	wait_for_double_click_check->setChecked(pref->delay_left_click);
 }
 
 void TInput::getData(Settings::TPreferences* pref) {
-	requires_restart = false;
 
+	requires_restart = false;
 	pref->mouse_left_click_function = leftClickFunction();
 	pref->mouse_right_click_function = rightClickFunction();
 	pref->mouse_double_click_function = doubleClickFunction();
@@ -180,7 +181,7 @@ void TInput::getData(Settings::TPreferences* pref) {
 	pref->wheel_function = wheelFunction();
 	pref->wheel_function_cycle = wheelFunctionCycle();
 	pref->wheel_function_seeking_reverse = wheelFunctionSeekingReverse();
-	pref->delay_left_click = delay_left_check->isChecked();
+	pref->delay_left_click = wait_for_double_click_check->isChecked();
 }
 
 /*
@@ -334,12 +335,18 @@ void TInput::createHelp() {
 	setWhatsThis(wheel_function_combo, tr("Wheel function"),
 		tr("Select the action for the mouse wheel."));
 
-	setWhatsThis(delay_left_check, tr("Don't trigger the left click function with a double click"),
-		tr("If this option is enabled when you double click on the "
-            "video area only the double click function will be triggered. "
-            "The left click action won't be activated.") + " "+
-		tr("By enabling this option the left click is delayed %1 milliseconds "
-           "because it's necessary to wait that time to know if there's a double click or not.").arg(qApp->doubleClickInterval()+10));
+	setWhatsThis(wait_for_double_click_check,
+		tr("Wait for double click before triggering left click action"),
+		tr("Normally checked, so a left click will be delayed by %1 millisecond"
+		   " to see if it will turn into a double click. When a double click is"
+		   " detected the left click action is not triggered and the double"
+		   " click action is triggered instead.").arg(qApp->doubleClickInterval())
+		+ "<br><br>"
+		+ tr("For precise seeking, it can be convenient to trigger the left"
+			 " click action right away, without delay, to instantly pause a"
+			 " video. Besides instant triggering of the left click action,"
+			 " it will also cause a left click action being triggered before"
+			 " and after every double click action."));
 
 	setWhatsThis(wheel_function_seeking_reverse_check, tr("Reverse mouse wheel seeking"),
 		tr("Check it to seek in the opposite direction."));
