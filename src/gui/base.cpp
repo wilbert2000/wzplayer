@@ -232,7 +232,7 @@ void TBase::createPlayerWindow() {
 	layout->addWidget(playerwindow);
 	panel->setLayout(layout);
 
-	// Connect to player window mouse events
+	// Connect player window mouse events
 	connect(playerwindow, SIGNAL(doubleClicked()),
 			 this, SLOT(doubleClickFunction()));
 	connect(playerwindow, SIGNAL(leftClicked()),
@@ -388,7 +388,7 @@ void TBase::createActions() {
 	nextWheelFunctionAct = new TAction(this, "next_wheel_function", QT_TR_NOOP("Next wheel function"));
 	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
 
-	// Time slider action
+	// Time slider
 	timeslider_action = new TTimeSliderAction(this, core->positionMax(), pref->time_slider_drag_delay);
 	timeslider_action->setObjectName("timeslider_action");
 

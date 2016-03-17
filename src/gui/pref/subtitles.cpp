@@ -113,7 +113,7 @@ void TSubtitles::retranslateStrings() {
 	current_idx = style_border_style_combo->currentIndex();
 	style_border_style_combo->clear();
 	style_border_style_combo->addItem(tr("Outline", "border style"), TAssStyles::Outline);
-	style_border_style_combo->addItem(tr("Opaque box", "border style"), TAssStyles::Opaque);
+	style_border_style_combo->addItem(tr("Opaque", "border style"), TAssStyles::Opaque);
 	style_border_style_combo->setCurrentIndex(current_idx);
 	enable_border_spins = true;
 
@@ -137,7 +137,7 @@ void TSubtitles::setData(Settings::TPreferences* pref) {
 #endif
 
 	// Libraries tab
-	setFreetypeSupport(pref->freetype_support);
+	freetype_group->setChecked(pref->freetype_support);
 	// Clear use ASS when freetype support is off
 	ass_group->setChecked(pref->freetype_support && pref->use_ass_subtitles);
 
@@ -193,7 +193,7 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 #endif
 
 	// Library tab
-	restartIfBoolChanged(pref->freetype_support, freetypeSupport());
+	restartIfBoolChanged(pref->freetype_support, freetype_group->isChecked());
 	restartIfBoolChanged(pref->use_ass_subtitles, pref->freetype_support && ass_group->isChecked());
 
 	pref->initial_sub_scale_ass = assFontScale();
@@ -365,14 +365,6 @@ void TSubtitles::onAssCustomizeButtonClicked() {
 	}
 }
 
-void TSubtitles::setFreetypeSupport(bool b) {
-	freetype_check->setChecked(b);
-}
-
-bool TSubtitles::freetypeSupport() {
-	return freetype_check->isChecked();
-}
-
 void TSubtitles::onWindowsFontDirCheckToggled(bool b) {
 	qDebug("Gui::Pref::TSubtitles::onWindowsFontDirCheckToggled: %d", b);
 
@@ -399,6 +391,7 @@ void TSubtitles::onWindowsFontDirCheckToggled(bool b) {
 }
 
 void TSubtitles::createHelp() {
+
 	clearHelp();
 
 	addSectionTitle(tr("Subtitles"));
@@ -441,7 +434,7 @@ void TSubtitles::createHelp() {
 
 	addSectionTitle(tr("Libraries"));
 
-	setWhatsThis(freetype_check, tr("Freetype support"),
+	setWhatsThis(freetype_group, tr("Freetype support"),
 		tr("You should normally not disable this option. Do it only if your "
 		   "player is compiled without freetype support. "
 		   "<b>Disabling this option could make subtitles not to work "

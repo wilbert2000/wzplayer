@@ -79,9 +79,6 @@ private:
 	void setEncodingFallback(const QString& s);
 	QString encodingFallback();
 
-	void setFreetypeSupport(bool b);
-	bool freetypeSupport();
-
 	void setAssFontScale(double n);
 	double assFontScale();
 

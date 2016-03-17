@@ -134,8 +134,8 @@ public slots:
 	void pauseMessages();
 
 signals:
-	void doubleClicked();
 	void leftClicked();
+	void doubleClicked();
 	void rightClicked();
 	void middleClicked();
 	void xbutton1Clicked(); // first X button
