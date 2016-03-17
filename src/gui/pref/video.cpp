@@ -96,7 +96,7 @@ void TVideo::retranslateStrings() {
 
 	updateDriverCombo(true);
 
-	int deinterlace_item = deinterlace_combo->currentIndex();
+	int index = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
 	deinterlace_combo->addItem(tr("None"), TMediaSettings::NoDeinterlace);
 	deinterlace_combo->addItem(tr("Lowpass5"), TMediaSettings::L5);
@@ -104,7 +104,17 @@ void TVideo::retranslateStrings() {
 	deinterlace_combo->addItem(tr("Yadif (double framerate)"), TMediaSettings::Yadif_1);
 	deinterlace_combo->addItem(tr("Linear Blend"), TMediaSettings::LB);
 	deinterlace_combo->addItem(tr("Kerndeint"), TMediaSettings::Kerndeint);
-	deinterlace_combo->setCurrentIndex(deinterlace_item);
+	deinterlace_combo->setCurrentIndex(index);
+
+	index = deinterlace_tv_combo->currentIndex();
+	deinterlace_tv_combo->clear();
+	deinterlace_tv_combo->addItem(tr("None"), TMediaSettings::NoDeinterlace);
+	deinterlace_tv_combo->addItem(tr("Lowpass5"), TMediaSettings::L5);
+	deinterlace_tv_combo->addItem(tr("Yadif (normal)"), TMediaSettings::Yadif);
+	deinterlace_tv_combo->addItem(tr("Yadif (double framerate)"), TMediaSettings::Yadif_1);
+	deinterlace_tv_combo->addItem(tr("Linear Blend"), TMediaSettings::LB);
+	deinterlace_tv_combo->addItem(tr("Kerndeint"), TMediaSettings::Kerndeint);
+	deinterlace_tv_combo->setCurrentIndex(index);
 
 	screenshot_edit->setCaption(tr("Select a directory"));
 
@@ -147,6 +157,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 	setInitialPostprocessing(pref->initial_postprocessing);
 	setPostprocessingQuality(pref->postprocessing_quality);
 	setInitialDeinterlace(pref->initial_deinterlace);
+	setInitialDeinterlaceTV(pref->initial_tv_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
 
 	// Screenshots group
@@ -178,6 +189,7 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	pref->initial_postprocessing = initialPostprocessing();
 	restartIfIntChanged(pref->postprocessing_quality, postprocessingQuality());
 	pref->initial_deinterlace = initialDeinterlace();
+	pref->initial_tv_deinterlace = initialDeinterlace();
 	pref->initial_zoom_factor = initialZoom();
 
 	// Screenshots
@@ -352,6 +364,25 @@ int TVideo::initialDeinterlace() {
 	qWarning("Gui::Pref::TVideo::initialDeinterlace: no item selected");
 	return 0;
 }
+void TVideo::setInitialDeinterlaceTV(int ID) {
+
+	int pos = deinterlace_tv_combo->findData(ID);
+	if (pos != -1) {
+		deinterlace_tv_combo->setCurrentIndex(pos);
+	} else {
+		qWarning("Gui::Pref::TTV::setInitialDeinterlaceTV: ID: %d not found in combo", ID);
+	}
+}
+
+int TVideo::initialDeinterlaceTV() {
+
+	if (deinterlace_tv_combo->currentIndex() != -1) {
+		return deinterlace_tv_combo->itemData(deinterlace_tv_combo->currentIndex()).toInt();
+	} else {
+		qWarning("Gui::Pref::TTV::initialDeinterlaceTV: no item selected");
+		return 0;
+	}
+}
 
 void TVideo::setInitialZoom(double v) {
 	zoom_spin->setValue(v);
@@ -502,14 +533,16 @@ void TVideo::createHelp() {
 		   "available spare CPU time. The number you specify will be the "
 		   "maximum level used. Usually you can use some big number."));
 
-	setWhatsThis(deinterlace_combo, tr("Deinterlace by default"),
+	setWhatsThis(deinterlace_combo, tr("Deinterlace"),
 		tr("Select the deinterlace filter that you want to be used for new "
 		   "videos opened.") +" "+
 		tr("<b>Note:</b> This option won't be used for TV channels."));
 
-	setWhatsThis(zoom_spin, tr("Default zoom"),
-		tr("This option sets the default zoom which will be used for "
-		   "new videos."));
+	setWhatsThis(deinterlace_tv_combo, tr("Deinterlace for TV"),
+		tr("Select the deinterlace filter that you want to be used for TV channels."));
+
+	setWhatsThis(zoom_spin, tr("Zoom"),
+		tr("This option sets the default zoom used for new videos."));
 
 	setWhatsThis(software_video_equalizer_check, tr("Software video equalizer"),
 		tr("You can check this option if video equalizing is not supported by "

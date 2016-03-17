@@ -21,6 +21,7 @@
 #include "images.h"
 #include "settings/mediasettings.h"
 
+
 namespace Gui { namespace Pref {
 
 TTV::TTV(QWidget* parent, Qt::WindowFlags f)
@@ -51,48 +52,18 @@ void TTV::retranslateStrings() {
 
 	retranslateUi(this);
 
-	using namespace Settings;
-	int deinterlace_item = deinterlace_combo->currentIndex();
-	deinterlace_combo->clear();
-	deinterlace_combo->addItem(tr("None"), TMediaSettings::NoDeinterlace);
-	deinterlace_combo->addItem(tr("Lowpass5"), TMediaSettings::L5);
-	deinterlace_combo->addItem(tr("Yadif (normal)"), TMediaSettings::Yadif);
-	deinterlace_combo->addItem(tr("Yadif (double framerate)"), TMediaSettings::Yadif_1);
-	deinterlace_combo->addItem(tr("Linear Blend"), TMediaSettings::LB);
-	deinterlace_combo->addItem(tr("Kerndeint"), TMediaSettings::Kerndeint);
-	deinterlace_combo->setCurrentIndex(deinterlace_item);
-
 	createHelp();
 }
 
 void TTV::setData(Settings::TPreferences* pref) {
-	setInitialDeinterlace(pref->initial_tv_deinterlace);
+
 	setRescan(pref->check_channels_conf_on_startup);
 }
 
 void TTV::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
-	pref->initial_tv_deinterlace = initialDeinterlace();
 	pref->check_channels_conf_on_startup = rescan();
-}
-
-void TTV::setInitialDeinterlace(int ID) {
-	int pos = deinterlace_combo->findData(ID);
-	if (pos != -1) {
-		deinterlace_combo->setCurrentIndex(pos);
-	} else {
-		qWarning("Gui::Pref::TTV::setInitialDeinterlace: ID: %d not found in combo", ID);
-	}
-}
-
-int TTV::initialDeinterlace() {
-	if (deinterlace_combo->currentIndex() != -1) {
-		return deinterlace_combo->itemData(deinterlace_combo->currentIndex()).toInt();
-	} else {
-		qWarning("Gui::Pref::TTV::initialDeinterlace: no item selected");
-		return 0;
-	}
 }
 
 void TTV::setRescan(bool b) {
@@ -106,8 +77,6 @@ bool TTV::rescan() {
 void TTV::createHelp() {
 	clearHelp();
 
-	setWhatsThis(deinterlace_combo, tr("Deinterlace by default for TV"),
-        tr("Select the deinterlace filter that you want to be used for TV channels."));
 
 #ifndef Q_OS_WIN
 	setWhatsThis(rescan_check, tr("Rescan ~/.mplayer/channels.conf on startup"),

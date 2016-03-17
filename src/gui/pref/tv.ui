@@ -28,49 +28,6 @@
         <number>16</number>
        </property>
        <item>
-        <layout class="QHBoxLayout">
-         <property name="spacing">
-          <number>6</number>
-         </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Dei&amp;nterlace by default for TV:</string>
-           </property>
-           <property name="buddy">
-            <cstring>deinterlace_combo</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="deinterlace_combo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="QCheckBox" name="rescan_check">
          <property name="text">
           <string>&amp;Check for new channels on startup</string>
@@ -98,7 +55,6 @@
  </widget>
  <tabstops>
   <tabstop>tvt_tab</tabstop>
-  <tabstop>deinterlace_combo</tabstop>
   <tabstop>rescan_check</tabstop>
  </tabstops>
  <resources/>

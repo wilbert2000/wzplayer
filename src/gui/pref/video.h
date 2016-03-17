@@ -96,6 +96,9 @@ private:
 	void setInitialDeinterlace(int ID);
 	int initialDeinterlace();
 
+	void setInitialDeinterlaceTV(int ID);
+	int initialDeinterlaceTV();
+
 	void setInitialZoom(double v);
 	double initialZoom();
 

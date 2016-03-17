@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>600</height>
+    <height>576</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -49,7 +49,7 @@
            <number>8</number>
           </property>
           <property name="bottomMargin">
-           <number>16</number>
+           <number>8</number>
           </property>
           <item>
            <layout class="QGridLayout" name="gridLayout">
@@ -186,7 +186,7 @@
            <number>8</number>
           </property>
           <property name="bottomMargin">
-           <number>16</number>
+           <number>8</number>
           </property>
           <item>
            <widget class="QLabel" name="resize_window_icon">

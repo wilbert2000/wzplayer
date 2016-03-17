@@ -49,9 +49,6 @@ public:
 protected:
 	virtual void createHelp();
 
-	void setInitialDeinterlace(int ID);
-	int initialDeinterlace();
-
 	void setRescan(bool b);
 	bool rescan();
 

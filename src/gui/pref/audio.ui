@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>620</height>
+    <height>576</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -49,7 +49,7 @@
            <number>8</number>
           </property>
           <property name="bottomMargin">
-           <number>16</number>
+           <number>8</number>
           </property>
           <item>
            <layout class="QHBoxLayout">
@@ -108,7 +108,7 @@
             <item>
              <widget class="QLabel" name="channels_label">
               <property name="text">
-               <string>&amp;Channels by default:</string>
+               <string>Default &amp;Channels:</string>
               </property>
               <property name="buddy">
                <cstring>channels_combo</cstring>
@@ -134,28 +134,11 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="equalizer_layout">
-            <item>
-             <widget class="QCheckBox" name="audio_equalizer_check">
-              <property name="text">
-               <string>&amp;Enable the audio equalizer</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+           <widget class="QCheckBox" name="audio_equalizer_check">
+            <property name="text">
+             <string>&amp;Enable the audio equalizer</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="hwac3_check">
@@ -229,7 +212,7 @@
            <number>8</number>
           </property>
           <property name="bottomMargin">
-           <number>16</number>
+           <number>8</number>
           </property>
           <item>
            <layout class="QHBoxLayout">
@@ -322,7 +305,7 @@
            <number>8</number>
           </property>
           <property name="bottomMargin">
-           <number>16</number>
+           <number>8</number>
           </property>
           <item>
            <layout class="QHBoxLayout">
@@ -442,7 +425,7 @@
        <item>
         <widget class="QGroupBox" name="language_group">
          <property name="title">
-          <string>Language overrides</string>
+          <string>Language</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -463,7 +446,7 @@
           <item>
            <widget class="QLabel" name="language_label">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When a stream has audio in different languages and the player does not automatically select your preferred language, you can override the player selection by specifying your preferred language here. This field accepts regular expressions.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects an audio track if its language matches &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Override the audio channel selected by the player with &lt;span style=&quot; font-weight:600;&quot;&gt;language&lt;/span&gt;. This field accepts regular expressions.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects the first audio track with a language matching &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

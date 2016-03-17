@@ -83,6 +83,7 @@ public:
 
 
 	// General tab
+
 	// Version config file
 	int config_version;
 
@@ -107,28 +108,21 @@ public:
 	bool remember_time_pos;
 	QString file_settings_method; //!< Method to be used for saving file settings
 
-	// Screenshot
-	bool use_screenshot;
-#ifdef MPV_SUPPORT
-	QString screenshot_template;
-	QString screenshot_format;
-#endif
-	QString screenshot_directory;
-#ifdef CAPTURE_STREAM
-	QString capture_directory;
-#endif
-	void setupScreenshotFolder();
-
 
 	// Video tab
 	QString vo; // video output
 	QString hwdec; //!< hardware video decoding (mpv only)
+	bool use_soft_video_eq;
+
+	// Sync
 	bool frame_drop;
 	bool hard_frame_drop;
-	bool use_soft_video_eq;
-	int postprocessing_quality; 	//!< Postprocessing quality
 
-	bool add_blackborders_on_fullscreen;
+	// Defaults
+	bool initial_postprocessing;
+	int postprocessing_quality;
+	int initial_deinterlace;
+	int initial_tv_deinterlace;
 
 #ifndef Q_OS_WIN
 	struct VDPAU_settings {
@@ -140,6 +134,22 @@ public:
 		bool disable_video_filters;
 	} vdpau;
 #endif
+
+	// Screenshots
+	bool use_screenshot;
+
+#ifdef MPV_SUPPORT
+	QString screenshot_template;
+	QString screenshot_format;
+#endif
+
+	QString screenshot_directory;
+
+#ifdef CAPTURE_STREAM
+	QString capture_directory;
+#endif
+
+	void setupScreenshotFolder();
 
 
 	// Audio tab
@@ -296,6 +306,8 @@ public:
 	// TODO: fullscreen is not a preference...
 	bool fullscreen;
 	bool start_in_fullscreen;
+	bool add_blackborders_on_fullscreen;
+
 	TOnTop stay_on_top;
 	double size_factor;
 
@@ -370,7 +382,6 @@ public:
        ******** */
 
 	bool check_channels_conf_on_startup;
-	int initial_tv_deinterlace;
 	QString last_dvb_channel;
 	QString last_tv_channel;
 
@@ -419,10 +430,7 @@ public:
 	//! 100 = 100% at the bottom
 	int initial_sub_pos;
 
-	bool initial_postprocessing; //!< global postprocessing filter
 	bool initial_volnorm;
-
-	int initial_deinterlace;
 
 	int initial_audio_channels;
 	int initial_stereo_mode;
