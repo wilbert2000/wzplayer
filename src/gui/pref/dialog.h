@@ -42,7 +42,6 @@ class TPrefPlaylist;
 class TSubtitles;
 class TDrives;
 class TPerformance;
-class TTV;
 class TNetwork;
 class TUpdates;
 
@@ -67,7 +66,6 @@ public:
 		SECTION_SUBTITLES,
 		SECTION_DRIVES,
 		SECTION_PERFORMANCE,
-		SECTION_TV,
 		SECTION_NETWORK,
 		SECTION_UPDATES,
 #if USE_ASSOCIATIONS
@@ -120,7 +118,6 @@ protected:
 	TSubtitles* page_subtitles;
 	TDrives* page_drives;
 	TPerformance* page_performance;
-	TTV* page_tv;
 	TNetwork* page_network;
 	TUpdates* page_updates;
 

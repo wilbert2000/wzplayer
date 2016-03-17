@@ -36,6 +36,7 @@ public:
 
 	// Return the name of the section
 	virtual QString sectionName();
+
 	// Return the icon of the section
 	virtual QPixmap sectionIcon();
 

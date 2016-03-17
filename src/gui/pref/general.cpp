@@ -38,6 +38,7 @@ TGeneral::TGeneral(QWidget* parent)
 
 	mplayer_edit->setDialogType(FileChooser::GetFileName);
 	mpv_edit->setDialogType(FileChooser::GetFileName);
+
 	connect(mplayer_edit, SIGNAL(fileChanged(QString)),
 			this, SLOT(onMPlayerFileChanged(QString)));
 	connect(mpv_edit, SIGNAL(fileChanged(QString)),
@@ -46,6 +47,10 @@ TGeneral::TGeneral(QWidget* parent)
 			this, SLOT(onRadioClicked(bool)));
 	connect(mpv_radio, SIGNAL(clicked(bool)),
 			this, SLOT(onRadioClicked(bool)));
+
+#ifdef Q_OS_WIN
+	radio_tv_group->hide();
+#endif
 
 	retranslateStrings();
 }
@@ -65,7 +70,7 @@ void TGeneral::retranslateStrings() {
 
 	retranslateUi(this);
 
-	// Icons
+	// Player
 	mplayer_icon_label->setPixmap(Images::icon("mplayer"));
 	mpv_icon_label->setPixmap(Images::icon("mpv"));
 
@@ -80,11 +85,15 @@ void TGeneral::retranslateStrings() {
 	mpv_edit->setFilter(tr("All files") +" (*)");
 #endif
 
+	// Media settings
 	int filesettings_method_item = filesettings_method_combo->currentIndex();
 	filesettings_method_combo->clear();
 	filesettings_method_combo->addItem(tr("one ini file"), "normal");
 	filesettings_method_combo->addItem(tr("multiple ini files"), "hash");
 	filesettings_method_combo->setCurrentIndex(filesettings_method_item);
+
+	// Radio and TV
+	radio_tv_icon_label->setPixmap(Images::icon("pref_radio_tv"));
 
 	createHelp();
 }
@@ -102,6 +111,9 @@ void TGeneral::setData(TPreferences* pref) {
 	remember_audio_eq_check->setChecked(!pref->global_audio_equalizer);
 	setFileSettingsMethod(pref->file_settings_method);
 
+	// Radio and TV
+	radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
+
 	requires_restart = false;
 }
 
@@ -116,12 +128,16 @@ void TGeneral::getData(TPreferences* pref) {
 		pref->setPlayerBin(bin);
 	}
 
+	// Media settings
 	pref->remember_media_settings = rememberSettings();
 	pref->remember_time_pos = rememberTimePos();
 	pref->global_volume = !pref->remember_media_settings || globalVolume();
 	pref->global_audio_equalizer = !pref->remember_media_settings
 								   || !remember_audio_eq_check->isChecked();
 	pref->file_settings_method = fileSettingsMethod();
+
+	// Radio and TV
+	pref->check_channels_conf_on_startup = radio_tv_rescan_check->isChecked();
 }
 
 void TGeneral::setPlayerID(Settings::TPreferences::TPlayerID id) {
@@ -263,6 +279,14 @@ void TGeneral::createHelp() {
 		tr("<b>multiple ini files</b>: one ini file will be used for each played file. "
            "Those ini files will be saved in the folder %1").arg(QString("<i>"+TPaths::iniPath()+"/file_settings</i>")) + "</li></ul>" +
 		tr("The latter method could be faster if there is info for a lot of files."));
+
+#ifndef Q_OS_WIN
+	setWhatsThis(radio_tv_rescan_check, tr("Check for new radio and TV channels on startup"),
+		tr("If this option is checked, SMPlayer will look for new TV and radio"
+		   " channels in ~/.mplayer/channels.conf.ter"
+		   " or ~/.mplayer/channels.conf."));
+#endif
+
 }
 
 } // namespace Pref

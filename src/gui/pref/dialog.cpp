@@ -33,7 +33,6 @@
 #include "gui/pref/subtitles.h"
 #include "gui/pref/advanced.h"
 #include "gui/pref/prefplaylist.h"
-#include "gui/pref/tv.h"
 #include "gui/pref/updates.h"
 #include "gui/pref/network.h"
 
@@ -101,9 +100,6 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 
 	page_performance = new TPerformance;
 	addSection(page_performance);
-
-	page_tv = new TTV;
-	addSection(page_tv);
 
 	page_network = new TNetwork;
 	addSection(page_network);
@@ -204,7 +200,6 @@ void TDialog::setData(Settings::TPreferences* pref) {
 	page_subtitles->setData(pref);
 	page_drives->setData(pref);
 	page_performance->setData(pref);
-	page_tv->setData(pref);
 	page_network->setData(pref);
 	page_updates->setData(pref);
 
@@ -226,7 +221,6 @@ void TDialog::getData(Settings::TPreferences* pref) {
 	page_subtitles->getData(pref);
 	page_drives->getData(pref);
 	page_performance->getData(pref);
-	page_tv->getData(pref);
 	page_network->getData(pref);
 	page_updates->getData(pref);
 
@@ -248,7 +242,6 @@ bool TDialog::requiresRestart() {
 	if (!need_restart) need_restart = page_subtitles->requiresRestart();
 	if (!need_restart) need_restart = page_drives->requiresRestart();
 	if (!need_restart) need_restart = page_performance->requiresRestart();
-	if (!need_restart) need_restart = page_tv->requiresRestart();
 	if (!need_restart) need_restart = page_network->requiresRestart();
 	if (!need_restart) need_restart = page_updates->requiresRestart();
 	if (!need_restart) need_restart = page_advanced->requiresRestart();

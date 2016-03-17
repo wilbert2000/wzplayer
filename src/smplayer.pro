@@ -129,7 +129,6 @@ HEADERS += svn_revision.h \
     gui/pref/subtitles.h \
     gui/pref/advanced.h \
     gui/pref/prefplaylist.h \
-    gui/pref/tv.h \
     gui/pref/updates.h \
     gui/pref/network.h \
     gui/multilineinputdialog.h \
@@ -241,7 +240,6 @@ SOURCES	+= version.cpp \
     gui/pref/subtitles.cpp \
     gui/pref/advanced.cpp \
     gui/pref/prefplaylist.cpp \
-    gui/pref/tv.cpp \
     gui/pref/updates.cpp \
     gui/pref/network.cpp \
     gui/multilineinputdialog.cpp \
@@ -284,7 +282,7 @@ FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/pref/general.ui gui/pref/video.ui gui/pref/audio.ui \
         gui/pref/drives.ui gui/pref/interface.ui \
         gui/pref/performance.ui gui/pref/input.ui gui/pref/subtitles.ui \
-        gui/pref/advanced.ui gui/pref/prefplaylist.ui gui/pref/tv.ui \
+        gui/pref/advanced.ui gui/pref/prefplaylist.ui \
         gui/pref/updates.ui gui/pref/network.ui \
 
 contains(DEFINES, MPV_SUPPORT) {

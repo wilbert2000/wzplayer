@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>500</height>
+    <height>460</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -111,7 +111,7 @@
            <number>8</number>
           </property>
           <property name="bottomMargin">
-           <number>0</number>
+           <number>16</number>
           </property>
           <item>
            <widget class="QCheckBox" name="remember_all_check">
@@ -217,6 +217,60 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="radio_tv_group">
+         <property name="title">
+          <string>Radio and TV</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>16</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>8</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="radio_tv_icon_label">
+            <property name="text">
+             <string>Icon</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="radio_tv_rescan_check">
+            <property name="text">
+             <string>&amp;Check for new radio and TV channels on startup</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -256,6 +310,7 @@
   <tabstop>remember_volume_check</tabstop>
   <tabstop>remember_audio_eq_check</tabstop>
   <tabstop>filesettings_method_combo</tabstop>
+  <tabstop>radio_tv_rescan_check</tabstop>
  </tabstops>
  <resources/>
  <connections>
