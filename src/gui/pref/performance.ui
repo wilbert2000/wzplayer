@@ -106,38 +106,12 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="3">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>211</width>
-              <height>27</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="8" column="2">
            <widget class="QLabel" name="label_11">
             <property name="text">
              <string>KB</string>
             </property>
            </widget>
-          </item>
-          <item row="9" column="3">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>231</width>
-              <height>27</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item row="9" column="2">
            <widget class="QLabel" name="label_15">
@@ -203,19 +177,6 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="3">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>201</width>
-              <height>27</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="4" column="0">
            <widget class="QLabel" name="cache_streams_label">
             <property name="text">
@@ -253,32 +214,6 @@
              <number>100000</number>
             </property>
            </widget>
-          </item>
-          <item row="7" column="3">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>221</width>
-              <height>27</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="4" column="3">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>211</width>
-              <height>27</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
