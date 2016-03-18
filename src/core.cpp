@@ -1032,10 +1032,9 @@ void TCore::startPlayer(QString file, double seek) {
 		file = file.remove("|playlist");
 	} else {
 		QUrl url(file);
-		qDebug("TCore::startPlayer: url path: '%s'", url.path().toUtf8().constData());
 		if (url.scheme().toLower() != "ffmpeg") {
 			QRegExp rx("\\.ram$|\\.asx$|\\.m3u$|\\.m3u8$|\\.pls$", Qt::CaseInsensitive);
-			url_is_playlist = (rx.indexIn(url.path()) != -1);
+			url_is_playlist = rx.indexIn(url.path()) >= 0;
 		}
 	}
 	qDebug("TCore::startPlayer: url_is_playlist: %d", url_is_playlist);
@@ -1052,7 +1051,7 @@ void TCore::startPlayer(QString file, double seek) {
 					file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
 				}
 				if (QFile::exists(file2)) {
-					qDebug("TCore::startPlayer: found %s, so it will be used as audio file",
+					qDebug("TCore::startPlayer: using %s as external audio file",
 						   file2.toUtf8().constData());
 					mset.external_audio = file2;
 				}
@@ -1084,7 +1083,7 @@ void TCore::startPlayer(QString file, double seek) {
 		if (hwdec != "no" && haveVideoFilters()) {
 			hwdec = "no";
 			QString msg = tr("Disabled hardware decoding for video filters");
-			qDebug("TCore::startPlayer: %s", msg.toUtf8().constData());
+			qDebug() << "TCore::startPlayer:" << msg;
 			emit showMessage(msg, 0);
 		}
 		mdat.video_hwdec = hwdec != "no";
@@ -1165,7 +1164,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 #if USE_ADAPTER
-	if (pref->adapter > -1) {
+	if (pref->adapter >= 0) {
 		proc->setOption("adapter", QString::number(pref->adapter));
 	}
 #endif
