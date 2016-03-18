@@ -1305,13 +1305,8 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("vid", QString::number(mset.current_video_id));
 	}
 
-	if (mset.external_audio.isEmpty()) {
-		if (mset.current_audio_id >= 0) {
-			// Workaround for MPlayer bug #1321 (http://bugzilla.mplayerhq.hu/show_bug.cgi?id=1321)
-			if (mdat.audios.count() != 1) {
-				proc->setOption("aid", QString::number(mset.current_audio_id));
-			}
-		}
+	if (mset.external_audio.isEmpty() && mset.current_audio_id >= 0) {
+		proc->setOption("aid", QString::number(mset.current_audio_id));
 	}
 
 #if PROGRAM_SWITCH
