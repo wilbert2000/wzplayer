@@ -58,12 +58,12 @@ class TDialog : public QDialog, public Ui::TDialog {
 public:
 	enum TSection {
 		SECTION_GENERAL = 0,
-		SECTION_GUI,
-		SECTION_INPUT,
-		SECTION_PLAYLIST,
 		SECTION_VIDEO,
 		SECTION_AUDIO,
 		SECTION_SUBTITLES,
+		SECTION_GUI,
+		SECTION_PLAYLIST,
+		SECTION_INPUT,
 		SECTION_DRIVES,
 		SECTION_PERFORMANCE,
 		SECTION_NETWORK,
@@ -104,18 +104,14 @@ protected:
 	virtual void retranslateStrings();
 	virtual void changeEvent (QEvent* event);
 
-protected slots:
-	void apply();
-	void showHelp();
-
-protected:
+private:
 	TGeneral* page_general;
-	TInterface* page_interface;
-	TInput* page_input;
-	TPrefPlaylist* page_playlist;
 	TVideo* page_video;
 	TAudio* page_audio;
 	TSubtitles* page_subtitles;
+	TInterface* page_interface;
+	TPrefPlaylist* page_playlist;
+	TInput* page_input;
 	TDrives* page_drives;
 	TPerformance* page_performance;
 	TNetwork* page_network;
@@ -129,7 +125,6 @@ protected:
 
 	QTextBrowser* help_window;
 
-private:
 	QPushButton* okButton;
 	QPushButton* cancelButton;
 	QPushButton* applyButton;
@@ -138,6 +133,8 @@ private:
 	void addSection(TWidget* w);
 
 private slots:
+	void apply();
+	void showHelp();
 	void binChanged(const QString& path);
 };
 

@@ -77,15 +77,6 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	connect(page_general, SIGNAL(binChanged(const QString&)),
 			this, SLOT(binChanged(const QString&)));
 
-	page_interface = new TInterface;
-	addSection(page_interface);
-
-	page_input = new TInput;
-	addSection(page_input);
-
-	page_playlist = new TPrefPlaylist;
-	addSection(page_playlist);
-
 	page_video = new TVideo(0, i->voList());
 	addSection(page_video);
 
@@ -94,6 +85,15 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 
 	page_subtitles = new TSubtitles;
 	addSection(page_subtitles);
+
+	page_interface = new TInterface;
+	addSection(page_interface);
+
+	page_playlist = new TPrefPlaylist;
+	addSection(page_playlist);
+
+	page_input = new TInput;
+	addSection(page_input);
 
 	page_drives = new TDrives;
 	addSection(page_drives);
@@ -192,12 +192,12 @@ void TDialog::addSection(TWidget *w) {
 void TDialog::setData(Settings::TPreferences* pref) {
 
 	page_general->setData(pref);
-	page_interface->setData(pref);
-	page_input->setData(pref);
-	page_playlist->setData(pref);
 	page_video->setData(pref);
 	page_audio->setData(pref);
 	page_subtitles->setData(pref);
+	page_interface->setData(pref);
+	page_playlist->setData(pref);
+	page_input->setData(pref);
 	page_drives->setData(pref);
 	page_performance->setData(pref);
 	page_network->setData(pref);
@@ -213,12 +213,12 @@ void TDialog::setData(Settings::TPreferences* pref) {
 void TDialog::getData(Settings::TPreferences* pref) {
 
 	page_general->getData(pref);
-	page_interface->getData(pref);
-	page_input->getData(pref);
-	page_playlist->getData(pref);
 	page_video->getData(pref);
 	page_audio->getData(pref);
 	page_subtitles->getData(pref);
+	page_interface->getData(pref);
+	page_playlist->getData(pref);
+	page_input->getData(pref);
 	page_drives->getData(pref);
 	page_performance->getData(pref);
 	page_network->getData(pref);
@@ -234,12 +234,12 @@ void TDialog::getData(Settings::TPreferences* pref) {
 bool TDialog::requiresRestart() {
 
 	bool need_restart = page_general->requiresRestart();
-	if (!need_restart) need_restart = page_interface->requiresRestart();
-	if (!need_restart) need_restart = page_input->requiresRestart();
-	if (!need_restart) need_restart = page_playlist->requiresRestart();
 	if (!need_restart) need_restart = page_video->requiresRestart();
 	if (!need_restart) need_restart = page_audio->requiresRestart();
 	if (!need_restart) need_restart = page_subtitles->requiresRestart();
+	if (!need_restart) need_restart = page_interface->requiresRestart();
+	if (!need_restart) need_restart = page_playlist->requiresRestart();
+	if (!need_restart) need_restart = page_input->requiresRestart();
 	if (!need_restart) need_restart = page_drives->requiresRestart();
 	if (!need_restart) need_restart = page_performance->requiresRestart();
 	if (!need_restart) need_restart = page_network->requiresRestart();
