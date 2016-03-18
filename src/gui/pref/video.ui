@@ -28,10 +28,10 @@
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
-        <number>16</number>
+        <number>12</number>
        </property>
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item>
         <widget class="QGroupBox" name="output_group">
@@ -48,7 +48,7 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="output_verticalLayout">
-          <property name="margin">
+          <property name="topMargin">
            <number>0</number>
           </property>
           <item>
@@ -159,7 +159,7 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="synchronization_verticalLayout">
-          <property name="margin">
+          <property name="topMargin">
            <number>0</number>
           </property>
           <item>
@@ -194,11 +194,11 @@
           <bool>true</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
           <property name="horizontalSpacing">
            <number>16</number>
-          </property>
-          <property name="margin">
-           <number>0</number>
           </property>
           <item row="0" column="0" colspan="2">
            <widget class="QCheckBox" name="postprocessing_check">
@@ -321,7 +321,7 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="screenshots_verticalLayout">
-          <property name="margin">
+          <property name="topMargin">
            <number>0</number>
           </property>
           <item>

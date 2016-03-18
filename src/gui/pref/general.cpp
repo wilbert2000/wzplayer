@@ -194,11 +194,11 @@ void TGeneral::onRadioClicked(bool) {
 }
 
 void TGeneral::setRememberSettings(bool b) {
-	remember_all_check->setChecked(b);
+	settings_group->setChecked(b);
 }
 
 bool TGeneral::rememberSettings() {
-	return remember_all_check->isChecked();
+	return settings_group->isChecked();
 }
 
 void TGeneral::setRememberTimePos(bool b) {
@@ -251,22 +251,22 @@ void TGeneral::createHelp() {
 		+ tr("If this setting is wrong, SMPlayer won't be able to play anything!")
 		+ "</b>");
 
-	setWhatsThis(remember_all_check, tr("Remember settings"),
+	setWhatsThis(settings_group, tr("Remember settings for every file"),
 		tr("When checked SMPlayer will remember the settings you make for each file"
 		   " and reload them when you play the file again."));
 
-	setWhatsThis(remember_time_check, tr("Remember time position for every file"),
+	setWhatsThis(remember_time_check, tr("Remember time position"),
 		tr("If you check this option, SMPlayer will remember the last position "
            "of the file when you open it again. This option works only with "
            "regular files (not with DVDs, CDs, URLs...)."));
 
-	setWhatsThis(remember_volume_check, tr("Remember volume for every file"),
+	setWhatsThis(remember_volume_check, tr("Remember volume"),
 		tr("If not checked, the same volume will be used for all files you play."
 		   " If checked each file uses its own volume.")
 		+ "<br>"
 		+ tr("This option also applies to the mute state."));
 
-	setWhatsThis(remember_audio_eq_check, tr("Remember audio equalizer for every file"),
+	setWhatsThis(remember_audio_eq_check, tr("Remember audio equalizer"),
 		tr("If this option is not checked, all media files share the same audio equalizer.") +" "+
 		tr("If it is checked, the audio equalizer values are saved along each file "
 		   "and loaded back when the file is played later."));

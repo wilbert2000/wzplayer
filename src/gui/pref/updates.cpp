@@ -31,8 +31,7 @@ TUpdates::TUpdates(QWidget* parent, Qt::WindowFlags f)
 	createHelp();
 
 #ifndef UPDATE_CHECKER
-	updates_check->hide();
-	days_frame->hide();
+	update_group->hide();
 #endif
 
 }
@@ -49,6 +48,7 @@ QPixmap TUpdates::sectionIcon() {
 }
 
 void TUpdates::retranslateStrings() {
+
 	retranslateUi(this);
 	createHelp();
 }
@@ -56,7 +56,7 @@ void TUpdates::retranslateStrings() {
 void TUpdates::setData(Settings::TPreferences* pref) {
 
 #ifdef UPDATE_CHECKER
-	updates_check->setChecked(pref->update_checker_data.enabled);
+	update_group->setChecked(pref->update_checker_data.enabled);
 	days_spin->setValue(pref->update_checker_data.days_to_check);
 #endif
 
@@ -66,7 +66,7 @@ void TUpdates::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 #ifdef UPDATE_CHECKER
-	pref->update_checker_data.enabled = updates_check->isChecked();
+	pref->update_checker_data.enabled = update_group->isChecked();
 	pref->update_checker_data.days_to_check = days_spin->value();
 #endif
 
@@ -76,12 +76,12 @@ void TUpdates::createHelp() {
 	clearHelp();
 
 #ifdef UPDATE_CHECKER
-	setWhatsThis(updates_check, tr("Check for updates"),
+	setWhatsThis(update_group, tr("Check for updates"),
 		tr("If this option is enabled, SMPlayer will check for updates "
            "and display a notification if a new version is available."));
 
-	setWhatsThis(days_frame, tr("Check interval"),
-		tr("You can enter here the interval (in days) for the update checks."));
+	setWhatsThis(days_spin, tr("Check interval"),
+		tr("Enter the number of days between update checks."));
 #endif
 
 }

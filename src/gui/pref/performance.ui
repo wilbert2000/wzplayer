@@ -15,17 +15,17 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QTabWidget" name="performance_tab">
+    <widget class="QTabWidget" name="performance_tabwidget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="performance_tab">
       <attribute name="title">
        <string>Performance</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item>
         <widget class="QGroupBox" name="cache_group">
@@ -36,16 +36,7 @@
           <bool>true</bool>
          </property>
          <layout class="QGridLayout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
           <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item row="0" column="0" colspan="4">

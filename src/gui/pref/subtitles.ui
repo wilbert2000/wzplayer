@@ -31,10 +31,10 @@
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
-        <number>16</number>
+        <number>12</number>
        </property>
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item>
         <widget class="QGroupBox" name="selection_group">
@@ -45,8 +45,17 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
            <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
+           <number>4</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
@@ -194,8 +203,17 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
            <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
+           <number>4</number>
           </property>
           <item>
            <widget class="QLabel" name="enca_lang_label">
@@ -320,13 +338,13 @@
       </attribute>
       <layout class="QGridLayout">
        <property name="leftMargin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <property name="topMargin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <property name="rightMargin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <property name="bottomMargin">
         <number>0</number>
@@ -353,7 +371,7 @@
           </size>
          </property>
          <property name="title">
-          <string>Freetype support</string>
+          <string>&amp;Freetype support</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -362,7 +380,16 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -374,7 +401,7 @@
              </size>
             </property>
             <property name="title">
-             <string>Use the ASS subtitle library</string>
+             <string>&amp;Use the ASS subtitle library</string>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -383,7 +410,16 @@
              <bool>true</bool>
             </property>
             <layout class="QGridLayout" name="ass_gridlayout">
-             <property name="margin">
+             <property name="leftMargin">
+              <number>4</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
               <number>0</number>
              </property>
              <item row="1" column="0">
@@ -448,7 +484,7 @@
              <item row="3" column="0" colspan="3">
               <widget class="QGroupBox" name="custom_style_group">
                <property name="title">
-                <string>Use custom style for unstyled subtitles</string>
+                <string>U&amp;se custom style for unstyled subtitles</string>
                </property>
                <property name="flat">
                 <bool>true</bool>
@@ -460,7 +496,16 @@
                 <property name="spacing">
                  <number>16</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>4</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
                  <number>0</number>
                 </property>
                 <item>
@@ -472,7 +517,16 @@
                    <bool>true</bool>
                   </property>
                   <layout class="QGridLayout" name="font_gridlayout">
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>4</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>0</number>
                    </property>
                    <item row="1" column="1">
@@ -575,7 +629,7 @@
                     </property>
                     <layout class="QGridLayout">
                      <property name="leftMargin">
-                      <number>0</number>
+                      <number>4</number>
                      </property>
                      <property name="topMargin">
                       <number>0</number>
@@ -671,7 +725,7 @@
                     </property>
                     <layout class="QGridLayout">
                      <property name="leftMargin">
-                      <number>0</number>
+                      <number>4</number>
                      </property>
                      <property name="topMargin">
                       <number>0</number>
@@ -738,7 +792,16 @@
                    <bool>true</bool>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_5">
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>4</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>0</number>
                    </property>
                    <item>
@@ -811,7 +874,16 @@
                    <bool>true</bool>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>4</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>0</number>
                    </property>
                    <item>

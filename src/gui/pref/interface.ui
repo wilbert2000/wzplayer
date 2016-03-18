@@ -28,10 +28,10 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <property name="spacing">
-        <number>16</number>
+        <number>12</number>
        </property>
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item>
         <widget class="QGroupBox" name="interface_group">
@@ -42,7 +42,7 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
-          <property name="margin">
+          <property name="topMargin">
            <number>0</number>
           </property>
           <item>
@@ -170,7 +170,7 @@
           <property name="spacing">
            <number>16</number>
           </property>
-          <property name="margin">
+          <property name="topMargin">
            <number>0</number>
           </property>
           <item>
@@ -299,7 +299,7 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
-          <property name="margin">
+          <property name="topMargin">
            <number>0</number>
           </property>
           <item>
@@ -402,8 +402,11 @@
        <string>&amp;Seeking</string>
       </attribute>
       <layout class="QGridLayout">
+       <property name="verticalSpacing">
+        <number>12</number>
+       </property>
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item row="0" column="0">
         <widget class="QGroupBox" name="seek_group">
@@ -420,17 +423,8 @@
           <bool>true</bool>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
           <property name="topMargin">
            <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>16</number>
           </property>
           <item>
            <layout class="QVBoxLayout">
@@ -479,17 +473,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <property name="rightMargin">
            <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>16</number>
           </property>
           <item>
            <widget class="QRadioButton" name="absolute_seeking_button">
@@ -549,17 +534,8 @@
        </item>
        <item row="4" column="0">
         <layout class="QHBoxLayout">
-         <property name="leftMargin">
+         <property name="margin">
           <number>4</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>4</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
          </property>
          <item>
           <widget class="QLabel" name="label_3">
@@ -613,8 +589,11 @@
        <string>&amp;History</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>12</number>
+       </property>
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item>
         <widget class="QGroupBox" name="groupBox_4">
@@ -625,17 +604,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_7">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
           <property name="topMargin">
            <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>16</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">

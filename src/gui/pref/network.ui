@@ -19,41 +19,43 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="proxy_page">
+     <widget class="QWidget" name="proxy_tab">
       <attribute name="title">
-       <string>&amp;Proxy</string>
+       <string>Network</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item>
-        <widget class="QCheckBox" name="use_proxy_check">
-         <property name="text">
+        <widget class="QGroupBox" name="proxy_group">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="title">
           <string>&amp;Enable proxy</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="proxy_container" native="true">
-         <property name="enabled">
-          <bool>false</bool>
+         <property name="flat">
+          <bool>true</bool>
          </property>
-         <layout class="QGridLayout" name="_2">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>&amp;Host:</string>
-            </property>
-            <property name="buddy">
-             <cstring>proxy_hostname_edit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="2">
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
            <widget class="QLineEdit" name="proxy_hostname_edit"/>
           </item>
           <item row="0" column="3">
+           <widget class="QSpinBox" name="proxy_port_spin">
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>&amp;Port:</string>
@@ -63,13 +65,6 @@
             </property>
             <property name="buddy">
              <cstring>proxy_port_spin</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QSpinBox" name="proxy_port_spin">
-            <property name="maximum">
-             <number>65535</number>
             </property>
            </widget>
           </item>
@@ -83,7 +78,37 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="4">
+          <item row="3" column="1">
+           <widget class="QComboBox" name="proxy_type_combo"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>&amp;Type:</string>
+            </property>
+            <property name="buddy">
+             <cstring>proxy_type_combo</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="proxy_password_edit">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>&amp;Host:</string>
+            </property>
+            <property name="buddy">
+             <cstring>proxy_hostname_edit</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
            <widget class="QLineEdit" name="proxy_username_edit"/>
           </item>
           <item row="2" column="0">
@@ -96,40 +121,30 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1" colspan="4">
-           <widget class="QLineEdit" name="proxy_password_edit">
-            <property name="echoMode">
-             <enum>QLineEdit::Password</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>&amp;Type:</string>
-            </property>
-            <property name="buddy">
-             <cstring>proxy_type_combo</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="proxy_type_combo"/>
-          </item>
-          <item row="3" column="2" colspan="3">
-           <spacer>
+          <item row="0" column="4">
+           <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>261</width>
+              <width>40</width>
               <height>20</height>
              </size>
             </property>
            </spacer>
           </item>
          </layout>
+         <zorder>label_2</zorder>
+         <zorder>proxy_hostname_edit</zorder>
+         <zorder>label_3</zorder>
+         <zorder>proxy_port_spin</zorder>
+         <zorder>label_4</zorder>
+         <zorder>proxy_username_edit</zorder>
+         <zorder>label_5</zorder>
+         <zorder>proxy_password_edit</zorder>
+         <zorder>label_6</zorder>
+         <zorder>proxy_type_combo</zorder>
         </widget>
        </item>
        <item>
@@ -153,7 +168,7 @@
  </widget>
  <tabstops>
   <tabstop>tab_widget</tabstop>
-  <tabstop>use_proxy_check</tabstop>
+  <tabstop>proxy_group</tabstop>
   <tabstop>proxy_hostname_edit</tabstop>
   <tabstop>proxy_port_spin</tabstop>
   <tabstop>proxy_username_edit</tabstop>
@@ -161,22 +176,5 @@
   <tabstop>proxy_type_combo</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>use_proxy_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>proxy_container</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>239</x>
-     <y>50</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>239</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

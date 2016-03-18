@@ -25,8 +25,8 @@
 namespace Gui { namespace Pref {
 
 TNetwork::TNetwork(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
+
 	setupUi(this);
 
 	proxy_type_combo->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
@@ -47,12 +47,14 @@ QPixmap TNetwork::sectionIcon() {
 }
 
 void TNetwork::retranslateStrings() {
+
 	retranslateUi(this);
 	createHelp();
 }
 
 void TNetwork::setData(Settings::TPreferences* pref) {
-	use_proxy_check->setChecked(pref->use_proxy);
+
+	proxy_group->setChecked(pref->use_proxy);
 	proxy_hostname_edit->setText(pref->proxy_host);
 	proxy_port_spin->setValue(pref->proxy_port);
 	proxy_username_edit->setText(pref->proxy_username);
@@ -62,9 +64,10 @@ void TNetwork::setData(Settings::TPreferences* pref) {
 }
 
 void TNetwork::getData(Settings::TPreferences* pref) {
+
 	requires_restart = false;
 
-	pref->use_proxy = use_proxy_check->isChecked();
+	pref->use_proxy = proxy_group->isChecked();
 	pref->proxy_host = proxy_hostname_edit->text();
 	pref->proxy_port = proxy_port_spin->value();
 	pref->proxy_username = proxy_username_edit->text();
@@ -74,22 +77,25 @@ void TNetwork::getData(Settings::TPreferences* pref) {
 }
 
 void TNetwork::setProxyType(int type) {
+
 	int index = proxy_type_combo->findData(type);
 	if (index == -1) index = 0;
 	proxy_type_combo->setCurrentIndex(index);
 }
 
 int TNetwork::proxyType() {
+
 	int index = proxy_type_combo->currentIndex();
 	return proxy_type_combo->itemData(index).toInt();
 }
 
 void TNetwork::createHelp() {
+
 	clearHelp();
 
 	addSectionTitle(tr("Proxy"));
 
-	setWhatsThis(use_proxy_check, tr("Enable proxy"),
+	setWhatsThis(proxy_group, tr("Enable proxy"),
 		tr("Enable/disable the use of the proxy."));
 
 	setWhatsThis(proxy_hostname_edit, tr("Host"),
@@ -107,7 +113,6 @@ void TNetwork::createHelp() {
 
 	setWhatsThis(proxy_type_combo, tr("Type"),
 		tr("Select the proxy type to be used."));
-
 }
 
 }} // namespace Gui::Pref
