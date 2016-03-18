@@ -1241,13 +1241,11 @@ void TCore::startPlayer(QString file, double seek) {
 			}
 
 			if (isMPV()) {
-				// MPV
 				proc->setSubStyles(pref->ass_styles);
 				if (pref->force_ass_styles) {
 					proc->setOption("ass-force-style", ass_force_style);
 				}
 			} else {
-				// MPlayer
 				if (pref->force_ass_styles) {
 					proc->setOption("ass-force-style", ass_force_style);
 				} else {
@@ -1257,12 +1255,11 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	} else {
 		// NO ASS
-		// TODO: Check passing -noass, seems to create more problems then it solves?
-		// if (pref->freetype_support)
-		//	proc->setOption("noass");
+		if (pref->freetype_support)
+			proc->setOption("noass");
 		if (isMPV()) {
 			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
-		} else if (mset.sub_scale != 5) {
+		} else {
 			proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
 		}
 	}
