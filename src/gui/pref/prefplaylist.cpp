@@ -17,6 +17,7 @@
 */
 
 #include "gui/pref/prefplaylist.h"
+#include "settings/paths.h"
 #include "settings/preferences.h"
 #include "images.h"
 
@@ -35,7 +36,7 @@ TPrefPlaylist::~TPrefPlaylist() {
 }
 
 QString TPrefPlaylist::sectionName() {
-	return tr("Playlist");
+	return tr("Playlist and log");
 }
 
 QPixmap TPrefPlaylist::sectionIcon() {
@@ -61,6 +62,10 @@ void TPrefPlaylist::setData(Settings::TPreferences* pref) {
 
 	setAutoAddFilesToPlaylist(pref->auto_add_to_playlist);
 	setMediaToAdd(pref->media_to_add_to_playlist);
+
+	setLogDebugEnabled(pref->log_debug_enabled);
+	setLogVerbose(pref->log_verbose);
+	setLogFile(pref->log_file);
 }
 
 void TPrefPlaylist::getData(Settings::TPreferences* pref) {
@@ -69,6 +74,10 @@ void TPrefPlaylist::getData(Settings::TPreferences* pref) {
 
 	pref->auto_add_to_playlist = autoAddFilesToPlaylist();
 	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
+
+	pref->log_debug_enabled = logDebugEnabled();
+	restartIfBoolChanged(pref->log_verbose, logVerbose());
+	pref->log_file = logFile();
 }
 
 void TPrefPlaylist::setAutoAddFilesToPlaylist(bool b) {
@@ -113,8 +122,35 @@ bool TPrefPlaylist::playFilesFromStart() {
 	return play_from_start_check->isChecked();
 }
 
+void TPrefPlaylist::setLogDebugEnabled(bool b) {
+	log_debug_check->setChecked(b);
+}
+
+bool TPrefPlaylist::logDebugEnabled() {
+	return log_debug_check->isChecked();
+}
+
+void TPrefPlaylist::setLogVerbose(bool b) {
+	log_verbose_check->setChecked(b);
+}
+
+bool TPrefPlaylist::logVerbose() {
+	return log_verbose_check->isChecked();
+}
+
+void TPrefPlaylist::setLogFile(bool b) {
+	log_file_check->setChecked(b);
+}
+
+bool TPrefPlaylist::logFile() {
+	return log_file_check->isChecked();
+}
+
 void TPrefPlaylist::createHelp() {
+
 	clearHelp();
+
+	addSectionTitle(tr("Playlist"));
 
 	setWhatsThis(auto_add_to_playlist_check, tr("Automatically add files to playlist"),
 		tr("If this option is enabled, every time a file is opened, SMPlayer "
@@ -144,6 +180,22 @@ void TPrefPlaylist::createHelp() {
 		tr("If this option is checked, a copy of the playlist will be saved "
            "in the smplayer configuration when smplayer is closed, and it will "
            "reloaded automatically when smplayer is run again."));
+
+	addSectionTitle(tr("Logs"));
+
+	setWhatsThis(log_debug_check, tr("Log debug messages"),
+		tr("If checked, SMPlayer will log debug messages, "
+		   "which might give additional information in case of trouble. "
+		   "Non-debug messages are always logged. "
+		   "You can view the log with menu <b>Options - View log</b>."));
+
+	setWhatsThis(log_verbose_check, tr("Verbose"),
+		tr("Request verbose messages from player for troubleshooting."));
+
+	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
+		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
+		  .arg("<i>"+ Settings::TPaths::configPath() + "/smplayer_log.txt</i>"));
+
 }
 
 }} // namespace Gui::Pref

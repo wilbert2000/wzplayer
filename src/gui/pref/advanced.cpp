@@ -21,7 +21,6 @@
 #include <QColorDialog>
 #include "images.h"
 #include "settings/preferences.h"
-#include "settings/paths.h"
 
 
 using namespace Settings;
@@ -91,10 +90,6 @@ void TAdvanced::setData(TPreferences* pref) {
 	setUseCorrectPts(pref->use_correct_pts);
 	setActionsToRun(pref->actions_to_run);
 
-	setLogDebugEnabled(pref->log_debug_enabled);
-	setLogVerbose(pref->log_verbose);
-	setLogFile(pref->log_file);
-
 	setMplayerCrashes(pref->report_mplayer_crashes);
 }
 
@@ -136,10 +131,6 @@ void TAdvanced::getData(TPreferences* pref) {
 		colorkey_changed = true;
 		requires_restart = true;
 	}
-
-	pref->log_debug_enabled = logDebugEnabled();
-	TEST_AND_SET(pref->log_verbose, logVerbose());
-	pref->log_file = logFile();
 
 	pref->report_mplayer_crashes = mplayerCrashes();
 }
@@ -263,31 +254,6 @@ void TAdvanced::on_changeButton_clicked() {
 	}
 }
 
-// Log options
-void TAdvanced::setLogDebugEnabled(bool b) {
-	log_debug_enabled_check->setChecked(b);
-}
-
-bool TAdvanced::logDebugEnabled() {
-	return log_debug_enabled_check->isChecked();
-}
-
-void TAdvanced::setLogVerbose(bool b) {
-	log_verbose_check->setChecked(b);
-}
-
-bool TAdvanced::logVerbose() {
-	return log_verbose_check->isChecked();
-}
-
-void TAdvanced::setLogFile(bool b) {
-	log_file_check->setChecked(b);
-}
-
-bool TAdvanced::logFile() {
-	return log_file_check->isChecked();
-}
-
 void TAdvanced::createHelp() {
 	clearHelp();
 
@@ -357,19 +323,6 @@ void TAdvanced::createHelp() {
 	setWhatsThis(mplayer_afilters_edit, tr("Audio filters"),
         tr("Here you can add audio filters for %1.").arg(pref->playerName()) +" "+
         tr("Write them separated by commas. Don't use spaces!"));
-
-
-	addSectionTitle(tr("Logs"));
-
-	setWhatsThis(log_debug_enabled_check, tr("Log debug messages"),
-		tr("If checked, SMPlayer will log debug messages, "
-		   "which might give additional information in case of trouble. "
-		   "Non-debug messages are always logged. "
-		   "You can view the log with menu <b>Options -> View log</b>."));
-
-	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
-		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
-          .arg("<i>"+ TPaths::configPath() + "/smplayer_log.txt</i>"));
 }
 
 }} // namespace Gui::Pref

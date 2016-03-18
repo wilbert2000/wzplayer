@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>378</width>
-    <height>367</height>
+    <height>400</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -15,110 +15,169 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QTabWidget" name="playlist_tab">
+    <widget class="QTabWidget" name="playlist_tabwidget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="playlist_tab">
       <attribute name="title">
-       <string>&amp;Playlist</string>
+       <string>Playlist and log</string>
       </attribute>
       <layout class="QVBoxLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
        <property name="margin">
-        <number>16</number>
+        <number>12</number>
        </property>
        <item>
-        <widget class="QCheckBox" name="auto_add_to_playlist_check">
-         <property name="text">
-          <string>&amp;Automatically add files to playlist</string>
+        <widget class="QGroupBox" name="playlist_group">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
          </property>
+         <property name="title">
+          <string>Playlist</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QCheckBox" name="auto_add_to_playlist_check">
+            <property name="text">
+             <string>&amp;Automatically add files to playlist</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="media_to_add_label">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Add files from &amp;folder:</string>
+              </property>
+              <property name="buddy">
+               <cstring>media_to_add_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="media_to_add_combo">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="recursive_check">
+            <property name="text">
+             <string>Add files in directories &amp;recursively</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="play_from_start_check">
+            <property name="text">
+             <string>P&amp;lay files from start</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="autosave_on_exit_check">
+            <property name="text">
+             <string>&amp;Save copy of playlist on exit</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="media_to_add_label">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Add files from &amp;folder:</string>
-           </property>
-           <property name="buddy">
-            <cstring>media_to_add_combo</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="media_to_add_combo">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QGroupBox" name="log_group">
+         <property name="title">
+          <string>Log</string>
          </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+         <property name="flat">
+          <bool>true</bool>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="play_from_start_check">
-         <property name="text">
-          <string>P&amp;lay files from start</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="recursive_check">
-         <property name="text">
-          <string>Add files in directories &amp;recursively</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="autosave_on_exit_check">
-         <property name="text">
-          <string>&amp;Save copy of playlist on exit</string>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item alignment="Qt::AlignTop">
+           <widget class="QCheckBox" name="log_debug_check">
+            <property name="text">
+             <string>&amp;Log debug messages</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="log_verbose_check">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&amp;Verbose</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="log_file_check">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&amp;Save log to a file</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -141,12 +200,15 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>playlist_tab</tabstop>
+  <tabstop>playlist_tabwidget</tabstop>
   <tabstop>auto_add_to_playlist_check</tabstop>
   <tabstop>media_to_add_combo</tabstop>
-  <tabstop>play_from_start_check</tabstop>
   <tabstop>recursive_check</tabstop>
+  <tabstop>play_from_start_check</tabstop>
   <tabstop>autosave_on_exit_check</tabstop>
+  <tabstop>log_debug_check</tabstop>
+  <tabstop>log_verbose_check</tabstop>
+  <tabstop>log_file_check</tabstop>
  </tabstops>
  <resources/>
  <connections>

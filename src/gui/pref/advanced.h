@@ -86,16 +86,6 @@ protected:
 	void setActionsToRun(QString actions);
 	QString actionsToRun();
 
-	// Log options
-	void setLogDebugEnabled(bool b);
-	bool logDebugEnabled();
-
-	void setLogVerbose(bool b);
-	bool logVerbose();
-
-	void setLogFile(bool b);
-	bool logFile();
-
 protected:
 	virtual void retranslateStrings();
 

@@ -66,6 +66,16 @@ private:
 
 	void setMediaToAdd(int);
 	int mediaToAdd();
+
+	// Log options
+	void setLogDebugEnabled(bool b);
+	bool logDebugEnabled();
+
+	void setLogVerbose(bool b);
+	bool logVerbose();
+
+	void setLogFile(bool b);
+	bool logFile();
 };
 
 }} // namespace Gui::Pref
