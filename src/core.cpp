@@ -746,6 +746,7 @@ void TCore::dvdnavSeek() {
 void TCore::dvdnavRestoreTitle() {
 
 	// Restore title, time and menu
+	// TODO: remove, too dangerous
 
 	int selected_title = mdat.titles.getSelectedID();
 	if (title_to_select == selected_title) {
