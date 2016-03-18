@@ -28,6 +28,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::TabFocus</enum>
+     </property>
      <property name="currentIndex">
       <number>-1</number>
      </property>
@@ -61,6 +64,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>sections</tabstop>
+  <tabstop>pages</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

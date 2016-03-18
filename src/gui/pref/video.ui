@@ -508,6 +508,7 @@
   <tabstop>postprocessing_check</tabstop>
   <tabstop>postprocessing_quality_spin</tabstop>
   <tabstop>deinterlace_combo</tabstop>
+  <tabstop>deinterlace_tv_combo</tabstop>
   <tabstop>zoom_spin</tabstop>
   <tabstop>use_screenshots_check</tabstop>
   <tabstop>screenshot_edit</tabstop>

@@ -229,6 +229,8 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>performance_tabwidget</tabstop>
+  <tabstop>cache_files_spin</tabstop>
   <tabstop>cache_streams_spin</tabstop>
   <tabstop>cache_dvds_spin</tabstop>
   <tabstop>cache_cds_spin</tabstop>

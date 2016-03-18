@@ -476,6 +476,7 @@ Example: extrastereo,karaoke</string>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>advanced_tab</tabstop>
   <tabstop>monitoraspect_combo</tabstop>
   <tabstop>idx_check</tabstop>
   <tabstop>lavf_demuxer_check</tabstop>

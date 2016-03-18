@@ -106,6 +106,8 @@
  </widget>
  <tabstops>
   <tabstop>updates_tabwidget</tabstop>
+  <tabstop>update_group</tabstop>
+  <tabstop>days_spin</tabstop>
  </tabstops>
  <resources/>
  <connections/>
