@@ -367,16 +367,16 @@ int TVideo::initialDeinterlace() {
 void TVideo::setInitialDeinterlaceTV(int ID) {
 
 	int pos = deinterlace_tv_combo->findData(ID);
-	if (pos != -1) {
-		deinterlace_tv_combo->setCurrentIndex(pos);
-	} else {
+	if (pos < 0) {
+		pos = 0;
 		qWarning("Gui::Pref::TTV::setInitialDeinterlaceTV: ID: %d not found in combo", ID);
 	}
+	deinterlace_tv_combo->setCurrentIndex(pos);
 }
 
 int TVideo::initialDeinterlaceTV() {
 
-	if (deinterlace_tv_combo->currentIndex() != -1) {
+	if (deinterlace_tv_combo->currentIndex() >= 0) {
 		return deinterlace_tv_combo->itemData(deinterlace_tv_combo->currentIndex()).toInt();
 	} else {
 		qWarning("Gui::Pref::TTV::initialDeinterlaceTV: no item selected");
@@ -401,11 +401,11 @@ int TVideo::postprocessingQuality() {
 }
 
 void TVideo::setUseScreenshots(bool b) {
-	use_screenshots_check->setChecked(b);
+	screenshots_group->setChecked(b);
 }
 
 bool TVideo::useScreenshots() {
-	return use_screenshots_check->isChecked();
+	return screenshots_group->isChecked();
 }
 
 void TVideo::setScreenshotDir(const QString& path) {
@@ -550,7 +550,7 @@ void TVideo::createHelp() {
 		   "<b>Note:</b> this option can be incompatible with some video "
 		   "output drivers."));
 
-	setWhatsThis(use_screenshots_check, tr("Enable screenshots"),
+	setWhatsThis(screenshots_group, tr("Enable screenshots"),
 		tr("You can use this option to enable or disable the possibility to "
 		   "take screenshots."));
 
