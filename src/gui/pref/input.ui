@@ -111,6 +111,9 @@
        <string>&amp;Mouse</string>
       </attribute>
       <layout class="QVBoxLayout">
+       <property name="spacing">
+        <number>16</number>
+       </property>
        <property name="margin">
         <number>16</number>
        </property>
@@ -133,7 +136,7 @@
            <number>8</number>
           </property>
           <property name="bottomMargin">
-           <number>16</number>
+           <number>0</number>
           </property>
           <property name="horizontalSpacing">
            <number>16</number>
@@ -309,36 +312,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="wheel_function_seeking_reverse_check">
-         <property name="text">
-          <string>R&amp;everse wheel while seeking</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="wheel_tab">
-      <attribute name="title">
-       <string>Mouse &amp;wheel</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="margin">
-        <number>16</number>
-       </property>
-       <item>
         <widget class="QGroupBox" name="wheel_group">
          <property name="minimumSize">
           <size>
@@ -360,7 +333,7 @@
            <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>16</number>
+           <number>8</number>
           </property>
           <property name="bottomMargin">
            <number>0</number>
@@ -413,7 +386,14 @@
         </widget>
        </item>
        <item>
-        <spacer>
+        <widget class="QCheckBox" name="wheel_function_seeking_reverse_check">
+         <property name="text">
+          <string>R&amp;everse wheel while seeking</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -454,11 +434,11 @@
   <tabstop>xbutton2_click_combo</tabstop>
   <tabstop>wheel_function_combo</tabstop>
   <tabstop>wait_for_double_click_check</tabstop>
-  <tabstop>wheel_function_seeking_reverse_check</tabstop>
   <tabstop>wheel_function_seek</tabstop>
   <tabstop>wheel_function_volume</tabstop>
   <tabstop>wheel_function_zoom</tabstop>
   <tabstop>wheel_function_speed</tabstop>
+  <tabstop>wheel_function_seeking_reverse_check</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -348,11 +348,6 @@ void TInput::createHelp() {
 			 " it will also cause a left click action being triggered before"
 			 " and after every double click action."));
 
-	setWhatsThis(wheel_function_seeking_reverse_check, tr("Reverse mouse wheel seeking"),
-		tr("Check it to seek in the opposite direction."));
-
-	addSectionTitle(tr("Mouse wheel functions"));
-
 	setWhatsThis(wheel_function_seek, tr("Media seeking"),
 		tr("Check it to enable seeking as one function."));
 
@@ -364,6 +359,9 @@ void TInput::createHelp() {
 
 	setWhatsThis(wheel_function_speed, tr("Change speed"),
 		tr("Check it to enable changing speed as one function."));
+
+	setWhatsThis(wheel_function_seeking_reverse_check, tr("Reverse mouse wheel seeking"),
+		tr("Check it to seek in the opposite direction."));
 }
 
 }} // namespace Gui::Pref
