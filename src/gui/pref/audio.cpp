@@ -67,13 +67,14 @@ QString TAudio::sectionName() {
 }
 
 QPixmap TAudio::sectionIcon() {
-	// TODO:
 	return Images::icon("speaker", 22);
 }
 
 void TAudio::retranslateStrings() {
 
 	retranslateUi(this);
+
+	icon_label->setPixmap(Images::icon("speaker"));
 
 	updateDriverCombo(true);
 
