@@ -30,9 +30,8 @@
 #include "languages.h"
 
 
-#define SINGLE_INSTANCE_TAB 2
-
-namespace Gui { namespace Pref {
+namespace Gui {
+namespace Pref {
 
 TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 	: TWidget(parent, f) {
@@ -65,14 +64,13 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 	connect(single_instance_check, SIGNAL(toggled(bool)), 
 			this, SLOT(changeInstanceImages()));
 #else
-	tabWidget->setTabEnabled(SINGLE_INSTANCE_TAB, false);
+	single_instance_check->hide();
 #endif
 
 	retranslateStrings();
 }
 
-TInterface::~TInterface()
-{
+TInterface::~TInterface() {
 }
 
 QString TInterface::sectionName() {
@@ -84,6 +82,7 @@ QPixmap TInterface::sectionIcon() {
 }
 
 void TInterface::createLanguageCombo() {
+
 	QMap <QString,QString> m = Languages::translations();
 
 	// Language combo
@@ -103,21 +102,16 @@ void TInterface::createLanguageCombo() {
 }
 
 void TInterface::retranslateStrings() {
+
 	int mainwindow_resize = resize_window_combo->currentIndex();
 	int timeslider_pos = timeslider_behaviour_combo->currentIndex();
 
 	retranslateUi(this);
 
+	changeInstanceImages();
+
 	resize_window_combo->setCurrentIndex(mainwindow_resize);
 	timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
-
-	// Icons
-	resize_window_icon->setPixmap(Images::icon("resize_window"));
-	/* volume_icon->setPixmap(Images::icon("speaker")); */
-
-#ifdef SINGLE_INSTANCE
-	changeInstanceImages();
-#endif
 
 	// Seek widgets
 	seek1->setLabel(tr("&Short jump"));
@@ -155,6 +149,10 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setIconSet(pref->iconset);
 
 	// Main window
+#ifdef SINGLE_INSTANCE
+	setUseSingleInstance(pref->use_single_instance);
+#endif
+
 	setResizeMethod(pref->resize_method);
 	setSaveSize(pref->save_window_size_on_exit);
 	setPauseWhenHidden(pref->pause_when_hidden);
@@ -167,10 +165,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setStartInFullscreen(pref->start_in_fullscreen);
 	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
 
-
-#ifdef SINGLE_INSTANCE
-	setUseSingleInstance(pref->use_single_instance);
-#endif
 	setSeeking1(pref->seeking1);
 	setSeeking2(pref->seeking2);
 	setSeeking3(pref->seeking3);
@@ -211,6 +205,10 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	}
 
 	// Main window
+#ifdef SINGLE_INSTANCE
+	pref->use_single_instance = useSingleInstance();
+#endif
+
 	pref->resize_method = resizeMethod();
 	pref->save_window_size_on_exit = saveSize();
 	pref->close_on_finish = closeOnFinish();
@@ -226,10 +224,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		if (pref->fullscreen)
 			requires_restart = true;
 	}
-
-#ifdef SINGLE_INSTANCE
-	pref->use_single_instance = useSingleInstance();
-#endif
 
 	pref->seeking1 = seeking1();
 	pref->seeking2 = seeking2();
@@ -450,14 +444,17 @@ void TInterface::on_changeFontButton_clicked() {
 	}
 }
 
-#ifdef SINGLE_INSTANCE
 void TInterface::changeInstanceImages() {
+
+#ifdef SINGLE_INSTANCE
 	if (single_instance_check->isChecked())
 		instances_icon->setPixmap(Images::icon("instance1"));
 	else
 		instances_icon->setPixmap(Images::icon("instance2"));
-}
+#else
+	instances_icon->setPixmap(Images::icon("instance1"));
 #endif
+}
 
 void TInterface::setCloseOnFinish(bool b) {
 	close_on_finish_check->setChecked(b);
@@ -527,6 +524,13 @@ void TInterface::createHelp() {
 
 
 	addSectionTitle(tr("Main window"));
+
+#ifdef SINGLE_INSTANCE
+	setWhatsThis(single_instance_check,
+		tr("Use only one running instance of SMPlayer"),
+		tr("Check this option if you want to use an already running instance "
+		   "of SMPlayer when opening other files."));
+#endif
 
 	setWhatsThis(resize_window_combo, tr("Autoresize"),
         tr("The main window can be resized automatically. Select the option "
@@ -603,15 +607,6 @@ void TInterface::createHelp() {
 		tr("If this option is enabled, seeks are more accurate but they "
            "can be a little bit slower. May not work with some video formats.") +"<br>"+
 		tr("Note: this option only works with MPlayer2"));
-
-#ifdef SINGLE_INSTANCE
-	addSectionTitle(tr("Instances"));
-
-	setWhatsThis(single_instance_check, 
-        tr("Use only one running instance of SMPlayer"),
-        tr("Check this option if you want to use an already running instance "
-           "of SMPlayer when opening other files."));
-#endif
 
 	addSectionTitle(tr("History"));
 

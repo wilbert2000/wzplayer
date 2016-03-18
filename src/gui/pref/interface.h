@@ -116,9 +116,7 @@ protected:
 
 protected slots:
 	void on_changeFontButton_clicked();
-#ifdef SINGLE_INSTANCE
 	void changeInstanceImages();
-#endif
 
 protected:
 	virtual void retranslateStrings();
