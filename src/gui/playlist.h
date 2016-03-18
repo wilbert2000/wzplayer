@@ -79,7 +79,6 @@ public:
 	int count();
 	bool isEmpty();
 	bool directoryRecursion() const { return recursive_add_directory; }
-	bool autoGetInfo() const { return automatically_get_info; }
 	bool savePlaylistOnExit() const { return save_playlist_in_config; }
 	bool playFilesFromStart() const { return play_files_from_start; }
 
@@ -149,7 +148,6 @@ public slots:
 
 	// Preferences
 	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
-	void setAutoGetInfo(bool b) { automatically_get_info = b; }
 	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; }
 	void setPlayFilesFromStart(bool b) { play_files_from_start = b; }
 
@@ -234,7 +232,6 @@ private:
 
 	//Preferences
 	bool recursive_add_directory;
-	bool automatically_get_info;
 	bool save_playlist_in_config;
 	bool play_files_from_start;
 	bool automatically_play_next;

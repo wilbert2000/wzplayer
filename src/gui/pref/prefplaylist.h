@@ -49,9 +49,6 @@ public:
 	void setDirectoryRecursion(bool b);
 	bool directoryRecursion();
 
-	void setAutoGetInfo(bool b);
-	bool autoGetInfo();
-
 	void setSavePlaylistOnExit(bool b);
 	bool savePlaylistOnExit();
 
@@ -59,16 +56,16 @@ public:
 	bool playFilesFromStart();
 
 protected:
-	virtual void createHelp();
+	virtual void retranslateStrings();
+
+private:
+	void createHelp();
 
 	void setAutoAddFilesToPlaylist(bool b);
 	bool autoAddFilesToPlaylist();
 
 	void setMediaToAdd(int);
 	int mediaToAdd();
-
-protected:
-	virtual void retranslateStrings();
 };
 
 }} // namespace Gui::Pref

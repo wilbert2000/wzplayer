@@ -936,7 +936,6 @@ void TBase::showPreferencesDialog() {
 	// Set playlist preferences
 	Pref::TPrefPlaylist* pl = pref_dialog->mod_playlist();
 	pl->setDirectoryRecursion(playlist->directoryRecursion());
-	pl->setAutoGetInfo(playlist->autoGetInfo());
 	pl->setSavePlaylistOnExit(playlist->savePlaylistOnExit());
 	pl->setPlayFilesFromStart(playlist->playFilesFromStart());
 
@@ -964,7 +963,6 @@ void TBase::applyNewPreferences() {
 	// Update and save playlist preferences
 	Pref::TPrefPlaylist* pl = pref_dialog->mod_playlist();
 	playlist->setDirectoryRecursion(pl->directoryRecursion());
-	playlist->setAutoGetInfo(pl->autoGetInfo());
 	playlist->setSavePlaylistOnExit(pl->savePlaylistOnExit());
 	playlist->setPlayFilesFromStart(pl->playFilesFromStart());
 	playlist->saveSettings();

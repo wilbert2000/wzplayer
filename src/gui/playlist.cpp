@@ -96,7 +96,6 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f)
 	, core(c)
 	, modified(false)
 	, recursive_add_directory(true)
-	, automatically_get_info(false)
 	, save_playlist_in_config(true)
 	, play_files_from_start(true)
 	, automatically_play_next(true)
@@ -1461,7 +1460,6 @@ void TPlaylist::saveSettings() {
 	set->setValue("repeat", repeatAct->isChecked());
 	set->setValue("shuffle", shuffleAct->isChecked());
 
-	set->setValue("auto_get_info", automatically_get_info);
 	set->setValue("recursive_add_directory", recursive_add_directory);
 	set->setValue("save_playlist_in_config", save_playlist_in_config);
 	set->setValue("play_files_from_start", play_files_from_start);
@@ -1504,7 +1502,6 @@ void TPlaylist::loadSettings() {
 	repeatAct->setChecked(set->value("repeat", repeatAct->isChecked()).toBool());
 	shuffleAct->setChecked(set->value("shuffle", shuffleAct->isChecked()).toBool());
 
-	automatically_get_info = set->value("auto_get_info", automatically_get_info).toBool();
 	recursive_add_directory = set->value("recursive_add_directory", recursive_add_directory).toBool();
 	save_playlist_in_config = set->value("save_playlist_in_config", save_playlist_in_config).toBool();
 	play_files_from_start = set->value("play_files_from_start", play_files_from_start).toBool();

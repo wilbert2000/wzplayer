@@ -20,17 +20,18 @@
 #include "settings/preferences.h"
 #include "images.h"
 
-namespace Gui { namespace Pref {
+
+namespace Gui {
+namespace Pref {
 
 TPrefPlaylist::TPrefPlaylist(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
+
 	setupUi(this);
 	retranslateStrings();
 }
 
-TPrefPlaylist::~TPrefPlaylist()
-{
+TPrefPlaylist::~TPrefPlaylist() {
 }
 
 QString TPrefPlaylist::sectionName() {
@@ -57,11 +58,13 @@ void TPrefPlaylist::retranslateStrings() {
 }
 
 void TPrefPlaylist::setData(Settings::TPreferences* pref) {
+
 	setAutoAddFilesToPlaylist(pref->auto_add_to_playlist);
 	setMediaToAdd(pref->media_to_add_to_playlist);
 }
 
 void TPrefPlaylist::getData(Settings::TPreferences* pref) {
+
 	requires_restart = false;
 
 	pref->auto_add_to_playlist = autoAddFilesToPlaylist();
@@ -92,14 +95,6 @@ void TPrefPlaylist::setDirectoryRecursion(bool b) {
 
 bool TPrefPlaylist::directoryRecursion() {
 	return recursive_check->isChecked();
-}
-
-void TPrefPlaylist::setAutoGetInfo(bool b) {
-	getinfo_check->setChecked(b);
-}
-
-bool TPrefPlaylist::autoGetInfo() {
-	return getinfo_check->isChecked();
 }
 
 void TPrefPlaylist::setSavePlaylistOnExit(bool b) {
@@ -144,13 +139,6 @@ void TPrefPlaylist::createHelp() {
 		tr("Check this option if you want that adding a directory will also "
         "add the files in subdirectories recursively. Otherwise only the "
         "files in the selected directory will be added."));
-
-	setWhatsThis(getinfo_check, tr("Get info automatically about files added"), 
-		tr("Check this option to inquire the files to be added to the playlist "
-        "for some info. That allows to show the title name (if available) and "
-        "length of the files. Otherwise this info won't be available until "
-        "the file is actually played. Beware: this option can be slow, "
-        "specially if you add many files."));
 
 	setWhatsThis(autosave_on_exit_check, tr("Save copy of playlist on exit"), 
 		tr("If this option is checked, a copy of the playlist will be saved "
