@@ -27,6 +27,9 @@
        <string>Video</string>
       </attribute>
       <layout class="QVBoxLayout">
+       <property name="spacing">
+        <number>16</number>
+       </property>
        <property name="margin">
         <number>16</number>
        </property>
@@ -45,17 +48,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="output_verticalLayout">
-          <property name="leftMargin">
+          <property name="margin">
            <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>8</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="vo_layout">
@@ -165,17 +159,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="synchronization_verticalLayout">
-          <property name="leftMargin">
+          <property name="margin">
            <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>8</number>
           </property>
           <item>
            <widget class="QCheckBox" name="framedrop_check">
@@ -209,20 +194,11 @@
           <bool>true</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>8</number>
-          </property>
           <property name="horizontalSpacing">
            <number>16</number>
+          </property>
+          <property name="margin">
+           <number>0</number>
           </property>
           <item row="0" column="0" colspan="2">
            <widget class="QCheckBox" name="postprocessing_check">
@@ -345,16 +321,7 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="screenshots_verticalLayout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <item>

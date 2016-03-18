@@ -30,6 +30,9 @@
        <string>&amp;Subtitles</string>
       </attribute>
       <layout class="QVBoxLayout">
+       <property name="spacing">
+        <number>16</number>
+       </property>
        <property name="margin">
         <number>16</number>
        </property>
@@ -42,17 +45,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="leftMargin">
+          <property name="margin">
            <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>8</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
@@ -112,7 +106,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <property name="topMargin">
-             <number>16</number>
+             <number>0</number>
             </property>
             <property name="bottomMargin">
              <number>0</number>
@@ -120,7 +114,7 @@
             <item>
              <widget class="QLabel" name="language_desc_label">
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Language&lt;/span&gt; overrides the subtitle track selected by the player.It selects the first track matching the &lt;span style=&quot; font-weight:600;&quot;&gt;language&lt;/span&gt; regular expression. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names.&lt;/p&gt;&lt;p&gt;Overriding the track selected by the player, and even more so, unconditionally selecting the first track, can lead to undesirable effects with streams using tracks for say, graphics, like some DVDs. You can always manually select subtitles with the &lt;span style=&quot; font-weight:600;&quot;&gt;Subtitles - Tracks&lt;/span&gt; menu or speed button.&lt;/p&gt;&lt;p&gt;Examples:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects the first track with language &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Leaving &lt;span style=&quot; font-weight:600;&quot;&gt;language&lt;/span&gt; empty lets the player select subtitles (default), unless the &lt;span style=&quot; font-weight:600;&quot;&gt;Select first subtitle track&lt;/span&gt; option is checked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language overrides the subtitle track selected by the player. It selects the first track matching the language regular expression. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names.&lt;/p&gt;&lt;p&gt;Overriding the track selected by the player and even more so, unconditionally selecting the first track, can lead to undesirable effects with streams using tracks for graphics, like some DVDs. You can always manually select subtitles with the &lt;span style=&quot; font-weight:600;&quot;&gt;Subtitles - Tracks&lt;/span&gt; menu or speed button.&lt;/p&gt;&lt;p&gt;Examples:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects the first track with language &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Leaving language empty lets the player select subtitles (default), unless the &lt;span style=&quot; font-weight:600;&quot;&gt;Select first subtitle track&lt;/span&gt; option is checked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
@@ -200,17 +194,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout">
-          <property name="leftMargin">
+          <property name="margin">
            <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>8</number>
           </property>
           <item>
            <widget class="QLabel" name="enca_lang_label">
@@ -377,16 +362,7 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
-          <property name="leftMargin">
-           <number>4</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <item>
@@ -407,16 +383,7 @@
              <bool>true</bool>
             </property>
             <layout class="QGridLayout" name="ass_gridlayout">
-             <property name="leftMargin">
-              <number>4</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>0</number>
              </property>
              <item row="1" column="0">
@@ -490,16 +457,10 @@
                 <bool>true</bool>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
-                <property name="leftMargin">
-                 <number>4</number>
+                <property name="spacing">
+                 <number>16</number>
                 </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
+                <property name="margin">
                  <number>0</number>
                 </property>
                 <item>
@@ -511,17 +472,8 @@
                    <bool>true</bool>
                   </property>
                   <layout class="QGridLayout" name="font_gridlayout">
-                   <property name="leftMargin">
-                    <number>4</number>
-                   </property>
-                   <property name="topMargin">
+                   <property name="margin">
                     <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>10</number>
                    </property>
                    <item row="1" column="1">
                     <widget class="QSpinBox" name="style_size_spin">
@@ -611,7 +563,7 @@
                    <number>24</number>
                   </property>
                   <property name="bottomMargin">
-                   <number>8</number>
+                   <number>0</number>
                   </property>
                   <item>
                    <widget class="QGroupBox" name="colors_group">
@@ -623,7 +575,7 @@
                     </property>
                     <layout class="QGridLayout">
                      <property name="leftMargin">
-                      <number>4</number>
+                      <number>0</number>
                      </property>
                      <property name="topMargin">
                       <number>0</number>
@@ -719,7 +671,7 @@
                     </property>
                     <layout class="QGridLayout">
                      <property name="leftMargin">
-                      <number>4</number>
+                      <number>0</number>
                      </property>
                      <property name="topMargin">
                       <number>0</number>
@@ -786,20 +738,8 @@
                    <bool>true</bool>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_5">
-                   <property name="spacing">
-                    <number>4</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>4</number>
-                   </property>
-                   <property name="topMargin">
+                   <property name="margin">
                     <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>10</number>
                    </property>
                    <item>
                     <widget class="QLabel" name="margin_left_label">
@@ -871,20 +811,8 @@
                    <bool>true</bool>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
-                   <property name="spacing">
-                    <number>4</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>4</number>
-                   </property>
-                   <property name="topMargin">
+                   <property name="margin">
                     <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>10</number>
                    </property>
                    <item>
                     <widget class="QLabel" name="style_border_style_label">
@@ -963,7 +891,7 @@
                   <item>
                    <widget class="QCheckBox" name="force_ass_styles">
                     <property name="text">
-                     <string>A&amp;pply custom style to ASS files too</string>
+                     <string>A&amp;pply this style to ASS files too</string>
                     </property>
                    </widget>
                   </item>

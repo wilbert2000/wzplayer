@@ -27,6 +27,9 @@
        <string>General</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>16</number>
+       </property>
        <property name="margin">
         <number>16</number>
        </property>
@@ -39,17 +42,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="leftMargin">
+          <property name="margin">
            <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>16</number>
           </property>
           <item>
            <layout class="QGridLayout" name="player_gridlayout">
@@ -101,17 +95,8 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout">
-          <property name="leftMargin">
+          <property name="margin">
            <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
-           <number>16</number>
           </property>
           <item>
            <widget class="QCheckBox" name="remember_all_check">
@@ -228,16 +213,7 @@
           <property name="spacing">
            <number>16</number>
           </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>8</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <item>
