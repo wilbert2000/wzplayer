@@ -32,8 +32,8 @@ using namespace Settings;
 namespace Gui {
 
 TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
-	: QDialog(parent, f)
-{
+	: QDialog(parent, f) {
+
 	setupUi(this);
 	setWindowIcon(Images::icon("logo", 64));
 
@@ -46,37 +46,30 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 		"<b>SMPlayer</b> &copy; 2006-2015 Ricardo Villalba &lt;rvm@users.sourceforge.net&gt;<br><br>"
 		"<b>" + tr("Version: %1").arg(Version::printable()) + "</b>" +
 #if PORTABLE_APP
-                " (" + tr("Portable Edition") + ")" +
+				" (" + tr("Portable Edition") + ")" +
 #endif
         "<br>" +
 		tr("Using Qt %1 (compiled with Qt %2)").arg(qVersion()).arg(QT_VERSION_STR)
-		+ "<br><br>" +
-		"<b>"+ tr("Links:") +"</b><br>"+
-		tr("Official website:") +" "+  link(URL_HOMEPAGE) +"<br>"+
-		tr("Support forum:") +" "+  link(URL_FORUM) +"<br>"+
-        "<br>" +
-		/*
-		tr("SMPlayer uses the award-winning MPlayer as playback engine. See %1")
-		   .arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">http://www.mplayerhq.hu</a>") +
-		*/
+		+ "<br><br>"
+		+ "<b>"+ tr("Links:") +"</b><br>"
+		+ tr("Official website:") +" "+  link(URL_HOMEPAGE) + "<br>"
+		+ tr("Support forum:") +" "+  link(URL_FORUM) + "<br>"
+		+ "<br>" +
 #if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
 		tr("SMPlayer is a graphical interface for %1 and %2.")
 			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
-			.arg("<a href=\"http://www.mpv.io\">mpv</a>") +
+			.arg("<a href=\"http://www.mpv.io\">mpv</a>")
 #else
 		tr("SMPlayer is a graphical interface for %1.")
 	#ifdef MPV_SUPPORT
-			.arg("<a href=\"http://www.mpv.io\">mpv</a>") +
+			.arg("<a href=\"http://www.mpv.io\">mpv</a>")
 	#endif
 	#ifdef MPLAYER_SUPPORT
-			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>") +
+			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
 	#endif
 #endif
-        "<br><br>" +
-		tr("Subtitles service powered by %1").arg("<a href=\"http://www.opensubtitles.org\">www.OpenSubtitles.org</a>")
-        /* + "<br><a href=\"http://www.opensubtitles.org\"><img src=\":default-theme/opensubtitles-logo.png\"></a>" */
-	);
-
+		+ "<br><br>"
+		+ tr("Subtitles service powered by %1").arg("<a href=\"http://www.opensubtitles.org\">www.OpenSubtitles.org</a>"));
 
 	QString license_text =
 		"<i>"
