@@ -3,7 +3,6 @@
 
 #include "gui/action/menu.h"
 
-class TCore;
 
 namespace Gui {
 
@@ -17,7 +16,7 @@ class TAction;
 class TMenuOpen : public TMenu {
 	Q_OBJECT
 public:
-	explicit TMenuOpen(TBase* parent, TCore* core, QWidget* playlist);
+	explicit TMenuOpen(TBase* parent, QWidget* playlist);
 	void updateRecents();
 private:
 	TBase* main_window;

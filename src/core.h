@@ -347,8 +347,6 @@ signals:
 	void newMediaStartedPlaying();
 	void mediaLoaded();
 	void mediaInfoChanged();
-	//! Sends the filename and title of the stream playing in this moment
-	void mediaPlaying(const QString& filename, const QString& title);
 	void mediaStopped();
 	void mediaEOF(); // Media has arrived to the end.
 	//! Player started but finished with exit code != 0
@@ -429,9 +427,6 @@ protected slots:
 	void streamTitleChanged(const QString&);
 	void streamTitleAndUrlChanged(const QString&, const QString&);
 
-	// Catches mediaInfoChanged and sends mediaPlaying signal
-	void sendMediaInfo();
-	
 	void onAudioTracksChanged();
 
 	void selectPreferredSubtitles();

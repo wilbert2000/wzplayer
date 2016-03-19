@@ -437,7 +437,7 @@ void TBase::createActions() {
 void TBase::createMenus() {
 
 	// MENUS
-	openMenu = new TMenuOpen(this, core, playlist);
+	openMenu = new TMenuOpen(this, playlist);
 	menuBar()->addMenu(openMenu);
 	playMenu = new TMenuPlay(this, core, playlist);
 	menuBar()->addMenu(playMenu);
@@ -1174,7 +1174,9 @@ void TBase::updateMediaInfo() {
 		setDataToFileProperties();
 	}
 
-	setWindowCaption(core->mdat.displayName(pref->show_tag_in_window_title) + " - SMPlayer");
+	QString title = core->mdat.displayName(pref->show_tag_in_window_title);
+	setWindowCaption(title + " - SMPlayer");
+	emit mediaFileTitleChanged(core->mdat.filename, title);
 
 	emit videoInfoChanged(core->mdat.video_width, core->mdat.video_height, core->mdat.video_fps);
 }

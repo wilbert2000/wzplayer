@@ -171,6 +171,7 @@ signals:
 	void frameChanged(int);
 
 	void mediaSettingsChanged(Settings::TMediaSettings* mset);
+	void mediaFileTitleChanged(const QString& filename, const QString& title);
 	void videoInfoChanged(int width, int height, double fps);
 
 	void fullscreenChanged();

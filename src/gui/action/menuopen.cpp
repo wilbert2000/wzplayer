@@ -1,7 +1,8 @@
 #include "gui/action/menuopen.h"
 #include <QMessageBox>
-#include "core.h"
+#include <QFileInfo>
 #include "settings/paths.h"
+#include "settings/preferences.h"
 #include "gui/action/action.h"
 #include "gui/action/favorites.h"
 #include "gui/action/tvlist.h"
@@ -41,7 +42,7 @@ TMenuDisc::TMenuDisc(TBase* parent)
 }
 
 
-TMenuOpen::TMenuOpen(TBase* parent, TCore* core, QWidget* playlist)
+TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	: TMenu(parent, this, "open_menu", QT_TR_NOOP("&Open"), "noicon")
 	, main_window(parent) {
 
@@ -75,7 +76,7 @@ TMenuOpen::TMenuOpen(TBase* parent, TCore* core, QWidget* playlist)
 	addMenu(fav);
 	connect(fav, SIGNAL(activated(QString)),
 			main_window, SLOT(openFavorite(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+	connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
 			fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 	// Open dir
@@ -115,7 +116,7 @@ TMenuOpen::TMenuOpen(TBase* parent, TCore* core, QWidget* playlist)
 	main_window->addAction(fav->addCurrentAct());
 	addMenu(fav);
 	connect(fav, SIGNAL(activated(QString)), main_window, SLOT(open(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+	connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
 			fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 	// Radio
@@ -137,7 +138,7 @@ TMenuOpen::TMenuOpen(TBase* parent, TCore* core, QWidget* playlist)
 	main_window->addAction(fav->addCurrentAct());
 	addMenu(fav);
 	connect(fav, SIGNAL(activated(QString)), main_window, SLOT(open(QString)));
-	connect(core, SIGNAL(mediaPlaying(const QString&, const QString&)),
+	connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
 			fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 	// Close

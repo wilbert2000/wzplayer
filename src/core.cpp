@@ -180,9 +180,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 
 	connect(proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()));
 
-	connect(this, SIGNAL(mediaInfoChanged()),
-			this, SLOT(sendMediaInfo()));
-
 	// TPlayerWindow
 	connect(this, SIGNAL(aboutToStartPlaying()),
 			playerwindow, SLOT(aboutToStartPlaying()));
@@ -3577,11 +3574,6 @@ void TCore::streamTitleAndUrlChanged(const QString& title, const QString& url) {
 	mdat.stream_title = title;
 	mdat.stream_url = url;
 	emit mediaInfoChanged();
-}
-
-void TCore::sendMediaInfo() {
-	qDebug("TCore::sendMediaInfo");
-	emit mediaPlaying(mdat.filename, mdat.displayName(pref->show_tag_in_window_title));
 }
 
 bool TCore::setPreferredAudio() {
