@@ -366,22 +366,20 @@ int TVideo::initialDeinterlace() {
 }
 void TVideo::setInitialDeinterlaceTV(int ID) {
 
-	int pos = deinterlace_tv_combo->findData(ID);
-	if (pos < 0) {
-		pos = 0;
+	int i = deinterlace_tv_combo->findData(ID);
+	if (i < 0) {
+		i = 0;
 		qWarning("Gui::Pref::TTV::setInitialDeinterlaceTV: ID: %d not found in combo", ID);
 	}
-	deinterlace_tv_combo->setCurrentIndex(pos);
+	deinterlace_tv_combo->setCurrentIndex(i);
 }
 
 int TVideo::initialDeinterlaceTV() {
 
-	if (deinterlace_tv_combo->currentIndex() >= 0) {
-		return deinterlace_tv_combo->itemData(deinterlace_tv_combo->currentIndex()).toInt();
-	} else {
-		qWarning("Gui::Pref::TTV::initialDeinterlaceTV: no item selected");
-		return 0;
-	}
+	int i = deinterlace_tv_combo->currentIndex();
+	if (i < 0)
+		i = 0;
+	return deinterlace_tv_combo->itemData(i).toInt();
 }
 
 void TVideo::setInitialZoom(double v) {
