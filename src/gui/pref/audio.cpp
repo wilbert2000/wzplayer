@@ -354,24 +354,24 @@ void TAudio::createHelp() {
 #endif
 		);
 
-	setWhatsThis(audio_equalizer_check, tr("Enable the audio equalizer"),
-		tr("Check this option if you want to use the audio equalizer."));
+	setWhatsThis(channels_combo, tr("Channels"),
+		tr("Requests the number of playback channels. MPlayer "
+		   "asks the decoder to decode the audio into as many channels as "
+		   "specified. Then it is up to the decoder to fulfill the "
+		   "requirement. This is usually only important when playing "
+		   "videos with AC3 audio (like DVDs). In that case liba52 does "
+		   "the decoding by default and correctly downmixes the audio "
+		   "into the requested number of channels. "
+		   "<b>Note</b>: This option is honored by codecs (AC3 only), "
+		   "filters (surround) and audio output drivers (OSS at least)."));
 
 	setWhatsThis(hwac3_check, tr("AC3/DTS pass-through S/PDIF"),
 		tr("Uses hardware AC3 passthrough.") + "<br>" +
-        tr("<b>Note:</b> none of the audio filters will be used when this "
-           "option is enabled."));
+		tr("<b>Note:</b> none of the audio filters will be used when this "
+		   "option is enabled."));
 
-	setWhatsThis(channels_combo, tr("Channels by default"),
-		tr("Requests the number of playback channels. MPlayer "
-           "asks the decoder to decode the audio into as many channels as "
-           "specified. Then it is up to the decoder to fulfill the "
-           "requirement. This is usually only important when playing "
-           "videos with AC3 audio (like DVDs). In that case liba52 does "
-           "the decoding by default and correctly downmixes the audio "
-           "into the requested number of channels. "
-           "<b>Note</b>: This option is honored by codecs (AC3 only), "
-           "filters (surround) and audio output drivers (OSS at least)."));
+	setWhatsThis(audio_equalizer_check, tr("Enable the audio equalizer"),
+		tr("Check this option if you want to use the audio equalizer."));
 
 	setWhatsThis(scaletempo_combo, tr("High speed playback without altering pitch"),
 		tr("Allows to change the playback speed without altering pitch. "
