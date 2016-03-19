@@ -86,13 +86,14 @@ QString TVideo::sectionName() {
 }
 
 QPixmap TVideo::sectionIcon() {
-	// TODO: create pref_video icon
-	return Images::icon("type_video", 22);
+	return Images::icon("pref_video", 22);
 }
 
 void TVideo::retranslateStrings() {
 
 	retranslateUi(this);
+
+	video_icon_label->setPixmap(Images::icon("pref_video"));
 
 	updateDriverCombo(true);
 
