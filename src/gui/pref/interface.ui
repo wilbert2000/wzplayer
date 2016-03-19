@@ -30,7 +30,16 @@
        <property name="spacing">
         <number>12</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
         <number>12</number>
        </property>
        <item>
@@ -402,10 +411,19 @@
        <string>&amp;Seeking</string>
       </attribute>
       <layout class="QGridLayout">
-       <property name="verticalSpacing">
+       <property name="leftMargin">
         <number>12</number>
        </property>
-       <property name="margin">
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>12</number>
+       </property>
+       <property name="verticalSpacing">
         <number>12</number>
        </property>
        <item row="0" column="0">
@@ -592,7 +610,16 @@
        <property name="spacing">
         <number>12</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
         <number>12</number>
        </property>
        <item>

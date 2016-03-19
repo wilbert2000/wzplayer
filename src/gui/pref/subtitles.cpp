@@ -399,11 +399,11 @@ void TSubtitles::createHelp() {
 	setWhatsThis(autoload_combo, tr("Autoload"),
         tr("Select the subtitle autoload method."));
 
-	setWhatsThis(language_edit, tr("Preferred subtitle language"),
-		tr("Here you can type your preferred language for the subtitle stream. "
+	setWhatsThis(language_edit, tr("Language"),
+		tr("Here you can give your preferred language for the subtitle stream. "
 		   "When a media with multiple subtitle streams is found, SMPlayer will "
 		   "try to use your preferred language.<br>"
-		   "This only will work with media that offer info about the language "
+		   "This only will work with media that offers info about the language "
 		   "of the subtitle streams, like DVDs or mkv files.<br>"
 		   "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
 		   "will select the subtitle stream if it matches with <i>es</i>, "

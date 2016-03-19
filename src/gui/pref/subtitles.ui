@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>480</width>
     <height>600</height>
    </rect>
   </property>
@@ -33,7 +33,16 @@
        <property name="spacing">
         <number>12</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
         <number>12</number>
        </property>
        <item>
@@ -123,7 +132,7 @@
             <item>
              <widget class="QLabel" name="language_desc_label">
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language overrides the subtitle track selected by the player. It selects the first track matching the language regular expression. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names.&lt;/p&gt;&lt;p&gt;Overriding the track selected by the player and even more so, unconditionally selecting the first track, can lead to undesirable effects with streams using tracks for graphics, like some DVDs. You can always manually select subtitles with the &lt;span style=&quot; font-weight:600;&quot;&gt;Subtitles - Tracks&lt;/span&gt; menu or speed button.&lt;/p&gt;&lt;p&gt;Examples:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects the first track with language &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Leaving language empty lets the player select subtitles (default), unless the &lt;span style=&quot; font-weight:600;&quot;&gt;Select first subtitle track&lt;/span&gt; option is checked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language overrides the subtitle track selected by the player. It selects the first track matching the language regular expression. DVDs use ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three letter language codes and some like fantasy names.&lt;/p&gt;&lt;p&gt;Overriding the track selected by the player and even more so, unconditionally selecting the first track, can lead to undesirable effects with streams using tracks for graphics, like some DVDs. You can always manually select subtitles with the &lt;span style=&quot; font-weight:600;&quot;&gt;Subtitles - Tracks&lt;/span&gt; menu or its speed button.&lt;/p&gt;&lt;p&gt;Examples:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects the first track with language &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Leaving language empty lets the player select subtitles (default), unless &lt;span style=&quot; font-weight:600;&quot;&gt;Select the first subtitle track&lt;/span&gt; is checked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
@@ -187,7 +196,7 @@
           <item>
            <widget class="QCheckBox" name="select_first_subtitle_check">
             <property name="text">
-             <string>S&amp;elect first subtitle track if language does not match</string>
+             <string>S&amp;elect the first subtitle track if language does not match</string>
             </property>
            </widget>
           </item>
@@ -341,7 +350,7 @@
         <number>12</number>
        </property>
        <property name="topMargin">
-        <number>12</number>
+        <number>16</number>
        </property>
        <property name="rightMargin">
         <number>12</number>
