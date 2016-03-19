@@ -799,9 +799,8 @@ void TCore::dvdnavRestoreTitle() {
 	block_dvd_nav = false;
 }
 
-// This is reached when a new file has just started playing
-void TCore::newMediaPlayingStarted() {
-	qDebug("TCore::newMediaPlayingStarted");
+void TCore::playingStartedOfNewMedia() {
+	qDebug("TCore::playingStartedOfNewMedia");
 
 	mdat.initialized = true;
 	mdat.list();
@@ -810,8 +809,25 @@ void TCore::newMediaPlayingStarted() {
 	mset.current_demuxer = mdat.demuxer;
 	mset.list();
 
-	qDebug("TCore::newMediaPlayingStarted: emit newMediaStartedPlaying()");
+	qDebug("TCore::playingStartedOfNewMedia: emit newMediaStartedPlaying()");
 	emit newMediaStartedPlaying();
+}
+
+void TCore::playingRestarted() {
+	qDebug("TCore::playingRestarted");
+
+	restarting = 0;
+
+	// For DVDNAV go back to where we were.
+	// Need timer to give DVDNAV time to update its current state.
+	if (title >= 0) {
+		title_to_select = title;
+		title = -1;
+		menus_selected = 0;
+		block_dvd_nav = true;
+		qDebug("TCore::playingStarted: posting dvdnavRestoreTitle()");
+		QTimer::singleShot(1000, this, SLOT(dvdnavRestoreTitle()));
+	}
 }
 
 // Slot called when signal playerFullyLoaded arrives.
@@ -821,22 +837,9 @@ void TCore::playingStarted() {
 	setState(STATE_PLAYING);
 
 	if (restarting) {
-		restarting = 0;
-
-		// For DVDNAV go back to where we were.
-		// Need timer to give DVDNAV time to update its current state.
-		if (title >= 0) {
-			title_to_select = title;
-			title = -1;
-			menus_selected = 0;
-			block_dvd_nav = true;
-			qDebug("TCore::playingStarted: posting dvdnavRestoreTitle()");
-			QTimer::singleShot(1000, this, SLOT(dvdnavRestoreTitle()));
-		}
-
+		playingRestarted();
 	} else {
-		// Handle new media
-		newMediaPlayingStarted();
+		playingStartedOfNewMedia();
 	} 
 
 	if (forced_titles.contains(mdat.filename)) {

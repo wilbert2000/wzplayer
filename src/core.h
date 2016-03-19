@@ -402,7 +402,6 @@ protected:
 	void stopPlayer();
 	void restartPlay();
 
-	void newMediaPlayingStarted();
 	void saveMediaSettings();
 
 	void seek_cmd(double secs, int mode);
@@ -479,6 +478,9 @@ private:
 
 	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(const QString& filename, int seek = -1);
+
+	void playingStartedOfNewMedia();
+	void playingRestarted();
 
 	bool isMPlayer() const;
 	bool isMPV() const;
