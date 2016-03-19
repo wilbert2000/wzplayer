@@ -159,7 +159,7 @@
             <property name="topMargin">
              <number>0</number>
             </property>
-            <item row="7" column="2">
+            <item row="8" column="2">
              <widget class="QComboBox" name="xbutton1_click_combo"/>
             </item>
             <item row="0" column="1">
@@ -175,7 +175,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="2">
+            <item row="6" column="2">
              <widget class="Gui::Pref::TComboBox" name="right_click_combo">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -185,7 +185,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="6" column="1">
              <widget class="QLabel" name="right_click_label">
               <property name="text">
                <string>&amp;Right click</string>
@@ -198,7 +198,7 @@
               </property>
              </widget>
             </item>
-            <item row="8" column="2">
+            <item row="9" column="2">
              <widget class="QComboBox" name="xbutton2_click_combo"/>
             </item>
             <item row="0" column="2">
@@ -211,7 +211,7 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="1">
+            <item row="7" column="1">
              <widget class="QLabel" name="middle_click_label">
               <property name="text">
                <string>M&amp;iddle click</string>
@@ -221,7 +221,7 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="2">
+            <item row="7" column="2">
              <widget class="QComboBox" name="middle_click_combo"/>
             </item>
             <item row="3" column="2">
@@ -247,7 +247,7 @@
               </property>
              </widget>
             </item>
-            <item row="8" column="1">
+            <item row="9" column="1">
              <widget class="QLabel" name="xbutton2_label">
               <property name="text">
                <string>X button &amp;2</string>
@@ -257,7 +257,7 @@
               </property>
              </widget>
             </item>
-            <item row="7" column="1">
+            <item row="8" column="1">
              <widget class="QLabel" name="xbutton1_label">
               <property name="text">
                <string>X button &amp;1</string>
@@ -281,11 +281,21 @@
              </spacer>
             </item>
             <item row="4" column="1" colspan="3">
-             <widget class="QCheckBox" name="wait_for_double_click_check">
-              <property name="text">
-               <string>&amp;Wait for double click before triggering left click</string>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <property name="topMargin">
+               <number>4</number>
               </property>
-             </widget>
+              <property name="bottomMargin">
+               <number>12</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="wait_for_double_click_check">
+                <property name="text">
+                 <string>&amp;Wait for double click before triggering left click</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
