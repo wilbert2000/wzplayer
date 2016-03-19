@@ -124,6 +124,8 @@ private slots:
 	void on_vdpau_button_clicked();
 #endif
 
+	void setMonitorAspect(const QString& asp);
+	QString monitorAspect();
 };
 
 } // namespace Pref

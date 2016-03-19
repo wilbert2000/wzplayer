@@ -28,20 +28,13 @@ using namespace Settings;
 namespace Gui { namespace Pref {
 
 TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
+
 	setupUi(this);
 
 	colorkey_label->hide();
 	colorkey_view->hide();
 	changeButton->hide();
-
-	// Monitor aspect
-	monitoraspect_combo->addItem("Auto");
-	monitoraspect_combo->addItem("4:3");
-	monitoraspect_combo->addItem("16:9");
-	monitoraspect_combo->addItem("5:4");
-	monitoraspect_combo->addItem("16:10");
 
 	retranslateStrings();
 }
@@ -62,20 +55,12 @@ void TAdvanced::retranslateStrings() {
 
 	retranslateUi(this);
 
-	monitor_aspect_icon->setPixmap(Images::icon("monitor"));
-
-	monitoraspect_combo->setItemText(0, tr("Auto"));
-
 	mplayer_crashes_check->setText(tr("R&eport %1 crashes").arg(pref->playerName()));
-	advanced_tab->setTabText(1, tr("O&ptions for %1").arg(pref->playerName()));
-	options_info_label->setText(tr("Here you can pass extra options to %1.").arg(pref->playerName()) +"<br>"+
-		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25");
 
 	createHelp();
 }
 
 void TAdvanced::setData(TPreferences* pref) {
-	setMonitorAspect(pref->monitor_aspect);
 
 	setRepaintVideoBackground(pref->repaint_video_background);
 	setMplayerAdditionalArguments(pref->mplayer_additional_options);
@@ -97,7 +82,6 @@ void TAdvanced::getData(TPreferences* pref) {
 
 	requires_restart = false;
 	repaint_video_background_changed = false;
-	monitor_aspect_changed = false;
 	colorkey_changed = false;
 	lavf_demuxer_changed = false;
 
@@ -111,12 +95,6 @@ void TAdvanced::getData(TPreferences* pref) {
 
 	TEST_AND_SET(pref->use_correct_pts, useCorrectPts());
 	pref->actions_to_run = actionsToRun();
-
-	if (pref->monitor_aspect != monitorAspect()) {
-		pref->monitor_aspect = monitorAspect();
-		monitor_aspect_changed = true;
-		requires_restart = true;
-	}
 
 	if (pref->repaint_video_background != repaintVideoBackground()) {
 		pref->repaint_video_background = repaintVideoBackground();
@@ -133,21 +111,6 @@ void TAdvanced::getData(TPreferences* pref) {
 	}
 
 	pref->report_mplayer_crashes = mplayerCrashes();
-}
-
-void TAdvanced::setMonitorAspect(QString asp) {
-	if (asp.isEmpty())
-		monitoraspect_combo->setCurrentIndex(0);
-	else
-		monitoraspect_combo->setCurrentText(asp);
-		//monitoraspect_combo->setEditText(asp);
-}
-
-QString TAdvanced::monitorAspect() {
-	if (monitoraspect_combo->currentIndex() == 0) 
-		return "";
-	else
-		return monitoraspect_combo->currentText();
 }
 
 void TAdvanced::setRepaintVideoBackground(bool b) {
@@ -258,9 +221,6 @@ void TAdvanced::createHelp() {
 	clearHelp();
 
 	addSectionTitle(tr("Advanced"));
-
-	setWhatsThis(monitoraspect_combo, tr("Monitor aspect"),
-        tr("Select the aspect ratio of your monitor."));
 
 	setWhatsThis(idx_check, tr("Rebuild index if needed"),
 		tr("Rebuilds index of files if no index was found, allowing seeking. "

@@ -1033,6 +1033,9 @@ void TBase::applyNewPreferences() {
 	// Video equalizer
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
+	// Monitor
+	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
+
 	// Hide toolbars delay
 	auto_hide_timer->setInterval(pref->floating_hide_delay);
 
@@ -1047,9 +1050,6 @@ void TBase::applyNewPreferences() {
 	}
 	if (advanced->colorkeyChanged()) {
 		playerwindow->setColorKey(pref->color_key);
-	}
-	if (advanced->monitorAspectChanged()) {
-		playerwindow->setMonitorAspect(pref->monitor_aspect_double());
 	}
 	if (advanced->lavfDemuxerChanged()) {
 		core->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";

@@ -43,19 +43,13 @@ public:
 	void getData(Settings::TPreferences* pref);
 
 	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; }
-	bool monitorAspectChanged() { return monitor_aspect_changed; }
-
 	bool colorkeyChanged() { return colorkey_changed; }
-
 	bool lavfDemuxerChanged() { return lavf_demuxer_changed; }
 
 protected:
 	virtual void createHelp();
 
 	// Advanced
-	void setMonitorAspect(QString asp);
-	QString monitorAspect();
-
 	void setRepaintVideoBackground(bool b);
 	bool repaintVideoBackground();
 

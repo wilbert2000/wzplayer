@@ -75,6 +75,13 @@ TVideo::TVideo(QWidget* parent, InfoList vol)
 	screenshot_format_combo->hide();
 #endif
 
+	// Monitor aspect
+	monitoraspect_combo->addItem("Auto");
+	monitoraspect_combo->addItem("4:3");
+	monitoraspect_combo->addItem("16:9");
+	monitoraspect_combo->addItem("5:4");
+	monitoraspect_combo->addItem("16:10");
+
 	retranslateStrings();
 }
 
@@ -118,6 +125,10 @@ void TVideo::retranslateStrings() {
 	deinterlace_tv_combo->setCurrentIndex(index);
 
 	screenshot_edit->setCaption(tr("Select a directory"));
+
+	// Monitor
+	monitor_aspect_icon->setPixmap(Images::icon("monitor"));
+	monitoraspect_combo->setItemText(0, tr("Auto"));
 
 	createHelp();
 }
@@ -171,6 +182,9 @@ void TVideo::setData(Settings::TPreferences* pref) {
 #endif
 
 	setSubtitlesOnScreenshots(pref->subtitles_on_screenshots);
+
+	// Monitor
+	setMonitorAspect(pref->monitor_aspect);
 }
 
 void TVideo::getData(Settings::TPreferences* pref) {
@@ -203,6 +217,9 @@ void TVideo::getData(Settings::TPreferences* pref) {
 #endif
 
 	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
+
+	// Monitor
+	restartIfStringChanged(pref->monitor_aspect, monitorAspect());
 }
 
 void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
@@ -476,6 +493,22 @@ void TVideo::on_vdpau_button_clicked() {
 }
 #endif
 
+void TVideo::setMonitorAspect(const QString& asp) {
+
+	if (asp.isEmpty())
+		monitoraspect_combo->setCurrentIndex(0);
+	else
+		monitoraspect_combo->setCurrentText(asp);
+}
+
+QString TVideo::monitorAspect() {
+
+	if (monitoraspect_combo->currentIndex() <= 0)
+		return "";
+	else
+		return monitoraspect_combo->currentText();
+}
+
 void TVideo::createHelp() {
 
 	clearHelp();
@@ -578,6 +611,12 @@ void TVideo::createHelp() {
 		tr("Include subtitles on screenshots"),
 		tr("If this option is checked, the subtitles will appear in the "
 		   "screenshots. <b>Note:</b> it may cause some troubles sometimes."));
+
+	addSectionTitle("Monitor");
+
+	setWhatsThis(monitoraspect_combo, tr("Monitor aspect"),
+		tr("Select or enter the aspect ratio of your monitor."
+		   "Accepts w:h and floating point notations."));
 }
 
 }} // namespace Gui::Pref

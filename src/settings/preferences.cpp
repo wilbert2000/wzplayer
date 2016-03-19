@@ -1413,17 +1413,18 @@ void TPreferences::load() {
 double TPreferences::monitor_aspect_double() {
 
 	QRegExp exp("(\\d+)[:/](\\d+)");
+
 	if (exp.indexIn(monitor_aspect) >= 0) {
 		int w = exp.cap(1).toInt();
 		int h = exp.cap(2).toInt();
-		qDebug("Settings::TPreferences::monitor_aspect_double: monitor_aspect parsed successfully: %d:%d", w, h);
-		return (double) w / h;
+		qDebug("Settings::TPreferences::monitor_aspect_double: monitor aspect %d:%d", w, h);
+		return h <= 0.01 ? 0 : (double) w / h;
 	}
 
 	bool ok;
 	double res = monitor_aspect.toDouble(&ok);
 	if (ok) {
-		qDebug("Settings::TPreferences::monitor_aspect_double: monitor_aspect parsed successfully: %f", res);
+		qDebug("Settings::TPreferences::monitor_aspect_double: monitor aspect %f", res);
 		return res;
 	}
 
