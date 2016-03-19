@@ -1045,9 +1045,6 @@ void TBase::applyNewPreferences() {
 
 	// Advanced tab
 	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();
-	if (advanced->repaintVideoBackgroundChanged()) {
-		playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
-	}
 	if (advanced->colorkeyChanged()) {
 		playerwindow->setColorKey(pref->color_key);
 	}

@@ -37,9 +37,9 @@
 
 using namespace Settings;
 
+// Widget used to contain the video player
 TPlayerLayer::TPlayerLayer(QWidget* parent)
 	: QWidget(parent)
-	, repaint_background(false)
 	, normal_background(true) {
 
 #ifndef Q_OS_WIN
@@ -47,7 +47,6 @@ TPlayerLayer::TPlayerLayer(QWidget* parent)
 	setAttribute(Qt::WA_OpaquePaintEvent);
 	setAttribute(Qt::WA_NativeWindow);
 	setAttribute(Qt::WA_PaintUnclipped);
-	//setAttribute(Qt::WA_PaintOnScreen);
 #endif
 #endif
 }
@@ -55,22 +54,12 @@ TPlayerLayer::TPlayerLayer(QWidget* parent)
 TPlayerLayer::~TPlayerLayer() {
 }
 
-void TPlayerLayer::setRepaintBackground(bool b) {
-	qDebug("TPlayerLayer::setRepaintBackground: %d", b);
-	repaint_background = b;
-}
-
+// TODO: remove and check with colorkey on Windows
 void TPlayerLayer::paintEvent(QPaintEvent* e) {
-	//qDebug("TPlayerLayer::paintEvent: repaint_background: %d", repaint_background);
+	//qDebug("TPlayerLayer::paintEvent: normal_background: %d", normal_background);
 
-	// repaint_background is the option to draw the background or not,
-	// preventing flicker and speeding up redraws when set to false.
-	// When repaint background is false the background still needs to be
-	// repainted when no video is loaded, which is controlled by normal_background.
-	// TPlayerWindow::aboutToStartPlaying calls setFastBackground() to set it
-	// and TPlayerWindow::playingStopped() calls restoreNormalBackground() to
-	// clear it.
-	if (repaint_background || normal_background) {
+	// Only clear background when no video playing
+	if (normal_background) {
 		QPainter painter(this);
 		painter.eraseRect(e->rect());
 	}

@@ -250,13 +250,6 @@ void TPreferences::reset() {
 	log_verbose = false;
 	log_file = false;
 
-	// "Repaint video background" in the preferences dialog
-#ifdef Q_OS_WIN
-	repaint_video_background = true;
-#else
-	repaint_video_background = false;
-#endif
-
 	use_edl_files = true;
 
 	use_playlist_option = false;
@@ -610,8 +603,6 @@ void TPreferences::save() {
 	setValue("log_debug_enabled", log_debug_enabled);
 	setValue("log_verbose", log_verbose);
 	setValue("log_file", log_file);
-
-	setValue("repaint_video_background", repaint_video_background);
 
 	setValue("use_edl_files", use_edl_files);
 
@@ -1111,8 +1102,6 @@ void TPreferences::load() {
 	log_verbose = value("log_verbose", log_verbose).toBool();
 	log_file = value("log_file", log_file).toBool();
 
-	repaint_video_background = value("repaint_video_background", repaint_video_background).toBool();
-
 	use_edl_files = value("use_edl_files", use_edl_files).toBool();
 
 	use_playlist_option = value("use_playlist_option", use_playlist_option).toBool();
@@ -1404,6 +1393,8 @@ void TPreferences::load() {
 
 		use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
 		remove("subtitles/enable_ass_styles");
+		remove("advanced/repaint_video_background");
+
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

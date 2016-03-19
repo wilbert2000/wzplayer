@@ -62,7 +62,6 @@ void TAdvanced::retranslateStrings() {
 
 void TAdvanced::setData(TPreferences* pref) {
 
-	setRepaintVideoBackground(pref->repaint_video_background);
 	setMplayerAdditionalArguments(pref->mplayer_additional_options);
 	setMplayerAdditionalVideoFilters(pref->mplayer_additional_video_filters);
 	setMplayerAdditionalAudioFilters(pref->mplayer_additional_audio_filters);
@@ -81,7 +80,6 @@ void TAdvanced::setData(TPreferences* pref) {
 void TAdvanced::getData(TPreferences* pref) {
 
 	requires_restart = false;
-	repaint_video_background_changed = false;
 	colorkey_changed = false;
 	lavf_demuxer_changed = false;
 
@@ -96,11 +94,6 @@ void TAdvanced::getData(TPreferences* pref) {
 	TEST_AND_SET(pref->use_correct_pts, useCorrectPts());
 	pref->actions_to_run = actionsToRun();
 
-	if (pref->repaint_video_background != repaintVideoBackground()) {
-		pref->repaint_video_background = repaintVideoBackground();
-		repaint_video_background_changed = true;
-    }
-
 	TEST_AND_SET(pref->mplayer_additional_options, mplayerAdditionalArguments());
 	TEST_AND_SET(pref->mplayer_additional_video_filters, mplayerAdditionalVideoFilters());
 	TEST_AND_SET(pref->mplayer_additional_audio_filters, mplayerAdditionalAudioFilters());
@@ -111,14 +104,6 @@ void TAdvanced::getData(TPreferences* pref) {
 	}
 
 	pref->report_mplayer_crashes = mplayerCrashes();
-}
-
-void TAdvanced::setRepaintVideoBackground(bool b) {
-	repaint_video_background_check->setChecked(b);
-}
-
-bool TAdvanced::repaintVideoBackground() {
-	return repaint_video_background_check->isChecked();
 }
 
 void TAdvanced::setMplayerCrashes(bool b) {
@@ -231,11 +216,6 @@ void TAdvanced::createHelp() {
 
 	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
 		tr("If this option is checked, the lavf demuxer will be used for all formats."));
-
-	setWhatsThis(repaint_video_background_check, 
-        tr("Repaint the background of the video window"),
-		tr("Checking this option may reduce flickering, but it also might "
-           "produce that the video won't be displayed properly."));
 
 	setWhatsThis(mplayer_crashes_check, 
 		tr("Report %1 crashes").arg(pref->playerName()),

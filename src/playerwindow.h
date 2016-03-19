@@ -43,24 +43,17 @@ public:
 	explicit TPlayerLayer(QWidget* parent);
 	virtual ~TPlayerLayer();
 
-	//! If b is true, the background of the widget will be repainted as usual.
-	/*! Otherwise the background will not repainted when a video is playing. */
-	void setRepaintBackground(bool b);
-
-	//! Return true if repainting the background is allowed.
-	bool repaintBackground() { return repaint_background; }
-
-	//! Should be called when a file has started. 
+	//! Should be called when a file has started playing.
     /*! It's needed to know if the background has to be cleared or not. */
 	void setFastBackground();
-	//! Should be called when a file has stopped.
+
+	//! Should be called when a file has stopped playing.
 	void restoreNormalBackground();
 
 protected:
 	virtual void paintEvent (QPaintEvent* e);
 
 private:
-	bool repaint_background;
 	bool normal_background;
 };
 

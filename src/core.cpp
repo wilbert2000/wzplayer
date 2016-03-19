@@ -186,7 +186,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
 			this, SLOT(dvdnavUpdateMousePos(QPoint)));
 
-	playerwindow->videoLayer()->setRepaintBackground(pref->repaint_video_background);
 	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)

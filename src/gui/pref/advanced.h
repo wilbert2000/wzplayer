@@ -42,7 +42,6 @@ public:
     // Apply changes
 	void getData(Settings::TPreferences* pref);
 
-	bool repaintVideoBackgroundChanged() { return repaint_video_background_changed; }
 	bool colorkeyChanged() { return colorkey_changed; }
 	bool lavfDemuxerChanged() { return lavf_demuxer_changed; }
 
@@ -50,9 +49,6 @@ protected:
 	virtual void createHelp();
 
 	// Advanced
-	void setRepaintVideoBackground(bool b);
-	bool repaintVideoBackground();
-
 	void setMplayerCrashes(bool b);
 	bool mplayerCrashes();
 
@@ -87,8 +83,6 @@ protected slots:
 	void on_changeButton_clicked();
 
 private:
-	bool repaint_video_background_changed;
-	bool monitor_aspect_changed;
 	bool colorkey_changed;
 	bool lavf_demuxer_changed;
 };
