@@ -189,7 +189,7 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	pref->initial_postprocessing = initialPostprocessing();
 	restartIfIntChanged(pref->postprocessing_quality, postprocessingQuality());
 	pref->initial_deinterlace = initialDeinterlace();
-	pref->initial_tv_deinterlace = initialDeinterlace();
+	pref->initial_tv_deinterlace = initialDeinterlaceTV();
 	pref->initial_zoom_factor = initialZoom();
 
 	// Screenshots
