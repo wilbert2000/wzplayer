@@ -103,6 +103,7 @@ void TGeneral::setData(TPreferences* pref) {
 	// Player
 	setPlayerID(pref->player_id);
 	setPlayerPath(pref->mplayer_bin, pref->mpv_bin);
+	report_player_crashes_check->setChecked(pref->report_player_crashes);
 
 	// Media settings group
 	setRememberSettings(pref->remember_media_settings);
@@ -127,6 +128,7 @@ void TGeneral::getData(TPreferences* pref) {
 		requires_restart = true;
 		pref->setPlayerBin(bin);
 	}
+	pref->report_player_crashes = report_player_crashes_check->isChecked();
 
 	// Media settings
 	pref->remember_media_settings = rememberSettings();
@@ -250,6 +252,11 @@ void TGeneral::createHelp() {
 		+ "<br><b>"
 		+ tr("If this setting is wrong, SMPlayer won't be able to play anything!")
 		+ "</b>");
+
+	setWhatsThis(report_player_crashes_check,
+		tr("Report player errors"),
+		tr("If checked, a messagebox will inform you when the player reports errors."
+		   "If not then player errors will only be shown in the statusbar."));
 
 	setWhatsThis(settings_group, tr("Remember settings for every file"),
 		tr("When checked SMPlayer will remember the settings you make for each file"

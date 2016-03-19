@@ -49,9 +49,6 @@ protected:
 	virtual void createHelp();
 
 	// Advanced
-	void setMplayerCrashes(bool b);
-	bool mplayerCrashes();
-
 	void setMplayerAdditionalArguments(QString args);
 	QString mplayerAdditionalArguments();
 

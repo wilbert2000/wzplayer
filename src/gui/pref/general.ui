@@ -92,6 +92,13 @@
             </item>
            </layout>
           </item>
+          <item>
+           <widget class="QCheckBox" name="report_player_crashes_check">
+            <property name="text">
+             <string notr="true">Report player &amp;errors</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -219,6 +226,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QWidget" name="widget" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -253,6 +270,7 @@
   <tabstop>mplayer_edit</tabstop>
   <tabstop>mpv_radio</tabstop>
   <tabstop>mpv_edit</tabstop>
+  <tabstop>report_player_crashes_check</tabstop>
   <tabstop>settings_group</tabstop>
   <tabstop>remember_time_check</tabstop>
   <tabstop>remember_volume_check</tabstop>

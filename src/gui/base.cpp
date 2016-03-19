@@ -1916,7 +1916,7 @@ void TBase::checkPendingActionsToRun() {
 void TBase::gotForbidden() {
 	qDebug("Gui::TBase::gotForbidden");
 
-	if (!pref->report_mplayer_crashes) {
+	if (!pref->report_player_crashes) {
 		qDebug("Gui::TBase::gotForbidden: not displaying error dialog");
 		return;
 	}
@@ -2465,7 +2465,7 @@ void TBase::showExitCodeFromPlayer(int exit_code) {
 	QString msg = exitCodeToMessage(exit_code);
 	displayMessage(msg, 0);
 
-	if (pref->report_mplayer_crashes) {
+	if (pref->report_player_crashes) {
 		TErrorDialog d(this);
 		d.setWindowTitle(tr("%1 Error").arg(pref->playerName()));
 		d.setText(msg);
@@ -2481,7 +2481,7 @@ void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
 
 	block_resize = false;
 
-	if (!pref->report_mplayer_crashes) {
+	if (!pref->report_player_crashes) {
 		qDebug("Gui::TBase::showErrorFromPlayer: error reporting is turned off");
 		displayMessage(tr("Player crashed or quit with errors."), 6000);
 		return;

@@ -54,9 +54,6 @@ QPixmap TAdvanced::sectionIcon() {
 void TAdvanced::retranslateStrings() {
 
 	retranslateUi(this);
-
-	mplayer_crashes_check->setText(tr("R&eport %1 crashes").arg(pref->playerName()));
-
 	createHelp();
 }
 
@@ -73,8 +70,6 @@ void TAdvanced::setData(TPreferences* pref) {
 
 	setUseCorrectPts(pref->use_correct_pts);
 	setActionsToRun(pref->actions_to_run);
-
-	setMplayerCrashes(pref->report_mplayer_crashes);
 }
 
 void TAdvanced::getData(TPreferences* pref) {
@@ -102,16 +97,6 @@ void TAdvanced::getData(TPreferences* pref) {
 		colorkey_changed = true;
 		requires_restart = true;
 	}
-
-	pref->report_mplayer_crashes = mplayerCrashes();
-}
-
-void TAdvanced::setMplayerCrashes(bool b) {
-	mplayer_crashes_check->setChecked(b);
-}
-
-bool TAdvanced::mplayerCrashes() {
-	return mplayer_crashes_check->isChecked();
 }
 
 void TAdvanced::setMplayerAdditionalArguments(QString args) {
@@ -216,12 +201,6 @@ void TAdvanced::createHelp() {
 
 	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
 		tr("If this option is checked, the lavf demuxer will be used for all formats."));
-
-	setWhatsThis(mplayer_crashes_check, 
-		tr("Report %1 crashes").arg(pref->playerName()),
-		tr("If this option is checked, a window will appear to inform "
-           "about %1 crashes. Otherwise those failures will be "
-           "silently ignored.").arg(pref->playerName()));
 
 	setWhatsThis(correct_pts_combo, tr("Correct pts"),
 		tr("Switches %1 to an experimental mode where timestamps for "

@@ -460,7 +460,7 @@
           <item>
            <widget class="QLabel" name="language_label">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Override the audio channel selected by the player with &lt;span style=&quot; font-weight:600;&quot;&gt;language&lt;/span&gt;. This field accepts regular expressions.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects the first audio track with a language matching &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Override the audio channel selected by the player when it matches the regular expression &lt;span style=&quot; font-weight:600;&quot;&gt;language&lt;/span&gt;.&lt;br/&gt;Example: &lt;span style=&quot; font-weight:600;&quot;&gt;es|esp|spa&lt;/span&gt; selects the first audio track with a language matching &lt;span style=&quot; font-style:italic;&quot;&gt;es&lt;/span&gt;, &lt;span style=&quot; font-style:italic;&quot;&gt;esp&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;spa&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

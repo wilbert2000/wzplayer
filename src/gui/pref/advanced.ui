@@ -42,13 +42,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="mplayer_crashes_check">
-         <property name="text">
-          <string notr="true">R&amp;eport PLAYER crashes</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <layout class="QHBoxLayout">
          <item>
           <widget class="QLabel" name="label_8">
@@ -404,7 +397,6 @@ Example: extrastereo,karaoke</string>
   <tabstop>advanced_tabwidget</tabstop>
   <tabstop>idx_check</tabstop>
   <tabstop>lavf_demuxer_check</tabstop>
-  <tabstop>mplayer_crashes_check</tabstop>
   <tabstop>correct_pts_combo</tabstop>
   <tabstop>actions_to_run_edit</tabstop>
   <tabstop>colorkey_view</tabstop>
