@@ -108,7 +108,6 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
     private slots:
         void tick(qint64 newPos);
         void emitMetadataChange() const;
-        void currentSourceChanged() const;
         void stateUpdated() const;
         void totalTimeChanged() const;
         void seekableChanged(bool seekable) const;

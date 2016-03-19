@@ -60,7 +60,6 @@ MediaPlayer2Player::MediaPlayer2Player(Gui::TBase* gui, QObject* parent)
 {
 //     connect(m_core, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
 //     connect(m_core, SIGNAL(seekableChanged(bool)), this, SLOT(seekableChanged(bool)));
-    connect(m_core, SIGNAL(mediaPlaying(QString,QString)), this, SLOT(currentSourceChanged()));
 	connect(m_core, SIGNAL(stateChanged(TCoreState)), this, SLOT(stateUpdated()));
     connect(m_core, SIGNAL(mediaInfoChanged()), this, SLOT(emitMetadataChange()));
     connect(m_core, SIGNAL(volumeChanged(int)), this, SLOT(volumeChanged()));
@@ -250,15 +249,8 @@ void MediaPlayer2Player::emitMetadataChange() const
 {
     QVariantMap properties;
     properties["Metadata"] = Metadata();
-    Mpris2::signalPropertiesChange(this, properties);
-}
-
-void MediaPlayer2Player::currentSourceChanged() const
-{
-    QVariantMap properties;
-    properties["Metadata"] = Metadata();
-    properties["CanSeek"] = CanSeek();
-    Mpris2::signalPropertiesChange(this, properties);
+	properties["CanSeek"] = CanSeek();
+	Mpris2::signalPropertiesChange(this, properties);
 }
 
 void MediaPlayer2Player::stateUpdated() const
