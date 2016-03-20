@@ -404,8 +404,6 @@ protected:
 
 	void saveMediaSettings();
 
-	void seek_cmd(double secs, int mode);
-
 protected slots:
 	void playingStarted();
 	void processError(QProcess::ProcessError error);
@@ -476,22 +474,28 @@ private:
 
 	int cache_size;
 
+	bool isMPlayer() const;
+	bool isMPV() const;
+
 	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(const QString& filename, int seek = -1);
 
 	void playingStartedOfNewMedia();
 	void playingRestarted();
 
-	bool isMPlayer() const;
-	bool isMPV() const;
 	bool haveVideoFilters() const;
 	void changeVF(const QString& filter, bool enable, const QVariant& option);
+
+	void setExternalSubs(const QString& filename);
+	bool setPreferredAudio();
+
 	void getZoomFromPlayerWindow();
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);
-	void setExternalSubs(const QString& filename);
-	bool setPreferredAudio();
+
 	int getVolumeForPlayer() const;
+
+	void seekCmd(double secs, int mode);
 };
 
 #endif

@@ -67,7 +67,7 @@ QString TDrives::sectionName() {
 }
 
 QPixmap TDrives::sectionIcon() {
-    return Images::icon("pref_devices", 22);
+    return Images::icon("pref_devices", icon_size);
 }
 
 

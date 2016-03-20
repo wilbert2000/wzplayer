@@ -43,7 +43,7 @@ QString TNetwork::sectionName() {
 }
 
 QPixmap TNetwork::sectionIcon() {
-	return Images::icon("pref_network", 22);
+	return Images::icon("pref_network", icon_size);
 }
 
 void TNetwork::retranslateStrings() {

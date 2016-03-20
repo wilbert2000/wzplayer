@@ -78,7 +78,6 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	connect(page_general, SIGNAL(binChanged(const QString&)),
 			this, SLOT(binChanged(const QString&)));
 
-
 	page_demuxer = new TDemuxer(0);
 	addSection(page_demuxer);
 

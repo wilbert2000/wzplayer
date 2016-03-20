@@ -89,16 +89,16 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="idx_check">
+        <widget class="QCheckBox" name="lavf_demuxer_check">
          <property name="text">
-          <string>Rebuild &amp;index if needed</string>
+          <string>Use the la&amp;vf demuxer by default</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="lavf_demuxer_check">
+        <widget class="QCheckBox" name="idx_check">
          <property name="text">
-          <string>Use the la&amp;vf demuxer by default</string>
+          <string>Rebuild &amp;index if needed</string>
          </property>
         </widget>
        </item>

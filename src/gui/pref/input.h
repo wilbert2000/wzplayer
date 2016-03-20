@@ -45,8 +45,6 @@ public:
 	void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void createHelp();
-
 	void createMouseCombos();
 
 	void setLeftClickFunction(const QString& f);
@@ -78,6 +76,30 @@ protected:
 
 protected:
 	virtual void retranslateStrings();
+
+private:
+	void createHelp();
+
+	void setSeeking1(int n);
+	int seeking1();
+
+	void setSeeking2(int n);
+	int seeking2();
+
+	void setSeeking3(int n);
+	int seeking3();
+
+	void setSeeking4(int n);
+	int seeking4();
+
+	void setUpdateWhileDragging(bool);
+	bool updateWhileDragging();
+
+	void setRelativeSeeking(bool);
+	bool relativeSeeking();
+
+	void setPreciseSeeking(bool);
+	bool preciseSeeking();
 }; // class TInput
 
 } // namespace Pref

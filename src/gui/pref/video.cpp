@@ -93,7 +93,7 @@ QString TVideo::sectionName() {
 }
 
 QPixmap TVideo::sectionIcon() {
-	return Images::icon("pref_video", 22);
+	return Images::icon("pref_video", icon_size);
 }
 
 void TVideo::retranslateStrings() {

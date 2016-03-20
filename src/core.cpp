@@ -1407,15 +1407,17 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("dvdangle", QString::number(mset.current_angle_id));
 	}
 
-	// TMPVProcess title and track switch code does not run nicely when caching
-	// is set. Seeks inside the cache don't notify track or title changes.
-	// So instead of honouring some cache settings and not others, for now,
-	// declare them MPlayer only.
-	if (isMPlayer()) {
+	// TODO: TMPVProcess title and track switch code does not run nicely when
+	// caching is set. Seeks inside cache don't notify track or title changes.
+	cache_size = -1;
+	if (mdat.selected_type == TMediaData::TYPE_DVDNAV) {
+		// Always set no cache for DVDNAV
+		cache_size = 0;
+	} else if (pref->cache_enabled) {
+		// Enabled set cache
 		switch (mdat.selected_type) {
 			case TMediaData::TYPE_FILE  : cache_size = pref->cache_for_files; break;
 			case TMediaData::TYPE_DVD   : cache_size = pref->cache_for_dvds; break;
-			case TMediaData::TYPE_DVDNAV: cache_size = 0; break;
 			case TMediaData::TYPE_STREAM: cache_size = pref->cache_for_streams; break;
 			case TMediaData::TYPE_VCD   : cache_size = pref->cache_for_vcds; break;
 			case TMediaData::TYPE_CDDA  : cache_size = pref->cache_for_audiocds; break;
@@ -1423,10 +1425,9 @@ void TCore::startPlayer(QString file, double seek) {
 			case TMediaData::TYPE_BLURAY: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
 			default: cache_size = 0;
 		} // switch
-
+	}
+	if (cache_size >= 0) {
 		proc->setOption("cache", QString::number(cache_size));
-	} else {
-		cache_size = -1;
 	}
 
 	if (mset.speed != 1.0) {
@@ -1828,45 +1829,50 @@ void TCore::goToPosition(int pos) {
 	}
 }
 
+void TCore::seekCmd(double secs, int mode) {
+
+	// seek <value> [type]
+	// Seek to some place in the movie.
+	// mode 0 is a relative seek of +/- <value> seconds (default).
+	// mode 1 is a seek to <value> % in the movie.
+	// mode 2 is a seek to an absolute position of <value> seconds.
+
+	if (mode != 0) {
+		if (secs < 0)
+			secs = 0;
+		if (mode == 1) {
+			if (secs > 100) {
+				secs = 100;
+			}
+		} else if (mode == 2 && mdat.duration > 0 && secs >= mdat.duration) {
+			qWarning("TCore::seekCmd: seek %f beyond end of video %f", secs, mdat.duration);
+			// TODO: limit only when mdat.duration is proven reliable...
+			//if (mdat.video_fps > 0)
+			//	secs = mdat.duration - (1.0 / mdat.video_fps);
+			//else secs = mdat.duration - 0.1;
+		}
+	}
+
+	if (proc->isFullyStarted()) {
+		proc->seek(secs, mode, pref->precise_seeking, _state == STATE_PAUSED);
+	} else {
+		qWarning("TCore::seekCmd: ignored seek, player not yet fully loaded");
+	}
+}
+
 void TCore::goToPos(double perc) {
 	qDebug("TCore::goToPos: per: %f", perc);
-	seek_cmd(perc, 1);
+	seekCmd(perc, 1);
 }
 
 void TCore::goToSec(double sec) {
 	qDebug("TCore::goToSec: %f", sec);
-	seek_cmd(sec, 2);
+	seekCmd(sec, 2);
 }
 
 void TCore::seek(int secs) {
 	qDebug("TCore::seek: seek relative %d secs", secs);
-
-	// Something to seek?
-	if (qAbs(secs) > 0.01)
-		seek_cmd(secs, 0);
-}
-
-void TCore::seek_cmd(double secs, int mode) {
-
-	//seek <value> [type]
-	//    Seek to some place in the movie.
-	//        0 is a relative seek of +/- <value> seconds (default).
-	//        1 is a seek to <value> % in the movie.
-	//        2 is a seek to an absolute position of <value> seconds.
-	if (mode != 0) {
-		if (secs < 0)
-			secs = 0;
-		if (mode == 2) {
-			if (mdat.duration > 0 && secs >= mdat.duration) {
-				if (mdat.video_fps > 0)
-					secs = mdat.duration - (1.0 / mdat.video_fps);
-				else secs = mdat.duration - 0.1;
-			}
-		}
-	}
-
-	if (proc->isFullyStarted())
-		proc->seek(secs, mode, pref->precise_seeking, _state == STATE_PAUSED);
+	seekCmd(secs, 0);
 }
 
 void TCore::sforward() {

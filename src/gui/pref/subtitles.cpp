@@ -59,7 +59,7 @@ QString TSubtitles::sectionName() {
 }
 
 QPixmap TSubtitles::sectionIcon() {
-    return Images::icon("pref_subtitles", 22);
+	return Images::icon("sub", icon_size);
 }
 
 void TSubtitles::retranslateStrings() {
@@ -67,6 +67,8 @@ void TSubtitles::retranslateStrings() {
 	int autoload = autoload_combo->currentIndex();
 	retranslateUi(this);
 	autoload_combo->setCurrentIndex(autoload);
+
+	icon_label->setPixmap(Images::icon("sub"));
 
 	// Subtitle encoding language
 	QString current = encaLang();

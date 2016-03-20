@@ -210,7 +210,7 @@ QString TAssociations::sectionName() {
 }
 
 QPixmap TAssociations::sectionIcon() {
-	return Images::icon("pref_associations", 22);
+	return Images::icon("pref_associations", icon_size);
 }
 
 void TAssociations::retranslateStrings() {

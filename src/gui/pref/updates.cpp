@@ -44,7 +44,7 @@ QString TUpdates::sectionName() {
 }
 
 QPixmap TUpdates::sectionIcon() {
-    return Images::icon("pref_updates", 22);
+    return Images::icon("pref_updates", icon_size);
 }
 
 void TUpdates::retranslateStrings() {

@@ -28,7 +28,6 @@
         <file>default-theme/gamma.png</file>
         <file>default-theme/hue.png</file>
         <file>default-theme/info.png</file>
-        <file>default-theme/input_devices.png</file>
         <file>default-theme/keyboard.png</file>
         <file>default-theme/logo.png</file>
         <file>default-theme/log.png</file>
@@ -50,10 +49,12 @@
         <file>default-theme/pref_radio_tv.png</file>
         <file>default-theme/pref_demuxer.png</file>
         <file>default-theme/pref_video.png</file>
-        <file>default-theme/pref_gui.png</file>
         <file>default-theme/pref_subtitles.png</file>
+        <file>default-theme/pref_gui.png</file>
+        <file>default-theme/pref_input.png</file>
         <file>default-theme/pref_devices.png</file>
         <file>default-theme/pref_performance.png</file>
+        <file>default-theme/pref_cache.png</file>
         <file>default-theme/pref_network.png</file>
         <file>default-theme/pref_updates.png</file>
 		<file>default-theme/pref_advanced.png</file>

@@ -78,7 +78,7 @@ QString TInterface::sectionName() {
 }
 
 QPixmap TInterface::sectionIcon() {
-    return Images::icon("pref_gui", 22);
+	return Images::icon("instance1", icon_size);
 }
 
 void TInterface::createLanguageCombo() {
@@ -104,31 +104,12 @@ void TInterface::createLanguageCombo() {
 void TInterface::retranslateStrings() {
 
 	int mainwindow_resize = resize_window_combo->currentIndex();
-	int timeslider_pos = timeslider_behaviour_combo->currentIndex();
 
 	retranslateUi(this);
 
 	changeInstanceImages();
 
 	resize_window_combo->setCurrentIndex(mainwindow_resize);
-	timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
-
-	// Seek widgets
-	seek1->setLabel(tr("&Short jump"));
-	seek2->setLabel(tr("&Medium jump"));
-	seek3->setLabel(tr("&Long jump"));
-	seek4->setLabel(tr("Mouse &wheel jump"));
-
-	if (qApp->isLeftToRight()) {
-		seek1->setIcon(Images::icon("forward10s", 32));
-		seek2->setIcon(Images::icon("forward1m", 32));
-		seek3->setIcon(Images::icon("forward10m", 32));
-	} else {
-		seek1->setIcon(Images::flippedIcon("forward10s", 32));
-		seek2->setIcon(Images::flippedIcon("forward1m", 32));
-		seek3->setIcon(Images::flippedIcon("forward10m", 32));
-	}
-	seek4->setIcon(Images::icon("mouse",32));
 
 	// Language combo
 	int language_item = language_combo->currentIndex();
@@ -164,15 +145,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	show_toolbars_bottom_only_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	setStartInFullscreen(pref->start_in_fullscreen);
 	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
-
-	setSeeking1(pref->seeking1);
-	setSeeking2(pref->seeking2);
-	setSeeking3(pref->seeking3);
-	setSeeking4(pref->seeking4);
-
-	setUpdateWhileDragging(pref->update_while_seeking);
-	setRelativeSeeking(pref->relative_seeking);
-	setPreciseSeeking(pref->precise_seeking);
 
 	setDefaultFont(pref->default_font);
 
@@ -225,15 +197,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 			requires_restart = true;
 	}
 
-	pref->seeking1 = seeking1();
-	pref->seeking2 = seeking2();
-	pref->seeking3 = seeking3();
-	pref->seeking4 = seeking4();
-
-	pref->update_while_seeking = updateWhileDragging();
-	pref->relative_seeking= relativeSeeking();
-	pref->precise_seeking = preciseSeeking();
-
 	pref->default_font = defaultFont();
 
 	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
@@ -257,10 +220,10 @@ void TInterface::getData(Settings::TPreferences* pref) {
 }
 
 void TInterface::setLanguage(const QString& lang) {
+
 	if (lang.isEmpty()) {
 		language_combo->setCurrentIndex(0);
-	}
-	else {
+	} else {
 		int pos = language_combo->findData(lang);
 		if (pos != -1) 
 			language_combo->setCurrentIndex(pos);
@@ -270,7 +233,8 @@ void TInterface::setLanguage(const QString& lang) {
 }
 
 QString TInterface::language() {
-	if (language_combo->currentIndex()==0) 
+
+	if (language_combo->currentIndex() <= 0)
 		return "";
 	else 
 		return language_combo->itemData(language_combo->currentIndex()).toString();
@@ -289,7 +253,7 @@ void TInterface::setIconSet(const QString& set) {
 
 QString TInterface::iconSet() {
 
-	if (iconset_combo->currentIndex() == 0)
+	if (iconset_combo->currentIndex() <= 0)
 		return "";
 	else
 		return iconset_combo->currentText();
@@ -360,66 +324,6 @@ bool TInterface::useSingleInstance() {
 	return single_instance_check->isChecked();
 }
 #endif
-
-void TInterface::setSeeking1(int n) {
-	seek1->setTime(n);
-}
-
-int TInterface::seeking1() {
-	return seek1->time();
-}
-
-void TInterface::setSeeking2(int n) {
-	seek2->setTime(n);
-}
-
-int TInterface::seeking2() {
-	return seek2->time();
-}
-
-void TInterface::setSeeking3(int n) {
-	seek3->setTime(n);
-}
-
-int TInterface::seeking3() {
-	return seek3->time();
-}
-
-void TInterface::setSeeking4(int n) {
-	seek4->setTime(n);
-}
-
-int TInterface::seeking4() {
-	return seek4->time();
-}
-
-void TInterface::setUpdateWhileDragging(bool b) {
-	if (b) 
-		timeslider_behaviour_combo->setCurrentIndex(0);
-	else
-		timeslider_behaviour_combo->setCurrentIndex(1);
-}
-
-bool TInterface::updateWhileDragging() {
-	return (timeslider_behaviour_combo->currentIndex() == 0);
-}
-
-void TInterface::setRelativeSeeking(bool b) {
-	relative_seeking_button->setChecked(b);
-	absolute_seeking_button->setChecked(!b);
-}
-
-bool TInterface::relativeSeeking() {
-	return relative_seeking_button->isChecked();
-}
-
-void TInterface::setPreciseSeeking(bool b) {
-	precise_seeking_check->setChecked(b);
-}
-
-bool TInterface::preciseSeeking() {
-	return precise_seeking_check->isChecked();
-}
 
 void TInterface::setDefaultFont(const QString& font_desc) {
 	default_font_edit->setText(font_desc);
@@ -576,37 +480,6 @@ void TInterface::createHelp() {
 		   "image in fullscreen mode. This allows subtitles to be displayed "
 		   "on the black borders."));
 
-
-	addSectionTitle(tr("Seeking"));
-
-	setWhatsThis(seek1, tr("Short jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("short jump")));
-
-	setWhatsThis(seek2, tr("Medium jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("medium jump")));
-
-	setWhatsThis(seek3, tr("Long jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("long jump")));
-
-	setWhatsThis(seek4, tr("Mouse wheel jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "move the mouse wheel."));
-
-	setWhatsThis(timeslider_behaviour_combo, tr("Behaviour of time slider"),
-        tr("Select what to do when dragging the time slider."));
-
-	setWhatsThis(seeking_method_group, tr("Seeking method"),
-		tr("Sets the method to be used when seeking with the slider. "
-           "Absolute seeking may be a little bit more accurate, while "
-           "relative seeking may work better with files with a wrong length."));
-
-	setWhatsThis(precise_seeking_check, tr("Precise seeking"),
-		tr("If this option is enabled, seeks are more accurate but they "
-           "can be a little bit slower. May not work with some video formats.") +"<br>"+
-		tr("Note: this option only works with MPlayer2"));
 
 	addSectionTitle(tr("History"));
 

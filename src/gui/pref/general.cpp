@@ -63,7 +63,7 @@ QString TGeneral::sectionName() {
 }
 
 QPixmap TGeneral::sectionIcon() {
-	return Images::icon("play", 22);
+	return Images::icon("pref_general", icon_size);
 }
 
 void TGeneral::retranslateStrings() {

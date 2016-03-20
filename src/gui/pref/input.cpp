@@ -40,7 +40,7 @@ QString TInput::sectionName() {
 }
 
 QPixmap TInput::sectionIcon() {
-    return Images::icon("input_devices", 22);
+	return Images::icon("pref_input", icon_size);
 }
 
 void TInput::createMouseCombos() {
@@ -115,7 +115,9 @@ void TInput::createMouseCombos() {
 }
 
 void TInput::retranslateStrings() {
+
 	int wheel_function = wheel_function_combo->currentIndex();
+	int timeslider_pos = timeslider_behaviour_combo->currentIndex();
 
 	retranslateUi(this);
 
@@ -152,6 +154,25 @@ void TInput::retranslateStrings() {
 	wheel_function_volume->setText(tr("&Volume control"));
 	wheel_function_speed->setText(tr("&Change speed"));
 
+	// Seek tab
+	seek1->setLabel(tr("&Short jump"));
+	seek2->setLabel(tr("&Medium jump"));
+	seek3->setLabel(tr("&Long jump"));
+	seek4->setLabel(tr("Mouse &wheel jump"));
+
+	if (qApp->isLeftToRight()) {
+		seek1->setIcon(Images::icon("forward10s", 32));
+		seek2->setIcon(Images::icon("forward1m", 32));
+		seek3->setIcon(Images::icon("forward10m", 32));
+	} else {
+		seek1->setIcon(Images::flippedIcon("forward10s", 32));
+		seek2->setIcon(Images::flippedIcon("forward1m", 32));
+		seek3->setIcon(Images::flippedIcon("forward10m", 32));
+	}
+	seek4->setIcon(Images::icon("mouse",32));
+
+	timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
+
 	createHelp();
 }
 
@@ -167,6 +188,15 @@ void TInput::setData(Settings::TPreferences* pref) {
 	setWheelFunctionCycle(pref->wheel_function_cycle);
 	setWheelFunctionSeekingReverse(pref->wheel_function_seeking_reverse);
 	wait_for_double_click_check->setChecked(pref->delay_left_click);
+
+	setSeeking1(pref->seeking1);
+	setSeeking2(pref->seeking2);
+	setSeeking3(pref->seeking3);
+	setSeeking4(pref->seeking4);
+
+	setUpdateWhileDragging(pref->update_while_seeking);
+	setRelativeSeeking(pref->relative_seeking);
+	setPreciseSeeking(pref->precise_seeking);
 }
 
 void TInput::getData(Settings::TPreferences* pref) {
@@ -182,6 +212,16 @@ void TInput::getData(Settings::TPreferences* pref) {
 	pref->wheel_function_cycle = wheelFunctionCycle();
 	pref->wheel_function_seeking_reverse = wheelFunctionSeekingReverse();
 	pref->delay_left_click = wait_for_double_click_check->isChecked();
+
+	// Seeking tab
+	pref->seeking1 = seeking1();
+	pref->seeking2 = seeking2();
+	pref->seeking3 = seeking3();
+	pref->seeking4 = seeking4();
+
+	pref->update_while_seeking = updateWhileDragging();
+	pref->relative_seeking= relativeSeeking();
+	pref->precise_seeking = preciseSeeking();
 }
 
 /*
@@ -299,15 +339,76 @@ bool TInput::wheelFunctionSeekingReverse() {
 	return wheel_function_seeking_reverse_check->isChecked();
 }
 
+void TInput::setSeeking1(int n) {
+	seek1->setTime(n);
+}
+
+int TInput::seeking1() {
+	return seek1->time();
+}
+
+void TInput::setSeeking2(int n) {
+	seek2->setTime(n);
+}
+
+int TInput::seeking2() {
+	return seek2->time();
+}
+
+void TInput::setSeeking3(int n) {
+	seek3->setTime(n);
+}
+
+int TInput::seeking3() {
+	return seek3->time();
+}
+
+void TInput::setSeeking4(int n) {
+	seek4->setTime(n);
+}
+
+int TInput::seeking4() {
+	return seek4->time();
+}
+
+void TInput::setUpdateWhileDragging(bool b) {
+	if (b)
+		timeslider_behaviour_combo->setCurrentIndex(0);
+	else
+		timeslider_behaviour_combo->setCurrentIndex(1);
+}
+
+bool TInput::updateWhileDragging() {
+	return (timeslider_behaviour_combo->currentIndex() == 0);
+}
+
+void TInput::setRelativeSeeking(bool b) {
+	relative_seeking_button->setChecked(b);
+	absolute_seeking_button->setChecked(!b);
+}
+
+bool TInput::relativeSeeking() {
+	return relative_seeking_button->isChecked();
+}
+
+void TInput::setPreciseSeeking(bool b) {
+	precise_seeking_check->setChecked(b);
+}
+
+bool TInput::preciseSeeking() {
+	return precise_seeking_check->isChecked();
+}
+
 void TInput::createHelp() {
+
 	clearHelp();
 
 	addSectionTitle(tr("Keyboard"));
 
 	setWhatsThis(actions_editor, tr("Shortcut editor"),
-        tr("This table allows you to change the key shortcuts of most "
+		tr("This table allows you to change the shortcut keys of most "
            "available actions. Double click or press enter on a item, or "
-           "press the <b>Change shortcut</b> button to enter in the "
+		   "press the <b>Change shortcut</b> button to open the "
            "<i>Modify shortcut</i> dialog. There are two ways to change a "
            "shortcut: if the <b>Capture</b> button is on then just "
            "press the new key or combination of keys that you want to "
@@ -315,13 +416,29 @@ void TInput::createHelp() {
            "keys). If the <b>Capture</b> button is off "
            "then you could enter the full name of the key."));
 
+
 	addSectionTitle(tr("Mouse"));
+
+	addSectionGroup(tr("Buttons"));
 
 	setWhatsThis(left_click_combo, tr("Left click"),
 		tr("Select the action for left click on the mouse."));
 
 	setWhatsThis(double_click_combo, tr("Double click"),
 		tr("Select the action for double click on the mouse."));
+
+	setWhatsThis(wait_for_double_click_check,
+		tr("Wait for double click before triggering left click action"),
+		tr("When checked, a left click will be delayed by %1 millisecond"
+		   " to see whether it will turn into a double click. When a double"
+		   " click is detected, the left click action is canceled and the"
+		   " double click action is triggered instead. This is the default"
+		   " left click behaviour.").arg(qApp->doubleClickInterval())
+		+ "<br><br>"
+		+ tr("For precise seeking, it can be convenient to trigger the left"
+			 " click action right away, without delay, to instantly pause a"
+			 " video. Consequently this will cause a left click action being"
+			 " triggered before and after each double click action."));
 
 	setWhatsThis(middle_click_combo, tr("Middle click"),
 		tr("Select the action for middle click on the mouse."));
@@ -332,36 +449,59 @@ void TInput::createHelp() {
 	setWhatsThis(xbutton2_click_combo, tr("X Button 2"),
 		tr("Select the action for the X button 2."));
 
-	setWhatsThis(wheel_function_combo, tr("Wheel function"),
-		tr("Select the action for the mouse wheel."));
 
-	setWhatsThis(wait_for_double_click_check,
-		tr("Wait for double click before triggering left click action"),
-		tr("Normally checked, so a left click will be delayed by %1 millisecond"
-		   " to see if it will turn into a double click. When a double click is"
-		   " detected the left click action is not triggered and the double"
-		   " click action is triggered instead.").arg(qApp->doubleClickInterval())
-		+ "<br><br>"
-		+ tr("For precise seeking, it can be convenient to trigger the left"
-			 " click action right away, without delay, to instantly pause a"
-			 " video. Besides instant triggering of the left click action,"
-			 " it will also cause a left click action being triggered before"
-			 " and after every double click action."));
+	addSectionGroup(tr("Wheel"));
+
+	setWhatsThis(wheel_function_combo, tr("Current scroll action"),
+		tr("Select the action for scrolling the mouse wheel."));
 
 	setWhatsThis(wheel_function_seek, tr("Media seeking"),
-		tr("Check it to enable seeking as one function."));
+		tr("Check it to enable seeking as action for the mouse wheel."));
 
 	setWhatsThis(wheel_function_volume, tr("Volume control"),
-		tr("Check it to enable changing volume as one function."));
+		tr("Check it to enable changing volume as action for the mouse wheel."));
 
 	setWhatsThis(wheel_function_zoom, tr("Zoom video"),
-		tr("Check it to enable zooming as one function."));
+		tr("Check it to enable zooming as action for the mouse wheel."));
 
 	setWhatsThis(wheel_function_speed, tr("Change speed"),
-		tr("Check it to enable changing speed as one function."));
+		tr("Check it to enable changing speed as action for the mouse wheel."));
 
 	setWhatsThis(wheel_function_seeking_reverse_check, tr("Reverse mouse wheel seeking"),
 		tr("Check it to seek in the opposite direction."));
+
+
+	addSectionTitle(tr("Seeking"));
+
+	setWhatsThis(seek1, tr("Short jump"),
+		tr("Select the time that should be go forward or backward when you "
+		   "choose the %1 action.").arg(tr("short jump")));
+
+	setWhatsThis(seek2, tr("Medium jump"),
+		tr("Select the time that should be go forward or backward when you "
+		   "choose the %1 action.").arg(tr("medium jump")));
+
+	setWhatsThis(seek3, tr("Long jump"),
+		tr("Select the time that should be go forward or backward when you "
+		   "choose the %1 action.").arg(tr("long jump")));
+
+	setWhatsThis(seek4, tr("Mouse wheel jump"),
+		tr("Select the time that should be go forward or backward when you "
+		   "move the mouse wheel."));
+
+	setWhatsThis(seeking_method_group, tr("Seeking method"),
+		tr("Sets the method to be used when seeking with the time slider."
+		   " Absolute seeking seeks with the requested timestamp. It may be"
+		   " a little bit more accurate, while relative seeking, seeks with"
+		   " a time offset, 5 seconds forward from here, and may work better"
+		   " with files having a wrong duration."));
+
+	setWhatsThis(precise_seeking_check, tr("Precise seeking"),
+		tr("If this option is enabled, seeks are more accurate but slower."
+		   " May not work with some video formats."));
+
+	setWhatsThis(timeslider_behaviour_combo, tr("Behaviour of time slider"),
+		tr("Select what to do when dragging the time slider."));
 }
 
 }} // namespace Gui::Pref

@@ -25,7 +25,8 @@ namespace Pref {
 
 TWidget::TWidget(QWidget* parent, Qt::WindowFlags f)
 	: QWidget(parent, f)
-	, requires_restart(false) {
+	, requires_restart(false)
+	, icon_size(32) {
 }
 
 TWidget::~TWidget() {

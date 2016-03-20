@@ -51,7 +51,6 @@ public:
 	bool urlMaxChanged() const { return url_max_changed; }
 
 protected:
-	virtual void createHelp();
 	void createLanguageCombo();
 
 	void setLanguage(const QString& lang);
@@ -76,27 +75,6 @@ protected:
 	void setUseSingleInstance(bool b);
 	bool useSingleInstance();
 #endif
-
-	void setSeeking1(int n);
-	int seeking1();
-
-	void setSeeking2(int n);
-	int seeking2();
-
-	void setSeeking3(int n);
-	int seeking3();
-
-	void setSeeking4(int n);
-	int seeking4();
-
-	void setUpdateWhileDragging(bool);
-	bool updateWhileDragging();
-
-	void setRelativeSeeking(bool);
-	bool relativeSeeking();
-
-	void setPreciseSeeking(bool);
-	bool preciseSeeking();
 
 	void setDefaultFont(const QString& font_desc);
 	QString defaultFont();
@@ -127,6 +105,8 @@ private:
 	bool style_changed;
 	bool recents_changed;
 	bool url_max_changed;
+
+	void createHelp();
 
 	void setPauseWhenHidden(bool b);
 	bool pauseWhenHidden();

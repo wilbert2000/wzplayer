@@ -41,18 +41,20 @@ QString TPerformance::sectionName() {
 }
 
 QPixmap TPerformance::sectionIcon() {
-    return Images::icon("pref_performance", 22);
+	//return Images::icon("pref_performance", icon_size);
+	return Images::icon("pref_cache", icon_size);
 }
-
 
 void TPerformance::retranslateStrings() {
 
 	retranslateUi(this);
+	icon_label->setPixmap(Images::icon("pref_cache"));
 	createHelp();
 }
 
 void TPerformance::setData(TPreferences* pref) {
 
+	cache_group->setChecked(pref->cache_enabled);
 	setCacheForFiles(pref->cache_for_files);
 	setCacheForStreams(pref->cache_for_streams);
 	setCacheForDVDs(pref->cache_for_dvds);
@@ -65,6 +67,7 @@ void TPerformance::getData(TPreferences* pref) {
 
 	requires_restart = false;
 
+	restartIfBoolChanged(pref->cache_enabled, cache_group->isChecked());
 	restartIfIntChanged(pref->cache_for_files, cacheForFiles());
 	restartIfIntChanged(pref->cache_for_streams, cacheForStreams());
 	restartIfIntChanged(pref->cache_for_dvds, cacheForDVDs());

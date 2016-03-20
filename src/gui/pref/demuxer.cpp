@@ -25,7 +25,8 @@ void TDemuxer::retranslateStrings() {
 	icon2_label->setPixmap(Images::icon("mirror"));
 	icon3_label->setPixmap(Images::icon("pref_video"));
 	icon4_label->setPixmap(Images::icon("speaker"));
-	icon5_label->setPixmap(Images::icon("pref_subtitles"));
+	//icon5_label->setPixmap(Images::icon("pref_subtitles"));
+	icon5_label->setPixmap(Images::icon("sub"));
 
 	createHelp();
 }
@@ -35,26 +36,29 @@ QString TDemuxer::sectionName() {
 }
 
 QPixmap TDemuxer::sectionIcon() {
-	return Images::icon("pref_demuxer", 22);
+	return Images::icon("pref_demuxer", icon_size);
 }
 
 void TDemuxer::setData(Settings::TPreferences* pref) {
 
-	idx_check->setChecked(pref->use_idx);
 	lavf_demuxer_check->setChecked(pref->use_lavf_demuxer);
+	idx_check->setChecked(pref->use_idx);
 }
 
 void TDemuxer::getData(Settings::TPreferences* pref) {
 
 	requires_restart = false;
 
-	restartIfBoolChanged(pref->use_idx, idx_check->isChecked());
 	restartIfBoolChanged(pref->use_lavf_demuxer, lavf_demuxer_check->isChecked());
+	restartIfBoolChanged(pref->use_idx, idx_check->isChecked());
 }
 
 void TDemuxer::createHelp() {
 
 	addSectionTitle(tr("Demuxer"));
+
+	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
+		tr("If this option is checked, the lavf demuxer will be used for all formats."));
 
 	setWhatsThis(idx_check, tr("Rebuild index if needed"),
 		tr("Rebuilds index of files if no index was found, allowing seeking. "
@@ -62,10 +66,6 @@ void TDemuxer::createHelp() {
 		   "This option only works if the underlying media supports "
 		   "seeking (i.e. not with stdin, pipe, etc).<br> "
 		   "<b>Note:</b> the creation of the index may take some time."));
-
-	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
-		tr("If this option is checked, the lavf demuxer will be used for all formats."));
-
 }
 
 } // namespace Pref

@@ -67,7 +67,7 @@ QString TAudio::sectionName() {
 }
 
 QPixmap TAudio::sectionIcon() {
-	return Images::icon("speaker", 22);
+	return Images::icon("speaker", icon_size);
 }
 
 void TAudio::retranslateStrings() {

@@ -48,7 +48,7 @@ QString TAdvanced::sectionName() {
 }
 
 QPixmap TAdvanced::sectionIcon() {
-    return Images::icon("pref_advanced", 22);
+    return Images::icon("pref_advanced", icon_size);
 }
 
 

@@ -48,6 +48,7 @@ public:
 
 protected:
 	bool requires_restart;
+	int icon_size;
 
 	virtual void retranslateStrings();
 	virtual void changeEvent (QEvent* event) ;

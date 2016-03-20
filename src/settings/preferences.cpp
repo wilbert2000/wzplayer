@@ -180,7 +180,7 @@ void TPreferences::reset() {
     /* ***********
        Performance
        *********** */
-
+	cache_enabled = false;
 	cache_for_files = 2048;
 	cache_for_streams = 2048;
 	cache_for_dvds = 0; // not recommended to use cache for dvds
@@ -533,7 +533,7 @@ void TPreferences::save() {
        Performance
        *********** */
 	beginGroup("performance");
-
+	setValue("cache_enabled", cache_enabled);
 	setValue("cache_for_files", cache_for_files);
 	setValue("cache_for_streams", cache_for_streams);
 	setValue("cache_for_dvds", cache_for_dvds);
@@ -1024,6 +1024,7 @@ void TPreferences::load() {
 
 	beginGroup("performance");
 
+	cache_enabled = value("cache_enabled", cache_enabled).toBool();
 	cache_for_files = value("cache_for_files", cache_for_files).toInt();
 	cache_for_streams = value("cache_for_streams", cache_for_streams).toInt();
 	cache_for_dvds = value("cache_for_dvds", cache_for_dvds).toInt();

@@ -83,7 +83,6 @@ public:
 
 
 	// General tab
-
 	// Version config file
 	int config_version;
 
@@ -204,6 +203,7 @@ public:
 
 
 	// Performance tab
+	bool cache_enabled;
 	int cache_for_files;
 	int cache_for_streams;
 	int cache_for_dvds;

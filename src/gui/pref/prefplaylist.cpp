@@ -40,7 +40,7 @@ QString TPrefPlaylist::sectionName() {
 }
 
 QPixmap TPrefPlaylist::sectionIcon() {
-    return Images::icon("playlist", 22);
+    return Images::icon("playlist", icon_size);
 }
 
 void TPrefPlaylist::retranslateStrings() {
