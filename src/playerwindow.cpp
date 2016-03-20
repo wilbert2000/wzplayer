@@ -68,9 +68,8 @@ void TPlayerLayer::paintEvent(QPaintEvent* e) {
 void TPlayerLayer::setFastBackground() {
 	qDebug("TPlayerLayer::setFastBackground");
 
-	normal_background = false;
-
 #ifndef Q_OS_WIN
+	normal_background = false;
 	setAttribute(Qt::WA_PaintOnScreen);
 #endif
 }
@@ -543,12 +542,6 @@ void TPlayerWindow::setColorKey(QColor c) {
 
 void TPlayerWindow::aboutToStartPlaying() {
 	//qDebug("TPlayerWindow::aboutToStartPlaying");
-
-#ifdef Q_OS_WIN
-	// Clear background to color key
-	repaint();
-#endif
-
 	playerlayer->setFastBackground();
 }
 
