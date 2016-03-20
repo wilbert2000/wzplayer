@@ -21,7 +21,12 @@
 
 #include "ui_advanced.h"
 #include "gui/pref/widget.h"
-#include "settings/preferences.h"
+
+
+namespace Settings {
+class TPreferences;
+}
+
 
 namespace Gui {
 namespace Pref {
@@ -60,15 +65,6 @@ protected:
 
 	void setColorKey(unsigned int c);
 	unsigned int colorKey();
-
-	void setUseIdx(bool);
-	bool useIdx();
-
-	void setUseLavfDemuxer(bool);
-	bool useLavfDemuxer();
-
-	void setUseCorrectPts(Settings::TPreferences::TOptionState value);
-	Settings::TPreferences::TOptionState useCorrectPts();
 
 	void setActionsToRun(QString actions);
 	QString actionsToRun();

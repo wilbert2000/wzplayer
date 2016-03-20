@@ -1154,6 +1154,8 @@ void TBase::applyFileProperties() {
 	TEST_AND_SET(core->mset.mplayer_additional_video_filters, file_properties_dialog->mplayerAdditionalVideoFilters());
 	TEST_AND_SET(core->mset.mplayer_additional_audio_filters, file_properties_dialog->mplayerAdditionalAudioFilters());
 
+#undef TEST_AND_SET
+
 	// Restart the video to apply
 	if (need_restart) {
 		if (demuxer_changed) {

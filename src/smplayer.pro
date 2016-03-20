@@ -120,6 +120,7 @@ HEADERS += svn_revision.h \
     gui/pref/dialog.h \
     gui/pref/widget.h \
     gui/pref/general.h \
+    gui/pref/demuxer.h \
     gui/pref/video.h \
     gui/pref/audio.h \
     gui/pref/drives.h \
@@ -231,6 +232,7 @@ SOURCES	+= version.cpp \
     gui/pref/dialog.cpp \
     gui/pref/widget.cpp \
     gui/pref/general.cpp \
+    gui/pref/demuxer.cpp \
     gui/pref/video.cpp \
     gui/pref/audio.cpp \
     gui/pref/drives.cpp \
@@ -279,7 +281,7 @@ FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
         gui/stereo3ddialog.ui gui/multilineinputdialog.ui \
         gui/action/toolbareditor.ui gui/action/favoriteeditor.ui \
         gui/pref/seekwidget.ui gui/pref/vdpauproperties.ui gui/pref/dialog.ui \
-        gui/pref/general.ui gui/pref/video.ui gui/pref/audio.ui \
+        gui/pref/general.ui gui/pref/demuxer.ui gui/pref/video.ui gui/pref/audio.ui \
         gui/pref/drives.ui gui/pref/interface.ui \
         gui/pref/performance.ui gui/pref/input.ui gui/pref/subtitles.ui \
         gui/pref/advanced.ui gui/pref/prefplaylist.ui \

@@ -48,6 +48,7 @@
         <file>default-theme/plus.png</file>
         <file>default-theme/pref_general.png</file>
         <file>default-theme/pref_radio_tv.png</file>
+        <file>default-theme/pref_demuxer.png</file>
         <file>default-theme/pref_video.png</file>
         <file>default-theme/pref_gui.png</file>
         <file>default-theme/pref_subtitles.png</file>

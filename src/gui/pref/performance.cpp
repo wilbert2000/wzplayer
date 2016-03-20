@@ -65,12 +65,12 @@ void TPerformance::getData(TPreferences* pref) {
 
 	requires_restart = false;
 
-	TEST_AND_SET(pref->cache_for_files, cacheForFiles());
-	TEST_AND_SET(pref->cache_for_streams, cacheForStreams());
-	TEST_AND_SET(pref->cache_for_dvds, cacheForDVDs());
-	TEST_AND_SET(pref->cache_for_audiocds, cacheForAudioCDs());
-	TEST_AND_SET(pref->cache_for_vcds, cacheForVCDs());
-	TEST_AND_SET(pref->cache_for_tv, cacheForTV());
+	restartIfIntChanged(pref->cache_for_files, cacheForFiles());
+	restartIfIntChanged(pref->cache_for_streams, cacheForStreams());
+	restartIfIntChanged(pref->cache_for_dvds, cacheForDVDs());
+	restartIfIntChanged(pref->cache_for_audiocds, cacheForAudioCDs());
+	restartIfIntChanged(pref->cache_for_vcds, cacheForVCDs());
+	restartIfIntChanged(pref->cache_for_tv, cacheForTV());
 }
 
 void TPerformance::setCacheForFiles(int n) {

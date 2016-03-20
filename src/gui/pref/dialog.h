@@ -34,6 +34,7 @@ namespace Pref {
 
 class TWidget;
 class TGeneral;
+class TDemuxer;
 class TVideo;
 class TAudio;
 class TInterface;
@@ -58,6 +59,7 @@ class TDialog : public QDialog, public Ui::TDialog {
 public:
 	enum TSection {
 		SECTION_GENERAL = 0,
+		SECTION_DEMUXER,
 		SECTION_VIDEO,
 		SECTION_AUDIO,
 		SECTION_SUBTITLES,
@@ -106,6 +108,7 @@ protected:
 
 private:
 	TGeneral* page_general;
+	TDemuxer* page_demuxer;
 	TVideo* page_video;
 	TAudio* page_audio;
 	TSubtitles* page_subtitles;

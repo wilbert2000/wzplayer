@@ -32,6 +32,7 @@ TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
 
 	setupUi(this);
 
+	// TODO:
 	colorkey_label->hide();
 	colorkey_view->hide();
 	changeButton->hide();
@@ -59,17 +60,13 @@ void TAdvanced::retranslateStrings() {
 
 void TAdvanced::setData(TPreferences* pref) {
 
+	setColorKey(pref->color_key);
+
+	setActionsToRun(pref->actions_to_run);
+
 	setMplayerAdditionalArguments(pref->mplayer_additional_options);
 	setMplayerAdditionalVideoFilters(pref->mplayer_additional_video_filters);
 	setMplayerAdditionalAudioFilters(pref->mplayer_additional_audio_filters);
-	setColorKey(pref->color_key);
-
-	setUseIdx(pref->use_idx);
-
-	setUseLavfDemuxer(pref->use_lavf_demuxer);
-
-	setUseCorrectPts(pref->use_correct_pts);
-	setActionsToRun(pref->actions_to_run);
 }
 
 void TAdvanced::getData(TPreferences* pref) {
@@ -78,25 +75,17 @@ void TAdvanced::getData(TPreferences* pref) {
 	colorkey_changed = false;
 	lavf_demuxer_changed = false;
 
-	TEST_AND_SET(pref->use_idx, useIdx());
-
-	if (pref->use_lavf_demuxer != useLavfDemuxer()) {
-		pref->use_lavf_demuxer = useLavfDemuxer();
-		lavf_demuxer_changed = true;
-		requires_restart = true;
-	}
-
-	TEST_AND_SET(pref->use_correct_pts, useCorrectPts());
-	pref->actions_to_run = actionsToRun();
-
-	TEST_AND_SET(pref->mplayer_additional_options, mplayerAdditionalArguments());
-	TEST_AND_SET(pref->mplayer_additional_video_filters, mplayerAdditionalVideoFilters());
-	TEST_AND_SET(pref->mplayer_additional_audio_filters, mplayerAdditionalAudioFilters());
 	if (pref->color_key != colorKey()) {
 		pref->color_key = colorKey();
 		colorkey_changed = true;
 		requires_restart = true;
 	}
+
+	pref->actions_to_run = actionsToRun();
+
+	restartIfStringChanged(pref->mplayer_additional_options, mplayerAdditionalArguments());
+	restartIfStringChanged(pref->mplayer_additional_video_filters, mplayerAdditionalVideoFilters());
+	restartIfStringChanged(pref->mplayer_additional_audio_filters, mplayerAdditionalAudioFilters());
 }
 
 void TAdvanced::setMplayerAdditionalArguments(QString args) {
@@ -124,8 +113,10 @@ QString TAdvanced::mplayerAdditionalAudioFilters() {
 }
 
 void TAdvanced::setColorKey(unsigned int c) {
+
 	QString color = QString::number(c, 16);
-	while (color.length() < 6) color = "0" + color;
+	while (color.length() < 6)
+		color = "0" + color;
 	colorkey_view->setText("#" + color);
 }
 
@@ -142,30 +133,6 @@ unsigned int TAdvanced::colorKey() {
 
 	qDebug("Gui::Pref::TAdvanced::colorKey: color: %s", QString::number(color, 16).toUtf8().data());
 	return color;
-}
-
-void TAdvanced::setUseIdx(bool b) {
-	idx_check->setChecked(b);
-}
-
-bool TAdvanced::useIdx() {
-	return idx_check->isChecked();
-}
-
-void TAdvanced::setUseLavfDemuxer(bool b) {
-	lavf_demuxer_check->setChecked(b);
-}
-
-bool TAdvanced::useLavfDemuxer() {
-	return lavf_demuxer_check->isChecked();
-}
-
-void TAdvanced::setUseCorrectPts(TPreferences::TOptionState value) {
-	correct_pts_combo->setState(value);
-}
-
-TPreferences::TOptionState TAdvanced::useCorrectPts() {
-	return correct_pts_combo->state();
 }
 
 void TAdvanced::setActionsToRun(QString actions) {
@@ -191,26 +158,6 @@ void TAdvanced::createHelp() {
 	clearHelp();
 
 	addSectionTitle(tr("Advanced"));
-
-	setWhatsThis(idx_check, tr("Rebuild index if needed"),
-		tr("Rebuilds index of files if no index was found, allowing seeking. "
-		   "Useful with broken/incomplete downloads, or badly created files. "
-           "This option only works if the underlying media supports "
-           "seeking (i.e. not with stdin, pipe, etc).<br> "
-           "<b>Note:</b> the creation of the index may take some time."));
-
-	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
-		tr("If this option is checked, the lavf demuxer will be used for all formats."));
-
-	setWhatsThis(correct_pts_combo, tr("Correct pts"),
-		tr("Switches %1 to an experimental mode where timestamps for "
-           "video frames are calculated differently and video filters which "
-           "add new frames or modify timestamps of existing ones are "
-           "supported. The more accurate timestamps can be visible for "
-           "example when playing subtitles timed to scene changes with the "
-           "SSA/ASS library enabled. Without correct pts the subtitle timing "
-           "will typically be off by some frames. This option does not work "
-           "correctly with some demuxers and codecs.").arg(pref->playerName()));
 
 	setWhatsThis(actions_to_run_edit, tr("Actions list"),
 		tr("Here you can specify a list of <i>actions</i> which will be "

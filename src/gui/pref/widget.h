@@ -24,10 +24,6 @@
 #include <QPixmap>
 
 
-// TODO: remove
-#define TEST_AND_SET(Pref, Dialog) \
-	if (Pref != Dialog) { Pref = Dialog; requires_restart = true; }
-
 class QEvent;
 
 namespace Gui {
@@ -65,6 +61,7 @@ protected:
 
 	// Help
 	void addSectionTitle(const QString& title);
+	void addSectionGroup(const QString& title);
 	void setWhatsThis(QWidget* w, const QString& title, const QString& text);
 	void clearHelp();
 	

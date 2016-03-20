@@ -165,6 +165,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 
 	setFrameDrop(pref->frame_drop);
 	setHardFrameDrop(pref->hard_frame_drop);
+	correct_pts_combo->setState(pref->use_correct_pts);
 
 	setInitialPostprocessing(pref->initial_postprocessing);
 	setPostprocessingQuality(pref->postprocessing_quality);
@@ -200,6 +201,11 @@ void TVideo::getData(Settings::TPreferences* pref) {
 
 	restartIfBoolChanged(pref->frame_drop, frameDrop());
 	restartIfBoolChanged(pref->hard_frame_drop, hardFrameDrop());
+	TPreferences::TOptionState pts = correct_pts_combo->state();
+	if (pts != pref->use_correct_pts) {
+		pref->use_correct_pts = pts;
+		requires_restart = true;
+	}
 
 	pref->initial_postprocessing = initialPostprocessing();
 	restartIfIntChanged(pref->postprocessing_quality, postprocessingQuality());
@@ -514,6 +520,7 @@ void TVideo::createHelp() {
 	clearHelp();
 
 	addSectionTitle(tr("Video"));
+	addSectionGroup(tr("Output"));
 
 	setWhatsThis(vo_combo, tr("Video output driver"),
 		tr("Select the video output driver. %1 provides the best performance.")
@@ -550,12 +557,33 @@ void TVideo::createHelp() {
 			"</ul>"
 			+ tr("This option only works with mpv."));
 
+
+	setWhatsThis(software_video_equalizer_check, tr("Software video equalizer"),
+		tr("You can check this option if video equalizing is not supported by "
+		   "your graphic card or the selected video output driver.<br>"
+		   "<b>Note:</b> this option can be incompatible with some video "
+		   "output drivers."));
+
+	addSectionGroup(tr("Synchronization"));
+
 	setWhatsThis(framedrop_check, tr("Allow frame drop"),
 		tr("Skip displaying some frames to maintain A/V sync on slow systems."));
 
 	setWhatsThis(hardframedrop_check, tr("Allow hard frame drop"),
 		tr("More intense frame dropping (breaks decoding). "
 		   "Leads to image distortion!"));
+
+	setWhatsThis(correct_pts_combo, tr("Correct PTS"),
+		tr("Switches the player to an experimental mode with more accurate"
+		   " timestamps and supporting video filters which add new frames or"
+		   " modify timestamps. The more accurate timestamps can be visible for"
+		   " example when playing subtitles timed to scene changes with the"
+		   " SSA/ASS library enabled. Without correct PTS the subtitle timing"
+		   " will typically be off by some frames. This option does not work"
+		   " correctly with some demuxers and codecs."));
+
+
+	addSectionGroup(tr("Defaults"));
 
 	setWhatsThis(postprocessing_check, tr("Enable postprocessing by default"),
 		tr("Postprocessing will be used by default on new opened files."));
@@ -576,11 +604,8 @@ void TVideo::createHelp() {
 	setWhatsThis(zoom_spin, tr("Zoom"),
 		tr("This option sets the default zoom used for new videos."));
 
-	setWhatsThis(software_video_equalizer_check, tr("Software video equalizer"),
-		tr("You can check this option if video equalizing is not supported by "
-		   "your graphic card or the selected video output driver.<br>"
-		   "<b>Note:</b> this option can be incompatible with some video "
-		   "output drivers."));
+
+	addSectionGroup(tr("Screenshots"));
 
 	setWhatsThis(screenshots_group, tr("Enable screenshots"),
 		tr("You can use this option to enable or disable the possibility to "

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>576</height>
+    <height>600</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -199,6 +199,39 @@
             </property>
            </widget>
           </item>
+          <item>
+           <layout class="QHBoxLayout" name="correct_pts_layout">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>C&amp;orrect PTS:</string>
+              </property>
+              <property name="buddy">
+               <cstring>correct_pts_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Gui::Pref::TTristateCombo" name="correct_pts_combo"/>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
          </layout>
         </widget>
        </item>
@@ -388,7 +421,7 @@
             <item>
              <widget class="QLabel" name="screenshot_format_label">
               <property name="text">
-               <string>F&amp;ormat:</string>
+               <string>Fo&amp;rmat:</string>
               </property>
               <property name="buddy">
                <cstring>screenshot_format_combo</cstring>
@@ -521,6 +554,11 @@
    <header>filechooser.h</header>
   </customwidget>
   <customwidget>
+   <class>Gui::Pref::TTristateCombo</class>
+   <extends>QComboBox</extends>
+   <header>gui/pref/tristatecombo.h</header>
+  </customwidget>
+  <customwidget>
    <class>Gui::Pref::TComboBox</class>
    <extends>QComboBox</extends>
    <header>gui/pref/combobox.h</header>
@@ -535,6 +573,7 @@
   <tabstop>software_video_equalizer_check</tabstop>
   <tabstop>framedrop_check</tabstop>
   <tabstop>hardframedrop_check</tabstop>
+  <tabstop>correct_pts_combo</tabstop>
   <tabstop>postprocessing_check</tabstop>
   <tabstop>postprocessing_quality_spin</tabstop>
   <tabstop>deinterlace_combo</tabstop>
@@ -545,6 +584,7 @@
   <tabstop>screenshot_template_edit</tabstop>
   <tabstop>screenshot_format_combo</tabstop>
   <tabstop>subtitles_on_screeshots_check</tabstop>
+  <tabstop>monitoraspect_combo</tabstop>
  </tabstops>
  <resources/>
  <connections/>

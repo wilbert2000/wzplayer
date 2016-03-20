@@ -43,6 +43,10 @@ void TWidget::addSectionTitle(const QString& title) {
 	help_message += "<h2>" + title + "</h2>";
 }
 
+void TWidget::addSectionGroup(const QString& title) {
+	help_message += "<h3>" + title + "</h3>";
+}
+
 void TWidget::restartIfBoolChanged(bool& old_value, bool new_value) {
 
 	if (old_value != new_value) {

@@ -24,6 +24,7 @@
 #include "settings/preferences.h"
 #include "gui/pref/widget.h"
 #include "gui/pref/general.h"
+#include "gui/pref/demuxer.h"
 #include "gui/pref/video.h"
 #include "gui/pref/audio.h"
 #include "gui/pref/drives.h"
@@ -76,6 +77,10 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	addSection(page_general);
 	connect(page_general, SIGNAL(binChanged(const QString&)),
 			this, SLOT(binChanged(const QString&)));
+
+
+	page_demuxer = new TDemuxer(0);
+	addSection(page_demuxer);
 
 	page_video = new TVideo(0, i->voList());
 	addSection(page_video);
@@ -192,6 +197,7 @@ void TDialog::addSection(TWidget *w) {
 void TDialog::setData(Settings::TPreferences* pref) {
 
 	page_general->setData(pref);
+	page_demuxer->setData(pref);
 	page_video->setData(pref);
 	page_audio->setData(pref);
 	page_subtitles->setData(pref);
@@ -213,6 +219,7 @@ void TDialog::setData(Settings::TPreferences* pref) {
 void TDialog::getData(Settings::TPreferences* pref) {
 
 	page_general->getData(pref);
+	page_demuxer->getData(pref);
 	page_video->getData(pref);
 	page_audio->getData(pref);
 	page_subtitles->getData(pref);
@@ -234,6 +241,7 @@ void TDialog::getData(Settings::TPreferences* pref) {
 bool TDialog::requiresRestart() {
 
 	bool need_restart = page_general->requiresRestart();
+	if (!need_restart) need_restart = page_demuxer->requiresRestart();
 	if (!need_restart) need_restart = page_video->requiresRestart();
 	if (!need_restart) need_restart = page_audio->requiresRestart();
 	if (!need_restart) need_restart = page_subtitles->requiresRestart();
