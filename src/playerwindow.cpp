@@ -544,6 +544,11 @@ void TPlayerWindow::setColorKey(QColor c) {
 void TPlayerWindow::aboutToStartPlaying() {
 	//qDebug("TPlayerWindow::aboutToStartPlaying");
 
+#ifdef Q_OS_WIN
+	// Clear background to color key
+	repaint();
+#endif
+
 	playerlayer->setFastBackground();
 }
 
