@@ -47,13 +47,18 @@ public:
     // Apply changes
 	void getData(Settings::TPreferences* pref);
 
-	bool colorkeyChanged() { return colorkey_changed; }
-	bool lavfDemuxerChanged() { return lavf_demuxer_changed; }
-
 protected:
-	virtual void createHelp();
+	virtual void retranslateStrings();
 
-	// Advanced
+private:
+	void createHelp();
+
+	void setActionsToRun(QString actions);
+	QString actionsToRun();
+
+	void setColorKey(unsigned int c);
+	unsigned int colorKey();
+
 	void setMplayerAdditionalArguments(QString args);
 	QString mplayerAdditionalArguments();
 
@@ -63,21 +68,8 @@ protected:
 	void setMplayerAdditionalAudioFilters(QString s);
 	QString mplayerAdditionalAudioFilters();
 
-	void setColorKey(unsigned int c);
-	unsigned int colorKey();
-
-	void setActionsToRun(QString actions);
-	QString actionsToRun();
-
-protected:
-	virtual void retranslateStrings();
-
-protected slots:
-	void on_changeButton_clicked();
-
-private:
-	bool colorkey_changed;
-	bool lavf_demuxer_changed;
+private slots:
+	void onChangeButtonClicked();
 };
 
 } // namespace Pref

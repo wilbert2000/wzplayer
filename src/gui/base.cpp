@@ -974,26 +974,25 @@ void TBase::applyNewPreferences() {
 	// Commit changes
 	pref->save();
 
-
-	// Handle interface tab first to check for changes that need a restart of TSMPlayer
+	// Handle interface tab first to check for changes
+	// that need a restart of TSMPlayer
 	Pref::TInterface* interface = pref_dialog->mod_interface();
 
-	// Style change needs recreation of the main window
+	// Style change needs recreation of main window
 	if (interface->styleChanged()) {
 		// Request restart and optional reset style to default
 		restartSMPlayer(pref->style.isEmpty());
 		return;
 	}
 
-	// Icon or player bin change needs restart TSMPlayer
-	if (interface->iconsetChanged()
-		|| old_player_bin != pref->player_bin) {
+	// Player bin or icon set change needs restart TSMPlayer
+	if (pref->player_bin != old_player_bin || interface->iconsetChanged()) {
 		// Request restart, don't reset style
 		restartSMPlayer(false);
 		return;
 	}
 
-	// Not restarting and keeping the current main window
+	// Keeping the current main window
 
 	// Update logging
 	TLog::log->setLogDebugMessages(pref->log_debug_enabled);
@@ -1010,25 +1009,14 @@ void TBase::applyNewPreferences() {
 		QFont f;
 		f.fromString(pref->default_font);
 		if (QApplication::font() != f) {
-			qDebug("Gui::TBase::applyNewPreferences: setting new font: %s",
-				   pref->default_font.toLatin1().constData());
+			qDebug() << "Gui::TBase::applyNewPreferences: setting new font"
+					 << pref->default_font;
 			QApplication::setFont(f);
 		}
 	}
 
-	// Recents
-	if (interface->recentsChanged()) {
-		openMenu->updateRecents();
-	}
-
-	// Show panel
-	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
-		resize(width(), height() + 200);
-		panel->show();
-	}
-
-	// Show tags
-	setWindowCaption(core->mdat.displayName(pref->show_tag_in_window_title) + " - SMPlayer");
+	// Forced demuxer
+	core->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
 
 	// Video equalizer
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
@@ -1036,27 +1024,36 @@ void TBase::applyNewPreferences() {
 	// Monitor
 	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
 
-	// Hide toolbars delay
-	auto_hide_timer->setInterval(pref->floating_hide_delay);
-
 	// Subtitles
 	subtitleMenu->useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
 	subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
-	// Advanced tab
-	Pref::TAdvanced *advanced = pref_dialog->mod_advanced();
-	if (advanced->colorkeyChanged()) {
-		playerwindow->setColorKey(pref->color_key);
-	}
-	if (advanced->lavfDemuxerChanged()) {
-		core->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
-	}
-	playerwindow->setDelayLeftClick(pref->delay_left_click);
 
+	// Gui continued
+
+	// Show panel
+	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
+		resize(width(), height() + 200);
+		panel->show();
+	}
+	// Show tags
+	setWindowCaption(core->mdat.displayName(pref->show_tag_in_window_title) + " - SMPlayer");
+	// Hide toolbars delay
+	auto_hide_timer->setInterval(pref->floating_hide_delay);
+	// Recents
+	if (interface->recentsChanged()) {
+		openMenu->updateRecents();
+	}
+
+	// Keyboard and mouse
+	playerwindow->setDelayLeftClick(pref->delay_left_click);
 	playMenu->setJumpTexts(); // Update texts in menus
 
 	// Network
 	setupNetworkProxy();
+
+	// Advanced tab
+	playerwindow->setColorKey(pref->color_key);
 
 	// Reenable actions to reflect changes
 	if (core->state() == STATE_STOPPED) {

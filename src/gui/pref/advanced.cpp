@@ -48,9 +48,8 @@ QString TAdvanced::sectionName() {
 }
 
 QPixmap TAdvanced::sectionIcon() {
-    return Images::icon("pref_advanced", icon_size);
+	return Images::icon("pref_advanced", icon_size);
 }
-
 
 void TAdvanced::retranslateStrings() {
 
@@ -61,7 +60,6 @@ void TAdvanced::retranslateStrings() {
 void TAdvanced::setData(TPreferences* pref) {
 
 	setColorKey(pref->color_key);
-
 	setActionsToRun(pref->actions_to_run);
 
 	setMplayerAdditionalArguments(pref->mplayer_additional_options);
@@ -72,15 +70,8 @@ void TAdvanced::setData(TPreferences* pref) {
 void TAdvanced::getData(TPreferences* pref) {
 
 	requires_restart = false;
-	colorkey_changed = false;
-	lavf_demuxer_changed = false;
 
-	if (pref->color_key != colorKey()) {
-		pref->color_key = colorKey();
-		colorkey_changed = true;
-		requires_restart = true;
-	}
-
+	restartIfUIntChanged(pref->color_key, colorKey());
 	pref->actions_to_run = actionsToRun();
 
 	restartIfStringChanged(pref->mplayer_additional_options, mplayerAdditionalArguments());
@@ -123,13 +114,16 @@ void TAdvanced::setColorKey(unsigned int c) {
 unsigned int TAdvanced::colorKey() {
 
 	QString c = colorkey_view->text();
-	if (c.startsWith("#")) c = c.mid(1);
+	if (c.startsWith("#"))
+		c = c.mid(1);
 
 	bool ok;
 	unsigned int color = c.toUInt(&ok, 16);
 
-	if (!ok) 
+	if (!ok) {
 		qWarning("Gui::Pref::TAdvanced::colorKey: cannot convert color to uint");
+		color = TPreferences::DEFAULT_COLOR_KEY;
+	}
 
 	qDebug("Gui::Pref::TAdvanced::colorKey: color: %s", QString::number(color, 16).toUtf8().data());
 	return color;
@@ -143,7 +137,8 @@ QString TAdvanced::actionsToRun() {
 	return actions_to_run_edit->text();
 }
 
-void TAdvanced::on_changeButton_clicked() {
+void TAdvanced::onChangeButtonClicked() {
+
 	//bool ok;
 	//int color = colorkey_view->text().toUInt(&ok, 16);
 	QColor color(colorkey_view->text());
@@ -176,19 +171,16 @@ void TAdvanced::createHelp() {
            "change the colorkey to fix it. Try to select a color close to "
            "black."));
 
-	addSectionTitle(tr("Options for %1").arg(pref->playerName()));
+	addSectionTitle(tr("Options for player"));
 
 	setWhatsThis(mplayer_args_edit, tr("Options"),
-        tr("Here you can type options for %1.").arg(pref->playerName()) +" "+
-        tr("Write them separated by spaces."));
+		tr("Here you can pass extra options to the player. Write them separated by spaces."));
 
 	setWhatsThis(mplayer_vfilters_edit, tr("Video filters"),
-        tr("Here you can add video filters for %1.").arg(pref->playerName()) +" "+
-        tr("Write them separated by commas. Don't use spaces!"));
+		tr("Here you can add extra video filters. Write them separated by commas. Don't use spaces!"));
 
 	setWhatsThis(mplayer_afilters_edit, tr("Audio filters"),
-        tr("Here you can add audio filters for %1.").arg(pref->playerName()) +" "+
-        tr("Write them separated by commas. Don't use spaces!"));
+		tr("Here you can add extra audio filters. Write them separated by commas. Don't use spaces!"));
 }
 
 }} // namespace Gui::Pref

@@ -54,11 +54,11 @@ TPlayerLayer::TPlayerLayer(QWidget* parent)
 TPlayerLayer::~TPlayerLayer() {
 }
 
-// TODO: remove and check with colorkey on Windows
+// TODO: remove, handle with window attribute for background erasing
 void TPlayerLayer::paintEvent(QPaintEvent* e) {
-	//qDebug("TPlayerLayer::paintEvent: normal_background: %d", normal_background);
 
 	// Only clear background when no video playing
+	// or on Windows to make sure background is set to color key
 	if (normal_background) {
 		QPainter painter(this);
 		painter.eraseRect(e->rect());
@@ -78,10 +78,10 @@ void TPlayerLayer::restoreNormalBackground() {
 	qDebug("TPlayerLayer::restoreNormalBackground");
 
 #ifndef Q_OS_WIN
+	normal_background = true;
 	setAttribute(Qt::WA_PaintOnScreen, false);
 #endif
 
-	normal_background = true;
 }
 
 

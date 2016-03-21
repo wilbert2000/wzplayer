@@ -232,7 +232,7 @@ void TPreferences::reset() {
 	adapter = -1;
 #endif
 
-	color_key = 0x020202;
+	color_key = DEFAULT_COLOR_KEY;
 
 	monitor_aspect=""; // Autodetect
 

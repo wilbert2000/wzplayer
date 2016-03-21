@@ -82,7 +82,6 @@ public:
 	TInterface* mod_interface() const { return page_interface; }
 	TInput* mod_input() const { return page_input; }
 	TPrefPlaylist* mod_playlist() const { return page_playlist; }
-	TAdvanced* mod_advanced() const { return page_advanced; }
 
 	// Pass data to the standard dialogs
 	void setData(Settings::TPreferences* pref);
