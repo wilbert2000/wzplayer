@@ -216,6 +216,7 @@ void TMediaData::list() const {
 	qDebug("  demuxer: '%s'", demuxer.toUtf8().data());
 	qDebug("  mpegts: %d", mpegts);
 
+	qDebug("  video driver: '%s'", vo.toUtf8().constData());
 	qDebug("  video_width: %d", video_width);
 	qDebug("  video_height: %d", video_height); 
 	qDebug("  video_aspect: %f", video_aspect);

@@ -413,7 +413,6 @@ protected slots:
 	void gotCurrentSec(double sec);
 	void onReceivedPause();
 	void gotVideoOutResolution(int w, int h);
-	void gotVO(const QString&);
 	void gotAO(const QString&);
 
 	void displayScreenshotName(const QString& filename);

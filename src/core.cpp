@@ -51,9 +51,6 @@
 #include "gui/action/tvlist.h"
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef Q_OS_WIN
-#include <QSysInfo> // To get Windows version
-#endif
 #ifdef DISABLE_SCREENSAVER
 #include "screensaver.h"
 #endif
@@ -133,9 +130,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 
 	connect(proc, SIGNAL(receivedVideoOutResolution(int,int)),
 			 this, SLOT(gotVideoOutResolution(int,int)));
-
-	connect(proc, SIGNAL(receivedVO(const QString&)),
-			 this, SLOT(gotVO(const QString&)));
 
 	connect(proc, SIGNAL(receivedAO(const QString&)),
 			 this, SLOT(gotAO(const QString&)));
@@ -1145,22 +1139,8 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("framedrop", "decoder");
 	}
 
-	if (pref->vo != "player_default") {
-		if (!pref->vo.isEmpty()) {
-			proc->setOption("vo", pref->vo);
-		} else {
-
-#ifdef Q_OS_WIN
-			if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
-				proc->setOption("vo", "direct3d,");
-			} else {
-				proc->setOption("vo", "directx,");
-			}
-#else
-			proc->setOption("vo", "xv,");
-#endif
-
-		}
+	if (!pref->vo.isEmpty()) {
+		proc->setOption("vo", pref->vo);
 	}
 
 #if USE_ADAPTER
@@ -1540,10 +1520,12 @@ void TCore::startPlayer(QString file, double seek) {
 	if (pref->use_soft_video_eq) {
 		proc->addVF("eq2");
 		proc->addVF("hue");
-		if ((pref->vo == "gl") || (pref->vo == "gl2") || (pref->vo == "gl_tiled")
+		if (pref->vo == "gl" || pref->vo == "gl2" || pref->vo == "gl_tiled"
+
 #ifdef Q_OS_WIN
-			|| (pref->vo == "directx:noaccel")
+			|| pref->vo == "directx:noaccel"
 #endif
+
 			) {
 			proc->addVF("scale");
 		}
@@ -3555,18 +3537,10 @@ void TCore::gotVideoOutResolution(int w, int h) {
 	playerwindow->updateVideoWindow();
 }
 
-void TCore::gotVO(const QString& vo) {
-	qDebug("TCore::gotVO: '%s'", vo.toUtf8().data());
-
-	if (pref->vo.isEmpty()) {
-		qDebug("TCore::gotVO: saving vo");
-		pref->vo = vo;
-	}
-}
-
 void TCore::gotAO(const QString& ao) {
 	qDebug("TCore::gotAO: '%s'", ao.toUtf8().data());
 
+	// TODO:
 	if (pref->ao.isEmpty()) {
 		qDebug("TCore::gotAO: saving ao");
 		pref->ao = ao;

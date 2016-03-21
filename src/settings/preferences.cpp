@@ -34,6 +34,10 @@
 #include <QDesktopServices>
 #endif
 
+#ifdef Q_OS_WIN
+#include <QSysInfo> // To get Windows version
+#endif
+
 #include "settings/paths.h"
 #include "settings/assstyles.h"
 #include "settings/mediasettings.h"
@@ -102,8 +106,23 @@ void TPreferences::reset() {
 	capture_directory = "";
 #endif
 
+
 	// Video tab
-	vo = "";
+	// Video driver
+#ifdef Q_OS_WIN
+	if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
+		vo = "direct3d,";
+	} else {
+		vo = "directx,";
+}
+#else
+#ifdef Q_OS_OS2
+	vo = "kva";
+#else
+	vo = "xv";
+#endif
+#endif
+
 	hwdec = "no";
 	frame_drop = false;
 	hard_frame_drop = false;
@@ -120,6 +139,7 @@ void TPreferences::reset() {
 	vdpau.ffodivxvdpau = false;
 	vdpau.disable_video_filters = true;
 #endif
+
 
 	// Audio tab
 	ao = "";
@@ -1396,6 +1416,10 @@ void TPreferences::load() {
 		remove("subtitles/enable_ass_styles");
 		remove("advanced/repaint_video_background");
 		remove("gui/report_player_crashes");
+
+		if (vo == "player_default") {
+			vo = "";
+		}
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

@@ -584,14 +584,11 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// VO
 	if (rx_vo.indexIn(line) >= 0) {
-		QString vo = rx_vo.cap(1);
-		qDebug() << "MVPProcess::parseLine: emit receivedVO(" << vo << ")";
-		emit receivedVO(vo);
-
+		md->vo = rx_vo.cap(1);
+		qDebug() << "MVPProcess::parseLine: video out driver" << md->vo;
 		// Ask for video out resolution
 		writeToStdin("print_text VIDEO_DSIZE=${=dwidth}x${=dheight}");
 		waiting_for_answers++;
-
 		return true;
 	}
 

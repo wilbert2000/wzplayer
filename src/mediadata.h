@@ -71,6 +71,7 @@ public:
 	bool mpegts;
 
 	// Video
+	QString vo;
 	int video_width;
 	int video_height;
 	double video_aspect;

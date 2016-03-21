@@ -620,12 +620,11 @@ bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QStrin
 
 bool TMPlayerProcess::parseVO(const QString& driver, int w, int h) {
 
+	md->vo = driver;
 	md->video_out_width = w;
 	md->video_out_height = h;
 
-	qDebug("Proc::TMPlayerProcess::parseVO: video out size set to %d x %d", w, h);
-	emit receivedVO(driver);
-
+	qDebug() << "Proc::TMPlayerProcess::parseVO: video out" << driver << w << "x" << h;
 	return true;
 }
 

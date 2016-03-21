@@ -136,25 +136,7 @@ void TVideo::retranslateStrings() {
 void TVideo::setData(Settings::TPreferences* pref) {
 
 	// Video out driver
-	QString vo = pref->vo;
-	if (vo.isEmpty()) {
-
-#ifdef Q_OS_WIN
-		if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
-			vo = "direct3d,";
-		} else {
-			vo = "directx,";
-		}
-#else
-#ifdef Q_OS_OS2
-		vo = "kva";
-#else
-		vo = "xv,";
-#endif
-#endif
-
-	} // if (vo.isEmpty())
-	setVO(vo, true);
+	setVO(pref->vo, true);
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	vdpau = pref->vdpau;
@@ -232,7 +214,7 @@ void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
 
 	QString current_vo = VO();
 	vo_combo->clear();
-	vo_combo->addItem(tr("Default"), "player_default");
+	vo_combo->addItem(tr("Default"), "");
 
 	QString vo;
 	for (int n = 0; n < vo_list.count(); n++) {
@@ -255,7 +237,7 @@ void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
 		if (vo == "xv") vo_combo->addItem("xv (" + tr("fastest") + ")", vo);
 		*/
 #if USE_XV_ADAPTORS
-		if ((vo == "xv") && (!xv_adaptors.isEmpty())) {
+		if (vo == "xv" && !xv_adaptors.isEmpty()) {
 			vo_combo->addItem(vo, vo);
 			for (int n = 0; n < xv_adaptors.count(); n++) {
 				vo_combo->addItem("xv (" + xv_adaptors[n].ID().toString()
@@ -316,9 +298,6 @@ QString TVideo::VO() {
 	QString vo = vo_combo->itemData(vo_combo->currentIndex()).toString();
 	if (vo == "user_defined") {
 		vo = vo_user_defined_edit->text();
-		if (vo.isEmpty()) {
-			vo = vo_combo->itemData(0).toString();
-		}
 	}
 	return vo;
 }
