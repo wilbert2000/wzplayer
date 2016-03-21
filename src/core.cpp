@@ -1179,11 +1179,9 @@ void TCore::startPlayer(QString file, double seek) {
 	proc->setOption("wid", QString::number((qint64) playerwindow->videoLayer()->winId()));
 #endif
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	if ((pref->vo.startsWith("directx")) || (pref->vo.startsWith("kva")) || (pref->vo.isEmpty())) {
+	if (pref->useColorKey()) {
 		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
 	}
-#endif
 
 	// Square pixels
 	proc->setOption("monitorpixelaspect", "1");

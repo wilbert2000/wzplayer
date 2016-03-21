@@ -1426,6 +1426,20 @@ void TPreferences::load() {
 	}
 } // load()
 
+bool TPreferences::useColorKey() const {
+
+#if defined(Q_OS_WIN)
+	return vo.startsWith("directx");
+#else
+#if defined(Q_OS_OS2)
+	return vo.startsWith("kva");
+#else
+	return false;
+#endif
+#endif
+
+}
+
 double TPreferences::monitor_aspect_double() {
 
 	QRegExp exp("(\\d+)[:/](\\d+)");

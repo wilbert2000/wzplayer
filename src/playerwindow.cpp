@@ -57,8 +57,7 @@ TPlayerLayer::~TPlayerLayer() {
 // TODO: remove, handle with window attribute for background erasing
 void TPlayerLayer::paintEvent(QPaintEvent* e) {
 
-	// Only clear background when no video playing
-	// or on Windows to make sure background is set to color key
+	// Only clear background when no video playing or when color key is used
 	if (normal_background) {
 		QPainter painter(this);
 		painter.eraseRect(e->rect());
@@ -68,8 +67,9 @@ void TPlayerLayer::paintEvent(QPaintEvent* e) {
 void TPlayerLayer::setFastBackground() {
 	qDebug("TPlayerLayer::setFastBackground");
 
+	normal_background = pref->useColorKey();
+
 #ifndef Q_OS_WIN
-	normal_background = false;
 	setAttribute(Qt::WA_PaintOnScreen);
 #endif
 }
@@ -77,8 +77,9 @@ void TPlayerLayer::setFastBackground() {
 void TPlayerLayer::restoreNormalBackground() {
 	qDebug("TPlayerLayer::restoreNormalBackground");
 
-#ifndef Q_OS_WIN
 	normal_background = true;
+
+#ifndef Q_OS_WIN
 	setAttribute(Qt::WA_PaintOnScreen, false);
 #endif
 

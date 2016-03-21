@@ -259,6 +259,7 @@ public:
 #endif
 
 	unsigned int color_key;
+	bool useColorKey() const;
 
 	bool use_idx; //!< Use -idx
 	bool use_lavf_demuxer;
