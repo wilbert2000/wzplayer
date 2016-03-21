@@ -274,21 +274,18 @@ int TAudio::amplification() {
 
 void TAudio::setAudioChannels(int ID) {
 
-	int pos = channels_combo->findData(ID);
-	if (pos >= 0) {
-		channels_combo->setCurrentIndex(pos);
-	} else {
-		qWarning("Gui::Pref::TAudio::setAudioChannels: ID: %d not found in combo", ID);
-	}
+	int i = channels_combo->findData(ID);
+	if (i < 0)
+		i = 0;
+	channels_combo->setCurrentIndex(i);
 }
 
 int TAudio::audioChannels() {
 	
-	if (channels_combo->currentIndex() >= 0) {
-		return channels_combo->itemData(channels_combo->currentIndex()).toInt();
-	}
-	qWarning("Gui::Pref::TAudio::audioChannels: no item selected");
-	return 0;
+	int i = channels_combo->currentIndex();
+	if (i < 0)
+		i = 0;
+	return channels_combo->itemData(i).toInt();
 }
 
 void TAudio::setScaleTempoFilter(TPreferences::TOptionState value) {
