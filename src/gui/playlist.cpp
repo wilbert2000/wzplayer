@@ -1050,8 +1050,7 @@ void TPlaylist::playerSwitchedTitle(int id) {
 		}
 	}
 
-	// TODO: Add title?
-	qDebug("Gui::TPlaylist::playerSwitchedTitle: title %d not found", id);
+	qWarning("Gui::TPlaylist::playerSwitchedTitle: title %d not found", id);
 }
 
 // Add current file to playlist
