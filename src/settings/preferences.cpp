@@ -264,12 +264,12 @@ void TPreferences::reset() {
 	use_idx = false;
 	use_lavf_demuxer = false;
 
-	mplayer_additional_options="";
-	#ifdef PORTABLE_APP
-	mplayer_additional_options="-nofontconfig";
-	#endif
-    mplayer_additional_video_filters="";
-    mplayer_additional_audio_filters="";
+	player_additional_options = "";
+#ifdef PORTABLE_APP
+	player_additional_options = "-nofontconfig";
+#endif
+	player_additional_video_filters = "";
+	player_additional_audio_filters = "";
 
 	log_debug_enabled = true;
 	log_verbose = false;
@@ -621,9 +621,9 @@ void TPreferences::save() {
 	setValue("use_idx", use_idx);
 	setValue("use_lavf_demuxer", use_lavf_demuxer);
 
-	setValue("mplayer_additional_options", mplayer_additional_options);
-	setValue("mplayer_additional_video_filters", mplayer_additional_video_filters);
-	setValue("mplayer_additional_audio_filters", mplayer_additional_audio_filters);
+	setValue("mplayer_additional_options", player_additional_options);
+	setValue("mplayer_additional_video_filters", player_additional_video_filters);
+	setValue("mplayer_additional_audio_filters", player_additional_audio_filters);
 
 	setValue("log_debug_enabled", log_debug_enabled);
 	setValue("log_verbose", log_verbose);
@@ -1119,9 +1119,9 @@ void TPreferences::load() {
 	use_idx = value("use_idx", use_idx).toBool();
 	use_lavf_demuxer = value("use_lavf_demuxer", use_lavf_demuxer).toBool();
 
-	mplayer_additional_options = value("mplayer_additional_options", mplayer_additional_options).toString();
-	mplayer_additional_video_filters = value("mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
-	mplayer_additional_audio_filters = value("mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
+	player_additional_options = value("mplayer_additional_options", player_additional_options).toString();
+	player_additional_video_filters = value("mplayer_additional_video_filters", player_additional_video_filters).toString();
+	player_additional_audio_filters = value("mplayer_additional_audio_filters", player_additional_audio_filters).toString();
 
 	// Load log settings
 	log_debug_enabled = value("log_debug_enabled", log_debug_enabled).toBool();

@@ -55,9 +55,9 @@ void TAdvanced::setData(TPreferences* pref) {
 
 	setActionsToRun(pref->actions_to_run);
 
-	setMplayerAdditionalArguments(pref->mplayer_additional_options);
-	setMplayerAdditionalVideoFilters(pref->mplayer_additional_video_filters);
-	setMplayerAdditionalAudioFilters(pref->mplayer_additional_audio_filters);
+	setPlayerAdditionalArguments(pref->player_additional_options);
+	setPlayerAdditionalVideoFilters(pref->player_additional_video_filters);
+	setPlayerAdditionalAudioFilters(pref->player_additional_audio_filters);
 }
 
 void TAdvanced::getData(TPreferences* pref) {
@@ -66,33 +66,33 @@ void TAdvanced::getData(TPreferences* pref) {
 
 	pref->actions_to_run = actionsToRun();
 
-	restartIfStringChanged(pref->mplayer_additional_options, mplayerAdditionalArguments());
-	restartIfStringChanged(pref->mplayer_additional_video_filters, mplayerAdditionalVideoFilters());
-	restartIfStringChanged(pref->mplayer_additional_audio_filters, mplayerAdditionalAudioFilters());
+	restartIfStringChanged(pref->player_additional_options, playerAdditionalArguments());
+	restartIfStringChanged(pref->player_additional_video_filters, playerAdditionalVideoFilters());
+	restartIfStringChanged(pref->player_additional_audio_filters, playerAdditionalAudioFilters());
 }
 
-void TAdvanced::setMplayerAdditionalArguments(QString args) {
-	mplayer_args_edit->setText(args);
+void TAdvanced::setPlayerAdditionalArguments(QString args) {
+	player_args_edit->setText(args);
 }
 
-QString TAdvanced::mplayerAdditionalArguments() {
-	return mplayer_args_edit->text();
+QString TAdvanced::playerAdditionalArguments() {
+	return player_args_edit->text();
 }
 
-void TAdvanced::setMplayerAdditionalVideoFilters(QString s) {
-	mplayer_vfilters_edit->setText(s);
+void TAdvanced::setPlayerAdditionalVideoFilters(QString s) {
+	player_vfilters_edit->setText(s);
 }
 
-QString TAdvanced::mplayerAdditionalVideoFilters() {
-	return mplayer_vfilters_edit->text();
+QString TAdvanced::playerAdditionalVideoFilters() {
+	return player_vfilters_edit->text();
 }
 
-void TAdvanced::setMplayerAdditionalAudioFilters(QString s) {
-	mplayer_afilters_edit->setText(s);
+void TAdvanced::setPlayerAdditionalAudioFilters(QString s) {
+	player_afilters_edit->setText(s);
 }
 
-QString TAdvanced::mplayerAdditionalAudioFilters() {
-	return mplayer_afilters_edit->text();
+QString TAdvanced::playerAdditionalAudioFilters() {
+	return player_afilters_edit->text();
 }
 
 void TAdvanced::setActionsToRun(QString actions) {
@@ -122,13 +122,13 @@ void TAdvanced::createHelp() {
 
 	addSectionTitle(tr("Options for player"));
 
-	setWhatsThis(mplayer_args_edit, tr("Options"),
+	setWhatsThis(player_args_edit, tr("Options"),
 		tr("Here you can pass extra options to the player. Write them separated by spaces."));
 
-	setWhatsThis(mplayer_vfilters_edit, tr("Video filters"),
+	setWhatsThis(player_vfilters_edit, tr("Video filters"),
 		tr("Here you can add extra video filters. Write them separated by commas. Don't use spaces!"));
 
-	setWhatsThis(mplayer_afilters_edit, tr("Audio filters"),
+	setWhatsThis(player_afilters_edit, tr("Audio filters"),
 		tr("Here you can add extra audio filters. Write them separated by commas. Don't use spaces!"));
 }
 

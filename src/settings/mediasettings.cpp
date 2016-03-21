@@ -148,9 +148,9 @@ void TMediaSettings::reset() {
 	original_video_codec = "";
 	original_audio_codec = "";
 
-	mplayer_additional_options = "";
-	mplayer_additional_video_filters = "";
-	mplayer_additional_audio_filters = "";
+	player_additional_options = "";
+	player_additional_video_filters = "";
+	player_additional_audio_filters = "";
 }
 
 double TMediaSettings::aspectToDouble() {
@@ -248,9 +248,9 @@ void TMediaSettings::list() {
 	qDebug("  original_video_codec: '%s'", original_video_codec.toUtf8().data());
 	qDebug("  original_audio_codec: '%s'", original_video_codec.toUtf8().data());
 
-	qDebug("  mplayer_additional_options: '%s'", mplayer_additional_options.toUtf8().data());
-	qDebug("  mplayer_additional_video_filters: '%s'", mplayer_additional_video_filters.toUtf8().data());
-	qDebug("  mplayer_additional_audio_filters: '%s'", mplayer_additional_audio_filters.toUtf8().data());
+	qDebug("  player_additional_options: '%s'", player_additional_options.toUtf8().data());
+	qDebug("  player_additional_video_filters: '%s'", player_additional_video_filters.toUtf8().data());
+	qDebug("  player_additional_audio_filters: '%s'", player_additional_audio_filters.toUtf8().data());
 }
 
 void TMediaSettings::save(QSettings* set, int player_id) {
@@ -386,9 +386,9 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 	set->setValue("A_marker", A_marker);
 	set->setValue("B_marker", B_marker);
 
-	set->setValue("mplayer_additional_options", mplayer_additional_options);
-	set->setValue("mplayer_additional_video_filters", mplayer_additional_video_filters);
-	set->setValue("mplayer_additional_audio_filters", mplayer_additional_audio_filters);
+	set->setValue("mplayer_additional_options", player_additional_options);
+	set->setValue("mplayer_additional_video_filters", player_additional_video_filters);
+	set->setValue("mplayer_additional_audio_filters", player_additional_audio_filters);
 }
 
 void TMediaSettings::convertOldSelectedTrack(int &id) {
@@ -525,9 +525,9 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	B_marker = set->value("B_marker", B_marker).toInt();
 
 
-	mplayer_additional_options = set->value("mplayer_additional_options", mplayer_additional_options).toString();
-	mplayer_additional_video_filters = set->value("mplayer_additional_video_filters", mplayer_additional_video_filters).toString();
-	mplayer_additional_audio_filters = set->value("mplayer_additional_audio_filters", mplayer_additional_audio_filters).toString();
+	player_additional_options = set->value("mplayer_additional_options", player_additional_options).toString();
+	player_additional_video_filters = set->value("mplayer_additional_video_filters", player_additional_video_filters).toString();
+	player_additional_audio_filters = set->value("mplayer_additional_audio_filters", player_additional_audio_filters).toString();
 
 	// ChDefault not used anymore
 	if (audio_use_channels == ChDefault) audio_use_channels = ChStereo;

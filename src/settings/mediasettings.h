@@ -164,9 +164,9 @@ public:
 	QString original_audio_codec;
 
 	// Options to mplayer (for this file only)
-	QString mplayer_additional_options;
-	QString mplayer_additional_video_filters;
-	QString mplayer_additional_audio_filters;
+	QString player_additional_options;
+	QString player_additional_video_filters;
+	QString player_additional_audio_filters;
 
 	TAspectRatio aspect_ratio;
 	double aspectToDouble();

@@ -21,7 +21,7 @@
      </property>
      <widget class="QWidget" name="advanced_tab">
       <attribute name="title">
-       <string>&amp;Advanced</string>
+       <string>Advanced</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="margin">
@@ -29,6 +29,9 @@
        </property>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="bottomMargin">
+          <number>16</number>
+         </property>
          <item>
           <widget class="QLabel" name="actions_to_run_label">
            <property name="text">
@@ -49,35 +52,9 @@ The actions must be separated by white spaces:</string>
         </layout>
        </item>
        <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="options_tab">
-      <attribute name="title">
-       <string notr="true">&amp;Options for player</string>
-      </attribute>
-      <layout class="QVBoxLayout">
-       <property name="margin">
-        <number>16</number>
-       </property>
-       <item>
         <widget class="QLabel" name="options_info_label">
          <property name="text">
-          <string notr="true">Here you can pass extra options to the player.
+          <string>Here you can pass extra options to the player.
 Write them separated by spaces.
 Example: -flip -nosound -fps 25</string>
          </property>
@@ -112,33 +89,14 @@ Example: -flip -nosound -fps 25</string>
             <bool>false</bool>
            </property>
            <property name="buddy">
-            <cstring>mplayer_args_edit</cstring>
+            <cstring>player_args_edit</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="mplayer_args_edit"/>
+          <widget class="QLineEdit" name="player_args_edit"/>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::HLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="QLabel" name="textLabel4_2">
@@ -178,33 +136,14 @@ Example: scale=512:-2,mirror</string>
             <bool>false</bool>
            </property>
            <property name="buddy">
-            <cstring>mplayer_vfilters_edit</cstring>
+            <cstring>player_vfilters_edit</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="mplayer_vfilters_edit"/>
+          <widget class="QLineEdit" name="player_vfilters_edit"/>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line3">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::HLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="QLabel" name="textLabel5_2">
@@ -237,12 +176,12 @@ Example: extrastereo,karaoke</string>
             <bool>false</bool>
            </property>
            <property name="buddy">
-            <cstring>mplayer_afilters_edit</cstring>
+            <cstring>player_afilters_edit</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="mplayer_afilters_edit"/>
+          <widget class="QLineEdit" name="player_afilters_edit"/>
          </item>
         </layout>
        </item>
@@ -268,9 +207,9 @@ Example: extrastereo,karaoke</string>
  <tabstops>
   <tabstop>advanced_tabwidget</tabstop>
   <tabstop>actions_to_run_edit</tabstop>
-  <tabstop>mplayer_args_edit</tabstop>
-  <tabstop>mplayer_vfilters_edit</tabstop>
-  <tabstop>mplayer_afilters_edit</tabstop>
+  <tabstop>player_args_edit</tabstop>
+  <tabstop>player_vfilters_edit</tabstop>
+  <tabstop>player_afilters_edit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

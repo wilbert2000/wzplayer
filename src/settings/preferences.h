@@ -265,9 +265,9 @@ public:
 	bool use_lavf_demuxer;
 
 	// Let the user pass options to mplayer
-	QString mplayer_additional_options;
-	QString mplayer_additional_video_filters;
-	QString mplayer_additional_audio_filters;
+	QString player_additional_options;
+	QString player_additional_video_filters;
+	QString player_additional_audio_filters;
 
 
 	// Logging tab

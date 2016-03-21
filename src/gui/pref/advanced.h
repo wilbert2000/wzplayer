@@ -56,14 +56,14 @@ private:
 	void setActionsToRun(QString actions);
 	QString actionsToRun();
 
-	void setMplayerAdditionalArguments(QString args);
-	QString mplayerAdditionalArguments();
+	void setPlayerAdditionalArguments(QString args);
+	QString playerAdditionalArguments();
 
-	void setMplayerAdditionalVideoFilters(QString s);
-	QString mplayerAdditionalVideoFilters();
+	void setPlayerAdditionalVideoFilters(QString s);
+	QString playerAdditionalVideoFilters();
 
-	void setMplayerAdditionalAudioFilters(QString s);
-	QString mplayerAdditionalAudioFilters();
+	void setPlayerAdditionalAudioFilters(QString s);
+	QString playerAdditionalAudioFilters();
 };
 
 } // namespace Pref

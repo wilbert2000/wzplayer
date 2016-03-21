@@ -48,14 +48,14 @@ public:
 	void setAudioCodec(const QString& ac, const QString& original_ac="");
 	QString audioCodec();
 
-	void setMplayerAdditionalArguments(const QString& args);
-	QString mplayerAdditionalArguments();
+	void setPlayerAdditionalArguments(const QString& args);
+	QString playerAdditionalArguments();
 
-	void setMplayerAdditionalVideoFilters(const QString& s);
-	QString mplayerAdditionalVideoFilters();
+	void setPlayerAdditionalVideoFilters(const QString& s);
+	QString playerAdditionalVideoFilters();
 
-	void setMplayerAdditionalAudioFilters(const QString& s);
-	QString mplayerAdditionalAudioFilters();
+	void setPlayerAdditionalAudioFilters(const QString& s);
+	QString playerAdditionalAudioFilters();
 
 	void showInfo();
 

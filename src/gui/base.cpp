@@ -1108,9 +1108,9 @@ void TBase::setDataToFileProperties() {
 	file_properties_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
 	file_properties_dialog->setVideoCodec(vc, core->mset.original_video_codec);
 
-	file_properties_dialog->setMplayerAdditionalArguments(core->mset.mplayer_additional_options);
-	file_properties_dialog->setMplayerAdditionalVideoFilters(core->mset.mplayer_additional_video_filters);
-	file_properties_dialog->setMplayerAdditionalAudioFilters(core->mset.mplayer_additional_audio_filters);
+	file_properties_dialog->setPlayerAdditionalArguments(core->mset.player_additional_options);
+	file_properties_dialog->setPlayerAdditionalVideoFilters(core->mset.player_additional_video_filters);
+	file_properties_dialog->setPlayerAdditionalAudioFilters(core->mset.player_additional_audio_filters);
 
 	file_properties_dialog->showInfo();
 }
@@ -1147,9 +1147,9 @@ void TBase::applyFileProperties() {
 	if (vc == core->mset.original_video_codec) vc="";
 	TEST_AND_SET(core->mset.forced_video_codec, vc);
 
-	TEST_AND_SET(core->mset.mplayer_additional_options, file_properties_dialog->mplayerAdditionalArguments());
-	TEST_AND_SET(core->mset.mplayer_additional_video_filters, file_properties_dialog->mplayerAdditionalVideoFilters());
-	TEST_AND_SET(core->mset.mplayer_additional_audio_filters, file_properties_dialog->mplayerAdditionalAudioFilters());
+	TEST_AND_SET(core->mset.player_additional_options, file_properties_dialog->playerAdditionalArguments());
+	TEST_AND_SET(core->mset.player_additional_video_filters, file_properties_dialog->playerAdditionalVideoFilters());
+	TEST_AND_SET(core->mset.player_additional_audio_filters, file_properties_dialog->playerAdditionalAudioFilters());
 
 #undef TEST_AND_SET
 

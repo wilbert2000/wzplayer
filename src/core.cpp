@@ -968,8 +968,8 @@ bool TCore::haveVideoFilters() const {
 		|| mset.postprocessing_filter
 		|| mset.add_letterbox
 		|| pref->use_soft_video_eq
-		|| !mset.mplayer_additional_video_filters.isEmpty()
-		|| !pref->mplayer_additional_video_filters.isEmpty()
+		|| !mset.player_additional_video_filters.isEmpty()
+		|| !pref->player_additional_video_filters.isEmpty()
 		|| mset.rotate != TMediaSettings::NoRotate
 		|| mset.flip
 		|| mset.mirror;
@@ -1528,12 +1528,12 @@ void TCore::startPlayer(QString file, double seek) {
 
 	// Additional video filters, supplied by user
 	// File
-	if (!mset.mplayer_additional_video_filters.isEmpty()) {
-		proc->setOption("vf-add", mset.mplayer_additional_video_filters);
+	if (!mset.player_additional_video_filters.isEmpty()) {
+		proc->setOption("vf-add", mset.player_additional_video_filters);
 	}
 	// Global
-	if (!pref->mplayer_additional_video_filters.isEmpty()) {
-		proc->setOption("vf-add", pref->mplayer_additional_video_filters);
+	if (!pref->player_additional_video_filters.isEmpty()) {
+		proc->setOption("vf-add", pref->player_additional_video_filters);
 	}
 
 	// Filters for subtitles on screenshots
@@ -1583,7 +1583,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 
 	// Volume
-	if (pref->mplayer_additional_options.contains("-volume")) {
+	if (pref->player_additional_options.contains("-volume")) {
 		qDebug("TCore::startPlayer: don't set volume since -volume is used");
 	} else {
 		proc->setOption("volume", QString::number(getVolumeForPlayer()));
@@ -1646,12 +1646,12 @@ void TCore::startPlayer(QString file, double seek) {
 
 		// Additional audio filters, supplied by user
 		// File
-		if (!pref->mplayer_additional_audio_filters.isEmpty()) {
-			proc->setOption("af-add", pref->mplayer_additional_audio_filters);
+		if (!pref->player_additional_audio_filters.isEmpty()) {
+			proc->setOption("af-add", pref->player_additional_audio_filters);
 		}
 		// Global
-		if (!mset.mplayer_additional_audio_filters.isEmpty()) {
-			proc->setOption("af-add", mset.mplayer_additional_audio_filters);
+		if (!mset.player_additional_audio_filters.isEmpty()) {
+			proc->setOption("af-add", mset.player_additional_audio_filters);
 		}
 	}
 
@@ -1689,8 +1689,8 @@ void TCore::startPlayer(QString file, double seek) {
 
 	// Additional options supplied by the user
 	// File
-	if (!mset.mplayer_additional_options.isEmpty()) {
-		QStringList args = Proc::TProcess::splitArguments(mset.mplayer_additional_options);
+	if (!mset.player_additional_options.isEmpty()) {
+		QStringList args = Proc::TProcess::splitArguments(mset.player_additional_options);
 		for (int n = 0; n < args.count(); n++) {
 			QString arg = args[n].simplified();
 			if (!arg.isEmpty()) {
@@ -1700,8 +1700,8 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Global
-	if (!pref->mplayer_additional_options.isEmpty()) {
-		QStringList args = Proc::TProcess::splitArguments(pref->mplayer_additional_options);
+	if (!pref->player_additional_options.isEmpty()) {
+		QStringList args = Proc::TProcess::splitArguments(pref->player_additional_options);
 		for (int n = 0; n < args.count(); n++) {
 			QString arg = args[n].simplified();
 			if (!arg.isEmpty()) {
@@ -2870,7 +2870,7 @@ void TCore::changeAudioTrack(int id) {
 			// Workaround too for a mplayer problem in linux,
 			// the volume is reduced if using -softvol-max.
 			if (isMPlayer()
-				&& !pref->mplayer_additional_options.contains("-volume")) {
+				&& !pref->player_additional_options.contains("-volume")) {
 				setVolume(getVolume(), false);
 			}
 		}

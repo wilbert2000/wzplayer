@@ -219,28 +219,28 @@ int TFilePropertiesDialog::find(const QString s, InfoList &list) {
 	return -1;
 }
 
-void TFilePropertiesDialog::setMplayerAdditionalArguments(const QString& args) {
-	mplayer_args_edit->setText(args);
+void TFilePropertiesDialog::setPlayerAdditionalArguments(const QString& args) {
+	player_args_edit->setText(args);
 }
 
-QString TFilePropertiesDialog::mplayerAdditionalArguments() {
-	return mplayer_args_edit->text();
+QString TFilePropertiesDialog::playerAdditionalArguments() {
+	return player_args_edit->text();
 }
 
-void TFilePropertiesDialog::setMplayerAdditionalVideoFilters(const QString& s) {
-	mplayer_vfilters_edit->setText(s);
+void TFilePropertiesDialog::setPlayerAdditionalVideoFilters(const QString& s) {
+	player_vfilters_edit->setText(s);
 }
 
-QString TFilePropertiesDialog::mplayerAdditionalVideoFilters() {
-	return mplayer_vfilters_edit->text();
+QString TFilePropertiesDialog::playerAdditionalVideoFilters() {
+	return player_vfilters_edit->text();
 }
 
-void TFilePropertiesDialog::setMplayerAdditionalAudioFilters(const QString& s) {
-	mplayer_afilters_edit->setText(s);
+void TFilePropertiesDialog::setPlayerAdditionalAudioFilters(const QString& s) {
+	player_afilters_edit->setText(s);
 }
 
-QString TFilePropertiesDialog::mplayerAdditionalAudioFilters() {
-	return mplayer_afilters_edit->text();
+QString TFilePropertiesDialog::playerAdditionalAudioFilters() {
+	return player_afilters_edit->text();
 }
 
 // Language change stuff

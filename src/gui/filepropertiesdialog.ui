@@ -290,12 +290,12 @@ Example: -flip -nosound</string>
                <bool>false</bool>
               </property>
               <property name="buddy">
-               <cstring>mplayer_args_edit</cstring>
+               <cstring>player_args_edit</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="mplayer_args_edit"/>
+             <widget class="QLineEdit" name="player_args_edit"/>
             </item>
            </layout>
           </item>
@@ -350,12 +350,12 @@ Example: scale=512:-2,mirror</string>
                <bool>false</bool>
               </property>
               <property name="buddy">
-               <cstring>mplayer_vfilters_edit</cstring>
+               <cstring>player_vfilters_edit</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="mplayer_vfilters_edit"/>
+             <widget class="QLineEdit" name="player_vfilters_edit"/>
             </item>
            </layout>
           </item>
@@ -409,12 +409,12 @@ Example: extrastereo,karaoke</string>
                <bool>false</bool>
               </property>
               <property name="buddy">
-               <cstring>mplayer_afilters_edit</cstring>
+               <cstring>player_afilters_edit</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="mplayer_afilters_edit"/>
+             <widget class="QLineEdit" name="player_afilters_edit"/>
             </item>
            </layout>
           </item>
@@ -461,9 +461,9 @@ Example: extrastereo,karaoke</string>
   <tabstop>resetVCButton</tabstop>
   <tabstop>ac_listbox</tabstop>
   <tabstop>resetACButton</tabstop>
-  <tabstop>mplayer_args_edit</tabstop>
-  <tabstop>mplayer_vfilters_edit</tabstop>
-  <tabstop>mplayer_afilters_edit</tabstop>
+  <tabstop>player_args_edit</tabstop>
+  <tabstop>player_vfilters_edit</tabstop>
+  <tabstop>player_afilters_edit</tabstop>
  </tabstops>
  <resources/>
  <connections>
