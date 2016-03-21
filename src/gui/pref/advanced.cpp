@@ -18,7 +18,6 @@
 
 
 #include "gui/pref/advanced.h"
-#include <QColorDialog>
 #include "images.h"
 #include "settings/preferences.h"
 
@@ -31,11 +30,6 @@ TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
 	: TWidget(parent, f) {
 
 	setupUi(this);
-
-	// TODO:
-	colorkey_label->hide();
-	colorkey_view->hide();
-	changeButton->hide();
 
 	retranslateStrings();
 }
@@ -59,7 +53,6 @@ void TAdvanced::retranslateStrings() {
 
 void TAdvanced::setData(TPreferences* pref) {
 
-	setColorKey(pref->color_key);
 	setActionsToRun(pref->actions_to_run);
 
 	setMplayerAdditionalArguments(pref->mplayer_additional_options);
@@ -71,7 +64,6 @@ void TAdvanced::getData(TPreferences* pref) {
 
 	requires_restart = false;
 
-	restartIfUIntChanged(pref->color_key, colorKey());
 	pref->actions_to_run = actionsToRun();
 
 	restartIfStringChanged(pref->mplayer_additional_options, mplayerAdditionalArguments());
@@ -103,50 +95,12 @@ QString TAdvanced::mplayerAdditionalAudioFilters() {
 	return mplayer_afilters_edit->text();
 }
 
-void TAdvanced::setColorKey(unsigned int c) {
-
-	QString color = QString::number(c, 16);
-	while (color.length() < 6)
-		color = "0" + color;
-	colorkey_view->setText("#" + color);
-}
-
-unsigned int TAdvanced::colorKey() {
-
-	QString c = colorkey_view->text();
-	if (c.startsWith("#"))
-		c = c.mid(1);
-
-	bool ok;
-	unsigned int color = c.toUInt(&ok, 16);
-
-	if (!ok) {
-		qWarning("Gui::Pref::TAdvanced::colorKey: cannot convert color to uint");
-		color = TPreferences::DEFAULT_COLOR_KEY;
-	}
-
-	qDebug("Gui::Pref::TAdvanced::colorKey: color: %s", QString::number(color, 16).toUtf8().data());
-	return color;
-}
-
 void TAdvanced::setActionsToRun(QString actions) {
 	actions_to_run_edit->setText(actions);
 }
 
 QString TAdvanced::actionsToRun() {
 	return actions_to_run_edit->text();
-}
-
-void TAdvanced::onChangeButtonClicked() {
-
-	//bool ok;
-	//int color = colorkey_view->text().toUInt(&ok, 16);
-	QColor color(colorkey_view->text());
-	QColor c = QColorDialog::getColor (color, this);
-	if (c.isValid()) {
-		//colorkey_view->setText(QString::number(c.rgb(), 16));
-		colorkey_view->setText(c.name());
-	}
 }
 
 void TAdvanced::createHelp() {
@@ -165,11 +119,6 @@ void TAdvanced::createHelp() {
 		tr("Limitation: the actions are run only when a file is opened and "
            "not when the mplayer process is restarted (e.g. you select an "
            "audio or video filter)."));
-
-	setWhatsThis(colorkey_view, tr("Colorkey"),
-        tr("If you see parts of the video over any other window, you can "
-           "change the colorkey to fix it. Try to select a color close to "
-           "black."));
 
 	addSectionTitle(tr("Options for player"));
 

@@ -56,9 +56,6 @@ private:
 	void setActionsToRun(QString actions);
 	QString actionsToRun();
 
-	void setColorKey(unsigned int c);
-	unsigned int colorKey();
-
 	void setMplayerAdditionalArguments(QString args);
 	QString mplayerAdditionalArguments();
 
@@ -67,9 +64,6 @@ private:
 
 	void setMplayerAdditionalAudioFilters(QString s);
 	QString mplayerAdditionalAudioFilters();
-
-private slots:
-	void onChangeButtonClicked();
 };
 
 } // namespace Pref
