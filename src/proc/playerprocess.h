@@ -151,7 +151,6 @@ signals:
 	void receivedCurrentSec(double sec);
 	void receivedCurrentFrame(int frame);
 	void receivedPause();
-	void receivedAO(const QString&);
 	void receivedEndOfFile();
 
 	void receivedMessage(const QString&);

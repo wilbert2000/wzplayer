@@ -903,8 +903,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 	// AO driver
 	if (rx_ao.indexIn(line) >= 0) {
-		qDebug("Proc::TMPlayerProcess::parseLine: emit receivedAO()");
-		emit receivedAO(rx_ao.cap(1));
+		md->ao = rx_ao.cap(1);
+		qDebug() << "Proc::TMPlayerProcess::parseLine: audio driver" << md->ao;
 		return true;
 	}
 

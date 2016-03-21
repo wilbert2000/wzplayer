@@ -131,9 +131,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedVideoOutResolution(int,int)),
 			 this, SLOT(gotVideoOutResolution(int,int)));
 
-	connect(proc, SIGNAL(receivedAO(const QString&)),
-			 this, SLOT(gotAO(const QString&)));
-
 	connect(proc, SIGNAL(receivedEndOfFile()),
 			 this, SLOT(fileReachedEnd()), Qt::QueuedConnection);
 
@@ -1155,7 +1152,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 #endif
 
-	if (pref->ao != "player_default" && !pref->ao.isEmpty()) {
+	if (!pref->ao.isEmpty()) {
 		proc->setOption("ao", pref->ao);
 	}
 
@@ -3533,16 +3530,6 @@ void TCore::gotVideoOutResolution(int w, int h) {
 
 	// If resize is canceled adjust new video to old size
 	playerwindow->updateVideoWindow();
-}
-
-void TCore::gotAO(const QString& ao) {
-	qDebug("TCore::gotAO: '%s'", ao.toUtf8().data());
-
-	// TODO:
-	if (pref->ao.isEmpty()) {
-		qDebug("TCore::gotAO: saving ao");
-		pref->ao = ao;
-	}
 }
 
 void TCore::streamTitleChanged(const QString& title) {

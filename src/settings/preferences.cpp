@@ -47,7 +47,7 @@
 #include "helper.h"
 
 
-#define CURRENT_CONFIG_VERSION 11
+#define CURRENT_CONFIG_VERSION 12
 
 
 namespace Settings {
@@ -142,7 +142,12 @@ void TPreferences::reset() {
 
 
 	// Audio tab
+#ifdef Q_OS_OS2
+	ao = "kai";
+#else
 	ao = "";
+#endif
+
 	use_soft_vol = false;
 	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
 	softvol_max = 100;
@@ -1412,13 +1417,18 @@ void TPreferences::load() {
 			remove("defaults/initial_subtitle_track");
 		}
 
-		use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
-		remove("subtitles/enable_ass_styles");
-		remove("advanced/repaint_video_background");
-		remove("gui/report_player_crashes");
+		if (config_version < 12) {
+			use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
+			remove("subtitles/enable_ass_styles");
+			remove("advanced/repaint_video_background");
+			remove("gui/report_player_crashes");
 
-		if (vo == "player_default") {
-			vo = "";
+			if (vo == "player_default") {
+				vo = "";
+			}
+			if (ao == "player_default") {
+				ao = "";
+			}
 		}
 
 		config_version = CURRENT_CONFIG_VERSION;

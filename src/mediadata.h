@@ -95,6 +95,7 @@ public:
 	Maps::TTracks videos;
 
 	// Audio
+	QString ao;
 	QString audio_format;
 	QString audio_codec;
 	QString audio_codec_description;

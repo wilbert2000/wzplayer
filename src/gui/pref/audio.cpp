@@ -89,15 +89,7 @@ void TAudio::retranslateStrings() {
 
 void TAudio::setData(TPreferences* pref) {
 
-	QString ao = pref->ao;
-
-#ifdef Q_OS_OS2
-	if (ao.isEmpty()) {
-		ao = "kai";
-	}
-#endif
-
-	setAO(ao, true);
+	setAO(pref->ao, true);
 	setAudioChannels(pref->initial_audio_channels);
 	setUseAudioEqualizer(pref->use_audio_equalizer);
 	setAc3DTSPassthrough(pref->use_hwac3);
@@ -150,7 +142,7 @@ void TAudio::updateDriverCombo(bool allow_user_defined_ao) {
 
 	QString current_ao = AO();
 	ao_combo->clear();
-	ao_combo->addItem(tr("Default"), "player_default");
+	ao_combo->addItem(tr("Default"), "");
 
 	QString ao;
 	for (int n = 0; n < ao_list.count(); n++) {
@@ -203,9 +195,6 @@ QString TAudio::AO() {
 	QString ao = ao_combo->itemData(ao_combo->currentIndex()).toString();
 	if (ao == "user_defined") {
 		ao = ao_user_defined_edit->text();
-		if (ao.isEmpty()) {
-			ao = ao_combo->itemData(0).toString();
-		}
 	}
 	return ao;
 }

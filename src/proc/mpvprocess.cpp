@@ -604,9 +604,8 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// AO
 	if (rx_ao.indexIn(line) >= 0) {
-		QString ao = rx_ao.cap(1);
-		qDebug() << "MVPProcess::parseLine: emit receivedAO(" << ao << ")";
-		emit receivedAO(ao);
+		md->ao = rx_ao.cap(1);
+		qDebug() << "MVPProcess::parseLine: audio driver" << md->ao;
 		return true;
 	}
 

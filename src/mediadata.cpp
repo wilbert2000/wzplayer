@@ -233,6 +233,7 @@ void TMediaData::list() const {
 	qDebug("  Video tracks:");
 	videos.list();
 
+	qDebug("  audio driver: '%s'", ao.toUtf8().constData());
 	qDebug("  audio_format: '%s'", audio_format.toUtf8().data());
 	qDebug("  audio_codec: '%s'", audio_codec.toUtf8().data());
 	qDebug("  audio_bitrate: %d", audio_bitrate);
