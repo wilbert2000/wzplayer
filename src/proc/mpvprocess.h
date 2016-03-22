@@ -93,9 +93,7 @@ public:
 	void setSubDelay(double delay);
 	void setLoop(int v);
 	void takeScreenshot(ScreenshotType t, bool include_subtitles = false);
-#ifdef CAPTURE_STREAM
 	void switchCapturing();
-#endif
 	void setTitle(int ID);
 	void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant());
 	void changeStereo3DFilter(bool enable, const QString& in, const QString& out);
@@ -151,9 +149,7 @@ private:
 	bool osd_centered_x;
 	bool osd_centered_y;
 
-#ifdef CAPTURE_STREAM
 	bool capturing;
-#endif
 
 	void convertChaptersToTitles();
 	void fixTitle();

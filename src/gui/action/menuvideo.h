@@ -61,10 +61,7 @@ private:
 
 	TAction* screenshotAct;
 	TAction* screenshotsAct;
-
-#ifdef CAPTURE_STREAM
 	TAction * capturingAct;
-#endif
 
 private slots:
 	void onFullscreenChanged();

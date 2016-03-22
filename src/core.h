@@ -97,9 +97,7 @@ public slots:
 	void frameBackStep();
 	void screenshot();	//!< Take a screenshot of current frame
 	void screenshots();	//!< Start/stop taking screenshot of each frame
-#ifdef CAPTURE_STREAM
 	void switchCapturing();
-#endif
 
 	void displayMessage(const QString& text, int duration = 3500, int osd_level = 1);
 

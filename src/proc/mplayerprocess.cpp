@@ -1149,7 +1149,6 @@ void TMPlayerProcess::disableInput() {
 #endif
 }
 
-#ifdef CAPTURE_STREAM
 void TMPlayerProcess::setCaptureDirectory(const QString& dir) {
 
 	TPlayerProcess::setCaptureDirectory(dir);
@@ -1157,7 +1156,6 @@ void TMPlayerProcess::setCaptureDirectory(const QString& dir) {
 		arg << "-capture" << "-dumpfile" << capture_filename;
 	}
 }
-#endif
 
 void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 
@@ -1502,11 +1500,9 @@ void TMPlayerProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
 	}
 }
 
-#ifdef CAPTURE_STREAM
 void TMPlayerProcess::switchCapturing() {
 	writeToStdin("capturing");
 }
-#endif
 
 void TMPlayerProcess::setTitle(int ID) {
 	title_hint = ID;

@@ -944,12 +944,10 @@ void TCore::screenshots() {
 	}
 }
 
-#ifdef CAPTURE_STREAM
 void TCore::switchCapturing() {
 	qDebug("TCore::switchCapturing");
 	proc->switchCapturing();
 }
-#endif
 
 bool TCore::haveVideoFilters() const {
 
@@ -1670,10 +1668,8 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 #endif
 
-#ifdef CAPTURE_STREAM
 	// Set the capture directory
-	proc->setCaptureDirectory(pref->capture_directory);
-#endif
+	proc->setCaptureDirectory(pref->screenshot_directory);
 
 	// Load edl file
 	if (pref->use_edl_files) {

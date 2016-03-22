@@ -113,9 +113,7 @@ public:
 	virtual void setSubDelay(double delay) = 0;
 	virtual void setLoop(int v) = 0;
 	virtual void takeScreenshot(ScreenshotType t, bool include_subtitles = false) = 0;
-#ifdef CAPTURE_STREAM
 	virtual void switchCapturing() = 0;
-#endif
 	virtual void setTitle(int ID) = 0;
 	virtual void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant()) = 0;
 	virtual void changeStereo3DFilter(bool enable, const QString& in, const QString& out) = 0;
@@ -135,10 +133,7 @@ public:
 
 	void setScreenshotDirectory(const QString& dir) { screenshot_dir = dir; }
 	QString screenshotDirectory() const { return screenshot_dir; }
-
-#ifdef CAPTURE_STREAM
 	virtual void setCaptureDirectory(const QString& dir);
-#endif
 
 // Signals
 signals:
@@ -197,10 +192,7 @@ protected:
 	TMediaData* md;
 
 	QString screenshot_dir;
-
-#ifdef CAPTURE_STREAM
 	QString capture_filename;
-#endif
 
 	bool notified_player_is_running;
 	int waiting_for_answers;

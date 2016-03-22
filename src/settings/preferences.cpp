@@ -102,10 +102,6 @@ void TPreferences::reset() {
 	screenshot_directory = "";
 #endif
 
-#ifdef CAPTURE_STREAM
-	capture_directory = "";
-#endif
-
 
 	// Video tab
 	// Video driver
@@ -480,10 +476,6 @@ void TPreferences::save() {
 	// Note: "screenshot_folder" used to be "screenshot_directory"
 	// before QT_VERSION 0x040400
 	setValue("screenshot_folder", screenshot_directory);
-
-#ifdef CAPTURE_STREAM
-	setValue("capture_directory", capture_directory);
-#endif
 
 
 	// Video tab
@@ -956,11 +948,6 @@ void TPreferences::load() {
 
 	// Note: "screenshot_folder" used to be "screenshot_directory" before Qt 4.4
 	screenshot_directory = value("screenshot_folder", screenshot_directory).toString();
-
-#ifdef CAPTURE_STREAM
-	capture_directory = value("capture_directory", capture_directory).toString();
-#endif
-
 	setupScreenshotFolder();
 
 
@@ -1432,6 +1419,8 @@ void TPreferences::load() {
 			}
 		}
 
+		remove("General/capture_directory");
+
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();
 	}
@@ -1523,11 +1512,6 @@ void TPreferences::setupScreenshotFolder() {
 	if (screenshot_directory.isEmpty()) {
 		use_screenshot = false;
 	}
-
-	// Currently there is no way to set capture dir from interface
-#ifdef CAPTURE_STREAM
-	capture_directory = screenshot_directory;
-#endif
 }
 
 } // namespace Settings

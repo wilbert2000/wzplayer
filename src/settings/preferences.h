@@ -157,10 +157,6 @@ public:
 	QString screenshot_format;
 #endif
 
-#ifdef CAPTURE_STREAM
-	QString capture_directory;
-#endif
-
 	void setupScreenshotFolder();
 
 

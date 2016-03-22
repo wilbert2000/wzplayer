@@ -320,11 +320,9 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	// Multiple
 	screenshotsAct = new TAction(this, "multiple_screenshots", QT_TR_NOOP("Start/stop takin&g screenshots"), "screenshots", QKeySequence("Shift+D"));
 	connect(screenshotsAct, SIGNAL(triggered()), core, SLOT(screenshots()));
-
-#ifdef CAPTURE_STREAM
+	// Capture
 	capturingAct = new TAction(this, "capture_stream", QT_TR_NOOP("Start/stop capturing stream"), "record");
 	connect(capturingAct, SIGNAL(triggered()), core, SLOT(switchCapturing()) );
-#endif
 
 	addActionsTo(parent);
 }
@@ -363,10 +361,8 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 	screenshotAct->setEnabled(enableScreenShots);
 	screenshotsAct->setEnabled(enableScreenShots);
 
-#ifdef CAPTURE_STREAM
 	capturingAct->setEnabled(enableVideo
-							 && !pref->capture_directory.isEmpty());
-#endif
+							 && !pref->screenshot_directory.isEmpty());
 }
 
 void TMenuVideo::onFullscreenChanged() {

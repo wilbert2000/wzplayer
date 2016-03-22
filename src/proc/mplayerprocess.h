@@ -94,9 +94,7 @@ public:
 	void setSubDelay(double delay);
 	void setLoop(int v);
 	void takeScreenshot(ScreenshotType t, bool include_subtitles = false);
-#ifdef CAPTURE_STREAM
 	void switchCapturing();
-#endif
 	void setTitle(int ID);
 	void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant());
 	void changeStereo3DFilter(bool enable, const QString& in, const QString& out);
@@ -113,10 +111,7 @@ public:
 	void setOSDPos(const QPoint& pos, int);
 	void setOSDScale(double value);
 	void setChannelsFile(const QString&) {}
-
-#ifdef CAPTURE_STREAM
 	void setCaptureDirectory(const QString & dir);
-#endif
 
 protected:
 	virtual void processFinished(int exitCode, QProcess::ExitStatus exitStatus);

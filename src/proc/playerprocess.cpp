@@ -568,7 +568,6 @@ void TPlayerProcess::seek(double secs, int mode, bool precise, bool currently_pa
 	seekPlayerTime(secs, mode, precise, currently_paused);
 }
 
-#ifdef CAPTURE_STREAM
 void TPlayerProcess::setCaptureDirectory(const QString& dir) {
 
 	capture_filename = "";
@@ -587,7 +586,6 @@ void TPlayerProcess::setCaptureDirectory(const QString& dir) {
 		}
 	}
 }
-#endif
 
 } // namespace Proc
 

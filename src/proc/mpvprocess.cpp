@@ -752,9 +752,7 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 		arg << url;
 	}
 
-#ifdef CAPTURE_STREAM
 	capturing = false;
-#endif
 }
 
 void TMPVProcess::setFixedOptions() {
@@ -1272,7 +1270,6 @@ void TMPVProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
 	writeToStdin(QString("screenshot %1 %2").arg(include_subtitles ? "subtitles" : "video").arg(t == Single ? "single" : "each-frame"));
 }
 
-#ifdef CAPTURE_STREAM
 void TMPVProcess::switchCapturing() {
 
 	if (!capture_filename.isEmpty()) {
@@ -1290,7 +1287,6 @@ void TMPVProcess::switchCapturing() {
 		capturing = !capturing;
 	}
 }
-#endif
 
 void TMPVProcess::setTitle(int ID) {
 	writeToStdin("set disc-title " + QString::number(ID));
