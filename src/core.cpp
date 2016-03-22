@@ -1054,17 +1054,17 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("verbose");
 	}
 
-	// Set screenshot directory
-	if (pref->use_screenshot) {
-		if (pref->screenshot_directory.isEmpty()) {
-			pref->use_screenshot = false;
-		} else {
-			QFileInfo fi(pref->screenshot_directory);
-			pref->use_screenshot = fi.isDir() && fi.isWritable();
-		}
-		if (!pref->use_screenshot) {
-			qWarning() << "TCore::startPlayer: disabled screenshots, screenshot directory not writable"
+	// Setup screenshot directory
+	if (pref->screenshot_directory.isEmpty()) {
+		pref->use_screenshot = false;
+	} else {
+		QFileInfo fi(pref->screenshot_directory);
+		if (!fi.isDir() || !fi.isWritable()) {
+			qWarning() << "TCore::startPlayer: disabled screenshots and capturing, screenshot directory not writable"
 					   << pref->screenshot_directory;
+			pref->use_screenshot = false;
+			// Need to clear to disable capture
+			pref->screenshot_directory = "";
 		}
 	}
 	if (pref->use_screenshot) {

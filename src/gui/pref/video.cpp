@@ -17,6 +17,7 @@
 */
 
 #include "gui/pref/video.h"
+#include <QDebug>
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/mediasettings.h"
@@ -202,7 +203,13 @@ void TVideo::getData(Settings::TPreferences* pref) {
 		enable = false;
 	} else {
 		QFileInfo fi(dir);
-		enable = fi.isDir() && fi.isWritable();
+		if (!fi.isDir() || !fi.isWritable()) {
+			qWarning() << "Gui::Pref::TVideo::getData: screenshot directory not writable"
+					   << dir;
+			enable = false;
+			// Need to clear dir to disable capture
+			dir = "";
+		}
 	}
 	restartIfBoolChanged(pref->use_screenshot, enable);
 	restartIfStringChanged(pref->screenshot_directory, dir);
