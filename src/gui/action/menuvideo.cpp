@@ -1,4 +1,5 @@
 #include "gui/action/menuvideo.h"
+#include <QDebug>
 #include "core.h"
 #include "settings/mediasettings.h"
 #include "gui/action/menuaspect.h"
@@ -368,8 +369,6 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 							 && !pref->capture_directory.isEmpty()
 							 && QFileInfo(pref->capture_directory).isDir());
 #endif
-
-	// video preview always enabled
 }
 
 void TMenuVideo::onFullscreenChanged() {

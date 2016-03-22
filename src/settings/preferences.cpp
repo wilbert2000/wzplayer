@@ -956,11 +956,12 @@ void TPreferences::load() {
 
 	// Note: "screenshot_folder" used to be "screenshot_directory" before Qt 4.4
 	screenshot_directory = value("screenshot_folder", screenshot_directory).toString();
-	setupScreenshotFolder();
 
 #ifdef CAPTURE_STREAM
 	capture_directory = value("capture_directory", capture_directory).toString();
 #endif
+
+	setupScreenshotFolder();
 
 
 	// Video tab
@@ -1488,23 +1489,38 @@ void TPreferences::setupScreenshotFolder() {
 
 		if (pdir.isEmpty())
 			pdir = "/tmp";
-		if (!QFile::exists(pdir)) {
-			qWarning("Settings::TPreferences::setupScreenshotFolder: folder '%s' does not exist. Using /tmp as fallback", pdir.toUtf8().constData());
-			pdir = "/tmp";
-		}
-		QString default_screenshot_path = QDir::toNativeSeparators(pdir + "/smplayer_screenshots");
-		if (!QFile::exists(default_screenshot_path)) {
-			qDebug("Settings::TPreferences::setupScreenshotFolder: creating '%s'", default_screenshot_path.toUtf8().constData());
-			if (!QDir().mkdir(default_screenshot_path)) {
-				qWarning("Settings::TPreferences::setupScreenshotFolder: failed to create '%s'", default_screenshot_path.toUtf8().constData());
+
+		if (QFile::exists(pdir)) {
+			QString default_screenshot_path = QDir::toNativeSeparators(pdir + "/smplayer_screenshots");
+			if (QFile::exists(default_screenshot_path)) {
+				screenshot_directory = default_screenshot_path;
+			} else if (QDir().mkdir(default_screenshot_path)) {
+				qDebug() << "Settings::TPreferences::setupScreenshotFolder: created"
+						 << default_screenshot_path;
+				screenshot_directory = default_screenshot_path;
+			} else {
+				qWarning() << "Settings::TPreferences::setupScreenshotFolder: failed to create"
+						   << default_screenshot_path;
 			}
-		}
-		if (QFile::exists(default_screenshot_path)) {
-			screenshot_directory = default_screenshot_path;
+		} else {
+			qWarning() << "Settings::TPreferences::setupScreenshotFolder: folder"
+					   << pdir << "does not exist";
 		}
 	} else {
 		screenshot_directory = QDir::toNativeSeparators(screenshot_directory);
+		if (QFileInfo(screenshot_directory).isDir()) {
+			qDebug() << "Settings::TPreferences::setupScreenshotFolder: screenshot directory set to"
+					 << screenshot_directory;
+		} else {
+			qWarning() << "Settings::TPreferences::setupScreenshotFolder: invalid screenshot directory"
+					   << screenshot_directory;
+		}
 	}
+
+	// Currently there is no way to set capture dir from interface
+#ifdef CAPTURE_STREAM
+	capture_directory = screenshot_directory;
+#endif
 }
 
 } // namespace Settings
