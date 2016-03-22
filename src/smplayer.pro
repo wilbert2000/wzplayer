@@ -122,15 +122,16 @@ HEADERS += svn_revision.h \
     gui/pref/demuxer.h \
     gui/pref/video.h \
     gui/pref/audio.h \
-    gui/pref/drives.h \
-    gui/pref/interface.h \
-    gui/pref/performance.h \
-    gui/pref/input.h \
     gui/pref/subtitles.h \
-    gui/pref/advanced.h \
+    gui/pref/interface.h \
     gui/pref/prefplaylist.h \
-    gui/pref/updates.h \
+    gui/pref/input.h \
+    gui/pref/drives.h \
+    gui/pref/capture.h \
+    gui/pref/performance.h \
     gui/pref/network.h \
+    gui/pref/updates.h \
+    gui/pref/advanced.h \
     gui/multilineinputdialog.h \
     gui/infofile.h \
     gui/filepropertiesdialog.h \
@@ -234,15 +235,16 @@ SOURCES	+= version.cpp \
     gui/pref/demuxer.cpp \
     gui/pref/video.cpp \
     gui/pref/audio.cpp \
-    gui/pref/drives.cpp \
-    gui/pref/interface.cpp \
-    gui/pref/performance.cpp \
-    gui/pref/input.cpp \
     gui/pref/subtitles.cpp \
-    gui/pref/advanced.cpp \
+    gui/pref/interface.cpp \
     gui/pref/prefplaylist.cpp \
-    gui/pref/updates.cpp \
+    gui/pref/input.cpp \
+    gui/pref/drives.cpp \
+    gui/pref/capture.cpp \
+    gui/pref/performance.cpp \
     gui/pref/network.cpp \
+    gui/pref/updates.cpp \
+    gui/pref/advanced.cpp \
     gui/multilineinputdialog.cpp \
     gui/infofile.cpp \
     gui/filepropertiesdialog.cpp \
@@ -274,17 +276,36 @@ SOURCES	+= version.cpp \
     log.cpp \
     main.cpp
 
-FORMS = gui/inputdvddirectory.ui gui/logwindow.ui gui/filepropertiesdialog.ui \
-        gui/eqslider.ui gui/inputurl.ui gui/videoequalizer.ui \
-        gui/about.ui gui/errordialog.ui gui/timedialog.ui \
-        gui/stereo3ddialog.ui gui/multilineinputdialog.ui \
-        gui/action/toolbareditor.ui gui/action/favoriteeditor.ui \
-        gui/pref/seekwidget.ui gui/pref/vdpauproperties.ui gui/pref/dialog.ui \
-        gui/pref/general.ui gui/pref/demuxer.ui gui/pref/video.ui gui/pref/audio.ui \
-        gui/pref/drives.ui gui/pref/interface.ui \
-        gui/pref/performance.ui gui/pref/input.ui gui/pref/subtitles.ui \
-        gui/pref/advanced.ui gui/pref/prefplaylist.ui \
-        gui/pref/updates.ui gui/pref/network.ui \
+FORMS = gui/inputdvddirectory.ui \
+    gui/logwindow.ui \
+    gui/filepropertiesdialog.ui \
+    gui/eqslider.ui \
+    gui/inputurl.ui \
+    gui/videoequalizer.ui \
+    gui/about.ui \
+    gui/errordialog.ui \
+    gui/timedialog.ui \
+    gui/stereo3ddialog.ui \
+    gui/multilineinputdialog.ui \
+    gui/action/toolbareditor.ui \
+    gui/action/favoriteeditor.ui \
+    gui/pref/seekwidget.ui \
+    gui/pref/vdpauproperties.ui \
+    gui/pref/dialog.ui \
+    gui/pref/general.ui \
+    gui/pref/demuxer.ui \
+    gui/pref/video.ui \
+    gui/pref/audio.ui \
+    gui/pref/subtitles.ui \
+    gui/pref/interface.ui \
+    gui/pref/prefplaylist.ui \
+    gui/pref/input.ui \
+    gui/pref/drives.ui \
+    gui/pref/capture.ui \
+    gui/pref/performance.ui \
+    gui/pref/network.ui \
+    gui/pref/updates.ui \
+    gui/pref/advanced.ui
 
 contains(DEFINES, MPV_SUPPORT) {
     HEADERS += proc/mpvprocess.h inforeadermpv.h

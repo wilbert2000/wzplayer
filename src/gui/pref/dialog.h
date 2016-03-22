@@ -37,14 +37,15 @@ class TGeneral;
 class TDemuxer;
 class TVideo;
 class TAudio;
-class TInterface;
-class TInput;
-class TPrefPlaylist;
 class TSubtitles;
+class TInterface;
+class TPrefPlaylist;
+class TInput;
 class TDrives;
-class TPerformance;
-class TNetwork;
+class TCapture;
 class TUpdates;
+class TNetwork;
+class TPerformance;
 
 #if USE_ASSOCIATIONS
 class TAssociations;
@@ -67,6 +68,7 @@ public:
 		SECTION_PLAYLIST,
 		SECTION_INPUT,
 		SECTION_DRIVES,
+		SECTION_CAPTURE,
 		SECTION_PERFORMANCE,
 		SECTION_NETWORK,
 		SECTION_UPDATES,
@@ -115,6 +117,7 @@ private:
 	TPrefPlaylist* page_playlist;
 	TInput* page_input;
 	TDrives* page_drives;
+	TCapture* page_capture;
 	TPerformance* page_performance;
 	TNetwork* page_network;
 	TUpdates* page_updates;

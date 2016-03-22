@@ -16,18 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_PREF_VIDEO_H
-#define GUI_PREF_VIDEO_H
+#ifndef GUI_PREF_CAPTURE_H
+#define GUI_PREF_CAPTURE_H
 
-#include "ui_video.h"
+#include "ui_capture.h"
 #include "gui/pref/widget.h"
-#include "inforeader.h"
 #include "settings/preferences.h"
-#include "gui/deviceinfo.h"
-
-#ifndef Q_OS_WIN
-#define USE_XV_ADAPTORS 1
-#endif
 
 
 namespace Settings {
@@ -37,14 +31,12 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TVideo : public TWidget, public Ui::TVideo {
+class TCapture : public TWidget, public Ui::TCapture {
 	Q_OBJECT
 
 public:
-	InfoList vo_list;
-
-	TVideo(QWidget* parent, InfoList vol);
-	virtual ~TVideo();
+	TCapture(QWidget* parent);
+	virtual ~TCapture();
 
 	virtual QString sectionName();
 	virtual QPixmap sectionIcon();
@@ -55,65 +47,28 @@ public:
     // Apply changes
 	void getData(Settings::TPreferences* pref);
 
-	void updateDriverCombo(bool allow_user_defined_vo);
-
 protected:
 	virtual void retranslateStrings();
 
 private:
-
-#if USE_XV_ADAPTORS
-	TDeviceList xv_adaptors;
-#endif
-
-#ifndef Q_OS_WIN
-	struct Settings::TPreferences::VDPAU_settings vdpau;
-#endif
-
 	void createHelp();
 
-	void setVO(const QString& vo_driver, bool allow_user_defined);
-	QString VO();
+	void setUseScreenshots(bool b);
+	bool useScreenshots();
 
-	void setHwdec(const QString& v);
-	QString hwdec();
+	void setScreenshotDir(const QString& path);
+	QString screenshotDir();
 
-	void setSoftwareVideoEqualizer(bool b);
-	bool softwareVideoEqualizer();
-
-	void setFrameDrop(bool b);
-	bool frameDrop();
-
-	void setHardFrameDrop(bool b);
-	bool hardFrameDrop();
-
-	void setInitialPostprocessing(bool b);
-	bool initialPostprocessing();
-
-	void setPostprocessingQuality(int n);
-	int postprocessingQuality();
-
-	void setInitialDeinterlace(int ID);
-	int initialDeinterlace();
-
-	void setInitialDeinterlaceTV(int ID);
-	int initialDeinterlaceTV();
-
-	void setInitialZoom(double v);
-	double initialZoom();
-
-private slots:
-	void vo_combo_changed(int);
-
-#ifndef Q_OS_WIN
-	void on_vdpau_button_clicked();
+#ifdef MPV_SUPPORT
+	void setScreenshotFormat(const QString& format);
+	QString screenshotFormat();
 #endif
 
-	void setMonitorAspect(const QString& asp);
-	QString monitorAspect();
+	void setSubtitlesOnScreenshots(bool b);
+	bool subtitlesOnScreenshots();
 };
 
 } // namespace Pref
 } // namespace Gui
 
-#endif // GUI_PREF_VIDEO_H
+#endif // GUI_PREF_CAPTURE_H

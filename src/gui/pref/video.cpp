@@ -64,18 +64,6 @@ TVideo::TVideo(QWidget* parent, InfoList vol)
 	connect(vo_combo, SIGNAL(currentIndexChanged(int)),
 			this, SLOT(vo_combo_changed(int)));
 
-	// Screenshots
-	screenshot_edit->setDialogType(FileChooser::GetDirectory);
-
-#ifdef MPV_SUPPORT
-	screenshot_format_combo->addItems(QStringList() << "png" << "ppm" << "pgm" << "pgmyuv" << "tga" << "jpg" << "jpeg");
-#else
-	screenshot_template_label->hide();
-	screenshot_template_edit->hide();
-	screenshot_format_label->hide();
-	screenshot_format_combo->hide();
-#endif
-
 	// Monitor aspect
 	monitoraspect_combo->addItem("Auto");
 	monitoraspect_combo->addItem("4:3");
@@ -125,8 +113,6 @@ void TVideo::retranslateStrings() {
 	deinterlace_tv_combo->addItem(tr("Kerndeint"), TMediaSettings::Kerndeint);
 	deinterlace_tv_combo->setCurrentIndex(index);
 
-	screenshot_edit->setCaption(tr("Select a directory"));
-
 	// Monitor
 	monitor_aspect_icon->setPixmap(Images::icon("monitor"));
 	monitoraspect_combo->setItemText(0, tr("Auto"));
@@ -156,17 +142,6 @@ void TVideo::setData(Settings::TPreferences* pref) {
 	setInitialDeinterlaceTV(pref->initial_tv_deinterlace);
 	setInitialZoom(pref->initial_zoom_factor);
 
-	// Screenshots group
-	setUseScreenshots(pref->use_screenshot);
-	setScreenshotDir(pref->screenshot_directory);
-
-#ifdef MPV_SUPPORT
-	screenshot_template_edit->setText(pref->screenshot_template);
-	setScreenshotFormat(pref->screenshot_format);
-#endif
-
-	setSubtitlesOnScreenshots(pref->subtitles_on_screenshots);
-
 	// Monitor
 	setMonitorAspect(pref->monitor_aspect);
 }
@@ -195,31 +170,6 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_tv_deinterlace = initialDeinterlaceTV();
 	pref->initial_zoom_factor = initialZoom();
-
-	// Screenshots
-	bool enable = useScreenshots();
-	QString dir = screenshotDir();
-	if (dir.isEmpty()) {
-		enable = false;
-	} else {
-		QFileInfo fi(dir);
-		if (!fi.isDir() || !fi.isWritable()) {
-			qWarning() << "Gui::Pref::TVideo::getData: screenshot directory not writable"
-					   << dir;
-			enable = false;
-			// Need to clear dir to disable capture
-			dir = "";
-		}
-	}
-	restartIfBoolChanged(pref->use_screenshot, enable);
-	restartIfStringChanged(pref->screenshot_directory, dir);
-
-#ifdef MPV_SUPPORT
-	restartIfStringChanged(pref->screenshot_template, screenshot_template_edit->text());
-	restartIfStringChanged(pref->screenshot_format, screenshotFormat());
-#endif
-
-	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
 
 	// Monitor
 	restartIfStringChanged(pref->monitor_aspect, monitorAspect());
@@ -416,44 +366,6 @@ int TVideo::postprocessingQuality() {
 	return postprocessing_quality_spin->value();
 }
 
-void TVideo::setUseScreenshots(bool b) {
-	screenshots_group->setChecked(b);
-}
-
-bool TVideo::useScreenshots() {
-	return screenshots_group->isChecked();
-}
-
-void TVideo::setScreenshotDir(const QString& path) {
-	screenshot_edit->setText(path);
-}
-
-QString TVideo::screenshotDir() {
-	return screenshot_edit->text();
-}
-
-#ifdef MPV_SUPPORT
-void TVideo::setScreenshotFormat(const QString& format) {
-
-	int i = screenshot_format_combo->findText(format);
-	if (i < 0)
-		i = 0;
-	screenshot_format_combo->setCurrentIndex(i);
-}
-
-QString TVideo::screenshotFormat() {
-	return screenshot_format_combo->currentText();
-}
-#endif
-
-void TVideo::setSubtitlesOnScreenshots(bool b) {
-	subtitles_on_screeshots_check->setChecked(b);
-}
-
-bool TVideo::subtitlesOnScreenshots() {
-	return subtitles_on_screeshots_check->isChecked();
-}
-
 void TVideo::vo_combo_changed(int idx) {
 	//qDebug("Gui::Pref::TVideo::vo_combo_changed: %d", idx);
 
@@ -597,39 +509,6 @@ void TVideo::createHelp() {
 
 	setWhatsThis(zoom_spin, tr("Zoom"),
 		tr("This option sets the default zoom used for new videos."));
-
-
-	addSectionGroup(tr("Screenshots"));
-
-	setWhatsThis(screenshots_group, tr("Enable screenshots"),
-		tr("You can use this option to enable or disable the possibility to "
-		   "take screenshots."));
-
-	setWhatsThis(screenshot_edit, tr("Screenshots folder"),
-		tr("Here you can specify a folder where the screenshots taken by "
-		   "SMPlayer will be stored. If the folder is not valid the "
-		   "screenshot feature will be disabled."));
-
-#ifdef MPV_SUPPORT
-	setWhatsThis(screenshot_template_edit, tr("Template for screenshots"),
-		tr("This option specifies the filename template used to save screenshots.") + " " +
-		tr("For example %1 would save the screenshot as 'moviename_0001.png'.").arg("%F_%04n") + "<br>" +
-		tr("%1 specifies the filename of the video without the extension, "
-		   "%2 adds a 4 digit number padded with zeros.").arg("%F").arg("%04n") + " " +
-		tr("For a full list of the template specifiers visit this link:") +
-		" <a href=\"http://mpv.io/manual/stable/#options-screenshot-template\">"
-		"http://mpv.io/manual/stable/#options-screenshot-template</a>" + "<br>" +
-		tr("This option only works with mpv."));
-
-	setWhatsThis(screenshot_format_combo, tr("Format for screenshots"),
-		tr("This option allows to choose the image file type used for saving screenshots.") + " " +
-		tr("This option only works with mpv.") );
-#endif
-
-	setWhatsThis(subtitles_on_screeshots_check,
-		tr("Include subtitles on screenshots"),
-		tr("If this option is checked, the subtitles will appear in the "
-		   "screenshots. <b>Note:</b> it may cause some troubles sometimes."));
 
 	addSectionTitle("Monitor");
 

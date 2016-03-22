@@ -27,15 +27,16 @@
 #include "gui/pref/demuxer.h"
 #include "gui/pref/video.h"
 #include "gui/pref/audio.h"
-#include "gui/pref/drives.h"
-#include "gui/pref/interface.h"
-#include "gui/pref/performance.h"
-#include "gui/pref/input.h"
 #include "gui/pref/subtitles.h"
-#include "gui/pref/advanced.h"
+#include "gui/pref/interface.h"
 #include "gui/pref/prefplaylist.h"
-#include "gui/pref/updates.h"
+#include "gui/pref/input.h"
+#include "gui/pref/drives.h"
+#include "gui/pref/capture.h"
+#include "gui/pref/performance.h"
 #include "gui/pref/network.h"
+#include "gui/pref/updates.h"
+#include "gui/pref/advanced.h"
 
 #if USE_ASSOCIATIONS
 #include "gui/pref/associations.h"
@@ -101,6 +102,9 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 
 	page_drives = new TDrives;
 	addSection(page_drives);
+
+	page_capture = new TCapture(0);
+	addSection(page_capture);
 
 	page_performance = new TPerformance;
 	addSection(page_performance);
@@ -204,6 +208,7 @@ void TDialog::setData(Settings::TPreferences* pref) {
 	page_playlist->setData(pref);
 	page_input->setData(pref);
 	page_drives->setData(pref);
+	page_capture->setData(pref);
 	page_performance->setData(pref);
 	page_network->setData(pref);
 	page_updates->setData(pref);
@@ -226,6 +231,7 @@ void TDialog::getData(Settings::TPreferences* pref) {
 	page_playlist->getData(pref);
 	page_input->getData(pref);
 	page_drives->getData(pref);
+	page_capture->getData(pref);
 	page_performance->getData(pref);
 	page_network->getData(pref);
 	page_updates->getData(pref);
@@ -248,6 +254,7 @@ bool TDialog::requiresRestart() {
 	if (!need_restart) need_restart = page_playlist->requiresRestart();
 	if (!need_restart) need_restart = page_input->requiresRestart();
 	if (!need_restart) need_restart = page_drives->requiresRestart();
+	if (!need_restart) need_restart = page_capture->requiresRestart();
 	if (!need_restart) need_restart = page_performance->requiresRestart();
 	if (!need_restart) need_restart = page_network->requiresRestart();
 	if (!need_restart) need_restart = page_updates->requiresRestart();
