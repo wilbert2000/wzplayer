@@ -359,15 +359,13 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
 	bool enableScreenShots = enableFilters
 							 && pref->use_screenshot
-							 && !pref->screenshot_directory.isEmpty()
-							 && QFileInfo(pref->screenshot_directory).isDir();
+							 && !pref->screenshot_directory.isEmpty();
 	screenshotAct->setEnabled(enableScreenShots);
 	screenshotsAct->setEnabled(enableScreenShots);
 
 #ifdef CAPTURE_STREAM
 	capturingAct->setEnabled(enableVideo
-							 && !pref->capture_directory.isEmpty()
-							 && QFileInfo(pref->capture_directory).isDir());
+							 && !pref->capture_directory.isEmpty());
 #endif
 }
 

@@ -923,26 +923,24 @@ void TCore::frameBackStep() {
 void TCore::screenshot() {
 	qDebug("TCore::screenshot");
 
-	if (!pref->screenshot_directory.isEmpty()
-		&& QFileInfo(pref->screenshot_directory).isDir()) {
+	if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
 		proc->takeScreenshot(Proc::TPlayerProcess::Single,
 							 pref->subtitles_on_screenshots);
 		qDebug("TCore::screenshot: took screenshot");
 	} else {
-		qDebug("TCore::screenshot: error: directory for screenshots not valid");
-		emit showMessage(tr("Screenshot NOT taken, folder not configured"));
+		qWarning("TCore::screenshot: directory for screenshots not valid or enabled");
+		emit showMessage(tr("Screenshot NOT taken, folder not configured or enabled"));
 	}
 }
 
 void TCore::screenshots() {
 	qDebug("TCore::screenshots");
 
-	if (!pref->screenshot_directory.isEmpty()
-		&& QFileInfo(pref->screenshot_directory).isDir()) {
+	if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
 		proc->takeScreenshot(Proc::TPlayerProcess::Multiple, pref->subtitles_on_screenshots);
 	} else {
-		qDebug("TCore::screenshots: error: directory for screenshots not valid");
-		emit showMessage(tr("Screenshots NOT taken, folder not configured"));
+		qWarning("TCore::screenshots: directory for screenshots not valid or enabled");
+		emit showMessage(tr("Screenshots NOT taken, folder not configured or enabled"));
 	}
 }
 
@@ -1059,10 +1057,19 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Set screenshot directory
-	bool screenshot_enabled = pref->use_screenshot
-							  && !pref->screenshot_directory.isEmpty()
-							  && QFileInfo(pref->screenshot_directory).isDir();
-	if (screenshot_enabled) {
+	if (pref->use_screenshot) {
+		if (pref->screenshot_directory.isEmpty()) {
+			pref->use_screenshot = false;
+		} else {
+			QFileInfo fi(pref->screenshot_directory);
+			pref->use_screenshot = fi.isDir() && fi.isWritable();
+		}
+		if (!pref->use_screenshot) {
+			qWarning() << "TCore::startPlayer: disabled screenshots, screenshot directory not writable"
+					   << pref->screenshot_directory;
+		}
+	}
+	if (pref->use_screenshot) {
 		proc->setScreenshotDirectory(pref->screenshot_directory);
 	}
 
@@ -1537,7 +1544,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Filters for subtitles on screenshots
-	if (screenshot_enabled && pref->subtitles_on_screenshots) {
+	if (pref->use_screenshot && pref->subtitles_on_screenshots) {
 		if (pref->use_ass_subtitles) {
 			proc->addVF("subs_on_screenshots", "ass");
 		} else {
@@ -1561,7 +1568,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Screenshots
-	if (screenshot_enabled) {
+	if (pref->use_screenshot) {
 		proc->addVF("screenshot");
 	}
 
@@ -1571,7 +1578,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 #ifdef MPV_SUPPORT
 	// Template for screenshots (only works with mpv)
-	if (screenshot_enabled) {
+	if (pref->use_screenshot) {
 		if (!pref->screenshot_template.isEmpty()) {
 			proc->setOption("screenshot_template", pref->screenshot_template);
 		}
@@ -1580,7 +1587,6 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	}
 #endif
-
 
 	// Volume
 	if (pref->player_additional_options.contains("-volume")) {

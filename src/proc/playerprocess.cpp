@@ -572,14 +572,17 @@ void TPlayerProcess::seek(double secs, int mode, bool precise, bool currently_pa
 void TPlayerProcess::setCaptureDirectory(const QString& dir) {
 
 	capture_filename = "";
-	if (!dir.isEmpty() && (QFileInfo(dir).isDir())) {
-		// Find a unique filename
-		QString prefix = "capture";
-		for (int n = 1; ; n++) {
-			QString c = QDir::toNativeSeparators(QString("%1/%2_%3.dump").arg(dir).arg(prefix).arg(n, 4, 10, QChar('0')));
-			if (!QFile::exists(c)) {
-				capture_filename = c;
-				return;
+	if (!dir.isEmpty()) {
+		QFileInfo fi(dir);
+		if (fi.isDir() && fi.isWritable()) {
+			// Find a unique filename
+			QString prefix = "capture";
+			for (int n = 1; ; n++) {
+				QString c = QDir::toNativeSeparators(QString("%1/%2_%3.dump").arg(dir).arg(prefix).arg(n, 4, 10, QChar('0')));
+				if (!QFile::exists(c)) {
+					capture_filename = c;
+					return;
+				}
 			}
 		}
 	}

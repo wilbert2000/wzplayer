@@ -196,8 +196,16 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	pref->initial_zoom_factor = initialZoom();
 
 	// Screenshots
-	restartIfBoolChanged(pref->use_screenshot, useScreenshots());
-	restartIfStringChanged(pref->screenshot_directory, screenshotDir());
+	bool enable = useScreenshots();
+	QString dir = screenshotDir();
+	if (dir.isEmpty()) {
+		enable = false;
+	} else {
+		QFileInfo fi(dir);
+		enable = fi.isDir() && fi.isWritable();
+	}
+	restartIfBoolChanged(pref->use_screenshot, enable);
+	restartIfStringChanged(pref->screenshot_directory, dir);
 
 #ifdef MPV_SUPPORT
 	restartIfStringChanged(pref->screenshot_template, screenshot_template_edit->text());

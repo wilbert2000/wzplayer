@@ -1508,13 +1508,20 @@ void TPreferences::setupScreenshotFolder() {
 		}
 	} else {
 		screenshot_directory = QDir::toNativeSeparators(screenshot_directory);
-		if (QFileInfo(screenshot_directory).isDir()) {
+		QFileInfo fi(screenshot_directory);
+		if (fi.isDir() && fi.isWritable()) {
 			qDebug() << "Settings::TPreferences::setupScreenshotFolder: screenshot directory set to"
 					 << screenshot_directory;
 		} else {
-			qWarning() << "Settings::TPreferences::setupScreenshotFolder: invalid screenshot directory"
+			qWarning() << "Settings::TPreferences::setupScreenshotFolder: disabling screenshots, screenshot directory not writable"
 					   << screenshot_directory;
+			// Disable screenshots and capture
+			screenshot_directory = "";
 		}
+	}
+
+	if (screenshot_directory.isEmpty()) {
+		use_screenshot = false;
 	}
 
 	// Currently there is no way to set capture dir from interface
