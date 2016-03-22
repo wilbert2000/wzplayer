@@ -110,21 +110,17 @@ public:
 	bool remember_time_pos;
 	QString file_settings_method; //!< Method to be used for saving file settings
 
+	// Check radio and TV channels on startup
+	bool check_channels_conf_on_startup;
+
+
+	// Demuxer tab
+	bool use_lavf_demuxer;
+	bool use_idx;
+
 
 	// Video tab
 	QString vo; // video output
-	QString hwdec; //!< hardware video decoding (mpv only)
-	bool use_soft_video_eq;
-
-	// Sync
-	bool frame_drop;
-	bool hard_frame_drop;
-
-	// Defaults
-	bool initial_postprocessing;
-	int postprocessing_quality;
-	int initial_deinterlace;
-	int initial_tv_deinterlace;
 
 #ifndef Q_OS_WIN
 	struct VDPAU_settings {
@@ -137,15 +133,29 @@ public:
 	} vdpau;
 #endif
 
+	QString hwdec; //!< hardware video decoding (mpv only)
+	bool use_soft_video_eq;
+
+	// Sync
+	bool frame_drop;
+	bool hard_frame_drop;
+	TOptionState use_correct_pts; //!< Pass -correct-pts to mplayer
+
+	// Defaults
+	bool initial_postprocessing;
+	int postprocessing_quality;
+	int initial_deinterlace;
+	int initial_tv_deinterlace;
+	double initial_zoom_factor; // Default value for zoom (1.0 = no zoom)
+
 	// Screenshots
 	bool use_screenshot;
+	QString screenshot_directory;
 
 #ifdef MPV_SUPPORT
 	QString screenshot_template;
 	QString screenshot_format;
 #endif
-
-	QString screenshot_directory;
 
 #ifdef CAPTURE_STREAM
 	QString capture_directory;
@@ -261,9 +271,6 @@ public:
 	unsigned int color_key;
 	bool useColorKey() const;
 
-	bool use_idx; //!< Use -idx
-	bool use_lavf_demuxer;
-
 	// Let the user pass options to mplayer
 	QString player_additional_options;
 	QString player_additional_video_filters;
@@ -285,8 +292,6 @@ public:
 	//! If false, -brightness, -contrast and so on, won't be passed to
 	//! mplayer. It seems that some graphic cards don't support those options.
 	bool change_video_equalizer_on_startup;
-
-	TOptionState use_correct_pts; //!< Pass -correct-pts to mplayer
 
 	QString actions_to_run; //!< List of actions to run every time a video loads.
 
@@ -382,7 +387,6 @@ public:
        TV (dvb)
        ******** */
 
-	bool check_channels_conf_on_startup;
 	QString last_dvb_channel;
 	QString last_tv_channel;
 
@@ -423,9 +427,6 @@ public:
 	int initial_gamma;
 
 	TAudioEqualizerList initial_audio_equalizer;
-
-	//! Default value for zoom (1.0 = no zoom)
-	double initial_zoom_factor;
 
 	//! Default value for position of subtitles on screen
 	//! 100 = 100% at the bottom
