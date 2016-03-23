@@ -48,6 +48,7 @@ QPixmap TAdvanced::sectionIcon() {
 void TAdvanced::retranslateStrings() {
 
 	retranslateUi(this);
+	icon_label->setPixmap(Images::icon("pref_advanced"));
 	createHelp();
 }
 

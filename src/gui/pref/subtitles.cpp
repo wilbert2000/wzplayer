@@ -68,8 +68,6 @@ void TSubtitles::retranslateStrings() {
 	retranslateUi(this);
 	autoload_combo->setCurrentIndex(autoload);
 
-	icon_label->setPixmap(Images::icon("sub"));
-
 	// Subtitle encoding language
 	QString current = encaLang();
 	enca_lang_combo->clear();
