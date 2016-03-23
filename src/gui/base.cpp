@@ -541,10 +541,10 @@ void TBase::createToolbars() {
 	toolbar = new TEditableToolbar(this);
 	toolbar->setObjectName("toolbar1");
 	actions.clear();
-	actions << "open_file" << "open_url" << "favorites_menu" << "separator"
-			<< "screenshot" << "separator" << "show_file_properties"
-			<< "show_playlist" << "separator" << "show_preferences"
-			<< "separator" << "play_prev" << "play_next";
+	actions << "open_url" << "favorites_menu" << "separator"
+			<< "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
+			<< "separator" << "show_file_properties" << "show_playlist"
+			<< "show_smplayer_log" << "separator" << "show_preferences";
 	toolbar->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar);
 	connect(editToolbarAct, SIGNAL(triggered()),
