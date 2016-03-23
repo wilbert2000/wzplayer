@@ -41,6 +41,7 @@
 #include <QTextCodec>
 #include <QApplication>
 #include <QMimeData>
+#include <QClipboard>
 
 #include "version.h"
 #include "helper.h"
@@ -100,7 +101,7 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f)
 {
 
 	createTable();
-	createActions();
+	createActions(parent);
 	createToolbar();
 
 	connect(core, SIGNAL(newMediaStartedPlaying()),
@@ -173,62 +174,68 @@ void TPlaylist::createTable() {
 	// <--
 }
 
-void TPlaylist::createActions() {
+void TPlaylist::createActions(QWidget* parent) {
 
 	openAct = new TAction(this, "pl_open", QT_TR_NOOP("&Load"), "open");
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
 
-	saveAct = new Gui::TAction(this, "pl_save", QT_TR_NOOP("&Save"), "save");
+	saveAct = new TAction(this, "pl_save", QT_TR_NOOP("&Save"), "save");
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-	playAct = new Gui::TAction(this, "pl_play", QT_TR_NOOP("&Play"), "play");
+	playAct = new TAction(this, "pl_play", QT_TR_NOOP("&Play"), "play");
 	connect(playAct, SIGNAL(triggered()), this, SLOT(playCurrent()));
 
-	nextAct = new Gui::TAction(this, "pl_next", QT_TR_NOOP("&Next"), "next", Qt::Key_N);
+	nextAct = new TAction(this, "pl_next", QT_TR_NOOP("&Next"), "next", Qt::Key_N);
 	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
-	prevAct = new Gui::TAction(this, "pl_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_P);
+	prevAct = new TAction(this, "pl_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_P);
 	connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
-	moveUpAct = new Gui::TAction(this, "pl_move_up", QT_TR_NOOP("Move &up"), "up");
+	moveUpAct = new TAction(this, "pl_move_up", QT_TR_NOOP("Move &up"), "up");
 	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(upItem()));
 
-	moveDownAct = new Gui::TAction(this, "pl_move_down", QT_TR_NOOP("Move &down"), "down");
+	moveDownAct = new TAction(this, "pl_move_down", QT_TR_NOOP("Move &down"), "down");
 	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(downItem()));
 
-	repeatAct = new Gui::TAction(this, "pl_repeat", QT_TR_NOOP("&Repeat"), "repeat");
+	repeatAct = new TAction(this, "pl_repeat", QT_TR_NOOP("&Repeat"), "repeat");
 	repeatAct->setCheckable(true);
 
-	shuffleAct = new Gui::TAction(this, "pl_shuffle", QT_TR_NOOP("S&huffle"), "shuffle");
+	shuffleAct = new TAction(this, "pl_shuffle", QT_TR_NOOP("S&huffle"), "shuffle");
 	shuffleAct->setCheckable(true);
 
 	// Add actions
-	addCurrentAct = new Gui::TAction(this, "pl_add_current", QT_TR_NOOP("Add &current file"), "noicon");
+	addCurrentAct = new TAction(this, "pl_add_current", QT_TR_NOOP("Add &current file"), "noicon");
 	connect(addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()));
 
-	addFilesAct = new Gui::TAction(this, "pl_add_files", QT_TR_NOOP("Add &file(s)"), "noicon");
+	addFilesAct = new TAction(this, "pl_add_files", QT_TR_NOOP("Add &file(s)"), "noicon");
 	connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
 
-	addDirectoryAct = new Gui::TAction(this, "pl_add_directory", QT_TR_NOOP("Add &directory"), "noicon");
+	addDirectoryAct = new TAction(this, "pl_add_directory", QT_TR_NOOP("Add &directory"), "noicon");
 	connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
 
-	addUrlsAct = new Gui::TAction(this, "pl_add_urls", QT_TR_NOOP("Add &URL(s)"), "noicon");
+	addUrlsAct = new TAction(this, "pl_add_urls", QT_TR_NOOP("Add &URL(s)"), "noicon");
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
 	// Remove actions
-	removeSelectedAct = new Gui::TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected"), "noicon");
+	removeSelectedAct = new TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected"), "noicon");
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
 
-	removeAllAct = new Gui::TAction(this, "pl_remove_all", QT_TR_NOOP("Remove &all"), "noicon");
+	removeAllAct = new TAction(this, "pl_remove_all", QT_TR_NOOP("Remove &all"), "noicon");
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
+	// Copy
+	copyAct = new TAction(this, "pl_copy", QT_TR_NOOP("&Copy"), "noicon", QKeySequence("Ctrl+C"));
+	connect(copyAct, SIGNAL(triggered()), this, SLOT(copyCurrentItem()));
+
 	// Edit
-	editAct = new Gui::TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), "noicon");
+	editAct = new TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), "noicon");
 	connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
-	deleteSelectedFileFromDiskAct = new Gui::TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete file from disk"), "noicon");
+	deleteSelectedFileFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete file from disk"), "noicon");
 	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 
+	// Add actions to parent
+	parent->addActions(actions());
 }
 
 void TPlaylist::createToolbar() {
@@ -276,8 +283,10 @@ void TPlaylist::createToolbar() {
 	// Popup menu
 	popup = new QMenu(this);
 	popup->addAction(playAct);
-	popup->addAction(removeSelectedAct);
+	popup->addAction(copyAct);
 	popup->addAction(editAct);
+	popup->addSeparator();
+	popup->addAction(removeSelectedAct);
 	popup->addAction(deleteSelectedFileFromDiskAct);
 
 	connect(listView, SIGNAL(customContextMenuRequested(const QPoint &)),
@@ -306,17 +315,6 @@ void TPlaylist::appendFiles(QStringList& files) const {
 	TPlaylistItemList::const_iterator i;
 	for (i = pl.constBegin(); i != pl.constEnd(); i++) {
 		files.append((*i).filename());
-	}
-}
-
-void TPlaylist::list() {
-	qDebug("Gui::TPlaylist::list");
-
-	TPlaylistItemList::iterator it;
-	for (it = pl.begin(); it != pl.end(); ++it) {
-		qDebug("filename: '%s', name: '%s' duration: %f",
-			   (*it).filename().toUtf8().data(), (*it).name().toUtf8().data(),
-			   (*it).duration());
 	}
 }
 
@@ -403,11 +401,11 @@ void TPlaylist::remove(int i) {
 	}
 }
 
-int TPlaylist::count() {
+int TPlaylist::count() const {
 	return pl.count();
 }
 
-bool TPlaylist::isEmpty() {
+bool TPlaylist::isEmpty() const {
 	return pl.isEmpty();
 }
 
@@ -577,7 +575,6 @@ void TPlaylist::load_m3u(const QString &file, bool clear, bool play) {
 		}
 
 		f.close();
-		list();
 		updateView();
 
 		if (play)
@@ -624,7 +621,6 @@ void TPlaylist::load_pls(const QString &file, bool clear, bool play) {
 
 	set.endGroup();
 
-	list();
 	updateView();
 
 	if (play && (set.status() == QSettings::NoError))
@@ -1319,6 +1315,18 @@ void TPlaylist::moveItemDown(int current	){
 		updateView();
 		listView->clearSelection();
 		listView->setCurrentCell(current + 1, 0);
+	}
+}
+
+void TPlaylist::copyCurrentItem() {
+
+	int current = listView->currentRow();
+	if (current >= 0) {
+		QString filename = pl[current].filename();
+		if (!filename.isEmpty()) {
+			QApplication::clipboard()->setText(filename);
+			emit displayMessage(tr("Copied %1").arg(filename), TConfig::MESSAGE_DURATION);
+		}
 	}
 }
 

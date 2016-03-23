@@ -2,6 +2,7 @@
 #include "images.h"
 #include "core.h"
 #include "settings/preferences.h"
+#include "gui/action/action.h"
 #include "gui/action/widgetactions.h"
 #include "gui/playlist.h"
 
@@ -200,7 +201,7 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	forwardbutton_action->setObjectName("forwardbutton_action");
 	parent->addAction(rewindbutton_action);
 
-	// TODO: doubles playlist next prev action. Add this one to playlist?
+	// TODO: doubles playlist next prev action
 	addSeparator();
 	playNextAct = new TAction(this, "play_next", QT_TR_NOOP("&Next"), "next", Qt::Key_Greater);
 	playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key

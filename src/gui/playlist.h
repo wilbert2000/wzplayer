@@ -23,7 +23,7 @@
 #include <QList>
 #include <QStringList>
 #include <QWidget>
-#include "gui/action/action.h"
+
 
 class QToolBar;
 class TCore;
@@ -36,6 +36,9 @@ namespace Gui {
 
 class TTableWidget;
 
+namespace Action {
+class TAction;
+}
 
 class TPlaylistItem {
 
@@ -76,8 +79,8 @@ public:
 	TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f = Qt::Window);
 	virtual ~TPlaylist();
 
-	int count();
-	bool isEmpty();
+	int count() const;
+	bool isEmpty() const;
 	bool directoryRecursion() const { return recursive_add_directory; }
 	bool savePlaylistOnExit() const { return save_playlist_in_config; }
 	bool playFilesFromStart() const { return play_files_from_start; }
@@ -86,7 +89,6 @@ public:
 	int currentItem() const { return current_item; }
 
 	void clear();
-	void list();
 
 	void loadSettings();
 	void saveSettings();
@@ -168,7 +170,7 @@ protected:
 	void updateView();
 
 	void createTable();
-	void createActions();
+	void createActions(QWidget* parent);
 	void createToolbar();
 
 	virtual void dragEnterEvent(QDragEnterEvent*) ;
@@ -183,6 +185,7 @@ protected slots:
 	void showContextMenu(const QPoint & pos);
 	void upItem();
 	void downItem();
+	void copyCurrentItem();
 	void editCurrentItem();
 	void editItem(int item);
 
@@ -215,6 +218,7 @@ protected:
 	Action::TAction* moveUpAct;
 	Action::TAction* moveDownAct;
 	Action::TAction* editAct;
+	Action::TAction* copyAct;
 
 	Action::TAction* addCurrentAct;
 	Action::TAction* addFilesAct;
