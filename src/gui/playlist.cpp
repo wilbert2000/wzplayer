@@ -169,6 +169,10 @@ void TPlaylist::createTable() {
 	connect(listView, SIGNAL(cellActivated(int,int)),
              this, SLOT(itemDoubleClicked(int)));
 
+	listView->setMouseTracking(true);
+	connect(listView, SIGNAL(cellEntered(int, int)),
+			this, SLOT(onCellEntered(int, int)));
+
 	// EDIT BY NEO -->
 	connect(listView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(sortBy(int)));
 	// <--
@@ -806,6 +810,14 @@ void TPlaylist::playCurrent() {
 	int current = listView->currentRow();
 	if (current >= 0) {
 		playItem(current);
+	}
+}
+
+void TPlaylist::onCellEntered(int row, int) {
+	qDebug("Gui::TPlaylist::onCellEntered: row: %d", row);
+
+	if (row >= 0 && row < pl.count()) {
+		emit displayMessage(pl[row].filename(), TConfig::MESSAGE_DURATION);
 	}
 }
 

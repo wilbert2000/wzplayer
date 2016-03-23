@@ -188,6 +188,7 @@ protected slots:
 	void copyCurrentItem();
 	void editCurrentItem();
 	void editItem(int item);
+	void onCellEntered(int row, int);
 
 protected:
 	TPlaylistItemList pl;
