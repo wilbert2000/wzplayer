@@ -90,10 +90,10 @@ TMenuRotate::TMenuRotate(QWidget* parent, TCore* c)
 	group = new TActionGroup(this, "rotate");
 	group->setEnabled(false);
 	new TActionGroupItem(this, group, "rotate_none", QT_TR_NOOP("&Off"), TMediaSettings::NoRotate);
-	new TActionGroupItem(this, group, "rotate_clockwise_flip", QT_TR_NOOP("&Rotate by 90 degrees clockwise and flip"), TMediaSettings::Clockwise_flip);
-	new TActionGroupItem(this, group, "rotate_clockwise", QT_TR_NOOP("Rotate by 90 degrees &clockwise"), TMediaSettings::Clockwise);
-	new TActionGroupItem(this, group, "rotate_counterclockwise", QT_TR_NOOP("Rotate by 90 degrees counterclock&wise"), TMediaSettings::Counterclockwise);
-	new TActionGroupItem(this, group, "rotate_counterclockwise_flip", QT_TR_NOOP("Rotate by 90 degrees counterclockwise and &flip"), TMediaSettings::Counterclockwise_flip);
+	new TActionGroupItem(this, group, "rotate_clockwise_flip", QT_TR_NOOP("&Rotate 90 degrees clockwise and flip"), TMediaSettings::Clockwise_flip);
+	new TActionGroupItem(this, group, "rotate_clockwise", QT_TR_NOOP("Rotate 90 degrees &clockwise"), TMediaSettings::Clockwise);
+	new TActionGroupItem(this, group, "rotate_counterclockwise", QT_TR_NOOP("Rotate 90 degrees counterclock&wise"), TMediaSettings::Counterclockwise);
+	new TActionGroupItem(this, group, "rotate_counterclockwise_flip", QT_TR_NOOP("Rotate 90 degrees counterclockwise and &flip"), TMediaSettings::Counterclockwise_flip);
 	group->setChecked(core->mset.rotate);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeRotate(int)));
 	// No one else changes it
