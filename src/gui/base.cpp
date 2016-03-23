@@ -2222,13 +2222,13 @@ void TBase::resizeWindow(int w, int h) {
 }
 
 void TBase::resizeMainWindow(int w, int h, bool try_twice) {
-	qDebug("Gui::TBase::resizeMainWindow: size to scale: %d x %d, size factor %f",
+	qDebug("Gui::TBase::resizeMainWindow: requested size %d x %d, size factor %f",
 		   w, h, pref->size_factor);
 
 	// Adjust for selected size and aspect ratio
 	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	if (video_size == panel->size()) {
-		qDebug("Gui::TBase::resizeMainWindow: panel already has requested size");
+		qDebug("Gui::TBase::resizeMainWindow: panel has requested size");
 		return;
 	}
 
