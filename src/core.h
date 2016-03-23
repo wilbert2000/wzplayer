@@ -475,7 +475,7 @@ private:
 	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(const QString& filename, int seek = -1);
 
-	void playingStartedOfNewMedia();
+	void playingNewMediaStarted();
 	void playingRestarted();
 
 	bool haveVideoFilters() const;

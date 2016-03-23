@@ -765,8 +765,8 @@ void TCore::dvdnavRestoreTitle() {
 	block_dvd_nav = false;
 }
 
-void TCore::playingStartedOfNewMedia() {
-	qDebug("TCore::playingStartedOfNewMedia");
+void TCore::playingNewMediaStarted() {
+	qDebug("TCore::playingNewMediaStarted");
 
 	mdat.initialized = true;
 	mdat.list();
@@ -775,7 +775,7 @@ void TCore::playingStartedOfNewMedia() {
 	mset.current_demuxer = mdat.demuxer;
 	mset.list();
 
-	qDebug("TCore::playingStartedOfNewMedia: emit newMediaStartedPlaying()");
+	qDebug("TCore::playingNewMediaStarted: emit newMediaStartedPlaying()");
 	emit newMediaStartedPlaying();
 }
 
@@ -805,7 +805,7 @@ void TCore::playingStarted() {
 	if (restarting) {
 		playingRestarted();
 	} else {
-		playingStartedOfNewMedia();
+		playingNewMediaStarted();
 	} 
 
 	if (forced_titles.contains(mdat.filename)) {
