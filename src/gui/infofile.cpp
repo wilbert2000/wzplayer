@@ -121,7 +121,8 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	// Video info
 	if (!md.noVideo()) {
 		s += openPar(tr("Video"));
-		s += addItem(tr("Resolution"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
+		s += addItem(tr("Resolution source"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
+		s += addItem(tr("Resolution video out"), QString("%1 x %2").arg(md.video_out_width).arg(md.video_out_height));
 		s += addItem(tr("Aspect ratio"), QString::number(md.video_aspect));
 		s += addItem(tr("Aspect ratio specified"), md.video_aspect_set ? tr("yes") : tr("no"));
 		s += addItem(tr("Format"), md.video_format);
