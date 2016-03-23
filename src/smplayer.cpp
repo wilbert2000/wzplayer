@@ -531,10 +531,15 @@ void TSMPlayer::onRequestRestart(bool reset_style) {
 	current_file = playlist->currentItem();
 
 	// Rebuild playlist from scratch when restarting a disc. Playing the whole
-	// disc gives less problems as playing the seperate tracks from the
-	// playlist, especially for DVDNAV.
+	// disc gives less problems as playing the seperate tracks from the playlist,
+	// especially for DVDNAV.
 	if (files_to_play.count() > 1) {
-		int i = current_file >= 0 && current_file < files_to_play.count() ? current_file : 0;
+		int i;
+		if (current_file >= 0 && current_file < files_to_play.count()) {
+			i = current_file;
+		} else {
+			i = 0;
+		}
 		bool is_disc;
 		TDiscData disc = TDiscName::split(files_to_play[i], &is_disc);
 		if (is_disc) {
