@@ -960,6 +960,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
 	} else {
 		// Add current file. getMediaInfo will fill in name and duration.
 		addItem(filename, "", 0);
+		setCurrentItem(0);
 
 		// Add associated files to playlist
 		if (core->mdat.selected_type == TMediaData::TYPE_FILE) {
