@@ -335,6 +335,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 		}
 
 		if (dragging) {
+			// Move video in fullscreen or with modifier, otherwise move window
 			drag_pos = pos;
 			if (pref->fullscreen || event->modifiers() != Qt::NoModifier) {
 				moveVideo(diff);
