@@ -66,6 +66,7 @@ protected slots:
 	virtual void showPlaylist(bool b);
 
 	void dockVisibilityChanged(bool visible);
+	void onTopLevelChanged(bool topLevel);
 	void stretchWindow();
 	void shrinkWindow();
 
@@ -88,6 +89,7 @@ protected:
 
 private:
 	void switchToTray();
+	void setWinTitle();
 	void retranslateStrings();
 };
 

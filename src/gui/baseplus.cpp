@@ -100,6 +100,8 @@ TBasePlus::TBasePlus()
 	addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
 	playlistdock->setFloating(true); // Floating by default
 
+	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
+			this, SLOT(onTopLevelChanged(bool)));
 	connect(playlistdock, SIGNAL(visibilityChanged(bool)),
 			this, SLOT(dockVisibilityChanged(bool)));
 	connect(this, SIGNAL(openFileRequested()),
@@ -155,9 +157,18 @@ void TBasePlus::quit() {
 	TBase::closeWindow();
 }
 
+void TBasePlus::setWinTitle() {
+
+	if (playlistdock->isFloating()) {
+		playlistdock->setWindowTitle(tr("SMPlayer - Playlist"));
+	} else {
+		playlistdock->setWindowTitle(tr("Playlist"));
+	}
+}
+
 void TBasePlus::retranslateStrings() {
 
-	playlistdock->setWindowTitle(tr("Playlist"));
+	setWinTitle();
 	updateShowAllAct();
 }
 
@@ -211,6 +222,7 @@ void TBasePlus::loadConfig() {
 	pref->endGroup();
 	pref->endGroup();
 
+	setWinTitle();
 	updateShowAllAct();
 }
 
@@ -324,6 +336,12 @@ void TBasePlus::showPlaylist(bool b) {
 	if (b && playlistdock->isFloating()) {
 		TDesktop::keepInsideDesktop(playlistdock);
 	}
+}
+
+void TBasePlus::onTopLevelChanged(bool topLevel) {
+	qDebug("Gui::TBasePlus::onTopLevelChanged: %d", topLevel);
+
+	setWinTitle();
 }
 
 void TBasePlus::dockVisibilityChanged(bool visible) {
