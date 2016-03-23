@@ -2184,12 +2184,12 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		// Leave maximized window as is
 		if (!isMaximized()) {
 			// force_resize only set for the first video
-			// if pref->save_window_size_on_exit not set.
+			// when pref->save_window_size_on_exit not set.
 			// block_resize only set for the first video
-			// if pref->save_window_size_on_exit is set.
+			// when pref->save_window_size_on_exit is set.
 			if (!force_resize
 				&& (block_resize || pref->resize_method == TPreferences::Never)) {
-				// Adjust size factor to window size
+				// Adjust the size factor to the window size
 				playerwindow->updateSizeFactor();
 			} else {
 				// Try size factor 1.0
@@ -2225,10 +2225,10 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 	qDebug("Gui::TBase::resizeMainWindow: size to scale: %d x %d, size factor %f",
 		   w, h, pref->size_factor);
 
-	// Adjust for selected size and aspect.
+	// Adjust for selected size and aspect ratio
 	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
 	if (video_size == panel->size()) {
-		qDebug("Gui::TBase::resizeMainWindow: the panel is already the required size. Doing nothing.");
+		qDebug("Gui::TBase::resizeMainWindow: panel already has requested size");
 		return;
 	}
 

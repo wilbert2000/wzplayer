@@ -61,7 +61,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 		setEnabled(true);
 		int factor = qRound(playerWindow->getSizeFactor() * 100);
 		setChecked(factor);
-		qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: updating size factor from %d to %d",
+		qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: updating size factor menu from %d to %d",
 			   size_percentage, factor);
 		size_percentage = factor;
 	}

@@ -35,7 +35,6 @@ class QLabel;
 
 
 //! TPlayerLayer can be instructed to not delete the background.
-
 class TPlayerLayer : public QWidget {
 	Q_OBJECT
 
@@ -51,7 +50,7 @@ public:
 	void restoreNormalBackground();
 
 protected:
-	virtual void paintEvent (QPaintEvent* e);
+	virtual void paintEvent(QPaintEvent* e);
 
 private:
 	bool normal_background;
