@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include "error.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
 
@@ -57,14 +58,11 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata)
 	//qRegisterMetaType<Maps::TTracks>("Tracks");
 	//qRegisterMetaType<Chapters>("Chapters");
 
-	connect(this, SIGNAL(error(QProcess::ProcessError)),
-			 this, SLOT(processError(QProcess::ProcessError)));
-
 	connect(this, SIGNAL(finished(int,QProcess::ExitStatus)),
-			 this, SLOT(processFinished(int,QProcess::ExitStatus)));
+			this, SLOT(processFinished(int,QProcess::ExitStatus)));
 
 	connect(this, SIGNAL(lineAvailable(QByteArray)),
-			 this, SLOT(parseBytes(QByteArray)));
+			this, SLOT(parseBytes(QByteArray)));
 }
 
 void TPlayerProcess::writeToStdin(QString text, bool log) {
@@ -109,6 +107,8 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData*
 
 bool TPlayerProcess::startPlayer() {
 
+	exit_code_override = 0;
+
 	notified_player_is_running = false;
 
 	waiting_for_answers = 0;
@@ -128,23 +128,8 @@ bool TPlayerProcess::startPlayer() {
 	return waitForStarted();
 }
 
-void TPlayerProcess::processError(QProcess::ProcessError error) {
-
-	QString msg;
-	switch (error) {
-		case QProcess::FailedToStart: msg = "player failed to start"; break;
-		case QProcess::Crashed: msg = "player quit unexpectedly"; break;
-		case QProcess::Timedout: msg = "timeout waiting for player"; break;
-		case QProcess::WriteError: msg = "error trying to write to player"; break;
-		case QProcess::ReadError: msg = "error trying to read from player"; break;
-		default: msg = "unknown error";
-	}
-
-	qWarning("Proc::TPlayerProcess::processError: %s (%d)", msg.toUtf8().constData(), error);
-}
-
 int TPlayerProcess::exitCodeOverride() {
-	return exitCode();
+	return exit_code_override ? exit_code_override : exitCode();
 }
 
 // Slot called when the process is finished
@@ -152,15 +137,12 @@ void TPlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStat
 	qDebug("Proc::TPlayerProcess::processFinished: exitCode: %d, status: %d",
 		   exitCode, (int) exitStatus);
 
-	// Send processExited signal before the EOF one, otherwise the playlist
-	// will start to play the next file before all objects are notified that
-	// the process has exited.
-	bool normal_exit = exitCode == 0 && exitStatus == QProcess::NormalExit;
+	bool normal_exit = exit_code_override == 0
+					   && exitCode == 0
+					   && exitStatus == QProcess::NormalExit;
 	emit processExited(normal_exit);
 
 	// Send EOF when there are no errors.
-	// Change of behaviour since 2015-11-19 (was send always).
-	// Trying to make MPV and MPlayer behave the same.
 	if (normal_exit && received_end_of_file)
 		emit receivedEndOfFile();
 }
@@ -364,8 +346,7 @@ bool TPlayerProcess::parseLine(QString& line) {
 
 	if (rx_no_disk.indexIn(line) >= 0) {
 		qWarning("Proc::TPlayerProcess::parseLine: no disc in device");
-		// ENOMEDIUM 159 is linux specific, caught by exitCodeToMessage()
-		quit(159);
+		quit(TError::ERR_NO_DISC);
 		return true;
 	}
 
@@ -373,7 +354,8 @@ bool TPlayerProcess::parseLine(QString& line) {
 	if (rx_eof.indexIn(line) >= 0)  {
 		qDebug("Proc::TPlayerProcess::parseLine: detected end of file");
 		received_end_of_file = true;
-		return true;
+		// Let MPV display the message
+		return isMPlayer();
 	}
 
 	// Like to be parsed a little longer

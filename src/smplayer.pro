@@ -141,7 +141,6 @@ HEADERS += svn_revision.h \
     gui/eqslider.h \
     gui/videoequalizer.h \
     gui/audioequalizer.h \
-    gui/errordialog.h \
     gui/about.h \
     gui/timedialog.h \
     gui/lineedit.h \
@@ -160,6 +159,7 @@ HEADERS += svn_revision.h \
     maps/chapters.h \
     clhelp.h \
     log.h \
+    error.h \
     smplayer.h
 
 
@@ -254,7 +254,6 @@ SOURCES	+= version.cpp \
     gui/eqslider.cpp \
     gui/videoequalizer.cpp \
     gui/audioequalizer.cpp \
-    gui/errordialog.cpp \
     gui/about.cpp \
     gui/timedialog.cpp \
     gui/lineedit.cpp \
@@ -274,6 +273,7 @@ SOURCES	+= version.cpp \
     clhelp.cpp \
     smplayer.cpp \
     log.cpp \
+    error.cpp \
     main.cpp
 
 FORMS = gui/inputdvddirectory.ui \
@@ -283,7 +283,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/inputurl.ui \
     gui/videoequalizer.ui \
     gui/about.ui \
-    gui/errordialog.ui \
     gui/timedialog.ui \
     gui/stereo3ddialog.ui \
     gui/multilineinputdialog.ui \

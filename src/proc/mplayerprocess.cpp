@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QApplication>
 
+#include "error.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "subtracks.h"
@@ -61,25 +62,7 @@ bool TMPlayerProcess::startPlayer() {
 	title_needs_update = false;
 	title_hint = -2;
 
-	exit_code_override = 0;
-
 	return TPlayerProcess::startPlayer();
-}
-
-int TMPlayerProcess::exitCodeOverride() {
-	return exit_code_override ? exit_code_override : TPlayerProcess::exitCodeOverride();
-}
-
-void TMPlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-	qDebug("TMPlayerProcess::processFinished");
-
-	if (exit_code_override) {
-		qDebug("TMPlayerProcess::processFinished: overriding exit code from %d to %d",
-			   exitCode, exit_code_override);
-		exitCode = exit_code_override;
-	}
-
-	TPlayerProcess::processFinished(exitCode, exitStatus);
 }
 
 void TMPlayerProcess::getSelectedSubtitles() {
@@ -1113,8 +1096,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 	// File not found
 	if (rx_file_not_found.indexIn(line) >= 0) {
-		qDebug("Proc::TMPlayerProcess::parseLine: setting exit code 2");
-		exit_code_override = 2;
+		qDebug("Proc::TMPlayerProcess::parseLine: file not found");
+		exit_code_override = TError::ERR_FILE_NOT_FOUND;
 		emit receivedMessage(line);
 		return true;
 	}

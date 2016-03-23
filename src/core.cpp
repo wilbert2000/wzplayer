@@ -213,7 +213,7 @@ void TCore::processError(QProcess::ProcessError error) {
 	// First restore normal window background
 	playerwindow->playingStopped();
 
-	emit playerFailed(error);
+	emit playerError(error);
 }
 
 void TCore::processFinished(bool normal_exit) {

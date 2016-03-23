@@ -196,8 +196,10 @@ protected:
 
 	bool notified_player_is_running;
 	int waiting_for_answers;
+
 	bool received_end_of_file;
 	bool quit_send;
+	int exit_code_override;
 
 	double guiTimeToPlayerTime(double sec);
 	double playerTimeToGuiTime(double sec);
@@ -218,7 +220,6 @@ protected:
 	virtual bool parseProperty(const QString& name, const QString& value);
 
 protected slots:
-	void processError(QProcess::ProcessError);
 	virtual void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:

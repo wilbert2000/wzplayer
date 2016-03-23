@@ -253,8 +253,8 @@ protected slots:
 	void handleMessageFromOtherInstances(const QString& message);
 #endif
 
-	void showExitCodeFromPlayer(int exit_code);
-	void showErrorFromPlayer(QProcess::ProcessError);
+	void onPlayerFinishedWithError(int exit_code);
+	void onPlayerError(QProcess::ProcessError);
 
 protected:
 	virtual void closeEvent(QCloseEvent* e);
@@ -385,8 +385,6 @@ private:
 	QMenu* createToolbarMenu();
 
 	void restartSMPlayer(bool reset_style);
-
-	QString exitCodeToMessage(int exit_code);
 
 	void setFloatingToolbarsVisible(bool visible);
 	double getNewSizeFactor();

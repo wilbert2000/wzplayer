@@ -350,7 +350,7 @@ signals:
 	//! Player started but finished with exit code != 0
 	void playerFinishedWithError(int exitCode);
 	//! Player didn't started or crashed
-	void playerFailed(QProcess::ProcessError error);
+	void playerError(QProcess::ProcessError error);
 	//! Sent when requested to play, but there is no file to play
 	void noFileToPlay();
 

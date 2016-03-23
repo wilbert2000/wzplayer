@@ -38,7 +38,6 @@ public:
 	virtual ~TMPlayerProcess();
 
 	virtual bool startPlayer();
-	virtual int exitCodeOverride();
 
 	// Command line options
 	void setMedia(const QString& media, bool is_playlist = false);
@@ -114,7 +113,6 @@ public:
 	void setCaptureDirectory(const QString & dir);
 
 protected:
-	virtual void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 	virtual int getFrame(double sec, const QString& line);
 	virtual void checkTime(double sec);
 
@@ -153,8 +151,6 @@ private:
 
 	bool want_pause;
 	bool mute_option_set;
-
-	int exit_code_override;
 
 	void clearStartTime();
 	void clearSubSources();

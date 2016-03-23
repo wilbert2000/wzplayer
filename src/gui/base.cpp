@@ -42,8 +42,10 @@
 #include <QMimeData>
 #include <QNetworkProxy>
 
+// TODO:
 #include <cmath>
 
+#include "error.h"
 #include "version.h"
 #include "desktop.h"
 #include "discname.h"
@@ -80,7 +82,6 @@
 #include "gui/action/menuhelp.h"
 
 #include "gui/links.h"
-#include "gui/errordialog.h"
 #include "gui/logwindow.h"
 #include "gui/playlist.h"
 #include "gui/autohidetimer.h"
@@ -293,10 +294,10 @@ void TBase::createCore() {
 	connect(core, SIGNAL(mediaStopped()),
 			 this, SLOT(exitFullscreenOnStop()));
 
-	connect(core, SIGNAL(playerFailed(QProcess::ProcessError)),
-			 this, SLOT(showErrorFromPlayer(QProcess::ProcessError)));
+	connect(core, SIGNAL(playerError(QProcess::ProcessError)),
+			 this, SLOT(onPlayerError(QProcess::ProcessError)));
 	connect(core, SIGNAL(playerFinishedWithError(int)),
-			 this, SLOT(showExitCodeFromPlayer(int)));
+			 this, SLOT(onPlayerFinishedWithError(int)));
 
 	connect(core, SIGNAL(receivedForbidden()),
 			 this, SLOT(gotForbidden()));
@@ -2441,64 +2442,25 @@ bool TBase::event(QEvent* e) {
 }
 #endif
 
-QString TBase::exitCodeToMessage(int exit_code) {
-
-	// TODO: use Player/Qt/sys msgs
-	QString msg;
-	switch (exit_code) {
-		case 2: msg = tr("File not found: '%1'").arg(core->mdat.filename); break;
-		case 159: msg = tr("No disk in device for '%1'").arg(core->mdat.filename); break;
-		default: msg = tr("%1 has finished unexpectedly.").arg(pref->playerName())
-					   + " " + tr("Exit code: %1").arg(exit_code);
-	}
-
-	qDebug() << "Gui::TBase::exitCodeToMessage:" << msg;
-	return msg;
-}
-
-void TBase::showExitCodeFromPlayer(int exit_code) {
-	qDebug("Gui::TBase::showExitCodeFromPlayer: %d", exit_code);
+void TBase::onPlayerFinishedWithError(int exit_code) {
+	qDebug("Gui::TBase::onPlayerFinishedWithError: %d", exit_code);
 
 	block_resize = false;
 
-	QString msg = exitCodeToMessage(exit_code);
+	QString msg = TError::message(exit_code) + " (" + core->mdat.filename + ")";
 	displayMessage(msg, 0);
 
 	if (pref->report_player_crashes) {
-		TErrorDialog d(this);
-		d.setWindowTitle(tr("%1 Error").arg(pref->playerName()));
-		d.setText(msg);
-		d.setLog(TLog::log->getLogLines());
-		d.exec();
+		QMessageBox::warning(this, tr("%1 error").arg(pref->playerName()), msg,
+							 QMessageBox::Ok);
 	} else {
-		qDebug("Gui::TBase::showExitCodeFromPlayer: error reporting is turned off");
+		qDebug("Gui::TBase::onPlayerFinishedWithError: error reporting is turned off");
 	}
 }
 
-void TBase::showErrorFromPlayer(QProcess::ProcessError e) {
-	qDebug("Gui::TBase::showErrorFromPlayer");
-
-	block_resize = false;
-
-	if (!pref->report_player_crashes) {
-		qDebug("Gui::TBase::showErrorFromPlayer: error reporting is turned off");
-		displayMessage(tr("Player crashed or quit with errors."), 6000);
-		return;
-	}
-
-	if (e == QProcess::FailedToStart || e == QProcess::Crashed) {
-		TErrorDialog d(this);
-		d.setWindowTitle(tr("%1 Error").arg(pref->playerName()));
-		if (e == QProcess::FailedToStart) {
-			d.setText(tr("%1 failed to start.").arg(pref->playerName()) + " " + 
-					  tr("Please check the %1 path in preferences.").arg(pref->playerName()));
-		} else {
-			d.setText(tr("%1 has crashed.").arg(pref->playerName()) + " " + 
-					  tr("See the log for more info."));
-		}
-		d.setLog(TLog::log->getLogLines());
-		d.exec();
-	}
+void TBase::onPlayerError(QProcess::ProcessError e) {
+	qDebug("Gui::TBase::onPlayerError: %d", e);
+	onPlayerFinishedWithError(TError::processErrorToErrorID(e));
 }
 
 

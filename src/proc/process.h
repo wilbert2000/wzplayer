@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PROC_PROCESS_H_
-#define _PROC_PROCESS_H_
+#ifndef PROC_PROCESS_H
+#define PROC_PROCESS_H
 
 #include <QProcess>
 
@@ -75,4 +75,4 @@ protected:
 
 } // namespace Proc
 
-#endif // _PROC_PROCESS_H_
+#endif // PROC_PROCESS_H

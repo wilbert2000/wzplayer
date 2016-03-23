@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QApplication>
 
+#include "error.h"
 #include "proc/playerprocess.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
@@ -490,7 +491,8 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// Custom status line. Make sure it matches!
 	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
-	static QRegExp rx_message("^(Playing:|\\[ytdl_hook\\])");
+	// Messages to show in statusline
+	static QRegExp rx_message("^(Playing:|Exiting|\\[ytdl_hook\\])");
 
 	// TODO: check video and audio track name.
 	// Subs suggest name comes before codec...
@@ -519,7 +521,9 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_stream_title("icy-title: (.*)");
 
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
+
 	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
+	static QRegExp rx_format("Failed to recognize file format");
 
 	static QRegExp rx_verbose("^\\[(statusline|term-msg|cplayer)\\] (.*)");
 
@@ -680,6 +684,11 @@ bool TMPVProcess::parseLine(QString& line) {
 		qDebug("MVPProcess::parseLine: 403 forbidden");
 		emit receivedForbiddenText();
 		return true;
+	}
+
+	if (rx_format.indexIn(line) >= 0) {
+		qDebug("MVPProcess::parseLine: unrecognized file format");
+		exit_code_override = TError::ERR_FILE_FORMAT;
 	}
 
 	return false;
