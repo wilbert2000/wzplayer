@@ -283,7 +283,7 @@ void TBase::createCore() {
 			 this, SLOT(displayMessage(const QString&)));
 
 	connect(core, SIGNAL(newMediaStartedPlaying()),
-			 this, SLOT(newMediaLoaded()), Qt::QueuedConnection);
+			 this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaLoaded()),
 			 this, SLOT(enableActionsOnPlaying()));
@@ -1178,8 +1178,8 @@ void TBase::updateMediaInfo() {
 	emit videoInfoChanged(core->mdat.video_width, core->mdat.video_height, core->mdat.video_fps);
 }
 
-void TBase::newMediaLoaded() {
-	qDebug("Gui::TBase::newMediaLoaded");
+void TBase::onNewMediaStartedPlaying() {
+	qDebug("Gui::TBase::onNewMediaStartedPlaying");
 
 	enterFullscreenOnPlay();
 

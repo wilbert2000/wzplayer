@@ -204,7 +204,7 @@ protected slots:
 	virtual void onVideoOutResolutionChanged(int w, int h);
 	virtual void gotCurrentTime(double);
 	virtual void gotDuration(double);
-	virtual void newMediaLoaded();
+	virtual void onNewMediaStartedPlaying();
 	virtual void updateMediaInfo();
 
 	virtual void updateVideoEqualizer();

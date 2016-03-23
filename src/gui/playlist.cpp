@@ -105,7 +105,7 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	createToolbar();
 
 	connect(core, SIGNAL(newMediaStartedPlaying()),
-			this, SLOT(newMediaLoaded()));
+			this, SLOT(onNewMediaStartedPlaying()));
 	connect(core, SIGNAL(mediaLoaded()),
 			this, SLOT(getMediaInfo()));
 	connect(core, SIGNAL(titleTrackChanged(int)),
@@ -911,10 +911,10 @@ void TPlaylist::playDirectory(const QString &dir) {
 	startPlay();
 }
 
-void TPlaylist::newMediaLoaded() {
+void TPlaylist::onNewMediaStartedPlaying() {
 
 	if (!pref->auto_add_to_playlist) {
-		qDebug("Gui::TPlaylist::newMediaLoaded: add to playlist disabled by user");
+		qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: add to playlist disabled by user");
 		return;
 	}
 
@@ -924,7 +924,7 @@ void TPlaylist::newMediaLoaded() {
 		current_filename = pl[current_item].filename();
 	}
 	if (filename == current_filename) {
-		qDebug("Gui::TPlaylist::newMediaLoaded: new file is current item");
+		qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is current item");
 		return;
 	}
 
@@ -936,7 +936,7 @@ void TPlaylist::newMediaLoaded() {
 		TDiscData cur_disc = TDiscName::split(current_filename, &cur_is_disc);
 		if (cur_is_disc && cur_disc.protocol == disc.protocol
 			&& cur_disc.device == disc.device) {
-			qDebug("Gui::TPlaylist::newMediaLoaded: new file is from current disc");
+			qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is from current disc");
 			return;
 		}
 	}
@@ -963,11 +963,11 @@ void TPlaylist::newMediaLoaded() {
 
 		// Add associated files to playlist
 		if (core->mdat.selected_type == TMediaData::TYPE_FILE) {
-			qDebug() << "Gui::TPlaylist::newMediaLoaded: searching for files to add to playlist for"
+			qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: searching for files to add to playlist for"
 					 << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
 			if (files_to_add.isEmpty()) {
-				qDebug("Gui::TPlaylist::newMediaLoaded: none found");
+				qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: none found");
 			} else {
 				addFiles(files_to_add);
 			}
@@ -980,7 +980,7 @@ void TPlaylist::newMediaLoaded() {
 	}
 	updateView();
 
-	qDebug() << "Gui::TPlaylist::newMediaLoaded: created new playlist with" << count()
+	qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: created new playlist with" << count()
 			 << "items for" << filename;
 }
 

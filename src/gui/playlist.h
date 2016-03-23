@@ -142,7 +142,7 @@ public slots:
 	void load_pls(const QString& file, bool clear = true, bool play = true);
 	bool save_pls(QString file);
 
-	void newMediaLoaded();
+	void onNewMediaStartedPlaying();
 	void getMediaInfo();
 	void mediaEOF();
 	void playerSwitchedTitle(int id);
