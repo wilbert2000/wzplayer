@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QApplication>
 
+#include "config.h"
 #include "error.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
@@ -844,19 +845,23 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// Catch all props
 	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
 
-	// Messages with side effects
-	static QRegExp rx_cache_empty("^Cache empty.*|^Cache not filling.*");
-	static QRegExp rx_create_index("^Generating Index:.*");
-	static QRegExp rx_connecting("^Connecting to .*");
-	static QRegExp rx_resolving("^Resolving .*");
+	// Errors
+	static QRegExp rx_error_file_not_found("^File not found: '(.*)'");
+	static QRegExp rx_error_open("^Failed to open (.*).");
+	static QRegExp rx_error_http_403("Server returned 403:");
+	static QRegExp rx_error_http_404("Server returned 404:");
+	static QRegExp rx_error_no_stream_found("^No stream found to handle url ");
+
+	// Font cache
 	static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
-	static QRegExp rx_forbidden("Server returned 403: Forbidden");
 
 	// General messages to pass on to core
-	static QRegExp rx_message("^(Playing |Cache fill:|Scanning file)");
-
-	// File not found
-	static QRegExp rx_file_not_found("^File not found");
+	static QRegExp rx_message("^(Playing "
+							  "|Cache "
+							  "|Generating "
+							  "|Connecting "
+							  "|Resolving "
+							  "|Scanning )");
 
 
 	// Parse A: V: status line
@@ -864,7 +869,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		return parseStatusLine(rx_av.cap(1).toDouble(), 0, rx_av, line);
 	}
 
-	// First ask your mom
+	// First ask mom
 	if (TPlayerProcess::parseLine(line))
 		return true;
 
@@ -1057,47 +1062,54 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		return parseProperty(rx_prop.cap(1), rx_prop.cap(2));
 	}
 
-	// Catch cache messages
-	if (rx_cache_empty.indexIn(line) >= 0) {
-		emit receivedCacheEmptyMessage(line);
+	// Errors
+	if (rx_error_file_not_found.indexIn(line) >= 0) {
+		if (rx_error_file_not_found.cap(1) == md->filename) {
+			qDebug("Proc::TMPlayerProcess::parseLine: stored file not found");
+			exit_code_override = TError::ERR_FILE_NOT_FOUND;
+		} else {
+			qDebug("Proc::TMPlayerProcess::parseLine: skipped file not found");
+		}
 		return true;
 	}
-	// Creating index
-	if (rx_create_index.indexIn(line) >= 0) {
-		emit receivedCreatingIndex(line);
+	if (rx_error_open.indexIn(line) >= 0) {
+		if (exit_code_override == 0 && rx_error_open.cap(1) == md->filename) {
+			qDebug("Proc::TMPlayerProcess::parseLine: stored open failed");
+			exit_code_override = TError::ERR_OPEN;
+		} else {
+			qDebug("Proc::TMPlayerProcess::parseLine: skipped open failed");
+		}
 		return true;
 	}
-	// Catch connecting message
-	if (rx_connecting.indexIn(line) >= 0) {
-		emit receivedConnectingToMessage(line);
+	if (rx_error_http_403.indexIn(line) >= 0) {
+		qDebug("Proc::TMPlayerProcess::parseLine: stored HTTP 403");
+		exit_code_override = TError::ERR_HTTP_403;
 		return true;
 	}
-	// Catch resolving message
-	if (rx_resolving.indexIn(line) >= 0) {
-		emit receivedResolvingMessage(line);
+	if (rx_error_http_404.indexIn(line) >= 0) {
+		qDebug("Proc::TMPlayerProcess::parseLine: stored HTTP 404");
+		exit_code_override = TError::ERR_HTTP_404;
 		return true;
 	}
+	if (rx_error_no_stream_found.indexIn(line) >= 0) {
+		if (exit_code_override == 0) {
+			qDebug("Proc::TMPlayerProcess::parseLine: stored no stream");
+			exit_code_override = TError::ERR_NO_STREAM_FOUND;
+		} else {
+			qDebug("Proc::TMPlayerProcess::parseLine: skipped no stream");
+		}
+		return true;
+	}
+
+	// Font cache
 	if (rx_fontcache.indexIn(line) >= 0) {
 		qDebug("Proc::TMPlayerProcess::parseLine: emit receivedUpdatingFontCache");
 		emit receivedUpdatingFontCache();
 		return true;
 	}
-	if (rx_forbidden.indexIn(line) >= 0) {
-		qDebug("Proc::TMPlayerProcess::parseLine: 403 forbidden");
-		emit receivedForbiddenText();
-		return true;
-	}
 
 	// Messages to display
 	if (rx_message.indexIn(line) >= 0) {
-		emit receivedMessage(line);
-		return true;
-	}
-
-	// File not found
-	if (rx_file_not_found.indexIn(line) >= 0) {
-		qDebug("Proc::TMPlayerProcess::parseLine: file not found");
-		exit_code_override = TError::ERR_FILE_NOT_FOUND;
 		emit receivedMessage(line);
 		return true;
 	}
@@ -1430,10 +1442,9 @@ void TMPlayerProcess::setSubStep(int value) {
 }
 
 #ifdef MPV_SUPPORT
-void TMPlayerProcess::seekSub(int value) {
-	Q_UNUSED(value)
+void TMPlayerProcess::seekSub(int) {
 	/* Not supported */
-	showOSDText(tr("This option is not supported by MPlayer"), 3000, 1);
+	showOSDText(tr("This option is not supported by MPlayer"), TConfig::MESSAGE_DURATION, 1);
 }
 #endif
 

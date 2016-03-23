@@ -1913,25 +1913,6 @@ void TBase::checkPendingActionsToRun() {
 	}
 }
 
-void TBase::gotForbidden() {
-	qDebug("Gui::TBase::gotForbidden");
-
-	if (!pref->report_player_crashes) {
-		qDebug("Gui::TBase::gotForbidden: not displaying error dialog");
-		return;
-	}
-
-	static bool busy = false;
-	if (busy)
-		return;
-
-	busy = true;
-	QMessageBox::warning(this, tr("Error detected"),
-		tr("Unfortunately this video can't be played.") +"<br>"+
-		tr("The server returned '%1'").arg("403: Forbidden"));
-	busy = false;
-}
-
 void TBase::dragEnterEvent(QDragEnterEvent *e) {
 	qDebug("Gui::TBase::dragEnterEvent");
 
@@ -2015,7 +1996,7 @@ void TBase::onStateChanged(TCoreState state) {
 
 	switch (state) {
 		case STATE_PLAYING:
-			displayMessage(tr("Playing %1").arg(core->mdat.filename), 3000);
+			displayMessage(tr("Playing %1").arg(core->mdat.filename));
 			auto_hide_timer->startAutoHideMouse();
 			break;
 		case STATE_PAUSED:
@@ -2025,7 +2006,7 @@ void TBase::onStateChanged(TCoreState state) {
 		case STATE_STOPPED:
 			disableActionsOnStop();
 			setWindowCaption("SMPlayer");
-			displayMessage(tr("Stop") , 3000);
+			displayMessage(tr("Stop"));
 			auto_hide_timer->stopAutoHideMouse();
 			break;
 	}
@@ -2033,10 +2014,6 @@ void TBase::onStateChanged(TCoreState state) {
 
 void TBase::displayMessage(const QString& message, int time) {
 	statusBar()->showMessage(message, time);
-}
-
-void TBase::displayMessage(const QString& message) {
-	displayMessage(message, 3000);
 }
 
 void TBase::gotCurrentTime(double sec) {
@@ -2450,11 +2427,13 @@ void TBase::onPlayerFinishedWithError(int exit_code) {
 	QString msg = TError::message(exit_code) + " (" + core->mdat.filename + ")";
 	displayMessage(msg, 0);
 
-	if (pref->report_player_crashes) {
-		QMessageBox::warning(this, tr("%1 error").arg(pref->playerName()), msg,
+	static bool busy = false;
+	if (pref->report_player_crashes && !busy) {
+		busy = true;
+		QMessageBox::warning(this, tr("%1 process error").arg(pref->playerName()),
+							 msg + " " + tr("See the log for details."),
 							 QMessageBox::Ok);
-	} else {
-		qDebug("Gui::TBase::onPlayerFinishedWithError: error reporting is turned off");
+		busy = false;
 	}
 }
 

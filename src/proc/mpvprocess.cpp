@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QApplication>
 
+#include "config.h"
 #include "error.h"
 #include "proc/playerprocess.h"
 #include "settings/preferences.h"
@@ -522,8 +523,11 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 
-	static QRegExp rx_forbidden("HTTP error 403 Forbidden");
-	static QRegExp rx_format("Failed to recognize file format");
+	// Errors
+	static QRegExp rx_failed_open("^Failed to open (.*)\\.$");
+	static QRegExp rx_failed_format("^Failed to recognize file format");
+	static QRegExp rx_error_http_403("HTTP error 403 ");
+	static QRegExp rx_error_http_404("HTTP error 404 ");
 
 	static QRegExp rx_verbose("^\\[(statusline|term-msg|cplayer)\\] (.*)");
 
@@ -679,16 +683,28 @@ bool TMPVProcess::parseLine(QString& line) {
 		return true;
 	}
 
-	// HTTP error 403 Forbidden
-	if (rx_forbidden.indexIn(line) >= 0) {
-		qDebug("MVPProcess::parseLine: 403 forbidden");
-		emit receivedForbiddenText();
+	// Errors
+	if (rx_failed_open.indexIn(line) >= 0) {
+		if (exit_code_override == 0 && rx_failed_open.cap(1) == md->filename) {
+			qDebug("MVPProcess::parseLine: stored open failed");
+			exit_code_override = TError::ERR_OPEN;
+		} else {
+			qDebug("MVPProcess::parseLine: skipped open failed");
+		}
+	}
+	if (rx_failed_format.indexIn(line) >= 0) {
+		qDebug("MVPProcess::parseLine: stored unrecognized file format");
+		exit_code_override = TError::ERR_FILE_FORMAT;
+	}
+	if (rx_error_http_403.indexIn(line) >= 0) {
+		qDebug("MVPProcess::parseLine: stored HTTP 403");
+		exit_code_override = TError::ERR_HTTP_403;
 		return true;
 	}
-
-	if (rx_format.indexIn(line) >= 0) {
-		qDebug("MVPProcess::parseLine: unrecognized file format");
-		exit_code_override = TError::ERR_FILE_FORMAT;
+	if (rx_error_http_404.indexIn(line) >= 0) {
+		qDebug("MVPProcess::parseLine: stored HTTP 404");
+		exit_code_override = TError::ERR_HTTP_404;
+		return true;
 	}
 
 	return false;
@@ -805,7 +821,7 @@ void TMPVProcess::addVFIfAvailable(const QString& vf, const QString& value) {
 
 void TMPVProcess::messageFilterNotSupported(const QString& filter_name) {
 	QString text = tr("the '%1' filter is not supported by mpv").arg(filter_name);
-	writeToStdin(QString("show_text \"%1\" 3000").arg(text));
+	writeToStdin(QString("show_text \"%1\" %2").arg(text).arg(TConfig::MESSAGE_DURATION));
 }
 
 void TMPVProcess::setOption(const QString& name, const QVariant& value) {

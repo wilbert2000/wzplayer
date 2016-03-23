@@ -22,6 +22,7 @@
 #include <QProcess>
 #include <QTime>
 
+#include "config.h"
 #include "corestate.h"
 #include "mediadata.h"
 #include "settings/mediasettings.h"
@@ -99,7 +100,7 @@ public slots:
 	void screenshots();	//!< Start/stop taking screenshot of each frame
 	void switchCapturing();
 
-	void displayMessage(const QString& text, int duration = 3500, int osd_level = 1);
+	void displayMessage(const QString& text, int duration = TConfig::MESSAGE_DURATION, int osd_level = 1);
 
 	//! Public restart, for the GUI.
 	void restart();
@@ -331,7 +332,7 @@ public slots:
 
 	//! Wrapper for the osd_show_text slave command
 	void displayTextOnOSD(const QString& text,
-						  int duration = 3000,
+						  int duration = TConfig::MESSAGE_DURATION,
 						  int level = 1);
 	void clearOSD();
 
@@ -339,8 +340,6 @@ signals:
 	void stateChanged(TCoreState state);
 	void mediaSettingsChanged();
 	void aboutToStartPlaying(); // Signal emited just before starting player
-	void buffering();
-	void receivedForbidden();
 	void videoOutResolutionChanged(int w, int h);
 	void newMediaStartedPlaying();
 	void mediaLoaded();

@@ -24,6 +24,7 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 
+#include "config.h"
 #include "images.h"
 #include "desktop.h"
 #include "core.h"
@@ -132,7 +133,7 @@ void TBasePlus::switchToTray() {
 	if (pref->balloon_count > 0) {
 		tray->showMessage("SMPlayer",
 			tr("SMPlayer is still running here"),
-			QSystemTrayIcon::Information, 3000);
+			QSystemTrayIcon::Information, TConfig::MESSAGE_DURATION);
 		pref->balloon_count--;
 	}
 }

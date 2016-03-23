@@ -81,7 +81,7 @@ public:
 	void setSubScale(double value);
 	void setSubStep(int value);
 #ifdef MPV_SUPPORT
-	void seekSub(int value);
+	void seekSub(int);
 #endif
 	void setSubForcedOnly(bool b);
 	void setSpeed(double value);

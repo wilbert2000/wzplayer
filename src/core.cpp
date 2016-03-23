@@ -93,34 +93,13 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			 this, SLOT(onReceivedPause()));
 
 	connect(proc, SIGNAL(receivedBuffering()),
-			 this, SIGNAL(buffering()));
+			 this, SIGNAL(displayBuffering()));
 
 	connect(proc, SIGNAL(receivedBufferingEnded()),
 			 this, SLOT(displayBufferingEnded()));
 
 	connect(proc, SIGNAL(receivedMessage(const QString&)),
 			 this, SLOT(displayMessage(const QString&)));
-
-	connect(proc, SIGNAL(receivedCacheEmptyMessage(const QString&)),
-			 this, SIGNAL(buffering()));
-
-	connect(proc, SIGNAL(receivedCreatingIndex(const QString&)),
-			 this, SLOT(displayMessage(const QString&)));
-
-	connect(proc, SIGNAL(receivedCreatingIndex(const QString&)),
-			 this, SIGNAL(buffering()));
-
-	connect(proc, SIGNAL(receivedConnectingToMessage(const QString&)),
-			 this, SLOT(displayMessage(const QString&)));
-
-	connect(proc, SIGNAL(receivedConnectingToMessage(const QString&)),
-			 this, SIGNAL(buffering()));
-
-	connect(proc, SIGNAL(receivedResolvingMessage(const QString&)),
-			 this, SLOT(displayMessage(const QString&)));
-
-	connect(proc, SIGNAL(receivedResolvingMessage(const QString&)),
-			 this, SIGNAL(buffering()));
 
 	connect(proc, SIGNAL(receivedScreenshot(const QString&)),
 			 this, SLOT(displayScreenshotName(const QString&)));
@@ -169,8 +148,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(durationChanged(double)),
 			this, SIGNAL(durationChanged(double)));
 
-	connect(proc, SIGNAL(receivedForbiddenText()), this, SIGNAL(receivedForbidden()));
-
 	// TPlayerWindow
 	connect(this, SIGNAL(aboutToStartPlaying()),
 			playerwindow, SLOT(aboutToStartPlaying()));
@@ -192,7 +169,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 #endif
 #endif
 
-	connect(this, SIGNAL(buffering()), this, SLOT(displayBuffering()));
 }
 
 TCore::~TCore() {
@@ -326,7 +302,7 @@ void TCore::saveMediaSettings() {
 		settings.saveSettingsFor(mdat.filename, mset, proc->player());
 	}
 
-	emit showMessage(tr("Saved settings for %1").arg(mdat.filename), 3000);
+	emit showMessage(tr("Saved settings for %1").arg(mdat.filename));
 } // saveMediaSettings
 
 void TCore::changeFullscreenMode(bool b) {
@@ -3487,7 +3463,7 @@ void TCore::dvdnavUpdateMousePos(QPoint pos) {
 void TCore::displayMessage(const QString& text, int duration, int osd_level) {
 	//qDebug("TCore::displayMessage");
 
-	emit showMessage(text);
+	emit showMessage(text, duration);
 	displayTextOnOSD(text, duration, osd_level);
 }
 

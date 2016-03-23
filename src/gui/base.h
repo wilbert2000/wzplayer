@@ -22,6 +22,8 @@
 #include <QTimer>
 #include <QMainWindow>
 #include <QProcess>
+
+#include "config.h"
 #include "corestate.h"
 #include "gui/action/actionlist.h"
 
@@ -204,15 +206,13 @@ protected slots:
 	virtual void gotDuration(double);
 	virtual void newMediaLoaded();
 	virtual void updateMediaInfo();
-	void gotForbidden();
 
 	virtual void updateVideoEqualizer();
 	virtual void updateAudioEqualizer();
 	virtual void setDefaultValuesFromVideoEqualizer();
 	virtual void changeVideoEqualizerBySoftware(bool b);
 
-	virtual void displayMessage(const QString& message, int time);
-	virtual void displayMessage(const QString& message);
+	virtual void displayMessage(const QString& message, int time = TConfig::MESSAGE_DURATION);
 
 	virtual void openRecent();
 	virtual void exitFullscreenOnStop();

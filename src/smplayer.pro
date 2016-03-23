@@ -160,7 +160,8 @@ HEADERS += svn_revision.h \
     clhelp.h \
     log.h \
     error.h \
-    smplayer.h
+    smplayer.h \
+    config.h
 
 
 SOURCES	+= version.cpp \
@@ -274,7 +275,8 @@ SOURCES	+= version.cpp \
     smplayer.cpp \
     log.cpp \
     error.cpp \
-    main.cpp
+    main.cpp \
+    config.cpp
 
 FORMS = gui/inputdvddirectory.ui \
     gui/logwindow.ui \

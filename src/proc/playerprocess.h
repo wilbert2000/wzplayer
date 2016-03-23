@@ -149,15 +149,10 @@ signals:
 	void receivedEndOfFile();
 
 	void receivedMessage(const QString&);
-	void receivedCacheEmptyMessage(const QString&);
-	void receivedCreatingIndex(const QString&);
-	void receivedConnectingToMessage(const QString&);
-	void receivedResolvingMessage(const QString&);
 	void receivedBuffering();
 	void receivedBufferingEnded();
 	void receivedScreenshot(const QString&);
 	void receivedUpdatingFontCache();
-	void receivedForbiddenText();
 
 	void receivedStreamTitle(const QString&);
 	void receivedStreamTitleAndUrl(const QString&, const QString&);
