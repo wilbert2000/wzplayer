@@ -76,7 +76,7 @@ public:
 
 	typedef QList<TPlaylistItem> TPlaylistItemList;
 
-	TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f = Qt::Window);
+	TPlaylist(QWidget* parent, TCore* c);
 	virtual ~TPlaylist();
 
 	int count() const;

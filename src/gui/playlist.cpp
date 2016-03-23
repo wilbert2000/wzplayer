@@ -88,8 +88,8 @@ TPlaylistItem::TPlaylistItem(const QString &filename, const QString &name,
 	_directory = QFileInfo(filename).absolutePath();
 }
 
-TPlaylist::TPlaylist(QWidget* parent, TCore* c, Qt::WindowFlags f)
-	: QWidget(parent, f)
+TPlaylist::TPlaylist(QWidget* parent, TCore* c)
+	: QWidget(parent, 0)
 	, current_item(-1)
 	, core(c)
 	, modified(false)
@@ -241,11 +241,13 @@ void TPlaylist::createActions(QWidget* parent) {
 void TPlaylist::createToolbar() {
 
 	toolbar = new QToolBar(this);
-	toolbar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
 	toolbar->addAction(openAct);
 	toolbar->addAction(saveAct);;
+
 	toolbar->addSeparator();
+	toolbar->addAction(moveUpAct);
+	toolbar->addAction(moveDownAct);
 
 	add_menu = new QMenu(this);
 	add_menu->addAction(addCurrentAct);
@@ -270,19 +272,16 @@ void TPlaylist::createToolbar() {
 
 	toolbar->addSeparator();
 	toolbar->addAction(playAct);
-	toolbar->addSeparator();
 	toolbar->addAction(prevAct);
 	toolbar->addAction(nextAct);
 	toolbar->addSeparator();
 	toolbar->addAction(repeatAct);
 	toolbar->addAction(shuffleAct);
-	toolbar->addSeparator();
-	toolbar->addAction(moveUpAct);
-	toolbar->addAction(moveDownAct);
 
 	// Popup menu
 	popup = new QMenu(this);
 	popup->addAction(playAct);
+	popup->addSeparator();
 	popup->addAction(copyAct);
 	popup->addAction(editAct);
 	popup->addSeparator();
@@ -300,7 +299,9 @@ void TPlaylist::retranslateStrings() {
 	setWindowIcon(Images::icon("logo", 64));
 	setWindowTitle(tr("SMPlayer - Playlist"));
 
-	listView->setHorizontalHeaderLabels(QStringList() << "   " << tr("Name")
+	listView->setHorizontalHeaderLabels(QStringList()
+										<< "   "
+										<< tr("Name")
 										<< tr("Length"));
 
 	// Tool buttons

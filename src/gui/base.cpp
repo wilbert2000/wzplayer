@@ -317,7 +317,7 @@ void TBase::createCore() {
 
 void TBase::createPlaylist() {
 
-	playlist = new TPlaylist(this, core, 0);
+	playlist = new TPlaylist(this, core);
 	connect(playlist, SIGNAL(playlistEnded()),
 			 this, SLOT(playlistHasFinished()));
 	connect(playlist, SIGNAL(displayMessage(const QString&, int)),
