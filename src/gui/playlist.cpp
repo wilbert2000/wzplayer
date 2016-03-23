@@ -53,9 +53,6 @@
 #include "gui/action/menu.h"
 #include "gui/tablewidget.h"
 #include "gui/multilineinputdialog.h"
-//#include "gui/infoprovider.h"
-
-#include <stdlib.h>
 
 
 #define DRAG_ITEMS 0
@@ -284,24 +281,24 @@ void TPlaylist::createToolbar() {
 	popup->addAction(deleteSelectedFileFromDiskAct);
 
 	connect(listView, SIGNAL(customContextMenuRequested(const QPoint &)),
-			 this, SLOT(showContextMenu(const QPoint &)));
+			this, SLOT(showContextMenu(const QPoint &)));
 }
 
 void TPlaylist::retranslateStrings() {
 	//qDebug("Gui::TPlaylist::retranslateStrings");
 
-	listView->setHorizontalHeaderLabels(QStringList() << "   " <<
-        tr("Name") << tr("Length"));
+	// Icon
+	setWindowIcon(Images::icon("logo", 64));
+	setWindowTitle(tr("SMPlayer - Playlist"));
+
+	listView->setHorizontalHeaderLabels(QStringList() << "   " << tr("Name")
+										<< tr("Length"));
 
 	// Tool buttons
 	add_button->setIcon(Images::icon("plus"));
 	add_button->setToolTip(tr("Add..."));
 	remove_button->setIcon(Images::icon("minus"));
 	remove_button->setToolTip(tr("Remove..."));
-
-	// Icon
-	setWindowIcon(Images::icon("logo", 64));
-	setWindowTitle(tr("SMPlayer - Playlist"));
 }
 
 void TPlaylist::appendFiles(QStringList& files) const {

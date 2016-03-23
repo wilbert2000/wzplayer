@@ -100,50 +100,49 @@ public slots:
 	void playItem(int n);
 	void playDirectory(const QString& dir);
 
-	// TODO: remove virtual from following methods where it's not needed
-	virtual void playNext();
-	virtual void playPrev();
+	void playNext();
+	void playPrev();
 
-	virtual void resumePlay();
+	void resumePlay();
 
-	virtual void removeSelected();
-	virtual void removeAll();
-	virtual void remove(int);
+	void removeSelected();
+	void removeAll();
+	void remove(int);
 
-	virtual void moveItemUp(int);
-	virtual void moveItemDown(int);
+	void moveItemUp(int);
+	void moveItemDown(int);
 
-	virtual void addCurrentFile();
-	virtual void addFiles();
-	virtual void addDirectory();
-	virtual void addUrls();
+	void addCurrentFile();
+	void addFiles();
+	void addDirectory();
+	void addUrls();
 
-	virtual void addFile(const QString& filename);
-	virtual void addFiles(const QStringList& files);
+	void addFile(const QString& filename);
+	void addFiles(const QStringList& files);
 	void addFileOrDir(const QString& filename);
 
 	// Adds a directory, maybe with recursion (depends on user config)
-	virtual void addDirectory(const QString& dir);
+	void addDirectory(const QString& dir);
 
 	// EDIT BY NEO -->
-	virtual void sortBy(int section);
+	void sortBy(int section);
 	// <--
 
-	virtual void deleteSelectedFileFromDisk();
+	void deleteSelectedFileFromDisk();
 
-	virtual bool maybeSave();
-    virtual void load();
-    virtual bool save();
+	bool maybeSave();
+	void load();
+	bool save();
 
-	virtual void load_m3u(const QString& file, bool clear = true, bool play = true);
-	virtual bool save_m3u(QString file);
+	void load_m3u(const QString& file, bool clear = true, bool play = true);
+	bool save_m3u(QString file);
 
-	virtual void load_pls(const QString& file, bool clear = true, bool play = true);
-	virtual bool save_pls(QString file);
+	void load_pls(const QString& file, bool clear = true, bool play = true);
+	bool save_pls(QString file);
 
-	virtual void newMediaLoaded();
-	virtual void getMediaInfo();
-	virtual void mediaEOF();
+	void newMediaLoaded();
+	void getMediaInfo();
+	void mediaEOF();
 	void playerSwitchedTitle(int id);
 
 	// Preferences
@@ -179,13 +178,13 @@ protected:
 	virtual void closeEvent(QCloseEvent* e);
 
 protected slots:
-	virtual void playCurrent();
-	virtual void itemDoubleClicked(int row);
-	virtual void showContextMenu(const QPoint & pos);
-	virtual void upItem();
-	virtual void downItem();
-	virtual void editCurrentItem();
-	virtual void editItem(int item);
+	void playCurrent();
+	void itemDoubleClicked(int row);
+	void showContextMenu(const QPoint & pos);
+	void upItem();
+	void downItem();
+	void editCurrentItem();
+	void editItem(int item);
 
 protected:
 	TPlaylistItemList pl;

@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_TABLEWIDGET_H_
-#define _GUI_TABLEWIDGET_H_
+#ifndef GUI_TABLEWIDGET_H
+#define GUI_TABLEWIDGET_H
 
 #include <QTableWidget>
 #include <QIcon>
@@ -35,10 +35,10 @@ public:
 
 	QTableWidgetItem* getItem(int row, int column, bool* existed = 0);
 
-	void setText(int row, int column, const QString & text);
+	void setText(int row, int column, const QString& text);
 	QString text(int row, int column);
 
-	void setIcon(int row, int column, const QIcon & icon);
+	void setIcon(int row, int column, const QIcon& icon);
 	QIcon icon(int row, int column);
 
 	bool isSelected(int row, int column);
@@ -50,4 +50,4 @@ protected:
 
 } // namespace Gui
 
-#endif // _GUI_TABLEWIDGET_H_
+#endif // GUI_TABLEWIDGET_H

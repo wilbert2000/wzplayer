@@ -23,13 +23,11 @@
 
 namespace Gui {
 
-TTableWidget::TTableWidget(QWidget* parent) : QTableWidget(parent) 
-{
+TTableWidget::TTableWidget(QWidget* parent) : QTableWidget(parent) {
 }
 
 TTableWidget::TTableWidget(int rows, int columns, QWidget* parent)
-	: QTableWidget(rows, columns, parent)
-{
+	: QTableWidget(rows, columns, parent) {
 }
 
 QTableWidgetItem* TTableWidget::getItem(int row, int column, bool* existed) {
