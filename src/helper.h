@@ -33,9 +33,6 @@ public:
 
 	static QString timeForJumps(int secs);
 
-	//! Change filenames like "C:/Program Files/" to "C:\Program Files\"
-	static QString changeSlashes(QString filename);
-
 	static bool directoryContainsDVD(QString directory);
 
 	//! Returns an int with the version number of Qt at run-time.
