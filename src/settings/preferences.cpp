@@ -90,11 +90,8 @@ void TPreferences::reset() {
 	global_volume = true;
 
 	use_screenshot = true;
-
-#ifdef MPV_SUPPORT
 	screenshot_template = "cap_%F_%p_%02n";
 	screenshot_format = "jpg";
-#endif
 
 #ifdef PORTABLE_APP
 	screenshot_directory= "./screenshots";
@@ -469,11 +466,9 @@ void TPreferences::save() {
 	setValue("file_settings_method", file_settings_method);
 
 	setValue("use_screenshot", use_screenshot);
-#ifdef MPV_SUPPORT
 	setValue("screenshot_template", screenshot_template);
 	setValue("screenshot_format", screenshot_format);
-#endif
-	// Note: "screenshot_folder" used to be "screenshot_directory"
+	// "screenshot_folder" used to be "screenshot_directory"
 	// before QT_VERSION 0x040400
 	setValue("screenshot_folder", screenshot_directory);
 
@@ -940,11 +935,8 @@ void TPreferences::load() {
 
 	// Screenshots
 	use_screenshot = value("use_screenshot", use_screenshot).toBool();
-
-#ifdef MPV_SUPPORT
 	screenshot_template = value("screenshot_template", screenshot_template).toString();
 	screenshot_format = value("screenshot_format", screenshot_format).toString();
-#endif
 
 	// Note: "screenshot_folder" used to be "screenshot_directory" before Qt 4.4
 	screenshot_directory = value("screenshot_folder", screenshot_directory).toString();

@@ -58,9 +58,7 @@ void TMediaSettings::reset() {
 
 	external_subtitles_fps = SFPS_None;
 
-#ifdef MPV_SUPPORT
 	current_secondary_sub_idx = NoneSelected;
-#endif
 
 	playing_single_track = false;
 	current_angle_id = 0;
@@ -114,10 +112,8 @@ void TMediaSettings::reset() {
 
 	add_letterbox = false;
 
-#ifdef MPLAYER_SUPPORT
 	karaoke_filter = false;
 	extrastereo_filter = false;
-#endif
 	volnorm_filter = pref->initial_volnorm;
 
 	audio_use_channels = pref->initial_audio_channels; //ChDefault; // (0)
@@ -167,10 +163,7 @@ void TMediaSettings::list() {
 	qDebug("  current_sub_set_by_user: %d", current_sub_set_by_user);
 	qDebug("  external_subtitles: '%s'", sub.filename().toUtf8().data());
 	qDebug("  external_subtitles_fps: '%d'", external_subtitles_fps);
-
-#ifdef MPV_SUPPORT
 	qDebug("  current_secondary_sub_idx: %d", current_secondary_sub_idx);
-#endif
 
 #if PROGRAM_SWITCH
 	qDebug("  current_program_id: %d", current_program_id);
@@ -216,10 +209,8 @@ void TMediaSettings::list() {
 
 	qDebug("  add_letterbox: %d", add_letterbox);
 
-#ifdef MPLAYER_SUPPORT
 	qDebug("  karaoke_filter: %d", karaoke_filter);
 	qDebug("  extrastereo_filter: %d", extrastereo_filter);
-#endif
 	qDebug("  volnorm_filter: %d", volnorm_filter);
 
 	qDebug("  audio_use_channels: %d", audio_use_channels);
@@ -282,12 +273,7 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 		set->setValue("current_audio_id", current_video_id);
 	else set->setValue("current_audio_id", NoneSelected);
 
-	// Old config
-	set->remove("current_sub_id");
-
-#ifdef MPV_SUPPORT
 	set->setValue("current_secondary_sub_idx", current_secondary_sub_idx);
-#endif
 
 #if PROGRAM_SWITCH
 	set->setValue("current_program_id", current_program_id);
@@ -364,10 +350,8 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 
 	set->setValue("add_letterbox", add_letterbox);
 
-#ifdef MPLAYER_SUPPORT
 	set->setValue("karaoke_filter", karaoke_filter);
 	set->setValue("extrastereo_filter", extrastereo_filter);
-#endif
 	set->setValue("volnorm_filter", volnorm_filter);
 
 	set->setValue("audio_use_channels", audio_use_channels);
@@ -428,9 +412,7 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	current_audio_id = set->value("current_audio_id", NoneSelected).toInt();
 	convertOldSelectedTrack(current_audio_id);
 
-#ifdef MPV_SUPPORT
 	current_secondary_sub_idx = set->value("current_secondary_sub_id", NoneSelected).toInt();
-#endif
 
 #if PROGRAM_SWITCH
 	current_program_id = set->value("current_program_id", NoneSelected).toInt();
@@ -502,10 +484,8 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 
 	add_letterbox = set->value("add_letterbox", add_letterbox).toBool();
 
-#ifdef MPLAYER_SUPPORT
 	karaoke_filter = set->value("karaoke_filter", karaoke_filter).toBool();
 	extrastereo_filter = set->value("extrastereo_filter", extrastereo_filter).toBool();
-#endif
 	volnorm_filter = set->value("volnorm_filter", volnorm_filter).toBool();
 
 	audio_use_channels = set->value("audio_use_channels", audio_use_channels).toInt();

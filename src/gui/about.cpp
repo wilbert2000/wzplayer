@@ -54,20 +54,10 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 		+ "<b>"+ tr("Links:") +"</b><br>"
 		+ tr("Official website:") +" "+  link(URL_HOMEPAGE) + "<br>"
 		+ tr("Support forum:") +" "+  link(URL_FORUM) + "<br>"
-		+ "<br>" +
-#if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
-		tr("SMPlayer is a graphical interface for %1 and %2.")
+		+ "<br>"
+		+ tr("SMPlayer is a graphical interface for %1 and %2.")
 			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
 			.arg("<a href=\"http://www.mpv.io\">mpv</a>")
-#else
-		tr("SMPlayer is a graphical interface for %1.")
-	#ifdef MPV_SUPPORT
-			.arg("<a href=\"http://www.mpv.io\">mpv</a>")
-	#endif
-	#ifdef MPLAYER_SUPPORT
-			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
-	#endif
-#endif
 		+ "<br><br>"
 		+ tr("Subtitles service powered by %1").arg("<a href=\"http://www.opensubtitles.org\">www.OpenSubtitles.org</a>"));
 

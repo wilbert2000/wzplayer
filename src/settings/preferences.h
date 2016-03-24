@@ -151,11 +151,8 @@ public:
 	// Screenshots
 	bool use_screenshot;
 	QString screenshot_directory;
-
-#ifdef MPV_SUPPORT
 	QString screenshot_template;
 	QString screenshot_format;
-#endif
 
 	void setupScreenshotFolder();
 

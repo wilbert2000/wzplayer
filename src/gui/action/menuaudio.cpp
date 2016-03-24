@@ -158,7 +158,6 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	audioFilterMenu->addAction(volnormAct);
 	connect(volnormAct, SIGNAL(triggered(bool)), core, SLOT(toggleVolnorm(bool)));
 
-#ifdef MPLAYER_SUPPORT
 	extrastereoAct = new TAction(this, "extrastereo_filter", QT_TR_NOOP("&Extrastereo"), "", 0, false);
 	extrastereoAct->setCheckable(true);
 	audioFilterMenu->addAction(extrastereoAct);
@@ -168,7 +167,6 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	karaokeAct->setCheckable(true);
 	audioFilterMenu->addAction(karaokeAct);
 	connect(karaokeAct, SIGNAL(triggered(bool)), core, SLOT(toggleKaraoke(bool)));
-#endif
 
 	addMenu(audioFilterMenu);
 
@@ -203,11 +201,8 @@ void TMenuAudio::enableActions(bool stopped, bool, bool audio) {
 
 	// Filters
 	volnormAct->setEnabled(enableAudio);
-
-#ifdef MPLAYER_SUPPORT
 	extrastereoAct->setEnabled(enableAudio && pref->isMPlayer());
 	karaokeAct->setEnabled(enableAudio && pref->isMPlayer());
-#endif
 
 	loadAudioAct->setEnabled(!stopped);
 	unloadAudioAct->setEnabled(enableAudio && !core->mset.external_audio.isEmpty());
@@ -218,12 +213,10 @@ void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {
 	// Filters
 	volnormAct->setChecked(mset->volnorm_filter);
 
-#ifdef MPLAYER_SUPPORT
 	// Karaoke
 	karaokeAct->setChecked(mset->karaoke_filter);
 	// Extra stereo
 	extrastereoAct->setChecked(mset->extrastereo_filter);
-#endif
 }
 
 } // namespace Action

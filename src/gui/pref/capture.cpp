@@ -32,19 +32,8 @@ TCapture::TCapture(QWidget* parent)
 	: TWidget(parent, 0) {
 
 	setupUi(this);
-
-	// Screenshots
 	screenshot_edit->setDialogType(FileChooser::GetDirectory);
-
-#ifdef MPV_SUPPORT
 	screenshot_format_combo->addItems(QStringList() << "png" << "ppm" << "pgm" << "pgmyuv" << "tga" << "jpg" << "jpeg");
-#else
-	screenshot_template_label->hide();
-	screenshot_template_edit->hide();
-	screenshot_format_label->hide();
-	screenshot_format_combo->hide();
-#endif
-
 	retranslateStrings();
 }
 
@@ -72,17 +61,11 @@ void TCapture::retranslateStrings() {
 
 void TCapture::setData(Settings::TPreferences* pref) {
 
-	// Screenshots group
 	setUseScreenshots(pref->use_screenshot);
 	setScreenshotDir(pref->screenshot_directory);
-
-#ifdef MPV_SUPPORT
 	screenshot_template_edit->setText(pref->screenshot_template);
 	setScreenshotFormat(pref->screenshot_format);
-#endif
-
 	setSubtitlesOnScreenshots(pref->subtitles_on_screenshots);
-
 }
 
 void TCapture::getData(Settings::TPreferences* pref) {
@@ -105,10 +88,8 @@ void TCapture::getData(Settings::TPreferences* pref) {
 	restartIfBoolChanged(pref->use_screenshot, enable);
 	restartIfStringChanged(pref->screenshot_directory, dir);
 
-#ifdef MPV_SUPPORT
 	restartIfStringChanged(pref->screenshot_template, screenshot_template_edit->text());
 	restartIfStringChanged(pref->screenshot_format, screenshotFormat());
-#endif
 
 	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
 }
@@ -129,7 +110,6 @@ QString TCapture::screenshotDir() {
 	return screenshot_edit->text();
 }
 
-#ifdef MPV_SUPPORT
 void TCapture::setScreenshotFormat(const QString& format) {
 
 	int i = screenshot_format_combo->findText(format);
@@ -141,7 +121,6 @@ void TCapture::setScreenshotFormat(const QString& format) {
 QString TCapture::screenshotFormat() {
 	return screenshot_format_combo->currentText();
 }
-#endif
 
 void TCapture::setSubtitlesOnScreenshots(bool b) {
 	subtitles_on_screeshots_check->setChecked(b);
@@ -168,21 +147,17 @@ void TCapture::createHelp() {
 		   "SMPlayer will be stored. If the folder is not valid the "
 		   "screenshot feature will be disabled."));
 
-#ifdef MPV_SUPPORT
 	setWhatsThis(screenshot_template_edit, tr("Template for screenshots"),
-		tr("This option specifies the filename template used to save screenshots.") + " " +
+		tr("MPV only. This option specifies the filename template used to save screenshots.") + " " +
 		tr("For example %1 would save the screenshot as 'moviename_0001.png'.").arg("%F_%04n") + "<br>" +
 		tr("%1 specifies the filename of the video without the extension, "
 		   "%2 adds a 4 digit number padded with zeros.").arg("%F").arg("%04n") + " " +
 		tr("For a full list of the template specifiers visit this link:") +
 		" <a href=\"http://mpv.io/manual/stable/#options-screenshot-template\">"
-		"http://mpv.io/manual/stable/#options-screenshot-template</a>" + "<br>" +
-		tr("This option only works with mpv."));
+		"http://mpv.io/manual/stable/#options-screenshot-template</a>");
 
 	setWhatsThis(screenshot_format_combo, tr("Format for screenshots"),
-		tr("This option allows to choose the image file type used for saving screenshots.") + " " +
-		tr("This option only works with mpv.") );
-#endif
+		tr("MPV only. Choose the image file type used for saving screenshots."));
 
 	setWhatsThis(subtitles_on_screeshots_check,
 		tr("Include subtitles on screenshots"),

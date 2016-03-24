@@ -25,13 +25,8 @@
 #include <QSettings>
 #include <QDebug>
 
-#ifdef MPV_SUPPORT
 #include "inforeadermpv.h"
-#endif
-
-#ifdef MPLAYER_SUPPORT
 #include "inforeadermplayer.h"
-#endif
 
 #define INFOREADER_SAVE_VERSION 3
 
@@ -120,7 +115,6 @@ void InfoReader::getInfo(const QString& path) {
 	// Get info from player
 	bool save = false;
 	if (TPreferences::getPlayerID(bin) == TPreferences::ID_MPLAYER) {
-#ifdef MPLAYER_SUPPORT
 		InfoReaderMplayer ir(bin);
 		ir.getInfo();
 		vo_list = ir.voList();
@@ -131,9 +125,7 @@ void InfoReader::getInfo(const QString& path) {
 		vf_list.clear();
 		option_list.clear();
 		save = true;
-#endif
 	} else {
-#ifdef MPV_SUPPORT
 		InfoReaderMPV ir(bin);
 		ir.getInfo();
 		vo_list = ir.voList();
@@ -144,7 +136,6 @@ void InfoReader::getInfo(const QString& path) {
 		vf_list = ir.vfList();
 		option_list = ir.optionList();
 		save = true;
-#endif
 	}
 
 	if (save) {

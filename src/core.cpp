@@ -1048,7 +1048,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Setup hardware decoding for MPV.
-	// First set mdat.video_hwdec, handle proc later
+	// First set mdat.video_hwdec, handle setting option later
 	QString hwdec = pref->hwdec;
 	if (isMPV()) {
 		// Disable hardware decoding when there are filters in use
@@ -1067,6 +1067,7 @@ void TCore::startPlayer(QString file, double seek) {
 	if (!mset.forced_demuxer.isEmpty()) {
 		proc->setOption("demuxer", mset.forced_demuxer);
 	}
+
 	// Forced audio codec
 	if (!mset.forced_audio_codec.isEmpty()) {
 		proc->setOption("ac", mset.forced_audio_codec);
@@ -1106,7 +1107,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// MPV only
-	if (!hwdec.isEmpty()) {
+	if (!hwdec.isEmpty() && isMPV()) {
 		proc->setOption("hwdec", hwdec);
 	}
 	if (pref->frame_drop && pref->hard_frame_drop) {
@@ -1550,9 +1551,8 @@ void TCore::startPlayer(QString file, double seek) {
 	end_video_filters:
 #endif
 
-#ifdef MPV_SUPPORT
 	// Template for screenshots (only works with mpv)
-	if (pref->use_screenshot) {
+	if (isMPV() && pref->use_screenshot) {
 		if (!pref->screenshot_template.isEmpty()) {
 			proc->setOption("screenshot_template", pref->screenshot_template);
 		}
@@ -1560,7 +1560,6 @@ void TCore::startPlayer(QString file, double seek) {
 			proc->setOption("screenshot_format", pref->screenshot_format);
 		}
 	}
-#endif
 
 	// Volume
 	if (pref->player_additional_options.contains("-volume")) {
@@ -1589,11 +1588,9 @@ void TCore::startPlayer(QString file, double seek) {
 	} else {
 
 		// Audio filters
-#ifdef MPLAYER_SUPPORT
 		if (mset.karaoke_filter) {
 			proc->addAF("karaoke");
 		}
-#endif
 
 		// Stereo mode
 		if (mset.stereo_mode != 0) {
@@ -1605,11 +1602,9 @@ void TCore::startPlayer(QString file, double seek) {
 			}
 		}
 
-#ifdef MPLAYER_SUPPORT
 		if (mset.extrastereo_filter) {
 			proc->addAF("extrastereo");
 		}
-#endif
 
 		if (mset.volnorm_filter) {
 			proc->addAF("volnorm", pref->filters.item("volnorm").options());
@@ -1874,7 +1869,6 @@ void TCore::rewind(int secs) {
 	seek(-secs);
 }
 
-#ifdef MPV_SUPPORT
 void TCore::seekToNextSub() {
 	qDebug("TCore::seekToNextSub");
 	proc->seekSub(1);
@@ -1884,7 +1878,6 @@ void TCore::seekToPrevSub() {
 	qDebug("TCore::seekToPrevSub");
 	proc->seekSub(-1);
 }
-#endif
 
 void TCore::wheelUp(TPreferences::TWheelFunction function) {
 	qDebug("TCore::wheelUp");
@@ -1977,7 +1970,6 @@ void TCore::toggleRepeat(bool b) {
 }
 
 // Audio filters
-#ifdef MPLAYER_SUPPORT
 void TCore::toggleKaraoke() {
 	toggleKaraoke(!mset.karaoke_filter);
 }
@@ -2001,7 +1993,6 @@ void TCore::toggleExtrastereo(bool b) {
 		proc->enableExtrastereo(b);
 	}
 }
-#endif
 
 void TCore::toggleVolnorm() {
 	toggleVolnorm(!mset.volnorm_filter);
@@ -2889,7 +2880,6 @@ void TCore::nextSubtitle() {
 	changeSubtitle(mdat.subs.nextID());
 }
 
-#ifdef MPV_SUPPORT
 void TCore::changeSecondarySubtitle(int idx) {
 	qDebug("TCore::changeSecondarySubtitle: idx %d", idx);
 
@@ -2918,7 +2908,6 @@ void TCore::changeSecondarySubtitle(int idx) {
 
 	emit secondarySubtitleTrackChanged(mset.current_secondary_sub_idx);
 }
-#endif
 
 void TCore::changeTitleLeaveMenu() {
 
@@ -3585,11 +3574,7 @@ void TCore::onSubtitlesChanged() {
 
 	// Need to set current_sub_idx, the subtitle action group checks on it.
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
-
-#ifdef MPV_SUPPORT
 	mset.current_secondary_sub_idx = mdat.subs.findSelectedSecondaryIdx();
-#endif
-
 	emit subtitlesChanged();
 
 	if (isMPlayer()) {
@@ -3609,9 +3594,7 @@ void TCore::onSubtitleChanged() {
 	int selected_idx = mdat.subs.findSelectedIdx();
 	mset.current_sub_idx = selected_idx;
 
-#ifdef MPV_SUPPORT
 	mset.current_secondary_sub_idx = mdat.subs.findSelectedSecondaryIdx();
-#endif
 
 	emit subtitleTrackChanged(selected_idx);
 }

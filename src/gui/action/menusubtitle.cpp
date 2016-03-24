@@ -114,14 +114,12 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 	incSubStepAct = new TAction(this, "inc_sub_step", QT_TR_NOOP("N&ext line in subtitles"), "", Qt::Key_Y);
 	connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
 
-#ifdef MPV_SUPPORT
 	seekNextSubAct = new TAction(this, "seek_next_sub", QT_TR_NOOP("Seek to next subtitle"),
 								 "", Qt::CTRL | Qt::Key_Right, pref->isMPV());
 	connect(seekNextSubAct, SIGNAL(triggered()), core, SLOT(seekToNextSub()));
 	seekPrevSubAct = new TAction(this, "seek_prev_sub", QT_TR_NOOP("Seek to previous subtitle"),
 								 "", Qt::CTRL | Qt::Key_Left, pref->isMPV());
 	connect(seekPrevSubAct, SIGNAL(triggered()), core, SLOT(seekToPrevSub()));
-#endif
 
 	// Subtitle tracks
 	addSeparator();
@@ -139,16 +137,12 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
 	// Secondary subtitle track
-	// Need to create sec subs if player is MPlayer, otherwise we'll crash when
-	// player is changed to MPV
-#ifdef MPV_SUPPORT
 	secondarySubtitleTrackMenu = new TMenu(parent, this, "secondary_subtitles_track_menu", QT_TR_NOOP("Secondary trac&k"), "secondary_sub");
 	if (pref->isMPV())
 		addMenu(secondarySubtitleTrackMenu);
 	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
 	connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSecondarySubtitle(int)));
 	connect(core, SIGNAL(secondarySubtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
-#endif
 
 	addMenu(new TMenuCC(parent, core));
 
@@ -200,10 +194,8 @@ void TMenuSubtitle::enableActions(bool stopped, bool, bool) {
 	incSubStepAct->setEnabled(e);
 	decSubStepAct->setEnabled(e);
 
-#ifdef MPV_SUPPORT
 	seekNextSubAct->setEnabled(e && pref->isMPV());
 	seekPrevSubAct->setEnabled(e && pref->isMPV());
-#endif
 
 	nextSubtitleAct->setEnabled(e && core->mdat.subs.count() > 1);
 
@@ -228,9 +220,7 @@ void TMenuSubtitle::updateSubtitles() {
 
 	// Note: use idx not ID
 	subtitleTrackGroup->clear();
-#ifdef MPV_SUPPORT
 	secondarySubtitleTrackGroup->clear();
-#endif
 
 	QAction* subNoneAct = subtitleTrackGroup->addAction(tr("&None"));
 	subNoneAct->setData(SubData::None);
@@ -238,14 +228,12 @@ void TMenuSubtitle::updateSubtitles() {
 	if (core->mset.current_sub_idx < 0) {
 		subNoneAct->setChecked(true);
 	}
-#ifdef MPV_SUPPORT
 	subNoneAct = secondarySubtitleTrackGroup->addAction(tr("&None"));
 	subNoneAct->setData(SubData::None);
 	subNoneAct->setCheckable(true);
 	if (core->mset.current_secondary_sub_idx < 0) {
 		subNoneAct->setChecked(true);
 	}
-#endif
 
 	for (int idx = 0; idx < core->mdat.subs.count(); idx++) {
 		SubData sub = core->mdat.subs.itemAt(idx);
@@ -257,7 +245,6 @@ void TMenuSubtitle::updateSubtitles() {
 			a->setChecked(true);
 		}
 
-#ifdef MPV_SUPPORT
 		if (pref->isMPV()) {
 			if (idx == core->mset.current_secondary_sub_idx) {
 				a->setEnabled(false);
@@ -274,13 +261,10 @@ void TMenuSubtitle::updateSubtitles() {
 				a->setEnabled(false);
 			}
 		}
-#endif
 	}
 
 	subtitleTrackMenu->addActions(subtitleTrackGroup->actions());
-#ifdef MPV_SUPPORT
 	secondarySubtitleTrackMenu->addActions(secondarySubtitleTrackGroup->actions());
-#endif
 
 	// Enable actions
 	enableActions(false, true, true);

@@ -52,18 +52,14 @@ private:
 	TAction* incSubStepAct;
 	TAction* decSubStepAct;
 
-#ifdef MPV_SUPPORT
 	TAction* seekNextSubAct;
 	TAction* seekPrevSubAct;
-#endif
 
 	TAction* nextSubtitleAct;
 	TMenu* subtitleTrackMenu;
 	TActionGroup* subtitleTrackGroup;
-#ifdef MPV_SUPPORT
 	TMenu* secondarySubtitleTrackMenu;
 	TActionGroup* secondarySubtitleTrackGroup;
-#endif
 
 	TAction* loadSubsAct;
 	TAction* unloadSubsAct;

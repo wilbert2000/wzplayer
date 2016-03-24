@@ -65,11 +65,8 @@ QString SubData::displayName() const {
 SubTracks::SubTracks()
 	: _selected_type(SubData::None)
 	, _selected_ID(-1)
-
-#ifdef MPV_SUPPORT
 	, _selected_secondary_type(SubData::None)
 	,  _selected_secondary_ID(-1)
-#endif
 {}
 
 SubTracks::~SubTracks() {
@@ -79,10 +76,8 @@ void SubTracks::clear() {
 	_selected_type = SubData::None;
 	_selected_ID = -1;
 
-#ifdef MPV_SUPPORT
 	_selected_secondary_type = SubData::None;
 	_selected_secondary_ID = -1;
-#endif
 
 	subs.clear();
 }
@@ -102,11 +97,9 @@ int SubTracks::findSelectedIdx() const {
 	return find(_selected_type, _selected_ID);
 }
 
-#ifdef MPV_SUPPORT
 int SubTracks::findSelectedSecondaryIdx() const {
 	return find(_selected_secondary_type, _selected_secondary_ID);
 }
-#endif
 
 int SubTracks::findLangIdx(QString expr) const {
 	qDebug("SubTracks::findLangIdx: '%s'", expr.toUtf8().data());
@@ -205,7 +198,6 @@ bool SubTracks::changeFilename(SubData::Type t, int ID, QString filename) {
 	return true;
 }
 
-#ifdef MPV_SUPPORT
 bool SubTracks::update(SubData::Type type,
 					   int id,
 					   SubData::Type sec_type,
@@ -303,7 +295,6 @@ bool SubTracks::update(SubData::Type type,
 	}
 	return changed;
 }
-#endif
 
 void SubTracks::list() const {
 	qDebug("SubTracks::list: selected subtitle track ID: %d", _selected_ID);

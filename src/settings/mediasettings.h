@@ -69,10 +69,7 @@ public:
 
 	int current_sub_idx;
 	bool current_sub_set_by_user;
-
-#ifdef MPV_SUPPORT
 	int current_secondary_sub_idx;
-#endif
 
 	// Only used for loading settings for local files
 	// and external subs during restart
@@ -128,10 +125,8 @@ public:
 	QString stereo3d_in;
 	QString stereo3d_out;
 
-#ifdef MPLAYER_SUPPORT
 	bool karaoke_filter;
 	bool extrastereo_filter;
-#endif
 	bool volnorm_filter;
 
 	int audio_use_channels;

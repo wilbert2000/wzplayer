@@ -21,10 +21,6 @@ DEFINES += UPDATE_CHECKER
 
 # Support for program switch in TS files
 #DEFINES += PROGRAM_SWITCH
-
-DEFINES += MPV_SUPPORT
-DEFINES += MPLAYER_SUPPORT
-
 #DEFINES += SIMPLE_BUILD
 
 contains(DEFINES, SIMPLE_BUILD) {
@@ -56,6 +52,8 @@ HEADERS += svn_revision.h \
     desktop.h \
 	proc/process.h \
 	proc/playerprocess.h \
+    proc/mpvprocess.h \
+    proc/mplayerprocess.h \
     playerwindow.h \
 	mediadata.h \
     settings/paths.h \
@@ -75,6 +73,8 @@ HEADERS += svn_revision.h \
     settings/cleanconfig.h \
     images.h \
 	inforeader.h \
+    inforeadermpv.h \
+    inforeadermlayer.h \
     corestate.h \
 	core.h \
     lineedit_with_icon.h \
@@ -171,8 +171,10 @@ SOURCES	+= version.cpp \
 	discname.cpp \
 	extensions.cpp \
     desktop.cpp \
-	proc/process.cpp \
-	proc/playerprocess.cpp \
+    proc/process.cpp \
+    proc/playerprocess.cpp \
+    proc/mpvprocess.cpp \
+    proc/mplayerprocess.cpp \
     playerwindow.cpp \
 	mediadata.cpp \
     settings/paths.cpp \
@@ -192,6 +194,8 @@ SOURCES	+= version.cpp \
     settings/cleanconfig.cpp \
     images.cpp \
 	inforeader.cpp \
+    inforeadermpv.cpp \
+    inforeadermplayer.cpp \
 	core.cpp \
     lineedit_with_icon.cpp \
     filedialog.cpp \
@@ -308,15 +312,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/pref/updates.ui \
     gui/pref/advanced.ui
 
-contains(DEFINES, MPV_SUPPORT) {
-    HEADERS += proc/mpvprocess.h inforeadermpv.h
-    SOURCES += proc/mpvprocess.cpp inforeadermpv.cpp
-}
-
-contains(DEFINES, MPLAYER_SUPPORT) {
-    HEADERS += proc/mplayerprocess.h inforeadermplayer.h
-    SOURCES += proc/mplayerprocess.cpp inforeadermplayer.cpp
-}
 
 # qtsingleapplication
 contains(DEFINES, SINGLE_INSTANCE) {

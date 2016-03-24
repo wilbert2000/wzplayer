@@ -1188,10 +1188,6 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 		} else {
 			arg << "-no" + name;
 		}
-	} else if (name == "screenshot_template"
-			   || name == "screenshot_format"
-			   || name == "hwdec") {
-		// Not supported
 	} else {
 		arg << "-" + name;
 		if (!value.isNull()) {
@@ -1441,12 +1437,10 @@ void TMPlayerProcess::setSubStep(int value) {
 	writeToStdin("sub_step " + QString::number(value));
 }
 
-#ifdef MPV_SUPPORT
 void TMPlayerProcess::seekSub(int) {
 	/* Not supported */
 	showOSDText(tr("This option is not supported by MPlayer"), TConfig::MESSAGE_DURATION, 1);
 }
-#endif
 
 void TMPlayerProcess::setSubForcedOnly(bool b) {
 	writeToStdin(QString("forced_subs_only %1").arg(b ? 1 : 0));

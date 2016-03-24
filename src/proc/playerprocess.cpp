@@ -27,13 +27,8 @@
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
 
-#ifdef MPV_SUPPORT
 #include "proc/mpvprocess.h"
-#endif
-
-#ifdef MPLAYER_SUPPORT
 #include "proc/mplayerprocess.h"
-#endif
 
 
 namespace Proc {
@@ -83,9 +78,7 @@ void TPlayerProcess::writeToStdin(QString text, bool log) {
 
 TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData* md) {
 
-	TPlayerProcess* proc = 0;
-
-#if defined(MPV_SUPPORT) && defined(MPLAYER_SUPPORT)
+	TPlayerProcess* proc;
 	if (Settings::pref->isMPlayer()) {
 		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMPlayerProcess";
 		proc = new TMPlayerProcess(parent, md);
@@ -93,14 +86,6 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData*
 		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMPVProcess";
 		proc = new TMPVProcess(parent, md);
 	}
-#else
-	#ifdef MPV_SUPPORT
-	proc = new TMPVProcess(parent, md);
-	#endif
-	#ifdef MPLAYER_SUPPORT
-	proc = new TMPlayerProcess(parent, md);
-	#endif
-#endif
 
 	return proc;
 }
@@ -171,7 +156,7 @@ void TPlayerProcess::parseBytes(QByteArray ba) {
 	}
 
 	line_count++;
-	if (line_count % 5000 == 0) {
+	if (line_count % 10000 == 0) {
 		qDebug("Proc::TPlayerProcess::parseBytes: parsed %'d lines at %f lines per second",
 			   line_count, (line_count * 1000.0) / line_time.elapsed());
 	}

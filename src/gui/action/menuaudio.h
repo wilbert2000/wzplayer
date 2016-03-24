@@ -39,10 +39,8 @@ private:
 
 	QMenu* audioFilterMenu;
 	TAction* volnormAct;
-#ifdef MPLAYER_SUPPORT
 	TAction* extrastereoAct;
 	TAction* karaokeAct;
-#endif
 
 	TAction* loadAudioAct;
 	TAction* unloadAudioAct;

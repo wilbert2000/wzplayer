@@ -76,23 +76,18 @@ public:
 	}
 	void clearSelected() { _selected_ID = -1; }
 
-#ifdef MPV_SUPPORT
 	SubData::Type selectedSecondaryType() const { return _selected_secondary_type; }
 	int selectedSecondaryID() const { return _selected_secondary_ID; }
 	void setSelectedSecondary(SubData::Type type, int id) {
 		_selected_secondary_type = type;
 		_selected_secondary_ID = id;
 	}
-#endif
 
 	int count() const { return subs.count(); }
 
 	int find(SubData::Type type, int ID) const;
 	int findSelectedIdx() const;
-
-#ifdef MPV_SUPPORT
 	int findSelectedSecondaryIdx() const;
-#endif
 
 	int findLangIdx(QString expr) const;
 	SubData findItem(SubData::Type t, int ID) const;
@@ -106,10 +101,7 @@ public:
 	bool changeLang(SubData::Type t, int ID, QString lang);
 	bool changeName(SubData::Type t, int ID, QString name);
 	bool changeFilename(SubData::Type t, int ID, QString filename);
-
-#ifdef MPV_SUPPORT
 	bool update(SubData::Type type, int id, SubData::Type sec_type, int sec_id, const QString & lang, const QString & name, const QString &filename, bool selected, bool sec_selected);
-#endif
 
 	void list() const;
 	void listNames() const;
@@ -120,10 +112,8 @@ protected:
 	SubData::Type _selected_type;
 	int _selected_ID;
 
-#ifdef MPV_SUPPORT
 	SubData::Type _selected_secondary_type;
 	int _selected_secondary_ID;
-#endif
 };
 
 #endif
