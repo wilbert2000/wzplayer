@@ -15,8 +15,6 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-
 #ifndef GUI_PLAYLIST_H
 #define GUI_PLAYLIST_H
 
@@ -96,21 +94,10 @@ public slots:
 	// Start playing, from item 0 if shuffle is off,
 	// or from a random item otherwise
 	void startPlay();
-
 	void playItem(int n);
 	void playDirectory(const QString& dir);
-
 	void playNext();
 	void playPrev();
-
-	void resumePlay();
-
-	void removeSelected();
-	void removeAll();
-	void remove(int);
-
-	void moveItemUp(int);
-	void moveItemDown(int);
 
 	void addCurrentFile();
 	void addFiles();
@@ -124,23 +111,9 @@ public slots:
 	// Adds a directory, maybe with recursion (depends on user config)
 	void addDirectory(const QString& dir);
 
-
-	void deleteSelectedFileFromDisk();
-
 	bool maybeSave();
 	void load();
 	bool save();
-
-	void loadM3u(const QString& file, bool clear = true, bool play = true);
-	bool saveM3u(QString file);
-
-	void loadIni(const QString& file, bool clear = true, bool play = true);
-	bool saveIni(QString file);
-
-	void onNewMediaStartedPlaying();
-	void onMediaLoaded();
-	void mediaEOF();
-	void playerSwitchedTitle(int id);
 
 	// Preferences
 	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
@@ -158,16 +131,6 @@ protected:
 	virtual void hideEvent (QHideEvent*);
 	virtual void showEvent (QShowEvent*);
 	virtual void closeEvent(QCloseEvent* e);
-
-protected slots:
-	void playCurrent();
-	void itemDoubleClicked(int row);
-	void showContextMenu(const QPoint & pos);
-	void upItem();
-	void downItem();
-	void copyCurrentItem();
-	void editCurrentItem();
-	void editItem(int item);
 
 private:
 	enum TColID {
@@ -218,7 +181,6 @@ private:
 	bool save_playlist_in_config;
 	bool play_files_from_start;
 	bool automatically_play_next;
-	int row_spacing;
 
 	bool modified;
 	QString playlist_path;
@@ -228,18 +190,54 @@ private:
 	int chooseRandomItem();
 	void cleanAndAddItem(QString filename, const QString& name, double duration);
 	void clearPlayedTag();
+
 	void createTable();
 	void createActions(QWidget* parent);
 	void createToolbar();
+
 	void getMediaInfo();
 	QString lastDir();
 	void setCurrentItem(int current);
 	void swapItems(int item1, int item2);
+
 	void updateView();
 
+	void loadM3u(const QString& file, bool clear = true, bool play = true);
+	bool saveM3u(QString file);
+
+	void loadIni(const QString& file, bool clear = true, bool play = true);
+	bool saveIni(QString file);
+
 private slots:
+	void showContextMenu(const QPoint& pos);
+
+	void playCurrent();
+
+	void upItem();
+	void downItem();
+
+	void moveItemUp(int);
+	void moveItemDown(int);
+
+	void removeAll();
+	void remove(int);
+
+	void copyCurrentItem();
+	void editCurrentItem();
+	void editItem(int item);
+	void removeSelected();
+	void deleteSelectedFileFromDisk();
+
 	void sortBy(int section);
 	void sortBy(int section, bool revert, int count);
+
+	void onNewMediaStartedPlaying();
+	void onMediaLoaded();
+	void onTitleTrackChanged(int id);
+	void onMediaEOF();
+	void resumePlay();
+
+	void onCellActivated(int row, int);
 };
 
 } // namespace Gui

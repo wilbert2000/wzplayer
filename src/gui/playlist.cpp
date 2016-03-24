@@ -90,7 +90,6 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	, save_playlist_in_config(true)
 	, play_files_from_start(true)
 	, automatically_play_next(true)
-	, row_spacing(-1) // Default height
 	, modified(false) {
 
 	createTable();
@@ -102,9 +101,9 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(mediaLoaded()),
 			this, SLOT(onMediaLoaded()));
 	connect(core, SIGNAL(titleTrackChanged(int)),
-			this, SLOT(playerSwitchedTitle(int)));
+			this, SLOT(onTitleTrackChanged(int)));
 	connect(core, SIGNAL(mediaEOF()),
-			this, SLOT(mediaEOF()), Qt::QueuedConnection);
+			this, SLOT(onMediaEOF()), Qt::QueuedConnection);
 	connect(core, SIGNAL(noFileToPlay()),
 			this, SLOT(resumePlay()));
 
@@ -120,7 +119,7 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	// Random seed
 	QTime t;
 	t.start();
-	srand(t.hour() * 3600 + t.minute() * 60 + t.second());
+	qsrand(t.hour() * 3600 + t.minute() * 60 + t.second());
 }
 
 TPlaylist::~TPlaylist() {
@@ -161,7 +160,7 @@ void TPlaylist::createTable() {
 	}
 
 	connect(listView, SIGNAL(cellActivated(int,int)),
-             this, SLOT(itemDoubleClicked(int)));
+			 this, SLOT(onCellActivated(int, int)));
 
 	// EDIT BY NEO -->
 	connect(listView->horizontalHeader(), SIGNAL(sectionClicked(int)),
@@ -346,12 +345,7 @@ void TPlaylist::updateView() {
 
 		// Duration
 		listView->setText(i, COL_TIME,
-						  Helper::formatTime(qRound(playlist_item.duration())));
-
-		// Row spacing
-		if (row_spacing >= 0) {
-			listView->setRowHeight(i, listView->font().pointSize() + row_spacing);
-		}
+			Helper::formatTime(qRound(playlist_item.duration())));
 	}
 
 	listView->resizeColumnToContents(COL_PLAY);
@@ -822,8 +816,8 @@ void TPlaylist::playCurrent() {
 	}
 }
 
-void TPlaylist::itemDoubleClicked(int row) {
-	qDebug("Gui::TPlaylist::itemDoubleClicked: row: %d", row);
+void TPlaylist::onCellActivated(int row, int) {
+	qDebug("Gui::TPlaylist::onCellActivated: row: %d", row);
 	playItem(row);
 }
 
@@ -906,7 +900,7 @@ void TPlaylist::playPrev() {
 void TPlaylist::resumePlay() {
 
 	if (pl.count() > 0) {
-		if (current_item < 0)
+		if (current_item < 0 || current_item >= pl.count())
 			current_item = 0;
 		playItem(current_item);
 	}
@@ -1037,16 +1031,16 @@ void TPlaylist::onMediaLoaded() {
 	getMediaInfo();
 }
 
-void TPlaylist::mediaEOF() {
-	qDebug("Gui::Tplaylist::mediaEOF");
+void TPlaylist::onMediaEOF() {
+	qDebug("Gui::Tplaylist::onMediaEOF");
 
 	if (automatically_play_next) {
 		playNext();
 	}
 }
 
-void TPlaylist::playerSwitchedTitle(int id) {
-	qDebug("Gui::TPlaylist::playerSwitchedTitle: %d", id);
+void TPlaylist::onTitleTrackChanged(int id) {
+	qDebug("Gui::TPlaylist::onTitleTrackChanged: %d", id);
 
 	// Search for title on file name instead of using id as index,
 	// because user can change order of the playlist.
@@ -1062,7 +1056,7 @@ void TPlaylist::playerSwitchedTitle(int id) {
 		}
 	}
 
-	qWarning() << "Gui::TPlaylist::playerSwitchedTitle: title id" << id
+	qWarning() << "Gui::TPlaylist::onTitleTrackChanged: title id" << id
 			   << "filename" << filename << "not found in playlist";
 }
 
@@ -1261,17 +1255,16 @@ void TPlaylist::clearPlayedTag() {
 int TPlaylist::chooseRandomItem() {
 	// qDebug("Gui::TPlaylist::chooseRandomItem");
 
-	QList <int> fi; //List of not played items (free items)
+	// Create list of items not yet played
+	QList <int> fi;
 	for (int n = 0; n < pl.count(); n++) {
 		if (!pl[n].played())
 			fi.append(n);
 	}
+	if (fi.count() == 0)
+		return -1; // none free
 
-	qDebug("Gui::TPlaylist::chooseRandomItem: free items: %d", fi.count());
-
-	if (fi.count() == 0) return -1; // none free
-
-	int selected = (int) ((double) fi.count() * rand()/(RAND_MAX+1.0));
+	int selected = (int) ((double) fi.count() * qrand()/(RAND_MAX+1.0));
 	qDebug("Gui::TPlaylist::chooseRandomItem: selected item: %d",
 		   fi[selected]);
 	return fi[selected];
@@ -1484,8 +1477,6 @@ void TPlaylist::saveSettings() {
 	set->setValue("play_files_from_start", play_files_from_start);
 	set->setValue("automatically_play_next", automatically_play_next);
 
-	set->setValue("row_spacing", row_spacing);
-
 	if (save_dirs) {
 		set->setValue("latest_dir", latest_dir);
 	} else {
@@ -1526,8 +1517,6 @@ void TPlaylist::loadSettings() {
 	play_files_from_start = set->value("play_files_from_start", play_files_from_start).toBool();
 	automatically_play_next = set->value("automatically_play_next", automatically_play_next).toBool();
 
-	row_spacing = set->value("row_spacing", row_spacing).toInt();
-
 	latest_dir = set->value("latest_dir", latest_dir).toString();
 
 	set->endGroup();
@@ -1554,8 +1543,11 @@ void TPlaylist::loadSettings() {
 }
 
 QString TPlaylist::lastDir() {
+
 	QString last_dir = latest_dir;
-	if (last_dir.isEmpty()) last_dir = pref->latest_dir;
+	if (last_dir.isEmpty())
+		last_dir = pref->latest_dir;
+
 	return last_dir;
 }
 
