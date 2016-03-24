@@ -368,8 +368,10 @@ void TPlaylist::setCurrentItem(int current) {
 	// Give old current_item an icon
 	if (current_item >= 0 && current_item < listView->rowCount()) {
 		if (current_item < pl.count() && pl[current_item].played()) {
+			qDebug() << "Gui::TPlaylist::setCurrentItem: setting ok icon for" << current_item;
 			listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
-		} else {
+		} else if (current < 0 || current != current_item){
+			qDebug() << "Gui::TPlaylist::setCurrentItem: clearing icon for" << current_item;
 			listView->setIcon(current_item, COL_PLAY, QPixmap());
 		}
 	}
@@ -378,6 +380,7 @@ void TPlaylist::setCurrentItem(int current) {
 
 	if (current_item >= 0) {
 		if (current_item < listView->rowCount()) {
+			qDebug() << "Gui::TPlaylist::setCurrentItem: setting play icon for" << current_item;
 			listView->setIcon(current_item, COL_PLAY, Images::icon("play"));
 		}
 
@@ -912,6 +915,7 @@ void TPlaylist::resumePlay() {
 }
 
 void TPlaylist::playDirectory(const QString &dir) {
+	qDebug("Gui::TPlaylist::playDirectory");
 
 	clear();
 	addDirectory(dir);
