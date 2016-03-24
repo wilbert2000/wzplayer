@@ -17,8 +17,8 @@
 */
 
 
-#ifndef _GUI_PLAYLIST_H_
-#define _GUI_PLAYLIST_H_
+#ifndef GUI_PLAYLIST_H
+#define GUI_PLAYLIST_H
 
 #include <QList>
 #include <QStringList>
@@ -72,8 +72,6 @@ class TPlaylist : public QWidget {
 	Q_OBJECT
 
 public:
-	enum AutoGetInfo { NoGetInfo = 0, GetInfo = 1, UserDefined = 2 };
-
 	typedef QList<TPlaylistItem> TPlaylistItemList;
 
 	TPlaylist(QWidget* parent, TCore* c);
@@ -95,8 +93,8 @@ public:
 	void retranslateStrings();
 
 public slots:
-	// Start playing, from item 0 if shuffle is off, or from
-	// a random item otherwise
+	// Start playing, from item 0 if shuffle is off,
+	// or from a random item otherwise
 	void startPlay();
 
 	void playItem(int n);
@@ -126,9 +124,6 @@ public slots:
 	// Adds a directory, maybe with recursion (depends on user config)
 	void addDirectory(const QString& dir);
 
-	// EDIT BY NEO -->
-	void sortBy(int section);
-	// <--
 
 	void deleteSelectedFileFromDisk();
 
@@ -143,7 +138,7 @@ public slots:
 	bool save_pls(QString file);
 
 	void onNewMediaStartedPlaying();
-	void getMediaInfo();
+	void onMediaLoaded();
 	void mediaEOF();
 	void playerSwitchedTitle(int id);
 
@@ -158,21 +153,6 @@ signals:
 	void displayMessage(const QString&, int);
 
 protected:
-	void addItem(QString filename, QString name, double duration);
-	void setCurrentItem(int current);
-	void clearPlayedTag();
-	int chooseRandomItem();
-	void swapItems(int item1, int item2);
-	// EDIT BY NEO -->
-	void sortBy(int section, bool revert, int count);
-	// <--
-	QString lastDir();
-	void updateView();
-
-	void createTable();
-	void createActions(QWidget* parent);
-	void createToolbar();
-
 	virtual void dragEnterEvent(QDragEnterEvent*) ;
 	virtual void dropEvent (QDropEvent*);
 	virtual void hideEvent (QHideEvent*);
@@ -188,21 +168,23 @@ protected slots:
 	void copyCurrentItem();
 	void editCurrentItem();
 	void editItem(int item);
-	void onCellEntered(int row, int);
 
-protected:
-	TPlaylistItemList pl;
+private:
+	enum TColID {
+		COL_PLAY = 0,
+		COL_NAME = 1,
+		COL_TIME = 2,
+		COL_COUNT = 3
+	};
+
 	int current_item;
-
-	QString playlist_path;
-	QString latest_dir;
-
 	TCore* core;
+	TPlaylistItemList pl;
+	TTableWidget* listView;
+
 	QMenu* add_menu;
 	QMenu* remove_menu;
 	QMenu* popup;
-
-	TTableWidget* listView;
 
 	QToolBar* toolbar;
 	QToolButton* add_button;
@@ -218,31 +200,47 @@ protected:
 
 	Action::TAction* moveUpAct;
 	Action::TAction* moveDownAct;
-	Action::TAction* editAct;
-	Action::TAction* copyAct;
 
 	Action::TAction* addCurrentAct;
 	Action::TAction* addFilesAct;
 	Action::TAction* addDirectoryAct;
 	Action::TAction* addUrlsAct;
 
+	Action::TAction* copyAct;
+	Action::TAction* editAct;
 	Action::TAction* removeSelectedAct;
 	Action::TAction* removeAllAct;
 
 	Action::TAction* deleteSelectedFileFromDiskAct;
 
-private:
-	bool modified;
-
-	//Preferences
+	// Preferences
 	bool recursive_add_directory;
 	bool save_playlist_in_config;
 	bool play_files_from_start;
 	bool automatically_play_next;
 	int row_spacing;
+
+	bool modified;
+	QString playlist_path;
+	QString latest_dir;
+
+	void addItem(QString filename, QString name, double duration);
+	int chooseRandomItem();
+	void clearPlayedTag();
+	void createTable();
+	void createActions(QWidget* parent);
+	void createToolbar();
+	QString lastDir();
+	void setCurrentItem(int current);
+	void swapItems(int item1, int item2);
+	void updateView();
+
+private slots:
+	void sortBy(int section);
+	void sortBy(int section, bool revert, int count);
 };
 
 } // namespace Gui
 
-#endif // _GUI_PLAYLIST_H_
+#endif // GUI_PLAYLIST_H
 

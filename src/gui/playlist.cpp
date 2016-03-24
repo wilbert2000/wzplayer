@@ -56,12 +56,6 @@
 #include "gui/multilineinputdialog.h"
 
 
-#define DRAG_ITEMS 0
-
-#define COL_PLAY 0
-#define COL_NAME 1
-#define COL_TIME 2
-
 using namespace Settings;
 
 namespace Gui {
@@ -92,13 +86,12 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	: QWidget(parent, 0)
 	, current_item(-1)
 	, core(c)
-	, modified(false)
 	, recursive_add_directory(true)
 	, save_playlist_in_config(true)
 	, play_files_from_start(true)
 	, automatically_play_next(true)
 	, row_spacing(-1) // Default height
-{
+	, modified(false) {
 
 	createTable();
 	createActions(parent);
@@ -107,7 +100,7 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(newMediaStartedPlaying()),
 			this, SLOT(onNewMediaStartedPlaying()));
 	connect(core, SIGNAL(mediaLoaded()),
-			this, SLOT(getMediaInfo()));
+			this, SLOT(onMediaLoaded()));
 	connect(core, SIGNAL(titleTrackChanged(int)),
 			this, SLOT(playerSwitchedTitle(int)));
 	connect(core, SIGNAL(mediaEOF()),
@@ -135,7 +128,7 @@ TPlaylist::~TPlaylist() {
 
 void TPlaylist::createTable() {
 
-	listView = new TTableWidget(0, COL_TIME + 1, this);
+	listView = new TTableWidget(0, COL_COUNT, this);
 	listView->setObjectName("playlist_table");
 	listView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	listView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -158,23 +151,21 @@ void TPlaylist::createTable() {
 	*/
 	listView->setIconSize(Images::icon("ok").size());
 
-#if DRAG_ITEMS
-	listView->setSelectionMode(QAbstractItemView::SingleSelection);
-	listView->setDragEnabled(true);
-	listView->setAcceptDrops(true);
-	listView->setDropIndicatorShown(true);
-	listView->setDragDropMode(QAbstractItemView::InternalMove);
-#endif
+	// TODO: enable
+	if (0) {
+		listView->setSelectionMode(QAbstractItemView::SingleSelection);
+		listView->setDragEnabled(true);
+		listView->setAcceptDrops(true);
+		listView->setDropIndicatorShown(true);
+		listView->setDragDropMode(QAbstractItemView::InternalMove);
+	}
 
 	connect(listView, SIGNAL(cellActivated(int,int)),
              this, SLOT(itemDoubleClicked(int)));
 
-	listView->setMouseTracking(true);
-	connect(listView, SIGNAL(cellEntered(int, int)),
-			this, SLOT(onCellEntered(int, int)));
-
 	// EDIT BY NEO -->
-	connect(listView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(sortBy(int)));
+	connect(listView->horizontalHeader(), SIGNAL(sectionClicked(int)),
+			this, SLOT(sortBy(int)));
 	// <--
 }
 
@@ -326,53 +317,69 @@ void TPlaylist::appendFiles(QStringList& files) const {
 void TPlaylist::updateView() {
 	qDebug("Gui::TPlaylist::updateView");
 
+	listView->clearSelection();
 	listView->setRowCount(pl.count());
 
-	QString name;
-	QString time;
+	for (int i = 0; i < pl.count(); i++) {
+		TPlaylistItem& playlist_item = pl[i];
 
-	for (int n = 0; n < pl.count(); n++) {
-		TPlaylistItem& item = pl[n];
-		name = item.name();
-		if (name.isEmpty())
-			name = item.filename();
-		time = Helper::formatTime(qRound(item.duration()));
-		
-		listView->setText(n, COL_NAME, name);
-		QTableWidgetItem* i = listView->item(n, COL_NAME);
-		if (i) {
-			i->setToolTip(item.filename());
-		}
-		listView->setText(n, COL_TIME, time);
-
-		if (item.played()) {
-			listView->setIcon(n, COL_PLAY, Images::icon("ok"));
+		// Icon
+		if (i == current_item) {
+			listView->setIcon(i, COL_PLAY, Images::icon("play"));
+		} else if (playlist_item.played()) {
+			listView->setIcon(i, COL_PLAY, Images::icon("ok"));
 		} else {
-			listView->setIcon(n, COL_PLAY, QPixmap());
+			listView->setIcon(i, COL_PLAY, QPixmap());
 		}
 
+		// Name
+		QString name = playlist_item.name();
+		if (name.isEmpty())
+			name = playlist_item.filename();
+		listView->setText(i, COL_NAME, name);
+
+		// Set tooltip to filename
+		QTableWidgetItem* table_item = listView->item(i, COL_NAME);
+		if (table_item) {
+			table_item->setToolTip(playlist_item.filename());
+		}
+
+		// Duration
+		listView->setText(i, COL_TIME,
+						  Helper::formatTime(qRound(playlist_item.duration())));
+
+		// Row spacing
 		if (row_spacing >= 0) {
-			listView->setRowHeight(n, listView->font().pointSize() + row_spacing);
+			listView->setRowHeight(i, listView->font().pointSize() + row_spacing);
 		}
 	}
 
 	listView->resizeColumnToContents(COL_PLAY);
 	listView->resizeColumnToContents(COL_TIME);
 
-	setCurrentItem(current_item);
+	if (current_item >= 0) {
+		listView->setCurrentCell(current_item, 0);
+	}
 }
 
 void TPlaylist::setCurrentItem(int current) {
 	qDebug("Gui::TPlaylist::setCurrentItem: from %d to %d", current_item, current);
 
+	// TODO: reduce mem trashing
+
 	// Give old current_item an icon
 	if (current_item >= 0 && current_item < listView->rowCount()) {
-		if (current_item < pl.count() && pl[current_item].played()) {
-			qDebug() << "Gui::TPlaylist::setCurrentItem: setting ok icon for" << current_item;
-			listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
-		} else if (current < 0 || current != current_item){
-			qDebug() << "Gui::TPlaylist::setCurrentItem: clearing icon for" << current_item;
-			listView->setIcon(current_item, COL_PLAY, QPixmap());
+		if (current_item < pl.count()) {
+			if (pl[current_item].played()) {
+				// Set ok icon unless current not changing
+				if (current_item != current) {
+					qDebug() << "Gui::TPlaylist::setCurrentItem: setting ok icon for" << current_item;
+					listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
+				}
+			} else if (current_item != current) {
+				qDebug() << "Gui::TPlaylist::setCurrentItem: clearing icon for" << current_item;
+				listView->setIcon(current_item, COL_PLAY, QPixmap());
+			}
 		}
 	}
 
@@ -816,14 +823,6 @@ void TPlaylist::playCurrent() {
 	}
 }
 
-void TPlaylist::onCellEntered(int row, int) {
-	qDebug("Gui::TPlaylist::onCellEntered: row: %d", row);
-
-	if (row >= 0 && row < pl.count()) {
-		emit displayMessage(pl[row].filename(), TConfig::MESSAGE_DURATION);
-	}
-}
-
 void TPlaylist::itemDoubleClicked(int row) {
 	qDebug("Gui::TPlaylist::itemDoubleClicked: row: %d", row);
 	playItem(row);
@@ -974,7 +973,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
 			}
 		}
 	} else {
-		// Add current file. getMediaInfo will fill in name and duration.
+		// Add current file. onMediaLoaded will fill in name and duration.
 		addItem(filename, "", 0);
 		setCurrentItem(0);
 
@@ -1001,8 +1000,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
 			 << "items for" << filename;
 }
 
-void TPlaylist::getMediaInfo() {
-	qDebug("Gui::TPlaylist::getMediaInfo");
+void TPlaylist::onMediaLoaded() {
+	qDebug("Gui::TPlaylist::onMediaLoaded");
 
 	QString filename = core->mdat.filename;
 
@@ -1070,7 +1069,7 @@ void TPlaylist::addCurrentFile() {
 
 	if (!core->mdat.filename.isEmpty()) {
 		addItem(core->mdat.filename, "", 0);
-		getMediaInfo();
+		onMediaLoaded();
 	}
 }
 
@@ -1536,7 +1535,7 @@ void TPlaylist::loadSettings() {
 	set->endGroup();
 
 	if (save_playlist_in_config) {
-		//Load latest list
+		// Load latest list
 		set->beginGroup("playlist_contents");
 
 		int count = set->value("count", 0).toInt();
