@@ -424,25 +424,39 @@ bool TPlaylist::isEmpty() const {
 	return pl.isEmpty();
 }
 
-void TPlaylist::addItem(QString filename, QString name, double duration) {
+void TPlaylist::addItem(const QString& filename, QString name, double duration) {
 	//qDebug() << "Gui::TPlaylist::addItem:" << filename;
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	filename = Helper::changeSlashes(filename);
-#endif
 
 	if (name.isEmpty()) {
 		QFileInfo fi(filename);
+		// TODO:
 		// Let's see if it looks like a file (no dvd://1 or something)
-		if (filename.indexOf(QRegExp("^.*://.*")) == -1) {
+		if (filename.indexOf("://") < 0) {
 			// Local file
-			name = fi.fileName(); //fi.baseName(true);
+			name = fi.fileName();
 		} else {
 			// Stream
 			name = filename;
 		}
 	}
 	pl.append(TPlaylistItem(filename, name, duration));
+}
+
+void TPlaylist::cleanAndAddItem(QString filename, const QString& name, double duration) {
+
+	QFileInfo fi(filename);
+	if (fi.exists()) {
+		filename = fi.absoluteFilePath();
+	} else if (QFileInfo(playlist_path + "/" + filename).exists()) {
+		filename = playlist_path + "/" + filename;
+	}
+
+	// TODO:
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+	filename = Helper::changeSlashes(filename);
+#endif
+
+	addItem(filename, name, duration);
 }
 
 // EDIT BY NEO -->
@@ -538,10 +552,10 @@ void TPlaylist::sortBy(int section, bool revert, int count) {
 }
 // <--
 
-void TPlaylist::load_m3u(const QString &file, bool clear, bool play) {
-	qDebug("Gui::TPlaylist::load_m3u");
+void TPlaylist::loadM3u(const QString&file, bool clear, bool play) {
+	qDebug("Gui::TPlaylist::loadM3u");
 
-	bool utf8 = (QFileInfo(file).suffix().toLower() == "m3u8");
+	bool utf8 = QFileInfo(file).suffix().toLower() == "m3u8";
 
 	QRegExp info("^#EXTINF:(.*),(.*)");
 
@@ -551,39 +565,32 @@ void TPlaylist::load_m3u(const QString &file, bool clear, bool play) {
 
 		if (clear)
 			this->clear();
-		QString filename="";
-		QString name="";
-		double duration=0;
+
+		QString name = "";
+		double duration = 0;
 
 		QTextStream stream(&f);
-
 		if (utf8)
 			stream.setCodec("UTF-8");
 		else
 			stream.setCodec(QTextCodec::codecForLocale());
 
-		QString line;
 		while (!stream.atEnd()) {
-			line = stream.readLine().trimmed();
-			if (line.isEmpty()) continue; // Ignore empty lines
+			QString line = stream.readLine().trimmed();
 
-			qDebug("Gui::TPlaylist::load_m3u: line: '%s'", line.toUtf8().data());
-			if (info.indexIn(line)!=-1) {
+			// Ignore empty lines
+			if (line.isEmpty())
+				continue;
+
+			qDebug() << "Gui::TPlaylist::loadM3u: line:" << line;
+			if (info.indexIn(line) >= 0) {
 				duration = info.cap(1).toDouble();
 				name = info.cap(2);
-				qDebug("Gui::TPlaylist::load_m3u: name: '%s', duration: %f", name.toUtf8().data(), duration);
+				qDebug() << "Gui::TPlaylist::loadM3u: name:" << name << "duration:" << duration;
 			} else if (line.startsWith("#")) {
-				// Comment
-				// Ignore
+				// Ignore comments
 			} else {
-				filename = line;
-				QFileInfo fi(filename);
-				if (fi.exists()) {
-					filename = fi.absoluteFilePath();
-				} else if (QFileInfo(playlist_path + "/" + filename).exists()) {
-					filename = playlist_path + "/" + filename;
-				}
-				addItem(filename, name, duration);
+				cleanAndAddItem(line, name, duration);
 				name = "";
 				duration = 0;
 			}
@@ -597,11 +604,11 @@ void TPlaylist::load_m3u(const QString &file, bool clear, bool play) {
 	}
 }
 
-void TPlaylist::load_pls(const QString &file, bool clear, bool play) {
-	qDebug("Gui::TPlaylist::load_pls");
+void TPlaylist::loadIni(const QString &file, bool clear, bool play) {
+	qDebug("Gui::TPlaylist::loadIni");
 
 	if (!QFile::exists(file)) {
-		qDebug("Gui::TPlaylist::load_pls: '%s' doesn't exist, doing nothing", file.toUtf8().constData());
+		qDebug("Gui::TPlaylist::loadIni: '%s' doesn't exist, doing nothing", file.toUtf8().constData());
 		return;
 	}
 
@@ -623,14 +630,7 @@ void TPlaylist::load_pls(const QString &file, bool clear, bool play) {
 			filename = set.value("File" + QString::number(n + 1), "").toString();
 			name = set.value("Title" + QString::number(n + 1), "").toString();
 			duration = (double) set.value("Length" + QString::number(n + 1), 0).toInt();
-
-			QFileInfo fi(filename);
-			if (fi.exists()) {
-				filename = fi.absoluteFilePath();
-			} else if (QFileInfo(playlist_path + "/" + filename).exists()) {
-				filename = playlist_path + "/" + filename;
-			}
-			addItem(filename, name, duration);
+			cleanAndAddItem(filename, name, duration);
 		}
 	}
 
@@ -642,8 +642,8 @@ void TPlaylist::load_pls(const QString &file, bool clear, bool play) {
 		startPlay();
 }
 
-bool TPlaylist::save_m3u(QString file) {
-	qDebug("Gui::TPlaylist::save_m3u: '%s'", file.toUtf8().data());
+bool TPlaylist::saveM3u(QString file) {
+	qDebug("Gui::TPlaylist::saveM3u: '%s'", file.toUtf8().data());
 
 	QString dir_path = QFileInfo(file).path();
 	if (!dir_path.endsWith("/")) dir_path += "/";
@@ -673,9 +673,11 @@ bool TPlaylist::save_m3u(QString file) {
 		TPlaylistItemList::iterator it;
 		for (it = pl.begin(); it != pl.end(); ++it) {
 			filename = (*it).filename();
-			#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 			filename = Helper::changeSlashes(filename);
-			#endif
+#endif
+
 			stream << "#EXTINF:";
 			stream << (*it).duration() << ",";
 			stream << (*it).name() << "\n";
@@ -694,27 +696,25 @@ bool TPlaylist::save_m3u(QString file) {
 	}
 }
 
-
-bool TPlaylist::save_pls(QString file) {
-	qDebug("Gui::TPlaylist::save_pls: '%s'", file.toUtf8().data());
+bool TPlaylist::saveIni(QString file) {
+	qDebug() << "Gui::TPlaylist::saveIni:" << file;
 
 	QString dir_path = QFileInfo(file).path();
-	if (!dir_path.endsWith("/")) dir_path += "/";
+	if (!dir_path.endsWith("/"))
+		dir_path += "/";
 
-	#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	dir_path = Helper::changeSlashes(dir_path);
-	#endif
+#endif
 
-	qDebug(" * dirPath: '%s'", dir_path.toUtf8().data());
-
+	qDebug() << "Gui::TPlaylist::saveIni: dirPath" << dir_path;
 	QSettings set(file, QSettings::IniFormat);
 	set.beginGroup("playlist");
 	
-	QString filename;
-
 	TPlaylistItemList::iterator it;
 	for (int n=0; n < pl.count(); n++) {
-		filename = pl[n].filename();
+		QString filename = pl[n].filename();
+
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		filename = Helper::changeSlashes(filename);
 #endif
@@ -736,13 +736,12 @@ bool TPlaylist::save_pls(QString file) {
 
 	set.sync();
 
-	bool ok = (set.status() == QSettings::NoError);
+	bool ok = set.status() == QSettings::NoError;
 	if (ok)
 		modified = false;
 
 	return ok;
 }
-
 
 void TPlaylist::load() {
 	if (maybeSave()) {
@@ -755,9 +754,9 @@ void TPlaylist::load() {
 		if (!s.isEmpty()) {
 			latest_dir = QFileInfo(s).absolutePath();
 			if (QFileInfo(s).suffix().toLower() == "pls")
-				load_pls(s);
+				loadIni(s);
 			else
-				load_m3u(s);
+				loadM3u(s);
 		}
 	}
 }
@@ -788,9 +787,9 @@ bool TPlaylist::save() {
 		}
 		latest_dir = QFileInfo(s).absolutePath();
 		if (QFileInfo(s).suffix().toLower() == "pls")
-			return save_pls(s);
+			return saveIni(s);
 		else
-			return save_m3u(s);
+			return saveM3u(s);
 	} else {
 		return false;
 	}
@@ -1004,24 +1003,20 @@ void TPlaylist::getMediaInfo() {
 	qDebug("Gui::TPlaylist::getMediaInfo");
 
 	QString filename = core->mdat.filename;
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	filename = Helper::changeSlashes(filename);
-#endif
-
 	QString title = core->mdat.displayName();
 	QString artist = core->mdat.meta_data.value("ARTIST");
 	if (!artist.isEmpty())
 		title = artist + " - " + title;
-
 	double duration = core->mdat.duration;
 	bool need_update = false;
 
 	for (int n = 0; n < pl.count(); n++) {
 		TPlaylistItem& item = pl[n];
 		if (item.filename() == filename) {
-			// TODO: better write protection...
-			// Protect titles loaded from an external playlist
+			// TODO: better write protection.
+			// Need always overwrite for left behind garbage...
+
+			// For now still protect titles loaded from an external playlist
 			// by only updating items with duration 0
 			if (item.duration() == 0) {
 				if (!item.edited()) {
@@ -1091,16 +1086,10 @@ void TPlaylist::addFile(const QString &filename) {
 		QFileInfo fi(filename);
 		QString ext = fi.suffix().toLower();
 		if (ext == "m3u" || ext == "m3u8") {
-			load_m3u(filename, false, false);
+			loadM3u(filename, false, false);
 		} else if (ext == "pls") {
-			load_pls(filename, false, false);
-		} /* else if (get_info) {
-			// TODO: currently get_info is always false
-			// Move it to a seperate thread before enabling
-			TMediaData media_data;
-			TInfoProvider::getInfo(filename, media_data);
-			addItem(filename, media_data.displayName(), media_data.duration);
-		} */ else {
+			loadIni(filename, false, false);
+		} else {
 			addItem(filename, fi.fileName(), 0);
 		}
 
@@ -1205,7 +1194,8 @@ void TPlaylist::addUrls() {
 	if (d.exec() == QDialog::Accepted) {
 		QStringList urls = d.lines();
 		foreach(QString u, urls) {
-			if (!u.isEmpty()) addItem(u, "", 0);
+			if (!u.isEmpty())
+				addItem(u, "", 0);
 		}
 		updateView();
 	}

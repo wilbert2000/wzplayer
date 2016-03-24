@@ -68,6 +68,7 @@ QString Helper::timeForJumps(int secs) {
 	}
 }
 
+// TODO: fix
 QString Helper::changeSlashes(QString filename) {
 	// Only change if file exists (it's a local file)
 	if (QFileInfo(filename).exists())

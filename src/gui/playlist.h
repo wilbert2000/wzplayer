@@ -131,11 +131,11 @@ public slots:
 	void load();
 	bool save();
 
-	void load_m3u(const QString& file, bool clear = true, bool play = true);
-	bool save_m3u(QString file);
+	void loadM3u(const QString& file, bool clear = true, bool play = true);
+	bool saveM3u(QString file);
 
-	void load_pls(const QString& file, bool clear = true, bool play = true);
-	bool save_pls(QString file);
+	void loadIni(const QString& file, bool clear = true, bool play = true);
+	bool saveIni(QString file);
 
 	void onNewMediaStartedPlaying();
 	void onMediaLoaded();
@@ -224,8 +224,9 @@ private:
 	QString playlist_path;
 	QString latest_dir;
 
-	void addItem(QString filename, QString name, double duration);
+	void addItem(const QString& filename, QString name, double duration);
 	int chooseRandomItem();
+	void cleanAndAddItem(QString filename, const QString& name, double duration);
 	void clearPlayedTag();
 	void createTable();
 	void createActions(QWidget* parent);
