@@ -45,7 +45,7 @@
 // TODO:
 #include <cmath>
 
-#include "error.h"
+#include "smperror.h"
 #include "version.h"
 #include "desktop.h"
 #include "discname.h"

@@ -25,7 +25,7 @@
 #include <QApplication>
 
 #include "config.h"
-#include "error.h"
+#include "smperror.h"
 #include "proc/playerprocess.h"
 #include "settings/preferences.h"
 #include "colorutils.h"

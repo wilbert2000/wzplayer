@@ -159,7 +159,7 @@ HEADERS += svn_revision.h \
     maps/chapters.h \
     clhelp.h \
     log.h \
-    error.h \
+    smperror.h \
     smplayer.h \
     config.h
 
@@ -278,7 +278,7 @@ SOURCES	+= version.cpp \
     clhelp.cpp \
     smplayer.cpp \
     log.cpp \
-    error.cpp \
+    smperror.cpp \
     main.cpp \
     config.cpp
 

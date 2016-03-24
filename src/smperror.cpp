@@ -1,4 +1,4 @@
-#include "error.h"
+#include "smperror.h"
 #include <QApplication>
 
 QString TError::exitCodeMsg;
