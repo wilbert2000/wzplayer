@@ -230,6 +230,7 @@ private:
 	void createTable();
 	void createActions(QWidget* parent);
 	void createToolbar();
+	void getMediaInfo();
 	QString lastDir();
 	void setCurrentItem(int current);
 	void swapItems(int item1, int item2);

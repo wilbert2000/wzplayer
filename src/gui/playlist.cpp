@@ -1000,8 +1000,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
 			 << "items for" << filename;
 }
 
-void TPlaylist::onMediaLoaded() {
-	qDebug("Gui::TPlaylist::onMediaLoaded");
+void TPlaylist::getMediaInfo() {
+	qDebug("Gui::TPlaylist::getMediaInfo");
 
 	QString filename = core->mdat.filename;
 
@@ -1009,16 +1009,18 @@ void TPlaylist::onMediaLoaded() {
 	filename = Helper::changeSlashes(filename);
 #endif
 
-	double duration = core->mdat.duration;
 	QString title = core->mdat.displayName();
 	QString artist = core->mdat.meta_data.value("ARTIST");
 	if (!artist.isEmpty())
 		title = artist + " - " + title;
 
+	double duration = core->mdat.duration;
 	bool need_update = false;
+
 	for (int n = 0; n < pl.count(); n++) {
 		TPlaylistItem& item = pl[n];
 		if (item.filename() == filename) {
+			// TODO: better write protection...
 			// Protect titles loaded from an external playlist
 			// by only updating items with duration 0
 			if (item.duration() == 0) {
@@ -1035,6 +1037,11 @@ void TPlaylist::onMediaLoaded() {
 		updateView();
 }
 
+void TPlaylist::onMediaLoaded() {
+	qDebug("Gui::TPlaylist::onMediaLoaded");
+	getMediaInfo();
+}
+
 void TPlaylist::mediaEOF() {
 	qDebug("Gui::Tplaylist::mediaEOF");
 
@@ -1046,8 +1053,8 @@ void TPlaylist::mediaEOF() {
 void TPlaylist::playerSwitchedTitle(int id) {
 	qDebug("Gui::TPlaylist::playerSwitchedTitle: %d", id);
 
-	// current item = id - core->mdat.titles.firstID() only works if
-	// mdat.titles is identical to playlist. Saver to search for title.
+	// Search for title on file name instead of using id as index,
+	// because user can change order of the playlist.
 	TDiscData disc = TDiscName::split(core->mdat.filename);
 	disc.title = id;
 	QString filename = TDiscName::join(disc);
@@ -1060,7 +1067,8 @@ void TPlaylist::playerSwitchedTitle(int id) {
 		}
 	}
 
-	qWarning("Gui::TPlaylist::playerSwitchedTitle: title %d not found", id);
+	qWarning() << "Gui::TPlaylist::playerSwitchedTitle: title id" << id
+			   << "filename" << filename << "not found in playlist";
 }
 
 // Add current file to playlist
@@ -1069,7 +1077,7 @@ void TPlaylist::addCurrentFile() {
 
 	if (!core->mdat.filename.isEmpty()) {
 		addItem(core->mdat.filename, "", 0);
-		onMediaLoaded();
+		getMediaInfo();
 	}
 }
 
