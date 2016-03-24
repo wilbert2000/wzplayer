@@ -45,7 +45,7 @@
 // TODO:
 #include <cmath>
 
-#include "smperror.h"
+#include "errormsg.h"
 #include "version.h"
 #include "desktop.h"
 #include "discname.h"
@@ -2423,7 +2423,7 @@ void TBase::onPlayerFinishedWithError(int exit_code) {
 
 	block_resize = false;
 
-	QString msg = TError::message(exit_code) + " (" + core->mdat.filename + ")";
+	QString msg = TErrorMsg::message(exit_code) + " (" + core->mdat.filename + ")";
 	displayMessage(msg, 0);
 
 	static bool busy = false;
@@ -2438,7 +2438,7 @@ void TBase::onPlayerFinishedWithError(int exit_code) {
 
 void TBase::onPlayerError(QProcess::ProcessError e) {
 	qDebug("Gui::TBase::onPlayerError: %d", e);
-	onPlayerFinishedWithError(TError::processErrorToErrorID(e));
+	onPlayerFinishedWithError(TErrorMsg::processErrorToErrorID(e));
 }
 
 

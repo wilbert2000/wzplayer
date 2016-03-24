@@ -1,15 +1,15 @@
-#include "smperror.h"
+#include "errormsg.h"
 #include <QApplication>
 
-QString TError::exitCodeMsg;
+QString TErrorMsg::exitCodeMsg;
 
-void TError::setExitCodeMsg(const QString &msg) {
+void TErrorMsg::setExitCodeMsg(const QString &msg) {
 	exitCodeMsg = msg;
 }
 
-QString TError::message(int id) {
+QString TErrorMsg::message(int id) {
 
-	static const char* c = "TError";
+	static const char* c = "TErrorMsg";
 	static const char* msgs[] = {
 		QT_TRANSLATE_NOOP(c, "The player failed to start. Please check the player path in the preferences dialog."),
 		QT_TRANSLATE_NOOP(c, "The player quit unexpectedly"),

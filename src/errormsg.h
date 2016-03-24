@@ -4,9 +4,9 @@
 #include <QString>
 #include <QProcess>
 
-class TError {
+class TErrorMsg {
 public:
-	enum TErrorID {
+	enum TErrorMsgID {
 		ERR_FIRST_ID = 4000,
 		ERR_FAILED_TO_START = ERR_FIRST_ID,
 		ERR_CRASHED,
@@ -25,8 +25,8 @@ public:
 
 	static QString message(int id);
 	static void setExitCodeMsg(const QString& msg);
-	static TErrorID processErrorToErrorID(QProcess::ProcessError error) {
-		return (TErrorID) (ERR_FAILED_TO_START + error);
+	static TErrorMsgID processErrorToErrorID(QProcess::ProcessError error) {
+		return (TErrorMsgID) (ERR_FAILED_TO_START + error);
 	}
 
 private:

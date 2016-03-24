@@ -74,7 +74,7 @@ HEADERS += svn_revision.h \
     images.h \
 	inforeader.h \
     inforeadermpv.h \
-    inforeadermlayer.h \
+    inforeadermplayer.h \
     corestate.h \
 	core.h \
     lineedit_with_icon.h \
@@ -159,7 +159,7 @@ HEADERS += svn_revision.h \
     maps/chapters.h \
     clhelp.h \
     log.h \
-    smperror.h \
+    errormsg.h \
     smplayer.h \
     config.h
 
@@ -278,7 +278,7 @@ SOURCES	+= version.cpp \
     clhelp.cpp \
     smplayer.cpp \
     log.cpp \
-    smperror.cpp \
+    errormsg.cpp \
     main.cpp \
     config.cpp
 
