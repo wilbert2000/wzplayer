@@ -299,9 +299,6 @@ void TBase::createCore() {
 	connect(core, SIGNAL(playerFinishedWithError(int)),
 			 this, SLOT(onPlayerFinishedWithError(int)));
 
-	connect(core, SIGNAL(receivedForbidden()),
-			 this, SLOT(gotForbidden()));
-
 	connect(playerwindow, SIGNAL(wheelUp()),
 			 core, SLOT(wheelUp()));
 	connect(playerwindow, SIGNAL(wheelDown()),

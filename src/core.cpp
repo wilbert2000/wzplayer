@@ -93,10 +93,10 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			 this, SLOT(onReceivedPause()));
 
 	connect(proc, SIGNAL(receivedBuffering()),
-			 this, SIGNAL(displayBuffering()));
+			 this, SLOT(displayBuffering()));
 
 	connect(proc, SIGNAL(receivedBufferingEnded()),
-			 this, SLOT(displayBufferingEnded()));
+			this, SLOT(displayBufferingEnded()));
 
 	connect(proc, SIGNAL(receivedMessage(const QString&)),
 			 this, SLOT(displayMessage(const QString&)));
