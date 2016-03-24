@@ -93,6 +93,7 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData*
 bool TPlayerProcess::startPlayer() {
 
 	exit_code_override = 0;
+	TError::setExitCodeMsg("");
 
 	notified_player_is_running = false;
 

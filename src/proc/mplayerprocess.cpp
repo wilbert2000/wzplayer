@@ -846,7 +846,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
 
 	// Errors
-	static QRegExp rx_error_file_not_found("^File not found: '(.*)'");
 	static QRegExp rx_error_open("^Failed to open (.*).");
 	static QRegExp rx_error_http_403("Server returned 403:");
 	static QRegExp rx_error_http_404("Server returned 404:");
@@ -1063,18 +1062,9 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	}
 
 	// Errors
-	if (rx_error_file_not_found.indexIn(line) >= 0) {
-		if (rx_error_file_not_found.cap(1) == md->filename) {
-			qDebug("Proc::TMPlayerProcess::parseLine: stored file not found");
-			exit_code_override = TError::ERR_FILE_NOT_FOUND;
-		} else {
-			qDebug("Proc::TMPlayerProcess::parseLine: skipped file not found");
-		}
-		return true;
-	}
 	if (rx_error_open.indexIn(line) >= 0) {
 		if (exit_code_override == 0 && rx_error_open.cap(1) == md->filename) {
-			qDebug("Proc::TMPlayerProcess::parseLine: stored open failed");
+			qDebug("Proc::TMPlayerProcess::parseLine: storing open failed");
 			exit_code_override = TError::ERR_OPEN;
 		} else {
 			qDebug("Proc::TMPlayerProcess::parseLine: skipped open failed");
@@ -1082,18 +1072,18 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		return true;
 	}
 	if (rx_error_http_403.indexIn(line) >= 0) {
-		qDebug("Proc::TMPlayerProcess::parseLine: stored HTTP 403");
+		qDebug("Proc::TMPlayerProcess::parseLine: storing HTTP 403");
 		exit_code_override = TError::ERR_HTTP_403;
 		return true;
 	}
 	if (rx_error_http_404.indexIn(line) >= 0) {
-		qDebug("Proc::TMPlayerProcess::parseLine: stored HTTP 404");
+		qDebug("Proc::TMPlayerProcess::parseLine: storing HTTP 404");
 		exit_code_override = TError::ERR_HTTP_404;
 		return true;
 	}
 	if (rx_error_no_stream_found.indexIn(line) >= 0) {
 		if (exit_code_override == 0) {
-			qDebug("Proc::TMPlayerProcess::parseLine: stored no stream");
+			qDebug("Proc::TMPlayerProcess::parseLine: storing no stream");
 			exit_code_override = TError::ERR_NO_STREAM_FOUND;
 		} else {
 			qDebug("Proc::TMPlayerProcess::parseLine: skipped no stream");

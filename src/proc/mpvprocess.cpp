@@ -524,6 +524,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 
 	// Errors
+	static QRegExp rx_file_open("^\\[file\\] Cannot open file '.*': (.*)");
 	static QRegExp rx_failed_open("^Failed to open (.*)\\.$");
 	static QRegExp rx_failed_format("^Failed to recognize file format");
 	static QRegExp rx_error_http_403("HTTP error 403 ");
@@ -684,6 +685,12 @@ bool TMPVProcess::parseLine(QString& line) {
 	}
 
 	// Errors
+	if (rx_file_open.indexIn(line) >= 0) {
+		qDebug("MVPProcess::parseLine: stored file open failed");
+		exit_code_override = TError::ERR_FILE_OPEN;
+		TError::setExitCodeMsg(rx_file_open.cap(1));
+		return true;
+	}
 	if (rx_failed_open.indexIn(line) >= 0) {
 		if (exit_code_override == 0 && rx_failed_open.cap(1) == md->filename) {
 			qDebug("MVPProcess::parseLine: stored open failed");

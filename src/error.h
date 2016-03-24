@@ -5,7 +5,6 @@
 #include <QProcess>
 
 class TError {
-
 public:
 	enum TErrorID {
 		ERR_FIRST_ID = 4000,
@@ -14,7 +13,7 @@ public:
 		ERR_TIMEOUT,
 		ERR_READ_ERROR,
 		ERR_WRITE_ERROR,
-		ERR_FILE_NOT_FOUND,
+		ERR_FILE_OPEN,
 		ERR_OPEN,
 		ERR_FILE_FORMAT,
 		ERR_NO_DISC,
@@ -25,9 +24,13 @@ public:
 	};
 
 	static QString message(int id);
+	static void setExitCodeMsg(const QString& msg);
 	static TErrorID processErrorToErrorID(QProcess::ProcessError error) {
 		return (TErrorID) (ERR_FAILED_TO_START + error);
 	}
+
+private:
+	static QString exitCodeMsg;
 };
 
 #endif // ERROR_H

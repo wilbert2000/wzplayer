@@ -1,6 +1,12 @@
 #include "error.h"
 #include <QApplication>
 
+QString TError::exitCodeMsg;
+
+void TError::setExitCodeMsg(const QString &msg) {
+	exitCodeMsg = msg;
+}
+
 QString TError::message(int id) {
 
 	static const char* c = "TError";
@@ -10,7 +16,7 @@ QString TError::message(int id) {
 		QT_TRANSLATE_NOOP(c, "Timeout waiting for the player"),
 		QT_TRANSLATE_NOOP(c, "Error trying to read from the player"),
 		QT_TRANSLATE_NOOP(c, "Error trying to write to the player"),
-		QT_TRANSLATE_NOOP(c, "File not found"),
+		QT_TRANSLATE_NOOP(c, "Cannot open file:"),
 		QT_TRANSLATE_NOOP(c, "Failed to open file"),
 		QT_TRANSLATE_NOOP(c, "Failed to recognize file format"),
 		QT_TRANSLATE_NOOP(c, "No disc in device"),
@@ -22,5 +28,10 @@ QString TError::message(int id) {
 	if (id < ERR_FIRST_ID || id > ERR_LAST_ID) {
 		id = ERR_CRASHED;
 	}
-	return qApp->translate(c, msgs[id - ERR_FIRST_ID]);
+	QString msg = qApp->translate(c, msgs[id - ERR_FIRST_ID]);
+	if (id == ERR_FILE_OPEN) {
+		msg += " " + exitCodeMsg;
+	}
+
+	return msg;
 }
