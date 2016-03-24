@@ -58,7 +58,9 @@ void TDemuxer::createHelp() {
 	addSectionTitle(tr("Demuxer"));
 
 	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
-		tr("If this option is checked, the lavf demuxer will be used for all formats."));
+		tr("If checked, the lavf demuxer will be used for all formats."
+		   " Note: you can set the demuxer for the current container through"
+		   " the demuxer tab of the properties dialog."));
 
 	setWhatsThis(idx_check, tr("Rebuild index if needed"),
 		tr("Rebuilds index of files if no index was found, allowing seeking. "
