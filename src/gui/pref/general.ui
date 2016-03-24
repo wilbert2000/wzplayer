@@ -95,7 +95,7 @@
           <item>
            <widget class="QCheckBox" name="report_player_crashes_check">
             <property name="text">
-             <string>Report player &amp;errors in message box</string>
+             <string>Report player &amp;errors in a message box</string>
             </property>
            </widget>
           </item>

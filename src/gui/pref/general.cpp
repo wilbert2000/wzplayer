@@ -254,9 +254,9 @@ void TGeneral::createHelp() {
 		+ "</b>");
 
 	setWhatsThis(report_player_crashes_check,
-		tr("Report player errors"),
-		tr("If checked, a messagebox will inform you when the player reports errors."
-		   "If not then player errors will only be shown in the statusbar."));
+		tr("Report player errors in a messagebox"),
+		tr("Shows a messagebox when the player reports errors or crashes."
+		   " Errors will always be shown in the statusbar."));
 
 	setWhatsThis(settings_group, tr("Remember settings for every file"),
 		tr("When checked SMPlayer will remember the settings you make for each file"

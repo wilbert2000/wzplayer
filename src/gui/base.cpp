@@ -2430,7 +2430,7 @@ void TBase::onPlayerFinishedWithError(int exit_code) {
 	if (pref->report_player_crashes && !busy) {
 		busy = true;
 		QMessageBox::warning(this, tr("%1 process error").arg(pref->playerName()),
-							 msg + " " + tr("See the log for details."),
+							 msg + " \n" + tr("See Options -> View log for additional details."),
 							 QMessageBox::Ok);
 		busy = false;
 	}
