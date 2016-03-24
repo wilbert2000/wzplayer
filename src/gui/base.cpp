@@ -1022,7 +1022,7 @@ void TBase::applyNewPreferences() {
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
 	// Monitor
-	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
+	playerwindow->setMonitorAspect(pref->monitorAspectDouble());
 
 	// Subtitles
 	subtitleMenu->useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);

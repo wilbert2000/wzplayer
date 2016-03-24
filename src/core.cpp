@@ -154,7 +154,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
 			this, SLOT(dvdnavUpdateMousePos(QPoint)));
 
-	playerwindow->setMonitorAspect(pref->monitor_aspect_double());
+	playerwindow->setMonitorAspect(pref->monitorAspectDouble());
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef DISABLE_SCREENSAVER

@@ -1432,25 +1432,25 @@ bool TPreferences::useColorKey() const {
 
 }
 
-double TPreferences::monitor_aspect_double() {
+double TPreferences::monitorAspectDouble() {
 
 	QRegExp exp("(\\d+)[:/](\\d+)");
 
 	if (exp.indexIn(monitor_aspect) >= 0) {
 		int w = exp.cap(1).toInt();
 		int h = exp.cap(2).toInt();
-		qDebug("Settings::TPreferences::monitor_aspect_double: monitor aspect %d:%d", w, h);
+		qDebug("Settings::TPreferences::monitorAspectDouble: monitor aspect %d:%d", w, h);
 		return h <= 0.01 ? 0 : (double) w / h;
 	}
 
 	bool ok;
 	double res = monitor_aspect.toDouble(&ok);
 	if (ok) {
-		qDebug("Settings::TPreferences::monitor_aspect_double: monitor aspect %f", res);
+		qDebug("Settings::TPreferences::monitorAspectDouble: monitor aspect %f", res);
 		return res;
 	}
 
-	qDebug("Settings::TPreferences::monitor_aspect_double: monitor_aspect set to 0");
+	qDebug("Settings::TPreferences::monitorAspectDouble: monitor_aspect set to 0");
 	return 0;
 }
 

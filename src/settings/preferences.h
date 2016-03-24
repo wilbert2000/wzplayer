@@ -255,7 +255,7 @@ public:
 
 	// Advanced tab
 	QString monitor_aspect;
-	double monitor_aspect_double();
+	double monitorAspectDouble();
 
 #if USE_ADAPTER
 	int adapter; //Screen for overlay. If -1 it won't be used.
