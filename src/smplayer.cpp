@@ -613,7 +613,7 @@ void TSMPlayer::showInfo() {
 #endif
 
 	qDebug("%s", s.toUtf8().data());
-	qDebug("Compiled with Qt v. %s, using %s", QT_VERSION_STR, qVersion());
+	qDebug("Compiled with Qt v. %s, running on Qt v. %s", QT_VERSION_STR, qVersion());
 
 	qDebug(" * application path: '%s'", TPaths::appPath().toUtf8().data());
 	qDebug(" * data path: '%s'", TPaths::dataPath().toUtf8().data());
@@ -622,7 +622,7 @@ void TSMPlayer::showInfo() {
 	qDebug(" * themes path: '%s'", TPaths::themesPath().toUtf8().data());
 	qDebug(" * shortcuts path: '%s'", TPaths::shortcutsPath().toUtf8().data());
 	qDebug(" * config path: '%s'", TPaths::configPath().toUtf8().data());
-	qDebug(" * file for subtitles' styles: '%s'", TPaths::subtitleStyleFile().toUtf8().data());
+	qDebug(" * file for subtitle styles: '%s'", TPaths::subtitleStyleFile().toUtf8().data());
 	qDebug(" * current path: '%s'", QDir::currentPath().toUtf8().data());
 #ifdef Q_OS_WIN
 	qDebug(" * font path: '%s'", TPaths::fontPath().toUtf8().data());
