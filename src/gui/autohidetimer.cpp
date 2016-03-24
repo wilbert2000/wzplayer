@@ -22,6 +22,7 @@ TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
 	, settingVisible(false)
 	, autoHideMouse(false)
 	, mouseHidden(false)
+	, draggingPlayerWindow(false)
 	, playerWindow(playerwin) {
 
 	setSingleShot(true);
@@ -183,6 +184,14 @@ void TAutoHideTimer::hideMouse() {
 	}
 }
 
+void TAutoHideTimer::setDraggingPlayerWindow(bool dragging) {
+
+	draggingPlayerWindow = dragging;
+	if (autoHide && enabled && draggingPlayerWindow && visibleWidget()) {
+		setVisible(false);
+	}
+}
+
 void TAutoHideTimer::onTimeOut() {
 
 	// Handle mouse
@@ -201,10 +210,10 @@ void TAutoHideTimer::onTimeOut() {
 	}
 	autoHideMouseLastPosition = QCursor::pos();
 
-	// Handle widgets
+	// Hide widgets when right mouse down or inside show area
 	if (autoHide && enabled && visibleWidget()) {
 		if ((QApplication::mouseButtons() & Qt::RightButton)
-			|| mouseInsideShowArea()) {
+			|| (!draggingPlayerWindow && mouseInsideShowArea())) {
 			QTimer::start();
 		} else {
 			setVisible(false);
@@ -230,9 +239,9 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 	// Handle widgets
 	if (autoHide && enabled && mouse) {
 		// Don't show when left button still down, like when dragging
-		if (((QApplication::mouseButtons() & Qt::LeftButton) == 0)
+		if ((QApplication::mouseButtons() & Qt::LeftButton) == 0
 			&& hiddenWidget()) {
-			if (pref->floating_activation_area == Settings::TPreferences::Anywhere
+			if (pref->floating_activation_area == TPreferences::Anywhere
 				|| button) {
 				setVisible(true);
 				QTimer::start();

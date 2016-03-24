@@ -289,6 +289,7 @@ void TPlayerWindow::startDragging() {
 	if (delay_left_click)
 		left_click_timer->stop();
 	QApplication::setOverrideCursor(QCursor(Qt::DragMoveCursor));
+	emit draggingChanged(true);
 }
 
 void TPlayerWindow::stopDragging() {
@@ -296,6 +297,7 @@ void TPlayerWindow::stopDragging() {
 
 	dragging = false;
 	QApplication::restoreOverrideCursor();
+	emit draggingChanged(false);
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {

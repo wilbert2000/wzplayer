@@ -583,6 +583,8 @@ void TBase::createToolbars() {
 	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
 	auto_hide_timer->add(viewMenuBarAct, menuBar());
 	auto_hide_timer->add(viewStatusBarAct, statusBar());
+	connect(playerwindow, SIGNAL(draggingChanged(bool)),
+			auto_hide_timer, SLOT(setDraggingPlayerWindow(bool)));
 }
 
 void TBase::setupNetworkProxy() {

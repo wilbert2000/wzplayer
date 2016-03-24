@@ -36,6 +36,7 @@ public slots:
 	void setAutoHideMouse(bool on);
 	void startAutoHideMouse() { setAutoHideMouse(true); }
 	void stopAutoHideMouse() { setAutoHideMouse(false); }
+	void setDraggingPlayerWindow(bool dragging);
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* event);
@@ -48,6 +49,7 @@ private:
 	bool autoHideMouse;
 	bool mouseHidden;
 	QPoint autoHideMouseLastPosition;
+	bool draggingPlayerWindow;
 
 	QWidget* playerWindow;
 
