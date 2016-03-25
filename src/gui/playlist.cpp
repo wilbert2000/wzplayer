@@ -211,8 +211,11 @@ void TPlaylist::createActions(QWidget* parent) {
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
 	// Remove actions
-	removeSelectedAct = new TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected"), "noicon");
+	removeSelectedAct = new TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected from list"), "noicon");
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
+
+	deleteSelectedFileFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete selected from disk"), "noicon");
+	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 
 	removeAllAct = new TAction(this, "pl_remove_all", QT_TR_NOOP("Remove &all"), "noicon");
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
@@ -224,9 +227,6 @@ void TPlaylist::createActions(QWidget* parent) {
 	// Edit
 	editAct = new TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), "noicon");
 	connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
-
-	deleteSelectedFileFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete file from disk"), "noicon");
-	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 
 	// Add actions to parent
 	parent->addActions(actions());
@@ -255,6 +255,7 @@ void TPlaylist::createToolbar() {
 
 	remove_menu = new QMenu(this);
 	remove_menu->addAction(removeSelectedAct);
+	remove_menu->addAction(deleteSelectedFileFromDiskAct);
 	remove_menu->addAction(removeAllAct);
 
 	remove_button = new QToolButton(this);
@@ -305,7 +306,7 @@ void TPlaylist::retranslateStrings() {
 	remove_button->setToolTip(tr("Remove..."));
 }
 
-void TPlaylist::appendFiles(QStringList& files) const {
+void TPlaylist::getFilesAppend(QStringList& files) const {
 
 	TPlaylistItemList::const_iterator i;
 	for (i = pl.constBegin(); i != pl.constEnd(); i++) {
@@ -399,37 +400,17 @@ void TPlaylist::clear() {
 	modified = false;
 }
 
-void TPlaylist::remove(int i) {
-
-	if (i >= 0 && i < pl.count()) {
-		pl.removeAt(i);
-		if(current_item == i && i == (pl.count() - 1))
-			setCurrentItem(i - 1);
-		modified = true;
-		updateView();
-	}
-}
-
-int TPlaylist::count() const {
-	return pl.count();
-}
-
-bool TPlaylist::isEmpty() const {
-	return pl.isEmpty();
-}
-
 void TPlaylist::addItem(const QString& filename, QString name, double duration) {
 	//qDebug() << "Gui::TPlaylist::addItem:" << filename;
 
 	if (name.isEmpty()) {
-		QFileInfo fi(filename);
-		// TODO:
 		// Let's see if it looks like a file (no dvd://1 or something)
 		if (filename.indexOf("://") < 0) {
-			// Local file
-			name = fi.fileName();
+			name = QFileInfo(filename).fileName();
+			if (name.isEmpty()) {
+				name = filename;
+			}
 		} else {
-			// Stream
 			name = filename;
 		}
 	}
@@ -667,6 +648,7 @@ bool TPlaylist::saveM3u(QString file) {
 		QString filename = (*it).filename();
 
 		// Try to save the filename as relative instead of absolute
+		// Normalize separator to match dir_path
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		if (QFileInfo(filename).exists()) {
 			filename = QDir::toNativeSeparators(filename);
@@ -1070,8 +1052,8 @@ void TPlaylist::addFile(const QString &filename) {
 	// giving a nice balance. Load if the individual file is requested,
 	// skip when adding a directory.
 
-	if (QFile::exists(filename)) {
-		QFileInfo fi(filename);
+	QFileInfo fi(filename);
+	if (fi.exists()) {
 		QString ext = fi.suffix().toLower();
 		if (ext == "m3u" || ext == "m3u8") {
 			loadM3u(filename, false, false);
@@ -1196,12 +1178,13 @@ void TPlaylist::removeSelected() {
 	int first_selected = -1;
 	int number_previous_item = 0;
 
-	for (int n=0; n < listView->rowCount(); n++) {
+	for (int n = 0; n < listView->rowCount(); n++) {
 		if (listView->isSelected(n, 0)) {
 			qDebug(" row %d selected", n);
 			pl[n].setMarkForDeletion(true);
 			number_previous_item++;
-			if (first_selected == -1) first_selected = n;
+			if (first_selected == -1)
+				first_selected = n;
 		}
 	}
 
@@ -1215,19 +1198,18 @@ void TPlaylist::removeSelected() {
 		}
 	}
 
-
 	if (first_selected < current_item) {
 		current_item -= number_previous_item;
 	}
 
-	if (isEmpty())
+	if (pl.isEmpty())
 		modified = false;
 	updateView();
 
 	if (first_selected >= listView->rowCount()) 
 		first_selected = listView->rowCount() - 1;
 
-	if ((first_selected > -1) && (first_selected < listView->rowCount())) {
+	if (first_selected >= 0 && first_selected < listView->rowCount()) {
 		listView->clearSelection();
 		listView->setCurrentCell(first_selected, 0);
 		//listView->selectRow(first_selected);
@@ -1247,7 +1229,6 @@ void TPlaylist::clearPlayedTag() {
 }
 
 int TPlaylist::chooseRandomItem() {
-	// qDebug("Gui::TPlaylist::chooseRandomItem");
 
 	// Create list of items not yet played
 	QList <int> fi;
@@ -1259,9 +1240,10 @@ int TPlaylist::chooseRandomItem() {
 		return -1; // none free
 
 	int selected = (int) ((double) fi.count() * qrand()/(RAND_MAX+1.0));
-	qDebug("Gui::TPlaylist::chooseRandomItem: selected item: %d",
-		   fi[selected]);
-	return fi[selected];
+	selected = fi[selected];
+
+	qDebug("Gui::TPlaylist::chooseRandomItem: selected item: %d", selected);
+	return selected;
 }
 
 void TPlaylist::swapItems(int item1, int item2) {
@@ -1273,21 +1255,12 @@ void TPlaylist::swapItems(int item1, int item2) {
 
 void TPlaylist::upItem() {
 	qDebug("Gui::TPlaylist::upItem");
-
-	int current = listView->currentRow();
-	qDebug(" currentRow: %d", current);
-
-	moveItemUp(current);
-
+	moveItemUp(listView->currentRow());
 }
 
 void TPlaylist::downItem() {
 	qDebug("Gui::TPlaylist::downItem");
-
-	int current = listView->currentRow();
-	qDebug(" currentRow: %d", current);
-
-	moveItemDown(current);
+	moveItemDown(listView->currentRow());
 }
 
 void TPlaylist::moveItemUp(int current){
@@ -1305,10 +1278,10 @@ void TPlaylist::moveItemUp(int current){
 	}
 }
 
-void TPlaylist::moveItemDown(int current	){
+void TPlaylist::moveItemDown(int current){
 	qDebug("Gui::TPlaylist::moveItemDown");
 
-	if ((current >= 0) && (current < pl.count() - 1)) {
+	if (current >= 0 && current < pl.count() - 1) {
 		swapItems(current, current + 1);
 		if (current_item == current + 1)
 			current_item = current;
@@ -1333,8 +1306,10 @@ void TPlaylist::copyCurrentItem() {
 }
 
 void TPlaylist::editCurrentItem() {
+
 	int current = listView->currentRow();
-	if (current > -1) editItem(current);
+	if (current >= 0)
+		editItem(current);
 }
 
 void TPlaylist::editItem(int item) {
@@ -1362,7 +1337,7 @@ void TPlaylist::deleteSelectedFileFromDisk() {
 	qDebug("Gui::TPlaylist::deleteSelectedFileFromDisk");
 
 	int current = listView->currentRow();
-	if (current > -1) {
+	if (current >= 0) {
 		// If more that one row is selected, select only the current one
 		listView->clearSelection();
 		listView->setCurrentCell(current, 0);

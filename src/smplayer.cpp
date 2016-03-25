@@ -527,7 +527,7 @@ void TSMPlayer::onRequestRestart(bool reset_style) {
 	this->reset_style = reset_style;
 
 	Gui::TPlaylist* playlist = main_window->getPlaylist();
-	playlist->appendFiles(files_to_play);
+	playlist->getFilesAppend(files_to_play);
 	current_file = playlist->currentItem();
 
 	// Rebuild playlist from scratch when restarting a disc. Playing the whole

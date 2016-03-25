@@ -75,50 +75,39 @@ public:
 	TPlaylist(QWidget* parent, TCore* c);
 	virtual ~TPlaylist();
 
-	int count() const;
-	bool isEmpty() const;
-	bool directoryRecursion() const { return recursive_add_directory; }
-	bool savePlaylistOnExit() const { return save_playlist_in_config; }
-	bool playFilesFromStart() const { return play_files_from_start; }
-
-	void appendFiles(QStringList& files) const;
-	int currentItem() const { return current_item; }
-
-	void clear();
-
-	void loadSettings();
-	void saveSettings();
-	void retranslateStrings();
-
-public slots:
 	// Start playing, from item 0 if shuffle is off,
 	// or from a random item otherwise
 	void startPlay();
 	void playItem(int n);
 	void playDirectory(const QString& dir);
-	void playNext();
-	void playPrev();
 
-	void addCurrentFile();
-	void addFiles();
-	void addDirectory();
-	void addUrls();
+	int currentItem() const { return current_item; }
+	int count() const { return pl.count(); }
 
-	void addFile(const QString& filename);
+	void clear();
 	void addFiles(const QStringList& files);
-	void addFileOrDir(const QString& filename);
-
-	// Adds a directory, maybe with recursion (depends on user config)
-	void addDirectory(const QString& dir);
-
-	bool maybeSave();
-	void load();
-	bool save();
+	void getFilesAppend(QStringList& files) const;
 
 	// Preferences
+	bool directoryRecursion() const { return recursive_add_directory; }
+	bool savePlaylistOnExit() const { return save_playlist_in_config; }
+	bool playFilesFromStart() const { return play_files_from_start; }
+
 	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
 	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; }
 	void setPlayFilesFromStart(bool b) { play_files_from_start = b; }
+
+	bool maybeSave();
+	void loadSettings();
+	void saveSettings();
+	void retranslateStrings();
+
+public slots:
+	void playNext();
+	void playPrev();
+
+	void load();
+	bool save();
 
 signals:
 	void playlistEnded();
@@ -187,6 +176,10 @@ private:
 	QString latest_dir;
 
 	void addItem(const QString& filename, QString name, double duration);
+	void addFile(const QString& filename);
+	void addFileOrDir(const QString& filename);
+	void addDirectory(const QString& dir);
+
 	int chooseRandomItem();
 	void cleanAndAddItem(QString filename, const QString& name, double duration);
 	void clearPlayedTag();
@@ -219,14 +212,18 @@ private slots:
 	void moveItemUp(int);
 	void moveItemDown(int);
 
+	void addCurrentFile();
+	void addFiles();
+	void addDirectory();
+	void addUrls();
+
+	void removeSelected();
+	void deleteSelectedFileFromDisk();
 	void removeAll();
-	void remove(int);
 
 	void copyCurrentItem();
 	void editCurrentItem();
 	void editItem(int item);
-	void removeSelected();
-	void deleteSelectedFileFromDisk();
 
 	void sortBy(int section);
 	void sortBy(int section, bool revert, int count);
