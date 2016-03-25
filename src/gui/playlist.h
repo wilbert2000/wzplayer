@@ -175,25 +175,26 @@ private:
 	QString playlist_path;
 	QString latest_dir;
 
-	void addItem(const QString& filename, QString name, double duration);
-	void addFile(const QString& filename);
-	void addFileOrDir(const QString& filename);
-	void addDirectory(const QString& dir);
-
-	int chooseRandomItem();
-	void cleanAndAddItem(QString filename, QString name, double duration);
-	void clearPlayedTag();
-
 	void createTable();
 	void createActions(QWidget* parent);
 	void createToolbar();
 
+	void addItem(const QString& filename, QString name, double duration);
+	void cleanAndAddItem(QString filename, QString name, double duration);
+
+	void addFile(const QString& filename);
+	void addFileOrDir(const QString& filename);
+	void addDirectory(const QString& dir);
+
+	void setCurrentItem(int current);
+	void updateView();
+
+	int chooseRandomItem();
+	void clearPlayedTag();
 	void getMediaInfo();
 	QString lastDir();
-	void setCurrentItem(int current);
 	void swapItems(int item1, int item2);
-
-	void updateView();
+	bool deleteFileFromDisk(int i);
 
 	void loadM3u(const QString& file, bool clear = true, bool play = true);
 	bool saveM3u(QString file);
@@ -205,10 +206,10 @@ private slots:
 	void showContextMenu(const QPoint& pos);
 
 	void playCurrent();
+	void onCellActivated(int row, int);
 
 	void upItem();
 	void downItem();
-
 	void moveItemUp(int);
 	void moveItemDown(int);
 
@@ -217,11 +218,11 @@ private slots:
 	void addDirectory();
 	void addUrls();
 
-	void removeSelected();
+	void removeSelected(bool deleteFromDisk = false);
 	void deleteSelectedFileFromDisk();
 	void removeAll();
 
-	void copyCurrentItem();
+	void copySelected();
 	void editCurrentItem();
 	void editItem(int item);
 
@@ -233,8 +234,6 @@ private slots:
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();
 	void resumePlay();
-
-	void onCellActivated(int row, int);
 };
 
 } // namespace Gui

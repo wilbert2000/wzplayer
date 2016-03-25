@@ -211,18 +211,18 @@ void TPlaylist::createActions(QWidget* parent) {
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
 	// Remove actions
-	removeSelectedAct = new TAction(this, "pl_remove_selected", QT_TR_NOOP("Remove &selected from list"), "noicon");
+	removeSelectedAct = new TAction(this, "pl_remove_selected", QT_TR_NOOP("&Remove from list"), "noicon", Qt::Key_Delete);
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
 
-	deleteSelectedFileFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete selected from disk"), "noicon");
+	deleteSelectedFileFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete from disk..."), "noicon");
 	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
 
-	removeAllAct = new TAction(this, "pl_remove_all", QT_TR_NOOP("Remove &all"), "noicon");
+	removeAllAct = new TAction(this, "pl_remove_all", QT_TR_NOOP("&Clear playlist"), "noicon");
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
 	// Copy
 	copyAct = new TAction(this, "pl_copy", QT_TR_NOOP("&Copy"), "noicon", QKeySequence("Ctrl+C"));
-	connect(copyAct, SIGNAL(triggered()), this, SLOT(copyCurrentItem()));
+	connect(copyAct, SIGNAL(triggered()), this, SLOT(copySelected()));
 
 	// Edit
 	editAct = new TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), "noicon");
@@ -684,92 +684,79 @@ void TPlaylist::playDirectory(const QString &dir) {
 	startPlay();
 }
 
+bool TPlaylist::deleteFileFromDisk(int i) {
+
+	QString filename = pl[i].filename();
+	QFileInfo fi(filename);
+	if (!fi.exists()) {
+		return true;
+	}
+	if (!fi.isFile()) {
+		QMessageBox::warning(this, tr("Error"),
+			tr("Cannot delete '%1', it does not seem to be a file.").arg(filename));
+		return false;
+	}
+
+	// Ask the user for confirmation
+	int res = QMessageBox::question(this, tr("Confirm file deletion"),
+		tr("You're about to delete the file '%1' from your drive.").arg(filename) + "<br>"+
+		tr("This action cannot be undone. Are you sure you want to proceed?"),
+		QMessageBox::Yes, QMessageBox::No);
+
+	if (res == QMessageBox::Yes) {
+		// Cannot delete file on Windows when it is in use
+		if (i == current_item && core->state() != STATE_STOPPED) {
+			core->stop();
+		}
+		if (QFile::remove(filename)) {
+			return true;
+		}
+		QMessageBox::warning(this, tr("Deletion failed"),
+			tr("Failed to delete '%1'").arg(filename));
+	}
+
+	return false;
+}
+
 // Remove selected items
-void TPlaylist::removeSelected() {
+void TPlaylist::removeSelected(bool deleteFromDisk) {
 	qDebug("Gui::TPlaylist::removeSelected");
 
-	int first_selected = -1;
-	int number_previous_item = 0;
-
-	for (int n = 0; n < listView->rowCount(); n++) {
-		if (listView->isSelected(n, 0)) {
-			qDebug(" row %d selected", n);
-			pl[n].setMarkForDeletion(true);
-			number_previous_item++;
-			if (first_selected == -1)
-				first_selected = n;
+	for (int i = listView->rowCount() - 1; i >= 0; i--) {
+		if (listView->isSelected(i, 0)
+			&& (!deleteFromDisk || deleteFileFromDisk(i))) {
+			pl[i].setMarkForDeletion(true);
+			if (i < current_item) {
+				current_item--;
+			} else if (i == current_item) {
+				current_item = -1;
+			}
 		}
 	}
 
 	TPlaylistItemList::iterator it;
 	for (it = pl.begin(); it != pl.end(); ++it) {
 		if ((*it).markedForDeletion()) {
-			qDebug("Remove '%s'", (*it).filename().toUtf8().data());
+			qDebug() << "Removed" << (*it).filename();
 			it = pl.erase(it);
 			it--;
 			modified = true;
 		}
 	}
 
-	if (first_selected < current_item) {
-		current_item -= number_previous_item;
-	}
-
 	if (pl.isEmpty())
 		modified = false;
+
+	listView->clearSelection();
 	updateView();
+}
 
-	if (first_selected >= listView->rowCount())
-		first_selected = listView->rowCount() - 1;
-
-	if (first_selected >= 0 && first_selected < listView->rowCount()) {
-		listView->clearSelection();
-		listView->setCurrentCell(first_selected, 0);
-		//listView->selectRow(first_selected);
-	}
+void TPlaylist::deleteSelectedFileFromDisk() {
+	removeSelected(true);
 }
 
 void TPlaylist::removeAll() {
 	clear();
-}
-
-void TPlaylist::deleteSelectedFileFromDisk() {
-	qDebug("Gui::TPlaylist::deleteSelectedFileFromDisk");
-
-	int current = listView->currentRow();
-	if (current >= 0) {
-		// If more that one row is selected, select only the current one
-		listView->clearSelection();
-		listView->setCurrentCell(current, 0);
-
-		QString filename = pl[current].filename();
-		qDebug() << "Gui::TPlaylist::deleteSelectedFileFromDisk: current file:" << filename;
-
-		QFileInfo fi(filename);
-		if (fi.exists() && fi.isFile()) {
-			// Ask the user for confirmation
-			int res = QMessageBox::question(this, tr("Confirm deletion"),
-						tr("You're about to DELETE the file '%1' from your drive.").arg(filename) + "<br>"+
-						tr("This action cannot be undone. Are you sure you want to proceed?"),
-						QMessageBox::Yes, QMessageBox::No);
-
-			if (res == QMessageBox::Yes) {
-				// Delete file
-				bool success = QFile::remove(filename);
-				if (success) {
-					// Remove item from the playlist
-					removeSelected();
-				} else {
-					QMessageBox::warning(this, tr("Deletion failed"),
-						tr("It wasn't possible to delete '%1'").arg(filename));
-				}
-			}
-		} else {
-			qDebug("Gui::TPlaylist::deleteSelectedFileFromDisk: file doesn't exists or it's not a file");
-			QMessageBox::information(this, tr("Error deleting the file"),
-				tr("It's not possible to delete '%1' from the filesystem.").arg(filename));
-		}
-	}
 }
 
 void TPlaylist::showContextMenu(const QPoint & pos) {
@@ -969,15 +956,29 @@ void TPlaylist::moveItemDown(int current){
 	}
 }
 
-void TPlaylist::copyCurrentItem() {
+void TPlaylist::copySelected() {
 
-	int current = listView->currentRow();
-	if (current >= 0) {
-		QString filename = pl[current].filename();
-		if (!filename.isEmpty()) {
-			QApplication::clipboard()->setText(filename);
-			emit displayMessage(tr("Copied %1").arg(filename), TConfig::MESSAGE_DURATION);
+	QString text;
+	int copied = 0;
+	for (int i = 0; i < listView->rowCount(); i++) {
+		if (listView->isSelected(i, 0) && i < pl.count()) {
+			QString fn = pl[i].filename();
+			if (!fn.isEmpty()) {
+				text += fn + "\n";
+				copied++;
+			}
 		}
+	}
+
+	if (copied > 0) {
+		if (copied == 1) {
+			// Remove trailing new line
+			text = text.left(text.length() - 1);
+			emit displayMessage(tr("Copied %1").arg(text), TConfig::MESSAGE_DURATION);
+		} else {
+			emit displayMessage(tr("Copied %1 file names").arg(copied), TConfig::MESSAGE_DURATION);
+		}
+		QApplication::clipboard()->setText(text);
 	}
 }
 
