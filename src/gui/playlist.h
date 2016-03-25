@@ -169,7 +169,6 @@ private:
 	bool recursive_add_directory;
 	bool save_playlist_in_config;
 	bool play_files_from_start;
-	bool automatically_play_next;
 
 	bool modified;
 	QString playlist_path;

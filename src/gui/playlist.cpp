@@ -89,7 +89,6 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	, recursive_add_directory(true)
 	, save_playlist_in_config(true)
 	, play_files_from_start(true)
-	, automatically_play_next(true)
 	, modified(false) {
 
 	createTable();
@@ -883,10 +882,7 @@ void TPlaylist::onMediaLoaded() {
 
 void TPlaylist::onMediaEOF() {
 	qDebug("Gui::Tplaylist::onMediaEOF");
-
-	if (automatically_play_next) {
-		playNext();
-	}
+	playNext();
 }
 
 void TPlaylist::onTitleTrackChanged(int id) {
@@ -1432,7 +1428,6 @@ void TPlaylist::saveSettings() {
 	set->setValue("recursive_add_directory", recursive_add_directory);
 	set->setValue("save_playlist_in_config", save_playlist_in_config);
 	set->setValue("play_files_from_start", play_files_from_start);
-	set->setValue("automatically_play_next", automatically_play_next);
 
 	if (save_dirs) {
 		set->setValue("latest_dir", latest_dir);
@@ -1472,7 +1467,6 @@ void TPlaylist::loadSettings() {
 	recursive_add_directory = set->value("recursive_add_directory", recursive_add_directory).toBool();
 	save_playlist_in_config = set->value("save_playlist_in_config", save_playlist_in_config).toBool();
 	play_files_from_start = set->value("play_files_from_start", play_files_from_start).toBool();
-	automatically_play_next = set->value("automatically_play_next", automatically_play_next).toBool();
 
 	latest_dir = set->value("latest_dir", latest_dir).toString();
 
