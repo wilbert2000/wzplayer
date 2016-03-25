@@ -213,8 +213,8 @@ void TPlaylist::createActions(QWidget* parent) {
 	removeSelectedAct = new TAction(this, "pl_remove_selected", QT_TR_NOOP("&Remove from list"), "noicon", Qt::Key_Delete);
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
 
-	deleteSelectedFileFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete from disk..."), "noicon");
-	connect(deleteSelectedFileFromDiskAct, SIGNAL(triggered()), this, SLOT(deleteSelectedFileFromDisk()));
+	removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete from disk..."), "noicon");
+	connect(removeSelectedFromDiskAct, SIGNAL(triggered()), this, SLOT(removeSelectedFromDisk()));
 
 	removeAllAct = new TAction(this, "pl_remove_all", QT_TR_NOOP("&Clear playlist"), "noicon");
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
@@ -254,7 +254,7 @@ void TPlaylist::createToolbar() {
 
 	remove_menu = new QMenu(this);
 	remove_menu->addAction(removeSelectedAct);
-	remove_menu->addAction(deleteSelectedFileFromDiskAct);
+	remove_menu->addAction(removeSelectedFromDiskAct);
 	remove_menu->addAction(removeAllAct);
 
 	remove_button = new QToolButton(this);
@@ -280,7 +280,7 @@ void TPlaylist::createToolbar() {
 	popup->addAction(editAct);
 	popup->addSeparator();
 	popup->addAction(removeSelectedAct);
-	popup->addAction(deleteSelectedFileFromDiskAct);
+	popup->addAction(removeSelectedFromDiskAct);
 
 	connect(listView, SIGNAL(customContextMenuRequested(const QPoint &)),
 			this, SLOT(showContextMenu(const QPoint &)));
@@ -750,7 +750,7 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
 	updateView();
 }
 
-void TPlaylist::deleteSelectedFileFromDisk() {
+void TPlaylist::removeSelectedFromDisk() {
 	removeSelected(true);
 }
 

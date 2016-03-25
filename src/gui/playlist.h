@@ -161,9 +161,9 @@ private:
 	Action::TAction* copyAct;
 	Action::TAction* editAct;
 	Action::TAction* removeSelectedAct;
+	Action::TAction* removeSelectedFromDiskAct;
 	Action::TAction* removeAllAct;
 
-	Action::TAction* deleteSelectedFileFromDiskAct;
 
 	// Preferences
 	bool recursive_add_directory;
@@ -218,7 +218,7 @@ private slots:
 	void addUrls();
 
 	void removeSelected(bool deleteFromDisk = false);
-	void deleteSelectedFileFromDisk();
+	void removeSelectedFromDisk();
 	void removeAll();
 
 	void copySelected();
