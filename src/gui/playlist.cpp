@@ -401,32 +401,26 @@ void TPlaylist::clear() {
 }
 
 void TPlaylist::addItem(const QString& filename, QString name, double duration) {
-	//qDebug() << "Gui::TPlaylist::addItem:" << filename;
-
-	if (name.isEmpty()) {
-		// Let's see if it looks like a file (no dvd://1 or something)
-		if (filename.indexOf("://") < 0) {
-			name = QFileInfo(filename).fileName();
-			if (name.isEmpty()) {
-				name = filename;
-			}
-		} else {
-			name = filename;
-		}
-	}
 	pl.append(TPlaylistItem(filename, name, duration));
 }
 
-void TPlaylist::cleanAndAddItem(QString filename, const QString& name, double duration) {
+void TPlaylist::cleanAndAddItem(QString filename, QString name, double duration) {
 
+	QString alt_name = filename;
 	QFileInfo fi(filename);
 	if (fi.exists()) {
 		filename = QDir::toNativeSeparators(fi.absoluteFilePath());
-	} else {
-		fi.setFile(playlist_path + "/" + filename);
+		alt_name = fi.fileName();
+	} else if (!playlist_path.isEmpty()) {
+		fi.setFile(playlist_path, filename);
 		if (fi.exists()) {
 			filename = QDir::toNativeSeparators(fi.absoluteFilePath());
+			alt_name = fi.fileName();
 		}
+	}
+
+	if (name.isEmpty()) {
+		name = alt_name;
 	}
 
 	addItem(filename, name, duration);
@@ -942,8 +936,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
 			}
 		}
 	} else {
-		// Add current file. onMediaLoaded will fill in name and duration.
-		addItem(filename, "", 0);
+		// Add current file
+		addItem(filename, core->mdat.displayName(), core->mdat.duration);
 		setCurrentItem(0);
 
 		// Add associated files to playlist
@@ -974,9 +968,6 @@ void TPlaylist::getMediaInfo() {
 
 	QString filename = core->mdat.filename;
 	QString title = core->mdat.displayName();
-	QString artist = core->mdat.meta_data.value("ARTIST");
-	if (!artist.isEmpty())
-		title = artist + " - " + title;
 	double duration = core->mdat.duration;
 	bool need_update = false;
 
@@ -1041,8 +1032,7 @@ void TPlaylist::addCurrentFile() {
 	qDebug("Gui::TPlaylist::addCurrentFile");
 
 	if (!core->mdat.filename.isEmpty()) {
-		addItem(core->mdat.filename, "", 0);
-		getMediaInfo();
+		addItem(core->mdat.filename, core->mdat.displayName(), core->mdat.duration);
 	}
 }
 
@@ -1075,6 +1065,8 @@ void TPlaylist::addFile(const QString &filename) {
 			} else {
 				name = tr("Title %1").arg(QString::number(disc.title));
 			}
+		} else {
+			name = filename;
 		}
 		addItem(filename, name, 0);
 	}
@@ -1088,20 +1080,19 @@ void TPlaylist::addDirectory(const QString &dir) {
 
 	emit displayMessage(dir, 0);
 
+	QFileInfo fi;
 	QStringList dir_list = QDir(dir).entryList();
 	QStringList::Iterator it = dir_list.begin();
 	while(it != dir_list.end()) {
 		QString filename = *it;
 		if (filename != "." && filename != "..") {
-			if (dir.right(1) != "/")
-				filename = dir + "/" + filename;
-			else filename = dir + filename;
-			QFileInfo fi(filename);
+			fi.setFile(dir, filename);
 			if (fi.isDir()) {
-				if (recursive_add_directory)
-					addDirectory(filename);
+				if (recursive_add_directory) {
+					addDirectory(fi.absoluteFilePath());
+				}
 			} else if (rx_ext.indexIn(fi.suffix()) >= 0) {
-				addFile(filename);
+				addFile(fi.absoluteFilePath());
 			}
 		}
 		++it;
@@ -1162,10 +1153,11 @@ void TPlaylist::addUrls() {
 
 	TMultilineInputDialog d(this);
 	if (d.exec() == QDialog::Accepted) {
+		playlist_path = lastDir();
 		QStringList urls = d.lines();
 		foreach(QString u, urls) {
 			if (!u.isEmpty())
-				addItem(u, "", 0);
+				cleanAndAddItem(u, "", 0);
 		}
 		updateView();
 	}
@@ -1492,6 +1484,7 @@ void TPlaylist::loadSettings() {
 
 	if (save_playlist_in_config) {
 		// Load latest list
+		playlist_path = "";
 		set->beginGroup("playlist_contents");
 
 		int count = set->value("count", 0).toInt();
@@ -1501,7 +1494,7 @@ void TPlaylist::loadSettings() {
 			filename = set->value(QString("item_%1_filename").arg(n), "").toString();
 			duration = set->value(QString("item_%1_duration").arg(n), -1).toDouble();
 			name = set->value(QString("item_%1_name").arg(n), "").toString();
-			addItem(filename, name, duration);
+			cleanAndAddItem(filename, name, duration);
 		}
 		setCurrentItem(set->value("current_item", 0).toInt());
 		modified = set->value("modified", false).toBool();

@@ -181,7 +181,7 @@ private:
 	void addDirectory(const QString& dir);
 
 	int chooseRandomItem();
-	void cleanAndAddItem(QString filename, const QString& name, double duration);
+	void cleanAndAddItem(QString filename, QString name, double duration);
 	void clearPlayedTag();
 
 	void createTable();
