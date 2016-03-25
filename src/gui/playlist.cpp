@@ -1050,7 +1050,7 @@ void TPlaylist::addFile(const QString &filename) {
 		} else if (ext == "pls") {
 			loadIni(filename, false, false);
 		} else {
-			addItem(filename, fi.fileName(), 0);
+			addItem(QDir::toNativeSeparators(filename), fi.fileName(), 0);
 		}
 
 		latest_dir = fi.absolutePath();
