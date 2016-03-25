@@ -736,7 +736,6 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "add_to_playlist") {
 			QStringList file_list = arg.split(" <<sep>> ");
-			/* if (core->state() == STATE_STOPPED) { emit openFileRequested(); } */
 			playlist->addFiles(file_list);
 		}
 		else

@@ -181,6 +181,7 @@ void TBasePlus::changeEvent(QEvent* e) {
 }
 
 void TBasePlus::updateShowAllAct() {
+
 	if (isVisible()) 
 		showAllAct->setTextAndTip(tr("&Hide"));
 	else
@@ -233,9 +234,7 @@ void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 
 	if (reason == QSystemTrayIcon::Trigger) {
 		toggleShowAll();
-	}
-	else
-	if (reason == QSystemTrayIcon::MiddleClick) {
+	} else if (reason == QSystemTrayIcon::MiddleClick) {
 		core->playOrPause();
 	}
 }
