@@ -581,7 +581,7 @@ int TPlaylist::chooseRandomItem() {
 	if (fi.count() == 0)
 		return -1; // none free
 
-	int selected = (int) ((double) fi.count() * qrand()/(RAND_MAX+1.0));
+	int selected = (int) ((double) fi.count() * qrand() / (RAND_MAX + 1.0));
 	selected = fi[selected];
 
 	qDebug("Gui::TPlaylist::chooseRandomItem: selected item: %d", selected);
@@ -630,24 +630,21 @@ void TPlaylist::playNext() {
 	if (shuffleAct->isChecked()) {
 		// Shuffle
 		int chosen_item = chooseRandomItem();
-		qDebug("Gui::TPlaylist::playNext: chosen_item: %d", chosen_item);
-		if (chosen_item == -1) {
+		if (chosen_item < 0) {
 			clearPlayedTag();
 			if (repeatAct->isChecked()) {
 				chosen_item = chooseRandomItem();
-				if (chosen_item == -1) chosen_item = 0;
 			}
 		}
 		playItem(chosen_item);
+	} else if (current_item < pl.count() - 1) {
+		playItem(current_item + 1);
 	} else {
-		bool finished_list = (current_item + 1 >= pl.count());
-		if (finished_list)
-			clearPlayedTag();
-
-		if (finished_list && repeatAct->isChecked()) {
+		clearPlayedTag();
+		if (repeatAct->isChecked()) {
 			playItem(0);
 		} else {
-			playItem(current_item + 1);
+			playItem(-1);
 		}
 	}
 }
@@ -667,8 +664,9 @@ void TPlaylist::playPrev() {
 void TPlaylist::resumePlay() {
 
 	if (pl.count() > 0) {
-		if (current_item < 0 || current_item >= pl.count())
+		if (current_item < 0 || current_item >= pl.count()) {
 			current_item = 0;
+		}
 		playItem(current_item);
 	}
 }
@@ -748,7 +746,7 @@ void TPlaylist::deleteSelectedFileFromDisk() {
 		qDebug() << "Gui::TPlaylist::deleteSelectedFileFromDisk: current file:" << filename;
 
 		QFileInfo fi(filename);
-		if (fi.exists() && fi.isFile() && fi.isWritable()) {
+		if (fi.exists() && fi.isFile()) {
 			// Ask the user for confirmation
 			int res = QMessageBox::question(this, tr("Confirm deletion"),
 						tr("You're about to DELETE the file '%1' from your drive.").arg(filename) + "<br>"+
@@ -758,8 +756,6 @@ void TPlaylist::deleteSelectedFileFromDisk() {
 			if (res == QMessageBox::Yes) {
 				// Delete file
 				bool success = QFile::remove(filename);
-				//bool success = false;
-
 				if (success) {
 					// Remove item from the playlist
 					removeSelected();
@@ -769,7 +765,7 @@ void TPlaylist::deleteSelectedFileFromDisk() {
 				}
 			}
 		} else {
-			qDebug("Gui::TPlaylist::deleteSelectedFileFromDisk: file doesn't exists, it's not a file or it's not writable");
+			qDebug("Gui::TPlaylist::deleteSelectedFileFromDisk: file doesn't exists or it's not a file");
 			QMessageBox::information(this, tr("Error deleting the file"),
 				tr("It's not possible to delete '%1' from the filesystem.").arg(filename));
 		}
@@ -1024,7 +1020,7 @@ void TPlaylist::sortBy(int section, bool revert, int count) {
 	// Bubble sort
 	bool swaped = false;
 
-	for (int n = 0; n < (pl.count() - count); n++) {
+	for (int n = 0; n < pl.count() - count; n++) {
 
 		int last = n - 1;
 		int current = n;
@@ -1080,7 +1076,7 @@ void TPlaylist::sortBy(int section, bool revert, int count) {
 			if (compare > 0) {
 				swapItems(n, n - 1);
 
-				if (current_item == (n - 1)) {
+				if (current_item == n - 1) {
 					current_item = n;
 				} else if (current_item == n) {
 					current_item = n - 1;
