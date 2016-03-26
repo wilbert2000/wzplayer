@@ -492,8 +492,6 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// Custom status line. Make sure it matches!
 	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
-	// Messages to show in statusline
-	static QRegExp rx_message("^(Playing:|Exiting|\\[ytdl_hook\\])");
 
 	// TODO: check video and audio track name.
 	// Subs suggest name comes before codec...
@@ -522,6 +520,9 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_stream_title("icy-title: (.*)");
 
 	static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
+
+	// Messages to show in statusline
+	static QRegExp rx_message("^(Playing:|\\[ytdl_hook\\])");
 
 	// Errors
 	static QRegExp rx_file_open("^\\[file\\] Cannot open file '.*': (.*)");

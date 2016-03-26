@@ -340,8 +340,7 @@ bool TPlayerProcess::parseLine(QString& line) {
 	if (rx_eof.indexIn(line) >= 0)  {
 		qDebug("Proc::TPlayerProcess::parseLine: detected end of file");
 		received_end_of_file = true;
-		// Let MPV display the message
-		return isMPlayer();
+		return true;
 	}
 
 	// Like to be parsed a little longer
