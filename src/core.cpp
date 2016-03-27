@@ -400,7 +400,7 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 
 // Generic open, autodetect type
 void TCore::open(QString file, int seek, bool fast_open) {
-	qDebug("TCore::open: '%s'", file.toUtf8().data());
+	qDebug() << "TCore::open:" << file;
 
 	if (file.startsWith("file:")) {
 		file = QUrl(file).toLocalFile();
@@ -580,10 +580,10 @@ void TCore::openStream(const QString& name) {
 }
 
 void TCore::openFile(const QString& filename, int seek) {
-	qDebug("TCore::openFile: '%s'", filename.toUtf8().data());
+	qDebug() << "TCore::openFile:" << filename;
 
 	close();
-	mdat.filename = filename;
+	mdat.filename = QDir::toNativeSeparators(filename);
 	mdat.selected_type = TMediaData::TYPE_FILE;
 	mset.reset();
 
