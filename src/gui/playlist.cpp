@@ -590,10 +590,12 @@ int TPlaylist::chooseRandomItem() {
 void TPlaylist::startPlay() {
 	qDebug("Gui::TPlaylist::startPlay");
 
-	if (shuffleAct->isChecked())
-		playItem(chooseRandomItem());
-	else
-		playItem(0);
+	if (pl.count() > 0) {
+		if (shuffleAct->isChecked())
+			playItem(chooseRandomItem());
+		else
+			playItem(0);
+	}
 }
 
 void TPlaylist::playItem(int n) {
