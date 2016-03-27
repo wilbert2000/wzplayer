@@ -109,7 +109,6 @@ public slots:
 	virtual void openFiles(QStringList files, int item = -1);
 	virtual void openFavorite(QString file);
 	virtual void openURL();
-	virtual void openURL(QString url);
 	virtual void openVCD();
 	virtual void openAudioCD();
 	virtual void openDVD();

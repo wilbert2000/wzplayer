@@ -1353,11 +1353,11 @@ void TBase::openURL() {
 
 	// Get url from clipboard
 	QString clipboard_text = QApplication::clipboard()->text();
-	if ((!clipboard_text.isEmpty()) && (clipboard_text.contains("://")) /*&& (QUrl(clipboard_text).isValid())*/) {
+	if (!clipboard_text.isEmpty() && clipboard_text.contains("://")) {
 		d.setURL(clipboard_text);
 	}
 
-	for (int n=0; n < pref->history_urls.count(); n++) {
+	for (int n = 0; n < pref->history_urls.count(); n++) {
 		d.setURL(pref->history_urls.url(n));
 	}
 
@@ -1365,15 +1365,8 @@ void TBase::openURL() {
 		QString url = d.url();
 		if (!url.isEmpty()) {
 			pref->history_urls.addUrl(url);
-			openURL(url);
+			open(url);
 		}
-	}
-}
-
-void TBase::openURL(QString url) {
-
-	if (!url.isEmpty() && playlist->maybeSave()) {
-			core->openStream(url);
 	}
 }
 
@@ -1490,7 +1483,8 @@ void TBase::loadSub() {
 		tr("Subtitles") + e.subtitles().forFilter()+ ";;" +
 		tr("All files") +" (*.*)");
 
-	if (!s.isEmpty()) core->loadSub(s);
+	if (!s.isEmpty())
+		core->loadSub(s);
 }
 
 void TBase::setInitialSubtitle(const QString & subtitle_file) {
@@ -1509,7 +1503,8 @@ void TBase::loadAudioFile() {
 		tr("Audio") + e.audio().forFilter()+";;" +
 		tr("All files") +" (*.*)");
 
-	if (!s.isEmpty()) core->loadAudioFile(s);
+	if (!s.isEmpty())
+		core->loadAudioFile(s);
 }
 
 void TBase::helpFirstSteps() {
