@@ -42,6 +42,7 @@ public:
 	QIcon icon(int row, int column);
 
 	bool isSelected(int row, int column);
+	void selRow(int row, bool sel);
 
 protected:
 	virtual QTableWidgetItem* createItem(int col);

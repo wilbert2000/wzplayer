@@ -38,6 +38,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QHeaderView>
+#include <QTableWidgetItem>
 #include <QTextCodec>
 #include <QApplication>
 #include <QMimeData>
@@ -185,10 +186,10 @@ void TPlaylist::createActions(QWidget* parent) {
 	connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
 	moveUpAct = new TAction(this, "pl_move_up", QT_TR_NOOP("Move &up"), "up");
-	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(upItem()));
+	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(moveItemUp()));
 
 	moveDownAct = new TAction(this, "pl_move_down", QT_TR_NOOP("Move &down"), "down");
-	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(downItem()));
+	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(moveItemDown()));
 
 	repeatAct = new TAction(this, "pl_repeat", QT_TR_NOOP("&Repeat"), "repeat");
 	repeatAct->setCheckable(true);
@@ -313,11 +314,17 @@ void TPlaylist::getFilesAppend(QStringList& files) const {
 	}
 }
 
-void TPlaylist::updateView() {
+void TPlaylist::updateView(bool select_current_item) {
 	qDebug("Gui::TPlaylist::updateView");
 
-	listView->clearSelection();
 	listView->setRowCount(pl.count());
+
+	if (select_current_item) {
+		listView->clearSelection();
+		if (current_item >= 0) {
+			listView->setCurrentCell(current_item, 0);
+		}
+	}
 
 	for (int i = 0; i < pl.count(); i++) {
 		TPlaylistItem& playlist_item = pl[i];
@@ -350,43 +357,39 @@ void TPlaylist::updateView() {
 
 	listView->resizeColumnToContents(COL_PLAY);
 	listView->resizeColumnToContents(COL_TIME);
-
-	if (current_item >= 0) {
-		listView->setCurrentCell(current_item, 0);
-	}
 }
 
 void TPlaylist::setCurrentItem(int current) {
 	qDebug("Gui::TPlaylist::setCurrentItem: from %d to %d", current_item, current);
 
-	// TODO: reduce mem trashing
-
 	// Give old current_item an icon
-	if (current_item >= 0 && current_item < listView->rowCount()) {
-		if (current_item < pl.count()) {
-			if (pl[current_item].played()) {
-				// Set ok icon unless current not changing
-				if (current_item != current) {
-					qDebug() << "Gui::TPlaylist::setCurrentItem: setting ok icon for" << current_item;
-					listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
-				}
-			} else if (current_item != current) {
-				qDebug() << "Gui::TPlaylist::setCurrentItem: clearing icon for" << current_item;
-				listView->setIcon(current_item, COL_PLAY, QPixmap());
-			}
+	if (current_item >= 0
+		&& current_item != current
+		&& current_item < pl.count()
+		&& current_item < listView->rowCount()) {
+		if (pl[current_item].played()) {
+			// Set ok icon
+			qDebug() << "Gui::TPlaylist::setCurrentItem: setting ok icon for" << current_item;
+			listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
+		} else {
+			qDebug() << "Gui::TPlaylist::setCurrentItem: clearing icon for" << current_item;
+			listView->setIcon(current_item, COL_PLAY, QPixmap());
 		}
+	}
+
+	// TODO: Try to better preserve current row and selection
+	//if (current_item == listView->currentRow()
+	//	|| (current_item < 0 && current >= 0)) {
+	if (current >= 0) {
+		listView->clearSelection();
+		listView->setCurrentCell(current, 0);
 	}
 
 	current_item = current;
 
-	if (current_item >= 0) {
-		if (current_item < listView->rowCount()) {
-			qDebug() << "Gui::TPlaylist::setCurrentItem: setting play icon for" << current_item;
-			listView->setIcon(current_item, COL_PLAY, Images::icon("play"));
-		}
-
-		listView->clearSelection();
-		listView->setCurrentCell(current_item, 0);
+	if (current_item >= 0 && current_item < listView->rowCount()) {
+		qDebug() << "Gui::TPlaylist::setCurrentItem: setting play icon for" << current_item;
+		listView->setIcon(current_item, COL_PLAY, Images::icon("play"));
 	}
 }
 
@@ -529,7 +532,7 @@ void TPlaylist::addFiles(const QStringList &files) {
 		++it;
 	}
 
-	updateView();
+	updateView(false);
 	unsetCursor();
 
 	qDebug("Gui::TPlaylist::addFiles: done");
@@ -557,7 +560,7 @@ void TPlaylist::addUrls() {
 			if (!u.isEmpty())
 				cleanAndAddItem(u, "", 0);
 		}
-		updateView();
+		updateView(false);
 	}
 }
 
@@ -620,7 +623,7 @@ void TPlaylist::clearPlayedTag() {
 	for (int n = 0; n < pl.count(); n++) {
 		pl[n].setPlayed(false);
 	}
-	updateView();
+	updateView(false);
 }
 
 void TPlaylist::playNext() {
@@ -717,7 +720,6 @@ bool TPlaylist::deleteFileFromDisk(int i) {
 	return false;
 }
 
-// Remove selected items
 void TPlaylist::removeSelected(bool deleteFromDisk) {
 	qDebug("Gui::TPlaylist::removeSelected");
 
@@ -746,8 +748,7 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
 	if (pl.isEmpty())
 		modified = false;
 
-	listView->clearSelection();
-	updateView();
+	updateView(true);
 }
 
 void TPlaylist::removeSelectedFromDisk() {
@@ -839,7 +840,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
 	if (current_item >= 0 && current_item < pl.count()) {
 		pl[current_item].setPlayed(true);
 	}
-	updateView();
+	updateView(true);
 
 	qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: created new playlist with" << count()
 			 << "items for" << filename;
@@ -872,7 +873,7 @@ void TPlaylist::getMediaInfo() {
 	}
 
 	if (need_update)
-		updateView();
+		updateView(false);
 }
 
 void TPlaylist::onMediaLoaded() {
@@ -908,48 +909,60 @@ void TPlaylist::onTitleTrackChanged(int id) {
 
 void TPlaylist::swapItems(int item1, int item2) {
 
+	// Save current row
+	int fix_current_row = -1;
+	if (listView->currentRow() == item1) {
+		fix_current_row = item2;
+	} else if (listView->currentRow() == item2) {
+		fix_current_row = item1;
+	}
+
+	// Swap playlist data
 	pl.swap(item1, item2);
+
+	// Swap current_item
+	if (current_item == item1) {
+		current_item = item2;
+	} else if (current_item == item2) {
+		current_item = item1;
+	}
+
+	// Swap selected
+	bool selected1 = listView->isSelected(item1, 0);
+	bool selected2 = listView->isSelected(item2, 0);
+	if (selected1 != selected2) {
+		listView->selRow(item1, selected2);
+		listView->selRow(item2, selected1);
+	}
+
+	// Fix currentRow
+	if (fix_current_row >= 0) {
+		QItemSelection sel = listView->selectionModel()->selection();
+		listView->setCurrentCell(fix_current_row, 0);
+		listView->selectionModel()->select(sel, QItemSelectionModel::Current | QItemSelectionModel::Select);
+	}
+
 	modified = true;
 }
 
-void TPlaylist::upItem() {
-	qDebug("Gui::TPlaylist::upItem");
-	moveItemUp(listView->currentRow());
-}
+void TPlaylist::moveItemUp() {
 
-void TPlaylist::downItem() {
-	qDebug("Gui::TPlaylist::downItem");
-	moveItemDown(listView->currentRow());
-}
-
-void TPlaylist::moveItemUp(int current){
-	qDebug("Gui::TPlaylist::moveItemUp");
-
-	if (current > 0) {
-		swapItems(current, current - 1);
-		if (current_item == current - 1)
-			current_item = current;
-		else if (current_item == current)
-			current_item = current - 1;
-		updateView();
-		listView->clearSelection();
-		listView->setCurrentCell(current - 1, 0);
+	for(int row = 1; row < listView->rowCount(); row++) {
+		if (listView->isSelected(row, 0)) {
+			swapItems(row, row - 1);
+		}
 	}
+	updateView(false);
 }
 
-void TPlaylist::moveItemDown(int current){
-	qDebug("Gui::TPlaylist::moveItemDown");
+void TPlaylist::moveItemDown() {
 
-	if (current >= 0 && current < pl.count() - 1) {
-		swapItems(current, current + 1);
-		if (current_item == current + 1)
-			current_item = current;
-		else if (current_item == current)
-			current_item = current + 1;
-		updateView();
-		listView->clearSelection();
-		listView->setCurrentCell(current + 1, 0);
+	for(int row = listView->rowCount() - 2; row >= 0; row--) {
+		if (listView->isSelected(row, 0)) {
+			swapItems(row, row + 1);
+		}
 	}
+	updateView(false);
 }
 
 void TPlaylist::copySelected() {
@@ -1002,7 +1015,7 @@ void TPlaylist::editItem(int item) {
 		pl[item].setEdited(true);
 		pl[item].setName(text);
 		modified = true;
-		updateView();
+		updateView(false);
 	}
 }
 
@@ -1015,7 +1028,7 @@ void TPlaylist::sortBy(int section) {
 void TPlaylist::sortBy(int section, bool revert, int count) {
 
 	// Bubble sort
-	bool swaped = false;
+	bool swapped = false;
 
 	for (int n = 0; n < pl.count() - count; n++) {
 
@@ -1072,29 +1085,19 @@ void TPlaylist::sortBy(int section, bool revert, int count) {
 			// Swap items
 			if (compare > 0) {
 				swapItems(n, n - 1);
-
-				if (current_item == n - 1) {
-					current_item = n;
-				} else if (current_item == n) {
-					current_item = n - 1;
-				}
-
-				listView->clearSelection();
-				listView->setCurrentCell(n - 1, 0);
-
-				swaped = true;
+				swapped = true;
 			}
 		}
 	}
 
-	if (count == 0 && !swaped && !revert) {
+	if (count == 0 && !swapped && !revert) {
 		// Revert sort
 		sortBy(section, true, 0);
-	} else if(swaped) {
+	} else if(swapped) {
 		// Sort until there is nothing to sort
 		sortBy(section, revert, ++count);
 	} else {
-		updateView();
+		updateView(false);
 	}
 }
 
@@ -1195,7 +1198,7 @@ void TPlaylist::loadM3u(const QString&file, bool clear, bool play) {
 		}
 
 		f.close();
-		updateView();
+		updateView(true);
 
 		if (play)
 			startPlay();
@@ -1234,7 +1237,7 @@ void TPlaylist::loadIni(const QString &file, bool clear, bool play) {
 
 	set.endGroup();
 
-	updateView();
+	updateView(true);
 
 	if (play && (set.status() == QSettings::NoError))
 		startPlay();
@@ -1488,7 +1491,7 @@ void TPlaylist::loadSettings() {
 		}
 		setCurrentItem(set->value("current_item", 0).toInt());
 		modified = set->value("modified", false).toBool();
-		updateView();
+		updateView(true);
 
 		set->endGroup();
 	}

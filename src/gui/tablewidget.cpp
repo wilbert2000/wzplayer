@@ -18,6 +18,7 @@
 
 #include "gui/tablewidget.h"
 #include <QTableWidgetItem>
+#include <QDebug>
 
 #define BE_VERBOSE 0
 
@@ -81,6 +82,20 @@ QIcon TTableWidget::icon(int row, int column) {
 
 bool TTableWidget::isSelected(int row, int column) {
 	return getItem(row, column)->isSelected();
+}
+
+void TTableWidget::selRow(int row, bool sel) {
+
+	if (row >= 0 && row < rowCount()) {
+		QItemSelectionModel::SelectionFlags flags;
+		if (sel)
+			flags = QItemSelectionModel::Select;
+		else
+			flags = QItemSelectionModel::Deselect;
+		QModelIndex tl = model()->index(row, 0, rootIndex());
+		QModelIndex br = model()->index(row, columnCount() - 1, rootIndex());
+		selectionModel()->select(QItemSelection(tl, br), flags);
+	}
 }
 
 } // namespace Gui

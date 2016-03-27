@@ -186,7 +186,7 @@ private:
 	void addDirectory(const QString& dir);
 
 	void setCurrentItem(int current);
-	void updateView();
+	void updateView(bool select_current_item);
 
 	int chooseRandomItem();
 	void clearPlayedTag();
@@ -207,10 +207,8 @@ private slots:
 	void playCurrent();
 	void onCellActivated(int row, int);
 
-	void upItem();
-	void downItem();
-	void moveItemUp(int);
-	void moveItemDown(int);
+	void moveItemUp();
+	void moveItemDown();
 
 	void addCurrentFile();
 	void addFiles();
