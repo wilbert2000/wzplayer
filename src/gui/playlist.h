@@ -186,12 +186,13 @@ private:
 	void addDirectory(const QString& dir);
 
 	void setCurrentItem(int current);
-	void updateView(bool select_current_item);
+	void updateView();
 
 	int chooseRandomItem();
 	void clearPlayedTag();
 	void getMediaInfo();
 	QString lastDir();
+	void sort();
 	void swapItems(int item1, int item2);
 	bool deleteFileFromDisk(int i);
 
@@ -224,7 +225,7 @@ private slots:
 	void editItem(int item);
 
 	void sortBy(int section);
-	void sortBy(int section, bool revert, int count);
+	void sortBy(int section, bool allow_revert, bool revert, int count);
 
 	void onNewMediaStartedPlaying();
 	void onMediaLoaded();
