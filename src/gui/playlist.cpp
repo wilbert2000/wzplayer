@@ -89,7 +89,6 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	, core(c)
 	, recursive_add_directory(true)
 	, save_playlist_in_config(true)
-	, play_files_from_start(true)
 	, modified(false) {
 
 	createTable();
@@ -606,9 +605,7 @@ void TPlaylist::playItem(int n) {
 	if (!item.filename().isEmpty()) {
 		item.setPlayed(true);
 		setCurrentItem(n);
-		if (play_files_from_start)
-			core->open(item.filename(), 0);
-		else core->open(item.filename());
+		core->open(item.filename());
 	}
 }
 
@@ -1393,12 +1390,10 @@ void TPlaylist::saveSettings() {
 
 	set->beginGroup("playlist");
 
-	set->setValue("repeat", repeatAct->isChecked());
-	set->setValue("shuffle", shuffleAct->isChecked());
-
 	set->setValue("recursive_add_directory", recursive_add_directory);
 	set->setValue("save_playlist_in_config", save_playlist_in_config);
-	set->setValue("play_files_from_start", play_files_from_start);
+	set->setValue("repeat", repeatAct->isChecked());
+	set->setValue("shuffle", shuffleAct->isChecked());
 
 	if (save_dirs) {
 		set->setValue("latest_dir", latest_dir);
@@ -1432,13 +1427,10 @@ void TPlaylist::loadSettings() {
 
 	set->beginGroup("playlist");
 
-	repeatAct->setChecked(set->value("repeat", repeatAct->isChecked()).toBool());
-	shuffleAct->setChecked(set->value("shuffle", shuffleAct->isChecked()).toBool());
-
 	recursive_add_directory = set->value("recursive_add_directory", recursive_add_directory).toBool();
 	save_playlist_in_config = set->value("save_playlist_in_config", save_playlist_in_config).toBool();
-	play_files_from_start = set->value("play_files_from_start", play_files_from_start).toBool();
-
+	repeatAct->setChecked(set->value("repeat", repeatAct->isChecked()).toBool());
+	shuffleAct->setChecked(set->value("shuffle", shuffleAct->isChecked()).toBool());
 	latest_dir = set->value("latest_dir", latest_dir).toString();
 
 	set->endGroup();

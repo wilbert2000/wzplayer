@@ -90,12 +90,9 @@ public:
 
 	// Preferences
 	bool directoryRecursion() const { return recursive_add_directory; }
-	bool savePlaylistOnExit() const { return save_playlist_in_config; }
-	bool playFilesFromStart() const { return play_files_from_start; }
-
 	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
+	bool savePlaylistOnExit() const { return save_playlist_in_config; }
 	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; }
-	void setPlayFilesFromStart(bool b) { play_files_from_start = b; }
 
 	bool maybeSave();
 	void loadSettings();
@@ -168,7 +165,6 @@ private:
 	// Preferences
 	bool recursive_add_directory;
 	bool save_playlist_in_config;
-	bool play_files_from_start;
 
 	bool modified;
 	QString playlist_path;

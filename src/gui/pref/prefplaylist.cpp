@@ -104,14 +104,6 @@ bool TPrefPlaylist::savePlaylistOnExit() {
 	return autosave_on_exit_check->isChecked();
 }
 
-void TPrefPlaylist::setPlayFilesFromStart(bool b) {
-	play_from_start_check->setChecked(b);
-}
-
-bool TPrefPlaylist::playFilesFromStart() {
-	return play_from_start_check->isChecked();
-}
-
 void TPrefPlaylist::setLogDebugEnabled(bool b) {
 	log_debug_check->setChecked(b);
 }
@@ -149,11 +141,6 @@ void TPrefPlaylist::createHelp() {
 		tr("<b>Audio files</b>: all audio files found in the folder will be added") +"<br>"+
 		tr("<b>Video and audio files</b>: all video and audio files found in the folder will be added") +"<br>"+
 		tr("<b>Consecutive files</b>: consecutive files (like video_1.avi, video_2.avi) will be added"));
-
-	setWhatsThis(play_from_start_check, tr("Play files from start"),
-		tr("If this option is enabled, all files from the playlist will "
-           "start to play from the beginning instead of resuming from a "
-           "previous playback."));
 
 	setWhatsThis(recursive_check, tr("Add files in directories recursively"),
 		tr("Check this option if you want that adding a directory will also "

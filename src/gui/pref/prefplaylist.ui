@@ -111,13 +111,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="play_from_start_check">
-            <property name="text">
-             <string>&amp;Play files from start</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="autosave_on_exit_check">
             <property name="text">
              <string>&amp;Save copy of playlist on exit</string>
@@ -204,7 +197,6 @@
   <tabstop>playlist_tabwidget</tabstop>
   <tabstop>media_to_add_combo</tabstop>
   <tabstop>recursive_check</tabstop>
-  <tabstop>play_from_start_check</tabstop>
   <tabstop>autosave_on_exit_check</tabstop>
   <tabstop>log_debug_check</tabstop>
   <tabstop>log_verbose_check</tabstop>
