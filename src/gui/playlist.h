@@ -168,7 +168,6 @@ private:
 
 	bool modified;
 	QString playlist_path;
-	QString latest_dir;
 
 	void createTable();
 	void createActions(QWidget* parent);
@@ -187,7 +186,6 @@ private:
 	int chooseRandomItem();
 	void clearPlayedTag();
 	void getMediaInfo();
-	QString lastDir();
 	void sort();
 	void swapItems(int item1, int item2);
 	bool deleteFileFromDisk(int i);

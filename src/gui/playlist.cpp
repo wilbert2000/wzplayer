@@ -446,7 +446,7 @@ void TPlaylist::addFile(const QString &filename) {
 			addItem(QDir::toNativeSeparators(filename), fi.fileName(), 0);
 		}
 
-		latest_dir = fi.absolutePath();
+		pref->latest_dir = fi.absolutePath();
 	} else {
 		QString name;
 		bool ok;
@@ -473,6 +473,7 @@ void TPlaylist::addDirectory(const QString &dir) {
 
 	emit displayMessage(dir, 0);
 
+	bool found_something = false;
 	QFileInfo fi;
 	QStringList dir_list = QDir(dir).entryList();
 	QStringList::Iterator it = dir_list.begin();
@@ -487,18 +488,21 @@ void TPlaylist::addDirectory(const QString &dir) {
 			} else if (rx_ext.indexIn(fi.suffix()) >= 0) {
 				addFile(fi.absoluteFilePath());
 			}
+			found_something = true;
 		}
 		++it;
 	}
 
-	latest_dir = dir;
+	if (found_something) {
+		pref->latest_dir = dir;
+	}
 }
 
 void TPlaylist::addDirectory() {
 
 	QString s = MyFileDialog::getExistingDirectory(
 					this, tr("Choose a directory"),
-					lastDir());
+					pref->latest_dir);
 
 	if (!s.isEmpty()) {
 		addDirectory(s);
@@ -535,7 +539,7 @@ void TPlaylist::addFiles() {
 
 	TExtensions e;
 	QStringList files = MyFileDialog::getOpenFileNames(this,
-		tr("Select one or more files to open"), lastDir(),
+		tr("Select one or more files to open"), pref->latest_dir,
 		tr("Multimedia") + e.multimedia().forFilter() + ";;" +
 			tr("All files") +" (*.*)");
 
@@ -547,7 +551,7 @@ void TPlaylist::addUrls() {
 
 	TMultilineInputDialog d(this);
 	if (d.exec() == QDialog::Accepted) {
-		playlist_path = lastDir();
+		playlist_path = pref->latest_dir;
 		QStringList urls = d.lines();
 		foreach(QString u, urls) {
 			if (!u.isEmpty())
@@ -1309,16 +1313,18 @@ bool TPlaylist::saveIni(QString file) {
 }
 
 void TPlaylist::load() {
+
 	if (maybeSave()) {
 		TExtensions e;
 		QString s = MyFileDialog::getOpenFileName(
 			this, tr("Choose a file"),
-			lastDir(),
+			pref->latest_dir,
 			tr("Playlists") + e.playlist().forFilter());
 
 		if (!s.isEmpty()) {
-			latest_dir = QFileInfo(s).absolutePath();
-			if (QFileInfo(s).suffix().toLower() == "pls")
+			QFileInfo fi(s);
+			pref->latest_dir = fi.absolutePath();
+			if (fi.suffix().toLower() == "pls")
 				loadIni(s);
 			else
 				loadM3u(s);
@@ -1330,7 +1336,7 @@ bool TPlaylist::save() {
 	TExtensions e;
 	QString s = MyFileDialog::getSaveFileName(
 		this, tr("Choose a filename"),
-		lastDir(),
+		pref->latest_dir,
 		tr("Playlists") + e.playlist().forFilter());
 
 	if (!s.isEmpty()) {
@@ -1350,7 +1356,7 @@ bool TPlaylist::save() {
 				return false;
 			}
 		}
-		latest_dir = QFileInfo(s).absolutePath();
+		pref->latest_dir = QFileInfo(s).absolutePath();
 		if (QFileInfo(s).suffix().toLower() == "pls")
 			return saveIni(s);
 		else
@@ -1384,22 +1390,12 @@ void TPlaylist::saveSettings() {
 
 	QSettings* set = Settings::pref;
 
-	set->beginGroup("directories");
-	bool save_dirs = set->value("save_dirs", false).toBool();
-	set->endGroup();
-
 	set->beginGroup("playlist");
 
 	set->setValue("recursive_add_directory", recursive_add_directory);
 	set->setValue("save_playlist_in_config", save_playlist_in_config);
 	set->setValue("repeat", repeatAct->isChecked());
 	set->setValue("shuffle", shuffleAct->isChecked());
-
-	if (save_dirs) {
-		set->setValue("latest_dir", latest_dir);
-	} else {
-		set->setValue("latest_dir", "");
-	}
 
 	set->endGroup();
 
@@ -1431,7 +1427,6 @@ void TPlaylist::loadSettings() {
 	save_playlist_in_config = set->value("save_playlist_in_config", save_playlist_in_config).toBool();
 	repeatAct->setChecked(set->value("repeat", repeatAct->isChecked()).toBool());
 	shuffleAct->setChecked(set->value("shuffle", shuffleAct->isChecked()).toBool());
-	latest_dir = set->value("latest_dir", latest_dir).toString();
 
 	set->endGroup();
 
@@ -1455,15 +1450,6 @@ void TPlaylist::loadSettings() {
 
 		set->endGroup();
 	}
-}
-
-QString TPlaylist::lastDir() {
-
-	QString last_dir = latest_dir;
-	if (last_dir.isEmpty())
-		last_dir = pref->latest_dir;
-
-	return last_dir;
 }
 
 } // namespace Gui

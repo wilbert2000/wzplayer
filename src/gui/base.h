@@ -119,7 +119,7 @@ public slots:
 	void openBluRayFromFolder();
 	void openBluRayFromFolder(QString directory);
 	virtual void openDirectory();
-	virtual void openDirectory(QString directory);
+	virtual void openDirectory(const QString& directory);
 
 	virtual void showConfigFolder();
 
