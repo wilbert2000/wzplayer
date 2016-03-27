@@ -655,16 +655,6 @@ void TPlaylist::playPrev() {
 	}
 }
 
-void TPlaylist::resumePlay() {
-
-	if (pl.count() > 0) {
-		if (current_item < 0 || current_item >= pl.count()) {
-			current_item = 0;
-		}
-		playItem(current_item);
-	}
-}
-
 void TPlaylist::playDirectory(const QString &dir) {
 	qDebug("Gui::TPlaylist::playDirectory");
 
@@ -674,6 +664,16 @@ void TPlaylist::playDirectory(const QString &dir) {
 	// sort() can set modified
 	modified = false;
 	startPlay();
+}
+
+void TPlaylist::resumePlay() {
+
+	if (pl.count() > 0) {
+		if (current_item < 0 || current_item >= pl.count()) {
+			current_item = 0;
+		}
+		playItem(current_item);
+	}
 }
 
 bool TPlaylist::deleteFileFromDisk(int i) {
