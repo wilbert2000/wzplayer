@@ -1761,7 +1761,7 @@ void TCore::stopPlayer() {
 	}
 #endif
 
-	qDebug("TCore::stopPlayer: Finished. (I hope)");
+	qDebug("TCore::stopPlayer: done");
 }
 
 void TCore::goToPosition(int pos) {
