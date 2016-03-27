@@ -372,7 +372,6 @@ public:
 
 	bool report_player_crashes;
 
-	bool auto_add_to_playlist; //!< Add files to open to playlist
 	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
 

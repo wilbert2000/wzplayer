@@ -1377,8 +1377,8 @@ void TBase::openURL() {
 }
 
 void TBase::openURL(QString url) {
-	if (!url.isEmpty()
-		&& (!pref->auto_add_to_playlist || playlist->maybeSave())) {
+
+	if (!url.isEmpty() && playlist->maybeSave()) {
 			core->openStream(url);
 	}
 }

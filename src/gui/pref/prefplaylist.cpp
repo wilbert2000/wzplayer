@@ -60,7 +60,6 @@ void TPrefPlaylist::retranslateStrings() {
 
 void TPrefPlaylist::setData(Settings::TPreferences* pref) {
 
-	setAutoAddFilesToPlaylist(pref->auto_add_to_playlist);
 	setMediaToAdd(pref->media_to_add_to_playlist);
 
 	setLogDebugEnabled(pref->log_debug_enabled);
@@ -72,20 +71,11 @@ void TPrefPlaylist::getData(Settings::TPreferences* pref) {
 
 	requires_restart = false;
 
-	pref->auto_add_to_playlist = autoAddFilesToPlaylist();
 	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
 
 	pref->log_debug_enabled = logDebugEnabled();
 	restartIfBoolChanged(pref->log_verbose, logVerbose());
 	pref->log_file = logFile();
-}
-
-void TPrefPlaylist::setAutoAddFilesToPlaylist(bool b) {
-	auto_add_to_playlist_check->setChecked(b);
-}
-
-bool TPrefPlaylist::autoAddFilesToPlaylist() {
-	return auto_add_to_playlist_check->isChecked();
 }
 
 void TPrefPlaylist::setMediaToAdd(int type) {
@@ -151,12 +141,6 @@ void TPrefPlaylist::createHelp() {
 	clearHelp();
 
 	addSectionTitle(tr("Playlist"));
-
-	setWhatsThis(auto_add_to_playlist_check, tr("Automatically add files to playlist"),
-		tr("If this option is enabled, every time a file is opened, SMPlayer "
-           "will first clear the playlist and then add the file to it. In "
-           "case of DVDs, CDs and VCDs, all titles in the disc will be added "
-           "to the playlist."));
 
 	setWhatsThis(media_to_add_combo, tr("Add files from folder"),
 		tr("This option allows to add files automatically to the playlist:") +"<br>"+

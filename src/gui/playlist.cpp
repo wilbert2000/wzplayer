@@ -772,11 +772,6 @@ void TPlaylist::onCellActivated(int row, int) {
 
 void TPlaylist::onNewMediaStartedPlaying() {
 
-	if (!pref->auto_add_to_playlist) {
-		qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: add to playlist disabled by user");
-		return;
-	}
-
 	QString filename = core->mdat.filename;
 	QString current_filename;
 	if (current_item >= 0 && current_item < pl.count()) {

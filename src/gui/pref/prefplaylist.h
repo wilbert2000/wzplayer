@@ -61,9 +61,6 @@ protected:
 private:
 	void createHelp();
 
-	void setAutoAddFilesToPlaylist(bool b);
-	bool autoAddFilesToPlaylist();
-
 	void setMediaToAdd(int);
 	int mediaToAdd();
 

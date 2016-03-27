@@ -350,7 +350,6 @@ void TPreferences::reset() {
 
 	report_player_crashes = true;
 
-	auto_add_to_playlist = true;
 	media_to_add_to_playlist = NoFiles;
 
 
@@ -692,7 +691,6 @@ void TPreferences::save() {
 
 	setValue("report_player_crashes", report_player_crashes);
 
-	setValue("auto_add_to_playlist", auto_add_to_playlist);
 	setValue("media_to_add_to_playlist", media_to_add_to_playlist);
 
 	endGroup(); // gui
@@ -1190,7 +1188,6 @@ void TPreferences::load() {
 
 	report_player_crashes = value("report_player_crashes", report_player_crashes).toBool();
 
-	auto_add_to_playlist = value("auto_add_to_playlist", auto_add_to_playlist).toBool();
 	media_to_add_to_playlist = (TAutoAddToPlaylistFilter) value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
 
 	endGroup(); // gui
@@ -1412,6 +1409,7 @@ void TPreferences::load() {
 		}
 
 		remove("General/capture_directory");
+		remove("gui/auto_add_to_playlist");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();
