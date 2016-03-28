@@ -1948,15 +1948,10 @@ void TBase::onStateChanged(TCoreState state) {
 	qDebug() << "Gui::TBase::onStateChanged: new state" << core->stateToString();
 
 	switch (state) {
-		case STATE_PLAYING: {
-			QString fn = core->mdat.filename;
-			if (!pref->fullscreen) {
-				QFileInfo fi(fn);
-				fn = fi.fileName();
-			}
-			displayMessage(tr("Playing %1").arg(fn));
+		case STATE_PLAYING:
+			displayMessage(tr("Playing %1").arg(core->mdat.displayName()));
 			auto_hide_timer->startAutoHideMouse();
-		} break;
+			break;
 		case STATE_PAUSED:
 			displayMessage(tr("Paused"));
 			auto_hide_timer->stopAutoHideMouse();
