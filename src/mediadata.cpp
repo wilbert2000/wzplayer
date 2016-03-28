@@ -144,19 +144,13 @@ QString TMediaData::displayName(bool show_tag) const {
 		}
 	}
 
-	// Don't parse disc
-	if (detectedDisc()) {
-		return filename;
-	}
-
 	// Remove path
 	QFileInfo fi(filename);
-	if (fi.exists()) {
-		// Return filename without path
-		return fi.fileName();
+	QString fn = fi.fileName();
+	if (fn.isEmpty()) {
+		return filename;
 	}
-
-	return filename;
+	return fn;
 }
 
 QString TMediaData::typeToString(Type type) {
