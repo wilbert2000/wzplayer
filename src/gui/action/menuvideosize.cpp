@@ -59,11 +59,32 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 		setEnabled(false);
 	} else {
 		setEnabled(true);
-		int factor = qRound(playerWindow->getSizeFactor() * 100);
-		setChecked(factor);
-		qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: updating size factor menu from %d to %d",
-			   size_percentage, factor);
-		size_percentage = factor;
+		double factorX, factorY;
+		playerWindow->getSizeFactors(factorX, factorY);
+
+		// Set size factor for menu
+		if (factorX < factorY) {
+			size_percentage = qRound(factorX * 100);
+		} else {
+			size_percentage = qRound(factorY * 100);
+		}
+
+		// Only set check menu when x and y factor agree on +/- half a pixel
+		// Fuzzy...
+		double diffX = 0.5 / s.width() / factorX;
+		double diffY = 0.5 / s.height() / factorY;
+		if (diffY < diffX) {
+			diffX = diffY;
+		}
+		diffY = qAbs(factorX - factorY);
+		if (diffY < diffX) {
+			setChecked(size_percentage);
+			qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: match on %d fx %f fy %f diff %f allowed diff %f",
+				   size_percentage, factorX, factorY, diffY, diffX);
+		} else {
+			qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: no match on %d fx %f fy %f diff %f allowed diff %f",
+				   size_percentage, factorX, factorY, diffY, diffX);
+		}
 	}
 }
 
