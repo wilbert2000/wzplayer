@@ -1312,12 +1312,6 @@ void TBase::openRecent() {
 	}
 }
 
-void TBase::openFavorite(QString file) {
-	qDebug("Gui::TBase::openFavorite");
-
-	openFiles(QStringList() << file);
-}
-
 void TBase::openURL() {
 	qDebug("Gui::TBase::openURL");
 

@@ -74,8 +74,8 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	main_window->addAction(fav->previousAct());
 	main_window->addAction(fav->addCurrentAct());
 	addMenu(fav);
-	connect(fav, SIGNAL(activated(QString)),
-			main_window, SLOT(openFavorite(QString)));
+	connect(fav, SIGNAL(activated(const QString&)),
+			main_window, SLOT(open(const QString&)));
 	connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
 			fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 

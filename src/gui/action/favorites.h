@@ -82,7 +82,7 @@ public slots:
 	void getCurrentMedia(const QString& filename, const QString& title);
 
 signals:
-	void activated(QString filemane);
+	void activated(const QString& filemane);
 	//! Signal to resend the data to child
 	void sendCurrentMedia(const QString& filename, const QString& title);
 
