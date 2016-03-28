@@ -278,8 +278,6 @@ void TFavorites::previous() {
 }
 
 void TFavorites::getCurrentMedia(const QString& filename, const QString& title) {
-	qDebug("Gui::Action::TFavorites::getCurrentMedia: '%s', '%s'",
-		   filename.toUtf8().constData(), title.toUtf8().constData());
 
 	if (!filename.isEmpty()) {
 		received_file_playing = filename;
@@ -346,9 +344,6 @@ void TFavorites::load() {
 		while (!stream.atEnd()) {
 			line = stream.readLine().trimmed();
 			if (line.isEmpty()) continue; // Ignore empty lines
-			//qDebug("info2.indexIn: %d", info2.indexIn(line));
-			//qDebug("info1.indexIn: %d", info1.indexIn(line));
-			//qDebug(" * line: '%s'", line.toUtf8().data());
 			if (m3u_id.indexIn(line)!=-1) {
 				//#EXTM3U
 				// Ignore line
@@ -373,7 +368,6 @@ void TFavorites::load() {
 			} else {
 				fav.setFile(line);
 				if (fav.name().isEmpty()) fav.setName(line);
-				//qDebug("Gui::Action::TFavorites::load: adding '%s' '%s'", fav.name().toUtf8().constData(), fav.file().toUtf8().constData());
 				f_list.append(fav);
 
 				// Clear data

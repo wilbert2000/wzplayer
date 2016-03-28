@@ -383,7 +383,6 @@ QString TShortcutGetter::exec(const QString& s)
 		for (int n = 0; n < list->count(); n++) {
 			QString shortcut = list->item(n)->text();
 			if (!shortcut.isEmpty()) {
-				//qDebug("Gui::Action::TShortcutGetter::exec: shortcut: '%s'", shortcut.toUtf8().constData());
 				l << shortcut;
 			}
 		}
@@ -485,9 +484,7 @@ void TShortcutGetter::setText()
 		seq << "Meta";
 			
 	foreach (QString s, lKeys) {
-		//qDebug("setText: s: '%s'", s.toUtf8().data());
-		if (s != "Shift" && s != "Ctrl"
-			&& s != "Alt" && s != "Meta")
+		if (s != "Shift" && s != "Ctrl" && s != "Alt" && s != "Meta")
 			seq << s;
 	}
 			

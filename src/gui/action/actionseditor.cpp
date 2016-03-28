@@ -360,7 +360,7 @@ void TActionsEditor::saveActionsTable() {
 }
 
 bool TActionsEditor::saveActionsTable(const QString & filename) {
-	qDebug("Gui::Action::TActionsEditor::saveActions: '%s'", filename.toUtf8().data());
+	qDebug() << "Gui::Action::TActionsEditor::saveActions:" << filename;
 
 	QFile f(filename);
 	if (f.open(QIODevice::WriteOnly)) {
@@ -394,7 +394,7 @@ void TActionsEditor::loadActionsTable() {
 }
 
 bool TActionsEditor::loadActionsTable(const QString& filename) {
-	qDebug("Gui::Action::TActionsEditor::loadActions: '%s'", filename.toUtf8().data());
+	qDebug() << "Gui::Action::TActionsEditor::loadActions:" << filename;
 
 	QRegExp rx("^(.*)\\t(.*)");
 	int row;
@@ -411,7 +411,6 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
 			if (rx.indexIn(line) > -1) {
 				QString name = rx.cap(1);
 				QString accelText = rx.cap(2);
-				qDebug(" name: '%s' accel: '%s'", name.toUtf8().data(), accelText.toUtf8().data());
 				row = findActionName(name);
 				if (row > -1) {
 					qDebug("Action found!");

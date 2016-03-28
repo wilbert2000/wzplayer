@@ -17,7 +17,7 @@
 */
 
 #include "gui/about.h"
-
+#include <QDebug>
 #include <QFile>
 #include <QDesktopServices>
 
@@ -76,7 +76,6 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 
 	if ((pref->language != "en") && (pref->language != "en_US")) {
 		QString license_trans_file = TPaths::doc("gpl.html", pref->language, false);
-		//qDebug("license_trans_file: %s", license_trans_file.toUtf8().constData());
 		if (QFile::exists(license_trans_file)) {
 			license_trans_file = QUrl::fromLocalFile(license_trans_file).toString();
 			license_text += QString("<br><a href=\"%1\">%2</a>").arg(license_trans_file).arg(tr("Read a translation"));
@@ -168,7 +167,7 @@ QSize TAbout::sizeHint () const {
 }
 
 void TAbout::openLink(const QUrl & link) {
-	qDebug("Gui::TAbout::openLink: '%s'", link.toString().toUtf8().constData());
+	qDebug() << "Gui::TAbout::openLink:" << link.toString();
 	QDesktopServices::openUrl(link);
 }
 

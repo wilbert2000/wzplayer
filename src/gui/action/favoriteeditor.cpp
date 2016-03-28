@@ -17,11 +17,12 @@
 */
 
 #include "gui/action/favoriteeditor.h"
-#include "images.h"
 
+#include <QDebug>
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QItemDelegate>
+#include "images.h"
 #include "filechooser.h"
 
 #define COL_ICON 0
@@ -241,8 +242,7 @@ void TFavoriteEditor::on_add_button_clicked() {
 }
 
 void TFavoriteEditor::on_add_submenu_button_clicked() {
-	qDebug("Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked");
-	qDebug("Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: store_path: '%s'", store_path.toUtf8().constData());
+	qDebug() << "Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: store_path:" << store_path;
 
 	QString filename;
 	//QString s;
@@ -250,11 +250,11 @@ void TFavoriteEditor::on_add_submenu_button_clicked() {
 	do {
 		filename = QString("favorites%1.m3u8").arg(n, 4, 10, QChar('0'));
 		if (!store_path.isEmpty()) filename = store_path +"/"+ filename;
-		qDebug("Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: filename: '%s'", filename.toUtf8().constData());
+		qDebug() << "Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: filename:" << filename;
 		n++;
 	} while (QFile::exists(filename));
 
-	qDebug("Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: choosen filename: '%s'", filename.toUtf8().constData());
+	qDebug() << "Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: choosen filename:" << filename;
 
 
 	int row = table->currentRow();
@@ -341,7 +341,7 @@ void TFavoriteEditor::edit_icon(int row, int column) {
 	QTableWidgetItem* i = table->item(row, column);
 	QString icon_filename = i->data(Qt::UserRole).toString();
 
-	qDebug("Gui::Action::TFavoriteEditor::edit_icon: icon file: '%s'", icon_filename.toUtf8().constData());
+	qDebug() << "Gui::Action::TFavoriteEditor::edit_icon: icon file:" << icon_filename;
 
 	QString dir = icon_filename;
 	if (dir.isEmpty()) dir = last_dir;

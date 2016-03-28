@@ -314,7 +314,6 @@ void TCore::clearOSD() {
 }
 
 void TCore::displayTextOnOSD(const QString& text, int duration, int level) {
-	//qDebug("TCore::displayTextOnOSD: '%s'", text.toUtf8().constData());
 
 	if (proc->isFullyStarted()
 		&& level <= pref->osd_level
@@ -533,7 +532,7 @@ void TCore::unloadAudioFile() {
 }
 
 void TCore::openTV(QString channel_id) {
-	qDebug("TCore::openTV: '%s'", channel_id.toUtf8().constData());
+	qDebug() << "TCore::openTV:" << channel_id;
 
 	close();
 
@@ -569,7 +568,7 @@ void TCore::openTV(QString channel_id) {
 }
 
 void TCore::openStream(const QString& name) {
-	qDebug("TCore::openStream: '%s'", name.toUtf8().data());
+	qDebug() << "TCore::openStream:" << name;
 
 	close();
 	mdat.filename = name;
@@ -964,7 +963,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 		}
 
 		if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
-			qDebug("TCore::videoFiltersEnabled: %s", msg.toUtf8().constData());
+			qDebug() << "TCore::videoFiltersEnabled:" << msg;
 			emit showMessage(msg, 0);
 		}
 	}
@@ -1014,8 +1013,8 @@ void TCore::startPlayer(QString file, double seek) {
 					file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
 				}
 				if (QFile::exists(file2)) {
-					qDebug("TCore::startPlayer: using %s as external audio file",
-						   file2.toUtf8().constData());
+					qDebug() << "TCore::startPlayer: using external audio file"
+							 << file2;
 					mset.external_audio = file2;
 				}
 			}
@@ -1291,7 +1290,6 @@ void TCore::startPlayer(QString file, double seek) {
 			// Remove extension
 			QFileInfo fi(mset.sub.filename());
 			QString s = fi.path() +"/"+ fi.completeBaseName();
-			qDebug("TCore::startPlayer: subtitle file without extension: '%s'", s.toUtf8().data());
 			proc->setOption("vobsub", s);
 		}
 		if (mset.sub.ID() >= 0) {
@@ -1633,7 +1631,7 @@ void TCore::startPlayer(QString file, double seek) {
 #ifndef Q_OS_WIN
 	if (isMPV() && file.startsWith("dvb:")) {
 		QString channels_file = Gui::Action::TTVList::findChannelsFile();
-		qDebug("TCore::startPlayer: channels_file: %s", channels_file.toUtf8().constData());
+		qDebug() << "TCore::startPlayer: channels_file:" << channels_file;
 		if (!channels_file.isEmpty())
 			proc->setChannelsFile(channels_file);
 	}
@@ -1650,11 +1648,10 @@ void TCore::startPlayer(QString file, double seek) {
 
 		if (QFile::exists(basename + ".edl"))
 			edl_f = basename + ".edl";
-		else
-		if (QFile::exists(basename + ".EDL"))
+		else if (QFile::exists(basename + ".EDL"))
 			edl_f = basename + ".EDL";
 
-		qDebug("TCore::startPlayer: edl file: '%s'", edl_f.toUtf8().data());
+		qDebug() << "TCore::startPlayer: edl file:" << edl_f;
 		if (!edl_f.isEmpty()) {
 			proc->setOption("edl", edl_f);
 		}
@@ -1678,7 +1675,7 @@ void TCore::startPlayer(QString file, double seek) {
 		for (int n = 0; n < args.count(); n++) {
 			QString arg = args[n].simplified();
 			if (!arg.isEmpty()) {
-				qDebug("arg %d: %s", n, arg.toUtf8().constData());
+				qDebug() << "arg" << n << arg;
 				proc->addUserOption(arg);
 			}
 		}
@@ -2208,7 +2205,7 @@ void TCore::changeUpscale(bool b) {
 }
 
 void TCore::changeStereo3d(const QString & in, const QString & out) {
-	qDebug("TCore::changeStereo3d: in: %s out: %s", in.toUtf8().constData(), out.toUtf8().constData());
+	qDebug() << "TCore::changeStereo3d: in:" << in << "out:" << out;
 
 	if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
 		if (isMPlayer() || mdat.video_hwdec) {
@@ -3457,7 +3454,7 @@ void TCore::displayMessage(const QString& text, int duration, int osd_level) {
 }
 
 void TCore::displayScreenshotName(const QString& filename) {
-	qDebug("TCore::displayScreenshotName: %s", filename.toUtf8().constData());
+	qDebug() << "TCore::displayScreenshotName:" << filename;
 
 	QFileInfo fi(filename);
 	QString text = tr("Screenshot saved as %1").arg(fi.fileName());
