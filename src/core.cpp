@@ -111,7 +111,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			 this, SLOT(gotVideoOutResolution(int,int)));
 
 	connect(proc, SIGNAL(receivedEndOfFile()),
-			 this, SLOT(fileReachedEnd()), Qt::QueuedConnection);
+			 this, SLOT(onReceivedEndOfFile()), Qt::QueuedConnection);
 
 	connect(proc, SIGNAL(receivedStreamTitle(const QString&)),
 			 this, SLOT(streamTitleChanged(const QString&)));
@@ -219,12 +219,12 @@ void TCore::processFinished(bool normal_exit) {
 	}
 }
 
-void TCore::fileReachedEnd() {
+void TCore::onReceivedEndOfFile() {
 
-	// Reset current time to 0
+	// Reset current time to 0, needed so mset.current_sec 0 is saved
 	gotCurrentSec(0);
 
-	qDebug("TCore::fileReachedEnd: emit mediaEOF()");
+	qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
 	emit mediaEOF();
 }
 

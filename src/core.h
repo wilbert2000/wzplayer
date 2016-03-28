@@ -397,7 +397,7 @@ protected slots:
 	void playingStarted();
 	void processError(QProcess::ProcessError error);
 	void processFinished(bool normal_exit);
-	void fileReachedEnd();
+	void onReceivedEndOfFile();
 
 	void gotCurrentSec(double sec);
 	void onReceivedPause();
