@@ -497,7 +497,7 @@ void TCore::loadSub(const QString & sub) {
 			proc->setExternalSubtitleFile(sub);
 		}
 	} else {
-		qWarning("TCore::loadSub: file '%s' is not valid", sub.toUtf8().constData());
+		qWarning() << "TCore::loadSub: file not found" << sub;
 	}
 }
 
@@ -981,7 +981,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	if (proc->isRunning()) {
-		qWarning("TCore::startPlayer: MPlayer still running!");
+		qWarning("TCore::startPlayer: Player still running!");
 		return;
 	}
 
