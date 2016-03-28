@@ -259,7 +259,7 @@ QString Helper::findExecutable(const QString& name) {
 
 #ifdef Q_OS_WIN
 	// Add mplayer subdir of app dir to end of PATH
-	search_paths << TPaths::appPath() + "/mplayer";
+	search_paths << TPaths::appPath() + "/mplayer" << TPaths::appPath() + "/mpv";
 	// TODO: add some more...
 #endif
 
