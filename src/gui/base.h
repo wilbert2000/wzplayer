@@ -290,7 +290,6 @@ protected:
 	void setDataToFileProperties();
 	void createActions();
 	void setActionsEnabled(bool);
-	Action::TAction* findAction(const QString& name);
 	void createMenus();
 	void configureDiscDevices();
 	void setupNetworkProxy();

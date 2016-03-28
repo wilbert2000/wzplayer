@@ -772,18 +772,6 @@ TActionList TBase::getAllNamedActions() {
 	return all_actions;
 }
 
-TAction* TBase::findAction(const QString& name) {
-
-	QList<TAction*> actions = findChildren<TAction*>(name);
-	if (actions.count() == 0) {
-		qWarning("Gui::TBase::findAction: action '%s' not found",
-				 name.toUtf8().constData());
-		return new TAction(this, name, name);
-	}
-
-	return actions[0];
-}
-
 void TBase::loadConfig() {
 	qDebug("Gui::TBase::loadConfig");
 
