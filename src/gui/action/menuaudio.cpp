@@ -201,7 +201,7 @@ void TMenuAudio::enableActions(bool stopped, bool, bool audio) {
 
 	// Filters
 	volnormAct->setEnabled(enableAudio);
-	extrastereoAct->setEnabled(enableAudio && pref->isMPlayer());
+	extrastereoAct->setEnabled(enableAudio);
 	karaokeAct->setEnabled(enableAudio && pref->isMPlayer());
 
 	loadAudioAct->setEnabled(!stopped);

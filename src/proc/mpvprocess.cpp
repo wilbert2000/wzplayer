@@ -1033,7 +1033,9 @@ void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
 				s = "[pp=" + option + "]";
 			}
 			addVFIfAvailable("lavfi", s);
-		} else if (filter_name == "extrastereo" || filter_name == "karaoke") {
+		} else if (filter_name == "extrastereo") {
+			arg << "--af-add=lavfi=[extrastereo]";
+		} else if (filter_name == "karaoke") {
 			/* Not supported anymore, ignore */
 		} else {
 			QString s = filter_name;
@@ -1245,12 +1247,12 @@ void TMPVProcess::enableKaraoke(bool) {
 	messageFilterNotSupported("karaoke");
 }
 
-void TMPVProcess::enableExtrastereo(bool) {
-	/*
-	if (b) writeToStdin("af add extrastereo"); else writeToStdin("af del extrastereo");
-	*/
-	messageFilterNotSupported("extrastereo");
-}
+void TMPVProcess::enableExtrastereo(bool b) {
+	if (b)
+		writeToStdin("af add lavfi=[extrastereo]");
+	else
+		writeToStdin("af del lavfi=[extrastereo]");
+ }
 
 void TMPVProcess::enableVolnorm(bool b, const QString& option) {
 	if (b) writeToStdin("af add drc=" + option); else writeToStdin("af del drc=" + option);
