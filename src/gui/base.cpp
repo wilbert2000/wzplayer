@@ -1997,6 +1997,10 @@ void TBase::changeSize(double factor) {
 							   pref->size_factor);
 		QSize desktop_size = TDesktop::size(this);
 		double zoom = (double) video_size.width() / desktop_size.width();
+		double zoomY = (double) video_size.height() / desktop_size.height();
+		if (zoomY > zoom) {
+			zoom = zoomY;
+		}
 		playerwindow->setZoom(zoom);
 	} else {
 		// Normal screen

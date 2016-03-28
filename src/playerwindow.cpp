@@ -210,8 +210,13 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
 
 	if (video_width > 0 && video_height > 0) {
 		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
-		factorX = (double) width() / video_size.width();
-		factorY = (double) height() / video_size.height();
+		if (pref->fullscreen) {
+			factorX = (double) playerlayer->width() / video_size.width();
+			factorY = (double) playerlayer->height() / video_size.height();
+		} else {
+			factorX = (double) width() / video_size.width();
+			factorY = (double) height() / video_size.height();
+		}
 		return;
 	}
 	factorX = 0;
