@@ -1389,11 +1389,10 @@ void TCore::startPlayer(QString file, double seek) {
 
 	if (mdat.selected_type != TMediaData::TYPE_TV) {
 		// Play A - B
-		if ((mset.A_marker > -1) && (mset.B_marker > mset.A_marker)) {
+		if (mset.A_marker >= 0 && mset.B_marker > mset.A_marker) {
 			proc->setOption("ss", QString::number(mset.A_marker));
 			proc->setOption("endpos", QString::number(mset.B_marker - mset.A_marker));
-		}
-		else
+		} else
 		// If seek < 5 it's better to allow the video to start from the beginning
 		if (seek >= 5 && !mset.loop) {
 			proc->setOption("ss", QString::number(seek));
@@ -1915,7 +1914,8 @@ void TCore::setAMarker(int sec) {
 	displayMessage(tr("\"A\" marker set to %1").arg(Helper::formatTime(sec)));
 
 	if (mset.B_marker > mset.A_marker) {
-		if (proc->isRunning()) restartPlay();
+		if (proc->isRunning())
+			restartPlay();
 	}
 
 	emit ABMarkersChanged();
@@ -1931,8 +1931,9 @@ void TCore::setBMarker(int sec) {
 	mset.B_marker = sec;
 	displayMessage(tr("\"B\" marker set to %1").arg(Helper::formatTime(sec)));
 
-	if ((mset.A_marker > -1) && (mset.A_marker < mset.B_marker)) {
-		if (proc->isRunning()) restartPlay();
+	if (mset.A_marker >= 0 && mset.A_marker < mset.B_marker) {
+		if (proc->isRunning())
+			restartPlay();
 	}
 
 	emit ABMarkersChanged();
@@ -1941,7 +1942,7 @@ void TCore::setBMarker(int sec) {
 void TCore::clearABMarkers() {
 	qDebug("TCore::clearABMarkers");
 
-	if ((mset.A_marker != -1) || (mset.B_marker != -1)) {
+	if (mset.A_marker != -1 || mset.B_marker != -1) {
 		mset.A_marker = -1;
 		mset.B_marker = -1;
 		displayMessage(tr("A-B markers cleared"));
