@@ -54,7 +54,7 @@ ${LangFileString} Section_IconThemes_Desc "Ícones adicionais para o SMPlayer."
 ${LangFileString} Section_Translations "Idiomas"
 ${LangFileString} Section_Translations_Desc "Idiomas adicionais para o SMPlayer."
 
-${LangFileString} Section_ResetSettings_Desc "Elimina as preferências de uma anterior instalação do SMPlayer."
+${LangFileString} Section_ResetSettings_Desc "Remove as preferências de uma anterior instalação do SMPlayer."
 
 ${LangFileString} MPlayer_Codec_Msg "O pacote de codificadores adiciona suporte aos formatos que ainda não foram implementados no MPlayer, tais como as novas variantes RealVideo e outros formatos menos utilizados.$\nEstes codificadores não são necessários para os formatos mais comuns como DVD, MPEG-1/2/4, etc."
 
@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Clique Desinstalar para continuar."
 ${LangFileString} Reinstall_Msg4 "Alterar definições de instalação"
 ${LangFileString} Reinstall_Msg5 "Reiniciar configurações do SMPlayer"
 
+${LangFileString} Remove_Settings_Confirmation "Tem a certeza de que deseja repor as definições do SMPlayer? Esta ação não pode ser revertida."
+
 ${LangFileString} Type_Reinstall "Reinstalar"
 ${LangFileString} Type_Downgrade "Reverter"
 ${LangFileString} Type_Upgrade "Atualizar"
@@ -79,9 +81,9 @@ ${LangFileString} Type_Upgrade "Atualizar"
 ${LangFileString} StartBtn "Iniciar"
 
 ; Codecs Section
-${LangFileString} Codecs_DL_Msg "A transferir os codificadores MPlayer..."
+${LangFileString} Codecs_DL_Msg "A descarregar os codificadores MPlayer..."
 ${LangFileString} Codecs_DL_Retry "Os codificadores MPlayer não foram instalados corretamente. Tentar novamente?"
-${LangFileString} Codecs_DL_Failed "Falha ao transferir os codificadores MPlayer: '$R0'."
+${LangFileString} Codecs_DL_Failed "Falha ao descarregar os codificadores MPlayer: '$R0'."
 ${LangFileString} Codecs_Inst_Failed "Falha ao instalar os codificadores MPlayer."
 
 ; Uninstaller
@@ -109,11 +111,16 @@ ${LangFileString} Info_MPV_Backup "A criar backup do mpv..."
 ${LangFileString} Info_MPV_Restore "A restaurar o mpv da instalação anterior..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "A transferir o mpv..."
+${LangFileString} MPV_DL_Msg "A descarregar o mpv..."
 ${LangFileString} MPV_DL_Retry "O mpv não foi instalado. Tentar novamente?"
-${LangFileString} MPV_DL_Failed "Falha ao transferir o mpv: '$R0'."
+${LangFileString} MPV_DL_Failed "Falha ao descarregar o mpv: '$R0'."
 ${LangFileString} MPV_Inst_Failed "Falha ao instalar o mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL não foi instalada. Tentar novamente?"
-${LangFileString} YTDL_DL_Failed "Falha ao transferir Youtube-DL: '$R0'."
+${LangFileString} YTDL_DL_Retry "youtube-dl não foi instalada. Tentar novamente?"
+${LangFileString} YTDL_DL_Failed "Falha ao descarregar a youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "A procurar atualizações para youtube-dl..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "A limpar cache de fontes..."
+${LangFileString} Info_Cleaning_SMPlayer "A limpar definições do SMPlayer..."

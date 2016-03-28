@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Stiskněte Odinstalovat jste-li připraveni.
 ${LangFileString} Reinstall_Msg4 "Změnit nastavení instalace"
 ${LangFileString} Reinstall_Msg5 "Resetovat moje nastavení SMPlayeru"
 
+${LangFileString} Remove_Settings_Confirmation "Are you sure you want to reset your SMPlayer settings? This action cannot be reversed."
+
 ${LangFileString} Type_Reinstall "reinstalovat"
 ${LangFileString} Type_Downgrade "ponížit verzi"
 ${LangFileString} Type_Upgrade "aktualizovat"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Beru zpět změny..."
 ${LangFileString} Info_Files_Extract "Extrahuji soubory..."
 ${LangFileString} Info_SMTube_Backup "Zálohování SMtube..."
 ${LangFileString} Info_SMTube_Restore "Obnovení SMtube z předchozí instalace..."
-${LangFileString} Info_MPV_Backup "Zálohování MPV..."
-${LangFileString} Info_MPV_Restore "Obnovování MPV z předchozích instalací..."
+${LangFileString} Info_MPV_Backup "Backing up mpv..."
+${LangFileString} Info_MPV_Restore "Restoring mpv from previous installation..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Stahování MPV..."
-${LangFileString} MPV_DL_Retry "Instlace MPV nebyla úspěšná. Zkusit znovu?"
-${LangFileString} MPV_DL_Failed "Nelze stáhnout MPV: '$R0'."
-${LangFileString} MPV_Inst_Failed "Chyba při instalaci MPV."
+${LangFileString} MPV_DL_Msg "Downloading mpv..."
+${LangFileString} MPV_DL_Retry "mpv was not successfully installed. Retry?"
+${LangFileString} MPV_DL_Failed "Failed to download mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "Failed to install mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "Instlace YouTube-DL nebyla úspěšná. Zkusit znovu?"
-${LangFileString} YTDL_DL_Failed "Nelze stáhnout Youtube-DL: '$R0'."
+${LangFileString} YTDL_DL_Retry "youtube-dl was not successfully installed. Retry?"
+${LangFileString} YTDL_DL_Failed "Failed to download youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "Checking for youtube-dl updates..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Cleaning fontconfig cache..."
+${LangFileString} Info_Cleaning_SMPlayer "Cleaning SMPlayer settings..."

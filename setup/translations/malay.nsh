@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Klik Nyahpasang bila sedia diteruskan."
 ${LangFileString} Reinstall_Msg4 "Ubah Tetapan Pemasangan"
 ${LangFileString} Reinstall_Msg5 "Tetap semula konfigurasi SMPlayer saya"
 
+${LangFileString} Remove_Settings_Confirmation "Anda pasti mahu menetap semula tetapan SMPlayer anda? Tindakan ini tidak boleh dikembalikan."
+
 ${LangFileString} Type_Reinstall "pasang semula"
 ${LangFileString} Type_Downgrade "nyahtatar"
 ${LangFileString} Type_Upgrade "tatar"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Mengembali perubahan..."
 ${LangFileString} Info_Files_Extract "Mengekstrak fail..."
 ${LangFileString} Info_SMTube_Backup "Menyandar SMTube..."
 ${LangFileString} Info_SMTube_Restore "Memulihkan SMTube dari pemasangan terdahulu..."
-${LangFileString} Info_MPV_Backup "Menyandar MPV..."
-${LangFileString} Info_MPV_Restore "Memulihkan MPV dari pemasangan terdahulu..."
+${LangFileString} Info_MPV_Backup "Menyandar mpv..."
+${LangFileString} Info_MPV_Restore "Memulihkan mpv dari pemasangan terdahulu..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Memuat turun MPV..."
-${LangFileString} MPV_DL_Retry "MPV gagal dipasang. Cuba lagi?"
-${LangFileString} MPV_DL_Failed "Gagal memuat turun MPV: '$R0'."
-${LangFileString} MPV_Inst_Failed "Gagal memasang MPV."
+${LangFileString} MPV_DL_Msg "Memuat turun mpv..."
+${LangFileString} MPV_DL_Retry "mpv gagal dipasang. Cuba lagi?"
+${LangFileString} MPV_DL_Failed "Gagal memuat turun mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "Gagal memasang mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL gagal dipasang. Cuba lagi?"
-${LangFileString} YTDL_DL_Failed "Gagal memuat turun Youtube-DL: '$R0'."
+${LangFileString} YTDL_DL_Retry "youtube-dl gagal dipasang. Cuba lagi?"
+${LangFileString} YTDL_DL_Failed "Gagal memuat turun youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "Memeriksa kemaskini youtube-dl..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Membersihkan cache konfig fon..."
+${LangFileString} Info_Cleaning_SMPlayer "Membersihkan tetapan SMPlayer..."

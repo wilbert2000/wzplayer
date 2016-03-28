@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Kliknite 'Deinstaliraj' kada ste spremni za 
 ${LangFileString} Reinstall_Msg4 "Promijeni postavke instalacije"
 ${LangFileString} Reinstall_Msg5 "Vrati na početno SMPlayer podešavanja"
 
+${LangFileString} Remove_Settings_Confirmation "Sigurno želite vratiti izvorne SMPlayer postavke? Ova radnja se ne može poništiti."
+
 ${LangFileString} Type_Reinstall "reinstaliraj"
 ${LangFileString} Type_Downgrade "nadogradi na stariju inačicu"
 ${LangFileString} Type_Upgrade "nadogradi"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Vraćanje promjena..."
 ${LangFileString} Info_Files_Extract "Raspakiravanje datoteka..."
 ${LangFileString} Info_SMTube_Backup "Sigurnosno kopiranje SMTubea..."
 ${LangFileString} Info_SMTube_Restore "Vraćanje sigurnosne kopije prijašnje instalacije SMTuba..."
-${LangFileString} Info_MPV_Backup "Sigurnosno kopiranje MPV-a..."
-${LangFileString} Info_MPV_Restore "Vraćanje sigurnosne kopije prijašnje instalacije MPV-a..."
+${LangFileString} Info_MPV_Backup "Sigurnosno kopiranje mpv-a..."
+${LangFileString} Info_MPV_Restore "Vraćanje sigurnosne kopije prijašnje instalacije mpv-a..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Preuzimanje MPV-a..."
-${LangFileString} MPV_DL_Retry "MPV nije uspješno instaliran. Pokušaj ponovno?"
-${LangFileString} MPV_DL_Failed "Neuspjelo preuzimanje MPV-a: '$R0'."
-${LangFileString} MPV_Inst_Failed "Neuspjelo instaliranje MPV-a."
+${LangFileString} MPV_DL_Msg "Preuzimanje mpv-a..."
+${LangFileString} MPV_DL_Retry "mpv nije uspješno instaliran. Pokušaj ponovno?"
+${LangFileString} MPV_DL_Failed "Neuspjelo preuzimanje mpv-a: '$R0'."
+${LangFileString} MPV_Inst_Failed "Neuspjelo instaliranje mpv-a."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL nije uspješno instaliran. Pokušaj ponovno?"
-${LangFileString} YTDL_DL_Failed "Neuspjelo preuzimanje Youtube-DL: '$R0'."
+${LangFileString} YTDL_DL_Retry "YouTube-dl nije uspješno instaliran. Pokušaj ponovno?"
+${LangFileString} YTDL_DL_Failed "Neuspjelo preuzimanje Youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "Provjeravanje youtube-dl nadopuna..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Brisanje priručne memorije slova..."
+${LangFileString} Info_Cleaning_SMPlayer "Brisanje SMPlayer postavki..."

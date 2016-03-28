@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Prema Desinstalar cando estea listo."
 ${LangFileString} Reinstall_Msg4 "Cambiar os axustes da instalación"
 ${LangFileString} Reinstall_Msg5 "Restabelecer a configuración do SMPlayer"
 
+${LangFileString} Remove_Settings_Confirmation "Confirma o restabelecemento dos axustes do SMPlayer? Esta acción non se pode desfacer."
+
 ${LangFileString} Type_Reinstall "reinstalar"
 ${LangFileString} Type_Downgrade "desanovar"
 ${LangFileString} Type_Upgrade "anovar"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Desfacendo os cambios..."
 ${LangFileString} Info_Files_Extract "Extraendo ficheiros..."
 ${LangFileString} Info_SMTube_Backup "Facendo copia de seguranza de SMTube..."
 ${LangFileString} Info_SMTube_Restore "Restabelecendo SMTube desde a instalación anterior..."
-${LangFileString} Info_MPV_Backup "Facendo copia de seguranza de MPV..."
-${LangFileString} Info_MPV_Restore "Restabelecendo MPV desde a instalación anterior..."
+${LangFileString} Info_MPV_Backup "Facendo copia de seguranza do mpv..."
+${LangFileString} Info_MPV_Restore "Restabelecendo o mpv desde a instalación anterior..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Descargando MPV..."
-${LangFileString} MPV_DL_Retry "Os códecs de MPV non se instalaron correctamente. Desexa tentalo de novo?"
-${LangFileString} MPV_DL_Failed "A descarga de MPV fallou: «$R0»."
-${LangFileString} MPV_Inst_Failed "Produciuse un fallo ao instalar MPV."
+${LangFileString} MPV_DL_Msg "Descargando mpv..."
+${LangFileString} MPV_DL_Retry "Os códecs do mpv non se instalaron correctamente. Desexa tentalo de novo?"
+${LangFileString} MPV_DL_Failed "A descarga do mpv fallou: «$R0»."
+${LangFileString} MPV_Inst_Failed "Produciuse un fallo ao instalar o mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "Non se instalou correctamente YouTube-DL. Desexa tentalo de novo?"
-${LangFileString} YTDL_DL_Failed "A descarga de Youtube-DL fallou: «$R0»."
+${LangFileString} YTDL_DL_Retry "Non se instalou correctamente youtube-dl. Desexa tentalo de novo?"
+${LangFileString} YTDL_DL_Failed "A descarga de youtube-dl fallou: «$R0»."
+${LangFileString} YTDL_Update_Check "Buscando actualizacións para o youtube-dl..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Borrando a caché do fontconfig..."
+${LangFileString} Info_Cleaning_SMPlayer "Borrando os axustes do SMPlayer..."

@@ -44,7 +44,7 @@ ${LangFileString} Section_MPlayerCodecs_Desc "קודקים של בינארי א�
 ${LangFileString} Section_MPlayerCodecs_Desc "קודקי לא מחייבים (רשות) עבור MPlayer. (חיבור אינטרנט נדרש לשם התקנה)"
 !endif
 
-${LangFileString} Section_MPV_Desc "הסתעפות רב-תכליתית של MPlayer ו-MPlayer2"
+${LangFileString} Section_MPV_Desc "הסתעפות רב-תכליתית של MPlayer וגם MPlayer2"
 
 ${LangFileString} Section_MEncoder_Desc "תוכנית משותפת ליישום MPlayer אשר מסוגלת לשמש כדי לקודד או לשנות זרמי אודיו או וידאו נתמכים."
 
@@ -56,7 +56,7 @@ ${LangFileString} Section_Translations_Desc "קבצים של שפות לא-אנ�
 
 ${LangFileString} Section_ResetSettings_Desc "מחיקת העדפות SMPlayer אשר נותרו מתוך התקנות קודמות."
 
-${LangFileString} MPlayer_Codec_Msg "The binary codec packages add support for codecs that are not yet implemented natively, like newer RealVideo variants and a lot of uncommon formats.$\nNote that they are not necessary to play most common formats like DVDs, MPEG-1/2/4, etc."
+${LangFileString} MPlayer_Codec_Msg "חבילות בינארי codec מוסיפות תמיכה לקודקים אשר לא מיושמים במערכת באופן טבעי, כגון RealVideo על סוגיו ועוד פורמטים רבים לא נפוצים.$\nלתשומת לבך אלו לא נדרשים כדי לנגן את רוב הפורמטים הנפוצים כגון DVD, MPEG-1/2/4, וכו׳."
 
 ; Upgrade/Reinstall Page
 ${LangFileString} Reinstall_Header_Text "בחר טיפוס התקנה"
@@ -71,6 +71,8 @@ ${LangFileString} Reinstall_Msg3_2 "לחץ הבא כאשר אתה מוכן לה�
 ${LangFileString} Reinstall_Msg3_3 "לחץ בטל התקנה כאשר אתה מוכן להמשיך."
 ${LangFileString} Reinstall_Msg4 "שנה הגדרות התקנה"
 ${LangFileString} Reinstall_Msg5 "אפס תצורת SMPlayer"
+
+${LangFileString} Remove_Settings_Confirmation "האם אתה בטוח כי ברצונך לאפס את הגדרות SMPlayer? פעולה זו היא בלתי הפיכה."
 
 ${LangFileString} Type_Reinstall "התקן מחדש"
 ${LangFileString} Type_Downgrade "הנמך"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "משחזר כעת שינויים..."
 ${LangFileString} Info_Files_Extract "מחלץ כעת קבצים..."
 ${LangFileString} Info_SMTube_Backup "מגבה כעת את SMTube..."
 ${LangFileString} Info_SMTube_Restore "משחזר כעת את SMTube מתוך התקנה קודמת..."
-${LangFileString} Info_MPV_Backup "מגבה כעת את MPV..."
-${LangFileString} Info_MPV_Restore "משחזר כעת את MPV מתוך התקנה קודמת..."
+${LangFileString} Info_MPV_Backup "כעת מגבה את mpv..."
+${LangFileString} Info_MPV_Restore "כעת משחזר את mpv מתוך התקנה קודמת..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "מוריד כעת את MPV..."
-${LangFileString} MPV_DL_Retry "MPV לא הותקן בהצלחה. לנסות שוב?"
-${LangFileString} MPV_DL_Failed "נכשל להוריד MPV: '$R0'."
-${LangFileString} MPV_Inst_Failed "נכשל להתקין MPV."
+${LangFileString} MPV_DL_Msg "כעת מוריד את mpv..."
+${LangFileString} MPV_DL_Retry "mpv לא הותקן בהצלחה. לנסות שוב?"
+${LangFileString} MPV_DL_Failed "נכשל להוריד את mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "נכשל להתקין את mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL לא הותקן בהצלחה. לנסות שוב?"
-${LangFileString} YTDL_DL_Failed "נכשל להוריד את Youtube-DL: '$R0'."
+${LangFileString} YTDL_DL_Retry "youtube-dl לא הותקן בהצלחה. לנסות שוב?"
+${LangFileString} YTDL_DL_Failed "נכשל להוריד את youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "כעת בודק עדכונים עבור youtube-dl..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "כעת מנקה מטמון fontconfig..."
+${LangFileString} Info_Cleaning_SMPlayer "כעת מנקה הגדרות SMPlayer..."

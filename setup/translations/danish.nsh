@@ -12,7 +12,7 @@ ${LangFileString} Installer_No_Admin "Du skal være logget på som administrator
 ${LangFileString} SMPlayer_Is_Running "SMPlayer kører allerede. Luk venligst SMPlayer og prøv igen."
 
 ${LangFileString} OS_Not_Supported "Styresystemet er ikke understøttet.$\nSMPlayer ${SMPLAYER_VERSION} kræver som minimum Windows XP og vil måske ikke virke korrekt på dit system.$\nEr du sikker på at du vil fortsætte installationen?"
-${LangFileString} Win64_Required "Det kræver et 64-bit Windows-styresystem at installere denne software."
+${LangFileString} Win64_Required "Det kræver et 64-bit Windows-styresystem at installere dette software."
 ${LangFileString} Existing_32bitInst "Der findes allerede en 32-bit installation af SMPlayer. Du skal først afinstallere 32-bit SMPlayer."
 ${LangFileString} Existing_64bitInst "Der findes allerede en 64-bit installation af SMPlayer. Du skal først afinstallere 64-bit SMPlayer."
 
@@ -23,7 +23,7 @@ ${LangFileString} WelcomePage_Text "Installationsprogrammet guider dig gennem in
 ; Components Page
 ${LangFileString} ShortcutGroupTitle "Genveje"
 ${LangFileString} MPlayerGroupTitle "MPlayer Komponenter"
-${LangFileString} MPlayerMPVGroupTitle "Multimedie motor"
+${LangFileString} MPlayerMPVGroupTitle "Multimediemotor"
 
 ${LangFileString} Section_SMPlayer "SMPlayer (påkrævet)"
 ${LangFileString} Section_SMPlayer_Desc "SMPlayer, delte biblioteker, og dokumentation."
@@ -72,16 +72,18 @@ ${LangFileString} Reinstall_Msg3_3 "Klik på Afinstaller når du er klar til at 
 ${LangFileString} Reinstall_Msg4 "Skift installationsindstillinger"
 ${LangFileString} Reinstall_Msg5 "Nulstil mine SMPlayer indstillinger"
 
-${LangFileString} Type_Reinstall "geninstaller"
+${LangFileString} Remove_Settings_Confirmation "Er du sikker på at du vil nulstille dine SMPlayer indstillinger? Denne handling kan ikke gøres om."
+
+${LangFileString} Type_Reinstall "geninstallér"
 ${LangFileString} Type_Downgrade "nedgrader"
 ${LangFileString} Type_Upgrade "opgrader"
 
 ${LangFileString} StartBtn "Start"
 
 ; Codecs Section
-${LangFileString} Codecs_DL_Msg "Henter MPlayer-codecs..."
+${LangFileString} Codecs_DL_Msg "Downloader MPlayer-codecs..."
 ${LangFileString} Codecs_DL_Retry "MPlayer codecs blev ikke installeret korrekt. Prøv igen?"
-${LangFileString} Codecs_DL_Failed "Hentning af MPlayer-codecs mislykkedes: '$R0'."
+${LangFileString} Codecs_DL_Failed "Download af MPlayer-codecs mislykkedes: '$R0'."
 ${LangFileString} Codecs_Inst_Failed "Installation af MPlayer-codecs mislykkedes."
 
 ; Uninstaller
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Gendanner ændringer..."
 ${LangFileString} Info_Files_Extract "Udpakker filer..."
 ${LangFileString} Info_SMTube_Backup "Opretter backup af SMTube..."
 ${LangFileString} Info_SMTube_Restore "Gendanner SMTube fra tidligere installation..."
-${LangFileString} Info_MPV_Backup "Opretter backup af MPV..."
-${LangFileString} Info_MPV_Restore "Gendanner MPV fra tidligere installation..."
+${LangFileString} Info_MPV_Backup "Opretter backup af mpv..."
+${LangFileString} Info_MPV_Restore "Genskaber mpv fra tidligere installation..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Henter MPV..."
-${LangFileString} MPV_DL_Retry "MPV blev ikke korrekt installeret. Prøv igen?"
-${LangFileString} MPV_DL_Failed "Hentning af MPV mislykkedes: '$R0'."
-${LangFileString} MPV_Inst_Failed "Installation af MPV mislykkedes."
+${LangFileString} MPV_DL_Msg "Downloader mpv..."
+${LangFileString} MPV_DL_Retry "mpv blev ikke installeret. Prøv igen?"
+${LangFileString} MPV_DL_Failed "Kunne ikke downloade mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "Kunne ikke installere mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL blev ikke korrekt installeret. Forsøg igen?"
-${LangFileString} YTDL_DL_Failed "Download af YouTube-DL mislykkedes: '$R0'."
+${LangFileString} YTDL_DL_Retry "youtube-dl blev ikke installeret. Prøv igen?"
+${LangFileString} YTDL_DL_Failed "Kunne ikke downloade youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "Søger efter opdateringer til youtube-dl..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Rydder op i fontconfig-cache..."
+${LangFileString} Info_Cleaning_SMPlayer "Rydder op i SMPlayer indstillinger..."

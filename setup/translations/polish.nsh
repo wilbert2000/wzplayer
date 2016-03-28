@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Kliknij Odinstaluj, gdy będziesz gotów."
 ${LangFileString} Reinstall_Msg4 "Zmiana Ustawień Instalacji"
 ${LangFileString} Reinstall_Msg5 "Zresetuj moją konfigurację SMPlayera"
 
+${LangFileString} Remove_Settings_Confirmation "Czy na pewno chcesz zresetować ustawienia SMPlayera? Ta czynność nie może zostać odwrócona."
+
 ${LangFileString} Type_Reinstall "zainstaluj ponownie"
 ${LangFileString} Type_Downgrade "aktualizuj do starszej wersji"
 ${LangFileString} Type_Upgrade "aktualizuj"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Cofanie zmian..."
 ${LangFileString} Info_Files_Extract "Wypakowywanie plików..."
 ${LangFileString} Info_SMTube_Backup "Tworzenie kopii zapasowej SMTube..."
 ${LangFileString} Info_SMTube_Restore "Przywracanie SMTube z poprzedniej instalacji..."
-${LangFileString} Info_MPV_Backup "Tworzenie kopii zapasowej MPV..."
-${LangFileString} Info_MPV_Restore "Przywracanie MPV z poprzedniej instalacji..."
+${LangFileString} Info_MPV_Backup "Tworzenie kopii zapasowej mpv..."
+${LangFileString} Info_MPV_Restore "Przywracanie mpv z poprzedniej instalacji..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Pobieranie MPV..."
-${LangFileString} MPV_DL_Retry "MPV nie został pomyślnie zainstalowany. Ponowić?"
-${LangFileString} MPV_DL_Failed "Błąd pobierania MPV: '$R0'."
-${LangFileString} MPV_Inst_Failed "Błąd instalacji MPV."
+${LangFileString} MPV_DL_Msg "Pobieranie mpv..."
+${LangFileString} MPV_DL_Retry "Instalacja mpv nie powiodła się. Ponowić próbę?"
+${LangFileString} MPV_DL_Failed "Błąd pobierania mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "Błąd instalacji mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL nie został pomyślnie zainstalowany. Ponowić?"
-${LangFileString} YTDL_DL_Failed "Błąd pobierania Youtube-DL: '$R0'."
+${LangFileString} YTDL_DL_Retry "Instalacja youtube-dl nie powiodła się. Ponowić próbę?"
+${LangFileString} YTDL_DL_Failed "Błąd pobierania youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "Sprawdzanie aktualizacji youtube-dl..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Czyszczenie pamięci podręcznej czcionki..."
+${LangFileString} Info_Cleaning_SMPlayer "Czyszczenie ustawień SMPlayera..."

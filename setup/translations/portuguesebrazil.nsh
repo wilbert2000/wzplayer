@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Clique em Desinstalar quando estiver pronto 
 ${LangFileString} Reinstall_Msg4 "Altere as configurações da instalação"
 ${LangFileString} Reinstall_Msg5 "Reinicie minhas configurações do SMPlayer"
 
+${LangFileString} Remove_Settings_Confirmation "Tem certeza que deseja reiniciar as configurações do SMPlayer? Essa ação não pode ser desfeita."
+
 ${LangFileString} Type_Reinstall "reinstalar"
 ${LangFileString} Type_Downgrade "downgrade"
 ${LangFileString} Type_Upgrade "atualizar"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Revertendo alterações..."
 ${LangFileString} Info_Files_Extract "Extraindo arquivos..."
 ${LangFileString} Info_SMTube_Backup "Fazendo backup do SMTube..."
 ${LangFileString} Info_SMTube_Restore "Restaurando o SMTube da instalação anterior..."
-${LangFileString} Info_MPV_Backup "Fazendo backup do MPV..."
-${LangFileString} Info_MPV_Restore "Restaurando o MPV da instalação anterior..."
+${LangFileString} Info_MPV_Backup "Fazendo backup do mpv..."
+${LangFileString} Info_MPV_Restore "Restaurando o mpv da instalação anterior..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Baixando o MPV..."
-${LangFileString} MPV_DL_Retry "O MPV não foi instalado corretamente. Tentar novamente?"
-${LangFileString} MPV_DL_Failed "Falha ao baixar o MPV: '$R0'."
-${LangFileString} MPV_Inst_Failed "Falha ao instalar o MPV."
+${LangFileString} MPV_DL_Msg "Baixando o mpv..."
+${LangFileString} MPV_DL_Retry "O mpv não foi instalado corretamente. Tentar novamente?"
+${LangFileString} MPV_DL_Failed "Falha ao baixar o mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "Falha ao instalar o mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "O YouTube-DL não foi instalado corretamente. Tentar novamente?"
-${LangFileString} YTDL_DL_Failed "Falha ao baixar o Youtube-DL:'$R0'."
+${LangFileString} YTDL_DL_Retry "O youtube-dl não foi instalado corretamente. Tentar novamente?"
+${LangFileString} YTDL_DL_Failed "Falha ao baixar o youtube-dl:'$R0'."
+${LangFileString} YTDL_Update_Check "Buscando por atualizações do youtube-dl..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Limpando cache do fontconfig..."
+${LangFileString} Info_Cleaning_SMPlayer "Limpando as configurações do SMPlayer..."

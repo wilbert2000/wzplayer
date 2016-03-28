@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Auf Deinstallieren klicken, wenn Sie bereit 
 ${LangFileString} Reinstall_Msg4 "Installationseinstellungen ändern"
 ${LangFileString} Reinstall_Msg5 "Meine SMPlayer-Konfiguration zurücksetzen"
 
+${LangFileString} Remove_Settings_Confirmation "Sind Sie sicher, dass Sie Ihre SMPlayer-Einstellungen zurücksetzen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+
 ${LangFileString} Type_Reinstall "Erneut installieren"
 ${LangFileString} Type_Downgrade "Herunterstufen"
 ${LangFileString} Type_Upgrade "Aktualisierung"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Änderungen werden zurückgesetzt …"
 ${LangFileString} Info_Files_Extract "Dateien werden entpackt …"
 ${LangFileString} Info_SMTube_Backup "SMTube wird gesichert ..."
 ${LangFileString} Info_SMTube_Restore "SMTube wird aus vorheriger Installation wiederhergestellt ..."
-${LangFileString} Info_MPV_Backup "MPV wird gesichert ..."
-${LangFileString} Info_MPV_Restore "MPV wird aus vorheriger Installation wiederhergestellt..."
+${LangFileString} Info_MPV_Backup "mpv wird gesichert …"
+${LangFileString} Info_MPV_Restore "mpv wird aus vorheriger Installation wiederhergestellt …"
 
 ; MPV
-${LangFileString} MPV_DL_Msg "MPV wird heruntergeladen ..."
-${LangFileString} MPV_DL_Retry "MPV ist nicht erfolgreich installiert worden. Erneut versuchen?"
-${LangFileString} MPV_DL_Failed "Fehler beim Herunterladen von MPV: »$R0«."
-${LangFileString} MPV_Inst_Failed "Fehler beim Installieren von MPV."
+${LangFileString} MPV_DL_Msg "mpv wird heruntergeladen …"
+${LangFileString} MPV_DL_Retry "mpv ist nicht erfolgreich installiert worden. Erneut versuchen?"
+${LangFileString} MPV_DL_Failed "Fehler beim Herunterladen von mpv: »$R0«."
+${LangFileString} MPV_Inst_Failed "Fehler beim Installieren von mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL ist nicht erfolgreich installiert worden. Erneut versuchen?"
-${LangFileString} YTDL_DL_Failed "Fehler beim Herunterladen von Youtube-DL: »$R0«."
+${LangFileString} YTDL_DL_Retry "youtube-dl ist nicht erfolgreich installiert worden. Erneut versuchen?"
+${LangFileString} YTDL_DL_Failed "Fehler beim Herunterladen von youtube-dl: »$R0«."
+${LangFileString} YTDL_Update_Check "Es wird nach Aktualisierungen für youtube-dl gesucht …"
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Schriftzwischenspeicher wird bereinigt …"
+${LangFileString} Info_Cleaning_SMPlayer "SMPlayer-Einstellungen werden bereinigt …"

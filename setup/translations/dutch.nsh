@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "Klik op Deïnstalleren wanneer u klaar bent 
 ${LangFileString} Reinstall_Msg4 "Installatie-voorkeuren wijzigen"
 ${LangFileString} Reinstall_Msg5 "Standaardwaarden voor mijn SMPlayer-configuratie"
 
+${LangFileString} Remove_Settings_Confirmation "Are you sure you want to reset your SMPlayer settings? This action cannot be reversed."
+
 ${LangFileString} Type_Reinstall "herinstalleren"
 ${LangFileString} Type_Downgrade "versie verlagen"
 ${LangFileString} Type_Upgrade "versie opwaarderen"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "Veranderingen ongedaan maken..."
 ${LangFileString} Info_Files_Extract "Uitpakken van bestanden..."
 ${LangFileString} Info_SMTube_Backup "Back-up SMTube..."
 ${LangFileString} Info_SMTube_Restore "Herstel SMTube van de oude installatie..."
-${LangFileString} Info_MPV_Backup "Bak-up MPV..."
-${LangFileString} Info_MPV_Restore "Herstel MPV van de oude installatie..."
+${LangFileString} Info_MPV_Backup "Backing up mpv..."
+${LangFileString} Info_MPV_Restore "Restoring mpv from previous installation..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "Download MPV..."
-${LangFileString} MPV_DL_Retry "MPV was niet succesvol geïnstalleerd. Opnieuw?"
-${LangFileString} MPV_DL_Failed "De download van MPV is mislukt: '$R0'."
-${LangFileString} MPV_Inst_Failed "De installatie van MPV is mislukt."
+${LangFileString} MPV_DL_Msg "Downloading mpv..."
+${LangFileString} MPV_DL_Retry "mpv was not successfully installed. Retry?"
+${LangFileString} MPV_DL_Failed "Failed to download mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "Failed to install mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL was niet succesvol geïnstalleerd. Opniew?"
-${LangFileString} YTDL_DL_Failed "De download van Youtube-DL is mislukt: '$R0'."
+${LangFileString} YTDL_DL_Retry "youtube-dl was not successfully installed. Retry?"
+${LangFileString} YTDL_DL_Failed "Failed to download youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "Checking for youtube-dl updates..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Cleaning fontconfig cache..."
+${LangFileString} Info_Cleaning_SMPlayer "Cleaning SMPlayer settings..."

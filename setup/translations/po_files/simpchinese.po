@@ -2,37 +2,49 @@
 msgid "Binary codecs are not supported in this version."
 msgstr "此版本不支持二进制解码器"
 
+# Info_Cleaning_SMPlayer
+msgid "Cleaning SMPlayer settings..."
+msgstr ""
+
+# Info_Cleaning_Fontconfig
+msgid "Cleaning fontconfig cache..."
+msgstr ""
+
+# YTDL_Update_Check
+msgid "Checking for youtube-dl updates..."
+msgstr ""
+
 # YTDL_DL_Failed
-msgid "Failed to download Youtube-DL: '$R0'."
-msgstr "下载 Youtube-DL 失败：'$R0'。"
+msgid "Failed to download youtube-dl: '$R0'."
+msgstr ""
 
 # YTDL_DL_Retry
-msgid "YouTube-DL was not successfully installed. Retry?"
-msgstr "YouTube-DL 未安装成功。是否重试？"
+msgid "youtube-dl was not successfully installed. Retry?"
+msgstr ""
 
 # MPV_Inst_Failed
-msgid "Failed to install MPV."
-msgstr "安装 MPV 失败。"
+msgid "Failed to install mpv."
+msgstr ""
 
 # MPV_DL_Failed
-msgid "Failed to download MPV: '$R0'."
-msgstr "下载 MPV 失败： '$R0'。"
+msgid "Failed to download mpv: '$R0'."
+msgstr ""
 
 # MPV_DL_Retry
-msgid "MPV was not successfully installed. Retry?"
-msgstr "MPV 未安装成功。是否重试？"
+msgid "mpv was not successfully installed. Retry?"
+msgstr ""
 
 # MPV_DL_Msg
-msgid "Downloading MPV..."
-msgstr "下载 MPV 中..."
+msgid "Downloading mpv..."
+msgstr ""
 
 # Info_MPV_Restore
-msgid "Restoring MPV from previous installation..."
-msgstr "恢复上次安装的 MPV 中。"
+msgid "Restoring mpv from previous installation..."
+msgstr ""
 
 # Info_MPV_Backup
-msgid "Backing up MPV..."
-msgstr "备份 MPV 中..."
+msgid "Backing up mpv..."
+msgstr ""
 
 # Info_SMTube_Restore
 msgid "Restoring SMTube from previous installation..."
@@ -139,6 +151,12 @@ msgstr "降级"
 # Type_Reinstall
 msgid "reinstall"
 msgstr "重新安装"
+
+# Remove_Settings_Confirmation
+msgid ""
+"Are you sure you want to reset your SMPlayer settings? This action cannot be "
+"reversed."
+msgstr ""
 
 # Reinstall_Msg5
 msgid "Reset my SMPlayer configuration"
@@ -338,9 +356,9 @@ msgstr "安装程序已在运行。"
 msgid ""
 msgstr ""
 "Project-Id-Version: smplayer\n"
-"PO-Revision-Date: 2015-01-31 03:26+0000\n"
-"Last-Translator: zhangmin <zm1990s@gmail.com>\n"
-"Language-Team: Chinese (China) (http://www.transifex.com/projects/p/smplayer/"
+"PO-Revision-Date: 2016-02-25 00:24+0000\n"
+"Last-Translator: Ricardo Villalba <rvm@users.sourceforge.net>\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/rvm/smplayer/"
 "language/zh_CN/)\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"

@@ -19,7 +19,7 @@
 #include "version.h"
 #include "svn_revision.h"
 
-#define VERSION "15.9.0"
+#define VERSION "16.1.0"
 
 
 QString Version::printable() {

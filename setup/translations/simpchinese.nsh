@@ -72,6 +72,8 @@ ${LangFileString} Reinstall_Msg3_3 "单击『卸载』继续。"
 ${LangFileString} Reinstall_Msg4 "更改安装设置"
 ${LangFileString} Reinstall_Msg5 "重置 SMPlayer 设置"
 
+${LangFileString} Remove_Settings_Confirmation "Are you sure you want to reset your SMPlayer settings? This action cannot be reversed."
+
 ${LangFileString} Type_Reinstall "重新安装"
 ${LangFileString} Type_Downgrade "降级"
 ${LangFileString} Type_Upgrade "升级"
@@ -105,15 +107,20 @@ ${LangFileString} Info_RollBack "正在回滚更改..."
 ${LangFileString} Info_Files_Extract "正在提取文件..."
 ${LangFileString} Info_SMTube_Backup "备份 SMTube 中..."
 ${LangFileString} Info_SMTube_Restore "恢复上次安装的 SMTube 中..."
-${LangFileString} Info_MPV_Backup "备份 MPV 中..."
-${LangFileString} Info_MPV_Restore "恢复上次安装的 MPV 中。"
+${LangFileString} Info_MPV_Backup "Backing up mpv..."
+${LangFileString} Info_MPV_Restore "Restoring mpv from previous installation..."
 
 ; MPV
-${LangFileString} MPV_DL_Msg "下载 MPV 中..."
-${LangFileString} MPV_DL_Retry "MPV 未安装成功。是否重试？"
-${LangFileString} MPV_DL_Failed "下载 MPV 失败： '$R0'。"
-${LangFileString} MPV_Inst_Failed "安装 MPV 失败。"
+${LangFileString} MPV_DL_Msg "Downloading mpv..."
+${LangFileString} MPV_DL_Retry "mpv was not successfully installed. Retry?"
+${LangFileString} MPV_DL_Failed "Failed to download mpv: '$R0'."
+${LangFileString} MPV_Inst_Failed "Failed to install mpv."
 
 ; YouTube-DL
-${LangFileString} YTDL_DL_Retry "YouTube-DL 未安装成功。是否重试？"
-${LangFileString} YTDL_DL_Failed "下载 Youtube-DL 失败：'$R0'。"
+${LangFileString} YTDL_DL_Retry "youtube-dl was not successfully installed. Retry?"
+${LangFileString} YTDL_DL_Failed "Failed to download youtube-dl: '$R0'."
+${LangFileString} YTDL_Update_Check "Checking for youtube-dl updates..."
+
+; Post install
+${LangFileString} Info_Cleaning_Fontconfig "Cleaning fontconfig cache..."
+${LangFileString} Info_Cleaning_SMPlayer "Cleaning SMPlayer settings..."
