@@ -666,12 +666,16 @@ void TPlaylist::playPrev() {
 void TPlaylist::playDirectory(const QString &dir) {
 	qDebug("Gui::TPlaylist::playDirectory");
 
-	clear();
-	addDirectory(dir);
-	sort();
-	// sort() can set modified
-	modified = false;
-	startPlay();
+	if (Helper::directoryContainsDVD(dir)) {
+		core->open(dir);
+	} else {
+		clear();
+		addDirectory(dir);
+		sort();
+		// sort() can set modified
+		modified = false;
+		startPlay();
+	}
 }
 
 void TPlaylist::resumePlay() {

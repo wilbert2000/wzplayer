@@ -1219,22 +1219,6 @@ void TBase::changeVideoEqualizerBySoftware(bool b) {
 	}
 }
 
-void TBase::openDirectory(const QString& directory) {
-	qDebug() << "Gui::TBase::openDirectory:" << directory;
-
-	if (Helper::directoryContainsDVD(directory)) {
-		core->open(directory);
-	} else {
-		QFileInfo fi(directory);
-		if (fi.isDir()) {
-			playlist->playDirectory(fi.absoluteFilePath());
-		} else {
-			qWarning() << "Gui::TBase::openDirectory: directory is not valid"
-					   << directory;
-		}
-	}
-}
-
 void TBase::openDirectory() {
 	qDebug("Gui::TBase::openDirectory");
 
@@ -1243,7 +1227,7 @@ void TBase::openDirectory() {
 					pref->latest_dir);
 
 	if (!s.isEmpty()) {
-		openDirectory(s);
+		playlist->playDirectory(s);
 	}
 }
 
@@ -1261,7 +1245,7 @@ void TBase::open(const QString &file) {
 	QFileInfo fi(file);
 	if (fi.exists()) {
 		if (fi.isDir()) {
-			openDirectory(file);
+			playlist->playDirectory(file);
 			return;
 		}
 		pref->latest_dir = fi.absolutePath();
