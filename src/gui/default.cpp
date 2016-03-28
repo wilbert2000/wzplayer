@@ -84,7 +84,7 @@ void TDefault::createStatusBar() {
 
 	video_info_display = new QLabel(statusBar());
 	video_info_display->setObjectName("video_info_display");
-	video_info_display->setAlignment(Qt::AlignRight);
+	//video_info_display->setAlignment(Qt::AlignRight);
 	video_info_display->setFrameShape(QFrame::NoFrame);
 
 	statusBar()->setAutoFillBackground(true);
@@ -101,7 +101,7 @@ void TDefault::createStatusBar() {
 	ColorUtils::setForegroundColor(video_info_display, QColor(255,255,255));
 	statusBar()->setSizeGripEnabled(false);
 
-	statusBar()->addPermanentWidget(video_info_display);
+	statusBar()->addWidget(video_info_display);
 	statusBar()->addPermanentWidget(ab_section_display);
 
 	statusBar()->showMessage(tr("Ready"));
@@ -161,7 +161,7 @@ void TDefault::displayABSection() {
 void TDefault::displayVideoInfo(int width, int height, double fps) {
 
 	if ((width != 0) && (height != 0)) {
-		video_info_display->setText(tr("%1x%2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
+		video_info_display->setText(tr("%1 x %2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
 	} else {
 		video_info_display->setText(" ");
 	}
