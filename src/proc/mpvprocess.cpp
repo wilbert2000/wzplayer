@@ -715,10 +715,10 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 		"VIDEO_CODEC=${=video-codec}\n"
 
 //		"AUDIO_BITRATE=${=audio-bitrate}\n"
-		"AUDIO_FORMAT=${=audio-codec-name:${=audio-format}}\n"
+		"AUDIO_FORMAT=${=audio-codec-name}\n"
 		"AUDIO_CODEC=${=audio-codec}\n"
-		"AUDIO_RATE=${=audio-params/samplerate:${=audio-samplerate}}\n"
-		"AUDIO_NCH=${=audio-params/channel-count:${=audio-channels}}\n"
+		"AUDIO_RATE=${=audio-params/samplerate}\n"
+		"AUDIO_NCH=${=audio-params/channel-count}\n"
 
 		"INFO_START_TIME=${=time-start:}\n"
 		"INFO_LENGTH=${=duration:${=length}}\n"
