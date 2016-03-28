@@ -70,12 +70,14 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 		}
 
 		// Only set check menu when x and y factor agree on +/- half a pixel
-		// Fuzzy...
+		// TODO: fuzzy...
 		double diffX = 0.5 / s.width() / factorX;
 		double diffY = 0.5 / s.height() / factorY;
 		if (diffY < diffX) {
 			diffX = diffY;
 		}
+		// Multiply allowed diff with zoom...
+		diffX *= playerWindow->zoom();
 		diffY = qAbs(factorX - factorY);
 		if (diffY < diffX) {
 			setChecked(size_percentage);
