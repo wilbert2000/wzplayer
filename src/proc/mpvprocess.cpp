@@ -66,18 +66,9 @@ bool TMPVProcess::startPlayer() {
 	return TPlayerProcess::startPlayer();
 }
 
-bool TMPVProcess::parseVideoTrack(int id,
-								 QString codec,
-								 QString name,
-								 bool selected) {
+bool TMPVProcess::parseVideoTrack(int id, QString name, bool selected) {
 
 	// Note lang "". Track info has lang.
-	if (codec.startsWith("*) (")) {
-		codec = codec.mid(4);
-	}
-	if (name.isEmpty() && !codec.isEmpty()) {
-		name = codec;
-	}
 	if (md->videos.updateTrack(id, "", name, selected)) {
 		if (notified_player_is_running)
 			emit receivedVideoTracks();
@@ -88,19 +79,13 @@ bool TMPVProcess::parseVideoTrack(int id,
 
 bool TMPVProcess::parseAudioTrack(int id,
 								  const QString& lang,
-								  QString codec,
 								  QString name,
 								  bool selected) {
 
-	if (codec.startsWith("*) (")) {
-		codec = codec.mid(4);
-	}
-	if (name.isEmpty() && !codec.isEmpty()) {
-		name = codec;
-	}
 	if (md->audios.updateTrack(id, lang, name, selected)) {
-		if (notified_player_is_running)
+		if (notified_player_is_running) {
 			emit receivedAudioTracks();
+		}
 		return true;
 	}
 	return false;
@@ -495,8 +480,8 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// TODO: check video and audio track name.
 	// Subs suggest name comes before codec...
-	static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)(\\s+\\((.*)\\))?(\\s+'(.*)')?");
-	static QRegExp rx_audio_track("^(.*)Audio\\s+--aid=(\\d+)(\\s+--alang=([a-zA-Z]+))?(\\s+\\((.*)\\))?(\\s+'(.*)')?");
+	static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)(.*)");
+	static QRegExp rx_audio_track("^(.*)Audio\\s+--aid=(\\d+)(\\s+--alang=([a-zA-Z]+))?(.*)");
 	static QRegExp rx_subtitle_track("^(.*)Subs\\s+--sid=(\\d+)(\\s+--slang=([a-zA-Z]+))?(\\s+'(.*)')?(\\s+\\((.*)\\))?");
 
 	static QRegExp rx_dsize("^VIDEO_DSIZE=(\\d+)x(\\d+)");
@@ -569,8 +554,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// If enabled, track info does give lang
 	if (rx_video_track.indexIn(line) >= 0) {
 		return parseVideoTrack(rx_video_track.cap(2).toInt(),
-							   rx_video_track.cap(4),
-							   rx_video_track.cap(6).trimmed(),
+							   rx_video_track.cap(3).trimmed(),
 							   rx_video_track.cap(1) != "");
 	}
 
@@ -578,8 +562,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	if (rx_audio_track.indexIn(line) >= 0) {
 		return parseAudioTrack(rx_audio_track.cap(2).toInt(),
 							   rx_audio_track.cap(4),
-							   rx_audio_track.cap(6),
-							   rx_audio_track.cap(8).trimmed(),
+							   rx_audio_track.cap(5).trimmed(),
 							   rx_audio_track.cap(1) != "");
 	}
 

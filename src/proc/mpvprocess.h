@@ -155,8 +155,8 @@ private:
 	bool parseChapter(int id, double start, QString title);
 	bool parseTitleSwitched(QString disc_type, int title);
 	bool parseTitleNotFound(const QString& disc_type);
-	bool parseVideoTrack(int id, QString codec, QString name, bool selected);
-	bool parseAudioTrack(int id, const QString& lang, QString codec, QString name, bool selected);
+	bool parseVideoTrack(int id, QString name, bool selected);
+	bool parseAudioTrack(int id, const QString& lang, QString name, bool selected);
 	bool parseSubtitleTrack(int id, const QString& lang, QString name, QString type, bool selected);
 	void messageFilterNotSupported(const QString& filter_name);
 };
