@@ -42,9 +42,6 @@
 #include <QMimeData>
 #include <QNetworkProxy>
 
-// TODO:
-#include <cmath>
-
 #include "proc/errormsg.h"
 #include "version.h"
 #include "desktop.h"

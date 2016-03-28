@@ -29,8 +29,6 @@
 #include <QEventLoop>
 #endif
 
-#include <cmath>
-
 #include "desktop.h"
 #include "discname.h"
 #include "mediadata.h"
@@ -2712,11 +2710,11 @@ void TCore::gotCurrentSec(double sec) {
 	mset.current_sec = sec;
 
 	// Update GUI once per second
-	static double last_second = -11.0;
-	double f = floor(sec);
-	if (f == last_second)
+	static int last_second = -11;
+	int i = (int) sec;
+	if (i == last_second)
 		return;
-	last_second = f;
+	last_second = i;
 
 	// Let the world know what a beautiful time it is
 	emit showTime(sec);
