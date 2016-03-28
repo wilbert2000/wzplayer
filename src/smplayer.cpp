@@ -70,6 +70,13 @@ TSMPlayer::TSMPlayer(int& argc, char** argv)
 	// Save default style
 	default_style = style()->objectName();
 
+#ifdef Q_OS_LINUX
+	// Some controls aren't displayed correctly with the adwaita style
+	// so try to prevent to use it as the default style
+	if (default_style.toLower() == "adwaita")
+		default_style = "gtk+";
+#endif
+
 	// Enable icons in menus
 	setAttribute(Qt::AA_DontShowIconsInMenus, false);
 }
