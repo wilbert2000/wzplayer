@@ -1564,6 +1564,13 @@ void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles, const QString
 	arg << "--sub-text-border-size=" + QString::number(styles.outline * 2.5);
 	arg << "--sub-text-shadow-offset=" + QString::number(styles.shadow * 2.5);
 
+	if (isOptionAvailable("--sub-text-font-size")) {
+		arg << "--sub-text-font-size=" + QString::number(styles.fontsize * 2.5);
+	}
+	if (isOptionAvailable("--sub-text-bold")) {
+		arg << QString("--sub-text-bold=%1").arg(styles.bold ? "yes" : "no");
+	}
+
 	QString halign;
 	switch (styles.halignment) {
 		case TAssStyles::Left: halign = "left"; break;
