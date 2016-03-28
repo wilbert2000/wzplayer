@@ -108,6 +108,7 @@ public:
 	QSize getAdjustedSize(int w, int h, double zoom) const;
 
 	// Calculate size factor for current view
+	void getSizeFactors(double& factorX, double& factorY);
 	double getSizeFactor();
 	void updateSizeFactor();
 
