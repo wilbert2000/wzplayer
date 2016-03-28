@@ -1945,21 +1945,26 @@ void TBase::playlistHasFinished() {
 }
 
 void TBase::onStateChanged(TCoreState state) {
-	qDebug("Gui::TBase::onStateChanged: new state \"%s\"", core->stateToString().toUtf8().data());
+	qDebug() << "Gui::TBase::onStateChanged: new state" << core->stateToString();
 
 	switch (state) {
-		case STATE_PLAYING:
-			displayMessage(tr("Playing %1").arg(core->mdat.filename));
+		case STATE_PLAYING: {
+			QString fn = core->mdat.filename;
+			if (!pref->fullscreen) {
+				QFileInfo fi(fn);
+				fn = fi.fileName();
+			}
+			displayMessage(tr("Playing %1").arg(fn));
 			auto_hide_timer->startAutoHideMouse();
-			break;
+		} break;
 		case STATE_PAUSED:
-			displayMessage(tr("Pause"), 0);
+			displayMessage(tr("Paused"));
 			auto_hide_timer->stopAutoHideMouse();
 			break;
 		case STATE_STOPPED:
 			disableActionsOnStop();
 			setWindowCaption("SMPlayer");
-			displayMessage(tr("Stop"));
+			displayMessage(tr("Stopped"));
 			auto_hide_timer->stopAutoHideMouse();
 			break;
 	}
