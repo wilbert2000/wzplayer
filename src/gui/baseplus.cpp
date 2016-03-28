@@ -48,7 +48,7 @@ TBasePlus::TBasePlus()
 	, mainwindow_visible(true)
 	, trayicon_playlist_was_visible(false) {
 
-	tray = new QSystemTrayIcon(Images::icon("logo", 22), this);
+	tray = new QSystemTrayIcon(this);
 	tray->setToolTip("SMPlayer");
 	connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -111,6 +111,7 @@ TBasePlus::TBasePlus()
 }
 
 TBasePlus::~TBasePlus() {
+	tray->hide();
 }
 
 bool TBasePlus::startHidden() {
@@ -168,6 +169,7 @@ void TBasePlus::setWinTitle() {
 
 void TBasePlus::retranslateStrings() {
 
+	tray->setIcon(Images::icon("logo", 22));
 	setWinTitle();
 	updateShowAllAct();
 }
