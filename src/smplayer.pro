@@ -50,7 +50,8 @@ HEADERS += svn_revision.h \
 	discname.h \
 	extensions.h \
     desktop.h \
-	proc/process.h \
+    proc/errormsg.h \
+    proc/process.h \
 	proc/playerprocess.h \
     proc/mpvprocess.h \
     proc/mplayerprocess.h \
@@ -159,7 +160,6 @@ HEADERS += svn_revision.h \
     maps/chapters.h \
     clhelp.h \
     log.h \
-    errormsg.h \
     smplayer.h \
     config.h
 
@@ -171,6 +171,7 @@ SOURCES	+= version.cpp \
 	discname.cpp \
 	extensions.cpp \
     desktop.cpp \
+    proc/errormsg.cpp \
     proc/process.cpp \
     proc/playerprocess.cpp \
     proc/mpvprocess.cpp \
@@ -278,7 +279,6 @@ SOURCES	+= version.cpp \
     clhelp.cpp \
     smplayer.cpp \
     log.cpp \
-    errormsg.cpp \
     main.cpp \
     config.cpp
 

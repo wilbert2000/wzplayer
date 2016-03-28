@@ -25,7 +25,7 @@
 #include <QApplication>
 
 #include "config.h"
-#include "errormsg.h"
+#include "proc/errormsg.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "subtracks.h"

@@ -23,7 +23,7 @@
 #include <QDir>
 #include <QFileInfo>
 
-#include "errormsg.h"
+#include "proc/errormsg.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
 

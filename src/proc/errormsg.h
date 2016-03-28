@@ -1,8 +1,10 @@
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef PROC_ERRORMSG_H
+#define PROC_ERRORMSG_H
 
 #include <QString>
 #include <QProcess>
+
+namespace Proc {
 
 class TErrorMsg {
 public:
@@ -33,4 +35,6 @@ private:
 	static QString exitCodeMsg;
 };
 
-#endif // ERROR_H
+} // namespace Proc
+
+#endif // PROC_ERRORMSG_H
