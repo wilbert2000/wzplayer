@@ -595,6 +595,8 @@ void TPlaylist::startPlay() {
 			playItem(chooseRandomItem());
 		else
 			playItem(0);
+	} else {
+		emit displayMessage(tr("Found no files to play"), 0);
 	}
 }
 
