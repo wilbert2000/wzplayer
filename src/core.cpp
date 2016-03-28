@@ -2970,18 +2970,12 @@ void TCore::changeChapter(int id) {
 
 void TCore::prevChapter() {
 	qDebug("TCore::prevChapter");
-
-	// Can use mplayer: seek_chapter -1 mpv: add chapter -1
-	int id = mdat.chapters.idForTime(mset.current_sec, false);
-	changeChapter(mdat.chapters.previousID(id));
+	proc->nextChapter(-1);
 }
 
 void TCore::nextChapter() {
 	qDebug("TCore::nextChapter");
-
-	// Can use mplayer: seek_chapter 1 mpv: add chapter 1
-	int id = mdat.chapters.idForTime(mset.current_sec, false);
-	changeChapter(mdat.chapters.nextID(id));
+	proc->nextChapter(1);
 }
 
 void TCore::changeAngle(int ID) {

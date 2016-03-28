@@ -1194,6 +1194,10 @@ void TMPVProcess::setChapter(int ID) {
 	writeToStdin("set chapter " + QString::number(ID));
 }
 
+void TMPVProcess::nextChapter(int delta) {
+	writeToStdin("add chapter " + QString::number(delta));
+}
+
 void TMPVProcess::setAngle(int ID) {
 	writeToStdin("set angle " + QString::number(ID));
 }

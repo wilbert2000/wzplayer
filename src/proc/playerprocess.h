@@ -92,6 +92,7 @@ public:
 	virtual void setSaturation(int value) = 0;
 	virtual void setGamma(int value) = 0;
 	virtual void setChapter(int ID) = 0;
+	virtual void nextChapter(int delta) = 0;
 	virtual void setAngle(int ID) = 0;
 	virtual void nextAngle() = 0;
 	virtual void setExternalSubtitleFile(const QString& filename) = 0;

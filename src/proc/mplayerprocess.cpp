@@ -1395,6 +1395,10 @@ void TMPlayerProcess::setChapter(int ID) {
 	writeToStdin("seek_chapter " + QString::number(ID) +" 1");
 }
 
+void TMPlayerProcess::nextChapter(int delta) {
+	writeToStdin("seek_chapter " + QString::number(delta) +" 0");
+}
+
 void TMPlayerProcess::setAngle(int ID) {
 	writeToStdin("switch_angle " + QString::number(ID));
 	// Switch angle does not always succeed, so verify new angle
