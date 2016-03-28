@@ -2176,18 +2176,18 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 		   w, h, pref->size_factor);
 
 	// Adjust for selected size and aspect ratio
-	QSize video_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
-	if (video_size == panel->size()) {
+	QSize panel_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
+	if (panel_size == panel->size()) {
 		qDebug("Gui::TBase::resizeMainWindow: panel has requested size");
 		return;
 	}
 
-	QSize new_size = size() + video_size - panel->size();
+	QSize new_size = size() + panel_size - panel->size();
 	qDebug("Gui::TBase::resizeMainWindow: resizing window from %d x %d to %d x %d",
 		   width(), height(), new_size.width(), new_size.height());
 	resize(new_size);
 
-	if (panel->size() == video_size) {
+	if (panel->size() == panel_size) {
 		qDebug("Gui::TBase::resizeMainWindow: resize succeeded");
 	} else {
 		// Resizing the main window can change the height of the tool bars,
@@ -2196,12 +2196,12 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 		if (try_twice) {
 			qDebug("Gui::TBase::resizeMainWindow: panel size now %d x %d. Wanted size %d x %d. Trying a second time",
 				   panel->size().width(), panel->size().height(),
-				   video_size.width(), video_size.height());
+				   panel_size.width(), panel_size.height());
 			resizeMainWindow(w, h, false);
 		} else {
 			qDebug("Gui::TBase::resizeMainWindow: resize failed. Panel size now %d x %d. Wanted size %d x %d",
 				   panel->size().width(), panel->size().height(),
-				   video_size.width(), video_size.height());
+				   panel_size.width(), panel_size.height());
 		}
 	}
 
