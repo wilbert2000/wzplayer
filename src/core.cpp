@@ -1047,7 +1047,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Setup hardware decoding for MPV.
-	// First set mdat.video_hwdec, handle setting option later
+	// First set mdat.video_hwdec, handle setting hwdec option later
 	QString hwdec = pref->hwdec;
 	if (isMPV()) {
 		// Disable hardware decoding when there are filters in use

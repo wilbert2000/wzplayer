@@ -329,7 +329,7 @@ void TBasePlus::didExitFullscreen() {
 }
 
 void TBasePlus::showPlaylist(bool b) {
-	qDebug("Gui::TBasePlus::showPlaylist: %d", b);
+	//qDebug("Gui::TBasePlus::showPlaylist: %d", b);
 
 	playlistdock->setVisible(b);
 	if (b && playlistdock->isFloating()) {
@@ -337,14 +337,13 @@ void TBasePlus::showPlaylist(bool b) {
 	}
 }
 
-void TBasePlus::onTopLevelChanged(bool topLevel) {
-	qDebug("Gui::TBasePlus::onTopLevelChanged: %d", topLevel);
-
+void TBasePlus::onTopLevelChanged(bool) {
+	//qDebug("Gui::TBasePlus::onTopLevelChanged: %d", topLevel);
 	setWinTitle();
 }
 
 void TBasePlus::dockVisibilityChanged(bool visible) {
-	qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
+	//qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
 
 	if (!playlistdock->isFloating()) {
 		if (visible)
