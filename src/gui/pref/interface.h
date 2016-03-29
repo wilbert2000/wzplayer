@@ -50,6 +50,12 @@ public:
 	bool recentsChanged() const { return recents_changed; }
 	bool urlMaxChanged() const { return url_max_changed; }
 
+	void setDirectoryRecursion(bool b);
+	bool directoryRecursion();
+
+	void setSavePlaylistOnExit(bool b);
+	bool savePlaylistOnExit();
+
 protected:
 	void createLanguageCombo();
 
@@ -81,6 +87,8 @@ protected:
 
 	void setHideVideoOnAudioFiles(bool b);
 	bool hideVideoOnAudioFiles();
+
+	// Playlist tab
 
 	// History tab
 	void setRecentsMaxItems(int n);
@@ -119,6 +127,19 @@ private:
 
 	void setBlackbordersOnFullscreen(bool b);
 	bool blackbordersOnFullscreen();
+
+	void setMediaToAdd(int);
+	int mediaToAdd();
+
+	// Log options
+	void setLogDebugEnabled(bool b);
+	bool logDebugEnabled();
+
+	void setLogVerbose(bool b);
+	bool logVerbose();
+
+	void setLogFile(bool b);
+	bool logFile();
 };
 
 }} // namespace Gui::Pref

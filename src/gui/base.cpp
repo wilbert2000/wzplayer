@@ -99,7 +99,6 @@
 #include "gui/pref/interface.h"
 #include "gui/pref/input.h"
 #include "gui/pref/advanced.h"
-#include "gui/pref/prefplaylist.h"
 
 #ifdef FIND_SUBTITLES
 #include "findsubtitleswindow.h"
@@ -912,9 +911,8 @@ void TBase::showPreferencesDialog() {
 	pref_dialog->mod_input()->actions_editor->addActions(this);
 
 	// Set playlist preferences
-	Pref::TPrefPlaylist* pl = pref_dialog->mod_playlist();
-	pl->setDirectoryRecursion(playlist->directoryRecursion());
-	pl->setSavePlaylistOnExit(playlist->savePlaylistOnExit());
+	pref_dialog->mod_interface()->setDirectoryRecursion(playlist->directoryRecursion());
+	pref_dialog->mod_interface()->setSavePlaylistOnExit(playlist->savePlaylistOnExit());
 
 	pref_dialog->show();
 }
@@ -938,9 +936,9 @@ void TBase::applyNewPreferences() {
 	pref_dialog->getData(pref);
 
 	// Update and save playlist preferences
-	Pref::TPrefPlaylist* pl = pref_dialog->mod_playlist();
-	playlist->setDirectoryRecursion(pl->directoryRecursion());
-	playlist->setSavePlaylistOnExit(pl->savePlaylistOnExit());
+	Pref::TInterface* interface = pref_dialog->mod_interface();
+	playlist->setDirectoryRecursion(interface->directoryRecursion());
+	playlist->setSavePlaylistOnExit(interface->savePlaylistOnExit());
 	playlist->saveSettings();
 
 	// Update actions
@@ -949,10 +947,6 @@ void TBase::applyNewPreferences() {
 
 	// Commit changes
 	pref->save();
-
-	// Handle interface tab first to check for changes
-	// that need a restart of TSMPlayer
-	Pref::TInterface* interface = pref_dialog->mod_interface();
 
 	// Style change needs recreation of main window
 	if (interface->styleChanged()) {

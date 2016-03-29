@@ -29,7 +29,6 @@
 #include "gui/pref/audio.h"
 #include "gui/pref/subtitles.h"
 #include "gui/pref/interface.h"
-#include "gui/pref/prefplaylist.h"
 #include "gui/pref/input.h"
 #include "gui/pref/drives.h"
 #include "gui/pref/capture.h"
@@ -59,7 +58,6 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
 	connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
 	
-
 	setWindowIcon(Images::icon("logo"));
 
 	help_window = new QTextBrowser(this);
@@ -93,9 +91,6 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 
 	page_interface = new TInterface;
 	addSection(page_interface);
-
-	page_playlist = new TPrefPlaylist;
-	addSection(page_playlist);
 
 	page_input = new TInput;
 	addSection(page_input);
@@ -205,7 +200,6 @@ void TDialog::setData(Settings::TPreferences* pref) {
 	page_audio->setData(pref);
 	page_subtitles->setData(pref);
 	page_interface->setData(pref);
-	page_playlist->setData(pref);
 	page_input->setData(pref);
 	page_drives->setData(pref);
 	page_capture->setData(pref);
@@ -228,7 +222,6 @@ void TDialog::getData(Settings::TPreferences* pref) {
 	page_audio->getData(pref);
 	page_subtitles->getData(pref);
 	page_interface->getData(pref);
-	page_playlist->getData(pref);
 	page_input->getData(pref);
 	page_drives->getData(pref);
 	page_capture->getData(pref);
@@ -251,7 +244,6 @@ bool TDialog::requiresRestart() {
 	if (!need_restart) need_restart = page_audio->requiresRestart();
 	if (!need_restart) need_restart = page_subtitles->requiresRestart();
 	if (!need_restart) need_restart = page_interface->requiresRestart();
-	if (!need_restart) need_restart = page_playlist->requiresRestart();
 	if (!need_restart) need_restart = page_input->requiresRestart();
 	if (!need_restart) need_restart = page_drives->requiresRestart();
 	if (!need_restart) need_restart = page_capture->requiresRestart();

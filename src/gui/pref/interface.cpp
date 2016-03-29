@@ -121,6 +121,16 @@ void TInterface::retranslateStrings() {
 
 	style_combo->setItemText(0, tr("Default"));
 
+	// Playlist
+	int index = media_to_add_combo->currentIndex();
+	media_to_add_combo->clear();
+	media_to_add_combo->addItem(tr("None"), Settings::TPreferences::NoFiles);
+	media_to_add_combo->addItem(tr("Video files"), Settings::TPreferences::VideoFiles);
+	media_to_add_combo->addItem(tr("Audio files"), Settings::TPreferences::AudioFiles);
+	media_to_add_combo->addItem(tr("Video and audio files"), Settings::TPreferences::MultimediaFiles);
+	media_to_add_combo->addItem(tr("Consecutive files"), Settings::TPreferences::ConsecutiveFiles);
+	media_to_add_combo->setCurrentIndex(index);
+
 	createHelp();
 }
 
@@ -128,16 +138,19 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	setLanguage(pref->language);
 	setIconSet(pref->iconset);
+	setStyle(pref->style);
+	setDefaultFont(pref->default_font);
 
 	// Main window
 #ifdef SINGLE_INSTANCE
 	setUseSingleInstance(pref->use_single_instance);
 #endif
 
-	setResizeMethod(pref->resize_method);
 	setSaveSize(pref->save_window_size_on_exit);
+	setResizeMethod(pref->resize_method);
 	setPauseWhenHidden(pref->pause_when_hidden);
 	setCloseOnFinish(pref->close_on_finish);
+	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
 	setShowTagInTitle(pref->show_tag_in_window_title);
 
 	// Fullscreen
@@ -146,12 +159,14 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setStartInFullscreen(pref->start_in_fullscreen);
 	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
 
-	setDefaultFont(pref->default_font);
+	// Playlist
+	setMediaToAdd(pref->media_to_add_to_playlist);
 
-	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
+	setLogDebugEnabled(pref->log_debug_enabled);
+	setLogVerbose(pref->log_verbose);
+	setLogFile(pref->log_file);
 
-	setStyle(pref->style);
-
+	// History
 	setRecentsMaxItems(pref->history_recents.maxItems());
 	setURLMaxItems(pref->history_urls.maxItems());
 	setRememberDirs(pref->save_dirs);
@@ -170,11 +185,15 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		language_changed = true;
 		qDebug("Gui::Pref::TInterface::getData: chosen language: '%s'", pref->language.toUtf8().data());
 	}
-
 	if (pref->iconset != iconSet()) {
 		pref->iconset = iconSet();
 		iconset_changed = true;
 	}
+	if (pref->style != style()) {
+		pref->style = style();
+		style_changed = true;
+	}
+	pref->default_font = defaultFont();
 
 	// Main window
 #ifdef SINGLE_INSTANCE
@@ -185,6 +204,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	pref->save_window_size_on_exit = saveSize();
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
+	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
 	pref->show_tag_in_window_title = showTagInTitle();
 
 	// Fullscreen
@@ -197,15 +217,14 @@ void TInterface::getData(Settings::TPreferences* pref) {
 			requires_restart = true;
 	}
 
-	pref->default_font = defaultFont();
+	// Playlist
+	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
 
-	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
+	pref->log_debug_enabled = logDebugEnabled();
+	restartIfBoolChanged(pref->log_verbose, logVerbose());
+	pref->log_file = logFile();
 
-	if (pref->style != style()) {
-		pref->style = style();
-		style_changed = true;
-	}
-
+	// History
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
 		pref->history_recents.setMaxItems(recentsMaxItems());
 		recents_changed = true;
@@ -383,6 +402,55 @@ void TInterface::setHideVideoOnAudioFiles(bool b) {
 bool TInterface::hideVideoOnAudioFiles() {
 	return hide_video_window_on_audio_check->isChecked();
 }
+void TInterface::setMediaToAdd(int type) {
+	int i = media_to_add_combo->findData(type);
+	if (i < 0) i = 0;
+	media_to_add_combo->setCurrentIndex(i);
+}
+
+int TInterface::mediaToAdd() {
+	return media_to_add_combo->itemData(media_to_add_combo->currentIndex()).toInt();
+}
+
+void TInterface::setDirectoryRecursion(bool b) {
+	recursive_check->setChecked(b);
+}
+
+bool TInterface::directoryRecursion() {
+	return recursive_check->isChecked();
+}
+
+void TInterface::setSavePlaylistOnExit(bool b) {
+	autosave_on_exit_check->setChecked(b);
+}
+
+bool TInterface::savePlaylistOnExit() {
+	return autosave_on_exit_check->isChecked();
+}
+
+void TInterface::setLogDebugEnabled(bool b) {
+	log_debug_check->setChecked(b);
+}
+
+bool TInterface::logDebugEnabled() {
+	return log_debug_check->isChecked();
+}
+
+void TInterface::setLogVerbose(bool b) {
+	log_verbose_check->setChecked(b);
+}
+
+bool TInterface::logVerbose() {
+	return log_verbose_check->isChecked();
+}
+
+void TInterface::setLogFile(bool b) {
+	log_file_check->setChecked(b);
+}
+
+bool TInterface::logFile() {
+	return log_file_check->isChecked();
+}
 
 void TInterface::setRecentsMaxItems(int n) {
 	recents_max_items_spin->setValue(n);
@@ -480,6 +548,40 @@ void TInterface::createHelp() {
 		   "image in fullscreen mode. This allows subtitles to be displayed "
 		   "on the black borders."));
 
+	addSectionTitle(tr("Playlist"));
+
+	setWhatsThis(media_to_add_combo, tr("Add files from folder"),
+		tr("This option allows to add files automatically to the playlist:") +"<br>"+
+		tr("<b>None</b>: no files will be added") +"<br>"+
+		tr("<b>Video files</b>: all video files found in the folder will be added") +"<br>"+
+		tr("<b>Audio files</b>: all audio files found in the folder will be added") +"<br>"+
+		tr("<b>Video and audio files</b>: all video and audio files found in the folder will be added") +"<br>"+
+		tr("<b>Consecutive files</b>: consecutive files (like video_1.avi, video_2.avi) will be added"));
+
+	setWhatsThis(recursive_check, tr("Add files in directories recursively"),
+		tr("Check this option if you want that adding a directory will also "
+		"add the files in subdirectories recursively. Otherwise only the "
+		"files in the selected directory will be added."));
+
+	setWhatsThis(autosave_on_exit_check, tr("Save copy of playlist on exit"),
+		tr("If this option is checked, a copy of the playlist will be saved "
+		   "in the smplayer configuration when smplayer is closed, and it will "
+		   "reloaded automatically when smplayer is run again."));
+
+	addSectionTitle(tr("Logs"));
+
+	setWhatsThis(log_debug_check, tr("Log debug messages"),
+		tr("If checked, SMPlayer will log debug messages, "
+		   "which might give additional information in case of trouble. "
+		   "Non-debug messages are always logged. "
+		   "You can view the log with menu <b>Options - View log</b>."));
+
+	setWhatsThis(log_verbose_check, tr("Verbose"),
+		tr("Request verbose messages from player for troubleshooting."));
+
+	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
+		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
+		  .arg("<i>"+ Settings::TPaths::configPath() + "/smplayer_log.txt</i>"));
 
 	addSectionTitle(tr("History"));
 

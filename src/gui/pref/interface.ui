@@ -82,7 +82,7 @@
             <item row="2" column="0">
              <widget class="QLabel" name="style_label">
               <property name="text">
-               <string>S&amp;tyle:</string>
+               <string>&amp;Style:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -256,7 +256,7 @@
             <item>
              <widget class="QCheckBox" name="pause_on_minimize_check">
               <property name="text">
-               <string>&amp;Pause when minimized</string>
+               <string>Pause when &amp;minimized</string>
               </property>
              </widget>
             </item>
@@ -406,11 +406,11 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="history_tab">
+     <widget class="QWidget" name="playlist_tab">
       <attribute name="title">
-       <string>&amp;History</string>
+       <string>&amp;Playlist, log and history</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout">
        <property name="spacing">
         <number>12</number>
        </property>
@@ -427,9 +427,144 @@
         <number>12</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="groupBox_4">
+        <widget class="QGroupBox" name="playlist_group">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
          <property name="title">
-          <string>Number of items to remember</string>
+          <string>Playlist</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_22">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="leftMargin">
+             <number>4</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="media_to_add_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>&amp;Automatically add files from same folder as opened file:</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+              <property name="buddy">
+               <cstring>media_to_add_combo</cstring>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QComboBox" name="media_to_add_combo"/>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="recursive_check">
+            <property name="text">
+             <string>Add files in directories &amp;recursively</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="autosave_on_exit_check">
+            <property name="text">
+             <string>&amp;Save copy of playlist on exit</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="log_group">
+         <property name="title">
+          <string>Log</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item alignment="Qt::AlignTop">
+           <widget class="QCheckBox" name="log_debug_check">
+            <property name="text">
+             <string>&amp;Log debug messages</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="log_verbose_check">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&amp;Verbose</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="log_file_check">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Sa&amp;ve log to a file</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="history_group">
+         <property name="title">
+          <string>History</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -438,15 +573,21 @@
           <property name="topMargin">
            <number>0</number>
           </property>
+          <property name="bottomMargin">
+           <number>4</number>
+          </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="leftMargin">
+             <number>4</number>
+            </property>
             <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
              <widget class="QLabel" name="max_files_label">
               <property name="text">
-               <string>Recent &amp;files:</string>
+               <string>Number of recent &amp;files:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -483,13 +624,16 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="leftMargin">
+             <number>4</number>
+            </property>
             <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
              <widget class="QLabel" name="textLabel1_16">
               <property name="text">
-               <string>Recent &amp;URLs</string>
+               <string>Number of recent &amp;URLs</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -524,18 +668,18 @@
             </item>
            </layout>
           </item>
+          <item>
+           <widget class="QCheckBox" name="save_dirs_check">
+            <property name="text">
+             <string>&amp;Remember last directory</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="save_dirs_check">
-         <property name="text">
-          <string>&amp;Remember last directory</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
+        <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -576,6 +720,14 @@
   <tabstop>use_filename_in_title_check</tabstop>
   <tabstop>hide_toolbars_spin</tabstop>
   <tabstop>show_toolbars_bottom_only_check</tabstop>
+  <tabstop>start_fullscreen_check</tabstop>
+  <tabstop>blackborders_on_fs_check</tabstop>
+  <tabstop>media_to_add_combo</tabstop>
+  <tabstop>recursive_check</tabstop>
+  <tabstop>autosave_on_exit_check</tabstop>
+  <tabstop>log_debug_check</tabstop>
+  <tabstop>log_verbose_check</tabstop>
+  <tabstop>log_file_check</tabstop>
   <tabstop>recents_max_items_spin</tabstop>
   <tabstop>url_max_items_spin</tabstop>
   <tabstop>save_dirs_check</tabstop>

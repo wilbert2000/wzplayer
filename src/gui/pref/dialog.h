@@ -39,7 +39,6 @@ class TVideo;
 class TAudio;
 class TSubtitles;
 class TInterface;
-class TPrefPlaylist;
 class TInput;
 class TDrives;
 class TCapture;
@@ -65,7 +64,6 @@ public:
 		SECTION_AUDIO,
 		SECTION_SUBTITLES,
 		SECTION_GUI,
-		SECTION_PLAYLIST,
 		SECTION_INPUT,
 		SECTION_DRIVES,
 		SECTION_CAPTURE,
@@ -83,7 +81,6 @@ public:
 
 	TInterface* mod_interface() const { return page_interface; }
 	TInput* mod_input() const { return page_input; }
-	TPrefPlaylist* mod_playlist() const { return page_playlist; }
 
 	// Pass data to the standard dialogs
 	void setData(Settings::TPreferences* pref);
@@ -114,7 +111,6 @@ private:
 	TAudio* page_audio;
 	TSubtitles* page_subtitles;
 	TInterface* page_interface;
-	TPrefPlaylist* page_playlist;
 	TInput* page_input;
 	TDrives* page_drives;
 	TCapture* page_capture;

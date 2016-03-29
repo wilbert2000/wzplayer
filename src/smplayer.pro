@@ -125,7 +125,6 @@ HEADERS += svn_revision.h \
     gui/pref/audio.h \
     gui/pref/subtitles.h \
     gui/pref/interface.h \
-    gui/pref/prefplaylist.h \
     gui/pref/input.h \
     gui/pref/drives.h \
     gui/pref/capture.h \
@@ -243,7 +242,6 @@ SOURCES	+= version.cpp \
     gui/pref/audio.cpp \
     gui/pref/subtitles.cpp \
     gui/pref/interface.cpp \
-    gui/pref/prefplaylist.cpp \
     gui/pref/input.cpp \
     gui/pref/drives.cpp \
     gui/pref/capture.cpp \
@@ -303,7 +301,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/pref/audio.ui \
     gui/pref/subtitles.ui \
     gui/pref/interface.ui \
-    gui/pref/prefplaylist.ui \
     gui/pref/input.ui \
     gui/pref/drives.ui \
     gui/pref/capture.ui \
