@@ -46,10 +46,32 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	: TMenu(parent, this, "open_menu", QT_TR_NOOP("&Open"), "noicon")
 	, main_window(parent) {
 
-	// Open
-	TAction* a = new TAction(this, "open_file", QT_TR_NOOP("&File..."), "open", QKeySequence("Ctrl+F"));
+	// Open URL
+	TAction* a = new TAction(this, "open_url", QT_TR_NOOP("&URL..."), "url", QKeySequence("Ctrl+U"));
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
+
+	addSeparator();
+
+	// Open file
+	a = new TAction(this, "open_file", QT_TR_NOOP("&File..."), "open", QKeySequence("Ctrl+F"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
+
+	// Open dir
+	a = new TAction(this, "open_directory", QT_TR_NOOP("D&irectory..."), "openfolder");
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
+
+	// Open playlist
+	a = new TAction(this, "open_playlist", QT_TR_NOOP("&Playlist..."));
+	main_window->addAction(a);
+	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
+
+	// Disc submenu
+	addMenu(new TMenuDisc(main_window));
+
+	addSeparator();
 
 	// Recents
 	recentfiles_menu = new TMenu(main_window, this, "recent_menu", QT_TR_NOOP("&Recent files"), "recents");
@@ -79,23 +101,7 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
 			fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 
-	// Open dir
-	a = new TAction(this, "open_directory", QT_TR_NOOP("D&irectory..."), "openfolder");
-	main_window->addAction(a);
-	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
-
-	// Open playlist
-	a = new TAction(this, "open_playlist", QT_TR_NOOP("&Playlist..."));
-	main_window->addAction(a);
-	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
-
-	// Disc submenu
-	addMenu(new TMenuDisc(main_window));
-
-	// URL
-	a = new TAction(this, "open_url", QT_TR_NOOP("&URL..."), "url", QKeySequence("Ctrl+U"));
-	main_window->addAction(a);
-	connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
+	addSeparator();
 
 	// TV
 	fav = new TTVList(main_window, this, "tv_menu", QT_TR_NOOP("&TV"), "open_tv",
@@ -141,8 +147,9 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
 			fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 
-	// Close
 	addSeparator();
+
+	// Close
 	a = new TAction(this, "close", QT_TR_NOOP("C&lose"), "", QKeySequence("Ctrl+X"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
