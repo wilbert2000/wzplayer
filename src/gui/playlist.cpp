@@ -521,7 +521,7 @@ void TPlaylist::addFileOrDir(const QString &filename) {
 void TPlaylist::addFiles(const QStringList &files) {
 	qDebug("Gui::TPlaylist::addFiles");
 
-	setCursor(Qt::WaitCursor);
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 	QStringList::ConstIterator it = files.constBegin();
 	while(it != files.constEnd()) {
@@ -530,7 +530,7 @@ void TPlaylist::addFiles(const QStringList &files) {
 	}
 
 	updateView();
-	unsetCursor();
+	QApplication::restoreOverrideCursor();
 
 	qDebug("Gui::TPlaylist::addFiles: done");
 }
