@@ -25,8 +25,10 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 
 	// Chapters
 	prevChapterAct = new TAction(this, "prev_chapter", QT_TR_NOOP("Previous chapter"), "", Qt::Key_AsciiTilde, false);
+	parent->addAction(prevChapterAct);
 	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
 	nextChapterAct = new TAction(this, "next_chapter", QT_TR_NOOP("Next chapter"), "", Qt::Key_Exclam, false);
+	parent->addAction(nextChapterAct);
 	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
 
 	chaptersMenu = new TMenu(parent, this, "chapters_menu", QT_TR_NOOP("&Chapter"), "chapter");
@@ -34,8 +36,6 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	chaptersMenu->addAction(nextChapterAct);
 	chaptersMenu->addSeparator();
 	addMenu(chaptersMenu);
-	parent->addAction(prevChapterAct);
-	parent->addAction(nextChapterAct);
 
 	chapterGroup = new TActionGroup(this, "chapter");
 	connect(chapterGroup, SIGNAL(activated(int)), core, SLOT(changeChapter(int)));
@@ -63,45 +63,38 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	// TODO: update
 #endif
 
+	addSeparator();
+
 	// DVDNAV
-	if (pref->isMPlayer())
-		addSeparator();
-	dvdnavUpAct = new TAction(this, "dvdnav_up", QT_TR_NOOP("DVD menu, move up"),
-							  "", Qt::SHIFT | Qt::Key_Up, false);
-	parent->addAction(dvdnavUpAct);
+	dvdnavUpAct = new TAction(this, "dvdnav_up", QT_TR_NOOP("DVD, move up"),
+							  "", Qt::SHIFT | Qt::Key_Up);
 	connect(dvdnavUpAct, SIGNAL(triggered()), core, SLOT(dvdnavUp()));
-
-	dvdnavDownAct = new TAction(this, "dvdnav_down", QT_TR_NOOP("DVD menu, move down"),
-								"", Qt::SHIFT | Qt::Key_Down, false);
-	parent->addAction(dvdnavDownAct);
+	dvdnavDownAct = new TAction(this, "dvdnav_down", QT_TR_NOOP("DVD, move down"),
+								"", Qt::SHIFT | Qt::Key_Down);
 	connect(dvdnavDownAct, SIGNAL(triggered()), core, SLOT(dvdnavDown()));
-
-	dvdnavLeftAct = new TAction(this, "dvdnav_left", QT_TR_NOOP("DVD menu, move left"),
-								"", Qt::SHIFT | Qt::Key_Left, false);
-	parent->addAction(dvdnavLeftAct);
+	dvdnavLeftAct = new TAction(this, "dvdnav_left", QT_TR_NOOP("DVD, move left"),
+								"", Qt::SHIFT | Qt::Key_Left);
 	connect(dvdnavLeftAct, SIGNAL(triggered()), core, SLOT(dvdnavLeft()));
-
-	dvdnavRightAct = new TAction(this, "dvdnav_right", QT_TR_NOOP("DVD menu, move right"),
-								 "", Qt::SHIFT | Qt::Key_Right, false);
-	parent->addAction(dvdnavRightAct);
+	dvdnavRightAct = new TAction(this, "dvdnav_right", QT_TR_NOOP("DVD, move right"),
+								 "", Qt::SHIFT | Qt::Key_Right);
 	connect(dvdnavRightAct, SIGNAL(triggered()), core, SLOT(dvdnavRight()));
 
+	addSeparator();
 
 	dvdnavMenuAct = new TAction(this, "dvdnav_menu", QT_TR_NOOP("DVD &menu"),
-								"", Qt::SHIFT | Qt::Key_Return, pref->isMPlayer());
+								"", Qt::SHIFT | Qt::Key_Return);
 	connect(dvdnavMenuAct, SIGNAL(triggered()), core, SLOT(dvdnavMenu()));
 
 	dvdnavPrevAct = new TAction(this, "dvdnav_prev", QT_TR_NOOP("DVD &previous menu"),
-								"", Qt::SHIFT | Qt::Key_Escape, pref->isMPlayer());
+								"", Qt::SHIFT | Qt::Key_Escape);
 	connect(dvdnavPrevAct, SIGNAL(triggered()), core, SLOT(dvdnavPrev()));
 
-	dvdnavSelectAct = new TAction(this, "dvdnav_select", QT_TR_NOOP("DVD menu, select option"),
-								  "", Qt::Key_Return, pref->isMPlayer());
+	dvdnavSelectAct = new TAction(this, "dvdnav_select", QT_TR_NOOP("DVD, select"),
+								  "", Qt::Key_Return);
 	connect(dvdnavSelectAct, SIGNAL(triggered()), core, SLOT(dvdnavSelect()));
 
-	dvdnavMouseAct = new TAction(this, "dvdnav_mouse", QT_TR_NOOP("DVD menu, mouse click"),
-								 "", false);
-	parent->addAction(dvdnavMouseAct);
+	dvdnavMouseAct = new TAction(this, "dvdnav_mouse", QT_TR_NOOP("DVD, mouse click"),
+								 "", Qt::CTRL | Qt::Key_Return);
 	connect(dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()));
 
 	addActionsTo(parent);
