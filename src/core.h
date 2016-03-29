@@ -268,7 +268,7 @@ public slots:
 	void changeChapter(int id);
 	void prevChapter();
 	void nextChapter();
-	void changeAngle(int);
+	void setAngle(int);
 	void nextAngle();
 	void changeAspectRatio(int id);
 	void nextAspectRatio();

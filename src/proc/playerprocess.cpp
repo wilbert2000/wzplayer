@@ -503,7 +503,7 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 		}
 		return true;
 	}
-	if (name == "ANGLE") {
+	if (name == "ANGLE_EX") {
 		return parseAngle(value);
 	}
 

@@ -51,7 +51,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	anglesMenu->addSeparator();
 	addMenu(anglesMenu);
 	angleGroup = new TActionGroup(this, "angle");
-	connect(angleGroup, SIGNAL(activated(int)), core, SLOT(changeAngle(int)));
+	connect(angleGroup, SIGNAL(activated(int)), core, SLOT(setAngle(int)));
 	// Update normally done by updateTitles. For DVDNAV only:
 	connect(core, SIGNAL(anglesChanged()), this, SLOT(updateAngles()));
 

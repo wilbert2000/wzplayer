@@ -77,7 +77,7 @@ public:
 	int external_subtitles_fps;
 
 	bool playing_single_track;
-	int current_angle_id;
+	int current_angle;
 
 #if PROGRAM_SWITCH
 	int current_program_id;

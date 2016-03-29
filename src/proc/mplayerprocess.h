@@ -75,7 +75,7 @@ public:
 	void setGamma(int value);
 	void setChapter(int ID);
 	void nextChapter(int delta);
-	void setAngle(int ID);
+	void setAngle(int angle);
 	void nextAngle();
 	void setExternalSubtitleFile(const QString& filename);
 	void setSubPos(int pos);

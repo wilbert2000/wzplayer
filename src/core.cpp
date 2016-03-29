@@ -1356,8 +1356,8 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 	}
 
-	if (mset.current_angle_id > 1) {
-		proc->setOption("dvdangle", QString::number(mset.current_angle_id));
+	if (mset.current_angle > 0) {
+		proc->setOption("dvdangle", QString::number(mset.current_angle));
 	}
 
 	// TODO: TMPVProcess title and track switch code does not run nicely when
@@ -2978,22 +2978,30 @@ void TCore::nextChapter() {
 	proc->nextChapter(1);
 }
 
-void TCore::changeAngle(int ID) {
-	qDebug("TCore::changeAngle: ID: %d", ID);
+void TCore::setAngle(int angle) {
+	qDebug("TCore::setAngle: angle: %d", angle);
 
-	mset.current_angle_id = ID;
-	proc->setAngle(ID);
+	mset.current_angle = angle;
+	proc->setAngle(angle);
 }
 
 void TCore::nextAngle() {
+	qDebug("TCore::nextAngle");
 
-	// Use nextAngle() because on mplayer 4.8 setAngle(last angle) often fails,
-	// while nextAngle() to the last angle succeeds...
+	/*
 	if (mdat.angle == mdat.angles) {
-		// Clear angle
-		mset.current_angle_id = 0;
+		setAngle(1);
 	} else {
-		mset.current_angle_id = mdat.angle + 1;
+		setAngle(mdat.angle + 1);
+	}
+	*/
+
+	// For now use proc->nextAngle as alternative to setAngle()
+	if (mdat.angle == mdat.angles) {
+		// Clear angle. 0 instead of 1 to not save the angle
+		mset.current_angle = 0;
+	} else {
+		mset.current_angle = mdat.angle + 1;
 	}
 	proc->nextAngle();
 }

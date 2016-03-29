@@ -726,7 +726,7 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 
 		"INFO_TITLES=${=disc-titles}\n"
 		"INFO_CHAPTERS=${=chapters}\n"
-		"INFO_ANGLE=${angle}\n"
+		"INFO_ANGLE_EX=${angle}\n"
 //		"INFO_TRACKS_COUNT=${=track-list/count}\n"
 
 		// TODO: check name, author, comment etc.
@@ -1202,11 +1202,12 @@ void TMPVProcess::nextChapter(int delta) {
 
 void TMPVProcess::setAngle(int ID) {
 	writeToStdin("set angle " + QString::number(ID));
+	writeToStdin("print_text INFO_ANGLE_EX=${angle}");
 }
 
 void TMPVProcess::nextAngle() {
 	writeToStdin("cycle angle");
-	writeToStdin("print_text INFO_ANGLE=${angle}");
+	writeToStdin("print_text INFO_ANGLE_EX=${angle}");
 }
 
 void TMPVProcess::setExternalSubtitleFile(const QString& filename) {

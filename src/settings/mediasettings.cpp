@@ -61,7 +61,7 @@ void TMediaSettings::reset() {
 	current_secondary_sub_idx = NoneSelected;
 
 	playing_single_track = false;
-	current_angle_id = 0;
+	current_angle = 0;
 
 #if PROGRAM_SWITCH
 	current_program_id = NoneSelected;
@@ -168,7 +168,7 @@ void TMediaSettings::list() {
 #if PROGRAM_SWITCH
 	qDebug("  current_program_id: %d", current_program_id);
 #endif
-	qDebug("  current_angle_id: %d", current_angle_id);
+	qDebug("  current_angle: %d", current_angle);
 
 	qDebug("  aspect_ratio: %s", aspect_ratio.toString().toUtf8().constData());
 
@@ -308,7 +308,7 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 	set->remove("current_title_id");
 	set->remove("current_chapter_id");
 
-	set->setValue("current_angle_id", current_angle_id);
+	set->setValue("current_angle", current_angle);
 
 	set->setValue("aspect_ratio", aspect_ratio.toInt());
 	set->setValue("volume", volume);
@@ -435,9 +435,9 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 
 	current_sec = set->value("current_sec", current_sec).toDouble();
 
-	current_angle_id = set->value("current_angle_id", current_angle_id).toInt();
-	if (current_angle_id < 0) {
-		current_angle_id = 0;
+	current_angle = set->value("current_angle", current_angle).toInt();
+	if (current_angle < 0) {
+		current_angle = 0;
 	}
 
 	aspect_ratio.setID(TAspectRatio::toTMenuID(set->value("aspect_ratio", aspect_ratio.toInt())));

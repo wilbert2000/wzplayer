@@ -95,7 +95,7 @@ void TMPlayerProcess::getSelectedAngle() {
 	if (md->videos.count() > 0) {
 		// Need "angle/number of angles", hence use run instead of
 		// get_property angle, which only gives the current angle
-		writeToStdin("run \"echo ID_ANGLE=${angle}\"");
+		writeToStdin("run \"echo ID_ANGLE_EX=${angle}\"");
 	}
 }
 
@@ -1116,7 +1116,7 @@ void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
 	arg << "-playing-msg"
 		<< "ID_VIDEO_TRACK_EX=${switch_video}\n"
 		   "ID_AUDIO_TRACK_EX=${switch_audio}\n"
-		   "ID_ANGLE=${angle}\n";
+		   "ID_ANGLE_EX=${angle}\n";
 	if (is_playlist)
 		arg << "-playlist";
 	arg << media;
@@ -1399,8 +1399,8 @@ void TMPlayerProcess::nextChapter(int delta) {
 	writeToStdin("seek_chapter " + QString::number(delta) +" 0");
 }
 
-void TMPlayerProcess::setAngle(int ID) {
-	writeToStdin("switch_angle " + QString::number(ID));
+void TMPlayerProcess::setAngle(int angle) {
+	writeToStdin("switch_angle " + QString::number(angle - 1));
 	// Switch angle does not always succeed, so verify new angle
 	getSelectedAngle();
 }
