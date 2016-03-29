@@ -121,7 +121,6 @@ public:
 	int angles;
 
 	// Clip info
-	// TODO: set title by mplayer
 	QString title;
 	// Meta data names and values
 	typedef QMap<QString, QString> MetaData;

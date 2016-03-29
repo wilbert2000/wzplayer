@@ -523,10 +523,17 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
 		return false;
 	}
 
-	// DVD disc ID (DVD_VOLUME_ID is not the same)
+	// DVD title
+	if (name == "DVD_VOLUME_ID") {
+		md->title = value;
+		qDebug() << "Proc::TMPlayerProcess::parseProperty: title set to" << md->title;
+		return true;
+	}
+
+	// DVD disc ID
 	if (name == "DVD_DISC_ID") {
 		md->dvd_id = value;
-		qDebug("Proc::TMPlayerProcess::parseProperty: DVD ID set to '%s'", md->dvd_id.toUtf8().data());
+		qDebug() << "Proc::TMPlayerProcess::parseProperty: DVD ID set to" << md->dvd_id;
 		return true;
 	}
 
