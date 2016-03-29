@@ -73,43 +73,43 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
 
 	connect(proc, SIGNAL(error(QProcess::ProcessError)),
-			 this, SLOT(processError(QProcess::ProcessError)));
+			this, SLOT(processError(QProcess::ProcessError)));
 
 	connect(proc, SIGNAL(processExited(bool)),
-			 this, SLOT(processFinished(bool)));
+			this, SLOT(processFinished(bool)));
 
 	connect(proc, SIGNAL(playerFullyLoaded()),
-			 this, SLOT(playingStarted()));
+			this, SLOT(playingStarted()));
 
 	connect(proc, SIGNAL(receivedCurrentSec(double)),
-			 this, SLOT(gotCurrentSec(double)));
+			this, SLOT(gotCurrentSec(double)));
 
 	connect(proc, SIGNAL(receivedCurrentFrame(int)),
-			 this, SIGNAL(showFrame(int)));
+			this, SIGNAL(showFrame(int)));
 
 	connect(proc, SIGNAL(receivedPause()),
-			 this, SLOT(onReceivedPause()));
+			this, SLOT(onReceivedPause()));
 
 	connect(proc, SIGNAL(receivedBuffering()),
-			 this, SLOT(displayBuffering()));
+			this, SLOT(displayBuffering()));
 
 	connect(proc, SIGNAL(receivedBufferingEnded()),
 			this, SLOT(displayBufferingEnded()));
 
 	connect(proc, SIGNAL(receivedMessage(const QString&)),
-			 this, SLOT(displayMessage(const QString&)));
+			this, SLOT(displayMessage(const QString&)));
 
 	connect(proc, SIGNAL(receivedScreenshot(const QString&)),
-			 this, SLOT(displayScreenshotName(const QString&)));
+			this, SLOT(displayScreenshotName(const QString&)));
 
 	connect(proc, SIGNAL(receivedUpdatingFontCache()),
-			 this, SLOT(displayUpdatingFontCache()));
+			this, SLOT(displayUpdatingFontCache()));
 
 	connect(proc, SIGNAL(receivedVideoOutResolution(int,int)),
-			 this, SLOT(gotVideoOutResolution(int,int)));
+			this, SLOT(gotVideoOutResolution(int,int)));
 
 	connect(proc, SIGNAL(receivedEndOfFile()),
-			 this, SLOT(onReceivedEndOfFile()), Qt::QueuedConnection);
+			this, SLOT(onReceivedEndOfFile()), Qt::QueuedConnection);
 
 	connect(proc, SIGNAL(receivedStreamTitle(const QString&)),
 			 this, SLOT(streamTitleChanged(const QString&)));
