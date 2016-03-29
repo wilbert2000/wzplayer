@@ -78,11 +78,12 @@ void TLog::setLogFileEnabled(bool log_file_enabled) {
 
 void TLog::setLogWindow(Gui::TLogWindow *window) {
 
+	bool did_log = log_window;
 	log_window = window;
 	if (log_window) {
 		log_window->setText(lines_back + lines);
 		qDebug("TLog::setLogWindow: forwarding log to log window");
-	} else {
+	} else if (did_log) {
 		qDebug("TLog::setLogWindow: stopped logging to log window");
 	}
 }
