@@ -24,14 +24,12 @@
 #include <QPoint>
 #include <QSize>
 #include <QPaintEvent>
-#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QResizeEvent>
 #include <QTime>
 
 class QTimer;
-class QLabel;
 
 
 //! TPlayerLayer can be instructed to not delete the background.
@@ -42,11 +40,10 @@ public:
 	explicit TPlayerLayer(QWidget* parent);
 	virtual ~TPlayerLayer();
 
-	//! Should be called when a file has started playing.
-    /*! It's needed to know if the background has to be cleared or not. */
+	// Reduce flicker, tearing and speed up painting
 	void setFastBackground();
 
-	//! Should be called when a file has stopped playing.
+	// Restore normal paint behaviour
 	void restoreNormalBackground();
 
 protected:
@@ -77,10 +74,10 @@ public:
 	QSize resolution() const { return QSize(video_width, video_height); }
 
 	// Zoom
-	// Sets current zoom to factor if factor_fullscreen == 0.0
+	// Sets current zoom to factor if factor_fullscreen == 0
 	// else sets both zoom for normal and full screen.
 	void setZoom(double factor,
-				 double factor_fullscreen = 0.0,
+				 double factor_fullscreen = 0,
 				 bool updateVideoWindow = true);
 	// Zoom current screen
 	double zoom();
@@ -115,14 +112,9 @@ public:
 	void updateVideoWindow();
 	void moveVideo(int dx, int dy);
 	void playingStopped(bool clear_background = true);
-	void retranslateStrings();
 
 public slots:
 	void aboutToStartPlaying();
-
-	void setLogoVisible(bool b);
-	void showLogo() { setLogoVisible(true); }
-	void hideLogo() { setLogoVisible(false); }
 
 signals:
 	void leftClicked();
@@ -131,13 +123,14 @@ signals:
 	void middleClicked();
 	void xbutton1Clicked(); // first X button
 	void xbutton2Clicked(); // second X button
-	void keyPressed(QKeyEvent* e);
+
 	void wheelUp();
 	void wheelDown();
+
 	void mouseMoved(QPoint);
 	void draggingChanged(bool);
-	void moveWindow(QPoint);
 
+	void moveWindow(QPoint);
 	void moveOSD(QPoint pos);
 	void videoOutChanged(const QSize& size);
 
@@ -171,8 +164,6 @@ private:
 	QPoint drag_pos;
 	bool dragging;
 	bool kill_fake_event;
-
-	QLabel* logo;
 
 	void moveVideo(QPoint delta);
 

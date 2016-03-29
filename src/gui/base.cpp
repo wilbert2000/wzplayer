@@ -646,9 +646,6 @@ void TBase::retranslateStrings() {
 	timeslider_action->setText(tr("Time slider"));
 	volumeslider_action->setText(tr("Volume slider"));
 
-	// PlayerWindow
-	playerwindow->retranslateStrings();
-
 	// Playlist
 	playlist->retranslateStrings();
 
@@ -2103,8 +2100,6 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		// No video
 		if (pref->hide_video_window_on_audio_files) {
 			hidePanel();
-		} else {
-			playerwindow->showLogo();
 		}
 	} else {
 		// Have video

@@ -209,7 +209,6 @@ void TCore::processFinished(bool normal_exit) {
 	if (!normal_exit) {
 		int exit_code = proc->exitCodeOverride();
 		qWarning("TCore::processFinished: player error (%d)", exit_code);
-		playerwindow->showLogo();
 		emit playerFinishedWithError(exit_code);
 	}
 }
@@ -673,7 +672,6 @@ void TCore::initPlaying(int seek) {
 	qDebug("TCore::initPlaying: starting time");
 
 	time.start();
-	playerwindow->hideLogo();
 	if (restarting == 0)
 		initMediaSettings();
 

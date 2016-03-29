@@ -37,16 +37,19 @@
 
 using namespace Settings;
 
-// Widget used to contain the video player
+// Widget containing the video player
 TPlayerLayer::TPlayerLayer(QWidget* parent)
 	: QWidget(parent)
 	, normal_background(true) {
 
+	setAutoFillBackground(false);
+	// Don't erase background before paint
+	setAttribute(Qt::WA_OpaquePaintEvent);
+
 #ifndef Q_OS_WIN
 #if QT_VERSION < 0x050000
-	setAttribute(Qt::WA_OpaquePaintEvent);
 	setAttribute(Qt::WA_NativeWindow);
-	setAttribute(Qt::WA_PaintUnclipped);
+	//setAttribute(Qt::WA_DontCreateNativeAncestors);
 #endif
 #endif
 }
@@ -54,13 +57,13 @@ TPlayerLayer::TPlayerLayer(QWidget* parent)
 TPlayerLayer::~TPlayerLayer() {
 }
 
-// TODO: remove, handle with window attribute for background erasing
 void TPlayerLayer::paintEvent(QPaintEvent* e) {
 
 	// Only clear background when no video playing or when color key is used
 	if (normal_background) {
 		QPainter painter(this);
 		painter.eraseRect(e->rect());
+		//painter.fillRect(e->rect(), QColor(255,0,0));
 	}
 }
 
@@ -68,8 +71,10 @@ void TPlayerLayer::setFastBackground() {
 	qDebug("TPlayerLayer::setFastBackground");
 
 	normal_background = pref->useColorKey();
+	setAttribute(Qt::WA_NoSystemBackground);
 
 #ifndef Q_OS_WIN
+	// Disable composition and double buffering on X11
 	setAttribute(Qt::WA_PaintOnScreen);
 #endif
 }
@@ -78,11 +83,11 @@ void TPlayerLayer::restoreNormalBackground() {
 	qDebug("TPlayerLayer::restoreNormalBackground");
 
 	normal_background = true;
+	setAttribute(Qt::WA_NoSystemBackground, false);
 
 #ifndef Q_OS_WIN
 	setAttribute(Qt::WA_PaintOnScreen, false);
 #endif
-
 }
 
 
@@ -109,19 +114,8 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	playerlayer = new TPlayerLayer(this);
 	playerlayer->setObjectName("playerlayer");
 	playerlayer->setMinimumSize(QSize(0, 0));
-	playerlayer->setAutoFillBackground(false);
 	playerlayer->setFocusPolicy(Qt::NoFocus);
 	playerlayer->setMouseTracking(true);
-
-	logo = new QLabel();
-	logo->setObjectName("logo");
-	logo->setAutoFillBackground(true);
-	logo->setMouseTracking(true);
-	ColorUtils::setBackgroundColor(logo, QColor(0, 0, 0));
-
-	QVBoxLayout* layout = new QVBoxLayout();
-	layout->addWidget(logo, 0, Qt::AlignHCenter | Qt::AlignVCenter);
-	playerlayer->setLayout(layout);
 
 	left_click_timer = new QTimer(this);
 	left_click_timer->setSingleShot(true);
@@ -212,6 +206,7 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
 		}
 		return;
 	}
+
 	factorX = 0;
 	factorY = 0;
 }
@@ -273,7 +268,7 @@ void TPlayerWindow::updateVideoWindow() {
 		osd_pos.ry() -= p.y();
 	emit moveOSD(osd_pos);
 
-	// Update status with new size
+	// Update status with new video out size
 	if (video_size != last_video_size) {
 		emit videoOutChanged(video_size);
 		last_video_size = video_size;
@@ -480,7 +475,7 @@ void TPlayerWindow::setZoom(double factor,
 	else if (factor > ZOOM_MAX)
 		factor = ZOOM_MAX;
 
-	if (factor_fullscreen == 0.0) {
+	if (factor_fullscreen == 0) {
 		// Set only current zoom
 		if (pref->fullscreen)
 			zoom_factor_fullscreen = factor;
@@ -515,9 +510,11 @@ void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWi
 
 void TPlayerWindow::moveVideo(QPoint delta) {
 
-	if (pref->fullscreen)
+	if (pref->fullscreen) {
 		pan_offset_fullscreen += delta;
-	else pan_offset += delta;
+	} else {
+		pan_offset += delta;
+	}
 	updateVideoWindow();
 }
 
@@ -545,30 +542,28 @@ void TPlayerWindow::setColorKey(QColor c) {
 void TPlayerWindow::aboutToStartPlaying() {
 	//qDebug("TPlayerWindow::aboutToStartPlaying");
 	playerlayer->setFastBackground();
+
+#ifndef Q_OS_WIN
+	// Disable composition and double buffering on X11
+	setAttribute(Qt::WA_PaintOnScreen);
+#endif
 }
 
 void TPlayerWindow::playingStopped(bool clear_background) {
 	qDebug("TPlayerWindow::playingStopped: clear_background %d", clear_background);
 
 	playerlayer->restoreNormalBackground();
-	// Clear background right away.
-	// Pro: no artifacts when things take a little while.
-	// Against: longer black flicker when restarting or switching bright videos
+
+#ifndef Q_OS_WIN
+	// Enable composition and double buffering on X11
+	setAttribute(Qt::WA_PaintOnScreen, false);
+#endif
+
+	// Clear background to prevent artifacts when things take a little while
 	if (clear_background)
 		repaint();
 
 	setResolution(0, 0);
-}
-
-// Called by TBase::retranslateStrings
-void TPlayerWindow::retranslateStrings() {
-	//qDebug("TPlayerWindow::retranslateStrings");
-	logo->setPixmap(Images::icon("background"));
-}
-
-void TPlayerWindow::setLogoVisible(bool b) {
-	qDebug("TPlayerWindow::setLogoVisible: %d", b);
-	logo->setVisible(b);
 }
 
 #include "moc_playerwindow.cpp"
