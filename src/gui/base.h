@@ -213,8 +213,7 @@ protected slots:
 	virtual void exitFullscreenOnStop();
 	virtual void playlistHasFinished();
 
-	virtual void enableActionsOnPlaying();
-	virtual void disableActionsOnStop();
+	virtual void setActionsEnabled(bool b = true);
 
 	void toggleDoubleSize();
 
@@ -285,7 +284,6 @@ protected:
 	void createFilePropertiesDialog();
 	void setDataToFileProperties();
 	void createActions();
-	void setActionsEnabled(bool);
 	void createMenus();
 	void configureDiscDevices();
 	void setupNetworkProxy();

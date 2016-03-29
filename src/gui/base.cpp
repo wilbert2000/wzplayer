@@ -278,7 +278,7 @@ void TBase::createCore() {
 			this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaLoaded()),
-			this, SLOT(enableActionsOnPlaying()));
+			this, SLOT(setActionsEnabled()));
 
 	connect(core, SIGNAL(mediaInfoChanged()),
 			this, SLOT(updateMediaInfo()));
@@ -597,21 +597,12 @@ void TBase::setupNetworkProxy() {
 }
 
 void TBase::setActionsEnabled(bool b) {
-
-	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
+	qDebug("Gui::TBase::setActionsEnabled: %d", b);
 
 	// Time slider
 	timeslider_action->enable(b);
-}
 
-void TBase::enableActionsOnPlaying() {
-	qDebug("Gui::TBase::enableActionsOnPlaying");
-	setActionsEnabled(true);
-}
-
-void TBase::disableActionsOnStop() {
-	qDebug("Gui::TBase::disableActionsOnStop");
-	setActionsEnabled(false);
+	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
 }
 
 void TBase::retranslateStrings() {
@@ -961,6 +952,7 @@ void TBase::applyNewPreferences() {
 
 	// Update logging
 	TLog::log->setLogDebugMessages(pref->log_debug_enabled);
+	// Verbose handled by restart core
 	TLog::log->setLogFileEnabled(pref->log_file);
 
 	// Load translation if language changed.
@@ -990,19 +982,16 @@ void TBase::applyNewPreferences() {
 	playerwindow->setMonitorAspect(pref->monitorAspectDouble());
 
 	// Subtitles
-	subtitleMenu->useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
 	subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
-
-	// Gui continued
-
+	// Interface continued
 	// Show panel
 	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
 		resize(width(), height() + 200);
 		panel->show();
 	}
-	// Show tags
-	setWindowCaption(core->mdat.displayName(pref->show_tag_in_window_title) + " - SMPlayer");
+	// Show tags in window title
+	updateMediaInfo();
 	// Hide toolbars delay
 	auto_hide_timer->setInterval(pref->floating_hide_delay);
 	// Recents
@@ -1017,15 +1006,8 @@ void TBase::applyNewPreferences() {
 	// Network
 	setupNetworkProxy();
 
-	// Advanced tab
-	playerwindow->setColorKey(pref->color_key);
-
 	// Reenable actions to reflect changes
-	if (core->state() == STATE_STOPPED) {
-		disableActionsOnStop();
-	} else {
-		enableActionsOnPlaying();
-	}
+	setActionsEnabled(core->state() != STATE_STOPPED);
 
 	// Restart video if needed
 	if (pref_dialog->requiresRestart()) {
@@ -1927,7 +1909,7 @@ void TBase::onStateChanged(TCoreState state) {
 			auto_hide_timer->stopAutoHideMouse();
 			break;
 		case STATE_STOPPED:
-			disableActionsOnStop();
+			setActionsEnabled(false);
 			setWindowCaption("SMPlayer");
 			displayMessage(tr("Stopped"));
 			auto_hide_timer->stopAutoHideMouse();

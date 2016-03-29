@@ -3332,11 +3332,9 @@ void TCore::changeUseCustomSubStyle(bool b) {
 void TCore::toggleForcedSubsOnly(bool b) {
 	qDebug("TCore::toggleForcedSubsOnly: %d", b);
 
-	if (pref->use_forced_subs_only != b) {
-		pref->use_forced_subs_only = b;
-		if (proc->isRunning())
-			proc->setSubForcedOnly(b);
-	}
+	pref->use_forced_subs_only = b;
+	if (proc->isRunning())
+		proc->setSubForcedOnly(b);
 }
 
 void TCore::changeClosedCaptionChannel(int c) {
@@ -3348,22 +3346,6 @@ void TCore::changeClosedCaptionChannel(int c) {
 			restartPlay();
 	}
 }
-
-/*
-void TCore::nextClosedCaptionChannel() {
-	int c = mset.closed_caption_channel;
-	c++;
-	if (c > 4) c = 0;
-	changeClosedCaptionChannel(c);
-}
-
-void TCore::prevClosedCaptionChannel() {
-	int c = mset.closed_caption_channel;
-	c--;
-	if (c < 0) c = 4;
-	changeClosedCaptionChannel(c);
-}
-*/
 
 // dvdnav buttons
 void TCore::dvdnavUp() {
