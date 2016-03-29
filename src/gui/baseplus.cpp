@@ -347,22 +347,19 @@ void TBasePlus::onTopLevelChanged(bool) {
 void TBasePlus::dockVisibilityChanged(bool visible) {
 	//qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
 
-	if (!playlistdock->isFloating()) {
-		if (visible)
+	if (!playlistdock->isFloating()
+		&& !pref->fullscreen
+		&& pref->resize_method == TPreferences::Always) {
+		if (visible) {
 			stretchWindow();
-		else
+		} else if (isVisible()) { // Don't shrink on shutdown
 			shrinkWindow();
+		}
 	}
 }
 
 void TBasePlus::stretchWindow() {
-	qDebug("Gui::TBasePlus::stretchWindow");
-
-	if (pref->fullscreen
-		|| pref->resize_method != Settings::TPreferences::Always)
-		return;
-
-	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
+	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", dockWidgetArea(playlistdock));
 
 	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
 		(dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea)) {
@@ -379,12 +376,6 @@ void TBasePlus::stretchWindow() {
 }
 
 void TBasePlus::shrinkWindow() {
-	qDebug("Gui::TBasePlus::shrinkWindow");
-
-	if (pref->fullscreen
-		|| pref->resize_method != Settings::TPreferences::Always)
-		return;
-
 	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
 
 	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea)

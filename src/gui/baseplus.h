@@ -67,8 +67,6 @@ protected slots:
 
 	void dockVisibilityChanged(bool visible);
 	void onTopLevelChanged(bool);
-	void stretchWindow();
-	void shrinkWindow();
 
 protected:
 	QSystemTrayIcon* tray;
@@ -88,6 +86,8 @@ protected:
 	bool fullscreen_playlist_was_floating;
 
 private:
+	void stretchWindow();
+	void shrinkWindow();
 	void switchToTray();
 	void setWinTitle();
 	void retranslateStrings();
