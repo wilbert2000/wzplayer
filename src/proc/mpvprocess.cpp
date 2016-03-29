@@ -478,8 +478,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Custom status line. Make sure it matches!
 	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
 
-	// TODO: check video and audio track name.
-	// Subs suggest name comes before codec...
+	// Tracks:
 	static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)(.*)");
 	static QRegExp rx_audio_track("^(.*)Audio\\s+--aid=(\\d+)(\\s+--alang=([a-zA-Z]+))?(.*)");
 	static QRegExp rx_subtitle_track("^(.*)Subs\\s+--sid=(\\d+)(\\s+--slang=([a-zA-Z]+))?(\\s+'(.*)')?(\\s+\\((.*)\\))?");
