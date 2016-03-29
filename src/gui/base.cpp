@@ -231,19 +231,19 @@ void TBase::createPlayerWindow() {
 
 	// Connect player window mouse events
 	connect(playerwindow, SIGNAL(doubleClicked()),
-			 this, SLOT(doubleClickFunction()));
+			this, SLOT(doubleClickFunction()));
 	connect(playerwindow, SIGNAL(leftClicked()),
-			 this, SLOT(leftClickFunction()));
+			this, SLOT(leftClickFunction()));
 	connect(playerwindow, SIGNAL(rightClicked()),
-			 this, SLOT(rightClickFunction()));
+			this, SLOT(rightClickFunction()));
 	connect(playerwindow, SIGNAL(middleClicked()),
-			 this, SLOT(middleClickFunction()));
+			this, SLOT(middleClickFunction()));
 	connect(playerwindow, SIGNAL(xbutton1Clicked()),
-			 this, SLOT(xbutton1ClickFunction()));
+			this, SLOT(xbutton1ClickFunction()));
 	connect(playerwindow, SIGNAL(xbutton2Clicked()),
-			 this, SLOT(xbutton2ClickFunction()));
+			this, SLOT(xbutton2ClickFunction()));
 	connect(playerwindow, SIGNAL(moveWindow(QPoint)),
-			 this, SLOT(moveWindow(QPoint)));
+			this, SLOT(moveWindow(QPoint)));
 }
 
 void TBase::createCore() {
@@ -251,62 +251,60 @@ void TBase::createCore() {
 	core = new TCore(this, playerwindow);
 
 	connect(core, SIGNAL(showTime(double)),
-			 this, SLOT(gotCurrentTime(double)));
+			this, SLOT(gotCurrentTime(double)));
 	connect(core, SIGNAL(showFrame(int)),
-			 this, SIGNAL(frameChanged(int)));
+			this, SIGNAL(frameChanged(int)));
 	connect(core, SIGNAL(durationChanged(double)),
-			 this, SLOT(gotDuration(double)));
+			this, SLOT(gotDuration(double)));
 
 	connect(core, SIGNAL(stateChanged(TCoreState)),
-			 this, SLOT(onStateChanged(TCoreState)));
+			this, SLOT(onStateChanged(TCoreState)));
 	connect(core, SIGNAL(stateChanged(TCoreState)),
-			 this, SLOT(checkStayOnTop(TCoreState)), Qt::QueuedConnection);
+			this, SLOT(checkStayOnTop(TCoreState)), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaSettingsChanged()),
-			 this, SLOT(onMediaSettingsChanged()));
+			this, SLOT(onMediaSettingsChanged()));
 	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
-			 this, SLOT(onVideoOutResolutionChanged(int,int)));
+			this, SLOT(onVideoOutResolutionChanged(int,int)));
 	connect(core, SIGNAL(needResize(int, int)),
-			 this, SLOT(resizeWindow(int, int)));
+			this, SLOT(resizeWindow(int, int)));
 
 	connect(core, SIGNAL(showMessage(const QString&, int)),
-			 this, SLOT(displayMessage(const QString&, int)));
+			this, SLOT(displayMessage(const QString&, int)));
 	connect(core, SIGNAL(showMessage(const QString&)),
-			 this, SLOT(displayMessage(const QString&)));
+			this, SLOT(displayMessage(const QString&)));
 
 	connect(core, SIGNAL(newMediaStartedPlaying()),
-			 this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
+			this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaLoaded()),
-			 this, SLOT(enableActionsOnPlaying()));
+			this, SLOT(enableActionsOnPlaying()));
 
 	connect(core, SIGNAL(mediaInfoChanged()),
-			 this, SLOT(updateMediaInfo()));
+			this, SLOT(updateMediaInfo()));
 
 	connect(core, SIGNAL(mediaStopped()),
-			 this, SLOT(exitFullscreenOnStop()));
+			this, SLOT(exitFullscreenOnStop()));
 
 	connect(core, SIGNAL(playerError(QProcess::ProcessError)),
-			 this, SLOT(onPlayerError(QProcess::ProcessError)));
+			this, SLOT(onPlayerError(QProcess::ProcessError)));
 	connect(core, SIGNAL(playerFinishedWithError(int)),
-			 this, SLOT(onPlayerFinishedWithError(int)));
+			this, SLOT(onPlayerFinishedWithError(int)));
 
 	connect(playerwindow, SIGNAL(wheelUp()),
-			 core, SLOT(wheelUp()));
+			core, SLOT(wheelUp()));
 	connect(playerwindow, SIGNAL(wheelDown()),
-			 core, SLOT(wheelDown()));
+			core, SLOT(wheelDown()));
 
-	connect(core, SIGNAL(mediaStopped()),
-			 playerwindow, SLOT(showLogo()));
 	connect(playerwindow, SIGNAL(moveOSD(const QPoint&)),
-			 core, SLOT(setOSDPos(const QPoint&)));
+			core, SLOT(setOSDPos(const QPoint&)));
 }
 
 void TBase::createPlaylist() {
 
 	playlist = new TPlaylist(this, core);
 	connect(playlist, SIGNAL(playlistEnded()),
-			 this, SLOT(playlistHasFinished()));
+			this, SLOT(playlistHasFinished()));
 	connect(playlist, SIGNAL(displayMessage(const QString&, int)),
 			this, SLOT(displayMessage(const QString&, int)));
 }
@@ -317,23 +315,23 @@ void TBase::createVideoEqualizer() {
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
 	connect(video_equalizer, SIGNAL(contrastChanged(int)),
-			 core, SLOT(setContrast(int)));
+			core, SLOT(setContrast(int)));
 	connect(video_equalizer, SIGNAL(brightnessChanged(int)),
-			 core, SLOT(setBrightness(int)));
+			core, SLOT(setBrightness(int)));
 	connect(video_equalizer, SIGNAL(hueChanged(int)),
-			 core, SLOT(setHue(int)));
+			core, SLOT(setHue(int)));
 	connect(video_equalizer, SIGNAL(saturationChanged(int)),
-			 core, SLOT(setSaturation(int)));
+			core, SLOT(setSaturation(int)));
 	connect(video_equalizer, SIGNAL(gammaChanged(int)),
-			 core, SLOT(setGamma(int)));
+			core, SLOT(setGamma(int)));
 
 	connect(video_equalizer, SIGNAL(requestToChangeDefaultValues()),
-			 this, SLOT(setDefaultValuesFromVideoEqualizer()));
+			this, SLOT(setDefaultValuesFromVideoEqualizer()));
 	connect(video_equalizer, SIGNAL(bySoftwareChanged(bool)),
-			 this, SLOT(changeVideoEqualizerBySoftware(bool)));
+			this, SLOT(changeVideoEqualizerBySoftware(bool)));
 
 	connect(core, SIGNAL(videoEqualizerNeedsUpdate()),
-			 this, SLOT(updateVideoEqualizer()));
+			this, SLOT(updateVideoEqualizer()));
 }
 
 void TBase::createAudioEqualizer() {
@@ -345,26 +343,26 @@ void TBase::createAudioEqualizer() {
 	connect(audio_equalizer->eq[1], SIGNAL(valueChanged(int)),
 			core, SLOT(setAudioEq1(int)));
 	connect(audio_equalizer->eq[2], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq2(int)));
+			core, SLOT(setAudioEq2(int)));
 	connect(audio_equalizer->eq[3], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq3(int)));
+			core, SLOT(setAudioEq3(int)));
 	connect(audio_equalizer->eq[4], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq4(int)));
+			core, SLOT(setAudioEq4(int)));
 	connect(audio_equalizer->eq[5], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq5(int)));
+			core, SLOT(setAudioEq5(int)));
 	connect(audio_equalizer->eq[6], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq6(int)));
+			core, SLOT(setAudioEq6(int)));
 	connect(audio_equalizer->eq[7], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq7(int)));
+			core, SLOT(setAudioEq7(int)));
 	connect(audio_equalizer->eq[8], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq8(int)));
+			core, SLOT(setAudioEq8(int)));
 	connect(audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
-			 core, SLOT(setAudioEq9(int)));
+			core, SLOT(setAudioEq9(int)));
 
 	connect(audio_equalizer, SIGNAL(applyClicked(const Settings::TAudioEqualizerList&)),
-			 core, SLOT(setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&)));
+			core, SLOT(setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&)));
 	connect(audio_equalizer, SIGNAL(valuesChanged(const Settings::TAudioEqualizerList&)),
-			 core, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
+			core, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
 }
 
 void TBase::createActions() {
