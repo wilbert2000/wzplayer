@@ -429,7 +429,7 @@ void TCore::open(QString file, int seek, bool fast_open) {
 			qDebug("TCore::open:   checking if it contains a dvd");
 			if (Helper::directoryContainsDVD(file)) {
 				qDebug("TCore::open: * directory contains a dvd");
-				open(TDiscName::joinDVD(file, pref->use_dvdnav), fast_open);
+				open(TDiscName::joinDVD(file, pref->useDVDNAV()), fast_open);
 			} else {
 				qDebug("TCore::open: * directory doesn't contain a dvd");
 				qDebug("TCore::open:   opening nothing");

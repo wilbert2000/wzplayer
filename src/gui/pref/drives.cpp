@@ -190,10 +190,11 @@ void TDrives::createHelp() {
 	setWhatsThis(dvd_device_combo, tr("DVD device"),
 		tr("Choose your DVD device. It will be used to play DVDs."));
 
-	setWhatsThis(use_dvdnav_check, tr("Enable DVD menus"),
-		tr("If this option is checked, SMPlayer will play DVDs using "
-           "dvdnav. Requires a recent version of MPlayer compiled with dvdnav "
-		   "support."));
+	setWhatsThis(use_dvdnav_check, tr("Enable DVD menus (DVDNAV, MPlayer only)"),
+		tr("When checked, SMPlayer will play DVDs using DVDNAV enabling menus."
+		   " This option is MPlayer only."
+		   " Playback of DVDs with MPV is horribly broken, so if you have the choice"
+		   " use MPlayer for playing DVDs."));
 
 	setWhatsThis(bluray_device_combo, tr("Blu-ray device"),
 		tr("Choose your Blu-ray device. It will be used to play Blu-ray discs."));

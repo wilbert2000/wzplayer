@@ -1357,7 +1357,7 @@ void TBase::openDVD() {
 		configureDiscDevices();
 	} else {
 		if (playlist->maybeSave()) {
-			core->open(TDiscName::joinDVD(pref->dvd_device, pref->use_dvdnav));
+			core->open(TDiscName::joinDVD(pref->dvd_device, pref->useDVDNAV()));
 		}
 	}
 }
@@ -1381,7 +1381,7 @@ void TBase::openDVDFromFolder() {
 void TBase::openDVDFromFolder(const QString &directory) {
 
 	pref->last_dvd_directory = directory;
-	core->open(TDiscName::joinDVD(directory, pref->use_dvdnav));
+	core->open(TDiscName::joinDVD(directory, pref->useDVDNAV()));
 }
 
 /**

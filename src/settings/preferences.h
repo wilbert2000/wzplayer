@@ -206,6 +206,7 @@ public:
 	int vcd_initial_title;
 
 	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:
+	bool useDVDNAV() const { return isMPlayer() && use_dvdnav; }
 
 
 	// Performance tab
