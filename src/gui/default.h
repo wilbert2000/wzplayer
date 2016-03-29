@@ -45,10 +45,13 @@ protected:
 	virtual QString settingsGroupName() { return "default_gui"; }
 
 protected slots:
-	virtual void displayTime(QString text);
-	virtual void displayFrame(int frame);
-	virtual void displayABSection();
-	virtual void displayVideoInfo(int width, int height, double fps);
+	// Override
+	virtual void updateMediaInfo();
+
+	void displayTime(QString text);
+	void displayFrame(int frame);
+	void displayABSection();
+	void displayVideoInfo();
 
 protected:
 	QLabel* time_display;

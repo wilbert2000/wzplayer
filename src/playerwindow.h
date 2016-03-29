@@ -124,8 +124,6 @@ public slots:
 	void showLogo() { setLogoVisible(true); }
 	void hideLogo() { setLogoVisible(false); }
 
-	void pauseMessages();
-
 signals:
 	void leftClicked();
 	void doubleClicked();
@@ -140,8 +138,8 @@ signals:
 	void draggingChanged(bool);
 	void moveWindow(QPoint);
 
-	void showMessage(const QString& text, int duration, int osd_level);
 	void moveOSD(QPoint pos);
+	void videoOutChanged(const QSize& size);
 
 protected:
 	virtual void resizeEvent(QResizeEvent*);
@@ -150,9 +148,6 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent* e);
 	virtual void mouseDoubleClickEvent(QMouseEvent* e);
 	virtual void wheelEvent(QWheelEvent* e);
-
-protected slots:
-	void enableMessages();
 
 private:
 	TPlayerLayer* playerlayer;
@@ -176,8 +171,6 @@ private:
 	QPoint drag_pos;
 	bool dragging;
 	bool kill_fake_event;
-
-	bool enable_messages;
 
 	QLabel* logo;
 

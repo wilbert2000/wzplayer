@@ -245,10 +245,6 @@ void TBase::createPlayerWindow() {
 			 this, SLOT(xbutton2ClickFunction()));
 	connect(playerwindow, SIGNAL(moveWindow(QPoint)),
 			 this, SLOT(moveWindow(QPoint)));
-
-	// Pause messages before exiting fullscreen
-	connect(this, SIGNAL(aboutToExitFullscreenSignal()),
-			playerwindow, SLOT(pauseMessages()));
 }
 
 void TBase::createCore() {
@@ -305,8 +301,6 @@ void TBase::createCore() {
 			 playerwindow, SLOT(showLogo()));
 	connect(playerwindow, SIGNAL(moveOSD(const QPoint&)),
 			 core, SLOT(setOSDPos(const QPoint&)));
-	connect(playerwindow, SIGNAL(showMessage(const QString&, int, int)),
-			 core, SLOT(displayMessage(const QString&, int, int)));
 }
 
 void TBase::createPlaylist() {
@@ -1155,8 +1149,6 @@ void TBase::updateMediaInfo() {
 	QString title = core->mdat.displayName(pref->show_tag_in_window_title);
 	setWindowCaption(title + " - SMPlayer");
 	emit mediaFileTitleChanged(core->mdat.filename, title);
-
-	emit videoInfoChanged(core->mdat.video_width, core->mdat.video_height, core->mdat.video_fps);
 }
 
 void TBase::onNewMediaStartedPlaying() {
@@ -1662,8 +1654,6 @@ void TBase::aboutToExitFullscreen() {
 	//qDebug("Gui::TBase::aboutToExitFullscreen");
 
 	auto_hide_timer->stop();
-
-	emit aboutToExitFullscreenSignal();
 
 	// Save fullscreen state
 	fullscreen_menubar_visible = !menuBar()->isHidden();

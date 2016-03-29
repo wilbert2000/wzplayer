@@ -97,8 +97,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	, double_clicked(false)
 	, delay_left_click(true)
 	, dragging(false)
-	, kill_fake_event(false)
-	, enable_messages(false) {
+	, kill_fake_event(false) {
 
 	setMinimumSize(QSize(0, 0));
 	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
@@ -158,12 +157,6 @@ void TPlayerWindow::setResolution(int width, int height) {
 	video_width = width;
 	video_height = height;
 	last_video_size = QSize(width, height);
-
-	// Disable messages and post enable if video
-	enable_messages = false;
-	if (width > 0) {
-		pauseMessages();
-	}
 }
 
 void TPlayerWindow::set(double aspect,
@@ -281,9 +274,8 @@ void TPlayerWindow::updateVideoWindow() {
 	emit moveOSD(osd_pos);
 
 	// Update status with new size
-	if (enable_messages && video_size != last_video_size) {
-		emit showMessage(tr("Video size %1 x %2").arg(video_size.width()).arg(video_size.height()),
-						 2500, 1); // 2.5 sec, osd_level 1
+	if (video_size != last_video_size) {
+		emit videoOutChanged(video_size);
 		last_video_size = video_size;
 	}
 
@@ -473,17 +465,6 @@ void TPlayerWindow::wheelEvent(QWheelEvent* event) {
 	} else {
 		qDebug("TPlayerWindow::wheelEvent: horizontal event received, doing nothing");
 	}
-}
-
-void TPlayerWindow::enableMessages() {
-	enable_messages = true;
-}
-
-void TPlayerWindow::pauseMessages() {
-
-	// Disable messages and post enable
-	enable_messages = false;
-	QTimer::singleShot(500, this, SLOT(enableMessages()));
 }
 
 void TPlayerWindow::setZoom(double factor,

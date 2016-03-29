@@ -28,6 +28,7 @@
 #include "images.h"
 #include "core.h"
 #include "gui/action/action.h"
+#include "playerwindow.h"
 
 
 using namespace Settings;
@@ -117,18 +118,17 @@ void TDefault::createStatusBar() {
 	video_info_display->hide();
 
 	connect(this, SIGNAL(timeChanged(QString)),
-			 this, SLOT(displayTime(QString)));
+			this, SLOT(displayTime(QString)));
 	connect(this, SIGNAL(frameChanged(int)),
-			 this, SLOT(displayFrame(int)));
+			this, SLOT(displayFrame(int)));
 
 	connect(core, SIGNAL(ABMarkersChanged()),
-			 this, SLOT(displayABSection()));
+			this, SLOT(displayABSection()));
 	connect(core, SIGNAL(mediaLoaded()),
-			 this, SLOT(displayABSection()));
+			this, SLOT(displayABSection()));
 
-	connect(this, SIGNAL(videoInfoChanged(int,int,double)),
-			 this, SLOT(displayVideoInfo(int,int,double)));
-
+	connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
+			this, SLOT(displayVideoInfo()));
 }
 
 void TDefault::displayTime(QString text) {
@@ -158,13 +158,26 @@ void TDefault::displayABSection() {
 	ab_section_display->setVisible(!s.isEmpty());
 }
 
-void TDefault::displayVideoInfo(int width, int height, double fps) {
+void TDefault::displayVideoInfo() {
 
-	if ((width != 0) && (height != 0)) {
-		video_info_display->setText(tr("%1 x %2 %3 fps", "width + height + fps").arg(width).arg(height).arg(fps));
-	} else {
+	if (core->mdat.noVideo()) {
 		video_info_display->setText(" ");
+	} else {
+		video_info_display->setText(tr("%1 x %2", "video source width x height")
+			.arg(core->mdat.video_width).arg(core->mdat.video_height)
+			+ " " + QString::fromUtf8("\u279F") + " "
+			+ tr("%1 x %2 %3 fps", "video out width x height + fps")
+			.arg(playerwindow->videoLayer()->width())
+			.arg(playerwindow->videoLayer()->height())
+			.arg(core->mdat.video_fps));
 	}
+}
+
+void TDefault::updateMediaInfo() {
+	qDebug("Gui::TDefault::updateMediaInfo");
+
+	TBasePlus::updateMediaInfo();
+	displayVideoInfo();
 }
 
 void TDefault::saveConfig() {
