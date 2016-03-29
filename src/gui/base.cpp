@@ -1151,13 +1151,7 @@ void TBase::onNewMediaStartedPlaying() {
 	enterFullscreenOnPlay();
 
 	// Recents
-	QString filename = core->mdat.filename;
-	QString stream_title = core->mdat.stream_title;
-	if (!stream_title.isEmpty()) {
-		pref->history_recents.addItem(filename, stream_title);
-	} else {
-		pref->history_recents.addItem(filename);
-	}
+	pref->history_recents.addItem(core->mdat.filename, core->mdat.title);
 	openMenu->updateRecents();
 
 	checkPendingActionsToRun();

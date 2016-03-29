@@ -1020,21 +1020,21 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	if (rx_stream_title_and_url.indexIn(line) >= 0) {
 		QString s = rx_stream_title_and_url.cap(1);
 		QString url = rx_stream_title_and_url.cap(2);
-		qDebug("Proc::TMPlayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
-		qDebug("Proc::TMPlayerProcess::parseLine: stream_url: '%s'", url.toUtf8().data());
+		qDebug() << "Proc::TMPlayerProcess::parseLine: stream title:" << s;
+		qDebug() << "Proc::TMPlayerProcess::parseLine: stream_url:" << url;
 		md->detected_type = TMediaData::TYPE_STREAM;
-		md->stream_title = s;
+		md->title = s;
 		md->stream_url = url;
-		emit receivedStreamTitleAndUrl(s, url);
+		emit receivedStreamTitle();
 		return true;
 	}
 
 	if (rx_stream_title.indexIn(line) >= 0) {
 		QString s = rx_stream_title.cap(1);
-		qDebug("Proc::TMPlayerProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
+		qDebug() << "Proc::TMPlayerProcess::parseLine: stream title:" << s;
 		md->detected_type = TMediaData::TYPE_STREAM;
-		md->stream_title = s;
-		emit receivedStreamTitle(s);
+		md->title = s;
+		emit receivedStreamTitle();
 		return true;
 	}
 

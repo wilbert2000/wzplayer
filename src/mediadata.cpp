@@ -127,9 +127,6 @@ QString TMediaData::displayName(bool show_tag) const {
 		if (!title.isEmpty())
 			return displayNameAddTitleOrTrack(title);
 
-		if (!stream_title.isEmpty())
-			return stream_title;
-
 		if (detectedDisc()) {
 			bool ok;
 			TDiscData disc = TDiscName::split(filename, &ok);
@@ -258,8 +255,7 @@ void TMediaData::list() const {
 		i++;
 	}
 
-	qDebug("  stream_title: '%s'", stream_title.toUtf8().constData());
-	qDebug("  stream_url: '%s'", stream_title.toUtf8().constData());
+	qDebug("  stream_url: '%s'", stream_url.toUtf8().constData());
 
 	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
 	qDebug("  title_is_menu: %d", title_is_menu);

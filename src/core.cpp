@@ -111,11 +111,8 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedEndOfFile()),
 			this, SLOT(onReceivedEndOfFile()), Qt::QueuedConnection);
 
-	connect(proc, SIGNAL(receivedStreamTitle(const QString&)),
-			 this, SLOT(streamTitleChanged(const QString&)));
-
-	connect(proc, SIGNAL(receivedStreamTitleAndUrl(const QString&, const QString&)),
-			 this, SLOT(streamTitleAndUrlChanged(const QString&, const QString&)));
+	connect(proc, SIGNAL(receivedStreamTitle()),
+			this, SIGNAL(mediaInfoChanged()));
 
 	connect(proc, SIGNAL(receivedVideoTracks()),
 			this, SIGNAL(videoTracksChanged()));
@@ -3495,17 +3492,6 @@ void TCore::gotVideoOutResolution(int w, int h) {
 
 	// If resize is canceled adjust new video to old size
 	playerwindow->updateVideoWindow();
-}
-
-void TCore::streamTitleChanged(const QString& title) {
-	mdat.stream_title = title;
-	emit mediaInfoChanged();
-}
-
-void TCore::streamTitleAndUrlChanged(const QString& title, const QString& url) {
-	mdat.stream_title = title;
-	mdat.stream_url = url;
-	emit mediaInfoChanged();
 }
 
 bool TCore::setPreferredAudio() {

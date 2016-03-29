@@ -128,7 +128,6 @@ public:
 	MetaData meta_data;
 
 	// Streams
-	QString stream_title;
 	QString stream_url;
 
 	// DVD ID

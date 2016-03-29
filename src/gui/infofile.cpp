@@ -96,9 +96,11 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	// Clip info
 	QString c;
 
-	// Title MPV only
 	if (!md.title.isEmpty())
 		c += addItem(tr("Title"), md.title);
+
+	if (!md.stream_url.isEmpty())
+		c+= addItem(tr("Stream URL"), md.stream_url);
 
 	// Add meta data
 	QMapIterator<QString, QString> i(md.meta_data);
@@ -106,11 +108,6 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		i.next();
 		c += addItem(i.key(), i.value());
 	 }
-
-	if (!md.stream_title.isEmpty())
-		c+= addItem(tr("Stream title"), md.stream_title);
-	if (!md.stream_url.isEmpty())
-		c+= addItem(tr("Stream URL"), md.stream_url);
 
 	if (!c.isEmpty()) {
 		s += openPar(tr("Clip info"));

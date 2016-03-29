@@ -29,8 +29,7 @@ public:
 	TRecents();
 	virtual ~TRecents();
 
-	virtual void addItem(QString s);
-	virtual void addItem(QString s, QString title);
+	virtual void addItem(QString s, const QString& title);
 
 	virtual QString item(int n);
 	virtual QString title(int n);

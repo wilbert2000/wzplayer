@@ -151,8 +151,7 @@ signals:
 	void receivedScreenshot(const QString&);
 	void receivedUpdatingFontCache();
 
-	void receivedStreamTitle(const QString&);
-	void receivedStreamTitleAndUrl(const QString&, const QString&);
+	void receivedStreamTitle();
 
 	//! Emitted if one or more video track(s) added or changed
 	void receivedVideoTracks();

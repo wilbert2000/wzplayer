@@ -17,6 +17,8 @@
 */
 
 #include "settings/recents.h"
+#include <QDebug>
+
 
 namespace Settings {
 
@@ -34,8 +36,12 @@ void TRecents::setMaxItems(int n_items) {
 	}
 }
 
-void TRecents::addItem(QString s) {
-	qDebug("Settings::TRecents::addItem: '%s'", s.toUtf8().data());
+void TRecents::addItem(QString s, const QString& title) {
+	qDebug() << "Settings::TRecents::addItem:" << s << title;
+
+	if (!title.isEmpty()) {
+		s += "|title]=" + title;
+	}
 
 	int pos = indexOf(s);
 	if (pos >= 0)
@@ -44,12 +50,6 @@ void TRecents::addItem(QString s) {
 
 	if (count() > max_items)
 		removeLast();
-}
-
-void TRecents::addItem(QString s, QString title) {
-
-	s += "|title]=" + title;
-	addItem(s);
 }
 
 QString TRecents::item(int n) {

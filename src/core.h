@@ -408,9 +408,6 @@ protected slots:
 	void displayBuffering();
 	void displayBufferingEnded();
 
-	void streamTitleChanged(const QString&);
-	void streamTitleAndUrlChanged(const QString&, const QString&);
-
 	void onAudioTracksChanged();
 
 	void selectPreferredSubtitles();

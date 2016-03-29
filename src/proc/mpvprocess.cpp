@@ -662,9 +662,9 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	if (rx_stream_title.indexIn(line) > -1) {
 		QString s = rx_stream_title.cap(1);
-		qDebug("Proc::TMPVProcess::parseLine: stream_title: '%s'", s.toUtf8().data());
-		md->stream_title = s;
-		emit receivedStreamTitle(s);
+		qDebug() << "Proc::TMPVProcess::parseLine: title:" << s;
+		md->title = s;
+		emit receivedStreamTitle();
 		return true;
 	}
 
