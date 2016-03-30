@@ -119,10 +119,12 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& val
 		if (rx_track.indexIn(value) >= 0) {
 			return setVideoTrack(rx_track.cap(1).toInt());
 		}
-		if (value != "disabled") {
-			qWarning() << "Proc::TMPlayerProcess:parseVideoProperty: failed to parse video track ID"
-					   << value;
+		if (value == "disabled") {
+			qDebug("No video track selected");
+			return true;
 		}
+		qWarning() << "Proc::TMPlayerProcess:parseVideoProperty: failed to parse video track ID"
+				   << value;
 		return false;
 	}
 
@@ -150,10 +152,12 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name, const QString& val
 		if (rx_track.indexIn(value) >= 0) {
 			return setAudioTrack(rx_track.cap(1).toInt());
 		}
-		if (value != "disabled") {
-			qWarning() << "Proc::TMPlayerProcess:parseAudioProperty: failed to parse audio track ID"
-					   << value;
+		if (value == "disabled") {
+			qDebug("No audio track selected");
+			return true;
 		}
+		qWarning() << "Proc::TMPlayerProcess:parseAudioProperty: failed to parse audio track ID"
+				   << value;
 		return false;
 	}
 
