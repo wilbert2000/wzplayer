@@ -48,7 +48,7 @@ public:
 	};
 
 	TMediaData();
-	TMediaData(const QString& fname, Type sel_type, bool hwdec);
+	TMediaData(const TMediaData& md);
 	virtual ~TMediaData() {}
 
 	QString filename;
@@ -56,6 +56,8 @@ public:
 	Type selected_type;
 	// Detected type only set for disc types
 	Type detected_type;
+	// Parsed disc data
+	TDiscName disc;
 
 	// Start time reported by player
 	double start_sec;

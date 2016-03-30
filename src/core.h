@@ -28,7 +28,6 @@
 #include "settings/mediasettings.h"
 
 
-class TDiscData;
 class TMediaData;
 class TPlayerWindow;
 
@@ -60,6 +59,8 @@ public:
 	//! so it can be printed on debugging messages.
 	QString stateToString() const;
 
+	void openDisc(TDiscName disc, bool fast_open = false);
+
 	// Stop player if running and save MediaInfo
 	void close();
 
@@ -75,7 +76,7 @@ public:
 
 public slots:
 	//! Generic open, with autodetection of type
-	void open(QString file, int seek = -1, bool fast_open = true);
+	void open(QString file, int seek = -1);
 	void openStream(const QString& name);
 	void openTV(QString channel_id);
 
@@ -461,7 +462,6 @@ private:
 	bool isMPlayer() const;
 	bool isMPV() const;
 
-	void openDisc(TDiscData &disc, bool fast_open);
 	void openFile(const QString& filename, int seek = -1);
 
 	void playingNewMediaStarted();

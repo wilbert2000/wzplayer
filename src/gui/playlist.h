@@ -161,7 +161,6 @@ private:
 	Action::TAction* removeSelectedFromDiskAct;
 	Action::TAction* removeAllAct;
 
-
 	// Preferences
 	bool recursive_add_directory;
 	bool save_playlist_in_config;
@@ -181,13 +180,15 @@ private:
 	void addDirectory(const QString& dir);
 
 	void setCurrentItem(int current);
+	void updateCurrentItem();
 	void updateView();
 
 	int chooseRandomItem();
 	void clearPlayedTag();
-	void getMediaInfo();
+
 	void sort();
 	void swapItems(int item1, int item2);
+
 	bool deleteFileFromDisk(int i);
 
 	void loadM3u(const QString& file, bool clear = true, bool play = true);
@@ -222,7 +223,6 @@ private slots:
 	void sortBy(int section, bool allow_revert, bool revert, int count);
 
 	void onNewMediaStartedPlaying();
-	void onMediaLoaded();
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();
 	void resumePlay();

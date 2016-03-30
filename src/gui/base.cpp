@@ -1303,18 +1303,17 @@ void TBase::configureDiscDevices() {
 void TBase::openVCD() {
 	qDebug("Gui::TBase::openVCD");
 
-	if (pref->dvd_device.isEmpty() || pref->cdrom_device.isEmpty()) {
+	if (pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
-		core->open(TDiscName::join(TDiscName::VCD, pref->vcd_initial_title,
-								   pref->cdrom_device));
+		core->openDisc(TDiscName("vcd", pref->vcd_initial_title, pref->cdrom_device));
 	}
 }
 
 void TBase::openAudioCD() {
 	qDebug("Gui::TBase::openAudioCD");
 
-	if (pref->dvd_device.isEmpty() || pref->cdrom_device.isEmpty()) {
+	if (pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
 		core->open("cdda://");
@@ -1324,12 +1323,10 @@ void TBase::openAudioCD() {
 void TBase::openDVD() {
 	qDebug("Gui::TBase::openDVD");
 
-	if (pref->dvd_device.isEmpty() || pref->cdrom_device.isEmpty()) {
+	if (pref->dvd_device.isEmpty()) {
 		configureDiscDevices();
-	} else {
-		if (playlist->maybeSave()) {
-			core->open(TDiscName::joinDVD(pref->dvd_device, pref->useDVDNAV()));
-		}
+	} else if (playlist->maybeSave()) {
+		core->openDisc(TDiscName(pref->dvd_device, pref->useDVDNAV()));
 	}
 }
 
@@ -1339,7 +1336,6 @@ void TBase::openDVDFromFolder() {
 	if (playlist->maybeSave()) {
 		TInputDVDDirectory *d = new TInputDVDDirectory(this);
 		d->setFolder(pref->last_dvd_directory);
-
 		if (d->exec() == QDialog::Accepted) {
 			qDebug("Gui::TBase::openDVDFromFolder: accepted");
 			openDVDFromFolder(d->folder());
@@ -1352,32 +1348,16 @@ void TBase::openDVDFromFolder() {
 void TBase::openDVDFromFolder(const QString &directory) {
 
 	pref->last_dvd_directory = directory;
-	core->open(TDiscName::joinDVD(directory, pref->useDVDNAV()));
+	core->openDisc(TDiscName(directory, pref->useDVDNAV()));
 }
 
-/**
- * Minimal TBase abstraction for calling openBluRay. It's called from
- * OpenBluRayFromFolder()
- */
-void TBase::openBluRayFromFolder(QString directory) {
-
-	pref->last_dvd_directory = directory;
-	core->open(TDiscName::join(TDiscName::BLURAY, 0, directory));
-}
-
-/**
- * Attempts to open a bluray from pref->bluray_device. If not set, calls configureDiscDevices.
- * If successful, calls TCore::OpenBluRay(QString)
- */
 void TBase::openBluRay() {
 	qDebug("Gui::TBase::openBluRay");
 
-	if (pref->dvd_device.isEmpty()
-		|| pref->cdrom_device.isEmpty()
-		|| pref->bluray_device.isEmpty()) {
+	if (pref->bluray_device.isEmpty()) {
 		configureDiscDevices();
 	} else {
-		core->open(TDiscName::join(TDiscName::BLURAY, 0, pref->bluray_device));
+		core->openDisc(TDiscName("br", 0, pref->bluray_device));
 	}
 }
 
@@ -1388,7 +1368,8 @@ void TBase::openBluRayFromFolder() {
 		QString dir = QFileDialog::getExistingDirectory(this, tr("Select the Blu-ray folder"),
 			pref->last_dvd_directory, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 		if (!dir.isEmpty()) {
-			openBluRayFromFolder(dir);
+			pref->last_dvd_directory = dir;
+			core->openDisc(TDiscName("br", 0, dir));
 		}
 	}
 }

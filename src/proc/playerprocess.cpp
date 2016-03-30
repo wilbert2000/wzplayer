@@ -106,7 +106,7 @@ bool TPlayerProcess::startPlayer() {
 	prev_frame = -11111;
 
 	// Clear media data
-	*md = TMediaData(md->filename, md->selected_type, md->video_hwdec);
+	*md = TMediaData(*md);
 
 	// Start the player process
 	start();

@@ -21,47 +21,30 @@
 
 #include <QString>
 
-#define DISCNAME_TEST 0
-
-class TDiscData {
-
-public:
-
-	TDiscData() {
-		protocol = ""; 
-		device = ""; 
-		title = 0; 
-	};
-	TDiscData(const QString& protocol, int title, const QString& device) {
-		this->protocol = protocol; 
-		this->title = title; 
-		this->device = device; 
-	};
-	virtual ~TDiscData() {}
-
-	QString protocol;
-	QString device;
-	int title;
-};
 
 class TDiscName {
-
 public:
-	enum Disc { DVD = 1, DVDNAV = 2, VCD = 3, CDDA = 4, BLURAY = 5 };
+	enum TDisc { DVD = 1, DVDNAV = 2, VCD = 3, CDDA = 4, BLURAY = 5 };
 
-	static Disc protocolToDisc(QString protocol);
+	TDiscName();
+	TDiscName(const TDiscName& disc);
+	TDiscName(const QString& aprotocol, int atitle, const QString& adevice);
+	TDiscName(const QString& adevice, bool use_dvd_nav);
+	TDiscName(const QString& url);
+	virtual ~TDiscName();
 
-	static QString join(Disc type, int title, const QString& device);
-	static QString join(const TDiscData& d, bool add_zero_title = false);
-	static QString joinDVD(const QString& device, bool use_dvdnav);
-	static TDiscData split(const QString& disc_url, bool *ok = 0);
+	static TDisc protocolToTDisc(QString protocol);
 
-#if DISCNAME_TEST
-	static void test();
-#endif
+	QString toString(bool add_zero_title = false) const;
+	TDisc disc() const;
 
-protected:
-	static QString removeTrailingSlash(const QString& device);
+	QString protocol;
+	int title;
+	QString device;
+	bool valid;
+
+private:
+	void removeTrailingSlashFromDevice();
 };
 
-#endif
+#endif // DISCNAME_H

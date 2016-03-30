@@ -547,12 +547,11 @@ void TSMPlayer::onRequestRestart(bool reset_style) {
 		} else {
 			i = 0;
 		}
-		bool is_disc;
-		TDiscData disc = TDiscName::split(files_to_play[i], &is_disc);
-		if (is_disc) {
+		TDiscName disc(files_to_play[i]);
+		if (disc.valid) {
 			files_to_play.clear();
 			disc.title = 0;
-			files_to_play.append(TDiscName::join(disc));
+			files_to_play.append(disc.toString());
 			current_file = -1;
 		}
 	}

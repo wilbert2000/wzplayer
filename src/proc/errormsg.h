@@ -22,7 +22,8 @@ public:
 		ERR_HTTP_403,
 		ERR_HTTP_404,
 		ERR_NO_STREAM_FOUND,
-		ERR_LAST_ID = ERR_NO_STREAM_FOUND
+		ERR_TITLE_NOT_FOUND,
+		ERR_LAST_ID = ERR_TITLE_NOT_FOUND
 	};
 
 	static QString message(int id);

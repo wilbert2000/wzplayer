@@ -225,32 +225,35 @@ void TMPVProcess::requestChapterInfo() {
 
 void TMPVProcess::fixTitle() {
 
-	TDiscData disc = TDiscName::split(md->filename);
-	if (disc.title == 0) disc.title = 1;
+	// TODO: see if with the new VTS to title code this can be cleaned up
+	int title = md->disc.title;
+	if (title == 0)
+		title = 1;
 
 	// Accept the requested title as the selected title, if we did not receive
 	// a title not found. First and upmost this handles titles being reported
 	// as VTS by DVDNAV, but it also makes it possible to sequentially play all
 	// titles, needed because MPV does not support menus.
 	if (!received_title_not_found) {
-		if (disc.title == selected_title) {
-			qDebug("Proc::TMPVProcess::fixTitle: found requested title %d", disc.title);
+		if (title == selected_title) {
+			qDebug("Proc::TMPVProcess::fixTitle: found requested title %d", title);
 		} else {
 			qDebug("Proc::TMPVProcess::fixTitle: selecting title %d, player reports it is playing VTS %d",
-				   disc.title, selected_title);
+				   title, selected_title);
 		}
-		notifyTitleTrackChanged(disc.title);
+		notifyTitleTrackChanged(title);
 		return;
 	}
 
-	qWarning("Proc::TMPVProcess::fixTitle: requested title %d not found or really short", disc.title);
+	qWarning("Proc::TMPVProcess::fixTitle: requested title %d not found or really short",
+			 title);
 
 	// Let the playlist try the next title if a valid title was requested and
 	// there is more than 1 title.
-	if (disc.title <= md->titles.count() && md->titles.count() > 1) {
+	if (title <= md->titles.count() && md->titles.count() > 1) {
 		// Need to set the selected title, otherwise the playlist will select
 		// the second title instead of the title after this one.
-		notifyTitleTrackChanged(disc.title);
+		notifyTitleTrackChanged(title);
 		// Pass eof to trigger playNext() in playlist
 		received_end_of_file = true;
 		// Ask player to quit
@@ -259,7 +262,7 @@ void TMPVProcess::fixTitle() {
 	}
 
 	// Accept defeat
-	quit(1);
+	quit(TErrorMsg::ERR_TITLE_NOT_FOUND);
 }
 
 void TMPVProcess::checkTime(double sec) {
@@ -751,14 +754,13 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 	// Need to change no title to 0, otherwise fixTitle() won't work.
 	// CDs work as expected, don't know about bluray, but assuming it's the same.
 	QString url = media;
-	bool valid_disc;
-	TDiscData disc = TDiscName::split(media, &valid_disc);
-	if (valid_disc
+	TDiscName disc(media);
+	if (disc.valid
 		&& (disc.protocol == "dvd" || disc.protocol == "dvdnav"
 			|| disc.protocol == "br")) {
 		if (disc.title > 0)
 			disc.title--;
-		url = TDiscName::join(disc, true);
+		url = disc.toString(true);
 	}
 
 	if (is_playlist) {

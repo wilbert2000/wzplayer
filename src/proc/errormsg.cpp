@@ -25,7 +25,8 @@ QString TErrorMsg::message(int id) {
 		QT_TRANSLATE_NOOP(c, "No disc in device"),
 		QT_TRANSLATE_NOOP(c, "HTTP 403: the server refused access to the file"),
 		QT_TRANSLATE_NOOP(c, "HTTP 404: file not found on the server"),
-		QT_TRANSLATE_NOOP(c, "No stream found at the given URL")
+		QT_TRANSLATE_NOOP(c, "No stream found at the given URL"),
+		QT_TRANSLATE_NOOP(c, "Could not find the requested title")
 	};
 
 	if (id < ERR_FIRST_ID || id > ERR_LAST_ID) {

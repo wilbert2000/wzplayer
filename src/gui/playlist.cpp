@@ -97,8 +97,6 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 
 	connect(core, SIGNAL(newMediaStartedPlaying()),
 			this, SLOT(onNewMediaStartedPlaying()));
-	connect(core, SIGNAL(mediaLoaded()),
-			this, SLOT(onMediaLoaded()));
 	connect(core, SIGNAL(titleTrackChanged(int)),
 			this, SLOT(onTitleTrackChanged(int)));
 	connect(core, SIGNAL(mediaEOF()),
@@ -449,9 +447,8 @@ void TPlaylist::addFile(const QString &filename) {
 		pref->latest_dir = fi.absolutePath();
 	} else {
 		QString name;
-		bool ok;
-		TDiscData disc = TDiscName::split(filename, &ok);
-		if (ok) {
+		TDiscName disc(filename);
+		if (disc.valid) {
 			// See also TTitleData::getDisplayName() from titletracks.cpp
 			if (disc.protocol == "cdda" || disc.protocol == "vcd") {
 				name = tr("Track %1").arg(QString::number(disc.title));
@@ -779,26 +776,45 @@ void TPlaylist::onCellActivated(int row, int) {
 	playItem(row);
 }
 
+void TPlaylist::updateCurrentItem() {
+	qDebug() << "Gui::TPlaylist::updateCurrentItem:" << current_item;
+
+	if (current_item >= 0 && current_item < pl.count()) {
+		TPlaylistItem& item = pl[current_item];
+		item.setPlayed(true);
+		TMediaData* md = &core->mdat;
+		if (!md->disc.valid) {
+			if (!item.edited()) {
+				item.setName(md->displayName());
+			}
+			if (md->duration > 0) {
+				item.setDuration(md->duration);
+			}
+		}
+		updateView();
+	}
+}
+
 void TPlaylist::onNewMediaStartedPlaying() {
 
-	QString filename = core->mdat.filename;
+	TMediaData* md = &core->mdat;
+	QString filename = md->filename;
 	QString current_filename;
 	if (current_item >= 0 && current_item < pl.count()) {
-		current_filename = pl[current_item].filename();
+		current_filename = pl.at(current_item).filename();
 	}
+
 	if (filename == current_filename) {
 		qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is current item");
+		updateCurrentItem();
 		return;
 	}
 
-	Maps::TTitleTracks* titles = &core->mdat.titles;
-	bool is_disc;
-	TDiscData disc = TDiscName::split(filename, &is_disc);
-	if (is_disc && titles->count() == count()) {
-		bool cur_is_disc;
-		TDiscData cur_disc = TDiscName::split(current_filename, &cur_is_disc);
-		if (cur_is_disc && cur_disc.protocol == disc.protocol
-			&& cur_disc.device == disc.device) {
+	if (md->disc.valid && md->titles.count() == count()) {
+		TDiscName cur_disc(current_filename);
+		if (cur_disc.valid
+			&& cur_disc.protocol == md->disc.protocol
+			&& cur_disc.device == md->disc.device) {
 			qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is from current disc");
 			return;
 		}
@@ -807,17 +823,18 @@ void TPlaylist::onNewMediaStartedPlaying() {
 	// Create new playlist
 	clear();
 
-	if (is_disc) {
+	if (md->disc.valid) {
 		// Add disc titles
-		Maps::TTitleTracks::TMapIterator i = titles->getIterator();
+		TDiscName disc = md->disc;
+		Maps::TTitleTracks::TMapIterator i = md->titles.getIterator();
 		while (i.hasNext()) {
 			i.next();
 			Maps::TTitleData title = i.value();
 			disc.title = title.getID();
-			addItem(TDiscName::join(disc), title.getDisplayName(false),
+			addItem(disc.toString(), title.getDisplayName(false),
 					title.getDuration());
-			if (title.getID() == titles->getSelectedID()) {
-				setCurrentItem(title.getID() - titles->firstID());
+			if (title.getID() == md->titles.getSelectedID()) {
+				setCurrentItem(title.getID() - md->titles.firstID());
 			}
 		}
 	} else {
@@ -826,10 +843,11 @@ void TPlaylist::onNewMediaStartedPlaying() {
 		setCurrentItem(0);
 
 		// Add associated files to playlist
-		if (core->mdat.selected_type == TMediaData::TYPE_FILE) {
+		if (md->selected_type == TMediaData::TYPE_FILE) {
 			qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: searching for files to add to playlist for"
 					 << filename;
-			QStringList files_to_add = Helper::filesForPlaylist(filename, pref->media_to_add_to_playlist);
+			QStringList files_to_add = Helper::filesForPlaylist(
+				filename, pref->media_to_add_to_playlist);
 			if (files_to_add.isEmpty()) {
 				qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: none found");
 			} else {
@@ -844,37 +862,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
 	}
 	updateView();
 
-	qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: created new playlist with" << count()
-			 << "items for" << filename;
-}
-
-void TPlaylist::getMediaInfo() {
-	qDebug("Gui::TPlaylist::getMediaInfo");
-
-	QString filename = core->mdat.filename;
-	QString title = core->mdat.displayName();
-	double duration = core->mdat.duration;
-
-	for (int n = 0; n < pl.count(); n++) {
-		TPlaylistItem& item = pl[n];
-		if (item.filename() == filename) {
-			item.setPlayed(true);
-			if (!item.edited()) {
-				item.setName(title);
-			}
-			if (duration > 0) {
-				item.setDuration(duration);
-			}
-			// Playlist can contain double items, so continue
-		}
-	}
-
-	updateView();
-}
-
-void TPlaylist::onMediaLoaded() {
-	qDebug("Gui::TPlaylist::onMediaLoaded");
-	getMediaInfo();
+	qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: created new playlist with"
+			 << count() << "items for" << filename;
 }
 
 void TPlaylist::onMediaEOF() {
@@ -887,9 +876,9 @@ void TPlaylist::onTitleTrackChanged(int id) {
 
 	// Search for title on file name instead of using id as index,
 	// because user can change order of the playlist.
-	TDiscData disc = TDiscName::split(core->mdat.filename);
+	TDiscName disc = core->mdat.disc;
 	disc.title = id;
-	QString filename = TDiscName::join(disc);
+	QString filename = disc.toString();
 
 	for(int i = 0; i < pl.count(); i++) {
 		if (pl[i].filename() == filename) {

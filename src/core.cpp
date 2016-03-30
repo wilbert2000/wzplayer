@@ -335,25 +335,29 @@ void TCore::close() {
 	mdat = TMediaData();
 }
 
-void TCore::openDisc(TDiscData &disc, bool fast_open) {
+void TCore::openDisc(TDiscName disc, bool fast_open) {
+	qDebug() << "TCore::openDisc:" << disc.toString() << "fast open" << fast_open;
+
+	// TODO: check 0 is ok
+	emit showMessage(tr("Opening %1").arg(disc.toString()), 0);
 
 	// Change title if already playing
-	if (fast_open && _state != STATE_STOPPED && disc.title > 0
-		&& !mset.playing_single_track) {
-		bool current_url_valid;
-		TDiscData current_disc = TDiscName::split(mdat.filename, &current_url_valid);
-		if (current_url_valid && current_disc.device == disc.device) {
-			// If it fails, it will call again with fast_open set to false
-			qDebug("TCore::openDisc: trying changeTitle(%d)", disc.title);
-			changeTitle(disc.title);
-			return;
-		}
+	if (fast_open
+		&& !mset.playing_single_track
+		&& _state != STATE_STOPPED
+		&& disc.title > 0
+		&& mdat.disc.valid
+		&& mdat.disc.device == disc.device) {
+		// If changeTitle fails, it will call again with fast_open set to false
+		qDebug("TCore::openDisc: trying changeTitle(%d)", disc.title);
+		changeTitle(disc.title);
+		return;
 	}
 
 	// Finish current
 	close();
 
-	// Add device from prev if none specified
+	// Add device from pref if none specified
 	if (disc.device.isEmpty()) {
 		if (disc.protocol == "vcd" || disc.protocol == "cdda") {
 			disc.device = pref->cdrom_device;
@@ -364,26 +368,29 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 		}
 	}
 
-	// Test access
+	// Test access, correct missing /
 	if (!QFileInfo(disc.device).exists()) {
 		qWarning() << "TCore::openDisc: could not access" << disc.device;
-		// Forgot a "/"?
+		// Forgot a /?
 		if (QFileInfo("/" + disc.device).exists()) {
 			qWarning() << "TCore::openDisc: added missing /";
 			disc.device = "/" + disc.device;
 		} else {
-			emit showMessage(tr("File not found: %1").arg(disc.device), 0);
+			emit showMessage(tr("Device or file not found: %1").arg(disc.device), 0);
 			return;
 		}
 	}
 
-	// Set filename and selected type
-	mdat.filename = TDiscName::join(disc);
-	mdat.selected_type = (TMediaData::Type) TDiscName::protocolToDisc(disc.protocol);
+	// Set filename, selected type and disc
+	mdat.filename = disc.toString();
+	mdat.selected_type = (TMediaData::Type) disc.disc();
+	mdat.disc = disc;
 
 	// Clear settings
 	mset.reset();
-	if (disc.title > 0 && TMediaData::isCD(mdat.selected_type)) {
+
+	// Playing single CD track needs separate treatment...
+	if (mdat.disc.title > 0 && TMediaData::isCD(mdat.selected_type)) {
 		mset.playing_single_track = true;
 	}
 
@@ -392,21 +399,23 @@ void TCore::openDisc(TDiscData &disc, bool fast_open) {
 } // openDisc
 
 // Generic open, autodetect type
-void TCore::open(QString file, int seek, bool fast_open) {
+void TCore::open(QString file, int seek) {
 	qDebug() << "TCore::open:" << file;
 
 	if (file.startsWith("file:")) {
 		file = QUrl(file).toLocalFile();
 	}
-	emit showMessage(tr("Opening %1").arg(file), 0);
 
-	bool disc_url_valid;
-	TDiscData disc = TDiscName::split(file, &disc_url_valid);
-	if (disc_url_valid) {
-		qDebug() << "TCore::openDisc: * identified as" << disc.protocol;
-		openDisc(disc, fast_open);
+	TDiscName disc(file);
+	if (disc.valid) {
+		qDebug() << "TCore::open: * identified as" << disc.protocol;
+		openDisc(disc, true);
 		return;
 	}
+	// Forget a previous disc
+	mdat.disc.valid = false;
+
+	emit showMessage(tr("Opening %1").arg(file), 0);
 
 	QFileInfo fi(file);
 	if (fi.exists()) {
@@ -425,7 +434,8 @@ void TCore::open(QString file, int seek, bool fast_open) {
 			qDebug("TCore::open:   checking if it contains a dvd");
 			if (Helper::directoryContainsDVD(file)) {
 				qDebug("TCore::open: * directory contains a dvd");
-				open(TDiscName::joinDVD(file, pref->useDVDNAV()), fast_open);
+				disc = TDiscName(file, pref->useDVDNAV());
+				openDisc(disc);
 			} else {
 				qDebug("TCore::open: * directory doesn't contain a dvd");
 				qDebug("TCore::open:   opening nothing");
@@ -611,9 +621,8 @@ void TCore::restartPlay() {
 		title = mdat.titles.getSelectedID();
 		title_time = mset.current_sec - 10;
 		title_was_menu = mdat.title_is_menu;
-		TDiscData disc = TDiscName::split(mdat.filename);
-		disc.title = 0;
-		mdat.filename = TDiscName::join(disc);
+		mdat.disc.title = 0;
+		mdat.filename = mdat.disc.toString();
 		mdat.selected_type = TMediaData::TYPE_DVDNAV;
 		qDebug() << "TCore::restartPlay: restarting" << mdat.filename;
 	} else {
@@ -792,6 +801,10 @@ void TCore::playingRestarted() {
 void TCore::playingStarted() {
 	qDebug("TCore::playingStarted");
 
+	if (forced_titles.contains(mdat.filename)) {
+		mdat.title = forced_titles[mdat.filename];
+	}
+
 	setState(STATE_PLAYING);
 
 	if (restarting) {
@@ -799,10 +812,6 @@ void TCore::playingStarted() {
 	} else {
 		playingNewMediaStarted();
 	} 
-
-	if (forced_titles.contains(mdat.filename)) {
-		mdat.title = forced_titles[mdat.filename];
-	}
 
 	qDebug("TCore::playingStarted: emit mediaLoaded()");
 	emit mediaLoaded();
@@ -2922,7 +2931,7 @@ void TCore::changeTitleLeaveMenu() {
 }
 
 void TCore::changeTitle(int title) {
-	qDebug("TCore::changeTitle: title %d", title);
+	qDebug("TCore::changeTitle: %d", title);
 
 	if (proc->isRunning()) {
 		// Handle CDs with the chapter commands
@@ -2931,7 +2940,7 @@ void TCore::changeTitle(int title) {
 			return;
 		}
 		// Handle DVDNAV with title command
-		if (mdat.detected_type == TMediaData::TYPE_DVDNAV && cache_size == 0) {
+		if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 			if (mdat.title_is_menu && mdat.duration <= 0) {
 				// Changing title on a menu does not work :(
 				// Risc pressing menus you don't want to press, like settings...
@@ -2942,7 +2951,6 @@ void TCore::changeTitle(int title) {
 				title_to_select = title;
 				QTimer::singleShot(1000, this, SLOT(changeTitleLeaveMenu()));
 			} else {
-				qDebug("TCore::changeTitle: switching title through proc");
 				proc->setTitle(title);
 			}
 			return;
@@ -2950,9 +2958,8 @@ void TCore::changeTitle(int title) {
 	}
 
 	// Start/restart
-	TDiscData disc = TDiscName::split(mdat.filename);
-	disc.title = title;
-	openDisc(disc, false);
+	mdat.disc.title = title;
+	openDisc(mdat.disc, false);
 }
 
 void TCore::changeChapter(int id) {

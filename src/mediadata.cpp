@@ -28,10 +28,11 @@ TMediaData::TMediaData()
 	init();
 }
 
-TMediaData::TMediaData(const QString& fname, Type sel_type, bool hwdec)
-	: filename(fname)
-	, selected_type(sel_type)
-	, video_hwdec(hwdec) {
+TMediaData::TMediaData(const TMediaData& md)
+	: filename(md.filename)
+	, selected_type(md.selected_type)
+	, disc(md.disc)
+	, video_hwdec(md.video_hwdec) {
 	init();
 }
 
@@ -94,18 +95,15 @@ bool TMediaData::selectedDisc() const {
 
 QString TMediaData::displayNameAddTitleOrTrack(const QString& title) const {
 
-	if (detectedDisc()) {
-		bool ok;
-		TDiscData disc = TDiscName::split(filename, &ok);
-		if (ok && disc.title > 0) {
-			if (isCD(detected_type)) {
-				static const char* format = QT_TRANSLATE_NOOP("TMediaData", "%1 track %2");
-				return qApp->translate("TMediaData", format).arg(title, QString::number(disc.title));
-			}
-			static const char* format = QT_TRANSLATE_NOOP("TMediaData", "%1 title %2");
-			return qApp->translate("TMediaData", format).arg(title, QString::number(disc.title));
+	if (disc.valid && disc.title > 0) {
+		if (isCD(detected_type)) {
+			static const char* format = QT_TRANSLATE_NOOP("TMediaData", "%1 track %2");
+			return qApp->translate("TMediaData", format).arg(title).arg(QString::number(disc.title));
 		}
+		static const char* format = QT_TRANSLATE_NOOP("TMediaData", "%1 title %2");
+		return qApp->translate("TMediaData", format).arg(title).arg(QString::number(disc.title));
 	}
+
 	return title;
 }
 
@@ -127,16 +125,12 @@ QString TMediaData::displayName(bool show_tag) const {
 		if (!title.isEmpty())
 			return displayNameAddTitleOrTrack(title);
 
-		if (detectedDisc()) {
-			bool ok;
-			TDiscData disc = TDiscName::split(filename, &ok);
-			if (ok && disc.title > 0) {
-				// See also Gui::TPlaylist::addFile() and TTitleData::getDisplayName()
-				if (isCD(detected_type)) {
-					return qApp->translate("Gui::TPlaylist", "Track %1").arg(QString::number(disc.title));
-				}
-				return qApp->translate("Gui::TPlaylist", "Title %1").arg(QString::number(disc.title));
+		if (disc.valid && disc.title > 0) {
+			// See also Gui::TPlaylist::addFile() and TTitleData::getDisplayName()
+			if (isCD(detected_type)) {
+				return qApp->translate("Gui::TPlaylist", "Track %1").arg(QString::number(disc.title));
 			}
+			return qApp->translate("Gui::TPlaylist", "Title %1").arg(QString::number(disc.title));
 		}
 	}
 
