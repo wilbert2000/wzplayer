@@ -55,7 +55,7 @@ void TMediaData::init() {
 	video_out_width = 0;
 	video_out_height = 0;
 	video_bitrate = 0;
-	//video_hwdec = false;
+	// video_hwdec set by constructor
 
 	audio_bitrate = 0;
 	audio_rate = 0;
@@ -63,7 +63,6 @@ void TMediaData::init() {
 
 	angle = 0;
 	angles = 0;
-
 	title_is_menu = false;
 
 	initialized = false;
@@ -191,6 +190,7 @@ void TMediaData::list() const {
 	qDebug("  filename: '%s'", filename.toUtf8().data());
 	qDebug("  selected type: %s", typeToString(selected_type).toUtf8().data());
 	qDebug("  detected type: %s", typeToString(detected_type).toUtf8().data());
+	qDebug("  valid disc URL: %d", disc.valid);
 
 	qDebug("  start: %f", start_sec);
 	qDebug("  start sec set: %d", start_sec_set);
@@ -238,11 +238,9 @@ void TMediaData::list() const {
 	programs.list();
 #endif
 
-	qDebug("  Angle: %d/%d", angle, angles);
-
 	qDebug("  Title: '%s'", title.toUtf8().constData());
 	qDebug("  Meta data:");
-	MetaData::const_iterator i = meta_data.constBegin();
+	TMetaData::const_iterator i = meta_data.constBegin();
 	while (i != meta_data.constEnd()) {
 		qDebug() << i.key() << "=" << i.value();
 		i++;
@@ -251,6 +249,7 @@ void TMediaData::list() const {
 	qDebug("  stream_url: '%s'", stream_url.toUtf8().constData());
 
 	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
+	qDebug("  Angle: %d/%d", angle, angles);
 	qDebug("  title_is_menu: %d", title_is_menu);
 
 	qDebug("  initialized: %d", initialized);

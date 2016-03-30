@@ -56,7 +56,7 @@ public:
 	Type selected_type;
 	// Detected type only set for disc types
 	Type detected_type;
-	// Parsed disc data
+	// Parsed disc data set by TCore::openDisc()
 	TDiscName disc;
 
 	// Start time reported by player
@@ -84,7 +84,6 @@ public:
 	int video_out_width;
 	int video_out_height;
 
-	// Can be audio
 	bool noVideo() const {
 		return video_out_width <= 0 || video_out_height <= 0;
 	}
@@ -119,20 +118,20 @@ public:
 	Tracks programs;
 #endif
 
-	int angle;
-	int angles;
-
 	// Clip info
 	QString title;
 	// Meta data names and values
-	typedef QMap<QString, QString> MetaData;
-	MetaData meta_data;
+	typedef QMap<QString, QString> TMetaData;
+	TMetaData meta_data;
 
 	// Streams
 	QString stream_url;
 
 	// DVD ID
 	QString dvd_id;
+	// DVD angles
+	int angle;
+	int angles;
 	// DVDNAV
 	bool title_is_menu;
 
