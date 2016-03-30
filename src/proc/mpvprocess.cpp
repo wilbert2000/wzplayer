@@ -495,7 +495,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_audio_codec("^AUDIO_CODEC=\\s*(.*) \\[(.*)\\]");
 	static QRegExp rx_audio_property("^AUDIO_([A-Z]+)=\\s*(.*)");
 
-	static QRegExp rx_meta_data("^METADATA_([A-Z]+)=\\s*(.*)");
+	static QRegExp rx_meta_data("^METADATA_([a-z]+)=\\s*(.*)");
 
 	static QRegExp rx_chapter("^CHAPTER_(\\d+)=([0-9\\.-]+) '(.*)'");
 
@@ -732,13 +732,13 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 //		"INFO_TRACKS_COUNT=${=track-list/count}\n"
 
 		// TODO: check name, author, comment etc.
-		"METADATA_TITLE=${metadata/by-key/title:}\n"
-		"METADATA_ARTIST=${metadata/by-key/artist:}\n"
-		"METADATA_ALBUM=${metadata/by-key/album:}\n"
-		"METADATA_GENRE=${metadata/by-key/genre:}\n"
-		"METADATA_DATE=${metadata/by-key/date:}\n"
-		"METADATA_TRACK=${metadata/by-key/track:}\n"
-		"METADATA_COPYRIGHT=${metadata/by-key/copyright:}\n"
+		"METADATA_title=${metadata/by-key/title:}\n"
+		"METADATA_artist=${metadata/by-key/artist:}\n"
+		"METADATA_album=${metadata/by-key/album:}\n"
+		"METADATA_genre=${metadata/by-key/genre:}\n"
+		"METADATA_date=${metadata/by-key/date:}\n"
+		"METADATA_track=${metadata/by-key/track:}\n"
+		"METADATA_copyright=${metadata/by-key/copyright:}\n"
 
 		"INFO_MEDIA_TITLE=${=media-title:}\n"
 

@@ -116,11 +116,11 @@ QString TMediaData::displayName(bool show_tag) const {
 		if (!title.isEmpty())
 			return displayNameAddTitleOrTrack(title);
 
-		title = meta_data.value("TITLE");
+		title = meta_data.value("title");
 		if (!title.isEmpty())
 			return displayNameAddTitleOrTrack(title);
 
-		title = meta_data.value("NAME");
+		title = meta_data.value("name");
 		if (!title.isEmpty())
 			return displayNameAddTitleOrTrack(title);
 

@@ -181,18 +181,22 @@ QVariantMap MediaPlayer2Player::Metadata() const
 	else
 		metaData["xesam:url"] = md->filename;
 
-	if (md->meta_data.contains("ALBUM"))
-		metaData["xesam:album"] = md->meta_data["ALBUM"];
-	if (md->meta_data.contains("NAME"))
-		metaData["xesam:title"] = md->meta_data["NAME"];
+	if (md->meta_data.contains("album"))
+		metaData["xesam:album"] = md->meta_data["album"];
+	if (!md->title.isEmpty())
+		metaData["xesam:title"] = md->title;
+	else if (md->meta_data.contains("title"))
+		metaData["xesam:title"] = md->meta_data["title"];
+	else if (md->meta_data.contains("name"))
+		metaData["xesam:title"] = md->meta_data["name"];
 	else if (!md->filename.isEmpty()) {
 		QFileInfo fileInfo(md->filename);
 		metaData["xesam:title"] = fileInfo.fileName();
 	}
-	if (md->meta_data.contains("ARTIST"))
-		metaData["xesam:artist"] = md->meta_data["ARTIST"];
-	if (md->meta_data.contains("GENRE"))
-		metaData["xesam:genre"] = md->meta_data["GENRE"];
+	if (md->meta_data.contains("artist"))
+		metaData["xesam:artist"] = md->meta_data["artist"];
+	if (md->meta_data.contains("genre"))
+		metaData["xesam:genre"] = md->meta_data["genre"];
 
 	return metaData;
 }

@@ -510,10 +510,8 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	return false;
 }
 
-bool TPlayerProcess::parseMetaDataProperty(QString name, QString value, bool skip_empty) {
+bool TPlayerProcess::parseMetaDataProperty(const QString& name, QString value, bool skip_empty) {
 
-	// TODO: No longer uppercase name for searches
-	name = name.toUpper();
 	value = value.trimmed();
 
 	if (skip_empty && value.isEmpty()) {
