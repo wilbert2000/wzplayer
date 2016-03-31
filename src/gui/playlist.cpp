@@ -359,10 +359,10 @@ void TPlaylist::setCurrentItem(int current) {
 		&& current_item < listView->rowCount()) {
 		if (pl[current_item].played()) {
 			// Set ok icon
-			qDebug() << "Gui::TPlaylist::setCurrentItem: setting ok icon for" << current_item;
+			//qDebug() << "Gui::TPlaylist::setCurrentItem: setting ok icon for" << current_item;
 			listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
 		} else {
-			qDebug() << "Gui::TPlaylist::setCurrentItem: clearing icon for" << current_item;
+			//qDebug() << "Gui::TPlaylist::setCurrentItem: clearing icon for" << current_item;
 			listView->setIcon(current_item, COL_PLAY, QPixmap());
 		}
 	}
@@ -371,7 +371,7 @@ void TPlaylist::setCurrentItem(int current) {
 	current_item = current;
 
 	if (current_item >= 0 && current_item < listView->rowCount()) {
-		qDebug() << "Gui::TPlaylist::setCurrentItem: setting play icon for" << current_item;
+		//qDebug() << "Gui::TPlaylist::setCurrentItem: setting play icon for" << current_item;
 		listView->setIcon(current_item, COL_PLAY, Images::icon("play"));
 		listView->setCurrentCell(current_item, 0);
 	}
@@ -772,7 +772,7 @@ void TPlaylist::showContextMenu(const QPoint & pos) {
 }
 
 void TPlaylist::onCellActivated(int row, int) {
-	qDebug("Gui::TPlaylist::onCellActivated: row: %d", row);
+	//qDebug("Gui::TPlaylist::onCellActivated: row: %d", row);
 	playItem(row);
 }
 
