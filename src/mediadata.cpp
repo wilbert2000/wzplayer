@@ -191,6 +191,7 @@ void TMediaData::list() const {
 	qDebug("  selected type: %s", typeToString(selected_type).toUtf8().data());
 	qDebug("  detected type: %s", typeToString(detected_type).toUtf8().data());
 	qDebug("  valid disc URL: %d", disc.valid);
+	qDebug("  stream_url: '%s'", stream_url.toUtf8().constData());
 
 	qDebug("  start: %f", start_sec);
 	qDebug("  start sec set: %d", start_sec_set);
@@ -245,8 +246,6 @@ void TMediaData::list() const {
 		qDebug() << i.key() << "=" << i.value();
 		i++;
 	}
-
-	qDebug("  stream_url: '%s'", stream_url.toUtf8().constData());
 
 	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
 	qDebug("  Angle: %d/%d", angle, angles);

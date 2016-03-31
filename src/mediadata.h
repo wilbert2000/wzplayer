@@ -58,6 +58,8 @@ public:
 	Type detected_type;
 	// Parsed disc data set by TCore::openDisc()
 	TDiscName disc;
+	// Streams
+	QString stream_url;
 
 	// Start time reported by player
 	double start_sec;
@@ -123,9 +125,6 @@ public:
 	// Meta data names and values
 	typedef QMap<QString, QString> TMetaData;
 	TMetaData meta_data;
-
-	// Streams
-	QString stream_url;
 
 	// DVD ID
 	QString dvd_id;
