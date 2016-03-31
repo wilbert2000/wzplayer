@@ -772,13 +772,13 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// DVD/BLURAY chapters
 	static QRegExp rx_title_chapters("^CHAPTERS: (.*)");
 
-	// DVDNAV chapters for every title
-	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
+	// DVDNAV
+	static QRegExp rx_dvdread_vts_count("^libdvdread: Found (\\d+) VTS");
 	static QRegExp rx_dvdnav_switched_vts("^DVDNAV, switched to title: (\\d+)");
 	static QRegExp rx_dvdnav_new_title("^DVDNAV, NEW TITLE (\\d+)");
 	static QRegExp rx_dvdnav_title_is_menu("^DVDNAV_TITLE_IS_MENU");
 	static QRegExp rx_dvdnav_title_is_movie("^DVDNAV_TITLE_IS_MOVIE");
-	static QRegExp rx_dvdread_vts_count("^libdvdread: Found (\\d+) VTS");
+	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
 
 	// DVDNAV messages that kill the log
 	static QRegExp rx_dvdnav_kill_line(
