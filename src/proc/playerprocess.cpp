@@ -289,9 +289,7 @@ bool TPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp& 
 	if (duration > 0)
 		notifyDuration(duration);
 
-	// Notify time if not menu or animated menu
-	if (!md->title_is_menu || md->duration > 0)
-		notifyTime(time_sec, line);
+	notifyTime(time_sec, line);
 
 	// Parse the line just a litlle bit longer
 	return false;
