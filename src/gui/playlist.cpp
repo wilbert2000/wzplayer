@@ -969,6 +969,11 @@ void TPlaylist::copySelected() {
 		}
 	}
 
+	if (copied == 0 && current_item >= 0 && current_item < pl.count()) {
+		text = pl.at(current_item).filename() + "\n";
+		copied = 1;
+	}
+
 	if (copied > 0) {
 		if (copied == 1) {
 			// Remove trailing new line
