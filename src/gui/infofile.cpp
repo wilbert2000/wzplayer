@@ -89,20 +89,14 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		QString url = md.filename;
 		s += addItem(tr("URL"), url);
 	}
+	if (!md.stream_url.isEmpty())
+		s += addItem(tr("Stream URL"), md.stream_url);
 	s += addItem(tr("Length"), Helper::formatTime((int)md.duration));
 	s += addItem(tr("Demuxer"), md.demuxer + " - " + md.demuxer_description);
 	s += closePar();
 
-	// Clip info
+	// Meta data
 	QString c;
-
-	if (!md.title.isEmpty())
-		c += addItem(tr("Title"), md.title);
-
-	if (!md.stream_url.isEmpty())
-		c+= addItem(tr("Stream URL"), md.stream_url);
-
-	// Add meta data
 	QMapIterator<QString, QString> i(md.meta_data);
 	while (i.hasNext()) {
 		i.next();
@@ -110,7 +104,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	 }
 
 	if (!c.isEmpty()) {
-		s += openPar(tr("Clip info"));
+		s += openPar(tr("Meta data"));
 		s += c;
 		s += closePar();
 	}

@@ -207,7 +207,7 @@ protected:
 	virtual bool parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line);
 	virtual bool parseAudioProperty(const QString& name, const QString& value);
 	virtual bool parseVideoProperty(const QString& name, const QString& value);
-	virtual bool parseMetaDataProperty(const QString& name, QString value, bool skip_empty);
+	virtual bool parseMetaDataProperty(QString name, QString value);
 	virtual bool parseProperty(const QString& name, const QString& value);
 
 protected slots:

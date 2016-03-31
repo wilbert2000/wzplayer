@@ -510,15 +510,10 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	return false;
 }
 
-bool TPlayerProcess::parseMetaDataProperty(const QString& name, QString value, bool skip_empty) {
+bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
 
+	name = name.trimmed();
 	value = value.trimmed();
-
-	if (skip_empty && value.isEmpty()) {
-		qDebug("Proc::TPlayerProcess::parseMetaDataProperty: value empty");
-		return false;
-	}
-
 	md->meta_data[name] = value;
 	qDebug() << "Proc::TPlayerProcess::parseMetaDataProperty:" << name << "set to" << value;
 	return true;

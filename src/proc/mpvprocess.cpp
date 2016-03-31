@@ -210,6 +210,22 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 	return TPlayerProcess::parseProperty(name, value);
 }
 
+bool TMPVProcess::parseMetaDataList(QString list) {
+
+	// TODO: no idea how MPV escapes a ", so for now this will
+	// prob. break if the meta data contains a "
+	static QRegExp rx("\\{\"key\"\\:\"([^\"]*)\",\"value\"\\:\"([^\"]*)\"\\}");
+
+	while (rx.indexIn(list) >= 0) {
+		QString key = rx.cap(1);
+		QString value = rx.cap(2);
+		parseMetaDataProperty(key, value);
+		list = list.mid(22 + key.length() + value.length());
+	}
+
+	return true;
+}
+
 bool TMPVProcess::parseChapter(int id, double start, QString title) {
 
 	waiting_for_answers--;
@@ -495,7 +511,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_audio_codec("^AUDIO_CODEC=\\s*(.*) \\[(.*)\\]");
 	static QRegExp rx_audio_property("^AUDIO_([A-Z]+)=\\s*(.*)");
 
-	static QRegExp rx_meta_data("^METADATA_([a-z]+)=\\s*(.*)");
+	static QRegExp rx_meta_data("^METADATA_LIST=(.*)");
 
 	static QRegExp rx_chapter("^CHAPTER_(\\d+)=([0-9\\.-]+) '(.*)'");
 
@@ -646,9 +662,7 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// Meta data METADATA_name and value
 	if (rx_meta_data.indexIn(line) >= 0) {
-		return parseMetaDataProperty(rx_meta_data.cap(1),
-									 rx_meta_data.cap(2),
-									 true);
+		return parseMetaDataList(rx_meta_data.cap(1));
 	}
 
 	// Switch title
@@ -731,14 +745,7 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 		"INFO_ANGLE_EX=${angle}\n"
 //		"INFO_TRACKS_COUNT=${=track-list/count}\n"
 
-		// TODO: check name, author, comment etc.
-		"METADATA_title=${metadata/by-key/title:}\n"
-		"METADATA_artist=${metadata/by-key/artist:}\n"
-		"METADATA_album=${metadata/by-key/album:}\n"
-		"METADATA_genre=${metadata/by-key/genre:}\n"
-		"METADATA_date=${metadata/by-key/date:}\n"
-		"METADATA_track=${metadata/by-key/track:}\n"
-		"METADATA_copyright=${metadata/by-key/copyright:}\n"
+		"METADATA_LIST=${=metadata/list:}\n"
 
 		"INFO_MEDIA_TITLE=${=media-title:}\n"
 

@@ -340,7 +340,7 @@ bool TMPlayerProcess::parseClipInfoValue(int id, const QString& value) {
 
 	bool result;
 	if (id == clip_info_id) {
-		result = parseMetaDataProperty(clip_info_name, value, false);
+		result = parseMetaDataProperty(clip_info_name, value);
 	} else {
 		qWarning("TMPlayerProcess::parseClipInfoValue: unexpected value id %d", id);
 		result = false;
