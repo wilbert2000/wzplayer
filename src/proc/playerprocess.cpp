@@ -309,17 +309,10 @@ bool TPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
-	// Emitted on DVDNAV menus when image not mpeg2 compliant
-	// TODO: move to TMPlayerProcess?
-	static QRegExp rx_kill_line("Invalid horizontal or vertical size value");
-
+	// TODO: remove trim. Be carefull some regexp might depend on it...
 	// Trim line
 	line = line.trimmed();
 	if (line.isEmpty())
-		return true;
-
-	// Lines that kill the log
-	if (rx_kill_line.indexIn(line) >= 0)
 		return true;
 
 	// Output line to console++
@@ -458,6 +451,10 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 bool TPlayerProcess::parseAngle(const QString& value) {
 
 	static QRegExp rx_angles("(\\d+)/(\\d+)");
+
+	if (value.startsWith("$")) {
+		return false;
+	}
 	if (rx_angles.indexIn(value) >= 0) {
 		md->angle = rx_angles.cap(1).toInt();
 		md->angles = rx_angles.cap(2).toInt();

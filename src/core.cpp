@@ -3549,7 +3549,7 @@ void TCore::onSubtitlesChanged() {
 	if (isMPlayer()) {
 		// MPlayer selected sub will not yet be updated, que the subtitle selection
 		qDebug("TCore::onSubtitlesChanged: posting selectPreferredSubtitles()");
-		QTimer::singleShot(500, this, SLOT(selectPreferredSubtitles()));
+		QTimer::singleShot(1500, this, SLOT(selectPreferredSubtitles()));
 	} else {
 		selectPreferredSubtitles();
 	}

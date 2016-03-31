@@ -60,8 +60,6 @@ bool TMPlayerProcess::startPlayer() {
 	clearSubSources();
 	frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
 	clip_info_id = -1;
-	title_needs_update = false;
-	title_hint = -2;
 
 	return TPlayerProcess::startPlayer();
 }
@@ -120,7 +118,7 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& val
 			return setVideoTrack(rx_track.cap(1).toInt());
 		}
 		if (value == "disabled") {
-			qDebug("No video track selected");
+			qDebug("Proc::TMPlayerProcess:parseVideoProperty: no video track");
 			return true;
 		}
 		qWarning() << "Proc::TMPlayerProcess:parseVideoProperty: failed to parse video track ID"
@@ -153,11 +151,13 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name, const QString& val
 			return setAudioTrack(rx_track.cap(1).toInt());
 		}
 		if (value == "disabled") {
-			qDebug("No audio track selected");
+			qDebug("Proc::TMPlayerProcess:parseAudioProperty: no audio track");
 			return true;
 		}
-		qWarning() << "Proc::TMPlayerProcess:parseAudioProperty: failed to parse audio track ID"
-				   << value;
+		if (!value.startsWith("$")) {
+			qWarning() << "Proc::TMPlayerProcess:parseAudioProperty: failed to parse audio track ID"
+					   << value;
+		}
 		return false;
 	}
 
@@ -256,12 +256,7 @@ bool TMPlayerProcess::setAudioTrack(int id) {
 bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 
 	if (name == "LENGTH") {
-		double duration = value.toDouble();
-		if (title_needs_update) {
-			updateTitleFromDuration(duration);
-		} else {
-			notifyDuration(duration);
-		}
+		notifyDuration(value.toDouble());
 		return true;
 	}
 
@@ -350,120 +345,8 @@ bool TMPlayerProcess::parseClipInfoValue(int id, const QString& value) {
 	return result;
 }
 
-void TMPlayerProcess::clearStartTime() {
-	qDebug("Proc::TMPlayerProcess::clearStartTime");
-
-	// Reset start time. Assuming we get ID_START_TIME if title has one,
-	// though never seen it, except for the first title at startup.
-	md->start_sec = 0;
-	md->start_sec_set = false;
-}
-
-void TMPlayerProcess::dvdnavTitleChanged(int oldTitle) {
-	qDebug("Proc::TMPlayerProcess::dvdnavTitleChanged: title changed from %d to %d VTS %d",
-		   oldTitle, md->titles.getSelectedID(), md->titles.getSelectedVTS());
-
-	if (notified_player_is_running) {
-		emit receivedTitleTrackChanged(md->titles.getSelectedID());
-	}
-
-	Maps::TTitleData title = md->titles[md->titles.getSelectedID()];
-	notifyDuration(title.getDuration());
-
-	// Chapters
-	md->chapters = title.chapters;
-	if (notified_player_is_running) {
-		emit receivedChapters();
-	}
-
-	// Angles already handled by calling getSelectedAngle() in dvdnavGetTitle()
-}
-
-void TMPlayerProcess::updateTitleFromDuration(double duration) {
-
-	title_needs_update = false;
-	int old_title = md->titles.getSelectedID();
-	if (md->titles.setTitleFromDuration(duration, title_hint)) {
-		title_hint = -2;
-		dvdnavTitleChanged(old_title);
-	} else {
-		title_hint = -2;
-	}
-}
-
-bool TMPlayerProcess::failedToGetLength() {
-
-	if (md->title_is_menu) {
-		qDebug("Proc::TMPlayerProcess::failedToGetLength: this menu has no length");
-		if (title_needs_update) {
-			title_needs_update = false;
-			title_hint = -2;
-			// Set selected title if none selected (first time), else leave it as is.
-			if (md->titles.getSelectedID() < 0) {
-				md->titles.setSelectedID(1);
-				if (notified_player_is_running) {
-					emit receivedTitleTrackChanged(1);
-				}
-			}
-		}
-		notifyTime(0, "");
-		notifyDuration(0);
-		return true;
-	}
-
-	return false;
-}
-
-void TMPlayerProcess::dvdnavGetTitle() {
-
-	clearStartTime();
-
-	// Note writeToStdin("get_property switch_title") does not work
-
-	if (md->titles.count() == md->titles.getVTSCount()) {
-		// 1 title per VTS
-		int old_title = md->titles.getSelectedID();
-		md->titles.setSelectedID(md->titles.getSelectedVTS());
-		dvdnavTitleChanged(old_title);
-	} else {
-		// Use duration to map from vts to title
-		qDebug("Proc::TMPlayerProcess::dvdnavGetTitle: VTS %d title needs update by duration",
-			   md->titles.getSelectedVTS());
-		title_needs_update = true;
-		writeToStdin("get_property length");
-	}
-
-	// Update angles
-	if (notified_player_is_running) {
-		getSelectedAngle();
-	}
-}
-
-bool TMPlayerProcess::parseTitleIsMenu() {
-	qDebug("Proc::TMPlayerProcess::parseTitleIsMenu");
-
-	md->title_is_menu = true;
-	dvdnavGetTitle();
-
-	// Menus can have a length. If the menu has no length we get
-	// 'Failed to get value of property' and clear the duration.
-	if (!title_needs_update)
-		writeToStdin("get_property length");
-
-	return true;
-}
-
-bool TMPlayerProcess::parseTitleIsMovie() {
-	qDebug("Proc::TMPlayerProcess::parseTitleIsMovie");
-
-	md->title_is_menu = false;
-	dvdnavGetTitle();
-
-	return true;
-}
-
-bool TMPlayerProcess::vtsChanged(int vts) {
-	qDebug("Proc::TMPlayerProcess::vtsChanged: selecting VTS %d", vts);
+bool TMPlayerProcess::dvdnavVTSChanged(int vts) {
+	qDebug("Proc::TMPlayerProcess::dvdnavVTSChanged: selecting VTS %d", vts);
 
 	md->detected_type = TMediaData::TYPE_DVDNAV;
 	md->titles.setSelectedVTS(vts);
@@ -474,13 +357,12 @@ bool TMPlayerProcess::vtsChanged(int vts) {
 		// Videos don't get reannounced
 
 		// Audios
-		qDebug("Proc::TMPlayerProcess::vtsChanged: clearing audio tracks");
+		qDebug("Proc::TMPlayerProcess::dvdnavVTSChanged: clearing audio tracks");
 		md->audios = Maps::TTracks();
 		audio_tracks_changed = true;
 
 		// Subs
-		// Sometimes don't get reannounced. Not clearing can lead to ghost
-		// entries in the subtitle track menu, but better as missing entries.
+		// Don't need clear, though can get updated...
 		// clearSubSources();
 		// md->subs.clear();
 		// subtitles_changed = true;
@@ -489,6 +371,72 @@ bool TMPlayerProcess::vtsChanged(int vts) {
 	return true;
 }
 
+bool TMPlayerProcess::dvdnavTitleChanged(int title) {
+	qDebug("Proc::TMPlayerProcess::dvdnavTitleChanged: title changed from %d to %d",
+		   md->titles.getSelectedID(), title);
+
+	// Reset start time
+	md->start_sec = 0;
+	md->start_sec_set = false;
+	// Reset time
+	notifyTime(0, "");
+
+	if (title <= 0) {
+		title = -1;
+		md->titles.setSelectedID(-1);
+		md->duration = 0;
+		md->chapters = Maps::TChapters();
+	} else {
+		md->titles.setVTSTitle(title);
+		Maps::TTitleData title_data = md->titles[title];
+		md->duration = title_data.getDuration();
+		md->chapters = title_data.chapters;
+	}
+
+	qDebug("Proc::TMPlayerProcess::dvdnavTitleChanged: emit durationChanged(%f)",
+		   md->duration);
+	emit durationChanged(md->duration);
+
+	if (notified_player_is_running) {
+		getSelectedAngle();
+		emit receivedTitleTrackChanged(title);
+		emit receivedChapters();
+	}
+
+	return true;
+}
+
+bool TMPlayerProcess::dvdnavTitleIsMenu() {
+	qDebug("Proc::TMPlayerProcess::dvdnavTitleIsMenu");
+
+	md->title_is_menu = true;
+
+	if (notified_player_is_running) {
+		// One title can have multiple menus, so need to reset time/duration
+		notifyTime(0, "");
+		notifyDuration(0);
+		// Menus can have a length...
+		writeToStdin("get_property length");
+	}
+
+	return true;
+}
+
+bool TMPlayerProcess::dvdnavTitleIsMovie() {
+	qDebug("Proc::TMPlayerProcess::dvdnavTitleIsMovie");
+
+	md->title_is_menu = false;
+
+	if (notified_player_is_running) {
+		// The duration from the title TOC is not always reliable,
+		// so verify duration
+		writeToStdin("get_property length");
+	}
+
+	return true;
+}
+
+// Title changed for non DVDNAV disc
 bool TMPlayerProcess::titleChanged(TMediaData::Type type, int title) {
 	qDebug("Proc::TMPlayerProcess::titleChanged: title %d", title);
 
@@ -666,10 +614,6 @@ void TMPlayerProcess::convertTitlesToChapters() {
 		   md->chapters.count());
 }
 
-void TMPlayerProcess::checkTime(double sec) {
-	Q_UNUSED(sec)
-}
-
 int TMPlayerProcess::getFrame(double sec, const QString& line) {
 	Q_UNUSED(sec)
 
@@ -748,12 +692,7 @@ void TMPlayerProcess::playingStarted() {
 		check_duration_time_diff = 1;
 	}
 
-	if (!md->title_is_menu && md->duration == 0) {
-		// Use duration from selected title if duration 0
-		int title = md->titles.getSelectedID();
-		if (title >= 0)
-			notifyDuration(md->titles[title].getDuration());
-
+	if (md->duration == 0 && md->detected_type != TMediaData::TYPE_DVDNAV ) {
 		// See if the duration is known by now
 		writeToStdin("get_property length");
 	}
@@ -835,10 +774,19 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 	// DVDNAV chapters for every title
 	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
-	static QRegExp rx_dvdnav_switch_title("^DVDNAV, switched to title: (\\d+)");
+	static QRegExp rx_dvdnav_switched_vts("^DVDNAV, switched to title: (\\d+)");
+	static QRegExp rx_dvdnav_new_title("^DVDNAV, NEW TITLE (\\d+)");
 	static QRegExp rx_dvdnav_title_is_menu("^DVDNAV_TITLE_IS_MENU");
 	static QRegExp rx_dvdnav_title_is_movie("^DVDNAV_TITLE_IS_MOVIE");
-	static QRegExp rx_dvdread_vts_count("Found (\\d+) VTS", Qt::CaseInsensitive);
+	static QRegExp rx_dvdread_vts_count("^libdvdread: Found (\\d+) VTS");
+
+	// DVDNAV messages that kill the log
+	static QRegExp rx_dvdnav_kill_line(
+		/* scaling mouse move, because off -msglevel cplayer=6 */
+		"^(rescaled coordinates"
+		/* Emitted on DVDNAV menus when image not mpeg2 compliant */
+		"|\\[mpeg2video .*Invalid horizontal or vertical size value)"
+	);
 
 	// Clip info
 	static QRegExp rx_clip_info_name("^ID_CLIP_INFO_NAME(\\d+)=(.+)");
@@ -881,6 +829,10 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	if (rx_av.indexIn(line) >= 0) {
 		return parseStatusLine(rx_av.cap(1).toDouble(), 0, rx_av, line);
 	}
+
+	// DVDNAV messages that kill the log
+	if (rx_dvdnav_kill_line.indexIn(line) >= 0)
+		return true;
 
 	// First ask mom
 	if (TPlayerProcess::parseLine(line))
@@ -1001,17 +953,17 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		qWarning("Proc::TMPlayerProcess::parseLine: unexpected title %d", title);
 		return false;
 	}
-	if (rx_dvdnav_switch_title.indexIn(line) >= 0) {
-		return vtsChanged(rx_dvdnav_switch_title.cap(1).toInt());
+	if (rx_dvdnav_switched_vts.indexIn(line) >= 0) {
+		return dvdnavVTSChanged(rx_dvdnav_switched_vts.cap(1).toInt());
+	}
+	if (rx_dvdnav_new_title.indexIn(line) >= 0) {
+		return dvdnavTitleChanged(rx_dvdnav_new_title.cap(1).toInt());
 	}
 	if (rx_dvdnav_title_is_menu.indexIn(line) >= 0) {
-		return parseTitleIsMenu();
-	}
-	if (line == "Failed to get value of property 'length'.") {
-		return failedToGetLength();
+		return dvdnavTitleIsMenu();
 	}
 	if (rx_dvdnav_title_is_movie.indexIn(line) >= 0) {
-		return parseTitleIsMovie();
+		return dvdnavTitleIsMovie();
 	}
 	if (rx_dvdread_vts_count.indexIn(line) >= 0) {
 		int count = rx_dvdread_vts_count.cap(1).toInt();
@@ -1138,6 +1090,11 @@ void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
 
 void TMPlayerProcess::setFixedOptions() {
 	arg << "-noquiet" << "-slave" << "-identify";
+
+	// Need level 6 to catch DVDNAV, NEW TITLE
+	if (md->selected_type == TMediaData::TYPE_DVDNAV) {
+		arg << "-msglevel" << "cplayer=6";
+	}
 }
 
 void TMPlayerProcess::disableInput() {
@@ -1501,7 +1458,6 @@ void TMPlayerProcess::switchCapturing() {
 }
 
 void TMPlayerProcess::setTitle(int ID) {
-	title_hint = ID;
 	writeToStdin("switch_title " + QString::number(ID));
 }
 

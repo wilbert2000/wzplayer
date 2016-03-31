@@ -113,7 +113,6 @@ public:
 
 protected:
 	virtual int getFrame(double sec, const QString& line);
-	virtual void checkTime(double sec);
 
 	virtual void playingStarted();
 	virtual bool parseLine(QString& line);
@@ -145,13 +144,9 @@ private:
 	int clip_info_id;
 	QString clip_info_name;
 
-	bool title_needs_update;
-	int title_hint;
-
 	bool want_pause;
 	bool mute_option_set;
 
-	void clearStartTime();
 	void clearSubSources();
 	void getSelectedSubtitles();
 	void getSelectedTracks();
@@ -162,13 +157,10 @@ private:
 	bool setAudioTrack(int id);
 
 	bool titleChanged(TMediaData::Type type, int title);
-	void dvdnavTitleChanged(int old_title);
-	void dvdnavGetTitle();
-	void updateTitleFromDuration(double duration);
-	bool failedToGetLength();
-	bool parseTitleIsMenu();
-	bool parseTitleIsMovie();
-	bool vtsChanged(int vts);
+	bool dvdnavVTSChanged(int vts);
+	bool dvdnavTitleChanged(int title);
+	bool dvdnavTitleIsMenu();
+	bool dvdnavTitleIsMovie();
 
 	bool parseVO(const QString& driver, int w, int h);
 	bool parseSubID(const QString& type, int id);

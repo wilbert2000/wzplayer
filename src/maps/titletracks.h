@@ -73,7 +73,7 @@ public:
 	void setSelectedVTS(int vts) { selectedVTS = vts; }
 	int getVTSCount() const { return vtsCount; }
 	void setVTSCount(int count) { vtsCount = count; }
-	bool setTitleFromDuration(double duration, int titleHint);
+	void setVTSTitle(int title);
 
 	void list() const;
 
@@ -85,8 +85,6 @@ public:
 protected:
 	int selectedVTS;
 	int vtsCount;
-
-	void setVTSTitle(int title);
 };
 
 } // namespace Maps

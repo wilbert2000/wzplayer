@@ -874,6 +874,11 @@ void TPlaylist::onMediaEOF() {
 void TPlaylist::onTitleTrackChanged(int id) {
 	qDebug("Gui::TPlaylist::onTitleTrackChanged: %d", id);
 
+	if (id < 0) {
+		setCurrentItem(-1);
+		return;
+	}
+
 	// Search for title on file name instead of using id as index,
 	// because user can change order of the playlist.
 	TDiscName disc = core->mdat.disc;
