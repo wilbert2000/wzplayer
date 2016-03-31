@@ -241,7 +241,9 @@ void TMPVProcess::requestChapterInfo() {
 
 void TMPVProcess::fixTitle() {
 
-	// TODO: see if with the new VTS to title code this can be cleaned up
+	// Note: getting prop with writeToStdin("print_text XXX=${=disc-title:}");
+	// valid by now.
+
 	int title = md->disc.title;
 	if (title == 0)
 		title = 1;
@@ -251,23 +253,18 @@ void TMPVProcess::fixTitle() {
 	// as VTS by DVDNAV, but it also makes it possible to sequentially play all
 	// titles, needed because MPV does not support menus.
 	if (!received_title_not_found) {
-		if (title == selected_title) {
-			qDebug("Proc::TMPVProcess::fixTitle: found requested title %d", title);
-		} else {
-			qDebug("Proc::TMPVProcess::fixTitle: selecting title %d, player reports it is playing VTS %d",
+		qDebug("Proc::TMPVProcess::fixTitle: requested title %d, player reports it is playing VTS %d",
 				   title, selected_title);
-		}
 		notifyTitleTrackChanged(title);
 		return;
 	}
 
-	qWarning("Proc::TMPVProcess::fixTitle: requested title %d not found or really short",
-			 title);
+	qWarning("Proc::TMPVProcess::fixTitle: requested title %d not found", title);
 
 	// Let the playlist try the next title if a valid title was requested and
 	// there is more than 1 title.
 	if (title <= md->titles.count() && md->titles.count() > 1) {
-		// Need to set the selected title, otherwise the playlist will select
+		// Need to notify the requested title, otherwise the playlist will select
 		// the second title instead of the title after this one.
 		notifyTitleTrackChanged(title);
 		// Pass eof to trigger playNext() in playlist
@@ -355,14 +352,9 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 bool TMPVProcess::parseTitleNotFound(const QString &disc_type) {
 	Q_UNUSED(disc_type)
 
-	// qWarning("Proc::TMPVProcess::parseTitleNotFound: requested title not found");
-
 	// Requested title means the original title. The currently selected title
 	// seems still valid and is the last selected title during its search through
 	// the disc.
-
-	// Ask which one is selected. Seems to always deliver -1, probably mpv just doesn't know?
-	// writeToStdin("print_text \"[" + disc_type + "] switched to title: ${disc-title:-1}\"");
 
 	received_title_not_found = true;
 
@@ -537,6 +529,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_verbose("^\\[(statusline|term-msg|cplayer)\\] (.*)");
 
 
+	// Check to see if a DVD title needs to be terminated
 	if (quit_at_end_of_title && !quit_send
 		&& quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
 		qDebug("Proc::TMPVProcess::parseLine: %d ms elapsed, quitting title",
