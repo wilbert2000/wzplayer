@@ -418,6 +418,8 @@ void TMPlayerProcess::dvdnavGetTitle() {
 
 	clearStartTime();
 
+	// Note writeToStdin("get_property switch_title") does not work
+
 	if (md->titles.count() == md->titles.getVTSCount()) {
 		// 1 title per VTS
 		int old_title = md->titles.getSelectedID();
@@ -477,7 +479,8 @@ bool TMPlayerProcess::vtsChanged(int vts) {
 		audio_tracks_changed = true;
 
 		// Subs
-		// Sometimes don't get reannounced...
+		// Sometimes don't get reannounced. Not clearing can lead to ghost
+		// entries in the subtitle track menu, but better as missing entries.
 		// clearSubSources();
 		// md->subs.clear();
 		// subtitles_changed = true;
