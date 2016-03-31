@@ -52,7 +52,7 @@ protected slots:
 	virtual void closeWindow();
 	virtual void setWindowCaption(const QString& title);
 	virtual void resizeWindow(int w, int h);
-	virtual void updateMediaInfo();
+	virtual void onMediaInfoChanged();
 	// New
 	virtual void trayIconActivated(QSystemTrayIcon::ActivationReason);
 	virtual void toggleShowAll();

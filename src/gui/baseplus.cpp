@@ -282,10 +282,10 @@ void TBasePlus::resizeWindow(int w, int h) {
 	TBase::resizeWindow(w, h);
 }
 
-void TBasePlus::updateMediaInfo() {
-	qDebug("Gui::TBasePlus::updateMediaInfo");
+void TBasePlus::onMediaInfoChanged() {
+	qDebug("Gui::TBasePlus::onMediaInfoChanged");
 
-	TBase::updateMediaInfo();
+	TBase::onMediaInfoChanged();
 	tray->setToolTip(windowTitle());
 }
 

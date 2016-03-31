@@ -281,7 +281,7 @@ void TBase::createCore() {
 			this, SLOT(setActionsEnabled()));
 
 	connect(core, SIGNAL(mediaInfoChanged()),
-			this, SLOT(updateMediaInfo()));
+			this, SLOT(onMediaInfoChanged()));
 
 	connect(core, SIGNAL(mediaStopped()),
 			this, SLOT(exitFullscreenOnStop()));
@@ -991,7 +991,7 @@ void TBase::applyNewPreferences() {
 		panel->show();
 	}
 	// Show tags in window title
-	updateMediaInfo();
+	onMediaInfoChanged();
 	// Hide toolbars delay
 	auto_hide_timer->setInterval(pref->floating_hide_delay);
 	// Recents
@@ -1110,8 +1110,8 @@ void TBase::applyFileProperties() {
 	}
 }
 
-void TBase::updateMediaInfo() {
-	qDebug("Gui::TBase::updateMediaInfo");
+void TBase::onMediaInfoChanged() {
+	qDebug("Gui::TBase::onMediaInfoChanged");
 
 	if (file_properties_dialog && file_properties_dialog->isVisible()) {
 		setDataToFileProperties();

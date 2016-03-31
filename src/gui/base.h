@@ -199,7 +199,7 @@ protected slots:
 	virtual void gotCurrentTime(double);
 	virtual void gotDuration(double);
 	virtual void onNewMediaStartedPlaying();
-	virtual void updateMediaInfo();
+	virtual void onMediaInfoChanged();
 
 	virtual void updateVideoEqualizer();
 	virtual void updateAudioEqualizer();

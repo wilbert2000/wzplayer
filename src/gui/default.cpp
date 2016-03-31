@@ -173,10 +173,10 @@ void TDefault::displayVideoInfo() {
 	}
 }
 
-void TDefault::updateMediaInfo() {
-	qDebug("Gui::TDefault::updateMediaInfo");
+void TDefault::onMediaInfoChanged() {
+	qDebug("Gui::TDefault::onMediaInfoChanged");
 
-	TBasePlus::updateMediaInfo();
+	TBasePlus::onMediaInfoChanged();
 	displayVideoInfo();
 }
 

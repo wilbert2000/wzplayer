@@ -46,7 +46,7 @@ protected:
 
 protected slots:
 	// Override
-	virtual void updateMediaInfo();
+	virtual void onMediaInfoChanged();
 
 	void displayTime(QString text);
 	void displayFrame(int frame);
