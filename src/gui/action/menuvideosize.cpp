@@ -137,7 +137,7 @@ void TMenuVideoSize::enableActions(bool stopped, bool video, bool) {
 }
 
 void TMenuVideoSize::upd() {
-	qDebug("Gui::Action::TMenuVideoSize:upd: %f", pref->size_factor);
+	//qDebug("Gui::Action::TMenuVideoSize:upd: %f", pref->size_factor);
 
 	group->updateVideoSizeGroup();
 	doubleSizeAct->setEnabled(group->isEnabled());
