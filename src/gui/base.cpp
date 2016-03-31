@@ -1923,6 +1923,9 @@ void TBase::gotDuration(double duration) {
 void TBase::changeSize(double factor) {
 	qDebug("TBase::changeSize: %f", factor);
 
+	if (core->mdat.noVideo())
+		return;
+
 	pref->size_factor = factor;
 
 	if (pref->fullscreen) {

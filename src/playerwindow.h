@@ -111,10 +111,9 @@ public:
 
 	void updateVideoWindow();
 	void moveVideo(int dx, int dy);
-	void playingStopped(bool clear_background = true);
 
-public slots:
-	void aboutToStartPlaying();
+	void setFastWindow();
+	void restoreNormalWindow(bool clear_background = true);
 
 signals:
 	void leftClicked();
@@ -148,6 +147,7 @@ private:
 	int video_width;
 	int video_height;
 	QSize last_video_size;
+	bool fast_window;
 
 	double zoom_factor;
 	double zoom_factor_fullscreen;

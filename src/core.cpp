@@ -144,8 +144,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			this, SIGNAL(durationChanged(double)));
 
 	// TPlayerWindow
-	connect(this, SIGNAL(aboutToStartPlaying()),
-			playerwindow, SLOT(aboutToStartPlaying()));
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
 			this, SLOT(dvdnavUpdateMousePos(QPoint)));
 
@@ -182,7 +180,7 @@ void TCore::processError(QProcess::ProcessError error) {
 	qDebug("TCore::processError: %d", error);
 
 	// First restore normal window background
-	playerwindow->playingStopped();
+	playerwindow->restoreNormalWindow();
 
 	emit playerError(error);
 }
@@ -196,7 +194,7 @@ void TCore::processFinished(bool normal_exit) {
 		restarting = 0;
 
 	// Restore normal window background
-	playerwindow->playingStopped(restarting == 0);
+	playerwindow->restoreNormalWindow(restarting == 0);
 
 	if (restarting) {
 		qDebug("TCore::processFinished: restarting...");
@@ -1696,6 +1694,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	emit aboutToStartPlaying();
+	playerwindow->setFastWindow();
 
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	if (pref->use_proxy
@@ -3179,13 +3178,15 @@ void TCore::getPanFromPlayerWindow() {
 void TCore::changeZoom(double factor) {
 	qDebug("TCore::changeZoom: %f", factor);
 
-	// Kept between min and max by playerwindow->setZoom()
-	// Hence reread of factors
-	playerwindow->setZoom(factor);
-	getZoomFromPlayerWindow();
+	if (!mdat.noVideo()) {
+		// Kept between min and max by playerwindow->setZoom()
+		// Hence reread of factors
+		playerwindow->setZoom(factor);
+		getZoomFromPlayerWindow();
 
-	emit zoomChanged(playerwindow->zoom());
-	displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
+		emit zoomChanged(playerwindow->zoom());
+		displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
+	}
 }
 
 void TCore::resetZoomAndPan() {
@@ -3214,7 +3215,6 @@ void TCore::pan(int dx, int dy) {
 const int PAN_STEP = 8;
 
 void TCore::panLeft() {
-
 	pan(PAN_STEP, 0);
 }
 

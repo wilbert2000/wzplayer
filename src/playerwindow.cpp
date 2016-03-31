@@ -95,6 +95,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	: QWidget(parent)
 	, video_width(0)
 	, video_height(0)
+	, fast_window(false)
 	, zoom_factor(1.0)
 	, zoom_factor_fullscreen(1.0)
 	, aspect(0)
@@ -151,6 +152,9 @@ void TPlayerWindow::setResolution(int width, int height) {
 	video_width = width;
 	video_height = height;
 	last_video_size = QSize(width, height);
+
+	if (video_width == 0)
+		restoreNormalWindow(true);
 }
 
 void TPlayerWindow::set(double aspect,
@@ -510,12 +514,14 @@ void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWi
 
 void TPlayerWindow::moveVideo(QPoint delta) {
 
-	if (pref->fullscreen) {
-		pan_offset_fullscreen += delta;
-	} else {
-		pan_offset += delta;
+	if (video_width != 0) {
+		if (pref->fullscreen) {
+			pan_offset_fullscreen += delta;
+		} else {
+			pan_offset += delta;
+		}
+		updateVideoWindow();
 	}
-	updateVideoWindow();
 }
 
 void TPlayerWindow::moveVideo(int dx, int dy) {
@@ -539,8 +545,10 @@ void TPlayerWindow::setColorKey(QColor c) {
 	ColorUtils::setBackgroundColor(playerlayer, c);
 }
 
-void TPlayerWindow::aboutToStartPlaying() {
-	//qDebug("TPlayerWindow::aboutToStartPlaying");
+void TPlayerWindow::setFastWindow() {
+	//qDebug("TPlayerWindow::setFastWindow");
+
+	fast_window = true;
 	playerlayer->setFastBackground();
 
 #ifndef Q_OS_WIN
@@ -549,21 +557,25 @@ void TPlayerWindow::aboutToStartPlaying() {
 #endif
 }
 
-void TPlayerWindow::playingStopped(bool clear_background) {
-	qDebug("TPlayerWindow::playingStopped: clear_background %d", clear_background);
+void TPlayerWindow::restoreNormalWindow(bool clear_background) {
+	qDebug("TPlayerWindow::restoreNormalWindow: clear_background %d", clear_background);
 
-	playerlayer->restoreNormalBackground();
+	if (fast_window) {
+		fast_window = false;
+		playerlayer->restoreNormalBackground();
 
 #ifndef Q_OS_WIN
-	// Enable composition and double buffering on X11
-	setAttribute(Qt::WA_PaintOnScreen, false);
+		// Enable composition and double buffering on X11
+		setAttribute(Qt::WA_PaintOnScreen, false);
 #endif
 
-	// Clear background to prevent artifacts when things take a little while
-	if (clear_background)
-		repaint();
+		if (video_width != 0)
+			setResolution(0, 0);
 
-	setResolution(0, 0);
+		// Clear background to prevent artifacts when things take a little while
+		if (clear_background)
+			repaint();
+	}
 }
 
 #include "moc_playerwindow.cpp"
