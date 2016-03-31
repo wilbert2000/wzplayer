@@ -3304,12 +3304,10 @@ void TCore::autoZoomFor235() {
 const double ZOOM_STEP = 0.05;
 
 void TCore::incZoom() {
-	qDebug("TCore::incZoom");
 	changeZoom(playerwindow->zoom() + ZOOM_STEP);
 }
 
 void TCore::decZoom() {
-	qDebug("TCore::decZoom");
 	changeZoom(playerwindow->zoom() - ZOOM_STEP);
 }
 
