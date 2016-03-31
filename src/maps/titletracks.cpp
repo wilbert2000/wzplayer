@@ -115,8 +115,8 @@ bool TTitleTracks::setTitleFromDuration(double duration, int titleHint) {
 	}
 
 	if (foundTwice) {
-		qDebug("Maps::TTitleTracks::setTitleFromDuration: found duration %f multiple times, no title selected",
-			   duration);
+		qWarning("Maps::TTitleTracks::setTitleFromDuration: found duration %f multiple times, no title selected",
+				 duration);
 		return false;
 	}
 	if (foundTitle > 0) {
@@ -125,7 +125,7 @@ bool TTitleTracks::setTitleFromDuration(double duration, int titleHint) {
 		setVTSTitle(foundTitle);
 		return true;
 	}
-	qWarning("Maps::TTitleTracks::setTitleFromDuration: no title selected, duration %f not found",
+	qWarning("Maps::TTitleTracks::setTitleFromDuration: duration %f not found, no title selected.",
 			 duration);
 	return false;
 }
