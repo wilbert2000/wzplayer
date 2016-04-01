@@ -132,6 +132,9 @@ public:
 	QString screenshotDirectory() const { return screenshot_dir; }
 	virtual void setCaptureDirectory(const QString& dir);
 
+	// Save current state to restore it after a restart
+	virtual void save() = 0;
+
 // Signals
 signals:
 	void processExited(bool normal_exit);

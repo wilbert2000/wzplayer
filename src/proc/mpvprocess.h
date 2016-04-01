@@ -110,6 +110,8 @@ public:
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &);
 
+	virtual void save();
+
 protected:
 	virtual void playingStarted();
 	virtual int getFrame(double time_sec, const QString& line);

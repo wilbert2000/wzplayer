@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PROC_MPLAYERPROCESS_H_
-#define _PROC_MPLAYERPROCESS_H_
+#ifndef PROC_MPLAYERPROCESS_H
+#define PROC_MPLAYERPROCESS_H
 
 #include <QObject>
 #include <QString>
@@ -111,6 +111,8 @@ public:
 	void setChannelsFile(const QString&) {}
 	void setCaptureDirectory(const QString & dir);
 
+	virtual void save();
+
 protected:
 	virtual int getFrame(double sec, const QString& line);
 
@@ -147,6 +149,13 @@ private:
 	bool want_pause;
 	bool mute_option_set;
 
+	// Restore DVDNAV to pos before restart
+	bool restore_dvdnav;
+	int dvdnav_vts_to_restore;
+	int dvdnav_title_to_restore_vts;
+	int dvdnav_title_to_restore;
+	double dvdnav_time_to_restore;
+
 	void clearSubSources();
 	void getSelectedSubtitles();
 	void getSelectedTracks();
@@ -157,10 +166,12 @@ private:
 	bool setAudioTrack(int id);
 
 	bool titleChanged(TMediaData::Type type, int title);
+
 	bool dvdnavVTSChanged(int vts);
 	bool dvdnavTitleChanged(int title);
 	bool dvdnavTitleIsMenu();
-	bool dvdnavTitleIsMovie();
+	void dvdnavSave();
+	void dvdnavRestore();
 
 	bool parseVO(const QString& driver, int w, int h);
 	bool parseSubID(const QString& type, int id);
@@ -174,8 +185,11 @@ private:
 	bool parseAnswer(const QString& name, const QString& value);
 	bool parsePause();
 	void convertTitlesToChapters();
+
+private slots:
+	void dvdnavRestoreTime();
 };
 
 } // namesapce Proc
 
-#endif // _PROC_MPLAYERPROCESS_H_
+#endif // PROC_MPLAYERPROCESS_H

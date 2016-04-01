@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MAPS_TITLETRACKS_H_
-#define _MAPS_TITLETRACKS_H_
+#ifndef MAPS_TITLETRACKS_H
+#define MAPS_TITLETRACKS_H
 
 #include <QMap>
 #include "helper.h"
@@ -73,7 +73,8 @@ public:
 	void setSelectedVTS(int vts) { selectedVTS = vts; }
 	int getVTSCount() const { return vtsCount; }
 	void setVTSCount(int count) { vtsCount = count; }
-	void setVTSTitle(int title);
+	void setSelectedTitle(int title);
+	int findTitleForVTS(int vts);
 
 	void list() const;
 
@@ -89,4 +90,4 @@ protected:
 
 } // namespace Maps
 
-#endif // _MAPS_TITLETRACKS_H_
+#endif // MAPS_TITLETRACKS_H

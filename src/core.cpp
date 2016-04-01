@@ -64,10 +64,8 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	  playerwindow(mpw),
 	  _state(STATE_STOPPED),
 	  restarting(0),
-	  title(-1),
-	  block_dvd_nav(false),
-	  pos_max(1000)
-{
+	  pos_max(1000) {
+
 	qRegisterMetaType<TCoreState>("TCoreState");
 
 	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
@@ -614,18 +612,8 @@ void TCore::openFile(const QString& filename, int seek) {
 
 void TCore::restartPlay() {
 
-	// For DVDNAV remember the current title, pos and menu.
-	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
-		title = mdat.titles.getSelectedID();
-		title_time = mset.current_sec - 10;
-		title_was_menu = mdat.title_is_menu;
-		mdat.disc.title = 0;
-		mdat.filename = mdat.disc.toString();
-		mdat.selected_type = TMediaData::TYPE_DVDNAV;
-		qDebug() << "TCore::restartPlay: restarting" << mdat.filename;
-	} else {
-		title = -1;
-	}
+	// Save state proc, currently only used by TMPlayerProcess for DVDNAV
+	proc->save();
 
 	if (proc->isRunning()) {
 		restarting = 1;
@@ -694,76 +682,6 @@ void TCore::initPlaying(int seek) {
 	startPlayer(mdat.filename, start_sec);
 }
 
-void TCore::dvdnavSeek() {
-
-	if (mdat.duration > 0) {
-		qDebug("TCore::dvdnavSeek: going back to %f", title_time);
-		proc->seek(title_time, 2, true, false);
-	} else {
-		qDebug("TCore::dvdnavSeek: title duration is 0, skipping seek");
-	}
-	block_dvd_nav = false;
-}
-
-void TCore::dvdnavRestoreTitle() {
-
-	// Restore title, time and menu
-	// TODO: remove, too dangerous
-
-	int selected_title = mdat.titles.getSelectedID();
-	if (title_to_select == selected_title) {
-		if (title_was_menu) {
-			if (!mdat.title_is_menu) {
-				qDebug("TCore::dvdnavRestoreTitle: going back to menu");
-				dvdnavMenu();
-			}
-			qDebug("TCore::dvdnavRestoreTitle: done, selected menu of title %d", title_to_select);
-			block_dvd_nav = false;
-			return;
-		}
-	}
-
-	if (mdat.title_is_menu && mdat.duration <= 0) {
-		// Changing title or seeking on a menu does not work :(
-		// Risc pressing menu you don't want to press, like settings...
-		if (menus_selected >= 2) {
-			qDebug("TCore::dvdnavRestoreTitle: failed to leave menu, giving up");
-			block_dvd_nav = false;
-			return;
-		}
-		menus_selected++;
-		qDebug("TCore::dvdnavRestoreTitle: current title %d is menu, sending select",
-			   selected_title);
-		dvdnavSelect();
-		QTimer::singleShot(500, this, SLOT(dvdnavRestoreTitle()));
-		return;
-	}
-
-	if (title_to_select == selected_title) {
-		if (title_time > 0) {
-			qDebug("TCore::dvdnavRestoreTitle: going back to %f", title_time);
-			proc->seek(title_time, 2, true, false);
-		}
-		block_dvd_nav = false;
-		return;
-	}
-
-	qDebug("TCore::dvdnavRestoreTitle: current title is %d, sending setTitle(%d)",
-		   selected_title, title_to_select);
-	proc->setTitle(title_to_select);
-
-	if (title_was_menu) {
-		qDebug("TCore::dvdnavRestoreTitle: posting dvdnavMenu");
-		QTimer::singleShot(500, this, SLOT(dvdnavMenu()));
-	} else if (title_time > 0) {
-		qDebug("TCore::dvdnavRestoreTitle: posting seek");
-		QTimer::singleShot(1000, this, SLOT(dvdnavSeek()));
-		return;
-	}
-
-	block_dvd_nav = false;
-}
-
 void TCore::playingNewMediaStarted() {
 	qDebug("TCore::playingNewMediaStarted");
 
@@ -778,23 +696,6 @@ void TCore::playingNewMediaStarted() {
 	emit newMediaStartedPlaying();
 }
 
-void TCore::playingRestarted() {
-	qDebug("TCore::playingRestarted");
-
-	restarting = 0;
-
-	// For DVDNAV go back to where we were.
-	// Need timer to give DVDNAV time to update its current state.
-	if (title >= 0) {
-		title_to_select = title;
-		title = -1;
-		menus_selected = 0;
-		block_dvd_nav = true;
-		qDebug("TCore::playingStarted: posting dvdnavRestoreTitle()");
-		QTimer::singleShot(1000, this, SLOT(dvdnavRestoreTitle()));
-	}
-}
-
 // Slot called when signal playerFullyLoaded arrives.
 void TCore::playingStarted() {
 	qDebug("TCore::playingStarted");
@@ -806,7 +707,7 @@ void TCore::playingStarted() {
 	setState(STATE_PLAYING);
 
 	if (restarting) {
-		playingRestarted();
+		restarting = 0;
 	} else {
 		playingNewMediaStarted();
 	} 
@@ -2908,27 +2809,6 @@ void TCore::changeSecondarySubtitle(int idx) {
 	emit secondarySubtitleTrackChanged(mset.current_secondary_sub_idx);
 }
 
-void TCore::changeTitleLeaveMenu() {
-
-	if (mdat.title_is_menu) {
-		if (menus_selected >= 2) {
-			qDebug("TCore::changeTitleLeaveMenu: failed to leave menu, giving up");
-			block_dvd_nav = false;
-			return;
-		}
-		qDebug("TCore::changeTitleLeaveMenu: still on menu, sending select");
-		dvdnavSelect();
-		menus_selected++;
-		QTimer::singleShot(500, this, SLOT(changeTitleLeaveMenu()));
-		return;
-	}
-
-	qDebug("TCore::changeTitleLeaveMenu: left menu, setting title");
-
-	proc->setTitle(title_to_select);
-	block_dvd_nav = false;
-}
-
 void TCore::changeTitle(int title) {
 	qDebug("TCore::changeTitle: %d", title);
 
@@ -2940,18 +2820,7 @@ void TCore::changeTitle(int title) {
 		}
 		// Handle DVDNAV with title command
 		if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
-			if (mdat.title_is_menu && mdat.duration <= 0) {
-				// Changing title on a menu does not work :(
-				// Risc pressing menus you don't want to press, like settings...
-				qDebug("TCore::changeTitle: trying to leave menu");
-				dvdnavSelect();
-				block_dvd_nav = true;
-				menus_selected = 1;
-				title_to_select = title;
-				QTimer::singleShot(1000, this, SLOT(changeTitleLeaveMenu()));
-			} else {
-				proc->setTitle(title);
-			}
+			proc->setTitle(title);
 			return;
 		}
 	}
@@ -3355,39 +3224,45 @@ void TCore::changeClosedCaptionChannel(int c) {
 // dvdnav buttons
 void TCore::dvdnavUp() {
 	qDebug("TCore::dvdnavUp");
-	proc->discButtonPressed("up");
+	if (proc->isFullyStarted())
+		proc->discButtonPressed("up");
 }
 
 void TCore::dvdnavDown() {
 	qDebug("TCore::dvdnavDown");
-	proc->discButtonPressed("down");
+	if (proc->isFullyStarted())
+		proc->discButtonPressed("down");
 }
 
 void TCore::dvdnavLeft() {
 	qDebug("TCore::dvdnavLeft");
-	proc->discButtonPressed("left");
+	if (proc->isFullyStarted())
+		proc->discButtonPressed("left");
 }
 
 void TCore::dvdnavRight() {
 	qDebug("TCore::dvdnavRight");
-	proc->discButtonPressed("right");
+	if (proc->isFullyStarted())
+		proc->discButtonPressed("right");
 }
 
 void TCore::dvdnavMenu() {
 	qDebug("TCore::dvdnavMenu");
-	proc->discButtonPressed("menu");
+	if (proc->isFullyStarted())
+		proc->discButtonPressed("menu");
 }
 
 void TCore::dvdnavPrev() {
 	qDebug("TCore::dvdnavPrev");
-	proc->discButtonPressed("prev");
+	if (proc->isFullyStarted())
+		proc->discButtonPressed("prev");
 }
 
 // Slot called by action dvdnav_select
 void TCore::dvdnavSelect() {
 	qDebug("TCore::dvdnavSelect");
 
-	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
+	if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		if (_state == STATE_PAUSED) {
 			play();
 		}
@@ -3401,7 +3276,7 @@ void TCore::dvdnavSelect() {
 void TCore::dvdnavMouse() {
 	qDebug("TCore::dvdnavMouse");
 
-	if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
+	if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		if (_state == STATE_PAUSED) {
 			play();
 		}
@@ -3418,9 +3293,9 @@ void TCore::dvdnavMouse() {
 // Slot called by playerwindow to pass mouse move local to video
 void TCore::dvdnavUpdateMousePos(QPoint pos) {
 
-	if (mdat.detected_type == TMediaData::TYPE_DVDNAV && !block_dvd_nav) {
+	if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		// MPlayer won't act if paused. Play if menu not animated.
-		if (_state == STATE_PAUSED && mdat.title_is_menu && mdat.duration == 0) {
+		if (_state == STATE_PAUSED && mdat.duration == 0) {
 			play();
 		}
 		if (_state == STATE_PLAYING) {

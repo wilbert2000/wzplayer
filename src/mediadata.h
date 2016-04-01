@@ -131,8 +131,6 @@ public:
 	// DVD angles
 	int angle;
 	int angles;
-	// DVDNAV
-	bool title_is_menu;
 
 	bool initialized;
 

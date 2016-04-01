@@ -361,6 +361,8 @@ bool TMPVProcess::parseTitleNotFound(const QString &disc_type) {
 	return true;
 }
 
+void TMPVProcess::save() {
+}
 
 int TMPVProcess::getFrame(double time_sec, const QString& line) {
 	Q_UNUSED(line)

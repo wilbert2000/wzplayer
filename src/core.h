@@ -416,9 +416,6 @@ protected slots:
 	void onSubtitleChanged();
 
 	void dvdnavUpdateMousePos(QPoint);
-	void dvdnavSeek();
-	void dvdnavRestoreTitle();
-	void changeTitleLeaveMenu();
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef DISABLE_SCREENSAVER
@@ -441,13 +438,6 @@ private:
 	TCoreState _state;
 
 	int restarting;
-	// Get DVDNAV to restart
-	int title;
-	int title_to_select;
-	double title_time;
-	bool title_was_menu;
-	bool block_dvd_nav;
-	int menus_selected;
 
 	QTime time;
 
@@ -465,7 +455,6 @@ private:
 	void openFile(const QString& filename, int seek = -1);
 
 	void playingNewMediaStarted();
-	void playingRestarted();
 
 	bool haveVideoFilters() const;
 	void changeVF(const QString& filter, bool enable, const QVariant& option);

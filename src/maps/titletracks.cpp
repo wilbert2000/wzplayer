@@ -76,9 +76,28 @@ void TTitleTracks::addTrack(int ID, const QString &name, double duration) {
 	(*this)[ID].setTrack(ID, name, duration);
 }
 
-void TTitleTracks::setVTSTitle(int title) {
+void TTitleTracks::setSelectedTitle(int title) {
 	(*this)[title].setVTS(selectedVTS);
 	selectedID = title;
+}
+
+int TTitleTracks::findTitleForVTS(int vts) {
+
+	// Look for a title marked with the requested VTS
+	TTitleTrackIterator i(*this);
+	while (i.hasNext()) {
+		i.next();
+		if (i.value().getVTS() == vts) {
+			return i.key();
+		}
+	}
+
+	// Assume there are no empty track sets...
+	if (vtsCount == count()) {
+		return vts;
+	}
+
+	return -1;
 }
 
 void TTitleTracks::list() const {

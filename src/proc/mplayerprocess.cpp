@@ -23,6 +23,7 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QApplication>
+#include <QTimer>
 
 #include "config.h"
 #include "proc/errormsg.h"
@@ -38,9 +39,10 @@ namespace Proc {
 const double FRAME_BACKSTEP_TIME = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
-TMPlayerProcess::TMPlayerProcess(QObject* parent, TMediaData* mdata)
-	: TPlayerProcess(parent, mdata)
-	, mute_option_set(false) {
+TMPlayerProcess::TMPlayerProcess(QObject* parent, TMediaData* mdata) :
+	TPlayerProcess(parent, mdata),
+	mute_option_set(false),
+	restore_dvdnav(false) {
 }
 
 TMPlayerProcess::~TMPlayerProcess() {
@@ -375,22 +377,28 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
 	qDebug("Proc::TMPlayerProcess::dvdnavTitleChanged: title changed from %d to %d",
 		   md->titles.getSelectedID(), title);
 
-	// Reset start time
+	// Reset start time and time
 	md->start_sec = 0;
 	md->start_sec_set = false;
-	// Reset time
 	notifyTime(0, "");
 
 	if (title <= 0) {
+		// Menu: clear selected title, duration and chapters
 		title = -1;
-		md->titles.setSelectedID(-1);
+		md->titles.setSelectedID(title);
 		md->duration = 0;
 		md->chapters = Maps::TChapters();
 	} else {
-		md->titles.setVTSTitle(title);
-		Maps::TTitleData title_data = md->titles[title];
+		// Title: select it and mark it with the current VTS
+		md->titles.setSelectedTitle(title);
+		// Get duration and chapters
+		const Maps::TTitleData title_data = md->titles[title];
 		md->duration = title_data.getDuration();
 		md->chapters = title_data.chapters;
+
+		// The duration from the title TOC is not always reliable,
+		// so verify duration
+		writeToStdin("get_property length");
 	}
 
 	qDebug("Proc::TMPlayerProcess::dvdnavTitleChanged: emit durationChanged(%f)",
@@ -409,10 +417,7 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
 bool TMPlayerProcess::dvdnavTitleIsMenu() {
 	qDebug("Proc::TMPlayerProcess::dvdnavTitleIsMenu");
 
-	md->title_is_menu = true;
-
 	if (notified_player_is_running) {
-		// One title can have multiple menus, so need to reset time/duration
 		notifyTime(0, "");
 		notifyDuration(0);
 		// Menus can have a length...
@@ -422,18 +427,87 @@ bool TMPlayerProcess::dvdnavTitleIsMenu() {
 	return true;
 }
 
-bool TMPlayerProcess::dvdnavTitleIsMovie() {
-	qDebug("Proc::TMPlayerProcess::dvdnavTitleIsMovie");
+void TMPlayerProcess::dvdnavSave() {
 
-	md->title_is_menu = false;
+	// For DVDNAV remember the current video track set, title and pos
+	// TODO: should clear restore_dvdnav on player crash
+	if (md->detected_type == TMediaData::TYPE_DVDNAV) {
+		restore_dvdnav = true;
+		dvdnav_vts_to_restore = md->titles.getSelectedVTS();
+		dvdnav_title_to_restore_vts = md->titles.getSelectedID();
+		if (dvdnav_title_to_restore_vts < 0) {
+			// For a menu we need a title to be able to restore the VTS the
+			// menu belongs to, because there is no command to select a VTS.
+			// When no title is found (-1), we just see how far we get.
+			dvdnav_title_to_restore_vts = md->titles.findTitleForVTS(
+				dvdnav_vts_to_restore);
+		}
+		dvdnav_title_to_restore = md->titles.getSelectedID();
+		dvdnav_time_to_restore = md->time_sec;
+		if (dvdnav_time_to_restore > md->duration) {
+			dvdnav_time_to_restore = 0;
+		}
 
-	if (notified_player_is_running) {
-		// The duration from the title TOC is not always reliable,
-		// so verify duration
-		writeToStdin("get_property length");
+		// Open the disc, not just the current title
+		md->disc.title = 0;
+		md->filename = md->disc.toString();
+		md->selected_type = TMediaData::TYPE_DVDNAV;
+		qDebug() << "TMPlayerProcess::dvdnavSave: saved state" << md->filename;
+	} else {
+		restore_dvdnav = false;
+	}
+}
+
+void TMPlayerProcess::save() {
+	dvdnavSave();
+}
+
+void TMPlayerProcess::dvdnavRestoreTime() {
+	qDebug("Proc::TMPlayerProcess::dvdNavRestoreTime: restoring time %f", dvdnav_time_to_restore);
+	// seek time, abs, exact, currently paused
+	seekPlayerTime(dvdnav_time_to_restore - 5, 2, true, false);
+}
+
+void TMPlayerProcess::dvdnavRestore() {
+	qDebug("Proc::TMPlayerProcess::dvdnavRestore");
+
+	restore_dvdnav = false;
+	bool restore_title = true;
+	bool did_set_title = false;
+
+	// VTS
+	if (dvdnav_vts_to_restore != md->titles.getSelectedVTS()) {
+		if (dvdnav_title_to_restore_vts > 0) {
+			qDebug("Proc::TMPlayerProcess::dvdnavRestore: restoring VTS %d with title %d",
+				   dvdnav_vts_to_restore, dvdnav_title_to_restore_vts);
+			setTitle(dvdnav_title_to_restore_vts);
+			did_set_title = true;
+			if (dvdnav_title_to_restore_vts == dvdnav_title_to_restore) {
+				restore_title = false;
+			}
+		} else {
+			qDebug("Proc::TMPlayerProcess::dvdnavRestore: don't have a title to restore VTS %d, canceling restore",
+				   dvdnav_vts_to_restore);
+			return;
+		}
 	}
 
-	return true;
+	if (dvdnav_title_to_restore <= 0) {
+		// Menu
+		if (did_set_title || md->titles.getSelectedID() > 0) {
+			qDebug("Proc::TMPlayerProcess::dvdnavRestore: restoring menu");
+			discButtonPressed("menu");
+		}
+	} else {
+		// Title
+		if (restore_title && dvdnav_title_to_restore != md->titles.getSelectedID()) {
+			qDebug("Proc::TMPlayerProcess::dvdnavRestore: restoring title %d", dvdnav_title_to_restore);
+			setTitle(dvdnav_title_to_restore);
+		}
+		if (dvdnav_time_to_restore > 20) {
+			QTimer::singleShot(500, this, SLOT(dvdnavRestoreTime()));
+		}
+	}
 }
 
 // Title changed for non DVDNAV disc
@@ -705,6 +779,11 @@ void TMPlayerProcess::playingStarted() {
 		convertTitlesToChapters();
 	}
 
+	// Restore DVDNAV
+	if (restore_dvdnav) {
+		dvdnavRestore();
+	}
+
 	// Get the GUI going
 	TPlayerProcess::playingStarted();
 }
@@ -777,7 +856,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_dvdnav_switched_vts("^DVDNAV, switched to title: (\\d+)");
 	static QRegExp rx_dvdnav_new_title("^DVDNAV, NEW TITLE (\\d+)");
 	static QRegExp rx_dvdnav_title_is_menu("^DVDNAV_TITLE_IS_MENU");
-	static QRegExp rx_dvdnav_title_is_movie("^DVDNAV_TITLE_IS_MOVIE");
 	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
 
 	// DVDNAV messages that kill the log
@@ -793,8 +871,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_clip_info_value("^ID_CLIP_INFO_VALUE(\\d+)=(.*)");
 
 	// Stream title and url
-	static QRegExp rx_stream_title("^.*StreamTitle='(.*)';");
-	static QRegExp rx_stream_title_and_url("^.*StreamTitle='(.*)';StreamUrl='(.*)';");
+	static QRegExp rx_stream_title("StreamTitle='(.*)';");
+	static QRegExp rx_stream_title_and_url("StreamTitle='(.*)';StreamUrl='(.*)';");
 
 	// Screen shot
 	static QRegExp rx_screenshot("^\\*\\*\\* screenshot '(.*)'");
@@ -961,9 +1039,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	}
 	if (rx_dvdnav_title_is_menu.indexIn(line) >= 0) {
 		return dvdnavTitleIsMenu();
-	}
-	if (rx_dvdnav_title_is_movie.indexIn(line) >= 0) {
-		return dvdnavTitleIsMovie();
 	}
 	if (rx_dvdread_vts_count.indexIn(line) >= 0) {
 		int count = rx_dvdread_vts_count.cap(1).toInt();
@@ -1268,11 +1343,11 @@ void TMPlayerProcess::setSubtitlesVisibility(bool b) {
 }
 
 void TMPlayerProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
-	//seek <value> [type]
-	//    Seek to some place in the movie.
-	//        0 is a relative seek of +/- <value> seconds (default).
-	//        1 is a seek to <value> % in the movie.
-	//        2 is a seek to an absolute position of <value> seconds.
+	// seek <value> [type]
+	// Seek to some place in the movie.
+	// 0 is a relative seek of +/- <value> seconds (default).
+	// 1 is a seek to <value> % in the movie.
+	// 2 is a seek to an absolute position of <value> seconds.
 
 	QString s = QString("seek %1 %2").arg(secs).arg(mode);
 	if (precise) s += " 1"; else s += " -1";
@@ -1458,7 +1533,21 @@ void TMPlayerProcess::switchCapturing() {
 }
 
 void TMPlayerProcess::setTitle(int ID) {
+
 	writeToStdin("switch_title " + QString::number(ID));
+
+	// Changing title on a menu without duration does not work :(
+	// This hack seems to solve it.
+	// TODO: find out what is going on and fix
+	if (md->titles.getSelectedID() < 0 && md->duration <= 0) {
+		qDebug("Proc::TMPlayerProcess::setTitle: fixing menu");
+		// First go to menu of this VTS
+		discButtonPressed("menu");
+		// Select and hope...
+		discButtonPressed("select");
+		// And set the title again
+		writeToStdin("switch_title " + QString::number(ID));
+	}
 }
 
 void TMPlayerProcess::discSetMousePos(int x, int y) {

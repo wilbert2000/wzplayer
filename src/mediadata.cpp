@@ -63,7 +63,6 @@ void TMediaData::init() {
 
 	angle = 0;
 	angles = 0;
-	title_is_menu = false;
 
 	initialized = false;
 }
@@ -249,7 +248,6 @@ void TMediaData::list() const {
 
 	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
 	qDebug("  Angle: %d/%d", angle, angles);
-	qDebug("  title_is_menu: %d", title_is_menu);
 
 	qDebug("  initialized: %d", initialized);
 }
