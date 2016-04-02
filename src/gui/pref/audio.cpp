@@ -142,7 +142,7 @@ void TAudio::updateDriverCombo(bool allow_user_defined_ao) {
 
 	QString current_ao = AO();
 	ao_combo->clear();
-	ao_combo->addItem(tr("Default"), "");
+	ao_combo->addItem(tr("Players default"), "");
 
 	QString ao;
 	for (int n = 0; n < ao_list.count(); n++) {

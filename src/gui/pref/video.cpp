@@ -179,7 +179,7 @@ void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
 
 	QString current_vo = VO();
 	vo_combo->clear();
-	vo_combo->addItem(tr("Default"), "");
+	vo_combo->addItem(tr("Players default"), "");
 
 	QString vo;
 	for (int n = 0; n < vo_list.count(); n++) {
