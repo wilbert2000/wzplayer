@@ -114,8 +114,8 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& val
 		return true;
 	}
 
-	if (name == "TRACK_EX") {
-		static QRegExp rx_track(".*(\\d+)");
+	if (name == "TRACK") {
+		static QRegExp rx_track("(\\d+)");
 		if (rx_track.indexIn(value) >= 0) {
 			return setVideoTrack(rx_track.cap(1).toInt());
 		}
@@ -147,8 +147,8 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name, const QString& val
 		return true;
 	}
 
-	if (name == "TRACK_EX") {
-		static QRegExp rx_track(".*(\\d+)");
+	if (name == "TRACK") {
+		static QRegExp rx_track("(\\d+)");
 		if (rx_track.indexIn(value) >= 0) {
 			return setAudioTrack(rx_track.cap(1).toInt());
 		}
@@ -227,32 +227,22 @@ bool TMPlayerProcess::parseSubTrack(const QString& type, int id, const QString& 
 
 bool TMPlayerProcess::setVideoTrack(int id) {
 
-	if (id != md->videos.getSelectedID()) {
-		qDebug("Proc::TMPlayerProcess::setVideoTrack: selecting video track with id %d", id);
-		md->videos.setSelectedID(id);
-		if (notified_player_is_running) {
-			emit receivedVideoTrackChanged(id);
-		}
-		return true;
+	qDebug("Proc::TMPlayerProcess::setVideoTrack: selecting video track with id %d", id);
+	md->videos.setSelectedID(id);
+	if (notified_player_is_running) {
+		emit receivedVideoTrackChanged(id);
 	}
-
-	qDebug("Proc::TMPlayerProcess::setVideoTrack: video track with id %d already selected", id);
-	return false;
+	return true;
 }
 
 bool TMPlayerProcess::setAudioTrack(int id) {
 
-	if (id != md->audios.getSelectedID()) {
-		qDebug("Proc::TMPlayerProcess::setAudioTrack: selecting audio track with id %d", id);
-		md->audios.setSelectedID(id);
-		if (notified_player_is_running) {
-			emit receivedAudioTrackChanged(id);
-		}
-		return true;
+	qDebug("Proc::TMPlayerProcess::setAudioTrack: selecting audio track with id %d", id);
+	md->audios.setSelectedID(id);
+	if (notified_player_is_running) {
+		emit receivedAudioTrackChanged(id);
 	}
-
-	qDebug("Proc::TMPlayerProcess::setAudioTrack: audio track with id %d already selected", id);
-	return false;
+	return true;
 }
 
 bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
@@ -1155,8 +1145,8 @@ void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
 
 	// TODO: Add sub_source?
 	arg << "-playing-msg"
-		<< "ID_VIDEO_TRACK_EX=${switch_video}\n"
-		   "ID_AUDIO_TRACK_EX=${switch_audio}\n"
+		<< "ID_VIDEO_TRACK=${switch_video}\n"
+		   "ID_AUDIO_TRACK=${switch_audio}\n"
 		   "ID_ANGLE_EX=${angle}\n";
 	if (is_playlist)
 		arg << "-playlist";

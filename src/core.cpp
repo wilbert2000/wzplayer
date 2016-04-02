@@ -2710,11 +2710,9 @@ void TCore::changeVideoTrack(int id) {
 	// TODO: fix video tracks having different dimensions. The video out
 	// dimension will be the dimension of the last selected video track.
 	// When fixed use proc->setVideo() instead of restartPlay().
-	if (id != mset.current_video_id) {
+	if (id != mdat.videos.getSelectedID()) {
 		mset.current_video_id = id;
-		if (id >= 0 && id != mdat.videos.getSelectedID()) {
-			restartPlay();
-		}
+		restartPlay();
 	}
 }
 
@@ -2727,21 +2725,19 @@ void TCore::nextVideoTrack() {
 void TCore::changeAudioTrack(int id) {
 	qDebug("TCore::changeAudio: id: %d", id);
 
-	if (id != mset.current_audio_id) {
-		mset.current_audio_id = id;
-		if (id >= 0 && id != mdat.audios.getSelectedID()) {
-			proc->setAudio(id);
-			mdat.audios.setSelectedID(id);
-			emit audioTrackChanged(id);
+	mset.current_audio_id = id;
+	if (id >= 0) {
+		proc->setAudio(id);
+		mdat.audios.setSelectedID(id);
+		emit audioTrackChanged(id);
 
-			// Workaround for a mplayer problem in windows,
-			// volume is too loud after changing audio.
-			// Workaround too for a mplayer problem in linux,
-			// the volume is reduced if using -softvol-max.
-			if (isMPlayer()
-				&& !pref->player_additional_options.contains("-volume")) {
-				setVolume(getVolume(), false);
-			}
+		// Workaround for a mplayer problem in windows,
+		// volume is too loud after changing audio.
+		// Workaround too for a mplayer problem in linux,
+		// the volume is reduced if using -softvol-max.
+		if (isMPlayer()
+			&& !pref->player_additional_options.contains("-volume")) {
+			setVolume(getVolume(), false);
 		}
 	}
 }
@@ -3361,7 +3357,6 @@ bool TCore::setPreferredAudio() {
 		if (selected_id >= 0) {
 			int wanted_id = mdat.audios.findLangID(pref->audio_lang);
 			if (wanted_id >= 0 && wanted_id != selected_id) {
-				mset.current_audio_id = TMediaSettings::NoneSelected;
 				qDebug("TCore::setPreferredAudio: selecting preferred audio with id %d", wanted_id);
 				changeAudioTrack(wanted_id);
 				return true;
