@@ -104,7 +104,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			this, SLOT(displayUpdatingFontCache()));
 
 	connect(proc, SIGNAL(receivedVideoOutResolution(int,int)),
-			this, SLOT(gotVideoOutResolution(int,int)));
+			this, SLOT(onReceivedVideoOutResolution(int,int)));
 
 	connect(proc, SIGNAL(receivedEndOfFile()),
 			this, SLOT(onReceivedEndOfFile()), Qt::QueuedConnection);
@@ -3327,8 +3327,8 @@ void TCore::displayBufferingEnded() {
 	emit showMessage(tr("Playing from %1").arg(Helper::formatTime(mset.current_sec)));
 }
 
-void TCore::gotVideoOutResolution(int w, int h) {
-	qDebug("TCore::gotVideoOutResolution: %d x %d", w, h);
+void TCore::onReceivedVideoOutResolution(int w, int h) {
+	qDebug("TCore::onReceivedVideoOutResolution: %d x %d", w, h);
 
 	// w x h is output resolution selected by player with aspect and filters applied
 	playerwindow->setResolution(w, h);
