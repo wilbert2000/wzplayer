@@ -50,9 +50,6 @@ public:
 	enum TOnTop {
 		NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2
 	};
-	enum TResize {
-		Never = 0, Always = 1, Afterload = 2
-	};
 	enum TPriority {
 		Realtime = 0, High = 1, AboveNormal = 2, Normal = 3, BelowNormal = 4,
 		Idle = 5
@@ -311,7 +308,9 @@ public:
 	TOnTop stay_on_top;
 	double size_factor;
 
-	int resize_method; 	//!< Mainwindow resize method
+	// Mainwindow resize methods
+	bool resize_on_load;
+	bool resize_on_docking;
 
 	QString style; 	//!< SMPlayer look
 

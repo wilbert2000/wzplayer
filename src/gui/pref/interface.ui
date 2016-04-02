@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>600</height>
+    <height>620</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
@@ -207,51 +207,23 @@
             <item>
              <widget class="QCheckBox" name="save_size_check">
               <property name="text">
-               <string>R&amp;emember position and size</string>
+               <string>&amp;Remember position and size</string>
               </property>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="resize_window_layout">
-              <property name="bottomMargin">
-               <number>0</number>
+             <widget class="QCheckBox" name="resize_on_load_check">
+              <property name="text">
+               <string>R&amp;esize window when loading a new video</string>
               </property>
-              <item>
-               <widget class="QLabel" name="resize_window_label">
-                <property name="text">
-                 <string>&amp;Resize window:</string>
-                </property>
-                <property name="buddy">
-                 <cstring>resize_window_combo</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="resize_window_combo">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Never</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Whenever it's needed</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Only after loading a new video</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="resize_on_docking_check">
+              <property name="text">
+               <string>Resi&amp;ze window when docking the playlist</string>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="pause_on_minimize_check">
@@ -713,7 +685,8 @@
   <tabstop>changeFontButton</tabstop>
   <tabstop>single_instance_check</tabstop>
   <tabstop>save_size_check</tabstop>
-  <tabstop>resize_window_combo</tabstop>
+  <tabstop>resize_on_load_check</tabstop>
+  <tabstop>resize_on_docking_check</tabstop>
   <tabstop>pause_on_minimize_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
   <tabstop>hide_video_window_on_audio_check</tabstop>

@@ -347,9 +347,7 @@ void TBasePlus::onTopLevelChanged(bool) {
 void TBasePlus::dockVisibilityChanged(bool visible) {
 	//qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
 
-	if (!playlistdock->isFloating()
-		&& !pref->fullscreen
-		&& pref->resize_method == TPreferences::Always) {
+	if (!playlistdock->isFloating() && !pref->fullscreen && pref->resize_on_docking) {
 		if (visible) {
 			stretchWindow();
 		} else if (isVisible()) { // Don't shrink on shutdown

@@ -2078,8 +2078,7 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 			// when pref->save_window_size_on_exit not set.
 			// block_resize only set for the first video
 			// when pref->save_window_size_on_exit is set.
-			if (!force_resize
-				&& (block_resize || pref->resize_method == TPreferences::Never)) {
+			if (!force_resize && (block_resize || !pref->resize_on_load)) {
 				// Adjust the size factor to the window size
 				playerwindow->updateSizeFactor();
 			} else {

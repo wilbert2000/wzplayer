@@ -296,7 +296,8 @@ void TPreferences::reset() {
 	stay_on_top = NeverOnTop;
 	size_factor = 1.0; // 100%
 
-	resize_method = Never;
+	resize_on_load = true;
+	resize_on_docking = true;
 
 	style = "";
 
@@ -645,7 +646,8 @@ void TPreferences::save() {
 
 	setValue("stay_on_top", (int) stay_on_top);
 	setValue("size_factor", size_factor);
-	setValue("resize_method", resize_method);
+	setValue("resize_on_load", resize_on_load);
+	setValue("resize_on_docking", resize_on_docking);
 
 	setValue("style", style);
 
@@ -1139,7 +1141,8 @@ void TPreferences::load() {
 	if (size_factor > 24.0) size_factor = size_factor / 100;
 	if (size_factor < 0.1) size_factor = 0.1;
 	if (size_factor > 4.0) size_factor = 4.0;
-	resize_method = value("resize_method", resize_method).toInt();
+	resize_on_load = value("resize_on_load", resize_on_load).toBool();
+	resize_on_docking = value("resize_on_docking", resize_on_docking).toBool();
 
 	style = value("style", style).toString();
 
@@ -1327,7 +1330,6 @@ void TPreferences::load() {
 			frame_drop = false;
 			cache_for_files = 2048;
 			cache_for_streams = 2048;
-			resize_method = Never;
 		}
 		if (config_version <= 5) {
 			if (time_to_kill_mplayer < 5000)
@@ -1410,6 +1412,7 @@ void TPreferences::load() {
 
 		remove("General/capture_directory");
 		remove("gui/auto_add_to_playlist");
+		remove("gui/resize_method");
 
 		config_version = CURRENT_CONFIG_VERSION;
 		sync();

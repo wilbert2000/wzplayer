@@ -65,9 +65,6 @@ protected:
 	void setIconSet(const QString& set);
 	QString iconSet();
 
-	void setResizeMethod(int v);
-	int resizeMethod();
-
 	void setSaveSize(bool b);
 	bool saveSize();
 

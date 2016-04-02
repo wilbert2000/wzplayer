@@ -103,13 +103,9 @@ void TInterface::createLanguageCombo() {
 
 void TInterface::retranslateStrings() {
 
-	int mainwindow_resize = resize_window_combo->currentIndex();
-
 	retranslateUi(this);
 
 	changeInstanceImages();
-
-	resize_window_combo->setCurrentIndex(mainwindow_resize);
 
 	// Language combo
 	int language_item = language_combo->currentIndex();
@@ -147,7 +143,9 @@ void TInterface::setData(Settings::TPreferences* pref) {
 #endif
 
 	setSaveSize(pref->save_window_size_on_exit);
-	setResizeMethod(pref->resize_method);
+	resize_on_load_check->setChecked(pref->resize_on_load);
+	resize_on_docking_check->setChecked(pref->resize_on_docking);
+
 	setPauseWhenHidden(pref->pause_when_hidden);
 	setCloseOnFinish(pref->close_on_finish);
 	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
@@ -200,7 +198,8 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	pref->use_single_instance = useSingleInstance();
 #endif
 
-	pref->resize_method = resizeMethod();
+	pref->resize_on_load = resize_on_load_check->isChecked();
+	pref->resize_on_docking = resize_on_docking_check->isChecked();
 	pref->save_window_size_on_exit = saveSize();
 	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
@@ -276,14 +275,6 @@ QString TInterface::iconSet() {
 		return "";
 	else
 		return iconset_combo->currentText();
-}
-
-void TInterface::setResizeMethod(int v) {
-	resize_window_combo->setCurrentIndex(v);
-}
-
-int TInterface::resizeMethod() {
-	return resize_window_combo->currentIndex();
 }
 
 void TInterface::setSaveSize(bool b) {
@@ -504,13 +495,15 @@ void TInterface::createHelp() {
 		   "of SMPlayer when opening other files."));
 #endif
 
-	setWhatsThis(resize_window_combo, tr("Autoresize"),
-        tr("The main window can be resized automatically. Select the option "
-           "you prefer."));
-
 	setWhatsThis(save_size_check, tr("Remember position and size"),
         tr("If you check this option, the position and size of the main "
            "window will be saved and restored when you run SMPlayer again."));
+
+	setWhatsThis(resize_on_load_check, tr("Resize window when loading a new video"),
+		tr("Adjust the dimension of the main window to a newly loaded video."));
+
+	setWhatsThis(resize_on_docking_check, tr("Resize window when docking the playlist"),
+		tr("Grows or shrinks the main window when you dock or undock the playlist."));
 
 	setWhatsThis(pause_on_minimize_check, tr("Pause when minimized"),
 		tr("If this option is enabled, the file will be paused when the "
@@ -545,7 +538,7 @@ void TInterface::createHelp() {
 
 	setWhatsThis(blackborders_on_fs_check, tr("Add black borders on fullscreen"),
 		tr("If this option is enabled, black borders will be added to the "
-		   "image in fullscreen mode. This allows subtitles to be displayed "
+		   "image in fullscreen mode. This allows subtitles and OSD to be displayed "
 		   "on the black borders."));
 
 	addSectionTitle(tr("Playlist"));
