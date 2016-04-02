@@ -306,7 +306,7 @@ void TCore::displayTextOnOSD(const QString& text, int duration, int level) {
 
 	if (proc->isFullyStarted()
 		&& level <= pref->osd_level
-		&& !mdat.noVideo()) {
+		&& mdat.hasVideo()) {
 		proc->showOSDText(text, duration, level);
 	}
 }
@@ -2892,6 +2892,9 @@ void TCore::nextProgram() {
 void TCore::changeAspectRatio(int id) {
 	qDebug("TCore::changeAspectRatio: %d", id);
 
+	if (mdat.noVideo())
+		return;
+
 	// Keep id in range
 	TAspectRatio::TMenuID new_id;
 	if (id < 0 || id > TAspectRatio::MAX_MENU_ID)
@@ -3038,7 +3041,7 @@ void TCore::getPanFromPlayerWindow() {
 void TCore::changeZoom(double factor) {
 	qDebug("TCore::changeZoom: %f", factor);
 
-	if (!mdat.noVideo()) {
+	if (mdat.hasVideo()) {
 		// Kept between min and max by playerwindow->setZoom()
 		// Hence reread of factors
 		playerwindow->setZoom(factor);
@@ -3064,11 +3067,12 @@ void TCore::resetZoomAndPan() {
 void TCore::pan(int dx, int dy) {
 	qDebug("TCore::pan");
 
-	playerwindow->moveVideo(dx, dy);
-	getPanFromPlayerWindow();
-
-	QPoint current_pan = playerwindow->pan();
-	displayMessage(tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())));
+	if (mdat.hasVideo()) {
+		playerwindow->moveVideo(dx, dy);
+		getPanFromPlayerWindow();
+		QPoint current_pan = playerwindow->pan();
+		displayMessage(tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())));
+	}
 }
 
 
@@ -3328,9 +3332,10 @@ void TCore::gotVideoOutResolution(int w, int h) {
 
 	// w x h is output resolution selected by player with aspect and filters applied
 	playerwindow->setResolution(w, h);
+
 	if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
 		double aspect;
-		if (h == 0) {
+		if (h <= 0) {
 			aspect = 0;
 		} else {
 			aspect = (double) w / h;

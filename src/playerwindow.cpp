@@ -346,7 +346,9 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 			// Move video in fullscreen or with modifier, otherwise move window
 			drag_pos = pos;
 			if (pref->fullscreen || event->modifiers() != Qt::NoModifier) {
-				moveVideo(diff);
+				if (video_width > 0 && video_height > 0) {
+					moveVideo(diff);
+				}
 			} else {
 				emit moveWindow(diff);
 			}
@@ -517,14 +519,12 @@ void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWi
 
 void TPlayerWindow::moveVideo(QPoint delta) {
 
-	if (video_width != 0) {
-		if (pref->fullscreen) {
-			pan_offset_fullscreen += delta;
-		} else {
-			pan_offset += delta;
-		}
-		updateVideoWindow();
+	if (pref->fullscreen) {
+		pan_offset_fullscreen += delta;
+	} else {
+		pan_offset += delta;
 	}
+	updateVideoWindow();
 }
 
 void TPlayerWindow::moveVideo(int dx, int dy) {
