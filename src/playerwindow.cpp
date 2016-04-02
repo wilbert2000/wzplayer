@@ -71,7 +71,8 @@ void TPlayerLayer::setFastBackground() {
 	qDebug("TPlayerLayer::setFastBackground");
 
 	normal_background = pref->useColorKey();
-	setAttribute(Qt::WA_NoSystemBackground);
+	if (!normal_background)
+		setAttribute(Qt::WA_NoSystemBackground);
 
 #ifndef Q_OS_WIN
 	// Disable composition and double buffering on X11
@@ -95,7 +96,6 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	: QWidget(parent)
 	, video_width(0)
 	, video_height(0)
-	, fast_window(false)
 	, zoom_factor(1.0)
 	, zoom_factor_fullscreen(1.0)
 	, aspect(0)
@@ -114,6 +114,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 
 	playerlayer = new TPlayerLayer(this);
 	playerlayer->setObjectName("playerlayer");
+	setColorKey();
 	playerlayer->setMinimumSize(QSize(0, 0));
 	playerlayer->setFocusPolicy(Qt::NoFocus);
 	playerlayer->setMouseTracking(true);
@@ -122,6 +123,9 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	left_click_timer->setSingleShot(true);
 	left_click_timer->setInterval(qApp->doubleClickInterval() + 10);
 	connect(left_click_timer, SIGNAL(timeout()), this, SIGNAL(leftClicked()));
+	setDelayLeftClick(pref->delay_left_click);
+
+	setMonitorAspect(pref->monitorAspectDouble());
 }
 
 TPlayerWindow::~TPlayerWindow() {
@@ -153,8 +157,9 @@ void TPlayerWindow::setResolution(int width, int height) {
 	video_height = height;
 	last_video_size = QSize(width, height);
 
-	if (video_width == 0)
-		restoreNormalWindow(true);
+	if (video_width > 0 && video_height > 0) {
+		setFastWindow();
+	}
 }
 
 void TPlayerWindow::set(double aspect,
@@ -163,8 +168,6 @@ void TPlayerWindow::set(double aspect,
 						QPoint pan,
 						QPoint pan_fullscreen) {
 
-	// Clear video size
-	setResolution(0, 0);
 	// false = do not update video window
 	setAspect(aspect, false);
 	setZoom(zoom_factor, zoom_factor_fullscreen, false);
@@ -296,7 +299,7 @@ void TPlayerWindow::startDragging() {
 }
 
 void TPlayerWindow::stopDragging() {
-	qDebug("TPlayerWindow::stopDragging");
+	//qDebug("TPlayerWindow::stopDragging");
 
 	dragging = false;
 	QApplication::restoreOverrideCursor();
@@ -541,14 +544,18 @@ void TPlayerWindow::resetZoomAndPan() {
 	updateVideoWindow();
 }
 
-void TPlayerWindow::setColorKey(QColor c) {
-	ColorUtils::setBackgroundColor(playerlayer, c);
+void TPlayerWindow::setColorKey() {
+
+	if (pref->useColorKey()) {
+		ColorUtils::setBackgroundColor(playerlayer, pref->color_key);
+	} else {
+		ColorUtils::setBackgroundColor(playerlayer, QColor(0, 0, 0));
+	}
 }
 
 void TPlayerWindow::setFastWindow() {
-	//qDebug("TPlayerWindow::setFastWindow");
+	qDebug("TPlayerWindow::setFastWindow");
 
-	fast_window = true;
 	playerlayer->setFastBackground();
 
 #ifndef Q_OS_WIN
@@ -557,24 +564,18 @@ void TPlayerWindow::setFastWindow() {
 #endif
 }
 
-void TPlayerWindow::restoreNormalWindow(bool clear_background) {
-	qDebug("TPlayerWindow::restoreNormalWindow: clear_background %d", clear_background);
+void TPlayerWindow::restoreNormalWindow() {
+	qDebug("TPlayerWindow::restoreNormalWindow");
 
-	if (fast_window) {
-		fast_window = false;
-		playerlayer->restoreNormalBackground();
+	playerlayer->restoreNormalBackground();
 
 #ifndef Q_OS_WIN
-		// Enable composition and double buffering on X11
-		setAttribute(Qt::WA_PaintOnScreen, false);
+	// Enable composition and double buffering on X11
+	setAttribute(Qt::WA_PaintOnScreen, false);
 #endif
 
-		if (video_width != 0)
-			setResolution(0, 0);
-
-		// Clear background to prevent artifacts when things take a little while
-		if (clear_background)
-			repaint();
+	if (video_width != 0 || video_height != 0) {
+		setResolution(0, 0);
 	}
 }
 

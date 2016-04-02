@@ -86,6 +86,9 @@ public:
 	int video_out_width;
 	int video_out_height;
 
+	bool hasVideo() const {
+		return video_out_width > 0 && video_out_height > 0;
+	}
 	bool noVideo() const {
 		return video_out_width <= 0 || video_out_height <= 0;
 	}

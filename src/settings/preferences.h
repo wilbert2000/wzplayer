@@ -70,9 +70,6 @@ public:
 
 	Q_DECLARE_FLAGS(TWheelFunctions, TWheelFunction)
 
-	const static unsigned int DEFAULT_COLOR_KEY = 0x020202;
-
-
 	TPreferences();
 	virtual ~TPreferences();
 

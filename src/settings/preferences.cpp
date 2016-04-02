@@ -250,7 +250,7 @@ void TPreferences::reset() {
 	adapter = -1;
 #endif
 
-	color_key = DEFAULT_COLOR_KEY;
+	color_key = 0x020202;
 
 	monitor_aspect=""; // Autodetect
 
@@ -1093,6 +1093,9 @@ void TPreferences::load() {
 	unsigned int temp_color_key = color.toUInt(&ok, 16);
 	if (ok)
 		color_key = temp_color_key;
+	else
+		qWarning() << "Settings::TPreferences: failed to parse color key"
+				   << color;
 
 	monitor_aspect = value("monitor_aspect", monitor_aspect).toString();
 

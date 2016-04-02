@@ -99,7 +99,6 @@ public:
 	void resetZoomAndPan();
 
 	void setDelayLeftClick(bool b) { delay_left_click = b; }
-	void setColorKey(QColor c);
 
 	// Get size adjusted for aspect and desired zoom
 	QSize getAdjustedSize(int w, int h, double zoom) const;
@@ -112,8 +111,8 @@ public:
 	void updateVideoWindow();
 	void moveVideo(int dx, int dy);
 
-	void setFastWindow();
-	void restoreNormalWindow(bool clear_background = true);
+	void setColorKey();
+	void restoreNormalWindow();
 
 signals:
 	void leftClicked();
@@ -147,7 +146,6 @@ private:
 	int video_width;
 	int video_height;
 	QSize last_video_size;
-	bool fast_window;
 
 	double zoom_factor;
 	double zoom_factor_fullscreen;
@@ -170,6 +168,8 @@ private:
 	void startDragging();
 	void stopDragging();
 	bool checkDragging(QMouseEvent* event);
+
+	void setFastWindow();
 };
 
 #endif // PLAYERWINDOW_H

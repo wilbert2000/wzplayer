@@ -220,8 +220,6 @@ void TBase::createPlayerWindow() {
 
 	playerwindow = new TPlayerWindow(panel);
 	playerwindow->setObjectName("playerwindow");
-	playerwindow->setDelayLeftClick(pref->delay_left_click);
-	playerwindow->setColorKey(pref->color_key);
 
 	QVBoxLayout* layout = new QVBoxLayout;
 	layout->setSpacing(0);
@@ -971,6 +969,9 @@ void TBase::applyNewPreferences() {
 			QApplication::setFont(f);
 		}
 	}
+
+	// Set color key, depends on VO
+	playerwindow->setColorKey();
 
 	// Forced demuxer
 	core->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";

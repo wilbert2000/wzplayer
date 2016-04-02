@@ -141,22 +141,20 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(durationChanged(double)),
 			this, SIGNAL(durationChanged(double)));
 
-	// TPlayerWindow
+	// For DVDNAV subscribe to TPlayerWindow::mouseMoved()
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
 			this, SLOT(dvdnavUpdateMousePos(QPoint)));
-
-	playerwindow->setMonitorAspect(pref->monitorAspectDouble());
 
 #if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef DISABLE_SCREENSAVER
 	// Windows or OS2 screensaver
 	win_screensaver = new WinScreenSaver();
 	connect(this, SIGNAL(aboutToStartPlaying()),
-			 this, SLOT(disableScreensaver()));
+			this, SLOT(disableScreensaver()));
 	connect(proc, SIGNAL(processExited(bool)),
-			 this, SLOT(enableScreensaver()), Qt::QueuedConnection);
+			this, SLOT(enableScreensaver()), Qt::QueuedConnection);
 	connect(proc, SIGNAL(error(QProcess::ProcessError)),
-			 this, SLOT(enableScreensaver()), Qt::QueuedConnection);
+			this, SLOT(enableScreensaver()), Qt::QueuedConnection);
 #endif
 #endif
 
@@ -186,13 +184,14 @@ void TCore::processError(QProcess::ProcessError error) {
 void TCore::processFinished(bool normal_exit) {
 	qDebug("TCore::processFinished: normal exit %d", normal_exit);
 
-	// Cancel restarting to enter the stopped state in case the already
-	// restarted player unexpectedly finished
-	if (restarting == 2)
-		restarting = 0;
-
 	// Restore normal window background
-	playerwindow->restoreNormalWindow(restarting == 0);
+	playerwindow->restoreNormalWindow();
+
+	// Cancel restarting to enter the stopped state in case
+	// the restarted player unexpectedly finished
+	if (restarting == 2) {
+		restarting = 0;
+	}
 
 	if (restarting) {
 		qDebug("TCore::processFinished: restarting...");
@@ -204,7 +203,7 @@ void TCore::processFinished(bool normal_exit) {
 
 	if (!normal_exit) {
 		int exit_code = proc->exitCodeOverride();
-		qWarning("TCore::processFinished: player error (%d)", exit_code);
+		qDebug("TCore::processFinished: emit playerFinishedWithError(%d)", exit_code);
 		emit playerFinishedWithError(exit_code);
 	}
 }
@@ -656,9 +655,6 @@ void TCore::initMediaSettings() {
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
 
-	// Feedback and prevent artifacts waiting for redraw
-	playerwindow->repaint();
-
 	emit mediaSettingsChanged();
 }
 
@@ -1058,6 +1054,8 @@ void TCore::startPlayer(QString file, double seek) {
 
 	if (pref->useColorKey()) {
 		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
+		// Make sure the color key is applied
+		playerwindow->videoLayer()->repaint();
 	}
 
 	// Square pixels
@@ -1593,7 +1591,6 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	emit aboutToStartPlaying();
-	playerwindow->setFastWindow();
 
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	if (pref->use_proxy
