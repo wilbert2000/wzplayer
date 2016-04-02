@@ -419,7 +419,7 @@ bool TMPlayerProcess::dvdnavTitleIsMenu() {
 
 void TMPlayerProcess::dvdnavSave() {
 
-	// For DVDNAV remember the current video track set, title and pos
+	// For DVDNAV remember the current video title set, title and pos
 	// TODO: should clear restore_dvdnav on player crash
 	if (md->detected_type == TMediaData::TYPE_DVDNAV) {
 		restore_dvdnav = true;
@@ -890,7 +890,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 							  "|Generating "
 							  "|Connecting "
 							  "|Resolving "
-							  "|Scanning )");
+							  "|Scanning "
+							  "|libdvdread: Get key )");
 
 
 	// Parse A: V: status line

@@ -334,9 +334,6 @@ void TCore::close() {
 void TCore::openDisc(TDiscName disc, bool fast_open) {
 	qDebug() << "TCore::openDisc:" << disc.toString() << "fast open" << fast_open;
 
-	// TODO: check 0 is ok
-	emit showMessage(tr("Opening %1").arg(disc.toString()), 0);
-
 	// Change title if already playing
 	if (fast_open
 		&& !mset.playing_single_track
@@ -350,8 +347,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 		return;
 	}
 
-	// Finish current
-	close();
+	emit showMessage(tr("Opening %1").arg(disc.toString()), 0);
 
 	// Add device from pref if none specified
 	if (disc.device.isEmpty()) {
@@ -377,6 +373,9 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 		}
 	}
 
+	// Finish current
+	close();
+
 	// Set filename, selected type and disc
 	mdat.filename = disc.toString();
 	mdat.selected_type = (TMediaData::Type) disc.disc();
@@ -385,7 +384,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 	// Clear settings
 	mset.reset();
 
-	// Playing single CD track needs separate treatment...
+	// Single CD track needs separate treatment for chapters and fast open
 	if (mdat.disc.title > 0 && TMediaData::isCD(mdat.selected_type)) {
 		mset.playing_single_track = true;
 	}
@@ -675,7 +674,6 @@ void TCore::initPlaying(int seek) {
 		start_sec = seek;
 
 	// Cannot seek at startup in DVDNAV.
-	// See restartPlay() and restoreTitle() for DVDNAV seek.
 	if (mdat.selected_type == TMediaData::TYPE_DVDNAV)
 		start_sec = 0;
 
@@ -1630,7 +1628,7 @@ void TCore::stopPlayer() {
 	// If set high enough the OS will detect the "not responding state" and popup a dialog
 	int timeout = pref->time_to_kill_mplayer;
 	if (timeout < 5000) {
-		qDebug("TCore::stopPlayer: timeout %d too small, adjusting it to 5000 ms", timeout);
+		qWarning("TCore::stopPlayer: timeout %d too small, adjusting it to 5000 ms", timeout);
 		timeout = 5000;
 	}
 

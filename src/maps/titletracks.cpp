@@ -92,7 +92,7 @@ int TTitleTracks::findTitleForVTS(int vts) {
 		}
 	}
 
-	// Assume there are no empty track sets...
+	// Assume there are no empty title sets...
 	if (vtsCount == count()) {
 		return vts;
 	}
