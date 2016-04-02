@@ -363,7 +363,6 @@ private:
 	bool ignore_show_hide_events;
 
 	bool force_resize;
-	bool block_resize;
 	bool center_window;
 
 	QPoint move_window_diff;

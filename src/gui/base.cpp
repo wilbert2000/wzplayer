@@ -146,7 +146,6 @@ TBase::TBase()
 	, arg_close_on_finish(-1)
 	, arg_start_in_fullscreen(-1)
 	, ignore_show_hide_events(false)
-	, block_resize(false)
 	, center_window(false) {
 
 #if QT_VERSION >= 0x050000
@@ -769,9 +768,6 @@ void TBase::loadConfig() {
 		resize(s);
 		setWindowState((Qt::WindowStates) state);
 		TDesktop::keepInsideDesktop(this);
-
-		// Block resize of main window by loading of video
-		block_resize = true;
 	} else {
 		centerWindow();
 		// Need to center again after video loaded
@@ -1932,9 +1928,9 @@ void TBase::changeSize(double factor) {
 	if (pref->fullscreen) {
 		// Adjust zoom to match the requested size
 		QSize video_size = playerwindow->getAdjustedSize(
-							   core->mdat.video_out_width,
-							   core->mdat.video_out_height,
-							   pref->size_factor);
+			core->mdat.video_out_width,
+			core->mdat.video_out_height,
+			pref->size_factor);
 		QSize desktop_size = TDesktop::size(this);
 		double zoom = (double) video_size.width() / desktop_size.width();
 		double zoomY = (double) video_size.height() / desktop_size.height();
@@ -1967,8 +1963,8 @@ void TBase::changeSize(int percentage) {
 void TBase::toggleDoubleSize() {
 
 	if (pref->size_factor != 1.0)
-		changeSize(100);
-	else changeSize(200);
+		changeSize(1.0);
+	else changeSize(2.0);
 }
 
 void TBase::centerWindow() {
@@ -2077,16 +2073,15 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		if (!isMaximized()) {
 			// force_resize only set for the first video
 			// when pref->save_window_size_on_exit not set.
-			// block_resize only set for the first video
-			// when pref->save_window_size_on_exit is set.
-			if (!force_resize && (block_resize || !pref->resize_on_load)) {
-				// Adjust the size factor to the window size
-				playerwindow->updateSizeFactor();
-			} else {
+			if (pref->resize_on_load || force_resize) {
 				// Try size factor 1.0
 				pref->size_factor = getNewSizeFactor();
 				resizeWindow(w, h);
+			} else {
+				// Adjust the size factor to the current window size
+				playerwindow->updateSizeFactor();
 			}
+
 			emit videoSizeFactorChanged();
 		}
 	}
@@ -2099,7 +2094,6 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 	}
 
 	force_resize = false;
-	block_resize = false;
 }
 
 // Slot called by signal needResize
@@ -2113,7 +2107,7 @@ void TBase::resizeWindow(int w, int h) {
 }
 
 void TBase::resizeMainWindow(int w, int h, bool try_twice) {
-	qDebug("Gui::TBase::resizeMainWindow: requested size %d x %d, size factor %f",
+	qDebug("Gui::TBase::resizeMainWindow: requested video size %d x %d, size factor %f",
 		   w, h, pref->size_factor);
 
 	// Adjust for selected size and aspect ratio
@@ -2312,8 +2306,6 @@ bool TBase::event(QEvent* e) {
 
 void TBase::onPlayerFinishedWithError(int exit_code) {
 	qDebug("Gui::TBase::onPlayerFinishedWithError: %d", exit_code);
-
-	block_resize = false;
 
 	QString msg = Proc::TErrorMsg::message(exit_code) + " (" + core->mdat.filename + ")";
 	displayMessage(msg, 0);
