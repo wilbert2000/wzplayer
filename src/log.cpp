@@ -7,7 +7,7 @@
 #include "gui/logwindow.h"
 
 // Size one log buffer, allocated twice
-const int LOG_BUF_LENGTH = 65536 - 512;
+const int LOG_BUF_LENGTH = 2 * 65536 - 512;
 
 // Static instance log
 TLog* TLog::log = 0;
