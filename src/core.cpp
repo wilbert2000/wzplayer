@@ -919,6 +919,14 @@ void TCore::startPlayer(QString file, double seek) {
 	proc->clearArguments();
 	proc->setExecutable(pref->player_bin);
 	proc->setFixedOptions();
+	proc->disableInput();
+
+#if defined(Q_OS_OS2)
+#define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
+	proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoLayer()->winId())));
+#else
+	proc->setOption("wid", QString::number((qint64) playerwindow->videoLayer()->winId()));
+#endif
 
 	if (pref->log_verbose) {
 		proc->setOption("verbose");
@@ -961,7 +969,6 @@ void TCore::startPlayer(QString file, double seek) {
 	if (!mset.forced_demuxer.isEmpty()) {
 		proc->setOption("demuxer", mset.forced_demuxer);
 	}
-
 	// Forced audio codec
 	if (!mset.forced_audio_codec.isEmpty()) {
 		proc->setOption("ac", mset.forced_audio_codec);
@@ -1004,23 +1011,10 @@ void TCore::startPlayer(QString file, double seek) {
 	if (!hwdec.isEmpty() && isMPV()) {
 		proc->setOption("hwdec", hwdec);
 	}
-	if (pref->frame_drop && pref->hard_frame_drop) {
-		proc->setOption("framedrop", "decoder+vo");
-	} else if (pref->frame_drop) {
-		proc->setOption("framedrop", "vo");
-	} else if (pref->hard_frame_drop) {
-		proc->setOption("framedrop", "decoder");
-	}
 
 	if (!pref->vo.isEmpty()) {
 		proc->setOption("vo", pref->vo);
 	}
-
-#if USE_ADAPTER
-	if (pref->adapter >= 0) {
-		proc->setOption("adapter", QString::number(pref->adapter));
-	}
-#endif
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	if (pref->vo.startsWith("x11")) {
@@ -1032,25 +1026,40 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("ao", pref->ao);
 	}
 
-
-	// Performance options
-	if (pref->autosync) {
-		proc->setOption("autosync", QString::number(pref->autosync_factor));
+#if USE_ADAPTER
+	if (pref->adapter >= 0) {
+		proc->setOption("adapter", QString::number(pref->adapter));
 	}
-
-	if (pref->use_mc) {
-		proc->setOption("mc", QString::number(pref->mc_value));
-	}
-
-	proc->disableInput();
-	proc->setOption("keepaspect", false);
-
-#if defined(Q_OS_OS2)
-#define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
-	proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoLayer()->winId())));
-#else
-	proc->setOption("wid", QString::number((qint64) playerwindow->videoLayer()->winId()));
 #endif
+
+#if PROGRAM_SWITCH
+	if (mset.current_program_id != TMediaSettings::NoneSelected) {
+		proc->setOption("tsprog", QString::number(mset.current_program_id));
+	}
+	// Don't set video and audio track if using -tsprog
+	else {
+#endif
+
+	if (mset.current_video_id >= 0) {
+		proc->setOption("vid", QString::number(mset.current_video_id));
+	}
+
+	if (mset.external_audio.isEmpty() && mset.current_audio_id >= 0) {
+		proc->setOption("aid", QString::number(mset.current_audio_id));
+	}
+
+#if PROGRAM_SWITCH
+	}
+#endif
+
+	if (!mset.external_audio.isEmpty()) {
+		proc->setOption("audiofile", mset.external_audio);
+	}
+
+	// Aspect ratio
+	proc->setOption("keepaspect", false);
+	// Square pixels
+	proc->setOption("monitorpixelaspect", "1");
 
 	if (pref->useColorKey()) {
 		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
@@ -1058,8 +1067,20 @@ void TCore::startPlayer(QString file, double seek) {
 		playerwindow->videoLayer()->repaint();
 	}
 
-	// Square pixels
-	proc->setOption("monitorpixelaspect", "1");
+	// Synchronization
+	if (pref->frame_drop && pref->hard_frame_drop) {
+		proc->setOption("framedrop", "decoder+vo");
+	} else if (pref->frame_drop) {
+		proc->setOption("framedrop", "vo");
+	} else if (pref->hard_frame_drop) {
+		proc->setOption("framedrop", "decoder");
+	}
+	if (pref->autosync) {
+		proc->setOption("autosync", QString::number(pref->autosync_factor));
+	}
+	if (pref->use_mc) {
+		proc->setOption("mc", QString::number(pref->mc_value));
+	}
 
 	// OSD
 	proc->setOption("osdlevel", pref->osd_level);
@@ -1146,33 +1167,12 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("forcedsubsonly");
 	}
 
-#if PROGRAM_SWITCH
-	if (mset.current_program_id != TMediaSettings::NoneSelected) {
-		proc->setOption("tsprog", QString::number(mset.current_program_id));
-	}
-	// Don't set video and audio track if using -tsprog
-	else {
-#endif
-
-	if (mset.current_video_id >= 0) {
-		proc->setOption("vid", QString::number(mset.current_video_id));
-	}
-
-	if (mset.external_audio.isEmpty() && mset.current_audio_id >= 0) {
-		proc->setOption("aid", QString::number(mset.current_audio_id));
-	}
-
-#if PROGRAM_SWITCH
-	}
-#endif
-
-	// Subtitles
-	// Setup external sub from command line or other instance
 	if (!initial_subtitle.isEmpty()) {
+		// Setup external sub from command line or other instance
 		setExternalSubs(initial_subtitle);
 		initial_subtitle = "";
 	} else if (mset.current_sub_set_by_user) {
-		// Selected sub when restarting
+		// Sub selected by user
 		if (mset.current_sub_idx >= 0) {
 			mset.sub = mdat.subs.itemAt(mset.current_sub_idx);
 		} else {
@@ -1221,16 +1221,8 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("subfps", fps);
 	}
 
-	if (!mset.external_audio.isEmpty()) {
-		proc->setOption("audiofile", mset.external_audio);
-	}
-
 	if (mset.sub_pos != 100)
 		proc->setOption("subpos", QString::number(mset.sub_pos));
-
-	if (mset.audio_delay != 0) {
-		proc->setOption("delay", QString::number((double) mset.audio_delay/1000));
-	}
 
 	if (mset.sub_delay != 0) {
 		proc->setOption("subdelay", QString::number((double) mset.sub_delay/1000));
@@ -1476,6 +1468,10 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("channels", QString::number(mset.audio_use_channels));
 	}
 
+	if (mset.audio_delay != 0) {
+		proc->setOption("delay", QString::number((double) mset.audio_delay/1000));
+	}
+
 	if (pref->use_hwac3) {
 		proc->setOption("afm", "hwac3");
 		qDebug("TCore::startPlayer: audio filters are disabled when using the S/PDIF output");
@@ -1578,7 +1574,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	}
 
-	// Last checks for the file
+	// Set file and playing msg
 	if (isMPlayer()) {
 		proc->setMedia(file, pref->use_playlist_option ? url_is_playlist : false);
 	} else {
@@ -1592,6 +1588,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	emit aboutToStartPlaying();
 
+	// Setup environment
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	if (pref->use_proxy
 		&& pref->proxy_type == QNetworkProxy::HttpProxy
@@ -1609,7 +1606,7 @@ void TCore::startPlayer(QString file, double seek) {
 	proc->setProcessEnvironment(env);
 
 	if (!proc->startPlayer()) {
-		// Error already reported by processError()
+		// Error reported by processError()
 		qWarning("TCore::startPlayer: player process didn't start");
 	}
 } //startPlayer()
