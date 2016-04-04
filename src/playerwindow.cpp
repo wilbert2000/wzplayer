@@ -207,55 +207,56 @@ void TPlayerWindow::updateVideoWindow() {
 
 	// On fullscreen ignore the toolbars
 	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
-	QSize vsize = s;
+	QSize video_size = s;
 
 	// Select best fit: height adjusted or width adjusted,
 	// in case video aspect does not match the window aspect ratio.
 	// Height adjusted gives horizontal black borders.
 	// Width adjusted gives vertical black borders,
 	if (aspect != 0) {
-		int height_adjusted = qRound(vsize.width() / aspect);
-		if (height_adjusted <= vsize.height()) {
+		int height_adjusted = qRound(video_size.width() / aspect);
+		if (height_adjusted <= video_size.height()) {
 			// adjust the height
-			vsize.rheight() = height_adjusted;
+			video_size.rheight() = height_adjusted;
 		} else {
 			// adjust the width
-			vsize.rwidth() = qRound(vsize.height() * aspect);
+			video_size.rwidth() = qRound(video_size.height() * aspect);
 		}
 	}
 
 	// Zoom
-	vsize *= zoom();
+	video_size *= zoom();
 
 	// Center
-	s = (s - vsize) / 2;
-	QPoint p(s.width(), s.height());
+	s = (s - video_size) / 2;
+	QPoint video_pos(s.width(), s.height());
 
 	// Move
-	p += pan();
+	video_pos += pan();
 
 	// Return to local coords in fullscreen
 	if (pref->fullscreen)
-		p = mapFromGlobal(p);
+		video_pos = mapFromGlobal(video_pos);
 
 	// Set geometry video layer
-	playerlayer->setGeometry(p.x(), p.y(), vsize.width(), vsize.height());
+	playerlayer->setGeometry(video_pos.x(), video_pos.y(),
+							 video_size.width(), video_size.height());
 
 	// Keep OSD in sight. Need the offset as seen by the player.
 	QPoint osd_pos(Proc::default_osd_pos);
-	if (p.x() < 0)
-		osd_pos.rx() -= p.x();
-	if (p.y() < 0)
-		osd_pos.ry() -= p.y();
+	if (video_pos.x() < 0)
+		osd_pos.rx() -= video_pos.x();
+	if (video_pos.y() < 0)
+		osd_pos.ry() -= video_pos.y();
 	emit moveOSD(osd_pos);
 
 	// Update status with new video out size
-	if (vsize != last_video_size) {
-		last_video_size = vsize;
-		emit videoOutChanged(vsize);
+	if (video_size != last_video_size) {
+		last_video_size = video_size;
+		emit videoOutChanged(video_size);
 	}
 
-	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << vsize;
+	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << video_pos << video_size;
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent*) {
