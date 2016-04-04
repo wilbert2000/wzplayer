@@ -24,8 +24,7 @@
 
 namespace Gui {
 
-class TInfoFile
-{
+class TInfoFile {
 
 public:
 	TInfoFile();
@@ -47,6 +46,7 @@ protected:
 private:
 	inline QString tr(const char* sourceText, const char* comment = 0, int n = -1);
 	QString formatSize(qint64 size);
+	void addTracks(QString& s, const Maps::TTracks& tracks, const QString& name);
 };
 
 } // namespace Gui

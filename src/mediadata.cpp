@@ -54,10 +54,10 @@ void TMediaData::init() {
 	video_fps = 0;
 	video_out_width = 0;
 	video_out_height = 0;
-	video_bitrate = 0;
+	video_bitrate = -1;
 	// video_hwdec set by constructor
 
-	audio_bitrate = 0;
+	audio_bitrate = -1;
 	audio_rate = 0;
 	audio_nch = 0;
 

@@ -49,6 +49,39 @@ QString TInfoFile::formatSize(qint64 size) {
 	return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2), locale.toString(size));
 }
 
+void TInfoFile::addTracks(QString& s, const Maps::TTracks& tracks, const QString& name) {
+
+	if (tracks.count() > 0) {
+		s += openPar(name);
+		row++;
+		s += openItem();
+		s += "<td>" + tr("#", "Info for translators: this is a abbreviation for number") + "</td><td>" +
+			 tr("Language") + "</td><td>" + tr("Name") +"</td><td>" +
+			 tr("ID", "Info for translators: this is a identification code") + "</td>";
+		s += closeItem();
+
+		int n = 0;
+		Maps::TTracks::TTrackIterator i = tracks.getIterator();
+		do {
+			i.next();
+			Maps::TTrackData track = i.value();
+			row++;
+			n++;
+			s += openItem();
+			QString lang = track.getLang();
+			if (lang.isEmpty())
+				lang = "<i>&lt;"+tr("empty")+"&gt;</i>";
+			QString name = track.getName();
+			if (name.isEmpty())
+				name = "<i>&lt;"+tr("empty")+"&gt;</i>";
+			s += QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
+				 .arg(n).arg(lang).arg(name).arg(track.getID());
+			s += closeItem();
+		} while (i.hasNext());
+		s += closePar();
+	}
+}
+
 QString TInfoFile::getInfo(const TMediaData& md) {
 
 	QString s;
@@ -109,58 +142,43 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += closePar();
 	}
 
-	// Video info
-	if (!md.noVideo()) {
+	// Video
+	if (md.hasVideo()) {
 		s += openPar(tr("Video"));
 		s += addItem(tr("Resolution source"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
 		s += addItem(tr("Resolution video out"), QString("%1 x %2").arg(md.video_out_width).arg(md.video_out_height));
-		s += addItem(tr("Aspect ratio"), QString::number(md.video_aspect));
-		s += addItem(tr("Aspect ratio specified"), md.video_aspect_set ? tr("yes") : tr("no"));
+		s += addItem(tr("Aspect ratio reported by player"), md.video_aspect);
+		s += addItem(tr("Original aspect ratio"), md.video_aspect_original == -1
+			? tr("Play with aspect ratio set to auto to detect")
+			: QString::number(md.video_aspect_original));
+		s += addItem(tr("Current aspect ratio"), QString::number((double) md.video_out_width / md.video_out_height));
 		s += addItem(tr("Format"), md.video_format);
-		s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000));
+		s += addItem(tr("Bitrate"), md.video_bitrate == -1
+			? (Settings::pref->isMPV() ? tr("Still testing, wait a few seconds") : tr("Unknown"))
+			: tr("%1 kbps").arg(md.video_bitrate / 1000));
 		s += addItem(tr("Frames per second"), QString::number(md.video_fps));
 		s += addItem(tr("Selected codec"), md.video_codec + " - " + md.video_codec_description);
+		s += addItem(tr("Number of tracks"), QString::number(md.videos.count()));
 		s += closePar();
 	}
 
-	// Audio info
-	s += openPar(tr("Initial Audio Stream"));
+	// Video tracks
+	addTracks(s, md.videos, tr("Video tracks"));
+
+	// Audio
+	s += openPar(tr("Audio"));
 	s += addItem(tr("Format"), md.audio_format);
-	s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.audio_bitrate / 1000));
+	s += addItem(tr("Bitrate"), md.audio_bitrate == -1
+		 ?  (Settings::pref->isMPV() ? tr("Still testing, wait a few seconds") : tr("Unknown"))
+		 : tr("%1 kbps").arg(md.audio_bitrate / 1000));
 	s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
 	s += addItem(tr("Channels"), QString::number(md.audio_nch));
 	s += addItem(tr("Selected codec"), md.audio_codec + " - " + md.audio_codec_description);
+	s += addItem(tr("Number of tracks"), QString::number(md.audios.count()));
 	s += closePar();
 
-	// Audio Tracks
-	if (md.audios.count() > 0) {
-		s += openPar(tr("Audio Streams"));
-		row++;
-		s += openItem();
-		s += "<td>" + tr("#", "Info for translators: this is a abbreviation for number") + "</td><td>" + 
-              tr("Language") + "</td><td>" + tr("Name") +"</td><td>" +
-              tr("ID", "Info for translators: this is a identification code") + "</td>";
-		s += closeItem();
-
-		Maps::TTracks::TTrackIterator i = md.audios.getIterator();
-		int n = 0;
-		do {
-			i.next();
-			Maps::TTrackData track = i.value();
-			row++;
-			n++;
-			s += openItem();
-			QString lang = track.getLang();
-			if (lang.isEmpty()) lang = "<i>&lt;"+tr("empty")+"&gt;</i>";
-			QString name = track.getName();
-			if (name.isEmpty()) name = "<i>&lt;"+tr("empty")+"&gt;</i>";
-			s += QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
-                 .arg(n).arg(lang).arg(name)
-				 .arg(track.getID());
-			s += closeItem();
-		} while (i.hasNext());
-		s += closePar();
-	}
+	// Audio tracks
+	addTracks(s, md.audios, tr("Audio tracks"));
 
 	// Subtitles
 	if (md.subs.count() > 0) {
