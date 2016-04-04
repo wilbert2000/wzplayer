@@ -26,6 +26,7 @@ private:
 	TCore* core;
 	TActionGroup* group;
 	TAction* aspectAutoAct;
+	TAction* aspectDisabledAct;
 	TAction* nextAspectAct;
 
 	void upd();

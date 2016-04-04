@@ -150,12 +150,15 @@ void TMediaSettings::reset() {
 }
 
 double TMediaSettings::aspectToDouble() {
-	return aspect_ratio.toDouble(md->video_out_width, md->video_out_height);
-}
 
-// TODO:
-double TMediaSettings::aspectToDouble2() {
-	return aspect_ratio.toDouble(-1, 1);
+	double aspect = aspect_ratio.toDouble();
+	if (aspect == 0) {
+		return (double) md->video_width / md->video_height;
+	}
+	if (aspect == -1) {
+		return (double) md->video_aspect_original;
+	}
+	return aspect;
 }
 
 void TMediaSettings::list() {
@@ -445,7 +448,7 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 		current_angle = 0;
 	}
 
-	aspect_ratio.setID(TAspectRatio::toTMenuID(set->value("aspect_ratio", aspect_ratio.toInt())));
+	aspect_ratio.setID(TAspectRatio::variantToTMenuID(set->value("aspect_ratio", aspect_ratio.toInt())));
 	restore_volume = false;
 	volume = set->value("volume", volume).toInt();
 	if (volume < 0) volume = 0;

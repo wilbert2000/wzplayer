@@ -17,7 +17,7 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 
 	group = new TActionGroup(this, "aspect");
 	group->setEnabled(false);
-	aspectAutoAct = new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("Au&to"), TAspectRatio::AspectAuto);
+	aspectAutoAct = new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TAspectRatio::AspectAuto);
 	addSeparator();
 	new TActionGroupItem(this, group, "aspect_1_1", TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11);
 	new TActionGroupItem(this, group, "aspect_5_4", TAspectRatio::aspectIDToString(1), TAspectRatio::Aspect54);
@@ -30,14 +30,15 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 	new TActionGroupItem(this, group, "aspect_16_9", TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169);
 	new TActionGroupItem(this, group, "aspect_2.35_1", TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect235);
 	addSeparator();
-	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TAspectRatio::AspectNone);
+	aspectDisabledAct = new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TAspectRatio::AspectNone);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(setAspectRatio(int)));
 	connect(core, SIGNAL(aspectRatioChanged(Settings::TAspectRatio::TMenuID)),
-			this, SLOT(onAspectRatioChanged(Settings::TAspectRatio::TMenuID)));
+			this, SLOT(onAspectRatioChanged(Settings::TAspectRatio::TMenuID)),
+			Qt::QueuedConnection);
 
 	addSeparator();
-	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("Next &aspect ratio"), "", Qt::Key_A);
+	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("&Next aspect ratio"), "", Qt::Key_A);
 	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
 
 	addActionsTo(parent);
@@ -52,8 +53,12 @@ void TMenuAspect::upd() {
 	QString s = TAspectRatio::doubleToString(aspect);
 	menuAction()->setToolTip(tr("Aspect ratio %1").arg(s));
 
-	s = TAspectRatio::doubleToString(core->mdat.video_aspect_original);
-	aspectAutoAct->setTextAndTip(tr("Au&to %1").arg(s));
+	s = tr("&Auto") + "\t" + TAspectRatio::doubleToString(core->mdat.video_aspect_original);
+	aspectAutoAct->setTextAndTip(s);
+
+	s = tr("&Disabled") + "\t" + TAspectRatio::doubleToString(
+			(double) core->mdat.video_width / core->mdat.video_height);
+	aspectDisabledAct->setTextAndTip(s);
 }
 
 void TMenuAspect::enableActions(bool stopped, bool video, bool) {

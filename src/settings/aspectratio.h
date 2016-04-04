@@ -10,7 +10,8 @@ namespace Settings {
 class TAspectRatio : public QObject {
 	Q_OBJECT
 public:
-	// IDs used by menu and TMediaSettings::load() and save()
+	// IDs used by menu and TMediaSettings::load() and save(),
+	// so cannot be changed
 	enum TMenuID {
 		AspectNone = 0,
 		AspectAuto = 1,
@@ -31,10 +32,10 @@ public:
 	static const unsigned int RATIOS_COUNT = 10;
 	static const double RATIOS[RATIOS_COUNT];
 	static const char* RATIO_NAMES[RATIOS_COUNT];
-	static TMenuID toTMenuID(const QVariant& id);
+	static TMenuID variantToTMenuID(const QVariant& id);
 	static QString doubleToString(double aspect);
 	static QString aspectIDToString(int id);
-	static double menuIDToDouble(TMenuID id, int w, int h);
+	static double menuIDToDouble(TMenuID id);
 
 	TAspectRatio();
 
@@ -42,7 +43,7 @@ public:
 	void setID(TMenuID anID) { id = anID; }
 	TMenuID nextMenuID() const;
 
-	double toDouble(int w, int h) const;
+	double toDouble() const;
 	int toInt() const { return id; }
 	QString toString() const;
 	QString toOption() const;

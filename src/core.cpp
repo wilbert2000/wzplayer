@@ -2912,7 +2912,7 @@ void TCore::setAspectRatio(int id) {
 		aspect_id = (TAspectRatio::TMenuID) id;
 
 	mset.aspect_ratio.setID(aspect_id);
-	proc->setAspect(mset.aspectToDouble2());
+	proc->setAspect(mset.aspect_ratio.toDouble());
 
 	emit aspectRatioChanged(aspect_id);
 	emit showMessage(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));

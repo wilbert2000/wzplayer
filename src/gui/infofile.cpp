@@ -25,6 +25,7 @@
 #include "discname.h"
 #include "images.h"
 #include "maps/tracks.h"
+#include "settings/aspectratio.h"
 
 namespace Gui {
 
@@ -150,8 +151,9 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += addItem(tr("Aspect ratio reported by player"), md.video_aspect);
 		s += addItem(tr("Original aspect ratio"), md.video_aspect_original == -1
 			? tr("Play with aspect ratio set to auto to detect")
-			: QString::number(md.video_aspect_original));
-		s += addItem(tr("Current aspect ratio"), QString::number((double) md.video_out_width / md.video_out_height));
+			: Settings::TAspectRatio::doubleToString(md.video_aspect_original));
+		s += addItem(tr("Current aspect ratio"),
+			Settings::TAspectRatio::doubleToString((double) md.video_out_width / md.video_out_height));
 		s += addItem(tr("Format"), md.video_format);
 		s += addItem(tr("Bitrate"), md.video_bitrate == -1
 			? (Settings::pref->isMPV() ? tr("Still testing, wait a few seconds") : tr("Unknown"))

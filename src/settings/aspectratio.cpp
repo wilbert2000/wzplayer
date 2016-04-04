@@ -18,6 +18,7 @@ const double TAspectRatio::RATIOS[] = {
 	2.35
 };
 
+// List of aspect ratio names used in menus and pretty strings
 const char* TAspectRatio::RATIO_NAMES[] = {
 	QT_TR_NOOP("1&:1"),
 	QT_TR_NOOP("&5:4"),
@@ -31,8 +32,8 @@ const char* TAspectRatio::RATIO_NAMES[] = {
 	QT_TR_NOOP("&2.35:1")
 };
 
-
-TAspectRatio::TMenuID TAspectRatio::toTMenuID(const QVariant& id) {
+// Convert saved aspect back to TMenuID
+TAspectRatio::TMenuID TAspectRatio::variantToTMenuID(const QVariant& id) {
 
 	int i = id.toInt();
 	if (i >= 0 && i <= MAX_MENU_ID) {
@@ -41,11 +42,11 @@ TAspectRatio::TMenuID TAspectRatio::toTMenuID(const QVariant& id) {
 	return AspectAuto;
 }
 
-// Used to create strings for aspect ratio menu
+// Create pretty string for aspect double, like 0.75 becomes "4:3 (0.75)"
 QString TAspectRatio::doubleToString(double aspect) {
 
 	if (aspect == -1) {
-		return tr("(Unknown)");
+		return tr("Unknown");
 	}
 
 	for(unsigned int i = 0; i < RATIOS_COUNT; i++) {
@@ -56,14 +57,15 @@ QString TAspectRatio::doubleToString(double aspect) {
 		}
 	}
 
-	return tr("(%1)").arg(QString::number(aspect));
+	return QString::number(aspect);
 }
 
+// Get string to use in menu. Note: id is not a TMenuID!
 QString TAspectRatio::aspectIDToString(int id) {
 
 	QString name = tr(RATIO_NAMES[id]);
 	double aspect = RATIOS[id];
-	return tr("%1 (%2)").arg(name, QString::number(aspect));
+	return name + "\t" + tr("(%1)").arg(QString::number(aspect));
 }
 
 
@@ -86,40 +88,30 @@ TAspectRatio::TMenuID TAspectRatio::nextMenuID() const {
 		case Aspect32: return Aspect149;
 		case Aspect1410: return Aspect32;
 		case Aspect118: return Aspect1410;
-		//case AspectNone: return AspectAuto;
 		default: return AspectAuto;
 	}
 }
 
-double TAspectRatio::menuIDToDouble(TMenuID id, int w, int h) {
-
-	double asp;
+double TAspectRatio::menuIDToDouble(Settings::TAspectRatio::TMenuID id) {
 
 	switch (id) {
-		case AspectNone: asp = 0; break;
-		case Aspect43: asp = (double) 4 / 3; break;
-		case Aspect169: asp = (double) 16 / 9; break;
-		case Aspect149: asp = (double) 14 / 9; break;
-		case Aspect1610: asp = (double) 16 / 10; break;
-		case Aspect54: asp = (double) 5 / 4; break;
-		case Aspect235: asp = 2.35; break;
-		case Aspect11: asp = 1; break;
-		case Aspect32: asp = (double) 3 / 2; break;
-		case Aspect1410: asp = (double) 14 / 10; break;
-		case Aspect118: asp = (double) 11 / 8; break;
-		default:
-			if (h == 0) {
-				asp = 0;
-			} else {
-				asp = (double) w / h;
-			}
+		case AspectNone: return 0;
+		case Aspect43: return (double) 4 / 3;
+		case Aspect169: return (double) 16 / 9;
+		case Aspect149: return (double) 14 / 9;
+		case Aspect1610: return (double) 16 / 10;
+		case Aspect54: return (double) 5 / 4;
+		case Aspect235: return 2.35;
+		case Aspect11: return 1;
+		case Aspect32: return (double) 3 / 2;
+		case Aspect1410: return (double) 14 / 10;
+		case Aspect118: return (double) 11 / 8;
+		default: return -1;
 	}
-
-	return asp;
 }
 
-double TAspectRatio::toDouble(int w, int h) const {
-	return menuIDToDouble(id, w, h);
+double TAspectRatio::toDouble() const {
+	return menuIDToDouble(id);
 }
 
 QString TAspectRatio::toString() const {
@@ -133,7 +125,7 @@ QString TAspectRatio::toString() const {
 		case Aspect149: name = "14:9"; break;
 		case Aspect1610: name = "16:10"; break;
 		case Aspect54: name = "5:4"; break;
-		case Aspect235: name = "2.35:1"; break; // dot should be translated
+		case Aspect235: name = QString(RATIO_NAMES[9]).replace("&", ""); break;
 		case Aspect11: name = "1:1"; break;
 		case Aspect32: name = "3:2"; break;
 		case Aspect1410: name = "14:10"; break;
