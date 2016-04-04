@@ -163,12 +163,13 @@ void TDefault::displayVideoInfo() {
 	if (core->mdat.noVideo()) {
 		video_info_display->setText(" ");
 	} else {
+		QSize video_out_size = playerwindow->lastVideoSize();
 		video_info_display->setText(tr("%1 x %2", "video source width x height")
 			.arg(core->mdat.video_width).arg(core->mdat.video_height)
 			+ " " + QString::fromUtf8("\u279F") + " "
 			+ tr("%1 x %2 %3 fps", "video out width x height + fps")
-			.arg(playerwindow->videoLayer()->width())
-			.arg(playerwindow->videoLayer()->height())
+			.arg(video_out_size.width())
+			.arg(video_out_size.height())
 			.arg(core->mdat.video_fps));
 	}
 }

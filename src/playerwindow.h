@@ -63,6 +63,7 @@ public:
 			 QPoint pan_fullscreen);
 	void setResolution(int width, int height);
 	QSize resolution() const { return video_size; }
+	QSize lastVideoSize() const { return last_video_size; }
 	double aspectRatio() const { return aspect; }
 
 	// Zoom

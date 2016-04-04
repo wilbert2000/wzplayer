@@ -3099,7 +3099,7 @@ void TCore::autoZoom() {
 	double video_aspect = mset.aspectToDouble();
 
 	if (video_aspect <= 0) {
-		QSize w = playerwindow->videoLayer()->size();
+		QSize w = playerwindow->lastVideoSize();
 		video_aspect = (double) w.width() / w.height();
 	}
 
@@ -3128,7 +3128,7 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 	double video_aspect = mset.aspectToDouble();
 
 	if (video_aspect <= 0) {
-		QSize w = playerwindow->videoLayer()->size();
+		QSize w = playerwindow->lastVideoSize();
 		video_aspect = (double) w.width() / w.height();
 	}
 
