@@ -3040,12 +3040,12 @@ void TCore::getPanFromPlayerWindow() {
 	mset.pan_offset_fullscreen = playerwindow->panFullScreen();
 }
 
-void TCore::changeZoom(double factor) {
-	qDebug("TCore::changeZoom: %f", factor);
+void TCore::setZoom(double factor) {
+	qDebug("TCore::setZoom: %f", factor);
 
 	if (mdat.hasVideo()) {
-		// Kept between min and max by playerwindow->setZoom()
-		// Hence reread of factors
+		// Kept between min and max by playerwindow->setZoom(),
+		// so reread factors
 		playerwindow->setZoom(factor);
 		getZoomFromPlayerWindow();
 		displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
@@ -3115,7 +3115,7 @@ void TCore::autoZoom() {
 	qDebug("TCore::autoZoom: screen_aspect: %f", screen_aspect);
 	qDebug("TCore::autoZoom: zoom_factor: %f", zoom_factor);
 
-	changeZoom(zoom_factor);
+	setZoom(zoom_factor);
 }
 
 void TCore::autoZoomFromLetterbox(double aspect) {
@@ -3153,7 +3153,7 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 	double zoom_factor = (double) desktop.height() / actual_video.height();
 
 	qDebug("TCore::autoZoomFromLetterbox: calculated zoom factor: %f", zoom_factor);
-	changeZoom(zoom_factor);	
+	setZoom(zoom_factor);
 }
 
 void TCore::autoZoomFor169() {
@@ -3168,11 +3168,11 @@ void TCore::autoZoomFor235() {
 const double ZOOM_STEP = 0.05;
 
 void TCore::incZoom() {
-	changeZoom(playerwindow->zoom() + ZOOM_STEP);
+	setZoom(playerwindow->zoom() + ZOOM_STEP);
 }
 
 void TCore::decZoom() {
-	changeZoom(playerwindow->zoom() - ZOOM_STEP);
+	setZoom(playerwindow->zoom() - ZOOM_STEP);
 }
 
 void TCore::showFilenameOnOSD() {

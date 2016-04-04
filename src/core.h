@@ -277,7 +277,7 @@ public slots:
 	void nextOSDLevel();
 	void nextWheelFunction();
 
-	void changeZoom(double); // Zoom on playerwindow
+	void setZoom(double); // Zoom on playerwindow
 
 	void changeRotate(int r);
 
