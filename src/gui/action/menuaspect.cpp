@@ -32,7 +32,7 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 	addSeparator();
 	new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TAspectRatio::AspectNone);
 
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeAspectRatio(int)));
+	connect(group, SIGNAL(activated(int)), core, SLOT(setAspectRatio(int)));
 	connect(core, SIGNAL(aspectRatioChanged(Settings::TAspectRatio::TMenuID)),
 			this, SLOT(onAspectRatioChanged(Settings::TAspectRatio::TMenuID)));
 
@@ -49,17 +49,15 @@ void TMenuAspect::upd() {
 	group->setChecked(core->mset.aspect_ratio.ID());
 
 	double aspect = core->mset.aspectToDouble();
-	QString tip = TAspectRatio::doubleToString(aspect);
-	menuAction()->setToolTip(tr("Aspect ratio %1").arg(tip));
+	QString s = TAspectRatio::doubleToString(aspect);
+	menuAction()->setToolTip(tr("Aspect ratio %1").arg(s));
 
-	aspect = TAspectRatio::menuIDToDouble(TAspectRatio::AspectAuto,
-										  core->mdat.video_out_width,
-										  core->mdat.video_out_height);
-	tip = TAspectRatio::doubleToString(aspect);
-	aspectAutoAct->setTextAndTip(tr("Au&to %1").arg(tip));
+	s = TAspectRatio::doubleToString(core->mdat.video_aspect_original);
+	aspectAutoAct->setTextAndTip(tr("Au&to %1").arg(s));
 }
 
 void TMenuAspect::enableActions(bool stopped, bool video, bool) {
+
 	// Uses mset, so useless to set if stopped or no video
 	bool enabled = !stopped && video;
 	group->setEnabled(enabled);

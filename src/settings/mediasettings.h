@@ -165,6 +165,7 @@ public:
 
 	TAspectRatio aspect_ratio;
 	double aspectToDouble();
+	double aspectToDouble2();
 
 	void list();
 

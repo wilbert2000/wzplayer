@@ -10,7 +10,7 @@ namespace Settings {
 class TAspectRatio : public QObject {
 	Q_OBJECT
 public:
-	// IDs used by menu
+	// IDs used by menu and TMediaSettings::load() and save()
 	enum TMenuID {
 		AspectNone = 0,
 		AspectAuto = 1,
@@ -45,6 +45,7 @@ public:
 	double toDouble(int w, int h) const;
 	int toInt() const { return id; }
 	QString toString() const;
+	QString toOption() const;
 
 private:
 	TMenuID id;

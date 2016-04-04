@@ -173,7 +173,6 @@ private:
 	void dvdnavSave();
 	void dvdnavRestore();
 
-	bool parseVO(const QString& driver, int w, int h);
 	bool parseSubID(const QString& type, int id);
 	bool parseSubTrack(const QString& type, int id, const QString& name, const QString& value);
 	bool parseChapter(int id, const QString& type, const QString& value);

@@ -304,10 +304,11 @@ void TPlayerProcess::quit(int exit_code) {
 
 bool TPlayerProcess::parseLine(QString& line) {
 
+	static QRegExp rx_vo("^VO: \\[([^\\]]*)\\] (\\d+)x(\\d+)( => (\\d+)x(\\d+))?");
 	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
-	// TODO: remove trim. Be carefull some regexp might depend on it...
+	// TODO: remove trim. Be carefull some regexp depend on it...
 	// Trim line
 	line = line.trimmed();
 	if (line.isEmpty())
@@ -319,6 +320,13 @@ bool TPlayerProcess::parseLine(QString& line) {
 	if (quit_send) {
 		qDebug("Proc::TPlayerProcess::parseLine: ignored, waiting for quit to arrive");
 		return true;
+	}
+
+	// VO
+	if (rx_vo.indexIn(line) >= 0) {
+		return parseVO(rx_vo.cap(1),
+					   rx_vo.cap(2).toInt(), rx_vo.cap(3).toInt(),
+					   rx_vo.cap(5).toInt(), rx_vo.cap(6).toInt());
 	}
 
 	if (rx_no_disk.indexIn(line) >= 0) {
@@ -335,6 +343,80 @@ bool TPlayerProcess::parseLine(QString& line) {
 	}
 
 	// Like to be parsed a little longer
+	return false;
+}
+
+bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) {
+
+	md->vo = vo;
+	md->video_width = sw;
+	md->video_height = sh;
+	if (dw == 0) {
+		md->video_out_width = sw;
+		md->video_out_height = sh;
+	} else {
+		md->video_out_width = dw;
+		md->video_out_height = dh;
+	}
+
+	qDebug() << "Proc::TMPVProcess::parseLine: VO" << md->vo
+			 << md->video_width << "x" << md->video_height << "=>"
+			 << md->video_out_width << "x" << md->video_out_height;
+
+	if (notified_player_is_running) {
+		emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
+	}
+
+	return true;
+}
+
+bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
+
+	/* Replaced by parseVO()
+	if (name == "WIDTH") {
+		md->video_width = value.toInt();
+		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_width set to %d",
+			   md->video_width);
+		return true;
+	}
+	if (name == "HEIGHT") {
+		md->video_height = value.toInt();
+		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_height set to %d",
+			   md->video_height);
+		return true;
+	}
+	*/
+	if (name == "ASPECT") {
+		md->video_aspect = value;
+		qDebug() << "Proc::TPlayerProcess::parseAspectRatio: video aspect ratio set to"
+				 << md->video_aspect;
+		return true;
+	}
+	if (name == "FPS") {
+		md->video_fps = value.toDouble();
+		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_fps set to %f",
+			   md->video_fps);
+		return true;
+	}
+	if (name == "BITRATE") {
+		md->video_bitrate = value.toInt();
+		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_bitrate set to %d",
+			   md->video_bitrate);
+		return true;
+	}
+	if (name == "FORMAT") {
+		md->video_format = value;
+		qDebug() << "Proc::TPlayerProcess::parseVideoProperty: video_format set to"
+				 << md->video_format;
+		return true;
+	}
+	if (name == "CODEC") {
+		md->video_codec = value;
+		qDebug() << "Proc::TPlayerProcess::parseVideoProperty: video_codec set to"
+				 << md->video_codec;
+		return true;
+	}
+
 	return false;
 }
 
@@ -363,83 +445,6 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 	if (name == "CODEC") {
 		md->audio_codec = value;
 		qDebug() << "Proc::TPlayerProcess::parseAudioProperty: audio_codec set to" << md->audio_codec;
-		return true;
-	}
-
-	return false;
-}
-
-bool TPlayerProcess::setAspectRatio(const QString& value) {
-
-	// Try to increase the precision
-	double aspect = value.toDouble();
-	double source_aspect = md->video_height ? (double) md->video_width / md->video_height : 0.0;
-
-	if (aspect < 0.001) {
-		qDebug("Proc::TPlayerProcess::setAspectRatio: aspect ratio not set, using source aspect");
-		md->video_aspect_set = false;
-		aspect = source_aspect;
-	} else {
-		md->video_aspect_set = true;
-		// MPlayer prints 4 digits precision, aka 1.3333, MPV 6 aka 1.333333
-		// Prefer source aspect
-		if (qAbs(aspect - source_aspect) < 0.0001) {
-			qDebug("Proc::TPlayerProcess::setAspectRatio: selecting source aspect %f for aspect %f",
-				   source_aspect, aspect);
-			aspect = source_aspect;
-		} else {
-			// Check against arbitrary list
-			for (unsigned int i = 0; i < Settings::TAspectRatio::RATIOS_COUNT; i++) {
-				const double predef = Settings::TAspectRatio::RATIOS[i];
-				if (qAbs(predef - aspect) < 0.0001) {
-					qDebug("Proc::TPlayerProcess::setAspectRatio: selecting predefined aspect %f for aspect %f",
-						   predef, aspect);
-					aspect = predef;
-					break;
-				}
-			} // for
-		}
-	}
-
-	qDebug("Proc::TPlayerProcess::setAspectRatio: video aspect ratio changed from %f to %f",
-		   md->video_aspect, aspect);
-	md->video_aspect = aspect;
-	return true;
-}
-
-bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
-
-	if (name == "WIDTH") {
-		md->video_width = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_width set to %d", md->video_width);
-		return true;
-	}
-	if (name == "HEIGHT") {
-		md->video_height = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_height set to %d", md->video_height);
-		return true;
-	}
-	if (name == "ASPECT") {
-		return setAspectRatio(value);
-	}
-	if (name == "FPS") {
-		md->video_fps = value.toDouble();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_fps set to %f", md->video_fps);
-		return true;
-	}
-	if (name == "BITRATE") {
-		md->video_bitrate = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_bitrate set to %d", md->video_bitrate);
-		return true;
-	}
-	if (name == "FORMAT") {
-		md->video_format = value;
-		qDebug() << "Proc::TPlayerProcess::parseVideoProperty: video_format set to" << md->video_format;
-		return true;
-	}
-	if (name == "CODEC") {
-		md->video_codec = value;
-		qDebug() << "Proc::TPlayerProcess::parseVideoProperty: video_codec set to" << md->video_codec;
 		return true;
 	}
 

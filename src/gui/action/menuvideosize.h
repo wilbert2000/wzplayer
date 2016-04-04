@@ -1,7 +1,6 @@
 #ifndef GUI_VIDEOSIZEMENU_H
 #define GUI_VIDEOSIZEMENU_H
 
-#include <QTimer>
 #include "gui/action/actiongroup.h"
 #include "gui/action/menu.h"
 
@@ -22,7 +21,6 @@ public:
 	int size_percentage;
 
 public slots:
-	void enableVideoSizeGroup(bool on);
 	void updateVideoSizeGroup();
 
 private:
@@ -35,7 +33,7 @@ private:
 class TMenuVideoSize : public TMenu {
 	Q_OBJECT
 public:
-	TMenuVideoSize(TBase* mw, TCore* core, TPlayerWindow* pw);
+	TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
@@ -48,20 +46,11 @@ private:
 	TAction* doubleSizeAct;
 	TAction* currentSizeAct;
 
-	QTimer update_size_factor_timer;
-	int block_update_size_factor;
-
 	bool optimizeSizeFactorPreDef(int factor, int predef_factor);
 	void upd();
 
 private slots:
-	void updateSizeFactor();
-	void unlockSizeFactor();
-	void onFullscreenChanged();
-	void onFullscreenChangedDone();
 	void onVideoSizeFactorChanged();
-	void onZoomChanged(double);
-	void onMainWindowResizeEvent(QResizeEvent* event);
 	void optimizeSizeFactor();
 }; // class TMenuVideoSize
 

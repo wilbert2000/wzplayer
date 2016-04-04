@@ -78,8 +78,8 @@ public:
 	QString vo;
 	int video_width;
 	int video_height;
-	double video_aspect;
-	bool video_aspect_set;
+	QString video_aspect;
+	double video_aspect_original;
 	double video_fps;
 
 	// Resolution with aspect and filters applied

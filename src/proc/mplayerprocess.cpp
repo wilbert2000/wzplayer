@@ -628,16 +628,6 @@ bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QStrin
 	return true;
 }
 
-bool TMPlayerProcess::parseVO(const QString& driver, int w, int h) {
-
-	md->vo = driver;
-	md->video_out_width = w;
-	md->video_out_height = h;
-
-	qDebug() << "Proc::TMPlayerProcess::parseVO: video out" << driver << w << "x" << h;
-	return true;
-}
-
 bool TMPlayerProcess::parsePause() {
 
 	if (md->time_sec > frame_backstep_time_start) {
@@ -813,8 +803,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// Answers to queries
 	static QRegExp rx_answer("^ANS_(.+)=(.*)");
 
-	// Video driver and resolution after filters and aspect applied
-	static QRegExp rx_vo("^VO: \\[(.*)\\] \\d+x\\d+ => (\\d+)x(\\d+)");
 	// Audio driver
 	static QRegExp rx_ao("^AO: \\[(.*)\\]");
 	// Video and audio tracks
@@ -915,12 +903,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// Answers ANS_name=value
 	if (rx_answer.indexIn(line) >= 0) {
 		return parseAnswer(rx_answer.cap(1).toUpper(), rx_answer.cap(2));
-	}
-
-	// VO driver and resolution after aspect and filters applied
-	if (rx_vo.indexIn(line) >= 0) {
-		return parseVO(rx_vo.cap(1), rx_vo.cap(2).toInt(),
-					   rx_vo.cap(3).toInt());
 	}
 
 	// AO driver
@@ -1214,6 +1196,16 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 			arg << "-" + name;
 		} else {
 			arg << "-no" + name;
+		}
+	} else if (name == "aspect") {
+		QString s = value.toString();
+		if (!s.isEmpty()) {
+			if (s == "0") {
+				arg << "-noaspect";
+			} else {
+				arg << "-aspect";
+				arg << s;
+			}
 		}
 	} else {
 		arg << "-" + name;

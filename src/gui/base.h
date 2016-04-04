@@ -172,13 +172,10 @@ signals:
 	void mediaFileTitleChanged(const QString& filename, const QString& title);
 
 	void fullscreenChanged();
-	void fullscreenChangedDone();
 	void aboutToEnterFullscreenSignal();
 	void didEnterFullscreenSignal();
 	void didExitFullscreenSignal();
 
-	void videoSizeFactorChanged();
-	void mainWindowResizeEvent(QResizeEvent* event);
 	void stayOnTopChanged(int);
 
 	//! Sent when another instance requested to play a file
@@ -254,7 +251,6 @@ protected:
 	virtual void changeEvent(QEvent* event);
 	virtual void hideEvent(QHideEvent* event);
 	virtual void showEvent(QShowEvent* event);
-	virtual void resizeEvent(QResizeEvent* event);
 
 #if QT_VERSION >= 0x050000
 	virtual bool event(QEvent* e);
@@ -380,7 +376,7 @@ private:
 	double getNewSizeFactor();
 	void hidePanel();
 	void centerWindow();
-	void resizeMainWindow(int w, int h, bool try_twice = true);
+	void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 
 	void enterFullscreenOnPlay();
 	void checkPendingActionsToRun();

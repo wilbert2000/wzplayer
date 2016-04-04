@@ -271,7 +271,7 @@ public slots:
 	void nextChapter();
 	void setAngle(int);
 	void nextAngle();
-	void changeAspectRatio(int id);
+	void setAspectRatio(int id);
 	void nextAspectRatio();
 	void changeOSDLevel(int level);
 	void nextOSDLevel();
@@ -357,7 +357,6 @@ signals:
 	void showMessage(const QString& text, int time);
 
 	void aspectRatioChanged(Settings::TAspectRatio::TMenuID id);
-	void zoomChanged(double);
 
 	void volumeChanged(int);
 	void muteChanged(bool);

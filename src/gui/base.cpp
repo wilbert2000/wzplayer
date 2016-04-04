@@ -975,9 +975,6 @@ void TBase::applyNewPreferences() {
 	// Video equalizer
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
-	// Monitor
-	playerwindow->setMonitorAspect(pref->monitorAspectDouble());
-
 	// Subtitles
 	subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
@@ -1546,8 +1543,6 @@ void TBase::toggleFullscreen(bool b) {
 		core->changeLetterboxOnFullscreen(pref->fullscreen);
 	}
 
-	emit fullscreenChangedDone();
-
 	setFocus(); // Fixes bug #2493415
 }
 
@@ -1923,14 +1918,10 @@ void TBase::changeSize(double factor) {
 	if (core->mdat.noVideo())
 		return;
 
-	pref->size_factor = factor;
-
 	if (pref->fullscreen) {
-		// Adjust zoom to match the requested size
-		QSize video_size = playerwindow->getAdjustedSize(
-			core->mdat.video_out_width,
-			core->mdat.video_out_height,
-			pref->size_factor);
+		// Adjust zoom to match the requested size factor
+		QSize video_size = QSize(core->mdat.video_out_width,
+								 core->mdat.video_out_height) * factor;
 		QSize desktop_size = TDesktop::size(this);
 		double zoom = (double) video_size.width() / desktop_size.width();
 		double zoomY = (double) video_size.height() / desktop_size.height();
@@ -1940,9 +1931,11 @@ void TBase::changeSize(double factor) {
 		playerwindow->setZoom(zoom);
 	} else {
 		// Normal screen
+		pref->size_factor = factor;
 		bool center = false;
 		if (isMaximized()) {
 			showNormal();
+			// Need center, on X windows the original pos is not restored
 			center = true;
 		}
 		resizeWindow(core->mdat.video_out_width, core->mdat.video_out_height);
@@ -1951,7 +1944,6 @@ void TBase::changeSize(double factor) {
 		}
 	}
 
-	emit videoSizeFactorChanged();
 	core->displayMessage(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
 }
 
@@ -1998,10 +1990,15 @@ double TBase::getNewSizeFactor() {
 	double size_factor = 1.0;
 	QSize available_size = TDesktop::availableSize(playerwindow);
 	QSize res = playerwindow->resolution();
-	QSize video_size = playerwindow->getAdjustedSize(res.width(), res.height(), size_factor);
+	QSize video_size = res;
 
 	if (pref->fullscreen) {
-		return (double) available_size.width() / video_size.width();
+		size_factor = (double) available_size.width() / video_size.width();
+		double size_factor_y = (double) available_size.height() / video_size.height();
+		if (size_factor_y < size_factor) {
+			return size_factor_y;
+		}
+		return size_factor;
 	}
 
 	// Limit size to 0.6 of available desktop
@@ -2014,7 +2011,7 @@ double TBase::getNewSizeFactor() {
 		qDebug("Gui::TBase::getNewSizeFactor: height larger as %f desktop, reducing size factor from %f to %f",
 			   f, size_factor, factor);
 		size_factor = factor;
-		video_size = playerwindow->getAdjustedSize(res.width(), res.height(), size_factor);
+		video_size = res * size_factor;
 	}
 	// Adjust width
 	max = f * available_size.width();
@@ -2023,7 +2020,7 @@ double TBase::getNewSizeFactor() {
 		qDebug("Gui::TBase::getNewSizeFactor: width larger as %f desktop, reducing size factor from %f to %f",
 			   f, size_factor, factor);
 		size_factor = factor;
-		video_size = playerwindow->getAdjustedSize(res.width(), res.height(), size_factor);
+		video_size = res * size_factor;
 	}
 
 	if (size_factor != 1.0) {
@@ -2069,20 +2066,16 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		if (!panel->isVisible()) {
 			panel->show();
 		}
-		// Leave maximized window as is
-		if (!isMaximized()) {
-			// force_resize only set for the first video
-			// when pref->save_window_size_on_exit not set.
-			if (pref->resize_on_load || force_resize) {
-				// Try size factor 1.0
-				pref->size_factor = getNewSizeFactor();
-				resizeWindow(w, h);
-			} else {
-				// Adjust the size factor to the current window size
-				playerwindow->updateSizeFactor();
-			}
-
-			emit videoSizeFactorChanged();
+		// force_resize is only set for the first video
+		// when pref->save_window_size_on_exit not set.
+		// Leave maximized window as is.
+		if (!isMaximized() && (pref->resize_on_load || force_resize)) {
+			// Try size factor 1.0
+			pref->size_factor = getNewSizeFactor();
+			resizeWindow(w, h);
+		} else {
+			// Adjust the size factor to the current window size
+			playerwindow->updateSizeFactor();
 		}
 	}
 
@@ -2101,17 +2094,16 @@ void TBase::resizeWindow(int w, int h) {
 	// qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
 	if (!pref->fullscreen && !isMaximized()) {
-		resizeMainWindow(w, h);
+		resizeMainWindow(w, h, pref->size_factor);
 		TDesktop::keepInsideDesktop(this);
 	}
 }
 
-void TBase::resizeMainWindow(int w, int h, bool try_twice) {
+void TBase::resizeMainWindow(int w, int h, double size_factor, bool try_twice) {
 	qDebug("Gui::TBase::resizeMainWindow: requested video size %d x %d, size factor %f",
 		   w, h, pref->size_factor);
 
-	// Adjust for selected size and aspect ratio
-	QSize panel_size = playerwindow->getAdjustedSize(w, h, pref->size_factor);
+	QSize panel_size = QSize(w, h) * size_factor;
 	if (panel_size == panel->size()) {
 		qDebug("Gui::TBase::resizeMainWindow: panel has requested size");
 		return;
@@ -2132,7 +2124,7 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 			qDebug("Gui::TBase::resizeMainWindow: panel size now %d x %d. Wanted size %d x %d. Trying a second time",
 				   panel->size().width(), panel->size().height(),
 				   panel_size.width(), panel_size.height());
-			resizeMainWindow(w, h, false);
+			resizeMainWindow(w, h, size_factor, false);
 		} else {
 			qDebug("Gui::TBase::resizeMainWindow: resize failed. Panel size now %d x %d. Wanted size %d x %d",
 				   panel->size().width(), panel->size().height(),
@@ -2140,13 +2132,6 @@ void TBase::resizeMainWindow(int w, int h, bool try_twice) {
 		}
 	}
 
-}
-
-void TBase::resizeEvent(QResizeEvent* event) {
-	//qDebug() << "TBase::resizeEvent: event spontaneous:" << event->spontaneous();
-
-	QMainWindow::resizeEvent(event);
-	emit mainWindowResizeEvent(event);
 }
 
 // Slot called when media settings reset or loaded

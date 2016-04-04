@@ -496,8 +496,6 @@ bool TMPVProcess::parseLine(QString& line) {
 	static QRegExp rx_audio_track("^(.*)Audio\\s+--aid=(\\d+)(\\s+--alang=([a-zA-Z]+))?(.*)");
 	static QRegExp rx_subtitle_track("^(.*)Subs\\s+--sid=(\\d+)(\\s+--slang=([a-zA-Z]+))?(\\s+'(.*)')?(\\s+\\((.*)\\))?");
 
-	static QRegExp rx_dsize("^VIDEO_DSIZE=(\\d+)x(\\d+)");
-	static QRegExp rx_vo("^VO: \\[(.*)\\]");
 	static QRegExp rx_ao("^AO: \\[(.*)\\]");
 
 	static QRegExp rx_video_codec("^VIDEO_CODEC=\\s*(.*) \\[(.*)\\]");
@@ -586,26 +584,6 @@ bool TMPVProcess::parseLine(QString& line) {
 								  rx_subtitle_track.cap(6).trimmed(),
 								  rx_subtitle_track.cap(8),
 								  rx_subtitle_track.cap(1) != "");
-	}
-
-	// VO
-	if (rx_vo.indexIn(line) >= 0) {
-		md->vo = rx_vo.cap(1);
-		qDebug() << "MVPProcess::parseLine: video out driver" << md->vo;
-		// Ask for video out resolution
-		writeToStdin("print_text VIDEO_DSIZE=${=dwidth}x${=dheight}");
-		waiting_for_answers++;
-		return true;
-	}
-
-	// Video out size w x h
-	if (rx_dsize.indexIn(line) >= 0) {
-		waiting_for_answers--;
-		md->video_out_width = rx_dsize.cap(1).toInt();
-		md->video_out_height = rx_dsize.cap(2).toInt();
-		qDebug("Proc::TMPVProcess::parseLine: set video out size to %d x %d",
-			   md->video_out_width, md->video_out_height);
-		return true;
 	}
 
 	// AO
@@ -716,10 +694,7 @@ bool TMPVProcess::parseLine(QString& line) {
 
 void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 	arg << "--term-playing-msg="
-		"VIDEO_WIDTH=${=width}\n"
-		"VIDEO_HEIGHT=${=height}\n"
-		"VIDEO_ASPECT=${=video-aspect}\n"
-//		"VIDEO_DSIZE=${=dwidth}x${=dheight}\n"
+		"VIDEO_ASPECT=${video-aspect}\n"
 		"VIDEO_FPS=${=fps}\n"
 //		"VIDEO_BITRATE=${=video-bitrate}\n"
 		"VIDEO_FORMAT=${=video-format}\n"
@@ -855,6 +830,16 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		if (!value.isNull())
 			s += "=" + value.toString();
 		arg << s;
+	} else if (name == "aspect") {
+		QString s = value.toString();
+		if (!s.isEmpty()) {
+			if (s == "0") {
+				arg << "--no-video-aspect";
+			} else {
+				arg << "--video-aspect";
+				arg << s;
+			}
+		}
 	} else if (name == "cache") {
 		int cache = value.toInt();
 		if (cache > 31) {

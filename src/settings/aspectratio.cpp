@@ -41,16 +41,22 @@ TAspectRatio::TMenuID TAspectRatio::toTMenuID(const QVariant& id) {
 	return AspectAuto;
 }
 
+// Used to create strings for aspect ratio menu
 QString TAspectRatio::doubleToString(double aspect) {
 
+	if (aspect == -1) {
+		return tr("(Unknown)");
+	}
+
 	for(unsigned int i = 0; i < RATIOS_COUNT; i++) {
-		if (aspect == RATIOS[i]) {
+		if (qAbs(aspect - RATIOS[i]) < 0.0001) {
 			QString s = RATIO_NAMES[i];
 			s.replace("&", "");
 			return tr("%1 (%2)").arg(s, QString::number(aspect));
 		}
 	}
-	return QString::number(aspect);
+
+	return tr("(%1)").arg(QString::number(aspect));
 }
 
 QString TAspectRatio::aspectIDToString(int id) {
@@ -127,7 +133,7 @@ QString TAspectRatio::toString() const {
 		case Aspect149: name = "14:9"; break;
 		case Aspect1610: name = "16:10"; break;
 		case Aspect54: name = "5:4"; break;
-		case Aspect235: name = "2.35:1"; break;
+		case Aspect235: name = "2.35:1"; break; // dot should be translated
 		case Aspect11: name = "1:1"; break;
 		case Aspect32: name = "3:2"; break;
 		case Aspect1410: name = "14:10"; break;
@@ -137,6 +143,28 @@ QString TAspectRatio::toString() const {
 	}
 
 	return name;
+}
+
+QString TAspectRatio::toOption() const {
+
+	// Could use float, but prefer exact
+	QString option;
+	switch (id) {
+		case AspectNone: option = "0"; break;
+		case Aspect43: option = "4:3"; break;
+		case Aspect169: option = "16:9"; break;
+		case Aspect149: option = "14:9"; break;
+		case Aspect1610: option = "16:10"; break;
+		case Aspect54: option = "5:4"; break;
+		case Aspect235: option = "2.35:1"; break;
+		case Aspect11: option = "1:1"; break;
+		case Aspect32: option = "3:2"; break;
+		case Aspect1410: option = "14:10"; break;
+		case Aspect118: option = "11:8"; break;
+		default: ;
+	}
+
+	return option;
 }
 
 } // namespace Settings

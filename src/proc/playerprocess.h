@@ -222,7 +222,7 @@ private:
 	int prev_frame;
 
 	bool parseAngle(const QString& value);
-	bool setAspectRatio(const QString& value);
+	bool parseVO(const QString& vo, int sw, int sh, int dw, int dh);
 };
 
 } // namespace Proc

@@ -38,13 +38,11 @@
 using namespace Settings;
 
 // Widget containing the video player
-TPlayerLayer::TPlayerLayer(QWidget* parent)
-	: QWidget(parent)
-	, normal_background(true) {
+TPlayerLayer::TPlayerLayer(QWidget* parent) :
+	QWidget(parent),
+	normal_background(true) {
 
-	setAutoFillBackground(false);
-	// Don't erase background before paint
-	setAttribute(Qt::WA_OpaquePaintEvent);
+	setAutoFillBackground(true);
 
 #ifndef Q_OS_WIN
 #if QT_VERSION < 0x050000
@@ -57,25 +55,26 @@ TPlayerLayer::TPlayerLayer(QWidget* parent)
 TPlayerLayer::~TPlayerLayer() {
 }
 
-void TPlayerLayer::paintEvent(QPaintEvent* e) {
+void TPlayerLayer::paintEvent(QPaintEvent*) {
+	// qDebug() << "TPlayerLayer::paintEvent:" << e->rect();
 
-	// Only clear background when no video playing or when color key is used
-	if (normal_background) {
-		QPainter painter(this);
-		painter.eraseRect(e->rect());
-		//painter.fillRect(e->rect(), QColor(255,0,0));
-	}
+	// QPainter painter(this);
+	// painter.eraseRect(e->rect());
 }
 
 void TPlayerLayer::setFastBackground() {
 	qDebug("TPlayerLayer::setFastBackground");
 
-	normal_background = pref->useColorKey();
-	if (!normal_background)
-		setAttribute(Qt::WA_NoSystemBackground);
+	normal_background = false;
+	setAutoFillBackground(false);
+	// Don't erase background before paint
+	setAttribute(Qt::WA_OpaquePaintEvent);
+	// No system background restore
+	setAttribute(Qt::WA_NoSystemBackground);
 
 #ifndef Q_OS_WIN
 	// Disable composition and double buffering on X11
+	// Needed for mplayer
 	setAttribute(Qt::WA_PaintOnScreen);
 #endif
 }
@@ -84,6 +83,8 @@ void TPlayerLayer::restoreNormalBackground() {
 	qDebug("TPlayerLayer::restoreNormalBackground");
 
 	normal_background = true;
+	setAutoFillBackground(true);
+	setAttribute(Qt::WA_OpaquePaintEvent, false);
 	setAttribute(Qt::WA_NoSystemBackground, false);
 
 #ifndef Q_OS_WIN
@@ -92,18 +93,17 @@ void TPlayerLayer::restoreNormalBackground() {
 }
 
 
-TPlayerWindow::TPlayerWindow(QWidget* parent)
-	: QWidget(parent)
-	, video_width(0)
-	, video_height(0)
-	, zoom_factor(1.0)
-	, zoom_factor_fullscreen(1.0)
-	, aspect(0)
-	, monitoraspect(0)
-	, double_clicked(false)
-	, delay_left_click(true)
-	, dragging(false)
-	, kill_fake_event(false) {
+TPlayerWindow::TPlayerWindow(QWidget* parent) :
+	QWidget(parent),
+	video_size(0, 0),
+	last_video_size(0, 0),
+	aspect(0),
+	zoom_factor(1.0),
+	zoom_factor_fullscreen(1.0),
+	double_clicked(false),
+	delay_left_click(true),
+	dragging(false),
+	kill_fake_event(false) {
 
 	setMinimumSize(QSize(0, 0));
 	setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
@@ -124,98 +124,50 @@ TPlayerWindow::TPlayerWindow(QWidget* parent)
 	left_click_timer->setInterval(qApp->doubleClickInterval() + 10);
 	connect(left_click_timer, SIGNAL(timeout()), this, SIGNAL(leftClicked()));
 	setDelayLeftClick(pref->delay_left_click);
-
-	setMonitorAspect(pref->monitorAspectDouble());
 }
 
 TPlayerWindow::~TPlayerWindow() {
 }
 
-void TPlayerWindow::setMonitorAspect(double asp) {
-	monitoraspect = asp;
-}
-
-void TPlayerWindow::setAspect(double aspect, bool updateVideoWindow) {
-	qDebug("TPlayerWindow::setAspect: %f", aspect);
-
-	// See core::startPlayer. The player is started with --no-keepaspect and
-	// monitorpixelaspect=1, so aspect changes don't require a restart of the player,
-	// hence monitor aspect needs to be handled here.
-	if (monitoraspect != 0) {
-		aspect = aspect / monitoraspect * TDesktop::aspectRatio(this);
-	}
-
-	this->aspect = aspect;
-	if (updateVideoWindow)
-		this->updateVideoWindow();
-}
-
 void TPlayerWindow::setResolution(int width, int height) {
 	qDebug("TPlayerWindow::setResolution: %d x %d", width, height);
 
-	video_width = width;
-	video_height = height;
-	last_video_size = QSize(width, height);
-
-	if (video_width > 0 && video_height > 0) {
+	video_size = QSize(width, height);
+	if (height == 0) {
+		aspect = 0;
+	} else {
+		aspect = (double) width / height;
+	}
+	if (!video_size.isEmpty() && playerlayer->normal_background) {
 		setFastWindow();
 	}
 }
 
-void TPlayerWindow::set(double aspect,
-						double zoom_factor,
+void TPlayerWindow::set(double zoom_factor,
 						double zoom_factor_fullscreen,
 						QPoint pan,
 						QPoint pan_fullscreen) {
 
 	// false = do not update video window
-	setAspect(aspect, false);
 	setZoom(zoom_factor, zoom_factor_fullscreen, false);
 	setPan(pan, pan_fullscreen, false);
 }
 
-QSize TPlayerWindow::getAdjustedSize(int w, int h, double zoom) const {
-	//qDebug("TPlayerWindow::getAdjustedSize: in: %d x %d zoom %f aspect %f",
-	//	   w, h, zoom, aspect);
-
-	// Select best fit: height adjusted or width adjusted,
-	// in case video aspect does not match the window aspect ratio.
-	// Height adjusted gives horizontal black borders.
-	// Width adjusted gives vertical black borders,
-	if (aspect != 0) {
-		int height_adjust = qRound(w / aspect);
-		if (height_adjust <= h) {
-			// adjust height
-			h = height_adjust;
-		} else {
-			// adjust width
-			w = qRound(h * aspect);
-		}
-	}
-
-	// Zoom
-	QSize size = QSize(w, h) * zoom;
-
-	//qDebug("TPlayerWindow::getAdjustedSize: out: %d x %d", size.width(), size.height());
-	return size;
-}
-
 void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
 
-	if (video_width > 0 && video_height > 0) {
-		QSize video_size = getAdjustedSize(video_width, video_height, 1.0);
+	if (video_size.isEmpty()) {
+		factorX = 0;
+		factorY = 0;
+	} else {
 		if (pref->fullscreen) {
 			factorX = (double) playerlayer->width() / video_size.width();
 			factorY = (double) playerlayer->height() / video_size.height();
 		} else {
 			factorX = (double) width() / video_size.width();
-			factorY = (double) height() / video_size.height();
+			factorY = (double) height() /  video_size.height();
 		}
 		return;
 	}
-
-	factorX = 0;
-	factorY = 0;
 }
 
 double TPlayerWindow::getSizeFactor() {
@@ -230,31 +182,53 @@ double TPlayerWindow::getSizeFactor() {
 
 void TPlayerWindow::updateSizeFactor() {
 
-	if (video_width > 0 && video_height > 0) {
-		double factor = getSizeFactor();
+	if (!video_size.isEmpty()) {
+		double old_factor = pref->size_factor;
+		pref->size_factor = getSizeFactor();
 		qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
-			   pref->size_factor, factor);
-		pref->size_factor = factor;
+			   old_factor, pref->size_factor);
+		emit videoSizeFactorChanged();
 	}
 }
 
 void TPlayerWindow::updateVideoWindow() {
-	/*
-	qDebug() << "TPlayerWindow::updateVideoWindow: video size:"
-			 << video_width << "x" << video_height
+	qDebug() << "TPlayerWindow::updateVideoWindow: video size:" << video_size
 			 << " window size:" << size()
 			 << " desktop size:" << TDesktop::size(this)
 			 << " zoom:" << zoom()
 			 << " pan:" << pan()
-			 << " aspect:" << aspect
 			 << " fs:" << pref->fullscreen;
-	*/
 
+	// TODO: can give MPV the whole window, it uses it for OSD and Subs.
+	// Mplayer too, but it does misbehave with some VOs, like XV,
+	// not properly clearing the background of the window given to it.
+	// MPlayer with GL or VDPAU work ok too, but on my setup clear the
+	// whole background creating a nasty flicker.
+
+	// On fullscreen ignore the toolbars
 	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
-	QSize video_size = getAdjustedSize(s.width(), s.height(), zoom());
+	QSize vsize = s;
+
+	// Select best fit: height adjusted or width adjusted,
+	// in case video aspect does not match the window aspect ratio.
+	// Height adjusted gives horizontal black borders.
+	// Width adjusted gives vertical black borders,
+	if (aspect != 0) {
+		int height_adjusted = qRound(vsize.width() / aspect);
+		if (height_adjusted <= vsize.height()) {
+			// adjust the height
+			vsize.rheight() = height_adjusted;
+		} else {
+			// adjust the width
+			vsize.rwidth() = qRound(vsize.height() * aspect);
+		}
+	}
+
+	// Zoom
+	vsize *= zoom();
 
 	// Center
-	s = (s - video_size) / 2;
+	s = (s - vsize) / 2;
 	QPoint p(s.width(), s.height());
 
 	// Move
@@ -265,9 +239,9 @@ void TPlayerWindow::updateVideoWindow() {
 		p = mapFromGlobal(p);
 
 	// Set geometry video layer
-	playerlayer->setGeometry(p.x(), p.y(), video_size.width(), video_size.height());
+	playerlayer->setGeometry(p.x(), p.y(), vsize.width(), vsize.height());
 
-	// Keep OSD in sight. Need the offset as seen by player.
+	// Keep OSD in sight. Need the offset as seen by the player.
 	QPoint osd_pos(Proc::default_osd_pos);
 	if (p.x() < 0)
 		osd_pos.rx() -= p.x();
@@ -276,16 +250,19 @@ void TPlayerWindow::updateVideoWindow() {
 	emit moveOSD(osd_pos);
 
 	// Update status with new video out size
-	if (video_size != last_video_size) {
-		emit videoOutChanged(video_size);
-		last_video_size = video_size;
+	if (vsize != last_video_size) {
+		last_video_size = vsize;
+		emit videoOutChanged(vsize);
 	}
 
-	//qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << video_size;
+	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << p << vsize;
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent*) {
+	qDebug("TPlayerWindow::resizeEvent");
+
 	updateVideoWindow();
+	updateSizeFactor();
 }
 
 void TPlayerWindow::startDragging() {
@@ -346,7 +323,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 			// Move video in fullscreen or with modifier, otherwise move window
 			drag_pos = pos;
 			if (pref->fullscreen || event->modifiers() != Qt::NoModifier) {
-				if (video_width > 0 && video_height > 0) {
+				if (!video_size.isEmpty()) {
 					moveVideo(diff);
 				}
 			} else {
@@ -500,8 +477,12 @@ void TPlayerWindow::setZoom(double factor,
 		zoom_factor_fullscreen = factor_fullscreen;
 	}
 
-	if (updateVideoWindow)
+	if (updateVideoWindow) {
 		this->updateVideoWindow();
+		if (pref->fullscreen) {
+			updateSizeFactor();
+		}
+	}
 }
 
 double TPlayerWindow::zoom() {
@@ -555,28 +536,15 @@ void TPlayerWindow::setColorKey() {
 
 void TPlayerWindow::setFastWindow() {
 	qDebug("TPlayerWindow::setFastWindow");
-
 	playerlayer->setFastBackground();
-
-#ifndef Q_OS_WIN
-	// Disable composition and double buffering on X11
-	setAttribute(Qt::WA_PaintOnScreen);
-#endif
 }
 
 void TPlayerWindow::restoreNormalWindow() {
 	qDebug("TPlayerWindow::restoreNormalWindow");
 
 	playerlayer->restoreNormalBackground();
-
-#ifndef Q_OS_WIN
-	// Enable composition and double buffering on X11
-	setAttribute(Qt::WA_PaintOnScreen, false);
-#endif
-
-	if (video_width != 0 || video_height != 0) {
-		setResolution(0, 0);
-	}
+	// Clear video size
+	video_size = QSize(0, 0);
 }
 
 #include "moc_playerwindow.cpp"

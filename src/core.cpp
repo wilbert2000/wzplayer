@@ -651,7 +651,6 @@ void TCore::initMediaSettings() {
 
 	// Apply settings to playerwindow
 	playerwindow->set(
-		mset.aspectToDouble(),
 		mset.zoom_factor, mset.zoom_factor_fullscreen,
 		mset.pan_offset, mset.pan_offset_fullscreen);
 
@@ -1016,6 +1015,7 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("vo", pref->vo);
 	}
 
+	// Enable software scaling for vo x11
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	if (pref->vo.startsWith("x11")) {
 		proc->setOption("zoom");
@@ -1026,6 +1026,7 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("ao", pref->ao);
 	}
 
+// TODO: remove
 #if USE_ADAPTER
 	if (pref->adapter >= 0) {
 		proc->setOption("adapter", QString::number(pref->adapter));
@@ -1057,13 +1058,24 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Aspect ratio
-	proc->setOption("keepaspect", false);
-	// Square pixels
-	proc->setOption("monitorpixelaspect", "1");
+	// proc->setOption("keepaspect", false);
+	QString aspect_option = mset.aspect_ratio.toOption();
+	if (!aspect_option.isEmpty()) {
+		// Clear original aspect ratio
+		if (restarting == 0) {
+			mdat.video_aspect_original = -1;
+		}
+		proc->setOption("aspect", aspect_option);
+	}
+	double aspect = pref->monitorAspectDouble();
+	if (aspect != 0) {
+		proc->setOption("monitorpixelaspect", aspect);
+	}
 
 	if (pref->useColorKey()) {
 		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
-		// Make sure the color key is applied
+		// Make sure the color key is applied by clearing the background of
+		// the video window
 		playerwindow->videoLayer()->repaint();
 	}
 
@@ -2886,35 +2898,28 @@ void TCore::nextProgram() {
 }
 #endif
 
-void TCore::changeAspectRatio(int id) {
-	qDebug("TCore::changeAspectRatio: %d", id);
+void TCore::setAspectRatio(int id) {
+	qDebug("TCore::setAspectRatio: %d", id);
 
 	if (mdat.noVideo())
 		return;
 
 	// Keep id in range
-	TAspectRatio::TMenuID new_id;
+	TAspectRatio::TMenuID aspect_id;
 	if (id < 0 || id > TAspectRatio::MAX_MENU_ID)
-		new_id = TAspectRatio::AspectAuto;
+		aspect_id = TAspectRatio::AspectAuto;
 	else
-		new_id = (TAspectRatio::TMenuID) id;
-	mset.aspect_ratio.setID(new_id);
-	double aspect = mset.aspectToDouble();
+		aspect_id = (TAspectRatio::TMenuID) id;
 
-	// Set aspect video window, don't update it
-	playerwindow->setAspect(aspect, false);
-	// Resize with new aspect, normally updates video window
-	emit needResize(mdat.video_out_width, mdat.video_out_height);
-	// Adjust video window in case the resize has been canceled or failed
-	playerwindow->updateVideoWindow();
+	mset.aspect_ratio.setID(aspect_id);
+	proc->setAspect(mset.aspectToDouble2());
 
-	emit aspectRatioChanged(new_id);
-
-	displayMessage(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
+	emit aspectRatioChanged(aspect_id);
+	emit showMessage(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
 }
 
 void TCore::nextAspectRatio() {
-	changeAspectRatio(mset.aspect_ratio.nextMenuID());
+	setAspectRatio(mset.aspect_ratio.nextMenuID());
 }
 
 void TCore::nextWheelFunction() {
@@ -3043,8 +3048,6 @@ void TCore::changeZoom(double factor) {
 		// Hence reread of factors
 		playerwindow->setZoom(factor);
 		getZoomFromPlayerWindow();
-
-		emit zoomChanged(playerwindow->zoom());
 		displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
 	}
 }
@@ -3330,21 +3333,16 @@ void TCore::onReceivedVideoOutResolution(int w, int h) {
 	// w x h is output resolution selected by player with aspect and filters applied
 	playerwindow->setResolution(w, h);
 
-	if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
-		double aspect;
-		if (h <= 0) {
-			aspect = 0;
-		} else {
-			aspect = (double) w / h;
-		}
-		// Set aspect, false = do not update video window.
-		playerwindow->setAspect(aspect, false);
-	}
 	if (restarting == 0)
 		emit videoOutResolutionChanged(w, h);
 
 	// If resize is canceled adjust new video to old size
 	playerwindow->updateVideoWindow();
+
+	// Update original aspect
+	if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
+		mdat.video_aspect_original = playerwindow->aspectRatio();
+	}
 }
 
 bool TCore::setPreferredAudio() {

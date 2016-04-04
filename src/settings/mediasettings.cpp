@@ -153,6 +153,11 @@ double TMediaSettings::aspectToDouble() {
 	return aspect_ratio.toDouble(md->video_out_width, md->video_out_height);
 }
 
+// TODO:
+double TMediaSettings::aspectToDouble2() {
+	return aspect_ratio.toDouble(-1, 1);
+}
+
 void TMediaSettings::list() {
 	qDebug("Settings::TMediaSettings::list");
 

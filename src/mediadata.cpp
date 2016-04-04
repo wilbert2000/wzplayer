@@ -22,17 +22,19 @@
 #include <QDebug>
 
 
-TMediaData::TMediaData()
-	: selected_type(TYPE_UNKNOWN)
-	, video_hwdec(false) {
+TMediaData::TMediaData() :
+	selected_type(TYPE_UNKNOWN),
+	video_aspect_original(-1),
+	video_hwdec(false) {
 	init();
 }
 
-TMediaData::TMediaData(const TMediaData& md)
-	: filename(md.filename)
-	, selected_type(md.selected_type)
-	, disc(md.disc)
-	, video_hwdec(md.video_hwdec) {
+TMediaData::TMediaData(const TMediaData& md) :
+	filename(md.filename),
+	selected_type(md.selected_type),
+	disc(md.disc),
+	video_aspect_original(md.video_aspect_original),
+	video_hwdec(md.video_hwdec) {
 	init();
 }
 
@@ -49,8 +51,6 @@ void TMediaData::init() {
 
 	video_width = 0;
 	video_height = 0;
-	video_aspect = 0;
-	video_aspect_set = false;
 	video_fps = 0;
 	video_out_width = 0;
 	video_out_height = 0;
@@ -203,8 +203,8 @@ void TMediaData::list() const {
 	qDebug("  video driver: '%s'", vo.toUtf8().constData());
 	qDebug("  video_width: %d", video_width);
 	qDebug("  video_height: %d", video_height); 
-	qDebug("  video_aspect: %f", video_aspect);
-	qDebug("  video_aspect_set: %d", video_aspect_set);
+	qDebug("  video_aspect: %s", video_aspect.toUtf8().constData());
+	qDebug("  video_aspect_original: %f", video_aspect_original);
 	qDebug("  video_fps: '%f'", video_fps);
 
 	qDebug("  video_out_width: %d", video_out_width);

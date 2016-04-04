@@ -35,43 +35,35 @@ class QTimer;
 //! TPlayerLayer can be instructed to not delete the background.
 class TPlayerLayer : public QWidget {
 	Q_OBJECT
-
 public:
 	explicit TPlayerLayer(QWidget* parent);
 	virtual ~TPlayerLayer();
 
-	// Reduce flicker, tearing and speed up painting
-	void setFastBackground();
+	bool normal_background;
 
-	// Restore normal paint behaviour
+	void setFastBackground();
 	void restoreNormalBackground();
 
 protected:
-	virtual void paintEvent(QPaintEvent* e);
-
-private:
-	bool normal_background;
+	virtual void paintEvent(QPaintEvent*);
 };
 
 
 class TPlayerWindow : public QWidget {
 	Q_OBJECT
-
 public:
 	TPlayerWindow(QWidget* parent);
 	virtual ~TPlayerWindow();
 
 	TPlayerLayer* videoLayer() { return playerlayer; }
 
-	void set(double aspect,
-			 double zoom_factor,
+	void set(double zoom_factor,
 			 double zoom_factor_fullscreen,
 			 QPoint pan,
 			 QPoint pan_fullscreen);
-	void setAspect(double aspect, bool updateVideoWindow = true);
-	void setMonitorAspect(double asp);
 	void setResolution(int width, int height);
-	QSize resolution() const { return QSize(video_width, video_height); }
+	QSize resolution() const { return video_size; }
+	double aspectRatio() const { return aspect; }
 
 	// Zoom
 	// Sets current zoom to factor if factor_fullscreen == 0
@@ -99,9 +91,6 @@ public:
 	void resetZoomAndPan();
 
 	void setDelayLeftClick(bool b) { delay_left_click = b; }
-
-	// Get size adjusted for aspect and desired zoom
-	QSize getAdjustedSize(int w, int h, double zoom) const;
 
 	// Calculate size factor for current view
 	void getSizeFactors(double& factorX, double& factorY);
@@ -131,6 +120,7 @@ signals:
 	void moveWindow(QPoint);
 	void moveOSD(QPoint pos);
 	void videoOutChanged(const QSize& size);
+	void videoSizeFactorChanged();
 
 protected:
 	virtual void resizeEvent(QResizeEvent*);
@@ -143,17 +133,14 @@ protected:
 private:
 	TPlayerLayer* playerlayer;
 
-	int video_width;
-	int video_height;
+	QSize video_size;
 	QSize last_video_size;
+	double aspect;
 
 	double zoom_factor;
 	double zoom_factor_fullscreen;
 	QPoint pan_offset;
 	QPoint pan_offset_fullscreen;
-
-	double aspect;
-	double monitoraspect;
 
 	bool double_clicked;
 	bool delay_left_click;
