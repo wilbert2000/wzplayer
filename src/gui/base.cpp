@@ -1259,7 +1259,13 @@ void TBase::openURL() {
 
 	// Get url from clipboard
 	QString clipboard_text = QApplication::clipboard()->text();
-	if (!clipboard_text.isEmpty() && clipboard_text.contains("://")) {
+	if (!clipboard_text.isEmpty() && (clipboard_text.contains("/")
+
+#ifdef Q_OS_WIN
+			|| clipboard_text.contains("\\")
+#endif
+
+		)) {
 		d.setURL(clipboard_text);
 	}
 
