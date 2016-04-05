@@ -33,8 +33,8 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 	aspectDisabledAct = new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TAspectRatio::AspectNone);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(setAspectRatio(int)));
-	connect(core, SIGNAL(aspectRatioChanged(Settings::TAspectRatio::TMenuID)),
-			this, SLOT(onAspectRatioChanged(Settings::TAspectRatio::TMenuID)),
+	connect(core, SIGNAL(aspectRatioChanged(int)),
+			this, SLOT(onAspectRatioChanged(int)),
 			Qt::QueuedConnection);
 
 	addSeparator();
@@ -78,7 +78,7 @@ void TMenuAspect::onAboutToShow() {
 	upd();
 }
 
-void TMenuAspect::onAspectRatioChanged(Settings::TAspectRatio::TMenuID) {
+void TMenuAspect::onAspectRatioChanged(int) {
 	upd();
 }
 

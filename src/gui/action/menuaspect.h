@@ -2,7 +2,7 @@
 #define GUI_MENUASPECT_H
 
 #include "gui/action/menu.h"
-#include "settings/aspectratio.h"
+
 
 class TCore;
 
@@ -32,7 +32,7 @@ private:
 	void upd();
 
 private slots:
-	void onAspectRatioChanged(Settings::TAspectRatio::TMenuID);
+	void onAspectRatioChanged(int);
 };
 
 } // namespace Action

@@ -221,7 +221,6 @@ public slots:
 	void incSubScale();
 	void decSubScale();
 
-	void setOSDPos(const QPoint &pos);
 	void changeOSDScale(double value);
 	void incOSDScale();
 	void decOSDScale();
@@ -278,6 +277,7 @@ public slots:
 	void nextWheelFunction();
 
 	void setZoom(double); // Zoom on playerwindow
+	void setZoomAndPan(double zoom, double pan_x, double pan_y);
 
 	void changeRotate(int r);
 
@@ -356,7 +356,7 @@ signals:
 	void showMessage(const QString& text);
 	void showMessage(const QString& text, int time);
 
-	void aspectRatioChanged(Settings::TAspectRatio::TMenuID id);
+	void aspectRatioChanged(int);
 
 	void volumeChanged(int);
 	void muteChanged(bool);

@@ -163,6 +163,7 @@ void TMenuVideoSize::optimizeSizeFactor() {
 	double factor;
 
 	if (pref->fullscreen) {
+		// TODO: use core to update mset.zoom_factor_fullscreen
 		playerWindow->setZoom(1.0);
 		return;
 	}

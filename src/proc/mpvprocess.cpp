@@ -34,16 +34,9 @@
 
 namespace Proc {
 
-// Max pos accepted by MPV for OSD margins used by setOSDPos.
-// TODO: get from player too
-static const QPoint max_osd_pos(300, 600);
-
-TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata)
-	: TPlayerProcess(parent, mdata)
-	, verbose(false)
-	, osd_pos()
-	, osd_centered_x(false)
-	, osd_centered_y(false) {
+TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata) :
+	TPlayerProcess(parent, mdata),
+	verbose(false) {
 }
 
 TMPVProcess::~TMPVProcess() {
@@ -60,8 +53,9 @@ bool TMPVProcess::startPlayer() {
 
 	request_bit_rate_info = true;
 
-	osd_centered_x = false;
-	osd_centered_y = false;
+	zoom = 1;
+	pan_x = 0;
+	pan_y = 0;
 
 	return TPlayerProcess::startPlayer();
 }
@@ -190,20 +184,6 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 	if (name == "MEDIA_TITLE") {
 		md->title = value.trimmed();
 		qDebug() << "Proc::TMPVProcess::parseProperty: title set to" << md->title;
-		return true;
-	}
-
-	if (name == "OSD_X") {
-		default_osd_pos.rx() = value.toInt();
-		osd_pos.rx() = default_osd_pos.x();
-		qDebug("Proc::TMPVProcess::parseProperty: OSD x margin set to %d", default_osd_pos.x());
-		return true;
-	}
-
-	if (name == "OSD_Y") {
-		default_osd_pos.ry() = value.toInt();
-		osd_pos.ry() = default_osd_pos.y();
-		qDebug("Proc::TMPVProcess::parseProperty: OSD y margin set to %d", default_osd_pos.y());
 		return true;
 	}
 
@@ -716,12 +696,7 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 //		"INFO_TRACKS_COUNT=${=track-list/count}\n"
 
 		"METADATA_LIST=${=metadata/list:}\n"
-
-		"INFO_MEDIA_TITLE=${=media-title:}\n"
-
-		// OSD position used by setOSDPos. Docs MPV: (25, 22)
-		"INFO_OSD_X=${=options/osd-margin-x:}\n"
-		"INFO_OSD_Y=${=options/osd-margin-y:}\n";
+		"INFO_MEDIA_TITLE=${=media-title:}\n";
 
 	arg << "--term-status-msg=STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}";
 
@@ -1301,9 +1276,7 @@ void TMPVProcess::setTitle(int ID) {
 	writeToStdin("set disc-title " + QString::number(ID));
 }
 
-void TMPVProcess::discSetMousePos(int x, int y) {
-	Q_UNUSED(x)
-	Q_UNUSED(y)
+void TMPVProcess::discSetMousePos(int, int) {
 
 	// MPV versions later than 18 july 2015 no longer support menus
 
@@ -1327,6 +1300,26 @@ void TMPVProcess::setAspect(double aspect) {
 	writeToStdin("set video-aspect " + QString::number(aspect));
 }
 
+void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y) {
+	qDebug("Proc::TMPVProcess::setZoomAndPan: %f %f %f", zoom, pan_x, pan_y);
+
+	// Wait until player is up
+	if (notified_player_is_running) {
+		if (zoom != this->zoom) {
+			writeToStdin("set video-zoom " + QString::number(zoom - 1));
+			this->zoom = zoom;
+		}
+		if (pan_x != this->pan_x) {
+			writeToStdin("set video-pan-x " + QString::number(pan_x));
+			this->pan_x = pan_x;
+		}
+		if (pan_y != this->pan_y) {
+			writeToStdin("set video-pan-y " + QString::number(pan_y));
+			this->pan_y = pan_y;
+		}
+	}
+}
+
 void TMPVProcess::setFullscreen(bool b) {
 	writeToStdin(QString("set fullscreen %1").arg(b ? "yes" : "no"));
 }
@@ -1339,96 +1332,6 @@ void TMPVProcess::setTSProgram(int ID) {
 
 void TMPVProcess::toggleDeinterlace() {
 	writeToStdin("cycle deinterlace");
-}
-
-void TMPVProcess::setOSDPos(const QPoint& pos, int current_osd_level) {
-	// mpv has no way to set the OSD position,
-	// so this hack uses osd-margin to emulate it.
-
-	if (default_osd_pos.x() == 0) {
-		// Old player, not supporting OSD margins
-		return;
-	}
-
-	// options/osd-margin-x Integer (0 to 300) (default: 25)
-	// options/osd-margin-y Integer (0 to 600) (default: 22)
-	// options/osd-align-x and y from version 0.9.0 onwards
-	// osd-duration=<time in ms> (default 1000)
-
-	bool clr_osd = false;
-
-	// Handle y first
-	if (pos.y() > max_osd_pos.y()) {
-		// Max margin is 600. Beyond that center osd and hope for the best
-		if (!osd_centered_y) {
-			writeToStdin("set options/osd-align-y center");
-			clr_osd = true;
-			osd_centered_y = true;
-		}
-		// Reset margin to default
-		if (osd_pos.y() != default_osd_pos.y()) {
-			osd_pos.ry() = default_osd_pos.y();
-			writeToStdin("set options/osd-margin-y " + QString::number(osd_pos.y()));
-			clr_osd = true;
-		}
-	} else {
-		// Reset alignment hack if centered
-		if (osd_centered_y) {
-			osd_centered_y = false;
-			writeToStdin("set options/osd-align-y top");
-			clr_osd = true;
-		}
-
-		int y = pos.y();
-		if (y < default_osd_pos.y()) {
-			y = default_osd_pos.y();
-		}
-
-		if (y != osd_pos.y()) {
-			osd_pos.ry() = y;
-			writeToStdin("set options/osd-margin-y " + QString::number(y));
-			clr_osd = true;
-		}
-	}
-
-	// Handle x
-	if (pos.x() > max_osd_pos.x()) {
-		// Hack: center osd and hope for the best
-		if (!osd_centered_x) {
-			writeToStdin("set options/osd-align-x center");
-			osd_centered_x = true;
-			clr_osd = true;
-		}
-		// Reset margin
-		if (osd_pos.x() != default_osd_pos.x()) {
-			osd_pos.rx() = default_osd_pos.x();
-			writeToStdin("set options/osd-margin-x "
-				+ QString::number(osd_pos.x()));
-			clr_osd = true;
-		}
-	} else {
-		// Reset alignment hack if centered
-		if (osd_centered_x) {
-			osd_centered_x = false;
-			writeToStdin("set options/osd-align-x left");
-			clr_osd = true;
-		}
-
-		int x = pos.x();
-		if (x < default_osd_pos.x()) {
-			x = default_osd_pos.x();
-		}
-
-		if (x != osd_pos.x()) {
-			osd_pos.rx() = x;
-			writeToStdin("set options/osd-margin-x " + QString::number(x));
-			clr_osd = true;
-		}
-	}
-
-	if (clr_osd) {
-		writeToStdin("show_text \"\" 0 " + QString::number(current_osd_level));
-	}
 }
 
 void TMPVProcess::setOSDScale(double value) {

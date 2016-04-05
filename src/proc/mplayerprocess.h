@@ -101,12 +101,12 @@ public:
 	void discButtonPressed(const QString& button_name);
 
 	void setAspect(double aspect);
+	virtual void setZoomAndPan(double, double, double);
 	void setFullscreen(bool b);
 #if PROGRAM_SWITCH
 	void setTSProgram(int ID);
 #endif
 	void toggleDeinterlace();
-	void setOSDPos(const QPoint& pos, int);
 	void setOSDScale(double value);
 	void setChannelsFile(const QString&) {}
 	void setCaptureDirectory(const QString & dir);

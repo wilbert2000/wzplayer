@@ -30,10 +30,6 @@
 
 namespace Proc {
 
-// OSD position used by setOSDPos and TPlayerWindow
-extern QPoint default_osd_pos;
-
-	
 class TPlayerProcess : public TProcess {
 	Q_OBJECT
 
@@ -119,12 +115,12 @@ public:
 	virtual void discButtonPressed(const QString& button_name) = 0;
 
 	virtual void setAspect(double aspect) = 0;
+	virtual void setZoomAndPan(double zoom, double pan_x, double pan_y) = 0;
 	virtual void setFullscreen(bool b) = 0;
 #if PROGRAM_SWITCH
 	virtual void setTSProgram(int ID) = 0;
 #endif
 	virtual void toggleDeinterlace() = 0;
-	virtual void setOSDPos(const QPoint& pos, int current_osd_level) = 0;
 	virtual void setOSDScale(double value) = 0;
 	virtual void setChannelsFile(const QString &) = 0;
 

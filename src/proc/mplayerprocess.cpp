@@ -1545,6 +1545,10 @@ void TMPlayerProcess::setAspect(double aspect) {
 	writeToStdin("switch_ratio " + QString::number(aspect));
 }
 
+void TMPlayerProcess::setZoomAndPan(double, double, double) {
+	// Not supported
+}
+
 void TMPlayerProcess::setFullscreen(bool b) {
 	writeToStdin(QString("vo_fullscreen %1").arg(b ? "1" : "0"));
 }
@@ -1559,10 +1563,6 @@ void TMPlayerProcess::setTSProgram(int ID) {
 
 void TMPlayerProcess::toggleDeinterlace() {
 	writeToStdin("step_property deinterlace");
-}
-
-void TMPlayerProcess::setOSDPos(const QPoint&, int) {
-	// not supported
 }
 
 void TMPlayerProcess::setOSDScale(double) {

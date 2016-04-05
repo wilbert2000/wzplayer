@@ -128,7 +128,7 @@ void TDefault::createStatusBar() {
 			this, SLOT(displayABSection()));
 
 	connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
-			this, SLOT(displayVideoInfo()));
+			this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
 }
 
 void TDefault::displayTime(QString text) {
@@ -163,7 +163,7 @@ void TDefault::displayVideoInfo() {
 	if (core->mdat.noVideo()) {
 		video_info_display->setText(" ");
 	} else {
-		QSize video_out_size = playerwindow->lastVideoSize();
+		QSize video_out_size = playerwindow->lastVideoOutSize();
 		video_info_display->setText(tr("%1 x %2", "video source width x height")
 			.arg(core->mdat.video_width).arg(core->mdat.video_height)
 			+ " " + QString::fromUtf8("\u279F") + " "

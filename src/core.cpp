@@ -141,6 +141,17 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(durationChanged(double)),
 			this, SIGNAL(durationChanged(double)));
 
+	// playerwindow
+	connect(playerwindow, SIGNAL(displayMessage(const QString&)),
+			this, SLOT(displayMessage(const QString&)));
+	connect(playerwindow, SIGNAL(setZoomAndPan(double, double, double)),
+			this, SLOT(setZoomAndPan(double, double, double)));
+
+	// Mouse wheel
+	connect(playerwindow, SIGNAL(wheelUp()),
+			this, SLOT(wheelUp()));
+	connect(playerwindow, SIGNAL(wheelDown()),
+			this, SLOT(wheelDown()));
 	// For DVDNAV subscribe to TPlayerWindow::mouseMoved()
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
 			this, SLOT(dvdnavUpdateMousePos(QPoint)));
@@ -157,7 +168,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 			this, SLOT(enableScreensaver()), Qt::QueuedConnection);
 #endif
 #endif
-
 }
 
 TCore::~TCore() {
@@ -308,14 +318,6 @@ void TCore::displayTextOnOSD(const QString& text, int duration, int level) {
 		&& level <= pref->osd_level
 		&& mdat.hasVideo()) {
 		proc->showOSDText(text, duration, level);
-	}
-}
-
-void TCore::setOSDPos(const QPoint &pos) {
-	// qDebug("TCore::setOSDPos");
-
-	if (proc->isFullyStarted()) {
-		proc->setOSDPos(pos, pref->osd_level);
 	}
 }
 
@@ -649,10 +651,9 @@ void TCore::initMediaSettings() {
 	// Restore old volume or emit new volume
 	initVolume();
 
-	// Apply settings to playerwindow
-	playerwindow->set(
-		mset.zoom_factor, mset.zoom_factor_fullscreen,
-		mset.pan_offset, mset.pan_offset_fullscreen);
+	// Apply settings to playerwindow, false = do not update video window
+	playerwindow->setZoom(mset.zoom_factor, mset.zoom_factor_fullscreen, false);
+	playerwindow->setPan(mset.pan_offset, mset.pan_offset_fullscreen);
 
 	emit mediaSettingsChanged();
 }
@@ -3030,6 +3031,11 @@ void TCore::changeAdapter(int n) {
 }
 #endif
 
+// Slot called by player window to set zoom and pan (MPV only)
+void TCore::setZoomAndPan(double zoom, double pan_x, double pan_y) {
+	proc->setZoomAndPan(zoom, pan_x, pan_y);
+}
+
 void TCore::getZoomFromPlayerWindow() {
 	mset.zoom_factor = playerwindow->zoomNormalScreen();
 	mset.zoom_factor_fullscreen = playerwindow->zoomFullScreen();
@@ -3044,8 +3050,10 @@ void TCore::setZoom(double factor) {
 	qDebug("TCore::setZoom: %f", factor);
 
 	if (mdat.hasVideo()) {
-		// Kept between min and max by playerwindow->setZoom(),
-		// so reread factors
+		if (factor < TConfig::ZOOM_MIN)
+			factor = TConfig::ZOOM_MIN;
+		else if (factor > TConfig::ZOOM_MAX)
+			factor = TConfig::ZOOM_MAX;
 		playerwindow->setZoom(factor);
 		getZoomFromPlayerWindow();
 		displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
@@ -3060,18 +3068,15 @@ void TCore::resetZoomAndPan() {
 	// Reread modified settings
 	getZoomFromPlayerWindow();
 	getPanFromPlayerWindow();
-
 	displayMessage(tr("Zoom and pan reset"));
 }
 
 void TCore::pan(int dx, int dy) {
-	qDebug("TCore::pan");
+	qDebug("TCore::pan: dx %d, dy %d", dx, dy);
 
 	if (mdat.hasVideo()) {
 		playerwindow->moveVideo(dx, dy);
 		getPanFromPlayerWindow();
-		QPoint current_pan = playerwindow->pan();
-		displayMessage(tr("Pan (%1, %2)").arg(QString::number(current_pan.x())).arg(QString::number(current_pan.y())));
 	}
 }
 
@@ -3099,7 +3104,7 @@ void TCore::autoZoom() {
 	double video_aspect = mset.aspectToDouble();
 
 	if (video_aspect <= 0) {
-		QSize w = playerwindow->lastVideoSize();
+		QSize w = playerwindow->lastVideoOutSize();
 		video_aspect = (double) w.width() / w.height();
 	}
 
@@ -3128,7 +3133,7 @@ void TCore::autoZoomFromLetterbox(double aspect) {
 	double video_aspect = mset.aspectToDouble();
 
 	if (video_aspect <= 0) {
-		QSize w = playerwindow->lastVideoSize();
+		QSize w = playerwindow->lastVideoOutSize();
 		video_aspect = (double) w.width() / w.height();
 	}
 

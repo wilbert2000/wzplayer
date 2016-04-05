@@ -287,14 +287,6 @@ void TBase::createCore() {
 			this, SLOT(onPlayerError(QProcess::ProcessError)));
 	connect(core, SIGNAL(playerFinishedWithError(int)),
 			this, SLOT(onPlayerFinishedWithError(int)));
-
-	connect(playerwindow, SIGNAL(wheelUp()),
-			core, SLOT(wheelUp()));
-	connect(playerwindow, SIGNAL(wheelDown()),
-			core, SLOT(wheelDown()));
-
-	connect(playerwindow, SIGNAL(moveOSD(const QPoint&)),
-			core, SLOT(setOSDPos(const QPoint&)));
 }
 
 void TBase::createPlaylist() {
@@ -1928,7 +1920,7 @@ void TBase::changeSize(double factor) {
 		if (zoomY > zoom) {
 			zoom = zoomY;
 		}
-		playerwindow->setZoom(zoom);
+		core->setZoom(zoom);
 	} else {
 		// Normal screen
 		pref->size_factor = factor;

@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PROC_MPVPROCESS_H
-#define _PROC_MPVPROCESS_H
+#ifndef PROC_MPVPROCESS_H
+#define PROC_MPVPROCESS_H
 
 #include <QObject>
 #include <QPoint>
@@ -97,16 +97,17 @@ public:
 	void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant());
 	void changeStereo3DFilter(bool enable, const QString& in, const QString& out);
 
-	void discSetMousePos(int x, int y);
+	void discSetMousePos(int, int);
 	void discButtonPressed(const QString& button_name);
 
 	void setAspect(double aspect);
+	virtual void setZoomAndPan(double, double, double);
+
 	void setFullscreen(bool b);
 #if PROGRAM_SWITCH
 	void setTSProgram(int ID);
 #endif
 	void toggleDeinterlace();
-	void setOSDPos(const QPoint& pos, int current_osd_level);
 	void setOSDScale(double value);
 	void setChannelsFile(const QString &);
 
@@ -146,9 +147,9 @@ private:
 
 	QString previous_eq;
 
-	QPoint osd_pos;
-	bool osd_centered_x;
-	bool osd_centered_y;
+	double zoom;
+	double pan_x;
+	double pan_y;
 
 	bool capturing;
 
@@ -167,4 +168,4 @@ private:
 
 } // namespace Proc
 
-#endif // _PROC_MPVPROCESS_H
+#endif // PROC_MPVPROCESS_H

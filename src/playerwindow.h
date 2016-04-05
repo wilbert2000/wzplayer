@@ -57,13 +57,9 @@ public:
 
 	TPlayerLayer* videoLayer() { return playerlayer; }
 
-	void set(double zoom_factor,
-			 double zoom_factor_fullscreen,
-			 QPoint pan,
-			 QPoint pan_fullscreen);
 	void setResolution(int width, int height);
 	QSize resolution() const { return video_size; }
-	QSize lastVideoSize() const { return last_video_size; }
+	QSize lastVideoOutSize() const { return last_video_out_size; }
 	double aspectRatio() const { return aspect; }
 
 	// Zoom
@@ -80,7 +76,7 @@ public:
 	double zoomFullScreen() { return zoom_factor_fullscreen; }
 
 	// Pan
-	void setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWindow = true);
+	void setPan(QPoint pan, QPoint pan_fullscreen);
 	// Pan current screen
 	QPoint pan();
 	// Pan normal screen
@@ -119,9 +115,10 @@ signals:
 	void draggingChanged(bool);
 
 	void moveWindow(QPoint);
-	void moveOSD(QPoint pos);
+	void setZoomAndPan(double, double, double);
 	void videoOutChanged(const QSize& size);
 	void videoSizeFactorChanged();
+	void displayMessage(const QString&);
 
 protected:
 	virtual void resizeEvent(QResizeEvent*);
@@ -135,7 +132,7 @@ private:
 	TPlayerLayer* playerlayer;
 
 	QSize video_size;
-	QSize last_video_size;
+	QSize last_video_out_size;
 	double aspect;
 
 	double zoom_factor;

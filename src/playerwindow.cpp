@@ -96,7 +96,7 @@ void TPlayerLayer::restoreNormalBackground() {
 TPlayerWindow::TPlayerWindow(QWidget* parent) :
 	QWidget(parent),
 	video_size(0, 0),
-	last_video_size(0, 0),
+	last_video_out_size(0, 0),
 	aspect(0),
 	zoom_factor(1.0),
 	zoom_factor_fullscreen(1.0),
@@ -143,16 +143,6 @@ void TPlayerWindow::setResolution(int width, int height) {
 	}
 }
 
-void TPlayerWindow::set(double zoom_factor,
-						double zoom_factor_fullscreen,
-						QPoint pan,
-						QPoint pan_fullscreen) {
-
-	// false = do not update video window
-	setZoom(zoom_factor, zoom_factor_fullscreen, false);
-	setPan(pan, pan_fullscreen, false);
-}
-
 void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
 
 	if (video_size.isEmpty()) {
@@ -160,8 +150,9 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
 		factorY = 0;
 	} else {
 		if (pref->fullscreen) {
-			factorX = (double) playerlayer->width() / video_size.width();
-			factorY = (double) playerlayer->height() / video_size.height();
+			// Should both be the same...
+			factorX = (double) last_video_out_size.width() / video_size.width();
+			factorY = (double) last_video_out_size.height() / video_size.height();
 		} else {
 			factorX = (double) width() / video_size.width();
 			factorY = (double) height() /  video_size.height();
@@ -199,64 +190,75 @@ void TPlayerWindow::updateVideoWindow() {
 			 << " pan:" << pan()
 			 << " fs:" << pref->fullscreen;
 
-	// TODO: can give MPV the whole window, it uses it for OSD and Subs.
-	// Mplayer too, but it does misbehave with some VOs, like XV,
-	// not properly clearing the background of the window given to it.
-	// MPlayer with GL or VDPAU work ok too, but on my setup clear the
-	// whole background creating a nasty flicker.
+	// Note: Can give MPV the whole window, it uses it for OSD and Subs.
+	// Mplayer too, but it does misbehave with some VOs, like XV, not properly
+	// clearing the background not covered by the video. MPlayer with GL or
+	// VDPAU work ok too, but on my setup clear the whole background creating
+	// a nasty flicker when changing video dimensions.
 
 	// On fullscreen ignore the toolbars
 	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
-	QSize video_size = s;
+	QSize vsize = s;
 
 	// Select best fit: height adjusted or width adjusted,
 	// in case video aspect does not match the window aspect ratio.
 	// Height adjusted gives horizontal black borders.
 	// Width adjusted gives vertical black borders,
 	if (aspect != 0) {
-		int height_adjusted = qRound(video_size.width() / aspect);
-		if (height_adjusted <= video_size.height()) {
+		int height_adjusted = qRound(vsize.width() / aspect);
+		if (height_adjusted <= vsize.height()) {
 			// adjust the height
-			video_size.rheight() = height_adjusted;
+			vsize.rheight() = height_adjusted;
 		} else {
 			// adjust the width
-			video_size.rwidth() = qRound(video_size.height() * aspect);
+			vsize.rwidth() = qRound(vsize.height() * aspect);
 		}
 	}
 
 	// Zoom
-	video_size *= zoom();
+	vsize *= zoom();
 
-	// Center
-	s = (s - video_size) / 2;
-	QPoint video_pos(s.width(), s.height());
-
-	// Move
-	video_pos += pan();
+	// Calc window pos and size
+	QPoint wpos;
+	QSize wsize;
+	if (pref->isMPlayer()) {
+		// MPlayer does not support zoom, so we blow up the video surface
+		// when zoom is too large
+		wsize = vsize;
+		// Center
+		s = (s - wsize) / 2;
+		wpos = QPoint(s.width(), s.height());
+		// Move
+		wpos += pan();
+	} else {
+		// Give MPV the whole window, passing zoom and pan to player
+		wsize = s;
+	}
 
 	// Return to local coords in fullscreen
 	if (pref->fullscreen)
-		video_pos = mapFromGlobal(video_pos);
+		wpos = mapFromGlobal(wpos);
 
 	// Set geometry video layer
-	playerlayer->setGeometry(video_pos.x(), video_pos.y(),
-							 video_size.width(), video_size.height());
+	playerlayer->setGeometry(wpos.x(), wpos.y(), wsize.width(), wsize.height());
 
-	// Keep OSD in sight. Need the offset as seen by the player.
-	QPoint osd_pos(Proc::default_osd_pos);
-	if (video_pos.x() < 0)
-		osd_pos.rx() -= video_pos.x();
-	if (video_pos.y() < 0)
-		osd_pos.ry() -= video_pos.y();
-	emit moveOSD(osd_pos);
-
-	// Update status with new video out size
-	if (video_size != last_video_size) {
-		last_video_size = video_size;
-		emit videoOutChanged(video_size);
+	// Pass zoom and pan to player.
+	if (pref->isMPV()) {
+		// Pan wants factor relative to whole scaled video
+		QPoint pan = this->pan();
+		double pan_x = (double) pan.x() / vsize.width();
+		double pan_y = (double) pan.y() / vsize.height();
+		emit setZoomAndPan(zoom(), pan_x, pan_y);
 	}
 
-	qDebug() << "TPlayerWindow::updateVideoWindow: out:" << video_pos << video_size;
+	// Update status with new video out size
+	if (vsize != last_video_out_size) {
+		last_video_out_size = vsize;
+		emit videoOutChanged(vsize);
+	}
+
+	qDebug() << "TPlayerWindow::updateVideoWindow: out: win pos" << wpos
+			 << "win size" << wsize << "video size" << vsize;
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent*) {
@@ -454,14 +456,6 @@ void TPlayerWindow::setZoom(double factor,
 							bool updateVideoWindow) {
 	qDebug("TPlayerWindow::setZoom: normal screen %f, full screen %f", factor, factor_fullscreen);
 
-	const double ZOOM_MIN = 0.05;
-	const double ZOOM_MAX = 8.0; // High max can blow up surface
-
-	if (factor < ZOOM_MIN)
-		factor = ZOOM_MIN;
-	else if (factor > ZOOM_MAX)
-		factor = ZOOM_MAX;
-
 	if (factor_fullscreen == 0) {
 		// Set only current zoom
 		if (pref->fullscreen)
@@ -469,11 +463,6 @@ void TPlayerWindow::setZoom(double factor,
 		else zoom_factor = factor;
 	} else {
 		// Set both zooms
-		if (factor_fullscreen < ZOOM_MIN)
-			factor_fullscreen = ZOOM_MIN;
-		else if (factor_fullscreen > ZOOM_MAX)
-			factor_fullscreen = ZOOM_MAX;
-
 		zoom_factor = factor;
 		zoom_factor_fullscreen = factor_fullscreen;
 	}
@@ -490,13 +479,11 @@ double TPlayerWindow::zoom() {
 	return pref->fullscreen ? zoom_factor_fullscreen : zoom_factor;
 }
 
-void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen, bool updateVideoWindow) {
+void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen) {
 	qDebug() << "TPlayerWindow::setPan: pan" << pan << "pan full screen" << pan_fullscreen;
 
 	pan_offset = pan;
 	pan_offset_fullscreen = pan_fullscreen;
-	if (updateVideoWindow)
-		this->updateVideoWindow();
 }
 
 void TPlayerWindow::moveVideo(QPoint delta) {
@@ -507,6 +494,9 @@ void TPlayerWindow::moveVideo(QPoint delta) {
 		pan_offset += delta;
 	}
 	updateVideoWindow();
+	QPoint p = pan();
+	emit displayMessage(tr("Pan (%1, %2)")
+		.arg(QString::number(p.x())).arg(QString::number(p.y())));
 }
 
 void TPlayerWindow::moveVideo(int dx, int dy) {

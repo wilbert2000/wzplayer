@@ -19,6 +19,7 @@
 #include <QDebug>
 #include <QSettings>
 
+#include "config.h"
 #include "settings/aspectratio.h"
 #include "settings/mediasettings.h"
 #include "settings/preferences.h"
@@ -500,7 +501,11 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	stereo_mode = set->value("stereo_mode", stereo_mode).toInt();
 
 	zoom_factor = set->value("zoom_factor", zoom_factor).toDouble();
+	if (zoom_factor < TConfig::ZOOM_MIN || zoom_factor > TConfig::ZOOM_MAX)
+		zoom_factor = 1;
 	zoom_factor_fullscreen = set->value("zoom_factor_fullscreen", zoom_factor_fullscreen).toDouble();
+	if (zoom_factor_fullscreen < TConfig::ZOOM_MIN || zoom_factor_fullscreen > TConfig::ZOOM_MAX)
+		zoom_factor_fullscreen = 1;
 	pan_offset = set->value("pan_offset", pan_offset).toPoint();
 	pan_offset_fullscreen = set->value("pan_offset_fullscreen", pan_offset_fullscreen).toPoint();
 
