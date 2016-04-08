@@ -129,8 +129,6 @@ protected slots:
 	void requestBitrateInfo();
 
 private:
-	bool verbose;
-
 	bool received_buffering;
 
 	int selected_title;

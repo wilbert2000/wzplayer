@@ -35,8 +35,7 @@
 namespace Proc {
 
 TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata) :
-	TPlayerProcess(parent, mdata),
-	verbose(false) {
+	TPlayerProcess(parent, mdata) {
 }
 
 TMPVProcess::~TMPVProcess() {
@@ -521,7 +520,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	}
 
 	// Remove sender when using verbose
-	if (verbose && rx_verbose.indexIn(line) >= 0) {
+	if (rx_verbose.indexIn(line) >= 0) {
 		line = rx_verbose.cap(2);
 	}
 
@@ -913,7 +912,6 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 			arg << "--ad=spdif:ac3,spdif:dts";
 	} else if (name == "verbose") {
 		arg << "-v";
-		verbose = true;
 	} else if (name == "mute") {
 		arg << "--mute=yes";
 	} else if (name == "vf-add") {
@@ -929,9 +927,6 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 
 void TMPVProcess::addUserOption(const QString& option) {
 	arg << option;
-	if (option == "-v") {
-		verbose = true;
-	}
 }
 
 void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
