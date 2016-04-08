@@ -1830,8 +1830,8 @@ void TBase::showContextMenu(QPoint p) {
 
 // Called when a video has started to play
 void TBase::enterFullscreenOnPlay() {
-	qDebug("Gui::TBase::enterFullscreenOnPlay: arg_start_in_fullscreen: %d, pref->start_in_fullscreen: %d",
-		   arg_start_in_fullscreen, pref->start_in_fullscreen);
+	//qDebug("Gui::TBase::enterFullscreenOnPlay: arg_start_in_fullscreen: %d, pref->start_in_fullscreen: %d",
+	//	   arg_start_in_fullscreen, pref->start_in_fullscreen);
 
 	if (arg_start_in_fullscreen != 0) {
 		if ((arg_start_in_fullscreen == 1) || (pref->start_in_fullscreen)) {
@@ -2104,20 +2104,18 @@ void TBase::resizeMainWindow(int w, int h, double size_factor, bool try_twice) {
 	}
 
 	QSize new_size = size() + panel_size - panel->size();
-	qDebug("Gui::TBase::resizeMainWindow: resizing window from %d x %d to %d x %d",
-		   width(), height(), new_size.width(), new_size.height());
+	//qDebug("Gui::TBase::resizeMainWindow: resizing window from %d x %d to %d x %d",
+	//	   width(), height(), new_size.width(), new_size.height());
 	resize(new_size);
 
-	if (panel->size() == panel_size) {
-		qDebug("Gui::TBase::resizeMainWindow: resize succeeded");
-	} else {
+	if (panel->size() != panel_size) {
 		// Resizing the main window can change the height of the tool bars,
 		// which will change the height of the panel during the resize.
 		// Often fixed by resizing once again, using the new panel height.
 		if (try_twice) {
-			qDebug("Gui::TBase::resizeMainWindow: panel size now %d x %d. Wanted size %d x %d. Trying a second time",
-				   panel->size().width(), panel->size().height(),
-				   panel_size.width(), panel_size.height());
+			//qDebug("Gui::TBase::resizeMainWindow: panel size now %d x %d. Wanted size %d x %d. Trying a second time",
+			//	   panel->size().width(), panel->size().height(),
+			//	   panel_size.width(), panel_size.height());
 			resizeMainWindow(w, h, size_factor, false);
 		} else {
 			qDebug("Gui::TBase::resizeMainWindow: resize failed. Panel size now %d x %d. Wanted size %d x %d",
