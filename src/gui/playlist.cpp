@@ -843,7 +843,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
 		setCurrentItem(0);
 
 		// Add associated files to playlist
-		if (md->selected_type == TMediaData::TYPE_FILE) {
+		if (md->selected_type == TMediaData::TYPE_FILE
+			&& pref->media_to_add_to_playlist != TPreferences::NoFiles) {
 			qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: searching for files to add to playlist for"
 					 << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(
