@@ -75,11 +75,11 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 		diffY = qAbs(factorX - factorY);
 		if (diffY < diffX) {
 			setChecked(size_percentage);
-			qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: match on %d fx %f fy %f diff %f allowed diff %f",
-				   size_percentage, factorX, factorY, diffY, diffX);
+			//qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: match on %d fx %f fy %f diff %f allowed diff %f",
+			//	   size_percentage, factorX, factorY, diffY, diffX);
 		} else {
-			qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: no match on %d fx %f fy %f diff %f allowed diff %f",
-				   size_percentage, factorX, factorY, diffY, diffX);
+			//qDebug("Gui::Action::TVideoSizeGroup::updateVideoSizeGroup: no match on %d fx %f fy %f diff %f allowed diff %f",
+			//	   size_percentage, factorX, factorY, diffY, diffX);
 		}
 	}
 }
@@ -117,7 +117,7 @@ void TMenuVideoSize::enableActions(bool stopped, bool video, bool) {
 }
 
 void TMenuVideoSize::upd() {
-	qDebug("Gui::Action::TMenuVideoSize:upd: size factor %f", pref->size_factor);
+	//qDebug("Gui::Action::TMenuVideoSize:upd: size factor %f", pref->size_factor);
 
 	group->updateVideoSizeGroup();
 	doubleSizeAct->setEnabled(group->isEnabled());
