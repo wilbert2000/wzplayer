@@ -1300,22 +1300,30 @@ void TMPVProcess::setAspect(double aspect) {
 	writeToStdin("set video-aspect " + QString::number(aspect));
 }
 
-void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y) {
-	qDebug("Proc::TMPVProcess::setZoomAndPan: %f %f %f", zoom, pan_x, pan_y);
+void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y, int osd_level) {
+	//qDebug("Proc::TMPVProcess::setZoomAndPan: %f %f %f", zoom, pan_x, pan_y);
 
 	// Wait until player is up
 	if (notified_player_is_running) {
+		bool clear_osd = false;
 		if (zoom != this->zoom) {
 			writeToStdin("set video-zoom " + QString::number(zoom - 1));
 			this->zoom = zoom;
+			clear_osd = true;
 		}
 		if (pan_x != this->pan_x) {
 			writeToStdin("set video-pan-x " + QString::number(pan_x));
 			this->pan_x = pan_x;
+			clear_osd = true;
 		}
 		if (pan_y != this->pan_y) {
 			writeToStdin("set video-pan-y " + QString::number(pan_y));
 			this->pan_y = pan_y;
+			clear_osd = true;
+		}
+		// Clear OSD message
+		if (clear_osd) {
+			writeToStdin("show_text \"\" 0 " + QString::number(osd_level));
 		}
 	}
 }

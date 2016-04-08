@@ -59,6 +59,10 @@ void TMPlayerProcess::clearSubSources() {
 
 bool TMPlayerProcess::startPlayer() {
 
+	zoom = 1;
+	pan_x = 0;
+	pan_y = 0;
+
 	clearSubSources();
 	frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
 	clip_info_id = -1;
@@ -841,7 +845,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		/* scaling mouse move, because off -msglevel cplayer=6 */
 		"^(rescaled coordinates"
 		/* Emitted on DVDNAV menus when image not mpeg2 compliant */
-		"|\\[mpeg2video .*Invalid horizontal or vertical size value)"
+		"|\\[mpeg2video .*Invalid horizontal or vertical size value"
+		"|\\[ASPECT\\] Warning: No suitable new res found)"
 	);
 
 	// Clip info
@@ -1137,7 +1142,11 @@ void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
 }
 
 void TMPlayerProcess::setFixedOptions() {
-	arg << "-noquiet" << "-slave" << "-identify";
+	arg << "-noquiet"
+		<< "-slave"
+		<< "-identify"
+		<< "-panscanrange" << QString::number(1 - TConfig::ZOOM_MAX);
+	//	arg << "-msglevel" << "vo=7";
 
 	// Need level 6 to catch DVDNAV, NEW TITLE
 	if (md->selected_type == TMediaData::TYPE_DVDNAV) {
@@ -1545,8 +1554,22 @@ void TMPlayerProcess::setAspect(double aspect) {
 	writeToStdin("switch_ratio " + QString::number(aspect));
 }
 
-void TMPlayerProcess::setZoomAndPan(double, double, double) {
-	// Not supported
+void TMPlayerProcess::setZoomAndPan(double zoom, double, double, int) {
+	//qDebug("Proc::TMPlayerProcess::setZoomAndPan: %f %f %f", zoom, pan_x, pan_y);
+	// -panscanrange is set in setFixedOptions() to allow for ZOOM_MAX zoom.
+
+	if (notified_player_is_running) {
+		// Zoom < 1 does not work.
+		if (zoom < 1) {
+			zoom = 1;
+		}
+		if (zoom != this->zoom) {
+			this->zoom = zoom;
+			// Map 1 - ZOOM_MAX to 0 - 1
+			zoom = (zoom - 1) / (TConfig::ZOOM_MAX - 1);
+			writeToStdin("pausing_keep_force panscan " + QString::number(zoom) + " 1");
+		}
+	}
 }
 
 void TMPlayerProcess::setFullscreen(bool b) {

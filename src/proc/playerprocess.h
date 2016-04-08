@@ -115,7 +115,7 @@ public:
 	virtual void discButtonPressed(const QString& button_name) = 0;
 
 	virtual void setAspect(double aspect) = 0;
-	virtual void setZoomAndPan(double zoom, double pan_x, double pan_y) = 0;
+	virtual void setZoomAndPan(double zoom, double pan_x, double pan_y, int osd_levl) = 0;
 	virtual void setFullscreen(bool b) = 0;
 #if PROGRAM_SWITCH
 	virtual void setTSProgram(int ID) = 0;

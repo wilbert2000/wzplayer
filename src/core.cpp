@@ -3033,7 +3033,7 @@ void TCore::changeAdapter(int n) {
 
 // Slot called by player window to set zoom and pan (MPV only)
 void TCore::setZoomAndPan(double zoom, double pan_x, double pan_y) {
-	proc->setZoomAndPan(zoom, pan_x, pan_y);
+	proc->setZoomAndPan(zoom, pan_x, pan_y, pref->osd_level);
 }
 
 void TCore::getZoomFromPlayerWindow() {

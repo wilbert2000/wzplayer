@@ -155,6 +155,7 @@ private:
 	bool checkDragging(QMouseEvent* event);
 
 	void setFastWindow();
+	void clipMPlayer(QRect& vwin, const QPoint& pan, double& zoom);
 };
 
 #endif // PLAYERWINDOW_H

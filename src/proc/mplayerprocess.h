@@ -101,7 +101,7 @@ public:
 	void discButtonPressed(const QString& button_name);
 
 	void setAspect(double aspect);
-	virtual void setZoomAndPan(double, double, double);
+	virtual void setZoomAndPan(double zoom, double, double, int);
 	void setFullscreen(bool b);
 #if PROGRAM_SWITCH
 	void setTSProgram(int ID);
@@ -124,6 +124,10 @@ protected:
 	virtual bool parseProperty(const QString& name, const QString& value);
 
 private:
+	double zoom;
+	double pan_x;
+	double pan_y;
+
 	int sub_source;
 	bool sub_file;
 	bool sub_vob;
