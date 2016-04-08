@@ -531,6 +531,7 @@ void TSMPlayer::onRequestRestart(bool reset_style) {
 	qDebug("TSMPlayer::onRequestRestart");
 
 	requested_restart = true;
+	start_in_fullscreen = pref->fullscreen;
 	this->reset_style = reset_style;
 
 	Gui::TPlaylist* playlist = main_window->getPlaylist();
