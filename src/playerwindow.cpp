@@ -37,8 +37,8 @@
 
 using namespace Settings;
 
-// Widget containing the video player
-TPlayerLayer::TPlayerLayer(QWidget* parent) :
+// Window containing the video player
+TVideoWindow::TVideoWindow(QWidget* parent) :
 	QWidget(parent),
 	normal_background(true) {
 
@@ -52,24 +52,23 @@ TPlayerLayer::TPlayerLayer(QWidget* parent) :
 #endif
 }
 
-TPlayerLayer::~TPlayerLayer() {
+TVideoWindow::~TVideoWindow() {
 }
 
-void TPlayerLayer::paintEvent(QPaintEvent*) {
-	// qDebug() << "TPlayerLayer::paintEvent:" << e->rect();
-
+void TVideoWindow::paintEvent(QPaintEvent*) {
+	// qDebug() << "TVideoWindow::paintEvent:" << e->rect();
 	// QPainter painter(this);
 	// painter.eraseRect(e->rect());
 }
 
-void TPlayerLayer::setFastBackground() {
-	qDebug("TPlayerLayer::setFastBackground");
+void TVideoWindow::setFastBackground() {
+	qDebug("TVideoWindow::setFastBackground");
 
 	normal_background = false;
 	setAutoFillBackground(false);
 	// Don't erase background before paint
 	setAttribute(Qt::WA_OpaquePaintEvent);
-	// No system background restore
+	// No restore background by system
 	setAttribute(Qt::WA_NoSystemBackground);
 
 #ifndef Q_OS_WIN
@@ -79,8 +78,8 @@ void TPlayerLayer::setFastBackground() {
 #endif
 }
 
-void TPlayerLayer::restoreNormalBackground() {
-	qDebug("TPlayerLayer::restoreNormalBackground");
+void TVideoWindow::restoreNormalBackground() {
+	qDebug("TVideoWindow::restoreNormalBackground");
 
 	normal_background = true;
 	setAutoFillBackground(true);
@@ -112,12 +111,12 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
 	setFocusPolicy(Qt::StrongFocus);
 	setMouseTracking(true);
 
-	playerlayer = new TPlayerLayer(this);
-	playerlayer->setObjectName("playerlayer");
+	video_window = new TVideoWindow(this);
+	video_window->setObjectName("video_window");
 	setColorKey();
-	playerlayer->setMinimumSize(QSize(0, 0));
-	playerlayer->setFocusPolicy(Qt::NoFocus);
-	playerlayer->setMouseTracking(true);
+	video_window->setMinimumSize(QSize(0, 0));
+	video_window->setFocusPolicy(Qt::NoFocus);
+	video_window->setMouseTracking(true);
 
 	left_click_timer = new QTimer(this);
 	left_click_timer->setSingleShot(true);
@@ -138,7 +137,7 @@ void TPlayerWindow::setResolution(int width, int height) {
 	} else {
 		aspect = (double) width / height;
 	}
-	if (!video_size.isEmpty() && playerlayer->normal_background) {
+	if (!video_size.isEmpty() && video_window->normal_background) {
 		setFastWindow();
 	}
 }
@@ -336,9 +335,9 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 	}
 
 	// For DVDNAV
-	if (!dragging && playerlayer->underMouse()) {
+	if (!dragging && video_window->underMouse()) {
 		// Make event relative to video layer
-		QPoint pos = event->pos() - playerlayer->pos();
+		QPoint pos = event->pos() - video_window->pos();
 		emit mouseMoved(pos);
 	}
 }
@@ -519,21 +518,21 @@ void TPlayerWindow::resetZoomAndPan() {
 void TPlayerWindow::setColorKey() {
 
 	if (pref->useColorKey()) {
-		ColorUtils::setBackgroundColor(playerlayer, pref->color_key);
+		ColorUtils::setBackgroundColor(video_window, pref->color_key);
 	} else {
-		ColorUtils::setBackgroundColor(playerlayer, QColor(0, 0, 0));
+		ColorUtils::setBackgroundColor(video_window, QColor(0, 0, 0));
 	}
 }
 
 void TPlayerWindow::setFastWindow() {
 	qDebug("TPlayerWindow::setFastWindow");
-	playerlayer->setFastBackground();
+	video_window->setFastBackground();
 }
 
 void TPlayerWindow::restoreNormalWindow() {
 	qDebug("TPlayerWindow::restoreNormalWindow");
 
-	playerlayer->restoreNormalBackground();
+	video_window->restoreNormalBackground();
 	// Clear video size
 	video_size = QSize(0, 0);
 }

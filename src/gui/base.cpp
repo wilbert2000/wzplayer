@@ -1627,7 +1627,7 @@ void TBase::leftClickFunction() {
 	qDebug("Gui::TBase::leftClickFunction");
 
 	if (core->mdat.detected_type == TMediaData::TYPE_DVDNAV
-		&& playerwindow->videoLayer()->underMouse()) {
+		&& playerwindow->videoWindow()->underMouse()) {
 		core->dvdnavMouse();
 	} else if (!pref->mouse_left_click_function.isEmpty()) {
 		processFunction(pref->mouse_left_click_function);

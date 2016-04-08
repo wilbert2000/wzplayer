@@ -32,12 +32,12 @@
 class QTimer;
 
 
-//! TPlayerLayer can be instructed to not delete the background.
-class TPlayerLayer : public QWidget {
+//! TVideoWindow can be instructed to not delete the background.
+class TVideoWindow : public QWidget {
 	Q_OBJECT
 public:
-	explicit TPlayerLayer(QWidget* parent);
-	virtual ~TPlayerLayer();
+	explicit TVideoWindow(QWidget* parent);
+	virtual ~TVideoWindow();
 
 	bool normal_background;
 
@@ -55,7 +55,7 @@ public:
 	TPlayerWindow(QWidget* parent);
 	virtual ~TPlayerWindow();
 
-	TPlayerLayer* videoLayer() { return playerlayer; }
+	TVideoWindow* videoWindow() { return video_window; }
 
 	void setResolution(int width, int height);
 	QSize resolution() const { return video_size; }
@@ -129,7 +129,7 @@ protected:
 	virtual void wheelEvent(QWheelEvent* e);
 
 private:
-	TPlayerLayer* playerlayer;
+	TVideoWindow* video_window;
 
 	QSize video_size;
 	QSize last_video_out_size;

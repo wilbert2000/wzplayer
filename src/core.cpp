@@ -923,9 +923,9 @@ void TCore::startPlayer(QString file, double seek) {
 
 #if defined(Q_OS_OS2)
 #define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
-	proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoLayer()->winId())));
+	proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoWindow()->winId())));
 #else
-	proc->setOption("wid", QString::number((qint64) playerwindow->videoLayer()->winId()));
+	proc->setOption("wid", QString::number((qint64) playerwindow->videoWindow()->winId()));
 #endif
 
 	if (pref->log_verbose) {
@@ -1077,7 +1077,7 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
 		// Make sure the color key is applied by clearing the background of
 		// the video window
-		playerwindow->videoLayer()->repaint();
+		playerwindow->videoWindow()->repaint();
 	}
 
 	// Synchronization
@@ -3282,7 +3282,7 @@ void TCore::dvdnavMouse() {
 		}
 		if (_state == STATE_PLAYING) {
 			// Give a last update on the mouse position
-			QPoint pos = playerwindow->videoLayer()->mapFromGlobal(QCursor::pos());
+			QPoint pos = playerwindow->videoWindow()->mapFromGlobal(QCursor::pos());
 			dvdnavUpdateMousePos(pos);
 			// Click
 			proc->discButtonPressed("mouse");
