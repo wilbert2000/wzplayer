@@ -300,7 +300,6 @@ public:
 	// TODO: fullscreen is not a preference...
 	bool fullscreen;
 	bool start_in_fullscreen;
-	bool add_blackborders_on_fullscreen;
 
 	TOnTop stay_on_top;
 	double size_factor;

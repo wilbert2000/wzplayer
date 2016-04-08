@@ -353,13 +353,6 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QCheckBox" name="blackborders_on_fs_check">
-            <property name="text">
-             <string>A&amp;dd black borders on fullscreen</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -694,7 +687,6 @@
   <tabstop>hide_toolbars_spin</tabstop>
   <tabstop>show_toolbars_bottom_only_check</tabstop>
   <tabstop>start_fullscreen_check</tabstop>
-  <tabstop>blackborders_on_fs_check</tabstop>
   <tabstop>media_to_add_combo</tabstop>
   <tabstop>recursive_check</tabstop>
   <tabstop>autosave_on_exit_check</tabstop>

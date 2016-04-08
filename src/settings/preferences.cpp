@@ -122,8 +122,6 @@ void TPreferences::reset() {
 	use_soft_video_eq = false;
 	postprocessing_quality = 6;
 
-	add_blackborders_on_fullscreen = false;
-
 #ifndef Q_OS_WIN
 	vdpau.ffh264vdpau = true;
 	vdpau.ffmpeg12vdpau = true;
@@ -479,7 +477,6 @@ void TPreferences::save() {
 	setValue("hard_frame_drop", hard_frame_drop);
 	setValue("use_soft_video_eq", use_soft_video_eq);
 	setValue("postprocessing_quality", postprocessing_quality);
-	setValue("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen);
 
 #ifndef Q_OS_WIN
 	setValue("vdpau_ffh264vdpau", vdpau.ffh264vdpau);
@@ -950,7 +947,6 @@ void TPreferences::load() {
 	hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
 	use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
 	postprocessing_quality = value("postprocessing_quality", postprocessing_quality).toInt();
-	add_blackborders_on_fullscreen = value("add_blackborders_on_fullscreen", add_blackborders_on_fullscreen).toBool();
 
 #ifndef Q_OS_WIN
 	vdpau.ffh264vdpau = value("vdpau_ffh264vdpau", vdpau.ffh264vdpau).toBool();
@@ -1414,6 +1410,7 @@ void TPreferences::load() {
 		}
 
 		remove("General/capture_directory");
+		remove("General/add_blackborders_on_fullscreen");
 		remove("gui/auto_add_to_playlist");
 		remove("gui/resize_method");
 

@@ -1388,7 +1388,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Letterbox (expand)
-	if (mset.add_letterbox || (pref->fullscreen && pref->add_blackborders_on_fullscreen)) {
+	if (mset.add_letterbox) {
 		proc->addVF("expand", QString("aspect=%1").arg(TDesktop::aspectRatio(playerwindow)));
 	}
 

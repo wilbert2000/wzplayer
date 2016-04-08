@@ -85,8 +85,6 @@ protected:
 	void setHideVideoOnAudioFiles(bool b);
 	bool hideVideoOnAudioFiles();
 
-	// Playlist tab
-
 	// History tab
 	void setRecentsMaxItems(int n);
 	int recentsMaxItems();
@@ -121,9 +119,6 @@ private:
 
 	void setStartInFullscreen(bool b);
 	bool startInFullscreen();
-
-	void setBlackbordersOnFullscreen(bool b);
-	bool blackbordersOnFullscreen();
 
 	void setMediaToAdd(int);
 	int mediaToAdd();

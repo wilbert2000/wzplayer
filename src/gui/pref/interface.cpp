@@ -155,7 +155,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	hide_toolbars_spin->setValue(pref->floating_hide_delay);
 	show_toolbars_bottom_only_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	setStartInFullscreen(pref->start_in_fullscreen);
-	setBlackbordersOnFullscreen(pref->add_blackborders_on_fullscreen);
 
 	// Playlist
 	setMediaToAdd(pref->media_to_add_to_playlist);
@@ -210,11 +209,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	pref->floating_hide_delay = hide_toolbars_spin->value();
 	pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked() ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->start_in_fullscreen = startInFullscreen();
-	if (pref->add_blackborders_on_fullscreen != blackbordersOnFullscreen()) {
-		pref->add_blackborders_on_fullscreen = blackbordersOnFullscreen();
-		if (pref->fullscreen)
-			requires_restart = true;
-	}
 
 	// Playlist
 	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
@@ -313,15 +307,6 @@ void TInterface::setStartInFullscreen(bool b) {
 
 bool TInterface::startInFullscreen() {
 	return start_fullscreen_check->isChecked();
-}
-
-
-void TInterface::setBlackbordersOnFullscreen(bool b) {
-	blackborders_on_fs_check->setChecked(b);
-}
-
-bool TInterface::blackbordersOnFullscreen() {
-	return blackborders_on_fs_check->isChecked();
 }
 
 #ifdef SINGLE_INSTANCE
@@ -535,11 +520,6 @@ void TInterface::createHelp() {
 	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
 		tr("If this option is checked, all videos will start to play in "
 		   "fullscreen mode."));
-
-	setWhatsThis(blackborders_on_fs_check, tr("Add black borders on fullscreen"),
-		tr("If this option is enabled, black borders will be added to the "
-		   "image in fullscreen mode. This allows subtitles and OSD to be displayed "
-		   "on the black borders."));
 
 	addSectionTitle(tr("Playlist"));
 

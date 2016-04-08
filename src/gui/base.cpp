@@ -1537,10 +1537,6 @@ void TBase::toggleFullscreen(bool b) {
 		didExitFullscreen();
 	}
 
-	if (pref->add_blackborders_on_fullscreen && !core->mset.add_letterbox) {
-		core->changeLetterboxOnFullscreen(pref->fullscreen);
-	}
-
 	setFocus(); // Fixes bug #2493415
 }
 
