@@ -43,7 +43,9 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 	license_icon->setPixmap(Images::icon("license"));
 
 	info->setText(
-		"<b>SMPlayer</b> &copy; 2006-2015 Ricardo Villalba &lt;rvm@users.sourceforge.net&gt;<br><br>"
+		"<b>" + TConfig::PROGRAM_NAME +"</b> &copy; 2015-2016 Wilbert Hengst.<br>"
+		+ tr("Based on %1 by Ricardo Villalba.").arg("<a href=\"" + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
+		+ "<br><br>"
 		"<b>" + tr("Version: %1").arg(Version::printable()) + "</b>" +
 #if PORTABLE_APP
 				" (" + tr("Portable Edition") + ")" +
@@ -57,7 +59,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 		+ "<br>"
 		+ tr("WZPlayer is a graphical interface for %1 and %2.")
 			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
-			.arg("<a href=\"http://www.mpv.io\">mpv</a>")
+			.arg("<a href=\"http://www.mpv.io\">MPV</a>")
 		+ "<br><br>"
 		+ tr("Subtitles service powered by %1").arg("<a href=\"http://www.opensubtitles.org\">www.OpenSubtitles.org</a>"));
 

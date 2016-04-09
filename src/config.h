@@ -19,6 +19,7 @@ public:
 	static const QString URL_CHANGES;
 	static const QString URL_OPENSSL;
 	static const QString URL_VERSION_INFO;
+	static const QString URL_SMPLAYER;
 };
 
 

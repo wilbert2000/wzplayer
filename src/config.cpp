@@ -15,4 +15,5 @@ const QString TConfig::URL_ISSUES("https://github.com/wilbert2000/wzplayer/issue
 const QString TConfig::URL_TRANSLATORS("http://www.smplayer.info/translators.php");
 const QString TConfig::URL_CHANGES("https://github.com/wilbert2000/wzplayer/blob/master/Changelog");
 const QString TConfig::URL_VERSION_INFO("https://github.com/wilbert2000/wzplayer/blob/master/latest_versions.txt");
+const QString TConfig::URL_SMPLAYER("http://www.smplayer.info");
 
