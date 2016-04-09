@@ -3,6 +3,7 @@
 ln -s debian-rvm debian
 cp debian-rvm/changelog-orig debian-rvm/changelog
 
+# TODO
 ./get_svn_revision.sh
 dch -v 16.1.0-`cat svn_revision` "New version"
 

@@ -114,8 +114,8 @@ void TUpdateChecker::gotReply() {
 			if (!version.isEmpty()) {
 				d->last_checked = QDate::currentDate();
 				qDebug() << "TUpdateChecker::gotReply: last known version:" << d->last_known_version << "received version:" << version;
-				qDebug() << "TUpdateChecker::gotReply: installed version:" << Version::with_revision();
-				if ((d->last_known_version != version) && (formattedVersion(version) > formattedVersion(Version::with_revision()))) {
+				qDebug() << "TUpdateChecker::gotReply: installed version:" << TVersion::version;
+				if (d->last_known_version != version && version > TVersion::version) {
 					qDebug() << "TUpdateChecker::gotReply: new version found:" << version;
 					emit newVersionFound(version);
 				}
@@ -138,7 +138,7 @@ void TUpdateChecker::gotReplyFromUserRequest() {
 		if (reply->error() == QNetworkReply::NoError) {
 			QString version = parseVersion(reply->readAll(), "unstable");
 			if (!version.isEmpty()) {
-				if ((formattedVersion(version) > formattedVersion(Version::with_revision()))) {
+				if (version > TVersion::version) {
 					qDebug("TUpdateChecker::gotReplyFromUserRequest: new version found: %s", version.toUtf8().constData());
 					emit newVersionFound(version);
 				} else {
@@ -160,29 +160,12 @@ void TUpdateChecker::saveVersion(QString v) {
 	d->last_known_version = v;
 }
 
-QString TUpdateChecker::formattedVersion(const QString & version) {
-	int n1 = 0, n2 = 0, n3 = 0, n4 = 0;
-	QStringList l = version.split(".");
-	int c = l.count();
-	if (c >= 1) n1 = l[0].toInt();
-	if (c >= 2) n2 = l[1].toInt();
-	if (c >= 3) n3 = l[2].toInt();
-	if (c >= 4) n4 = l[3].toInt();
-
-	QString res = QString("%1.%2.%3.%4").arg(n1, 2, 10, QChar('0'))
-										.arg(n2, 2, 10, QChar('0'))
-										.arg(n3, 2, 10, QChar('0'))
-										.arg(n4, 4, 10, QChar('0'));
-	//qDebug() << "TUpdateChecker::formattedVersion:" << res;
-	return res;
-}
-
 void TUpdateChecker::reportNewVersionAvailable(const QString & new_version) {
 	QWidget* p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),
 		tr("A new version of WZPlayer is available.") + "<br><br>" +
-		tr("Installed version: %1").arg(Version::with_revision()) + "<br>" +
+		tr("Installed version: %1").arg(TVersion::version) + "<br>" +
 		tr("Available version: %1").arg(new_version) + "<br><br>" +
 		tr("Would you like to know more about this new version?"),
 		QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
@@ -199,7 +182,7 @@ void TUpdateChecker::reportNoNewVersionFound(const QString & version) {
 
 	QMessageBox::information(p, tr("Checking for updates"),
 		tr("Congratulations, WZPlayer is up to date.") + "<br><br>" +
-		tr("Installed version: %1").arg(Version::with_revision()) + "<br>" +
+		tr("Installed version: %1").arg(TVersion::version) + "<br>" +
 		tr("Available version: %1").arg(version));
 }
 

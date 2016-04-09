@@ -44,7 +44,7 @@ void OSClient::setProxy(const QNetworkProxy & proxy) {
 void OSClient::login() {
 	qDebug("OSClient::login");
 
-	QString user_agent = "WZPlayer v" + Version::stable();
+	QString user_agent = "WZPlayer " + TVersion::version;
 	qDebug("OSClient::login: user agent: %s", user_agent.toUtf8().constData());
 
 	QVariantList args;

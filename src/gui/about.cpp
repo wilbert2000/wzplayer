@@ -46,7 +46,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 		"<b>" + TConfig::PROGRAM_NAME +"</b> &copy; 2015-2016 Wilbert Hengst.<br>"
 		+ tr("Based on %1 by Ricardo Villalba.").arg("<a href=\"" + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
 		+ "<br><br>"
-		"<b>" + tr("Version: %1").arg(Version::printable()) + "</b>" +
+		"<b>" + tr("Version: %1").arg(TVersion::version) + "</b>" +
 #if PORTABLE_APP
 				" (" + tr("Portable Edition") + ")" +
 #endif

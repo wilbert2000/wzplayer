@@ -18,6 +18,7 @@ DEFINES += FIND_SUBTITLES
 DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += MPRIS2
 DEFINES += UPDATE_CHECKER
+DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --abbrev=4 --dirty --always --tags)\\\"
 
 # Support for program switch in TS files
 #DEFINES += PROGRAM_SWITCH
@@ -42,8 +43,7 @@ contains(QT_VERSION, ^4\\.[0-3]\\..*) {
     error("Qt > 4.3 required")
 }
 
-HEADERS += svn_revision.h \
-	version.h \
+HEADERS += version.h \
 	helper.h \
 	colorutils.h \
 	subtracks.h \

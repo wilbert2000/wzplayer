@@ -1,16 +1,13 @@
 #!/bin/sh
-#svn up
-./get_svn_revision.sh
 
-SVN_REVISION=`cat svn_revision | sed -e 's/SVN-/svn_/g'`
-SMPVERSION=`cat src/version.cpp | grep "#define VERSION " | sed -e 's/#define VERSION "//g' -e 's/ /_/g' -e 's/"$//g'`
+WZPVERSION=`git describe --abbrev=4 --dirty --always --tags`
+NAME=wzplayer-${WZPVERSION}
 
-svn export . /tmp/smplayer-${SMPVERSION}_${SVN_REVISION}
-CURDIR=`pwd`
 cd /tmp
-tar cvjf smplayer-${SMPVERSION}_${SVN_REVISION}.tar.bz2 smplayer-${SMPVERSION}_${SVN_REVISION}/
-rm -r /tmp/smplayer-${SMPVERSION}_${SVN_REVISION}
-cat ${CURDIR}/smplayer.spec | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${SMPVERSION}'_'${SVN_REVISION}'/' > /tmp/smplayer.spec
+git clone 'https://github.com/wilbert2000/wzplayer.git' ${NAME}
+tar cvjf ${NAME}.tar.bz2 ${NAME}/
+cat ${NAME}/wzplayer.spec | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${WZPVERSION}'/' > /tmp/wzplayer.spec
+rm -r /tmp/${NAME}
 PCKGDIR=/usr/src/packages/
 if [ -e /etc/fedora-release ]; then
     PCKGDIR=/usr/src/redhat/
@@ -18,5 +15,5 @@ fi
 if [ -e /etc/mandrake-release ]; then
     PCKGDIR=/usr/src/rpm/
 fi
-cp /tmp/smplayer-${SMPVERSION}_${SVN_REVISION}.tar.bz2 ${PCKGDIR}SOURCES/
-rpmbuild -bb --clean --rmsource smplayer.spec
+cp /tmp/${NAME}.tar.bz2 ${PCKGDIR}SOURCES/
+rpmbuild -bb --clean --rmsource wzplayer.spec

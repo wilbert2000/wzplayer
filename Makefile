@@ -1,17 +1,19 @@
 
+#TODO: add build dir
+
 PREFIX=/usr/local
-#PREFIX=/tmp/smplayer
+#PREFIX=/tmp/wzplayer
 
 CONF_PREFIX=$(PREFIX)
 
-DATA_PATH=$(PREFIX)/share/smplayer
-DOC_PATH=$(PREFIX)/share/doc/packages/smplayer
-TRANSLATION_PATH=$(PREFIX)/share/smplayer/translations
-THEMES_PATH=$(PREFIX)/share/smplayer/themes
-SHORTCUTS_PATH=$(PREFIX)/share/smplayer/shortcuts
+DATA_PATH=$(PREFIX)/share/wzplayer
+DOC_PATH=$(PREFIX)/share/doc/packages/wzplayer
+TRANSLATION_PATH=$(DATA_PATH)/translations
+THEMES_PATH=$(DATA_PATH)/themes
+SHORTCUTS_PATH=$(DATA_PATH)/shortcuts
 
 #KDE_PREFIX=`kde-config --prefix`
-#KDE_PREFIX=/tmp/smplayer/kde/
+#KDE_PREFIX=/tmp/wzplayer/kde/
 KDE_PREFIX=$(PREFIX)
 
 KDE_ICONS=$(KDE_PREFIX)/share/icons/hicolor/
@@ -39,18 +41,17 @@ QMAKE_OPTS=DEFINES+=KDE_SUPPORT INCLUDEPATH+=$(KDE_INCLUDE_PATH) \
 
 endif
 
-src/smplayer:
-	./get_svn_revision.sh
+src/wzplayer:
 	+cd src && $(QMAKE) $(QMAKE_OPTS) && $(DEFS) make
-	cd src && $(LRELEASE) smplayer.pro
+	cd src && $(LRELEASE) wzplayer.pro
 
 clean:
 	if [ -f src/Makefile ]; then cd src && make distclean; fi
-	-rm src/translations/smplayer_*.qm
+	-rm src/translations/*.qm
 
-install: src/smplayer
+install: src/wzplayer
 	-install -d $(DESTDIR)$(PREFIX)/bin/
-	install -m 755 src/smplayer $(DESTDIR)$(PREFIX)/bin/
+	install -m 755 src/wzplayer $(DESTDIR)$(PREFIX)/bin/
 	-install -d $(DESTDIR)$(DATA_PATH)
 	install -m 644 src/input.conf $(DESTDIR)$(DATA_PATH)
 	-install -d $(DESTDIR)$(TRANSLATION_PATH)
@@ -76,35 +77,35 @@ install: src/smplayer
 	-install -d $(DESTDIR)$(KDE_ICONS)/22x22/apps/
 	-install -d $(DESTDIR)$(KDE_ICONS)/16x16/apps/
 	-install -d $(DESTDIR)$(KDE_ICONS)/scalable/apps/
-	install -m 644 icons/smplayer_icon512.png $(DESTDIR)$(KDE_ICONS)/512x512/apps/smplayer.png
-	install -m 644 icons/smplayer_icon256.png $(DESTDIR)$(KDE_ICONS)/256x256/apps/smplayer.png
-	install -m 644 icons/smplayer_icon192.png $(DESTDIR)$(KDE_ICONS)/192x192/apps/smplayer.png
-	install -m 644 icons/smplayer_icon128.png $(DESTDIR)$(KDE_ICONS)/128x128/apps/smplayer.png
-	install -m 644 icons/smplayer_icon64.png $(DESTDIR)$(KDE_ICONS)/64x64/apps/smplayer.png
-	install -m 644 icons/smplayer_icon32.png $(DESTDIR)$(KDE_ICONS)/32x32/apps/smplayer.png
-	install -m 644 icons/smplayer_icon22.png $(DESTDIR)$(KDE_ICONS)/22x22/apps/smplayer.png
-	install -m 644 icons/smplayer_icon16.png $(DESTDIR)$(KDE_ICONS)/16x16/apps/smplayer.png
-	install -m 644 icons/smplayer.svg $(DESTDIR)$(KDE_ICONS)/scalable/apps/smplayer.svg
+	install -m 644 icons/wzplayer_icon512.png $(DESTDIR)$(KDE_ICONS)/512x512/apps/wzplayer.png
+	install -m 644 icons/wzplayer_icon256.png $(DESTDIR)$(KDE_ICONS)/256x256/apps/wzplayer.png
+	install -m 644 icons/wzplayer_icon192.png $(DESTDIR)$(KDE_ICONS)/192x192/apps/wzplayer.png
+	install -m 644 icons/wzplayer_icon128.png $(DESTDIR)$(KDE_ICONS)/128x128/apps/wzplayer.png
+	install -m 644 icons/wzplayer_icon64.png $(DESTDIR)$(KDE_ICONS)/64x64/apps/wzplayer.png
+	install -m 644 icons/wzplayer_icon32.png $(DESTDIR)$(KDE_ICONS)/32x32/apps/wzplayer.png
+	install -m 644 icons/wzplayer_icon22.png $(DESTDIR)$(KDE_ICONS)/22x22/apps/wzplayer.png
+	install -m 644 icons/wzplayer_icon16.png $(DESTDIR)$(KDE_ICONS)/16x16/apps/wzplayer.png
+	install -m 644 icons/wzplayer.svg $(DESTDIR)$(KDE_ICONS)/scalable/apps/wzplayer.svg
 	-install -d $(DESTDIR)$(KDE_APPLNK)
-	install -m 644 smplayer.desktop $(DESTDIR)$(KDE_APPLNK)
-	install -m 644 smplayer_enqueue.desktop $(DESTDIR)$(KDE_APPLNK)
+	install -m 644 wzplayer.desktop $(DESTDIR)$(KDE_APPLNK)
+	install -m 644 wzplayer_enqueue.desktop $(DESTDIR)$(KDE_APPLNK)
 	-install -d $(DESTDIR)$(PREFIX)/share/man/man1/
-	install -m 644 man/smplayer.1 $(DESTDIR)$(PREFIX)/share/man/man1/
-	gzip -9 -f $(DESTDIR)$(PREFIX)/share/man/man1/smplayer.1
+	install -m 644 man/wzplayer.1 $(DESTDIR)$(PREFIX)/share/man/man1/
+	gzip -9 -f $(DESTDIR)$(PREFIX)/share/man/man1/wzplayer.1
 
 uninstall:
-	-rm -f $(PREFIX)/bin/smplayer
+	-rm -f $(PREFIX)/bin/wzplayer
 	-rm -f $(DATA_PATH)/input.conf
 	-rm -f $(TRANSLATION_PATH)/*.qm
 	-rm -f $(DOC_PATH)/Changelog
 	-rm -f $(DOC_PATH)/*.txt
 	-rm -f $(SHORTCUTS_PATH)/*.keys
-	-rm -f $(KDE_ICONS)/64x64/apps/smplayer.png
-	-rm -f $(KDE_ICONS)/32x32/apps/smplayer.png
-	-rm -f $(KDE_ICONS)/22x22/apps/smplayer.png
-	-rm -f $(KDE_ICONS)/16x16/apps/smplayer.png
-	-rm -f $(KDE_APPLNK)/smplayer.desktop
-	-rm -f $(PREFIX)/share/man/man1/smplayer.1.gz
+	-rm -f $(KDE_ICONS)/64x64/apps/wzplayer.png
+	-rm -f $(KDE_ICONS)/32x32/apps/wzplayer.png
+	-rm -f $(KDE_ICONS)/22x22/apps/wzplayer.png
+	-rm -f $(KDE_ICONS)/16x16/apps/wzplayer.png
+	-rm -f $(KDE_APPLNK)/wzplayer.desktop
+	-rm -f $(PREFIX)/share/man/man1/wzplayer.1.gz
 	-rmdir $(SHORTCUTS_PATH)/
 	-rmdir $(TRANSLATION_PATH)/
 #	-for file in docs/*/*; do \

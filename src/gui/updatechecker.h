@@ -51,7 +51,6 @@ signals:
 
 protected:
 	void saveVersion(QString v);
-	static QString formattedVersion(const QString & version);
 	static QString parseVersion(const QByteArray & data, const QString & name);
 
 	QNetworkAccessManager* net_manager;

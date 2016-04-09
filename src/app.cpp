@@ -604,8 +604,8 @@ void TApp::showInfo() {
 		default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
 	}
 #endif
-	QString s = QObject::tr("This is WZPlayer v. %1 running on %2")
-				.arg(Version::printable())
+	QString s = QObject::tr("This is WZPlayer %1 running on %2")
+				.arg(TVersion::version)
 #ifdef Q_OS_LINUX
 				.arg("Linux");
 #else

@@ -17,20 +17,7 @@
 */
 
 #include "version.h"
-#include "svn_revision.h"
-
-#define VERSION "16.1.0"
 
 
-QString Version::printable() {
-	return QString(VERSION) + " (svn r" + SVN_REVISION + ")";
-}
-
-QString Version::stable() {
-	return QString(VERSION);
-}
-
-QString Version::revision() {
-	return QString(SVN_REVISION);
-}
+const QString TVersion::version(WZPLAYER_VERSION_STR);
 

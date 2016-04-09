@@ -34,7 +34,7 @@ void UpdateCheckerData::load(QSettings* set) {
 	last_checked = set->value("checked_date", 0).toDate();
 	enabled = set->value("enabled", true).toBool();
 	days_to_check = set->value("days_to_check", 7).toInt();
-	last_known_version = set->value("last_known_version", Version::with_revision()).toString();
+	last_known_version = set->value("last_known_version", TVersion::version).toString();
 	set->endGroup();
 }
 

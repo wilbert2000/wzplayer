@@ -1243,7 +1243,7 @@ bool TPlaylist::saveM3u(QString file) {
 	}
 
 	stream << "#EXTM3U" << "\n"
-		   << "# Playlist created by WZPlayer " << Version::printable()
+		   << "# Playlist created by WZPlayer " << TVersion::version
 		   << " \n";
 
 	TPlaylistItemList::iterator it;

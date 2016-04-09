@@ -14,10 +14,11 @@
 /* version 0.3.0 from 24.12.2011 Silvan (added shadow build) */
 /* version 0.3.1 from 16.03.2012 Silvan (get the version from version.cpp) */
 /* version 0.3.2 from 29.03.2012 Silvan (don't delete the installdir completely) */
+/* version 0.3.3 from 09.04.2016 Wilbert (dropped get_svn_revision.sh) */
 
 /* init the version string (don't forget to change) */
-version = "0.3.2"
-version_date = "29.03.2012"
+version = "0.3.3"
+version_date = "09.04.2016"
 '@echo off'
 
 parse arg command option
@@ -89,9 +90,8 @@ select
     when command = "MAKE" then do
         say "Executing command: "command option
 
-        say "building svn_revision"
+        say "creating build dir"
 	ok = SysMkDir(buildDir||'\src')
-        address cmd 'sh ' sourceDir||'\get_svn_revision.sh ' sourceDir ' "eCS(OS/2) build"'
 
         say "creating SMPlayer makefile"
         call qmake

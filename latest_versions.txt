@@ -1,7 +1,7 @@
 [linux]
-stable=16.4.0.7558
-unstable=16.4.0.7558
+stable=v2016.01.29
+unstable=v2016.01.29
 
 [windows]
-stable=16.4.0.7558
-unstable=16.4.0.7558
+stable=v2016.01.29
+unstable=v2016.01.29

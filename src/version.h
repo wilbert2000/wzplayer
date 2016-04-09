@@ -21,13 +21,11 @@
 
 #include <QString>
 
-class Version {
+
+class TVersion {
 public:
-	static QString printable();
-	static QString stable();
-	static QString revision();
-	static QString with_revision() { return stable() + "." + revision(); }
+	static const QString version;
 };
 
-#endif
+#endif // VERSION_H
 
