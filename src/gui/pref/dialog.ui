@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>SMPlayer - Preferences</string>
+   <string>WZPlayer - Preferences</string>
   </property>
   <layout class="QGridLayout">
    <property name="leftMargin">

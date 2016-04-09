@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "gui/pref/dialog.h"
 #include <QDebug>
 #include <QTextBrowser>
+
+#include "config.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "gui/pref/widget.h"
@@ -63,7 +65,7 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	help_window = new QTextBrowser(this);
 	help_window->setWindowFlags(Qt::Window);
 	help_window->resize(300, 450);
-	help_window->setWindowTitle(tr("SMPlayer - Help"));
+	help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
 	help_window->setWindowIcon(Images::icon("logo"));
 	help_window->setOpenExternalLinks(true);
 
@@ -148,7 +150,7 @@ void TDialog::retranslateStrings() {
 		showHelp();
 	}
 
-	help_window->setWindowTitle(tr("SMPlayer - Help"));
+	help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
 }
 
 void TDialog::accept() {

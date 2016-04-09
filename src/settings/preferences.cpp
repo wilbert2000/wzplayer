@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ namespace Settings {
 TPreferences* pref = 0;
 
 TPreferences::TPreferences() :
-	TSMPlayerSettings(TPaths::configPath() + "/smplayer.ini") {
+	TPlayerSettings(TPaths::iniPath()) {
 
 	reset();
 	load();
@@ -1476,7 +1476,7 @@ void TPreferences::setupScreenshotFolder() {
 			pdir = "/tmp";
 
 		if (QFile::exists(pdir)) {
-			QString default_screenshot_path = QDir::toNativeSeparators(pdir + "/smplayer_screenshots");
+			QString default_screenshot_path = QDir::toNativeSeparators(pdir + "/screenshots");
 			if (QFile::exists(default_screenshot_path)) {
 				screenshot_directory = default_screenshot_path;
 			} else if (QDir().mkdir(default_screenshot_path)) {

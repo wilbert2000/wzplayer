@@ -1,0 +1,41 @@
+#include <winver.h>
+
+#define WZPLAYER_FILEVERSION 16,1,0,0
+#define WZPLAYER_PRODVERSION "16.1.0.0"
+
+VS_VERSION_INFO     VERSIONINFO
+FILEVERSION         WZPLAYER_FILEVERSION
+PRODUCTVERSION      WZPLAYER_FILEVERSION
+FILEOS              VOS_NT_WINDOWS32
+FILETYPE            VFT_APP
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "000004b0"
+    {
+      VALUE "CompanyName", "Wilbert Hengst\0"
+      #ifdef PORTABLE_APP
+      VALUE "FileDescription", "WZPlayer (Portable Edition)\0"
+      #else
+      VALUE "FileDescription", "WZPlayer\0"
+      #endif
+      VALUE "FileVersion", WZPLAYER_PRODVERSION "\0"
+      VALUE "InternalName", "wzplayer\0"
+      VALUE "LegalCopyright", "Copyright (c) Wilbert Hengst\0"
+      VALUE "OriginalFilename", "wzplayer.exe\0"
+      #if defined(_WIN64)
+      VALUE "ProductName", "WZPlayer for Windows (64-bit)\0"
+      #elif defined(_WIN32) && !defined(_WIN64)
+      VALUE "ProductName", "WZPlayer for Windows (32-bit)\0"
+      #endif
+      VALUE "ProductVersion", WZPLAYER_PRODVERSION "\0"
+    }
+  }
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 0, 0x04b0
+  }
+}
+
+IDI_ICON1   ICON    DISCARDABLE   "wzplayer.ico"
+IDI_ICON2   ICON    DISCARDABLE   "wzplayer_associations.ico"

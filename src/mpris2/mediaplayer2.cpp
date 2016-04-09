@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include <QApplication>
 
 #include "mediaplayer2.h"
+#include "config.h"
 #include "mpris2.h"
 #include "gui/base.h"
 
@@ -104,12 +105,12 @@ bool MediaPlayer2::HasTrackList() const
 
 QString MediaPlayer2::Identity() const
 {
-    return QString("SMPlayer");
+	return TConfig::PROGRAM_NAME;
 }
 
 QString MediaPlayer2::DesktopEntry() const
 {
-    return QString("smplayer");
+	return TConfig::PROGRAM_ID;
 }
 
 QStringList MediaPlayer2::SupportedUriSchemes() const

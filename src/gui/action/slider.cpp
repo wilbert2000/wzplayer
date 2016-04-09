@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

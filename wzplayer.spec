@@ -1,16 +1,12 @@
-Name:           smplayer
+Name:           wzplayer
 Version:        16.1.0
-%global smplayer_themes_ver 15.12.0
-%global smplayer_skins_ver 15.2.0
 Release:        1%{?dist}
 Summary:        A great media player
 
 Group:          Applications/Multimedia
 License:        GPL-2.0+
-URL:            http://smplayer.sourceforge.net/
-Source0:        http://downloads.sourceforge.net/smplayer/smplayer-%{version}.tar.bz2
-Source3:        http://downloads.sourceforge.net/smplayer/smplayer-themes-%{smplayer_themes_ver}.tar.bz2
-Source4:        http://downloads.sourceforge.net/smplayer/smplayer-skins-%{smplayer_skins_ver}.tar.bz2
+URL:            https://github.com/wilbert2000/wzplayer
+Source0:        https://github.com/wilbert2000/wzplayer/releases/wzplayer-%{version}.tar.bz2
 
 %if 0%{?suse_version}
 BuildRequires:  libqt4-devel
@@ -26,7 +22,7 @@ Requires:       mplayer
 %{?_qt4_version:Requires: qt4%{?_isa} >= %{_qt4_version}}
 
 %description
-SMPlayer is a graphical user interface (GUI) for the award-winning mplayer
+WZPlayer is a graphical user interface (GUI) for the award-winning mplayer
 and also for mpv. But apart from providing access for the most common
 and useful options of mplayer and mpv, SMPlayer adds other interesting features
 like the possibility to play Youtube videos or search and download subtitles.
@@ -56,24 +52,8 @@ make \
 #touch src/smplayer
 #touch src/translations/smplayer_es.qm
 
-pushd smplayer-themes-%{smplayer_themes_ver}
-make
-popd
-
-pushd smplayer-skins-%{smplayer_skins_ver}
-make
-popd
-
 %install
 make PREFIX=%{_prefix} DESTDIR=%{buildroot}/ DOC_PATH=%{_docdir}/%{name}/ install
-
-pushd smplayer-themes-%{smplayer_themes_ver}
-make install PREFIX=%{_prefix} DESTDIR=%{buildroot}
-popd
-
-pushd smplayer-skins-%{smplayer_skins_ver}
-make install PREFIX=%{_prefix} DESTDIR=%{buildroot}
-popd
 
 %post
 touch --no-create %{_datadir}/icons/hicolor
@@ -91,13 +71,13 @@ update-desktop-database &> /dev/null || :
 
 %files
 %defattr(-,root,root)
-%{_bindir}/smplayer
+%{_bindir}/wzplayer
 %{_datadir}/applications/*.desktop
 %dir %{_datadir}/icons/hicolor/*/
 %dir %{_datadir}/icons/hicolor/*/apps/
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{_datadir}/smplayer/
-%{_mandir}/man1/smplayer.1.gz
+%{_datadir}/wzplayer/
+%{_mandir}/man1/wzplayer.1.gz
 %{_docdir}/%{name}/
 
 %changelog

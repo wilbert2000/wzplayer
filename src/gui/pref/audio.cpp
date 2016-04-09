@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -384,7 +384,7 @@ void TAudio::createHelp() {
 
 	setWhatsThis(language_edit, tr("Language override"),
 		tr("Here you can type your preferred language for the audio streams. "
-		   "When a media with multiple audio streams is found, SMPlayer will "
+		   "When a media with multiple audio streams is found, WZPlayer will "
 		   "try to use your preferred language.<br>"
 		   "This only will work with media that offer info about the language "
 		   "of the audio streams, like DVDs or mkv files.<br>"

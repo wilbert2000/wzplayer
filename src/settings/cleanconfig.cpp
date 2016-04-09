@@ -12,13 +12,13 @@ void TCleanConfig::clean(const QString& config_path) {
 
 	QStringList files_to_delete;
 
-	QString s = config_path + "/smplayer.ini";
+	QString s = config_path + "/wzplayer.ini";
 	if (QFile::exists(s)) files_to_delete << s;
 
 	s = config_path + "/styles.ass";
 	if (QFile::exists(s)) files_to_delete << s;
 
-	s = config_path + "/smplayer_files.ini";
+	s = config_path + "/wzplayer_files.ini";
 	if (QFile::exists(s)) files_to_delete << s;
 
 	s = config_path + "/ytcode.script";

@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ void OSClient::setProxy(const QNetworkProxy & proxy) {
 void OSClient::login() {
 	qDebug("OSClient::login");
 
-	QString user_agent = "SMPlayer v" + Version::stable();
+	QString user_agent = "WZPlayer v" + Version::stable();
 	qDebug("OSClient::login: user agent: %s", user_agent.toUtf8().constData());
 
 	QVariantList args;

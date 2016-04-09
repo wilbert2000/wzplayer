@@ -12,7 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>SMPlayer - File properties</string>
+   <string>WZPlayer - File properties</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

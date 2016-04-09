@@ -1,4 +1,9 @@
 #include "config.h"
+#include <QString>
+
+
+const QString TConfig::PROGRAM_ID("wzplayer");
+const QString TConfig::PROGRAM_NAME("WZPlayer");
 
 const int TConfig::MESSAGE_DURATION = 3500;
 

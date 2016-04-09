@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 */
 
 #include "settings/filesettings.h"
+#include "config.h"
 #include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include <QFileInfo>
@@ -24,7 +25,7 @@
 namespace Settings {
 
 TFileSettings::TFileSettings() :
-	TFileSettingsBase(TPaths::configPath() + "/smplayer_files.ini") {
+	TFileSettingsBase(TPaths::configPath() + "/" + TConfig::PROGRAM_ID + "_files.ini") {
 }
 
 TFileSettings::~TFileSettings() {

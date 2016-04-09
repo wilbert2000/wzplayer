@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class WinFileAssoc
 {
 protected:
 	QString m_ClassId; //Application ClassId
-	QString m_ClassId2; //The ClassId created by explorer if user selects 'Open With...', usually smplayer.exe
+	QString m_ClassId2; //The ClassId created by explorer if user selects 'Open With...', usually wzplayer.exe
 	QString m_AppName;
 
 protected:
@@ -40,8 +40,8 @@ protected:
 	bool VistaGetDefaultApps(const QStringList &extensions, QStringList& registeredExt);
 	int  VistaSetAppsAsDefault(const QStringList& extensions);
 public:
-	WinFileAssoc(const QString ClassId = "MPlayerFileVideo", const QString AppName="SMPlayer");
-	//Checks the registry to see which extensions are registered with SMPlayer
+	WinFileAssoc(const QString ClassId = "MPlayerFileVideo", const QString AppName="WZPlayer");
+	//Checks the registry to see which extensions are registered with WZPlayer
 	bool GetRegisteredExtensions(const QStringList& extensionsToCheck, QStringList& registeredExtensions);
 
 	int CreateFileAssociations(const QStringList& fileExtensions); 

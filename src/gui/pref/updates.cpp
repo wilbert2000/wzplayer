@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ void TUpdates::createHelp() {
 
 #ifdef UPDATE_CHECKER
 	setWhatsThis(update_group, tr("Check for updates"),
-		tr("If this option is enabled, SMPlayer will check for updates "
+		tr("If this option is enabled, WZPlayer will check for updates "
            "and display a notification if a new version is available."));
 
 	setWhatsThis(days_spin, tr("Check interval"),

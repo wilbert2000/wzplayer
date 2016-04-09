@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -401,7 +401,7 @@ void TSubtitles::createHelp() {
 
 	setWhatsThis(language_edit, tr("Language"),
 		tr("Here you can give your preferred language for the subtitle stream. "
-		   "When a media with multiple subtitle streams is found, SMPlayer will "
+		   "When a media with multiple subtitle streams is found, WZPlayer will "
 		   "try to use your preferred language.<br>"
 		   "This only will work with media that offers info about the language "
 		   "of the subtitle streams, like DVDs or mkv files.<br>"
@@ -428,7 +428,7 @@ void TSubtitles::createHelp() {
 		tr("If this option is enabled the Windows system fonts will be "
 		   "available for subtitles. There's an inconvenience: a font cache have "
 		   "to be created which can take some time.") +"<br>"+
-		tr("If this option is not checked then only a few fonts bundled with SMPlayer "
+		tr("If this option is not checked then only a few fonts bundled with WZPlayer "
 		   "can be used, but this is faster."));
 #endif
 

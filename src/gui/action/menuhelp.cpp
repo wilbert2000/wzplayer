@@ -20,7 +20,7 @@ TMenuHelp::TMenuHelp(QWidget* parent)
 	a = new TAction(this, "check_updates", QT_TR_NOOP("Check for &updates"));
 	connect(a, SIGNAL(triggered()), parent, SLOT(helpCheckUpdates()));
 
-	a = new TAction(this, "about_smplayer", QT_TR_NOOP("About &SMPlayer"), "logo");
+	a = new TAction(this, "about", QT_TR_NOOP("About &WZPlayer"), "logo");
 	connect(a, SIGNAL(triggered()), parent, SLOT(helpAbout()));
 
 	addActionsTo(parent);

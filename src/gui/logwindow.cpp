@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 
+#include "config.h"
 #include "log.h"
 #include "desktop.h"
 #include "images.h"
@@ -63,7 +64,7 @@ void TLogWindow::retranslateStrings() {
 	copyButton->setIcon(Images::icon("copy"));
 
 	// Title changed by TBase::helpCLOptions()
-	setWindowTitle(tr("SMPlayer log"));
+	setWindowTitle(tr("%1 log").arg(TConfig::PROGRAM_NAME));
 	setWindowIcon(Images::icon("logo"));
 }
 

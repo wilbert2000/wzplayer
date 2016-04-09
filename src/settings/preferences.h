@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include <QSize>
 #include <QString>
 
-#include "settings/smplayersettings.h"
+#include "settings/playersettings.h"
 #include "settings/assstyles.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
@@ -38,7 +38,7 @@ namespace Settings {
 
 typedef QList<QVariant> TAudioEqualizerList;
 
-class TPreferences : public TSMPlayerSettings {
+class TPreferences : public TPlayerSettings {
 
 public:
 	enum TPlayerID {
@@ -308,7 +308,7 @@ public:
 	bool resize_on_load;
 	bool resize_on_docking;
 
-	QString style; 	//!< SMPlayer look
+	QString style; 	//!< WZPlayer look
 
 	// Function of mouse buttons:
 	QString mouse_left_click_function;

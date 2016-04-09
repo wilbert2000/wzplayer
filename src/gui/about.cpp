@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 		+ tr("Official website:") +" "+  link(URL_HOMEPAGE) + "<br>"
 		+ tr("Support forum:") +" "+  link(URL_FORUM) + "<br>"
 		+ "<br>"
-		+ tr("SMPlayer is a graphical interface for %1 and %2.")
+		+ tr("WZPlayer is a graphical interface for %1 and %2.")
 			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
 			.arg("<a href=\"http://www.mpv.io\">mpv</a>")
 		+ "<br><br>"
@@ -89,7 +89,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 	translators->setHtml(getTranslators());
 
 	contributions->setText(
-		tr("SMPlayer logo by %1").arg("Charles Barcza &lt;kbarcza@blackpanther.hu&gt;") + "<br><br>"
+		tr("WZPlayer logo by %1").arg("Charles Barcza &lt;kbarcza@blackpanther.hu&gt;") + "<br><br>"
 		+ tr("Packages for Windows created by %1").arg("redxii &lt;redxii@users.sourceforge.net&gt;") + "<br><br>"
 		+ tr("Some icons by <a href=\"http://tatice.deviantart.com\">Tatice</a>"
 		   " under the <a href=\"http://creativecommons.org/licenses/by-nc-nd/4.0/\">"
@@ -131,7 +131,7 @@ TAbout::~TAbout() {
 QString TAbout::getTranslators() {
 	return QString(
 		 tr("Many people contributed with translations.") +" "+
-		 tr("You can also help to translate SMPlayer into your own language.") +"<p>"+
+		 tr("You can also help to translate WZPlayer into your own language.") +"<p>"+
 		 tr("Visit %1 and join a translation team.").arg("<a href=\"http://www.transifex.com/projects/p/smplayer/\">http://www.transifex.com/projects/p/smplayer/</a>") +
 		"<p><a href=\"" URL_TRANSLATORS "\">" +
 		 tr("Click here to know the translators from the transifex teams") +

@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -118,8 +118,8 @@ QString CLHelp::help(bool html) {
 #endif
 
 	s += formatHelp("--config-path", QObject::tr(
-		"specifies the directory where smplayer will store its configuration "
-        "files (smplayer.ini, smplayer_files.ini...)"), html);
+		"specifies the directory where wzplayer will store its configuration "
+		"files (wzplayer.ini, wzplayer_files.ini...)"), html);
 
 	s += formatHelp("--send-action", QObject::tr(
 		"tries to make a connection to another running instance "
@@ -176,7 +176,7 @@ QString CLHelp::help(bool html) {
         "files will be opened in a new instance."), html);
 
 	s += formatHelp(QObject::tr("media"), QObject::tr(
-		"'media' is any kind of file that SMPlayer can open. It can "
+		"'media' is any kind of file that WZPlayer can open. It can "
 		"be a local file, a DVD (e.g. dvd:// or dvdnav://), an Internet stream "
         "(e.g. mms://....) or a local playlist in format m3u or pls."), html);
 

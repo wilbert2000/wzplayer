@@ -201,7 +201,7 @@ void TMenuOpen::updateRecents() {
 
 void TMenuOpen::clearRecentsList() {
 
-	int ret = QMessageBox::question(main_window, tr("Confirm deletion - SMPlayer"),
+	int ret = QMessageBox::question(main_window, tr("Confirm deletion - WZPlayer"),
 				tr("Delete the list of recent files?"),
 				QMessageBox::Cancel, QMessageBox::Ok);
 

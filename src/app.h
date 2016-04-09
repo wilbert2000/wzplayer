@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SMPLAYER_H_
-#define _SMPLAYER_H_
+#ifndef APP_H
+#define APP_H
 
 #include <QtGlobal>
 #include <QString>
@@ -42,14 +42,14 @@ typedef QApplication TBaseApp;
 #endif
 
 
-class TSMPlayer : public TBaseApp {
+class TApp : public TBaseApp {
 	Q_OBJECT
 
 public:
 	enum ExitCode { ErrorArgument = -3, NoAction = -2, NoRunningInstance = -1, NoError = 0, NoExit = 1 };
 
-	TSMPlayer(int& argc, char** argv);
-	virtual ~TSMPlayer();
+	TApp(int& argc, char** argv);
+	virtual ~TApp();
 
 	// Nothing to do, let the application close
 	virtual void commitData(QSessionManager& /*manager*/) {}
@@ -108,4 +108,4 @@ private:
 	void showInfo();
 };
 
-#endif
+#endif // APP_H

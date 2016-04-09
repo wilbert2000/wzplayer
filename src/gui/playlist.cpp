@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -289,7 +289,7 @@ void TPlaylist::retranslateStrings() {
 
 	// Icon
 	setWindowIcon(Images::icon("logo", 64));
-	setWindowTitle(tr("SMPlayer - Playlist"));
+	setWindowTitle(tr("%1 - Playlist").arg(TConfig::PROGRAM_NAME));
 
 	listView->setHorizontalHeaderLabels(QStringList()
 										<< "   "
@@ -1243,7 +1243,7 @@ bool TPlaylist::saveM3u(QString file) {
 	}
 
 	stream << "#EXTM3U" << "\n"
-		   << "# Playlist created by SMPlayer " << Version::printable()
+		   << "# Playlist created by WZPlayer " << Version::printable()
 		   << " \n";
 
 	TPlaylistItemList::iterator it;

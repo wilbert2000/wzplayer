@@ -60,7 +60,7 @@ void TLog::setLogFileEnabled(bool log_file_enabled) {
 	if (log_file_enabled) {
 		// Open log file
 		if (!file.isOpen()) {
-			QString filename = Settings::TPaths::configPath() + "/smplayer_log.txt";
+			QString filename = Settings::TPaths::configPath() + "/log.txt";
 			file.setFileName(filename);
 			file.open(QIODevice::WriteOnly);
 			if (file.isOpen()) {

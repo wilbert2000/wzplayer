@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -230,9 +230,9 @@ void TAssociations::createHelp() {
 		tr("Uncheck all file types in the list"));
 
 	setWhatsThis(listWidget, tr("List of file types"), 
-		tr("Check the media file extensions you would like SMPlayer to handle. "
+		tr("Check the media file extensions you would like WZPlayer to handle. "
 		   "When you click Apply, the checked files will be associated with "
-		   "SMPlayer. If you uncheck a media type, the file association will "
+		   "WZPlayer. If you uncheck a media type, the file association will "
 		   "be restored.") + "<br><b>" + tr("Note:") + "</b> " +
         tr("Restoration doesn't work on Windows Vista."));
 }

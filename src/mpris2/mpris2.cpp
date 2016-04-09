@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@
 Mpris2::Mpris2(Gui::TBase* gui, QObject* parent)
     : QObject(parent)
 {
-    QString mpris2Name("org.mpris.MediaPlayer2." + QLatin1String("smplayer"));
+	QString mpris2Name("org.mpris.MediaPlayer2." + TConfig::PROGRAM_ID);
 
     bool success = QDBusConnection::sessionBus().registerService(mpris2Name);
 

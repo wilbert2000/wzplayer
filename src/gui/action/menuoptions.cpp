@@ -125,7 +125,7 @@ TMenuOptions::TMenuOptions(QWidget* parent,
 	connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
 
 	// Show log
-	a = new TAction(this, "show_smplayer_log", QT_TR_NOOP("View &log..."), "log", QKeySequence("Ctrl+L"));
+	a = new TAction(this, "show_log", QT_TR_NOOP("View &log..."), "log", QKeySequence("Ctrl+L"));
 	a->setCheckable(true);
 	connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
 	connect(logWindow, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));

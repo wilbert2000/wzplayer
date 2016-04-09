@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -475,14 +475,14 @@ void TInterface::createHelp() {
 
 #ifdef SINGLE_INSTANCE
 	setWhatsThis(single_instance_check,
-		tr("Use only one running instance of SMPlayer"),
+		tr("Use only one running instance of WZPlayer"),
 		tr("Check this option if you want to use an already running instance "
-		   "of SMPlayer when opening other files."));
+		   "of WZPlayer when opening other files."));
 #endif
 
 	setWhatsThis(save_size_check, tr("Remember position and size"),
         tr("If you check this option, the position and size of the main "
-           "window will be saved and restored when you run SMPlayer again."));
+		   "window will be saved and restored when you run WZPlayer again."));
 
 	setWhatsThis(resize_on_load_check, tr("Resize window when loading a new video"),
 		tr("Adjust the dimension of the main window to a newly loaded video."));
@@ -538,13 +538,13 @@ void TInterface::createHelp() {
 
 	setWhatsThis(autosave_on_exit_check, tr("Save copy of playlist on exit"),
 		tr("If this option is checked, a copy of the playlist will be saved "
-		   "in the smplayer configuration when smplayer is closed, and it will "
-		   "reloaded automatically when smplayer is run again."));
+		   "in the wzplayer configuration when wzplayer is closed, and it will "
+		   "reloaded automatically when wzplayer is run again."));
 
 	addSectionTitle(tr("Logs"));
 
 	setWhatsThis(log_debug_check, tr("Log debug messages"),
-		tr("If checked, SMPlayer will log debug messages, "
+		tr("If checked, WZPlayer will log debug messages, "
 		   "which might give additional information in case of trouble. "
 		   "Non-debug messages are always logged. "
 		   "You can view the log with menu <b>Options - View log</b>."));
@@ -552,9 +552,9 @@ void TInterface::createHelp() {
 	setWhatsThis(log_verbose_check, tr("Verbose"),
 		tr("Request verbose messages from player for troubleshooting."));
 
-	setWhatsThis(log_file_check, tr("Save SMPlayer log to file"),
-		tr("If this option is checked, the SMPlayer log wil be recorded to %1")
-		  .arg("<i>"+ Settings::TPaths::configPath() + "/smplayer_log.txt</i>"));
+	setWhatsThis(log_file_check, tr("Save WZPlayer log to file"),
+		tr("If this option is checked, the WZPlayer log wil be recorded to %1")
+		  .arg("<i>"+ Settings::TPaths::configPath() + "/log.txt</i>"));
 
 	addSectionTitle(tr("History"));
 
@@ -569,7 +569,7 @@ void TInterface::createHelp() {
            "to be stored."));
 
 	setWhatsThis(save_dirs_check, tr("Remember last directory"),
-		tr("If this option is checked, SMPlayer will remember the last folder you use to open a file."));
+		tr("If this option is checked, WZPlayer will remember the last folder you use to open a file."));
 }
 
 }} // namespace Gui::Pref

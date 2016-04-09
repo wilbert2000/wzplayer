@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,9 +48,8 @@
 
 static QByteArray makeTrackId(const QString& source)
 {
-    return QByteArray("/org/smplayer/") + "smplayer" + "/tid_" +
-        QCryptographicHash::hash(source.toLocal8Bit(), QCryptographicHash::Sha1)
-            .toHex();
+	return ("/org/" + TConfig::PROGRAM_ID + "/" + TConfig::PROGRAM_ID + "/tid_").toLocal8Bit()
+			+ QCryptographicHash::hash(source.toLocal8Bit(), QCryptographicHash::Sha1).toHex();
 }
 
 MediaPlayer2Player::MediaPlayer2Player(Gui::TBase* gui, QObject* parent)

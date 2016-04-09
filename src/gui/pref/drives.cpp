@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -191,7 +191,7 @@ void TDrives::createHelp() {
 		tr("Choose your DVD device. It will be used to play DVDs."));
 
 	setWhatsThis(use_dvdnav_check, tr("Enable DVD menus (MPlayer only)"),
-		tr("When checked, SMPlayer will play DVDs using the DVDNAV library enabling DVD menus."
+		tr("When checked, WZPlayer will play DVDs using the DVDNAV library enabling DVD menus."
 		   " MPV does not support DVD menus."));
 
 	setWhatsThis(bluray_device_combo, tr("Blu-ray device"),

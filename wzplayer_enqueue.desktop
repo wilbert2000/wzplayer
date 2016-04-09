@@ -1,0 +1,115 @@
+[Desktop Entry]
+Categories=Qt;KDE;AudioVideo;Player;Video;
+Exec=wzplayer -add-to-playlist %U
+Icon=wzplayer
+MimeType=audio/ac3;audio/mp4;audio/mpeg;audio/vnd.rn-realaudio;audio/vorbis;audio/x-adpcm;audio/x-matroska;audio/x-mp2;audio/x-mp3;audio/x-ms-wma;audio/x-vorbis;audio/x-wav;audio/mpegurl;audio/x-mpegurl;audio/x-pn-realaudio;audio/x-scpls;audio/aac;audio/flac;audio/ogg;video/avi;video/mp4;video/flv;video/mpeg;video/quicktime;video/vnd.rn-realvideo;video/x-matroska;video/x-ms-asf;video/x-msvideo;video/x-ms-wmv;video/x-ogm;video/x-theora;video/webm;
+Name=Enqueue in WZPlayer
+Comment=Add file(s) to the WZPlayer playlist
+Type=Application
+X-KDE-StartupNotify=false
+NoDisplay=true
+
+# Translations
+Comment[ar]=أضف ملف (ملفات) الى قائمة تشغيل WZPlayer
+Name[ar]=ضع في طابور WZPlayer
+
+Comment[bg]=Добави файл(ове) към списъка на WZPlayer
+Name[bg]=На опашка в WZPlayer
+
+Comment[cs]=Přidat soubor(y) do playlistu WZPlayeru
+Name[cs]=Zařadit do WZPlayeru
+
+Comment[da]=Føj fil(er) til WZPlayer's spilleliste
+Name[da]=Sæt i kø i WZPlayer
+
+Comment[de]=Datei(en) zur WZPlayer Wiedergabeliste hinzufügen
+Name[de]=Im WZPlayer einreihen
+
+Comment[el]=Προσθήκη του αρχείου(ων) στη λίστα αναπαραγωγής του WZPlayer 
+Name[el]=Στην ουρά αναμονής του WZPlayer
+
+Comment[en_GB]=Add file(s) to the WZPlayer playlist
+Name[en_GB]=Enqueue in WZPlayer
+
+Comment[es]=Añade fichero(s) a la lista de reproducción de WZPlayer
+Name[es]=Añadir a la lista de reproducción de WZPlayer
+
+Comment[eu]=Gehitu agiria(k) WZPlayer irakur-zerrendara
+Name[eu]=Lerrokatu WZPlayer-en
+
+Comment[fa]=به لیست Smplayer فایل(ها) اضافه کنید
+Name[fa]=در نوبت قراردادن در WZPlayer
+
+Comment[fr]=Ajouter le(s) fichier(s) dans la liste de lecture de WZPlayer
+Name[fr]=En queue dans WZPlayer
+
+Comment[gl]=Engadir ficheiro(s) á lista de reprodución de WZPlayer
+Name[gl]=Poñer na cola de WZPlayer
+
+Comment[he]=הוסף קובץ אל רשימת נגינה של WZPlayer
+Name[he]=הוסף אל WZPlayer
+
+Comment[hr]=Dodaj dadoteku(e) na SMplayer popis izvođenja
+Name[hr]=Dodaj na WZPlayer popis izvođenja
+
+Comment[id]=Tambah berkas ke daftar main WZPlayer
+Name[id]=Antrikan di WZPlayer
+
+Comment[ja]=ファイルを WZPlayer のプレイリストに追加
+Name[ja]=WZPlayer でエンキュー
+
+Comment[ko]=파일을 WZPlayer 재생목록에 추가하기
+Name[ko]=WZPlayer의 재생대기열에 넣기
+
+Comment[lt]=Pridėti failą(-us) į WZPlayer grojaraštį
+Name[lt]=Pridėti į WZPlayer
+
+Comment[sq_AL]=Shto file-in(at) tek playlist-a e WZPlayer
+Name[sq_AL]=Shto tek playlista e WZPlayer
+
+Comment[nqo]=ߞߐߕߐ (ߟߎ߬) ߝߙߊ߬ ߛߡߔߑߟߋߦߊ ߕߟߏ߲ߛߙߍߘߍ ߟߊ߫
+Name[nqo]=ߞߏ ߟߊ߫ ߛߡߔߑߟߋߦߊ ߞߣߐ߫
+
+Comment[nl]=Voeg bestand(en) toe aan de WZPlayer-afspeellijst
+Name[nl]=Aan WZPlayer-wachtrij toevoegen
+
+Comment[pl]=Dodaj plik(i) do listy odtwarzania WZPlayera
+Name[pl]=Kolejkuj w WZPlayer
+
+Comment[pt]=Adicionar ficheiro(s) à lista de reprodução do WZPlayer
+Name[pt]=Colocar na fila do WZPlayer
+
+Comment[pt_BR]=Adicionar arquivo(s) à lista de reprodução do WZPlayer
+Name[pt_BR]=Adicionar à lista do WZPlayer
+
+Comment[ru]=Добавить файл(ы) в плейлист WZPlayer
+Name[ru]=Добавить в очередь WZPlayer
+
+Comment[sr]=Додај фајл(ове) у листу СМПлејера
+Name[sr]=Придодај у СМПлејер
+
+Comment[sv]=Lägg till fil(er) i WZPlayers spellista
+Name[sv]=Köa till WZPlayer
+
+Comment[th]=เพิ่มไฟล์สู่บัญชีการเล่นของ WZPlayer
+Name[th]=เข้าคิวใน WZPlayer
+
+Comment[tr]=Dosya(ları) WZPlayer oynatma listesine ekle
+Name[tr]=WZPlayer'da kuyruğa ekle
+
+Comment[uk]=Додати файл(и) у перелік відтворення WZPlayer
+Name[uk]=Додати в чергу WZPlayer'а
+
+Comment[vi]=Thêm tệp tin vào danh sách chơi
+Name[vi]=Thêm vào WZPlayer
+Comment[zh_CN]=添加文件到 WZPlayer 播放列表
+Name[zh_CN]=添加到 WZPlayer 队列
+
+Comment[zh_TW]=加入檔案到 WZPlayer 的播放清單
+Name[zh_TW]=加入到 WZPlayer 佇列
+
+Comment[ms_MY]=Tambah fail(s) ke dalam senarai main WZPlayer
+Name[ms_MY]=Baris gilir dalam WZPlayer
+
+Comment[nn_NO]=Legg til fil(er) i WZPlayer-spelelista
+Name[nn_NO]=Legg i kø i WZPlayer

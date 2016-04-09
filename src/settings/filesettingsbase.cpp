@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 namespace Settings {
 
 TFileSettingsBase::TFileSettingsBase(const QString& filename) :
-	TSMPlayerSettings(filename) {
+	TPlayerSettings(filename) {
 }
 
 TFileSettingsBase::~TFileSettingsBase() {

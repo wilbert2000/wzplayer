@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>Gui::TInputDVDDirectory</class>
- <widget class="QDialog" name="Gui::TInputDVDDirectory" >
-  <property name="geometry" >
+ <widget class="QDialog" name="Gui::TInputDVDDirectory">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,54 +10,50 @@
     <height>140</height>
    </rect>
   </property>
-  <property name="windowTitle" >
-   <string>SMPlayer - Play a DVD from a folder</string>
+  <property name="windowTitle">
+   <string>WZPlayer - Play a DVD from a folder</string>
   </property>
-  <property name="modal" >
+  <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" >
-   <property name="margin" >
-    <number>9</number>
-   </property>
-   <property name="spacing" >
+  <layout class="QVBoxLayout">
+   <property name="spacing">
     <number>6</number>
    </property>
+   <property name="margin">
+    <number>9</number>
+   </property>
    <item>
-    <widget class="QLabel" name="intro_text" >
-     <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>7</hsizetype>
-       <vsizetype>5</vsizetype>
+    <widget class="QLabel" name="intro_text">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="text" >
+     <property name="text">
       <string>You can play a DVD from your hard disc. Just select the folder which contains the VIDEO_TS and AUDIO_TS directories.</string>
      </property>
-     <property name="alignment" >
+     <property name="alignment">
       <set>Qt::AlignVCenter</set>
      </property>
-     <property name="wordWrap" >
+     <property name="wordWrap">
       <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>6</number>
      </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <widget class="QLineEdit" name="dvd_directory_edit" >
-       <property name="sizePolicy" >
-        <sizepolicy>
-         <hsizetype>7</hsizetype>
-         <vsizetype>0</vsizetype>
+      <widget class="QLineEdit" name="dvd_directory_edit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -64,8 +61,8 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="searchButton" >
-       <property name="text" >
+      <widget class="QPushButton" name="searchButton">
+       <property name="text">
         <string>Choose a directory...</string>
        </property>
       </widget>
@@ -73,40 +70,38 @@
     </layout>
    </item>
    <item>
-    <widget class="Line" name="line1" >
-     <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>7</hsizetype>
-       <vsizetype>0</vsizetype>
+    <widget class="Line" name="line1">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="frameShape" >
+     <property name="frameShape">
       <enum>QFrame::HLine</enum>
      </property>
-     <property name="frameShadow" >
+     <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
      </property>
-     <property name="orientation" >
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
+    <layout class="QHBoxLayout">
+     <property name="spacing">
       <number>6</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
      </property>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
          <height>20</height>
@@ -115,12 +110,12 @@
       </spacer>
      </item>
      <item>
-      <widget class="QDialogButtonBox" name="buttonBox" >
-       <property name="orientation" >
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="standardButtons" >
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
        </property>
       </widget>
      </item>
@@ -128,7 +123,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections>
   <connection>
@@ -137,11 +132,11 @@
    <receiver>Gui::TInputDVDDirectory</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>468</x>
      <y>185</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>132</y>
     </hint>
@@ -153,11 +148,11 @@
    <receiver>Gui::TInputDVDDirectory</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>468</x>
      <y>185</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>132</y>
     </hint>

@@ -1,4 +1,4 @@
-/*  smplayer, GUI front-end for mplayer.
+/*  WZPlayer, GUI front-end for mplayer and MPV.
     Copyright (C) 2006-2016 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify

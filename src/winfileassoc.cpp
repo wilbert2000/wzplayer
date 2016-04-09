@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 	Handles file associations in Windows 7/Vista/XP/2000.
 	We assume that the code is run without administrator privileges, so the associations are done for current user only.
 	System-wide associations require writing to HKEY_CLASSES_ROOT and we don't want to get our hands dirty with that.
-	Each user on the computer can configure his own set of file associations for SMPlayer, which is extremely cool.
+	Each user on the computer can configure his own set of file associations for WZPlayer, which is extremely cool.
 
 	Optionally, during uninstall, it would be a good idea to call RestoreFileAssociations for all media types so
 	that we can clean up the registry and restore the old associations for current user.
@@ -29,7 +29,7 @@
 	The code can only register the app as default program for selected extensions and check if it is the default.
 	It cannot restore 'old' default application, since this doesn't seem to be possible with the current Vista API.
 
-	Add libole32.a library if compiling with MinGW. In smplayer.pro, under 'win32 {': LIBS += libole32
+	Add libole32.a library if compiling with MinGW. In wzplayer.pro, under 'win32 {': LIBS += libole32
 
 	Tested on: WinXP, Vista, Win7.
 
@@ -69,7 +69,7 @@ int WinFileAssoc::CreateFileAssociations(const QStringList &fileExtensions)
     // Check if classId exists in the registry
     if (!RegCR.contains(m_ClassId) && !RegCU.contains("Software/Classes/" + m_ClassId)) {
         // If doesn't exist (user didn't run the setup program), try to create the ClassId for current user.
-        if (!CreateClassId(QApplication::applicationFilePath(), "SMPlayer Media Player"))
+		if (!CreateClassId(QApplication::applicationFilePath(), "WZPlayer Media Player"))
             return 0;
     }
 
@@ -146,7 +146,7 @@ bool WinFileAssoc::GetRegisteredExtensions(const QStringList &extensionsToCheck,
         if (CurClassId.size()) {	// Registered with Open With... / ProgId ?
             bRegistered = (CurClassId == m_ClassId) || (0 == CurClassId.compare(m_ClassId2, Qt::CaseInsensitive));
         } else if (CurAppId.size()) {
-            // If user uses Open With..., explorer creates it's own ClassId under Application, usually "smplayer.exe"
+			// If user uses Open With..., explorer creates it's own ClassId under Application, usually "wzplayer.exe"
             bRegistered = (CurAppId == m_ClassId) || (0 == CurAppId.compare(m_ClassId2, Qt::CaseInsensitive));
         } else {
             // No classId means that no associations exists in Default Programs or Explorer
@@ -251,7 +251,7 @@ bool WinFileAssoc::CreateClassId(const QString &executablePath, const QString &f
     Reg.setValue(classId + "/DefaultIcon/.", QString("\"%1\",1").arg(appPath));
 
     // Add "Enqueue" command
-    Reg.setValue(classId + "/shell/enqueue/.", QObject::tr("Enqueue in SMPlayer"));
+	Reg.setValue(classId + "/shell/enqueue/.", QObject::tr("Enqueue in WZPlayer"));
     Reg.setValue(classId + "/shell/enqueue/command/.", QString("\"%1\" -add-to-playlist \"%2\"").arg(appPath, "%1"));
     return true;
 }

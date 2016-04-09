@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 */
 
 #include "gui/updatechecker.h"
+#include "config.h"
 #include "updatecheckerdata.h"
 #include "version.h"
 #include "gui/links.h"
@@ -43,7 +44,7 @@ TUpdateChecker::TUpdateChecker(QWidget* parent, UpdateCheckerData* data) : QObje
 	d = data;
 
 	check_url = URL_VERSION_INFO;
-	user_agent = "SMPlayer";
+	user_agent = TConfig::PROGRAM_NAME.toLatin1();
 
 	connect(this, SIGNAL(newVersionFound(const QString &)),
             this, SLOT(reportNewVersionAvailable(const QString &)));
@@ -181,7 +182,7 @@ void TUpdateChecker::reportNewVersionAvailable(const QString & new_version) {
 	QWidget* p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),
-		tr("A new version of SMPlayer is available.") + "<br><br>" +
+		tr("A new version of WZPlayer is available.") + "<br><br>" +
 		tr("Installed version: %1").arg(Version::with_revision()) + "<br>" +
 		tr("Available version: %1").arg(new_version) + "<br><br>" +
 		tr("Would you like to know more about this new version?"),
@@ -198,7 +199,7 @@ void TUpdateChecker::reportNoNewVersionFound(const QString & version) {
 	QWidget* p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::information(p, tr("Checking for updates"),
-		tr("Congratulations, SMPlayer is up to date.") + "<br><br>" +
+		tr("Congratulations, WZPlayer is up to date.") + "<br><br>" +
 		tr("Installed version: %1").arg(Version::with_revision()) + "<br>" +
 		tr("Available version: %1").arg(version));
 }

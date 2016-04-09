@@ -200,7 +200,7 @@
             <item>
              <widget class="QCheckBox" name="single_instance_check">
               <property name="text">
-               <string>&amp;Use only one running instance of SMPlayer</string>
+               <string>&amp;Use only one running instance of WZPlayer</string>
               </property>
              </widget>
             </item>

@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QDebug>
+#include "config.h"
 
 FileDownloader::FileDownloader(QWidget *parent) : QProgressDialog(parent)
 {
@@ -53,7 +54,7 @@ void FileDownloader::setProxy(QNetworkProxy proxy) {
 
 void FileDownloader::download(QUrl url) {
 	QNetworkRequest req(url);
-	req.setRawHeader("User-Agent", "SMPlayer");
+	req.setRawHeader("User-Agent", TConfig::PROGRAM_NAME.toLatin1());
 	reply = manager->get(req);
 	connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
             this, SLOT(updateDataReadProgress(qint64, qint64)));

@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -236,21 +236,21 @@ void TGeneral::createHelp() {
 	clearHelp();
 
 	setWhatsThis(mplayer_radio, tr("MPlayer"),
-		tr("Select MPlayer as the media player to use by SMPlayer."));
+		tr("Select MPlayer as the media player to use by WZPlayer."));
 
 	setWhatsThis(mplayer_edit, tr("MPlayer executable"),
 		tr("The path to the MPlayer executable file.")
 		+ "<br><b>"
-		+ tr("If this setting is wrong, SMPlayer won't be able to play anything!")
+		+ tr("If this setting is wrong, WZPlayer won't be able to play anything!")
 		+ "</b>");
 
 	setWhatsThis(mpv_radio, tr("MPV"),
-		tr("Select MPV as the media player to use by SMPlayer."));
+		tr("Select MPV as the media player to use by WZPlayer."));
 
 	setWhatsThis(mpv_edit, tr("MPV executable"),
 		tr("The path to the MPV executable file.")
 		+ "<br><b>"
-		+ tr("If this setting is wrong, SMPlayer won't be able to play anything!")
+		+ tr("If this setting is wrong, WZPlayer won't be able to play anything!")
 		+ "</b>");
 
 	setWhatsThis(report_player_crashes_check,
@@ -259,11 +259,11 @@ void TGeneral::createHelp() {
 		   " Errors will always be shown in the statusbar."));
 
 	setWhatsThis(settings_group, tr("Remember settings for every file"),
-		tr("When checked SMPlayer will remember the settings you make for each file"
+		tr("When checked WZPlayer will remember the settings you make for each file"
 		   " and reload them when you play the file again."));
 
 	setWhatsThis(remember_time_check, tr("Remember time position"),
-		tr("If you check this option, SMPlayer will remember the last position "
+		tr("If you check this option, WZPlayer will remember the last position "
            "of the file when you open it again. This option works only with "
            "regular files (not with DVDs, CDs, URLs...)."));
 
@@ -282,14 +282,14 @@ void TGeneral::createHelp() {
 		tr("This option allows to change the way the file settings would be "
            "stored. The following options are available:") +"<ul><li>" + 
 		tr("<b>one ini file</b>: the settings for all played files will be "
-           "saved in a single ini file (%1)").arg(QString("<i>"+TPaths::iniPath()+"/smplayer.ini</i>")) + "</li><li>" +
+		   "saved in a single ini file (%1)").arg(QString("<i>" + TPaths::iniPath() +"</i>")) + "</li><li>" +
 		tr("<b>multiple ini files</b>: one ini file will be used for each played file. "
-           "Those ini files will be saved in the folder %1").arg(QString("<i>"+TPaths::iniPath()+"/file_settings</i>")) + "</li></ul>" +
+		   "Those ini files will be saved in the folder %1").arg(QString("<i>"+TPaths::configPath()+"/file_settings</i>")) + "</li></ul>" +
 		tr("The latter method could be faster if there is info for a lot of files."));
 
 #ifndef Q_OS_WIN
 	setWhatsThis(radio_tv_rescan_check, tr("Check for new radio and TV channels on startup"),
-		tr("If this option is checked, SMPlayer will look for new TV and radio"
+		tr("If this option is checked, WZPlayer will look for new TV and radio"
 		   " channels in ~/.mplayer/channels.conf.ter"
 		   " or ~/.mplayer/channels.conf."));
 #endif

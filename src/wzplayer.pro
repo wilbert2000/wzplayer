@@ -62,7 +62,7 @@ HEADERS += svn_revision.h \
     settings/aspectratio.h \
     settings/mediasettings.h \
     settings/filters.h \
-    settings/smplayersettings.h \
+    settings/playersettings.h \
     settings/preferences.h \
     settings/filesettingsbase.h \
     settings/filesettings.h \
@@ -159,7 +159,7 @@ HEADERS += svn_revision.h \
     maps/chapters.h \
     clhelp.h \
     log.h \
-    smplayer.h \
+    app.h \
     config.h
 
 
@@ -182,7 +182,7 @@ SOURCES	+= version.cpp \
     settings/aspectratio.cpp \
     settings/mediasettings.cpp \
     settings/filters.cpp \
-    settings/smplayersettings.cpp \
+    settings/playersettings.cpp \
     settings/preferences.cpp \
     settings/filesettingsbase.cpp \
     settings/filesettings.cpp \
@@ -275,7 +275,7 @@ SOURCES	+= version.cpp \
     maps/titletracks.cpp \
     maps/chapters.cpp \
     clhelp.cpp \
-    smplayer.cpp \
+    app.cpp \
     log.cpp \
     main.cpp \
     config.cpp
@@ -433,7 +433,7 @@ win32 {
 	
     DEFINES -= OUTPUT_ON_CONSOLE
     DEFINES += USE_ADAPTER
-	RC_FILE = smplayer.rc
+    RC_FILE = wzplayer.rc
 }
 
 os2 {
@@ -443,7 +443,7 @@ os2 {
 		HEADERS += screensaver.h
 		SOURCES += screensaver.cpp
 	}
-	RC_FILE = smplayer_os2.rc
+    RC_FILE = wzplayer_os2.rc
 }
 
 

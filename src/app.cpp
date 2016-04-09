@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "smplayer.h"
+#include "app.h"
 
 #include <QDebug>
 #include <QFile>
@@ -26,6 +26,7 @@
 #include <QLocale>
 #include <QStyle>
 
+#include "config.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
 #include "settings/cleanconfig.h"
@@ -48,10 +49,10 @@
 
 using namespace Settings;
 
-TSMPlayer::TSMPlayer(int& argc, char** argv)
+TApp::TApp(int& argc, char** argv)
 	: TBaseApp(
 #ifdef SINGLE_INSTANCE
-		"smplayer", // AppID
+		TConfig::PROGRAM_ID,
 #endif
 		argc, argv)
 	, main_window(0)
@@ -81,11 +82,11 @@ TSMPlayer::TSMPlayer(int& argc, char** argv)
 	setAttribute(Qt::AA_DontShowIconsInMenus, false);
 }
 
-TSMPlayer::~TSMPlayer() {
+TApp::~TApp() {
 	delete Settings::pref;
 }
 
-bool TSMPlayer::loadCatalog(QTranslator& translator,
+bool TApp::loadCatalog(QTranslator& translator,
 							const QString& name,
 							const QString& locale,
 							const QString& dir) {
@@ -93,15 +94,15 @@ bool TSMPlayer::loadCatalog(QTranslator& translator,
 	QString loc = name + "_" + locale; //.toLower();
 	bool r = translator.load(loc, dir);
 	if (r)
-		qDebug("TSMPlayer::loadCatalog: successfully loaded %s from %s",
+		qDebug("TApp::loadCatalog: successfully loaded %s from %s",
 			   loc.toUtf8().data(), dir.toUtf8().data());
 	else
-		qDebug("TSMPlayer::loadCatalog: can't load %s from %s",
+		qDebug("TApp::loadCatalog: can't load %s from %s",
 			   loc.toUtf8().data(), dir.toUtf8().data());
 	return r;
 }
 
-void TSMPlayer::loadTranslation() {
+void TApp::loadTranslation() {
 
 	QString locale = pref->language;
 	if (locale.isEmpty()) {
@@ -114,10 +115,10 @@ void TSMPlayer::loadTranslation() {
 	if (!loadCatalog(qt_trans, "qt", locale, trans_path)) {
 		loadCatalog(qt_trans, "qt", locale, TPaths::qtTranslationPath());
 	}
-	loadCatalog(app_trans, "smplayer", locale, trans_path);
+	loadCatalog(app_trans, TConfig::PROGRAM_ID, locale, trans_path);
 }
 
-void TSMPlayer::loadConfig() {
+void TApp::loadConfig() {
 
 	// Setup config directory
 	TPaths::setConfigPath(initial_config_path);
@@ -160,7 +161,7 @@ QString getArgName(const QString& arg) {
 	return "";
 }
 
-bool TSMPlayer::processArgName(const QString& name, const QStringList& args) const {
+bool TApp::processArgName(const QString& name, const QStringList& args) const {
 
 	for (int i = 0; i < args.size(); i++) {
 		if (getArgName(args.at(i)) == name) {
@@ -171,7 +172,7 @@ bool TSMPlayer::processArgName(const QString& name, const QStringList& args) con
 	return false;
 }
 
-int TSMPlayer::processArgPos(const QString& name, const QStringList& args) const {
+int TApp::processArgPos(const QString& name, const QStringList& args) const {
 
 	int pos = args.indexOf("--" + name);
 	if (pos < 0) {
@@ -188,7 +189,7 @@ int TSMPlayer::processArgPos(const QString& name, const QStringList& args) const
 	return pos;
 }
 
-TSMPlayer::ExitCode TSMPlayer::processArgs() {
+TApp::ExitCode TApp::processArgs() {
 
 	QStringList args = arguments();
 
@@ -203,7 +204,7 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		RegAssoc.GetRegisteredExtensions(exts.multimedia(), regExts); 
 		RegAssoc.RestoreFileAssociations(regExts);
 		// TODO: send to log
-		printf("TSMPlayer::processArgs: restored associations\n");
+		printf("TApp::processArgs: restored associations\n");
 #endif
 		return NoError;
 	}
@@ -219,8 +220,8 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 			args.removeAt(pos);
 			args.removeAt(pos - 1);
 		} else {
-			printf("TSMPlayer::processArgs: error: expected path after --config-path\r\n");
-			return TSMPlayer::ErrorArgument;
+			printf("TApp::processArgs: error: expected path after --config-path\r\n");
+			return TApp::ErrorArgument;
 		}
 	}
 
@@ -338,9 +339,9 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 		return NoError;
 	}
 
-	qDebug("TSMPlayer::processArgs: files_to_play: count: %d", files_to_play.count());
+	qDebug("TApp::processArgs: files_to_play: count: %d", files_to_play.count());
 	for (int n=0; n < files_to_play.count(); n++) {
-		qDebug("TSMPlayer::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
+		qDebug("TApp::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
 	}
 
 #ifdef SINGLE_INSTANCE
@@ -374,15 +375,15 @@ TSMPlayer::ExitCode TSMPlayer::processArgs() {
 	}
 #endif
 
-	return TSMPlayer::NoExit;
+	return TApp::NoExit;
 }
 
-void TSMPlayer::createGUI() {
-	qDebug() << "TSMPlayer::createGUI: creating main window Gui::TDefault";
+void TApp::createGUI() {
+	qDebug() << "TApp::createGUI: creating main window Gui::TDefault";
 
 	main_window = new Gui::TDefault();
 
-	qDebug("TSMPlayer::createGUI: loading config");
+	qDebug("TApp::createGUI: loading config");
 	main_window->loadConfig();
 
 	main_window->setForceCloseOnFinish(close_at_end);
@@ -400,19 +401,19 @@ void TSMPlayer::createGUI() {
 #endif
 
 	if (move_gui) {
-		qDebug("TSMPlayer::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
+		qDebug("TApp::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
 		main_window->move(gui_position);
 	}
 	if (resize_gui) {
-		qDebug("TSMPlayer::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
+		qDebug("TApp::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
 		main_window->resize(gui_size);
 	}
 
-	qDebug() << "TSMPlayer::createGUI: created main window Gui::TDefault";
+	qDebug() << "TApp::createGUI: created main window Gui::TDefault";
 } // createGUI()
 
-QString TSMPlayer::loadStyleSheet(const QString& filename) {
-	qDebug("TSMPlayer::loadStyleSheet: %s", filename.toUtf8().constData());
+QString TApp::loadStyleSheet(const QString& filename) {
+	qDebug("TApp::loadStyleSheet: %s", filename.toUtf8().constData());
 
 	QFile file(filename);
 	file.open(QFile::ReadOnly);
@@ -430,12 +431,12 @@ QString TSMPlayer::loadStyleSheet(const QString& filename) {
 	stylesheet.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)",
 							   Qt::CaseSensitive, QRegExp::RegExp2),
 						QString("url(%1\\1)").arg(path + "/"));
-	//qDebug("TSMPlayer::loadStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
+	//qDebug("TApp::loadStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
 	return stylesheet;
 }
 
-void TSMPlayer::changeStyleSheet(const QString& style) {
-	qDebug("TSMPlayer::changeStyleSheet: %s", style.toUtf8().constData());
+void TApp::changeStyleSheet(const QString& style) {
+	qDebug("TApp::changeStyleSheet: %s", style.toUtf8().constData());
 
 	// Load default stylesheet
 	QString stylesheet = loadStyleSheet(":/default-theme/style.qss");
@@ -461,12 +462,12 @@ void TSMPlayer::changeStyleSheet(const QString& style) {
 		}
 	}
 
-	//qDebug("TSMPlayer::changeStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
+	//qDebug("TApp::changeStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
 	setStyleSheet(stylesheet);
 }
 
-void TSMPlayer::changeStyle() {
-	qDebug("TSMPlayer::changeStyle");
+void TApp::changeStyle() {
+	qDebug("TApp::changeStyle");
 
 	// Set font
 	if (!Settings::pref->default_font.isEmpty()) {
@@ -495,8 +496,8 @@ void TSMPlayer::changeStyle() {
 	changeStyleSheet(pref->iconset);
 }
 
-void TSMPlayer::start() {
-	qDebug("TSMPlayer::start");
+void TApp::start() {
+	qDebug("TApp::start");
 
 	// Setup style
 	changeStyle();
@@ -527,8 +528,8 @@ void TSMPlayer::start() {
 	files_to_play.clear();
 }
 
-void TSMPlayer::onRequestRestart(bool reset_style) {
-	qDebug("TSMPlayer::onRequestRestart");
+void TApp::onRequestRestart(bool reset_style) {
+	qDebug("TApp::onRequestRestart");
 
 	requested_restart = true;
 	start_in_fullscreen = pref->fullscreen;
@@ -558,17 +559,17 @@ void TSMPlayer::onRequestRestart(bool reset_style) {
 	}
 }
 
-int TSMPlayer::execWithRestart() {
+int TApp::execWithRestart() {
 
 	int exit_code;
 	do {
 		requested_restart = false;
 		start();
-		qDebug("TSMPlayer::execWithRestart: calling exec()");
+		qDebug("TApp::execWithRestart: calling exec()");
 		exit_code = exec();
-		qDebug("TSMPlayer::execWithRestart: exec() returned %d", exit_code);
+		qDebug("TApp::execWithRestart: exec() returned %d", exit_code);
 		if (requested_restart) {
-			qDebug("TSMPlayer::execWithRestart: restarting");
+			qDebug("TApp::execWithRestart: restarting");
 			// Free current settings
 			delete Settings::pref;
 			// Reload configuration
@@ -579,7 +580,7 @@ int TSMPlayer::execWithRestart() {
 	return exit_code;
 }
 
-void TSMPlayer::showInfo() {
+void TApp::showInfo() {
 #ifdef Q_OS_WIN
 	QString win_ver;
 	switch (QSysInfo::WindowsVersion) {
@@ -603,7 +604,7 @@ void TSMPlayer::showInfo() {
 		default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
 	}
 #endif
-	QString s = QObject::tr("This is SMPlayer v. %1 running on %2")
+	QString s = QObject::tr("This is WZPlayer v. %1 running on %2")
 				.arg(Version::printable())
 #ifdef Q_OS_LINUX
 				.arg("Linux");
@@ -720,13 +721,13 @@ void TSMPlayer::showInfo() {
 #define VK_MEDIA_PLAY_PAUSE 0xB3
 #define VK_MEDIA_STOP 0xB2
 
-bool TSMPlayer::winEventFilter(MSG* msg, long* result) {
-	//qDebug() << "TSMPlayer::winEventFilter" << msg->message << "lParam:" << msg->lParam;
+bool TApp::winEventFilter(MSG* msg, long* result) {
+	//qDebug() << "TApp::winEventFilter" << msg->message << "lParam:" << msg->lParam;
 
 	static uint last_appcommand = 0;
 
 	if (msg->message == WM_KEYDOWN) {
-		//qDebug("TSMPlayer::winEventFilter: WM_KEYDOWN: %X", msg->wParam);
+		//qDebug("TApp::winEventFilter: WM_KEYDOWN: %X", msg->wParam);
 		bool eat_key = false;
 		if ((last_appcommand == APPCOMMAND_MEDIA_NEXTTRACK) && (msg->wParam == VK_MEDIA_NEXT_TRACK)) eat_key = true;
 		else
@@ -737,7 +738,7 @@ bool TSMPlayer::winEventFilter(MSG* msg, long* result) {
 		if ((last_appcommand == APPCOMMAND_MEDIA_STOP) && (msg->wParam == VK_MEDIA_STOP)) eat_key = true;
 
 		if (eat_key) {
-			qDebug("TSMPlayer::winEventFilter: ignoring key %X", msg->wParam);
+			qDebug("TApp::winEventFilter: ignoring key %X", msg->wParam);
 			last_appcommand = 0;
 			*result = true;
 			return true;
@@ -747,14 +748,14 @@ bool TSMPlayer::winEventFilter(MSG* msg, long* result) {
 	if (msg->message == WM_APPCOMMAND) {
 		/*
 		QKeySequence k(Qt::Key_MediaTogglePlayPause);
-		qDebug() << "TSMPlayer::winEventFilter" << k.toString();
+		qDebug() << "TApp::winEventFilter" << k.toString();
 		*/
 
-		//qDebug() << "TSMPlayer::winEventFilter" << msg->message << "lParam:" << msg->lParam;
+		//qDebug() << "TApp::winEventFilter" << msg->message << "lParam:" << msg->lParam;
 		uint cmd  = GET_APPCOMMAND_LPARAM(msg->lParam);
 		uint uDevice = GET_DEVICE_LPARAM(msg->lParam);
 		uint dwKeys = GET_KEYSTATE_LPARAM(msg->lParam);
-		qDebug() << "TSMPlayer::winEventFilter: cmd:" << cmd <<"uDevice:" << uDevice << "dwKeys:" << dwKeys;
+		qDebug() << "TApp::winEventFilter: cmd:" << cmd <<"uDevice:" << uDevice << "dwKeys:" << dwKeys;
 
 		//if (uDevice == FAPPCOMMAND_KEY) {
 			int key = 0;
@@ -790,4 +791,4 @@ bool TSMPlayer::winEventFilter(MSG* msg, long* result) {
 }
 #endif // USE_WINEVENTFILTER
 
-#include "moc_smplayer.cpp"
+#include "moc_app.cpp"

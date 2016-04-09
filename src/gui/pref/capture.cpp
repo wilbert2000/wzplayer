@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -144,7 +144,7 @@ void TCapture::createHelp() {
 
 	setWhatsThis(screenshot_edit, tr("Screenshots folder"),
 		tr("Here you can specify a folder where the screenshots taken by "
-		   "SMPlayer will be stored. If the folder is not valid the "
+		   "WZPlayer will be stored. If the folder is not valid the "
 		   "screenshot feature will be disabled."));
 
 	setWhatsThis(screenshot_template_edit, tr("Template for screenshots"),

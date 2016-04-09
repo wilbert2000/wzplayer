@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ TBase::TBase()
 #endif
 
 	setAttribute(Qt::WA_DeleteOnClose);
-	setWindowTitle("SMPlayer");
+	setWindowTitle(TConfig::PROGRAM_NAME);
 	setAcceptDrops(true);
 
 	// Reset size factor
@@ -518,7 +518,7 @@ void TBase::createToolbars() {
 	actions << "open_url" << "favorites_menu" << "separator"
 			<< "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
 			<< "separator" << "show_file_properties" << "show_playlist"
-			<< "show_smplayer_log" << "separator" << "show_preferences";
+			<< "show_log" << "separator" << "show_preferences";
 	toolbar->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar);
 	connect(editToolbarAct, SIGNAL(triggered()),
@@ -889,8 +889,8 @@ void TBase::showPreferencesDialog() {
 	pref_dialog->show();
 }
 
-void TBase::restartSMPlayer(bool reset_style) {
-	qDebug("Gui::TBase::restartSMPlayer");
+void TBase::restartWZPlayer(bool reset_style) {
+	qDebug("Gui::TBase::restartWZPlayer");
 
 	emit requestRestart(reset_style);
 	// Close and restart with the new settings
@@ -923,14 +923,14 @@ void TBase::applyNewPreferences() {
 	// Style change needs recreation of main window
 	if (interface->styleChanged()) {
 		// Request restart and optional reset style to default
-		restartSMPlayer(pref->style.isEmpty());
+		restartWZPlayer(pref->style.isEmpty());
 		return;
 	}
 
-	// Player bin or icon set change needs restart TSMPlayer
+	// Player bin or icon set change needs restart TApp
 	if (pref->player_bin != old_player_bin || interface->iconsetChanged()) {
 		// Request restart, don't reset style
-		restartSMPlayer(false);
+		restartWZPlayer(false);
 		return;
 	}
 
@@ -943,7 +943,7 @@ void TBase::applyNewPreferences() {
 
 	// Load translation if language changed.
 	if (interface->languageChanged()) {
-		// Handled by TSMPlayer::loadTranslation()
+		// Handled by TApp::loadTranslation()
 		emit loadTranslation();
 	}
 
@@ -1104,7 +1104,7 @@ void TBase::onMediaInfoChanged() {
 	}
 
 	QString title = core->mdat.displayName(pref->show_tag_in_window_title);
-	setWindowCaption(title + " - SMPlayer");
+	setWindowCaption(title + " - " + TConfig::PROGRAM_NAME);
 	emit mediaFileTitleChanged(core->mdat.filename, title);
 }
 
@@ -1283,7 +1283,7 @@ void TBase::openURL() {
 }
 
 void TBase::configureDiscDevices() {
-	QMessageBox::information(this, tr("SMPlayer - Information"),
+	QMessageBox::information(this, TConfig::PROGRAM_NAME + tr(" - Information"),
 			tr("The CDROM / DVD drives are not configured yet.\n"
 			   "The configuration dialog will be shown now, "
 			   "so you can do it."), QMessageBox::Ok);
@@ -1414,7 +1414,7 @@ void TBase::helpCLOptions() {
 
 	if (help_window == 0) {
 		help_window = new TLogWindow(this, "helpwindow");
-		help_window->setWindowTitle(tr("SMPlayer command line options"));
+		help_window->setWindowTitle(tr("%1 command line options").arg(TConfig::PROGRAM_NAME));
 		help_window->loadConfig();
 	}
 
@@ -1445,7 +1445,7 @@ void TBase::showGotoDialog() {
 
 	TTimeDialog d(this);
 	d.setLabel(tr("&Jump to:"));
-	d.setWindowTitle(tr("SMPlayer - Seek"));
+	d.setWindowTitle(tr("%1 - Seek").arg(TConfig::PROGRAM_NAME));
 	d.setMaximumTime((int) core->mdat.duration);
 	d.setTime((int) core->mset.current_sec);
 	if (d.exec() == QDialog::Accepted) {
@@ -1456,11 +1456,11 @@ void TBase::showGotoDialog() {
 void TBase::showAudioDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
-	int delay = QInputDialog::getInt(this, tr("SMPlayer - Audio delay"),
+	int delay = QInputDialog::getInt(this, tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
 		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
 		-3600000, 3600000, 1, &ok);
 	#else
-	int delay = QInputDialog::getInteger(this, tr("SMPlayer - Audio delay"),
+	int delay = QInputDialog::getInteger(this, tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
 		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
 		-3600000, 3600000, 1, &ok);
 	#endif
@@ -1472,11 +1472,11 @@ void TBase::showAudioDelayDialog() {
 void TBase::showSubDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
-	int delay = QInputDialog::getInt(this, tr("SMPlayer - Subtitle delay"),
+	int delay = QInputDialog::getInt(this, tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
 		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
 		-3600000, 3600000, 1, &ok);
 	#else
-	int delay = QInputDialog::getInteger(this, tr("SMPlayer - Subtitle delay"),
+	int delay = QInputDialog::getInteger(this, tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
 		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
 		-3600000, 3600000, 1, &ok);
 	#endif
@@ -1877,7 +1877,7 @@ void TBase::onStateChanged(TCoreState state) {
 			break;
 		case STATE_STOPPED:
 			setActionsEnabled(false);
-			setWindowCaption("SMPlayer");
+			setWindowCaption(TConfig::PROGRAM_NAME);
 			displayMessage(tr("Stopped"));
 			auto_hide_timer->stopAutoHideMouse();
 			break;

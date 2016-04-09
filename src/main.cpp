@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 #include <QDebug>
 #include "log.h"
-#include "smplayer.h"
+#include "app.h"
 
 bool processArgName(const QString& name, char* arg) {
 
@@ -43,9 +43,9 @@ int main(int argc, char** argv) {
 	TLog log(log_debug, false);
 
 	// Create and exec app
-	TSMPlayer app(argc, argv);
+	TApp app(argc, argv);
 	int exit_code = app.processArgs();
-	if (exit_code == TSMPlayer::NoExit) {
+	if (exit_code == TApp::NoExit) {
 		exit_code = app.execWithRestart();
 	}
 

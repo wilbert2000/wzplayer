@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 */
 
 #include "settings/paths.h"
+#include <QDebug>
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QFile>
@@ -29,6 +30,7 @@
 #include <stdlib.h>
 #endif
 
+#include "config.h"
 
 namespace Settings {
 
@@ -48,13 +50,13 @@ void TPaths::setConfigPath(const QString& path) {
 		// Normal use case, use home
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		// TODO: use APPDATA or QDesktopServices::DataLocation
-		config_path = QDir::homePath() + "/.smplayer";
+		config_path = QDir::homePath() + "/." + TConfig::PROGRAM_ID;
 #else
 		const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
 		if (XDG_CONFIG_HOME != NULL) {
-			config_path = QString(XDG_CONFIG_HOME) + "/smplayer";
+			config_path = QString(XDG_CONFIG_HOME) + "/" + TConfig::PROGRAM_ID;
 		} else {
-			config_path = QDir::homePath() + "/.config/smplayer";
+			config_path = QDir::homePath() + "/.config/" + TConfig::PROGRAM_ID;
 		}
 #endif
 
@@ -70,9 +72,9 @@ void TPaths::setConfigPath(const QString& path) {
 	if (!QFile::exists(config_path)) {
 		QDir d;
 		if (d.mkdir(config_path)) {
-			qDebug("Settings::TPaths::setConfigPath: created config dir \"%s\"", config_path.toUtf8().constData());
+			qDebug() << "Settings::TPaths::setConfigPath: created config dir" << config_path;
 		} else {
-			qWarning("Settings::TPaths::setConfigPath: failed to create \"%s\"", config_path.toUtf8().constData());
+			qWarning() << "Settings::TPaths::setConfigPath: failed to create" << config_path;
 		}
 	}
 #endif
@@ -164,6 +166,10 @@ QString TPaths::doc(const QString& file, QString locale, bool english_fallback) 
 	}
 
 	return QString::null;
+}
+
+QString TPaths::iniPath() {
+	return config_path + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
 }
 
 QString TPaths::subtitleStyleFile() {

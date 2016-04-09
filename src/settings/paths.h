@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,11 +32,11 @@ public:
 	static QString appPath() { return app_path; }
 
 	static void setConfigPath(const QString& path);
-	//! Return the path where smplayer should save its config files
+	//! Return the path where wzplayer should save its config files
 	static QString configPath() { return config_path; }
 
-	//! Replaced by configPath()
-	static QString iniPath() { return config_path; }
+	// Ini file name
+	static QString iniPath();
 
 	static QString dataPath();
 	static QString translationPath();

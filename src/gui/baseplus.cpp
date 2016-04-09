@@ -1,5 +1,5 @@
-/*  smplayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+/*  WZPlayer, GUI front-end for mplayer and MPV.
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ TBasePlus::TBasePlus()
 	, trayicon_playlist_was_visible(false) {
 
 	tray = new QSystemTrayIcon(this);
-	tray->setToolTip("SMPlayer");
+	tray->setToolTip(TConfig::PROGRAM_NAME);
 	connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 			 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
@@ -134,8 +134,8 @@ void TBasePlus::switchToTray() {
 		core->stop();
 
 	if (pref->balloon_count > 0) {
-		tray->showMessage("SMPlayer",
-			tr("SMPlayer is still running here"),
+		tray->showMessage(TConfig::PROGRAM_NAME,
+			tr("%1 is still running here").arg(TConfig::PROGRAM_NAME),
 			QSystemTrayIcon::Information, TConfig::MESSAGE_DURATION);
 		pref->balloon_count--;
 	}
@@ -161,7 +161,7 @@ void TBasePlus::quit() {
 void TBasePlus::setWinTitle() {
 
 	if (playlistdock->isFloating()) {
-		playlistdock->setWindowTitle(tr("SMPlayer - Playlist"));
+		playlistdock->setWindowTitle(tr("%1 - Playlist").arg(TConfig::PROGRAM_NAME));
 	} else {
 		playlistdock->setWindowTitle(tr("Playlist"));
 	}
