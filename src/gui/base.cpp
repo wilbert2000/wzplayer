@@ -78,7 +78,6 @@
 #include "gui/action/menuoptions.h"
 #include "gui/action/menuhelp.h"
 
-#include "gui/links.h"
 #include "gui/logwindow.h"
 #include "gui/playlist.h"
 #include "gui/autohidetimer.h"
@@ -1398,16 +1397,6 @@ void TBase::loadAudioFile() {
 
 	if (!s.isEmpty())
 		core->loadAudioFile(s);
-}
-
-void TBase::helpFirstSteps() {
-	QDesktopServices::openUrl(QString(URL_FIRST_STEPS "?version=%1").arg(Version::printable()));
-}
-
-void TBase::helpFAQ() {
-	QString url = URL_FAQ;
-	/* if (!pref->language.isEmpty()) url += QString("?tr_lang=%1").arg(pref->language); */
-	QDesktopServices::openUrl(QUrl(url));
 }
 
 void TBase::helpCLOptions() {

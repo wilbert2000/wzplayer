@@ -119,8 +119,6 @@ public slots:
 
 	virtual void showConfigFolder();
 
-	virtual void helpFirstSteps();
-	virtual void helpFAQ();
 	virtual void helpCLOptions();
 	virtual void helpCheckUpdates();
 	virtual void helpAbout();

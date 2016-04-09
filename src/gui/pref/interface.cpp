@@ -88,7 +88,7 @@ void TInterface::createLanguageCombo() {
 	// Language combo
 	QDir translation_dir = Settings::TPaths::translationPath();
 	QStringList languages = translation_dir.entryList(QStringList() << "*.qm");
-	QRegExp rx_lang("smplayer_(.*)\\.qm");
+	QRegExp rx_lang("(.*)\\.qm");
 	language_combo->clear();
 	language_combo->addItem(tr("<Autodetect>"));
 	for (int n=0; n < languages.count(); n++) {

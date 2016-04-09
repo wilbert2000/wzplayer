@@ -1,0 +1,7 @@
+[linux]
+stable=16.4.0.7558
+unstable=16.4.0.7558
+
+[windows]
+stable=16.4.0.7558
+unstable=16.4.0.7558

@@ -21,11 +21,11 @@
 #include <QFile>
 #include <QDesktopServices>
 
+#include "config.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
 #include "images.h"
 #include "version.h"
-#include "gui/links.h"
 
 using namespace Settings;
 
@@ -52,8 +52,8 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 		tr("Using Qt %1 (compiled with Qt %2)").arg(qVersion()).arg(QT_VERSION_STR)
 		+ "<br><br>"
 		+ "<b>"+ tr("Links:") +"</b><br>"
-		+ tr("Official website:") +" "+  link(URL_HOMEPAGE) + "<br>"
-		+ tr("Support forum:") +" "+  link(URL_FORUM) + "<br>"
+		+ tr("Website:") + " " + link(TConfig::URL_HOMEPAGE) + "<br>"
+		+ tr("Issues:") +" "+  link(TConfig::URL_ISSUES) + "<br>"
 		+ "<br>"
 		+ tr("WZPlayer is a graphical interface for %1 and %2.")
 			.arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
@@ -132,8 +132,8 @@ QString TAbout::getTranslators() {
 	return QString(
 		 tr("Many people contributed with translations.") +" "+
 		 tr("You can also help to translate WZPlayer into your own language.") +"<p>"+
-		 tr("Visit %1 and join a translation team.").arg("<a href=\"http://www.transifex.com/projects/p/smplayer/\">http://www.transifex.com/projects/p/smplayer/</a>") +
-		"<p><a href=\"" URL_TRANSLATORS "\">" +
+		 tr("Visit %1 and join a translation team.").arg("<a href=\"http://www.transifex.com/projects/p/wzplayer/\">http://www.transifex.com/projects/p/wzplayer/</a>") +
+		"<p><a href=\"" + TConfig::URL_TRANSLATORS + "\">" +
 		 tr("Click here to know the translators from the transifex teams") +
 		"</a>");
 }

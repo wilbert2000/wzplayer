@@ -20,7 +20,6 @@
 #include "config.h"
 #include "updatecheckerdata.h"
 #include "version.h"
-#include "gui/links.h"
 #include <QUrl>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -43,7 +42,7 @@ TUpdateChecker::TUpdateChecker(QWidget* parent, UpdateCheckerData* data) : QObje
 {
 	d = data;
 
-	check_url = URL_VERSION_INFO;
+	check_url = TConfig::URL_VERSION_INFO;
 	user_agent = TConfig::PROGRAM_NAME.toLatin1();
 
 	connect(this, SIGNAL(newVersionFound(const QString &)),
@@ -189,7 +188,7 @@ void TUpdateChecker::reportNewVersionAvailable(const QString & new_version) {
 		QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 
 	if (button == QMessageBox::Yes) {
-		QDesktopServices::openUrl(QUrl(URL_CHANGES));
+		QDesktopServices::openUrl(QUrl(TConfig::URL_CHANGES));
 	}
 
 	saveVersion(new_version);
