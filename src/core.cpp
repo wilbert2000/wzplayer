@@ -662,6 +662,9 @@ void TCore::initPlaying(int seek) {
 	qDebug("TCore::initPlaying: starting time");
 
 	time.start();
+	// Clear background
+	playerwindow->repaint();
+
 	if (restarting == 0)
 		initMediaSettings();
 
