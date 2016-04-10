@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[smplayer.english]
+[zwplayer.english]
 type = QT
 file_filter = <lang>.ts
 source_lang = en

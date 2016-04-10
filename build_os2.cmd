@@ -1,4 +1,4 @@
-/* SMPlayer Build Script */
+/* WZPlayer Build Script */
 /* root done by Herwig Bauernfeind, enhanced by Silvan Scherrer */
 
 /* version history */
@@ -38,18 +38,18 @@ qOutFile   = buildDir||'\qmake.out'
 mErrorFile = buildDir||'\make.err'
 mOutFile   = buildDir||'\make.out'
 
-/* get the SMPlayer version */
-SMPlayer_version = '0.0.0'
+/* get the WZPlayer version */
+WZPlayer_version = '0.0.0'
 call version
-internal_build = translate(SMPlayer_version, '_', '.')
+internal_build = translate(WZPlayer_version, '_', '.')
 
-title = "SMPlayer for eCS (OS/2) build script v" || version || " from " || version_date
+title = "WZPlayer for eCS (OS/2) build script v" || version || " from " || version_date
 say title
 say
 say "Build directory:" buildDir
 say "Source directory:" sourceDir
 say
-say "SMPlayer version:" SMPlayer_version
+say "WZPlayer version:" WZPlayer_version
 say
 
 /* translate command to all upercase */
@@ -58,10 +58,10 @@ command = translate(command)
 if command = "" then signal help
 
 if command = "INSTALL" then do
-    SMPlayer_build = option
+    WZPlayer_build = option
     select
-	when SMPlayer_build \== "" then do
-	  zipFile = installDir || '\SMPlayer-' || internal_build || '-' || SMPlayer_build || '.zip'
+	when WZPlayer_build \== "" then do
+	  zipFile = installDir || '\WZPlayer-' || internal_build || '-' || WZPlayer_build || '.zip'
 	end
 	otherwise do
 	  signal help
@@ -84,7 +84,7 @@ select
         say "cleaning the tree"
         call make 'distclean'
 
-        say "please execute this script again with 'make' to build SMPlayer"
+        say "please execute this script again with 'make' to build WZPlayer"
 
     end
     when command = "MAKE" then do
@@ -93,11 +93,11 @@ select
         say "creating build dir"
 	ok = SysMkDir(buildDir||'\src')
 
-        say "creating SMPlayer makefile"
+        say "creating WZPlayer makefile"
         call qmake
 
         if qRC = 0 then do
-            say "building SMPlayer"
+            say "building WZPlayer"
 	    if option = "" then do
             	call make
 	    end
@@ -119,7 +119,7 @@ select
 	ok = SysMkDir(installDirT)
 
 /* copy the exe */
-	ok = SysCopyObject(buildDir||'\src\smplayer.exe',installDir)
+	ok = SysCopyObject(buildDir||'\src\wzplayer.exe',installDir)
 
 /* copy the readme */
 	rm.0 = 3
@@ -127,7 +127,7 @@ select
 	rm.2 = 'liesmich.os2'
 	rm.3 = 'lisezmoi.os2'
 	do i = 1 to rm.0
-	cmdtorun = 'sed "s;_VERSION_;' || SMPlayer_version || ';g" ' || os2Dir || '\' || rm.i || ' | sed "s;_BUILD_;' || SMPlayer_build || ';g" >' || installDir || '\' || rm.i
+	cmdtorun = 'sed "s;_VERSION_;' || WZPlayer_version || ';g" ' || os2Dir || '\' || rm.i || ' | sed "s;_BUILD_;' || WZPlayer_build || ';g" >' || installDir || '\' || rm.i
         address cmd cmdtorun
 	end
 
@@ -250,24 +250,24 @@ FixDir: procedure expose (Globals)
     return dir
 
 /**
- *  reads the version.cpp and gets the SMPlayer version from there
+ *  reads the version.cpp and gets the WZPlayer version from there
  */ 
-version: procedure expose SMPlayer_version srcDir
+version: procedure expose WZPlayer_version srcDir
 
-    SMPlayerVer = ' '
-    /* SMPlayer Version file */
+    WZPlayerVer = ' '
+    /* WZPlayer Version file */
     Version = srcDir || "\version.cpp"
 
     do until lines(Version) = 0
         verline = linein(Version)
         if left(Verline,15) = "#define VERSION" then do
-            parse var verline . ' '. ' ' SMPlayerVer
+            parse var verline . ' '. ' ' WZPlayerVer
         end
     end
 
     ok = stream(Version,'c','close')
-    if SMPlayerVer \== ' ' then do
-    	SMPlayer_version = strip(SMPlayerVer,,'"')
+    if WZPlayerVer \== ' ' then do
+    	WZPlayer_version = strip(WZPlayerVer,,'"')
     end
 
     return
