@@ -1,7 +1,7 @@
 [linux]
-stable=v2016.01.29
-unstable=v2016.01.29
+stable=v2016.04.10
+unstable=v2016.04.10
 
 [windows]
-stable=v2016.01.29
-unstable=v2016.01.29
+stable=v2016.04.10
+unstable=v2016.04.10
