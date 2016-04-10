@@ -1075,9 +1075,6 @@ void TCore::startPlayer(QString file, double seek) {
 
 	if (pref->useColorKey()) {
 		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
-		// Make sure the color key is applied by clearing the background of
-		// the video window
-		playerwindow->videoWindow()->repaint();
 	}
 
 	// Synchronization

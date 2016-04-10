@@ -57,6 +57,7 @@ TVideoWindow::~TVideoWindow() {
 
 void TVideoWindow::paintEvent(QPaintEvent*) {
 	// qDebug() << "TVideoWindow::paintEvent:" << e->rect();
+	// Background already handled
 	// QPainter painter(this);
 	// painter.eraseRect(e->rect());
 }
@@ -64,6 +65,8 @@ void TVideoWindow::paintEvent(QPaintEvent*) {
 void TVideoWindow::setFastBackground() {
 	qDebug("TVideoWindow::setFastBackground");
 
+	// Clear background
+	repaint();
 	normal_background = false;
 	setAutoFillBackground(false);
 	// Don't erase background before paint
