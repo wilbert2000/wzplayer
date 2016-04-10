@@ -93,10 +93,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 	contributions->setText(
 		tr("WZPlayer logo by %1").arg("Charles Barcza &lt;kbarcza@blackpanther.hu&gt;") + "<br><br>"
 		+ tr("Packages for Windows created by %1").arg("redxii &lt;redxii@users.sourceforge.net&gt;") + "<br><br>"
-		+ tr("Some icons by <a href=\"http://tatice.deviantart.com\">Tatice</a>"
-		   " under the <a href=\"http://creativecommons.org/licenses/by-nc-nd/4.0/\">"
-		   "CC Attribution-Noncommercial-No Derivate 4.0</a> license.") + "<br><br>"
-		+ tr("Many other people contributed with patches. See the Changelog for details."));
+		+ tr("Many other people contributed with patches. See the Changelog and Readme.txt for details."));
 
 	// Copy the background color ("window") of the tab widget to the "base" color of the qtextbrowsers
 	// Problem, it doesn't work with some styles, so first we change the "window" color of the tab widgets.

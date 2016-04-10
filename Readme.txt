@@ -1,5 +1,5 @@
-    SMPlayer, GUI front-end for mplayer.
-    Copyright (C) 2006-2016 Ricardo Villalba <rvm@users.sourceforge.net>
+    WZPlayer, GUI front-end for MPlayer and MPV.
+    Based on SMPlayer by Ricardo Villalba
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,22 +17,14 @@
 
     -------------------------------------------------------------------------
 
-    SMPlayer intends to be a complete front-end for MPlayer, from basic
+    WZPlayer intends to be a complete front-end for MPlayer and MPV, from basic
     features like playing videos, DVDs, and VCDs to more advanced features
-    like support for MPlayer filters and more.
+    like support for filters and more.
 
-    To know how to compile and install smplayer please read Install.txt.
-
-    There are available two optional packages: smplayer-themes and smplayer-skins.
-    They contain some icon themes and skins for smplayer and it's highly recommended
-    that you install them too.
+    To know how to compile and install wzplayer please read Install.txt.
 
     Visit the web for updates:
-    http://smplayer.sourceforge.net
-    http://www.smplayer.info
-
-    Support forum:
-    http://forum.smplayer.info
+    https://github.com/wilbert2000/wzplayer
 
     -------------------------------------------------------------------------
 
@@ -97,3 +89,7 @@
 
      * http://www.pd4pic.com/anaglyph-3d-cellophane-glasses-3dimensional-movie.html
        license: Public Domain CC0
+ 
+     * Tatice
+       http://tatice.deviantart.com
+       license: CC Attribution-Noncommercial-No Derivate 4.0
