@@ -5,9 +5,8 @@ cd ..\src
 mingw32-make distclean
 
 cd ..
-del src\translations\smplayer_*.qm
-del src\object_script.smplayer.Release
-del src\object_script.smplayer.Debug
-del src\svn_revision.h
+del src\translations\*.qm
+del src\object_script.wzplayer.Release
+del src\object_script.wzplayer.Debug
 rd src\release
 rd src\debug
