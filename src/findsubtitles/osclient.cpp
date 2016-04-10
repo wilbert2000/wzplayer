@@ -44,7 +44,9 @@ void OSClient::setProxy(const QNetworkProxy & proxy) {
 void OSClient::login() {
 	qDebug("OSClient::login");
 
-	QString user_agent = "WZPlayer " + TVersion::version;
+	// api.opensubtitles.org checks on user agent...
+	// QString user_agent = "WZPlayer " + TVersion::version;
+	QString user_agent = "SMPlayer v16.1.0.0";
 	qDebug("OSClient::login: user agent: %s", user_agent.toUtf8().constData());
 
 	QVariantList args;
