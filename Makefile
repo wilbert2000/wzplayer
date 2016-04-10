@@ -1,6 +1,4 @@
 
-#TODO: add build dir
-
 PREFIX=/usr/local
 #PREFIX=/tmp/wzplayer
 
