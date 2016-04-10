@@ -83,7 +83,9 @@ void TUpdateChecker::check() {
 	connect(reply, SIGNAL(finished()), this, SLOT(gotReplyFromUserRequest()));
 }
 
-QString TUpdateChecker::parseVersion(const QByteArray & data, const QString & name) {
+QString TUpdateChecker::parseVersion(const QByteArray& data, const QString& name) {
+
+	qDebug() << "TUpdateChecker::parseVersion: data:\n" << data;
 	QTemporaryFile tf;
 	tf.open();
 	tf.write(data);
@@ -91,11 +93,12 @@ QString TUpdateChecker::parseVersion(const QByteArray & data, const QString & na
 	QString tfile = tf.fileName();
 	qDebug() << "TUpdateChecker::parseVersion: tfile:" << tfile;
 
-	#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
 	QString grname = "windows";
-	#else
+#else
 	QString grname = "linux";
-	#endif
+#endif
+
 	QSettings set(tfile, QSettings::IniFormat);
 	set.beginGroup(grname);
 	QString version = set.value(name, "").toString();
