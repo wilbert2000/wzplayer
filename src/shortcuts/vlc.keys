@@ -96,16 +96,10 @@ upload_subtitles
 show_playlist	Ctrl+L
 show_file_properties	Ctrl+I
 show_preferences	Ctrl+P
-show_tube_browser	F11
-show_mplayer_log	Ctrl+M
-show_smplayer_log	Ctrl+S
-first_steps	
-faq	
+show_log	Ctrl+S
 cl_options	
 check_updates	
-update_youtube	
 show_config	
-donate	
 about_smplayer	
 inc_osd_scale	Shift+U
 dec_osd_scale	Shift+Y

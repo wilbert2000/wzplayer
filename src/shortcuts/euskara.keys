@@ -89,21 +89,12 @@ upload_subtitles
 show_playlist	Ctrl+Z
 show_file_properties	Ctrl+A
 show_preferences	Ctrl+H
-show_tube_browser	F11
-show_mplayer_log	Ctrl+M
-show_smplayer_log	Ctrl+S
-first_steps	
-faq	Ctrl+Shift+G
+show_log	Ctrl+S
 cl_options	
 check_updates	
 show_config	
 about_qt	
 about_smplayer	
-facebook	
-twitter	
-gmail	
-hotmail	
-yahoo	
 play_next	>
 play_prev	<
 move_up	Alt+Up
