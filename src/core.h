@@ -401,7 +401,7 @@ protected slots:
 
 	void gotCurrentSec(double sec);
 	void onReceivedPause();
-	void onReceivedVideoOutResolution(int w, int h);
+	void onReceivedVideoOut();
 
 	void displayScreenshotName(const QString& filename);
 	void displayUpdatingFontCache();

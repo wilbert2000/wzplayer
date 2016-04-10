@@ -163,8 +163,7 @@ void TPlayerProcess::playingStarted() {
 
 	notified_player_is_running = true;
 
-	emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
-
+	emit receivedVideoOut();
 	emit receivedVideoTracks();
 	emit receivedAudioTracks();
 	emit receivedSubtitleTracks();
@@ -359,7 +358,7 @@ bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) 
 			 << md->video_out_width << "x" << md->video_out_height;
 
 	if (notified_player_is_running) {
-		emit receivedVideoOutResolution(md->video_out_width, md->video_out_height);
+		emit receivedVideoOut();
 	}
 
 	return true;

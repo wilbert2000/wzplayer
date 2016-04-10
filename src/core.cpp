@@ -103,8 +103,8 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(receivedUpdatingFontCache()),
 			this, SLOT(displayUpdatingFontCache()));
 
-	connect(proc, SIGNAL(receivedVideoOutResolution(int,int)),
-			this, SLOT(onReceivedVideoOutResolution(int,int)));
+	connect(proc, SIGNAL(receivedVideoOut()),
+			this, SLOT(onReceivedVideoOut()));
 
 	connect(proc, SIGNAL(receivedEndOfFile()),
 			this, SLOT(onReceivedEndOfFile()), Qt::QueuedConnection);
@@ -3332,14 +3332,14 @@ void TCore::displayBufferingEnded() {
 	emit showMessage(tr("Playing from %1").arg(Helper::formatTime(mset.current_sec)));
 }
 
-void TCore::onReceivedVideoOutResolution(int w, int h) {
-	qDebug("TCore::onReceivedVideoOutResolution: %d x %d", w, h);
+void TCore::onReceivedVideoOut() {
+	qDebug("TCore::onReceivedVideoOut");
 
 	// w x h is output resolution selected by player with aspect and filters applied
-	playerwindow->setResolution(w, h);
+	playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
 
 	if (restarting == 0)
-		emit videoOutResolutionChanged(w, h);
+		emit videoOutResolutionChanged(mdat.video_out_width, mdat.video_out_height);
 
 	// If resize is canceled adjust new video to old size
 	playerwindow->updateVideoWindow();
