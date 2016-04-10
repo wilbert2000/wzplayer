@@ -466,3 +466,7 @@ TRANSLATIONS = translations/es.ts translations/de.ts \
                translations/nn_NO.ts translations/id.ts \
                translations/ar.ts translations/en_GB.ts \
                translations/sq_AL.ts
+
+OTHER_FILES += \
+    ../Readme.txt \
+    ../wzplayer.spec

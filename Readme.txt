@@ -17,9 +17,10 @@
 
     -------------------------------------------------------------------------
 
-    WZPlayer intends to be a complete front-end for MPlayer and MPV, from basic
-    features like playing videos, DVDs, and VCDs to more advanced features
-    like support for filters and more.
+    WZPlayer is a graphical user interface for MPV and MPlayer based upon
+    SMPlayer, http://www.smplayer.info, by Ricardo Villalba. With improved
+    performance, scaling, DVDNAV support, no setup needed, lots of setup
+    available. No support and lots of source...
 
     To know how to compile and install wzplayer please read Install.txt.
 

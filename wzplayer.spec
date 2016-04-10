@@ -1,12 +1,12 @@
 Name:           wzplayer
-Version:        16.1.0
+Version:        %{version}
 Release:        1%{?dist}
 Summary:        A great media player
 
 Group:          Applications/Multimedia
 License:        GPL-2.0+
 URL:            https://github.com/wilbert2000/wzplayer
-Source0:        https://github.com/wilbert2000/wzplayer/releases/wzplayer-%{version}.tar.bz2
+Source0:        https://github.com/wilbert2000/wzplayer/raw/releases/wzplayer-%{version}.tar.bz2
 
 %if 0%{?suse_version}
 BuildRequires:  libqt4-devel
@@ -18,17 +18,14 @@ BuildRequires:  qt4-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 
-Requires:       mplayer
+Requires:       (mplayer or mpv)
 %{?_qt4_version:Requires: qt4%{?_isa} >= %{_qt4_version}}
 
 %description
-WZPlayer is a graphical user interface (GUI) for the award-winning mplayer
-and also for mpv. But apart from providing access for the most common
-and useful options of mplayer and mpv, SMPlayer adds other interesting features
-like the possibility to play Youtube videos or search and download subtitles.
-One of the main features is the ability to remember the state of a
-played file, so when you play it later it will be resumed at the same point
-and with the same settings.
+WZPlayer is a graphical user interface for MPV and MPlayer based upon
+SMPlayer, http://www.smplayer.info, by Ricardo Villalba. With improved
+performance, scaling, DVDNAV support, no setup needed, lots of setup
+available. No support and lots of source.
 
 %prep
 %setup -a3 -a4 -qn %{name}-%{version}
