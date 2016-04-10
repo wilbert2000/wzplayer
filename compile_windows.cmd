@@ -40,7 +40,7 @@ cd zlib
 mingw32-make -fwin32\makefile.gcc
 
 cd ..\src
-lrelease smplayer.pro
+lrelease wzplayer.pro
 qmake "DEFINES += %qmake_defs%"
 mingw32-make
 
