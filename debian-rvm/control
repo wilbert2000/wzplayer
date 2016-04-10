@@ -1,22 +1,19 @@
-Source: smplayer
+Source: wzplayer
 Section: graphics
 Priority: extra
-Maintainer: Ricardo Villalba <rvm@users.sourceforge.net>
+Maintainer: Wilbert Hengst <wplayer@xs4all.nl>
 Build-Depends: debhelper (>= 5), libqt4-dev, zlib1g-dev
 Standards-Version: 3.7.2
 
-Package: smplayer
+Package: wzplayer
 Architecture: any
 Pre-Depends: dpkg (>= 1.14.12ubuntu3)
 Depends: ${shlibs:Depends}, mplayer | mplayer-nogui | mpv (>= 0.6.2)
-Recommends: smplayer-themes, smplayer-skins, smtube, alsa-utils, x11-utils
-Replaces: smplayer-translations, smplayer-l10n
-Provides: smplayer-translations, smplayer-l10n
+Recommends: alsa-utils, x11-utils
+Replaces: wzplayer-translations, wzplayer-l10n
+Provides: wzplayer-translations, wzplayer-l10n
 Description: A great media player
- SMPlayer is a graphical user interface (GUI) for the award-winning mplayer
- and also for mpv. But apart from providing access for the most common
- and useful options of mplayer and mpv, SMPlayer adds other interesting features
- like the possibility to play Youtube videos or search and download subtitles.
- One of the main features is the ability to remember the state of a
- played file, so when you play it later it will be resumed at the same point
- and with the same settings.
+ WZPlayer is a graphical user interface for MPV and MPlayer based upon
+ SMPlayer, http://www.smplayer.info, by Ricardo Villalba. With improved
+ performance, scaling, DVDNAV support, no setup needed, lots of setup
+ available. No support and lots of source...

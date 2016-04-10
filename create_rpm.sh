@@ -1,14 +1,19 @@
 #!/bin/sh
 
 # TODO: Watch it, version is still taken from current dir...
-WZPVERSION=`git describe --dirty --always --tags`
-NAME=wzplayer-${WZPVERSION}
+NAME=wzplayer
 
 cd /tmp
 git clone 'https://github.com/wilbert2000/wzplayer.git' ${NAME}
-tar cvjf ${NAME}.tar.bz2 ${NAME}/
-cat ${NAME}/wzplayer.spec | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${WZPVERSION}'/' > /tmp/wzplayer.spec
-rm -r /tmp/${NAME}
+cd $(NAME)
+NAMEVERSION=`git describe --dirty --always --tags`
+cd ..
+NAMEVERSION=${NAME}-${NAMEVERSION}
+
+mv "$(NAME)" "${NAMEVERSION}"
+tar cvjf ${NAMEVERSION}.tar.bz2 ${NAMEVERSION}/
+cat ${NAMEVERSION}/wzplayer.spec | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${NAMEVERSION}'/' > /tmp/wzplayer.spec
+rm -r "/tmp/${NAMEVERSION}"
 PCKGDIR=/usr/src/packages/
 if [ -e /etc/fedora-release ]; then
     PCKGDIR=/usr/src/redhat/

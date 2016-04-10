@@ -1,2 +1,2 @@
-?package(smplayer):needs="X11" section="Apps/Graphics"\
-  title="smplayer" command="/usr/bin/smplayer"
+?package(wzplayer):needs="X11" section="Apps/Graphics"\
+  title="wzplayer" command="/usr/bin/wzplayer"

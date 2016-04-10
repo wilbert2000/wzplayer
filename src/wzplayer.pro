@@ -472,4 +472,6 @@ OTHER_FILES += \
     ../wzplayer.spec \
     ../create_rpm.sh \
     ../Install.txt \
-    ../create_deb.sh
+    ../create_deb.sh \
+    ../setup/scripts/install_wzplayer.cmd \
+    ../setup/scripts/make_pkgs.cmd
