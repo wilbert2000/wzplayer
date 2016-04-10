@@ -20,6 +20,8 @@ KDE_APPLNK=$(KDE_PREFIX)/share/applications/
 QMAKE=qmake
 LRELEASE=lrelease
 
+CHANGELOG=Changelog
+
 DEFS=DATA_PATH=\\\"$(DATA_PATH)\\\" \
      TRANSLATION_PATH=\\\"$(TRANSLATION_PATH)\\\" \
      DOC_PATH=\\\"$(DOC_PATH)\\\" THEMES_PATH=\\\"$(THEMES_PATH)\\\" \
@@ -39,9 +41,12 @@ QMAKE_OPTS=DEFINES+=KDE_SUPPORT INCLUDEPATH+=$(KDE_INCLUDE_PATH) \
 
 endif
 
-src/wzplayer:
+src/wzplayer: $(CHANGELOG)
 	+cd src && $(QMAKE) $(QMAKE_OPTS) && $(DEFS) make
 	cd src && $(LRELEASE) wzplayer.pro
+
+Changelog:
+	echo "https://github.com/wilbert2000/wzplayer/commits/master" > $(CHANGELOG)
 
 clean:
 	if [ -f src/Makefile ]; then cd src && make distclean; fi
