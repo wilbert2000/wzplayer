@@ -17,10 +17,20 @@
 */
 
 #include "updatecheckerdata.h"
-#include "version.h"
 #include <QSettings>
+#include "version.h"
 
-void UpdateCheckerData::save(QSettings* set) {
+
+TUpdateCheckerData::TUpdateCheckerData() :
+	enabled(false),
+	days_to_check(7) {
+}
+
+TUpdateCheckerData::~TUpdateCheckerData() {
+}
+
+void TUpdateCheckerData::save(QSettings* set) {
+
 	set->beginGroup("update_checker");
 	set->setValue("checked_date", last_checked);
 	set->setValue("enabled", enabled);
@@ -29,11 +39,12 @@ void UpdateCheckerData::save(QSettings* set) {
 	set->endGroup();
 }
 
-void UpdateCheckerData::load(QSettings* set) {
+void TUpdateCheckerData::load(QSettings* set) {
+
 	set->beginGroup("update_checker");
 	last_checked = set->value("checked_date", 0).toDate();
-	enabled = set->value("enabled", true).toBool();
-	days_to_check = set->value("days_to_check", 7).toInt();
+	enabled = set->value("enabled", enabled).toBool();
+	days_to_check = set->value("days_to_check", days_to_check).toInt();
 	last_known_version = set->value("last_known_version", TVersion::version).toString();
 	set->endGroup();
 }

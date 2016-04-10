@@ -36,7 +36,7 @@
 
 namespace Gui {
 
-TUpdateChecker::TUpdateChecker(QWidget* parent, UpdateCheckerData* data) : QObject(parent)
+TUpdateChecker::TUpdateChecker(QWidget* parent, TUpdateCheckerData* data) : QObject(parent)
 	, net_manager(0)
 	, d(0)
 {
@@ -45,11 +45,11 @@ TUpdateChecker::TUpdateChecker(QWidget* parent, UpdateCheckerData* data) : QObje
 	check_url = TConfig::URL_VERSION_INFO;
 	user_agent = TConfig::PROGRAM_NAME.toLatin1();
 
-	connect(this, SIGNAL(newVersionFound(const QString &)),
-            this, SLOT(reportNewVersionAvailable(const QString &)));
+	connect(this, SIGNAL(newVersionFound(const QString&)),
+			this, SLOT(reportNewVersionAvailable(const QString&)));
 
-	connect(this, SIGNAL(noNewVersionFound(const QString &)),
-            this, SLOT(reportNoNewVersionFound(const QString &)));
+	connect(this, SIGNAL(noNewVersionFound(const QString&)),
+			this, SLOT(reportNoNewVersionFound(const QString&)));
 
 	connect(this, SIGNAL(errorOcurred(int, QString)), this, SLOT(reportError(int, QString)));
 
@@ -67,7 +67,7 @@ TUpdateChecker::TUpdateChecker(QWidget* parent, UpdateCheckerData* data) : QObje
 	QNetworkRequest req(check_url);
 	req.setRawHeader("User-Agent", user_agent);
 	QNetworkReply *reply = net_manager->get(req);
-	connect(reply, SIGNAL(finished()), this, SLOT(gotReply()));
+	connect(reply, SIGNAL(finished()), this, SLOT(gotReply()), Qt::QueuedConnection);
 }
 
 TUpdateChecker::~TUpdateChecker() {
@@ -163,7 +163,8 @@ void TUpdateChecker::saveVersion(QString v) {
 	d->last_known_version = v;
 }
 
-void TUpdateChecker::reportNewVersionAvailable(const QString & new_version) {
+void TUpdateChecker::reportNewVersionAvailable(const QString& new_version) {
+
 	QWidget* p = qobject_cast<QWidget*>(parent());
 
 	QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),

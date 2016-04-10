@@ -24,7 +24,7 @@
 #include <QUrl>
 
 class QNetworkAccessManager;
-class UpdateCheckerData;
+class TUpdateCheckerData;
 
 namespace Gui {
 
@@ -32,7 +32,7 @@ class TUpdateChecker : public QObject {
 	Q_OBJECT
 
 public:
-	TUpdateChecker(QWidget* parent, UpdateCheckerData* data);
+	TUpdateChecker(QWidget* parent, TUpdateCheckerData* data);
 	virtual ~TUpdateChecker();
 
 	void check();
@@ -54,7 +54,7 @@ protected:
 	static QString parseVersion(const QByteArray & data, const QString & name);
 
 	QNetworkAccessManager* net_manager;
-	UpdateCheckerData* d;
+	TUpdateCheckerData* d;
 
 	QUrl check_url;
 	QByteArray user_agent;

@@ -804,9 +804,7 @@ void TPreferences::save() {
     /* *********
        Update
        ********* */
-#ifdef UPDATE_CHECKER
 	update_checker_data.save(this);
-#endif
 
 	sync();
 }
@@ -1314,10 +1312,7 @@ void TPreferences::load() {
     /* *********
        Update
        ********* */
-
-#ifdef UPDATE_CHECKER
 	update_checker_data.load(this);
-#endif
 
 
 	qDebug("Settings::TPreferences::load: config_version: %d, CURRENT_CONFIG_VERSION: %d", config_version, CURRENT_CONFIG_VERSION);

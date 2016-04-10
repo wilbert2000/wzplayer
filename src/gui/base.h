@@ -332,10 +332,6 @@ protected:
 	FindSubtitlesWindow* find_subs_dialog;
 #endif
 
-#ifdef UPDATE_CHECKER
-	TUpdateChecker* update_checker;
-#endif
-
 	QString pending_actions_to_run;
 
 private:
@@ -363,7 +359,7 @@ private:
 	QTimer move_window_timer;
 
 	TAutoHideTimer* auto_hide_timer;
-
+	TUpdateChecker* update_checker;
 
 	void createToolbars();
 	QMenu* createToolbarMenu();

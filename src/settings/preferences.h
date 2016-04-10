@@ -23,15 +23,12 @@
 #include <QSize>
 #include <QString>
 
+#include "filters.h"
+#include "updatecheckerdata.h"
 #include "settings/playersettings.h"
 #include "settings/assstyles.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
-#include "filters.h"
-
-#ifdef UPDATE_CHECKER
-#include "updatecheckerdata.h"
-#endif
 
 
 namespace Settings {
@@ -459,10 +456,7 @@ public:
     /* *********
        Update
        ********* */
-
-#ifdef UPDATE_CHECKER
-	UpdateCheckerData update_checker_data;
-#endif
+	TUpdateCheckerData update_checker_data;
 
 private:
 	void setPlayerBin0(QString bin);

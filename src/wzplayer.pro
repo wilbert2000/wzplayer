@@ -17,7 +17,6 @@ DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
 DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += MPRIS2
-DEFINES += UPDATE_CHECKER
 DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --abbrev=4 --dirty --always --tags)\\\"
 
 # Support for program switch in TS files
@@ -28,7 +27,6 @@ contains(DEFINES, SIMPLE_BUILD) {
 	DEFINES -= SINGLE_INSTANCE
 	DEFINES -= FIND_SUBTITLES
 	DEFINES -= MPRIS2
-	DEFINES -= UPDATE_CHECKER
 }
 
 isEqual(QT_MAJOR_VERSION, 5) {
@@ -152,6 +150,8 @@ HEADERS += version.h \
 	gui/baseplus.h \
     gui/default.h \
     gui/logwindow.h \
+    gui/updatechecker.h \
+    updatecheckerdata.h \
     maps/map.h \
     maps/tracks.h \
     maps/titletracks.h \
@@ -269,6 +269,8 @@ SOURCES	+= version.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
     gui/logwindow.cpp \
+    gui/updatechecker.cpp \
+    updatecheckerdata.cpp \
     maps/map.cpp \
     maps/tracks.cpp \
     maps/titletracks.cpp \
@@ -386,12 +388,6 @@ contains(DEFINES, MPRIS2) {
 	SOURCES += mpris2/mediaplayer2.cpp mpris2/mediaplayer2player.cpp mpris2/mpris2.cpp
 
 	QT += dbus
-}
-
-# Update checker
-contains(DEFINES, UPDATE_CHECKER) {
-    HEADERS += gui/updatechecker.h updatecheckerdata.h
-    SOURCES += gui/updatechecker.cpp updatecheckerdata.cpp
 }
 
 unix {

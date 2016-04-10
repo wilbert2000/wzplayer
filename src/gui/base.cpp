@@ -92,6 +92,7 @@
 #include "gui/audioequalizer.h"
 #include "gui/stereo3ddialog.h"
 #include "gui/action/tvlist.h"
+#include "gui/updatechecker.h"
 
 #include "gui/pref/dialog.h"
 #include "gui/pref/general.h"
@@ -112,10 +113,6 @@
 #include <QSysInfo>
 #endif
 
-#ifdef UPDATE_CHECKER
-#include "gui/updatechecker.h"
-#endif
-
 
 using namespace Settings;
 
@@ -124,28 +121,25 @@ namespace Gui {
 using namespace Action;
 
 
-TBase::TBase()
-	: QMainWindow()
-	, toolbar_menu(0)
-	, help_window(0)
-	, pref_dialog(0)
-	, file_properties_dialog(0)
+TBase::TBase() :
+	QMainWindow(),
+	toolbar_menu(0),
+	help_window(0),
+	pref_dialog(0),
+	file_properties_dialog(0),
 #ifdef FIND_SUBTITLES
-	, find_subs_dialog(0)
+	find_subs_dialog(0),
 #endif
-#ifdef UPDATE_CHECKER
-	, update_checker(0)
-#endif
+	menubar_visible(true),
+	statusbar_visible(true),
+	fullscreen_menubar_visible(false),
+	fullscreen_statusbar_visible(true),
+	arg_close_on_finish(-1),
+	arg_start_in_fullscreen(-1),
+	ignore_show_hide_events(false),
+	center_window(false),
+	update_checker(0) {
 
-	, menubar_visible(true)
-	, statusbar_visible(true)
-	, fullscreen_menubar_visible(false)
-	, fullscreen_statusbar_visible(true)
-
-	, arg_close_on_finish(-1)
-	, arg_start_in_fullscreen(-1)
-	, ignore_show_hide_events(false)
-	, center_window(false) {
 
 #if QT_VERSION >= 0x050000
 	was_minimized = isMinimized();
@@ -191,9 +185,7 @@ TBase::TBase()
 	setupNetworkProxy();
 	changeStayOnTop(pref->stay_on_top);
 
-#ifdef UPDATE_CHECKER
 	update_checker = new TUpdateChecker(this, &pref->update_checker_data);
-#endif
 
 #ifdef MPRIS2
 	if (pref->use_mpris2)
@@ -1413,12 +1405,7 @@ void TBase::helpCLOptions() {
 }
 
 void TBase::helpCheckUpdates() {
-#ifdef UPDATE_CHECKER
 	update_checker->check();
-#else
-	QString url = QString(URL_CHANGES "?version=%1").arg(Version::with_revision());
-	QDesktopServices::openUrl(QUrl(url));
-#endif
 }
 
 void TBase::showConfigFolder() {

@@ -24,16 +24,10 @@
 namespace Gui { namespace Pref {
 
 TUpdates::TUpdates(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+	: TWidget(parent, f) {
+
 	setupUi(this);
-
 	createHelp();
-
-#ifndef UPDATE_CHECKER
-	update_group->hide();
-#endif
-
 }
 
 TUpdates::~TUpdates() {
@@ -55,35 +49,26 @@ void TUpdates::retranslateStrings() {
 
 void TUpdates::setData(Settings::TPreferences* pref) {
 
-#ifdef UPDATE_CHECKER
 	update_group->setChecked(pref->update_checker_data.enabled);
 	days_spin->setValue(pref->update_checker_data.days_to_check);
-#endif
-
 }
 
 void TUpdates::getData(Settings::TPreferences* pref) {
-	requires_restart = false;
 
-#ifdef UPDATE_CHECKER
+	requires_restart = false;
 	pref->update_checker_data.enabled = update_group->isChecked();
 	pref->update_checker_data.days_to_check = days_spin->value();
-#endif
-
 }
 
 void TUpdates::createHelp() {
-	clearHelp();
 
-#ifdef UPDATE_CHECKER
+	clearHelp();
 	setWhatsThis(update_group, tr("Check for updates"),
 		tr("If this option is enabled, WZPlayer will check for updates "
            "and display a notification if a new version is available."));
 
 	setWhatsThis(days_spin, tr("Check interval"),
 		tr("Enter the number of days between update checks."));
-#endif
-
 }
 
 }} // namespace Gui::Pref
