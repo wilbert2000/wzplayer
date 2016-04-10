@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# TODO: Watch it, version is still taken from current dir...
 NAME=wzplayer
 
 cd /tmp
@@ -11,8 +10,8 @@ cd ..
 NAMEVERSION=${NAME}-${NAMEVERSION}
 
 mv "$(NAME)" "${NAMEVERSION}"
-tar cvjf ${NAMEVERSION}.tar.bz2 ${NAMEVERSION}/
-cat ${NAMEVERSION}/wzplayer.spec | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${NAMEVERSION}'/' > /tmp/wzplayer.spec
+tar cvjf "${NAMEVERSION}".tar.bz2 "${NAMEVERSION}/"
+cat "${NAMEVERSION}/${NAME}.spec" | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${NAMEVERSION}'/' > "/tmp/${NAME}.spec"
 rm -r "/tmp/${NAMEVERSION}"
 PCKGDIR=/usr/src/packages/
 if [ -e /etc/fedora-release ]; then
@@ -22,4 +21,5 @@ if [ -e /etc/mandrake-release ]; then
     PCKGDIR=/usr/src/rpm/
 fi
 cp /tmp/${NAME}.tar.bz2 ${PCKGDIR}SOURCES/
-rpmbuild -bb --clean --rmsource wzplayer.spec
+# TODO: test quotes
+rpmbuild -bb --clean --rmsource ${NAME}.spec
