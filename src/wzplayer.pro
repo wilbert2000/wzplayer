@@ -21,7 +21,7 @@ DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
 DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += MPRIS2
-DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --abbrev=4 --dirty --always --tags)\\\"
+DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tags)\\\"
 
 # Support for program switch in TS files
 #DEFINES += PROGRAM_SWITCH
@@ -469,4 +469,5 @@ TRANSLATIONS = translations/es.ts translations/de.ts \
 
 OTHER_FILES += \
     ../Readme.txt \
-    ../wzplayer.spec
+    ../wzplayer.spec \
+    ../create_rpm.sh

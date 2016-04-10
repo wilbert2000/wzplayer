@@ -1,6 +1,7 @@
 #!/bin/sh
 
-WZPVERSION=`git describe --abbrev=4 --dirty --always --tags`
+# TODO: Watch it, version is still taken from current dir...
+WZPVERSION=`git describe --dirty --always --tags`
 NAME=wzplayer-${WZPVERSION}
 
 cd /tmp
