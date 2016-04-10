@@ -470,4 +470,6 @@ TRANSLATIONS = translations/es.ts translations/de.ts \
 OTHER_FILES += \
     ../Readme.txt \
     ../wzplayer.spec \
-    ../create_rpm.sh
+    ../create_rpm.sh \
+    ../Install.txt \
+    ../create_deb.sh

@@ -1,17 +1,14 @@
-#! /bin/sh
+#!/bin/sh
  
 ln -s debian-rvm debian
 cp debian-rvm/changelog-orig debian-rvm/changelog
-
-# TODO
-./get_svn_revision.sh
-dch -v 16.1.0-`cat svn_revision` "New version"
+dch -v 16.1.0-`git describe --dirty --always --tags` "New version"
 
 #dpkg-buildpackage -rfakeroot
 
 # This should be faster:
 rm build-stamp
-rm src/smplayer
+rm src/wzplayer
 fakeroot debian/rules build
 fakeroot debian/rules binary
 
