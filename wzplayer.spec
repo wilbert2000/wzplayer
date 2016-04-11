@@ -78,7 +78,8 @@ update-desktop-database &> /dev/null || :
 %{_docdir}/%{name}/
 
 %changelog
-* For the changelog see https://github.com/wilbert2000/wzplayer/commits/master
-* To find your version search for the digits following the g in %{version}
+* Mon Apr 11 2016 Wilbert Hengst <wplayer@xs4all.nl>
+- For the changelog see https://github.com/wilbert2000/wzplayer/commits/master
+- To find your version search for the digits following the g in %{version}
 * Thu Jun 14 2007 Sebastian Vahl <fedora@deadbabylon.de> - 0.5.7-1
 - Initial Release

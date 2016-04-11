@@ -5,14 +5,14 @@ NAME=wzplayer
 cd /tmp
 git clone 'https://github.com/wilbert2000/wzplayer.git' ${NAME}
 cd $(NAME)
-NAMEVERSION=`git describe --dirty --always --tags`
+VERSION=`git describe --dirty --always --tags`
 cd ..
-NAMEVERSION=${NAME}-${NAMEVERSION}
+NAME_WITH_VERSION=${NAME}-${VERSION}
 
-mv "$(NAME)" "${NAMEVERSION}"
-tar cvjf "${NAMEVERSION}".tar.bz2 "${NAMEVERSION}/"
-cat "${NAMEVERSION}/${NAME}.spec" | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${NAMEVERSION}'/' > "/tmp/${NAME}.spec"
-rm -r "/tmp/${NAMEVERSION}"
+mv "$(NAME)" "${NAME_WITH_VERSION}"
+tar cvjf "${NAME_WITH_VERSION}".tar.bz2 "${NAME_WITH_VERSION}/"
+cat "${NAME_WITH_VERSION}/${NAME}.spec" | sed -e 's/%define version [a-zA-Z0-9\.]*$/%define version '${VERSION}'/' > "/tmp/${NAME}.spec"
+rm -r "/tmp/${NAME_WITH_VERSION}"
 PCKGDIR=/usr/src/packages/
 if [ -e /etc/fedora-release ]; then
     PCKGDIR=/usr/src/redhat/
