@@ -55,12 +55,16 @@ public:
     // Apply changes
 	void getData(Settings::TPreferences* pref);
 
-	void updateDriverCombo(bool allow_user_defined_vo);
+	void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
+						   bool keep_driver, bool allow_user_defined_vo);
 
 protected:
 	virtual void retranslateStrings();
 
 private:
+	Settings::TPreferences::TPlayerID player_id;
+	QString mplayer_vo;
+	QString mpv_vo;
 
 #if USE_XV_ADAPTORS
 	TDeviceList xv_adaptors;
@@ -103,7 +107,7 @@ private:
 	double initialZoom();
 
 private slots:
-	void vo_combo_changed(int);
+	void onVOComboChanged(int);
 
 #ifndef Q_OS_WIN
 	void on_vdpau_button_clicked();

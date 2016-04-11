@@ -29,9 +29,12 @@ using namespace Settings;
 namespace Gui {
 namespace Pref {
 
-TVideo::TVideo(QWidget* parent, InfoList vol)
-	: TWidget(parent, 0)
-	, vo_list(vol) {
+TVideo::TVideo(QWidget* parent, InfoList vol) :
+	TWidget(parent, 0),
+	vo_list(vol),
+	player_id(pref->player_id),
+	mplayer_vo(pref->mplayer_vo),
+	mpv_vo(pref->mpv_vo) {
 
 	setupUi(this);
 
@@ -62,7 +65,7 @@ TVideo::TVideo(QWidget* parent, InfoList vol)
 #endif
 
 	connect(vo_combo, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(vo_combo_changed(int)));
+			this, SLOT(onVOComboChanged(int)));
 
 	// Monitor aspect
 	monitoraspect_combo->addItem("Auto");
@@ -91,7 +94,7 @@ void TVideo::retranslateStrings() {
 
 	video_icon_label->setPixmap(Images::icon("pref_video"));
 
-	updateDriverCombo(true);
+	updateDriverCombo(player_id, false, true);
 
 	int index = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
@@ -123,6 +126,24 @@ void TVideo::retranslateStrings() {
 void TVideo::setData(Settings::TPreferences* pref) {
 
 	// Video out driver
+	player_id = pref->player_id;
+	mplayer_vo = pref->mplayer_vo;
+	mpv_vo = pref->mpv_vo;
+	qDebug() << "Gui::Pref::TVideo::setData: player id" << player_id
+			 << "vo" << pref->vo
+			 << "mplayer vo" << mplayer_vo
+			 << "mpv_vo" << mpv_vo;
+
+	// This should not be needed
+	if (player_id == TPreferences::ID_MPLAYER) {
+		if (pref->vo != pref->mplayer_vo) {
+			qWarning() << "Gui::Pref::TVideo::setData: mplayer vo mismatch, resetting vo";
+			pref->vo = pref->mplayer_vo;
+		}
+	} else if (pref->vo != pref->mpv_vo) {
+		qWarning() << "Gui::Pref::TVideo::setData: mpv vo mismatch, resetting vo";
+		pref->vo = pref->mpv_vo;
+	}
 	setVO(pref->vo, true);
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
@@ -131,6 +152,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 
 	setHwdec(pref->hwdec);
 	setSoftwareVideoEqualizer(pref->use_soft_video_eq);
+	mplayer_start_panscan_spin->setValue(pref->mplayer_start_panscan_width);
 
 	setFrameDrop(pref->frame_drop);
 	setHardFrameDrop(pref->hard_frame_drop);
@@ -149,6 +171,13 @@ void TVideo::setData(Settings::TPreferences* pref) {
 void TVideo::getData(Settings::TPreferences* pref) {
 
 	restartIfStringChanged(pref->vo, VO());
+	if (pref->isMPlayer()) {
+		pref->mplayer_vo = pref->vo;
+		pref->mpv_vo = mpv_vo;
+	} else {
+		pref->mplayer_vo = mplayer_vo;
+		pref->mpv_vo = pref->vo;
+	}
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	pref->vdpau = vdpau;
@@ -156,6 +185,7 @@ void TVideo::getData(Settings::TPreferences* pref) {
 
 	restartIfStringChanged(pref->hwdec, hwdec());
 	restartIfBoolChanged(pref->use_soft_video_eq, softwareVideoEqualizer());
+	pref->mplayer_start_panscan_width = mplayer_start_panscan_spin->value();
 
 	restartIfBoolChanged(pref->frame_drop, frameDrop());
 	restartIfBoolChanged(pref->hard_frame_drop, hardFrameDrop());
@@ -175,9 +205,24 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	restartIfStringChanged(pref->monitor_aspect, monitorAspect());
 }
 
-void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
+void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
+							   bool keep_driver,
+							   bool allow_user_defined_vo) {
+	qDebug() << "Gui::Pref::TVideo::updateDriverCombo: player id" << player_id
+			 << "keep_driver" << keep_driver
+			  << "allow user defined" << allow_user_defined_vo
+			 << "current mplayer vo" << mplayer_vo
+			 << "current mpv vo" << mpv_vo;
 
-	QString current_vo = VO();
+	this->player_id = player_id;
+	QString wanted_vo;
+	if (keep_driver) {
+		wanted_vo = VO();
+	} else if (player_id == TPreferences::ID_MPLAYER) {
+		wanted_vo = mplayer_vo;
+	} else {
+		wanted_vo = mpv_vo;
+	}
 	vo_combo->clear();
 	vo_combo->addItem(tr("Players default"), "");
 
@@ -198,9 +243,6 @@ void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
 			vo_combo->addItem("kva (" + tr("slower dive mode") + ")", "kva:dive");
 		}
 #else
-		/*
-		if (vo == "xv") vo_combo->addItem("xv (" + tr("fastest") + ")", vo);
-		*/
 #if USE_XV_ADAPTORS
 		if (vo == "xv" && !xv_adaptors.isEmpty()) {
 			vo_combo->addItem(vo, vo);
@@ -238,24 +280,29 @@ void TVideo::updateDriverCombo(bool allow_user_defined_vo) {
 		} else {
 			vo_combo->addItem(vo, vo);
 		}
-	}
-	vo_combo->addItem(tr("User defined..."), "user_defined");
+	} // for (int n = 0; n < vo_list.count(); n++)
 
-	setVO(current_vo, allow_user_defined_vo);
+	// Add user defined VO
+	vo_combo->addItem(tr("User defined..."), "user_defined");
+	// Set selected VO
+	setVO(wanted_vo, allow_user_defined_vo);
 }
 
 void TVideo::setVO(const QString& vo_driver, bool allow_user_defined) {
 
 	int idx = vo_combo->findData(vo_driver);
 	if (idx >= 0) {
+		qDebug() << "Gui::Pref::TVideo::setVO: driver" << vo_driver
+				 << "idx" << idx;
 		vo_combo->setCurrentIndex(idx);
 	} else if (allow_user_defined && !vo_driver.isEmpty()) {
 		vo_combo->setCurrentIndex(vo_combo->findData("user_defined"));
 		vo_user_defined_edit->setText(vo_driver);
+		qDebug() << "Gui::Pref::TVideo::setVO: set user def driver" << vo_driver;
 	} else {
+		qWarning("Gui::Pref::TVideo::setVO: requested VO driver not found, selecting players default");
 		vo_combo->setCurrentIndex(0);
 	}
-	vo_combo_changed(vo_combo->currentIndex());
 }
 
 QString TVideo::VO() {
@@ -366,17 +413,33 @@ int TVideo::postprocessingQuality() {
 	return postprocessing_quality_spin->value();
 }
 
-void TVideo::vo_combo_changed(int idx) {
-	//qDebug("Gui::Pref::TVideo::vo_combo_changed: %d", idx);
+void TVideo::onVOComboChanged(int idx) {
+	qDebug("Gui::Pref::TVideo::onVOComboChanged: %d", idx);
 
-	bool visible = (vo_combo->itemData(idx).toString() == "user_defined");
+	// Update VOs
+	if (idx >= 0) {
+		if (player_id == TPreferences::ID_MPLAYER) {
+			mplayer_vo = VO();
+			qDebug() << "Gui::Pref::TVideo::onVOComboChanged: mplayer vo set to"
+					 << mplayer_vo;
+		} else {
+			mpv_vo = VO();
+			qDebug() << "Gui::Pref::TVideo::onVOComboChanged: mpv vo set to"
+					 << mpv_vo;
+		}
+	}
+
+	// Show or hide user defined vo edit
+	bool visible = vo_combo->itemData(idx).toString() == "user_defined";
 	vo_user_defined_edit->setVisible(visible);
 	vo_user_defined_edit->setFocus();
 
+	// Show hide vdpau
 #ifndef Q_OS_WIN
-	bool vdpau_button_visible = (vo_combo->itemData(idx).toString() == "vdpau");
+	bool vdpau_button_visible = vo_combo->itemData(idx).toString() == "vdpau";
 	vdpau_button->setVisible(vdpau_button_visible);
 #endif
+
 }
 
 #ifndef Q_OS_WIN
@@ -469,6 +532,15 @@ void TVideo::createHelp() {
 		   "your graphic card or the selected video output driver.<br>"
 		   "<b>Note:</b> this option can be incompatible with some video "
 		   "output drivers."));
+
+	setWhatsThis(mplayer_start_panscan_spin, tr("Start of panscan zoom width"),
+		tr("MPlayer only. Whenever the zoom factor is larger then 1"
+		   " and the video width is larger than this value, let MPlayer handle"
+		   " zooming, requiring less resources. When the video gets smaller"
+		   " than this value the window manager will handle zooming, taking"
+		   " more resources especially with HD video. A too large value can"
+		   " blow up the available amount of video surface on less powerfull"
+		   " setups."));
 
 	addSectionGroup(tr("Synchronization"));
 

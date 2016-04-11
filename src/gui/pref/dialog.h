@@ -20,14 +20,12 @@
 #define GUI_PREF_DIALOG_H
 
 #include "ui_dialog.h"
+#include "settings/preferences.h"
 
 
 class QTextBrowser;
 class QPushButton;
 
-namespace Settings {
-class TPreferences;
-}
 
 namespace Gui {
 namespace Pref {
@@ -136,7 +134,8 @@ private:
 private slots:
 	void apply();
 	void showHelp();
-	void binChanged(const QString& path);
+	void onBinChanged(Settings::TPreferences::TPlayerID player_id,
+					  bool keep_current_drivers, const QString &path);
 };
 
 } // namespace Pref

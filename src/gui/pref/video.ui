@@ -130,7 +130,7 @@
               <item>
                <widget class="QLabel" name="hwdec_label">
                 <property name="text">
-                 <string>&amp;Hardware decoding:</string>
+                 <string>&amp;Hardware decoding (MPV only):</string>
                 </property>
                 <property name="buddy">
                  <cstring>hwdec_combo</cstring>
@@ -161,6 +161,39 @@
                <string>&amp;Use software video equalizer</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>&amp;Video width to start using panscan for zoom (MPlayer only):</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+                <property name="buddy">
+                 <cstring>mplayer_start_panscan_spin</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="mplayer_start_panscan_spin">
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>99999</number>
+                </property>
+                <property name="singleStep">
+                 <number>512</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -473,6 +506,7 @@
   <tabstop>vdpau_button</tabstop>
   <tabstop>hwdec_combo</tabstop>
   <tabstop>software_video_equalizer_check</tabstop>
+  <tabstop>mplayer_start_panscan_spin</tabstop>
   <tabstop>framedrop_check</tabstop>
   <tabstop>hardframedrop_check</tabstop>
   <tabstop>correct_pts_combo</tabstop>
@@ -481,6 +515,7 @@
   <tabstop>deinterlace_combo</tabstop>
   <tabstop>deinterlace_tv_combo</tabstop>
   <tabstop>zoom_spin</tabstop>
+  <tabstop>monitoraspect_combo</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -80,10 +80,15 @@ public:
 	// Version config file
 	int config_version;
 
-	// Media player
+	// Media players
 	QString player_bin;
 	QString mplayer_bin;
+	QString mplayer_vo;
+	QString mplayer_ao;
+	int mplayer_start_panscan_width;
 	QString mpv_bin;
+	QString mpv_vo;
+	QString mpv_ao;
 	TPlayerID player_id;
 
 	bool isMPlayer() const { return player_id == ID_MPLAYER; }
@@ -94,7 +99,7 @@ public:
 	static QString getAbsolutePathPlayer(const QString& player);
 	static TPlayerID getPlayerID(const QString& player);
 
-	void setPlayerBin(QString bin);
+	void setPlayerBin(QString bin, bool allow_other_player, TPlayerID wanted_player);
 
 	// Media settings per file
 	bool remember_media_settings;

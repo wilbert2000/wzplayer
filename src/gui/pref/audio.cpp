@@ -18,6 +18,7 @@
 
 
 #include "gui/pref/audio.h"
+#include <QDebug>
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/mediasettings.h"
@@ -34,7 +35,10 @@ namespace Gui { namespace Pref {
 
 TAudio::TAudio(QWidget* parent, InfoList aol)
 	: TWidget(parent, 0)
-	, ao_list(aol) {
+	, ao_list(aol),
+	  player_id(pref->player_id),
+	  mplayer_ao(pref->mplayer_ao),
+	  mpv_ao(pref->mpv_ao)  {
 
 	setupUi(this);
 
@@ -54,7 +58,7 @@ TAudio::TAudio(QWidget* parent, InfoList aol)
 	channels_combo->addItem("8", TMediaSettings::ChFull71);
 
 	connect(ao_combo, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(ao_combo_changed(int)));
+			this, SLOT(onAOComboChanged(int)));
 
 	retranslateStrings();
 }
@@ -76,7 +80,7 @@ void TAudio::retranslateStrings() {
 
 	icon_label->setPixmap(Images::icon("speaker"));
 
-	updateDriverCombo(true);
+	updateDriverCombo(player_id, false, true);
 
 	channels_combo->setItemText(0, tr("2 (Stereo)"));
 	channels_combo->setItemText(1, tr("4 (4.0 Surround)"));
@@ -89,7 +93,11 @@ void TAudio::retranslateStrings() {
 
 void TAudio::setData(TPreferences* pref) {
 
+	player_id = pref->player_id;
+	mplayer_ao = pref->mplayer_ao;
+	mpv_ao = pref->mpv_ao;
 	setAO(pref->ao, true);
+
 	setAudioChannels(pref->initial_audio_channels);
 	setUseAudioEqualizer(pref->use_audio_equalizer);
 	setAc3DTSPassthrough(pref->use_hwac3);
@@ -116,6 +124,14 @@ void TAudio::getData(TPreferences* pref) {
 	requires_restart = false;
 
 	restartIfStringChanged(pref->ao, AO());
+	if (pref->isMPlayer()) {
+		pref->mplayer_ao = pref->ao;
+		pref->mpv_ao = mpv_ao;
+	} else {
+		pref->mplayer_ao = mplayer_ao;
+		pref->mpv_ao = pref->ao;
+	}
+
 	restartIfBoolChanged(pref->use_audio_equalizer, useAudioEqualizer());
 	restartIfBoolChanged(pref->use_hwac3, Ac3DTSPassthrough());
 	pref->initial_audio_channels = audioChannels();
@@ -138,9 +154,20 @@ void TAudio::getData(TPreferences* pref) {
 	pref->audio_lang = audioLang();
 }
 
-void TAudio::updateDriverCombo(bool allow_user_defined_ao) {
+void TAudio::updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
+							   bool keep_current_drivers,
+							   bool allow_user_defined_ao) {
 
-	QString current_ao = AO();
+
+	this->player_id = player_id;
+	QString wanted_ao;
+	if (keep_current_drivers) {
+		wanted_ao = AO();
+	} else if (player_id == TPreferences::ID_MPLAYER) {
+		wanted_ao = mplayer_ao;
+	} else {
+		wanted_ao = mpv_ao;
+	}
 	ao_combo->clear();
 	ao_combo->addItem(tr("Players default"), "");
 
@@ -171,9 +198,10 @@ void TAudio::updateDriverCombo(bool allow_user_defined_ao) {
 		}
 #endif
 	}
-	ao_combo->addItem(tr("User defined..."), "user_defined");
 
-	setAO(current_ao, allow_user_defined_ao);
+	ao_combo->addItem(tr("User defined..."), "user_defined");
+	// Set selected AO
+	setAO(wanted_ao, allow_user_defined_ao);
 }
 
 void TAudio::setAO(const QString& ao_driver, bool allow_user_defined) {
@@ -187,7 +215,6 @@ void TAudio::setAO(const QString& ao_driver, bool allow_user_defined) {
 	} else {
 		ao_combo->setCurrentIndex(0);
 	}
-	ao_combo_changed(ao_combo->currentIndex());
 }
 
 QString TAudio::AO() {
@@ -305,10 +332,22 @@ QString TAudio::audioLang() {
 }
 
 
-void TAudio::ao_combo_changed(int idx) {
-	//qDebug("Gui::Pref::TAudio::ao_combo_changed: %d", idx);
+void TAudio::onAOComboChanged(int idx) {
+	qDebug("Gui::Pref::TAudio::onAOComboChanged: %d", idx);
 
-	bool visible = (ao_combo->itemData(idx).toString() == "user_defined");
+	// Update VOs
+	if (idx >= 0) {
+		if (player_id == TPreferences::ID_MPLAYER) {
+			mplayer_ao = AO();
+			qDebug() << "Gui::Pref::TAudio::onAOComboChanged: mplayer ao set to" << mplayer_ao;
+		} else {
+			mpv_ao = AO();
+			qDebug() << "Gui::Pref::TAudio::onAOComboChanged: mpv ao set to" << mpv_ao;
+		}
+	}
+
+	// Handle user defined VO
+	bool visible = ao_combo->itemData(idx).toString() == "user_defined";
 	ao_user_defined_edit->setVisible(visible);
 	ao_user_defined_edit->setFocus();
 }

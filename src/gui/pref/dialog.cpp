@@ -76,8 +76,8 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	// TODO: parent
 	page_general = new TGeneral(0);
 	addSection(page_general);
-	connect(page_general, SIGNAL(binChanged(const QString&)),
-			this, SLOT(binChanged(const QString&)));
+	connect(page_general, SIGNAL(binChanged(Settings::TPreferences::TPlayerID, bool, const QString&)),
+			this, SLOT(onBinChanged(Settings::TPreferences::TPlayerID, bool, const QString&)));
 
 	page_demuxer = new TDemuxer(0);
 	addSection(page_demuxer);
@@ -176,15 +176,19 @@ void TDialog::reject() {
 	setResult(QDialog::Accepted);
 }
 
-void TDialog::binChanged(const QString& path) {
-	qDebug() << "Gui::Pref::TDialog::binChanged:" << path;
+void TDialog::onBinChanged(Settings::TPreferences::TPlayerID player_id,
+						   bool keep_current_drivers,
+						   const QString& path) {
+	qDebug() << "Gui::Pref::TDialog::binChanged: player id" << player_id
+			 << "keep drivers" << keep_current_drivers
+			 << "path" << path;
 
 	InfoReader* i = InfoReader::obj();
 	i->getInfo(path);
 	page_video->vo_list = i->voList();
-	page_video->updateDriverCombo(false);
+	page_video->updateDriverCombo(player_id, keep_current_drivers, false);
 	page_audio->ao_list = i->aoList();
-	page_audio->updateDriverCombo(false);
+	page_audio->updateDriverCombo(player_id, keep_current_drivers, false);
 }
 
 void TDialog::addSection(TWidget *w) {

@@ -47,7 +47,9 @@ public:
 	void getData(Settings::TPreferences* pref);
 
 signals:
-	void binChanged(const QString& path);
+	void binChanged(Settings::TPreferences::TPlayerID,
+					bool keep_current_drivers,
+					const QString& path);
 
 protected:
 	virtual void retranslateStrings();
@@ -76,7 +78,7 @@ private:
 private slots:
 	void onMPlayerFileChanged(QString file);
 	void onMPVFileChanged(QString file);
-	void onRadioClicked(bool);
+	void onPlayerRadioClicked(bool);
 };
 
 } // namespace Pref

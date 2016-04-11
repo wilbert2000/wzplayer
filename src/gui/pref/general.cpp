@@ -44,9 +44,9 @@ TGeneral::TGeneral(QWidget* parent)
 	connect(mpv_edit, SIGNAL(fileChanged(QString)),
 			this, SLOT(onMPVFileChanged(QString)));
 	connect(mplayer_radio, SIGNAL(clicked(bool)),
-			this, SLOT(onRadioClicked(bool)));
+			this, SLOT(onPlayerRadioClicked(bool)));
 	connect(mpv_radio, SIGNAL(clicked(bool)),
-			this, SLOT(onRadioClicked(bool)));
+			this, SLOT(onPlayerRadioClicked(bool)));
 
 #ifdef Q_OS_WIN
 	radio_tv_group->hide();
@@ -126,7 +126,8 @@ void TGeneral::getData(TPreferences* pref) {
 	QString bin = mplayer_radio->isChecked() ? pref->mplayer_bin : pref->mpv_bin;
 	if (pref->player_bin != bin) {
 		requires_restart = true;
-		pref->setPlayerBin(bin);
+		pref->setPlayerBin(bin, false, mplayer_radio->isChecked() ?
+							TPreferences::ID_MPLAYER : TPreferences::ID_MPV);
 	}
 	pref->report_player_crashes = report_player_crashes_check->isChecked();
 
@@ -171,7 +172,7 @@ void TGeneral::onMPlayerFileChanged(QString file) {
 	qDebug() << "Gui::Pref::TGeneral::onMPlayerFileChanged:" << file;
 
 	if (mplayer_radio->isChecked()) {
-		emit binChanged(pref->getAbsolutePathPlayer(file));
+		emit binChanged(TPreferences::ID_MPLAYER, true, pref->getAbsolutePathPlayer(file));
 	}
 }
 
@@ -179,20 +180,23 @@ void TGeneral::onMPVFileChanged(QString file) {
 	qDebug() << "Gui::Pref::TGeneral::onMPVFileChanged:" << file;
 
 	if (mpv_radio->isChecked()) {
-		emit binChanged(pref->getAbsolutePathPlayer(file));
+		emit binChanged(TPreferences::ID_MPV, true, pref->getAbsolutePathPlayer(file));
 	}
 }
 
-void TGeneral::onRadioClicked(bool) {
-	qDebug() << "Gui::Pref::TGeneral::onRadioClicked";
+void TGeneral::onPlayerRadioClicked(bool) {
+	qDebug() << "Gui::Pref::TGeneral::onPlayerRadioClicked";
 
+	TPreferences::TPlayerID player_id;
 	QString file;
 	if (mplayer_radio->isChecked()) {
+		player_id = TPreferences::ID_MPLAYER;
 		file = mplayer_edit->text();
 	} else {
+		player_id = TPreferences::ID_MPV;
 		file = mpv_edit->text();
 	}
-	emit binChanged(pref->getAbsolutePathPlayer(file));
+	emit binChanged(player_id, false, pref->getAbsolutePathPlayer(file));
 }
 
 void TGeneral::setRememberSettings(bool b) {

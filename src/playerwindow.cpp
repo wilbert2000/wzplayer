@@ -182,15 +182,18 @@ void TPlayerWindow::updateSizeFactor() {
 	}
 }
 
-void TPlayerWindow::clipMPlayer(QRect& vwin, const QPoint& pan, double& zoom) {
+void TPlayerWindow::clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan) {
 
 	QSize s = pref->fullscreen ? TDesktop::size(this) : size();
-	qDebug() << "TPlayerWindow::clipMPlayer: in vwin" << vwin << "pan" << pan
-			 << "pwin size" << s;
+	qDebug() << "TPlayerWindow::clipMPlayer: in vwin" << vwin
+			 << "zoom" << zoom
+			 << "pan" << pan
+			 << "plwin size" << s;
 
 	// Clip
 	QRect cwin = vwin.intersected(QRect(QPoint(), s));
 	//qDebug() << "TPlayerWindow::clipMPlayer: clipped vwin" << cwin;
+
 	// Add pan
 	cwin = cwin.united(cwin.translated(pan * zoom));
 	//qDebug() << "TPlayerWindow::clipMPlayer: panned" << cwin;
@@ -303,11 +306,10 @@ void TPlayerWindow::updateVideoWindow() {
 		vwin.translate(pan);
 
 		// Let the window manager handle zoom as long as the video width is
-		// smaller than MPLAYER_START_PANSCAN_WIDTH. A too large value can
+		// smaller than mplayer_start_panscan_width. A too large value can
 		// blow up the available video surface of less powerfull setups.
-		static const int MPLAYER_START_PANSCAN_WIDTH = 4 * 1024;
-		if (vwin.width() >= MPLAYER_START_PANSCAN_WIDTH && zoom > 1) {
-			clipMPlayer(vwin, pan, zoom);
+		if (vwin.width() >= pref->mplayer_start_panscan_width && zoom > 1) {
+			clipMPlayer(vwin, zoom, pan);
 		} else {
 			zoom = 1;
 		}

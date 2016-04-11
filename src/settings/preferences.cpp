@@ -102,21 +102,30 @@ void TPreferences::reset() {
 
 	// Video tab
 	// Video driver
+
 #ifdef Q_OS_WIN
 	if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
-		vo = "direct3d,";
+		mplayer_vo = "direct3d,";
+		mpv_vo = mplayer_vo;
 	} else {
-		vo = "directx,";
+		mplayer_vo = "directx,";
+		mpv_vo = mplayer_vo;
 }
 #else
 #ifdef Q_OS_OS2
-	vo = "kva";
+	mplayer_vo = "kva";
+	mpv_vo = mplayer_vo;
 #else
-	vo = "xv";
+	mplayer_vo = "xv";
+	mpv_vo = ""; // Players default
 #endif
 #endif
 
+	vo = mplayer_vo;
+
 	hwdec = "no";
+	mplayer_start_panscan_width = 0;
+
 	frame_drop = false;
 	hard_frame_drop = false;
 	use_soft_video_eq = false;
@@ -133,11 +142,18 @@ void TPreferences::reset() {
 
 
 	// Audio tab
+
 #ifdef Q_OS_OS2
 	ao = "kai";
 #else
-	ao = "";
+#ifdef Q_OS_LINUX
+	ao = "pulse";
+#else
+	ao = ""; // Players default
 #endif
+#endif
+	mplayer_ao = ao;
+	mpv_ao = ao;
 
 	use_soft_vol = false;
 	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
@@ -453,26 +469,36 @@ void TPreferences::save() {
 
 	setValue("config_version", config_version);
 
-	setValue("mplayer_bin", mplayer_bin);
-	setValue("mpv_bin", mpv_bin);
+	beginGroup("mplayer");
+	setValue("bin", mplayer_bin);
+	setValue("vo", mplayer_vo);
+	setValue("ao", mplayer_ao);
+	setValue("start_panscan_width", mplayer_start_panscan_width);
+	endGroup();
+	beginGroup("mpv");
+	setValue("bin", mpv_bin);
+	setValue("vo", mpv_vo);
+	setValue("ao", mpv_ao);
+	setValue("hwdec", hwdec);
+	setValue("screenshot_template", screenshot_template);
+	setValue("screenshot_format", screenshot_format);
+	endGroup();
+
 	setValue("player_bin", player_bin);
-	setValue("driver/vo", vo);
-	setValue("driver/audio_output", ao);
+	setValue("vo", vo);
+	setValue("ao", ao);
 
 	setValue("dont_remember_media_settings", !remember_media_settings);
 	setValue("dont_remember_time_pos", !remember_time_pos);
 	setValue("file_settings_method", file_settings_method);
 
 	setValue("use_screenshot", use_screenshot);
-	setValue("screenshot_template", screenshot_template);
-	setValue("screenshot_format", screenshot_format);
 	// "screenshot_folder" used to be "screenshot_directory"
 	// before QT_VERSION 0x040400
 	setValue("screenshot_folder", screenshot_directory);
 
 
 	// Video tab
-	setValue("hwdec", hwdec);
 	setValue("frame_drop", frame_drop);
 	setValue("hard_frame_drop", hard_frame_drop);
 	setValue("use_soft_video_eq", use_soft_video_eq);
@@ -845,45 +871,69 @@ QString TPreferences::getAbsolutePathPlayer(const QString& player) {
 	return path;
 }
 
-void TPreferences::setPlayerBin(QString bin) {
+void TPreferences::setPlayerBin(QString bin,
+								bool allow_other_player,
+								TPlayerID wanted_player) {
 
 	// Check binary and try to fix it
 	if (bin.isEmpty()) {
-		bin = default_mplayer_bin;
+		if (wanted_player == ID_MPLAYER) {
+			bin = default_mplayer_bin;
+		} else {
+			bin = default_mpv_bin;
+		}
 	}
 
 	QString found_bin = Helper::findExecutable(bin);
 
 	// Try to find an alternative if not found
 	if (found_bin.isEmpty()) {
+		TPlayerID found_id = ID_MPLAYER;
 		QFileInfo fi(bin);
-		if (fi.baseName().startsWith("mpv")) {
-			// Wanted mpv, try default mpv first
+		if (wanted_player == ID_MPV || fi.baseName().startsWith("mpv")) {
+			// Assume wanted mpv, try default mpv first
 			if (bin != default_mpv_bin) {
 				found_bin = Helper::findExecutable(default_mpv_bin);
+				if (!found_bin.isEmpty()) {
+					found_id = ID_MPV;
+				}
 			}
 			if (found_bin.isEmpty()) {
-				// Try default mplayer
-				found_bin = Helper::findExecutable(default_mplayer_bin);
+				if (bin != default_mplayer_bin
+					&& (allow_other_player || wanted_player == ID_MPLAYER)) {
+					// Try default mplayer
+					found_bin = Helper::findExecutable(default_mplayer_bin);
+				}
+			} else {
+				found_id = ID_MPV;
 			}
 		} else {
 			// Try default mplayer
-			if (bin != default_mplayer_bin) {
+			if (bin != default_mplayer_bin
+				&& (allow_other_player || wanted_player == ID_MPLAYER)) {
 				found_bin = Helper::findExecutable(default_mplayer_bin);
 			}
-			if (found_bin.isEmpty()) {
+			if (found_bin.isEmpty()
+				&& bin != default_mpv_bin
+				&& (allow_other_player || wanted_player == ID_MPV)) {
 				// Try default mpv
 				found_bin = Helper::findExecutable(default_mpv_bin);
+				if (!found_bin.isEmpty()) {
+					found_id = ID_MPV;
+				}
 			}
 		}
 
 		if (found_bin.isEmpty()) {
 			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
 					   << bin;
+		} else if (allow_other_player || found_id == wanted_player) {
+			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
+					   << bin << "Selecting" << found_bin << "instead.";
+			bin = found_bin;
 		} else {
 			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
-					   << bin << "Selecting" << found_bin << "instead";
-			bin = found_bin;
+					   << bin << "Maybe you could use" << found_bin << "instead.";
 		}
 	} else {
 		bin = found_bin;
@@ -895,14 +945,25 @@ void TPreferences::setPlayerBin(QString bin) {
 
 	setPlayerID();
 
-	// Store bin for player
+	// Store player and set drivers for player
 	if (!found_bin.isEmpty()) {
 		if (player_id == ID_MPLAYER) {
 			mplayer_bin = player_bin;
+			vo = mplayer_vo;
+			ao = mplayer_ao;
 		} else {
 			mpv_bin = player_bin;
+			vo = mpv_vo;
+			ao = mpv_ao;
 		}
 	}
+
+	qDebug() << "Settings::TPreferences::setPlayerBin: selected vo" << vo
+			 << "mplayer vo" << mplayer_vo
+			 << "mplayer ao" << mplayer_ao
+			 << "selected ao" << ao
+			 << "mpv vo" << mpv_vo
+			 << "mpv ao" << mpv_ao;
 }
 
 void TPreferences::load() {
@@ -913,15 +974,24 @@ void TPreferences::load() {
 
 	config_version = value("config_version", 0).toInt();
 
-	mplayer_bin = value("mplayer_bin", mplayer_bin).toString();
-	// Handle old config which used mplayer_bin to store player_bin
-	if (config_version < 11 && getPlayerID(mplayer_bin) != ID_MPLAYER) {
-		qWarning() << "Settings::TPreferences::load: resetting MPlayer bin from"
-				   << mplayer_bin << "to" << default_mplayer_bin;
-		mplayer_bin = default_mplayer_bin;
-	}
-	mpv_bin = value("mpv_bin", mpv_bin).toString();
-	setPlayerBin(value("player_bin", player_bin).toString());
+	beginGroup("mplayer");
+	mplayer_bin = value("bin", mplayer_bin).toString();
+	mplayer_vo  = value("vo", mplayer_vo).toString();
+	mplayer_ao = value("ao", mplayer_ao).toString();
+	mplayer_start_panscan_width = value("start_panscan_width",
+										mplayer_start_panscan_width).toInt();
+	endGroup();
+
+	beginGroup("mpv");
+	mpv_bin = value("bin", mpv_bin).toString();
+	mpv_vo = value("vo", mpv_vo).toString();
+	mpv_ao = value("ao", mpv_ao).toString();
+	hwdec = value("hwdec", hwdec).toString();
+	screenshot_template = value("screenshot_template", screenshot_template).toString();
+	screenshot_format = value("screenshot_format", screenshot_format).toString();
+	endGroup();
+
+	setPlayerBin(value("player_bin", player_bin).toString(), true, player_id);
 
 	// Media settings per file
 	remember_media_settings = !value("dont_remember_media_settings", !remember_media_settings).toBool();
@@ -930,17 +1000,12 @@ void TPreferences::load() {
 
 	// Screenshots
 	use_screenshot = value("use_screenshot", use_screenshot).toBool();
-	screenshot_template = value("screenshot_template", screenshot_template).toString();
-	screenshot_format = value("screenshot_format", screenshot_format).toString();
-
 	// Note: "screenshot_folder" used to be "screenshot_directory" before Qt 4.4
 	screenshot_directory = value("screenshot_folder", screenshot_directory).toString();
 	setupScreenshotFolder();
 
 
 	// Video tab
-	vo = value("driver/vo", vo).toString();
-	hwdec = value("hwdec", hwdec).toString();
 	frame_drop = value("frame_drop", frame_drop).toBool();
 	hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
 	use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
@@ -957,8 +1022,6 @@ void TPreferences::load() {
 
 
 	// Audio tab
-	ao = value("driver/audio_output", ao).toString();
-
 	use_soft_vol = value("use_soft_vol", use_soft_vol).toBool();
 	softvol_max = value("softvol_max", softvol_max).toInt();
 	if (softvol_max < 100)

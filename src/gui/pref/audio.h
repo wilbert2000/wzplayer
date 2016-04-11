@@ -59,12 +59,17 @@ public:
 	// Apply changes
 	void getData(Settings::TPreferences* pref);
 
-	void updateDriverCombo(bool allow_user_defined_ao);
+	void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
+						   bool keep_current_drivers,
+						   bool allow_user_defined_ao);
 
 protected:
 	virtual void retranslateStrings();
 
 private:
+	Settings::TPreferences::TPlayerID player_id;
+	QString mplayer_ao;
+	QString mpv_ao;
 
 #if USE_DSOUND_DEVICES
 	TDeviceList dsound_devices;
@@ -116,7 +121,7 @@ private:
 	QString audioLang();
 
 private slots:
-	void ao_combo_changed(int);
+	void onAOComboChanged(int);
 };
 
 } // namespace Pref
