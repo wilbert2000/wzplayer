@@ -35,7 +35,7 @@
 #include "gui/action/menuaudio.h"
 #include "gui/action/menusubtitle.h"
 #include "gui/action/menubrowse.h"
-#include "gui/action/menuoptions.h"
+#include "gui/action/menuwindow.h"
 #include "gui/playlist.h"
 
 
@@ -62,11 +62,11 @@ TBasePlus::TBasePlus()
 	connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
 
 #ifndef Q_OS_OS2
-	optionsMenu->addSeparator();
-	optionsMenu->addAction(showTrayAct);
+	windowMenu->addSeparator();
+	windowMenu->addAction(showTrayAct);
 #else
 	trayAvailable();
-	connect(optionsMenu, SIGNAL(aboutToShow()), this, SLOT(trayAvailable()));
+	connect(windowMenu, SIGNAL(aboutToShow()), this, SLOT(trayAvailable()));
 #endif
 
 	showAllAct = new Action::TAction(this, "restore_hide", QT_TR_NOOP("&Hide"));
@@ -80,7 +80,7 @@ TBasePlus::TBasePlus()
 	context_menu->addMenu(audioMenu);
 	context_menu->addMenu(subtitleMenu);
 	context_menu->addMenu(browseMenu);
-	context_menu->addMenu(optionsMenu);
+	context_menu->addMenu(windowMenu);
 	context_menu->addSeparator();
 	context_menu->addAction(showAllAct);
 	context_menu->addAction(quitAct);
@@ -393,10 +393,10 @@ void TBasePlus::shrinkWindow() {
 // we test if xcenter is available at all. if not disable the tray action. this is possible when xcenter is not opened or crashed
 void TBasePlus::trayAvailable() {
 	if (!tray->isSystemTrayAvailable()) {
-			optionsMenu->removeAction(showTrayAct);
+			windowMenu->removeAction(showTrayAct);
 	}
 	else {
-		optionsMenu->addAction(showTrayAct);
+		windowMenu->addAction(showTrayAct);
 	}
 }
 #endif

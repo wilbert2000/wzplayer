@@ -1,4 +1,4 @@
-#include "gui/action/menuoptions.h"
+#include "gui/action/menuwindow.h"
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
 #include "core.h"
@@ -99,12 +99,12 @@ void TMenuStayOnTop::onAboutToShow() {
 	group->setChecked((int) pref->stay_on_top);
 }
 
-TMenuOptions::TMenuOptions(QWidget* parent,
+TMenuWindow::TMenuWindow(QWidget* parent,
 						   TCore* core,
 						   QMenu* toolBarMenu,
 						   QWidget* playlist,
 						   QWidget* logWindow)
-	: TMenu(parent, this, "options_menu", QT_TR_NOOP("Op&tions"), "noicon") {
+	: TMenu(parent, this, "window_menu", QT_TR_NOOP("&Window"), "noicon") {
 
 	// OSD
 	addMenu(new TMenuOSD(parent, core));

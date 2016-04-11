@@ -547,7 +547,7 @@ void TInterface::createHelp() {
 		tr("If checked, WZPlayer will log debug messages, "
 		   "which might give additional information in case of trouble. "
 		   "Non-debug messages are always logged. "
-		   "You can view the log with menu <b>Options - View log</b>."));
+		   "You can view the log with menu <b>Window - View log</b>."));
 
 	setWhatsThis(log_verbose_check, tr("Verbose"),
 		tr("Request verbose messages from player for troubleshooting."));

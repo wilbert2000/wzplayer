@@ -296,7 +296,7 @@ protected:
 	Action::TMenuAudio* audioMenu;
 	Action::TMenuSubtitle* subtitleMenu;
 	Action::TMenuBrowse* browseMenu;
-	QMenu* optionsMenu;
+	QMenu* windowMenu;
 	QMenu* helpMenu;
 
 	QMenu* popup;

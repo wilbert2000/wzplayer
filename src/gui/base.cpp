@@ -75,7 +75,7 @@
 #include "gui/action/menuaudio.h"
 #include "gui/action/menusubtitle.h"
 #include "gui/action/menubrowse.h"
-#include "gui/action/menuoptions.h"
+#include "gui/action/menuwindow.h"
 #include "gui/action/menuhelp.h"
 
 #include "gui/logwindow.h"
@@ -420,8 +420,8 @@ void TBase::createMenus() {
 	// and filled by descendants::createMenus()
 	statusbar_menu = new QMenu(this);
 	toolbar_menu = createToolbarMenu();
-	optionsMenu = new TMenuOptions(this, core, toolbar_menu, playlist, log_window);
-	menuBar()->addMenu(optionsMenu);
+	windowMenu = new TMenuWindow(this, core, toolbar_menu, playlist, log_window);
+	menuBar()->addMenu(windowMenu);
 
 	helpMenu = new TMenuHelp(this);
 	menuBar()->addMenu(helpMenu);
@@ -434,7 +434,7 @@ void TBase::createMenus() {
 	popup->addMenu(audioMenu);
 	popup->addMenu(subtitleMenu);
 	popup->addMenu(browseMenu);
-	popup->addMenu(optionsMenu);
+	popup->addMenu(windowMenu);
 } // createMenus()
 
 QMenu* TBase::createToolbarMenu() {
@@ -2267,7 +2267,7 @@ void TBase::onPlayerFinishedWithError(int exit_code) {
 	if (pref->report_player_crashes && !busy) {
 		busy = true;
 		QMessageBox::warning(this, tr("%1 process error").arg(pref->playerName()),
-							 msg + " \n" + tr("See Options -> View log for additional details."),
+							 msg + " \n" + tr("See menu Window -> View log for additional details."),
 							 QMessageBox::Ok);
 		busy = false;
 	}

@@ -1,5 +1,5 @@
-#ifndef GUI_OPTIONSMENU_H
-#define GUI_OPTIONSMENU_H
+#ifndef GUI_ACTION_MENUWINDOW_H
+#define GUI_ACTION_MENUWINDOW_H
 
 #include "gui/action/menu.h"
 
@@ -11,9 +11,9 @@ namespace Action {
 
 class TAction;
 
-class TMenuOptions : public TMenu {
+class TMenuWindow : public TMenu {
 public:
-	TMenuOptions(QWidget* parent,
+	TMenuWindow(QWidget* parent,
 				 TCore* core,
 				 QMenu* toolBarMenu,
 				 QWidget* playlist,
@@ -23,4 +23,4 @@ public:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_OPTIONSMENU_H
+#endif // GUI_ACTION_MENUWINDOW_H

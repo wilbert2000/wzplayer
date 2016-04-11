@@ -107,7 +107,7 @@ HEADERS += version.h \
     gui/action/menuaudio.h \
     gui/action/menusubtitle.h \
     gui/action/menubrowse.h \
-    gui/action/menuoptions.h \
+    gui/action/menuwindow.h \
     gui/action/menuhelp.h \
     gui/action/favoriteeditor.h \
     gui/action/favorites.h \
@@ -226,7 +226,7 @@ SOURCES	+= version.cpp \
     gui/action/menuaudio.cpp \
     gui/action/menusubtitle.cpp \
     gui/action/menubrowse.cpp \
-    gui/action/menuoptions.cpp \
+    gui/action/menuwindow.cpp \
     gui/action/menuhelp.cpp \
     gui/action/favoriteeditor.cpp \
     gui/action/favorites.cpp \
