@@ -1,36 +1,47 @@
 
 PREFIX=/usr/local
-#PREFIX=/tmp/wzplayer
+#PREFIX=/tmp/$(NAME)
 
-CONF_PREFIX=$(PREFIX)
+NAME=wzplayer
+PROJECT=$(NAME).pro
+# qmake needs full project path
+PROJECT_PATH=$(CURDIR)/src/$(PROJECT)
 
-DATA_PATH=$(PREFIX)/share/wzplayer
-DOC_PATH=$(PREFIX)/share/doc/packages/wzplayer
-TRANSLATION_PATH=$(DATA_PATH)/translations
-THEMES_PATH=$(DATA_PATH)/themes
-SHORTCUTS_PATH=$(DATA_PATH)/shortcuts
+BINDIR=$(DESTDIR)$(PREFIX)/bin/
+MANDIR=$(DESTDIR)$(PREFIX)/share/man/man1/
 
-#KDE_PREFIX=`kde-config --prefix`
-#KDE_PREFIX=/tmp/wzplayer/kde/
 KDE_PREFIX=$(PREFIX)
 
-KDE_ICONS=$(KDE_PREFIX)/share/icons/hicolor/
-KDE_APPLNK=$(KDE_PREFIX)/share/applications/
+KDE_ICONS=$(DESTDIR)$(KDE_PREFIX)/share/icons/hicolor/
+KDE_APPLNK=$(DESTDIR)$(KDE_PREFIX)/share/applications/
 
 QMAKE=qmake
 LRELEASE=lrelease
 
+BUILDDIR=build
 CHANGELOG=Changelog
 
+# Pass without DESTDIR to build
+DATA_PATH=$(PREFIX)/share/$(NAME)
+DOC_PATH=$(PREFIX)/share/doc/packages/$(NAME)
+TRANSLATION_PATH=$(DATA_PATH)/translations
+THEMES_PATH=$(DATA_PATH)/themes
+SHORTCUTS_PATH=$(DATA_PATH)/shortcuts
+
 DEFS=DATA_PATH=\\\"$(DATA_PATH)\\\" \
-     TRANSLATION_PATH=\\\"$(TRANSLATION_PATH)\\\" \
-     DOC_PATH=\\\"$(DOC_PATH)\\\" THEMES_PATH=\\\"$(THEMES_PATH)\\\" \
-     SHORTCUTS_PATH=\\\"$(SHORTCUTS_PATH)\\\"
+ DOC_PATH=\\\"$(DOC_PATH)\\\" \
+ TRANSLATION_PATH=\\\"$(TRANSLATION_PATH)\\\" \
+ THEMES_PATH=\\\"$(THEMES_PATH)\\\" \
+ SHORTCUTS_PATH=\\\"$(SHORTCUTS_PATH)\\\"
+
+# Convenience vars with DESTDIR
+FDATA_PATH=$(DESTDIR)$(DATA_PATH)
+FTRANSLATION_PATH=$(DESTDIR)$(TRANSLATION_PATH)
+FSHORTCUTS_PATH=$(DESTDIR)$(SHORTCUTS_PATH)
+FDOC_PATH=$(DESTDIR)$(DOC_PATH)
 
 
 ifdef KDE_SUPPORT
-
-# KDE paths, change if necessary
 
 KDE_INCLUDE_PATH=`kde-config --prefix`/include/
 KDE_LIB_PATH=`kde-config --prefix`/lib/
@@ -41,84 +52,68 @@ QMAKE_OPTS=DEFINES+=KDE_SUPPORT INCLUDEPATH+=$(KDE_INCLUDE_PATH) \
 
 endif
 
-src/wzplayer: $(CHANGELOG)
-	+cd src && $(QMAKE) $(QMAKE_OPTS) && $(DEFS) make
-	cd src && $(LRELEASE) wzplayer.pro
+$(BUILDDIR)/$(NAME): $(CHANGELOG)
+	-mkdir $(BUILDDIR)
+	cd $(BUILDDIR) && $(QMAKE) $(QMAKE_OPTS) -o Makefile "$(PROJECT_PATH)"
+	cd $(BUILDDIR) && $(DEFS) make
+	cd $(BUILDDIR) && $(LRELEASE) "$(PROJECT_PATH)"
 
 Changelog:
-	echo "https://github.com/wilbert2000/wzplayer/commits/master" > $(CHANGELOG)
+	echo "See https://github.com/wilbert2000/wzplayer/commits/master" > $(CHANGELOG)
 
 clean:
-	if [ -f src/Makefile ]; then cd src && make distclean; fi
+	-rm -rf $(BUILDDIR)
 	-rm src/translations/*.qm
+	-rm $(CHANGELOG)
 
-install: src/wzplayer
-	-install -d $(DESTDIR)$(PREFIX)/bin/
-	install -m 755 src/wzplayer $(DESTDIR)$(PREFIX)/bin/
-	-install -d $(DESTDIR)$(DATA_PATH)
-	install -m 644 src/input.conf $(DESTDIR)$(DATA_PATH)
-	-install -d $(DESTDIR)$(TRANSLATION_PATH)
-	install -m 644 src/translations/*.qm $(DESTDIR)$(TRANSLATION_PATH)
-	-install -d $(DESTDIR)$(DOC_PATH)
-	install -m 644 Changelog *.txt $(DESTDIR)$(DOC_PATH)
+install: $(BUILDDIR)/$(NAME)
+	-install -d $(BINDIR)
+	install -m 755 $(BUILDDIR)/$(NAME) $(BINDIR)
+	-install -d $(FDATA_PATH)
+	install -m 644 src/input.conf $(FDATA_PATH)
+	-install -d $(FTRANSLATION_PATH)
+	install -m 644 src/translations/*.qm $(FTRANSLATION_PATH)
+	-install -d $(FDOC_PATH)
+	install -m 644 Changelog *.txt $(FDOC_PATH)
+	tar -C docs/ -c -f - . | tar -C $(FDOC_PATH) -x -f -
+	-install -d $(FSHORTCUTS_PATH)
+	cp src/shortcuts/* $(FSHORTCUTS_PATH)
 
-	-install -d $(DESTDIR)$(DOC_PATH)
-	tar -C docs/ --exclude=.svn -c -f - . | tar -C $(DESTDIR)$(DOC_PATH) -x -f -
+	-install -d $(KDE_ICONS)/512x512/apps/
+	-install -d $(KDE_ICONS)/256x256/apps/
+	-install -d $(KDE_ICONS)/192x192/apps/
+	-install -d $(KDE_ICONS)/128x128/apps/
+	-install -d $(KDE_ICONS)/64x64/apps/
+	-install -d $(KDE_ICONS)/32x32/apps/
+	-install -d $(KDE_ICONS)/22x22/apps/
+	-install -d $(KDE_ICONS)/16x16/apps/
+	-install -d $(KDE_ICONS)/scalable/apps/
+	install -m 644 icons/$(NAME)_icon512.png $(KDE_ICONS)/512x512/apps/$(NAME).png
+	install -m 644 icons/$(NAME)_icon256.png $(KDE_ICONS)/256x256/apps/$(NAME).png
+	install -m 644 icons/$(NAME)_icon192.png $(KDE_ICONS)/192x192/apps/$(NAME).png
+	install -m 644 icons/$(NAME)_icon128.png $(KDE_ICONS)/128x128/apps/$(NAME).png
+	install -m 644 icons/$(NAME)_icon64.png $(KDE_ICONS)/64x64/apps/$(NAME).png
+	install -m 644 icons/$(NAME)_icon32.png $(KDE_ICONS)/32x32/apps/$(NAME).png
+	install -m 644 icons/$(NAME)_icon22.png $(KDE_ICONS)/22x22/apps/$(NAME).png
+	install -m 644 icons/$(NAME)_icon16.png $(KDE_ICONS)/16x16/apps/$(NAME).png
+	install -m 644 icons/$(NAME).svg $(KDE_ICONS)/scalable/apps/$(NAME).svg
 
-	-install -d $(DESTDIR)$(SHORTCUTS_PATH)
-	cp src/shortcuts/* $(DESTDIR)$(SHORTCUTS_PATH)
+	-install -d $(KDE_APPLNK)
+	install -m 644 $(NAME).desktop $(KDE_APPLNK)
+	install -m 644 $(NAME)_enqueue.desktop $(KDE_APPLNK)
 
-#	-install -d $(DESTDIR)$(THEMES_PATH)
-#	-tar -C src/themes/ --exclude=.svn -c -f - . | tar -C $(DESTDIR)$(THEMES_PATH) -x -f -
-
-	-install -d $(DESTDIR)$(KDE_ICONS)/512x512/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/256x256/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/192x192/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/128x128/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/64x64/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/32x32/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/22x22/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/16x16/apps/
-	-install -d $(DESTDIR)$(KDE_ICONS)/scalable/apps/
-	install -m 644 icons/wzplayer_icon512.png $(DESTDIR)$(KDE_ICONS)/512x512/apps/wzplayer.png
-	install -m 644 icons/wzplayer_icon256.png $(DESTDIR)$(KDE_ICONS)/256x256/apps/wzplayer.png
-	install -m 644 icons/wzplayer_icon192.png $(DESTDIR)$(KDE_ICONS)/192x192/apps/wzplayer.png
-	install -m 644 icons/wzplayer_icon128.png $(DESTDIR)$(KDE_ICONS)/128x128/apps/wzplayer.png
-	install -m 644 icons/wzplayer_icon64.png $(DESTDIR)$(KDE_ICONS)/64x64/apps/wzplayer.png
-	install -m 644 icons/wzplayer_icon32.png $(DESTDIR)$(KDE_ICONS)/32x32/apps/wzplayer.png
-	install -m 644 icons/wzplayer_icon22.png $(DESTDIR)$(KDE_ICONS)/22x22/apps/wzplayer.png
-	install -m 644 icons/wzplayer_icon16.png $(DESTDIR)$(KDE_ICONS)/16x16/apps/wzplayer.png
-	install -m 644 icons/wzplayer.svg $(DESTDIR)$(KDE_ICONS)/scalable/apps/wzplayer.svg
-	-install -d $(DESTDIR)$(KDE_APPLNK)
-	install -m 644 wzplayer.desktop $(DESTDIR)$(KDE_APPLNK)
-	install -m 644 wzplayer_enqueue.desktop $(DESTDIR)$(KDE_APPLNK)
-	-install -d $(DESTDIR)$(PREFIX)/share/man/man1/
-	install -m 644 man/wzplayer.1 $(DESTDIR)$(PREFIX)/share/man/man1/
-	gzip -9 -f $(DESTDIR)$(PREFIX)/share/man/man1/wzplayer.1
+	-install -d $(MANDIR)
+	install -m 644 man/$(NAME).1 $(MANDIR)
+	gzip -9 -f $(MANDIR)$(NAME).1
 
 uninstall:
-	-rm -f $(PREFIX)/bin/wzplayer
-	-rm -f $(DATA_PATH)/input.conf
-	-rm -f $(TRANSLATION_PATH)/*.qm
-	-rm -f $(DOC_PATH)/Changelog
-	-rm -f $(DOC_PATH)/*.txt
-	-rm -f $(SHORTCUTS_PATH)/*.keys
-	-rm -f $(KDE_ICONS)/64x64/apps/wzplayer.png
-	-rm -f $(KDE_ICONS)/32x32/apps/wzplayer.png
-	-rm -f $(KDE_ICONS)/22x22/apps/wzplayer.png
-	-rm -f $(KDE_ICONS)/16x16/apps/wzplayer.png
-	-rm -f $(KDE_APPLNK)/wzplayer.desktop
-	-rm -f $(PREFIX)/share/man/man1/wzplayer.1.gz
-	-rmdir $(SHORTCUTS_PATH)/
-	-rmdir $(TRANSLATION_PATH)/
-#	-for file in docs/*/*; do \
-#	    rm -f $(DOC_PATH)/$${file/docs/}; \
-#	done;
-#	-for file in docs/*; do \
-#	    rmdir $(DOC_PATH)/$${file/docs/}; \
-#	done;
-	-(cd docs && find -iname '*.html') | (cd $(DESTDIR)$(DOC_PATH) && xargs rm)
-	-(cd docs && find -type d -name '??') | (cd $(DESTDIR)$(DOC_PATH) && xargs rmdir)
-	-rmdir $(DOC_PATH)/
-	-rmdir $(DATA_PATH)/
-
+	-rm -f $(BINDIR)$(NAME)
+	-rm -rf $(FDATA_PATH)
+	-rm -rf $(FDOC_PATH)
+	-rm -f $(KDE_ICONS)/64x64/apps/$(NAME).png
+	-rm -f $(KDE_ICONS)/32x32/apps/$(NAME).png
+	-rm -f $(KDE_ICONS)/22x22/apps/$(NAME).png
+	-rm -f $(KDE_ICONS)/16x16/apps/$(NAME).png
+	-rm -f $(KDE_APPLNK)/$(NAME).desktop
+	-rm -f $(KDE_APPLNK)/$(NAME)_enqueue.desktop.desktop
+	-rm -f $(MANDIR)$(NAME).1.gz
