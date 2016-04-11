@@ -146,6 +146,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	// Video
 	if (md.hasVideo()) {
 		s += openPar(tr("Video"));
+		s += addItem(tr("Video out driver"), md.vo);
 		s += addItem(tr("Resolution source"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
 		s += addItem(tr("Resolution video out"), QString("%1 x %2").arg(md.video_out_width).arg(md.video_out_height));
 		s += addItem(tr("Aspect ratio reported by player"), md.video_aspect);
@@ -161,6 +162,8 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += addItem(tr("Frames per second"), QString::number(md.video_fps));
 		s += addItem(tr("Selected codec"), md.video_codec + " - " + md.video_codec_description);
 		s += addItem(tr("Number of tracks"), QString::number(md.videos.count()));
+		s += addItem(tr("Current angle"), QString::number(md.angle));
+		s += addItem(tr("Number of angles"), QString::number(md.angles));
 		s += closePar();
 	}
 
@@ -169,6 +172,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 
 	// Audio
 	s += openPar(tr("Audio"));
+	s += addItem(tr("Audio out driver"), md.ao);
 	s += addItem(tr("Format"), md.audio_format);
 	s += addItem(tr("Bitrate"), md.audio_bitrate == -1
 		 ?  (Settings::pref->isMPV() ? tr("Still testing, wait a few seconds") : tr("Unknown"))
