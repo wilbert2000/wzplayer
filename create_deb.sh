@@ -8,7 +8,7 @@ dch -v 16.1.0-`git describe --dirty --always --tags` "New version"
 
 # This should be faster:
 rm build-stamp
-rm src/wzplayer
+rm build/wzplayer
 fakeroot debian/rules build
 fakeroot debian/rules binary
 
