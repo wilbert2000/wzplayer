@@ -3,7 +3,8 @@ This document explains how to compile and install wzplayer.
 1) Compilation general
 2) Changing installation path
 3) Compiling under Windows
-4) How to make a deb package
+4) How to create a deb package
+5) How to create a rpm package
 
 1) Compilation general
 ----------------------
@@ -11,7 +12,7 @@ For Windows see "Compiling under Windows"
 
 Be sure you have installed the Qt 4 development package. Its name maybe
 qt4-devel, libqt4-dev or similar. Issue the following commands in the
-directory where you want to install the source and compile wzplayer:
+directory under which you want to install the source and compile wzplayer:
 
 git clone 'https://github.com/wilbert2000/wzplayer.git' wzplayer
 cd wzplayer
@@ -45,18 +46,18 @@ That would compile wzplayer for /usr but in fact it will be installed in
 You need to have git and and least Qt 4.4 installed. You can get Qt from
 http://www.qt.io/
 
-During the installation it will ask you for a compiler. Simply let the
+During the installation of Qt it will ask you for a compiler. Simply let the
 Qt installer download and install MinGW.
 
 To install the WZPlayer source issue the following command from the directory
-where you want to install the source:
+under which you want to install the source:
 git clone "https://github.com/wilbert2000/wzplayer.git" wzplayer
 
 The next step is to open the Qt console: select the option "Qt 4.x
 Command Prompt" that you'll find under the Qt menu.
 
 That'll open a new command line shell. cd to the directory where you installed
-wzplayer and issue the following command:
+the wzplayer source and issue the following command:
 compile_windows.bat
 
 Compiling should start and take a while.
@@ -65,12 +66,19 @@ If everything went well you should find the new compiled wzplayer.exe in the
 wzplayer\src\release directory.
 
 
-4) How to make a deb package
+4) How to create a deb package
 ----------------------------
-Be sure you have installed the following packages: libqt4-dev, zlib1g-dev,
-fakeroot, build-essential, devscripts, debhelper and g++.
+Make sure you have installed the following packages: libqt4-dev, zlib1g-dev,
+fakeroot, build-essential, devscripts, debhelper, g++ and git.
 
-sudo apt-get install libqt4-dev zlib1g-dev fakeroot build-essential devscripts debhelper g++
+To install them:
+sudo apt-get install libqt4-dev zlib1g-dev fakeroot build-essential devscripts debhelper g++ git
 
-Now run ./create_deb.sh
+Run ./create_deb.sh from the directory where you installed the WZPlayer sources.
 
+5) How to create a rpm package
+----------------------------
+
+Make sure you have git and rpmbuild installed.
+
+Run ./create_rpm.sh from the directory where you installed the WZPlayer sources.
