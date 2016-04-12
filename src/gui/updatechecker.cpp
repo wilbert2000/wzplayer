@@ -165,12 +165,19 @@ void TUpdateChecker::reportNewVersionAvailable(const QString& new_version) {
 
 	QWidget* p = qobject_cast<QWidget*>(parent());
 
+	QString git_tag = TVersion::version;
+	QRegExp rx("-g([0-9a-f]+)");
+	if (rx.indexIn(git_tag) >= 0) {
+		git_tag = "<br>" + tr("(You can find your version by searching for %1)").arg(rx.cap(1));
+	} else {
+		git_tag = "";
+	}
 	QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),
-		tr("A new version of WZPlayer is available.") + "<br><br>" +
-		tr("Installed version: %1").arg(TVersion::version) + "<br>" +
-		tr("Available version: %1").arg(new_version) + "<br><br>" +
-		tr("Would you like to know more about this new version?"),
-		QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+		tr("A new version of WZPlayer is available.") + "<br><br>"
+		+ tr("Installed version: %1").arg(TVersion::version) + "<br>"
+		+ tr("Available version: %1").arg(new_version) + "<br><br>"
+		+ tr("Would you like to know more about this new version?")
+		+ git_tag, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 
 	if (button == QMessageBox::Yes) {
 		QDesktopServices::openUrl(QUrl(TConfig::URL_CHANGES));
