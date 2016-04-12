@@ -19,7 +19,6 @@ RESOURCES = icons.qrc
 
 DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
-DEFINES += OUTPUT_ON_CONSOLE
 DEFINES += MPRIS2
 DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tags)\\\"
 
@@ -426,7 +425,6 @@ win32 {
 		LIBS += libole32
 	}
 	
-    DEFINES -= OUTPUT_ON_CONSOLE
     DEFINES += USE_ADAPTER
     RC_FILE = wzplayer.rc
 }

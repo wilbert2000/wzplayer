@@ -113,17 +113,16 @@ void TLog::logLine(QtMsgType type, QString line) {
 	lines.append(line);
 
 	// Output to console on stderr
-#ifdef OUTPUT_ON_CONSOLE
-	QByteArray bytes = line.toUtf8();
-	if ((type != QtDebugMsg) || log_debug_messages_to_console)
+#ifdef Q_OS_LINUX
+	if (type != QtDebugMsg || log_debug_messages_to_console) {
+		QByteArray bytes = line.toUtf8();
 		fwrite(bytes.constData(), 1, bytes.size(), stderr);
+	}
 #endif
 
 	// Output to log file
 	if (file.isOpen()) {
-#ifndef OUTPUT_ON_CONSOLE
 		QByteArray bytes = line.toUtf8();
-#endif
 		file.write(bytes.constData(), bytes.size());
 		file.flush();
 	}
@@ -144,7 +143,7 @@ void TLog::msgHandler(QtMsgType type, const char* p_msg) {
 	QString msg = QString::fromUtf8(p_msg);
 #endif
 
-	if (log && ((type != QtDebugMsg) || log->logDebugMessages())) {
+	if (log && (type != QtDebugMsg || log->logDebugMessages())) {
 		log->logLine(type, msg);
 	}
 }
