@@ -51,9 +51,6 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <item>
            <layout class="QGridLayout" name="player_gridlayout">
             <item row="0" column="0">
@@ -117,9 +114,6 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <item>
            <widget class="QCheckBox" name="remember_time_check">
             <property name="sizePolicy">
@@ -191,9 +185,6 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="spacing">
            <number>16</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
           </property>
           <item>
            <widget class="QLabel" name="radio_tv_icon_label">

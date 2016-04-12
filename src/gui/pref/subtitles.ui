@@ -54,9 +54,6 @@
           <property name="leftMargin">
            <number>4</number>
           </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <property name="rightMargin">
            <number>4</number>
           </property>
@@ -224,9 +221,6 @@
          <layout class="QVBoxLayout">
           <property name="leftMargin">
            <number>4</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
           </property>
           <property name="rightMargin">
            <number>4</number>
@@ -402,9 +396,6 @@
           <property name="leftMargin">
            <number>4</number>
           </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
@@ -431,9 +422,6 @@
             <layout class="QGridLayout" name="ass_gridlayout">
              <property name="leftMargin">
               <number>4</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
              </property>
              <property name="rightMargin">
               <number>0</number>
@@ -518,9 +506,6 @@
                 <property name="leftMargin">
                  <number>4</number>
                 </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
                 <property name="rightMargin">
                  <number>0</number>
                 </property>
@@ -538,9 +523,6 @@
                   <layout class="QGridLayout" name="font_gridlayout">
                    <property name="leftMargin">
                     <number>4</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
                    </property>
                    <property name="rightMargin">
                     <number>0</number>
@@ -650,9 +632,6 @@
                      <property name="leftMargin">
                       <number>4</number>
                      </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
                      <property name="rightMargin">
                       <number>0</number>
                      </property>
@@ -746,9 +725,6 @@
                      <property name="leftMargin">
                       <number>4</number>
                      </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
                      <property name="rightMargin">
                       <number>0</number>
                      </property>
@@ -813,9 +789,6 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_5">
                    <property name="leftMargin">
                     <number>4</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
                    </property>
                    <property name="rightMargin">
                     <number>0</number>
@@ -895,9 +868,6 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
                    <property name="leftMargin">
                     <number>4</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
                    </property>
                    <property name="rightMargin">
                     <number>0</number>

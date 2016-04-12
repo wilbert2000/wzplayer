@@ -97,9 +97,6 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="screenshots_verticalLayout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>

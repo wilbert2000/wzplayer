@@ -156,9 +156,6 @@
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <property name="topMargin">
-             <number>0</number>
-            </property>
             <item row="8" column="2">
              <widget class="QComboBox" name="xbutton1_click_combo"/>
             </item>
@@ -317,9 +314,6 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <item>
            <layout class="QHBoxLayout" name="wheel_scroll_action_layout">
             <property name="leftMargin">
@@ -488,9 +482,6 @@
           <bool>true</bool>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <item>
            <layout class="QVBoxLayout">
             <property name="spacing">

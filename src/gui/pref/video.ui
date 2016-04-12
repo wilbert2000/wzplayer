@@ -69,9 +69,6 @@
             <bool>true</bool>
            </property>
            <layout class="QVBoxLayout" name="output_verticalLayout">
-            <property name="topMargin">
-             <number>0</number>
-            </property>
             <item>
              <layout class="QHBoxLayout" name="vo_layout">
               <item>
@@ -182,9 +179,6 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="synchronization_verticalLayout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <item>
            <widget class="QCheckBox" name="framedrop_check">
             <property name="text">
@@ -250,9 +244,6 @@
           <bool>true</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
           <property name="horizontalSpacing">
            <number>16</number>
           </property>
@@ -379,9 +370,6 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="spacing">
            <number>12</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
           </property>
           <item>
            <widget class="QLabel" name="monitor_aspect_icon">
