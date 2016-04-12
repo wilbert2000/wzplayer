@@ -56,13 +56,12 @@ bool Helper::directoryContainsDVD(QString directory) {
 
 	QDir dir(directory);
 	QStringList l = dir.entryList();
-	bool valid = false;
-	for (int n=0; n < l.count(); n++) {
-		//qDebug("  * entry %d: '%s'", n, l[n].toUtf8().data());
-		if (l[n].toLower() == "video_ts") valid = true;
+	for (int n = 0; n < l.count(); n++) {
+		if (l[n].toLower() == "video_ts")
+			return true;
 	}
 
-	return valid;
+	return false;
 }
 
 int Helper::qtVersion() {
