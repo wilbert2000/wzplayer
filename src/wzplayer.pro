@@ -472,4 +472,5 @@ OTHER_FILES += \
     ../Install.txt \
     ../create_deb.sh \
     ../setup/scripts/install_wzplayer.cmd \
-    ../setup/scripts/make_pkgs.cmd
+    ../setup/scripts/make_pkgs.cmd \
+    ../latest_versions.txt
