@@ -6,7 +6,7 @@ Summary:        A great media player
 Group:          Applications/Multimedia
 License:        GPL-2.0+
 URL:            https://github.com/wilbert2000/wzplayer
-Source0:        https://github.com/wilbert2000/wzplayer/releases/latest
+Source0:        https://github.com/wilbert2000/wzplayer/archive/v2016.04.12.rc.1.5.tar.gz
 
 %if 0%{?suse_version}
 BuildRequires:  libqt4-devel
