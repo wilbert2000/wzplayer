@@ -36,7 +36,7 @@ TInput::~TInput() {
 }
 
 QString TInput::sectionName() {
-	return tr("Keyboard and mouse");
+	return tr("Actions");
 }
 
 QPixmap TInput::sectionIcon() {
