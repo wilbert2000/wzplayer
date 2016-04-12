@@ -22,7 +22,7 @@
     performance, scaling, DVDNAV support, no setup needed, lots of setup
     available. No support and lots of source...
 
-    To know how to compile and install wzplayer please read Install.txt.
+    To compile and install wzplayer please read Install.txt.
 
     Visit the web for updates:
     https://github.com/wilbert2000/wzplayer
@@ -50,24 +50,24 @@
        license: GPL
 
      * Vista-Inspirate 
-        url: http://www.kde-look.org/content/show.php/Vista-Inspirate?content=31585
-        license: GPL
+       url: http://www.kde-look.org/content/show.php/Vista-Inspirate?content=31585
+       license: GPL
 
      * Crystal Clear
-        url: http://www.kde-look.org/content/show.php/Crystal+Clear?content=25668
-        license: LGPL
+       url: http://www.kde-look.org/content/show.php/Crystal+Clear?content=25668
+       license: LGPL
 
      * Oxygen Team
-        url: http://www.iconarchive.com/artist/oxygen-icons.org.html
-        license: LGPL
+       url: http://www.iconarchive.com/artist/oxygen-icons.org.html
+       license: LGPL
 
      * WPZOOM Social Networking Icon Pack
-        url: http://findicons.com/pack/2336/wpzoom_social_networking_icon
-        license: Creative Commons Attribution Share Alike (by-sa)
+       url: http://findicons.com/pack/2336/wpzoom_social_networking_icon
+       license: Creative Commons Attribution Share Alike (by-sa)
 
      * ricebowl-0.2.0
-        url: http://www.deviantart.com/deviation/22605468/
-        license: LGPL 
+       url: http://www.deviantart.com/deviation/22605468/
+       license: LGPL
 
      * rulesPlayer
        url: http://www.dsource.org/projects/rulesplayer
@@ -79,6 +79,10 @@
 
      * kplayer
        url: http://kplayer.sourceforge.net/
+       license: GPL
+
+     * mpv
+       url: https://mpv.io/
        license: GPL
 
      * Gimp
