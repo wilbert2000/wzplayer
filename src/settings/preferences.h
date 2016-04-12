@@ -82,13 +82,15 @@ public:
 
 	// Media players
 	QString player_bin;
+
 	QString mplayer_bin;
 	QString mplayer_vo;
 	QString mplayer_ao;
-	int mplayer_start_panscan_width;
+
 	QString mpv_bin;
 	QString mpv_vo;
 	QString mpv_ao;
+
 	TPlayerID player_id;
 
 	bool isMPlayer() const { return player_id == ID_MPLAYER; }

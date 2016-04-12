@@ -152,7 +152,6 @@ void TVideo::setData(Settings::TPreferences* pref) {
 
 	setHwdec(pref->hwdec);
 	setSoftwareVideoEqualizer(pref->use_soft_video_eq);
-	mplayer_start_panscan_spin->setValue(pref->mplayer_start_panscan_width);
 
 	setFrameDrop(pref->frame_drop);
 	setHardFrameDrop(pref->hard_frame_drop);
@@ -185,7 +184,6 @@ void TVideo::getData(Settings::TPreferences* pref) {
 
 	restartIfStringChanged(pref->hwdec, hwdec());
 	restartIfBoolChanged(pref->use_soft_video_eq, softwareVideoEqualizer());
-	pref->mplayer_start_panscan_width = mplayer_start_panscan_spin->value();
 
 	restartIfBoolChanged(pref->frame_drop, frameDrop());
 	restartIfBoolChanged(pref->hard_frame_drop, hardFrameDrop());
@@ -527,15 +525,6 @@ void TVideo::createHelp() {
 		   "your graphic card or the selected video output driver.<br>"
 		   "<b>Note:</b> this option can be incompatible with some video "
 		   "output drivers."));
-
-	setWhatsThis(mplayer_start_panscan_spin, tr("Start of panscan zoom width"),
-		tr("MPlayer only. Whenever the zoom factor is larger then 1"
-		   " and the video width is larger than this value, let MPlayer handle"
-		   " zooming, requiring less resources. When the video gets smaller"
-		   " than this value the window manager will handle zooming, taking"
-		   " more resources especially with HD video. A too large value can"
-		   " blow up the available amount of video surface on less powerfull"
-		   " setups."));
 
 	addSectionGroup(tr("Synchronization"));
 

@@ -124,7 +124,6 @@ void TPreferences::reset() {
 	vo = mplayer_vo;
 
 	hwdec = "no";
-	mplayer_start_panscan_width = 0;
 
 	frame_drop = false;
 	hard_frame_drop = false;
@@ -473,8 +472,8 @@ void TPreferences::save() {
 	setValue("bin", mplayer_bin);
 	setValue("vo", mplayer_vo);
 	setValue("ao", mplayer_ao);
-	setValue("start_panscan_width", mplayer_start_panscan_width);
 	endGroup();
+
 	beginGroup("mpv");
 	setValue("bin", mpv_bin);
 	setValue("vo", mpv_vo);
@@ -978,8 +977,6 @@ void TPreferences::load() {
 	mplayer_bin = value("bin", mplayer_bin).toString();
 	mplayer_vo  = value("vo", mplayer_vo).toString();
 	mplayer_ao = value("ao", mplayer_ao).toString();
-	mplayer_start_panscan_width = value("start_panscan_width",
-										mplayer_start_panscan_width).toInt();
 	endGroup();
 
 	beginGroup("mpv");

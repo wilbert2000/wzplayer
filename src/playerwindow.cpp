@@ -305,10 +305,7 @@ void TPlayerWindow::updateVideoWindow() {
 		// MPlayer cannot pan in slave mode, so pan the video window
 		vwin.translate(pan);
 
-		// Let the window manager handle zoom as long as the video width is
-		// smaller than mplayer_start_panscan_width. A too large value can
-		// blow up the available video surface of less powerfull setups.
-		if (vwin.width() >= pref->mplayer_start_panscan_width && zoom > 1) {
+		if (zoom > 1) {
 			clipMPlayer(vwin, zoom, pan);
 		} else {
 			zoom = 1;
