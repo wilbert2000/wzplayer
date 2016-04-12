@@ -5,7 +5,7 @@ NAME=wzplayer
 cd /tmp
 git clone 'https://github.com/wilbert2000/wzplayer.git' ${NAME}
 cd $(NAME)
-VERSION=`git describe --dirty --always --tags`
+VERSION=`git describe --tags`
 cd ..
 NAME_WITH_VERSION=${NAME}-${VERSION}
 

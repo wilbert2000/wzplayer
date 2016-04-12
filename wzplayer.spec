@@ -6,7 +6,7 @@ Summary:        A great media player
 Group:          Applications/Multimedia
 License:        GPL-2.0+
 URL:            https://github.com/wilbert2000/wzplayer
-Source0:        https://github.com/wilbert2000/wzplayer/archive/v2016.04.12.rc.1.5.tar.gz
+Source0:        https://github.com/wilbert2000/wzplayer/archive/%{version}.tar.gz
 
 %if 0%{?suse_version}
 BuildRequires:  libqt4-devel
@@ -43,11 +43,7 @@ make \
 	LRELEASE=%{_bindir}/lrelease-qt4 \
 %endif
 	PREFIX=%{_prefix} \
-	DOC_PATH="\\\"%{_docdir}/%{name}/\\\"" \
-	QMAKE_OPTS=DEFINES+=NO_DEBUG_ON_CONSOLE
-
-#touch src/smplayer
-#touch src/translations/smplayer_es.qm
+    DOC_PATH="\\\"%{_docdir}/%{name}/\\\""
 
 %install
 make PREFIX=%{_prefix} DESTDIR=%{buildroot}/ DOC_PATH=%{_docdir}/%{name}/ install
@@ -80,6 +76,5 @@ update-desktop-database &> /dev/null || :
 %changelog
 * Mon Apr 11 2016 Wilbert Hengst <wplayer@xs4all.nl>
 - For the changelog see https://github.com/wilbert2000/wzplayer/commits/master
-- To find your version search for the digits following the g in %{version}
 * Thu Jun 14 2007 Sebastian Vahl <fedora@deadbabylon.de> - 0.5.7-1
 - Initial Release
