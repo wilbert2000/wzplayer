@@ -237,7 +237,7 @@
      </widget>
      <widget class="QWidget" name="options_page">
       <attribute name="title">
-       <string notr="true">O&amp;ptions for PLAYER</string>
+       <string notr="true">O&amp;ptions for player</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
@@ -249,7 +249,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string notr="true">Additional Options for PLAYER</string>
+          <string notr="true">Additional options to pass to player for this file only</string>
          </property>
          <layout class="QVBoxLayout">
           <property name="spacing">
@@ -261,7 +261,7 @@
           <item>
            <widget class="QLabel" name="options_info_label">
             <property name="text">
-             <string notr="true">Here you can pass extra options to PLAYER.
+             <string notr="true">Here you can pass extra options to the player applied to this file only.
 Write them separated by spaces.
 Example: -flip -nosound</string>
             </property>

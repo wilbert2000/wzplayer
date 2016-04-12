@@ -57,14 +57,7 @@ void TFilePropertiesDialog::showInfo() {
 void TFilePropertiesDialog::retranslateStrings() {
 
 	retranslateUi(this);
-
 	setWindowIcon(Images::icon("logo"));
-
-	int tab_idx = 4;
-	tabWidget->setTabText(tab_idx, tr("O&ptions for %1").arg(Settings::pref->playerName()));
-	groupBox->setTitle(tr("Additional Options for %1").arg(Settings::pref->playerName()));
-	options_info_label->setText(tr("Here you can pass extra options to %1.").arg(Settings::pref->playerName()) +"<br>"+
-		tr("Write them separated by spaces.") + "<br>" + tr("Example:") + " -volume 50 -fps 25");
 }
 
 void TFilePropertiesDialog::accept() {
@@ -84,8 +77,8 @@ void TFilePropertiesDialog::apply() {
 
 void TFilePropertiesDialog::setCodecs(const InfoList& vc,
 									  const InfoList& ac,
-									  const InfoList& demuxer)
-{
+									  const InfoList& demuxer) {
+
 	vclist = vc;
 	aclist = ac;
 	demuxerlist = demuxer;
