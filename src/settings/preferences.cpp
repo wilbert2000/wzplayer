@@ -123,7 +123,7 @@ void TPreferences::reset() {
 
 	vo = mplayer_vo;
 
-	hwdec = "no";
+	hwdec = "auto";
 
 	frame_drop = false;
 	hard_frame_drop = false;
