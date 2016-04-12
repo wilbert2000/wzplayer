@@ -83,7 +83,7 @@ QString CLHelp::formatHelp(QString parameter, QString help, bool html) {
 QString CLHelp::help(bool html) {
 	QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
 
-	QString options = QString("%1 [--debug] [--defaultgui] [--config-path %2] "
+	QString options = QString("%1 [--debug] [--config-path %2] "
 						"[--send-action %3] [--actions %4] "
 						"[--close-at-end] [--no-close-at-end] [--fullscreen] [--no-fullscreen] "
 						"[--ontop] [--no-ontop] "
@@ -109,8 +109,7 @@ QString CLHelp::help(bool html) {
 	}
 
 	s += formatHelp("--debug", QObject::tr(
-		"Log debug messages. Overrides the setting from advanced preferences."
-		"Shows startup debug messages, unlike the setting from advanced preferences."), html);
+		"Logs debug message to the console."), html);
 
 #ifdef Q_OS_WIN	
 	s += formatHelp("--uninstall", QObject::tr(
@@ -123,7 +122,7 @@ QString CLHelp::help(bool html) {
 
 	s += formatHelp("--send-action", QObject::tr(
 		"tries to make a connection to another running instance "
-        "and send to it the specified action. Example: -send-action pause "
+		"and send it the specified action. Example: --send-action pause "
         "The rest of options (if any) will be ignored and the "
         "application will exit. It will return 0 on success or -1 "
         "on failure."), html);
@@ -133,7 +132,7 @@ QString CLHelp::help(bool html) {
 		"The actions will be executed just after loading the file (if any) "
 		"in the same order you entered. For checkable actions you can pass "
 		"true or false as parameter. Example: "
-		"-actions \"fullscreen true\". Quotes are necessary in "
+		"--actions \"fullscreen repeat true\". Quotes are necessary in "
 		"case you pass more than one action."), html);
 
 	s += formatHelp("--close-at-end", QObject::tr(

@@ -473,4 +473,5 @@ OTHER_FILES += \
     ../create_deb.sh \
     ../setup/scripts/install_wzplayer.cmd \
     ../setup/scripts/make_pkgs.cmd \
-    ../latest_versions.txt
+    ../latest_versions.txt \
+    ../man/wzplayer.1

@@ -26,7 +26,7 @@ That will install wzplayer in /usr/local.
 2) Changing installation path
 -----------------------------
 By default wzplayer will be installed in /usr/local. You can change it by
-using PREFIX and DESTDIR.
+using PREFIX.
 
 Examples:
 make PREFIX=/usr
@@ -34,17 +34,16 @@ make PREFIX=/usr install
 
 That would install wzplayer under /usr.
 
-DESTDIR will be useful for package maintainers.
+DESTDIR can be useful for package maintainers.
 
 make PREFIX=/usr
 make PREFIX=/usr DESTDIR=/tmp/ install
 
-That would compile wzplayer for /usr but in fact it will be installed in
-/tmp/usr/
+Would compile wzplayer for /usr and install it in /tmp/usr/
 
 3) Compiling under Windows
 ----------------------------
-You need to have git and and least Qt 4.4 with the MinGW compiler installed.
+You need to have git and at least Qt 4.4 with the MinGW compiler installed.
 You can get git from https://git-scm.com/downloads and Qt with MinGW from
 http://www.qt.io/
 
@@ -79,9 +78,9 @@ Run ./create_deb.sh from the directory where you installed the WZPlayer sources.
 5) How to create a rpm package
 ----------------------------
 
-Make sure you have git and rpmbuild installed.
+Make sure you have git installed.
 
-Run ./create_rpm.sh from the directory where you installed the WZPlayer sources.
+Run create_rpm.sh from anywhere.
 
-It will clone the WZPlayer repository to the tmp directory and create the tar
-ball for release.
+It will create a fresh clone from the WZPlayer repository to the tmp directory,
+copy the tar ball to the package dir and call rpmbuild to build the package.
