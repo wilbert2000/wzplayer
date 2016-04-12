@@ -60,8 +60,7 @@ public:
 	void getData(Settings::TPreferences* pref);
 
 	void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
-						   bool keep_current_drivers,
-						   bool allow_user_defined_ao);
+						   bool keep_current_drivers);
 
 protected:
 	virtual void retranslateStrings();
@@ -81,7 +80,7 @@ private:
 
 	void createHelp();
 
-	void setAO(const QString& ao_driver, bool allow_user_defined);
+	void setAO(const QString& ao_driver);
 	QString AO();
 
 	void setAudioChannels(int ID);

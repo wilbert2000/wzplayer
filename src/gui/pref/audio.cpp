@@ -80,7 +80,7 @@ void TAudio::retranslateStrings() {
 
 	icon_label->setPixmap(Images::icon("speaker"));
 
-	updateDriverCombo(player_id, false, true);
+	updateDriverCombo(player_id, false);
 
 	channels_combo->setItemText(0, tr("2 (Stereo)"));
 	channels_combo->setItemText(1, tr("4 (4.0 Surround)"));
@@ -96,7 +96,7 @@ void TAudio::setData(TPreferences* pref) {
 	player_id = pref->player_id;
 	mplayer_ao = pref->mplayer_ao;
 	mpv_ao = pref->mpv_ao;
-	setAO(pref->ao, true);
+	setAO(pref->ao);
 
 	setAudioChannels(pref->initial_audio_channels);
 	setUseAudioEqualizer(pref->use_audio_equalizer);
@@ -155,8 +155,7 @@ void TAudio::getData(TPreferences* pref) {
 }
 
 void TAudio::updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
-							   bool keep_current_drivers,
-							   bool allow_user_defined_ao) {
+							   bool keep_current_drivers) {
 
 
 	this->player_id = player_id;
@@ -201,19 +200,17 @@ void TAudio::updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
 
 	ao_combo->addItem(tr("User defined..."), "user_defined");
 	// Set selected AO
-	setAO(wanted_ao, allow_user_defined_ao);
+	setAO(wanted_ao);
 }
 
-void TAudio::setAO(const QString& ao_driver, bool allow_user_defined) {
+void TAudio::setAO(const QString& ao_driver) {
 
 	int idx = ao_combo->findData(ao_driver);
 	if (idx >= 0) {
 		ao_combo->setCurrentIndex(idx);
-	} else if (allow_user_defined && !ao_driver.isEmpty()) {
+	} else {
 		ao_combo->setCurrentIndex(ao_combo->findData("user_defined"));
 		ao_user_defined_edit->setText(ao_driver);
-	} else {
-		ao_combo->setCurrentIndex(0);
 	}
 }
 

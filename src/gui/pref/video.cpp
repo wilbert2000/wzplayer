@@ -94,7 +94,7 @@ void TVideo::retranslateStrings() {
 
 	video_icon_label->setPixmap(Images::icon("pref_video"));
 
-	updateDriverCombo(player_id, false, true);
+	updateDriverCombo(player_id, false);
 
 	int index = deinterlace_combo->currentIndex();
 	deinterlace_combo->clear();
@@ -144,7 +144,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 		qWarning() << "Gui::Pref::TVideo::setData: mpv vo mismatch, resetting vo";
 		pref->vo = pref->mpv_vo;
 	}
-	setVO(pref->vo, true);
+	setVO(pref->vo);
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 	vdpau = pref->vdpau;
@@ -206,11 +206,9 @@ void TVideo::getData(Settings::TPreferences* pref) {
 }
 
 void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
-							   bool keep_driver,
-							   bool allow_user_defined_vo) {
+							   bool keep_driver) {
 	qDebug() << "Gui::Pref::TVideo::updateDriverCombo: player id" << player_id
 			 << "keep_driver" << keep_driver
-			  << "allow user defined" << allow_user_defined_vo
 			 << "current mplayer vo" << mplayer_vo
 			 << "current mpv vo" << mpv_vo;
 
@@ -285,23 +283,20 @@ void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
 	// Add user defined VO
 	vo_combo->addItem(tr("User defined..."), "user_defined");
 	// Set selected VO
-	setVO(wanted_vo, allow_user_defined_vo);
+	setVO(wanted_vo);
 }
 
-void TVideo::setVO(const QString& vo_driver, bool allow_user_defined) {
+void TVideo::setVO(const QString& vo_driver) {
 
 	int idx = vo_combo->findData(vo_driver);
 	if (idx >= 0) {
-		qDebug() << "Gui::Pref::TVideo::setVO: driver" << vo_driver
+		qDebug() << "Gui::Pref::TVideo::setVO: found driver" << vo_driver
 				 << "idx" << idx;
 		vo_combo->setCurrentIndex(idx);
-	} else if (allow_user_defined && !vo_driver.isEmpty()) {
+	} else {
 		vo_combo->setCurrentIndex(vo_combo->findData("user_defined"));
 		vo_user_defined_edit->setText(vo_driver);
 		qDebug() << "Gui::Pref::TVideo::setVO: set user def driver" << vo_driver;
-	} else {
-		qWarning("Gui::Pref::TVideo::setVO: requested VO driver not found, selecting players default");
-		vo_combo->setCurrentIndex(0);
 	}
 }
 

@@ -186,9 +186,9 @@ void TDialog::onBinChanged(Settings::TPreferences::TPlayerID player_id,
 	InfoReader* i = InfoReader::obj();
 	i->getInfo(path);
 	page_video->vo_list = i->voList();
-	page_video->updateDriverCombo(player_id, keep_current_drivers, false);
+	page_video->updateDriverCombo(player_id, keep_current_drivers);
 	page_audio->ao_list = i->aoList();
-	page_audio->updateDriverCombo(player_id, keep_current_drivers, false);
+	page_audio->updateDriverCombo(player_id, keep_current_drivers);
 }
 
 void TDialog::addSection(TWidget *w) {

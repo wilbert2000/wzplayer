@@ -56,7 +56,7 @@ public:
 	void getData(Settings::TPreferences* pref);
 
 	void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
-						   bool keep_driver, bool allow_user_defined_vo);
+						   bool keep_driver);
 
 protected:
 	virtual void retranslateStrings();
@@ -76,7 +76,7 @@ private:
 
 	void createHelp();
 
-	void setVO(const QString& vo_driver, bool allow_user_defined);
+	void setVO(const QString& vo_driver);
 	QString VO();
 
 	void setHwdec(const QString& v);
