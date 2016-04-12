@@ -5,7 +5,7 @@ NAME=wzplayer
 cd /tmp
 git clone 'https://github.com/wilbert2000/wzplayer.git' ${NAME}
 cd $(NAME)
-VERSION=`git describe --tags`
+VERSION=`git describe --tags --abbrev=0`
 cd ..
 NAME_WITH_VERSION=${NAME}-${VERSION}
 NAME_TAR=${NAME_WITH_VERSION}.tar.bz2
