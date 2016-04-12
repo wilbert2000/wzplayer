@@ -261,15 +261,34 @@ void TMenuPlay::enableActions(bool stopped, bool, bool) {
 	gotoAct->setEnabled(e);
 }
 
+QString TMenuPlay::timeForJumps(int secs) {
+
+	int minutes = (int) secs / 60;
+	int seconds = secs % 60;
+
+	if (minutes == 0) {
+		return tr("%n second(s)", "", seconds);
+	}
+	if (seconds == 0) {
+		return tr("%n minute(s)", "", minutes);
+	}
+	QString m = tr("%n minute(s)", "", minutes);
+	QString s = tr("%n second(s)", "", seconds);
+	return tr("%1 and %2").arg(m).arg(s);
+}
+
+void TMenuPlay::setJumpText(TAction* rewindAct, TAction* forwardAct, int secs) {
+
+	QString s = timeForJumps(secs);
+	rewindAct->setTextAndTip(tr("-%1").arg(s));
+	forwardAct->setTextAndTip(tr("+%1").arg(s));
+}
+
 void TMenuPlay::setJumpTexts() {
 
-	rewind1Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking1)));
-	rewind2Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking2)));
-	rewind3Act->setTextAndTip(tr("-%1").arg(Helper::timeForJumps(pref->seeking3)));
-
-	forward1Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking1)));
-	forward2Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking2)));
-	forward3Act->setTextAndTip(tr("+%1").arg(Helper::timeForJumps(pref->seeking3)));
+	setJumpText(rewind1Act, forward1Act, pref->seeking1);
+	setJumpText(rewind2Act, forward2Act, pref->seeking2);
+	setJumpText(rewind3Act, forward3Act, pref->seeking3);
 }
 
 void TMenuPlay::retranslateStrings() {

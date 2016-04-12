@@ -51,23 +51,6 @@ QString Helper::formatTime(int secs) {
 	return QString("%1%2:%3:%4").arg(negative ? "-" : "").arg(hours, 2, 10, QChar('0')).arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
 }
 
-QString Helper::timeForJumps(int secs) {
-    int minutes = (int) secs / 60;
-	int seconds = secs % 60;
-
-	if (minutes==0) {
-		return QObject::tr("%n second(s)", "", seconds);
-	} else {
-		if (seconds==0) 
-			return QObject::tr("%n minute(s)", "", minutes);
-		else {
-			QString m = QObject::tr("%n minute(s)", "", minutes);
-			QString s = QObject::tr("%n second(s)", "", seconds);
-			return QObject::tr("%1 and %2").arg(m).arg(s);
-		}
-	}
-}
-
 bool Helper::directoryContainsDVD(QString directory) {
 	//qDebug("Helper::directoryContainsDVD: '%s'", directory.latin1());
 

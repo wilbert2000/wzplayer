@@ -25,13 +25,9 @@
 #include "settings/preferences.h"
 
 class Helper {
-
 public:
-
 	// Format a time (hh:mm:ss)
 	static QString formatTime(int secs);
-
-	static QString timeForJumps(int secs);
 
 	static bool directoryContainsDVD(QString directory);
 

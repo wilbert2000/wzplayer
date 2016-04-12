@@ -48,6 +48,10 @@ private:
 	TAction* playPrevAct;
 	TAction* playNextAct;
 	TAction* gotoAct;
+
+	QString timeForJumps(int secs);
+	void setJumpText(TAction* rewindAct, TAction* forwardAct, int secs);
+
 private slots:
 	void onStateChanged(TCoreState state);
 }; // class TMenuPlay
