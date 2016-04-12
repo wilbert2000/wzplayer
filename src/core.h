@@ -448,6 +448,8 @@ private:
 
 	int cache_size;
 
+	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
+
 	bool isMPlayer() const;
 	bool isMPV() const;
 

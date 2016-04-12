@@ -39,10 +39,6 @@ public:
     //! If version is 4.3.2 it returns 40302.
 	static int qtVersion();
 
-	//! Returns a string to be passed to mplayer with the audio equalizer
-	//! values.
-	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
-
 	static QStringList filesForPlaylist(const QString& initial_file,
 										Settings::TPreferences::TAutoAddToPlaylistFilter filter);
 
