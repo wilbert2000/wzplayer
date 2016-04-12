@@ -59,6 +59,9 @@ public:
 	//! so it can be printed on debugging messages.
 	QString stateToString() const;
 
+	//! Generic open, with autodetection of type
+	void open(QString file, int seek = -1);
+	//! Open disc
 	void openDisc(TDiscName disc, bool fast_open = false);
 
 	// Stop player if running and save MediaInfo
@@ -75,11 +78,6 @@ public:
 	bool videoFiltersEnabled(bool displayMessage = false);
 
 public slots:
-	//! Generic open, with autodetection of type
-	void open(QString file, int seek = -1);
-	void openStream(const QString& name);
-	void openTV(QString channel_id);
-
 	void loadSub(const QString& sub);
 	void unloadSub();
 
@@ -454,6 +452,8 @@ private:
 	bool isMPV() const;
 
 	void openFile(const QString& filename, int seek = -1);
+	void openStream(const QString& name);
+	void openTV(QString channel_id);
 
 	void playingNewMediaStarted();
 
