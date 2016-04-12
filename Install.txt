@@ -10,8 +10,8 @@ This document explains how to compile and install wzplayer.
 ----------------------
 For Windows see "Compiling under Windows"
 
-Be sure you have installed the Qt 4 development package. Its name maybe
-qt4-devel, libqt4-dev or similar. Issue the following commands in the
+Be sure you have installed the Qt 4 or higher development package. Its name
+maybe qt4-devel, libqt4-dev or similar. Issue the following commands in the
 directory under which you want to install the source and compile wzplayer:
 
 git clone 'https://github.com/wilbert2000/wzplayer.git' wzplayer
@@ -44,21 +44,20 @@ That would compile wzplayer for /usr but in fact it will be installed in
 
 3) Compiling under Windows
 ----------------------------
-You need to have git and and least Qt 4.4 installed. You can get Qt from
+You need to have git and and least Qt 4.4 with the MinGW compiler installed.
+You can get git from https://git-scm.com/downloads and Qt with MinGW from
 http://www.qt.io/
 
-During the installation of Qt it will ask you for a compiler. Simply let the
-Qt installer download and install MinGW.
-
-To install the WZPlayer source issue the following command from the directory
-under which you want to install the source:
+To install the WZPlayer source open a command line prompt and cd to the
+directory under which you want to install the source. The source will be
+installed in the subdirectory wzplayer with the following command:
 git clone "https://github.com/wilbert2000/wzplayer.git" wzplayer
 
-The next step is to open the Qt console: select the option "Qt 4.x
-Command Prompt" that you'll find under the Qt menu.
+The next step is to open the Qt console: select the option "Qt Command Prompt"
+that you'll find under the Qt menu.
 
-That'll open a new command line shell. cd to the directory where you installed
-the wzplayer source and issue the following command:
+cd to the directory where you installed the wzplayer source and issue the
+following command:
 compile_windows.bat
 
 Compiling should start and take a while.
@@ -83,3 +82,6 @@ Run ./create_deb.sh from the directory where you installed the WZPlayer sources.
 Make sure you have git and rpmbuild installed.
 
 Run ./create_rpm.sh from the directory where you installed the WZPlayer sources.
+
+It will clone the WZPlayer repository to the tmp directory and create the tar
+ball for release.
