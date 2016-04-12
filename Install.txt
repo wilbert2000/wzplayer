@@ -18,7 +18,8 @@ git clone 'https://github.com/wilbert2000/wzplayer.git' wzplayer
 cd wzplayer
 make
 
-If compiling succeeded you can install wzplayer with "make install".
+If compiling succeeded you can install wzplayer with:
+sudo make install
 That will install wzplayer in /usr/local.
 
 
