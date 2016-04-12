@@ -20,6 +20,8 @@
         <file>default-theme/bluray_hd.png</file>
         <file>default-theme/dvd_hd.png</file>
         <file>default-theme/exit.png</file>
+        <file>default-theme/frame_step.png</file>
+        <file>default-theme/frame_back_step.png</file>
         <file>default-theme/forward10m.png</file>
         <file>default-theme/forward10s.png</file>
         <file>default-theme/forward1m.png</file>
