@@ -680,5 +680,22 @@
   <tabstop>save_dirs_check</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>log_debug_check</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>log_verbose_check</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>217</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>242</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
