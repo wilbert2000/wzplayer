@@ -195,7 +195,7 @@ TApp::ExitCode TApp::processArgs() {
 
 	// Uninstall Windows file associations
 #ifdef Q_OS_WIN
-	if (processArgName("uninstall"), args) {
+    if (processArgName("uninstall", args)) {
 #if USE_ASSOCIATIONS
 		// Called by uninstaller. Will restore old associations.
 		WinFileAssoc RegAssoc; 
