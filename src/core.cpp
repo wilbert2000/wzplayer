@@ -844,11 +844,14 @@ bool TCore::haveVideoFilters() const {
 		|| mset.mirror;
 }
 
+#ifdef Q_OS_WIN
+bool TCore::videoFiltersEnabled(bool) {
+    return true;
+}
+#else
 bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 	bool enabled = true;
-
-#ifndef Q_OS_WIN
 	if (isMPlayer()) {
 		QString msg;
 		if (pref->vo.startsWith("vdpau")) {
@@ -865,10 +868,10 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 			emit showMessage(msg, 0);
 		}
 	}
-#endif
 
 	return enabled;
 }
+#endif
 
 void TCore::startPlayer(QString file, double seek) {
 	qDebug() << "TCore::startPlayer:" << file << "at" << seek;
@@ -1311,8 +1314,9 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("correct-pts", pref->use_correct_pts == TPreferences::Enabled);
 	}
 
-	if (!videoFiltersEnabled(true))
+    if (!videoFiltersEnabled(true)) {
 		goto end_video_filters;
+    }
 
 	// Video filters:
 	// Phase
@@ -1446,9 +1450,7 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->addVF("screenshot");
 	}
 
-#ifndef Q_OS_WIN
-	end_video_filters:
-#endif
+end_video_filters:
 
 	// Template for screenshots (only works with mpv)
 	if (isMPV() && pref->use_screenshot) {
@@ -2322,7 +2324,7 @@ int TCore::getVolumeForPlayer() const {
 
 	int volume = getVolume();
 	if (isMPV() && pref->use_soft_vol) {
-		volume = qRound(volume * pref->softvol_max / 100);
+        volume = qRound((qreal)(volume * pref->softvol_max) / 100);
 	}
 	return volume;
 }
