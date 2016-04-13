@@ -1522,12 +1522,12 @@ void TCore::startPlayer(QString file, double seek) {
 			proc->addAF("equalizer", equalizerListToString(getAudioEqualizer()));
 		}
 
-		// Additional audio filters, supplied by user
-		// File
+		// Additional audio filters
+		// Global from pref
 		if (!pref->player_additional_audio_filters.isEmpty()) {
 			proc->setOption("af-add", pref->player_additional_audio_filters);
 		}
-		// Global
+		// This file from mset
 		if (!mset.player_additional_audio_filters.isEmpty()) {
 			proc->setOption("af-add", mset.player_additional_audio_filters);
 		}
