@@ -168,7 +168,7 @@ void TAudio::updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
 		wanted_ao = mpv_ao;
 	}
 	ao_combo->clear();
-	ao_combo->addItem(tr("Players default"), "");
+	ao_combo->addItem(tr("players default"), "");
 
 	QString ao;
 	for (int n = 0; n < ao_list.count(); n++) {
@@ -358,7 +358,6 @@ void TAudio::createHelp() {
 
 	setWhatsThis(ao_combo, tr("Audio output driver"),
 		tr("Select the audio output driver.") 
-#ifndef Q_OS_WIN
 #ifdef Q_OS_OS2
         + " " +
 		tr("%1 is the recommended one. %2 is only available on older MPlayer (before version %3)")
@@ -366,18 +365,19 @@ void TAudio::createHelp() {
            .arg("<b><i>dart</i></b>")
            .arg(MPLAYER_KAI_VERSION)
 #else
-        + " " + 
-		tr("%1 is the recommended one. Try to avoid %2 and %3, they are slow "
-           "and can have an impact on performance.")
-           .arg("<b><i>alsa</i></b>")
-           .arg("<b><i>esd</i></b>")
-           .arg("<b><i>arts</i></b>")
+#ifndef Q_OS_WIN
+		+ " " +
+		tr("%1 and %2 are the most commonly used drivers.")
+		   .arg("<b><i>pulse</i></b>")
+		   .arg("<b><i>alsa</i></b>")
 #endif
+		+ " " +
+		tr("Select <b><i>players default</i></b> to let the player select the audio driver.")
 #endif
 		);
 
 	setWhatsThis(channels_combo, tr("Channels"),
-		tr("Requests the number of playback channels. MPlayer "
+		tr("Requests the number of playback channels. The player will "
 		   "asks the decoder to decode the audio into as many channels as "
 		   "specified. Then it is up to the decoder to fulfill the "
 		   "requirement. This is usually only important when playing "
@@ -389,7 +389,7 @@ void TAudio::createHelp() {
 
 	setWhatsThis(hwac3_check, tr("AC3/DTS pass-through S/PDIF"),
 		tr("Uses hardware AC3 passthrough.") + "<br>" +
-		tr("<b>Note:</b> none of the audio filters will be used when this "
+		tr("<b>Note:</b> audio filters will be disabled when this "
 		   "option is enabled."));
 
 	setWhatsThis(audio_equalizer_check, tr("Enable the audio equalizer"),
@@ -400,10 +400,11 @@ void TAudio::createHelp() {
            "Requires at least MPlayer dev-SVN-r24924."));
 
 	setWhatsThis(softvol_check, tr("Software volume control"),
-		tr("Force using the software mixer instead of the sound card mixer."));
+		tr("Use the software mixer instead of the sound card mixer and amplify"
+		   " the volume by the factor given by <b>Amplification</b>"));
 
 	setWhatsThis(softvol_amp_spin, tr("Amplification"),
-		tr("Sets the amplification level in percent.<br>"
+		tr("Sets the amplification level.<br>"
 		   "100 is no amplification.<br>"
 		   "For MPlayer a value of 200 doubles the volume (linear scale).<br>"
 		   "For MPV a value of 130 doubles the volume (cubic scale)."));
@@ -418,15 +419,17 @@ void TAudio::createHelp() {
 	setWhatsThis(mc_spin, tr("A-V sync correction"),
 		tr("Maximum A-V sync correction per frame (in seconds)"));
 
-	setWhatsThis(language_edit, tr("Language override"),
-		tr("Here you can type your preferred language for the audio streams. "
-		   "When a media with multiple audio streams is found, WZPlayer will "
+	setWhatsThis(language_edit, tr("Language"),
+		tr("Here you can select your preferred language for the audio streams. "
+		   "When media has multiple audio streams, WZPlayer will "
 		   "try to use your preferred language.<br>"
-		   "This only will work with media that offer info about the language "
-		   "of the audio streams, like DVDs or mkv files.<br>"
 		   "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
 		   "will select the audio track if it matches with <i>es</i>, "
-		   "<i>esp</i> or <i>spa</i>."));
+		   "<i>esp</i> or <i>spa</i>.") + "<br><br>"
+		+ tr("<b>Note:</b> WZPlayer will select the first matching track,"
+			 " which might not be the best track for your setup."
+			 " Normally the player will already select tracks in the language"
+			 " of your system and overriding it should not be needed."));
 }
 
 }} // namespace Gui::Pref

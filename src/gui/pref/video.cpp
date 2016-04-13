@@ -23,6 +23,9 @@
 #include "settings/mediasettings.h"
 #include "gui/pref/vdpauproperties.h"
 
+#ifdef Q_OS_WIN
+#include <QSysInfo> // To get Windows version
+#endif
 
 using namespace Settings;
 
@@ -220,7 +223,7 @@ void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
 		wanted_vo = mpv_vo;
 	}
 	vo_combo->clear();
-	vo_combo->addItem(tr("Players default"), "");
+	vo_combo->addItem(tr("players default"), "");
 
 	QString vo;
 	for (int n = 0; n < vo_list.count(); n++) {
@@ -484,22 +487,36 @@ void TVideo::createHelp() {
 	addSectionTitle(tr("Video"));
 	addSectionGroup(tr("Output"));
 
-	setWhatsThis(vo_combo, tr("Video output driver"),
-		tr("Select the video output driver. %1 provides the best performance.")
+	QString remark;
 #ifdef Q_OS_WIN
-		  .arg("<b><i>directx</i></b>")
+	QString driver;
+	if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
+		driver = "direct3d";
+	} else {
+		driver = "directx";
+	}
+	remark = tr("%1 should give good performance.").arg("<b><i>" + driver + "</i></b>");
 #else
 #ifdef Q_OS_OS2
-		  .arg("<b><i>kva</i></b>")
+	remark = tr("%1 is probably your best bet.").arg("<b><i>kva</i></b>");
 #else
-		  .arg("<b><i>xv</i></b>")
+	remark = tr("%1 should work and give reasonable performance.") .arg("<b><i>xv</i></b>");
 #endif
 #endif
+
+	setWhatsThis(vo_combo, tr("Video output driver"),
+		tr("Select the video output driver.") + " "
+		+ remark
+		+ tr("If unsure you can always try <b><i>players default</i></b>."
+			 " You can find the driver selected by the player in the"
+			 " properties dialog (Menu Windows -> View properties)"
+			 " underneath the video heading.")
 		);
 
 	setWhatsThis(hwdec_combo, tr("Hardware decoding"),
-		tr("Sets the hardware video decoding API."
-		   "If hardware decoding is not possible, software decoding will be used instead.")
+		tr("This option only works with MPV.") + " "
+		+ tr("Sets the hardware video decoding API."
+			" If hardware decoding is not possible, software decoding will be used instead.")
 			+ " "
 			+ tr("Available options:")
 			+ "<ul>"
@@ -516,13 +533,14 @@ void TVideo::createHelp() {
 			"<li>" + tr("dxva2-copy: copies video back to system RAM.") + "</li>"
 #endif
 
-			"</ul>"
-			+ tr("This option only works with mpv."));
-
+			"</ul> "
+			+ tr("When video filters are used this option is automatically"
+				 " reset to <b><i>None</b></i> for the currently playing video.")
+			);
 
 	setWhatsThis(software_video_equalizer_check, tr("Software video equalizer"),
 		tr("You can check this option if video equalizing is not supported by "
-		   "your graphic card or the selected video output driver.<br>"
+		   "your graphics card or the selected video output driver.<br>"
 		   "<b>Note:</b> this option can be incompatible with some video "
 		   "output drivers."));
 

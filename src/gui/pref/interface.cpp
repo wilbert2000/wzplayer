@@ -510,12 +510,14 @@ void TInterface::createHelp() {
 	addSectionTitle(tr("Fullscreen"));
 
 	setWhatsThis(hide_toolbars_spin, tr("Hide toolbars after"),
-		tr("Sets the time (in milliseconds) to hide the toolbars after the mouse went away from the control."));
+		tr("Sets the time in milliseconds to hide the toolbars after the mouse left a toolbar."));
 
-	setWhatsThis(show_toolbars_bottom_only_check, tr("Show toolbars only when moving the mouse to the bottom of the screen"),
-		tr("If this option is checked, the toolbars will only be displayed when the mouse is moved "
-		   "to the bottom of the screen. Otherwise the control will appear whenever the mouse is moved, no matter "
-		   "its position."));
+	setWhatsThis(show_toolbars_bottom_only_check,
+		tr("Show toolbars only when moving the mouse to the bottom of the screen"),
+		tr("If this option is checked, the toolbars will only be displayed when"
+		   " the mouse is moved to the bottom of the screen or over a hidden"
+		   " toolbar. Otherwise the control will appear whenever the mouse is"
+		   " moved, no matter its position."));
 
 	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
 		tr("If this option is checked, all videos will start to play in "
@@ -538,19 +540,20 @@ void TInterface::createHelp() {
 
 	setWhatsThis(autosave_on_exit_check, tr("Save copy of playlist on exit"),
 		tr("If this option is checked, a copy of the playlist will be saved "
-		   "in the wzplayer configuration when wzplayer is closed, and it will "
-		   "reloaded automatically when wzplayer is run again."));
+		   "in the wzplayer configuration when wzplayer is closed, and will "
+		   "be reloaded automatically when wzplayer is run again."));
 
 	addSectionTitle(tr("Logs"));
 
 	setWhatsThis(log_debug_check, tr("Log debug messages"),
 		tr("If checked, WZPlayer will log debug messages, "
 		   "which might give additional information in case of trouble. "
-		   "Non-debug messages are always logged. "
+		   "Non-debug messages are always logged. This option will only "
+		   "affect versions of WZPlayer compiled with DEBUG defined."
 		   "You can view the log with menu <b>Window - View log</b>."));
 
 	setWhatsThis(log_verbose_check, tr("Verbose"),
-		tr("Request verbose messages from player for troubleshooting."));
+		tr("Request verbose messages from the player for troubleshooting."));
 
 	setWhatsThis(log_file_check, tr("Save WZPlayer log to file"),
 		tr("If this option is checked, the WZPlayer log wil be recorded to %1")

@@ -240,7 +240,7 @@ void TGeneral::createHelp() {
 	clearHelp();
 
 	setWhatsThis(mplayer_radio, tr("MPlayer"),
-		tr("Select MPlayer as the media player to use by WZPlayer."));
+		tr("Selects MPlayer as the media player to use by WZPlayer."));
 
 	setWhatsThis(mplayer_edit, tr("MPlayer executable"),
 		tr("The path to the MPlayer executable file.")
@@ -249,7 +249,7 @@ void TGeneral::createHelp() {
 		+ "</b>");
 
 	setWhatsThis(mpv_radio, tr("MPV"),
-		tr("Select MPV as the media player to use by WZPlayer."));
+		tr("Selects MPV as the media player to use by WZPlayer."));
 
 	setWhatsThis(mpv_edit, tr("MPV executable"),
 		tr("The path to the MPV executable file.")
@@ -263,17 +263,17 @@ void TGeneral::createHelp() {
 		   " Errors will always be shown in the statusbar."));
 
 	setWhatsThis(settings_group, tr("Remember settings for every file"),
-		tr("When checked WZPlayer will remember the settings you make for each file"
+		tr("If checked WZPlayer will remember the settings you make for every file"
 		   " and reload them when you play the file again."));
 
 	setWhatsThis(remember_time_check, tr("Remember time position"),
-		tr("If you check this option, WZPlayer will remember the last position "
+		tr("If checked, WZPlayer will remember the last position "
            "of the file when you open it again. This option works only with "
            "regular files (not with DVDs, CDs, URLs...)."));
 
 	setWhatsThis(remember_volume_check, tr("Remember volume"),
-		tr("If not checked, the same volume will be used for all files you play."
-		   " If checked each file uses its own volume.")
+		tr("If checked, each file uses and remembers its own volume."
+		   "If not checked, the volume is left unchanged when loading a new file.")
 		+ "<br>"
 		+ tr("This option also applies to the mute state."));
 
@@ -283,18 +283,22 @@ void TGeneral::createHelp() {
 		   "and loaded back when the file is played later."));
 
 	setWhatsThis(filesettings_method_combo, tr("Method to store the file settings"),
-		tr("This option allows to change the way the file settings would be "
-           "stored. The following options are available:") +"<ul><li>" + 
-		tr("<b>one ini file</b>: the settings for all played files will be "
-		   "saved in a single ini file (%1)").arg(QString("<i>" + TPaths::iniPath() +"</i>")) + "</li><li>" +
-		tr("<b>multiple ini files</b>: one ini file will be used for each played file. "
-		   "Those ini files will be saved in the folder %1").arg(QString("<i>"+TPaths::configPath()+"/file_settings</i>")) + "</li></ul>" +
+		tr("This option allows to change the way the file settings will be "
+		   "stored. The following options are available:")
+		+ "<ul><li>"
+		+ tr("<b>one ini file</b>: the settings for all played files will be "
+			 "saved in a single ini file (%1)")
+			.arg(QString("<i>" + TPaths::configPath() + "/file_settings.ini</i>"))
+		+ "</li><li>"
+		+ tr("<b>multiple ini files</b>: one ini file will be used for each played file. "
+			 "Those ini files will be saved in the folder %1")
+			.arg(QString("<i>"+TPaths::configPath()+"/file_settings</i>")) + "</li></ul>" +
 		tr("The latter method could be faster if there is info for a lot of files."));
 
 #ifndef Q_OS_WIN
 	setWhatsThis(radio_tv_rescan_check, tr("Check for new radio and TV channels on startup"),
 		tr("If this option is checked, WZPlayer will look for new TV and radio"
-		   " channels in ~/.mplayer/channels.conf.ter"
+		   " channels in ~/.mplayer/channels.conf.ter "
 		   " or ~/.mplayer/channels.conf."));
 #endif
 

@@ -401,7 +401,7 @@ void TSubtitles::createHelp() {
 
 	setWhatsThis(language_edit, tr("Language"),
 		tr("Here you can give your preferred language for the subtitle stream. "
-		   "When a media with multiple subtitle streams is found, WZPlayer will "
+		   "When media has multiple subtitle streams, WZPlayer will "
 		   "try to use your preferred language.<br>"
 		   "This only will work with media that offers info about the language "
 		   "of the subtitle streams, like DVDs or mkv files.<br>"
@@ -410,14 +410,10 @@ void TSubtitles::createHelp() {
 		   "<i>esp</i> or <i>spa</i>."));
 
 	setWhatsThis(select_first_subtitle_check, tr("Select first available subtitle"),
-        tr("If there are one or more subtitle tracks available, one of them "
-           "will be automatically selected, usually the first one, although if "
-           "one of them matches the user's preferred language that one will "
-           "be used instead."));
+		tr("If checked, selects the first subtitle track if no track matches <b>Language</b>."));
 
 	setWhatsThis(enca_lang_combo, tr("Guess the encoding for language"),
-		tr("Select the language for which you want the encoding to be guessed "
-		   "automatically."));
+		tr("Select the language for which you want the encoding to be guessed."));
 
 	setWhatsThis(encoding_fallback_combo, tr("Encoding when detection fails"),
         tr("Select the encoding which will be used for subtitle files "

@@ -112,7 +112,7 @@ void TAdvanced::createHelp() {
 	setWhatsThis(actions_to_run_edit, tr("Actions list"),
 		tr("Here you can specify a list of <i>actions</i> which will be "
            "run every time a file is opened. You'll find all available "
-           "actions in the key shortcut editor in the <b>Keyboard and mouse</b> "
+		   "actions in the shortcut editor in the <b>Actions</b> "
            "section. The actions must be separated by spaces. Checkable "
            "actions can be followed by <i>true</i> or <i>false</i> to "
            "enable or disable the action.") +"<br>"+

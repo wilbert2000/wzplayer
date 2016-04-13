@@ -136,16 +136,15 @@ void TCapture::createHelp() {
 
 	addSectionTitle(tr("Capture"));
 
-	addSectionGroup(tr("Screenshots"));
+	setWhatsThis(screenshot_edit, tr("Directory to store screenshots and captured video"),
+		tr("Here you can specify the folder where screenshots and video dumps"
+		   " will be stored. If the folder is not valid the screenshot feature"
+		   " will be disabled."));
 
 	setWhatsThis(screenshots_group, tr("Enable screenshots"),
-		tr("You can use this option to enable or disable the possibility to "
-		   "take screenshots."));
-
-	setWhatsThis(screenshot_edit, tr("Screenshots folder"),
-		tr("Here you can specify a folder where the screenshots taken by "
-		   "WZPlayer will be stored. If the folder is not valid the "
-		   "screenshot feature will be disabled."));
+		tr("You can use this option to enable or disable the possibility to"
+		   " take screenshots. When enabled an extra video filter will be added"
+		   " to make taking screenshots possible."));
 
 	setWhatsThis(screenshot_template_edit, tr("Template for screenshots"),
 		tr("MPV only. This option specifies the filename template used to save screenshots.") + " " +
@@ -162,7 +161,7 @@ void TCapture::createHelp() {
 	setWhatsThis(subtitles_on_screeshots_check,
 		tr("Include subtitles on screenshots"),
 		tr("If this option is checked, the subtitles will appear in the "
-		   "screenshots. <b>Note:</b> it may cause some troubles sometimes."));
+		   "screenshots.<br><b>Note:</b> it may cause trouble sometimes."));
 }
 
 }} // namespace Gui::Pref
