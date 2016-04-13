@@ -1,7 +1,5 @@
-wzplayer (2016.04.10) precise; urgency=low
+wzplayer (2016.04.12) precise; urgency=low
 
 * For the changelog see https://github.com/wilbert2000/wzplayer/commits/master
-* To find your version search for the digits following the g in your version
-* %{version}
-* Thu Jun 14 2007 Sebastian Vahl <fedora@deadbabylon.de> - 0.5.7-1
-- Initial Release
+* To find your version search for the string following the -g in your version.
+*
