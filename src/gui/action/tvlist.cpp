@@ -35,12 +35,18 @@ TTVList::TTVList(QWidget* parent,
 				 const QString& text,
 				 const QString& icon,
 				 const QString& filename,
-				 bool check_channels_conf,
-				 Services services)
-	: TFavorites(parent, aTranslator, name, text, icon, filename)
-{
+#ifdef Q_OS_WIN
+                 bool,
+                 Services
+#else
+                 bool check_channels_conf,
+                 Services services
+#endif
+                 )
+    : TFavorites(parent, aTranslator, name, text, icon, filename) {
+
 #ifndef Q_OS_WIN
-	if (check_channels_conf) {
+    if (check_channels_conf) {
 		/* f_list.clear(); */
 		parse_channels_conf(services);
 		updateMenu();

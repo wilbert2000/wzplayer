@@ -133,7 +133,7 @@ void TSubtitles::setData(Settings::TPreferences* pref) {
 #ifdef Q_OS_WIN
 	windowsfontdir_check->setChecked(pref->use_windowsfontdir);
 	if (!windowsfontdir_check->isChecked())
-		on_windowsfontdir_check_toggled(false);
+        onWindowsFontDirCheckToggled(false);
 #endif
 
 	// Libraries tab

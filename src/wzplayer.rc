@@ -1,10 +1,8 @@
 #include <winver.h>
 
-#define WZPLAYER_FILEVERSION 1,0,0,0
-
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         WZPLAYER_FILEVERSION
-PRODUCTVERSION      WZPLAYER_FILEVERSION
+FILEVERSION         2016,4,13,0
+PRODUCTVERSION      2016,4,13,0
 FILEOS              VOS_NT_WINDOWS32
 FILETYPE            VFT_APP
 {
@@ -18,7 +16,7 @@ FILETYPE            VFT_APP
       #else
       VALUE "FileDescription", "WZPlayer\0"
       #endif
-      VALUE "FileVersion", WZPLAYER_VERSION_STR "\0"
+      VALUE "FileVersion", "2016,4,13,0\0"
       VALUE "InternalName", "wzplayer\0"
       VALUE "LegalCopyright", "Copyright (c) Wilbert Hengst\0"
       VALUE "OriginalFilename", "wzplayer.exe\0"
@@ -27,7 +25,7 @@ FILETYPE            VFT_APP
       #elif defined(_WIN32) && !defined(_WIN64)
       VALUE "ProductName", "WZPlayer for Windows (32-bit)\0"
       #endif
-      VALUE "ProductVersion", WZPLAYER_VERSION_STR "\0"
+      VALUE "ProductVersion", "2016,4,13,0\0"
     }
   }
   BLOCK "VarFileInfo"

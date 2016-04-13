@@ -9,6 +9,10 @@
 #include "gui/videoequalizer.h"
 #include "gui/base.h"
 
+#ifdef Q_OS_WIN
+#include "gui/deviceinfo.h"
+#endif
+
 
 using namespace Settings;
 
@@ -206,8 +210,8 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 		for (int n = 0; n < display_devices.count(); n++) {
 			int id = display_devices[n].ID().toInt();
 			QString desc = display_devices[n].desc();
-			TAction* screen_item = new TActionGroupItem(this, screenGroup,
-				QString("screen_%1").arg(n),
+            new TActionGroupItem(this, screenGroup,
+                QString("screen_%1").arg(n),
 				"&" + QString::number(n) + " - " + desc,
 				id, false);
 		}
@@ -216,7 +220,7 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 #endif // Q_OS_WIN
 
 	for (int n = 1; n <= 4; n++) {
-		TAction* screen_item = new TActionGroupItem(this, screenGroup,
+        new TActionGroupItem(this, screenGroup,
 			QString("screen_%1").arg(n), "&" + QString::number(n), n, false);
 	}
 
@@ -333,7 +337,7 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 	bool enableVideo = !stopped && video;
 
 #if USE_ADAPTER
-	screenGroup->setActionsEnabled(enableVideo && pref->vo.startsWith("directx"));
+    screenGroup->setEnabled(enableVideo && pref->vo.startsWith("directx"));
 #endif
 
 	equalizerAct->setEnabled(enableVideo);

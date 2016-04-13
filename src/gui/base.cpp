@@ -899,9 +899,9 @@ void TBase::applyNewPreferences() {
 	pref_dialog->getData(pref);
 
 	// Update and save playlist preferences
-	Pref::TInterface* interface = pref_dialog->mod_interface();
-	playlist->setDirectoryRecursion(interface->directoryRecursion());
-	playlist->setSavePlaylistOnExit(interface->savePlaylistOnExit());
+    Pref::TInterface* mod_interface = pref_dialog->mod_interface();
+    playlist->setDirectoryRecursion(mod_interface->directoryRecursion());
+    playlist->setSavePlaylistOnExit(mod_interface->savePlaylistOnExit());
 	playlist->saveSettings();
 
 	// Update actions
@@ -912,14 +912,14 @@ void TBase::applyNewPreferences() {
 	pref->save();
 
 	// Style change needs recreation of main window
-	if (interface->styleChanged()) {
+    if (mod_interface->styleChanged()) {
 		// Request restart and optional reset style to default
 		restartWZPlayer(pref->style.isEmpty());
 		return;
 	}
 
 	// Player bin or icon set change needs restart TApp
-	if (pref->player_bin != old_player_bin || interface->iconsetChanged()) {
+    if (pref->player_bin != old_player_bin || mod_interface->iconsetChanged()) {
 		// Request restart, don't reset style
 		restartWZPlayer(false);
 		return;
@@ -933,7 +933,7 @@ void TBase::applyNewPreferences() {
 	TLog::log->setLogFileEnabled(pref->log_file);
 
 	// Load translation if language changed.
-	if (interface->languageChanged()) {
+    if (mod_interface->languageChanged()) {
 		// Handled by TApp::loadTranslation()
 		emit loadTranslation();
 	}
@@ -972,7 +972,7 @@ void TBase::applyNewPreferences() {
 	// Hide toolbars delay
 	auto_hide_timer->setInterval(pref->floating_hide_delay);
 	// Recents
-	if (interface->recentsChanged()) {
+    if (mod_interface->recentsChanged()) {
 		openMenu->updateRecents();
 	}
 
@@ -2308,12 +2308,12 @@ bool TBase::winEvent (MSG* m, long* result) {
 
 	if (m->message == WM_SYSCOMMAND) {
 		if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
-			|| ((m->wParam & 0xFFF0) == SC_MONITORPOWER) {
+            || ((m->wParam & 0xFFF0) == SC_MONITORPOWER)) {
 			qDebug("Gui::TBase::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
 			qDebug("Gui::TBase::winEvent: playing: %d", core->state() == STATE_PLAYING);
 			qDebug("Gui::TBase::winEvent: video: %d", !core->mdat.noVideo());
 			
-			if (core->state() == STATE_PLAYING && !core->mdat.noVideo())) {
+            if (core->state() == STATE_PLAYING && core->mdat.hasVideo()) {
 				qDebug("Gui::TBase::winEvent: not allowing screensaver");
 				(*result) = 0;
 				return true;

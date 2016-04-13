@@ -109,7 +109,7 @@ QString Images::file(const QString& name) {
 QPixmap Images::icon(const QString& name, int size) {
 
 	if (name.isEmpty())
-		return 0;
+        return QPixmap();
 
 	QString icon_name = file(name);
 	QPixmap p(icon_name);
