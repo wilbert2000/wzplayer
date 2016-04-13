@@ -105,12 +105,12 @@ void TPreferences::reset() {
 
 #ifdef Q_OS_WIN
 	if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
-		mplayer_vo = "direct3d,";
+		mplayer_vo = "direct3d";
 		mpv_vo = mplayer_vo;
 	} else {
-		mplayer_vo = "directx,";
+		mplayer_vo = "directx";
 		mpv_vo = mplayer_vo;
-}
+	}
 #else
 #ifdef Q_OS_OS2
 	mplayer_vo = "kva";
