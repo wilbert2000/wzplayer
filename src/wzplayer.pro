@@ -466,12 +466,12 @@ TRANSLATIONS = translations/es.ts translations/de.ts \
                translations/sq_AL.ts
 
 OTHER_FILES += \
-    ../Readme.txt \
-    ../wzplayer.spec \
+    ../create_deb.sh \
     ../create_rpm.sh \
     ../Install.txt \
-    ../create_deb.sh \
+    ../latest_versions.txt \
+    ../Readme.txt \
+    ../wzplayer.spec \
     ../setup/scripts/install_wzplayer.cmd \
     ../setup/scripts/make_pkgs.cmd \
-    ../latest_versions.txt \
     ../man/wzplayer.1
