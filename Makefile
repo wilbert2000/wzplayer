@@ -62,7 +62,7 @@ Changelog:
 	echo "See https://github.com/wilbert2000/wzplayer/commits/master" > $(CHANGELOG)
 
 clean:
-	-rm -rf $(BUILDDIR)
+	-rm -r $(BUILDDIR)
 	-rm src/translations/*.qm
 	-rm $(CHANGELOG)
 
