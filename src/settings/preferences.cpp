@@ -250,7 +250,7 @@ void TPreferences::reset() {
 
 	monitor_aspect=""; // Autodetect
 
-	use_idx = false;
+	use_idx = true;
 	use_lavf_demuxer = false;
 
 	player_additional_options = "";
