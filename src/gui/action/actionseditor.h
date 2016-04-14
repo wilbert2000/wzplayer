@@ -72,7 +72,8 @@ public slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent* event) ;
+	virtual void changeEvent(QEvent* event);
+	virtual void resizeEvent(QResizeEvent* event);
 
 	// Find in table, not in actionslist
 	int findActionName(const QString& name);
@@ -103,6 +104,7 @@ private:
 	static QString actionToString(const QAction& action);
 	static void setActionFromString(QAction& action, const QString& s, const TActionList& actions);
 	static void removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action);
+	void resizeColumns();
 };
 
 } // namespace Action

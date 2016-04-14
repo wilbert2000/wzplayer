@@ -51,7 +51,8 @@ public:
 
 protected:
 	static void populateList(QListWidget* w, const TActionList& actions_list);
-	void virtual resizeEvent(QResizeEvent* event);
+	virtual void resizeEvent(QResizeEvent* event);
+	virtual void changeEvent(QEvent* event);
 
 protected slots:
 	void on_up_button_clicked();
@@ -63,18 +64,18 @@ protected slots:
 	void checkRowsAllList(int currentRow);
 	void onCurrentCellChanged(int currentRow, int currentColumn,
 							  int previousRow, int previousColumn);
-	void resizeColumns();
 
 private:
 	const TActionList* all_actions;
 	QStringList default_actions;
-	bool fix_scrollbars;
 
 	bool getVis(int row, int col);
 	void insertRowFromAction(int row, QAction* action, bool ns, bool fs);
 	void insertSeparator(int row, bool ns, bool fs);
 	void swapRows(int row1, int row2);
 	void setCurrentRow(int row);
+	void resizeColumns();
+	void retranslateStrings();
 }; // class TToolbarEditor
 
 } // namespace Action

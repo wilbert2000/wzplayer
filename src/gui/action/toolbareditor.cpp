@@ -32,18 +32,18 @@
 namespace Gui {
 namespace Action {
 
-enum cols {
-	COL_ICON = 0,
-	COL_NAME = 1,
-	COL_DESC = 2,
-	COL_NS = 3,
-	COL_FS = 4
+enum TCols {
+	COL_NS = 0,
+	COL_FS = 1,
+	COL_ICON = 2,
+	COL_NAME = 3,
+	COL_DESC = 4,
+	COL_COUNT = 5
 };
 
-TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f)
-	: QDialog(parent, f)
-	, fix_scrollbars(true)
-{
+TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f) :
+	QDialog(parent, f) {
+
 	setupUi(this);
 
 	up_button->setIcon(Images::icon("up"));
@@ -79,10 +79,46 @@ TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f)
 	// //active_actions_list->setDragDropMode(QAbstractItemView::InternalMove);
 #endif
 
-	active_actions_table->setColumnCount(5);
-	QStringList headers;
-	headers << "" << tr("Name") << tr("Description") << tr("NS") << tr("FS");
-	active_actions_table->setHorizontalHeaderLabels(headers);
+	active_actions_table->setColumnCount(COL_COUNT);
+
+#if QT_VERSION_MAJOR >= 5
+	active_actions_table->horizontalHeader()->setSectionResizeMode(COL_NS, QHeaderView::Fixed);
+	active_actions_table->horizontalHeader()->setSectionResizeMode(COL_FS, QHeaderView::Fixed);
+	active_actions_table->horizontalHeader()->setSectionResizeMode(COL_ICON, QHeaderView::Fixed);
+#else
+	active_actions_table->horizontalHeader()->setResizeMode(COL_NS, QHeaderView::Fixed);
+	active_actions_table->horizontalHeader()->setResizeMode(COL_FS, QHeaderView::Fixed);
+	active_actions_table->horizontalHeader()->setResizeMode(COL_ICON, QHeaderView::Fixed);
+#endif
+
+	active_actions_table->horizontalHeader()->setStretchLastSection(true);
+	retranslateStrings();
+}
+
+void TToolbarEditor::retranslateStrings() {
+
+	retranslateUi(this);
+
+	QTableWidgetItem* header = new QTableWidgetItem(
+		QIcon(Images::icon("normalscreen", 24)), "");
+	header->setToolTip(tr("Show button in normal window"));
+	active_actions_table->setHorizontalHeaderItem(COL_NS, header);
+
+	header = new QTableWidgetItem(QIcon(Images::icon("fullscreen", 24)), "");
+	header->setToolTip(tr("Show button in full screen"));
+	active_actions_table->setHorizontalHeaderItem(COL_FS, header);
+
+	header = new QTableWidgetItem("");
+	header->setToolTip(tr("The icon to put on the button"));
+	active_actions_table->setHorizontalHeaderItem(COL_ICON, header);
+
+	header = new QTableWidgetItem(tr("Action"));
+	header->setToolTip(tr("The action to execute when the button is clicked"));
+	active_actions_table->setHorizontalHeaderItem(COL_NAME, header);
+
+	header = new QTableWidgetItem(tr("Text"));
+	header->setToolTip(tr("The text to use as hint and when there is no icon"));
+	active_actions_table->setHorizontalHeaderItem(COL_DESC, header);
 }
 
 TToolbarEditor::~TToolbarEditor() {
@@ -230,28 +266,17 @@ void TToolbarEditor::resizeColumns() {
 
 	active_actions_table->resizeColumnsToContents();
 
-	int icon_width = active_actions_table->columnWidth(COL_ICON);
-	int check_width = active_actions_table->columnWidth(COL_NS);
-
 	int w = active_actions_table->width()
-			- icon_width
-			- 2 * check_width
+			- 2 * active_actions_table->columnWidth(COL_NS)
+			- active_actions_table->columnWidth(COL_ICON)
 			- 2 * active_actions_table->columnCount();
 
 	if (active_actions_table->verticalScrollBar()->isVisible()) {
 		w -= active_actions_table->verticalScrollBar()->width();
-		fix_scrollbars = false;
 	}
 
-	w = w / 2;
-	active_actions_table->setColumnWidth(COL_NAME, w);
-	active_actions_table->setColumnWidth(COL_DESC, w);
-
-	// Fix scrollbars not yet visible
-	if (fix_scrollbars) {
-		fix_scrollbars = false;
-		QTimer::singleShot(250, this, SLOT(resizeColumns()));
-	}
+	active_actions_table->setColumnWidth(COL_NAME, w / 2);
+	active_actions_table->resizeRowsToContents();
 }
 
 void TToolbarEditor::resizeEvent(QResizeEvent* event) {
@@ -450,6 +475,15 @@ QAction* TToolbarEditor::findAction(const QString& action_name, const TActionLis
 	}
 
 	return 0;
+}
+
+void TToolbarEditor::changeEvent(QEvent* e) {
+
+	if (e->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	} else {
+		QDialog::changeEvent(e);
+	}
 }
 
 } // namespace Action

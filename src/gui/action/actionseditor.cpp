@@ -25,10 +25,11 @@
 #include <QTableWidget>
 #include <QHeaderView>
 
-#include <QLayout>
-#include <QObject>
-#include <QPushButton>
 #include <QString>
+#include <QAction>
+#include <QLayout>
+#include <QScrollBar>
+#include <QPushButton>
 #include <QSettings>
 #include <QFile>
 #include <QTextStream>
@@ -36,7 +37,8 @@
 #include <QFileInfo>
 #include <QRegExp>
 #include <QApplication>
-#include <QAction>
+#include <QTimer>
+#include <QResizeEvent>
 
 #include "images.h"
 #include "filedialog.h"
@@ -96,8 +98,11 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 namespace Gui {
 namespace Action {
 
-TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f) {
+const int width_icon = 16;
+const int margins = 2;
+
+TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
+	QWidget(parent, f) {
 
 	latest_dir = Settings::TPaths::shortcutsPath();
 
@@ -105,13 +110,15 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f)
 	actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);
 	actionsTable->verticalHeader()->hide();
 
-#if QT_VERSION >= 0x050000
-	actionsTable->horizontalHeader()->setSectionResizeMode(COL_ACTION, QHeaderView::Stretch);
-	actionsTable->horizontalHeader()->setSectionResizeMode(COL_DESC, QHeaderView::Stretch);
+	actionsTable->setColumnWidth(COL_CONFLICTS, width_icon + margins);
+
+#if QT_VERSION_MAJOR >= 5
+	actionsTable->horizontalHeader()->setSectionResizeMode(COL_CONFLICTS, QHeaderView::Fixed);
 #else
-	actionsTable->horizontalHeader()->setResizeMode(COL_ACTION, QHeaderView::Stretch);
-	actionsTable->horizontalHeader()->setResizeMode(COL_DESC, QHeaderView::Stretch);
+	actionsTable->horizontalHeader()->setResizeMode(COL_CONFLICTS, QHeaderView::Fixed);
 #endif
+
+	actionsTable->horizontalHeader()->setStretchLastSection(true);
 
 	actionsTable->setAlternatingRowColors(true);
 	actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -188,6 +195,25 @@ void TActionsEditor::addActions(QWidget* widget) {
 	updateView();
 }
 
+void TActionsEditor::resizeColumns() {
+
+	int w = (width() - width_icon - margins * actionsTable->columnCount())
+			/ (actionsTable->columnCount() - 1);
+
+	for (int col = 1; col < actionsTable->columnCount() - 1; col++) {
+		actionsTable->setColumnWidth(col, w);
+	}
+
+	actionsTable->resizeRowsToContents();
+}
+
+void TActionsEditor::resizeEvent(QResizeEvent* event) {
+	qDebug("Gui::Action::TToolbarEditor::resizeEvent %d", event->spontaneous());
+
+	QWidget::resizeEvent(event);
+	resizeColumns();
+}
+
 void TActionsEditor::updateView() {
 
 	actionsTable->setRowCount(actionsList.count());
@@ -224,8 +250,8 @@ void TActionsEditor::updateView() {
 
 	hasConflicts(); // Check for conflicts
 
-	actionsTable->resizeColumnsToContents();
 	actionsTable->setCurrentCell(0, COL_SHORTCUT);
+	resizeColumns();
 }
 
 void TActionsEditor::applyChanges() {
@@ -437,7 +463,7 @@ QString TActionsEditor::shortcutsToString(const TShortCutList& shortcuts) {
 	for (int n = 0; n < shortcuts.count(); n++) {
 		s += shortcuts[n].toString(QKeySequence::PortableText);
 		if (n < shortcuts.count() - 1)
-			s += ",";
+			s += ", ";
 	}
 
 	return s;
