@@ -209,7 +209,7 @@ void TPaths::createFontFile() {
 	QString input = app_path + "/mplayer/fonts/fonts.conf";
 	if (!QFile::exists(input)) {
 		qDebug("Settings::TPaths::createFontFile: %s doesn't exist", input.toUtf8().constData());
-		input = app_path + "/mplayer/mpv/fonts.conf";
+        input = app_path + "/mpv/fonts.conf";
 		if (!QFile::exists(input)) {
 			qDebug("Settings::TPaths::createFontFile: %s doesn't exist", input.toUtf8().constData());
 			qWarning("Settings::TPaths::createFontFile: failed to create fonts.conf");
