@@ -197,10 +197,6 @@ public:
 	QString cdrom_device;
 	QString bluray_device;
 
-#ifdef Q_OS_WIN
-	bool enable_audiocd_on_windows;
-#endif
-
 	int vcd_initial_title;
 
 	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:

@@ -192,13 +192,7 @@ void TPreferences::reset() {
 	if (QFile::exists("/dev/cdrom")) cdrom_device = "/dev/cdrom";
 #endif
 
-#ifdef Q_OS_WIN
-	// TODO:
-	enable_audiocd_on_windows = false;
-#endif
-
 	vcd_initial_title = 2; // Most VCD's start at title #2
-
 	use_dvdnav = true;
 
     /* ***********
@@ -540,10 +534,6 @@ void TPreferences::save() {
 	setValue("dvd_device", dvd_device);
 	setValue("cdrom_device", cdrom_device);
 	setValue("bluray_device", bluray_device);
-
-#ifdef Q_OS_WIN
-	setValue("enable_audiocd_on_windows", enable_audiocd_on_windows);
-#endif
 
 	setValue("vcd_initial_title", vcd_initial_title);
 
@@ -1049,10 +1039,6 @@ void TPreferences::load() {
 	dvd_device = value("dvd_device", dvd_device).toString();
 	cdrom_device = value("cdrom_device", cdrom_device).toString();
 	bluray_device = value("bluray_device", bluray_device).toString();
-
-#ifdef Q_OS_WIN
-	enable_audiocd_on_windows = value("enable_audiocd_on_windows", enable_audiocd_on_windows).toBool();
-#endif
 
 	// TODO: move to Preferred??
 	vcd_initial_title = value("vcd_initial_title", vcd_initial_title).toInt();
