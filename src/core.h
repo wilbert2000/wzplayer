@@ -332,7 +332,6 @@ public slots:
 signals:
 	void stateChanged(TCoreState state);
 	void mediaSettingsChanged();
-	void aboutToStartPlaying(); // Signal emited just before starting player
 	void videoOutResolutionChanged(int w, int h);
 	void newMediaStartedPlaying();
 	void mediaLoaded();
@@ -414,13 +413,6 @@ protected slots:
 
 	void dvdnavUpdateMousePos(QPoint);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-	void enableScreensaver();
-	void disableScreensaver();
-#endif
-#endif
-
 protected:
 	Proc::TPlayerProcess* proc;
 	TPlayerWindow* playerwindow;
@@ -470,6 +462,9 @@ private:
 	int getVolumeForPlayer() const;
 
 	void seekCmd(double secs, int mode);
+
+    void enableScreensaver();
+    void disableScreensaver();
 };
 
 #endif

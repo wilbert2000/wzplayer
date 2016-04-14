@@ -160,12 +160,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 #ifdef DISABLE_SCREENSAVER
 	// Windows or OS2 screensaver
 	win_screensaver = new WinScreenSaver();
-	connect(this, SIGNAL(aboutToStartPlaying()),
-			this, SLOT(disableScreensaver()));
-	connect(proc, SIGNAL(processExited(bool)),
-			this, SLOT(enableScreensaver()), Qt::QueuedConnection);
-	connect(proc, SIGNAL(error(QProcess::ProcessError)),
-			this, SLOT(enableScreensaver()), Qt::QueuedConnection);
 #endif
 #endif
 }
@@ -189,6 +183,7 @@ void TCore::processError(QProcess::ProcessError error) {
 	playerwindow->restoreNormalWindow();
 
 	emit playerError(error);
+    enableScreensaver();
 }
 
 void TCore::processFinished(bool normal_exit) {
@@ -196,6 +191,7 @@ void TCore::processFinished(bool normal_exit) {
 
 	// Restore normal window background
 	playerwindow->restoreNormalWindow();
+    enableScreensaver();
 
 	// Cancel restarting to enter the stopped state in case
 	// the restarted player unexpectedly finished
@@ -455,19 +451,25 @@ void TCore::open(QString file, int seek) {
 	}
 }
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
 void TCore::enableScreensaver() {
 	qDebug("TCore::enableScreensaver");
-	win_screensaver->enable();
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef DISABLE_SCREENSAVER
+    win_screensaver->enable();
+#endif
+#endif
 }
 
 void TCore::disableScreensaver() {
 	qDebug("TCore::disableScreensaver");
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef DISABLE_SCREENSAVER
 	win_screensaver->disable();
+#endif
+#endif
 }
-#endif
-#endif
 
 void TCore::setExternalSubs(const QString &filename) {
 
@@ -1601,7 +1603,7 @@ end_video_filters:
 		proc->setOption("loop", "0");
 	}
 
-	emit aboutToStartPlaying();
+    disableScreensaver();
 
 	// Setup environment
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
