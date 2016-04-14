@@ -317,7 +317,7 @@ void TPreferences::reset() {
 	relative_seeking = false;
 	precise_seeking = true;
 
-	delay_left_click = false;
+	delay_left_click = true;
 
 	language = "";
 
