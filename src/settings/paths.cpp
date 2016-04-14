@@ -38,7 +38,7 @@ QString TPaths::app_path;
 QString TPaths::config_path;
 
 
-QString TPaths::writableLocation(TLocation type) {
+QString TPaths::location(TLocation type) {
 
 	QString path;
 
@@ -71,7 +71,7 @@ void TPaths::setConfigPath(const QString& path) {
 		config_path = app_path;
 #else
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		config_path = writableLocation(TLocation::DataLocation);
+		config_path = location(TLocation::DataLocation);
 #else
 		const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
 		if (XDG_CONFIG_HOME != NULL) {

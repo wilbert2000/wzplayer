@@ -1497,9 +1497,9 @@ double TPreferences::monitorAspectDouble() {
 void TPreferences::setupScreenshotFolder() {
 
 	if (screenshot_directory.isEmpty()) {
-        QString pdir = TPaths::writableLocation(TPaths::TLocation::PicturesLocation);
-        if (pdir.isEmpty()) pdir = TPaths::writableLocation(TPaths::TLocation::DocumentsLocation);
-        if (pdir.isEmpty()) pdir = TPaths::writableLocation(TPaths::TLocation::HomeLocation);
+		QString pdir = TPaths::location(TPaths::TLocation::PicturesLocation);
+		if (pdir.isEmpty()) pdir = TPaths::location(TPaths::TLocation::DocumentsLocation);
+		if (pdir.isEmpty()) pdir = TPaths::location(TPaths::TLocation::HomeLocation);
 
 		if (pdir.isEmpty())
 			pdir = "/tmp";

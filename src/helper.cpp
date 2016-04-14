@@ -29,9 +29,6 @@
 #include "settings/preferences.h"
 #include "extensions.h"
 
-#ifdef Q_OS_WIN
-#include <windows.h> // For the screensaver stuff
-#endif
 
 using namespace Settings;
 
@@ -221,7 +218,11 @@ QString Helper::findExecutable(const QString& name) {
 #ifdef Q_OS_WIN
 	// Add mplayer subdir of app dir to end of PATH
 	search_paths << TPaths::appPath() + "/mplayer" << TPaths::appPath() + "/mpv";
-	// TODO: add some more...
+	// Add program files
+	QString program_files(qgetenv("PROGRAMFILES"));
+	if (!program_files.isEmpty()) {
+		search_paths << program_files + "/mplayer" << program_files + "/mpv";
+	}
 #endif
 
 	// Add app dir to end of PATH

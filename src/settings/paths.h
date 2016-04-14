@@ -40,7 +40,7 @@ public:
 	typedef QDesktopServices::StandardLocation = TLocation;
 #endif
 
-	static QString writableLocation(TLocation type);
+	static QString location(TLocation type);
 
 	static void setAppPath(const QString& path) { app_path = path; }
 	static QString appPath() { return app_path; }
