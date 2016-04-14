@@ -23,7 +23,6 @@ echo.
 
 mkdir %OUTPUT_DIR%
 copy %WZPLAYER_DIR_DIR%\src\release\wzplayer.exe %OUTPUT_DIR%
-copy %WZPLAYER_DIR_DIR%\dxlist\release\dxlist.exe %OUTPUT_DIR%
 copy %WZPLAYER_DIR_DIR%\zlib\zlib1.dll %OUTPUT_DIR%
 copy %WZPLAYER_DIR_DIR%\setup\sample.avi %OUTPUT_DIR%
 copy %WZPLAYER_DIR_DIR%\*.txt %OUTPUT_DIR%

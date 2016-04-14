@@ -252,10 +252,6 @@ void TPreferences::reset() {
        Advanced
        ******** */
 
-#if USE_ADAPTER
-	adapter = -1;
-#endif
-
 	color_key = 0x020202;
 
 	monitor_aspect=""; // Autodetect
@@ -611,10 +607,6 @@ void TPreferences::save() {
        Advanced
        ******** */
 	beginGroup("advanced");
-
-#if USE_ADAPTER
-	setValue("adapter", adapter);
-#endif
 
 	setValue("color_key", QString::number(color_key, 16));
 
@@ -1130,10 +1122,6 @@ void TPreferences::load() {
        ******** */
 
 	beginGroup("advanced");
-
-#if USE_ADAPTER
-	adapter = value("adapter", adapter).toInt();
-#endif
 
 	bool ok;
 	QString color = value("color_key", QString::number(color_key, 16)).toString();

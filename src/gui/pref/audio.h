@@ -25,9 +25,7 @@
 #include "settings/preferences.h"
 #include "gui/deviceinfo.h"
 
-#ifdef Q_OS_WIN
-#define USE_DSOUND_DEVICES 1
-#else
+#ifndef Q_OS_WIN
 #define USE_ALSA_DEVICES 1
 #endif
 
@@ -69,10 +67,6 @@ private:
 	Settings::TPreferences::TPlayerID player_id;
 	QString mplayer_ao;
 	QString mpv_ao;
-
-#if USE_DSOUND_DEVICES
-	TDeviceList dsound_devices;
-#endif
 
 #if USE_ALSA_DEVICES
 	TDeviceList alsa_devices;

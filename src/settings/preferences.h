@@ -256,10 +256,6 @@ public:
 	QString monitor_aspect;
 	double monitorAspectDouble();
 
-#if USE_ADAPTER
-	int adapter; //Screen for overlay. If -1 it won't be used.
-#endif
-
 	unsigned int color_key;
 	bool useColorKey() const;
 

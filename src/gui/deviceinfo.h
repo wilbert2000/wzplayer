@@ -50,20 +50,12 @@ typedef QList<TDeviceData> TDeviceList;
 class TDeviceInfo {
 
 public:
-#ifdef Q_OS_WIN
-	static TDeviceList dsoundDevices();
-	static TDeviceList displayDevices();
-#else
+
+#ifndef Q_OS_WIN
 	static TDeviceList alsaDevices();
 	static TDeviceList xvAdaptors();
 #endif
 
-protected:
-#ifdef Q_OS_WIN
-	enum DeviceType { Sound = 0, Display = 1 };
-
-	static TDeviceList retrieveDevices(DeviceType type);
-#endif
 };
 
 } // namespace Gui

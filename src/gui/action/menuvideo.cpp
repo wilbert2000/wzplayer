@@ -198,38 +198,6 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 
 	connect(parent, SIGNAL(fullscreenChanged()), this, SLOT(onFullscreenChanged()));
 
-	// Screen submenu
-#if USE_ADAPTER
-	screenMenu = new TMenu(parent, this, "screen_menu", QT_TR_NOOP("Scree&n"), "screen");
-	screenGroup = new TActionGroup(this, "screen");
-	new TActionGroupItem(this, screenGroup, "screen_default", QT_TR_NOOP("Default screen"), -1, false);
-
-#ifdef Q_OS_WIN
-	TDeviceList display_devices = TDeviceInfo::displayDevices();
-	if (!display_devices.isEmpty()) {
-		for (int n = 0; n < display_devices.count(); n++) {
-			int id = display_devices[n].ID().toInt();
-			QString desc = display_devices[n].desc();
-            new TActionGroupItem(this, screenGroup,
-                QString("screen_%1").arg(n),
-				"&" + QString::number(n) + " - " + desc,
-				id, false);
-		}
-	}
-	else
-#endif // Q_OS_WIN
-
-	for (int n = 1; n <= 4; n++) {
-        new TActionGroupItem(this, screenGroup,
-			QString("screen_%1").arg(n), "&" + QString::number(n), n, false);
-	}
-
-	screenGroup->setChecked(pref->adapter);
-	addMenu(screenMenu);
-	parent->addActions(screenGroup->actions());
-	connect(screenGroup, SIGNAL(activated(int)), core, SLOT(changeAdapter(int)));
-#endif
-
 	// Aspect submenu
 	addSeparator();
 	addMenu(new TMenuAspect(parent, core));
@@ -335,10 +303,6 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
 	// Depending on mset, so useless to set if no video
 	bool enableVideo = !stopped && video;
-
-#if USE_ADAPTER
-    screenGroup->setEnabled(enableVideo && pref->vo.startsWith("directx"));
-#endif
 
 	equalizerAct->setEnabled(enableVideo);
 	resetVideoEqualizerAct->setEnabled(enableVideo);

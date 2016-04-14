@@ -1035,13 +1035,6 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("ao", pref->ao);
 	}
 
-// TODO: remove
-#if USE_ADAPTER
-	if (pref->adapter >= 0) {
-		proc->setOption("adapter", QString::number(pref->adapter));
-	}
-#endif
-
 #if PROGRAM_SWITCH
 	if (mset.current_program_id != TMediaSettings::NoneSelected) {
 		proc->setOption("tsprog", QString::number(mset.current_program_id));
@@ -3044,17 +3037,6 @@ void TCore::changeRotate(int r) {
 		}
 	}
 }
-
-#if USE_ADAPTER
-void TCore::changeAdapter(int n) {
-	qDebug("TCore::changeScreen: %d", n);
-
-	if (pref->adapter != n) {
-		pref->adapter = n;
-		restartPlay();
-	}
-}
-#endif
 
 // Slot called by player window to set zoom and pan (MPV only)
 void TCore::setZoomAndPan(double zoom, double pan_x, double pan_y) {

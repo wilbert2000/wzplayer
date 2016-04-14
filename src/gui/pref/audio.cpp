@@ -24,7 +24,7 @@
 #include "settings/mediasettings.h"
 #include "settings/paths.h"
 
-#if USE_ALSA_DEVICES || USE_DSOUND_DEVICES
+#if USE_ALSA_DEVICES
 #include "gui/deviceinfo.h"
 #endif
 
@@ -41,10 +41,6 @@ TAudio::TAudio(QWidget* parent, InfoList aol)
 	  mpv_ao(pref->mpv_ao)  {
 
 	setupUi(this);
-
-#if USE_DSOUND_DEVICES
-	dsound_devices = TDeviceInfo::dsoundDevices();
-#endif
 
 #if USE_ALSA_DEVICES
 	alsa_devices = TDeviceInfo::alsaDevices();
@@ -185,14 +181,6 @@ void TAudio::updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
 			for (int n=0; n < alsa_devices.count(); n++) {
 				ao_combo->addItem("alsa (" + alsa_devices[n].ID().toString() + " - " + alsa_devices[n].desc() + ")", 
                                    "alsa:device=hw=" + alsa_devices[n].ID().toString());
-			}
-		}
-#endif
-#if USE_DSOUND_DEVICES
-		if ((ao == "dsound") && (!dsound_devices.isEmpty())) {
-			for (int n=0; n < dsound_devices.count(); n++) {
-				ao_combo->addItem("dsound (" + dsound_devices[n].ID().toString() + " - " + dsound_devices[n].desc() + ")", 
-                                   "dsound:device=" + dsound_devices[n].ID().toString());
 			}
 		}
 #endif

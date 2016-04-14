@@ -279,10 +279,6 @@ public slots:
 
 	void changeRotate(int r);
 
-#if USE_ADAPTER
-	void changeAdapter(int n);
-#endif
-
 	void incZoom();
 	void decZoom();
 

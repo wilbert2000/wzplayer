@@ -36,11 +36,6 @@ private:
 	TAction* fullscreenAct;
 	TAction* exitFullscreenAct;
 
-#if USE_ADAPTER
-	TMenu* screenMenu;
-	TActionGroup* screenGroup;
-#endif
-
 	TAction* equalizerAct;
 	TAction* resetVideoEqualizerAct;
 

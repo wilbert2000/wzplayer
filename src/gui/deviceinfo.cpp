@@ -23,48 +23,7 @@
 
 namespace Gui {
 
-#ifdef Q_OS_WIN
-
-TDeviceList TDeviceInfo::retrieveDevices(DeviceType type) {
-	qDebug("Gui::TDeviceInfo::retrieveDevices: %d", type);
-	
-	TDeviceList l;
-	QRegExp rx_device("^(\\d+): (.*)");
-	
-	if (QFile::exists("dxlist.exe")) {
-		QProcess p;
-		p.setProcessChannelMode(QProcess::MergedChannels);
-		QStringList arg;
-		if (type == Sound) arg << "-s"; else arg << "-d";
-		p.start("dxlist", arg);
-
-		if (p.waitForFinished()) {
-			QByteArray line;
-			while (p.canReadLine()) {
-				line = p.readLine().trimmed();
-				qDebug("Gui::TDeviceInfo::retrieveDevices: '%s'", line.constData());
-				if (rx_device.indexIn(line) > -1) {
-					int id = rx_device.cap(1).toInt();
-					QString desc = rx_device.cap(2);
-					qDebug("Gui::TDeviceInfo::retrieveDevices: found device: '%d' '%s'", id, desc.toUtf8().constData());
-					l.append(TDeviceData(id, desc));
-				}
-			}
-		}
-	}
-	
-	return l;
-}
-
-TDeviceList TDeviceInfo::dsoundDevices() { 
-	return retrieveDevices(Sound);
-}
-
-TDeviceList TDeviceInfo::displayDevices() {
-	return retrieveDevices(Display);
-}
-
-#else
+#ifndef Q_OS_WIN
 
 TDeviceList TDeviceInfo::alsaDevices() {
 	qDebug("Gui::TDeviceInfo::alsaDevices");

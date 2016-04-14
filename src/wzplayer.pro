@@ -425,7 +425,6 @@ win32 {
 		LIBS += libole32
 	}
 	
-    DEFINES += USE_ADAPTER
     RC_FILE = wzplayer.rc
 }
 

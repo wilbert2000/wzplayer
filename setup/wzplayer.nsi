@@ -656,7 +656,6 @@ ${MementoSectionDone}
 
   ;Binaries
   Delete "$INSTDIR\wzplayer.exe"
-  Delete "$INSTDIR\dxlist.exe"
   Delete "$INSTDIR\icudt5*.dll"
   Delete "$INSTDIR\icuin5*.dll"
   Delete "$INSTDIR\icuuc5*.dll"
