@@ -811,6 +811,9 @@ void TBase::loadConfig() {
 		move(p);
 		resize(s);
 		setWindowState((Qt::WindowStates) state);
+		if (p.isNull()) {
+			centerWindow();
+		}
 		TDesktop::keepInsideDesktop(this);
 	} else {
 		centerWindow();
