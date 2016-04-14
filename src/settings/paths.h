@@ -21,12 +21,26 @@
 
 #include <QString>
 
+#if QT_VERSION_MAJOR >= 5
+#include <QStandardPaths>
+#else
+#include <QDesktopServices>
+#endif
+
 
 namespace Settings {
 
 class TPaths {
-
 public:
+
+	// Fix Qt locations
+#if QT_VERSION_MAJOR >= 5
+	typedef QStandardPaths::StandardLocation TLocation;
+#else
+	typedef QDesktopServices::StandardLocation = TLocation;
+#endif
+
+	static QString writableLocation(TLocation type);
 
 	static void setAppPath(const QString& path) { app_path = path; }
 	static QString appPath() { return app_path; }

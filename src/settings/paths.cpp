@@ -38,6 +38,30 @@ QString TPaths::app_path;
 QString TPaths::config_path;
 
 
+QString TPaths::writableLocation(TLocation type) {
+
+	QString path;
+
+#if QT_VERSION_MAJOR >= 5
+
+	// Switch to roaming on Windows
+#if QT_VERSION >= 0x050400
+	if (type == QStandardPaths::DataLocation) {
+		type = QStandardPaths::AppDataLocation;
+	}
+#endif
+
+	path = QStandardPaths::writableLocation(type);
+
+#else
+	path = QDesktopServices::storageLocation(type);
+#endif
+
+	qDebug() << "Settings::TPaths::writableLocation: returning" << path
+			 << "for" << type;
+	return path;
+}
+
 void TPaths::setConfigPath(const QString& path) {
 
 	// Set config_path
@@ -46,11 +70,8 @@ void TPaths::setConfigPath(const QString& path) {
 #ifdef PORTABLE_APP
 		config_path = app_path;
 #else
-
-		// Normal use case, use home
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		// TODO: use APPDATA or QDesktopServices::DataLocation
-		config_path = QDir::homePath() + "/." + TConfig::PROGRAM_ID;
+		config_path = writableLocation(TLocation::DataLocation);
 #else
 		const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
 		if (XDG_CONFIG_HOME != NULL) {
@@ -59,13 +80,13 @@ void TPaths::setConfigPath(const QString& path) {
 			config_path = QDir::homePath() + "/.config/" + TConfig::PROGRAM_ID;
 		}
 #endif
-
 #endif
 
 	} else {
 		config_path = path;
 	}
-	qDebug("Settings::TPaths::setConfigPath: config directory set to \"%s\"", config_path.toUtf8().constData());
+    qDebug() << "Settings::TPaths::setConfigPath: config directory set to"
+             << config_path;
 
 	// Create config directory
 #ifndef PORTABLE_APP

@@ -26,14 +26,6 @@
 #include <QLocale>
 #include <QNetworkProxy>
 
-#if QT_VERSION >= 0x050000
-#include <QStandardPaths>
-#endif
-
-#if QT_VERSION >= 0x040400
-#include <QDesktopServices>
-#endif
-
 #ifdef Q_OS_WIN
 #include <QSysInfo> // To get Windows version
 #endif
@@ -1516,16 +1508,9 @@ double TPreferences::monitorAspectDouble() {
 void TPreferences::setupScreenshotFolder() {
 
 	if (screenshot_directory.isEmpty()) {
-
-#if QT_VERSION >= 0x050000
-		QString pdir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-		if (pdir.isEmpty()) pdir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-		if (pdir.isEmpty()) pdir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-#else
-		QString pdir = QDesktopServices::storageLocation(QDesktopServices::PicturesLocation);
-		if (pdir.isEmpty()) pdir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-		if (pdir.isEmpty()) pdir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-#endif
+        QString pdir = TPaths::writableLocation(TPaths::TLocation::PicturesLocation);
+        if (pdir.isEmpty()) pdir = TPaths::writableLocation(TPaths::TLocation::DocumentsLocation);
+        if (pdir.isEmpty()) pdir = TPaths::writableLocation(TPaths::TLocation::HomeLocation);
 
 		if (pdir.isEmpty())
 			pdir = "/tmp";
