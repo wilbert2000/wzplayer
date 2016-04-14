@@ -478,16 +478,22 @@ void TBase::createToolbars() {
 	controlbar = new TEditableToolbar(this);
 	controlbar->setObjectName("controlbar");
 	QStringList actions;
-	actions << "play_or_pause"
+	actions << "show_playlist|0|1"
+			<< "separator|0|1"
+			<< "play_or_pause"
 			<< "separator"
 			<< "rewindbutton_action"
 			<< "timeslider_action"
-			<< "timelabel_action|0|1"
 			<< "forwardbutton_action"
 			<< "separator"
-			<< "fullscreen"
+			<< "osd_menu|0|1"
+			<< "aspect_menu|0|1"
+			<< "reset_zoom|0|1"
+			<< "separator|0|1"
 			<< "mute"
-			<< "volumeslider_action";
+			<< "volumeslider_action"
+			<< "separator|0|1"
+			<< "fullscreen";
 	controlbar->setDefaultActions(actions);
 	addToolBar(Qt::BottomToolBarArea, controlbar);
 	connect(editControlBarAct, SIGNAL(triggered()),
