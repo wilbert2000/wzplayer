@@ -65,7 +65,6 @@ TApp::TApp(int& argc, char** argv)
 	, start_in_fullscreen(-1) {
 
 	// Change working directory to application path
-	QDir::setCurrent(applicationDirPath());
 	TPaths::setAppPath(applicationDirPath());
 
 	// Save default style
