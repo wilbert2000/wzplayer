@@ -148,7 +148,7 @@ void TPreferences::reset() {
 
 	use_soft_vol = false;
 	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
-	softvol_max = 100;
+	softvol_max = 110;
 
 	use_scaletempo = Detect;
 	use_hwac3 = false;
@@ -193,6 +193,7 @@ void TPreferences::reset() {
 #endif
 
 #ifdef Q_OS_WIN
+	// TODO:
 	enable_audiocd_on_windows = false;
 #endif
 
@@ -223,7 +224,7 @@ void TPreferences::reset() {
 	subtitle_encoding_fallback = ""; // Auto detect subtitle encoding
 
 	use_ass_subtitles = true;
-	use_custom_ass_style = true;
+	use_custom_ass_style = false;
 	ass_line_spacing = 0;
 
 	use_forced_subs_only = false;
@@ -306,14 +307,14 @@ void TPreferences::reset() {
 
 	style = "";
 
-	mouse_left_click_function = "dvdnav_mouse";
+	mouse_left_click_function = "play_or_pause";
 	mouse_right_click_function = "show_context_menu";
 	mouse_double_click_function = "fullscreen";
-	mouse_middle_click_function = "mute";
+	mouse_middle_click_function = "next_wheel_function";
 	mouse_xbutton1_click_function = "";
 	mouse_xbutton2_click_function = "";
-	wheel_function = Seeking;
-	wheel_function_cycle = Seeking | Volume | Zoom | ChangeSpeed;
+	wheel_function = Zoom;
+	wheel_function_cycle = Volume | Zoom;
 	wheel_function_seeking_reverse = false;
 
 	seeking1 = 10;
@@ -321,7 +322,7 @@ void TPreferences::reset() {
 	seeking3 = 10*60;
 	seeking4 = 30;
 
-	update_while_seeking = false;
+	update_while_seeking = true;
 	time_slider_drag_delay = 200;
 	relative_seeking = false;
 	precise_seeking = true;
