@@ -112,17 +112,19 @@ void TLog::logLine(QtMsgType type, QString line) {
 	}
 	lines.append(line);
 
+	// Too lazy to handle anything else than utf8
+	QByteArray bytes = line.toUtf8();
+
 	// Output to console on stderr
-#ifdef Q_OS_LINUX
 	if (type != QtDebugMsg || log_debug_messages_to_console) {
-		QByteArray bytes = line.toUtf8();
 		fwrite(bytes.constData(), 1, bytes.size(), stderr);
+  #ifdef Q_OS_WIN
+		fflush(stderr);
+  #endif
 	}
-#endif
 
 	// Output to log file
 	if (file.isOpen()) {
-		QByteArray bytes = line.toUtf8();
 		file.write(bytes.constData(), bytes.size());
 		file.flush();
 	}
