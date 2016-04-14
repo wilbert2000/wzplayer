@@ -14,7 +14,16 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -28,19 +37,19 @@
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
-        <number>12</number>
+        <number>16</number>
        </property>
        <property name="leftMargin">
-        <number>12</number>
+        <number>16</number>
        </property>
        <property name="topMargin">
         <number>16</number>
        </property>
        <property name="rightMargin">
-        <number>12</number>
+        <number>16</number>
        </property>
        <property name="bottomMargin">
-        <number>12</number>
+        <number>16</number>
        </property>
        <item>
         <layout class="QHBoxLayout" name="output_layout">
@@ -444,14 +453,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Gui::Pref::TTristateCombo</class>
-   <extends>QComboBox</extends>
-   <header>gui/pref/tristatecombo.h</header>
-  </customwidget>
-  <customwidget>
    <class>Gui::Pref::TComboBox</class>
    <extends>QComboBox</extends>
    <header>gui/pref/combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::Pref::TTristateCombo</class>
+   <extends>QComboBox</extends>
+   <header>gui/pref/tristatecombo.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
