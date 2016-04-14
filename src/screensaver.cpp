@@ -17,15 +17,15 @@
 */
 
 #include <Qt>
-#include <QSysInfo>
 #include "screensaver.h"
+
 #ifndef Q_OS_OS2
 #include <windows.h>
 #endif
 
 WinScreenSaver::WinScreenSaver() {
 #ifndef Q_OS_OS2
-	lowpower = poweroff = screensaver = 0;
+	screensaver_timeout = 0;
 #else
 	SSaver = new QLibrary("SSCORE");
 	SSaver->load();
@@ -52,19 +52,14 @@ void WinScreenSaver::retrieveState() {
 	qDebug("WinScreenSaver::retrieveState");
 	
 	if (!state_saved) {
+		state_saved = true;
 #ifndef Q_OS_OS2
-		if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
-			// Not supported on Windows Vista
-			SystemParametersInfo(SPI_GETLOWPOWERTIMEOUT, 0, &lowpower, 0);
-			SystemParametersInfo(SPI_GETPOWEROFFTIMEOUT, 0, &poweroff, 0);
-		}
-		SystemParametersInfo(SPI_GETSCREENSAVETIMEOUT, 0, &screensaver, 0);
-		state_saved = true;
-		
-		qDebug("WinScreenSaver::retrieveState: lowpower: %d, poweroff: %d, screensaver: %d", lowpower, poweroff, screensaver);
+		SystemParametersInfo(SPI_GETSCREENSAVETIMEOUT, 0, &screensaver_timeout, 0);
+		qDebug("WinScreenSaver::retrieveState: screensaver timeout: %d",
+			   screensaver_timeout);
 #else
-		state_saved = true;
-		qDebug("WinScreensaver::retrieveState: init done %s", SSCore_TempDisable ?"succesfully":"failed");
+		qDebug("WinScreensaver::retrieveState: init done %s",
+			   SSCore_TempDisable ? "succesfully" : "failed");
 #endif
 	} else {
 		qDebug("WinScreenSaver::retrieveState: state already saved previously, doing nothing");
@@ -79,15 +74,10 @@ void WinScreenSaver::restoreState() {
 	
 	if (state_saved) {
 #ifndef Q_OS_OS2
-		if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
-			// Not supported on Windows Vista
-			SystemParametersInfo(SPI_SETLOWPOWERTIMEOUT, lowpower, NULL, 0);
-			SystemParametersInfo(SPI_SETPOWEROFFTIMEOUT, poweroff, NULL, 0);
-		}
-		SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, screensaver, NULL, 0);
+		SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, screensaver_timeout, NULL, 0);
 		SetThreadExecutionState(ES_CONTINUOUS);
-
-		qDebug("WinScreenSaver::restoreState: lowpower: %d, poweroff: %d, screensaver: %d", lowpower, poweroff, screensaver);
+		qDebug("WinScreenSaver::restoreState: screensaver timeout: %d",
+			   screensaver_timeout);
 #else
 		if (SSCore_TempEnable) {
 			SSCore_TempEnable();
@@ -112,11 +102,6 @@ void WinScreenSaver::disable() {
 	qDebug("WinScreenSaver::disable");
 
 #ifndef Q_OS_OS2
-	if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
-		// Not supported on Windows Vista
-		SystemParametersInfo(SPI_SETLOWPOWERTIMEOUT, 0, NULL, 0);
-		SystemParametersInfo(SPI_SETPOWEROFFTIMEOUT, 0, NULL, 0);
-	}
 	SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, 0, NULL, 0);
 	SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED);
 #else

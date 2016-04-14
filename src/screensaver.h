@@ -46,7 +46,7 @@ private:
 
 private:
 #ifndef Q_OS_OS2
-	int lowpower, poweroff, screensaver;
+	int screensaver_timeout;
 #else
 	QLibrary *SSaver;
 	typedef int (*FuncPtr) (void);
