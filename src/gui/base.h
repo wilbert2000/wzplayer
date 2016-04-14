@@ -250,11 +250,6 @@ protected:
 	virtual void hideEvent(QHideEvent* event);
 	virtual void showEvent(QShowEvent* event);
 
-#if QT_VERSION >= 0x050000
-	virtual bool event(QEvent* e);
-	bool was_minimized;
-#endif
-
 #if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 	/* Disable screensaver by event */
 	virtual bool winEvent (MSG* m, long* result);

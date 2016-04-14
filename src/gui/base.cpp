@@ -140,11 +140,6 @@ TBase::TBase() :
 	center_window(false),
 	update_checker(0) {
 
-
-#if QT_VERSION >= 0x050000
-	was_minimized = isMinimized();
-#endif
-
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(TConfig::PROGRAM_NAME);
 	setAcceptDrops(true);
@@ -635,11 +630,71 @@ void TBase::retranslateStrings() {
 		pref_dialog->mod_input()->actions_editor->updateView();
 } // retranslateStrings()
 
+void TBase::setFloatingToolbarsVisible(bool visible) {
+
+	if (toolbar->isFloating()) {
+		toolbar->setVisible(visible);
+	}
+	if (toolbar2->isFloating()) {
+		toolbar2->setVisible(visible);
+	}
+	if (controlbar->isFloating()) {
+		controlbar->setVisible(visible);
+	}
+}
+
+void TBase::showEvent(QShowEvent* event) {
+	qDebug("Gui::TBase::showEvent");
+
+	if (event) {
+		QMainWindow::showEvent(event);
+	}
+
+	//qDebug("Gui::TBase::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
+	if (pref->pause_when_hidden && core->state() == STATE_PAUSED && !ignore_show_hide_events) {
+		qDebug("Gui::TBase::showEvent: unpausing");
+		core->play();
+	}
+
+	setFloatingToolbarsVisible(true);
+}
+
+void TBase::hideEvent(QHideEvent* event) {
+	qDebug("Gui::TBase::hideEvent");
+
+	if (event) {
+		QMainWindow::hideEvent(event);
+	}
+
+	if (pref->pause_when_hidden && core->state() == STATE_PLAYING && !ignore_show_hide_events) {
+		qDebug("Gui::TBase::hideEvent: pausing");
+		core->pause();
+	}
+
+	setFloatingToolbarsVisible(false);
+}
+
 void TBase::changeEvent(QEvent* e) {
+
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
 		QMainWindow::changeEvent(e);
+
+#if QT_VERSION_MAJOR >= 5
+		// Emulate show/hide events for Qt >= 5
+		if(e->type() == QEvent::WindowStateChange) {
+			bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState() == Qt::WindowMinimized;
+			if (was_min) {
+				if (!isMinimized()) {
+					showEvent(0);
+				}
+			} else if (isMinimized()) {
+				hideEvent(0);
+			}
+		}
+#endif
+
 	}
 }
 
@@ -2186,76 +2241,6 @@ void TBase::toggleStayOnTop() {
 	if (pref->stay_on_top == Settings::TPreferences::NeverOnTop)
 		changeStayOnTop(Settings::TPreferences::AlwaysOnTop);
 }
-
-void TBase::setFloatingToolbarsVisible(bool visible) {
-
-	if (toolbar->isFloating()) {
-		toolbar->setVisible(visible);
-	}
-	if (toolbar2->isFloating()) {
-		toolbar2->setVisible(visible);
-	}
-	if (controlbar->isFloating()) {
-		controlbar->setVisible(visible);
-	}
-}
-
-void TBase::showEvent(QShowEvent* event) {
-	qDebug("Gui::TBase::showEvent");
-
-	if (event) {
-		QMainWindow::showEvent(event);
-	}
-
-	//qDebug("Gui::TBase::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
-	if (pref->pause_when_hidden && core->state() == STATE_PAUSED && !ignore_show_hide_events) {
-		qDebug("Gui::TBase::showEvent: unpausing");
-		core->play();
-	}
-
-	setFloatingToolbarsVisible(true);
-}
-
-void TBase::hideEvent(QHideEvent* event) {
-	qDebug("Gui::TBase::hideEvent");
-
-	if (event) {
-		QMainWindow::hideEvent(event);
-	}
-
-	if (pref->pause_when_hidden && core->state() == STATE_PLAYING && !ignore_show_hide_events) {
-		qDebug("Gui::TBase::hideEvent: pausing");
-		core->pause();
-	}
-
-	setFloatingToolbarsVisible(false);
-}
-
-#if QT_VERSION >= 0x050000
-// Qt 5 doesn't call showEvent / hideEvent when the window is minimized or unminimized
-// TODO: handle with changeEvent instead
-bool TBase::event(QEvent* e) {
-	//qDebug("Gui::TBase::event: %d", e->type());
-
-	bool result = QMainWindow::event(e);
-
-	if (e->type() == QEvent::WindowStateChange) {
-		qDebug("Gui::TBase::event: WindowStateChange");
-		if (isMinimized() && !was_minimized) {
-			was_minimized = true;
-			hideEvent(0);
-		}
-	} else if (e->type() == QEvent::ActivationChange && isActiveWindow()) {
-		qDebug("Gui::TBase::event: ActivationChange: %d", was_minimized);
-		if (!isMinimized() && was_minimized) {
-			was_minimized = false;
-			showEvent(0);
-		}
-	}
-
-	return result;
-}
-#endif
 
 void TBase::onPlayerFinishedWithError(int exit_code) {
 	qDebug("Gui::TBase::onPlayerFinishedWithError: %d", exit_code);
