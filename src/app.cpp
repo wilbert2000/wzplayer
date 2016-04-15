@@ -344,7 +344,7 @@ TApp::ExitCode TApp::processArgs() {
 	}
 
 #ifdef SINGLE_INSTANCE
-	if (Settings::pref->use_single_instance) {
+	if (Settings::pref->use_single_window) {
 		// Single instance
 		if (isRunning()) {
 			sendMessage("Hello");

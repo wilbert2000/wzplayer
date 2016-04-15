@@ -254,6 +254,7 @@ public:
 
 	unsigned int color_key;
 	bool useColorKey() const;
+	bool use_single_window;
 
 	// Let the user pass options to mplayer
 	QString player_additional_options;
@@ -421,13 +422,6 @@ public:
 	int initial_audio_channels;
 	int initial_stereo_mode;
 
-
-    /* *********
-       Instances
-       ********* */
-#ifdef SINGLE_INSTANCE
-	bool use_single_instance;
-#endif
 
 
     /* ****************

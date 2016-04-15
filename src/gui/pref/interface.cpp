@@ -139,7 +139,7 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	// Main window
 #ifdef SINGLE_INSTANCE
-	setUseSingleInstance(pref->use_single_instance);
+	setUseSingleInstance(pref->use_single_window);
 #endif
 
 	setSaveSize(pref->save_window_size_on_exit);
@@ -194,7 +194,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 
 	// Main window
 #ifdef SINGLE_INSTANCE
-	pref->use_single_instance = useSingleInstance();
+	pref->use_single_window = useSingleInstance();
 #endif
 
 	pref->resize_on_load = resize_on_load_check->isChecked();

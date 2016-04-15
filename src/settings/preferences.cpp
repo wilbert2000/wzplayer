@@ -640,6 +640,7 @@ void TPreferences::save() {
 	beginGroup("gui");
 
 	setValue("start_in_fullscreen", start_in_fullscreen);
+	setValue("use_single_window", use_single_window);
 
 	setValue("stay_on_top", (int) stay_on_top);
 	setValue("size_factor", size_factor);
@@ -763,16 +764,6 @@ void TPreferences::save() {
 	setValue("initial_stereo_mode", initial_stereo_mode);
 
 	endGroup(); // defaults
-
-
-    /* *********
-       Instances
-       ********* */
-#ifdef SINGLE_INSTANCE
-	beginGroup("instances");
-	setValue("single_instance_enabled", use_single_instance);
-	endGroup(); // instances
-#endif
 
 
     /* ****************
@@ -1158,6 +1149,7 @@ void TPreferences::load() {
 	beginGroup("gui");
 
 	start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
+	use_single_window = value("use_single_window", use_single_window).toBool();
 
 	stay_on_top = (TPreferences::TOnTop) value("stay_on_top", (int) stay_on_top).toInt();
 	size_factor = value("size_factor", size_factor).toDouble();
@@ -1291,17 +1283,6 @@ void TPreferences::load() {
 	initial_stereo_mode = value("initial_stereo_mode", initial_stereo_mode).toInt();
 
 	endGroup(); // defaults
-
-
-
-    /* *********
-       Instances
-       ********* */
-#ifdef SINGLE_INSTANCE
-	beginGroup("instances");
-	use_single_instance = value("single_instance_enabled", use_single_instance).toBool();
-	endGroup(); // instances
-#endif
 
 
     /* ****************
