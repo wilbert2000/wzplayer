@@ -35,9 +35,17 @@ public:
 
 	// Fix Qt locations
 #if QT_VERSION_MAJOR >= 5
-	typedef QStandardPaths::StandardLocation TLocation;
+	enum TLocation {
+		PicturesLocation = QStandardPaths::PicturesLocation,
+		DocumentsLocation = QStandardPaths::DocumentsLocation,
+		HomeLocation = QStandardPaths::HomeLocation
+	}
 #else
-	typedef QDesktopServices::StandardLocation = TLocation;
+	enum TLocation {
+		PicturesLocation = QDesktopServices::PicturesLocation,
+		DocumentsLocation = QDesktopServices::DocumentsLocation,
+		HomeLocation = QDesktopServices::HomeLocation
+	};
 #endif
 
 	static QString location(TLocation type);
