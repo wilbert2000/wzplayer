@@ -74,10 +74,8 @@ protected:
 	void setStyle(const QString& style);
 	QString style();
 
-#ifdef SINGLE_INSTANCE
 	void setUseSingleInstance(bool b);
 	bool useSingleInstance();
-#endif
 
 	void setDefaultFont(const QString& font_desc);
 	QString defaultFont();

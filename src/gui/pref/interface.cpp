@@ -60,12 +60,8 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 		}
 	}
 
-#ifdef SINGLE_INSTANCE
 	connect(single_instance_check, SIGNAL(toggled(bool)), 
 			this, SLOT(changeInstanceImages()));
-#else
-	single_instance_check->hide();
-#endif
 
 	retranslateStrings();
 }
@@ -138,10 +134,7 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setDefaultFont(pref->default_font);
 
 	// Main window
-#ifdef SINGLE_INSTANCE
 	setUseSingleInstance(pref->use_single_window);
-#endif
-
 	setSaveSize(pref->save_window_size_on_exit);
 	resize_on_load_check->setChecked(pref->resize_on_load);
 	resize_on_docking_check->setChecked(pref->resize_on_docking);
@@ -193,15 +186,12 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	pref->default_font = defaultFont();
 
 	// Main window
-#ifdef SINGLE_INSTANCE
 	pref->use_single_window = useSingleInstance();
-#endif
-
+	pref->save_window_size_on_exit = saveSize();
 	pref->resize_on_load = resize_on_load_check->isChecked();
 	pref->resize_on_docking = resize_on_docking_check->isChecked();
-	pref->save_window_size_on_exit = saveSize();
-	pref->close_on_finish = closeOnFinish();
 	pref->pause_when_hidden = pauseWhenHidden();
+	pref->close_on_finish = closeOnFinish();
 	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
 	pref->show_tag_in_window_title = showTagInTitle();
 
@@ -309,16 +299,13 @@ bool TInterface::startInFullscreen() {
 	return start_fullscreen_check->isChecked();
 }
 
-#ifdef SINGLE_INSTANCE
 void TInterface::setUseSingleInstance(bool b) {
 	single_instance_check->setChecked(b);
-	//singleInstanceButtonToggled(b);
 }
 
 bool TInterface::useSingleInstance() {
 	return single_instance_check->isChecked();
 }
-#endif
 
 void TInterface::setDefaultFont(const QString& font_desc) {
 	default_font_edit->setText(font_desc);
@@ -345,14 +332,10 @@ void TInterface::on_changeFontButton_clicked() {
 
 void TInterface::changeInstanceImages() {
 
-#ifdef SINGLE_INSTANCE
 	if (single_instance_check->isChecked())
 		instances_icon->setPixmap(Images::icon("instance1"));
 	else
 		instances_icon->setPixmap(Images::icon("instance2"));
-#else
-	instances_icon->setPixmap(Images::icon("instance1"));
-#endif
 }
 
 void TInterface::setCloseOnFinish(bool b) {
@@ -473,12 +456,10 @@ void TInterface::createHelp() {
 
 	addSectionTitle(tr("Main window"));
 
-#ifdef SINGLE_INSTANCE
 	setWhatsThis(single_instance_check,
-		tr("Use only one running instance of WZPlayer"),
+		tr("Use only one window running WZPlayer"),
 		tr("Check this option if you want to use an already running instance "
 		   "of WZPlayer when opening other files."));
-#endif
 
 	setWhatsThis(save_size_check, tr("Remember position and size"),
         tr("If you check this option, the position and size of the main "

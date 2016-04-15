@@ -33,16 +33,10 @@
 #endif
 #endif
 
-#ifdef SINGLE_INSTANCE
 #include "QtSingleApplication"
-typedef QtSingleApplication TBaseApp;
-#else
-#include <QApplication>
-typedef QApplication TBaseApp;
-#endif
 
 
-class TApp : public TBaseApp {
+class TApp : public QtSingleApplication {
 	Q_OBJECT
 
 public:

@@ -50,19 +50,15 @@
 using namespace Settings;
 
 TApp::TApp(int& argc, char** argv)
-	: TBaseApp(
-#ifdef SINGLE_INSTANCE
-		TConfig::PROGRAM_ID,
-#endif
-		argc, argv)
-	, main_window(0)
-	, requested_restart(false)
-	, reset_style(false)
-	, current_file(-1)
-	, move_gui(false)
-	, resize_gui(false)
-	, close_at_end(-1)
-	, start_in_fullscreen(-1) {
+	: QtSingleApplication(TConfig::PROGRAM_ID, argc, argv),
+	  main_window(0),
+	  requested_restart(false),
+	  reset_style(false),
+	  current_file(-1),
+	  move_gui(false),
+	  resize_gui(false),
+	  close_at_end(-1),
+	  start_in_fullscreen(-1) {
 
 	// Change working directory to application path
 	TPaths::setAppPath(applicationDirPath());
@@ -343,7 +339,6 @@ TApp::ExitCode TApp::processArgs() {
 		qDebug("TApp::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
 	}
 
-#ifdef SINGLE_INSTANCE
 	if (Settings::pref->use_single_window) {
 		// Single instance
 		if (isRunning()) {
@@ -372,7 +367,6 @@ TApp::ExitCode TApp::processArgs() {
 			return NoError;
 		}
 	}
-#endif
 
 	return TApp::NoExit;
 }
@@ -393,11 +387,9 @@ void TApp::createGUI() {
 	connect(main_window, SIGNAL(requestRestart(bool)),
 			this, SLOT(onRequestRestart(bool)));
 
-#if SINGLE_INSTANCE
 	connect(this, SIGNAL(messageReceived(const QString&)),
 			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
 	setActivationWindow(main_window);
-#endif
 
 	if (move_gui) {
 		qDebug("TApp::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
