@@ -159,7 +159,7 @@ TActionsEditor::~TActionsEditor() {
 void TActionsEditor::retranslateStrings() {
 
 	actionsTable->setHorizontalHeaderLabels(QStringList() << "" <<
-		tr("Action") << tr("Description") << tr("Shortcut"));
+		tr("Action") << tr("Description") << tr("Shortcuts"));
 
 	saveButton->setText(tr("&Save"));
 	saveButton->setIcon(Images::icon("save"));
