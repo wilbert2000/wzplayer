@@ -17,7 +17,6 @@ OBJECTS_DIR = .obj
 
 RESOURCES = icons.qrc
 
-DEFINES += SINGLE_INSTANCE
 DEFINES += FIND_SUBTITLES
 DEFINES += MPRIS2
 DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tags)\\\"
@@ -27,7 +26,6 @@ DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tag
 #DEFINES += SIMPLE_BUILD
 
 contains(DEFINES, SIMPLE_BUILD) {
-	DEFINES -= SINGLE_INSTANCE
 	DEFINES -= FIND_SUBTITLES
 	DEFINES -= MPRIS2
 }
@@ -161,6 +159,8 @@ HEADERS += version.h \
     maps/chapters.h \
     clhelp.h \
     log.h \
+    qtsingleapplication/qtsingleapplication.h \
+    qtsingleapplication/qtlocalpeer.h \
     app.h \
     config.h
 
@@ -279,6 +279,8 @@ SOURCES	+= version.cpp \
     maps/titletracks.cpp \
     maps/chapters.cpp \
     clhelp.cpp \
+    qtsingleapplication/qtsingleapplication.cpp \
+    qtsingleapplication/qtlocalpeer.cpp \
     app.cpp \
     log.cpp \
     main.cpp \
@@ -313,15 +315,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/pref/updates.ui \
     gui/pref/advanced.ui
 
-
-# qtsingleapplication
-contains(DEFINES, SINGLE_INSTANCE) {
-	INCLUDEPATH += qtsingleapplication
-	DEPENDPATH += qtsingleapplication
-
-	SOURCES += qtsingleapplication/qtsingleapplication.cpp qtsingleapplication/qtlocalpeer.cpp
-	HEADERS += qtsingleapplication/qtsingleapplication.h qtsingleapplication/qtlocalpeer.h
-}
 
 # Find subtitles dialog
 contains(DEFINES, FIND_SUBTITLES) {

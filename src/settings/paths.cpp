@@ -54,7 +54,8 @@ QString TPaths::location(TLocation type) {
 	path = QStandardPaths::writableLocation(type);
 
 #else
-	path = QDesktopServices::storageLocation(type);
+	path = QDesktopServices::storageLocation(
+			   static_cast<QDesktopServices::StandardLocation>(type));
 #endif
 
 	qDebug() << "Settings::TPaths::writableLocation: returning" << path

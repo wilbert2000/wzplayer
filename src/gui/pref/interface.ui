@@ -14,16 +14,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -39,16 +30,7 @@
        <property name="spacing">
         <number>16</number>
        </property>
-       <property name="leftMargin">
-        <number>16</number>
-       </property>
-       <property name="topMargin">
-        <number>16</number>
-       </property>
-       <property name="rightMargin">
-        <number>16</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>16</number>
        </property>
        <item>
@@ -197,22 +179,13 @@
             <property name="spacing">
              <number>6</number>
             </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
+            <property name="margin">
              <number>0</number>
             </property>
             <item>
              <widget class="QCheckBox" name="single_instance_check">
               <property name="text">
-               <string>&amp;Use only one running instance of WZPlayer</string>
+               <string>&amp;Use only one window running WZPlayer</string>
               </property>
              </widget>
             </item>
@@ -388,16 +361,7 @@
        <property name="spacing">
         <number>16</number>
        </property>
-       <property name="leftMargin">
-        <number>16</number>
-       </property>
-       <property name="topMargin">
-        <number>16</number>
-       </property>
-       <property name="rightMargin">
-        <number>16</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>16</number>
        </property>
        <item>

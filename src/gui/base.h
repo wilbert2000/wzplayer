@@ -237,9 +237,7 @@ protected slots:
 	virtual void applyFileProperties();
 
 	// Single instance stuff
-#ifdef SINGLE_INSTANCE
 	void handleMessageFromOtherInstances(const QString& message);
-#endif
 
 	void onPlayerFinishedWithError(int exit_code);
 	void onPlayerError(QProcess::ProcessError);

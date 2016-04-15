@@ -729,7 +729,6 @@ void TBase::createFilePropertiesDialog() {
 	QApplication::restoreOverrideCursor();
 }
 
-#ifdef SINGLE_INSTANCE
 void TBase::handleMessageFromOtherInstances(const QString& message) {
 	qDebug("Gui::TBase::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
 
@@ -773,7 +772,6 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		}
 	}
 }
-#endif
 
 TActionList TBase::getAllNamedActions() {
 
