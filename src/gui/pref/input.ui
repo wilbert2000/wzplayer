@@ -84,7 +84,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Here you can change the shortcuts for actions. Double click an action to change its shortcut. You can save the list for later use, sharing or transport to another computer.</string>
+            <string>Here you can change the keyboard shortcuts for actions. Double click an action to change its shortcut. You can save the list for later use, sharing or transport to another computer.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignVCenter</set>
