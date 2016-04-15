@@ -38,34 +38,27 @@ typedef QList<QVariant> TAudioEqualizerList;
 class TPreferences : public TPlayerSettings {
 
 public:
-	enum TPlayerID {
-		ID_MPLAYER = 0, ID_MPV = 1
-	};
-	enum TOSDLevel {
-		None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3
-	};
-	enum TOnTop {
-		NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2
-	};
-	enum TPriority {
-		Realtime = 0, High = 1, AboveNormal = 2, Normal = 3, BelowNormal = 4,
-		Idle = 5
-	};
+	enum TPlayerID { ID_MPLAYER = 0, ID_MPV = 1 };
+	enum TOSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
+	enum TOnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
 	enum TWheelFunction {
-		DoNothing = 1, Seeking = 2, Volume = 4, Zoom = 8, ChangeSpeed = 16
+		DoNothing = 1,
+		Seeking = 2,
+		Volume = 4,
+		Zoom = 8,
+		ChangeSpeed = 16
 	};
-	enum TOptionState {
-		Detect = -1, Disabled = 0, Enabled = 1
-	};
+	Q_DECLARE_FLAGS(TWheelFunctions, TWheelFunction)
+	enum TOptionState { Detect = -1, Disabled = 0, Enabled = 1 };
 	enum TAutoAddToPlaylistFilter {
-		NoFiles = 0, VideoFiles = 1, AudioFiles = 2, MultimediaFiles = 3,
+		NoFiles = 0,
+		VideoFiles = 1,
+		AudioFiles = 2,
+		MultimediaFiles = 3,
 		ConsecutiveFiles = 4
 	};
-	enum TToolbarActivation {
-		Anywhere = 1, NearToolbar = 2
-	};
+	enum TToolbarActivation { Anywhere = 1, NearToolbar = 2 };
 
-	Q_DECLARE_FLAGS(TWheelFunctions, TWheelFunction)
 
 	TPreferences();
 	virtual ~TPreferences();
@@ -81,6 +74,7 @@ public:
 	int config_version;
 
 	// Media players
+	TPlayerID player_id;
 	QString player_bin;
 
 	QString mplayer_bin;
@@ -91,7 +85,7 @@ public:
 	QString mpv_vo;
 	QString mpv_ao;
 
-	TPlayerID player_id;
+	bool report_player_crashes;
 
 	bool isMPlayer() const { return player_id == ID_MPLAYER; }
 	bool isMPV() const { return player_id == ID_MPV; }
@@ -146,22 +140,27 @@ public:
 	int initial_tv_deinterlace;
 	double initial_zoom_factor; // Default value for zoom (1.0 = no zoom)
 
-	// Screenshots
-	bool use_screenshot;
-	QString screenshot_directory;
-	QString screenshot_template;
-	QString screenshot_format;
+	// Monitor
+	QString monitor_aspect;
+	double monitorAspectDouble();
 
-	void setupScreenshotFolder();
+	unsigned int color_key;
+	bool useColorKey() const;
+
+	// OSD
+	TOSDLevel osd_level;
+	double osd_scale; // mpv
+	double subfont_osd_scale; // mplayer
 
 
-	// Audio tab
+	// Audio section
 	QString ao;
-	bool use_soft_vol;
-	int softvol_max;
-	TOptionState use_scaletempo;
+	int initial_audio_channels;
 	bool use_hwac3; // -afm hwac3
 	bool use_audio_equalizer;
+	TOptionState use_scaletempo;
+
+	int initial_stereo_mode;
 
 	// Global volume options
 	bool global_volume;
@@ -172,6 +171,12 @@ public:
 	bool global_audio_equalizer;
 	TAudioEqualizerList audio_equalizer;
 
+	// Volume group
+	bool use_soft_vol;
+	int softvol_max;
+	bool initial_volnorm;
+
+	// Synchronization group
 	bool autosync;
 	int autosync_factor;
 
@@ -183,37 +188,10 @@ public:
 
 	// When playing a mp4 file, it will use a m4a file for audio if a there's a file with same name but extension m4a
 	bool autoload_m4a;
-	int min_step; //<! Step to increase of decrease the controls for color, contrast, brightness and so on
+	int min_step; // Step to increase of decrease the controls for color, contrast, brightness and so on
 
 
-	// OSD
-	TOSDLevel osd_level;
-	double osd_scale; // mpv
-	double subfont_osd_scale; // mplayer
-
-
-	// Drives
-	QString dvd_device;
-	QString cdrom_device;
-	QString bluray_device;
-
-	int vcd_initial_title;
-
-	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:
-	bool useDVDNAV() const { return isMPlayer() && use_dvdnav; }
-
-
-	// Performance tab
-	bool cache_enabled;
-	int cache_for_files;
-	int cache_for_streams;
-	int cache_for_dvds;
-	int cache_for_vcds;
-	int cache_for_audiocds;
-	int cache_for_tv;
-
-
-	// Subtitles
+	// Subtitles section
 	int subtitle_fuzziness;
 	QString subtitle_language; // Preferred subtitle language
 	bool select_first_subtitle;
@@ -221,13 +199,20 @@ public:
 	QString subtitle_enca_language;
 	QString subtitle_encoding_fallback;
 
+	// Libraries tab
+	bool freetype_support;
 	bool use_ass_subtitles;
-	bool use_custom_ass_style;
+
 	int ass_line_spacing;
 
-	bool use_forced_subs_only;
+	// ASS styles
+	bool use_custom_ass_style;
+	TAssStyles ass_styles;
 
-	bool subtitles_on_screenshots;
+	bool force_ass_styles; // Use ass styles even for ass files
+	QString user_forced_ass_style; //!< Specifies a style defined by the user to be used with -ass-force-style
+
+	bool use_forced_subs_only;
 
 	TOptionState change_sub_scale_should_restart;
 
@@ -236,30 +221,43 @@ public:
 	//! mplayer will be restarted.
 	bool fast_load_sub;
 
-	// ASS styles
-	TAssStyles ass_styles;
-	bool force_ass_styles; // Use ass styles even for ass files
-	QString user_forced_ass_style; //!< Specifies a style defined by the user to be used with -ass-force-style
-
 	//! If false, options requiring freetype won't be used
-	bool freetype_support;
 #ifdef Q_OS_WIN
 	bool use_windowsfontdir;
 #endif
 
 
-	// Advanced tab
-	QString monitor_aspect;
-	double monitorAspectDouble();
+	// Interface section
+	QString language;
+	QString iconset;
+	QString style;
+	QString default_font;
 
-	unsigned int color_key;
-	bool useColorKey() const;
+	// Mainwindow
 	bool use_single_window;
+	QSize default_size;
+	//! If true, the position of the main window will be saved before
+	//! entering in fullscreen and will restore when going back to
+	//! window mode.
+	bool restore_pos_after_fullscreen;
+	bool save_window_size_on_exit;
+	bool resize_on_load;
+	bool resize_on_docking;
+	bool hide_video_window_on_audio_files;
+	//!< Pause the current file when the main window is not visible
+	bool pause_when_hidden;
+	//! Close the main window when a file or playlist finish
+	bool close_on_finish;
+	bool show_tag_in_window_title;
 
-	// Let the user pass options to mplayer
-	QString player_additional_options;
-	QString player_additional_video_filters;
-	QString player_additional_audio_filters;
+	// Fullscreen
+	bool fullscreen;
+	bool start_in_fullscreen;
+
+	// Playlist
+	//! If true it will pass to mplayer the -playlist option
+	bool use_playlist_option;
+	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
 
 	// Logging tab
@@ -267,48 +265,14 @@ public:
 	bool log_verbose;
 	bool log_file;
 
-	//! If true it will autoload edl files with the same name of the file
-    //! to play
-	bool use_edl_files;
 
-	//! If true it will pass to mplayer the -playlist option
-	bool use_playlist_option;
-
-	//! If false, -brightness, -contrast and so on, won't be passed to
-	//! mplayer. It seems that some graphic cards don't support those options.
-	bool change_video_equalizer_on_startup;
-
-	QString actions_to_run; //!< List of actions to run every time a video loads.
-
-	//! Show file tag in window title
-	bool show_tag_in_window_title;
-
-	int time_to_kill_mplayer;
-
-#ifdef MPRIS2
-	bool use_mpris2;
-#endif
-
-
-	/* *********
-	   GUI stuff
-	   ********* */
-
-	// TODO: fullscreen is not a preference...
-	bool fullscreen;
-	bool start_in_fullscreen;
-
-	TOnTop stay_on_top;
-	double size_factor;
-
-	// Mainwindow resize methods
-	bool resize_on_load;
-	bool resize_on_docking;
-
-	QString style; 	//!< WZPlayer look
+	// Actions section
 
 	// Function of mouse buttons:
 	QString mouse_left_click_function;
+	//! If true, the left click in the video is delayed some ms
+	//! to check if the user double clicked
+	bool delay_left_click;
 	QString mouse_right_click_function;
 	QString mouse_double_click_function;
 	QString mouse_middle_click_function;
@@ -330,42 +294,77 @@ public:
 
 	//! If true, seeking will be done using a
 	//! percentage (with fractions) instead of time.
-	bool relative_seeking;  
+	bool relative_seeking;
 	bool precise_seeking; //! Enable precise_seeking (only available with mplayer2)
 
-	//! If true, the left click in the video is delayed some ms
-	//! to check if the user double clicked
-	bool delay_left_click;
 
-	QString language;
-	QString iconset;
+	// Drives section
+	QString cdrom_device;
+	int vcd_initial_title;
+
+	QString dvd_device;
+	bool use_dvdnav; //!< Opens DVDs using dvdnav: instead of dvd:
+	bool useDVDNAV() const { return isMPlayer() && use_dvdnav; }
+
+	QString bluray_device;
+
+
+	// Capture section
+	bool use_screenshot;
+	QString screenshot_directory;
+	QString screenshot_template;
+	QString screenshot_format;
+	bool subtitles_on_screenshots;
+
+	void setupScreenshotFolder();
+
+
+	// Performance section
+	bool cache_enabled;
+	int cache_for_files;
+	int cache_for_streams;
+	int cache_for_dvds;
+	int cache_for_vcds;
+	int cache_for_audiocds;
+	int cache_for_tv;
+
+
+	// Advanced tab
+	// Let the user pass options to mplayer
+	QString player_additional_options;
+	QString player_additional_video_filters;
+	QString player_additional_audio_filters;
+
+
+	//! If true it will autoload edl files with the same name of the file
+    //! to play
+	bool use_edl_files;
+
+	//! If false, -brightness, -contrast and so on, won't be passed to
+	//! mplayer. It seems that some graphic cards don't support those options.
+	bool change_video_equalizer_on_startup;
+
+	QString actions_to_run; //!< List of actions to run every time a video loads.
+
+	int time_to_kill_mplayer;
+
+#ifdef MPRIS2
+	bool use_mpris2;
+#endif
+
+
+	/* *********
+	   GUI stuff
+	   ********* */
+
+
+	TOnTop stay_on_top;
+	double size_factor;
+
 
 	//! Number of times to show the balloon remembering that the program
 	//! is still running in the system tray.
 	int balloon_count;
-
-	//! If true, the position of the main window will be saved before
-	//! entering in fullscreen and will restore when going back to
-	//! window mode.
-	bool restore_pos_after_fullscreen;
-
-	bool save_window_size_on_exit;
-
-	//! Close the main window when a file or playlist finish
-	bool close_on_finish;
-
-	QString default_font;
-
-	//!< Pause the current file when the main window is not visible
-	bool pause_when_hidden; 
-
-	QSize default_size; // Default size of the main window
-
-	bool hide_video_window_on_audio_files;
-
-	bool report_player_crashes;
-
-	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
 
     /* ********
@@ -404,6 +403,7 @@ public:
 	double initial_sub_scale;
 	double initial_sub_scale_mpv;
 	double initial_sub_scale_ass;
+
 	int initial_volume;
 	int initial_contrast;
 	int initial_brightness;
@@ -416,12 +416,6 @@ public:
 	//! Default value for position of subtitles on screen
 	//! 100 = 100% at the bottom
 	int initial_sub_pos;
-
-	bool initial_volnorm;
-
-	int initial_audio_channels;
-	int initial_stereo_mode;
-
 
 
     /* ****************

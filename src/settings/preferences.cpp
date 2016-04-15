@@ -39,12 +39,11 @@
 #include "helper.h"
 
 
-#define CURRENT_CONFIG_VERSION 12
-
-
 namespace Settings {
 
+static const int CURRENT_CONFIG_VERSION = 12;
 TPreferences* pref = 0;
+
 
 TPreferences::TPreferences() :
 	TPlayerSettings(TPaths::iniPath()) {
@@ -59,6 +58,8 @@ TPreferences::~TPreferences() {
 	pref = 0;
 }
 
+
+// Default names
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 QString default_mplayer_bin = "mplayer.exe";
 QString default_mpv_bin = "mpv.exe";
@@ -67,32 +68,31 @@ QString default_mplayer_bin = "mplayer";
 QString default_mpv_bin = "mpv";
 #endif
 
+
 void TPreferences::reset() {
 
 	config_version = CURRENT_CONFIG_VERSION;
 
 	// General tab
-	player_id = ID_MPLAYER;
-	player_bin = default_mplayer_bin;
-	mplayer_bin = default_mplayer_bin;
+	player_id = ID_MPV;
+	player_bin = default_mpv_bin;
 	mpv_bin = default_mpv_bin;
+	mplayer_bin = default_mplayer_bin;
+	report_player_crashes = true;
 
 	remember_media_settings = false;
 	remember_time_pos = false;
 	global_volume = true;
+	file_settings_method = "hash"; // Possible values: normal & hash
 
-	use_screenshot = true;
-	screenshot_template = "cap_%F_%p_%02n";
-	screenshot_format = "jpg";
+	check_channels_conf_on_startup = true;
 
-#ifdef PORTABLE_APP
-	screenshot_directory= "./screenshots";
-#else
-	screenshot_directory = "";
-#endif
+	// Demuxer section
+	use_lavf_demuxer = false;
+	use_idx = true;
 
 
-	// Video tab
+	// Video section
 	// Video driver
 
 #ifdef Q_OS_WIN
@@ -113,14 +113,7 @@ void TPreferences::reset() {
 #endif
 #endif
 
-	vo = mplayer_vo;
-
-	hwdec = "auto";
-
-	frame_drop = false;
-	hard_frame_drop = false;
-	use_soft_video_eq = false;
-	postprocessing_quality = 6;
+	vo = mpv_vo;
 
 #ifndef Q_OS_WIN
 	vdpau.ffh264vdpau = true;
@@ -131,9 +124,36 @@ void TPreferences::reset() {
 	vdpau.disable_video_filters = true;
 #endif
 
+	color_key = 0x020202;
+
+	hwdec = "auto";
+	use_soft_video_eq = false;
+
+	// Synchronization
+	frame_drop = false;
+	hard_frame_drop = false;
+	use_correct_pts = Detect;
+
+	initial_postprocessing = false;
+	postprocessing_quality = 6;
+	initial_deinterlace = TMediaSettings::NoDeinterlace;
+	initial_tv_deinterlace = TMediaSettings::Yadif_1;
+	initial_zoom_factor = 1.0;
+
+	monitor_aspect = ""; // Autodetect
+
+	initial_contrast = 0;
+	initial_brightness = 0;
+	initial_hue = 0;
+	initial_saturation = 0;
+	initial_gamma = 0;
+
+	osd_level = None;
+	osd_scale = 1;
+	subfont_osd_scale = 3;
+
 
 	// Audio tab
-
 #ifdef Q_OS_OS2
 	ao = "kai";
 #else
@@ -146,19 +166,26 @@ void TPreferences::reset() {
 	mplayer_ao = ao;
 	mpv_ao = ao;
 
-	use_soft_vol = false;
-	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
-	softvol_max = 110;
-
-	use_scaletempo = Detect;
+	initial_audio_channels = TMediaSettings::ChDefault;
+	initial_stereo_mode = TMediaSettings::Stereo;
 	use_hwac3 = false;
 	use_audio_equalizer = true;
+	use_scaletempo = Detect;
 
-	volume = 50;
+	// Volume
+	initial_volume = 50;
+	volume = initial_volume;
 	mute = false;
 
+	use_soft_vol = false;
+	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
+	softvol_max = 130;
+	initial_volnorm = false;
+
+
+	initial_audio_equalizer << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0;
 	global_audio_equalizer = true;
-	audio_equalizer << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0; // FIXME: use initial_audio_equalizer (but it's set later)
+	audio_equalizer = initial_audio_equalizer;
 
 	autosync = false;
 	autosync_factor = 100;
@@ -166,48 +193,13 @@ void TPreferences::reset() {
 	use_mc = false;
 	mc_value = 0;
 
+	audio_lang = "";
+
 	autoload_m4a = true;
 	min_step = 5;
 
-	osd_level = None;
-	osd_scale = 1;
-	subfont_osd_scale = 3;
 
-	file_settings_method = "hash"; // Possible values: normal & hash
-
-	// Preferred
-	audio_lang = "";
-
-    /* ***************
-       Drives (CD/DVD)
-       *************** */
-
-	dvd_device = "";
-	cdrom_device = "";
-	bluray_device = "";
-
-#ifndef Q_OS_WIN
-	// Try to set default values
-	if (QFile::exists("/dev/dvd")) dvd_device = "/dev/dvd";
-	if (QFile::exists("/dev/cdrom")) cdrom_device = "/dev/cdrom";
-#endif
-
-	vcd_initial_title = 2; // Most VCD's start at title #2
-	use_dvdnav = true;
-
-    /* ***********
-       Performance
-       *********** */
-	cache_enabled = false;
-	cache_for_files = 2048;
-	cache_for_streams = 2048;
-	cache_for_dvds = 0; // not recommended to use cache for dvds
-	cache_for_vcds = 1024;
-	cache_for_audiocds = 1024;
-	cache_for_tv = 3000;
-
-
-	// Subtitles
+	// Subtitles section
 	subtitle_fuzziness = 1;
 	subtitle_language = "";
 	select_first_subtitle = false;
@@ -217,87 +209,87 @@ void TPreferences::reset() {
 	// subtitle_enca_language = QString(QLocale::system().name()).section("_" , 0, 0);
 	subtitle_encoding_fallback = ""; // Auto detect subtitle encoding
 
-	use_ass_subtitles = true;
-	use_custom_ass_style = false;
-	ass_line_spacing = 0;
-
-	use_forced_subs_only = false;
-
-	subtitles_on_screenshots = false;
-
-	change_sub_scale_should_restart = Detect;
-
-	fast_load_sub = true;
-
-	// ASS styles
-	// Nothing to do, default values are given in
-	// TAssStyles constructor
-
-	force_ass_styles = false;
-	user_forced_ass_style.clear();
-
-	freetype_support = true;
 #ifdef Q_OS_WIN
 	use_windowsfontdir = false;
 #endif
 
+	// Libraries tab
+	freetype_support = true;
+	use_ass_subtitles = true;
+	ass_line_spacing = 0;
 
-    /* ********
-       Advanced
-       ******** */
+	use_custom_ass_style = false;
+	force_ass_styles = false;
+	user_forced_ass_style.clear();
 
-	color_key = 0x020202;
+	initial_sub_pos = 100; // 100%
+	initial_sub_scale = 5;
+	initial_sub_scale_mpv = 1;
+	initial_sub_scale_ass = 1;
 
-	monitor_aspect=""; // Autodetect
+	use_forced_subs_only = false;
+	change_sub_scale_should_restart = Detect;
+	fast_load_sub = true;
 
-	use_idx = true;
-	use_lavf_demuxer = false;
 
-	player_additional_options = "";
-#ifdef PORTABLE_APP
-	player_additional_options = "-nofontconfig";
+	// Interface section
+	language = "";
+	iconset = "H2O";
+	style = "";
+	default_font = "";
+
+	// Main window
+	stay_on_top = NeverOnTop;
+	size_factor = 1.0; // 100%
+
+	// 360p 16:9 is 640 x 360 (360 + 99 = 459)
+	default_size = QSize(640, 459);
+
+	use_single_window = true;
+	save_window_size_on_exit = true;
+	resize_on_load = true;
+	resize_on_docking = true;
+	pause_when_hidden = false;
+	hide_video_window_on_audio_files = true;
+	start_in_fullscreen = false;
+	close_on_finish = false;
+	show_tag_in_window_title = true;
+
+	// Fullscreen
+	fullscreen = false;
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+	restore_pos_after_fullscreen = true;
+#else
+	restore_pos_after_fullscreen = false;
 #endif
-	player_additional_video_filters = "";
-	player_additional_audio_filters = "";
+
+	floating_hide_delay = 3000;
+	floating_activation_area = Anywhere;
+
+
+	// Playlist tab
+	media_to_add_to_playlist = NoFiles;
 
 	log_debug_enabled = true;
 	log_verbose = false;
 	log_file = false;
 
-	use_edl_files = true;
+	history_recents.clear();
+	history_urls.clear();
 
-	use_playlist_option = false;
+	save_dirs = true;
+	latest_dir = QDir::homePath();
+	last_dvd_directory = "";
 
-	change_video_equalizer_on_startup = true;
-
-	use_correct_pts = Detect;
-
-	actions_to_run = "";
-
-	show_tag_in_window_title = true;
-
-	time_to_kill_mplayer = 5000;
-
-#ifdef MPRIS2
-	use_mpris2 = true;
-#endif
+	// TV (dvb)
+	last_dvb_channel = "";
+	last_tv_channel = "";
 
 
-    /* *********
-       GUI stuff
-       ********* */
-
-	fullscreen = false;
-	start_in_fullscreen = false;
-	stay_on_top = NeverOnTop;
-	size_factor = 1.0; // 100%
-
-	resize_on_load = true;
-	resize_on_docking = true;
-
-	style = "";
-
+	// Actions section
 	mouse_left_click_function = "play_or_pause";
+	delay_left_click = true;
 	mouse_right_click_function = "show_context_menu";
 	mouse_double_click_function = "fullscreen";
 	mouse_middle_click_function = "next_wheel_function";
@@ -317,54 +309,45 @@ void TPreferences::reset() {
 	relative_seeking = false;
 	precise_seeking = true;
 
-	delay_left_click = true;
 
-	language = "";
+	// Drives section
+	cdrom_device = "";
+	vcd_initial_title = 2; // Most VCD's start at title #2
+	dvd_device = "";
+	use_dvdnav = true;
+	bluray_device = "";
 
-	balloon_count = 5;
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	restore_pos_after_fullscreen = true;
-#else
-	restore_pos_after_fullscreen = false;
+#ifndef Q_OS_WIN
+	// Try to set default values
+	if (QFile::exists("/dev/cdrom")) cdrom_device = "/dev/cdrom";
+	if (QFile::exists("/dev/dvd")) dvd_device = "/dev/dvd";
 #endif
 
-	save_window_size_on_exit = true;
 
-	close_on_finish = false;
+	// Capture section
+#ifdef PORTABLE_APP
+	screenshot_directory= "./screenshots";
+#else
+	screenshot_directory = "";
+#endif
 
-	default_font = "";
-
-	pause_when_hidden = false;
-
-	iconset = "H2O";
-
-	// Used to be default_size = QSize(683, 509);
-	// Now 360p 16:9 is 640 x 360 (360 + 99 = 459)
-	default_size = QSize(640, 459);
-
-	hide_video_window_on_audio_files = true;
-
-	report_player_crashes = true;
-
-	media_to_add_to_playlist = NoFiles;
+	use_screenshot = true;
+	screenshot_template = "cap_%F_%p_%02n";
+	screenshot_format = "jpg";
+	subtitles_on_screenshots = false;
 
 
-    /* ********
-       TV (dvb)
-       ******** */
+	// Performance section
+	cache_enabled = false;
+	cache_for_files = 2048;
+	cache_for_streams = 2048;
+	cache_for_dvds = 0; // not recommended to use cache for dvds
+	cache_for_vcds = 1024;
+	cache_for_audiocds = 1024;
+	cache_for_tv = 3000;
 
-	check_channels_conf_on_startup = true;
-	initial_tv_deinterlace = TMediaSettings::Yadif_1;
-	last_dvb_channel = "";
-	last_tv_channel = "";
 
-
-    /* ********
-       Network
-       ******** */
-
-	// Proxy
+	// Network proxy
 	use_proxy = false;
 	proxy_type = QNetworkProxy::HttpProxy;
 	proxy_host = "";
@@ -373,70 +356,27 @@ void TPreferences::reset() {
 	proxy_password = "";
 
 
-    /* ***********
-       Directories
-       *********** */
+	// Advanced section
+	actions_to_run = "";
+	player_additional_options = "";
 
-	latest_dir = QDir::homePath();
-	last_dvd_directory = "";
-	save_dirs = true;
-
-    /* **************
-       Initial values
-       ************** */
-
-	initial_sub_scale = 5;
-	initial_sub_scale_mpv = 1;
-	initial_sub_scale_ass = 1;
-	initial_volume = 40;
-	initial_contrast = 0;
-	initial_brightness = 0;
-	initial_hue = 0;
-	initial_saturation = 0;
-	initial_gamma = 0;
-
-	initial_audio_equalizer << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0;
-
-	initial_zoom_factor = 1.0;
-	initial_sub_pos = 100; // 100%
-
-	initial_postprocessing = false;
-	initial_volnorm = false;
-
-	initial_deinterlace = TMediaSettings::NoDeinterlace;
-
-	initial_audio_channels = TMediaSettings::ChDefault;
-	initial_stereo_mode = TMediaSettings::Stereo;
-
-
-
-    /* *********
-       Instances
-       ********* */
-#ifdef SINGLE_INSTANCE
-	use_single_instance = true;
+#ifdef PORTABLE_APP
+	player_additional_options = "-nofontconfig";
 #endif
 
-
-    /* ****************
-       Floating control
-       **************** */
-
-	floating_activation_area = Anywhere;
-	floating_hide_delay = 3000;
+	player_additional_video_filters = "";
+	player_additional_audio_filters = "";
 
 
-    /* *******
-       History
-       ******* */
+	use_edl_files = true;
+	use_playlist_option = false;
+	change_video_equalizer_on_startup = true;
+	time_to_kill_mplayer = 5000;
+	balloon_count = 5;
 
-	history_recents.clear();
-	history_urls.clear();
-
-
-    /* *******
-       Filters
-       ******* */
+#ifdef MPRIS2
+	use_mpris2 = true;
+#endif
 
 	filters.init();
 }
@@ -1323,7 +1263,9 @@ void TPreferences::load() {
 	update_checker_data.load(this);
 
 
-	qDebug("Settings::TPreferences::load: config_version: %d, CURRENT_CONFIG_VERSION: %d", config_version, CURRENT_CONFIG_VERSION);
+	qDebug("Settings::TPreferences::load: config_version: %d, CURRENT_CONFIG_VERSION: %d",
+		   config_version, CURRENT_CONFIG_VERSION);
+
 	// Fix some values if config is old
 	if (config_version < CURRENT_CONFIG_VERSION) {
 		qDebug("TPreferences::load: config version is old, updating it");
