@@ -196,7 +196,9 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	parent->addAction(exitFullscreenAct);
 	connect(exitFullscreenAct, SIGNAL(triggered()), parent, SLOT(exitFullscreen()));
 
-	connect(parent, SIGNAL(fullscreenChanged()), this, SLOT(onFullscreenChanged()));
+    connect(parent, SIGNAL(fullscreenChanged()),
+            this, SLOT(onFullscreenChanged()),
+            Qt::QueuedConnection);
 
 	// Aspect submenu
 	addSeparator();
