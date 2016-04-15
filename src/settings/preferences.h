@@ -240,10 +240,6 @@ public:
 	// Mainwindow
 	bool use_single_window;
 	QSize default_size;
-	//! If true, the position of the main window will be saved before
-	//! entering in fullscreen and will restore when going back to
-	//! window mode.
-	bool restore_pos_after_fullscreen;
 	bool save_window_size_on_exit;
 	bool resize_on_load;
 	bool resize_on_docking;

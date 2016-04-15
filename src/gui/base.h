@@ -337,10 +337,6 @@ private:
 	int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 	int arg_start_in_fullscreen; // -1 = not set, 1 = true, 0 = false
 
-	// Variables to restore pos and size of the window
-	// when exiting from fullscreen mode.
-	QPoint win_pos;
-	QSize win_size;
 	bool was_maximized;
 
 	bool ignore_show_hide_events;

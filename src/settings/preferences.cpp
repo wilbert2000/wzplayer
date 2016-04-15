@@ -257,13 +257,6 @@ void TPreferences::reset() {
 
 	// Fullscreen
 	fullscreen = false;
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	restore_pos_after_fullscreen = true;
-#else
-	restore_pos_after_fullscreen = false;
-#endif
-
 	floating_hide_delay = 3000;
 	floating_activation_area = Anywhere;
 
@@ -616,7 +609,6 @@ void TPreferences::save() {
 
 	setValue("balloon_count", balloon_count);
 
-	setValue("restore_pos_after_fullscreen", restore_pos_after_fullscreen);
 	setValue("save_window_size_on_exit", save_window_size_on_exit);
 
 	setValue("close_on_finish", close_on_finish);
@@ -1140,7 +1132,6 @@ void TPreferences::load() {
 
 	balloon_count = value("balloon_count", balloon_count).toInt();
 
-	restore_pos_after_fullscreen = value("restore_pos_after_fullscreen", restore_pos_after_fullscreen).toBool();
 	save_window_size_on_exit = 	value("save_window_size_on_exit", save_window_size_on_exit).toBool();
 
 	close_on_finish = value("close_on_finish", close_on_finish).toBool();

@@ -110,7 +110,6 @@
 
 #ifdef Q_OS_WIN
 #include "gui/deviceinfo.h"
-#include <QSysInfo>
 #endif
 
 
@@ -1554,20 +1553,10 @@ void TBase::toggleFullscreen(bool b) {
 		return;
 	}
 	pref->fullscreen = b;
-
 	emit fullscreenChanged();
 
 	if (pref->fullscreen) {
 		aboutToEnterFullscreen();
-
-#ifdef Q_OS_WIN
-		// Hack to avoid the windows taskbar to be visible on Windows XP
-		if (QSysInfo::WindowsVersion < QSysInfo::WV_VISTA) {
-			if (!pref->pause_when_hidden)
-				hide();
-		}
-#endif
-
 		showFullScreen();
 		didEnterFullscreen();
 	} else {
@@ -1585,12 +1574,7 @@ void TBase::aboutToEnterFullscreen() {
 	emit aboutToEnterFullscreenSignal();
 
 	// Save current state
-	if (pref->restore_pos_after_fullscreen) {
-		win_pos = pos();
-		win_size = size();
-	}
-	was_maximized = isMaximized();
-
+    was_maximized = isMaximized();
 	menubar_visible = !menuBar()->isHidden();
 	statusbar_visible = !statusBar()->isHidden();
 
@@ -1638,14 +1622,10 @@ void TBase::aboutToExitFullscreen() {
 void TBase::didExitFullscreen() {
 	//qDebug("Gui::TBase::didExitFullscreen");
 
-	// Restore normal state
+    // Restore maximizednormal state
 	if (was_maximized) {
 		showMaximized();
-	}
-	if (pref->restore_pos_after_fullscreen) {
-		move(win_pos);
-		resize(win_size);
-	}
+    }
 
 	viewMenuBarAct->setChecked(menubar_visible);
 	viewStatusBarAct->setChecked(statusbar_visible);
