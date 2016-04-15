@@ -547,10 +547,12 @@ void TInterface::createHelp() {
 
 	setWhatsThis(log_debug_check, tr("Log debug messages"),
 		tr("If checked, WZPlayer will log debug messages, "
-		   "which might give additional information in case of trouble. "
-		   "Non-debug messages are always logged. This option will only "
-		   "affect versions of WZPlayer compiled with DEBUG defined."
-		   "You can view the log with menu <b>Window - View log</b>."));
+		   "which might give additional information in case of trouble."
+		   " Non-debug messages are always logged. This option will only"
+		   " affect versions of WZPlayer compiled with DEBUG defined."
+		   " To log early program startup messages start WZPlayer with"
+		   "<b><i>--debug</i></b> on the command line."
+		   "You can view the log with the menu <b><i>Window - View log</i></b>."));
 
 	setWhatsThis(log_verbose_check, tr("Verbose"),
 		tr("Request verbose messages from the player for troubleshooting."));
