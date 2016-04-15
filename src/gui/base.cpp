@@ -487,12 +487,13 @@ void TBase::createToolbars() {
 			<< "forwardbutton_action"
 			<< "separator"
 			<< "osd_menu|0|1"
-			<< "aspect_menu|0|1"
-			<< "reset_zoom|0|1"
-			<< "separator|0|1"
+            << "aspect_menu|1|1"
+            << "videosize_menu|1|0"
+            << "reset_zoom|0|1"
+            << "separator|1|1"
 			<< "mute"
 			<< "volumeslider_action"
-			<< "separator|0|1"
+            << "separator|1|1"
 			<< "fullscreen";
 	controlbar->setDefaultActions(actions);
 	addToolBar(Qt::BottomToolBarArea, controlbar);
