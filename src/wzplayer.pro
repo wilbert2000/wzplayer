@@ -466,4 +466,5 @@ OTHER_FILES += \
     ../wzplayer.spec \
     ../setup/scripts/install_wzplayer.cmd \
     ../setup/scripts/make_pkgs.cmd \
-    ../man/wzplayer.1
+    ../man/wzplayer.1 \
+    wzplayer.rc
