@@ -37,7 +37,9 @@ public:
 #if QT_VERSION_MAJOR >= 5
 	enum TLocation {
         DataLocation = QStandardPaths::DataLocation,
+#if QT_VERSION >= 0x050400
         AppDataLocation = QStandardPaths::AppDataLocation,
+#endif
 		PicturesLocation = QStandardPaths::PicturesLocation,
 		DocumentsLocation = QStandardPaths::DocumentsLocation,
 		HomeLocation = QStandardPaths::HomeLocation
@@ -45,7 +47,6 @@ public:
 #else
 	enum TLocation {
         //DataLocation = QDesktopServices::DataLocation,
-        //AppDataLocation = QDesktopServices::AppDataLocation,
         PicturesLocation = QDesktopServices::PicturesLocation,
 		DocumentsLocation = QDesktopServices::DocumentsLocation,
 		HomeLocation = QDesktopServices::HomeLocation
