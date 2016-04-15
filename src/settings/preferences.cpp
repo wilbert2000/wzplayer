@@ -754,15 +754,23 @@ TPreferences::TPlayerID TPreferences::getPlayerID(const QString& player) {
 }
 
 void TPreferences::setPlayerID() {
-
 	player_id = getPlayerID(player_bin);
 }
 
 QString TPreferences::playerName() const {
 
-	if (player_id == ID_MPLAYER)
+    if (player_id == ID_MPLAYER) {
 		return "MPlayer";
+    }
 	return "MPV";
+}
+
+QString TPreferences::playerIDToString(TPlayerID pid) {
+
+    if (pid == ID_MPLAYER) {
+        return "mplayer";
+    }
+    return "mpv";
 }
 
 QString TPreferences::getAbsolutePathPlayer(const QString& player) {
@@ -865,10 +873,10 @@ void TPreferences::setPlayerBin(QString bin,
 
 	qDebug() << "Settings::TPreferences::setPlayerBin: selected vo" << vo
 			 << "mplayer vo" << mplayer_vo
-			 << "mplayer ao" << mplayer_ao
+             << "mpv vo" << mpv_vo
 			 << "selected ao" << ao
-			 << "mpv vo" << mpv_vo
-			 << "mpv ao" << mpv_ao;
+             << "mplayer ao" << mplayer_ao
+             << "mpv ao" << mpv_ao;
 }
 
 void TPreferences::load() {
@@ -1407,45 +1415,33 @@ void TPreferences::setupScreenshotFolder() {
 
 	if (screenshot_directory.isEmpty()) {
 		QString pdir = TPaths::location(TPaths::PicturesLocation);
-		if (pdir.isEmpty()) pdir = TPaths::location(TPaths::DocumentsLocation);
-		if (pdir.isEmpty()) pdir = TPaths::location(TPaths::HomeLocation);
-
-		if (pdir.isEmpty())
-			pdir = "/tmp";
-
-		if (QFile::exists(pdir)) {
-			QString default_screenshot_path = QDir::toNativeSeparators(pdir + "/screenshots");
-			if (QFile::exists(default_screenshot_path)) {
-				screenshot_directory = default_screenshot_path;
-			} else if (QDir().mkdir(default_screenshot_path)) {
-				qDebug() << "Settings::TPreferences::setupScreenshotFolder: created"
-						 << default_screenshot_path;
-				screenshot_directory = default_screenshot_path;
-			} else {
-				qWarning() << "Settings::TPreferences::setupScreenshotFolder: failed to create"
-						   << default_screenshot_path;
-			}
-		} else {
-			qWarning() << "Settings::TPreferences::setupScreenshotFolder: folder"
-					   << pdir << "does not exist";
-		}
+        if (pdir.isEmpty()) {
+            qDebug() << "TPreferences::setupScreenshotFolder: no PicturesLocation";
+            pdir = TPaths::location(TPaths::DocumentsLocation);
+        }
+        if (pdir.isEmpty()) {
+            qDebug() << "TPreferences::setupScreenshotFolder: no DocumentsLocation";
+            pdir = TPaths::location(TPaths::HomeLocation);
+        }
+        if (pdir.isEmpty()) {
+            qDebug() << "TPreferences::setupScreenshotFolder: no HomeLocation";
+            pdir = "/tmp";
+        }
+        screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");
 	} else {
 		screenshot_directory = QDir::toNativeSeparators(screenshot_directory);
-		QFileInfo fi(screenshot_directory);
-		if (fi.isDir() && fi.isWritable()) {
-			qDebug() << "Settings::TPreferences::setupScreenshotFolder: screenshot directory set to"
-					 << screenshot_directory;
-		} else {
-			qWarning() << "Settings::TPreferences::setupScreenshotFolder: disabling screenshots, screenshot directory not writable"
-					   << screenshot_directory;
-			// Disable screenshots and capture
-			screenshot_directory = "";
-		}
 	}
 
 	if (screenshot_directory.isEmpty()) {
 		use_screenshot = false;
-	}
+    } else if (QDir().mkpath(screenshot_directory)) {
+        qDebug() << "Settings::TPreferences::setupScreenshotFolder: using screen shot folder"
+                 << screenshot_directory;
+    } else {
+        qWarning() << "Settings::TPreferences::setupScreenshotFolder: failed to create"
+                   << screenshot_directory;
+        screenshot_directory = "";
+    }
 }
 
 } // namespace Settings

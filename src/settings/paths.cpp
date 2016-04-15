@@ -17,6 +17,8 @@
 */
 
 #include "settings/paths.h"
+
+#include <QApplication>
 #include <QDebug>
 #include <QLibraryInfo>
 #include <QLocale>
@@ -34,7 +36,6 @@
 
 namespace Settings {
 
-QString TPaths::app_path;
 QString TPaths::config_path;
 
 
@@ -65,12 +66,13 @@ QString TPaths::location(TLocation type) {
 }
 
 void TPaths::setConfigPath(const QString& path) {
+    qDebug() << "Settings::TPaths::setConfigPath:" << path;
 
-	// Set config_path
+    // Set config_path
 	if (path.isEmpty()) {
 
 #ifdef PORTABLE_APP
-		config_path = app_path;
+        config_path = qApp->applicationDirPath();
 #else
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		config_path = location(TLocation::DataLocation);
@@ -87,19 +89,16 @@ void TPaths::setConfigPath(const QString& path) {
 	} else {
 		config_path = path;
 	}
-    qDebug() << "Settings::TPaths::setConfigPath: config directory set to"
+    qDebug() << "Settings::TPaths::setConfigPath: config path set to"
              << config_path;
 
 	// Create config directory
 #ifndef PORTABLE_APP
-	if (!QFile::exists(config_path)) {
-		QDir d;
-		if (d.mkdir(config_path)) {
-			qDebug() << "Settings::TPaths::setConfigPath: created config dir" << config_path;
-		} else {
-			qWarning() << "Settings::TPaths::setConfigPath: failed to create" << config_path;
-		}
-	}
+    QDir dir(config_path);
+    if (!dir.mkpath(config_path)) {
+        qWarning() << "Settings::TPaths::setConfigPath: failed to create"
+                   << config_path;
+    }
 #endif
 
 } // void TPaths::setConfigPath(const QString& path)
@@ -113,7 +112,7 @@ QString TPaths::dataPath() {
 	}
 #endif
 
-	return app_path;
+    return qApp->applicationDirPath();
 }
 
 QString TPaths::translationPath() {
@@ -124,7 +123,7 @@ QString TPaths::translationPath() {
 		return path;
 #endif
 
-	return app_path + "/translations";
+    return qApp->applicationDirPath() + "/translations";
 }
 
 QString TPaths::docPath() {
@@ -135,7 +134,7 @@ QString TPaths::docPath() {
 		return path;
 #endif
 
-	return app_path + "/docs";
+    return qApp->applicationDirPath() + "/docs";
 }
 
 QString TPaths::themesPath() {
@@ -146,7 +145,7 @@ QString TPaths::themesPath() {
 		return path;
 #endif
 
-	return app_path + "/themes";
+    return qApp->applicationDirPath() + "/themes";
 }
 
 QString TPaths::shortcutsPath() {
@@ -157,7 +156,7 @@ QString TPaths::shortcutsPath() {
 		return path;
 #endif
 
-	return app_path + "/shortcuts";
+    return qApp->applicationDirPath() + "/shortcuts";
 }
 
 QString TPaths::qtTranslationPath() {
@@ -171,14 +170,14 @@ QString TPaths::doc(const QString& file, QString locale, bool english_fallback) 
 	}
 
 	QString f = docPath() + "/" + locale + "/" + file;
-	qDebug("Helper:doc: checking '%s'", f.toUtf8().data());
+    qDebug() << "TPaths::doc: checking" << f;
 	if (QFile::exists(f))
 		return f;
 
 	if (locale.indexOf(QRegExp("_[A-Z]+")) >= 0) {
 		locale.replace(QRegExp("_[A-Z]+"), "");
 		f = docPath() + "/" + locale + "/" + file;
-		qDebug("Helper:doc: checking '%s'", f.toUtf8().data());
+        qDebug() << "TPaths:doc: checking" << f;
 		if (QFile::exists(f))
 			return f;
 	}
@@ -200,18 +199,32 @@ QString TPaths::subtitleStyleFile() {
 }
 
 #ifdef Q_OS_WIN
+QString TPaths::fontPathPlayer(Settings::TPreferences::TPlayerID pid) {
+    // TODO:
+    return qApp->applicationDirPath() + "/" + pref->playerIDToString(pid) + "/fonts";
+}
+
+QStringList TPaths::fonts(const QString& font_dir) {
+
+    QDir dir(font_dir);
+    return dir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
+}
+
 QString TPaths::fontPath() {
 
-	QString path = app_path + "/mplayer/fonts";
-	QDir font_dir(path);
-    QStringList files = font_dir.entryList(QStringList() << "*.ttf" << "*.otf",
-                                           QDir::Files);
-	//qDebug("Paths:fontPath: files in %s: %d", path.toUtf8().constData(), files.count());
-	if (files.count() > 0) {
+    QString path = fontPathPlayer(pref->player_id);
+    if (fonts(path).count() > 0) {
 		return path;
-	} else {
-		return app_path + "/open-fonts";
-	}
+    }
+    if (pref->player_id == Settings::TPreferences::ID_MPLAYER) {
+        path = fontPathPlayer(Settings::TPreferences::ID_MPV);
+    } else {
+        path = fontPathPlayer(Settings::TPreferences::ID_MPLAYER);
+    }
+    if (fonts(path).count() > 0) {
+        return path;
+    }
+    return qApp->applicationDirPath() + "/open-fonts";
 }
 
 QString TPaths::fontConfigFilename() {
@@ -239,10 +252,10 @@ void TPaths::createFontFile() {
 	}
 
     // Check the mplayer font file
-	QString input = app_path + "/mplayer/fonts/fonts.conf";
+    QString input = qApp->applicationDirPath() + "/mplayer/fonts/fonts.conf";
 	if (!QFile::exists(input)) {
         qDebug() << "Settings::TPaths::createFontFile:" << input << "doesn't exist";
-        input = app_path + "/mpv/fonts.conf";
+        input = qApp->applicationDirPath() + "/mpv/fonts.conf";
 		if (!QFile::exists(input)) {
             qDebug() << "Settings::TPaths::createFontFile:" << input << "doesn't exist";
 			qWarning("Settings::TPaths::createFontFile: failed to create fonts.conf");

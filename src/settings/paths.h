@@ -27,6 +27,8 @@
 #include <QDesktopServices>
 #endif
 
+#include "settings/preferences.h"
+
 
 namespace Settings {
 
@@ -55,9 +57,6 @@ public:
 
 	static QString location(TLocation type);
 
-	static void setAppPath(const QString& path) { app_path = path; }
-	static QString appPath() { return app_path; }
-
 	static void setConfigPath(const QString& path);
 	//! Return the path where wzplayer should save its config files
 	static QString configPath() { return config_path; }
@@ -81,8 +80,9 @@ public:
 #endif
 
 private:
-	static QString app_path;
 	static QString config_path;
+    static QStringList fonts(const QString& font_dir);
+    static QString fontPathPlayer(Settings::TPreferences::TPlayerID pid);
 };
 
 } // namespace Settings

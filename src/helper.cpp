@@ -217,7 +217,9 @@ QString Helper::findExecutable(const QString& name) {
 
 #ifdef Q_OS_WIN
 	// Add mplayer subdir of app dir to end of PATH
-	search_paths << TPaths::appPath() + "/mplayer" << TPaths::appPath() + "/mpv";
+    search_paths << qApp->applicationDirPath() + "/mplayer"
+                 << qApp->applicationDirPath() + "/mpv";
+
 	// Add program files
 	QString program_files(qgetenv("PROGRAMFILES"));
 	if (!program_files.isEmpty()) {
@@ -226,7 +228,7 @@ QString Helper::findExecutable(const QString& name) {
 #endif
 
 	// Add app dir to end of PATH
-	search_paths << TPaths::appPath();
+    search_paths << qApp->applicationDirPath();
 
 	for (int n = 0; n < search_paths.count(); n++) {
 		QString candidate = search_paths[n] + "/" + name;
@@ -235,7 +237,7 @@ QString Helper::findExecutable(const QString& name) {
 			qDebug() << "Helper::findExecutable: found" << fi.absoluteFilePath();
 			return fi.absoluteFilePath();
 		}
-		qDebug() << "Helper::findExecutable:" << candidate << "not accepted";
+        qDebug() << "Helper::findExecutable:" << candidate << "not executable";
 	}
 
 	// Name not found

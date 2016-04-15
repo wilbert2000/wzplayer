@@ -615,7 +615,7 @@ void TApp::showInfo() {
 	qDebug("%s", s.toUtf8().data());
 	qDebug("Compiled with Qt v. %s, running on Qt v. %s", QT_VERSION_STR, qVersion());
 
-	qDebug(" * application path: '%s'", TPaths::appPath().toUtf8().data());
+    qDebug(" * application path: '%s'", applicationDirPath().toUtf8().constData());
 	qDebug(" * data path: '%s'", TPaths::dataPath().toUtf8().data());
 	qDebug(" * translation path: '%s'", TPaths::translationPath().toUtf8().data());
 	qDebug(" * doc path: '%s'", TPaths::docPath().toUtf8().data());

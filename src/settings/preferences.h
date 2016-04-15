@@ -97,6 +97,7 @@ public:
 
 	static QString getAbsolutePathPlayer(const QString& player);
 	static TPlayerID getPlayerID(const QString& player);
+    static QString playerIDToString(TPlayerID pid);
 
 	void setPlayerBin(QString bin, bool allow_other_player, TPlayerID wanted_player);
 
