@@ -36,13 +36,17 @@ public:
 	// Fix Qt locations
 #if QT_VERSION_MAJOR >= 5
 	enum TLocation {
+        DataLocation = QStandardPaths::DataLocation,
+        AppDataLocation = QStandardPaths::AppDataLocation,
 		PicturesLocation = QStandardPaths::PicturesLocation,
 		DocumentsLocation = QStandardPaths::DocumentsLocation,
 		HomeLocation = QStandardPaths::HomeLocation
-	}
+    };
 #else
 	enum TLocation {
-		PicturesLocation = QDesktopServices::PicturesLocation,
+        //DataLocation = QDesktopServices::DataLocation,
+        //AppDataLocation = QDesktopServices::AppDataLocation,
+        PicturesLocation = QDesktopServices::PicturesLocation,
 		DocumentsLocation = QDesktopServices::DocumentsLocation,
 		HomeLocation = QDesktopServices::HomeLocation
 	};

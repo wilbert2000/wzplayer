@@ -46,16 +46,17 @@ QString TPaths::location(TLocation type) {
 
 	// Switch to roaming on Windows
 #if QT_VERSION >= 0x050400
-	if (type == QStandardPaths::DataLocation) {
-		type = QStandardPaths::AppDataLocation;
+    if (type == DataLocation) {
+        type = AppDataLocation;
 	}
 #endif
 
-	path = QStandardPaths::writableLocation(type);
+    path = QStandardPaths::writableLocation(
+        static_cast<QStandardPaths::StandardLocation>(type));
 
 #else
 	path = QDesktopServices::storageLocation(
-			   static_cast<QDesktopServices::StandardLocation>(type));
+        static_cast<QDesktopServices::StandardLocation>(type));
 #endif
 
 	qDebug() << "Settings::TPaths::writableLocation: returning" << path
