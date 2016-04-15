@@ -33,7 +33,7 @@
 #endif
 #endif
 
-#include "QtSingleApplication"
+#include "qtsingleapplication/QtSingleApplication"
 
 
 class TApp : public QtSingleApplication {
