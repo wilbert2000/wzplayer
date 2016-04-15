@@ -1,7 +1,7 @@
 This document explains how to compile and install wzplayer.
 
 1) Compilation general
-2) Changing installation path
+2) Changing the installation path
 3) Compiling under Windows
 4) How to create a deb package
 5) How to create a rpm package
@@ -10,53 +10,51 @@ This document explains how to compile and install wzplayer.
 ----------------------
 For Windows see "Compiling under Windows"
 
-Be sure you have installed the Qt 4 or higher development package. Its name
-maybe qt4-devel, libqt4-dev or similar. Issue the following commands in the
-directory under which you want to install the source and compile wzplayer:
+Be sure you have installed the Qt 4.4 or higher development packages. Its name
+maybe qt4-devel, libqt4-dev, the higher the version the better. Issue the
+following commands from the directory under which you want to install the
+source:
 
 git clone 'https://github.com/wilbert2000/wzplayer.git' wzplayer
 cd wzplayer
 make
 
-If compiling succeeded you can install wzplayer with:
+If building succeeded you can install WZPlayer into /usr/local with:
 sudo make install
-That will install wzplayer in /usr/local.
 
 
-2) Changing installation path
+2) Changing the installation path
 -----------------------------
 By default wzplayer will be installed in /usr/local. You can change it by
 using PREFIX.
 
-Examples:
 make PREFIX=/usr
-make PREFIX=/usr install
+sudo make PREFIX=/usr install
 
-That would install wzplayer under /usr.
+Would install wzplayer under /usr.
 
 DESTDIR can be useful for package maintainers.
 
 make PREFIX=/usr
 make PREFIX=/usr DESTDIR=/tmp/ install
 
-Would compile wzplayer for /usr and install it in /tmp/usr/
+Will build wzplayer for /usr and install it in /tmp/usr/
 
 3) Compiling under Windows
 ----------------------------
-You need to have git and at least Qt 4.4 with the MinGW compiler installed.
-You can get git from https://git-scm.com/downloads and Qt with MinGW from
-http://www.qt.io/
+You need to have git and at least Qt 4.4, but preferrable Qt 5.4 or later, with
+the MinGW compiler installed. You can get git from
+https://git-scm.com/downloads and Qt with MinGW from http://www.qt.io/.
 
 To install the WZPlayer source open a command line prompt in the directory
-under which you want to install the source, for example by selecting the
-directory and choosing "Git bash here". The source will be installed in a
+under which you want to install the source. The source will be installed in the
 subdirectory wzplayer with the following command:
 git clone "https://github.com/wilbert2000/wzplayer.git" wzplayer
 
 Open Qt Creator and open the project file wzplayer/src/wzplayer.pro.
-Qt Creator will offer you the options to configure the project.
+Qt Creator will offer you to configure the project.
 Select "Configure project".
-You can now build, modify and run wzplayer.
+You can now build, modify and run WZPlayer.
 
 4) How to create a deb package
 ----------------------------
@@ -73,7 +71,9 @@ Run ./create_deb.sh from the directory where you installed the WZPlayer sources.
 
 Make sure you have git installed.
 
-Run create_rpm.sh from anywhere.
+Run ./create_rpm.sh
 
-It will create a fresh clone from the WZPlayer repository to the tmp directory,
-copy the tar ball to the package dir and call rpmbuild to build the package.
+It will create a clean clone from the WZPlayer repository in the tmp directory,
+so, except for the create_rpm.sh file, you don't need the source to be checked out.
+It will copy the latest tar ball to the package dir and call rpmbuild to build
+the package.
