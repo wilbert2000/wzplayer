@@ -7,11 +7,14 @@
 class TConfig {
 public:
 	static const int MESSAGE_DURATION;
-	static const double ZOOM_MIN;
+
+    static const double ZOOM_MIN;
 	static const double ZOOM_MAX;
 
-	static const QString PROGRAM_ID;
+    static const QString PROGRAM_ORG;
+    static const QString PROGRAM_ID;
 	static const QString PROGRAM_NAME;
+    static const QString PROGRAM_VERSION;
 
 	static const QString URL_HOMEPAGE;
 	static const QString URL_ISSUES;

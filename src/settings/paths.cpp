@@ -199,9 +199,11 @@ QString TPaths::subtitleStyleFile() {
 
 #ifdef Q_OS_WIN
 QString TPaths::fontPath() {
+
 	QString path = app_path + "/mplayer/fonts";
 	QDir font_dir(path);
-	QStringList files = font_dir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
+    QStringList files = font_dir.entryList(QStringList() << "*.ttf" << "*.otf",
+                                           QDir::Files);
 	//qDebug("Paths:fontPath: files in %s: %d", path.toUtf8().constData(), files.count());
 	if (files.count() > 0) {
 		return path;
@@ -210,29 +212,37 @@ QString TPaths::fontPath() {
 	}
 }
 
+QString TPaths::fontConfigFilename() {
+    return configPath() + "/fonts.conf";
+}
+
 void TPaths::createFontFile() {
 	qDebug("Settings::TPaths::createFontFile");
 
-	QString output = configPath() + "/fonts.conf";
+    QString output = fontConfigFilename();
+    QString fontDir = fontPath();
 
-	// Check if the file already exists with the modified path
+    // Check if the WZPlayer font config file already exists
+    // and uses the current font dir
 	if (QFile::exists(output)) {
 		QFile i(output);
 		if (i.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			QString text = i.readAll();
-			if (text.contains("<dir>" + fontPath() + "</dir>")) {
-				qDebug("Settings::TPaths::createFontFile: file %s already exists with font path. Doing nothing.", output.toUtf8().constData());
+            if (text.contains("<dir>" + fontDir + "</dir>")) {
+                qDebug() << "Settings::TPaths::createFontFile: reusing existing font config file"
+                         << output << "which uses font directory" << fontDir;
 				return;
 			}
 		}
 	}
 
+    // Check the mplayer font file
 	QString input = app_path + "/mplayer/fonts/fonts.conf";
 	if (!QFile::exists(input)) {
-		qDebug("Settings::TPaths::createFontFile: %s doesn't exist", input.toUtf8().constData());
+        qDebug() << "Settings::TPaths::createFontFile:" << input << "doesn't exist";
         input = app_path + "/mpv/fonts.conf";
 		if (!QFile::exists(input)) {
-			qDebug("Settings::TPaths::createFontFile: %s doesn't exist", input.toUtf8().constData());
+            qDebug() << "Settings::TPaths::createFontFile:" << input << "doesn't exist";
 			qWarning("Settings::TPaths::createFontFile: failed to create fonts.conf");
 			return;
 		}

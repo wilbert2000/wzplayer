@@ -1609,7 +1609,7 @@ end_video_filters:
 
 #ifdef Q_OS_WIN
 	if (!pref->use_windowsfontdir) {
-		env.insert("FONTCONFIG_FILE", TPaths::configPath() + "/fonts.conf");
+        env.insert("FONTCONFIG_FILE", TPaths::fontConfigFilename());
 	}
 #endif
 

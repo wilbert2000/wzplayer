@@ -70,6 +70,7 @@ public:
 
 
 	// General tab
+
 	// Version config file
 	int config_version;
 
@@ -77,11 +78,13 @@ public:
 	TPlayerID player_id;
 	QString player_bin;
 
-	QString mplayer_bin;
+    // Mplayer
+    QString mplayer_bin;
 	QString mplayer_vo;
 	QString mplayer_ao;
 
-	QString mpv_bin;
+    // MPV
+    QString mpv_bin;
 	QString mpv_vo;
 	QString mpv_ao;
 

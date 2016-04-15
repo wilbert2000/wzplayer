@@ -63,6 +63,7 @@ public:
 
 #ifdef Q_OS_WIN
 	static QString fontPath();
+    static QString fontConfigFilename();
     static void createFontFile();
 #endif
 

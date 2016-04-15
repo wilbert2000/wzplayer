@@ -64,8 +64,9 @@ TApp::TApp(int& argc, char** argv)
 	, close_at_end(-1)
 	, start_in_fullscreen(-1) {
 
-	// Change working directory to application path
-	TPaths::setAppPath(applicationDirPath());
+    setOrganizationName(TConfig::PROGRAM_ORG);
+    setApplicationName(TConfig::PROGRAM_ID);
+    //setApplicationVersion(TConfig::PROGRAM_VERSION);
 
 	// Save default style
 	default_style = style()->objectName();
