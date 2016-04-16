@@ -191,7 +191,7 @@ protected slots:
 
 	virtual void onMediaSettingsChanged();
 	virtual void onVideoOutResolutionChanged(int w, int h);
-	virtual void gotCurrentTime(double);
+    virtual void onPositionChanged(double);
 	virtual void gotDuration(double);
 	virtual void onNewMediaStartedPlaying();
 	virtual void onMediaInfoChanged();
@@ -213,9 +213,7 @@ protected slots:
 
 	virtual void resizeWindow(int w, int h);
 
-	virtual void displayGotoTime(int);
-	//! You can call this slot to jump to the specified percentage in the video, while dragging the slider.
-	virtual void goToPosOnDragging(int);
+    virtual void onDragPositionChanged(double);
 
 	virtual void showContextMenu();
 	virtual void showContextMenu(QPoint p);

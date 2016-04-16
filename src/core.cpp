@@ -63,8 +63,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	  mset(&mdat),
 	  playerwindow(mpw),
 	  _state(STATE_STOPPED),
-	  restarting(0),
-	  pos_max(1000) {
+      restarting(0) {
 
 	qRegisterMetaType<TCoreState>("TCoreState");
 
@@ -79,10 +78,10 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
 	connect(proc, SIGNAL(playerFullyLoaded()),
 			this, SLOT(playingStarted()));
 
-	connect(proc, SIGNAL(receivedCurrentSec(double)),
-			this, SLOT(gotCurrentSec(double)));
+    connect(proc, SIGNAL(receivedPosition(double)),
+            this, SLOT(onReceivedPosition(double)));
 
-	connect(proc, SIGNAL(receivedCurrentFrame(int)),
+    connect(proc, SIGNAL(receivedFrame(int)),
 			this, SIGNAL(showFrame(int)));
 
 	connect(proc, SIGNAL(receivedPause()),
@@ -217,7 +216,7 @@ void TCore::processFinished(bool normal_exit) {
 void TCore::onReceivedEndOfFile() {
 
 	// Reset current time to 0, needed so mset.current_sec 0 is saved
-	gotCurrentSec(0);
+    onReceivedPosition(0);
 
 	qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
 	emit mediaEOF();
@@ -728,7 +727,7 @@ void TCore::stop() {
 	// if pressed stop twice, reset video to the beginning
 	if (prev_state == STATE_STOPPED && mset.current_sec != 0) {
 		qDebug("TCore::stop: resetting current_sec %f to 0", mset.current_sec);
-		gotCurrentSec(0);
+        onReceivedPosition(0);
 	}
 
 	emit mediaStopped();
@@ -1664,21 +1663,6 @@ void TCore::stopPlayer() {
 	qDebug("TCore::stopPlayer: done");
 }
 
-void TCore::goToPosition(int pos) {
-	qDebug("TCore::goToPosition: %d/%d", pos, pos_max);
-
-	if (pos < 0)
-		pos = 0;
-	else if (pos >= pos_max)
-		pos = pos_max - 1;
-
-	if (pref->relative_seeking || mdat.duration <= 0) {
-		goToPos((double) pos / ((double) pos_max / 100));
-	} else {
-		goToSec(mdat.duration * pos / pos_max);
-	}
-}
-
 void TCore::seekCmd(double secs, int mode) {
 
 	// seek <value> [type]
@@ -1695,7 +1679,8 @@ void TCore::seekCmd(double secs, int mode) {
 				secs = 100;
 			}
 		} else if (mode == 2 && mdat.duration > 0 && secs >= mdat.duration) {
-			qWarning("TCore::seekCmd: seek %f beyond end of video %f", secs, mdat.duration);
+            qWarning("TCore::seekCmd: seek %f beyond end of video %f",
+                     secs, mdat.duration);
 			// TODO: limit only when mdat.duration is proven reliable...
 			//if (mdat.video_fps > 0)
 			//	secs = mdat.duration - (1.0 / mdat.video_fps);
@@ -1710,63 +1695,63 @@ void TCore::seekCmd(double secs, int mode) {
 	}
 }
 
-void TCore::goToPos(double perc) {
-	qDebug("TCore::goToPos: per: %f", perc);
+void TCore::seekRelative(double secs) {
+    qDebug("TCore::seekRelative: seek %f secs", secs);
+    seekCmd(secs, 0);
+}
+
+void TCore::seekPercentage(double perc) {
+    qDebug("TCore::seekPercentage: per: %f", perc);
 	seekCmd(perc, 1);
 }
 
-void TCore::goToSec(double sec) {
-	qDebug("TCore::goToSec: %f", sec);
+void TCore::seekTime(double sec) {
+    qDebug("TCore::seekTime: %f", sec);
 	seekCmd(sec, 2);
-}
-
-void TCore::seek(int secs) {
-	qDebug("TCore::seek: seek relative %d secs", secs);
-	seekCmd(secs, 0);
 }
 
 void TCore::sforward() {
 	qDebug("TCore::sforward");
-	seek(pref->seeking1); // +10s
+    seekRelative(pref->seeking1); // +10s
 }
 
 void TCore::srewind() {
 	qDebug("TCore::srewind");
-	seek(-pref->seeking1); // -10s
+    seekRelative(-pref->seeking1); // -10s
 }
 
 
 void TCore::forward() {
 	qDebug("TCore::forward");
-	seek(pref->seeking2); // +1m
+    seekRelative(pref->seeking2); // +1m
 }
 
 
 void TCore::rewind() {
 	qDebug("TCore::rewind");
-	seek(-pref->seeking2); // -1m
+    seekRelative(-pref->seeking2); // -1m
 }
 
 
 void TCore::fastforward() {
 	qDebug("TCore::fastforward");
-	seek(pref->seeking3); // +10m
+    seekRelative(pref->seeking3); // +10m
 }
 
 
 void TCore::fastrewind() {
 	qDebug("TCore::fastrewind");
-	seek(-pref->seeking3); // -10m
+    seekRelative(-pref->seeking3); // -10m
 }
 
 void TCore::forward(int secs) {
 	qDebug("TCore::forward: %d", secs);
-	seek(secs);
+    seekRelative(secs);
 }
 
 void TCore::rewind(int secs) {
 	qDebug("TCore::rewind: %d", secs);
-	seek(-secs);
+    seekRelative(-secs);
 }
 
 void TCore::seekToNextSub() {
@@ -2633,27 +2618,18 @@ void TCore::setAudioEq9(int value) {
 	setAudioEq(9, value);
 }
 
-void TCore::gotCurrentSec(double sec) {
+void TCore::onReceivedPosition(double sec) {
 
 	mset.current_sec = sec;
 
 	// Update GUI once per second
 	static int last_second = -11;
-	int i = (int) sec;
-	if (i == last_second)
+    int sec_int = (int) sec;
+    if (sec_int == last_second)
 		return;
-	last_second = i;
+    last_second = sec_int;
 
-	// Let the world know what a beautiful time it is
-	emit showTime(sec);
-
-	// Emit posChanged:
-	int pos = 0;
-	if (mset.current_sec > 0 && mdat.duration > 0.1) {
-		pos = qRound((mset.current_sec * pos_max) / mdat.duration);
-		if (pos >= pos_max) pos = pos_max - 1;
-	}
-	emit positionChanged(pos);
+    emit positionChanged(sec);
 
 	// Check chapter
 	if (mdat.chapters.count() <= 0 || mset.playing_single_track) {
@@ -2685,7 +2661,7 @@ void TCore::gotCurrentSec(double sec) {
 	int new_chapter_id = mdat.chapters.idForTime(sec);
 	if (new_chapter_id != chapter_id) {
 		mdat.chapters.setSelectedID(new_chapter_id);
-		qDebug("TCore:gotCurrentSec: emit chapterChanged(%d)", new_chapter_id);
+        qDebug("TCore:onReceivedPosition: emit chapterChanged(%d)", new_chapter_id);
 		emit chapterChanged(new_chapter_id);
 	}
 }

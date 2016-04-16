@@ -244,7 +244,7 @@ void TPlayerProcess::notifyTime(double time_sec, const QString& line) {
 	checkTime(time_sec);
 
 	// Pass timestamp to GUI
-	emit receivedCurrentSec(time_sec);
+    emit receivedPosition(time_sec);
 
 	// Ask children for frame
 	int frame = getFrame(time_sec, line);
@@ -252,7 +252,7 @@ void TPlayerProcess::notifyTime(double time_sec, const QString& line) {
 	// Pass frame to GUI
 	if (frame != prev_frame) {
 		prev_frame = frame;
-		emit receivedCurrentFrame(frame);
+        emit receivedFrame(frame);
 	}
 }
 

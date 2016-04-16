@@ -32,7 +32,7 @@ class TTimeSlider : public TSlider {
 	Q_OBJECT
 
 public:
-	TTimeSlider(QWidget* parent, int max_pos, int drag_delay);
+	TTimeSlider(QWidget* parent, int max_pos, double duration, int drag_delay);
 	virtual ~TTimeSlider();
 
 	// See TEditableToolbar::resizeEvent() for details.
@@ -49,7 +49,7 @@ public slots:
 
 signals:
 	void posChanged(int);
-	void draggingPos(int);
+    void draggingPosChanged(int);
 	//! Emitted with a few ms of delay
 	void delayedDraggingPos(int);
 
@@ -60,7 +60,7 @@ protected slots:
 	void stopUpdate();
 	void resumeUpdate();
 	void mouseReleased();
-	void valueChanged_slot(int);
+	void onValueChanged(int);
 	void checkDragging(int);
 	void sendDelayedPos();
 
@@ -74,7 +74,7 @@ protected:
 private:
 	bool dont_update;
 	int position;
-	double total_time;
+	double _duration;
 	
 	int last_pos_to_send;
 	QTimer* timer;

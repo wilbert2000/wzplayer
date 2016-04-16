@@ -29,24 +29,29 @@ namespace Gui {
 namespace Action {
 
 
-TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, int drag_delay)
+TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, double duration, int drag_delay)
 	: TSlider(parent)
 	, dont_update(false)
 	, position(0)
-	, total_time(0)
+    , _duration(duration)
 	, last_pos_to_send(-1)
 	, savedSize(256)
 	, getInitialSize(true) {
 
 	setMinimum(0);
-	setMaximum(max_pos);
-	setFocusPolicy(Qt::NoFocus);
+    setValue(0);
+    setMaximum(max_pos);
+
+    setTickPosition(QSlider::TicksBelow);
+    setTickInterval(max_pos / 10);
+
+    setFocusPolicy(Qt::NoFocus);
 
 	connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));
 	connect(this, SIGNAL(sliderReleased()), this, SLOT(resumeUpdate()));
 	connect(this, SIGNAL(sliderReleased()), this, SLOT(mouseReleased()));
-	connect(this, SIGNAL(valueChanged(int)), this, SLOT(valueChanged_slot(int)));
-	connect(this, SIGNAL(draggingPos(int)), this, SLOT(checkDragging(int)));
+	connect(this, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged(int)));
+    connect(this, SIGNAL(draggingPosChanged(int)), this, SLOT(checkDragging(int)));
 	
 	timer = new QTimer(this);
 	timer->setInterval(drag_delay);
@@ -101,7 +106,7 @@ void TTimeSlider::resizeEvent(QResizeEvent* event) {
 
 void TTimeSlider::setPos(int v) {
 
-	if (v != pos() && !dont_update) {
+    if (v != position && !dont_update) {
 		position = v;
 		setValue(v);
 	}
@@ -112,11 +117,11 @@ int TTimeSlider::pos() {
 }
 
 void TTimeSlider::setDuration(double t) {
-	total_time = t;
+	_duration = t;
 }
 
 double TTimeSlider::duration() {
-	return total_time;
+	return _duration;
 }
 
 void TTimeSlider::stopUpdate() {
@@ -137,7 +142,7 @@ void TTimeSlider::mouseReleased() {
 	emit posChanged(value());
 }
 
-void TTimeSlider::valueChanged_slot(int v) {
+void TTimeSlider::onValueChanged(int v) {
 
 	bool dragging = dont_update;
 	if (!dragging) {
@@ -145,7 +150,7 @@ void TTimeSlider::valueChanged_slot(int v) {
 			emit posChanged(v);
 		}
 	} else {
-		emit draggingPos(v);
+        emit draggingPosChanged(v);
 	}
 }
 
@@ -181,10 +186,11 @@ bool TTimeSlider::event(QEvent* event) {
 		QHelpEvent* help_event = static_cast<QHelpEvent*>(event);
 		QStyleOptionSlider opt;
 		initStyleOption(&opt);
-		const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+		const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider,
+			&opt, QStyle::SC_SliderHandle, this);
 		const QPoint center = sliderRect.center() - sliderRect.topLeft();
 		int val = pixelPosToRangeValue(pick(help_event->pos() - center));
-		int time = val * total_time / maximum();
+		int time = val * _duration / maximum();
 		QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
 		event->accept();
 		return true;

@@ -232,8 +232,8 @@ void TBase::createCore() {
 
 	core = new TCore(this, playerwindow);
 
-	connect(core, SIGNAL(showTime(double)),
-			this, SLOT(gotCurrentTime(double)));
+    connect(core, SIGNAL(positionChanged(double)),
+            this, SLOT(onPositionChanged(double)));
 	connect(core, SIGNAL(showFrame(int)),
 			this, SIGNAL(frameChanged(int)));
 	connect(core, SIGNAL(durationChanged(double)),
@@ -349,15 +349,19 @@ void TBase::createActions() {
 	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
 
 	// Time slider
-	timeslider_action = new TTimeSliderAction(this, core->positionMax(), pref->time_slider_drag_delay);
+    timeslider_action = new TTimeSliderAction(this);
 	timeslider_action->setObjectName("timeslider_action");
 
-	connect(timeslider_action, SIGNAL(posChanged(int)), core, SLOT(goToPosition(int)));
-	connect(core, SIGNAL(positionChanged(int)), timeslider_action, SLOT(setPos(int)));
-	connect(core, SIGNAL(durationChanged(double)), timeslider_action, SLOT(setDuration(double)));
-
-	connect(timeslider_action, SIGNAL(draggingPos(int)), this, SLOT(displayGotoTime(int)));
-	connect(timeslider_action, SIGNAL(delayedDraggingPos(int)), this, SLOT(goToPosOnDragging(int)));
+    connect(core, SIGNAL(positionChanged(double)),
+            timeslider_action, SLOT(setPosition(double)));
+    connect(core, SIGNAL(durationChanged(double)),
+            timeslider_action, SLOT(setDuration(double)));
+    connect(timeslider_action, SIGNAL(positionChanged(double)),
+            core, SLOT(seekTime(double)));
+    connect(timeslider_action, SIGNAL(percentageChanged(double)),
+            core, SLOT(seekPercentage(double)));
+    connect(timeslider_action, SIGNAL(dragPositionChanged(double)),
+            this, SLOT(onDragPositionChanged(double)));
 
 	connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
 			core, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
@@ -1487,7 +1491,7 @@ void TBase::showGotoDialog() {
 	d.setMaximumTime((int) core->mdat.duration);
 	d.setTime((int) core->mset.current_sec);
 	if (d.exec() == QDialog::Accepted) {
-		core->goToSec(d.time());
+        core->seekTime(d.time());
 	}
 }
 
@@ -1907,8 +1911,8 @@ void TBase::displayMessage(const QString& message, int time) {
 	statusBar()->showMessage(message, time);
 }
 
-void TBase::gotCurrentTime(double sec) {
-	//qDebug("Gui::TBase::gotCurrentTime: %f", sec);
+void TBase::onPositionChanged(double sec) {
+    //qDebug("Gui::TBase::onPositionChanged: %f", sec);
 
 	QString time =
 		Helper::formatTime((int) sec) + " / " +
@@ -1922,7 +1926,7 @@ void TBase::gotDuration(double duration) {
 	Q_UNUSED(duration)
 
 	// Uses duration in text
-	gotCurrentTime(core->mset.current_sec);
+    onPositionChanged(core->mset.current_sec);
 }
 
 void TBase::changeSize(double factor) {
@@ -2155,20 +2159,13 @@ void TBase::onMediaSettingsChanged() {
 	updateAudioEqualizer();
 }
 
-void TBase::displayGotoTime(int t) {
+void TBase::onDragPositionChanged(double t) {
 
-	int jump_time = qRound(core->mdat.duration * t / core->positionMax());
-	QString s = tr("Jump to %1").arg(Helper::formatTime(jump_time));
+    QString s = tr("Jump to %1").arg(Helper::formatTime(qRound(t)));
 	statusBar()->showMessage(s, 1000);
 
 	if (pref->fullscreen) {
 		core->displayTextOnOSD(s);
-	}
-}
-
-void TBase::goToPosOnDragging(int t) {
-	if (pref->update_while_seeking) {
-		core->goToPosition(t);
 	}
 }
 

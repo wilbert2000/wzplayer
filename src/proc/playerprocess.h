@@ -139,8 +139,8 @@ signals:
 
 	void receivedVideoOut();
 	void durationChanged(double);
-	void receivedCurrentSec(double sec);
-	void receivedCurrentFrame(int frame);
+	void receivedPosition(double sec);
+	void receivedFrame(int frame);
 	void receivedPause();
 	void receivedEndOfFile();
 

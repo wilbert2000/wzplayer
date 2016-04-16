@@ -71,7 +71,6 @@ public:
 		forced_titles[file] = title;
 	}
 	bool haveExternalSubs() const;
-	int positionMax() const { return pos_max; }
 	int getVolume() const;
 	bool getMute() const;
 	Settings::TAudioEqualizerList getAudioEqualizer() const;
@@ -106,11 +105,6 @@ public slots:
 
 	//! Reopens the file (no restart)
 	void reload();
-
-	void goToPosition(int pos);
-	void goToPos(double perc);
-	// void goToPos(int perc);
-	void goToSec(double sec);
 
 	void setAMarker(); //!< Set A marker to current sec
 	void setAMarker(int sec);
@@ -157,7 +151,9 @@ public slots:
 	void changeUpscale(bool);
 	void changeStereo3d(const QString& in, const QString& out);
 
-	void seek(int secs);
+    void seekRelative(double secs);
+    void seekPercentage(double perc);
+    void seekTime(double sec);
 	void sforward(); 	// + 10 seconds
 	void srewind(); 	// - 10 seconds
     void forward(); 	// + 1 minute
@@ -341,9 +337,8 @@ signals:
 	//! Sent when requested to play, but there is no file to play
 	void noFileToPlay();
 
-	void showTime(double sec);
-	void positionChanged(int); // To connect a slider
-	void durationChanged(double); // Duration has changed
+    void positionChanged(double sec);
+    void durationChanged(double);
 	void showFrame(int frame);
 
 	void showMessage(const QString& text);
@@ -392,7 +387,7 @@ protected slots:
 	void processFinished(bool normal_exit);
 	void onReceivedEndOfFile();
 
-	void gotCurrentSec(double sec);
+    void onReceivedPosition(double sec);
 	void onReceivedPause();
 	void onReceivedVideoOut();
 
@@ -428,9 +423,6 @@ private:
 
 	QString initial_subtitle;
 	QMap<QString,QString> forced_titles;
-
-	// Max value [0.. pos_max) for gotoPosition() and positionChanged()
-	int pos_max;
 
 	int cache_size;
 

@@ -121,7 +121,7 @@ void MediaPlayer2Player::Play() const
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& TrackId, qlonglong Position) const
 {
     if (TrackId.path().toLocal8Bit() == makeTrackId(m_core->mdat.filename))
-        m_core->seek(static_cast<int>(Position / 1000000));
+        m_core->seekTime(Position / 1000000);
 }
 
 void MediaPlayer2Player::OpenUri(QString uri) const
@@ -232,7 +232,7 @@ bool MediaPlayer2Player::CanSeek() const
 
 void MediaPlayer2Player::Seek(qlonglong Offset) const
 {
-    m_core->seek(static_cast<int>(Offset/1000000));
+    m_core->seekRelative(Offset / 1000000);
 }
 
 bool MediaPlayer2Player::CanControl() const

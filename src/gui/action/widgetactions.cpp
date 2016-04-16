@@ -23,6 +23,7 @@
 #include <QToolBar>
 #include "colorutils.h"
 #include "gui/action/timeslider.h"
+#include "settings/preferences.h"
 
 namespace Gui {
 namespace Action {
@@ -53,10 +54,10 @@ void TWidgetAction::propagate_enabled(bool b) {
 }
 
 
-TTimeSliderAction::TTimeSliderAction(QWidget* parent , int max_position, int delay)
-	: TWidgetAction(parent),
-	  max_pos(max_position),
-	  drag_delay(delay) {
+TTimeSliderAction::TTimeSliderAction(QWidget* parent) :
+    TWidgetAction(parent),
+    max_pos(1000),
+    duration(0) {
 }
 
 TTimeSliderAction::~TTimeSliderAction() {
@@ -64,19 +65,32 @@ TTimeSliderAction::~TTimeSliderAction() {
 
 void TTimeSliderAction::setPos(int v) {
 
-	QList<QWidget *> l = createdWidgets();
-	for (int n=0; n < l.count(); n++) {
-		TTimeSlider *s = (TTimeSlider*) l[n];
-		bool was_blocked= s->blockSignals(true);
+    QList<QWidget*> l = createdWidgets();
+    for (int n = 0; n < l.count(); n++) {
+        TTimeSlider* s = (TTimeSlider*) l[n];
+        bool was_blocked = s->blockSignals(true);
 		s->setPos(v);
 		s->blockSignals(was_blocked);
 	}
 }
 
+void TTimeSliderAction::setPosition(double sec) {
+
+    int pos = 0;
+    if (sec > 0 && duration > 0.1) {
+        pos = qRound((sec * max_pos) / duration);
+        if (pos > max_pos) {
+            pos = max_pos;
+        }
+    }
+
+    setPos(pos);
+}
+
 void TTimeSliderAction::setDuration(double t) {
 	//qDebug() << "Gui::Action::TTimeSliderAction::setDuration:" << t;
 
-	total_time = t;
+	duration = t;
 	QList<QWidget*> l = createdWidgets();
 	for (int n = 0; n < l.count(); n++) {
 		TTimeSlider* s = (TTimeSlider*) l[n];
@@ -84,23 +98,46 @@ void TTimeSliderAction::setDuration(double t) {
 	}
 }
 
+// Slider pos changed
+void TTimeSliderAction::onPosChanged(int value) {
+
+    if (Settings::pref->relative_seeking || duration <= 0) {
+        emit percentageChanged((double) (value * 100) / max_pos);
+    } else {
+        emit positionChanged(duration * value / max_pos);
+    }
+}
+
+// Slider pos changed while dragging
+void TTimeSliderAction::onDraggingPosChanged(int value) {
+    emit dragPositionChanged(duration * value / max_pos);
+}
+
+// Delayed slider pos while dragging
+void TTimeSliderAction::onDelayedDraggingPos(int value) {
+
+    if (Settings::pref->update_while_seeking) {
+        onPosChanged(value);
+    }
+}
+
 QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 
-	TTimeSlider* slider = new TTimeSlider(parent, max_pos, drag_delay);
+    TTimeSlider* slider = new TTimeSlider(parent, max_pos, duration,
+        Settings::pref->time_slider_drag_delay);
 	slider->setEnabled(isEnabled());
-	slider->setDuration(total_time);
 
 	if (custom_style)
 		slider->setStyle(custom_style);
 	if (!custom_stylesheet.isEmpty())
 		slider->setStyleSheet(custom_stylesheet);
 
-	connect(slider, SIGNAL(posChanged(int)),
-			this, SIGNAL(posChanged(int)));
-	connect(slider, SIGNAL(draggingPos(int)),
-			this, SIGNAL(draggingPos(int)));
+    connect(slider, SIGNAL(posChanged(int)),
+            this, SLOT(onPosChanged(int)));
+    connect(slider, SIGNAL(draggingPosChanged(int)),
+            this, SLOT(onDraggingPosChanged(int)));
 	connect(slider, SIGNAL(delayedDraggingPos(int)),
-			this, SIGNAL(delayedDraggingPos(int)));
+            this, SLOT(onDelayedDraggingPos(int)));
 
 	connect(slider, SIGNAL(wheelUp()),
 			this, SIGNAL(wheelUp()));

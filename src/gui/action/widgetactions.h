@@ -61,17 +61,17 @@ class TTimeSliderAction : public TWidgetAction {
 	Q_OBJECT
 
 public:
-	TTimeSliderAction(QWidget* parent, int max_position, int delay);
+    TTimeSliderAction(QWidget* parent);
 	virtual ~TTimeSliderAction();
 
 public slots:
-	virtual void setPos(int);
-	virtual void setDuration(double);
+    virtual void setPosition(double sec);
+    virtual void setDuration(double);
 
 signals:
-	void posChanged(int value);
-	void draggingPos(int value);
-	void delayedDraggingPos(int);
+    void positionChanged(double sec);
+    void percentageChanged(double percentage);
+    void dragPositionChanged(double sec);
 
 	void wheelUp(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::Seeking);
 	void wheelDown(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::Seeking);
@@ -81,8 +81,13 @@ protected:
 
 private:
 	int max_pos;
-	int drag_delay;
-	double total_time;
+    double duration;
+
+    void setPos(int);
+private slots:
+    void onPosChanged(int value);
+    void onDraggingPosChanged(int value);
+    void onDelayedDraggingPos(int value);
 };
 
 
