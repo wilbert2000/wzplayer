@@ -25,7 +25,7 @@
   !define WZPLAYER_VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_BUILD}.${VER_REVISION}"
   !define WZPLAYER_PRODUCT_VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_BUILD}.${VER_REVISION}"
 !else ifndef VER_REVISION
-  !define WZPLAYER_VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_BUILD}"
+  !define WZPLAYER_VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_BUILD}.0"
   !define WZPLAYER_PRODUCT_VERSION "${VER_MAJOR}.${VER_MINOR}.${VER_BUILD}.0"
 !endif
 
@@ -35,7 +35,7 @@
   !define WZPLAYER_BUILD_DIR "wzplayer-build"
 !endif
 
-  !define WZPLAYER_REG_KEY "Software\WZPlayer"
+  !define WZPLAYER_REG_KEY "Software\WH\WZPlayer"
   !define WZPLAYER_APP_PATHS_KEY "Software\Microsoft\Windows\CurrentVersion\App Paths\wzplayer.exe"
   !define WZPLAYER_DEF_PROGS_KEY "Software\Clients\Media\WZPlayer"
 
@@ -76,9 +76,9 @@
 
   ;Default installation folder
 !ifdef WIN64
-  InstallDir "$PROGRAMFILES64\WZPlayer"
+  InstallDir "$PROGRAMFILES64\WH\WZPlayer"
 !else
-  InstallDir "$PROGRAMFILES\WZPlayer"
+  InstallDir "$PROGRAMFILES\WH\WZPlayer"
 !endif
 
   ;Get installation folder from registry if available
