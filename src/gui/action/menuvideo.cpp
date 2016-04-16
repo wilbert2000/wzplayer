@@ -51,7 +51,8 @@ TMenuDeinterlace::TMenuDeinterlace(QWidget* parent, TCore* c)
 	// No one else sets it
 
 	addSeparator();
-	toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", QT_TR_NOOP("Toggle deinterlacing"), "", Qt::Key_D);
+    toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", QT_TR_NOOP("Toggle deinterlacing"), "deinterlace", Qt::Key_D);
+    toggleDeinterlaceAct->setCheckable(true);
 	connect(toggleDeinterlaceAct, SIGNAL(triggered()), core, SLOT(toggleDeinterlace()));
 
 	addActionsTo(parent);

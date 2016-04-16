@@ -3172,7 +3172,6 @@ void TCore::showTimeOnOSD() {
 }
 
 void TCore::toggleDeinterlace() {
-	qDebug("TCore::toggleDeinterlace");
 	proc->toggleDeinterlace();
 }
 
