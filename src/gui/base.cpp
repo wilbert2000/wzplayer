@@ -2161,7 +2161,7 @@ void TBase::onMediaSettingsChanged() {
 
 void TBase::onDragPositionChanged(double t) {
 
-    QString s = tr("Jump to %1").arg(Helper::formatTime(qRound(t)));
+    QString s = tr("Jump to %1").arg(Helper::formatTime(t));
 	statusBar()->showMessage(s, 1000);
 
 	if (pref->fullscreen) {
