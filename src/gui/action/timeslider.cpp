@@ -41,10 +41,6 @@ TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, double duration, int drag
 	setMinimum(0);
     setValue(0);
     setMaximum(max_pos);
-
-    setTickPosition(QSlider::TicksBelow);
-    setTickInterval(max_pos / 10);
-
     setFocusPolicy(Qt::NoFocus);
 
 	connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));
