@@ -58,9 +58,6 @@ public:
 	static void saveToConfig(QObject* o, QSettings* set);
 	static void loadFromConfig(const TActionList& all_actions, QSettings* set);
 
-	static QString shortcutsToString(const TShortCutList& shortcuts);
-	static TShortCutList stringToShortcuts(const QString& shortcuts);
-
 public slots:
 	void applyChanges();
 	void saveActionsTable();
@@ -101,7 +98,12 @@ private:
 	QPushButton* editButton;
 	QString latest_dir;
 
-	static QString actionToString(const QAction& action);
+    static QString keyToString(QKeySequence key);
+    static QKeySequence stringToKey(QString s);
+    static QString shortcutsToString(const TShortCutList& shortcuts);
+    static TShortCutList stringToShortcuts(const QString& shortcuts);
+
+    static QString actionToString(const QAction& action);
 	static void setActionFromString(QAction& action, const QString& s, const TActionList& actions);
 	static void removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action);
 	void resizeColumns();

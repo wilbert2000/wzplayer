@@ -120,7 +120,6 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
 
 	actionsTable->horizontalHeader()->setStretchLastSection(true);
 
-	actionsTable->setAlternatingRowColors(true);
 	actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 	actionsTable->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
@@ -137,7 +136,7 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
 	connect(editButton, SIGNAL(clicked()), this, SLOT(editShortcut()));
 
 	QHBoxLayout* buttonLayout = new QHBoxLayout;
-	buttonLayout->setContentsMargins(22, 8, 16, 0);
+    buttonLayout->setContentsMargins(16, 8, 16, 0);
 	buttonLayout->setSpacing(6);
 	buttonLayout->addWidget(editButton);
 	buttonLayout->addStretch(1);
@@ -220,32 +219,28 @@ void TActionsEditor::updateView() {
 
 	for (int n = 0; n < actionsList.count(); n++) {
 		QAction* action = actionsList[n];
-		QString accelText = shortcutsToString(action->shortcuts());
 
 		// Conflict column
-		QTableWidgetItem* i_conf = new QTableWidgetItem();
+        QTableWidgetItem* i = new QTableWidgetItem();
+        i->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        actionsTable->setItem(n, COL_CONFLICTS, i);
 
-		// Action column
-		QTableWidgetItem* i_name = new QTableWidgetItem(action->objectName());
+        // Action column
+        i = new QTableWidgetItem(action->objectName());
+        i->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        actionsTable->setItem(n, COL_ACTION, i);
 
-		// Desc column
-		QTableWidgetItem* i_desc = new QTableWidgetItem(action->text().replace("&",""));
-		i_desc->setIcon(action->icon());
+        // Desc column
+        i = new QTableWidgetItem(actionTextToDescription(
+            action->text(), action->objectName()));
+        i->setIcon(action->icon());
+        i->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        actionsTable->setItem(n, COL_DESC, i);
 
-		// Shortcut column
-		QTableWidgetItem* i_shortcut = new QTableWidgetItem(accelText);
-
-		// Set flags
-		i_conf->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		i_name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		i_desc->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		i_shortcut->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-		// Add items to table
-		actionsTable->setItem(n, COL_CONFLICTS, i_conf);
-		actionsTable->setItem(n, COL_ACTION, i_name);
-		actionsTable->setItem(n, COL_DESC, i_desc);
-		actionsTable->setItem(n, COL_SHORTCUT, i_shortcut);
+        // Shortcut column
+        i = new QTableWidgetItem(shortcutsToString(action->shortcuts()));
+        i->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        actionsTable->setItem(n, COL_SHORTCUT, i);
 	}
 
 	hasConflicts(); // Check for conflicts
@@ -349,7 +344,6 @@ bool TActionsEditor::hasConflicts() {
 
 	return conflict;
 }
-
 
 void TActionsEditor::saveActionsTable() {
 	QString s = MyFileDialog::getSaveFileName(
@@ -456,12 +450,40 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
 
 
 // Static functions
+const QString KEY_COMMA = "Comma";
+
+QString TActionsEditor::keyToString(QKeySequence key) {
+
+    QString s = key.toString(QKeySequence::PortableText);
+    if (s == ",") {
+        s = KEY_COMMA;
+    }
+    return s;
+}
+
+QKeySequence TActionsEditor::stringToKey(QString s) {
+
+    s = s.simplified();
+    if (s == KEY_COMMA) {
+        return QKeySequence(Qt::Key_Comma);
+    }
+
+    // Qt 4.3 and 4.4 (at least on linux) seems to have a problem when
+    // using Simplified-Chinese. QKeysequence deletes the arrow key names
+    // from the shortcut, so this is a work-around.
+    s.replace(QString::fromUtf8("左"), "Left");
+    s.replace(QString::fromUtf8("下"), "Down");
+    s.replace(QString::fromUtf8("右"), "Right");
+    s.replace(QString::fromUtf8("上"), "Up");
+
+    return QKeySequence(s, QKeySequence::PortableText);
+}
 
 QString TActionsEditor::shortcutsToString(const TShortCutList& shortcuts) {
 
 	QString s = "";
 	for (int n = 0; n < shortcuts.count(); n++) {
-		s += shortcuts[n].toString(QKeySequence::PortableText);
+        s += keyToString(shortcuts[n]);
 		if (n < shortcuts.count() - 1)
 			s += ", ";
 	}
@@ -475,22 +497,7 @@ TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 	QStringList l = shortcuts.split(",", QString::SkipEmptyParts);
 
 	for (int n = 0; n < l.count(); n++) {
-#if QT_VERSION >= 0x040300
-		// Qt 4.3 and 4.4 (at least on linux) seems to have a problem when
-		// using Traditional Chinese. QKeysequence deletes the arrow key names
-		// from the shortcut, so this is a work-around.
-		QString s = l[n].simplified();
-#else
-		QString s = QKeySequence(l[n].simplified());
-#endif
-
-		// Work-around for Simplified-Chinese
-		s.replace(QString::fromUtf8("左"), "Left");
-		s.replace(QString::fromUtf8("下"), "Down");
-		s.replace(QString::fromUtf8("右"), "Right");
-		s.replace(QString::fromUtf8("上"), "Up");
-
-		shortcut_list.append(s);
+        shortcut_list.append(stringToKey(l[n]));
 	}
 
 	return shortcut_list;
@@ -506,6 +513,7 @@ QString TActionsEditor::actionTextToDescription(const QString& text, const QStri
 	QString s = text;
 	s = s.replace("&", "");
 	s = s.replace(".", "");
+    s = s.replace("\t", " ");
 	return s;
 }
 
@@ -537,13 +545,8 @@ void TActionsEditor::saveToConfig(QObject* o, QSettings* set) {
 		QAction* action = actions[n];
 		if (!action->isSeparator()) {
 			QString action_name = action->objectName();
-			if (!action_name.isEmpty()) {
-				if (action->inherits("QWidgetAction")) {
-					//qDebug() << "Gui::Action::TActionsEditor::saveToConfig: skipping QWidgetAction"
-					//		 << action_name;
-				} else {
-					set->setValue(action->objectName(), actionToString(*action));
-				}
+            if (!action_name.isEmpty() && !action->inherits("QWidgetAction")) {
+                set->setValue(action->objectName(), actionToString(*action));
 			}
 		}
 	}
@@ -611,10 +614,7 @@ void TActionsEditor::loadFromConfig(const TActionList& all_actions, QSettings* s
 
 	for (int n = 0; n < all_actions.count(); n++) {
 		QAction* action = all_actions[n];
-		if (action->inherits("QWidgetAction")) {
-			//qDebug() << "Gui::Action::TActionsEditor::loadFromConfig: skipping QWidgetAction"
-			//		 << action->objectName();
-		} else {
+        if (!action->inherits("QWidgetAction")) {
 			setActionFromString(*action,
 				set->value(action->objectName(), shortcutsToString(action->shortcuts())).toString(),
 				all_actions);
