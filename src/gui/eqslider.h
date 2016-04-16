@@ -17,8 +17,8 @@
 */
 
 
-#ifndef _GUI_EQSLIDER_H_
-#define _GUI_EQSLIDER_H_
+#ifndef GUI_EQSLIDER_H
+#define GUI_EQSLIDER_H
 
 #include "ui_eqslider.h"
 #include <QPixmap>
@@ -58,4 +58,4 @@ protected slots:
 
 } // namespace Gui
 
-#endif // _GUI_EQSLIDER_H_
+#endif // GUI_EQSLIDER_H
