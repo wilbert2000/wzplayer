@@ -149,7 +149,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += addItem(tr("Video out driver"), md.vo);
 		s += addItem(tr("Resolution source"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
 		s += addItem(tr("Resolution video out"), QString("%1 x %2").arg(md.video_out_width).arg(md.video_out_height));
-		s += addItem(tr("Aspect ratio reported by player"), md.video_aspect);
+		s += addItem(tr("Aspect reported by player"), md.video_aspect);
 		s += addItem(tr("Original aspect ratio"), md.video_aspect_original == -1
 			? tr("Play with aspect ratio set to auto to detect")
 			: Settings::TAspectRatio::doubleToString(md.video_aspect_original));
