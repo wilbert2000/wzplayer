@@ -9,11 +9,11 @@ namespace Action {
 
 
 TMenuVideoTracks::TMenuVideoTracks(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "videotrack_menu", QT_TR_NOOP("&Video track"), "video_track")
+    : TMenu(parent, "videotrack_menu", tr("&Video track"), "video_track")
 	, core(c) {
 
 	// Next video track
-	nextVideoTrackAct = new TAction(this, "next_video_track", QT_TR_NOOP("Next video track"));
+	nextVideoTrackAct = new TAction(this, "next_video_track", tr("Next video track"));
 	parent->addAction(nextVideoTrackAct);
 	connect(nextVideoTrackAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()));
 

@@ -167,62 +167,62 @@ void TPlaylist::createTable() {
 
 void TPlaylist::createActions(QWidget* parent) {
 
-	openAct = new TAction(this, "pl_open", QT_TR_NOOP("&Load"), "open");
+	openAct = new TAction(this, "pl_open", tr("&Load"), "open");
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
 
-	saveAct = new TAction(this, "pl_save", QT_TR_NOOP("&Save"), "save");
+	saveAct = new TAction(this, "pl_save", tr("&Save"), "save");
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-	playAct = new TAction(this, "pl_play", QT_TR_NOOP("&Play"), "play");
+	playAct = new TAction(this, "pl_play", tr("&Play"), "play");
 	connect(playAct, SIGNAL(triggered()), this, SLOT(playCurrent()));
 
-	nextAct = new TAction(this, "pl_next", QT_TR_NOOP("&Next"), "next", Qt::Key_N);
+	nextAct = new TAction(this, "pl_next", tr("&Next"), "next", Qt::Key_N);
 	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
-	prevAct = new TAction(this, "pl_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_P);
+	prevAct = new TAction(this, "pl_prev", tr("Pre&vious"), "previous", Qt::Key_P);
 	connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
-	moveUpAct = new TAction(this, "pl_move_up", QT_TR_NOOP("Move &up"), "up");
+	moveUpAct = new TAction(this, "pl_move_up", tr("Move &up"), "up");
 	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(moveItemUp()));
 
-	moveDownAct = new TAction(this, "pl_move_down", QT_TR_NOOP("Move &down"), "down");
+	moveDownAct = new TAction(this, "pl_move_down", tr("Move &down"), "down");
 	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(moveItemDown()));
 
-	repeatAct = new TAction(this, "pl_repeat", QT_TR_NOOP("&Repeat"), "repeat");
+	repeatAct = new TAction(this, "pl_repeat", tr("&Repeat"), "repeat");
 	repeatAct->setCheckable(true);
 
-	shuffleAct = new TAction(this, "pl_shuffle", QT_TR_NOOP("S&huffle"), "shuffle");
+	shuffleAct = new TAction(this, "pl_shuffle", tr("S&huffle"), "shuffle");
 	shuffleAct->setCheckable(true);
 
 	// Add actions
-	addCurrentAct = new TAction(this, "pl_add_current", QT_TR_NOOP("Add &current file"), "noicon");
+	addCurrentAct = new TAction(this, "pl_add_current", tr("Add &current file"), "noicon");
 	connect(addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()));
 
-	addFilesAct = new TAction(this, "pl_add_files", QT_TR_NOOP("Add &file(s)"), "noicon");
+	addFilesAct = new TAction(this, "pl_add_files", tr("Add &file(s)"), "noicon");
 	connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
 
-	addDirectoryAct = new TAction(this, "pl_add_directory", QT_TR_NOOP("Add &directory"), "noicon");
+	addDirectoryAct = new TAction(this, "pl_add_directory", tr("Add &directory"), "noicon");
 	connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
 
-	addUrlsAct = new TAction(this, "pl_add_urls", QT_TR_NOOP("Add &URL(s)"), "noicon");
+	addUrlsAct = new TAction(this, "pl_add_urls", tr("Add &URL(s)"), "noicon");
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
 	// Remove actions
-	removeSelectedAct = new TAction(this, "pl_remove_selected", QT_TR_NOOP("&Remove from list"), "noicon", Qt::Key_Delete);
+	removeSelectedAct = new TAction(this, "pl_remove_selected", tr("&Remove from list"), "noicon", Qt::Key_Delete);
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
 
-	removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk", QT_TR_NOOP("&Delete from disk..."), "noicon");
+	removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk", tr("&Delete from disk..."), "noicon");
 	connect(removeSelectedFromDiskAct, SIGNAL(triggered()), this, SLOT(removeSelectedFromDisk()));
 
-	removeAllAct = new TAction(this, "pl_remove_all", QT_TR_NOOP("&Clear playlist"), "noicon");
+	removeAllAct = new TAction(this, "pl_remove_all", tr("&Clear playlist"), "noicon");
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
 	// Copy
-	copyAct = new TAction(this, "pl_copy", QT_TR_NOOP("&Copy"), "noicon", QKeySequence("Ctrl+C"));
+	copyAct = new TAction(this, "pl_copy", tr("&Copy"), "noicon", QKeySequence("Ctrl+C"));
 	connect(copyAct, SIGNAL(triggered()), this, SLOT(copySelected()));
 
 	// Edit
-	editAct = new TAction(this, "pl_edit", QT_TR_NOOP("&Edit"), "noicon");
+	editAct = new TAction(this, "pl_edit", tr("&Edit"), "noicon");
 	connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
 	// Add actions to parent

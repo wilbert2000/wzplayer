@@ -56,10 +56,6 @@ public:
 	virtual bool winEventFilter(MSG* msg, long* result);
 #endif
 
-private slots:
-	void loadTranslation();
-	void onRequestRestart(bool reset_style);
-
 private:
 	QString initial_config_path;
 	QTranslator app_trans;
@@ -91,7 +87,8 @@ private:
 					 const QString& name,
 					 const QString& locale,
 					 const QString& dir);
-	void loadConfig();
+    void loadTranslation();
+    void loadConfig();
 	QString loadStyleSheet(const QString& filename);
 	void changeStyleSheet(const QString& style);
 	void changeStyle();
@@ -100,6 +97,9 @@ private:
 	int processArgPos(const QString& name, const QStringList& args) const;
 	void start();
 	void showInfo();
+
+private slots:
+    void onRequestRestart(bool reset_style);
 };
 
 #endif // APP_H

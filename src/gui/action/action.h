@@ -29,9 +29,7 @@ namespace Action {
 
 class TAction : public QAction {
 public:
-	//! Creates a new TAction with name \a name. If \a autoadd is true
-	//! the action will be added to the parent
-	TAction(QObject* parent,
+    TAction(QObject* parent,
 			const QString& name,
 			const QString& text,
 			const QString& icon = 0,
@@ -45,16 +43,10 @@ public:
 	//! Change the text of the action.
 	void setTextAndTip(const QString& text);
 
-protected:
-	virtual bool event(QEvent* event);
-
+private:
 	//! Checks if the parent is a QWidget and adds the action to it.
 	void addActionToParent();
 
-private:
-	QString text_en;
-
-	void retranslateStrings();
 }; // class TAction
 
 } // namespace Action

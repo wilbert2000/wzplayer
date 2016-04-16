@@ -59,29 +59,28 @@ void TFavorite::setIcon(QString file) {
 
 
 TFavorites::TFavorites(QWidget* parent,
-					   QObject* aTranslator,
 					   const QString& name,
 					   const QString& text,
 					   const QString& icon,
 					   const QString& filename)
-	: TMenu(parent, aTranslator, name, text, icon)
+    : TMenu(parent, name, text, icon)
 	, _filename(filename)
 	, parent_widget(parent)
 	, last_item(1) {
 
-	edit_act = new TAction(this, "", QT_TR_NOOP("&Edit..."), "noicon");
+    edit_act = new TAction(this, "", tr("&Edit..."), "noicon");
 	connect(edit_act, SIGNAL(triggered()), this, SLOT(edit()));
 
-	jump_act = new TAction(this, "", QT_TR_NOOP("&Jump..."), "noicon", 0, false);
+    jump_act = new TAction(this, "", tr("&Jump..."), "noicon", 0, false);
 	connect(jump_act, SIGNAL(triggered()), this, SLOT(jump()));
 
-	next_act = new TAction(this, "", QT_TR_NOOP("&Next"), "noicon", 0, false);
+    next_act = new TAction(this, "", tr("&Next"), "noicon", 0, false);
 	connect(next_act, SIGNAL(triggered()), this, SLOT(next()));
 
-	previous_act = new TAction(this, "", QT_TR_NOOP("&Previous"), "noicon", 0, false);
+    previous_act = new TAction(this, "", tr("&Previous"), "noicon", 0, false);
 	connect(previous_act, SIGNAL(triggered()), this, SLOT(previous()));
 
-	add_current_act = new TAction(this, "", QT_TR_NOOP("&Add current media"), "noicon");
+    add_current_act = new TAction(this, "", tr("&Add current media"), "noicon");
 	add_current_act->setEnabled(false);
 	connect(add_current_act, SIGNAL(triggered()), this, SLOT(addCurrentPlaying()));
 
@@ -112,7 +111,7 @@ void TFavorites::delete_children() {
 }
 
 TFavorites* TFavorites::createNewObject(const QString& filename) {
-	return new TFavorites(parent_widget, translator, "", "", "noicon", filename);
+    return new TFavorites(parent_widget, "", "", "noicon", filename);
 }
 
 void TFavorites::populateMenu() {

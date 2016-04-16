@@ -23,16 +23,16 @@ private:
 };
 
 TMenuCC::TMenuCC(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "closed_captions_menu", QT_TR_NOOP("&Closed captions"), "closed_caption")
+    : TMenu(parent, "closed_captions_menu", tr("&Closed captions"), "closed_caption")
 	, core(c) {
 
 	group = new TActionGroup(this, "cc");
 	group->setEnabled(false);
-	new TActionGroupItem(this, group, "cc_none", QT_TR_NOOP("&Off"), 0);
-	new TActionGroupItem(this, group, "cc_ch_1", QT_TR_NOOP("&1"), 1);
-	new TActionGroupItem(this, group, "cc_ch_2", QT_TR_NOOP("&2"), 2);
-	new TActionGroupItem(this, group, "cc_ch_3", QT_TR_NOOP("&3"), 3);
-	new TActionGroupItem(this, group, "cc_ch_4", QT_TR_NOOP("&4"), 4);
+	new TActionGroupItem(this, group, "cc_none", tr("&Off"), 0);
+	new TActionGroupItem(this, group, "cc_ch_1", tr("&1"), 1);
+	new TActionGroupItem(this, group, "cc_ch_2", tr("&2"), 2);
+	new TActionGroupItem(this, group, "cc_ch_3", tr("&3"), 3);
+	new TActionGroupItem(this, group, "cc_ch_4", tr("&4"), 4);
 	group->setChecked(core->mset.closed_caption_channel);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeClosedCaptionChannel(int)));
 	// Currently no one else sets it
@@ -55,17 +55,17 @@ void TMenuCC::onAboutToShow() {
 
 
 TMenuSubFPS::TMenuSubFPS(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "subfps_menu", QT_TR_NOOP("F&rames per second external subtitles"), "subfps")
+    : TMenu(parent, "subfps_menu", tr("F&rames per second external subtitles"), "subfps")
 	, core(c) {
 
 	group = new TActionGroup(this, "subfps");
 	group->setEnabled(false);
-	new TActionGroupItem(this, group, "sub_fps_none", QT_TR_NOOP("&Default"), TMediaSettings::SFPS_None);
-	new TActionGroupItem(this, group, "sub_fps_23976", QT_TR_NOOP("23.9&76"), TMediaSettings::SFPS_23976);
-	new TActionGroupItem(this, group, "sub_fps_24", QT_TR_NOOP("2&4"), TMediaSettings::SFPS_24);
-	new TActionGroupItem(this, group, "sub_fps_25", QT_TR_NOOP("2&5"), TMediaSettings::SFPS_25);
-	new TActionGroupItem(this, group, "sub_fps_29970", QT_TR_NOOP("29.&970"), TMediaSettings::SFPS_29970);
-	new TActionGroupItem(this, group, "sub_fps_30", QT_TR_NOOP("3&0"), TMediaSettings::SFPS_30);
+	new TActionGroupItem(this, group, "sub_fps_none", tr("&Default"), TMediaSettings::SFPS_None);
+	new TActionGroupItem(this, group, "sub_fps_23976", tr("23.9&76"), TMediaSettings::SFPS_23976);
+	new TActionGroupItem(this, group, "sub_fps_24", tr("2&4"), TMediaSettings::SFPS_24);
+	new TActionGroupItem(this, group, "sub_fps_25", tr("2&5"), TMediaSettings::SFPS_25);
+	new TActionGroupItem(this, group, "sub_fps_29970", tr("29.&970"), TMediaSettings::SFPS_29970);
+	new TActionGroupItem(this, group, "sub_fps_30", tr("3&0"), TMediaSettings::SFPS_30);
 	group->setChecked(core->mset.external_subtitles_fps);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeExternalSubFPS(int)));
 	// No one else sets it
@@ -86,45 +86,45 @@ void TMenuSubFPS::onAboutToShow() {
 
 
 TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
-	: TMenu(parent, this, "subtitle_menu", QT_TR_NOOP("&Subtitles"), "noicon")
+    : TMenu(parent, "subtitle_menu", tr("&Subtitles"), "noicon")
 	, core(c) {
 
-	decSubPosAct = new TAction(this, "dec_sub_pos", QT_TR_NOOP("&Up"), "sub_up", Qt::Key_R);
+	decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "sub_up", Qt::Key_R);
 	connect(decSubPosAct, SIGNAL(triggered()), core, SLOT(decSubPos()));
-	incSubPosAct = new TAction(this, "inc_sub_pos", QT_TR_NOOP("&Down"), "sub_down", Qt::Key_T);
+	incSubPosAct = new TAction(this, "inc_sub_pos", tr("&Down"), "sub_down", Qt::Key_T);
 	connect(incSubPosAct, SIGNAL(triggered()), core, SLOT(incSubPos()));
 
 	addSeparator();
-	decSubScaleAct = new TAction(this, "dec_sub_scale", QT_TR_NOOP("S&ize -"), "", Qt::SHIFT | Qt::Key_R);
+	decSubScaleAct = new TAction(this, "dec_sub_scale", tr("S&ize -"), "", Qt::SHIFT | Qt::Key_R);
 	connect(decSubScaleAct, SIGNAL(triggered()), core, SLOT(decSubScale()));
-	incSubScaleAct = new TAction(this, "inc_sub_scale", QT_TR_NOOP("Si&ze +"), "", Qt::SHIFT | Qt::Key_T);
+	incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Si&ze +"), "", Qt::SHIFT | Qt::Key_T);
 	connect(incSubScaleAct, SIGNAL(triggered()), core, SLOT(incSubScale()));
 
 	addSeparator();
-	decSubDelayAct = new TAction(this, "dec_sub_delay", QT_TR_NOOP("Delay &-"), "delay_down", Qt::Key_Z);
+	decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay &-"), "delay_down", Qt::Key_Z);
 	connect(decSubDelayAct, SIGNAL(triggered()), core, SLOT(decSubDelay()));
-	incSubDelayAct = new TAction(this, "inc_sub_delay", QT_TR_NOOP("Delay &+"), "delay_up", Qt::Key_X);
+	incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay &+"), "delay_up", Qt::Key_X);
 	connect(incSubDelayAct, SIGNAL(triggered()), core, SLOT(incSubDelay()));
-	subDelayAct = new TAction(this, "sub_delay", QT_TR_NOOP("Se&t delay..."), "sub_delay");
+	subDelayAct = new TAction(this, "sub_delay", tr("Se&t delay..."), "sub_delay");
 	connect(subDelayAct, SIGNAL(triggered()), parent, SLOT(showSubDelayDialog()));
 
 	addSeparator();
-	decSubStepAct = new TAction(this, "dec_sub_step", QT_TR_NOOP("&Previous line in subtitles"), "", Qt::Key_G);
+	decSubStepAct = new TAction(this, "dec_sub_step", tr("&Previous line in subtitles"), "", Qt::Key_G);
 	connect(decSubStepAct, SIGNAL(triggered()), core, SLOT(decSubStep()));
-	incSubStepAct = new TAction(this, "inc_sub_step", QT_TR_NOOP("N&ext line in subtitles"), "", Qt::Key_Y);
+	incSubStepAct = new TAction(this, "inc_sub_step", tr("N&ext line in subtitles"), "", Qt::Key_Y);
 	connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
 
-	seekNextSubAct = new TAction(this, "seek_next_sub", QT_TR_NOOP("Seek to next subtitle"),
+	seekNextSubAct = new TAction(this, "seek_next_sub", tr("Seek to next subtitle"),
 								 "", Qt::CTRL | Qt::Key_Right, pref->isMPV());
 	connect(seekNextSubAct, SIGNAL(triggered()), core, SLOT(seekToNextSub()));
-	seekPrevSubAct = new TAction(this, "seek_prev_sub", QT_TR_NOOP("Seek to previous subtitle"),
+	seekPrevSubAct = new TAction(this, "seek_prev_sub", tr("Seek to previous subtitle"),
 								 "", Qt::CTRL | Qt::Key_Left, pref->isMPV());
 	connect(seekPrevSubAct, SIGNAL(triggered()), core, SLOT(seekToPrevSub()));
 
 	// Subtitle tracks
 	addSeparator();
-	subtitleTrackMenu = new TMenu(parent, this, "subtitlestrack_menu", QT_TR_NOOP("Subtitle &track"), "sub");
-	nextSubtitleAct = new TAction(this, "next_subtitle", QT_TR_NOOP("Next subtitle"), "", Qt::Key_J, false);
+    subtitleTrackMenu = new TMenu(parent, "subtitlestrack_menu", tr("Subtitle &track"), "sub");
+	nextSubtitleAct = new TAction(this, "next_subtitle", tr("Next subtitle"), "", Qt::Key_J, false);
 	subtitleTrackMenu->addAction(nextSubtitleAct);
 	subtitleTrackMenu->addSeparator();
 	parent->addAction(nextSubtitleAct);
@@ -137,7 +137,7 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
 	// Secondary subtitle track
-	secondarySubtitleTrackMenu = new TMenu(parent, this, "secondary_subtitles_track_menu", QT_TR_NOOP("Secondary trac&k"), "secondary_sub");
+    secondarySubtitleTrackMenu = new TMenu(parent, "secondary_subtitles_track_menu", tr("Secondary trac&k"), "secondary_sub");
 	if (pref->isMPV())
 		addMenu(secondarySubtitleTrackMenu);
 	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
@@ -146,31 +146,31 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 
 	addMenu(new TMenuCC(parent, core));
 
-	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", QT_TR_NOOP("&Forced subtitles only"), "forced_subs");
+	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", tr("&Forced subtitles only"), "forced_subs");
 	useForcedSubsOnlyAct->setCheckable(true);
 	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
 	connect(useForcedSubsOnlyAct, SIGNAL(triggered(bool)), core, SLOT(toggleForcedSubsOnly(bool)));
 
 	addSeparator();
-	loadSubsAct = new TAction(this, "load_subs", QT_TR_NOOP("&Load subtitles..."), "open");
+	loadSubsAct = new TAction(this, "load_subs", tr("&Load subtitles..."), "open");
 	connect(loadSubsAct, SIGNAL(triggered()), parent, SLOT(loadSub()));
-	unloadSubsAct = new TAction(this, "unload_subs", QT_TR_NOOP("U&nload subtitles"), "unload");
+	unloadSubsAct = new TAction(this, "unload_subs", tr("U&nload subtitles"), "unload");
 	connect(unloadSubsAct, SIGNAL(triggered()), core, SLOT(unloadSub()));
 	subFPSMenu = new TMenuSubFPS(parent, core);
 	addMenu(subFPSMenu);
 
 	addSeparator();
-	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", QT_TR_NOOP("Use custo&m style"));
+	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", tr("Use custo&m style"));
 	useCustomSubStyleAct->setCheckable(true);
 	useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 	connect(useCustomSubStyleAct, SIGNAL(triggered(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
 
 #ifdef FIND_SUBTITLES
 	addSeparator();
-	showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog", QT_TR_NOOP("Find subtitles at &OpenSubtitles.org..."), "download_subs");
+	showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog", tr("Find subtitles at &OpenSubtitles.org..."), "download_subs");
 	connect(showFindSubtitlesDialogAct, SIGNAL(triggered()), parent, SLOT(showFindSubtitlesDialog()));
 
-	openUploadSubtitlesPageAct = new TAction(this, "upload_subtitles", QT_TR_NOOP("Upload su&btitles to OpenSubtitles.org..."), "upload_subs");
+	openUploadSubtitlesPageAct = new TAction(this, "upload_subtitles", tr("Upload su&btitles to OpenSubtitles.org..."), "upload_subs");
 	connect(openUploadSubtitlesPageAct, SIGNAL(triggered()), parent, SLOT(openUploadSubtitlesPage()));
 #endif
 

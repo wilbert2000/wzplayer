@@ -29,16 +29,16 @@ private:
 
 
 TMenuAudioChannel::TMenuAudioChannel(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "audiochannels_menu", QT_TR_NOOP("&Channels"), "audio_channels")
+    : TMenu(parent, "audiochannels_menu", tr("&Channels"), "audio_channels")
 	, core(c) {
 
 	group = new TActionGroup(this, "channels");
 	group->setEnabled(false);
-	new TActionGroupItem(this, group, "channels_stereo", QT_TR_NOOP("&Stereo"), TMediaSettings::ChStereo);
-	new TActionGroupItem(this, group, "channels_surround", QT_TR_NOOP("&4.0 Surround"), TMediaSettings::ChSurround);
-	new TActionGroupItem(this, group, "channels_ful51", QT_TR_NOOP("&5.1 Surround"), TMediaSettings::ChFull51);
-	new TActionGroupItem(this, group, "channels_ful61", QT_TR_NOOP("&6.1 Surround"), TMediaSettings::ChFull61);
-	new TActionGroupItem(this, group, "channels_ful71", QT_TR_NOOP("&7.1 Surround"), TMediaSettings::ChFull71);
+	new TActionGroupItem(this, group, "channels_stereo", tr("&Stereo"), TMediaSettings::ChStereo);
+	new TActionGroupItem(this, group, "channels_surround", tr("&4.0 Surround"), TMediaSettings::ChSurround);
+	new TActionGroupItem(this, group, "channels_ful51", tr("&5.1 Surround"), TMediaSettings::ChFull51);
+	new TActionGroupItem(this, group, "channels_ful61", tr("&6.1 Surround"), TMediaSettings::ChFull61);
+	new TActionGroupItem(this, group, "channels_ful71", tr("&7.1 Surround"), TMediaSettings::ChFull71);
 	group->setChecked(core->mset.audio_use_channels);
 	connect(group, SIGNAL(activated(int)), core, SLOT(setAudioChannels(int)));
 	// No one else sets it
@@ -72,16 +72,16 @@ private:
 };
 
 TMenuStereo::TMenuStereo(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "stereomode_menu", QT_TR_NOOP("&Stereo mode"), "stereo_mode")
+    : TMenu(parent, "stereomode_menu", tr("&Stereo mode"), "stereo_mode")
 	, core(c) {
 
 	group = new TActionGroup(this, "stereo");
 	group->setEnabled(false);
-	new TActionGroupItem(this, group, "stereo", QT_TR_NOOP("&Stereo"), TMediaSettings::Stereo);
-	new TActionGroupItem(this, group, "left_channel", QT_TR_NOOP("&Left channel"), TMediaSettings::Left);
-	new TActionGroupItem(this, group, "right_channel", QT_TR_NOOP("&Right channel"), TMediaSettings::Right);
-	new TActionGroupItem(this, group, "mono", QT_TR_NOOP("&Mono"), TMediaSettings::Mono);
-	new TActionGroupItem(this, group, "reverse_channels", QT_TR_NOOP("Re&verse"), TMediaSettings::Reverse);
+	new TActionGroupItem(this, group, "stereo", tr("&Stereo"), TMediaSettings::Stereo);
+	new TActionGroupItem(this, group, "left_channel", tr("&Left channel"), TMediaSettings::Left);
+	new TActionGroupItem(this, group, "right_channel", tr("&Right channel"), TMediaSettings::Right);
+	new TActionGroupItem(this, group, "mono", tr("&Mono"), TMediaSettings::Mono);
+	new TActionGroupItem(this, group, "reverse_channels", tr("Re&verse"), TMediaSettings::Reverse);
 	group->setChecked(core->mset.stereo_mode);
 	connect(group, SIGNAL(activated(int)), core, SLOT(setStereoMode(int)));
 	// No one else changes it
@@ -102,11 +102,11 @@ void TMenuStereo::onAboutToShow() {
 
 
 TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer)
-	: TMenu(parent, this, "audio_menu", QT_TR_NOOP("&Audio"), "noicon")
+    : TMenu(parent, "audio_menu", tr("&Audio"), "noicon")
 	, core(c) {
 
 	// Mute
-	muteAct = new TAction(this, "mute", QT_TR_NOOP("&Mute"), "noicon", Qt::Key_M);
+	muteAct = new TAction(this, "mute", tr("&Mute"), "noicon", Qt::Key_M);
 	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
 	muteAct->setCheckable(true);
 	muteAct->setChecked(core->getMute());
@@ -118,33 +118,33 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	connect(muteAct, SIGNAL(triggered(bool)), core, SLOT(mute(bool)));
 	connect(core, SIGNAL(muteChanged(bool)), muteAct, SLOT(setChecked(bool)));
 
-	decVolumeAct = new TAction(this, "decrease_volume", QT_TR_NOOP("Volume &-"), "audio_down", Qt::Key_Slash);
+	decVolumeAct = new TAction(this, "decrease_volume", tr("Volume &-"), "audio_down", Qt::Key_Slash);
 	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
 	connect(decVolumeAct, SIGNAL(triggered()), core, SLOT(decVolume()));
 
-	incVolumeAct = new TAction(this, "increase_volume", QT_TR_NOOP("Volume &+"), "audio_up", Qt::Key_multiply);
+	incVolumeAct = new TAction(this, "increase_volume", tr("Volume &+"), "audio_up", Qt::Key_multiply);
 	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
 	connect(incVolumeAct, SIGNAL(triggered()), core, SLOT(incVolume()));
 
 	addSeparator();
-	decAudioDelayAct = new TAction(this, "dec_audio_delay", QT_TR_NOOP("&Delay -"), "delay_down", Qt::Key_Minus);
+	decAudioDelayAct = new TAction(this, "dec_audio_delay", tr("&Delay -"), "delay_down", Qt::Key_Minus);
 	connect(decAudioDelayAct, SIGNAL(triggered()), core, SLOT(decAudioDelay()));
 
-	incAudioDelayAct = new TAction(this, "inc_audio_delay", QT_TR_NOOP("Del&ay +"), "delay_up", Qt::Key_Plus);
+	incAudioDelayAct = new TAction(this, "inc_audio_delay", tr("Del&ay +"), "delay_up", Qt::Key_Plus);
 	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
 
-	audioDelayAct = new TAction(this, "audio_delay", QT_TR_NOOP("Set dela&y..."));
+	audioDelayAct = new TAction(this, "audio_delay", tr("Set dela&y..."));
 	connect(audioDelayAct, SIGNAL(triggered()), parent, SLOT(showAudioDelayDialog()));
 
 	// Equalizer
 	addSeparator();
-	audioEqualizerAct = new TAction(this, "audio_equalizer", QT_TR_NOOP("&Equalizer"));
+	audioEqualizerAct = new TAction(this, "audio_equalizer", tr("&Equalizer"));
 	audioEqualizerAct->setCheckable(true);
 	audioEqualizerAct->setChecked(audioEqualizer->isVisible());
 	connect(audioEqualizerAct, SIGNAL(triggered(bool)), audioEqualizer, SLOT(setVisible(bool)));
 	connect(audioEqualizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
 
-	resetAudioEqualizerAct = new TAction(this, "reset_audio_equalizer", QT_TR_NOOP("Reset audio equalizer"));
+	resetAudioEqualizerAct = new TAction(this, "reset_audio_equalizer", tr("Reset audio equalizer"));
 	connect(resetAudioEqualizerAct, SIGNAL(triggered()), audioEqualizer, SLOT(reset()));
 
 	// Stereo and channel subs
@@ -152,18 +152,18 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	addMenu(new TMenuStereo(parent, core));
 	addMenu(new TMenuAudioChannel(parent, core));
 	// Filter sub
-	audioFilterMenu = new TMenu(parent, this, "audiofilter_menu", QT_TR_NOOP("&Filters"), "audio_filters");
-	volnormAct = new TAction(this, "volnorm_filter", QT_TR_NOOP("Volume &normalization"), "", 0, false);
+    audioFilterMenu = new TMenu(parent, "audiofilter_menu", tr("&Filters"), "audio_filters");
+	volnormAct = new TAction(this, "volnorm_filter", tr("Volume &normalization"), "", 0, false);
 	volnormAct->setCheckable(true);
 	audioFilterMenu->addAction(volnormAct);
 	connect(volnormAct, SIGNAL(triggered(bool)), core, SLOT(toggleVolnorm(bool)));
 
-	extrastereoAct = new TAction(this, "extrastereo_filter", QT_TR_NOOP("&Extrastereo"), "", 0, false);
+	extrastereoAct = new TAction(this, "extrastereo_filter", tr("&Extrastereo"), "", 0, false);
 	extrastereoAct->setCheckable(true);
 	audioFilterMenu->addAction(extrastereoAct);
 	connect(extrastereoAct, SIGNAL(triggered(bool)), core, SLOT(toggleExtrastereo(bool)));
 
-	karaokeAct = new TAction(this, "karaoke_filter", QT_TR_NOOP("&Karaoke"), "", 0, false);
+	karaokeAct = new TAction(this, "karaoke_filter", tr("&Karaoke"), "", 0, false);
 	karaokeAct->setCheckable(true);
 	audioFilterMenu->addAction(karaokeAct);
 	connect(karaokeAct, SIGNAL(triggered(bool)), core, SLOT(toggleKaraoke(bool)));
@@ -176,9 +176,9 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 
 	// Load/unload
 	addSeparator();
-	loadAudioAct = new TAction(this, "load_audio_file", QT_TR_NOOP("&Load external file..."), "open");
+	loadAudioAct = new TAction(this, "load_audio_file", tr("&Load external file..."), "open");
 	connect(loadAudioAct, SIGNAL(triggered()), parent, SLOT(loadAudioFile()));
-	unloadAudioAct = new TAction(this, "unload_audio_file", QT_TR_NOOP("&Unload"), "unload");
+	unloadAudioAct = new TAction(this, "unload_audio_file", tr("&Unload"), "unload");
 	connect(unloadAudioAct, SIGNAL(triggered()), core, SLOT(unloadAudioFile()));
 
 	addActionsTo(parent);

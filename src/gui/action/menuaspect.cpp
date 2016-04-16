@@ -12,12 +12,12 @@ namespace Action {
 
 
 TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
-	: TMenu(parent, this, "aspect_menu", QT_TR_NOOP("&Aspect ratio"), "aspect")
+    : TMenu(parent, "aspect_menu", tr("&Aspect ratio"), "aspect")
 	, core(c) {
 
 	group = new TActionGroup(this, "aspect");
 	group->setEnabled(false);
-	aspectAutoAct = new TActionGroupItem(this, group, "aspect_detect", QT_TR_NOOP("&Auto"), TAspectRatio::AspectAuto);
+    aspectAutoAct = new TActionGroupItem(this, group, "aspect_detect", tr("&Auto"), TAspectRatio::AspectAuto);
 	addSeparator();
 	new TActionGroupItem(this, group, "aspect_1_1", TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11);
 	new TActionGroupItem(this, group, "aspect_5_4", TAspectRatio::aspectIDToString(1), TAspectRatio::Aspect54);
@@ -30,7 +30,7 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 	new TActionGroupItem(this, group, "aspect_16_9", TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169);
 	new TActionGroupItem(this, group, "aspect_2.35_1", TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect235);
 	addSeparator();
-	aspectDisabledAct = new TActionGroupItem(this, group, "aspect_none", QT_TR_NOOP("&Disabled"), TAspectRatio::AspectNone);
+    aspectDisabledAct = new TActionGroupItem(this, group, "aspect_none", tr("&Disabled"), TAspectRatio::AspectNone);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(setAspectRatio(int)));
 	connect(core, SIGNAL(aspectRatioChanged(int)),
@@ -38,7 +38,7 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
 			Qt::QueuedConnection);
 
 	addSeparator();
-	nextAspectAct = new TAction(this, "next_aspect", QT_TR_NOOP("&Next aspect ratio"), "", Qt::Key_A);
+    nextAspectAct = new TAction(this, "next_aspect", tr("&Next aspect ratio"), "", Qt::Key_A);
 	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
 
 	addActionsTo(parent);

@@ -9,11 +9,11 @@ namespace Action {
 
 
 TMenuAudioTracks::TMenuAudioTracks(QWidget *parent, TCore* c)
-	: TMenu(parent, this, "audiotrack_menu", QT_TR_NOOP("Audio &track"), "audio_track")
+    : TMenu(parent, "audiotrack_menu", tr("Audio &track"), "audio_track")
 	, core(c) {
 
 	// Next audio track
-	nextAudioTrackAct = new TAction(this, "next_audio_track", QT_TR_NOOP("Next audio track"), "", Qt::Key_K);
+	nextAudioTrackAct = new TAction(this, "next_audio_track", tr("Next audio track"), "", Qt::Key_K);
 	parent->addAction(nextAudioTrackAct);
 	connect(nextAudioTrackAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
 

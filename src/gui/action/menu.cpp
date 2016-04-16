@@ -54,15 +54,13 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 
 
 TMenu::TMenu(QWidget* parent,
-			 QObject* aTranslator,
-			 const QString& name,
+             const QString& name,
 			 const QString& text,
 			 const QString& icon)
-	: QMenu(parent)
-	, translator(aTranslator)
-	, text_en(text) {
+    : QMenu(parent) {
 
 	menuAction()->setObjectName(name);
+    menuAction()->setText(text);
 	QString iconName = icon.isEmpty() ? name : icon;
 	if (iconName != "noicon")
 		menuAction()->setIcon(Images::icon(iconName));
@@ -74,32 +72,12 @@ TMenu::TMenu(QWidget* parent,
 		connect(main_window, SIGNAL(mediaSettingsChanged(Settings::TMediaSettings*)),
 				this, SLOT(onMediaSettingsChanged(Settings::TMediaSettings*)));
 	}
-
-	retranslateStrings();
 }
 
 TMenu::~TMenu() {
 }
 
-void TMenu::retranslateStrings() {
-	if (!text_en.isEmpty())
-		menuAction()->setText(translator->tr(text_en.toUtf8().constData()));
-}
-
-void TMenu::changeEvent(QEvent* e) {
-
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QMenu::changeEvent(e);
-	}
-}
-
-void TMenu::enableActions(bool stopped, bool video, bool audio) {
-	Q_UNUSED(stopped)
-	Q_UNUSED(video)
-	Q_UNUSED(audio)
-	//qDebug() << "Gui::Action::TMenu::enableActions:" << menuAction()->objectName() << "always enabled";
+void TMenu::enableActions(bool, bool, bool) {
 }
 
 void TMenu::onMediaSettingsChanged(Settings::TMediaSettings*) {

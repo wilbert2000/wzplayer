@@ -20,18 +20,18 @@ TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
 	setEnabled(false);
 
 	TActionGroupItem* a;
-	new TActionGroupItem(this, this, "size_25", QT_TR_NOOP("25%"), 25, false);
-	new TActionGroupItem(this, this, "size_50", QT_TR_NOOP("5&0%"), 50, false);
-	new TActionGroupItem(this, this, "size_75", QT_TR_NOOP("7&5%"), 75, false);
-	a = new TActionGroupItem(this, this, "size_100", QT_TR_NOOP("&100%"), 100, false);
+	new TActionGroupItem(this, this, "size_25", tr("25%"), 25, false);
+	new TActionGroupItem(this, this, "size_50", tr("5&0%"), 50, false);
+	new TActionGroupItem(this, this, "size_75", tr("7&5%"), 75, false);
+	a = new TActionGroupItem(this, this, "size_100", tr("&100%"), 100, false);
 	a->setShortcut(Qt::CTRL | Qt::Key_1);
-	new TActionGroupItem(this, this, "size_125", QT_TR_NOOP("125%"), 125, false);
-	new TActionGroupItem(this, this, "size_150", QT_TR_NOOP("15&0%"), 150, false);
-	new TActionGroupItem(this, this, "size_175", QT_TR_NOOP("1&75%"), 175, false);
-	a = new TActionGroupItem(this, this, "size_200", QT_TR_NOOP("&200%"), 200, false);
+	new TActionGroupItem(this, this, "size_125", tr("125%"), 125, false);
+	new TActionGroupItem(this, this, "size_150", tr("15&0%"), 150, false);
+	new TActionGroupItem(this, this, "size_175", tr("1&75%"), 175, false);
+	a = new TActionGroupItem(this, this, "size_200", tr("&200%"), 200, false);
 	a->setShortcut(Qt::CTRL | Qt::Key_2);
-	new TActionGroupItem(this, this, "size_300", QT_TR_NOOP("&300%"), 300, false);
-	new TActionGroupItem(this, this, "size_400", QT_TR_NOOP("&400%"), 400, false);
+	new TActionGroupItem(this, this, "size_300", tr("&300%"), 300, false);
+	new TActionGroupItem(this, this, "size_400", tr("&400%"), 400, false);
 
 	setChecked(size_percentage);
 }
@@ -86,7 +86,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 
 
 TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
-	: TMenu(mw, this, "videosize_menu", QT_TR_NOOP("&Size"), "video_size")
+    : TMenu(mw, "videosize_menu", tr("&Size"), "video_size")
 	, mainWindow(mw)
 	, playerWindow(pw) {
 
@@ -95,7 +95,7 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
 	connect(group, SIGNAL(activated(int)), mainWindow, SLOT(changeSize(int)));
 
 	addSeparator();
-	doubleSizeAct = new TAction(this, "toggle_double_size", QT_TR_NOOP("&Toggle double size"), "", Qt::CTRL | Qt::Key_D);
+	doubleSizeAct = new TAction(this, "toggle_double_size", tr("&Toggle double size"), "", Qt::CTRL | Qt::Key_D);
 	connect(doubleSizeAct, SIGNAL(triggered()), mainWindow, SLOT(toggleDoubleSize()));
 
 	currentSizeAct = new TAction(this, "video_size", "");
@@ -124,10 +124,10 @@ void TMenuVideoSize::upd() {
 	currentSizeAct->setEnabled(group->isEnabled());
 
 	// Update text and tips
-	QString txt = translator->tr("&Optimize size %1%").arg(QString::number(group->size_percentage));
+    QString txt = tr("&Optimize size %1%").arg(QString::number(group->size_percentage));
 	currentSizeAct->setTextAndTip(txt);
 
-	txt = translator->tr("Size %1%").arg(QString::number(group->size_percentage));
+    txt = tr("Size %1%").arg(QString::number(group->size_percentage));
 	QString scut = menuAction()->shortcut().toString();
 	if (!scut.isEmpty()) {
 		txt += " (" + scut + ")";

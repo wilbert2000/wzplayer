@@ -20,22 +20,22 @@ public:
 };
 
 TMenuDisc::TMenuDisc(TBase* parent)
-	: TMenu(parent, this, "disc_menu", QT_TR_NOOP("&Disc"), "open_disc") {
+    : TMenu(parent, "disc_menu", tr("&Disc"), "open_disc") {
 
 	// DVD
-	TAction* a = new TAction(this, "open_dvd", QT_TR_NOOP("&DVD from drive"), "dvd");
+	TAction* a = new TAction(this, "open_dvd", tr("&DVD from drive"), "dvd");
 	connect(a, SIGNAL(triggered()), parent, SLOT(openDVD()));
-	a = new TAction(this, "open_dvd_folder", QT_TR_NOOP("D&VD from folder..."), "dvd_hd");
+	a = new TAction(this, "open_dvd_folder", tr("D&VD from folder..."), "dvd_hd");
 	connect(a, SIGNAL(triggered()), parent, SLOT(openDVDFromFolder()));
 	// BluRay
-	a = new TAction(this, "open_bluray", QT_TR_NOOP("&Blu-ray from drive"), "bluray");
+	a = new TAction(this, "open_bluray", tr("&Blu-ray from drive"), "bluray");
 	connect(a, SIGNAL(triggered()), parent, SLOT(openBluRay()));
-	a = new TAction(this, "open_bluray_folder", QT_TR_NOOP("Blu-&ray from folder..."), "bluray_hd");
+	a = new TAction(this, "open_bluray_folder", tr("Blu-&ray from folder..."), "bluray_hd");
 	connect(a, SIGNAL(triggered()), parent, SLOT(openBluRayFromFolder()));
 	// VCD and audio
-	a = new TAction(this, "open_vcd", QT_TR_NOOP("V&CD"), "vcd");
+	a = new TAction(this, "open_vcd", tr("V&CD"), "vcd");
 	connect(a, SIGNAL(triggered()), parent, SLOT(openVCD()));
-	a = new TAction(this, "open_audio_cd", QT_TR_NOOP("&Audio CD"), "cdda");
+	a = new TAction(this, "open_audio_cd", tr("&Audio CD"), "cdda");
 	connect(a, SIGNAL(triggered()), parent, SLOT(openAudioCD()));
 
 	addActionsTo(parent);
@@ -43,28 +43,28 @@ TMenuDisc::TMenuDisc(TBase* parent)
 
 
 TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
-	: TMenu(parent, this, "open_menu", QT_TR_NOOP("&Open"), "noicon")
+    : TMenu(parent, "open_menu", tr("&Open"), "noicon")
 	, main_window(parent) {
 
 	// Open URL
-	TAction* a = new TAction(this, "open_url", QT_TR_NOOP("&URL..."), "url", QKeySequence("Ctrl+U"));
+	TAction* a = new TAction(this, "open_url", tr("&URL..."), "url", QKeySequence("Ctrl+U"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
 
 	addSeparator();
 
 	// Open file
-	a = new TAction(this, "open_file", QT_TR_NOOP("&File..."), "open", QKeySequence("Ctrl+F"));
+	a = new TAction(this, "open_file", tr("&File..."), "open", QKeySequence("Ctrl+F"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
 
 	// Open dir
-	a = new TAction(this, "open_directory", QT_TR_NOOP("D&irectory..."), "openfolder");
+	a = new TAction(this, "open_directory", tr("D&irectory..."), "openfolder");
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
 
 	// Open playlist
-	a = new TAction(this, "open_playlist", QT_TR_NOOP("&Playlist..."));
+	a = new TAction(this, "open_playlist", tr("&Playlist..."));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
 
@@ -74,17 +74,17 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	addSeparator();
 
 	// Recents
-	recentfiles_menu = new TMenu(main_window, this, "recent_menu", QT_TR_NOOP("&Recent files"), "recents");
-	clearRecentsAct = new TAction(this, "clear_recents", QT_TR_NOOP("&Clear"), "delete", 0, false);
+    recentfiles_menu = new TMenu(main_window, "recent_menu", tr("&Recent files"), "recents");
+	clearRecentsAct = new TAction(this, "clear_recents", tr("&Clear"), "delete", 0, false);
 	main_window->addAction(clearRecentsAct);
 	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
 	addMenu(recentfiles_menu);
 	updateRecents();
 
 	// Favorites
-	TFavorites* fav = new TFavorites(main_window, this, "favorites_menu",
-									 QT_TR_NOOP("F&avorites"), "open_favorites",
-									 TPaths::configPath() + "/favorites.m3u8");
+    TFavorites* fav = new TFavorites(main_window, "favorites_menu",
+                                     tr("F&avorites"), "open_favorites",
+                                     TPaths::configPath() + "/favorites.m3u8");
 	fav->editAct()->setObjectName("edit_fav_list");
 	fav->jumpAct()->setObjectName("jump_fav_list");
 	fav->nextAct()->setObjectName("next_fav");
@@ -104,7 +104,7 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	addSeparator();
 
 	// TV
-	fav = new TTVList(main_window, this, "tv_menu", QT_TR_NOOP("&TV"), "open_tv",
+    fav = new TTVList(main_window, "tv_menu", tr("&TV"), "open_tv",
 					  TPaths::configPath() + "/tv.m3u8",
 					  pref->check_channels_conf_on_startup,
 					  TTVList::TV);
@@ -126,7 +126,7 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 			fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 
 	// Radio
-	fav = new TTVList(main_window, this, "radio_menu", QT_TR_NOOP("Radi&o"), "open_radio",
+    fav = new TTVList(main_window, "radio_menu", tr("Radi&o"), "open_radio",
 					  TPaths::configPath() + "/radio.m3u8",
 					  pref->check_channels_conf_on_startup,
 					  TTVList::Radio);
@@ -150,7 +150,7 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	addSeparator();
 
 	// Close
-	a = new TAction(this, "close", QT_TR_NOOP("C&lose"), "", QKeySequence("Ctrl+X"));
+	a = new TAction(this, "close", tr("C&lose"), "", QKeySequence("Ctrl+X"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
 }

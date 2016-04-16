@@ -342,10 +342,10 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
 	qDebug("Gui::TBase::createActions");
 
-	showContextMenuAct = new Action::TAction(this, "show_context_menu", QT_TR_NOOP("Show context menu"));
+	showContextMenuAct = new Action::TAction(this, "show_context_menu", tr("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
 
-	nextWheelFunctionAct = new TAction(this, "next_wheel_function", QT_TR_NOOP("Next wheel function"));
+	nextWheelFunctionAct = new TAction(this, "next_wheel_function", tr("Next wheel function"));
 	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
 
 	// Time slider
@@ -379,20 +379,20 @@ void TBase::createActions() {
 	time_label_action->setObjectName("timelabel_action");
 
 	// Menu bar
-	viewMenuBarAct = new TAction(this, "toggle_menubar", QT_TR_NOOP("Me&nu bar"), "", Qt::Key_F2);
+	viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Me&nu bar"), "", Qt::Key_F2);
 	viewMenuBarAct->setCheckable(true);
 	viewMenuBarAct->setChecked(true);
 	connect(viewMenuBarAct, SIGNAL(toggled(bool)), menuBar(), SLOT(setVisible(bool)));
 
 	// Toolbars
-	editToolbarAct = new TAction(this, "edit_toolbar1", QT_TR_NOOP("Edit main &toolbar..."));
-	editToolbar2Act = new TAction(this, "edit_toolbar2", QT_TR_NOOP("Edit extra t&oolbar..."));
+	editToolbarAct = new TAction(this, "edit_toolbar1", tr("Edit main &toolbar..."));
+	editToolbar2Act = new TAction(this, "edit_toolbar2", tr("Edit extra t&oolbar..."));
 
 	// Control bar
-	editControlBarAct = new TAction(this, "edit_controlbar", QT_TR_NOOP("Edit control &bar.."));
+	editControlBarAct = new TAction(this, "edit_controlbar", tr("Edit control &bar.."));
 
 	// Status bar
-	viewStatusBarAct = new TAction(this, "toggle_statusbar", QT_TR_NOOP("&Status bar"), "", Qt::Key_F6);
+	viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("&Status bar"), "", Qt::Key_F6);
 	viewStatusBarAct->setCheckable(true);
 	viewStatusBarAct->setChecked(true);
 	connect(viewStatusBarAct, SIGNAL(toggled(bool)), statusBar(), SLOT(setVisible(bool)));
@@ -439,7 +439,7 @@ QMenu* TBase::createToolbarMenu() {
 
 	// Use name "toolbar_menu" only for first
 	QString name = toolbar_menu ? "" : "toolbar_menu";
-	QMenu* menu = new TMenu(this, this, name, QT_TR_NOOP("&Toolbars"), "toolbars");
+    QMenu* menu = new TMenu(this, name, tr("&Toolbars"), "toolbars");
 
 	menu->addAction(viewMenuBarAct);
 	menu->addAction(toolbar->toggleViewAction());
@@ -984,8 +984,10 @@ void TBase::applyNewPreferences() {
 		return;
 	}
 
-	// Player bin or icon set change needs restart TApp
-    if (pref->player_bin != old_player_bin || mod_interface->iconsetChanged()) {
+    // Player bin, icon set or language change need restart TApp
+    if (pref->player_bin != old_player_bin
+        || mod_interface->iconsetChanged()
+        || mod_interface->languageChanged()) {
 		// Request restart, don't reset style
 		restartWZPlayer(false);
 		return;
@@ -997,12 +999,6 @@ void TBase::applyNewPreferences() {
 	TLog::log->setLogDebugMessages(pref->log_debug_enabled);
 	// Verbose handled by restart core
 	TLog::log->setLogFileEnabled(pref->log_file);
-
-	// Load translation if language changed.
-    if (mod_interface->languageChanged()) {
-		// Handled by TApp::loadTranslation()
-		emit loadTranslation();
-	}
 
 	// Update application font
 	if (!pref->default_font.isEmpty()) {

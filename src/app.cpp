@@ -383,14 +383,12 @@ void TApp::createGUI() {
 	main_window->setForceCloseOnFinish(close_at_end);
 	main_window->setForceStartInFullscreen(start_in_fullscreen);
 
-	connect(main_window, SIGNAL(loadTranslation()),
-			this, SLOT(loadTranslation()));
 	connect(main_window, SIGNAL(requestRestart(bool)),
 			this, SLOT(onRequestRestart(bool)));
-
 	connect(this, SIGNAL(messageReceived(const QString&)),
 			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
-	setActivationWindow(main_window);
+
+    setActivationWindow(main_window);
 
 	if (move_gui) {
 		qDebug("TApp::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());

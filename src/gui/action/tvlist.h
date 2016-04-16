@@ -34,14 +34,13 @@ public:
 	enum Service { TV = 1, Radio = 2, Data = 4 };
 	Q_DECLARE_FLAGS(Services, Service)
 
-	TTVList(QWidget* parent,
-			QObject* aTranslator,
-			const QString& name,
-			const QString& text,
-			const QString& icon,
-			const QString& filename,
-			bool check_channels_conf,
-			Services services);
+    TTVList(QWidget* parent,
+            const QString& name,
+            const QString& text,
+            const QString& icon,
+            const QString& filename,
+            bool check_channels_conf,
+            Services services);
 	virtual ~TTVList();
 
 #ifndef Q_OS_WIN

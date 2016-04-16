@@ -61,12 +61,11 @@ typedef QList<TFavorite> TFavoriteList;
 class TFavorites : public TMenu {
 	Q_OBJECT
 public:
-	TFavorites(QWidget* parent,
-			   QObject* aTranslator,
-			   const QString& name,
-			   const QString& text,
-			   const QString& icon,
-			   const QString& filename);
+    TFavorites(QWidget* parent,
+               const QString& name,
+               const QString& text,
+               const QString& icon,
+               const QString& filename);
 	virtual ~TFavorites();
 
 	TAction* editAct() { return edit_act; }

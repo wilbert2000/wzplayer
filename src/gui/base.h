@@ -178,8 +178,6 @@ signals:
 
 	//! Sent when another instance requested to play a file
 	void openFileRequested();
-
-	void loadTranslation();
 	void requestRestart(bool);
 
 protected slots:

@@ -20,16 +20,16 @@ const double TAspectRatio::RATIOS[] = {
 
 // List of aspect ratio names used in menus and pretty strings
 const char* TAspectRatio::RATIO_NAMES[] = {
-	QT_TR_NOOP("1&:1"),
-	QT_TR_NOOP("&5:4"),
-	QT_TR_NOOP("&4:3"),
-	QT_TR_NOOP("11:&8"),
-	QT_TR_NOOP("1&4:10"),
-	QT_TR_NOOP("&3:2"),
-	QT_TR_NOOP("&14:9"),
-	QT_TR_NOOP("1&6:10"),
-	QT_TR_NOOP("16:&9"),
-	QT_TR_NOOP("&2.35:1")
+    QT_TR_NOOP("1&:1"),
+    QT_TR_NOOP("&5:4"),
+    QT_TR_NOOP("&4:3"),
+    QT_TR_NOOP("11:&8"),
+    QT_TR_NOOP("1&4:10"),
+    QT_TR_NOOP("&3:2"),
+    QT_TR_NOOP("&14:9"),
+    QT_TR_NOOP("1&6:10"),
+    QT_TR_NOOP("16:&9"),
+    QT_TR_NOOP("&2.35:1")
 };
 
 // Convert saved aspect back to TMenuID

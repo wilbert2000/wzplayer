@@ -32,34 +32,19 @@ TAction::TAction (QObject* parent,
 				  const QString& icon,
 				  const QKeySequence& shortCut,
 				  bool autoAdd)
-	: QAction(parent)
-	, text_en(text) {
+    : QAction(parent) {
 
 	setObjectName(name);
+    setTextAndTip(text);
 	QString iconName = icon.isEmpty() ? name : icon;
 	if (!iconName.isEmpty() && iconName != "noicon")
 		setIcon(Images::icon(iconName));
 	setShortcut(shortCut);
-	retranslateStrings();
 	if (autoAdd)
 		addActionToParent();
 }
 
 TAction::~TAction() {
-}
-
-void TAction::retranslateStrings() {
-	// Translate with parent
-	if (!text_en.isEmpty())
-		setTextAndTip(parent()->tr(text_en.toUtf8().constData()));
-}
-
-bool TAction::event(QEvent* e) {
-
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	}
-	return QAction::event(e);
 }
 
 void TAction::addShortcut(QKeySequence key) {

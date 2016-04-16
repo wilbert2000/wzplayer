@@ -26,27 +26,27 @@ private:
 };
 
 TMenuAB::TMenuAB(QWidget* parent, TCore* c)
-	: TMenu(parent, this, "ab_menu", QT_TR_NOOP("&A-B section"))
+    : TMenu(parent, "ab_menu", tr("&A-B section"))
 	, core(c) {
 
 	group = new QActionGroup(this);
 	group->setExclusive(false);
 	group->setEnabled(false);
 
-	TAction* a  = new TAction(this, "set_a_marker", QT_TR_NOOP("Set &A marker"));
+	TAction* a  = new TAction(this, "set_a_marker", tr("Set &A marker"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(setAMarker()));
 
-	a = new TAction(this, "set_b_marker", QT_TR_NOOP("Set &B marker"));
+	a = new TAction(this, "set_b_marker", tr("Set &B marker"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(setBMarker()));
 
-	a = new TAction(this, "clear_ab_markers", QT_TR_NOOP("&Clear A-B markers"));
+	a = new TAction(this, "clear_ab_markers", tr("&Clear A-B markers"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(clearABMarkers()));
 
 	addSeparator();
-	repeatAct = new TAction(this, "repeat", QT_TR_NOOP("&Repeat"));
+	repeatAct = new TAction(this, "repeat", tr("&Repeat"));
 	repeatAct->setCheckable(true);
 	repeatAct->setChecked(core->mset.loop);
 	group->addAction(repeatAct);
@@ -82,7 +82,7 @@ private:
 
 
 TMenuPlaySpeed::TMenuPlaySpeed(QWidget *parent, TCore *c)
-	: TMenu(parent, this, "speed_menu", QT_TR_NOOP("Sp&eed"), "speed")
+    : TMenu(parent, "speed_menu", tr("Sp&eed"), "speed")
 	, core(c) {
 
 	group = new QActionGroup(this);
@@ -90,39 +90,39 @@ TMenuPlaySpeed::TMenuPlaySpeed(QWidget *parent, TCore *c)
 	group->setEnabled(false);
 
 	// TODO: make checkable, to see if normal speed?
-	TAction* a = new TAction(this, "normal_speed", QT_TR_NOOP("&Normal speed"), "", Qt::Key_Backspace);
+	TAction* a = new TAction(this, "normal_speed", tr("&Normal speed"), "", Qt::Key_Backspace);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(normalSpeed()));
 
 	addSeparator();
-	a = new TAction(this, "halve_speed", QT_TR_NOOP("&Half speed"), "", Qt::Key_BraceLeft);
+	a = new TAction(this, "halve_speed", tr("&Half speed"), "", Qt::Key_BraceLeft);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(halveSpeed()));
-	a = new TAction(this, "double_speed", QT_TR_NOOP("&Double speed"), "", Qt::Key_BraceRight);
+	a = new TAction(this, "double_speed", tr("&Double speed"), "", Qt::Key_BraceRight);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(doubleSpeed()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed", QT_TR_NOOP("Speed &-10%"), "", Qt::Key_BracketLeft);
+	a = new TAction(this, "dec_speed", tr("Speed &-10%"), "", Qt::Key_BracketLeft);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed10()));
-	a = new TAction(this, "inc_speed", QT_TR_NOOP("Speed &+10%"), "", Qt::Key_BracketRight);
+	a = new TAction(this, "inc_speed", tr("Speed &+10%"), "", Qt::Key_BracketRight);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed10()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed_4", QT_TR_NOOP("Speed -&4%"));
+	a = new TAction(this, "dec_speed_4", tr("Speed -&4%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed4()));
-	a = new TAction(this, "inc_speed_4", QT_TR_NOOP("&Speed +4%"));
+	a = new TAction(this, "inc_speed_4", tr("&Speed +4%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed4()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed_1", QT_TR_NOOP("Speed -&1%"));
+	a = new TAction(this, "dec_speed_1", tr("Speed -&1%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed1()));
-	a = new TAction(this, "inc_speed_1", QT_TR_NOOP("S&peed +1%"));
+	a = new TAction(this, "inc_speed_1", tr("S&peed +1%"));
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed1()));
 
@@ -136,36 +136,36 @@ void TMenuPlaySpeed::enableActions(bool stopped, bool, bool) {
 
 
 TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
-	: TMenu(parent, this, "play_menu", QT_TR_NOOP("&Play"), "noicon")
+    : TMenu(parent, "play_menu", tr("&Play"), "noicon")
 	, core(c)
 	, playlist(plist)
 	, pauseIcon(Images::icon("pause"))
 	, playIcon(Images::icon("play")) {
 
-	playAct = new TAction(this, "play", QT_TR_NOOP("Play"), "", 0, false);
+	playAct = new TAction(this, "play", tr("Play"), "", 0, false);
 	parent->addAction(playAct);
 	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
 
-	playOrPauseAct = new TAction(this, "play_or_pause", QT_TR_NOOP("&Play"), "play", Qt::Key_Space);
+	playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play", Qt::Key_Space);
 	playOrPauseAct->addShortcut(Qt::Key_MediaPlay);
 	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
 	connect(playOrPauseAct, SIGNAL(triggered()), core, SLOT(playOrPause()));
 
-	pauseAct = new TAction(this, "pause", QT_TR_NOOP("Pause"), "",
+	pauseAct = new TAction(this, "pause", tr("Pause"), "",
 						   QKeySequence("Media Pause"), false); // MCE remote key
 	parent->addAction(pauseAct);
 	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
 
-	stopAct = new TAction(this, "stop", QT_TR_NOOP("&Stop"), "", Qt::Key_MediaStop);
+	stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
 	connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
 
 	connect(core, SIGNAL(stateChanged(TCoreState)), this, SLOT(onStateChanged(TCoreState)));
 
 	addSeparator();
-	frameBackStepAct = new TAction(this, "frame_back_step", QT_TR_NOOP("Fra&me back step"), "", Qt::Key_Comma);
+	frameBackStepAct = new TAction(this, "frame_back_step", tr("Fra&me back step"), "", Qt::Key_Comma);
 	connect(frameBackStepAct, SIGNAL(triggered()), core, SLOT(frameBackStep()));
 
-	frameStepAct = new TAction(this, "frame_step", QT_TR_NOOP("&Frame step"), "", Qt::Key_Period);
+	frameStepAct = new TAction(this, "frame_step", tr("&Frame step"), "", Qt::Key_Period);
 	connect(frameStepAct, SIGNAL(triggered()), core, SLOT(frameStep()));
 
 	addSeparator();
@@ -203,11 +203,11 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 
 	// TODO: doubles playlist next prev action
 	addSeparator();
-	playNextAct = new TAction(this, "play_next", QT_TR_NOOP("&Next"), "next", Qt::Key_Greater);
+	playNextAct = new TAction(this, "play_next", tr("&Next"), "next", Qt::Key_Greater);
 	playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
 	connect(playNextAct, SIGNAL(triggered()), playlist, SLOT(playNext()));
 
-	playPrevAct = new TAction(this, "play_prev", QT_TR_NOOP("Pre&vious"), "previous", Qt::Key_Less);
+	playPrevAct = new TAction(this, "play_prev", tr("Pre&vious"), "previous", Qt::Key_Less);
 	playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
 	connect(playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()));
 
@@ -218,7 +218,7 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	addMenu(new TMenuPlaySpeed(parent, core));
 
 	addSeparator();
-	gotoAct = new TAction(this, "jump_to", QT_TR_NOOP("&Jump to..."), "jumpto", QKeySequence("Ctrl+J"));
+	gotoAct = new TAction(this, "jump_to", tr("&Jump to..."), "jumpto", QKeySequence("Ctrl+J"));
 	connect(gotoAct, SIGNAL(triggered()), parent, SLOT(showGotoDialog()));
 
 	addActionsTo(parent);

@@ -30,7 +30,6 @@ namespace Action {
 
 
 TTVList::TTVList(QWidget* parent,
-				 QObject* aTranslator,
 				 const QString& name,
 				 const QString& text,
 				 const QString& icon,
@@ -43,7 +42,7 @@ TTVList::TTVList(QWidget* parent,
                  Services services
 #endif
                  )
-    : TFavorites(parent, aTranslator, name, text, icon, filename) {
+    : TFavorites(parent, name, text, icon, filename) {
 
 #ifndef Q_OS_WIN
     if (check_channels_conf) {
@@ -58,8 +57,7 @@ TTVList::~TTVList() {
 }
 
 TFavorites* TTVList::createNewObject(const QString& filename) {
-	return new TTVList(parent_widget, translator, "", "", "noicon", filename,
-					   false, TV);
+    return new TTVList(parent_widget, "", "", "noicon", filename, false, TV);
 }
 
 #ifndef Q_OS_WIN
