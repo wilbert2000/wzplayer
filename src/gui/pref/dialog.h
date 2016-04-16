@@ -124,15 +124,11 @@ private:
 
 	QTextBrowser* help_window;
 
-	QPushButton* okButton;
-	QPushButton* cancelButton;
-	QPushButton* applyButton;
 	QPushButton* helpButton;
 
 	void addSection(TWidget* w);
 
 private slots:
-	void apply();
 	void showHelp();
 	void onBinChanged(Settings::TPreferences::TPlayerID player_id,
 					  bool keep_current_drivers, const QString &path);

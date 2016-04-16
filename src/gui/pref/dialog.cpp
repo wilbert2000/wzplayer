@@ -52,12 +52,7 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 
 	setupUi(this);
 
-	// Setup buttons
-	okButton = buttonBox->button(QDialogButtonBox::Ok);
-	cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
-	applyButton = buttonBox->button(QDialogButtonBox::Apply);
 	helpButton = buttonBox->button(QDialogButtonBox::Help);
-	connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
 	connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
 	
 	setWindowIcon(Images::icon("logo"));
@@ -156,12 +151,6 @@ void TDialog::accept() {
 
 	hide();
 	help_window->hide();
-	setResult(QDialog::Accepted);
-	emit applied();
-}
-
-void TDialog::apply() {
-
 	setResult(QDialog::Accepted);
 	emit applied();
 }
