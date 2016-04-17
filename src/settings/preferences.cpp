@@ -54,12 +54,11 @@ TPreferences::TPreferences() :
 }
 
 TPreferences::~TPreferences() {
-
 	pref = 0;
 }
 
 
-// Default names
+// Default names player executables
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 QString default_mplayer_bin = "mplayer.exe";
 QString default_mpv_bin = "mpv.exe";
@@ -73,7 +72,7 @@ void TPreferences::reset() {
 
 	config_version = CURRENT_CONFIG_VERSION;
 
-	// General tab
+    // General section
 	player_id = ID_MPV;
 	player_bin = default_mpv_bin;
 	mpv_bin = default_mpv_bin;
@@ -86,6 +85,7 @@ void TPreferences::reset() {
 	file_settings_method = "hash"; // Possible values: normal & hash
 
 	check_channels_conf_on_startup = true;
+
 
 	// Demuxer section
 	use_lavf_demuxer = false;
@@ -124,8 +124,6 @@ void TPreferences::reset() {
 	vdpau.disable_video_filters = true;
 #endif
 
-	color_key = 0x020202;
-
 	hwdec = "auto";
 	use_soft_video_eq = false;
 
@@ -142,7 +140,9 @@ void TPreferences::reset() {
 
 	monitor_aspect = ""; // Autodetect
 
-	initial_contrast = 0;
+    color_key = 0x020202;
+
+    initial_contrast = 0;
 	initial_brightness = 0;
 	initial_hue = 0;
 	initial_saturation = 0;
@@ -153,7 +153,7 @@ void TPreferences::reset() {
 	subfont_osd_scale = 3;
 
 
-	// Audio tab
+    // Audio section
 #ifdef Q_OS_OS2
 	ao = "kai";
 #else
@@ -179,6 +179,7 @@ void TPreferences::reset() {
 
 	use_soft_vol = false;
 	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
+    // TODO: store per player?
 	softvol_max = 130;
 	initial_volnorm = false;
 
@@ -216,6 +217,7 @@ void TPreferences::reset() {
 	// Libraries tab
 	freetype_support = true;
 	use_ass_subtitles = true;
+    initial_sub_scale_ass = 1;
 	ass_line_spacing = 0;
 
 	use_custom_ass_style = false;
@@ -225,10 +227,8 @@ void TPreferences::reset() {
 	initial_sub_pos = 100; // 100%
 	initial_sub_scale = 5;
 	initial_sub_scale_mpv = 1;
-	initial_sub_scale_ass = 1;
 
 	use_forced_subs_only = false;
-	change_sub_scale_should_restart = Detect;
 
 
 	// Interface section
@@ -250,7 +250,6 @@ void TPreferences::reset() {
 	resize_on_docking = true;
 	pause_when_hidden = false;
 	hide_video_window_on_audio_files = true;
-	start_in_fullscreen = false;
 	close_on_finish = false;
 	show_tag_in_window_title = true;
 
@@ -258,6 +257,7 @@ void TPreferences::reset() {
 	fullscreen = false;
 	floating_hide_delay = 3000;
 	floating_activation_area = Anywhere;
+    start_in_fullscreen = false;
 
 
 	// Playlist tab
@@ -280,6 +280,7 @@ void TPreferences::reset() {
 
 
 	// Actions section
+    // Mouse tab
 	mouse_left_click_function = "play_or_pause";
 	delay_left_click = true;
 	mouse_right_click_function = "show_context_menu";
@@ -306,7 +307,7 @@ void TPreferences::reset() {
 	cdrom_device = "";
 	vcd_initial_title = 2; // Most VCD's start at title #2
 	dvd_device = "";
-	use_dvdnav = true;
+    use_dvdnav = true; // MPlayer only
 	bluray_device = "";
 
 #ifndef Q_OS_WIN
@@ -501,8 +502,6 @@ void TPreferences::save() {
 	setValue("use_forced_subs_only", use_forced_subs_only);
 
 	setValue("subtitles_on_screenshots", subtitles_on_screenshots);
-
-	setValue("change_sub_scale_should_restart", change_sub_scale_should_restart);
 
 
 	// ASS styles
@@ -1006,8 +1005,6 @@ void TPreferences::load() {
 	use_forced_subs_only = value("use_forced_subs_only", use_forced_subs_only).toBool();
 
 	subtitles_on_screenshots = value("subtitles_on_screenshots", subtitles_on_screenshots).toBool();
-
-	change_sub_scale_should_restart = (TOptionState) value("change_sub_scale_should_restart", change_sub_scale_should_restart).toInt();
 
 
 	// ASS styles

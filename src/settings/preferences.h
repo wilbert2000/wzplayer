@@ -148,6 +148,12 @@ public:
 	QString monitor_aspect;
 	double monitorAspectDouble();
 
+    int initial_contrast;
+    int initial_brightness;
+    int initial_hue;
+    int initial_saturation;
+    int initial_gamma;
+
 	unsigned int color_key;
 	bool useColorKey() const;
 
@@ -168,12 +174,16 @@ public:
 
 	// Global volume options
 	bool global_volume;
-	int volume;
+    int initial_volume;
+
+    int volume;
 	bool mute;
 
 	// Global equalizer
 	bool global_audio_equalizer;
-	TAudioEqualizerList audio_equalizer;
+    TAudioEqualizerList initial_audio_equalizer;
+    TAudioEqualizerList audio_equalizer;
+
 
 	// Volume group
 	bool use_soft_vol;
@@ -206,8 +216,14 @@ public:
 	// Libraries tab
 	bool freetype_support;
 	bool use_ass_subtitles;
+    double initial_sub_scale_ass;
+    int ass_line_spacing;
 
-	int ass_line_spacing;
+    //! Default value for position of subtitles on screen
+    //! 100 = 100% at the bottom
+    int initial_sub_pos;
+    double initial_sub_scale;
+    double initial_sub_scale_mpv;
 
 	// ASS styles
 	bool use_custom_ass_style;
@@ -217,8 +233,6 @@ public:
 	QString user_forced_ass_style; //!< Specifies a style defined by the user to be used with -ass-force-style
 
 	bool use_forced_subs_only;
-
-	TOptionState change_sub_scale_should_restart;
 
 	//! If false, options requiring freetype won't be used
 #ifdef Q_OS_WIN
@@ -245,21 +259,38 @@ public:
 	bool close_on_finish;
 	bool show_tag_in_window_title;
 
+    TOnTop stay_on_top;
+    double size_factor;
+
+
 	// Fullscreen
 	bool fullscreen;
+    int floating_hide_delay;
+    TToolbarActivation floating_activation_area;
 	bool start_in_fullscreen;
 
+    // Playlist tab
 	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
-
-	// Logging tab
+    // Logging
 	bool log_debug_enabled;
 	bool log_verbose;
 	bool log_file;
 
+    // History
+    TRecents history_recents;
+    TURLHistory history_urls;
+    bool save_dirs; // Save or not the latest dirs
+
+    QString latest_dir; //!< Directory of the latest file loaded
+    QString last_dvd_directory;
+
+    // TV (dvb)
+    QString last_dvb_channel;
+    QString last_tv_channel;
+
 
 	// Actions section
-
 	// Function of mouse buttons:
 	QString mouse_left_click_function;
 	//! If true, the left click in the video is delayed some ms
@@ -321,121 +352,45 @@ public:
 	int cache_for_tv;
 
 
-	// Advanced tab
-	// Let the user pass options to mplayer
-	QString player_additional_options;
+    // Network section
+    bool use_proxy;
+    int proxy_type;
+    QString proxy_host;
+    int proxy_port;
+    QString proxy_username;
+    QString proxy_password;
+
+
+    // Update section
+    TUpdateCheckerData update_checker_data;
+
+
+    // Advanced section
+    QString actions_to_run; //!< List of actions to run every time a video loads.
+    QString player_additional_options;
 	QString player_additional_video_filters;
 	QString player_additional_audio_filters;
-
 
 	//! If true it will autoload edl files with the same name of the file
     //! to play
 	bool use_edl_files;
     int time_to_kill_player;
 
+    //! Number of times to show the balloon remembering that the program
+    //! is still running in the system tray.
+    int balloon_count;
+
 	//! If false, -brightness, -contrast and so on, won't be passed to
 	//! mplayer. It seems that some graphic cards don't support those options.
 	bool change_video_equalizer_on_startup;
 
-	QString actions_to_run; //!< List of actions to run every time a video loads.
-
+    // Filters
+    TFilters filters;
 
 #ifdef MPRIS2
 	bool use_mpris2;
 #endif
 
-
-	/* *********
-	   GUI stuff
-	   ********* */
-
-
-	TOnTop stay_on_top;
-	double size_factor;
-
-
-	//! Number of times to show the balloon remembering that the program
-	//! is still running in the system tray.
-	int balloon_count;
-
-
-    /* ********
-       TV (dvb)
-       ******** */
-
-	QString last_dvb_channel;
-	QString last_tv_channel;
-
-
-    /* ********
-       Network
-       ******** */
-
-	// Proxy
-	bool use_proxy;
-	int proxy_type;
-	QString proxy_host;
-	int proxy_port;
-	QString proxy_username;
-	QString proxy_password;
-
-
-    /* ***********
-       Directories
-       *********** */
-
-	QString latest_dir; //!< Directory of the latest file loaded
-	QString last_dvd_directory;
-	bool save_dirs; // Save or not the latest dirs
-
-    /* **************
-       Initial values
-       ************** */
-
-	double initial_sub_scale;
-	double initial_sub_scale_mpv;
-	double initial_sub_scale_ass;
-
-	int initial_volume;
-	int initial_contrast;
-	int initial_brightness;
-	int initial_hue;
-	int initial_saturation;
-	int initial_gamma;
-
-	TAudioEqualizerList initial_audio_equalizer;
-
-	//! Default value for position of subtitles on screen
-	//! 100 = 100% at the bottom
-	int initial_sub_pos;
-
-
-    /* ****************
-       Floating control
-       **************** */
-
-	TToolbarActivation floating_activation_area;
-	int floating_hide_delay;
-
-
-    /* *******
-       History
-       ******* */
-
-	TRecents history_recents;
-	TURLHistory history_urls;
-
-
-    /* *******
-       Filters
-       ******* */
-	TFilters filters;
-
-
-    /* *********
-       Update
-       ********* */
-	TUpdateCheckerData update_checker_data;
 
 private:
 	void setPlayerBin0(QString bin);
