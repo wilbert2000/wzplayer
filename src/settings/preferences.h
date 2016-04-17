@@ -331,6 +331,7 @@ public:
 	//! If true it will autoload edl files with the same name of the file
     //! to play
 	bool use_edl_files;
+    int time_to_kill_player;
 
 	//! If false, -brightness, -contrast and so on, won't be passed to
 	//! mplayer. It seems that some graphic cards don't support those options.
@@ -338,7 +339,6 @@ public:
 
 	QString actions_to_run; //!< List of actions to run every time a video loads.
 
-	int time_to_kill_mplayer;
 
 #ifdef MPRIS2
 	bool use_mpris2;

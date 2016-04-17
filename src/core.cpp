@@ -1615,7 +1615,7 @@ void TCore::stopPlayer() {
 	qDebug("TCore::stopPlayer");
 
 	// If set high enough the OS will detect the "not responding state" and popup a dialog
-	int timeout = pref->time_to_kill_mplayer;
+    int timeout = pref->time_to_kill_player;
 	if (timeout < 5000) {
 		qWarning("TCore::stopPlayer: timeout %d too small, adjusting it to 5000 ms", timeout);
 		timeout = 5000;

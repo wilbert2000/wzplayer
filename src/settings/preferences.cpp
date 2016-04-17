@@ -359,10 +359,9 @@ void TPreferences::reset() {
 	player_additional_video_filters = "";
 	player_additional_audio_filters = "";
 
-
 	use_edl_files = true;
 	change_video_equalizer_on_startup = true;
-	time_to_kill_mplayer = 5000;
+    time_to_kill_player = 5000;
 	balloon_count = 5;
 
 #ifdef MPRIS2
@@ -553,7 +552,7 @@ void TPreferences::save() {
 
 	setValue("show_tag_in_window_title", show_tag_in_window_title);
 
-	setValue("time_to_kill_mplayer", time_to_kill_mplayer);
+    setValue("time_to_kill_player", time_to_kill_player);
 
 #ifdef MPRIS2
 	setValue("use_mpris2", use_mpris2);
@@ -1065,7 +1064,7 @@ void TPreferences::load() {
 
 	show_tag_in_window_title = value("show_tag_in_window_title", show_tag_in_window_title).toBool();
 
-	time_to_kill_mplayer = value("time_to_kill_mplayer", time_to_kill_mplayer).toInt();
+    time_to_kill_player = value("time_to_kill_player", time_to_kill_player).toInt();
 
 #ifdef MPRIS2
 	use_mpris2 = value("use_mpris2", use_mpris2).toBool();
@@ -1267,8 +1266,8 @@ void TPreferences::load() {
 			cache_for_streams = 2048;
 		}
 		if (config_version <= 5) {
-			if (time_to_kill_mplayer < 5000)
-				time_to_kill_mplayer = 5000;
+            if (time_to_kill_player < 5000)
+                time_to_kill_player = 5000;
 			use_dvdnav = true;
 			if (time_slider_drag_delay < 200)
 				time_slider_drag_delay = 200;
