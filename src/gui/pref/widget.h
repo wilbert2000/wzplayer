@@ -63,7 +63,10 @@ protected:
 	// Help
 	void addSectionTitle(const QString& title);
 	void addSectionGroup(const QString& title);
-	void setWhatsThis(QWidget* w, const QString& title, const QString& text);
+    void setWhatsThis(QWidget* w,
+                      const QString& title,
+                      const QString& text,
+                      bool set_tooltip = true);
 	void clearHelp();
 	
 private:

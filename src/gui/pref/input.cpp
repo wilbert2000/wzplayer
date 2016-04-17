@@ -409,13 +409,14 @@ void TInput::createHelp() {
 		tr("This table allows you to change the shortcut keys of most "
            "available actions. Double click or press enter on a item, or "
 		   "press the <b>Change shortcut</b> button to open the "
-           "<i>Modify shortcut</i> dialog. There are two ways to change a "
-           "shortcut: if the <b>Capture</b> button is on then just "
-           "press the new key or combination of keys that you want to "
-           "assign for the action (unfortunately this doesn't work for all "
-           "keys). If the <b>Capture</b> button is off "
-           "then you could enter the full name of the key."));
-
+           "<i>Modify shortcut</i> dialog."
+           "<br>There are two ways to change a shortcut:<br>"
+           "if the <b>Capture</b> button is on then just press the new key"
+           " or combination of keys that you want to assign to the action"
+           " (unfortunately this doesn't work for all keys).<br>"
+           "If the <b>Capture</b> button is off then you can enter"
+           " the full name of the key."),
+           false);
 
 	addSectionTitle(tr("Mouse"));
 

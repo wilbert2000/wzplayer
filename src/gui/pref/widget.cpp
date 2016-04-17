@@ -88,12 +88,16 @@ void TWidget::restartIfStringChanged(QString& old_value, const QString& new_valu
 	}
 }
 
-void TWidget::setWhatsThis(QWidget *w, const QString & title, const QString & text) {
+void TWidget::setWhatsThis(QWidget* w,
+                           const QString& title,
+                           const QString& text,
+                           bool set_tooltip) {
 
 	w->setWhatsThis(text);
 	help_message += "<b>"+title+"</b><br>"+text+"<br><br>";
-
-	w->setToolTip("<qt>"+ text +"</qt>");
+    if (set_tooltip) {
+        w->setToolTip("<qt>"+ text +"</qt>");
+    }
 }
 
 void TWidget::clearHelp() {
