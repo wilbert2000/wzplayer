@@ -1250,43 +1250,42 @@ void TPreferences::load() {
 	qDebug("Settings::TPreferences::load: config_version: %d, CURRENT_CONFIG_VERSION: %d",
 		   config_version, CURRENT_CONFIG_VERSION);
 
-	// Fix some values if config is old
-	if (config_version < CURRENT_CONFIG_VERSION) {
-		qDebug("TPreferences::load: config version is old, updating it");
-		if (config_version < 4) {
-			osd_level = None;
-			frame_drop = false;
-			cache_for_files = 2048;
-			cache_for_streams = 2048;
-		}
-		if (config_version <= 5) {
-            if (time_to_kill_player < 5000)
-                time_to_kill_player = 5000;
-			use_dvdnav = true;
-			if (time_slider_drag_delay < 200)
-				time_slider_drag_delay = 200;
-			if (min_step < 5)
-				min_step = 5;
-		}
-
-		if (config_version < 11) {
-            subtitle_language = value("General/subtitle_lang", subtitle_language).toString();
-			subtitle_fuzziness = value("subtitles/subfuzziness", subtitle_fuzziness).toInt();
-		}
-
-		if (config_version < 12) {
-			use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
-			if (vo == "player_default") {
-				vo = "";
-			}
-			if (ao == "player_default") {
-				ao = "";
-			}
-		}
-
-		config_version = CURRENT_CONFIG_VERSION;
-        clean_config = true;
-	}
+    // Fix some values if config is old
+    if (config_version < CURRENT_CONFIG_VERSION) {
+        if (config_version > 0) {
+            qDebug("TPreferences::load: config version is old, updating it");
+            clean_config = true;
+            if (config_version < 4) {
+                osd_level = None;
+                frame_drop = false;
+                cache_for_files = 2048;
+                cache_for_streams = 2048;
+            }
+            if (config_version <= 5) {
+                if (time_to_kill_player < 5000)
+                    time_to_kill_player = 5000;
+                use_dvdnav = true;
+                if (time_slider_drag_delay < 200)
+                    time_slider_drag_delay = 200;
+                if (min_step < 5)
+                    min_step = 5;
+            }
+            if (config_version < 11) {
+                subtitle_language = value("General/subtitle_lang", subtitle_language).toString();
+                subtitle_fuzziness = value("subtitles/subfuzziness", subtitle_fuzziness).toInt();
+            }
+            if (config_version < 12) {
+                use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
+                if (vo == "player_default") {
+                    vo = "";
+                }
+                if (ao == "player_default") {
+                    ao = "";
+                }
+            }
+        }
+        config_version = CURRENT_CONFIG_VERSION;
+    }
 } // load()
 
 bool TPreferences::useColorKey() const {
