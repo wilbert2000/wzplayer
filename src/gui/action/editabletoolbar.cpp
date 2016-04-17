@@ -197,8 +197,8 @@ void TEditableToolbar::resizeEvent(QResizeEvent* event) {
 	// than the orientation changed signal is sent and received by TTImeslider
     // changing TTImesliders minimum size and then another resize arrives,
     // based on the old minimum size hint from before the orientation change.
-    // Might be volume slider as well.
-	if (isFloating() && !fixing_size) {
+    // sizeHint() is never called, so can't fix it that way.
+    if (isFloating() && space_eater && !fixing_size) {
 		if (orientation() == Qt::Horizontal) {
             if (height() > iconSize().height() + fix_size) {
 				qDebug() << "Gui::Action::TEditableToolbar::resizeEvent: fixing height";
