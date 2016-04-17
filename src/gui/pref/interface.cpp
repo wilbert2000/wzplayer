@@ -197,7 +197,8 @@ void TInterface::getData(Settings::TPreferences* pref) {
 
 	// Fullscreen
 	pref->floating_hide_delay = hide_toolbars_spin->value();
-	pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked() ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
+    pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked()
+        ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->start_in_fullscreen = startInFullscreen();
 
 	// Playlist
