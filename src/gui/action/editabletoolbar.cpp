@@ -150,11 +150,11 @@ void TEditableToolbar::edit() {
 		QStringList new_actions = editor.saveActions();
 		// Load new actions
 		setActionsFromStringList(new_actions, all_actions);
-		resize(width(), editor.iconSize());
-		setIconSize(QSize(editor.iconSize(), editor.iconSize()));
-
-		// Save icon text of actions to pref
+        // Update icon size
+        setIconSize(QSize(editor.iconSize(), editor.iconSize()));
+        // Save modified icon texts to pref
         TActionsEditor::saveToConfig(Settings::pref, main_window);
+        Settings::pref->sync();
 	}
 }
 
