@@ -23,6 +23,7 @@
 #include <QResizeEvent>
 #include <QTimer>
 
+#include "desktop.h"
 #include "settings/preferences.h"
 #include "gui/base.h"
 #include "gui/action/actionlist.h"
@@ -164,36 +165,48 @@ void TEditableToolbar::showContextMenu(const QPoint& pos) {
 	}
 }
 
+void TEditableToolbar::mouseReleaseEvent(QMouseEvent* event) {
+
+    QToolBar::mouseReleaseEvent(event);
+    if (size_grip) {
+        QTimer::singleShot(1000, size_grip, SLOT(delayedShow()));
+    }
+}
+
 void TEditableToolbar::moveEvent(QMoveEvent* event) {
 	//qDebug("Gui::Action::TEditableToolbar::moveEvent");
 
 	QToolBar::moveEvent(event);
-	if (size_grip)
-		size_grip->follow();
+    if (size_grip) {
+        if (QApplication::mouseButtons()) {
+            size_grip->hide();
+        }
+        size_grip->follow();
+    }
 }
 
 void TEditableToolbar::resizeEvent(QResizeEvent* event) {
-	//qDebug() << "Gui::Action::TEditableToolbar::resizeEvent:" << objectName()
-	//		 << "from" << event->oldSize() << "to" << size()
-	//		 << "min" << minimumSizeHint();
+    //qDebug() << "Gui::Action::TEditableToolbar::resizeEvent:" << objectName()
+    //         << "from" << event->oldSize() << "to" << size()
+    //         << "min" << minimumSizeHint();
 
 	QToolBar::resizeEvent(event);
 
 	// Fix the dark and uncontrollable ways of Qt's layout engine.
 	// It looks like that with an orientation change the resize is done first,
 	// than the orientation changed signal is sent and received by TTImeslider
-	// changing its minimum size and then another resize arrives, based on the
-	// old minimum size hint from before the orientation change.
-	// Might be volume slider as well.
+    // changing TTImesliders minimum size and then another resize arrives,
+    // based on the old minimum size hint from before the orientation change.
+    // Might be volume slider as well.
 	if (isFloating() && !fixing_size) {
 		if (orientation() == Qt::Horizontal) {
-			if (height() == TTimeSlider::SLIDER_MIN_SIZE) {
+            if (height() > iconSize().height() + fix_size) {
 				qDebug() << "Gui::Action::TEditableToolbar::resizeEvent: fixing height";
 				fixing_size = true;
 				resize(width(), iconSize().height() + fix_size);
 				fixing_size = false;
 			}
-		} else if (width() == TTimeSlider::SLIDER_MIN_SIZE) {
+        } else if (width() > iconSize().width() + fix_size) {
 			qDebug() << "Gui::Action::TEditableToolbar::resizeEvent: fixing width";
 			fixing_size = true;
 			resize(iconSize().width() + fix_size, height());
@@ -201,8 +214,9 @@ void TEditableToolbar::resizeEvent(QResizeEvent* event) {
 		}
 	}
 
-	if (size_grip)
-		size_grip->follow();
+    if (size_grip) {
+        size_grip->follow();
+    }
 }
 
 void TEditableToolbar::setVisible(bool visible) {
@@ -227,15 +241,15 @@ void TEditableToolbar::removeSizeGrip() {
 void TEditableToolbar::addSizeGrip() {
 
 	if (space_eater && isFloating()) {
-		if (size_grip) {
-			//qDebug("Gui::Action::TEditableToolbar::addSizeGrip: size grip already added");
-		} else {
+        setMaximumSize(0.9 * TDesktop::availableSize(this));
+        if (!size_grip) {
 			//qDebug() << "Gui::Action::TEditableToolbar::addSizeGrip: adding size grip";
 			size_grip = new TSizeGrip(main_window, this);
 			connect(size_grip, SIGNAL(saveSizeHint()),
 					space_eater, SLOT(saveSizeHint()));
 		}
 	} else {
+        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 		removeSizeGrip();
 	}
 }

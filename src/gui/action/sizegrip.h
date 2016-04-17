@@ -16,10 +16,11 @@ public:
 	TSizeGrip(QWidget* parent, QToolBar* tb);
 	virtual ~TSizeGrip();
 
-	void follow();
+    void follow();
 
 public slots:
 	void delayedHide();
+    void delayedShow();
 
 signals:
 	void saveSizeHint();

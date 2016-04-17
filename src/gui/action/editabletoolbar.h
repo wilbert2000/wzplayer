@@ -58,6 +58,7 @@ protected:
 	virtual void moveEvent(QMoveEvent* event);
 	virtual void enterEvent(QEvent* event);
 	virtual void leaveEvent(QEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
 
 private:
 	QStringList actions;

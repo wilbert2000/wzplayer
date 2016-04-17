@@ -121,6 +121,14 @@ void TSizeGrip::delayedHide() {
 		hide();
 }
 
+void TSizeGrip::delayedShow() {
+
+    if (toolbar->underMouse()) {
+        follow();
+        show();
+    }
+}
+
 bool TSizeGrip::event(QEvent* e) {
 
 	switch (e->type()) {

@@ -35,10 +35,6 @@ public:
 	TTimeSlider(QWidget* parent, int max_pos, double duration, int drag_delay);
 	virtual ~TTimeSlider();
 
-	// See TEditableToolbar::resizeEvent() for details.
-	// Probably needs to be the size returned by TSlider::sizeHint()...
-	static const int SLIDER_MIN_SIZE = 84;
-
 	virtual int pos();
 	virtual double duration();
 
@@ -72,7 +68,9 @@ protected:
 	virtual void resizeEvent(QResizeEvent* e);
 
 private:
-	bool dont_update;
+    static const int SLIDER_MIN_SIZE = 84;
+
+    bool dont_update;
 	int position;
 	double _duration;
 	
