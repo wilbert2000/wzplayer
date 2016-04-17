@@ -170,7 +170,7 @@ void TPlaylist::createActions(QWidget* parent) {
 	openAct = new TAction(this, "pl_open", tr("&Load"), "open");
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
 
-	saveAct = new TAction(this, "pl_save", tr("&Save"), "save");
+    saveAct = new TAction(this, "pl_save", tr("&Save"), "save", QKeySequence("Ctrl+S"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
 	playAct = new TAction(this, "pl_play", tr("&Play"), "play");

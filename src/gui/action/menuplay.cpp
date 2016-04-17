@@ -142,12 +142,11 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	, pauseIcon(Images::icon("pause"))
 	, playIcon(Images::icon("play")) {
 
-	playAct = new TAction(this, "play", tr("Play"), "", 0, false);
+    playAct = new TAction(this, "play", tr("Play"), "", Qt::Key_MediaPlay, false);
 	parent->addAction(playAct);
 	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
 
 	playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play", Qt::Key_Space);
-	playOrPauseAct->addShortcut(Qt::Key_MediaPlay);
 	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
 	connect(playOrPauseAct, SIGNAL(triggered()), core, SLOT(playOrPause()));
 

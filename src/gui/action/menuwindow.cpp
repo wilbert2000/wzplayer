@@ -115,7 +115,7 @@ TMenuWindow::TMenuWindow(QWidget* parent,
 
 	addSeparator();
 	// Show playlist
-	TAction* a = new TAction(this, "show_playlist", tr("&Playlist..."), "playlist", QKeySequence("Ctrl+P"));
+    TAction* a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist", QKeySequence("Ctrl+P"));
 	a->setCheckable(true);
 	connect(a, SIGNAL(triggered(bool)), parent, SLOT(showPlaylist(bool)));
 	connect(playlist, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
@@ -135,7 +135,7 @@ TMenuWindow::TMenuWindow(QWidget* parent,
 	a = new TAction(this, "show_config", tr("Open &configuration folder..."));
 	connect(a, SIGNAL(triggered()), parent, SLOT(showConfigFolder()));
 
-	a = new TAction(this, "show_preferences", tr("P&references..."), "prefs", QKeySequence("Ctrl+S"));
+    a = new TAction(this, "show_preferences", tr("P&references..."), "prefs", QKeySequence("Alt+P"));
 	connect(a, SIGNAL(triggered()), parent, SLOT(showPreferencesDialog()));
 
 	addActionsTo(parent);
