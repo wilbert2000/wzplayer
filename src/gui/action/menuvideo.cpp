@@ -153,10 +153,10 @@ TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TCore* c)
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(autoZoomFor235()));
 	addSeparator();
-    a = new TAction(this, "dec_zoom", tr("Zoom &-"), "", Qt::Key_W);
+    a = new TAction(this, "dec_zoom", tr("Zoom &-"), "", Qt::Key_Q);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decZoom()));
-    a = new TAction(this, "inc_zoom", tr("Zoom &+"), "", Qt::Key_E);
+    a = new TAction(this, "inc_zoom", tr("Zoom &+"), "", Qt::Key_W);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incZoom()));
 
