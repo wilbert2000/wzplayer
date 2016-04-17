@@ -349,7 +349,8 @@ private:
 	void createToolbars();
 	QMenu* createToolbarMenu();
 
-	void restartWZPlayer(bool reset_style);
+    void save();
+    void restartWZPlayer(bool reset_style);
 
 	void setFloatingToolbarsVisible(bool visible);
 	double getNewSizeFactor();

@@ -360,6 +360,7 @@ void TPreferences::reset() {
 	change_video_equalizer_on_startup = true;
     time_to_kill_player = 5000;
 	balloon_count = 5;
+    clean_config = false;
 
 #ifdef MPRIS2
 	use_mpris2 = true;
@@ -1266,69 +1267,15 @@ void TPreferences::load() {
 				time_slider_drag_delay = 200;
 			if (min_step < 5)
 				min_step = 5;
-
-			remove("floating_control/width");
-			remove("advanced/use_mplayer_window");
-			remove("mplayer_info");
-		}
-
-		if (config_version < 9) {
-			remove("advanced/log_enabled");
-			remove("advanced/log_filter");
-		}
-
-		if (config_version < 10) {
-			remove("gui/gui");
-			remove("skin_gui");
-			remove("mini_gui");
-			remove("mpc_gui");
-			remove("gui/auto_shutdown_pc");
-			remove("performance/h264_skip_loop_filter");
-			remove("performance/HD_height");
-			remove("performance/coreavc");
-			remove("performance/threads");
-			remove("youtube");
-			remove("videopreview");
-			remove("streaming");
 		}
 
 		if (config_version < 11) {
-			remove("smplayer");
-			remove("General/use_direct_rendering");
-			remove("General/use_double_buffer");
-			remove("General/use_slices");
-			remove("General/autoq");
-
-			subtitle_language = value("General/subtitle_lang", subtitle_language).toString();
-			remove("General/subtitle_lang");
-
-			remove("gui/reset_stop");
-
+            subtitle_language = value("General/subtitle_lang", subtitle_language).toString();
 			subtitle_fuzziness = value("subtitles/subfuzziness", subtitle_fuzziness).toInt();
-			remove("subtitles/subfuzziness");
-			remove("subtitles/autoload_sub");
-
-			remove("subtitles/use_enca");
-			remove("subtitles/enca_lang");
-			remove("subtitles/subcp");
-
-			remove("performance/hwdec");
-			remove("performance/frame_drop");
-			remove("performance/hard_frame_drop");
-			remove("performance/priority");
-
-			remove("advanced/prefer_ipv4");
-
-			remove("defaults/initial_audio_track");
-			remove("defaults/initial_subtitle_track");
 		}
 
 		if (config_version < 12) {
 			use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
-			remove("subtitles/enable_ass_styles");
-			remove("advanced/repaint_video_background");
-			remove("gui/report_player_crashes");
-
 			if (vo == "player_default") {
 				vo = "";
 			}
@@ -1337,13 +1284,8 @@ void TPreferences::load() {
 			}
 		}
 
-		remove("General/capture_directory");
-		remove("General/add_blackborders_on_fullscreen");
-		remove("gui/auto_add_to_playlist");
-		remove("gui/resize_method");
-
 		config_version = CURRENT_CONFIG_VERSION;
-		sync();
+        clean_config = true;
 	}
 } // load()
 

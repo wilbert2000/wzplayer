@@ -904,15 +904,24 @@ void TBase::saveConfig() {
 	}
 }
 
+void TBase::save() {
+
+    displayMessage(tr("Saving settings"), 0);
+    if (pref->clean_config) {
+        pref->clean_config = false;
+        pref->remove("");
+        Action::TActionsEditor::saveToConfig(pref, this);
+    }
+    saveConfig();
+    pref->save();
+}
+
 void TBase::closeEvent(QCloseEvent* e)  {
 	qDebug("Gui::TBase::closeEvent");
 
 	core->close();
 	exitFullscreen();
-
-	displayMessage(tr("Saving settings"), 0);
-	saveConfig();
-	pref->save();
+    save();
 	e->accept();
 }
 
@@ -964,18 +973,18 @@ void TBase::applyNewPreferences() {
 	// Update pref from dialog
 	pref_dialog->getData(pref);
 
-	// Update and save playlist preferences
+    // Update and save playlist preferences
     Pref::TInterface* mod_interface = pref_dialog->mod_interface();
     playlist->setDirectoryRecursion(mod_interface->directoryRecursion());
     playlist->setSavePlaylistOnExit(mod_interface->savePlaylistOnExit());
-	playlist->saveSettings();
+    playlist->saveSettings();
 
-	// Update actions
+    // Update and save actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();
     Action::TActionsEditor::saveToConfig(pref, this);
 
 	// Commit changes
-	pref->save();
+    pref->save();
 
 	// Style change needs recreation of main window
     if (mod_interface->styleChanged()) {

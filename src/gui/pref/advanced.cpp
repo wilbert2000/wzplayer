@@ -64,7 +64,6 @@ void TAdvanced::setData(TPreferences* pref) {
 void TAdvanced::getData(TPreferences* pref) {
 
 	requires_restart = false;
-
 	pref->actions_to_run = actionsToRun();
 
 	restartIfStringChanged(pref->player_additional_options, playerAdditionalArguments());

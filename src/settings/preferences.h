@@ -384,6 +384,8 @@ public:
 	//! mplayer. It seems that some graphic cards don't support those options.
 	bool change_video_equalizer_on_startup;
 
+    bool clean_config;
+
     // Filters
     TFilters filters;
 
