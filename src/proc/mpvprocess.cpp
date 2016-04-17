@@ -671,7 +671,7 @@ bool TMPVProcess::parseLine(QString& line) {
 
 // Start of what used to be mpvoptions.cpp and was pulled in with an include
 
-void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
+void TMPVProcess::setMedia(const QString& media) {
 	arg << "--term-playing-msg="
 		"VIDEO_ASPECT=${video-aspect}\n"
 		"VIDEO_FPS=${=fps}\n"
@@ -714,11 +714,7 @@ void TMPVProcess::setMedia(const QString& media, bool is_playlist) {
 		url = disc.toString(true);
 	}
 
-	if (is_playlist) {
-		arg << "--playlist=" + url;
-	} else {
-		arg << url;
-	}
+    arg << url;
 
 	capturing = false;
 }

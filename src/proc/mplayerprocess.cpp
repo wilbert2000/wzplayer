@@ -1129,16 +1129,14 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 // Start of what used to be mplayeroptions.cpp
 
-void TMPlayerProcess::setMedia(const QString& media, bool is_playlist) {
+void TMPlayerProcess::setMedia(const QString& media) {
 
 	// TODO: Add sub_source?
 	arg << "-playing-msg"
 		<< "ID_VIDEO_TRACK=${switch_video}\n"
 		   "ID_AUDIO_TRACK=${switch_audio}\n"
 		   "ID_ANGLE_EX=${angle}\n";
-	if (is_playlist)
-		arg << "-playlist";
-	arg << media;
+    arg << media;
 }
 
 void TMPlayerProcess::setFixedOptions() {

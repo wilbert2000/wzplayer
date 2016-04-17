@@ -40,7 +40,7 @@ public:
 	virtual bool startPlayer();
 
 	// Command line options
-	void setMedia(const QString& media, bool is_playlist = false);
+    void setMedia(const QString& media);
 	void disableInput();
 	void setFixedOptions();
 	void setOption(const QString& name, const QVariant& value = QVariant());

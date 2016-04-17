@@ -362,7 +362,6 @@ void TPreferences::reset() {
 
 
 	use_edl_files = true;
-	use_playlist_option = false;
 	change_video_equalizer_on_startup = true;
 	time_to_kill_mplayer = 5000;
 	balloon_count = 5;
@@ -547,8 +546,6 @@ void TPreferences::save() {
 	setValue("log_file", log_file);
 
 	setValue("use_edl_files", use_edl_files);
-
-	setValue("use_playlist_option", use_playlist_option);
 
 	setValue("change_video_equalizer_on_startup", change_video_equalizer_on_startup);
 
@@ -1064,8 +1061,6 @@ void TPreferences::load() {
 	log_file = value("log_file", log_file).toBool();
 
 	use_edl_files = value("use_edl_files", use_edl_files).toBool();
-
-	use_playlist_option = value("use_playlist_option", use_playlist_option).toBool();
 
 	use_correct_pts = (TOptionState) value("correct_pts", use_correct_pts).toInt();
 

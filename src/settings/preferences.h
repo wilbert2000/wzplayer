@@ -254,9 +254,6 @@ public:
 	bool fullscreen;
 	bool start_in_fullscreen;
 
-	// Playlist
-	//! If true it will pass to mplayer the -playlist option
-	bool use_playlist_option;
 	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
 

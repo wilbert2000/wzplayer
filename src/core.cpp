@@ -887,21 +887,12 @@ void TCore::startPlayer(QString file, double seek) {
 		return;
 	}
 
-	emit showMessage(tr("Starting player..."), 5000);
+    emit showMessage(tr("Starting player..."), 6000);
 
 	// Check URL playlist
-	bool url_is_playlist = false;
 	if (file.endsWith("|playlist")) {
-		url_is_playlist = true;
 		file = file.remove("|playlist");
-	} else {
-		QUrl url(file);
-		if (url.scheme().toLower() != "ffmpeg") {
-			QRegExp rx("\\.ram$|\\.asx$|\\.m3u$|\\.m3u8$|\\.pls$", Qt::CaseInsensitive);
-			url_is_playlist = rx.indexIn(url.path()) >= 0;
-		}
-	}
-	qDebug("TCore::startPlayer: url_is_playlist: %d", url_is_playlist);
+    }
 
 	// Check if a m4a file exists with the same name of file,
 	// in that cause if will be used as audio
@@ -1584,11 +1575,7 @@ end_video_filters:
 	}
 
 	// Set file and playing msg
-	if (isMPlayer()) {
-		proc->setMedia(file, pref->use_playlist_option ? url_is_playlist : false);
-	} else {
-		proc->setMedia(file, false); // Don't use playlist with mpv
-	}
+    proc->setMedia(file);
 
 	// It seems the loop option must be after the filename
 	if (mset.loop) {
