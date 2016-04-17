@@ -425,6 +425,7 @@ QStringList TToolbarEditor::saveActions() {
 							QString action_text = TActionsEditor::actionTextToDescription(action->text(), action_name);
 							if (action_text != action_icon_text) {
 								action->setIconText(action_icon_text);
+                                action->setProperty("modified", true);
 								qDebug() << "Gui::Action::TToolbarEditor::saveActions: updated icon text"
 										 << action_name << "to" << action_icon_text;
 							} else {

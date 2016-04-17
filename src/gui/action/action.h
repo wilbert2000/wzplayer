@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_ACTION_H_
-#define _GUI_ACTION_H_
+#ifndef GUI_ACTION_ACTION_H
+#define GUI_ACTION_ACTION_H
 
 #include <QAction>
 #include <QString>
@@ -39,19 +39,15 @@ public:
 	virtual ~TAction();
 
 	void addShortcut(QKeySequence key);
-
-	//! Change the text of the action.
 	void setTextAndTip(const QString& text);
 
 private:
 	//! Checks if the parent is a QWidget and adds the action to it.
 	void addActionToParent();
-
-}; // class TAction
+};
 
 } // namespace Action
-
 } // namespace Gui
 
-#endif // _GUI_ACTION_H_
+#endif // GUI_ACTION_ACTION_H
 

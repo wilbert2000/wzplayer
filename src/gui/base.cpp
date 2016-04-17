@@ -797,7 +797,7 @@ void TBase::loadConfig() {
 	// Get all actions with a name
 	TActionList all_actions = getAllNamedActions();
 	// Load actions from outside group derived class
-	Action::TActionsEditor::loadFromConfig(all_actions, pref);
+    Action::TActionsEditor::loadFromConfig(pref, all_actions);
 
 	// Load from inside group derived class for backwards compatibility
 	pref->beginGroup(settingsGroupName());
@@ -972,7 +972,7 @@ void TBase::applyNewPreferences() {
 
 	// Update actions
 	pref_dialog->mod_input()->actions_editor->applyChanges();
-	Action::TActionsEditor::saveToConfig(this, pref);
+    Action::TActionsEditor::saveToConfig(pref, this);
 
 	// Commit changes
 	pref->save();
@@ -1717,10 +1717,7 @@ void TBase::processFunction(QString function) {
 		checkableFunction = true;
 	}
 
-	QAction* action = Action::TActionsEditor::findAction(this, function);
-	if (!action)
-		action = Action::TActionsEditor::findAction(playlist, function);
-
+    QAction* action = findChild<QAction*>(function);
 	if (action) {
 		if (action->isEnabled()) {
 			if (action->isCheckable() && checkableFunction) {
@@ -1760,11 +1757,8 @@ void TBase::runActions(QString actions) {
 			} //end if
 		} //end if
 
-		action = Action::TActionsEditor::findAction(this, actionStr);
-		if (!action)
-			action = Action::TActionsEditor::findAction(playlist, actionStr);
-
-		if (action) {
+        action = findChild<QAction*>(actionStr);
+        if (action) {
 			qDebug("Gui::TBase::runActions: running action: '%s' (par: '%s')",
 				   actionStr.toUtf8().data(), par.toUtf8().data());
 

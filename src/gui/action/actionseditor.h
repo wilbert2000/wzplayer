@@ -45,18 +45,13 @@ public:
 	// Clear the actionlist
 	void clear();
 
-	// There are no actions yet?
-	bool isEmpty();
-
 	void addActions(QWidget* widget);
 
 	// Static functions
 	static QString actionTextToDescription(const QString& text, const QString& action_name);
-	static QAction* findAction(QObject* o, const QString& name);
-	static QStringList actionsNames(QObject* o);
 
-	static void saveToConfig(QObject* o, QSettings* set);
-	static void loadFromConfig(const TActionList& all_actions, QSettings* set);
+    static void saveToConfig(QSettings* set, QObject* o);
+    static void loadFromConfig(QSettings* set, const TActionList& all_actions);
 
 public slots:
 	void applyChanges();
@@ -69,7 +64,6 @@ public slots:
 
 protected:
 	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent* event);
 	virtual void resizeEvent(QResizeEvent* event);
 
 	// Find in table, not in actionslist
@@ -103,10 +97,13 @@ private:
     static QString shortcutsToString(const TShortCutList& shortcuts);
     static TShortCutList stringToShortcuts(const QString& shortcuts);
 
-    static QString actionToString(const QAction& action);
-	static void setActionFromString(QAction& action, const QString& s, const TActionList& actions);
+    static QString actionToString(QAction *action);
+    static void setActionFromString(QAction* action, const QString& s, const TActionList& actions);
 	static void removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action);
-	void resizeColumns();
+
+    static QAction* findAction(const TActionList& actions, const QString& name);
+
+    void resizeColumns();
 };
 
 } // namespace Action

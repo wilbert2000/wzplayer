@@ -145,7 +145,7 @@ void TEditableToolbar::edit() {
 		setIconSize(QSize(editor.iconSize(), editor.iconSize()));
 
 		// Save icon text of actions to pref
-		TActionsEditor::saveToConfig(main_window, Settings::pref);
+        TActionsEditor::saveToConfig(Settings::pref, main_window);
 	}
 }
 
