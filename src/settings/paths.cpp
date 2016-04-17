@@ -43,6 +43,10 @@ QString TPaths::location(TLocation type) {
 
 	QString path;
 
+#ifdef PORTABLE_APP
+    path = qApp->applicationDirPath();
+#else
+
 #if QT_VERSION_MAJOR >= 5
 
 	// Switch to roaming on Windows
@@ -58,6 +62,7 @@ QString TPaths::location(TLocation type) {
 #else
 	path = QDesktopServices::storageLocation(
         static_cast<QDesktopServices::StandardLocation>(type));
+#endif
 #endif
 
 	qDebug() << "Settings::TPaths::writableLocation: returning" << path

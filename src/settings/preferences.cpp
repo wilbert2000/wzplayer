@@ -317,11 +317,7 @@ void TPreferences::reset() {
 
 
 	// Capture section
-#ifdef PORTABLE_APP
-	screenshot_directory= "./screenshots";
-#else
 	screenshot_directory = "";
-#endif
 
 	use_screenshot = true;
 	screenshot_template = "cap_%F_%p_%02n";
