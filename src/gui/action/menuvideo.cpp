@@ -211,7 +211,7 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 
 	// Equalizer
 	addSeparator();
-    equalizerAct = new TAction(this, "video_equalizer", tr("&Equalizer"), "equalizer", QKeySequence("E"));
+    equalizerAct = new TAction(this, "video_equalizer", tr("&Equalizer"), "", QKeySequence("E"));
 	equalizerAct->setCheckable(true);
 	equalizerAct->setChecked(videoEqualizer->isVisible());
 	connect(equalizerAct, SIGNAL(triggered(bool)), videoEqualizer, SLOT(setVisible(bool)));

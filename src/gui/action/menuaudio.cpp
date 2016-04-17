@@ -138,7 +138,7 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 
 	// Equalizer
 	addSeparator();
-    audioEqualizerAct = new TAction(this, "audio_equalizer", tr("&Equalizer"), QKeySequence("Ctrl+E"));
+    audioEqualizerAct = new TAction(this, "audio_equalizer", tr("&Equalizer"), "", QKeySequence("Ctrl+E"));
 	audioEqualizerAct->setCheckable(true);
 	audioEqualizerAct->setChecked(audioEqualizer->isVisible());
 	connect(audioEqualizerAct, SIGNAL(triggered(bool)), audioEqualizer, SLOT(setVisible(bool)));
