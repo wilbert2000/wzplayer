@@ -210,10 +210,9 @@ void TAutoHideTimer::onTimeOut() {
 	}
 	autoHideMouseLastPosition = QCursor::pos();
 
-	// Hide widgets when right mouse down or inside show area
+    // Hide widgets when no mouse buttons down and mouse outside show area
 	if (autoHide && enabled && visibleWidget()) {
-		if ((QApplication::mouseButtons() & Qt::RightButton)
-			|| (!draggingPlayerWindow && mouseInsideShowArea())) {
+        if (QApplication::mouseButtons() || mouseInsideShowArea()) {
 			QTimer::start();
 		} else {
 			setVisible(false);
