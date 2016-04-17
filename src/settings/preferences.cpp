@@ -233,7 +233,7 @@ void TPreferences::reset() {
 
 	// Interface section
 	language = "";
-	iconset = "H2O";
+    iconset = "";
 	style = "";
 	default_font = "";
 
