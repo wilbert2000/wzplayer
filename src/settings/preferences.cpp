@@ -834,10 +834,7 @@ void TPreferences::setPlayerBin(QString bin,
 		bin = found_bin;
 	}
 
-	qDebug() << "Settings::TPreferences::setPlayerBin: selected player"
-			 << bin;
-	player_bin = bin;
-
+    player_bin = bin;
 	setPlayerID();
 
 	// Store player and set drivers for player
@@ -853,7 +850,8 @@ void TPreferences::setPlayerBin(QString bin,
 		}
 	}
 
-	qDebug() << "Settings::TPreferences::setPlayerBin: selected vo" << vo
+    qDebug() << "Settings::TPreferences::setPlayerBin: selected player" << bin
+             << "vo" << vo
 			 << "mplayer vo" << mplayer_vo
              << "mpv vo" << mpv_vo
 			 << "selected ao" << ao

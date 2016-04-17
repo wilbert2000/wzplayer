@@ -990,6 +990,7 @@ void TBase::applyNewPreferences() {
 	// Style change needs recreation of main window
     if (mod_interface->styleChanged()) {
 		// Request restart and optional reset style to default
+        qDebug("Gui::TBase::applyNewPreferences: style changed, restarting");
 		restartWZPlayer(pref->style.isEmpty());
 		return;
 	}
@@ -999,7 +1000,8 @@ void TBase::applyNewPreferences() {
         || mod_interface->iconsetChanged()
         || mod_interface->languageChanged()) {
 		// Request restart, don't reset style
-		restartWZPlayer(false);
+        qDebug("Gui::TBase::applyNewPreferences: playerbin, icon set or language changed, restarting");
+        restartWZPlayer(false);
 		return;
 	}
 
