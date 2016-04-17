@@ -491,8 +491,7 @@ void TCore::loadSub(const QString & sub) {
 
 	if (!sub.isEmpty() && QFile::exists(sub)) {
 		setExternalSubs(sub);
-		if (!pref->fast_load_sub
-			|| mset.external_subtitles_fps != TMediaSettings::SFPS_None) {
+        if (mset.external_subtitles_fps != TMediaSettings::SFPS_None) {
 			restartPlay();
 		} else {
 			proc->setExternalSubtitleFile(sub);

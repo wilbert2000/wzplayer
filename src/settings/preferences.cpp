@@ -229,7 +229,6 @@ void TPreferences::reset() {
 
 	use_forced_subs_only = false;
 	change_sub_scale_should_restart = Detect;
-	fast_load_sub = true;
 
 
 	// Interface section
@@ -510,7 +509,6 @@ void TPreferences::save() {
 
 	setValue("change_sub_scale_should_restart", change_sub_scale_should_restart);
 
-	setValue("fast_load_sub", fast_load_sub);
 
 	// ASS styles
 	ass_styles.save(this);
@@ -1016,7 +1014,6 @@ void TPreferences::load() {
 
 	change_sub_scale_should_restart = (TOptionState) value("change_sub_scale_should_restart", change_sub_scale_should_restart).toInt();
 
-	fast_load_sub = value("fast_load_sub", fast_load_sub).toBool();
 
 	// ASS styles
 	ass_styles.load(this);

@@ -220,11 +220,6 @@ public:
 
 	TOptionState change_sub_scale_should_restart;
 
-	//! If true, loading an external subtitle will be done
-	//! by using the sub_load slave command. Otherwise
-	//! mplayer will be restarted.
-	bool fast_load_sub;
-
 	//! If false, options requiring freetype won't be used
 #ifdef Q_OS_WIN
 	bool use_windowsfontdir;
