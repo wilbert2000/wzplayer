@@ -815,11 +815,11 @@ void TBase::loadConfig() {
 		resize(s);
 		setWindowState((Qt::WindowStates) state);
 		if (p.isNull()) {
-			centerWindow();
+            TDesktop::centerWindow(this);
 		}
 		TDesktop::keepInsideDesktop(this);
 	} else {
-		centerWindow();
+        TDesktop::centerWindow(this);
 		// Need to center again after video loaded
 		center_window = true;
 	}
@@ -1957,7 +1957,7 @@ void TBase::changeSize(double factor) {
 		}
 		resizeWindow(core->mdat.video_out_width, core->mdat.video_out_height);
 		if (center) {
-			centerWindow();
+            TDesktop::centerWindow(this);
 		}
 	}
 
@@ -1974,14 +1974,6 @@ void TBase::toggleDoubleSize() {
 	if (pref->size_factor != 1.0)
 		changeSize(1.0);
 	else changeSize(2.0);
-}
-
-void TBase::centerWindow() {
-
-	QSize center_pos = (TDesktop::availableSize(this) - frameGeometry().size()) / 2;
-	if (center_pos.isValid()) {
-		move(center_pos.width(), center_pos.height());
-	}
 }
 
 void TBase::hidePanel() {
@@ -2099,7 +2091,7 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 	if (center_window) {
 		center_window = false;
 		if (!isMaximized()) {
-			centerWindow();
+            TDesktop::centerWindow(this);
 		}
 	}
 

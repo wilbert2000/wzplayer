@@ -35,6 +35,14 @@ double TDesktop::aspectRatio(const QWidget* w) {
 	return  (double) s.width() / s.height() ;
 }
 
+void TDesktop::centerWindow(QWidget* w) {
+
+    QSize center_pos = (TDesktop::availableSize(w) - w->frameGeometry().size()) / 2;
+    if (center_pos.isValid()) {
+        w->move(center_pos.width(), center_pos.height());
+    }
+}
+
 void TDesktop::keepInsideDesktop(QWidget* w) {
 
 	if (w->isMaximized())

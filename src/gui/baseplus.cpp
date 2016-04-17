@@ -99,6 +99,7 @@ TBasePlus::TBasePlus()
 								  | Qt::RightDockWidgetArea);
 	addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
 	playlistdock->setFloating(true); // Floating by default
+    TDesktop::centerWindow(this);
 
 	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
 			this, SLOT(onTopLevelChanged(bool)));
