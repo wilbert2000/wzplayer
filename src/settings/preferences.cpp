@@ -245,7 +245,7 @@ void TPreferences::reset() {
 	default_size = QSize(640, 459);
 
 	use_single_window = true;
-	save_window_size_on_exit = true;
+    save_window_size_on_exit = false;
 	resize_on_load = true;
 	resize_on_docking = true;
 	pause_when_hidden = false;
