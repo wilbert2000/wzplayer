@@ -115,7 +115,7 @@ void TDefault::createStatusBar() {
 	time_display->show();
 	frame_display->hide();
 	ab_section_display->show();
-	video_info_display->hide();
+    video_info_display->show();
 
 	connect(this, SIGNAL(timeChanged(QString)),
 			this, SLOT(displayTime(QString)));
@@ -199,7 +199,7 @@ void TDefault::loadConfig() {
 	TBasePlus::loadConfig();
 
 	pref->beginGroup(settingsGroupName());
-	viewVideoInfoAct->setChecked(pref->value("video_info", false).toBool());
+    viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
 	viewFrameCounterAct->setChecked(pref->value("frame_counter", false).toBool());
 	pref->endGroup();
 }
