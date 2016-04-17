@@ -20,7 +20,7 @@ public:
 };
 
 TMenuDisc::TMenuDisc(TBase* parent)
-    : TMenu(parent, "disc_menu", tr("&Disc"), "open_disc") {
+    : TMenu(parent, "disc_menu", tr("Open d&isc"), "open_disc") {
 
 	// DVD
 	TAction* a = new TAction(this, "open_dvd", tr("&DVD from drive"), "dvd");
@@ -47,24 +47,24 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	, main_window(parent) {
 
 	// Open URL
-	TAction* a = new TAction(this, "open_url", tr("&URL..."), "url", QKeySequence("Ctrl+U"));
+    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "url", QKeySequence("Ctrl+U"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
 
 	addSeparator();
 
 	// Open file
-	a = new TAction(this, "open_file", tr("&File..."), "open", QKeySequence("Ctrl+F"));
+    a = new TAction(this, "open_file", tr("Open &file..."), "open", QKeySequence("Ctrl+F"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
 
 	// Open dir
-	a = new TAction(this, "open_directory", tr("D&irectory..."), "openfolder");
+    a = new TAction(this, "open_directory", tr("Open &directory..."), "openfolder");
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
 
 	// Open playlist
-	a = new TAction(this, "open_playlist", tr("&Playlist..."));
+    a = new TAction(this, "open_playlist", tr("Open &playlist..."));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
 
@@ -150,7 +150,7 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	addSeparator();
 
 	// Close
-	a = new TAction(this, "close", tr("C&lose"), "", QKeySequence("Ctrl+X"));
+    a = new TAction(this, "close", tr("&Close"), "", QKeySequence("Ctrl+X"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
 }
