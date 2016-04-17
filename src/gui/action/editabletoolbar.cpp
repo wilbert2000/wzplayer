@@ -91,18 +91,26 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 					QAction* action = TToolbarEditor::findAction(action_name, all_actions);
 					if (action) {
 						addAction(action);
-
-						// Set QToolButton::InstantPopup if the action is a menu
-						if (action->objectName().endsWith("_menu")) {
-							QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
-							if (button) {
-								button->setPopupMode(QToolButton::InstantPopup);
-							}
-						} else if (action_name == "timeslider_action") {
-							qDebug() << "Gui::Action::TEditableToolbar::setActionsFromStringList: found space eater"
-									 << action_name;
-							space_eater = qobject_cast<TTimeSlider*>(widgetForAction(action));
-						}
+                        if (action_name == "timeslider_action") {
+                            qDebug() << "Gui::Action::TEditableToolbar::setActionsFromStringList: found space eater"
+                                     << action_name;
+                            space_eater = qobject_cast<TTimeSlider*>(widgetForAction(action));
+                        } else {
+                            // Add shortcut to tooltip
+                            QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
+                            if (button) {
+                                QString shortcut = action->shortcut().toString();
+                                if (!shortcut.isEmpty()) {
+                                    QString s = action->text();
+                                    s.replace("&", "");
+                                    button->setToolTip(s + " (" + shortcut + ")");
+                                }
+                                // Set QToolButton::InstantPopup if the action is a menu
+                                if (action->objectName().endsWith("_menu")) {
+                                    button->setPopupMode(QToolButton::InstantPopup);
+                                }
+                            }
+                        }
 					} else {
 						qWarning() << "Gui::Action::TEditableToolbar::setActionsFromStringList: action"
 								   << action_name << "not found";
