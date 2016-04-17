@@ -498,11 +498,13 @@ void TInput::createHelp() {
 		   " with files having a wrong duration."));
 
 	setWhatsThis(precise_seeking_check, tr("Precise seeking"),
-		tr("If this option is enabled, seeks are more accurate but slower."
-		   " May not work with some video formats."));
+        tr("If checked, seeks are more accurate but slower."
+           " If not checked seeks are done to keyframes, faster,"
+           " but can be off by quite a few seconds for heavily"
+           " compressed videos with only a few keyframes."));
 
 	setWhatsThis(timeslider_behaviour_combo, tr("Behaviour of time slider"),
-		tr("Select what to do when dragging the time slider."));
+        tr("Select whether or not to update the video while dragging the time slider."));
 }
 
 }} // namespace Gui::Pref
