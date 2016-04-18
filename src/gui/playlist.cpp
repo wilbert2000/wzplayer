@@ -177,10 +177,12 @@ void TPlaylist::createActions(QWidget* parent) {
 	connect(playAct, SIGNAL(triggered()), this, SLOT(playCurrent()));
 
 	nextAct = new TAction(this, "pl_next", tr("&Next"), "next", Qt::Key_N);
+    nextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
 	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
 	prevAct = new TAction(this, "pl_prev", tr("Pre&vious"), "previous", Qt::Key_P);
-	connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
+    prevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
+    connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
 	moveUpAct = new TAction(this, "pl_move_up", tr("Move &up"), "up");
 	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(moveItemUp()));
@@ -347,6 +349,7 @@ void TPlaylist::updateView() {
 
 	listView->resizeColumnToContents(COL_PLAY);
 	listView->resizeColumnToContents(COL_TIME);
+    enableActions();
 }
 
 void TPlaylist::setCurrentItem(int current) {
@@ -375,6 +378,8 @@ void TPlaylist::setCurrentItem(int current) {
 		listView->setIcon(current_item, COL_PLAY, Images::icon("play"));
 		listView->setCurrentCell(current_item, 0);
 	}
+
+    enableActions();
 }
 
 void TPlaylist::clear() {
@@ -382,7 +387,7 @@ void TPlaylist::clear() {
 	pl.clear();
 	listView->clearContents();
 	listView->setRowCount(0);
-	current_item = -1;
+    setCurrentItem(-1);
 	modified = false;
 }
 
@@ -424,6 +429,7 @@ void TPlaylist::addCurrentFile() {
 		addItem(core->mdat.filename, core->mdat.displayName(), core->mdat.duration);
 		pl[pl.count() - 1].setPlayed(true);
 		updateView();
+        setCurrentItem(pl.count() - 1);
 	}
 }
 
@@ -747,12 +753,8 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
 	if (pl.isEmpty())
 		modified = false;
 
-	listView->clearSelection();
-	updateView();
-	if (current_item >= 0) {
-		listView->setCurrentCell(current_item, 0);
-	}
-
+    updateView();
+    setCurrentItem(current_item);
 }
 
 void TPlaylist::removeSelectedFromDisk() {
@@ -793,6 +795,32 @@ void TPlaylist::updateCurrentItem() {
 		}
 		updateView();
 	}
+}
+
+void TPlaylist::enableActions() {
+
+    // Note: there is always something selected when c > 0
+    int c = pl.count();
+    saveAct->setEnabled(c > 0);
+    playAct->setEnabled(listView->currentRow() >= 0);
+
+    bool enable = c > 0 && repeatAct->isChecked();
+    nextAct->setEnabled(enable || (c > 1 && current_item < c - 1));
+    prevAct->setEnabled(enable || (c > 1 && current_item > 0));
+
+    // TODO: should act on selection change
+    //int sel_count = listView->selectionModel()->selection().count();
+    moveUpAct->setEnabled(c > 1);
+    moveDownAct->setEnabled(c > 1);
+
+    addCurrentAct->setEnabled(!core->mdat.filename.isEmpty());
+
+    removeSelectedAct->setEnabled(c > 0);
+    removeSelectedFromDiskAct->setEnabled(c > 0);
+    removeAllAct->setEnabled(c > 0);
+
+    copyAct->setEnabled(c > 0);
+    editAct->setEnabled(listView->currentRow() >= 0);
 }
 
 void TPlaylist::onNewMediaStartedPlaying() {

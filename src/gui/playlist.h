@@ -182,6 +182,7 @@ private:
 	void setCurrentItem(int current);
 	void updateCurrentItem();
 	void updateView();
+    void enableActions();
 
 	int chooseRandomItem();
 	void clearPlayedTag();

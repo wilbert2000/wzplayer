@@ -45,9 +45,7 @@ private:
 	TAction* forward3Act;
 	TSeekingButton* rewindbutton_action;
 	TSeekingButton* forwardbutton_action;
-	TAction* playPrevAct;
-	TAction* playNextAct;
-	TAction* gotoAct;
+    TAction* gotoAct;
 
 	QString timeForJumps(int secs);
 	void setJumpText(TAction* rewindAct, TAction* forwardAct, int secs);

@@ -200,15 +200,10 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	forwardbutton_action->setObjectName("forwardbutton_action");
 	parent->addAction(rewindbutton_action);
 
-	// TODO: doubles playlist next prev action
-	addSeparator();
-	playNextAct = new TAction(this, "play_next", tr("&Next"), "next", Qt::Key_Greater);
-	playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
-	connect(playNextAct, SIGNAL(triggered()), playlist, SLOT(playNext()));
-
-	playPrevAct = new TAction(this, "play_prev", tr("Pre&vious"), "previous", Qt::Key_Less);
-	playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
-	connect(playPrevAct, SIGNAL(triggered()), playlist, SLOT(playPrev()));
+    // Play next/prev
+    addSeparator();
+    addAction(playlist->findChild<TAction*>("pl_next"));
+    addAction(playlist->findChild<TAction*>("pl_prev"));
 
 	// A-B submenu
 	addSeparator();
@@ -255,9 +250,7 @@ void TMenuPlay::enableActions(bool stopped, bool, bool) {
 	forward1Act->setEnabled(e);
 	forward2Act->setEnabled(e);
 	forward3Act->setEnabled(e);
-	playPrevAct->setEnabled(playlist->count() > 0);
-	playNextAct->setEnabled(playlist->count() > 0);
-	gotoAct->setEnabled(e);
+    gotoAct->setEnabled(e);
 }
 
 QString TMenuPlay::timeForJumps(int secs) {
