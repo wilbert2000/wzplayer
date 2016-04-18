@@ -17,6 +17,8 @@
 */
 
 #include "inforeadermplayer.h"
+
+#include <QDebug>
 #include <QStringList>
 #include <QApplication>
 #include <QRegExp>
@@ -110,7 +112,7 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 
 	if (!waiting_for_key) {
 		if ((reading_type == VO) || (reading_type == AO)) {
-			if (rx_driver.indexIn(line) > -1) {
+            if (rx_driver.indexIn(line) >= 0) {
 				QString name = rx_driver.cap(1);
 				QString desc = rx_driver.cap(2);
 				qDebug("InfoReaderMplayer::readLine: found driver: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
@@ -122,31 +124,31 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 					ao_list.append(InfoData(name, desc));
 				}
 			} else {
-				qWarning("InfoReaderMplayer::readLine: can't parse output driver from line '%s'", line.toUtf8().constData());
+                qDebug() << "InfoReaderMplayer::readLine: skipping line:" << line;
 			}
 		}
 		else
 		if (reading_type == DEMUXER) {
-			if (rx_demuxer.indexIn(line) > -1) {
+            if (rx_demuxer.indexIn(line) >= 0) {
 				QString name = rx_demuxer.cap(1);
 				QString desc = rx_demuxer.cap(3);
 				qDebug("InfoReaderMplayer::readLine: found demuxer: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
 				demuxer_list.append(InfoData(name, desc));
 			}
 			else 
-			if (rx_demuxer2.indexIn(line) > -1) {
+            if (rx_demuxer2.indexIn(line) >= 0) {
 				QString name = rx_demuxer2.cap(1);
 				QString desc = rx_demuxer2.cap(2);
 				qDebug("InfoReaderMplayer::readLine: found demuxer: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
 				demuxer_list.append(InfoData(name, desc));
 			}
 			else {
-				qWarning("InfoReaderMplayer::readLine: can't parse demuxer from line '%s'", line.toUtf8().constData());
+                qDebug() << "InfoReaderMplayer::readLine: skipping line:" << line;
 			}
 		}
 		else
 		if ((reading_type == VC) || (reading_type == AC)) {
-			if (rx_codec.indexIn(line) > -1) {
+            if (rx_codec.indexIn(line) >= 0) {
 				QString name = rx_codec.cap(1);
 				QString desc = rx_codec.cap(4);
 				qDebug("InfoReaderMplayer::readLine: found codec: '%s' '%s'", name.toUtf8().data(), desc.toUtf8().data());
@@ -158,36 +160,36 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 					ac_list.append(InfoData(name, desc));
 				}
 			} else {
-				qWarning("InfoReaderMplayer::readLine: can't parse codec from line '%s'", line.toUtf8().constData());
+                qDebug() << "InfoReaderMplayer::readLine: skipping line" << line;
 			}
 		}
 	}
 
-	if (rx_vo_key.indexIn(line) > -1) {
+    if (rx_vo_key.indexIn(line) >= 0) {
 		reading_type = VO;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: vo");
 	}
 
-	if (rx_ao_key.indexIn(line) > -1) {
+    if (rx_ao_key.indexIn(line) >= 0) {
 		reading_type = AO;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: ao");
 	}
 
-	if (rx_demuxer_key.indexIn(line) > -1) {
+    if (rx_demuxer_key.indexIn(line) >= 0) {
 		reading_type = DEMUXER;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: demuxer");
 	}
 
-	if (rx_ac_key.indexIn(line) > -1) {
+    if (rx_ac_key.indexIn(line) >= 0) {
 		reading_type = AC;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLine: found key: ac");
 	}
 
-	if (rx_vc_key.indexIn(line) > -1) {
+    if (rx_vc_key.indexIn(line) >= 0) {
 		reading_type = VC;
 		waiting_for_key = false;
 		qDebug("InfoReaderMplayer::readLines: found key: vc");
