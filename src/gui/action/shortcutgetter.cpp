@@ -48,6 +48,7 @@
 #include "gui/action/shortcutgetter.h"
 #include "images.h"
 
+#include <QDebug>
 #include <QLayout>
 #include <QHash>
 #include <QLabel>
@@ -60,209 +61,6 @@
 
 namespace Gui {
 namespace Action {
-
-#if 1
-
-static QHash<int, const char*> keyMap;
-
-static void initKeyMap()
-{
-	if (!keyMap.isEmpty())
-		return;
-	
-	/*
-		I'm a bit unsure about these one...
-	*/
-	keyMap[Qt::Key_Escape] = "Escape";
-	keyMap[Qt::Key_Return] = "Return";
-	keyMap[Qt::Key_Enter] = "Enter";
-	keyMap[Qt::Key_Insert] = "Ins";
-	keyMap[Qt::Key_Delete] = "Delete";
-	keyMap[Qt::Key_Home] = "Home";
-	keyMap[Qt::Key_End] = "End";
-	keyMap[Qt::Key_Left] = "Left";
-	keyMap[Qt::Key_Up] = "Up";
-	keyMap[Qt::Key_Right] = "Right";
-	keyMap[Qt::Key_Down] = "Down";
-	keyMap[Qt::Key_PageUp] = "PgUp";
-	keyMap[Qt::Key_PageDown] = "PgDown";
-	keyMap[Qt::Key_CapsLock] = "CapsLock";
-	keyMap[Qt::Key_NumLock] = "NumLock";
-	keyMap[Qt::Key_ScrollLock] = "ScrollLock";
-	
-	/*
-		These one are quite sure...
-	*/
-	keyMap[Qt::Key_F1] = "F1";
-	keyMap[Qt::Key_F2] = "F2";
-	keyMap[Qt::Key_F3] = "F3";
-	keyMap[Qt::Key_F4] = "F4";
-	keyMap[Qt::Key_F5] = "F5";
-	keyMap[Qt::Key_F6] = "F6";
-	keyMap[Qt::Key_F7] = "F7";
-	keyMap[Qt::Key_F8] = "F8";
-	keyMap[Qt::Key_F9] = "F9";
-	keyMap[Qt::Key_F10] = "F10";
-	keyMap[Qt::Key_F11] = "F11";
-	keyMap[Qt::Key_F12] = "F12";
-	keyMap[Qt::Key_F13] = "F13";
-	keyMap[Qt::Key_F14] = "F14";
-	keyMap[Qt::Key_F15] = "F15";
-	keyMap[Qt::Key_F16] = "F16";
-	keyMap[Qt::Key_F17] = "F17";
-	keyMap[Qt::Key_F18] = "F18";
-	keyMap[Qt::Key_F19] = "F19";
-	keyMap[Qt::Key_F20] = "F20";
-	keyMap[Qt::Key_F21] = "F21";
-	keyMap[Qt::Key_F22] = "F22";
-	keyMap[Qt::Key_F23] = "F23";
-	keyMap[Qt::Key_F24] = "F24";
-	keyMap[Qt::Key_F25] = "F25";
-	keyMap[Qt::Key_F26] = "F26";
-	keyMap[Qt::Key_F27] = "F27";
-	keyMap[Qt::Key_F28] = "F28";
-	keyMap[Qt::Key_F29] = "F29";
-	keyMap[Qt::Key_F30] = "F30";
-	keyMap[Qt::Key_F31] = "F31";
-	keyMap[Qt::Key_F32] = "F32";
-	keyMap[Qt::Key_F33] = "F33";
-	keyMap[Qt::Key_F34] = "F34";
-	keyMap[Qt::Key_F35] = "F35";
-	
-	keyMap[Qt::Key_Exclam] = "!";
-	keyMap[Qt::Key_QuoteDbl] = "\"";
-	keyMap[Qt::Key_NumberSign] = "-";
-	keyMap[Qt::Key_Dollar] = "$";
-	keyMap[Qt::Key_Percent] = "%";
-	keyMap[Qt::Key_Ampersand] = "&amp;";
-	keyMap[Qt::Key_Apostrophe] = "\'";
-	keyMap[Qt::Key_ParenLeft] = "(";
-	keyMap[Qt::Key_ParenRight] = ")";
-	keyMap[Qt::Key_Asterisk] = "*";
-	keyMap[Qt::Key_Plus] = "+";
-	keyMap[Qt::Key_Comma] = ",";
-	keyMap[Qt::Key_Minus] = "-";
-	keyMap[Qt::Key_Period] = "Period";
-	keyMap[Qt::Key_Slash] = "/";
-	
-	keyMap[Qt::Key_0] = "0";
-	keyMap[Qt::Key_1] = "1";
-	keyMap[Qt::Key_2] = "2";
-	keyMap[Qt::Key_3] = "3";
-	keyMap[Qt::Key_4] = "4";
-	keyMap[Qt::Key_5] = "5";
-	keyMap[Qt::Key_6] = "6";
-	keyMap[Qt::Key_7] = "7";
-	keyMap[Qt::Key_8] = "8";
-	keyMap[Qt::Key_9] = "9";
-	
-	keyMap[Qt::Key_Colon] = ":";
-	keyMap[Qt::Key_Semicolon] = ";";
-	keyMap[Qt::Key_Less] = "<";
-	keyMap[Qt::Key_Equal] = "=";
-	keyMap[Qt::Key_Greater] = ">";
-	keyMap[Qt::Key_Question] = "?";
-	keyMap[Qt::Key_At] = "@";
-	
-	keyMap[Qt::Key_A] = "A";
-	keyMap[Qt::Key_B] = "B";
-	keyMap[Qt::Key_C] = "C";
-	keyMap[Qt::Key_D] = "D";
-	keyMap[Qt::Key_E] = "E";
-	keyMap[Qt::Key_F] = "F";
-	keyMap[Qt::Key_G] = "G";
-	keyMap[Qt::Key_H] = "H";
-	keyMap[Qt::Key_I] = "I";
-	keyMap[Qt::Key_J] = "J";
-	keyMap[Qt::Key_K] = "K";
-	keyMap[Qt::Key_L] = "L";
-	keyMap[Qt::Key_M] = "M";
-	keyMap[Qt::Key_N] = "N";
-	keyMap[Qt::Key_O] = "O";
-	keyMap[Qt::Key_P] = "P";
-	keyMap[Qt::Key_Q] = "Q";
-	keyMap[Qt::Key_R] = "R";
-	keyMap[Qt::Key_S] = "S";
-	keyMap[Qt::Key_T] = "T";
-	keyMap[Qt::Key_U] = "U";
-	keyMap[Qt::Key_V] = "V";
-	keyMap[Qt::Key_W] = "W";
-	keyMap[Qt::Key_X] = "X";
-	keyMap[Qt::Key_Y] = "Y";
-	keyMap[Qt::Key_Z] = "Z";
-	
-	keyMap[Qt::Key_BracketLeft] = "[";
-	keyMap[Qt::Key_Backslash] = "\\";
-	keyMap[Qt::Key_BracketRight] = "]";
-	
-	keyMap[Qt::Key_Underscore] = "_";
-	keyMap[Qt::Key_BraceLeft] = "{";
-	keyMap[Qt::Key_Bar] = "|";
-	keyMap[Qt::Key_BraceRight] = "}";
-	keyMap[Qt::Key_AsciiTilde] = "~";
-
-	// Added by rvm:
-	keyMap[Qt::Key_Space] = "Space";
-	keyMap[Qt::Key_Backspace] = "Backspace";
-	keyMap[Qt::Key_MediaPlay] = "Media Play";
-	keyMap[Qt::Key_MediaStop] = "Media Stop";
-	keyMap[Qt::Key_MediaPrevious] = "Media Previous";
-	keyMap[Qt::Key_MediaNext] = "Media Next";
-	keyMap[Qt::Key_MediaRecord] = "Media Record";
-	keyMap[Qt::Key_MediaLast] = "Media Last"; // doesn't work?
-	keyMap[Qt::Key_VolumeUp] = "Volume Up";
-	keyMap[Qt::Key_VolumeDown] = "Volume Down";
-	keyMap[Qt::Key_VolumeMute] = "Volume Mute";	
-	keyMap[Qt::Key_Back] = "Back";	
-	keyMap[Qt::Key_Forward] = "Forward";	
-	keyMap[Qt::Key_Stop] = "Stop";
-}
-
-static QString keyToString(int k)
-{
-	if (	k == Qt::Key_Shift || k == Qt::Key_Control || k == Qt::Key_Meta ||
-			k == Qt::Key_Alt || k == Qt::Key_AltGr)
-		return QString::null;
-
-	initKeyMap();
-	
-	return keyMap[k];
-}
-
-#else
-
-static QString keyToString(int k)
-{
-	if (	k == Qt::Key_Shift || k == Qt::Key_Control || k == Qt::Key_Meta ||
-			k == Qt::Key_Alt || k == Qt::Key_AltGr)
-		return QString::null;
-
-	return QKeySequence(k).toString();
-}
-
-#endif
-
-static QStringList modToString(Qt::KeyboardModifiers k)
-{
-	//qDebug("modToString: k: %x", (int) k);
-
-	QStringList l;
-	
-	if (k & Qt::ShiftModifier)
-		l << "Shift";
-	if (k & Qt::ControlModifier)
-		l << "Ctrl";
-	if (k & Qt::AltModifier)
-		l << "Alt";
-	if (k & Qt::MetaModifier)
-		l << "Meta";
-	if (k & Qt::GroupSwitchModifier) {
-	}
-	if (k & Qt::KeypadModifier) {
-	}
-	
-	return l;
-}
 
 
 TShortcutGetter::TShortcutGetter(QWidget *parent) : QDialog(parent)
@@ -356,6 +154,7 @@ void TShortcutGetter::addItemClicked() {
 // Added by rvm
 void TShortcutGetter::removeItemClicked() {
 	qDebug("Gui::Action::TShortcutGetter::removeItemClicked");
+
 	if (list->count() > 1) {
 		QListWidgetItem* i = list->takeItem(list->currentRow());
 		if (i) delete i;
@@ -365,12 +164,10 @@ void TShortcutGetter::removeItemClicked() {
 	}
 }
 
-QString TShortcutGetter::exec(const QString& s)
-{
-	// Added by rvm
-	QStringList shortcuts = s.split(", ");
-	QString shortcut;
-	foreach(shortcut, shortcuts) {
+QString TShortcutGetter::exec(const QString& s) {
+
+    QStringList shortcuts = s.split(", ");
+    foreach(QString shortcut, shortcuts) {
 		list->addItem(shortcut.trimmed());
 	}
 	list->setCurrentRow(0);
@@ -378,7 +175,6 @@ QString TShortcutGetter::exec(const QString& s)
 	bStop = false;
 
 	if (QDialog::exec() == QDialog::Accepted) {
-		// Added by rvm
 		QStringList l;
 		for (int n = 0; n < list->count(); n++) {
 			QString shortcut = list->item(n)->text();
@@ -386,110 +182,137 @@ QString TShortcutGetter::exec(const QString& s)
 				l << shortcut;
 			}
 		}
-		QString res = l.join(", ");
-		if (res.isNull()) res = "";
-		return res;
+        return l.join(", ");
 	}
 
 	return QString();
 }
 
-bool TShortcutGetter::event(QEvent *e)
-{
-	if (!capture) return QDialog::event(e);
+static QString keyToString(int k) {
 
-	QString key;
-	QStringList mods;
-	QKeyEvent *k = static_cast<QKeyEvent*>(e);
-			
-	switch (e->type())
-	{
-		case QEvent::KeyPress :
-					
-		if (bStop)
-		{
-			lKeys.clear();
-			bStop = false;
-		}
+    if (k == Qt::Key_Shift
+            || k == Qt::Key_Control
+            || k == Qt::Key_Meta
+            || k == Qt::Key_Alt
+            || k == Qt::Key_AltGr) {
+        return "";
+    }
 
-		key = keyToString(k->key());
-		mods = modToString(k->modifiers());
-
-		//qDebug("event: key.count: %d, mods.count: %d", key.count(), mods.count());
-
-		if (key.count() || mods.count())
-		{
-						
-			if (key.count() && !lKeys.contains(key))
-				lKeys << key;
-						
-			foreach (key, mods)
-				if (!lKeys.contains(key))
-					lKeys << key;
-			
-			} else {
-				key = k->text();
-						
-				if (!lKeys.contains(key))
-					lKeys << key;
-			}
-					
-			setText();
-			break;
-					
-		case QEvent::KeyRelease :
-					
-			bStop = true;
-			break;
-					
-			/*
-		case QEvent::ShortcutOverride :
-			leKey->setText("Shortcut override");
-			break;
-			*/
-					
-		default:
-			return QDialog::event(e);
-			break;
-	}
-	
-	return true;
+    return QKeySequence(k).toString();
 }
-		
-bool TShortcutGetter::eventFilter(QObject *o, QEvent *e)
-{
-	if (!capture) return QDialog::eventFilter(o, e);
 
-	if (	e->type() == QEvent::KeyPress ||
-			e->type() ==QEvent::KeyRelease)
-		return event(e);
-	else
-		return QDialog::eventFilter(o, e);
+static Qt::KeyboardModifiers getModifiers(Qt::KeyboardModifiers modifiers,
+                                          const QString& text) {
+
+    Qt::KeyboardModifiers result = 0;
+
+    // Fix shift
+    if ((modifiers & Qt::ShiftModifier)
+            && (text.isEmpty()
+                || !text.at(0).isPrint()
+                || text.at(0).isLetterOrNumber()
+                || text.at(0).isSpace()))
+        result |= Qt::ShiftModifier;
+    if (modifiers & Qt::ControlModifier)
+        result |= Qt::ControlModifier;
+    if (modifiers & Qt::AltModifier)
+        result |= Qt::AltModifier;
+    if (modifiers & Qt::MetaModifier)
+        result |= Qt::MetaModifier;
+    /*
+    QKeySequence does not support Num
+    if (modifiers & Qt::KeypadModifier) {
+        result |= Qt::KeypadModifier;
+    }
+    */
+
+    return result;
 }
-		
-void TShortcutGetter::setText()
-{
-	QStringList seq;
-			
-	if (lKeys.contains("Shift"))
-		seq << "Shift";
-			
-	if (lKeys.contains("Ctrl"))
-		seq << "Ctrl";
-				
-	if (lKeys.contains("Alt"))
-		seq << "Alt";
-			
-	if (lKeys.contains("Meta"))
-		seq << "Meta";
-			
-	foreach (QString s, lKeys) {
-		if (s != "Shift" && s != "Ctrl" && s != "Alt" && s != "Meta")
-			seq << s;
-	}
-			
-	leKey->setText(seq.join("+"));
-	//leKey->selectAll();
+
+void TShortcutGetter::captureEvent(QEvent* e) {
+
+    e->accept();
+
+    if (e->type() == QEvent::KeyRelease) {
+        bStop = true;
+        return;
+    }
+
+    if (bStop) {
+        bStop = false;
+        modifiers = 0;
+        lKeys.clear();
+    }
+
+    QKeyEvent *k = static_cast<QKeyEvent*>(e);
+    QString key = keyToString(k->key());
+    modifiers = getModifiers(k->modifiers(), k->text());
+
+    if (!key.isEmpty()) {
+        if (!lKeys.contains(key)) {
+            lKeys << key;
+        }
+    } else if (modifiers == 0) {
+        key = k->text();
+        if (!lKeys.contains(key)) {
+            lKeys << key;
+        }
+    }
+
+    setText();
+}
+
+bool TShortcutGetter::event(QEvent* e) {
+
+    switch (e->type()) {
+    case QEvent::KeyPress:
+    case QEvent::KeyRelease:
+        if (capture) {
+            captureEvent(e);
+            return true;
+        }
+    default:
+        return QDialog::event(e);
+    }
+}
+
+bool TShortcutGetter::eventFilter(QObject* o, QEvent* e) {
+
+    if (capture
+        && (e->type() == QEvent::KeyPress || e->type() ==QEvent::KeyRelease)) {
+        captureEvent(e);
+        // Filter event
+        return true;
+    }
+    return QDialog::eventFilter(o, e);
+}
+
+void TShortcutGetter::setText() {
+
+    QStringList seq;
+    if (modifiers & Qt::ShiftModifier) {
+        seq << "Shift";
+    }
+    if (modifiers & Qt::ControlModifier) {
+        seq << "Ctrl";
+    }
+    if (modifiers & Qt::AltModifier) {
+        seq << "Alt";
+    }
+    if (modifiers & Qt::MetaModifier) {
+        seq << "Meta";
+    }
+    /*
+    if (modifiers & Qt::KeypadModifier) {
+        seq << "Num";
+    }
+    */
+
+    foreach (QString s, lKeys) {
+        seq << s;
+    }
+
+    leKey->setText(seq.join("+"));
 }
 
 } // namespace Action

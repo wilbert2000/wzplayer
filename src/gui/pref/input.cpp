@@ -406,16 +406,20 @@ void TInput::createHelp() {
 	addSectionTitle(tr("Keyboard"));
 
 	setWhatsThis(actions_editor, tr("Shortcut editor"),
-		tr("This table allows you to change the shortcut keys of most "
-           "available actions. Double click or press enter on a item, or "
-		   "press the <b>Change shortcut</b> button to open the "
-           "<i>Modify shortcut</i> dialog."
-           "<br>There are two ways to change a shortcut:<br>"
-           "if the <b>Capture</b> button is on then just press the new key"
-           " or combination of keys that you want to assign to the action"
-           " (unfortunately this doesn't work for all keys).<br>"
-           "If the <b>Capture</b> button is off then you can enter"
-           " the full name of the key."),
+        tr("This table allows you to change the keyboard shortcuts of actions."
+           " Double click or press enter on a item, or press the"
+           " <b>Change shortcut</b> button to open the"
+           " <i>Modify shortcut</i> dialog.<br><br>"
+           "There are two ways to change a shortcut:<br>"
+           "If the <b>Capture</b> button is on then just press the key"
+           " or combination of keys you want to assign to the shortcut.<br>"
+           "If the <b>Capture</b> button is off you can enter the full name"
+           " of the key.<br><br>"
+           "Sadly shortcuts cannot differentiate between the numeric key pad"
+           " and normal keys or between the left Shift, Ctrl, Meta, Alt"
+           " and the right Shift, Ctrl, Meta and AltGr modifiers.<br>"
+           "You can assign multiple shortcuts to one action and one shortcut"
+           " may consist of up to 4 keys with multiple modifiers."),
            false);
 
 	addSectionTitle(tr("Mouse"));
@@ -439,7 +443,10 @@ void TInput::createHelp() {
 		+ tr("For precise seeking, it can be convenient to trigger the left"
 			 " click action right away, without delay, to instantly pause a"
 			 " video. Consequently this will cause a left click action being"
-			 " triggered before and after each double click action."));
+             " triggered before and after each double click action."
+             " This won't cause much trouble if the default action for the"
+             " left mouse button, play_or_pause, is still assigned, because"
+             " the first left click will be canceled by the second."));
 
 	setWhatsThis(middle_click_combo, tr("Middle click"),
 		tr("Select the action for middle click on the mouse."));

@@ -268,10 +268,11 @@ void TActionsEditor::editShortcut() {
 	if (i) {
 		TShortcutGetter d(this);
 		QString result = d.exec(i->text());
-
-		if (!result.isNull()) {
-			QString accelText = QKeySequence(result).toString(QKeySequence::PortableText);
-			i->setText(accelText);
+        if (d.result() == QDialog::Accepted) {
+            // Just to make sure shortcutgetter and actionseditor
+            // speak the same language...
+            result = shortcutsToString(stringToShortcuts(result));
+            i->setText(result);
 			if (hasConflicts())
 				qApp->beep();
 		}
@@ -329,15 +330,15 @@ bool TActionsEditor::hasConflicts() {
 
 	for (int n = 0; n < actionsTable->rowCount(); n++) {
 		i = actionsTable->item(n, COL_CONFLICTS);
-		if (i)
+        if (i) {
 			i->setIcon(QPixmap());
-
+        }
 		i = actionsTable->item(n, COL_SHORTCUT);
 		if (i) {
 			accelText = i->text();
 			if (!accelText.isEmpty()) {
 				found = findActionAccel(accelText, n);
-				if (found != -1) {
+                if (found >= 0) {
 					conflict = true;
 					actionsTable->item(n, COL_CONFLICTS)->setIcon(Images::icon("conflict"));
 				}
@@ -419,28 +420,27 @@ void TActionsEditor::loadActionsTable() {
 bool TActionsEditor::loadActionsTable(const QString& filename) {
 	qDebug() << "Gui::Action::TActionsEditor::loadActions:" << filename;
 
-	QRegExp rx("^(.*)\\t(.*)");
-	int row;
+    QRegExp rx("^([^\\t]*)\\t(.*)");
 
 	QFile f(filename);
 	if (f.open(QIODevice::ReadOnly)) {
 		QTextStream stream(&f);
 		stream.setCodec("UTF-8");
-
-		QString line;
 		while (!stream.atEnd()) {
-			line = stream.readLine();
-			qDebug("line: '%s'", line.toUtf8().data());
-			if (rx.indexIn(line) > -1) {
-				QString name = rx.cap(1);
-				QString accelText = rx.cap(2);
-				row = findActionName(name);
-				if (row > -1) {
-					qDebug("Action found!");
-					actionsTable->item(row, COL_SHORTCUT)->setText(accelText);
-				}				
+            QString line = stream.readLine();
+            if (rx.indexIn(line) >= 0) {
+                QString name = rx.cap(1).trimmed();
+                int row = findActionName(name);
+                if (row >= 0) {
+                    QString shortcuts = shortcutsToString(stringToShortcuts(rx.cap(2)));
+                    actionsTable->item(row, COL_SHORTCUT)->setText(shortcuts);
+                } else {
+                    qWarning() << "Gui::Action::TActionsEditor::loadActions: action"
+                               << name << "not found";
+                }
 			} else {
-				qDebug(" wrong line");
+                qDebug() << "Gui::Action::TActionsEditor::loadActions: skipped line"
+                         << line;
 			}
 		}
 		f.close();
@@ -453,24 +453,14 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
 
 
 // Static functions
-// TODO: can be handled by always splitting on ", "
-const QString KEY_COMMA = "Comma";
 
 QString TActionsEditor::keyToString(QKeySequence key) {
-
-    QString s = key.toString(QKeySequence::PortableText);
-    if (s == ",") {
-        s = KEY_COMMA;
-    }
-    return s;
+    return key.toString(QKeySequence::PortableText);
 }
 
 QKeySequence TActionsEditor::stringToKey(QString s) {
 
     s = s.simplified();
-    if (s == KEY_COMMA) {
-        return QKeySequence(Qt::Key_Comma);
-    }
 
     // Qt 4.3 and 4.4 (at least on linux) seems to have a problem when
     // using Simplified-Chinese. QKeysequence deletes the arrow key names
@@ -498,7 +488,7 @@ QString TActionsEditor::shortcutsToString(const TShortCutList& shortcuts) {
 TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 
 	TShortCutList shortcut_list;
-	QStringList l = shortcuts.split(",", QString::SkipEmptyParts);
+    QStringList l = shortcuts.split(", ", QString::SkipEmptyParts);
 
 	for (int n = 0; n < l.count(); n++) {
         shortcut_list.append(stringToKey(l[n]));
@@ -507,17 +497,30 @@ TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 	return shortcut_list;
 }
 
-QString TActionsEditor::actionTextToDescription(const QString& text, const QString& action_name) {
+QString TActionsEditor::actionTextToDescription(const QString& text,
+                                                const QString& action_name) {
 
-	// Time label uses text() to display time
-	if (action_name == "timelabel_action") {
+    // Actions modifying text property themselves
+    if (action_name == "timelabel_action") {
 		return tr("Display time");
 	}
+    if (action_name == "play_or_pause") {
+        return tr("Play or pause");
+    }
+    if (action_name == "aspect_detect") {
+        return tr("Auto");
+    }
+    if (action_name == "aspect_none") {
+        return tr("Disabled");
+    }
+    if (action_name == "video_size") {
+        return tr("Optimize size");
+    }
 
 	QString s = text;
 	s = s.replace("&", "");
-	s = s.replace(".", "");
-    s = s.replace("\t", " ");
+    s = s.replace(".", ""); // To remove ...
+    s = s.replace("\t", " "); // Aspect menu used tabs
 	return s;
 }
 

@@ -63,13 +63,16 @@ protected:
 
 private:
 	bool bStop;
-	QLineEdit *leKey;
+    bool capture;
+    Qt::KeyboardModifiers modifiers;
 	QStringList lKeys;
-	bool capture;
 
-	QListWidget* list;
+    QLineEdit *leKey;
+    QListWidget* list;
 	QPushButton* addItem;
 	QPushButton* removeItem;
+
+    void captureEvent(QEvent* e);
 }; // class TShortcutGetter
 
 } // namespace Action
