@@ -839,7 +839,7 @@ bool TCore::haveVideoFilters() const {
 		|| pref->use_soft_video_eq
 		|| !mset.player_additional_video_filters.isEmpty()
 		|| !pref->player_additional_video_filters.isEmpty()
-		|| mset.rotate != TMediaSettings::NoRotate
+        || mset.rotate
 		|| mset.flip
 		|| mset.mirror;
 }
@@ -1415,8 +1415,8 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// Rotate
-	if (mset.rotate != TMediaSettings::NoRotate) {
-		proc->addVF("rotate", QString::number(mset.rotate));
+    if (mset.rotate) {
+        proc->addVF("rotate", mset.rotate);
 	}
 
 	// Flip
@@ -2982,20 +2982,12 @@ void TCore::changeRotate(int r) {
 		} else {
 			// MPV
 			// Remove previous filter
-			switch (mset.rotate) {
-				case TMediaSettings::Clockwise_flip: proc->changeVF("rotate", false, TMediaSettings::Clockwise_flip); break;
-				case TMediaSettings::Clockwise: proc->changeVF("rotate", false, TMediaSettings::Clockwise); break;
-				case TMediaSettings::Counterclockwise: proc->changeVF("rotate", false, TMediaSettings::Counterclockwise); break;
-				case TMediaSettings::Counterclockwise_flip: proc->changeVF("rotate", false, TMediaSettings::Counterclockwise_flip); break;
-			}
+            if (mset.rotate)
+                proc->changeVF("rotate", false, mset.rotate);
 			mset.rotate = r;
-			// New filter
-			switch (mset.rotate) {
-				case TMediaSettings::Clockwise_flip: proc->changeVF("rotate", true, TMediaSettings::Clockwise_flip); break;
-				case TMediaSettings::Clockwise: proc->changeVF("rotate", true, TMediaSettings::Clockwise); break;
-				case TMediaSettings::Counterclockwise: proc->changeVF("rotate", true, TMediaSettings::Counterclockwise); break;
-				case TMediaSettings::Counterclockwise_flip: proc->changeVF("rotate", true, TMediaSettings::Counterclockwise_flip); break;
-			}
+            // Set new filter
+            if (mset.rotate)
+                proc->changeVF("rotate", true, mset.rotate);
 		}
 	}
 }

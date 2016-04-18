@@ -47,9 +47,6 @@ public:
                          ChFull51 = 6, ChFull61 = 7, ChFull71 = 8 };
 	enum StereoMode { Stereo = 0, Left = 1, Right = 2, Mono = 3, Reverse = 4 };
 
-	enum Rotate { NoRotate = -1, Clockwise_flip = 0, Clockwise = 1, 
-                  Counterclockwise = 2, Counterclockwise_flip = 3 };
-
 	// Must be < 0, any ID >= 0 can be valid
 	// SubNone must be -1, because that is used by the player process for SubNone
 	enum IDs { NoneSelected = -2, SubNone = -1 };

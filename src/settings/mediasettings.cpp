@@ -125,7 +125,7 @@ void TMediaSettings::reset() {
 	pan_offset = QPoint();
 	pan_offset_fullscreen = QPoint();
 
-	rotate = NoRotate;
+    rotate = 0;
 	flip = false;
 	mirror = false;
 
@@ -230,9 +230,9 @@ void TMediaSettings::list() {
 	qDebug() << "  pan_offset:" << pan_offset;
 	qDebug() << "  pan_offset_fullscreen:" << pan_offset_fullscreen;
 
-	qDebug("  rotate: %d", rotate);
-	qDebug("  flip: %d", flip);
-	qDebug("  mirror: %d", mirror);
+    qDebug("  flip: %d", flip);
+    qDebug("  mirror: %d", mirror);
+    qDebug("  rotate: %d", rotate);
 
 	qDebug("  loop: %d", loop);
 	qDebug("  A_marker: %d", A_marker);

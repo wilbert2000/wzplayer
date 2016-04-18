@@ -969,16 +969,8 @@ void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
 			arg << "--screenshot-directory=" + QDir::toNativeSeparators(screenshot_dir);
 		}
 	} else if (filter_name == "rotate") {
-		if (option == "0") {
-			arg << "--vf-add=rotate=270,flip";
-		} else if (option == "1") {
-			arg << "--vf-add=rotate=90";
-		} else if (option == "2") {
-			arg << "--vf-add=rotate=270";
-		} else if (option == "3") {
-			arg << "--vf-add=rotate=90,flip";
-		}
-	} else {
+        arg << "--vf-add=rotate=" + option;
+    } else {
 		if (filter_name == "pp") {
 			QString s;
 			if (option.isEmpty()) {
@@ -1338,7 +1330,7 @@ void TMPVProcess::setOSDScale(double value) {
 }
 
 void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& option) {
-	qDebug() << "Proc::TMPVProcess::changeVF:" << filter << enable;
+    qDebug() << "Proc::TMPVProcess::changeVF:" << filter << enable << option;
 
 	QString f;
 	if (filter == "letterbox") {
@@ -1380,22 +1372,7 @@ void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& o
 	}
 	else
 	if (filter == "rotate") {
-		QString o = option.toString();
-		if (o == "0") {
-			f = "rotate=270,flip";
-		}
-		else
-		if (o == "1") {
-			f = "rotate=90";
-		}
-		else
-		if (o == "2") {
-			f = "rotate=270";
-		}
-		else
-		if (o == "3") {
-			f = "rotate=90,flip";
-		}
+        f = "rotate=" + option.toString();
 	}
 	else
 	if (filter == "flip" || filter == "mirror") {

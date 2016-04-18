@@ -32,12 +32,13 @@ class TActionGroup;
 
 class TActionGroupItem : public TAction {
 public:
-	TActionGroupItem(QObject* parent,
-					 TActionGroup* group,
-					 const QString& name,
-					 const QString& text,
-					 int data,
-					 bool autoadd = true);
+    TActionGroupItem(QObject* parent,
+                     TActionGroup* group,
+                     const QString& name,
+                     const QString& text,
+                     int data,
+                     bool autoadd = true,
+                     bool icon = false);
 };
 
 

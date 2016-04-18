@@ -29,8 +29,9 @@ TActionGroupItem::TActionGroupItem(QObject* parent,
 								   const QString& name,
 								   const QString& text,
 								   int data,
-								   bool autoadd)
-	: TAction(parent, name, text, "noicon", 0, autoadd) {
+                                   bool autoadd,
+                                   bool icon)
+    : TAction(parent, name, text, icon ? "" : "noicon", 0, autoadd) {
 
 	setData(data);
 	setCheckable(true);

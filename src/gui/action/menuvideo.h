@@ -28,7 +28,6 @@ public:
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 
 private:
 	TCore* core;
@@ -51,8 +50,6 @@ private:
 	TAction* incGammaAct;
 
 	TAction* stereo3DAct;
-	TAction* flipAct;
-	TAction* mirrorAct;
 
 	TAction* screenshotAct;
 	TAction* screenshotsAct;

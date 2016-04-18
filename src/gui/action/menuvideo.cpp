@@ -75,47 +75,68 @@ void TMenuDeinterlace::onAboutToShow() {
 }
 
 
-class TMenuRotate : public TMenu {
+class TMenuTransform : public TMenu {
 public:
-	explicit TMenuRotate(QWidget* parent, TCore* c);
+    explicit TMenuTransform(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
 	TCore* core;
+    TAction* flipAct;
+    TAction* mirrorAct;
 	TActionGroup* group;
 };
 
 
-TMenuRotate::TMenuRotate(QWidget* parent, TCore* c)
-    : TMenu(parent, "rotate_menu", tr("&Rotate"), "rotate")
+TMenuTransform::TMenuTransform(QWidget* parent, TCore* c)
+    : TMenu(parent, "transform_menu", tr("&Transform"), "transform")
 	, core(c) {
 
+    flipAct = new TAction(this, "flip", tr("Fli&p image"));
+    flipAct->setCheckable(true);
+    connect(flipAct, SIGNAL(triggered(bool)), core, SLOT(toggleFlip(bool)));
+
+    mirrorAct = new TAction(this, "mirror", tr("&Mirror image"));
+    mirrorAct->setCheckable(true);
+    connect(mirrorAct, SIGNAL(triggered(bool)), core, SLOT(toggleMirror(bool)));
+
+    addSeparator();
 	group = new TActionGroup(this, "rotate");
 	group->setEnabled(false);
-    new TActionGroupItem(this, group, "rotate_none", tr("&Off"), TMediaSettings::NoRotate);
-    new TActionGroupItem(this, group, "rotate_cw_flip", tr("&Rotate 90 degrees clockwise and flip"), TMediaSettings::Clockwise_flip);
-    new TActionGroupItem(this, group, "rotate_cw", tr("Rotate 90 degrees &clockwise"), TMediaSettings::Clockwise);
-    new TActionGroupItem(this, group, "rotate_cc", tr("Rotate 90 degrees counterclock&wise"), TMediaSettings::Counterclockwise);
-    new TActionGroupItem(this, group, "rotate_cc_flip", tr("Rotate 90 degrees counterclockwise and &flip"), TMediaSettings::Counterclockwise_flip);
+    new TActionGroupItem(this, group, "rotate_none", tr("&No rotation"), 0);
+    new TActionGroupItem(this, group, "rotate_90", trUtf8("&Rotate 90° clockwise"), 90, true, true);
+    new TActionGroupItem(this, group, "rotate_270", trUtf8("Rotate 90° &counter-clockwise"), 270, true, true);
 	group->setChecked(core->mset.rotate);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeRotate(int)));
-	// No one else changes it
+    // No one changes it
+
 	addActionsTo(parent);
 }
 
-void TMenuRotate::enableActions(bool stopped, bool video, bool) {
-	// Using mset, so useless to set if stopped or no video
-	group->setEnabled(!stopped && video && core->videoFiltersEnabled());
+void TMenuTransform::enableActions(bool stopped, bool video, bool) {
+
+    // Using mset, so useless to set if stopped or no video
+    bool enable = !stopped && video && core->videoFiltersEnabled();
+    flipAct->setEnabled(enable);
+    mirrorAct->setEnabled(enable);
+    group->setEnabled(enable);
 }
 
-void TMenuRotate::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
-	group->setChecked(mset->rotate);
+
+void TMenuTransform::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
+
+    flipAct->setChecked(mset->flip);
+    mirrorAct->setChecked(mset->mirror);
+    group->setChecked(mset->rotate);
 }
 
-void TMenuRotate::onAboutToShow() {
-	group->setChecked(core->mset.rotate);
+void TMenuTransform::onAboutToShow() {
+
+    flipAct->setChecked(core->mset.flip);
+    mirrorAct->setChecked(core->mset.mirror);
+    group->setChecked(core->mset.rotate);
 }
 
 
@@ -264,24 +285,14 @@ TMenuVideo::TMenuVideo(TBase* parent, TCore* c, TPlayerWindow* playerwindow, TVi
 	// Deinterlace submenu
 	addSeparator();
 	addMenu(new TMenuDeinterlace(parent, core));
-	// Video filter submenu
+    // Transform submenu
+    addMenu(new TMenuTransform(parent, core));
+    // Video filter submenu
 	addMenu(new TMenuVideoFilter(parent, core));
 
 	// Stereo 3D
     stereo3DAct = new TAction(this, "stereo_3d_filter", tr("Stereo &3D filter..."), "stereo3d");
 	connect(stereo3DAct, SIGNAL(triggered()), parent, SLOT(showStereo3dDialog()));
-
-	// Rotate submenu
-	addSeparator();
-	addMenu(new TMenuRotate(parent, core));
-
-    flipAct = new TAction(this, "flip", tr("Fli&p image"));
-	flipAct->setCheckable(true);
-	connect(flipAct, SIGNAL(triggered(bool)), core, SLOT(toggleFlip(bool)));
-
-    mirrorAct = new TAction(this, "mirror", tr("&Mirror image"));
-	mirrorAct->setCheckable(true);
-	connect(mirrorAct, SIGNAL(triggered(bool)), core, SLOT(toggleMirror(bool)));
 
 	// Video tracks
 	addSeparator();
@@ -323,8 +334,6 @@ void TMenuVideo::enableActions(bool stopped, bool video, bool) {
 
 	bool enableFilters = enableVideo && core->videoFiltersEnabled();
 	stereo3DAct->setEnabled(enableFilters);
-	flipAct->setEnabled(enableFilters);
-	mirrorAct->setEnabled(enableFilters);
 
 	bool enableScreenShots = enableFilters
 							 && pref->use_screenshot
@@ -340,12 +349,6 @@ void TMenuVideo::onFullscreenChanged() {
 
 	fullscreenAct->setChecked(pref->fullscreen);
 	exitFullscreenAct->setEnabled(pref->fullscreen);
-}
-
-void TMenuVideo::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
-
-	flipAct->setChecked(mset->flip);
-	mirrorAct->setChecked(mset->mirror);
 }
 
 } // namespace Action

@@ -123,7 +123,9 @@
         <file>default-theme/cl_help.png</file>
         <file>default-theme/osd.png</file>
         <file>default-theme/angle.png</file>
-        <file>default-theme/rotate.png</file>
+        <file>default-theme/transform.png</file>
+        <file>default-theme/rotate_90.png</file>
+        <file>default-theme/rotate_270.png</file>
         <file>default-theme/warning.png</file>
         <file>default-theme/find.png</file>
         <file>default-theme/flip.png</file>
