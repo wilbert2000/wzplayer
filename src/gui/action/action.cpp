@@ -35,11 +35,12 @@ TAction::TAction (QObject* parent,
     : QAction(parent) {
 
 	setObjectName(name);
+    // Set before calling setTextAndTip
+    setShortcut(shortCut);
     setTextAndTip(text);
 	QString iconName = icon.isEmpty() ? name : icon;
 	if (!iconName.isEmpty() && iconName != "noicon")
 		setIcon(Images::icon(iconName));
-	setShortcut(shortCut);
 	if (autoAdd)
 		addActionToParent();
 }
