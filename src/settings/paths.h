@@ -27,8 +27,6 @@
 #include <QDesktopServices>
 #endif
 
-#include "settings/preferences.h"
-
 
 namespace Settings {
 
@@ -82,7 +80,7 @@ public:
 private:
 	static QString config_path;
     static QStringList fonts(const QString& font_dir);
-    static QString fontPathPlayer(Settings::TPreferences::TPlayerID pid);
+    static QString fontPathPlayer(const QString& bin);
 };
 
 } // namespace Settings

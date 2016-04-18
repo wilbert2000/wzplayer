@@ -28,6 +28,7 @@
 
 #ifdef Q_OS_WIN
 #include <QIODevice>
+#include "settings/preferences.h"
 #else
 #include <stdlib.h>
 #endif
@@ -204,12 +205,12 @@ QString TPaths::subtitleStyleFile() {
 }
 
 #ifdef Q_OS_WIN
-QString TPaths::fontPathPlayer(Settings::TPreferences::TPlayerID pid) {
-    // TODO:
-    return qApp->applicationDirPath() + "/" + pref->playerIDToString(pid) + "/fonts";
+QString TPaths::fontPathPlayer(const QString& bin) {
+    return QFileInfo(bin).absolutePath() + "/fonts";
 }
 
 QStringList TPaths::fonts(const QString& font_dir) {
+    qDebug() << "Settings::TPaths::fonts: retrieving" << font_dir;
 
     QDir dir(font_dir);
     return dir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
@@ -217,14 +218,15 @@ QStringList TPaths::fonts(const QString& font_dir) {
 
 QString TPaths::fontPath() {
 
-    QString path = fontPathPlayer(pref->player_id);
+    QString path = fontPathPlayer(pref->player_bin);
     if (fonts(path).count() > 0) {
 		return path;
     }
+
     if (pref->player_id == Settings::TPreferences::ID_MPLAYER) {
-        path = fontPathPlayer(Settings::TPreferences::ID_MPV);
+        path = fontPathPlayer(pref->mpv_bin);
     } else {
-        path = fontPathPlayer(Settings::TPreferences::ID_MPLAYER);
+        path = fontPathPlayer(pref->mplayer_bin);
     }
     if (fonts(path).count() > 0) {
         return path;
@@ -256,32 +258,28 @@ void TPaths::createFontFile() {
 		}
 	}
 
-    // Check the mplayer font file
-    QString input = qApp->applicationDirPath() + "/mplayer/fonts/fonts.conf";
-	if (!QFile::exists(input)) {
-        qDebug() << "Settings::TPaths::createFontFile:" << input << "doesn't exist";
-        input = qApp->applicationDirPath() + "/mpv/fonts.conf";
-		if (!QFile::exists(input)) {
-            qDebug() << "Settings::TPaths::createFontFile:" << input << "doesn't exist";
-			qWarning("Settings::TPaths::createFontFile: failed to create fonts.conf");
-			return;
-		}
+    // Use the font file from the selected font dir
+    QString input = fontDir + "/fonts.conf";
+    if (!QFile::exists(input)) {
+        qWarning() << "Settings::TPaths::createFontFile: font.conf not found" << input;
+        return;
 	}
 
-	qDebug("Settings::TPaths::createFontFile: input: %s", input.toUtf8().constData());
 	QFile infile(input);
 	if (infile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 		QString text = infile.readAll();
 		text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
 		text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + fontPath() + "</dir>");
 
-		qDebug("Settings::TPaths::createFontFile: saving %s", output.toUtf8().constData());
+        qDebug() << "Settings::TPaths::createFontFile: saving" << output;
 		QFile outfile(output);
 		if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
 			outfile.write(text.toUtf8());
 			outfile.close();
 		}
-	}
+    } else {
+        qWarning() << "Settings::TPaths::createFontFile: failed to open" << input;
+    }
 }
 #endif // Q_OS_WIN
 
