@@ -22,9 +22,9 @@
         <file>default-theme/exit.png</file>
         <file>default-theme/frame_step.png</file>
         <file>default-theme/frame_back_step.png</file>
-        <file>default-theme/forward10m.png</file>
-        <file>default-theme/forward10s.png</file>
-        <file>default-theme/forward1m.png</file>
+        <file>default-theme/forward3.png</file>
+        <file>default-theme/forward1.png</file>
+        <file>default-theme/forward2.png</file>
         <file>default-theme/fullscreen.png</file>
         <file>default-theme/normalscreen.png</file>
         <file>default-theme/gamma.png</file>
@@ -83,9 +83,9 @@
         <file>default-theme/refresh.png</file>
         <file>default-theme/download.png</file>
         <file>default-theme/resize_window.png</file>
-        <file>default-theme/rewind10m.png</file>
-        <file>default-theme/rewind10s.png</file>
-        <file>default-theme/rewind1m.png</file>
+        <file>default-theme/rewind3.png</file>
+        <file>default-theme/rewind1.png</file>
+        <file>default-theme/rewind2.png</file>
         <file>default-theme/title.png</file>
         <file>default-theme/type_audio.png</file>
         <file>default-theme/type_cdda.png</file>

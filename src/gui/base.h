@@ -137,7 +137,7 @@ public slots:
 	virtual void showPreferencesDialog();
 	virtual void showFilePropertiesDialog();
 
-	virtual void showGotoDialog();
+	virtual void showSeekToDialog();
 	virtual void showSubDelayDialog();
 	virtual void showAudioDelayDialog();
 	virtual void showStereo3dDialog();
@@ -166,6 +166,7 @@ signals:
 	void timeChanged(QString time_ready_to_print);
 	void frameChanged(int);
 
+    void preferencesChanged();
 	void mediaSettingsChanged(Settings::TMediaSettings* mset);
 	void mediaFileTitleChanged(const QString& filename, const QString& title);
 

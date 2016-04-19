@@ -64,6 +64,31 @@ TEditableToolbar::TEditableToolbar(TBase* mainwindow)
 TEditableToolbar::~TEditableToolbar() {
 }
 
+void TEditableToolbar::addMenu(QAction* action) {
+
+    if (action->objectName() == "forward_menu"
+        || action->objectName() == "rewind_menu") {
+        QMenu* menu = action->menu();
+        QAction* default_action = menu->defaultAction();
+        addAction(default_action);
+        QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(
+                                                             default_action));
+        if (button) {
+            button->setObjectName(menu->objectName() + "_toolbutton");
+            button->setPopupMode(QToolButton::MenuButtonPopup);
+            button->setMenu(menu);
+            connect(menu, SIGNAL(triggered(QAction*)),
+                    button, SLOT(setDefaultAction(QAction*)));
+        }
+    } else {
+        addAction(action);
+        QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
+        if (button) {
+            button->setPopupMode(QToolButton::InstantPopup);
+        }
+    }
+}
+
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const TActionList& all_actions) {
 	qDebug() << "Gui::Action::TEditableToolbar::setActionsFromStringList: loading toolbar" << objectName();
 
@@ -90,15 +115,13 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 				} else {
 					QAction* action = TToolbarEditor::findAction(action_name, all_actions);
 					if (action) {
-						addAction(action);
-                        // Set QToolButton::InstantPopup if the action is a menu
                         if (action_name.endsWith("_menu")) {
-                            QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
-                            if (button) {
-                                button->setPopupMode(QToolButton::InstantPopup);
+                            addMenu(action);
+                        } else {
+                            addAction(action);
+                            if (action_name == "timeslider_action") {
+                                space_eater = qobject_cast<TTimeSlider*>(widgetForAction(action));
                             }
-                        } else if (action_name == "timeslider_action") {
-                            space_eater = qobject_cast<TTimeSlider*>(widgetForAction(action));
                         }
 					} else {
 						qWarning() << "Gui::Action::TEditableToolbar::setActionsFromStringList: action"

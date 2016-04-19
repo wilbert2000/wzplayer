@@ -161,13 +161,13 @@ void TInput::retranslateStrings() {
 	seek4->setLabel(tr("Mouse &wheel jump"));
 
 	if (qApp->isLeftToRight()) {
-		seek1->setIcon(Images::icon("forward10s", 32));
-		seek2->setIcon(Images::icon("forward1m", 32));
-		seek3->setIcon(Images::icon("forward10m", 32));
+        seek1->setIcon(Images::icon("forward1", 32));
+        seek2->setIcon(Images::icon("forward2", 32));
+        seek3->setIcon(Images::icon("forward3", 32));
 	} else {
-		seek1->setIcon(Images::flippedIcon("forward10s", 32));
-		seek2->setIcon(Images::flippedIcon("forward1m", 32));
-		seek3->setIcon(Images::flippedIcon("forward10m", 32));
+        seek1->setIcon(Images::flippedIcon("forward1", 32));
+        seek2->setIcon(Images::flippedIcon("forward2", 32));
+        seek3->setIcon(Images::flippedIcon("forward3", 32));
 	}
 	seek4->setIcon(Images::icon("mouse",32));
 

@@ -1,5 +1,5 @@
-#ifndef GUI_PLAYMENU_H
-#define GUI_PLAYMENU_H
+#ifndef GUI_ACTION_PLAYMENU_H
+#define GUI_ACTION_PLAYMENU_H
 
 #include "gui/action/menu.h"
 #include "corestate.h"
@@ -14,17 +14,50 @@ class TPlaylist;
 namespace Action {
 
 class TAction;
-class TSeekingButton;
+
+class TMenuSeek: public TMenu {
+    Q_OBJECT
+public:
+    explicit TMenuSeek(QWidget* parent,
+                       QWidget* mainwindow,
+                       const QString& name,
+                       const QString& text,
+                       const QString& icon,
+                       const QString& sign);
+
+public slots:
+    void peerTriggered(QAction* action);
+
+protected:
+    TAction* frameAct;
+    TAction* seek1Act;
+    TAction* seek2Act;
+    TAction* seek3Act;
+    TAction* plAct;
+
+    virtual void enableActions(bool stopped, bool, bool);
+
+protected slots:
+    void setJumpTexts();
+
+private:
+    QWidget* main_window;
+    QString seek_sign;
+    QString timeForJumps(int secs) const;
+
+private slots:
+    void setDefaultActionSlot(QAction* act);
+};
 
 
 class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
 	explicit TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist);
-	void setJumpTexts();
-	void retranslateStrings();
+
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
+
 private:
 	TCore* core;
 	Gui::TPlaylist* playlist;
@@ -35,20 +68,7 @@ private:
 	QIcon playIcon;
 	TAction* pauseAct;
 	TAction* stopAct;
-	TAction* frameBackStepAct;
-	TAction* frameStepAct;
-	TAction* rewind1Act;
-	TAction* forward1Act;
-	TAction* rewind2Act;
-	TAction* forward2Act;
-	TAction* rewind3Act;
-	TAction* forward3Act;
-	TSeekingButton* rewindbutton_action;
-	TSeekingButton* forwardbutton_action;
-    TAction* gotoAct;
-
-	QString timeForJumps(int secs);
-	void setJumpText(TAction* rewindAct, TAction* forwardAct, int secs);
+    TAction* seekToAct;
 
 private slots:
 	void onStateChanged(TCoreState state);
@@ -57,4 +77,4 @@ private slots:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_PLAYMENU_H
+#endif // GUI_ACTION_PLAYMENU_H

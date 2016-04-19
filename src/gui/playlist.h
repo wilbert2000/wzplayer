@@ -182,7 +182,6 @@ private:
 	void setCurrentItem(int current);
 	void updateCurrentItem();
 	void updateView();
-    void enableActions();
 
 	int chooseRandomItem();
 	void clearPlayedTag();
@@ -223,7 +222,8 @@ private slots:
 	void sortBy(int section);
 	void sortBy(int section, bool allow_revert, bool revert, int count);
 
-	void onNewMediaStartedPlaying();
+    void enableActions();
+    void onNewMediaStartedPlaying();
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();
 	void resumePlay();

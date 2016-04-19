@@ -176,11 +176,11 @@ void TPlaylist::createActions(QWidget* parent) {
 	playAct = new TAction(this, "pl_play", tr("&Play"), "play");
 	connect(playAct, SIGNAL(triggered()), this, SLOT(playCurrent()));
 
-	nextAct = new TAction(this, "pl_next", tr("&Next"), "next", Qt::Key_N);
+    nextAct = new TAction(this, "pl_next", tr("Play &next"), "next", QKeySequence(">"));
     nextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
 	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
-	prevAct = new TAction(this, "pl_prev", tr("Pre&vious"), "previous", Qt::Key_P);
+    prevAct = new TAction(this, "pl_prev", tr("Play pre&vious"), "previous", QKeySequence("<"));
     prevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
     connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
@@ -191,6 +191,8 @@ void TPlaylist::createActions(QWidget* parent) {
 	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(moveItemDown()));
 
 	repeatAct = new TAction(this, "pl_repeat", tr("&Repeat"), "repeat");
+    // Enable depends on repeat
+    connect(repeatAct, SIGNAL(triggered()), this, SLOT(enableActions()));
 	repeatAct->setCheckable(true);
 
 	shuffleAct = new TAction(this, "pl_shuffle", tr("S&huffle"), "shuffle");
@@ -808,7 +810,7 @@ void TPlaylist::enableActions() {
     nextAct->setEnabled(enable || (c > 1 && current_item < c - 1));
     prevAct->setEnabled(enable || (c > 1 && current_item > 0));
 
-    // TODO: should act on selection change
+    // TODO: should act on selection change use onCurrentCellChanged?
     //int sel_count = listView->selectionModel()->selection().count();
     moveUpAct->setEnabled(c > 1);
     moveDownAct->setEnabled(c > 1);

@@ -147,20 +147,6 @@ private:
 	QString _text;
 };
 
-
-class TSeekingButton : public QWidgetAction {
-	Q_OBJECT
-
-public:
-	TSeekingButton(const TActionList& actions, QWidget* parent);
-	~TSeekingButton();
-
-protected:
-	virtual QWidget* createWidget(QWidget* parent);
-
-	TActionList _actions;
-};
-
 } // namespace Action
 } // namespace Gui
 

@@ -484,20 +484,18 @@ void TBase::createToolbars() {
 	actions << "show_playlist|0|1"
 			<< "separator|0|1"
 			<< "play_or_pause"
-            << "pl_prev"
-            << "rewindbutton_action|0|1"
-			<< "timeslider_action"
-            << "forwardbutton_action|0|1"
-            << "pl_next"
-			<< "separator"
-			<< "osd_menu|0|1"
+            << "timeslider_action"
+            << "rewind_menu"
+            << "forward_menu"
+            << "separator|0|1"
+            << "osd_menu|0|1"
             << "aspect_menu|1|1"
             << "videosize_menu|1|0"
             << "reset_zoom|0|1"
-            << "separator|1|1"
-			<< "mute"
+            << "separator|0|1"
+            << "mute|0|1"
 			<< "volumeslider_action"
-            << "separator|1|1"
+            << "separator|0|1"
 			<< "fullscreen";
 	controlbar->setDefaultActions(actions);
 	addToolBar(Qt::BottomToolBarArea, controlbar);
@@ -595,9 +593,6 @@ void TBase::retranslateStrings() {
 	qDebug("Gui::TBase::retranslateStrings");
 
 	setWindowIcon(Images::icon("logo", 64));
-
-	// Menu Play
-	playMenu->retranslateStrings();
 
 	// Toolbars
 	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
@@ -1052,13 +1047,15 @@ void TBase::applyNewPreferences() {
 
 	// Keyboard and mouse
 	playerwindow->setDelayLeftClick(pref->delay_left_click);
-	playMenu->setJumpTexts(); // Update texts in menus
 
 	// Network
 	setupNetworkProxy();
 
 	// Reenable actions to reflect changes
 	setActionsEnabled(core->state() != STATE_STOPPED);
+
+    // TODO: move code above to preferencesChanged() signal
+    emit preferencesChanged();
 
 	// Restart video if needed
 	if (pref_dialog->requiresRestart()) {
@@ -1491,11 +1488,10 @@ void TBase::helpAbout() {
 	d.exec();
 }
 
-void TBase::showGotoDialog() {
+void TBase::showSeekToDialog() {
 
 	TTimeDialog d(this);
-	d.setLabel(tr("&Jump to:"));
-	d.setWindowTitle(tr("%1 - Seek").arg(TConfig::PROGRAM_NAME));
+    d.setWindowTitle(tr("Seek"));
 	d.setMaximumTime((int) core->mdat.duration);
 	d.setTime((int) core->mset.current_sec);
 	if (d.exec() == QDialog::Accepted) {

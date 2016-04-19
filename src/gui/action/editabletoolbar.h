@@ -68,7 +68,8 @@ private:
 	bool fixing_size;
 	int fix_size;
 
-	void addSizeGrip();
+    void addMenu(QAction* action);
+    void addSizeGrip();
 	void removeSizeGrip();
 
 private slots:

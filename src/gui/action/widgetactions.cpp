@@ -252,30 +252,6 @@ QWidget* TTimeLabelAction::createWidget (QWidget* parent) {
 	return time_label;
 }
 
-
-TSeekingButton::TSeekingButton(const TActionList& actions, QWidget* parent)
-	: QWidgetAction(parent),
-	  _actions(actions) {
-}
-
-TSeekingButton::~TSeekingButton() {
-}
-
-QWidget* TSeekingButton::createWidget(QWidget* parent) {
-
-	QToolButton* button = new QToolButton(parent);
-	button->setPopupMode(QToolButton::MenuButtonPopup);
-
-	if (_actions.count() > 0) {
-		button->setDefaultAction(_actions[0]);
-	}
-	for (int n = 1; n < _actions.count(); n++) {
-		button->addAction(_actions[n]);
-	}
-
-	return button;
-}
-
 } // namespace Action
 } // namespace Gui
 
