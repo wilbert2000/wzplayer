@@ -67,16 +67,16 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 
 	// DVDNAV
 	dvdnavUpAct = new TAction(this, "dvdnav_up", tr("DVD, move up"),
-							  "", Qt::SHIFT | Qt::Key_Up);
+                              "", Qt::META | Qt::Key_Up);
 	connect(dvdnavUpAct, SIGNAL(triggered()), core, SLOT(dvdnavUp()));
 	dvdnavDownAct = new TAction(this, "dvdnav_down", tr("DVD, move down"),
-								"", Qt::SHIFT | Qt::Key_Down);
+                                "", Qt::META | Qt::Key_Down);
 	connect(dvdnavDownAct, SIGNAL(triggered()), core, SLOT(dvdnavDown()));
 	dvdnavLeftAct = new TAction(this, "dvdnav_left", tr("DVD, move left"),
-								"", Qt::SHIFT | Qt::Key_Left);
+                                "", Qt::META | Qt::Key_Left);
 	connect(dvdnavLeftAct, SIGNAL(triggered()), core, SLOT(dvdnavLeft()));
 	dvdnavRightAct = new TAction(this, "dvdnav_right", tr("DVD, move right"),
-								 "", Qt::SHIFT | Qt::Key_Right);
+                                 "", Qt::META | Qt::Key_Right);
 	connect(dvdnavRightAct, SIGNAL(triggered()), core, SLOT(dvdnavRight()));
 
 	addSeparator();
@@ -85,18 +85,16 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 								  "", Qt::Key_Return);
 	connect(dvdnavSelectAct, SIGNAL(triggered()), core, SLOT(dvdnavSelect()));
 
-	dvdnavMouseAct = new TAction(this, "dvdnav_mouse", tr("DVD, mouse click"),
-								 "", Qt::CTRL | Qt::Key_Return);
-	connect(dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()));
-
-	addSeparator();
+    // Not in menu, so add to parent
+    dvdnavMouseAct = new TAction(parent, "dvdnav_mouse", tr("DVD, mouse click"));
+    connect(dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()));
 
 	dvdnavMenuAct = new TAction(this, "dvdnav_menu", tr("DVD &menu"),
-								"", Qt::SHIFT | Qt::Key_Return);
+                                "", Qt::META | Qt::Key_Return);
 	connect(dvdnavMenuAct, SIGNAL(triggered()), core, SLOT(dvdnavMenu()));
 
 	dvdnavPrevAct = new TAction(this, "dvdnav_prev", tr("DVD &previous menu"),
-								"", Qt::SHIFT | Qt::Key_Escape);
+                                "", Qt::META | Qt::Key_Escape);
 	connect(dvdnavPrevAct, SIGNAL(triggered()), core, SLOT(dvdnavPrev()));
 
 	addActionsTo(parent);
