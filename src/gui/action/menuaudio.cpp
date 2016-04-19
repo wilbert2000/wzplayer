@@ -118,19 +118,19 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	connect(muteAct, SIGNAL(triggered(bool)), core, SLOT(mute(bool)));
 	connect(core, SIGNAL(muteChanged(bool)), muteAct, SLOT(setChecked(bool)));
 
-	decVolumeAct = new TAction(this, "decrease_volume", tr("Volume &-"), "audio_down", Qt::Key_Slash);
+    decVolumeAct = new TAction(this, "decrease_volume", tr("Volume &-"), "audio_down", Qt::Key_Minus);
 	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
 	connect(decVolumeAct, SIGNAL(triggered()), core, SLOT(decVolume()));
 
-	incVolumeAct = new TAction(this, "increase_volume", tr("Volume &+"), "audio_up", Qt::Key_multiply);
+    incVolumeAct = new TAction(this, "increase_volume", tr("Volume &+"), "audio_up", Qt::Key_Plus);
 	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
 	connect(incVolumeAct, SIGNAL(triggered()), core, SLOT(incVolume()));
 
 	addSeparator();
-	decAudioDelayAct = new TAction(this, "dec_audio_delay", tr("&Delay -"), "delay_down", Qt::Key_Minus);
+    decAudioDelayAct = new TAction(this, "dec_audio_delay", tr("&Delay -"), "delay_down", Qt::CTRL | Qt::Key_Minus);
 	connect(decAudioDelayAct, SIGNAL(triggered()), core, SLOT(decAudioDelay()));
 
-	incAudioDelayAct = new TAction(this, "inc_audio_delay", tr("Del&ay +"), "delay_up", Qt::Key_Plus);
+    incAudioDelayAct = new TAction(this, "inc_audio_delay", tr("Del&ay +"), "delay_up", Qt::CTRL | Qt::Key_Plus);
 	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
 
 	audioDelayAct = new TAction(this, "audio_delay", tr("Set dela&y..."));
@@ -138,13 +138,13 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 
 	// Equalizer
 	addSeparator();
-    audioEqualizerAct = new TAction(this, "audio_equalizer", tr("&Equalizer"), "", QKeySequence("Ctrl+E"));
+    audioEqualizerAct = new TAction(this, "audio_equalizer", tr("&Equalizer"), "", Qt::ALT | Qt::Key_Plus);
 	audioEqualizerAct->setCheckable(true);
 	audioEqualizerAct->setChecked(audioEqualizer->isVisible());
 	connect(audioEqualizerAct, SIGNAL(triggered(bool)), audioEqualizer, SLOT(setVisible(bool)));
 	connect(audioEqualizer, SIGNAL(visibilityChanged(bool)), audioEqualizerAct, SLOT(setChecked(bool)));
 
-	resetAudioEqualizerAct = new TAction(this, "reset_audio_equalizer", tr("Reset audio equalizer"));
+    resetAudioEqualizerAct = new TAction(this, "reset_audio_equalizer", tr("Reset audio equalizer"), "", Qt::ALT | Qt::Key_Minus);
 	connect(resetAudioEqualizerAct, SIGNAL(triggered()), audioEqualizer, SLOT(reset()));
 
 	// Stereo and channel subs
