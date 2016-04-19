@@ -217,7 +217,8 @@ void TActionsEditor::updateView() {
 		QAction* action = actionsList[n];
 
 		// Conflict column
-        QTableWidgetItem* i = new QTableWidgetItem();
+        QTableWidgetItem* i = new QTableWidgetItem(
+            action->property("modified").toBool() ? "m" : "");
         i->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         actionsTable->setItem(n, COL_CONFLICTS, i);
 
