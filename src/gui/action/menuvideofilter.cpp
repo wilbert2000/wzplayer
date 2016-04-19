@@ -107,6 +107,7 @@ void TMenuVideoFilter::enableActions(bool stopped, bool video, bool) {
 
 	bool enable = !stopped && video && core->videoFiltersEnabled();
 	group->setEnabled(enable);
+    addLetterboxAct->setEnabled(enable && pref->isMPlayer());
 	denoiseGroup->setEnabled(enable);
 	unsharpGroup->setEnabled(enable);
 }
