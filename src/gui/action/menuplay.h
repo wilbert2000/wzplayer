@@ -37,16 +37,21 @@ protected:
 
     virtual void enableActions(bool stopped, bool, bool);
 
+    int actionToInt(QAction* action) const;
+    TAction* intToAction(int i) const;
+
 protected slots:
     void setJumpTexts();
 
 private:
     QWidget* main_window;
     QString seek_sign;
+
+
     QString timeForJumps(int secs) const;
 
 private slots:
-    void setDefaultActionSlot(QAction* act);
+    void onTriggered(QAction* action);
 };
 
 

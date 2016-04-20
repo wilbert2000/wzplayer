@@ -27,13 +27,44 @@ TMenuSeek::TMenuSeek(QWidget* parent,
     seek_sign(sign) {
 
     connect(this, SIGNAL(triggered(QAction*)),
-            this, SLOT(setDefaultActionSlot(QAction*)));
+            this, SLOT(onTriggered(QAction*)));
     connect(mainwindow, SIGNAL(preferencesChanged()),
             this, SLOT(setJumpTexts()));
 }
 
-void TMenuSeek::setDefaultActionSlot(QAction* act) {
-    setDefaultAction(act);
+TAction* TMenuSeek::intToAction(int i) const {
+
+    switch (i) {
+    case 0: return frameAct;
+    case 1: return seek1Act;
+    case 2: return seek2Act;
+    case 3: return seek3Act;
+    default: return plAct;
+    }
+}
+
+int TMenuSeek::actionToInt(QAction* action) const {
+
+    QString name = action->objectName();
+    if (name.startsWith("frame")) {
+        return 0;
+    }
+    if (name.endsWith("1")) {
+        return 1;
+    }
+    if (name.endsWith("2")) {
+        return 2;
+    }
+    if (name.endsWith("3")) {
+        return 3;
+    }
+    return 4;
+}
+
+void TMenuSeek::onTriggered(QAction* action) {
+
+    setDefaultAction(action);
+    pref->seeking_current_action = actionToInt(action);
 }
 
 void TMenuSeek::enableActions(bool stopped, bool, bool) {
@@ -131,7 +162,7 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent,
     plAct = playlist->findChild<TAction*>("pl_next");
     addAction(plAct);
 
-    setDefaultAction(seek2Act);
+    setDefaultAction(intToAction(pref->seeking_current_action));
     setJumpTexts();
 }
 
