@@ -98,8 +98,8 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 namespace Gui {
 namespace Action {
 
-const int width_icon = 16;
-const int margins = 2;
+const int WIDTH_CONFLICT_ICON = 16;
+const int MARGINS = 2;
 
 TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
 	QWidget(parent, f) {
@@ -107,10 +107,8 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
 	latest_dir = Settings::TPaths::shortcutsPath();
 
 	actionsTable = new QTableWidget(0, COL_COUNT, this);
-	actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);
 	actionsTable->verticalHeader()->hide();
-
-	actionsTable->setColumnWidth(COL_CONFLICTS, width_icon + margins);
+    actionsTable->setColumnWidth(COL_CONFLICTS, WIDTH_CONFLICT_ICON + MARGINS);
 
 #if QT_VERSION_MAJOR >= 5
 	actionsTable->horizontalHeader()->setSectionResizeMode(COL_CONFLICTS, QHeaderView::Fixed);
@@ -120,7 +118,8 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
 
 	actionsTable->horizontalHeader()->setStretchLastSection(true);
 
-	actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 	actionsTable->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	connect(actionsTable, SIGNAL(itemActivated(QTableWidgetItem*)),
@@ -192,7 +191,7 @@ void TActionsEditor::addActions(QWidget* widget) {
 
 void TActionsEditor::resizeColumns() {
 
-	int w = (width() - width_icon - margins * actionsTable->columnCount())
+    int w = (width() - WIDTH_CONFLICT_ICON - MARGINS * actionsTable->columnCount())
 			/ (actionsTable->columnCount() - 1);
 
 	for (int col = 1; col < actionsTable->columnCount() - 1; col++) {
@@ -230,8 +229,10 @@ void TActionsEditor::updateView() {
         // Desc column
         i = new QTableWidgetItem(actionTextToDescription(
             action->text(), action->objectName()));
-        i->setIcon(action->icon());
         i->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        i->setIcon(action->icon());
+        actionsTable->setIconSize(QSize(32, 32));
+
         actionsTable->setItem(n, COL_DESC, i);
 
         // Shortcut column
