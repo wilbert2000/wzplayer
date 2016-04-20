@@ -87,7 +87,7 @@ static QString TStayOnTopToIconString(int stay_on_top) {
 TMenuStayOnTop::TMenuStayOnTop(TBase* mw) :
     TMenu(mw, mw, "stay_on_top_menu", tr("&Stay on top")) {
 
-	group = new TActionGroup(this, "ontop");
+    group = new TActionGroup(this, "stay_on_top_group");
     new TActionGroupItem(this, group, "stay_on_top_always", tr("&Always"),
                          Settings::TPreferences::AlwaysOnTop,
                          true, true);
@@ -168,15 +168,15 @@ TMenuWindow::TMenuWindow(TBase* parent,
 	addMenu(new TMenuStayOnTop(parent));
 
 	addSeparator();
-	// Show playlist
-    TAction* a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist", Qt::Key_P);
+    // Show properties
+    TAction* a = new TAction(this, "show_file_properties", tr("&View properties..."), "info", QKeySequence("Ctrl+I"));
+    connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
+
+    // Show playlist
+    a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist", Qt::Key_P);
 	a->setCheckable(true);
 	connect(a, SIGNAL(triggered(bool)), parent, SLOT(showPlaylist(bool)));
 	connect(playlist, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
-
-	// Show properties
-	a = new TAction(this, "show_file_properties", tr("&View properties..."), "info", QKeySequence("Ctrl+I"));
-	connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
 
 	// Show log
 	a = new TAction(this, "show_log", tr("View &log..."), "log", QKeySequence("Ctrl+L"));
