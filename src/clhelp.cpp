@@ -132,7 +132,7 @@ QString CLHelp::help(bool html) {
 		"The actions will be executed just after loading the file (if any) "
 		"in the same order you entered. For checkable actions you can pass "
 		"true or false as parameter. Example: "
-		"--actions \"fullscreen repeat true\". Quotes are necessary in "
+		"--actions \"fullscreen repeat_in_out true\". Quotes are necessary in "
 		"case you pass more than one action."), html);
 
 	s += formatHelp("--close-at-end", QObject::tr(

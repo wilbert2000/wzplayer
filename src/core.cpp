@@ -44,6 +44,7 @@
 #include "settings/tvsettings.h"
 #include "settings/filters.h"
 
+#include "proc/errormsg.h"
 #include "proc/playerprocess.h"
 #include "playerwindow.h"
 #include "gui/action/tvlist.h"
@@ -57,13 +58,15 @@
 
 using namespace Settings;
 
-TCore::TCore(QWidget* parent, TPlayerWindow *mpw)
-	: QObject(parent),
-	  mdat(),
-	  mset(&mdat),
-	  playerwindow(mpw),
-	  _state(STATE_STOPPED),
-      restarting(0) {
+TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
+    QObject(parent),
+    mdat(),
+    mset(&mdat),
+    playerwindow(mpw),
+    _state(STATE_STOPPED),
+    restarting(0),
+    seeking_in_point(false),
+    seeking_out_point(false) {
 
 	qRegisterMetaType<TCoreState>("TCoreState");
 
@@ -1278,17 +1281,16 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("speed", QString::number(mset.speed));
 	}
 
-	if (mdat.selected_type != TMediaData::TYPE_TV) {
-		// Play A - B
-		if (mset.A_marker >= 0 && mset.B_marker > mset.A_marker) {
-			proc->setOption("ss", QString::number(mset.A_marker));
-			proc->setOption("endpos", QString::number(mset.B_marker - mset.A_marker));
-		} else
-		// If seek < 5 it's better to allow the video to start from the beginning
-		if (seek >= 5 && !mset.loop) {
-			proc->setOption("ss", QString::number(seek));
-		}
-	}
+    // Play in to out
+    if (mdat.selected_type != TMediaData::TYPE_TV) {
+        if (mset.in_point >= 0 && mset.out_point > mset.in_point) {
+            proc->setOption("ss", QString::number(mset.in_point));
+            proc->setOption("endpos", QString::number(mset.out_point - mset.in_point));
+        } else if (seek >= 5) {
+            // If seek < 5 it's better to allow the video to start from the beginning
+            proc->setOption("ss", QString::number(seek));
+        }
+    }
 
 	if (pref->use_idx) {
 		proc->setOption("idx");
@@ -1576,11 +1578,6 @@ end_video_filters:
 	// Set file and playing msg
     proc->setMedia(file);
 
-	// It seems the loop option must be after the filename
-	if (mset.loop) {
-		proc->setOption("loop", "0");
-	}
-
     disableScreensaver();
 
 	// Setup environment
@@ -1606,7 +1603,7 @@ end_video_filters:
 	}
 } //startPlayer()
 
-void TCore::stopPlayer() {
+void TCore::stopPlayer(int exit_code) {
 
 	if (!proc->isRunning()) {
 		qDebug("TCore::stopPlayer: player not running");
@@ -1626,7 +1623,7 @@ void TCore::stopPlayer() {
 
 	connect(proc, SIGNAL(processExited(bool)), &eventLoop, SLOT(quit()));
 
-	proc->quit(0);
+    proc->quit(exit_code);
 
 	QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
 	eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
@@ -1636,7 +1633,7 @@ void TCore::stopPlayer() {
 		proc->kill();
 	}
 #else
-	proc->quit(0);
+    proc->quit(exit_code);
 
 	qDebug("TCore::stopPlayer: Waiting %d ms for player to finish...", timeout);
 	if (!proc->waitForFinished(timeout)) {
@@ -1682,17 +1679,17 @@ void TCore::seekCmd(double secs, int mode) {
 }
 
 void TCore::seekRelative(double secs) {
-    qDebug("TCore::seekRelative: seek %f secs", secs);
+    qDebug("TCore::seekRelative: %f seconds", secs);
     seekCmd(secs, 0);
 }
 
 void TCore::seekPercentage(double perc) {
-    qDebug("TCore::seekPercentage: per: %f", perc);
+    qDebug("TCore::seekPercentage: %f procent", perc);
 	seekCmd(perc, 1);
 }
 
 void TCore::seekTime(double sec) {
-    qDebug("TCore::seekTime: %f", sec);
+    qDebug("TCore::seekTime: %f seconds", sec);
 	seekCmd(sec, 2);
 }
 
@@ -1780,66 +1777,71 @@ void TCore::wheelDown(TPreferences::TWheelFunction function) {
 	}
 }
 
-void TCore::setAMarker() {
-	setAMarker((int)mset.current_sec);
+void TCore::setInPoint() {
+	setInPoint((int)mset.current_sec);
 }
 
-void TCore::setAMarker(int sec) {
-	qDebug("TCore::setAMarker: %d", sec);
+void TCore::setInPoint(int sec) {
+	qDebug("TCore::setInPoint: %d", sec);
 
-	mset.A_marker = sec;
-	displayMessage(tr("\"A\" marker set to %1").arg(Helper::formatTime(sec)));
+    mset.in_point = sec;
+    displayMessage(tr("In point set to %1").arg(Helper::formatTime(sec)));
+    emit InOutPointsChanged();
 
-	if (mset.B_marker > mset.A_marker) {
-		if (proc->isRunning())
-			restartPlay();
-	}
-
-	emit ABMarkersChanged();
+    // TODO: upgrade prec
+    if (mset.loop
+        && mset.in_point >= 0
+        && mset.in_point < mset.out_point
+        && mset.current_sec < mset.in_point) {
+        seekTime(mset.in_point);
+    }
 }
 
-void TCore::setBMarker() {
-	setBMarker((int)mset.current_sec);
+void TCore::setOutPoint() {
+	setOutPoint((int)mset.current_sec);
 }
 
-void TCore::setBMarker(int sec) {
-	qDebug("TCore::setBMarker: %d", sec);
+void TCore::setOutPoint(int sec) {
+	qDebug("TCore::setOutPoint: %d", sec);
 
-	mset.B_marker = sec;
-	displayMessage(tr("\"B\" marker set to %1").arg(Helper::formatTime(sec)));
+    mset.out_point = sec;
+    emit InOutPointsChanged();
 
-	if (mset.A_marker >= 0 && mset.A_marker < mset.B_marker) {
-		if (proc->isRunning())
-			restartPlay();
-	}
+    double seek = 0;
+    if (mset.in_point >= 0) {
+        seek = mset.in_point;
+    }
+    seekTime(seek);
 
-	emit ABMarkersChanged();
+    displayMessage(tr("Out point set to %1").arg(Helper::formatTime(mset.out_point)));
 }
 
-void TCore::clearABMarkers() {
-	qDebug("TCore::clearABMarkers");
+void TCore::clearInOutPoints() {
+    qDebug("TCore::clearInOutPoints");
 
-	if (mset.A_marker != -1 || mset.B_marker != -1) {
-		mset.A_marker = -1;
-		mset.B_marker = -1;
-		displayMessage(tr("A-B markers cleared"));
-		if (proc->isRunning())
-			restartPlay();
-	}
-
-	emit ABMarkersChanged();
+    mset.in_point = -1;
+    mset.out_point = -1;
+    mset.loop = false;
+    emit InOutPointsChanged();
+    displayMessage(tr("In-out points cleared"));
 }
 
 void TCore::toggleRepeat(bool b) {
 	qDebug("TCore::toggleRepeat: %d", b);
 
-	if (mset.loop != b) {
-		mset.loop = b;
-		int v = -1; // no loop
-		if (mset.loop)
-			v = 0; // infinite loop
-		proc->setLoop(v);
-	}
+    mset.loop = b;
+    emit InOutPointsChanged();
+
+    if (mset.loop && mset.in_point >= 0 && mset.in_point < mset.out_point
+        && mset.current_sec > mset.out_point) {
+        seekTime(mset.in_point);
+    }
+
+    if (mset.loop) {
+        displayMessage(tr("Repeat in-out set"));
+    } else {
+        displayMessage(tr("Repeat in-out cleared"));
+    }
 }
 
 // Audio filters
@@ -2608,10 +2610,42 @@ void TCore::onReceivedPosition(double sec) {
 
 	mset.current_sec = sec;
 
+    bool force_update_gui = false;
+
+    if (mset.current_sec < mset.in_point) {
+        if (!seeking_in_point) {
+            seeking_in_point = true;
+            seekTime(mset.in_point);
+            force_update_gui = true;
+        }
+    } else if (seeking_in_point) {
+        seeking_in_point = false;
+        force_update_gui = true;
+    }
+
+    if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
+        if (mset.loop) {
+            if (mset.in_point >= 0 && mset.in_point < mset.out_point) {
+                seeking_in_point = true;
+                seeking_out_point = true;
+                seekTime(mset.in_point);
+                force_update_gui = true;
+            }
+        }
+        if (!seeking_out_point) {
+            seeking_out_point = true;
+            proc->quit(Proc::TErrorMsg::EXIT_OUT_POINT_REACHED);
+            force_update_gui = true;
+        }
+    } else if (seeking_out_point) {
+        seeking_out_point = false;
+        force_update_gui = true;
+    }
+
 	// Update GUI once per second
 	static int last_second = -11;
     int sec_int = (int) sec;
-    if (sec_int == last_second)
+    if (sec_int == last_second && !force_update_gui)
 		return;
     last_second = sec_int;
 

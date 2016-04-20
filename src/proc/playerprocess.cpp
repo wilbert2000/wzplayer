@@ -36,14 +36,15 @@ namespace Proc {
 const int waiting_for_answers_safe_guard_init = 100;
 
 
-TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata)
-	: TProcess(parent)
-	, player_id(Settings::pref->player_id)
-	, md(mdata)
-	, notified_player_is_running(false)
-	, received_end_of_file(false)
-	, line_count(0)
-{
+TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
+    TProcess(parent),
+    player_id(Settings::pref->player_id),
+    md(mdata),
+    notified_player_is_running(false),
+    received_end_of_file(false),
+    quit_send(false),
+    line_count(0) {
+
 	//qRegisterMetaType<SubTracks>("SubTracks");
 	//qRegisterMetaType<Maps::TTracks>("Tracks");
 	//qRegisterMetaType<Chapters>("Chapters");
@@ -292,8 +293,10 @@ bool TPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp& 
 void TPlayerProcess::quit(int exit_code) {
 	qDebug("Proc::TPlayerProcess::quit");
 
-	quit_send = true;
-	writeToStdin("quit " + QString::number(exit_code));
+    if (!quit_send) {
+        quit_send = true;
+        writeToStdin("quit " + QString::number(exit_code));
+    }
 }
 
 bool TPlayerProcess::parseLine(QString& line) {

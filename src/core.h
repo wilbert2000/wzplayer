@@ -106,12 +106,12 @@ public slots:
 	//! Reopens the file (no restart)
 	void reload();
 
-	void setAMarker(); //!< Set A marker to current sec
-	void setAMarker(int sec);
+    void setInPoint(); //!< Set in point to current sec
+	void setInPoint(int sec);
 
-	void setBMarker(); //!< Set B marker to current sec
-	void setBMarker(int sec);
-	void clearABMarkers();
+    void setOutPoint(); //!< Set out point to current sec
+	void setOutPoint(int sec);
+    void clearInOutPoints();
 	void toggleRepeat(bool b);
 
 	void toggleFlip();
@@ -361,7 +361,7 @@ signals:
 	void chaptersChanged();
 	void chapterChanged(int);
 	void anglesChanged();
-	void ABMarkersChanged();
+    void InOutPointsChanged();
 	void osdLevelChanged(int);
 	void videoEqualizerNeedsUpdate();
 
@@ -376,7 +376,7 @@ protected:
 	void initMediaSettings();
 	void initPlaying(int seek = -1);
 	void startPlayer(QString file, double seek = -1);
-	void stopPlayer();
+    void stopPlayer(int exit_code = 0);
 	void restartPlay();
 
 	void saveMediaSettings();
@@ -418,6 +418,8 @@ private:
 	TCoreState _state;
 
 	int restarting;
+    bool seeking_in_point;
+    bool seeking_out_point;
 
 	QTime time;
 

@@ -129,9 +129,9 @@ void TMediaSettings::reset() {
 	flip = false;
 	mirror = false;
 
-	loop = false;
-	A_marker = -1;
-	B_marker = -1;
+	in_point = -1;
+	out_point = -1;
+    loop = false;
 
 	current_demuxer = "unknown";
 
@@ -235,8 +235,8 @@ void TMediaSettings::list() {
     qDebug("  rotate: %d", rotate);
 
 	qDebug("  loop: %d", loop);
-	qDebug("  A_marker: %d", A_marker);
-	qDebug("  B_marker: %d", B_marker);
+    qDebug("  in_point: %f", in_point);
+    qDebug("  out_point: %f", out_point);
 
 	qDebug("  current_demuxer: '%s'", current_demuxer.toUtf8().data());
 
@@ -376,8 +376,8 @@ void TMediaSettings::save(QSettings* set, int player_id) {
 	set->setValue("mirror", mirror);
 
 	set->setValue("loop", loop);
-	set->setValue("A_marker", A_marker);
-	set->setValue("B_marker", B_marker);
+	set->setValue("in_point", in_point);
+	set->setValue("out_point", out_point);
 
 	set->setValue("mplayer_additional_options", player_additional_options);
 	set->setValue("mplayer_additional_video_filters", player_additional_video_filters);
@@ -514,8 +514,8 @@ void TMediaSettings::load(QSettings* set, int player_id) {
 	mirror = set->value("mirror", mirror).toBool();
 
 	loop = set->value("loop", loop).toBool();
-	A_marker = set->value("A_marker", A_marker).toInt();
-	B_marker = set->value("B_marker", B_marker).toInt();
+	in_point = set->value("in_point", in_point).toInt();
+	out_point = set->value("out_point", out_point).toInt();
 
 
 	player_additional_options = set->value("mplayer_additional_options", player_additional_options).toString();

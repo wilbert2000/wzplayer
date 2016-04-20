@@ -169,14 +169,14 @@ TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
     plAct = playlist->findChild<TAction*>("pl_prev");
     addAction(plAct);
 
-    setDefaultAction(seek2Act);
+    setDefaultAction(intToAction(pref->seeking_current_action));
     setJumpTexts();
 }
 
 
-class TMenuAB : public TMenu {
+class TMenuInOut : public TMenu {
 public:
-	explicit TMenuAB(QWidget* parent, TCore* c);
+    explicit TMenuInOut(QWidget* parent, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -187,47 +187,47 @@ private:
 	TAction* repeatAct;
 };
 
-TMenuAB::TMenuAB(QWidget* parent, TCore* c)
-    : TMenu(parent, "ab_menu", tr("&A-B section"))
+TMenuInOut::TMenuInOut(QWidget* parent, TCore* c)
+    : TMenu(parent, "in_out_points_menu", tr("&In-out points"))
 	, core(c) {
 
-	group = new QActionGroup(this);
+    // Put in group to enable/disable together, if we disable the menu users
+    // cannot discover the menu because it won't open.
+    group = new QActionGroup(this);
 	group->setExclusive(false);
-	group->setEnabled(false);
+    group->setEnabled(false);
 
-    TAction* a  = new TAction(this, "set_a_marker", tr("Set &A marker"), "", QKeySequence("Ctrl+["));
+    TAction* a  = new TAction(this, "set_in_point", tr("Set &in point"), "", QKeySequence("["));
 	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(setAMarker()));
+    connect(a, SIGNAL(triggered()), core, SLOT(setInPoint()));
 
-    a = new TAction(this, "set_b_marker", tr("Set &B marker"), "", QKeySequence("Ctrl+]"));
+    a = new TAction(this, "set_out_point", tr("Set &out point"), "", QKeySequence("]"));
 	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(setBMarker()));
+    connect(a, SIGNAL(triggered()), core, SLOT(setOutPoint()));
 
-	a = new TAction(this, "clear_ab_markers", tr("&Clear A-B markers"));
+    a = new TAction(this, "clear_in_out_points", tr("&Clear in-out points"), "", Qt::Key_Backspace);
 	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(clearABMarkers()));
+    connect(a, SIGNAL(triggered()), core, SLOT(clearInOutPoints()));
 
 	addSeparator();
-	repeatAct = new TAction(this, "repeat", tr("&Repeat"));
+    repeatAct = new TAction(this, "repeat_in_out", tr("&Repeat in-out"), "repeat", Qt::Key_Backslash);
 	repeatAct->setCheckable(true);
-	repeatAct->setChecked(core->mset.loop);
-	group->addAction(repeatAct);
+    group->addAction(repeatAct);
 	connect(repeatAct, SIGNAL(triggered(bool)), core, SLOT(toggleRepeat(bool)));
-	// Currently no one else sets it
+    // Currently no one sets it
 
 	addActionsTo(parent);
 }
 
-void TMenuAB::enableActions(bool stopped, bool, bool) {
-	// Uses mset, so useless to set if stopped
-	group->setEnabled(!stopped);
+void TMenuInOut::enableActions(bool stopped, bool, bool) {
+    group->setEnabled(!stopped);
 }
 
-void TMenuAB::onMediaSettingsChanged(TMediaSettings* mset) {
+void TMenuInOut::onMediaSettingsChanged(TMediaSettings* mset) {
 	repeatAct->setChecked(mset->loop);
 }
 
-void TMenuAB::onAboutToShow() {
+void TMenuInOut::onAboutToShow() {
 	repeatAct->setChecked(core->mset.loop);
 }
 
@@ -343,8 +343,9 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
     // Speed submenu
     addSeparator();
     addMenu(new TMenuPlaySpeed(parent, core));
+
     // A-B submenu
-	addMenu(new TMenuAB(parent, core));
+    addMenu(new TMenuInOut(parent, core));
 
 	addActionsTo(parent);
 }

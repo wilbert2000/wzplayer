@@ -139,9 +139,9 @@ public:
 	bool flip; //!< Flip image
 	bool mirror; //!< Mirrors the image on the Y axis.
 
-	bool loop; //!< Loop. If true repeat the file
-	int A_marker;
-	int B_marker;
+    double in_point;
+    double out_point;
+    bool loop; //!< Loop. If true repeat the file
 
 	QString current_demuxer;
 

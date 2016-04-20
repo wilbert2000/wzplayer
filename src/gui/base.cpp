@@ -487,6 +487,7 @@ void TBase::createToolbars() {
             << "timeslider_action"
             << "rewind_menu"
             << "forward_menu"
+            << "in_out_points_menu|0|1"
             << "separator|0|1"
             << "osd_menu|0|1"
             << "aspect_menu|1|1"

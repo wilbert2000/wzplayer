@@ -47,24 +47,26 @@ protected:
 protected slots:
 	// Override
 	virtual void onMediaInfoChanged();
+    virtual void onMediaSettingsChanged();
 
 	void displayTime(QString text);
 	void displayFrame(int frame);
-	void displayABSection();
+	void displayInOutPoints();
 	void displayVideoInfo();
+    void db(bool v);
 
-protected:
-	QLabel* time_display;
+private:
+    QLabel* time_display;
 	QLabel* frame_display;
-	QLabel* ab_section_display;
+    QLabel* in_out_points_label;
 	QLabel* video_info_display;
 
 	Action::TAction* viewFrameCounterAct;
-	Action::TAction* viewVideoInfoAct;
+    Action::TAction* viewVideoTimeAct;
+    Action::TAction* viewVideoInfoAct;
 
 	int last_second;
 
-private:
 	void createStatusBar();
 	void createActions();
 	void createMenus();

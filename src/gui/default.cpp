@@ -76,12 +76,12 @@ void TDefault::createStatusBar() {
 	frame_display->setText("88888888");
 	frame_display->setMinimumSize(frame_display->sizeHint());
 
-	ab_section_display = new QLabel(statusBar());
-	ab_section_display->setObjectName("ab_section_display");
-	ab_section_display->setAlignment(Qt::AlignRight);
-	ab_section_display->setFrameShape(QFrame::NoFrame);
-//	ab_section_display->setText("A:0:00:00 B:0:00:00");
-//	ab_section_display->setMinimumSize(ab_section_display->sizeHint());
+    // Controls its own visibility, so no hide()
+    in_out_points_label = new QLabel(statusBar());
+    in_out_points_label->setObjectName("in_out_points_label");
+    in_out_points_label->setAlignment(Qt::AlignRight);
+    in_out_points_label->setFrameShape(QFrame::NoFrame);
+    in_out_points_label->setMargin(margin);
 
 	video_info_display = new QLabel(statusBar());
 	video_info_display->setObjectName("video_info_display");
@@ -96,14 +96,16 @@ void TDefault::createStatusBar() {
 	ColorUtils::setForegroundColor(time_display, QColor(255,255,255));
 	ColorUtils::setBackgroundColor(frame_display, QColor(0,0,0));
 	ColorUtils::setForegroundColor(frame_display, QColor(255,255,255));
-	ColorUtils::setBackgroundColor(ab_section_display, QColor(0,0,0));
-	ColorUtils::setForegroundColor(ab_section_display, QColor(255,255,255));
+    ColorUtils::setBackgroundColor(in_out_points_label, QColor(0,0,0));
+    ColorUtils::setForegroundColor(in_out_points_label, QColor(255,255,255));
 	ColorUtils::setBackgroundColor(video_info_display, QColor(0,0,0));
 	ColorUtils::setForegroundColor(video_info_display, QColor(255,255,255));
 	statusBar()->setSizeGripEnabled(false);
 
-	statusBar()->addWidget(video_info_display);
-	statusBar()->addPermanentWidget(ab_section_display);
+    statusBar()->addWidget(video_info_display);
+    statusBar()->addPermanentWidget(in_out_points_label);
+    statusBar()->addPermanentWidget(time_display, 0);
+    statusBar()->addPermanentWidget(frame_display, 0);
 
 	statusBar()->showMessage(tr("Ready"));
 	statusBar()->addPermanentWidget(frame_display, 0);
@@ -114,7 +116,6 @@ void TDefault::createStatusBar() {
 
 	time_display->show();
 	frame_display->hide();
-	ab_section_display->show();
     video_info_display->show();
 
 	connect(this, SIGNAL(timeChanged(QString)),
@@ -122,10 +123,10 @@ void TDefault::createStatusBar() {
 	connect(this, SIGNAL(frameChanged(int)),
 			this, SLOT(displayFrame(int)));
 
-	connect(core, SIGNAL(ABMarkersChanged()),
-			this, SLOT(displayABSection()));
+	connect(core, SIGNAL(InOutPointsChanged()),
+            this, SLOT(displayInOutPoints()));
 	connect(core, SIGNAL(mediaLoaded()),
-			this, SLOT(displayABSection()));
+            this, SLOT(displayInOutPoints()));
 
 	connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
 			this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
@@ -141,27 +142,32 @@ void TDefault::displayFrame(int frame) {
 	}
 }
 
-void TDefault::displayABSection() {
+void TDefault::displayInOutPoints() {
 
 	QString s;
-	int secs = core->mset.A_marker;
+	int secs = core->mset.in_point;
 	if (secs >= 0)
-		s = tr("A:%1").arg(Helper::formatTime(secs));
+        s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
 
-	secs = core->mset.B_marker;
+	secs = core->mset.out_point;
 	if (secs >= 0) {
 		if (!s.isEmpty()) s += " ";
-		s += tr("B:%1").arg(Helper::formatTime(secs));
+        s += " " + tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
 	}
 
-	ab_section_display->setText(s);
-	ab_section_display->setVisible(!s.isEmpty());
+    if (core->mset.loop) {
+        if (!s.isEmpty()) s += " ";
+        s += tr("R", "Repeat in-out in statusbar");
+    }
+
+    in_out_points_label->setVisible(!s.isEmpty());
+    in_out_points_label->setText(s);
 }
 
 void TDefault::displayVideoInfo() {
 
 	if (core->mdat.noVideo()) {
-		video_info_display->setText(" ");
+        video_info_display->setText("");
 	} else {
 		QSize video_out_size = playerwindow->lastVideoOutSize();
 		video_info_display->setText(tr("%1x%2", "video source width x height")
@@ -173,6 +179,14 @@ void TDefault::displayVideoInfo() {
 			.arg(video_out_size.height())
 			.arg(core->mdat.video_fps));
 	}
+}
+
+// Slot called when media settings reset or loaded
+void TDefault::onMediaSettingsChanged() {
+    qDebug("Gui::TDefault::onMediaSettingsChanged");
+
+    TBase::onMediaSettingsChanged();
+    displayInOutPoints();
 }
 
 void TDefault::onMediaInfoChanged() {
