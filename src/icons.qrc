@@ -103,7 +103,6 @@
         <file>default-theme/license.png</file>
         <file>default-theme/faq.png</file>
         <file>default-theme/qt.png</file>
-        <file>default-theme/check_updates.png</file>
         <file>default-theme/instance1.png</file>
         <file>default-theme/instance2.png</file>
         <file>default-theme/video_equalizer.png</file>
@@ -117,7 +116,11 @@
         <file>default-theme/open_playlist.png</file>
         <file>default-theme/audio_track.png</file>
         <file>default-theme/toolbars.png</file>
-        <file>default-theme/ontop.png</file>
+        <file>default-theme/stay_on_top_menu.png</file>
+        <file>default-theme/stay_on_top_always.png</file>
+        <file>default-theme/stay_on_top_never.png</file>
+        <file>default-theme/stay_on_top_playing.png</file>
+        <file>default-theme/stay_on_top_toggle.png</file>
         <file>default-theme/stereo_mode.png</file>
         <file>default-theme/deinterlace.png</file>
         <file>default-theme/cl_help.png</file>
@@ -134,9 +137,10 @@
         <file>default-theme/open_radio.png</file>
         <file>default-theme/favorite.png</file>
         <file>default-theme/open_favorites.png</file>
-        <file>default-theme/set_a_marker.png</file>
-        <file>default-theme/set_b_marker.png</file>
-        <file>default-theme/ab_menu.png</file>
+        <file>default-theme/set_in_point.png</file>
+        <file>default-theme/set_out_point.png</file>
+        <file>default-theme/clear_in_out_points.png</file>
+        <file>default-theme/in_out_points_menu.png</file>
         <file>default-theme/bookmark_add.png</file>
         <file>default-theme/bookmark_folder.png</file>
         <file>default-theme/trash.png</file>

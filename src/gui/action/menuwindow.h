@@ -10,6 +10,24 @@ namespace Gui {
 namespace Action {
 
 class TAction;
+class TActionGroup;
+
+class TMenuStayOnTop : public TMenu {
+    Q_OBJECT
+public:
+    explicit TMenuStayOnTop(QWidget* parent);
+    // Group to enable/disable together
+    TActionGroup* group;
+
+protected:
+    virtual void onAboutToShow();
+
+private:
+    TAction* toggleStayOnTopAct;
+
+private slots:
+    void onTriggered(QAction* action);
+};
 
 class TMenuWindow : public TMenu {
 public:

@@ -66,7 +66,20 @@ TEditableToolbar::~TEditableToolbar() {
 
 void TEditableToolbar::addMenu(QAction* action) {
 
-    if (action->objectName() == "forward_menu"
+    if (action->objectName() == "stay_on_top_menu") {
+        QAction* toggleOnTopAct = main_window->findChild<QAction*>("toggle_stay_on_top");
+        addAction(toggleOnTopAct);
+        QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(toggleOnTopAct));
+        if (button) {
+            if (toggleOnTopAct) {
+                button->setPopupMode(QToolButton::MenuButtonPopup);
+                button->setDefaultAction(toggleOnTopAct);
+            } else {
+                button->setPopupMode(QToolButton::InstantPopup);
+            }
+            button->setMenu(action->menu());
+        }
+    } else if (action->objectName() == "forward_menu"
         || action->objectName() == "rewind_menu") {
         QMenu* menu = action->menu();
         QAction* default_action = menu->defaultAction();

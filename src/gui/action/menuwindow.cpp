@@ -67,32 +67,48 @@ void TMenuOSD::onAboutToShow() {
 	group->setChecked((int) pref->osd_level);
 }
 
-
-class TMenuStayOnTop : public TMenu {
-public:
-	explicit TMenuStayOnTop(QWidget* parent);
-	TActionGroup* group;
-protected:
-	virtual void onAboutToShow();
-};
-
-TMenuStayOnTop::TMenuStayOnTop(QWidget *parent)
-    : TMenu(parent, "stay_on_top_menu", tr("&Stay on top"), "ontop") {
+TMenuStayOnTop::TMenuStayOnTop(QWidget *parent) :
+    TMenu(parent, "stay_on_top_menu", tr("&Stay on top")) {
 
 	group = new TActionGroup(this, "ontop");
-	// Always enabled
-	new TActionGroupItem(this, group, "stay_on_top_always", tr("&Always"), Settings::TPreferences::AlwaysOnTop);
-	new TActionGroupItem(this, group, "stay_on_top_never", tr("&Never"), Settings::TPreferences::NeverOnTop);
-	new TActionGroupItem(this, group, "stay_on_top_playing", tr("While &playing"), Settings::TPreferences::WhilePlayingOnTop);
+    new TActionGroupItem(this, group, "stay_on_top_always", tr("&Always"),
+                         Settings::TPreferences::AlwaysOnTop,
+                         true, true);
+    new TActionGroupItem(this, group, "stay_on_top_never", tr("&Never"),
+                         Settings::TPreferences::NeverOnTop,
+                         true, true);
+    new TActionGroupItem(this, group, "stay_on_top_playing",
+                         tr("While &playing"),
+                         Settings::TPreferences::WhilePlayingOnTop,
+                         true, true);
 	group->setChecked((int) pref->stay_on_top);
 	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
 	connect(parent , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
 
 	addSeparator();
-	TAction* a = new TAction(this, "toggle_stay_on_top", tr("Toggle stay on top"), "");
-	connect(a, SIGNAL(triggered()), parent, SLOT(toggleStayOnTop()));
+
+    QString icon;
+    switch (pref->stay_on_top) {
+    case TPreferences::NeverOnTop: icon = "stay_on_top_never"; break;
+    case TPreferences::AlwaysOnTop:icon = "stay_on_top_always"; break;;
+    case TPreferences::WhilePlayingOnTop:icon = "stay_on_top_playing"; break;;
+    default: icon = "stay_on_top_toggle";
+    }
+
+    toggleStayOnTopAct = new TAction(this, "toggle_stay_on_top",
+                                     tr("Toggle stay on top"),
+                                     icon,
+                                     Qt::Key_T);
+    connect(toggleStayOnTopAct, SIGNAL(triggered()),
+            parent, SLOT(toggleStayOnTop()));
+    connect(this, SIGNAL(triggered(QAction*)),
+            this, SLOT(onTriggered(QAction*)));
 
 	addActionsTo(parent);
+}
+
+void TMenuStayOnTop::onTriggered(QAction* action) {
+    toggleStayOnTopAct->setIcon(action->icon());
 }
 
 void TMenuStayOnTop::onAboutToShow() {

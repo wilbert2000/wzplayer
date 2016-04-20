@@ -26,10 +26,11 @@ QString TErrorMsg::message(int id) {
 		QT_TRANSLATE_NOOP(c, "HTTP 403: the server refused access to the file"),
 		QT_TRANSLATE_NOOP(c, "HTTP 404: file not found on the server"),
 		QT_TRANSLATE_NOOP(c, "No stream found at the given URL"),
-		QT_TRANSLATE_NOOP(c, "Could not find the requested title")
+        QT_TRANSLATE_NOOP(c, "Could not find the requested title"),
+        QT_TRANSLATE_NOOP(c, "Reached out point")
 	};
 
-	if (id < ERR_FIRST_ID || id > ERR_LAST_ID) {
+    if (id < ERR_FIRST_ID || id > EXIT_LAST_ID) {
 		id = ERR_CRASHED;
 	}
 	QString msg = qApp->translate(c, msgs[id - ERR_FIRST_ID]);
