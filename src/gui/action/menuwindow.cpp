@@ -100,7 +100,6 @@ TMenuStayOnTop::TMenuStayOnTop(TBase* mw) :
                          true, true);
 	group->setChecked((int) pref->stay_on_top);
     connect(group , SIGNAL(activated(int)), main_window, SLOT(changeStayOnTop(int)));
-    connect(group , SIGNAL(activated(int)), this, SLOT(onActivated(int)));
     connect(main_window , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
 
 	addSeparator();
