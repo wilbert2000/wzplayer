@@ -15,7 +15,7 @@ class TActionGroup;
 class TMenuAspect : public TMenu {
 	Q_OBJECT
 public:
-	explicit TMenuAspect(QWidget* parent, TCore* c);
+    explicit TMenuAspect(TBase* mw, TCore* c);
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);

@@ -25,6 +25,7 @@
 #include <QFileInfo>
 #include "gui/action/action.h"
 #include "gui/action/favoriteeditor.h"
+#include "gui/base.h"
 
 #define FIRST_MENU_ENTRY 3
 
@@ -58,15 +59,14 @@ void TFavorite::setIcon(QString file) {
 }
 
 
-TFavorites::TFavorites(QWidget* parent,
+TFavorites::TFavorites(TBase* mw,
 					   const QString& name,
 					   const QString& text,
 					   const QString& icon,
 					   const QString& filename)
-    : TMenu(parent, name, text, icon)
+    : TMenu(mw, mw, name, text, icon)
 	, _filename(filename)
-	, parent_widget(parent)
-	, last_item(1) {
+    , last_item(1) {
 
     edit_act = new TAction(this, "", tr("&Edit..."), "noicon");
 	connect(edit_act, SIGNAL(triggered()), this, SLOT(edit()));
@@ -111,7 +111,7 @@ void TFavorites::delete_children() {
 }
 
 TFavorites* TFavorites::createNewObject(const QString& filename) {
-    return new TFavorites(parent_widget, "", "", "noicon", filename);
+    return new TFavorites(main_window, "", "", "noicon", filename);
 }
 
 void TFavorites::populateMenu() {
@@ -383,7 +383,7 @@ void TFavorites::load() {
 void TFavorites::edit() {
 	qDebug("Gui::Action::TFavorites::edit");
 
-	TFavoriteEditor e(parent_widget);
+    TFavoriteEditor e(main_window);
 
 	e.setData(f_list);
 	e.setStorePath(QFileInfo(_filename).absolutePath());
@@ -400,11 +400,11 @@ void TFavorites::jump() {
 
 	bool ok;
 #if QT_VERSION >= 0x050000
-	int item = QInputDialog::getInt(parent_widget, tr("Jump to item"),
+    int item = QInputDialog::getInt(main_window, tr("Jump to item"),
                           tr("Enter the number of the item in the list to jump:"), 
                           last_item, 1, f_list.count(), 1, &ok);
 #else
-	int item = QInputDialog::getInteger(parent_widget, tr("Jump to item"),
+    int item = QInputDialog::getInteger(main_window, tr("Jump to item"),
                           tr("Enter the number of the item in the list to jump:"), 
                           last_item, 1, f_list.count(), 1, &ok);
 #endif

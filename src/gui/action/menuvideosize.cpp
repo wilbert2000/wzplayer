@@ -20,18 +20,26 @@ TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
 	setEnabled(false);
 
 	TActionGroupItem* a;
-	new TActionGroupItem(this, this, "size_25", tr("25%"), 25, false);
-	new TActionGroupItem(this, this, "size_50", tr("5&0%"), 50, false);
-	new TActionGroupItem(this, this, "size_75", tr("7&5%"), 75, false);
-	a = new TActionGroupItem(this, this, "size_100", tr("&100%"), 100, false);
-	a->setShortcut(Qt::CTRL | Qt::Key_1);
-	new TActionGroupItem(this, this, "size_125", tr("125%"), 125, false);
-	new TActionGroupItem(this, this, "size_150", tr("15&0%"), 150, false);
-	new TActionGroupItem(this, this, "size_175", tr("1&75%"), 175, false);
-	a = new TActionGroupItem(this, this, "size_200", tr("&200%"), 200, false);
-	a->setShortcut(Qt::CTRL | Qt::Key_2);
-	new TActionGroupItem(this, this, "size_300", tr("&300%"), 300, false);
-	new TActionGroupItem(this, this, "size_400", tr("&400%"), 400, false);
+    a = new TActionGroupItem(this, this, "size_25", tr("25%"), 25, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_1);
+    a = new TActionGroupItem(this, this, "size_50", tr("5&0%"), 50, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_2);
+    a = new TActionGroupItem(this, this, "size_75", tr("7&5%"), 75, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_3);
+    a = new TActionGroupItem(this, this, "size_100", tr("&100%"), 100, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_4);
+    a = new TActionGroupItem(this, this, "size_125", tr("125%"), 125, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_5);
+    a = new TActionGroupItem(this, this, "size_150", tr("15&0%"), 150, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_6);
+    a = new TActionGroupItem(this, this, "size_175", tr("1&75%"), 175, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_7);
+    a = new TActionGroupItem(this, this, "size_200", tr("&200%"), 200, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_8);
+    a = new TActionGroupItem(this, this, "size_300", tr("&300%"), 300, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_9);
+    a = new TActionGroupItem(this, this, "size_400", tr("&400%"), 400, false);
+    a->setShortcut(Qt::CTRL | Qt::Key_0);
 
 	setChecked(size_percentage);
 }
@@ -85,26 +93,25 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 }
 
 
-TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw)
-    : TMenu(mw, "videosize_menu", tr("&Size"), "video_size")
-	, mainWindow(mw)
-	, playerWindow(pw) {
+TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw) :
+    TMenu(mw, mw, "videosize_menu", tr("&Size"), "video_size"),
+    playerWindow(pw) {
 
 	group = new TVideoSizeGroup(this, pw);
 	addActions(group->actions());
-	connect(group, SIGNAL(activated(int)), mainWindow, SLOT(changeSize(int)));
+    connect(group, SIGNAL(activated(int)), main_window, SLOT(changeSize(int)));
 
 	addSeparator();
-	doubleSizeAct = new TAction(this, "toggle_double_size", tr("&Toggle double size"), "", Qt::CTRL | Qt::Key_D);
-	connect(doubleSizeAct, SIGNAL(triggered()), mainWindow, SLOT(toggleDoubleSize()));
+    doubleSizeAct = new TAction(this, "toggle_double_size", tr("&Toggle double size"), "", Qt::Key_D);
+    connect(doubleSizeAct, SIGNAL(triggered()), main_window, SLOT(toggleDoubleSize()));
 
-	currentSizeAct = new TAction(this, "video_size", "");
+    currentSizeAct = new TAction(this, "video_size", "", "", QKeySequence("`"));
 	connect(currentSizeAct, SIGNAL(triggered()), this, SLOT(optimizeSizeFactor()));
 
 	connect(playerWindow, SIGNAL(videoSizeFactorChanged()),
 			this, SLOT(onVideoSizeFactorChanged()), Qt::QueuedConnection);
 
-	addActionsTo(mainWindow);
+    addActionsTo(main_window);
 	upd();
 }
 
@@ -151,7 +158,7 @@ bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {
 	if (qAbs(factor - predef_factor) < d) {
 		qDebug("Gui::Action::TMenuVideoSize::optimizeSizeFactorPreDef: optimizing size from %d%% to predefined value %d%%",
 			   factor, predef_factor);
-		mainWindow->changeSize(predef_factor);
+        main_window->changeSize(predef_factor);
 		return true;
 	}
 	return false;
@@ -209,7 +216,7 @@ void TMenuVideoSize::optimizeSizeFactor() {
 	factor = (double) new_w / res.width();
 	qDebug("Gui::Action::TMenuVideoSize::optimizeSizeFactor: optimizing width %d factor %f to multiple of 16 %d factor %f",
 		   video_size.width(), size_factor, new_w, factor);
-	mainWindow->changeSize(factor);
+    main_window->changeSize(factor);
 }
 
 

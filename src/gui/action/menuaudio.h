@@ -1,5 +1,5 @@
-#ifndef GUI_AUDIOMENU_H
-#define GUI_AUDIOMENU_H
+#ifndef GUI_ACTION_AUDIOMENU_H
+#define GUI_ACTION_AUDIOMENU_H
 
 #include "gui/action/menu.h"
 
@@ -8,6 +8,7 @@ class TCore;
 
 namespace Gui {
 
+class TBase;
 class TAudioEqualizer;
 
 namespace Action {
@@ -17,7 +18,7 @@ class TAction;
 
 class TMenuAudio : public TMenu {
 public:
-	explicit TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer);
+    explicit TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer);
 
 protected:
 	virtual void enableActions(bool stopped, bool, bool audio);
@@ -49,4 +50,4 @@ private:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_AUDIOMENU_H
+#endif // GUI_ACTION_AUDIOMENU_H

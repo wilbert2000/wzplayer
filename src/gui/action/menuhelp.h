@@ -1,9 +1,11 @@
-#ifndef GUI_HELPMENU_H
-#define GUI_HELPMENU_H
+#ifndef GUI_ACTION_HELPMENU_H
+#define GUI_ACTION_HELPMENU_H
 
 #include "gui/action/menu.h"
 
 namespace Gui {
+
+class TBase;
 namespace Action {
 
 class TAction;
@@ -11,10 +13,10 @@ class TAction;
 
 class TMenuHelp : public TMenu {
 public:
-	explicit TMenuHelp(QWidget* parent);
+    explicit TMenuHelp(TBase* mw);
 };
 
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_HELPMENU_H
+#endif // GUI_ACTION_HELPMENU_H

@@ -3,6 +3,7 @@
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
 #include "core.h"
+#include "gui/base.h"
 
 
 using namespace Settings;
@@ -11,12 +12,12 @@ namespace Gui {
 namespace Action {
 
 
-TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
-    : TMenu(parent, "browse_menu", tr("&Browse"), "noicon")
+TMenuBrowse::TMenuBrowse(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "browse_menu", tr("&Browse"), "noicon")
 	, core(c) {
 
 	// Titles
-    titlesMenu = new TMenu(parent, "titles_menu", tr("&Title"), "title");
+    titlesMenu = new TMenu(main_window, main_window, "titles_menu", tr("&Title"), "title");
 	addMenu(titlesMenu);
 	titleGroup = new TActionGroup(this, "title");
 	connect(titleGroup, SIGNAL(activated(int)), core, SLOT(changeTitle(int)));
@@ -25,13 +26,13 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 
 	// Chapters
 	prevChapterAct = new TAction(this, "prev_chapter", tr("Previous chapter"), "", Qt::Key_AsciiTilde, false);
-	parent->addAction(prevChapterAct);
+    main_window->addAction(prevChapterAct);
 	connect(prevChapterAct, SIGNAL(triggered()), core, SLOT(prevChapter()));
 	nextChapterAct = new TAction(this, "next_chapter", tr("Next chapter"), "", Qt::Key_Exclam, false);
-	parent->addAction(nextChapterAct);
+    main_window->addAction(nextChapterAct);
 	connect(nextChapterAct, SIGNAL(triggered()), core, SLOT(nextChapter()));
 
-    chaptersMenu = new TMenu(parent, "chapters_menu", tr("&Chapter"), "chapter");
+    chaptersMenu = new TMenu(main_window, main_window, "chapters_menu", tr("&Chapter"), "chapter");
 	chaptersMenu->addAction(prevChapterAct);
 	chaptersMenu->addAction(nextChapterAct);
 	chaptersMenu->addSeparator();
@@ -46,7 +47,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	// Angles submenu
 	nextAngleAct = new TAction(this, "next_angle", tr("Next angle"), "", Qt::Key_At, false);
 	connect(nextAngleAct, SIGNAL(triggered()), core, SLOT(nextAngle()));
-    anglesMenu = new TMenu(parent, "angles_menu", tr("&Angle"), "angle");
+    anglesMenu = new TMenu(main_window, main_window, "angles_menu", tr("&Angle"), "angle");
 	anglesMenu->addAction(nextAngleAct);
 	anglesMenu->addSeparator();
 	addMenu(anglesMenu);
@@ -86,7 +87,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
 	connect(dvdnavSelectAct, SIGNAL(triggered()), core, SLOT(dvdnavSelect()));
 
     // Not in menu, so add to parent
-    dvdnavMouseAct = new TAction(parent, "dvdnav_mouse", tr("DVD, mouse click"));
+    dvdnavMouseAct = new TAction(main_window, "dvdnav_mouse", tr("DVD, mouse click"));
     connect(dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()));
 
 	dvdnavMenuAct = new TAction(this, "dvdnav_menu", tr("DVD &menu"),
@@ -97,7 +98,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TCore* c)
                                 "", Qt::META | Qt::Key_Escape);
 	connect(dvdnavPrevAct, SIGNAL(triggered()), core, SLOT(dvdnavPrev()));
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuBrowse::enableActions(bool stopped, bool, bool) {

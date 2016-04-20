@@ -7,6 +7,9 @@
 class TCore;
 
 namespace Gui {
+
+class TBase;
+
 namespace Action {
 
 
@@ -16,7 +19,7 @@ class TActionGroup;
 class TMenuVideoTracks : public TMenu {
 	Q_OBJECT
 public:
-	explicit TMenuVideoTracks(QWidget* parent, TCore* c);
+    explicit TMenuVideoTracks(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 private:

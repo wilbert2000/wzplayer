@@ -9,6 +9,7 @@ class TCore;
 
 namespace Gui {
 
+class TBase;
 class TPlaylist;
 
 namespace Action {
@@ -19,7 +20,7 @@ class TMenuSeek: public TMenu {
     Q_OBJECT
 public:
     explicit TMenuSeek(QWidget* parent,
-                       QWidget* mainwindow,
+                       TBase* mainwindow,
                        const QString& name,
                        const QString& text,
                        const QString& icon,
@@ -44,7 +45,6 @@ protected slots:
     void setJumpTexts();
 
 private:
-    QWidget* main_window;
     QString seek_sign;
 
 
@@ -58,7 +58,7 @@ private slots:
 class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
-	explicit TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist);
+    explicit TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist);
 
 protected:
 	virtual void enableActions(bool stopped, bool, bool);

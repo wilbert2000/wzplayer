@@ -16,7 +16,7 @@ class TActionGroup;
 class TMenuVideoFilter : public TMenu {
 	Q_OBJECT
 public:
-	explicit TMenuVideoFilter(QWidget* parent, TCore* c);
+    explicit TMenuVideoFilter(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);

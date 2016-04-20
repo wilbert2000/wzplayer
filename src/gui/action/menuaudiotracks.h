@@ -15,7 +15,7 @@ class TActionGroup;
 class TMenuAudioTracks : public TMenu {
 	Q_OBJECT
 public:
-	explicit TMenuAudioTracks(QWidget* parent, TCore* c);
+    explicit TMenuAudioTracks(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool audio);
 private:

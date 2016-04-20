@@ -17,19 +17,22 @@
 */
 
 #include "gui/action/tvlist.h"
+
 #include <QDebug>
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
-#include "images.h"
+
+#include "gui/base.h"
 #include "gui/action/favoriteeditor.h"
+#include "images.h"
 
 
 namespace Gui {
 namespace Action {
 
 
-TTVList::TTVList(QWidget* parent,
+TTVList::TTVList(TBase* mw,
 				 const QString& name,
 				 const QString& text,
 				 const QString& icon,
@@ -42,7 +45,7 @@ TTVList::TTVList(QWidget* parent,
                  Services services
 #endif
                  )
-    : TFavorites(parent, name, text, icon, filename) {
+    : TFavorites(mw, name, text, icon, filename) {
 
 #ifndef Q_OS_WIN
     if (check_channels_conf) {
@@ -57,7 +60,7 @@ TTVList::~TTVList() {
 }
 
 TFavorites* TTVList::createNewObject(const QString& filename) {
-    return new TTVList(parent_widget, "", "", "noicon", filename, false, TV);
+    return new TTVList(main_window, "", "", "noicon", filename, false, TV);
 }
 
 #ifndef Q_OS_WIN
@@ -125,7 +128,7 @@ QString TTVList::findChannelsFile() {
 void TTVList::edit() {
 	qDebug("Gui::Action::TTVList::edit");
 
-	TFavoriteEditor e(parent_widget);
+    TFavoriteEditor e(main_window);
 
 	e.setWindowTitle(tr("Channel editor"));
 	e.setCaption(tr("TV/Radio list"));

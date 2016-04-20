@@ -67,17 +67,16 @@ TEditableToolbar::~TEditableToolbar() {
 void TEditableToolbar::addMenu(QAction* action) {
 
     if (action->objectName() == "stay_on_top_menu") {
-        QAction* toggleOnTopAct = main_window->findChild<QAction*>("toggle_stay_on_top");
-        addAction(toggleOnTopAct);
-        QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(toggleOnTopAct));
-        if (button) {
-            if (toggleOnTopAct) {
+        QAction* toggleAct = main_window->findChild<QAction*>("stay_on_top_toggle");
+        if (toggleAct) {
+            addAction(toggleAct);
+            QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(toggleAct));
+            if (button) {
+                button->setObjectName(action->objectName() + "_toolbutton");
                 button->setPopupMode(QToolButton::MenuButtonPopup);
-                button->setDefaultAction(toggleOnTopAct);
-            } else {
-                button->setPopupMode(QToolButton::InstantPopup);
+                button->setDefaultAction(toggleAct);
+                button->setMenu(action->menu());
             }
-            button->setMenu(action->menu());
         }
     } else if (action->objectName() == "forward_menu"
         || action->objectName() == "rewind_menu") {
@@ -87,7 +86,7 @@ void TEditableToolbar::addMenu(QAction* action) {
         QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(
                                                              default_action));
         if (button) {
-            button->setObjectName(menu->objectName() + "_toolbutton");
+            button->setObjectName(action->objectName() + "_toolbutton");
             button->setPopupMode(QToolButton::MenuButtonPopup);
             button->setMenu(menu);
             connect(menu, SIGNAL(triggered(QAction*)),

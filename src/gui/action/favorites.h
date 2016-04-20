@@ -61,7 +61,7 @@ typedef QList<TFavorite> TFavoriteList;
 class TFavorites : public TMenu {
 	Q_OBJECT
 public:
-    TFavorites(QWidget* parent,
+    TFavorites(TBase* mw,
                const QString& name,
                const QString& text,
                const QString& icon,
@@ -113,8 +113,6 @@ protected:
 	TAction* next_act;
 	TAction* previous_act;
 	TAction* add_current_act;
-
-	QWidget* parent_widget;
 
 	// Current (or last) file clicked
 	QString current_file;

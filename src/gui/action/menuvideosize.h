@@ -33,14 +33,13 @@ private:
 class TMenuVideoSize : public TMenu {
 	Q_OBJECT
 public:
-	TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
+    TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onAboutToShow();
 
 private:
-	TBase* mainWindow;
 	TPlayerWindow* playerWindow;
 	TVideoSizeGroup* group;
 	TAction* doubleSizeAct;

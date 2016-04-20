@@ -54,19 +54,22 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 
 
 TMenu::TMenu(QWidget* parent,
+             TBase* w,
              const QString& name,
 			 const QString& text,
-			 const QString& icon)
-    : QMenu(parent) {
+             const QString& icon) :
+    QMenu(parent),
+    main_window(w) {
 
 	menuAction()->setObjectName(name);
     menuAction()->setText(text);
-	QString iconName = icon.isEmpty() ? name : icon;
-	if (iconName != "noicon")
-		menuAction()->setIcon(Images::icon(iconName));
 
-	TBase* main_window = qobject_cast<TBase*>(parent);
-	if (main_window) {
+    QString iconName = icon.isEmpty() ? name : icon;
+    if (iconName != "noicon") {
+		menuAction()->setIcon(Images::icon(iconName));
+    }
+
+    if (main_window) {
 		connect(main_window, SIGNAL(enableActions(bool, bool, bool)),
 				this, SLOT(enableActions(bool, bool, bool)));
 		connect(main_window, SIGNAL(mediaSettingsChanged(Settings::TMediaSettings*)),

@@ -345,7 +345,7 @@ void TBase::createActions() {
 	showContextMenuAct = new Action::TAction(this, "show_context_menu", tr("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
 
-	nextWheelFunctionAct = new TAction(this, "next_wheel_function", tr("Next wheel function"));
+    nextWheelFunctionAct = new TAction(this, "next_wheel_function", tr("Next wheel function"), 0, Qt::Key_W);
 	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
 
 	// Time slider
@@ -439,7 +439,7 @@ QMenu* TBase::createToolbarMenu() {
 
 	// Use name "toolbar_menu" only for first
 	QString name = toolbar_menu ? "" : "toolbar_menu";
-    QMenu* menu = new TMenu(this, name, tr("&Toolbars"), "toolbars");
+    QMenu* menu = new TMenu(this, this, name, tr("&Toolbars"), "toolbars");
 
 	menu->addAction(viewMenuBarAct);
 	menu->addAction(toolbar->toggleViewAction());
@@ -2166,7 +2166,7 @@ void TBase::setStayOnTop(bool b) {
 	bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
 	if (b == stay_on_top) {
 		// identical do nothing
-		qDebug("Gui::TBase::setStayOnTop: nothing to do");
+        qDebug("Gui::TBase::setStayOnTop: WindowStaysOnTopHint flag already up2date");
 		return;
 	}
 
@@ -2188,12 +2188,12 @@ void TBase::setStayOnTop(bool b) {
 }
 
 void TBase::changeStayOnTop(int stay_on_top) {
-	qDebug("Gui::TBase::changeStayOnTop");
+    qDebug("Gui::TBase::changeStayOnTop: %d", stay_on_top);
 
-	switch (stay_on_top) {
-		case Settings::TPreferences::AlwaysOnTop : setStayOnTop(true); break;
-		case Settings::TPreferences::NeverOnTop  : setStayOnTop(false); break;
-		case Settings::TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == STATE_PLAYING)); break;
+    switch (stay_on_top) {
+        case TPreferences::AlwaysOnTop : setStayOnTop(true); break;
+        case TPreferences::NeverOnTop  : setStayOnTop(false); break;
+        case TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == STATE_PLAYING)); break;
 	}
 
 	pref->stay_on_top = (Settings::TPreferences::TOnTop) stay_on_top;
@@ -2211,11 +2211,10 @@ void TBase::checkStayOnTop(TCoreState state) {
 
 void TBase::toggleStayOnTop() {
 
-	if (pref->stay_on_top == Settings::TPreferences::AlwaysOnTop)
-		changeStayOnTop(Settings::TPreferences::NeverOnTop);
-	else
-	if (pref->stay_on_top == Settings::TPreferences::NeverOnTop)
-		changeStayOnTop(Settings::TPreferences::AlwaysOnTop);
+    if (pref->stay_on_top == Settings::TPreferences::NeverOnTop)
+        changeStayOnTop(Settings::TPreferences::AlwaysOnTop);
+    else
+        changeStayOnTop(Settings::TPreferences::NeverOnTop);
 }
 
 void TBase::onPlayerFinishedWithError(int exit_code) {

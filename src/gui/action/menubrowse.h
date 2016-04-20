@@ -17,7 +17,7 @@ class TMenuBrowse : public TMenu {
 	Q_OBJECT
 
 public:
-	TMenuBrowse(QWidget* parent, TCore* c);
+    TMenuBrowse(TBase* mw, TCore* c);
 
 protected:
 	virtual void enableActions(bool stopped, bool, bool);

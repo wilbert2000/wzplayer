@@ -3,6 +3,7 @@
 #include "settings/mediasettings.h"
 #include "gui/action/actiongroup.h"
 #include "core.h"
+#include "gui/base.h"
 
 using namespace Settings;
 
@@ -12,7 +13,7 @@ namespace Action {
 
 class TMenuCC : public TMenu {
 public:
-	explicit TMenuCC(QWidget* parent, TCore* c);
+    explicit TMenuCC(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -22,8 +23,8 @@ private:
 	TActionGroup* group;
 };
 
-TMenuCC::TMenuCC(QWidget *parent, TCore* c)
-    : TMenu(parent, "closed_captions_menu", tr("&Closed captions"), "closed_caption")
+TMenuCC::TMenuCC(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "closed_captions_menu", tr("&Closed captions"), "closed_caption")
 	, core(c) {
 
 	group = new TActionGroup(this, "cc");
@@ -36,7 +37,7 @@ TMenuCC::TMenuCC(QWidget *parent, TCore* c)
 	group->setChecked(core->mset.closed_caption_channel);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeClosedCaptionChannel(int)));
 	// Currently no one else sets it
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuCC::enableActions(bool stopped, bool, bool) {
@@ -54,8 +55,8 @@ void TMenuCC::onAboutToShow() {
 }
 
 
-TMenuSubFPS::TMenuSubFPS(QWidget *parent, TCore* c)
-    : TMenu(parent, "subfps_menu", tr("F&rames per second external subtitles"), "subfps")
+TMenuSubFPS::TMenuSubFPS(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "subfps_menu", tr("F&rames per second external subtitles"), "subfps")
 	, core(c) {
 
 	group = new TActionGroup(this, "subfps");
@@ -69,7 +70,7 @@ TMenuSubFPS::TMenuSubFPS(QWidget *parent, TCore* c)
 	group->setChecked(core->mset.external_subtitles_fps);
 	connect(group, SIGNAL(activated(int)), core, SLOT(changeExternalSubFPS(int)));
 	// No one else sets it
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuSubFPS::enableActions(bool stopped, bool, bool) {
@@ -85,49 +86,51 @@ void TMenuSubFPS::onAboutToShow() {
 }
 
 
-TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
-    : TMenu(parent, "subtitle_menu", tr("&Subtitles"), "noicon")
+TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "subtitle_menu", tr("&Subtitles"), "noicon")
 	, core(c) {
 
-	decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "sub_up", Qt::Key_R);
+    decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "sub_up");
 	connect(decSubPosAct, SIGNAL(triggered()), core, SLOT(decSubPos()));
-	incSubPosAct = new TAction(this, "inc_sub_pos", tr("&Down"), "sub_down", Qt::Key_T);
+    incSubPosAct = new TAction(this, "inc_sub_pos", tr("&Down"), "sub_down");
 	connect(incSubPosAct, SIGNAL(triggered()), core, SLOT(incSubPos()));
 
 	addSeparator();
-	decSubScaleAct = new TAction(this, "dec_sub_scale", tr("S&ize -"), "", Qt::SHIFT | Qt::Key_R);
+    decSubScaleAct = new TAction(this, "dec_sub_scale", tr("S&ize -"));
 	connect(decSubScaleAct, SIGNAL(triggered()), core, SLOT(decSubScale()));
-	incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Si&ze +"), "", Qt::SHIFT | Qt::Key_T);
+    incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Si&ze +"));
 	connect(incSubScaleAct, SIGNAL(triggered()), core, SLOT(incSubScale()));
 
 	addSeparator();
-	decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay &-"), "delay_down", Qt::Key_Z);
+    decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay &-"));
 	connect(decSubDelayAct, SIGNAL(triggered()), core, SLOT(decSubDelay()));
-	incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay &+"), "delay_up", Qt::Key_X);
+    incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay &+"));
 	connect(incSubDelayAct, SIGNAL(triggered()), core, SLOT(incSubDelay()));
-	subDelayAct = new TAction(this, "sub_delay", tr("Se&t delay..."), "sub_delay");
-	connect(subDelayAct, SIGNAL(triggered()), parent, SLOT(showSubDelayDialog()));
+    subDelayAct = new TAction(this, "sub_delay", tr("Se&t delay..."));
+    connect(subDelayAct, SIGNAL(triggered()), main_window, SLOT(showSubDelayDialog()));
 
 	addSeparator();
-	decSubStepAct = new TAction(this, "dec_sub_step", tr("&Previous line in subtitles"), "", Qt::Key_G);
+    decSubStepAct = new TAction(this, "dec_sub_step",
+        tr("&Previous line in subtitles"), "", Qt::SHIFT | Qt::Key_L);
 	connect(decSubStepAct, SIGNAL(triggered()), core, SLOT(decSubStep()));
-	incSubStepAct = new TAction(this, "inc_sub_step", tr("N&ext line in subtitles"), "", Qt::Key_Y);
+    incSubStepAct = new TAction(this, "inc_sub_step",
+        tr("N&ext line in subtitles"), "", Qt::Key_L);
 	connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
 
-	seekNextSubAct = new TAction(this, "seek_next_sub", tr("Seek to next subtitle"),
-								 "", Qt::CTRL | Qt::Key_Right, pref->isMPV());
+    seekNextSubAct = new TAction(this, "seek_next_sub",
+        tr("Seek to next subtitle"), "", Qt::Key_N, pref->isMPV());
 	connect(seekNextSubAct, SIGNAL(triggered()), core, SLOT(seekToNextSub()));
-	seekPrevSubAct = new TAction(this, "seek_prev_sub", tr("Seek to previous subtitle"),
-								 "", Qt::CTRL | Qt::Key_Left, pref->isMPV());
+    seekPrevSubAct = new TAction(this, "seek_prev_sub",
+        tr("Seek to previous subtitle"), "", Qt::SHIFT | Qt::Key_N, pref->isMPV());
 	connect(seekPrevSubAct, SIGNAL(triggered()), core, SLOT(seekToPrevSub()));
 
 	// Subtitle tracks
 	addSeparator();
-    subtitleTrackMenu = new TMenu(parent, "subtitlestrack_menu", tr("Subtitle &track"), "sub");
+    subtitleTrackMenu = new TMenu(main_window, main_window, "subtitlestrack_menu", tr("Subtitle &track"), "sub");
 	nextSubtitleAct = new TAction(this, "next_subtitle", tr("Next subtitle"), "", Qt::Key_J, false);
 	subtitleTrackMenu->addAction(nextSubtitleAct);
 	subtitleTrackMenu->addSeparator();
-	parent->addAction(nextSubtitleAct);
+    main_window->addAction(nextSubtitleAct);
 	addMenu(subtitleTrackMenu);
 	connect(nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()));
 
@@ -137,14 +140,14 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 	connect(core, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
 	// Secondary subtitle track
-    secondarySubtitleTrackMenu = new TMenu(parent, "secondary_subtitles_track_menu", tr("Secondary trac&k"), "secondary_sub");
+    secondarySubtitleTrackMenu = new TMenu(main_window, main_window, "secondary_subtitles_track_menu", tr("Secondary trac&k"), "secondary_sub");
 	if (pref->isMPV())
 		addMenu(secondarySubtitleTrackMenu);
 	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
 	connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSecondarySubtitle(int)));
 	connect(core, SIGNAL(secondarySubtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
-	addMenu(new TMenuCC(parent, core));
+    addMenu(new TMenuCC(main_window, core));
 
 	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", tr("&Forced subtitles only"), "forced_subs");
 	useForcedSubsOnlyAct->setCheckable(true);
@@ -153,10 +156,10 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 
 	addSeparator();
 	loadSubsAct = new TAction(this, "load_subs", tr("&Load subtitles..."), "open");
-	connect(loadSubsAct, SIGNAL(triggered()), parent, SLOT(loadSub()));
+    connect(loadSubsAct, SIGNAL(triggered()), main_window, SLOT(loadSub()));
 	unloadSubsAct = new TAction(this, "unload_subs", tr("U&nload subtitles"), "unload");
 	connect(unloadSubsAct, SIGNAL(triggered()), core, SLOT(unloadSub()));
-	subFPSMenu = new TMenuSubFPS(parent, core);
+    subFPSMenu = new TMenuSubFPS(main_window, core);
 	addMenu(subFPSMenu);
 
 	addSeparator();
@@ -168,13 +171,13 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TCore* c)
 #ifdef FIND_SUBTITLES
 	addSeparator();
 	showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog", tr("Find subtitles at &OpenSubtitles.org..."), "download_subs");
-	connect(showFindSubtitlesDialogAct, SIGNAL(triggered()), parent, SLOT(showFindSubtitlesDialog()));
+    connect(showFindSubtitlesDialogAct, SIGNAL(triggered()), main_window, SLOT(showFindSubtitlesDialog()));
 
 	openUploadSubtitlesPageAct = new TAction(this, "upload_subtitles", tr("Upload su&btitles to OpenSubtitles.org..."), "upload_subs");
-	connect(openUploadSubtitlesPageAct, SIGNAL(triggered()), parent, SLOT(openUploadSubtitlesPage()));
+    connect(openUploadSubtitlesPageAct, SIGNAL(triggered()), main_window, SLOT(openUploadSubtitlesPage()));
 #endif
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuSubtitle::enableActions(bool stopped, bool, bool) {

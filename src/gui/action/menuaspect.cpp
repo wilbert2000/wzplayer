@@ -1,8 +1,10 @@
 #include "gui/action/menuaspect.h"
-#include "gui/action/actiongroup.h"
-#include "settings/aspectratio.h"
-#include "settings/mediasettings.h"
+#include "gui/base.h"
 #include "core.h"
+#include "gui/action/actiongroup.h"
+#include "gui/action/menu.h"
+#include "settings/mediasettings.h"
+#include "settings/aspectratio.h"
 
 
 using namespace Settings;
@@ -11,8 +13,8 @@ namespace Gui {
 namespace Action {
 
 
-TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
-    : TMenu(parent, "aspect_menu", tr("&Aspect ratio"), "aspect")
+TMenuAspect::TMenuAspect(TBase* mw, TCore* c) :
+    TMenu(mw, mw, "aspect_menu", tr("&Aspect ratio"), "aspect")
 	, core(c) {
 
 	group = new TActionGroup(this, "aspect");
@@ -41,7 +43,7 @@ TMenuAspect::TMenuAspect(QWidget* parent, TCore* c)
     nextAspectAct = new TAction(this, "next_aspect", tr("&Next aspect ratio"), "", Qt::Key_A);
 	connect(nextAspectAct, SIGNAL(triggered()), core, SLOT(nextAspectRatio()));
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 	upd();
 }
 

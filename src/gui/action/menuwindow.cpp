@@ -1,8 +1,15 @@
 #include "gui/action/menuwindow.h"
+
+#include <QDebug>
+#include <QToolButton>
+
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
 #include "core.h"
-
+#include "images.h"
+#include "gui/base.h"
+#include "gui/action/action.h"
+#include "images.h"
 
 using namespace Settings;
 
@@ -11,7 +18,7 @@ namespace Action {
 
 class TMenuOSD : public TMenu {
 public:
-	explicit TMenuOSD(QWidget* parent, TCore* c);
+    explicit TMenuOSD(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);
 	virtual void onAboutToShow();
@@ -22,8 +29,8 @@ private:
 	TAction* showTimeAct;
 };
 
-TMenuOSD::TMenuOSD(QWidget *parent, TCore* c)
-    : TMenu(parent, "osd_menu", tr("&OSD"), "osd")
+TMenuOSD::TMenuOSD(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "osd_menu", tr("&OSD"), "osd")
 	, core(c) {
 
 	group = new TActionGroup(this, "osd");
@@ -41,19 +48,19 @@ TMenuOSD::TMenuOSD(QWidget *parent, TCore* c)
 	connect(a, SIGNAL(triggered()), core, SLOT(nextOSDLevel()));
 
 	addSeparator();
-	a = new TAction(this, "inc_osd_scale", tr("Size &+"), "", Qt::SHIFT | Qt::Key_U);
+    a = new TAction(this, "inc_osd_scale", tr("Size &+"), "", QKeySequence(")"));
 	connect(a, SIGNAL(triggered()), core, SLOT(incOSDScale()));
-	a = new TAction(this, "dec_osd_scale", tr("Size &-"), "", Qt::SHIFT | Qt::Key_Y);
+    a = new TAction(this, "dec_osd_scale", tr("Size &-"), "", QKeySequence("("));
 	connect(a, SIGNAL(triggered()), core, SLOT(decOSDScale()));
 
 	addSeparator();
-	showFilenameAct = new TAction(this, "show_filename", tr("Show filename on OSD"), "", Qt::SHIFT | Qt::Key_I);
+    showFilenameAct = new TAction(this, "show_filename", tr("Show filename on OSD"));
 	connect(showFilenameAct, SIGNAL(triggered()), core, SLOT(showFilenameOnOSD()));
 
-	showTimeAct = new TAction(this, "show_time", tr("Show playback time on OSD"), "", Qt::Key_I);
+    showTimeAct = new TAction(this, "show_time", tr("Show playback time on OSD"));
 	connect(showTimeAct, SIGNAL(triggered()), core, SLOT(showTimeOnOSD()));
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuOSD::enableActions(bool stopped, bool video, bool) {
@@ -67,8 +74,18 @@ void TMenuOSD::onAboutToShow() {
 	group->setChecked((int) pref->osd_level);
 }
 
-TMenuStayOnTop::TMenuStayOnTop(QWidget *parent) :
-    TMenu(parent, "stay_on_top_menu", tr("&Stay on top")) {
+static QString TStayOnTopToIconString(int stay_on_top) {
+
+    switch (stay_on_top) {
+    case TPreferences::NeverOnTop: return "stay_on_top_never";
+    case TPreferences::AlwaysOnTop:return "stay_on_top_always";
+    case TPreferences::WhilePlayingOnTop:return "stay_on_top_playing";
+    default: return "stay_on_top_toggle";
+    }
+}
+
+TMenuStayOnTop::TMenuStayOnTop(TBase* mw) :
+    TMenu(mw, mw, "stay_on_top_menu", tr("&Stay on top")) {
 
 	group = new TActionGroup(this, "ontop");
     new TActionGroupItem(this, group, "stay_on_top_always", tr("&Always"),
@@ -82,45 +99,67 @@ TMenuStayOnTop::TMenuStayOnTop(QWidget *parent) :
                          Settings::TPreferences::WhilePlayingOnTop,
                          true, true);
 	group->setChecked((int) pref->stay_on_top);
-	connect(group , SIGNAL(activated(int)), parent, SLOT(changeStayOnTop(int)));
-	connect(parent , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
+    connect(group , SIGNAL(activated(int)), main_window, SLOT(changeStayOnTop(int)));
+    connect(group , SIGNAL(activated(int)), this, SLOT(onActivated(int)));
+    connect(main_window , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
 
 	addSeparator();
 
-    QString icon;
-    switch (pref->stay_on_top) {
-    case TPreferences::NeverOnTop: icon = "stay_on_top_never"; break;
-    case TPreferences::AlwaysOnTop:icon = "stay_on_top_always"; break;;
-    case TPreferences::WhilePlayingOnTop:icon = "stay_on_top_playing"; break;;
-    default: icon = "stay_on_top_toggle";
-    }
-
-    toggleStayOnTopAct = new TAction(this, "toggle_stay_on_top",
+    toggleStayOnTopAct = new TAction(this, "stay_on_top_toggle",
                                      tr("Toggle stay on top"),
-                                     icon,
+                                     TStayOnTopToIconString(pref->stay_on_top),
                                      Qt::Key_T);
     connect(toggleStayOnTopAct, SIGNAL(triggered()),
-            parent, SLOT(toggleStayOnTop()));
+            main_window, SLOT(toggleStayOnTop()));
     connect(this, SIGNAL(triggered(QAction*)),
             this, SLOT(onTriggered(QAction*)));
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuStayOnTop::onTriggered(QAction* action) {
-    toggleStayOnTopAct->setIcon(action->icon());
+    // enum TOnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
+
+    qDebug() << "Gui::Action::TMenuStayOnTop::onTriggered action"
+             << action->objectName() << "pref" << pref->stay_on_top;
+
+    TPreferences::TOnTop stay_on_top;
+    if (action->objectName() == "stay_on_top_toggle") {
+        // Pref->stay_on_top not yet updated
+        if (pref->stay_on_top == TPreferences::NeverOnTop) {
+            stay_on_top = TPreferences::AlwaysOnTop;
+        } else {
+            stay_on_top = TPreferences::NeverOnTop;
+        }
+    } else {
+        stay_on_top = (TPreferences::TOnTop) action->data().toInt();
+    }
+
+    qDebug() << "Gui::Action::TMenuStayOnTop::onTriggered selected stay_on_top"
+             << stay_on_top;
+
+    QString icon_str = TStayOnTopToIconString(stay_on_top);
+    QIcon icon = Images::icon(icon_str);
+    toggleStayOnTopAct->setIcon(icon);
+
+    // Set default action asscociated tool buttons
+    QList<QToolButton*> buttons = main_window->findChildren<QToolButton*>(
+                                      objectName() + "_toolbutton");
+    foreach(QToolButton* button, buttons) {
+        button->setIcon(icon);
+    }
 }
 
 void TMenuStayOnTop::onAboutToShow() {
 	group->setChecked((int) pref->stay_on_top);
 }
 
-TMenuWindow::TMenuWindow(QWidget* parent,
-						   TCore* core,
-						   QMenu* toolBarMenu,
-						   QWidget* playlist,
-						   QWidget* logWindow)
-    : TMenu(parent, "window_menu", tr("&Window"), "noicon") {
+TMenuWindow::TMenuWindow(TBase* parent,
+                         TCore* core,
+                         QMenu* toolBarMenu,
+                         QWidget* playlist,
+                         QWidget* logWindow)
+    : TMenu(parent, parent, "window_menu", tr("&Window"), "noicon") {
 
 	// OSD
 	addMenu(new TMenuOSD(parent, core));
@@ -131,7 +170,7 @@ TMenuWindow::TMenuWindow(QWidget* parent,
 
 	addSeparator();
 	// Show playlist
-    TAction* a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist", QKeySequence("Ctrl+P"));
+    TAction* a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist", Qt::Key_P);
 	a->setCheckable(true);
 	connect(a, SIGNAL(triggered(bool)), parent, SLOT(showPlaylist(bool)));
 	connect(playlist, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
@@ -151,7 +190,7 @@ TMenuWindow::TMenuWindow(QWidget* parent,
 	a = new TAction(this, "show_config", tr("Open &configuration folder..."));
 	connect(a, SIGNAL(triggered()), parent, SLOT(showConfigFolder()));
 
-    a = new TAction(this, "show_preferences", tr("P&references..."), "prefs", QKeySequence("Alt+P"));
+    a = new TAction(this, "show_preferences", tr("P&references..."), "prefs");
 	connect(a, SIGNAL(triggered()), parent, SLOT(showPreferencesDialog()));
 
 	addActionsTo(parent);

@@ -2,19 +2,20 @@
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
 #include "core.h"
+#include "gui/base.h"
 
 
 namespace Gui {
 namespace Action {
 
 
-TMenuAudioTracks::TMenuAudioTracks(QWidget *parent, TCore* c)
-    : TMenu(parent, "audiotrack_menu", tr("Audio &track"), "audio_track")
+TMenuAudioTracks::TMenuAudioTracks(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "audiotrack_menu", tr("Audio &track"), "audio_track")
 	, core(c) {
 
 	// Next audio track
 	nextAudioTrackAct = new TAction(this, "next_audio_track", tr("Next audio track"), "", Qt::Key_K);
-	parent->addAction(nextAudioTrackAct);
+    main_window->addAction(nextAudioTrackAct);
 	connect(nextAudioTrackAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
 
 	addSeparator();

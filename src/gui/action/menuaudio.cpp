@@ -1,12 +1,14 @@
 #include "gui/action/menuaudio.h"
-#include <QWidget>
-#include "images.h"
-#include "settings/mediasettings.h"
+#include "gui/base.h"
 #include "core.h"
 #include "gui/action/actiongroup.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/menuaudiotracks.h"
 #include "gui/audioequalizer.h"
+#include "settings/mediasettings.h"
+#include "images.h"
+
+#include <QWidget>
 
 
 using namespace Settings;
@@ -17,7 +19,7 @@ namespace Action {
 
 class TMenuAudioChannel : public TMenu {
 public:
-	explicit TMenuAudioChannel(QWidget* parent, TCore* c);
+    explicit TMenuAudioChannel(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool video, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -28,8 +30,8 @@ private:
 };
 
 
-TMenuAudioChannel::TMenuAudioChannel(QWidget *parent, TCore* c)
-    : TMenu(parent, "audiochannels_menu", tr("&Channels"), "audio_channels")
+TMenuAudioChannel::TMenuAudioChannel(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "audiochannels_menu", tr("&Channels"), "audio_channels")
 	, core(c) {
 
 	group = new TActionGroup(this, "channels");
@@ -42,7 +44,7 @@ TMenuAudioChannel::TMenuAudioChannel(QWidget *parent, TCore* c)
 	group->setChecked(core->mset.audio_use_channels);
 	connect(group, SIGNAL(activated(int)), core, SLOT(setAudioChannels(int)));
 	// No one else sets it
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuAudioChannel::enableActions(bool stopped, bool, bool audio) {
@@ -61,7 +63,7 @@ void TMenuAudioChannel::onAboutToShow() {
 
 class TMenuStereo : public TMenu {
 public:
-	explicit TMenuStereo(QWidget* parent, TCore* c);
+    explicit TMenuStereo(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool audio);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
@@ -71,8 +73,8 @@ private:
 	TActionGroup* group;
 };
 
-TMenuStereo::TMenuStereo(QWidget *parent, TCore* c)
-    : TMenu(parent, "stereomode_menu", tr("&Stereo mode"), "stereo_mode")
+TMenuStereo::TMenuStereo(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "stereomode_menu", tr("&Stereo mode"), "stereo_mode")
 	, core(c) {
 
 	group = new TActionGroup(this, "stereo");
@@ -85,7 +87,7 @@ TMenuStereo::TMenuStereo(QWidget *parent, TCore* c)
 	group->setChecked(core->mset.stereo_mode);
 	connect(group, SIGNAL(activated(int)), core, SLOT(setStereoMode(int)));
 	// No one else changes it
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuStereo::enableActions(bool stopped, bool, bool audio) {
@@ -101,8 +103,8 @@ void TMenuStereo::onAboutToShow() {
 }
 
 
-TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualizer)
-    : TMenu(parent, "audio_menu", tr("&Audio"), "noicon")
+TMenuAudio::TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer)
+    : TMenu(mw, mw, "audio_menu", tr("&Audio"), "noicon")
 	, core(c) {
 
 	// Mute
@@ -134,7 +136,7 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
 
 	audioDelayAct = new TAction(this, "audio_delay", tr("Set dela&y..."));
-	connect(audioDelayAct, SIGNAL(triggered()), parent, SLOT(showAudioDelayDialog()));
+    connect(audioDelayAct, SIGNAL(triggered()), main_window, SLOT(showAudioDelayDialog()));
 
 	// Equalizer
 	addSeparator();
@@ -149,10 +151,10 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 
 	// Stereo and channel subs
 	addSeparator();
-	addMenu(new TMenuStereo(parent, core));
-	addMenu(new TMenuAudioChannel(parent, core));
+    addMenu(new TMenuStereo(main_window, core));
+    addMenu(new TMenuAudioChannel(main_window, core));
 	// Filter sub
-    audioFilterMenu = new TMenu(parent, "audiofilter_menu", tr("&Filters"), "audio_filters");
+    audioFilterMenu = new TMenu(main_window, main_window, "audiofilter_menu", tr("&Filters"), "audio_filters");
 	volnormAct = new TAction(this, "volnorm_filter", tr("Volume &normalization"), "", 0, false);
 	volnormAct->setCheckable(true);
 	audioFilterMenu->addAction(volnormAct);
@@ -172,16 +174,16 @@ TMenuAudio::TMenuAudio(QWidget* parent, TCore* c, TAudioEqualizer* audioEqualize
 
 	// Audio tracks
 	addSeparator();
-	addMenu(new TMenuAudioTracks(parent, core));
+    addMenu(new TMenuAudioTracks(main_window, core));
 
 	// Load/unload
 	addSeparator();
 	loadAudioAct = new TAction(this, "load_audio_file", tr("&Load external file..."), "open");
-	connect(loadAudioAct, SIGNAL(triggered()), parent, SLOT(loadAudioFile()));
+    connect(loadAudioAct, SIGNAL(triggered()), main_window, SLOT(loadAudioFile()));
 	unloadAudioAct = new TAction(this, "unload_audio_file", tr("&Unload"), "unload");
 	connect(unloadAudioAct, SIGNAL(triggered()), core, SLOT(unloadAudioFile()));
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuAudio::enableActions(bool stopped, bool, bool audio) {

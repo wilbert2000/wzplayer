@@ -3,12 +3,13 @@
 #include <QDebug>
 #include <QToolButton>
 
-#include "images.h"
-#include "core.h"
-#include "settings/preferences.h"
-#include "gui/action/action.h"
-#include "gui/action/widgetactions.h"
+#include "gui/base.h"
 #include "gui/playlist.h"
+#include "gui/action/widgetactions.h"
+#include "gui/action/action.h"
+#include "settings/preferences.h"
+#include "core.h"
+#include "images.h"
 
 
 using namespace Settings;
@@ -17,18 +18,17 @@ namespace Gui {
 namespace Action {
 
 TMenuSeek::TMenuSeek(QWidget* parent,
-                     QWidget* mainwindow,
+                     TBase* mainwindow,
                      const QString& name,
                      const QString& text,
                      const QString& icon,
                      const QString& sign) :
-    TMenu(parent, name, text, icon),
-    main_window(mainwindow),
+    TMenu(parent, mainwindow, name, text, icon),
     seek_sign(sign) {
 
     connect(this, SIGNAL(triggered(QAction*)),
             this, SLOT(onTriggered(QAction*)));
-    connect(mainwindow, SIGNAL(preferencesChanged()),
+    connect(main_window, SIGNAL(preferencesChanged()),
             this, SLOT(setJumpTexts()));
 }
 
@@ -132,13 +132,13 @@ void TMenuSeek::peerTriggered(QAction* action) {
 class TMenuSeekForward: public TMenuSeek {
 public:
     explicit TMenuSeekForward(QWidget* parent,
-                              QWidget* mainwindow,
+                              TBase* mainwindow,
                               TCore* core,
                               TPlaylist* playlist);
 };
 
 TMenuSeekForward::TMenuSeekForward(QWidget* parent,
-                                   QWidget* mainwindow,
+                                   TBase* mainwindow,
                                    TCore* core,
                                    TPlaylist* playlist) :
     TMenuSeek(parent, mainwindow, "forward_menu", tr("&Forward"), "forward1",
@@ -170,13 +170,13 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent,
 class TMenuSeekRewind: public TMenuSeek {
 public:
     explicit TMenuSeekRewind(QWidget* parent,
-                             QWidget* mainwindow,
+                             TBase* mainwindow,
                              TCore* core,
                              TPlaylist* playlist);
 };
 
 TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
-                                 QWidget* mainwindow,
+                                 TBase* mainwindow,
                                  TCore* core,
                                  TPlaylist* playlist) :
     TMenuSeek(parent, mainwindow, "rewind_menu", tr("&Rewind"), "rewind1",
@@ -207,7 +207,7 @@ TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
 
 class TMenuInOut : public TMenu {
 public:
-    explicit TMenuInOut(QWidget* parent, TCore* c);
+    explicit TMenuInOut(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -218,8 +218,8 @@ private:
 	TAction* repeatAct;
 };
 
-TMenuInOut::TMenuInOut(QWidget* parent, TCore* c)
-    : TMenu(parent, "in_out_points_menu", tr("&In-out points"))
+TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "in_out_points_menu", tr("&In-out points"))
 	, core(c) {
 
     // Put in group to enable/disable together, if we disable the menu users
@@ -247,7 +247,7 @@ TMenuInOut::TMenuInOut(QWidget* parent, TCore* c)
 	connect(repeatAct, SIGNAL(triggered(bool)), core, SLOT(toggleRepeat(bool)));
     // Currently no one sets it
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuInOut::enableActions(bool stopped, bool, bool) {
@@ -265,7 +265,7 @@ void TMenuInOut::onAboutToShow() {
 
 class TMenuPlaySpeed : public TMenu {
 public:
-	explicit TMenuPlaySpeed(QWidget* parent, TCore* c);
+    explicit TMenuPlaySpeed(TBase* mw, TCore* c);
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
 private:
@@ -274,52 +274,52 @@ private:
 };
 
 
-TMenuPlaySpeed::TMenuPlaySpeed(QWidget *parent, TCore *c)
-    : TMenu(parent, "speed_menu", tr("Sp&eed"), "speed")
+TMenuPlaySpeed::TMenuPlaySpeed(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "speed_menu", tr("Spee&d"), "speed")
 	, core(c) {
 
 	group = new QActionGroup(this);
 	group->setExclusive(false);
 	group->setEnabled(false);
 
-	// TODO: make checkable, to see if normal speed?
-	TAction* a = new TAction(this, "normal_speed", tr("&Normal speed"), "", Qt::Key_Backspace);
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(normalSpeed()));
+
+    TAction* a = new TAction(this, "normal_speed", tr("&Normal speed"), "", Qt::Key_S);
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(normalSpeed()));
+
+    addSeparator();
+    a = new TAction(this, "halve_speed", tr("&Half speed"), "", Qt::ALT | Qt::Key_S);
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(halveSpeed()));
+    a = new TAction(this, "double_speed", tr("&Double speed"), "", Qt::META | Qt::Key_S);
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(doubleSpeed()));
+
+    addSeparator();
+    a = new TAction(this, "dec_speed", tr("Speed &-10%"), "", Qt::SHIFT | Qt::Key_S);
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(decSpeed10()));
+    a = new TAction(this, "inc_speed", tr("Speed &+10%"), "", Qt::CTRL | Qt::Key_S);
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(incSpeed10()));
 
 	addSeparator();
-	a = new TAction(this, "halve_speed", tr("&Half speed"), "", Qt::Key_BraceLeft);
+    a = new TAction(this, "dec_speed_4", tr("Speed -&4%"), "", Qt::SHIFT | Qt::CTRL | Qt::Key_S);
 	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(halveSpeed()));
-	a = new TAction(this, "double_speed", tr("&Double speed"), "", Qt::Key_BraceRight);
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(doubleSpeed()));
-
-	addSeparator();
-	a = new TAction(this, "dec_speed", tr("Speed &-10%"), "", Qt::Key_BracketLeft);
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed10()));
-	a = new TAction(this, "inc_speed", tr("Speed &+10%"), "", Qt::Key_BracketRight);
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed10()));
-
-	addSeparator();
-	a = new TAction(this, "dec_speed_4", tr("Speed -&4%"));
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed4()));
-	a = new TAction(this, "inc_speed_4", tr("&Speed +4%"));
+    connect(a, SIGNAL(triggered()), core, SLOT(decSpeed4()));
+    a = new TAction(this, "inc_speed_4", tr("&Speed +4%"), "", Qt::ALT | Qt::CTRL | Qt::Key_S);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed4()));
 
 	addSeparator();
-	a = new TAction(this, "dec_speed_1", tr("Speed -&1%"));
+    a = new TAction(this, "dec_speed_1", tr("Speed -&1%"), "", Qt::SHIFT | Qt::META | Qt::Key_S);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed1()));
-	a = new TAction(this, "inc_speed_1", tr("S&peed +1%"));
+    a = new TAction(this, "inc_speed_1", tr("S&peed +1%"), "", Qt::CTRL | Qt::META | Qt::Key_S);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed1()));
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuPlaySpeed::enableActions(bool stopped, bool, bool) {
@@ -328,15 +328,15 @@ void TMenuPlaySpeed::enableActions(bool stopped, bool, bool) {
 }
 
 
-TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
-    : TMenu(parent, "play_menu", tr("&Play"), "noicon")
+TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
+    : TMenu(mw, mw, "play_menu", tr("&Play"), "noicon")
 	, core(c)
 	, playlist(plist)
 	, pauseIcon(Images::icon("pause"))
 	, playIcon(Images::icon("play")) {
 
     playAct = new TAction(this, "play", tr("Play"), "", Qt::Key_MediaPlay, false);
-	parent->addAction(playAct);
+    main_window->addAction(playAct);
 	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
 
 	playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play", Qt::Key_Space);
@@ -345,7 +345,7 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 
 	pauseAct = new TAction(this, "pause", tr("Pause"), "",
 						   QKeySequence("Media Pause"), false); // MCE remote key
-	parent->addAction(pauseAct);
+    main_window->addAction(pauseAct);
 	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
 
 	stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
@@ -356,10 +356,10 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 	addSeparator();
 
     // Forward menu
-    QMenu* fw = new TMenuSeekForward(this, parent, core, playlist);
+    QMenu* fw = new TMenuSeekForward(this, main_window, core, playlist);
     addMenu(fw);
     // Rewind menu
-    QMenu* rw = new TMenuSeekRewind(this, parent, core, playlist);
+    QMenu* rw = new TMenuSeekRewind(this, main_window, core, playlist);
     addMenu(rw);
 
     connect(fw, SIGNAL(triggered(QAction*)),
@@ -369,16 +369,16 @@ TMenuPlay::TMenuPlay(QWidget* parent, TCore* c, Gui::TPlaylist* plist)
 
     // Seek
     seekToAct = new TAction(this, "seek_to", tr("S&eek to..."), "", QKeySequence("Ctrl+G"));
-    connect(seekToAct, SIGNAL(triggered()), parent, SLOT(showSeekToDialog()));
+    connect(seekToAct, SIGNAL(triggered()), main_window, SLOT(showSeekToDialog()));
 
     // Speed submenu
     addSeparator();
-    addMenu(new TMenuPlaySpeed(parent, core));
+    addMenu(new TMenuPlaySpeed(main_window, core));
 
     // A-B submenu
-    addMenu(new TMenuInOut(parent, core));
+    addMenu(new TMenuInOut(main_window, core));
 
-	addActionsTo(parent);
+    addActionsTo(main_window);
 }
 
 void TMenuPlay::onStateChanged(TCoreState state) {

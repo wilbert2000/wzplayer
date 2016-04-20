@@ -3,6 +3,7 @@
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
 #include "core.h"
+#include "gui/base.h"
 
 
 using namespace Settings;
@@ -11,8 +12,8 @@ namespace Gui {
 namespace Action {
 
 
-TMenuVideoFilter::TMenuVideoFilter(QWidget *parent, TCore *c)
-    : TMenu(parent, "videofilter_menu", tr("F&ilters"), "video_filters")
+TMenuVideoFilter::TMenuVideoFilter(TBase* mw, TCore *c)
+    : TMenu(mw, mw, "videofilter_menu", tr("F&ilters"), "video_filters")
 	, core(c) {
 
 	group = new QActionGroup(this);
@@ -60,27 +61,27 @@ TMenuVideoFilter::TMenuVideoFilter(QWidget *parent, TCore *c)
 	connect(phaseAct, SIGNAL(triggered(bool)), core, SLOT(toggleAutophase(bool)));
 
 	// Denoise
-    TMenu* menu = new TMenu(this, "denoise_menu", tr("De&noise"), "denoise");
+    TMenu* menu = new TMenu(this, main_window, "denoise_menu", tr("De&noise"), "denoise");
 	denoiseGroup = new TActionGroup(this, "denoise");
 	denoiseGroup->setEnabled(false);
 	denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none", tr("&Off"), TMediaSettings::NoDenoise, false);
 	denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", tr("&Normal"), TMediaSettings::DenoiseNormal, false);
 	denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", tr("&Soft"), TMediaSettings::DenoiseSoft, false);
 	menu->addActions(denoiseGroup->actions());
-	menu->addActionsTo(parent);
+    menu->addActionsTo(main_window);
 	addMenu(menu);
 	connect(denoiseGroup, SIGNAL(activated(int)), core, SLOT(changeDenoise(int)));
 	connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowDenoise()));
 
 	// Unsharp group
-    menu = new TMenu(this, "unsharp_menu", tr("Blur/S&harp"), "unsharp");
+    menu = new TMenu(this, main_window, "unsharp_menu", tr("Blur/S&harp"), "unsharp");
 	unsharpGroup = new TActionGroup(this, "unsharp");
 	unsharpGroup->setEnabled(false);
 	unsharpNoneAct = new TActionGroupItem(this, unsharpGroup, "unsharp_off", tr("&None"), 0, false);
 	blurAct = new TActionGroupItem(this, unsharpGroup, "blur", tr("&Blur"), 1, false);
 	sharpenAct = new TActionGroupItem(this, unsharpGroup, "sharpen", tr("&Sharpen"), 2, false);
 	menu->addActions(unsharpGroup->actions());
-	menu->addActionsTo(parent);
+    menu->addActionsTo(main_window);
 	addMenu(menu);
 	connect(unsharpGroup, SIGNAL(activated(int)), core, SLOT(changeUnsharp(int)));
 	connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowUnSharp()));

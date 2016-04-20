@@ -21,10 +21,10 @@ class TActionGroup;
 class TMenuVideo : public TMenu {
 	Q_OBJECT
 public:
-	TMenuVideo(TBase* parent,
-			   TCore* c,
-			   TPlayerWindow* playerwindow,
-			   TVideoEqualizer* videoEqualizer);
+    TMenuVideo(TBase* mw,
+               TCore* c,
+               TPlayerWindow* playerwindow,
+               TVideoEqualizer* videoEqualizer);
 
 protected:
 	virtual void enableActions(bool stopped, bool video, bool);

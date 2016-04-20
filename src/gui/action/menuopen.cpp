@@ -20,7 +20,7 @@ public:
 };
 
 TMenuDisc::TMenuDisc(TBase* parent)
-    : TMenu(parent, "disc_menu", tr("Open d&isc"), "open_disc") {
+    : TMenu(parent, parent, "disc_menu", tr("Open d&isc"), "open_disc") {
 
 	// DVD
 	TAction* a = new TAction(this, "open_dvd", tr("&DVD from drive"), "dvd");
@@ -42,9 +42,8 @@ TMenuDisc::TMenuDisc(TBase* parent)
 }
 
 
-TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
-    : TMenu(parent, "open_menu", tr("&Open"), "noicon")
-	, main_window(parent) {
+TMenuOpen::TMenuOpen(TBase* mw, QWidget* playlist)
+    : TMenu(mw, mw, "open_menu", tr("&Open"), "noicon") {
 
 	// Open URL
     TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "url", QKeySequence("Ctrl+U"));
@@ -54,17 +53,17 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	addSeparator();
 
 	// Open file
-    a = new TAction(this, "open_file", tr("Open &file..."), "open", QKeySequence("Ctrl+F"));
+    a = new TAction(this, "open_file", tr("Open &file..."), "open", QKeySequence("Ctrl+O"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
 
 	// Open dir
-    a = new TAction(this, "open_directory", tr("Open &directory..."), "openfolder");
+    a = new TAction(this, "open_directory", tr("Open &directory..."), "openfolder", QKeySequence("Ctrl+D"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
 
 	// Open playlist
-    a = new TAction(this, "open_playlist", tr("Open &playlist..."));
+    a = new TAction(this, "open_playlist", tr("Open &playlist..."), "", QKeySequence("Ctrl+P"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
 
@@ -74,7 +73,7 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	addSeparator();
 
 	// Recents
-    recentfiles_menu = new TMenu(main_window, "recent_menu", tr("&Recent files"), "recents");
+    recentfiles_menu = new TMenu(main_window, main_window, "recent_menu", tr("&Recent files"), "recents");
 	clearRecentsAct = new TAction(this, "clear_recents", tr("&Clear"), "delete", 0, false);
 	main_window->addAction(clearRecentsAct);
 	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
@@ -111,10 +110,8 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	fav->editAct()->setObjectName("edit_tv_list");
 	fav->jumpAct()->setObjectName("jump_tv_list");
 	fav->nextAct()->setObjectName("next_tv");
-	fav->nextAct()->setShortcut(Qt::Key_H);
-	fav->previousAct()->setObjectName("previous_tv");
-	fav->previousAct()->setShortcut(Qt::Key_L);
-	fav->addCurrentAct()->setObjectName("add_current_tv");
+    fav->previousAct()->setObjectName("previous_tv");
+    fav->addCurrentAct()->setObjectName("add_current_tv");
 	main_window->addAction(fav->editAct());
 	main_window->addAction(fav->jumpAct());
 	main_window->addAction(fav->nextAct());
@@ -133,10 +130,8 @@ TMenuOpen::TMenuOpen(TBase* parent, QWidget* playlist)
 	fav->editAct()->setObjectName("edit_radio_list");
 	fav->jumpAct()->setObjectName("jump_radio_list");
 	fav->nextAct()->setObjectName("next_radio");
-	fav->nextAct()->setShortcut(Qt::SHIFT | Qt::Key_H);
-	fav->previousAct()->setObjectName("previous_radio");
-	fav->previousAct()->setShortcut(Qt::SHIFT | Qt::Key_L);
-	fav->addCurrentAct()->setObjectName("add_current_radio");
+    fav->previousAct()->setObjectName("previous_radio");
+    fav->addCurrentAct()->setObjectName("add_current_radio");
 	main_window->addAction(fav->editAct());
 	main_window->addAction(fav->jumpAct());
 	main_window->addAction(fav->nextAct());

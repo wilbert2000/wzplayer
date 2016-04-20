@@ -7,6 +7,9 @@
 class TCore;
 
 namespace Gui {
+
+class TBase;
+
 namespace Action {
 
 class TAction;
@@ -15,7 +18,7 @@ class TActionGroup;
 
 class TMenuSubFPS : public TMenu {
 public:
-	explicit TMenuSubFPS(QWidget* parent, TCore* c);
+    explicit TMenuSubFPS(TBase* mw, TCore* c);
 	TActionGroup* group;
 protected:
 	virtual void enableActions(bool stopped, bool, bool);
@@ -29,7 +32,7 @@ private:
 class TMenuSubtitle : public TMenu {
 	Q_OBJECT
 public:
-	TMenuSubtitle(QWidget* parent, TCore* c);
+    TMenuSubtitle(TBase* mw, TCore* c);
 	TAction* useForcedSubsOnlyAct;
 	TAction* useCustomSubStyleAct;
 

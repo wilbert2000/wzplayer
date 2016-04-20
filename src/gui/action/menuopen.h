@@ -16,10 +16,9 @@ class TAction;
 class TMenuOpen : public TMenu {
 	Q_OBJECT
 public:
-	explicit TMenuOpen(TBase* parent, QWidget* playlist);
+    explicit TMenuOpen(TBase* mw, QWidget* playlist);
 	void updateRecents();
 private:
-	TBase* main_window;
 	TMenu* recentfiles_menu;
 	TAction* clearRecentsAct;
 private slots:

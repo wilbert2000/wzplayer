@@ -2,19 +2,20 @@
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
 #include "core.h"
+#include "gui/base.h"
 
 
 namespace Gui {
 namespace Action {
 
 
-TMenuVideoTracks::TMenuVideoTracks(QWidget *parent, TCore* c)
-    : TMenu(parent, "videotrack_menu", tr("&Video track"), "video_track")
+TMenuVideoTracks::TMenuVideoTracks(TBase* mw, TCore* c)
+    : TMenu(mw, mw, "videotrack_menu", tr("&Video track"), "video_track")
 	, core(c) {
 
 	// Next video track
 	nextVideoTrackAct = new TAction(this, "next_video_track", tr("Next video track"));
-	parent->addAction(nextVideoTrackAct);
+    main_window->addAction(nextVideoTrackAct);
 	connect(nextVideoTrackAct, SIGNAL(triggered()), core, SLOT(nextVideoTrack()));
 
 	addSeparator();
