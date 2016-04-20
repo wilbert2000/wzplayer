@@ -53,7 +53,6 @@ protected slots:
 	void displayFrame(int frame);
 	void displayInOutPoints();
 	void displayVideoInfo();
-    void db(bool v);
 
 private:
     QLabel* time_display;

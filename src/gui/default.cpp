@@ -53,28 +53,39 @@ void TDefault::createActions() {
 	statusbar_menu->addAction(viewVideoInfoAct);
 	connect(viewVideoInfoAct, SIGNAL(toggled(bool)), video_info_display, SLOT(setVisible(bool)));
 
-	viewFrameCounterAct = new Action::TAction(this, "toggle_frame_counter", tr("&Frame counter"), "frame_counter");
+    viewVideoTimeAct = new Action::TAction(this, "toggle_video_time", tr("&Video time"), "view_video_time");
+    viewVideoTimeAct->setCheckable(true);
+    statusbar_menu->addAction(viewVideoTimeAct);
+    connect(viewVideoTimeAct, SIGNAL(toggled(bool)), time_display, SLOT(setVisible(bool)));
+
+    viewFrameCounterAct = new Action::TAction(this, "toggle_frame_counter", tr("&Frame counter"), "frame_counter");
 	viewFrameCounterAct->setCheckable(true);
 	statusbar_menu->addAction(viewFrameCounterAct);
-	connect(viewFrameCounterAct, SIGNAL(toggled(bool)), frame_display, SLOT(setVisible(bool)));
+    connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
+            frame_display, SLOT(setVisible(bool)));
 }
 
 void TDefault::createStatusBar() {
 	qDebug("Gui::TDefault::createStatusBar");
 
-	time_display = new QLabel(statusBar());
-	time_display->setObjectName("time_display");
-	time_display->setAlignment(Qt::AlignRight);
-	time_display->setFrameShape(QFrame::NoFrame);
-	time_display->setText(" 88:88:88 / 88:88:88 ");
-	time_display->setMinimumSize(time_display->sizeHint());
+    const int margin = 1;
 
-	frame_display = new QLabel(statusBar());
-	frame_display->setObjectName("frame_display");
-	frame_display->setAlignment(Qt::AlignRight);
-	frame_display->setFrameShape(QFrame::NoFrame);
-	frame_display->setText("88888888");
-	frame_display->setMinimumSize(frame_display->sizeHint());
+    frame_display = new QLabel(statusBar());
+    frame_display->setObjectName("frame_display");
+    frame_display->setAlignment(Qt::AlignRight);
+    frame_display->setFrameShape(QFrame::NoFrame);
+    frame_display->setMargin(margin);
+    frame_display->setIndent(margin);
+    frame_display->setText("0");
+    frame_display->hide();
+
+    time_display = new QLabel(statusBar());
+	time_display->setObjectName("time_display");
+    time_display->setAlignment(Qt::AlignRight);
+	time_display->setFrameShape(QFrame::NoFrame);
+    time_display->setMargin(margin);
+    time_display->setText(" 00:00:00 / 00:00:00 ");
+    time_display->hide();
 
     // Controls its own visibility, so no hide()
     in_out_points_label = new QLabel(statusBar());
@@ -85,8 +96,10 @@ void TDefault::createStatusBar() {
 
 	video_info_display = new QLabel(statusBar());
 	video_info_display->setObjectName("video_info_display");
-	//video_info_display->setAlignment(Qt::AlignRight);
 	video_info_display->setFrameShape(QFrame::NoFrame);
+    video_info_display->setMargin(margin);
+    video_info_display->setIndent(margin);
+    video_info_display->hide();
 
 	statusBar()->setAutoFillBackground(true);
 
@@ -107,18 +120,7 @@ void TDefault::createStatusBar() {
     statusBar()->addPermanentWidget(time_display, 0);
     statusBar()->addPermanentWidget(frame_display, 0);
 
-	statusBar()->showMessage(tr("Ready"));
-	statusBar()->addPermanentWidget(frame_display, 0);
-	frame_display->setText("0");
-
-	statusBar()->addPermanentWidget(time_display, 0);
-	time_display->setText(" 00:00:00 / 00:00:00 ");
-
-	time_display->show();
-	frame_display->hide();
-    video_info_display->show();
-
-	connect(this, SIGNAL(timeChanged(QString)),
+    connect(this, SIGNAL(timeChanged(QString)),
 			this, SLOT(displayTime(QString)));
 	connect(this, SIGNAL(frameChanged(int)),
 			this, SLOT(displayFrame(int)));
@@ -133,10 +135,11 @@ void TDefault::createStatusBar() {
 }
 
 void TDefault::displayTime(QString text) {
-	time_display->setText(text);
+    time_display->setText(text);
 }
 
 void TDefault::displayFrame(int frame) {
+
 	if (frame_display->isVisible()) {
 		frame_display->setNum(frame);
 	}
@@ -193,7 +196,7 @@ void TDefault::onMediaInfoChanged() {
 	qDebug("Gui::TDefault::onMediaInfoChanged");
 
 	TBasePlus::onMediaInfoChanged();
-	displayVideoInfo();
+    displayVideoInfo();
 }
 
 void TDefault::saveConfig() {
@@ -203,7 +206,8 @@ void TDefault::saveConfig() {
 
 	pref->beginGroup(settingsGroupName());
 	pref->setValue("video_info", viewVideoInfoAct->isChecked());
-	pref->setValue("frame_counter", viewFrameCounterAct->isChecked());
+    pref->setValue("video_time", viewVideoTimeAct->isChecked());
+    pref->setValue("frame_counter", viewFrameCounterAct->isChecked());
 	pref->endGroup();
 }
 
@@ -214,7 +218,8 @@ void TDefault::loadConfig() {
 
 	pref->beginGroup(settingsGroupName());
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
-	viewFrameCounterAct->setChecked(pref->value("frame_counter", false).toBool());
+    viewVideoTimeAct->setChecked(pref->value("video_time", true).toBool());
+    viewFrameCounterAct->setChecked(pref->value("frame_counter", true).toBool());
 	pref->endGroup();
 }
 
