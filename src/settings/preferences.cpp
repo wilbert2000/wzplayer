@@ -149,7 +149,7 @@ void TPreferences::reset() {
 	initial_gamma = 0;
 
 	osd_level = None;
-	osd_scale = 1;
+    osd_scale = 0.5;
 	subfont_osd_scale = 3;
 
 
