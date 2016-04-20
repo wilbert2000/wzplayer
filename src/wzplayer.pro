@@ -49,7 +49,7 @@ HEADERS += version.h \
 	discname.h \
 	extensions.h \
     desktop.h \
-    proc/errormsg.h \
+    proc/exitmsg.h \
     proc/process.h \
 	proc/playerprocess.h \
     proc/mpvprocess.h \
@@ -172,7 +172,7 @@ SOURCES	+= version.cpp \
 	discname.cpp \
 	extensions.cpp \
     desktop.cpp \
-    proc/errormsg.cpp \
+    proc/exitmsg.cpp \
     proc/process.cpp \
     proc/playerprocess.cpp \
     proc/mpvprocess.cpp \

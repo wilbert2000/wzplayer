@@ -26,7 +26,7 @@
 #include <QTimer>
 
 #include "config.h"
-#include "proc/errormsg.h"
+#include "proc/exitmsg.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "subtracks.h"
@@ -1084,7 +1084,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	if (rx_error_open.indexIn(line) >= 0) {
 		if (exit_code_override == 0 && rx_error_open.cap(1) == md->filename) {
 			qDebug("Proc::TMPlayerProcess::parseLine: storing open failed");
-			exit_code_override = TErrorMsg::ERR_OPEN;
+			exit_code_override = TExitMsg::ERR_OPEN;
 		} else {
 			qDebug("Proc::TMPlayerProcess::parseLine: skipped open failed");
 		}
@@ -1092,18 +1092,18 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	}
 	if (rx_error_http_403.indexIn(line) >= 0) {
 		qDebug("Proc::TMPlayerProcess::parseLine: storing HTTP 403");
-		exit_code_override = TErrorMsg::ERR_HTTP_403;
+		exit_code_override = TExitMsg::ERR_HTTP_403;
 		return true;
 	}
 	if (rx_error_http_404.indexIn(line) >= 0) {
 		qDebug("Proc::TMPlayerProcess::parseLine: storing HTTP 404");
-		exit_code_override = TErrorMsg::ERR_HTTP_404;
+		exit_code_override = TExitMsg::ERR_HTTP_404;
 		return true;
 	}
 	if (rx_error_no_stream_found.indexIn(line) >= 0) {
 		if (exit_code_override == 0) {
 			qDebug("Proc::TMPlayerProcess::parseLine: storing no stream");
-			exit_code_override = TErrorMsg::ERR_NO_STREAM_FOUND;
+			exit_code_override = TExitMsg::ERR_NO_STREAM_FOUND;
 		} else {
 			qDebug("Proc::TMPlayerProcess::parseLine: skipped no stream");
 		}

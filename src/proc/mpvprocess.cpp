@@ -25,7 +25,7 @@
 #include <QApplication>
 
 #include "config.h"
-#include "proc/errormsg.h"
+#include "proc/exitmsg.h"
 #include "proc/playerprocess.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
@@ -254,7 +254,7 @@ void TMPVProcess::fixTitle() {
 	}
 
 	// Accept defeat
-	quit(TErrorMsg::ERR_TITLE_NOT_FOUND);
+	quit(TExitMsg::ERR_TITLE_NOT_FOUND);
 }
 
 void TMPVProcess::checkTime(double sec) {
@@ -639,30 +639,30 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Errors
 	if (rx_file_open.indexIn(line) >= 0) {
 		qDebug("MVPProcess::parseLine: stored file open failed");
-		exit_code_override = TErrorMsg::ERR_FILE_OPEN;
-		TErrorMsg::setExitCodeMsg(rx_file_open.cap(1));
+		exit_code_override = TExitMsg::ERR_FILE_OPEN;
+		TExitMsg::setExitCodeMsg(rx_file_open.cap(1));
 		return true;
 	}
 	if (rx_failed_open.indexIn(line) >= 0) {
 		if (exit_code_override == 0 && rx_failed_open.cap(1) == md->filename) {
 			qDebug("MVPProcess::parseLine: stored open failed");
-			exit_code_override = TErrorMsg::ERR_OPEN;
+			exit_code_override = TExitMsg::ERR_OPEN;
 		} else {
 			qDebug("MVPProcess::parseLine: skipped open failed");
 		}
 	}
 	if (rx_failed_format.indexIn(line) >= 0) {
 		qDebug("MVPProcess::parseLine: stored unrecognized file format");
-		exit_code_override = TErrorMsg::ERR_FILE_FORMAT;
+		exit_code_override = TExitMsg::ERR_FILE_FORMAT;
 	}
 	if (rx_error_http_403.indexIn(line) >= 0) {
 		qDebug("MVPProcess::parseLine: stored HTTP 403");
-		exit_code_override = TErrorMsg::ERR_HTTP_403;
+		exit_code_override = TExitMsg::ERR_HTTP_403;
 		return true;
 	}
 	if (rx_error_http_404.indexIn(line) >= 0) {
 		qDebug("MVPProcess::parseLine: stored HTTP 404");
-		exit_code_override = TErrorMsg::ERR_HTTP_404;
+		exit_code_override = TExitMsg::ERR_HTTP_404;
 		return true;
 	}
 

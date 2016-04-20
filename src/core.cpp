@@ -44,7 +44,7 @@
 #include "settings/tvsettings.h"
 #include "settings/filters.h"
 
-#include "proc/errormsg.h"
+#include "proc/exitmsg.h"
 #include "proc/playerprocess.h"
 #include "playerwindow.h"
 #include "gui/action/tvlist.h"
@@ -2610,8 +2610,10 @@ void TCore::onReceivedPosition(double sec) {
 
 	mset.current_sec = sec;
 
+    // Handle in-out points
     bool force_update_gui = false;
 
+    // Handle in point
     if (mset.current_sec < mset.in_point) {
         if (!seeking_in_point) {
             seeking_in_point = true;
@@ -2623,6 +2625,7 @@ void TCore::onReceivedPosition(double sec) {
         force_update_gui = true;
     }
 
+    // Handle ou point
     if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
         if (mset.loop) {
             if (mset.in_point >= 0 && mset.in_point < mset.out_point) {
@@ -2634,7 +2637,7 @@ void TCore::onReceivedPosition(double sec) {
         }
         if (!seeking_out_point) {
             seeking_out_point = true;
-            proc->quit(Proc::TErrorMsg::EXIT_OUT_POINT_REACHED);
+            proc->quit(Proc::TExitMsg::EXIT_OUT_POINT_REACHED);
             force_update_gui = true;
         }
     } else if (seeking_out_point) {

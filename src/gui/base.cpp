@@ -42,7 +42,7 @@
 #include <QMimeData>
 #include <QNetworkProxy>
 
-#include "proc/errormsg.h"
+#include "proc/exitmsg.h"
 #include "version.h"
 #include "desktop.h"
 #include "discname.h"
@@ -2220,7 +2220,7 @@ void TBase::toggleStayOnTop() {
 void TBase::onPlayerFinishedWithError(int exit_code) {
 	qDebug("Gui::TBase::onPlayerFinishedWithError: %d", exit_code);
 
-	QString msg = Proc::TErrorMsg::message(exit_code) + " (" + core->mdat.filename + ")";
+	QString msg = Proc::TExitMsg::message(exit_code) + " (" + core->mdat.filename + ")";
 	displayMessage(msg, 0);
 
 	static bool busy = false;
@@ -2235,7 +2235,7 @@ void TBase::onPlayerFinishedWithError(int exit_code) {
 
 void TBase::onPlayerError(QProcess::ProcessError e) {
 	qDebug("Gui::TBase::onPlayerError: %d", e);
-	onPlayerFinishedWithError(Proc::TErrorMsg::processErrorToErrorID(e));
+	onPlayerFinishedWithError(Proc::TExitMsg::processErrorToErrorID(e));
 }
 
 

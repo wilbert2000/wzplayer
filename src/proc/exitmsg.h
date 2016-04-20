@@ -1,15 +1,14 @@
-#ifndef PROC_ERRORMSG_H
-#define PROC_ERRORMSG_H
+#ifndef PROC_EXITMSG_H
+#define PROC_EXITMSG_H
 
 #include <QString>
 #include <QProcess>
 
 namespace Proc {
 
-// TODO: rename exit msg
-class TErrorMsg {
+class TExitMsg {
 public:
-	enum TErrorMsgID {
+    enum TExitMsgID {
         EXIT_COUNT = 15,
         EXIT_LAST_ID = 255,
         ERR_FIRST_ID = EXIT_LAST_ID - EXIT_COUNT + 1,
@@ -31,8 +30,8 @@ public:
 
 	static QString message(int id);
 	static void setExitCodeMsg(const QString& msg);
-	static TErrorMsgID processErrorToErrorID(QProcess::ProcessError error) {
-		return (TErrorMsgID) (ERR_FAILED_TO_START + error);
+    static TExitMsgID processErrorToErrorID(QProcess::ProcessError error) {
+        return (TExitMsgID) (ERR_FAILED_TO_START + error);
 	}
 
 private:
@@ -41,4 +40,4 @@ private:
 
 } // namespace Proc
 
-#endif // PROC_ERRORMSG_H
+#endif // PROC_EXITMSG_H

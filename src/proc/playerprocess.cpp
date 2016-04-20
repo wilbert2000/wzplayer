@@ -23,7 +23,7 @@
 #include <QDir>
 #include <QFileInfo>
 
-#include "proc/errormsg.h"
+#include "proc/exitmsg.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
 
@@ -89,7 +89,7 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData*
 bool TPlayerProcess::startPlayer() {
 
 	exit_code_override = 0;
-	TErrorMsg::setExitCodeMsg("");
+	TExitMsg::setExitCodeMsg("");
 
 	notified_player_is_running = false;
 
@@ -328,7 +328,7 @@ bool TPlayerProcess::parseLine(QString& line) {
 
 	if (rx_no_disk.indexIn(line) >= 0) {
 		qWarning("Proc::TPlayerProcess::parseLine: no disc in device");
-		quit(TErrorMsg::ERR_NO_DISC);
+		quit(TExitMsg::ERR_NO_DISC);
 		return true;
 	}
 

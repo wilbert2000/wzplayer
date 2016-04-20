@@ -1,18 +1,18 @@
-#include "proc/errormsg.h"
+#include "proc/exitmsg.h"
 #include <QApplication>
 
 
 namespace Proc {
 
-QString TErrorMsg::exitCodeMsg;
+QString TExitMsg::exitCodeMsg;
 
-void TErrorMsg::setExitCodeMsg(const QString &msg) {
+void TExitMsg::setExitCodeMsg(const QString &msg) {
 	exitCodeMsg = msg;
 }
 
-QString TErrorMsg::message(int id) {
+QString TExitMsg::message(int id) {
 
-	static const char* c = "Proc::TErrorMsg";
+	static const char* c = "Proc::TExitMsg";
 	static const char* msgs[] = {
 		QT_TRANSLATE_NOOP(c, "The player failed to start. Please check the player path in the preferences dialog."),
 		QT_TRANSLATE_NOOP(c, "The player quit unexpectedly"),
