@@ -324,6 +324,8 @@ protected:
 
 	QString pending_actions_to_run;
 
+    bool state_restored;
+
 private:
 	bool menubar_visible;
 	bool statusbar_visible;

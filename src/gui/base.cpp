@@ -842,13 +842,16 @@ void TBase::loadConfig() {
 
 	menubar_visible = pref->value("menubar_visible", menubar_visible).toBool();
 	viewMenuBarAct->setChecked(menubar_visible);
-	fullscreen_menubar_visible = pref->value("fullscreen_menubar_visible", fullscreen_menubar_visible).toBool();
+    fullscreen_menubar_visible = pref->value("fullscreen_menubar_visible",
+        fullscreen_menubar_visible).toBool();
 
 	statusbar_visible = pref->value("statusbar_visible", statusbar_visible).toBool();
 	viewStatusBarAct->setChecked(statusbar_visible);
-	fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible", fullscreen_statusbar_visible).toBool();
+    fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible",
+        fullscreen_statusbar_visible).toBool();
 
-	restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion());
+    state_restored = restoreState(pref->value("toolbars_state").toByteArray(),
+                                  Helper::qtVersion());
 
 	pref->endGroup();
 
@@ -1603,7 +1606,7 @@ void TBase::didEnterFullscreen() {
 	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
 					  Helper::qtVersion())) {
 		// First time there is no fullscreen toolbar state
-		qWarning("Gui::TBase::didEnterFullscreen: failed to restore fullscreen toolbar state");
+        qDebug("Gui::TBase::didEnterFullscreen: failed to restore fullscreen toolbar state");
 		toolbar->hide();
 		toolbar2->hide();
 	}
@@ -1641,7 +1644,7 @@ void TBase::didExitFullscreen() {
 
 	pref->beginGroup(settingsGroupName());
 	if (!restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion()))
-		qWarning("Gui::TBase::didExitFullscreen: failed to restore toolbar state");
+        qDebug("Gui::TBase::didExitFullscreen: failed to restore toolbar state");
 	pref->endGroup();
 
 	emit didExitFullscreenSignal();
