@@ -36,7 +36,7 @@ class TWidgetAction : public QWidgetAction {
 
 public:
 	TWidgetAction(QWidget* parent);
-	~TWidgetAction();
+    virtual ~TWidgetAction();
 
 	void setCustomStyle(QStyle* style) { custom_style = style; }
 	QStyle* customStyle() const { return custom_style; }
@@ -96,7 +96,7 @@ class TVolumeSliderAction : public TWidgetAction {
 
 public:
 	TVolumeSliderAction(QWidget* parent, int vol);
-	~TVolumeSliderAction();
+    virtual ~TVolumeSliderAction();
 
 	void setFixedSize(QSize size) { fixed_size = size; }
 	QSize fixedSize() const { return fixed_size; }
