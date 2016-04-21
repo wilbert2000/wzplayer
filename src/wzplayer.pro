@@ -38,8 +38,8 @@ isEqual(QT_MAJOR_VERSION, 5) {
 	}
 }
 
-contains(QT_VERSION, ^4\\.[0-3]\\..*) {
-    error("Qt > 4.3 required")
+contains(QT_VERSION, ^4\\.[0-5]\\..*) {
+    error("Qt >= 4.6 required")
 }
 
 HEADERS += version.h \

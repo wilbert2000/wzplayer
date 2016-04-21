@@ -317,12 +317,10 @@ TApp::ExitCode TApp::processArgs() {
 			Settings::pref->stay_on_top = Settings::TPreferences::NeverOnTop;
 		} else {
 			// File
-#if QT_VERSION >= 0x040600
 			QUrl fUrl = QUrl::fromUserInput(argument);
 			if (fUrl.isValid() && fUrl.scheme().toLower() == "file") {
 				argument = fUrl.toLocalFile();
 			}
-#endif
 			if (QFile::exists(argument)) {
 				argument = QFileInfo(argument).absoluteFilePath();
 			}

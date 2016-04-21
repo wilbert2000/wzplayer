@@ -241,11 +241,7 @@ void FindSubtitlesWindow::retranslateStrings() {
 	}
 	language_filter->model()->sort(0);
 	language_filter->insertItem(0, tr("All"), "*");
-
-#if QT_VERSION >= 0x040400
 	language_filter->insertSeparator(1);
-#endif
-
 	language_filter->setCurrentIndex(language_filter->findData(current_language));
 
 	// Actions
@@ -381,16 +377,9 @@ void FindSubtitlesWindow::parseInfo() {
 			QStandardItem * i_name = new QStandardItem(title_name);
 			i_name->setData(l[n].link);
 
-#if QT_VERSION < 0x040400
-			i_name->setToolTip(l[n].link);
-#endif
-
 			QStandardItem * i_lang = new QStandardItem(l[n].language);
 			i_lang->setData(l[n].iso639, Qt::UserRole);
 
-#if QT_VERSION < 0x040400
-			i_lang->setToolTip(l[n].iso639);
-#endif
 			if (language_list.contains(l[n].iso639)) {
 				i_lang->setText(language_list[ l[n].iso639 ]);
 			}
