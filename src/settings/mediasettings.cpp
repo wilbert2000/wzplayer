@@ -131,7 +131,7 @@ void TMediaSettings::reset() {
 	flip = false;
 	mirror = false;
 
-	in_point = -1;
+    in_point = 0;
 	out_point = -1;
     loop = false;
 
@@ -308,18 +308,10 @@ void TMediaSettings::save(QSettings* set) {
 
 	set->endGroup(); // player
 
-	// Old config
-	set->remove("external_subtitles");
-
-	set->setValue("external_subtitles_fps", external_subtitles_fps);
-
+    set->setValue("external_subtitles_fps", external_subtitles_fps);
 	set->setValue("current_sec", current_sec);
 
-	// Old config
-	set->remove("current_title_id");
-	set->remove("current_chapter_id");
-
-	set->setValue("current_angle", current_angle);
+    set->setValue("current_angle", current_angle);
 
 	set->setValue("aspect_ratio", aspect_ratio.toInt());
 	set->setValue("volume", volume);
@@ -520,8 +512,8 @@ void TMediaSettings::load(QSettings* set) {
 
 	loop = set->value("loop", loop).toBool();
 	in_point = set->value("in_point", in_point).toInt();
+    if (in_point < 0) in_point = 0;
 	out_point = set->value("out_point", out_point).toInt();
-
 
 	player_additional_options = set->value("mplayer_additional_options", player_additional_options).toString();
 	player_additional_video_filters = set->value("mplayer_additional_video_filters", player_additional_video_filters).toString();

@@ -64,9 +64,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     mset(&mdat),
     playerwindow(mpw),
     _state(STATE_STOPPED),
-    restarting(0),
-    seeking_in_point(false),
-    seeking_out_point(false) {
+    restarting(0) {
 
 	qRegisterMetaType<TCoreState>("TCoreState");
 
@@ -922,7 +920,23 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("verbose");
 	}
 
-	// Setup screenshot directory
+    // Seek to in point or to seek
+    seeking = false;
+    if (mdat.selected_type != TMediaData::TYPE_TV) {
+        double ss = 0;
+        if (mset.in_point > 0) {
+            ss = mset.in_point;
+        }
+        // Seek may override in point, but cannot be beyond out point
+        if (seek > 0 && (mset.out_point <= 0 || seek < mset.out_point)) {
+            ss = seek;
+        }
+        if (ss > 0) {
+            proc->setOption("ss", ss);
+        }
+    }
+
+    // Setup screenshot directory
 	if (pref->screenshot_directory.isEmpty()) {
 		pref->use_screenshot = false;
 	} else {
@@ -1270,17 +1284,6 @@ void TCore::startPlayer(QString file, double seek) {
 	if (mset.speed != 1.0) {
 		proc->setOption("speed", QString::number(mset.speed));
 	}
-
-    // Play in to out
-    if (mdat.selected_type != TMediaData::TYPE_TV) {
-        if (mset.in_point >= 0 && mset.out_point > mset.in_point) {
-            proc->setOption("ss", QString::number(mset.in_point));
-            proc->setOption("endpos", QString::number(mset.out_point - mset.in_point));
-        } else if (seek >= 5) {
-            // If seek < 5 it's better to allow the video to start from the beginning
-            proc->setOption("ss", QString::number(seek));
-        }
-    }
 
 	if (pref->use_idx) {
 		proc->setOption("idx");
@@ -1768,48 +1771,90 @@ void TCore::wheelDown(TPreferences::TWheelFunction function) {
 }
 
 void TCore::setInPoint() {
-	setInPoint((int)mset.current_sec);
+    setInPoint(mset.current_sec);
 }
 
-void TCore::setInPoint(int sec) {
-	qDebug("TCore::setInPoint: %d", sec);
+void TCore::setInPoint(double sec) {
+    qDebug("TCore::setInPoint: %f", sec);
 
     mset.in_point = sec;
-    displayMessage(tr("In point set to %1").arg(Helper::formatTime(sec)));
-    emit InOutPointsChanged();
-
-    // TODO: upgrade prec
-    if (mset.loop
-        && mset.in_point >= 0
-        && mset.in_point < mset.out_point
-        && mset.current_sec < mset.in_point) {
-        seekTime(mset.in_point);
+    if (mset.in_point < 0) {
+        mset.in_point = 0;
     }
+    if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
+        qDebug("TCore::setInPoint: clearing out point %f larger or equal than in point %f",
+               mset.out_point, mset.in_point);
+        mset.out_point = -1;
+    }
+
+    emit InOutPointsChanged();
+    displayMessage(tr("In point set to %1").arg(Helper::formatTime(sec)));
+}
+
+void TCore::seekInPoint() {
+    seekTime(mset.in_point);
+}
+
+void TCore::clearInPoint() {
+    qDebug("TCore::clearInPoint");
+
+    mset.in_point = 0;
+    emit InOutPointsChanged();
+    displayMessage(tr("Cleared in point"));
 }
 
 void TCore::setOutPoint() {
-	setOutPoint((int)mset.current_sec);
+    setOutPoint(mset.current_sec);
 }
 
-void TCore::setOutPoint(int sec) {
-	qDebug("TCore::setOutPoint: %d", sec);
+void TCore::setOutPoint(double sec) {
+    qDebug("TCore::setOutPoint: %f", sec);
 
-    mset.out_point = sec;
-    emit InOutPointsChanged();
-
-    double seek = 0;
-    if (mset.in_point >= 0) {
-        seek = mset.in_point;
+    if (sec <= 0) {
+        mset.out_point = -1;
+    } else {
+        mset.out_point = sec;
     }
-    seekTime(seek);
+    if (mset.out_point > 0) {
+        mset.loop = true;
+        if (mset.in_point >= mset.out_point) {
+            qDebug("TCore::setOutPoint: clearing in point %f larger or equal than out point %f",
+                   mset.in_point, mset.out_point);
+            mset.in_point = 0;
+        }
+    }
 
-    displayMessage(tr("Out point set to %1").arg(Helper::formatTime(mset.out_point)));
+    emit InOutPointsChanged();
+    if (mset.out_point > 0)
+        displayMessage(tr("Out point set to %1").arg(Helper::formatTime(mset.out_point)));
+    else
+        displayMessage(tr("Cleared out point"));
+}
+
+void TCore::seekOutPoint() {
+
+    if (mset.loop && _state != STATE_PAUSED) {
+        seekTime(mset.in_point);
+    } else if (mset.out_point > 0){
+        seekTime(mset.out_point);
+    } else {
+        seekTime(mdat.duration);
+    }
+}
+
+void TCore::clearOutPoint() {
+    qDebug("TCore::clearOutPoint");
+
+    mset.out_point = -1;
+    mset.loop = false;
+    emit InOutPointsChanged();
+    displayMessage(tr("Cleared out point and repeat"));
 }
 
 void TCore::clearInOutPoints() {
     qDebug("TCore::clearInOutPoints");
 
-    mset.in_point = -1;
+    mset.in_point = 0;
     mset.out_point = -1;
     mset.loop = false;
     emit InOutPointsChanged();
@@ -1821,11 +1866,6 @@ void TCore::toggleRepeat(bool b) {
 
     mset.loop = b;
     emit InOutPointsChanged();
-
-    if (mset.loop && mset.in_point >= 0 && mset.in_point < mset.out_point
-        && mset.current_sec > mset.out_point) {
-        seekTime(mset.in_point);
-    }
 
     if (mset.loop) {
         displayMessage(tr("Repeat in-out set"));
@@ -2596,49 +2636,44 @@ void TCore::setAudioEq9(int value) {
 	setAudioEq(9, value);
 }
 
+void TCore::handleOutPoint() {
+
+    if (_state != STATE_PLAYING) {
+        seeking = false;
+        return;
+    }
+
+    // Handle out point
+    if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
+        if (mset.loop) {
+            if (!seeking && mset.in_point < mset.out_point) {
+                qDebug("TCore::handleOutPoint: position %f reached out point %f, start seeking in point %f",
+                       mset.current_sec, mset.out_point, mset.in_point);
+                seeking = true;
+                seekTime(mset.in_point);
+            }
+        } else {
+            qDebug("TCore::handleOutPoint: position %f reached out point %f, sending quit",
+                   mset.current_sec, mset.out_point);
+            proc->quit(Proc::TExitMsg::EXIT_OUT_POINT_REACHED);
+        }
+    } else if (seeking) {
+        qDebug("TCore::handleOutPoint: done handling out point, position %f now before out point %f",
+               mset.current_sec, mset.out_point);
+        seeking = false;
+    }
+}
+
 void TCore::onReceivedPosition(double sec) {
 
 	mset.current_sec = sec;
 
-    // Handle in-out points
-    bool force_update_gui = false;
-
-    // Handle in point
-    if (mset.current_sec < mset.in_point) {
-        if (!seeking_in_point) {
-            seeking_in_point = true;
-            seekTime(mset.in_point);
-            force_update_gui = true;
-        }
-    } else if (seeking_in_point) {
-        seeking_in_point = false;
-        force_update_gui = true;
-    }
-
-    // Handle ou point
-    if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
-        if (mset.loop) {
-            if (mset.in_point >= 0 && mset.in_point < mset.out_point) {
-                seeking_in_point = true;
-                seeking_out_point = true;
-                seekTime(mset.in_point);
-                force_update_gui = true;
-            }
-        }
-        if (!seeking_out_point) {
-            seeking_out_point = true;
-            proc->quit(Proc::TExitMsg::EXIT_OUT_POINT_REACHED);
-            force_update_gui = true;
-        }
-    } else if (seeking_out_point) {
-        seeking_out_point = false;
-        force_update_gui = true;
-    }
+    handleOutPoint();
 
 	// Update GUI once per second
 	static int last_second = -11;
     int sec_int = (int) sec;
-    if (sec_int == last_second && !force_update_gui)
+    if (sec_int == last_second)
 		return;
     last_second = sec_int;
 

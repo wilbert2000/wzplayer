@@ -118,14 +118,20 @@ void TMenuSeek::peerTriggered(QAction* action) {
         this_action = seek3Act;
     } else {
         this_action = plAct;
+        if (!name.startsWith("pl_")) {
+            qWarning() << "TMenuSeek::peerTriggered: unexpected action" << name;
+        }
     }
     setDefaultAction(this_action);
 
     // Set default action asscociated tool buttons
-    QList<QToolButton*> buttons = main_window->findChildren<QToolButton*>(
-                                      objectName() + "_toolbutton");
+    name = menuAction()->objectName() + "_toolbutton";
+    QList<QToolButton*> buttons = main_window->findChildren<QToolButton*>(name);
     foreach(QToolButton* button, buttons) {
         button->setDefaultAction(this_action);
+    }
+    if (buttons.count() <= 0) {
+        qDebug() << "TMenuSeek::peerTriggered: tool button" << name << "not found";
     }
 }
 
@@ -232,20 +238,37 @@ TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
 	group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(setInPoint()));
 
-    a = new TAction(this, "set_out_point", tr("Set &out point"), "", QKeySequence("]"));
-	group->addAction(a);
+    a = new TAction(this, "set_out_point", tr("Set &out point and repeat"), "", QKeySequence("]"));
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(setOutPoint()));
 
+    addSeparator();
+    a  = new TAction(this, "clear_in_point", tr("Clear in point"), "", QKeySequence("Shift+["));
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(clearInPoint()));
+
+    a = new TAction(this, "clear_out_point", tr("Clear out point and repeat"), "", QKeySequence("Shift+]"));
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(clearOutPoint()));
+
+    addSeparator();
+    a  = new TAction(this, "seek_in_point", tr("Seek in point"), "", Qt::Key_Home);
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(seekInPoint()));
+
+    a = new TAction(this, "seek_out_point", tr("Seek &out point"), "", Qt::Key_End);
+    group->addAction(a);
+    connect(a, SIGNAL(triggered()), core, SLOT(seekOutPoint()));
+
+    addSeparator();
     a = new TAction(this, "clear_in_out_points", tr("&Clear in-out points"), "", Qt::Key_Backspace);
 	group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(clearInOutPoints()));
 
-	addSeparator();
     repeatAct = new TAction(this, "repeat_in_out", tr("&Repeat in-out"), "repeat", Qt::Key_Backslash);
 	repeatAct->setCheckable(true);
     group->addAction(repeatAct);
 	connect(repeatAct, SIGNAL(triggered(bool)), core, SLOT(toggleRepeat(bool)));
-    // Currently no one sets it
 
     addActionsTo(main_window);
 }

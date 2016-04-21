@@ -115,11 +115,19 @@ int TPlayerProcess::exitCodeOverride() {
 
 // Slot called when the process is finished
 void TPlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-	qDebug("Proc::TPlayerProcess::processFinished: exitCode: %d, status: %d",
-		   exitCode, (int) exitStatus);
+    qDebug("Proc::TPlayerProcess::processFinished: exitCode: %d, override: %d, status: %d",
+           exitCode, exit_code_override, exitStatus);
+
+    if (exitCode == TExitMsg::EXIT_OUT_POINT_REACHED) {
+        qDebug("Proc::TPlayerProcess::processFinished: setting EOF");
+        exitCode = 0;
+        exit_code_override = 0;
+        exitStatus = QProcess::NormalExit;
+        received_end_of_file = true;
+    }
 
 	bool normal_exit = exit_code_override == 0
-					   && exitCode == 0
+                       && exitCode == 0
 					   && exitStatus == QProcess::NormalExit;
 	emit processExited(normal_exit);
 

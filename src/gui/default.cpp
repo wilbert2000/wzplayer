@@ -23,6 +23,7 @@
 #include <QLabel>
 #include <QStatusBar>
 #include <QList>
+#include <QLayout>
 
 #include "colorutils.h"
 #include "images.h"
@@ -48,100 +49,106 @@ void TDefault::createActions() {
 	qDebug("Gui::TDefault::createActions");
 
 	// Statusbar
-	viewVideoInfoAct = new Action::TAction(this, "toggle_video_info", tr("&Video info"), "view_video_info");
+    viewVideoInfoAct = new Action::TAction(this, "toggle_video_info",
+        tr("&Video info"), "view_video_info");
 	viewVideoInfoAct->setCheckable(true);
-	statusbar_menu->addAction(viewVideoInfoAct);
-	connect(viewVideoInfoAct, SIGNAL(toggled(bool)), video_info_display, SLOT(setVisible(bool)));
+    viewVideoInfoAct->setChecked(true);
+    statusbar_menu->addAction(viewVideoInfoAct);
+    connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
+            video_info_label, SLOT(setVisible(bool)));
 
-    viewVideoTimeAct = new Action::TAction(this, "toggle_video_time", tr("&Video time"), "view_video_time");
+    viewInOutPointsAct = new Action::TAction(this, "toggle_in_out_points",
+        tr("&In-out points"), "view_in_out_points");
+    viewInOutPointsAct->setCheckable(true);
+    viewInOutPointsAct->setChecked(true);
+    statusbar_menu->addAction(viewInOutPointsAct);
+    connect(viewInOutPointsAct, SIGNAL(toggled(bool)),
+            in_out_points_label, SLOT(setVisible(bool)));
+
+    viewVideoTimeAct = new Action::TAction(this, "toggle_video_time",
+        tr("&Video time"), "view_video_time");
     viewVideoTimeAct->setCheckable(true);
+    viewVideoTimeAct->setChecked(true);
     statusbar_menu->addAction(viewVideoTimeAct);
-    connect(viewVideoTimeAct, SIGNAL(toggled(bool)), time_display, SLOT(setVisible(bool)));
+    connect(viewVideoTimeAct, SIGNAL(toggled(bool)),
+            time_label, SLOT(setVisible(bool)));
 
-    viewFrameCounterAct = new Action::TAction(this, "toggle_frame_counter", tr("&Frame counter"), "frame_counter");
+    viewFrameCounterAct = new Action::TAction(this, "toggle_frame_counter",
+        tr("&Frame counter"), "frame_counter");
 	viewFrameCounterAct->setCheckable(true);
-	statusbar_menu->addAction(viewFrameCounterAct);
+    viewFrameCounterAct->setChecked(true);
+    statusbar_menu->addAction(viewFrameCounterAct);
     connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
-            frame_display, SLOT(setVisible(bool)));
+            frame_label, SLOT(setVisible(bool)));
 }
 
 void TDefault::createStatusBar() {
 	qDebug("Gui::TDefault::createStatusBar");
 
-    const int margin = 1;
+    QColor bgc(0, 0, 0);
+    QColor fgc(255, 255, 255);
+    int margin = 3;
+    QMargins margins(margin, 0, margin, 0);
 
-    frame_display = new QLabel(statusBar());
-    frame_display->setObjectName("frame_display");
-    frame_display->setAlignment(Qt::AlignRight);
-    frame_display->setFrameShape(QFrame::NoFrame);
-    frame_display->setMargin(margin);
-    frame_display->setIndent(margin);
-    frame_display->setText("0");
-    frame_display->hide();
+    statusBar()->setSizeGripEnabled(false);
+    ColorUtils::setBackgroundColor(statusBar(), bgc);
+    ColorUtils::setForegroundColor(statusBar(), fgc);
+    statusBar()->setContentsMargins(1, 1, 1, 1);
 
-    time_display = new QLabel(statusBar());
-	time_display->setObjectName("time_display");
-    time_display->setAlignment(Qt::AlignRight);
-	time_display->setFrameShape(QFrame::NoFrame);
-    time_display->setMargin(margin);
-    time_display->setText(" 00:00:00 / 00:00:00 ");
-    time_display->hide();
+    video_info_label = new QLabel(statusBar());
+    video_info_label->setObjectName("video_info_label");
+    ColorUtils::setBackgroundColor(video_info_label, bgc);
+    ColorUtils::setForegroundColor(video_info_label, fgc);
+    video_info_label->setFrameShape(QFrame::NoFrame);
+    video_info_label->setContentsMargins(margins);
+    statusBar()->addWidget(video_info_label);
+    connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
+            this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
 
-    // Controls its own visibility, so no hide()
     in_out_points_label = new QLabel(statusBar());
     in_out_points_label->setObjectName("in_out_points_label");
-    in_out_points_label->setAlignment(Qt::AlignRight);
+    ColorUtils::setBackgroundColor(in_out_points_label, bgc);
+    ColorUtils::setForegroundColor(in_out_points_label, fgc);
     in_out_points_label->setFrameShape(QFrame::NoFrame);
-    in_out_points_label->setMargin(margin);
+    in_out_points_label->setContentsMargins(margins);
+    statusBar()->addPermanentWidget(in_out_points_label, 0);
+    connect(core, SIGNAL(InOutPointsChanged()),
+            this, SLOT(displayInOutPoints()));
+    connect(core, SIGNAL(mediaSettingsChanged()),
+            this, SLOT(displayInOutPoints()));
 
-	video_info_display = new QLabel(statusBar());
-	video_info_display->setObjectName("video_info_display");
-	video_info_display->setFrameShape(QFrame::NoFrame);
-    video_info_display->setMargin(margin);
-    video_info_display->setIndent(margin);
-    video_info_display->hide();
-
-	statusBar()->setAutoFillBackground(true);
-
-	ColorUtils::setBackgroundColor(statusBar(), QColor(0,0,0));
-	ColorUtils::setForegroundColor(statusBar(), QColor(255,255,255));
-	ColorUtils::setBackgroundColor(time_display, QColor(0,0,0));
-	ColorUtils::setForegroundColor(time_display, QColor(255,255,255));
-	ColorUtils::setBackgroundColor(frame_display, QColor(0,0,0));
-	ColorUtils::setForegroundColor(frame_display, QColor(255,255,255));
-    ColorUtils::setBackgroundColor(in_out_points_label, QColor(0,0,0));
-    ColorUtils::setForegroundColor(in_out_points_label, QColor(255,255,255));
-	ColorUtils::setBackgroundColor(video_info_display, QColor(0,0,0));
-	ColorUtils::setForegroundColor(video_info_display, QColor(255,255,255));
-	statusBar()->setSizeGripEnabled(false);
-
-    statusBar()->addWidget(video_info_display);
-    statusBar()->addPermanentWidget(in_out_points_label);
-    statusBar()->addPermanentWidget(time_display, 0);
-    statusBar()->addPermanentWidget(frame_display, 0);
-
+    time_label = new QLabel(statusBar());
+    time_label->setObjectName("time_label");
+    ColorUtils::setBackgroundColor(time_label, bgc);
+    ColorUtils::setForegroundColor(time_label, fgc);
+    time_label->setFrameShape(QFrame::NoFrame);
+    time_label->setContentsMargins(margins);
+    time_label->setText("00:00:00 / 00:00:00");
+    statusBar()->addPermanentWidget(time_label, 0);
     connect(this, SIGNAL(timeChanged(QString)),
-			this, SLOT(displayTime(QString)));
+            this, SLOT(displayTime(QString)));
+
+    frame_label = new QLabel(statusBar());
+    frame_label->setObjectName("frame_label");
+    ColorUtils::setBackgroundColor(frame_label, bgc);
+    ColorUtils::setForegroundColor(frame_label, fgc);
+    frame_label->setFrameShape(QFrame::NoFrame);
+    margins.setLeft(0);
+    frame_label->setContentsMargins(margins);
+    frame_label->setText("0");
+    statusBar()->addPermanentWidget(frame_label, 0);
 	connect(this, SIGNAL(frameChanged(int)),
 			this, SLOT(displayFrame(int)));
-
-	connect(core, SIGNAL(InOutPointsChanged()),
-            this, SLOT(displayInOutPoints()));
-	connect(core, SIGNAL(mediaLoaded()),
-            this, SLOT(displayInOutPoints()));
-
-	connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
-			this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
 }
 
 void TDefault::displayTime(QString text) {
-    time_display->setText(text);
+    time_label->setText(text);
 }
 
 void TDefault::displayFrame(int frame) {
 
-	if (frame_display->isVisible()) {
-		frame_display->setNum(frame);
+    if (frame_label->isVisible()) {
+        frame_label->setNum(frame);
 	}
 }
 
@@ -149,13 +156,13 @@ void TDefault::displayInOutPoints() {
 
 	QString s;
 	int secs = core->mset.in_point;
-	if (secs >= 0)
+    if (secs > 0)
         s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
 
 	secs = core->mset.out_point;
-	if (secs >= 0) {
+    if (secs > 0) {
 		if (!s.isEmpty()) s += " ";
-        s += " " + tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
+        s += tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
 	}
 
     if (core->mset.loop) {
@@ -163,17 +170,16 @@ void TDefault::displayInOutPoints() {
         s += tr("R", "Repeat in-out in statusbar");
     }
 
-    in_out_points_label->setVisible(!s.isEmpty());
     in_out_points_label->setText(s);
 }
 
 void TDefault::displayVideoInfo() {
 
 	if (core->mdat.noVideo()) {
-        video_info_display->setText("");
+        video_info_label->setText("");
 	} else {
 		QSize video_out_size = playerwindow->lastVideoOutSize();
-		video_info_display->setText(tr("%1x%2", "video source width x height")
+        video_info_label->setText(tr("%1x%2", "video source width x height")
 			.arg(core->mdat.video_width)
 			.arg(core->mdat.video_height)
 			+ " " + QString::fromUtf8("\u279F") + " "
@@ -206,6 +212,7 @@ void TDefault::saveConfig() {
 
 	pref->beginGroup(settingsGroupName());
 	pref->setValue("video_info", viewVideoInfoAct->isChecked());
+    pref->setValue("in_out_points", viewInOutPointsAct->isChecked());
     pref->setValue("video_time", viewVideoTimeAct->isChecked());
     pref->setValue("frame_counter", viewFrameCounterAct->isChecked());
 	pref->endGroup();
@@ -218,6 +225,7 @@ void TDefault::loadConfig() {
 
 	pref->beginGroup(settingsGroupName());
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
+    viewInOutPointsAct->setChecked(pref->value("in_out_points", true).toBool());
     viewVideoTimeAct->setChecked(pref->value("video_time", true).toBool());
     viewFrameCounterAct->setChecked(pref->value("frame_counter", true).toBool());
 	pref->endGroup();

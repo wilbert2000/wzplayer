@@ -107,12 +107,15 @@ public slots:
 	void reload();
 
     void setInPoint(); //!< Set in point to current sec
-	void setInPoint(int sec);
-
+    void setInPoint(double sec);
+    void seekInPoint();
+    void clearInPoint();
     void setOutPoint(); //!< Set out point to current sec
-	void setOutPoint(int sec);
+    void setOutPoint(double sec);
+    void seekOutPoint();
+    void clearOutPoint();
+    void toggleRepeat(bool b);
     void clearInOutPoints();
-	void toggleRepeat(bool b);
 
 	void toggleFlip();
 	void toggleFlip(bool b);
@@ -418,8 +421,7 @@ private:
 	TCoreState _state;
 
 	int restarting;
-    bool seeking_in_point;
-    bool seeking_out_point;
+    bool seeking;
 
 	QTime time;
 
@@ -449,6 +451,7 @@ private:
 	int getVolumeForPlayer() const;
 
 	void seekCmd(double secs, int mode);
+    void handleOutPoint();
 
     void enableScreensaver();
     void disableScreensaver();

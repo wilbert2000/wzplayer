@@ -113,9 +113,7 @@ int TProcess::canReadLine(const QByteArray & ba, int from) {
 Do some clean up, and be sure that all output has been read.
 */
 void TProcess::procFinished() {
-	qDebug("Proc::TProcess::procFinished");
-
-	qDebug() << "TProcess::procFinished: Bytes available: " << bytesAvailable();
+    qDebug() << "Proc::TProcess::procFinished: Bytes available: " << bytesAvailable();
 	if (bytesAvailable() > 0) readStdOut();
 }
 

@@ -55,14 +55,15 @@ protected slots:
 	void displayVideoInfo();
 
 private:
-    QLabel* time_display;
-	QLabel* frame_display;
+    QLabel* video_info_label;
     QLabel* in_out_points_label;
-	QLabel* video_info_display;
+    QLabel* time_label;
+    QLabel* frame_label;
 
-	Action::TAction* viewFrameCounterAct;
-    Action::TAction* viewVideoTimeAct;
     Action::TAction* viewVideoInfoAct;
+    Action::TAction* viewInOutPointsAct;
+    Action::TAction* viewVideoTimeAct;
+    Action::TAction* viewFrameCounterAct;
 
 	int last_second;
 

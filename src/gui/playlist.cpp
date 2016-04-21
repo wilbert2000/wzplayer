@@ -132,7 +132,6 @@ void TPlaylist::createTable() {
 	listView->setContextMenuPolicy(Qt::CustomContextMenu);
 	listView->setShowGrid(false);
 	listView->setSortingEnabled(false);
-	//listView->setAlternatingRowColors(true);
 
 #if QT_VERSION >= 0x050000
 	listView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);

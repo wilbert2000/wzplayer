@@ -139,6 +139,8 @@
         <file>default-theme/open_favorites.png</file>
         <file>default-theme/set_in_point.png</file>
         <file>default-theme/set_out_point.png</file>
+        <file>default-theme/clear_in_point.png</file>
+        <file>default-theme/clear_out_point.png</file>
         <file>default-theme/clear_in_out_points.png</file>
         <file>default-theme/in_out_points_menu.png</file>
         <file>default-theme/bookmark_add.png</file>

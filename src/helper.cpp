@@ -33,6 +33,7 @@
 using namespace Settings;
 
 QString Helper::formatTime(int secs) {
+
 	bool negative = (secs < 0);
 	secs = abs(secs);
 
