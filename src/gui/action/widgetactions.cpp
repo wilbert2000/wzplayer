@@ -228,26 +228,27 @@ TTimeLabelAction::TTimeLabelAction(QWidget* parent)
 TTimeLabelAction::~TTimeLabelAction() {
 }
 
-void TTimeLabelAction::setText(QString s) {
+void TTimeLabelAction::setText(const QString& s) {
+
 	_text = s;
 	emit newText(s);
 }
 
 QWidget* TTimeLabelAction::createWidget (QWidget* parent) {
 
-	QLabel* time_label = new QLabel(parent);
-	time_label->setObjectName("time_label");
-	time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-	time_label->setAutoFillBackground(true);
+    // TODO: margins and loses color when loaded into toolbar
+    QLabel* time_label = new QLabel(parent);
+    time_label->setObjectName("display_time_label");
+    time_label->setAutoFillBackground(true);
+    ColorUtils::setBackgroundColor(time_label, QColor(0,0,0));
+    ColorUtils::setForegroundColor(time_label, QColor(255,255,255));
+    time_label->setFrameShape(QFrame::Panel);
+    time_label->setFrameShadow(QFrame::Sunken);
+    time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+    time_label->setText("00:00:00 / 00:00:00");
 
-	ColorUtils::setBackgroundColor(time_label, QColor(0,0,0));
-	ColorUtils::setForegroundColor(time_label, QColor(255,255,255));
-	time_label->setText("00:00:00 / 00:00:00");
-	time_label->setFrameShape(QFrame::Panel);
-	time_label->setFrameShadow(QFrame::Sunken);
-
-	connect(this, SIGNAL(newText(QString)), 
-			time_label, SLOT(setText(QString)));
+    connect(this, SIGNAL(newText(const QString&)),
+            time_label, SLOT(setText(const QString&)));
 
 	return time_label;
 }

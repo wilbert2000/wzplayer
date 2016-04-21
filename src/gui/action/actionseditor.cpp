@@ -503,7 +503,7 @@ QString TActionsEditor::actionTextToDescription(const QString& text,
                                                 const QString& action_name) {
 
     // Actions modifying text property themselves
-    if (action_name == "timelabel_action") {
+    if (action_name == "display_time") {
 		return tr("Display time");
 	}
     if (action_name == "play_or_pause") {

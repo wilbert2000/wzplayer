@@ -376,7 +376,7 @@ void TBase::createActions() {
 
 	// Time label actions
 	time_label_action = new TTimeLabelAction(this);
-	time_label_action->setObjectName("timelabel_action");
+    time_label_action->setObjectName("display_time");
 
 	// Menu bar
 	viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Me&nu bar"), "", Qt::Key_F2);

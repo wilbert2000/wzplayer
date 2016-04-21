@@ -130,15 +130,15 @@ class TTimeLabelAction : public TWidgetAction {
 
 public:
 	TTimeLabelAction(QWidget* parent);
-	~TTimeLabelAction();
+    virtual ~TTimeLabelAction();
 
 	virtual QString text() const { return _text; }
 
 public slots:
-	virtual void setText(QString s);
+    virtual void setText(const QString& s);
 
 signals:
-	void newText(QString s);
+    void newText(const QString& s);
 
 protected:
 	virtual QWidget* createWidget(QWidget* parent);
