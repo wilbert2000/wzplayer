@@ -430,9 +430,6 @@ private:
 
 	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
 
-	bool isMPlayer() const;
-	bool isMPV() const;
-
 	void openFile(const QString& filename, int seek = -1);
 	void openStream(const QString& name);
 	void openTV(QString channel_id);

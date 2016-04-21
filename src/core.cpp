@@ -252,7 +252,7 @@ void TCore::restart() {
 	if (proc->isRunning()) {
 		restartPlay();
 	} else {
-		qDebug("TCore::restart: mplayer is not running");
+        qDebug("TCore::restart: player is not running");
 	}
 }
 
@@ -260,17 +260,7 @@ void TCore::reload() {
 	qDebug("TCore::reload");
 
 	stopPlayer();
-	restarting = 0;
-
-	initPlaying();
-}
-
-bool TCore::isMPlayer() const {
-	return proc->isMPlayer();
-}
-
-bool TCore::isMPV() const {
-	return proc->isMPV();
+    initPlaying();
 }
 
 void TCore::saveMediaSettings() {
@@ -289,14 +279,14 @@ void TCore::saveMediaSettings() {
 	if (mdat.selected_type == TMediaData::TYPE_FILE) {
 		if (pref->file_settings_method.toLower() == "hash") {
 			Settings::TFileSettingsHash settings(mdat.filename);
-			settings.saveSettingsFor(mdat.filename, mset, proc->player());
+            settings.saveSettingsFor(mdat.filename, mset);
 		} else {
 			Settings::TFileSettings settings;
-			settings.saveSettingsFor(mdat.filename, mset, proc->player());
+            settings.saveSettingsFor(mdat.filename, mset);
 		}
 	} else if (mdat.selected_type == TMediaData::TYPE_TV) {
 		Settings::TTVSettings settings;
-		settings.saveSettingsFor(mdat.filename, mset, proc->player());
+        settings.saveSettingsFor(mdat.filename, mset);
 	}
 
 	emit showMessage(tr("Saved settings for %1").arg(mdat.filename));
@@ -480,7 +470,7 @@ void TCore::setExternalSubs(const QString &filename) {
 	mset.sub.setID(TMediaSettings::NoneSelected);
 	mset.sub.setType(SubData::File);
 	// For mplayer assume vob if file extension idx
-	if (isMPlayer()) {
+    if (pref->isMPlayer()) {
 		QFileInfo fi(filename);
 		if (fi.suffix().toLower() == "idx") {
 			mset.sub.setType(SubData::Vob);
@@ -563,7 +553,7 @@ void TCore::openTV(QString channel_id) {
 	if (pref->remember_media_settings) {
 		Settings::TTVSettings settings;
 		if (settings.existSettingsFor(channel_id)) {
-			settings.loadSettingsFor(channel_id, mset, proc->player());
+            settings.loadSettingsFor(channel_id, mset);
 		}
 	}
 
@@ -594,12 +584,12 @@ void TCore::openFile(const QString& filename, int seek) {
 		if (pref->file_settings_method.toLower() == "hash") {
 			Settings::TFileSettingsHash settings(mdat.filename);
 			if (settings.existSettingsFor(mdat.filename)) {
-				settings.loadSettingsFor(mdat.filename, mset, proc->player());
+                settings.loadSettingsFor(mdat.filename, mset);
 			}
 		} else {
 			Settings::TFileSettings settings;
 			if (settings.existSettingsFor(mdat.filename)) {
-				settings.loadSettingsFor(mdat.filename, mset, proc->player());
+                settings.loadSettingsFor(mdat.filename, mset);
 			}
 		}
 
@@ -855,7 +845,7 @@ bool TCore::videoFiltersEnabled(bool) {
 bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 	bool enabled = true;
-	if (isMPlayer()) {
+    if (pref->isMPlayer()) {
 		QString msg;
 		if (pref->vo.startsWith("vdpau")) {
 			enabled = !pref->vdpau.disable_video_filters;
@@ -952,7 +942,7 @@ void TCore::startPlayer(QString file, double seek) {
 	// Setup hardware decoding for MPV.
 	// First set mdat.video_hwdec, handle setting hwdec option later
 	QString hwdec = pref->hwdec;
-	if (isMPV()) {
+    if (pref->isMPV()) {
 		// Disable hardware decoding when there are filters in use
 		if (hwdec != "no" && haveVideoFilters()) {
 			hwdec = "no";
@@ -981,7 +971,7 @@ void TCore::startPlayer(QString file, double seek) {
 #ifndef Q_OS_WIN
 		// VDPAU codecs
 		if (pref->vo.startsWith("vdpau")) {
-			if (isMPlayer()) {
+            if (pref->isMPlayer()) {
 				QString c;
 				if (pref->vdpau.ffh264vdpau) c = "ffh264vdpau,";
 				if (pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
@@ -1008,7 +998,7 @@ void TCore::startPlayer(QString file, double seek) {
 	}
 
 	// MPV only
-	if (!hwdec.isEmpty() && isMPV()) {
+    if (!hwdec.isEmpty() && pref->isMPV()) {
 		proc->setOption("hwdec", hwdec);
 	}
 
@@ -1087,7 +1077,7 @@ void TCore::startPlayer(QString file, double seek) {
 
 	// OSD
 	proc->setOption("osdlevel", pref->osd_level);
-	if (isMPlayer()) {
+    if (pref->isMPlayer()) {
 		proc->setOption("osd-scale", pref->subfont_osd_scale);
 	} else {
 		proc->setOption("osd-scale", pref->osd_scale);
@@ -1117,7 +1107,7 @@ void TCore::startPlayer(QString file, double seek) {
 				ass_force_style = pref->user_forced_ass_style;
 			}
 
-			if (isMPV()) {
+            if (pref->isMPV()) {
 				proc->setSubStyles(pref->ass_styles);
 				if (pref->force_ass_styles) {
 					proc->setOption("ass-force-style", ass_force_style);
@@ -1134,7 +1124,7 @@ void TCore::startPlayer(QString file, double seek) {
 		// NO ASS
 		if (pref->freetype_support)
 			proc->setOption("noass");
-		if (isMPV()) {
+        if (pref->isMPV()) {
 			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
 		} else {
 			proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
@@ -1145,7 +1135,7 @@ void TCore::startPlayer(QString file, double seek) {
 	if (pref->subtitle_enca_language.isEmpty()) {
 		// No encoding language, set fallback code page
 		if (!pref->subtitle_encoding_fallback.isEmpty()) {
-			if (isMPlayer()) {
+            if (pref->isMPlayer()) {
 				proc->setOption("subcp", pref->subtitle_encoding_fallback);
 			} else if (pref->subtitle_encoding_fallback != "UTF-8") {
 				// Use pref->subtitle_encoding_fallback if encoding is not utf8
@@ -1439,7 +1429,7 @@ void TCore::startPlayer(QString file, double seek) {
 end_video_filters:
 
 	// Template for screenshots (only works with mpv)
-	if (isMPV() && pref->use_screenshot) {
+    if (pref->isMPV() && pref->use_screenshot) {
 		if (!pref->screenshot_template.isEmpty()) {
 			proc->setOption("screenshot_template", pref->screenshot_template);
 		}
@@ -1522,7 +1512,7 @@ end_video_filters:
 	}
 
 #ifndef Q_OS_WIN
-	if (isMPV() && file.startsWith("dvb:")) {
+    if (pref->isMPV() && file.startsWith("dvb:")) {
 		QString channels_file = Gui::Action::TTVList::findChannelsFile();
 		qDebug() << "TCore::startPlayer: channels_file:" << channels_file;
 		if (!channels_file.isEmpty())
@@ -1907,7 +1897,7 @@ void TCore::setStereoMode(int mode) {
 
 void TCore::changeVF(const QString& filter, bool enable, const QVariant& option) {
 
-	if (isMPV() && !mdat.video_hwdec) { \
+    if (pref->isMPV() && !mdat.video_hwdec) { \
 		proc->changeVF(filter, enable, option); \
 	} else { \
 		restartPlay(); \
@@ -2024,7 +2014,7 @@ void TCore::changeDenoise(int id) {
 	qDebug("TCore::changeDenoise: %d", id);
 
 	if (id != mset.current_denoiser) {
-		if (isMPlayer() || mdat.video_hwdec) {
+        if (pref->isMPlayer() || mdat.video_hwdec) {
 			mset.current_denoiser = id;
 			restartPlay();
 		} else {
@@ -2050,7 +2040,7 @@ void TCore::changeUnsharp(int id) {
 	qDebug("TCore::changeUnsharp: %d", id);
 
 	if (id != mset.current_unsharp) {
-		if (isMPlayer() || mdat.video_hwdec) {
+        if (pref->isMPlayer() || mdat.video_hwdec) {
 			mset.current_unsharp = id;
 			restartPlay();
 		} else {
@@ -2086,7 +2076,7 @@ void TCore::changeStereo3d(const QString & in, const QString & out) {
 	qDebug() << "TCore::changeStereo3d: in:" << in << "out:" << out;
 
 	if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
-		if (isMPlayer() || mdat.video_hwdec) {
+        if (pref->isMPlayer() || mdat.video_hwdec) {
 			mset.stereo3d_in = in;
 			mset.stereo3d_out = out;
 			restartPlay();
@@ -2291,7 +2281,7 @@ int TCore::getVolume() const {
 int TCore::getVolumeForPlayer() const {
 
 	int volume = getVolume();
-	if (isMPV() && pref->use_soft_vol) {
+    if (pref->isMPV() && pref->use_soft_vol) {
         volume = qRound((qreal)(volume * pref->softvol_max) / 100);
 	}
 	return volume;
@@ -2421,7 +2411,7 @@ void TCore::changeSubScale(double value) {
 			mset.sub_scale_ass = value;
 			proc->setSubScale(mset.sub_scale_ass);
 		}
-	} else if (isMPV()) {
+    } else if (pref->isMPV()) {
 		if (value != mset.sub_scale_mpv) {
 			mset.sub_scale_mpv = value;
 			proc->setSubScale(value);
@@ -2440,7 +2430,7 @@ void TCore::incSubScale() {
 
 	if (pref->use_ass_subtitles) {
 		changeSubScale(mset.sub_scale_ass + step);
-	} else if (isMPV()) {
+    } else if (pref->isMPV()) {
 		changeSubScale(mset.sub_scale_mpv + step);
 	} else {
 		changeSubScale(mset.sub_scale + step);
@@ -2453,7 +2443,7 @@ void TCore::decSubScale() {
 
 	if (pref->use_ass_subtitles) {
 		changeSubScale(mset.sub_scale_ass - step);
-	} else if (isMPV()) {
+    } else if (pref->isMPV()) {
 		changeSubScale(mset.sub_scale_mpv - step);
 	} else {
 		changeSubScale(mset.sub_scale - step);
@@ -2465,7 +2455,7 @@ void TCore::changeOSDScale(double value) {
 
 	if (value < 0) value = 0;
 
-	if (isMPlayer()) {
+    if (pref->isMPlayer()) {
 		if (value != pref->subfont_osd_scale) {
 			pref->subfont_osd_scale = value;
 			if (proc->isRunning())
@@ -2482,7 +2472,7 @@ void TCore::changeOSDScale(double value) {
 
 void TCore::incOSDScale() {
 
-	if (isMPlayer()) {
+    if (pref->isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale + 1);
 	} else {
 		changeOSDScale(pref->osd_scale + 0.10);
@@ -2491,7 +2481,7 @@ void TCore::incOSDScale() {
 
 void TCore::decOSDScale() {
 
-	if (isMPlayer()) {
+    if (pref->isMPlayer()) {
 		changeOSDScale(pref->subfont_osd_scale - 1);
 	} else {
 		changeOSDScale(pref->osd_scale - 0.10);
@@ -2700,7 +2690,7 @@ void TCore::changeDeinterlace(int ID) {
 	qDebug("TCore::changeDeinterlace: %d", ID);
 
 	if (ID != mset.current_deinterlacer) {
-		if (isMPlayer()) {
+        if (pref->isMPlayer()) {
 			mset.current_deinterlacer = ID;
 			restartPlay();
 		} else {
@@ -2757,7 +2747,7 @@ void TCore::changeAudioTrack(int id) {
 		// volume is too loud after changing audio.
 		// Workaround too for a mplayer problem in linux,
 		// the volume is reduced if using -softvol-max.
-		if (isMPlayer()
+        if (pref->isMPlayer()
 			&& !pref->player_additional_options.contains("-volume")) {
 			setVolume(getVolume(), false);
 		}
@@ -3013,7 +3003,7 @@ void TCore::changeRotate(int r) {
 	qDebug("TCore::changeRotate: %d", r);
 
 	if (mset.rotate != r) {
-		if (isMPlayer()) {
+        if (pref->isMPlayer()) {
 			mset.rotate = r;
 			restartPlay();
 		} else {
@@ -3413,7 +3403,7 @@ void TCore::onSubtitlesChanged() {
 	mset.current_secondary_sub_idx = mdat.subs.findSelectedSecondaryIdx();
 	emit subtitlesChanged();
 
-	if (isMPlayer()) {
+    if (pref->isMPlayer()) {
 		// MPlayer selected sub will not yet be updated, que the subtitle selection
 		qDebug("TCore::onSubtitlesChanged: posting selectPreferredSubtitles()");
 		QTimer::singleShot(1500, this, SLOT(selectPreferredSubtitles()));

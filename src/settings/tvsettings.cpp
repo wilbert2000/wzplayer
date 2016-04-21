@@ -54,24 +54,24 @@ bool TTVSettings::existSettingsFor(const QString& filename) {
 	return saved;
 }
 
-void TTVSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset, int player) {
+void TTVSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
 	qDebug("TTVSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
 
 	QString group_name = filenameToGroupname(filename);
 	qDebug("TTVSettings::loadSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
 	beginGroup(group_name);
-	mset.load(this, player);
+    mset.load(this);
 	endGroup();
 }
 
-void TTVSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset, int player) {
+void TTVSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
 	qDebug("TTVSettings::saveSettingsFor: '%s'", filename.toUtf8().constData());
 
 	QString group_name = filenameToGroupname(filename);
 	qDebug("TTVSettings::saveSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
 	beginGroup(group_name);
 	setValue("saved", true);
-	mset.save(this, player);
+    mset.save(this);
 	endGroup();
 	sync();
 }

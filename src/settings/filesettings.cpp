@@ -60,17 +60,17 @@ bool TFileSettings::existSettingsFor(const QString& filename) {
 	return saved;
 }
 
-void TFileSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset, int player) {
+void TFileSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
 	qDebug("Settings::TFileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
 
 	QString group_name = filenameToGroupname(filename);
 	qDebug("Settings::TFileSettings::loadSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
 	beginGroup(group_name);
-	mset.load(this, player);
+    mset.load(this);
 	endGroup();
 }
 
-void TFileSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset, int player) {
+void TFileSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
 	qDebug("Settings::TFileSettings::saveSettingsFor: '%s'", filename.toUtf8().constData());
 
 	QString group_name = filenameToGroupname(filename);
@@ -79,7 +79,7 @@ void TFileSettings::saveSettingsFor(const QString& filename, TMediaSettings& mse
 
 	beginGroup(group_name);
 	setValue("saved", true);
-	mset.save(this, player);
+    mset.save(this);
 	endGroup();
 }
 

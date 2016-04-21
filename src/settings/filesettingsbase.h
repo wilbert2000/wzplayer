@@ -31,8 +31,8 @@ public:
 	virtual ~TFileSettingsBase();
 
 	virtual bool existSettingsFor(const QString& filename) = 0;
-	virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset, int player) = 0;
-	virtual void saveSettingsFor(const QString& filename, TMediaSettings& mset, int player) = 0;
+    virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset) = 0;
+    virtual void saveSettingsFor(const QString& filename, TMediaSettings& mset) = 0;
 };
 
 } // namespace Settings

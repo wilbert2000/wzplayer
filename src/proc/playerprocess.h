@@ -25,7 +25,6 @@
 
 #include "mediadata.h"
 #include "proc/process.h"
-#include "settings/preferences.h"
 
 
 namespace Proc {
@@ -41,10 +40,7 @@ public:
 	explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
-	Settings::TPreferences::TPlayerID player() const { return player_id; }
-	bool isMPlayer() const { return player_id == Settings::TPreferences::ID_MPLAYER; }
-	bool isMPV() const { return player_id == Settings::TPreferences::ID_MPV; }
-	bool isFullyStarted() const { return isRunning() && notified_player_is_running; }
+    bool isFullyStarted() const { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();
 	virtual int exitCodeOverride();
@@ -177,9 +173,7 @@ public slots:
 	void parseBytes(QByteArray ba);
 
 protected:
-	Settings::TPreferences::TPlayerID player_id;
-
-	TMediaData* md;
+    TMediaData* md;
 
 	QString screenshot_dir;
 	QString capture_filename;

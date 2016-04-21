@@ -38,7 +38,6 @@ const int waiting_for_answers_safe_guard_init = 100;
 
 TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
     TProcess(parent),
-    player_id(Settings::pref->player_id),
     md(mdata),
     notified_player_is_running(false),
     received_end_of_file(false),

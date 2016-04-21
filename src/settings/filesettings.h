@@ -30,8 +30,8 @@ public:
 	virtual ~TFileSettings();
 
 	virtual bool existSettingsFor(const QString& filename);
-	virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset, int player);
-	virtual void saveSettingsFor(const QString& filename, TMediaSettings& mset, int player);
+    virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset);
+    virtual void saveSettingsFor(const QString& filename, TMediaSettings& mset);
 
 	static QString filenameToGroupname(const QString& filename);
 };

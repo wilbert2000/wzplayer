@@ -165,10 +165,11 @@ public:
 
 	void list();
 
-	void save(QSettings* set, int player_id);
-	void load(QSettings* set, int player_id);
+    void save(QSettings* set);
+    void load(QSettings* set);
 
 private:
+    TPreferences::TPlayerID player_id;
 	TMediaData* md;
 	void convertOldSelectedTrack(int &id);
 };

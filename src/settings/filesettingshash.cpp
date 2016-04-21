@@ -62,19 +62,19 @@ bool TFileSettingsHash::existSettingsFor(const QString& filename) {
 	return QFile::exists(config_file);
 }
 
-void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings& mset, int player) {
+void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
 	qDebug("FileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
 
 	beginGroup("file_settings");
-	mset.load(this, player);
+    mset.load(this);
 	endGroup();
 }
 
-void TFileSettingsHash::saveSettingsFor(const QString& filename, TMediaSettings& mset, int player) {
+void TFileSettingsHash::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
 	qDebug("TFileSettingsHash::saveSettingsFor: '%s'", filename.toUtf8().constData());
 
 	beginGroup("file_settings");
-	mset.save(this, player);
+    mset.save(this);
 	endGroup();
 	sync();
 }

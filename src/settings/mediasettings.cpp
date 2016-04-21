@@ -44,6 +44,8 @@ TMediaSettings::~TMediaSettings() {
 void TMediaSettings::reset() {
 	qDebug("Settings::TMediaSettings::reset");
 
+    player_id = pref->player_id;
+
 	current_sec = 0;
 
 	current_video_id = NoneSelected;
@@ -253,7 +255,7 @@ void TMediaSettings::list() {
 	qDebug("  player_additional_audio_filters: '%s'", player_additional_audio_filters.toUtf8().data());
 }
 
-void TMediaSettings::save(QSettings* set, int player_id) {
+void TMediaSettings::save(QSettings* set) {
 	qDebug("Settings::TMediaSettings::save");
 
 	set->beginGroup("player_" + QString::number(player_id));
@@ -393,8 +395,11 @@ void TMediaSettings::convertOldSelectedTrack(int &id) {
 	}
 }
 
-void TMediaSettings::load(QSettings* set, int player_id) {
+void TMediaSettings::load(QSettings* set) {
 	qDebug("Settings::TMediaSettings::load");
+
+    // Remember player id, at save time in can be changed
+    player_id = pref->player_id;
 
 	set->beginGroup("player_" + QString::number(player_id));
 
