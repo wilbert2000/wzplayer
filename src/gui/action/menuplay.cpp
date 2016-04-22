@@ -251,7 +251,7 @@ TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
     connect(a, SIGNAL(triggered()), core, SLOT(seekOutPoint()));
 
     addSeparator();
-    a = new TAction(this, "clear_in_out_points", tr("Cle&ar in-out points"), "", Qt::Key_Backspace);
+    a = new TAction(this, "clear_in_out_points", tr("Cle&ar in-out points and repeat"), "", Qt::Key_Backspace);
 	group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(clearInOutPoints()));
 
