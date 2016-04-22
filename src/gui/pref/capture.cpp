@@ -141,8 +141,8 @@ void TCapture::createHelp() {
 
 	setWhatsThis(screenshots_group, tr("Enable screenshots"),
 		tr("You can use this option to enable or disable the possibility to"
-		   " take screenshots. When enabled an extra video filter will be added"
-		   " to make taking screenshots possible."));
+           " take screenshots. Enabling will pass the screenshot directory to"
+           " the player and enable the screenshot button from the video menu."));
 
 	setWhatsThis(screenshot_template_edit, tr("Template for screenshots"),
 		tr("MPV only. This option specifies the filename template used to save screenshots.") + " " +
@@ -158,8 +158,9 @@ void TCapture::createHelp() {
 
 	setWhatsThis(subtitles_on_screeshots_check,
 		tr("Include subtitles on screenshots"),
-		tr("If this option is checked, the subtitles will appear in the "
-		   "screenshots.<br><b>Note:</b> it may cause trouble sometimes."));
+        tr("If this option is checked, an extra vide filter will be added to"
+           " enable burning the subtitles into the screenshot.<br>"
+           "<b>Note:</b> may cause trouble with some drivers."));
 }
 
 }} // namespace Gui::Pref
