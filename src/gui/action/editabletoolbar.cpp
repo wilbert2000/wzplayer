@@ -73,8 +73,7 @@ void TEditableToolbar::addMenu(QAction* action) {
     button->setMenu(menu);
 
     // Set popupmode and default action
-    if (action->objectName() == "stay_on_top_menu"
-        || action->objectName() == "videosize_menu") {
+    if (action->objectName() == "stay_on_top_menu") {
         button->setPopupMode(QToolButton::MenuButtonPopup);
         button->setDefaultAction(menu->defaultAction());
     } else if (action->objectName() == "forward_menu"
