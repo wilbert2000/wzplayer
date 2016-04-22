@@ -3299,11 +3299,20 @@ void TCore::onReceivedVideoOut() {
 	// w x h is output resolution selected by player with aspect and filters applied
 	playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
 
-	if (restarting == 0)
+    // Normally, let the main window know the new video dimension, unless
+    // restarting, then need to prevent the main window resizing itself.
+    if (restarting == 0) {
 		emit videoOutResolutionChanged(mdat.video_out_width, mdat.video_out_height);
+    }
 
-	// If resize is canceled adjust new video to old size
+    // If resize of main window is canceled adjust new video to the old size
 	playerwindow->updateVideoWindow();
+
+    if (restarting) {
+        // Adjust the size factor to the current window size,
+        // in case the restart changed the video resolution.
+        playerwindow->updateSizeFactor();
+    }
 
 	// Update original aspect
 	if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
