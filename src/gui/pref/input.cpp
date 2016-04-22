@@ -155,21 +155,11 @@ void TInput::retranslateStrings() {
 	wheel_function_speed->setText(tr("&Change speed"));
 
 	// Seek tab
-	seek1->setLabel(tr("&Short jump"));
-	seek2->setLabel(tr("&Medium jump"));
-	seek3->setLabel(tr("&Long jump"));
-	seek4->setLabel(tr("Mouse &wheel jump"));
-
-	if (qApp->isLeftToRight()) {
-        seek1->setIcon(Images::icon("forward1", 32));
-        seek2->setIcon(Images::icon("forward2", 32));
-        seek3->setIcon(Images::icon("forward3", 32));
-	} else {
-        seek1->setIcon(Images::flippedIcon("forward1", 32));
-        seek2->setIcon(Images::flippedIcon("forward2", 32));
-        seek3->setIcon(Images::flippedIcon("forward3", 32));
+    if (!qApp->isLeftToRight()) {
+        seek1_icon->setPixmap(Images::flippedIcon("forward1", 32));
+        seek2_icon->setPixmap(Images::flippedIcon("forward2", 32));
+        seek3_icon->setPixmap(Images::flippedIcon("forward3", 32));
 	}
-	seek4->setIcon(Images::icon("mouse",32));
 
 	timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
 
@@ -340,35 +330,63 @@ bool TInput::wheelFunctionSeekingReverse() {
 }
 
 void TInput::setSeeking1(int n) {
-	seek1->setTime(n);
+    int m = n / 60;
+    int s = n - 60 * m;
+    seek1_minutes_spin->setValue(m);
+    seek1_seconds_spin->setValue(s);
 }
 
 int TInput::seeking1() {
-	return seek1->time();
+    int s = seek1_minutes_spin->value() * 60 + seek1_seconds_spin->value();
+    if (s == 0) {
+        s = 1;
+    }
+    return s;
 }
 
 void TInput::setSeeking2(int n) {
-	seek2->setTime(n);
+    int m = n / 60;
+    int s = n - 60 * m;
+    seek2_minutes_spin->setValue(m);
+    seek2_seconds_spin->setValue(s);
 }
 
 int TInput::seeking2() {
-	return seek2->time();
+    int s = seek2_minutes_spin->value() * 60 + seek2_seconds_spin->value();
+    if (s == 0) {
+        s = 1;
+    }
+    return s;
 }
 
 void TInput::setSeeking3(int n) {
-	seek3->setTime(n);
+    int m = n / 60;
+    int s = n - 60 * m;
+    seek3_minutes_spin->setValue(m);
+    seek3_seconds_spin->setValue(s);
 }
 
 int TInput::seeking3() {
-	return seek3->time();
+    int s = seek3_minutes_spin->value() * 60 + seek3_seconds_spin->value();
+    if (s == 0) {
+        s = 1;
+    }
+    return s;
 }
 
 void TInput::setSeeking4(int n) {
-	seek4->setTime(n);
+    int m = n / 60;
+    int s = n - 60 * m;
+    seek4_minutes_spin->setValue(m);
+    seek4_seconds_spin->setValue(s);
 }
 
 int TInput::seeking4() {
-	return seek4->time();
+    int s = seek4_minutes_spin->value() * 60 + seek4_seconds_spin->value();
+    if (s == 0) {
+        s = 1;
+    }
+    return s;
 }
 
 void TInput::setUpdateWhileDragging(bool b) {
@@ -481,19 +499,19 @@ void TInput::createHelp() {
 
 	addSectionTitle(tr("Seeking"));
 
-	setWhatsThis(seek1, tr("Short jump"),
+    setWhatsThis(seek1_minutes_spin, tr("Short jump"),
 		tr("Select the time that should be go forward or backward when you "
 		   "choose the %1 action.").arg(tr("short jump")));
 
-	setWhatsThis(seek2, tr("Medium jump"),
+    setWhatsThis(seek2_minutes_spin, tr("Medium jump"),
 		tr("Select the time that should be go forward or backward when you "
 		   "choose the %1 action.").arg(tr("medium jump")));
 
-	setWhatsThis(seek3, tr("Long jump"),
+    setWhatsThis(seek3_minutes_spin, tr("Long jump"),
 		tr("Select the time that should be go forward or backward when you "
 		   "choose the %1 action.").arg(tr("long jump")));
 
-	setWhatsThis(seek4, tr("Mouse wheel jump"),
+    setWhatsThis(seek4_minutes_spin, tr("Mouse wheel jump"),
 		tr("Select the time that should be go forward or backward when you "
 		   "move the mouse wheel."));
 

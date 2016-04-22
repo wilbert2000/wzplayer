@@ -11,16 +11,7 @@
    </rect>
   </property>
   <layout class="QVBoxLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -126,16 +117,7 @@
        <property name="spacing">
         <number>16</number>
        </property>
-       <property name="leftMargin">
-        <number>16</number>
-       </property>
-       <property name="topMargin">
-        <number>16</number>
-       </property>
-       <property name="rightMargin">
-        <number>16</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>16</number>
        </property>
        <item>
@@ -452,19 +434,10 @@
        <string>&amp;Seeking</string>
       </attribute>
       <layout class="QGridLayout">
-       <property name="leftMargin">
-        <number>16</number>
-       </property>
-       <property name="topMargin">
-        <number>16</number>
-       </property>
-       <property name="rightMargin">
-        <number>16</number>
-       </property>
-       <property name="bottomMargin">
-        <number>16</number>
-       </property>
        <property name="verticalSpacing">
+        <number>16</number>
+       </property>
+       <property name="margin">
         <number>16</number>
        </property>
        <item row="0" column="0">
@@ -481,40 +454,142 @@
          <property name="flat">
           <bool>true</bool>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <layout class="QVBoxLayout">
-            <property name="spacing">
-             <number>6</number>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <property name="horizontalSpacing">
+           <number>16</number>
+          </property>
+          <item row="3" column="4">
+           <widget class="QSpinBox" name="seek3_seconds_spin">
+            <property name="maximum">
+             <number>59</number>
             </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="Gui::Pref::TSeekWidget" name="seek1" native="true"/>
-            </item>
-            <item>
-             <widget class="Gui::Pref::TSeekWidget" name="seek2" native="true"/>
-            </item>
-            <item>
-             <widget class="Gui::Pref::TSeekWidget" name="seek3" native="true"/>
-            </item>
-            <item>
-             <widget class="Gui::Pref::TSeekWidget" name="seek4" native="true"/>
-            </item>
-           </layout>
+           </widget>
           </item>
-          <item>
-           <spacer name="horizontalSpacer_22">
+          <item row="4" column="4">
+           <widget class="QSpinBox" name="seek4_seconds_spin">
+            <property name="maximum">
+             <number>59</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="seek1_seconds_unit_label">
+            <property name="text">
+             <string>Seconds</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="seek4_icon">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="../../icons.qrc">:/default-theme/mouse.png</pixmap>
+            </property>
+            <property name="scaledContents">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="seek2_label">
+            <property name="text">
+             <string>&amp;Medium jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek2_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="4">
+           <widget class="QSpinBox" name="seek2_seconds_spin">
+            <property name="maximum">
+             <number>59</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QSpinBox" name="seek1_seconds_spin">
+            <property name="maximum">
+             <number>59</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="seek1_icon">
+            <property name="text">
+             <string notr="true"/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="../../icons.qrc">:/default-theme/forward1.png</pixmap>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="seek4_label">
+            <property name="text">
+             <string>&amp;Mouse wheel jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek4_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="seek2_icon">
+            <property name="text">
+             <string notr="true"/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="../../icons.qrc">:/default-theme/forward2.png</pixmap>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="seek3_icon">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="../../icons.qrc">:/default-theme/forward3.png</pixmap>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="seek1_label">
+            <property name="text">
+             <string>&amp;Short jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek1_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="seek3_label">
+            <property name="text">
+             <string>&amp;Long jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek3_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="10">
+           <spacer name="horizontalSpacer_3">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -525,6 +600,25 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item row="4" column="3">
+           <widget class="QSpinBox" name="seek4_minutes_spin"/>
+          </item>
+          <item row="3" column="3">
+           <widget class="QSpinBox" name="seek3_minutes_spin"/>
+          </item>
+          <item row="2" column="3">
+           <widget class="QSpinBox" name="seek2_minutes_spin"/>
+          </item>
+          <item row="1" column="3">
+           <widget class="QSpinBox" name="seek1_minutes_spin"/>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="seek1_minute_unit_label">
+            <property name="text">
+             <string>Minutes</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -661,11 +755,6 @@
    <extends>QWidget</extends>
    <header>gui/action/actionseditor.h</header>
   </customwidget>
-  <customwidget>
-   <class>Gui::Pref::TSeekWidget</class>
-   <extends>QWidget</extends>
-   <header>gui/pref/seekwidget.h</header>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>input_tabwidget</tabstop>
@@ -683,15 +772,21 @@
   <tabstop>wheel_function_zoom</tabstop>
   <tabstop>wheel_function_speed</tabstop>
   <tabstop>wheel_function_seeking_reverse_check</tabstop>
-  <tabstop>seek1</tabstop>
-  <tabstop>seek2</tabstop>
-  <tabstop>seek3</tabstop>
-  <tabstop>seek4</tabstop>
+  <tabstop>seek1_minutes_spin</tabstop>
+  <tabstop>seek1_seconds_spin</tabstop>
+  <tabstop>seek2_minutes_spin</tabstop>
+  <tabstop>seek2_seconds_spin</tabstop>
+  <tabstop>seek3_minutes_spin</tabstop>
+  <tabstop>seek3_seconds_spin</tabstop>
+  <tabstop>seek4_minutes_spin</tabstop>
+  <tabstop>seek4_seconds_spin</tabstop>
   <tabstop>absolute_seeking_button</tabstop>
   <tabstop>relative_seeking_button</tabstop>
   <tabstop>precise_seeking_check</tabstop>
   <tabstop>timeslider_behaviour_combo</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../../icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

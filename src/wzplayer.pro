@@ -110,7 +110,6 @@ HEADERS += version.h \
     gui/action/favorites.h \
     gui/action/tvlist.h \
     gui/deviceinfo.h \
-    gui/pref/seekwidget.h \
     gui/pref/vdpauproperties.h \
     gui/pref/selectcolorbutton.h \
     gui/pref/tristatecombo.h \
@@ -231,7 +230,6 @@ SOURCES	+= version.cpp \
     gui/action/favorites.cpp \
     gui/action/tvlist.cpp \
     gui/deviceinfo.cpp \
-    gui/pref/seekwidget.cpp \
     gui/pref/vdpauproperties.cpp \
     gui/pref/selectcolorbutton.cpp \
     gui/pref/tristatecombo.cpp \
@@ -298,7 +296,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/multilineinputdialog.ui \
     gui/action/toolbareditor.ui \
     gui/action/favoriteeditor.ui \
-    gui/pref/seekwidget.ui \
     gui/pref/vdpauproperties.ui \
     gui/pref/dialog.ui \
     gui/pref/general.ui \
