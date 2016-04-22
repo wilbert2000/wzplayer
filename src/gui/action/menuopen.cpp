@@ -46,7 +46,7 @@ TMenuOpen::TMenuOpen(TBase* mw, QWidget* playlist)
     : TMenu(mw, mw, "open_menu", tr("&Open"), "noicon") {
 
 	// Open URL
-    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "url", QKeySequence("Ctrl+U"));
+    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "", QKeySequence("Ctrl+U"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
 

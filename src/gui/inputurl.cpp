@@ -31,7 +31,7 @@ TInputURL::TInputURL(QWidget* parent, Qt::WindowFlags f)
 	setMaximumSize(QSize(600,170));
 	//layout()->setSizeConstraint(QLayout::SetFixedSize);
 
-	url_icon->setPixmap(Images::icon("url_big", 48));
+	url_icon->setPixmap(Images::icon("open_url_big", 48));
 	url_edit->setFocus();
 
 	TLineEdit* edit = new TLineEdit(this);

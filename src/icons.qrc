@@ -77,7 +77,6 @@
         <file>default-theme/unload.png</file>
         <file>default-theme/download_subs.png</file>
         <file>default-theme/up.png</file>
-        <file>default-theme/url.png</file>
         <file>default-theme/vcd.png</file>
         <file>default-theme/volume.png</file>
         <file>default-theme/next.png</file>
@@ -98,7 +97,8 @@
         <file>default-theme/type_tv.png</file>
         <file>default-theme/type_video.png</file>
         <file>default-theme/type_bluray.png</file>
-        <file>default-theme/url_big.png</file>
+        <file>default-theme/open_url.png</file>
+        <file>default-theme/open_url_big.png</file>
         <file>default-theme/pref_associations.png</file>
         <file>default-theme/translators.png</file>
         <file>default-theme/contributors.png</file>
