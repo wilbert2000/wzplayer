@@ -233,25 +233,25 @@ TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
     connect(a, SIGNAL(triggered()), core, SLOT(setOutPoint()));
 
     addSeparator();
-    a  = new TAction(this, "clear_in_point", tr("Clear in point"), "", QKeySequence("Shift+["));
+    a  = new TAction(this, "clear_in_point", tr("&Clear in point"), "", QKeySequence("Shift+["));
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(clearInPoint()));
 
-    a = new TAction(this, "clear_out_point", tr("Clear out point and repeat"), "", QKeySequence("Shift+]"));
+    a = new TAction(this, "clear_out_point", tr("C&lear out point and repeat"), "", QKeySequence("Shift+]"));
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(clearOutPoint()));
 
     addSeparator();
-    a  = new TAction(this, "seek_in_point", tr("Seek in point"), "", Qt::Key_Home);
+    a  = new TAction(this, "seek_in_point", tr("&Seek to in point"), "", Qt::Key_Home);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(seekInPoint()));
 
-    a = new TAction(this, "seek_out_point", tr("Seek &out point"), "", Qt::Key_End);
+    a = new TAction(this, "seek_out_point", tr("S&eek to &out point"), "", Qt::Key_End);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(seekOutPoint()));
 
     addSeparator();
-    a = new TAction(this, "clear_in_out_points", tr("&Clear in-out points"), "", Qt::Key_Backspace);
+    a = new TAction(this, "clear_in_out_points", tr("Cle&ar in-out points"), "", Qt::Key_Backspace);
 	group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(clearInOutPoints()));
 
