@@ -181,6 +181,24 @@ TCore::~TCore() {
 #endif
 }
 
+void TCore::enableScreensaver() {
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef DISABLE_SCREENSAVER
+    win_screensaver->enable();
+#endif
+#endif
+}
+
+void TCore::disableScreensaver() {
+
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#ifdef DISABLE_SCREENSAVER
+    win_screensaver->disable();
+#endif
+#endif
+}
+
 void TCore::processError(QProcess::ProcessError error) {
 	qDebug("TCore::processError: %d", error);
 
@@ -440,26 +458,6 @@ void TCore::open(QString file, int seek) {
 		qDebug("TCore::open: * not identified, playing as stream");
 		openStream(file);
 	}
-}
-
-void TCore::enableScreensaver() {
-	qDebug("TCore::enableScreensaver");
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-    win_screensaver->enable();
-#endif
-#endif
-}
-
-void TCore::disableScreensaver() {
-	qDebug("TCore::disableScreensaver");
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-	win_screensaver->disable();
-#endif
-#endif
 }
 
 void TCore::setExternalSubs(const QString &filename) {
