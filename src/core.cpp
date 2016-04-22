@@ -198,11 +198,11 @@ void TCore::processFinished(bool normal_exit) {
 	playerwindow->restoreNormalWindow();
     enableScreensaver();
 
-	// Cancel restarting to enter the stopped state in case
-	// the restarted player unexpectedly finished
-	if (restarting == 2) {
-		restarting = 0;
-	}
+    // Cancel restarting to enter the stopped state in case the restarted
+    // player unexpectedly finished. See restartPlay() for details.
+    if (restarting == 2) {
+        restarting = 0;
+    }
 
 	if (restarting) {
 		qDebug("TCore::processFinished: restarting...");
@@ -611,6 +611,14 @@ void TCore::restartPlay() {
 	// Save state proc, currently only used by TMPlayerProcess for DVDNAV
 	proc->save();
 
+    // restarting has three states decided here:
+    // 0: normal operation, no restart
+    // 1: restarting, stopping the current player
+    // 2: restarting, starting the player with the new settings
+    // Needed to prevent restart loops. processFinished() can now distinguish
+    // between a failing player while stopping the player, 1 and ignored,
+    // and a failing player starting with new settings, 2 and not ignored,
+    // but used to move to the stopped state to prevent restart loops.
 	if (proc->isRunning()) {
 		restarting = 1;
 		stopPlayer();
@@ -941,23 +949,6 @@ void TCore::startPlayer(QString file, double seek) {
         }
     }
 
-    // Setup screenshot directory
-	if (pref->screenshot_directory.isEmpty()) {
-		pref->use_screenshot = false;
-	} else {
-		QFileInfo fi(pref->screenshot_directory);
-		if (!fi.isDir() || !fi.isWritable()) {
-			qWarning() << "TCore::startPlayer: disabled screenshots and capturing, screenshot directory not writable"
-					   << pref->screenshot_directory;
-			pref->use_screenshot = false;
-			// Need to clear to disable capture
-			pref->screenshot_directory = "";
-		}
-	}
-	if (pref->use_screenshot) {
-		proc->setScreenshotDirectory(pref->screenshot_directory);
-	}
-
 	// Setup hardware decoding for MPV.
 	// First set mdat.video_hwdec, handle setting hwdec option later
 	QString hwdec = pref->hwdec;
@@ -1060,9 +1051,8 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("audiofile", mset.external_audio);
 	}
 
-	// Aspect ratio
-	// proc->setOption("keepaspect", false);
-	QString aspect_option = mset.aspect_ratio.toOption();
+    // Aspect ratio video
+    QString aspect_option = mset.aspect_ratio.toOption();
 	if (!aspect_option.isEmpty()) {
 		// Clear original aspect ratio
 		if (restarting == 0) {
@@ -1070,11 +1060,14 @@ void TCore::startPlayer(QString file, double seek) {
 		}
 		proc->setOption("aspect", aspect_option);
 	}
+    // Aspect ratio monitor
 	double aspect = pref->monitorAspectDouble();
-	if (aspect != 0) {
+    if (aspect > 0) {
 		proc->setOption("monitorpixelaspect", aspect);
 	}
 
+    // Colorkey, only used by XP directx and OS2 kva drivers
+    // to set color key for overlay
 	if (pref->useColorKey()) {
 		proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
 	}
@@ -1297,6 +1290,24 @@ void TCore::startPlayer(QString file, double seek) {
 	if (pref->use_correct_pts != TPreferences::Detect) {
 		proc->setOption("correct-pts", pref->use_correct_pts == TPreferences::Enabled);
 	}
+
+    // Setup screenshot directory.
+    // Needs to be setup before the video filters below use it.
+    if (pref->screenshot_directory.isEmpty()) {
+        pref->use_screenshot = false;
+    } else {
+        QFileInfo fi(pref->screenshot_directory);
+        if (!fi.isDir() || !fi.isWritable()) {
+            qWarning() << "TCore::startPlayer: disabled screenshots and capturing, screenshot directory not writable"
+                       << pref->screenshot_directory;
+            pref->use_screenshot = false;
+            // Need to clear to disable capture
+            pref->screenshot_directory = "";
+        }
+    }
+    if (pref->use_screenshot) {
+        proc->setScreenshotDirectory(pref->screenshot_directory);
+    }
 
     if (!videoFiltersEnabled(true)) {
 		goto end_video_filters;
