@@ -1788,11 +1788,12 @@ void TCore::setInPoint(double sec) {
     }
 
     emit InOutPointsChanged();
-    displayMessage(tr("In point set to %1").arg(Helper::formatTime(sec)));
+    displayMessage(tr("In point set to %1").arg(Helper::formatTime(mset.in_point)));
 }
 
 void TCore::seekInPoint() {
     seekTime(mset.in_point);
+    displayMessage(tr("Seeking to %1").arg(Helper::formatTime(mset.in_point)));
 }
 
 void TCore::clearInPoint() {
@@ -1833,13 +1834,16 @@ void TCore::setOutPoint(double sec) {
 
 void TCore::seekOutPoint() {
 
+    double seek;
     if (mset.loop && _state != STATE_PAUSED) {
-        seekTime(mset.in_point);
+        seek = mset.in_point;
     } else if (mset.out_point > 0){
-        seekTime(mset.out_point);
+        seek = mset.out_point;
     } else {
-        seekTime(mdat.duration);
+        seek = mdat.duration;
     }
+    seekTime(seek);
+    displayMessage(tr("Seeking to %1").arg(Helper::formatTime(seek)));
 }
 
 void TCore::clearOutPoint() {
