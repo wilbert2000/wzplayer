@@ -135,7 +135,7 @@ TMenuAudio::TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer)
     incAudioDelayAct = new TAction(this, "inc_audio_delay", tr("Del&ay +"), "delay_up", Qt::CTRL | Qt::Key_Plus);
 	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
 
-	audioDelayAct = new TAction(this, "audio_delay", tr("Set dela&y..."));
+    audioDelayAct = new TAction(this, "audio_delay", tr("Set dela&y..."), "", Qt::META | Qt::Key_Plus);
     connect(audioDelayAct, SIGNAL(triggered()), main_window, SLOT(showAudioDelayDialog()));
 
 	// Equalizer
