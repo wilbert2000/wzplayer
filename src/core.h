@@ -311,9 +311,6 @@ public slots:
 	void dvdnavPrev();
 	void dvdnavMouse();
 
-	//! Change fullscreen when using the player own window
-	void changeFullscreenMode(bool b);
-
 	//! Wrapper for the osd_show_text slave command
 	void displayTextOnOSD(const QString& text,
 						  int duration = TConfig::MESSAGE_DURATION,

@@ -102,10 +102,11 @@ public:
 
 	void setAspect(double aspect);
 	virtual void setZoomAndPan(double zoom, double, double, int);
-	void setFullscreen(bool b);
+
 #if PROGRAM_SWITCH
 	void setTSProgram(int ID);
 #endif
+
 	void toggleDeinterlace();
 	void setOSDScale(double value);
 	void setChannelsFile(const QString&) {}

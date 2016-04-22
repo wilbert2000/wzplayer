@@ -1570,10 +1570,6 @@ void TMPlayerProcess::setZoomAndPan(double zoom, double, double, int) {
 	}
 }
 
-void TMPlayerProcess::setFullscreen(bool b) {
-	writeToStdin(QString("vo_fullscreen %1").arg(b ? "1" : "0"));
-}
-
 #if PROGRAM_SWITCH
 void TMPlayerProcess::setTSProgram(int ID) {
 	writeToStdin("set_property switch_program " + QString::number(ID));

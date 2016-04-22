@@ -1311,10 +1311,6 @@ void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y, int osd
 	}
 }
 
-void TMPVProcess::setFullscreen(bool b) {
-	writeToStdin(QString("set fullscreen %1").arg(b ? "yes" : "no"));
-}
-
 #if PROGRAM_SWITCH
 void TMPVProcess::setTSProgram(int ID) {
 	qDebug("Proc::TMPVProcess::setTSProgram: function not supported");

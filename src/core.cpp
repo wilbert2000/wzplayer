@@ -295,10 +295,6 @@ void TCore::saveMediaSettings() {
 	emit showMessage(tr("Saved settings for %1").arg(mdat.filename));
 } // saveMediaSettings
 
-void TCore::changeFullscreenMode(bool b) {
-	proc->setFullscreen(b);
-}
-
 void TCore::clearOSD() {
 	displayTextOnOSD("", 0, pref->osd_level);
 }
