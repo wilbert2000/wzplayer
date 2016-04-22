@@ -56,6 +56,7 @@ void TWidgetAction::propagate_enabled(bool b) {
 
 TTimeSliderAction::TTimeSliderAction(QWidget* parent) :
     TWidgetAction(parent),
+    pos(0),
     max_pos(1000),
     duration(0) {
 }
@@ -63,20 +64,20 @@ TTimeSliderAction::TTimeSliderAction(QWidget* parent) :
 TTimeSliderAction::~TTimeSliderAction() {
 }
 
-void TTimeSliderAction::setPos(int v) {
+void TTimeSliderAction::setPos() {
 
     QList<QWidget*> l = createdWidgets();
     for (int n = 0; n < l.count(); n++) {
         TTimeSlider* s = (TTimeSlider*) l[n];
         bool was_blocked = s->blockSignals(true);
-		s->setPos(v);
+        s->setPos(pos);
 		s->blockSignals(was_blocked);
 	}
 }
 
 void TTimeSliderAction::setPosition(double sec) {
 
-    int pos = 0;
+    pos = 0;
     if (sec > 0 && duration > 0.1) {
         pos = qRound((sec * max_pos) / duration);
         if (pos > max_pos) {
@@ -84,7 +85,7 @@ void TTimeSliderAction::setPosition(double sec) {
         }
     }
 
-    setPos(pos);
+    setPos();
 }
 
 void TTimeSliderAction::setDuration(double t) {
@@ -101,29 +102,33 @@ void TTimeSliderAction::setDuration(double t) {
 // Slider pos changed
 void TTimeSliderAction::onPosChanged(int value) {
 
+    pos = value;
     if (Settings::pref->relative_seeking || duration <= 0) {
-        emit percentageChanged((double) (value * 100) / max_pos);
+        emit percentageChanged((double) (pos * 100) / max_pos);
     } else {
-        emit positionChanged(duration * value / max_pos);
+        emit positionChanged(duration * pos / max_pos);
     }
 }
 
 // Slider pos changed while dragging
 void TTimeSliderAction::onDraggingPosChanged(int value) {
-    emit dragPositionChanged(duration * value / max_pos);
+
+    pos = value;
+    emit dragPositionChanged(duration * pos / max_pos);
 }
 
 // Delayed slider pos while dragging
 void TTimeSliderAction::onDelayedDraggingPos(int value) {
 
+    pos = value;
     if (Settings::pref->update_while_seeking) {
-        onPosChanged(value);
+        onPosChanged(pos);
     }
 }
 
 QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 
-    TTimeSlider* slider = new TTimeSlider(parent, max_pos, duration,
+    TTimeSlider* slider = new TTimeSlider(parent, pos, max_pos, duration,
         Settings::pref->time_slider_drag_delay);
 	slider->setEnabled(isEnabled());
 

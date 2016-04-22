@@ -29,18 +29,22 @@ namespace Gui {
 namespace Action {
 
 
-TTimeSlider::TTimeSlider(QWidget* parent, int max_pos, double duration, int drag_delay)
+TTimeSlider::TTimeSlider(QWidget* parent,
+                         int pos,
+                         int max_pos,
+                         double duration,
+                         int drag_delay)
 	: TSlider(parent)
 	, dont_update(false)
-	, position(0)
+    , position(pos)
     , _duration(duration)
 	, last_pos_to_send(-1)
 	, savedSize(256)
 	, getInitialSize(true) {
 
 	setMinimum(0);
-    setValue(0);
     setMaximum(max_pos);
+    setValue(position);
     setFocusPolicy(Qt::NoFocus);
 
 	connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));

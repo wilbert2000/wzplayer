@@ -32,7 +32,11 @@ class TTimeSlider : public TSlider {
 	Q_OBJECT
 
 public:
-	TTimeSlider(QWidget* parent, int max_pos, double duration, int drag_delay);
+    TTimeSlider(QWidget* parent,
+                int pos,
+                int max_pos,
+                double duration,
+                int drag_delay);
 	virtual ~TTimeSlider();
 
 	virtual int pos();

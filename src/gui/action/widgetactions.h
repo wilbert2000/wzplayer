@@ -80,10 +80,11 @@ protected:
 	virtual QWidget* createWidget(QWidget* parent);
 
 private:
+    int pos;
 	int max_pos;
     double duration;
 
-    void setPos(int);
+    void setPos();
 private slots:
     void onPosChanged(int value);
     void onDraggingPosChanged(int value);
