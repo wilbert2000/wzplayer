@@ -1352,12 +1352,13 @@ void TPreferences::setupScreenshotFolder() {
 
 	if (screenshot_directory.isEmpty()) {
 		use_screenshot = false;
-    } else if (QDir().mkpath(screenshot_directory)) {
+    } else if (QDir(screenshot_directory).exists()) {
         qDebug() << "Settings::TPreferences::setupScreenshotFolder: using screen shot folder"
                  << screenshot_directory;
     } else {
-        qWarning() << "Settings::TPreferences::setupScreenshotFolder: failed to create"
-                   << screenshot_directory;
+        qWarning() << "Settings::TPreferences::setupScreenshotFolder: screen shot folder"
+                   << screenshot_directory << "not found";
+        use_screenshot = false;
         screenshot_directory = "";
     }
 }

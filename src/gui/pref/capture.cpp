@@ -75,16 +75,14 @@ void TCapture::getData(Settings::TPreferences* pref) {
 	QString dir = screenshotDir();
 	if (dir.isEmpty()) {
 		enable = false;
-	} else {
-		QFileInfo fi(dir);
-		if (!fi.isDir() || !fi.isWritable()) {
-			qWarning() << "Gui::Pref::TCapture::getData: screenshot directory not writable"
-					   << dir;
-			enable = false;
-			// Need to clear dir to disable capture
-			dir = "";
-		}
-	}
+    } else if (!QDir().mkpath(dir)) {
+        qWarning() << "Gui::Pref::TCapture::getData: failed to create screenshot directory"
+                   << dir;
+        enable = false;
+        // Need to clear dir to disable capture
+        dir = "";
+    }
+
 	restartIfBoolChanged(pref->use_screenshot, enable);
 	restartIfStringChanged(pref->screenshot_directory, dir);
 
