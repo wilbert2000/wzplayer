@@ -53,7 +53,7 @@ TMenuOpen::TMenuOpen(TBase* mw, QWidget* playlist)
 	addSeparator();
 
 	// Open file
-    a = new TAction(this, "open_file", tr("Open &file..."), "open", QKeySequence("Ctrl+O"));
+    a = new TAction(this, "open_file", tr("Open &file..."), "open");
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
 

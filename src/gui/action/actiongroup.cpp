@@ -25,17 +25,18 @@ namespace Gui {
 namespace Action {
 
 TActionGroupItem::TActionGroupItem(QObject* parent,
-								   TActionGroup* group,
-								   const QString& name,
-								   const QString& text,
-								   int data,
+                                   TActionGroup* group,
+                                   const QString& name,
+                                   const QString& text,
+                                   int data,
                                    bool autoadd,
-                                   bool icon)
-    : TAction(parent, name, text, icon ? "" : "noicon", 0, autoadd) {
+                                   bool icon,
+                                   const QKeySequence& shortCut)
+    : TAction(parent, name, text, icon ? "" : "noicon", shortCut, autoadd) {
 
 	setData(data);
 	setCheckable(true);
-	group->addAction(this);
+    group->addAction(this);
 }
 
 

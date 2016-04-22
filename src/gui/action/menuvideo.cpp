@@ -202,7 +202,7 @@ TMenuVideo::TMenuVideo(TBase* mw,
         core(c) {
 
     fullscreenAct = new TAction(this, "fullscreen", tr("&Fullscreen"), "", Qt::Key_F);
-	fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
+    //fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
 	fullscreenAct->setCheckable(true);
     connect(fullscreenAct, SIGNAL(triggered(bool)),
             main_window, SLOT(toggleFullscreen(bool)));

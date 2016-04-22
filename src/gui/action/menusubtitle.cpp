@@ -90,32 +90,32 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
     : TMenu(mw, mw, "subtitle_menu", tr("&Subtitles"), "noicon")
 	, core(c) {
 
-    decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "sub_up");
+    decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "", Qt::Key_Up);
 	connect(decSubPosAct, SIGNAL(triggered()), core, SLOT(decSubPos()));
-    incSubPosAct = new TAction(this, "inc_sub_pos", tr("&Down"), "sub_down");
+    incSubPosAct = new TAction(this, "inc_sub_pos", tr("&Down"), "", Qt::Key_Down);
 	connect(incSubPosAct, SIGNAL(triggered()), core, SLOT(incSubPos()));
 
 	addSeparator();
-    decSubScaleAct = new TAction(this, "dec_sub_scale", tr("S&ize -"));
+    incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Si&ze +"), "", Qt::Key_K);
+    connect(incSubScaleAct, SIGNAL(triggered()), core, SLOT(incSubScale()));
+    decSubScaleAct = new TAction(this, "dec_sub_scale", tr("S&ize -"), "", Qt::SHIFT | Qt::Key_K);
 	connect(decSubScaleAct, SIGNAL(triggered()), core, SLOT(decSubScale()));
-    incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Si&ze +"));
-	connect(incSubScaleAct, SIGNAL(triggered()), core, SLOT(incSubScale()));
 
 	addSeparator();
-    decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay &-"));
-	connect(decSubDelayAct, SIGNAL(triggered()), core, SLOT(decSubDelay()));
-    incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay &+"));
+    incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay &+"), "", Qt::ALT | Qt::Key_D);
 	connect(incSubDelayAct, SIGNAL(triggered()), core, SLOT(incSubDelay()));
-    subDelayAct = new TAction(this, "sub_delay", tr("Se&t delay..."));
+    decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay &-"), "", Qt::SHIFT | Qt::Key_D);
+    connect(decSubDelayAct, SIGNAL(triggered()), core, SLOT(decSubDelay()));
+    subDelayAct = new TAction(this, "sub_delay", tr("Se&t delay..."), "", Qt::META | Qt::Key_D);
     connect(subDelayAct, SIGNAL(triggered()), main_window, SLOT(showSubDelayDialog()));
 
 	addSeparator();
+    incSubStepAct = new TAction(this, "inc_sub_step",
+        tr("N&ext line in subtitles"), "", Qt::Key_L);
+    connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
     decSubStepAct = new TAction(this, "dec_sub_step",
         tr("&Previous line in subtitles"), "", Qt::SHIFT | Qt::Key_L);
 	connect(decSubStepAct, SIGNAL(triggered()), core, SLOT(decSubStep()));
-    incSubStepAct = new TAction(this, "inc_sub_step",
-        tr("N&ext line in subtitles"), "", Qt::Key_L);
-	connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
 
     seekNextSubAct = new TAction(this, "seek_next_sub",
         tr("Seek to next subtitle"), "", Qt::Key_N, pref->isMPV());

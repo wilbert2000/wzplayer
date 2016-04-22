@@ -14,7 +14,7 @@ TMenuAudioTracks::TMenuAudioTracks(TBase* mw, TCore* c)
 	, core(c) {
 
 	// Next audio track
-	nextAudioTrackAct = new TAction(this, "next_audio_track", tr("Next audio track"), "", Qt::Key_K);
+    nextAudioTrackAct = new TAction(this, "next_audio_track", tr("Next audio track"), "", QKeySequence("*"));
     main_window->addAction(nextAudioTrackAct);
 	connect(nextAudioTrackAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
 

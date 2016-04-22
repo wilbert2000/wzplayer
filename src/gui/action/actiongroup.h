@@ -38,7 +38,8 @@ public:
                      const QString& text,
                      int data,
                      bool autoadd = true,
-                     bool icon = false);
+                     bool icon = false,
+                     const QKeySequence& shortCut = 0);
 };
 
 
