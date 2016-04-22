@@ -164,16 +164,6 @@ TMenuZoomAndPan::TMenuZoomAndPan(TBase* mw, TCore* c)
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()));
 	addSeparator();
-    a = new TAction(this, "auto_zoom", tr("&Auto zoom"));
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(autoZoom()));
-    a = new TAction(this, "zoom_169", tr("Zoom for &16:9"));
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(autoZoomFor169()));
-    a = new TAction(this, "zoom_235", tr("Zoom for &2.35:1"));
-	group->addAction(a);
-	connect(a, SIGNAL(triggered()), core, SLOT(autoZoomFor235()));
-	addSeparator();
     a = new TAction(this, "dec_zoom", tr("Zoom &-"), "", Qt::Key_1);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decZoom()));

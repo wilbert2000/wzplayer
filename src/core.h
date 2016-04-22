@@ -287,10 +287,6 @@ public slots:
 	void panDown();
 
 	void resetZoomAndPan();
-	void autoZoom();
-	void autoZoomFromLetterbox(double video_aspect);
-	void autoZoomFor169();
-	void autoZoomFor235();
 
 	void showFilenameOnOSD();
 	void showTimeOnOSD();
