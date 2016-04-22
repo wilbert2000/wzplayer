@@ -266,24 +266,6 @@ QString TCore::stateToString() const {
 	return "Stopped";
 }
 
-// Public restart
-void TCore::restart() {
-	qDebug("TCore::restart");
-
-	if (proc->isRunning()) {
-		restartPlay();
-	} else {
-        qDebug("TCore::restart: player is not running");
-	}
-}
-
-void TCore::reload() {
-	qDebug("TCore::reload");
-
-	stopPlayer();
-    initPlaying();
-}
-
 void TCore::saveMediaSettings() {
 
 	if (!pref->remember_media_settings) {
@@ -599,7 +581,6 @@ void TCore::openFile(const QString& filename, int seek) {
 	initPlaying(seek);
 }
 
-
 void TCore::restartPlay() {
 
 	// Save state proc, currently only used by TMPlayerProcess for DVDNAV
@@ -620,6 +601,24 @@ void TCore::restartPlay() {
 
 	restarting = 2;
 	initPlaying();
+}
+
+// Public restart
+void TCore::restart() {
+    qDebug("TCore::restart");
+
+    if (proc->isRunning()) {
+        restartPlay();
+    } else {
+        qDebug("TCore::restart: player is not running");
+    }
+}
+
+void TCore::reload() {
+    qDebug("TCore::reload");
+
+    stopPlayer();
+    initPlaying();
 }
 
 void TCore::initVolume() {
