@@ -607,6 +607,7 @@ void TPlayerWindow::restoreNormalWindow() {
 	qDebug("TPlayerWindow::restoreNormalWindow");
 
 	video_window->restoreNormalBackground();
+    repaint();
 	// Clear video size
 	video_size = QSize(0, 0);
 }
