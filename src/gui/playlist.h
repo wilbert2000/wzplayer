@@ -108,7 +108,8 @@ public slots:
 
 signals:
 	void playlistEnded();
-	void visibilityChanged(bool visible);
+    void enablePrevNextChanged();
+    void visibilityChanged(bool visible);
 	void displayMessage(const QString&, int);
 
 protected:

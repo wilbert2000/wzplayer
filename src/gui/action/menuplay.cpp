@@ -11,27 +11,30 @@
 #include "core.h"
 #include "images.h"
 
-
 using namespace Settings;
 
 namespace Gui {
 namespace Action {
 
+// Base class for seeking forward/rewinding
 TMenuSeek::TMenuSeek(QWidget* parent,
                      TBase* mainwindow,
                      const QString& name,
                      const QString& text,
-                     const QString& icon,
                      const QString& sign) :
-    TMenu(parent, mainwindow, name, text, icon),
+    TMenu(parent, mainwindow, name, text),
     seek_sign(sign) {
 
+    setDefaultAction(menuAction());
     connect(this, SIGNAL(triggered(QAction*)),
             this, SLOT(onTriggered(QAction*)));
     connect(main_window, SIGNAL(preferencesChanged()),
             this, SLOT(setJumpTexts()));
+    connect(main_window->getPlaylist(), SIGNAL(enablePrevNextChanged()),
+            this, SLOT(updateDefaultAction()));
 }
 
+// Map in to action
 TAction* TMenuSeek::intToAction(int i) const {
 
     switch (i) {
@@ -43,6 +46,7 @@ TAction* TMenuSeek::intToAction(int i) const {
     }
 }
 
+// Return int for action
 int TMenuSeek::actionToInt(QAction* action) const {
 
     QString name = action->objectName();
@@ -61,10 +65,35 @@ int TMenuSeek::actionToInt(QAction* action) const {
     return 4;
 }
 
+// Set default action and pref when menu triggered
 void TMenuSeek::onTriggered(QAction* action) {
 
     setDefaultAction(action);
     pref->seeking_current_action = actionToInt(action);
+}
+
+// Update default actions menu and associated tool buttons
+void TMenuSeek::updateDefaultAction() {
+
+    QAction* action = intToAction(pref->seeking_current_action);
+    if (!action->isEnabled()) {
+        action = menuAction();
+    }
+
+    if (action != defaultAction()) {
+        qDebug() << "Gui::Action::TMenuseek::updateDefaultAction: updating default action for"
+                 << menuAction()->objectName()
+                 << "from" << defaultAction()->objectName()
+                 << "to" << action->objectName();
+        setDefaultAction(action);
+
+        // Set default action asscociated tool buttons.
+        QString name = menuAction()->objectName() + "_toolbutton";
+        QList<QToolButton*> buttons = main_window->findChildren<QToolButton*>(name);
+        foreach(QToolButton* button, buttons) {
+            button->setDefaultAction(action);
+        }
+    }
 }
 
 void TMenuSeek::enableActions(bool stopped, bool, bool) {
@@ -74,8 +103,11 @@ void TMenuSeek::enableActions(bool stopped, bool, bool) {
     seek1Act->setEnabled(e);
     seek2Act->setEnabled(e);
     seek3Act->setEnabled(e);
+
+    updateDefaultAction();
 }
 
+// Return seek string to use in menu
 QString TMenuSeek::timeForJumps(int secs) const {
 
     int minutes = (int) secs / 60;
@@ -96,6 +128,7 @@ QString TMenuSeek::timeForJumps(int secs) const {
             .arg(seek_sign).arg(txt);
 }
 
+// Set seek actions text from preferences
 void TMenuSeek::setJumpTexts() {
 
     seek1Act->setTextAndTip(timeForJumps(pref->seeking1));
@@ -103,37 +136,6 @@ void TMenuSeek::setJumpTexts() {
     seek3Act->setTextAndTip(timeForJumps(pref->seeking3));
 }
 
-void TMenuSeek::peerTriggered(QAction* action) {
-
-    // Set default action for this menu
-    QAction* this_action;
-    QString name = action->objectName();
-    if (name.startsWith("frame")) {
-        this_action = frameAct;
-    } else if (name.endsWith("1")) {
-        this_action = seek1Act;
-    } else if (name.endsWith("2")) {
-        this_action = seek2Act;
-    } else if (name.endsWith("3")) {
-        this_action = seek3Act;
-    } else {
-        this_action = plAct;
-        if (!name.startsWith("pl_")) {
-            qWarning() << "TMenuSeek::peerTriggered: unexpected action" << name;
-        }
-    }
-    setDefaultAction(this_action);
-
-    // Set default action asscociated tool buttons
-    name = menuAction()->objectName() + "_toolbutton";
-    QList<QToolButton*> buttons = main_window->findChildren<QToolButton*>(name);
-    foreach(QToolButton* button, buttons) {
-        button->setDefaultAction(this_action);
-    }
-    if (buttons.count() <= 0) {
-        qDebug() << "TMenuSeek::peerTriggered: tool button" << name << "not found";
-    }
-}
 
 class TMenuSeekForward: public TMenuSeek {
 public:
@@ -143,11 +145,12 @@ public:
                               TPlaylist* playlist);
 };
 
+// Create forward menu as descendant from TMenuSeek
 TMenuSeekForward::TMenuSeekForward(QWidget* parent,
                                    TBase* mainwindow,
                                    TCore* core,
                                    TPlaylist* playlist) :
-    TMenuSeek(parent, mainwindow, "forward_menu", tr("&Forward"), "forward1",
+    TMenuSeek(parent, mainwindow, "forward_menu", tr("&Forward"),
               tr("+", "sign to use in menu for forward seeking")) {
 
     frameAct = new TAction(this, "frame_step", tr("Fra&me step"), "", Qt::ALT | Qt::Key_Right);
@@ -168,7 +171,6 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent,
     plAct = playlist->findChild<TAction*>("pl_next");
     addAction(plAct);
 
-    setDefaultAction(intToAction(pref->seeking_current_action));
     setJumpTexts();
 }
 
@@ -181,11 +183,12 @@ public:
                              TPlaylist* playlist);
 };
 
+// Create rewind menu as descendant from TMenuSeek
 TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
                                  TBase* mainwindow,
                                  TCore* core,
                                  TPlaylist* playlist) :
-    TMenuSeek(parent, mainwindow, "rewind_menu", tr("&Rewind"), "rewind1",
+    TMenuSeek(parent, mainwindow, "rewind_menu", tr("&Rewind"),
               tr("-", "sign to use in menu for rewind seeking")) {
 
     frameAct = new TAction(this, "frame_back_step", tr("Fra&me back step"), "", Qt::ALT | Qt::Key_Left);
@@ -206,24 +209,11 @@ TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
     plAct = playlist->findChild<TAction*>("pl_prev");
     addAction(plAct);
 
-    setDefaultAction(intToAction(pref->seeking_current_action));
     setJumpTexts();
 }
 
 
-class TMenuInOut : public TMenu {
-public:
-    explicit TMenuInOut(TBase* mw, TCore* c);
-protected:
-	virtual void enableActions(bool stopped, bool, bool);
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
-private:
-	TCore* core;
-	QActionGroup* group;
-	TAction* repeatAct;
-};
-
+// Create in-out points menu
 TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
     : TMenu(mw, mw, "in_out_points_menu", tr("&In-out points"))
 	, core(c) {
@@ -269,6 +259,7 @@ TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
 	repeatAct->setCheckable(true);
     group->addAction(repeatAct);
 	connect(repeatAct, SIGNAL(triggered(bool)), core, SLOT(toggleRepeat(bool)));
+    connect(core, SIGNAL(InOutPointsChanged()), this, SLOT(upd()));
 
     addActionsTo(main_window);
 }
@@ -277,12 +268,16 @@ void TMenuInOut::enableActions(bool stopped, bool, bool) {
     group->setEnabled(!stopped);
 }
 
-void TMenuInOut::onMediaSettingsChanged(TMediaSettings* mset) {
-	repeatAct->setChecked(mset->loop);
+void TMenuInOut::upd() {
+    repeatAct->setChecked(core->mset.loop);
+}
+
+void TMenuInOut::onMediaSettingsChanged(TMediaSettings*) {
+    upd();
 }
 
 void TMenuInOut::onAboutToShow() {
-	repeatAct->setChecked(core->mset.loop);
+    upd();
 }
 
 
@@ -351,6 +346,7 @@ void TMenuPlaySpeed::enableActions(bool stopped, bool, bool) {
 }
 
 
+// Create main play menu
 TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
     : TMenu(mw, mw, "play_menu", tr("&Play"), "noicon")
 	, core(c)
@@ -379,18 +375,18 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
 	addSeparator();
 
     // Forward menu
-    QMenu* fw = new TMenuSeekForward(this, main_window, core, playlist);
-    addMenu(fw);
+    QMenu* forward_menu = new TMenuSeekForward(this, main_window, core, playlist);
+    addMenu(forward_menu);
     // Rewind menu
-    QMenu* rw = new TMenuSeekRewind(this, main_window, core, playlist);
-    addMenu(rw);
+    QMenu* rewind_menu = new TMenuSeekRewind(this, main_window, core, playlist);
+    addMenu(rewind_menu);
+    // Let forward and rewind work in tandem
+    connect(forward_menu, SIGNAL(triggered(QAction*)),
+            rewind_menu, SLOT(updateDefaultAction()));
+    connect(rewind_menu, SIGNAL(triggered(QAction*)),
+            forward_menu, SLOT(updateDefaultAction()));
 
-    connect(fw, SIGNAL(triggered(QAction*)),
-            rw, SLOT(peerTriggered(QAction*)));
-    connect(rw, SIGNAL(triggered(QAction*)),
-            fw, SLOT(peerTriggered(QAction*)));
-
-    // Seek
+    // Seek to...
     seekToAct = new TAction(this, "seek_to", tr("S&eek to..."), "", QKeySequence("Ctrl+G"));
     connect(seekToAct, SIGNAL(triggered()), main_window, SLOT(showSeekToDialog()));
 
@@ -398,7 +394,7 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
     addSeparator();
     addMenu(new TMenuPlaySpeed(main_window, core));
 
-    // A-B submenu
+    // In-out point submenu
     addMenu(new TMenuInOut(main_window, core));
 
     addActionsTo(main_window);

@@ -66,39 +66,35 @@ TEditableToolbar::~TEditableToolbar() {
 
 void TEditableToolbar::addMenu(QAction* action) {
 
-    if (action->objectName() == "stay_on_top_menu") {
-        QAction* toggleAct = main_window->findChild<QAction*>("stay_on_top_toggle");
-        if (toggleAct) {
-            addAction(toggleAct);
-            QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(toggleAct));
-            if (button) {
-                button->setObjectName(action->objectName() + "_toolbutton");
-                button->setPopupMode(QToolButton::MenuButtonPopup);
-                button->setDefaultAction(toggleAct);
-                button->setMenu(action->menu());
-            }
-        }
+    // Create button with menu
+    QToolButton* button = new QToolButton();
+    button->setObjectName(action->objectName() + "_toolbutton");
+    QMenu* menu = action->menu();
+    button->setMenu(menu);
+
+    // Set popupmode and default action
+    if (action->objectName() == "stay_on_top_menu"
+        || action->objectName() == "videosize_menu") {
+        button->setPopupMode(QToolButton::MenuButtonPopup);
+        button->setDefaultAction(menu->defaultAction());
     } else if (action->objectName() == "forward_menu"
         || action->objectName() == "rewind_menu") {
-        QMenu* menu = action->menu();
-        QAction* default_action = menu->defaultAction();
-        addAction(default_action);
-        QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(
-                                                             default_action));
-        if (button) {
-            button->setObjectName(action->objectName() + "_toolbutton");
-            button->setPopupMode(QToolButton::MenuButtonPopup);
-            button->setMenu(menu);
-            connect(menu, SIGNAL(triggered(QAction*)),
-                    button, SLOT(setDefaultAction(QAction*)));
-        }
+        button->setPopupMode(QToolButton::MenuButtonPopup);
+        button->setDefaultAction(menu->defaultAction());
+        // Set triggered action as default action
+        connect(menu, SIGNAL(triggered(QAction*)),
+                button, SLOT(setDefaultAction(QAction*)));
+        // Show menu when action disabled
+        connect(action, SIGNAL(triggered()),
+                button, SLOT(showMenu()),
+                Qt::QueuedConnection);
     } else {
-        addAction(action);
-        QToolButton* button = qobject_cast<QToolButton*>(widgetForAction(action));
-        if (button) {
-            button->setPopupMode(QToolButton::InstantPopup);
-        }
+        // Default, use instant popup
+        button->setPopupMode(QToolButton::InstantPopup);
+        button->setDefaultAction(action);
     }
+
+    addWidget(button);
 }
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const TActionList& all_actions) {
@@ -142,7 +138,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
 						i--;
 					}
 				}
-			} // if (vis)
+            } // if (visible)
 
 			i++;
 		}
@@ -169,6 +165,7 @@ void TEditableToolbar::edit() {
 	editor.setDefaultActions(default_actions);
 	editor.setIconSize(iconSize().width());
 
+    // Execute
 	if (editor.exec() == QDialog::Accepted) {
 		// Get action names and update actions in all_actions
 		QStringList new_actions = editor.saveActions();

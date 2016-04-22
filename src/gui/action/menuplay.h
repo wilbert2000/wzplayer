@@ -23,11 +23,10 @@ public:
                        TBase* mainwindow,
                        const QString& name,
                        const QString& text,
-                       const QString& icon,
                        const QString& sign);
 
 public slots:
-    void peerTriggered(QAction* action);
+    void updateDefaultAction();
 
 protected:
     TAction* frameAct;
@@ -47,11 +46,27 @@ protected slots:
 private:
     QString seek_sign;
 
-
     QString timeForJumps(int secs) const;
 
 private slots:
     void onTriggered(QAction* action);
+};
+
+
+class TMenuInOut : public TMenu {
+    Q_OBJECT
+public:
+    explicit TMenuInOut(TBase* mw, TCore* c);
+protected:
+    virtual void enableActions(bool stopped, bool, bool);
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+    virtual void onAboutToShow();
+private:
+    TCore* core;
+    QActionGroup* group;
+    TAction* repeatAct;
+private slots:
+    void upd();
 };
 
 

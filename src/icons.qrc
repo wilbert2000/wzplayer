@@ -25,6 +25,8 @@
         <file>default-theme/forward3.png</file>
         <file>default-theme/forward1.png</file>
         <file>default-theme/forward2.png</file>
+        <file>default-theme/forward_menu.png</file>
+        <file>default-theme/rewind_menu.png</file>
         <file>default-theme/fullscreen.png</file>
         <file>default-theme/normalscreen.png</file>
         <file>default-theme/gamma.png</file>

@@ -1,7 +1,6 @@
 #include "gui/action/menuwindow.h"
 
 #include <QDebug>
-#include <QToolButton>
 
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
@@ -74,7 +73,7 @@ void TMenuOSD::onAboutToShow() {
 	group->setChecked((int) pref->osd_level);
 }
 
-static QString TStayOnTopToIconString(int stay_on_top) {
+static QString stayOnTopToIconString(int stay_on_top) {
 
     switch (stay_on_top) {
     case TPreferences::NeverOnTop: return "stay_on_top_never";
@@ -106,8 +105,9 @@ TMenuStayOnTop::TMenuStayOnTop(TBase* mw) :
 
     toggleStayOnTopAct = new TAction(this, "stay_on_top_toggle",
                                      tr("Toggle stay on top"),
-                                     TStayOnTopToIconString(pref->stay_on_top),
+                                     stayOnTopToIconString(pref->stay_on_top),
                                      Qt::Key_T);
+    setDefaultAction(toggleStayOnTopAct);
     connect(toggleStayOnTopAct, SIGNAL(triggered()),
             main_window, SLOT(toggleStayOnTop()));
     connect(this, SIGNAL(triggered(QAction*)),
@@ -117,14 +117,12 @@ TMenuStayOnTop::TMenuStayOnTop(TBase* mw) :
 }
 
 void TMenuStayOnTop::onTriggered(QAction* action) {
-    // enum TOnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
-
     qDebug() << "Gui::Action::TMenuStayOnTop::onTriggered action"
              << action->objectName() << "pref" << pref->stay_on_top;
 
     TPreferences::TOnTop stay_on_top;
     if (action->objectName() == "stay_on_top_toggle") {
-        // Pref->stay_on_top not yet updated
+        // pref->stay_on_top is not yet updated
         if (pref->stay_on_top == TPreferences::NeverOnTop) {
             stay_on_top = TPreferences::AlwaysOnTop;
         } else {
@@ -133,20 +131,10 @@ void TMenuStayOnTop::onTriggered(QAction* action) {
     } else {
         stay_on_top = (TPreferences::TOnTop) action->data().toInt();
     }
-
     qDebug() << "Gui::Action::TMenuStayOnTop::onTriggered selected stay_on_top"
              << stay_on_top;
 
-    QString icon_str = TStayOnTopToIconString(stay_on_top);
-    QIcon icon = Images::icon(icon_str);
-    toggleStayOnTopAct->setIcon(icon);
-
-    // Set default action asscociated tool buttons
-    QList<QToolButton*> buttons = main_window->findChildren<QToolButton*>(
-                                      objectName() + "_toolbutton");
-    foreach(QToolButton* button, buttons) {
-        button->setIcon(icon);
-    }
+    toggleStayOnTopAct->setIcon(Images::icon(stayOnTopToIconString(stay_on_top)));
 }
 
 void TMenuStayOnTop::onAboutToShow() {

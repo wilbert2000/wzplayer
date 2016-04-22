@@ -805,9 +805,22 @@ void TPlaylist::enableActions() {
     saveAct->setEnabled(c > 0);
     playAct->setEnabled(listView->currentRow() >= 0);
 
+    bool changed = false;
     bool enable = c > 0 && repeatAct->isChecked();
-    nextAct->setEnabled(enable || (c > 1 && current_item < c - 1));
-    prevAct->setEnabled(enable || (c > 1 && current_item > 0));
+    bool e = enable || (c > 1 && current_item < c - 1);
+    if (e != nextAct->isEnabled()) {
+        nextAct->setEnabled(e);
+        changed = true;
+    }
+    e = enable || (c > 1 && current_item > 0);
+    if (e != prevAct->isEnabled()) {
+        prevAct->setEnabled(e);
+        changed = true;
+    }
+    if (changed) {
+        emit enablePrevNextChanged();
+    }
+
 
     // TODO: should act on selection change use onCurrentCellChanged?
     //int sel_count = listView->selectionModel()->selection().count();
