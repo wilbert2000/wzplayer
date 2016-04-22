@@ -359,7 +359,7 @@ void TPreferences::reset() {
 
 	use_edl_files = true;
 	change_video_equalizer_on_startup = true;
-    time_to_kill_player = 5000;
+    time_to_kill_player = 10000;
 	balloon_count = 5;
     clean_config = false;
 
@@ -1059,6 +1059,8 @@ void TPreferences::load() {
 	show_tag_in_window_title = value("show_tag_in_window_title", show_tag_in_window_title).toBool();
 
     time_to_kill_player = value("time_to_kill_player", time_to_kill_player).toInt();
+    if (time_to_kill_player < 5000)
+        time_to_kill_player = 5000;
 
 #ifdef MPRIS2
 	use_mpris2 = value("use_mpris2", use_mpris2).toBool();

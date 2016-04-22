@@ -1615,10 +1615,6 @@ void TCore::stopPlayer(int exit_code) {
 
 	// If set high enough the OS will detect the "not responding state" and popup a dialog
     int timeout = pref->time_to_kill_player;
-	if (timeout < 5000) {
-		qWarning("TCore::stopPlayer: timeout %d too small, adjusting it to 5000 ms", timeout);
-		timeout = 5000;
-	}
 
 #ifdef Q_OS_OS2
 	QEventLoop eventLoop;
