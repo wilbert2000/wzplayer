@@ -70,10 +70,15 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 
 	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
 
-	connect(proc, SIGNAL(error(QProcess::ProcessError)),
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+    connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)),
 			this, SLOT(processError(QProcess::ProcessError)));
+#else
+    connect(proc, SIGNAL(error(QProcess::ProcessError)),
+            this, SLOT(processError(QProcess::ProcessError)));
+#endif
 
-	connect(proc, SIGNAL(processExited(bool)),
+    connect(proc, SIGNAL(processExited(bool)),
 			this, SLOT(processFinished(bool)));
 
 	connect(proc, SIGNAL(playerFullyLoaded()),
