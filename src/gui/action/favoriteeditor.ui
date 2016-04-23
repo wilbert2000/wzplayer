@@ -180,7 +180,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Gui::TFavoriteEditor</receiver>
+   <receiver>Gui::Action::TFavoriteEditor</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -196,7 +196,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Gui::TFavoriteEditor</receiver>
+   <receiver>Gui::Action::TFavoriteEditor</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
