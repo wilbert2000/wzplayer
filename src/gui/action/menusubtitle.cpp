@@ -126,11 +126,13 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
 
 	// Subtitle tracks
 	addSeparator();
-    subtitleTrackMenu = new TMenu(main_window, main_window, "subtitlestrack_menu", tr("Subtitle &track"), "sub");
-	nextSubtitleAct = new TAction(this, "next_subtitle", tr("Next subtitle"), "", Qt::Key_J, false);
+    subtitleTrackMenu = new TMenu(main_window, main_window,
+        "subtitlestrack_menu", tr("Subtitle &track"), "sub");
+    nextSubtitleAct = new TAction(this, "next_subtitle", tr("Next subtitle track"),
+        "", Qt::CTRL | Qt::Key_N, false);
 	subtitleTrackMenu->addAction(nextSubtitleAct);
-	subtitleTrackMenu->addSeparator();
     main_window->addAction(nextSubtitleAct);
+    subtitleTrackMenu->addSeparator();
 	addMenu(subtitleTrackMenu);
 	connect(nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()));
 
