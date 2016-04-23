@@ -481,26 +481,11 @@
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="seek4_icon">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
             <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="../../icons.qrc">:/default-theme/mouse.png</pixmap>
+             <string notr="true">Icon</string>
             </property>
             <property name="scaledContents">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -531,10 +516,7 @@
           <item row="1" column="0">
            <widget class="QLabel" name="seek1_icon">
             <property name="text">
-             <string notr="true"/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="../../icons.qrc">:/default-theme/forward1.png</pixmap>
+             <string notr="true">Icon</string>
             </property>
            </widget>
           </item>
@@ -551,20 +533,14 @@
           <item row="2" column="0">
            <widget class="QLabel" name="seek2_icon">
             <property name="text">
-             <string notr="true"/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="../../icons.qrc">:/default-theme/forward2.png</pixmap>
+             <string notr="true">Icon</string>
             </property>
            </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="seek3_icon">
             <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="../../icons.qrc">:/default-theme/forward3.png</pixmap>
+             <string notr="true">Icon</string>
             </property>
            </widget>
           </item>
@@ -785,8 +761,6 @@
   <tabstop>precise_seeking_check</tabstop>
   <tabstop>timeslider_behaviour_combo</tabstop>
  </tabstops>
- <resources>
-  <include location="../../icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
