@@ -53,12 +53,12 @@ TMenuOpen::TMenuOpen(TBase* mw, QWidget* playlist)
 	addSeparator();
 
 	// Open file
-    a = new TAction(this, "open_file", tr("Open &file..."), "open");
+    a = new TAction(this, "open_file", tr("Open &file..."), "open", Qt::CTRL | Qt::Key_F);
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
 
 	// Open dir
-    a = new TAction(this, "open_directory", tr("Open &directory..."), "openfolder", QKeySequence("Ctrl+D"));
+    a = new TAction(this, "open_directory", tr("Open &directory..."), "", QKeySequence("Ctrl+D"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
 

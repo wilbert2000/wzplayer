@@ -49,12 +49,6 @@ TFavorite::~TFavorite() {
 }
 
 void TFavorite::setIcon(QString file) {
-
-	// Fix wrong icon
-	if (file == ":/icons-png/openfolder.png" ||
-		file == ":/default-theme/openfolder.png.png") {
-		file = ":/default-theme/openfolder.png";
-	}
 	_icon = file;
 }
 

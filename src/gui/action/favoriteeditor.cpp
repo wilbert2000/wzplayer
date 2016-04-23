@@ -262,8 +262,8 @@ void TFavoriteEditor::on_add_submenu_button_clicked() {
 	table->insertRow(row);
 
 	QTableWidgetItem* icon_item = new QTableWidgetItem;
-	icon_item->setData(Qt::UserRole, Images::file("openfolder"));
-	icon_item->setIcon(Images::icon("openfolder"));
+    icon_item->setData(Qt::UserRole, Images::file("open_directory"));
+    icon_item->setIcon(Images::icon("open_directory"));
 	icon_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 	table->setItem(row, COL_ICON, icon_item);
