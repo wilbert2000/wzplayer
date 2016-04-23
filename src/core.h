@@ -379,9 +379,8 @@ protected:
 
 protected slots:
 	void playingStarted();
-	void processError(QProcess::ProcessError error);
-	void processFinished(bool normal_exit);
-	void onReceivedEndOfFile();
+	void onProcessError(QProcess::ProcessError error);
+    void onProcessFinished(bool normal_exit, int exit_code, bool eof);
 
     void onReceivedPosition(double sec);
 	void onReceivedPause();

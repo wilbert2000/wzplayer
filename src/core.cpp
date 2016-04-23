@@ -72,14 +72,14 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
     connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)),
-			this, SLOT(processError(QProcess::ProcessError)));
+            this, SLOT(onProcessError(QProcess::ProcessError)));
 #else
     connect(proc, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(processError(QProcess::ProcessError)));
+            this, SLOT(onProcessError(QProcess::ProcessError)));
 #endif
 
-    connect(proc, SIGNAL(processExited(bool)),
-			this, SLOT(processFinished(bool)));
+    connect(proc, SIGNAL(processFinished(bool, int, bool)),
+            this, SLOT(onProcessFinished(bool, int, bool)));
 
 	connect(proc, SIGNAL(playerFullyLoaded()),
 			this, SLOT(playingStarted()));
@@ -110,9 +110,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 
 	connect(proc, SIGNAL(receivedVideoOut()),
 			this, SLOT(onReceivedVideoOut()));
-
-	connect(proc, SIGNAL(receivedEndOfFile()),
-			this, SLOT(onReceivedEndOfFile()), Qt::QueuedConnection);
 
 	connect(proc, SIGNAL(receivedStreamTitle()),
 			this, SIGNAL(mediaInfoChanged()));
@@ -199,51 +196,54 @@ void TCore::disableScreensaver() {
 #endif
 }
 
-void TCore::processError(QProcess::ProcessError error) {
-	qDebug("TCore::processError: %d", error);
+void TCore::onProcessError(QProcess::ProcessError error) {
+    qDebug("TCore::onProcessError: %d", error);
 
 	// First restore normal window background
 	playerwindow->restoreNormalWindow();
+    enableScreensaver();
 
 	emit playerError(error);
-    enableScreensaver();
 }
 
-void TCore::processFinished(bool normal_exit) {
-	qDebug("TCore::processFinished: normal exit %d", normal_exit);
+void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
+    qDebug("TCore::onProcessFinished: normal exit %d, exit code %d, eof %d",
+           normal_exit, exit_code, eof);
 
 	// Restore normal window background
 	playerwindow->restoreNormalWindow();
     enableScreensaver();
 
     // Cancel restarting to enter the stopped state in case the restarted
-    // player unexpectedly finished. See restartPlay() for details.
+    // player crashed. See restartPlay() for details.
     if (restarting == 2) {
         restarting = 0;
     }
 
-	if (restarting) {
-		qDebug("TCore::processFinished: restarting...");
-		return;
-	}
+    // TODO: check if needed, leaves actions enabled during restart...
+    if (restarting) {
+        qDebug("TCore::onProcessFinished: restarting...");
+        return;
+    }
 
-	qDebug("TCore::processFinished: entering the stopped state");
+    if (exit_code == Proc::TExitMsg::EXIT_OUT_POINT_REACHED) {
+        qDebug("Proc::TCore::onProcessFinished: out point reached, setting EOF");
+        eof = true;
+    }
+
+    qDebug("TCore::onProcessFinished: entering the stopped state");
 	setState(STATE_STOPPED);
 
-	if (!normal_exit) {
-		int exit_code = proc->exitCodeOverride();
-		qDebug("TCore::processFinished: emit playerFinishedWithError(%d)", exit_code);
+    if (eof) {
+        // TODO: fix mediasettings and check if needed
+        // Reset current time to 0, needed so mset.current_sec 0 is saved
+        onReceivedPosition(0);
+        qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
+        emit mediaEOF();
+    } else if (!normal_exit){
+        qDebug("TCore::onProcessFinished: emit playerFinishedWithError()");
 		emit playerFinishedWithError(exit_code);
 	}
-}
-
-void TCore::onReceivedEndOfFile() {
-
-	// Reset current time to 0, needed so mset.current_sec 0 is saved
-    onReceivedPosition(0);
-
-	qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
-	emit mediaEOF();
 }
 
 void TCore::setState(TCoreState s) {
@@ -590,7 +590,7 @@ void TCore::restartPlay() {
     // 0: normal operation, no restart
     // 1: restarting, stopping the current player
     // 2: restarting, starting the player with the new settings
-    // Needed to prevent restart loops. processFinished() can now distinguish
+    // Needed to prevent restart loops. onProcessFinished() can now distinguish
     // between a failing player while stopping the player, 1 and ignored,
     // and a failing player starting with new settings, 2 and not ignored,
     // but used to move to the stopped state to prevent restart loops.
@@ -1600,7 +1600,7 @@ end_video_filters:
 	proc->setProcessEnvironment(env);
 
 	if (!proc->startPlayer()) {
-		// Error reported by processError()
+        // Error reported by onProcessError()
 		qWarning("TCore::startPlayer: player process didn't start");
 	}
 } //startPlayer()
@@ -1619,7 +1619,7 @@ void TCore::stopPlayer(int exit_code) {
 #ifdef Q_OS_OS2
 	QEventLoop eventLoop;
 
-	connect(proc, SIGNAL(processExited(bool)), &eventLoop, SLOT(quit()));
+    connect(proc, SIGNAL(processFinished(bool, int, bool)), &eventLoop, SLOT(quit()));
 
     proc->quit(exit_code);
 

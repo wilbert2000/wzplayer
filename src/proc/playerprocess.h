@@ -43,7 +43,6 @@ public:
     bool isFullyStarted() const { return isRunning() && notified_player_is_running; }
 
 	virtual bool startPlayer();
-	virtual int exitCodeOverride();
 
 	void writeToStdin(QString text, bool log = true);
 
@@ -130,7 +129,7 @@ public:
 
 // Signals
 signals:
-	void processExited(bool normal_exit);
+    void processFinished(bool normal_exit, int exit_code, bool eof);
 
 	void playerFullyLoaded();
 
@@ -139,7 +138,6 @@ signals:
 	void receivedPosition(double sec);
 	void receivedFrame(int frame);
 	void receivedPause();
-	void receivedEndOfFile();
 
 	void receivedMessage(const QString&);
 	void receivedBuffering();
@@ -205,7 +203,7 @@ protected:
 	virtual bool parseProperty(const QString& name, const QString& value);
 
 protected slots:
-	virtual void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    virtual void onFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
 	int line_count;

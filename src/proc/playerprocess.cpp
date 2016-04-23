@@ -49,7 +49,7 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
 	//qRegisterMetaType<Chapters>("Chapters");
 
 	connect(this, SIGNAL(finished(int,QProcess::ExitStatus)),
-			this, SLOT(processFinished(int,QProcess::ExitStatus)));
+            this, SLOT(onFinished(int,QProcess::ExitStatus)));
 
 	connect(this, SIGNAL(lineAvailable(QByteArray)),
 			this, SLOT(parseBytes(QByteArray)));
@@ -109,31 +109,17 @@ bool TPlayerProcess::startPlayer() {
 	return waitForStarted();
 }
 
-int TPlayerProcess::exitCodeOverride() {
-	return exit_code_override ? exit_code_override : exitCode();
-}
-
 // Slot called when the process is finished
-void TPlayerProcess::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    qDebug("Proc::TPlayerProcess::processFinished: exitCode: %d, override: %d, status: %d",
+void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
+    qDebug("Proc::TPlayerProcess::onFinished: exitCode: %d, override: %d, status: %d",
            exitCode, exit_code_override, exitStatus);
 
-    if (exitCode == TExitMsg::EXIT_OUT_POINT_REACHED) {
-        qDebug("Proc::TPlayerProcess::processFinished: setting EOF");
-        exitCode = 0;
-        exit_code_override = 0;
-        exitStatus = QProcess::NormalExit;
-        received_end_of_file = true;
+    if (exit_code_override) {
+        exitCode = exit_code_override;
     }
 
-	bool normal_exit = exit_code_override == 0
-                       && exitCode == 0
-					   && exitStatus == QProcess::NormalExit;
-	emit processExited(normal_exit);
-
-	// Send EOF when there are no errors.
-	if (normal_exit && received_end_of_file)
-		emit receivedEndOfFile();
+    emit processFinished(exitCode == 0 && exitStatus == QProcess::NormalExit,
+                         exitCode, received_end_of_file);
 }
 
 // Convert line of bytes to QString.
