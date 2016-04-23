@@ -23,10 +23,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="url_icon">
      <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>:/icons-png/open_url_big.png</pixmap>
+      <string notr="true"/>
      </property>
     </widget>
    </item>
