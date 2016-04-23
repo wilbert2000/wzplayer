@@ -142,19 +142,24 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
 	connect(core, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
 	// Secondary subtitle track
-    secondarySubtitleTrackMenu = new TMenu(main_window, main_window, "secondary_subtitles_track_menu", tr("Secondary trac&k"), "secondary_sub");
+    secondarySubtitleTrackMenu = new TMenu(main_window, main_window,
+        "secondary_subtitles_track_menu", tr("Secondary trac&k"), "secondary_sub");
 	if (pref->isMPV())
 		addMenu(secondarySubtitleTrackMenu);
 	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
-	connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSecondarySubtitle(int)));
-	connect(core, SIGNAL(secondarySubtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
+    connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)),
+            core, SLOT(changeSecondarySubtitle(int)));
+    connect(core, SIGNAL(secondarySubtitleTrackChanged(int)),
+            this, SLOT(updateSubtitles()));
 
     addMenu(new TMenuCC(main_window, core));
 
-	useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only", tr("&Forced subtitles only"), "forced_subs");
+    useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only",
+        tr("&Forced subtitles only"), "forced_subs");
 	useForcedSubsOnlyAct->setCheckable(true);
 	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
-	connect(useForcedSubsOnlyAct, SIGNAL(triggered(bool)), core, SLOT(toggleForcedSubsOnly(bool)));
+    connect(useForcedSubsOnlyAct, SIGNAL(triggered(bool)), core,
+            SLOT(toggleForcedSubsOnly(bool)));
 
 	addSeparator();
 	loadSubsAct = new TAction(this, "load_subs", tr("&Load subtitles..."), "open");
@@ -165,18 +170,24 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
 	addMenu(subFPSMenu);
 
 	addSeparator();
-	useCustomSubStyleAct = new TAction(this, "use_custom_sub_style", tr("Use custo&m style"));
+    useCustomSubStyleAct = new TAction(this, "use_custom_sub_style",
+                                       tr("Use custo&m style"));
 	useCustomSubStyleAct->setCheckable(true);
 	useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
-	connect(useCustomSubStyleAct, SIGNAL(triggered(bool)), core, SLOT(changeUseCustomSubStyle(bool)));
+    connect(useCustomSubStyleAct, SIGNAL(triggered(bool)),
+            core, SLOT(changeUseCustomSubStyle(bool)));
 
 #ifdef FIND_SUBTITLES
 	addSeparator();
-	showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog", tr("Find subtitles at &OpenSubtitles.org..."), "download_subs");
-    connect(showFindSubtitlesDialogAct, SIGNAL(triggered()), main_window, SLOT(showFindSubtitlesDialog()));
+    showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog",
+         tr("Find subtitles at &OpenSubtitles.org..."), "download_subs");
+    connect(showFindSubtitlesDialogAct, SIGNAL(triggered()),
+            main_window, SLOT(showFindSubtitlesDialog()));
 
-	openUploadSubtitlesPageAct = new TAction(this, "upload_subtitles", tr("Upload su&btitles to OpenSubtitles.org..."), "upload_subs");
-    connect(openUploadSubtitlesPageAct, SIGNAL(triggered()), main_window, SLOT(openUploadSubtitlesPage()));
+    openUploadSubtitlesPageAct = new TAction(this, "upload_subtitles",
+        tr("Upload su&btitles to OpenSubtitles.org..."), "upload_subs");
+    connect(openUploadSubtitlesPageAct, SIGNAL(triggered()),
+            main_window, SLOT(openUploadSubtitlesPage()));
 #endif
 
     addActionsTo(main_window);

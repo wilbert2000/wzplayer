@@ -153,7 +153,8 @@ TMenuAudio::TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer)
 	addSeparator();
     addMenu(new TMenuStereo(main_window, core));
     addMenu(new TMenuAudioChannel(main_window, core));
-	// Filter sub
+
+    // Filter sub
     audioFilterMenu = new TMenu(main_window, main_window, "audiofilter_menu", tr("&Filters"), "audio_filters");
 	volnormAct = new TAction(this, "volnorm_filter", tr("Volume &normalization"), "", 0, false);
 	volnormAct->setCheckable(true);
