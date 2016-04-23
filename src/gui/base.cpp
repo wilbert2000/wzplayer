@@ -511,10 +511,8 @@ void TBase::createToolbars() {
 	toolbar = new TEditableToolbar(this);
 	toolbar->setObjectName("toolbar1");
 	actions.clear();
-	actions << "open_url" << "favorites_menu" << "separator"
-			<< "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
-			<< "separator" << "show_file_properties" << "show_playlist"
-			<< "show_log" << "separator" << "show_preferences";
+    actions << "open_url" << "favorites_menu" << "separator"
+            << "audiotrack_menu" << "subtitlestrack_menu";
 	toolbar->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar);
 	connect(editToolbarAct, SIGNAL(triggered()),
@@ -528,8 +526,10 @@ void TBase::createToolbars() {
 	toolbar2 = new TEditableToolbar(this);
 	toolbar2->setObjectName("toolbar2");
 	actions.clear();
-	actions << "audiotrack_menu" << "subtitlestrack_menu";
-	toolbar2->setDefaultActions(actions);
+    actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
+            << "separator" << "show_file_properties" << "show_playlist"
+            << "show_log" << "separator" << "show_preferences";
+    toolbar2->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar2);
 	connect(editToolbar2Act, SIGNAL(triggered()),
 			toolbar2, SLOT(edit()));
@@ -537,8 +537,6 @@ void TBase::createToolbars() {
 	action = toolbar2->toggleViewAction();
 	action->setObjectName("toggle_toolbar2");
 	action->setShortcut(Qt::Key_F4);
-
-	toolbar2->hide();
 
 	// Statusbar
 	statusBar()->setObjectName("statusbar");
