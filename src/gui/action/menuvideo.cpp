@@ -24,7 +24,7 @@ class TMenuDeinterlace : public TMenu {
 public:
     explicit TMenuDeinterlace(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
@@ -58,10 +58,11 @@ TMenuDeinterlace::TMenuDeinterlace(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuDeinterlace::enableActions(bool stopped, bool video, bool) {
+void TMenuDeinterlace::enableActions() {
 
 	// Using mset, so useless to set if stopped or no video
-	bool enabled = !stopped && video && core->videoFiltersEnabled();
+    bool enabled = core->statePOP() && core->hasVideo()
+                   && core->videoFiltersEnabled();
 	group->setEnabled(enabled);
 	toggleDeinterlaceAct->setEnabled(enabled);
 }
@@ -79,7 +80,7 @@ class TMenuTransform : public TMenu {
 public:
     explicit TMenuTransform(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
@@ -115,10 +116,11 @@ TMenuTransform::TMenuTransform(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuTransform::enableActions(bool stopped, bool video, bool) {
+void TMenuTransform::enableActions() {
 
     // Using mset, so useless to set if stopped or no video
-    bool enable = !stopped && video && core->videoFiltersEnabled();
+    bool enable = core->statePOP() && core->hasVideo()
+                  && core->videoFiltersEnabled();
     flipAct->setEnabled(enable);
     mirrorAct->setEnabled(enable);
     group->setEnabled(enable);
@@ -144,7 +146,7 @@ class TMenuZoomAndPan : public TMenu {
 public:
     explicit TMenuZoomAndPan(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+    virtual void enableActions();
 private:
 	TCore* core;
 	QActionGroup* group;
@@ -189,8 +191,8 @@ TMenuZoomAndPan::TMenuZoomAndPan(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuZoomAndPan::enableActions(bool stopped, bool video, bool) {
-	group->setEnabled(!stopped && video);
+void TMenuZoomAndPan::enableActions() {
+    group->setEnabled(core->statePOP() && core->hasVideo());
 }
 
 
@@ -312,36 +314,35 @@ TMenuVideo::TMenuVideo(TBase* mw,
     addActionsTo(main_window);
 }
 
-void TMenuVideo::enableActions(bool stopped, bool video, bool) {
+void TMenuVideo::enableActions() {
 
-	// Depending on mset, so useless to set if no video
-	bool enableVideo = !stopped && video;
+    // Depending on mset, so useless to set if no video
+    bool enable = core->statePOP() && core->hasVideo();
 
-	equalizerAct->setEnabled(enableVideo);
-	resetVideoEqualizerAct->setEnabled(enableVideo);
+    equalizerAct->setEnabled(enable);
+    resetVideoEqualizerAct->setEnabled(enable);
 
-	decContrastAct->setEnabled(enableVideo);
-	incContrastAct->setEnabled(enableVideo);
-	decBrightnessAct->setEnabled(enableVideo);
-	incBrightnessAct->setEnabled(enableVideo);
-	decHueAct->setEnabled(enableVideo);
-	incHueAct->setEnabled(enableVideo);
-	decSaturationAct->setEnabled(enableVideo);
-	incSaturationAct->setEnabled(enableVideo);
-	decGammaAct->setEnabled(enableVideo);
-	incGammaAct->setEnabled(enableVideo);
+    decContrastAct->setEnabled(enable);
+    incContrastAct->setEnabled(enable);
+    decBrightnessAct->setEnabled(enable);
+    incBrightnessAct->setEnabled(enable);
+    decHueAct->setEnabled(enable);
+    incHueAct->setEnabled(enable);
+    decSaturationAct->setEnabled(enable);
+    incSaturationAct->setEnabled(enable);
+    decGammaAct->setEnabled(enable);
+    incGammaAct->setEnabled(enable);
 
-	bool enableFilters = enableVideo && core->videoFiltersEnabled();
-	stereo3DAct->setEnabled(enableFilters);
+    bool enableFilters = enable && core->videoFiltersEnabled();
+    stereo3DAct->setEnabled(enableFilters);
 
-	bool enableScreenShots = enableFilters
-							 && pref->use_screenshot
-							 && !pref->screenshot_directory.isEmpty();
-	screenshotAct->setEnabled(enableScreenShots);
-	screenshotsAct->setEnabled(enableScreenShots);
+    bool enableScreenShots = enable
+                             && pref->use_screenshot
+                             && pref->screenshot_directory.count();
+    screenshotAct->setEnabled(enableScreenShots);
+    screenshotsAct->setEnabled(enableScreenShots);
 
-	capturingAct->setEnabled(enableVideo
-							 && !pref->screenshot_directory.isEmpty());
+    capturingAct->setEnabled(enable && pref->screenshot_directory.count());
 }
 
 void TMenuVideo::onFullscreenChanged() {

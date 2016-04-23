@@ -63,10 +63,10 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     mdat(),
     mset(&mdat),
     playerwindow(mpw),
-    _state(STATE_STOPPED),
-    restarting(0) {
+    _state(STATE_STOPPED) {
 
-	qRegisterMetaType<TCoreState>("TCoreState");
+    qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
+    qRegisterMetaType<TCoreState>("TCoreState");
 
 	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
 
@@ -210,40 +210,23 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
     qDebug("TCore::onProcessFinished: normal exit %d, exit code %d, eof %d",
            normal_exit, exit_code, eof);
 
-	// Restore normal window background
-	playerwindow->restoreNormalWindow();
+    // Restore normal window background
+    playerwindow->restoreNormalWindow();
     enableScreensaver();
 
-    // Cancel restarting to enter the stopped state in case the restarted
-    // player crashed. See restartPlay() for details.
-    if (restarting == 2) {
-        restarting = 0;
-    }
-
-    // TODO: check if needed, leaves actions enabled during restart...
-    if (restarting) {
-        qDebug("TCore::onProcessFinished: restarting...");
-        return;
-    }
-
-    if (exit_code == Proc::TExitMsg::EXIT_OUT_POINT_REACHED) {
-        qDebug("Proc::TCore::onProcessFinished: out point reached, setting EOF");
-        eof = true;
-    }
-
     qDebug("TCore::onProcessFinished: entering the stopped state");
-	setState(STATE_STOPPED);
+    setState(STATE_STOPPED);
 
-    if (eof) {
-        // TODO: fix mediasettings and check if needed
+    if (eof || exit_code == Proc::TExitMsg::EXIT_OUT_POINT_REACHED) {
+        // TODO: fix mediasettings and check if onReceivedPosition() is needed
         // Reset current time to 0, needed so mset.current_sec 0 is saved
         onReceivedPosition(0);
         qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
         emit mediaEOF();
-    } else if (!normal_exit){
+    } else if (!normal_exit) {
         qDebug("TCore::onProcessFinished: emit playerFinishedWithError()");
-		emit playerFinishedWithError(exit_code);
-	}
+        emit playerFinishedWithError(exit_code);
+    }
 }
 
 void TCore::setState(TCoreState s) {
@@ -263,7 +246,11 @@ QString TCore::stateToString() const {
 		return "Playing";
 	if (_state == STATE_PAUSED)
 		return "Paused";
-	return "Stopped";
+    if (_state == STATE_STOPPING)
+        return "Stopping";
+    if (_state == STATE_RESTARTING)
+        return "Restarting";
+    return "Stopped";
 }
 
 void TCore::saveMediaSettings() {
@@ -312,7 +299,6 @@ void TCore::close() {
 	qDebug("TCore::close()");
 
 	stopPlayer();
-	restarting = 0;
 	// Save data previous file:
 	saveMediaSettings();
 	// Clear media data
@@ -582,24 +568,14 @@ void TCore::openFile(const QString& filename, int seek) {
 }
 
 void TCore::restartPlay() {
+    qDebug("TCore::restartPlay");
 
 	// Save state proc, currently only used by TMPlayerProcess for DVDNAV
 	proc->save();
+    stopPlayer();
 
-    // restarting has three states decided here:
-    // 0: normal operation, no restart
-    // 1: restarting, stopping the current player
-    // 2: restarting, starting the player with the new settings
-    // Needed to prevent restart loops. onProcessFinished() can now distinguish
-    // between a failing player while stopping the player, 1 and ignored,
-    // and a failing player starting with new settings, 2 and not ignored,
-    // but used to move to the stopped state to prevent restart loops.
-	if (proc->isRunning()) {
-		restarting = 1;
-		stopPlayer();
-	}
-
-	restarting = 2;
+    qDebug("TCore::restartPlay: entering the restarting state");
+    setState(STATE_RESTARTING);
 	initPlaying();
 }
 
@@ -662,7 +638,7 @@ void TCore::initPlaying(int seek) {
 	// Clear background
 	playerwindow->repaint();
 
-	if (restarting == 0)
+    if (_state != STATE_RESTARTING)
 		initMediaSettings();
 
 	int start_sec = (int) mset.current_sec;
@@ -676,8 +652,8 @@ void TCore::initPlaying(int seek) {
 	startPlayer(mdat.filename, start_sec);
 }
 
-void TCore::playingNewMediaStarted() {
-	qDebug("TCore::playingNewMediaStarted");
+void TCore::playingStartNewMedia() {
+    qDebug("TCore::playingStartNewMedia");
 
 	mdat.initialized = true;
 	mdat.list();
@@ -686,8 +662,8 @@ void TCore::playingNewMediaStarted() {
 	mset.current_demuxer = mdat.demuxer;
 	mset.list();
 
-	qDebug("TCore::playingNewMediaStarted: emit newMediaStartedPlaying()");
-	emit newMediaStartedPlaying();
+    qDebug("TCore::playingStartNewMedia: emit startPlayingNewMedia()");
+    emit startPlayingNewMedia();
 }
 
 // Slot called when signal playerFullyLoaded arrives.
@@ -698,16 +674,12 @@ void TCore::playingStarted() {
 		mdat.title = forced_titles[mdat.filename];
 	}
 
+    if (_state != STATE_RESTARTING) {
+        playingStartNewMedia();
+    }
+
 	setState(STATE_PLAYING);
 
-	if (restarting) {
-		restarting = 0;
-	} else {
-		playingNewMediaStarted();
-	} 
-
-	qDebug("TCore::playingStarted: emit mediaLoaded()");
-	emit mediaLoaded();
 	qDebug("TCore::playingStarted: emit mediaInfoChanged()");
 	emit mediaInfoChanged();
 
@@ -717,15 +689,7 @@ void TCore::playingStarted() {
 void TCore::stop() {
 	qDebug() << "TCore::stop: current state:" << stateToString();
 
-	TCoreState prev_state = _state;
-	stopPlayer();
-
-	// if pressed stop twice, reset video to the beginning
-	if (prev_state == STATE_STOPPED && mset.current_sec != 0) {
-		qDebug("TCore::stop: resetting current_sec %f to 0", mset.current_sec);
-        onReceivedPosition(0);
-	}
-
+    stopPlayer();
 	emit mediaStopped();
 }
 
@@ -849,6 +813,7 @@ bool TCore::videoFiltersEnabled(bool) {
 bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 	bool enabled = true;
+
     if (pref->isMPlayer()) {
 		QString msg;
 		if (pref->vo.startsWith("vdpau")) {
@@ -1048,7 +1013,7 @@ void TCore::startPlayer(QString file, double seek) {
     QString aspect_option = mset.aspect_ratio.toOption();
 	if (!aspect_option.isEmpty()) {
 		// Clear original aspect ratio
-		if (restarting == 0) {
+        if (_state != STATE_RESTARTING) {
 			mdat.video_aspect_original = -1;
 		}
 		proc->setOption("aspect", aspect_option);
@@ -1607,11 +1572,13 @@ end_video_filters:
 
 void TCore::stopPlayer(int exit_code) {
 
-	if (!proc->isRunning()) {
+    if (proc->state() == QProcess::NotRunning) {
 		qDebug("TCore::stopPlayer: player not running");
 		return;
 	}
-	qDebug("TCore::stopPlayer");
+
+    qDebug("TCore::stopPlayer: entering the stopping state");
+    setState(STATE_STOPPING);
 
 	// If set high enough the OS will detect the "not responding state" and popup a dialog
     int timeout = pref->time_to_kill_player;
@@ -1641,6 +1608,8 @@ void TCore::stopPlayer(int exit_code) {
 	}
 #endif
 
+    // Already done by onProcessFinished, unless killed
+    setState(STATE_STOPPED);
 	qDebug("TCore::stopPlayer: done");
 }
 
@@ -3299,15 +3268,15 @@ void TCore::onReceivedVideoOut() {
 	playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
 
     // Normally, let the main window know the new video dimension, unless
-    // restarting, then need to prevent the main window resizing itself.
-    if (restarting == 0) {
+    // restarting, then need to prevent the main window from resizing itself.
+    if (_state != STATE_RESTARTING) {
 		emit videoOutResolutionChanged(mdat.video_out_width, mdat.video_out_height);
     }
 
     // If resize of main window is canceled adjust new video to the old size
 	playerwindow->updateVideoWindow();
 
-    if (restarting) {
+    if (_state == STATE_RESTARTING) {
         // Adjust the size factor to the current window size,
         // in case the restart changed the video resolution.
         playerwindow->updateSizeFactor();

@@ -148,7 +148,7 @@ public slots:
 
 	void setStayOnTop(bool b);
 	virtual void changeStayOnTop(int);
-	virtual void checkStayOnTop(TCoreState);
+    virtual void checkStayOnTop(TCoreState);
 	void toggleStayOnTop();
 
 	void changeSize(double factor);
@@ -161,7 +161,7 @@ public slots:
 	int forceStartInFullscreen() { return arg_start_in_fullscreen; }
 
 signals:
-	void enableActions(bool stopped, bool video, bool audio);
+    void enableActions();
 
 	void timeChanged(QString time_ready_to_print);
 	void frameChanged(int);
@@ -192,7 +192,7 @@ protected slots:
 	virtual void onVideoOutResolutionChanged(int w, int h);
     virtual void onPositionChanged(double);
 	virtual void gotDuration(double);
-	virtual void onNewMediaStartedPlaying();
+	virtual void onStartPlayingNewMedia();
 	virtual void onMediaInfoChanged();
 
 	virtual void updateVideoEqualizer();
@@ -205,8 +205,6 @@ protected slots:
 	virtual void openRecent();
 	virtual void exitFullscreenOnStop();
 	virtual void playlistHasFinished();
-
-	virtual void setActionsEnabled(bool b = true);
 
 	void toggleDoubleSize();
 
@@ -351,6 +349,8 @@ private:
 
 	void createToolbars();
 	QMenu* createToolbarMenu();
+
+    void sendEnableActions();
 
     void save();
     void restartWZPlayer(bool reset_style);

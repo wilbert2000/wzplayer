@@ -96,9 +96,9 @@ void TMenuSeek::updateDefaultAction() {
     }
 }
 
-void TMenuSeek::enableActions(bool stopped, bool, bool) {
+void TMenuSeek::enableActions() {
 
-    bool e = !stopped;
+    bool e = main_window->getCore()->statePOP();
     frameAct->setEnabled(e);
     seek1Act->setEnabled(e);
     seek2Act->setEnabled(e);
@@ -264,8 +264,8 @@ TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuInOut::enableActions(bool stopped, bool, bool) {
-    group->setEnabled(!stopped);
+void TMenuInOut::enableActions() {
+    group->setEnabled(core->statePOP());
 }
 
 void TMenuInOut::upd() {
@@ -285,7 +285,7 @@ class TMenuPlaySpeed : public TMenu {
 public:
     explicit TMenuPlaySpeed(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool, bool);
+    virtual void enableActions();
 private:
 	TCore* core;
 	QActionGroup* group;
@@ -340,9 +340,9 @@ TMenuPlaySpeed::TMenuPlaySpeed(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuPlaySpeed::enableActions(bool stopped, bool, bool) {
+void TMenuPlaySpeed::enableActions() {
 	// Using mset, so useless to set if stopped
-	group->setEnabled(!stopped);
+    group->setEnabled(core->statePOP());
 }
 
 
@@ -369,8 +369,6 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
 
 	stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
 	connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
-
-	connect(core, SIGNAL(stateChanged(TCoreState)), this, SLOT(onStateChanged(TCoreState)));
 
 	addSeparator();
 
@@ -400,30 +398,25 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
     addActionsTo(main_window);
 }
 
-void TMenuPlay::onStateChanged(TCoreState state) {
+void TMenuPlay::enableActions() {
 
-	playAct->setEnabled(state != STATE_PLAYING);
-	// playOrPauseAct always enabled
-	if (state == STATE_PLAYING) {
-		playOrPauseAct->setTextAndTip(tr("&Pause"));
-		playOrPauseAct->setIcon(pauseIcon);
-	} else {
-		playOrPauseAct->setTextAndTip(tr("&Play"));
-		playOrPauseAct->setIcon(playIcon);
-	}
-	pauseAct->setEnabled(state == STATE_PLAYING);
-	// Allowed to push stop twice...
-	// stopAct->setEnabled(core->state() != STATE_STOPPED);
-}
+    TCoreState s = core->state();
 
-void TMenuPlay::enableActions(bool stopped, bool, bool) {
+    playAct->setEnabled(s == STATE_STOPPED || s == STATE_PAUSED);
 
-	playAct->setEnabled(core->state() != STATE_PLAYING);
-	// playOrPauseAct always enabled
-	pauseAct->setEnabled(core->state() == STATE_PLAYING);
-	// Allowed to push stop twice...
-	// stopAct->setEnabled(core->state() != STATE_STOPPED);
-    seekToAct->setEnabled(!stopped);
+    bool pop = s == STATE_PLAYING || s == STATE_PAUSED;
+
+    playOrPauseAct->setEnabled(s == STATE_STOPPED || pop);
+    if (s == STATE_PLAYING) {
+        playOrPauseAct->setTextAndTip(tr("&Pause"));
+        playOrPauseAct->setIcon(pauseIcon);
+    } else {
+        playOrPauseAct->setTextAndTip(tr("&Play"));
+        playOrPauseAct->setIcon(playIcon);
+    }
+    pauseAct->setEnabled(s == STATE_PLAYING);
+    stopAct->setEnabled(pop);
+    seekToAct->setEnabled(pop);
 }
 
 } // namespace Action

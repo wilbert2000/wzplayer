@@ -256,11 +256,8 @@ void TBase::createCore() {
 	connect(core, SIGNAL(showMessage(const QString&)),
 			this, SLOT(displayMessage(const QString&)));
 
-	connect(core, SIGNAL(newMediaStartedPlaying()),
-			this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
-
-	connect(core, SIGNAL(mediaLoaded()),
-			this, SLOT(setActionsEnabled()));
+    connect(core, SIGNAL(startPlayingNewMedia()),
+            this, SLOT(onStartPlayingNewMedia()), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaInfoChanged()),
 			this, SLOT(onMediaInfoChanged()));
@@ -269,9 +266,11 @@ void TBase::createCore() {
 			this, SLOT(exitFullscreenOnStop()));
 
 	connect(core, SIGNAL(playerError(QProcess::ProcessError)),
-			this, SLOT(onPlayerError(QProcess::ProcessError)));
+            this, SLOT(onPlayerError(QProcess::ProcessError)),
+            Qt::QueuedConnection);
 	connect(core, SIGNAL(playerFinishedWithError(int)),
-			this, SLOT(onPlayerFinishedWithError(int)));
+            this, SLOT(onPlayerFinishedWithError(int)),
+            Qt::QueuedConnection);
 }
 
 void TBase::createPlaylist() {
@@ -356,6 +355,7 @@ void TBase::createActions() {
             timeslider_action, SLOT(setPosition(double)));
     connect(core, SIGNAL(durationChanged(double)),
             timeslider_action, SLOT(setDuration(double)));
+
     connect(timeslider_action, SIGNAL(positionChanged(double)),
             core, SLOT(seekTime(double)));
     connect(timeslider_action, SIGNAL(percentageChanged(double)),
@@ -363,10 +363,10 @@ void TBase::createActions() {
     connect(timeslider_action, SIGNAL(dragPositionChanged(double)),
             this, SLOT(onDragPositionChanged(double)));
 
-	connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
-			core, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
-	connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
-			core, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
+    connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
+            core, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
+    connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
+            core, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
 
 	// Volume slider action
 	volumeslider_action = new TVolumeSliderAction(this, core->getVolume());
@@ -579,13 +579,12 @@ void TBase::setupNetworkProxy() {
 	QNetworkProxy::setApplicationProxy(proxy);
 }
 
-void TBase::setActionsEnabled(bool b) {
-	qDebug("Gui::TBase::setActionsEnabled: %d", b);
+void TBase::sendEnableActions() {
+    qDebug() << "Gui::TBase::enableActions: state" << core->stateToString();
 
-	// Time slider
-	timeslider_action->enable(b);
+    timeslider_action->enable(core->statePOP());
 
-	emit enableActions(!b, !core->mdat.noVideo(), core->mdat.audios.count() > 0);
+    emit enableActions();
 }
 
 void TBase::retranslateStrings() {
@@ -857,7 +856,7 @@ void TBase::loadConfig() {
 	log_window->loadConfig();
 
 	// Disable actions
-	setActionsEnabled(false);
+    sendEnableActions();
 }
 
 void TBase::saveConfig() {
@@ -1054,7 +1053,7 @@ void TBase::applyNewPreferences() {
 	setupNetworkProxy();
 
 	// Reenable actions to reflect changes
-	setActionsEnabled(core->state() != STATE_STOPPED);
+    sendEnableActions();
 
     // TODO: move code above to preferencesChanged() signal
     emit preferencesChanged();
@@ -1172,8 +1171,8 @@ void TBase::onMediaInfoChanged() {
 	emit mediaFileTitleChanged(core->mdat.filename, title);
 }
 
-void TBase::onNewMediaStartedPlaying() {
-	qDebug("Gui::TBase::onNewMediaStartedPlaying");
+void TBase::onStartPlayingNewMedia() {
+    qDebug("Gui::TBase::onStartPlayingNewMedia");
 
 	enterFullscreenOnPlay();
 
@@ -1889,22 +1888,28 @@ void TBase::playlistHasFinished() {
 void TBase::onStateChanged(TCoreState state) {
 	qDebug() << "Gui::TBase::onStateChanged: new state" << core->stateToString();
 
-	switch (state) {
-		case STATE_PLAYING:
-			displayMessage(tr("Playing %1").arg(core->mdat.displayName()));
-			auto_hide_timer->startAutoHideMouse();
-			break;
-		case STATE_PAUSED:
-			displayMessage(tr("Paused"));
-			auto_hide_timer->stopAutoHideMouse();
-			break;
-		case STATE_STOPPED:
-			setActionsEnabled(false);
-			setWindowCaption(TConfig::PROGRAM_NAME);
-			displayMessage(tr("Stopped"));
-			auto_hide_timer->stopAutoHideMouse();
-			break;
-	}
+    sendEnableActions();
+    switch (state) {
+        case STATE_STOPPED:
+            auto_hide_timer->stopAutoHideMouse();
+            setWindowCaption(TConfig::PROGRAM_NAME);
+            displayMessage(tr("Stopped"));
+            break;
+        case STATE_PLAYING:
+            auto_hide_timer->startAutoHideMouse();
+            displayMessage(tr("Playing %1").arg(core->mdat.displayName()));
+            break;
+        case STATE_PAUSED:
+            auto_hide_timer->stopAutoHideMouse();
+            displayMessage(tr("Paused"));
+            break;
+        case STATE_STOPPING:
+            auto_hide_timer->stopAutoHideMouse();
+            displayMessage(tr("Stopping..."));
+            break;
+        case STATE_RESTARTING:
+            displayMessage(tr("Restarting..."));
+    }
 }
 
 void TBase::displayMessage(const QString& message, int time) {
@@ -2088,11 +2093,11 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 		}
 	}
 
+    // Center window only set for the first video
+    // when pref->save_window_size_on_exit not set.
 	if (center_window) {
 		center_window = false;
-		if (!isMaximized()) {
-            TDesktop::centerWindow(this);
-		}
+        TDesktop::centerWindow(this);
 	}
 
 	force_resize = false;
@@ -2197,25 +2202,39 @@ void TBase::changeStayOnTop(int stay_on_top) {
         case TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == STATE_PLAYING)); break;
 	}
 
-	pref->stay_on_top = (Settings::TPreferences::TOnTop) stay_on_top;
+    pref->stay_on_top = (TPreferences::TOnTop) stay_on_top;
 	emit stayOnTopChanged(stay_on_top);
 }
 
-void TBase::checkStayOnTop(TCoreState state) {
-	//qDebug("Gui::TBase::checkStayOnTop");
+void TBase::checkStayOnTop(TCoreState) {
+    qDebug("Gui::TBase::checkStayOnTop");
 
-	if (!pref->fullscreen
-		&& (pref->stay_on_top == Settings::TPreferences::WhilePlayingOnTop)) {
-		setStayOnTop((state == STATE_PLAYING));
-	}
+    if (pref->fullscreen
+        || pref->stay_on_top != TPreferences::WhilePlayingOnTop) {
+        return;
+    }
+
+    // On queued connection, so better use core->state()
+    switch (core->state()) {
+        case STATE_STOPPED:
+        case STATE_PAUSED:
+            setStayOnTop(false);
+            break;
+        case STATE_PLAYING:
+            setStayOnTop(true);
+            break;
+        case STATE_STOPPING:
+        case STATE_RESTARTING:
+            break;
+    }
 }
 
 void TBase::toggleStayOnTop() {
 
-    if (pref->stay_on_top == Settings::TPreferences::NeverOnTop)
-        changeStayOnTop(Settings::TPreferences::AlwaysOnTop);
+    if (pref->stay_on_top == TPreferences::NeverOnTop)
+        changeStayOnTop(TPreferences::AlwaysOnTop);
     else
-        changeStayOnTop(Settings::TPreferences::NeverOnTop);
+        changeStayOnTop(TPreferences::NeverOnTop);
 }
 
 void TBase::onPlayerFinishedWithError(int exit_code) {

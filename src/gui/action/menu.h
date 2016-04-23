@@ -37,7 +37,7 @@ protected:
 	virtual void setVisible(bool visible);
 
 protected slots:
-	virtual void enableActions(bool stopped, bool video, bool audio);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 };
 

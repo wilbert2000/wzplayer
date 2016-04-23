@@ -18,7 +18,7 @@ class TMenuVideoFilter : public TMenu {
 public:
     explicit TMenuVideoFilter(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:

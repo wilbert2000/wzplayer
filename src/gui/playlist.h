@@ -24,14 +24,17 @@
 
 
 class QToolBar;
-class TCore;
 class QMenu;
 class QSettings;
 class QToolButton;
 class QTimer;
+class QItemSelection;
+
+class TCore;
 
 namespace Gui {
 
+class TBase;
 class TTableWidget;
 
 namespace Action {
@@ -72,7 +75,7 @@ class TPlaylist : public QWidget {
 public:
 	typedef QList<TPlaylistItem> TPlaylistItemList;
 
-	TPlaylist(QWidget* parent, TCore* c);
+    TPlaylist(TBase* main_window, TCore* c);
 	virtual ~TPlaylist();
 
 	// Start playing, from item 0 if shuffle is off,
@@ -82,7 +85,6 @@ public:
 	void playDirectory(const QString& dir);
 
 	int currentItem() const { return current_item; }
-	int count() const { return pl.count(); }
 
 	void clear();
 	void addFiles(const QStringList& files);
@@ -170,7 +172,7 @@ private:
 	QString playlist_path;
 
 	void createTable();
-	void createActions(QWidget* parent);
+    void createActions();
 	void createToolbar();
 
 	void addItem(const QString& filename, QString name, double duration);
@@ -180,7 +182,9 @@ private:
 	void addFileOrDir(const QString& filename);
 	void addDirectory(const QString& dir);
 
-	void setCurrentItem(int current);
+    int count() const { return pl.count(); }
+
+    void setCurrentItem(int current);
 	void updateCurrentItem();
 	void updateView();
 
@@ -202,7 +206,9 @@ private slots:
 	void showContextMenu(const QPoint& pos);
 
 	void playCurrent();
-	void onCellActivated(int row, int);
+
+    void onCellActivated(int row, int);
+    void onSelectionChanged(const QItemSelection&, const QItemSelection&);
 
 	void moveItemUp();
 	void moveItemDown();
@@ -224,7 +230,9 @@ private slots:
 	void sortBy(int section, bool allow_revert, bool revert, int count);
 
     void enableActions();
-    void onNewMediaStartedPlaying();
+    void enableUpDown(const QItemSelection& selected);
+
+    void onStartPlayingNewMedia();
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();
 	void resumePlay();

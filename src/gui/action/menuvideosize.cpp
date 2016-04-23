@@ -4,6 +4,7 @@
 #include "settings/preferences.h"
 #include "playerwindow.h"
 #include "gui/base.h"
+#include "core.h"
 
 
 using namespace Settings;
@@ -116,9 +117,10 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw) :
 	upd();
 }
 
-void TMenuVideoSize::enableActions(bool stopped, bool video, bool) {
+void TMenuVideoSize::enableActions() {
 
-	bool enable = !stopped && video;
+    TCore* core = main_window->getCore();
+    bool enable = core->statePOP() && core->hasVideo();
 	group->setEnabled(enable);
 	doubleSizeAct->setEnabled(enable);
 	currentSizeAct->setEnabled(enable);

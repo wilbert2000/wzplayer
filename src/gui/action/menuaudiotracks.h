@@ -1,5 +1,5 @@
-#ifndef GUI_MENUAUDIOTRACKS_H
-#define GUI_MENUAUDIOTRACKS_H
+#ifndef GUI_ACTION_MENUAUDIOTRACKS_H
+#define GUI_ACTION_MENUAUDIOTRACKS_H
 
 #include "gui/action/menu.h"
 
@@ -17,7 +17,7 @@ class TMenuAudioTracks : public TMenu {
 public:
     explicit TMenuAudioTracks(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool, bool audio);
+    virtual void enableActions();
 private:
 	TCore* core;
 	TAction* nextAudioTrackAct;
@@ -29,4 +29,4 @@ private slots:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_MENUAUDIOTRACKS_H
+#endif // GUI_ACTION_MENUAUDIOTRACKS_H

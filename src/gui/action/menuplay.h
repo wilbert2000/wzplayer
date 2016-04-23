@@ -35,7 +35,7 @@ protected:
     TAction* seek3Act;
     TAction* plAct;
 
-    virtual void enableActions(bool stopped, bool, bool);
+    virtual void enableActions();
 
     int actionToInt(QAction* action) const;
     TAction* intToAction(int i) const;
@@ -58,7 +58,7 @@ class TMenuInOut : public TMenu {
 public:
     explicit TMenuInOut(TBase* mw, TCore* c);
 protected:
-    virtual void enableActions(bool stopped, bool, bool);
+    virtual void enableActions();
     virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
     virtual void onAboutToShow();
 private:
@@ -76,7 +76,7 @@ public:
     explicit TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist);
 
 protected:
-	virtual void enableActions(bool stopped, bool, bool);
+    virtual void enableActions();
 
 private:
 	TCore* core;
@@ -89,9 +89,6 @@ private:
 	TAction* pauseAct;
 	TAction* stopAct;
     TAction* seekToAct;
-
-private slots:
-	void onStateChanged(TCoreState state);
 }; // class TMenuPlay
 
 } // namespace Action

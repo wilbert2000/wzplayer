@@ -21,7 +21,7 @@ class TMenuAudioChannel : public TMenu {
 public:
     explicit TMenuAudioChannel(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
@@ -47,9 +47,9 @@ TMenuAudioChannel::TMenuAudioChannel(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuAudioChannel::enableActions(bool stopped, bool, bool audio) {
+void TMenuAudioChannel::enableActions() {
 	// Uses mset, so useless to set if stopped or no audio
-	group->setEnabled(!stopped && audio);
+    group->setEnabled(core->statePOP() && core->hasAudio());
 }
 
 void TMenuAudioChannel::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -65,7 +65,7 @@ class TMenuStereo : public TMenu {
 public:
     explicit TMenuStereo(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool, bool audio);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
@@ -90,8 +90,8 @@ TMenuStereo::TMenuStereo(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuStereo::enableActions(bool stopped, bool, bool audio) {
-	group->setEnabled(!stopped && audio);
+void TMenuStereo::enableActions() {
+    group->setEnabled(core->statePOP() && core->hasAudio());
 }
 
 void TMenuStereo::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -187,28 +187,34 @@ TMenuAudio::TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer)
     addActionsTo(main_window);
 }
 
-void TMenuAudio::enableActions(bool stopped, bool, bool audio) {
+void TMenuAudio::enableActions() {
 
-	bool enableAudio = !stopped && audio;
+    // Maybe global settings
+    bool enable = pref->global_volume || (core->statePOP() && core->hasAudio());
+    muteAct->setEnabled(enable);
+    decVolumeAct->setEnabled(enable);
+    incVolumeAct->setEnabled(enable);
 
-	muteAct->setEnabled(enableAudio);
-	decVolumeAct->setEnabled(enableAudio);
-	incVolumeAct->setEnabled(enableAudio);
-	decAudioDelayAct->setEnabled(enableAudio);
-	incAudioDelayAct->setEnabled(enableAudio);
-	audioDelayAct->setEnabled(enableAudio);
+    // Settings only stored in mset
+    enable = core->statePOP() && core->hasAudio();
 
-	bool enableEqualizer = enableAudio && pref->use_audio_equalizer;
+    decAudioDelayAct->setEnabled(enable);
+    incAudioDelayAct->setEnabled(enable);
+    audioDelayAct->setEnabled(enable);
+
+    // Equalizer can be global
+    bool enableEqualizer = pref->use_audio_equalizer
+                           && (pref->global_audio_equalizer || enable);
 	audioEqualizerAct->setEnabled(enableEqualizer);
 	resetAudioEqualizerAct->setEnabled(enableEqualizer);
 
-	// Filters
-	volnormAct->setEnabled(enableAudio);
-	extrastereoAct->setEnabled(enableAudio);
-	karaokeAct->setEnabled(enableAudio && pref->isMPlayer());
+    // Filters, mset only
+    volnormAct->setEnabled(enable);
+    extrastereoAct->setEnabled(enable);
+    karaokeAct->setEnabled(enable && pref->isMPlayer());
 
-	loadAudioAct->setEnabled(!stopped);
-	unloadAudioAct->setEnabled(enableAudio && !core->mset.external_audio.isEmpty());
+    loadAudioAct->setEnabled(core->statePOP());
+    unloadAudioAct->setEnabled(enable && core->mset.external_audio.count());
 }
 
 void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {

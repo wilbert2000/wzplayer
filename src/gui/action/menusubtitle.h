@@ -21,7 +21,7 @@ public:
     explicit TMenuSubFPS(TBase* mw, TCore* c);
 	TActionGroup* group;
 protected:
-	virtual void enableActions(bool stopped, bool, bool);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
 	virtual void onAboutToShow();
 private:
@@ -37,7 +37,7 @@ public:
 	TAction* useCustomSubStyleAct;
 
 protected:
-	virtual void enableActions(bool stopped, bool, bool);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 
 private:

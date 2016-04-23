@@ -20,7 +20,7 @@ public:
     TMenuBrowse(TBase* mw, TCore* c);
 
 protected:
-	virtual void enableActions(bool stopped, bool, bool);
+    virtual void enableActions();
 
 private:
 	TCore* core;

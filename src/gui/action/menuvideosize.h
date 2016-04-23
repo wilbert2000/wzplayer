@@ -36,7 +36,7 @@ public:
     TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
 
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+    virtual void enableActions();
 	virtual void onAboutToShow();
 
 private:

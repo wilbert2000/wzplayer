@@ -25,9 +25,9 @@ TMenuVideoTracks::TMenuVideoTracks(TBase* mw, TCore* c)
 	connect(core, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
 }
 
-void TMenuVideoTracks::enableActions(bool stopped, bool video, bool) {
+void TMenuVideoTracks::enableActions() {
 
-	nextVideoTrackAct->setEnabled(!stopped && video && core->mdat.videos.count() > 1);
+    nextVideoTrackAct->setEnabled(core->statePOP() && core->mdat.videos.count() > 1);
 }
 
 void TMenuVideoTracks::updateVideoTracks() {

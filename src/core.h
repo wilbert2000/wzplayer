@@ -54,12 +54,21 @@ public:
 
 	//! Return the current state
 	TCoreState state() const { return _state; }
-
 	//! Return a string with the name of the current state,
 	//! so it can be printed on debugging messages.
 	QString stateToString() const;
 
-	//! Generic open, with autodetection of type
+    bool statePOP() const {
+        return _state == STATE_PLAYING || _state == STATE_PAUSED;
+    }
+    bool hasVideo() const {
+        return mdat.hasVideo();
+    }
+    bool hasAudio() const {
+        return mdat.hasAudio();
+    }
+
+    //! Generic open, with autodetection of type
 	void open(QString file, int seek = -1);
 	//! Open disc
 	void openDisc(TDiscName disc, bool fast_open = false);
@@ -321,8 +330,7 @@ signals:
 	void stateChanged(TCoreState state);
 	void mediaSettingsChanged();
 	void videoOutResolutionChanged(int w, int h);
-	void newMediaStartedPlaying();
-	void mediaLoaded();
+    void startPlayingNewMedia();
 	void mediaInfoChanged();
 	void mediaStopped();
 	void mediaEOF(); // Media has arrived to the end.
@@ -411,10 +419,7 @@ protected:
 
 private:
 	TCoreState _state;
-
-	int restarting;
     bool seeking;
-
 	QTime time;
 
 	QString initial_subtitle;
@@ -428,7 +433,7 @@ private:
 	void openStream(const QString& name);
 	void openTV(QString channel_id);
 
-	void playingNewMediaStarted();
+    void playingStartNewMedia();
 
 	bool haveVideoFilters() const;
 	void changeVF(const QString& filter, bool enable, const QVariant& option);

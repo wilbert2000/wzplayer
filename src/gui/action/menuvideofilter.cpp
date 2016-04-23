@@ -104,9 +104,9 @@ void TMenuVideoFilter::updateFilters() {
 	unsharpGroup->setChecked(core->mset.current_unsharp);
 }
 
-void TMenuVideoFilter::enableActions(bool stopped, bool video, bool) {
+void TMenuVideoFilter::enableActions() {
 
-	bool enable = !stopped && video && core->videoFiltersEnabled();
+    bool enable = core->statePOP() && core->hasVideo() && core->videoFiltersEnabled();
 	group->setEnabled(enable);
     addLetterboxAct->setEnabled(enable && pref->isMPlayer());
 	denoiseGroup->setEnabled(enable);

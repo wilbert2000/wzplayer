@@ -304,7 +304,12 @@ void TMediaSettings::save(QSettings* set) {
 	set->endGroup(); // player
 
     set->setValue("external_subtitles_fps", external_subtitles_fps);
-	set->setValue("current_sec", current_sec);
+
+    if (current_sec < md->duration - 10) {
+        set->setValue("current_sec", current_sec);
+    } else {
+        set->setValue("current_sec", 0);
+    }
 
     set->setValue("current_angle", current_angle);
 

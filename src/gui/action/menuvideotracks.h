@@ -21,7 +21,7 @@ class TMenuVideoTracks : public TMenu {
 public:
     explicit TMenuVideoTracks(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+    virtual void enableActions();
 private:
 	TCore* core;
 	TAction* nextVideoTrackAct;

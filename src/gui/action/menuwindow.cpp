@@ -19,7 +19,7 @@ class TMenuOSD : public TMenu {
 public:
     explicit TMenuOSD(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+    virtual void enableActions();
 	virtual void onAboutToShow();
 private:
 	TCore* core;
@@ -66,9 +66,9 @@ TMenuOSD::TMenuOSD(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuOSD::enableActions(bool stopped, bool video, bool) {
+void TMenuOSD::enableActions() {
 
-	bool enabled = !stopped && video;
+    bool enabled = core->statePOP() && core->hasVideo();
 	showFilenameAct->setEnabled(enabled);
 	showTimeAct->setEnabled(enabled);
 }

@@ -18,7 +18,7 @@ public:
     explicit TMenuAspect(TBase* mw, TCore* c);
 
 protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 

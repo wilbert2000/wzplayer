@@ -15,7 +15,7 @@ class TMenuCC : public TMenu {
 public:
     explicit TMenuCC(TBase* mw, TCore* c);
 protected:
-	virtual void enableActions(bool stopped, bool video, bool audio);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
@@ -40,10 +40,9 @@ TMenuCC::TMenuCC(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuCC::enableActions(bool stopped, bool, bool) {
+void TMenuCC::enableActions() {
 	// Using mset, so useless to set if stopped.
-	// Assuming you can have closed captions on audio...
-	group->setEnabled(!stopped);
+    group->setEnabled(core->statePOP() && core->hasVideo());
 }
 
 void TMenuCC::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -73,8 +72,8 @@ TMenuSubFPS::TMenuSubFPS(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuSubFPS::enableActions(bool stopped, bool, bool) {
-	group->setEnabled(!stopped && core->haveExternalSubs());
+void TMenuSubFPS::enableActions() {
+    group->setEnabled(core->statePOP() && core->haveExternalSubs());
 }
 
 void TMenuSubFPS::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -193,11 +192,11 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuSubtitle::enableActions(bool stopped, bool, bool) {
+void TMenuSubtitle::enableActions() {
 
-	bool e = !stopped
-			 && (core->mdat.subs.count() > 0
-				 || core->mset.closed_caption_channel > 0);
+    bool pop = core->statePOP();
+    bool e = pop && (core->mdat.subs.count() > 0
+                     || core->mset.closed_caption_channel > 0);
 	decSubPosAct->setEnabled(e);
 	incSubPosAct->setEnabled(e);
 	incSubScaleAct->setEnabled(e);
@@ -215,15 +214,15 @@ void TMenuSubtitle::enableActions(bool stopped, bool, bool) {
 
 	nextSubtitleAct->setEnabled(e && core->mdat.subs.count() > 1);
 
-	// useForcedSubsOnlyAct always enabled
+    // useForcedSubsOnlyAct always enabled
 
-	loadSubsAct->setEnabled(!stopped);
+    loadSubsAct->setEnabled(pop);
 	unloadSubsAct->setEnabled(e && core->haveExternalSubs());
 
 	// useCustomSubStyleAct always enabled
 
 	// Depends on mset
-	showFindSubtitlesDialogAct->setEnabled(!stopped);
+    showFindSubtitlesDialogAct->setEnabled(pop);
 	// openUploadSubtitlesPageAct always enabled
 }
 
@@ -283,8 +282,8 @@ void TMenuSubtitle::updateSubtitles() {
 	secondarySubtitleTrackMenu->addActions(secondarySubtitleTrackGroup->actions());
 
 	// Enable actions
-	enableActions(false, true, true);
-	subFPSMenu->enableActions(false, true, true);
+    enableActions();
+    subFPSMenu->enableActions();
 }
 
 } // namespace Action

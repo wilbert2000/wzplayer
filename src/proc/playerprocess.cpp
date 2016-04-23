@@ -100,6 +100,7 @@ bool TPlayerProcess::startPlayer() {
 
 	prev_frame = -11111;
 
+    // TODO: check, also cleared by TCore::close()
 	// Clear media data
 	*md = TMediaData(*md);
 
@@ -116,6 +117,9 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 
     if (exit_code_override) {
         exitCode = exit_code_override;
+    }
+    if (exitCode) {
+        received_end_of_file = false;
     }
 
     emit processFinished(exitCode == 0 && exitStatus == QProcess::NormalExit,

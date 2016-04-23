@@ -27,7 +27,7 @@ public:
                TVideoEqualizer* videoEqualizer);
 
 protected:
-	virtual void enableActions(bool stopped, bool video, bool);
+    virtual void enableActions();
 
 private:
 	TCore* core;

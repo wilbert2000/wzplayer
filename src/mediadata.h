@@ -110,6 +110,9 @@ public:
 	int audio_nch;
 	Maps::TTracks audios;
 
+    bool hasAudio() const {
+        return audios.count() > 0;
+    }
 	bool noAudio() const {
 		return audios.count() <= 0;
 	}

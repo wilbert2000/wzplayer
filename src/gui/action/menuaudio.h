@@ -21,7 +21,7 @@ public:
     explicit TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer);
 
 protected:
-	virtual void enableActions(bool stopped, bool, bool audio);
+    virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 
 private:

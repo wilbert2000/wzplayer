@@ -68,12 +68,10 @@ public:
 	void load();
 	void save();
 
+    // Version config file
+    int config_version;
 
 	// General tab
-
-	// Version config file
-	int config_version;
-
 	// Media players
 	TPlayerID player_id;
 	QString player_bin;

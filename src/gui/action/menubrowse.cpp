@@ -101,15 +101,16 @@ TMenuBrowse::TMenuBrowse(TBase* mw, TCore* c)
     addActionsTo(main_window);
 }
 
-void TMenuBrowse::enableActions(bool stopped, bool, bool) {
+void TMenuBrowse::enableActions() {
 
-	bool enableChapters = !stopped && core->mdat.chapters.count() > 0;
+    bool pop = core->statePOP();
+    bool enableChapters = pop && core->mdat.chapters.count() > 0;
 	prevChapterAct->setEnabled(enableChapters);
 	nextChapterAct->setEnabled(enableChapters);
 
-	nextAngleAct->setEnabled(!stopped && core->mdat.angles > 1);
+    nextAngleAct->setEnabled(pop && core->mdat.angles > 1);
 
-	bool enableDVDNav = !stopped && core->mdat.detected_type == TMediaData::TYPE_DVDNAV;
+    bool enableDVDNav = pop && core->mdat.detected_type == TMediaData::TYPE_DVDNAV;
 	dvdnavUpAct->setEnabled(enableDVDNav);
 	dvdnavDownAct->setEnabled(enableDVDNav);
 	dvdnavLeftAct->setEnabled(enableDVDNav);

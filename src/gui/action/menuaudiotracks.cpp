@@ -25,9 +25,9 @@ TMenuAudioTracks::TMenuAudioTracks(TBase* mw, TCore* c)
 	connect(core, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
 }
 
-void TMenuAudioTracks::enableActions(bool stopped, bool, bool audio) {
+void TMenuAudioTracks::enableActions() {
 
-	nextAudioTrackAct->setEnabled(!stopped && audio && core->mdat.audios.count() > 1);
+    nextAudioTrackAct->setEnabled(core->statePOP() && core->mdat.audios.count() > 1);
 }
 
 void TMenuAudioTracks::updateAudioTracks() {

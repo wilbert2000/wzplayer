@@ -63,10 +63,10 @@ void TMenuAspect::upd() {
 	aspectDisabledAct->setTextAndTip(s);
 }
 
-void TMenuAspect::enableActions(bool stopped, bool video, bool) {
+void TMenuAspect::enableActions() {
 
 	// Uses mset, so useless to set if stopped or no video
-	bool enabled = !stopped && video;
+    bool enabled = core->statePOP() && core->hasVideo();
 	group->setEnabled(enabled);
 	nextAspectAct->setEnabled(enabled);
 	upd();

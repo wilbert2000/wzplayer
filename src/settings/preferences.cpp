@@ -359,7 +359,7 @@ void TPreferences::reset() {
 
 	use_edl_files = true;
 	change_video_equalizer_on_startup = true;
-    time_to_kill_player = 10000;
+    time_to_kill_player = 15000;
 	balloon_count = 5;
     clean_config = false;
 

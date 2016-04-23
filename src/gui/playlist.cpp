@@ -44,17 +44,18 @@
 #include <QMimeData>
 #include <QClipboard>
 
-#include "version.h"
-#include "helper.h"
-#include "images.h"
-#include "core.h"
-#include "extensions.h"
-#include "filedialog.h"
-#include "settings/preferences.h"
-#include "gui/action/action.h"
-#include "gui/action/menu.h"
+#include "gui/base.h"
 #include "gui/tablewidget.h"
 #include "gui/multilineinputdialog.h"
+#include "gui/action/menu.h"
+#include "gui/action/action.h"
+#include "settings/preferences.h"
+#include "core.h"
+#include "images.h"
+#include "helper.h"
+#include "filedialog.h"
+#include "extensions.h"
+#include "version.h"
 
 
 using namespace Settings;
@@ -83,8 +84,8 @@ TPlaylistItem::TPlaylistItem(const QString &filename, const QString &name,
 	_directory = QFileInfo(filename).absolutePath();
 }
 
-TPlaylist::TPlaylist(QWidget* parent, TCore* c)
-	: QWidget(parent, 0)
+TPlaylist::TPlaylist(TBase* main_window, TCore* c)
+    : QWidget(main_window, 0)
 	, current_item(-1)
 	, core(c)
 	, recursive_add_directory(true)
@@ -92,17 +93,22 @@ TPlaylist::TPlaylist(QWidget* parent, TCore* c)
 	, modified(false) {
 
 	createTable();
-	createActions(parent);
+    createActions();
+    // Add actions to main window
+    main_window->addActions(actions());
 	createToolbar();
 
-	connect(core, SIGNAL(newMediaStartedPlaying()),
-			this, SLOT(onNewMediaStartedPlaying()));
+    connect(core, SIGNAL(startPlayingNewMedia()),
+            this, SLOT(onStartPlayingNewMedia()));
 	connect(core, SIGNAL(titleTrackChanged(int)),
 			this, SLOT(onTitleTrackChanged(int)));
 	connect(core, SIGNAL(mediaEOF()),
 			this, SLOT(onMediaEOF()), Qt::QueuedConnection);
 	connect(core, SIGNAL(noFileToPlay()),
 			this, SLOT(resumePlay()));
+
+    connect(main_window, SIGNAL(enableActions()),
+            this, SLOT(enableActions()));
 
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->addWidget(listView);
@@ -164,7 +170,7 @@ void TPlaylist::createTable() {
 	// <--
 }
 
-void TPlaylist::createActions(QWidget* parent) {
+void TPlaylist::createActions() {
 
 	openAct = new TAction(this, "pl_open", tr("&Load"), "open");
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
@@ -188,6 +194,9 @@ void TPlaylist::createActions(QWidget* parent) {
 
 	moveDownAct = new TAction(this, "pl_move_down", tr("Move &down"), "down");
 	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(moveItemDown()));
+
+    connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+            this, SLOT(onSelectionChanged(QItemSelection,QItemSelection)));
 
 	repeatAct = new TAction(this, "pl_repeat", tr("&Repeat"), "repeat");
     // Enable depends on repeat
@@ -227,9 +236,6 @@ void TPlaylist::createActions(QWidget* parent) {
 	// Edit
 	editAct = new TAction(this, "pl_edit", tr("&Edit"), "noicon");
 	connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
-
-	// Add actions to parent
-	parent->addActions(actions());
 }
 
 void TPlaylist::createToolbar() {
@@ -798,36 +804,55 @@ void TPlaylist::updateCurrentItem() {
 	}
 }
 
+void TPlaylist::enableUpDown(const QItemSelection& selected) {
+
+    int c = count();
+    bool sel2 = selected.count() > 1;
+    moveUpAct->setEnabled(c > 1 && (listView->currentRow() > 0 || sel2));
+    moveDownAct->setEnabled(c > 1
+        && (listView->currentRow() < listView->rowCount() - 1 || sel2));
+
+}
+
+void TPlaylist::onSelectionChanged(const QItemSelection& selected, const QItemSelection&) {
+    enableUpDown(selected);
+}
+
 void TPlaylist::enableActions() {
 
     // Note: there is always something selected when c > 0
-    int c = pl.count();
-    saveAct->setEnabled(c > 0);
-    playAct->setEnabled(listView->currentRow() >= 0);
+    int c = count();
+    TCoreState s = core->state();
+    qDebug() << "Gui::TPlaylist::enableActions: count" << c
+             << "state" << core->stateToString();
 
+    saveAct->setEnabled(c > 0);
+    playAct->setEnabled(listView->currentRow() >= 0
+                        && (s == STATE_STOPPED || s == STATE_PAUSED));
+
+    // Prev/Next
     bool changed = false;
-    bool enable = c > 0 && repeatAct->isChecked();
-    bool e = enable || (c > 1 && current_item < c - 1);
+    bool enable = s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED;
+    bool e = enable && ((c > 0 && repeatAct->isChecked())
+                        || (c > 1 && current_item < c - 1));
     if (e != nextAct->isEnabled()) {
         nextAct->setEnabled(e);
         changed = true;
     }
-    e = enable || (c > 1 && current_item > 0);
+    e = enable && ((c > 0 && repeatAct->isChecked()) || (c > 1 && current_item > 0));
     if (e != prevAct->isEnabled()) {
         prevAct->setEnabled(e);
         changed = true;
     }
     if (changed) {
+        // Update forward/rewind menus
         emit enablePrevNextChanged();
     }
 
+    // Move up/down
+    enableUpDown(listView->selectionModel()->selection());
 
-    // TODO: should act on selection change use onCurrentCellChanged?
-    //int sel_count = listView->selectionModel()->selection().count();
-    moveUpAct->setEnabled(c > 1);
-    moveDownAct->setEnabled(c > 1);
-
-    addCurrentAct->setEnabled(!core->mdat.filename.isEmpty());
+    addCurrentAct->setEnabled(core->mdat.filename.count());
 
     removeSelectedAct->setEnabled(c > 0);
     removeSelectedFromDiskAct->setEnabled(c > 0);
@@ -837,7 +862,7 @@ void TPlaylist::enableActions() {
     editAct->setEnabled(listView->currentRow() >= 0);
 }
 
-void TPlaylist::onNewMediaStartedPlaying() {
+void TPlaylist::onStartPlayingNewMedia() {
 
 	TMediaData* md = &core->mdat;
 	QString filename = md->filename;
@@ -847,7 +872,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
 	}
 
 	if (filename == current_filename) {
-		qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is current item");
+        qDebug("Gui::TPlaylist::onStartPlayingNewMedia: new file is current item");
 		updateCurrentItem();
 		return;
 	}
@@ -857,7 +882,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
 		if (cur_disc.valid
 			&& cur_disc.protocol == md->disc.protocol
 			&& cur_disc.device == md->disc.device) {
-			qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is from current disc");
+            qDebug("Gui::TPlaylist::onStartPlayingNewMedia: new file is from current disc");
 			return;
 		}
 	}
@@ -887,12 +912,12 @@ void TPlaylist::onNewMediaStartedPlaying() {
 		// Add associated files to playlist
 		if (md->selected_type == TMediaData::TYPE_FILE
 			&& pref->media_to_add_to_playlist != TPreferences::NoFiles) {
-			qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: searching for files to add to playlist for"
+            qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: searching for files to add to playlist for"
 					 << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(
 				filename, pref->media_to_add_to_playlist);
 			if (files_to_add.isEmpty()) {
-				qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: none found");
+                qDebug("Gui::TPlaylist::onStartPlayingNewMedia: none found");
 			} else {
 				addFiles(files_to_add);
 			}
@@ -905,7 +930,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
 	}
 	updateView();
 
-	qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: created new playlist with"
+    qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist with"
 			 << count() << "items for" << filename;
 }
 
