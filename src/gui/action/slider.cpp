@@ -72,7 +72,8 @@ int TSlider::pixelPosToRangeValue(int pos) const
 // Based on code from qslider.cpp
 void TSlider::mousePressEvent(QMouseEvent* event) {
 
-	if (event->button() == Qt::LeftButton) {
+    // Change QSlider PgUp/PgDown behaviour to directly jumping to clicked pos
+    if (event->button() == Qt::LeftButton) {
 		QStyleOptionSlider opt;
 		initStyleOption(&opt);
 		const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);

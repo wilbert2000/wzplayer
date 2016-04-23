@@ -186,9 +186,12 @@ bool TTimeSlider::event(QEvent* event) {
 		QHelpEvent* help_event = static_cast<QHelpEvent*>(event);
 		QStyleOptionSlider opt;
 		initStyleOption(&opt);
-		const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider,
-			&opt, QStyle::SC_SliderHandle, this);
+        // Rect of handle/knob
+        const QRect sliderRect = style()->subControlRect(
+            QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+        // Center of handle
 		const QPoint center = sliderRect.center() - sliderRect.topLeft();
+
 		int val = pixelPosToRangeValue(pick(help_event->pos() - center));
 		int time = val * _duration / maximum();
 		QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
