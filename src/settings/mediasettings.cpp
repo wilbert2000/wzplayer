@@ -276,13 +276,8 @@ void TMediaSettings::save(QSettings* set) {
 
 	set->beginGroup(demuxer_section);
 
-	// Is this too agressive writing towards NoneSelected?
-	if (current_video_id > md->videos.firstID())
-		set->setValue("current_video_id", current_video_id);
-	else set->setValue("current_video_id", NoneSelected);
-	if (current_audio_id > md->audios.firstID())
-		set->setValue("current_audio_id", current_video_id);
-	else set->setValue("current_audio_id", NoneSelected);
+    set->setValue("current_video_id", current_video_id);
+    set->setValue("current_audio_id", current_audio_id);
 
 	set->setValue("current_secondary_sub_idx", current_secondary_sub_idx);
 
