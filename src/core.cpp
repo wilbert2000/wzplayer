@@ -1786,14 +1786,16 @@ void TCore::setInPoint(double sec) {
     if (mset.in_point < 0) {
         mset.in_point = 0;
     }
+    QString msg = tr("In point set to %1").arg(Helper::formatTime(mset.in_point));
+
     if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
-        qDebug("TCore::setInPoint: clearing out point %f larger or equal than in point %f",
-               mset.out_point, mset.in_point);
         mset.out_point = -1;
+        mset.loop = false;
+        msg += tr(", cleared out point and repeat");
     }
 
     emit InOutPointsChanged();
-    displayMessage(tr("In point set to %1").arg(Helper::formatTime(mset.in_point)));
+    displayMessage(msg);
 }
 
 void TCore::seekInPoint() {
@@ -1817,24 +1819,21 @@ void TCore::setOutPoint(double sec) {
     qDebug("TCore::setOutPoint: %f", sec);
 
     if (sec <= 0) {
-        mset.out_point = -1;
-    } else {
-        mset.out_point = sec;
+        clearOutPoint();
+        return;
     }
-    if (mset.out_point > 0) {
-        mset.loop = true;
-        if (mset.in_point >= mset.out_point) {
-            qDebug("TCore::setOutPoint: clearing in point %f larger or equal than out point %f",
-                   mset.in_point, mset.out_point);
-            mset.in_point = 0;
-        }
+
+    mset.out_point = sec;
+    mset.loop = true;
+    QString msg;
+    msg = tr("Out point set to %1, repeat set").arg(Helper::formatTime(mset.out_point));
+    if (mset.in_point >= mset.out_point) {
+        mset.in_point = 0;
+        msg += tr(" and cleared in point");
     }
 
     emit InOutPointsChanged();
-    if (mset.out_point > 0)
-        displayMessage(tr("Out point set to %1").arg(Helper::formatTime(mset.out_point)));
-    else
-        displayMessage(tr("Cleared out point"));
+    displayMessage(msg);
 }
 
 void TCore::seekOutPoint() {
@@ -1867,7 +1866,7 @@ void TCore::clearInOutPoints() {
     mset.out_point = -1;
     mset.loop = false;
     emit InOutPointsChanged();
-    displayMessage(tr("In-out points cleared"));
+    displayMessage(tr("In-out points and repeat cleared"));
 }
 
 void TCore::toggleRepeat(bool b) {
