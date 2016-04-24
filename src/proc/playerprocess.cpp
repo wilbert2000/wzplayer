@@ -57,17 +57,20 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
 
 void TPlayerProcess::writeToStdin(QString text, bool log) {
 
-	if (log)
-		qDebug("Proc::TPlayerProcess::writeToStdin: %s", text.toUtf8().constData());
+    if (log) {
+        qDebug() << "Proc::TPlayerProcess::writeToStdin:" << text;
+    }
 
 	if (isRunning()) {
-		#ifdef Q_OS_WIN
+
+#ifdef Q_OS_WIN
 		write(text.toUtf8() + "\n");
-		#else
+#else
 		write(text.toLocal8Bit() + "\n");
-		#endif
+#endif
+
 	} else {
-		qWarning("Proc::TPlayerProcess::writeToStdin: process not running");
+        qWarning("Proc::TPlayerProcess::writeToStdin: process not in running state");
 	}
 }
 

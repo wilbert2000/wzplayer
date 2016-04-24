@@ -295,13 +295,13 @@ void TPlaylist::createToolbar() {
     toolbar->addAction(shuffleAct);
     toolbar->addAction(repeatAct);
     toolbar->addSeparator();
-    toolbar->addAction(playOrPauseAct);
-    toolbar->addSeparator();
     toolbar->addAction(prevAct);
 	toolbar->addAction(nextAct);
     toolbar->addSeparator();
     toolbar->addAction(moveUpAct);
     toolbar->addAction(moveDownAct);
+    toolbar->addSeparator();
+    toolbar->addAction(playOrPauseAct);
 
 	// Popup menu
 	popup = new QMenu(this);
