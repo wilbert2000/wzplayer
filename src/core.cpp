@@ -1768,6 +1768,7 @@ void TCore::setInPoint(double sec) {
     if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
         mset.out_point = -1;
         mset.loop = false;
+        updateLoop();
         msg += tr(", cleared out point and repeat");
     }
 
@@ -1776,6 +1777,7 @@ void TCore::setInPoint(double sec) {
 }
 
 void TCore::seekInPoint() {
+
     seekTime(mset.in_point);
     displayMessage(tr("Seeking to %1").arg(Helper::formatTime(mset.in_point)));
 }
@@ -1802,12 +1804,16 @@ void TCore::setOutPoint(double sec) {
 
     mset.out_point = sec;
     mset.loop = true;
+
     QString msg;
-    msg = tr("Out point set to %1, repeat set").arg(Helper::formatTime(mset.out_point));
+    msg = tr("Out point set to %1, repeat set")
+          .arg(Helper::formatTime(mset.out_point));
     if (mset.in_point >= mset.out_point) {
         mset.in_point = 0;
         msg += tr(" and cleared in point");
     }
+
+    updateLoop();
 
     emit InOutPointsChanged();
     displayMessage(msg);
@@ -1832,6 +1838,8 @@ void TCore::clearOutPoint() {
 
     mset.out_point = -1;
     mset.loop = false;
+    updateLoop();
+
     emit InOutPointsChanged();
     displayMessage(tr("Cleared out point and repeat"));
 }
@@ -1842,20 +1850,26 @@ void TCore::clearInOutPoints() {
     mset.in_point = 0;
     mset.out_point = -1;
     mset.loop = false;
+    updateLoop();
+
     emit InOutPointsChanged();
     displayMessage(tr("In-out points and repeat cleared"));
 }
 
-void TCore::toggleRepeat(bool b) {
-	qDebug("TCore::toggleRepeat: %d", b);
-
-    mset.loop = b;
+void TCore::updateLoop() {
 
     if (mset.loop && mset.out_point <= 0) {
         proc->setLoop(true);
     } else {
         proc->setLoop(false);
     }
+}
+
+void TCore::toggleRepeat(bool b) {
+	qDebug("TCore::toggleRepeat: %d", b);
+
+    mset.loop = b;
+    updateLoop();
 
     emit InOutPointsChanged();
     if (mset.loop) {
@@ -2649,7 +2663,7 @@ void TCore::handleOutPoint() {
             proc->quit(Proc::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
-        qDebug("TCore::handleOutPoint: done handling out point, position %f now before out point %f",
+        qDebug("TCore::handleOutPoint: done handling out point, position %f no longer after out point %f",
                mset.current_sec, mset.out_point);
         seeking = false;
     }

@@ -442,10 +442,12 @@ private:
 	void getPanFromPlayerWindow();
 	void pan(int dx, int dy);
 
+    void seekCmd(double secs, int mode);
+    void handleOutPoint();
+    void updateLoop();
+
 	int getVolumeForPlayer() const;
 
-	void seekCmd(double secs, int mode);
-    void handleOutPoint();
 
     void enableScreensaver();
     void disableScreensaver();
