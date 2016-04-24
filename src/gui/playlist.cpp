@@ -212,7 +212,7 @@ void TPlaylist::createActions() {
     connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(onSelectionChanged(QItemSelection,QItemSelection)));
 
-	repeatAct = new TAction(this, "pl_repeat", tr("&Repeat"), "repeat");
+    repeatAct = new TAction(this, "pl_repeat", tr("&Repeat"));
     // Enable depends on repeat
     connect(repeatAct, SIGNAL(triggered()), this, SLOT(enableActions()));
 	repeatAct->setCheckable(true);
