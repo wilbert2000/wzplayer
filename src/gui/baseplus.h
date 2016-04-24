@@ -65,7 +65,7 @@ protected slots:
 
 	virtual void showPlaylist(bool b);
 
-	void dockVisibilityChanged(bool visible);
+	void onDockVisibilityChanged(bool visible);
 	void onTopLevelChanged(bool);
 
 protected:

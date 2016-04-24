@@ -19,9 +19,8 @@
 #ifndef GUI_BASE_H
 #define GUI_BASE_H
 
-#include <QTimer>
 #include <QMainWindow>
-#include <QProcess>
+#include <QTimer>
 
 #include "config.h"
 #include "corestate.h"
@@ -234,8 +233,7 @@ protected slots:
 	// Single instance stuff
 	void handleMessageFromOtherInstances(const QString& message);
 
-	void onPlayerFinishedWithError(int exit_code);
-	void onPlayerError(QProcess::ProcessError);
+    void onPlayerError(int exit_code);
 
 protected:
 	virtual void closeEvent(QCloseEvent* e);

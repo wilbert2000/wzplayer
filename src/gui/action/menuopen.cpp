@@ -1,12 +1,14 @@
 #include "gui/action/menuopen.h"
 #include <QMessageBox>
 #include <QFileInfo>
-#include "settings/paths.h"
-#include "settings/preferences.h"
+
+#include "gui/base.h"
+#include "gui/playlist.h"
 #include "gui/action/action.h"
 #include "gui/action/favorites.h"
 #include "gui/action/tvlist.h"
-#include "gui/base.h"
+#include "settings/paths.h"
+#include "settings/preferences.h"
 
 
 using namespace Settings;
@@ -42,30 +44,31 @@ TMenuDisc::TMenuDisc(TBase* parent)
 }
 
 
-TMenuOpen::TMenuOpen(TBase* mw, QWidget* playlist)
+TMenuOpen::TMenuOpen(TBase* mw)
     : TMenu(mw, mw, "open_menu", tr("&Open"), "noicon") {
 
 	// Open URL
-    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "", QKeySequence("Ctrl+U"));
+    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "",
+                             QKeySequence("Ctrl+U"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
 
 	addSeparator();
 
 	// Open file
-    a = new TAction(this, "open_file", tr("Open &file..."), "open", Qt::CTRL | Qt::Key_F);
+    a = new TAction(this, "open_file", tr("Open &file..."), "open",
+                    Qt::CTRL | Qt::Key_F);
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
 
 	// Open dir
-    a = new TAction(this, "open_directory", tr("Open &directory..."), "", QKeySequence("Ctrl+D"));
+    a = new TAction(this, "open_directory", tr("Open &directory..."), "",
+                    QKeySequence("Ctrl+D"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
 
 	// Open playlist
-    a = new TAction(this, "open_playlist", tr("Open &playlist..."), "", QKeySequence("Ctrl+P"));
-	main_window->addAction(a);
-	connect(a, SIGNAL(triggered()), playlist, SLOT(load()));
+    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_open"));
 
 	// Disc submenu
 	addMenu(new TMenuDisc(main_window));
@@ -73,8 +76,10 @@ TMenuOpen::TMenuOpen(TBase* mw, QWidget* playlist)
 	addSeparator();
 
 	// Recents
-    recentfiles_menu = new TMenu(main_window, main_window, "recent_menu", tr("&Recent files"), "recents");
-	clearRecentsAct = new TAction(this, "clear_recents", tr("&Clear"), "delete", 0, false);
+    recentfiles_menu = new TMenu(main_window, main_window, "recent_menu",
+                                 tr("&Recent files"), "recents");
+    clearRecentsAct = new TAction(this, "clear_recents", tr("&Clear"),
+                                  "delete", 0, false);
 	main_window->addAction(clearRecentsAct);
 	connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
 	addMenu(recentfiles_menu);

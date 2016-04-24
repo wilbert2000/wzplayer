@@ -65,7 +65,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     playerwindow(mpw),
     _state(STATE_STOPPED) {
 
-    qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
+    //qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
     qRegisterMetaType<TCoreState>("TCoreState");
 
 	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
@@ -203,7 +203,7 @@ void TCore::onProcessError(QProcess::ProcessError error) {
 	playerwindow->restoreNormalWindow();
     enableScreensaver();
 
-	emit playerError(error);
+    emit playerError(Proc::TExitMsg::processErrorToErrorID(error));
 }
 
 void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
@@ -224,8 +224,8 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
         qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
         emit mediaEOF();
     } else if (!normal_exit) {
-        qDebug("TCore::onProcessFinished: emit playerFinishedWithError()");
-        emit playerFinishedWithError(exit_code);
+        qDebug("TCore::onProcessFinished: emit playerError()");
+        emit playerError(exit_code);
     }
 }
 
@@ -370,6 +370,14 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 // Generic open, autodetect type
 void TCore::open(QString file, int seek) {
 	qDebug() << "TCore::open:" << file;
+
+    if (file.isEmpty()) {
+        file = mdat.filename;
+        if (file.isEmpty()) {
+            emit showMessage(tr("No file to play"));
+            return;
+        }
+    }
 
 	if (file.startsWith("file:")) {
 		file = QUrl(file).toLocalFile();
@@ -1842,8 +1850,14 @@ void TCore::toggleRepeat(bool b) {
 	qDebug("TCore::toggleRepeat: %d", b);
 
     mset.loop = b;
-    emit InOutPointsChanged();
 
+    if (mset.loop && mset.out_point <= 0) {
+        proc->setLoop(true);
+    } else {
+        proc->setLoop(false);
+    }
+
+    emit InOutPointsChanged();
     if (mset.loop) {
         displayMessage(tr("Repeat in-out set"));
     } else {

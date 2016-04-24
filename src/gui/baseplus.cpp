@@ -43,10 +43,10 @@ using namespace Settings;
 
 namespace Gui {
 
-TBasePlus::TBasePlus()
-	: TBase()
-	, mainwindow_visible(true)
-	, trayicon_playlist_was_visible(false) {
+TBasePlus::TBasePlus() :
+    TBase(),
+    mainwindow_visible(true),
+    trayicon_playlist_was_visible(false) {
 
 	tray = new QSystemTrayIcon(this);
 	tray->setToolTip(TConfig::PROGRAM_NAME);
@@ -89,21 +89,23 @@ TBasePlus::TBasePlus()
 
 	// Playlistdock
 	playlistdock = new QDockWidget(this);
-	playlistdock->hide();
 	playlistdock->setObjectName("playlistdock");
-	playlistdock->setAcceptDrops(true);
-	playlistdock->setWidget(playlist);
+    playlistdock->setWidget(playlist);
 	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
 								  | Qt::BottomDockWidgetArea
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
-	addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
-	playlistdock->setFloating(true); // Floating by default
+    playlistdock->setAcceptDrops(true);
+    playlistdock->setFloating(true); // Floating by default
+    //playlistdock->setWindowIcon("logo");
+    playlistdock->hide();
+
+    addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
 
 	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
 			this, SLOT(onTopLevelChanged(bool)));
 	connect(playlistdock, SIGNAL(visibilityChanged(bool)),
-			this, SLOT(dockVisibilityChanged(bool)));
+            this, SLOT(onDockVisibilityChanged(bool)));
 	connect(this, SIGNAL(openFileRequested()),
 			this, SLOT(showAll()));
 
@@ -130,8 +132,9 @@ void TBasePlus::switchToTray() {
 
 	exitFullscreen();
 	showAll(false); // Hide windows
-	if (core->state() == STATE_PLAYING)
+    if (core->state() == STATE_PLAYING) {
 		core->stop();
+    }
 
 	if (pref->balloon_count > 0) {
 		tray->showMessage(TConfig::PROGRAM_NAME,
@@ -161,7 +164,8 @@ void TBasePlus::quit() {
 void TBasePlus::setWinTitle() {
 
 	if (playlistdock->isFloating()) {
-		playlistdock->setWindowTitle(tr("%1 - Playlist").arg(TConfig::PROGRAM_NAME));
+        playlistdock->setWindowTitle(tr("%1 - Playlist")
+                                     .arg(TConfig::PROGRAM_NAME));
 	} else {
 		playlistdock->setWindowTitle(tr("Playlist"));
 	}
@@ -175,6 +179,7 @@ void TBasePlus::retranslateStrings() {
 }
 
 void TBasePlus::changeEvent(QEvent* e) {
+
 	if (e->type() == QEvent::LanguageChange) {
 		retranslateStrings();
 	} else {
@@ -213,6 +218,8 @@ void TBasePlus::loadConfig() {
 	TBase::loadConfig();
 
     if (!state_restored) {
+        QRect r(playlistdock->pos(), QSize(420, 500));
+        playlistdock->setGeometry(r);
         TDesktop::centerWindow(playlistdock);
     }
 
@@ -348,8 +355,8 @@ void TBasePlus::onTopLevelChanged(bool) {
 	setWinTitle();
 }
 
-void TBasePlus::dockVisibilityChanged(bool visible) {
-	//qDebug("Gui::TBasePlus::dockVisibilityChanged: %d", visible);
+void TBasePlus::onDockVisibilityChanged(bool visible) {
+    //qDebug("Gui::TBasePlus::onDockVisibilityChanged: %d", visible);
 
 	if (!playlistdock->isFloating() && !pref->fullscreen && pref->resize_on_docking) {
 		if (visible) {

@@ -11,7 +11,6 @@
         <file>default-theme/contrast.png</file>
         <file>default-theme/copy.png</file>
         <file>default-theme/delete.png</file>
-        <file>default-theme/down.png</file>
         <file>default-theme/open_disc.png</file>
         <file>default-theme/dvd.png</file>
         <file>default-theme/dvd_drive.png</file>
@@ -41,7 +40,9 @@
         <file>default-theme/monitor.png</file>
         <file>default-theme/mouse.png</file>
         <file>default-theme/mute.png</file>
+        <file>default-theme/loading.png</file>
         <file>default-theme/ok.png</file>
+        <file>default-theme/failed.png</file>
         <file>default-theme/open.png</file>
         <file>default-theme/open_directory.png</file>
         <file>default-theme/pause.png</file>
@@ -76,7 +77,6 @@
         <file>default-theme/secondary_sub.png</file>
         <file>default-theme/unload.png</file>
         <file>default-theme/download_subs.png</file>
-        <file>default-theme/up.png</file>
         <file>default-theme/vcd.png</file>
         <file>default-theme/volume.png</file>
         <file>default-theme/next.png</file>
@@ -115,7 +115,9 @@
         <file>default-theme/video_filters.png</file>
         <file>default-theme/video_size.png</file>
         <file>default-theme/audio_channels.png</file>
-        <file>default-theme/open_playlist.png</file>
+        <file>default-theme/pl_open.png</file>
+        <file>default-theme/pl_move_up.png</file>
+        <file>default-theme/pl_move_down.png</file>
         <file>default-theme/audio_track.png</file>
         <file>default-theme/toolbars.png</file>
         <file>default-theme/stay_on_top_menu.png</file>
@@ -155,7 +157,7 @@
         <file>default-theme/crash.png</file>
         <file>default-theme/shutdown.png</file>
         <file>default-theme/stereo3d.png</file>
-        <file>default-theme/zoom_reset.png</file>
+        <file>default-theme/reset_zoom_and_pan.png</file>
         <file>default-theme/empty_icon.png</file>
 		<file>default-theme/record.png</file>
         <file>default-theme/style.qss</file>

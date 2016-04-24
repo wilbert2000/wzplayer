@@ -83,11 +83,9 @@ private:
 	Gui::TPlaylist* playlist;
 
 	TAction* playAct;
-	TAction* playOrPauseAct;
 	QIcon pauseIcon;
 	QIcon playIcon;
 	TAction* pauseAct;
-	TAction* stopAct;
     TAction* seekToAct;
 }; // class TMenuPlay
 

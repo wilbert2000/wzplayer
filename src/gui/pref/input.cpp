@@ -53,7 +53,7 @@ void TInput::createMouseCombos() {
 
 	left_click_combo->addItem(tr("None"), "");
 	left_click_combo->addItem(tr("Play"), "play");
-	left_click_combo->addItem(tr("Play / Pause"), "play_or_pause");
+    left_click_combo->addItem(tr("Play / Pause"), "pl_play_or_pause");
 	left_click_combo->addItem(tr("Pause"), "pause");
 	left_click_combo->addItem(tr("Stop"), "stop");
 	left_click_combo->addItem(tr("Frame back step"), "frame_back_step");
@@ -74,7 +74,7 @@ void TInput::createMouseCombos() {
 	left_click_combo->addItem(tr("Mute"), "mute");
 	left_click_combo->addItem(tr("OSD - Next level"), "next_osd");
 	left_click_combo->addItem(tr("Playlist"), "show_playlist");
-	left_click_combo->addItem(tr("Reset zoom"), "reset_zoom");
+	left_click_combo->addItem(tr("Reset zoom"), "reset_zoom_and_pan");
 	left_click_combo->addItem(tr("Exit fullscreen"), "exit_fullscreen");
 	left_click_combo->addItem(tr("Normal speed"), "normal_speed");
 	left_click_combo->addItem(tr("Frame counter"), "frame_counter");
@@ -468,8 +468,8 @@ void TInput::createHelp() {
 			 " video. Consequently this will cause a left click action being"
              " triggered before and after each double click action."
              " This won't cause much trouble if the default action for the"
-             " left mouse button, play_or_pause, is still assigned, because"
-             " the first left click will be canceled by the second."));
+             " left mouse button, pl_play_or_pause, is still assigned,"
+             " because the first left click will be canceled by the second."));
 
 	setWhatsThis(middle_click_combo, tr("Middle click"),
 		tr("Select the action for middle click on the mouse."));

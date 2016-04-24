@@ -39,6 +39,8 @@ class TTableWidget;
 
 namespace Action {
 class TAction;
+class TMenu;
+class TMenuInOut;
 }
 
 class TPlaylistItem {
@@ -54,6 +56,7 @@ public:
 	void setPlayed(bool b) { _played = b; }
 	void setMarkForDeletion(bool b) { _deleted = b; }
 	void setEdited(bool b) { _edited = b; }
+    void setFailed(bool b) { _failed = b; }
 
 	QString directory() const { return _directory; }
 	QString filename() const { return _filename; }
@@ -62,11 +65,12 @@ public:
 	bool played() const { return _played; }
 	bool markedForDeletion() const { return _deleted; }
 	bool edited() const { return _edited; }
+    bool failed() const { return _failed; }
 
 private:
 	QString _directory, _filename, _name;
 	double _duration;
-	bool _played, _deleted, _edited;
+    bool _played, _deleted, _edited, _failed;
 };
 
 class TPlaylist : public QWidget {
@@ -75,7 +79,7 @@ class TPlaylist : public QWidget {
 public:
 	typedef QList<TPlaylistItem> TPlaylistItemList;
 
-    TPlaylist(TBase* main_window, TCore* c);
+    TPlaylist(TBase* mw, TCore* c);
 	virtual ~TPlaylist();
 
 	// Start playing, from item 0 if shuffle is off,
@@ -100,6 +104,8 @@ public:
 	void loadSettings();
 	void saveSettings();
 	void retranslateStrings();
+
+    Action::TMenuInOut* getInOutMenu() const { return inOutMenu; }
 
 public slots:
 	void playNext();
@@ -130,6 +136,9 @@ private:
 	};
 
 	int current_item;
+    bool loading;
+
+    TBase* main_window;
 	TCore* core;
 	TPlaylistItemList pl;
 	TTableWidget* listView;
@@ -144,7 +153,8 @@ private:
 
 	Action::TAction* openAct;
 	Action::TAction* saveAct;
-	Action::TAction* playAct;
+    Action::TAction* playOrPauseAct;
+    Action::TAction* stopAct;
 	Action::TAction* prevAct;
 	Action::TAction* nextAct;
 	Action::TAction* repeatAct;
@@ -163,6 +173,8 @@ private:
 	Action::TAction* removeSelectedAct;
 	Action::TAction* removeSelectedFromDiskAct;
 	Action::TAction* removeAllAct;
+
+    Action::TMenuInOut* inOutMenu;
 
 	// Preferences
 	bool recursive_add_directory;
@@ -205,7 +217,9 @@ private:
 private slots:
 	void showContextMenu(const QPoint& pos);
 
-	void playCurrent();
+    void onPlayerError();
+
+    void playOrPause();
 
     void onCellActivated(int row, int);
     void onSelectionChanged(const QItemSelection&, const QItemSelection&);

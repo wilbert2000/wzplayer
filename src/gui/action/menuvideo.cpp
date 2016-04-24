@@ -162,9 +162,12 @@ TMenuZoomAndPan::TMenuZoomAndPan(TBase* mw, TCore* c)
 	group->setEnabled(false);
 
 	// Zoom
-    TAction* a = new TAction(this, "reset_zoom", tr("&Reset"), "zoom_reset", Qt::Key_5);
+    TAction* a = new TAction(this, "reset_zoom_and_pan",
+                             tr("&Reset zoom and pan"), "", Qt::Key_5);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(resetZoomAndPan()));
+
+    // Zoom
 	addSeparator();
     a = new TAction(this, "dec_zoom", tr("Zoom &-"), "", Qt::Key_1);
 	group->addAction(a);

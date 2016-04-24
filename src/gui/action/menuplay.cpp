@@ -358,17 +358,14 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
     main_window->addAction(playAct);
 	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
 
-	playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play", Qt::Key_Space);
-	playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause")); // MCE remote key
-	connect(playOrPauseAct, SIGNAL(triggered()), core, SLOT(playOrPause()));
+    addAction(playlist->findChild<TAction*>("pl_play_or_pause"));
 
 	pauseAct = new TAction(this, "pause", tr("Pause"), "",
 						   QKeySequence("Media Pause"), false); // MCE remote key
     main_window->addAction(pauseAct);
 	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
 
-	stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
-	connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
+    addAction(playlist->findChild<TAction*>("stop"));
 
 	addSeparator();
 
@@ -393,7 +390,7 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
     addMenu(new TMenuPlaySpeed(main_window, core));
 
     // In-out point submenu
-    addMenu(new TMenuInOut(main_window, core));
+    addMenu(playlist->getInOutMenu());
 
     addActionsTo(main_window);
 }
@@ -401,22 +398,11 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
 void TMenuPlay::enableActions() {
 
     TCoreState s = core->state();
+    bool e = s == STATE_STOPPED || s == STATE_PAUSED;
 
-    playAct->setEnabled(s == STATE_STOPPED || s == STATE_PAUSED);
-
-    bool pop = s == STATE_PLAYING || s == STATE_PAUSED;
-
-    playOrPauseAct->setEnabled(s == STATE_STOPPED || pop);
-    if (s == STATE_PLAYING) {
-        playOrPauseAct->setTextAndTip(tr("&Pause"));
-        playOrPauseAct->setIcon(pauseIcon);
-    } else {
-        playOrPauseAct->setTextAndTip(tr("&Play"));
-        playOrPauseAct->setIcon(playIcon);
-    }
+    playAct->setEnabled(e);
     pauseAct->setEnabled(s == STATE_PLAYING);
-    stopAct->setEnabled(pop);
-    seekToAct->setEnabled(pop);
+    seekToAct->setEnabled(e);
 }
 
 } // namespace Action

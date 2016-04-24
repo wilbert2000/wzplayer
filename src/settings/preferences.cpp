@@ -281,7 +281,7 @@ void TPreferences::reset() {
 
 	// Actions section
     // Mouse tab
-	mouse_left_click_function = "play_or_pause";
+    mouse_left_click_function = "pl_play_or_pause";
 	delay_left_click = true;
 	mouse_right_click_function = "show_context_menu";
 	mouse_double_click_function = "fullscreen";
@@ -296,7 +296,7 @@ void TPreferences::reset() {
 	seeking2 = 60;
 	seeking3 = 10*60;
 	seeking4 = 30;
-    seeking_current_action = 4;
+    seeking_current_action = 1; // seek short jump
 
 	update_while_seeking = true;
 	time_slider_drag_delay = 200;

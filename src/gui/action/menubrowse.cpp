@@ -83,15 +83,15 @@ TMenuBrowse::TMenuBrowse(TBase* mw, TCore* c)
 	addSeparator();
 
 	dvdnavSelectAct = new TAction(this, "dvdnav_select", tr("DVD, select"),
-								  "", Qt::Key_Return);
+                                  "", Qt::META | Qt::Key_Return);
 	connect(dvdnavSelectAct, SIGNAL(triggered()), core, SLOT(dvdnavSelect()));
 
-    // Not in menu, so add to parent
+    // Not in menu, so add to parent only
     dvdnavMouseAct = new TAction(main_window, "dvdnav_mouse", tr("DVD, mouse click"));
     connect(dvdnavMouseAct, SIGNAL(triggered()), core, SLOT(dvdnavMouse()));
 
 	dvdnavMenuAct = new TAction(this, "dvdnav_menu", tr("DVD &menu"),
-                                "", Qt::META | Qt::Key_Return);
+                                "", Qt::CTRL | Qt::Key_Return);
 	connect(dvdnavMenuAct, SIGNAL(triggered()), core, SLOT(dvdnavMenu()));
 
 	dvdnavPrevAct = new TAction(this, "dvdnav_prev", tr("DVD &previous menu"),

@@ -69,7 +69,7 @@ public:
     }
 
     //! Generic open, with autodetection of type
-	void open(QString file, int seek = -1);
+    void open(QString file = "", int seek = -1);
 	//! Open disc
 	void openDisc(TDiscName disc, bool fast_open = false);
 
@@ -334,11 +334,8 @@ signals:
 	void mediaInfoChanged();
 	void mediaStopped();
 	void mediaEOF(); // Media has arrived to the end.
-	//! Player started but finished with exit code != 0
-	void playerFinishedWithError(int exitCode);
-	//! Player didn't started or crashed
-	void playerError(QProcess::ProcessError error);
-	//! Sent when requested to play, but there is no file to play
+    void playerError(int exitCode);
+    //! Sent when requested to play, but there is no file to play
 	void noFileToPlay();
 
     void positionChanged(double sec);

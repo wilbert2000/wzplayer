@@ -265,11 +265,8 @@ void TBase::createCore() {
 	connect(core, SIGNAL(mediaStopped()),
 			this, SLOT(exitFullscreenOnStop()));
 
-	connect(core, SIGNAL(playerError(QProcess::ProcessError)),
-            this, SLOT(onPlayerError(QProcess::ProcessError)),
-            Qt::QueuedConnection);
-	connect(core, SIGNAL(playerFinishedWithError(int)),
-            this, SLOT(onPlayerFinishedWithError(int)),
+    connect(core, SIGNAL(playerError(int)),
+            this, SLOT(onPlayerError(int)),
             Qt::QueuedConnection);
 }
 
@@ -401,7 +398,7 @@ void TBase::createActions() {
 void TBase::createMenus() {
 
 	// MENUS
-	openMenu = new TMenuOpen(this, playlist);
+    openMenu = new TMenuOpen(this);
 	menuBar()->addMenu(openMenu);
 	playMenu = new TMenuPlay(this, core, playlist);
 	menuBar()->addMenu(playMenu);
@@ -481,23 +478,22 @@ void TBase::createToolbars() {
 	controlbar = new TEditableToolbar(this);
 	controlbar->setObjectName("controlbar");
 	QStringList actions;
-	actions << "show_playlist|0|1"
-			<< "separator|0|1"
-			<< "play_or_pause"
+    actions << "pl_play_or_pause"
             << "timeslider_action"
             << "rewind_menu"
             << "forward_menu"
             << "in_out_points_menu|0|1"
             << "separator|0|1"
-            << "osd_menu|0|1"
             << "aspect_menu|1|1"
             << "videosize_menu|1|0"
-            << "reset_zoom|0|1"
+            << "reset_zoom_and_pan|0|1"
             << "separator|0|1"
             << "mute|0|1"
 			<< "volumeslider_action"
             << "separator|0|1"
-			<< "fullscreen";
+            << "osd_menu|0|1"
+            << "show_playlist|0|1"
+            << "fullscreen";
 	controlbar->setDefaultActions(actions);
 	addToolBar(Qt::BottomToolBarArea, controlbar);
 	connect(editControlBarAct, SIGNAL(triggered()),
@@ -511,8 +507,7 @@ void TBase::createToolbars() {
 	toolbar = new TEditableToolbar(this);
 	toolbar->setObjectName("toolbar1");
 	actions.clear();
-    actions << "open_url" << "favorites_menu" << "separator"
-            << "audiotrack_menu" << "subtitlestrack_menu";
+    actions << "open_url" << "favorites_menu";
 	toolbar->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar);
 	connect(editToolbarAct, SIGNAL(triggered()),
@@ -916,10 +911,12 @@ void TBase::save() {
 void TBase::closeEvent(QCloseEvent* e)  {
 	qDebug("Gui::TBase::closeEvent");
 
-	core->close();
-	exitFullscreen();
-    save();
-	e->accept();
+    if (playlist->maybeSave()) {
+        core->close();
+        exitFullscreen();
+        save();
+        e->accept();
+    }
 }
 
 void TBase::closeWindow() {
@@ -2237,8 +2234,8 @@ void TBase::toggleStayOnTop() {
         changeStayOnTop(TPreferences::NeverOnTop);
 }
 
-void TBase::onPlayerFinishedWithError(int exit_code) {
-	qDebug("Gui::TBase::onPlayerFinishedWithError: %d", exit_code);
+void TBase::onPlayerError(int exit_code) {
+    qDebug("Gui::TBase::onPlayerError: %d", exit_code);
 
 	QString msg = Proc::TExitMsg::message(exit_code) + " (" + core->mdat.filename + ")";
 	displayMessage(msg, 0);
@@ -2252,12 +2249,6 @@ void TBase::onPlayerFinishedWithError(int exit_code) {
 		busy = false;
 	}
 }
-
-void TBase::onPlayerError(QProcess::ProcessError e) {
-	qDebug("Gui::TBase::onPlayerError: %d", e);
-	onPlayerFinishedWithError(Proc::TExitMsg::processErrorToErrorID(e));
-}
-
 
 #ifdef FIND_SUBTITLES
 void TBase::showFindSubtitlesDialog() {
