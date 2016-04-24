@@ -38,12 +38,12 @@ namespace Gui {
 namespace Action {
 
 
-TEditableToolbar::TEditableToolbar(TBase* mainwindow)
-	: QToolBar(mainwindow)
-	, main_window(mainwindow)
-	, size_grip(0)
-	, space_eater(0)
-	, fixing_size(false) {
+TEditableToolbar::TEditableToolbar(TBase* mainwindow) :
+    QToolBar(mainwindow),
+    main_window(mainwindow),
+    size_grip(0),
+    space_eater(0),
+    fixing_size(false) {
 
 	fix_size = height() - iconSize().height();
 
@@ -283,7 +283,8 @@ void TEditableToolbar::addSizeGrip() {
 }
 
 void TEditableToolbar::onTopLevelChanged(bool) {
-	addSizeGrip();
+
+    addSizeGrip();
 }
 
 void TEditableToolbar::enterEvent(QEvent* event) {

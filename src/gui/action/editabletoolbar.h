@@ -23,6 +23,7 @@
 #include <QStringList>
 #include <gui/action/actionlist.h>
 
+
 namespace Gui {
 
 class TBase;
@@ -63,7 +64,8 @@ protected:
 private:
 	QStringList actions;
 	QStringList default_actions;
-	TSizeGrip* size_grip;
+
+    TSizeGrip* size_grip;
 	TTimeSlider* space_eater;
 	bool fixing_size;
 	int fix_size;
@@ -74,7 +76,7 @@ private:
 
 private slots:
 	void showContextMenu(const QPoint& pos);
-	void onTopLevelChanged(bool);
+    void onTopLevelChanged(bool);
 	void reload();
 }; // class TEditableToolbar
 
