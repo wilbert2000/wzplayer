@@ -187,6 +187,8 @@ private:
     void createActions();
 	void createToolbar();
 
+    void msg(const QString& s);
+
 	void addItem(const QString& filename, QString name, double duration);
 	void cleanAndAddItem(QString filename, QString name, double duration);
 
@@ -246,6 +248,7 @@ private slots:
     void enableActions();
     void enableUpDown(const QItemSelection& selected);
 
+    void onRepeatToggled(bool toggled);
     void onStartPlayingNewMedia();
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();

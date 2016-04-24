@@ -212,13 +212,14 @@ void TPlaylist::createActions() {
     connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(onSelectionChanged(QItemSelection,QItemSelection)));
 
-    repeatAct = new TAction(this, "pl_repeat", tr("&Repeat"));
-    // Enable depends on repeat
-    connect(repeatAct, SIGNAL(triggered()), this, SLOT(enableActions()));
-	repeatAct->setCheckable(true);
+    // Added to inOutMenu
+    repeatAct = new TAction(this, "pl_repeat", tr("&Repeat playlist"), "",
+                            Qt::CTRL | Qt::Key_Backslash);
+    repeatAct->setCheckable(true);
+    connect(repeatAct, SIGNAL(triggered(bool)), this, SLOT(onRepeatToggled(bool)));
 
 	shuffleAct = new TAction(this, "pl_shuffle", tr("S&huffle"), "shuffle");
-	shuffleAct->setCheckable(true);
+    shuffleAct->setCheckable(true);
 
 	// Add actions
     addCurrentAct = new TAction(this, "pl_add_current",
@@ -293,6 +294,7 @@ void TPlaylist::createToolbar() {
 
     toolbar->addSeparator();
     toolbar->addAction(shuffleAct);
+    toolbar->addAction(inOutMenu->findChild<TAction*>("repeat_in_out"));
     toolbar->addAction(repeatAct);
     toolbar->addSeparator();
     toolbar->addAction(prevAct);
@@ -316,6 +318,9 @@ void TPlaylist::createToolbar() {
     popup->addSeparator();
     popup->addMenu(inOutMenu);
 
+    //Hck
+    inOutMenu->addAction(repeatAct);
+
 	connect(listView, SIGNAL(customContextMenuRequested(const QPoint &)),
 			this, SLOT(showContextMenu(const QPoint &)));
 }
@@ -337,6 +342,10 @@ void TPlaylist::retranslateStrings() {
 	add_button->setToolTip(tr("Add..."));
 	remove_button->setIcon(Images::icon("minus"));
 	remove_button->setToolTip(tr("Remove..."));
+}
+
+void TPlaylist::msg(const QString& s) {
+    emit displayMessage(s, TConfig::MESSAGE_DURATION);
 }
 
 void TPlaylist::getFilesAppend(QStringList& files) const {
@@ -604,6 +613,17 @@ void TPlaylist::addUrls() {
 		}
 		updateView();
 	}
+}
+
+void TPlaylist::onRepeatToggled(bool toggled) {
+
+    // Enable depends on repeat
+    enableActions();
+
+    if (toggled)
+        msg(tr("Repeat playlist set"));
+    else
+        msg(tr("Repeat playlist cleared"));
 }
 
 void TPlaylist::playOrPause() {
@@ -1125,9 +1145,9 @@ void TPlaylist::copySelected() {
 		if (copied == 1) {
 			// Remove trailing new line
 			text = text.left(text.length() - 1);
-			emit displayMessage(tr("Copied %1").arg(text), TConfig::MESSAGE_DURATION);
+            msg(tr("Copied %1").arg(text));
 		} else {
-			emit displayMessage(tr("Copied %1 file names").arg(copied), TConfig::MESSAGE_DURATION);
+            msg(tr("Copied %1 file names").arg(copied));
 		}
 		QApplication::clipboard()->setText(text);
 	}
@@ -1254,8 +1274,7 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 				files.append(filename);
 			} else {
 				qWarning() << "Gui::TPlaylist::dropEvent:: ignoring" << url.toString();
-                emit displayMessage(tr("Ignoring %1").arg(url.toString()),
-                                    TConfig::MESSAGE_DURATION);
+                msg(tr("Ignoring %1").arg(url.toString()));
             }
 		}
 	}
