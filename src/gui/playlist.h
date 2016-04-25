@@ -143,8 +143,8 @@ private:
 	TPlaylistItemList pl;
 	TTableWidget* listView;
 
-	QMenu* add_menu;
-	QMenu* remove_menu;
+    Action::TMenu* add_menu;
+    Action::TMenu* remove_menu;
 	QMenu* popup;
 
 	QToolBar* toolbar;

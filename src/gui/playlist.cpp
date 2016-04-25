@@ -98,8 +98,6 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
 
     createTable();
     createActions();
-    // Add actions to main window
-    main_window->addActions(actions());
 	createToolbar();
 
     connect(core, SIGNAL(startPlayingNewMedia()),
@@ -176,13 +174,16 @@ void TPlaylist::createTable() {
 
 void TPlaylist::createActions() {
 
+    // Open
     openAct = new TAction(this, "pl_open", tr("Open &playlist..."), "",
                           QKeySequence("Ctrl+P"));
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
 
+    // Save
     saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save", QKeySequence("Ctrl+W"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
+    // Play/pause
     playOrPauseAct = new TAction(this, "pl_play_or_pause", tr("&Play"), "play",
                                  Qt::Key_Space);
     // Add MCE remote key
@@ -193,61 +194,76 @@ void TPlaylist::createActions() {
     stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
     connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
 
+    // Next
     nextAct = new TAction(this, "pl_next", tr("Play &next"), "next",
                           QKeySequence(">"));
     nextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
 	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
+    // Prev
     prevAct = new TAction(this, "pl_prev", tr("Play pre&vious"), "previous",
                           QKeySequence("<"));
     prevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
     connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
+    // Up
     moveUpAct = new TAction(this, "pl_move_up", tr("Move &up"));
 	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(moveItemUp()));
 
+    // Down
     moveDownAct = new TAction(this, "pl_move_down", tr("Move &down"));
 	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(moveItemDown()));
 
     connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(onSelectionChanged(QItemSelection,QItemSelection)));
 
-    // Added to inOutMenu
+    // Repeat added to inOutMenu
     repeatAct = new TAction(this, "pl_repeat", tr("&Repeat playlist"), "",
                             Qt::CTRL | Qt::Key_Backslash);
     repeatAct->setCheckable(true);
     connect(repeatAct, SIGNAL(triggered(bool)), this, SLOT(onRepeatToggled(bool)));
 
+    // Shuffle
 	shuffleAct = new TAction(this, "pl_shuffle", tr("S&huffle"), "shuffle");
     shuffleAct->setCheckable(true);
 
-	// Add actions
-    addCurrentAct = new TAction(this, "pl_add_current",
-                                tr("Add &current file"));
-    connect(addCurrentAct, SIGNAL(triggered()),
-            this, SLOT(addCurrentFile()));
+    // Add menu
+    add_menu = new TMenu(this, main_window, "pl_add_menu",
+                         tr("&Add to playlist"), "plus");
+    //add_menu->setDefaultAction(add_menu->menuAction());
 
-    addFilesAct = new TAction(this, "pl_add_files", tr("Add &file(s)..."));
+    addCurrentAct = new TAction(add_menu, "pl_add_current",
+                                tr("Add &current file"));
+    connect(addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()));
+
+    addFilesAct = new TAction(add_menu, "pl_add_files", tr("Add &file(s)..."));
 	connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
 
-    addDirectoryAct = new TAction(this, "pl_add_directory", tr("Add &directory..."));
+    addDirectoryAct = new TAction(add_menu, "pl_add_directory", tr("Add &directory..."));
 	connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
 
-    addUrlsAct = new TAction(this, "pl_add_urls", tr("Add &URL(s)..."));
+    addUrlsAct = new TAction(add_menu, "pl_add_urls", tr("Add &URL(s)..."));
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
-	// Remove actions
-    removeSelectedAct = new TAction(this, "pl_remove_selected",
+    addActions(add_menu->actions());
+
+    // Remove menu
+    remove_menu = new TMenu(this, main_window, "pl_remove_menu",
+                            tr("&Remove from playlist"), "minus");
+
+    removeSelectedAct = new TAction(remove_menu, "pl_remove_selected",
                                     tr("&Remove from list"), "", Qt::Key_Delete);
 	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
 
-    removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk",
+    removeSelectedFromDiskAct = new TAction(remove_menu, "pl_delete_from_disk",
                                             tr("&Delete from disk..."));
     connect(removeSelectedFromDiskAct, SIGNAL(triggered()),
             this, SLOT(removeSelectedFromDisk()));
 
-    removeAllAct = new TAction(this, "pl_remove_all", tr("&Clear playlist"));
+    removeAllAct = new TAction(remove_menu, "pl_remove_all", tr("&Clear playlist"));
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
+
+    addActions(remove_menu->actions());
 
 	// Copy
     copyAct = new TAction(this, "pl_copy", tr("&Copy filename(s)"), "",
@@ -258,8 +274,13 @@ void TPlaylist::createActions() {
     editAct = new TAction(this, "pl_edit", tr("&Edit name..."), "", Qt::Key_Return);
     connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
-    // In-out menu
+    // Add actions to main window
+    main_window->addActions(actions());
+
+    // In-out menu, adds itself to main window
     inOutMenu = new TMenuInOut(main_window, core);
+    addActions(inOutMenu->actions());
+    inOutMenu->addAction(repeatAct);
 }
 
 void TPlaylist::createToolbar() {
@@ -269,27 +290,18 @@ void TPlaylist::createToolbar() {
 	toolbar->addAction(openAct);
 	toolbar->addAction(saveAct);;
 
-    add_menu = new QMenu(tr("&Add..."), this);
-	add_menu->addAction(addCurrentAct);
-	add_menu->addAction(addFilesAct);
-	add_menu->addAction(addDirectoryAct);
-	add_menu->addAction(addUrlsAct);
+    toolbar->addSeparator();
 
-	add_button = new QToolButton(this);
-	add_button->setMenu(add_menu);
-	add_button->setPopupMode(QToolButton::InstantPopup);
-
-    remove_menu = new QMenu(tr("&Remove..."), this);
-	remove_menu->addAction(removeSelectedAct);
-	remove_menu->addAction(removeSelectedFromDiskAct);
-	remove_menu->addAction(removeAllAct);
+    add_button = new QToolButton(this);
+    add_button->setMenu(add_menu);
+    add_button->setPopupMode(QToolButton::InstantPopup);
+    add_button->setDefaultAction(add_menu->menuAction());
+    toolbar->addWidget(add_button);
 
 	remove_button = new QToolButton(this);
-	remove_button->setMenu(remove_menu);
-	remove_button->setPopupMode(QToolButton::InstantPopup);
-
-    toolbar->addSeparator();
-    toolbar->addWidget(add_button);
+    remove_button->setMenu(remove_menu);
+    remove_button->setPopupMode(QToolButton::InstantPopup);
+    remove_button->setDefaultAction(remove_menu->menuAction());
 	toolbar->addWidget(remove_button);
 
     toolbar->addSeparator();
@@ -306,20 +318,17 @@ void TPlaylist::createToolbar() {
     toolbar->addAction(playOrPauseAct);
 
 	// Popup menu
-	popup = new QMenu(this);
-    popup->addMenu(add_menu);
-    popup->addMenu(remove_menu);
+    popup = new QMenu(this);
+    popup->addAction(editAct);
+    popup->addAction(copyAct);
     popup->addSeparator();
     popup->addAction(playOrPauseAct);
     popup->addAction(stopAct);
-	popup->addSeparator();
-	popup->addAction(copyAct);
-	popup->addAction(editAct);
     popup->addSeparator();
     popup->addMenu(inOutMenu);
-
-    //Hck
-    inOutMenu->addAction(repeatAct);
+    popup->addSeparator();
+    popup->addMenu(add_menu);
+    popup->addMenu(remove_menu);
 
 	connect(listView, SIGNAL(customContextMenuRequested(const QPoint &)),
 			this, SLOT(showContextMenu(const QPoint &)));
@@ -336,12 +345,6 @@ void TPlaylist::retranslateStrings() {
 										<< "   "
 										<< tr("Name")
 										<< tr("Length"));
-
-	// Tool buttons
-	add_button->setIcon(Images::icon("plus"));
-	add_button->setToolTip(tr("Add..."));
-	remove_button->setIcon(Images::icon("minus"));
-	remove_button->setToolTip(tr("Remove..."));
 }
 
 void TPlaylist::msg(const QString& s) {
