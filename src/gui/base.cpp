@@ -492,6 +492,7 @@ void TBase::createToolbars() {
 			<< "volumeslider_action"
             << "separator|0|1"
             << "osd_menu|0|1"
+            << "show_file_properties|0|1"
             << "show_playlist|0|1"
             << "fullscreen";
 	controlbar->setDefaultActions(actions);
