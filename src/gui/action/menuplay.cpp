@@ -6,6 +6,7 @@
 #include "gui/base.h"
 #include "gui/playlist.h"
 #include "gui/action/widgetactions.h"
+#include "gui/action/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "settings/preferences.h"
 #include "core.h"
@@ -213,84 +214,6 @@ TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
 }
 
 
-// Create in-out points menu
-TMenuInOut::TMenuInOut(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "in_out_points_menu", tr("&In-out points"))
-	, core(c) {
-
-    // Put in group to enable/disable together, if we disable the menu users
-    // cannot discover the menu because it won't open.
-    group = new QActionGroup(this);
-	group->setExclusive(false);
-    group->setEnabled(false);
-
-    TAction* a = new TAction(this, "clear_in_out_points",
-                    tr("Cle&ar in-out points and repeat"), "", Qt::Key_Backspace);
-    group->addAction(a);
-    connect(a, SIGNAL(triggered()), core, SLOT(clearInOutPoints()));
-
-    addSeparator();
-    a  = new TAction(this, "set_in_point", tr("Set &in point"), "",
-                              QKeySequence("["));
-	group->addAction(a);
-    connect(a, SIGNAL(triggered()), core, SLOT(setInPoint()));
-
-    a = new TAction(this, "set_out_point", tr("Set &out point and repeat"), "",
-                    QKeySequence("]"));
-    group->addAction(a);
-    connect(a, SIGNAL(triggered()), core, SLOT(setOutPoint()));
-
-    addSeparator();
-    a  = new TAction(this, "clear_in_point", tr("&Clear in point"), "",
-                     QKeySequence("Shift+["));
-    group->addAction(a);
-    connect(a, SIGNAL(triggered()), core, SLOT(clearInPoint()));
-
-    a = new TAction(this, "clear_out_point", tr("C&lear out point and repeat"),
-                    "", QKeySequence("Shift+]"));
-    group->addAction(a);
-    connect(a, SIGNAL(triggered()), core, SLOT(clearOutPoint()));
-
-    addSeparator();
-    a  = new TAction(this, "seek_in_point", tr("&Seek to in point"), "",
-                     Qt::Key_Home);
-    group->addAction(a);
-    connect(a, SIGNAL(triggered()), core, SLOT(seekInPoint()));
-
-    a = new TAction(this, "seek_out_point", tr("S&eek to &out point"), "",
-                    Qt::Key_End);
-    group->addAction(a);
-    connect(a, SIGNAL(triggered()), core, SLOT(seekOutPoint()));
-
-    addSeparator();
-    repeatAct = new TAction(this, "repeat_in_out", tr("&Repeat in-out"), "repeat", Qt::Key_Backslash);
-	repeatAct->setCheckable(true);
-    group->addAction(repeatAct);
-	connect(repeatAct, SIGNAL(triggered(bool)), core, SLOT(toggleRepeat(bool)));
-    connect(core, SIGNAL(InOutPointsChanged()), this, SLOT(upd()));
-
-    // Repeat playlist added by playlist
-
-    addActionsTo(main_window);
-}
-
-void TMenuInOut::enableActions() {
-    group->setEnabled(core->statePOP());
-}
-
-void TMenuInOut::upd() {
-    repeatAct->setChecked(core->mset.loop);
-}
-
-void TMenuInOut::onMediaSettingsChanged(TMediaSettings*) {
-    upd();
-}
-
-void TMenuInOut::onAboutToShow() {
-    upd();
-}
-
-
 class TMenuPlaySpeed : public TMenu {
 public:
     explicit TMenuPlaySpeed(TBase* mw, TCore* c);
@@ -408,11 +331,9 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
 void TMenuPlay::enableActions() {
 
     TCoreState s = core->state();
-    bool e = s == STATE_STOPPED || s == STATE_PAUSED;
-
-    playAct->setEnabled(e);
+    playAct->setEnabled(s == STATE_STOPPED || s == STATE_PAUSED);
     pauseAct->setEnabled(s == STATE_PLAYING);
-    seekToAct->setEnabled(e);
+    seekToAct->setEnabled(s == STATE_PLAYING || s == STATE_PAUSED);
 }
 
 } // namespace Action

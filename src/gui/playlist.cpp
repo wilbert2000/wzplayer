@@ -48,6 +48,7 @@
 #include "gui/tablewidget.h"
 #include "gui/multilineinputdialog.h"
 #include "gui/action/menuplay.h"
+#include "gui/action/menuinoutpoints.h"
 #include "gui/action/menu.h"
 #include "gui/action/action.h"
 #include "settings/preferences.h"
@@ -217,20 +218,23 @@ void TPlaylist::createActions() {
     connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(onSelectionChanged(QItemSelection,QItemSelection)));
 
-    // Repeat added to inOutMenu
-    repeatAct = new TAction(this, "pl_repeat", tr("&Repeat playlist"), "",
-                            Qt::CTRL | Qt::Key_Backslash);
-    repeatAct->setCheckable(true);
-    connect(repeatAct, SIGNAL(triggered(bool)), this, SLOT(onRepeatToggled(bool)));
+    // In-out menu
+    inOutMenu = new TMenuInOut(main_window, core);
+    addActions(inOutMenu->actions());
+
+    // Repeat
+    repeatAct = inOutMenu->findChild<TAction*>("pl_repeat");
+    connect(repeatAct, SIGNAL(triggered(bool)),
+            this, SLOT(onRepeatToggled(bool)));
 
     // Shuffle
-	shuffleAct = new TAction(this, "pl_shuffle", tr("S&huffle"), "shuffle");
-    shuffleAct->setCheckable(true);
+    shuffleAct = inOutMenu->findChild<TAction*>("pl_shuffle");
+    connect(shuffleAct, SIGNAL(triggered(bool)),
+            this, SLOT(onShuffleToggled(bool)));
 
     // Add menu
     add_menu = new TMenu(this, main_window, "pl_add_menu",
                          tr("&Add to playlist"), "plus");
-    //add_menu->setDefaultAction(add_menu->menuAction());
 
     addCurrentAct = new TAction(add_menu, "pl_add_current",
                                 tr("Add &current file"));
@@ -276,11 +280,6 @@ void TPlaylist::createActions() {
 
     // Add actions to main window
     main_window->addActions(actions());
-
-    // In-out menu, adds itself to main window
-    inOutMenu = new TMenuInOut(main_window, core);
-    addActions(inOutMenu->actions());
-    inOutMenu->addAction(repeatAct);
 }
 
 void TPlaylist::createToolbar() {
@@ -627,6 +626,14 @@ void TPlaylist::onRepeatToggled(bool toggled) {
         msg(tr("Repeat playlist set"));
     else
         msg(tr("Repeat playlist cleared"));
+}
+
+void TPlaylist::onShuffleToggled(bool toggled) {
+
+    if (toggled)
+        msg(tr("Shuffle playlist set"));
+    else
+        msg(tr("Shuffle playlist cleared"));
 }
 
 void TPlaylist::playOrPause() {

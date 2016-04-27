@@ -249,6 +249,7 @@ private slots:
     void enableUpDown(const QItemSelection& selected);
 
     void onRepeatToggled(bool toggled);
+    void onShuffleToggled(bool toggled);
     void onStartPlayingNewMedia();
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();

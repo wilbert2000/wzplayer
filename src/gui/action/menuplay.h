@@ -53,23 +53,6 @@ private slots:
 };
 
 
-class TMenuInOut : public TMenu {
-    Q_OBJECT
-public:
-    explicit TMenuInOut(TBase* mw, TCore* c);
-protected:
-    virtual void enableActions();
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-    virtual void onAboutToShow();
-private:
-    TCore* core;
-    QActionGroup* group;
-    TAction* repeatAct;
-private slots:
-    void upd();
-};
-
-
 class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
