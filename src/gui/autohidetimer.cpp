@@ -195,11 +195,9 @@ void TAutoHideTimer::setDraggingPlayerWindow(bool dragging) {
 void TAutoHideTimer::onTimeOut() {
 
 	// Handle mouse
-	const int SHOW_MOUSE_TRESHOLD = 4;
-
 	if (autoHideMouse) {
 		if ((QCursor::pos() - autoHideMouseLastPosition).manhattanLength()
-			> SHOW_MOUSE_TRESHOLD) {
+            > MOUSE_MOVED_TRESHOLD) {
 			showHiddenMouse();
 			QTimer::start();
 		} else if (enabled) {
@@ -224,10 +222,16 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 
 	bool button = event->type() == QEvent::MouseButtonPress
 				  || event->type() == QEvent::MouseButtonRelease;
-	bool mouse = button || event->type() == QEvent::MouseMove;
+    bool mouse = button;
+
+    if (event->type() == QEvent::MouseMove
+        && (QCursor::pos() - autoHideMouseLastPosition).manhattanLength()
+            > MOUSE_MOVED_TRESHOLD) {
+        mouse = true;
+    }
 
 	// Handle mouse
-	if (mouse) {
+    if (mouse) {
 		showHiddenMouse();
 		if (autoHideMouse && enabled) {
 			QTimer::start();
