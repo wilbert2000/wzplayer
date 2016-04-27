@@ -416,6 +416,11 @@ void TPlaylist::updateView(int current) {
         notify_sel_changed = true;
     }
 
+    // Takes a long time with large playlists...
+    if (pl.count() < 1000) {
+        listView->resizeRowsToContents();
+    }
+
     enableActions();
 }
 
@@ -1027,7 +1032,7 @@ void TPlaylist::onPlayerError() {
 void TPlaylist::onStartPlayingNewMedia() {
 
     loading = false;
-	TMediaData* md = &core->mdat;
+    const TMediaData* md = &core->mdat;
 	QString filename = md->filename;
 	QString current_filename;
 	if (current_item >= 0 && current_item < pl.count()) {
@@ -1053,6 +1058,7 @@ void TPlaylist::onStartPlayingNewMedia() {
 	// Create new playlist
 	clear();
 
+    int current = 0;
 	if (md->disc.valid) {
 		// Add disc titles
 		TDiscName disc = md->disc;
@@ -1061,13 +1067,12 @@ void TPlaylist::onStartPlayingNewMedia() {
 			addItem(disc.toString(), title.getDisplayName(false),
 					title.getDuration());
 			if (title.getID() == md->titles.getSelectedID()) {
-				setCurrentItem(title.getID() - md->titles.firstID());
+                current = title.getID() - md->titles.firstID();
 			}
 		}
 	} else {
 		// Add current file
 		addItem(filename, core->mdat.displayName(), core->mdat.duration);
-		setCurrentItem(0);
 
 		// Add associated files to playlist
 		if (md->selected_type == TMediaData::TYPE_FILE
@@ -1085,10 +1090,10 @@ void TPlaylist::onStartPlayingNewMedia() {
 	}
 
 	// Mark current item as played
-	if (current_item >= 0 && current_item < pl.count()) {
-		pl[current_item].setPlayed(true);
+    if (current >= 0 && current < pl.count()) {
+        pl[current].setPlayed(true);
 	}
-	updateView();
+    updateView(current);
 
     qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist with"
 			 << count() << "items for" << filename;
@@ -1640,7 +1645,7 @@ bool TPlaylist::maybeSave() {
 
 	int res = QMessageBox::question(this,
         tr("Playlist modified"),
-        tr("The playlist is modified, do you want to save it to a file?"),
+        tr("The playlist is modified, do you want to save it?"),
         QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
 
     switch (res) {
