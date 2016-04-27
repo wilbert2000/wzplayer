@@ -146,12 +146,10 @@ void TPlaylist::createTable() {
     listView->horizontalHeader()->setSectionResizeMode(COL_PLAY, QHeaderView::Fixed);
     listView->horizontalHeader()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
     listView->horizontalHeader()->setSectionResizeMode(COL_TIME, QHeaderView::Fixed);
-    listView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 #else
     listView->horizontalHeader()->setResizeMode(COL_PLAY, QHeaderView::Fixed);
     listView->horizontalHeader()->setResizeMode(COL_NAME, QHeaderView::Stretch);
     listView->horizontalHeader()->setResizeMode(COL_TIME, QHeaderView::Fixed);
-    listView->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 #endif
 
     // TODO: with ResizeToContents the first time the play column is too small...
