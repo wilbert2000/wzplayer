@@ -920,6 +920,10 @@ void TPlaylist::enableUpDown(const QItemSelection& selected) {
 
 }
 
+void TPlaylist::scrollToCurrentItem() {
+    listView->scrollToItem(listView->item(current_item, 0));
+}
+
 void TPlaylist::enableActions() {
 
     // Note: there is always something selected when c > 0
@@ -951,7 +955,7 @@ void TPlaylist::enableActions() {
             pl[current_item].setFailed(false);
         }
         int r = listView->currentRow();
-        if (isVisible() && r >= 0 && r < count() && r != current_item) {
+        if (isVisible() && r != current_item && r >= 0 && r < count()) {
             playOrPauseAct->setTextAndTip(tr("&Play selected"));
             playOrPauseAct->setIcon(Images::icon("play"));
         } else {
@@ -998,6 +1002,10 @@ void TPlaylist::enableActions() {
     copyAct->setEnabled(c > 0);
     editAct->setEnabled(listView->currentRow() >= 0
                         || current_item >= 0);
+
+    if (s == STATE_PLAYING && current_item == listView->currentRow()) {
+        scrollToCurrentItem();
+    }
 }
 
 void TPlaylist::onPlayerError() {
@@ -1006,6 +1014,7 @@ void TPlaylist::onPlayerError() {
     if (current_item >= 0 && current_item < count()) {
         pl[current_item].setFailed(true);
         updateView();
+        scrollToCurrentItem();
     }
 }
 

@@ -244,6 +244,8 @@ private slots:
 	void sortBy(int section);
 	void sortBy(int section, bool allow_revert, bool revert, int count);
 
+    void scrollToCurrentItem();
+
     void enableActions();
     void enableUpDown(const QItemSelection& selected);
 
