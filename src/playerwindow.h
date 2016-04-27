@@ -117,7 +117,7 @@ signals:
 	void moveWindow(QPoint);
 	void setZoomAndPan(double, double, double);
 	void videoOutChanged(const QSize& size);
-	void videoSizeFactorChanged();
+    void videoSizeFactorChanged(double, double);
 	void displayMessage(const QString&);
 
 protected:

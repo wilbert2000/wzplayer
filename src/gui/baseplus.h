@@ -42,8 +42,6 @@ public:
 
 protected:
 	virtual void changeEvent(QEvent* event);
-	virtual void aboutToEnterFullscreen();
-	virtual void didExitFullscreen();
 
 	void updateShowAllAct();
 
@@ -65,7 +63,6 @@ protected slots:
 
 	virtual void showPlaylist(bool b);
 
-	void onDockVisibilityChanged(bool visible);
 	void onTopLevelChanged(bool);
 
 protected:
@@ -78,19 +75,21 @@ protected:
 
 	// To save state
 	bool mainwindow_visible;
-	QPoint playlist_pos;
-	bool trayicon_playlist_was_visible;
+    bool restore_playlist;
+    double restore_size_factor;
+    double old_size_factor;
 
 	QDockWidget* playlistdock;
-	bool fullscreen_playlist_was_visible;
-	bool fullscreen_playlist_was_floating;
 
 private:
-	void stretchWindow();
-	void shrinkWindow();
 	void switchToTray();
 	void setWinTitle();
 	void retranslateStrings();
+
+private slots:
+    void onDockVisibilityChanged(bool visible);
+    void onvideoSizeFactorChanged(double, double);
+    void resizeWindowToVideoRestoreSize();
 };
 
 } // namespace Gui

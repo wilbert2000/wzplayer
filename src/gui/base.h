@@ -208,6 +208,7 @@ protected slots:
 	void toggleDoubleSize();
 
 	virtual void resizeWindow(int w, int h);
+    void resizeWindowToVideo();
 
     virtual void onDragPositionChanged(double);
 
@@ -266,6 +267,7 @@ protected:
 	void createMenus();
 	void configureDiscDevices();
 	void setupNetworkProxy();
+    double getNewSizeFactor();
 
 protected:
 	QWidget* panel;
@@ -321,6 +323,7 @@ protected:
 	QString pending_actions_to_run;
 
     bool state_restored;
+    bool switching_to_fullscreen;
 
 private:
 	bool menubar_visible;
@@ -354,7 +357,6 @@ private:
     void restartWZPlayer(bool reset_style);
 
 	void setFloatingToolbarsVisible(bool visible);
-	double getNewSizeFactor();
 	void hidePanel();
 	void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 

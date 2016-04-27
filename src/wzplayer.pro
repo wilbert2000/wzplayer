@@ -95,6 +95,7 @@ HEADERS += version.h \
     gui/action/menu.h \
     gui/action/menuopen.h \
     gui/action/menuplay.h \
+    gui/action/menuinoutpoints.h \
     gui/action/menuaspect.h \
     gui/action/menuvideofilter.h \
     gui/action/menuvideosize.h \
@@ -215,6 +216,7 @@ SOURCES	+= version.cpp \
     gui/action/menu.cpp \
     gui/action/menuopen.cpp \
     gui/action/menuplay.cpp \
+    gui/action/menuinoutpoints.cpp \
     gui/action/menuaspect.cpp \
     gui/action/menuvideofilter.cpp \
     gui/action/menuvideosize.cpp \

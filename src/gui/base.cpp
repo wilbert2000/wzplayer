@@ -129,6 +129,7 @@ TBase::TBase() :
 #ifdef FIND_SUBTITLES
 	find_subs_dialog(0),
 #endif
+    switching_to_fullscreen(false),
 	menubar_visible(true),
 	statusbar_visible(true),
 	fullscreen_menubar_visible(false),
@@ -415,6 +416,8 @@ void TBase::createMenus() {
 	toolbar_menu = createToolbarMenu();
 	windowMenu = new TMenuWindow(this, core, toolbar_menu, playlist, log_window);
 	menuBar()->addMenu(windowMenu);
+    auto_hide_timer->add(windowMenu->findChild<TAction*>("show_playlist"),
+                         playlist);
 
 	helpMenu = new TMenuHelp(this);
 	menuBar()->addMenu(helpMenu);
@@ -545,6 +548,7 @@ void TBase::createToolbars() {
 	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
 	auto_hide_timer->add(viewMenuBarAct, menuBar());
 	auto_hide_timer->add(viewStatusBarAct, statusBar());
+    // Playlist added by createmenus
 	connect(playerwindow, SIGNAL(draggingChanged(bool)),
 			auto_hide_timer, SLOT(setDraggingPlayerWindow(bool)));
 }
@@ -926,7 +930,7 @@ void TBase::closeWindow() {
 
 // Overriden by TBasePlus
 void TBase::showPlaylist(bool b) {
-	playlist->setVisible(b);
+    playlist->setVisible(b);
 }
 
 void TBase::showPreferencesDialog() {
@@ -1557,6 +1561,8 @@ void TBase::toggleFullscreen(bool b) {
 		qDebug("Gui::TBase::toggleFullscreen: nothing to do, returning");
 		return;
 	}
+
+    switching_to_fullscreen = true;
 	pref->fullscreen = b;
 	emit fullscreenChanged();
 
@@ -1571,6 +1577,7 @@ void TBase::toggleFullscreen(bool b) {
 	}
 
 	setFocus(); // Fixes bug #2493415
+    switching_to_fullscreen = false;
 }
 
 void TBase::aboutToEnterFullscreen() {
@@ -1596,8 +1603,9 @@ void TBase::didEnterFullscreen() {
 	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 
 	pref->beginGroup(settingsGroupName());
-	if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
-					  Helper::qtVersion())) {
+    state_restored = restoreState(pref->value("toolbars_state_fullscreen")
+                                  .toByteArray(), Helper::qtVersion());
+    if (!state_restored) {
 		// First time there is no fullscreen toolbar state
         qDebug("Gui::TBase::didEnterFullscreen: failed to restore fullscreen toolbar state");
 		toolbar->hide();
@@ -1636,8 +1644,11 @@ void TBase::didExitFullscreen() {
 	viewStatusBarAct->setChecked(statusbar_visible);
 
 	pref->beginGroup(settingsGroupName());
-	if (!restoreState(pref->value("toolbars_state").toByteArray(), Helper::qtVersion()))
-        qDebug("Gui::TBase::didExitFullscreen: failed to restore toolbar state");
+    state_restored = restoreState(pref->value("toolbars_state")
+                                  .toByteArray(), Helper::qtVersion());
+    if  (!state_restored) {
+        qWarning("Gui::TBase::didExitFullscreen: failed to restore toolbar state");
+    }
 	pref->endGroup();
 
 	emit didExitFullscreenSignal();
@@ -1957,7 +1968,7 @@ void TBase::changeSize(double factor) {
 			// Need center, on X windows the original pos is not restored
 			center = true;
 		}
-		resizeWindow(core->mdat.video_out_width, core->mdat.video_out_height);
+        resizeWindowToVideo();
 		if (center) {
             TDesktop::centerWindow(this);
 		}
@@ -2100,7 +2111,6 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 	force_resize = false;
 }
 
-// Slot called by signal needResize
 void TBase::resizeWindow(int w, int h) {
 	// qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
@@ -2108,6 +2118,10 @@ void TBase::resizeWindow(int w, int h) {
 		resizeMainWindow(w, h, pref->size_factor);
 		TDesktop::keepInsideDesktop(this);
 	}
+}
+
+void TBase::resizeWindowToVideo() {
+    resizeWindow(core->mdat.video_out_width, core->mdat.video_out_height);
 }
 
 void TBase::resizeMainWindow(int w, int h, double size_factor, bool try_twice) {

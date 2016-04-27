@@ -173,13 +173,14 @@ double TPlayerWindow::getSizeFactor() {
 
 void TPlayerWindow::updateSizeFactor() {
 
-	if (!video_size.isEmpty()) {
-		//double old_factor = pref->size_factor;
-		pref->size_factor = getSizeFactor();
-		//qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
-		//	   old_factor, pref->size_factor);
-		emit videoSizeFactorChanged();
-	}
+    if (!video_size.isEmpty()) {
+        double old_factor = pref->size_factor;
+        pref->size_factor = getSizeFactor();
+        qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
+               old_factor, pref->size_factor);
+        // Need to emit if old == new to detect changes by user
+        emit videoSizeFactorChanged(old_factor, pref->size_factor);
+    }
 }
 
 void TPlayerWindow::clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan) {

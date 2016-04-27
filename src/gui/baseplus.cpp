@@ -18,12 +18,14 @@
 
 #include "gui/baseplus.h"
 
+#include <QDebug>
 #include <QEvent>
 #include <QMenu>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDockWidget>
 
+#include "playerwindow.h"
 #include "config.h"
 #include "images.h"
 #include "desktop.h"
@@ -46,7 +48,9 @@ namespace Gui {
 TBasePlus::TBasePlus() :
     TBase(),
     mainwindow_visible(true),
-    trayicon_playlist_was_visible(false) {
+    restore_playlist(false),
+    restore_size_factor(0),
+    old_size_factor(0) {
 
 	tray = new QSystemTrayIcon(this);
 	tray->setToolTip(TConfig::PROGRAM_NAME);
@@ -70,8 +74,7 @@ TBasePlus::TBasePlus() :
 #endif
 
 	showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
-	connect(showAllAct, SIGNAL(triggered()),
-			 this, SLOT(toggleShowAll()));
+    connect(showAllAct, SIGNAL(triggered()), this, SLOT(toggleShowAll()));
 
 	context_menu = new QMenu(this);
 	context_menu->addMenu(openMenu);
@@ -88,6 +91,7 @@ TBasePlus::TBasePlus() :
 	tray->setContextMenu(context_menu);
 
 	// Playlistdock
+    setAnimated(false);
 	playlistdock = new QDockWidget(this);
 	playlistdock->setObjectName("playlistdock");
     playlistdock->setWidget(playlist);
@@ -97,15 +101,16 @@ TBasePlus::TBasePlus() :
 								  | Qt::RightDockWidgetArea);
     playlistdock->setAcceptDrops(true);
     playlistdock->setFloating(true); // Floating by default
-    //playlistdock->setWindowIcon("logo");
     playlistdock->hide();
 
     addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
 
 	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
 			this, SLOT(onTopLevelChanged(bool)));
-	connect(playlistdock, SIGNAL(visibilityChanged(bool)),
+    connect(playlistdock, SIGNAL(visibilityChanged(bool)),
             this, SLOT(onDockVisibilityChanged(bool)));
+    connect(playerwindow, SIGNAL(videoSizeFactorChanged(double, double)),
+            this, SLOT(onvideoSizeFactorChanged(double,double)));
 	connect(this, SIGNAL(openFileRequested()),
 			this, SLOT(showAll()));
 
@@ -114,6 +119,46 @@ TBasePlus::TBasePlus() :
 
 TBasePlus::~TBasePlus() {
 	tray->hide();
+}
+
+void TBasePlus::retranslateStrings() {
+
+    tray->setIcon(Images::icon("logo", 22));
+    setWinTitle();
+    updateShowAllAct();
+}
+
+void TBasePlus::changeEvent(QEvent* e) {
+
+    if (e->type() == QEvent::LanguageChange) {
+        retranslateStrings();
+    } else {
+        QMainWindow::changeEvent(e);
+    }
+}
+
+void TBasePlus::setWinTitle() {
+
+    if (playlistdock->isFloating()) {
+        playlistdock->setWindowTitle(playlist->windowTitle());
+    } else {
+        playlistdock->setWindowTitle(tr("Playlist"));
+    }
+}
+
+void TBasePlus::setWindowCaption(const QString& title) {
+
+    TBase::setWindowCaption(title);
+    tray->setToolTip(title);
+}
+
+void TBasePlus::updateShowAllAct() {
+
+    if (isVisible()) {
+        showAllAct->setTextAndTip(tr("&Hide"));
+    } else {
+        showAllAct->setTextAndTip(tr("&Restore"));
+    }
 }
 
 bool TBasePlus::startHidden() {
@@ -161,40 +206,6 @@ void TBasePlus::quit() {
 	TBase::closeWindow();
 }
 
-void TBasePlus::setWinTitle() {
-
-	if (playlistdock->isFloating()) {
-        playlistdock->setWindowTitle(tr("%1 - Playlist")
-                                     .arg(TConfig::PROGRAM_NAME));
-	} else {
-		playlistdock->setWindowTitle(tr("Playlist"));
-	}
-}
-
-void TBasePlus::retranslateStrings() {
-
-	tray->setIcon(Images::icon("logo", 22));
-	setWinTitle();
-	updateShowAllAct();
-}
-
-void TBasePlus::changeEvent(QEvent* e) {
-
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QMainWindow::changeEvent(e);
-	}
-}
-
-void TBasePlus::updateShowAllAct() {
-
-	if (isVisible()) 
-		showAllAct->setTextAndTip(tr("&Hide"));
-	else
-		showAllAct->setTextAndTip(tr("&Restore"));
-}
-
 void TBasePlus::saveConfig() {
 	qDebug("Gui::TBasePlus::saveConfig");
 
@@ -204,9 +215,8 @@ void TBasePlus::saveConfig() {
 	pref->beginGroup(settingsGroupName());
 	pref->beginGroup("base_gui_plus");
 
-	pref->setValue("show_tray_icon", showTrayAct->isChecked());
+    pref->setValue("show_tray_icon", showTrayAct->isChecked());
 	pref->setValue("mainwindow_visible", isVisible());
-	pref->setValue("trayicon_playlist_was_visible", trayicon_playlist_was_visible);
 
 	pref->endGroup();
 	pref->endGroup();
@@ -227,17 +237,26 @@ void TBasePlus::loadConfig() {
 	pref->beginGroup(settingsGroupName());
 	pref->beginGroup("base_gui_plus");
 
-	bool show_tray_icon = pref->value("show_tray_icon", false).toBool();
-	showTrayAct->setChecked(show_tray_icon);
-
+    showTrayAct->setChecked(pref->value("show_tray_icon", false).toBool());
 	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
-	trayicon_playlist_was_visible = pref->value("trayicon_playlist_was_visible", trayicon_playlist_was_visible).toBool();
 
+    pref->endGroup();
 	pref->endGroup();
-	pref->endGroup();
+
+    restore_playlist = playlistdock->isVisible() && playlistdock->isFloating();
 
 	setWinTitle();
 	updateShowAllAct();
+}
+
+void TBasePlus::resizeWindow(int w, int h) {
+    // qDebug("Gui::TBasePlus::resizeWindow: %d, %d", w, h);
+
+    if (tray->isVisible() && !isVisible()) {
+        showAll(true);
+    }
+
+    TBase::resizeWindow(w, h);
 }
 
 void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
@@ -267,30 +286,20 @@ void TBasePlus::showAll() {
 
 void TBasePlus::showAll(bool b) {
 
-	if (!b) {
-		// Hide all
-		trayicon_playlist_was_visible = (playlistdock->isVisible() && 
-										 playlistdock->isFloating());
-		if (trayicon_playlist_was_visible)
-			playlistdock->hide();
-		hide();
+    if (b) {
+        show();
+        if (restore_playlist) {
+            playlistdock->show();
+        }
 	} else {
-		// Show all
-		show();
-		if (trayicon_playlist_was_visible) {
-			playlistdock->show();
-		}
-	}
+        restore_playlist = playlistdock->isVisible()
+                           && playlistdock->isFloating();
+        if (restore_playlist) {
+            playlistdock->hide();
+        }
+        hide();
+    }
 	updateShowAllAct();
-}
-
-void TBasePlus::resizeWindow(int w, int h) {
-	// qDebug("Gui::TBasePlus::resizeWindow: %d, %d", w, h);
-
-	if (tray->isVisible() && !isVisible())
-		showAll(true);
-
-	TBase::resizeWindow(w, h);
 }
 
 void TBasePlus::onMediaInfoChanged() {
@@ -300,104 +309,115 @@ void TBasePlus::onMediaInfoChanged() {
 	tray->setToolTip(windowTitle());
 }
 
-void TBasePlus::setWindowCaption(const QString& title) {
-
-	tray->setToolTip(title);
-	TBase::setWindowCaption(title);
-}
-
-// Playlist stuff
-void TBasePlus::aboutToEnterFullscreen() {
-	//qDebug("Gui::TBasePlus::aboutToEnterFullscreen");
-
-	fullscreen_playlist_was_visible = playlistdock->isVisible();
-	fullscreen_playlist_was_floating = playlistdock->isFloating();
-	int playlist_screen = QApplication::desktop()->screenNumber(playlistdock);
-	int mainwindow_screen = QApplication::desktop()->screenNumber(this);
-
-	TBase::aboutToEnterFullscreen();
-
-	// Hide the playlist if it's in the same screen as the main window
-	if (playlist_screen == mainwindow_screen) {
-		playlistdock->hide();
-		playlistdock->setFloating(true);
-	}
-	playlistdock->setAllowedAreas(Qt::NoDockWidgetArea);
-}
-
-void TBasePlus::didExitFullscreen() {
-	//qDebug("Gui::TBasePlus::didExitFullscreen");
-
-	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
-								  | Qt::BottomDockWidgetArea
-								  | Qt::LeftDockWidgetArea
-								  | Qt::RightDockWidgetArea);
-
-	TBase::didExitFullscreen();
-
-	playlistdock->setFloating(fullscreen_playlist_was_floating);
-	if (fullscreen_playlist_was_visible) {
-		playlistdock->show();
-	}
-}
-
 void TBasePlus::showPlaylist(bool b) {
-	//qDebug("Gui::TBasePlus::showPlaylist: %d", b);
+    qDebug("Gui::TBasePlus::showPlaylist: %d", b);
+    // TODO: use QDockWidget::toggleViewAction()
 
-	playlistdock->setVisible(b);
-	if (b && playlistdock->isFloating()) {
-		TDesktop::keepInsideDesktop(playlistdock);
-	}
+    restore_playlist = false;
+    if (playlistdock->isFloating()) {
+        if (b) {
+            restore_playlist = true;
+        }
+    } else if (pref->resize_on_docking && !pref->fullscreen) {
+        restore_size_factor = pref->size_factor;
+    }
+    // Triggers onDockVisibilityChanged
+    playlistdock->setVisible(b);
 }
 
-void TBasePlus::onTopLevelChanged(bool) {
-	//qDebug("Gui::TBasePlus::onTopLevelChanged: %d", topLevel);
-	setWinTitle();
+void TBasePlus::onvideoSizeFactorChanged(double old_size, double size) {
+    qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: currently saved old size"
+             << old_size_factor << "currently saved restore size"
+             << restore_size_factor << switching_to_fullscreen;
+
+    if (switching_to_fullscreen) {
+        old_size_factor = -1;
+    } else if (pref->fullscreen || restore_size_factor > 0) {
+        qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: not saving old size" << old_size;
+    } else if (old_size_factor == -1) {
+        qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: saving new size" << size;
+        old_size_factor = size;
+    } else {
+        qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: saving old size" << old_size;
+        old_size_factor = old_size;
+    }
+}
+
+void TBasePlus::resizeWindowToVideoRestoreSize() {
+
+    // Wait until mouse released
+    if (qApp->mouseButtons()) {
+        QTimer::singleShot(200, this, SLOT(resizeWindowToVideoRestoreSize()));
+        return;
+    }
+
+    if (restore_size_factor > 0) {
+        qDebug() << "Gui::TBasePlus::resizeWindowToVideoRestoreSize: restoring size factor from"
+                 << pref->size_factor << "to" << restore_size_factor;
+        pref->size_factor = restore_size_factor;
+    } else {
+        qDebug() << "Gui::TBasePlus::resizeWindowToVideoRestoreSize: selecting new size factor from"
+                 << pref->size_factor;
+        pref->size_factor = getNewSizeFactor();
+    }
+    resizeWindowToVideo();
+
+    old_size_factor = pref->size_factor;
+    restore_size_factor = 0;
+}
+
+void TBasePlus::onTopLevelChanged(bool topLevel) {
+    qDebug() << "Gui::TBasePlus::onTopLevelChanged: topLevel" << topLevel
+             << "size factor" << pref->size_factor;
+
+    setWinTitle();
+
+    if (pref->resize_on_docking
+        && core->stateReady()
+        && !pref->fullscreen
+        && !switching_to_fullscreen
+        && restore_size_factor == 0) {
+        if (topLevel) {
+            restore_size_factor = pref->size_factor;
+            old_size_factor = restore_size_factor;
+            qDebug() << "Gui::TBasePlus::onTopLevelChanged: saved size factor"
+                     << restore_size_factor;
+        } else {
+            restore_size_factor = old_size_factor;
+            qDebug() << "Gui::TBasePlus::onTopLevelChanged: saved old size factor"
+                     << restore_size_factor;
+        }
+        QTimer::singleShot(200, this, SLOT(resizeWindowToVideoRestoreSize()));
+    }
 }
 
 void TBasePlus::onDockVisibilityChanged(bool visible) {
-    //qDebug("Gui::TBasePlus::onDockVisibilityChanged: %d", visible);
+    qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: visible" << visible
+             << "floating" << playlistdock->isFloating();
 
-	if (!playlistdock->isFloating() && !pref->fullscreen && pref->resize_on_docking) {
-		if (visible) {
-			stretchWindow();
-		} else if (isVisible()) { // Don't shrink on shutdown
-			shrinkWindow();
-		}
-	}
-}
+    if (playlistdock->isFloating()) {
+        if (visible) {
+            TDesktop::keepInsideDesktop(playlistdock);
+        }
+    } else if (pref->resize_on_docking
+               && !pref->fullscreen
+               && !switching_to_fullscreen
+               && core->stateReady()) {
 
-void TBasePlus::stretchWindow() {
-	qDebug("Gui::TBasePlus::stretchWindow: dockWidgetArea: %d", dockWidgetArea(playlistdock));
-
-	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea) ||
-		(dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea)) {
-		int new_height = height() + playlistdock->height();
-		qDebug("Gui::TBasePlus::stretchWindow: stretching: new height: %d", new_height);
-		resize(width(), new_height);
-	} else if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea) ||
-			   (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea)) {
-		int new_width = width() + playlistdock->width();
-		qDebug("Gui::TBasePlus::stretchWindow: stretching: new width: %d", new_width);
-		resize(new_width, height());
-	}
-	TDesktop::keepInsideDesktop(this);
-}
-
-void TBasePlus::shrinkWindow() {
-	qDebug("Gui::TBasePlus::shrinkWindow: dockWidgetArea: %d", (int) dockWidgetArea(playlistdock));
-
-	if ((dockWidgetArea(playlistdock) == Qt::TopDockWidgetArea)
-		|| (dockWidgetArea(playlistdock) == Qt::BottomDockWidgetArea)) {
-		int new_height = height() - playlistdock->height();
-		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new height: %d", new_height);
-		resize(width(), new_height);
-	} else if ((dockWidgetArea(playlistdock) == Qt::LeftDockWidgetArea)
-			   || (dockWidgetArea(playlistdock) == Qt::RightDockWidgetArea)) {
-		int new_width = width() - playlistdock->width();
-		qDebug("Gui::TBasePlus::shrinkWindow: shrinking: new width: %d", new_width);
-		resize(new_width, height());
-	}
+        // Restore size already set by showPlaylist()
+        if (restore_size_factor == 0) {
+            if (visible) {
+                qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: selecting old size factor";
+                restore_size_factor = old_size_factor;
+            } else {
+                qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: selecting current size factor";
+                restore_size_factor = pref->size_factor;
+            }
+        }
+        qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: posting resizeWindowToVideoRestoreSize() with size factor"
+                 << restore_size_factor;
+        QTimer::singleShot(200, this, SLOT(resizeWindowToVideoRestoreSize()));
+    }
 }
 
 #ifdef Q_OS_OS2

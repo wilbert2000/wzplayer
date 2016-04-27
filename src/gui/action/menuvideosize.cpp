@@ -110,7 +110,7 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw) :
 	connect(currentSizeAct, SIGNAL(triggered()), this, SLOT(optimizeSizeFactor()));
     //setDefaultAction(currentSizeAct);
 
-	connect(playerWindow, SIGNAL(videoSizeFactorChanged()),
+    connect(playerWindow, SIGNAL(videoSizeFactorChanged(double, double)),
 			this, SLOT(onVideoSizeFactorChanged()), Qt::QueuedConnection);
 
     addActionsTo(main_window);
