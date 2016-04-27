@@ -155,15 +155,9 @@ void TInput::retranslateStrings() {
 	wheel_function_speed->setText(tr("&Change speed"));
 
 	// Seek tab
-    if (qApp->isLeftToRight()) {
-        seek1_icon->setPixmap(Images::icon("forward1", 32));
-        seek2_icon->setPixmap(Images::icon("forward2", 32));
-        seek3_icon->setPixmap(Images::icon("forward3", 32));
-    } else {
-        seek1_icon->setPixmap(Images::flippedIcon("forward1", 32));
-        seek2_icon->setPixmap(Images::flippedIcon("forward2", 32));
-        seek3_icon->setPixmap(Images::flippedIcon("forward3", 32));
-    }
+    seek1_icon->setPixmap(Images::icon("forward1", 32));
+    seek2_icon->setPixmap(Images::icon("forward2", 32));
+    seek3_icon->setPixmap(Images::icon("forward3", 32));
     seek4_icon->setPixmap(Images::icon("mouse", 32));
 
 	timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
