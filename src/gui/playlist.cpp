@@ -386,12 +386,12 @@ void TPlaylist::updateView(int current) {
                 listView->setIcon(i, COL_PLAY, Images::icon("play"));
             }
         } else if (item.played()) {
-			listView->setIcon(i, COL_PLAY, Images::icon("ok"));
-		} else {
-			listView->setIcon(i, COL_PLAY, QPixmap());
-		}
+            listView->setIcon(i, COL_PLAY, Images::icon("ok"));
+        } else {
+            listView->setIcon(i, COL_PLAY, QPixmap());
+        }
 
-		// Name
+        // Name
         QString text = item.name();
         if (text.isEmpty())
             text = item.filename();
@@ -403,14 +403,13 @@ void TPlaylist::updateView(int current) {
             table_item->setToolTip(item.filename());
 		}
 
-		// Duration
         if (item.duration() > 0) {
             text = Helper::formatTime(qRound(item.duration()));
         } else {
             text = "";
         }
         listView->setText(i, COL_TIME, text);
-	}
+    }
 
     if (current >= -1) {
         if (current >= 0 && current < pl.count()) {
@@ -423,25 +422,25 @@ void TPlaylist::updateView(int current) {
 }
 
 void TPlaylist::setCurrentItem(int current) {
-	qDebug("Gui::TPlaylist::setCurrentItem: from %d to %d", current_item, current);
+    qDebug("Gui::TPlaylist::setCurrentItem: from %d to %d", current_item, current);
 
-	// Give old current_item an icon
-	if (current_item >= 0
-		&& current_item != current
-		&& current_item < pl.count()
-		&& current_item < listView->rowCount()) {
-		if (pl[current_item].played()) {
+    // Give old current_item an icon
+    if (current_item >= 0
+        && current_item != current
+        && current_item < pl.count()
+        && current_item < listView->rowCount()) {
+        if (pl[current_item].played()) {
             listView->setIcon(current_item, COL_PLAY, Images::icon("ok"));
         } else if (pl[current_item].failed()){
             listView->setIcon(current_item, COL_PLAY, Images::icon("failed"));
         } else {
             listView->setIcon(current_item, COL_PLAY, QPixmap());
-		}
-	}
+        }
+    }
 
     notify_sel_changed = false;
-	listView->clearSelection();
-	current_item = current;
+    listView->clearSelection();
+    current_item = current;
 
     if (current_item >= 0 && current_item < listView->rowCount()) {
         if (loading) {
@@ -450,7 +449,7 @@ void TPlaylist::setCurrentItem(int current) {
             listView->setIcon(current_item, COL_PLAY, Images::icon("play"));
         }
         listView->setCurrentCell(current_item, 0);
-	}
+    }
 
     enableActions();
     notify_sel_changed = true;
