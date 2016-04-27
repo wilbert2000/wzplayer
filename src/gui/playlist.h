@@ -202,7 +202,7 @@ private:
 
     void setCurrentItem(int current);
 	void updateCurrentItem();
-	void updateView();
+    void updateView(int current = -2);
 
 	int chooseRandomItem();
 	void clearPlayedTag();

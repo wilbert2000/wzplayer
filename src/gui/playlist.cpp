@@ -366,8 +366,14 @@ void TPlaylist::getFilesAppend(QStringList& files) const {
 	}
 }
 
-void TPlaylist::updateView() {
+void TPlaylist::updateView(int current) {
     qDebug("Gui::TPlaylist::updateView");
+
+    if (current >= -1) {
+        notify_sel_changed = false;
+        listView->clearSelection();
+        current_item = current;
+    }
 
     listView->setRowCount(pl.count());
 
@@ -410,6 +416,13 @@ void TPlaylist::updateView() {
         listView->setText(i, COL_TIME, text);
 	}
 
+    if (current >= -1) {
+        if (current >= 0 && current < pl.count()) {
+            listView->setCurrentCell(current, 0);
+        }
+        notify_sel_changed = true;
+    }
+
     enableActions();
 }
 
@@ -430,6 +443,7 @@ void TPlaylist::setCurrentItem(int current) {
 		}
 	}
 
+    notify_sel_changed = false;
 	listView->clearSelection();
 	current_item = current;
 
@@ -443,6 +457,7 @@ void TPlaylist::setCurrentItem(int current) {
 	}
 
     enableActions();
+    notify_sel_changed = true;
 }
 
 void TPlaylist::clear() {
@@ -491,8 +506,7 @@ void TPlaylist::addCurrentFile() {
 	if (!core->mdat.filename.isEmpty()) {
 		addItem(core->mdat.filename, core->mdat.displayName(), core->mdat.duration);
 		pl[pl.count() - 1].setPlayed(true);
-		updateView();
-        setCurrentItem(pl.count() - 1);
+        updateView(pl.count() - 1);
 	}
 }
 
@@ -849,8 +863,7 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
 	if (pl.isEmpty())
 		modified = false;
 
-    updateView();
-    setCurrentItem(current_item);
+    updateView(current_item);
 }
 
 void TPlaylist::removeSelectedFromDisk() {
@@ -1244,12 +1257,14 @@ void TPlaylist::sort() {
     notify_sel_changed = false;
 	sortBy(COL_NAME, false, false, 0);
     notify_sel_changed = true;
+    enableActions();
 }
 
 void TPlaylist::sortBy(int section) {
     notify_sel_changed = false;
     sortBy(section, true, false, 0);
     notify_sel_changed = true;
+    enableActions();
 }
 
 void TPlaylist::sortBy(int section, bool allow_revert, bool revert, int count) {
@@ -1702,8 +1717,7 @@ void TPlaylist::loadSettings() {
 			cleanAndAddItem(filename, name, duration);
 		}
 		modified = set->value("modified", false).toBool();
-		updateView();
-		setCurrentItem(set->value("current_item", 0).toInt());
+        updateView(set->value("current_item", 0).toInt());
 
 		set->endGroup();
 	}
