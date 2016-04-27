@@ -34,7 +34,7 @@ private slots:
 
 class TMenuWindow : public TMenu {
 public:
-    TMenuWindow(TBase* parent,
+    TMenuWindow(TBase* mw,
                 TCore* core,
                 QMenu* toolBarMenu,
                 QWidget* playlist,

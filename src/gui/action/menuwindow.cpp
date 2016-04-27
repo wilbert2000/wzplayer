@@ -141,46 +141,56 @@ void TMenuStayOnTop::onAboutToShow() {
 	group->setChecked((int) pref->stay_on_top);
 }
 
-TMenuWindow::TMenuWindow(TBase* parent,
+TMenuWindow::TMenuWindow(TBase* mw,
                          TCore* core,
                          QMenu* toolBarMenu,
                          QWidget* playlist,
                          QWidget* logWindow)
-    : TMenu(parent, parent, "window_menu", tr("&Window"), "noicon") {
+    : TMenu(mw, mw, "window_menu", tr("&Window"), "noicon") {
 
 	// OSD
-	addMenu(new TMenuOSD(parent, core));
+    addMenu(new TMenuOSD(main_window, core));
 	// Toolbars
 	addMenu(toolBarMenu);
 	// Ontop submenu
-	addMenu(new TMenuStayOnTop(parent));
+    addMenu(new TMenuStayOnTop(main_window));
 
 	addSeparator();
     // Show properties
-    TAction* a = new TAction(this, "show_file_properties", tr("&View properties..."), "info", Qt::SHIFT | Qt::Key_P);
-    connect(a, SIGNAL(triggered()), parent, SLOT(showFilePropertiesDialog()));
+    TAction* a = new TAction(this, "show_file_properties",
+        tr("&View properties..."), "info", Qt::SHIFT | Qt::Key_P);
+    main_window->addAction(a);
+    connect(a, SIGNAL(triggered()), main_window, SLOT(showFilePropertiesDialog()));
 
     // Show playlist
-    a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist", Qt::Key_P);
+    a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist",
+                    Qt::Key_P);
 	a->setCheckable(true);
-	connect(a, SIGNAL(triggered(bool)), parent, SLOT(showPlaylist(bool)));
-	connect(playlist, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
+    main_window->addAction(a);
+    connect(a, SIGNAL(triggered(bool)),
+            main_window, SLOT(showPlaylist(bool)));
+    connect(playlist, SIGNAL(visibilityChanged(bool)),
+            a, SLOT(setChecked(bool)));
 
 	// Show log
-	a = new TAction(this, "show_log", tr("View &log..."), "log", QKeySequence("Ctrl+L"));
+    a = new TAction(this, "show_log", tr("View &log..."), "log",
+                    QKeySequence("Ctrl+L"));
 	a->setCheckable(true);
-	connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
-	connect(logWindow, SIGNAL(visibilityChanged(bool)), a, SLOT(setChecked(bool)));
+    main_window->addAction(a);
+    connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
+    connect(logWindow, SIGNAL(visibilityChanged(bool)),
+            a, SLOT(setChecked(bool)));
 
 	// Preferences
 	addSeparator();
     a = new TAction(this, "show_config", tr("Open &configuration folder..."));
-	connect(a, SIGNAL(triggered()), parent, SLOT(showConfigFolder()));
+    main_window->addAction(a);
+    connect(a, SIGNAL(triggered()), main_window, SLOT(showConfigFolder()));
 
-    a = new TAction(this, "show_preferences", tr("P&references..."), "prefs", Qt::ALT | Qt::Key_P);
-	connect(a, SIGNAL(triggered()), parent, SLOT(showPreferencesDialog()));
-
-	addActionsTo(parent);
+    a = new TAction(this, "show_preferences", tr("P&references..."), "prefs",
+                    Qt::ALT | Qt::Key_P);
+    main_window->addAction(a);
+    connect(a, SIGNAL(triggered()), main_window, SLOT(showPreferencesDialog()));
 }
 
 } // namespace Action
