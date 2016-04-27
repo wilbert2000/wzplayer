@@ -119,10 +119,11 @@ signals:
     void enablePrevNextChanged();
     void visibilityChanged(bool visible);
 	void displayMessage(const QString&, int);
+    void displayMessageOnOSD(const QString&, int);
 
 protected:
-	virtual void dragEnterEvent(QDragEnterEvent*) ;
-	virtual void dropEvent (QDropEvent*);
+    virtual void dragEnterEvent(QDragEnterEvent*);
+    virtual void dropEvent(QDropEvent*);
 	virtual void hideEvent (QHideEvent*);
 	virtual void showEvent (QShowEvent*);
 	virtual void closeEvent(QCloseEvent* e);
@@ -182,6 +183,7 @@ private:
 
 	bool modified;
 	QString playlist_path;
+    bool notify_sel_changed;
 
 	void createTable();
     void createActions();
@@ -223,11 +225,8 @@ private slots:
 
     void playOrPause();
 
-    void onCellActivated(int row, int);
-    void onSelectionChanged(const QItemSelection&, const QItemSelection&);
-
-	void moveItemUp();
-	void moveItemDown();
+    void moveItemsUp();
+    void moveItemsDown();
 
 	void addCurrentFile();
 	void addFiles();
@@ -248,6 +247,10 @@ private slots:
     void enableActions();
     void enableUpDown(const QItemSelection& selected);
 
+    void onCellActivated(int row, int);
+    void onSelectionChanged(const QItemSelection&, const QItemSelection&);
+    void onDropRow(int, int);
+    void onVisibilityChanged(bool);
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
     void onStartPlayingNewMedia();

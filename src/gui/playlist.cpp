@@ -67,11 +67,12 @@ namespace Gui {
 using namespace Action;
 
 
-TPlaylistItem::TPlaylistItem()
-	: _duration(0)
-	, _played(false)
-	, _deleted(false)
-	, _edited(false) {
+TPlaylistItem::TPlaylistItem() :
+    _duration(0),
+    _played(false),
+    _deleted(false),
+    _edited(false),
+    _failed(false) {
 }
 
 TPlaylistItem::TPlaylistItem(const QString &filename, const QString &name,
@@ -95,7 +96,8 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     core(c) ,
     recursive_add_directory(true),
     save_playlist_in_config(false),
-    modified(false) {
+    modified(false),
+    notify_sel_changed(true) {
 
     createTable();
     createActions();
@@ -110,7 +112,7 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
 	connect(core, SIGNAL(mediaEOF()),
 			this, SLOT(onMediaEOF()), Qt::QueuedConnection);
 	connect(core, SIGNAL(noFileToPlay()),
-			this, SLOT(resumePlay()));
+            this, SLOT(resumePlay()), Qt::QueuedConnection);
 
     connect(main_window, SIGNAL(enableActions()),
             this, SLOT(enableActions()));
@@ -141,28 +143,33 @@ void TPlaylist::createTable() {
 	listView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	listView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	listView->setContextMenuPolicy(Qt::CustomContextMenu);
-	listView->setShowGrid(false);
+    //listView->setShowGrid(false);
 	listView->setSortingEnabled(false);
 
 #if QT_VERSION >= 0x050000
-	listView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-	listView->horizontalHeader()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
+    listView->horizontalHeader()->setSectionResizeMode(COL_PLAY, QHeaderView::Fixed);
+    listView->horizontalHeader()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
+    listView->horizontalHeader()->setSectionResizeMode(COL_TIME, QHeaderView::ResizeToContents);
+    listView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 #else
-	listView->horizontalHeader()->setResizeMode(QHeaderView::Interactive);
-	listView->horizontalHeader()->setResizeMode(COL_NAME, QHeaderView::Stretch);
+    listView->horizontalHeader()->setResizeMode(COL_PLAY, QHeaderView::Fixed);
+    listView->horizontalHeader()->setResizeMode(COL_NAME, QHeaderView::Stretch);
+    listView->horizontalHeader()->setResizeMode(COL_TIME, QHeaderView::ResizeToContents);
+    listView->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 #endif
-	/*
-	listView->horizontalHeader()->setResizeMode(COL_TIME, QHeaderView::ResizeToContents);
-	listView->horizontalHeader()->setResizeMode(COL_PLAY, QHeaderView::ResizeToContents);
-	*/
-    listView->setIconSize(QSize(22, 22));
 
-	// TODO: enable
-    listView->setSelectionMode(QAbstractItemView::SingleSelection);
+    listView->setIconSize(QSize(22, 22));
+    // With ResizeToContents the first time the play column is too small...
+    listView->setColumnWidth(COL_PLAY, 29);
+
     listView->setDragEnabled(true);
     listView->setAcceptDrops(true);
+    listView->setDragDropMode(QAbstractItemView::DragDrop);
+    listView->setDragDropOverwriteMode(false);
     listView->setDropIndicatorShown(true);
-    //listView->setDragDropMode(QAbstractItemView::InternalMove);
+    listView->setDefaultDropAction(Qt::MoveAction);
+    connect(listView, SIGNAL(dropRow(int,int)),
+            this, SLOT(onDropRow(int, int)), Qt::QueuedConnection);
 
 	connect(listView, SIGNAL(cellActivated(int,int)),
 			 this, SLOT(onCellActivated(int, int)));
@@ -190,6 +197,8 @@ void TPlaylist::createActions() {
     // Add MCE remote key
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
     connect(playOrPauseAct, SIGNAL(triggered()), this, SLOT(playOrPause()));
+    connect(this, SIGNAL(visibilityChanged(bool)),
+            this, SLOT(onVisibilityChanged(bool)));
 
     // Stop action, only in play menu, but owned by playlist
     stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
@@ -209,11 +218,11 @@ void TPlaylist::createActions() {
 
     // Up
     moveUpAct = new TAction(this, "pl_move_up", tr("Move &up"));
-	connect(moveUpAct, SIGNAL(triggered()), this, SLOT(moveItemUp()));
+    connect(moveUpAct, SIGNAL(triggered()), this, SLOT(moveItemsUp()));
 
     // Down
     moveDownAct = new TAction(this, "pl_move_down", tr("Move &down"));
-	connect(moveDownAct, SIGNAL(triggered()), this, SLOT(moveItemDown()));
+    connect(moveDownAct, SIGNAL(triggered()), this, SLOT(moveItemsDown()));
 
     connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(onSelectionChanged(QItemSelection,QItemSelection)));
@@ -264,7 +273,8 @@ void TPlaylist::createActions() {
     connect(removeSelectedFromDiskAct, SIGNAL(triggered()),
             this, SLOT(removeSelectedFromDisk()));
 
-    removeAllAct = new TAction(remove_menu, "pl_remove_all", tr("&Clear playlist"));
+    removeAllAct = new TAction(remove_menu, "pl_remove_all",
+                               tr("&Clear playlist"), "", Qt::CTRL | Qt::Key_Delete);
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
     addActions(remove_menu->actions());
@@ -304,17 +314,15 @@ void TPlaylist::createToolbar() {
 	toolbar->addWidget(remove_button);
 
     toolbar->addSeparator();
-    toolbar->addAction(shuffleAct);
     toolbar->addAction(inOutMenu->findChild<TAction*>("repeat_in_out"));
     toolbar->addAction(repeatAct);
+    toolbar->addAction(shuffleAct);
     toolbar->addSeparator();
     toolbar->addAction(prevAct);
 	toolbar->addAction(nextAct);
     toolbar->addSeparator();
     toolbar->addAction(moveUpAct);
     toolbar->addAction(moveDownAct);
-    toolbar->addSeparator();
-    toolbar->addAction(playOrPauseAct);
 
 	// Popup menu
     popup = new QMenu(this);
@@ -347,7 +355,7 @@ void TPlaylist::retranslateStrings() {
 }
 
 void TPlaylist::msg(const QString& s) {
-    emit displayMessage(s, TConfig::MESSAGE_DURATION);
+    emit displayMessageOnOSD(s, TConfig::MESSAGE_DURATION);
 }
 
 void TPlaylist::getFilesAppend(QStringList& files) const {
@@ -382,10 +390,10 @@ void TPlaylist::updateView() {
 		}
 
 		// Name
-        QString name = item.name();
-		if (name.isEmpty())
-            name = item.filename();
-		listView->setText(i, COL_NAME, name);
+        QString text = item.name();
+        if (text.isEmpty())
+            text = item.filename();
+        listView->setText(i, COL_NAME, text);
 
 		// Set tooltip to filename
 		QTableWidgetItem* table_item = listView->item(i, COL_NAME);
@@ -394,12 +402,14 @@ void TPlaylist::updateView() {
 		}
 
 		// Duration
-        listView->setText(i, COL_TIME,
-                          Helper::formatTime(qRound(item.duration())));
+        if (item.duration() > 0) {
+            text = Helper::formatTime(qRound(item.duration()));
+        } else {
+            text = "";
+        }
+        listView->setText(i, COL_TIME, text);
 	}
 
-	listView->resizeColumnToContents(COL_PLAY);
-	listView->resizeColumnToContents(COL_TIME);
     enableActions();
 }
 
@@ -637,13 +647,18 @@ void TPlaylist::onShuffleToggled(bool toggled) {
 }
 
 void TPlaylist::playOrPause() {
+    qDebug() << "Gui::TPlaylist:playOrPause: state" << core->stateToString()
+             << "current row" << listView->currentRow()
+             << "current item" << current_item
+             << "visible" << isVisible();
 
-    if (core->state() == STATE_PLAYING) {
+    int r = listView->currentRow();
+    if (isVisible() && r >= 0 && r < count() && r != current_item) {
+        playItem(listView->currentRow());
+    } else if (core->state() == STATE_PLAYING) {
         core->pause();
     } else 	if (core->state() == STATE_PAUSED) {
         core->play();
-    } else if (listView->currentRow() >= 0) {
-        playItem(listView->currentRow());
     } else if (current_item >= 0) {
         playItem(current_item);
     } else {
@@ -752,6 +767,7 @@ void TPlaylist::playDirectory(const QString &dir) {
 	if (Helper::directoryContainsDVD(dir)) {
 		core->open(dir);
 	} else {
+        core->setState(STATE_LOADING);
 		clear();
 		addDirectory(dir);
 		sort();
@@ -878,20 +894,30 @@ void TPlaylist::updateCurrentItem() {
 	}
 }
 
+void TPlaylist::onSelectionChanged(const QItemSelection&, const QItemSelection&) {
+
+    // TODO: this is too expensive...
+    if (notify_sel_changed)
+        enableActions();
+}
+
+void TPlaylist::onVisibilityChanged(bool) {
+
+    // Play depends on visible
+    if (core->state() == STATE_PLAYING)
+        enableActions();
+}
+
 void TPlaylist::enableUpDown(const QItemSelection& selected) {
 
     int c = count();
     bool sel2 = selected.count() > 1;
     bool e = listView->currentRow() > 0;
     moveUpAct->setEnabled(c > 1 && (e || sel2));
-    e = listView->currentRow() >= 0 && listView->currentRow() < listView->rowCount() - 1;
+    e = listView->currentRow() >= 0
+        && listView->currentRow() < listView->rowCount() - 1;
     moveDownAct->setEnabled(c > 1 && (e  || sel2));
 
-}
-
-void TPlaylist::onSelectionChanged(const QItemSelection& selected,
-                                   const QItemSelection&) {
-    enableUpDown(selected);
 }
 
 void TPlaylist::enableActions() {
@@ -899,10 +925,12 @@ void TPlaylist::enableActions() {
     // Note: there is always something selected when c > 0
     int c = count();
     TCoreState s = core->state();
-    qDebug() << "Gui::TPlaylist::enableActions: current item:" << current_item
+    QString state_str = core->stateToString();
+    qDebug() << "Gui::TPlaylist::enableActions: state" << state_str
+             << "current item" << current_item
              << "current row" << listView->currentRow()
              << "count" << c
-             << "state" << core->stateToString();
+             << "visible" << isVisible();
 
     saveAct->setEnabled(c > 0);
 
@@ -912,13 +940,24 @@ void TPlaylist::enableActions() {
         && (current_item >= 0
             || listView->currentRow() >= 0
             || core->mdat.filename.count()));
-    if (s == STATE_PLAYING) {
+
+    // Update icon
+    if (!enable) {
+        playOrPauseAct->setTextAndTip(state_str);
+        playOrPauseAct->setIcon(Images::icon("loading"));
+    } else if (s == STATE_PLAYING) {
         if (loading) {
             loading = false;
             pl[current_item].setFailed(false);
         }
-        playOrPauseAct->setTextAndTip(tr("&Pause"));
-        playOrPauseAct->setIcon(Images::icon("pause"));
+        int r = listView->currentRow();
+        if (isVisible() && r >= 0 && r < count() && r != current_item) {
+            playOrPauseAct->setTextAndTip(tr("&Play selected"));
+            playOrPauseAct->setIcon(Images::icon("play"));
+        } else {
+            playOrPauseAct->setTextAndTip(tr("&Pause"));
+            playOrPauseAct->setIcon(Images::icon("pause"));
+        }
     } else if (loading) {
         playOrPauseAct->setTextAndTip(tr("Loading"));
         playOrPauseAct->setIcon(Images::icon("loading"));
@@ -1112,7 +1151,7 @@ void TPlaylist::swapItems(int item1, int item2) {
 	modified = true;
 }
 
-void TPlaylist::moveItemUp() {
+void TPlaylist::moveItemsUp() {
 
 	for(int row = 1; row < listView->rowCount(); row++) {
 		if (listView->isSelected(row, 0)) {
@@ -1122,7 +1161,7 @@ void TPlaylist::moveItemUp() {
 	updateView();
 }
 
-void TPlaylist::moveItemDown() {
+void TPlaylist::moveItemsDown() {
 
 	for(int row = listView->rowCount() - 2; row >= 0; row--) {
 		if (listView->isSelected(row, 0)) {
@@ -1196,11 +1235,15 @@ void TPlaylist::editItem(int item) {
 }
 
 void TPlaylist::sort() {
+    notify_sel_changed = false;
 	sortBy(COL_NAME, false, false, 0);
+    notify_sel_changed = true;
 }
 
 void TPlaylist::sortBy(int section) {
-	sortBy(section, true, false, 0);
+    notify_sel_changed = false;
+    sortBy(section, true, false, 0);
+    notify_sel_changed = true;
 }
 
 void TPlaylist::sortBy(int section, bool allow_revert, bool revert, int count) {
@@ -1255,6 +1298,36 @@ void TPlaylist::sortBy(int section, bool allow_revert, bool revert, int count) {
 	} else {
 		updateView();
 	}
+}
+
+void TPlaylist::onDropRow(int srow, int drow) {
+    qDebug() << "Gui::TPlaylist:onDropRow:" << srow << drow
+             << listView->dropRows;
+
+    int d = drow - srow;
+    if (d > 0) {
+        for(int i = listView->dropRows.count() - 1; i >= 0; i--) {
+            int s = listView->dropRows[i];
+            pl.insert(s + d, pl.takeAt(s));
+            if (s == current_item) {
+                current_item = s + d;
+            }
+        }
+    } else {
+        for(int i = 0; i < listView->dropRows.count(); i++) {
+            int s = listView->dropRows[i];
+            pl.insert(s + d, pl.takeAt(s));
+            if (s == current_item) {
+                current_item = s + d;
+            }
+        }
+    }
+    listView->dropRows.clear();
+    modified = true;
+
+    listView->clearSelection();
+    updateView();
+    listView->setCurrentCell(drow, 0);
 }
 
 // Drag&drop

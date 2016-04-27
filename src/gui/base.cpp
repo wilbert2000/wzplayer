@@ -276,6 +276,8 @@ void TBase::createPlaylist() {
 			this, SLOT(playlistHasFinished()));
 	connect(playlist, SIGNAL(displayMessage(const QString&, int)),
 			this, SLOT(displayMessage(const QString&, int)));
+    connect(playlist, SIGNAL(displayMessageOnOSD(const QString&,int)),
+            core, SLOT(displayMessage(const QString&,int)));
 }
 
 void TBase::createVideoEqualizer() {

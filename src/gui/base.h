@@ -132,8 +132,8 @@ public slots:
 	virtual void openUploadSubtitlesPage(); //turbos
 #endif
 
-	virtual void showPlaylist(bool b);
-	virtual void showPreferencesDialog();
+    virtual void showPlaylist(bool b);
+    virtual void showPreferencesDialog();
 	virtual void showFilePropertiesDialog();
 
 	virtual void showSeekToDialog();

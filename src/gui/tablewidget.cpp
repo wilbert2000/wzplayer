@@ -19,16 +19,54 @@
 #include "gui/tablewidget.h"
 #include <QTableWidgetItem>
 #include <QDebug>
+#include <QMimeData>
+#include <QDragEnterEvent>
 
 #define BE_VERBOSE 0
 
 namespace Gui {
 
-TTableWidget::TTableWidget(QWidget* parent) : QTableWidget(parent) {
-}
-
 TTableWidget::TTableWidget(int rows, int columns, QWidget* parent)
 	: QTableWidget(rows, columns, parent) {
+}
+
+Qt::DropActions TTableWidget::supportedDropActions () const {
+    return Qt::MoveAction;
+}
+
+const QString mimetype = "application/x-qabstractitemmodeldatalist";
+
+void TTableWidget::dragEnterEvent(QDragEnterEvent *e) {
+    qDebug() << "Gui::TTableWidget::dragEnterEvent" << e->mimeData()->formats();
+
+    if (e->mimeData()->hasFormat(mimetype)) {
+        dragSourceRow = rowAt(e->pos().y());
+        dropRows.clear();
+        foreach (QModelIndex index, selectedIndexes()) {
+            if (!dropRows.contains(index.row())) {
+                dropRows.append(index.row());
+            }
+        }
+        qDebug() << "Gui::TTableWidget::dragEnterEvent: accepted source"
+                 << dragSourceRow << dropRows;
+        e->acceptProposedAction();
+    } else {
+        QTableWidget::dragEnterEvent(e);
+    }
+}
+
+void TTableWidget::dropEvent(QDropEvent *e) {
+    qDebug() << "Gui::TTableWidget::dropEvent" << e->mimeData()->formats();
+
+    if (e->mimeData()->hasFormat(mimetype)) {
+        int row = rowAt(e->pos().y());
+        qDebug("Gui::TTableWidget::dropEvent: emit dropRow(%d, %d)",
+               dragSourceRow, row);
+        emit dropRow(dragSourceRow, row);
+        e->accept();
+    } else {
+        QTableWidget::dropEvent(e);
+    }
 }
 
 QTableWidgetItem* TTableWidget::getItem(int row, int column, bool* existed) {

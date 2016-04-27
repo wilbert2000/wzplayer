@@ -26,11 +26,10 @@ class QTableWidgetItem;
 
 namespace Gui {
 
-class TTableWidget : public QTableWidget
-{
+class TTableWidget : public QTableWidget {
+    Q_OBJECT
 public:
-	TTableWidget (QWidget* parent = 0);
-	TTableWidget (int rows, int columns, QWidget* parent = 0);
+    TTableWidget(int rows, int columns, QWidget* parent = 0);
 	virtual ~TTableWidget() {}
 
 	QTableWidgetItem* getItem(int row, int column, bool* existed = 0);
@@ -44,9 +43,20 @@ public:
 	bool isSelected(int row, int column);
 	void selRow(int row, bool sel);
 
+    QList<int> dropRows;
+
+signals:
+    void dropRow(int source, int dest);
+
 protected:
 	virtual QTableWidgetItem* createItem(int col);
 
+    virtual Qt::DropActions supportedDropActions () const;
+    virtual void dragEnterEvent(QDragEnterEvent*);
+    virtual void dropEvent(QDropEvent*);
+
+private:
+    int dragSourceRow;
 };
 
 } // namespace Gui
