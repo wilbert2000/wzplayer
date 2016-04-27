@@ -578,7 +578,7 @@ void TBase::setupNetworkProxy() {
 }
 
 void TBase::sendEnableActions() {
-    qDebug() << "Gui::TBase::enableActions: state" << core->stateToString();
+    qDebug() << "Gui::TBase::sendEnableActions: state" << core->stateToString();
 
     timeslider_action->enable(core->statePOP());
 
@@ -786,7 +786,9 @@ TActionList TBase::getAllNamedActions() {
 void TBase::loadConfig() {
 	qDebug("Gui::TBase::loadConfig");
 
-	// Get all actions with a name
+    // Disable actions
+    sendEnableActions();
+    // Get all actions with a name
 	TActionList all_actions = getAllNamedActions();
 	// Load actions from outside group derived class
     Action::TActionsEditor::loadFromConfig(pref, all_actions);
@@ -852,9 +854,6 @@ void TBase::loadConfig() {
 
 	playlist->loadSettings();
 	log_window->loadConfig();
-
-	// Disable actions
-    sendEnableActions();
 }
 
 void TBase::saveConfig() {
