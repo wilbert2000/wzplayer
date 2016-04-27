@@ -374,7 +374,7 @@ void TPlaylist::updateView(int current) {
     listView->setRowCount(pl.count());
 
     for (int i = 0; i < pl.count(); i++) {
-        TPlaylistItem& item = pl[i];
+        const TPlaylistItem& item = pl.value(i);
 
         // Icon
         if (item.failed()) {
@@ -397,12 +397,10 @@ void TPlaylist::updateView(int current) {
             text = item.filename();
         listView->setText(i, COL_NAME, text);
 
-		// Set tooltip to filename
-		QTableWidgetItem* table_item = listView->item(i, COL_NAME);
-		if (table_item) {
-            table_item->setToolTip(item.filename());
-		}
+        // Set tooltip to filename
+        listView->item(i, COL_NAME)->setToolTip(item.filename());
 
+        // Duration
         if (item.duration() > 0) {
             text = Helper::formatTime(qRound(item.duration()));
         } else {
