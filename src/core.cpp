@@ -63,7 +63,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     mdat(),
     mset(&mdat),
     playerwindow(mpw),
-    _state(STATE_STOPPED) {
+    _state(STATE_LOADING) {
 
     //qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
     qRegisterMetaType<TCoreState>("TCoreState");
@@ -168,7 +168,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 
 TCore::~TCore() {
 
-	stopPlayer();
+    stopPlayer();
 	proc->terminate();
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
@@ -214,12 +214,16 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
     playerwindow->restoreNormalWindow();
     enableScreensaver();
 
+    if (_state == STATE_STOPPING) {
+        return;
+    }
+
     qDebug("TCore::onProcessFinished: entering the stopped state");
     setState(STATE_STOPPED);
 
     if (eof || exit_code == Proc::TExitMsg::EXIT_OUT_POINT_REACHED) {
-        // TODO: fix mediasettings and check if onReceivedPosition() is needed
-        // Reset current time to 0, needed so mset.current_sec 0 is saved
+        // Reset current time to 0
+        // TODO: check
         onReceivedPosition(0);
         qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
         emit mediaEOF();
@@ -240,17 +244,21 @@ void TCore::setState(TCoreState s) {
 	}
 }
 
-QString TCore::stateToString() const {
+QString TCore::stateToString(TCoreState state) {
 
-	if (_state == STATE_PLAYING)
-		return "Playing";
-	if (_state == STATE_PAUSED)
-		return "Paused";
-    if (_state == STATE_STOPPING)
-        return "Stopping";
-    if (_state == STATE_RESTARTING)
-        return "Restarting";
-    return "Stopped";
+    switch (state) {
+        case STATE_STOPPED: return tr("Stopped");
+        case STATE_PLAYING: return tr("Playing");
+        case STATE_PAUSED: return tr("Paused");
+        case STATE_STOPPING: return tr("Stopping");
+        case STATE_RESTARTING: return tr("Restarting");
+        case STATE_LOADING: return tr("Loading");
+        default: return tr("Undefined");
+    }
+}
+
+QString TCore::stateToString() const {
+    return stateToString(_state);
 }
 
 void TCore::saveMediaSettings() {
@@ -295,23 +303,27 @@ void TCore::displayTextOnOSD(const QString& text, int duration, int level) {
 	}
 }
 
-void TCore::close() {
+void TCore::close(TCoreState next_state) {
 	qDebug("TCore::close()");
 
-	stopPlayer();
+    stopPlayer();
 	// Save data previous file:
 	saveMediaSettings();
+    // Set state
+    setState(next_state);
 	// Clear media data
 	mdat = TMediaData();
+    qDebug() << "TCore::close: closed in state" << stateToString();
 }
 
 void TCore::openDisc(TDiscName disc, bool fast_open) {
-	qDebug() << "TCore::openDisc:" << disc.toString() << "fast open" << fast_open;
+    qDebug() << "TCore::openDisc:" << disc.toString()
+             << "fast open" << fast_open;
 
 	// Change title if already playing
 	if (fast_open
 		&& !mset.playing_single_track
-		&& _state != STATE_STOPPED
+        && statePOP()
 		&& disc.title > 0
 		&& mdat.disc.valid
 		&& mdat.disc.device == disc.device) {
@@ -348,7 +360,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 	}
 
 	// Finish current
-	close();
+    close(STATE_LOADING);
 
 	// Set filename, selected type and disc
 	mdat.filename = disc.toString();
@@ -500,7 +512,7 @@ void TCore::unloadAudioFile() {
 void TCore::openTV(QString channel_id) {
 	qDebug() << "TCore::openTV:" << channel_id;
 
-	close();
+    close(STATE_LOADING);
 
 	// Use last channel if the name is just "dvb://" or "tv://"
 	if ((channel_id == "dvb://") && (!pref->last_dvb_channel.isEmpty())) {
@@ -536,7 +548,7 @@ void TCore::openTV(QString channel_id) {
 void TCore::openStream(const QString& name) {
 	qDebug() << "TCore::openStream:" << name;
 
-	close();
+    close(STATE_LOADING);
 	mdat.filename = name;
 	mdat.selected_type = TMediaData::TYPE_STREAM;
 	mset.reset();
@@ -547,7 +559,7 @@ void TCore::openStream(const QString& name) {
 void TCore::openFile(const QString& filename, int seek) {
 	qDebug() << "TCore::openFile:" << filename;
 
-	close();
+    close(STATE_LOADING);
 	mdat.filename = QDir::toNativeSeparators(filename);
 	mdat.selected_type = TMediaData::TYPE_FILE;
 	mset.reset();
@@ -602,6 +614,8 @@ void TCore::reload() {
     qDebug("TCore::reload");
 
     stopPlayer();
+    qDebug("TCore::reload: entering the loading state");
+    setState(STATE_LOADING);
     initPlaying();
 }
 
@@ -698,25 +712,30 @@ void TCore::stop() {
 	qDebug() << "TCore::stop: current state:" << stateToString();
 
     stopPlayer();
+    qDebug("TCore::stop: entering the stopped state");
+    setState(STATE_STOPPED);
 	emit mediaStopped();
 }
 
 void TCore::play() {
 	qDebug() << "TCore::play: current state: " << stateToString();
 
-	if (proc->isRunning()) {
-		if (_state == STATE_PAUSED) {
-			proc->setPause(false);
-			setState(STATE_PLAYING);
-		}
-	} else {
-		// if we're stopped, play it again
-		if (!mdat.filename.isEmpty()) {
-			restartPlay();
-		} else {
-			emit noFileToPlay();
-		}
-	}
+    switch (proc->state()) {
+        case QProcess::Running: {
+            if (_state == STATE_PAUSED) {
+                proc->setPause(false);
+                setState(STATE_PLAYING);
+            }
+        } break;
+        case QProcess::NotRunning: {
+            if (mdat.filename.isEmpty()) {
+                emit noFileToPlay();
+            } else {
+                restartPlay();
+            }
+        } break;
+        default: break;
+    }
 }
 
 void TCore::pause() {
@@ -1578,47 +1597,45 @@ end_video_filters:
 	}
 } //startPlayer()
 
-void TCore::stopPlayer(int exit_code) {
+void TCore::stopPlayer() {
 
     if (proc->state() == QProcess::NotRunning) {
 		qDebug("TCore::stopPlayer: player not running");
-		return;
-	}
+        return;
+    }
 
     qDebug("TCore::stopPlayer: entering the stopping state");
     setState(STATE_STOPPING);
 
-	// If set high enough the OS will detect the "not responding state" and popup a dialog
+    // If set high enough the OS will detect the "not responding state" and popup a dialog
     int timeout = pref->time_to_kill_player;
 
 #ifdef Q_OS_OS2
-	QEventLoop eventLoop;
+    QEventLoop eventLoop;
 
     connect(proc, SIGNAL(processFinished(bool, int, bool)), &eventLoop, SLOT(quit()));
 
-    proc->quit(exit_code);
+    proc->quit(0);
 
-	QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
-	eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+    QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 
-	if (proc->isRunning()) {
-		qWarning("TCore::stopPlayer: player didn't finish. Killing it...");
-		proc->kill();
-	}
+    if (proc->isRunning()) {
+        qWarning("TCore::stopPlayer: player didn't finish. Killing it...");
+        proc->kill();
+    }
 #else
-    proc->quit(exit_code);
+    proc->quit(0);
 
-	qDebug("TCore::stopPlayer: Waiting %d ms for player to finish...", timeout);
-	if (!proc->waitForFinished(timeout)) {
-		qWarning("TCore::stopPlayer: player process did not finish in %d ms. Killing it...",
-				 timeout);
-		proc->kill();
-	}
+    qDebug("TCore::stopPlayer: Waiting %d ms for player to finish...", timeout);
+    if (!proc->waitForFinished(timeout)) {
+        qWarning("TCore::stopPlayer: player process did not finish in %d ms. Killing it...",
+                 timeout);
+        proc->kill();
+    }
 #endif
 
-    // Already done by onProcessFinished, unless killed
-    setState(STATE_STOPPED);
-	qDebug("TCore::stopPlayer: done");
+    qDebug("TCore::stopPlayer: done");
 }
 
 void TCore::seekCmd(double secs, int mode) {
@@ -3264,8 +3281,8 @@ void TCore::dvdnavUpdateMousePos(QPoint pos) {
 void TCore::displayMessage(const QString& text, int duration, int osd_level) {
 	//qDebug("TCore::displayMessage");
 
-	emit showMessage(text, duration);
-	displayTextOnOSD(text, duration, osd_level);
+    displayTextOnOSD(text, duration, osd_level);
+    emit showMessage(text, duration);
 }
 
 void TCore::displayScreenshotName(const QString& filename) {

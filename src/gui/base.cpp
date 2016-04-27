@@ -248,8 +248,6 @@ void TBase::createCore() {
 			this, SLOT(onMediaSettingsChanged()));
 	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
 			this, SLOT(onVideoOutResolutionChanged(int,int)));
-	connect(core, SIGNAL(needResize(int, int)),
-			this, SLOT(resizeWindow(int, int)));
 
 	connect(core, SIGNAL(showMessage(const QString&, int)),
 			this, SLOT(displayMessage(const QString&, int)));
@@ -760,7 +758,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "load_sub") {
 			setInitialSubtitle(arg);
-			if (core->state() != STATE_STOPPED) {
+            if (core->statePOP()) {
 				core->loadSub(arg);
 			}
 		}
@@ -913,7 +911,7 @@ void TBase::closeEvent(QCloseEvent* e)  {
 	qDebug("Gui::TBase::closeEvent");
 
     if (playlist->maybeSave()) {
-        core->close();
+        core->close(STATE_STOPPING);
         exitFullscreen();
         save();
         e->accept();
@@ -1887,26 +1885,27 @@ void TBase::onStateChanged(TCoreState state) {
 	qDebug() << "Gui::TBase::onStateChanged: new state" << core->stateToString();
 
     sendEnableActions();
+    auto_hide_timer->setAutoHideMouse(state == STATE_PLAYING);
     switch (state) {
         case STATE_STOPPED:
-            auto_hide_timer->stopAutoHideMouse();
             setWindowCaption(TConfig::PROGRAM_NAME);
             displayMessage(tr("Stopped"));
             break;
         case STATE_PLAYING:
-            auto_hide_timer->startAutoHideMouse();
             displayMessage(tr("Playing %1").arg(core->mdat.displayName()));
             break;
         case STATE_PAUSED:
-            auto_hide_timer->stopAutoHideMouse();
             displayMessage(tr("Paused"));
             break;
         case STATE_STOPPING:
-            auto_hide_timer->stopAutoHideMouse();
             displayMessage(tr("Stopping..."));
             break;
         case STATE_RESTARTING:
             displayMessage(tr("Restarting..."));
+            break;
+        case STATE_LOADING:
+            displayMessage(tr("Loading..."));
+            break;
     }
 }
 
@@ -2221,8 +2220,7 @@ void TBase::checkStayOnTop(TCoreState) {
         case STATE_PLAYING:
             setStayOnTop(true);
             break;
-        case STATE_STOPPING:
-        case STATE_RESTARTING:
+        default:
             break;
     }
 }

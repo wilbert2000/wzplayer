@@ -54,12 +54,17 @@ public:
 
 	//! Return the current state
 	TCoreState state() const { return _state; }
-	//! Return a string with the name of the current state,
-	//! so it can be printed on debugging messages.
-	QString stateToString() const;
+    //! Change the current state and sends the stateChanged() signal.
+    void setState(TCoreState s);
+    //! Return a string with the name of the current state.
+    static QString stateToString(TCoreState state);
+    QString stateToString() const;
 
     bool statePOP() const {
         return _state == STATE_PLAYING || _state == STATE_PAUSED;
+    }
+    bool stateReady() const {
+        return _state == STATE_STOPPED || _state == STATE_PLAYING || _state == STATE_PAUSED;
     }
     bool hasVideo() const {
         return mdat.hasVideo();
@@ -74,7 +79,7 @@ public:
 	void openDisc(TDiscName disc, bool fast_open = false);
 
 	// Stop player if running and save MediaInfo
-	void close();
+    void close(TCoreState next_state);
 
 	void addForcedTitle(const QString& file, const QString& title) {
 		forced_titles[file] = title;
@@ -366,18 +371,12 @@ signals:
 	void osdLevelChanged(int);
 	void videoEqualizerNeedsUpdate();
 
-	void needResize(int w, int h);
-
 protected:
-	//! Change the current state (Stopped, Playing or Paused)
-	//! And sends the stateChanged() signal.
-	void setState(TCoreState s);
-
 	void initVolume();
 	void initMediaSettings();
 	void initPlaying(int seek = -1);
 	void startPlayer(QString file, double seek = -1);
-    void stopPlayer(int exit_code = 0);
+    void stopPlayer();
 	void restartPlay();
 
 	void saveMediaSettings();
