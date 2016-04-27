@@ -657,9 +657,7 @@ void TMPlayerProcess::convertTitlesToChapters() {
 
 	Maps::TTitleTracks::TTitleTrackIterator i = md->titles.getIterator();
 	double start = 0;
-	while (i.hasNext()) {
-		i.next();
-		Maps::TTitleData title = i.value();
+    foreach(Maps::TTitleData title, md->titles) {
 		md->chapters.addChapter(title.getID() - first_title_id, title.getName(), start);
 		start += title.getDuration();
 	}

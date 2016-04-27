@@ -131,10 +131,7 @@ void TMenuBrowse::updateTitles() {
 		a->setEnabled(false);
 	} else {
 		int selected_ID = core->mdat.titles.getSelectedID();
-		Maps::TTitleTracks::TTitleTrackIterator i = core->mdat.titles.getIterator();
-		while (i.hasNext()) {
-			i.next();
-			Maps::TTitleData title = i.value();
+        foreach(Maps::TTitleData title, core->mdat.titles) {
 			QAction* action = new QAction(titleGroup);
 			action->setCheckable(true);
 			action->setText(title.getDisplayName());
@@ -157,18 +154,15 @@ void TMenuBrowse::updateChapters() {
 	chapterGroup->clear();
 	if (core->mdat.chapters.count() > 0) {
 		int selected_id = core->mdat.chapters.getSelectedID();
-		Maps::TChapters::TChapterIterator i = core->mdat.chapters.getIterator();
-		do {
-			i.next();
-			const Maps::TChapterData chapter = i.value();
-			QAction *a = new QAction(chapterGroup);
+        foreach(Maps::TChapterData chapter, core->mdat.chapters) {
+            QAction *a = new QAction(chapterGroup);
 			a->setCheckable(true);
 			a->setText(chapter.getDisplayName());
 			a->setData(chapter.getID());
 			if (chapter.getID() == selected_id) {
 				a->setChecked(true);
 			}
-		} while (i.hasNext());
+        }
 	} else {
 		QAction* a = chapterGroup->addAction(tr("<empty>"));
 		a->setEnabled(false);

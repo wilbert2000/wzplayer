@@ -1041,11 +1041,8 @@ void TPlaylist::onStartPlayingNewMedia() {
 	if (md->disc.valid) {
 		// Add disc titles
 		TDiscName disc = md->disc;
-		Maps::TTitleTracks::TMapIterator i = md->titles.getIterator();
-		while (i.hasNext()) {
-			i.next();
-			Maps::TTitleData title = i.value();
-			disc.title = title.getID();
+        foreach(Maps::TTitleData title, md->titles) {
+            disc.title = title.getID();
 			addItem(disc.toString(), title.getDisplayName(false),
 					title.getDuration());
 			if (title.getID() == md->titles.getSelectedID()) {
@@ -1340,34 +1337,25 @@ void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
 }
 
 void TPlaylist::dropEvent(QDropEvent *e) {
-	qDebug("Gui::TPlaylist::dropEvent");
+    qDebug("Gui::TPlaylist::dropEvent");
 
-	QStringList files;
+    QStringList files;
 
-	if (e->mimeData()->hasUrls()) {
-		QList <QUrl> urls = e->mimeData()->urls();
-		for (int n = 0; n < urls.count(); n++) {
-			QUrl url = urls[n];
-			if (url.isValid()) {
-				QString filename;
-				if (url.scheme() == "file")
-					filename = url.toLocalFile();
-				else filename = url.toString();
-				qDebug() << "Gui::TPlaylist::dropEvent: adding" << filename;
-				files.append(filename);
-			} else {
-				qWarning() << "Gui::TPlaylist::dropEvent:: ignoring" << url.toString();
-                msg(tr("Ignoring %1").arg(url.toString()));
+    if (e->mimeData()->hasUrls()) {
+        foreach(QUrl url, e->mimeData()->urls()) {
+            if (url.scheme() == "file") {
+                files.append(url.toLocalFile());
+            } else {
+                files.append(url.toString());
             }
-		}
-	}
+        }
+    }
 
 #ifdef Q_OS_WIN
-	files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
+    files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
 #endif
-	files.sort();
 
-	addFiles(files);
+    addFiles(files);
 }
 
 

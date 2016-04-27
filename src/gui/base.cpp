@@ -1824,29 +1824,22 @@ void TBase::dragEnterEvent(QDragEnterEvent *e) {
 }
 
 void TBase::dropEvent(QDropEvent *e) {
-	qDebug("Gui::TBase::dropEvent");
+    qDebug("Gui::TBase::dropEvent");
 
-	QStringList files;
+    QStringList files;
 
-	if (e->mimeData()->hasUrls()) {
-		QList <QUrl> urls = e->mimeData()->urls();
-		for (int n = 0; n < urls.count(); n++) {
-			QUrl url = urls[n];
-			if (url.isValid()) {
-				QString filename;
-				if (url.scheme() == "file")
-					filename = url.toLocalFile();
-				else filename = url.toString();
-				qDebug() << "Gui::TBase::dropEvent: adding" << filename;
-				files.append(filename);
-			} else {
-				qWarning() << "Gui::TBase::dropEvent:: ignoring" << url.toString();
-			}
-		}
-	}
+    if (e->mimeData()->hasUrls()) {
+        foreach(QUrl url, e->mimeData()->urls()) {
+            if (url.scheme() == "file") {
+                files.append(url.toLocalFile());
+            } else {
+                files.append(url.toString());
+            }
+        }
+    }
 
-	qDebug("Gui::TBase::dropEvent: number of files: %d", files.count());
-	openFiles(files);
+    qDebug("Gui::TBase::dropEvent: number of files: %d", files.count());
+    openFiles(files);
 }
 
 void TBase::showContextMenu() {
