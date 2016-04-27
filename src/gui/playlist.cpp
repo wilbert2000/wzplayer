@@ -145,22 +145,26 @@ void TPlaylist::createTable() {
 	listView->setContextMenuPolicy(Qt::CustomContextMenu);
     //listView->setShowGrid(false);
 	listView->setSortingEnabled(false);
+    const int ICON_SIZE = 22;
+    listView->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
 
 #if QT_VERSION >= 0x050000
     listView->horizontalHeader()->setSectionResizeMode(COL_PLAY, QHeaderView::Fixed);
     listView->horizontalHeader()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
-    listView->horizontalHeader()->setSectionResizeMode(COL_TIME, QHeaderView::ResizeToContents);
+    listView->horizontalHeader()->setSectionResizeMode(COL_TIME, QHeaderView::Fixed);
     listView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 #else
     listView->horizontalHeader()->setResizeMode(COL_PLAY, QHeaderView::Fixed);
     listView->horizontalHeader()->setResizeMode(COL_NAME, QHeaderView::Stretch);
-    listView->horizontalHeader()->setResizeMode(COL_TIME, QHeaderView::ResizeToContents);
+    listView->horizontalHeader()->setResizeMode(COL_TIME, QHeaderView::Fixed);
     listView->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 #endif
 
-    listView->setIconSize(QSize(22, 22));
-    // With ResizeToContents the first time the play column is too small...
-    listView->setColumnWidth(COL_PLAY, 29);
+    // TODO: with ResizeToContents the first time the play column is too small...
+    // TODO: with ResizeToContents the first time the time column is too small...
+    const int MARGINS = 7;
+    listView->setColumnWidth(COL_PLAY, ICON_SIZE + MARGINS);
+    listView->setColumnWidth(COL_TIME, listView->fontMetrics().width("00:00:00") + MARGINS);
 
     listView->setDragEnabled(true);
     listView->setAcceptDrops(true);
