@@ -28,11 +28,9 @@
 #include <QPushButton>
 #include <QRegExp>
 #include <QMenu>
-#include <QDateTime>
 #include <QSettings>
 #include <QInputDialog>
 #include <QToolButton>
-#include <QTimer>
 #include <QVBoxLayout>
 #include <QUrl>
 #include <QDragEnterEvent>
@@ -40,18 +38,14 @@
 #include <QHeaderView>
 #include <QTableWidgetItem>
 #include <QTextCodec>
-#include <QApplication>
 #include <QMimeData>
 #include <QClipboard>
 
 #include "gui/base.h"
 #include "gui/tablewidget.h"
 #include "gui/multilineinputdialog.h"
-#include "gui/action/menuplay.h"
 #include "gui/action/menuinoutpoints.h"
-#include "gui/action/menu.h"
 #include "gui/action/action.h"
-#include "settings/preferences.h"
 #include "core.h"
 #include "images.h"
 #include "helper.h"
