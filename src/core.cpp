@@ -222,10 +222,7 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
     setState(STATE_STOPPED);
 
     if (eof || exit_code == Proc::TExitMsg::EXIT_OUT_POINT_REACHED) {
-        // Reset current time to 0
-        // TODO: check
-        onReceivedPosition(0);
-        qDebug("TCore::onReceivedEndOfFile: emit mediaEOF()");
+        qDebug("TCore::onProcessFinished: emit mediaEOF()");
         emit mediaEOF();
     } else if (!normal_exit) {
         qDebug("TCore::onProcessFinished: emit playerError()");
