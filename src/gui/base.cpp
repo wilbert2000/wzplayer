@@ -1263,7 +1263,7 @@ void TBase::openFiles(QStringList files, int item) {
 	qDebug("Gui::TBase::openFiles");
 
 	if (files.empty()) {
-		qWarning("Gui::TBase::openFiles: no files in list to open");
+        qDebug("Gui::TBase::openFiles: no files in list to open");
 		return;
 	}
 
@@ -2068,7 +2068,6 @@ double TBase::getNewSizeFactor() {
 	return size_factor;
 }
 
-// Slot called by signal videoOutResolutionChanged
 void TBase::onVideoOutResolutionChanged(int w, int h) {
 	qDebug("Gui::TBase::onVideoOutResolutionChanged: %d, %d", w, h);
 
