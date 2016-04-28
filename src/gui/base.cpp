@@ -1894,7 +1894,7 @@ void TBase::onStateChanged(TCoreState state) {
     switch (state) {
         case STATE_STOPPED:
             setWindowCaption(TConfig::PROGRAM_NAME);
-            displayMessage(tr("Stopped"));
+            displayMessage(tr("Ready"));
             break;
         case STATE_PLAYING:
             displayMessage(tr("Playing %1").arg(core->mdat.displayName()));

@@ -496,7 +496,9 @@ void TApp::start() {
 	if (!main_window->startHidden() || !files_to_play.isEmpty())
 		main_window->show();
 
-	if (!files_to_play.isEmpty()) {
+    if (files_to_play.isEmpty()) {
+        main_window->getCore()->setState(STATE_STOPPED);
+    } else {
 		if (!subtitle_file.isEmpty())
 			main_window->setInitialSubtitle(subtitle_file);
 		if (!media_title.isEmpty())
