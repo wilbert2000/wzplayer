@@ -47,11 +47,11 @@ QStringList TCleanConfig::listDir(const QString& path) {
 	QDir dir(path);
 	QStringList file_list;
 
-	foreach(QString file, dir.entryList(QDir::Files)) {
+    foreach(const QString file, dir.entryList(QDir::Files)) {
 		file_list << QFileInfo(dir, file).absoluteFilePath();
 	}
 
-	foreach(QString sub_dir, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+    foreach(const QString sub_dir, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
 		file_list << listDir(path +"/"+ sub_dir);
 	}
 

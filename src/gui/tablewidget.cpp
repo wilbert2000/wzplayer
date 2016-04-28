@@ -42,7 +42,7 @@ void TTableWidget::dragEnterEvent(QDragEnterEvent *e) {
     if (e->mimeData()->hasFormat(mimetype)) {
         dragSourceRow = rowAt(e->pos().y());
         dropRows.clear();
-        foreach (QModelIndex index, selectedIndexes()) {
+        foreach (const QModelIndex index, selectedIndexes()) {
             if (!dropRows.contains(index.row())) {
                 dropRows.append(index.row());
             }

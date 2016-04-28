@@ -1829,7 +1829,7 @@ void TBase::dropEvent(QDropEvent *e) {
     QStringList files;
 
     if (e->mimeData()->hasUrls()) {
-        foreach(QUrl url, e->mimeData()->urls()) {
+        foreach(const QUrl url, e->mimeData()->urls()) {
             if (url.scheme() == "file") {
                 files.append(url.toLocalFile());
             } else {

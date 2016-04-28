@@ -630,10 +630,10 @@ void TPlaylist::addUrls() {
 	TMultilineInputDialog d(this);
 	if (d.exec() == QDialog::Accepted) {
 		playlist_path = pref->latest_dir;
-		QStringList urls = d.lines();
-		foreach(QString u, urls) {
-			if (!u.isEmpty())
-				cleanAndAddItem(u, "", 0);
+        foreach(const QString url, d.lines()) {
+            if (url.count()) {
+                cleanAndAddItem(url, "", 0);
+            }
 		}
 		updateView();
 	}
@@ -1062,7 +1062,7 @@ void TPlaylist::onStartPlayingNewMedia() {
 	if (md->disc.valid) {
 		// Add disc titles
 		TDiscName disc = md->disc;
-        foreach(Maps::TTitleData title, md->titles) {
+        foreach(const Maps::TTitleData title, md->titles) {
             disc.title = title.getID();
 			addItem(disc.toString(), title.getDisplayName(false),
 					title.getDuration());
