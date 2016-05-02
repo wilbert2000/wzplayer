@@ -143,8 +143,8 @@ HEADERS += version.h \
     gui/timedialog.h \
     gui/lineedit.h \
     gui/inputurl.h \
-	gui/tablewidget.h \
     gui/infoprovider.h \
+    gui/playlistwidget.h \
     gui/playlist.h \
     gui/autohidetimer.h \
     gui/base.h \
@@ -264,8 +264,8 @@ SOURCES	+= version.cpp \
     gui/timedialog.cpp \
     gui/lineedit.cpp \
     gui/inputurl.cpp \
-   	gui/tablewidget.cpp \
     gui/infoprovider.cpp \
+    gui/playlistwidget.cpp \
     gui/playlist.cpp \
     gui/autohidetimer.cpp \
     gui/base.cpp \

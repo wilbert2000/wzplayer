@@ -111,7 +111,9 @@ TBasePlus::TBasePlus() :
             this, SLOT(onDockVisibilityChanged(bool)));
     connect(playerwindow, SIGNAL(videoSizeFactorChanged(double, double)),
             this, SLOT(onvideoSizeFactorChanged(double,double)));
-	connect(this, SIGNAL(openFileRequested()),
+    connect(playlist, SIGNAL(windowTitleChanged()),
+            this, SLOT(setWinTitle()));
+    connect(this, SIGNAL(openFileRequested()),
 			this, SLOT(showAll()));
 
 	retranslateStrings();
@@ -139,11 +141,7 @@ void TBasePlus::changeEvent(QEvent* e) {
 
 void TBasePlus::setWinTitle() {
 
-    if (playlistdock->isFloating()) {
-        playlistdock->setWindowTitle(playlist->windowTitle());
-    } else {
-        playlistdock->setWindowTitle(tr("Playlist"));
-    }
+    playlistdock->setWindowTitle(playlist->windowTitle());
 }
 
 void TBasePlus::setWindowCaption(const QString& title) {
@@ -369,8 +367,6 @@ void TBasePlus::resizeWindowToVideoRestoreSize() {
 void TBasePlus::onTopLevelChanged(bool topLevel) {
     qDebug() << "Gui::TBasePlus::onTopLevelChanged: topLevel" << topLevel
              << "size factor" << pref->size_factor;
-
-    setWinTitle();
 
     if (pref->resize_on_docking
         && core->stateReady()

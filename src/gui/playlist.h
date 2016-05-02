@@ -18,9 +18,12 @@
 #ifndef GUI_PLAYLIST_H
 #define GUI_PLAYLIST_H
 
+#include <QWidget>
+#include <QTreeWidgetItem>
 #include <QList>
 #include <QStringList>
-#include <QWidget>
+
+#include "gui/playlistwidget.h"
 
 
 class QToolBar;
@@ -35,7 +38,6 @@ class TCore;
 namespace Gui {
 
 class TBase;
-class TTableWidget;
 
 namespace Action {
 class TAction;
@@ -43,62 +45,30 @@ class TMenu;
 class TMenuInOut;
 }
 
-class TPlaylistItem {
-
-public:
-	TPlaylistItem();
-	TPlaylistItem(const QString &filename, const QString &name, double duration);
-	virtual ~TPlaylistItem() {}
-
-	void setFilename(const QString &filename) { _filename = filename; }
-	void setName(const QString &name) { _name = name; }
-	void setDuration(double duration) { _duration = duration; }
-	void setPlayed(bool b) { _played = b; }
-	void setMarkForDeletion(bool b) { _deleted = b; }
-	void setEdited(bool b) { _edited = b; }
-    void setFailed(bool b) { _failed = b; }
-
-	QString directory() const { return _directory; }
-	QString filename() const { return _filename; }
-	QString name() const { return _name; }
-	double duration() const { return _duration; }
-	bool played() const { return _played; }
-	bool markedForDeletion() const { return _deleted; }
-	bool edited() const { return _edited; }
-    bool failed() const { return _failed; }
-
-private:
-	QString _directory, _filename, _name;
-	double _duration;
-    bool _played, _deleted, _edited, _failed;
-};
-
 class TPlaylist : public QWidget {
 	Q_OBJECT
-
 public:
-	typedef QList<TPlaylistItem> TPlaylistItemList;
-
     TPlaylist(TBase* mw, TCore* c);
 	virtual ~TPlaylist();
 
 	// Start playing, from item 0 if shuffle is off,
 	// or from a random item otherwise
 	void startPlay();
-	void playItem(int n);
+    void playItem(TPlaylistWidgetItem* item);
 	void playDirectory(const QString& dir);
 
-	int currentItem() const { return current_item; }
+    QString playingFile() const { return playlistWidget->playingFile(); }
+    TPlaylistWidgetItem* findFilename(const QString& filename) {
+        return playlistWidget->findFilename(filename);
+    }
 
 	void clear();
-	void addFiles(const QStringList& files);
+    void addFiles(const QStringList& files, bool insert = false);
 	void getFilesAppend(QStringList& files) const;
 
 	// Preferences
 	bool directoryRecursion() const { return recursive_add_directory; }
 	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
-	bool savePlaylistOnExit() const { return save_playlist_in_config; }
-	void setSavePlaylistOnExit(bool b) { save_playlist_in_config = b; }
 
 	bool maybeSave();
 	void loadSettings();
@@ -120,6 +90,7 @@ signals:
     void visibilityChanged(bool visible);
 	void displayMessage(const QString&, int);
     void displayMessageOnOSD(const QString&, int);
+    void windowTitleChanged();
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent*);
@@ -129,20 +100,9 @@ protected:
 	virtual void closeEvent(QCloseEvent* e);
 
 private:
-	enum TColID {
-		COL_PLAY = 0,
-		COL_NAME = 1,
-		COL_TIME = 2,
-		COL_COUNT = 3
-	};
-
-	int current_item;
-    bool loading;
-
     TBase* main_window;
 	TCore* core;
-	TPlaylistItemList pl;
-	TTableWidget* listView;
+    TPlaylistWidget* playlistWidget;
 
     Action::TMenu* add_menu;
     Action::TMenu* remove_menu;
@@ -161,16 +121,15 @@ private:
 	Action::TAction* repeatAct;
 	Action::TAction* shuffleAct;
 
-	Action::TAction* moveUpAct;
-	Action::TAction* moveDownAct;
-
 	Action::TAction* addCurrentAct;
 	Action::TAction* addFilesAct;
 	Action::TAction* addDirectoryAct;
 	Action::TAction* addUrlsAct;
 
-	Action::TAction* copyAct;
-	Action::TAction* editAct;
+    Action::TAction* cutAct;
+    Action::TAction* copyAct;
+    Action::TAction* pasteAct;
+    Action::TAction* editAct;
 	Action::TAction* removeSelectedAct;
 	Action::TAction* removeSelectedFromDiskAct;
 	Action::TAction* removeAllAct;
@@ -179,44 +138,40 @@ private:
 
 	// Preferences
 	bool recursive_add_directory;
-	bool save_playlist_in_config;
 
-	bool modified;
-	QString playlist_path;
     bool notify_sel_changed;
 
-	void createTable();
+    bool modified;
+    QString title;
+    QString playlist_filename;
+    QString playlist_path;
+
+    void createTree();
     void createActions();
 	void createToolbar();
 
     void msg(const QString& s);
 
-	void addItem(const QString& filename, QString name, double duration);
-	void cleanAndAddItem(QString filename, QString name, double duration);
+    void cleanAndAddItem(QString filename, QString name, double duration);
 
-	void addFile(const QString& filename);
-	void addFileOrDir(const QString& filename);
-	void addDirectory(const QString& dir);
+    void addFile(QTreeWidgetItem* parent, const QString& filename);
+    void addFileOrDir(QTreeWidgetItem* parent, const QString& filename);
+    void addDirectory(QTreeWidgetItem* parent, const QString& dir);
 
-    int count() const { return pl.count(); }
+    TPlaylistWidgetItem* chooseRandomItem() const;
 
-    void setCurrentItem(int current);
-	void updateCurrentItem();
-    void updateView(int current = -2);
+    void swapItems(int item1, int item2);
 
-	int chooseRandomItem();
-	void clearPlayedTag();
-
-	void sort();
-	void swapItems(int item1, int item2);
-
-	bool deleteFileFromDisk(int i);
+    bool deleteFileFromDisk(const QString& filename);
 
 	void loadM3u(const QString& file, bool clear = true, bool play = true);
 	bool saveM3u(QString file);
 
 	void loadIni(const QString& file, bool clear = true, bool play = true);
-	bool saveIni(QString file);
+
+    void setModified(bool mod = true);
+    void setWinTitle(QString s = 0);
+    void setPlaylistFilename(const QString& name);
 
 private slots:
 	void showContextMenu(const QPoint& pos);
@@ -225,10 +180,7 @@ private slots:
 
     void playOrPause();
 
-    void moveItemsUp();
-    void moveItemsDown();
-
-	void addCurrentFile();
+    void addCurrentFile();
 	void addFiles();
 	void addDirectory();
 	void addUrls();
@@ -237,20 +189,17 @@ private slots:
 	void removeSelectedFromDisk();
 	void removeAll();
 
-	void copySelected();
-	void editCurrentItem();
-	void editItem(int item);
+    void editCurrentItem();
+    void editItem(TPlaylistWidgetItem* item);
 
-	void sortBy(int section);
-	void sortBy(int section, bool allow_revert, bool revert, int count);
-
-    void scrollToCurrentItem();
+    void copySelected();
+    void paste();
+    void enablePaste();
+    void cut();
 
     void enableActions();
-    void enableUpDown(const QItemSelection& selected);
 
-    void onCellActivated(int row, int);
-    void onSelectionChanged(const QItemSelection&, const QItemSelection&);
+    void onItemActivated(QTreeWidgetItem* item, int);
     void onDropRow(int, int);
     void onVisibilityChanged(bool);
     void onRepeatToggled(bool toggled);

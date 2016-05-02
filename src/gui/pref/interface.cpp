@@ -380,14 +380,6 @@ bool TInterface::directoryRecursion() {
 	return recursive_check->isChecked();
 }
 
-void TInterface::setSavePlaylistOnExit(bool b) {
-	autosave_on_exit_check->setChecked(b);
-}
-
-bool TInterface::savePlaylistOnExit() {
-	return autosave_on_exit_check->isChecked();
-}
-
 void TInterface::setLogDebugEnabled(bool b) {
 	log_debug_check->setChecked(b);
 }
@@ -519,11 +511,6 @@ void TInterface::createHelp() {
 		tr("Check this option if you want that adding a directory will also "
 		"add the files in subdirectories recursively. Otherwise only the "
 		"files in the selected directory will be added."));
-
-	setWhatsThis(autosave_on_exit_check, tr("Save copy of playlist on exit"),
-		tr("If this option is checked, a copy of the playlist will be saved "
-		   "in the wzplayer configuration when wzplayer is closed, and will "
-		   "be reloaded automatically when wzplayer is run again."));
 
 	addSectionTitle(tr("Logs"));
 

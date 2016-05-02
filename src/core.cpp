@@ -392,6 +392,16 @@ void TCore::open(QString file, int seek) {
 		file = QUrl(file).toLocalFile();
 	}
 
+    QFileInfo fi(file);
+
+#ifdef Q_OS_WIN
+    // Check for Windows shortcuts
+    QFileInfo fi(file);
+    if (fi.isSymLink()) {
+        file = fi.symLinkTarget();
+    }
+#endif
+
 	TDiscName disc(file);
 	if (disc.valid) {
 		qDebug() << "TCore::open: * identified as" << disc.protocol;
@@ -403,7 +413,6 @@ void TCore::open(QString file, int seek) {
 
 	emit showMessage(tr("Opening %1").arg(file), 0);
 
-	QFileInfo fi(file);
 	if (fi.exists()) {
 		file = fi.absoluteFilePath();
 

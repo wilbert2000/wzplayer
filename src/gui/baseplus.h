@@ -83,13 +83,13 @@ protected:
 
 private:
 	void switchToTray();
-	void setWinTitle();
 	void retranslateStrings();
 
 private slots:
     void onDockVisibilityChanged(bool visible);
     void onvideoSizeFactorChanged(double, double);
     void resizeWindowToVideoRestoreSize();
+    void setWinTitle();
 };
 
 } // namespace Gui

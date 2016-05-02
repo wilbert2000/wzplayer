@@ -53,9 +53,6 @@ public:
 	void setDirectoryRecursion(bool b);
 	bool directoryRecursion();
 
-	void setSavePlaylistOnExit(bool b);
-	bool savePlaylistOnExit();
-
 protected:
 	void createLanguageCombo();
 

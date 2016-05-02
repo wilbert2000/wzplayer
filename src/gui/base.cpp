@@ -948,7 +948,6 @@ void TBase::showPreferencesDialog() {
 
 	// Set playlist preferences
 	pref_dialog->mod_interface()->setDirectoryRecursion(playlist->directoryRecursion());
-	pref_dialog->mod_interface()->setSavePlaylistOnExit(playlist->savePlaylistOnExit());
 
 	pref_dialog->show();
 }
@@ -974,7 +973,6 @@ void TBase::applyNewPreferences() {
     // Update and save playlist preferences
     Pref::TInterface* mod_interface = pref_dialog->mod_interface();
     playlist->setDirectoryRecursion(mod_interface->directoryRecursion());
-    playlist->setSavePlaylistOnExit(mod_interface->savePlaylistOnExit());
     playlist->saveSettings();
 
     // Update and save actions
@@ -1259,7 +1257,7 @@ void TBase::open(const QString &file) {
 	qDebug("Gui::TBase::open: done");
 }
 
-void TBase::openFiles(QStringList files, int item) {
+void TBase::openFiles(QStringList files, const QString& current) {
 	qDebug("Gui::TBase::openFiles");
 
 	if (files.empty()) {
@@ -1267,20 +1265,19 @@ void TBase::openFiles(QStringList files, int item) {
 		return;
 	}
 
-#ifdef Q_OS_WIN
-	files = Helper::resolveSymlinks(files); // Check for Windows shortcuts
-#endif
-
-	if (files.count() == 1) {
-		open(files[0]);
-	} else if (playlist->maybeSave()) {
-		qDebug("Gui::TBase::openFiles: starting new playlist");
-		if (item < 0)
+    if (playlist->maybeSave()) {
+        if (current.isEmpty()) {
 			files.sort();
+        }
 		playlist->clear();
 		playlist->addFiles(files);
-		if (item >= 0) {
-			playlist->playItem(item);
+        if (current.count()) {
+            TPlaylistWidgetItem* w = playlist->findFilename(current);
+            if (w) {
+                playlist->playItem(w);
+            } else {
+                playlist->startPlay();
+            }
 		} else {
 			playlist->startPlay();
 		}
@@ -1818,17 +1815,21 @@ void TBase::checkPendingActionsToRun() {
 void TBase::dragEnterEvent(QDragEnterEvent *e) {
 	qDebug("Gui::TBase::dragEnterEvent");
 
-	if (e->mimeData()->hasUrls()) {
-		e->acceptProposedAction();
+    if (e->mimeData()->hasUrls()) {
+        if (e->proposedAction() & Qt::CopyAction) {
+            e->acceptProposedAction();
+        } else if (e->possibleActions() & Qt::CopyAction) {
+            e->setDropAction(Qt::CopyAction);
+            e->accept();
+        }
 	}
 }
 
 void TBase::dropEvent(QDropEvent *e) {
     qDebug("Gui::TBase::dropEvent");
 
-    QStringList files;
-
     if (e->mimeData()->hasUrls()) {
+        QStringList files;
         foreach(const QUrl url, e->mimeData()->urls()) {
             if (url.scheme() == "file") {
                 files.append(url.toLocalFile());
@@ -1836,10 +1837,10 @@ void TBase::dropEvent(QDropEvent *e) {
                 files.append(url.toString());
             }
         }
+        qDebug("Gui::TBase::dropEvent: number of files: %d", files.count());
+        openFiles(files);
+        e->accept();
     }
-
-    qDebug("Gui::TBase::dropEvent: number of files: %d", files.count());
-    openFiles(files);
 }
 
 void TBase::showContextMenu() {

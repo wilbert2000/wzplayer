@@ -64,7 +64,7 @@ private:
 
 	bool requested_restart;
 	bool reset_style;
-	int current_file;
+    QString current_file;
 
 	QStringList files_to_play;
 	QString subtitle_file;

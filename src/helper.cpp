@@ -183,20 +183,6 @@ QStringList Helper::filesForPlaylist(const QString & initial_file,
 	return res;
 }
 
-#ifdef Q_OS_WIN
-// Check for Windows shortcuts
-QStringList Helper::resolveSymlinks(const QStringList & files) {
-	QStringList list = files;
-	for (int n=0; n < list.count(); n++) {
-		QFileInfo fi(list[n]);
-		if (fi.isSymLink()) {
-			list[n] = fi.symLinkTarget();
-		}
-	}
-	return list;
-}
-#endif
-
 QString Helper::findExecutable(const QString& name) {
 
 	// Name is executable?

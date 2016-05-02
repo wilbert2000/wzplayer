@@ -38,10 +38,6 @@ public:
 	static QStringList filesForPlaylist(const QString& initial_file,
 										Settings::TPreferences::TAutoAddToPlaylistFilter filter);
 
-#ifdef Q_OS_WIN
-	static QStringList resolveSymlinks(const QStringList& files);
-#endif
-
 	//! Tries to find the executable in the path.
 	//! Returns the path if found or empty string if not.
 	static QString findExecutable(const QString& name);
