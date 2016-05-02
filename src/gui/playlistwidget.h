@@ -97,6 +97,7 @@ public:
     TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
     QTreeWidgetItem* currentPlaylistWidgetFolder() const;
     TPlaylistWidgetItem* firstPlaylistWidgetItem() const;
+    TPlaylistWidgetItem* lastPlaylistWidgetItem() const;
     QString playingFile() const;
     QString currentFile() const;
     TPlaylistWidgetItem* findFilename(const QString& filename);

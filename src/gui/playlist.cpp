@@ -666,6 +666,9 @@ void TPlaylist::playPrev() {
 	qDebug("Gui::TPlaylist::playPrev");
 
     TPlaylistWidgetItem* i = playlistWidget->getPreviousPlaylistWidgetItem();
+    if (i == 0 && repeatAct->isChecked()) {
+        i = playlistWidget->lastPlaylistWidgetItem();
+    }
     if (i) {
         playItem(i);
 	}

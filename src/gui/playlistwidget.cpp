@@ -213,6 +213,16 @@ TPlaylistWidgetItem* TPlaylistWidget::firstPlaylistWidgetItem() const {
     return static_cast<TPlaylistWidgetItem*>(topLevelItem(0));
 }
 
+TPlaylistWidgetItem* TPlaylistWidget::lastPlaylistWidgetItem() const {
+
+     TPlaylistWidgetItem* last = static_cast<TPlaylistWidgetItem*>(
+                                     topLevelItem(topLevelItemCount() - 1));
+     while (last && last->isFolder()) {
+         last = static_cast<TPlaylistWidgetItem*>(last->child(last->childCount() - 1));
+     }
+     return last;
+}
+
 QString TPlaylistWidget::playingFile() const {
     return playing_item ? playing_item->filename() : "";
 }
@@ -317,11 +327,7 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
     // See also itemAbove()
 
     if (w == 0) {
-        // TODO:
-        //w = lastPlaylistWidgetItem();
-        //if (w == 0) {
-            return 0;
-        //}
+        return lastPlaylistWidgetItem();
     }
 
     int c = w->childCount();
