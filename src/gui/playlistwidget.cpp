@@ -72,14 +72,19 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
         setIcon(COL_PLAY, Images::icon("not_played"));
     }
 
-    setText(COL_NAME, name);
-    setToolTip(COL_NAME, name);
+    setText(COL_NAME, playlistItem.name());
+    setToolTip(COL_NAME, playlistItem.name());
 
     setDuration(duration);
     setToolTip(COL_TIME, filename);
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
+
+    TPlaylistWidget* w = static_cast<TPlaylistWidget*>(treeWidget());
+    if (w && w->playing_item == this) {
+        w->playing_item = 0;
+    }
 }
 
 void TPlaylistWidgetItem::setState(TPlaylistItemState state) {

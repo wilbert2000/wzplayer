@@ -733,15 +733,36 @@ bool TPlaylist::deleteFileFromDisk(const QString& filename) {
 void TPlaylist::removeSelected(bool deleteFromDisk) {
 	qDebug("Gui::TPlaylist::removeSelected");
 
-    // TODO: reverse order
+    QTreeWidgetItem* newCurrent = playlistWidget->currentItem();
+
     QTreeWidgetItemIterator it(playlistWidget, QTreeWidgetItemIterator::Selected);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
         if (!deleteFromDisk || deleteFileFromDisk(i->filename())) {
+            QTreeWidgetItem* parent = i->parent();
+            if (i == newCurrent) {
+                newCurrent = parent;
+            }
             delete i;
+
+            // Clean up empty folders
+            while (parent && parent->childCount() == 0) {
+                QTreeWidgetItem* gp = parent->parent();
+                if (parent == newCurrent) {
+                    newCurrent = gp;
+                }
+                delete parent;
+                parent = gp;
+            }
             setModified();
         }
         it++;
+    }
+
+    if (newCurrent) {
+        playlistWidget->setCurrentItem(newCurrent);
+    } else {
+        playlistWidget->setCurrentItem(playlistWidget->firstPlaylistWidgetItem());
     }
 }
 
@@ -845,7 +866,8 @@ void TPlaylist::enableActions() {
     addCurrentAct->setEnabled(core->mdat.filename.count());
 
     removeSelectedAct->setEnabled(c > 0);
-    removeSelectedFromDiskAct->setEnabled(c > 0);
+    removeSelectedFromDiskAct->setEnabled(current_item
+                                          && !current_item->isFolder());
     removeAllAct->setEnabled(c > 0);
 
     cutAct->setEnabled(c > 0);
