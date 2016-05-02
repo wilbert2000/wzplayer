@@ -308,7 +308,19 @@ void TPlaylist::cleanAndAddItem(QString filename, QString name,
     bool protect_name = !name.isEmpty();
     QString alt_name = filename;
 
+    if (filename.startsWith("file:")) {
+        filename = QUrl(filename).toLocalFile();
+    }
+
     QFileInfo fi(filename);
+
+#ifdef Q_OS_WIN
+    // Check for Windows shortcuts
+    if (fi.isSymLink()) {
+        filename = fi.symLinkTarget();
+    }
+#endif
+
     if (fi.exists()) {
         filename = QDir::toNativeSeparators(fi.absoluteFilePath());
         alt_name = fi.fileName();
