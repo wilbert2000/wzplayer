@@ -158,7 +158,8 @@ private:
     void addFileOrDir(QTreeWidgetItem* parent, const QString& filename);
     bool addDirectory(QTreeWidgetItem* parent, const QString& dir);
 
-    TPlaylistWidgetItem* chooseRandomItem() const;
+    TPlaylistWidgetItem* getRandomItem() const;
+    bool haveUnplayedItems() const;
 
     void swapItems(int item1, int item2);
 

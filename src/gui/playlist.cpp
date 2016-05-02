@@ -539,7 +539,6 @@ void TPlaylist::onRepeatToggled(bool toggled) {
 
     // Enable depends on repeat
     enableActions();
-
     if (toggled)
         msg(tr("Repeat playlist set"));
     else
@@ -548,6 +547,7 @@ void TPlaylist::onRepeatToggled(bool toggled) {
 
 void TPlaylist::onShuffleToggled(bool toggled) {
 
+    enableActions();
     if (toggled)
         msg(tr("Shuffle playlist set"));
     else
@@ -573,7 +573,7 @@ void TPlaylist::playOrPause() {
     }
 }
 
-TPlaylistWidgetItem* TPlaylist::chooseRandomItem() const {
+TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
 
     if (playlistWidget->topLevelItemCount() <= 0) {
         return 0;
@@ -594,7 +594,7 @@ TPlaylistWidgetItem* TPlaylist::chooseRandomItem() const {
             TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
             if (!i->isFolder() && !i->played() && i->state() != PSTATE_FAILED) {
                 if (foundSelected) {
-                    qDebug() << "Gui::TPlaylist::chooseRandomItem: selecting"
+                    qDebug() << "Gui::TPlaylist::getRandomItem: selecting"
                              << i->filename();
                     return i;
                 } else {
@@ -609,8 +609,22 @@ TPlaylistWidgetItem* TPlaylist::chooseRandomItem() const {
         idx = 0;
     } while (foundFreeItem);
 
-    qDebug() << "Gui::TPlaylist::chooseRandomItem: end of playlist";
+    qDebug() << "Gui::TPlaylist::getRandomItem: end of playlist";
     return 0;
+}
+
+bool TPlaylist::haveUnplayedItems() const {
+
+    QTreeWidgetItemIterator it(playlistWidget);
+    while (*it) {
+        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        if (!i->isFolder() && !i->played() && i->state() != PSTATE_FAILED) {
+            return true;
+        }
+        ++it;
+    }
+
+    return false;
 }
 
 void TPlaylist::startPlay() {
@@ -618,7 +632,7 @@ void TPlaylist::startPlay() {
 
     if (playlistWidget->topLevelItemCount() > 0) {
 		if (shuffleAct->isChecked())
-			playItem(chooseRandomItem());
+            playItem(getRandomItem());
 		else
             playItem(playlistWidget->firstPlaylistWidgetItem());
 	} else {
@@ -628,8 +642,7 @@ void TPlaylist::startPlay() {
 
 void TPlaylist::playItem(TPlaylistWidgetItem* item) {
 
-    while (item && (item->isFolder()
-                    || item->filename().isEmpty())) {
+    while (item && (item->isFolder() || item->filename().isEmpty())) {
         item = playlistWidget->getNextPlaylistWidgetItem(item);
     }
     if (item) {
@@ -648,14 +661,14 @@ void TPlaylist::playNext() {
 
     TPlaylistWidgetItem* item = 0;
 	if (shuffleAct->isChecked()) {
-		item = chooseRandomItem();
+        item = getRandomItem();
         if (item == 0 && repeatAct->isChecked()) {
             playlistWidget->clearPlayed();
-            item = chooseRandomItem();
+            item = getRandomItem();
 		}
     } else {
         item = playlistWidget->getNextPlaylistWidgetItem();
-        if (item == 0 && repeatAct->isChecked()) {
+        if (item == 0) {
             item = playlistWidget->firstPlaylistWidgetItem();
         }
 	}
@@ -666,7 +679,7 @@ void TPlaylist::playPrev() {
 	qDebug("Gui::TPlaylist::playPrev");
 
     TPlaylistWidgetItem* i = playlistWidget->getPreviousPlaylistWidgetItem();
-    if (i == 0 && repeatAct->isChecked()) {
+    if (i == 0) {
         i = playlistWidget->lastPlaylistWidgetItem();
     }
     if (i) {
@@ -860,14 +873,14 @@ void TPlaylist::enableActions() {
 
     // Prev/Next
     bool changed = false;
-    bool e = enable && ((c > 0 && repeatAct->isChecked())
-                        || playlistWidget->getNextPlaylistWidgetItem());
+    bool e = enable
+             && ((c > 0 && (!shuffleAct->isChecked() ||repeatAct->isChecked()))
+                 || (shuffleAct->isChecked() && haveUnplayedItems()));
     if (e != nextAct->isEnabled()) {
         nextAct->setEnabled(e);
         changed = true;
     }
-    e = enable && ((c > 0 && repeatAct->isChecked())
-                   || playlistWidget->getPreviousPlaylistWidgetItem());
+    e = enable && c > 0;
     if (e != prevAct->isEnabled()) {
         prevAct->setEnabled(e);
         changed = true;
