@@ -217,6 +217,12 @@ QString TPlaylistWidget::playingFile() const {
     return playing_item ? playing_item->filename() : "";
 }
 
+QString TPlaylistWidget::currentFile() const {
+
+    TPlaylistWidgetItem* w = currentPlaylistWidgetItem();
+    return w ? w->filename() : "";
+}
+
 TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
 
     QTreeWidgetItemIterator it(this);
@@ -232,12 +238,14 @@ TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
 }
 
 void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item) {
-    qDebug() << "Gui::TPlaylist::setPlayingItem";
+    qDebug() << "Gui::TPlaylistWidget::setPlayingItem";
 
     bool setCurrent;
     if (playing_item) {
-        if (playing_item->state() == PSTATE_PLAYING
-            || playing_item->state() == PSTATE_LOADING) {
+        // Set state previous playing item
+        if (playing_item != item
+            && (playing_item->state() == PSTATE_PLAYING
+            || playing_item->state() == PSTATE_LOADING)) {
             playing_item->setState(PSTATE_STOPPED);
         }
         setCurrent = playing_item == currentItem();

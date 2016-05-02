@@ -65,7 +65,7 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     main_window(mw),
     core(c) ,
     recursive_add_directory(true),
-    notify_sel_changed(true),
+    disable_enableActions(false),
     modified(false) {
 
     createTree();
@@ -108,8 +108,11 @@ void TPlaylist::createTree() {
 
     playlistWidget = new TPlaylistWidget(this);
     playlistWidget->setObjectName("playlist_tree");
+
     connect(playlistWidget, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
              this, SLOT(onItemActivated(QTreeWidgetItem*, int)));
+    connect(playlistWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+            this, SLOT(enableActions()));
 }
 
 void TPlaylist::createActions() {
@@ -695,7 +698,7 @@ void TPlaylist::resumePlay() {
 	}
 }
 
-bool TPlaylist::deleteFileFromDisk(const QString& filename) {
+bool TPlaylist::deleteFileFromDisk(const QString& filename, const QString& playingFile) {
 
     QFileInfo fi(filename);
 	if (!fi.exists()) {
@@ -716,8 +719,7 @@ bool TPlaylist::deleteFileFromDisk(const QString& filename) {
 
 	if (res == QMessageBox::Yes) {
 		// Cannot delete file on Windows when it is in use
-        if (filename == playingFile()
-            && core->state() != STATE_STOPPED) {
+        if (filename == playingFile && core->state() != STATE_STOPPED) {
             core->stop();
         }
 		if (QFile::remove(filename)) {
@@ -733,16 +735,20 @@ bool TPlaylist::deleteFileFromDisk(const QString& filename) {
 void TPlaylist::removeSelected(bool deleteFromDisk) {
 	qDebug("Gui::TPlaylist::removeSelected");
 
+    disable_enableActions = true;
+    QString playing = playingFile();
     QTreeWidgetItem* newCurrent = playlistWidget->currentItem();
+    do {
+        newCurrent = newCurrent->parent();
+    } while (newCurrent && newCurrent->isSelected());
 
     QTreeWidgetItemIterator it(playlistWidget, QTreeWidgetItemIterator::Selected);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        if (!deleteFromDisk || deleteFileFromDisk(i->filename())) {
+        if (!deleteFromDisk || deleteFileFromDisk(i->filename(), playing)) {
+            qDebug() << "Gui::TPlaylist::removeSelected: removing"
+                     << i->filename();
             QTreeWidgetItem* parent = i->parent();
-            if (i == newCurrent) {
-                newCurrent = parent;
-            }
             delete i;
 
             // Clean up empty folders
@@ -759,11 +765,14 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         it++;
     }
 
+    playlistWidget->playing_item = findFilename(playing);
     if (newCurrent) {
         playlistWidget->setCurrentItem(newCurrent);
     } else {
         playlistWidget->setCurrentItem(playlistWidget->firstPlaylistWidgetItem());
     }
+    disable_enableActions = false;
+    enableActions();
 }
 
 void TPlaylist::removeSelectedFromDisk() {
@@ -775,7 +784,6 @@ void TPlaylist::removeAll() {
 }
 
 void TPlaylist::showContextMenu(const QPoint & pos) {
-	qDebug("Gui::TPlaylist::showContextMenu: x: %d y: %d", pos.x(), pos.y());
 
 	if (!popup->isVisible()) {
         Action::execPopup(this, popup, playlistWidget->viewport()->mapToGlobal(pos));
@@ -803,29 +811,32 @@ void TPlaylist::onVisibilityChanged(bool) {
 }
 
 void TPlaylist::enableActions() {
+    qDebug() << "Gui::TPlaylist::enableActions";
+
+    if (disable_enableActions) {
+        qDebug() << "Gui::TPlaylist::enableActions: disabled";
+        return;
+    }
 
     // Note: there is always something selected when c > 0
     int c = playlistWidget->topLevelItemCount();
-    TCoreState s = core->state();
-    QString state_str = core->stateToString();
-    qDebug() << "Gui::TPlaylist::enableActions: state" << state_str
-             << "top level count" << c
-             << "visible" << isVisible();
-
     saveAct->setEnabled(c > 0);
 
+    TCoreState s = core->state();
     bool enable = s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED;
     TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
     TPlaylistWidgetItem* current_item = playlistWidget->currentPlaylistWidgetItem();
 
     playOrPauseAct->setEnabled(enable
-        && (core->mdat.filename.count() || playing_item || current_item));
+        && (playing_item || current_item || core->mdat.filename.count()));
 
     if (!enable) {
-        playOrPauseAct->setTextAndTip(state_str);
+        playOrPauseAct->setTextAndTip(core->stateToString());
         playOrPauseAct->setIcon(Images::icon("loading"));
     } else if (s == STATE_PLAYING) {
-        playing_item->setState(PSTATE_PLAYING);
+        if (playing_item && playing_item->state() != PSTATE_PLAYING) {
+            playing_item->setState(PSTATE_PLAYING);
+        }
         if (current_item && isVisible() && current_item != playing_item) {
             playOrPauseAct->setTextAndTip(tr("&Play selected"));
             playOrPauseAct->setIcon(Images::icon("play"));

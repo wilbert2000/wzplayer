@@ -139,7 +139,7 @@ private:
 	// Preferences
 	bool recursive_add_directory;
 
-    bool notify_sel_changed;
+    bool disable_enableActions;
 
     bool modified;
     QString title;
@@ -162,7 +162,7 @@ private:
 
     void swapItems(int item1, int item2);
 
-    bool deleteFileFromDisk(const QString& filename);
+    bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
 
 	void loadM3u(const QString& file, bool clear = true, bool play = true);
 	bool saveM3u(QString file);
