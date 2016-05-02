@@ -244,7 +244,7 @@ void TPreferences::reset() {
 	// 360p 16:9 is 640 x 360 (360 + 99 = 459)
 	default_size = QSize(640, 459);
 
-	use_single_window = true;
+    use_single_window = false;
     save_window_size_on_exit = false;
 	resize_on_load = true;
 	resize_on_docking = true;
