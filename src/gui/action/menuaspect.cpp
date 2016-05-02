@@ -30,8 +30,9 @@ TMenuAspect::TMenuAspect(TBase* mw, TCore* c) :
 	new TActionGroupItem(this, group, "aspect_14_9", TAspectRatio::aspectIDToString(6), TAspectRatio::Aspect149);
 	new TActionGroupItem(this, group, "aspect_16_10", TAspectRatio::aspectIDToString(7), TAspectRatio::Aspect1610);
 	new TActionGroupItem(this, group, "aspect_16_9", TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169);
-	new TActionGroupItem(this, group, "aspect_2.35_1", TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect235);
-	addSeparator();
+    new TActionGroupItem(this, group, "aspect_2_1", TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect2);
+    new TActionGroupItem(this, group, "aspect_2.35_1", TAspectRatio::aspectIDToString(10), TAspectRatio::Aspect235);
+    addSeparator();
     aspectDisabledAct = new TActionGroupItem(this, group, "aspect_none", tr("&Disabled"), TAspectRatio::AspectNone);
 
 	connect(group, SIGNAL(activated(int)), core, SLOT(setAspectRatio(int)));

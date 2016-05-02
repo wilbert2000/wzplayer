@@ -15,7 +15,8 @@ const double TAspectRatio::RATIOS[] = {
 	(double) 14 / 9,  // 1.5r
 	(double) 16 / 10, // 1.6
 	(double) 16 / 9,  // 1.7r
-	2.35
+    2,
+    2.35
 };
 
 // List of aspect ratio names used in menus and pretty strings
@@ -29,7 +30,8 @@ const char* TAspectRatio::RATIO_NAMES[] = {
     QT_TR_NOOP("&14:9"),
     QT_TR_NOOP("1&6:10"),
     QT_TR_NOOP("16:&9"),
-    QT_TR_NOOP("&2.35:1")
+    QT_TR_NOOP("&2:1"),
+    QT_TR_NOOP("2.35:1")
 };
 
 // Convert saved aspect back to TMenuID
@@ -76,38 +78,40 @@ TAspectRatio::TAspectRatio()
 
 TAspectRatio::TMenuID TAspectRatio::nextMenuID() const {
 
-	switch(id) {
-		case AspectAuto: return Aspect11;
-		case Aspect43: return Aspect118;
-		case Aspect54: return Aspect43;
-		case Aspect149: return Aspect1610;
-		case Aspect169: return Aspect235;
-		case Aspect1610: return Aspect169;
-		case Aspect235: return AspectNone;
-		case Aspect11: return Aspect54;
-		case Aspect32: return Aspect149;
-		case Aspect1410: return Aspect32;
-		case Aspect118: return Aspect1410;
-		default: return AspectAuto;
-	}
+    switch(id) {
+        case AspectAuto: return Aspect11;
+        case Aspect11: return Aspect54;
+        case Aspect54: return Aspect43;
+        case Aspect43: return Aspect118;
+        case Aspect118: return Aspect1410;
+        case Aspect1410: return Aspect32;
+        case Aspect32: return Aspect149;
+        case Aspect149: return Aspect1610;
+        case Aspect1610: return Aspect169;
+        case Aspect169: return Aspect2;
+        case Aspect2: return Aspect235;
+        case Aspect235: return AspectNone;
+        default: return AspectAuto;
+    }
 }
 
 double TAspectRatio::menuIDToDouble(Settings::TAspectRatio::TMenuID id) {
 
-	switch (id) {
-		case AspectNone: return 0;
-		case Aspect43: return (double) 4 / 3;
-		case Aspect169: return (double) 16 / 9;
-		case Aspect149: return (double) 14 / 9;
-		case Aspect1610: return (double) 16 / 10;
-		case Aspect54: return (double) 5 / 4;
-		case Aspect235: return 2.35;
-		case Aspect11: return 1;
-		case Aspect32: return (double) 3 / 2;
-		case Aspect1410: return (double) 14 / 10;
-		case Aspect118: return (double) 11 / 8;
-		default: return -1;
-	}
+    switch (id) {
+        case AspectNone: return 0;
+        case Aspect11: return 1;
+        case Aspect54: return (double) 5 / 4;
+        case Aspect43: return (double) 4 / 3;
+        case Aspect1610: return (double) 16 / 10;
+        case Aspect169: return (double) 16 / 9;
+        case Aspect1410: return (double) 14 / 10;
+        case Aspect149: return (double) 14 / 9;
+        case Aspect32: return (double) 3 / 2;
+        case Aspect118: return (double) 11 / 8;
+        case Aspect2: return 2;
+        case Aspect235: return 2.35;
+        default: return -1;
+    }
 }
 
 double TAspectRatio::toDouble() const {

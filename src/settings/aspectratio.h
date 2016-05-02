@@ -24,12 +24,13 @@ public:
 		Aspect11 = 8,
 		Aspect32 = 9,
 		Aspect1410 = 10,
-		Aspect118 = 11
+        Aspect118 = 11,
+        Aspect2 = 12
 	};
-	static const int MAX_MENU_ID = 11;
+    static const int MAX_MENU_ID = 12;
 
 	// List of predefined aspect ratios
-	static const unsigned int RATIOS_COUNT = 10;
+    static const unsigned int RATIOS_COUNT = 11;
 	static const double RATIOS[RATIOS_COUNT];
 	static const char* RATIO_NAMES[RATIOS_COUNT];
 	static TMenuID variantToTMenuID(const QVariant& id);
