@@ -156,7 +156,7 @@ private:
 
     void addFile(QTreeWidgetItem* parent, const QString& filename);
     void addFileOrDir(QTreeWidgetItem* parent, const QString& filename);
-    void addDirectory(QTreeWidgetItem* parent, const QString& dir);
+    bool addDirectory(QTreeWidgetItem* parent, const QString& dir);
 
     TPlaylistWidgetItem* chooseRandomItem() const;
 

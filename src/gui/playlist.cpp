@@ -395,7 +395,7 @@ void TPlaylist::addFile(QTreeWidgetItem* parent, const QString &filename) {
 	}
 }
 
-void TPlaylist::addDirectory(QTreeWidgetItem* parent, const QString &dir) {
+bool TPlaylist::addDirectory(QTreeWidgetItem* parent, const QString &dir) {
     qDebug() << "Gui::TPlaylist::addDirectory:" << dir;
 
     static TExtensions ext;
@@ -426,9 +426,11 @@ void TPlaylist::addDirectory(QTreeWidgetItem* parent, const QString &dir) {
     if (w->childCount()) {
         parent->addChild(w);
         pref->latest_dir = dir;
-    } else {
-        delete w;
+        return true;
     }
+
+    delete w;
+    return false;
 }
 
 void TPlaylist::addDirectory() {
@@ -438,7 +440,9 @@ void TPlaylist::addDirectory() {
 					pref->latest_dir);
 
 	if (!s.isEmpty()) {
-        addDirectory(playlistWidget->root(), s);
+        if (!addDirectory(playlistWidget->root(), s)) {
+            msg(tr("Found no files to play in %s").arg(s));
+        }
 	}
 }
 
@@ -522,7 +526,6 @@ void TPlaylist::addUrls() {
 		playlist_path = pref->latest_dir;
         foreach(const QString url, d.lines()) {
             if (url.count()) {
-                // TODO:
                 cleanAndAddItem(url, "", 0);
             }
 		}
