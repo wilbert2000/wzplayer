@@ -109,6 +109,8 @@ void TPlaylist::createTree() {
     playlistWidget = new TPlaylistWidget(this);
     playlistWidget->setObjectName("playlist_tree");
 
+    connect(playlistWidget, SIGNAL(modified()),
+            this, SLOT(setModified()));
     connect(playlistWidget, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
              this, SLOT(onItemActivated(QTreeWidgetItem*, int)));
     connect(playlistWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),

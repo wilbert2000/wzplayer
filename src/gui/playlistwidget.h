@@ -88,9 +88,9 @@ private:
 
 
 class TPlaylistWidget : public QTreeWidget {
+    Q_OBJECT
 public:
     explicit TPlaylistWidget(QWidget* parent);
-
 
     TPlaylistWidgetItem* playing_item;
 
@@ -114,6 +114,12 @@ public:
     void clearPlayed();
     void clr();
     QTreeWidgetItem* root() const { return invisibleRootItem(); }
+
+signals:
+    void modified();
+
+protected:
+    virtual void dropEvent(QDropEvent*);
 
 private:
     int countChildren(QTreeWidgetItem* w) const;

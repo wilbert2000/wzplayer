@@ -176,7 +176,6 @@ private:
 
 	void loadIni(const QString& file, bool clear = true, bool play = true);
 
-    void setModified(bool mod = true);
     void setWinTitle(QString s = 0);
     void setPlaylistFilename(const QString& name);
 
@@ -198,6 +197,7 @@ private slots:
 
     void editCurrentItem();
     void editItem(TPlaylistWidgetItem* item);
+    void setModified(bool mod = true);
 
     void copySelected();
     void paste();

@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QHeaderView>
 #include <QTreeWidgetItemIterator>
+#include <QDropEvent>
 
 #include "images.h"
 #include "helper.h"
@@ -73,9 +74,14 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     QTreeWidgetItem(parent, after),
     playlistItem(filename, name, duration, isDir) {
 
+    Qt::ItemFlags flags = Qt::ItemIsSelectable
+                          | Qt::ItemIsDragEnabled
+                          | Qt::ItemIsEnabled;
     if (isDir) {
+        setFlags(flags | Qt::ItemIsDropEnabled);
         setIcon(COL_PLAY, folderIcon);
     } else {
+        setFlags(flags | Qt::ItemIsEditable);
         setIcon(COL_PLAY, notPlayedIcon);
     }
 
@@ -185,7 +191,9 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     setDragEnabled(true);
     setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::DragDrop);
+    viewport()->setAcceptDrops(true);
+    //setDragDropMode(QAbstractItemView::DragDrop);
+    setDragDropMode(QAbstractItemView::InternalMove);
     setDragDropOverwriteMode(false);
     setDropIndicatorShown(true);
     setDefaultDropAction(Qt::MoveAction);
@@ -381,6 +389,25 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem(TPlaylistWid
 
 TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem() const {
     return getPreviousPlaylistWidgetItem(playing_item);
+}
+
+// Fix Qt not selecting the drop
+void TPlaylistWidget::dropEvent(QDropEvent *e) {
+    qDebug() << "Gui::TPlaylistWidget::dropEvent" << e->mimeData()->formats();
+
+    QTreeWidgetItem* current = currentItem();
+    QList<QTreeWidgetItem*>	selection = selectedItems();
+
+    QTreeWidget::dropEvent(e);
+
+    if (e->isAccepted()) {
+        clearSelection();
+        setCurrentItem(current);
+        for(int i = 0; i < selection.count(); i++) {
+            selection[i]->setSelected(true);
+        }
+        emit modified();
+    }
 }
 
 } // namespace Gui
