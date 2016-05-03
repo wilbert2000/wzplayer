@@ -168,9 +168,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 
 TCore::~TCore() {
 
-    stopPlayer();
-	proc->terminate();
-
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef DISABLE_SCREENSAVER
 	delete win_screensaver;
