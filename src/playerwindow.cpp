@@ -176,8 +176,8 @@ void TPlayerWindow::updateSizeFactor() {
     if (!video_size.isEmpty()) {
         double old_factor = pref->size_factor;
         pref->size_factor = getSizeFactor();
-        qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
-               old_factor, pref->size_factor);
+        //qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
+        //       old_factor, pref->size_factor);
         // Need to emit if old == new to detect changes by user
         emit videoSizeFactorChanged(old_factor, pref->size_factor);
     }
