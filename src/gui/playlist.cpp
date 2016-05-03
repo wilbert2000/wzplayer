@@ -134,8 +134,6 @@ void TPlaylist::createActions() {
     // Add MCE remote key
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
     connect(playOrPauseAct, SIGNAL(triggered()), this, SLOT(playOrPause()));
-    connect(this, SIGNAL(visibilityChanged(bool)),
-            this, SLOT(onVisibilityChanged(bool)));
 
     // Stop action, only in play menu, but owned by playlist
     stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
@@ -583,19 +581,16 @@ void TPlaylist::onShuffleToggled(bool toggled) {
 }
 
 void TPlaylist::playOrPause() {
-    qDebug() << "Gui::TPlaylist:playOrPause: state" << core->stateToString()
-             << "visible" << isVisible();
+    qDebug() << "Gui::TPlaylist:playOrPause: state" << core->stateToString();
 
-    TPlaylistWidgetItem* item = playlistWidget->currentPlaylistWidgetItem();
-
-    if (item && isVisible() && item != playlistWidget->playing_item) {
-        playItem(item);
-    } else if (core->state() == STATE_PLAYING) {
+    if (core->state() == STATE_PLAYING) {
         core->pause();
     } else 	if (core->state() == STATE_PAUSED) {
         core->play();
     } else if (playlistWidget->playing_item) {
         playItem(playlistWidget->playing_item);
+    } else if (playlistWidget->currentItem()) {
+        playItem(playlistWidget->currentPlaylistWidgetItem());
     } else {
         core->open();
     }
@@ -851,13 +846,6 @@ void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
     }
 }
 
-void TPlaylist::onVisibilityChanged(bool) {
-
-    // Play depends on visible
-    if (core->state() == STATE_PLAYING)
-        enableActions();
-}
-
 void TPlaylist::enableActions() {
 
     if (disable_enableActions) {
@@ -885,13 +873,8 @@ void TPlaylist::enableActions() {
         if (playing_item && playing_item->state() != PSTATE_PLAYING) {
             playing_item->setState(PSTATE_PLAYING);
         }
-        if (current_item && isVisible() && current_item != playing_item) {
-            playOrPauseAct->setTextAndTip(tr("&Play selected"));
-            playOrPauseAct->setIcon(Images::icon("play"));
-        } else {
-            playOrPauseAct->setTextAndTip(tr("&Pause"));
-            playOrPauseAct->setIcon(Images::icon("pause"));
-        }
+        playOrPauseAct->setTextAndTip(tr("&Pause"));
+        playOrPauseAct->setIcon(Images::icon("pause"));
     } else if (playing_item && playing_item->state() == PSTATE_LOADING) {
         playOrPauseAct->setTextAndTip(tr("Loading"));
         playOrPauseAct->setIcon(Images::icon("loading"));

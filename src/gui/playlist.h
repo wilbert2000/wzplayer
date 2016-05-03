@@ -207,7 +207,6 @@ private slots:
     void enableActions();
 
     void onItemActivated(QTreeWidgetItem* item, int);
-    void onVisibilityChanged(bool);
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
     void onStartPlayingNewMedia();
