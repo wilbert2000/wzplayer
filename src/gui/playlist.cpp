@@ -1165,51 +1165,6 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
 	}
 }
 
-void TPlaylist::onDropRow(int, int) {
-    /*
-    qDebug() << "Gui::TPlaylist:onDropRow:" << srow << drow
-             << playlistWidget->dropRows;
-
-    int delta = drow - srow;
-    if (delta == 0) {
-        return;
-    }
-
-    QList<int>* rows = &playlistWidget->dropRows;
-    if (delta > 0) {
-        qSort(rows->begin(), rows->end(), qGreater<int>());
-    } else {
-        qSort(*rows);
-    }
-
-    notify_sel_changed = false;
-    playlistWidget->clearSelection();
-
-    foreach(int s, *rows) {
-        int d = s + delta;
-        qDebug() << s << d;
-        // Delete and insert
-        pl.insert(d, pl.takeAt(s));
-        // Set destination selected
-        playlistWidget->selRow(d, true);
-        // Keep playing item uptodate
-        if (delta > 0 && s < playing_item && d >= playing_item) {
-            playing_item--;
-        } else if (delta < 0 && s > playing_item && d <= playing_item) {
-            playing_item++;
-        } else if (s == playing_item) {
-            playing_item = d;
-        }
-    }
-    rows->clear();
-
-    updateView();
-    notify_sel_changed = true;
-    enableActions();
-    setModified();
-    */
-}
-
 // Drag&drop
 void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
     qDebug() << "Gui::TPlaylist::dragEnterEvent" << e->mimeData()->formats();
@@ -1239,8 +1194,7 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 
         if (files.count()) {
             QTreeWidgetItem* item = playlistWidget->itemAt(e->pos()
-                                                           - playlistWidget->pos()
-                                                           - playlistWidget->viewport()->pos());
+                - playlistWidget->pos() - playlistWidget->viewport()->pos());
             addFiles(files, item);
             setModified();
         }
