@@ -920,6 +920,8 @@ void TBase::closeEvent(QCloseEvent* e)  {
         exitFullscreen();
         save();
         e->accept();
+    } else {
+        e->ignore();
     }
 }
 

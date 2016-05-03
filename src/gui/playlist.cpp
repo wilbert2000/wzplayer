@@ -1258,8 +1258,13 @@ void TPlaylist::showEvent(QShowEvent*) {
 }
 
 void TPlaylist::closeEvent(QCloseEvent* e)  {
-	saveSettings();
-	e->accept();
+
+    if (maybeSave()) {
+        saveSettings();
+        e->accept();
+    } else {
+        e->ignore();
+    }
 }
 
 void TPlaylist::loadM3u(const QString&file, bool clear, bool play) {
