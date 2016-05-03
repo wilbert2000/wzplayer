@@ -41,31 +41,6 @@ public:
 	virtual void saveConfig();
 
 protected:
-	virtual void changeEvent(QEvent* event);
-
-	void updateShowAllAct();
-
-protected slots:
-	// Reimplemented methods
-	virtual void closeWindow();
-	virtual void setWindowCaption(const QString& title);
-	virtual void resizeWindow(int w, int h);
-	virtual void onMediaInfoChanged();
-	// New
-	virtual void trayIconActivated(QSystemTrayIcon::ActivationReason);
-	virtual void toggleShowAll();
-	virtual void showAll(bool b);
-	virtual void showAll();
-	virtual void quit();
-#ifdef Q_OS_OS2
-	void trayAvailable();
-#endif
-
-	virtual void showPlaylist(bool b);
-
-	void onTopLevelChanged(bool);
-
-protected:
 	QSystemTrayIcon* tray;
 	QMenu* context_menu;
 
@@ -76,19 +51,47 @@ protected:
 	// To save state
 	bool mainwindow_visible;
     bool restore_playlist;
-    double restore_size_factor;
-    double old_size_factor;
 
 	QDockWidget* playlistdock;
 
+    virtual void changeEvent(QEvent* event);
+    virtual void showEvent(QShowEvent* event);
+    virtual void hideEvent(QHideEvent* event);
+
+protected slots:
+    // Reimplemented methods
+    virtual void closeWindow();
+    virtual void setWindowCaption(const QString& title);
+    virtual void onMediaInfoChanged();
+    virtual void showPlaylist(bool v);
+
+    // New
+    virtual void trayIconActivated(QSystemTrayIcon::ActivationReason);
+    virtual void toggleShowAll();
+    virtual void showAll(bool b);
+    virtual void showAll();
+    virtual void quit();
+#ifdef Q_OS_OS2
+    void trayAvailable();
+#endif
+
+
 private:
-	void switchToTray();
+    double restore_size_factor;
+    double old_size_factor;
+    bool posted_restore_size_factor;
+    bool block_restore;
+
+    void switchToTray();
 	void retranslateStrings();
+    void updateShowAllAct();
 
 private slots:
     void onDockVisibilityChanged(bool visible);
+    void onTopLevelChanged(bool);
     void onvideoSizeFactorChanged(double, double);
     void resizeWindowToVideoRestoreSize();
+    void clearBlockRestore();
     void setWinTitle();
 };
 

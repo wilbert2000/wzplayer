@@ -50,7 +50,9 @@ TBasePlus::TBasePlus() :
     mainwindow_visible(true),
     restore_playlist(false),
     restore_size_factor(0),
-    old_size_factor(0) {
+    old_size_factor(0),
+    posted_restore_size_factor(false),
+    block_restore(false) {
 
 	tray = new QSystemTrayIcon(this);
 	tray->setToolTip(TConfig::PROGRAM_NAME);
@@ -100,7 +102,7 @@ TBasePlus::TBasePlus() :
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
     playlistdock->setAcceptDrops(true);
-    playlistdock->setFloating(true); // Floating by default
+    playlistdock->setFloating(true);
     playlistdock->hide();
 
     addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
@@ -175,9 +177,7 @@ void TBasePlus::switchToTray() {
 
 	exitFullscreen();
 	showAll(false); // Hide windows
-    if (core->state() == STATE_PLAYING) {
-		core->stop();
-    }
+    core->stop();
 
 	if (pref->balloon_count > 0) {
 		tray->showMessage(TConfig::PROGRAM_NAME,
@@ -225,7 +225,7 @@ void TBasePlus::loadConfig() {
 
 	TBase::loadConfig();
 
-    if (!state_restored) {
+    if (!state_restored && playlistdock->isFloating()) {
         QRect r(playlistdock->pos(), QSize(420, 500));
         playlistdock->setGeometry(r);
         TDesktop::centerWindow(playlistdock);
@@ -245,16 +245,6 @@ void TBasePlus::loadConfig() {
 
 	setWinTitle();
 	updateShowAllAct();
-}
-
-void TBasePlus::resizeWindow(int w, int h) {
-    // qDebug("Gui::TBasePlus::resizeWindow: %d, %d", w, h);
-
-    if (tray->isVisible() && !isVisible()) {
-        showAll(true);
-    }
-
-    TBase::resizeWindow(w, h);
 }
 
 void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
@@ -307,40 +297,65 @@ void TBasePlus::onMediaInfoChanged() {
 	tray->setToolTip(windowTitle());
 }
 
-void TBasePlus::showPlaylist(bool b) {
-    qDebug("Gui::TBasePlus::showPlaylist: %d", b);
-    // TODO: use QDockWidget::toggleViewAction()
+
+// The following is an awfull lot of code to keep the video panel
+// the same size before and after docking...
+
+void TBasePlus::showEvent(QShowEvent* event) {
+
+    TBase::showEvent(event);
+    // Cancel resizing
+    restore_size_factor = 0;
+}
+
+void TBasePlus::hideEvent(QHideEvent* event) {
+
+    TBase::hideEvent(event);
+    // Block resizing
+    block_restore = true;
+    QTimer::singleShot(500, this, SLOT(clearBlockRestore()));
+}
+
+void TBasePlus::clearBlockRestore() {
+    block_restore = false;
+}
+
+void TBasePlus::showPlaylist(bool v) {
+    qDebug("Gui::TBasePlus::showPlaylist: %d", v);
 
     restore_playlist = false;
     if (playlistdock->isFloating()) {
-        if (b) {
+        if (v) {
             restore_playlist = true;
         }
     } else if (pref->resize_on_docking && !pref->fullscreen) {
         restore_size_factor = pref->size_factor;
     }
+
     // Triggers onDockVisibilityChanged
-    playlistdock->setVisible(b);
+    playlistdock->setVisible(v);
 }
 
+// Try to save the size factor used before the dock resized the video panel
 void TBasePlus::onvideoSizeFactorChanged(double old_size, double size) {
-    qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: currently saved old size"
-             << old_size_factor << "currently saved restore size"
-             << restore_size_factor << switching_to_fullscreen;
+    //qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: currently saved old size"
+    //         << old_size_factor << "currently saved restore size"
+    //         << restore_size_factor << switching_to_fullscreen;
 
     if (switching_to_fullscreen) {
         old_size_factor = -1;
     } else if (pref->fullscreen || restore_size_factor > 0) {
-        qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: not saving old size" << old_size;
+        //qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: not saving old size" << old_size;
     } else if (old_size_factor == -1) {
-        qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: saving new size" << size;
+        //qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: saving new size" << size;
         old_size_factor = size;
     } else {
-        qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: saving old size" << old_size;
+        //qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: saving old size" << old_size;
         old_size_factor = old_size;
     }
 }
 
+// Slot to resize the video to its previous size
 void TBasePlus::resizeWindowToVideoRestoreSize() {
 
     // Wait until mouse released
@@ -349,19 +364,18 @@ void TBasePlus::resizeWindowToVideoRestoreSize() {
         return;
     }
 
-    if (restore_size_factor > 0) {
+    if (restore_size_factor > 0.15) {
         qDebug() << "Gui::TBasePlus::resizeWindowToVideoRestoreSize: restoring size factor from"
                  << pref->size_factor << "to" << restore_size_factor;
         pref->size_factor = restore_size_factor;
+        resizeWindowToVideo();
+        restore_size_factor = 0;
     } else {
-        qDebug() << "Gui::TBasePlus::resizeWindowToVideoRestoreSize: selecting new size factor from"
-                 << pref->size_factor;
-        pref->size_factor = getNewSizeFactor();
+        qDebug() << "Gui::TBasePlus::resizeWindowToVideoRestoreSize: canceled resize";
     }
-    resizeWindowToVideo();
 
     old_size_factor = pref->size_factor;
-    restore_size_factor = 0;
+    posted_restore_size_factor = false;
 }
 
 void TBasePlus::onTopLevelChanged(bool topLevel) {
@@ -372,17 +386,22 @@ void TBasePlus::onTopLevelChanged(bool topLevel) {
         && core->stateReady()
         && !pref->fullscreen
         && !switching_to_fullscreen
-        && restore_size_factor == 0) {
+        && restore_size_factor == 0
+        && !posted_restore_size_factor) {
+
         if (topLevel) {
+            // We became toplevel and the video size has not yet changed
             restore_size_factor = pref->size_factor;
             old_size_factor = restore_size_factor;
             qDebug() << "Gui::TBasePlus::onTopLevelChanged: saved size factor"
                      << restore_size_factor;
         } else {
+            // We are docked now and the video size already changed
             restore_size_factor = old_size_factor;
             qDebug() << "Gui::TBasePlus::onTopLevelChanged: saved old size factor"
                      << restore_size_factor;
         }
+        posted_restore_size_factor = true;
         QTimer::singleShot(200, this, SLOT(resizeWindowToVideoRestoreSize()));
     }
 }
@@ -391,27 +410,40 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
     qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: visible" << visible
              << "floating" << playlistdock->isFloating();
 
+    if (block_restore) {
+        block_restore = false;
+        qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: blocked restore";
+        return;
+    }
+
     if (playlistdock->isFloating()) {
         if (visible) {
             TDesktop::keepInsideDesktop(playlistdock);
         }
-    } else if (pref->resize_on_docking
-               && !pref->fullscreen
-               && !switching_to_fullscreen
-               && core->stateReady()) {
+        return;
+    }
 
-        // Restore size already set by showPlaylist()
+    if (pref->resize_on_docking
+        && !pref->fullscreen
+        && !switching_to_fullscreen
+        && core->stateReady()
+        && !posted_restore_size_factor) {
+
+        // Restore size already set by showPlaylist() if > 0
         if (restore_size_factor == 0) {
             if (visible) {
+                // Dock became visible, video size already changed
                 qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: selecting old size factor";
                 restore_size_factor = old_size_factor;
             } else {
+                // Dock is hiding, video size not yet changed
                 qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: selecting current size factor";
                 restore_size_factor = pref->size_factor;
             }
         }
         qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: posting resizeWindowToVideoRestoreSize() with size factor"
                  << restore_size_factor;
+        posted_restore_size_factor = true;
         QTimer::singleShot(200, this, SLOT(resizeWindowToVideoRestoreSize()));
     }
 }
