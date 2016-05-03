@@ -296,6 +296,9 @@ void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item) {
     playing_item = item;
     if (playing_item && setCurrent) {
         setCurrentItem(playing_item);
+    } else {
+        // Hack to trigger playlist enableActions...
+        emit currentItemChanged(currentItem(), currentItem());
     }
 }
 

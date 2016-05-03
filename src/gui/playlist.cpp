@@ -1017,7 +1017,6 @@ void TPlaylist::onMediaEOF() {
 void TPlaylist::onTitleTrackChanged(int id) {
 	qDebug("Gui::TPlaylist::onTitleTrackChanged: %d", id);
 
-    // TODO: enableactions?
 	if (id < 0) {
         playlistWidget->setPlayingItem(0);
 		return;
