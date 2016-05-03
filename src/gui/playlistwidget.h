@@ -56,6 +56,7 @@ private:
 class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
     TPlaylistWidgetItem(QTreeWidgetItem* parent,
+                        QTreeWidgetItem* after,
                         const QString& filename,
                         const QString& name,
                         double duration,
@@ -95,6 +96,7 @@ public:
 
     int count() const;
     TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
+    QTreeWidgetItem* playlistWidgetFolder(QTreeWidgetItem* w) const;
     QTreeWidgetItem* currentPlaylistWidgetFolder() const;
     TPlaylistWidgetItem* firstPlaylistWidgetItem() const;
     TPlaylistWidgetItem* lastPlaylistWidgetItem() const;

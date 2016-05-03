@@ -1818,11 +1818,15 @@ void TBase::dragEnterEvent(QDragEnterEvent *e) {
     if (e->mimeData()->hasUrls()) {
         if (e->proposedAction() & Qt::CopyAction) {
             e->acceptProposedAction();
-        } else if (e->possibleActions() & Qt::CopyAction) {
+            return;
+        }
+        if (e->possibleActions() & Qt::CopyAction) {
             e->setDropAction(Qt::CopyAction);
             e->accept();
+            return;
         }
 	}
+    QMainWindow::dragEnterEvent(e);
 }
 
 void TBase::dropEvent(QDropEvent *e) {
@@ -1831,16 +1835,14 @@ void TBase::dropEvent(QDropEvent *e) {
     if (e->mimeData()->hasUrls()) {
         QStringList files;
         foreach(const QUrl url, e->mimeData()->urls()) {
-            if (url.scheme() == "file") {
-                files.append(url.toLocalFile());
-            } else {
-                files.append(url.toString());
-            }
+            files.append(url.toString());
         }
         qDebug("Gui::TBase::dropEvent: number of files: %d", files.count());
         openFiles(files);
         e->accept();
+        return;
     }
+    QMainWindow::dropEvent(e);
 }
 
 void TBase::showContextMenu() {

@@ -57,19 +57,26 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
     return false;
 }
 
+QIcon folderIcon;
+QIcon notPlayedIcon;
+QIcon okIcon;
+QIcon loadingIcon;
+QIcon playIcon;
+QIcon failedIcon;
 
 TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
+                                         QTreeWidgetItem* after,
                                          const QString& filename,
                                          const QString& name,
                                          double duration,
                                          bool isDir) :
-    QTreeWidgetItem(parent),
+    QTreeWidgetItem(parent, after),
     playlistItem(filename, name, duration, isDir) {
 
     if (isDir) {
-        setIcon(COL_PLAY, Images::icon("folder"));
+        setIcon(COL_PLAY, folderIcon);
     } else {
-        setIcon(COL_PLAY, Images::icon("not_played"));
+        setIcon(COL_PLAY, notPlayedIcon);
     }
 
     setText(COL_NAME, playlistItem.name());
@@ -96,19 +103,19 @@ void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
     switch (state) {
         case PSTATE_STOPPED:
             if (playlistItem.played()) {
-                setIcon(COL_PLAY, Images::icon("ok"));
+                setIcon(COL_PLAY, okIcon);
             } else {
-                setIcon(COL_PLAY, Images::icon("not_played"));
+                setIcon(COL_PLAY, notPlayedIcon);
             }
             break;
         case PSTATE_LOADING:
-            setIcon(COL_PLAY, Images::icon("loading"));
+            setIcon(COL_PLAY, loadingIcon);
             break;
         case PSTATE_PLAYING:
-            setIcon(COL_PLAY, Images::icon("play"));
+            setIcon(COL_PLAY, playIcon);
             break;
         case PSTATE_FAILED:
-            setIcon(COL_PLAY, Images::icon("failed"));
+            setIcon(COL_PLAY, failedIcon);
             break;
     }
 }
@@ -134,12 +141,13 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
     playlistItem.setPlayed(played);
     if (playlistItem.state() == PSTATE_STOPPED) {
         if (played) {
-            setIcon(COL_PLAY, Images::icon("ok"));
+            setIcon(COL_PLAY, okIcon);
         } else {
-            setIcon(COL_PLAY, Images::icon("not_played"));
+            setIcon(COL_PLAY, notPlayedIcon);
         }
     }
 }
+
 
 TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     QTreeWidget(parent),
@@ -160,7 +168,17 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     //header()->setSortIndicator(COL_NAME, Qt::AscendingOrder);
     //header()->setSortIndicatorShown(true);
 
-    setIconSize(QSize(22, 22));
+    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirClosedIcon),
+                         QIcon::Normal, QIcon::Off);
+    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirOpenIcon),
+                         QIcon::Normal, QIcon::On);
+    notPlayedIcon.addPixmap(style()->standardPixmap(QStyle::SP_FileIcon));
+    QSize iconSize = folderIcon.actualSize(QSize(22,22));
+    setIconSize(iconSize);
+    okIcon = Images::icon("ok", iconSize.width());
+    loadingIcon = Images::icon("loading", iconSize.width());
+    playIcon = Images::icon("play", iconSize.width());
+    failedIcon = Images::icon("failed", iconSize.width());
 
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -196,10 +214,10 @@ TPlaylistWidgetItem* TPlaylistWidget::currentPlaylistWidgetItem() const {
     return static_cast<TPlaylistWidgetItem*>(currentItem());
 }
 
-QTreeWidgetItem* TPlaylistWidget::currentPlaylistWidgetFolder() const {
+QTreeWidgetItem* TPlaylistWidget::playlistWidgetFolder(QTreeWidgetItem* w) const {
 
-    TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(currentItem());
-    if (i) {
+    if (w && w != root()) {
+        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(w);
         if (i->isFolder()) {
             return i;
         } else if (i->parent()) {
@@ -207,6 +225,10 @@ QTreeWidgetItem* TPlaylistWidget::currentPlaylistWidgetFolder() const {
         }
     }
     return root();
+}
+
+QTreeWidgetItem* TPlaylistWidget::currentPlaylistWidgetFolder() const {
+    return playlistWidgetFolder(currentItem());
 }
 
 TPlaylistWidgetItem* TPlaylistWidget::firstPlaylistWidgetItem() const {

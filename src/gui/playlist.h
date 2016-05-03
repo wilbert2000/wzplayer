@@ -63,7 +63,7 @@ public:
     }
 
 	void clear();
-    void addFiles(const QStringList& files, bool insert = false);
+    void addFiles(const QStringList& files, QTreeWidgetItem* target = 0);
 	void getFilesAppend(QStringList& files) const;
 
 	// Preferences
@@ -154,9 +154,15 @@ private:
 
     void cleanAndAddItem(QString filename, QString name, double duration);
 
-    void addFile(QTreeWidgetItem* parent, const QString& filename);
-    void addFileOrDir(QTreeWidgetItem* parent, const QString& filename);
-    bool addDirectory(QTreeWidgetItem* parent, const QString& dir);
+    QTreeWidgetItem* addFile(QTreeWidgetItem* parent,
+                             QTreeWidgetItem* after,
+                             const QString& filename);
+    QTreeWidgetItem* addFileOrDir(QTreeWidgetItem* parent,
+                                  QTreeWidgetItem* after,
+                                  const QString& filename);
+    QTreeWidgetItem* addDirectory(QTreeWidgetItem* parent,
+                                  QTreeWidgetItem* after,
+                                  const QString& dir);
 
     TPlaylistWidgetItem* getRandomItem() const;
     bool haveUnplayedItems() const;

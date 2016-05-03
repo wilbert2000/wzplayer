@@ -31,7 +31,6 @@
         <file>default-theme/gamma.png</file>
         <file>default-theme/hue.png</file>
         <file>default-theme/info.png</file>
-        <file>default-theme/folder.png</file>
         <file>default-theme/keyboard.png</file>
         <file>default-theme/logo.png</file>
         <file>default-theme/log.png</file>
@@ -44,7 +43,6 @@
         <file>default-theme/loading.png</file>
         <file>default-theme/ok.png</file>
         <file>default-theme/failed.png</file>
-        <file>default-theme/not_played.png</file>
         <file>default-theme/open.png</file>
         <file>default-theme/open_directory.png</file>
         <file>default-theme/pause.png</file>
