@@ -543,6 +543,7 @@ void TPlaylist::addFiles() {
 
     if (files.count() > 0) {
         addFiles(files, playlistWidget->currentItem());
+        setModified();
     }
 }
 
@@ -554,6 +555,7 @@ void TPlaylist::addUrls() {
         foreach(const QString url, d.lines()) {
             if (url.count()) {
                 cleanAndAddItem(url, "", 0);
+                setModified();
             }
         }
     }
