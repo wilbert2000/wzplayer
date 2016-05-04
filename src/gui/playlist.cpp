@@ -872,12 +872,8 @@ void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
     qDebug() << "Gui::TPlaylist::onItemActivated";
 
     TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(item);
-    if (i) {
-        if (i->isFolder()) {
-            i->setExpanded(!i->isExpanded());
-        } else {
-            playItem(i);
-        }
+    if (i && !i->isFolder()) {
+        playItem(i);
     }
 }
 
