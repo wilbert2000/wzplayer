@@ -91,7 +91,6 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     layout->addWidget(playlistWidget);
 	layout->addWidget(toolbar);
 	setLayout(layout);
-	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	setAcceptDrops(true);
 	setAttribute(Qt::WA_NoMousePropagation);
