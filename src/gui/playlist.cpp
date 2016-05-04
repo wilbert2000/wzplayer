@@ -934,7 +934,7 @@ void TPlaylist::enableActions() {
 
     cutAct->setEnabled(c > 0);
     copyAct->setEnabled(c > 0);
-    editAct->setEnabled(current_item || playing_item);
+    editAct->setEnabled(current_item);
 }
 
 void TPlaylist::onPlayerError() {
@@ -1145,8 +1145,6 @@ void TPlaylist::editCurrentItem() {
     TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
     if (current) {
         editItem(current);
-    } else if (playlistWidget->playing_item) {
-        editItem(playlistWidget->playing_item);
     }
 }
 
