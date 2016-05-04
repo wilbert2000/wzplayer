@@ -189,7 +189,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     failedIcon = Images::icon("failed", iconSize.width());
 
     setSelectionMode(QAbstractItemView::ExtendedSelection);
-    setContextMenuPolicy(Qt::CustomContextMenu);
+    setAutoExpandDelay(750);
 
     setDragEnabled(true);
     setAcceptDrops(true);
@@ -199,6 +199,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setDragDropOverwriteMode(false);
     setDropIndicatorShown(true);
     setDefaultDropAction(Qt::MoveAction);
+
+    setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
 void TPlaylistWidget::clr() {
