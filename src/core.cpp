@@ -393,7 +393,6 @@ void TCore::open(QString file, int seek) {
 
 #ifdef Q_OS_WIN
     // Check for Windows shortcuts
-    QFileInfo fi(file);
     if (fi.isSymLink()) {
         file = fi.symLinkTarget();
     }
