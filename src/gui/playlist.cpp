@@ -839,6 +839,10 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         it++;
     }
 
+    if (playlistWidget->topLevelItemCount() == 0) {
+        newCurrent = 0;
+        setModified(false);
+    }
     playlistWidget->playing_item = findFilename(playing);
     if (newCurrent) {
         playlistWidget->setCurrentItem(newCurrent);
