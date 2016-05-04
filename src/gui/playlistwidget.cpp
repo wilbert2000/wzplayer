@@ -207,16 +207,32 @@ void TPlaylistWidget::clr() {
     clear();
 }
 
-int TPlaylistWidget::countChildren(QTreeWidgetItem* w) const {
+int TPlaylistWidget::countItems(QTreeWidgetItem* w) const {
 
     int count = w->childCount();
     for(int c = 0; c < w->childCount(); c++) {
-        count += countChildren(w->child(c));
+        count += countItems(w->child(c));
     }
     return count;
 }
 
-int TPlaylistWidget::count() const {
+int TPlaylistWidget::countItems() const {
+    return countItems(root());
+}
+
+int TPlaylistWidget::countChildren(QTreeWidgetItem* w) const {
+
+    if (w->childCount()) {
+        int count = 0;
+        for(int c = 0; c < w->childCount(); c++) {
+            count += countChildren(w->child(c));
+        }
+        return count;
+    }
+    return 1;
+}
+
+int TPlaylistWidget::countChildren() const {
     return countChildren(root());
 }
 

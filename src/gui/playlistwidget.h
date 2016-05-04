@@ -94,7 +94,9 @@ public:
 
     TPlaylistWidgetItem* playing_item;
 
-    int count() const;
+    int countItems() const;
+    int countChildren() const;
+
     TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
     QTreeWidgetItem* playlistWidgetFolder(QTreeWidgetItem* w) const;
     QTreeWidgetItem* currentPlaylistWidgetFolder() const;
@@ -122,6 +124,7 @@ protected:
     virtual void dropEvent(QDropEvent*);
 
 private:
+    int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
 
     TPlaylistWidgetItem* getNextItem(TPlaylistWidgetItem* w,

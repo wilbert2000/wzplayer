@@ -637,33 +637,33 @@ TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
     }
 
     bool foundFreeItem = false;
-    int selected = (int) ((double) playlistWidget->count() * qrand() / (RAND_MAX + 1.0));
+    int selected = (int) ((double) playlistWidget->countChildren() * qrand() / (RAND_MAX + 1.0));
     bool foundSelected = false;
-    int idx = 0;
 
     do {
+        int idx = 0;
         QTreeWidgetItemIterator it(playlistWidget);
         while (*it) {
-            if (idx == selected) {
-                foundSelected = true;
-            }
-
             TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-            if (!i->isFolder() && !i->played() && i->state() != PSTATE_FAILED) {
-                if (foundSelected) {
-                    qDebug() << "Gui::TPlaylist::getRandomItem: selecting"
-                             << i->filename();
-                    return i;
-                } else {
-                    foundFreeItem = true;
+            if (!i->isFolder()) {
+                if (idx == selected) {
+                    foundSelected = true;
                 }
-            }
 
-            idx++;
+                if (!i->played() && i->state() != PSTATE_FAILED) {
+                    if (foundSelected) {
+                        qDebug() << "Gui::TPlaylist::getRandomItem: selecting"
+                                 << i->filename();
+                        return i;
+                    } else {
+                        foundFreeItem = true;
+                    }
+                }
+
+                idx++;
+            }
             it++;
         }
-
-        idx = 0;
     } while (foundFreeItem);
 
     qDebug() << "Gui::TPlaylist::getRandomItem: end of playlist";
@@ -976,7 +976,7 @@ void TPlaylist::onStartPlayingNewMedia() {
         return;
 	}
 
-    if (md->disc.valid && md->titles.count() == playlistWidget->count()) {
+    if (md->disc.valid && md->titles.count() == playlistWidget->countItems()) {
 		TDiscName cur_disc(current_filename);
 		if (cur_disc.valid
 			&& cur_disc.protocol == md->disc.protocol
