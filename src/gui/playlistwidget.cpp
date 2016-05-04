@@ -167,9 +167,16 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setColumnCount(COL_COUNT);
     setHeaderLabels(QStringList() << tr("Name") << tr("Length"));
     header()->setStretchLastSection(false);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    header()->setSectionResizeMode(COL_PLAY, QHeaderView::ResizeToContents);
+    header()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
+    header()->setSectionResizeMode(COL_TIME, QHeaderView::ResizeToContents);
+#else
     header()->setResizeMode(COL_PLAY, QHeaderView::ResizeToContents);
     header()->setResizeMode(COL_NAME, QHeaderView::Stretch);
     header()->setResizeMode(COL_TIME, QHeaderView::ResizeToContents);
+#endif
 
     // TODO:
     //setSortingEnabled(true);
