@@ -66,7 +66,8 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     core(c) ,
     recursive_add_directory(true),
     disable_enableActions(false),
-    modified(false) {
+    modified(false),
+    search_for_item(false) {
 
     createTree();
     createActions();
@@ -384,6 +385,12 @@ QTreeWidgetItem* TPlaylist::addFile(QTreeWidgetItem* parent,
     // giving a nice balance. Load if the individual file is requested,
     // skip when adding a directory.
 
+    TPlaylistWidgetItem* existing_item = 0;
+    if (search_for_item) {
+        existing_item = playlistWidget->findFilename(filename);
+    }
+
+    TPlaylistWidgetItem* item;
     QFileInfo fi(filename);
     if (fi.exists()) {
         QString ext = fi.suffix().toLower();
@@ -394,27 +401,35 @@ QTreeWidgetItem* TPlaylist::addFile(QTreeWidgetItem* parent,
         if (ext == "pls") {
             return openPls(filename, false, false, parent, after);
         }
-        return new TPlaylistWidgetItem(parent,
+        item = new TPlaylistWidgetItem(parent,
                                        after,
                                        QDir::toNativeSeparators(filename),
                                        fi.fileName(),
                                        0,
                                        false);
+    } else {
+        QString name;
+        TDiscName disc(filename);
+        if (disc.valid) {
+            // See also TTitleData::getDisplayName() from titletracks.cpp
+            if (disc.protocol == "cdda" || disc.protocol == "vcd") {
+                name = tr("Track %1").arg(QString::number(disc.title));
+            } else {
+                name = tr("Title %1").arg(QString::number(disc.title));
+            }
+        } else {
+            name = filename;
+        }
+        item = new TPlaylistWidgetItem(parent, after, filename, name, 0, false);
     }
 
-    QString name;
-    TDiscName disc(filename);
-    if (disc.valid) {
-        // See also TTitleData::getDisplayName() from titletracks.cpp
-        if (disc.protocol == "cdda" || disc.protocol == "vcd") {
-            name = tr("Track %1").arg(QString::number(disc.title));
-        } else {
-            name = tr("Title %1").arg(QString::number(disc.title));
-        }
-    } else {
-        name = filename;
+    if (existing_item) {
+        item->setName(existing_item->name());
+        item->setDuration(existing_item->duration());
+        item->setPlayed(existing_item->played());
     }
-    return new TPlaylistWidgetItem(parent, after, filename, name, 0, false);
+
+    return item;
 }
 
 QTreeWidgetItem* TPlaylist::addDirectory(QTreeWidgetItem* parent,
@@ -1092,7 +1107,9 @@ void TPlaylist::paste() {
     QStringList files = QApplication::clipboard()->text()
                         .split("\n",  QString::SkipEmptyParts);
     if (files.count()) {
+        search_for_item = true;
         addFiles(files, playlistWidget->currentItem());
+        search_for_item = false;
         setModified();
     }
 }

@@ -143,6 +143,7 @@ private:
     bool disable_enableActions;
 
     bool modified;
+    bool search_for_item;
     QString title;
     QString playlist_filename;
     QString playlist_path;
