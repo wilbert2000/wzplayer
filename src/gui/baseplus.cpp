@@ -102,7 +102,6 @@ TBasePlus::TBasePlus() :
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
     playlistdock->setAcceptDrops(true);
-    playlistdock->setFloating(true);
     playlistdock->hide();
 
     addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
@@ -226,9 +225,7 @@ void TBasePlus::loadConfig() {
 	TBase::loadConfig();
 
     if (!state_restored && playlistdock->isFloating()) {
-        QRect r(playlistdock->pos(), QSize(420, 500));
-        playlistdock->setGeometry(r);
-        TDesktop::centerWindow(playlistdock);
+        playlistdock->move(300, 300);
     }
 
 	// load from group derived class
