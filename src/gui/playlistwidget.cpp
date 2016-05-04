@@ -81,7 +81,9 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
         setFlags(flags | Qt::ItemIsDropEnabled);
         setIcon(COL_PLAY, folderIcon);
     } else {
-        setFlags(flags | Qt::ItemIsEditable);
+        // TODO:
+        //setFlags(flags | Qt::ItemIsEditable);
+        setFlags(flags);
         setIcon(COL_PLAY, notPlayedIcon);
     }
 

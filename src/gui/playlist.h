@@ -114,6 +114,7 @@ private:
 
 	Action::TAction* openAct;
 	Action::TAction* saveAct;
+    Action::TAction* playAct;
     Action::TAction* playOrPauseAct;
     Action::TAction* stopAct;
 	Action::TAction* prevAct;

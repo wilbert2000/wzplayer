@@ -128,6 +128,11 @@ void TPlaylist::createActions() {
     saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save", QKeySequence("Ctrl+W"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
+    // Play
+    playAct = new TAction(this, "pl_play", tr("P&lay item"), "play",
+                          Qt::SHIFT | Qt::Key_Space);
+    connect(playAct, SIGNAL(triggered()), this, SLOT(play()));
+
     // Play/pause
     playOrPauseAct = new TAction(this, "pl_play_or_pause", tr("&Play"), "play",
                                  Qt::Key_Space);
@@ -265,6 +270,7 @@ void TPlaylist::createToolbar() {
     popup->addAction(copyAct);
     popup->addAction(pasteAct);
     popup->addSeparator();
+    popup->addAction(playAct);
     popup->addAction(playOrPauseAct);
     popup->addAction(stopAct);
     popup->addSeparator();
@@ -573,11 +579,20 @@ void TPlaylist::onRepeatToggled(bool toggled) {
 
 void TPlaylist::onShuffleToggled(bool toggled) {
 
+    // Enable depends on shuffle
     enableActions();
     if (toggled)
         msg(tr("Shuffle playlist set"));
     else
         msg(tr("Shuffle playlist cleared"));
+}
+
+void TPlaylist::play() {
+    qDebug() << "Gui::TPlaylist:play";
+
+    if (playlistWidget->currentItem()) {
+        playItem(playlistWidget->currentPlaylistWidgetItem());
+    }
 }
 
 void TPlaylist::playOrPause() {
@@ -862,6 +877,8 @@ void TPlaylist::enableActions() {
     bool enable = s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED;
     TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
     TPlaylistWidgetItem* current_item = playlistWidget->currentPlaylistWidgetItem();
+
+    playAct->setEnabled(enable && current_item);
 
     playOrPauseAct->setEnabled(enable
         && (playing_item || current_item || core->mdat.filename.count()));
