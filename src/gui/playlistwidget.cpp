@@ -428,7 +428,7 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem() const {
 
 // Fix Qt not selecting the drop
 void TPlaylistWidget::dropEvent(QDropEvent *e) {
-    qDebug() << "Gui::TPlaylistWidget::dropEvent" << e->mimeData()->formats();
+    qDebug() << "Gui::TPlaylistWidget::dropEvent";
 
     QTreeWidgetItem* current = currentItem();
     QList<QTreeWidgetItem*>	selection = selectedItems();
