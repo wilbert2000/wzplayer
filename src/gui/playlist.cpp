@@ -1521,10 +1521,10 @@ bool TPlaylist::save() {
 
 bool TPlaylist::maybeSave() {
 
-	if (!modified)
-		return true;
+    if (!modified)
+        return true;
 
-	int res = QMessageBox::question(this,
+    int res = QMessageBox::question(this,
         tr("Playlist modified"),
         tr("The playlist has been modified, do you want to save the changes?"),
         QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
