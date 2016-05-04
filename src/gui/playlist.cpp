@@ -442,6 +442,11 @@ QTreeWidgetItem* TPlaylist::addDirectory(QTreeWidgetItem* parent,
 
     emit displayMessage(dir, 0);
 
+    QString playlist = dir + "/" + TConfig::PROGRAM_ID + ".m3u8";
+    if (QFileInfo(playlist).exists()) {
+        return openM3u(playlist);
+    }
+
     TPlaylistWidgetItem* w = new TPlaylistWidgetItem(0,
                                                      0,
                                                      dir,
@@ -752,10 +757,7 @@ void TPlaylist::playDirectory(const QString &dir) {
 
     setWinTitle(QDir(dir).dirName());
 
-    QString playlist = dir + "/" + TConfig::PROGRAM_ID + ".m3u8";
-    if (QFileInfo(playlist).exists()) {
-        openM3u(playlist);
-    } else if (Helper::directoryContainsDVD(dir)) {
+    if (Helper::directoryContainsDVD(dir)) {
         // onStartPlayingNewMedia() will pickup the playlist
 		core->open(dir);
 	} else {
