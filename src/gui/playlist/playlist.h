@@ -55,7 +55,7 @@ public:
 
 	// Start playing, from item 0 if shuffle is off,
 	// or from a random item otherwise
-	void startPlay();
+    void startPlay(bool sort);
     void playItem(TPlaylistWidgetItem* item);
 	void playDirectory(const QString& dir);
 

@@ -118,6 +118,8 @@ public:
     void clr();
     QTreeWidgetItem* root() const { return invisibleRootItem(); }
 
+    void enableSort(bool enable);
+
 signals:
     void modified();
 
@@ -133,6 +135,9 @@ private:
 
     TPlaylistWidgetItem* getPreviousItem(TPlaylistWidgetItem* w,
                                          bool allowChild = true) const;
+
+private slots:
+    void onSectionClicked(int);
 };
 
 } // namespace Playlist

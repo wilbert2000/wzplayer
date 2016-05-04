@@ -313,6 +313,21 @@ void TPlaylist::clear() {
     setModified(false);
 }
 
+void TPlaylist::addCurrentFile() {
+    qDebug("Gui::TPlaylist::addCurrentFile");
+
+    if (core->mdat.filename.count()) {
+        TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
+            playlistWidget->currentPlaylistWidgetFolder(),
+            playlistWidget->currentItem(),
+            core->mdat.filename,
+            core->mdat.displayName(),
+            core->mdat.duration,
+            false);
+        i->setPlayed(true);
+    }
+}
+
 QTreeWidgetItem* TPlaylist::cleanAndAddItem(QString filename,
                                             QString name,
                                             double duration,
@@ -361,21 +376,6 @@ QTreeWidgetItem* TPlaylist::cleanAndAddItem(QString filename,
     }
 
     return i;
-}
-
-void TPlaylist::addCurrentFile() {
-    qDebug("Gui::TPlaylist::addCurrentFile");
-
-    if (core->mdat.filename.count()) {
-        TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-            playlistWidget->currentPlaylistWidgetFolder(),
-            playlistWidget->currentItem(),
-            core->mdat.filename,
-            core->mdat.displayName(),
-            core->mdat.duration,
-            false);
-        i->setPlayed(true);
-    }
 }
 
 QTreeWidgetItem* TPlaylist::addFile(QTreeWidgetItem* parent,
@@ -519,6 +519,8 @@ void TPlaylist::addFiles(const QStringList &files, QTreeWidgetItem* target) {
     qDebug() << "Gui::TPlaylist::addFiles";
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+    playlistWidget->enableSort(false);
 
     QTreeWidgetItem* parent;
     if (target == 0) {
@@ -685,17 +687,19 @@ bool TPlaylist::haveUnplayedItems() const {
     return false;
 }
 
-void TPlaylist::startPlay() {
-	qDebug("Gui::TPlaylist::startPlay");
+void TPlaylist::startPlay(bool sort) {
+    qDebug("Gui::TPlaylist::startPlay");
 
     if (playlistWidget->topLevelItemCount() > 0) {
-		if (shuffleAct->isChecked())
+        playlistWidget->enableSort(sort);
+        if (shuffleAct->isChecked()) {
             playItem(getRandomItem());
-		else
+        } else {
             playItem(playlistWidget->firstPlaylistWidgetItem());
-	} else {
+        }
+    } else {
         emit displayMessage(tr("Found no files to play"), 6000);
-	}
+    }
 }
 
 void TPlaylist::playItem(TPlaylistWidgetItem* item) {
@@ -753,15 +757,16 @@ void TPlaylist::playDirectory(const QString &dir) {
 	qDebug("Gui::TPlaylist::playDirectory");
 
     setWinTitle(QDir(dir).dirName());
+    playlistWidget->enableSort(false);
 
     if (Helper::directoryContainsDVD(dir)) {
         // onStartPlayingNewMedia() will pickup the playlist
-		core->open(dir);
+        core->open(dir);
 	} else {
         clear();
         core->setState(STATE_LOADING);
         addDirectory(playlistWidget->root(), 0, dir);
-        startPlay();
+        startPlay(true);
 	}
 }
 
@@ -1299,7 +1304,7 @@ QTreeWidgetItem* TPlaylist::openM3u(const QString&file,
 
     f.close();
     if (play) {
-        startPlay();
+        startPlay(false);
     }
 
     return result;
@@ -1350,7 +1355,7 @@ QTreeWidgetItem* TPlaylist::openPls(const QString &file,
     set.endGroup();
 
     if (play && (set.status() == QSettings::NoError)) {
-        startPlay();
+        startPlay(false);
     }
 
     return result;

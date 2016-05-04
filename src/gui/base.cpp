@@ -1263,14 +1263,14 @@ void TBase::openFiles(QStringList files, const QString& current) {
 		playlist->clear();
 		playlist->addFiles(files);
         if (current.count()) {
-            TPlaylistWidgetItem* w = playlist->findFilename(current);
+            Playlist::TPlaylistWidgetItem* w = playlist->findFilename(current);
             if (w) {
                 playlist->playItem(w);
             } else {
-                playlist->startPlay();
+                playlist->startPlay(true);
             }
 		} else {
-			playlist->startPlay();
+            playlist->startPlay(true);
 		}
 	}
 }

@@ -170,19 +170,19 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     header()->setStretchLastSection(false);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    header()->setSectionResizeMode(COL_PLAY, QHeaderView::ResizeToContents);
     header()->setSectionResizeMode(COL_NAME, QHeaderView::Stretch);
     header()->setSectionResizeMode(COL_TIME, QHeaderView::ResizeToContents);
 #else
-    header()->setResizeMode(COL_PLAY, QHeaderView::ResizeToContents);
     header()->setResizeMode(COL_NAME, QHeaderView::Stretch);
     header()->setResizeMode(COL_TIME, QHeaderView::ResizeToContents);
 #endif
 
-    // TODO:
-    //setSortingEnabled(true);
-    //header()->setSortIndicator(COL_NAME, Qt::AscendingOrder);
+    setSortingEnabled(false);
     //header()->setSortIndicatorShown(true);
+    //header()->setSortIndicator(-1, Qt::AscendingOrder);
+    header()->setClickable(true);
+    connect(header(), SIGNAL(sectionClicked(int)),
+            this, SLOT(onSectionClicked(int)));
 
     folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirClosedIcon),
                          QIcon::Normal, QIcon::Off);
@@ -448,4 +448,24 @@ void TPlaylistWidget::dropEvent(QDropEvent *e) {
     }
 }
 
+void TPlaylistWidget::enableSort(bool enable) {
+
+    setSortingEnabled(enable);
+    if (enable) {
+        header()->setSortIndicator(COL_NAME, Qt::AscendingOrder);
+    } else {
+        header()->setSortIndicator(-1, Qt::AscendingOrder);
+        header()->setClickable(true);
+    }
+}
+
+void TPlaylistWidget::onSectionClicked(int) {
+    qDebug() << "Gui::TPlaylistWidget: onSectionClicked";
+
+    if (!isSortingEnabled()) {
+        enableSort(true);
+    }
+}
+
+} // namespace Playlist
 } // namespace Gui
