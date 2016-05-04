@@ -18,9 +18,9 @@
 
 
 #include "gui/pref/interface.h"
+#include <QDebug>
 #include <QDir>
 #include <QStyleFactory>
-#include <QFontDialog>
 
 #include "images.h"
 #include "settings/preferences.h"
@@ -131,7 +131,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setLanguage(pref->language);
 	setIconSet(pref->iconset);
 	setStyle(pref->style);
-	setDefaultFont(pref->default_font);
 
 	// Main window
 	setUseSingleInstance(pref->use_single_window);
@@ -146,7 +145,8 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	// Fullscreen
 	hide_toolbars_spin->setValue(pref->floating_hide_delay);
-	show_toolbars_bottom_only_check->setChecked(pref->floating_activation_area == Settings::TPreferences::NearToolbar);
+    show_toolbars_bottom_only_check->setChecked(
+        pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	setStartInFullscreen(pref->start_in_fullscreen);
 
 	// Playlist
@@ -173,7 +173,8 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	if (pref->language != language()) {
 		pref->language = language();
 		language_changed = true;
-		qDebug("Gui::Pref::TInterface::getData: chosen language: '%s'", pref->language.toUtf8().data());
+        qDebug() << "Gui::Pref::TInterface::getData: chosen language"
+                 << pref->language;
 	}
 	if (pref->iconset != iconSet()) {
 		pref->iconset = iconSet();
@@ -183,7 +184,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 		pref->style = style();
 		style_changed = true;
 	}
-	pref->default_font = defaultFont();
 
 	// Main window
 	pref->use_single_window = useSingleInstance();
@@ -308,29 +308,6 @@ bool TInterface::useSingleInstance() {
 	return single_instance_check->isChecked();
 }
 
-void TInterface::setDefaultFont(const QString& font_desc) {
-	default_font_edit->setText(font_desc);
-}
-
-QString TInterface::defaultFont() {
-	return default_font_edit->text();
-}
-
-void TInterface::on_changeFontButton_clicked() {
-	QFont f = qApp->font();
-
-	if (!default_font_edit->text().isEmpty()) {
-		f.fromString(default_font_edit->text());
-	}
-
-	bool ok;
-	f = QFontDialog::getFont(&ok, f, this);
-
-	if (ok) {
-		default_font_edit->setText(f.toString());
-	}
-}
-
 void TInterface::changeInstanceImages() {
 
 	if (single_instance_check->isChecked())
@@ -441,10 +418,6 @@ void TInterface::createHelp() {
 
 	setWhatsThis(style_combo, tr("Style"),
 		tr("Select the style you prefer for the application."));
-
-
-	setWhatsThis(changeFontButton, tr("Default font"),
-		tr("You can change the application's font."));
 
 
 	addSectionTitle(tr("Main window"));

@@ -242,7 +242,6 @@ public:
 	QString language;
 	QString iconset;
 	QString style;
-	QString default_font;
 
 	// Mainwindow
 	bool use_single_window;

@@ -74,9 +74,6 @@ protected:
 	void setUseSingleInstance(bool b);
 	bool useSingleInstance();
 
-	void setDefaultFont(const QString& font_desc);
-	QString defaultFont();
-
 	void setHideVideoOnAudioFiles(bool b);
 	bool hideVideoOnAudioFiles();
 
@@ -90,12 +87,10 @@ protected:
 	void setRememberDirs(bool b);
 	bool rememberDirs();
 
-protected slots:
-	void on_changeFontButton_clicked();
-	void changeInstanceImages();
-
-protected:
 	virtual void retranslateStrings();
+
+protected slots:
+    void changeInstanceImages();
 
 private:
 	bool language_changed;

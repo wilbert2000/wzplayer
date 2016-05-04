@@ -1009,17 +1009,6 @@ void TBase::applyNewPreferences() {
 	// Verbose handled by restart core
 	TLog::log->setLogFileEnabled(pref->log_file);
 
-	// Update application font
-	if (!pref->default_font.isEmpty()) {
-		QFont f;
-		f.fromString(pref->default_font);
-		if (QApplication::font() != f) {
-			qDebug() << "Gui::TBase::applyNewPreferences: setting new font"
-					 << pref->default_font;
-			QApplication::setFont(f);
-		}
-	}
-
 	// Set color key, depends on VO
 	playerwindow->setColorKey();
 

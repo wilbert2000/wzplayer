@@ -235,7 +235,6 @@ void TPreferences::reset() {
 	language = "";
     iconset = "";
 	style = "";
-	default_font = "";
 
 	// Main window
 	stay_on_top = NeverOnTop;
@@ -604,8 +603,6 @@ void TPreferences::save() {
 	setValue("save_window_size_on_exit", save_window_size_on_exit);
 
 	setValue("close_on_finish", close_on_finish);
-
-	setValue("default_font", default_font);
 
 	setValue("pause_when_hidden", pause_when_hidden);
 
@@ -1124,8 +1121,6 @@ void TPreferences::load() {
 	save_window_size_on_exit = 	value("save_window_size_on_exit", save_window_size_on_exit).toBool();
 
 	close_on_finish = value("close_on_finish", close_on_finish).toBool();
-
-	default_font = value("default_font", default_font).toString();
 
 	pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
 

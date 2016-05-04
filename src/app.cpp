@@ -456,13 +456,6 @@ void TApp::changeStyleSheet(const QString& style) {
 void TApp::changeStyle() {
 	qDebug("TApp::changeStyle");
 
-	// Set font
-	if (!Settings::pref->default_font.isEmpty()) {
-		QFont f;
-		f.fromString(Settings::pref->default_font);
-		setFont(f);
-	}
-
 	// Set application style
 	// TODO: from help: Warning: To ensure that the application's style is set
 	// correctly, it is best to call this function before the QApplication
