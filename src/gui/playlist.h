@@ -153,8 +153,11 @@ private:
 
     void msg(const QString& s);
 
-    void cleanAndAddItem(QString filename, QString name, double duration);
-
+    QTreeWidgetItem* cleanAndAddItem(QString filename,
+                                     QString name,
+                                     double duration,
+                                     QTreeWidgetItem* parent = 0,
+                                     QTreeWidgetItem* after = 0);
     QTreeWidgetItem* addFile(QTreeWidgetItem* parent,
                              QTreeWidgetItem* after,
                              const QString& filename);
@@ -172,10 +175,19 @@ private:
 
     bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
 
-	void loadM3u(const QString& file, bool clear = true, bool play = true);
+    QTreeWidgetItem* openM3u(const QString& file,
+                             bool clear = true,
+                             bool play = true,
+                             QTreeWidgetItem* parent = 0,
+                             QTreeWidgetItem* after = 0);
 	bool saveM3u(QString file);
 
-	void loadIni(const QString& file, bool clear = true, bool play = true);
+    QTreeWidgetItem* openPls(const QString& file,
+                             bool clear = true,
+                             bool play = true,
+                             QTreeWidgetItem* parent = 0,
+                             QTreeWidgetItem* after = 0);
+    bool savePls(QString file);
 
     void setWinTitle(QString s = 0);
     void setPlaylistFilename(const QString& name);
@@ -185,6 +197,7 @@ private slots:
 
     void onPlayerError();
 
+    void play();
     void playOrPause();
 
     void addCurrentFile();

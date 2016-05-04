@@ -311,8 +311,11 @@ void TPlaylist::clear() {
     setModified(false);
 }
 
-void TPlaylist::cleanAndAddItem(QString filename, QString name,
-                                double duration) {
+QTreeWidgetItem* TPlaylist::cleanAndAddItem(QString filename,
+                                            QString name,
+                                            double duration,
+                                            QTreeWidgetItem* parent,
+                                            QTreeWidgetItem* after) {
 
     bool protect_name = !name.isEmpty();
     QString alt_name = filename;
@@ -343,17 +346,19 @@ void TPlaylist::cleanAndAddItem(QString filename, QString name,
     if (name.isEmpty()) {
         name = alt_name;
     }
-    TPlaylistWidgetItem* i = new TPlaylistWidgetItem(playlistWidget->root(),
-                                                     0,
-                                                     filename,
-                                                     name,
-                                                     duration,
-                                                     false);
+
+    if (parent == 0) {
+        parent = playlistWidget->root();
+    }
+    TPlaylistWidgetItem* i = new TPlaylistWidgetItem(parent, after, filename,
+                                                     name, duration, false);
 
     // Protect name
     if (protect_name) {
         i->setEdited(true);
     }
+
+    return i;
 }
 
 void TPlaylist::addCurrentFile() {
@@ -384,12 +389,10 @@ QTreeWidgetItem* TPlaylist::addFile(QTreeWidgetItem* parent,
         QString ext = fi.suffix().toLower();
         pref->latest_dir = fi.absolutePath();
         if (ext == "m3u" || ext == "m3u8") {
-            loadM3u(filename, false, false);
-            return 0;
+            return openM3u(filename, false, false, parent, after);
         }
         if (ext == "pls") {
-            loadIni(filename, false, false);
-            return 0;
+            return openPls(filename, false, false, parent, after);
         }
         return new TPlaylistWidgetItem(parent,
                                        after,
@@ -736,7 +739,7 @@ void TPlaylist::playDirectory(const QString &dir) {
 
     QString playlist = dir + "/" + TConfig::PROGRAM_ID + ".m3u8";
     if (QFileInfo(playlist).exists()) {
-        loadM3u(playlist);
+        openM3u(playlist);
     } else if (Helper::directoryContainsDVD(dir)) {
         // onStartPlayingNewMedia() will pickup the playlist
 		core->open(dir);
@@ -1224,120 +1227,148 @@ void TPlaylist::closeEvent(QCloseEvent* e)  {
     }
 }
 
-void TPlaylist::loadM3u(const QString&file, bool clear, bool play) {
-	qDebug("Gui::TPlaylist::loadM3u");
+QTreeWidgetItem* TPlaylist::openM3u(const QString&file,
+                                    bool clear,
+                                    bool play,
+                                    QTreeWidgetItem* parent,
+                                    QTreeWidgetItem* after) {
+    qDebug("Gui::TPlaylist::openM3u");
 
     QRegExp info("^#EXTINF:(.*),(.*)");
     bool utf8 = QFileInfo(file).suffix().toLower() == "m3u8";
 
 	QFile f(file);
-	if (f.open(QIODevice::ReadOnly)) {
-        setPlaylistFilename(file);
-        playlist_path = QFileInfo(file).path();
-        if (clear) {
-            this->clear();
-        }
-
-		QTextStream stream(&f);
-		if (utf8) {
-			stream.setCodec("UTF-8");
-		} else {
-			stream.setCodec(QTextCodec::codecForLocale());
-		}
-
-        QString name;
-		double duration = 0;
-
-		while (!stream.atEnd()) {
-			QString line = stream.readLine().trimmed();
-			// Ignore empty lines
-			if (line.isEmpty()) {
-				continue;
-			}
-
-			qDebug() << "Gui::TPlaylist::loadM3u: line:" << line;
-			if (info.indexIn(line) >= 0) {
-				duration = info.cap(1).toDouble();
-				name = info.cap(2);
-				qDebug() << "Gui::TPlaylist::loadM3u: name:" << name << "duration:" << duration;
-			} else if (line.startsWith("#")) {
-				// Ignore comments
-			} else {
-                cleanAndAddItem(line, name, duration);
-				name = "";
-				duration = 0;
-			}
-		}
-
-		f.close();
-		if (play) {
-			startPlay();
-		}
-	}
-}
-
-void TPlaylist::loadIni(const QString &file, bool clear, bool play) {
-	qDebug("Gui::TPlaylist::loadIni");
-
-	if (!QFile::exists(file)) {
-		qDebug("Gui::TPlaylist::loadIni: '%s' doesn't exist, doing nothing", file.toUtf8().constData());
-		return;
-	}
+    if (!f.open(QIODevice::ReadOnly)) {
+        qWarning() << "Gui::TPlaylist::openM3u: failed to open" << file;
+        msg(tr("Failed to open %1").arg(file));
+        return 0;
+    }
 
     setPlaylistFilename(file);
-	playlist_path = QFileInfo(file).path();
+    playlist_path = QFileInfo(file).path();
+    if (clear) {
+        this->clear();
+        parent = playlistWidget->root();
+        after = 0;
+    } else if (parent == 0) {
+        parent = playlistWidget->root();
+    }
 
-	QSettings set(file, QSettings::IniFormat);
-	set.beginGroup("playlist");
+    QTextStream stream(&f);
+    if (utf8) {
+        stream.setCodec("UTF-8");
+    } else {
+        stream.setCodec(QTextCodec::codecForLocale());
+    }
 
-	if (set.status() == QSettings::NoError) {
-		if (clear)
-			this->clear();
-		QString filename;
-		QString name;
-		double duration;
+    QTreeWidgetItem* result = 0;
+    QString name;
+    double duration = 0;
 
-		int num_items = set.value("NumberOfEntries", 0).toInt();
+    while (!stream.atEnd()) {
+        QString line = stream.readLine().trimmed();
+        // Ignore empty lines
+        if (line.isEmpty()) {
+            continue;
+        }
 
-		for (int n = 0; n < num_items; n++) {
-			filename = set.value("File" + QString::number(n + 1), "").toString();
-			name = set.value("Title" + QString::number(n + 1), "").toString();
-			duration = (double) set.value("Length" + QString::number(n + 1), 0).toInt();
-            cleanAndAddItem(filename, name, duration);
-		}
-	}
+        qDebug() << "Gui::TPlaylist::openM3u: line:" << line;
+        if (info.indexIn(line) >= 0) {
+            duration = info.cap(1).toDouble();
+            name = info.cap(2);
+            qDebug() << "Gui::TPlaylist::openM3u: name:" << name << "duration:" << duration;
+        } else if (line.startsWith("#")) {
+            // Ignore comments
+        } else {
+            result = cleanAndAddItem(line, name, duration, parent, after);
+            name = "";
+            duration = 0;
+        }
+    }
 
-	set.endGroup();
+    f.close();
+    if (play) {
+        startPlay();
+    }
 
-	if (play && (set.status() == QSettings::NoError)) {
-		startPlay();
-	}
+    return result;
+}
+
+QTreeWidgetItem* TPlaylist::openPls(const QString &file,
+                                    bool clear,
+                                    bool play,
+                                    QTreeWidgetItem* parent,
+                                    QTreeWidgetItem* after) {
+    qDebug("Gui::TPlaylist::openPls");
+
+    if (!QFile::exists(file)) {
+        qDebug("Gui::TPlaylist::openPls: '%s' doesn't exist, doing nothing", file.toUtf8().constData());
+        return 0;
+    }
+
+    QTreeWidgetItem* result = 0;
+    setPlaylistFilename(file);
+    playlist_path = QFileInfo(file).path();
+
+    QSettings set(file, QSettings::IniFormat);
+    set.beginGroup("playlist");
+
+    if (set.status() == QSettings::NoError) {
+        if (clear) {
+            this->clear();
+            parent = playlistWidget->root();
+            after = 0;
+        } else if (parent == 0) {
+            parent = playlistWidget->root();
+        }
+
+        QString filename;
+        QString name;
+        double duration;
+
+        int num_items = set.value("NumberOfEntries", 0).toInt();
+
+        for (int n = 0; n < num_items; n++) {
+            filename = set.value("File" + QString::number(n + 1), "").toString();
+            name = set.value("Title" + QString::number(n + 1), "").toString();
+            duration = (double) set.value("Length" + QString::number(n + 1), 0).toInt();
+            result = cleanAndAddItem(filename, name, duration, parent, after);
+        }
+    }
+
+    set.endGroup();
+
+    if (play && (set.status() == QSettings::NoError)) {
+        startPlay();
+    }
+
+    return result;
 }
 
 bool TPlaylist::saveM3u(QString file) {
-	qDebug() << "Gui::TPlaylist::saveM3u:" << file;
+    qDebug() << "Gui::TPlaylist::saveM3u:" << file;
 
-	QString dir_path = QDir::toNativeSeparators(QFileInfo(file).path());
-	if (!dir_path.endsWith(QDir::separator())) {
-		dir_path += QDir::separator();
-	}
+    QString dir_path = QDir::toNativeSeparators(QFileInfo(file).path());
+    if (!dir_path.endsWith(QDir::separator())) {
+        dir_path += QDir::separator();
+    }
 
-	bool utf8 = QFileInfo(file).suffix().toLower() == "m3u8";
+    bool utf8 = QFileInfo(file).suffix().toLower() == "m3u8";
 
-	QFile f(file);
-	if (!f.open(QIODevice::WriteOnly)) {
-		return false;
-	}
+    QFile f(file);
+    if (!f.open(QIODevice::WriteOnly)) {
+        return false;
+    }
 
-	QTextStream stream(&f);
-	if (utf8) {
-		stream.setCodec("UTF-8");
-	} else {
-		stream.setCodec(QTextCodec::codecForLocale());
-	}
+    QTextStream stream(&f);
+    if (utf8) {
+        stream.setCodec("UTF-8");
+    } else {
+        stream.setCodec(QTextCodec::codecForLocale());
+    }
 
-	stream << "#EXTM3U" << "\n"
-		   << "# Playlist created by WZPlayer " << TVersion::version
+    stream << "#EXTM3U" << "\n"
+           << "# Playlist created by WZPlayer " << TVersion::version
            << "\n";
 
     QTreeWidgetItemIterator it(playlistWidget);
@@ -1347,24 +1378,76 @@ bool TPlaylist::saveM3u(QString file) {
 
         QString filename = i->filename();
 
-		// Try to save the filename as relative instead of absolute
-		// Normalize separator to match dir_path
+        // Try to save the filename as relative instead of absolute
+        // Normalize separator to match dir_path
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		if (QFileInfo(filename).exists()) {
-			filename = QDir::toNativeSeparators(filename);
-		}
+        if (QFileInfo(filename).exists()) {
+            filename = QDir::toNativeSeparators(filename);
+        }
 #endif
-		if (filename.startsWith(dir_path)) {
-			filename = filename.mid(dir_path.length());
-		}
-		stream << filename << "\n";
+        if (filename.startsWith(dir_path)) {
+            filename = filename.mid(dir_path.length());
+        }
+        stream << filename << "\n";
         ++it;
-	}
+    }
 
-	f.close();
+    f.close();
     setModified(false);
 
-	return true;
+    return true;
+}
+
+bool TPlaylist::savePls(QString file) {
+    qDebug() << "Gui::TPlaylist::savePls:" << file;
+
+    QString dir_path = QDir::toNativeSeparators(QFileInfo(file).path());
+    if (!dir_path.endsWith(QDir::separator())) {
+        dir_path += QDir::separator();
+    }
+
+    QSettings set(file, QSettings::IniFormat);
+    set.beginGroup("playlist");
+
+    int n = 0;
+    QTreeWidgetItemIterator it(playlistWidget);
+    while (*it) {
+        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        QString filename = i->filename();
+
+        // Normalize path separator to match dir_path
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+        if (QFileInfo(filename).exists()) {
+            filename = QDir::toNativeSeparators(filename);
+        }
+#endif
+
+        // Try to save the filename as relative instead of absolute
+        if (filename.startsWith(dir_path)) {
+            filename = filename.mid(dir_path.length());
+        }
+
+        set.setValue("File" + QString::number(n + 1), filename);
+        set.setValue("Title" + QString::number(n + 1), i->name());
+        set.setValue("Length" + QString::number(n + 1), (int) i->duration());
+
+        n++;
+        ++it;
+    }
+
+    set.setValue("NumberOfEntries", n);
+    set.setValue("Version", 2);
+
+    set.endGroup();
+
+    set.sync();
+
+    bool ok = set.status() == QSettings::NoError;
+    if (ok) {
+        modified = false;
+    }
+
+    return ok;
 }
 
 void TPlaylist::load() {
@@ -1380,9 +1463,9 @@ void TPlaylist::load() {
 			QFileInfo fi(s);
 			pref->latest_dir = fi.absolutePath();
 			if (fi.suffix().toLower() == "pls")
-				loadIni(s);
+                openPls(s);
 			else
-				loadM3u(s);
+                openM3u(s);
 		}
 	}
 }
@@ -1416,6 +1499,9 @@ bool TPlaylist::save() {
     }
 
     setPlaylistFilename(s);
+    if (QFileInfo(s).suffix().toLower() == "pls") {
+        return savePls(s);
+    }
     return saveM3u(s);
 }
 

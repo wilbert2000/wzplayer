@@ -69,7 +69,7 @@ TExtensions::TExtensions()
 	_subtitles << "srt" << "sub" << "ssa" << "ass" << "idx" << "txt" << "smi"
                << "rt" << "utf" << "aqt";
 
-    _playlist << "m3u8" << "m3u";
+    _playlist << "m3u8" << "m3u" << "pls";
 
 	_multimedia = _video;
 	for (int n = 0; n < _audio.count(); n++) {
