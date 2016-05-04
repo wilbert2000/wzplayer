@@ -592,8 +592,6 @@ void TPlaylist::addUrls() {
 
 void TPlaylist::onRepeatToggled(bool toggled) {
 
-    // Enable depends on repeat
-    enableActions();
     if (toggled)
         msg(tr("Repeat playlist set"));
     else
@@ -602,8 +600,6 @@ void TPlaylist::onRepeatToggled(bool toggled) {
 
 void TPlaylist::onShuffleToggled(bool toggled) {
 
-    // Enable depends on shuffle
-    enableActions();
     if (toggled)
         msg(tr("Shuffle playlist set"));
     else
@@ -721,13 +717,13 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
 	}
 }
 
-void TPlaylist::playNext() {
+void TPlaylist::playNext(bool allow_reshuffle) {
 	qDebug("Gui::TPlaylist::playNext");
 
     TPlaylistWidgetItem* item = 0;
 	if (shuffleAct->isChecked()) {
         item = getRandomItem();
-        if (item == 0 && repeatAct->isChecked()) {
+        if (item == 0 && (repeatAct->isChecked() || allow_reshuffle)) {
             playlistWidget->clearPlayed();
             item = getRandomItem();
 		}
@@ -925,14 +921,11 @@ void TPlaylist::enableActions() {
 
     // Prev/Next
     bool changed = false;
-    bool e = enable
-             && ((c > 0 && (!shuffleAct->isChecked() ||repeatAct->isChecked()))
-                 || (shuffleAct->isChecked() && haveUnplayedItems()));
+    bool e = enable && c > 0;
     if (e != nextAct->isEnabled()) {
         nextAct->setEnabled(e);
         changed = true;
     }
-    e = enable && c > 0;
     if (e != prevAct->isEnabled()) {
         prevAct->setEnabled(e);
         changed = true;
@@ -1048,7 +1041,7 @@ void TPlaylist::onStartPlayingNewMedia() {
 
 void TPlaylist::onMediaEOF() {
 	qDebug("Gui::Tplaylist::onMediaEOF");
-	playNext();
+    playNext(false);
 }
 
 void TPlaylist::onTitleTrackChanged(int id) {

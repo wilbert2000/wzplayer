@@ -321,10 +321,7 @@ TPlaylistWidgetItem* TPlaylistWidget::getNextItem(TPlaylistWidgetItem* w,
     // See also itemBelow()
 
     if (w == 0) {
-        w = firstPlaylistWidgetItem();
-        if (w == 0) {
-            return 0;
-        }
+        return firstPlaylistWidgetItem();
     }
 
     if (allowChild && w->isFolder() && w->childCount() > 0) {
@@ -354,7 +351,12 @@ TPlaylistWidgetItem* TPlaylistWidget::getNextPlaylistWidgetItem(TPlaylistWidgetI
 }
 
 TPlaylistWidgetItem* TPlaylistWidget::getNextPlaylistWidgetItem() const {
-    return getNextPlaylistWidgetItem(playing_item);
+
+    TPlaylistWidgetItem* item = playing_item;
+    if (item == 0) {
+        item = currentPlaylistWidgetItem();
+    }
+    return getNextPlaylistWidgetItem(item);
 }
 
 TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
@@ -393,7 +395,12 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem(TPlaylistWid
 }
 
 TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem() const {
-    return getPreviousPlaylistWidgetItem(playing_item);
+
+    TPlaylistWidgetItem* item = playing_item;
+    if (item == 0) {
+        item = currentPlaylistWidgetItem();
+    }
+    return getPreviousPlaylistWidgetItem(item);
 }
 
 // Fix Qt not selecting the drop
