@@ -102,7 +102,6 @@ TBasePlus::TBasePlus() :
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
     playlistdock->setAcceptDrops(true);
-    playlistdock->setFloating(true);
     playlistdock->hide();
 
     addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
