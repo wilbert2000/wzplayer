@@ -4,7 +4,7 @@
 #include <QToolButton>
 
 #include "gui/base.h"
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/action/widgetactions.h"
 #include "gui/action/menuinoutpoints.h"
 #include "gui/action/action.h"
@@ -143,14 +143,14 @@ public:
     explicit TMenuSeekForward(QWidget* parent,
                               TBase* mainwindow,
                               TCore* core,
-                              TPlaylist* playlist);
+                              Gui::Playlist::TPlaylist* playlist);
 };
 
 // Create forward menu as descendant from TMenuSeek
 TMenuSeekForward::TMenuSeekForward(QWidget* parent,
                                    TBase* mainwindow,
                                    TCore* core,
-                                   TPlaylist* playlist) :
+                                   Gui::Playlist::TPlaylist* playlist) :
     TMenuSeek(parent, mainwindow, "forward_menu", tr("&Forward"),
               tr("+", "sign to use in menu for forward seeking")) {
 
@@ -181,14 +181,14 @@ public:
     explicit TMenuSeekRewind(QWidget* parent,
                              TBase* mainwindow,
                              TCore* core,
-                             TPlaylist* playlist);
+                             Gui::Playlist::TPlaylist* playlist);
 };
 
 // Create rewind menu as descendant from TMenuSeek
 TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
                                  TBase* mainwindow,
                                  TCore* core,
-                                 TPlaylist* playlist) :
+                                 Gui::Playlist::TPlaylist* playlist) :
     TMenuSeek(parent, mainwindow, "rewind_menu", tr("&Rewind"),
               tr("-", "sign to use in menu for rewind seeking")) {
 
@@ -280,7 +280,7 @@ void TMenuPlaySpeed::enableActions() {
 
 
 // Create main play menu
-TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist)
+TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* plist)
     : TMenu(mw, mw, "play_menu", tr("&Play"), "noicon")
 	, core(c)
 	, playlist(plist)

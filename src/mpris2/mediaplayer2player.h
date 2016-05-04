@@ -41,7 +41,7 @@
 
 #include <QDBusAbstractAdaptor>
 #include <QDBusObjectPath>
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/base.h"
 
 class TCore;
@@ -116,7 +116,7 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
     private:
         qint64 oldPos;
         TCore* m_core;
-		Gui::TPlaylist* m_playlist;
+        Gui::Playlist::TPlaylist* m_playlist;
 };
 
 #endif // MEDIAPLAYER2PLAYER_H

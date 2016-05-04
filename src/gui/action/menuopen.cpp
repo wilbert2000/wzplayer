@@ -3,7 +3,7 @@
 #include <QFileInfo>
 
 #include "gui/base.h"
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/action/action.h"
 #include "gui/action/favorites.h"
 #include "gui/action/tvlist.h"

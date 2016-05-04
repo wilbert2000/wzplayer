@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 
 #include <QDebug>
 #include <QToolBar>
@@ -41,7 +41,8 @@
 #include <QtAlgorithms>
 
 #include "gui/base.h"
-#include "gui/playlistwidget.h"
+#include "gui/playlist/playlistwidget.h"
+#include "gui/playlist/playlistthread.h"
 #include "core.h"
 #include "gui/multilineinputdialog.h"
 #include "gui/action/menuinoutpoints.h"
@@ -59,6 +60,7 @@ namespace Gui {
 
 using namespace Action;
 
+namespace Playlist {
 
 TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     QWidget(mw),
@@ -1558,6 +1560,7 @@ void TPlaylist::loadSettings() {
 	set->endGroup();
 }
 
+} // namespace Playlist
 } // namespace Gui
 
 #include "moc_playlist.cpp"

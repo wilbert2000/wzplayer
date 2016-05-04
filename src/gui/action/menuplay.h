@@ -10,7 +10,10 @@ class TCore;
 namespace Gui {
 
 class TBase;
+
+namespace Playlist {
 class TPlaylist;
+}
 
 namespace Action {
 
@@ -56,14 +59,14 @@ private slots:
 class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
-    explicit TMenuPlay(TBase* mw, TCore* c, Gui::TPlaylist* plist);
+    explicit TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* plist);
 
 protected:
     virtual void enableActions();
 
 private:
 	TCore* core;
-	Gui::TPlaylist* playlist;
+    Gui::Playlist::TPlaylist* playlist;
 
 	TAction* playAct;
 	QIcon pauseIcon;

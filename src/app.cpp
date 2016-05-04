@@ -36,7 +36,7 @@
 #include "images.h"
 #include "core.h"
 
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/default.h"
 
 #ifdef Q_OS_WIN
@@ -517,7 +517,7 @@ void TApp::onRequestRestart(bool reset_style) {
 	start_in_fullscreen = pref->fullscreen;
 	this->reset_style = reset_style;
 
-	Gui::TPlaylist* playlist = main_window->getPlaylist();
+    Gui::Playlist::TPlaylist* playlist = main_window->getPlaylist();
 	playlist->getFilesAppend(files_to_play);
     current_file = playlist->playingFile();
 

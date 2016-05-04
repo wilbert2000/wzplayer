@@ -1,4 +1,4 @@
-#include "gui/playlistwidget.h"
+#include "gui/playlist/playlistwidget.h"
 
 #include <QDebug>
 #include <QHeaderView>
@@ -9,6 +9,7 @@
 #include "helper.h"
 
 namespace Gui {
+namespace Playlist {
 
 enum TColID {
     COL_PLAY = 0,

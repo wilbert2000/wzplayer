@@ -15,15 +15,15 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-#ifndef GUI_PLAYLIST_H
-#define GUI_PLAYLIST_H
+#ifndef GUI_PLAYLIST_PLAYLIST_H
+#define GUI_PLAYLIST_PLAYLIST_H
 
 #include <QWidget>
 #include <QTreeWidgetItem>
 #include <QList>
 #include <QStringList>
 
-#include "gui/playlistwidget.h"
+#include "gui/playlist/playlistwidget.h"
 
 
 class QToolBar;
@@ -44,6 +44,8 @@ class TAction;
 class TMenu;
 class TMenuInOut;
 }
+
+namespace Playlist {
 
 class TPlaylist : public QWidget {
 	Q_OBJECT
@@ -230,7 +232,8 @@ private slots:
 	void resumePlay();
 };
 
+} // namespace Playlist
 } // namespace Gui
 
-#endif // GUI_PLAYLIST_H
+#endif // GUI_PLAYLIST_PLAYLIST_H
 

@@ -40,7 +40,7 @@
 
 #include "mediaplayer2player.h"
 #include "mpris2.h"
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/base.h"
 #include "core.h"
 

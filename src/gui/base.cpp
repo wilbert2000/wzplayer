@@ -79,14 +79,14 @@
 #include "gui/action/menuhelp.h"
 
 #include "gui/logwindow.h"
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/autohidetimer.h"
 #include "gui/filepropertiesdialog.h"
 #include "gui/inputdvddirectory.h"
 #include "gui/about.h"
 #include "gui/inputurl.h"
 #include "gui/timedialog.h"
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/videoequalizer.h"
 #include "gui/eqslider.h"
 #include "gui/audioequalizer.h"
@@ -271,7 +271,7 @@ void TBase::createCore() {
 
 void TBase::createPlaylist() {
 
-	playlist = new TPlaylist(this, core);
+    playlist = new Playlist::TPlaylist(this, core);
 	connect(playlist, SIGNAL(playlistEnded()),
 			this, SLOT(playlistHasFinished()));
 	connect(playlist, SIGNAL(displayMessage(const QString&, int)),

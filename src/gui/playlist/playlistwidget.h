@@ -1,10 +1,11 @@
-#ifndef GUI_PLAYLISTWIDGET_H
-#define GUI_PLAYLISTWIDGET_H
+#ifndef GUI_PLAYLIST_PLAYLISTWIDGET_H
+#define GUI_PLAYLIST_PLAYLISTWIDGET_H
 
 #include <QTreeWidget>
 
 
 namespace Gui {
+namespace Playlist {
 
 enum TPlaylistItemState {
     PSTATE_STOPPED,
@@ -134,6 +135,7 @@ private:
                                          bool allowChild = true) const;
 };
 
+} // namespace Playlist
 } // namespace Gui
 
-#endif // GUI_PLAYLISTWIDGET_H
+#endif // GUI_PLAYLIST_PLAYLISTWIDGET_H

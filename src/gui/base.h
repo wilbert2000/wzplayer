@@ -67,9 +67,12 @@ namespace Pref {
 class TDialog;
 }
 
+namespace Playlist {
+class TPlaylist;
+}
+
 class TAutoHideTimer;
 class TLogWindow;
-class TPlaylist;
 class TFilePropertiesDialog;
 class TAudioEqualizer;
 class TVideoEqualizer;
@@ -95,7 +98,7 @@ public:
 	void runActionsLater(QString actions) { pending_actions_to_run = actions; }
 
 	TCore* getCore() { return core; }
-	TPlaylist* getPlaylist() { return playlist; }
+    Playlist::TPlaylist* getPlaylist() { return playlist; }
 	Action::TActionList getAllNamedActions();
 	QMenu* getToolbarMenu() { return toolbar_menu; }
 
@@ -307,7 +310,7 @@ protected:
 	Action::TVolumeSliderAction* volumeslider_action;
 	Action::TTimeLabelAction* time_label_action;
 
-	TPlaylist* playlist;
+    Playlist::TPlaylist* playlist;
 	TLogWindow* log_window;
 	TLogWindow* help_window;
 

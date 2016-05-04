@@ -38,7 +38,7 @@
 #include "gui/action/menusubtitle.h"
 #include "gui/action/menubrowse.h"
 #include "gui/action/menuwindow.h"
-#include "gui/playlist.h"
+#include "gui/playlist/playlist.h"
 
 
 using namespace Settings;
