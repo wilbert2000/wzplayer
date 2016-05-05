@@ -97,13 +97,13 @@ TBasePlus::TBasePlus() :
 	playlistdock = new QDockWidget(this);
 	playlistdock->setObjectName("playlistdock");
     playlistdock->setWidget(playlist);
+    playlistdock->setFloating(true);
 	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
 								  | Qt::BottomDockWidgetArea
 								  | Qt::LeftDockWidgetArea
 								  | Qt::RightDockWidgetArea);
     playlistdock->setAcceptDrops(true);
     playlistdock->hide();
-
     addDockWidget(Qt::BottomDockWidgetArea, playlistdock);
 
 	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
@@ -211,10 +211,8 @@ void TBasePlus::saveConfig() {
 	// Store inside group derived class
 	pref->beginGroup(settingsGroupName());
 	pref->beginGroup("base_gui_plus");
-
     pref->setValue("show_tray_icon", showTrayAct->isChecked());
 	pref->setValue("mainwindow_visible", isVisible());
-
 	pref->endGroup();
 	pref->endGroup();
 }
@@ -223,10 +221,6 @@ void TBasePlus::loadConfig() {
 	qDebug("Gui::TBasePlus::loadConfig");
 
 	TBase::loadConfig();
-
-    if (!state_restored && playlistdock->isFloating()) {
-        playlistdock->move(300, 300);
-    }
 
 	// load from group derived class
 	pref->beginGroup(settingsGroupName());
@@ -295,7 +289,7 @@ void TBasePlus::onMediaInfoChanged() {
 }
 
 
-// The following is an awfull lot of code to keep the video panel
+// TODO: the following is an awfull lot of code to keep the video panel
 // the same size before and after docking...
 
 void TBasePlus::showEvent(QShowEvent* event) {
