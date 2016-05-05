@@ -1,12 +1,10 @@
 #include "gui/playlist/addfilesthread.h"
 
-//#include <QDebug>
 #include <QTreeWidgetItem>
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
 #include <QRegExp>
-#include <QApplication>
 
 #include "gui/playlist/playlistwidgetitem.h"
 #include "discname.h"
@@ -24,6 +22,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     QThread(parent),
     root(0),
     currentItem(0),
+    stopRequested(false),
     files(aFiles),
     recurse(recurseSubDirs),
     searchForItems(aSearchForItems) {
@@ -55,7 +54,6 @@ TPlaylistWidgetItem* TAddFilesThread::findFilename(const QString&) {
 
 QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
                                           const QString &filename) {
-    //qDebug() << "Gui::Playlist::TAddFilesThread::addFile:" << filename;
     // Note: currently addFile loads playlists and addDirectory skips them,
     // giving a nice balance. Load if the individual file is requested,
     // skip when adding a directory.
@@ -110,7 +108,6 @@ QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
 
 QTreeWidgetItem* TAddFilesThread::addDirectory(QTreeWidgetItem* parent,
                                                const QString &dir) {
-    //qDebug() << "Gui::Playlist::TAddFilesThread::addDirectory:" << dir;
 
     static TExtensions ext;
     static QRegExp rx_ext(ext.multimedia().forRegExp(), Qt::CaseInsensitive);
@@ -131,6 +128,9 @@ QTreeWidgetItem* TAddFilesThread::addDirectory(QTreeWidgetItem* parent,
 
     QFileInfo fi;
     foreach(const QString filename, QDir(dir).entryList()) {
+        if (stopRequested) {
+            break;
+        }
         if (filename != "." && filename != "..") {
             fi.setFile(dir, filename);
             if (fi.isDir()) {
@@ -157,6 +157,9 @@ void TAddFilesThread::addFiles() {
 
     bool first = true;
     foreach(QString file, files) {
+        if (stopRequested) {
+            break;
+        }
 
         if (file.startsWith("file:")) {
             file = QUrl(file).toLocalFile();

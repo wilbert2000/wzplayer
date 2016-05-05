@@ -24,6 +24,7 @@ public:
     virtual ~TAddFilesThread();
 
     virtual void run();
+    void stop() { stopRequested = true; }
 
     QTreeWidgetItem* root;
     QTreeWidgetItem* currentItem;
@@ -33,6 +34,7 @@ signals:
     void displayMessage(const QString&, int);
 
 private:
+    bool stopRequested;
     const QStringList& files;
     bool recurse;
     bool searchForItems;

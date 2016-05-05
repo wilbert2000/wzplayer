@@ -107,7 +107,7 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
 
 TPlaylist::~TPlaylist() {
 
-    // Prevent onThreadFinished deleting the thread
+    // Prevent onThreadFinished handling results
     thread = 0;
 }
 
@@ -394,6 +394,12 @@ void TPlaylist::addDirectory() {
 }
 
 void TPlaylist::onThreadFinished() {
+    qDebug() << "Gui::Playlist::TPlaylist::onThreadFinished";
+
+    if (thread == 0) {
+        qDebug() << "Gui::Playlist::TPlaylist::onThreadFinished: thread is gone";
+        return;
+    }
 
     // Get data from thread
     QTreeWidgetItem* root = thread->root;
@@ -479,6 +485,16 @@ void TPlaylist::addFiles(const QStringList& files,
                          QTreeWidgetItem* target,
                          const QString& fileToPlay,
                          bool searchForItems) {
+    qDebug() << "Gui::Playlist::TPlaylist::addFiles: files" << files
+             << "startPlay" << startPlay;
+
+    if (thread) {
+        // Assume something is wrong
+        qWarning("Gui::Playlist::TPlaylist::addFiles: add files thread is still"
+                 " running. Stopping thread and canceling this addFiles.");
+        thread->stop();
+        return;
+    }
 
     addFilesFiles = files;
     addFilesStartPlay = startPlay;
