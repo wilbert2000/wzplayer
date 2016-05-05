@@ -47,6 +47,9 @@ class TMenuInOut;
 
 namespace Playlist {
 
+class TAddFilesThread;
+
+
 class TPlaylist : public QWidget {
 	Q_OBJECT
 public:
@@ -65,7 +68,11 @@ public:
     }
 
 	void clear();
-    void addFiles(const QStringList& files, QTreeWidgetItem* target = 0);
+    void addFiles(const QStringList& files,
+                  bool startPlay = false,
+                  QTreeWidgetItem* target = 0,
+                  const QString& fileToPlay = "",
+                  bool searchForItems = false);
 	void getFilesAppend(QStringList& files) const;
 
 	// Preferences
@@ -145,10 +152,16 @@ private:
     bool disable_enableActions;
 
     bool modified;
-    bool search_for_item;
     QString title;
     QString playlist_filename;
     QString playlist_path;
+
+    TAddFilesThread* thread;
+    QStringList addFilesFiles;
+    QTreeWidgetItem* addFilesTarget;
+    QString addFilesFileToPlay;
+    bool addFilesStartPlay;
+    bool addFilesSearchItems;
 
     void createTree();
     void createActions();
@@ -161,15 +174,6 @@ private:
                                      double duration,
                                      QTreeWidgetItem* parent = 0,
                                      QTreeWidgetItem* after = 0);
-    QTreeWidgetItem* addFile(QTreeWidgetItem* parent,
-                             QTreeWidgetItem* after,
-                             const QString& filename);
-    QTreeWidgetItem* addFileOrDir(QTreeWidgetItem* parent,
-                                  QTreeWidgetItem* after,
-                                  const QString& filename);
-    QTreeWidgetItem* addDirectory(QTreeWidgetItem* parent,
-                                  QTreeWidgetItem* after,
-                                  const QString& dir);
 
     TPlaylistWidgetItem* getRandomItem() const;
     bool haveUnplayedItems() const;
@@ -230,6 +234,7 @@ private slots:
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();
 	void resumePlay();
+    void onThreadFinished();
 };
 
 } // namespace Playlist

@@ -42,7 +42,8 @@
 
 #include "gui/base.h"
 #include "gui/playlist/playlistwidget.h"
-#include "gui/playlist/playlistthread.h"
+#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/playlist/addfilesthread.h"
 #include "core.h"
 #include "gui/multilineinputdialog.h"
 #include "gui/action/menuinoutpoints.h"
@@ -65,11 +66,12 @@ namespace Playlist {
 TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     QWidget(mw),
     main_window(mw),
-    core(c) ,
+    core(c),
     recursive_add_directory(true),
     disable_enableActions(false),
     modified(false),
-    search_for_item(false) {
+    thread(0),
+    addFilesTarget(0) {
 
     createTree();
     createActions();
@@ -104,6 +106,9 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
 }
 
 TPlaylist::~TPlaylist() {
+
+    // Prevent onThreadFinished deleting the thread
+    thread = 0;
 }
 
 void TPlaylist::createTree() {
@@ -378,203 +383,129 @@ QTreeWidgetItem* TPlaylist::cleanAndAddItem(QString filename,
     return i;
 }
 
-QTreeWidgetItem* TPlaylist::addFile(QTreeWidgetItem* parent,
-                                    QTreeWidgetItem* after,
-                                    const QString &filename) {
-    qDebug() << "Gui::TPlaylist::addFile:" << filename;
-    // Note: currently addFile loads playlists and addDirectory skips them,
-    // giving a nice balance. Load if the individual file is requested,
-    // skip when adding a directory.
-
-    TPlaylistWidgetItem* existing_item = 0;
-    if (search_for_item) {
-        existing_item = playlistWidget->findFilename(filename);
-    }
-
-    TPlaylistWidgetItem* item;
-    QFileInfo fi(filename);
-    if (fi.exists()) {
-        QString ext = fi.suffix().toLower();
-        pref->latest_dir = fi.absolutePath();
-        if (ext == "m3u" || ext == "m3u8") {
-            return openM3u(filename, false, false, parent, after);
-        }
-        if (ext == "pls") {
-            return openPls(filename, false, false, parent, after);
-        }
-        item = new TPlaylistWidgetItem(parent,
-                                       after,
-                                       QDir::toNativeSeparators(filename),
-                                       fi.fileName(),
-                                       0,
-                                       false);
-    } else {
-        QString name;
-        TDiscName disc(filename);
-        if (disc.valid) {
-            // See also TTitleData::getDisplayName() from titletracks.cpp
-            if (disc.protocol == "cdda" || disc.protocol == "vcd") {
-                name = tr("Track %1").arg(QString::number(disc.title));
-            } else {
-                name = tr("Title %1").arg(QString::number(disc.title));
-            }
-        } else {
-            name = filename;
-        }
-        item = new TPlaylistWidgetItem(parent, after, filename, name, 0, false);
-    }
-
-    if (existing_item) {
-        item->setName(existing_item->name());
-        item->setDuration(existing_item->duration());
-        item->setPlayed(existing_item->played());
-    }
-
-    return item;
-}
-
-QTreeWidgetItem* TPlaylist::addDirectory(QTreeWidgetItem* parent,
-                                         QTreeWidgetItem* after,
-                                         const QString &dir) {
-    qDebug() << "Gui::TPlaylist::addDirectory:" << dir;
-
-    static TExtensions ext;
-    static QRegExp rx_ext(ext.multimedia().forRegExp(), Qt::CaseInsensitive);
-
-    emit displayMessage(dir, 0);
-
-    QString playlist = dir + "/" + TConfig::PROGRAM_ID + ".m3u8";
-    if (QFileInfo(playlist).exists()) {
-        return openM3u(playlist);
-    }
-
-    TPlaylistWidgetItem* w = new TPlaylistWidgetItem(0,
-                                                     0,
-                                                     dir,
-                                                     QDir(dir).dirName(),
-                                                     0,
-                                                     true);
-
-    QFileInfo fi;
-    foreach(const QString filename, QDir(dir).entryList()) {
-        if (filename != "." && filename != "..") {
-            fi.setFile(dir, filename);
-            if (fi.isDir()) {
-                if (recursive_add_directory) {
-                    addDirectory(w, 0, fi.absoluteFilePath());
-                }
-            } else if (rx_ext.indexIn(fi.suffix()) >= 0) {
-                addFile(w, 0, fi.absoluteFilePath());
-            }
-        }
-    }
-
-    if (w->childCount()) {
-        pref->latest_dir = dir;
-        if (after) {
-            if (after == parent) {
-                parent->insertChild(0, w);
-                return w;
-            }
-            int idx = parent->indexOfChild(after);
-            if (idx >= 0) {
-                parent->insertChild(idx + 1, w);
-                return w;
-            }
-        }
-        parent->addChild(w);
-        return w;
-    }
-
-    delete w;
-    return 0;
-}
-
 void TPlaylist::addDirectory() {
 
     QString s = MyFileDialog::getExistingDirectory(this,
                     tr("Choose a directory"), pref->latest_dir);
 
     if (!s.isEmpty()) {
-        if (!addDirectory(playlistWidget->currentPlaylistWidgetFolder(),
-                          playlistWidget->currentItem(),
-                          s)) {
-            msg(tr("Found no files to play in %s").arg(s));
+        addFiles(QStringList() << s, false, playlistWidget->currentItem());
+    }
+}
+
+void TPlaylist::onThreadFinished() {
+
+    // Get data from thread
+    QTreeWidgetItem* root = thread->root;
+    thread->root = 0;
+    QTreeWidgetItem* current = thread->currentItem;
+    if (thread->latestDir.count()) {
+        pref->latest_dir = thread->latestDir;
+    }
+
+    // Clean up
+    delete thread;
+    thread = 0;
+
+    if (root->childCount() == 0) {
+        QString msg;
+        if (addFilesFiles.count() == 1) {
+            msg = tr("Found no files to play in %1").arg(addFilesFiles[0]);
+        } else {
+            msg = tr("Found no files to play");
         }
+
+        delete root;
+        addFilesFiles.clear();
+        addFilesTarget = 0;
+
+        QMessageBox::information(this, "Found no files", msg);
+        // TODO: state?
+        enableActions();
+        return;
     }
-}
+    addFilesFiles.clear();
 
-QTreeWidgetItem* TPlaylist::addFileOrDir(QTreeWidgetItem* parent,
-                                         QTreeWidgetItem* after,
-                                         const QString& filename) {
-
-    if (QFileInfo(filename).isDir()) {
-        return addDirectory(parent, after, filename);
-    }
-
-    return addFile(parent, after, filename);
-}
-
-void TPlaylist::addFiles(const QStringList &files, QTreeWidgetItem* target) {
-    qDebug() << "Gui::TPlaylist::addFiles";
-
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
+    // Add to playlistWidget
     playlistWidget->enableSort(false);
 
+    // Setup parent and child index into parent
     QTreeWidgetItem* parent;
-    if (target == 0) {
+    int idx = -1;
+    if (addFilesTarget == 0) {
         parent = playlistWidget->root();
     } else {
-        parent = playlistWidget->playlistWidgetFolder(target);
+        // TODO: verify addFilesTarget still existing
+        parent = playlistWidget->playlistWidgetFolder(addFilesTarget);
+        if (parent == addFilesTarget) {
+            idx = 0;
+        } else {
+            idx = parent->indexOfChild(addFilesTarget);
+        }
+        addFilesTarget = 0;
+    }
+    if (idx < 0) {
+        idx = parent->childCount();
     }
 
-    // Add the files
-    bool first = true;
-    foreach(QString file, files) {
-
-        // Check here instead of in addFile() for performance
-        if (file.startsWith("file:")) {
-            file = QUrl(file).toLocalFile();
-        }
-
-#ifdef Q_OS_WIN
-        {
-            // Check for Windows shortcuts
-            QFileInfo fi(file);
-            if (fi.isSymLink()) {
-                file = fi.symLinkTarget();
-            }
-        }
-#endif
-
-        QTreeWidgetItem* result = addFileOrDir(parent, target, file);
-        if (result) {
-            if (first) {
-                playlistWidget->setCurrentItem(result);
-                first = false;
-            } else {
-                result->setSelected(true);
-            }
-            target = result;
-        }
+    QList<QTreeWidgetItem*> children;
+    while (root->childCount()) {
+        children << root->child(0);
+        root->removeChild(root->child(0));
     }
+    delete root;
 
-    QApplication::restoreOverrideCursor();
+    playlistWidget->clearSelection();
+    parent->insertChildren(idx, children);
+    playlistWidget->setCurrentItem(current);
 
-    qDebug() << "Gui::TPlaylist::addFiles: done";
+    if (addFilesStartPlay) {
+        if (addFilesFileToPlay.count()) {
+            TPlaylistWidgetItem* w = findFilename(addFilesFileToPlay);
+            if (w) {
+                // Ok to not sort, only used by restart
+                playItem(w);
+                return;
+            }
+        }
+        startPlay(true);
+    } else {
+        enableActions();
+    }
+}
+
+void TPlaylist::addFiles(const QStringList& files,
+                         bool startPlay,
+                         QTreeWidgetItem* target,
+                         const QString& fileToPlay,
+                         bool searchForItems) {
+
+    addFilesFiles = files;
+    addFilesStartPlay = startPlay;
+    addFilesTarget = target;
+    addFilesFileToPlay = fileToPlay;
+    addFilesSearchItems = searchForItems;
+
+    thread = new TAddFilesThread(this, addFilesFiles, recursive_add_directory,
+                                 searchForItems);
+    connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
+    connect(thread, SIGNAL(displayMessage(QString, int)),
+            this, SIGNAL(displayMessage(QString, int)));
+    thread->start();
+
+    enableActions();
 }
 
 void TPlaylist::addFiles() {
 
     TExtensions e;
     QStringList files = MyFileDialog::getOpenFileNames(this,
-        tr("Select one or more files to open"), pref->latest_dir,
+        tr("Select one or more files to add"), pref->latest_dir,
         tr("Multimedia") + e.multimedia().forFilter() + ";;" +
         tr("All files") +" (*.*)");
 
     if (files.count() > 0) {
-        addFiles(files, playlistWidget->currentItem());
+        addFiles(files, false, playlistWidget->currentItem());
         setModified();
     }
 }
@@ -757,16 +688,15 @@ void TPlaylist::playDirectory(const QString &dir) {
 	qDebug("Gui::TPlaylist::playDirectory");
 
     setWinTitle(QDir(dir).dirName());
-    playlistWidget->enableSort(false);
 
     if (Helper::directoryContainsDVD(dir)) {
         // onStartPlayingNewMedia() will pickup the playlist
+        playlistWidget->enableSort(false);
         core->open(dir);
 	} else {
         clear();
         core->setState(STATE_LOADING);
-        addDirectory(playlistWidget->root(), 0, dir);
-        startPlay(true);
+        addFiles(QStringList() << dir, true);
 	}
 }
 
@@ -778,7 +708,8 @@ void TPlaylist::resumePlay() {
 	}
 }
 
-bool TPlaylist::deleteFileFromDisk(const QString& filename, const QString& playingFile) {
+bool TPlaylist::deleteFileFromDisk(const QString& filename,
+                                   const QString& playingFile) {
 
     QFileInfo fi(filename);
 	if (!fi.exists()) {
@@ -889,16 +820,19 @@ void TPlaylist::enableActions() {
         qDebug() << "Gui::TPlaylist::enableActions: disabled";
         return;
     }
-    qDebug() << "Gui::TPlaylist::enableActions";
-
-    // Note: there is always something selected when c > 0
-    int c = playlistWidget->topLevelItemCount();
-    saveAct->setEnabled(c > 0);
+    qDebug() << "Gui::TPlaylist::enableActions: state" << core->stateToString();
 
     TCoreState s = core->state();
-    bool enable = s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED;
+    bool enable = (s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED)
+                  && thread == 0;
+                  ;
     TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
     TPlaylistWidgetItem* current_item = playlistWidget->currentPlaylistWidgetItem();
+    // Note: there is always something selected if c > 0
+    int c = playlistWidget->topLevelItemCount();
+
+
+    saveAct->setEnabled(enable && c > 0);
 
     playAct->setEnabled(enable && current_item);
 
@@ -941,16 +875,17 @@ void TPlaylist::enableActions() {
         emit enablePrevNextChanged();
     }
 
-    addCurrentAct->setEnabled(core->mdat.filename.count());
+    addCurrentAct->setEnabled(core->mdat.filename.count() && (thread == 0));
 
-    removeSelectedAct->setEnabled(c > 0);
-    removeSelectedFromDiskAct->setEnabled(current_item
+    e = c > 0 && thread == 0;
+    removeSelectedAct->setEnabled(e);
+    removeSelectedFromDiskAct->setEnabled(e && current_item
                                           && !current_item->isFolder());
-    removeAllAct->setEnabled(c > 0);
+    removeAllAct->setEnabled(e);
 
-    cutAct->setEnabled(c > 0);
-    copyAct->setEnabled(c > 0);
-    editAct->setEnabled(current_item);
+    cutAct->setEnabled(e);
+    copyAct->setEnabled(e);
+    editAct->setEnabled(e && current_item);
 }
 
 void TPlaylist::onPlayerError() {
@@ -1108,9 +1043,7 @@ void TPlaylist::paste() {
     QStringList files = QApplication::clipboard()->text()
                         .split("\n",  QString::SkipEmptyParts);
     if (files.count()) {
-        search_for_item = true;
-        addFiles(files, playlistWidget->currentItem());
-        search_for_item = false;
+        addFiles(files, false, playlistWidget->currentItem(), "", true);
         setModified();
     }
 }
@@ -1213,9 +1146,10 @@ void TPlaylist::dropEvent(QDropEvent *e) {
         }
 
         if (files.count()) {
+            // TODO: see dropIndicator for above/below
             QTreeWidgetItem* item = playlistWidget->itemAt(e->pos()
                 - playlistWidget->pos() - playlistWidget->viewport()->pos());
-            addFiles(files, item);
+            addFiles(files, false, item);
             setModified();
         }
 
@@ -1262,6 +1196,7 @@ QTreeWidgetItem* TPlaylist::openM3u(const QString&file,
 
     setPlaylistFilename(file);
     playlist_path = QFileInfo(file).path();
+    pref->latest_dir = playlist_path;
     if (clear) {
         this->clear();
         parent = playlistWidget->root();
@@ -1325,6 +1260,7 @@ QTreeWidgetItem* TPlaylist::openPls(const QString &file,
     QTreeWidgetItem* result = 0;
     setPlaylistFilename(file);
     playlist_path = QFileInfo(file).path();
+    pref->latest_dir = playlist_path;
 
     QSettings set(file, QSettings::IniFormat);
     set.beginGroup("playlist");

@@ -1249,30 +1249,17 @@ void TBase::open(const QString &file) {
 }
 
 void TBase::openFiles(QStringList files, const QString& current) {
-	qDebug("Gui::TBase::openFiles");
+    qDebug("Gui::TBase::openFiles");
 
-	if (files.empty()) {
+    if (files.empty()) {
         qDebug("Gui::TBase::openFiles: no files in list to open");
-		return;
-	}
+        return;
+    }
 
     if (playlist->maybeSave()) {
-        if (current.isEmpty()) {
-			files.sort();
-        }
-		playlist->clear();
-		playlist->addFiles(files);
-        if (current.count()) {
-            Playlist::TPlaylistWidgetItem* w = playlist->findFilename(current);
-            if (w) {
-                playlist->playItem(w);
-            } else {
-                playlist->startPlay(true);
-            }
-		} else {
-            playlist->startPlay(true);
-		}
-	}
+        playlist->clear();
+        playlist->addFiles(files, true, 0, current);
+    }
 }
 
 void TBase::openFile() {

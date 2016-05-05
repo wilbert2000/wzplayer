@@ -144,6 +144,8 @@ HEADERS += version.h \
     gui/lineedit.h \
     gui/inputurl.h \
     gui/infoprovider.h \
+    gui/playlist/addfilesthread.h \
+    gui/playlist/playlistwidgetitem.h \
     gui/playlist/playlistwidget.h \
     gui/playlist/playlist.h \
     gui/autohidetimer.h \
@@ -265,6 +267,8 @@ SOURCES	+= version.cpp \
     gui/lineedit.cpp \
     gui/inputurl.cpp \
     gui/infoprovider.cpp \
+    gui/playlist/addfilesthread.cpp \
+    gui/playlist/playlistwidgetitem.cpp \
     gui/playlist/playlistwidget.cpp \
     gui/playlist/playlist.cpp \
     gui/autohidetimer.cpp \
