@@ -656,35 +656,35 @@ void TCore::initMediaSettings() {
 }
 
 void TCore::initPlaying(int seek) {
-	qDebug("TCore::initPlaying: starting time");
+    qDebug("TCore::initPlaying: starting time");
 
-	time.start();
-	// Clear background
-	playerwindow->repaint();
+    time.start();
+    // Clear background
+    playerwindow->repaint();
 
     if (_state != STATE_RESTARTING)
-		initMediaSettings();
+        initMediaSettings();
 
-	int start_sec = (int) mset.current_sec;
-	if (seek >= 0)
-		start_sec = seek;
+    int start_sec = (int) mset.current_sec;
+    if (seek >= 0)
+        start_sec = seek;
 
-	// Cannot seek at startup in DVDNAV.
-	if (mdat.selected_type == TMediaData::TYPE_DVDNAV)
-		start_sec = 0;
+    // Cannot seek at startup in DVDNAV.
+    if (mdat.selected_type == TMediaData::TYPE_DVDNAV)
+        start_sec = 0;
 
-	startPlayer(mdat.filename, start_sec);
+    startPlayer(mdat.filename, start_sec);
 }
 
 void TCore::playingStartNewMedia() {
     qDebug("TCore::playingStartNewMedia");
 
-	mdat.initialized = true;
-	mdat.list();
+    mdat.initialized = true;
+    mdat.list();
 
-	// Copy the demuxer
-	mset.current_demuxer = mdat.demuxer;
-	mset.list();
+    // Copy the demuxer
+    mset.current_demuxer = mdat.demuxer;
+    mset.list();
 
     qDebug("TCore::playingStartNewMedia: emit startPlayingNewMedia()");
     emit startPlayingNewMedia();
@@ -692,71 +692,74 @@ void TCore::playingStartNewMedia() {
 
 // Slot called when signal playerFullyLoaded arrives.
 void TCore::playingStarted() {
-	qDebug("TCore::playingStarted");
+    qDebug("TCore::playingStarted");
 
-	if (forced_titles.contains(mdat.filename)) {
-		mdat.title = forced_titles[mdat.filename];
-	}
+    if (forced_titles.contains(mdat.filename)) {
+        mdat.title = forced_titles[mdat.filename];
+    }
 
     if (_state != STATE_RESTARTING) {
         playingStartNewMedia();
     }
 
-	setState(STATE_PLAYING);
+    setState(STATE_PLAYING);
 
-	qDebug("TCore::playingStarted: emit mediaInfoChanged()");
-	emit mediaInfoChanged();
+    qDebug("TCore::playingStarted: emit mediaInfoChanged()");
+    emit mediaInfoChanged();
 
-	qDebug() << "TCore::playingStarted: done in" << time.elapsed() << "ms";
+    qDebug() << "TCore::playingStarted: done in" << time.elapsed() << "ms";
 }
 
 void TCore::stop() {
-	qDebug() << "TCore::stop: current state:" << stateToString();
+    qDebug() << "TCore::stop: current state:" << stateToString();
 
     stopPlayer();
     qDebug("TCore::stop: entering the stopped state");
     setState(STATE_STOPPED);
-	emit mediaStopped();
+    emit mediaStopped();
 }
 
 void TCore::play() {
-	qDebug() << "TCore::play: current state: " << stateToString();
+    qDebug() << "TCore::play: current state: " << stateToString();
 
     switch (proc->state()) {
-        case QProcess::Running: {
+        case QProcess::Running:
             if (_state == STATE_PAUSED) {
                 proc->setPause(false);
                 setState(STATE_PLAYING);
             }
-        } break;
-        case QProcess::NotRunning: {
+            break;
+        case QProcess::NotRunning:
             if (mdat.filename.isEmpty()) {
                 emit noFileToPlay();
             } else {
                 restartPlay();
             }
-        } break;
-        default: break;
+            break;
+        case QProcess::Starting:
+            break;
+        default:
+            break;
     }
 }
 
 void TCore::pause() {
-	qDebug() << "TCore::pause: current state:" << stateToString();
+    qDebug() << "TCore::pause: current state:" << stateToString();
 
-	if (proc->isRunning() && _state != STATE_PAUSED) {
-		proc->setPause(true);
-		setState(STATE_PAUSED);
-	}
+    if (proc->isRunning() && _state != STATE_PAUSED) {
+        proc->setPause(true);
+        setState(STATE_PAUSED);
+    }
 }
 
 void TCore::playOrPause() {
-	qDebug() << "TCore::playOrPause: current state:" << stateToString();
+    qDebug() << "TCore::playOrPause: current state:" << stateToString();
 
-	if (_state == STATE_PLAYING) {
-		pause();
-	} else {
-		play();
-	}
+    if (_state == STATE_PLAYING) {
+        pause();
+    } else {
+        play();
+    }
 }
 
 void TCore::frameStep() {
