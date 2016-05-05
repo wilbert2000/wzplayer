@@ -234,39 +234,48 @@ TMenuPlaySpeed::TMenuPlaySpeed(TBase* mw, TCore* c)
 	group->setEnabled(false);
 
 
-    TAction* a = new TAction(this, "normal_speed", tr("&Normal speed"), "", Qt::Key_S);
+    TAction* a = new TAction(this, "normal_speed", tr("&Normal speed"), "",
+                             Qt::Key_S);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(normalSpeed()));
 
     addSeparator();
-    a = new TAction(this, "halve_speed", tr("&Half speed"), "", Qt::ALT | Qt::Key_S);
+    a = new TAction(this, "halve_speed", tr("&Half speed"), "",
+                    Qt::ALT | Qt::Key_S);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(halveSpeed()));
-    a = new TAction(this, "double_speed", tr("&Double speed"), "", Qt::META | Qt::Key_S);
+    a = new TAction(this, "double_speed", tr("&Double speed"), "",
+                    Qt::META | Qt::Key_S);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(doubleSpeed()));
 
     addSeparator();
-    a = new TAction(this, "dec_speed", tr("Speed &-10%"), "", Qt::SHIFT | Qt::Key_S);
+    a = new TAction(this, "dec_speed", tr("Speed &-10%"), "",
+                    Qt::SHIFT | Qt::Key_S);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(decSpeed10()));
-    a = new TAction(this, "inc_speed", tr("Speed &+10%"), "", Qt::CTRL | Qt::Key_S);
+    a = new TAction(this, "inc_speed", tr("Speed &+10%"), "",
+                    Qt::CTRL | Qt::Key_S);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(incSpeed10()));
 
 	addSeparator();
-    a = new TAction(this, "dec_speed_4", tr("Speed -&4%"), "", Qt::SHIFT | Qt::CTRL | Qt::Key_S);
+    a = new TAction(this, "dec_speed_4", tr("Speed -&4%"), "",
+                    Qt::SHIFT | Qt::CTRL | Qt::Key_S);
 	group->addAction(a);
     connect(a, SIGNAL(triggered()), core, SLOT(decSpeed4()));
-    a = new TAction(this, "inc_speed_4", tr("&Speed +4%"), "", Qt::ALT | Qt::CTRL | Qt::Key_S);
+    a = new TAction(this, "inc_speed_4", tr("&Speed +4%"), "",
+                    Qt::ALT | Qt::CTRL | Qt::Key_S);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed4()));
 
 	addSeparator();
-    a = new TAction(this, "dec_speed_1", tr("Speed -&1%"), "", Qt::SHIFT | Qt::META | Qt::Key_S);
+    a = new TAction(this, "dec_speed_1", tr("Speed -&1%"), "",
+                    Qt::SHIFT | Qt::META | Qt::Key_S);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(decSpeed1()));
-    a = new TAction(this, "inc_speed_1", tr("S&peed +1%"), "", Qt::CTRL | Qt::META | Qt::Key_S);
+    a = new TAction(this, "inc_speed_1", tr("S&peed +1%"), "",
+                    Qt::CTRL | Qt::META | Qt::Key_S);
 	group->addAction(a);
 	connect(a, SIGNAL(triggered()), core, SLOT(incSpeed1()));
 
