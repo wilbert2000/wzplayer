@@ -70,8 +70,7 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     recursive_add_directory(true),
     disable_enableActions(false),
     modified(false),
-    thread(0),
-    addFilesTarget(0) {
+    thread(0) {
 
     createTree();
     createActions();
@@ -423,11 +422,9 @@ void TPlaylist::onThreadFinished() {
 
         delete root;
         addFilesFiles.clear();
-        addFilesTarget = 0;
+        enableActions();
 
         QMessageBox::information(this, "Found no files", msg);
-        // TODO: state?
-        enableActions();
         return;
     }
     addFilesFiles.clear();
@@ -448,7 +445,6 @@ void TPlaylist::onThreadFinished() {
         } else {
             idx = parent->indexOfChild(addFilesTarget);
         }
-        addFilesTarget = 0;
     }
     if (idx < 0) {
         idx = parent->childCount();
@@ -711,7 +707,6 @@ void TPlaylist::playDirectory(const QString &dir) {
         core->open(dir);
 	} else {
         clear();
-        core->setState(STATE_LOADING);
         addFiles(QStringList() << dir, true);
 	}
 }
@@ -793,14 +788,16 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
     }
 
     if (playlistWidget->topLevelItemCount() == 0) {
-        newCurrent = 0;
+        playlistWidget->setPlayingItem(0);
+        playlistWidget->setCurrentItem(0);
         setModified(false);
-    }
-    playlistWidget->playing_item = findFilename(playing);
-    if (newCurrent) {
-        playlistWidget->setCurrentItem(newCurrent);
     } else {
-        playlistWidget->setCurrentItem(playlistWidget->firstPlaylistWidgetItem());
+        playlistWidget->playing_item = findFilename(playing);
+        if (newCurrent) {
+            playlistWidget->setCurrentItem(newCurrent);
+        } else {
+            playlistWidget->setCurrentItem(playlistWidget->firstPlaylistWidgetItem());
+        }
     }
     disable_enableActions = false;
     enableActions();
@@ -847,7 +844,6 @@ void TPlaylist::enableActions() {
     // Note: there is always something selected if c > 0
     int c = playlistWidget->topLevelItemCount();
 
-
     saveAct->setEnabled(enable && c > 0);
 
     playAct->setEnabled(enable && current_item);
@@ -864,9 +860,6 @@ void TPlaylist::enableActions() {
         }
         playOrPauseAct->setTextAndTip(tr("&Pause"));
         playOrPauseAct->setIcon(Images::icon("pause"));
-    } else if (playing_item && playing_item->state() == PSTATE_LOADING) {
-        playOrPauseAct->setTextAndTip(tr("Loading"));
-        playOrPauseAct->setIcon(Images::icon("loading"));
     } else {
         playOrPauseAct->setTextAndTip(tr("&Play"));
         playOrPauseAct->setIcon(Images::icon("play"));
@@ -910,6 +903,7 @@ void TPlaylist::onPlayerError() {
     if (item) {
         item->setState(PSTATE_FAILED);
         playlistWidget->scrollToItem(item);
+        playlistWidget->setPlayingItem(0);
     }
 }
 
