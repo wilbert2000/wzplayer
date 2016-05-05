@@ -1219,7 +1219,7 @@ void TBase::openDirectory() {
 					this, tr("Choose a directory"),
 					pref->latest_dir);
 
-	if (!s.isEmpty()) {
+    if (!s.isEmpty() && playlist->maybeSave()) {
 		playlist->playDirectory(s);
 	}
 }
