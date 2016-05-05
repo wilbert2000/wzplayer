@@ -21,6 +21,7 @@
 
 #include <QStringList>
 
+// TODO: make singleton
 class ExtensionList : public QStringList
 {
 public:
