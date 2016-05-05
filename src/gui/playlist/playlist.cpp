@@ -151,7 +151,7 @@ void TPlaylist::createActions() {
     connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
 
     // Play/pause
-    playOrPauseAct = new TAction(this, "pl_play_or_pause", tr("&Play"), "play",
+    playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play",
                                  Qt::Key_Space);
     // Add MCE remote key
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));

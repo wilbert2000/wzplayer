@@ -280,7 +280,7 @@ void TPreferences::reset() {
 
 	// Actions section
     // Mouse tab
-    mouse_left_click_function = "pl_play_or_pause";
+    mouse_left_click_function = "play_or_pause";
 	delay_left_click = true;
 	mouse_right_click_function = "show_context_menu";
 	mouse_double_click_function = "fullscreen";

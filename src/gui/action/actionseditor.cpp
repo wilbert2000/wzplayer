@@ -506,7 +506,7 @@ QString TActionsEditor::actionTextToDescription(const QString& text,
     if (action_name == "display_time") {
 		return tr("Display time");
 	}
-    if (action_name == "pl_play_or_pause") {
+    if (action_name == "play_or_pause") {
         return tr("Play or pause");
     }
     if (action_name == "aspect_detect") {

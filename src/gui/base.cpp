@@ -482,7 +482,7 @@ void TBase::createToolbars() {
 	controlbar->setObjectName("controlbar");
 	QStringList actions;
     actions << "stop"
-            << "pl_play_or_pause"
+            << "play_or_pause"
             << "timeslider_action"
             << "rewind_menu"
             << "forward_menu"

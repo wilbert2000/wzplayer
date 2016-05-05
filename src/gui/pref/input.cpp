@@ -51,9 +51,10 @@ void TInput::createMouseCombos() {
 	xbutton1_click_combo->clear();
 	xbutton2_click_combo->clear();
 
+    // TODO: use actions editors actionTextToDescription()
 	left_click_combo->addItem(tr("None"), "");
 	left_click_combo->addItem(tr("Play"), "play");
-    left_click_combo->addItem(tr("Play / Pause"), "pl_play_or_pause");
+    left_click_combo->addItem(tr("Play / Pause"), "play_or_pause");
 	left_click_combo->addItem(tr("Pause"), "pause");
 	left_click_combo->addItem(tr("Stop"), "stop");
 	left_click_combo->addItem(tr("Frame back step"), "frame_back_step");
@@ -462,7 +463,7 @@ void TInput::createHelp() {
 			 " video. Consequently this will cause a left click action being"
              " triggered before and after each double click action."
              " This won't cause much trouble if the default action for the"
-             " left mouse button, pl_play_or_pause, is still assigned,"
+             " left mouse button, play_or_pause, is still assigned,"
              " because the first left click will be canceled by the second."));
 
 	setWhatsThis(middle_click_combo, tr("Middle click"),

@@ -293,7 +293,7 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* playlist)
     : TMenu(mw, mw, "play_menu", tr("&Play"), "noicon")
     , core(c) {
 
-    addAction(playlist->findChild<TAction*>("pl_play_or_pause"));
+    addAction(playlist->findChild<TAction*>("play_or_pause"));
     addAction(playlist->findChild<TAction*>("stop"));
 
 	addSeparator();
