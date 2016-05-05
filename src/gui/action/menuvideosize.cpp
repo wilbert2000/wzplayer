@@ -134,7 +134,7 @@ void TMenuVideoSize::upd() {
 	currentSizeAct->setEnabled(group->isEnabled());
 
 	// Update text and tips
-    QString txt = tr("&Optimize size %1%").arg(QString::number(group->size_percentage));
+    QString txt = tr("&Optimize (size %1%)").arg(QString::number(group->size_percentage));
 	currentSizeAct->setTextAndTip(txt);
 
     txt = tr("Size %1%").arg(QString::number(group->size_percentage));
