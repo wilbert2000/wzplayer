@@ -1270,12 +1270,14 @@ void TBase::openFile() {
 
 	TExtensions e;
 	QString s = MyFileDialog::getOpenFileName(
-					   this, tr("Choose a file"), pref->latest_dir,
-					   tr("Multimedia") + e.allPlayable().forFilter()+";;" +
-					   tr("Video") + e.video().forFilter()+";;" +
-					   tr("Audio") + e.audio().forFilter()+";;" +
-					   tr("Playlists") + e.playlist().forFilter()+";;" +
-					   tr("All files") +" (*.*)");
+                    this,
+                    tr("Choose a file"),
+                    pref->latest_dir,
+                    tr("Multimedia") + e.allPlayable().forFilter() + ";;"
+                    + tr("Video") + e.video().forFilter() + ";;"
+                    + tr("Audio") + e.audio().forFilter() + ";;"
+                    + tr("Playlists") + e.playlist().forFilter() + ";;"
+                    + tr("All files") +" (*.*)");
 
 	if (!s.isEmpty()) {
 		open(s);
