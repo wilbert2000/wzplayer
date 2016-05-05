@@ -124,6 +124,7 @@ private:
 	Action::TAction* openAct;
 	Action::TAction* saveAct;
     Action::TAction* playAct;
+    Action::TAction* pauseAct;
     Action::TAction* playOrPauseAct;
     Action::TAction* stopAct;
 	Action::TAction* prevAct;
@@ -206,6 +207,7 @@ private slots:
 
     void play();
     void playOrPause();
+    void stop();
 
     void addCurrentFile();
 	void addFiles();

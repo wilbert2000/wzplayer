@@ -289,24 +289,11 @@ void TMenuPlaySpeed::enableActions() {
 
 
 // Create main play menu
-TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* plist)
+TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* playlist)
     : TMenu(mw, mw, "play_menu", tr("&Play"), "noicon")
-	, core(c)
-	, playlist(plist)
-	, pauseIcon(Images::icon("pause"))
-	, playIcon(Images::icon("play")) {
-
-    playAct = new TAction(this, "play", tr("Play"), "", Qt::Key_MediaPlay, false);
-    main_window->addAction(playAct);
-	connect(playAct, SIGNAL(triggered()), core, SLOT(play()));
+    , core(c) {
 
     addAction(playlist->findChild<TAction*>("pl_play_or_pause"));
-
-	pauseAct = new TAction(this, "pause", tr("Pause"), "",
-						   QKeySequence("Media Pause"), false); // MCE remote key
-    main_window->addAction(pauseAct);
-	connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
-
     addAction(playlist->findChild<TAction*>("stop"));
 
 	addSeparator();
@@ -340,8 +327,6 @@ TMenuPlay::TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* plist)
 void TMenuPlay::enableActions() {
 
     TCoreState s = core->state();
-    playAct->setEnabled(s == STATE_STOPPED || s == STATE_PAUSED);
-    pauseAct->setEnabled(s == STATE_PLAYING);
     seekToAct->setEnabled(s == STATE_PLAYING || s == STATE_PAUSED);
 }
 

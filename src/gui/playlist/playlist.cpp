@@ -131,13 +131,24 @@ void TPlaylist::createActions() {
 	connect(openAct, SIGNAL(triggered()), this, SLOT(load()));
 
     // Save
-    saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save", QKeySequence("Ctrl+W"));
+    saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save",
+                          QKeySequence("Ctrl+W"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
+    // Stop
+    stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
+    connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
+
     // Play
-    playAct = new TAction(this, "pl_play", tr("P&lay item"), "play",
+    playAct = new TAction(this, "play", tr("P&lay"), "play",
                           Qt::SHIFT | Qt::Key_Space);
+    playAct->addShortcut(Qt::Key_MediaPlay);
     connect(playAct, SIGNAL(triggered()), this, SLOT(play()));
+
+    // Pause
+    pauseAct = new TAction(this, "pause", tr("Pause"), "",
+                           QKeySequence("Media Pause")); // MCE remote key
+    connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
 
     // Play/pause
     playOrPauseAct = new TAction(this, "pl_play_or_pause", tr("&Play"), "play",
@@ -145,10 +156,6 @@ void TPlaylist::createActions() {
     // Add MCE remote key
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
     connect(playOrPauseAct, SIGNAL(triggered()), this, SLOT(playOrPause()));
-
-    // Stop action, only in play menu, but owned by playlist
-    stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
-    connect(stopAct, SIGNAL(triggered()), core, SLOT(stop()));
 
     // Next
     nextAct = new TAction(this, "pl_next", tr("Play &next"), "next",
@@ -264,6 +271,12 @@ void TPlaylist::createToolbar() {
     toolbar->addAction(shuffleAct);
     toolbar->addAction(repeatAct);
     toolbar->addAction(inOutMenu->findChild<TAction*>("repeat_in_out"));
+
+    toolbar->addSeparator();
+    toolbar->addAction(stopAct);
+    toolbar->addAction(playAct);
+    toolbar->addAction(playOrPauseAct);
+
     toolbar->addSeparator();
     toolbar->addAction(prevAct);
 	toolbar->addAction(nextAct);
@@ -276,9 +289,9 @@ void TPlaylist::createToolbar() {
     popup->addAction(copyAct);
     popup->addAction(pasteAct);
     popup->addSeparator();
+    popup->addAction(stopAct);
     popup->addAction(playAct);
     popup->addAction(playOrPauseAct);
-    popup->addAction(stopAct);
     popup->addSeparator();
     popup->addMenu(inOutMenu);
     popup->addSeparator();
@@ -557,11 +570,13 @@ void TPlaylist::play() {
 
     if (playlistWidget->currentItem()) {
         playItem(playlistWidget->currentPlaylistWidgetItem());
+    } else {
+        core->play();
     }
 }
 
 void TPlaylist::playOrPause() {
-    qDebug() << "Gui::TPlaylist:playOrPause: state" << core->stateToString();
+    qDebug() << "Gui::TPlaylist::playOrPause: state" << core->stateToString();
 
     if (core->state() == STATE_PLAYING) {
         core->pause();
@@ -572,7 +587,18 @@ void TPlaylist::playOrPause() {
     } else if (playlistWidget->currentItem()) {
         playItem(playlistWidget->currentPlaylistWidgetItem());
     } else {
-        core->open();
+        core->play();
+    }
+}
+
+void TPlaylist::stop() {
+    qDebug() << "Gui::TPlaylist::stop: state" << core->stateToString();
+
+    core->stop();
+    if (thread) {
+        qDebug() << "Gui::TPlaylist::stop: stopping add files thread";
+        addFilesStartPlay = false;
+        thread->stop();
     }
 }
 
@@ -835,24 +861,33 @@ void TPlaylist::enableActions() {
     }
     qDebug() << "Gui::TPlaylist::enableActions: state" << core->stateToString();
 
-    TCoreState s = core->state();
-    bool enable = (s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED)
-                  && thread == 0;
-                  ;
-    TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
-    TPlaylistWidgetItem* current_item = playlistWidget->currentPlaylistWidgetItem();
     // Note: there is always something selected if c > 0
     int c = playlistWidget->topLevelItemCount();
 
+    TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
+    TPlaylistWidgetItem* current_item = playlistWidget->currentPlaylistWidgetItem();
+
+    TCoreState s = core->state();
+    bool enable = (s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED)
+                  && thread == 0;
+    bool coreHasFilename = core->mdat.filename.count();
+
+    openAct->setEnabled(thread == 0);
     saveAct->setEnabled(enable && c > 0);
 
-    playAct->setEnabled(enable && current_item);
+    playAct->setEnabled(enable && (coreHasFilename || c > 0));
+    pauseAct->setEnabled(s == STATE_PLAYING);
 
-    playOrPauseAct->setEnabled(enable
-        && (playing_item || current_item || core->mdat.filename.count()));
+    playOrPauseAct->setEnabled(enable && (coreHasFilename || c > 0));
 
     if (!enable) {
-        playOrPauseAct->setTextAndTip(core->stateToString());
+        QString text;
+        if (thread) {
+            text = tr("loading");
+        } else {
+            text = core->stateToString();
+        }
+        playOrPauseAct->setTextAndTip(text + "...");
         playOrPauseAct->setIcon(Images::icon("loading"));
     } else if (s == STATE_PLAYING) {
         if (playing_item && playing_item->state() != PSTATE_PLAYING) {
@@ -866,7 +901,7 @@ void TPlaylist::enableActions() {
     }
 
     // Stop action
-    stopAct->setEnabled(s == STATE_PLAYING || s == STATE_PAUSED);
+    stopAct->setEnabled(s == STATE_PLAYING || s == STATE_PAUSED || thread);
 
     // Prev/Next
     bool changed = false;
@@ -884,7 +919,7 @@ void TPlaylist::enableActions() {
         emit enablePrevNextChanged();
     }
 
-    addCurrentAct->setEnabled(core->mdat.filename.count() && (thread == 0));
+    addCurrentAct->setEnabled(coreHasFilename && thread == 0);
 
     e = c > 0 && thread == 0;
     removeSelectedAct->setEnabled(e);

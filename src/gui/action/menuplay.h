@@ -59,19 +59,14 @@ private slots:
 class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
-    explicit TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* plist);
+    explicit TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* playlist);
 
 protected:
     virtual void enableActions();
 
 private:
 	TCore* core;
-    Gui::Playlist::TPlaylist* playlist;
 
-	TAction* playAct;
-	QIcon pauseIcon;
-	QIcon playIcon;
-	TAction* pauseAct;
     TAction* seekToAct;
 }; // class TMenuPlay
 
