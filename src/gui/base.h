@@ -73,6 +73,7 @@ class TPlaylist;
 
 class TAutoHideTimer;
 class TLogWindow;
+class THelpWindow;
 class TFilePropertiesDialog;
 class TAudioEqualizer;
 class TVideoEqualizer;
@@ -312,7 +313,7 @@ protected:
 
     Playlist::TPlaylist* playlist;
 	TLogWindow* log_window;
-	TLogWindow* help_window;
+	THelpWindow* help_window;
 
 	Pref::TDialog* pref_dialog;
 	TFilePropertiesDialog* file_properties_dialog;

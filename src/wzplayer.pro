@@ -153,6 +153,7 @@ HEADERS += version.h \
 	gui/baseplus.h \
     gui/default.h \
     gui/logwindow.h \
+    gui/helpwindow.h \
     gui/updatechecker.h \
     updatecheckerdata.h \
     maps/map.h \
@@ -276,6 +277,7 @@ SOURCES	+= version.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
     gui/logwindow.cpp \
+    gui/helpwindow.cpp \
     gui/updatechecker.cpp \
     updatecheckerdata.cpp \
     maps/map.cpp \
@@ -292,6 +294,7 @@ SOURCES	+= version.cpp \
 
 FORMS = gui/inputdvddirectory.ui \
     gui/logwindow.ui \
+    gui/helpwindow.ui \
     gui/filepropertiesdialog.ui \
     gui/eqslider.ui \
     gui/inputurl.ui \

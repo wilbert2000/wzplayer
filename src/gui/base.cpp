@@ -79,6 +79,7 @@
 #include "gui/action/menuhelp.h"
 
 #include "gui/logwindow.h"
+#include "gui/helpwindow.h"
 #include "gui/playlist/playlist.h"
 #include "gui/autohidetimer.h"
 #include "gui/filepropertiesdialog.h"
@@ -1447,7 +1448,7 @@ void TBase::loadAudioFile() {
 void TBase::helpCLOptions() {
 
 	if (help_window == 0) {
-		help_window = new TLogWindow(this, "helpwindow");
+		help_window = new THelpWindow(this, "helpwindow");
 		help_window->setWindowTitle(tr("%1 command line options").arg(TConfig::PROGRAM_NAME));
 		help_window->loadConfig();
 	}

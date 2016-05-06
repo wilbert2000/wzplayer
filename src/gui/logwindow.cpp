@@ -49,8 +49,7 @@ TLogWindow::TLogWindow(QWidget* parent, const QString& name)
 TLogWindow::~TLogWindow() {
 	qDebug("Gui::TLogWindow::~TLogWindow");
 
-	if (objectName() == "logwindow")
-		TLog::log->setLogWindow(0);
+    TLog::log->setLogWindow(0);
 }
 
 void TLogWindow::retranslateStrings() {
@@ -58,9 +57,8 @@ void TLogWindow::retranslateStrings() {
 	retranslateUi(this);
 
 	saveButton->setText("");
-	copyButton->setText("");
-
-	saveButton->setIcon(Images::icon("save"));
+    saveButton->setIcon(Images::icon("save"));
+    copyButton->setText("");
 	copyButton->setIcon(Images::icon("copy"));
 
 	// Title changed by TBase::helpCLOptions()
@@ -98,18 +96,14 @@ void TLogWindow::saveConfig() {
 void TLogWindow::showEvent(QShowEvent*) {
 	qDebug("Gui::TLogWindow::showEvent");
 
-	if (objectName() == "logwindow") {
-		TLog::log->setLogWindow(this);
-	}
+    TLog::log->setLogWindow(this);
 	emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
 	qDebug("Gui::TLogWindow::hideEvent");
 
-	if (objectName() == "logwindow") {
-		TLog::log->setLogWindow(0);
-	}
+    TLog::log->setLogWindow(0);
 	clear();
 	emit visibilityChanged(false);
 }
@@ -159,41 +153,42 @@ void TLogWindow::on_copyButton_clicked() {
 }
 
 void TLogWindow::on_saveButton_clicked() {
-	QString s = MyFileDialog::getSaveFileName(
+
+    QString s = MyFileDialog::getSaveFileName(
                     this, tr("Choose a filename to save under"), 
                     "", tr("Logs") +" (*.log *.txt)");
 
-	if (!s.isEmpty()) {
-		if (QFileInfo(s).exists()) {
-			int res =QMessageBox::question(this, 
-                                   tr("Confirm overwrite?"),
-                                   tr("The file already exists.\n"
-                                      "Do you want to overwrite?"),
-                                   QMessageBox::Yes,
-                                   QMessageBox::No,
-                                   QMessageBox::NoButton);
-			if (res == QMessageBox::No) {
-				return;
-			}
-		}
+    if (!s.isEmpty()) {
+        if (QFileInfo(s).exists()) {
+            int res =QMessageBox::question(this,
+                tr("Confirm overwrite?"),
+                tr("The file already exists.\n"
+                   "Do you want to overwrite?"),
+                QMessageBox::Yes,
+                QMessageBox::No,
+                QMessageBox::NoButton);
+            if (res == QMessageBox::No) {
+                return;
+            }
+        }
 
-		QFile file(s);
-		if (file.open(QIODevice::WriteOnly)) {
-	        QTextStream stream(&file);
-    		stream << browser->toPlainText();
-	        file.close();
-	    } else {
-			// Error opening file
-			qDebug("Gui::TLogWindow::save: error saving file");
-			QMessageBox::warning (this, 
-                                   tr("Error saving file"), 
-                                   tr("The log couldn't be saved"),
-                                   QMessageBox::Ok, 
-                                   QMessageBox::NoButton, 
-                                   QMessageBox::NoButton);
+        QFile file(s);
+        if (file.open(QIODevice::WriteOnly)) {
+            QTextStream stream(&file);
+            stream << browser->toPlainText();
+            file.close();
+        } else {
+            // Error opening file
+            qDebug("Gui::TLogWindow::save: error saving file");
+            QMessageBox::warning (this,
+                tr("Error saving file"),
+                tr("The log couldn't be saved"),
+                QMessageBox::Ok,
+                QMessageBox::NoButton,
+                QMessageBox::NoButton);
 
-		}
-	}
+        }
+    }
 }
 
 } // namespace Gui

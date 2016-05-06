@@ -16,22 +16,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_LOGWINDOW_H
-#define GUI_LOGWINDOW_H
+#ifndef GUI_HELPWINDOW_H
+#define GUI_HELPWINDOW_H
 
-#include "ui_logwindow.h"
+#include "ui_helpwindow.h"
 
 
 class QTextEdit;
 
 namespace Gui {
 
-class TLogWindow : public QWidget, public Ui::TLogWindow {
+class THelpWindow : public QWidget, public Ui::THelpWindow {
 	Q_OBJECT
 
 public:
-	TLogWindow(QWidget* parent, const QString& name);
-	virtual ~TLogWindow();
+    THelpWindow(QWidget* parent, const QString& name);
+    virtual ~THelpWindow();
 
 	virtual void loadConfig();
 	virtual void saveConfig();
@@ -58,10 +58,9 @@ protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 protected slots:
-	void on_copyButton_clicked();
-    void on_saveButton_clicked();
+    void on_copyButton_clicked();
 };
 
 } // namespace Gui
 
-#endif // GUI_LOGWINDOW_H
+#endif // GUI_HELPWINDOW_H
