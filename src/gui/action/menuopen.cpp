@@ -150,7 +150,7 @@ TMenuOpen::TMenuOpen(TBase* mw)
 	addSeparator();
 
 	// Close
-    a = new TAction(this, "close", tr("&Close"), "", QKeySequence("Ctrl+X"));
+    a = new TAction(this, "close", tr("&Close"));
 	main_window->addAction(a);
 	connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
 }
