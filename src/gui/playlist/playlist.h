@@ -76,8 +76,8 @@ public:
 	void getFilesAppend(QStringList& files) const;
 
 	// Preferences
-	bool directoryRecursion() const { return recursive_add_directory; }
-	void setDirectoryRecursion(bool b) { recursive_add_directory = b; }
+    bool directoryRecursion() const { return recursive_add_directories; }
+    void setDirectoryRecursion(bool b) { recursive_add_directories = b; }
 
 	bool maybeSave();
 	void loadSettings();
@@ -90,7 +90,7 @@ public slots:
     void playNext(bool allow_reshuffle = true);
 	void playPrev();
 
-	void load();
+    void open();
 	bool save();
 
 signals:
@@ -148,7 +148,7 @@ private:
     Action::TMenuInOut* inOutMenu;
 
 	// Preferences
-	bool recursive_add_directory;
+    bool recursive_add_directories;
 
     bool disable_enableActions;
 
@@ -170,12 +170,6 @@ private:
 
     void msg(const QString& s);
 
-    QTreeWidgetItem* cleanAndAddItem(QString filename,
-                                     QString name,
-                                     double duration,
-                                     QTreeWidgetItem* parent = 0,
-                                     QTreeWidgetItem* after = 0);
-
     TPlaylistWidgetItem* getRandomItem() const;
     bool haveUnplayedItems() const;
 
@@ -183,21 +177,9 @@ private:
 
     bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
 
-    QTreeWidgetItem* openM3u(const QString& file,
-                             bool clear = true,
-                             bool play = true,
-                             QTreeWidgetItem* parent = 0,
-                             QTreeWidgetItem* after = 0);
 	bool saveM3u(QString file);
-
-    QTreeWidgetItem* openPls(const QString& file,
-                             bool clear = true,
-                             bool play = true,
-                             QTreeWidgetItem* parent = 0,
-                             QTreeWidgetItem* after = 0);
     bool savePls(QString file);
 
-    void setWinTitle(QString s = 0);
     void setPlaylistFilename(const QString& name);
 
 private slots:
@@ -214,7 +196,7 @@ private slots:
 	void addDirectory();
 	void addUrls();
 
-	void removeSelected(bool deleteFromDisk = false);
+    void removeSelected(bool deleteFromDisk = false);
 	void removeSelectedFromDisk();
 	void removeAll();
 
@@ -222,12 +204,13 @@ private slots:
     void editItem(TPlaylistWidgetItem* item);
     void setModified(bool mod = true);
 
-    void copySelected();
+    void copySelected(const QString& actionName = "Copied");
     void paste();
     void enablePaste();
     void cut();
 
     void enableActions();
+    void setWinTitle(QString s = 0);
 
     void onItemActivated(QTreeWidgetItem* item, int);
     void onRepeatToggled(bool toggled);

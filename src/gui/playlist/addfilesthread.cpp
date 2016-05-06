@@ -1,11 +1,13 @@
 #include "gui/playlist/addfilesthread.h"
 
+#include <QSettings>
 #include <QTreeWidgetItem>
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
 #include <QRegExp>
-
+#include <QTextStream>
+#include <QTextCodec>
 #include "gui/playlist/playlistwidgetitem.h"
 #include "discname.h"
 #include "extensions.h"
@@ -17,13 +19,15 @@ namespace Playlist {
 
 TAddFilesThread::TAddFilesThread(QObject *parent,
                                  const QStringList& aFiles,
+                                 const QString& aPlaylistPath,
                                  bool recurseSubDirs,
                                  bool aSearchForItems) :
     QThread(parent),
+    files(aFiles),
+    playlistPath(aPlaylistPath),
     root(0),
     currentItem(0),
     stopRequested(false),
-    files(aFiles),
     recurse(recurseSubDirs),
     searchForItems(aSearchForItems) {
 }
@@ -38,14 +42,189 @@ void TAddFilesThread::run() {
     addFiles();
 }
 
-QTreeWidgetItem* TAddFilesThread::openM3u(const QString&,
-                                          QTreeWidgetItem*) {
-    return 0;
+QTreeWidgetItem* TAddFilesThread::cleanAndAddItem(QString filename,
+                                                  QString name,
+                                                  double duration,
+                                                  QTreeWidgetItem* parent) {
+
+    bool protect_name = !name.isEmpty();
+    QString alt_name = filename;
+
+    if (filename.startsWith("file:")) {
+        filename = QUrl(filename).toLocalFile();
+    }
+
+    QFileInfo fi(filename);
+
+#ifdef Q_OS_WIN
+    // Check for Windows shortcuts
+    if (fi.isSymLink()) {
+        filename = fi.symLinkTarget();
+    }
+#endif
+
+    if (fi.exists()) {
+        filename = QDir::toNativeSeparators(fi.absoluteFilePath());
+        alt_name = fi.fileName();
+    } else if (!playlistPath.isEmpty()) {
+        // Try relative path
+        fi.setFile(playlistPath, filename);
+        if (fi.exists()) {
+            filename = QDir::toNativeSeparators(fi.absoluteFilePath());
+            alt_name = fi.fileName();
+        }
+    }
+
+    if (name.isEmpty()) {
+        name = alt_name;
+    }
+
+    if (parent == 0) {
+        parent = root;
+    }
+    TPlaylistWidgetItem* i = new TPlaylistWidgetItem(parent,
+                                                     0,
+                                                     filename,
+                                                     name,
+                                                     duration,
+                                                     false);
+
+    // Protect name
+    if (protect_name) {
+        i->setEdited(true);
+    }
+
+    return i;
 }
 
-QTreeWidgetItem* TAddFilesThread::openPls(const QString&,
-                                          QTreeWidgetItem*) {
-    return 0;
+QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
+                                          QTreeWidgetItem* parent) {
+
+
+    QRegExp info("^#EXTINF:(.*),(.*)");
+
+    // When inserting directly into the root, the name of the playlist gets
+    // lost, so save it
+    playlistFileName = aPlaylistFileName;
+    QFileInfo fi(playlistFileName);
+    // Path to use for relative filenames in playlist
+    playlistPath = fi.path();
+    latestDir = fi.absolutePath();
+    emit setWinTitle(fi.fileName());
+
+    bool utf8 = fi.suffix().toLower() == "m3u8";
+
+    QFile f(playlistFileName);
+    if (!f.open(QIODevice::ReadOnly)) {
+        emit displayMessage(tr("Failed to open %1").arg(playlistFileName), 6000);
+        return 0;
+    }
+
+    QTextStream stream(&f);
+    if (utf8) {
+        stream.setCodec("UTF-8");
+    } else {
+        stream.setCodec(QTextCodec::codecForLocale());
+    }
+
+    QTreeWidgetItem* result = 0;
+    bool setResult = true;
+    if (parent != root || files.count() > 1) {
+        // Put playlist in a folder if child or more than one file
+        result = new TPlaylistWidgetItem(parent,
+                                         0,
+                                         playlistFileName,
+                                         fi.fileName(),
+                                         0,
+                                         true);
+        parent = result;
+        setResult = false;
+    }
+
+    QString name;
+    double duration = 0;
+
+    while (!stream.atEnd()) {
+        QString line = stream.readLine().trimmed();
+        // Ignore empty lines
+        if (line.isEmpty()) {
+            continue;
+        }
+
+        if (info.indexIn(line) >= 0) {
+            duration = info.cap(1).toDouble();
+            name = info.cap(2);
+        } else if (line.startsWith("#")) {
+            // Ignore comments
+        } else {
+            QTreeWidgetItem* w = cleanAndAddItem(line, name, duration, parent);
+            if (setResult) {
+                // Pass last as result when inserting into root
+                result = w;
+            }
+            name = "";
+            duration = 0;
+        }
+    }
+
+    f.close();
+
+    return result;
+}
+
+QTreeWidgetItem* TAddFilesThread::openPls(const QString& aPlaylistFileName,
+                                          QTreeWidgetItem* parent) {
+
+    // When inserting directly into the root, the name of the playlist gets
+    // lost, so save it
+    playlistFileName = aPlaylistFileName;
+    QFileInfo fi(playlistFileName);
+    // Path to use for relative filenames in playlist
+    playlistPath = fi.path();
+    latestDir = fi.absolutePath();
+    emit setWinTitle(fi.fileName());
+
+    QSettings set(playlistFileName, QSettings::IniFormat);
+    set.beginGroup("playlist");
+
+    QTreeWidgetItem* result = 0;
+    if (set.status() == QSettings::NoError) {
+        bool setResult = true;
+        if (parent != root || files.count() > 1) {
+            // Put playlist in a folder if child or more than one file
+            result = new TPlaylistWidgetItem(parent,
+                                             0,
+                                             playlistFileName,
+                                             fi.fileName(),
+                                             0,
+                                             true);
+            parent = result;
+            setResult = false;
+        }
+
+        QString filename;
+        QString name;
+        double duration;
+
+        int num_items = set.value("NumberOfEntries", 0).toInt();
+        for (int n = 1; n <= num_items; n++) {
+            filename = set.value("File" + QString::number(n), "").toString();
+            name = set.value("Title" + QString::number(n), "").toString();
+            duration = (double) set.value("Length"
+                                          + QString::number(n), 0).toInt();
+            QTreeWidgetItem* w =cleanAndAddItem(filename, name, duration,
+                                                parent);
+            if (setResult) {
+                // Pass last as result when inserting into root
+                result = w;
+            }
+        }
+    } else {
+        emit displayMessage(tr("Failed to open %1").arg(playlistFileName), 6000);
+    }
+
+    set.endGroup();
+    return result;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::findFilename(const QString&) {
@@ -127,7 +306,8 @@ QTreeWidgetItem* TAddFilesThread::addDirectory(QTreeWidgetItem* parent,
                                                      true);
 
     QFileInfo fi;
-    foreach(const QString filename, QDir(dir).entryList()) {
+    QDir directory(dir);
+    foreach(const QString& filename, directory.entryList()) {
         if (stopRequested) {
             break;
         }
@@ -156,16 +336,20 @@ QTreeWidgetItem* TAddFilesThread::addDirectory(QTreeWidgetItem* parent,
 void TAddFilesThread::addFiles() {
 
     bool first = true;
-    foreach(QString file, files) {
+    foreach(QString filename, files) {
         if (stopRequested) {
             break;
         }
 
-        if (file.startsWith("file:")) {
-            file = QUrl(file).toLocalFile();
+        if (filename.isEmpty()) {
+            continue;
         }
 
-        QFileInfo fi(file);
+        if (filename.startsWith("file:")) {
+            filename = QUrl(filename).toLocalFile();
+        }
+
+        QFileInfo fi(filename);
 
 #ifdef Q_OS_WIN
         // Check for Windows shortcuts
