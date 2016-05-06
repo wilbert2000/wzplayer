@@ -173,7 +173,7 @@ void TPreferences::reset() {
 	use_scaletempo = Detect;
 
 	// Volume
-	initial_volume = 50;
+    initial_volume = 100;
 	volume = initial_volume;
 	mute = false;
 
