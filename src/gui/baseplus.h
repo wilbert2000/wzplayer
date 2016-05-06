@@ -77,10 +77,11 @@ protected slots:
 
 
 private:
-    double restore_size_factor;
-    double old_size_factor;
-    bool posted_restore_size_factor;
-    bool block_restore;
+    QTimer* saveSizeTimer;
+    double saveSize;
+    QString saveSizeName;
+    bool blockSave;
+    bool postedResize;
 
     void switchToTray();
 	void retranslateStrings();
@@ -90,9 +91,11 @@ private slots:
     void onDockVisibilityChanged(bool visible);
     void onTopLevelChanged(bool);
     void onvideoSizeFactorChanged(double, double);
-    void resizeWindowToVideoRestoreSize();
+    void reposition(const QSize& oldWinSize);
+    void restoreVideoSize();
     void clearBlockRestore();
     void setWinTitle();
+    void saveSizeFactor();
 };
 
 } // namespace Gui
