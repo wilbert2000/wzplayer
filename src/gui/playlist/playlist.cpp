@@ -973,10 +973,10 @@ void TPlaylist::onStartPlayingNewMedia() {
 		}
 	}
 
-	// Mark current item as played
+    // Mark current item as playing and played
     if (current) {
-        current->setPlayed(true);
-	}
+        current->setState(PSTATE_PLAYING);
+    }
 
     qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist for"
              << filename;
