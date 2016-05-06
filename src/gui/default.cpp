@@ -76,7 +76,7 @@ void TDefault::createActions() {
     viewFrameCounterAct = new Action::TAction(this, "toggle_frame_counter",
         tr("&Frame counter"), "frame_counter");
 	viewFrameCounterAct->setCheckable(true);
-    viewFrameCounterAct->setChecked(true);
+    viewFrameCounterAct->setChecked(false);
     statusbar_menu->addAction(viewFrameCounterAct);
     connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
             frame_label, SLOT(setVisible(bool)));
@@ -136,6 +136,7 @@ void TDefault::createStatusBar() {
     margins.setLeft(0);
     frame_label->setContentsMargins(margins);
     frame_label->setText("0");
+    frame_label->hide();
     statusBar()->addPermanentWidget(frame_label, 0);
 	connect(this, SIGNAL(frameChanged(int)),
 			this, SLOT(displayFrame(int)));
@@ -227,7 +228,7 @@ void TDefault::loadConfig() {
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
     viewInOutPointsAct->setChecked(pref->value("in_out_points", true).toBool());
     viewVideoTimeAct->setChecked(pref->value("video_time", true).toBool());
-    viewFrameCounterAct->setChecked(pref->value("frame_counter", true).toBool());
+    viewFrameCounterAct->setChecked(pref->value("frame_counter", false).toBool());
 	pref->endGroup();
 }
 
