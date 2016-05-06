@@ -488,6 +488,7 @@ void TBase::createToolbars() {
             << "forward_menu"
             << "in_out_points_menu|0|1"
             << "separator|0|1"
+            << "deinterlace_menu|0|1"
             << "aspect_menu|1|1"
             << "videosize_menu|1|0"
             << "reset_zoom_and_pan|0|1"
