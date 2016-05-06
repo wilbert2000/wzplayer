@@ -393,7 +393,10 @@ void TBasePlus::restoreVideoSize() {
         return;
     }
 
-    if (saveSize > 0.10 && saveSizeName == core->mdat.filename) {
+    if (saveSize < 0.1) {
+        qDebug() << "Gui::TBasePlus::restoreVideoSize: ignoring small saved"
+                    " size" << saveSize;
+    } else if (saveSizeName == core->mdat.filename) {
         qDebug() << "Gui::TBasePlus::restoreVideoSize: restoring"
                     " size factor from" << pref->size_factor
                  << "to" << saveSize;
@@ -402,8 +405,8 @@ void TBasePlus::restoreVideoSize() {
         resizeWindowToVideo();
         reposition(oldWinSize);
     } else {
-        qDebug() << "Gui::TBasePlus::restoreVideoSize: canceling"
-                    " resize";
+        qDebug() << "Gui::TBasePlus::restoreVideoSize: name mismatch canceling"
+                    " resize, saving size";
         saveSize = pref->size_factor;
         saveSizeName = core->mdat.filename;
     }
