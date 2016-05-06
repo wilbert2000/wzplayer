@@ -156,9 +156,18 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += addItem(tr("Current aspect ratio"),
 			Settings::TAspectRatio::doubleToString((double) md.video_out_width / md.video_out_height));
 		s += addItem(tr("Format"), md.video_format);
-		s += addItem(tr("Bitrate"), md.video_bitrate == -1
-			? (Settings::pref->isMPV() ? tr("Still testing, wait a few seconds") : tr("Unknown"))
-			: tr("%1 kbps").arg(md.video_bitrate / 1000));
+        qDebug() << md.video_bitrate;
+        if (md.video_bitrate == -1) {
+            if (Settings::pref->isMPV()) {
+                s += addItem(tr("Bitrate"),
+                             tr("Not received, wait a few seconds..."));
+            } else {
+                s += addItem(tr("Bitrate"), tr("Unknown"));
+            }
+        } else {
+            s += addItem(tr("Bitrate"),
+                         tr("%1 kbps").arg(md.video_bitrate / 1000));
+        }
 		s += addItem(tr("Frames per second"), QString::number(md.video_fps));
 		s += addItem(tr("Selected codec"), md.video_codec + " - " + md.video_codec_description);
 		s += addItem(tr("Number of tracks"), QString::number(md.videos.count()));
@@ -174,10 +183,18 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	s += openPar(tr("Audio"));
 	s += addItem(tr("Audio out driver"), md.ao);
 	s += addItem(tr("Format"), md.audio_format);
-	s += addItem(tr("Bitrate"), md.audio_bitrate == -1
-		 ?  (Settings::pref->isMPV() ? tr("Still testing, wait a few seconds") : tr("Unknown"))
-		 : tr("%1 kbps").arg(md.audio_bitrate / 1000));
-	s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
+    if (md.audio_bitrate == -1) {
+        if (Settings::pref->isMPV()) {
+            s += addItem(tr("Bitrate"),
+                         tr("Not received yet, wait a few seconds..."));
+        } else {
+            s += addItem(tr("Bitrate"), tr("Unknown"));
+        }
+    } else {
+        s += addItem(tr("Bitrate"),
+                     tr("%1 kbps").arg(md.video_bitrate / 1000));
+    }
+    s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
 	s += addItem(tr("Channels"), QString::number(md.audio_nch));
 	s += addItem(tr("Selected codec"), md.audio_codec + " - " + md.audio_codec_description);
 	s += addItem(tr("Number of tracks"), QString::number(md.audios.count()));
