@@ -8,7 +8,7 @@ namespace Gui {
 namespace Playlist {
 
 class TPlaylistWidgetItem;
-
+class TWordWrapItemDelegate;
 
 class TPlaylistWidget : public QTreeWidget {
     Q_OBJECT
@@ -35,6 +35,8 @@ public:
     TPlaylistWidgetItem* getPreviousPlaylistWidgetItem(TPlaylistWidgetItem* w) const;
     TPlaylistWidgetItem* getPreviousPlaylistWidgetItem() const;
 
+    TPlaylistWidgetItem* findPreviousPlayedTime(TPlaylistWidgetItem* w);
+
     void setPlayingItem(TPlaylistWidgetItem* item);
     void clearPlayed();
     void clr();
@@ -46,9 +48,11 @@ signals:
     void modified();
 
 protected:
+    virtual void resizeEvent(QResizeEvent* event);
     virtual void dropEvent(QDropEvent*);
 
 private:
+    TWordWrapItemDelegate* wordWrapItemDelegate;
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
 
@@ -57,6 +61,8 @@ private:
 
     TPlaylistWidgetItem* getPreviousItem(TPlaylistWidgetItem* w,
                                          bool allowChild = true) const;
+
+    void resizeRows();
 
 private slots:
     void onSectionClicked(int);

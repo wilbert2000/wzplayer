@@ -3,16 +3,10 @@
 
 #include <QString>
 #include <QTreeWidgetItem>
+#include <QTime>
 
 namespace Gui {
 namespace Playlist {
-
-enum TColID {
-    COL_PLAY = 0,
-    COL_NAME = 0,
-    COL_TIME = 1,
-    COL_COUNT = 2
-};
 
 enum TPlaylistItemState {
     PSTATE_STOPPED,
@@ -28,6 +22,13 @@ extern QIcon loadingIcon;
 extern QIcon playIcon;
 extern QIcon failedIcon;
 
+class TTimeStamp : public QTime {
+public:
+    TTimeStamp();
+    virtual ~TTimeStamp();
+
+    int getStamp();
+};
 
 class TPlaylistItem {
 
@@ -59,6 +60,8 @@ public:
 
     bool folder() const { return _folder; }
 
+    int playedTime() const { return _playedTime; }
+
     bool operator == (const TPlaylistItem& item);
 
 private:
@@ -66,10 +69,18 @@ private:
     double _duration;
     TPlaylistItemState _state;
     bool _played, _edited, _folder;
+    int _playedTime;
 };
 
 class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
+    enum TColID {
+        COL_PLAY = 0,
+        COL_NAME = 0,
+        COL_TIME = 1,
+        COL_COUNT = 2
+    };
+
     TPlaylistWidgetItem(QTreeWidgetItem* parent,
                         QTreeWidgetItem* after,
                         const QString& filename,
@@ -96,6 +107,8 @@ public:
     void setEdited(bool edited) { playlistItem.setEdited(edited); }
 
     bool isFolder() const { return playlistItem.folder(); }
+
+    int playedTime() const { return playlistItem.playedTime(); }
 
 private:
     TPlaylistItem playlistItem;

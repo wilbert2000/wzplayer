@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QString>
+#include <QTime>
 
 #include "images.h"
 #include "helper.h"
@@ -9,13 +10,30 @@
 namespace Gui {
 namespace Playlist {
 
+TTimeStamp::TTimeStamp() : QTime() {
+}
+
+TTimeStamp::~TTimeStamp() {
+}
+
+int TTimeStamp::getStamp() {
+
+    if (isNull()) {
+        start();
+        return 1;
+    }
+    return elapsed();
+}
+
+TTimeStamp timeStamper;
 
 TPlaylistItem::TPlaylistItem() :
     _duration(0),
     _state(PSTATE_STOPPED),
     _played(false),
     _edited(false),
-    _folder(false) {
+    _folder(false),
+    _playedTime(0) {
 }
 
 TPlaylistItem::TPlaylistItem(const QString &filename,
@@ -28,7 +46,8 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     _state(PSTATE_STOPPED),
     _played(false),
     _edited(false),
-    _folder(isFolder) {
+    _folder(isFolder),
+    _playedTime(0) {
 
     if (_name.isEmpty()) {
         _name = _filename;
@@ -39,16 +58,19 @@ void TPlaylistItem::setState(TPlaylistItemState state) {
 
     if (state == PSTATE_PLAYING) {
         _played = true;
+        _playedTime = timeStamper.getStamp();
+        qDebug() << "Gui::Playlist::TPlaylistItem::setState: stamped"
+                 << _playedTime << "on" << _filename;
     }
     _state = state;
 }
 
 bool TPlaylistItem::operator == (const TPlaylistItem& item) {
 
-    if (&item != 0) {
-        return item.filename() == _filename;
+    if (&item == 0) {
+        return false;
     }
-    return false;
+    return item.filename() == _filename;
 }
 
 QIcon folderIcon;

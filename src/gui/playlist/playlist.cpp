@@ -670,7 +670,12 @@ void TPlaylist::playNext(bool allow_reshuffle) {
 void TPlaylist::playPrev() {
 	qDebug("Gui::TPlaylist::playPrev");
 
-    TPlaylistWidgetItem* i = playlistWidget->getPreviousPlaylistWidgetItem();
+    TPlaylistWidgetItem* i = playlistWidget->playing_item;
+    if (shuffleAct->isChecked() && i) {
+        i = playlistWidget->findPreviousPlayedTime(i);
+    } else {
+        i = playlistWidget->getPreviousPlaylistWidgetItem();
+    }
     if (i == 0) {
         i = playlistWidget->lastPlaylistWidgetItem();
     }
