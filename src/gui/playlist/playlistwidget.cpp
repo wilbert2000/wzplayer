@@ -396,7 +396,12 @@ void TPlaylistWidget::enableSort(bool enable) {
                                    Qt::AscendingOrder);
     } else {
         header()->setSortIndicator(-1, Qt::AscendingOrder);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        header()->setSectionsClickable(true);
+#else
         header()->setClickable(true);
+#endif
     }
 }
 
