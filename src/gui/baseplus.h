@@ -79,7 +79,7 @@ protected slots:
 private:
     QTimer* saveSizeTimer;
     double saveSize;
-    QString saveSizeName;
+    QString saveSizeFileName;
     bool blockSave;
     bool postedResize;
 
