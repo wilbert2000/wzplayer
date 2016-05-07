@@ -66,9 +66,9 @@ private:
 };
 
 
-extern QSize gIconSize;
 extern int gNameColumnWidth;
 extern QFontMetrics* gNameFontMetrics;
+extern QSize gIconSize;
 
 
 class TPlaylistWidgetItem : public QTreeWidgetItem {
@@ -109,7 +109,10 @@ public:
 
     int playedTime() const { return playlistItem.playedTime(); }
 
-    static QSize itemSize(const QString& text, const QFontMetrics& fm,
+    static QSize itemSize(const QString& text,
+                          int width,
+                          const QFontMetrics& fm,
+                          const QSize& iconSize,
                           int level);
     void setSzHint(int level);
     int getLevel() const;

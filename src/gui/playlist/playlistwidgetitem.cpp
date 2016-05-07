@@ -85,10 +85,6 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
 
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 
-QSize gIconSize;
-int gNameColumnWidth = 0;
-QFontMetrics* gNameFontMetrics = 0;
-
 QIcon folderIcon;
 QIcon notPlayedIcon;
 QIcon okIcon;
@@ -120,10 +116,10 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     }
 
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
-    setName(playlistItem.name());
+    setText(COL_NAME, name);
+    setToolTip(COL_NAME, filename);
 
     setDuration(duration);
-    setToolTip(COL_TIME, filename);
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
@@ -168,7 +164,6 @@ void TPlaylistWidgetItem::setName(const QString& name) {
     playlistItem.setName(name);
     setText(COL_NAME, name);
     setSzHint(getLevel());
-    setToolTip(COL_NAME, name);
 }
 
 void TPlaylistWidgetItem::setDuration(double d) {
@@ -194,35 +189,46 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
 }
 
 QSize TPlaylistWidgetItem::itemSize(const QString& text,
+                                    int width,
                                     const QFontMetrics& fm,
+                                    const QSize& iconSize,
                                     int level) {
 
     const int hm = 4;
-    const int vm = 2; // 2 * vertical margin
+    const int vm = 1;
 
-    int w = gNameColumnWidth - level * (gIconSize.width() + hm) - 2 * hm;
+    int w = width - level * (iconSize.width() + hm) - 2 * hm;
     if (w <= 32) {
-        return QSize(gNameColumnWidth, gIconSize.height());
+        return QSize(width, iconSize.height());
     }
 
     int maxh = 4 * fm.lineSpacing();
     QRect r = QRect(QPoint(), QSize(w, maxh));
     QRect br = fm.boundingRect(r, NAME_TEXT_ALIGN, text);
 
-    int h = br.height() + vm;
-    if (h < gIconSize.height()) {
-        h = gIconSize.height();
+    int h = br.height() + 2 * vm;
+    if (h < iconSize.height()) {
+        h = iconSize.height();
     }
 
-    return QSize(gNameColumnWidth, h);
+    return QSize(width, h);
 };
+
+
+// Set by TPlaylistWidget event handlers
+int gNameColumnWidth = 0;
+// Set by TPlaylistWidget constructor
+QFontMetrics* gNameFontMetrics = 0;
+QSize gIconSize;
 
 void TPlaylistWidgetItem::setSzHint(int level) {
 
-    setSizeHint(COL_NAME,
-                itemSize(playlistItem.name(), *gNameFontMetrics, level));
+    setSizeHint(COL_NAME, itemSize(playlistItem.name(),
+                                   gNameColumnWidth,
+                                   *gNameFontMetrics,
+                                   gIconSize,
+                                   level));
 }
-
 
 } // namespace Playlist
 } // namespace Gui

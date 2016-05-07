@@ -44,10 +44,12 @@ public:
             return QStyledItemDelegate::sizeHint(option, index);
         }
 
-        gNameColumnWidth = header->sectionSize(TPlaylistWidgetItem::COL_NAME);
-        return TPlaylistWidgetItem::itemSize(text,
-                                             option.fontMetrics,
-                                             getLevel(index));
+        return TPlaylistWidgetItem::itemSize(
+                    text,
+                    header->sectionSize(TPlaylistWidgetItem::COL_NAME),
+                    option.fontMetrics,
+                    option.decorationSize,
+                    getLevel(index));
     };
 
 private:
@@ -60,6 +62,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     playing_item(0) {
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
+    setAutoExpandDelay(750);
 
     //setRootIsDecorated(false);
     setColumnCount(TPlaylistWidgetItem::COL_COUNT);
@@ -78,7 +82,34 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
                             QHeaderView::ResizeToContents);
 #endif
 
-    setAutoExpandDelay(750);
+    // Icons
+    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirClosedIcon),
+                         QIcon::Normal, QIcon::Off);
+    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirOpenIcon),
+                         QIcon::Normal, QIcon::On);
+    notPlayedIcon.addPixmap(style()->standardPixmap(QStyle::SP_FileIcon));
+    gIconSize = folderIcon.actualSize(QSize(22,22));
+    setIconSize(gIconSize);
+
+    okIcon = Images::icon("ok", gIconSize.width());
+    loadingIcon = Images::icon("loading", gIconSize.width());
+    playIcon = Images::icon("play", gIconSize.width());
+    failedIcon = Images::icon("failed", gIconSize.width());
+
+    // Sort
+    enableSort(false);
+    connect(header(), SIGNAL(sectionClicked(int)),
+            this, SLOT(onSectionClicked(int)));
+
+    // Drag and drop
+    setDragEnabled(true);
+    setAcceptDrops(true);
+    viewport()->setAcceptDrops(true);
+    //setDragDropMode(QAbstractItemView::DragDrop);
+    setDragDropMode(QAbstractItemView::InternalMove);
+    setDragDropOverwriteMode(false);
+    setDropIndicatorShown(true);
+    setDefaultDropAction(Qt::MoveAction);
 
     // Wordwrap
     QTreeWidgetItem* t = new QTreeWidgetItem();
@@ -98,36 +129,6 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
             this, SLOT(onItemExpanded(QTreeWidgetItem*)));
     connect(header(), SIGNAL(sectionResized(int,int,int)),
             this, SLOT(onSectionResized(int,int,int)));
-
-    setSelectionMode(QAbstractItemView::ExtendedSelection);
-
-    enableSort(false);
-    connect(header(), SIGNAL(sectionClicked(int)),
-            this, SLOT(onSectionClicked(int)));
-
-    // Icons
-    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirClosedIcon),
-                         QIcon::Normal, QIcon::Off);
-    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirOpenIcon),
-                         QIcon::Normal, QIcon::On);
-    notPlayedIcon.addPixmap(style()->standardPixmap(QStyle::SP_FileIcon));
-    gIconSize = folderIcon.actualSize(QSize(22,22));
-    setIconSize(gIconSize);
-
-    okIcon = Images::icon("ok", gIconSize.width());
-    loadingIcon = Images::icon("loading", gIconSize.width());
-    playIcon = Images::icon("play", gIconSize.width());
-    failedIcon = Images::icon("failed", gIconSize.width());
-
-    // Drag and drop
-    setDragEnabled(true);
-    setAcceptDrops(true);
-    viewport()->setAcceptDrops(true);
-    //setDragDropMode(QAbstractItemView::DragDrop);
-    setDragDropMode(QAbstractItemView::InternalMove);
-    setDragDropOverwriteMode(false);
-    setDropIndicatorShown(true);
-    setDefaultDropAction(Qt::MoveAction);
 
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
@@ -432,8 +433,8 @@ void TPlaylistWidget::resizeRows() {
 void TPlaylistWidget::onSectionResized(int logicalIndex, int old, int newSize) {
 
     if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
-        gNameColumnWidth = newSize;
         wordWrapTimer->start();
+        gNameColumnWidth = newSize;
         qDebug() << "Gui::Playlist::TPlaylistWidget::onSectionResized:"
                  << old << newSize;
     }
