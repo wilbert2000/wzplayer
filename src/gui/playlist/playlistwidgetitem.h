@@ -3,10 +3,10 @@
 
 #include <QString>
 #include <QTreeWidgetItem>
-#include <QTime>
 
 namespace Gui {
 namespace Playlist {
+
 
 enum TPlaylistItemState {
     PSTATE_STOPPED,
@@ -22,13 +22,6 @@ extern QIcon loadingIcon;
 extern QIcon playIcon;
 extern QIcon failedIcon;
 
-class TTimeStamp : public QTime {
-public:
-    TTimeStamp();
-    virtual ~TTimeStamp();
-
-    int getStamp();
-};
 
 class TPlaylistItem {
 
@@ -72,6 +65,12 @@ private:
     int _playedTime;
 };
 
+
+extern QSize gIconSize;
+extern int gNameColumnWidth;
+extern QFontMetrics* gNameFontMetrics;
+
+
 class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
     enum TColID {
@@ -109,6 +108,11 @@ public:
     bool isFolder() const { return playlistItem.folder(); }
 
     int playedTime() const { return playlistItem.playedTime(); }
+
+    static QSize itemSize(const QString& text, const QFontMetrics& fm,
+                          int level);
+    void setSzHint(int level);
+    int getLevel() const;
 
 private:
     TPlaylistItem playlistItem;

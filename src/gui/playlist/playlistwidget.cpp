@@ -5,11 +5,8 @@
 #include <QTreeWidgetItemIterator>
 #include <QStyledItemDelegate>
 #include <QDropEvent>
-//#include <QTextDocument>
-#include <QPainter>
 #include <QFontMetrics>
-#include <QApplication>
-#include <QRectF>
+#include <QTimer>
 
 #include "gui/playlist/playlistwidgetitem.h"
 #include "images.h"
@@ -17,100 +14,44 @@
 namespace Gui {
 namespace Playlist {
 
-const int TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
-
-int iconWidth = 0;
-int nameColumnWidth = 0;
-
-const int hm = 4;
-const int vm = 1;
-
-//QTextDocument doc;
 
 class TWordWrapItemDelegate : public QStyledItemDelegate {
 public:
     TWordWrapItemDelegate(TPlaylistWidget* parent) :
-        QStyledItemDelegate(parent) {
+        QStyledItemDelegate(parent),
+        header(parent->header()) {
     }
 
     virtual ~TWordWrapItemDelegate() {
     }
 
-    virtual void paint(QPainter* painter,
-                       const QStyleOptionViewItem& option,
-                       const QModelIndex& index) const {
+    static int getLevel(const QModelIndex& index) {
 
-        //if (1 || index.column() != TPlaylistWidgetItem::COL_NAME) {
-            QStyledItemDelegate::paint(painter, option, index);
-            return;
-        //}
-
-        /*
-        QString text = index.data().toString();
-
-        //doc.setPlainText(text);
-        //doc.setTextWidth(option.rect.width());
-
-        painter->save();
-        painter->setPen(Qt::SolidLine);
-        painter->drawRect(option.rect);
-
-        //painter->translate(option.rect.x(), option.rect.y());
-        //doc.drawContents(painter);
-        painter->restore();
-
-        QRectF r = option.rect;
-        qDebug() << "draw before adjust" << r;
-        r.adjust(hm, vm, -hm, -vm);
-        qDebug() << "draw after" << r << text;
-        painter->drawText(r, TEXT_ALIGN, text);
-        */
+        if (index.parent() == QModelIndex()) {
+            return 2;
+        }
+        return getLevel(index.parent()) + 1;
     }
 
     virtual QSize sizeHint(const QStyleOptionViewItem& option,
                            const QModelIndex& index) const {
 
-        QSize hint = QStyledItemDelegate::sizeHint(option, index);
-        QString text = index.model()->data(index).toString();
-        qDebug() << "Gui::Playlist::TWordWrapItemDelegate::sizeHint: text"
-                 << text
-                 << "option.rect" << option.rect
-                 << "hint base" << hint;
-
-        if (text.isEmpty()) {
-            qDebug() << "Gui::Playlist::TWordWrapItemDelegate::sizeHint:"
-                        " returning hint base for empty" << hint;
-            return hint;
-        }
-
         if (index.column() != TPlaylistWidgetItem::COL_NAME) {
-            qDebug() << "Gui::Playlist::TWordWrapItemDelegate::sizeHint:"
-                        " returning hint base for time col" << hint;
-            return hint;
+            return QStyledItemDelegate::sizeHint(option, index);
+        }
+        QString text = index.model()->data(index).toString();
+        if (text.isEmpty()) {
+            return QStyledItemDelegate::sizeHint(option, index);
         }
 
-        QRect r = option.rect;
-        if (!r.isValid()) {
-            if (nameColumnWidth <= 0) {
-                return hint;
-            }
-            r = QRect(QPoint(), QSize(nameColumnWidth, 1000));
-        }
-
-        /*
-        doc.setPlainText(text);
-        doc.setTextWidth(option.rect.width());
-        return QtCore.QSize(document.idealWidth(), document.size().height())
-        */
-
-        r.adjust(hm + iconWidth, vm, -hm, -vm);
-        QRect br = option.fontMetrics.boundingRect(r, TEXT_ALIGN, text);
-        hint = br.size() + QSize(hm, vm) * 2;
-        qDebug() << "Gui::Playlist::TWordWrapItemDelegate::bounding rect br"
-                 << br
-                 << "hint" << hint;
-        return hint;
+        gNameColumnWidth = header->sectionSize(TPlaylistWidgetItem::COL_NAME);
+        return TPlaylistWidgetItem::itemSize(text,
+                                             option.fontMetrics,
+                                             getLevel(index));
     };
+
+private:
+    QHeaderView* header;
 };
 
 
@@ -139,15 +80,28 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     setAutoExpandDelay(750);
 
+    // Wordwrap
+    QTreeWidgetItem* t = new QTreeWidgetItem();
+    gNameFontMetrics = new QFontMetrics(t->font(0));
+    delete t;
+
     setWordWrap(true);
     setUniformRowHeights(false);
-    wordWrapItemDelegate = new TWordWrapItemDelegate(this);
-    setItemDelegate(wordWrapItemDelegate);
+    setItemDelegate(new TWordWrapItemDelegate(this));
+    wordWrapTimer = new QTimer();
+    wordWrapTimer->setInterval(750);
+    wordWrapTimer->setSingleShot(true);
+
+    connect(wordWrapTimer, SIGNAL(timeout()),
+            this, SLOT(resizeRows()));
+    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
+            this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+    connect(header(), SIGNAL(sectionResized(int,int,int)),
+            this, SLOT(onSectionResized(int,int,int)));
 
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     enableSort(false);
-
     connect(header(), SIGNAL(sectionClicked(int)),
             this, SLOT(onSectionClicked(int)));
 
@@ -157,13 +111,13 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
     notPlayedIcon.addPixmap(style()->standardPixmap(QStyle::SP_FileIcon));
-    QSize iconSize = folderIcon.actualSize(QSize(22,22));
-    setIconSize(iconSize);
-    iconWidth = iconSize.width();
-    okIcon = Images::icon("ok", iconSize.width());
-    loadingIcon = Images::icon("loading", iconSize.width());
-    playIcon = Images::icon("play", iconSize.width());
-    failedIcon = Images::icon("failed", iconSize.width());
+    gIconSize = folderIcon.actualSize(QSize(22,22));
+    setIconSize(gIconSize);
+
+    okIcon = Images::icon("ok", gIconSize.width());
+    loadingIcon = Images::icon("loading", gIconSize.width());
+    playIcon = Images::icon("play", gIconSize.width());
+    failedIcon = Images::icon("failed", gIconSize.width());
 
     // Drag and drop
     setDragEnabled(true);
@@ -317,7 +271,7 @@ TPlaylistWidgetItem* TPlaylistWidget::getNextItem(TPlaylistWidgetItem* w,
         return firstPlaylistWidgetItem();
     }
 
-    if (allowChild && w->isFolder() && w->childCount() > 0) {
+    if (allowChild && w->childCount() > 0) {
         return static_cast<TPlaylistWidgetItem*>(w->child(0));
     }
 
@@ -361,7 +315,7 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
     }
 
     int c = w->childCount();
-    if (allowChild && w->isFolder() && c > 0) {
+    if (allowChild && c > 0) {
         return static_cast<TPlaylistWidgetItem*>(w->child(c - 1));
     }
 
@@ -378,7 +332,8 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
                 topLevelItem(indexOfTopLevelItem(w) - 1));
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem(TPlaylistWidgetItem* i) const {
+TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem(
+        TPlaylistWidgetItem* i) const {
 
     do {
         i = getPreviousItem(i);
@@ -398,17 +353,13 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem() const {
 
 TPlaylistWidgetItem* TPlaylistWidget::findPreviousPlayedTime(
         TPlaylistWidgetItem* w) {
-    qDebug() << "Gui::Playlist::TPlaylistWidget::findPreviousPlayedTime:"
-             << w->filename() << w->playedTime();
 
     TPlaylistWidgetItem* result = 0;
     QTreeWidgetItemIterator it(this);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        qDebug() << i->filename() << i->playedTime();
         if (((result == 0) || (i->playedTime() >= result->playedTime()))
             && (i->playedTime() < w->playedTime())) {
-            qDebug() << "selected";
             result = i;
         }
         ++it;
@@ -449,7 +400,6 @@ void TPlaylistWidget::enableSort(bool enable) {
 }
 
 void TPlaylistWidget::onSectionClicked(int) {
-    qDebug() << "Gui::TPlaylistWidget: onSectionClicked";
 
     // TODO: see sortItems/sortColumn
     if (!isSortingEnabled()) {
@@ -457,27 +407,47 @@ void TPlaylistWidget::onSectionClicked(int) {
     }
 }
 
-void TPlaylistWidget::resizeRows() {
+void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
 
-    //resizeColumnToContents(TPlaylistWidgetItem::COL_TIME);
-    //doItemsLayout();
-
-    /*
-    QTreeWidgetItemIterator it(this);
-    while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        qDebug() << i->name();
-        ++it;
+    level++;
+    for(int c = 0; c < w->childCount(); c++) {
+        TPlaylistWidgetItem* cw = static_cast<TPlaylistWidgetItem*>(w->child(c));
+        if (cw) {
+            cw->setSzHint(level);
+            if (cw->isExpanded() && cw->childCount()) {
+                resizeRows(cw, level);
+            }
+        }
     }
-    */
 }
 
-void TPlaylistWidget::resizeEvent(QResizeEvent* event) {
+void TPlaylistWidget::resizeRows() {
 
-    nameColumnWidth = columnWidth(TPlaylistWidgetItem::COL_NAME);
-    qDebug() << "Gui::Playlist::TPlaylistWidget::resizeEvent: set col width to"
-             << nameColumnWidth;
-    QTreeWidget::resizeEvent(event);
+    gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
+    qDebug() << "Gui::Playlist::TPlaylistWidget::resizeRows: width name"
+             << gNameColumnWidth;
+    resizeRows(root(), 2);
+}
+
+void TPlaylistWidget::onSectionResized(int logicalIndex, int old, int newSize) {
+
+    if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
+        gNameColumnWidth = newSize;
+        wordWrapTimer->start();
+        qDebug() << "Gui::Playlist::TPlaylistWidget::onSectionResized:"
+                 << old << newSize;
+    }
+}
+
+void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
+    qDebug() << "Gui::Playlist::TPlaylistWidget::onItemExpanded:"
+             << w->text(0);
+
+    TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(w);
+    if (i && !wordWrapTimer->isActive()) {
+        gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
+        resizeRows(i, i->getLevel());
+    }
 }
 
 } // namespace Playlist
