@@ -231,7 +231,7 @@ void TActionsEditor::updateView() {
             action->text(), action->objectName()));
         i->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         i->setIcon(action->icon());
-        actionsTable->setIconSize(QSize(32, 32));
+        actionsTable->setIconSize(QSize(22, 22));
 
         actionsTable->setItem(n, COL_DESC, i);
 
