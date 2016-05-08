@@ -84,9 +84,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 #endif
 
     // Icons
-    // Get icon size
-    QIcon icon = iconProvider.icon(QFileIconProvider::Folder);
-    gIconSize = icon.actualSize(QSize(22, 22));
+    gIconSize = iconProvider.folderIcon.actualSize(QSize(22, 22));
     setIconSize(gIconSize);
 
     okIcon = Images::icon("ok", gIconSize.width());

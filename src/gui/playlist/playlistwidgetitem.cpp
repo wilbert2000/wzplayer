@@ -219,6 +219,7 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 int gNameColumnWidth = 0;
 // Set by TPlaylistWidget constructor
 QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
+// Set by TPlaylistWidget constructor
 QSize gIconSize(16, 16);
 
 void TPlaylistWidgetItem::setSzHint(int level) {
