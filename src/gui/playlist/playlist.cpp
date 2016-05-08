@@ -1214,21 +1214,23 @@ bool TPlaylist::saveM3u(QString file) {
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        stream << "#EXTINF:" << i->duration() << "," << i->name() << "\n";
+        if (!i->isFolder()) {
+            stream << "#EXTINF:" << i->duration() << "," << i->name() << "\n";
 
-        QString filename = i->filename();
+            QString filename = i->filename();
 
-        // Try to save the filename as relative instead of absolute
-        // Normalize separator to match dir_path
+            // Try to save the filename as relative instead of absolute
+            // Normalize separator to match dir_path
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-        if (QFileInfo(filename).exists()) {
-            filename = QDir::toNativeSeparators(filename);
-        }
+            if (QFileInfo(filename).exists()) {
+                filename = QDir::toNativeSeparators(filename);
+            }
 #endif
-        if (filename.startsWith(dir_path)) {
-            filename = filename.mid(dir_path.length());
+            if (filename.startsWith(dir_path)) {
+                filename = filename.mid(dir_path.length());
+            }
+            stream << filename << "\n";
         }
-        stream << filename << "\n";
         ++it;
     }
 
@@ -1253,25 +1255,27 @@ bool TPlaylist::savePls(QString file) {
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        QString filename = i->filename();
+        if (!i->isFolder()) {
+            QString filename = i->filename();
 
-        // Normalize path separator to match dir_path
+            // Normalize path separator to match dir_path
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-        if (QFileInfo(filename).exists()) {
-            filename = QDir::toNativeSeparators(filename);
-        }
+            if (QFileInfo(filename).exists()) {
+                filename = QDir::toNativeSeparators(filename);
+            }
 #endif
 
-        // Try to save the filename as relative instead of absolute
-        if (filename.startsWith(dir_path)) {
-            filename = filename.mid(dir_path.length());
+            // Try to save the filename as relative instead of absolute
+            if (filename.startsWith(dir_path)) {
+                filename = filename.mid(dir_path.length());
+            }
+
+            set.setValue("File" + QString::number(n + 1), filename);
+            set.setValue("Title" + QString::number(n + 1), i->name());
+            set.setValue("Length" + QString::number(n + 1), (int) i->duration());
+
+            n++;
         }
-
-        set.setValue("File" + QString::number(n + 1), filename);
-        set.setValue("Title" + QString::number(n + 1), i->name());
-        set.setValue("Length" + QString::number(n + 1), (int) i->duration());
-
-        n++;
         ++it;
     }
 
