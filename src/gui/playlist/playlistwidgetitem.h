@@ -67,7 +67,7 @@ private:
 
 
 extern int gNameColumnWidth;
-extern QFontMetrics* gNameFontMetrics;
+extern QFontMetrics gNameFontMetrics;
 extern QSize gIconSize;
 
 

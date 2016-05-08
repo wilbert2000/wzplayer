@@ -218,14 +218,14 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 // Set by TPlaylistWidget event handlers
 int gNameColumnWidth = 0;
 // Set by TPlaylistWidget constructor
-QFontMetrics* gNameFontMetrics = 0;
+QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
 QSize gIconSize;
 
 void TPlaylistWidgetItem::setSzHint(int level) {
 
     setSizeHint(COL_NAME, itemSize(playlistItem.name(),
                                    gNameColumnWidth,
-                                   *gNameFontMetrics,
+                                   gNameFontMetrics,
                                    gIconSize,
                                    level));
 }

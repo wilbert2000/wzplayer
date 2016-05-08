@@ -112,9 +112,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setDefaultDropAction(Qt::MoveAction);
 
     // Wordwrap
-    QTreeWidgetItem* t = new QTreeWidgetItem();
-    gNameFontMetrics = new QFontMetrics(t->font(0));
-    delete t;
+    gNameFontMetrics = fontMetrics();
 
     setWordWrap(true);
     setUniformRowHeights(false);
