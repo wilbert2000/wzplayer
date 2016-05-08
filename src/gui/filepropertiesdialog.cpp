@@ -22,6 +22,8 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QCloseEvent>
+
 #include "images.h"
 #include "gui/infofile.h"
 
@@ -46,6 +48,13 @@ TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, TMediaData* md)
 }
 
 TFilePropertiesDialog::~TFilePropertiesDialog() {
+}
+
+void TFilePropertiesDialog::closeEvent(QCloseEvent* event) {
+    qDebug("Gui::TFilePropertiesDialog::closeEvent");
+
+    emit visibilityChanged(false);
+    event->accept();
 }
 
 void TFilePropertiesDialog::showInfo() {

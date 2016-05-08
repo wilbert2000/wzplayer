@@ -65,6 +65,7 @@ public slots:
 
 signals:
 	void applied();
+    void visibilityChanged(bool visible);
 
 protected slots:
 	virtual void on_resetDemuxerButton_clicked();
@@ -72,6 +73,8 @@ protected slots:
 	virtual void on_resetVCButton_clicked();
 
 protected:
+    virtual void closeEvent(QCloseEvent* event);
+
 	bool hasCodecsList() { return codecs_set; }
 	int find(const QString s, InfoList &list);
 

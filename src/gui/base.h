@@ -138,7 +138,7 @@ public slots:
 
     virtual void showPlaylist(bool b);
     virtual void showPreferencesDialog();
-	virtual void showFilePropertiesDialog();
+    virtual void showFilePropertiesDialog(bool checked);
 
 	virtual void showSeekToDialog();
 	virtual void showSubDelayDialog();

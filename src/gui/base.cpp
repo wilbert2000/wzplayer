@@ -721,14 +721,21 @@ void TBase::createPreferencesDialog() {
 }
 
 void TBase::createFilePropertiesDialog() {
-	qDebug("Gui::TBase::createFilePropertiesDialog");
+    qDebug("Gui::TBase::createFilePropertiesDialog");
 
-	QApplication::setOverrideCursor(Qt::WaitCursor);
-	file_properties_dialog = new TFilePropertiesDialog(this, &core->mdat);
-	file_properties_dialog->setModal(false);
-	connect(file_properties_dialog, SIGNAL(applied()),
-			 this, SLOT(applyFileProperties()));
-	QApplication::restoreOverrideCursor();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    file_properties_dialog = new TFilePropertiesDialog(this, &core->mdat);
+    file_properties_dialog->setModal(false);
+    connect(file_properties_dialog, SIGNAL(applied()),
+            this, SLOT(applyFileProperties()));
+    TAction* action = findChild<TAction*>("show_file_properties");
+    if (action) {
+        connect(file_properties_dialog, SIGNAL(visibilityChanged(bool)),
+                action, SLOT(setChecked(bool)));
+    }
+
+    QApplication::restoreOverrideCursor();
 }
 
 void TBase::handleMessageFromOtherInstances(const QString& message) {
@@ -1058,14 +1065,18 @@ void TBase::applyNewPreferences() {
 	}
 } // TBase::applyNewPreferences()
 
-void TBase::showFilePropertiesDialog() {
-	qDebug("Gui::TBase::showFilePropertiesDialog");
+void TBase::showFilePropertiesDialog(bool checked) {
+    qDebug("Gui::TBase::showFilePropertiesDialog");
 
-	if (!file_properties_dialog) {
-		createFilePropertiesDialog();
-	}
-	setDataToFileProperties();
-	file_properties_dialog->show();
+    if (checked) {
+        if (!file_properties_dialog) {
+            createFilePropertiesDialog();
+        }
+        setDataToFileProperties();
+        file_properties_dialog->show();
+    } else {
+        file_properties_dialog->hide();
+    }
 }
 
 void TBase::setDataToFileProperties() {
