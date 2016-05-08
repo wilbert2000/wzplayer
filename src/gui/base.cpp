@@ -2076,15 +2076,18 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 			hidePanel();
 		}
 	} else {
-		// Have video
-		if (!panel->isVisible()) {
-			panel->show();
-		}
-		// force_resize is only set for the first video
-		// when pref->save_window_size_on_exit not set.
+        // Have video
+        if (!panel->isVisible()) {
+            panel->show();
+        }
+        // force_resize is only set for the first video when
+        // pref->save_window_size_on_exit is not set.
+        if (panel->width() < 64 || panel->height() < 48) {
+            force_resize = true;
+        }
 		// Leave maximized window as is.
 		if (!isMaximized() && (pref->resize_on_load || force_resize)) {
-			// Try size factor 1.0
+            // Get new size factor, trying 1.0
 			pref->size_factor = getNewSizeFactor();
 			resizeWindow(w, h);
 		} else {
