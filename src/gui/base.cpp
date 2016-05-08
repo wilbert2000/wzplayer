@@ -1182,7 +1182,8 @@ void TBase::onStartPlayingNewMedia() {
 	enterFullscreenOnPlay();
 
 	// Recents
-	pref->history_recents.addItem(core->mdat.filename, core->mdat.title);
+    pref->history_recents.addItem(core->mdat.filename,
+                                  core->mdat.displayName());
 	openMenu->updateRecents();
 
 	checkPendingActionsToRun();
