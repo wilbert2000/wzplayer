@@ -942,6 +942,7 @@ void TPlaylist::onStartPlayingNewMedia() {
 
 	if (md->disc.valid) {
 		// Add disc titles
+        title = core->mdat.title;
 		TDiscName disc = md->disc;
         QIcon icon = iconProvider.iconForFile(disc.toString());
         foreach(const Maps::TTitleData title, md->titles) {
@@ -956,9 +957,10 @@ void TPlaylist::onStartPlayingNewMedia() {
 		}
 	} else {
 		// Add current file
+        title = "";
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
-            playlistWidget->root(), 0, filename, core->mdat.displayName(),
-            core->mdat.duration, false, iconProvider.iconForFile(filename));
+            playlistWidget->root(), 0, filename, title, core->mdat.duration,
+            false, iconProvider.iconForFile(filename));
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
 		// Add associated files to playlist
 		if (md->selected_type == TMediaData::TYPE_FILE
@@ -975,6 +977,7 @@ void TPlaylist::onStartPlayingNewMedia() {
 		}
 	}
 
+    setWinTitle();
     qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist"
                 "for" << filename;
 }
