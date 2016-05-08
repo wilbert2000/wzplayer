@@ -433,13 +433,13 @@ void TPlaylistWidget::resizeRows() {
     resizeRows(root(), 2);
 }
 
-void TPlaylistWidget::onSectionResized(int logicalIndex, int old, int newSize) {
+void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 
     if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
         wordWrapTimer->start();
         gNameColumnWidth = newSize;
-        qDebug() << "Gui::Playlist::TPlaylistWidget::onSectionResized:"
-                 << old << newSize;
+        //qDebug() << "Gui::Playlist::TPlaylistWidget::onSectionResized:"
+        //         << old << newSize;
     }
 }
 

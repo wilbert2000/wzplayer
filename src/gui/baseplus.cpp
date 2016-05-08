@@ -54,7 +54,6 @@ TBasePlus::TBasePlus() :
     saveSizeFloating(true),
     saveSizeDockArea(Qt::LeftDockWidgetArea),
     dockArea(Qt::LeftDockWidgetArea),
-    blockSave(false),
     postedResize(false) {
 
 	tray = new QSystemTrayIcon(this);
@@ -303,7 +302,7 @@ void TBasePlus::onMediaInfoChanged() {
 }
 
 
-// TODO: the following is an awfull lot of code to keep the video panel
+// The following is an awfull lot of code to keep the video panel
 // the same size before and after docking...
 
 void TBasePlus::onDockLocationChanged(Qt::DockWidgetArea area) {
@@ -340,9 +339,9 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
 }
 
 // Try to save the size factor used before the dock resized the video panel
-void TBasePlus::onvideoSizeFactorChanged(double, double size) {
-    qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: save size"
-             << saveSize << "new Size" << size;
+void TBasePlus::onvideoSizeFactorChanged(double, double) {
+    //qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: save size"
+    //         << saveSize << "new Size" << size;
 
     if (pref->resize_on_docking
         && !pref->fullscreen
@@ -353,30 +352,6 @@ void TBasePlus::onvideoSizeFactorChanged(double, double size) {
             saveSizeTimer->start();
         }
     }
-}
-
-void TBasePlus::showEvent(QShowEvent* event) {
-
-    TBase::showEvent(event);
-
-    // Cancel resizing
-    saveSize = 0;
-    saveSizeTimer->start();
-}
-
-void TBasePlus::clearBlockRestore() {
-
-    blockSave = false;
-    saveSizeFactor(false);
-}
-
-void TBasePlus::hideEvent(QHideEvent* event) {
-
-    TBase::hideEvent(event);
-
-    // Block resizing
-    blockSave = true;
-    QTimer::singleShot(500, this, SLOT(clearBlockRestore()));
 }
 
 void TBasePlus::showPlaylist(bool v) {
@@ -439,7 +414,7 @@ void TBasePlus::restoreVideoSize() {
             reposition(oldWinSize);
         } else {
             qDebug() << "Gui::TBasePlus::restoreVideoSize: file name mismatch"
-                        " canceling resize, saving size";
+                        " canceling resize";
         }
     }
 
@@ -485,12 +460,6 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
              << "size" << pref->size_factor
              << "saved size" << saveSize;
 
-    if (blockSave) {
-        blockSave = false;
-        qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: blocked restore";
-        return;
-    }
-
     if (playlistdock->isFloating()) {
         if (visible) {
             TDesktop::keepInsideDesktop(playlistdock);
@@ -526,7 +495,8 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
 }
 
 #ifdef Q_OS_OS2
-// we test if xcenter is available at all. if not disable the tray action. this is possible when xcenter is not opened or crashed
+// we test if xcenter is available at all. if not disable the tray action. this
+// is possible when xcenter is not opened or crashed
 void TBasePlus::trayAvailable() {
 	if (!tray->isSystemTrayAvailable()) {
 			windowMenu->removeAction(showTrayAct);

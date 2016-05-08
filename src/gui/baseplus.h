@@ -55,8 +55,6 @@ protected:
 	QDockWidget* playlistdock;
 
     virtual void changeEvent(QEvent* event);
-    virtual void showEvent(QShowEvent* event);
-    virtual void hideEvent(QHideEvent* event);
 
 protected slots:
     // Reimplemented methods
@@ -84,7 +82,6 @@ private:
     bool saveSizeFloating;
     Qt::DockWidgetArea saveSizeDockArea;
     Qt::DockWidgetArea dockArea;
-    bool blockSave;
     bool postedResize;
 
     void switchToTray();
@@ -98,7 +95,6 @@ private slots:
     void onvideoSizeFactorChanged(double, double);
     void reposition(const QSize& oldWinSize);
     void restoreVideoSize();
-    void clearBlockRestore();
     void setWinTitle();
     void saveSizeFactor(bool checkMouse = true,
                         bool saveVisible = true,
