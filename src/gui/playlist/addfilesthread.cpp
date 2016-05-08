@@ -78,27 +78,28 @@ QTreeWidgetItem* TAddFilesThread::cleanAndAddItem(QString filename,
         }
     }
 
+    if (parent == 0) {
+        parent = root;
+    }
+
+    if (fi.isDir()) {
+        return addDirectory(parent, fi.absoluteFilePath());
+    }
+
     if (name.isEmpty()) {
         name = alt_name;
     }
 
-    if (parent == 0) {
-        parent = root;
-    }
-    TPlaylistWidgetItem* i = new TPlaylistWidgetItem(parent,
-                                                     0,
-                                                     filename,
-                                                     name,
-                                                     duration,
-                                                     false,
+    TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent, 0, filename, name,
+                                                     duration, false,
                                                      iconProvider.icon(fi));
 
     // Protect name
     if (protect_name) {
-        i->setEdited(true);
+        w->setEdited(true);
     }
 
-    return i;
+    return w;
 }
 
 QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
@@ -136,8 +137,7 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
     if (parent != root || files.count() > 1) {
         // Put playlist in a folder if child or more than one file
         result = new TPlaylistWidgetItem(parent, 0, playlistFileName,
-                         fi.fileName(), 0, true,
-                         iconProvider.icon(QFileIconProvider::Folder));
+                         fi.fileName(), 0, true, iconProvider.folderIcon);
         parent = result;
         setResult = false;
     }
@@ -159,7 +159,7 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
             // Ignore comments
         } else {
             QTreeWidgetItem* w = cleanAndAddItem(line, name, duration, parent);
-            if (setResult) {
+            if (setResult && w) {
                 // Pass last as result when inserting into root
                 result = w;
             }
@@ -194,8 +194,7 @@ QTreeWidgetItem* TAddFilesThread::openPls(const QString& aPlaylistFileName,
         if (parent != root || files.count() > 1) {
             // Put playlist in a folder if child or more than one file
             result = new TPlaylistWidgetItem(parent, 0, playlistFileName,
-                             fi.fileName(), 0, true,
-                             iconProvider.icon(QFileIconProvider::Folder));
+                             fi.fileName(), 0, true, iconProvider.folderIcon);
             parent = result;
             setResult = false;
         }
@@ -210,9 +209,9 @@ QTreeWidgetItem* TAddFilesThread::openPls(const QString& aPlaylistFileName,
             name = set.value("Title" + QString::number(n), "").toString();
             duration = (double) set.value("Length"
                                           + QString::number(n), 0).toInt();
-            QTreeWidgetItem* w =cleanAndAddItem(filename, name, duration,
-                                                parent);
-            if (setResult) {
+            QTreeWidgetItem* w = cleanAndAddItem(filename, name, duration,
+                                                 parent);
+            if (setResult && w) {
                 // Pass last as result when inserting into root
                 result = w;
             }
@@ -230,7 +229,7 @@ TPlaylistWidgetItem* TAddFilesThread::findFilename(const QString&) {
 }
 
 QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
-                                          const QString &filename) {
+                                          QString filename) {
     // Note: currently addFile loads playlists and addDirectory skips them,
     // giving a nice balance. Load if the individual file is requested,
     // skip when adding a directory.
@@ -239,6 +238,7 @@ QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
     TPlaylistWidgetItem* item;
     QFileInfo fi(filename);
     if (fi.exists()) {
+        filename = QDir::toNativeSeparators(filename);
         QString ext = fi.suffix().toLower();
         if (ext == "m3u" || ext == "m3u8") {
             return openM3u(filename, parent);
@@ -249,9 +249,8 @@ QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
         if (searchForItems) {
             existing_item = findFilename(filename);
         }
-        item = new TPlaylistWidgetItem(parent, 0,
-                       QDir::toNativeSeparators(filename), fi.fileName(), 0,
-                       false, iconProvider.icon(fi));
+        item = new TPlaylistWidgetItem(parent, 0, filename, fi.fileName(), 0,
+                                       false, iconProvider.icon(fi));
     } else {
         if (searchForItems) {
             existing_item = findFilename(filename);
@@ -291,12 +290,11 @@ QTreeWidgetItem* TAddFilesThread::addDirectory(QTreeWidgetItem* parent,
 
     QString playlist = dir + "/" + TConfig::PROGRAM_ID + ".m3u8";
     if (QFileInfo(playlist).exists()) {
-        return openM3u(playlist, parent);
+        return openM3u(QDir::toNativeSeparators(playlist), parent);
     }
 
     TPlaylistWidgetItem* w = new TPlaylistWidgetItem(0, 0, dir,
-        QDir(dir).dirName(), 0, true,
-        iconProvider.icon(QFileIconProvider::Folder));
+        QDir(dir).dirName(), 0, true, iconProvider.folderIcon);
 
     QFileInfo fi;
     QDir directory(dir);

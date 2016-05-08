@@ -51,7 +51,7 @@ private:
                                      double duration,
                                      QTreeWidgetItem* parent);
 
-    QTreeWidgetItem* addFile(QTreeWidgetItem* parent, const QString &filename);
+    QTreeWidgetItem* addFile(QTreeWidgetItem* parent, QString filename);
     QTreeWidgetItem* addDirectory(QTreeWidgetItem* parent, const QString& dir);
     void addFiles();
 
