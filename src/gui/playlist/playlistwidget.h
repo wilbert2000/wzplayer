@@ -2,12 +2,11 @@
 #define GUI_PLAYLIST_PLAYLISTWIDGET_H
 
 #include <QTreeWidget>
+#include <gui/playlist/playlistwidgetitem.h>
 
 
 namespace Gui {
 namespace Playlist {
-
-class TPlaylistWidgetItem;
 
 class TPlaylistWidget : public QTreeWidget {
     Q_OBJECT
@@ -36,7 +35,8 @@ public:
 
     TPlaylistWidgetItem* findPreviousPlayedTime(TPlaylistWidgetItem* w);
 
-    void setPlayingItem(TPlaylistWidgetItem* item);
+    void setPlayingItem(TPlaylistWidgetItem* item,
+                        TPlaylistItemState state = PSTATE_STOPPED);
     void clearPlayed();
     void clr();
     QTreeWidgetItem* root() const { return invisibleRootItem(); }

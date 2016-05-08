@@ -8,14 +8,17 @@
 #include <QRegExp>
 #include <QTextStream>
 #include <QTextCodec>
+
 #include "gui/playlist/playlistwidgetitem.h"
 #include "discname.h"
 #include "extensions.h"
 #include "config.h"
+#include "iconprovider.h"
 
 
 namespace Gui {
 namespace Playlist {
+
 
 TAddFilesThread::TAddFilesThread(QObject *parent,
                                  const QStringList& aFiles,
@@ -87,7 +90,8 @@ QTreeWidgetItem* TAddFilesThread::cleanAndAddItem(QString filename,
                                                      filename,
                                                      name,
                                                      duration,
-                                                     false);
+                                                     false,
+                                                     iconProvider.icon(fi));
 
     // Protect name
     if (protect_name) {
@@ -131,12 +135,9 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
     bool setResult = true;
     if (parent != root || files.count() > 1) {
         // Put playlist in a folder if child or more than one file
-        result = new TPlaylistWidgetItem(parent,
-                                         0,
-                                         playlistFileName,
-                                         fi.fileName(),
-                                         0,
-                                         true);
+        result = new TPlaylistWidgetItem(parent, 0, playlistFileName,
+                         fi.fileName(), 0, true,
+                         iconProvider.icon(QFileIconProvider::Folder));
         parent = result;
         setResult = false;
     }
@@ -192,12 +193,9 @@ QTreeWidgetItem* TAddFilesThread::openPls(const QString& aPlaylistFileName,
         bool setResult = true;
         if (parent != root || files.count() > 1) {
             // Put playlist in a folder if child or more than one file
-            result = new TPlaylistWidgetItem(parent,
-                                             0,
-                                             playlistFileName,
-                                             fi.fileName(),
-                                             0,
-                                             true);
+            result = new TPlaylistWidgetItem(parent, 0, playlistFileName,
+                             fi.fileName(), 0, true,
+                             iconProvider.icon(QFileIconProvider::Folder));
             parent = result;
             setResult = false;
         }
@@ -251,12 +249,9 @@ QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
         if (searchForItems) {
             existing_item = findFilename(filename);
         }
-        item = new TPlaylistWidgetItem(parent,
-                                       0,
-                                       QDir::toNativeSeparators(filename),
-                                       fi.fileName(),
-                                       0,
-                                       false);
+        item = new TPlaylistWidgetItem(parent, 0,
+                       QDir::toNativeSeparators(filename), fi.fileName(), 0,
+                       false, iconProvider.icon(fi));
     } else {
         if (searchForItems) {
             existing_item = findFilename(filename);
@@ -273,7 +268,8 @@ QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
         } else {
             name = filename;
         }
-        item = new TPlaylistWidgetItem(parent, 0, filename, name, 0, false);
+        item = new TPlaylistWidgetItem(parent, 0, filename, name, 0, false,
+                                       iconProvider.icon(fi));
     }
 
     if (existing_item) {
@@ -298,12 +294,9 @@ QTreeWidgetItem* TAddFilesThread::addDirectory(QTreeWidgetItem* parent,
         return openM3u(playlist, parent);
     }
 
-    TPlaylistWidgetItem* w = new TPlaylistWidgetItem(0,
-                                                     0,
-                                                     dir,
-                                                     QDir(dir).dirName(),
-                                                     0,
-                                                     true);
+    TPlaylistWidgetItem* w = new TPlaylistWidgetItem(0, 0, dir,
+        QDir(dir).dirName(), 0, true,
+        iconProvider.icon(QFileIconProvider::Folder));
 
     QFileInfo fi;
     QDir directory(dir);

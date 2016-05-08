@@ -10,6 +10,7 @@
 
 #include "gui/playlist/playlistwidgetitem.h"
 #include "images.h"
+#include "iconprovider.h"
 
 namespace Gui {
 namespace Playlist {
@@ -83,12 +84,9 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 #endif
 
     // Icons
-    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirClosedIcon),
-                         QIcon::Normal, QIcon::Off);
-    folderIcon.addPixmap(style()->standardPixmap(QStyle::SP_DirOpenIcon),
-                         QIcon::Normal, QIcon::On);
-    notPlayedIcon.addPixmap(style()->standardPixmap(QStyle::SP_FileIcon));
-    gIconSize = folderIcon.actualSize(QSize(22,22));
+    // Get icon size
+    QIcon icon = iconProvider.icon(QFileIconProvider::Folder);
+    gIconSize = icon.actualSize(QSize(22, 22));
     setIconSize(gIconSize);
 
     okIcon = Images::icon("ok", gIconSize.width());
@@ -225,23 +223,27 @@ TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
     return 0;
 }
 
-void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item) {
+void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item,
+                                     TPlaylistItemState state) {
     qDebug() << "Gui::TPlaylistWidget::setPlayingItem";
 
-    bool setCurrent;
+    bool setCurrent = true;
     if (playing_item) {
         // Set state previous playing item
         if (playing_item != item
-            && (playing_item->state() == PSTATE_PLAYING
-            || playing_item->state() == PSTATE_LOADING)) {
+            && playing_item->state() != PSTATE_STOPPED
+            && playing_item->state() != PSTATE_FAILED) {
             playing_item->setState(PSTATE_STOPPED);
         }
         setCurrent = playing_item == currentItem();
-    } else {
-        setCurrent = true;
     }
 
     playing_item = item;
+
+    if (playing_item) {
+        playing_item->setState(state);
+    }
+
     if (playing_item && setCurrent) {
         setCurrentItem(playing_item);
     } else {

@@ -34,6 +34,7 @@
 #include "version.h"
 #include "clhelp.h"
 #include "images.h"
+#include "iconprovider.h"
 #include "core.h"
 
 #include "gui/playlist/playlist.h"
@@ -474,6 +475,9 @@ void TApp::changeStyle() {
 
 	// Set stylesheets
 	changeStyleSheet(pref->iconset);
+
+    // Set icon style
+    iconProvider.setStyle(style());
 }
 
 void TApp::start() {

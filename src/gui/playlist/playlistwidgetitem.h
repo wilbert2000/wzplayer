@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QTreeWidgetItem>
+#include <QIcon>
+
 
 namespace Gui {
 namespace Playlist {
@@ -15,8 +17,6 @@ enum TPlaylistItemState {
     PSTATE_FAILED
 };
 
-extern QIcon folderIcon;
-extern QIcon notPlayedIcon;
 extern QIcon okIcon;
 extern QIcon loadingIcon;
 extern QIcon playIcon;
@@ -70,11 +70,9 @@ extern int gNameColumnWidth;
 extern QFontMetrics gNameFontMetrics;
 extern QSize gIconSize;
 
-
 class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
     enum TColID {
-        COL_PLAY = 0,
         COL_NAME = 0,
         COL_TIME = 1,
         COL_COUNT = 2
@@ -85,7 +83,8 @@ public:
                         const QString& filename,
                         const QString& name,
                         double duration,
-                        bool isDir);
+                        bool isDir,
+                        const QIcon& icon);
     virtual ~TPlaylistWidgetItem();
 
     QString filename() const { return playlistItem.filename(); }
@@ -119,6 +118,7 @@ public:
 
 private:
     TPlaylistItem playlistItem;
+    QIcon itemIcon;
 };
 
 } // namespace Playlist

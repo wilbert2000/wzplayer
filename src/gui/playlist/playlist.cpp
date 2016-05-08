@@ -49,6 +49,7 @@
 #include "gui/action/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "images.h"
+#include "iconprovider.h"
 #include "helper.h"
 #include "filedialog.h"
 #include "extensions.h"
@@ -337,7 +338,8 @@ void TPlaylist::addCurrentFile() {
             core->mdat.filename,
             core->mdat.displayName(),
             core->mdat.duration,
-            false);
+            false,
+            iconProvider.iconForFile(core->mdat.filename));
         i->setPlayed(true);
     }
 }
@@ -639,8 +641,7 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
             && playlistWidget->topLevelItemCount() == 1) {
             setWinTitle(playlistWidget->firstPlaylistWidgetItem()->name());
         }
-        item->setState(PSTATE_LOADING);
-        playlistWidget->setPlayingItem(item);
+        playlistWidget->setPlayingItem(item, PSTATE_LOADING);
         core->open(item->filename());
     } else {
         qDebug("Gui::TPlaylist::playItem: end of playlist");
@@ -853,7 +854,9 @@ void TPlaylist::enableActions() {
         playOrPauseAct->setIcon(Images::icon("loading"));
     } else if (s == STATE_PLAYING) {
         if (playing_item && playing_item->state() != PSTATE_PLAYING) {
-            playing_item->setState(PSTATE_PLAYING);
+            disable_enableActions = true;
+            playlistWidget->setPlayingItem(playing_item, PSTATE_PLAYING);
+            disable_enableActions = false;
         }
         playOrPauseAct->setTextAndTip(tr("&Pause"));
         playOrPauseAct->setIcon(Images::icon("pause"));
@@ -937,37 +940,31 @@ void TPlaylist::onStartPlayingNewMedia() {
 	// Create new playlist
 	clear();
 
-    TPlaylistWidgetItem* current = 0;
 	if (md->disc.valid) {
 		// Add disc titles
 		TDiscName disc = md->disc;
+        QIcon icon = iconProvider.iconForFile(disc.toString());
         foreach(const Maps::TTitleData title, md->titles) {
             disc.title = title.getID();
             TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-                                         playlistWidget->root(),
-                                         0,
-                                         disc.toString(),
-                                         title.getDisplayName(false),
-                                         title.getDuration(),
-                                         false);
+                playlistWidget->root(), 0, disc.toString(),
+                title.getDisplayName(false), title.getDuration(), false,
+                icon);
 			if (title.getID() == md->titles.getSelectedID()) {
-                current = i;
+                playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
 			}
 		}
 	} else {
 		// Add current file
-        current = new TPlaylistWidgetItem(playlistWidget->root(),
-                                          0,
-                                          filename,
-                                          core->mdat.displayName(),
-                                          core->mdat.duration,
-                                          false);
-
+        TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
+            playlistWidget->root(), 0, filename, core->mdat.displayName(),
+            core->mdat.duration, false, iconProvider.iconForFile(filename));
+        playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
 		// Add associated files to playlist
 		if (md->selected_type == TMediaData::TYPE_FILE
 			&& pref->media_to_add_to_playlist != TPreferences::NoFiles) {
-            qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: searching for files to add to playlist for"
-					 << filename;
+            qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: searching for"
+                        " files to add to playlist for" << filename;
 			QStringList files_to_add = Helper::filesForPlaylist(
 				filename, pref->media_to_add_to_playlist);
 			if (files_to_add.isEmpty()) {
@@ -978,13 +975,8 @@ void TPlaylist::onStartPlayingNewMedia() {
 		}
 	}
 
-    // Mark current item as playing and played
-    if (current) {
-        current->setState(PSTATE_PLAYING);
-    }
-
-    qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist for"
-             << filename;
+    qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist"
+                "for" << filename;
 }
 
 void TPlaylist::onMediaEOF() {
@@ -1007,8 +999,7 @@ void TPlaylist::onTitleTrackChanged(int id) {
 
     TPlaylistWidgetItem* i = playlistWidget->findFilename(filename);
     if (i) {
-        i->setState(PSTATE_PLAYING);
-        playlistWidget->setPlayingItem(i);
+        playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
     } else {
         qWarning() << "Gui::TPlaylist::onTitleTrackChanged: title id" << id
                    << "filename" << filename << "not found in playlist";

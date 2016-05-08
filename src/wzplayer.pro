@@ -71,6 +71,7 @@ HEADERS += version.h \
     settings/recents.h \
     settings/urlhistory.h \
     settings/cleanconfig.h \
+    iconprovider.h \
     images.h \
 	inforeader.h \
     inforeadermpv.h \
@@ -197,6 +198,7 @@ SOURCES	+= version.cpp \
     settings/recents.cpp \
     settings/urlhistory.cpp \
     settings/cleanconfig.cpp \
+    iconprovider.cpp \
     images.cpp \
 	inforeader.cpp \
     inforeadermpv.cpp \

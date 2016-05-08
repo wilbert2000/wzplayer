@@ -85,8 +85,7 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
 
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 
-QIcon folderIcon;
-QIcon notPlayedIcon;
+// Set by TPlaylistWidget constructor
 QIcon okIcon;
 QIcon loadingIcon;
 QIcon playIcon;
@@ -98,22 +97,23 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QString& filename,
                                          const QString& name,
                                          double duration,
-                                         bool isDir) :
+                                         bool isDir,
+                                         const QIcon& icon) :
     QTreeWidgetItem(parent, after),
-    playlistItem(filename, name, duration, isDir) {
+    playlistItem(filename, name, duration, isDir),
+    itemIcon(icon) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
                           | Qt::ItemIsDragEnabled
                           | Qt::ItemIsEnabled;
     if (isDir) {
         setFlags(flags | Qt::ItemIsDropEnabled);
-        setIcon(COL_PLAY, folderIcon);
     } else {
-        // TODO:
-        //setFlags(flags | Qt::ItemIsEditable);
+        // TODO: setFlags(flags | Qt::ItemIsEditable);
         setFlags(flags);
-        setIcon(COL_PLAY, notPlayedIcon);
     }
+
+    setIcon(COL_NAME, itemIcon);
 
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
     setText(COL_NAME, name);
@@ -142,19 +142,19 @@ void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
     switch (state) {
         case PSTATE_STOPPED:
             if (playlistItem.played()) {
-                setIcon(COL_PLAY, okIcon);
+                setIcon(COL_NAME, okIcon);
             } else {
-                setIcon(COL_PLAY, notPlayedIcon);
+                setIcon(COL_NAME, itemIcon);
             }
             break;
         case PSTATE_LOADING:
-            setIcon(COL_PLAY, loadingIcon);
+            setIcon(COL_NAME, loadingIcon);
             break;
         case PSTATE_PLAYING:
-            setIcon(COL_PLAY, playIcon);
+            setIcon(COL_NAME, playIcon);
             break;
         case PSTATE_FAILED:
-            setIcon(COL_PLAY, failedIcon);
+            setIcon(COL_NAME, failedIcon);
             break;
     }
 }
@@ -181,9 +181,9 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
     playlistItem.setPlayed(played);
     if (playlistItem.state() == PSTATE_STOPPED) {
         if (played) {
-            setIcon(COL_PLAY, okIcon);
+            setIcon(COL_NAME, okIcon);
         } else {
-            setIcon(COL_PLAY, notPlayedIcon);
+            setIcon(COL_NAME, itemIcon);
         }
     }
 }
@@ -219,10 +219,11 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 int gNameColumnWidth = 0;
 // Set by TPlaylistWidget constructor
 QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
-QSize gIconSize;
+QSize gIconSize(16, 16);
 
 void TPlaylistWidgetItem::setSzHint(int level) {
 
+    //QSize iconSize = icon(COL_NAME).actualSize(QSize(22, 22));
     setSizeHint(COL_NAME, itemSize(playlistItem.name(),
                                    gNameColumnWidth,
                                    gNameFontMetrics,
