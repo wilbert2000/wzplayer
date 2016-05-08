@@ -49,36 +49,36 @@
 
 using namespace Settings;
 
-TApp::TApp(int& argc, char** argv)
-	: QtSingleApplication(TConfig::PROGRAM_ID, argc, argv),
-	  main_window(0),
-	  requested_restart(false),
-	  reset_style(false),
-      move_gui(false),
-	  resize_gui(false),
-	  close_at_end(-1),
-	  start_in_fullscreen(-1) {
+TApp::TApp(int& argc, char** argv) :
+    QtSingleApplication(TConfig::PROGRAM_ID, argc, argv),
+    main_window(0),
+    requested_restart(false),
+    reset_style(false),
+    move_gui(false),
+    resize_gui(false),
+    close_at_end(-1),
+    start_in_fullscreen(-1) {
 
     setOrganizationName(TConfig::PROGRAM_ORG);
     setApplicationName(TConfig::PROGRAM_ID);
     //setApplicationVersion(TConfig::PROGRAM_VERSION);
 
-	// Save default style
-	default_style = style()->objectName();
+    // Save default style
+    default_style = style()->objectName();
 
 #ifdef Q_OS_LINUX
-	// Some controls aren't displayed correctly with the adwaita style
-	// so try to prevent to use it as the default style
-	if (default_style.toLower() == "adwaita")
-		default_style = "gtk+";
+    // Some controls aren't displayed correctly with the adwaita style
+    // so try to prevent to use it as the default style
+    if (default_style.toLower() == "adwaita")
+        default_style = "gtk+";
 #endif
 
-	// Enable icons in menus
-	setAttribute(Qt::AA_DontShowIconsInMenus, false);
+    // Enable icons in menus
+    setAttribute(Qt::AA_DontShowIconsInMenus, false);
 }
 
 TApp::~TApp() {
-	delete Settings::pref;
+    delete Settings::pref;
 }
 
 bool TApp::loadCatalog(QTranslator& translator,
