@@ -80,6 +80,8 @@ private:
     QTimer* saveSizeTimer;
     double saveSize;
     QString saveSizeFileName;
+    Qt::DockWidgetArea saveSizeDockArea;
+    Qt::DockWidgetArea dockArea;
     bool blockSave;
     bool postedResize;
 
@@ -90,12 +92,13 @@ private:
 private slots:
     void onDockVisibilityChanged(bool visible);
     void onTopLevelChanged(bool);
+    void onDockLocationChanged(Qt::DockWidgetArea area);
     void onvideoSizeFactorChanged(double, double);
     void reposition(const QSize& oldWinSize);
     void restoreVideoSize();
     void clearBlockRestore();
     void setWinTitle();
-    void saveSizeFactor();
+    void saveSizeFactor(bool checkMouse = true);
 };
 
 } // namespace Gui
