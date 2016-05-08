@@ -80,6 +80,8 @@ private:
     QTimer* saveSizeTimer;
     double saveSize;
     QString saveSizeFileName;
+    bool saveSizeVisible;
+    bool saveSizeFloating;
     Qt::DockWidgetArea saveSizeDockArea;
     Qt::DockWidgetArea dockArea;
     bool blockSave;
@@ -98,7 +100,9 @@ private slots:
     void restoreVideoSize();
     void clearBlockRestore();
     void setWinTitle();
-    void saveSizeFactor(bool checkMouse = true);
+    void saveSizeFactor(bool checkMouse = true,
+                        bool saveVisible = true,
+                        bool visible = false);
 };
 
 } // namespace Gui

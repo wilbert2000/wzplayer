@@ -50,6 +50,8 @@ TBasePlus::TBasePlus() :
     mainwindow_visible(true),
     restore_playlist(false),
     saveSize(0),
+    saveSizeVisible(false),
+    saveSizeFloating(true),
     saveSizeDockArea(Qt::LeftDockWidgetArea),
     dockArea(Qt::LeftDockWidgetArea),
     blockSave(false),
@@ -310,7 +312,7 @@ void TBasePlus::onDockLocationChanged(Qt::DockWidgetArea area) {
     dockArea = area;
 }
 
-void TBasePlus::saveSizeFactor(bool checkMouse) {
+void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) {
 
     if (checkMouse && qApp->mouseButtons()) {
         saveSizeTimer->start();
@@ -321,7 +323,15 @@ void TBasePlus::saveSizeFactor(bool checkMouse) {
                      << saveSize << "with new size" << pref->size_factor;
             saveSize = pref->size_factor;
             saveSizeFileName = core->mdat.filename;
+            saveSizeFloating = playlistdock->isFloating();
+            if (saveVisible) {
+                saveSizeVisible = playlistdock->isVisible();
+            } else {
+                saveSizeVisible = visible;
+            }
             saveSizeDockArea = dockArea;
+            qDebug() << "Gui::TBasePlus::saveSizeFactor: saved floating"
+                     << saveSizeFloating << "visible" << saveSizeVisible;
         } else {
             qDebug() << "Gui::TBasePlus::saveSizeFactor: ignoring small size"
                      << pref->size_factor;
@@ -410,16 +420,16 @@ void TBasePlus::restoreVideoSize() {
                         || dockArea == Qt::RightDockWidgetArea;
     bool saveDockVertical = saveSizeDockArea == Qt::LeftDockWidgetArea
                             || saveSizeDockArea == Qt::RightDockWidgetArea;
-    if (dockVertical == saveDockVertical) {
+    if (!playlistdock->isFloating()
+        && !saveSizeFloating
+        && saveSizeVisible == playlistdock->isVisible()
+        && dockVertical == saveDockVertical) {
         qDebug() << "Gui::TBasePlus::restoreVideoSize: areas match, canceling"
                     " resize";
     } else {
         if (saveSize < 0.1) {
             qDebug() << "Gui::TBasePlus::restoreVideoSize: ignoring small saved"
                         " size" << saveSize;
-            if (pref->size_factor > saveSize) {
-                saveSizeFactor();
-            }
         } else if (saveSizeFileName == core->mdat.filename) {
             qDebug() << "Gui::TBasePlus::restoreVideoSize: restoring size"
                         " factor from" << pref->size_factor << "to" << saveSize;
@@ -430,10 +440,10 @@ void TBasePlus::restoreVideoSize() {
         } else {
             qDebug() << "Gui::TBasePlus::restoreVideoSize: file name mismatch"
                         " canceling resize, saving size";
-            saveSizeFactor();
         }
     }
 
+    saveSizeFactor(false);
     postedResize = false;
 }
 
@@ -504,7 +514,7 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
         // Dock is hiding, video size not yet changed
         qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: saving size factor"
                  << pref->size_factor;
-        saveSizeFactor(false);
+        saveSizeFactor(false, false, true);
     }
 
     if (core->stateReady()) {
