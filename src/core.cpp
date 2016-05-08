@@ -375,7 +375,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 
 // Generic open, autodetect type
 void TCore::open(QString file, int seek) {
-	qDebug() << "TCore::open:" << file;
+    qDebug() << "TCore::open:" << file;
 
     if (file.isEmpty()) {
         file = mdat.filename;
@@ -385,9 +385,9 @@ void TCore::open(QString file, int seek) {
         }
     }
 
-	if (file.startsWith("file:")) {
-		file = QUrl(file).toLocalFile();
-	}
+    if (file.startsWith("file:")) {
+        file = QUrl(file).toLocalFile();
+    }
 
     QFileInfo fi(file);
 
@@ -398,56 +398,49 @@ void TCore::open(QString file, int seek) {
     }
 #endif
 
-	TDiscName disc(file);
-	if (disc.valid) {
-		qDebug() << "TCore::open: * identified as" << disc.protocol;
-		openDisc(disc, true);
-		return;
-	}
-	// Forget a previous disc
-	mdat.disc.valid = false;
+    TDiscName disc(file);
+    if (disc.valid) {
+        openDisc(disc, true);
+        return;
+    }
+    // Forget a previous disc
+    mdat.disc.valid = false;
 
-	emit showMessage(tr("Opening %1").arg(file), 0);
+    emit showMessage(tr("Opening %1").arg(file), 0);
 
-	if (fi.exists()) {
-		file = fi.absoluteFilePath();
+    if (fi.exists()) {
+        file = fi.absoluteFilePath();
 
-		TExtensions e;
-		QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
-		if (ext_sub.indexIn(fi.suffix()) >= 0) {
-			qDebug("TCore::open: * identified as subtitle file");
-			loadSub(file);
-			return;
-		}
+        TExtensions e;
+        QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
+        if (ext_sub.indexIn(fi.suffix()) >= 0) {
+            loadSub(file);
+            return;
+        }
 
-		if (fi.isDir()) {
-			qDebug("TCore::open: * identified as a directory");
-			qDebug("TCore::open:   checking if it contains a dvd");
-			if (Helper::directoryContainsDVD(file)) {
-				qDebug("TCore::open: * directory contains a dvd");
-				disc = TDiscName(file, pref->useDVDNAV());
-				openDisc(disc);
-			} else {
-				qDebug("TCore::open: * directory doesn't contain a dvd");
-				qDebug("TCore::open:   opening nothing");
-			}
-			return;
-		}
+        if (fi.isDir()) {
+            if (Helper::directoryContainsDVD(file)) {
+                qDebug("TCore::open: directory contains a dvd");
+                disc = TDiscName(file, pref->useDVDNAV());
+                openDisc(disc);
+                return;
+            }
+            qDebug("TCore::open: directory doesn't contain a dvd, doing nothing");
+            return;
+        }
 
-		// Local file
-		qDebug("TCore::open: * identified as local file");
-		openFile(file, seek);
-		return;
-	}
+        // Local file
+        openFile(file, seek);
+        return;
+    }
 
-	// File does not exist
-	if (file.toLower().startsWith("tv:") || file.toLower().startsWith("dvb:")) {
-		qDebug("TCore::open: * identified as TV");
-		openTV(file);
-	} else {
-		qDebug("TCore::open: * not identified, playing as stream");
-		openStream(file);
-	}
+    // File does not exist
+    if (file.toLower().startsWith("tv:") || file.toLower().startsWith("dvb:")) {
+        openTV(file);
+        return;
+    }
+
+    openStream(file);
 }
 
 void TCore::setExternalSubs(const QString &filename) {
