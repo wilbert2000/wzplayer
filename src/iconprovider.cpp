@@ -20,7 +20,7 @@ void TIconProvider::setStyle(QStyle* aStyle) {
 
     // To prevent: Fatal KGlobal::locale() must be called from the main thread
     // before using i18n() in threads, init it from here, the main thread.
-    iconForFile("/");
+    QFileIconProvider::icon(QFileInfo("/"));
 }
 
 QIcon TIconProvider::icon(IconType type) const {
@@ -33,25 +33,23 @@ QIcon TIconProvider::icon(IconType type) const {
 
 QIcon TIconProvider::icon(const QFileInfo& fi) const {
 
+    // TODO: handle the different kind of folders.
+    // For now need icon with open and close pixmap.
+    if (fi.isDir()) {
+        return folderIcon;
+    }
+
+    QIcon i;
     if (fi.filePath().startsWith("dvd://")
         || fi.filePath().startsWith("dvdnav://")
         || fi.filePath().startsWith("br://")) {
-        QIcon i;
         i.addPixmap(style->standardPixmap(QStyle::SP_DriveDVDIcon));
-        return i;
-    }
-    if (fi.filePath().startsWith("vcd://")
-        || fi.filePath().startsWith("cdda://")) {
-        QIcon i;
+    } else if (fi.filePath().startsWith("vcd://")
+               || fi.filePath().startsWith("cdda://")) {
         i.addPixmap(style->standardPixmap(QStyle::SP_DriveCDIcon));
-        return i;
-    }
-
-    QIcon i = QFileIconProvider::icon(fi);
-    if (i.isNull()) {
-        if (fi.isDir()) {
-            i = icon(QFileIconProvider::Folder);
-        } else {
+    } else {
+        i = QFileIconProvider::icon(fi);
+        if (i.isNull()) {
             i = icon(QFileIconProvider::File);
         }
     }
@@ -59,13 +57,6 @@ QIcon TIconProvider::icon(const QFileInfo& fi) const {
 }
 
 QIcon TIconProvider::iconForFile(const QString& filename) const {
-
-    /*
-    QStyle::SP_DriveCDIcon	18	The CD icon.
-    QStyle::SP_DriveDVDIcon	19	The DVD icon.
-    */
-
-
     return icon(QFileInfo(filename));
 }
 
