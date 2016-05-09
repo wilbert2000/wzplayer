@@ -201,6 +201,7 @@ private slots:
     void editItem(TPlaylistWidgetItem* item);
     void setModified(bool mod = true);
 
+    // TODO: Copied needs translation
     void copySelected(const QString& actionName = "Copied");
     void paste();
     void enablePaste();

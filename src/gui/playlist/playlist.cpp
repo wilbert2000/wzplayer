@@ -883,7 +883,7 @@ void TPlaylist::enableActions() {
     removeAllAct->setEnabled(e);
 
     cutAct->setEnabled(e);
-    copyAct->setEnabled(e);
+    copyAct->setEnabled(c > 0 || coreHasFilename);
     editAct->setEnabled(e && current_item);
 }
 
@@ -1009,8 +1009,8 @@ void TPlaylist::copySelected(const QString& actionName) {
         it++;
     }
 
-    if (copied == 0 && playlistWidget->playing_item) {
-        text = playlistWidget->playing_item->filename() + "\n";
+    if (copied == 0 && core->mdat.filename.count()) {
+        text = core->mdat.filename + "\n";
 		copied = 1;
 	}
 
@@ -1021,7 +1021,7 @@ void TPlaylist::copySelected(const QString& actionName) {
             msg(actionName + " " + text);
 		} else {
             msg(tr("%1 %2 file names",
-                   "action copy or cut, number of file names")
+                   "1 action Copied or Cut, 2 number of file names")
                 .arg(copied));
 		}
 		QApplication::clipboard()->setText(text);
