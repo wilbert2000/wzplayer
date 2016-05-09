@@ -171,12 +171,12 @@ TPlaylistWidgetItem* TPlaylistWidget::currentPlaylistWidgetItem() const {
 
 QTreeWidgetItem* TPlaylistWidget::playlistWidgetFolder(QTreeWidgetItem* w) const {
 
-    if (w && w != root()) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(w);
-        if (i->isFolder()) {
-            return i;
-        } else if (i->parent()) {
-            return i->parent();
+    if (w) {
+        if (w->childCount()) {
+            return w;
+        }
+        if (w->parent()) {
+            return w->parent();
         }
     }
     return root();
@@ -456,6 +456,58 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
         resizeRows(i, i->getLevel());
     }
 }
+
+QString TPlaylistWidget::add(TPlaylistWidgetItem* item,
+                             QTreeWidgetItem* target,
+                             QTreeWidgetItem* current) {
+    qDebug() << "Gui::Playlist::TPlaylistWidget::add";
+
+    enableSort(false);
+
+    // Setup parent and child index into parent
+    QTreeWidgetItem* parent;
+    int idx = -1;
+    if (target) {
+        parent = playlistWidgetFolder(target);
+        if (parent == target) {
+            idx = 0;
+        } else {
+            idx = parent->indexOfChild(target);
+        }
+    } else {
+        parent = root();
+    }
+    if (idx < 0) {
+        idx = parent->childCount();
+    }
+
+    QString filename;
+    if (parent == root()
+        && parent->childCount() == 0
+        && item->childCount() == 1
+        && item->child(0)->childCount()) {
+
+        TPlaylistWidgetItem* old = item;
+        item = static_cast<TPlaylistWidgetItem*>(item->takeChild(0));
+        delete old;
+        current = item->child(0);
+        idx = 0;
+        filename = item->filename();
+    }
+
+    QList<QTreeWidgetItem*> children;
+    while (item->childCount()) {
+        children << item->takeChild(0);
+    }
+    delete item;
+
+    clearSelection();
+    parent->insertChildren(idx, children);
+    setCurrentItem(current);
+
+    return filename;
+}
+
 
 } // namespace Playlist
 } // namespace Gui

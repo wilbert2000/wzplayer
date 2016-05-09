@@ -325,6 +325,7 @@ void TPlaylist::getFilesAppend(QStringList& files) const {
 void TPlaylist::clear() {
 
     playlistWidget->clr();
+    filename = "";
     title = "";
     setWinTitle();
     setModified(false);
@@ -365,7 +366,7 @@ void TPlaylist::onThreadFinished() {
     }
 
     // Get data from thread
-    QTreeWidgetItem* root = thread->root;
+    TPlaylistWidgetItem* root = thread->root;
     thread->root = 0;
     QTreeWidgetItem* current = thread->currentItem;
     if (thread->latestDir.count()) {
@@ -375,60 +376,30 @@ void TPlaylist::onThreadFinished() {
     // Clean up
     delete thread;
     thread = 0;
+    QString msg = addFilesFiles.count() == 1 ? addFilesFiles[0] : "";
+    addFilesFiles.clear();
 
-    // Add
     if (root->childCount() == 0) {
-        QString msg;
-        if (addFilesFiles.count() == 1) {
-            msg = tr("Found no files to play in %1.").arg(addFilesFiles[0]);
+        if (msg.count()) {
+            msg = tr("Found no files to play in %1.").arg(msg);
         } else {
-            msg = tr("Found no files to play in the requested locations.");
+            msg = tr("Found nothing to play in the requested locations.");
         }
 
         delete root;
-        addFilesFiles.clear();
         enableActions();
 
         QMessageBox::information(this, "Found no files", msg);
         return;
     }
-    addFilesFiles.clear();
 
-    // Add files to playlistWidget
-    playlistWidget->enableSort(false);
 
-    // Setup parent and child index into parent
-    QTreeWidgetItem* parent;
-    int idx = -1;
-    if (addFilesTarget == 0) {
-        parent = playlistWidget->root();
-    } else {
-        // TODO: verify addFilesTarget still existing
-        parent = playlistWidget->playlistWidgetFolder(addFilesTarget);
-        if (parent == addFilesTarget) {
-            idx = 0;
-        } else {
-            idx = parent->indexOfChild(addFilesTarget);
-        }
+    // TODO: make sure addFilesTarget still valid
+    QString fn = playlistWidget->add(root, addFilesTarget, current);
+    if (fn.count()) {
+        filename = fn;
+        setWinTitle(QFileInfo(fn).fileName());
     }
-    if (idx < 0) {
-        idx = parent->childCount();
-    }
-
-    QList<QTreeWidgetItem*> children;
-    while (root->childCount()) {
-        children << root->child(0);
-        root->removeChild(root->child(0));
-    }
-
-    delete root;
-
-    playlistWidget->clearSelection();
-    parent->insertChildren(idx, children);
-    playlistWidget->setCurrentItem(current);
-
-    // Set window title
-    setWinTitle();
 
     if (addFilesStartPlay) {
         if (addFilesFileToPlay.count()) {
@@ -477,7 +448,6 @@ void TPlaylist::addFiles(const QStringList& files,
             this, SIGNAL(displayMessage(QString, int)));
 
     thread->start();
-
     enableActions();
 }
 
@@ -1052,11 +1022,6 @@ void TPlaylist:: setWinTitle(QString s) {
 
     if (s.count()) {
         title = s;
-    } else if (playlistWidget->topLevelItemCount() == 1) {
-        TPlaylistWidgetItem* w = playlistWidget->firstPlaylistWidgetItem();
-        if (w->childCount()) {
-            title = w->name();
-        }
     }
 
     QString winTitle = tr("WZPlaylist%1%2%3",
@@ -1300,40 +1265,60 @@ void TPlaylist::open() {
 
 bool TPlaylist::save() {
 
-	TExtensions e;
-	QString s = MyFileDialog::getSaveFileName(
-        this, tr("Choose a filename"), pref->latest_dir,
-		tr("Playlists") + e.playlist().forFilter());
+    QFileInfo fi;
+    if (filename.isEmpty()) {
+        TExtensions e;
+        QString s = MyFileDialog::getSaveFileName(
+                        this, tr("Choose a filename"), pref->latest_dir,
+                        tr("Playlists") + e.playlist().forFilter());
 
-    if (s.isEmpty()) {
-        return false;
-    }
-
-    // If filename has no extension, add it
-    if (QFileInfo(s).suffix().isEmpty()) {
-        s = s + ".m3u8";
-    }
-    QFileInfo fi(s);
-    if (fi.exists()) {
-        int res = QMessageBox::question(this,
-            tr("Confirm overwrite?"),
-            tr("The file %1 already exists.\n"
-            "Do you want to overwrite it?").arg(s),
-            QMessageBox::Yes,
-            QMessageBox::No,
-            QMessageBox::NoButton);
-        if (res == QMessageBox::No) {
+        if (s.isEmpty()) {
             return false;
+        }
+
+        // If filename has no extension, add it
+        fi.setFile(s);
+        if (fi.suffix().isEmpty()) {
+            fi.setFile(s + ".m3u8");
+        }
+
+        if (fi.exists()) {
+            int res = QMessageBox::question(this,
+                tr("Confirm overwrite?"), tr("The file %1 already exists.\n"
+                "Do you want to overwrite it?").arg(fi.absoluteFilePath()),
+                QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
+            if (res == QMessageBox::No) {
+                return false;
+            }
+        }
+    } else {
+        // TODO: add save as
+        fi.setFile(filename);
+        if (fi.isDir()) {
+            fi.setFile(fi.absoluteFilePath()
+                       + "/" + TConfig::PROGRAM_ID + ".m3u8");
         }
     }
 
+    filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     pref->latest_dir = fi.absolutePath();
     setWinTitle(fi.fileName());
 
+    bool result;
     if (fi.suffix().toLower() == "pls") {
-        return savePls(s);
+        result = savePls(filename);
+    } else {
+        result = saveM3u(filename);
     }
-    return saveM3u(s);
+
+    if (result) {
+        msg(tr("Saved %1").arg(fi.fileName()));
+    } else {
+        QMessageBox::warning(this, tr("Save failed"),
+                             tr("Failed to save %1").arg(filename),
+                             QMessageBox::Ok);
+    }
+    return result;
 }
 
 bool TPlaylist::maybeSave() {

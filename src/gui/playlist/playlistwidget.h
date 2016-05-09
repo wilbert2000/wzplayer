@@ -44,6 +44,9 @@ public:
 
     void enableSort(bool enable);
 
+    QString add(TPlaylistWidgetItem* item, QTreeWidgetItem* target,
+                QTreeWidgetItem* current);
+
 signals:
     void modified();
 

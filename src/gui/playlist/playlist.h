@@ -153,6 +153,7 @@ private:
     bool disable_enableActions;
 
     bool modified;
+    QString filename;
     QString title;
 
     TAddFilesThread* thread;
