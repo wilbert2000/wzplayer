@@ -260,7 +260,8 @@ void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
 		} else if (vo == "gl") {
 			vo_combo->addItem(vo, vo);
 			vo_combo->addItem("gl (" + tr("fast") + ")", "gl:yuv=2:force-pbo");
-			vo_combo->addItem("gl (" + tr("fast - ATI cards") + ")", "gl:yuv=2:force-pbo:ati-hack");
+            vo_combo->addItem("gl (" + tr("fast - ATI cards") + ")",
+                              "gl:yuv=2:force-pbo:ati-hack");
 			vo_combo->addItem("gl (yuv)", "gl:yuv=3");
 		} else if (vo == "gl2") {
 			vo_combo->addItem(vo, vo);
