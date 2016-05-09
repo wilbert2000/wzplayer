@@ -156,7 +156,6 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += addItem(tr("Current aspect ratio"),
 			Settings::TAspectRatio::doubleToString((double) md.video_out_width / md.video_out_height));
 		s += addItem(tr("Format"), md.video_format);
-        qDebug() << md.video_bitrate;
         if (md.video_bitrate == -1) {
             if (Settings::pref->isMPV()) {
                 s += addItem(tr("Bitrate"),
