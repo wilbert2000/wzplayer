@@ -325,6 +325,8 @@ void TPlaylist::getFilesAppend(QStringList& files) const {
 void TPlaylist::clear() {
 
     playlistWidget->clr();
+    title = "";
+    setWinTitle();
     setModified(false);
 }
 
@@ -424,6 +426,9 @@ void TPlaylist::onThreadFinished() {
     playlistWidget->clearSelection();
     parent->insertChildren(idx, children);
     playlistWidget->setCurrentItem(current);
+
+    // Set window title
+    setWinTitle();
 
     if (addFilesStartPlay) {
         if (addFilesFileToPlay.count()) {
@@ -633,12 +638,6 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
     }
     if (item) {
         qDebug() << "Gui::TPlaylist::playItem:" << item->filename();
-        // Set window title to folder name when single root item
-        // and not a playlist
-        if (playlist_filename.isEmpty()
-            && playlistWidget->topLevelItemCount() == 1) {
-            setWinTitle(playlistWidget->firstPlaylistWidgetItem()->name());
-        }
         playlistWidget->setPlayingItem(item, PSTATE_LOADING);
         core->open(item->filename());
     } else {
@@ -940,7 +939,7 @@ void TPlaylist::onStartPlayingNewMedia() {
 
 	if (md->disc.valid) {
 		// Add disc titles
-        title = core->mdat.title;
+        setWinTitle(core->mdat.title);
 		TDiscName disc = md->disc;
         QIcon icon = iconProvider.iconForFile(disc.toString());
         foreach(const Maps::TTitleData title, md->titles) {
@@ -955,7 +954,6 @@ void TPlaylist::onStartPlayingNewMedia() {
 		}
 	} else {
 		// Add current file
-        title = "";
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
             playlistWidget->root(), 0, filename, title, core->mdat.duration,
             false, iconProvider.iconForFile(filename));
@@ -975,7 +973,6 @@ void TPlaylist::onStartPlayingNewMedia() {
 		}
 	}
 
-    setWinTitle();
     qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist"
                 "for" << filename;
 }
@@ -1063,6 +1060,11 @@ void TPlaylist:: setWinTitle(QString s) {
 
     if (s.count()) {
         title = s;
+    } else if (playlistWidget->topLevelItemCount() == 1) {
+        TPlaylistWidgetItem* w = playlistWidget->firstPlaylistWidgetItem();
+        if (w->childCount()) {
+            title = w->name();
+        }
     }
 
     QString winTitle = tr("WZPlaylist%1%2%3",

@@ -154,7 +154,6 @@ private:
 
     bool modified;
     QString title;
-    QString playlist_filename;
     QString playlist_path;
 
     TAddFilesThread* thread;
@@ -179,8 +178,6 @@ private:
 
 	bool saveM3u(QString file);
     bool savePls(QString file);
-
-    void setPlaylistFilename(const QString& name);
 
 private slots:
 	void showContextMenu(const QPoint& pos);
