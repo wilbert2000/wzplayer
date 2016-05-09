@@ -102,20 +102,15 @@ QTreeWidgetItem* TAddFilesThread::cleanAndAddItem(QString filename,
     return w;
 }
 
-QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
+QTreeWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
                                           QTreeWidgetItem* parent) {
 
 
     QRegExp info("^#EXTINF:(.*),(.*)");
 
-    // When inserting directly into the root, the name of the playlist gets
-    // lost, so save it
-    playlistFileName = aPlaylistFileName;
     QFileInfo fi(playlistFileName);
     // Path to use for relative filenames in playlist
     playlistPath = fi.path();
-    latestDir = fi.absolutePath();
-    emit setWinTitle(fi.fileName());
 
     bool utf8 = fi.suffix().toLower() == "m3u8";
 
@@ -133,15 +128,9 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
         stream.setCodec(QTextCodec::codecForLocale());
     }
 
-    QTreeWidgetItem* result = 0;
-    bool setResult = true;
-    if (parent != root || files.count() > 1) {
-        // Put playlist in a folder if child or more than one file
-        result = new TPlaylistWidgetItem(parent, 0, playlistFileName,
-                         fi.fileName(), 0, true, iconProvider.folderIcon);
-        parent = result;
-        setResult = false;
-    }
+    // Put playlist in a folder
+    QTreeWidgetItem* result = new TPlaylistWidgetItem(0, 0,
+        playlistFileName, fi.fileName(), 0, true, iconProvider.folderIcon);
 
     QString name;
     double duration = 0;
@@ -159,11 +148,7 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
         } else if (line.startsWith("#")) {
             // Ignore comments
         } else {
-            QTreeWidgetItem* w = cleanAndAddItem(line, name, duration, parent);
-            if (setResult && w) {
-                // Pass last as result when inserting into root
-                result = w;
-            }
+            cleanAndAddItem(line, name, duration, result);
             name = "";
             duration = 0;
         }
@@ -171,59 +156,59 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
 
     f.close();
 
-    return result;
+    if (result->childCount()) {
+        parent->addChild(result);
+        latestDir = fi.absolutePath();
+        emit setWinTitle(fi.fileName());
+        return result;
+    }
+
+    delete result;
+    return 0;
 }
 
-QTreeWidgetItem* TAddFilesThread::openPls(const QString& aPlaylistFileName,
+QTreeWidgetItem* TAddFilesThread::openPls(const QString& playlistFileName,
                                           QTreeWidgetItem* parent) {
 
-    // When inserting directly into the root, the name of the playlist gets
-    // lost, so save it
-    playlistFileName = aPlaylistFileName;
     QFileInfo fi(playlistFileName);
     // Path to use for relative filenames in playlist
     playlistPath = fi.path();
-    latestDir = fi.absolutePath();
-    emit setWinTitle(fi.fileName());
-
     QSettings set(playlistFileName, QSettings::IniFormat);
     set.beginGroup("playlist");
-
-    QTreeWidgetItem* result = 0;
-    if (set.status() == QSettings::NoError) {
-        bool setResult = true;
-        if (parent != root || files.count() > 1) {
-            // Put playlist in a folder if child or more than one file
-            result = new TPlaylistWidgetItem(parent, 0, playlistFileName,
-                             fi.fileName(), 0, true, iconProvider.folderIcon);
-            parent = result;
-            setResult = false;
-        }
-
-        QString filename;
-        QString name;
-        double duration;
-
-        int num_items = set.value("NumberOfEntries", 0).toInt();
-        for (int n = 1; n <= num_items; n++) {
-            filename = set.value("File" + QString::number(n), "").toString();
-            name = set.value("Title" + QString::number(n), "").toString();
-            duration = (double) set.value("Length"
-                                          + QString::number(n), 0).toInt();
-            QTreeWidgetItem* w = cleanAndAddItem(filename, name, duration,
-                                                 parent);
-            if (setResult && w) {
-                // Pass last as result when inserting into root
-                result = w;
-            }
-        }
-    } else {
+    if (set.status() != QSettings::NoError) {
         emit displayMessage(tr("Failed to open %1").arg(playlistFileName),
                             6000);
+        return 0;
+    }
+
+    // Put playlist in a folder
+    TPlaylistWidgetItem* result = new TPlaylistWidgetItem(0, 0,
+        playlistFileName, fi.fileName(), 0, true, iconProvider.folderIcon);
+
+    QString filename;
+    QString name;
+    double duration;
+
+    int num_items = set.value("NumberOfEntries", 0).toInt();
+    for (int n = 1; n <= num_items; n++) {
+        QString ns = QString::number(n);
+        filename = set.value("File" + ns, "").toString();
+        name = set.value("Title" + ns, "").toString();
+        duration = (double) set.value("Length" + ns, 0).toInt();
+        cleanAndAddItem(filename, name, duration, result);
     }
 
     set.endGroup();
-    return result;
+
+    if (result->childCount()) {
+        parent->addChild(result);
+        latestDir = fi.absolutePath();
+        emit setWinTitle(fi.fileName());
+        return result;
+    }
+
+    delete result;
+    return 0;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::findFilename(const QString&) {

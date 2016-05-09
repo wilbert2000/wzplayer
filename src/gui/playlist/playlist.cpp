@@ -366,9 +366,7 @@ void TPlaylist::onThreadFinished() {
     QTreeWidgetItem* root = thread->root;
     thread->root = 0;
     QTreeWidgetItem* current = thread->currentItem;
-    playlist_filename = thread->playlistFileName;
     playlist_path = thread->playlistPath;
-
     if (thread->latestDir.count()) {
         pref->latest_dir = thread->latestDir;
     }
@@ -1078,14 +1076,6 @@ void TPlaylist:: setWinTitle(QString s) {
     emit windowTitleChanged();
 }
 
-void TPlaylist::setPlaylistFilename(const QString& name) {
-
-    QFileInfo fi(name);
-    playlist_filename = fi.absoluteFilePath();
-    pref->latest_dir = fi.absolutePath();
-    setWinTitle(fi.fileName());
-}
-
 void TPlaylist::setModified(bool mod) {
 
     if (mod) {
@@ -1329,7 +1319,8 @@ bool TPlaylist::save() {
     if (QFileInfo(s).suffix().isEmpty()) {
         s = s + ".m3u8";
     }
-    if (QFileInfo(s).exists()) {
+    QFileInfo fi(s);
+    if (fi.exists()) {
         int res = QMessageBox::question(this,
             tr("Confirm overwrite?"),
             tr("The file %1 already exists.\n"
@@ -1342,8 +1333,10 @@ bool TPlaylist::save() {
         }
     }
 
-    setPlaylistFilename(s);
-    if (QFileInfo(s).suffix().toLower() == "pls") {
+    pref->latest_dir = fi.absolutePath();
+    setWinTitle(fi.fileName());
+
+    if (fi.suffix().toLower() == "pls") {
         return savePls(s);
     }
     return saveM3u(s);

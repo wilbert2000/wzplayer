@@ -34,7 +34,6 @@ public:
     // Outputs
     QTreeWidgetItem* root;
     QTreeWidgetItem* currentItem;
-    QString playlistFileName;
     QString latestDir;
 
 signals:
@@ -56,8 +55,8 @@ private:
     void addFiles();
 
 
-    QTreeWidgetItem* openM3u(const QString& aPlaylistFileName, QTreeWidgetItem* parent);
-    QTreeWidgetItem* openPls(const QString& aPlaylistFileName, QTreeWidgetItem* parent);
+    QTreeWidgetItem* openM3u(const QString& playlistFileName, QTreeWidgetItem* parent);
+    QTreeWidgetItem* openPls(const QString& playlistFileName, QTreeWidgetItem* parent);
     TPlaylistWidgetItem* findFilename(const QString& filename);
 };
 
