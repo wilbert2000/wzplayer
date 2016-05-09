@@ -59,17 +59,15 @@ TVideoWindow::~TVideoWindow() {
 void TVideoWindow::paintEvent(QPaintEvent* e) {
     //qDebug() << "TVideoWindow::paintEvent:" << e->rect();
 
-    if (normal_background) {
-        QPainter painter(this);
-        painter.eraseRect(e->rect());
-    }
+    QPainter painter(this);
+    painter.eraseRect(e->rect());
 }
 
 void TVideoWindow::setFastBackground() {
     qDebug("TVideoWindow::setFastBackground");
 
     normal_background = false;
-    // No restore background by system
+    // Disable restore background by system
     setAttribute(Qt::WA_NoSystemBackground);
 
 #ifndef Q_OS_WIN
@@ -83,6 +81,7 @@ void TVideoWindow::restoreNormalBackground() {
     qDebug("TVideoWindow::restoreNormalBackground");
 
     normal_background = true;
+    // Enable restore background by system
     setAttribute(Qt::WA_NoSystemBackground, false);
 
 #ifndef Q_OS_WIN
