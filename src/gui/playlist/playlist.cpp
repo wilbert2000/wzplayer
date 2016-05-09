@@ -900,10 +900,10 @@ void TPlaylist::onPlayerError() {
 void TPlaylist::onStartPlayingNewMedia() {
 
     const TMediaData* md = &core->mdat;
-	QString filename = md->filename;
+    QString filename = md->filename;
     QString current_filename = playlistWidget->playingFile();
 
-	if (filename == current_filename) {
+    if (filename == current_filename) {
         qDebug("Gui::TPlaylist::onStartPlayingNewMedia: new file is current item");
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item && !md->disc.valid) {
@@ -915,56 +915,55 @@ void TPlaylist::onStartPlayingNewMedia() {
             }
         }
         return;
-	}
+    }
 
     if (md->disc.valid && md->titles.count() == playlistWidget->countItems()) {
-		TDiscName cur_disc(current_filename);
-		if (cur_disc.valid
-			&& cur_disc.protocol == md->disc.protocol
-			&& cur_disc.device == md->disc.device) {
+        TDiscName cur_disc(current_filename);
+        if (cur_disc.valid
+            && cur_disc.protocol == md->disc.protocol
+            && cur_disc.device == md->disc.device) {
             qDebug("Gui::TPlaylist::onStartPlayingNewMedia: new file is from current disc");
-			return;
-		}
-	}
+            return;
+        }
+    }
 
-	// Create new playlist
-	clear();
+    // Create new playlist
+    clear();
 
-	if (md->disc.valid) {
-		// Add disc titles
+    if (md->disc.valid) {
+        // Add disc titles
         setWinTitle(core->mdat.title);
-		TDiscName disc = md->disc;
+        TDiscName disc = md->disc;
         QIcon icon = iconProvider.iconForFile(disc.toString());
         foreach(const Maps::TTitleData title, md->titles) {
             disc.title = title.getID();
             TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
                 playlistWidget->root(), 0, disc.toString(),
-                title.getDisplayName(false), title.getDuration(), false,
-                icon);
-			if (title.getID() == md->titles.getSelectedID()) {
+                title.getDisplayName(false), title.getDuration(), false, icon);
+            if (title.getID() == md->titles.getSelectedID()) {
                 playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
-			}
-		}
-	} else {
-		// Add current file
+            }
+        }
+    } else {
+        // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
             playlistWidget->root(), 0, filename, title, core->mdat.duration,
             false, iconProvider.iconForFile(filename));
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
-		// Add associated files to playlist
-		if (md->selected_type == TMediaData::TYPE_FILE
-			&& pref->media_to_add_to_playlist != TPreferences::NoFiles) {
+        // Add associated files to playlist
+        if (md->selected_type == TMediaData::TYPE_FILE
+            && pref->media_to_add_to_playlist != TPreferences::NoFiles) {
             qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: searching for"
                         " files to add to playlist for" << filename;
-			QStringList files_to_add = Helper::filesForPlaylist(
-				filename, pref->media_to_add_to_playlist);
-			if (files_to_add.isEmpty()) {
+            QStringList files_to_add = Helper::filesForPlaylist(filename,
+                pref->media_to_add_to_playlist);
+            if (files_to_add.isEmpty()) {
                 qDebug("Gui::TPlaylist::onStartPlayingNewMedia: none found");
-			} else {
-				addFiles(files_to_add);
-			}
-		}
-	}
+            } else {
+                addFiles(files_to_add);
+            }
+        }
+    }
 
     qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist"
                 "for" << filename;
