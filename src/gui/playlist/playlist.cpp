@@ -133,7 +133,7 @@ void TPlaylist::createActions() {
 
     // Save
     saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save",
-                          QKeySequence("Ctrl+W"));
+                          QKeySequence("Ctrl+S"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
     // Stop
