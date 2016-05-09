@@ -59,8 +59,10 @@ TVideoWindow::~TVideoWindow() {
 void TVideoWindow::paintEvent(QPaintEvent* e) {
     //qDebug() << "TVideoWindow::paintEvent:" << e->rect();
 
-    QPainter painter(this);
-    painter.eraseRect(e->rect());
+    if (normal_background || pref->isMPV()) {
+        QPainter painter(this);
+        painter.eraseRect(e->rect());
+    }
 }
 
 void TVideoWindow::setFastBackground() {
@@ -72,8 +74,10 @@ void TVideoWindow::setFastBackground() {
 
 #ifndef Q_OS_WIN
     // Disable composition and double buffering on X11
-    // Needed for mplayer painting in this window
-    setAttribute(Qt::WA_PaintOnScreen);
+    // Only needed for MPlayer. Makes the dock flash on screen with MPV.
+    if (pref->isMPlayer()) {
+        setAttribute(Qt::WA_PaintOnScreen);
+    }
 #endif
 }
 
@@ -85,7 +89,9 @@ void TVideoWindow::restoreNormalBackground() {
     setAttribute(Qt::WA_NoSystemBackground, false);
 
 #ifndef Q_OS_WIN
-    setAttribute(Qt::WA_PaintOnScreen, false);
+    if (pref->isMPlayer()) {
+        setAttribute(Qt::WA_PaintOnScreen, false);
+    }
 #endif
 }
 
