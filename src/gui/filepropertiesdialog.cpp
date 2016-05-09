@@ -72,9 +72,18 @@ void TFilePropertiesDialog::retranslateStrings() {
 void TFilePropertiesDialog::accept() {
 	qDebug("Gui::TFilePropertiesDialog::accept");
 
-	hide();
-	setResult(QDialog::Accepted);
+    setResult(QDialog::Accepted);
+    hide();
+    emit visibilityChanged(false);
 	emit applied();
+}
+
+void TFilePropertiesDialog::reject() {
+    qDebug("Gui::TFilePropertiesDialog::reject");
+
+    setResult(QDialog::Rejected);
+    hide();
+    emit visibilityChanged(false);
 }
 
 void TFilePropertiesDialog::apply() {

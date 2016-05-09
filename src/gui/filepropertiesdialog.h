@@ -61,6 +61,7 @@ public:
 
 public slots:
 	void accept(); // Reimplemented to send a signal
+    void reject();
 	void apply();
 
 signals:
