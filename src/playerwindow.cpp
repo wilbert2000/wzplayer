@@ -39,15 +39,15 @@ using namespace Settings;
 
 // Window containing the video player
 TVideoWindow::TVideoWindow(QWidget* parent) :
-	QWidget(parent),
-	normal_background(true) {
+    QWidget(parent),
+    normal_background(true) {
 
-	setAutoFillBackground(true);
+    setAutoFillBackground(true);
 
 #ifndef Q_OS_WIN
 #if QT_VERSION < 0x050000
-	setAttribute(Qt::WA_NativeWindow);
-	//setAttribute(Qt::WA_DontCreateNativeAncestors);
+    setAttribute(Qt::WA_NativeWindow);
+    //setAttribute(Qt::WA_DontCreateNativeAncestors);
 #endif
 #endif
 }
@@ -56,39 +56,39 @@ TVideoWindow::~TVideoWindow() {
 }
 
 void TVideoWindow::paintEvent(QPaintEvent*) {
-	// qDebug() << "TVideoWindow::paintEvent:" << e->rect();
-	// Background already handled
-	// QPainter painter(this);
-	// painter.eraseRect(e->rect());
+    // qDebug() << "TVideoWindow::paintEvent:" << e->rect();
+    // Background already handled
+    // QPainter painter(this);
+    // painter.eraseRect(e->rect());
 }
 
 void TVideoWindow::setFastBackground() {
-	qDebug("TVideoWindow::setFastBackground");
+    qDebug("TVideoWindow::setFastBackground");
 
-	normal_background = false;
-	setAutoFillBackground(false);
-	// Don't erase background before paint
-	setAttribute(Qt::WA_OpaquePaintEvent);
-	// No restore background by system
-	setAttribute(Qt::WA_NoSystemBackground);
+    normal_background = false;
+    setAutoFillBackground(false);
+    // Don't erase background before paint
+    setAttribute(Qt::WA_OpaquePaintEvent);
+    // No restore background by system
+    setAttribute(Qt::WA_NoSystemBackground);
 
 #ifndef Q_OS_WIN
-	// Disable composition and double buffering on X11
-	// Needed for mplayer
-	setAttribute(Qt::WA_PaintOnScreen);
+    // Disable composition and double buffering on X11
+    // Needed for mplayer
+    setAttribute(Qt::WA_PaintOnScreen);
 #endif
 }
 
 void TVideoWindow::restoreNormalBackground() {
-	qDebug("TVideoWindow::restoreNormalBackground");
+    qDebug("TVideoWindow::restoreNormalBackground");
 
-	normal_background = true;
-	setAutoFillBackground(true);
-	setAttribute(Qt::WA_OpaquePaintEvent, false);
-	setAttribute(Qt::WA_NoSystemBackground, false);
+    normal_background = true;
+    setAutoFillBackground(true);
+    setAttribute(Qt::WA_OpaquePaintEvent, false);
+    setAttribute(Qt::WA_NoSystemBackground, false);
 
 #ifndef Q_OS_WIN
-	setAttribute(Qt::WA_PaintOnScreen, false);
+    setAttribute(Qt::WA_PaintOnScreen, false);
 #endif
 }
 
@@ -550,67 +550,67 @@ void TPlayerWindow::setZoom(double factor,
 }
 
 double TPlayerWindow::zoom() {
-	return pref->fullscreen ? zoom_factor_fullscreen : zoom_factor;
+    return pref->fullscreen ? zoom_factor_fullscreen : zoom_factor;
 }
 
 void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen) {
-	qDebug() << "TPlayerWindow::setPan: pan" << pan << "pan full screen" << pan_fullscreen;
+    qDebug() << "TPlayerWindow::setPan: pan" << pan << "pan full screen" << pan_fullscreen;
 
-	pan_offset = pan;
-	pan_offset_fullscreen = pan_fullscreen;
+    pan_offset = pan;
+    pan_offset_fullscreen = pan_fullscreen;
 }
 
 void TPlayerWindow::moveVideo(QPoint delta) {
 
-	if (pref->fullscreen) {
-		pan_offset_fullscreen += delta;
-	} else {
-		pan_offset += delta;
-	}
-	updateVideoWindow();
-	QPoint p = pan();
-	emit displayMessage(tr("Pan (%1, %2)")
-		.arg(QString::number(p.x())).arg(QString::number(p.y())));
+    if (pref->fullscreen) {
+        pan_offset_fullscreen += delta;
+    } else {
+        pan_offset += delta;
+    }
+    updateVideoWindow();
+    QPoint p = pan();
+    emit displayMessage(tr("Pan (%1, %2)")
+                        .arg(QString::number(p.x())).arg(QString::number(p.y())));
 }
 
 void TPlayerWindow::moveVideo(int dx, int dy) {
-	moveVideo(QPoint(dx, dy));
+    moveVideo(QPoint(dx, dy));
 }
 
 QPoint TPlayerWindow::pan() {
-	return pref->fullscreen ? pan_offset_fullscreen : pan_offset;
+    return pref->fullscreen ? pan_offset_fullscreen : pan_offset;
 }
 
 void TPlayerWindow::resetZoomAndPan() {
 
-	zoom_factor_fullscreen = 1.0;
-	pan_offset_fullscreen = QPoint();
-	zoom_factor = 1.0;
-	pan_offset = QPoint();
-	updateVideoWindow();
+    zoom_factor_fullscreen = 1.0;
+    pan_offset_fullscreen = QPoint();
+    zoom_factor = 1.0;
+    pan_offset = QPoint();
+    updateVideoWindow();
 }
 
 void TPlayerWindow::setColorKey() {
 
-	if (pref->useColorKey()) {
-		ColorUtils::setBackgroundColor(video_window, pref->color_key);
-	} else {
-		ColorUtils::setBackgroundColor(video_window, QColor(0, 0, 0));
-	}
+    if (pref->useColorKey()) {
+        ColorUtils::setBackgroundColor(video_window, pref->color_key);
+    } else {
+        ColorUtils::setBackgroundColor(video_window, QColor(0, 0, 0));
+    }
 }
 
 void TPlayerWindow::setFastWindow() {
-	qDebug("TPlayerWindow::setFastWindow");
-	video_window->setFastBackground();
+    qDebug("TPlayerWindow::setFastWindow");
+    video_window->setFastBackground();
 }
 
 void TPlayerWindow::restoreNormalWindow() {
-	qDebug("TPlayerWindow::restoreNormalWindow");
+    qDebug("TPlayerWindow::restoreNormalWindow");
 
-	video_window->restoreNormalBackground();
+    video_window->restoreNormalBackground();
     repaint();
-	// Clear video size
-	video_size = QSize(0, 0);
+    // Clear video size
+    video_size = QSize(0, 0);
 }
 
 #include "moc_playerwindow.cpp"
