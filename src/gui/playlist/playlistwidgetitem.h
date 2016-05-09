@@ -17,11 +17,6 @@ enum TPlaylistItemState {
     PSTATE_FAILED
 };
 
-extern QIcon okIcon;
-extern QIcon loadingIcon;
-extern QIcon playIcon;
-extern QIcon failedIcon;
-
 
 class TPlaylistItem {
 
@@ -52,6 +47,7 @@ public:
     void setEdited(bool b) { _edited = b; }
 
     bool folder() const { return _folder; }
+    void setFolder(bool b) { _folder = b; }
 
     int playedTime() const { return _playedTime; }
 
@@ -66,9 +62,16 @@ private:
 };
 
 
+extern int gRootNodeLevel;
 extern int gNameColumnWidth;
 extern QFontMetrics gNameFontMetrics;
 extern QSize gIconSize;
+
+extern QIcon okIcon;
+extern QIcon loadingIcon;
+extern QIcon playIcon;
+extern QIcon failedIcon;
+
 
 class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
@@ -78,6 +81,7 @@ public:
         COL_COUNT = 2
     };
 
+    TPlaylistWidgetItem(const QIcon& icon);
     TPlaylistWidgetItem(QTreeWidgetItem* parent,
                         QTreeWidgetItem* after,
                         const QString& filename,

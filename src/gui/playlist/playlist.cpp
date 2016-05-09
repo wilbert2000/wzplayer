@@ -368,7 +368,6 @@ void TPlaylist::onThreadFinished() {
     QTreeWidgetItem* root = thread->root;
     thread->root = 0;
     QTreeWidgetItem* current = thread->currentItem;
-    playlist_path = thread->playlistPath;
     if (thread->latestDir.count()) {
         pref->latest_dir = thread->latestDir;
     }
@@ -381,9 +380,9 @@ void TPlaylist::onThreadFinished() {
     if (root->childCount() == 0) {
         QString msg;
         if (addFilesFiles.count() == 1) {
-            msg = tr("Found no files to play in %1").arg(addFilesFiles[0]);
+            msg = tr("Found no files to play in %1.").arg(addFilesFiles[0]);
         } else {
-            msg = tr("Found no files to play");
+            msg = tr("Found no files to play in the requested locations.");
         }
 
         delete root;
@@ -421,6 +420,7 @@ void TPlaylist::onThreadFinished() {
         children << root->child(0);
         root->removeChild(root->child(0));
     }
+
     delete root;
 
     playlistWidget->clearSelection();
@@ -469,16 +469,12 @@ void TPlaylist::addFiles(const QStringList& files,
 
     thread = new TAddFilesThread(this,
                                  addFilesFiles,
-                                 playlist_path,
                                  recursive_add_directories,
                                  searchForItems);
-
 
     connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
     connect(thread, SIGNAL(displayMessage(QString, int)),
             this, SIGNAL(displayMessage(QString, int)));
-    connect(thread, SIGNAL(setWinTitle(QString)),
-            this, SLOT(setWinTitle(QString)));
 
     thread->start();
 
@@ -503,7 +499,6 @@ void TPlaylist::addUrls() {
 
     TMultilineInputDialog d(this);
     if (d.exec() == QDialog::Accepted && d.lines().count() > 0) {
-        playlist_path = pref->latest_dir;
         addFiles(d.lines(), false, playlistWidget->currentItem());
         setModified();
     }
@@ -684,8 +679,6 @@ void TPlaylist::playPrev() {
 
 void TPlaylist::playDirectory(const QString &dir) {
 	qDebug("Gui::TPlaylist::playDirectory");
-
-    setWinTitle(QDir(dir).dirName());
 
     if (Helper::directoryContainsDVD(dir)) {
         // onStartPlayingNewMedia() will pickup the playlist

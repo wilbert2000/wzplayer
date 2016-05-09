@@ -85,12 +85,34 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
 
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 
+// Level of the root node in the tree view, where level means the number of
+// icons indenting the item. With root decoration on, toplevel items appear on
+// level 2, being gRootNodeLevel + 1.
+int gRootNodeLevel = 1;
+// Set by TPlaylistWidget event handlers
+int gNameColumnWidth = 0;
+// Set by TPlaylistWidget constructor
+QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
+// Set by TPlaylistWidget constructor
+QSize gIconSize(16, 16);
+
 // Set by TPlaylistWidget constructor
 QIcon okIcon;
 QIcon loadingIcon;
 QIcon playIcon;
 QIcon failedIcon;
 
+
+// Used as root
+TPlaylistWidgetItem::TPlaylistWidgetItem(const QIcon& icon) :
+    QTreeWidgetItem(),
+    itemIcon(icon) {
+
+    playlistItem.setFolder(true);
+    setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
+    setIcon(COL_NAME, itemIcon);
+    setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
+}
 
 TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          QTreeWidgetItem* after,
@@ -128,7 +150,7 @@ TPlaylistWidgetItem::~TPlaylistWidgetItem() {
 int TPlaylistWidgetItem::getLevel() const {
 
     if (parent() == 0) {
-        return 2;
+        return gRootNodeLevel + 1;
     }
     return static_cast<TPlaylistWidgetItem*>(parent())->getLevel() + 1;
 }
@@ -213,14 +235,6 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 
     return QSize(width, h);
 };
-
-
-// Set by TPlaylistWidget event handlers
-int gNameColumnWidth = 0;
-// Set by TPlaylistWidget constructor
-QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
-// Set by TPlaylistWidget constructor
-QSize gIconSize(16, 16);
 
 void TPlaylistWidgetItem::setSzHint(int level) {
 

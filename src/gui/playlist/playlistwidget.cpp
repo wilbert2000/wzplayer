@@ -29,7 +29,7 @@ public:
     static int getLevel(const QModelIndex& index) {
 
         if (index.parent() == QModelIndex()) {
-            return 2;
+            return gRootNodeLevel + 1;
         }
         return getLevel(index.parent()) + 1;
     }

@@ -6,8 +6,6 @@
 #include <QString>
 
 
-class QTreeWidgetItem;
-
 namespace Gui {
 namespace Playlist {
 
@@ -19,7 +17,6 @@ class TAddFilesThread : public QThread {
 public:
     TAddFilesThread(QObject* parent,
                     const QStringList& aFiles,
-                    const QString& aPlaylistPath,
                     bool recurseSubDirs,
                     bool aSearchForItems);
     virtual ~TAddFilesThread();
@@ -29,34 +26,35 @@ public:
 
     // Inputs
     const QStringList& files;
-    QString playlistPath;
 
     // Outputs
-    QTreeWidgetItem* root;
-    QTreeWidgetItem* currentItem;
+    TPlaylistWidgetItem* root;
+    TPlaylistWidgetItem* currentItem;
     QString latestDir;
 
 signals:
     void displayMessage(const QString&, int);
-    void setWinTitle(QString title);
 
 private:
     bool stopRequested;
     bool recurse;
     bool searchForItems;
+    QString playlistPath;
 
-    QTreeWidgetItem* cleanAndAddItem(QString filename,
-                                     QString name,
-                                     double duration,
-                                     QTreeWidgetItem* parent);
+    TPlaylistWidgetItem* cleanAndAddItem(QString filename,
+                                         QString name,
+                                         double duration,
+                                         TPlaylistWidgetItem* parent);
 
-    QTreeWidgetItem* addFile(QTreeWidgetItem* parent, QString filename);
-    QTreeWidgetItem* addDirectory(QTreeWidgetItem* parent, const QString& dir);
+    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QString filename);
+    TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
+                                      const QString& dir);
     void addFiles();
 
-
-    QTreeWidgetItem* openM3u(const QString& playlistFileName, QTreeWidgetItem* parent);
-    QTreeWidgetItem* openPls(const QString& playlistFileName, QTreeWidgetItem* parent);
+    TPlaylistWidgetItem* openM3u(const QString& playlistFileName,
+                                 TPlaylistWidgetItem* parent);
+    TPlaylistWidgetItem* openPls(const QString& playlistFileName,
+                                 TPlaylistWidgetItem* parent);
     TPlaylistWidgetItem* findFilename(const QString& filename);
 };
 

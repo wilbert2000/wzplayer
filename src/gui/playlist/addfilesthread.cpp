@@ -1,7 +1,6 @@
 #include "gui/playlist/addfilesthread.h"
 
 #include <QSettings>
-#include <QTreeWidgetItem>
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
@@ -22,12 +21,10 @@ namespace Playlist {
 
 TAddFilesThread::TAddFilesThread(QObject *parent,
                                  const QStringList& aFiles,
-                                 const QString& aPlaylistPath,
                                  bool recurseSubDirs,
                                  bool aSearchForItems) :
     QThread(parent),
     files(aFiles),
-    playlistPath(aPlaylistPath),
     root(0),
     currentItem(0),
     stopRequested(false),
@@ -41,14 +38,15 @@ TAddFilesThread::~TAddFilesThread() {
 
 void TAddFilesThread::run() {
 
-    root = new QTreeWidgetItem();
+    root = new TPlaylistWidgetItem(iconProvider.folderIcon);
     addFiles();
 }
 
-QTreeWidgetItem* TAddFilesThread::cleanAndAddItem(QString filename,
-                                                  QString name,
-                                                  double duration,
-                                                  QTreeWidgetItem* parent) {
+TPlaylistWidgetItem* TAddFilesThread::cleanAndAddItem(
+        QString filename,
+        QString name,
+        double duration,
+        TPlaylistWidgetItem* parent) {
 
     bool protect_name = !name.isEmpty();
     QString alt_name = filename;
@@ -102,8 +100,8 @@ QTreeWidgetItem* TAddFilesThread::cleanAndAddItem(QString filename,
     return w;
 }
 
-QTreeWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
-                                          QTreeWidgetItem* parent) {
+TPlaylistWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
+                                              TPlaylistWidgetItem* parent) {
 
 
     QRegExp info("^#EXTINF:(.*),(.*)");
@@ -129,7 +127,7 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
     }
 
     // Put playlist in a folder
-    QTreeWidgetItem* result = new TPlaylistWidgetItem(0, 0,
+    TPlaylistWidgetItem* result = new TPlaylistWidgetItem(0, 0,
         playlistFileName, fi.fileName(), 0, true, iconProvider.folderIcon);
 
     QString name;
@@ -159,7 +157,6 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
     if (result->childCount()) {
         parent->addChild(result);
         latestDir = fi.absolutePath();
-        emit setWinTitle(fi.fileName());
         return result;
     }
 
@@ -167,8 +164,8 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
     return 0;
 }
 
-QTreeWidgetItem* TAddFilesThread::openPls(const QString& playlistFileName,
-                                          QTreeWidgetItem* parent) {
+TPlaylistWidgetItem* TAddFilesThread::openPls(const QString& playlistFileName,
+                                              TPlaylistWidgetItem* parent) {
 
     QFileInfo fi(playlistFileName);
     // Path to use for relative filenames in playlist
@@ -203,7 +200,6 @@ QTreeWidgetItem* TAddFilesThread::openPls(const QString& playlistFileName,
     if (result->childCount()) {
         parent->addChild(result);
         latestDir = fi.absolutePath();
-        emit setWinTitle(fi.fileName());
         return result;
     }
 
@@ -215,8 +211,8 @@ TPlaylistWidgetItem* TAddFilesThread::findFilename(const QString&) {
     return 0;
 }
 
-QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
-                                          QString filename) {
+TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
+                                              QString filename) {
     // Note: currently addFile loads playlists and addDirectory skips them,
     // giving a nice balance. Load if the individual file is requested,
     // skip when adding a directory.
@@ -267,8 +263,8 @@ QTreeWidgetItem* TAddFilesThread::addFile(QTreeWidgetItem* parent,
     return item;
 }
 
-QTreeWidgetItem* TAddFilesThread::addDirectory(QTreeWidgetItem* parent,
-                                               const QString &dir) {
+TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
+                                                   const QString &dir) {
 
     static TExtensions ext;
     static QRegExp rx_ext(ext.multimedia().forRegExp(), Qt::CaseInsensitive);
@@ -336,7 +332,7 @@ void TAddFilesThread::addFiles() {
         }
 #endif
 
-        QTreeWidgetItem* result;
+        TPlaylistWidgetItem* result;
         if (fi.isDir()) {
             result = addDirectory(root, fi.absoluteFilePath());
         } else {

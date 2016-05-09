@@ -154,7 +154,6 @@ private:
 
     bool modified;
     QString title;
-    QString playlist_path;
 
     TAddFilesThread* thread;
     QStringList addFilesFiles;
@@ -168,6 +167,7 @@ private:
 	void createToolbar();
 
     void msg(const QString& s);
+    void setWinTitle(QString s = 0);
 
     TPlaylistWidgetItem* getRandomItem() const;
     bool haveUnplayedItems() const;
@@ -207,7 +207,6 @@ private slots:
     void cut();
 
     void enableActions();
-    void setWinTitle(QString s = 0);
 
     void onItemActivated(QTreeWidgetItem* item, int);
     void onRepeatToggled(bool toggled);
