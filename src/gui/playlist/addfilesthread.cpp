@@ -121,7 +121,8 @@ QTreeWidgetItem* TAddFilesThread::openM3u(const QString& aPlaylistFileName,
 
     QFile f(playlistFileName);
     if (!f.open(QIODevice::ReadOnly)) {
-        emit displayMessage(tr("Failed to open %1").arg(playlistFileName), 6000);
+        emit displayMessage(tr("Failed to open %1").arg(playlistFileName),
+                            6000);
         return 0;
     }
 
@@ -217,7 +218,8 @@ QTreeWidgetItem* TAddFilesThread::openPls(const QString& aPlaylistFileName,
             }
         }
     } else {
-        emit displayMessage(tr("Failed to open %1").arg(playlistFileName), 6000);
+        emit displayMessage(tr("Failed to open %1").arg(playlistFileName),
+                            6000);
     }
 
     set.endGroup();
