@@ -64,6 +64,7 @@ TBasePlus::TBasePlus() :
 
     quitAct = new Action::TAction(this, "quit", tr("&Quit"), "exit",
                                   QKeySequence("Ctrl+Q"));
+    quitAct->setVisible(false);
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
 	openMenu->addAction(quitAct);
 
@@ -72,6 +73,7 @@ TBasePlus::TBasePlus() :
                                       "systray");
 	showTrayAct->setCheckable(true);
 	connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
+    connect(showTrayAct, SIGNAL(toggled(bool)), quitAct, SLOT(setVisible(bool)));
 
 #ifndef Q_OS_OS2
 	windowMenu->addSeparator();
