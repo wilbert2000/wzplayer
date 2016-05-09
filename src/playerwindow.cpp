@@ -42,12 +42,11 @@ TVideoWindow::TVideoWindow(QWidget* parent) :
     QWidget(parent),
     normal_background(true) {
 
-    setAutoFillBackground(true);
+    setAutoFillBackground(false);
 
 #ifndef Q_OS_WIN
 #if QT_VERSION < 0x050000
     setAttribute(Qt::WA_NativeWindow);
-    //setAttribute(Qt::WA_DontCreateNativeAncestors);
 #endif
 #endif
 }
@@ -55,18 +54,19 @@ TVideoWindow::TVideoWindow(QWidget* parent) :
 TVideoWindow::~TVideoWindow() {
 }
 
-void TVideoWindow::paintEvent(QPaintEvent*) {
-    // qDebug() << "TVideoWindow::paintEvent:" << e->rect();
-    // Background already handled
-    // QPainter painter(this);
-    // painter.eraseRect(e->rect());
+void TVideoWindow::paintEvent(QPaintEvent* e) {
+    //qDebug() << "TVideoWindow::paintEvent:" << e->rect();
+
+    if (normal_background) {
+        QPainter painter(this);
+        painter.eraseRect(e->rect());
+    }
 }
 
 void TVideoWindow::setFastBackground() {
     qDebug("TVideoWindow::setFastBackground");
 
     normal_background = false;
-    setAutoFillBackground(false);
     // Don't erase background before paint
     setAttribute(Qt::WA_OpaquePaintEvent);
     // No restore background by system
@@ -74,7 +74,7 @@ void TVideoWindow::setFastBackground() {
 
 #ifndef Q_OS_WIN
     // Disable composition and double buffering on X11
-    // Needed for mplayer
+    // Needed for mplayer painting in this window
     setAttribute(Qt::WA_PaintOnScreen);
 #endif
 }
@@ -83,7 +83,6 @@ void TVideoWindow::restoreNormalBackground() {
     qDebug("TVideoWindow::restoreNormalBackground");
 
     normal_background = true;
-    setAutoFillBackground(true);
     setAttribute(Qt::WA_OpaquePaintEvent, false);
     setAttribute(Qt::WA_NoSystemBackground, false);
 
