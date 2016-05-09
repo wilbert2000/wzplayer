@@ -43,6 +43,8 @@ TVideoWindow::TVideoWindow(QWidget* parent) :
     normal_background(true) {
 
     setAutoFillBackground(false);
+    // Don't erase background before paint
+    setAttribute(Qt::WA_OpaquePaintEvent);
 
 #ifndef Q_OS_WIN
 #if QT_VERSION < 0x050000
@@ -67,8 +69,6 @@ void TVideoWindow::setFastBackground() {
     qDebug("TVideoWindow::setFastBackground");
 
     normal_background = false;
-    // Don't erase background before paint
-    setAttribute(Qt::WA_OpaquePaintEvent);
     // No restore background by system
     setAttribute(Qt::WA_NoSystemBackground);
 
@@ -83,7 +83,6 @@ void TVideoWindow::restoreNormalBackground() {
     qDebug("TVideoWindow::restoreNormalBackground");
 
     normal_background = true;
-    setAttribute(Qt::WA_OpaquePaintEvent, false);
     setAttribute(Qt::WA_NoSystemBackground, false);
 
 #ifndef Q_OS_WIN
