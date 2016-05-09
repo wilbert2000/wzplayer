@@ -108,8 +108,8 @@ void TPreferences::reset() {
 	mplayer_vo = "kva";
 	mpv_vo = mplayer_vo;
 #else
-	mplayer_vo = "xv";
-	mpv_vo = ""; // Players default
+    mplayer_vo = ""; // Players default
+    mpv_vo = "";
 #endif
 #endif
 
