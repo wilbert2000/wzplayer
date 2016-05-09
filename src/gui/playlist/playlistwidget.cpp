@@ -127,6 +127,9 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
+TPlaylistWidget::~TPlaylistWidget() {
+}
+
 void TPlaylistWidget::clr() {
 
     playing_item = 0;

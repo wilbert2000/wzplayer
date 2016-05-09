@@ -12,6 +12,7 @@ class TPlaylistWidget : public QTreeWidget {
     Q_OBJECT
 public:
     explicit TPlaylistWidget(QWidget* parent);
+    virtual ~TPlaylistWidget();
 
     TPlaylistWidgetItem* playing_item;
 
