@@ -1353,7 +1353,7 @@ void TPreferences::setupScreenshotFolder() {
         qDebug() << "Settings::TPreferences::setupScreenshotFolder: using screen shot folder"
                  << screenshot_directory;
     } else {
-        qWarning() << "Settings::TPreferences::setupScreenshotFolder: screen shot folder"
+        qDebug() << "Settings::TPreferences::setupScreenshotFolder: screen shot folder"
                    << screenshot_directory << "not found";
         use_screenshot = false;
         screenshot_directory = "";
