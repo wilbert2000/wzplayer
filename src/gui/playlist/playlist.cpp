@@ -1245,6 +1245,12 @@ bool TPlaylist::savePls(QString file) {
     return ok;
 }
 
+void TPlaylist::openPlaylist(const QString& filename) {
+
+    pref->latest_dir = QFileInfo(filename).absolutePath();
+    addFiles(QStringList() << filename, true);
+}
+
 void TPlaylist::open() {
 
     if (maybeSave()) {
@@ -1257,10 +1263,7 @@ void TPlaylist::open() {
             + tr("All files") +" (*.*)");
 
 		if (!s.isEmpty()) {
-            pref->latest_dir = QFileInfo(s).absolutePath();
-            addFiles(QStringList() << s,
-                     true,
-                     playlistWidget->currentItem());
+            openPlaylist(s);
 		}
 	}
 }

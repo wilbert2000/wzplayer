@@ -56,6 +56,8 @@ public:
     TPlaylist(TBase* mw, TCore* c);
 	virtual ~TPlaylist();
 
+    void openPlaylist(const QString& filename);
+
 	// Start playing, from item 0 if shuffle is off,
 	// or from a random item otherwise
     void startPlay(bool sort);

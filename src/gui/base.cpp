@@ -1256,8 +1256,13 @@ void TBase::open(const QString &file) {
 		if (fi.isDir()) {
 			playlist->playDirectory(file);
 			return;
-		}
-		pref->latest_dir = fi.absolutePath();
+        }
+        QString ext = fi.suffix().toLower();
+        if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
+            playlist->openPlaylist(fi.absoluteFilePath());
+            return;
+        }
+        pref->latest_dir = fi.absolutePath();
 	}
 
 	core->open(file);
