@@ -22,6 +22,7 @@ public:
     virtual ~TAddFilesThread();
 
     virtual void run();
+    void abort() { abortRequested = true; stopRequested = true; }
     void stop() { stopRequested = true; }
 
     // Inputs
@@ -36,6 +37,7 @@ signals:
     void displayMessage(const QString&, int);
 
 private:
+    bool abortRequested;
     bool stopRequested;
     bool recurse;
     bool searchForItems;

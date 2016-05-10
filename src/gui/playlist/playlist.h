@@ -169,6 +169,8 @@ private:
     void createActions();
 	void createToolbar();
 
+    void addFilesStartThread();
+
     void msg(const QString& s);
     void setWinTitle(QString s = 0);
 

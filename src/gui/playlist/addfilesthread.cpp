@@ -27,6 +27,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     files(aFiles),
     root(0),
     currentItem(0),
+    abortRequested(false),
     stopRequested(false),
     recurse(recurseSubDirs),
     searchForItems(aSearchForItems) {
@@ -40,6 +41,10 @@ void TAddFilesThread::run() {
 
     root = new TPlaylistWidgetItem(iconProvider.folderIcon);
     addFiles();
+    if (abortRequested) {
+        delete root;
+        root = 0;
+    }
 }
 
 TPlaylistWidgetItem* TAddFilesThread::cleanAndAddItem(

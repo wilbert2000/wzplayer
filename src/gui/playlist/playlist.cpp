@@ -325,44 +325,25 @@ void TPlaylist::getFilesAppend(QStringList& files) const {
 
 void TPlaylist::clear() {
 
+    if (thread) {
+        qDebug() << "Gui::TPlaylist::clear: add files thread still running,"
+                    " aborting it";
+        addFilesFiles.clear();
+        thread->abort();
+    }
     playlistWidget->clr();
     filename = "";
     title = "";
+    modified = false;
     setWinTitle();
-    setModified(false);
-}
-
-void TPlaylist::addCurrentFile() {
-    qDebug("Gui::TPlaylist::addCurrentFile");
-
-    if (core->mdat.filename.count()) {
-        TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-            playlistWidget->currentPlaylistWidgetFolder(),
-            playlistWidget->currentItem(),
-            core->mdat.filename,
-            core->mdat.displayName(),
-            core->mdat.duration,
-            false,
-            iconProvider.iconForFile(core->mdat.filename));
-        i->setPlayed(true);
-    }
-}
-
-void TPlaylist::addDirectory() {
-
-    QString s = MyFileDialog::getExistingDirectory(this,
-                    tr("Choose a directory"), pref->latest_dir);
-
-    if (!s.isEmpty()) {
-        addFiles(QStringList() << s, false, playlistWidget->currentItem());
-    }
 }
 
 void TPlaylist::onThreadFinished() {
     qDebug() << "Gui::Playlist::TPlaylist::onThreadFinished";
 
     if (thread == 0) {
-        qDebug() << "Gui::Playlist::TPlaylist::onThreadFinished: thread is gone";
+        // Only during destruction, so no need to enable actions
+        qDebug() << "Gui::Playlist::TPlaylist::onThreadFinished: thread gone";
         return;
     }
 
@@ -377,6 +358,22 @@ void TPlaylist::onThreadFinished() {
     // Clean up
     delete thread;
     thread = 0;
+
+    if (root == 0) {
+        // Thread aborted
+        if (addFilesFiles.count()) {
+            qDebug() << "Gui::Playlist::TPlaylist::onThreadFinished: thread"
+                        " aborted, restarting it";
+
+            addFilesStartThread();
+        } else {
+            qDebug() << "Gui::Playlist::TPlaylist::onThreadFinished: thread"
+                        " aborted";
+            enableActions();
+        }
+        return;
+    }
+
     QString msg = addFilesFiles.count() == 1 ? addFilesFiles[0] : "";
     addFilesFiles.clear();
 
@@ -417,6 +414,29 @@ void TPlaylist::onThreadFinished() {
     }
 }
 
+void TPlaylist::addFilesStartThread() {
+    qDebug() << "Gui::Playlist::TPlaylist::addFilesStartThread";
+
+    if (thread) {
+        // Thread still running, abort it and restart it in onThreadFinished()
+        qDebug("Gui::Playlist::TPlaylist::addFilesStartThread: add files"
+               " thread still running. Aborting it...");
+        thread->abort();
+    } else {
+        thread = new TAddFilesThread(this,
+                                     addFilesFiles,
+                                     recursive_add_directories,
+                                     addFilesSearchItems);
+
+        connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
+        connect(thread, SIGNAL(displayMessage(QString, int)),
+                this, SIGNAL(displayMessage(QString, int)));
+
+        thread->start();
+        enableActions();
+    }
+}
+
 void TPlaylist::addFiles(const QStringList& files,
                          bool startPlay,
                          QTreeWidgetItem* target,
@@ -425,31 +445,13 @@ void TPlaylist::addFiles(const QStringList& files,
     qDebug() << "Gui::Playlist::TPlaylist::addFiles: files" << files
              << "startPlay" << startPlay;
 
-    if (thread) {
-        // Assume something went wrong
-        qWarning("Gui::Playlist::TPlaylist::addFiles: the add files thread is"
-                 " still running. Stopping it and canceling this addFiles.");
-        thread->stop();
-        return;
-    }
-
     addFilesFiles = files;
     addFilesStartPlay = startPlay;
     addFilesTarget = target;
     addFilesFileToPlay = fileToPlay;
     addFilesSearchItems = searchForItems;
 
-    thread = new TAddFilesThread(this,
-                                 addFilesFiles,
-                                 recursive_add_directories,
-                                 searchForItems);
-
-    connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
-    connect(thread, SIGNAL(displayMessage(QString, int)),
-            this, SIGNAL(displayMessage(QString, int)));
-
-    thread->start();
-    enableActions();
+    addFilesStartThread();
 }
 
 void TPlaylist::addFiles() {
@@ -463,6 +465,32 @@ void TPlaylist::addFiles() {
     if (files.count() > 0) {
         addFiles(files, false, playlistWidget->currentItem());
         setModified();
+    }
+}
+
+void TPlaylist::addCurrentFile() {
+    qDebug("Gui::TPlaylist::addCurrentFile");
+
+    if (core->mdat.filename.count()) {
+        TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
+            playlistWidget->currentPlaylistWidgetFolder(),
+            playlistWidget->currentItem(),
+            core->mdat.filename,
+            core->mdat.displayName(),
+            core->mdat.duration,
+            false,
+            iconProvider.iconForFile(core->mdat.filename));
+        i->setPlayed(true);
+    }
+}
+
+void TPlaylist::addDirectory() {
+
+    QString s = MyFileDialog::getExistingDirectory(this,
+                    tr("Choose a directory"), pref->latest_dir);
+
+    if (!s.isEmpty()) {
+        addFiles(QStringList() << s, false, playlistWidget->currentItem());
     }
 }
 
