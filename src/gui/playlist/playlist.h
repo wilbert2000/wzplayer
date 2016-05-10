@@ -213,7 +213,7 @@ private slots:
     void onItemActivated(QTreeWidgetItem* item, int);
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
-    void onStartPlayingNewMedia();
+    void onNewMediaStartedPlaying();
 	void onTitleTrackChanged(int id);
 	void onMediaEOF();
 	void resumePlay();

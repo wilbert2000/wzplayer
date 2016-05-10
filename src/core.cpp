@@ -669,8 +669,8 @@ void TCore::initPlaying(int seek) {
     startPlayer(mdat.filename, start_sec);
 }
 
-void TCore::playingStartNewMedia() {
-    qDebug("TCore::playingStartNewMedia");
+void TCore::playingStartedNewMedia() {
+    qDebug("TCore::playingStartedNewMedia");
 
     mdat.initialized = true;
     mdat.list();
@@ -679,8 +679,8 @@ void TCore::playingStartNewMedia() {
     mset.current_demuxer = mdat.demuxer;
     mset.list();
 
-    qDebug("TCore::playingStartNewMedia: emit startPlayingNewMedia()");
-    emit startPlayingNewMedia();
+    qDebug("TCore::playingStartedNewMedia: emit newMediaStartedPlaying()");
+    emit newMediaStartedPlaying();
 }
 
 // Slot called when signal playerFullyLoaded arrives.
@@ -692,7 +692,7 @@ void TCore::playingStarted() {
     }
 
     if (_state != STATE_RESTARTING) {
-        playingStartNewMedia();
+        playingStartedNewMedia();
     }
 
     setState(STATE_PLAYING);

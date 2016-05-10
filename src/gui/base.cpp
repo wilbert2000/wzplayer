@@ -256,8 +256,8 @@ void TBase::createCore() {
 	connect(core, SIGNAL(showMessage(const QString&)),
 			this, SLOT(displayMessage(const QString&)));
 
-    connect(core, SIGNAL(startPlayingNewMedia()),
-            this, SLOT(onStartPlayingNewMedia()), Qt::QueuedConnection);
+    connect(core, SIGNAL(newMediaStartedPlaying()),
+            this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
 
 	connect(core, SIGNAL(mediaInfoChanged()),
 			this, SLOT(onMediaInfoChanged()));
@@ -1176,8 +1176,8 @@ void TBase::onMediaInfoChanged() {
 	emit mediaFileTitleChanged(core->mdat.filename, title);
 }
 
-void TBase::onStartPlayingNewMedia() {
-    qDebug("Gui::TBase::onStartPlayingNewMedia");
+void TBase::onNewMediaStartedPlaying() {
+    qDebug("Gui::TBase::onNewMediaStartedPlaying");
 
 	enterFullscreenOnPlay();
 

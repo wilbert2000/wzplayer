@@ -335,7 +335,7 @@ signals:
 	void stateChanged(TCoreState state);
 	void mediaSettingsChanged();
 	void videoOutResolutionChanged(int w, int h);
-    void startPlayingNewMedia();
+    void newMediaStartedPlaying();
 	void mediaInfoChanged();
 	void mediaStopped();
 	void mediaEOF(); // Media has arrived to the end.
@@ -429,7 +429,7 @@ private:
 	void openStream(const QString& name);
 	void openTV(QString channel_id);
 
-    void playingStartNewMedia();
+    void playingStartedNewMedia();
 
 	bool haveVideoFilters() const;
 	void changeVF(const QString& filter, bool enable, const QVariant& option);

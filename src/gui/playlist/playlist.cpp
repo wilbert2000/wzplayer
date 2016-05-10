@@ -64,6 +64,7 @@ using namespace Action;
 
 namespace Playlist {
 
+
 TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     QWidget(mw),
     main_window(mw),
@@ -77,8 +78,8 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     createActions();
 	createToolbar();
 
-    connect(core, SIGNAL(startPlayingNewMedia()),
-            this, SLOT(onStartPlayingNewMedia()));
+    connect(core, SIGNAL(newMediaStartedPlaying()),
+            this, SLOT(onNewMediaStartedPlaying()));
     connect(core, SIGNAL(playerError(int)),
             this, SLOT(onPlayerError()));
     connect(core, SIGNAL(titleTrackChanged(int)),
@@ -651,7 +652,7 @@ void TPlaylist::playDirectory(const QString &dir) {
 	qDebug("Gui::TPlaylist::playDirectory");
 
     if (Helper::directoryContainsDVD(dir)) {
-        // onStartPlayingNewMedia() will pickup the playlist
+        // onNewMediaStartedPlaying() will pickup the playlist
         playlistWidget->enableSort(false);
         core->open(dir);
 	} else {
@@ -867,14 +868,14 @@ void TPlaylist::onPlayerError() {
     }
 }
 
-void TPlaylist::onStartPlayingNewMedia() {
+void TPlaylist::onNewMediaStartedPlaying() {
 
     const TMediaData* md = &core->mdat;
     QString filename = md->filename;
     QString current_filename = playlistWidget->playingFile();
 
     if (filename == current_filename) {
-        qDebug("Gui::TPlaylist::onStartPlayingNewMedia: new file is current item");
+        qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is current item");
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item && !md->disc.valid) {
             if (!item->edited()) {
@@ -892,7 +893,7 @@ void TPlaylist::onStartPlayingNewMedia() {
         if (cur_disc.valid
             && cur_disc.protocol == md->disc.protocol
             && cur_disc.device == md->disc.device) {
-            qDebug("Gui::TPlaylist::onStartPlayingNewMedia: new file is from current disc");
+            qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: new file is from current disc");
             return;
         }
     }
@@ -920,22 +921,23 @@ void TPlaylist::onStartPlayingNewMedia() {
             playlistWidget->root(), 0, filename, title, core->mdat.duration,
             false, iconProvider.iconForFile(filename));
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
+
         // Add associated files to playlist
         if (md->selected_type == TMediaData::TYPE_FILE
             && pref->media_to_add_to_playlist != TPreferences::NoFiles) {
-            qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: searching for"
+            qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: searching for"
                         " files to add to playlist for" << filename;
             QStringList files_to_add = Helper::filesForPlaylist(filename,
                 pref->media_to_add_to_playlist);
             if (files_to_add.isEmpty()) {
-                qDebug("Gui::TPlaylist::onStartPlayingNewMedia: none found");
+                qDebug("Gui::TPlaylist::onNewMediaStartedPlaying: none found");
             } else {
                 addFiles(files_to_add);
             }
         }
     }
 
-    qDebug() << "Gui::TPlaylist::onStartPlayingNewMedia: created new playlist"
+    qDebug() << "Gui::TPlaylist::onNewMediaStartedPlaying: created new playlist"
                 "for" << filename;
 }
 
