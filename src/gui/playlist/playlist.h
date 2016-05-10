@@ -24,6 +24,7 @@
 #include <QStringList>
 
 #include "gui/playlist/playlistwidget.h"
+#include "log.h"
 
 
 class QToolBar;
@@ -111,6 +112,7 @@ protected:
 	virtual void closeEvent(QCloseEvent* e);
 
 private:
+    TLogger logger;
     TBase* main_window;
 	TCore* core;
     TPlaylistWidget* playlistWidget;

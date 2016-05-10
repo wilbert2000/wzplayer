@@ -15,8 +15,15 @@ class TLogWindow;
 
 
 class TLog {
-
 public:
+    enum TMsgType {
+        TDebugMsg = QtDebugMsg,
+        TWarningMsg = QtWarningMsg,
+        TCriticalMsg = QtCriticalMsg,
+        TFatalMsg = QtFatalMsg,
+        TInfoMsg
+    };
+
 	TLog(bool debug_enabled, bool log_file_enabled);
 	virtual ~TLog();
 
@@ -27,7 +34,7 @@ public:
 	void setLogFileEnabled(bool log_file_enabled);
 	void setLogWindow(Gui::TLogWindow* window);
 
-	void logLine(QtMsgType type, QString line);
+    void logLine(TMsgType type, QString line);
 	QString getLogLines() { return lines_back + lines; }
 
 private:
@@ -45,5 +52,23 @@ private:
 #endif
 
 }; // class TLog
+
+
+class TLogger {
+public:
+    TLogger(const QString& aClassName);
+    TLogger(const QObject* object);
+    virtual ~TLogger();
+
+    void debug(const QString& msg) const {
+        TLog::log->logLine(TLog::TDebugMsg, prefix + msg);
+    }
+
+    void info(const QString& msg) const {
+        TLog::log->logLine(TLog::TInfoMsg, prefix + msg);
+    }
+
+    QString prefix;
+};
 
 #endif // LOG_H

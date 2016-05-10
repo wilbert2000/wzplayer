@@ -88,17 +88,18 @@ void TLog::setLogWindow(Gui::TLogWindow *window) {
 	}
 }
 
-QString msgTypeToString(QtMsgType type) {
+QString msgTypeToString(TLog::TMsgType type) {
 
 	switch (type) {
-		case QtDebugMsg: return "Debug ";
-		case QtWarningMsg: return "Warning ";
-		case QtFatalMsg: return "Fatal ";
-		default: return "Critical ";
+        case QtDebugMsg: return "Debug ";
+        case QtWarningMsg: return "Warning ";
+        case QtFatalMsg: return "Fatal ";
+        case QtCriticalMsg: return "Critical ";
+        default: return "Info ";
 	}
 }
 
-void TLog::logLine(QtMsgType type, QString line) {
+void TLog::logLine(TMsgType type, QString line) {
 
 	// Add timestamp, message type and line feed
 	line = "["+ QTime::currentTime().toString("hh:mm:ss.zzz") +"] "
@@ -116,7 +117,7 @@ void TLog::logLine(QtMsgType type, QString line) {
 	QByteArray bytes = line.toUtf8();
 
 	// Output to console on stderr
-	if (type != QtDebugMsg || log_debug_messages_to_console) {
+    if (type != TDebugMsg || log_debug_messages_to_console) {
 		fwrite(bytes.constData(), 1, bytes.size(), stderr);
   #ifdef Q_OS_WIN
 		fflush(stderr);
@@ -146,7 +147,20 @@ void TLog::msgHandler(QtMsgType type, const char* p_msg) {
 #endif
 
 	if (log && (type != QtDebugMsg || log->logDebugMessages())) {
-		log->logLine(type, msg);
+        log->logLine(static_cast<TMsgType>(type), msg);
 	}
+}
+
+
+TLogger::TLogger(const QString& aClassName) :
+    prefix(aClassName + ":") {
+
+}
+
+TLogger::TLogger(const QObject* object) :
+    prefix(QString(object->metaObject()->className()) + ":") {
+}
+
+TLogger::~TLogger() {
 }
 

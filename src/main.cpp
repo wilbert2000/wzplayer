@@ -16,7 +16,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QDebug>
 #include "log.h"
 #include "app.h"
 
@@ -49,7 +48,8 @@ int main(int argc, char** argv) {
 		exit_code = app.execWithRestart();
 	}
 
-	qDebug("main: returning %d", exit_code);
+    // Make sure log does not get optimized away
+    log.logLine(TLog::TDebugMsg, "main: returning " + QString::number(exit_code));
 	return exit_code;
 }
 
