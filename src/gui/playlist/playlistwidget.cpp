@@ -236,6 +236,7 @@ void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item,
             && playing_item->state() != PSTATE_FAILED) {
             playing_item->setState(PSTATE_STOPPED);
         }
+        // Only set current, when playing_item was current
         setCurrent = playing_item == currentItem();
     }
 
