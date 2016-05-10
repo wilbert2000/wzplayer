@@ -1,5 +1,5 @@
-#ifndef GUI_OPENMENU_H
-#define GUI_OPENMENU_H
+#ifndef GUI_ACTION_OPENMENU_H
+#define GUI_ACTION_OPENMENU_H
 
 #include "gui/action/menu.h"
 
@@ -14,18 +14,20 @@ class TAction;
 
 
 class TMenuOpen : public TMenu {
-	Q_OBJECT
+    Q_OBJECT
 public:
     explicit TMenuOpen(TBase* mw);
-	void updateRecents();
+    void updateRecents();
+
 private:
-	TMenu* recentfiles_menu;
-	TAction* clearRecentsAct;
+    TMenu* recentfiles_menu;
+    TAction* clearRecentsAct;
+
 private slots:
-	void clearRecentsList();
+    void clearRecentsList();
 }; // class TmenuOpen
 
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_OPENMENU_H
+#endif // GUI_ACTION_OPENMENU_H
