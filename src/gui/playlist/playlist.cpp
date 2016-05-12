@@ -956,8 +956,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
     } else {
         // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
-            playlistWidget->root(), 0, filename, title, core->mdat.duration,
-            false, iconProvider.iconForFile(filename));
+            playlistWidget->root(), 0, filename, core->mdat.displayName(),
+            core->mdat.duration, false, iconProvider.iconForFile(filename));
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
 
         // Add associated files to playlist
