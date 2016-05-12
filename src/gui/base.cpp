@@ -1967,7 +1967,7 @@ void TBase::changeSize(double factor) {
 }
 
 void TBase::changeSize(int percentage) {
-    logger()->debug("TBase::changeSiz%1 %1%%", percentage);
+    logger()->debug("TBase::changeSize %1%", percentage);
 	changeSize((double) percentage / 100);
 }
 

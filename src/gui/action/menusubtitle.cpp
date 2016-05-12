@@ -231,7 +231,7 @@ void TMenuSubtitle::onMediaSettingsChanged(Settings::TMediaSettings*) {
 }
 
 void TMenuSubtitle::updateSubtitles() {
-	logger()->debug("Gui::Action::TMenuSubtitle::updateSubtitles");
+	logger()->debug("updateSubtitles");
 
 	// Note: use idx not ID
 	subtitleTrackGroup->clear();
