@@ -323,7 +323,7 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
         saveSizeTimer->stop();
         if (pref->size_factor >= 0.1) {
             debug << "saveSizeFactor: overwriting save size" << saveSize
-                  << " with new size " << pref->size_factor << debug;
+                  << "with new size" << pref->size_factor << debug;
             saveSize = pref->size_factor;
             saveSizeFileName = core->mdat.filename;
             saveSizeFloating = playlistdock->isFloating();
@@ -333,10 +333,10 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
                 saveSizeVisible = visible;
             }
             saveSizeDockArea = dockArea;
-            debug << "saveSizeFactor: saved floating " << saveSizeFloating
+            debug << "saveSizeFactor: saved floating" << saveSizeFloating
                   << "visible" << saveSizeVisible << debug;
         } else {
-            debug << "saveSizeFactor: ignoring small size "
+            debug << "saveSizeFactor: ignoring small size"
                   << pref->size_factor << debug;
         }
     }

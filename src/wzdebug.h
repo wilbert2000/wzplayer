@@ -40,6 +40,6 @@ public:
     virtual ~TWZDebug();
 };
 
-TWZDebug& operator<<(QDebug&, TWZDebug&);
+TWZDebug& operator << (QDebug&, TWZDebug&);
 
 #endif // WZDEBUG_H

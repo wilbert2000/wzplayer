@@ -97,8 +97,8 @@ bool TTracks::updateTrack(int id, const QString &field, const QString &value) {
 	}
 
 	if (changed) {
-        logger()->debug("updateTrack: updated track id %1 field '%2' to value '%3'",
-                        id, field, value);
+        logger()->debug("updateTrack: updated track id " + QString::number(id)
+                        + " field '" + field +"' to value '" + value + "'");
 	} else {
         logger()->debug("updateTrack: track id %1 was up to date", id);
 	}
@@ -192,8 +192,8 @@ void TTracks::list() const {
 		i.next();
 		TTrackData track = i.value();
         logger()->debug("list: ID: " + QString::number(track.getID())
-                        + " lang: " + track.getLang()
-                        + " name: " + track.getName());
+                        + " lang: '" + track.getLang()
+                        + "' name: '" + track.getName() + "'");
 	}
 }
 

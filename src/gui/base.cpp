@@ -1932,7 +1932,7 @@ void TBase::gotDuration(double duration) {
 }
 
 void TBase::changeSize(double factor) {
-    logger()->debug("TBase::changeSize: %1", factor);
+    debug << "changeSize:" << factor << debug;
 
 	if (core->mdat.noVideo())
 		return;

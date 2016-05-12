@@ -756,7 +756,7 @@ void TCore::playOrPause() {
 }
 
 void TCore::frameStep() {
-    logger()->debug("frameStep at %1", mset.current_sec);
+    logger()->debug("frameStep at " + QString::number(mset.current_sec));
 
 	if (proc->isRunning()) {
 		if (_state == STATE_PAUSED) {
@@ -768,7 +768,7 @@ void TCore::frameStep() {
 }
 
 void TCore::frameBackStep() {
-    logger()->debug("frameBackStep at %1", mset.current_sec);
+    logger()->debug("frameBackStep at " + QString::number(mset.current_sec));
 
 	if (proc->isRunning()) {
 		if (_state == STATE_PAUSED) {
@@ -2669,22 +2669,24 @@ void TCore::handleOutPoint() {
     if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
         if (mset.loop) {
             if (!seeking && mset.in_point < mset.out_point) {
-                logger()->debug("handleOutPoint: position %1 reached out point"
-                                " %2, start seeking in point %3",
-                                mset.current_sec, mset.out_point, mset.in_point);
+                debug << "handleOutPoint: position" << mset.current_sec
+                      << "reached out point" << mset.out_point
+                      << ", start seeking in point " << mset.in_point
+                      << debug;
                 seeking = true;
                 seekTime(mset.in_point);
             }
         } else {
-            logger()->debug("handleOutPoint: position %1 reached out point %2,"
-                            " sending quit",
-                            mset.current_sec, mset.out_point);
+            debug << "handleOutPoint: position" << mset.current_sec
+                  << "reached out point" << mset.out_point
+                  << ", sending quit" << debug;
+
             proc->quit(Proc::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
-        logger()->debug("handleOutPoint: done handling out point, position %1"
-                        " no longer after out point %2",
-                        mset.current_sec, mset.out_point);
+        debug << "handleOutPoint: done handling out point, position"
+              << mset.current_sec << "no longer after out point"
+              << mset.out_point << debug;
         seeking = false;
     }
 }
