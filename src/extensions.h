@@ -16,39 +16,39 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _EXTENSIONS_H_
-#define _EXTENSIONS_H_
+#ifndef EXTENSIONS_H
+#define EXTENSIONS_H
 
 #include <QStringList>
 
-// TODO: make singleton
-class ExtensionList : public QStringList
-{
+
+class ExtensionList : public QStringList {
 public:
 	ExtensionList();
 
-	QString forFilter();
-	QStringList forDirFilter();
-	QString forRegExp();
+    QString forFilter() const;
+    QStringList forDirFilter() const;
+    QString forRegExp() const;
 };
 
-class TExtensions
-{
+class TExtensions {
 public:
 	TExtensions();
 	virtual ~TExtensions();
 
-	ExtensionList video() { return _video; }
-	ExtensionList audio() { return _audio; }
-	ExtensionList playlist() { return _playlist; }
-	ExtensionList subtitles() { return _subtitles; }
-	ExtensionList multimedia() { return _multimedia; }
-	ExtensionList allPlayable() { return _all_playable; }
+    ExtensionList video() const { return _video; }
+    ExtensionList audio() const { return _audio; }
+    ExtensionList playlist() const { return _playlist; }
+    ExtensionList subtitles() const { return _subtitles; }
+    ExtensionList multimedia() const { return _multimedia; }
+    ExtensionList allPlayable() const { return _all_playable; }
 
 protected:
 	ExtensionList _video, _audio, _playlist, _subtitles;
 	ExtensionList _multimedia; //!< video and audio
 	ExtensionList _all_playable; //!< video, audio and playlist
 };
+
+extern TExtensions extensions;
 
 #endif

@@ -21,6 +21,7 @@
 
 #include "ui_drives.h"
 #include "gui/pref/widget.h"
+#include "wzdebug.h"
 
 
 namespace Settings {
@@ -32,6 +33,7 @@ namespace Pref {
 
 class TDrives : public TWidget, public Ui::TDrives {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TDrives(QWidget* parent = 0, Qt::WindowFlags f = 0);

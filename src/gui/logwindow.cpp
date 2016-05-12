@@ -26,7 +26,6 @@
 #include <QPushButton>
 
 #include "config.h"
-#include "log.h"
 #include "desktop.h"
 #include "images.h"
 #include "filedialog.h"
@@ -47,9 +46,9 @@ TLogWindow::TLogWindow(QWidget* parent, const QString& name)
 }
 
 TLogWindow::~TLogWindow() {
-	qDebug("Gui::TLogWindow::~TLogWindow");
+    logger()->debug("~TLogWindow");
 
-    TLog::log->setLogWindow(0);
+    //TLog::log->setLogWindow(0);
 }
 
 void TLogWindow::retranslateStrings() {
@@ -67,7 +66,7 @@ void TLogWindow::retranslateStrings() {
 }
 
 void TLogWindow::loadConfig() {
-	qDebug("Gui::TLogWindow::loadConfig");
+    logger()->debug("loadConfig");
 
 	pref->beginGroup(objectName());
 	QPoint p = pref->value("pos", QPoint()).toPoint();
@@ -84,7 +83,7 @@ void TLogWindow::loadConfig() {
 }
 
 void TLogWindow::saveConfig() {
-	qDebug("Gui::TLogWindow::saveConfig");
+    logger()->debug("saveConfig");
 
 	pref->beginGroup(objectName());
 	pref->setValue("pos", pos());
@@ -94,23 +93,23 @@ void TLogWindow::saveConfig() {
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
-	qDebug("Gui::TLogWindow::showEvent");
+    logger()->debug("showEvent");
 
-    TLog::log->setLogWindow(this);
+    //TLog::log->setLogWindow(this);
 	emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
-	qDebug("Gui::TLogWindow::hideEvent");
+    logger()->debug("hideEvent");
 
-    TLog::log->setLogWindow(0);
+    //TLog::log->setLogWindow(0);
 	clear();
 	emit visibilityChanged(false);
 }
 
 // Fix hideEvent() not called on close
 void TLogWindow::closeEvent(QCloseEvent* event) {
-	qDebug("Gui::TLogWindow::closeEvent");
+    logger()->debug("closeEvent");
 
 	hideEvent(0);
 	event->accept();
@@ -179,7 +178,7 @@ void TLogWindow::on_saveButton_clicked() {
             file.close();
         } else {
             // Error opening file
-            qDebug("Gui::TLogWindow::save: error saving file");
+            logger()->debug("save: error saving file");
             QMessageBox::warning (this,
                 tr("Error saving file"),
                 tr("The log couldn't be saved"),

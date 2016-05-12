@@ -23,15 +23,16 @@
 #include <QString>
 
 #include "proc/playerprocess.h"
+#include "wzdebug.h"
 #include "mediadata.h"
 
 class QStringList;
 
 namespace Proc {
 
-class TMPlayerProcess : public TPlayerProcess
-{
+class TMPlayerProcess : public TPlayerProcess {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TMPlayerProcess(QObject* parent, TMediaData* mdata);

@@ -8,7 +8,6 @@
 namespace Settings {
 
 void TCleanConfig::clean(const QString& config_path) {
-	qDebug("TCleanConfig::clean");
 
 	QStringList files_to_delete;
 

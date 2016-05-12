@@ -60,6 +60,7 @@ using namespace Settings;
 
 TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     QObject(parent),
+    debug(logger()),
     mdat(),
     mset(&mdat),
     playerwindow(mpw),
@@ -68,7 +69,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     //qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
     qRegisterMetaType<TCoreState>("TCoreState");
 
-	proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
+    proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
     connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)),
@@ -194,7 +195,7 @@ void TCore::disableScreensaver() {
 }
 
 void TCore::onProcessError(QProcess::ProcessError error) {
-    qDebug("TCore::onProcessError: %d", error);
+    logger()->debug("onProcessError: %1", error);
 
 	// First restore normal window background
 	playerwindow->restoreNormalWindow();
@@ -204,7 +205,7 @@ void TCore::onProcessError(QProcess::ProcessError error) {
 }
 
 void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
-    qDebug("TCore::onProcessFinished: normal exit %d, exit code %d, eof %d",
+    logger()->debug("onProcessFinished: normal exit %1, exit code %2, eof %3",
            normal_exit, exit_code, eof);
 
     // Restore normal window background
@@ -215,14 +216,14 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
         return;
     }
 
-    qDebug("TCore::onProcessFinished: entering the stopped state");
+    logger()->debug("onProcessFinished: entering the stopped state");
     setState(STATE_STOPPED);
 
     if (eof || exit_code == Proc::TExitMsg::EXIT_OUT_POINT_REACHED) {
-        qDebug("TCore::onProcessFinished: emit mediaEOF()");
+        logger()->debug("onProcessFinished: emit mediaEOF()");
         emit mediaEOF();
     } else if (!normal_exit) {
-        qDebug("TCore::onProcessFinished: emit playerError()");
+        logger()->debug("onProcessFinished: emit playerError()");
         emit playerError(exit_code);
     }
 }
@@ -231,9 +232,9 @@ void TCore::setState(TCoreState s) {
 
 	if (s != _state) {
 		_state = s;
-		qDebug() << "TCore::setState: state set to" << stateToString()
-				 << "at" << mset.current_sec;
-		qDebug() << "TCore::setState: emit stateChanged()";
+        logger()->debug("setState: state set to " + stateToString()
+                      + " at " + QString::number(mset.current_sec));
+        logger()->debug("setState: emit stateChanged()");
 		emit stateChanged(_state);
 	}
 }
@@ -258,14 +259,14 @@ QString TCore::stateToString() const {
 void TCore::saveMediaSettings() {
 
 	if (!pref->remember_media_settings) {
-		qDebug("TCore::saveMediaSettings: save settings per file is disabled");
+        logger()->debug("saveMediaSettings: save settings per file is disabled");
 		return;
 	}
 	if (mdat.filename.isEmpty()) {
-		qDebug("TCore::saveMediaSettings: nothing to save");
+        logger()->debug("saveMediaSettings: nothing to save");
 		return;
 	}
-	qDebug() << "TCore::saveMediaSettings: saving settings for" << mdat.filename;
+    logger()->info("saveMediaSettings: saving settings for " + mdat.filename);
 	emit showMessage(tr("Saving settings for %1").arg(mdat.filename), 0);
 
 	if (mdat.selected_type == TMediaData::TYPE_FILE) {
@@ -298,7 +299,7 @@ void TCore::displayTextOnOSD(const QString& text, int duration, int level) {
 }
 
 void TCore::close(TCoreState next_state) {
-	qDebug("TCore::close()");
+    logger()->debug("close()");
 
     stopPlayer();
 	// Save data previous file:
@@ -307,12 +308,12 @@ void TCore::close(TCoreState next_state) {
     setState(next_state);
 	// Clear media data
 	mdat = TMediaData();
-    qDebug() << "TCore::close: closed in state" << stateToString();
+    logger()->debug("close: closed in state " + stateToString());
 }
 
 void TCore::openDisc(TDiscName disc, bool fast_open) {
-    qDebug() << "TCore::openDisc:" << disc.toString()
-             << "fast open" << fast_open;
+    logger()->debug("openDisc: " + disc.toString()
+                  + " fast open " + QString::number(fast_open));
 
 	// Change title if already playing
 	if (fast_open
@@ -322,7 +323,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 		&& mdat.disc.valid
 		&& mdat.disc.device == disc.device) {
 		// If changeTitle fails, it will call again with fast_open set to false
-		qDebug("TCore::openDisc: trying changeTitle(%d)", disc.title);
+        logger()->debug("openDisc: trying changeTitle(%1)", disc.title);
 		changeTitle(disc.title);
 		return;
 	}
@@ -342,10 +343,10 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 
 	// Test access, correct missing /
 	if (!QFileInfo(disc.device).exists()) {
-		qWarning() << "TCore::openDisc: could not access" << disc.device;
+        logger()->warn("openDisc: could not access '" + disc.device + "'");
 		// Forgot a /?
 		if (QFileInfo("/" + disc.device).exists()) {
-			qWarning() << "TCore::openDisc: added missing /";
+            logger()->warn("openDisc: added missing /");
 			disc.device = "/" + disc.device;
 		} else {
 			emit showMessage(tr("Device or file not found: %1").arg(disc.device), 0);
@@ -375,7 +376,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 
 // Generic open, autodetect type
 void TCore::open(QString file, int seek) {
-    qDebug() << "TCore::open:" << file;
+    logger()->debug("open: " + file);
 
     if (file.isEmpty()) {
         file = mdat.filename;
@@ -411,8 +412,7 @@ void TCore::open(QString file, int seek) {
     if (fi.exists()) {
         file = fi.absoluteFilePath();
 
-        TExtensions e;
-        QRegExp ext_sub(e.subtitles().forRegExp(), Qt::CaseInsensitive);
+        QRegExp ext_sub(extensions.subtitles().forRegExp(), Qt::CaseInsensitive);
         if (ext_sub.indexIn(fi.suffix()) >= 0) {
             loadSub(file);
             return;
@@ -420,12 +420,12 @@ void TCore::open(QString file, int seek) {
 
         if (fi.isDir()) {
             if (Helper::directoryContainsDVD(file)) {
-                qDebug("TCore::open: directory contains a dvd");
+                logger()->debug("open: directory contains a dvd");
                 disc = TDiscName(file, pref->useDVDNAV());
                 openDisc(disc);
                 return;
             }
-            qDebug("TCore::open: directory doesn't contain a dvd, doing nothing");
+            logger()->debug("open: directory doesn't contain a dvd, doing nothing");
             return;
         }
 
@@ -460,7 +460,7 @@ void TCore::setExternalSubs(const QString &filename) {
 }
 
 void TCore::loadSub(const QString & sub) {
-	qDebug("TCore::loadSub");
+    logger()->debug("loadSub");
 
 	if (!sub.isEmpty() && QFile::exists(sub)) {
 		setExternalSubs(sub);
@@ -470,7 +470,7 @@ void TCore::loadSub(const QString & sub) {
 			proc->setExternalSubtitleFile(sub);
 		}
 	} else {
-		qWarning() << "TCore::loadSub: file not found" << sub;
+        logger()->warn("loadSub: file not found '" + sub + "'");
 	}
 }
 
@@ -505,7 +505,7 @@ void TCore::unloadAudioFile() {
 }
 
 void TCore::openTV(QString channel_id) {
-	qDebug() << "TCore::openTV:" << channel_id;
+    logger()->debug("openTV: %1", channel_id);
 
     close(STATE_LOADING);
 
@@ -541,7 +541,7 @@ void TCore::openTV(QString channel_id) {
 }
 
 void TCore::openStream(const QString& name) {
-	qDebug() << "TCore::openStream:" << name;
+    logger()->debug("openStream: " + name);
 
     close(STATE_LOADING);
 	mdat.filename = name;
@@ -552,7 +552,7 @@ void TCore::openStream(const QString& name) {
 }
 
 void TCore::openFile(const QString& filename, int seek) {
-	qDebug() << "TCore::openFile:" << filename;
+    logger()->debug("openFile: '" + filename + "'");
 
     close(STATE_LOADING);
 	mdat.filename = QDir::toNativeSeparators(filename);
@@ -575,7 +575,7 @@ void TCore::openFile(const QString& filename, int seek) {
 
 		if (!pref->remember_time_pos) {
 			mset.current_sec = 0;
-			qDebug("TCore::openFile: Time pos reset to 0");
+            logger()->debug("openFile: Time pos reset to 0");
 		}
 	}
 
@@ -583,33 +583,33 @@ void TCore::openFile(const QString& filename, int seek) {
 }
 
 void TCore::restartPlay() {
-    qDebug("TCore::restartPlay");
+    logger()->debug("restartPlay");
 
 	// Save state proc, currently only used by TMPlayerProcess for DVDNAV
 	proc->save();
     stopPlayer();
 
-    qDebug("TCore::restartPlay: entering the restarting state");
+    logger()->debug("restartPlay: entering the restarting state");
     setState(STATE_RESTARTING);
 	initPlaying();
 }
 
 // Public restart
 void TCore::restart() {
-    qDebug("TCore::restart");
+    logger()->debug("restart");
 
     if (proc->isRunning()) {
         restartPlay();
     } else {
-        qDebug("TCore::restart: player is not running");
+        logger()->debug("restart: player is not running");
     }
 }
 
 void TCore::reload() {
-    qDebug("TCore::reload");
+    logger()->debug("reload");
 
     stopPlayer();
-    qDebug("TCore::reload: entering the loading state");
+    logger()->debug("reload: entering the loading state");
     setState(STATE_LOADING);
     initPlaying();
 }
@@ -620,23 +620,23 @@ void TCore::initVolume() {
 	// restore_volume is set to true by mset.reset and set
 	// to false by mset.load
 	if (mset.restore_volume) {
-		qDebug("TCore::initVolume: keeping current volume");
+        logger()->debug("initVolume: keeping current volume");
 		mset.volume = mset.old_volume;
 		mset.mute = mset.old_mute;
 	} else if (!pref->global_volume) {
 		if (mset.old_volume != mset.volume) {
-			qDebug("TCore::initVolume: emit volumeChanged()");
+            logger()->debug("initVolume: emit volumeChanged()");
 			emit volumeChanged(mset.volume);
 		}
 		if (mset.old_mute != mset.mute) {
-			qDebug("TCore::initVolume: emit muteChanged()");
+            logger()->debug("initVolume: emit muteChanged()");
 			emit muteChanged(mset.mute);
 		}
 	}
 }
 
 void TCore::initMediaSettings() {
-	qDebug("TCore::initMediaSettings");
+    logger()->debug("initMediaSettings");
 
 	// Restore old volume or emit new volume
 	initVolume();
@@ -649,7 +649,7 @@ void TCore::initMediaSettings() {
 }
 
 void TCore::initPlaying(int seek) {
-    qDebug("TCore::initPlaying: starting time");
+    logger()->debug("initPlaying: starting time");
 
     time.start();
     // Clear background
@@ -670,7 +670,7 @@ void TCore::initPlaying(int seek) {
 }
 
 void TCore::playingStartedNewMedia() {
-    qDebug("TCore::playingStartedNewMedia");
+    logger()->debug("playingStartedNewMedia");
 
     mdat.initialized = true;
     mdat.list();
@@ -679,13 +679,13 @@ void TCore::playingStartedNewMedia() {
     mset.current_demuxer = mdat.demuxer;
     mset.list();
 
-    qDebug("TCore::playingStartedNewMedia: emit newMediaStartedPlaying()");
+    logger()->debug("playingStartedNewMedia: emit newMediaStartedPlaying()");
     emit newMediaStartedPlaying();
 }
 
 // Slot called when signal playerFullyLoaded arrives.
 void TCore::playingStarted() {
-    qDebug("TCore::playingStarted");
+    logger()->debug("playingStarted");
 
     if (forced_titles.contains(mdat.filename)) {
         mdat.title = forced_titles[mdat.filename];
@@ -697,23 +697,23 @@ void TCore::playingStarted() {
 
     setState(STATE_PLAYING);
 
-    qDebug("TCore::playingStarted: emit mediaInfoChanged()");
+    logger()->debug("playingStarted: emit mediaInfoChanged()");
     emit mediaInfoChanged();
 
-    qDebug() << "TCore::playingStarted: done in" << time.elapsed() << "ms";
+    logger()->debug("playingStarted: done in %1ms", time.elapsed());
 }
 
 void TCore::stop() {
-    qDebug() << "TCore::stop: current state:" << stateToString();
+    logger()->debug("stop: current state: " + stateToString());
 
     stopPlayer();
-    qDebug("TCore::stop: entering the stopped state");
+    logger()->debug("stop: entering the stopped state");
     setState(STATE_STOPPED);
     emit mediaStopped();
 }
 
 void TCore::play() {
-    qDebug() << "TCore::play: current state: " << stateToString();
+    logger()->debug("play: current state: " + stateToString());
 
     switch (proc->state()) {
         case QProcess::Running:
@@ -737,7 +737,7 @@ void TCore::play() {
 }
 
 void TCore::pause() {
-    qDebug() << "TCore::pause: current state:" << stateToString();
+    logger()->debug("pause: current state: " + stateToString());
 
     if (proc->isRunning() && _state != STATE_PAUSED) {
         proc->setPause(true);
@@ -746,7 +746,7 @@ void TCore::pause() {
 }
 
 void TCore::playOrPause() {
-    qDebug() << "TCore::playOrPause: current state:" << stateToString();
+    logger()->debug("playOrPause: current state:" + stateToString());
 
     if (_state == STATE_PLAYING) {
         pause();
@@ -756,7 +756,7 @@ void TCore::playOrPause() {
 }
 
 void TCore::frameStep() {
-	qDebug() << "TCore::frameStep at" <<  mset.current_sec;
+    logger()->debug("frameStep at %1", mset.current_sec);
 
 	if (proc->isRunning()) {
 		if (_state == STATE_PAUSED) {
@@ -768,7 +768,7 @@ void TCore::frameStep() {
 }
 
 void TCore::frameBackStep() {
-	qDebug() << "TCore::frameBackStep at" <<  mset.current_sec;
+    logger()->debug("frameBackStep at %1", mset.current_sec);
 
 	if (proc->isRunning()) {
 		if (_state == STATE_PAUSED) {
@@ -780,31 +780,31 @@ void TCore::frameBackStep() {
 }
 
 void TCore::screenshot() {
-	qDebug("TCore::screenshot");
+    logger()->debug("screenshot");
 
 	if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
 		proc->takeScreenshot(Proc::TPlayerProcess::Single,
 							 pref->subtitles_on_screenshots);
-		qDebug("TCore::screenshot: took screenshot");
+        logger()->debug("screenshot: took screenshot");
 	} else {
-		qWarning("TCore::screenshot: directory for screenshots not valid or enabled");
+        logger()->warn("screenshot: directory for screenshots not valid or enabled");
 		emit showMessage(tr("Screenshot NOT taken, folder not configured or enabled"));
 	}
 }
 
 void TCore::screenshots() {
-	qDebug("TCore::screenshots");
+    logger()->debug("screenshots");
 
 	if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
 		proc->takeScreenshot(Proc::TPlayerProcess::Multiple, pref->subtitles_on_screenshots);
 	} else {
-		qWarning("TCore::screenshots: directory for screenshots not valid or enabled");
+        logger()->warn("screenshots: directory for screenshots not valid or enabled");
 		emit showMessage(tr("Screenshots NOT taken, folder not configured or enabled"));
 	}
 }
 
 void TCore::switchCapturing() {
-	qDebug("TCore::switchCapturing");
+    logger()->debug("switchCapturing");
 	proc->switchCapturing();
 }
 
@@ -851,7 +851,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 		}
 
 		if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
-			qDebug() << "TCore::videoFiltersEnabled:" << msg;
+            logger()->debug("videoFiltersEnabled: " + msg);
 			emit showMessage(msg, 0);
 		}
 	}
@@ -861,15 +861,15 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 #endif
 
 void TCore::startPlayer(QString file, double seek) {
-	qDebug() << "TCore::startPlayer:" << file << "at" << seek;
+    logger()->debug("startPlayer: " + file + " at " + QString::number(seek));
 
 	if (file.isEmpty()) {
-		qWarning("TCore:startPlayer: file is empty!");
+        logger()->warn("TCore:startPlayer: file is empty");
 		return;
 	}
 
 	if (proc->isRunning()) {
-		qWarning("TCore::startPlayer: Player still running!");
+        logger()->warn("startPlayer: Player still running");
 		return;
 	}
 
@@ -892,8 +892,8 @@ void TCore::startPlayer(QString file, double seek) {
 					file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
 				}
 				if (QFile::exists(file2)) {
-					qDebug() << "TCore::startPlayer: using external audio file"
-							 << file2;
+                    logger()->debug("startPlayer: using external audio file "
+                                  + file2);
 					mset.external_audio = file2;
 				}
 			}
@@ -940,7 +940,7 @@ void TCore::startPlayer(QString file, double seek) {
 		if (hwdec != "no" && haveVideoFilters()) {
 			hwdec = "no";
 			QString msg = tr("Disabled hardware decoding for video filters");
-			qDebug() << "TCore::startPlayer:" << msg;
+            logger()->debug("startPlayer: " + msg);
 			emit showMessage(msg, 0);
 		}
 		mdat.video_hwdec = hwdec != "no";
@@ -1281,8 +1281,9 @@ void TCore::startPlayer(QString file, double seek) {
     } else {
         QFileInfo fi(pref->screenshot_directory);
         if (!fi.isDir() || !fi.isWritable()) {
-            qWarning() << "TCore::startPlayer: disabled screenshots and capturing, screenshot directory not writable"
-                       << pref->screenshot_directory;
+            logger()->warn("startPlayer: disabled screenshots and capturing,"
+                           " directory '" + pref->screenshot_directory
+                           + "' not writable");
             pref->use_screenshot = false;
             // Need to clear to disable capture
             pref->screenshot_directory = "";
@@ -1442,7 +1443,7 @@ end_video_filters:
 
 	// Volume
 	if (pref->player_additional_options.contains("-volume")) {
-		qDebug("TCore::startPlayer: don't set volume since -volume is used");
+        logger()->debug("startPlayer: don't set volume since -volume is used");
 	} else {
 		proc->setOption("volume", QString::number(getVolumeForPlayer()));
 	}
@@ -1467,7 +1468,7 @@ end_video_filters:
 
 	if (pref->use_hwac3) {
 		proc->setOption("afm", "hwac3");
-		qDebug("TCore::startPlayer: audio filters are disabled when using the S/PDIF output");
+        logger()->debug("startPlayer: audio filters are disabled when using the S/PDIF output");
 	} else {
 
 		// Audio filters
@@ -1516,7 +1517,7 @@ end_video_filters:
 #ifndef Q_OS_WIN
     if (pref->isMPV() && file.startsWith("dvb:")) {
 		QString channels_file = Gui::Action::TTVList::findChannelsFile();
-		qDebug() << "TCore::startPlayer: channels_file:" << channels_file;
+        logger()->debug("startPlayer: channels_file: " + channels_file);
 		if (!channels_file.isEmpty())
 			proc->setChannelsFile(channels_file);
 	}
@@ -1536,7 +1537,7 @@ end_video_filters:
 		else if (QFile::exists(basename + ".EDL"))
 			edl_f = basename + ".EDL";
 
-		qDebug() << "TCore::startPlayer: edl file:" << edl_f;
+        logger()->debug("startPlayer: edl file: '" + edl_f + "'");
 		if (!edl_f.isEmpty()) {
 			proc->setOption("edl", edl_f);
 		}
@@ -1560,7 +1561,7 @@ end_video_filters:
 		for (int n = 0; n < args.count(); n++) {
 			QString arg = args[n].simplified();
 			if (!arg.isEmpty()) {
-				qDebug() << "arg" << n << arg;
+                logger()->debug("arg %1 %2", n, arg);
 				proc->addUserOption(arg);
 			}
 		}
@@ -1591,18 +1592,18 @@ end_video_filters:
 
 	if (!proc->startPlayer()) {
         // Error reported by onProcessError()
-		qWarning("TCore::startPlayer: player process didn't start");
+        logger()->warn("startPlayer: player process didn't start");
 	}
 } //startPlayer()
 
 void TCore::stopPlayer() {
 
     if (proc->state() == QProcess::NotRunning) {
-		qDebug("TCore::stopPlayer: player not running");
+        logger()->debug("stopPlayer: player not running");
         return;
     }
 
-    qDebug("TCore::stopPlayer: entering the stopping state");
+    logger()->debug("stopPlayer: entering the stopping state");
     setState(STATE_STOPPING);
 
     // If set high enough the OS will detect the "not responding state" and popup a dialog
@@ -1619,21 +1620,21 @@ void TCore::stopPlayer() {
     eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 
     if (proc->isRunning()) {
-        qWarning("TCore::stopPlayer: player didn't finish. Killing it...");
+        logger()->warn("stopPlayer: player didn't finish. Killing it...");
         proc->kill();
     }
 #else
     proc->quit(0);
 
-    qDebug("TCore::stopPlayer: Waiting %d ms for player to finish...", timeout);
+    logger()->debug("stopPlayer: Waiting %1 ms for player to finish...", timeout);
     if (!proc->waitForFinished(timeout)) {
-        qWarning("TCore::stopPlayer: player process did not finish in %d ms. Killing it...",
-                 timeout);
+        logger()->warn("stopPlayer: player process did not finish in %1 ms. Killing it...",
+                       timeout);
         proc->kill();
     }
 #endif
 
-    qDebug("TCore::stopPlayer: done");
+    logger()->debug("stopPlayer: done");
 }
 
 void TCore::seekCmd(double secs, int mode) {
@@ -1652,8 +1653,9 @@ void TCore::seekCmd(double secs, int mode) {
 				secs = 100;
 			}
 		} else if (mode == 2 && mdat.duration > 0 && secs >= mdat.duration) {
-            qWarning("TCore::seekCmd: seek %f beyond end of video %f",
-                     secs, mdat.duration);
+            logger()->warn("seekCmd: seek " + QString::number(secs)
+                           + " beyond end of video "
+                           + QString::number(mdat.duration));
 			// TODO: limit only when mdat.duration is proven reliable...
 			//if (mdat.video_fps > 0)
 			//	secs = mdat.duration - (1.0 / mdat.video_fps);
@@ -1664,81 +1666,81 @@ void TCore::seekCmd(double secs, int mode) {
 	if (proc->isFullyStarted()) {
 		proc->seek(secs, mode, pref->precise_seeking, _state == STATE_PAUSED);
 	} else {
-		qWarning("TCore::seekCmd: ignored seek, player not yet fully loaded");
+        logger()->warn("seekCmd: ignored seek, player not yet fully loaded");
 	}
 }
 
 void TCore::seekRelative(double secs) {
-    qDebug("TCore::seekRelative: %f seconds", secs);
+    logger()->debug("seekRelative: %1 seconds", secs);
     seekCmd(secs, 0);
 }
 
 void TCore::seekPercentage(double perc) {
-    qDebug("TCore::seekPercentage: %f procent", perc);
+    logger()->debug("seekPercentage: %1 procent", perc);
 	seekCmd(perc, 1);
 }
 
 void TCore::seekTime(double sec) {
-    qDebug("TCore::seekTime: %f seconds", sec);
+    logger()->debug("seekTime: %1 seconds", sec);
 	seekCmd(sec, 2);
 }
 
 void TCore::sforward() {
-	qDebug("TCore::sforward");
+    logger()->debug("sforward");
     seekRelative(pref->seeking1); // +10s
 }
 
 void TCore::srewind() {
-	qDebug("TCore::srewind");
+    logger()->debug("srewind");
     seekRelative(-pref->seeking1); // -10s
 }
 
 
 void TCore::forward() {
-	qDebug("TCore::forward");
+    logger()->debug("forward");
     seekRelative(pref->seeking2); // +1m
 }
 
 
 void TCore::rewind() {
-	qDebug("TCore::rewind");
+    logger()->debug("rewind");
     seekRelative(-pref->seeking2); // -1m
 }
 
 
 void TCore::fastforward() {
-	qDebug("TCore::fastforward");
+    logger()->debug("fastforward");
     seekRelative(pref->seeking3); // +10m
 }
 
 
 void TCore::fastrewind() {
-	qDebug("TCore::fastrewind");
+    logger()->debug("fastrewind");
     seekRelative(-pref->seeking3); // -10m
 }
 
 void TCore::forward(int secs) {
-	qDebug("TCore::forward: %d", secs);
+    logger()->debug("forward: %1", secs);
     seekRelative(secs);
 }
 
 void TCore::rewind(int secs) {
-	qDebug("TCore::rewind: %d", secs);
+    logger()->debug("rewind: %1", secs);
     seekRelative(-secs);
 }
 
 void TCore::seekToNextSub() {
-	qDebug("TCore::seekToNextSub");
+    logger()->debug("seekToNextSub");
 	proc->seekSub(1);
 }
 
 void TCore::seekToPrevSub() {
-	qDebug("TCore::seekToPrevSub");
+    logger()->debug("seekToPrevSub");
 	proc->seekSub(-1);
 }
 
 void TCore::wheelUp(TPreferences::TWheelFunction function) {
-	qDebug("TCore::wheelUp");
+    logger()->debug("wheelUp");
 
 	if (function == TPreferences::DoNothing) {
 		function = (TPreferences::TWheelFunction) pref->wheel_function;
@@ -1753,7 +1755,7 @@ void TCore::wheelUp(TPreferences::TWheelFunction function) {
 }
 
 void TCore::wheelDown(TPreferences::TWheelFunction function) {
-	qDebug("TCore::wheelDown");
+    logger()->debug("wheelDown");
 
 	if (function == TPreferences::DoNothing) {
 		function = (TPreferences::TWheelFunction) pref->wheel_function;
@@ -1772,7 +1774,7 @@ void TCore::setInPoint() {
 }
 
 void TCore::setInPoint(double sec) {
-    qDebug("TCore::setInPoint: %f", sec);
+    logger()->debug("setInPoint: %1", sec);
 
     mset.in_point = sec;
     if (mset.in_point < 0) {
@@ -1798,7 +1800,7 @@ void TCore::seekInPoint() {
 }
 
 void TCore::clearInPoint() {
-    qDebug("TCore::clearInPoint");
+    logger()->debug("clearInPoint");
 
     mset.in_point = 0;
     emit InOutPointsChanged();
@@ -1810,7 +1812,7 @@ void TCore::setOutPoint() {
 }
 
 void TCore::setOutPoint(double sec) {
-    qDebug("TCore::setOutPoint: %f", sec);
+    logger()->debug("setOutPoint: %1", sec);
 
     if (sec <= 0) {
         clearOutPoint();
@@ -1849,7 +1851,7 @@ void TCore::seekOutPoint() {
 }
 
 void TCore::clearOutPoint() {
-    qDebug("TCore::clearOutPoint");
+    logger()->debug("clearOutPoint");
 
     mset.out_point = -1;
     mset.loop = false;
@@ -1860,7 +1862,7 @@ void TCore::clearOutPoint() {
 }
 
 void TCore::clearInOutPoints() {
-    qDebug("TCore::clearInOutPoints");
+    logger()->debug("clearInOutPoints");
 
     mset.in_point = 0;
     mset.out_point = -1;
@@ -1881,7 +1883,7 @@ void TCore::updateLoop() {
 }
 
 void TCore::toggleRepeat(bool b) {
-	qDebug("TCore::toggleRepeat: %d", b);
+    logger()->debug("toggleRepeat: %1", b);
 
     mset.loop = b;
     updateLoop();
@@ -1900,7 +1902,7 @@ void TCore::toggleKaraoke() {
 }
 
 void TCore::toggleKaraoke(bool b) {
-	qDebug("TCore::toggleKaraoke: %d", b);
+    logger()->debug("toggleKaraoke: %1", b);
 	if (b != mset.karaoke_filter) {
 		mset.karaoke_filter = b;
 		proc->enableKaraoke(b);
@@ -1912,7 +1914,7 @@ void TCore::toggleExtrastereo() {
 }
 
 void TCore::toggleExtrastereo(bool b) {
-	qDebug("TCore::toggleExtrastereo: %d", b);
+    logger()->debug("toggleExtrastereo: %1", b);
 	if (b != mset.extrastereo_filter) {
 		mset.extrastereo_filter = b;
 		proc->enableExtrastereo(b);
@@ -1924,7 +1926,7 @@ void TCore::toggleVolnorm() {
 }
 
 void TCore::toggleVolnorm(bool b) {
-	qDebug("TCore::toggleVolnorm: %d", b);
+    logger()->debug("toggleVolnorm: %1", b);
 
 	if (b != mset.volnorm_filter) {
 		mset.volnorm_filter = b;
@@ -1934,7 +1936,7 @@ void TCore::toggleVolnorm(bool b) {
 }
 
 void TCore::setAudioChannels(int channels) {
-	qDebug("TCore::setAudioChannels:%d", channels);
+    logger()->debug("setAudioChannels:%1", channels);
 
 	if (channels != mset.audio_use_channels) {
 		mset.audio_use_channels = channels;
@@ -1944,7 +1946,7 @@ void TCore::setAudioChannels(int channels) {
 }
 
 void TCore::setStereoMode(int mode) {
-	qDebug("TCore::setStereoMode:%d", mode);
+    logger()->debug("setStereoMode:%1", mode);
 	if (mode != mset.stereo_mode) {
 		mset.stereo_mode = mode;
 		if (proc->isRunning())
@@ -1965,12 +1967,12 @@ void TCore::changeVF(const QString& filter, bool enable, const QVariant& option)
 }
 
 void TCore::toggleFlip() {
-	qDebug("TCore::toggleFlip");
+    logger()->debug("toggleFlip");
 	toggleFlip(!mset.flip);
 }
 
 void TCore::toggleFlip(bool b) {
-	qDebug("TCore::toggleFlip: %d", b);
+    logger()->debug("toggleFlip: %1", b);
 
 	if (mset.flip != b) {
 		mset.flip = b;
@@ -1979,12 +1981,12 @@ void TCore::toggleFlip(bool b) {
 }
 
 void TCore::toggleMirror() {
-	qDebug("TCore::toggleMirror");
+    logger()->debug("toggleMirror");
 	toggleMirror(!mset.mirror);
 }
 
 void TCore::toggleMirror(bool b) {
-	qDebug("TCore::toggleMirror: %d", b);
+    logger()->debug("toggleMirror: %1", b);
 
 	if (mset.mirror != b) {
 		mset.mirror = b;
@@ -1997,7 +1999,7 @@ void TCore::toggleAutophase() {
 }
 
 void TCore::toggleAutophase(bool b) {
-	qDebug("TCore::toggleAutophase: %d", b);
+    logger()->debug("toggleAutophase: %1", b);
 
 	if (b != mset.phase_filter) {
 		mset.phase_filter = b;
@@ -2010,7 +2012,7 @@ void TCore::toggleDeblock() {
 }
 
 void TCore::toggleDeblock(bool b) {
-	qDebug("TCore::toggleDeblock: %d", b);
+    logger()->debug("toggleDeblock: %1", b);
 
 	if (b != mset.deblock_filter) {
 		mset.deblock_filter = b;
@@ -2023,7 +2025,7 @@ void TCore::toggleDering() {
 }
 
 void TCore::toggleDering(bool b) {
-	qDebug("TCore::toggleDering: %d", b);
+    logger()->debug("toggleDering: %1", b);
 
 	if (b != mset.dering_filter) {
 		mset.dering_filter = b;
@@ -2036,7 +2038,7 @@ void TCore::toggleGradfun() {
 }
 
 void TCore::toggleGradfun(bool b) {
-	qDebug("TCore::toggleGradfun: %d", b);
+    logger()->debug("toggleGradfun: %1", b);
 
 	if (b != mset.gradfun_filter) {
 		mset.gradfun_filter = b;
@@ -2049,7 +2051,7 @@ void TCore::toggleNoise() {
 }
 
 void TCore::toggleNoise(bool b) {
-	qDebug("TCore::toggleNoise: %d", b);
+    logger()->debug("toggleNoise: %1", b);
 
 	if (b != mset.noise_filter) {
 		mset.noise_filter = b;
@@ -2062,7 +2064,7 @@ void TCore::togglePostprocessing() {
 }
 
 void TCore::togglePostprocessing(bool b) {
-	qDebug("TCore::togglePostprocessing: %d", b);
+    logger()->debug("togglePostprocessing: %1", b);
 
 	if (b != mset.postprocessing_filter) {
 		mset.postprocessing_filter = b;
@@ -2071,7 +2073,7 @@ void TCore::togglePostprocessing(bool b) {
 }
 
 void TCore::changeDenoise(int id) {
-	qDebug("TCore::changeDenoise: %d", id);
+    logger()->debug("changeDenoise: %1", id);
 
 	if (id != mset.current_denoiser) {
         if (pref->isMPlayer() || mdat.video_hwdec) {
@@ -2097,7 +2099,7 @@ void TCore::changeDenoise(int id) {
 }
 
 void TCore::changeUnsharp(int id) {
-	qDebug("TCore::changeUnsharp: %d", id);
+    logger()->debug("changeUnsharp: %1", id);
 
 	if (id != mset.current_unsharp) {
         if (pref->isMPlayer() || mdat.video_hwdec) {
@@ -2123,7 +2125,7 @@ void TCore::changeUnsharp(int id) {
 }
 
 void TCore::changeUpscale(bool b) {
-	qDebug("TCore::changeUpscale: %d", b);
+    logger()->debug("changeUpscale: %1", b);
 
 	if (mset.upscaling_filter != b) {
 		mset.upscaling_filter = b;
@@ -2133,7 +2135,7 @@ void TCore::changeUpscale(bool b) {
 }
 
 void TCore::changeStereo3d(const QString & in, const QString & out) {
-	qDebug() << "TCore::changeStereo3d: in:" << in << "out:" << out;
+    logger()->debug("changeStereo3d: in: " + in + " out: " + out);
 
 	if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
         if (pref->isMPlayer() || mdat.video_hwdec) {
@@ -2157,7 +2159,7 @@ void TCore::changeStereo3d(const QString & in, const QString & out) {
 }
 
 void TCore::setBrightness(int value) {
-	qDebug("TCore::setBrightness: %d", value);
+    logger()->debug("setBrightness: %1", value);
 
 	if (value > 100) value = 100;
 	if (value < -100) value = -100;
@@ -2171,7 +2173,7 @@ void TCore::setBrightness(int value) {
 }
 
 void TCore::setContrast(int value) {
-	qDebug("TCore::setContrast: %d", value);
+    logger()->debug("setContrast: %1", value);
 
 	if (value > 100) value = 100;
 	if (value < -100) value = -100;
@@ -2185,7 +2187,7 @@ void TCore::setContrast(int value) {
 }
 
 void TCore::setGamma(int value) {
-	qDebug("TCore::setGamma: %d", value);
+    logger()->debug("setGamma: %1", value);
 
 	if (value > 100) value = 100;
 	if (value < -100) value = -100;
@@ -2199,7 +2201,7 @@ void TCore::setGamma(int value) {
 }
 
 void TCore::setHue(int value) {
-	qDebug("TCore::setHue: %d", value);
+    logger()->debug("setHue: %1", value);
 
 	if (value > 100) value = 100;
 	if (value < -100) value = -100;
@@ -2213,7 +2215,7 @@ void TCore::setHue(int value) {
 }
 
 void TCore::setSaturation(int value) {
-	qDebug("TCore::setSaturation: %d", value);
+    logger()->debug("setSaturation: %1", value);
 
 	if (value > 100) value = 100;
 	if (value < -100) value = -100;
@@ -2267,7 +2269,7 @@ void TCore::decSaturation() {
 }
 
 void TCore::setSpeed(double value) {
-	qDebug("TCore::setSpeed: %f", value);
+    logger()->debug("setSpeed: %1", value);
 
 	// Min and max used by players
 	if (value < 0.10) value = 0.10;
@@ -2280,42 +2282,42 @@ void TCore::setSpeed(double value) {
 }
 
 void TCore::incSpeed10() {
-	qDebug("TCore::incSpeed10");
+    logger()->debug("incSpeed10");
 	setSpeed((double) mset.speed + 0.1);
 }
 
 void TCore::decSpeed10() {
-	qDebug("TCore::decSpeed10");
+    logger()->debug("decSpeed10");
 	setSpeed((double) mset.speed - 0.1);
 }
 
 void TCore::incSpeed4() {
-	qDebug("TCore::incSpeed4");
+    logger()->debug("incSpeed4");
 	setSpeed((double) mset.speed + 0.04);
 }
 
 void TCore::decSpeed4() {
-	qDebug("TCore::decSpeed4");
+    logger()->debug("decSpeed4");
 	setSpeed((double) mset.speed - 0.04);
 }
 
 void TCore::incSpeed1() {
-	qDebug("TCore::incSpeed1");
+    logger()->debug("incSpeed1");
 	setSpeed((double) mset.speed + 0.01);
 }
 
 void TCore::decSpeed1() {
-	qDebug("TCore::decSpeed1");
+    logger()->debug("decSpeed1");
 	setSpeed((double) mset.speed - 0.01);
 }
 
 void TCore::doubleSpeed() {
-	qDebug("TCore::doubleSpeed");
+    logger()->debug("doubleSpeed");
 	setSpeed((double) mset.speed * 2);
 }
 
 void TCore::halveSpeed() {
-	qDebug("TCore::halveSpeed");
+    logger()->debug("halveSpeed");
 	setSpeed((double) mset.speed / 2);
 }
 
@@ -2348,7 +2350,7 @@ int TCore::getVolumeForPlayer() const {
 }
 
 void TCore::setVolume(int volume, bool unmute) {
-	//qDebug("TCore::setVolume: %d", volume);
+    //logger()->debug("setVolume: %1", volume);
 
 	if (volume < 0)
 		volume = 0;
@@ -2380,7 +2382,7 @@ bool TCore::getMute() const {
 }
 
 void TCore::mute(bool b) {
-	qDebug("TCore::mute: %d", b);
+    logger()->debug("mute: %1", b);
 
 	if (pref->global_volume) {
 		pref->mute = b;
@@ -2396,12 +2398,12 @@ void TCore::mute(bool b) {
 }
 
 void TCore::incVolume() {
-	qDebug("TCore::incVolume");
+    logger()->debug("incVolume");
 	setVolume(getVolume() + pref->min_step);
 }
 
 void TCore::decVolume() {
-	qDebug("TCore::incVolume");
+    logger()->debug("incVolume");
 	setVolume(getVolume() - pref->min_step);
 }
 
@@ -2410,7 +2412,7 @@ TAudioEqualizerList TCore::getAudioEqualizer() const {
 }
 
 void TCore::setSubDelay(int delay) {
-	qDebug("TCore::setSubDelay: %d", delay);
+    logger()->debug("setSubDelay: %1", delay);
 
 	mset.sub_delay = delay;
 	proc->setSubDelay((double) mset.sub_delay/1000);
@@ -2418,17 +2420,17 @@ void TCore::setSubDelay(int delay) {
 }
 
 void TCore::incSubDelay() {
-	qDebug("TCore::incSubDelay");
+    logger()->debug("incSubDelay");
 	setSubDelay(mset.sub_delay + 100);
 }
 
 void TCore::decSubDelay() {
-	qDebug("TCore::decSubDelay");
+    logger()->debug("decSubDelay");
 	setSubDelay(mset.sub_delay - 100);
 }
 
 void TCore::setAudioDelay(int delay) {
-	qDebug("TCore::setAudioDelay: %d", delay);
+    logger()->debug("setAudioDelay: %1", delay);
 
 	mset.audio_delay = delay;
 	proc->setAudioDelay((double) mset.audio_delay/1000);
@@ -2436,17 +2438,17 @@ void TCore::setAudioDelay(int delay) {
 }
 
 void TCore::incAudioDelay() {
-	qDebug("TCore::incAudioDelay");
+    logger()->debug("incAudioDelay");
 	setAudioDelay(mset.audio_delay + 100);
 }
 
 void TCore::decAudioDelay() {
-	qDebug("TCore::decAudioDelay");
+    logger()->debug("decAudioDelay");
 	setAudioDelay(mset.audio_delay - 100);
 }
 
 void TCore::incSubPos() {
-	qDebug("TCore::incSubPos");
+    logger()->debug("incSubPos");
 
 	mset.sub_pos++;
 	if (mset.sub_pos > 100) mset.sub_pos = 100;
@@ -2454,7 +2456,7 @@ void TCore::incSubPos() {
 }
 
 void TCore::decSubPos() {
-	qDebug("TCore::decSubPos");
+    logger()->debug("decSubPos");
 
 	mset.sub_pos--;
 	if (mset.sub_pos < 0) mset.sub_pos = 0;
@@ -2462,7 +2464,7 @@ void TCore::decSubPos() {
 }
 
 void TCore::changeSubScale(double value) {
-	qDebug("TCore::changeSubScale: %f", value);
+    logger()->debug("changeSubScale: %1", value);
 
 	if (value < 0) value = 0;
 
@@ -2511,7 +2513,7 @@ void TCore::decSubScale() {
 }
 
 void TCore::changeOSDScale(double value) {
-	qDebug("TCore::changeOSDScale: %f", value);
+    logger()->debug("changeOSDScale: %1", value);
 
 	if (value < 0) value = 0;
 
@@ -2549,17 +2551,17 @@ void TCore::decOSDScale() {
 }
 
 void TCore::incSubStep() {
-	qDebug("TCore::incSubStep");
+    logger()->debug("incSubStep");
 	proc->setSubStep(+1);
 }
 
 void TCore::decSubStep() {
-	qDebug("TCore::decSubStep");
+    logger()->debug("decSubStep");
 	proc->setSubStep(-1);
 }
 
 void TCore::changeExternalSubFPS(int fps_id) {
-	qDebug("TCore::setExternalSubFPS: %d", fps_id);
+    logger()->debug("setExternalSubFPS: %1", fps_id);
 
 	mset.external_subtitles_fps = fps_id;
 	if (haveExternalSubs()) {
@@ -2605,7 +2607,7 @@ void TCore::setAudioEqualizer(const TAudioEqualizerList& values, bool restart) {
 }
 
 void TCore::setAudioEq(int eq, int value) {
-	qDebug("TCore::setAudioEq: eq %d value %d", eq, value);
+    logger()->debug("setAudioEq: eq %1 value %1", eq, value);
 
 	if (pref->global_audio_equalizer) {
 		pref->audio_equalizer[eq] = value;
@@ -2667,19 +2669,22 @@ void TCore::handleOutPoint() {
     if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
         if (mset.loop) {
             if (!seeking && mset.in_point < mset.out_point) {
-                qDebug("TCore::handleOutPoint: position %f reached out point %f, start seeking in point %f",
-                       mset.current_sec, mset.out_point, mset.in_point);
+                logger()->debug("handleOutPoint: position %1 reached out point"
+                                " %2, start seeking in point %3",
+                                mset.current_sec, mset.out_point, mset.in_point);
                 seeking = true;
                 seekTime(mset.in_point);
             }
         } else {
-            qDebug("TCore::handleOutPoint: position %f reached out point %f, sending quit",
-                   mset.current_sec, mset.out_point);
+            logger()->debug("handleOutPoint: position %1 reached out point %2,"
+                            " sending quit",
+                            mset.current_sec, mset.out_point);
             proc->quit(Proc::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
-        qDebug("TCore::handleOutPoint: done handling out point, position %f no longer after out point %f",
-               mset.current_sec, mset.out_point);
+        logger()->debug("handleOutPoint: done handling out point, position %1"
+                        " no longer after out point %2",
+                        mset.current_sec, mset.out_point);
         seeking = false;
     }
 }
@@ -2729,20 +2734,20 @@ void TCore::onReceivedPosition(double sec) {
 	int new_chapter_id = mdat.chapters.idForTime(sec);
 	if (new_chapter_id != chapter_id) {
 		mdat.chapters.setSelectedID(new_chapter_id);
-        qDebug("TCore:onReceivedPosition: emit chapterChanged(%d)", new_chapter_id);
+        logger()->debug("TCore:onReceivedPosition: emit chapterChanged(%1)", new_chapter_id);
 		emit chapterChanged(new_chapter_id);
 	}
 }
 
 // MPlayer only
 void TCore::onReceivedPause() {
-	qDebug("TCore::onReceivedPause");
+    logger()->debug("onReceivedPause");
 
 	setState(STATE_PAUSED);
 }
 
 void TCore::changeDeinterlace(int ID) {
-	qDebug("TCore::changeDeinterlace: %d", ID);
+    logger()->debug("changeDeinterlace: %1", ID);
 
 	if (ID != mset.current_deinterlacer) {
         if (pref->isMPlayer()) {
@@ -2772,7 +2777,7 @@ void TCore::changeDeinterlace(int ID) {
 }
 
 void TCore::changeVideoTrack(int id) {
-	qDebug("TCore::changeVideoTrack: id: %d", id);
+    logger()->debug("changeVideoTrack: id: %1", id);
 
 	// TODO: fix video tracks having different dimensions. The video out
 	// dimension will be the dimension of the last selected video track.
@@ -2784,13 +2789,13 @@ void TCore::changeVideoTrack(int id) {
 }
 
 void TCore::nextVideoTrack() {
-	qDebug("TCore::nextVideoTrack");
+    logger()->debug("nextVideoTrack");
 
 	changeVideoTrack(mdat.videos.nextID(mdat.videos.getSelectedID()));
 }
 
 void TCore::changeAudioTrack(int id) {
-	qDebug("TCore::changeAudio: id: %d", id);
+    logger()->debug("changeAudio: id: %1", id);
 
 	mset.current_audio_id = id;
 	if (id >= 0) {
@@ -2810,14 +2815,14 @@ void TCore::changeAudioTrack(int id) {
 }
 
 void TCore::nextAudioTrack() {
-	qDebug("TCore::nextAudioTrack");
+    logger()->debug("nextAudioTrack");
 
 	changeAudioTrack(mdat.audios.nextID(mdat.audios.getSelectedID()));
 }
 
 // Note: changeSubtitle is by index, not ID
 void TCore::changeSubtitle(int idx, bool selected_by_user) {
-	qDebug("TCore::changeSubtitle: idx %d", idx);
+    logger()->debug("changeSubtitle: idx %1", idx);
 
 	if (selected_by_user)
 		mset.current_sub_set_by_user = true;
@@ -2838,13 +2843,13 @@ void TCore::changeSubtitle(int idx, bool selected_by_user) {
 }
 
 void TCore::nextSubtitle() {
-	qDebug("TCore::nextSubtitle");
+    logger()->debug("nextSubtitle");
 
 	changeSubtitle(mdat.subs.nextID());
 }
 
 void TCore::changeSecondarySubtitle(int idx) {
-	qDebug("TCore::changeSecondarySubtitle: idx %d", idx);
+    logger()->debug("changeSecondarySubtitle: idx %1", idx);
 
 	bool clr = true;
 
@@ -2873,7 +2878,7 @@ void TCore::changeSecondarySubtitle(int idx) {
 }
 
 void TCore::changeTitle(int title) {
-	qDebug("TCore::changeTitle: %d", title);
+    logger()->debug("changeTitle: %1", title);
 
 	if (proc->isRunning()) {
 		// Handle CDs with the chapter commands
@@ -2894,7 +2899,7 @@ void TCore::changeTitle(int title) {
 }
 
 void TCore::changeChapter(int id) {
-	qDebug("TCore::changeChapter: ID: %d", id);
+    logger()->debug("changeChapter: ID: %1", id);
 
 	if (id >= mdat.chapters.firstID()) {
 		proc->setChapter(id);
@@ -2902,24 +2907,24 @@ void TCore::changeChapter(int id) {
 }
 
 void TCore::prevChapter() {
-	qDebug("TCore::prevChapter");
+    logger()->debug("prevChapter");
 	proc->nextChapter(-1);
 }
 
 void TCore::nextChapter() {
-	qDebug("TCore::nextChapter");
+    logger()->debug("nextChapter");
 	proc->nextChapter(1);
 }
 
 void TCore::setAngle(int angle) {
-	qDebug("TCore::setAngle: angle: %d", angle);
+    logger()->debug("setAngle: angle: %1", angle);
 
 	mset.current_angle = angle;
 	proc->setAngle(angle);
 }
 
 void TCore::nextAngle() {
-	qDebug("TCore::nextAngle");
+    logger()->debug("nextAngle");
 
 	/*
 	if (mdat.angle == mdat.angles) {
@@ -2941,7 +2946,7 @@ void TCore::nextAngle() {
 
 #if PROGRAM_SWITCH
 void TCore::changeProgram(int ID) {
-	qDebug("TCore::changeProgram: %d", ID);
+    logger()->debug("changeProgram: %1", ID);
 
 	if (ID != mset.current_program_id) {
 		mset.current_program_id = ID;
@@ -2956,13 +2961,13 @@ void TCore::changeProgram(int ID) {
 }
 
 void TCore::nextProgram() {
-	qDebug("TCore::nextProgram");
+    logger()->debug("nextProgram");
 	// Not implemented yet
 }
 #endif
 
 void TCore::setAspectRatio(int id) {
-	qDebug("TCore::setAspectRatio: %d", id);
+    logger()->debug("setAspectRatio: %1", id);
 
 	if (mdat.noVideo())
 		return;
@@ -3021,7 +3026,7 @@ void TCore::nextWheelFunction() {
 }
 
 void TCore::changeLetterbox(bool b) {
-	qDebug("TCore::changeLetterbox: %d", b);
+    logger()->debug("changeLetterbox: %1", b);
 
 	if (mset.add_letterbox != b) {
 		mset.add_letterbox = b;
@@ -3030,12 +3035,12 @@ void TCore::changeLetterbox(bool b) {
 }
 
 void TCore::changeLetterboxOnFullscreen(bool b) {
-	qDebug("TCore::changeLetterboxOnFullscreen: %d", b);
+    logger()->debug("changeLetterboxOnFullscreen: %1", b);
 	changeVF("letterbox", b, TDesktop::aspectRatio(playerwindow));
 }
 
 void TCore::changeOSDLevel(int level) {
-	qDebug("TCore::changeOSDLevel: %d", level);
+    logger()->debug("changeOSDLevel: %1", level);
 
 	pref->osd_level = (TPreferences::TOSDLevel) level;
 	if (proc->isRunning())
@@ -3055,7 +3060,7 @@ void TCore::nextOSDLevel() {
 }
 
 void TCore::changeRotate(int r) {
-	qDebug("TCore::changeRotate: %d", r);
+    logger()->debug("changeRotate: %1", r);
 
 	if (mset.rotate != r) {
         if (pref->isMPlayer()) {
@@ -3090,7 +3095,7 @@ void TCore::getPanFromPlayerWindow() {
 }
 
 void TCore::setZoom(double factor) {
-	qDebug("TCore::setZoom: %f", factor);
+    logger()->debug("setZoom: %1", factor);
 
 	if (mdat.hasVideo()) {
 		if (factor < TConfig::ZOOM_MIN)
@@ -3104,7 +3109,7 @@ void TCore::setZoom(double factor) {
 }
 
 void TCore::resetZoomAndPan() {
-	qDebug("TCore::resetZoomAndPan");
+    logger()->debug("resetZoomAndPan");
 
 	// Reset zoom and pan of video window
 	playerwindow->resetZoomAndPan();
@@ -3115,7 +3120,7 @@ void TCore::resetZoomAndPan() {
 }
 
 void TCore::pan(int dx, int dy) {
-	qDebug("TCore::pan: dx %d, dy %d", dx, dy);
+    logger()->debug("pan: dx %1, dy %1", dx, dy);
 
 	if (mdat.hasVideo()) {
 		playerwindow->moveVideo(dx, dy);
@@ -3166,7 +3171,7 @@ void TCore::toggleDeinterlace() {
 }
 
 void TCore::changeUseCustomSubStyle(bool b) {
-	qDebug("TCore::changeUseCustomSubStyle: %d", b);
+    logger()->debug("changeUseCustomSubStyle: %1", b);
 
 	if (pref->use_custom_ass_style != b) {
 		pref->use_custom_ass_style = b;
@@ -3176,7 +3181,7 @@ void TCore::changeUseCustomSubStyle(bool b) {
 }
 
 void TCore::toggleForcedSubsOnly(bool b) {
-	qDebug("TCore::toggleForcedSubsOnly: %d", b);
+    logger()->debug("toggleForcedSubsOnly: %1", b);
 
 	pref->use_forced_subs_only = b;
 	if (proc->isRunning())
@@ -3184,7 +3189,7 @@ void TCore::toggleForcedSubsOnly(bool b) {
 }
 
 void TCore::changeClosedCaptionChannel(int c) {
-	qDebug("TCore::changeClosedCaptionChannel: %d", c);
+    logger()->debug("changeClosedCaptionChannel: %1", c);
 
 	if (c != mset.closed_caption_channel) {
 		mset.closed_caption_channel = c;
@@ -3195,44 +3200,44 @@ void TCore::changeClosedCaptionChannel(int c) {
 
 // dvdnav buttons
 void TCore::dvdnavUp() {
-	qDebug("TCore::dvdnavUp");
+    logger()->debug("dvdnavUp");
 	if (proc->isFullyStarted())
 		proc->discButtonPressed("up");
 }
 
 void TCore::dvdnavDown() {
-	qDebug("TCore::dvdnavDown");
+    logger()->debug("dvdnavDown");
 	if (proc->isFullyStarted())
 		proc->discButtonPressed("down");
 }
 
 void TCore::dvdnavLeft() {
-	qDebug("TCore::dvdnavLeft");
+    logger()->debug("dvdnavLeft");
 	if (proc->isFullyStarted())
 		proc->discButtonPressed("left");
 }
 
 void TCore::dvdnavRight() {
-	qDebug("TCore::dvdnavRight");
+    logger()->debug("dvdnavRight");
 	if (proc->isFullyStarted())
 		proc->discButtonPressed("right");
 }
 
 void TCore::dvdnavMenu() {
-	qDebug("TCore::dvdnavMenu");
+    logger()->debug("dvdnavMenu");
 	if (proc->isFullyStarted())
 		proc->discButtonPressed("menu");
 }
 
 void TCore::dvdnavPrev() {
-	qDebug("TCore::dvdnavPrev");
+    logger()->debug("dvdnavPrev");
 	if (proc->isFullyStarted())
 		proc->discButtonPressed("prev");
 }
 
 // Slot called by action dvdnav_select
 void TCore::dvdnavSelect() {
-	qDebug("TCore::dvdnavSelect");
+    logger()->debug("dvdnavSelect");
 
 	if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		if (_state == STATE_PAUSED) {
@@ -3246,7 +3251,7 @@ void TCore::dvdnavSelect() {
 
 // Slot called by action dvdnav_mouse and Gui::TBase when left mouse clicked
 void TCore::dvdnavMouse() {
-	qDebug("TCore::dvdnavMouse");
+    logger()->debug("dvdnavMouse");
 
 	if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
 		if (_state == STATE_PAUSED) {
@@ -3277,14 +3282,14 @@ void TCore::dvdnavUpdateMousePos(QPoint pos) {
 }
 
 void TCore::displayMessage(const QString& text, int duration, int osd_level) {
-	//qDebug("TCore::displayMessage");
+    //logger()->debug("displayMessage");
 
     displayTextOnOSD(text, duration, osd_level);
     emit showMessage(text, duration);
 }
 
 void TCore::displayScreenshotName(const QString& filename) {
-	qDebug() << "TCore::displayScreenshotName:" << filename;
+    logger()->debug("displayScreenshotName: " + filename);
 
 	QFileInfo fi(filename);
 	QString text = tr("Screenshot saved as %1").arg(fi.fileName());
@@ -3292,7 +3297,7 @@ void TCore::displayScreenshotName(const QString& filename) {
 }
 
 void TCore::displayUpdatingFontCache() {
-	qDebug("TCore::displayUpdatingFontCache");
+    logger()->debug("displayUpdatingFontCache");
 	emit showMessage(tr("Updating the font cache. This may take some seconds..."));
 }
 
@@ -3305,7 +3310,7 @@ void TCore::displayBufferingEnded() {
 }
 
 void TCore::onReceivedVideoOut() {
-	qDebug("TCore::onReceivedVideoOut");
+    logger()->debug("onReceivedVideoOut");
 
 	// w x h is output resolution selected by player with aspect and filters applied
 	playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
@@ -3338,19 +3343,19 @@ bool TCore::setPreferredAudio() {
 		if (selected_id >= 0) {
 			int wanted_id = mdat.audios.findLangID(pref->audio_lang);
 			if (wanted_id >= 0 && wanted_id != selected_id) {
-				qDebug("TCore::setPreferredAudio: selecting preferred audio with id %d", wanted_id);
+                logger()->debug("setPreferredAudio: selecting preferred audio with id %1", wanted_id);
 				changeAudioTrack(wanted_id);
 				return true;
 			}
 		}
 	}
 
-	qDebug("TCore::setPreferredAudio: no player overrides");
+    logger()->debug("setPreferredAudio: no player overrides");
 	return false;
 }
 
 void TCore::onAudioTracksChanged() {
-	qDebug("TCore::onAudioTracksChanged");
+    logger()->debug("onAudioTracksChanged");
 
 	// First update the track actions, so a possible track change by
 	// setpreferredAudio() will arrive on defined actions
@@ -3380,17 +3385,17 @@ void TCore::selectPreferredSubtitles() {
 	}
 
 	if (wanted_idx < 0) {
-		qDebug("TCore::selectPreferredSubtitles: no player overrides");
+        logger()->debug("selectPreferredSubtitles: no player overrides");
 	} else if (wanted_idx == mset.current_sub_idx) {
-		qDebug("TCore::selectPreferredSubtitles: keeping selected subtitles");
+        logger()->debug("selectPreferredSubtitles: keeping selected subtitles");
 	} else {
-		qDebug("TCore::selectPreferredSubtitles: selecting preferred subtitles");
+        logger()->debug("selectPreferredSubtitles: selecting preferred subtitles");
 		changeSubtitle(wanted_idx, false);
 	}
 }
 
 void TCore::onSubtitlesChanged() {
-	qDebug("TCore::onSubtitlesChanged");
+    logger()->debug("onSubtitlesChanged");
 
 	// Need to set current_sub_idx, the subtitle action group checks on it.
 	mset.current_sub_idx = mdat.subs.findSelectedIdx();
@@ -3399,7 +3404,7 @@ void TCore::onSubtitlesChanged() {
 
     if (pref->isMPlayer()) {
 		// MPlayer selected sub will not yet be updated, que the subtitle selection
-		qDebug("TCore::onSubtitlesChanged: posting selectPreferredSubtitles()");
+        logger()->debug("onSubtitlesChanged: posting selectPreferredSubtitles()");
 		QTimer::singleShot(1500, this, SLOT(selectPreferredSubtitles()));
 	} else {
 		selectPreferredSubtitles();
@@ -3408,7 +3413,7 @@ void TCore::onSubtitlesChanged() {
 
 // Called when player changed subtitle track
 void TCore::onSubtitleChanged() {
-	qDebug("TCore::onSubtitleChanged");
+    logger()->debug("onSubtitleChanged");
 
 	// Need to set current_sub_idx, the subtitle group checks on it.
 	int selected_idx = mdat.subs.findSelectedIdx();

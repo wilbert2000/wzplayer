@@ -18,6 +18,7 @@
 
 #include "titletracks.h"
 #include <QApplication>
+#include "log4qt/logger.h"
 #include "helper.h"
 
 namespace Maps {
@@ -51,6 +52,9 @@ QString TTitleData::getDisplayName(bool add_duration) const {
 
 	return dname;
 }
+
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Maps::TTitleTracks)
 
 
 TTitleTracks::TTitleTracks() : selectedVTS(-1), vtsCount(0) {
@@ -102,16 +106,18 @@ int TTitleTracks::findTitleForVTS(int vts) {
 
 void TTitleTracks::list() const {
 
-	qDebug("Maps::TTitleTracks::list: VTS count: %d", vtsCount);
-	qDebug("Maps::TTitleTracks::list: selected VTS: %d", selectedVTS);
-	qDebug("Maps::TTitleTracks::list: selected title ID: %d", selectedID);
+    logger()->debug("list: VTS count: %1", vtsCount);
+    logger()->debug("list: selected VTS: %1", selectedVTS);
+    logger()->debug("list: selected title ID: %1", selectedID);
 	TTitleTrackIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
 		TTitleData d = i.value();
-		qDebug("Maps::TTitleTracks::list: ID: %d name: '%s' duration %f chapters: %d",
-			   d.getID(), d.getName().toUtf8().constData(), d.getDuration(),
-			   d.chapters.count());
+        logger()->debug("list: ID: "
+                        + QString::number(d.getID())
+                        + " name: '" + d.getName() + "'"
+                        + " duration: " + QString::number(d.getDuration())
+                        + " chapters: " + QString::number(d.chapters.count()));
 	}
 }
 

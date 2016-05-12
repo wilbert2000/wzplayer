@@ -48,8 +48,8 @@ FileDownloader::~FileDownloader() {
 void FileDownloader::setProxy(QNetworkProxy proxy) {
 	manager->setProxy(proxy);
 
-	qDebug("FileDownloader::setProxy: host: '%s' port: %d type: %d",
-           proxy.hostName().toUtf8().constData(), proxy.port(), proxy.type());
+    logger()->debug("FileDownloader::setProxy: host: '%1' port: %2 type: %3",
+           proxy.hostName(), proxy.port(), proxy.type());
 }
 
 void FileDownloader::download(QUrl url) {
@@ -69,13 +69,14 @@ void FileDownloader::cancelDownload() {
 void FileDownloader::gotResponse(QNetworkReply* reply) {
 	if (reply->error() == QNetworkReply::NoError) {
 		int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-		qDebug("FileDownloader::gotResponse: status: %d", status);
+        logger()->debug("FileDownloader::gotResponse: st%1us: %1", status);
 		switch (status) {
 			case 301:
 			case 302:
 			case 307:
 				QString r_url = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl().toString();
-				qDebug("FileDownloader::gotResponse: redirected: %s", r_url.toLatin1().constData());
+                logger()->debug("FileDownloader::gotResponse: redirected: "
+                                + r_url);
 				download(r_url);
 				return;
 		}
@@ -90,31 +91,13 @@ void FileDownloader::gotResponse(QNetworkReply* reply) {
 }
 
 void FileDownloader::updateDataReadProgress(qint64 bytes_read, qint64 total_bytes) {
-	qDebug() << "FileDownloader::updateDataReadProgress: " << bytes_read << " " << total_bytes;
+    logger()->debug("updateDataReadProgress: " + QString::number(bytes_read)
+                  + QString::number(total_bytes));
 	if (total_bytes > -1) {
 		setMaximum(total_bytes);
 		setValue(bytes_read);
 	}
 }
-
-/*
-void FileDownloader::reportFileSaved(const QString &, const QString & version) {
-	hide();
-	QString t = tr("The Youtube code has been updated successfully.");
-	if (!version.isEmpty()) t += "<br>"+ tr("Installed version: %1").arg(version);
-	QMessageBox::information(this, tr("Success"),t);
-}
-
-void FileDownloader::reportSaveFailed(const QString & file) {
-	hide();
-	QMessageBox::warning(this, tr("Error"), tr("An error happened writing %1").arg(file));
-}
-
-void FileDownloader::reportError(int, QString error_str) {
-	hide();
-	QMessageBox::warning(this, tr("Error"), tr("An error happened while downloading the file:<br>%1").arg(error_str));
-}
-*/
 
 #include "moc_filedownloader.cpp"
 

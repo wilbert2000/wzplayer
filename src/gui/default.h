@@ -33,6 +33,7 @@ namespace Gui {
 
 class TDefault : public TBasePlus {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TDefault();

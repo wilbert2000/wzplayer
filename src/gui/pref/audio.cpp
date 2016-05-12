@@ -318,16 +318,14 @@ QString TAudio::audioLang() {
 
 
 void TAudio::onAOComboChanged(int idx) {
-	qDebug("Gui::Pref::TAudio::onAOComboChanged: %d", idx);
+	logger()->debug("Gui::Pref::TAudio::onAOComboChanged: %1", idx);
 
 	// Update VOs
 	if (idx >= 0) {
 		if (player_id == TPreferences::ID_MPLAYER) {
 			mplayer_ao = AO();
-			qDebug() << "Gui::Pref::TAudio::onAOComboChanged: mplayer ao set to" << mplayer_ao;
 		} else {
 			mpv_ao = AO();
-			qDebug() << "Gui::Pref::TAudio::onAOComboChanged: mpv ao set to" << mpv_ao;
 		}
 	}
 

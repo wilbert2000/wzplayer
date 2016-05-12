@@ -68,7 +68,6 @@ QSize TTimeSlider::sizeHint() const {
 		s.rwidth() = savedSize;
 	else
 		s.rheight() = savedSize;
-	//qDebug() << "Gui::Action::TTimeSlider::sizeHint: size" << size() << "hint" << s;
 	return s;
 }
 
@@ -79,7 +78,6 @@ QSize TTimeSlider::minimumSizeHint() const {
 		s.rwidth() = SLIDER_MIN_SIZE;
 	else
 		s.rheight() = SLIDER_MIN_SIZE;
-	//qDebug() << "Gui::Action::TTimeSlider::minimumSizeHint: size" << size() << "hint" << s;
 	return s;
 }
 
@@ -89,12 +87,9 @@ void TTimeSlider::saveSizeHint() {
 	savedSize = orientation() == Qt::Horizontal ? width() : height();
 	if (savedSize < SLIDER_MIN_SIZE)
 		savedSize = SLIDER_MIN_SIZE;
-	//qDebug() << "Gui::Action::TTimeSlider::saveSizeHint: size" << size() << "saved size" << savedSize;
 }
 
 void TTimeSlider::resizeEvent(QResizeEvent* event) {
-	//qDebug() << "Gui::Action::TTimeSlider::resizeEvent:"
-	//		 << "from" << event->oldSize() << "to" << size();
 
 	TSlider::resizeEvent(event);
 	// Save initial size as size hint
@@ -167,7 +162,6 @@ void TTimeSlider::sendDelayedPos() {
 }
 
 void TTimeSlider::wheelEvent(QWheelEvent* e) {
-	//qDebug("Gui::Action::TTimeSlider::wheelEvent: delta: %d", e->delta());
 
 	e->accept();
 	if (e->orientation() == Qt::Vertical) {
@@ -176,7 +170,7 @@ void TTimeSlider::wheelEvent(QWheelEvent* e) {
 		else
 			emit wheelDown();
 	} else {
-		qDebug("Gui::Action::TTimeslider::wheelEvent: horizontal event received, doing nothing");
+		logger()->debug("Gui::Action::TTimeslider::wheelEvent: horizontal event received, doing nothing");
 	}
 }
 

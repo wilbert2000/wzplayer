@@ -66,8 +66,6 @@ void TDesktop::keepInsideDesktop(QWidget* w) {
 		p.ry() = 0;
 
 	if (p != w->pos()) {
-		qDebug() << "Gui::TDesktop::keepInsideDesktop: moving window from"
-				 << w->pos() << "to" << p;
 		w->move(p);
 	}
 }

@@ -18,7 +18,6 @@
 
 #include "settings/preferences.h"
 
-#include <QDebug>
 #include <QSettings>
 #include <QFileInfo>
 #include <QRegExp>
@@ -30,6 +29,7 @@
 #include <QSysInfo> // To get Windows version
 #endif
 
+#include "log4qt/logger.h"
 #include "settings/paths.h"
 #include "settings/assstyles.h"
 #include "settings/mediasettings.h"
@@ -41,16 +41,20 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 12;
+static const int CURRENT_CONFIG_VERSION = 14;
 TPreferences* pref = 0;
+
+Log4Qt::Logger* TPreferences::logger = Log4Qt::Logger::logger(
+    QLatin1String("Settings::TPreferences"));
 
 
 TPreferences::TPreferences() :
-	TPlayerSettings(TPaths::iniPath()) {
+    TPlayerSettings(TPaths::iniPath()) {
 
-	reset();
-	load();
-	pref = this;
+
+    reset();
+    load();
+    pref = this;
 }
 
 TPreferences::~TPreferences() {
@@ -370,7 +374,7 @@ void TPreferences::reset() {
 }
 
 void TPreferences::save() {
-	qDebug("Settings::TPreferences::save");
+    logger->info("save");
 
     /* *******
        General
@@ -761,7 +765,7 @@ QString TPreferences::getAbsolutePathPlayer(const QString& player) {
 	if (!found_player.isEmpty()) {
 		path = found_player;
 	}
-	qDebug() << "Settings::TPreferences::getAbsolutePathPlayer:" << path;
+    logger->debug("getAbsolutePathPlayer: '" + path + "'");
 	return path;
 }
 
@@ -785,7 +789,7 @@ void TPreferences::setPlayerBin(QString bin,
 		TPlayerID found_id = ID_MPLAYER;
 		QFileInfo fi(bin);
 		if (wanted_player == ID_MPV || fi.baseName().startsWith("mpv")) {
-			// Assume wanted mpv, try default mpv first
+            // Try default mpv first
 			if (bin != default_mpv_bin) {
 				found_bin = Helper::findExecutable(default_mpv_bin);
 				if (!found_bin.isEmpty()) {
@@ -819,15 +823,14 @@ void TPreferences::setPlayerBin(QString bin,
 		}
 
 		if (found_bin.isEmpty()) {
-			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
-					   << bin;
+            logger->warn("setPlayerBin: failed to find player '" + bin + "'");
 		} else if (allow_other_player || found_id == wanted_player) {
-			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
-					   << bin << "Selecting" << found_bin << "instead.";
+            logger->warn("setPlayerBin: failed to find player '" + bin
+                         + "', selecting '" + found_bin + "' instead");
 			bin = found_bin;
 		} else {
-			qWarning() << "Settings::TPreferences""setPlayerBin: failed to find player"
-					   << bin << "Maybe you could use" << found_bin << "instead.";
+            logger->warn("setPlayerBin: failed to find player '" + bin
+                         + "'. Maybe you can try '" + found_bin + "' instead.");
 		}
 	} else {
 		bin = found_bin;
@@ -849,17 +852,16 @@ void TPreferences::setPlayerBin(QString bin,
 		}
 	}
 
-    qDebug() << "Settings::TPreferences::setPlayerBin: selected player" << bin
-             << "vo" << vo
-			 << "mplayer vo" << mplayer_vo
-             << "mpv vo" << mpv_vo
-			 << "selected ao" << ao
-             << "mplayer ao" << mplayer_ao
-             << "mpv ao" << mpv_ao;
+    logger->info("setPlayerBin: selected player '" + bin
+                  + "', mplayer vo '" + mplayer_vo
+                  + "', mplayer ao '" + mplayer_ao
+                  + "', mpv vo '" + mpv_vo
+                  + "', mpv ao '" + mpv_ao
+                  + "'");
 }
 
 void TPreferences::load() {
-	qDebug("Settings::TPreferences::load");
+    logger->debug("load");
 
 	// General tab
 	beginGroup("General");
@@ -877,8 +879,10 @@ void TPreferences::load() {
 	mpv_vo = value("vo", mpv_vo).toString();
 	mpv_ao = value("ao", mpv_ao).toString();
 	hwdec = value("hwdec", hwdec).toString();
-	screenshot_template = value("screenshot_template", screenshot_template).toString();
-	screenshot_format = value("screenshot_format", screenshot_format).toString();
+    screenshot_template = value("screenshot_template", screenshot_template)
+                          .toString();
+    screenshot_format = value("screenshot_format", screenshot_format)
+                        .toString();
 	endGroup();
 
 	setPlayerBin(value("player_bin", player_bin).toString(), true, player_id);
@@ -1027,11 +1031,11 @@ void TPreferences::load() {
 	bool ok;
 	QString color = value("color_key", QString::number(color_key, 16)).toString();
 	unsigned int temp_color_key = color.toUInt(&ok, 16);
-	if (ok)
+    if (ok) {
 		color_key = temp_color_key;
-	else
-		qWarning() << "Settings::TPreferences: failed to parse color key"
-				   << color;
+    } else {
+        logger->warn("load: failed to parse color key '" + color + "'");
+    }
 
 	monitor_aspect = value("monitor_aspect", monitor_aspect).toString();
 
@@ -1246,41 +1250,33 @@ void TPreferences::load() {
 	update_checker_data.load(this);
 
 
-	qDebug("Settings::TPreferences::load: config_version: %d, CURRENT_CONFIG_VERSION: %d",
-		   config_version, CURRENT_CONFIG_VERSION);
+    logger->info("load: config version " + QString::number(config_version)
+                 + ", CURRENT_CONFIG_VERSION "
+                 + QString::number(CURRENT_CONFIG_VERSION));
 
-    // Fix some values if config is old
+    // Fix some values if config is old by setting clean_config to true
     if (config_version < CURRENT_CONFIG_VERSION) {
         if (config_version > 0) {
-            qDebug("TPreferences::load: config version is old, updating it");
+            logger->warn("load: version configuration is old, updating it from "
+                         + QString::number(config_version) + " to "
+                         + QString::number(CURRENT_CONFIG_VERSION));
             clean_config = true;
-            if (config_version < 4) {
-                osd_level = None;
-                frame_drop = false;
-                cache_for_files = 2048;
-                cache_for_streams = 2048;
+            use_dvdnav = true;
+            if (vo == "player_default") {
+                vo = "";
             }
-            if (config_version <= 5) {
-                if (time_to_kill_player < 5000)
-                    time_to_kill_player = 5000;
-                use_dvdnav = true;
-                if (time_slider_drag_delay < 200)
-                    time_slider_drag_delay = 200;
-                if (min_step < 5)
-                    min_step = 5;
+            if (ao == "player_default") {
+                ao = "";
             }
             if (config_version < 11) {
-                subtitle_language = value("General/subtitle_lang", subtitle_language).toString();
-                subtitle_fuzziness = value("subtitles/subfuzziness", subtitle_fuzziness).toInt();
+                subtitle_language = value("General/subtitle_lang",
+                                          subtitle_language).toString();
+                subtitle_fuzziness = value("subtitles/subfuzziness",
+                                           subtitle_fuzziness).toInt();
             }
             if (config_version < 12) {
-                use_custom_ass_style = value("enable_ass_styles", use_custom_ass_style).toBool();
-                if (vo == "player_default") {
-                    vo = "";
-                }
-                if (ao == "player_default") {
-                    ao = "";
-                }
+                use_custom_ass_style = value("enable_ass_styles",
+                                             use_custom_ass_style).toBool();
             }
         }
         config_version = CURRENT_CONFIG_VERSION;
@@ -1311,18 +1307,19 @@ double TPreferences::monitorAspectDouble() {
 	if (exp.indexIn(monitor_aspect) >= 0) {
 		int w = exp.cap(1).toInt();
 		int h = exp.cap(2).toInt();
-		qDebug("Settings::TPreferences::monitorAspectDouble: monitor aspect set to %d:%d", w, h);
+        logger->info("monitorAspectDouble: monitor aspect set to %1:%2", w, h);
 		return h <= 0.01 ? 0 : (double) w / h;
 	}
 
 	bool ok;
 	double res = monitor_aspect.toDouble(&ok);
 	if (ok) {
-		qDebug("Settings::TPreferences::monitorAspectDouble: monitor aspect set to %f", res);
+        logger->info("monitorAspectDouble: monitor aspect set to %1", res);
 		return res;
 	}
 
-	qWarning("Settings::TPreferences::monitorAspectDouble: failed to parse monitor aspect, set to auto detect");
+    logger->warn("monitorAspectDouble: failed to parse monitor aspect,"
+                 " reset to auto detect");
 	return 0;
 }
 
@@ -1331,15 +1328,15 @@ void TPreferences::setupScreenshotFolder() {
 	if (screenshot_directory.isEmpty()) {
 		QString pdir = TPaths::location(TPaths::PicturesLocation);
         if (pdir.isEmpty()) {
-            qDebug() << "TPreferences::setupScreenshotFolder: no PicturesLocation";
+            logger->debug("setupScreenshotFolder: no PicturesLocation");
             pdir = TPaths::location(TPaths::DocumentsLocation);
         }
         if (pdir.isEmpty()) {
-            qDebug() << "TPreferences::setupScreenshotFolder: no DocumentsLocation";
+            logger->debug("setupScreenshotFolder: no DocumentsLocation");
             pdir = TPaths::location(TPaths::HomeLocation);
         }
         if (pdir.isEmpty()) {
-            qDebug() << "TPreferences::setupScreenshotFolder: no HomeLocation";
+            logger->debug("setupScreenshotFolder: no HomeLocation");
             pdir = "/tmp";
         }
         screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");
@@ -1350,11 +1347,12 @@ void TPreferences::setupScreenshotFolder() {
 	if (screenshot_directory.isEmpty()) {
 		use_screenshot = false;
     } else if (QDir(screenshot_directory).exists()) {
-        qDebug() << "Settings::TPreferences::setupScreenshotFolder: using screen shot folder"
-                 << screenshot_directory;
+        logger->info("setupScreenshotFolder: using screen shot folder '"
+                     + screenshot_directory + "'");
     } else {
-        qDebug() << "Settings::TPreferences::setupScreenshotFolder: screen shot folder"
-                   << screenshot_directory << "not found";
+        logger->info("setupScreenshotFolder: screen shot folder '"
+                     + screenshot_directory
+                     + "' not found, disabling screenshots");
         use_screenshot = false;
         screenshot_directory = "";
     }

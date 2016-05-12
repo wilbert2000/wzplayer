@@ -18,9 +18,13 @@
 
 #include "settings/recents.h"
 #include <QDebug>
+#include "log4qt/logger.h"
 
 
 namespace Settings {
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TRecents)
+
 
 TRecents::TRecents() : max_items(10) {
 }
@@ -37,7 +41,7 @@ void TRecents::setMaxItems(int n_items) {
 }
 
 void TRecents::addItem(QString s, const QString& title) {
-	qDebug() << "Settings::TRecents::addItem:" << s << title;
+    logger()->debug("addItem: '" + s + "' '" + title + "'");
 
 	if (!title.isEmpty()) {
 		s += "|title]=" + title;
@@ -70,14 +74,6 @@ QString TRecents::title(int n) {
 		res = s[1];
 
 	return res;
-}
-
-void TRecents::list() {
-	qDebug("Settings::TRecents::list");
-
-	for (int n = 0; n < count(); n++) {
-		qDebug(" * item %d: '%s'", n, (*this)[n].toUtf8().constData());
-	}
 }
 
 void TRecents::fromStringList(const QStringList& list) {

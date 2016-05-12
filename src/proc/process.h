@@ -20,6 +20,7 @@
 #define PROC_PROCESS_H
 
 #include <QProcess>
+#include "wzdebug.h"
 
 //! TProcess is a specialized QProcess designed to properly work with mplayer.
 
@@ -30,9 +31,9 @@
 
 namespace Proc {
 
-class TProcess : public QProcess
-{
+class TProcess : public QProcess {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TProcess (QObject* parent = 0);

@@ -25,12 +25,15 @@
 #include <QTimer>
 #include <QMatrix>
 
+#include "log4qt/logger.h"
 #include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "images.h"
 
 namespace Gui {
 namespace Action {
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, TToolbarEditor)
 
 enum TCols {
 	COL_NS = 0,
@@ -158,7 +161,6 @@ void TToolbarEditor::setAllActions(const TActionList& actions_list) {
 }
 
 void TToolbarEditor::insertRowFromAction(int row, QAction* action, bool ns, bool fs) {
-	//qDebug() << "Gui::Action::TToolbarEditor::insertRowFromAction:" << row << action->objectName();
 
 	Qt::ItemFlags item_flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 	active_actions_table->insertRow(row);
@@ -278,7 +280,7 @@ void TToolbarEditor::resizeColumns() {
 }
 
 void TToolbarEditor::resizeEvent(QResizeEvent* event) {
-	//qDebug("Gui::Action::TToolbarEditor::resizeEvent");
+	//logger()->debug("Gui::Action::TToolbarEditor::resizeEvent");
 
 	QDialog::resizeEvent(event);
 	resizeColumns();
@@ -315,7 +317,7 @@ void TToolbarEditor::swapRows(int row1, int row2) {
 	}
 }
 
-void TToolbarEditor::on_up_button_clicked() {
+void TToolbarEditor::onUpButtonClicked() {
 
 	int row = active_actions_table->currentRow();
 	if (row > 0) {
@@ -324,7 +326,7 @@ void TToolbarEditor::on_up_button_clicked() {
 	}
 }
 
-void TToolbarEditor::on_down_button_clicked() {
+void TToolbarEditor::onDownButtonClicked() {
 
 	int row = active_actions_table->currentRow();
 	if (row >= 0 && row < active_actions_table->rowCount() - 1) {
@@ -362,7 +364,7 @@ void TToolbarEditor::on_left_button_clicked() {
 }
 
 void TToolbarEditor::on_separator_button_clicked() {
-	//qDebug("Gui::Action::TToolbarEditor::on_separator_button_clicked");
+	//logger()->debug("Gui::Action::TToolbarEditor::on_separator_button_clicked");
 
 	int row = active_actions_table->currentRow();
 	if (row < 0)
@@ -371,7 +373,7 @@ void TToolbarEditor::on_separator_button_clicked() {
 }
 
 void TToolbarEditor::restoreDefaults() {
-	qDebug("Gui::Action::TToolbarEditor::restoreDefaults");
+	logger()->debug("Gui::Action::TToolbarEditor::restoreDefaults");
 
 	setActiveActions(default_actions);
 }
@@ -385,7 +387,7 @@ bool TToolbarEditor::getVis(int row, int col) {
 }
 
 QStringList TToolbarEditor::saveActions() {
-	qDebug("Gui::Action::TToolbarEditor::saveActions");
+	logger()->debug("Gui::Action::TToolbarEditor::saveActions");
 
 	QStringList list;
 
@@ -424,13 +426,15 @@ QStringList TToolbarEditor::saveActions() {
 							if (action_text != action_icon_text) {
 								action->setIconText(action_icon_text);
                                 action->setProperty("modified", true);
-								qDebug() << "Gui::Action::TToolbarEditor::saveActions: updated icon text"
-										 << action_name << "to" << action_icon_text;
+                                logger()->debug("saveActions: updated icon text '"
+                                    + action_name + "' to '" + action_icon_text
+                                    + "'");
 							} else {
 								action_icon_text = TActionsEditor::actionTextToDescription(action->iconText(), action_name);
 								if (action_icon_text != action_text) {
-									action->setIconText(action_text);
-									qDebug() << "Gui::Action::TToolbarEditor::saveActions: cleared icon text" << action_name;
+                                    action->setIconText(action_text);
+                                    logger()->debug("saveActions: cleared icon text "
+                                                    + action_name);
 								}
 							}
 						}
@@ -444,7 +448,6 @@ QStringList TToolbarEditor::saveActions() {
 }
 
 void TToolbarEditor::checkRowsAllList(int currentRow) {
-	// qDebug("Gui::Action::TToolbarEditor::checkRowsAllList: current row: %d", currentRow);
 	right_button->setEnabled(currentRow > -1);
 }
 
@@ -453,7 +456,7 @@ void TToolbarEditor::onCurrentCellChanged(int currentRow, int currentColumn,
 	Q_UNUSED(currentColumn)
 	Q_UNUSED(previousRow)
 	Q_UNUSED(previousColumn)
-	//qDebug("Gui::Action::TToolbarEditor::onCurrentCellChanged");
+	//logger()->debug("Gui::Action::TToolbarEditor::onCurrentCellChanged");
 
 	left_button->setEnabled(currentRow >= 0);
 	if (currentRow < 0) {

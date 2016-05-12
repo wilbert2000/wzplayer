@@ -146,14 +146,14 @@ void TShortcutGetter::textChanged(const QString & text) {
 
 // Added by rvm
 void TShortcutGetter::addItemClicked() {
-	qDebug("Gui::Action::TShortcutGetter::addItemClicked");
+	logger()->debug("Gui::Action::TShortcutGetter::addItemClicked");
 	list->addItem("");
 	list->setCurrentRow(list->count()-1); // Select last item
 }
 
 // Added by rvm
 void TShortcutGetter::removeItemClicked() {
-	qDebug("Gui::Action::TShortcutGetter::removeItemClicked");
+	logger()->debug("Gui::Action::TShortcutGetter::removeItemClicked");
 
 	if (list->count() > 1) {
 		QListWidgetItem* i = list->takeItem(list->currentRow());

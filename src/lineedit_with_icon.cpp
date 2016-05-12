@@ -32,8 +32,8 @@ void LineEditWithIcon::setupButton() {
 }
 
 void LineEditWithIcon::setIcon(const QPixmap & pixmap) {
+
 	QPixmap p = pixmap;
-	//qDebug("height: %d, icon height: %d", height(), p.height());
 	int max_height = 16;
 	if (max_height > height()) max_height = height() - 4;
 	if (pixmap.height() > max_height) p = pixmap.scaledToHeight(max_height, Qt::SmoothTransformation);
@@ -41,13 +41,7 @@ void LineEditWithIcon::setIcon(const QPixmap & pixmap) {
 	button->setStyleSheet("QToolButton { border: none; padding: 0px; }");
 
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-	//qDebug("frameWidth: %d", frameWidth);
     setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").arg(button->sizeHint().width() + frameWidth + 1));
-    /*
-    QSize msz = minimumSizeHint();
-    setMinimumSize(qMax(msz.width(), button->sizeHint().height() + frameWidth * 2 + 2),
-                   qMax(msz.height(), button->sizeHint().height() + frameWidth * 2 + 2));
-    */
 }
 
 void LineEditWithIcon::resizeEvent(QResizeEvent *)

@@ -19,7 +19,6 @@
 #include "settings/paths.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QFile>
@@ -33,16 +32,20 @@
 #include <stdlib.h>
 #endif
 
+#include "log4qt/logger.h"
 #include "config.h"
 
 namespace Settings {
 
 QString TPaths::config_path;
 
+Log4Qt::Logger* TPaths::logger = Log4Qt::Logger::logger(
+                                     QLatin1String("Settings::TPaths"));
+
 
 QString TPaths::location(TLocation type) {
 
-	QString path;
+    QString path;
 
 #ifdef PORTABLE_APP
     path = qApp->applicationDirPath();
@@ -50,29 +53,29 @@ QString TPaths::location(TLocation type) {
 
 #if QT_VERSION_MAJOR >= 5
 
-	// Switch to roaming on Windows
+    // Switch to roaming on Windows
 #if QT_VERSION >= 0x050400
     if (type == DataLocation) {
         type = AppDataLocation;
-	}
+    }
 #endif
 
     path = QStandardPaths::writableLocation(
         static_cast<QStandardPaths::StandardLocation>(type));
 
 #else
-	path = QDesktopServices::storageLocation(
+    path = QDesktopServices::storageLocation(
         static_cast<QDesktopServices::StandardLocation>(type));
 #endif
 #endif
 
-	qDebug() << "Settings::TPaths::writableLocation: returning" << path
-			 << "for" << type;
-	return path;
+    logger->debug("location: returning '" + path + "' for " + QString::number(type));
+    return path;
 }
 
 void TPaths::setConfigPath(const QString& path) {
-    qDebug() << "Settings::TPaths::setConfigPath:" << path;
+
+    logger->debug("setConfigPath: '" + path + "'");
 
     // Set config_path
 	if (path.isEmpty()) {
@@ -95,19 +98,18 @@ void TPaths::setConfigPath(const QString& path) {
 	} else {
 		config_path = path;
 	}
-    qDebug() << "Settings::TPaths::setConfigPath: config path set to"
-             << config_path;
+    logger->info("setConfigPath: configuration path set to '" + config_path
+                  + "'");
 
 	// Create config directory
 #ifndef PORTABLE_APP
     QDir dir(config_path);
     if (!dir.mkpath(config_path)) {
-        qWarning() << "Settings::TPaths::setConfigPath: failed to create"
-                   << config_path;
+        logger->warn("setConfigPath: failed to create '" + config_path + "'");
     }
 #endif
 
-} // void TPaths::setConfigPath(const QString& path)
+} // void TPaths::setConfigPath()
 
 QString TPaths::dataPath() {
 
@@ -176,14 +178,12 @@ QString TPaths::doc(const QString& file, QString locale, bool english_fallback) 
 	}
 
 	QString f = docPath() + "/" + locale + "/" + file;
-    qDebug() << "TPaths::doc: checking" << f;
-	if (QFile::exists(f))
+    if (QFile::exists(f))
 		return f;
 
 	if (locale.indexOf(QRegExp("_[A-Z]+")) >= 0) {
 		locale.replace(QRegExp("_[A-Z]+"), "");
 		f = docPath() + "/" + locale + "/" + file;
-        qDebug() << "TPaths:doc: checking" << f;
 		if (QFile::exists(f))
 			return f;
 	}
@@ -210,7 +210,7 @@ QString TPaths::fontPathPlayer(const QString& bin) {
 }
 
 QStringList TPaths::fonts(const QString& font_dir) {
-    qDebug() << "Settings::TPaths::fonts: retrieving" << font_dir;
+    logger->debug("fonts: retrieving " + font_dir);
 
     QDir dir(font_dir);
     return dir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
@@ -239,7 +239,7 @@ QString TPaths::fontConfigFilename() {
 }
 
 void TPaths::createFontFile() {
-	qDebug("Settings::TPaths::createFontFile");
+    logger->debug("createFontFile");
 
     QString output = fontConfigFilename();
     QString fontDir = fontPath();
@@ -251,8 +251,9 @@ void TPaths::createFontFile() {
 		if (i.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			QString text = i.readAll();
             if (text.contains("<dir>" + fontDir + "</dir>")) {
-                qDebug() << "Settings::TPaths::createFontFile: reusing existing font config file"
-                         << output << "which uses font directory" << fontDir;
+                logger->info("createFontFile: reusing existing font config"
+                             " file " + output + " which uses font directory "
+                             + fontDir);
 				return;
 			}
 		}
@@ -261,7 +262,7 @@ void TPaths::createFontFile() {
     // Use the font file from the selected font dir
     QString input = fontDir + "/fonts.conf";
     if (!QFile::exists(input)) {
-        qWarning() << "Settings::TPaths::createFontFile: font.conf not found" << input;
+        logger->warn("createFontFile: font.conf '" + input + "' not found");
         return;
 	}
 
@@ -271,14 +272,14 @@ void TPaths::createFontFile() {
 		text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
 		text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + fontPath() + "</dir>");
 
-        qDebug() << "Settings::TPaths::createFontFile: saving" << output;
+        logger->info("createFontFile: saving " + output;
 		QFile outfile(output);
 		if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
 			outfile.write(text.toUtf8());
 			outfile.close();
 		}
     } else {
-        qWarning() << "Settings::TPaths::createFontFile: failed to open" << input;
+       logger->warn("createFontFile: failed to open '" + input + "'");
     }
 }
 #endif // Q_OS_WIN

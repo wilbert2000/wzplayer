@@ -39,8 +39,6 @@ public:
 
 	virtual void fromStringList(const QStringList& list);
 
-	virtual void list();
-
 protected:
 	int max_items;
 };

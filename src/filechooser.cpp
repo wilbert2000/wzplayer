@@ -58,7 +58,6 @@ void FileChooser::setupButton() {
 }
 
 void FileChooser::openFileDialog() {
-	qDebug("FileChooser::openFileDialog");
 
 	QString result;
 	QString f;

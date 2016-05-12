@@ -88,7 +88,7 @@ TFavorites::TFavorites(TBase* mw,
 }
 
 TFavorites::~TFavorites() {
-	/* qDebug("Gui::Action::TFavorites::~TFavorites"); */
+    /* logger()->debug("~TFavorites"); */
 
 	save();
 	delete_children();
@@ -116,7 +116,7 @@ void TFavorites::populateMenu() {
 		if (f_list[n].isSubentry()) {
 
 			if (f_list[n].file() == _filename) {
-				qDebug("Gui::Action::TFavorites::populateMenu: infinite recursion detected. Ignoring item.");
+                logger()->debug("populateMenu: infinite recursion detected. Ignoring item.");
 				break;
 			}
 
@@ -219,7 +219,7 @@ bool TFavorites::anyItemAvailable() {
 }
 
 void TFavorites::next() {
-	qDebug("Gui::Action::TFavorites::next");
+    logger()->debug("next");
 
 	if (!anyItemAvailable())
 		return;
@@ -245,7 +245,7 @@ void TFavorites::next() {
 }
 
 void TFavorites::previous() {
-	qDebug("Gui::Action::TFavorites::previous");
+    logger()->debug("previous");
 
 	if (!anyItemAvailable())
 		return;
@@ -285,7 +285,7 @@ void TFavorites::getCurrentMedia(const QString& filename, const QString& title) 
 void TFavorites::addCurrentPlaying() {
 
 	if (received_file_playing.isEmpty()) {
-		qDebug("Gui::Action::TFavorites::addCurrentPlaying: received file is empty, doing nothing");
+        logger()->debug("addCurrentPlaying: received file is empty, doing nothing");
 	} else {
 		TFavorite fav;
 		fav.setName(received_title.replace(",", ""));
@@ -297,7 +297,7 @@ void TFavorites::addCurrentPlaying() {
 }
 
 void TFavorites::save() {
-	qDebug("Gui::Action::TFavorites::save");
+    logger()->debug("save");
 
 	QFile f(_filename);
 	if (f.open(QIODevice::WriteOnly)) {
@@ -317,7 +317,7 @@ void TFavorites::save() {
 }
 
 void TFavorites::load() {
-	qDebug("Gui::Action::TFavorites::load");
+    logger()->debug("load");
 
 	QRegExp m3u_id("^#EXTM3U|^#M3U");
 	QRegExp info1("^#EXTINF:(.*),(.*),(.*)");
@@ -375,7 +375,7 @@ void TFavorites::load() {
 }
 
 void TFavorites::edit() {
-	qDebug("Gui::Action::TFavorites::edit");
+    logger()->debug("edit");
 
     TFavoriteEditor e(main_window);
 
@@ -390,7 +390,7 @@ void TFavorites::edit() {
 }
 
 void TFavorites::jump() {
-	qDebug("Gui::Action::TFavorites::jump");
+    logger()->debug("jump");
 
 	bool ok;
 #if QT_VERSION >= 0x050000

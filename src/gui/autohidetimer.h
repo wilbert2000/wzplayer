@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QAction>
 #include <QList>
+#include "wzdebug.h"
+
 
 namespace Gui {
 
@@ -20,6 +22,8 @@ public:
 
 class TAutoHideTimer : public QTimer {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
+
 public:
 	explicit TAutoHideTimer(QObject *parent, QWidget* playerwin);
 	virtual ~TAutoHideTimer();

@@ -47,18 +47,15 @@ public:
 	QString getDisplayName() const;
 
 protected:
-
 	/* Language code: es, en, etc. */
 	QString lang;
-
 	/* spanish, english... */
 	QString name;
 };
 
+
 class TTracks : public TMap<TTrackData> {
-
 public:
-
 	TTracks() {}
 	virtual ~TTracks() {}
 

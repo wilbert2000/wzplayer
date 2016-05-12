@@ -24,10 +24,13 @@
 #include <QNetworkProxy>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include "log4qt/logger.h"
+
 
 class FileDownloader : public QProgressDialog
 {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	FileDownloader(QWidget *parent = 0);

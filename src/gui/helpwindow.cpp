@@ -58,7 +58,7 @@ void THelpWindow::retranslateStrings() {
 }
 
 void THelpWindow::loadConfig() {
-	qDebug("Gui::THelpWindow::loadConfig");
+	logger()->debug("Gui::THelpWindow::loadConfig");
 
 	pref->beginGroup(objectName());
 	QPoint p = pref->value("pos", QPoint()).toPoint();
@@ -75,7 +75,7 @@ void THelpWindow::loadConfig() {
 }
 
 void THelpWindow::saveConfig() {
-	qDebug("Gui::THelpWindow::saveConfig");
+	logger()->debug("Gui::THelpWindow::saveConfig");
 
 	pref->beginGroup(objectName());
 	pref->setValue("pos", pos());
@@ -85,19 +85,19 @@ void THelpWindow::saveConfig() {
 }
 
 void THelpWindow::showEvent(QShowEvent*) {
-	qDebug("Gui::THelpWindow::showEvent");
+	logger()->debug("Gui::THelpWindow::showEvent");
     emit visibilityChanged(true);
 }
 
 void THelpWindow::hideEvent(QShowEvent*) {
-	qDebug("Gui::THelpWindow::hideEvent");
+	logger()->debug("Gui::THelpWindow::hideEvent");
 	clear();
 	emit visibilityChanged(false);
 }
 
 // Fix hideEvent() not called on close
 void THelpWindow::closeEvent(QCloseEvent* event) {
-	qDebug("Gui::THelpWindow::closeEvent");
+	logger()->debug("Gui::THelpWindow::closeEvent");
 
 	hideEvent(0);
 	event->accept();

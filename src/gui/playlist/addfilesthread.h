@@ -48,7 +48,7 @@ private:
                                          double duration,
                                          TPlaylistWidgetItem* parent);
 
-    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QString filename);
+    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, const QString& filename);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       const QString& dir);
     void addFiles();

@@ -82,10 +82,6 @@ void TMenuSeek::updateDefaultAction() {
     }
 
     if (action != defaultAction()) {
-        //qDebug() << "Gui::Action::TMenuseek::updateDefaultAction: updating default action for"
-        //         << menuAction()->objectName()
-        //         << "from" << defaultAction()->objectName()
-        //         << "to" << action->objectName();
         setDefaultAction(action);
 
         // Set default action asscociated tool buttons.

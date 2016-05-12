@@ -18,7 +18,6 @@
 
 #include "gui/playlist/playlist.h"
 
-#include <QDebug>
 #include <QToolBar>
 #include <QFile>
 #include <QTextStream>
@@ -67,7 +66,7 @@ namespace Playlist {
 
 TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     QWidget(mw),
-    logger(this),
+    debug(logger()),
     main_window(mw),
     core(c),
     recursive_add_directories(true),
@@ -122,7 +121,8 @@ void TPlaylist::createTree() {
             this, SLOT(setModified()));
     connect(playlistWidget, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
              this, SLOT(onItemActivated(QTreeWidgetItem*, int)));
-    connect(playlistWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+    connect(playlistWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*,
+                                                      QTreeWidgetItem*)),
             this, SLOT(enableActions()));
 }
 
@@ -137,6 +137,11 @@ void TPlaylist::createActions() {
     saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save",
                           QKeySequence("Ctrl+S"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+
+    // SaveAs
+    saveAsAct = new TAction(this, "pl_saveas", tr("S&ave playlist as..."),
+                            "save");
+    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
     // Stop
     stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
@@ -197,7 +202,8 @@ void TPlaylist::createActions() {
     addFilesAct = new TAction(add_menu, "pl_add_files", tr("Add &file(s)..."));
 	connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
 
-    addDirectoryAct = new TAction(add_menu, "pl_add_directory", tr("Add &directory..."));
+    addDirectoryAct = new TAction(add_menu, "pl_add_directory",
+                                  tr("Add &directory..."));
 	connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
 
     addUrlsAct = new TAction(add_menu, "pl_add_urls", tr("Add &URL(s)..."));
@@ -210,8 +216,10 @@ void TPlaylist::createActions() {
                             tr("&Remove from playlist"), "minus");
 
     removeSelectedAct = new TAction(remove_menu, "pl_remove_selected",
-                                    tr("&Remove from list"), "", Qt::Key_Delete);
-	connect(removeSelectedAct, SIGNAL(triggered()), this, SLOT(removeSelected()));
+                                    tr("&Remove from list"), "",
+                                    Qt::Key_Delete);
+    connect(removeSelectedAct, SIGNAL(triggered()),
+            this, SLOT(removeSelected()));
 
     removeSelectedFromDiskAct = new TAction(remove_menu, "pl_delete_from_disk",
                                             tr("&Delete from disk..."));
@@ -219,7 +227,8 @@ void TPlaylist::createActions() {
             this, SLOT(removeSelectedFromDisk()));
 
     removeAllAct = new TAction(remove_menu, "pl_remove_all",
-                               tr("&Clear playlist"), "", Qt::CTRL | Qt::Key_Delete);
+                               tr("&Clear playlist"), "",
+                               Qt::CTRL | Qt::Key_Delete);
 	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
     addActions(remove_menu->actions());
@@ -242,7 +251,8 @@ void TPlaylist::createActions() {
             this, SLOT(enablePaste()));
 
     // Edit
-    editAct = new TAction(this, "pl_edit", tr("&Edit name..."), "", Qt::Key_Return);
+    editAct = new TAction(this, "pl_edit", tr("&Edit name..."), "",
+                          Qt::Key_Return);
     connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
     // Add actions to main window
@@ -326,7 +336,7 @@ void TPlaylist::getFilesAppend(QStringList& files) const {
 void TPlaylist::clear() {
 
     if (thread) {
-        logger.debug("clear: add files thread still running, aborting it");
+        logger()->info("clear: add files thread still running, aborting it");
         addFilesFiles.clear();
         thread->abort();
     }
@@ -338,11 +348,11 @@ void TPlaylist::clear() {
 }
 
 void TPlaylist::onThreadFinished() {
-    logger.debug("onThreadFinished");
+    logger()->debug("onThreadFinished");
 
     if (thread == 0) {
         // Only during destruction, so no need to enable actions
-        logger.debug("onThreadFinished: thread is gone");
+        logger()->debug("onThreadFinished: thread is gone");
         return;
     }
 
@@ -361,10 +371,10 @@ void TPlaylist::onThreadFinished() {
     if (root == 0) {
         // Thread aborted
         if (addFilesFiles.count()) {
-            logger.debug("onThreadFinished: thread aborted, restarting it");
+            logger()->debug("onThreadFinished: thread aborted, restarting it");
             addFilesStartThread();
         } else {
-            logger.debug("onThreadFinished: thread aborted");
+            logger()->debug("onThreadFinished: thread aborted");
             enableActions();
         }
         return;
@@ -414,11 +424,11 @@ void TPlaylist::addFilesStartThread() {
 
     if (thread) {
         // Thread still running, abort it and restart it in onThreadFinished()
-        logger.debug("addFilesStartThread: add files thread still running."
-                     " Aborting it...");
+        logger()->debug("addFilesStartThread: add files thread still running."
+                        " Aborting it...");
         thread->abort();
     } else {
-        logger.debug("addFilesStartThread: starting add files thread");
+        logger()->debug("addFilesStartThread: starting add files thread");
 
         thread = new TAddFilesThread(this,
                                      addFilesFiles,
@@ -439,8 +449,7 @@ void TPlaylist::addFiles(const QStringList& files,
                          QTreeWidgetItem* target,
                          const QString& fileToPlay,
                          bool searchForItems) {
-    qDebug() << "Gui::Playlist::TPlaylist::addFiles: files" << files
-             << "startPlay" << startPlay;
+    debug << "addFiles: files" << files << "startPlay" << startPlay << debug;
 
     addFilesFiles = files;
     addFilesStartPlay = startPlay;
@@ -453,10 +462,9 @@ void TPlaylist::addFiles(const QStringList& files,
 
 void TPlaylist::addFiles() {
 
-    TExtensions e;
     QStringList files = MyFileDialog::getOpenFileNames(this,
         tr("Select one or more files to add"), pref->latest_dir,
-        tr("Multimedia") + e.multimedia().forFilter() + ";;" +
+        tr("Multimedia") + extensions.multimedia().forFilter() + ";;" +
         tr("All files") +" (*.*)");
 
     if (files.count() > 0) {
@@ -466,7 +474,7 @@ void TPlaylist::addFiles() {
 }
 
 void TPlaylist::addCurrentFile() {
-   logger.debug("addCurrentFile");
+   logger()->debug("addCurrentFile");
 
     if (core->mdat.filename.count()) {
         TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
@@ -517,7 +525,7 @@ void TPlaylist::onShuffleToggled(bool toggled) {
 }
 
 void TPlaylist::play() {
-    logger.debug("play");
+    logger()->debug("play");
 
     if (playlistWidget->currentItem()) {
         playItem(playlistWidget->currentPlaylistWidgetItem());
@@ -527,7 +535,7 @@ void TPlaylist::play() {
 }
 
 void TPlaylist::playOrPause() {
-    logger.debug("playOrPause: state " + core->stateToString());
+    logger()->debug("playOrPause: state " + core->stateToString());
 
     if (core->state() == STATE_PLAYING) {
         core->pause();
@@ -543,11 +551,11 @@ void TPlaylist::playOrPause() {
 }
 
 void TPlaylist::stop() {
-    logger.debug("stop: state " + core->stateToString());
+    logger()->debug("stop: state " + core->stateToString());
 
     core->stop();
     if (thread) {
-        logger.debug("stop: stopping add files thread");
+        logger()->debug("stop: stopping add files thread");
         addFilesStartPlay = false;
         thread->stop();
     }
@@ -560,7 +568,8 @@ TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
     }
 
     bool foundFreeItem = false;
-    int selected = (int) ((double) playlistWidget->countChildren() * qrand() / (RAND_MAX + 1.0));
+    int selected = (int) ((double) playlistWidget->countChildren() * qrand()
+                          / (RAND_MAX + 1.0));
     bool foundSelected = false;
 
     do {
@@ -575,7 +584,8 @@ TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
 
                 if (!i->played() && i->state() != PSTATE_FAILED) {
                     if (foundSelected) {
-                        logger.debug("getRandomItem: selecting " + i->filename());
+                        logger()->debug("getRandomItem: selecting "
+                                        + i->filename());
                         return i;
                     } else {
                         foundFreeItem = true;
@@ -588,7 +598,7 @@ TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
         }
     } while (foundFreeItem);
 
-    logger.debug("getRandomItem: end of playlist");
+    logger()->debug("getRandomItem: end of playlist");
     return 0;
 }
 
@@ -607,7 +617,7 @@ bool TPlaylist::haveUnplayedItems() const {
 }
 
 void TPlaylist::startPlay(bool sort) {
-    logger.debug("startPlay");
+    logger()->debug("startPlay");
 
     if (playlistWidget->topLevelItemCount() > 0) {
         playlistWidget->enableSort(sort);
@@ -627,17 +637,17 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
         item = playlistWidget->getNextPlaylistWidgetItem(item);
     }
     if (item) {
-        logger.debug("playItem: " + item->filename());
+        logger()->debug("playItem: " + item->filename());
         playlistWidget->setPlayingItem(item, PSTATE_LOADING);
         core->open(item->filename());
     } else {
-        logger.debug("playItem: end of playlist");
+        logger()->debug("playItem: end of playlist");
 		emit playlistEnded();
 	}
 }
 
 void TPlaylist::playNext(bool allow_reshuffle) {
-    logger.debug("playNext");
+    logger()->debug("playNext");
 
     TPlaylistWidgetItem* item = 0;
 	if (shuffleAct->isChecked()) {
@@ -656,7 +666,7 @@ void TPlaylist::playNext(bool allow_reshuffle) {
 }
 
 void TPlaylist::playPrev() {
-    logger.debug("playPrev");
+    logger()->debug("playPrev");
 
     TPlaylistWidgetItem* i = playlistWidget->playing_item;
     if (shuffleAct->isChecked() && i) {
@@ -673,7 +683,7 @@ void TPlaylist::playPrev() {
 }
 
 void TPlaylist::playDirectory(const QString &dir) {
-    logger.debug("playDirectory");
+    logger()->debug("playDirectory");
 
     if (Helper::directoryContainsDVD(dir)) {
         // onNewMediaStartedPlaying() will pickup the playlist
@@ -697,39 +707,41 @@ bool TPlaylist::deleteFileFromDisk(const QString& filename,
                                    const QString& playingFile) {
 
     QFileInfo fi(filename);
-	if (!fi.exists()) {
-		return true;
-	}
+    if (!fi.exists()) {
+        return true;
+    }
 
-	if (!fi.isFile()) {
-		QMessageBox::warning(this, tr("Error"),
-			tr("Cannot delete '%1', it does not seem to be a file.").arg(filename));
-		return false;
-	}
+    if (!fi.isFile()) {
+        QMessageBox::warning(this, tr("Error"),
+            tr("Cannot delete '%1', it does not seem to be a file.")
+            .arg(filename));
+        return false;
+    }
 
-	// Ask the user for confirmation
-	int res = QMessageBox::question(this, tr("Confirm file deletion"),
-		tr("You're about to delete the file '%1' from your drive.").arg(filename) + "<br>"+
-		tr("This action cannot be undone. Are you sure you want to proceed?"),
-		QMessageBox::Yes, QMessageBox::No);
+    // Ask the user for confirmation
+    int res = QMessageBox::question(this, tr("Confirm file deletion"),
+        tr("You're about to delete '%1' from your drive.").arg(filename)
+        + "<br>"+
+        tr("This action cannot be undone. Are you sure you want to proceed?"),
+        QMessageBox::Yes, QMessageBox::No);
 
-	if (res == QMessageBox::Yes) {
-		// Cannot delete file on Windows when it is in use
+    if (res == QMessageBox::Yes) {
+        // Cannot delete file on Windows when in use...
         if (filename == playingFile && core->state() != STATE_STOPPED) {
             core->stop();
         }
-		if (QFile::remove(filename)) {
-			return true;
-		}
-		QMessageBox::warning(this, tr("Deletion failed"),
-			tr("Failed to delete '%1'").arg(filename));
-	}
+        if (QFile::remove(filename)) {
+            return true;
+        }
+        QMessageBox::warning(this, tr("Deletion failed"),
+                             tr("Failed to delete '%1'").arg(filename));
+    }
 
-	return false;
+    return false;
 }
 
 void TPlaylist::removeSelected(bool deleteFromDisk) {
-    logger.debug("removeSelected");
+    logger()->debug("removeSelected");
 
     disable_enableActions = true;
     QString playing = playingFile();
@@ -742,7 +754,7 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
         if (!deleteFromDisk || deleteFileFromDisk(i->filename(), playing)) {
-            logger.debug("removeSelected: removing " + i->filename());
+            logger()->debug("removeSelected: removing " + i->filename());
             QTreeWidgetItem* parent = i->parent();
             delete i;
 
@@ -787,12 +799,13 @@ void TPlaylist::removeAll() {
 void TPlaylist::showContextMenu(const QPoint & pos) {
 
 	if (!popup->isVisible()) {
-        Action::execPopup(this, popup, playlistWidget->viewport()->mapToGlobal(pos));
+        Action::execPopup(this, popup,
+                          playlistWidget->viewport()->mapToGlobal(pos));
 	}
 }
 
 void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
-    logger.debug("onItemActivated");
+    logger()->debug("onItemActivated");
 
     TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(item);
     if (i && !i->isFolder()) {
@@ -803,10 +816,10 @@ void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
 void TPlaylist::enableActions() {
 
     if (disable_enableActions) {
-        logger.debug("enableActions: disabled");
+        logger()->debug("enableActions: disabled");
         return;
     }
-    logger.debug("enableActions: state " + core->stateToString());
+    logger()->debug("enableActions: state " + core->stateToString());
 
     // Note: there is always something selected if c > 0
     int c = playlistWidget->topLevelItemCount();
@@ -821,6 +834,7 @@ void TPlaylist::enableActions() {
 
     openAct->setEnabled(thread == 0);
     saveAct->setEnabled(enable && c > 0);
+    saveAsAct->setEnabled(enable && c > 0);
 
     playAct->setEnabled(enable && (coreHasFilename || c > 0));
     pauseAct->setEnabled(s == STATE_PLAYING);
@@ -898,7 +912,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
     QString current_filename = playlistWidget->playingFile();
 
     if (filename == current_filename) {
-        logger.debug("onNewMediaStartedPlaying: new file is current item");
+        logger()->debug("onNewMediaStartedPlaying: new file is current item");
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item && !md->disc.valid) {
             if (!item->edited()) {
@@ -916,8 +930,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (cur_disc.valid
             && cur_disc.protocol == md->disc.protocol
             && cur_disc.device == md->disc.device) {
-            logger.debug("onNewMediaStartedPlaying: new file is from current"
-                         " disc");
+            logger()->debug("onNewMediaStartedPlaying: new file is from current"
+                            " disc");
             return;
         }
     }
@@ -949,29 +963,29 @@ void TPlaylist::onNewMediaStartedPlaying() {
         // Add associated files to playlist
         if (md->selected_type == TMediaData::TYPE_FILE
             && pref->media_to_add_to_playlist != TPreferences::NoFiles) {
-            logger.debug("onNewMediaStartedPlaying: searching for files to add"
-                         " to playlist for " + filename);
+            logger()->debug("onNewMediaStartedPlaying: searching for files to"
+                            " add to playlist for '" + filename + "'");
             QStringList files_to_add = Helper::filesForPlaylist(filename,
                 pref->media_to_add_to_playlist);
             if (files_to_add.isEmpty()) {
-                logger.debug("onNewMediaStartedPlaying: none found");
+                logger()->debug("onNewMediaStartedPlaying: none found");
             } else {
                 addFiles(files_to_add);
             }
         }
     }
 
-    logger.debug("onNewMediaStartedPlaying: created new playlist for "
-                 + filename);
+    logger()->debug("onNewMediaStartedPlaying: created new playlist for '"
+                    + filename + "'");
 }
 
 void TPlaylist::onMediaEOF() {
-    logger.debug("onMediaEOF");
+    logger()->debug("onMediaEOF");
     playNext(false);
 }
 
 void TPlaylist::onTitleTrackChanged(int id) {
-    logger.debug("onTitleTrackChanged: " + QString::number(id));
+    logger()->debug("onTitleTrackChanged: %1", id);
 
 	if (id < 0) {
         playlistWidget->setPlayingItem(0);
@@ -987,8 +1001,8 @@ void TPlaylist::onTitleTrackChanged(int id) {
     if (i) {
         playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
     } else {
-        qWarning() << "Gui::TPlaylist::onTitleTrackChanged: title id" << id
-                   << "filename" << filename << "not found in playlist";
+        logger()->warn("onTitleTrackChanged: title id " + QString::number(id)
+                       + " filename '" + filename + "' not found in playlist");
     }
 }
 
@@ -1103,7 +1117,8 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
 
 // Drag&drop
 void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
-    qDebug() << "Gui::TPlaylist::dragEnterEvent" << e->mimeData()->formats();
+    debug << "dragEnterEvent" << e->mimeData()->formats();
+    debug << debug;
 
 	if (e->mimeData()->hasUrls()) {
         if (e->proposedAction() & Qt::CopyAction) {
@@ -1120,7 +1135,8 @@ void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
 }
 
 void TPlaylist::dropEvent(QDropEvent *e) {
-    qDebug() << "Gui::TPlaylist::dropEvent" << e->mimeData()->formats();
+    debug << "dropEvent" << e->mimeData()->formats();
+    debug << debug;
 
     if (e->mimeData()->hasUrls()) {
         QStringList files;
@@ -1160,15 +1176,35 @@ void TPlaylist::closeEvent(QCloseEvent* e)  {
     }
 }
 
-bool TPlaylist::saveM3u(QString file) {
-    logger.debug("saveM3u: " + file);
+void TPlaylist::openPlaylist(const QString& filename) {
 
-    QString dir_path = QDir::toNativeSeparators(QFileInfo(file).path());
-    if (!dir_path.endsWith(QDir::separator())) {
-        dir_path += QDir::separator();
+    pref->latest_dir = QFileInfo(filename).absolutePath();
+    addFiles(QStringList() << filename, true);
+}
+
+void TPlaylist::open() {
+
+    if (maybeSave()) {
+        QString s = MyFileDialog::getOpenFileName(this, tr("Choose a file"),
+            pref->latest_dir,
+            tr("Playlists") + extensions.playlist().forFilter() + ";;"
+            + tr("All files") +" (*.*)");
+
+		if (!s.isEmpty()) {
+            openPlaylist(s);
+		}
+	}
+}
+
+bool TPlaylist::saveM3u(QString file) {
+    logger()->debug("saveM3u: " + file);
+
+    QString path = QDir::toNativeSeparators(QFileInfo(file).absolutePath());
+    if (!path.endsWith(QDir::separator())) {
+        path += QDir::separator();
     }
 
-    bool utf8 = QFileInfo(file).suffix().toLower() == "m3u8";
+    bool utf8 = QFileInfo(file).suffix().toLower() != "m3u";
 
     QFile f(file);
     if (!f.open(QIODevice::WriteOnly)) {
@@ -1183,8 +1219,7 @@ bool TPlaylist::saveM3u(QString file) {
     }
 
     stream << "#EXTM3U" << "\n"
-           << "# Playlist created by WZPlayer " << TVersion::version
-           << "\n";
+           << "# Playlist created by WZPlayer " << TVersion::version << "\n";
 
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {
@@ -1193,16 +1228,8 @@ bool TPlaylist::saveM3u(QString file) {
             stream << "#EXTINF:" << i->duration() << "," << i->name() << "\n";
 
             QString filename = i->filename();
-
-            // Try to save the filename as relative instead of absolute
-            // Normalize separator to match dir_path
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-            if (QFileInfo(filename).exists()) {
-                filename = QDir::toNativeSeparators(filename);
-            }
-#endif
-            if (filename.startsWith(dir_path)) {
-                filename = filename.mid(dir_path.length());
+            if (filename.startsWith(path)) {
+                filename = filename.mid(path.length());
             }
             stream << filename << "\n";
         }
@@ -1216,11 +1243,11 @@ bool TPlaylist::saveM3u(QString file) {
 }
 
 bool TPlaylist::savePls(QString file) {
-    logger.debug("savePls: " + file);
+    logger()->debug("savePls: '" + file + "'");
 
-    QString dir_path = QDir::toNativeSeparators(QFileInfo(file).path());
-    if (!dir_path.endsWith(QDir::separator())) {
-        dir_path += QDir::separator();
+    QString path = QDir::toNativeSeparators(QFileInfo(file).absolutePath());
+    if (!path.endsWith(QDir::separator())) {
+        path += QDir::separator();
     }
 
     QSettings set(file, QSettings::IniFormat);
@@ -1232,23 +1259,13 @@ bool TPlaylist::savePls(QString file) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
         if (!i->isFolder()) {
             QString filename = i->filename();
-
-            // Normalize path separator to match dir_path
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-            if (QFileInfo(filename).exists()) {
-                filename = QDir::toNativeSeparators(filename);
+            if (filename.startsWith(path)) {
+                filename = filename.mid(path.length());
             }
-#endif
-
-            // Try to save the filename as relative instead of absolute
-            if (filename.startsWith(dir_path)) {
-                filename = filename.mid(dir_path.length());
-            }
-
-            set.setValue("File" + QString::number(n + 1), filename);
-            set.setValue("Title" + QString::number(n + 1), i->name());
-            set.setValue("Length" + QString::number(n + 1), (int) i->duration());
-
+            QString ns = QString::number(n + 1);
+            set.setValue("File" + ns, filename);
+            set.setValue("Title" + ns, i->name());
+            set.setValue("Length" + ns, (int) i->duration());
             n++;
         }
         ++it;
@@ -1258,75 +1275,25 @@ bool TPlaylist::savePls(QString file) {
     set.setValue("Version", 2);
 
     set.endGroup();
-
     set.sync();
 
-    bool ok = set.status() == QSettings::NoError;
-    if (ok) {
+    if (set.status() == QSettings::NoError) {
         modified = false;
+        return true;
     }
 
-    return ok;
-}
-
-void TPlaylist::openPlaylist(const QString& filename) {
-
-    pref->latest_dir = QFileInfo(filename).absolutePath();
-    addFiles(QStringList() << filename, true);
-}
-
-void TPlaylist::open() {
-
-    if (maybeSave()) {
-        TExtensions e;
-        QString s = MyFileDialog::getOpenFileName(
-                        this,
-                        tr("Choose a file"),
-                        pref->latest_dir,
-            tr("Playlists") + e.playlist().forFilter() + ";;"
-            + tr("All files") +" (*.*)");
-
-		if (!s.isEmpty()) {
-            openPlaylist(s);
-		}
-	}
+    return false;
 }
 
 bool TPlaylist::save() {
 
-    QFileInfo fi;
     if (filename.isEmpty()) {
-        TExtensions e;
-        QString s = MyFileDialog::getSaveFileName(
-                        this, tr("Choose a filename"), pref->latest_dir,
-                        tr("Playlists") + e.playlist().forFilter());
+        return saveAs();
+    }
 
-        if (s.isEmpty()) {
-            return false;
-        }
-
-        // If filename has no extension, add it
-        fi.setFile(s);
-        if (fi.suffix().isEmpty()) {
-            fi.setFile(s + ".m3u8");
-        }
-
-        if (fi.exists()) {
-            int res = QMessageBox::question(this,
-                tr("Confirm overwrite?"), tr("The file %1 already exists.\n"
-                "Do you want to overwrite it?").arg(fi.absoluteFilePath()),
-                QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
-            if (res == QMessageBox::No) {
-                return false;
-            }
-        }
-    } else {
-        // TODO: add save as
-        fi.setFile(filename);
-        if (fi.isDir()) {
-            fi.setFile(fi.absoluteFilePath()
-                       + "/" + TConfig::PROGRAM_ID + ".m3u8");
-        }
+    QFileInfo fi(filename);
+    if (fi.isDir()) {
+        fi.setFile(fi.absoluteFilePath(), TConfig::PROGRAM_ID + ".m3u8");
     }
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
@@ -1347,7 +1314,39 @@ bool TPlaylist::save() {
                              tr("Failed to save %1").arg(filename),
                              QMessageBox::Ok);
     }
+
     return result;
+}
+
+bool TPlaylist::saveAs() {
+
+    QString s = MyFileDialog::getSaveFileName(this, tr("Choose a filename"),
+        pref->latest_dir, tr("Playlists") + extensions.playlist().forFilter());
+
+    if (s.isEmpty()) {
+        return false;
+    }
+
+    // If filename has no extension, add it
+    QFileInfo fi(s);
+    if (fi.suffix().isEmpty()) {
+        fi.setFile(s + ".m3u8");
+    }
+
+    if (fi.exists()) {
+        int res = QMessageBox::question(this, tr("Confirm overwrite?"),
+                                        tr("The file %1 already exists.\n"
+                                           "Do you want to overwrite it?")
+                                        .arg(fi.absoluteFilePath()),
+                                        QMessageBox::Yes, QMessageBox::No,
+                                        QMessageBox::NoButton);
+        if (res == QMessageBox::No) {
+            return false;
+        }
+    }
+
+    filename = fi.absoluteFilePath();
+    return save();
 }
 
 bool TPlaylist::maybeSave() {
@@ -1368,7 +1367,7 @@ bool TPlaylist::maybeSave() {
 }
 
 void TPlaylist::saveSettings() {
-    logger.debug("saveSettings");
+    logger()->debug("saveSettings");
 
 	QSettings* set = Settings::pref;
 
@@ -1380,7 +1379,7 @@ void TPlaylist::saveSettings() {
 }
 
 void TPlaylist::loadSettings() {
-    logger.debug("loadSettings");
+    logger()->debug("loadSettings");
 
 	QSettings* set = Settings::pref;
 

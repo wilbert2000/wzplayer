@@ -165,8 +165,7 @@ QSize TAbout::sizeHint () const {
 	return QSize(518, 326);
 }
 
-void TAbout::openLink(const QUrl & link) {
-	qDebug() << "Gui::TAbout::openLink:" << link.toString();
+void TAbout::openLink(const QUrl& link) {
 	QDesktopServices::openUrl(link);
 }
 

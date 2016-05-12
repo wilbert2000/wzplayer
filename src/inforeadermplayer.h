@@ -24,14 +24,18 @@
 #include <QObject>
 #include <QList>
 
+#include "wzdebug.h"
+
 class QProcess;
 
 
 class InfoReaderMplayer : QObject {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
+
 
 public:
-	InfoReaderMplayer(const QString& path);
+        InfoReaderMplayer(const QString& path);
 	virtual ~InfoReaderMplayer();
 
 	void getInfo();
@@ -47,7 +51,6 @@ protected slots:
 
 protected:
 	bool run(QString options);
-	void list();
 
 protected:
 	QString bin;

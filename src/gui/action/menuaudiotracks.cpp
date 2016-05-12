@@ -31,7 +31,7 @@ void TMenuAudioTracks::enableActions() {
 }
 
 void TMenuAudioTracks::updateAudioTracks() {
-		qDebug("Gui::Action::TMenuAudio::updateAudioTracks");
+		logger()->debug("updateAudioTracks");
 
 		audioTrackGroup->clear();
 

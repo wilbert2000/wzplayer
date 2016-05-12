@@ -123,7 +123,7 @@ void TMenuBrowse::enableActions() {
 }
 
 void TMenuBrowse::updateTitles() {
-	qDebug("Gui::Action::TMenuBrowse::updateTitles");
+    logger()->debug("updateTitles");
 
 	titleGroup->clear();
 	if (core->mdat.titles.count() == 0) {
@@ -149,7 +149,7 @@ void TMenuBrowse::updateTitles() {
 }
 
 void TMenuBrowse::updateChapters() {
-	qDebug("Gui::Action::TMenuBrowse::updateChapters");
+    logger()->debug("updateChapters");
 
 	chapterGroup->clear();
 	if (core->mdat.chapters.count() > 0) {
@@ -172,7 +172,7 @@ void TMenuBrowse::updateChapters() {
 }
 
 void TMenuBrowse::updateAngles() {
-	qDebug("Gui::Action::TMenuBrowse::updateAngels");
+    logger()->debug("updateAngels");
 
 	angleGroup->clear();
 

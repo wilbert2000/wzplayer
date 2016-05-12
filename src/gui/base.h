@@ -22,9 +22,10 @@
 #include <QMainWindow>
 #include <QTimer>
 
+#include "wzdebug.h"
+#include "gui/action/actionlist.h"
 #include "config.h"
 #include "corestate.h"
-#include "gui/action/actionlist.h"
 
 #if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 /* Disable screensaver by event */
@@ -51,7 +52,7 @@ namespace Gui {
 
 namespace Action {
 class TAction;
-class TMenuOpen;
+class TMenuFile;
 class TMenuPlay;
 class TMenuVideo;
 class TMenuAudio;
@@ -82,6 +83,7 @@ class TUpdateChecker;
 
 class TBase : public QMainWindow {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TBase();
@@ -282,7 +284,7 @@ protected:
 	Action::TAction* nextWheelFunctionAct;
 
 	// MENUS
-	Action::TMenuOpen* openMenu;
+    Action::TMenuFile* fileMenu;
 	Action::TMenuPlay* playMenu;
 	Action::TMenuVideo* videoMenu;
 	Action::TMenuAudio* audioMenu;

@@ -20,9 +20,10 @@
 #include "version.h"
 
 OSClient::OSClient(QObject* parent) : 
-	QObject(parent)
-	, logged_in(false)
-	, search_size(0) 
+    QObject(parent),
+    debug(logger()),
+    logged_in(false),
+    search_size(0)
 #ifdef OS_SEARCH_WORKAROUND
 	, best_search_count(0)
 	, search_retries(8)
@@ -42,12 +43,12 @@ void OSClient::setProxy(const QNetworkProxy & proxy) {
 #endif
 
 void OSClient::login() {
-	qDebug("OSClient::login");
+    logger()->debug("login");
 
 	// api.opensubtitles.org checks on user agent...
 	// QString user_agent = "WZPlayer " + TVersion::version;
 	QString user_agent = "SMPlayer v16.1.0.0";
-	qDebug("OSClient::login: user agent: %s", user_agent.toUtf8().constData());
+    logger()->debug("OSClient::login: user agent: '" + user_agent + "'");
 
 	QVariantList args;
 
@@ -59,7 +60,7 @@ void OSClient::login() {
 }
 
 void OSClient::search(const QString & hash, qint64 file_size) {
-	qDebug() << "OSClient::search: hash: " << hash << "file_size: " << file_size;
+    debug << "search: hash: " << hash << "file_size: " << file_size << debug;
 
 	search_hash = hash;
 	search_size = file_size;
@@ -89,7 +90,7 @@ void OSClient::doSearch(int nqueries) {
 #else
 void OSClient::doSearch() {
 #endif
-	qDebug("OSClient::doSearch");
+    logger()->debug("doSearch");
 
 	QVariantMap m;
 	m["sublanguageid"] = "all";
@@ -100,9 +101,8 @@ void OSClient::doSearch() {
 #ifdef OS_SEARCH_WORKAROUND
 	// Sometimes opensubtitles return 0 subtitles
 	// A workaround seems to add the query several times
-	qDebug("OSClient::doSearch: nqueries: %d", nqueries);
+    logger()->debug("doSearch: nqueries %1", nqueries);
 	for (int count = 0; count < nqueries; count++) list.append(m);
-	//qDebug("OSClient::doSearch: list count: %d", list.count());
 #else
 	list.append(m);
 #endif
@@ -110,26 +110,20 @@ void OSClient::doSearch() {
 	QVariantList args;
 	args << token << QVariant(list);
 
-	/*
-	for (int n=0; n < args.count(); n++) {
-		qDebug("%d = %d (%s)", n, args[n].type(), args[n].typeName());
-	}
-	*/
-
 	rpc->call("SearchSubtitles", args,
 			  this, SLOT(responseSearch(QVariant &)),
 			  this, SLOT(gotFault(int, const QString &)));
 }
 
 void OSClient::responseLogin(QVariant &arg) {
-	qDebug("OSClient::responseLogin");
+    logger()->debug("responseLogin");
 
 	QVariantMap m = arg.toMap();
 	QString status = m["status"].toString();
 	QString t = m["token"].toString();
 
-	qDebug("OSClient::responseLogin: status: %s", status.toLatin1().constData());
-	qDebug("OSClient::responseLogin: token: %s", t.toLatin1().constData());
+    logger()->debug("responseLogin: status: '" + status + "'");
+    logger()->debug("responseLogin: token: '" + t + "'");
 
 	if (status == "200 OK") {
 		token = t;
@@ -141,21 +135,12 @@ void OSClient::responseLogin(QVariant &arg) {
 }
 
 void OSClient::responseSearch(QVariant &arg) {
-	qDebug("OSClient::responseSearch");
+    logger()->debug("responseSearch");
 
 	QVariantMap m = arg.toMap();
 	QString status = m["status"].toString();
 
-	qDebug("OSClient::responseSearch: status: %s", status.toLatin1().constData());
-	//qDebug("count: %d", m.count());
-
-	/*
-	QMapIterator<QString, QVariant> i(m);
-	 while (i.hasNext()) {
-		i.next();
-		qDebug("key: %s", i.key().toLatin1().constData());
-	}
-	*/
+    logger()->debug("responseSearch: status: '" + status + "'");
 
 	if (status != "200 OK") {
 		emit searchFailed();
@@ -165,11 +150,12 @@ void OSClient::responseSearch(QVariant &arg) {
 	s_list.clear();
 
 	QVariantList data = m["data"].toList();
-	qDebug("OSClient::responseSearch: data count: %d", data.count());
+    logger()->debug("responseSearch: data count %1", data.count());
 
 #ifdef OS_SEARCH_WORKAROUND
 	if (best_search_count >= data.count()) {
-		qDebug("OSClient::responseSearch: we already have a better search (%d). Ignoring this one.", best_search_count);
+        logger()->debug("responseSearch: we already have a better search (%1)."
+                        " Ignoring this one.", best_search_count);
 		return;
 	}
 	best_search_count = data.count();
@@ -178,7 +164,6 @@ void OSClient::responseSearch(QVariant &arg) {
 	for (int n = 0; n < data.count(); n++) {
 		OSSubtitle sub;
 
-		//qDebug("%d: type: %d (%s)", n, data[n].type(), data[n].typeName());
 		QVariantMap m = data[n].toMap();
 
 		sub.releasename = m["MovieReleaseName"].toString();
@@ -198,29 +183,14 @@ void OSClient::responseSearch(QVariant &arg) {
 		sub.files = "1";
 
 		s_list.append(sub);
-
-		/*
-		qDebug("MovieName: %s", sub.movie.toLatin1().constData());
-		qDebug("MovieReleaseName: %s", sub.releasename.toLatin1().constData());
-		//qDebug("SubFileName: %s", m["SubFileName"].toString().toLatin1().constData());
-		//qDebug("SubDownloadLink: %s", m["SubDownloadLink"].toString().toLatin1().constData());
-		qDebug("ZipDownloadLink: %s", sub.link.toLatin1().constData());
-		qDebug("SubAddDate: %s", sub.date.toLatin1().constData());
-		qDebug("ISO639: %s", sub.iso639.toLatin1().constData());
-		qDebug("SubRating: %s", sub.rating.toLatin1().constData());
-		qDebug("SubAuthorComment: %s", sub.comments.toLatin1().constData());
-		qDebug("SubFormat: %s", sub.format.toLatin1().constData());
-		qDebug("LanguageName: %s", sub.language.toLatin1().constData());
-		qDebug("UserNickName: %s", sub.user.toLatin1().constData());
-		qDebug("=======");
-		*/
 	}
 
 	emit searchFinished();
 }
 
 void OSClient::gotFault(int error, const QString &message) {
-	qDebug("OSClient::gotFault: error: %d, message: %s", error, message.toUtf8().constData());
+    logger()->debug("gotFault: error: " + QString::number(error)
+                    + ", message: '" + message + "'");
 	emit errorFound(error, message);
 }
 

@@ -17,15 +17,21 @@
 */
 
 #include "settings/filesettings.h"
-#include "config.h"
-#include "settings/paths.h"
-#include "settings/mediasettings.h"
 #include <QFileInfo>
+
+#include "log4qt/logger.h"
+#include "settings/mediasettings.h"
+#include "settings/paths.h"
+#include "config.h"
+
 
 namespace Settings {
 
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TFileSettings)
+
 TFileSettings::TFileSettings() :
-	TFileSettingsBase(TPaths::configPath() + "/" + TConfig::PROGRAM_ID + "_files.ini") {
+    TFileSettingsBase(TPaths::configPath() + "/" + TConfig::PROGRAM_ID
+                      + "_files.ini") {
 }
 
 TFileSettings::~TFileSettings() {
@@ -49,33 +55,33 @@ QString TFileSettings::filenameToGroupname(const QString& filename) {
 }
 
 bool TFileSettings::existSettingsFor(const QString& filename) {
-	qDebug("Settings::TFileSettings::existSettingsFor: '%s'", filename.toUtf8().constData());
 
-	QString group_name = filenameToGroupname(filename);
-	qDebug("Settings::TFileSettings::existSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
-	beginGroup(group_name);
-	bool saved = value("saved", false).toBool();
-	endGroup();
+    QString group_name = filenameToGroupname(filename);
+    logger()->debug("existSettingsFor: group name: '" + group_name + "'");
+    beginGroup(group_name);
+    bool saved = value("saved", false).toBool();
+    endGroup();
 
-	return saved;
+    logger()->info("existSettingsFor: '" + filename + "' " + QString::number(saved));
+    return saved;
 }
 
 void TFileSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
-	qDebug("Settings::TFileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
+    logger()->info("loadSettingsFor: '" + filename + "'");
 
 	QString group_name = filenameToGroupname(filename);
-	qDebug("Settings::TFileSettings::loadSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
+    logger()->debug("loadSettingsFor: group name: '" + group_name +"'");
 	beginGroup(group_name);
     mset.load(this);
 	endGroup();
 }
 
 void TFileSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
-	qDebug("Settings::TFileSettings::saveSettingsFor: '%s'", filename.toUtf8().constData());
+    logger()->info("saveSettingsFor: '" + filename + "'");
 
 	QString group_name = filenameToGroupname(filename);
 
-	qDebug("Settings::TFileSettings::saveSettingsFor: group_name: '%s'", group_name.toUtf8().constData());
+    logger()->debug("saveSettingsFor: group name: '" + group_name + "'");
 
 	beginGroup(group_name);
 	setValue("saved", true);

@@ -124,7 +124,7 @@ TDialog::~TDialog() {
 }
 
 void TDialog::showSection(TSection section) {
-	qDebug("Gui::Pref::TDialog::showSection: %d", section);
+	logger()->debug("Gui::Pref::TDialog::showSection: %1", section);
 
 	sections->setCurrentRow(section);
 }
@@ -167,9 +167,6 @@ void TDialog::reject() {
 void TDialog::onBinChanged(Settings::TPreferences::TPlayerID player_id,
 						   bool keep_current_drivers,
 						   const QString& path) {
-	qDebug() << "Gui::Pref::TDialog::binChanged: player id" << player_id
-			 << "keep drivers" << keep_current_drivers
-			 << "path" << path;
 
 	InfoReader* i = InfoReader::obj();
 	i->getInfo(path);

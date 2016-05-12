@@ -17,22 +17,29 @@
 */
 
 #include "inforeader.h"
-#include "settings/preferences.h"
-#include "proc/playerprocess.h"
-#include "settings/paths.h"
+
 #include <QFileInfo>
 #include <QDateTime>
 #include <QSettings>
 #include <QDebug>
+
+#include "log4qt/logger.h"
+#include "proc/playerprocess.h"
+#include "settings/preferences.h"
+#include "settings/paths.h"
 
 #include "inforeadermpv.h"
 #include "inforeadermplayer.h"
 
 #define INFOREADER_SAVE_VERSION 3
 
+
 using namespace Settings;
 
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::InfoReader)
+
 InfoReader* InfoReader::static_obj = 0;
+
 
 InfoReader* InfoReader::obj() {
 
@@ -71,7 +78,7 @@ void InfoReader::clearInfo() {
 }
 
 void InfoReader::getInfo(const QString& path) {
-	qDebug() << "InfoReader::getInfo:" << path;
+    logger()->debug("InfoReader::getInfo: '" + path + "'");
 
 	// Player not existing
 	QFileInfo fi(path);
@@ -79,14 +86,14 @@ void InfoReader::getInfo(const QString& path) {
 		bin = path;
 		bin_size = 0;
 		clearInfo();
-		qWarning() << "InforReader::getInfo: player" << path << "not found";
+        logger()->warn("getInfo: player '" + path + "' not found");
 		return;
 	}
 
 	// Already loaded info
 	qint64 size = fi.size();
 	if (path == bin && size == bin_size) {
-		qDebug("InfoReader::getInfo: reusing player info");
+		logger()->debug("InfoReader::getInfo: reusing player info");
 		return;
 	}
 
@@ -108,7 +115,7 @@ void InfoReader::getInfo(const QString& path) {
 		vf_list = set.value("vf_list").toStringList();
 		option_list = set.value("option_list").toStringList();
 
-		qDebug() << "InfoReader::getInfo: loaded player info from" << inifile;
+        logger()->debug("getInfo: loaded player info from '" + inifile + "'");
 		return;
 	}
 
@@ -139,7 +146,7 @@ void InfoReader::getInfo(const QString& path) {
 	}
 
 	if (save) {
-		qDebug() << "InfoReader::getInfo: saving info to" << inifile;
+        logger()->debug("getInfo: saving info to '" + inifile + "'");
 		set.setValue("size", bin_size);
 		set.setValue("date", fi.lastModified());
 		set.setValue("vo_list", convertInfoListToList(vo_list));
@@ -151,7 +158,7 @@ void InfoReader::getInfo(const QString& path) {
 		set.setValue("option_list", option_list);
 	} else {
 		clearInfo();
-		qWarning("InfoReader::getInfo: support for player not compiled");
+		logger()->warn("InfoReader::getInfo: support for player not compiled");
 	}
 }
 

@@ -18,7 +18,6 @@
 
 #include "app.h"
 
-#include <QDebug>
 #include <QFile>
 #include <QDir>
 #include <QUrl>
@@ -26,11 +25,12 @@
 #include <QLocale>
 #include <QStyle>
 
+#include "log4qt/logger.h"
+
 #include "config.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
 #include "settings/cleanconfig.h"
-#include "log.h"
 #include "version.h"
 #include "clhelp.h"
 #include "images.h"
@@ -63,19 +63,15 @@ TApp::TApp(int& argc, char** argv) :
     setOrganizationName(TConfig::PROGRAM_ORG);
     setApplicationName(TConfig::PROGRAM_ID);
     //setApplicationVersion(TConfig::PROGRAM_VERSION);
+    //setOrganizationDomain("www.xs4all.nl");
 
-    // Save default style
+    // Save default style for resetting style
     default_style = style()->objectName();
-
-#ifdef Q_OS_LINUX
-    // Some controls aren't displayed correctly with the adwaita style
-    // so try to prevent to use it as the default style
-    if (default_style.toLower() == "adwaita")
-        default_style = "gtk+";
-#endif
 
     // Enable icons in menus
     setAttribute(Qt::AA_DontShowIconsInMenus, false);
+
+    logger()->debug("TApp: created application");
 }
 
 TApp::~TApp() {
@@ -83,18 +79,16 @@ TApp::~TApp() {
 }
 
 bool TApp::loadCatalog(QTranslator& translator,
-							const QString& name,
-							const QString& locale,
-							const QString& dir) {
+                       const QString& name,
+                       const QString& locale,
+                       const QString& dir) {
 
-	QString loc = name + "_" + locale; //.toLower();
+    QString loc = name + "_" + locale;
 	bool r = translator.load(loc, dir);
 	if (r)
-		qDebug("TApp::loadCatalog: successfully loaded %s from %s",
-			   loc.toUtf8().data(), dir.toUtf8().data());
+        logger()->info("loadCatalog: loaded " + loc + " from " + dir);
 	else
-		qDebug("TApp::loadCatalog: can't load %s from %s",
-			   loc.toUtf8().data(), dir.toUtf8().data());
+        logger()->debug("loadCatalog: failed to load " + loc + " from " + dir);
 	return r;
 }
 
@@ -123,10 +117,10 @@ void TApp::loadConfig() {
 
 	// Reconfig log
 	// --debug from the command line overrides preferences
-	if (!TLog::log->logDebugMessages()) {
-		TLog::log->setLogDebugMessages(pref->log_debug_enabled);
-	}
-	TLog::log->setLogFileEnabled(pref->log_file);
+    //if (!TLog::log->logDebugMessages()) {
+    //	TLog::log->setLogDebugMessages(pref->log_debug_enabled);
+    //}
+    //TLog::log->setLogFileEnabled(pref->log_file);
 
 	// Load translation
 	loadTranslation();
@@ -195,9 +189,8 @@ TApp::ExitCode TApp::processArgs() {
 #if USE_ASSOCIATIONS
 		// Called by uninstaller. Will restore old associations.
 		WinFileAssoc RegAssoc; 
-		TExtensions exts;
-		QStringList regExts; 
-		RegAssoc.GetRegisteredExtensions(exts.multimedia(), regExts); 
+        QStringList regExts;
+        RegAssoc.GetRegisteredExtensions(extensions.multimedia(), regExts);
 		RegAssoc.RestoreFileAssociations(regExts);
 		// TODO: send to log
 		printf("TApp::processArgs: restored associations\n");
@@ -333,12 +326,7 @@ TApp::ExitCode TApp::processArgs() {
 		return NoError;
 	}
 
-	qDebug("TApp::processArgs: files_to_play: count: %d", files_to_play.count());
-	for (int n=0; n < files_to_play.count(); n++) {
-		qDebug("TApp::processArgs: files_to_play[%d]: '%s'", n, files_to_play[n].toUtf8().data());
-	}
-
-	if (Settings::pref->use_single_window) {
+    if (Settings::pref->use_single_window) {
 		// Single instance
 		if (isRunning()) {
 			sendMessage("Hello");
@@ -371,11 +359,11 @@ TApp::ExitCode TApp::processArgs() {
 }
 
 void TApp::createGUI() {
-	qDebug() << "TApp::createGUI: creating main window Gui::TDefault";
+    logger()->debug("createGUI: creating main window Gui::TDefault");
 
 	main_window = new Gui::TDefault();
 
-	qDebug("TApp::createGUI: loading config");
+    logger()->debug("createGUI: loading window config");
 	main_window->loadConfig();
 
 	main_window->setForceCloseOnFinish(close_at_end);
@@ -389,19 +377,17 @@ void TApp::createGUI() {
     setActivationWindow(main_window);
 
 	if (move_gui) {
-		qDebug("TApp::createGUI: moving main window to %d %d", gui_position.x(), gui_position.y());
-		main_window->move(gui_position);
+        main_window->move(gui_position);
 	}
 	if (resize_gui) {
-		qDebug("TApp::createGUI: resizing main window to %d x %d", gui_size.width(), gui_size.height());
-		main_window->resize(gui_size);
+        main_window->resize(gui_size);
 	}
 
-	qDebug() << "TApp::createGUI: created main window Gui::TDefault";
+    logger()->debug("createGUI: created main window Gui::TDefault");
 } // createGUI()
 
 QString TApp::loadStyleSheet(const QString& filename) {
-	qDebug("TApp::loadStyleSheet: %s", filename.toUtf8().constData());
+    logger()->debug("loadStyleSheet: '" + filename + "'");
 
 	QFile file(filename);
 	file.open(QFile::ReadOnly);
@@ -419,12 +405,11 @@ QString TApp::loadStyleSheet(const QString& filename) {
 	stylesheet.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)",
 							   Qt::CaseSensitive, QRegExp::RegExp2),
 						QString("url(%1\\1)").arg(path + "/"));
-	//qDebug("TApp::loadStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
 	return stylesheet;
 }
 
 void TApp::changeStyleSheet(const QString& style) {
-	qDebug("TApp::changeStyleSheet: %s", style.toUtf8().constData());
+    logger()->debug("changeStyleSheet: '" + style + "'");
 
 	// Load default stylesheet
 	QString stylesheet = loadStyleSheet(":/default-theme/style.qss");
@@ -450,12 +435,11 @@ void TApp::changeStyleSheet(const QString& style) {
 		}
 	}
 
-	//qDebug("TApp::changeStyleSheet: stylesheet: %s", stylesheet.toUtf8().constData());
-	setStyleSheet(stylesheet);
+    setStyleSheet(stylesheet);
 }
 
 void TApp::changeStyle() {
-	qDebug("TApp::changeStyle");
+    logger()->debug("changeStyle");
 
 	// Set application style
 	// TODO: from help: Warning: To ensure that the application's style is set
@@ -481,7 +465,7 @@ void TApp::changeStyle() {
 }
 
 void TApp::start() {
-	qDebug("TApp::start");
+    logger()->debug("start");
 
 	// Setup style
 	changeStyle();
@@ -515,7 +499,7 @@ void TApp::start() {
 }
 
 void TApp::onRequestRestart(bool reset_style) {
-	qDebug("TApp::onRequestRestart");
+    logger()->debug("onRequestRestart");
 
 	requested_restart = true;
 	start_in_fullscreen = pref->fullscreen;
@@ -548,11 +532,12 @@ int TApp::execWithRestart() {
 	do {
 		requested_restart = false;
 		start();
-		qDebug("TApp::execWithRestart: calling exec()");
+        logger()->debug("execWithRestart: calling exec()");
 		exit_code = exec();
-		qDebug("TApp::execWithRestart: exec() returned %d", exit_code);
+        logger()->debug("execWithRestart: exec() returned "
+                        + QString::number(exit_code));
 		if (requested_restart) {
-			qDebug("TApp::execWithRestart: restarting");
+            logger()->debug("execWithRestart: restarting");
 			// Free current settings
 			delete Settings::pref;
 			// Reload configuration
@@ -571,24 +556,24 @@ void TApp::showInfo() {
 		case QSysInfo::WV_XP: win_ver = "Windows XP"; break;
 		case QSysInfo::WV_2003: win_ver = "Windows XP Professional x64/Server 2003"; break;
 		case QSysInfo::WV_VISTA: win_ver = "Windows Vista/Server 2008"; break;
-		#if QT_VERSION >= 0x040501
+#if QT_VERSION >= 0x040501
 		case QSysInfo::WV_WINDOWS7: win_ver = "Windows 7/Server 2008 R2"; break;
-		#endif
-		#if QT_VERSION >= 0x040803
+#endif
+#if QT_VERSION >= 0x040803
 		case QSysInfo::WV_WINDOWS8: win_ver = "Windows 8/Server 2012"; break;
-		#endif
-		#if ((QT_VERSION >= 0x040806 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050200))
+#endif
+#if ((QT_VERSION >= 0x040806 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050200))
 		case QSysInfo::WV_WINDOWS8_1: win_ver = "Windows 8.1/Server 2012 R2"; break;
-		#endif
-		#if ((QT_VERSION >= 0x040807 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050500))
+#endif
+#if ((QT_VERSION >= 0x040807 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050500))
 		case QSysInfo::WV_WINDOWS10: win_ver = "Windows 10"; break;
-		#endif
+#endif
 		case QSysInfo::WV_NT_based: win_ver = "NT-based Windows"; break;
 		default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
 	}
 #endif
-	QString s = QObject::tr("This is WZPlayer %1 running on %2")
-				.arg(TVersion::version)
+    QString s = tr("This is WZPlayer %1 thinking it is running on %2")
+                .arg(TVersion::version)
 #ifdef Q_OS_LINUX
 				.arg("Linux");
 #else
@@ -603,20 +588,20 @@ void TApp::showInfo() {
 #endif
 #endif
 
-	qDebug("%s", s.toUtf8().data());
-	qDebug("Compiled with Qt v. %s, running on Qt v. %s", QT_VERSION_STR, qVersion());
-
-    qDebug(" * application path: '%s'", applicationDirPath().toUtf8().constData());
-	qDebug(" * data path: '%s'", TPaths::dataPath().toUtf8().data());
-	qDebug(" * translation path: '%s'", TPaths::translationPath().toUtf8().data());
-	qDebug(" * doc path: '%s'", TPaths::docPath().toUtf8().data());
-	qDebug(" * themes path: '%s'", TPaths::themesPath().toUtf8().data());
-	qDebug(" * shortcuts path: '%s'", TPaths::shortcutsPath().toUtf8().data());
-	qDebug(" * config path: '%s'", TPaths::configPath().toUtf8().data());
-	qDebug(" * file for subtitle styles: '%s'", TPaths::subtitleStyleFile().toUtf8().data());
-	qDebug(" * current path: '%s'", QDir::currentPath().toUtf8().data());
+    logger()->info(s);
+    logger()->info("Compiled with Qt version %1, running on Qt version %2", QT_VERSION_STR,
+                 qVersion());
+    logger()->debug("application path: '%1'", applicationDirPath());
+    logger()->debug("data path: '%1'", TPaths::dataPath());
+    logger()->debug("translation path: '%1'", TPaths::translationPath());
+    logger()->debug("doc path: '%1'", TPaths::docPath());
+    logger()->debug("themes path: '%1'", TPaths::themesPath());
+    logger()->debug("shortcuts path: '%1'", TPaths::shortcutsPath());
+    logger()->debug("config path: '%1'", TPaths::configPath());
+    logger()->debug("file for subtitle styles: '%1'", TPaths::subtitleStyleFile());
+    logger()->debug("current path: '%1'", QDir::currentPath());
 #ifdef Q_OS_WIN
-	qDebug(" * font path: '%s'", TPaths::fontPath().toUtf8().data());
+    logger()->debug("font path: '%1'", TPaths::fontPath());
 #endif
 }
 
@@ -705,12 +690,11 @@ void TApp::showInfo() {
 #define VK_MEDIA_STOP 0xB2
 
 bool TApp::winEventFilter(MSG* msg, long* result) {
-	//qDebug() << "TApp::winEventFilter" << msg->message << "lParam:" << msg->lParam;
 
 	static uint last_appcommand = 0;
 
 	if (msg->message == WM_KEYDOWN) {
-		//qDebug("TApp::winEventFilter: WM_KEYDOWN: %X", msg->wParam);
+        //logger()->debug("TApp::winEventFilter: WM_KEYDOWN: %X", msg->wParam);
 		bool eat_key = false;
 		if ((last_appcommand == APPCOMMAND_MEDIA_NEXTTRACK) && (msg->wParam == VK_MEDIA_NEXT_TRACK)) eat_key = true;
 		else
@@ -721,7 +705,7 @@ bool TApp::winEventFilter(MSG* msg, long* result) {
 		if ((last_appcommand == APPCOMMAND_MEDIA_STOP) && (msg->wParam == VK_MEDIA_STOP)) eat_key = true;
 
 		if (eat_key) {
-			qDebug("TApp::winEventFilter: ignoring key %X", msg->wParam);
+            logger()->debug("TApp::winEventFilter: ignoring key %X", msg->wParam);
 			last_appcommand = 0;
 			*result = true;
 			return true;
@@ -729,16 +713,10 @@ bool TApp::winEventFilter(MSG* msg, long* result) {
 	}
 	else
 	if (msg->message == WM_APPCOMMAND) {
-		/*
-		QKeySequence k(Qt::Key_MediaTogglePlayPause);
-		qDebug() << "TApp::winEventFilter" << k.toString();
-		*/
 
-		//qDebug() << "TApp::winEventFilter" << msg->message << "lParam:" << msg->lParam;
 		uint cmd  = GET_APPCOMMAND_LPARAM(msg->lParam);
 		uint uDevice = GET_DEVICE_LPARAM(msg->lParam);
 		uint dwKeys = GET_KEYSTATE_LPARAM(msg->lParam);
-		qDebug() << "TApp::winEventFilter: cmd:" << cmd <<"uDevice:" << uDevice << "dwKeys:" << dwKeys;
 
 		//if (uDevice == FAPPCOMMAND_KEY) {
 			int key = 0;

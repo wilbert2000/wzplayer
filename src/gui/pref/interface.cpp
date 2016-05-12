@@ -18,7 +18,6 @@
 
 
 #include "gui/pref/interface.h"
-#include <QDebug>
 #include <QDir>
 #include <QStyleFactory>
 
@@ -34,7 +33,8 @@ namespace Gui {
 namespace Pref {
 
 TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f) {
+    : TWidget(parent, f),
+    debug(logger()) {
 
 	setupUi(this);
 
@@ -47,12 +47,12 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 
 	// User
 	QDir icon_dir = Settings::TPaths::configPath() + "/themes";
-	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
+    logger()->debug("icon_dir: " + icon_dir.absolutePath());
 	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
 	// Global
 	icon_dir = Settings::TPaths::themesPath();
-	qDebug("icon_dir: %s", icon_dir.absolutePath().toUtf8().data());
+    logger()->debug("icon_dir: " + icon_dir.absolutePath());
 	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n = 0; n < iconsets.count(); n++) {
 		if (iconset_combo->findText(iconsets[n]) == -1) {
@@ -173,8 +173,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	if (pref->language != language()) {
 		pref->language = language();
 		language_changed = true;
-        qDebug() << "Gui::Pref::TInterface::getData: chosen language"
-                 << pref->language;
+        logger()->debug("getData: chosen language " + pref->language);
 	}
 	if (pref->iconset != iconSet()) {
 		pref->iconset = iconSet();

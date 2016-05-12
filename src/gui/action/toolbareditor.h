@@ -55,8 +55,8 @@ protected:
 	virtual void changeEvent(QEvent* event);
 
 protected slots:
-	void on_up_button_clicked();
-	void on_down_button_clicked();
+	void onUpButtonClicked();
+	void onDownButtonClicked();
 	void on_right_button_clicked();
 	void on_left_button_clicked();
 	void on_separator_button_clicked();

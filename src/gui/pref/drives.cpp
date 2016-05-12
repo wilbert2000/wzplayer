@@ -32,7 +32,7 @@ namespace Gui { namespace Pref {
 
 bool isCDDevice(QString drive) {
 		unsigned int r =  GetDriveTypeW((LPCWSTR) drive.utf16());
-		qDebug("isCDDevice: '%s' r: %d", drive.toUtf8().data(), r);
+        logger()->debug("isCDDevice: '%1' r: %2", drive, r);
 		return (r == DRIVE_CDROM);
 	}
 
@@ -45,8 +45,8 @@ bool isCDDevice(QString drive) {
 #endif
 
 TDrives::TDrives(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f)
-{
+    : TWidget(parent, f),
+      debug(logger()) {
 	setupUi(this);
 
 #ifndef Q_OS_WIN
@@ -82,7 +82,7 @@ void TDrives::retranslateStrings() {
 }
 
 void TDrives::updateDriveCombos(bool detect_cd_devices) {
-	qDebug("Gui::Pref::TDrives::updateDriveCombos: detect_cd_devices: %d", detect_cd_devices);
+    logger()->debug("updateDriveCombos: detect_cd_device " + detect_cd_devices);
 
 	// Save current values
 	QString current_dvd_device = dvdDevice();
@@ -114,7 +114,7 @@ void TDrives::updateDriveCombos(bool detect_cd_devices) {
                                              QDir::Files | QDir::System | QDir::Readable);
 	for (int n=0; n < devices.count(); n++) {
 		QString device_name = "/dev/" + devices[n];
-		qDebug("Gui::Pref::TDrives::TDrives: device found: '%s'", device_name.toUtf8().constData());
+        logger()->debug("updateDriveCombos: device found: '" + device_name + "'");
 		dvd_device_combo->addItem(device_name);
 		cdrom_device_combo->addItem(device_name);
 		bluray_device_combo->addItem(device_name);
@@ -176,7 +176,7 @@ bool TDrives::useDVDNav() {
 }
 
 void TDrives::on_check_drives_button_clicked() {
-	qDebug("Gui::Pref::TDrives::on_check_drives_button_clicked");
+    logger()->debug("on_check_drives_button_clicked");
 	updateDriveCombos(true);
 }
 

@@ -2,6 +2,7 @@
 #define GUI_SUBTITLEMENU_H
 
 #include "gui/action/menu.h"
+#include "log4qt/logger.h"
 
 
 class TCore;
@@ -19,62 +20,64 @@ class TActionGroup;
 class TMenuSubFPS : public TMenu {
 public:
     explicit TMenuSubFPS(TBase* mw, TCore* c);
-	TActionGroup* group;
+    TActionGroup* group;
 protected:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
-	virtual void onAboutToShow();
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
+    virtual void onAboutToShow();
 private:
-	TCore* core;
-	friend class TMenuSubtitle;
+    TCore* core;
+    friend class TMenuSubtitle;
 };
 
 class TMenuSubtitle : public TMenu {
-	Q_OBJECT
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
 public:
     TMenuSubtitle(TBase* mw, TCore* c);
-	TAction* useForcedSubsOnlyAct;
-	TAction* useCustomSubStyleAct;
+    TAction* useForcedSubsOnlyAct;
+    TAction* useCustomSubStyleAct;
 
 protected:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 
 private:
-	TCore* core;
+    TCore* core;
 
-	TAction* decSubPosAct;
-	TAction* incSubPosAct;
-	TAction* decSubScaleAct;
-	TAction* incSubScaleAct;
+    TAction* decSubPosAct;
+    TAction* incSubPosAct;
+    TAction* decSubScaleAct;
+    TAction* incSubScaleAct;
 
-	TAction* decSubDelayAct;
-	TAction* incSubDelayAct;
-	TAction* subDelayAct;
+    TAction* decSubDelayAct;
+    TAction* incSubDelayAct;
+    TAction* subDelayAct;
 
-	TAction* incSubStepAct;
-	TAction* decSubStepAct;
+    TAction* incSubStepAct;
+    TAction* decSubStepAct;
 
-	TAction* seekNextSubAct;
-	TAction* seekPrevSubAct;
+    TAction* seekNextSubAct;
+    TAction* seekPrevSubAct;
 
-	TAction* nextSubtitleAct;
-	TMenu* subtitleTrackMenu;
-	TActionGroup* subtitleTrackGroup;
-	TMenu* secondarySubtitleTrackMenu;
-	TActionGroup* secondarySubtitleTrackGroup;
+    TAction* nextSubtitleAct;
+    TMenu* subtitleTrackMenu;
+    TActionGroup* subtitleTrackGroup;
+    TMenu* secondarySubtitleTrackMenu;
+    TActionGroup* secondarySubtitleTrackGroup;
 
-	TAction* loadSubsAct;
-	TAction* unloadSubsAct;
-	TMenuSubFPS* subFPSMenu;
+    TAction* loadSubsAct;
+    TAction* unloadSubsAct;
+    TMenuSubFPS* subFPSMenu;
 
 #ifdef FIND_SUBTITLES
-	TAction* showFindSubtitlesDialogAct;
-	TAction* openUploadSubtitlesPageAct;
+    TAction* showFindSubtitlesDialogAct;
+    TAction* openUploadSubtitlesPageAct;
 #endif
 
 private slots:
-	void updateSubtitles();
+    void updateSubtitles();
 };
 
 } // namespace Action

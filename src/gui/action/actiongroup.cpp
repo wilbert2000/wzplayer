@@ -20,6 +20,8 @@
 #include <QAction>
 #include <QList>
 #include <QWidget>
+#include "log4qt/logger.h"
+
 
 namespace Gui {
 namespace Action {
@@ -50,7 +52,7 @@ TActionGroup::TActionGroup(QObject* parent, const QString& name)
 }
 
 QAction* TActionGroup::setChecked(int ID) {
-	//qDebug("Gui::Action::TActionGroup::setChecked: ID: %d", ID);
+    //logger()->debug("Gui::Action::TActionGroup::setChecked: ID: %1", ID);
 
 	QList <QAction *> l = actions();
 	for (int n = 0; n < l.count(); n++) {
@@ -77,8 +79,8 @@ void TActionGroup::clear() {
 void TActionGroup::itemTriggered(QAction* a) {
 
 	int value = a->data().toInt();
-	qDebug("Gui::Action::TActionGroup::itemTriggered: '%s' ID: %d",
-		   a->objectName().toUtf8().data(), value);
+    Log4Qt::Logger::logger("Gui::Action::TActionGroup")->debug(
+                "itemTriggered: '%1' ID: %2", a->objectName(), value);
 
 	emit activated(value);
 }

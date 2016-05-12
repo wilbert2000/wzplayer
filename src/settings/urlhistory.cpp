@@ -17,6 +17,7 @@
 */
 
 #include "settings/urlhistory.h"
+#include "log4qt/logger.h"
 
 namespace Settings {
 
@@ -28,7 +29,7 @@ TURLHistory::~TURLHistory() {
 }
 
 void TURLHistory::addUrl(const QString& url) {
-	qDebug("Settings::TURLHistory::addItem: '%s'", url.toUtf8().data());
+    Log4Qt::Logger::logger("Settings::TURLHistory")->debug("addItem: " + url);
 
 	// Delete duplicates
 	QStringList::iterator iterator = begin();

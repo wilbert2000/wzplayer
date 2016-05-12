@@ -18,7 +18,6 @@
 
 #include "proc/mpvprocess.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QRegExp>
 #include <QStringList>
@@ -35,7 +34,8 @@
 namespace Proc {
 
 TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata) :
-	TPlayerProcess(parent, mdata) {
+    TPlayerProcess(parent, mdata),
+    debug(logger()) {
 }
 
 TMPVProcess::~TMPVProcess() {
@@ -111,7 +111,7 @@ bool TMPVProcess::parseSubtitleTrack(int id,
 	bool sec_selected = sec_type != SubData::None && sec_ID >= 0;
 
 	if (sub_type == sec_type && id == sec_ID) {
-		qDebug("TMPVProcess::parseSubtitleTrack: found secondary subtitle track");
+		logger()->debug("TMPVProcess::parseSubtitleTrack: found secondary subtitle track");
 		// Secondary sub, don't select the primary sub
 		selected = false;
 	}
@@ -132,7 +132,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 /*
 	if (name == "TRACKS_COUNT") {
 		int tracks = value.toInt();
-		qDebug("Proc::TMPVProcess::parseProperty: requesting track info for %d tracks", tracks);
+        logger()->debug("parseProperty: requesting track inf%1for %1 tracks", tracks);
 		for (int n = 0; n < tracks; n++) {
 			writeToStdin(QString("print_text \"TRACK_INFO_%1="
 				"${track-list/%1/type} "
@@ -147,7 +147,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "TITLES") {
 		int n_titles = value.toInt();
-		qDebug("Proc::TMPVProcess::parseProperty: creating %d titles", n_titles);
+        logger()->debug("parseProperty: creating %1 titles", n_titles);
 		for (int idx = 0; idx < n_titles; idx++) {
 			md->titles.addID(idx + 1);
 			writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1 ${=disc-title-list/%1/length:-1}\"").arg(idx));
@@ -172,7 +172,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "CHAPTERS") {
 		int n_chapters = value.toInt();
-		qDebug("Proc::TMPVProcess::parseProperty: requesting start and title of %d chapter(s)", n_chapters);
+        logger()->debug("parseProperty: requesting start and titel of %1 chapter(s)", n_chapters);
 		for (int n = 0; n < n_chapters; n++) {
 			writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
 		}
@@ -182,7 +182,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "MEDIA_TITLE") {
 		md->title = value.trimmed();
-		qDebug() << "Proc::TMPVProcess::parseProperty: title set to" << md->title;
+        logger()->debug("parseProperty: title set to '" + md->title + "'");
 		return true;
 	}
 
@@ -209,8 +209,9 @@ bool TMPVProcess::parseChapter(int id, double start, QString title) {
 
 	waiting_for_answers--;
 	md->chapters.addChapter(id, title, start);
-	qDebug() << "Proc::TMPVProcess::parseChapter: added chapter id" << id
-			 << "starting at" << start << "with title" << title;
+    logger()->debug("parseChapter: added chapter id " + QString::number(id)
+                    + " starting at " + QString::number(start)
+                    + " with title " + title);
 	return true;
 }
 
@@ -232,13 +233,13 @@ void TMPVProcess::fixTitle() {
 	// as VTS by DVDNAV, but it also makes it possible to sequentially play all
 	// titles, needed because MPV does not support menus.
 	if (!received_title_not_found) {
-		qDebug("Proc::TMPVProcess::fixTitle: requested title %d, player reports it is playing VTS %d",
+        logger()->debug("fixTitle: requested title %1, player reports it is playing VTS %2",
 				   title, selected_title);
 		notifyTitleTrackChanged(title);
 		return;
 	}
 
-	qWarning("Proc::TMPVProcess::fixTitle: requested title %d not found", title);
+    logger()->warn("fixTitle: requested tit%1 %1 not found", title);
 
 	// Let the playlist try the next title if a valid title was requested and
 	// there is more than 1 title.
@@ -261,7 +262,7 @@ void TMPVProcess::checkTime(double sec) {
 
 	if (title_swictched && sec >= title_switch_time) {
 		title_swictched = false;
-		qDebug("Proc::TMPVProcess::checkTime: sending track changed");
+        logger()->debug("checkTime: sending track changed");
 		notifyTitleTrackChanged(selected_title);
 	}
 }
@@ -285,13 +286,13 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 			int chapter = title - md->titles.firstID() + md->chapters.firstID();
 			title_switch_time = md->chapters[chapter].getStart();
 			if (title_switch_time <= md->time_sec + 0.5) {
-				qDebug("Proc::TMPVProcess::parseTitleSwitched: switched to track %d", title);
+                logger()->debug("parseTitleSwitched: switch%1 to track %1", title);
 				notifyTitleTrackChanged(title);
 			} else {
 				// Switch when the time comes
 				title_swictched = true;
 				title_switch_time -= 0.4;
-				qDebug("Proc::TMPVProcess::parseTitleSwitched: saved track changed to %d at %f", title, title_switch_time);
+                logger()->debug("parseTitleSwitched: saved track changed to %1 at %2", title, title_switch_time);
 			}
 		} else {
 			notifyTitleTrackChanged(title);
@@ -312,14 +313,14 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 			quit_at_end_of_title_ms = (int) ((md->duration - md->time_sec) * 1000);
 			// Quit right away if less than 400 ms to go.
 			if (quit_at_end_of_title_ms <= 400) {
-				qDebug("Proc::TMPVProcess::parseTitleSwitched: quitting at end of title");
+                logger()->debug("parseTitleSwitched: quitting at end of title");
 				received_end_of_file =  true;
 				quit(0);
 			} else {
 				// Quit when quit_at_end_of_title_ms elapsed
 				quit_at_end_of_title_ms -= 400;
 				quit_at_end_of_title_time.start();
-				qDebug("Proc::TMPVProcess::parseTitleSwitched: marked title to quit in %d ms",
+                logger()->debug("parseTitleSwitched: marked title%1o quit in %1 ms",
 					   quit_at_end_of_title_ms);
 			}
 		}
@@ -354,7 +355,7 @@ void TMPVProcess::convertChaptersToTitles() {
 
 	// Just for safety...
 	if (md->titles.count() > 0) {
-		qWarning("Proc::TMPVProcess::convertChaptersToTitles: found unexpected titles");
+        logger()->warn("convertChaptersToTitles: found unexpected titles");
 		return;
 	}
 	if (md->chapters.count() == 1) {
@@ -385,17 +386,18 @@ void TMPVProcess::convertChaptersToTitles() {
 		}
 	}
 
-	qDebug("Proc::TMPVProcess::convertChaptersToTitles: created %d titles",
+    logger()->debug("convertChaptersToTitles: creat%1 %1 titles",
 		   md->titles.count());
 }
 
 void TMPVProcess::playingStarted() {
-	qDebug("Proc::TMPVProcess::playingStarted");
+    logger()->debug("playingStarted");
 
 	// MPV can give negative times for TS without giving a start time.
 	// Correct them by setting the start time.
 	if (!md->start_sec_set && md->time_sec < 0) {
-		qDebug("Proc::TMPVProcess::playingStarted: setting negative start time %f", md->time_sec);
+        debug << "playingStarted: setting negative start time " << md->time_sec
+              << debug;
 		md->start_sec = md->time_sec;
 		// No longer need rollover protection (though not set for MPV anyway).
 		md->mpegts = false;
@@ -436,7 +438,7 @@ bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx,
 	}
 
 	if (buffering or idle) {
-		//qDebug("Proc::TMPVProcess::parseStatusLine: buffering");
+        //logger()->debug("parseStatusLine: buffering");
 		received_buffering = true;
 		emit receivedBuffering();
 		return true;
@@ -511,7 +513,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Check to see if a DVD title needs to be terminated
 	if (quit_at_end_of_title && !quit_send
 		&& quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
-		qDebug("Proc::TMPVProcess::parseLine: %d ms elapsed, quitting title",
+        logger()->debug("parse%1ne: %1 ms elapsed, quitting title",
 			   quit_at_end_of_title_ms);
 		quit_at_end_of_title = false;
 		received_end_of_file =  true;
@@ -568,7 +570,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// AO
 	if (rx_ao.indexIn(line) >= 0) {
 		md->ao = rx_ao.cap(1);
-        qDebug() << "Proc::TMVPProcess::parseLine: audio driver" << md->ao;
+        logger()->debug("parseLine: audio driver " + md->ao);
 		return true;
 	}
 
@@ -576,7 +578,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Fall back to generic VIDEO_CODEC if match fails.
 	if (rx_video_codec.indexIn(line) >= 0) {
 		md->video_codec = rx_video_codec.cap(2);
-		qDebug() << "Proc::TMPVProcess::parseLine: video_codec set to" << md->video_codec;
+        logger()->debug("parseLine: video_codec set to " + md->video_codec);
 		return true;
 	}
 
@@ -590,7 +592,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Fall back to generic AUDIO_CODEC if match fails.
 	if (rx_audio_codec.indexIn(line) >= 0) {
 		md->audio_codec = rx_audio_codec.cap(2);
-		qDebug() << "Proc::TMPVProcess::parseLine: audio_codec set to" << md->audio_codec;
+        logger()->debug("parseLine: audio_codec set to " + md->audio_codec);
 		return true;
 	}
 
@@ -630,7 +632,7 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	if (rx_stream_title.indexIn(line) > -1) {
 		QString s = rx_stream_title.cap(1);
-		qDebug() << "Proc::TMPVProcess::parseLine: title:" << s;
+        logger()->debug("parseLine: title " + s);
 		md->title = s;
 		emit receivedStreamTitle();
 		return true;
@@ -638,30 +640,30 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// Errors
 	if (rx_file_open.indexIn(line) >= 0) {
-		qDebug("MVPProcess::parseLine: stored file open failed");
+		logger()->debug("MVPProcess::parseLine: stored file open failed");
 		exit_code_override = TExitMsg::ERR_FILE_OPEN;
 		TExitMsg::setExitCodeMsg(rx_file_open.cap(1));
 		return true;
 	}
 	if (rx_failed_open.indexIn(line) >= 0) {
 		if (exit_code_override == 0 && rx_failed_open.cap(1) == md->filename) {
-			qDebug("MVPProcess::parseLine: stored open failed");
+			logger()->debug("MVPProcess::parseLine: stored open failed");
 			exit_code_override = TExitMsg::ERR_OPEN;
 		} else {
-			qDebug("MVPProcess::parseLine: skipped open failed");
+			logger()->debug("MVPProcess::parseLine: skipped open failed");
 		}
 	}
 	if (rx_failed_format.indexIn(line) >= 0) {
-		qDebug("MVPProcess::parseLine: stored unrecognized file format");
+		logger()->debug("MVPProcess::parseLine: stored unrecognized file format");
 		exit_code_override = TExitMsg::ERR_FILE_FORMAT;
 	}
 	if (rx_error_http_403.indexIn(line) >= 0) {
-		qDebug("MVPProcess::parseLine: stored HTTP 403");
+		logger()->debug("MVPProcess::parseLine: stored HTTP 403");
 		exit_code_override = TExitMsg::ERR_HTTP_403;
 		return true;
 	}
 	if (rx_error_http_404.indexIn(line) >= 0) {
-		qDebug("MVPProcess::parseLine: stored HTTP 404");
+		logger()->debug("MVPProcess::parseLine: stored HTTP 404");
 		exit_code_override = TExitMsg::ERR_HTTP_404;
 		return true;
 	}
@@ -740,7 +742,6 @@ bool TMPVProcess::isOptionAvailable(const QString& option) {
 
 	InfoReader* ir = InfoReader::obj();
 	ir->getInfo();
-	//qDebug() << "Proc::TMPVProcess::isOptionAvailable: option_list:" << ir->optionList();
 	return ir->optionList().contains(option);
 }
 
@@ -754,13 +755,16 @@ void TMPVProcess::addVFIfAvailable(const QString& vf, const QString& value) {
 		arg << s;
 	} else {
 		QString f = vf +"="+ value;
-		qDebug("Proc::TMPVProcess::addVFIfAvailable: filter %s is not used because it's not available", f.toLatin1().constData());
+        logger()->info("addVFIfAvailable: filter '" + f
+                       + "' is not used because it's not available");
 	}
 }
 
 void TMPVProcess::messageFilterNotSupported(const QString& filter_name) {
-	QString text = tr("the '%1' filter is not supported by mpv").arg(filter_name);
-	writeToStdin(QString("show_text \"%1\" %2").arg(text).arg(TConfig::MESSAGE_DURATION));
+    QString text = tr("the '%1' filter is not supported by mpv")
+                   .arg(filter_name);
+    writeToStdin(QString("show_text \"%1\" %2").arg(text)
+                 .arg(TConfig::MESSAGE_DURATION));
 }
 
 void TMPVProcess::setOption(const QString& name, const QVariant& value) {
@@ -917,7 +921,8 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		if (!value.isNull())
 			arg << "--af-add=" + value.toString();
 	} else {
-		qDebug() << "Proc::TMPVProcess::setOption: ignored option" << name << value;
+        logger()->debug("setOption: ignored option " + name
+                        + " " + value.toString());
 	}
 }
 
@@ -1263,7 +1268,6 @@ void TMPVProcess::discSetMousePos(int, int) {
 
 	// MPV versions later than 18 july 2015 no longer support menus
 
-	// qDebug("Proc::TMPVProcess::discSetMousePos: %d %d", x, y);
 	// writeToStdin(QString("discnav mouse_move %1 %2").arg(x).arg(y));
 	// mouse_move doesn't accept options :?
 
@@ -1284,7 +1288,6 @@ void TMPVProcess::setAspect(double aspect) {
 }
 
 void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y, int osd_level) {
-	//qDebug("Proc::TMPVProcess::setZoomAndPan: %f %f %f", zoom, pan_x, pan_y);
 
 	// Wait until player is up
 	if (notified_player_is_running) {
@@ -1313,7 +1316,7 @@ void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y, int osd
 
 #if PROGRAM_SWITCH
 void TMPVProcess::setTSProgram(int ID) {
-	qDebug("Proc::TMPVProcess::setTSProgram: function not supported");
+    logger()->debug("setTSProgram: function not supported");
 }
 #endif
 
@@ -1326,7 +1329,8 @@ void TMPVProcess::setOSDScale(double value) {
 }
 
 void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& option) {
-    qDebug() << "Proc::TMPVProcess::changeVF:" << filter << enable << option;
+    logger()->debug("changeVF: " + filter + QString::number(enable)
+                  + option.toString());
 
 	QString f;
 	if (filter == "letterbox") {
@@ -1397,7 +1401,7 @@ void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& o
 		f = "lavfi=[kerndeint=" + option.toString() +"]";
 	}
 	else {
-		qDebug() << "Proc::TMPVProcess::changeVF: unknown filter:" << filter;
+        logger()->debug("changeVF: unknown filter: " + filter);
 	}
 
 	if (!f.isEmpty()) {

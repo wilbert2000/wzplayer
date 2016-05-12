@@ -34,6 +34,7 @@ namespace Pref {
 
 TVideo::TVideo(QWidget* parent, InfoList vol) :
 	TWidget(parent, 0),
+    debug(logger()),
 	vo_list(vol),
 	player_id(pref->player_id),
 	mplayer_vo(pref->mplayer_vo),
@@ -132,21 +133,12 @@ void TVideo::setData(Settings::TPreferences* pref) {
 	player_id = pref->player_id;
 	mplayer_vo = pref->mplayer_vo;
 	mpv_vo = pref->mpv_vo;
-	qDebug() << "Gui::Pref::TVideo::setData: player id" << player_id
-			 << "vo" << pref->vo
-			 << "mplayer vo" << mplayer_vo
-			 << "mpv_vo" << mpv_vo;
+    debug << "setData: player id" << player_id
+          << "vo" << pref->vo
+          << "mplayer vo" << mplayer_vo
+          << "mpv_vo" << mpv_vo
+          << debug;
 
-	// This should not be needed
-	if (player_id == TPreferences::ID_MPLAYER) {
-		if (pref->vo != pref->mplayer_vo) {
-			qWarning() << "Gui::Pref::TVideo::setData: mplayer vo mismatch, resetting vo";
-			pref->vo = pref->mplayer_vo;
-		}
-	} else if (pref->vo != pref->mpv_vo) {
-		qWarning() << "Gui::Pref::TVideo::setData: mpv vo mismatch, resetting vo";
-		pref->vo = pref->mpv_vo;
-	}
 	setVO(pref->vo);
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
@@ -208,10 +200,11 @@ void TVideo::getData(Settings::TPreferences* pref) {
 
 void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
 							   bool keep_driver) {
-	qDebug() << "Gui::Pref::TVideo::updateDriverCombo: player id" << player_id
-			 << "keep_driver" << keep_driver
-			 << "current mplayer vo" << mplayer_vo
-			 << "current mpv vo" << mpv_vo;
+    debug << "updateDriverCombo: player id" << player_id
+          << "keep_driver" << keep_driver
+          << "current mplayer vo" << mplayer_vo
+          << "current mpv vo" << mpv_vo
+          << debug;
 
 	this->player_id = player_id;
 	QString wanted_vo;
@@ -292,13 +285,12 @@ void TVideo::setVO(const QString& vo_driver) {
 
 	int idx = vo_combo->findData(vo_driver);
 	if (idx >= 0) {
-		qDebug() << "Gui::Pref::TVideo::setVO: found driver" << vo_driver
-				 << "idx" << idx;
+        debug << "setVO: found driver" << vo_driver << "idx" << idx << debug;
 		vo_combo->setCurrentIndex(idx);
 	} else {
 		vo_combo->setCurrentIndex(vo_combo->findData("user_defined"));
 		vo_user_defined_edit->setText(vo_driver);
-		qDebug() << "Gui::Pref::TVideo::setVO: set user def driver" << vo_driver;
+        debug << "setVO: set user def driver" << vo_driver << debug;
 	}
 }
 
@@ -361,7 +353,7 @@ void TVideo::setInitialDeinterlace(int ID) {
 
 	int pos = deinterlace_combo->findData(ID);
 	if (pos < 0) {
-		qWarning("Gui::Pref::TVideo::setInitialDeinterlace: ID: %d not found in combo", ID);
+        logger()->warn("setInitialDeinterlace: ID: %1 not found in combo", ID);
 		pos = 0;
 	}
 	deinterlace_combo->setCurrentIndex(pos);
@@ -373,7 +365,7 @@ int TVideo::initialDeinterlace() {
 		return deinterlace_combo->itemData(deinterlace_combo->currentIndex()).toInt();
 	}
 
-	qWarning("Gui::Pref::TVideo::initialDeinterlace: no item selected");
+    logger()->warn("initialDeinterlace: no item selected");
 	return 0;
 }
 void TVideo::setInitialDeinterlaceTV(int ID) {
@@ -381,7 +373,7 @@ void TVideo::setInitialDeinterlaceTV(int ID) {
 	int i = deinterlace_tv_combo->findData(ID);
 	if (i < 0) {
 		i = 0;
-		qWarning("Gui::Pref::TTV::setInitialDeinterlaceTV: ID: %d not found in combo", ID);
+        logger()->warn("Gui::Pref::TTV::setInitialDeinterlaceTV%1ID: %1 not found in combo", ID);
 	}
 	deinterlace_tv_combo->setCurrentIndex(i);
 }
@@ -411,18 +403,16 @@ int TVideo::postprocessingQuality() {
 }
 
 void TVideo::onVOComboChanged(int idx) {
-	qDebug("Gui::Pref::TVideo::onVOComboChanged: %d", idx);
+    logger()->debug("onVOComboChanged: %1", idx);
 
 	// Update VOs
 	if (idx >= 0) {
 		if (player_id == TPreferences::ID_MPLAYER) {
 			mplayer_vo = VO();
-			qDebug() << "Gui::Pref::TVideo::onVOComboChanged: mplayer vo set to"
-					 << mplayer_vo;
+            logger()->debug("onVOComboChanged: mplayer vo set to " + mplayer_vo);
 		} else {
 			mpv_vo = VO();
-			qDebug() << "Gui::Pref::TVideo::onVOComboChanged: mpv vo set to"
-					 << mpv_vo;
+            logger()->debug("onVOComboChanged: mpv vo set to " + mpv_vo);
 		}
 	}
 
@@ -441,7 +431,7 @@ void TVideo::onVOComboChanged(int idx) {
 
 #ifndef Q_OS_WIN
 void TVideo::on_vdpau_button_clicked() {
-	qDebug("Gui::Pref::TVideo::on_vdpau_button_clicked");
+    logger()->debug("on_vdpau_button_clicked");
 
 	TVDPAUProperties d(this);
 

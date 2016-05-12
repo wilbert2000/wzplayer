@@ -18,10 +18,10 @@
 
 #include "proc/playerprocess.h"
 
-#include <QDebug>
 #include <QPoint>
 #include <QDir>
 #include <QFileInfo>
+#include <QString>
 
 #include "proc/exitmsg.h"
 #include "settings/aspectratio.h"
@@ -33,11 +33,13 @@
 
 namespace Proc {
 
+
 const int waiting_for_answers_safe_guard_init = 100;
 
 
 TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
     TProcess(parent),
+    debug(logger()),
     md(mdata),
     notified_player_is_running(false),
     received_end_of_file(false),
@@ -58,7 +60,7 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
 void TPlayerProcess::writeToStdin(QString text, bool log) {
 
     if (log) {
-        qDebug() << "Proc::TPlayerProcess::writeToStdin:" << text;
+        logger()->debug("writeToStdin: " + text);
     }
 
 	if (isRunning()) {
@@ -70,22 +72,23 @@ void TPlayerProcess::writeToStdin(QString text, bool log) {
 #endif
 
 	} else {
-        qWarning("Proc::TPlayerProcess::writeToStdin: process not in running state");
+        logger()->warn("writeToStdin: process not in running state");
 	}
 }
 
 TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData* md) {
 
-	TPlayerProcess* proc;
-	if (Settings::pref->isMPlayer()) {
-		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMPlayerProcess";
-		proc = new TMPlayerProcess(parent, md);
-	} else {
-		qDebug() << "Proc::TPlayerProcess::createPlayerProcess: creating TMPVProcess";
-		proc = new TMPVProcess(parent, md);
-	}
+    TPlayerProcess* proc;
+    Log4Qt::Logger* logger = Log4Qt::Logger::logger("Proc::TPlayerProcess");
+    if (Settings::pref->isMPlayer()) {
+        logger->debug("createPlayerProcess: creating TMPlayerProcess");
+        proc = new TMPlayerProcess(parent, md);
+    } else {
+        logger->debug("createPlayerProcess: creating TMPVProcess");
+        proc = new TMPVProcess(parent, md);
+    }
 
-	return proc;
+    return proc;
 }
 
 bool TPlayerProcess::startPlayer() {
@@ -115,8 +118,8 @@ bool TPlayerProcess::startPlayer() {
 
 // Slot called when the process is finished
 void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    qDebug("Proc::TPlayerProcess::onFinished: exitCode: %d, override: %d, status: %d",
-           exitCode, exit_code_override, exitStatus);
+    logger()->debug("onFinished: exitCode: %1, override:"
+                    " %2, status: %3", exitCode, exit_code_override, exitStatus);
 
     if (exit_code_override) {
         exitCode = exit_code_override;
@@ -132,35 +135,38 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 // Convert line of bytes to QString.
 void TPlayerProcess::parseBytes(QByteArray ba) {
 
-	static QTime line_time;
-	if (line_count == 0) {
-		line_time.start();
-	}
+    static QTime line_time;
+    if (line_count == 0) {
+        line_time.start();
+    }
 
 #if COLOR_OUTPUT_SUPPORT
-	QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
+    QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
 #else
-	#ifdef Q_OS_WIN
-	QString line = QString::fromUtf8(ba);
-	#else
-	QString line = QString::fromLocal8Bit(ba);
-	#endif
+#ifdef Q_OS_WIN
+    QString line = QString::fromUtf8(ba);
+#else
+    QString line = QString::fromLocal8Bit(ba);
+#endif
 #endif
 
 	// Parse QString
-	if (!parseLine(line)) {
-		qDebug("Proc::TPlayerProcess::parseBytes: ignored");
-	}
+    if (!parseLine(line)) {
+        logger()->debug("parseBytes: ignored");
+    }
 
-	line_count++;
-	if (line_count % 10000 == 0) {
-		qDebug("Proc::TPlayerProcess::parseBytes: parsed %'d lines at %f lines per second",
-			   line_count, (line_count * 1000.0) / line_time.elapsed());
-	}
+    line_count++;
+    if (line_count % 10000 == 0) {
+        logger()->debug("parseBytes: parsed " + QString::number(line_count)
+                        + " lines at "
+                        + QString::number((line_count * 1000.0)
+                                          / line_time.elapsed())
+                        + " lines per second");
+    }
 }
 
 void TPlayerProcess::playingStarted() {
-	qDebug("Proc::TPlayerProcess::playingStarted");
+    logger()->debug("playingStarted");
 
 	notified_player_is_running = true;
 
@@ -170,7 +176,7 @@ void TPlayerProcess::playingStarted() {
 	emit receivedSubtitleTracks();
 	emit receivedTitleTracks();
 
-	qDebug("Proc::TPlayerProcess::playingStarted: emit playerFullyLoaded()");
+    logger()->debug("playingStarted: emit playerFullyLoaded()");
 	emit playerFullyLoaded();
 }
 
@@ -178,15 +184,15 @@ void TPlayerProcess::notifyTitleTrackChanged(int new_title) {
 
 	int selected = md->titles.getSelectedID();
 	if (new_title != selected) {
-		qDebug("Proc::TPlayerProcess::notifyTitleTrackChanged: title changed from %d to %d",
+        logger()->debug("notifyTitleTrackChanged: title changed from %1 to %2",
 			   selected, new_title);
 		md->titles.setSelectedID(new_title);
 		if (notified_player_is_running) {
-			qDebug("Proc::TPlayerProcess::notifyTitleTrackChanged: emit receivedTitleTrackChanged()");
+            logger()->debug("notifyTitleTrackChanged: emit receivedTitleTrackChanged()");
 			emit receivedTitleTrackChanged(new_title);
 		}
 	} else {
-		qDebug("Proc::TPlayerProcess::notifyTitleTrackChanged: current title already set to %d",
+        logger()->debug("notifyTitleTrackChanged: current title already set to %1",
 			   new_title);
 	}
 }
@@ -195,9 +201,9 @@ void TPlayerProcess::notifyDuration(double duration) {
 
 	// Duration changed?
 	if (qAbs(duration - md->duration) > 0.001) {
-		qDebug("Proc::TPlayerProcess::notifyDuration: duration changed from %f to %f", md->duration, duration);
+        debug << "notifyDuration: duration changed from" << md->duration
+              << "to" << duration << debug;
 		md->duration = duration;
-		qDebug("Proc::TPlayerProcess::notifyDuration: emit durationChanged(%f)", duration);
 		emit durationChanged(duration);
 	}
 }
@@ -264,7 +270,7 @@ bool TPlayerProcess::waitForAnswers() {
 		if (waiting_for_answers_safe_guard > 0)
 			return true;
 
-		qWarning("Proc::TPlayerProcess::waitForAnswers: did not receive answers in time. Stopped waitng.");
+        logger()->warn("waitForAnswers: did not receive answers in time. Stopped waitng.");
 		waiting_for_answers = 0;
 		waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
 	}
@@ -291,7 +297,7 @@ bool TPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp& 
 }
 
 void TPlayerProcess::quit(int exit_code) {
-	qDebug("Proc::TPlayerProcess::quit");
+    logger()->debug("quit");
 
     if (!quit_send) {
         quit_send = true;
@@ -312,10 +318,10 @@ bool TPlayerProcess::parseLine(QString& line) {
 		return true;
 
 	// Output line to console++
-	qDebug("Proc::TPlayerProcess::parseLine: '%s'", line.toUtf8().data());
+    logger()->debug("parseLine: '%1'", line);
 
 	if (quit_send) {
-		qDebug("Proc::TPlayerProcess::parseLine: ignored, waiting for quit to arrive");
+        logger()->debug("parseLine: ignored, waiting for quit to arrive");
 		return true;
 	}
 
@@ -327,14 +333,14 @@ bool TPlayerProcess::parseLine(QString& line) {
 	}
 
 	if (rx_no_disk.indexIn(line) >= 0) {
-		qWarning("Proc::TPlayerProcess::parseLine: no disc in device");
+        logger()->warn("parseLine: no disc in device");
 		quit(TExitMsg::ERR_NO_DISC);
 		return true;
 	}
 
 	// End of file
 	if (rx_eof.indexIn(line) >= 0)  {
-		qDebug("Proc::TPlayerProcess::parseLine: detected end of file");
+        logger()->debug("parseLine: detected end of file");
 		received_end_of_file = true;
 		return true;
 	}
@@ -356,9 +362,11 @@ bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) 
 		md->video_out_height = dh;
 	}
 
-	qDebug() << "Proc::TMPVProcess::parseLine: VO" << md->vo
-			 << md->video_width << "x" << md->video_height << "=>"
-			 << md->video_out_width << "x" << md->video_out_height;
+    logger()->debug(QString("parseVO: VO ") + md->vo
+                    + " " + QString::number(md->video_width)
+                    + " x " + QString::number(md->video_height)
+                    + " => " + QString::number(md->video_out_width)
+                    + " x " + QString::number(md->video_out_height));
 
 	if (notified_player_is_running) {
 		emit receivedVideoOut();
@@ -372,45 +380,45 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 	/* Replaced by parseVO()
 	if (name == "WIDTH") {
 		md->video_width = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_width set to %d",
+        logger()->debug("parseVideoProperty: video_width set to %1",
 			   md->video_width);
 		return true;
 	}
 	if (name == "HEIGHT") {
 		md->video_height = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_height set to %d",
+        logger()->debug("parseVideoProperty: video_height set to %1",
 			   md->video_height);
 		return true;
 	}
 	*/
 	if (name == "ASPECT") {
 		md->video_aspect = value;
-		qDebug() << "Proc::TPlayerProcess::parseAspectRatio: video aspect ratio set to"
-				 << md->video_aspect;
+        logger()->debug("parseAspectRatio: video aspect ratio set to "
+                      + md->video_aspect);
 		return true;
 	}
 	if (name == "FPS") {
 		md->video_fps = value.toDouble();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_fps set to %f",
-			   md->video_fps);
+        debug << "parseVideoProperty: video_fps set to" << md->video_fps
+              << debug;
 		return true;
 	}
 	if (name == "BITRATE") {
 		md->video_bitrate = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseVideoProperty: video_bitrate set to %d",
+        logger()->debug("parseVideoProperty: video_bitrate set to %1",
 			   md->video_bitrate);
 		return true;
 	}
 	if (name == "FORMAT") {
 		md->video_format = value;
-		qDebug() << "Proc::TPlayerProcess::parseVideoProperty: video_format set to"
-				 << md->video_format;
+        logger()->debug("parseVideoProperty: video_format set to "
+                      + md->video_format);
 		return true;
 	}
 	if (name == "CODEC") {
 		md->video_codec = value;
-		qDebug() << "Proc::TPlayerProcess::parseVideoProperty: video_codec set to"
-				 << md->video_codec;
+        logger()->debug("parseVideoProperty: video_codec set to "
+                      + md->video_codec);
 		return true;
 	}
 
@@ -421,27 +429,32 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 
 	if (name == "BITRATE") {
 		md->audio_bitrate = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseAudioProperty: audio_bitrate set to %d", md->audio_bitrate);
+        logger()->debug("parseAudioProperty: audio_bitrate set to %1",
+                        md->audio_bitrate);
 		return true;
 	}
 	if (name == "FORMAT") {
 		md->audio_format = value;
-		qDebug() << "Proc::TPlayerProcess::parseAudioProperty: audio_format set to" << md->audio_format;
+        logger()->debug("parseAudioProperty: audio_format set to "
+                      + md->audio_format);
 		return true;
 	}
 	if (name == "RATE") {
 		md->audio_rate = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseAudioProperty: audio_rate set to %d", md->audio_rate);
+        logger()->debug("parseAudioProperty: audio_rate set to %1",
+                        md->audio_rate);
 		return true;
 	}
 	if (name == "NCH") {
 		md->audio_nch = value.toInt();
-		qDebug("Proc::TPlayerProcess::parseAudioProperty: audio_nch set to %d", md->audio_nch);
+        logger()->debug("parseAudioProperty: audio_nch set to %1",
+                        md->audio_nch);
 		return true;
 	}
 	if (name == "CODEC") {
 		md->audio_codec = value;
-		qDebug() << "Proc::TPlayerProcess::parseAudioProperty: audio_codec set to" << md->audio_codec;
+        logger()->debug("parseAudioProperty: audio_codec set to "
+                        + md->audio_codec);
 		return true;
 	}
 
@@ -462,11 +475,11 @@ bool TPlayerProcess::parseAngle(const QString& value) {
 		md->angle = 0;
 		md->angles = 0;
 	}
-	qDebug("Proc::TPlayerProcess::parseAngle: selected angle %d/%d",
+    logger()->debug("parseAngle: selected angle %1/%2",
 		   md->angle, md->angles);
 
 	if (notified_player_is_running) {
-		qDebug("Proc::TPlayerProcess::parseAngle: emit receivedAngles()");
+        logger()->debug("parseAngle: emit receivedAngles()");
 		emit receivedAngles();
 	}
 
@@ -477,11 +490,11 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "START_TIME") {
 		if (value.isEmpty() || value == "unknown") {
-			qDebug("Proc::TPlayerProcess::parseProperty: start time unknown");
+            logger()->debug("parseProperty: start time unknown");
 		} else {
 			md->start_sec_set = true;
 			md->start_sec = value.toDouble();
-			qDebug("Proc::TPlayerProcess::parseProperty: start time set to %f",
+            logger()->debug("parseProperty: start time set to %1",
 				   md->start_sec);
 		}
 		return true;
@@ -492,11 +505,11 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	}
 	if (name == "DEMUXER") {
 		md->demuxer = value;
-		qDebug() << "Proc::TPlayerProcess::parseProperty: demuxer set to" << md->demuxer;
+        logger()->debug("parseProperty: demuxer set to " + md->demuxer);
 		// TODO: mpeg TS detection
 		if (md->demuxer == "mpegts") {
 			md->mpegts = true;
-			qDebug("Proc::TPlayerProcess::parseProperty: detected mpegts");
+            logger()->debug("parseProperty: detected mpegts");
 		}
 		return true;
 	}
@@ -512,7 +525,8 @@ bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
 	name = name.trimmed();
 	value = value.trimmed();
 	md->meta_data[name] = value;
-	qDebug() << "Proc::TPlayerProcess::parseMetaDataProperty:" << name << "set to" << value;
+    logger()->debug("parseMetaDataProperty: '" + name + "' set to '"
+                    + value + "'");
 	return true;
 }
 

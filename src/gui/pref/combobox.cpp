@@ -77,13 +77,11 @@ void TFontComboBox::setFontsFromDir(const QString & fontdir) {
 		QStringList fontnames;
 		QStringList fontfiles = QDir(fontdir).entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
 		for (int n=0; n < fontfiles.count(); n++) {
-			qDebug() << "Gui::Pref::TFontComboBox::setFontsFromDir: adding font:" << fontfiles[n];
 			int id = fdb.addApplicationFont(fontdir +"/"+ fontfiles[n]);
 			fontnames << fdb.applicationFontFamilies(id);
 		}
 		//fdb.removeAllApplicationFonts();
 		fontnames.removeDuplicates();
-		qDebug() << "Gui::Pref::TFontComboBox::setFontsFromDir: fontnames:" << fontnames;
 		clear();
 		QStringListModel *m = qobject_cast<QStringListModel *>(model());
 		if (m) m->setStringList(fontnames);

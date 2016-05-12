@@ -24,13 +24,16 @@
 #include <QDir>
 #include <QTextCodec>
 #include <QWidget>
-#include <QDebug>
+
+#include "log4qt/logger.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
 #include "extensions.h"
 
 
 using namespace Settings;
+
+Log4Qt::Logger* logger = Log4Qt::Logger::logger("Helper");
 
 QString Helper::formatTime(int secs) {
 
@@ -44,13 +47,13 @@ QString Helper::formatTime(int secs) {
 	t -= minutes * 60;
 	int seconds = t;
 
-	//qDebug() << "Helper::formatTime:" << hours << ":" << minutes << ":" << seconds;
-
-	return QString("%1%2:%3:%4").arg(negative ? "-" : "").arg(hours, 2, 10, QChar('0')).arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
+    return QString("%1%2:%3:%4").arg(negative ? "-" : "")
+            .arg(hours, 2, 10, QChar('0'))
+            .arg(minutes, 2, 10, QChar('0'))
+            .arg(seconds, 2, 10, QChar('0'));
 }
 
 bool Helper::directoryContainsDVD(QString directory) {
-	//qDebug("Helper::directoryContainsDVD: '%s'", directory.latin1());
 
 	QDir dir(directory);
 	QStringList l = dir.entryList();
@@ -76,12 +79,14 @@ int Helper::qtVersion() {
 		r = n1 * 1000 + n2 * 100 + n3;
 	}
 
-	qDebug() << "Helper::qtVersion: Qt runtime version" <<  v << "counting as" << r;
+    logger->debug("qtVersion: Qt runtime version " + v + " counting as "
+                  + QString::number(r));
 	return r;
 }
 
-QStringList Helper::searchForConsecutiveFiles(const QString & initial_file) {
-	qDebug("Helper::searchForConsecutiveFiles: initial_file: '%s'", initial_file.toUtf8().constData());
+QStringList Helper::searchForConsecutiveFiles(const QString& initial_file) {
+    logger->debug("searchForConsecutiveFiles: initial file: '"
+                  + initial_file + "'");
 
 	QStringList files_to_add;
 	QStringList matching_files;
@@ -102,45 +107,46 @@ QStringList Helper::searchForConsecutiveFiles(const QString & initial_file) {
 	int pos = 0;
 	QString next_name;
 	bool next_found = false;
-	qDebug("Helper::searchForConsecutiveFiles: trying to find consecutive files");
-	while  ((pos = rx.indexIn(basename, pos)) != -1) {
-		qDebug("Helper::searchForConsecutiveFiles: captured: %s",rx.cap(1).toUtf8().constData());
+    while  ((pos = rx.indexIn(basename, pos)) >= 0) {
+        logger->debug("searchForConsecutiveFiles: captured '" + rx.cap(1) + "'");
 		digits = rx.cap(1).length();
 		current_number = rx.cap(1).toInt() + 1;
-		next_name = basename.left(pos) + QString("%1").arg(current_number, digits, 10, QLatin1Char('0'));
+        next_name = basename.left(pos) + QString("%1")
+                    .arg(current_number, digits, 10, QLatin1Char('0'));
 		next_name.replace(QRegExp("([\\[\\]?*])"), "[\\1]");
 		next_name += "*." + extension;
-		qDebug("Helper::searchForConsecutiveFiles: next name = %s",next_name.toUtf8().constData());
+        logger->debug("searchForConsecutiveFiles: next name '" + next_name + "'");
 		matching_files = dir.entryList((QStringList)next_name);
 
 		if (!matching_files.isEmpty()) {
 			next_found = true;
 			break;
 		}
-		qDebug("Helper::searchForConsecutiveFiles: pos = %d",pos);
 		pos  += digits;
 	}
 
 	if (next_found) {
-		qDebug("Helper::searchForConsecutiveFiles: adding consecutive files");
-		while (!matching_files.isEmpty()) {
-			qDebug("Helper::searchForConsecutiveFiles: '%s' exists, added to the list", matching_files[0].toUtf8().constData());
+        while (!matching_files.isEmpty()) {
+            logger->debug("searchForConsecutiveFiles: added '"
+                          + matching_files[0] + "'");
 			files_to_add << path  + "/" + matching_files[0];
 			current_number++;
-			next_name = basename.left(pos) + QString("%1").arg(current_number, digits, 10, QLatin1Char('0'));
+            next_name = basename.left(pos) + QString("%1")
+                        .arg(current_number, digits, 10, QLatin1Char('0'));
 			next_name.replace(QRegExp("([\\[\\]?*])"), "[\\1]");
 			next_name += "*." + extension;
 			matching_files = dir.entryList((QStringList)next_name);
-			qDebug("Helper::searchForConsecutiveFiles: looking for '%s'", next_name.toUtf8().constData());
+            logger->debug("searchForConsecutiveFiles: looking for '"
+                          + next_name + "'");
 		}
 	}
 
 	return files_to_add;
 }
 
-QStringList Helper::filesInDirectory(const QString & initial_file, const QStringList & filter) {
-	qDebug("Helper::filesInDirectory: initial_file: %s", initial_file.toUtf8().constData());
-	//qDebug() << "Helper::filesInDirectory: filter:" << filter;
+QStringList Helper::filesInDirectory(const QString& initial_file,
+                                     const QStringList& filter) {
+    logger->debug("filesInDirectory: initial_file: '" + initial_file + "'");
 
 	QFileInfo fi(initial_file);
 	QString current_file = fi.fileName();
@@ -157,8 +163,6 @@ QStringList Helper::filesInDirectory(const QString & initial_file, const QString
 		}
 	}
 
-	//qDebug() << "Helper::filesInDirectory: result:" << r;
-
 	return r;
 }
 
@@ -169,15 +173,21 @@ QStringList Helper::filesForPlaylist(const QString & initial_file,
 	if (filter == TPreferences::ConsecutiveFiles) {
 		res = searchForConsecutiveFiles(initial_file);
 	} else {
-		TExtensions e;
-		QStringList exts;
+        QStringList exts;
 		switch (filter) {
-			case TPreferences::VideoFiles: exts = e.video().forDirFilter(); break;
-			case TPreferences::AudioFiles: exts = e.audio().forDirFilter(); break;
-			case TPreferences::MultimediaFiles: exts = e.multimedia().forDirFilter(); break;
+            case TPreferences::VideoFiles:
+                exts = extensions.video().forDirFilter();
+                break;
+            case TPreferences::AudioFiles:
+                exts = extensions.audio().forDirFilter();
+                break;
+            case TPreferences::MultimediaFiles:
+                exts = extensions.multimedia().forDirFilter();
+                break;
 			default: ;
 		}
-		if (!exts.isEmpty()) res = Helper::filesInDirectory(initial_file, exts);
+        if (!exts.isEmpty())
+            res = Helper::filesInDirectory(initial_file, exts);
 	}
 
 	return res;
@@ -185,50 +195,53 @@ QStringList Helper::filesForPlaylist(const QString & initial_file,
 
 QString Helper::findExecutable(const QString& name) {
 
-	// Name is executable?
-	QFileInfo fi(name);
-	if (fi.isFile() && fi.isExecutable()) {
-		qDebug() << "Helper::findExecutable: found" << name;
-		return fi.absoluteFilePath();
-	}
+    // Name is executable?
+    QFileInfo fi(name);
+    if (fi.isFile() && fi.isExecutable()) {
+        logger->debug("findExecutable: found '" + name + "'");
+        return fi.absoluteFilePath();
+    }
 
-	// Search PATH
-	char sep =
+    // Search PATH
+    char sep =
 #ifdef Q_OS_LINUX
-		':';
+            ':';
 #else
-		';';
+            ';';
 #endif
-	QByteArray env = qgetenv("PATH");
-	QStringList search_paths = QString::fromLocal8Bit(env.constData()).split(sep, QString::SkipEmptyParts);
+
+    QByteArray env = qgetenv("PATH");
+    QStringList search_paths = QString::fromLocal8Bit(env.constData())
+                               .split(sep, QString::SkipEmptyParts);
 
 #ifdef Q_OS_WIN
-	// Add mplayer subdir of app dir to end of PATH
+    // Add mplayer subdir of app dir to end of PATH
     search_paths << qApp->applicationDirPath() + "/mplayer"
                  << qApp->applicationDirPath() + "/mpv";
 
-	// Add program files
-	QString program_files(qgetenv("PROGRAMFILES"));
-	if (!program_files.isEmpty()) {
-		search_paths << program_files + "/mplayer" << program_files + "/mpv";
-	}
+    // Add program files
+    QString program_files(qgetenv("PROGRAMFILES"));
+    if (!program_files.isEmpty()) {
+        search_paths << program_files + "/mplayer" << program_files + "/mpv";
+    }
 #endif
 
-	// Add app dir to end of PATH
+    // Add app dir to end of PATH
     search_paths << qApp->applicationDirPath();
 
-	for (int n = 0; n < search_paths.count(); n++) {
-		QString candidate = search_paths[n] + "/" + name;
-		fi.setFile(candidate);
-		if (fi.isFile() && fi.isExecutable()) {
-			qDebug() << "Helper::findExecutable: found" << fi.absoluteFilePath();
-			return fi.absoluteFilePath();
-		}
-        qDebug() << "Helper::findExecutable:" << candidate << "not executable";
-	}
+    for (int n = 0; n < search_paths.count(); n++) {
+        QString candidate = search_paths[n] + "/" + name;
+        fi.setFile(candidate);
+        if (fi.isFile() && fi.isExecutable()) {
+            logger->info("findExecutable: found '" + fi.absoluteFilePath()
+                         + "'");
+            return fi.absoluteFilePath();
+        }
+        logger->debug("findExecutable: '" + candidate + "' not executable");
+    }
 
-	// Name not found
-	qDebug() << "Helper::findExecutable: name" << name << "not found";
-	return QString();
+    // Name not found
+    logger->info("findExecutable: name '" + name + "' not found");
+    return QString();
 }
 

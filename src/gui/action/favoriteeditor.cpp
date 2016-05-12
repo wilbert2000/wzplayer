@@ -46,7 +46,7 @@ FEDelegate::FEDelegate(QObject *parent) : QItemDelegate(parent) {
 }
 
 QWidget* FEDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & option, const QModelIndex & index) const {
-	//qDebug("FEDelegate::createEditor");
+	//logger()->debug("FEDelegate::createEditor");
 
 	if (index.column() == COL_FILE) {
 		FileChooser* fch = new FileChooser(parent);
@@ -212,7 +212,7 @@ TFavoriteList TFavoriteEditor::data() {
 
 void TFavoriteEditor::on_delete_button_clicked() {
 	int row = table->currentRow();
-	qDebug("Gui::Action::TFavoriteEditor::on_delete_button_clicked: current_row: %d", row);
+    logger()->debug("Gui::Action::TFavoriteEditor::on_delete_button_clicked: current_ro%1 %1", row);
 
 	if (row > -1) table->removeRow(row);
 
@@ -221,13 +221,13 @@ void TFavoriteEditor::on_delete_button_clicked() {
 }
 
 void TFavoriteEditor::on_delete_all_button_clicked() {
-	qDebug("Gui::Action::TFavoriteEditor::on_delete_all_button_clicked");
+	logger()->debug("Gui::Action::TFavoriteEditor::on_delete_all_button_clicked");
 	table->setRowCount(0);
 }
 
 void TFavoriteEditor::on_add_button_clicked() {
 	int row = table->currentRow();
-	qDebug("Gui::Action::TFavoriteEditor::on_add_button_clicked: current_row: %d", row);
+    logger()->debug("Gui::Action::TFavoriteEditor::on_add_button_clicked: current_ro%1 %1", row);
 	row++;
 	table->insertRow(row);
 
@@ -241,8 +241,9 @@ void TFavoriteEditor::on_add_button_clicked() {
 	table->setCurrentCell(row, table->currentColumn());
 }
 
-void TFavoriteEditor::on_add_submenu_button_clicked() {
-	qDebug() << "Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: store_path:" << store_path;
+void TFavoriteEditor::onAddSubmenuButtonClicked() {
+    logger()->debug("onAddSubmenuButtonClicked: store_path: '" + store_path
+                    + "'");
 
 	QString filename;
 	//QString s;
@@ -250,11 +251,11 @@ void TFavoriteEditor::on_add_submenu_button_clicked() {
 	do {
 		filename = QString("favorites%1.m3u8").arg(n, 4, 10, QChar('0'));
 		if (!store_path.isEmpty()) filename = store_path +"/"+ filename;
-		qDebug() << "Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: filename:" << filename;
 		n++;
 	} while (QFile::exists(filename));
 
-	qDebug() << "Gui::Action::TFavoriteEditor::on_add_submenu_button_clicked: choosen filename:" << filename;
+    logger()->debug("onAddSubmenuButtonClicked: choosen filename: '"
+                    + filename + "'");
 
 
 	int row = table->currentRow();
@@ -280,9 +281,8 @@ void TFavoriteEditor::on_add_submenu_button_clicked() {
 	table->setCurrentCell(row, table->currentColumn());
 }
 
-void TFavoriteEditor::on_up_button_clicked() {
+void TFavoriteEditor::onUpButtonClicked() {
 	int row = table->currentRow();
-	qDebug("Gui::Action::TFavoriteEditor::on_up_button_clicked: current_row: %d", row);
 
 	if (row == 0) return;
 
@@ -297,9 +297,8 @@ void TFavoriteEditor::on_up_button_clicked() {
 	table->setCurrentCell(row-1, table->currentColumn());
 }
 
-void TFavoriteEditor::on_down_button_clicked() {
+void TFavoriteEditor::onDownButtonClicked() {
 	int row = table->currentRow();
-	qDebug("Gui::Action::TFavoriteEditor::on_down_button_clicked: current_row: %d", row);
 
 	if ((row+1) >= table->rowCount()) return;
 
@@ -334,14 +333,11 @@ void TFavoriteEditor::setRow(int row, const QList<QTableWidgetItem*>& rowItems)
 }
 
 void TFavoriteEditor::edit_icon(int row, int column) {
-	qDebug("Gui::Action::TFavoriteEditor::edit_icon: %d, %d", row, column);
 
 	if (column != COL_ICON) return;
 
 	QTableWidgetItem* i = table->item(row, column);
 	QString icon_filename = i->data(Qt::UserRole).toString();
-
-	qDebug() << "Gui::Action::TFavoriteEditor::edit_icon: icon file:" << icon_filename;
 
 	QString dir = icon_filename;
 	if (dir.isEmpty()) dir = last_dir;

@@ -22,6 +22,7 @@
 #include <QProcess>
 #include <QTime>
 
+#include "wzdebug.h"
 #include "config.h"
 #include "corestate.h"
 #include "mediadata.h"
@@ -43,7 +44,8 @@ class TPlayerProcess;
 
 
 class TCore : public QObject {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TCore(QWidget* parent, TPlayerWindow *mpw);

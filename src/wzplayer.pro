@@ -9,11 +9,13 @@ CONFIG += qt warn_on
 }
 }
 
-QT += network xml
-
 UI_DIR = .ui
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
+
+include(log4qt/log4qt.pri)
+
+QT += network xml
 
 RESOURCES = icons.qrc
 
@@ -32,8 +34,7 @@ contains(DEFINES, SIMPLE_BUILD) {
 
 isEqual(QT_MAJOR_VERSION, 5) {
 	QT += widgets gui
-	#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x040000
-	win32 {
+    win32 {
 		DEFINES -= MPRIS2
 	}
 }
@@ -42,7 +43,8 @@ contains(QT_VERSION, ^4\\.[0-5]\\..*) {
     error("Qt >= 4.6 required")
 }
 
-HEADERS += version.h \
+HEADERS += wzdebug.h \
+    version.h \
 	helper.h \
 	colorutils.h \
 	subtracks.h \
@@ -94,7 +96,7 @@ HEADERS += version.h \
     gui/action/sizegrip.h \
     gui/action/editabletoolbar.h \
     gui/action/menu.h \
-    gui/action/menuopen.h \
+    gui/action/menufile.h \
     gui/action/menuplay.h \
     gui/action/menuinoutpoints.h \
     gui/action/menuaspect.h \
@@ -162,14 +164,14 @@ HEADERS += version.h \
     maps/titletracks.h \
     maps/chapters.h \
     clhelp.h \
-    log.h \
     qtsingleapplication/qtsingleapplication.h \
     qtsingleapplication/qtlocalpeer.h \
-    app.h \
-    config.h
+    config.h \
+    app.h
 
 
-SOURCES	+= version.cpp \
+SOURCES	+= wzdebug.cpp \
+    version.cpp \
 	helper.cpp \
 	colorutils.cpp \
 	subtracks.cpp \
@@ -219,7 +221,7 @@ SOURCES	+= version.cpp \
     gui/action/sizegrip.cpp \
     gui/action/editabletoolbar.cpp \
     gui/action/menu.cpp \
-    gui/action/menuopen.cpp \
+    gui/action/menufile.cpp \
     gui/action/menuplay.cpp \
     gui/action/menuinoutpoints.cpp \
     gui/action/menuaspect.cpp \
@@ -289,10 +291,9 @@ SOURCES	+= version.cpp \
     clhelp.cpp \
     qtsingleapplication/qtsingleapplication.cpp \
     qtsingleapplication/qtlocalpeer.cpp \
+    config.cpp \
     app.cpp \
-    log.cpp \
-    main.cpp \
-    config.cpp
+    main.cpp
 
 FORMS = gui/inputdvddirectory.ui \
     gui/logwindow.ui \

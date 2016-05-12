@@ -89,7 +89,6 @@ void TTimeSliderAction::setPosition(double sec) {
 }
 
 void TTimeSliderAction::setDuration(double t) {
-	//qDebug() << "Gui::Action::TTimeSliderAction::setDuration:" << t;
 
 	duration = t;
 	QList<QWidget*> l = createdWidgets();
@@ -163,7 +162,6 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 }
 
 void TVolumeSliderAction::setValue(int v) {
-	//qDebug("Gui::Action::TVolumeSliderAction::setValue: %d", v);
 
 	volume = v;
 	QList<QWidget*> l = createdWidgets();
@@ -193,7 +191,6 @@ void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 }
 
 void TVolumeSliderAction::valueSliderChanged(int value) {
-	//qDebug("Gui::Action::TVolumeSliderAction::valueSliderChanged: %d", value);
 
 	volume = value;
 	emit valueChanged(value);

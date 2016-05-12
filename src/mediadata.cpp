@@ -20,6 +20,10 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QDebug>
+#include "log4qt/logger.h"
+
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, TMediaData)
 
 
 TMediaData::TMediaData() :
@@ -184,71 +188,71 @@ TMediaData::Type TMediaData::stringToType(QString type) {
 }
 
 void TMediaData::list() const {
-	qDebug("TMediaData::list");
+	logger()->debug("TMediaData::list");
 
-	qDebug("  filename: '%s'", filename.toUtf8().data());
-	qDebug("  selected type: %s", typeToString(selected_type).toUtf8().data());
-	qDebug("  detected type: %s", typeToString(detected_type).toUtf8().data());
-	qDebug("  valid disc URL: %d", disc.valid);
-	qDebug("  stream_url: '%s'", stream_url.toUtf8().constData());
+    logger()->debug("filename: '%1'", filename);
+    logger()->debug("selected type: %1", typeToString(selected_type));
+    logger()->debug("detected type: %1", typeToString(detected_type));
+    logger()->debug("valid disc URL: %1", disc.valid);
+    logger()->debug("stream_url: '%1'", stream_url);
 
-	qDebug("  start: %f", start_sec);
-	qDebug("  start sec set: %d", start_sec_set);
-	qDebug("  time_sec: %f", time_sec);
-	qDebug("  duration: %f", duration);
+    logger()->debug("start: " + QString::number(start_sec));
+    logger()->debug("start sec set: %1", start_sec_set);
+    logger()->debug("time_sec: " + QString::number(time_sec));
+    logger()->debug("duration: " + QString::number(duration));
 
-	qDebug("  demuxer: '%s'", demuxer.toUtf8().data());
-	qDebug("  mpegts: %d", mpegts);
+    logger()->debug("demuxer: '%1'", demuxer);
+    logger()->debug("mpegts: %1", mpegts);
 
-	qDebug("  video driver: '%s'", vo.toUtf8().constData());
-	qDebug("  video_width: %d", video_width);
-	qDebug("  video_height: %d", video_height); 
-	qDebug("  video_aspect: %s", video_aspect.toUtf8().constData());
-	qDebug("  video_aspect_original: %f", video_aspect_original);
-	qDebug("  video_fps: '%f'", video_fps);
+    logger()->debug("video driver: '%1'", vo);
+    logger()->debug("video_width: %1", video_width);
+    logger()->debug("video_height: %1", video_height);
+    logger()->debug("video_aspect: %1", video_aspect);
+    logger()->debug("video_aspect_original: %1", video_aspect_original);
+    logger()->debug("video_fps: " + QString::number(video_fps));
 
-	qDebug("  video_out_width: %d", video_out_width);
-	qDebug("  video_out_height: %d", video_out_height);
+    logger()->debug("video_out_width: %1", video_out_width);
+    logger()->debug("video_out_height: %1", video_out_height);
 
-	qDebug("  video_format: '%s'", video_format.toUtf8().data());
-	qDebug("  video_codec: '%s'", video_codec.toUtf8().data());
-	qDebug("  video_bitrate: %d", video_bitrate);
-	qDebug("  video_hwdec: %d", video_hwdec);
-	qDebug("  Video tracks:");
+    logger()->debug("video_format: '%1'", video_format);
+    logger()->debug("video_codec: '%1'", video_codec);
+    logger()->debug("video_bitrate: %1", video_bitrate);
+    logger()->debug("video_hwdec: %1", video_hwdec);
+    logger()->debug("Video tracks:");
 	videos.list();
 
-	qDebug("  audio driver: '%s'", ao.toUtf8().constData());
-	qDebug("  audio_format: '%s'", audio_format.toUtf8().data());
-	qDebug("  audio_codec: '%s'", audio_codec.toUtf8().data());
-	qDebug("  audio_bitrate: %d", audio_bitrate);
-	qDebug("  audio_rate: %d", audio_rate);
-	qDebug("  audio_nch: %d", audio_nch);
-	qDebug("  Audio tracks:");
+    logger()->debug("audio driver: '%1'", ao);
+    logger()->debug("audio_format: '%1'", audio_format);
+    logger()->debug("audio_codec: '%1'", audio_codec);
+    logger()->debug("audio_bitrate: %1", audio_bitrate);
+    logger()->debug("audio_rate: %1", audio_rate);
+    logger()->debug("audio_nch: %1", audio_nch);
+    logger()->debug("Audio tracks:");
 	audios.list();
 
-	qDebug("  Subtitles:");
+    logger()->debug("Subtitles:");
 	subs.list();
-	qDebug("  Titles:");
+    logger()->debug("Titles:");
 	titles.list();
-	qDebug("  Chapters:");
+    logger()->debug("Chapters:");
 	chapters.list();
 
 #if PROGRAM_SWITCH
-	qDebug("  Programs:");
+    logger()->debug("Programs:");
 	programs.list();
 #endif
 
-	qDebug("  Title: '%s'", title.toUtf8().constData());
-	qDebug("  Meta data:");
+    logger()->debug("Title: '%1'", title);
+    logger()->debug("Meta data:");
 	TMetaData::const_iterator i = meta_data.constBegin();
 	while (i != meta_data.constEnd()) {
-		qDebug() << i.key() << "=" << i.value();
+        logger()->debug(i.key() + " = " + i.value());
 		i++;
 	}
 
-	qDebug("  dvd_id: '%s'", dvd_id.toUtf8().data());
-	qDebug("  Angle: %d/%d", angle, angles);
+    logger()->debug("dvd_id: '%1'", dvd_id);
+    logger()->debug("Angle: %1/%2", angle, angles);
 
-	qDebug("  initialized: %d", initialized);
+    logger()->debug("initialized: %1", initialized);
 }
 

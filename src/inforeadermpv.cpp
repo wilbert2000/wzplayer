@@ -23,8 +23,9 @@
 
 
 InfoReaderMPV::InfoReaderMPV(const QString& path)
-	: QObject()
-	, bin(path) {
+    : QObject(),
+    debug(logger()),
+    bin(path) {
 }
 
 InfoReaderMPV::~InfoReaderMPV() {
@@ -52,45 +53,10 @@ void InfoReaderMPV::getInfo() {
 	}
 
 	option_list = getOptionsList(run("--list-options"));
-
-	//list();
-}
-
-void InfoReaderMPV::list() {
-	qDebug("InfoReaderMPV::list");
-
-	InfoList::iterator it;
-
-	qDebug(" vo_list:");
-	for (it = vo_list.begin(); it != vo_list.end(); ++it) {
-		qDebug("driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
-	}
-
-	qDebug(" ao_list:");
-	for (it = ao_list.begin(); it != ao_list.end(); ++it) {
-		qDebug("driver: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
-	}
-
-	qDebug(" demuxer_list:");
-	for (it = demuxer_list.begin(); it != demuxer_list.end(); ++it) {
-		qDebug("demuxer: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
-	}
-
-	qDebug(" vc_list:");
-	for (it = vc_list.begin(); it != vc_list.end(); ++it) {
-		qDebug("codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
-	}
-
-	qDebug(" ac_list:");
-	for (it = ac_list.begin(); it != ac_list.end(); ++it) {
-		qDebug("codec: '%s', desc: '%s'", (*it).name().toUtf8().data(), (*it).desc().toUtf8().data());
-	}
 }
 
 QList<QByteArray> InfoReaderMPV::run(QString options) {
-	qDebug("InfoReaderMPV::run: '%s %s'",
-		   bin.toUtf8().constData(),
-		   options.toUtf8().constData());
+    logger()->debug("run: bin '" + bin + "' options '" + options + "'");
 
 	QList<QByteArray> r;
 
@@ -99,13 +65,13 @@ QList<QByteArray> InfoReaderMPV::run(QString options) {
 	proc.setProcessChannelMode(QProcess::MergedChannels);
 	proc.start(bin, args);
 	if (!proc.waitForStarted()) {
-		qWarning("InfoReaderMPV::run: process can't start!");
+        logger()->warn("run: process can't start!");
 		return r;
 	}
 
 	//Wait until finish
 	if (!proc.waitForFinished()) {
-		qWarning("InfoReaderMPV::run: process didn't finish. Killing it...");
+        logger()->warn("run: process didn't finish. Killing it...");
 		proc.kill();
 	}
 
@@ -118,13 +84,11 @@ InfoList InfoReaderMPV::getList(const QList<QByteArray> & lines) {
 	InfoList l;
 
 	foreach(QByteArray line, lines) {
-		//qDebug() << "InfoReaderMPV::getList: line:" << line;
-
 		line.replace("\n", "");
 		line = line.simplified();
 		if (line.startsWith("Available") || line.startsWith("demuxer:") ||
-			line.startsWith("Video decoders:") || line.startsWith("Audio decoders:"))
-		{
+            line.startsWith("Video decoders:")
+            || line.startsWith("Audio decoders:")) {
 			line = QByteArray();
 		}
 		if (!line.isEmpty()) {
@@ -134,7 +98,6 @@ InfoList InfoReaderMPV::getList(const QList<QByteArray> & lines) {
 				if (name.endsWith(':')) name = name.left(name.count()-1);
 				QString desc = line.mid(pos+1);
 				desc = desc.replace(": ", "").replace("- ", "");
-				//qDebug() << "InfoReaderMPV::getList: name:" << name << "desc:" << desc;
 				l.append(InfoData(name, desc));
 			}
 		}
@@ -147,14 +110,12 @@ QStringList InfoReaderMPV::getOptionsList(const QList<QByteArray> & lines) {
 	QStringList l;
 
 	foreach(QByteArray line, lines) {
-		//qDebug() << "InfoReaderMPV::getOptionsList: line:" << line;
 		line.replace("\n", "");
 		line = line.simplified();
 		if (line.startsWith("--")) {
 			int pos = line.indexOf(' ');
 			if (pos > -1) {
 				QString option_name = line.left(pos);
-				//qDebug() << "InfoReaderMPV::getOptionsList: option:" << option_name;
 				l << option_name;
 			}
 		}

@@ -3,6 +3,7 @@
 
 #include <QTreeWidget>
 #include <gui/playlist/playlistwidgetitem.h>
+#include "wzdebug.h"
 
 
 namespace Gui {
@@ -10,6 +11,8 @@ namespace Playlist {
 
 class TPlaylistWidget : public QTreeWidget {
     Q_OBJECT
+    DECLARE_QCLASS_LOGGER
+
 public:
     explicit TPlaylistWidget(QWidget* parent);
     virtual ~TPlaylistWidget();

@@ -21,11 +21,15 @@
 #include <QFile>
 #include <QDir>
 
+#include "log4qt/logger.h"
 #include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include "filehash.h" // hash function
 
 namespace Settings {
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TFileSettingsHash)
+
 
 QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 
@@ -38,8 +42,8 @@ QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 	QDir dir(TPaths::configPath());
 	if (!dir.exists(dir_name)) {
 		if (!dir.mkpath(dir_name)) {
-			qWarning("Settings::TFileSettingsHash::iniFilenameFor: failed to create directory '%s'",
-					 dir_name.toUtf8().constData());
+            logger()->warn("iniFilenameFor: failed to create directory '"
+                           + dir_name + "'");
 			return QString();
 		}
 	}
@@ -55,15 +59,15 @@ TFileSettingsHash::~TFileSettingsHash() {
 }
 
 bool TFileSettingsHash::existSettingsFor(const QString& filename) {
-	qDebug("TFileSettingsHash::existSettingsFor: '%s'", filename.toUtf8().constData());
+    logger()->debug("existSettingsFor: '" + filename + "'");
 
 	QString config_file = iniFilenameFor(filename);
-	qDebug("TFileSettingsHash::existSettingsFor: config_file: '%s'", config_file.toUtf8().constData());
+    logger()->debug("existSettingsFor: config_file: '" + config_file + "'");
 	return QFile::exists(config_file);
 }
 
 void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
-	qDebug("FileSettings::loadSettingsFor: '%s'", filename.toUtf8().constData());
+    logger()->debug("loadSettingsFor: '" + filename + "'");
 
 	beginGroup("file_settings");
     mset.load(this);
@@ -71,7 +75,7 @@ void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings&
 }
 
 void TFileSettingsHash::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
-	qDebug("TFileSettingsHash::saveSettingsFor: '%s'", filename.toUtf8().constData());
+    logger()->debug("saveSettingsFor: '" + filename + "'");
 
 	beginGroup("file_settings");
     mset.save(this);

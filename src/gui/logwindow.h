@@ -20,7 +20,7 @@
 #define GUI_LOGWINDOW_H
 
 #include "ui_logwindow.h"
-
+#include "log4qt/logger.h"
 
 class QTextEdit;
 
@@ -28,6 +28,7 @@ namespace Gui {
 
 class TLogWindow : public QWidget, public Ui::TLogWindow {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	TLogWindow(QWidget* parent, const QString& name);

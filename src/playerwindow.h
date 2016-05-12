@@ -29,12 +29,17 @@
 #include <QResizeEvent>
 #include <QTime>
 
+#include "wzdebug.h"
+
+
 class QTimer;
 
 
 //! TVideoWindow can be instructed to not delete the background.
 class TVideoWindow : public QWidget {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
 public:
 	explicit TVideoWindow(QWidget* parent);
 	virtual ~TVideoWindow();
@@ -50,7 +55,9 @@ protected:
 
 
 class TPlayerWindow : public QWidget {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
+
 public:
 	TPlayerWindow(QWidget* parent);
 	virtual ~TPlayerWindow();

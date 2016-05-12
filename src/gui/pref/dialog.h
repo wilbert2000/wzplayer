@@ -20,6 +20,7 @@
 #define GUI_PREF_DIALOG_H
 
 #include "ui_dialog.h"
+#include "log4qt/logger.h"
 #include "settings/preferences.h"
 
 
@@ -53,6 +54,7 @@ class TAdvanced;
 
 class TDialog : public QDialog, public Ui::TDialog {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	enum TSection {

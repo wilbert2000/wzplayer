@@ -31,6 +31,10 @@
 #include "settings/urlhistory.h"
 
 
+namespace Log4Qt {
+class Logger;
+}
+
 namespace Settings {
 
 typedef QList<QVariant> TAudioEqualizerList;
@@ -391,8 +395,10 @@ public:
 	bool use_mpris2;
 #endif
 
+    static Log4Qt::Logger* logger;
 
 private:
+
 	void setPlayerBin0(QString bin);
 	void setPlayerID();
 };

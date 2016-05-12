@@ -117,8 +117,6 @@ TMenuStayOnTop::TMenuStayOnTop(TBase* mw) :
 }
 
 void TMenuStayOnTop::onTriggered(QAction* action) {
-    qDebug() << "Gui::Action::TMenuStayOnTop::onTriggered action"
-             << action->objectName() << "pref" << pref->stay_on_top;
 
     TPreferences::TOnTop stay_on_top;
     if (action->objectName() == "stay_on_top_toggle") {
@@ -131,8 +129,6 @@ void TMenuStayOnTop::onTriggered(QAction* action) {
     } else {
         stay_on_top = (TPreferences::TOnTop) action->data().toInt();
     }
-    qDebug() << "Gui::Action::TMenuStayOnTop::onTriggered selected stay_on_top"
-             << stay_on_top;
 
     toggleStayOnTopAct->setIcon(Images::icon(stayOnTopToIconString(stay_on_top)));
 }

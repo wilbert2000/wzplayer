@@ -1,15 +1,27 @@
 #include "gui/playlist/playlistwidgetitem.h"
 
-#include <QDebug>
-#include <QString>
+#include <QDir>
 #include <QTime>
+#include <QString>
 
+#include "log4qt/logger.h"
 #include "images.h"
 #include "helper.h"
 
 namespace Gui {
 namespace Playlist {
 
+
+QString playlistItemState(TPlaylistItemState state) {
+
+    switch (state) {
+        case PSTATE_STOPPED: return "Stopped";
+        case PSTATE_LOADING: return "Loading";
+        case PSTATE_PLAYING: return "Playing";
+        case PSTATE_FAILED: ;
+    }
+    return "Failed";
+}
 
 class TTimeStamp : public QTime {
 public:
@@ -68,8 +80,8 @@ void TPlaylistItem::setState(TPlaylistItemState state) {
     if (state == PSTATE_PLAYING) {
         _played = true;
         _playedTime = timeStamper.getStamp();
-        qDebug() << "Gui::Playlist::TPlaylistItem::setState: stamped"
-                 << _playedTime << "on" << _filename;
+        Log4Qt::Logger::logger("Gui::Playlist::TPlaylistItem")->logger()->debug(
+                    "setState: stamped %1 on %2", _playedTime, _filename);
     }
     _state = state;
 }
@@ -82,6 +94,8 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
     return item.filename() == _filename;
 }
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
 
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 
@@ -103,7 +117,7 @@ QIcon playIcon;
 QIcon failedIcon;
 
 
-// Used as root
+// Used as root during scan
 TPlaylistWidgetItem::TPlaylistWidgetItem(const QIcon& icon) :
     QTreeWidgetItem(),
     itemIcon(icon) {
@@ -122,7 +136,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          bool isDir,
                                          const QIcon& icon) :
     QTreeWidgetItem(parent, after),
-    playlistItem(filename, name, duration, isDir),
+    playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir),
     itemIcon(icon) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
@@ -139,12 +153,17 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
 
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
     setText(COL_NAME, name);
-    setToolTip(COL_NAME, filename);
+    setToolTip(COL_NAME, playlistItem.filename());
 
     setDuration(duration);
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
+}
+
+QString TPlaylistWidgetItem::path() const {
+     return QDir::toNativeSeparators(
+         QFileInfo(playlistItem.filename()).absolutePath());
 }
 
 int TPlaylistWidgetItem::getLevel() const {
@@ -156,8 +175,8 @@ int TPlaylistWidgetItem::getLevel() const {
 }
 
 void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
-    qDebug() << "Gui::TPlaylistWidgetItem::setState:"
-             << filename() << state;
+    logger()->debug("setState: '" + filename() + "' to "
+                    + playlistItemState(state));
 
     playlistItem.setState(state);
 

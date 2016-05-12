@@ -54,13 +54,12 @@ TAssociations::TAssociations(QWidget* parent, Qt::WindowFlags f)
 		//connect(lpbButton, SIGNAL(clicked(bool)), this, SLOT(launchAppDefaults()));
 	}
 
-	TExtensions e;
-	for (int n=0; n < e.multimedia().count(); n++) {
-		addItem(e.multimedia()[n]);
+    for (int n = 0; n < extensions.multimedia().count(); n++) {
+        addItem(extensions.multimedia()[n]);
 	}
 	// Add the playlist extensions
-	for (int n=0; n < e.playlist().count(); n++) {
-		addItem(e.playlist()[n]);
+    for (int n = 0; n < extensions.playlist().count(); n++) {
+        addItem(extensions.playlist()[n]);
 	}
 	retranslateStrings();
 
@@ -93,7 +92,7 @@ void TAssociations::selectNoneClicked(bool)
 
 void TAssociations::listItemClicked(QListWidgetItem* item)
 {
-	qDebug("Gui::Pref::TAssociations::listItemClicked");
+	logger()->debug("Gui::Pref::TAssociations::listItemClicked");
 	
 	if (!(item->flags() & Qt::ItemIsEnabled))
 		return; 
@@ -128,7 +127,7 @@ void TAssociations::addItem(QString label)
 void TAssociations::refreshList()
 {
 	m_regExtensions.clear(); 
-	WinFileAssoc ().GetRegisteredExtensions(TExtensions().multimedia(), m_regExtensions);
+    WinFileAssoc ().GetRegisteredExtensions(extensions.multimedia(), m_regExtensions);
 
 	for (int k = 0; k < listWidget->count(); k++)
 	{
@@ -179,7 +178,7 @@ int TAssociations::ProcessAssociations(QStringList& current, QStringList& old)
 
 void TAssociations::getData(Settings::TPreferences*)
 {
-	qDebug("Gui::Pref::TAssociations::getData: something_changed: %d", something_changed);
+	logger()->debug("Gui::Pref::TAssociations::getData: something_changed: %1", something_changed);
 	if (!something_changed) return;
 	
 	QStringList extensions; 

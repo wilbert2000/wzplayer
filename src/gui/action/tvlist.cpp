@@ -18,11 +18,11 @@
 
 #include "gui/action/tvlist.h"
 
-#include <QDebug>
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
 
+#include "log4qt/log4qt.h"
 #include "gui/base.h"
 #include "gui/action/favoriteeditor.h"
 #include "images.h"
@@ -50,7 +50,7 @@ TTVList::TTVList(TBase* mw,
 #ifndef Q_OS_WIN
     if (check_channels_conf) {
 		/* f_list.clear(); */
-		parse_channels_conf(services);
+		parseChannelsConf(services);
 		updateMenu();
 	}
 #endif
@@ -64,26 +64,27 @@ TFavorites* TTVList::createNewObject(const QString& filename) {
 }
 
 #ifndef Q_OS_WIN
-void TTVList::parse_channels_conf(Services services) {
-	qDebug("Gui::Action::TTVList::parse_channels_conf");
+void TTVList::parseChannelsConf(Services services) {
 
 	QString file = QDir::homePath() + "/.mplayer/channels.conf.ter";
 
 	if (!QFile::exists(file)) {
-		qDebug() << "Gui::TAction::TTVList::parse_channels_conf:" << file << "doesn't exist";
+        logger()->debug("parseChannelsConf: '" + file + "' doesn't exist");
 		file = QDir::homePath() + "/.mplayer/channels.conf";
 	}
 
 	QFile f(file);
 	if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qDebug() << "Gui::Action::TTVList::parse_channels_conf: can't open" << file;
+        logger()->debug("parseChannelsConf: can't open '" + file + "'");
 		return;
 	}
+
+    logger()->debug("parseChannelsConf");
 
 	QTextStream in(&f);
 	while (!in.atEnd()) {
 		QString line = in.readLine();
-		qDebug() << "Gui::Action::TTVList::parse_channels_conf:" << line;
+        logger()->debug("parseChannelsConf: line '" + line + "'");
 		QString channel = line.section(':', 0, 0);
 		QString video_pid = line.section(':', 10, 10);
 		QString audio_pid = line.section(':', 11, 11);
@@ -91,8 +92,9 @@ void TTVList::parse_channels_conf(Services services) {
 		bool is_data = (video_pid == "0" && audio_pid == "0");
 		bool is_tv = (!is_radio && !is_data);
 		if (!channel.isEmpty()) {
-			qDebug() << "Gui::Action::TTVList::parse_channels_conf: channel:" << channel
-					 << "video_pid:" << video_pid << "audio_pid:" << audio_pid;
+            logger()->debug("parseChannelsConf: channel: " + channel
+                          + " video_pid: " + video_pid
+                          + " audio_pid: " + audio_pid);
 			QString channel_id = "dvb://"+channel;
 			if (findFile(channel_id) == -1) {
 				if ((services.testFlag(TTVList::TV) && is_tv) ||
@@ -126,7 +128,7 @@ QString TTVList::findChannelsFile() {
 #endif
 
 void TTVList::edit() {
-	qDebug("Gui::Action::TTVList::edit");
+    logger()->debug("edit");
 
     TFavoriteEditor e(main_window);
 

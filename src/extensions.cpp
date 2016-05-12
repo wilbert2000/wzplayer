@@ -18,39 +18,47 @@
 
 #include "extensions.h"
 
-ExtensionList::ExtensionList() : QStringList()
-{
+
+TExtensions extensions;
+
+
+ExtensionList::ExtensionList() : QStringList() {
 }
 
-QString ExtensionList::forFilter() {
+QString ExtensionList::forFilter() const {
+
 	QString s;
-	for (int n=0; n < count(); n++) {
+    for (int n = 0; n < count(); n++) {
 		s = s + "*." + at(n) + " ";
 	}
-	if (!s.isEmpty()) s = " (" + s + ")";
+    if (!s.isEmpty())
+        s = " (" + s + ")";
 	return s;
 }
 
-QStringList ExtensionList::forDirFilter() {
+QStringList ExtensionList::forDirFilter() const {
+
 	QStringList l;
-	for (int n=0; n < count(); n++) {
+    for (int n = 0; n < count(); n++) {
 		QString s = "*." + at(n);
 		l << s;
 	}
 	return l;
 }
 
-QString ExtensionList::forRegExp() {
+QString ExtensionList::forRegExp() const {
+
 	QString s;
-	for (int n=0; n < count(); n++) {
-		if (!s.isEmpty()) s = s + "|";
+    for (int n = 0; n < count(); n++) {
+        if (!s.isEmpty())
+            s = s + "|";
 		s = s + "^" + at(n) + "$";
 	}
 	return s;
 }
 
-TExtensions::TExtensions()
-{
+TExtensions::TExtensions() {
+
 	_video << "avi" << "vfw" << "divx" 
            << "mpg" << "mpeg" << "m1v" << "m2v" << "mpv" << "dv" << "3gp"
            << "mov" << "mp4" << "m4v" << "mqv"
@@ -83,4 +91,3 @@ TExtensions::TExtensions()
 
 TExtensions::~TExtensions() {
 }
-

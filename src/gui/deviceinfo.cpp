@@ -20,13 +20,18 @@
 #include <QProcess>
 #include <QFile>
 #include <QDebug>
+#include "log4qt/logger.h"
+
 
 namespace Gui {
 
 #ifndef Q_OS_WIN
 
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::TDeviceList)
+
+
 TDeviceList TDeviceInfo::alsaDevices() {
-	qDebug("Gui::TDeviceInfo::alsaDevices");
+    logger()->debug("alsaDevices");
 
 	TDeviceList l;
 	QRegExp rx_device("^card\\s([0-9]+).*\\[(.*)\\],\\sdevice\\s([0-9]+):");
@@ -40,26 +45,27 @@ TDeviceList TDeviceInfo::alsaDevices() {
 		QByteArray line;
 		while (p.canReadLine()) {
 			line = p.readLine().trimmed();
-			qDebug("Gui::TDeviceInfo::alsaDevices: '%s'", line.constData());
+            logger()->debug("alsaDevices: '" + QString(line) + "'");
 			if (rx_device.indexIn(line) >= 0) {
 				QString id = rx_device.cap(1);
 				id.append(".");
 				id.append(rx_device.cap(3));
 				QString desc = rx_device.cap(2);
-				qDebug() << "Gui::TDeviceInfo::alsaDevices: found device:"
-						 << id << desc;
+                logger()->debug("alsaDevices: found device: '" + id
+                                + "' '" + desc + "'");
 				l.append(TDeviceData(id, desc));
 			}
 		}
 	} else {
-		qWarning("Gui::TDeviceInfo::alsaDevices: could not start aplay, error %d", p.error());
+        logger()->warn("alsaDevices: could not start aplay, error %1",
+                       p.error());
 	}
 
 	return l;
 }
 
 TDeviceList TDeviceInfo::xvAdaptors() {
-	qDebug("Gui::TDeviceInfo::xvAdaptors");
+    logger()->debug("xvAdaptors");
 
 	TDeviceList l;
 	QRegExp rx_device("^Adaptor #([0-9]+): \"(.*)\"");
@@ -72,17 +78,18 @@ TDeviceList TDeviceInfo::xvAdaptors() {
 	if (p.waitForFinished()) {
 		while (p.canReadLine()) {
 			QString s = QString::fromLocal8Bit(p.readLine()).trimmed();
-			qDebug() << "Gui::TDeviceInfo::xvAdaptors:" << s;
+            logger()->debug("xvAdaptors: '" + s + "'");
 			if (rx_device.indexIn(s) >= 0) {
 				QString id = rx_device.cap(1);
 				QString desc = rx_device.cap(2);
-				qDebug() << "Gui::TDeviceInfo::xvAdaptors: found adaptor:"
-						 << id << desc;
+                logger()->debug("xvAdaptors: found adaptor: '" + id
+                                + " '" + desc + "'");
 				l.append(TDeviceData(id, desc));
 			}
 		}
 	} else {
-		qWarning("Gui::TDeviceInfo::xvAdaptors: could not start xvinfo, error %d", p.error());
+        logger()->warn("xvAdaptors: could not start xvinfo, error %1",
+                       p.error());
 	}
 
 	return l;

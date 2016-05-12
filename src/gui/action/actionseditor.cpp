@@ -40,6 +40,7 @@
 #include <QTimer>
 #include <QResizeEvent>
 
+#include "log4qt/logger.h"
 #include "images.h"
 #include "filedialog.h"
 #include "settings/paths.h"
@@ -72,10 +73,9 @@ QWidget* MyDelegate::createEditor(QWidget *parent,
 								   const QStyleOptionViewItem & option,
 	                               const QModelIndex & index) const
 {
-	qDebug("MyDelegate::createEditor");
+	logger()->debug("MyDelegate::createEditor");
 
 	old_accel_text = index.model()->data(index, Qt::DisplayRole).toString();
-	//qDebug("text: %s", old_accel_text.toUtf8().data());
 	
 	return QItemDelegate::createEditor(parent, option, index);
 }
@@ -97,6 +97,8 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 
 namespace Gui {
 namespace Action {
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Action::TActionsEditor)
 
 const int WIDTH_CONFLICT_ICON = 16;
 const int MARGINS = 2;
@@ -202,8 +204,6 @@ void TActionsEditor::resizeColumns() {
 }
 
 void TActionsEditor::resizeEvent(QResizeEvent* event) {
-	qDebug("Gui::Action::TToolbarEditor::resizeEvent %d", event->spontaneous());
-
 	QWidget::resizeEvent(event);
 	resizeColumns();
 }
@@ -248,7 +248,7 @@ void TActionsEditor::updateView() {
 }
 
 void TActionsEditor::applyChanges() {
-	qDebug("Gui::Action::TActionsEditor::applyChanges");
+	logger()->debug("Gui::Action::TActionsEditor::applyChanges");
 
 	for (int row = 0; row < (int)actionsList.size(); ++row) {
 		QAction* action = actionsList[row];
@@ -386,7 +386,7 @@ void TActionsEditor::saveActionsTable() {
 }
 
 bool TActionsEditor::saveActionsTable(const QString & filename) {
-	qDebug() << "Gui::Action::TActionsEditor::saveActions:" << filename;
+    logger()->debug("saveActions: " + filename);
 
 	QFile f(filename);
 	if (f.open(QIODevice::WriteOnly)) {
@@ -420,7 +420,6 @@ void TActionsEditor::loadActionsTable() {
 }
 
 bool TActionsEditor::loadActionsTable(const QString& filename) {
-	qDebug() << "Gui::Action::TActionsEditor::loadActions:" << filename;
 
     QRegExp rx("^([^\\t]*)\\t(.*)");
 
@@ -437,12 +436,10 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
                     QString shortcuts = shortcutsToString(stringToShortcuts(rx.cap(2)));
                     actionsTable->item(row, COL_SHORTCUT)->setText(shortcuts);
                 } else {
-                    qWarning() << "Gui::Action::TActionsEditor::loadActions: action"
-                               << name << "not found";
+                    logger()->warn("loadActions: action '" + name + "' not found");
                 }
 			} else {
-                qDebug() << "Gui::Action::TActionsEditor::loadActions: skipped line"
-                         << line;
+                logger()->debug("loadActions: skipped line '" + line + "'");
 			}
 		}
 		f.close();
@@ -541,7 +538,7 @@ QString TActionsEditor::actionToString(QAction *action) {
 }
 
 void TActionsEditor::saveToConfig(QSettings* set, QObject* o) {
-	qDebug("Gui::Action::TActionsEditor::saveToConfig");
+	logger()->debug("Gui::Action::TActionsEditor::saveToConfig");
 
 	set->beginGroup("actions");
 
@@ -591,7 +588,6 @@ void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCut
 }
 
 void TActionsEditor::setActionFromString(QAction* action, const QString& s, const TActionList& actions) {
-    //qDebug() << "TActionsEditor::setActionFromString:" << action.objectName() << s;
 
     static QRegExp rx("^([^\\t]*)(\\t(.*))?");
 
@@ -625,7 +621,7 @@ QAction* TActionsEditor::findAction(const TActionList& actions, const QString& n
 }
 
 void TActionsEditor::loadFromConfig(QSettings* set, const TActionList& all_actions) {
-	qDebug("Gui::Action::TActionsEditor::loadFromConfig");
+    logger()->debug("loadFromConfig");
 
 	set->beginGroup("actions");
 
@@ -637,8 +633,7 @@ void TActionsEditor::loadFromConfig(QSettings* set, const TActionList& all_actio
             setActionFromString(action, set->value(name, "").toString(),
                                 all_actions);
         } else {
-            qWarning() << "TActionsEditor::loadFromConfig: action" << name
-                       << "not found";
+            logger()->warn("loadFromConfig: action '" + name + "' not found");
         }
     }
 

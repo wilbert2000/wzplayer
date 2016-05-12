@@ -36,7 +36,9 @@ using namespace Settings;
 
 namespace Gui {
 
-TDefault::TDefault() : TBasePlus() {
+TDefault::TDefault() :
+    TBasePlus(),
+    debug(logger()) {
 
 	createStatusBar();
 	createActions();
@@ -46,7 +48,7 @@ TDefault::~TDefault() {
 }
 
 void TDefault::createActions() {
-	qDebug("Gui::TDefault::createActions");
+    logger()->debug("createActions");
 
 	// Statusbar
     viewVideoInfoAct = new Action::TAction(this, "toggle_video_info",
@@ -83,7 +85,7 @@ void TDefault::createActions() {
 }
 
 void TDefault::createStatusBar() {
-	qDebug("Gui::TDefault::createStatusBar");
+    logger()->debug("createStatusBar");
 
     QColor bgc(0, 0, 0);
     QColor fgc(255, 255, 255);
@@ -193,21 +195,21 @@ void TDefault::displayVideoInfo() {
 
 // Slot called when media settings reset or loaded
 void TDefault::onMediaSettingsChanged() {
-    qDebug("Gui::TDefault::onMediaSettingsChanged");
+    logger()->debug("onMediaSettingsChanged");
 
     TBase::onMediaSettingsChanged();
     displayInOutPoints();
 }
 
 void TDefault::onMediaInfoChanged() {
-	qDebug("Gui::TDefault::onMediaInfoChanged");
+    logger()->debug("onMediaInfoChanged");
 
 	TBasePlus::onMediaInfoChanged();
     displayVideoInfo();
 }
 
 void TDefault::saveConfig() {
-	qDebug("Gui::TDefault::saveConfig");
+    logger()->debug("saveConfig");
 
 	TBasePlus::saveConfig();
 
@@ -220,7 +222,7 @@ void TDefault::saveConfig() {
 }
 
 void TDefault::loadConfig() {
-	qDebug("Gui::TDefault::loadConfig");
+    logger()->debug("loadConfig");
 
 	TBasePlus::loadConfig();
 

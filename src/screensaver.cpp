@@ -49,26 +49,26 @@ WinScreenSaver::~WinScreenSaver() {
 }
 
 void WinScreenSaver::retrieveState() {
-	qDebug("WinScreenSaver::retrieveState");
+	logger()->debug("WinScreenSaver::retrieveState");
 	
 	if (!state_saved) {
 		state_saved = true;
 #ifndef Q_OS_OS2
 		SystemParametersInfo(SPI_GETSCREENSAVETIMEOUT, 0, &screensaver_timeout, 0);
-		qDebug("WinScreenSaver::retrieveState: screensaver timeout: %d",
+        logger()->debug("WinScreenSaver::retrieveState: screensaver tim%1ut: %1",
 			   screensaver_timeout);
 #else
-		qDebug("WinScreensaver::retrieveState: init done %s",
-			   SSCore_TempDisable ? "succesfully" : "failed");
+        logger()->debug("WinScreensaver::retrieveState: init done "
+                        + (SSCore_TempDisable ? "succesfully" : "failed"));
 #endif
 	} else {
-		qDebug("WinScreenSaver::retrieveState: state already saved previously, doing nothing");
+		logger()->debug("WinScreenSaver::retrieveState: state already saved previously, doing nothing");
 	}
 }
 
 void WinScreenSaver::restoreState() {
 	if (!modified) {
-		qDebug("WinScreenSaver::restoreState: state did not change, doing nothing");
+		logger()->debug("WinScreenSaver::restoreState: state did not change, doing nothing");
 		return;
 	}
 	
@@ -76,16 +76,16 @@ void WinScreenSaver::restoreState() {
 #ifndef Q_OS_OS2
 		SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, screensaver_timeout, NULL, 0);
 		SetThreadExecutionState(ES_CONTINUOUS);
-		qDebug("WinScreenSaver::restoreState: screensaver timeout: %d",
+        logger()->debug("WinScreenSaver::restoreState: screensaver tim%1ut: %1",
 			   screensaver_timeout);
 #else
 		if (SSCore_TempEnable) {
 			SSCore_TempEnable();
 		}
-		qDebug("WinScreenSaver::restoreState done");
+		logger()->debug("WinScreenSaver::restoreState done");
 #endif
 	} else {
-		qWarning("WinScreenSaver::restoreState: no data, doing nothing");
+		logger()->warn("WinScreenSaver::restoreState: no data, doing nothing");
 	}
 }
 
@@ -99,7 +99,7 @@ void WinScreenSaver::unload() {
 #endif
 	
 void WinScreenSaver::disable() {
-	qDebug("WinScreenSaver::disable");
+	logger()->debug("WinScreenSaver::disable");
 
 #ifndef Q_OS_OS2
 	SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, 0, NULL, 0);
@@ -114,7 +114,7 @@ void WinScreenSaver::disable() {
 }
 
 void WinScreenSaver::enable() {
-	qDebug("WinScreenSaver::enable");
+	logger()->debug("WinScreenSaver::enable");
 
 	restoreState();
 }

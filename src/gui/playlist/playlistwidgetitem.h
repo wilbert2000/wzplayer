@@ -17,6 +17,7 @@ enum TPlaylistItemState {
     PSTATE_FAILED
 };
 
+//extern QString playlistItemState(TPlaylistItemState state);
 
 class TPlaylistItem {
 
@@ -92,6 +93,7 @@ public:
     virtual ~TPlaylistWidgetItem();
 
     QString filename() const { return playlistItem.filename(); }
+    QString path() const;
 
     QString name() const { return playlistItem.name(); }
     void setName(const QString& name);

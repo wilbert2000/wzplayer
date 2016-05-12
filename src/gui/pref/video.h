@@ -20,10 +20,11 @@
 #define GUI_PREF_VIDEO_H
 
 #include "ui_video.h"
+#include "wzdebug.h"
 #include "gui/pref/widget.h"
-#include "inforeader.h"
-#include "settings/preferences.h"
 #include "gui/deviceinfo.h"
+#include "settings/preferences.h"
+#include "inforeader.h"
 
 #ifndef Q_OS_WIN
 #define USE_XV_ADAPTORS 1
@@ -39,6 +40,7 @@ namespace Pref {
 
 class TVideo : public TWidget, public Ui::TVideo {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	InfoList vo_list;

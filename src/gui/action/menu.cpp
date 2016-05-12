@@ -14,7 +14,6 @@ namespace Action {
 
 
 void execPopup(QWidget* w, QMenu* popup, QPoint p) {
-	//qDebug() << "Gui::Action::execPopup:" << p;
 
 	// Keep inside desktop
 	QSize s = popup->sizeHint();

@@ -7,6 +7,7 @@
 class TConfig {
 public:
 	static const int MESSAGE_DURATION;
+    static const int ERROR_MESSAGE_DURATION;
 
     static const double ZOOM_MIN;
 	static const double ZOOM_MAX;

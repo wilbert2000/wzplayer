@@ -20,6 +20,7 @@
 #define _GUI_FILEPROPERTIESDIALOG_H_
 
 #include "ui_filepropertiesdialog.h"
+#include "log4qt/logger.h"
 #include "inforeader.h"
 #include "mediadata.h"
 
@@ -31,6 +32,7 @@ namespace Gui {
 class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog
 {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	TFilePropertiesDialog(QWidget* parent, TMediaData* md);

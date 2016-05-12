@@ -21,6 +21,7 @@
 
 #include "ui_audio.h"
 #include "gui/pref/widget.h"
+#include "log4qt/logger.h"
 #include "inforeader.h"
 #include "settings/preferences.h"
 #include "gui/deviceinfo.h"
@@ -39,6 +40,7 @@ namespace Pref {
 
 class TAudio : public TWidget, public Ui::TAudio {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	InfoList ao_list;

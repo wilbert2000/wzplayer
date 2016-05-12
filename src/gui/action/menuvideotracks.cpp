@@ -31,7 +31,7 @@ void TMenuVideoTracks::enableActions() {
 }
 
 void TMenuVideoTracks::updateVideoTracks() {
-	qDebug("Gui::Action::TMenuVideoTracks::updateVideoTracks");
+    logger()->debug("updateVideoTracks");
 
 	videoTrackGroup->clear();
 

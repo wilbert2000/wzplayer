@@ -22,6 +22,8 @@
 #include "gui/action/menu.h"
 #include <QString>
 #include <QList>
+#include "log4qt/logger.h"
+
 
 class QAction;
 class QWidget;
@@ -60,6 +62,8 @@ typedef QList<TFavorite> TFavoriteList;
 
 class TFavorites : public TMenu {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
 public:
     TFavorites(TBase* mw,
                const QString& name,

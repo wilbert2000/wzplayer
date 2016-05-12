@@ -18,7 +18,6 @@
 
 #include "gui/baseplus.h"
 
-#include <QDebug>
 #include <QEvent>
 #include <QMenu>
 #include <QApplication>
@@ -31,7 +30,7 @@
 #include "desktop.h"
 #include "core.h"
 #include "gui/action/action.h"
-#include "gui/action/menuopen.h"
+#include "gui/action/menufile.h"
 #include "gui/action/menuplay.h"
 #include "gui/action/menuvideo.h"
 #include "gui/action/menuaudio.h"
@@ -47,6 +46,7 @@ namespace Gui {
 
 TBasePlus::TBasePlus() :
     TBase(),
+    debug(logger()),
     mainwindow_visible(true),
     restore_playlist(false),
     saveSize(0),
@@ -66,14 +66,15 @@ TBasePlus::TBasePlus() :
                                   QKeySequence("Ctrl+Q"));
     quitAct->setVisible(false);
 	connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
-	openMenu->addAction(quitAct);
+	fileMenu->addAction(quitAct);
 
     showTrayAct = new Action::TAction(this, "show_tray_icon",
                                       tr("S&how icon in system tray"),
                                       "systray");
 	showTrayAct->setCheckable(true);
 	connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
-    connect(showTrayAct, SIGNAL(toggled(bool)), quitAct, SLOT(setVisible(bool)));
+    connect(showTrayAct, SIGNAL(toggled(bool)),
+            quitAct, SLOT(setVisible(bool)));
 
 #ifndef Q_OS_OS2
 	windowMenu->addSeparator();
@@ -87,7 +88,7 @@ TBasePlus::TBasePlus() :
     connect(showAllAct, SIGNAL(triggered()), this, SLOT(toggleShowAll()));
 
 	context_menu = new QMenu(this);
-	context_menu->addMenu(openMenu);
+	context_menu->addMenu(fileMenu);
 	context_menu->addMenu(playMenu);
 	context_menu->addMenu(videoMenu);
 	context_menu->addMenu(audioMenu);
@@ -139,6 +140,7 @@ TBasePlus::TBasePlus() :
 TBasePlus::~TBasePlus() {
 	tray->hide();
 }
+
 
 void TBasePlus::retranslateStrings() {
 
@@ -202,7 +204,7 @@ void TBasePlus::switchToTray() {
 }
 
 void TBasePlus::closeWindow() {
-	qDebug("Gui::TBasePlus::closeWindow");
+    logger()->debug("closeWindow");
 
 	if (tray->isVisible()) {
 		switchToTray();
@@ -212,14 +214,14 @@ void TBasePlus::closeWindow() {
 }
 
 void TBasePlus::quit() {
-	qDebug("Gui::TBasePlus::quit");
+    logger()->debug("quit");
 
 	// Bypass switch to tray
 	TBase::closeWindow();
 }
 
 void TBasePlus::saveConfig() {
-	qDebug("Gui::TBasePlus::saveConfig");
+    logger()->debug("saveConfig");
 
 	TBase::saveConfig();
 
@@ -233,7 +235,7 @@ void TBasePlus::saveConfig() {
 }
 
 void TBasePlus::loadConfig() {
-	qDebug("Gui::TBasePlus::loadConfig");
+    logger()->debug("loadConfig");
 
 	TBase::loadConfig();
 
@@ -254,7 +256,7 @@ void TBasePlus::loadConfig() {
 }
 
 void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
-	qDebug("Gui::TBasePlus::trayIconActivated: %d", reason);
+    logger()->debug("trayIconActivated: %1", reason);
 
 	updateShowAllAct();
 
@@ -297,7 +299,7 @@ void TBasePlus::showAll(bool b) {
 }
 
 void TBasePlus::onMediaInfoChanged() {
-	qDebug("Gui::TBasePlus::onMediaInfoChanged");
+    logger()->debug("onMediaInfoChanged");
 
 	TBase::onMediaInfoChanged();
 	tray->setToolTip(windowTitle());
@@ -308,8 +310,8 @@ void TBasePlus::onMediaInfoChanged() {
 // the same size before and after docking...
 
 void TBasePlus::onDockLocationChanged(Qt::DockWidgetArea area) {
-    qDebug() << "Gui::TBasePlus::onDockLocationChanged: changed from"
-             << dockArea << "to" << area;
+    logger()->debug("onDockLocationChanged: changed from %1 to %2",
+                    dockArea, area);
     dockArea = area;
 }
 
@@ -320,8 +322,8 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
     } else {
         saveSizeTimer->stop();
         if (pref->size_factor >= 0.1) {
-            qDebug() << "Gui::TBasePlus::saveSizeFactor: overwriting save size"
-                     << saveSize << "with new size" << pref->size_factor;
+            debug << "saveSizeFactor: overwriting save size" << saveSize
+                  << " with new size " << pref->size_factor << debug;
             saveSize = pref->size_factor;
             saveSizeFileName = core->mdat.filename;
             saveSizeFloating = playlistdock->isFloating();
@@ -331,19 +333,17 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
                 saveSizeVisible = visible;
             }
             saveSizeDockArea = dockArea;
-            qDebug() << "Gui::TBasePlus::saveSizeFactor: saved floating"
-                     << saveSizeFloating << "visible" << saveSizeVisible;
+            debug << "saveSizeFactor: saved floating " << saveSizeFloating
+                  << "visible" << saveSizeVisible << debug;
         } else {
-            qDebug() << "Gui::TBasePlus::saveSizeFactor: ignoring small size"
-                     << pref->size_factor;
+            debug << "saveSizeFactor: ignoring small size "
+                  << pref->size_factor << debug;
         }
     }
 }
 
 // Try to save the size factor used before the dock resized the video panel
 void TBasePlus::onvideoSizeFactorChanged(double, double) {
-    //qDebug() << "Gui::TBasePlus::onvideoSizeFactorChanged: save size"
-    //         << saveSize << "new Size" << size;
 
     if (pref->resize_on_docking
         && !pref->fullscreen
@@ -357,7 +357,7 @@ void TBasePlus::onvideoSizeFactorChanged(double, double) {
 }
 
 void TBasePlus::showPlaylist(bool v) {
-    qDebug("Gui::TBasePlus::showPlaylist: %d", v);
+    logger()->debug("showPlaylist: %1", v);
 
     restore_playlist = false;
     if (playlistdock->isFloating()) {
@@ -401,22 +401,21 @@ void TBasePlus::restoreVideoSize() {
         && !saveSizeFloating
         && saveSizeVisible == playlistdock->isVisible()
         && dockVertical == saveDockVertical) {
-        qDebug() << "Gui::TBasePlus::restoreVideoSize: areas match, canceling"
-                    " resize";
+        logger()->debug("restoreVideoSize: areas match, canceling resize");
     } else {
         if (saveSize < 0.1) {
-            qDebug() << "Gui::TBasePlus::restoreVideoSize: ignoring small saved"
-                        " size" << saveSize;
+            debug << "restoreVideoSize: ignoring small saved size "
+                  << saveSize << debug;
         } else if (saveSizeFileName == core->mdat.filename) {
-            qDebug() << "Gui::TBasePlus::restoreVideoSize: restoring size"
-                        " factor from" << pref->size_factor << "to" << saveSize;
+            debug << "restoreVideoSize: restoring size factor from"
+                  << pref->size_factor << "to" << saveSize << debug;
             QSize oldWinSize = frameGeometry().size();
             pref->size_factor = saveSize;
             resizeWindowToVideo();
             reposition(oldWinSize);
         } else {
-            qDebug() << "Gui::TBasePlus::restoreVideoSize: file name mismatch"
-                        " canceling resize";
+            logger()->debug("restoreVideoSize: file name mismatch canceling"
+                            " resize");
         }
     }
 
@@ -425,9 +424,9 @@ void TBasePlus::restoreVideoSize() {
 }
 
 void TBasePlus::onTopLevelChanged(bool topLevel) {
-    qDebug() << "Gui::TBasePlus::onTopLevelChanged: topLevel" << topLevel
-             << "size" << pref->size_factor
-             << "saved size" << saveSize;
+    debug << "onTopLevelChanged: topLevel" << topLevel
+          << "size" << pref->size_factor
+          << "saved size" << saveSize << debug;
 
     if (!pref->resize_on_docking
         || pref->fullscreen
@@ -439,28 +438,28 @@ void TBasePlus::onTopLevelChanged(bool topLevel) {
     if (topLevel) {
         // We became toplevel and the video size has not yet changed
         saveSizeFactor(false);
-        qDebug() << "Gui::TBasePlus::onTopLevelChanged: saved size factor"
-                 << saveSize;
+        debug << "onTopLevelChanged: saved size factor" << saveSize << debug;
     } else {
         // We are docked now and the video size already changed
         saveSizeTimer->stop();
-        qDebug() << "Gui::TBasePlus::onTopLevelChanged: keeping saved size"
-                    " factor" << saveSize;
+        debug << "onTopLevelChanged: keeping saved size factor" << saveSize
+              << debug;;
     }
 
     if (core->stateReady()) {
-        qDebug() << "Gui::TBasePlus:onTopLevelChanged: posting"
-                    " restoreVideoSize() with size factor" << saveSize;
+        debug << "onTopLevelChanged: posting restoreVideoSize() with size"
+                 " factor" << saveSize << debug;
         postedResize = true;
         QTimer::singleShot(250, this, SLOT(restoreVideoSize()));
     }
 }
 
 void TBasePlus::onDockVisibilityChanged(bool visible) {
-    qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: visible" << visible
-             << "floating" << playlistdock->isFloating()
-             << "size" << pref->size_factor
-             << "saved size" << saveSize;
+    debug << "onDockVisibilityChanged: visible" << visible
+          << "floating" << playlistdock->isFloating()
+          << "size" << pref->size_factor
+          << "saved size" << saveSize
+          << debug;
 
     if (playlistdock->isFloating()) {
         if (visible) {
@@ -479,18 +478,18 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
     if (visible) {
         // Dock became visible, video size already changed
         saveSizeTimer->stop();
-        qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: keeping saved size"
-                 << saveSize;
+        debug << "onDockVisibilityChanged: keeping saved size" << saveSize
+              << debug;
     } else {
         // Dock is hiding, video size not yet changed
-        qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: saving size factor"
-                 << pref->size_factor;
+        debug << "onDockVisibilityChanged: saving size factor"
+              << pref->size_factor << debug;
         saveSizeFactor(false, false, true);
     }
 
     if (core->stateReady()) {
-        qDebug() << "Gui::TBasePlus:onDockVisibilityChanged: posting"
-                    " restoreVideoSize() with size factor" << saveSize;
+        debug << "onDockVisibilityChanged: posting restoreVideoSize() with"
+                 " size factor" << saveSize << debug;
         postedResize = true;
         QTimer::singleShot(250, this, SLOT(restoreVideoSize()));
     }

@@ -18,15 +18,17 @@
 
 #include "gui/infoprovider.h"
 #include <QFileInfo>
+#include "log4qt/logger.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
 
 namespace Gui {
 
 void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
-	qDebug("Gui::TInfoProvider::getInfo: %s", filename.toUtf8().data());
+    Log4Qt::Logger::logger("Gui::TInfoProvider")->debug("getInfo:" + filename);
 
-	Proc::TPlayerProcess* proc = Proc::TPlayerProcess::createPlayerProcess(0, &md);
+    Proc::TPlayerProcess* proc =
+            Proc::TPlayerProcess::createPlayerProcess(0, &md);
 	proc->setExecutable(Settings::pref->player_bin);
 	proc->setFixedOptions();
 	proc->setOption("frames", "1");
@@ -41,7 +43,8 @@ void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
 
 	proc->startPlayer();
 	if (!proc->waitForFinished()) {
-		qWarning("Gui::TInfoProvider::getInfo: process didn't finish. Killing it...");
+        Log4Qt::Logger::logger("Gui::TInfoProvider")->warn(
+                    "getInfo: process didn't finish. Killing it...");
 		proc->kill();
 	}
 

@@ -23,8 +23,8 @@
 #include <QList>
 #include <QStringList>
 
+#include "wzdebug.h"
 #include "gui/playlist/playlistwidget.h"
-#include "log.h"
 
 
 class QToolBar;
@@ -52,18 +52,20 @@ class TAddFilesThread;
 
 
 class TPlaylist : public QWidget {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
+
 public:
     TPlaylist(TBase* mw, TCore* c);
-	virtual ~TPlaylist();
+    virtual ~TPlaylist();
 
     void openPlaylist(const QString& filename);
 
-	// Start playing, from item 0 if shuffle is off,
-	// or from a random item otherwise
+    // Start playing, from item 0 if shuffle is off,
+    // or from a random item otherwise
     void startPlay(bool sort);
     void playItem(TPlaylistWidgetItem* item);
-	void playDirectory(const QString& dir);
+    void playDirectory(const QString& dir);
 
     QString playingFile() const { return playlistWidget->playingFile(); }
     TPlaylistWidgetItem* findFilename(const QString& filename) {
@@ -76,82 +78,83 @@ public:
                   QTreeWidgetItem* target = 0,
                   const QString& fileToPlay = "",
                   bool searchForItems = false);
-	void getFilesAppend(QStringList& files) const;
+    void getFilesAppend(QStringList& files) const;
 
-	// Preferences
+    // Preferences
     bool directoryRecursion() const { return recursive_add_directories; }
     void setDirectoryRecursion(bool b) { recursive_add_directories = b; }
 
-	bool maybeSave();
-	void loadSettings();
-	void saveSettings();
-	void retranslateStrings();
+    bool maybeSave();
+    void loadSettings();
+    void saveSettings();
+    void retranslateStrings();
 
     Action::TMenuInOut* getInOutMenu() const { return inOutMenu; }
 
 public slots:
     void playNext(bool allow_reshuffle = true);
-	void playPrev();
+    void playPrev();
 
     void open();
-	bool save();
+    bool save();
+    bool saveAs();
 
 signals:
-	void playlistEnded();
+    void playlistEnded();
     void enablePrevNextChanged();
     void visibilityChanged(bool visible);
-	void displayMessage(const QString&, int);
+    void displayMessage(const QString&, int);
     void displayMessageOnOSD(const QString&, int);
     void windowTitleChanged();
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent*);
     virtual void dropEvent(QDropEvent*);
-	virtual void hideEvent (QHideEvent*);
-	virtual void showEvent (QShowEvent*);
-	virtual void closeEvent(QCloseEvent* e);
+    virtual void hideEvent (QHideEvent*);
+    virtual void showEvent (QShowEvent*);
+    virtual void closeEvent(QCloseEvent* e);
 
 private:
-    TLogger logger;
     TBase* main_window;
-	TCore* core;
+    TCore* core;
     TPlaylistWidget* playlistWidget;
 
     Action::TMenu* add_menu;
     Action::TMenu* remove_menu;
-	QMenu* popup;
+    QMenu* popup;
 
-	QToolBar* toolbar;
-	QToolButton* add_button;
-	QToolButton* remove_button;
+    QToolBar* toolbar;
+    QToolButton* add_button;
+    QToolButton* remove_button;
 
-	Action::TAction* openAct;
-	Action::TAction* saveAct;
+    Action::TAction* openAct;
+    Action::TAction* saveAct;
+    Action::TAction* saveAsAct;
     Action::TAction* playAct;
     Action::TAction* pauseAct;
     Action::TAction* playOrPauseAct;
     Action::TAction* stopAct;
-	Action::TAction* prevAct;
-	Action::TAction* nextAct;
-	Action::TAction* repeatAct;
-	Action::TAction* shuffleAct;
+    Action::TAction* prevAct;
+    Action::TAction* nextAct;
+    Action::TAction* repeatAct;
+    Action::TAction* shuffleAct;
 
-	Action::TAction* addCurrentAct;
-	Action::TAction* addFilesAct;
-	Action::TAction* addDirectoryAct;
-	Action::TAction* addUrlsAct;
+    Action::TAction* addCurrentAct;
+    Action::TAction* addFilesAct;
+    Action::TAction* addDirectoryAct;
+    Action::TAction* addUrlsAct;
 
     Action::TAction* cutAct;
     Action::TAction* copyAct;
     Action::TAction* pasteAct;
     Action::TAction* editAct;
-	Action::TAction* removeSelectedAct;
-	Action::TAction* removeSelectedFromDiskAct;
-	Action::TAction* removeAllAct;
+    Action::TAction* removeSelectedAct;
+    Action::TAction* removeSelectedFromDiskAct;
+    Action::TAction* removeAllAct;
 
     Action::TMenuInOut* inOutMenu;
 
-	// Preferences
+    // Preferences
     bool recursive_add_directories;
 
     bool disable_enableActions;
@@ -169,7 +172,7 @@ private:
 
     void createTree();
     void createActions();
-	void createToolbar();
+    void createToolbar();
 
     void addFilesStartThread();
 
@@ -183,11 +186,11 @@ private:
 
     bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
 
-	bool saveM3u(QString file);
+    bool saveM3u(QString file);
     bool savePls(QString file);
 
 private slots:
-	void showContextMenu(const QPoint& pos);
+    void showContextMenu(const QPoint& pos);
 
     void onPlayerError();
 
@@ -196,13 +199,13 @@ private slots:
     void stop();
 
     void addCurrentFile();
-	void addFiles();
-	void addDirectory();
-	void addUrls();
+    void addFiles();
+    void addDirectory();
+    void addUrls();
 
     void removeSelected(bool deleteFromDisk = false);
-	void removeSelectedFromDisk();
-	void removeAll();
+    void removeSelectedFromDisk();
+    void removeAll();
 
     void editCurrentItem();
     void editItem(TPlaylistWidgetItem* item);
@@ -220,9 +223,9 @@ private slots:
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
     void onNewMediaStartedPlaying();
-	void onTitleTrackChanged(int id);
-	void onMediaEOF();
-	void resumePlay();
+    void onTitleTrackChanged(int id);
+    void onMediaEOF();
+    void resumePlay();
     void onThreadFinished();
 };
 

@@ -23,6 +23,8 @@
 
 #include <QSystemTrayIcon>
 #include <QPoint>
+#include "wzdebug.h"
+
 
 class QMenu;
 class QDockWidget;
@@ -30,7 +32,8 @@ class QDockWidget;
 namespace Gui {
 
 class TBasePlus : public TBase {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TBasePlus();

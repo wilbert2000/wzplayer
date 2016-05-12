@@ -2,7 +2,7 @@
 #define GUI_ACTION_MENUAUDIOTRACKS_H
 
 #include "gui/action/menu.h"
-
+#include "log4qt/logger.h"
 
 class TCore;
 
@@ -13,17 +13,19 @@ class TAction;
 class TActionGroup;
 
 class TMenuAudioTracks : public TMenu {
-	Q_OBJECT
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
 public:
     explicit TMenuAudioTracks(TBase* mw, TCore* c);
 protected:
     virtual void enableActions();
 private:
-	TCore* core;
-	TAction* nextAudioTrackAct;
-	TActionGroup* audioTrackGroup;
+    TCore* core;
+    TAction* nextAudioTrackAct;
+    TActionGroup* audioTrackGroup;
 private slots:
-	void updateAudioTracks();
+    void updateAudioTracks();
 }; // class TMenuAudioTracks
 
 } // namespace Action

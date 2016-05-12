@@ -21,6 +21,8 @@
 
 #include "ui_interface.h"
 #include "gui/pref/widget.h"
+#include "wzdebug.h"
+
 
 namespace Settings{
 class TPreferences;
@@ -30,6 +32,7 @@ namespace Gui { namespace Pref {
 
 class TInterface : public TWidget, public Ui::TInterface {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TInterface(QWidget* parent = 0, Qt::WindowFlags f = 0);

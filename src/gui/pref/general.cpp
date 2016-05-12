@@ -169,7 +169,6 @@ void TGeneral::setPlayerPath(const QString& mplayer, const QString& mpv) {
 }
 
 void TGeneral::onMPlayerFileChanged(QString file) {
-	qDebug() << "Gui::Pref::TGeneral::onMPlayerFileChanged:" << file;
 
 	if (mplayer_radio->isChecked()) {
 		emit binChanged(TPreferences::ID_MPLAYER, true, pref->getAbsolutePathPlayer(file));
@@ -177,7 +176,6 @@ void TGeneral::onMPlayerFileChanged(QString file) {
 }
 
 void TGeneral::onMPVFileChanged(QString file) {
-	qDebug() << "Gui::Pref::TGeneral::onMPVFileChanged:" << file;
 
 	if (mpv_radio->isChecked()) {
 		emit binChanged(TPreferences::ID_MPV, true, pref->getAbsolutePathPlayer(file));
@@ -185,7 +183,6 @@ void TGeneral::onMPVFileChanged(QString file) {
 }
 
 void TGeneral::onPlayerRadioClicked(bool) {
-	qDebug() << "Gui::Pref::TGeneral::onPlayerRadioClicked";
 
 	TPreferences::TPlayerID player_id;
 	QString file;

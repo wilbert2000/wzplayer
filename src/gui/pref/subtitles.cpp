@@ -273,8 +273,8 @@ void TSubtitles::setEncaLang(const QString& s) {
 
 	int i = enca_lang_combo->findData(s);
 	if (i < 0) {
-		qWarning() << "Gui::Pref::TSubtitles::setEncaLang: encoding lannguage"
-				   << s << "not found, falling back to auto detect";
+        logger()->warn("setEncaLang: encoding lannguage '" + s
+                       + "' not found, falling back to auto detect");
 		i = enca_lang_combo->findData("");
 	}
 	enca_lang_combo->setCurrentIndex(i);
@@ -289,8 +289,8 @@ void TSubtitles::setEncodingFallback(const QString& s) {
 
 	int i = encoding_fallback_combo->findData(s);
 	if (i < 0) {
-		qWarning() << "Gui::Pref::TSubtitles::setEncodingFallback: encoding"
-				   << s << "not found, falling back to auto detect";
+        logger()->warn("setEncodingFallback: encoding '" + s
+                       + "' not found, falling back to auto detect");
 		i = encoding_fallback_combo->findData("");
 	}
 	encoding_fallback_combo->setCurrentIndex(i);
@@ -366,7 +366,7 @@ void TSubtitles::onAssCustomizeButtonClicked() {
 }
 
 void TSubtitles::onWindowsFontDirCheckToggled(bool b) {
-	qDebug("Gui::Pref::TSubtitles::onWindowsFontDirCheckToggled: %d", b);
+	logger()->debug("Gui::Pref::TSubtitles::onWindowsFontDirCheckToggled: %1", b);
 
 #ifdef Q_OS_WIN
 	if (b) {

@@ -215,8 +215,8 @@ void FindSubtitlesWindow::setProxy(QNetworkProxy proxy) {
 	file_downloader->setProxy(proxy);
 #endif
 
-	qDebug("FindSubtitlesWindow::setProxy: host: '%s' port: %d type: %d",
-           proxy.hostName().toUtf8().constData(), proxy.port(), proxy.type());
+    logger()->debug("setProxy: host: '%1' port: %2 type: %3",
+           proxy.hostName(), proxy.port(), proxy.type());
 }
 #endif
 
@@ -260,7 +260,7 @@ void FindSubtitlesWindow::retranslateStrings() {
 }
 
 void FindSubtitlesWindow::setMovie(QString filename) {
-	qDebug("FindSubtitlesWindow::setMovie: '%s'", filename.toLatin1().constData());
+    logger()->debug("setMovie: '" + filename + "'");
 
 	if (filename == last_file) {
 		return;
@@ -271,7 +271,7 @@ void FindSubtitlesWindow::setMovie(QString filename) {
 
 	QString hash = FileHash::calculateHash(filename);
 	if (hash.isEmpty()) {
-		qWarning("FindSubtitlesWindow::setMovie: hash invalid. Doing nothing.");
+        logger()->warn("setMovie: hash invalid. Doing nothing.");
 	} else {
 		qint64 file_size = QFileInfo(filename).size();
 		osclient->search(hash, file_size);
@@ -285,12 +285,13 @@ void FindSubtitlesWindow::refresh() {
 }
 
 void FindSubtitlesWindow::updateRefreshButton() {
-	qDebug("FindSubtitlesWindow::updateRefreshButton:");
+    logger()->debug("updateRefreshButton:");
 	refresh_button->setEnabled(true);
 }
 
 void FindSubtitlesWindow::currentItemChanged(const QModelIndex & current, const QModelIndex & /*previous*/) {
-	qDebug("FindSubtitlesWindow::currentItemChanged: row: %d, col: %d", current.row(), current.column());
+    logger()->debug("currentItemChanged: row: %1, col: %2",
+                    current.row(), current.column());
 	download_button->setEnabled(current.isValid());
 	downloadAct->setEnabled(current.isValid());
 	copyLinkAct->setEnabled(current.isValid());
@@ -342,7 +343,7 @@ void FindSubtitlesWindow::showErrorOS(int, const QString & error) {
 }
 
 void FindSubtitlesWindow::updateDataReadProgress(int done, int total) {
-	qDebug("FindSubtitlesWindow::updateDataReadProgress: %d, %d", done, total);
+    logger()->debug("updateDataReadProgress: %1, %2", done, total);
 
 	status->setText(tr("Downloading..."));
 
@@ -395,8 +396,8 @@ void FindSubtitlesWindow::parseInfo() {
 		status->setText(tr("%1 files available").arg(l.count()));
 		applyCurrentFilter();
 
-		qDebug("FindSubtitlesWindow::parseInfo: sort column: %d", view->header()->sortIndicatorSection());
-		qDebug("FindSubtitlesWindow::parseInfo: sort indicator: %d", view->header()->sortIndicatorOrder());
+        logger()->debug("parseInfo: sort column: %1", view->header()->sortIndicatorSection());
+        logger()->debug("parseInfo: sort indicator: %1", view->header()->sortIndicatorOrder());
 
 		table->sort(view->header()->sortIndicatorSection(),
                      view->header()->sortIndicatorOrder());
@@ -408,11 +409,13 @@ void FindSubtitlesWindow::parseInfo() {
 }
 
 void FindSubtitlesWindow::itemActivated(const QModelIndex & index) {
-	qDebug("FindSubtitlesWindow::itemActivated: row: %d, col %d", proxy_model->mapToSource(index).row(), proxy_model->mapToSource(index).column());
+    logger()->debug("itemActivated: row: %1, col %2",
+                    proxy_model->mapToSource(index).row(),
+                    proxy_model->mapToSource(index).column());
 
 	QString download_link = table->item(proxy_model->mapToSource(index).row(), COL_NAME)->data().toString();
 
-	qDebug("FindSubtitlesWindow::itemActivated: download link: '%s'", download_link.toLatin1().constData());
+    logger()->debug("itemActivated: download link: '%1'", download_link.toLatin1().constData());
 
 #ifdef DOWNLOAD_SUBS
 	file_downloader->download(QUrl(download_link));
@@ -423,24 +426,24 @@ void FindSubtitlesWindow::itemActivated(const QModelIndex & index) {
 }
 
 void FindSubtitlesWindow::download() {
-	qDebug("FindSubtitlesWindow::download");
+    logger()->debug("download");
 	if (view->currentIndex().isValid()) {
 		itemActivated(view->currentIndex());
 	}
 }
 
 void FindSubtitlesWindow::copyLink() {
-	qDebug("FindSubtitlesWindow::copyLink");
+    logger()->debug("copyLink");
 	if (view->currentIndex().isValid()) {
 		const QModelIndex & index = view->currentIndex();
 		QString download_link = table->item(proxy_model->mapToSource(index).row(), COL_NAME)->data().toString();
-		qDebug("FindSubtitlesWindow::copyLink: link: '%s'", download_link.toLatin1().constData());
+        logger()->debug("copyLink: link: '%1'", download_link);
 		qApp->clipboard()->setText(download_link);
 	}
 }
 
 void FindSubtitlesWindow::showContextMenu(const QPoint & pos) {
-	qDebug("FindSubtitlesWindow::showContextMenu");
+    logger()->debug("showContextMenu");
 
 	context_menu->move(view->viewport()->mapToGlobal(pos));
 	context_menu->show();
@@ -459,9 +462,8 @@ void FindSubtitlesWindow::changeEvent(QEvent *e) {
 
 #ifndef USE_QUAZIP
 void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
-	qDebug("FindSubtitlesWindow::archiveDownloaded");
+    logger()->debug("archiveDownloaded");
 	QByteArray uncompress_data = gUncompress(buffer);
-	//qDebug("uncompress_data: %s", uncompress_data.constData());
 
 	if (uncompress_data.isEmpty()) {
 		status->setText(tr("Download failed"));
@@ -482,7 +484,8 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
 	output_name += "." + extension;
 
 	QString output_file = fi.absolutePath() + "/" + output_name;
-	qDebug("FindSubtitlesWindow::archiveDownloaded: save subtitle as '%s'", output_file.toUtf8().constData());
+    logger()->debug("archiveDownloaded: save subtitle as '%1'",
+                    output_file);
 
 	QFile file(output_file);
 	file.open(QIODevice::WriteOnly);
@@ -490,7 +493,7 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
 	file.close();
 
 	if (error) {
-		qWarning("FindSubtitlesWindow::archiveDownloaded: can't write subtitle file");
+        logger()->warn("archiveDownloaded: can't write subtitle file");
 		QMessageBox::warning(this, tr("Error saving file"),
                              tr("It wasn't possible to save the downloaded\n"
                                 "file in folder %1\n"
@@ -504,7 +507,7 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
 QByteArray FindSubtitlesWindow::gUncompress(const QByteArray &data)
 {
     if (data.size() <= 4) {
-        qWarning("gUncompress: Input data is truncated");
+        logger()->warn("gUncompress: Input data is truncated");
         return QByteArray();
     }
 
@@ -554,7 +557,7 @@ QByteArray FindSubtitlesWindow::gUncompress(const QByteArray &data)
 #else
 
 void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
-	qDebug("FindSubtitlesWindow::archiveDownloaded");
+    logger()->debug("archiveDownloaded");
 
 	QString temp_dir = QDir::tempPath();
 	if (!temp_dir.endsWith("/")) temp_dir += "/";
@@ -562,19 +565,13 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
 	QTemporaryFile file(temp_dir + "archive_XXXXXX.zip");
 	file.setAutoRemove(false);
 
-	qDebug("FindSubtitlesWindow::archiveDownloaded: a temporary file will be saved in folder '%s'", temp_dir.toUtf8().constData());
-
 	if (file.open()) {
 		QString filename = file.fileName();
 		file.write(buffer);
 		file.close();
 
-		qDebug("FindSubtitlesWindow::archiveDownloaded: file saved as: %s", filename.toUtf8().constData());
-
-		/*
-		QMessageBox::information(this, tr("Downloaded"), tr("File saved as %1").arg(filename));
-		return;
-		*/
+        logger()->debug("archiveDownloaded: file saved as: "
+                        + filename);
 
 		status->setText(tr("Temporary file %1").arg(filename));
 
@@ -597,7 +594,7 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
 		file.remove();
 	}
 	else {
-		qWarning("FindSubtitlesWindow::archiveDownloaded: can't write temporary file");
+        logger()->warn("archiveDownloaded: can't write temporary file");
 		QMessageBox::warning(this, tr("Error saving file"),
                              tr("It wasn't possible to save the downloaded\n"
                                 "file in folder %1\n"
@@ -607,36 +604,42 @@ void FindSubtitlesWindow::archiveDownloaded(const QByteArray & buffer) {
 
 
 bool FindSubtitlesWindow::uncompressZip(const QString & filename, const QString & output_path, const QString & preferred_output_name) {
-	qDebug("FindSubtitlesWindow::uncompressZip: zip file '%s', output_path '%s', save subtitle as '%s'", 
-           filename.toUtf8().constData(), output_path.toUtf8().constData(),
-           preferred_output_name.toUtf8().constData());
+    logger()->debug("uncompressZip: zip file '%1',"
+                    " output_path '%2', save subtitle as '%3'",
+                    filename, output_path, preferred_output_name);
 
 	QuaZip zip(filename);
 
 	if (!zip.open(QuaZip::mdUnzip)) {
-	    qWarning("FindSubtitlesWindow::uncompressZip: open zip failed: %d", zip.getZipError());
+        logger()->warn("uncompressZip: open zip failed: %1",
+                       zip.getZipError());
 	    return false;
 	}
 
 	zip.setFileNameCodec("IBM866");
-	qDebug("FindSubtitlesWindow::uncompressZip: %d entries", zip.getEntriesCount());
-	qDebug("FindSubtitlesWindow::uncompressZip: global comment: '%s'", zip.getComment().toUtf8().constData());
+    logger()->debug("uncompressZip: %1 entries",
+                    zip.getEntriesCount());
+    logger()->debug("uncompressZip: global comment: '%1'",
+                    zip.getComment());
 
 	QStringList sub_files;
 	QuaZipFileInfo info;
 
 	for (bool more=zip.goToFirstFile(); more; more=zip.goToNextFile()) {
 		if (!zip.getCurrentFileInfo(&info)) {
-			qWarning("FindSubtitlesWindow::uncompressZip: getCurrentFileInfo(): %d\n", zip.getZipError());
+            logger()->warn("uncompressZip: getCurrentFileInfo(): %1\n",
+                           zip.getZipError());
 			return false;
 		}
-	    qDebug("FindSubtitlesWindow::uncompressZip: file '%s'", info.name.toUtf8().constData());
+        logger()->debug("uncompressZip: file '%1'",
+                        info.name);
 		if (QFileInfo(info.name).suffix() != "nfo") sub_files.append(info.name);
 	}
 
-	qDebug("FindSubtitlesWindow::uncompressZip: list of subtitle files:");
+    logger()->debug("uncompressZip: list of subtitle files:");
 	for (int n=0; n < sub_files.count(); n++) {
-		qDebug("FindSubtitlesWindow::uncompressZip: subtitle file %d '%s'", n, sub_files[n].toUtf8().constData());
+        logger()->debug("uncompressZip: subtitle file %1 '%2'",
+                        n, sub_files[n]);
 	}
 
 	if (sub_files.count() == 1) {
@@ -663,10 +666,11 @@ bool FindSubtitlesWindow::uncompressZip(const QString & filename, const QString 
 		for (int n=0; n < files_to_extract.count(); n++) {
 			QString file = files_to_extract[n];
 			bool ok = extractFile(zip, file, output_path +"/"+ file);
-			qDebug("FindSubtitlesWindow::uncompressZip: extracted %s ok: %d", file.toUtf8().constData(), ok);
+            logger()->debug("uncompressZip: extracted %1 ok: %2",
+                            file, ok);
 			if (ok) extracted_count++;
 		}
-		status->setText(tr("%n subtitle(s) extracted","", extracted_count));
+        status->setText(tr("%1 subtitle(s) extracted").arg(extracted_count));
 		if (extracted_count > 0) {
 			emit subtitleDownloaded(output_path +"/"+ files_to_extract[0]);
 		}
@@ -677,7 +681,7 @@ bool FindSubtitlesWindow::uncompressZip(const QString & filename, const QString 
 }
 
 bool FindSubtitlesWindow::extractFile(QuaZip & zip, const QString & filename, const QString & output_name) {
-	qDebug("FindSubtitlesWindow::extractFile: '%s', save as '%s'", filename.toUtf8().constData(), output_name.toUtf8().constData());
+    logger()->debug("extractFile: '%1', save as '%2'", filename, output_name);
 
 	if (QFile::exists(output_name)) {
 		if (QMessageBox::question(this, tr("Overwrite?"), 
@@ -688,7 +692,7 @@ bool FindSubtitlesWindow::extractFile(QuaZip & zip, const QString & filename, co
 	}
 
 	if (!zip.setCurrentFile(filename)) {
-		qDebug("FindSubtitlesWindow::extractFile: can't select file %s", filename.toUtf8().constData());
+        logger()->debug("extractFile: can't select file " + filename);
 		return false;
 	}
 
@@ -698,7 +702,8 @@ bool FindSubtitlesWindow::extractFile(QuaZip & zip, const QString & filename, co
 	QFile out(output_name);
 
 	if (!file.open(QIODevice::ReadOnly)) {
-		qWarning("FindSubtitlesWindow::extractFile: can't open file for reading: %d", file.getZipError());
+        logger()->warn("extractFile: can't open file for reading: %1",
+                       file.getZipError());
 		return false;
     }
 
@@ -711,7 +716,7 @@ bool FindSubtitlesWindow::extractFile(QuaZip & zip, const QString & filename, co
 
 		file.close();
 	} else {
-		qWarning("FindSubtitlesWindow::extractFile: can't open %s for writing", output_name.toUtf8().constData());
+        logger()->warn("extractFile: can't open %1 for writing", output_name);
 		return false;
 	}
 
@@ -719,15 +724,15 @@ bool FindSubtitlesWindow::extractFile(QuaZip & zip, const QString & filename, co
 }
 #endif // USE_QUAZIP
 
-void FindSubtitlesWindow::fixSubtitles(const QString & filename) {
-	qDebug("FindSubtitlesWindow::fixSubtitles: %s", filename.toUtf8().constData());
+void FindSubtitlesWindow::fixSubtitles(const QString& filename) {
+    logger()->debug("fixSubtitles: " + filename);
 
 	QFileInfo fi(filename);
 	if (fi.suffix().toLower() == "sub") {
-		qDebug("FindSubtitlesWindow::fixSubtitles: fixing end of lines");
+        logger()->debug("fixSubtitles: fixing end of lines");
 		if (FixSubtitles::fix(filename) != FixSubtitles::NoError) {
 			status->setText(tr("Error fixing the subtitle lines"));
-			qDebug("FindSubtitlesWindow::fixSubtitles: error fixing the subtitles");
+            logger()->debug("fixSubtitles: error fixing the subtitles");
 		}
 	}
 }
@@ -735,7 +740,7 @@ void FindSubtitlesWindow::fixSubtitles(const QString & filename) {
 #endif // DOWNLOAD_SUBS
 
 void FindSubtitlesWindow::on_configure_button_clicked() {
-	qDebug("FindSubtitlesWindow::on_configure_button_clicked");
+    logger()->debug("on_configure_button_clicked");
 
 	FindSubtitlesConfigDialog d(this);
 
@@ -793,12 +798,13 @@ void FindSubtitlesWindow::setupProxy() {
 			proxy.setUser(proxy_username);
 			proxy.setPassword(proxy_password);
 		}
-		qDebug("FindSubtitlesWindow::userProxy: using proxy: host: %s, port: %d, type: %d", 
-               proxy_host.toUtf8().constData(), proxy_port, proxy_type);
+        logger()->debug("userProxy: using proxy: host:"
+                        " %1, port: %2, type: %3",
+                        proxy_host, proxy_port, proxy_type);
 	} else {
 		// No proxy
 		proxy.setType(QNetworkProxy::NoProxy);
-		qDebug("FindSubtitlesDialog::userProxy: no proxy");
+		logger()->debug("FindSubtitlesDialog::userProxy: no proxy");
 	}
 
 	setProxy(proxy);
@@ -806,7 +812,7 @@ void FindSubtitlesWindow::setupProxy() {
 #endif
 
 void FindSubtitlesWindow::saveSettings() {
-	qDebug("FindSubtitlesWindow::saveSettings");
+    logger()->debug("saveSettings");
 
 	set->beginGroup("findsubtitles");
 
@@ -833,7 +839,7 @@ void FindSubtitlesWindow::saveSettings() {
 }
 
 void FindSubtitlesWindow::loadSettings() {
-	qDebug("FindSubtitlesWindow::loadSettings");
+    logger()->debug("loadSettings");
 
 	set->beginGroup("findsubtitles");
 

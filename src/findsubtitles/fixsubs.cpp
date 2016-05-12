@@ -29,11 +29,9 @@ FixSubtitles::ErrorCode FixSubtitles::fix(const QString & in_file, const QString
 
 	while (!file.atEnd()) {
 		QByteArray line = file.readLine().replace("\r\n", "\n").replace("\r", "\n").replace("\n", "\r\n");
-		//qDebug("l: '%s'", line.constData());
 		result += line;
 	}
 	file.close();
-	//qDebug("r: '%s'", result.constData());
 
 	QString out = out_file;
 	if (out.isEmpty()) out = in_file;

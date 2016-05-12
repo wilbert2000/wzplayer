@@ -1,12 +1,12 @@
-#include "gui/action/menuopen.h"
+#include "gui/action/menufile.h"
 #include <QMessageBox>
 #include <QFileInfo>
 
 #include "gui/base.h"
 #include "gui/playlist/playlist.h"
-#include "gui/action/action.h"
 #include "gui/action/favorites.h"
 #include "gui/action/tvlist.h"
+#include "gui/action/action.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
 
@@ -52,8 +52,8 @@ TMenuDisc::TMenuDisc(TBase* parent)
 }
 
 
-TMenuOpen::TMenuOpen(TBase* mw) :
-    TMenu(mw, mw, "open_menu", tr("&Open"), "noicon") {
+TMenuFile::TMenuFile(TBase* mw) :
+    TMenu(mw, mw, "file_menu", tr("&File"), "noicon") {
 
     // Open URL
     TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "",
@@ -62,7 +62,7 @@ TMenuOpen::TMenuOpen(TBase* mw) :
     main_window->addAction(a);
 
     // Open file
-    a  = new TAction(this, "open_file", tr("Open &file..."), "open",
+    a  = new TAction(this, "open_file", tr("&Open file..."), "open",
                               Qt::CTRL | Qt::Key_F);
     connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
     main_window->addAction(a);
@@ -81,12 +81,13 @@ TMenuOpen::TMenuOpen(TBase* mw) :
     // Playlist
     addAction(main_window->getPlaylist()->findChild<TAction*>("pl_open"));
     addAction(main_window->getPlaylist()->findChild<TAction*>("pl_save"));
+    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_saveas"));
 
     addSeparator();
 
     // Favorites
     TFavorites* fav = new TFavorites(main_window, "favorites_menu",
-                                     tr("F&avorites"), "open_favorites",
+                                     tr("Fa&vorites"), "open_favorites",
                                      TPaths::configPath() + "/favorites.m3u8");
     fav->editAct()->setObjectName("edit_fav_list");
     fav->jumpAct()->setObjectName("jump_fav_list");
@@ -109,7 +110,6 @@ TMenuOpen::TMenuOpen(TBase* mw) :
                                  tr("&Recent files"), "recents");
     clearRecentsAct = new TAction(this, "clear_recents", tr("&Clear"),
                                   "delete", 0, false);
-
     main_window->addAction(clearRecentsAct);
     connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
     addMenu(recentfiles_menu);
@@ -165,8 +165,7 @@ TMenuOpen::TMenuOpen(TBase* mw) :
     connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
 }
 
-void TMenuOpen::updateRecents() {
-    qDebug("Gui::Action::TMenuOpen::updateRecents");
+void TMenuFile::updateRecents() {
 
     recentfiles_menu->clear();
 
@@ -210,7 +209,7 @@ void TMenuOpen::updateRecents() {
     }
 }
 
-void TMenuOpen::clearRecentsList() {
+void TMenuFile::clearRecentsList() {
 
     int ret = QMessageBox::question(main_window,
                                     tr("Confirm deletion - WZPlayer"),

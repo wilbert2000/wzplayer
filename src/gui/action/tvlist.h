@@ -20,6 +20,8 @@
 #define GUI_TVLIST_H
 
 #include "gui/action/favorites.h"
+#include "log4qt/logger.h"
+
 
 class QWidget;
 
@@ -29,6 +31,7 @@ namespace Action {
 
 class TTVList : public TFavorites {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	enum Service { TV = 1, Radio = 2, Data = 4 };
@@ -49,7 +52,7 @@ public:
 
 #ifndef Q_OS_WIN
 protected:
-	void parse_channels_conf(Services services);
+	void parseChannelsConf(Services services);
 #endif
 
 protected:

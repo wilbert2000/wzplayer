@@ -16,15 +16,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SETTINGS_FILESETTINGS_H_
-#define _SETTINGS_FILESETTINGS_H_
+#ifndef SETTINGS_FILESETTINGS_H
+#define SETTINGS_FILESETTINGS_H
 
 #include "settings/filesettingsbase.h"
 
 namespace Settings {
 
-class TFileSettings : public TFileSettingsBase
-{
+class TFileSettings : public TFileSettingsBase {
 public:
 	TFileSettings();
 	virtual ~TFileSettings();
@@ -38,5 +37,5 @@ public:
 
 } // namespace Settings
 
-#endif // _SETTINGS_FILESETTINGS_H_
+#endif // SETTINGS_FILESETTINGS_H
 

@@ -20,6 +20,7 @@
 #define FINDSUBTITLESWINDOW_H
 
 #include "ui_findsubtitleswindow.h"
+#include "log4qt/logger.h"
 
 #ifdef FS_USE_PROXY
 #include <QNetworkProxy>
@@ -42,6 +43,7 @@ class QuaZip;
 class FindSubtitlesWindow : public QDialog, public Ui::FindSubtitlesWindow
 {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	FindSubtitlesWindow(QWidget* parent, Qt::WindowFlags f = 0);

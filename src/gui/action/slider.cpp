@@ -39,7 +39,6 @@ TSlider::TSlider(QWidget* parent) : QSlider(parent) {
 		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
 				this, SLOT(setOrientation(Qt::Orientation)));
 	} else {
-		//qDebug() << "Gui::Action::TSlider::TSlider: Got non toolbar as parent" << parent;
 		setOrientation(Qt::Horizontal);
 	}
 }

@@ -23,6 +23,8 @@
 #include <QWidget>
 #include <QHideEvent>
 #include <QShowEvent>
+
+#include "log4qt/logger.h"
 #include "settings/preferences.h"
 
 class QLabel;
@@ -33,9 +35,9 @@ namespace Gui {
 
 class TEqSlider;
 
-class TAudioEqualizer : public QWidget
-{
+class TAudioEqualizer : public QWidget {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	enum Preset { User_defined = 0, Flat = 1, Pop = 2, Rock = 3, Classical = 4, Club = 5, Dance = 6, Fullbass = 7,

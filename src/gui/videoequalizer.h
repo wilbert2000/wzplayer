@@ -22,12 +22,13 @@
 #include "ui_videoequalizer.h"
 #include <QObject>
 #include <QWidget>
+#include "log4qt/logger.h"
 
 namespace Gui {
 
-class TVideoEqualizer : public QWidget, public Ui::TVideoEqualizer
-{
+class TVideoEqualizer : public QWidget, public Ui::TVideoEqualizer {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	TVideoEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);

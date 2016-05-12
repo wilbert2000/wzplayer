@@ -25,6 +25,7 @@
 #include <QSettings>
 #include <QTranslator>
 
+#include "log4qt/logger.h"
 #include "gui/base.h"
 
 #ifdef Q_OS_WIN
@@ -37,10 +38,17 @@
 
 
 class TApp : public QtSingleApplication {
-	Q_OBJECT
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	enum ExitCode { ErrorArgument = -3, NoAction = -2, NoRunningInstance = -1, NoError = 0, NoExit = 1 };
+    enum ExitCode {
+             ErrorArgument = -3,
+             NoAction = -2,
+             NoRunningInstance = -1,
+             NoError = 0,
+             NoExit = 1
+    };
 
 	TApp(int& argc, char** argv);
 	virtual ~TApp();
@@ -57,7 +65,7 @@ public:
 #endif
 
 private:
-	QString initial_config_path;
+    QString initial_config_path;
 	QTranslator app_trans;
 	QTranslator qt_trans;
 	Gui::TBase* main_window;

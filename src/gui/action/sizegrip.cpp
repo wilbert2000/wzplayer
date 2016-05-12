@@ -24,7 +24,7 @@ TSizeGrip::TSizeGrip(QWidget* parent, QToolBar* tb)
 }
 
 void TSizeGrip::onOrientationChanged(Qt::Orientation orientation) {
-	//qDebug("TSizeGrip::onOrientationChanged");
+	//logger()->debug("TSizeGrip::onOrientationChanged");
 
 	setOrientation(orientation);
 	if (orientation == Qt::Horizontal)
@@ -38,7 +38,7 @@ TSizeGrip::~TSizeGrip() {
 }
 
 void TSizeGrip::mousePressEvent(QMouseEvent* event) {
-	//qDebug("TSizeGrip::mousePressEvent");
+	//logger()->debug("TSizeGrip::mousePressEvent");
 
 	resizing = true;
 	p = event->globalPos();
@@ -70,7 +70,7 @@ void TSizeGrip::follow() {
 }
 
 void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
-	//qDebug("TSizeGrip::mouseMoveEvent");
+	//logger()->debug("TSizeGrip::mouseMoveEvent");
 
 	if (!resizing || toolbar->testAttribute(Qt::WA_WState_ConfigPending))
 		return;

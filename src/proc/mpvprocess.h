@@ -31,7 +31,8 @@ class QStringList;
 namespace Proc {
 
 class TMPVProcess : public TPlayerProcess {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TMPVProcess(QObject* parent, TMediaData* mdata);

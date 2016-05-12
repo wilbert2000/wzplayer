@@ -60,6 +60,7 @@ private:
 
 TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     QTreeWidget(parent),
+    debug(logger()),
     playing_item(0) {
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -226,7 +227,7 @@ TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
 
 void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item,
                                      TPlaylistItemState state) {
-    qDebug() << "Gui::TPlaylistWidget::setPlayingItem";
+    logger()->debug("setPlayingItem");
 
     bool setCurrent = true;
     if (playing_item) {
@@ -373,7 +374,7 @@ TPlaylistWidgetItem* TPlaylistWidget::findPreviousPlayedTime(
 
 // Fix Qt not selecting the drop
 void TPlaylistWidget::dropEvent(QDropEvent *e) {
-    qDebug() << "Gui::TPlaylistWidget::dropEvent";
+    logger()->debug("dropEvent");
 
     QTreeWidgetItem* current = currentItem();
     QList<QTreeWidgetItem*>	selection = selectedItems();
@@ -432,8 +433,7 @@ void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
 void TPlaylistWidget::resizeRows() {
 
     gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
-    qDebug() << "Gui::Playlist::TPlaylistWidget::resizeRows: width name"
-             << gNameColumnWidth;
+    logger()->debug("resizeRows: width name %1", gNameColumnWidth);
     resizeRows(root(), 2);
 }
 
@@ -442,14 +442,11 @@ void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
     if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
         wordWrapTimer->start();
         gNameColumnWidth = newSize;
-        //qDebug() << "Gui::Playlist::TPlaylistWidget::onSectionResized:"
-        //         << old << newSize;
     }
 }
 
 void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
-    qDebug() << "Gui::Playlist::TPlaylistWidget::onItemExpanded:"
-             << w->text(0);
+    logger()->debug("onItemExpanded: '" + w->text(0) + "'");
 
     TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(w);
     if (i && !wordWrapTimer->isActive()) {
@@ -461,7 +458,7 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
 QString TPlaylistWidget::add(TPlaylistWidgetItem* item,
                              QTreeWidgetItem* target,
                              QTreeWidgetItem* current) {
-    qDebug() << "Gui::Playlist::TPlaylistWidget::add";
+    logger()->debug("add");
 
     enableSort(false);
 

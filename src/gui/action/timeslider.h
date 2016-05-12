@@ -20,6 +20,7 @@
 #define GUI_TIMESLIDER_H
 
 #include "gui/action/slider.h"
+#include "log4qt/logger.h"
 
 
 class QToolBar;
@@ -29,7 +30,9 @@ namespace Action {
 
 
 class TTimeSlider : public TSlider {
-	Q_OBJECT
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
 
 public:
     TTimeSlider(QWidget* parent,
@@ -37,52 +40,52 @@ public:
                 int max_pos,
                 double duration,
                 int drag_delay);
-	virtual ~TTimeSlider();
+    virtual ~TTimeSlider();
 
-	virtual int pos();
-	virtual double duration();
+    virtual int pos();
+    virtual double duration();
 
 public slots:
-	virtual void setPos(int); // Don't use setValue!
-	virtual void setDuration(double t);
-	void saveSizeHint();
+    virtual void setPos(int); // Don't use setValue!
+    virtual void setDuration(double t);
+    void saveSizeHint();
 
 signals:
-	void posChanged(int);
+    void posChanged(int);
     void draggingPosChanged(int);
-	//! Emitted with a few ms of delay
-	void delayedDraggingPos(int);
+    //! Emitted with a few ms of delay
+    void delayedDraggingPos(int);
 
-	void wheelUp();
-	void wheelDown();
+    void wheelUp();
+    void wheelDown();
 
 protected slots:
-	void stopUpdate();
-	void resumeUpdate();
-	void mouseReleased();
-	void onValueChanged(int);
-	void checkDragging(int);
-	void sendDelayedPos();
+    void stopUpdate();
+    void resumeUpdate();
+    void mouseReleased();
+    void onValueChanged(int);
+    void checkDragging(int);
+    void sendDelayedPos();
 
 protected:
-	virtual void wheelEvent(QWheelEvent* e);
-	virtual bool event(QEvent* event);
-	virtual QSize sizeHint() const;
-	virtual QSize minimumSizeHint() const;
-	virtual void resizeEvent(QResizeEvent* e);
+    virtual void wheelEvent(QWheelEvent* e);
+    virtual bool event(QEvent* event);
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
+    virtual void resizeEvent(QResizeEvent* e);
 
 private:
     static const int SLIDER_MIN_SIZE = 84;
 
     bool dont_update;
-	int position;
-	double _duration;
-	
-	int last_pos_to_send;
-	QTimer* timer;
+    int position;
+    double _duration;
 
-	int savedSize;
-	bool getInitialSize;
+    int last_pos_to_send;
+    QTimer* timer;
+
+    int savedSize;
+    bool getInitialSize;
 }; // class TTimeSlider
 
 } // namespace Action

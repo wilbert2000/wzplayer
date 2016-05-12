@@ -66,7 +66,7 @@ void TVideoWindow::paintEvent(QPaintEvent* e) {
 }
 
 void TVideoWindow::setFastBackground() {
-    qDebug("TVideoWindow::setFastBackground");
+    logger()->debug("TVideoWindow::setFastBackground");
 
     normal_background = false;
     // Disable restore background by system
@@ -82,7 +82,7 @@ void TVideoWindow::setFastBackground() {
 }
 
 void TVideoWindow::restoreNormalBackground() {
-    qDebug("TVideoWindow::restoreNormalBackground");
+    logger()->debug("TVideoWindow::restoreNormalBackground");
 
     normal_background = true;
     // Enable restore background by system
@@ -98,6 +98,7 @@ void TVideoWindow::restoreNormalBackground() {
 
 TPlayerWindow::TPlayerWindow(QWidget* parent) :
     QWidget(parent),
+    debug(logger()),
     video_size(0, 0),
     last_video_out_size(0, 0),
     aspect(0),
@@ -133,7 +134,7 @@ TPlayerWindow::~TPlayerWindow() {
 }
 
 void TPlayerWindow::setResolution(int width, int height) {
-    qDebug("TPlayerWindow::setResolution: %d x %d", width, height);
+    logger()->debug("setResolution: %1 x %2", width, height);
 
     video_size = QSize(width, height);
     if (height == 0) {
@@ -179,8 +180,6 @@ void TPlayerWindow::updateSizeFactor() {
     if (!video_size.isEmpty()) {
         double old_factor = pref->size_factor;
         pref->size_factor = getSizeFactor();
-        //qDebug("TPlayerWindow::updateSizeFactor: updating size factor from %f to %f",
-        //       old_factor, pref->size_factor);
         // Need to emit if old == new to detect changes by user
         emit videoSizeFactorChanged(old_factor, pref->size_factor);
     }
@@ -189,18 +188,18 @@ void TPlayerWindow::updateSizeFactor() {
 void TPlayerWindow::clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan) {
 
     QSize s = pref->fullscreen ? TDesktop::size(this) : size();
-    qDebug() << "TPlayerWindow::clipMPlayer: in vwin" << vwin
-             << "zoom" << zoom
-             << "pan" << pan
-             << "plwin size" << s;
+    //qDebug() << "clipMPlayer: in vwin" << vwin
+    //         << "zoom" << zoom
+    //         << "pan" << pan
+    //         << "plwin size" << s;
 
     // Clip
     QRect cwin = vwin.intersected(QRect(QPoint(), s));
-    //qDebug() << "TPlayerWindow::clipMPlayer: clipped vwin" << cwin;
+    //qDebug() << "clipMPlayer: clipped vwin" << cwin;
 
     // Add pan
     cwin = cwin.united(cwin.translated(pan * zoom));
-    //qDebug() << "TPlayerWindow::clipMPlayer: panned" << cwin;
+    //qDebug() << "clipMPlayer: panned" << cwin;
 
     // Repair aspect ratio
     double new_aspect = (double) cwin.width() / cwin.height();
@@ -224,8 +223,6 @@ void TPlayerWindow::clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan) {
             cwin.moveLeft(cwin.left() - dl);
             cwin.setWidth(w + dr);
         }
-        //qDebug("TPlayerWindow::clipMPlayer: fixed width left with %d width %d",
-        //       cwin.left(), cwin.width());
     } else {
         int h = qRound(cwin.width() / aspect);
         int d = h - cwin.height();
@@ -246,25 +243,23 @@ void TPlayerWindow::clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan) {
             cwin.moveTop(cwin.top() - dt);
             cwin.setHeight(h + db);
         }
-        //qDebug("TPlayerWindow::clipMPlayer: fixed height with top %d height %d",
-        //       cwin.top(), cwin.height());
     }
 
     // Based on MPlayer source libvo/aspect.c use the vertical zoom for panscan
     zoom = (double) vwin.height() / cwin.height();
-    qDebug() << "TPlayerWindow::clipMPlayer: clipped win" << cwin << "zoom" << zoom;
+    //qDebug() << "clipMPlayer: clipped win" << cwin << "zoom" << zoom;
     if (zoom > 1) {
-        qDebug() << "TPlayerWindow::clipMPlayer: clipping win";
+        //qDebug() << "clipMPlayer: clipping win";
         vwin = cwin;
     } else {
-        qDebug() << "TPlayerWindow::clipMPlayer: not clipping win";
+        //qDebug() << "clipMPlayer: not clipping win";
         zoom = 1;
     }
 }
 
 void TPlayerWindow::updateVideoWindow() {
     /*
-    qDebug() << "TPlayerWindow::updateVideoWindow: vsize" << video_size
+    qDebug() << "updateVideoWindow: vsize" << video_size
              << "wsize" << size()
              << "dsize" << TDesktop::size(this)
              << "zoom" << zoom()
@@ -338,7 +333,7 @@ void TPlayerWindow::updateVideoWindow() {
         emit videoOutChanged(vsize);
     }
 
-    //qDebug() << "TPlayerWindow::updateVideoWindow: out: win" << vwin
+    //qDebug() << "updateVideoWindow: out: win" << vwin
     //         << "video size" << vsize;
 }
 
@@ -358,7 +353,7 @@ void TPlayerWindow::startDragging() {
 }
 
 void TPlayerWindow::stopDragging() {
-	//qDebug("TPlayerWindow::stopDragging");
+    //logger()->debug("stopDragging");
 
 	dragging = false;
 	QApplication::restoreOverrideCursor();
@@ -366,7 +361,7 @@ void TPlayerWindow::stopDragging() {
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
-	// qDebug("TPlayerWindow::mousePressEvent");
+    // logger()->debug("mousePressEvent");
 
 	event->accept();
 
@@ -381,7 +376,7 @@ void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
-    //qDebug("TPlayerWindow::mouseMoveEvent");
+    //logger()->debug("mouseMoveEvent");
 
     event->accept();
 
@@ -443,8 +438,8 @@ bool TPlayerWindow::checkDragging(QMouseEvent* event) {
     // After the mouse has been captured, mouse release events sometimes
     // do not come through until the mouse moved (on Qt 4.8 KDE 4.1.14.9).
     if (left_button_pressed_time.elapsed() >= QApplication::startDragTime()) {
-        qDebug("TPlayerWindow::mouseReleaseEvent: canceled release event taking"
-               " longer as %d ms", QApplication::startDragTime());
+        logger()->debug("mouseReleaseEvent: canceled release event taking"
+               " longer as %1 ms", QApplication::startDragTime());
         return false;
     }
 
@@ -455,8 +450,8 @@ bool TPlayerWindow::checkDragging(QMouseEvent* event) {
         QPoint pos = event->globalPos();
         QPoint diff = pos - drag_pos;
         if (diff.manhattanLength() > QApplication::startDragDistance()) {
-            qDebug("TPlayerWindow::mouseReleaseEvent: canceled release event"
-                   " with drag distance larger than %d",
+            logger()->debug("mouseReleaseEvent: canceled release event"
+                   " with drag distance larger than %1",
                    QApplication::startDragDistance());
             return false;
         }
@@ -467,29 +462,29 @@ bool TPlayerWindow::checkDragging(QMouseEvent* event) {
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
-    // qDebug("TPlayerWindow::mouseReleaseEvent");
+    // logger()->debug("mouseReleaseEvent");
 
     event->accept();
 
     if (event->button() == Qt::LeftButton) {
         if (checkDragging(event)) {
             if (event->modifiers() != Qt::NoModifier) {
-                qDebug("TPlayerWindow::mouseReleaseEvent: ignoring modified"
+                logger()->debug("mouseReleaseEvent: ignoring modified"
                        " event");
             } else if (delay_left_click) {
                 if (double_clicked) {
                     double_clicked = false;
-                    //qDebug("TPlayerWindow::mouseReleaseEvent: ignoring event"
+                    //logger()->debug("mouseReleaseEvent: ignoring event"
                     //       " after double click");
                 } else {
                     // Delay left click until double click has a chance to arrive
                     left_click_timer->start();
-                    //qDebug("TPlayerWindow::mouseReleaseEvent: delaying left click");
+                    //logger()->debug("mouseReleaseEvent: delaying left click");
                 }
             } else {
                 double_clicked = false;
                 // Click right away
-                // qDebug("TPlayerWindow::mouseReleaseEvent: emitting left click");
+                // logger()->debug("mouseReleaseEvent: emitting left click");
                 emit leftClicked();
             }
         }
@@ -505,7 +500,7 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
-    //qDebug("TPlayerWindow::mouseDoubleClickEvent");
+    //logger()->debug("mouseDoubleClickEvent");
 
     event->accept();
 
@@ -520,7 +515,7 @@ void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::wheelEvent(QWheelEvent* event) {
-    //qDebug("TPlayerWindow::wheelEvent: delta: %d", event->delta());
+    //logger()->debug("wheelEvent: delta: %1", event->delta());
 
     event->accept();
 
@@ -530,14 +525,14 @@ void TPlayerWindow::wheelEvent(QWheelEvent* event) {
         else
             emit wheelDown();
     } else {
-        qDebug("TPlayerWindow::wheelEvent: ignoring horizontal event");
+        logger()->debug("wheelEvent: ignoring horizontal event");
     }
 }
 
 void TPlayerWindow::setZoom(double factor,
                             double factor_fullscreen,
                             bool updateVideoWindow) {
-    qDebug("TPlayerWindow::setZoom: normal screen %f, full screen %f",
+    logger()->debug("setZoom: normal screen %1, full screen %2",
            factor, factor_fullscreen);
 
     if (factor_fullscreen == 0) {
@@ -564,8 +559,8 @@ double TPlayerWindow::zoom() {
 }
 
 void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen) {
-    qDebug() << "TPlayerWindow::setPan: pan" << pan << "pan full screen"
-             << pan_fullscreen;
+    debug << "setPan: pan" << pan << "pan full screen" << pan_fullscreen;
+    debug << debug;
 
     pan_offset = pan;
     pan_offset_fullscreen = pan_fullscreen;
@@ -612,12 +607,12 @@ void TPlayerWindow::setColorKey() {
 }
 
 void TPlayerWindow::setFastWindow() {
-    qDebug("TPlayerWindow::setFastWindow");
+    logger()->debug("setFastWindow");
     video_window->setFastBackground();
 }
 
 void TPlayerWindow::restoreNormalWindow() {
-    qDebug("TPlayerWindow::restoreNormalWindow");
+    logger()->debug("restoreNormalWindow");
 
     video_window->restoreNormalBackground();
     repaint();

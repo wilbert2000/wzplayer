@@ -22,6 +22,8 @@
 
 #include <QWidget>
 #include <QUrl>
+#include "wzdebug.h"
+
 
 class QNetworkAccessManager;
 class TUpdateCheckerData;
@@ -30,6 +32,7 @@ namespace Gui {
 
 class TUpdateChecker : public QObject {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TUpdateChecker(QWidget* parent, TUpdateCheckerData* data);
@@ -51,7 +54,7 @@ signals:
 
 protected:
 	void saveVersion(QString v);
-	static QString parseVersion(const QByteArray & data, const QString & name);
+    QString parseVersion(const QByteArray& data, const QString& name);
 
 	QNetworkAccessManager* net_manager;
 	TUpdateCheckerData* d;

@@ -18,7 +18,6 @@
 
 #include "gui/base.h"
 
-#include <QDebug>
 #include <QMessageBox>
 #include <QLabel>
 #include <QMenu>
@@ -47,7 +46,6 @@
 #include "desktop.h"
 #include "discname.h"
 #include "extensions.h"
-#include "log.h"
 #include "colorutils.h"
 #include "images.h"
 #include "helper.h"
@@ -69,7 +67,7 @@
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
 #include "gui/action/menu.h"
-#include "gui/action/menuopen.h"
+#include "gui/action/menufile.h"
 #include "gui/action/menuplay.h"
 #include "gui/action/menuvideo.h"
 #include "gui/action/menuaudio.h"
@@ -123,6 +121,7 @@ using namespace Action;
 
 TBase::TBase() :
 	QMainWindow(),
+    debug(logger()),
 	toolbar_menu(0),
 	help_window(0),
 	pref_dialog(0),
@@ -338,7 +337,7 @@ void TBase::createAudioEqualizer() {
 }
 
 void TBase::createActions() {
-	qDebug("Gui::TBase::createActions");
+    logger()->debug("createActions");
 
 	showContextMenuAct = new Action::TAction(this, "show_context_menu", tr("Show context menu"));
 	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
@@ -400,8 +399,8 @@ void TBase::createActions() {
 void TBase::createMenus() {
 
 	// MENUS
-    openMenu = new TMenuOpen(this);
-	menuBar()->addMenu(openMenu);
+    fileMenu = new TMenuFile(this);
+	menuBar()->addMenu(fileMenu);
 	playMenu = new TMenuPlay(this, core, playlist);
 	menuBar()->addMenu(playMenu);
 	videoMenu = new TMenuVideo(this, core, playerwindow, video_equalizer);
@@ -427,7 +426,7 @@ void TBase::createMenus() {
 
 	// POPUP MENU
 	popup = new QMenu(this);
-	popup->addMenu(openMenu);
+	popup->addMenu(fileMenu);
 	popup->addMenu(playMenu);
 	popup->addMenu(videoMenu);
 	popup->addMenu(audioMenu);
@@ -465,12 +464,11 @@ QMenu* TBase::createToolbarMenu() {
 // Called by main window to show context popup.
 // Main window takes ownership of menu.
 QMenu* TBase::createPopupMenu() {
-	//qDebug("Gui::TBase::createPopupMenu");
+    //logger()->debug("createPopupMenu");
 	return createToolbarMenu();
 }
 
 void TBase::showStatusBarPopup(const QPoint& pos) {
-	//qDebug("Gui::TBase::showStatusBarPopup: x: %d y: %d", pos.x(), pos.y());
 	execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
 }
 
@@ -560,7 +558,7 @@ void TBase::createToolbars() {
 }
 
 void TBase::setupNetworkProxy() {
-	//qDebug("Gui::TBase::setupNetworkProxy");
+    //logger()->debug("setupNetworkProxy");
 
 	QNetworkProxy proxy;
 
@@ -572,19 +570,20 @@ void TBase::setupNetworkProxy() {
 			proxy.setUser(pref->proxy_username);
 			proxy.setPassword(pref->proxy_password);
 		}
-		qDebug("Gui::TBase::setupNetworkProxy: using proxy: host: %s, port: %d, type: %d",
-			   pref->proxy_host.toUtf8().constData(), pref->proxy_port, pref->proxy_type);
+        logger()->debug("setupNetworkProxy: using proxy: host: %1, port: %2,"
+                        " type: %3",
+               pref->proxy_host, pref->proxy_port, pref->proxy_type);
 	} else {
 		// No proxy
 		proxy.setType(QNetworkProxy::NoProxy);
-		qDebug("Gui::TBase::setupNetworkProxy: no proxy");
+        logger()->debug("setupNetworkProxy: no proxy");
 	}
 
 	QNetworkProxy::setApplicationProxy(proxy);
 }
 
 void TBase::sendEnableActions() {
-    qDebug() << "Gui::TBase::sendEnableActions: state" << core->stateToString();
+    logger()->debug("sendEnableActions: state " + core->stateToString());
 
     timeslider_action->enable(core->statePOP());
 
@@ -592,7 +591,7 @@ void TBase::sendEnableActions() {
 }
 
 void TBase::retranslateStrings() {
-	qDebug("Gui::TBase::retranslateStrings");
+    logger()->debug("retranslateStrings");
 
 	setWindowIcon(Images::icon("logo", 64));
 
@@ -652,15 +651,14 @@ void TBase::setFloatingToolbarsVisible(bool visible) {
 }
 
 void TBase::showEvent(QShowEvent* event) {
-	qDebug("Gui::TBase::showEvent");
+    logger()->debug("showEvent");
 
 	if (event) {
 		QMainWindow::showEvent(event);
 	}
 
-	//qDebug("Gui::TBase::showEvent: pref->pause_when_hidden: %d", pref->pause_when_hidden);
 	if (pref->pause_when_hidden && core->state() == STATE_PAUSED && !ignore_show_hide_events) {
-		qDebug("Gui::TBase::showEvent: unpausing");
+        logger()->debug("showEvent: unpausing");
 		core->play();
 	}
 
@@ -668,14 +666,14 @@ void TBase::showEvent(QShowEvent* event) {
 }
 
 void TBase::hideEvent(QHideEvent* event) {
-	qDebug("Gui::TBase::hideEvent");
+    logger()->debug("hideEvent");
 
 	if (event) {
 		QMainWindow::hideEvent(event);
 	}
 
 	if (pref->pause_when_hidden && core->state() == STATE_PLAYING && !ignore_show_hide_events) {
-		qDebug("Gui::TBase::hideEvent: pausing");
+        logger()->debug("hideEvent: pausing");
 		core->pause();
 	}
 
@@ -721,7 +719,7 @@ void TBase::createPreferencesDialog() {
 }
 
 void TBase::createFilePropertiesDialog() {
-    qDebug("Gui::TBase::createFilePropertiesDialog");
+    logger()->debug("createFilePropertiesDialog");
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -739,14 +737,14 @@ void TBase::createFilePropertiesDialog() {
 }
 
 void TBase::handleMessageFromOtherInstances(const QString& message) {
-	qDebug("Gui::TBase::handleMessageFromOtherInstances: '%s'", message.toUtf8().constData());
+    logger()->debug("handleMessageFromOtherInstances: '%1'", message);
 
 	int pos = message.indexOf(' ');
 	if (pos > -1) {
 		QString command = message.left(pos);
 		QString arg = message.mid(pos+1);
-		qDebug("command: '%s'", command.toUtf8().constData());
-		qDebug("arg: '%s'", arg.toUtf8().constData());
+        logger()->debug("command: '%1'", command);
+        logger()->debug("arg: '%1'", arg);
 
 		if (command == "open_file") {
 			emit openFileRequested();
@@ -797,7 +795,7 @@ TActionList TBase::getAllNamedActions() {
 }
 
 void TBase::loadConfig() {
-	qDebug("Gui::TBase::loadConfig");
+    logger()->debug("loadConfig");
 
     // Disable actions
     sendEnableActions();
@@ -870,7 +868,7 @@ void TBase::loadConfig() {
 }
 
 void TBase::saveConfig() {
-	qDebug("Gui::TBase::saveConfig");
+    logger()->debug("saveConfig");
 
 	pref->beginGroup(settingsGroupName());
 
@@ -924,7 +922,7 @@ void TBase::save() {
 }
 
 void TBase::closeEvent(QCloseEvent* e)  {
-	qDebug("Gui::TBase::closeEvent");
+    logger()->debug("closeEvent");
 
     if (playlist->maybeSave()) {
         core->close(STATE_STOPPING);
@@ -937,7 +935,7 @@ void TBase::closeEvent(QCloseEvent* e)  {
 }
 
 void TBase::closeWindow() {
-	qDebug("Gui::TBase::closeWindow");
+    logger()->debug("closeWindow");
 
 	close();
 }
@@ -948,7 +946,7 @@ void TBase::showPlaylist(bool b) {
 }
 
 void TBase::showPreferencesDialog() {
-	qDebug("Gui::TBase::showPreferencesDialog");
+    logger()->debug("showPreferencesDialog");
 
 	if (!pref_dialog) {
 		createPreferencesDialog();
@@ -966,7 +964,7 @@ void TBase::showPreferencesDialog() {
 }
 
 void TBase::restartWZPlayer(bool reset_style) {
-	qDebug("Gui::TBase::restartWZPlayer");
+    logger()->debug("restartWZPlayer");
 
 	emit requestRestart(reset_style);
 	// Close and restart with the new settings
@@ -976,7 +974,7 @@ void TBase::restartWZPlayer(bool reset_style) {
 
 // The user has pressed OK in preferences dialog
 void TBase::applyNewPreferences() {
-	qDebug("Gui::TBase::applyNewPreferences");
+    logger()->debug("applyNewPreferences");
 
 	QString old_player_bin = pref->player_bin;
 
@@ -998,7 +996,7 @@ void TBase::applyNewPreferences() {
 	// Style change needs recreation of main window
     if (mod_interface->styleChanged()) {
 		// Request restart and optional reset style to default
-        qDebug("Gui::TBase::applyNewPreferences: style changed, restarting app");
+        logger()->debug("applyNewPreferences: style changed, restarting app");
 		restartWZPlayer(pref->style.isEmpty());
 		return;
 	}
@@ -1008,7 +1006,7 @@ void TBase::applyNewPreferences() {
         || mod_interface->iconsetChanged()
         || mod_interface->languageChanged()) {
 		// Request restart, don't reset style
-        qDebug("Gui::TBase::applyNewPreferences: playerbin, icon set or language changed, restarting app");
+        logger()->debug("applyNewPreferences: playerbin, icon set or language changed, restarting app");
         restartWZPlayer(false);
 		return;
 	}
@@ -1016,9 +1014,9 @@ void TBase::applyNewPreferences() {
 	// Keeping the current main window
 
 	// Update logging
-	TLog::log->setLogDebugMessages(pref->log_debug_enabled);
+    //TLog::log->setLogDebugMessages(pref->log_debug_enabled);
 	// Verbose handled by restart core
-	TLog::log->setLogFileEnabled(pref->log_file);
+    //TLog::log->setLogFileEnabled(pref->log_file);
 
 	// Set color key, depends on VO
 	playerwindow->setColorKey();
@@ -1044,7 +1042,7 @@ void TBase::applyNewPreferences() {
 	auto_hide_timer->setInterval(pref->floating_hide_delay);
 	// Recents
     if (mod_interface->recentsChanged()) {
-		openMenu->updateRecents();
+		fileMenu->updateRecents();
 	}
 
 	// Keyboard and mouse
@@ -1066,7 +1064,7 @@ void TBase::applyNewPreferences() {
 } // TBase::applyNewPreferences()
 
 void TBase::showFilePropertiesDialog(bool checked) {
-    qDebug("Gui::TBase::showFilePropertiesDialog");
+    logger()->debug("showFilePropertiesDialog");
 
     if (checked) {
         if (!file_properties_dialog) {
@@ -1080,7 +1078,7 @@ void TBase::showFilePropertiesDialog(bool checked) {
 }
 
 void TBase::setDataToFileProperties() {
-	qDebug("TBase::setDataToFileProperties");
+	logger()->debug("TBase::setDataToFileProperties");
 
 	InfoReader *i = InfoReader::obj();
 	i->getInfo();
@@ -1117,7 +1115,7 @@ void TBase::setDataToFileProperties() {
 }
 
 void TBase::applyFileProperties() {
-	qDebug("Gui::TBase::applyFileProperties");
+    logger()->debug("applyFileProperties");
 
 	bool need_restart = false;
 
@@ -1165,7 +1163,7 @@ void TBase::applyFileProperties() {
 }
 
 void TBase::onMediaInfoChanged() {
-	qDebug("Gui::TBase::onMediaInfoChanged");
+    logger()->debug("onMediaInfoChanged");
 
 	if (file_properties_dialog && file_properties_dialog->isVisible()) {
 		setDataToFileProperties();
@@ -1177,20 +1175,20 @@ void TBase::onMediaInfoChanged() {
 }
 
 void TBase::onNewMediaStartedPlaying() {
-    qDebug("Gui::TBase::onNewMediaStartedPlaying");
+    logger()->debug("onNewMediaStartedPlaying");
 
 	enterFullscreenOnPlay();
 
 	// Recents
     pref->history_recents.addItem(core->mdat.filename,
                                   core->mdat.displayName());
-	openMenu->updateRecents();
+	fileMenu->updateRecents();
 
 	checkPendingActionsToRun();
 }
 
 void TBase::updateVideoEqualizer() {
-	qDebug("Gui::TBase::updateVideoEqualizer");
+    logger()->debug("updateVideoEqualizer");
 
 	video_equalizer->setContrast(core->mset.contrast);
 	video_equalizer->setBrightness(core->mset.brightness);
@@ -1200,13 +1198,13 @@ void TBase::updateVideoEqualizer() {
 }
 
 void TBase::updateAudioEqualizer() {
-	qDebug("Gui::TBase::updateAudioEqualizer");
+    logger()->debug("updateAudioEqualizer");
 
 	audio_equalizer->setEqualizer(core->getAudioEqualizer());
 }
 
 void TBase::setDefaultValuesFromVideoEqualizer() {
-	qDebug("Gui::TBase::setDefaultValuesFromVideoEqualizer");
+    logger()->debug("setDefaultValuesFromVideoEqualizer");
 
 	pref->initial_contrast = video_equalizer->contrast();
 	pref->initial_brightness = video_equalizer->brightness();
@@ -1220,7 +1218,7 @@ void TBase::setDefaultValuesFromVideoEqualizer() {
 }
 
 void TBase::changeVideoEqualizerBySoftware(bool b) {
-	qDebug("Gui::TBase::changeVideoEqualizerBySoftware: %d", b);
+    logger()->debug("changeVideoEqualizerBySoftware: %1", b);
 
 	if (b != pref->use_soft_video_eq) {
 		pref->use_soft_video_eq = b;
@@ -1229,7 +1227,7 @@ void TBase::changeVideoEqualizerBySoftware(bool b) {
 }
 
 void TBase::openDirectory() {
-	qDebug("Gui::TBase::openDirectory");
+    logger()->debug("openDirectory");
 
 	QString s = MyFileDialog::getExistingDirectory(
 					this, tr("Choose a directory"),
@@ -1241,10 +1239,10 @@ void TBase::openDirectory() {
 }
 
 void TBase::open(const QString &file) {
-	qDebug() << "Gui::TBase::open:" << file;
+    logger()->debug("open: " + file);
 
 	if (file.isEmpty()) {
-		qWarning("Gui::TBase::open: filename is empty");
+        logger()->warn("open: filename is empty");
 		return;
 	}
 	if (!playlist->maybeSave()) {
@@ -1266,14 +1264,14 @@ void TBase::open(const QString &file) {
 	}
 
 	core->open(file);
-	qDebug("Gui::TBase::open: done");
+    logger()->debug("open: done");
 }
 
 void TBase::openFiles(QStringList files, const QString& current) {
-    qDebug("Gui::TBase::openFiles");
+    logger()->debug("openFiles");
 
     if (files.empty()) {
-        qDebug("Gui::TBase::openFiles: no files in list to open");
+        logger()->debug("openFiles: no files in list to open");
         return;
     }
 
@@ -1284,17 +1282,16 @@ void TBase::openFiles(QStringList files, const QString& current) {
 }
 
 void TBase::openFile() {
-	qDebug("Gui::TBase::openFile");
+    logger()->debug("openFile");
 
-	TExtensions e;
-	QString s = MyFileDialog::getOpenFileName(
+    QString s = MyFileDialog::getOpenFileName(
                     this,
                     tr("Choose a file"),
                     pref->latest_dir,
-                    tr("Multimedia") + e.allPlayable().forFilter() + ";;"
-                    + tr("Video") + e.video().forFilter() + ";;"
-                    + tr("Audio") + e.audio().forFilter() + ";;"
-                    + tr("Playlists") + e.playlist().forFilter() + ";;"
+                    tr("Multimedia") + extensions.allPlayable().forFilter() + ";;"
+                    + tr("Video") + extensions.video().forFilter() + ";;"
+                    + tr("Audio") + extensions.audio().forFilter() + ";;"
+                    + tr("Playlists") + extensions.playlist().forFilter() + ";;"
                     + tr("All files") +" (*.*)");
 
 	if (!s.isEmpty()) {
@@ -1303,7 +1300,7 @@ void TBase::openFile() {
 }
 
 void TBase::openRecent() {
-	qDebug("Gui::TBase::openRecent");
+    logger()->debug("openRecent");
 
 	QAction *a = qobject_cast<QAction *> (sender());
 	if (a) {
@@ -1315,7 +1312,7 @@ void TBase::openRecent() {
 }
 
 void TBase::openURL() {
-	qDebug("Gui::TBase::openURL");
+    logger()->debug("openURL");
 
 	TInputURL d(this);
 
@@ -1355,7 +1352,7 @@ void TBase::configureDiscDevices() {
 }
 
 void TBase::openVCD() {
-	qDebug("Gui::TBase::openVCD");
+    logger()->debug("openVCD");
 
 	if (pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
@@ -1365,7 +1362,7 @@ void TBase::openVCD() {
 }
 
 void TBase::openAudioCD() {
-	qDebug("Gui::TBase::openAudioCD");
+    logger()->debug("openAudioCD");
 
 	if (pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
@@ -1375,7 +1372,7 @@ void TBase::openAudioCD() {
 }
 
 void TBase::openDVD() {
-	qDebug("Gui::TBase::openDVD");
+    logger()->debug("openDVD");
 
 	if (pref->dvd_device.isEmpty()) {
 		configureDiscDevices();
@@ -1385,13 +1382,13 @@ void TBase::openDVD() {
 }
 
 void TBase::openDVDFromFolder() {
-	qDebug("Gui::TBase::openDVDFromFolder");
+    logger()->debug("openDVDFromFolder");
 
 	if (playlist->maybeSave()) {
 		TInputDVDDirectory *d = new TInputDVDDirectory(this);
 		d->setFolder(pref->last_dvd_directory);
 		if (d->exec() == QDialog::Accepted) {
-			qDebug("Gui::TBase::openDVDFromFolder: accepted");
+            logger()->debug("openDVDFromFolder: accepted");
 			openDVDFromFolder(d->folder());
 		}
 
@@ -1406,7 +1403,7 @@ void TBase::openDVDFromFolder(const QString &directory) {
 }
 
 void TBase::openBluRay() {
-	qDebug("Gui::TBase::openBluRay");
+    logger()->debug("openBluRay");
 
 	if (pref->bluray_device.isEmpty()) {
 		configureDiscDevices();
@@ -1416,7 +1413,7 @@ void TBase::openBluRay() {
 }
 
 void TBase::openBluRayFromFolder() {
-	qDebug("Gui::TBase::openBluRayFromFolder");
+    logger()->debug("openBluRayFromFolder");
 
 	if (playlist->maybeSave()) {
 		QString dir = QFileDialog::getExistingDirectory(this, tr("Select the Blu-ray folder"),
@@ -1429,13 +1426,12 @@ void TBase::openBluRayFromFolder() {
 }
 
 void TBase::loadSub() {
-	qDebug("Gui::TBase::loadSub");
+    logger()->debug("loadSub");
 
-	TExtensions e;
-	QString s = MyFileDialog::getOpenFileName(
+    QString s = MyFileDialog::getOpenFileName(
 		this, tr("Choose a file"),
 		pref->latest_dir,
-		tr("Subtitles") + e.subtitles().forFilter()+ ";;" +
+        tr("Subtitles") + extensions.subtitles().forFilter()+ ";;" +
 		tr("All files") +" (*.*)");
 
 	if (!s.isEmpty())
@@ -1443,19 +1439,18 @@ void TBase::loadSub() {
 }
 
 void TBase::setInitialSubtitle(const QString & subtitle_file) {
-	qDebug("Gui::TBase::setInitialSubtitle: '%s'", subtitle_file.toUtf8().constData());
+    logger()->debug("setInitialSubtitle: '%1'", subtitle_file);
 
 	core->setInitialSubtitle(subtitle_file);
 }
 
 void TBase::loadAudioFile() {
-	qDebug("Gui::TBase::loadAudioFile");
+    logger()->debug("loadAudioFile");
 
-	TExtensions e;
-	QString s = MyFileDialog::getOpenFileName(
+    QString s = MyFileDialog::getOpenFileName(
 		this, tr("Choose a file"),
 		pref->latest_dir,
-		tr("Audio") + e.audio().forFilter()+";;" +
+        tr("Audio") + extensions.audio().forFilter()+";;" +
 		tr("All files") +" (*.*)");
 
 	if (!s.isEmpty())
@@ -1548,16 +1543,16 @@ void TBase::exitFullscreen() {
 }
 
 void TBase::toggleFullscreen() {
-	qDebug("Gui::TBase::toggleFullscreen");
+    logger()->debug("toggleFullscreen");
 
 	toggleFullscreen(!pref->fullscreen);
 }
 
 void TBase::toggleFullscreen(bool b) {
-	qDebug("Gui::TBase::toggleFullscreen: %d", b);
+    logger()->debug("toggleFullscreen: %1", b);
 
 	if (b == pref->fullscreen) {
-		qDebug("Gui::TBase::toggleFullscreen: nothing to do, returning");
+        logger()->debug("toggleFullscreen: nothing to do, returning");
 		return;
 	}
 
@@ -1580,7 +1575,7 @@ void TBase::toggleFullscreen(bool b) {
 }
 
 void TBase::aboutToEnterFullscreen() {
-	//qDebug("Gui::TBase::aboutToEnterFullscreen");
+    //logger()->debug("aboutToEnterFullscreen");
 
 	emit aboutToEnterFullscreenSignal();
 
@@ -1595,7 +1590,7 @@ void TBase::aboutToEnterFullscreen() {
 }
 
 void TBase::didEnterFullscreen() {
-	//qDebug("Gui::TBase::didEnterFullscreen");
+    //logger()->debug("didEnterFullscreen");
 
 	// Restore fullscreen state
 	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
@@ -1606,7 +1601,7 @@ void TBase::didEnterFullscreen() {
                                   .toByteArray(), Helper::qtVersion());
     if (!state_restored) {
 		// First time there is no fullscreen toolbar state
-        qDebug("Gui::TBase::didEnterFullscreen: failed to restore fullscreen toolbar state");
+        logger()->debug("didEnterFullscreen: failed to restore fullscreen toolbar state");
 		toolbar->hide();
 		toolbar2->hide();
 	}
@@ -1618,7 +1613,7 @@ void TBase::didEnterFullscreen() {
 }
 
 void TBase::aboutToExitFullscreen() {
-	//qDebug("Gui::TBase::aboutToExitFullscreen");
+    //logger()->debug("aboutToExitFullscreen");
 
 	auto_hide_timer->stop();
 
@@ -1632,7 +1627,7 @@ void TBase::aboutToExitFullscreen() {
 }
 
 void TBase::didExitFullscreen() {
-	//qDebug("Gui::TBase::didExitFullscreen");
+    //logger()->debug("didExitFullscreen");
 
     // Restore maximizednormal state
 	if (was_maximized) {
@@ -1646,7 +1641,7 @@ void TBase::didExitFullscreen() {
     state_restored = restoreState(pref->value("toolbars_state")
                                   .toByteArray(), Helper::qtVersion());
     if  (!state_restored) {
-        qWarning("Gui::TBase::didExitFullscreen: failed to restore toolbar state");
+        logger()->warn("didExitFullscreen: failed to restore toolbar state");
     }
 	pref->endGroup();
 
@@ -1654,7 +1649,7 @@ void TBase::didExitFullscreen() {
 }
 
 void TBase::leftClickFunction() {
-	qDebug("Gui::TBase::leftClickFunction");
+    logger()->debug("leftClickFunction");
 
 	if (core->mdat.detected_type == TMediaData::TYPE_DVDNAV
 		&& playerwindow->videoWindow()->underMouse()) {
@@ -1665,7 +1660,7 @@ void TBase::leftClickFunction() {
 }
 
 void TBase::rightClickFunction() {
-	qDebug("Gui::TBase::rightClickFunction");
+    logger()->debug("rightClickFunction");
 
 	if (!pref->mouse_right_click_function.isEmpty()) {
 		processFunction(pref->mouse_right_click_function);
@@ -1673,7 +1668,7 @@ void TBase::rightClickFunction() {
 }
 
 void TBase::doubleClickFunction() {
-	qDebug("Gui::TBase::doubleClickFunction");
+    logger()->debug("doubleClickFunction");
 
 	if (!pref->mouse_double_click_function.isEmpty()) {
 		processFunction(pref->mouse_double_click_function);
@@ -1681,7 +1676,7 @@ void TBase::doubleClickFunction() {
 }
 
 void TBase::middleClickFunction() {
-	qDebug("Gui::TBase::middleClickFunction");
+    logger()->debug("middleClickFunction");
 
 	if (!pref->mouse_middle_click_function.isEmpty()) {
 		processFunction(pref->mouse_middle_click_function);
@@ -1689,7 +1684,7 @@ void TBase::middleClickFunction() {
 }
 
 void TBase::xbutton1ClickFunction() {
-	qDebug("Gui::TBase::xbutton1ClickFunction");
+    logger()->debug("xbutton1ClickFunction");
 
 	if (!pref->mouse_xbutton1_click_function.isEmpty()) {
 		processFunction(pref->mouse_xbutton1_click_function);
@@ -1697,7 +1692,7 @@ void TBase::xbutton1ClickFunction() {
 }
 
 void TBase::xbutton2ClickFunction() {
-	qDebug("Gui::TBase::xbutton2ClickFunction");
+    logger()->debug("xbutton2ClickFunction");
 
 	if (!pref->mouse_xbutton2_click_function.isEmpty()) {
 		processFunction(pref->mouse_xbutton2_click_function);
@@ -1736,24 +1731,25 @@ void TBase::processFunction(QString function) {
 	if (action) {
 		if (action->isEnabled()) {
 			if (action->isCheckable() && checkableFunction) {
-				qDebug() << "Gui::TBase::processFunction: setting checked action"
-						 << function << value;
+                logger()->debug("processFunction: setting checked action "
+                              + function + " " + value);
 				action->setChecked(value);
 			} else {
-				qDebug() << "Gui::TBase::processFunction: triggering action" << function;
+                logger()->debug("processFunction: triggering action "
+                                 + function);
 				action->trigger();
 			}
 		} else {
-			qDebug() << "Gui::TBase::processFunction: canceling disabled action"
-					 << function;
+            logger()->warn("processFunction: canceling disabled action "
+                         + function);
 		}
 	} else {
-		qWarning() << "Gui::TBase::processFunction: action" << function << "not found";
+        logger()->warn("processFunction: action " + function + " not found");
 	}
 }
 
 void TBase::runActions(QString actions) {
-	qDebug("Gui::TBase::runActions");
+    logger()->debug("runActions");
 
 	actions = actions.simplified(); // Remove white space
 
@@ -1774,8 +1770,8 @@ void TBase::runActions(QString actions) {
 
         action = findChild<QAction*>(actionStr);
         if (action) {
-			qDebug("Gui::TBase::runActions: running action: '%s' (par: '%s')",
-				   actionStr.toUtf8().data(), par.toUtf8().data());
+            logger()->debug("runActions: running action: '%1' (par: '%2')",
+                   actionStr, par);
 
 			if (action->isCheckable()) {
 				if (par.isEmpty()) {
@@ -1788,13 +1784,13 @@ void TBase::runActions(QString actions) {
 				action->trigger();
 			} //end if
 		} else {
-			qWarning("Gui::TBase::runActions: action: '%s' not found",actionStr.toUtf8().data());
+            logger()->warn("runActions: action: '%1' not found", actionStr);
 		} //end if
 	} //end for
 }
 
 void TBase::checkPendingActionsToRun() {
-	qDebug("Gui::TBase::checkPendingActionsToRun");
+    logger()->debug("checkPendingActionsToRun");
 
 	QString actions;
 	if (!pending_actions_to_run.isEmpty()) {
@@ -1808,13 +1804,13 @@ void TBase::checkPendingActionsToRun() {
 	}
 
 	if (!actions.isEmpty()) {
-		qDebug("Gui::TBase::checkPendingActionsToRun: actions: '%s'", actions.toUtf8().constData());
+        logger()->debug("checkPendingActionsToRun: actions: '%1'", actions);
 		runActions(actions);
 	}
 }
 
 void TBase::dragEnterEvent(QDragEnterEvent *e) {
-	qDebug("Gui::TBase::dragEnterEvent");
+    logger()->debug("dragEnterEvent");
 
     if (e->mimeData()->hasUrls()) {
         if (e->proposedAction() & Qt::CopyAction) {
@@ -1831,14 +1827,14 @@ void TBase::dragEnterEvent(QDragEnterEvent *e) {
 }
 
 void TBase::dropEvent(QDropEvent *e) {
-    qDebug("Gui::TBase::dropEvent");
+    logger()->debug("dropEvent");
 
     if (e->mimeData()->hasUrls()) {
         QStringList files;
         foreach(const QUrl url, e->mimeData()->urls()) {
             files.append(url.toString());
         }
-        qDebug("Gui::TBase::dropEvent: number of files: %d", files.count());
+        logger()->debug("dropEvent: number of files: %1", files.count());
         openFiles(files);
         e->accept();
         return;
@@ -1851,14 +1847,11 @@ void TBase::showContextMenu() {
 }
 
 void TBase::showContextMenu(QPoint p) {
-	//qDebug("Gui::TBase::showContextMenu: %d, %d", p.x(), p.y());
 	execPopup(this, popup, p);
 }
 
 // Called when a video has started to play
 void TBase::enterFullscreenOnPlay() {
-	//qDebug("Gui::TBase::enterFullscreenOnPlay: arg_start_in_fullscreen: %d, pref->start_in_fullscreen: %d",
-	//	   arg_start_in_fullscreen, pref->start_in_fullscreen);
 
 	if (arg_start_in_fullscreen != 0) {
 		if ((arg_start_in_fullscreen == 1) || (pref->start_in_fullscreen)) {
@@ -1877,11 +1870,9 @@ void TBase::exitFullscreenOnStop() {
 }
 
 void TBase::playlistHasFinished() {
-	qDebug("Gui::TBase::playlistHasFinished");
+    logger()->debug("playlistHasFinished");
 
 	core->stop();
-
-	qDebug("Gui::TBase::playlistHasFinished: arg_close_on_finish: %d, pref->close_on_finish: %d", arg_close_on_finish, pref->close_on_finish);
 
 	if (arg_close_on_finish != 0) {
 		if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
@@ -1891,7 +1882,7 @@ void TBase::playlistHasFinished() {
 }
 
 void TBase::onStateChanged(TCoreState state) {
-	qDebug() << "Gui::TBase::onStateChanged: new state" << core->stateToString();
+    logger()->debug("onStateChanged: new state " + core->stateToString());
 
     sendEnableActions();
     auto_hide_timer->setAutoHideMouse(state == STATE_PLAYING);
@@ -1923,7 +1914,7 @@ void TBase::displayMessage(const QString& message, int time) {
 }
 
 void TBase::onPositionChanged(double sec) {
-    //qDebug("Gui::TBase::onPositionChanged: %f", sec);
+    //logger()->debug("onPositionChanged: %1", sec);
 
 	QString time =
 		Helper::formatTime((int) sec) + " / " +
@@ -1941,7 +1932,7 @@ void TBase::gotDuration(double duration) {
 }
 
 void TBase::changeSize(double factor) {
-	qDebug("TBase::changeSize: %f", factor);
+    logger()->debug("TBase::changeSize: %1", factor);
 
 	if (core->mdat.noVideo())
 		return;
@@ -1976,7 +1967,7 @@ void TBase::changeSize(double factor) {
 }
 
 void TBase::changeSize(int percentage) {
-	qDebug("TBase::changeSize: %d%%", percentage);
+    logger()->debug("TBase::changeSiz%1 %1%%", percentage);
 	changeSize((double) percentage / 100);
 }
 
@@ -1988,7 +1979,7 @@ void TBase::toggleDoubleSize() {
 }
 
 void TBase::hidePanel() {
-	qDebug("Gui::TBase::hidePanel");
+    logger()->debug("hidePanel");
 
 	if (panel->isVisible()) {
 		// Exit from fullscreen mode
@@ -2014,7 +2005,8 @@ double TBase::getNewSizeFactor() {
 
 	if (pref->fullscreen) {
 		size_factor = (double) available_size.width() / video_size.width();
-		double size_factor_y = (double) available_size.height() / video_size.height();
+        double size_factor_y = (double) available_size.height()
+                               / video_size.height();
 		if (size_factor_y < size_factor) {
 			return size_factor_y;
 		}
@@ -2028,8 +2020,9 @@ double TBase::getNewSizeFactor() {
 	// Adjust height first
 	if (video_size.height() > max) {
 		factor = max / res.height();
-		qDebug("Gui::TBase::getNewSizeFactor: height larger as %f desktop, reducing size factor from %f to %f",
-			   f, size_factor, factor);
+        debug << "getNewSizeFactor: height larger as" << f
+              << "desktop, reducing size factor from" << size_factor
+              << "to" << factor << debug;
 		size_factor = factor;
 		video_size = res * size_factor;
 	}
@@ -2037,8 +2030,9 @@ double TBase::getNewSizeFactor() {
 	max = f * available_size.width();
 	if (video_size.width() > max) {
 		factor = max / res.width();
-		qDebug("Gui::TBase::getNewSizeFactor: width larger as %f desktop, reducing size factor from %f to %f",
-			   f, size_factor, factor);
+        debug << "getNewSizeFactor: width larger as" << f
+              << "desktop, reducing size factor from" << size_factor
+              << " to " << factor << debug;
 		size_factor = factor;
 		video_size = res * size_factor;
 	}
@@ -2053,8 +2047,8 @@ double TBase::getNewSizeFactor() {
 			if (d < 10) d = 10;
 			if (qAbs(factor_int - predef) < d) {
 				factor = (double) predef / 100;
-				qDebug("Gui::TBase::getNewSizeFactor: rounding size factor from %f to %f",
-					   size_factor, factor);
+                debug << "getNewSizeFactor: rounding size factor from"
+                      << size_factor << "to" << factor << debug;
 				return factor;
 			}
 		}
@@ -2063,17 +2057,17 @@ double TBase::getNewSizeFactor() {
 		int new_w = ((video_size.width() + 8) / 16) * 16;
 		if (new_w != video_size.width()) {
 			size_factor = qRound((double) new_w / res.width());
-			qDebug("Gui::TBase::getNewSizeFactor: optimizing size_factor to %f for width %d",
-				   size_factor, new_w);
+            debug << "getNewSizeFactor: optimizing size factor to"
+                  << size_factor << "for width" << new_w << debug;
 		}
 	}
 
-	qDebug("Gui::TBase::getNewSizeFactor: selected size factor %f", size_factor);
+    debug << "getNewSizeFactor: selected size factor" << size_factor << debug;
 	return size_factor;
 }
 
 void TBase::onVideoOutResolutionChanged(int w, int h) {
-	qDebug("Gui::TBase::onVideoOutResolutionChanged: %d, %d", w, h);
+    logger()->debug("onVideoOutResolutionChanged: %1, %2", w, h);
 
 	if (w <= 0 || h <= 0) {
 		// No video
@@ -2112,12 +2106,11 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 }
 
 void TBase::resizeWindow(int w, int h) {
-	// qDebug("Gui::TBase::resizeWindow: %d, %d", w, h);
 
-	if (!pref->fullscreen && !isMaximized()) {
-		resizeMainWindow(w, h, pref->size_factor);
-		TDesktop::keepInsideDesktop(this);
-	}
+    if (!pref->fullscreen && !isMaximized()) {
+        resizeMainWindow(w, h, pref->size_factor);
+        TDesktop::keepInsideDesktop(this);
+    }
 }
 
 void TBase::resizeWindowToVideo() {
@@ -2125,41 +2118,39 @@ void TBase::resizeWindowToVideo() {
 }
 
 void TBase::resizeMainWindow(int w, int h, double size_factor, bool try_twice) {
-	qDebug("Gui::TBase::resizeMainWindow: requested video size %d x %d, size factor %f",
-		   w, h, pref->size_factor);
+    logger()->debug("resizeMainWindow: requested video size "
+                    + QString::number(w) + " x " + QString::number(h)
+                    + " size factor " + QString::number(pref->size_factor));
 
-	QSize panel_size = QSize(w, h) * size_factor;
-	if (panel_size == panel->size()) {
-		qDebug("Gui::TBase::resizeMainWindow: panel has requested size");
-		return;
-	}
+    QSize panel_size = QSize(w, h) * size_factor;
+    if (panel_size == panel->size()) {
+        logger()->debug("resizeMainWindow: panel has requested size");
+        return;
+    }
 
-	QSize new_size = size() + panel_size - panel->size();
-	//qDebug("Gui::TBase::resizeMainWindow: resizing window from %d x %d to %d x %d",
-	//	   width(), height(), new_size.width(), new_size.height());
-	resize(new_size);
+    QSize new_size = size() + panel_size - panel->size();
+    resize(new_size);
 
-	if (panel->size() != panel_size) {
-		// Resizing the main window can change the height of the tool bars,
-		// which will change the height of the panel during the resize.
-		// Often fixed by resizing once again, using the new panel height.
-		if (try_twice) {
-			//qDebug("Gui::TBase::resizeMainWindow: panel size now %d x %d. Wanted size %d x %d. Trying a second time",
-			//	   panel->size().width(), panel->size().height(),
-			//	   panel_size.width(), panel_size.height());
-			resizeMainWindow(w, h, size_factor, false);
-		} else {
-			qDebug("Gui::TBase::resizeMainWindow: resize failed. Panel size now %d x %d. Wanted size %d x %d",
-				   panel->size().width(), panel->size().height(),
-				   panel_size.width(), panel_size.height());
-		}
-	}
-
+    if (panel->size() != panel_size) {
+        // Resizing the main window can change the height of the tool bars,
+        // which will change the height of the panel during the resize.
+        // Often fixed by resizing once again, using the new panel height.
+        if (try_twice) {
+            resizeMainWindow(w, h, size_factor, false);
+        } else {
+            logger()->debug("resizeMainWindow: resize failed. Panel size now "
+                            + QString::number(panel->size().width())
+                            + " x " + QString::number(panel->size().height())
+                            + ". Wanted size "
+                            + QString::number(panel->size().width())
+                            + " x " + QString::number(panel->size().height()));
+        }
+    }
 }
 
 // Slot called when media settings reset or loaded
 void TBase::onMediaSettingsChanged() {
-	qDebug("Gui::TBase::onMediaSettingsChanged");
+    logger()->debug("onMediaSettingsChanged");
 
 	emit mediaSettingsChanged(&core->mset);
 
@@ -2178,12 +2169,12 @@ void TBase::onDragPositionChanged(double t) {
 }
 
 void TBase::setStayOnTop(bool b) {
-	qDebug("Gui::TBase::setStayOnTop: %d", b);
+    logger()->debug("setStayOnTop: %1", b);
 
 	bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
 	if (b == stay_on_top) {
 		// identical do nothing
-        qDebug("Gui::TBase::setStayOnTop: WindowStaysOnTopHint flag already up2date");
+        logger()->debug("setStayOnTop: WindowStaysOnTopHint flag already up2date");
 		return;
 	}
 
@@ -2205,7 +2196,7 @@ void TBase::setStayOnTop(bool b) {
 }
 
 void TBase::changeStayOnTop(int stay_on_top) {
-    qDebug("Gui::TBase::changeStayOnTop: %d", stay_on_top);
+    logger()->debug("changeStayOnTop: %1", stay_on_top);
 
     switch (stay_on_top) {
         case TPreferences::AlwaysOnTop : setStayOnTop(true); break;
@@ -2218,7 +2209,7 @@ void TBase::changeStayOnTop(int stay_on_top) {
 }
 
 void TBase::checkStayOnTop(TCoreState) {
-    qDebug("Gui::TBase::checkStayOnTop");
+    logger()->debug("checkStayOnTop");
 
     if (pref->fullscreen
         || pref->stay_on_top != TPreferences::WhilePlayingOnTop) {
@@ -2248,7 +2239,7 @@ void TBase::toggleStayOnTop() {
 }
 
 void TBase::onPlayerError(int exit_code) {
-    qDebug("Gui::TBase::onPlayerError: %d", exit_code);
+    logger()->debug("onPlayerError: %1", exit_code);
 
 	QString msg = Proc::TExitMsg::message(exit_code) + " (" + core->mdat.filename + ")";
 	displayMessage(msg, 0);
@@ -2265,7 +2256,7 @@ void TBase::onPlayerError(int exit_code) {
 
 #ifdef FIND_SUBTITLES
 void TBase::showFindSubtitlesDialog() {
-	qDebug("Gui::TBase::showFindSubtitlesDialog");
+    logger()->debug("showFindSubtitlesDialog");
 
 	if (!find_subs_dialog) {
 		find_subs_dialog = new FindSubtitlesWindow(this, Qt::Window | Qt::WindowMinMaxButtonsHint);
@@ -2288,22 +2279,22 @@ void TBase::openUploadSubtitlesPage() {
 
 #if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 bool TBase::winEvent (MSG* m, long* result) {
-	//qDebug("Gui::TBase::winEvent");
+    //logger()->debug("winEvent");
 
 	if (m->message == WM_SYSCOMMAND) {
 		if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
-            || ((m->wParam & 0xFFF0) == SC_MONITORPOWER)) {
-			qDebug("Gui::TBase::winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
-			qDebug("Gui::TBase::winEvent: playing: %d", core->state() == STATE_PLAYING);
-			qDebug("Gui::TBase::winEvent: video: %d", !core->mdat.noVideo());
+            || ((m->wParam & 0xFFF0) == SC_MONIT%1POWER)) {
+            logger()->debug("winEvent: receive%1SC_SCREENSAVE or SC_MONITORPOWER");
+            logger()->debug("winEvent: playing: %1", core->state() == STATE_PLAYING);
+            logger()->debug("winEvent: video: %1", !core->mdat.noVideo());
 			
             if (core->state() == STATE_PLAYING && core->mdat.hasVideo()) {
-				qDebug("Gui::TBase::winEvent: not allowing screensaver");
+                logger()->debug("winEvent: not allowing screensaver");
 				(*result) = 0;
 				return true;
 			}
 
-			qDebug("Gui::TBase::winEvent: allowing screensaver");
+            logger()->debug("winEvent: allowing screensaver");
 			return false;
 		}
 	}

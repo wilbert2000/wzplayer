@@ -254,20 +254,19 @@ void TAudioEqualizer::setDefaults() {
 }
 
 void TAudioEqualizer::setEqualizer(const TAudioEqualizerList& l) {
-	//qDebug() << "Gui::TAudioEqualizer::setEqualizer" << l;
 
 	int p = findPreset(l);
 	int index = presets_combo->findData(p);
 	if (index >= 0) {
 		presets_combo->setCurrentIndex(index);
 	} else {
-		qWarning("TAudioEqualizer::setEqualizer: preset not found");
+		logger()->warn("TAudioEqualizer::setEqualizer: preset not found");
 	}
 	setValues(l, false);
 }
 
 void TAudioEqualizer::setValues(const TAudioEqualizerList& l, bool emitValuesChanged) {
-	qDebug("TAudioEqualizer::setValues");
+	logger()->debug("TAudioEqualizer::setValues");
 
 	for (int n = 0; n < 10; n++) {
 		eq[n]->blockSignals(true);
@@ -280,7 +279,7 @@ void TAudioEqualizer::setValues(const TAudioEqualizerList& l, bool emitValuesCha
 }
 
 void TAudioEqualizer::presetChanged(int index) {
-	qDebug("TAudioEqualizer::presetChanged: %d", index);
+	logger()->debug("TAudioEqualizer::presetChanged: %1", index);
 	int p = presets_combo->itemData(index).toInt();
 	if (p != User_defined) {
 		setValues(preset_list[p]);
@@ -307,7 +306,7 @@ void TAudioEqualizer::applyButtonClicked() {
 }
 
 void TAudioEqualizer::updatePresetCombo() {
-	qDebug("TAudioEqualizer::updatePresetCombo");
+	logger()->debug("TAudioEqualizer::updatePresetCombo");
 
 	TAudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {

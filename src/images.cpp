@@ -17,17 +17,19 @@
 */
 
 #include "images.h"
-#include <QDebug>
 #include <QString>
 #include <QFile>
 #include <QPixmap>
 #include <QResource>
 
+#include "log4qt/logger.h"
 #include "settings/preferences.h"
 #include "settings/paths.h"
 
 
 using namespace Settings;
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Images)
 
 QString Images::current_theme;
 QString Images::themes_path;
@@ -43,8 +45,8 @@ QString Images::resourceFilename() {
 		filename = themes_path +"/"+ current_theme +"/"+ current_theme +".rcc";
 	}
 
-	qDebug() << "Images::resourceFilename:" << filename;
-	return filename;
+    logger()->debug("resourceFilename: resource file name '" + filename + "'");
+    return filename;
 }
 
 void Images::setTheme(const QString& name) {
@@ -59,25 +61,25 @@ void Images::setTheme(const QString& name) {
 	}
 
 	if (!last_resource_loaded.isEmpty()) {
-		qDebug() << "Images::setTheme: unloading" << last_resource_loaded;
+        logger()->debug("setTheme: unloading '" + last_resource_loaded + "'");
 		QResource::unregisterResource(last_resource_loaded);
 		last_resource_loaded = QString::null;
 	}
 
 	QString rs_file = resourceFilename();
 	if (!rs_file.isEmpty() && QFile::exists(rs_file)) {
-		qDebug() << "Images::setTheme: loading" << rs_file;
+        logger()->debug("setTheme: loading '" + rs_file + "'");
 		QResource::registerResource(rs_file);
 		last_resource_loaded = rs_file;
 		has_rcc = true;
 	} else {
 		has_rcc = false;
 	}
-	qDebug() << "Images::setTheme: has_rcc:" << has_rcc;
+    logger()->debug("setTheme: has_rcc: %1", has_rcc);
 }
 
 void Images::setThemesPath(const QString& folder) {
-	qDebug() << "Images::setThemesPath:" << folder;
+    logger()->debug("setThemesPath: '" + folder + "'");
 	themes_path = folder;
 }
 
@@ -102,7 +104,6 @@ QString Images::file(const QString& name) {
 		icon_name = ":/default-theme/" + name + ".png";
 	}
 
-	//qDebug() << "Images::file:" << icon_name;
 	return icon_name;
 }
 
@@ -114,7 +115,7 @@ QPixmap Images::icon(const QString& name, int size) {
 	QString icon_name = file(name);
 	QPixmap p(icon_name);
 	if (p.isNull()) {
-		qDebug() << "Images::icon:" << name << "not found";
+        logger()->debug("icon: '" + name + "' not found");
 	} else if (size > 0) {
 		p = resize(&p, size);
 	}

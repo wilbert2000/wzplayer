@@ -16,11 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
+#include <QDebug>
 #include "subtracks.h"
+#include "log4qt/logger.h"
 #include "settings/mediasettings.h"
 #include <QRegExp>
-#include <QDebug>
+
 
 SubData::SubData()
 	: _type(None)
@@ -62,6 +63,9 @@ QString SubData::displayName() const {
 	return dname;
 }
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, SubTracks)
+
 SubTracks::SubTracks()
 	: _selected_type(SubData::None)
 	, _selected_ID(-1)
@@ -102,18 +106,18 @@ int SubTracks::findSelectedSecondaryIdx() const {
 }
 
 int SubTracks::findLangIdx(QString expr) const {
-	qDebug("SubTracks::findLangIdx: '%s'", expr.toUtf8().data());
+    logger()->debug("findLangIdx: '%1'", expr);
 
 	QRegExp rx(expr);
 
 	for (int n = 0; n < subs.count(); n++) {
 		if (rx.indexIn(subs[n].lang()) >= 0) {
-			qDebug("SubTracks::findLangIdx: found preferred language");
+            logger()->debug("findLangIdx: found preferred language");
 			return n;
 		}
 	}
 
-	qDebug("SubTracks::findLangIdx: no match for preferred language found");
+    logger()->debug("findLangIdx: no match for preferred language found");
 	return -1;
 }
 
@@ -202,9 +206,9 @@ bool SubTracks::update(SubData::Type type,
 					   int id,
 					   SubData::Type sec_type,
 					   int sec_id,
-					   const QString & lang,
-					   const QString & name,
-					   const QString & filename,
+                       const QString& lang,
+                       const QString& name,
+                       const QString& filename,
 					   bool selected,
 					   bool sec_selected) {
 
@@ -242,16 +246,18 @@ bool SubTracks::update(SubData::Type type,
 
 		if (selected) {
 			if (_selected_type != type || _selected_ID != id) {
-				qDebug() << "SubTracks::update: changed selected subtitle from"
-						 << _selected_type << _selected_ID
-						 << "to" << type << id;
+                logger()->debug("update: changed selected subtitle from "
+                    " type " + QString::number(_selected_secondary_type)
+                    + " id " + QString::number(_selected_ID)
+                    + " to type " + QString::number(type)
+                    + " id " + QString::number(id));
 				_selected_type = type;
 				_selected_ID = id;
 				changed = true;
 			}
 		} else if (_selected_type == type && _selected_ID == id) {
-			qDebug() << "SubTracks::update: changed selected subtitle from"
-					 << type << id << "to none selected";
+            logger()->debug("update: changed selected subtitle from %1 %2 to"
+                            " none selected", type, id);
 			_selected_type = SubData::None;
 			_selected_ID = -1;
 			changed = true;
@@ -261,18 +267,19 @@ bool SubTracks::update(SubData::Type type,
 		if (sec_selected) {
 			if (_selected_secondary_type != sec_type
 				|| _selected_secondary_ID != sec_id) {
-				qDebug() << "SubTracks::update: changed selected secondary subtitle from"
-						 << _selected_secondary_type << _selected_secondary_ID
-						 << "to" << sec_type << sec_id;
-				_selected_secondary_type = sec_type;
+                logger()->debug("update: changed selected secondary subtitle"
+                                " from %1 to %2",
+                                _selected_secondary_type,
+                                _selected_secondary_ID);
+                _selected_secondary_type = sec_type;
 				_selected_secondary_ID = sec_id;
 				changed = true;
 			}
 		} else if (sec_id >= 0
 				   && _selected_secondary_type == sec_type
 				   && _selected_secondary_ID == sec_id) {
-			qDebug() << "SubTracks::update: changed selected secondary subtitle from"
-					 << sec_type << sec_id << "to none selected";
+            logger()->debug("update: changed selected secondary subtitle from"
+                            " %1 %2 to none selected", sec_type, sec_id);
 			_selected_secondary_type = SubData::None;
 			_selected_secondary_ID = -1;
 			changed = true;
@@ -281,7 +288,7 @@ bool SubTracks::update(SubData::Type type,
 	}
 
 	if (changed) {
-		qDebug() << "SubTracks::update: updated subtitle track type:" << type
+        qDebug() << "SubTracks::update: updated subtitle track type:" << type
 				 << "id:" << id
 				 << "sec type:" << sec_type
 				 << "sec id:" << sec_id
@@ -291,45 +298,24 @@ bool SubTracks::update(SubData::Type type,
 				 << "selected:" << selected
 				 << "sec selected:" << sec_selected;
 	} else {
-		qDebug("SubTracks::update:: subtitle track type %d id %d was up to date", type, id);
+        logger()->debug("update:: subtitle track type %1 id %2 was up to date",
+                        type, id);
 	}
 	return changed;
 }
 
 void SubTracks::list() const {
-	qDebug("SubTracks::list: selected subtitle track ID: %d", _selected_ID);
-	for (int n = 0; n < subs.count(); n++) {
-		qDebug("SubTracks::list: item %d: type: %d ID: %d lang: '%s' name: '%s' filename: '%s'",
-			   n, subs[n].type(), subs[n].ID(), subs[n].lang().toUtf8().data(),
-			   subs[n].name().toUtf8().data(), subs[n].filename().toUtf8().data());
+    logger()->debug("list: selected subtitle track ID: %1", _selected_ID);
+
+    int n = 0;
+    foreach(const SubData sub, subs) {
+        n++;
+        logger()->debug("list: item " + QString::number(n)
+                        + " type: " + QString::number(sub.type())
+                        + " ID: " + QString::number(sub.ID())
+                        + " lang: '" + sub.lang() + "'"
+                        + " name: '" + sub.name() + "'"
+                        + " filename: '" + sub.filename() + "'");
 	}
 }
 
-void SubTracks::listNames() const {
-	for (int n = 0; n < subs.count(); n++) {
-		qDebug("SubTracks::list: item %d: '%s'",
-			   n, subs[n].displayName().toUtf8().data());
-	}
-}
-
-/*
-void SubTracks::test() {
-	process("ID_SUBTITLE_ID=0");
-	process("ID_SID_0_NAME=Arabic");
-	process("ID_SID_0_LANG=ara");
-	process("ID_SUBTITLE_ID=1");
-	process("ID_SID_1_NAME=Catalan");
-	process("ID_SID_1_LANG=cat");
-
-	process("ID_VOBSUB_ID=0");
-	process("ID_VSID_0_LANG=en");
-	process("ID_VOBSUB_ID=1");
-	process("ID_VSID_1_LANG=fr");
-
-	process("ID_FILE_SUB_ID=1");
-	process("ID_FILE_SUB_FILENAME=./lost313_es.sub");
-
-	list();
-	listNames();
-}
-*/

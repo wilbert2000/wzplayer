@@ -20,6 +20,7 @@
 #define GUI_HELPWINDOW_H
 
 #include "ui_helpwindow.h"
+#include "log4qt/logger.h"
 
 
 class QTextEdit;
@@ -28,6 +29,7 @@ namespace Gui {
 
 class THelpWindow : public QWidget, public Ui::THelpWindow {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     THelpWindow(QWidget* parent, const QString& name);

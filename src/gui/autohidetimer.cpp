@@ -16,20 +16,21 @@ TAutoHideItem::~TAutoHideItem() {
 
 
 TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
-	: QTimer(parent)
-	, autoHide(false)
-	, enabled(true)
-	, settingVisible(false)
-	, autoHideMouse(false)
-	, mouseHidden(false)
-	, draggingPlayerWindow(false)
-	, playerWindow(playerwin) {
+    : QTimer(parent),
+    debug(logger()),
+    autoHide(false),
+    enabled(true),
+    settingVisible(false),
+    autoHideMouse(false),
+    mouseHidden(false),
+    draggingPlayerWindow(false),
+    playerWindow(playerwin) {
 
-	setSingleShot(true);
-	setInterval(pref->floating_hide_delay);
-	connect(this, SIGNAL(timeout()), this, SLOT(onTimeOut()));
+    setSingleShot(true);
+    setInterval(pref->floating_hide_delay);
+    connect(this, SIGNAL(timeout()), this, SLOT(onTimeOut()));
 
-	playerWindow->installEventFilter(this);
+    playerWindow->installEventFilter(this);
 }
 
 TAutoHideTimer::~TAutoHideTimer() {
@@ -151,7 +152,7 @@ void TAutoHideTimer::onActionToggled(bool visible) {
 	QString actioName = QObject::sender()->objectName();
 	TItemMap::const_iterator i = items.find(actioName);
 	if (i == items.end()) {
-		qWarning() << "TAutoHideTimer::onActionToggled: action" << actioName << "not found";
+        logger()->warn("onActionToggled: action '" + actioName + "' not found");
 		return;
 	}
 

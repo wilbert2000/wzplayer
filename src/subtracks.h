@@ -104,7 +104,6 @@ public:
 	bool update(SubData::Type type, int id, SubData::Type sec_type, int sec_id, const QString & lang, const QString & name, const QString &filename, bool selected, bool sec_selected);
 
 	void list() const;
-	void listNames() const;
 
 protected:
 	typedef QList <SubData> SubList;

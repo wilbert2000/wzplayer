@@ -21,6 +21,8 @@
 
 #include "ui_favoriteeditor.h"
 #include "gui/action/favorites.h"
+#include "log4qt/logger.h"
+
 
 class QPixmap;
 
@@ -30,6 +32,7 @@ namespace Action {
 
 class TFavoriteEditor : public QDialog, public Ui::TFavoriteEditor {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	TFavoriteEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
@@ -52,12 +55,12 @@ public:
 	QString storePath() { return store_path; }
 
 protected slots:
-	void on_up_button_clicked();
-	void on_down_button_clicked();
+    void onUpButtonClicked();
+    void onDownButtonClicked();
 	void on_delete_button_clicked();
 	void on_delete_all_button_clicked();
 	void on_add_button_clicked();
-	void on_add_submenu_button_clicked();
+	void onAddSubmenuButtonClicked();
 
 	void edit_icon(int row, int column); 
 

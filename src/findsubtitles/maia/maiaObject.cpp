@@ -39,8 +39,6 @@ QDomElement MaiaObject::toXml(QVariant arg) {
 	//value element, we need this in each case
 	QDomElement tagValue = doc.createElement("value");
 
-	/* qDebug("type: %d (%s)", arg.type(), arg.typeName()); */
-
 	switch(arg.type()) {
 	case QVariant::String: {
 

@@ -1,6 +1,7 @@
 #ifndef GUI_VIDEOSIZEMENU_H
 #define GUI_VIDEOSIZEMENU_H
 
+#include "log4qt/logger.h"
 #include "gui/action/actiongroup.h"
 #include "gui/action/menu.h"
 
@@ -15,42 +16,45 @@ class TBase;
 namespace Action {
 
 class TVideoSizeGroup : public TActionGroup {
-	Q_OBJECT
+    Q_OBJECT
+
 public:
-	explicit TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw);
-	int size_percentage;
+    explicit TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw);
+    int size_percentage;
 
 public slots:
-	void updateVideoSizeGroup();
+    void updateVideoSizeGroup();
 
 private:
-	TPlayerWindow* playerWindow;
+    TPlayerWindow* playerWindow;
 
-	void uncheck();
+    void uncheck();
 };
 
 
 class TMenuVideoSize : public TMenu {
-	Q_OBJECT
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
 public:
     TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
 
 protected:
     virtual void enableActions();
-	virtual void onAboutToShow();
+    virtual void onAboutToShow();
 
 private:
-	TPlayerWindow* playerWindow;
-	TVideoSizeGroup* group;
-	TAction* doubleSizeAct;
-	TAction* currentSizeAct;
+    TPlayerWindow* playerWindow;
+    TVideoSizeGroup* group;
+    TAction* doubleSizeAct;
+    TAction* currentSizeAct;
 
-	bool optimizeSizeFactorPreDef(int factor, int predef_factor);
-	void upd();
+    bool optimizeSizeFactorPreDef(int factor, int predef_factor);
+    void upd();
 
 private slots:
-	void onVideoSizeFactorChanged();
-	void optimizeSizeFactor();
+    void onVideoSizeFactorChanged();
+    void optimizeSizeFactor();
 }; // class TMenuVideoSize
 
 } // namespace Action

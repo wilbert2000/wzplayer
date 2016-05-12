@@ -83,7 +83,6 @@ QNetworkReply* MaiaXmlRpcClient::call(QString method, QList<QVariant> args,
 	connect(call, SIGNAL(fault(int, const QString &, QNetworkReply *)), faultObject, faultSlot);
 
 	QString call_text = call->prepareCall(method, args);
-	//qDebug("call_text: %s", call_text.toLatin1().constData());
 
 	QNetworkReply* reply = manager.post(request,
 		call_text.toUtf8()
@@ -112,7 +111,6 @@ void MaiaXmlRpcClient::replyFinished(QNetworkReply* reply) {
 		response = fault.toString();
 	} else {
 		response = QString::fromUtf8(reply->readAll());
-		//qDebug("response: %s", response.toLatin1().constData());
 	}
 	
 	// parseResponse deletes the MaiaObject

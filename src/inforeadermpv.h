@@ -21,14 +21,16 @@
 #define INFOREADER_MPV_H
 
 #include "inforeader.h"
-#include <QObject>
+#include "wzdebug.h"
+
 #include <QList>
 #include <QStringList>
 
 class QProcess;
 
 class InfoReaderMPV : QObject {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	InfoReaderMPV(const QString& path);
@@ -49,7 +51,6 @@ protected:
 	QList<QByteArray> run(QString options);
 	InfoList getList(const QList<QByteArray> &);
 	QStringList getOptionsList(const QList<QByteArray> &);
-	void list();
 
 protected:
 	QString bin;

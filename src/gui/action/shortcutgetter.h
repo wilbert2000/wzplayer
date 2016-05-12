@@ -30,6 +30,7 @@
 
 #include <QDialog>
 #include <QListWidget>
+#include "log4qt/logger.h"
 
 class QLineEdit;
 
@@ -39,6 +40,7 @@ namespace Action {
 
 class TShortcutGetter : public QDialog {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	TShortcutGetter(QWidget *parent = 0);

@@ -20,6 +20,7 @@
 #define OSCLIENT_H
 
 #include "maiaXmlRpcClient.h"
+#include "wzdebug.h"
 
 class OSSubtitle {
 public:
@@ -29,19 +30,20 @@ public:
 
 class OSClient : public QObject {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	OSClient(QObject* parent = 0);
 
-	QList<OSSubtitle> subtitleList() { return s_list; };
+    QList<OSSubtitle> subtitleList() { return s_list; }
 
 #ifdef FS_USE_PROXY
 	void setProxy(const QNetworkProxy & proxy);
 #endif
 
 #ifdef OS_SEARCH_WORKAROUND
-	void setRetries(int n) { search_retries = n; };
-	int retries() { return search_retries; };
+    void setRetries(int n) { search_retries = n; }
+    int retries() { return search_retries; }
 #endif
 
 public slots:

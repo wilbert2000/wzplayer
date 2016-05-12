@@ -21,8 +21,11 @@
 #include <QFile>
 #include <QTextStream>
 #include "colorutils.h"
+#include "log4qt/logger.h"
 
 namespace Settings {
+
+Log4Qt::Logger* logger = Log4Qt::Logger::logger("Settings::TAssStyles");
 
 TAssStyles::TAssStyles() {
 	fontname = "Arial";
@@ -46,7 +49,7 @@ TAssStyles::~TAssStyles() {
 }
 
 void TAssStyles::save(QSettings* set) {
-	qDebug("Settings::TAssStyles::save");
+    logger->debug("save");
 
 	set->setValue("styles/fontname", fontname);
 	set->setValue("styles/fontsize", fontsize);
@@ -66,7 +69,7 @@ void TAssStyles::save(QSettings* set) {
 }
 
 void TAssStyles::load(QSettings* set) {
-	qDebug("Settings::TAssStyles::load");
+    logger->debug("load");
 
 	fontname = set->value("styles/fontname", fontname).toString();
 	fontsize = set->value("styles/fontsize", fontsize).toInt();
@@ -86,7 +89,7 @@ void TAssStyles::load(QSettings* set) {
 }
 
 bool TAssStyles::exportStyles(const QString& filename) const {
-	qDebug("Settings::TAssStyles::exportStyles: filename: %s", filename.toUtf8().constData());
+    logger->debug("exportStyles: " + filename);
 
 	QFile f(filename);
 	if (f.open(QFile::WriteOnly)) {

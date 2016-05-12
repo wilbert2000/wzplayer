@@ -23,6 +23,7 @@
 #include <QVariant>
 #include <QRegExp>
 
+#include "wzdebug.h"
 #include "mediadata.h"
 #include "proc/process.h"
 
@@ -30,14 +31,15 @@
 namespace Proc {
 
 class TPlayerProcess : public TProcess {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	enum ScreenshotType { Single = 0, Multiple = 1 };
 
-	static TPlayerProcess* createPlayerProcess(QObject* parent, TMediaData* md);
+    static TPlayerProcess* createPlayerProcess(QObject* parent, TMediaData* md);
 
-	explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
+    explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
     bool isFullyStarted() const { return isRunning() && notified_player_is_running; }

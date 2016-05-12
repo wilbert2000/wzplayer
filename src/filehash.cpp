@@ -19,6 +19,7 @@
 #include "filehash.h"
 #include <QFile>
 #include <QDataStream>
+#include "log4qt/logger.h"
 
 // From the patch by Kamil Dziobek turbos11(at)gmail.com
 // (c) Kamil Dziobek turbos11(at)gmail.com | BSD or GPL or public domain
@@ -26,7 +27,8 @@ QString FileHash::calculateHash(const QString& filename) {
 
 	QFile file(filename);
 	if (!file.exists()) {
-		qWarning("OSParser:calculateHash: error hashing file. File doesn't exist.");
+        Log4Qt::Logger::logger("FileHash")->warn(
+            "OSParser:calculateHash: error hashing file. File doesn't exist.");
 		return QString();
 	}
 

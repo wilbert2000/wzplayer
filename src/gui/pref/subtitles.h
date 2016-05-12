@@ -21,6 +21,7 @@
 
 #include "ui_subtitles.h"
 #include "gui/pref/widget.h"
+#include "log4qt/logger.h"
 
 class Encodings;
 
@@ -33,6 +34,7 @@ namespace Pref {
 
 class TSubtitles : public TWidget, public Ui::TSubtitles {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	TSubtitles(QWidget* parent = 0, Qt::WindowFlags f = 0);

@@ -18,11 +18,15 @@
 
 #include "process.h"
 #include <QDebug>
+#include "log4qt/logger.h"
+
 
 namespace Proc {
 
-TProcess::TProcess(QObject* parent) : QProcess(parent)
-{
+
+TProcess::TProcess(QObject* parent)
+    : QProcess(parent),
+      debug(logger()) {
 	clearArguments();
 	setProcessChannelMode(QProcess::MergedChannels);
 	
@@ -57,7 +61,8 @@ QStringList TProcess::arguments() {
 void TProcess::start() {
 
 	remaining_output.clear();
-	qDebug() << "TProcess::start: program:" << program << "args:" << arg;
+    debug << "start: program:" << program << "args:" << arg;
+    debug << debug;
 	QProcess::start(program, arg);
 }
 
@@ -113,12 +118,12 @@ int TProcess::canReadLine(const QByteArray & ba, int from) {
 Do some clean up, and be sure that all output has been read.
 */
 void TProcess::procFinished() {
-    qDebug() << "Proc::TProcess::procFinished: Bytes available: " << bytesAvailable();
+    logger()->debug("procFinished: Bytes available: "
+                  + QString::number(bytesAvailable()));
 	if (bytesAvailable() > 0) readStdOut();
 }
 
 QStringList TProcess::splitArguments(const QString& args) {
-	qDebug("Proc::TProcess::splitArguments: '%s'", args.toUtf8().constData());
 
 	QStringList l;
 
@@ -135,10 +140,6 @@ QStringList TProcess::splitArguments(const QString& args) {
 		if (n == args.length()-1) {
 			l.append(args.mid(init_pos, (n - init_pos)+1));
 		}
-	}
-
-	for (int n = 0; n < l.count(); n++) {
-		qDebug("Proc::TProcess::splitArguments: arg: %d '%s'", n, l[n].toUtf8().constData());
 	}
 
 	return l;

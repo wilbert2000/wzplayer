@@ -36,38 +36,42 @@
 
 namespace Gui {
 
-TUpdateChecker::TUpdateChecker(QWidget* parent, TUpdateCheckerData* data) : QObject(parent)
-	, net_manager(0)
-	, d(0)
-{
-	d = data;
+TUpdateChecker::TUpdateChecker(QWidget* parent, TUpdateCheckerData* data) :
+    QObject(parent),
+    debug(logger()),
+    net_manager(0),
+    d(0) {
 
-	check_url = TConfig::URL_VERSION_INFO;
-	user_agent = TConfig::PROGRAM_NAME.toLatin1();
+    d = data;
 
-	connect(this, SIGNAL(newVersionFound(const QString&)),
-			this, SLOT(reportNewVersionAvailable(const QString&)));
+    check_url = TConfig::URL_VERSION_INFO;
+    user_agent = TConfig::PROGRAM_NAME.toLatin1();
 
-	connect(this, SIGNAL(noNewVersionFound(const QString&)),
-			this, SLOT(reportNoNewVersionFound(const QString&)));
+    connect(this, SIGNAL(newVersionFound(const QString&)),
+            this, SLOT(reportNewVersionAvailable(const QString&)));
 
-	connect(this, SIGNAL(errorOcurred(int, QString)), this, SLOT(reportError(int, QString)));
+    connect(this, SIGNAL(noNewVersionFound(const QString&)),
+            this, SLOT(reportNoNewVersionFound(const QString&)));
 
-	net_manager = new QNetworkAccessManager(this);
+    connect(this, SIGNAL(errorOcurred(int, QString)),
+            this, SLOT(reportError(int, QString)));
 
-	QDate now = QDate::currentDate();
-	//now = now.addDays(27);
-	int days = QDateTime(d->last_checked).daysTo(QDateTime(now));
+    net_manager = new QNetworkAccessManager(this);
 
-	qDebug("TUpdateChecker::TUpdateChecker: enabled: %d, days_to_check: %d, days since last check: %d",
-		   d->enabled, d->days_to_check, days);
-	if (!d->enabled || days < d->days_to_check)
-		return;
+    QDate now = QDate::currentDate();
+    int days = QDateTime(d->last_checked).daysTo(QDateTime(now));
 
-	QNetworkRequest req(check_url);
-	req.setRawHeader("User-Agent", user_agent);
-	QNetworkReply *reply = net_manager->get(req);
-	connect(reply, SIGNAL(finished()), this, SLOT(gotReply()), Qt::QueuedConnection);
+    logger()->debug("TUpdateChecker: enabled: %1, days_to_check: %2,"
+                    " days since last check: %3",
+                    d->enabled, d->days_to_check, days);
+    if (!d->enabled || days < d->days_to_check)
+        return;
+
+    QNetworkRequest req(check_url);
+    req.setRawHeader("User-Agent", user_agent);
+    QNetworkReply *reply = net_manager->get(req);
+    connect(reply, SIGNAL(finished()),
+            this, SLOT(gotReply()), Qt::QueuedConnection);
 }
 
 TUpdateChecker::~TUpdateChecker() {
@@ -75,7 +79,7 @@ TUpdateChecker::~TUpdateChecker() {
 
 // Force a check, requested by the user
 void TUpdateChecker::check() {
-	qDebug("TUpdateChecker::check");
+    logger()->debug("check");
 
 	QNetworkRequest req(check_url);
 	req.setRawHeader("User-Agent", user_agent);
@@ -84,7 +88,7 @@ void TUpdateChecker::check() {
 }
 
 QString TUpdateChecker::parseVersion(const QByteArray& data, const QString& name) {
-	qDebug() << "TUpdateChecker::parseVersion: data:\n" << data;
+    debug << "parseVersion: data:\n" << data << debug;
 
 	QTemporaryFile tf;
 	tf.open();
@@ -105,7 +109,7 @@ QString TUpdateChecker::parseVersion(const QByteArray& data, const QString& name
 }
 
 void TUpdateChecker::gotReply() {
-	qDebug("TUpdateChecker::gotReply");
+    logger()->debug("gotReply");
 
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
@@ -114,24 +118,29 @@ void TUpdateChecker::gotReply() {
 			QString version = parseVersion(reply->readAll(), "stable");
 			if (!version.isEmpty()) {
 				d->last_checked = QDate::currentDate();
-				qDebug() << "TUpdateChecker::gotReply: last known version:" << d->last_known_version << "received version:" << version;
-				qDebug() << "TUpdateChecker::gotReply: installed version:" << TVersion::version;
-				if (d->last_known_version != version && version > TVersion::version) {
-					qDebug() << "TUpdateChecker::gotReply: new version found:" << version;
+                debug << "gotReply: last known version:"
+                      << d->last_known_version
+                      << "received version:" << version
+                      << debug
+                      << "gotReply: installed version:" << TVersion::version;
+                if (d->last_known_version != version
+                    && version > TVersion::version) {
+                    logger()->debug("gotReply: new version found: " + version);
 					emit newVersionFound(version);
 				}
 			}
 		} else {
 			//get http status code
-			int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-			qDebug("TUpdateChecker::gotReply: status: %d", status);
+            int status = reply->attribute(
+                             QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            logger()->debug("gotReply: status: %1", status);
 		}
 		reply->deleteLater();
 	}
 }
 
 void TUpdateChecker::gotReplyFromUserRequest() {
-	qDebug("TUpdateChecker::gotReplyFromUserRequest");
+    logger()->debug("gotReplyFromUserRequest");
 
 	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
@@ -140,7 +149,9 @@ void TUpdateChecker::gotReplyFromUserRequest() {
 			QString version = parseVersion(reply->readAll(), "unstable");
 			if (!version.isEmpty()) {
 				if (version > TVersion::version) {
-					qDebug("TUpdateChecker::gotReplyFromUserRequest: new version found: %s", version.toUtf8().constData());
+                    logger()->debug(
+                        "gotReplyFromUserRequest: new version found: "
+                        + version);
 					emit newVersionFound(version);
 				} else {
 					emit noNewVersionFound(version);
@@ -150,7 +161,7 @@ void TUpdateChecker::gotReplyFromUserRequest() {
 			}
 		} else {
 			int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-			qDebug("TUpdateChecker::gotReplyFromUserRequest: status: %d", status);
+            logger()->debug("gotReplyFromUserRequest: status: %1", status);
 			emit errorOcurred((int)reply->error(), reply->errorString());
 		}
 		reply->deleteLater();
