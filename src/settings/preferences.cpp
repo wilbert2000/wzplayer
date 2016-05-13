@@ -30,6 +30,7 @@
 #endif
 
 #include "log4qt/logger.h"
+#include "log4qt/logmanager.h"
 #include "settings/paths.h"
 #include "settings/assstyles.h"
 #include "settings/mediasettings.h"
@@ -45,13 +46,14 @@ static const int CURRENT_CONFIG_VERSION = 16;
 
 TPreferences* pref = 0;
 
+const QString NAME_CONSOLE_APPENDER("A1");
+
 Log4Qt::Logger* TPreferences::logger = Log4Qt::Logger::logger(
     QLatin1String("Settings::TPreferences"));
 
 
 TPreferences::TPreferences() :
-    TPlayerSettings(TPaths::iniPath()),
-    log_level(Log4Qt::Level::DEBUG_INT) {
+    TPlayerSettings(TPaths::iniPath()) {
 
     reset();
     load();
@@ -269,7 +271,7 @@ void TPreferences::reset() {
 	media_to_add_to_playlist = NoFiles;
 
 	log_verbose = false;
-	log_file = false;
+    log_level = Log4Qt::Level::DEBUG_INT;
 
 	history_recents.clear();
 	history_urls.clear();
@@ -550,11 +552,37 @@ void TPreferences::save() {
     setValue("start_in_fullscreen", start_in_fullscreen);
 
     setValue("media_to_add_to_playlist", media_to_add_to_playlist);
+    endGroup();
 
-    // TODO:
-    //setValue("log_debug_enabled", log_debug_enabled);
-    //setValue("log_verbose", log_verbose);
-    //setValue("log_file", log_file);
+
+    beginGroup("log");
+    setValue("log_verbose", log_verbose);
+    setValue("log_level", log_level.toString());
+    endGroup();
+
+
+    beginGroup("Log4Qt");
+
+    // Note: using level from Log4Qt
+    // TODO: delivers a translated string
+    QString level = Log4Qt::Logger::rootLogger()->level().toString();
+
+    // Set level for Qt log
+    setValue("Debug", level);
+
+    // Set root log
+    beginGroup("Properties");
+
+    // Appender
+    setValue("log4j.appender." + NAME_CONSOLE_APPENDER,
+             "org.apache.log4j.ConsoleAppender");
+    setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout",
+             "org.apache.log4j.TTCCLayout");
+
+    // Set level and appender
+    setValue("log4j.rootLogger", level + ", " + NAME_CONSOLE_APPENDER);
+    endGroup();
+
     endGroup();
 
 
@@ -816,16 +844,25 @@ void TPreferences::setPlayerBin(QString bin,
                   + "'");
 }
 
+
 void TPreferences::load() {
     logger->debug("load");
 
     config_version = value("config_version", 0).toInt();
 
-    // Load log settings
-    beginGroup("Log4Qt");
+    beginGroup("log");
+    log_verbose = value("log_verbose", log_verbose).toBool();
+
     log_level = Log4Qt::Level::fromString(
-                    value("Debug", log_level.toString()).toString());
+                    value("log_level", log_level.toString()).toString());
+    if (log_level < Log4Qt::Level::TRACE_INT) {
+        log_level = Log4Qt::Level(Log4Qt::Level::DEBUG_INT);
+    }
     endGroup();
+    Log4Qt::Logger::rootLogger()->setLevel(log_level);
+    Log4Qt::LogManager::qtLogger()->setLevel(log_level);
+    logger->debug("load: log level set to " +log_level.toString());
+
 
     // General tab
     beginGroup("General");
@@ -1016,9 +1053,6 @@ void TPreferences::load() {
 
     media_to_add_to_playlist = (TAutoAddToPlaylistFilter) value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
 
-    // TODO:
-    //log_verbose = value("log_verbose", log_verbose).toBool();
-    //log_file = value("log_file", log_file).toBool();
     endGroup();
 
 

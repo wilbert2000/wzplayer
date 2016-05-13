@@ -24,8 +24,12 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QStyle>
+#include <QDateTime>
 
 #include "log4qt/logger.h"
+#include "log4qt/logmanager.h"
+#include "log4qt/consoleappender.h"
+#include "log4qt/ttcclayout.h"
 
 #include "config.h"
 #include "settings/paths.h"
@@ -62,8 +66,8 @@ TApp::TApp(int& argc, char** argv) :
 
     setOrganizationName(TConfig::PROGRAM_ORG);
     setApplicationName(TConfig::PROGRAM_ID);
-    //setApplicationVersion(TConfig::PROGRAM_VERSION);
     //setOrganizationDomain("www.xs4all.nl");
+    //setApplicationVersion(TConfig::PROGRAM_VERSION);
 
     // Save default style for resetting style
     default_style = style()->objectName();
@@ -71,11 +75,45 @@ TApp::TApp(int& argc, char** argv) :
     // Enable icons in menus
     setAttribute(Qt::AA_DontShowIconsInMenus, false);
 
+    initLog4Qt();
     logger()->debug("TApp: created application");
 }
 
 TApp::~TApp() {
     delete Settings::pref;
+}
+
+void TApp::initLog4Qt() {
+
+    using namespace Log4Qt;
+
+    // TODO: config not picked up
+    if (Logger::rootLogger()->appender(NAME_CONSOLE_APPENDER)) {
+        logger()->debug("initLogQt: Log4Qt already up and running");
+        return;
+    }
+
+    // Create a layout
+    TTCCLayout* layout = new TTCCLayout();
+    layout->setName("Layout");
+    layout->activateOptions();
+
+    // Create an appender
+    ConsoleAppender* appender = new ConsoleAppender(layout,
+        ConsoleAppender::STDOUT_TARGET);
+    appender->setName(NAME_CONSOLE_APPENDER);
+    appender->activateOptions();
+
+    // Set appender on root logger
+    Logger::rootLogger()->addAppender(appender);
+    Logger::rootLogger()->setLevel(Level(Level::DEBUG_INT));
+
+    // Let Log4Qt handle Debug(), qWarning(), qCritical() and qFatal()
+    LogManager::setHandleQtMessages(true);
+    LogManager::qtLogger()->setLevel(Level::DEBUG_INT);
+
+    logger()->info("initLog4Qt: log initialized on "
+                   + QDateTime::currentDateTime().toString());
 }
 
 bool TApp::loadCatalog(QTranslator& translator,
@@ -192,7 +230,6 @@ TApp::ExitCode TApp::processArgs() {
         QStringList regExts;
         RegAssoc.GetRegisteredExtensions(extensions.multimedia(), regExts);
 		RegAssoc.RestoreFileAssociations(regExts);
-		// TODO: send to log
 		printf("TApp::processArgs: restored associations\n");
 #endif
 		return NoError;
@@ -304,11 +341,7 @@ TApp::ExitCode TApp::processArgs() {
 			start_in_fullscreen = 0;
 		} else if (name == "add-to-playlist") {
 			add_to_playlist = true;
-		} else if (name == "ontop") {
-			Settings::pref->stay_on_top = Settings::TPreferences::AlwaysOnTop;
-		} else if (name == "no-ontop") {
-			Settings::pref->stay_on_top = Settings::TPreferences::NeverOnTop;
-		} else {
+        } else {
 			// File
 			QUrl fUrl = QUrl::fromUserInput(argument);
 			if (fUrl.isValid() && fUrl.scheme().toLower() == "file") {
@@ -534,8 +567,7 @@ int TApp::execWithRestart() {
 		start();
         logger()->debug("execWithRestart: calling exec()");
 		exit_code = exec();
-        logger()->debug("execWithRestart: exec() returned "
-                        + QString::number(exit_code));
+        logger()->debug("execWithRestart: exec() returned %1", exit_code);
 		if (requested_restart) {
             logger()->debug("execWithRestart: restarting");
 			// Free current settings
@@ -545,7 +577,9 @@ int TApp::execWithRestart() {
 		}
 	} while (requested_restart);
 
-	return exit_code;
+    logger()->info("execWithRestart: returning %1 on %2",
+                   exit_code, QDateTime::currentDateTime().toString());
+    return exit_code;
 }
 
 void TApp::showInfo() {

@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QStyleFactory>
 
+#include "log4qt/logmanager.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
@@ -152,9 +153,9 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	// Playlist
 	setMediaToAdd(pref->media_to_add_to_playlist);
 
-    setLogDebugEnabled(true); //pref->log_debug_enabled);
+    // Log
+    setLogLevel(Log4Qt::LogManager::rootLogger()->level());
 	setLogVerbose(pref->log_verbose);
-	setLogFile(pref->log_file);
 
 	// History
 	setRecentsMaxItems(pref->history_recents.maxItems());
@@ -203,9 +204,11 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	// Playlist
 	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
 
-    //pref->log_debug_enabled = logDebugEnabled();
-    //restartIfBoolChanged(pref->log_verbose, pref->log_debug_enabled && logVerbose());
-	pref->log_file = logFile();
+    pref->log_level = logLevel();
+    Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
+    Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
+    restartIfBoolChanged(pref->log_verbose,
+        pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose());
 
 	// History
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
@@ -356,12 +359,40 @@ bool TInterface::directoryRecursion() {
 	return recursive_check->isChecked();
 }
 
-void TInterface::setLogDebugEnabled(bool b) {
-	log_debug_check->setChecked(b);
+void TInterface::setLogLevel(Log4Qt::Level level) {
+
+    int idx;
+    switch (level.toInt()) {
+        case Log4Qt::Level::NULL_INT:
+        case Log4Qt::Level::ALL_INT:
+        case Log4Qt::Level::TRACE_INT: idx = 0; break;
+        case Log4Qt::Level::DEBUG_INT: idx = 1; break;
+        case Log4Qt::Level::INFO_INT: idx = 2; break;
+        case Log4Qt::Level::WARN_INT: idx = 3; break;
+        case Log4Qt::Level::ERROR_INT: idx = 4; break;
+        case Log4Qt::Level::FATAL_INT: idx = 5; break;
+        case Log4Qt::Level::OFF_INT: idx = 6; break;
+        default: idx = 1;
+    }
+
+    log_level_combo->setCurrentIndex(idx);
 }
 
-bool TInterface::logDebugEnabled() {
-	return log_debug_check->isChecked();
+Log4Qt::Level TInterface::logLevel() {
+
+    Log4Qt::Level level;
+    switch (log_level_combo->currentIndex()) {
+        case 0: level = Log4Qt::Level::TRACE_INT; break;
+        case 1: level = Log4Qt::Level::DEBUG_INT; break;
+        case 2: level = Log4Qt::Level::INFO_INT; break;
+        case 3: level = Log4Qt::Level::WARN_INT;break;
+        case 4: level = Log4Qt::Level::ERROR_INT; break;
+        case 5: level = Log4Qt::Level::FATAL_INT; break;
+        case 6: level = Log4Qt::Level::OFF_INT; break;
+        default: level =Log4Qt::Level:: DEBUG_INT;
+    }
+
+    return level;
 }
 
 void TInterface::setLogVerbose(bool b) {
@@ -370,14 +401,6 @@ void TInterface::setLogVerbose(bool b) {
 
 bool TInterface::logVerbose() {
 	return log_verbose_check->isChecked();
-}
-
-void TInterface::setLogFile(bool b) {
-	log_file_check->setChecked(b);
-}
-
-bool TInterface::logFile() {
-	return log_file_check->isChecked();
 }
 
 void TInterface::setRecentsMaxItems(int n) {
@@ -486,21 +509,12 @@ void TInterface::createHelp() {
 
 	addSectionTitle(tr("Logs"));
 
-	setWhatsThis(log_debug_check, tr("Log debug messages"),
-		tr("If checked, WZPlayer will log debug messages, "
-		   "which might give additional information in case of trouble."
-		   " Non-debug messages are always logged. This option will only"
-		   " affect versions of WZPlayer compiled with DEBUG defined."
-		   " To log early program startup messages start WZPlayer with"
-		   "<b><i>--debug</i></b> on the command line."
-		   "You can view the log with the menu <b><i>Window - View log</i></b>."));
+    setWhatsThis(log_level_combo, tr("Log level"),
+        tr("Select which messages will be written to the log. You can view the"
+           " log with menu <b><i>Window - View log</i></b>."));
 
 	setWhatsThis(log_verbose_check, tr("Verbose"),
 		tr("Request verbose messages from the player for troubleshooting."));
-
-	setWhatsThis(log_file_check, tr("Save WZPlayer log to file"),
-		tr("If this option is checked, the WZPlayer log wil be recorded to %1")
-		  .arg("<i>"+ Settings::TPaths::configPath() + "/log.txt</i>"));
 
 	addSectionTitle(tr("History"));
 

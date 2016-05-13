@@ -91,6 +91,7 @@ private:
 
 	QString default_style;
 
+    void initLog4Qt();
 	bool loadCatalog(QTranslator& translator,
 					 const QString& name,
 					 const QString& locale,

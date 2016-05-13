@@ -147,12 +147,6 @@ QString CLHelp::help(bool html) {
 	s += formatHelp("--no-fullscreen", QObject::tr(
 		"the video will be played in window mode."), html);
 
-	s += formatHelp("--ontop", QObject::tr(
-		"sets the stay on top option to always."), html);
-
-	s += formatHelp("--no-ontop", QObject::tr(
-		"sets the stay on top option to never."), html);
-
 	s += formatHelp("--sub", QObject::tr(
 		"specifies the subtitle file to be loaded for the first video."), html);
 

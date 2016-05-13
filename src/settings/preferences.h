@@ -40,13 +40,16 @@ namespace Settings {
 
 typedef QList<QVariant> TAudioEqualizerList;
 
-class TPreferences : public TPlayerSettings {
+extern const QString NAME_CONSOLE_APPENDER;
 
+
+class TPreferences : public TPlayerSettings {
 public:
 	enum TPlayerID { ID_MPLAYER = 0, ID_MPV = 1 };
 	enum TOSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
 	enum TOnTop { NeverOnTop = 0, AlwaysOnTop = 1, WhilePlayingOnTop = 2 };
-	enum TWheelFunction {
+
+    enum TWheelFunction {
 		DoNothing = 1,
 		Seeking = 2,
 		Volume = 4,
@@ -54,7 +57,8 @@ public:
 		ChangeSpeed = 16
 	};
 	Q_DECLARE_FLAGS(TWheelFunctions, TWheelFunction)
-	enum TOptionState { Detect = -1, Disabled = 0, Enabled = 1 };
+
+    enum TOptionState { Detect = -1, Disabled = 0, Enabled = 1 };
 	enum TAutoAddToPlaylistFilter {
 		NoFiles = 0,
 		VideoFiles = 1,
@@ -275,9 +279,8 @@ public:
 	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
     // Logging
+    bool log_verbose;
     Log4Qt::Level log_level;
-	bool log_verbose;
-	bool log_file;
 
     // History
     TRecents history_recents;

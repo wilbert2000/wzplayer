@@ -117,14 +117,11 @@ private:
 	int mediaToAdd();
 
 	// Log options
-	void setLogDebugEnabled(bool b);
-	bool logDebugEnabled();
+    void setLogLevel(Log4Qt::Level level);
+    Log4Qt::Level logLevel();
 
 	void setLogVerbose(bool b);
 	bool logVerbose();
-
-	void setLogFile(bool b);
-	bool logFile();
 };
 
 }} // namespace Gui::Pref

@@ -417,12 +417,77 @@
           <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <item alignment="Qt::AlignTop">
-           <widget class="QCheckBox" name="log_debug_check">
-            <property name="text">
-             <string>&amp;Log debug messages</string>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="bottomMargin">
+             <number>0</number>
             </property>
-           </widget>
+            <item>
+             <widget class="QLabel" name="log_level_label">
+              <property name="text">
+               <string>&amp;Log level</string>
+              </property>
+              <property name="buddy">
+               <cstring>log_level_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="log_level_combo">
+              <property name="currentIndex">
+               <number>1</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>Trace</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Debug</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Info</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Warn</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Error</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Fatal</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Off</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QCheckBox" name="log_verbose_check">
@@ -436,23 +501,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&amp;Verbose</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="log_file_check">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Sa&amp;ve log to a file</string>
+             <string>Request &amp;verbose messages from player</string>
             </property>
            </widget>
           </item>
@@ -611,30 +660,12 @@
   <tabstop>start_fullscreen_check</tabstop>
   <tabstop>media_to_add_combo</tabstop>
   <tabstop>recursive_check</tabstop>
-  <tabstop>log_debug_check</tabstop>
+  <tabstop>log_level_combo</tabstop>
   <tabstop>log_verbose_check</tabstop>
-  <tabstop>log_file_check</tabstop>
   <tabstop>recents_max_items_spin</tabstop>
   <tabstop>url_max_items_spin</tabstop>
   <tabstop>save_dirs_check</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>log_debug_check</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>log_verbose_check</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>239</x>
-     <y>217</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>239</x>
-     <y>242</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
