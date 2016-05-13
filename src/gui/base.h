@@ -347,6 +347,7 @@ private:
 
 	bool force_resize;
 	bool center_window;
+    QPoint center_window_pos;
 
 	QPoint move_window_diff;
 	QTimer move_window_timer;

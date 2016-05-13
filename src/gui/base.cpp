@@ -826,6 +826,7 @@ void TBase::loadConfig() {
         TDesktop::centerWindow(this);
 		// Need to center again after video loaded
 		center_window = true;
+        center_window_pos = pos();
 	}
 
 	pref->beginGroup("actions");
@@ -2097,9 +2098,12 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
 
     // Center window only set for the first video
     // when pref->save_window_size_on_exit not set.
-	if (center_window) {
+    if (center_window) {
 		center_window = false;
-        TDesktop::centerWindow(this);
+        // Only center when user did not move window
+        if (center_window_pos == pos()) {
+            TDesktop::centerWindow(this);
+        }
 	}
 
 	force_resize = false;
