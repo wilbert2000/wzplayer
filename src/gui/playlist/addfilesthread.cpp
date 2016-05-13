@@ -80,6 +80,7 @@ TPlaylistWidgetItem* TAddFilesThread::cleanAndAddItem(
     bool link = fi.isSymLink();
     if (link) {
         fi.setFile(fi.symLinkTarget());
+        alt_name = fi.fileName();
     }
 
     if (fi.isDir()) {
@@ -91,7 +92,10 @@ TPlaylistWidgetItem* TAddFilesThread::cleanAndAddItem(
     }
 
     if (link) {
-        fi.setFile(filename);
+        QString s = filename;
+        filename = fi.absoluteFilePath();
+        // For icon
+        fi.setFile(s);
     }
 
     TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent,
