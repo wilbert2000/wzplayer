@@ -750,7 +750,8 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         newCurrent = newCurrent->parent();
     } while (newCurrent && newCurrent->isSelected());
 
-    QTreeWidgetItemIterator it(playlistWidget, QTreeWidgetItemIterator::Selected);
+    QTreeWidgetItemIterator it(playlistWidget,
+                               QTreeWidgetItemIterator::Selected);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
         if (!deleteFromDisk || deleteFileFromDisk(i->filename(), playing)) {
@@ -781,7 +782,8 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         if (newCurrent) {
             playlistWidget->setCurrentItem(newCurrent);
         } else {
-            playlistWidget->setCurrentItem(playlistWidget->firstPlaylistWidgetItem());
+            playlistWidget->setCurrentItem(
+                        playlistWidget->firstPlaylistWidgetItem());
         }
     }
     disable_enableActions = false;
@@ -825,10 +827,12 @@ void TPlaylist::enableActions() {
     int c = playlistWidget->topLevelItemCount();
 
     TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
-    TPlaylistWidgetItem* current_item = playlistWidget->currentPlaylistWidgetItem();
+    TPlaylistWidgetItem* current_item =
+            playlistWidget->currentPlaylistWidgetItem();
 
     TCoreState s = core->state();
-    bool enable = (s == STATE_STOPPED || s == STATE_PLAYING || s == STATE_PAUSED)
+    bool enable = (s == STATE_STOPPED || s == STATE_PLAYING
+                   || s == STATE_PAUSED)
                   && thread == 0;
     bool coreHasFilename = core->mdat.filename.count();
 
@@ -1011,7 +1015,8 @@ void TPlaylist::copySelected(const QString& actionName) {
 	QString text;
 	int copied = 0;
 
-    QTreeWidgetItemIterator it(playlistWidget, QTreeWidgetItemIterator::Selected);
+    QTreeWidgetItemIterator it(playlistWidget,
+                               QTreeWidgetItemIterator::Selected);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
         text += i->filename() + "\n";
@@ -1361,7 +1366,7 @@ bool TPlaylist::maybeSave() {
 
     switch (res) {
         case QMessageBox::No: setModified(false); return true;
-        case QMessageBox::Cancel: return false; // Cancel operation
+        case QMessageBox::Cancel: return false;
         default: return save();
     }
 }
@@ -1385,7 +1390,7 @@ void TPlaylist::loadSettings() {
 
 	set->beginGroup("playlist");
     recursive_add_directories = set->value("recursive_add_directories",
-                                         recursive_add_directories).toBool();
+                                           recursive_add_directories).toBool();
     repeatAct->setChecked(set->value("repeat",
                                      repeatAct->isChecked()).toBool());
     shuffleAct->setChecked(set->value("shuffle",
