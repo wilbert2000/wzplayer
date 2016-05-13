@@ -70,6 +70,7 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     main_window(mw),
     core(c),
     recursive_add_directories(true),
+    media_to_add_to_playlist(Settings::TPreferences::NoFiles),
     disable_enableActions(false),
     modified(false),
     thread(0) {
@@ -966,11 +967,11 @@ void TPlaylist::onNewMediaStartedPlaying() {
 
         // Add associated files to playlist
         if (md->selected_type == TMediaData::TYPE_FILE
-            && pref->media_to_add_to_playlist != TPreferences::NoFiles) {
+            && media_to_add_to_playlist != TPreferences::NoFiles) {
             logger()->debug("onNewMediaStartedPlaying: searching for files to"
                             " add to playlist for '" + filename + "'");
             QStringList files_to_add = Helper::filesForPlaylist(filename,
-                pref->media_to_add_to_playlist);
+                media_to_add_to_playlist);
             if (files_to_add.isEmpty()) {
                 logger()->debug("onNewMediaStartedPlaying: none found");
             } else {
@@ -1380,6 +1381,7 @@ void TPlaylist::saveSettings() {
     set->setValue("recursive_add_directories", recursive_add_directories);
 	set->setValue("repeat", repeatAct->isChecked());
 	set->setValue("shuffle", shuffleAct->isChecked());
+    set->setValue("media_to_add_to_playlist", media_to_add_to_playlist);
 	set->endGroup();
 }
 
@@ -1395,6 +1397,9 @@ void TPlaylist::loadSettings() {
                                      repeatAct->isChecked()).toBool());
     shuffleAct->setChecked(set->value("shuffle",
                                       shuffleAct->isChecked()).toBool());
+    media_to_add_to_playlist = (Settings::TPreferences::TAddToPlaylist)
+        set->value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
+
 	set->endGroup();
 }
 

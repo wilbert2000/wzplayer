@@ -268,8 +268,6 @@ void TPreferences::reset() {
 
 
 	// Playlist tab
-	media_to_add_to_playlist = NoFiles;
-
 	log_verbose = false;
     log_level = Log4Qt::Level::DEBUG_INT;
 
@@ -550,8 +548,6 @@ void TPreferences::save() {
     setValue("hide_delay", floating_hide_delay);
     setValue("activation_area", floating_activation_area);
     setValue("start_in_fullscreen", start_in_fullscreen);
-
-    setValue("media_to_add_to_playlist", media_to_add_to_playlist);
     endGroup();
 
 
@@ -1050,8 +1046,6 @@ void TPreferences::load() {
     floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
     floating_activation_area = (TToolbarActivation) value("activation_area", floating_activation_area).toInt();
     start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
-
-    media_to_add_to_playlist = (TAutoAddToPlaylistFilter) value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
 
     endGroup();
 

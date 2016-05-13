@@ -25,6 +25,7 @@
 
 #include "wzdebug.h"
 #include "gui/playlist/playlistwidget.h"
+#include "settings/preferences.h"
 
 
 class QToolBar;
@@ -83,6 +84,13 @@ public:
     // Preferences
     bool directoryRecursion() const { return recursive_add_directories; }
     void setDirectoryRecursion(bool b) { recursive_add_directories = b; }
+
+    Settings::TPreferences::TAddToPlaylist mediaToAddToPlaylist() const {
+        return media_to_add_to_playlist;
+    }
+    void setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist m) {
+        media_to_add_to_playlist = m;
+    }
 
     bool maybeSave();
     void loadSettings();
@@ -156,6 +164,7 @@ private:
 
     // Preferences
     bool recursive_add_directories;
+    Settings::TPreferences::TAddToPlaylist media_to_add_to_playlist;
 
     bool disable_enableActions;
 

@@ -151,7 +151,7 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setStartInFullscreen(pref->start_in_fullscreen);
 
 	// Playlist
-	setMediaToAdd(pref->media_to_add_to_playlist);
+    // Playlist set by TBase
 
     // Log
     setLogLevel(Log4Qt::LogManager::rootLogger()->level());
@@ -201,8 +201,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
         ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->start_in_fullscreen = startInFullscreen();
 
-	// Playlist
-	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
+    // Playlist by TBase
 
     pref->log_level = logLevel();
     Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
@@ -341,14 +340,17 @@ void TInterface::setHideVideoOnAudioFiles(bool b) {
 bool TInterface::hideVideoOnAudioFiles() {
 	return hide_video_window_on_audio_check->isChecked();
 }
-void TInterface::setMediaToAdd(int type) {
-	int i = media_to_add_combo->findData(type);
-	if (i < 0) i = 0;
+void TInterface::setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type) {
+
+    int i = media_to_add_combo->findData(type);
+    if (i < 0)
+        i = 0;
 	media_to_add_combo->setCurrentIndex(i);
 }
 
-int TInterface::mediaToAdd() {
-	return media_to_add_combo->itemData(media_to_add_combo->currentIndex()).toInt();
+Settings::TPreferences::TAddToPlaylist TInterface::mediaToAddToPlaylist() {
+    return (Settings::TPreferences::TAddToPlaylist)
+        media_to_add_combo->itemData(media_to_add_combo->currentIndex()).toInt();
 }
 
 void TInterface::setDirectoryRecursion(bool b) {

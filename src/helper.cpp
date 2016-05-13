@@ -167,7 +167,7 @@ QStringList Helper::filesInDirectory(const QString& initial_file,
 }
 
 QStringList Helper::filesForPlaylist(const QString & initial_file,
-									 Settings::TPreferences::TAutoAddToPlaylistFilter filter) {
+									 Settings::TPreferences::TAddToPlaylist filter) {
 	QStringList res;
 
 	if (filter == TPreferences::ConsecutiveFiles) {

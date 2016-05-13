@@ -960,6 +960,7 @@ void TBase::showPreferencesDialog() {
 
 	// Set playlist preferences
 	pref_dialog->mod_interface()->setDirectoryRecursion(playlist->directoryRecursion());
+    pref_dialog->mod_interface()->setMediaToAddToPlaylist(playlist->mediaToAddToPlaylist());
 
 	pref_dialog->show();
 }
@@ -985,6 +986,7 @@ void TBase::applyNewPreferences() {
     // Update and save playlist preferences
     Pref::TInterface* mod_interface = pref_dialog->mod_interface();
     playlist->setDirectoryRecursion(mod_interface->directoryRecursion());
+    playlist->setMediaToAddToPlaylist(mod_interface->mediaToAddToPlaylist());
     playlist->saveSettings();
 
     // Update and save actions

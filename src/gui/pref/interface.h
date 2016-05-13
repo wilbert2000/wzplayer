@@ -21,6 +21,7 @@
 
 #include "ui_interface.h"
 #include "gui/pref/widget.h"
+#include "settings/preferences.h"
 #include "wzdebug.h"
 
 
@@ -55,6 +56,9 @@ public:
 
 	void setDirectoryRecursion(bool b);
 	bool directoryRecursion();
+
+    void setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type);
+    Settings::TPreferences::TAddToPlaylist mediaToAddToPlaylist();
 
 protected:
 	void createLanguageCombo();
@@ -112,9 +116,6 @@ private:
 
 	void setStartInFullscreen(bool b);
 	bool startInFullscreen();
-
-	void setMediaToAdd(int);
-	int mediaToAdd();
 
 	// Log options
     void setLogLevel(Log4Qt::Level level);

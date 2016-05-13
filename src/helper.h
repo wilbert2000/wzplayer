@@ -36,7 +36,7 @@ public:
 	static int qtVersion();
 
 	static QStringList filesForPlaylist(const QString& initial_file,
-										Settings::TPreferences::TAutoAddToPlaylistFilter filter);
+										Settings::TPreferences::TAddToPlaylist filter);
 
 	//! Tries to find the executable in the path.
 	//! Returns the path if found or empty string if not.

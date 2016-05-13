@@ -59,7 +59,7 @@ public:
 	Q_DECLARE_FLAGS(TWheelFunctions, TWheelFunction)
 
     enum TOptionState { Detect = -1, Disabled = 0, Enabled = 1 };
-	enum TAutoAddToPlaylistFilter {
+    enum TAddToPlaylist {
 		NoFiles = 0,
 		VideoFiles = 1,
 		AudioFiles = 2,
@@ -276,7 +276,6 @@ public:
 	bool start_in_fullscreen;
 
     // Playlist tab
-	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
     // Logging
     bool log_verbose;
