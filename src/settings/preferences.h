@@ -23,6 +23,7 @@
 #include <QSize>
 #include <QString>
 
+#include "log4qt/level.h"
 #include "filters.h"
 #include "updatecheckerdata.h"
 #include "settings/playersettings.h"
@@ -215,7 +216,12 @@ public:
 	QString subtitle_enca_language;
 	QString subtitle_encoding_fallback;
 
-	// Libraries tab
+    //! If false, options requiring freetype won't be used
+#ifdef Q_OS_WIN
+    bool use_windowsfontdir;
+#endif
+
+    // Libraries tab
 	bool freetype_support;
 	bool use_ass_subtitles;
     double initial_sub_scale_ass;
@@ -235,11 +241,6 @@ public:
 	QString user_forced_ass_style; //!< Specifies a style defined by the user to be used with -ass-force-style
 
 	bool use_forced_subs_only;
-
-	//! If false, options requiring freetype won't be used
-#ifdef Q_OS_WIN
-	bool use_windowsfontdir;
-#endif
 
 
 	// Interface section
@@ -274,7 +275,7 @@ public:
 	TAutoAddToPlaylistFilter media_to_add_to_playlist;
 
     // Logging
-	bool log_debug_enabled;
+    Log4Qt::Level log_level;
 	bool log_verbose;
 	bool log_file;
 
@@ -335,8 +336,8 @@ public:
 
 
 	// Capture section
-	bool use_screenshot;
-	QString screenshot_directory;
+    QString screenshot_directory;
+    bool use_screenshot;
 	QString screenshot_template;
 	QString screenshot_format;
 	bool subtitles_on_screenshots;
@@ -386,14 +387,14 @@ public:
 	//! mplayer. It seems that some graphic cards don't support those options.
 	bool change_video_equalizer_on_startup;
 
-    bool clean_config;
+#ifdef MPRIS2
+	bool use_mpris2;
+#endif
 
     // Filters
     TFilters filters;
 
-#ifdef MPRIS2
-	bool use_mpris2;
-#endif
+    bool clean_config;
 
     static Log4Qt::Logger* logger;
 

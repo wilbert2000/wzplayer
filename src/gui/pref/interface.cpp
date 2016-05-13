@@ -152,7 +152,7 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	// Playlist
 	setMediaToAdd(pref->media_to_add_to_playlist);
 
-	setLogDebugEnabled(pref->log_debug_enabled);
+    setLogDebugEnabled(true); //pref->log_debug_enabled);
 	setLogVerbose(pref->log_verbose);
 	setLogFile(pref->log_file);
 
@@ -203,8 +203,8 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	// Playlist
 	pref->media_to_add_to_playlist = (Settings::TPreferences::TAutoAddToPlaylistFilter) mediaToAdd();
 
-	pref->log_debug_enabled = logDebugEnabled();
-	restartIfBoolChanged(pref->log_verbose, pref->log_debug_enabled && logVerbose());
+    //pref->log_debug_enabled = logDebugEnabled();
+    //restartIfBoolChanged(pref->log_verbose, pref->log_debug_enabled && logVerbose());
 	pref->log_file = logFile();
 
 	// History
