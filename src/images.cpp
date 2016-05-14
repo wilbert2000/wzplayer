@@ -115,7 +115,7 @@ QPixmap Images::icon(const QString& name, int size) {
 	QString icon_name = file(name);
 	QPixmap p(icon_name);
 	if (p.isNull()) {
-        logger()->debug("icon: '" + name + "' not found");
+        logger()->trace("icon: '" + name + "' not found");
 	} else if (size > 0) {
 		p = resize(&p, size);
 	}
