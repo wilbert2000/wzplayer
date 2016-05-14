@@ -22,7 +22,6 @@
 #include <QResizeEvent>
 #include <QTimer>
 
-#include "log4qt/logger.h"
 #include "desktop.h"
 #include "settings/preferences.h"
 #include "gui/base.h"
@@ -37,11 +36,10 @@
 namespace Gui {
 namespace Action {
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Action::TEditableToolbar)
-
 
 TEditableToolbar::TEditableToolbar(TBase* mainwindow) :
     QToolBar(mainwindow),
+    debug(logger()),
     main_window(mainwindow),
     size_grip(0),
     space_eater(0),

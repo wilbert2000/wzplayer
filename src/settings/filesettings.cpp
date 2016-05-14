@@ -19,7 +19,6 @@
 #include "settings/filesettings.h"
 #include <QFileInfo>
 
-#include "log4qt/logger.h"
 #include "settings/mediasettings.h"
 #include "settings/paths.h"
 #include "config.h"
@@ -27,7 +26,6 @@
 
 namespace Settings {
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TFileSettings)
 
 TFileSettings::TFileSettings() :
     TFileSettingsBase(TPaths::configPath() + "/" + TConfig::PROGRAM_ID

@@ -20,10 +20,13 @@
 #define SETTINGS_FILESETTINGS_H
 
 #include "settings/filesettingsbase.h"
+#include "log4qt/logger.h"
+
 
 namespace Settings {
 
 class TFileSettings : public TFileSettingsBase {
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
 	TFileSettings();
 	virtual ~TFileSettings();

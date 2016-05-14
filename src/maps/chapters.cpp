@@ -45,8 +45,11 @@ QString TChapterData::getDisplayName() const {
 };
 
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Maps::TChapters)
+TChapters::TChapters() {
+}
 
+TChapters::~TChapters() {
+}
 
 void TChapters::addName(int id, const QString &name) {
 	TChapterData& chapter = (*this)[id];
@@ -100,16 +103,18 @@ int TChapters::idForTime(double sec, bool allow_gaps) const {
 }
 
 void TChapters::list() const {
-    logger()->debug("list: selected ID: %1", selectedID);
+
+    Log4Qt::Logger* logger = Log4Qt::Logger::logger("Maps::TChapters");
+    logger->debug("list: selected ID: %1", selectedID);
     TChapterIterator i(*this);
-	while (i.hasNext()) {
-		i.next();
-		const TChapterData d = i.value();
-        logger()->debug("list: ID: " + QString::number(d.getID())
-                        + " name: '" + d.getName()
-                        + "' start: " + QString::number(d.getStart())
-                        + " end: " + d.getEnd());
-	}
+    while (i.hasNext()) {
+        i.next();
+        const TChapterData d = i.value();
+        logger->debug("list: ID: " + QString::number(d.getID())
+                      + " name: '" + d.getName()
+                      + "' start: " + QString::number(d.getStart())
+                      + " end: " + QString::number(d.getEnd()));
+    }
 }
 
 } // End namespace Maps

@@ -21,6 +21,7 @@
 
 #include <QStringList>
 #include "ui_toolbareditor.h"
+#include "wzdebug.h"
 #include "gui/action/actionlist.h"
 
 
@@ -32,7 +33,8 @@ namespace Action {
 
 
 class TToolbarEditor : public QDialog, public Ui::TToolbarEditor {
-	Q_OBJECT
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TToolbarEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
@@ -59,7 +61,7 @@ protected slots:
 	void onDownButtonClicked();
 	void on_right_button_clicked();
 	void on_left_button_clicked();
-	void on_separator_button_clicked();
+    void onSeparatorButtonClicked();
 	void restoreDefaults();
 	void checkRowsAllList(int currentRow);
 	void onCurrentCellChanged(int currentRow, int currentColumn,

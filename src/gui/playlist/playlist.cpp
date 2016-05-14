@@ -938,8 +938,11 @@ void TPlaylist::onNewMediaStartedPlaying() {
             if (!item->edited()) {
                 item->setName(md->displayName());
             }
-            if (md->duration > 0) {
+            if (md->duration > 0
+                && qAbs(md->duration - item->duration()) > 0.005) {
+                logger()->debug("onNewMediaStartedPlaying: updating duration");
                 item->setDuration(md->duration);
+                timeChanged = true;
             }
         }
         return;
@@ -1307,7 +1310,7 @@ bool TPlaylist::savePls(QString file) {
 }
 
 bool TPlaylist::save() {
-    logger()->debug("save: '" + filename + "'");
+    logger()->info("save: '" + filename + "'");
 
     if (filename.isEmpty()) {
         return saveAs();
@@ -1338,8 +1341,11 @@ bool TPlaylist::save() {
     }
 
     if (result) {
+        logger()->info("save: '" + fi.absoluteFilePath()
+                       + "' succesfully saved");
         msg(tr("Saved %1").arg(fi.fileName()));
     } else {
+        logger()->error("save: '" + fi.absoluteFilePath() + "' failed");
         QMessageBox::warning(this, tr("Save failed"),
                              tr("Failed to save %1").arg(filename),
                              QMessageBox::Ok);

@@ -46,7 +46,7 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
     quit_send(false),
     line_count(0) {
 
-	//qRegisterMetaType<SubTracks>("SubTracks");
+	//qRegisterMetaType<TSubTracks>("TSubTracks");
 	//qRegisterMetaType<Maps::TTracks>("Tracks");
 	//qRegisterMetaType<Chapters>("Chapters");
 

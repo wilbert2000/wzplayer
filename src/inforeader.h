@@ -20,6 +20,7 @@
 #ifndef INFOREADER_H
 #define INFOREADER_H
 
+#include "log4qt/logger.h"
 #include <QObject>
 #include <QList>
 #include <QStringList>
@@ -59,6 +60,7 @@ typedef QList<InfoData> InfoList;
 
 class InfoReader : QObject {
 	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	InfoReader();

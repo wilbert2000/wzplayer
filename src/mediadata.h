@@ -118,7 +118,7 @@ public:
 	}
 
 	// Subtitles, titles and chapters
-	SubTracks subs;
+    TSubTracks subs;
 	Maps::TTitleTracks titles;
 	Maps::TChapters chapters;
 

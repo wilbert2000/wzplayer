@@ -95,8 +95,6 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
 }
 
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
-
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 
 // Level of the root node in the tree view, where level means the number of
@@ -170,8 +168,8 @@ int TPlaylistWidgetItem::getLevel() const {
 }
 
 void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
-    logger()->debug("setState: '" + filename() + "' to "
-                    + playlistItemState(state));
+    Log4Qt::Logger::logger("Gui::Playlist::TPlaylistWidgetItem")->debug(
+        "setState: '" + filename() + "' to " + playlistItemState(state));
 
     playlistItem.setState(state);
 

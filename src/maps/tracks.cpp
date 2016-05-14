@@ -41,8 +41,12 @@ QString TTrackData::getDisplayName() const {
 	return dname;
 }
 
+TTracks::TTracks() :
+    logger(Log4Qt::Logger::logger("Maps::TTracks")) {
+}
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Maps::TTracks)
+TTracks::~TTracks() {
+}
 
 
 void TTracks::addLang(int id, const QString &lang) {
@@ -97,10 +101,10 @@ bool TTracks::updateTrack(int id, const QString &field, const QString &value) {
 	}
 
 	if (changed) {
-        logger()->debug("updateTrack: updated track id " + QString::number(id)
+        logger->debug("updateTrack: updated track id " + QString::number(id)
                         + " field '" + field +"' to value '" + value + "'");
 	} else {
-        logger()->debug("updateTrack: track id %1 was up to date", id);
+        logger->debug("updateTrack: track id %1 was up to date", id);
 	}
 
 	return changed;
@@ -116,50 +120,50 @@ bool TTracks::updateTrack(int ID, const QString &lang, const QString &name, bool
 		addTrack(ID, lang, name);
 		if (selected)
 			selectedID = ID;
-        logger()->debug("updateTrack: added new track id " + QString::number(ID)
-                        + " lang '" + lang + "' name '" + name + "'"
-                        + " selected " + QString::number(selected));
+        logger->debug("updateTrack: added new track id " + QString::number(ID)
+                      + " lang '" + lang + "' name '" + name + "'"
+                      + " selected " + QString::number(selected));
 	} else {
 		// Existing track
 		TTrackData& track = i.value();
 		if (track.getLang() != lang) {
-            logger()->debug("updateTrack: updating lang track id "
+            logger->debug("updateTrack: updating lang track id "
                           + QString::number(ID) + " from " + track.getLang()
                           + " to " + lang);
 			track.setLang(lang);
 			changed = true;
 		}
 		if (track.getName() != name) {
-            logger()->debug("updateTrack: updating name track id "
-                            + QString::number(ID) + " from "
-                            + track.getName() + " to " + name);
+            logger->debug("updateTrack: updating name track id "
+                          + QString::number(ID) + " from "
+                          + track.getName() + " to " + name);
 			track.setName(name);
 			changed = true;
 		}
 
 		if (selected) {
 			if (selectedID != ID) {
-                logger()->debug("updateTrack: changed selected id from %1 to %2",
+                logger->debug("updateTrack: changed selected id from %1 to %2",
                               selectedID, ID);
 				selectedID = ID;
 				changed = true;
 			}
 		} else if (selectedID == ID) {
-            logger()->debug("updateTrack: changed selected id from %1 to -1", ID);
+            logger->debug("updateTrack: changed selected id from %1 to -1", ID);
 			selectedID = -1;
 			changed = true;
 		}
 	}
 
 	if (!changed)
-        logger()->debug("updateTrack: tra%1 id %1 was up to date", ID);
+        logger->debug("updateTrack: tra%1 id %1 was up to date", ID);
 
 	return changed;
 }
 
 // Select a track matching expr if only one track matches
 int TTracks::findLangID(QString expr) const {
-    logger()->debug("findLang: '" + expr + "'");
+    logger->debug("findLang: '" + expr + "'");
 
 	int id = -1;
 	QRegExp rx(expr);
@@ -171,12 +175,12 @@ int TTracks::findLangID(QString expr) const {
 			if (id != -1) {
 				// For complex formats it is not save to select just a track,
 				// it can disable audio
-                logger()->info("findLang: found multiple matching tracks,"
-                                " canceling selection");
+                logger->info("findLang: found multiple matching tracks,"
+                             " canceling selection");
 				return -1;
 			}
-            logger()->debug("findLangID: found preferred lang "
-                            + track.getLang() + " matching " + expr);
+            logger->debug("findLangID: found preferred lang "
+                          + track.getLang() + " matching " + expr);
 			id = track.getID();
 		}
 	}
@@ -185,15 +189,15 @@ int TTracks::findLangID(QString expr) const {
 }
 
 void TTracks::list() const {
-    logger()->debug("list: selected track %1", selectedID);
+    logger->debug("list: selected track %1", selectedID);
 
 	TMapIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
 		TTrackData track = i.value();
-        logger()->debug("list: ID: " + QString::number(track.getID())
-                        + " lang: '" + track.getLang()
-                        + "' name: '" + track.getName() + "'");
+        logger->debug("list: ID: " + QString::number(track.getID())
+                      + " lang: '" + track.getLang()
+                      + "' name: '" + track.getName() + "'");
 	}
 }
 

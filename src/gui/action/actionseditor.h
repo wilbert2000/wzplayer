@@ -24,6 +24,7 @@
 #include <QWidget>
 #include <QStringList>
 #include <gui/action/actionlist.h>
+#include <wzdebug.h>
 
 class QTableWidget;
 class QTableWidgetItem;
@@ -37,6 +38,7 @@ typedef QList<QKeySequence> TShortCutList;
 
 class TActionsEditor : public QWidget {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TActionsEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);

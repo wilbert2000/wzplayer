@@ -98,13 +98,13 @@ void MyDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 namespace Gui {
 namespace Action {
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Action::TActionsEditor)
 
 const int WIDTH_CONFLICT_ICON = 16;
 const int MARGINS = 2;
 
 TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
-	QWidget(parent, f) {
+    QWidget(parent, f),
+    debug(logger()) {
 
 	latest_dir = Settings::TPaths::shortcutsPath();
 
@@ -538,7 +538,7 @@ QString TActionsEditor::actionToString(QAction *action) {
 }
 
 void TActionsEditor::saveToConfig(QSettings* set, QObject* o) {
-	logger()->debug("Gui::Action::TActionsEditor::saveToConfig");
+Log4Qt::Logger::logger("Gui::Action::TActionsEditor")->debug("saveToConfig");
 
 	set->beginGroup("actions");
 
@@ -621,7 +621,9 @@ QAction* TActionsEditor::findAction(const TActionList& actions, const QString& n
 }
 
 void TActionsEditor::loadFromConfig(QSettings* set, const TActionList& all_actions) {
-    logger()->debug("loadFromConfig");
+
+    Log4Qt::Logger* l = Log4Qt::Logger::logger("Gui::Action::TActionsEditor");
+    l->debug("loadFromConfig");
 
 	set->beginGroup("actions");
 
@@ -633,7 +635,7 @@ void TActionsEditor::loadFromConfig(QSettings* set, const TActionList& all_actio
             setActionFromString(action, set->value(name, "").toString(),
                                 all_actions);
         } else {
-            logger()->warn("loadFromConfig: action '" + name + "' not found");
+            l->warn("loadFromConfig: action '" + name + "' not found");
         }
     }
 

@@ -21,14 +21,11 @@
 #include <QFile>
 #include <QDir>
 
-#include "log4qt/logger.h"
 #include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include "filehash.h" // hash function
 
 namespace Settings {
-
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TFileSettingsHash)
 
 
 QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
@@ -42,8 +39,9 @@ QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 	QDir dir(TPaths::configPath());
 	if (!dir.exists(dir_name)) {
 		if (!dir.mkpath(dir_name)) {
-            logger()->warn("iniFilenameFor: failed to create directory '"
-                           + dir_name + "'");
+            Log4Qt::Logger::logger("Settings::TFileSettingsHash")->warn(
+                "iniFilenameFor: failed to create directory '"
+                + dir_name + "'");
 			return QString();
 		}
 	}

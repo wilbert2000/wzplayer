@@ -16,11 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QDebug>
+
 #include "subtracks.h"
-#include "log4qt/logger.h"
 #include "settings/mediasettings.h"
 #include <QRegExp>
+#include "log4qt/logger.h"
 
 
 SubData::SubData()
@@ -64,19 +64,20 @@ QString SubData::displayName() const {
 }
 
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, SubTracks)
+LOG4QT_DECLARE_STATIC_LOGGER(logger, TSubTracks)
 
-SubTracks::SubTracks()
+
+TSubTracks::TSubTracks()
 	: _selected_type(SubData::None)
 	, _selected_ID(-1)
 	, _selected_secondary_type(SubData::None)
 	,  _selected_secondary_ID(-1)
 {}
 
-SubTracks::~SubTracks() {
+TSubTracks::~TSubTracks() {
 }
 
-void SubTracks::clear() {
+void TSubTracks::clear() {
 	_selected_type = SubData::None;
 	_selected_ID = -1;
 
@@ -86,7 +87,7 @@ void SubTracks::clear() {
 	subs.clear();
 }
 
-int SubTracks::find(SubData::Type type, int ID) const {
+int TSubTracks::find(SubData::Type type, int ID) const {
 
 	for (int n = 0; n < subs.count(); n++) {
 		if ((subs[n].type() == type) && (subs[n].ID() == ID)) {
@@ -97,16 +98,16 @@ int SubTracks::find(SubData::Type type, int ID) const {
 	return -1;
 }
 
-int SubTracks::findSelectedIdx() const {
+int TSubTracks::findSelectedIdx() const {
 	return find(_selected_type, _selected_ID);
 }
 
-int SubTracks::findSelectedSecondaryIdx() const {
+int TSubTracks::findSelectedSecondaryIdx() const {
 	return find(_selected_secondary_type, _selected_secondary_ID);
 }
 
-int SubTracks::findLangIdx(QString expr) const {
-    logger()->debug("findLangIdx: '%1'", expr);
+int TSubTracks::findLangIdx(QString expr) const {
+    logger()->debug("findLangIdx: '" + expr + "'");
 
 	QRegExp rx(expr);
 
@@ -121,7 +122,7 @@ int SubTracks::findLangIdx(QString expr) const {
 	return -1;
 }
 
-SubData SubTracks::findItem(SubData::Type t, int ID) const {
+SubData TSubTracks::findItem(SubData::Type t, int ID) const {
 
 	int n = find(t, ID);
 	if (n >= 0)
@@ -130,7 +131,7 @@ SubData SubTracks::findItem(SubData::Type t, int ID) const {
 	return SubData();
 }
 
-int SubTracks::firstID() const {
+int TSubTracks::firstID() const {
 
 	if (subs.count() > 0) {
 		return subs.at(0).ID();
@@ -138,7 +139,7 @@ int SubTracks::firstID() const {
 	return -1;
 }
 
-int SubTracks::nextID() const {
+int TSubTracks::nextID() const {
 
 	int idx = findSelectedIdx();
 	if (idx < 0) {
@@ -153,7 +154,7 @@ int SubTracks::nextID() const {
 	return idx;
 }
 
-bool SubTracks::hasFileSubs() const {
+bool TSubTracks::hasFileSubs() const {
 
 	for (int n = 0; n < subs.count(); n++) {
 		if (subs[n].type() == SubData::File) {
@@ -163,14 +164,14 @@ bool SubTracks::hasFileSubs() const {
 	return false;
 }
 
-SubData SubTracks::itemAt(int n) const {
+SubData TSubTracks::itemAt(int n) const {
 
 	if (n >= 0 && n < subs.count())
 		return subs[n];
 	return SubData();
 }
 
-void SubTracks::add(SubData::Type t, int ID) {
+void TSubTracks::add(SubData::Type t, int ID) {
 	SubData d;
 	d.setType(t);
 	d.setID(ID);
@@ -178,7 +179,7 @@ void SubTracks::add(SubData::Type t, int ID) {
 	subs.append(d);
 }
 
-bool SubTracks::changeLang(SubData::Type t, int ID, QString lang) {
+bool TSubTracks::changeLang(SubData::Type t, int ID, QString lang) {
 	int f = find(t,ID);
 	if (f == -1) return false;
 
@@ -186,7 +187,7 @@ bool SubTracks::changeLang(SubData::Type t, int ID, QString lang) {
 	return true;
 }
 
-bool SubTracks::changeName(SubData::Type t, int ID, QString name) {
+bool TSubTracks::changeName(SubData::Type t, int ID, QString name) {
 	int f = find(t,ID);
 	if (f == -1) return false;
 
@@ -194,7 +195,7 @@ bool SubTracks::changeName(SubData::Type t, int ID, QString name) {
 	return true;
 }
 
-bool SubTracks::changeFilename(SubData::Type t, int ID, QString filename) {
+bool TSubTracks::changeFilename(SubData::Type t, int ID, QString filename) {
 	int f = find(t,ID);
 	if (f == -1) return false;
 
@@ -202,7 +203,7 @@ bool SubTracks::changeFilename(SubData::Type t, int ID, QString filename) {
 	return true;
 }
 
-bool SubTracks::update(SubData::Type type,
+bool TSubTracks::update(SubData::Type type,
 					   int id,
 					   SubData::Type sec_type,
 					   int sec_id,
@@ -288,15 +289,16 @@ bool SubTracks::update(SubData::Type type,
 	}
 
 	if (changed) {
-        qDebug() << "SubTracks::update: updated subtitle track type:" << type
-				 << "id:" << id
-				 << "sec type:" << sec_type
-				 << "sec id:" << sec_id
-				 << "lang:" << lang
-				 << "name:" << name
-				 << "filename:" << filename
-				 << "selected:" << selected
-				 << "sec selected:" << sec_selected;
+        logger()->debug("update: updated subtitle track type: "
+                        + QString::number(type)
+                        + " id: " + QString::number(id)
+                        + " sec type: " + QString::number(sec_type)
+                        + " sec id: " + QString::number(sec_id)
+                        + " lang: '" + lang
+                        + "' name: '" + name
+                        + "' filename: '" + filename
+                        + "' selected: " + QString::number(selected)
+                        + " sec selected: " + QString::number(sec_selected));
 	} else {
         logger()->debug("update:: subtitle track type %1 id %2 was up to date",
                         type, id);
@@ -304,7 +306,7 @@ bool SubTracks::update(SubData::Type type,
 	return changed;
 }
 
-void SubTracks::list() const {
+void TSubTracks::list() const {
     logger()->debug("list: selected subtitle track ID: %1", _selected_ID);
 
     int n = 0;

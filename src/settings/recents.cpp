@@ -23,8 +23,6 @@
 
 namespace Settings {
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TRecents)
-
 
 TRecents::TRecents() : max_items(10) {
 }
@@ -41,7 +39,8 @@ void TRecents::setMaxItems(int n_items) {
 }
 
 void TRecents::addItem(QString s, const QString& title) {
-    logger()->debug("addItem: '" + s + "' '" + title + "'");
+    Log4Qt::Logger::logger("Settings::TRecents")->debug(
+        "addItem: '" + s + "' '" + title + "'");
 
 	if (!title.isEmpty()) {
 		s += "|title]=" + title;

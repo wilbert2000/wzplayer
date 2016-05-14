@@ -16,14 +16,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SETTINGS_TVSETTINGS_H_
-#define _SETTINGS_TVSETTINGS_H_
+#ifndef SETTINGS_TVSETTINGS_H
+#define SETTINGS_TVSETTINGS_H
 
 #include "settings/filesettingsbase.h"
+#include "log4qt/logger.h"
 
 namespace Settings {
 
 class TTVSettings : public TFileSettingsBase {
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
 	TTVSettings();
 	virtual ~TTVSettings();

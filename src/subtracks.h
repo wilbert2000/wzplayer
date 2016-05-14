@@ -17,12 +17,13 @@
 */
 
 
-#ifndef _SUBTRACKS_H_
-#define _SUBTRACKS_H_
+#ifndef SUBTRACKS_H
+#define SUBTRACKS_H
 
 #include <QString>
 #include <QFileInfo>
 #include <QList>
+
 
 class SubData {
 
@@ -61,10 +62,11 @@ protected:
 
 typedef QListIterator<SubData> SubIterator;
 
-class SubTracks {
+class TSubTracks {
+
 public:
-	SubTracks();
-	virtual ~SubTracks();
+    TSubTracks();
+    virtual ~TSubTracks();
 
 	void clear();
 
@@ -115,4 +117,4 @@ protected:
 	int _selected_secondary_ID;
 };
 
-#endif
+#endif // SUBTRACKS_H

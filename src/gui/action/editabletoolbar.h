@@ -21,6 +21,7 @@
 
 #include <QToolBar>
 #include <QStringList>
+#include "wzdebug.h"
 #include <gui/action/actionlist.h>
 
 
@@ -36,6 +37,7 @@ class TTimeSlider;
 
 class TEditableToolbar : public QToolBar {
 	Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
 	TEditableToolbar(TBase* mainwindow);

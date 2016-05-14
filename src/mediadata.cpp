@@ -23,9 +23,6 @@
 #include "log4qt/logger.h"
 
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, TMediaData)
-
-
 TMediaData::TMediaData() :
 	selected_type(TYPE_UNKNOWN),
 	video_aspect_original(-1),
@@ -188,72 +185,74 @@ TMediaData::Type TMediaData::stringToType(QString type) {
 }
 
 void TMediaData::list() const {
-	logger()->debug("TMediaData::list");
 
-    logger()->debug("filename: '%1'", filename);
-    logger()->debug("selected type: %1", typeToString(selected_type));
-    logger()->debug("detected type: %1", typeToString(detected_type));
-    logger()->debug("valid disc URL: %1", disc.valid);
-    logger()->debug("stream_url: '%1'", stream_url);
+    Log4Qt::Logger* logger = Log4Qt::Logger::logger("TMediaData");
+    logger->debug("TMediaData::list");
 
-    logger()->debug("start: " + QString::number(start_sec));
-    logger()->debug("start sec set: %1", start_sec_set);
-    logger()->debug("time_sec: " + QString::number(time_sec));
-    logger()->debug("duration: " + QString::number(duration));
+    logger->debug("filename: '%1'", filename);
+    logger->debug("selected type: %1", typeToString(selected_type));
+    logger->debug("detected type: %1", typeToString(detected_type));
+    logger->debug("valid disc URL: %1", disc.valid);
+    logger->debug("stream_url: '%1'", stream_url);
 
-    logger()->debug("demuxer: '%1'", demuxer);
-    logger()->debug("mpegts: %1", mpegts);
+    logger->debug("start: " + QString::number(start_sec));
+    logger->debug("start sec set: %1", start_sec_set);
+    logger->debug("time_sec: " + QString::number(time_sec));
+    logger->debug("duration: " + QString::number(duration));
 
-    logger()->debug("video driver: '%1'", vo);
-    logger()->debug("video_width: %1", video_width);
-    logger()->debug("video_height: %1", video_height);
-    logger()->debug("video_aspect: '" + video_aspect + "'");
-    logger()->debug("video_aspect_original: "
+    logger->debug("demuxer: '%1'", demuxer);
+    logger->debug("mpegts: %1", mpegts);
+
+    logger->debug("video driver: '%1'", vo);
+    logger->debug("video_width: %1", video_width);
+    logger->debug("video_height: %1", video_height);
+    logger->debug("video_aspect: '" + video_aspect + "'");
+    logger->debug("video_aspect_original: "
                     + QString::number(video_aspect_original));
-    logger()->debug("video_fps: " + QString::number(video_fps));
+    logger->debug("video_fps: " + QString::number(video_fps));
 
-    logger()->debug("video_out_width: %1", video_out_width);
-    logger()->debug("video_out_height: %1", video_out_height);
+    logger->debug("video_out_width: %1", video_out_width);
+    logger->debug("video_out_height: %1", video_out_height);
 
-    logger()->debug("video_format: '%1'", video_format);
-    logger()->debug("video_codec: '%1'", video_codec);
-    logger()->debug("video_bitrate: %1", video_bitrate);
-    logger()->debug("video_hwdec: %1", video_hwdec);
-    logger()->debug("Video tracks:");
+    logger->debug("video_format: '%1'", video_format);
+    logger->debug("video_codec: '%1'", video_codec);
+    logger->debug("video_bitrate: %1", video_bitrate);
+    logger->debug("video_hwdec: %1", video_hwdec);
+    logger->debug("Video tracks:");
 	videos.list();
 
-    logger()->debug("audio driver: '%1'", ao);
-    logger()->debug("audio_format: '%1'", audio_format);
-    logger()->debug("audio_codec: '%1'", audio_codec);
-    logger()->debug("audio_bitrate: %1", audio_bitrate);
-    logger()->debug("audio_rate: %1", audio_rate);
-    logger()->debug("audio_nch: %1", audio_nch);
-    logger()->debug("Audio tracks:");
+    logger->debug("audio driver: '%1'", ao);
+    logger->debug("audio_format: '%1'", audio_format);
+    logger->debug("audio_codec: '%1'", audio_codec);
+    logger->debug("audio_bitrate: %1", audio_bitrate);
+    logger->debug("audio_rate: %1", audio_rate);
+    logger->debug("audio_nch: %1", audio_nch);
+    logger->debug("Audio tracks:");
 	audios.list();
 
-    logger()->debug("Subtitles:");
+    logger->debug("Subtitles:");
 	subs.list();
-    logger()->debug("Titles:");
+    logger->debug("Titles:");
 	titles.list();
-    logger()->debug("Chapters:");
+    logger->debug("Chapters:");
 	chapters.list();
 
 #if PROGRAM_SWITCH
-    logger()->debug("Programs:");
+    logger->debug("Programs:");
 	programs.list();
 #endif
 
-    logger()->debug("Title: '%1'", title);
-    logger()->debug("Meta data:");
-	TMetaData::const_iterator i = meta_data.constBegin();
-	while (i != meta_data.constEnd()) {
-        logger()->debug("'" + i.key() + "' = '" + i.value() + "'");
-		i++;
-	}
+    logger->debug("Title: '%1'", title);
+    logger->debug("Meta data:");
+    TMetaData::const_iterator i = meta_data.constBegin();
+    while (i != meta_data.constEnd()) {
+        logger->debug("'" + i.key() + "' = '" + i.value() + "'");
+        i++;
+    }
 
-    logger()->debug("dvd_id: '%1'", dvd_id);
-    logger()->debug("Angle: %1/%2", angle, angles);
+    logger->debug("dvd_id: '%1'", dvd_id);
+    logger->debug("Angle: %1/%2", angle, angles);
 
-    logger()->debug("initialized: %1", initialized);
+    logger->debug("initialized: %1", initialized);
 }
 

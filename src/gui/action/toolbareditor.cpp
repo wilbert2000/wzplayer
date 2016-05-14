@@ -33,7 +33,6 @@
 namespace Gui {
 namespace Action {
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, TToolbarEditor)
 
 enum TCols {
 	COL_NS = 0,
@@ -45,7 +44,8 @@ enum TCols {
 };
 
 TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f) :
-	QDialog(parent, f) {
+    QDialog(parent, f),
+    debug(logger()) {
 
 	setupUi(this);
 
@@ -280,7 +280,7 @@ void TToolbarEditor::resizeColumns() {
 }
 
 void TToolbarEditor::resizeEvent(QResizeEvent* event) {
-	//logger()->debug("Gui::Action::TToolbarEditor::resizeEvent");
+    //logger()->debug("resizeEvent");
 
 	QDialog::resizeEvent(event);
 	resizeColumns();
@@ -363,8 +363,8 @@ void TToolbarEditor::on_left_button_clicked() {
 	}
 }
 
-void TToolbarEditor::on_separator_button_clicked() {
-	//logger()->debug("Gui::Action::TToolbarEditor::on_separator_button_clicked");
+void TToolbarEditor::onSeparatorButtonClicked() {
+    //logger()->debug("onSeparatorButtonClicked");
 
 	int row = active_actions_table->currentRow();
 	if (row < 0)
@@ -373,7 +373,7 @@ void TToolbarEditor::on_separator_button_clicked() {
 }
 
 void TToolbarEditor::restoreDefaults() {
-	logger()->debug("Gui::Action::TToolbarEditor::restoreDefaults");
+    logger()->debug("restoreDefaults");
 
 	setActiveActions(default_actions);
 }
@@ -387,7 +387,7 @@ bool TToolbarEditor::getVis(int row, int col) {
 }
 
 QStringList TToolbarEditor::saveActions() {
-	logger()->debug("Gui::Action::TToolbarEditor::saveActions");
+    logger()->debug("saveActions");
 
 	QStringList list;
 
@@ -456,7 +456,7 @@ void TToolbarEditor::onCurrentCellChanged(int currentRow, int currentColumn,
 	Q_UNUSED(currentColumn)
 	Q_UNUSED(previousRow)
 	Q_UNUSED(previousColumn)
-	//logger()->debug("Gui::Action::TToolbarEditor::onCurrentCellChanged");
+    //logger()->debug("onCurrentCellChanged");
 
 	left_button->setEnabled(currentRow >= 0);
 	if (currentRow < 0) {

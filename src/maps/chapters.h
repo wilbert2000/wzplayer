@@ -50,8 +50,8 @@ protected:
 class TChapters : public TMap<TChapterData> {
 
 public:
-	TChapters() {}
-	virtual ~TChapters() {}
+    TChapters();
+    virtual ~TChapters();
 
 	typedef QMap <int, TChapterData> TChapterMap;
 	typedef QMapIterator<int, TChapterData> TChapterIterator;

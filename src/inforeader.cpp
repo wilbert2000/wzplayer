@@ -23,7 +23,6 @@
 #include <QSettings>
 #include <QDebug>
 
-#include "log4qt/logger.h"
 #include "proc/playerprocess.h"
 #include "settings/preferences.h"
 #include "settings/paths.h"
@@ -36,7 +35,6 @@
 
 using namespace Settings;
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::InfoReader)
 
 InfoReader* InfoReader::static_obj = 0;
 

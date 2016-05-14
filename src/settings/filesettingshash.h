@@ -16,15 +16,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SETTINGS_FILESETTINGS_HASH_H_
-#define _SETTINGS_FILESETTINGS_HASH_H_
+#ifndef SETTINGS_FILESETTINGS_HASH_H
+#define SETTINGS_FILESETTINGS_HASH_H
 
 #include "settings/filesettingsbase.h"
+#include "log4qt/logger.h"
 
 namespace Settings {
 
-class TFileSettingsHash : public TFileSettingsBase
-{
+class TFileSettingsHash : public TFileSettingsBase {
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
 public:
 	TFileSettingsHash(const QString& filename);
 	virtual ~TFileSettingsHash();
@@ -39,5 +41,5 @@ private:
 
 } // namespace Settings
 
-#endif // _SETTINGS_FILESETTINGS_HASH_H_
+#endif // SETTINGS_FILESETTINGS_HASH_H
 

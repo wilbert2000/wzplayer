@@ -16,11 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MAPS_TRACKS_H_
-#define _MAPS_TRACKS_H_
+#ifndef MAPS_TRACKS_H
+#define MAPS_TRACKS_H
 
-#include <QString>
 #include "map.h"
+#include <log4qt/logger.h>
+#include <QString>
+
 
 /* Class to store info about video/audio tracks */
 
@@ -56,8 +58,8 @@ protected:
 
 class TTracks : public TMap<TTrackData> {
 public:
-	TTracks() {}
-	virtual ~TTracks() {}
+    TTracks();
+    virtual ~TTracks();
 
 	typedef QMapIterator<int, TTrackData> TTrackIterator;
 
@@ -76,8 +78,10 @@ public:
 
 	// Select a track matching expr if only one track matches
 	int findLangID(QString expr) const;
+ private:
+    Log4Qt::Logger* logger;
 };
 
 } // namespace Maps
 
-#endif // _MAPS_TRACKS_H_
+#endif // MAPS_TRACKS_H

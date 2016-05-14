@@ -25,10 +25,8 @@
 #include "settings/mediasettings.h"
 #include "settings/paths.h"
 
+
 namespace Settings {
-
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Images)
-
 
 TTVSettings::TTVSettings() :
 	TFileSettingsBase(TPaths::configPath() + "/tv.ini") {
