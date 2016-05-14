@@ -1261,11 +1261,10 @@ void TPreferences::setupScreenshotFolder() {
 	if (screenshot_directory.isEmpty()) {
 		use_screenshot = false;
     } else if (QDir(screenshot_directory).exists()) {
-        logger->info("setupScreenshotFolder: using screen shot folder '"
+        logger->info("setupScreenshotFolder: using folder '"
                      + screenshot_directory + "'");
     } else {
-        logger->info("setupScreenshotFolder: screen shot folder '"
-                     + screenshot_directory
+        logger->info("setupScreenshotFolder: folder '" + screenshot_directory
                      + "' not found, disabling screenshots");
         use_screenshot = false;
         screenshot_directory = "";
