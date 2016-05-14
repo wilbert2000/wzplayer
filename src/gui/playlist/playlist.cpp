@@ -73,6 +73,7 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     media_to_add_to_playlist(Settings::TPreferences::NoFiles),
     disable_enableActions(false),
     modified(false),
+    timeChanged(false),
     thread(0) {
 
     createTree();
@@ -345,6 +346,7 @@ void TPlaylist::clear() {
     filename = "";
     title = "";
     modified = false;
+    timeChanged = false;
     setWinTitle();
 }
 
@@ -401,13 +403,18 @@ void TPlaylist::onThreadFinished() {
 
     // TODO: make sure addFilesTarget still valid
     QString fn = playlistWidget->add(root, addFilesTarget, current);
-    if (fn.count()) {
-        filename = fn;
-        setWinTitle(QFileInfo(fn).fileName());
+    if (!fn.isEmpty()) {
+        QFileInfo fi(fn);
+        filename = fi.absoluteFilePath();
+        if (fi.fileName() == TConfig::WZPLAYLIST) {
+            setWinTitle(fi.dir().dirName() + " - " + fi.fileName());
+        } else {
+            setWinTitle(fi.fileName());
+        }
     }
 
     if (addFilesStartPlay) {
-        if (addFilesFileToPlay.count()) {
+        if (!addFilesFileToPlay.isEmpty()) {
             TPlaylistWidgetItem* w = findFilename(addFilesFileToPlay);
             if (w) {
                 // Ok to not sort, only used for restarting app
@@ -415,7 +422,15 @@ void TPlaylist::onThreadFinished() {
                 return;
             }
         }
-        startPlay(true);
+        // TODO: merge isPlaylist test with addFilesThread
+        QString ext = QFileInfo("x").suffix().toLower();
+        if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
+            // Don't sort playlist
+            startPlay(false);
+        } else {
+            // Sort anything else
+            startPlay(true);
+        }
     } else {
         enableActions();
     }
@@ -1074,7 +1089,7 @@ void TPlaylist:: setWinTitle(QString s) {
         "optional white space, optional playlist name, optional modified star")
         .arg(title.isEmpty() ? "" : " ")
         .arg(title)
-        .arg(modified ? "*" : "");
+        .arg(modified ? "*" : (timeChanged ? "t" : ""));
     setWindowTitle(winTitle);
 
     // Inform the playlist dock
@@ -1292,19 +1307,28 @@ bool TPlaylist::savePls(QString file) {
 }
 
 bool TPlaylist::save() {
+    logger()->debug("save: '" + filename + "'");
 
     if (filename.isEmpty()) {
         return saveAs();
     }
 
+    bool addTitle = false;
     QFileInfo fi(filename);
     if (fi.isDir()) {
-        fi.setFile(fi.absoluteFilePath(), TConfig::PROGRAM_ID + ".m3u8");
+        fi.setFile(fi.absoluteFilePath(), TConfig::WZPLAYLIST);
+        addTitle = true;
+    } else if (fi.fileName() == TConfig::WZPLAYLIST) {
+        addTitle = true;
     }
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     pref->latest_dir = fi.absolutePath();
-    setWinTitle(fi.fileName());
+    if (addTitle) {
+        setWinTitle(title + " - " + fi.fileName());
+    } else {
+        setWinTitle(fi.fileName());
+    }
 
     bool result;
     if (fi.suffix().toLower() == "pls") {
@@ -1357,8 +1381,15 @@ bool TPlaylist::saveAs() {
 
 bool TPlaylist::maybeSave() {
 
-    if (!modified)
+    if (!filename.isEmpty()
+        && timeChanged
+        && QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
+        return save();
+    }
+
+    if (!modified) {
         return true;
+    }
 
     int res = QMessageBox::question(this,
         tr("Playlist modified"),

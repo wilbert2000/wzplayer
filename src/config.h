@@ -17,6 +17,8 @@ public:
 	static const QString PROGRAM_NAME;
     static const QString PROGRAM_VERSION;
 
+    static const QString WZPLAYLIST;
+
 	static const QString URL_HOMEPAGE;
 	static const QString URL_ISSUES;
 	static const QString URL_TRANSLATORS;

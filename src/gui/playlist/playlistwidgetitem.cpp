@@ -161,11 +161,6 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
 }
 
-QString TPlaylistWidgetItem::path() const {
-     return QDir::toNativeSeparators(
-         QFileInfo(playlistItem.filename()).absolutePath());
-}
-
 int TPlaylistWidgetItem::getLevel() const {
 
     if (parent() == 0) {
@@ -198,6 +193,12 @@ void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
             setIcon(COL_NAME, failedIcon);
             break;
     }
+}
+
+void TPlaylistWidgetItem::setFileInfo(const QFileInfo& fi) {
+
+    playlistItem.setFilename(QDir::toNativeSeparators(fi.absoluteFilePath()));
+    setName(fi.fileName());
 }
 
 void TPlaylistWidgetItem::setName(const QString& name) {

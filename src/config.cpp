@@ -12,6 +12,7 @@ const QString TConfig::PROGRAM_ORG("WH");
 const QString TConfig::PROGRAM_ID("wzplayer");
 const QString TConfig::PROGRAM_NAME("WZPlayer");
 const QString TConfig::PROGRAM_VERSION(WZPLAYER_VERSION_STR);
+const QString TConfig::WZPLAYLIST(TConfig::PROGRAM_ID + ".m3u8");
 
 const QString TConfig::URL_HOMEPAGE("https://github.com/wilbert2000/wzplayer");
 const QString TConfig::URL_ISSUES("https://github.com/wilbert2000/wzplayer/issues");

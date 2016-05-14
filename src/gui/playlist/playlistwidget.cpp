@@ -458,11 +458,13 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
 QString TPlaylistWidget::add(TPlaylistWidgetItem* item,
                              QTreeWidgetItem* target,
                              QTreeWidgetItem* current) {
-    logger()->debug("add");
+    logger()->debug("add '" + item->filename()
+                    + "' with " + QString::number(item->childCount())
+                    + " children");
 
     enableSort(false);
 
-    // Setup parent and child index into parent
+    // Set parent and child index into parent
     QTreeWidgetItem* parent;
     int idx = -1;
     if (target) {
@@ -479,18 +481,19 @@ QString TPlaylistWidget::add(TPlaylistWidgetItem* item,
         idx = parent->childCount();
     }
 
+    // Remove single folder in root, copy filename root
     QString filename;
-    if (parent == root()
-        && parent->childCount() == 0
-        && item->childCount() == 1
-        && item->child(0)->childCount()) {
-
-        TPlaylistWidgetItem* old = item;
-        item = static_cast<TPlaylistWidgetItem*>(item->takeChild(0));
-        delete old;
-        current = item->child(0);
-        idx = 0;
+    if (parent == root() && parent->childCount() == 0) {
         filename = item->filename();
+        if (item->childCount() == 1 && item->child(0)->childCount()) {
+            logger()->debug("add: removing single folder in root '"
+                            + filename + "'");
+            TPlaylistWidgetItem* old = item;
+            item = static_cast<TPlaylistWidgetItem*>(item->takeChild(0));
+            delete old;
+            current = item->child(0);
+            idx = 0;
+        }
     }
 
     QList<QTreeWidgetItem*> children;

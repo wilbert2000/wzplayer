@@ -169,6 +169,7 @@ private:
     bool disable_enableActions;
 
     bool modified;
+    bool timeChanged;
     QString filename;
     QString title;
 
