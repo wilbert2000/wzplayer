@@ -566,14 +566,19 @@ void TPreferences::save() {
     // Set level for Qt log
     setValue("Debug", level);
 
-    // Set root log
     beginGroup("Properties");
 
     // Appender
     setValue("log4j.appender." + NAME_CONSOLE_APPENDER,
              "org.apache.log4j.ConsoleAppender");
+
+    // Layout
     setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout",
              "org.apache.log4j.TTCCLayout");
+    setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout.dateFormat",
+             "ABSOLUTE");
+    setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout.threadPrinting",
+             "false");
 
     // Set level and appender
     setValue("log4j.rootLogger", level + ", " + NAME_CONSOLE_APPENDER);

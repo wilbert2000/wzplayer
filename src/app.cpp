@@ -93,9 +93,11 @@ void TApp::initLog4Qt() {
         return;
     }
 
-    // Create a layout
+    // Create layout
     TTCCLayout* layout = new TTCCLayout();
     layout->setName("Layout");
+    layout->setDateFormat(TTCCLayout::ABSOLUTE);
+    layout->setThreadPrinting(false);
     layout->activateOptions();
 
     // Create an appender
