@@ -59,15 +59,18 @@ private:
                     const QString& name,
                     double duration,
                     bool protectName);
-    void cleanAndAddItem(QString filename,
+    void cleanAndAddItem(TPlaylistWidgetItem* parent,
+                         QString filename,
                          QString name,
-                         double duration,
-                         TPlaylistWidgetItem* parent);
+                         double duration);
 
-    TPlaylistWidgetItem* openM3u(const QString& playlistFileName,
-                                 TPlaylistWidgetItem* parent);
-    TPlaylistWidgetItem* openPls(const QString& playlistFileName,
-                                 TPlaylistWidgetItem* parent);
+    bool openM3u(TPlaylistWidgetItem* playlistItem,
+                 const QString& playlistFileName,
+                 bool utf8);
+    bool openPls(TPlaylistWidgetItem* playlistItem,
+                 const QString& playlistFileName);
+    TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,
+                                      const QString& playlistFileName);
 };
 
 } // namespace Playlist

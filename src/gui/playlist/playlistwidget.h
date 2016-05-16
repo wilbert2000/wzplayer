@@ -19,19 +19,26 @@ public:
 
     TPlaylistWidgetItem* playing_item;
 
+    void setPlayingItem(TPlaylistWidgetItem* item,
+                        TPlaylistItemState state = PSTATE_STOPPED);
+
+    TPlaylistWidgetItem* root() const {
+        return static_cast<TPlaylistWidgetItem*>(topLevelItem(0));
+    }
+
     int countItems() const;
     int countChildren() const;
+    bool hasItems() const;
 
     TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
-    QTreeWidgetItem* playlistWidgetFolder(QTreeWidgetItem* w) const;
-    QTreeWidgetItem* currentPlaylistWidgetFolder() const;
     TPlaylistWidgetItem* firstPlaylistWidgetItem() const;
     TPlaylistWidgetItem* lastPlaylistWidgetItem() const;
+
     QString playingFile() const;
     QString currentFile() const;
     TPlaylistWidgetItem* findFilename(const QString& filename);
 
-    TPlaylistWidgetItem* getNextPlaylistWidgetItem(TPlaylistWidgetItem* i) const;
+    TPlaylistWidgetItem* getNextPlaylistWidgetItem(TPlaylistWidgetItem* item) const;
     TPlaylistWidgetItem* getNextPlaylistWidgetItem() const;
 
     TPlaylistWidgetItem* getPreviousPlaylistWidgetItem(TPlaylistWidgetItem* w) const;
@@ -39,16 +46,14 @@ public:
 
     TPlaylistWidgetItem* findPreviousPlayedTime(TPlaylistWidgetItem* w);
 
-    void setPlayingItem(TPlaylistWidgetItem* item,
-                        TPlaylistItemState state = PSTATE_STOPPED);
     void clearPlayed();
     void clr();
-    QTreeWidgetItem* root() const { return invisibleRootItem(); }
 
     void enableSort(bool enable);
 
-    QString add(TPlaylistWidgetItem* item, QTreeWidgetItem* target,
-                QTreeWidgetItem* current);
+    TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
+                             QTreeWidgetItem* target,
+                             QTreeWidgetItem* current);
 
 signals:
     void modified();

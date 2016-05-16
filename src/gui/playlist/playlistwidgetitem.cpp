@@ -54,6 +54,7 @@ TPlaylistItem::TPlaylistItem() :
     _played(false),
     _edited(false),
     _folder(false),
+    _playlist(false),
     _playedTime(0) {
 }
 
@@ -73,6 +74,10 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     if (_name.isEmpty()) {
         _name = _filename;
     }
+
+    QFileInfo fi(_filename);
+    QString ext = fi.suffix().toLower();
+    _playlist = ext == "m3u8" || ext == "m3u" || ext == "pls";
 }
 
 void TPlaylistItem::setState(TPlaylistItemState state) {
@@ -115,13 +120,13 @@ QIcon playIcon;
 QIcon failedIcon;
 
 
-// Used as root during scan
+// Used as root
 TPlaylistWidgetItem::TPlaylistWidgetItem(const QIcon& icon) :
     QTreeWidgetItem(),
     itemIcon(icon) {
 
     playlistItem.setFolder(true);
-    setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
+    setFlags(ROOT_FLAGS);
     setIcon(COL_NAME, itemIcon);
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
 }
@@ -158,10 +163,14 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
 }
 
+bool TPlaylistWidgetItem::isRoot() const {
+    return parent() == 0;
+}
+
 int TPlaylistWidgetItem::getLevel() const {
 
     if (parent() == 0) {
-        return gRootNodeLevel + 1;
+        return gRootNodeLevel;
     }
     return static_cast<TPlaylistWidgetItem*>(parent())->getLevel() + 1;
 }
@@ -224,14 +233,10 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
 QString TPlaylistWidgetItem::path() const {
 
     QFileInfo fi(filename());
-    QString ext = fi.suffix().toLower();
-    QString path;
-    if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
-        path = fi.absolutePath();
-    } else {
-        path = fi.absoluteFilePath();
+    if (isPlaylist()) {
+        return fi.absolutePath();
     }
-    return path;
+    return fi.absoluteFilePath();
 }
 
 QSize TPlaylistWidgetItem::itemSize(const QString& text,

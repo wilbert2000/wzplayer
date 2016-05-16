@@ -50,6 +50,8 @@ public:
     bool folder() const { return _folder; }
     void setFolder(bool b) { _folder = b; }
 
+    bool playlist() const { return _playlist; }
+
     int playedTime() const { return _playedTime; }
 
     bool operator == (const TPlaylistItem& item);
@@ -58,7 +60,7 @@ private:
     QString _filename, _name;
     double _duration;
     TPlaylistItemState _state;
-    bool _played, _edited, _folder;
+    bool _played, _edited, _folder, _playlist;
     int _playedTime;
 };
 
@@ -73,6 +75,10 @@ extern QIcon loadingIcon;
 extern QIcon playIcon;
 extern QIcon failedIcon;
 
+// TODO: root selectable or not...
+const Qt::ItemFlags ROOT_FLAGS = Qt::ItemIsSelectable
+                                 | Qt::ItemIsEnabled
+                                 | Qt::ItemIsDropEnabled;
 
 class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
@@ -109,7 +115,9 @@ public:
     bool edited() const { return playlistItem.edited(); }
     void setEdited(bool edited) { playlistItem.setEdited(edited); }
 
+    bool isRoot() const;
     bool isFolder() const { return playlistItem.folder(); }
+    bool isPlaylist() const { return playlistItem.playlist(); }
 
     int playedTime() const { return playlistItem.playedTime(); }
 
@@ -120,6 +128,15 @@ public:
                           int level);
     void setSzHint(int level);
     int getLevel() const;
+
+    /*
+    TPlaylistWidgetItem* plParent() {
+        return static_cast<TPlaylistWidgetItem*>(parent());
+    }
+    */
+    TPlaylistWidgetItem* plChild(int idx) {
+        return static_cast<TPlaylistWidgetItem*>(child(idx));
+    }
 
 private:
     TPlaylistItem playlistItem;

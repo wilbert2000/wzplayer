@@ -339,8 +339,8 @@ void TPlaylist::clear() {
 
     if (thread) {
         logger()->info("clear: add files thread still running, aborting it");
-        addFilesFiles.clear();
         thread->abort();
+        addFilesFiles.clear();
     }
     playlistWidget->clr();
     filename = "";
@@ -400,12 +400,12 @@ void TPlaylist::onThreadFinished() {
         return;
     }
 
-
     // TODO: make sure addFilesTarget still valid
-    QString fn = playlistWidget->add(root, addFilesTarget, current);
-    if (!fn.isEmpty()) {
-        QFileInfo fi(fn);
-        filename = fi.absoluteFilePath();
+    root = playlistWidget->add(root, addFilesTarget, current);
+
+    if (root) {
+        filename = root->filename();
+        QFileInfo fi(filename);
         if (fi.fileName() == TConfig::WZPLAYLIST) {
             setWinTitle(fi.dir().dirName() + " - " + fi.fileName());
         } else {
@@ -417,20 +417,11 @@ void TPlaylist::onThreadFinished() {
         if (!addFilesFileToPlay.isEmpty()) {
             TPlaylistWidgetItem* w = findFilename(addFilesFileToPlay);
             if (w) {
-                // Ok to not sort, only used for restarting app
                 playItem(w);
                 return;
             }
         }
-        // TODO: merge isPlaylist test with addFilesThread
-        QString ext = QFileInfo("x").suffix().toLower();
-        if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
-            // Don't sort playlist
-            startPlay(false);
-        } else {
-            // Sort anything else
-            startPlay(true);
-        }
+        startPlay();
     } else {
         enableActions();
     }
@@ -542,8 +533,9 @@ void TPlaylist::onShuffleToggled(bool toggled) {
 void TPlaylist::play() {
     logger()->debug("play");
 
-    if (playlistWidget->currentItem()) {
-        playItem(playlistWidget->currentPlaylistWidgetItem());
+    TPlaylistWidgetItem* item = playlistWidget->currentPlaylistWidgetItem();
+    if (item) {
+        playItem(item);
     } else {
         core->play();
     }
@@ -577,10 +569,6 @@ void TPlaylist::stop() {
 }
 
 TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
-
-    if (playlistWidget->topLevelItemCount() <= 0) {
-        return 0;
-    }
 
     bool foundFreeItem = false;
     int selected = (int) ((double) playlistWidget->countChildren() * qrand()
@@ -631,28 +619,28 @@ bool TPlaylist::haveUnplayedItems() const {
     return false;
 }
 
-void TPlaylist::startPlay(bool sort) {
+void TPlaylist::startPlay() {
     logger()->debug("startPlay");
 
-    if (playlistWidget->topLevelItemCount() > 0) {
-        playlistWidget->enableSort(sort);
+    TPlaylistWidgetItem* item = playlistWidget->firstPlaylistWidgetItem();
+    if (item) {
         if (shuffleAct->isChecked()) {
             playItem(getRandomItem());
         } else {
-            playItem(playlistWidget->firstPlaylistWidgetItem());
+            playItem(item);
         }
     } else {
-        emit displayMessage(tr("Found no files to play"), 6000);
+        logger()->info("startPlay: nothing to play");
     }
 }
 
 void TPlaylist::playItem(TPlaylistWidgetItem* item) {
 
-    while (item && (item->isFolder() || item->filename().isEmpty())) {
+    while (item && item->isFolder()) {
         item = playlistWidget->getNextPlaylistWidgetItem(item);
     }
     if (item) {
-        logger()->debug("playItem: " + item->filename());
+        logger()->debug("playItem: '" + item->filename() + "'");
         playlistWidget->setPlayingItem(item, PSTATE_LOADING);
         core->open(item->filename());
     } else {
@@ -684,7 +672,7 @@ void TPlaylist::playPrev() {
     logger()->debug("playPrev");
 
     TPlaylistWidgetItem* i = playlistWidget->playing_item;
-    if (shuffleAct->isChecked() && i) {
+    if (i && shuffleAct->isChecked()) {
         i = playlistWidget->findPreviousPlayedTime(i);
     } else {
         i = playlistWidget->getPreviousPlaylistWidgetItem();
@@ -759,7 +747,11 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
     logger()->debug("removeSelected");
 
     disable_enableActions = true;
+    TPlaylistWidgetItem* root = playlistWidget->root();
+
+    // Save currently playing item, which might be deleted
     QString playing = playingFile();
+    // Move current out of selection
     QTreeWidgetItem* newCurrent = playlistWidget->currentItem();
     do {
         newCurrent = newCurrent->parent();
@@ -769,13 +761,15 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
                                QTreeWidgetItemIterator::Selected);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        if (!deleteFromDisk || deleteFileFromDisk(i->filename(), playing)) {
+        if (i != root
+            && (!deleteFromDisk
+                || deleteFileFromDisk(i->filename(), playing))) {
             logger()->debug("removeSelected: removing " + i->filename());
             QTreeWidgetItem* parent = i->parent();
             delete i;
 
             // Clean up empty folders
-            while (parent && parent->childCount() == 0) {
+            while (parent && parent->childCount() == 0 && parent != root) {
                 QTreeWidgetItem* gp = parent->parent();
                 if (parent == newCurrent) {
                     newCurrent = gp;
@@ -788,19 +782,18 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         it++;
     }
 
-    if (playlistWidget->topLevelItemCount() == 0) {
-        playlistWidget->setPlayingItem(0);
-        playlistWidget->setCurrentItem(0);
-        setModified(false);
+    playlistWidget->playing_item = findFilename(playing);
+    if (newCurrent && newCurrent != root) {
+        playlistWidget->setCurrentItem(newCurrent);
     } else {
-        playlistWidget->playing_item = findFilename(playing);
-        if (newCurrent) {
-            playlistWidget->setCurrentItem(newCurrent);
-        } else {
-            playlistWidget->setCurrentItem(
-                        playlistWidget->firstPlaylistWidgetItem());
-        }
+        playlistWidget->setCurrentItem(
+            playlistWidget->firstPlaylistWidgetItem());
     }
+
+    if (filename.isEmpty() && !playlistWidget->hasItems()) {
+        setModified(false);
+    }
+
     disable_enableActions = false;
     enableActions();
 }
@@ -838,8 +831,8 @@ void TPlaylist::enableActions() {
     }
     logger()->debug("enableActions: state " + core->stateToString());
 
-    // Note: there is always something selected if c > 0
-    int c = playlistWidget->topLevelItemCount();
+    // Note: there is always something selected if there are items
+    bool haveItems = playlistWidget->hasItems();
 
     TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
     TPlaylistWidgetItem* current_item =
@@ -849,16 +842,17 @@ void TPlaylist::enableActions() {
     bool enable = (s == STATE_STOPPED || s == STATE_PLAYING
                    || s == STATE_PAUSED)
                   && thread == 0;
+    bool e = enable && haveItems;
     bool coreHasFilename = core->mdat.filename.count();
 
     openAct->setEnabled(thread == 0);
-    saveAct->setEnabled(enable && c > 0);
-    saveAsAct->setEnabled(enable && c > 0);
+    saveAct->setEnabled(e);
+    saveAsAct->setEnabled(e);
 
-    playAct->setEnabled(enable && (coreHasFilename || c > 0));
+    playAct->setEnabled(enable && (coreHasFilename || haveItems));
     pauseAct->setEnabled(s == STATE_PLAYING);
 
-    playOrPauseAct->setEnabled(enable && (coreHasFilename || c > 0));
+    playOrPauseAct->setEnabled(enable && (coreHasFilename || haveItems));
 
     if (!enable) {
         QString text;
@@ -887,7 +881,6 @@ void TPlaylist::enableActions() {
 
     // Prev/Next
     bool changed = false;
-    bool e = enable && c > 0;
     if (e != nextAct->isEnabled()) {
         nextAct->setEnabled(e);
         changed = true;
@@ -903,14 +896,14 @@ void TPlaylist::enableActions() {
 
     addCurrentAct->setEnabled(coreHasFilename && thread == 0);
 
-    e = c > 0 && thread == 0;
+    e = haveItems && thread == 0;
     removeSelectedAct->setEnabled(e);
     removeSelectedFromDiskAct->setEnabled(e && current_item
                                           && !current_item->isFolder());
     removeAllAct->setEnabled(e);
 
     cutAct->setEnabled(e);
-    copyAct->setEnabled(c > 0 || coreHasFilename);
+    copyAct->setEnabled(haveItems || coreHasFilename);
     editAct->setEnabled(e && current_item);
 }
 
@@ -939,8 +932,9 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
             if (md->duration > 0) {
                 if (qAbs(md->duration - item->duration()) > 1) {
+                    logger()->debug("onNewMediaStartedPlaying: duration"
+                                    " changed");
                     timeChanged = true;
-                    logger()->debug("onNewMediaStartedPlaying: updating duration");
                 }
                 item->setDuration(md->duration);
             }
@@ -1220,8 +1214,8 @@ void TPlaylist::open() {
 	}
 }
 
-bool TPlaylist::saveM3u(QString file) {
-    logger()->debug("saveM3u: " + file);
+bool TPlaylist::saveM3u(const QString& file) {
+    logger()->debug("saveM3u: '" + file + "'");
 
     QString path = QDir::toNativeSeparators(QFileInfo(file).absolutePath());
     if (!path.endsWith(QDir::separator())) {
@@ -1262,12 +1256,11 @@ bool TPlaylist::saveM3u(QString file) {
 
     stream.flush();
     f.close();
-    setModified(false);
 
     return true;
 }
 
-bool TPlaylist::savePls(QString file) {
+bool TPlaylist::savePls(const QString& file) {
     logger()->debug("savePls: '" + file + "'");
 
     QString path = QDir::toNativeSeparators(QFileInfo(file).absolutePath());
@@ -1302,12 +1295,7 @@ bool TPlaylist::savePls(QString file) {
     set.endGroup();
     set.sync();
 
-    if (set.status() == QSettings::NoError) {
-        modified = false;
-        return true;
-    }
-
-    return false;
+    return set.status() == QSettings::NoError;
 }
 
 bool TPlaylist::save() {
@@ -1339,6 +1327,7 @@ bool TPlaylist::save() {
     }
 
     if (result) {
+        setModified(false);
         logger()->info("save: '" + fi.absoluteFilePath()
                        + "' succesfully saved");
         msg(tr("Saved %1").arg(fi.fileName()));

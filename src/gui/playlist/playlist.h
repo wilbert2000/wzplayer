@@ -64,7 +64,7 @@ public:
 
     // Start playing, from item 0 if shuffle is off,
     // or from a random item otherwise
-    void startPlay(bool sort);
+    void startPlay();
     void playItem(TPlaylistWidgetItem* item);
     void playDirectory(const QString& dir);
 
@@ -196,8 +196,8 @@ private:
 
     bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
 
-    bool saveM3u(QString file);
-    bool savePls(QString file);
+    bool saveM3u(const QString& file);
+    bool savePls(const QString& file);
 
 private slots:
     void showContextMenu(const QPoint& pos);
