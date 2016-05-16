@@ -677,7 +677,9 @@ void TCore::playingStartedNewMedia() {
 
     // Copy the demuxer
     mset.current_demuxer = mdat.demuxer;
-    mset.list();
+    if (pref->remember_media_settings) {
+        mset.list();
+    }
 
     logger()->debug("playingStartedNewMedia: emit newMediaStartedPlaying()");
     emit newMediaStartedPlaying();
