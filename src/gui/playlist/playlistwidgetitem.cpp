@@ -127,20 +127,19 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(const QIcon& icon) :
 }
 
 TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
-                                         QTreeWidgetItem* after,
                                          const QString& filename,
                                          const QString& name,
                                          double duration,
                                          bool isDir,
                                          const QIcon& icon) :
-    QTreeWidgetItem(parent, after),
+    QTreeWidgetItem(parent),
     playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir),
     itemIcon(icon) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
                           | Qt::ItemIsDragEnabled
                           | Qt::ItemIsEnabled;
-    if (isDir) {
+    if (playlistItem.folder()) {
         setFlags(flags | Qt::ItemIsDropEnabled);
     } else {
         // TODO: setFlags(flags | Qt::ItemIsEditable);
@@ -150,10 +149,10 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     setIcon(COL_NAME, itemIcon);
 
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
-    setText(COL_NAME, name);
+    setText(COL_NAME, playlistItem.name());
     setToolTip(COL_NAME, playlistItem.filename());
 
-    setDuration(duration);
+    setDuration(playlistItem.duration());
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
@@ -193,12 +192,6 @@ void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
     }
 }
 
-void TPlaylistWidgetItem::setFileInfo(const QFileInfo& fi) {
-
-    playlistItem.setFilename(QDir::toNativeSeparators(fi.absoluteFilePath()));
-    setName(fi.fileName());
-}
-
 void TPlaylistWidgetItem::setName(const QString& name) {
 
     playlistItem.setName(name);
@@ -226,6 +219,19 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
             setIcon(COL_NAME, itemIcon);
         }
     }
+}
+
+QString TPlaylistWidgetItem::path() const {
+
+    QFileInfo fi(filename());
+    QString ext = fi.suffix().toLower();
+    QString path;
+    if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
+        path = fi.absolutePath();
+    } else {
+        path = fi.absoluteFilePath();
+    }
+    return path;
 }
 
 QSize TPlaylistWidgetItem::itemSize(const QString& text,

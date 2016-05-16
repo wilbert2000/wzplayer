@@ -47,24 +47,27 @@ private:
     bool searchForItems;
     QString playlistPath;
 
-    TPlaylistWidgetItem* cleanAndAddItem(QString filename,
-                                         QString name,
-                                         double duration,
-                                         TPlaylistWidgetItem* parent);
-
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, const QString& filename);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       const QString& dir);
     void addFiles();
 
-    TPlaylistWidgetItem* createFolder(TPlaylistWidgetItem* parent,
-                                      TPlaylistWidgetItem* after,
-                                      const QFileInfo& fi);
+    TPlaylistWidgetItem* findFilename(const QString& filename);
+
+    void createPath(TPlaylistWidgetItem* parent,
+                    const QFileInfo& fi,
+                    const QString& name,
+                    double duration,
+                    bool protectName);
+    void cleanAndAddItem(QString filename,
+                         QString name,
+                         double duration,
+                         TPlaylistWidgetItem* parent);
+
     TPlaylistWidgetItem* openM3u(const QString& playlistFileName,
                                  TPlaylistWidgetItem* parent);
     TPlaylistWidgetItem* openPls(const QString& playlistFileName,
                                  TPlaylistWidgetItem* parent);
-    TPlaylistWidgetItem* findFilename(const QString& filename);
 };
 
 } // namespace Playlist

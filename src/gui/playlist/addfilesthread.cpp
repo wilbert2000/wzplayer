@@ -47,16 +47,74 @@ void TAddFilesThread::run() {
     }
 }
 
-TPlaylistWidgetItem* TAddFilesThread::cleanAndAddItem(
+void TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
+                                 const QFileInfo& fi,
+                                 const QString& name,
+                                 double duration,
+                                 bool protectName) {
+
+    QString parentPath = parent->path();
+    QString parentPathPlus;
+    if (parentPath.endsWith("/")) {
+        parentPathPlus = parentPath;
+    } else {
+        parentPathPlus = parentPath + "/";
+    }
+    // Remove extra slashes and dots from path
+    QString path = fi.dir().path();
+
+    if (path == parentPath || !path.startsWith(parentPathPlus)) {
+        // Use cleaned path
+        QString filename = path + "/" + fi.fileName();
+        logger()->trace("createPath: creating '" + filename
+                        + "' in '" + parentPath + "'");
+        TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent, filename,
+            name, duration, false, iconProvider.icon(fi));
+        // Protect name
+        if (protectName) {
+            w->setEdited(true);
+        }
+        return;
+    }
+
+    QString dir = path.mid(parentPathPlus.length());
+    int i = dir.indexOf("/");
+    if (i >= 0) {
+        dir = dir.left(i);
+    }
+    if (dir.isEmpty()) {
+        logger()->warn("createPath: invalid path");
+        return;
+    }
+    path = parentPathPlus + dir;
+
+    // Only check last child to preserve order of playlist
+    if (parent->childCount()) {
+        TPlaylistWidgetItem* child = static_cast<TPlaylistWidgetItem*>(
+            parent->child(parent->childCount() - 1));
+        if (child->path() == path) {
+            createPath(child, fi, name, duration, protectName);
+            return;
+        }
+    }
+
+    logger()->debug("createPath: creating folder '" + path + "'");
+    emit displayMessage(path, 0);
+    TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent, path, dir,
+        0, true, iconProvider.folderIcon);
+
+    createPath(folder, fi, name, duration, protectName);
+    return;
+}
+
+void TAddFilesThread::cleanAndAddItem(
         QString filename,
         QString name,
         double duration,
         TPlaylistWidgetItem* parent) {
-    logger()->debug("cleanAndAddItem: '" + filename
-                    + "' to '" + (parent ? parent->filename() + "'": "0"));
 
     bool protect_name = !name.isEmpty();
-    QString alt_name = filename;
+    QString alt_name;
 
     if (filename.startsWith("file:")) {
         filename = QUrl(filename).toLocalFile();
@@ -64,98 +122,46 @@ TPlaylistWidgetItem* TAddFilesThread::cleanAndAddItem(
 
     QFileInfo fi(filename);
     if (fi.exists()) {
-        logger()->debug("cleanAndAddItem: found '" + fi.fileName() + "'");
+        logger()->trace("cleanAndAddItem: found '" + fi.fileName() + "'");
         alt_name = fi.fileName();
     } else {
         // Try relative path
         fi.setFile(playlistPath, filename);
         if (fi.exists()) {
-            filename = fi.absoluteFilePath();
-            alt_name = fi.fileName();
-            logger()->debug("cleanAndAddItem: found relative path for '"
+            logger()->trace("cleanAndAddItem: found relative path to '"
                             + fi.fileName() + "'");
+            alt_name = fi.fileName();
+        } else {
+            logger()->trace("cleanAndAddItem: adding '" + filename + "'");
+            new TPlaylistWidgetItem(parent, filename, name, duration, false,
+                                    iconProvider.icon(fi));
+            return;
         }
     }
 
-    // TODO:
+#ifdef Q_OS_WIN
     if (fi.isSymLink()) {
         logger()->debug("cleanAndAddItem: following '" + fi.fileName()
                         + "' to '" + fi.symLinkTarget() + "'");
         fi.setFile(fi.symLinkTarget());
-        filename = fi.absoluteFilePath();
-        alt_name = fi.fileName();
     }
+#endif
 
     if (fi.isDir()) {
-        return addDirectory(parent, fi.absoluteFilePath());
+        TPlaylistWidgetItem* dir = addDirectory(parent, fi.absoluteFilePath());
+        if (dir && !name.isEmpty() && name != dir->name()) {
+            dir->setName(name);
+            dir->setEdited(true);
+        }
+        return;
     }
 
     if (name.isEmpty()) {
-        logger()->debug("cleanAndAddItem: assigning name '" + alt_name + "'");
         name = alt_name;
     }
 
-    logger()->debug("cleanAndAddItem: creating '" + fi.absoluteFilePath() + "'");
-    TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent,
-                                                     0,
-                                                     fi.absoluteFilePath(),
-                                                     name,
-                                                     duration,
-                                                     false,
-                                                     iconProvider.icon(fi));
-
-    // Protect name
-    if (protect_name) {
-        w->setEdited(true);
-    }
-
-    return w;
-}
-
-TPlaylistWidgetItem* TAddFilesThread::createFolder(TPlaylistWidgetItem* parent,
-                                                   TPlaylistWidgetItem* after,
-                                                   const QFileInfo& fi) {
-    logger()->debug("createFolder: '" + fi.filePath()
-                    + "' in '" + parent->filename() + "'");
-
-    // QDir::path removes redundant .. and //
-    // QDir::filePath does not
-
-    QDir parentDir;
-    if (parent->filename().isEmpty() || parent->filename() == ".") {
-        parentDir.setPath(playlistPath);
-    } else {
-        parentDir.setPath(parent->filename());
-    }
-    if (parentDir.path() == fi.path()) {
-        return new TPlaylistWidgetItem(parent,
-                                       after,
-                                       fi.absoluteFilePath(),
-                                       fi.fileName(),
-                                       0,
-                                       true,
-                                       iconProvider.icon(fi));
-    }
-
-    logger()->debug(parentDir.path() + " does not match path " + fi.path());
-    QDir subDir(fi.path().mid(parentDir.path().size()));
-    while (!subDir.path().isEmpty()
-           && subDir.path() != "."
-           && !subDir.isRoot()) {
-        subDir.setPath("..");
-    }
-    subDir.setPath(parentDir.path() + QDir::separator() + subDir.dirName());
-    QFileInfo subInfo(subDir.path());
-    TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(
-                                      parent,
-                                      after,
-                                      subInfo.absoluteFilePath(),
-                                      subInfo.fileName(),
-                                      0,
-                                      true,
-                                      iconProvider.icon(subInfo));
-    createFolder(folder, 0, subInfo);
-    return folder;
+    createPath(parent, fi, name, duration, protect_name);
+    return;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
@@ -163,14 +169,21 @@ TPlaylistWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
     logger()->info("openM3u: '" + playlistFileName + "'");
 
     QFileInfo fi(playlistFileName);
-
-
-    QFile file(playlistFileName);
+    QFile file(fi.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly)) {
-        emit displayMessage(tr("Failed to open %1").arg(playlistFileName),
+        emit displayMessage(tr("Failed to open %1").arg(fi.absoluteFilePath()),
                             TConfig::ERROR_MESSAGE_DURATION);
         return 0;
     }
+
+    // Path to use for relative filenames in playlist, use QDir to remove .. ///
+    playlistPath = fi.dir().path();
+    QString savedPlaylistPath = playlistPath;
+
+    // Put playlist in a folder
+    TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(0,
+        playlistPath + "/" + fi.fileName(), fi.fileName(), 0, true,
+        iconProvider.icon(fi));
 
     QTextStream stream(&file);
     if (fi.suffix().toLower() != "m3u") {
@@ -179,15 +192,10 @@ TPlaylistWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
         stream.setCodec(QTextCodec::codecForLocale());
     }
 
-
-    // Path to use for relative filenames in playlist
-    playlistPath = fi.absolutePath();
-    QString savedPlaylistPath = playlistPath;
-
     QString name;
     double duration = 0;
 
-    QRegExp rx("^#EXTINF:(.*),(.*)");
+    QRegExp rx("^#EXTINF:\\s*(\\d+)\\s*,\\s*(.*)");
 
     while (!stream.atEnd()) {
         QString line = stream.readLine().trimmed();
@@ -197,9 +205,9 @@ TPlaylistWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
         }
         if (rx.indexIn(line) >= 0) {
             duration = rx.cap(1).toDouble();
-            name = rx.cap(2);
+            name = rx.cap(2).simplified();
         } else if (!line.startsWith("#")) {
-            cleanAndAddItem(line, name, duration, parent);
+            cleanAndAddItem(line, name, duration, playlistItem);
             playlistPath = savedPlaylistPath;
             name = "";
             duration = 0;
@@ -208,71 +216,38 @@ TPlaylistWidgetItem* TAddFilesThread::openM3u(const QString& playlistFileName,
 
     file.close();
 
-    // Place siblings together in a folder, respecting the order of the playlist
-    // Can have multiple folders with the same name...
-    TPlaylistWidgetItem* currentFolder = 0;
-    QString prevPath;
-    if (parent->childCount()) {
-        fi.setFile(static_cast<TPlaylistWidgetItem*>(parent->child(0))
-                   ->filename());
-        prevPath = QDir::toNativeSeparators(fi.path());
-    }
-    QString path;
-    int i = 1;
-    while (i < parent->childCount()) {
-        TPlaylistWidgetItem* item = static_cast<TPlaylistWidgetItem*>(
-                                        parent->child(i));
-        fi.setFile(item->filename());
-        path = QDir::toNativeSeparators(fi.path());
-        if (!path.isEmpty()
-            && path != "."
-            && path != playlistPath
-            && path == prevPath) {
-            if (currentFolder == 0 || path != currentFolder->filename()) {
-                fi.setFile(path);
-                currentFolder = createFolder(parent, item, fi);
-                i--;
-                TPlaylistWidgetItem* first = static_cast<TPlaylistWidgetItem*>(
-                                                 parent->takeChild(i));
-                logger()->debug("openM3u: moving first '" + first->filename()
-                                + "' to '" + path + "'");
-                currentFolder->addChild(first);
-            }
-            logger()->debug("openM3u: moving '" + item->filename()
-                            + "' to '" + path + "'");
-            i--;
-            currentFolder->addChild(parent->takeChild(i));
-        }
-
-        prevPath = path;
-        i++;
+    if (playlistItem->childCount())  {
+        parent->addChild(playlistItem);
+        latestDir = fi.absoluteFilePath();
+    } else {
+        delete playlistItem;
+        playlistItem = 0;
     }
 
-    if (parent->filename().isEmpty() || parent->filename() == ".") {
-        logger()->debug("openM3u: updating parent file name from '"
-                        + parent->filename() + "' to '"
-                        + playlistFileName + "'");
-        fi.setFile(playlistFileName);
-        parent->setFileInfo(fi);
-    }
-
-    return parent;
+    return playlistItem;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::openPls(const QString& playlistFileName,
                                               TPlaylistWidgetItem* parent) {
+    logger()->info("openPls: '" + playlistFileName + "'");
 
-    QSettings set(playlistFileName, QSettings::IniFormat);
+    QFileInfo fi(playlistFileName);
+    QSettings set(fi.absoluteFilePath(), QSettings::IniFormat);
     set.beginGroup("playlist");
     if (set.status() != QSettings::NoError) {
-        emit displayMessage(tr("Failed to open %1").arg(playlistFileName),
+        emit displayMessage(tr("Failed to open %1").arg(fi.absoluteFilePath()),
                             TConfig::ERROR_MESSAGE_DURATION);
         return 0;
     }
 
-    QFileInfo fi(playlistFileName);
-    // Path to use for relative filenames in playlist
-    playlistPath = fi.absolutePath();
+    // Path to use for relative filenames in playlist, use QDir to remove .. ///
+    playlistPath = fi.dir().path();
+    QString savedPlaylistPath = playlistPath;
+
+    // Put playlist in a folder
+    TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(0,
+        playlistPath + "/" + fi.fileName(), fi.fileName(), 0, true,
+        iconProvider.icon(fi));
 
     QString filename;
     QString name;
@@ -282,13 +257,23 @@ TPlaylistWidgetItem* TAddFilesThread::openPls(const QString& playlistFileName,
     for (int n = 1; n <= num_items; n++) {
         QString ns = QString::number(n);
         filename = set.value("File" + ns, "").toString();
-        name = set.value("Title" + ns, "").toString();
+        name = set.value("Title" + ns, "").toString().simplified();
         duration = (double) set.value("Length" + ns, 0).toInt();
-        cleanAndAddItem(filename, name, duration, parent);
+        cleanAndAddItem(filename, name, duration, playlistItem);
+        playlistPath = savedPlaylistPath;
     }
 
     set.endGroup();
-    return parent;
+
+    if (playlistItem->childCount())  {
+        parent->addChild(playlistItem);
+        latestDir = fi.absoluteFilePath();
+    } else {
+        delete playlistItem;
+        playlistItem = 0;
+    }
+
+    return playlistItem;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::findFilename(const QString&) {
@@ -311,34 +296,14 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
     QFileInfo fi(filename);
 
     if (fi.exists()) {
-        // Put playlist in a folder
         QString ext = fi.suffix().toLower();
-        bool isPlaylist = ext == "m3u8" || ext == "m3u" || ext == "pls";
-
-        item = new TPlaylistWidgetItem(isPlaylist ? 0 : parent,
-                                       0,
-                                       filename,
-                                       fi.fileName(),
-                                       0,
-                                       isPlaylist,
-                                       iconProvider.icon(fi));
-
-        if (isPlaylist) {
-            TPlaylistWidgetItem* playlistItem;
-            if (ext == "pls") {
-                playlistItem = openPls(filename, item);
-            } else {
-                playlistItem = openM3u(filename, item);
-            }
-
-            if (playlistItem && playlistItem->childCount())  {
-                item = playlistItem;
-                parent->addChild(item);
-                latestDir = fi.absoluteFilePath();
-            } else {
-              delete item;
-              item = 0;
-            }
+        if (ext == "pls") {
+            item = openPls(filename, parent);
+        } else if (ext == "m3u8" || ext == "m3u") {
+            item = openM3u(filename, parent);
+        } else {
+            item = new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
+                fi.fileName(), 0, false, iconProvider.icon(fi));
         }
     } else {
         QString name;
@@ -353,7 +318,7 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
         } else {
             name = filename;
         }
-        item = new TPlaylistWidgetItem(parent, 0, filename, name, 0, false,
+        item = new TPlaylistWidgetItem(parent, filename, name, 0, false,
                                        iconProvider.icon(fi));
     }
 
@@ -368,7 +333,6 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    const QString &dir) {
-
     logger()->debug("addDirectory: " + dir);
 
     emit displayMessage(dir, 0);
@@ -379,10 +343,8 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
     }
 
     QDir directory(dir);
-
-    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(0, 0, dir,
+    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(0, directory.path(),
         directory.dirName(), 0, true, iconProvider.folderIcon);
-
 
     static QRegExp ext(extensions.multimedia().forRegExp(),
                        Qt::CaseInsensitive);

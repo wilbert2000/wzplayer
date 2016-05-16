@@ -494,8 +494,7 @@ void TPlaylist::addCurrentFile() {
 
     if (core->mdat.filename.count()) {
         TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-            playlistWidget->currentPlaylistWidgetFolder(),
-            playlistWidget->currentItem(),
+            playlistWidget->root(),
             core->mdat.filename,
             core->mdat.displayName(),
             core->mdat.duration,
@@ -938,11 +937,12 @@ void TPlaylist::onNewMediaStartedPlaying() {
             if (!item->edited()) {
                 item->setName(md->displayName());
             }
-            if (md->duration > 0
-                && qAbs(md->duration - item->duration()) > 0.005) {
-                logger()->debug("onNewMediaStartedPlaying: updating duration");
+            if (md->duration > 0) {
+                if (qAbs(md->duration - item->duration()) > 1) {
+                    timeChanged = true;
+                    logger()->debug("onNewMediaStartedPlaying: updating duration");
+                }
                 item->setDuration(md->duration);
-                timeChanged = true;
             }
         }
         return;
@@ -970,7 +970,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         foreach(const Maps::TTitleData title, md->titles) {
             disc.title = title.getID();
             TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-                playlistWidget->root(), 0, disc.toString(),
+                playlistWidget->root(), disc.toString(),
                 title.getDisplayName(false), title.getDuration(), false, icon);
             if (title.getID() == md->titles.getSelectedID()) {
                 playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
@@ -979,7 +979,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
     } else {
         // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
-            playlistWidget->root(), 0, filename, core->mdat.displayName(),
+            playlistWidget->root(), filename, core->mdat.displayName(),
             core->mdat.duration, false, iconProvider.iconForFile(filename));
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
 
@@ -1228,14 +1228,13 @@ bool TPlaylist::saveM3u(QString file) {
         path += QDir::separator();
     }
 
-    bool utf8 = QFileInfo(file).suffix().toLower() != "m3u";
-
     QFile f(file);
     if (!f.open(QIODevice::WriteOnly)) {
         return false;
     }
 
     QTextStream stream(&f);
+    bool utf8 = QFileInfo(file).suffix().toLower() != "m3u";
     if (utf8) {
         stream.setCodec("UTF-8");
     } else {
@@ -1249,7 +1248,8 @@ bool TPlaylist::saveM3u(QString file) {
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
         if (!i->isFolder()) {
-            stream << "#EXTINF:" << i->duration() << "," << i->name() << "\n";
+            stream << "#EXTINF:" << (int) i->duration()
+                   << "," << i->name() << "\n";
 
             QString filename = i->filename();
             if (filename.startsWith(path)) {
@@ -1260,6 +1260,7 @@ bool TPlaylist::saveM3u(QString file) {
         ++it;
     }
 
+    stream.flush();
     f.close();
     setModified(false);
 
@@ -1316,22 +1317,19 @@ bool TPlaylist::save() {
         return saveAs();
     }
 
-    bool addTitle = false;
     QFileInfo fi(filename);
     if (fi.isDir()) {
+        setWinTitle(fi.fileName() + " - " + TConfig::WZPLAYLIST);
         fi.setFile(fi.absoluteFilePath(), TConfig::WZPLAYLIST);
-        addTitle = true;
     } else if (fi.fileName() == TConfig::WZPLAYLIST) {
-        addTitle = true;
-    }
-
-    filename = QDir::toNativeSeparators(fi.absoluteFilePath());
-    pref->latest_dir = fi.absolutePath();
-    if (addTitle) {
-        setWinTitle(title + " - " + fi.fileName());
+        setWinTitle(fi.dir().dirName() + " - " + TConfig::WZPLAYLIST);
     } else {
         setWinTitle(fi.fileName());
     }
+    msg(tr("Saving %1").arg(fi.fileName()));
+
+    filename = QDir::toNativeSeparators(fi.absoluteFilePath());
+    pref->latest_dir = fi.absolutePath();
 
     bool result;
     if (fi.suffix().toLower() == "pls") {
@@ -1345,7 +1343,7 @@ bool TPlaylist::save() {
                        + "' succesfully saved");
         msg(tr("Saved %1").arg(fi.fileName()));
     } else {
-        logger()->error("save: '" + fi.absoluteFilePath() + "' failed");
+        logger()->error("save: saving '" + filename + "' failed");
         QMessageBox::warning(this, tr("Save failed"),
                              tr("Failed to save %1").arg(filename),
                              QMessageBox::Ok);

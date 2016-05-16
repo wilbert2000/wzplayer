@@ -6,8 +6,6 @@
 #include <QIcon>
 
 
-class QFileInfo;
-
 namespace Gui {
 namespace Playlist {
 
@@ -86,7 +84,6 @@ public:
 
     TPlaylistWidgetItem(const QIcon& icon);
     TPlaylistWidgetItem(QTreeWidgetItem* parent,
-                        QTreeWidgetItem* after,
                         const QString& filename,
                         const QString& name,
                         double duration,
@@ -95,7 +92,7 @@ public:
     virtual ~TPlaylistWidgetItem();
 
     QString filename() const { return playlistItem.filename(); }
-    void setFileInfo(const QFileInfo& fi);
+    QString path() const;
 
     QString name() const { return playlistItem.name(); }
     void setName(const QString& name);
