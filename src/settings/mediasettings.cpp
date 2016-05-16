@@ -168,7 +168,7 @@ double TMediaSettings::aspectToDouble() {
 }
 
 void TMediaSettings::list() {
-    logger()->debug("Settings::TMediaSettings::list");
+    logger()->debug("list");
 
     logger()->debug("  current_sec: " + QString::number(current_sec));
     logger()->debug("  current_video_id: %1", current_video_id);
