@@ -322,8 +322,10 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
     } else {
         saveSizeTimer->stop();
         if (pref->size_factor >= 0.1) {
-            debug << "saveSizeFactor: overwriting save size" << saveSize
-                  << "with new size" << pref->size_factor << debug;
+            logger()->debug("saveSizeFactor: overwriting save size "
+                            + QString::number(saveSize)
+                            + " with new size "
+                            + QString::number(pref->size_factor));
             saveSize = pref->size_factor;
             saveSizeFileName = core->mdat.filename;
             saveSizeFloating = playlistdock->isFloating();
@@ -333,8 +335,6 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
                 saveSizeVisible = visible;
             }
             saveSizeDockArea = dockArea;
-            debug << "saveSizeFactor: saved floating" << saveSizeFloating
-                  << "visible" << saveSizeVisible << debug;
         } else {
             debug << "saveSizeFactor: ignoring small size"
                   << pref->size_factor << debug;
@@ -424,9 +424,9 @@ void TBasePlus::restoreVideoSize() {
 }
 
 void TBasePlus::onTopLevelChanged(bool topLevel) {
-    debug << "onTopLevelChanged: topLevel" << topLevel
-          << "size" << pref->size_factor
-          << "saved size" << saveSize << debug;
+    //debug << "onTopLevelChanged: topLevel" << topLevel
+    //      << "size" << pref->size_factor
+    //      << "saved size" << saveSize << debug;
 
     if (!pref->resize_on_docking
         || pref->fullscreen
@@ -438,28 +438,28 @@ void TBasePlus::onTopLevelChanged(bool topLevel) {
     if (topLevel) {
         // We became toplevel and the video size has not yet changed
         saveSizeFactor(false);
-        debug << "onTopLevelChanged: saved size factor" << saveSize << debug;
+        //debug << "onTopLevelChanged: saved size factor" << saveSize << debug;
     } else {
         // We are docked now and the video size already changed
         saveSizeTimer->stop();
-        debug << "onTopLevelChanged: keeping saved size factor" << saveSize
-              << debug;;
+        //debug << "onTopLevelChanged: keeping saved size factor" << saveSize
+        //      << debug;;
     }
 
     if (core->stateReady()) {
-        debug << "onTopLevelChanged: posting restoreVideoSize() with size"
-                 " factor" << saveSize << debug;
+        //debug << "onTopLevelChanged: posting restoreVideoSize() with size"
+        //         " factor" << saveSize << debug;
         postedResize = true;
         QTimer::singleShot(250, this, SLOT(restoreVideoSize()));
     }
 }
 
 void TBasePlus::onDockVisibilityChanged(bool visible) {
-    debug << "onDockVisibilityChanged: visible" << visible
-          << "floating" << playlistdock->isFloating()
-          << "size" << pref->size_factor
-          << "saved size" << saveSize
-          << debug;
+    //debug << "onDockVisibilityChanged: visible" << visible
+    //      << "floating" << playlistdock->isFloating()
+    //      << "size" << pref->size_factor
+    //      << "saved size" << saveSize
+    //      << debug;
 
     if (playlistdock->isFloating()) {
         if (visible) {
@@ -478,18 +478,18 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
     if (visible) {
         // Dock became visible, video size already changed
         saveSizeTimer->stop();
-        debug << "onDockVisibilityChanged: keeping saved size" << saveSize
-              << debug;
+        //debug << "onDockVisibilityChanged: keeping saved size" << saveSize
+        //      << debug;
     } else {
         // Dock is hiding, video size not yet changed
-        debug << "onDockVisibilityChanged: saving size factor"
-              << pref->size_factor << debug;
+        //debug << "onDockVisibilityChanged: saving size factor"
+        //      << pref->size_factor << debug;
         saveSizeFactor(false, false, true);
     }
 
     if (core->stateReady()) {
-        debug << "onDockVisibilityChanged: posting restoreVideoSize() with"
-                 " size factor" << saveSize << debug;
+        //debug << "onDockVisibilityChanged: posting restoreVideoSize() with"
+        //         " size factor" << saveSize << debug;
         postedResize = true;
         QTimer::singleShot(250, this, SLOT(restoreVideoSize()));
     }
