@@ -168,8 +168,6 @@ private:
 
     bool disable_enableActions;
 
-    bool modified;
-    bool timeChanged;
     QString filename;
     QString title;
 
@@ -196,8 +194,15 @@ private:
 
     bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
 
-    bool saveM3u(const QString& file);
-    bool savePls(const QString& file);
+    bool saveM3uFolder(TPlaylistWidgetItem* folder,
+                       const QString& path,
+                       QTextStream& stream,
+                       bool linkFolders);
+    bool saveM3u(TPlaylistWidgetItem* folder,
+                 const QString& filename,
+                 bool linkFolders);
+    bool saveM3u(const QString& filename, bool linkFolders);
+    bool savePls(const QString& filename);
 
 private slots:
     void showContextMenu(const QPoint& pos);
@@ -219,7 +224,7 @@ private slots:
 
     void editCurrentItem();
     void editItem(TPlaylistWidgetItem* item);
-    void setModified(bool mod = true);
+    void onModifiedChanged();
 
     // TODO: Copied needs translation
     void copySelected(const QString& actionName = "Copied");

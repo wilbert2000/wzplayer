@@ -123,7 +123,8 @@ QIcon failedIcon;
 // Used as root
 TPlaylistWidgetItem::TPlaylistWidgetItem(const QIcon& icon) :
     QTreeWidgetItem(),
-    itemIcon(icon) {
+    itemIcon(icon),
+    _modified(false) {
 
     playlistItem.setFolder(true);
     setFlags(ROOT_FLAGS);
@@ -139,7 +140,8 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QIcon& icon) :
     QTreeWidgetItem(parent),
     playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir),
-    itemIcon(icon) {
+    itemIcon(icon),
+    _modified(false) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
                           | Qt::ItemIsDragEnabled
@@ -175,6 +177,18 @@ int TPlaylistWidgetItem::getLevel() const {
     return static_cast<TPlaylistWidgetItem*>(parent())->getLevel() + 1;
 }
 
+void TPlaylistWidgetItem::setFilename(const QString& filename) {
+
+    playlistItem.setFilename(filename);
+}
+
+void TPlaylistWidgetItem::setName(const QString& name) {
+
+    playlistItem.setName(name);
+    setText(COL_NAME, name);
+    setSzHint(getLevel());
+}
+
 void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
     Log4Qt::Logger::logger("Gui::Playlist::TPlaylistWidgetItem")->debug(
         "setState: '" + filename() + "' to " + playlistItemState(state));
@@ -199,13 +213,6 @@ void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
             setIcon(COL_NAME, failedIcon);
             break;
     }
-}
-
-void TPlaylistWidgetItem::setName(const QString& name) {
-
-    playlistItem.setName(name);
-    setText(COL_NAME, name);
-    setSzHint(getLevel());
 }
 
 void TPlaylistWidgetItem::setDuration(double d) {

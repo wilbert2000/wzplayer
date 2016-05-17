@@ -48,20 +48,28 @@ public:
 
     void clearPlayed();
     void clr();
-
     void enableSort(bool enable);
+
+    bool modified() { return _modified; }
+    void setModified(QTreeWidgetItem* item,
+                     bool modified = true,
+                     bool recurse = false);
+    void clearModified() {
+        setModified(root(), false, true);
+    }
 
     TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
                              QTreeWidgetItem* target,
                              QTreeWidgetItem* current);
 
 signals:
-    void modified();
+    void modifiedChanged();
 
 protected:
     virtual void dropEvent(QDropEvent*);
 
 private:
+    bool _modified;
     QTimer* wordWrapTimer;
 
     int countItems(QTreeWidgetItem* w) const;
@@ -72,6 +80,10 @@ private:
 
     TPlaylistWidgetItem* getPreviousItem(TPlaylistWidgetItem* w,
                                          bool allowChild = true) const;
+
+    bool setMod(TPlaylistWidgetItem* item,
+                             bool modified = true,
+                             bool recurse = false);
 
     void resizeRows(QTreeWidgetItem* w, int level);
 

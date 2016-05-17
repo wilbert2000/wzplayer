@@ -98,6 +98,8 @@ public:
     virtual ~TPlaylistWidgetItem();
 
     QString filename() const { return playlistItem.filename(); }
+    void setFilename(const QString& filename);
+
     QString path() const;
 
     QString name() const { return playlistItem.name(); }
@@ -115,6 +117,9 @@ public:
     bool edited() const { return playlistItem.edited(); }
     void setEdited(bool edited) { playlistItem.setEdited(edited); }
 
+    bool modified() const { return _modified; }
+    void setModified(bool modified = true) { _modified = modified; }
+
     bool isRoot() const;
     bool isFolder() const { return playlistItem.folder(); }
     bool isPlaylist() const { return playlistItem.playlist(); }
@@ -129,18 +134,17 @@ public:
     void setSzHint(int level);
     int getLevel() const;
 
-    /*
-    TPlaylistWidgetItem* plParent() {
+    TPlaylistWidgetItem* plParent() const {
         return static_cast<TPlaylistWidgetItem*>(parent());
     }
-    */
-    TPlaylistWidgetItem* plChild(int idx) {
+    TPlaylistWidgetItem* plChild(int idx) const {
         return static_cast<TPlaylistWidgetItem*>(child(idx));
     }
 
 private:
     TPlaylistItem playlistItem;
     QIcon itemIcon;
+    bool _modified;
 };
 
 } // namespace Playlist

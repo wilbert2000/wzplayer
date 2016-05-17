@@ -61,7 +61,8 @@ private:
 TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     QTreeWidget(parent),
     debug(logger()),
-    playing_item(0) {
+    playing_item(0),
+    _modified(false) {
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -138,11 +139,57 @@ TPlaylistWidget::~TPlaylistWidget() {
 void TPlaylistWidget::clr() {
 
     playing_item = 0;
+    _modified = false;
+
     clear();
 
     // Create a TPlaylistWidgetItem root
     addTopLevelItem(new TPlaylistWidgetItem(iconProvider.folderIcon));
     setRootIndex(model()->index(0, 0));
+}
+
+bool TPlaylistWidget::setMod(TPlaylistWidgetItem* item,
+                                          bool modified,
+                                          bool recurse) {
+
+    bool result = modified;
+
+    item->setModified(modified);
+    if (recurse) {
+        for(int c = 0; c < item->childCount(); c++) {
+            if (setMod(item->plChild(c), modified, recurse)) {
+                result = true;
+            }
+        }
+    }
+
+    return result;
+}
+
+void TPlaylistWidget::setModified(QTreeWidgetItem* item,
+                                  bool modified,
+                                  bool recurse) {
+
+    TPlaylistWidgetItem* i = dynamic_cast<TPlaylistWidgetItem*>(item);
+    if (i == 0) {
+        i = root();
+    }
+    if (i) {
+        modified = setMod(i, modified, recurse);
+    }
+    if (_modified != modified) {
+        logger()->debug("setModified: setting modified to %1", modified);
+        _modified = modified;
+
+        // If modified mark parents as modified
+        if (modified) {
+            while ((i = i->plParent())) {
+                i->setModified(true);
+            }
+        }
+
+        emit modifiedChanged();
+    }
 }
 
 int TPlaylistWidget::countItems(QTreeWidgetItem* w) const {
@@ -384,12 +431,16 @@ TPlaylistWidgetItem* TPlaylistWidget::findPreviousPlayedTime(
     return result;
 }
 
-// Fix Qt not selecting the drop
 void TPlaylistWidget::dropEvent(QDropEvent *e) {
     logger()->debug("dropEvent");
 
     QTreeWidgetItem* current = currentItem();
     QList<QTreeWidgetItem*>	selection = selectedItems();
+
+    for(int i = 0; i < selection.count(); i++) {
+        setModified(static_cast<TPlaylistWidgetItem*>(
+                        selection.at(i)->parent()));
+    }
 
     QTreeWidget::dropEvent(e);
 
@@ -399,7 +450,10 @@ void TPlaylistWidget::dropEvent(QDropEvent *e) {
         for(int i = 0; i < selection.count(); i++) {
             selection[i]->setSelected(true);
         }
-        emit modified();
+        if (!selection.isEmpty()) {
+            setModified(static_cast<TPlaylistWidgetItem*>(
+                            selection.at(0)->parent()));
+        }
     }
 }
 
@@ -474,6 +528,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
                                           QTreeWidgetItem* current) {
     logger()->debug("add");
 
+    // Save current sort settings
     int sort = header()->sortIndicatorSection();
     Qt::SortOrder sortorder = header()->sortIndicatorOrder();
     if (isSortingEnabled()) {
@@ -482,27 +537,29 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
 
     // Set parent and child index into parent
     QTreeWidgetItem* parent;
-    int idx;
-    // TODO: validate target
+    int idx = 0;
+    // TODO: validate target still valid
     if (target) {
         if (target->childCount()) {
             parent = target;
-            idx = parent->childCount();
         } else {
             parent = target->parent();
-            idx = parent->indexOfChild(target);
+            if (parent) {
+                idx = parent->indexOfChild(target);
+            }
         }
     } else {
         parent = topLevelItem(0);
         if (parent) {
             idx = parent->childCount();
-        } else {
-            idx = 0;
         }
     }
 
+    if (parent == invisibleRootItem()) {
+        parent = topLevelItem(0);
+    }
+
     if (parent == 0
-        || parent == invisibleRootItem()
         || (parent == topLevelItem(0) && parent->childCount() == 0)) {
 
         // Remove single folder in root
@@ -522,6 +579,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         addTopLevelItem(item);
         setRootIndex(model()->index(0, 0));
 
+        // Sort items
         if (!item->isPlaylist()) {
             enableSort(true);
         }
@@ -540,6 +598,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         clearSelection();
         parent->insertChildren(idx, children);
 
+        // Restore sort order
         if (sort >= 0) {
             setSortingEnabled(true);
             header()->setSortIndicator(sort, sortorder);

@@ -72,8 +72,6 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     recursive_add_directories(true),
     media_to_add_to_playlist(Settings::TPreferences::NoFiles),
     disable_enableActions(false),
-    modified(false),
-    timeChanged(false),
     thread(0) {
 
     createTree();
@@ -119,8 +117,8 @@ void TPlaylist::createTree() {
     playlistWidget = new TPlaylistWidget(this);
     playlistWidget->setObjectName("playlist_tree");
 
-    connect(playlistWidget, SIGNAL(modified()),
-            this, SLOT(setModified()));
+    connect(playlistWidget, SIGNAL(modifiedChanged()),
+            this, SLOT(onModifiedChanged()));
     connect(playlistWidget, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
              this, SLOT(onItemActivated(QTreeWidgetItem*, int)));
     connect(playlistWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*,
@@ -345,8 +343,6 @@ void TPlaylist::clear() {
     playlistWidget->clr();
     filename = "";
     title = "";
-    modified = false;
-    timeChanged = false;
     setWinTitle();
 }
 
@@ -475,8 +471,8 @@ void TPlaylist::addFiles() {
         tr("All files") +" (*.*)");
 
     if (files.count() > 0) {
+        playlistWidget->setModified(playlistWidget->currentItem());
         addFiles(files, false, playlistWidget->currentItem());
-        setModified();
     }
 }
 
@@ -509,8 +505,8 @@ void TPlaylist::addUrls() {
 
     TMultilineInputDialog d(this);
     if (d.exec() == QDialog::Accepted && d.lines().count() > 0) {
+        playlistWidget->setModified(playlistWidget->currentItem());
         addFiles(d.lines(), false, playlistWidget->currentItem());
-        setModified();
     }
 }
 
@@ -777,7 +773,9 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
                 delete parent;
                 parent = gp;
             }
-            setModified();
+            if (parent) {
+                playlistWidget->setModified(parent);
+            }
         }
         it++;
     }
@@ -791,7 +789,7 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
     }
 
     if (filename.isEmpty() && !playlistWidget->hasItems()) {
-        setModified(false);
+        playlistWidget->clearModified();
     }
 
     disable_enableActions = false;
@@ -931,10 +929,11 @@ void TPlaylist::onNewMediaStartedPlaying() {
                 item->setName(md->displayName());
             }
             if (md->duration > 0) {
-                if (qAbs(md->duration - item->duration()) > 1) {
-                    logger()->debug("onNewMediaStartedPlaying: duration"
-                                    " changed");
-                    timeChanged = true;
+                if (!this->filename.isEmpty()
+                    && qAbs(md->duration - item->duration()) > 1) {
+                    logger()->info("onNewMediaStartedPlaying: changed duration '"
+                                   + filename + "'");
+                    playlistWidget->setModified(item);
                 }
                 item->setDuration(md->duration);
             }
@@ -1061,8 +1060,12 @@ void TPlaylist::paste() {
     QStringList files = QApplication::clipboard()->text()
                         .split("\n",  QString::SkipEmptyParts);
     if (files.count()) {
+        QTreeWidgetItem* parent = playlistWidget->currentItem();
+        if (parent && parent->childCount() == 0) {
+            parent = parent->parent();
+        }
+        playlistWidget->setModified(parent);
         addFiles(files, false, playlistWidget->currentItem(), "", true);
-        setModified();
     }
 }
 
@@ -1078,7 +1081,7 @@ void TPlaylist::cut() {
 
 void TPlaylist:: setWinTitle(QString s) {
 
-    if (s.count()) {
+    if (!s.isEmpty()) {
         title = s;
     }
 
@@ -1086,24 +1089,16 @@ void TPlaylist:: setWinTitle(QString s) {
         "optional white space, optional playlist name, optional modified star")
         .arg(title.isEmpty() ? "" : " ")
         .arg(title)
-        .arg(modified ? "*" : (timeChanged ? "t" : ""));
+        .arg(playlistWidget->modified() ? tr("*", "modified star") : "");
     setWindowTitle(winTitle);
 
     // Inform the playlist dock
     emit windowTitleChanged();
 }
 
-void TPlaylist::setModified(bool mod) {
+void TPlaylist::onModifiedChanged() {
 
-    if (mod) {
-        if (!modified) {
-            modified = true;
-            setWinTitle();
-        }
-    } else if (modified) {
-        modified = false;
-        setWinTitle();
-    }
+    setWinTitle();
 }
 
 void TPlaylist::editCurrentItem() {
@@ -1129,7 +1124,7 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
     if (ok && text != saved_name) {
         item->setName(text);
         item->setEdited(true);
-        setModified();
+        playlistWidget->setModified(item->parent());
 	}
 }
 
@@ -1164,10 +1159,20 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 
         if (files.count()) {
             // TODO: see dropIndicator for above/below
-            QTreeWidgetItem* item = playlistWidget->itemAt(e->pos()
+            QTreeWidgetItem* target = playlistWidget->itemAt(e->pos()
                 - playlistWidget->pos() - playlistWidget->viewport()->pos());
-            addFiles(files, false, item);
-            setModified();
+
+            if (target) {
+                QTreeWidgetItem* parent;
+                if (target->childCount()) {
+                    parent = target;
+                } else {
+                    parent = target->parent();
+                }
+                playlistWidget->setModified(parent);
+            }
+
+            addFiles(files, false, target);
         }
 
         e->accept();
@@ -1214,22 +1219,98 @@ void TPlaylist::open() {
 	}
 }
 
-bool TPlaylist::saveM3u(const QString& file) {
-    logger()->debug("saveM3u: '" + file + "'");
+bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
+                              const QString& path,
+                              QTextStream& stream,
+                              bool linkFolders) {
+    logger()->debug("savem3uFolder: '" + folder->filename() + "'");
 
-    QString path = QDir::toNativeSeparators(QFileInfo(file).absolutePath());
+    bool result = true;
+    for(int idx = 0; idx < folder->childCount(); idx++) {
+        TPlaylistWidgetItem* i = folder->plChild(idx);
+        QString filename = i->filename();
+
+        if (i->isPlaylist()) {
+            bool modified = i->modified();
+
+            // Switch pls to m3u8
+            QFileInfo fi(i->filename());
+            if (fi.suffix().toLower() == "pls") {
+                logger()->warn("saveM3uFolder: saving '" + i->filename()
+                               + "' as m3u8");
+                bool switchName = i->name() == fi.fileName();
+                filename = filename.left(filename.length() - 4) + ".m3u8";
+                i->setFilename(filename);
+                if (switchName) {
+                    fi.setFile(filename);
+                    i->setName(fi.fileName());
+                }
+                modified = true;
+            }
+
+            if (modified) {
+                if (!saveM3u(i, filename, i->name() == TConfig::WZPLAYLIST)) {
+                    result = false;
+                }
+            } else {
+                logger()->info("saveM3uFolder: playlist '" + i->filename()
+                               + "' is not modified");
+            }
+        } else if (i->isFolder()) {
+            if (linkFolders) {
+                if (i->modified()) {
+                    QFileInfo fi(i->filename(), TConfig::WZPLAYLIST);
+                    filename = QDir::toNativeSeparators(fi.absoluteFilePath());
+                    if (!saveM3u(i, filename, linkFolders)) {
+                        result = false;
+                    }
+                } else {
+                    logger()->info("saveM3uFolder: folder '" + i->filename()
+                                   + "' is not modified");
+                }
+            } else {
+               if (!saveM3uFolder(i, path, stream, linkFolders)) {
+                   result = false;
+               }
+               continue;
+            }
+        } else {
+            stream << "#EXTINF:" << (int) i->duration()
+                   << "," << i->name() << "\n";
+        }
+
+        if (filename.startsWith(path)) {
+            filename = filename.mid(path.length());
+        }
+        stream << filename << "\n";
+    }
+
+    return result;
+}
+
+bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
+                        const QString& filename,
+                        bool linkFolders) {
+    logger()->debug("saveM3u: saving '" + filename + "'");
+
+    QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
     if (!path.endsWith(QDir::separator())) {
         path += QDir::separator();
     }
 
-    QFile f(file);
+    QFile f(filename);
     if (!f.open(QIODevice::WriteOnly)) {
+        // TODO: skip remaining  msgs...
+        logger()->error("saveM3u: failed to save '" + filename + "'");
+        QMessageBox::warning(this, tr("Save failed"),
+                             tr("Failed to open \"%1\" for writing.")
+                             .arg(filename), QMessageBox::Ok);
+
         return false;
     }
 
     QTextStream stream(&f);
-    bool utf8 = QFileInfo(file).suffix().toLower() != "m3u";
-    if (utf8) {
+    if (QFileInfo(filename).suffix().toLower() != "m3u") {
         stream.setCodec("UTF-8");
     } else {
         stream.setCodec(QTextCodec::codecForLocale());
@@ -1238,37 +1319,31 @@ bool TPlaylist::saveM3u(const QString& file) {
     stream << "#EXTM3U" << "\n"
            << "# Playlist created by WZPlayer " << TVersion::version << "\n";
 
-    QTreeWidgetItemIterator it(playlistWidget);
-    while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        if (!i->isFolder()) {
-            stream << "#EXTINF:" << (int) i->duration()
-                   << "," << i->name() << "\n";
-
-            QString filename = i->filename();
-            if (filename.startsWith(path)) {
-                filename = filename.mid(path.length());
-            }
-            stream << filename << "\n";
-        }
-        ++it;
-    }
+    bool result = saveM3uFolder(folder, path, stream, linkFolders);
 
     stream.flush();
     f.close();
 
-    return true;
+    logger()->debug("saveM3u: saved '" + filename + "'");
+    return result;
 }
 
-bool TPlaylist::savePls(const QString& file) {
-    logger()->debug("savePls: '" + file + "'");
+bool TPlaylist::saveM3u(const QString& filename, bool linkFolders) {
+    logger()->debug("saveM3u: link folders %1", linkFolders);
 
-    QString path = QDir::toNativeSeparators(QFileInfo(file).absolutePath());
+    TPlaylistWidgetItem* root = playlistWidget->root();
+    return saveM3u(root, filename, linkFolders);
+}
+
+bool TPlaylist::savePls(const QString& filename) {
+    logger()->debug("savePls: '" + filename + "'");
+
+    QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
     if (!path.endsWith(QDir::separator())) {
         path += QDir::separator();
     }
 
-    QSettings set(file, QSettings::IniFormat);
+    QSettings set(filename, QSettings::IniFormat);
     set.beginGroup("playlist");
 
     int n = 0;
@@ -1295,7 +1370,15 @@ bool TPlaylist::savePls(const QString& file) {
     set.endGroup();
     set.sync();
 
-    return set.status() == QSettings::NoError;
+    if (set.status() == QSettings::NoError) {
+        return true;
+    }
+
+    logger()->error("savePls: failed to save '" + filename + "'");
+    QMessageBox::warning(this, tr("Save failed"),
+                         tr("Failed to save %1").arg(filename),
+                         QMessageBox::Ok);
+    return false;
 }
 
 bool TPlaylist::save() {
@@ -1305,12 +1388,15 @@ bool TPlaylist::save() {
         return saveAs();
     }
 
+    bool linkFolders = false;
     QFileInfo fi(filename);
     if (fi.isDir()) {
         setWinTitle(fi.fileName() + " - " + TConfig::WZPLAYLIST);
         fi.setFile(fi.absoluteFilePath(), TConfig::WZPLAYLIST);
+        linkFolders = true;
     } else if (fi.fileName() == TConfig::WZPLAYLIST) {
         setWinTitle(fi.dir().dirName() + " - " + TConfig::WZPLAYLIST);
+        linkFolders = true;
     } else {
         setWinTitle(fi.fileName());
     }
@@ -1323,19 +1409,14 @@ bool TPlaylist::save() {
     if (fi.suffix().toLower() == "pls") {
         result = savePls(filename);
     } else {
-        result = saveM3u(filename);
+        result = saveM3u(filename, linkFolders);
     }
 
     if (result) {
-        setModified(false);
-        logger()->info("save: '" + fi.absoluteFilePath()
-                       + "' succesfully saved");
+        playlistWidget->clearModified();
+        logger()->info("save: succesfully saved '" + fi.absoluteFilePath()
+                       + "'");
         msg(tr("Saved %1").arg(fi.fileName()));
-    } else {
-        logger()->error("save: saving '" + filename + "' failed");
-        QMessageBox::warning(this, tr("Save failed"),
-                             tr("Failed to save %1").arg(filename),
-                             QMessageBox::Ok);
     }
 
     return result;
@@ -1374,23 +1455,29 @@ bool TPlaylist::saveAs() {
 
 bool TPlaylist::maybeSave() {
 
+    if (!playlistWidget->modified()) {
+        return true;
+    }
+
     if (!filename.isEmpty()
-        && timeChanged
         && QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
         return save();
     }
 
-    if (!modified) {
-        return true;
+    QString msg;
+    if (filename.isEmpty()) {
+        msg = tr("The playlist has been modified, do you want to save the"
+                 " changes?");
+    } else {
+        msg = tr("The playlist has been modified, do you want to save the"
+                 " changes to \"%1\"?").arg(filename);
     }
 
-    int res = QMessageBox::question(this,
-        tr("Playlist modified"),
-        tr("The playlist has been modified, do you want to save the changes?"),
+    int res = QMessageBox::question(this, tr("Playlist modified"), msg,
         QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
 
     switch (res) {
-        case QMessageBox::No: setModified(false); return true;
+        case QMessageBox::No: playlistWidget->clearModified(); return true;
         case QMessageBox::Cancel: return false;
         default: return save();
     }
