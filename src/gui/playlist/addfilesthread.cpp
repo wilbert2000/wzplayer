@@ -31,6 +31,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     stopRequested(false),
     recurse(recurseSubDirs),
     searchForItems(aSearchForItems) {
+
 }
 
 TAddFilesThread::~TAddFilesThread() {
@@ -275,6 +276,8 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(
         const QString &playlistFileName) {
     logger()->info("openPlaylist: '" + playlistFileName + "'");
 
+    emit displayMessage(playlistFileName, 0);
+
     QFileInfo fi(playlistFileName);
     // Path to use for relative filenames in playlist, use QDir to remove .. ///
     playlistPath = QDir::toNativeSeparators(fi.dir().path());
@@ -292,6 +295,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(
         result = openM3u(playlistItem, playlistFileName, ext != "m3u");
     }
 
+    // Handle result
     if (result) {
         if (playlistItem->childCount())  {
             parent->addChild(playlistItem);
@@ -372,7 +376,7 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    const QString &dir) {
-    logger()->debug("addDirectory: " + dir);
+    logger()->debug("addDirectory: '" + dir + "'");
 
     emit displayMessage(dir, 0);
 
