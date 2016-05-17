@@ -126,6 +126,23 @@ void TAddFilesThread::cleanAndAddItem(TPlaylistWidgetItem* parent,
         if (fi.exists()) {
             logger()->trace("cleanAndAddItem: found relative path to '"
                             + fi.fileName() + "'");
+        } else if (fi.fileName() == TConfig::WZPLAYLIST) {
+            // Try directory
+            fi.setFile(fi.dir().path());
+            if (!fi.exists()) {
+                fi.setFile(playlistPath, fi.dir().path());
+            }
+            if (fi.exists()) {
+                logger()->info("cleanAndAddItem: '" + filename + "' no longer"
+                               " exists. Linking to '" + fi.absoluteFilePath()
+                               + "' instead");
+            } else {
+                // TODO: ...
+                logger()->warn("cleanAndAddItem: ignoring '" + filename
+                               + "', directorie '" + fi.absoluteFilePath()
+                               + "' not found");
+                return;
+            }
         } else {
             logger()->trace("cleanAndAddItem: adding '" + filename + "'");
             new TPlaylistWidgetItem(parent, filename, name, duration, false,
@@ -178,6 +195,10 @@ void TAddFilesThread::cleanAndAddItem(TPlaylistWidgetItem* parent,
 bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
                               const QString& playlistFileName,
                               bool utf8) {
+
+    if (playlistItem->name() == TConfig::WZPLAYLIST) {
+        playlistItem->setName(QFileInfo(playlistFileName).dir().dirName());
+    }
 
     QFile file(playlistFileName);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -261,7 +282,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(
     // Put playlist in a folder
     TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(0,
         playlistPath + "/" + fi.fileName(), fi.fileName(), 0, true,
-        iconProvider.icon(fi));
+        iconProvider.folderIcon);
 
     bool result;
     QString ext = fi.suffix().toLower();
