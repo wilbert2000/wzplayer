@@ -277,7 +277,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(
 
     QFileInfo fi(playlistFileName);
     // Path to use for relative filenames in playlist, use QDir to remove .. ///
-    playlistPath = fi.dir().path();
+    playlistPath = QDir::toNativeSeparators(fi.dir().path());
 
     // Put playlist in a folder
     TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(0,
