@@ -22,6 +22,8 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QTextStream>
+#include <QTextBlock>
+#include <QTextCursor>
 #include <QTextEdit>
 #include <QPushButton>
 
@@ -72,11 +74,13 @@ void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
 void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
 
     textEdit = edit;
-    foreach(const Log4Qt::LoggingEvent& rEvent, list()) {
-        appnd(layout->format(rEvent));
+    if (textEdit) {
+        foreach(const Log4Qt::LoggingEvent& rEvent, list()) {
+            appnd(layout->format(rEvent));
+        }
+        textEdit->moveCursor(QTextCursor::End);
+        list().clear();
     }
-    textEdit->moveCursor(QTextCursor::End);
-    list().clear();
 }
 
 
@@ -85,6 +89,9 @@ TLogWindow::TLogWindow(QWidget* parent)
 
     setupUi(this);
     setObjectName("logwindow");
+
+    qRegisterMetaType<QTextBlock>("QTextBlock");
+    qRegisterMetaType<QTextCursor>("QTextCursor");
 
     edit->setFont(QFont("fixed"));
     edit->setMaximumBlockCount(1000);
@@ -98,6 +105,7 @@ TLogWindow::~TLogWindow() {
     logger()->debug("~TLogWindow");
 
     Log4Qt::Logger::rootLogger()->removeAppender(appender);
+    appender->setEdit(0);
 }
 
 void TLogWindow::retranslateStrings() {
