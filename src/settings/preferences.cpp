@@ -176,7 +176,7 @@ void TPreferences::reset() {
 	initial_audio_channels = TMediaSettings::ChDefault;
 	initial_stereo_mode = TMediaSettings::Stereo;
 	use_hwac3 = false;
-	use_audio_equalizer = true;
+    use_audio_equalizer = false;
 	use_scaletempo = Detect;
 
 	// Volume
