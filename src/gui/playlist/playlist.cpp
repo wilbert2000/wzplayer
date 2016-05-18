@@ -935,17 +935,22 @@ void TPlaylist::onNewMediaStartedPlaying() {
         logger()->debug("onNewMediaStartedPlaying: new file is current item");
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item && !md->disc.valid) {
-            if (!item->edited()) {
+            bool modified = false;
+            if (!item->edited() && item->name() != md->displayName()) {
                 item->setName(md->displayName());
+                modified = true;
             }
             if (md->duration > 0) {
                 if (!this->filename.isEmpty()
                     && qAbs(md->duration - item->duration()) > 1) {
-                    logger()->info("onNewMediaStartedPlaying: changed duration '"
-                                   + filename + "'");
-                    playlistWidget->setModified(item);
+                    modified = true;
                 }
                 item->setDuration(md->duration);
+            }
+            if (modified) {
+                playlistWidget->setModified(item);
+            } else {
+                logger()->debug("onNewMediaStartedPlaying: item is uptodate");
             }
         }
         return;
