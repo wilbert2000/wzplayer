@@ -39,7 +39,9 @@ using namespace Settings;
 
 namespace Gui {
 
-TLogWindowAppender* TLogWindow::appender;
+const int MAX_LINES = 1000;
+
+TLogWindowAppender* TLogWindow::appender = 0;
 
 TLogWindowAppender::TLogWindowAppender(QObject* pParent,
                                        Log4Qt::TTCCLayout* alayout) :
@@ -51,7 +53,7 @@ TLogWindowAppender::TLogWindowAppender(QObject* pParent,
 TLogWindowAppender::~TLogWindowAppender() {
 }
 
-void TLogWindowAppender::appnd(QString s) {
+void TLogWindowAppender::appendTextToEdit(QString s) {
 
     //QTextCursor prevCursor = textEdit->textCursor();
     //textEdit->moveCursor(QTextCursor::End);
@@ -64,22 +66,34 @@ void TLogWindowAppender::appnd(QString s) {
 
 void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
 
+    QMutexLocker locker(&mObjectGuard);
+
+    Log4Qt::ListAppender::append(rEvent);
+
+    // Shrink the list to MAX_LINES
+    setMaxCount(MAX_LINES);
+    setMaxCount(0);
+
+    // Append text to edit
     if (textEdit) {
-        appnd(layout->format(rEvent));
-    } else {
-        Log4Qt::ListAppender::append(rEvent);
+        appendTextToEdit(layout->format(rEvent));
     }
 }
 
 void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
 
-    textEdit = edit;
-    if (textEdit) {
+    if (edit) {
+        QString s;
         foreach(const Log4Qt::LoggingEvent& rEvent, list()) {
-            appnd(layout->format(rEvent));
+            s += layout->format(rEvent);
         }
-        textEdit->moveCursor(QTextCursor::End);
-        list().clear();
+        edit->setPlainText(s);
+        edit->moveCursor(QTextCursor::End);
+        textEdit = edit;
+    } else if (textEdit) {
+        edit = textEdit;
+        textEdit = 0;
+        edit->clear();
     }
 }
 
@@ -90,13 +104,12 @@ TLogWindow::TLogWindow(QWidget* parent)
     setupUi(this);
     setObjectName("logwindow");
 
+    edit->setFont(QFont("fixed"));
+    edit->setMaximumBlockCount(MAX_LINES);
+
+    // To handle queued signals from append by thread
     qRegisterMetaType<QTextBlock>("QTextBlock");
     qRegisterMetaType<QTextCursor>("QTextCursor");
-
-    edit->setFont(QFont("fixed"));
-    edit->setMaximumBlockCount(1000);
-    appender->setEdit(edit);
-    logger()->debug("TLogWindow: flushed log");
 
     retranslateStrings();
 }
@@ -105,7 +118,6 @@ TLogWindow::~TLogWindow() {
     logger()->debug("~TLogWindow");
 
     Log4Qt::Logger::rootLogger()->removeAppender(appender);
-    appender->setEdit(0);
 }
 
 void TLogWindow::retranslateStrings() {
@@ -119,6 +131,28 @@ void TLogWindow::retranslateStrings() {
     saveButton->setIcon(Images::icon("save"));
     copyButton->setText("");
     copyButton->setIcon(Images::icon("copy"));
+}
+
+void TLogWindow::showEvent(QShowEvent*) {
+    logger()->debug("showEvent");
+
+    appender->setEdit(edit);
+    emit visibilityChanged(true);
+}
+
+void TLogWindow::hideEvent(QShowEvent*) {
+    logger()->debug("hideEvent");
+
+    appender->setEdit(0);
+    emit visibilityChanged(false);
+}
+
+// Fix hideEvent() not called on close
+void TLogWindow::closeEvent(QCloseEvent* event) {
+    logger()->debug("closeEvent");
+
+    hideEvent(0);
+    event->accept();
 }
 
 void TLogWindow::loadConfig() {
@@ -146,24 +180,6 @@ void TLogWindow::saveConfig() {
     pref->setValue("size", size());
     pref->setValue("state", (int) windowState());
     pref->endGroup();
-}
-
-void TLogWindow::showEvent(QShowEvent*) {
-    logger()->debug("showEvent");
-    emit visibilityChanged(true);
-}
-
-void TLogWindow::hideEvent(QShowEvent*) {
-    logger()->debug("hideEvent");
-    emit visibilityChanged(false);
-}
-
-// Fix hideEvent() not called on close
-void TLogWindow::closeEvent(QCloseEvent* event) {
-    logger()->debug("closeEvent");
-
-    hideEvent(0);
-    event->accept();
 }
 
 void TLogWindow::onCopyButtonClicked() {
