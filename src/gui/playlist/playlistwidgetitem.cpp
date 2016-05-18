@@ -7,6 +7,8 @@
 #include "log4qt/logger.h"
 #include "images.h"
 #include "helper.h"
+#include "extensions.h"
+
 
 namespace Gui {
 namespace Playlist {
@@ -75,9 +77,11 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
         _name = _filename;
     }
 
-    QFileInfo fi(_filename);
-    QString ext = fi.suffix().toLower();
-    _playlist = ext == "m3u8" || ext == "m3u" || ext == "pls";
+    // This is bad, fix wordwrap...
+    _name = _name.replace("_", " ");
+    _name = _name.replace(".", " ");
+
+    _playlist = extensions.isPlayList(QFileInfo(_filename));
 }
 
 void TPlaylistItem::setState(TPlaylistItemState state) {
