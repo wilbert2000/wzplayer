@@ -1238,7 +1238,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                               const QString& path,
                               QTextStream& stream,
                               bool linkFolders) {
-    logger()->debug("savem3uFolder: '" + folder->filename() + "'");
+    logger()->debug("savem3uFolder: saving '" + folder->filename() + "'");
 
     bool result = true;
     for(int idx = 0; idx < folder->childCount(); idx++) {
@@ -1264,7 +1264,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
             }
 
             if (modified) {
-                if (!saveM3u(i, filename, i->name() == TConfig::WZPLAYLIST)) {
+                if (!saveM3u(i, filename, fi.fileName() == TConfig::WZPLAYLIST)) {
                     result = false;
                 }
             } else {
@@ -1284,10 +1284,13 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                                    + "' is not modified");
                 }
             } else {
-               if (!saveM3uFolder(i, path, stream, linkFolders)) {
-                   result = false;
-               }
-               continue;
+                if (saveM3uFolder(i, path, stream, linkFolders)) {
+                    logger()->info("savem3uFolder: succesfully saved '"
+                                   + i->filename() + "'");
+                } else {
+                    result = false;
+                }
+                continue;
             }
         } else {
             stream << "#EXTINF:" << (int) i->duration()

@@ -178,7 +178,14 @@ void TPlaylistWidget::setModified(QTreeWidgetItem* item,
         modified = setMod(i, modified, recurse);
     }
     if (_modified != modified) {
-        logger()->debug("setModified: setting modified to %1", modified);
+        if (i) {
+            logger()->info("setModified: modified set to "
+                           + QString::number(modified)+ " for '"
+                           + i->filename() + "'");
+        } else {
+            logger()->debug("setModified: modified set to "
+                            + QString::number(modified));
+        }
         _modified = modified;
 
         // If modified mark parents as modified
