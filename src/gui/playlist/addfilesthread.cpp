@@ -359,7 +359,7 @@ TPlaylistWidgetItem* TAddFilesThread::findFilename(const QString&) {
 
 TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
                                               const QString& filename) {
-    logger()->debug("addFile: " + filename);
+    logger()->trace("addFile: '" + filename + "'");
 
     TPlaylistWidgetItem* existing_item = 0;
     if (searchForItems) {
