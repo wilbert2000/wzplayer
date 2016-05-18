@@ -742,6 +742,16 @@ bool TPlaylist::deleteFileFromDisk(const QString& filename,
 void TPlaylist::removeSelected(bool deleteFromDisk) {
     logger()->debug("removeSelected");
 
+    if (!isActiveWindow()) {
+        logger()->info("removeSelected: ignoring remove actiom while not active"
+                     " window");
+        return;
+    }
+    if (!isVisible()) {
+        logger()->info("removeSelected: ignoring remove actiom while not visible");
+        return;
+    }
+
     disable_enableActions = true;
     TPlaylistWidgetItem* root = playlistWidget->root();
 
