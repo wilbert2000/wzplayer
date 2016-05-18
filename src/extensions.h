@@ -21,6 +21,7 @@
 
 #include <QStringList>
 
+class QFileInfo;
 
 class ExtensionList : public QStringList {
 public:
@@ -42,6 +43,9 @@ public:
     ExtensionList subtitles() const { return _subtitles; }
     ExtensionList multimedia() const { return _multimedia; }
     ExtensionList allPlayable() const { return _all_playable; }
+
+    bool isMultiMedia(const QFileInfo& fi) const;
+    bool isPlayList(const QFileInfo& fi) const;
 
 protected:
 	ExtensionList _video, _audio, _playlist, _subtitles;

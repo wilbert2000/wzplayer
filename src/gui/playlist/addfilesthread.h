@@ -6,6 +6,7 @@
 #include <QString>
 #include "log4qt/logger.h"
 
+class QDir;
 class QFileInfo;
 
 namespace Gui {
@@ -43,11 +44,20 @@ signals:
 private:
     bool abortRequested;
     bool stopRequested;
+
     bool recurse;
     bool searchForItems;
-    QString playlistPath;
 
-    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, const QString& filename);
+    QString playlistPath;
+    QStringList blackList;
+
+    bool blackListed(QString filename);
+    bool blackListed(const QFileInfo& fi);
+    bool blackListed(const QDir& dir);
+    void whiteList();
+
+    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent,
+                                 const QString& filename);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       const QString& dir);
     void addFiles();

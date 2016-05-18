@@ -17,6 +17,7 @@
 */
 
 #include "extensions.h"
+#include <QFileInfo>
 
 
 TExtensions extensions;
@@ -91,3 +92,12 @@ TExtensions::TExtensions() {
 
 TExtensions::~TExtensions() {
 }
+
+bool TExtensions::isMultiMedia(const QFileInfo &fi) const {
+    return _multimedia.contains(fi.suffix().toLower());
+}
+
+bool TExtensions::isPlayList(const QFileInfo &fi) const {
+    return _playlist.contains(fi.suffix().toLower());
+}
+
