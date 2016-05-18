@@ -88,11 +88,9 @@ void TApp::initLog4Qt() {
 
     using namespace Log4Qt;
 
-    // TODO: config not picked up
-    if (Logger::rootLogger()->appender(NAME_CONSOLE_APPENDER)) {
-        logger()->debug("initLogQt: Log4Qt already up and running");
-        return;
-    }
+    //if (Logger::rootLogger()->appender(NAME_CONSOLE_APPENDER)) {
+    //    logger()->debug("initLogQt: appender A1 already up and running");
+    //} else {
 
     // Create layout
     TTCCLayout* layout = new TTCCLayout();
@@ -102,8 +100,8 @@ void TApp::initLog4Qt() {
     layout->activateOptions();
 
     // Create an appender
-    ConsoleAppender* appender = new ConsoleAppender(layout,
-        ConsoleAppender::STDOUT_TARGET);
+    ConsoleAppender* appender = new ConsoleAppender(
+                                    layout, ConsoleAppender::STDOUT_TARGET);
     appender->setName(NAME_CONSOLE_APPENDER);
     appender->activateOptions();
 

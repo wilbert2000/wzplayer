@@ -42,7 +42,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 16;
+static const int CURRENT_CONFIG_VERSION = 17;
 
 TPreferences* pref = 0;
 
@@ -556,7 +556,7 @@ void TPreferences::save() {
     setValue("log_level", log_level.toString());
     endGroup();
 
-
+/*
     beginGroup("Log4Qt");
 
     // Note: using level from Log4Qt
@@ -585,7 +585,7 @@ void TPreferences::save() {
     endGroup();
 
     endGroup();
-
+*/
 
     beginGroup("history");
     setValue("recents", history_recents);
@@ -851,18 +851,19 @@ void TPreferences::load() {
 
     config_version = value("config_version", 0).toInt();
 
+    // Log
     beginGroup("log");
     log_verbose = value("log_verbose", log_verbose).toBool();
-
     log_level = Log4Qt::Level::fromString(
                     value("log_level", log_level.toString()).toString());
     if (log_level < Log4Qt::Level::TRACE_INT) {
         log_level = Log4Qt::Level(Log4Qt::Level::DEBUG_INT);
     }
     endGroup();
+
     Log4Qt::Logger::rootLogger()->setLevel(log_level);
     Log4Qt::LogManager::qtLogger()->setLevel(log_level);
-    logger->debug("load: log level set to " +log_level.toString());
+    logger->info("load: log level set to " +log_level.toString());
 
 
     // General tab
