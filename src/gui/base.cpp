@@ -162,7 +162,9 @@ TBase::TBase() :
 			this, SLOT(moveWindowMerged()));
 
 	// Create objects:
-	createPanel();
+    log_window = new TLogWindow(this);
+
+    createPanel();
 	setCentralWidget(panel);
 
 	createPlayerWindow();
@@ -170,8 +172,6 @@ TBase::TBase() :
 	createPlaylist();
 	createVideoEqualizer();
 	createAudioEqualizer();
-
-	log_window = new TLogWindow(this, "logwindow");
 
 	createActions();
 	createToolbars();

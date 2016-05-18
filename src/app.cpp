@@ -30,6 +30,7 @@
 #include "log4qt/logmanager.h"
 #include "log4qt/consoleappender.h"
 #include "log4qt/ttcclayout.h"
+#include "gui/logwindow.h"
 
 #include "config.h"
 #include "settings/paths.h"
@@ -113,6 +114,14 @@ void TApp::initLog4Qt() {
     // Let Log4Qt handle Debug(), qWarning(), qCritical() and qFatal()
     LogManager::setHandleQtMessages(true);
     LogManager::qtLogger()->setLevel(Level::DEBUG_INT);
+
+    // Create appender log window
+    Gui::TLogWindow::appender = new Gui::TLogWindowAppender(this, layout);
+    Gui::TLogWindow::appender->setName("LogWindowAppender");
+    Gui::TLogWindow::appender->activateOptions();
+
+    // Set appender on root logger
+    Log4Qt::Logger::rootLogger()->addAppender(Gui::TLogWindow::appender);
 
     logger()->info("initLog4Qt: log initialized on "
                    + QDateTime::currentDateTime().toString());

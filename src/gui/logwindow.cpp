@@ -25,6 +25,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 
+#include "log4qt/ttcclayout.h"
 #include "config.h"
 #include "desktop.h"
 #include "images.h"
@@ -36,122 +37,134 @@ using namespace Settings;
 
 namespace Gui {
 
-TLogWindow::TLogWindow(QWidget* parent, const QString& name)
-	: QWidget(parent, Qt::Window) {
+TLogWindowAppender* TLogWindow::appender;
 
-	setupUi(this);
-	setObjectName(name);
-	browser->setFont(QFont("fixed"));
-	retranslateStrings();
+TLogWindowAppender::TLogWindowAppender(QObject* pParent,
+                                       Log4Qt::TTCCLayout* alayout) :
+    Log4Qt::ListAppender(pParent),
+    textEdit(0),
+    layout(alayout) {
+}
+
+TLogWindowAppender::~TLogWindowAppender() {
+}
+
+void TLogWindowAppender::appnd(QString s) {
+
+    //QTextCursor prevCursor = textEdit->textCursor();
+    //textEdit->moveCursor(QTextCursor::End);
+    //textEdit->insertPlainText(s);
+    //textEdit->setTextCursor(prevCursor);
+
+    s.chop(1);
+    textEdit->appendPlainText(s);
+}
+
+void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
+
+    if (textEdit) {
+        appnd(layout->format(rEvent));
+    } else {
+        Log4Qt::ListAppender::append(rEvent);
+    }
+}
+
+void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
+
+    textEdit = edit;
+    foreach(const Log4Qt::LoggingEvent& rEvent, list()) {
+        appnd(layout->format(rEvent));
+    }
+    textEdit->moveCursor(QTextCursor::End);
+    list().clear();
+}
+
+
+TLogWindow::TLogWindow(QWidget* parent)
+    : QWidget(parent, Qt::Window) {
+
+    setupUi(this);
+    setObjectName("logwindow");
+
+    edit->setFont(QFont("fixed"));
+    edit->setMaximumBlockCount(1000);
+    appender->setEdit(edit);
+    logger()->debug("TLogWindow: flushed log");
+
+    retranslateStrings();
 }
 
 TLogWindow::~TLogWindow() {
     logger()->debug("~TLogWindow");
 
-    //TLog::log->setLogWindow(0);
+    Log4Qt::Logger::rootLogger()->removeAppender(appender);
 }
 
 void TLogWindow::retranslateStrings() {
 
-	retranslateUi(this);
+    retranslateUi(this);
 
-	saveButton->setText("");
+    setWindowTitle(tr("%1 log").arg(TConfig::PROGRAM_NAME));
+    setWindowIcon(Images::icon("logo"));
+
+    saveButton->setText("");
     saveButton->setIcon(Images::icon("save"));
     copyButton->setText("");
-	copyButton->setIcon(Images::icon("copy"));
-
-	// Title changed by TBase::helpCLOptions()
-	setWindowTitle(tr("%1 log").arg(TConfig::PROGRAM_NAME));
-	setWindowIcon(Images::icon("logo"));
+    copyButton->setIcon(Images::icon("copy"));
 }
 
 void TLogWindow::loadConfig() {
     logger()->debug("loadConfig");
 
-	pref->beginGroup(objectName());
-	QPoint p = pref->value("pos", QPoint()).toPoint();
-	QSize s = pref->value("size", QPoint()).toSize();
-	int state = pref->value("state", 0).toInt();
-	pref->endGroup();
+    pref->beginGroup(objectName());
+    QPoint p = pref->value("pos", QPoint()).toPoint();
+    QSize s = pref->value("size", QPoint()).toSize();
+    int state = pref->value("state", 0).toInt();
+    pref->endGroup();
 
-	if (s.width() > 200 && s.height() > 200) {
-		move(p);
-		resize(s);
-		setWindowState((Qt::WindowStates) state);
-		TDesktop::keepInsideDesktop(this);
-	}
+    if (s.width() > 200 && s.height() > 200) {
+        move(p);
+        resize(s);
+        setWindowState((Qt::WindowStates) state);
+        TDesktop::keepInsideDesktop(this);
+    }
 }
 
 void TLogWindow::saveConfig() {
     logger()->debug("saveConfig");
 
-	pref->beginGroup(objectName());
-	pref->setValue("pos", pos());
-	pref->setValue("size", size());
-	pref->setValue("state", (int) windowState());
-	pref->endGroup();
+    pref->beginGroup(objectName());
+    pref->setValue("pos", pos());
+    pref->setValue("size", size());
+    pref->setValue("state", (int) windowState());
+    pref->endGroup();
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
     logger()->debug("showEvent");
-
-    //TLog::log->setLogWindow(this);
-	emit visibilityChanged(true);
+    emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
     logger()->debug("hideEvent");
-
-    //TLog::log->setLogWindow(0);
-	clear();
-	emit visibilityChanged(false);
+    emit visibilityChanged(false);
 }
 
 // Fix hideEvent() not called on close
 void TLogWindow::closeEvent(QCloseEvent* event) {
     logger()->debug("closeEvent");
 
-	hideEvent(0);
-	event->accept();
+    hideEvent(0);
+    event->accept();
 }
 
-void TLogWindow::setText(const QString& log) {
-	browser->setPlainText(log);
-	browser->moveCursor(QTextCursor::End);
+void TLogWindow::onCopyButtonClicked() {
+
+    edit->selectAll();
+    edit->copy();
 }
 
-QString TLogWindow::text() {
-	return browser->toPlainText();
-}
-
-void TLogWindow::setHtml(const QString& text) {
-	browser->setHtml(text);
-}
-
-QString TLogWindow::html() {
-	return browser->toHtml();
-}
-
-void TLogWindow::clear() {
-	browser->clear();
-}
-
-void TLogWindow::appendText(const QString& text) {
-	browser->moveCursor(QTextCursor::End);
-	browser->insertPlainText(text);
-}
-
-void TLogWindow::appendHtml(const QString& text) {
-	browser->moveCursor(QTextCursor::End);
-	browser->insertHtml(text);
-}
-
-void TLogWindow::on_copyButton_clicked() {
-	browser->selectAll();
-	browser->copy();
-}
-
-void TLogWindow::on_saveButton_clicked() {
+void TLogWindow::onSaveButtonClicked() {
 
     QString s = MyFileDialog::getSaveFileName(
                     this, tr("Choose a filename to save under"), 
@@ -174,7 +187,7 @@ void TLogWindow::on_saveButton_clicked() {
         QFile file(s);
         if (file.open(QIODevice::WriteOnly)) {
             QTextStream stream(&file);
-            stream << browser->toPlainText();
+            stream << edit->toPlainText();
             file.close();
         } else {
             // Error opening file

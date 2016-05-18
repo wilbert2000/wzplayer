@@ -21,34 +21,55 @@
 
 #include "ui_logwindow.h"
 #include "log4qt/logger.h"
+#include "log4qt/varia/listappender.h"
 
-class QTextEdit;
+
+class QPlainTextEdit;
+
+namespace Log4Qt {
+class TTCCLayout;
+class LoggingEvent;
+}
 
 namespace Gui {
+
+class TLogWindow;
+
+class TLogWindowAppender : public Log4Qt::ListAppender {
+
+public:
+    TLogWindowAppender(QObject* pParent,
+                       Log4Qt::TTCCLayout* alayout);
+    virtual ~TLogWindowAppender();
+
+    void setEdit(QPlainTextEdit* edit);
+
+protected:
+    virtual void append(const Log4Qt::LoggingEvent& rEvent);
+
+private:
+    QPlainTextEdit* textEdit;
+    Log4Qt::TTCCLayout* layout;
+
+    void appnd(QString s);
+};
+
 
 class TLogWindow : public QWidget, public Ui::TLogWindow {
 	Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TLogWindow(QWidget* parent, const QString& name);
+    TLogWindow(QWidget* parent);
 	virtual ~TLogWindow();
 
 	virtual void loadConfig();
 	virtual void saveConfig();
 
-	void setText(const QString& log);
-	QString text();
-
-	void setHtml(const QString& text);
-	QString html();
-
-	void clear();
-
-	void appendText(const QString& text);
-	void appendHtml(const QString& text);
-
 	void retranslateStrings();
+
+    static TLogWindowAppender* appender;
+
 
 signals:
 	void visibilityChanged(bool visible);
@@ -59,8 +80,8 @@ protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 protected slots:
-	void on_copyButton_clicked();
-    void on_saveButton_clicked();
+    void onCopyButtonClicked();
+    void onSaveButtonClicked();
 };
 
 } // namespace Gui
