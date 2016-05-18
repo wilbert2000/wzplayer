@@ -134,7 +134,7 @@ void THelpWindow::appendHtml(const QString& text) {
 	browser->insertHtml(text);
 }
 
-void THelpWindow::on_copyButton_clicked() {
+void THelpWindow::onCopyButtonClicked() {
 	browser->selectAll();
 	browser->copy();
 }

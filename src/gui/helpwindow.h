@@ -60,7 +60,7 @@ protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 protected slots:
-    void on_copyButton_clicked();
+    void onCopyButtonClicked();
 };
 
 } // namespace Gui
