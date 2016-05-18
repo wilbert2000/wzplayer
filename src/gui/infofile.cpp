@@ -29,8 +29,8 @@
 
 namespace Gui {
 
-TInfoFile::TInfoFile() {
-	row = 0;
+TInfoFile::TInfoFile() :
+    row(0) {
 }
 
 TInfoFile::~TInfoFile() {
@@ -43,23 +43,27 @@ QString TInfoFile::formatSize(qint64 size) {
 	QLocale locale;
 	if (size < MB) {
 		double kb = (double) size / 1024;
-		return tr("%1 KiB (%2 bytes)").arg(locale.toString(kb, 'f', 2), locale.toString(size));
+        return tr("%1 KiB (%2 bytes)").arg(locale.toString(kb, 'f', 2),
+                                           locale.toString(size));
 	}
 
 	double mb = (double) size / MB;
-	return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2), locale.toString(size));
+    return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2),
+                                       locale.toString(size));
 }
 
-void TInfoFile::addTracks(QString& s, const Maps::TTracks& tracks, const QString& name) {
+void TInfoFile::addTracks(QString& s,
+                          const Maps::TTracks& tracks,
+                          const QString& name) {
 
 	if (tracks.count() > 0) {
-		s += openPar(name);
+        s += "<table width=\"100%\"><tr><td>&nbsp;</td></tr>"
+             "<tr><td colspan=\"4\"><h3>" + name + "</h3></td></tr>";
 		row++;
-		s += openItem();
-		s += "<td>" + tr("#", "Info for translators: this is a abbreviation for number") + "</td><td>" +
-			 tr("Language") + "</td><td>" + tr("Name") +"</td><td>" +
-			 tr("ID", "Info for translators: this is a identification code") + "</td>";
-		s += closeItem();
+        s += "<tr><th align=\"left\">" + tr("#", "abbreviation for number")
+             + "</th><th align=\"left\">" + tr("Language") + "</th>"
+             "<th align=\"left\">" + tr("Name") +"</th>"
+             "<th align=\"left\">" + tr("ID") + "</th></tr>";
 
 		int n = 0;
 		Maps::TTracks::TTrackIterator i = tracks.getIterator();
@@ -68,24 +72,16 @@ void TInfoFile::addTracks(QString& s, const Maps::TTracks& tracks, const QString
 			Maps::TTrackData track = i.value();
 			row++;
 			n++;
-			s += openItem();
-			QString lang = track.getLang();
-			if (lang.isEmpty())
-				lang = "<i>&lt;"+tr("empty")+"&gt;</i>";
-			QString name = track.getName();
-			if (name.isEmpty())
-				name = "<i>&lt;"+tr("empty")+"&gt;</i>";
-			s += QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
-				 .arg(n).arg(lang).arg(name).arg(track.getID());
-			s += closeItem();
+            s += "<tr><th align=\"left\">" + QString::number(n) + "</th>"
+                 "<td>" + track.getLang() + "</td>"
+                 "<td>" + track.getName() + "</td>"
+                 "<td>" + QString::number(track.getID()) + "</td></tr>";
 		} while (i.hasNext());
-		s += closePar();
+        s += "</table>\n";
 	}
 }
 
 QString TInfoFile::getInfo(const TMediaData& md) {
-
-	QString s;
 
 	// General
 	QFileInfo fi(md.filename);
@@ -112,36 +108,24 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		case TMediaData::TYPE_BLURAY:	icon = "type_bluray"; break;
 		default:						icon = "type_unknown";
 	}
-	icon = "<img src=\"" + Images::file(icon) + "\"> ";
-	s += title(icon + md.displayName());
 
+    QString s = "<html><body bgcolor=\"white\"><font color=\"black\">";
+    s += "<h1><img src=\"" + Images::file(icon) + "\">" + md.displayName()
+         + "</h1>\n";
+
+    s += "<table width=\"100%\">";
 	s += openPar(tr("General"));
 	if (fi.exists()) {
-		s += addItem(tr("File"), fi.absoluteFilePath());
+        s += addItem(tr("File name"), fi.absoluteFilePath());
 		s += addItem(tr("Size"), formatSize(fi.size()));
 	} else {
-		QString url = md.filename;
-		s += addItem(tr("URL"), url);
+        s += addItem(tr("URL"), md.filename);
 	}
 	if (!md.stream_url.isEmpty())
 		s += addItem(tr("Stream URL"), md.stream_url);
-	s += addItem(tr("Length"), Helper::formatTime((int)md.duration));
+    s += addItem(tr("Duration"), Helper::formatTime(qRound(md.duration)));
 	s += addItem(tr("Demuxer"), md.demuxer + " - " + md.demuxer_description);
 	s += closePar();
-
-	// Meta data
-	QString c;
-	QMapIterator<QString, QString> i(md.meta_data);
-	while (i.hasNext()) {
-		i.next();
-		c += addItem(i.key(), i.value());
-	 }
-
-	if (!c.isEmpty()) {
-		s += openPar(tr("Meta data"));
-		s += c;
-		s += closePar();
-	}
 
 	// Video
 	if (md.hasVideo()) {
@@ -175,10 +159,13 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 		s += closePar();
 	}
 
+    s += "</table>\n";
+
 	// Video tracks
 	addTracks(s, md.videos, tr("Video tracks"));
 
 	// Audio
+    s += "<table width=\"100%\">";
 	s += openPar(tr("Audio"));
 	s += addItem(tr("Audio out driver"), md.ao);
 	s += addItem(tr("Format"), md.audio_format);
@@ -198,80 +185,94 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 	s += addItem(tr("Selected codec"), md.audio_codec + " - " + md.audio_codec_description);
 	s += addItem(tr("Number of tracks"), QString::number(md.audios.count()));
 	s += closePar();
+    s += "</table>";
 
 	// Audio tracks
 	addTracks(s, md.audios, tr("Audio tracks"));
 
 	// Subtitles
 	if (md.subs.count() > 0) {
-		s += openPar(tr("Subtitles"));
+        s += "<table width=\"100%\">";
+        s += openPar(tr("Subtitles"), 5);
+
 		row++;
-		s += openItem();
-		s += "<td>" + tr("#", "Info for translators: this is a abbreviation for number") + "</td><td>" + 
-              tr("Type") + "</td><td>" +
-              tr("Language") + "</td><td>" + tr("Name") +"</td><td>" +
-              tr("ID", "Info for translators: this is a identification code") + "</td>";
-		s += closeItem();
+        s += "<tr><th align=\"left\">" + tr("#", "abbreviation for number") + "</th>"
+             "<th align=\"left\">" +  tr("Type") + "</th>"
+             "<th align=\"left\">" + tr("Language") + "</th>"
+             "<th align=\"left\">" + tr("Name") +"</th>"
+             "<th align=\"left\">" + tr("ID") + "</th></tr>";
 		for (int n = 0; n < md.subs.count(); n++) {
 			row++;
-			s += openItem();
+            s += "<tr>";
 			QString t;
 			switch (md.subs.itemAt(n).type()) {
 				case SubData::File: t = "FILE_SUB"; break;
 				case SubData::Vob:	t = "VOB"; break;
 				default:			t = "SUB";
 			}
-			QString lang = md.subs.itemAt(n).lang();
-			if (lang.isEmpty()) lang = "<i>&lt;"+tr("empty")+"&gt;</i>";
-			QString name = md.subs.itemAt(n).name();
-			if (name.isEmpty()) name = "<i>&lt;"+tr("empty")+"&gt;</i>";
-            s += "<td>" + QString::number(n) + "</td><td>" + t + 
-                 "</td><td>" + lang + "</td><td>" + name + 
-                 "</td><td>" + QString::number(md.subs.itemAt(n).ID()) + "</td>";
-			s += closeItem();
+            s += "<tr><th align=\"left\">" + QString::number(n) + "</th>"
+                 "<td>" + t + "</td>"
+                 "<td>" + md.subs.itemAt(n).lang() + "</td>"
+                 "<td>" + md.subs.itemAt(n).name() + "</td>"
+                 "<td>" + QString::number(md.subs.itemAt(n).ID()) + "</td></tr>";
 		}
 		s += closePar();
+        s += "</table>";
 	}
 
-	return "<html><body bgcolor=\"white\"><font color=\"black\">"+ s + "</font></body></html>";
+    // Meta data
+    QString c;
+    QMapIterator<QString, QString> i(md.meta_data);
+    while (i.hasNext()) {
+        i.next();
+        c += addItem(i.key(), i.value());
+     }
+
+    if (!c.isEmpty()) {
+        s += "<table width=\"100%\">";
+        s += openPar(tr("Meta data"));
+        s += c;
+        s += closePar();
+        s += "</table>";
+
+    }
+
+    s += "</font></body></html>";
+    return s;
 }
 
 QString TInfoFile::title(QString text) {
-	return "<h1>" + text + "</h1>";
+    return "<h1>" + text + "</h1>";
 }
 
-QString TInfoFile::openPar(QString text) {
-	return "<h2>" + text + "</h2>"
-           "<table width=\"100%\">";
+QString TInfoFile::openPar(QString text, int colSpan) {
+    return "<tr><td>&nbsp;</td></tr>"
+           "<tr><td colspan=\"" +QString::number(colSpan)
+            + "\"><h2>" + text + "</h2></td></tr>";
 }
 
 QString TInfoFile::closePar() {
-	row = 0;
-	return "</table>";
-}
 
-QString TInfoFile::openItem() {
-	return "<tr>";
-}
-
-QString TInfoFile::closeItem() {
-	return "</tr>";
+    row = 0;
+    return "\n";
 }
 
 QString TInfoFile::addItem(QString tag, QString value) {
 	row++;
-	return openItem()
-			+ "<td><b>" + tag + "</b></td>"
-			+ "<td>" + value + "</td>"
-			+ closeItem();
+    return "<tr><th align=\"left\">" + tag+ "</th>"
+            "<td align=\"left\">" + value + "</td></tr>";
 }
 
 
-inline QString TInfoFile::tr(const char* sourceText, const char* comment, int n)  {
+inline QString TInfoFile::tr(const char* sourceText,
+                             const char* comment,
+                             int n)  {
+
 #if QT_VERSION >= 0x050000
 	return QCoreApplication::translate("TInfoFile", sourceText, comment, n);
 #else
-	return QCoreApplication::translate("TInfoFile", sourceText, comment, QCoreApplication::CodecForTr, n);
+    return QCoreApplication::translate("TInfoFile", sourceText, comment,
+                                       QCoreApplication::CodecForTr, n);
 #endif
 }
 
