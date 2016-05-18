@@ -83,6 +83,7 @@ void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
 void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
 
     if (edit) {
+        QMutexLocker locker(&mObjectGuard);
         QString s;
         foreach(const Log4Qt::LoggingEvent& rEvent, list()) {
             s += layout->format(rEvent);
@@ -92,7 +93,10 @@ void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
         textEdit = edit;
     } else if (textEdit) {
         edit = textEdit;
-        textEdit = 0;
+        {
+            QMutexLocker locker(&mObjectGuard);
+            textEdit = 0;
+        }
         edit->clear();
     }
 }
