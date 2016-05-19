@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "log4qt/logger.h"
+#include "iconprovider.h"
 #include "images.h"
 #include "helper.h"
 #include "extensions.h"
@@ -76,12 +77,21 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     if (_name.isEmpty()) {
         _name = _filename;
     }
-
-    // This is bad, fix wordwrap...
-    _name = _name.replace("_", " ");
-    _name = _name.replace(".", " ");
+    _name = cleanName(_name);
 
     _playlist = extensions.isPlayList(QFileInfo(_filename));
+}
+
+QString TPlaylistItem::cleanName(const QString& name) {
+
+    // This is bad. Fix wordwrap and obnoxious names...
+    QString s = name;
+    s = s.replace(QRegExp("[\\s_\\.]+"), " ");
+    s = s.simplified();
+    if (s.length() > 255) {
+        s = s.left(252) + "...";
+    }
+    return s;
 }
 
 void TPlaylistItem::setState(TPlaylistItemState state) {
@@ -125,9 +135,9 @@ QIcon failedIcon;
 
 
 // Used as root
-TPlaylistWidgetItem::TPlaylistWidgetItem(const QIcon& icon) :
+TPlaylistWidgetItem::TPlaylistWidgetItem() :
     QTreeWidgetItem(),
-    itemIcon(icon),
+    itemIcon(iconProvider.folderIcon),
     _modified(false) {
 
     playlistItem.setFolder(true);
@@ -148,8 +158,9 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     _modified(false) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
-                          | Qt::ItemIsDragEnabled
-                          | Qt::ItemIsEnabled;
+                          | Qt::ItemIsEnabled
+                          | Qt::ItemIsDragEnabled;
+
     if (playlistItem.folder()) {
         setFlags(flags | Qt::ItemIsDropEnabled);
     } else {

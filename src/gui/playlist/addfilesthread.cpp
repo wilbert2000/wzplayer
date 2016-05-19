@@ -21,17 +21,14 @@ namespace Playlist {
 
 TAddFilesThread::TAddFilesThread(QObject *parent,
                                  const QStringList& aFiles,
-                                 bool recurseSubDirs,
-                                 bool aSearchForItems) :
+                                 bool recurseSubDirs) :
     QThread(parent),
     files(aFiles),
     root(0),
     currentItem(0),
     abortRequested(false),
     stopRequested(false),
-    recurse(recurseSubDirs),
-    searchForItems(aSearchForItems) {
-
+    recurse(recurseSubDirs) {
 }
 
 TAddFilesThread::~TAddFilesThread() {
@@ -40,7 +37,11 @@ TAddFilesThread::~TAddFilesThread() {
 
 void TAddFilesThread::run() {
 
-    root = new TPlaylistWidgetItem(iconProvider.folderIcon);
+    playlistPath = QDir::toNativeSeparators(QDir::current().path());
+    root = new TPlaylistWidgetItem(0, playlistPath, "", 0, true,
+                                   iconProvider.folderIcon);
+    root->setFlags(ROOT_FLAGS);
+
     addFiles();
     if (abortRequested) {
         delete root;
@@ -55,8 +56,8 @@ bool TAddFilesThread::blackListed(QString filename) {
     // Note: using case insensitive
     if (filename.isEmpty()
         || blackList.contains(filename, Qt::CaseInsensitive)) {
-        logger()->warn("blackListed: ignoring '" + filename
-                       + "', it would create an infinite playlist");
+        logger()->warn("blackListed: ignoring '%1', it would create an infinite"
+                       " playlist", filename);
         return true;
     }
 
@@ -76,11 +77,11 @@ void TAddFilesThread::whiteList() {
     blackList.removeLast();
 }
 
-void TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
-                                 const QFileInfo& fi,
-                                 const QString& name,
-                                 double duration,
-                                 bool protectName) {
+TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
+                                                 const QFileInfo& fi,
+                                                 const QString& name,
+                                                 double duration,
+                                                 bool protectName) {
 
     QString parentPath = parent->path();
     QString parentPathPlus;
@@ -93,17 +94,16 @@ void TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     QString path = fi.dir().path();
 
     if (path == parentPath || !path.startsWith(parentPathPlus)) {
-        // Use cleaned path
         QString filename = path + "/" + fi.fileName();
-        logger()->trace("createPath: creating '" + filename
-                        + "' in '" + parentPath + "'");
-        TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent, filename,
-            name, duration, false, iconProvider.icon(fi));
+        logger()->trace("createPath: creating '%1' in '%2'",
+                        filename, parent->filename());
+        TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent,
+            filename, name, duration, false, iconProvider.icon(fi));
         // Protect name
         if (protectName) {
             w->setEdited(true);
         }
-        return;
+        return w;
     }
 
     QString dir = path.mid(parentPathPlus.length());
@@ -113,7 +113,7 @@ void TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     }
     if (dir.isEmpty()) {
         logger()->error("createPath: invalid path");
-        return;
+        return 0;
     }
     path = parentPathPlus + dir;
 
@@ -122,23 +122,79 @@ void TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
         TPlaylistWidgetItem* child = parent->plChild(parent->childCount() - 1);
         if (child->path() == path) {
             createPath(child, fi, name, duration, protectName);
-            return;
+            return child;
         }
     }
 
-    logger()->debug("createPath: creating folder '" + path + "'");
+    logger()->debug("createPath: creating '%1'", path);
     emit displayMessage(path, 0);
     TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent, path, dir,
         0, true, iconProvider.folderIcon);
 
     createPath(folder, fi, name, duration, protectName);
-    return;
+    return folder;
 }
 
-void TAddFilesThread::cleanAndAddItem(TPlaylistWidgetItem* parent,
-                                      QString filename,
-                                      QString name,
-                                      double duration) {
+TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
+        TPlaylistWidgetItem* parent,
+        const QString& filename,
+        QString name,
+        const QFileInfo& fi,
+        bool ignoreNotFound) {
+
+    bool setFailed = false;
+
+    TDiscName disc(filename);
+    if (disc.valid) {
+        if (name.isEmpty()) {
+            // TODO: share with mdat and TTitleData::getDisplayName()
+            QFileInfo fid(disc.device);
+            name = fid.fileName();
+            // fileName() return empty if name ends in /
+            if (name.isEmpty()) {
+                name = disc.device;
+            }
+            if (disc.title > 0) {
+                name += " - ";
+                if (disc.protocol == "cdda" || disc.protocol == "vcd") {
+                    name += tr("track %1").arg(QString::number(disc.title));
+                } else {
+                    name += tr("title %1").arg(QString::number(disc.title));
+                }
+            }
+        }
+    } else {
+        QUrl url(filename);
+        if (url.scheme().isEmpty()) {
+            if (ignoreNotFound) {
+                logger()->info("addItemNotFound: ignoring no longer existing "
+                               " item '%1'", filename);
+                return 0;
+            }
+            logger()->warn("addItemNotFound: '%1' not found", filename);
+            setFailed = true;
+        } else if (name.isEmpty()) {
+            QString path = url.path();
+            if (!path.isEmpty()) {
+                name = QFileInfo(path).fileName();
+            }
+        }
+    }
+
+    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(parent, filename, name,
+                                                        0, false,
+                                                        iconProvider.icon(fi));
+    if (setFailed) {
+        item->setState(PSTATE_FAILED);
+    }
+    return item;
+}
+
+TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
+                                              QString filename,
+                                              QString name,
+                                              double duration,
+                                              bool ignoreNotFound) {
 
     bool protectName = !name.isEmpty();
 
@@ -148,13 +204,13 @@ void TAddFilesThread::cleanAndAddItem(TPlaylistWidgetItem* parent,
 
     QFileInfo fi(filename);
     if (fi.exists()) {
-        logger()->trace("cleanAndAddItem: found '" + fi.fileName() + "'");
+        logger()->trace("addItem: found '%1'", fi.fileName());
     } else {
         // Try relative path
         fi.setFile(playlistPath, filename);
         if (fi.exists()) {
-            logger()->trace("cleanAndAddItem: found relative path to '"
-                            + fi.fileName() + "'");
+            logger()->trace("addItem: found relative path to '%1'",
+                            fi.fileName());
         } else if (fi.fileName() == TConfig::WZPLAYLIST) {
             // Try directory
             fi.setFile(fi.dir().path());
@@ -162,69 +218,70 @@ void TAddFilesThread::cleanAndAddItem(TPlaylistWidgetItem* parent,
                 fi.setFile(playlistPath, fi.dir().path());
             }
             if (fi.exists()) {
-                logger()->info("cleanAndAddItem: '" + filename + "' no longer"
-                               " exists. Linking to '" + fi.absoluteFilePath()
-                               + "' instead");
+                logger()->info("addItem: '%1' no longer exists. Linking to"
+                               " directory '%2' instead",
+                               filename, fi.absoluteFilePath());
             } else {
-                logger()->info("cleanAndAddItem: ignoring no longer existing"
-                               " directorie with '" + filename + "'");
-                return;
+                logger()->info("addItem: ignoring no longer existing"
+                               " playlist '%1'", filename);
+                return 0;
             }
         } else {
-            logger()->trace("cleanAndAddItem: adding '" + filename + "'");
-            new TPlaylistWidgetItem(parent, filename, name, duration, false,
-                                    iconProvider.icon(fi));
-            return;
+            return addItemNotFound(parent, filename, name, fi, ignoreNotFound);
         }
     }
 
     if (fi.isSymLink()) {
-        logger()->debug("cleanAndAddItem: following '" + fi.fileName()
-                        + "' to '" + fi.symLinkTarget() + "'");
+        logger()->debug("addItem: following '%1' to '%2'",
+                        fi.fileName(), fi.symLinkTarget());
         if (name.isEmpty()) {
             name = fi.fileName();
         }
         fi.setFile(fi.symLinkTarget());
         if (!fi.exists()) {
-            logger()->warn("cleanAndAddItem: ignoring link '" + filename
-                           + "' pointing to non existing target '"
-                           + fi.filePath() + "'");
-            return;
+            logger()->warn("addItem: ignoring link '%1' pointing to non"
+                           " existing target '%2'", filename, fi.filePath());
+            return 0;
         }
     }
 
     QString savedPlaylistPath = playlistPath;
-    TPlaylistWidgetItem* folder;
+    TPlaylistWidgetItem* item;
     if (fi.isDir()) {
-        folder = addDirectory(parent, fi);
+        item = addDirectory(parent, fi);
     } else {
-        QString ext = fi.suffix().toLower();
-        if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
-            folder = openPlaylist(parent, fi);
+        if (extensions.isPlayList(fi)) {
+            item = openPlaylist(parent, fi);
         } else {
             if (name.isEmpty()) {
                 name = fi.fileName();
             }
-            createPath(parent, fi, name, duration, protectName);
-            folder = 0;
+            item = createPath(parent, fi, name, duration, protectName);
+            name = "";
         }
     }
 
-    if (folder && !name.isEmpty() && name != folder->name()) {
-        folder->setName(name);
+    if (item && !name.isEmpty() && name != item->name()) {
+        logger()->debug("addItem: replacing name '%1' with '%2'",
+                        item->name(), name);
+        item->setName(name);
         if (protectName) {
-            folder->setEdited(true);
+            item->setEdited(true);
         }
     }
+
     playlistPath = savedPlaylistPath;
+    return item;
 }
 
 bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
                               const QFileInfo& fi,
                               bool utf8) {
 
+    bool ignoreNotFound = false;
     if (fi.fileName() == TConfig::WZPLAYLIST) {
-        playlistItem->setName(fi.dir().dirName());
+        ignoreNotFound = true;
+        playlistItem->setName(TPlaylistItem::cleanName(fi.dir().dirName()));
     }
 
     QFile file(fi.absoluteFilePath());
@@ -256,7 +313,7 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
             duration = rx.cap(1).toDouble();
             name = rx.cap(2).simplified();
         } else if (!line.startsWith("#")) {
-            cleanAndAddItem(playlistItem, line, name, duration);
+            addItem(playlistItem, line, name, duration, ignoreNotFound);
             name = "";
             duration = 0;
         }
@@ -289,7 +346,7 @@ bool TAddFilesThread::openPls(TPlaylistWidgetItem* playlistItem,
         filename = set.value("File" + ns, "").toString();
         name = set.value("Title" + ns, "").toString().simplified();
         duration = (double) set.value("Length" + ns, 0).toInt();
-        cleanAndAddItem(playlistItem, filename, name, duration);
+        addItem(playlistItem, filename, name, duration);
     }
 
     set.endGroup();
@@ -299,7 +356,7 @@ bool TAddFilesThread::openPls(TPlaylistWidgetItem* playlistItem,
 
 TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
                                                    QFileInfo& fi) {
-    logger()->info("openPlaylist: '" + fi.filePath() + "'");
+    logger()->info("openPlaylist: '%1'", fi.filePath());
 
     emit displayMessage(fi.filePath(), 0);
 
@@ -329,14 +386,14 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
             parent->addChild(playlistItem);
             latestDir = playlistPath;
         } else {
-            logger()->warn("openPlaylist: found no playable items in playlist '"
-                           + fi.absoluteFilePath() + "'");
+            logger()->warn("openPlaylist: found no playable items in playlist"
+                           " '%1'", fi.absoluteFilePath());
             delete playlistItem;
             playlistItem = 0;
         }
     } else {
-        logger()->error("openPlaylist: failed to open '" + fi.absoluteFilePath()
-                        + "'");
+        logger()->error("openPlaylist: failed to open '%1'",
+                        fi.absoluteFilePath());
         emit displayMessage(tr("Failed to open %1").arg(fi.absoluteFilePath()),
                             TConfig::ERROR_MESSAGE_DURATION);
         delete playlistItem;
@@ -348,52 +405,24 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     return playlistItem;
 }
 
-TPlaylistWidgetItem* TAddFilesThread::findFilename(const QFileInfo&) {
-    return 0;
-}
-
 TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
                                               QFileInfo& fi) {
 
-    TPlaylistWidgetItem* existing_item = 0;
-    if (searchForItems) {
-        existing_item = findFilename(fi);
-    }
-
     TPlaylistWidgetItem* item;
-    if (fi.exists()) {
-        if (fi.isSymLink()) {
-            // TODO: preserve link, for now still need switch to target
-            fi.setFile(fi.symLinkTarget());
-            if (!extensions.isMultiMedia(fi) && !extensions.isPlayList(fi)) {
-                return 0;
-            }
+    if (fi.isSymLink()) {
+        // TODO: preserve link, for now still need switch to target
+        fi.setFile(fi.symLinkTarget());
+        if (!extensions.isMultiMedia(fi) && !extensions.isPlayList(fi)) {
+            return 0;
         }
-        if (extensions.isPlayList(fi)) {
-            item = openPlaylist(parent, fi);
-        } else {
-            item = new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
-                fi.fileName(), 0, false, iconProvider.icon(fi));
-        }
-    } else {
-        QString name;
-        TDiscName disc(fi.fileName());
-        if (disc.valid) {
-            // See also TTitleData::getDisplayName() from titletracks.cpp
-            if (disc.protocol == "cdda" || disc.protocol == "vcd") {
-                name = tr("Track %1").arg(QString::number(disc.title));
-            } else {
-                name = tr("Title %1").arg(QString::number(disc.title));
-            }
-        }
-        item = new TPlaylistWidgetItem(parent, fi.fileName(), name, 0, false,
-                                       iconProvider.icon(fi));
     }
 
-    if (item && existing_item) {
-        item->setName(existing_item->name());
-        item->setDuration(existing_item->duration());
-        item->setPlayed(existing_item->played());
+    if (extensions.isPlayList(fi)) {
+        item = openPlaylist(parent, fi);
+    } else {
+        item = new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
+                                       fi.fileName(), 0, false,
+                                       iconProvider.icon(fi));
     }
 
     return item;
@@ -401,7 +430,7 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    QFileInfo& fi) {
-    logger()->debug("addDirectory: '" + fi.filePath() + "'");
+    logger()->debug("addDirectory: '%1'", fi.filePath());
 
     static QStringList dirFilterList = extensions.multimedia().forDirFilter()
                                        << "*.lnk";
@@ -454,8 +483,8 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
         latestDir = directory.path();
         parent->addChild(dirItem);
     } else {
-        logger()->debug("addDirectory: found no playable items in '"
-                        + directory.path() + "'");
+        logger()->debug("addDirectory: found no playable items in '%1'",
+                        directory.path());
         delete dirItem;
         dirItem = 0;
     }
@@ -475,26 +504,7 @@ void TAddFilesThread::addFiles() {
         if (filename.isEmpty()) {
             continue;
         }
-        if (filename.startsWith("file:")) {
-            filename = QUrl(filename).toLocalFile();
-        }
-
-        QFileInfo fi(filename);
-
-#ifdef Q_OS_WIN
-        // Check for Windows shortcuts
-        if (fi.isSymLink()) {
-            fi.setFile(fi.symLinkTarget());
-        }
-#endif
-
-        TPlaylistWidgetItem* result;
-        if (fi.isDir()) {
-            result = addDirectory(root, fi);
-        } else {
-            result = addFile(root, fi);
-        }
-
+        TPlaylistWidgetItem* result = addItem(root, filename);
         if (result) {
             result->setSelected(true);
             if (first) {

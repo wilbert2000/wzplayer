@@ -17,7 +17,6 @@ enum TPlaylistItemState {
     PSTATE_FAILED
 };
 
-//extern QString playlistItemState(TPlaylistItemState state);
 
 class TPlaylistItem {
 
@@ -34,6 +33,7 @@ public:
 
     QString name() const { return _name; }
     void setName(const QString &name) { _name = name; }
+    static QString cleanName(const QString& name);
 
     double duration() const { return _duration; }
     void setDuration(double duration) { _duration = duration; }
@@ -88,7 +88,7 @@ public:
         COL_COUNT = 2
     };
 
-    TPlaylistWidgetItem(const QIcon& icon);
+    TPlaylistWidgetItem();
     TPlaylistWidgetItem(QTreeWidgetItem* parent,
                         const QString& filename,
                         const QString& name,

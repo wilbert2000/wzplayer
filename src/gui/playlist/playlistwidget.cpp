@@ -95,7 +95,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     failedIcon = Images::icon("failed", gIconSize.width());
 
     // Create a TPlaylistWidgetItem root
-    addTopLevelItem(new TPlaylistWidgetItem(iconProvider.folderIcon));
+    addTopLevelItem(new TPlaylistWidgetItem());
     setRootIndex(model()->index(0, 0));
 
     // Sort
@@ -144,7 +144,7 @@ void TPlaylistWidget::clr() {
     clear();
 
     // Create a TPlaylistWidgetItem root
-    addTopLevelItem(new TPlaylistWidgetItem(iconProvider.folderIcon));
+    addTopLevelItem(new TPlaylistWidgetItem());
     setRootIndex(model()->index(0, 0));
 }
 

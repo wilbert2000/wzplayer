@@ -22,8 +22,7 @@ class TAddFilesThread : public QThread {
 public:
     TAddFilesThread(QObject* parent,
                     const QStringList& aFiles,
-                    bool recurseSubDirs,
-                    bool aSearchForItems);
+                    bool recurseSubDirs);
     virtual ~TAddFilesThread();
 
     virtual void run();
@@ -44,9 +43,7 @@ signals:
 private:
     bool abortRequested;
     bool stopRequested;
-
     bool recurse;
-    bool searchForItems;
 
     QString playlistPath;
     QStringList blackList;
@@ -61,17 +58,21 @@ private:
                                       QFileInfo& fi);
     void addFiles();
 
-    TPlaylistWidgetItem* findFilename(const QFileInfo& fi);
-
-    void createPath(TPlaylistWidgetItem* parent,
-                    const QFileInfo& fi,
-                    const QString& name,
-                    double duration,
-                    bool protectName);
-    void cleanAndAddItem(TPlaylistWidgetItem* parent,
-                         QString filename,
-                         QString name,
-                         double duration);
+    TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,
+                                         const QString& filename,
+                                         QString name,
+                                         const QFileInfo& fi,
+                                         bool ignoreNotFound);
+    TPlaylistWidgetItem* createPath(TPlaylistWidgetItem* parent,
+                                    const QFileInfo& fi,
+                                    const QString& name,
+                                    double duration,
+                                    bool protectName);
+    TPlaylistWidgetItem* addItem(TPlaylistWidgetItem* parent,
+                                 QString filename,
+                                 QString name = "",
+                                 double duration = 0,
+                                 bool ignoreNotFound = false);
 
     bool openM3u(TPlaylistWidgetItem* playlistItem,
                  const QFileInfo& fi,

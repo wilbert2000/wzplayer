@@ -435,8 +435,7 @@ void TPlaylist::addFilesStartThread() {
 
         thread = new TAddFilesThread(this,
                                      addFilesFiles,
-                                     recursive_add_directories,
-                                     addFilesSearchItems);
+                                     recursive_add_directories);
 
         connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
         connect(thread, SIGNAL(displayMessage(QString, int)),
