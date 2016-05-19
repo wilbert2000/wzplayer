@@ -17,10 +17,6 @@ void TIconProvider::setStyle(QStyle* aStyle) {
                          QIcon::Normal, QIcon::Off);
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
-
-    // To prevent: Fatal KGlobal::locale() must be called from the main thread
-    // before using i18n() in threads, init it from here, the main thread.
-    QFileIconProvider::icon(QFileInfo("/"));
 }
 
 QIcon TIconProvider::icon(IconType type) const {
