@@ -100,7 +100,7 @@ void TDiscName::removeTrailingSlashFromDevice() {
 		static QRegExp r("^[A-Z]:/$");
 		if (r.indexIn(device) < 0)
 #endif
-			device = device.left(device.length() - 1);
+            device.chop(1);
 	}
 }
 
