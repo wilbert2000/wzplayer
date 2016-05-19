@@ -44,14 +44,12 @@ TDeviceList TDeviceInfo::alsaDevices() {
 		QByteArray line;
 		while (p.canReadLine()) {
 			line = p.readLine().trimmed();
-            logger->debug("alsaDevices: line '" + QString(line) + "'");
-			if (rx_device.indexIn(line) >= 0) {
+            if (rx_device.indexIn(line) >= 0) {
 				QString id = rx_device.cap(1);
 				id.append(".");
 				id.append(rx_device.cap(3));
 				QString desc = rx_device.cap(2);
-                logger->debug("alsaDevices: found device: '" + id
-                              + "' '" + desc + "'");
+                logger->debug("alsaDevices: found device: '%1' '%2'", id, desc);
 				l.append(TDeviceData(id, desc));
 			}
 		}
@@ -78,7 +76,7 @@ TDeviceList TDeviceInfo::xvAdaptors() {
 	if (p.waitForFinished()) {
 		while (p.canReadLine()) {
 			QString s = QString::fromLocal8Bit(p.readLine()).trimmed();
-            logger->debug("xvAdaptors: line '" + s + "'");
+            logger->trace("xvAdaptors: line '%1'", s);
 			if (rx_device.indexIn(s) >= 0) {
 				QString id = rx_device.cap(1);
 				QString desc = rx_device.cap(2);
