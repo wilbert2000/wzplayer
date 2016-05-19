@@ -56,13 +56,12 @@ private:
     bool blackListed(const QDir& dir);
     void whiteList();
 
-    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent,
-                                 const QString& filename);
+    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
-                                      const QString& dir);
+                                      QFileInfo& fi);
     void addFiles();
 
-    TPlaylistWidgetItem* findFilename(const QString& filename);
+    TPlaylistWidgetItem* findFilename(const QFileInfo& fi);
 
     void createPath(TPlaylistWidgetItem* parent,
                     const QFileInfo& fi,
@@ -75,12 +74,12 @@ private:
                          double duration);
 
     bool openM3u(TPlaylistWidgetItem* playlistItem,
-                 const QString& playlistFileName,
+                 const QFileInfo& fi,
                  bool utf8);
     bool openPls(TPlaylistWidgetItem* playlistItem,
                  const QString& playlistFileName);
     TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,
-                                      const QString& playlistFileName);
+                                      QFileInfo& fi);
 };
 
 } // namespace Playlist
