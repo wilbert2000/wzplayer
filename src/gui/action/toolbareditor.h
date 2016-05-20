@@ -59,9 +59,9 @@ protected:
 protected slots:
 	void onUpButtonClicked();
 	void onDownButtonClicked();
-	void on_right_button_clicked();
-	void on_left_button_clicked();
-    void onSeparatorButtonClicked();
+    void onRightButtonClicked();
+    void onLeftButtonClicked();
+    void onSeperatorButtonClicked();
 	void restoreDefaults();
 	void checkRowsAllList(int currentRow);
 	void onCurrentCellChanged(int currentRow, int currentColumn,

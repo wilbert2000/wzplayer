@@ -159,6 +159,8 @@
         <file>default-theme/reset_zoom_and_pan.png</file>
         <file>default-theme/empty_icon.png</file>
 		<file>default-theme/record.png</file>
+        <file>default-theme/up.png</file>
+        <file>default-theme/down.png</file>
         <file>default-theme/style.qss</file>
     </qresource>
 </RCC>

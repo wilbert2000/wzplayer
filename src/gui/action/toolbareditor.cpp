@@ -57,8 +57,19 @@ TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f) :
 
 	right_button->setIcon(Images::icon("up").transformed(matrix));
 	left_button->setIcon(Images::icon("down").transformed(matrix));
+    connect(up_button, SIGNAL(clicked()),
+            this, SLOT(onUpButtonClicked()));
+    connect(down_button, SIGNAL(clicked()),
+            this, SLOT(onDownButtonClicked()));
+    connect(left_button, SIGNAL(clicked()),
+            this, SLOT(onLeftButtonClicked()));
+    connect(right_button, SIGNAL(clicked()),
+            this, SLOT(onRightButtonClicked()));
 
-	QPushButton* restore = buttonBox->button(QDialogButtonBox::RestoreDefaults);
+    connect(separator_button, SIGNAL(clicked()),
+            this, SLOT(onSeperatorButtonClicked()));
+
+    QPushButton* restore = buttonBox->button(QDialogButtonBox::RestoreDefaults);
 	connect(restore, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
 
 	connect(all_actions_list, SIGNAL(currentRowChanged(int)),
@@ -335,7 +346,7 @@ void TToolbarEditor::onDownButtonClicked() {
 	}
 }
 
-void TToolbarEditor::on_right_button_clicked() {
+void TToolbarEditor::onRightButtonClicked() {
 
 	int row = all_actions_list->currentRow();
 	if (row >= 0) {
@@ -354,7 +365,7 @@ void TToolbarEditor::on_right_button_clicked() {
 	}
 }
 
-void TToolbarEditor::on_left_button_clicked() {
+void TToolbarEditor::onLeftButtonClicked() {
 
 	int row = active_actions_table->currentRow();
 	if (row >= 0) {
@@ -363,8 +374,8 @@ void TToolbarEditor::on_left_button_clicked() {
 	}
 }
 
-void TToolbarEditor::onSeparatorButtonClicked() {
-    //logger()->debug("onSeparatorButtonClicked");
+void TToolbarEditor::onSeperatorButtonClicked() {
+    //logger()->debug("onSeperatorButtonClicked");
 
 	int row = active_actions_table->currentRow();
 	if (row < 0)
