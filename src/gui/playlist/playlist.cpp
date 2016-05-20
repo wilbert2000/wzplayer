@@ -942,6 +942,9 @@ void TPlaylist::onNewMediaStartedPlaying() {
             if (!item->edited()) {
                 QString name = md->displayName();
                 if (item->name() != name) {
+                    logger()->debug("onNewMediaStartedPlaying: updating name"
+                                    " from '%1' to '%2'",
+                                    item->name(), name);
                     item->setName(name);
                     modified = true;
                 }
@@ -951,10 +954,13 @@ void TPlaylist::onNewMediaStartedPlaying() {
                     && qAbs(md->duration - item->duration()) > 1) {
                     modified = true;
                 }
+                logger()->debug("onNewMediaStartedPlaying: updating duration"
+                                " from %1 to %2",
+                                QString::number(item->duration()),
+                                QString::number(md->duration));
                 item->setDuration(md->duration);
             }
             if (modified) {
-                logger()->debug("onNewMediaStartedPlaying: updated item");
                 playlistWidget->setModified(item);
             } else {
                 logger()->debug("onNewMediaStartedPlaying: item is uptodate");
