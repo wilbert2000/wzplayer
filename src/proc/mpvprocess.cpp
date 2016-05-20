@@ -181,7 +181,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 	}
 
 	if (name == "MEDIA_TITLE") {
-		md->title = value.trimmed();
+        md->title = Helper::cleanTitle(value.trimmed());
         logger()->debug("parseProperty: title set to '" + md->title + "'");
 		return true;
 	}

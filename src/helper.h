@@ -42,6 +42,11 @@ public:
 	//! Returns the path if found or empty string if not.
 	static QString findExecutable(const QString& name);
 
+    static QString clean(const QString& name, bool removeOnly);
+    static QString cleanName(const QString& name);
+    static QString cleanTitle(const QString& name);
+
+
 private:
 	static QStringList searchForConsecutiveFiles(const QString& initial_file);
 	static QStringList filesInDirectory(const QString& initial_file, const QStringList& filter);

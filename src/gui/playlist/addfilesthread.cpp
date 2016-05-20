@@ -13,6 +13,7 @@
 #include "extensions.h"
 #include "config.h"
 #include "iconprovider.h"
+#include "helper.h"
 
 
 namespace Gui {
@@ -371,7 +372,7 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
     bool wzplaylist = false;
     if (fi.fileName() == TConfig::WZPLAYLIST) {
         wzplaylist = true;
-        playlistItem->setName(TPlaylistItem::cleanName(fi.dir().dirName()));
+        playlistItem->setName(fi.dir().dirName());
     }
 
     QFile file(fi.absoluteFilePath());

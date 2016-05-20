@@ -33,7 +33,6 @@ public:
 
     QString name() const { return mName; }
     void setName(const QString &name);
-    static QString cleanName(const QString& name, bool justRemove = false);
 
     double duration() const { return mDuration; }
     void setDuration(double duration) { mDuration = duration; }

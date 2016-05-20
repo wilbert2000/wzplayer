@@ -87,45 +87,9 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
             mName = QFileInfo(mName).fileName();
         }
     }
-    mName = cleanName(mName, true);
+    mName = Helper::cleanName(mName);
 
     mPlaylist = extensions.isPlaylist(mFilename);
-}
-
-QString TPlaylistItem::cleanName(const QString& name, bool justRemove) {
-    itemLogger()->trace("CleanName: '%1'", name);
-    // This is bad. Fix wordwrap and obnoxious names...
-
-    if (name.isEmpty()) {
-        return "";
-    }
-    if (name == TConfig::WZPLAYLIST) {
-        return name;
-    }
-
-    QString s = name;
-    foreach(QRegExp rx, TConfig::TITLE_BLACKLIST) {
-        if (rx.indexIn(name) >= 0) {
-            if (justRemove) {
-                s.replace(rx, "");
-            } else {
-                return "";
-            }
-        }
-    }
-    if (s.isEmpty()) {
-        return "";
-    }
-
-    s.replace(QRegExp("[\\._\\s]+"), " ");
-    s.replace("-", " - ");
-    s = s.simplified();
-    if (s.length() > 255) {
-        s = s.left(252) + "...";
-    }
-
-    itemLogger()->trace("CleanName: returning '%1'", s);
-    return s;
 }
 
 void TPlaylistItem::setFilename(const QString &filename) {
@@ -135,7 +99,7 @@ void TPlaylistItem::setFilename(const QString &filename) {
 }
 
 void TPlaylistItem::setName(const QString& name) {
-    mName = cleanName(name);
+    mName = Helper::cleanName(name);
 }
 
 void TPlaylistItem::setState(TPlaylistItemState state) {

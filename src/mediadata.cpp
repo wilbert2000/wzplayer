@@ -21,7 +21,6 @@
 #include <QFileInfo>
 #include <QDebug>
 #include "log4qt/logger.h"
-#include "gui/playlist/playlistwidgetitem.h"
 #include "config.h"
 
 
@@ -99,7 +98,7 @@ bool TMediaData::selectedDisc() const {
 
 QString TMediaData::displayNameAddTitleOrTrack(QString title) const {
 
-    title = Gui::Playlist::TPlaylistItem::cleanName(title);
+    title = Helper::cleanTitle(title);
 
     if (disc.valid) {
         if (disc.title > 0) {
