@@ -169,11 +169,10 @@ private:
     bool disable_enableActions;
 
     QString filename;
-    QString title;
 
     TAddFilesThread* thread;
     QStringList addFilesFiles;
-    QTreeWidgetItem* addFilesTarget;
+    TPlaylistWidgetItem* addFilesTarget;
     QString addFilesFileToPlay;
     bool addFilesStartPlay;
     bool addFilesSearchItems;
@@ -185,7 +184,7 @@ private:
     void addFilesStartThread();
 
     void msg(const QString& s);
-    void setWinTitle(QString s = 0);
+    void setWinTitle();
 
     TPlaylistWidgetItem* getRandomItem() const;
     bool haveUnplayedItems() const;
@@ -200,7 +199,7 @@ private:
                        bool linkFolders);
     bool saveM3u(TPlaylistWidgetItem* folder,
                  const QString& filename,
-                 bool linkFolders);
+                 bool wzplaylist);
     bool saveM3u(const QString& filename, bool linkFolders);
     bool savePls(const QString& filename);
 

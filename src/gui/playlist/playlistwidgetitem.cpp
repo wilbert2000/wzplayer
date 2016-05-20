@@ -3,12 +3,14 @@
 #include <QDir>
 #include <QTime>
 #include <QString>
+#include <QUrl>
 
 #include "log4qt/logger.h"
 #include "iconprovider.h"
 #include "images.h"
 #include "helper.h"
 #include "extensions.h"
+#include "config.h"
 
 
 namespace Gui {
@@ -18,12 +20,12 @@ namespace Playlist {
 QString playlistItemState(TPlaylistItemState state) {
 
     switch (state) {
-        case PSTATE_STOPPED: return "Stopped";
-        case PSTATE_LOADING: return "Loading";
-        case PSTATE_PLAYING: return "Playing";
+        case PSTATE_STOPPED: return "stopped";
+        case PSTATE_LOADING: return "loading";
+        case PSTATE_PLAYING: return "playing";
         case PSTATE_FAILED: ;
     }
-    return "Failed";
+    return "failed";
 }
 
 class TTimeStamp : public QTime {
@@ -51,58 +53,124 @@ int TTimeStamp::getStamp() {
 
 TTimeStamp timeStamper;
 
+LOG4QT_DECLARE_STATIC_LOGGER(itemLogger, Gui::Playlist::TPlaylistItem)
+
+
 TPlaylistItem::TPlaylistItem() :
-    _duration(0),
-    _state(PSTATE_STOPPED),
-    _played(false),
-    _edited(false),
-    _folder(false),
-    _playlist(false),
-    _playedTime(0) {
+    mDuration(0),
+    mState(PSTATE_STOPPED),
+    mPlayed(false),
+    mEdited(false),
+    mFolder(false),
+    mPlaylist(false),
+    mPlayedTime(0) {
 }
 
 TPlaylistItem::TPlaylistItem(const QString &filename,
                              const QString &name,
                              double duration,
                              bool isFolder) :
-    _filename(filename),
-    _name(name),
-    _duration(duration),
-    _state(PSTATE_STOPPED),
-    _played(false),
-    _edited(false),
-    _folder(isFolder),
-    _playedTime(0) {
+    mFilename(filename),
+    mName(name),
+    mDuration(duration),
+    mState(PSTATE_STOPPED),
+    mPlayed(false),
+    mEdited(false),
+    mFolder(isFolder),
+    mPlayedTime(0) {
 
-    if (_name.isEmpty()) {
-        _name = _filename;
+    if (!mFilename.isEmpty() && mName.isEmpty()) {
+        mName = QUrl(mFilename).path();
+        if (mName.isEmpty()) {
+            mName = mFilename;
+        } else {
+            mName = QFileInfo(mName).fileName();
+        }
     }
-    _name = cleanName(_name);
+    mName = cleanName(mName, true);
 
-    _playlist = extensions.isPlayList(QFileInfo(_filename));
+    mPlaylist = extensions.isPlaylist(mFilename);
 }
 
-QString TPlaylistItem::cleanName(const QString& name) {
-
+QString TPlaylistItem::cleanName(const QString& name, bool justRemove) {
+    itemLogger()->trace("CleanName: '%1'", name);
     // This is bad. Fix wordwrap and obnoxious names...
+
+    if (name.isEmpty()) {
+        return "";
+    }
+    if (name == TConfig::WZPLAYLIST) {
+        return name;
+    }
+
     QString s = name;
-    s = s.replace(QRegExp("[\\s_\\.]+"), " ");
+    foreach(QRegExp rx, TConfig::TITLE_BLACKLIST) {
+        if (rx.indexIn(name) >= 0) {
+            if (justRemove) {
+                s.replace(rx, "");
+            } else {
+                return "";
+            }
+        }
+    }
+    if (s.isEmpty()) {
+        return "";
+    }
+
+    s.replace(QRegExp("[\\._\\s]+"), " ");
+    s.replace("-", " - ");
     s = s.simplified();
     if (s.length() > 255) {
         s = s.left(252) + "...";
     }
+
+    itemLogger()->trace("CleanName: returning '%1'", s);
     return s;
+}
+
+void TPlaylistItem::setFilename(const QString &filename) {
+
+    mFilename = filename;
+    mPlaylist = extensions.isPlaylist(mFilename);
+}
+
+void TPlaylistItem::setName(const QString& name) {
+    mName = cleanName(name);
 }
 
 void TPlaylistItem::setState(TPlaylistItemState state) {
 
     if (state == PSTATE_PLAYING) {
-        _played = true;
-        _playedTime = timeStamper.getStamp();
-        Log4Qt::Logger::logger("Gui::Playlist::TPlaylistItem")->logger()->debug(
-                    "setState: stamped %1 on %2", _playedTime, _filename);
+        mPlayed = true;
+        mPlayedTime = timeStamper.getStamp();
+        itemLogger()->debug("setState: stamped %1 on '%2'",
+                            mPlayedTime, mFilename);
     }
-    _state = state;
+    mState = state;
+}
+
+// TODO: find the file sys func reporting case
+Qt::CaseSensitivity blacklistCaseSensitivity =
+        #ifdef Q_OS_WIN
+                    Qt::CaseInsensitive;
+        #else
+                    Qt::CaseSensitive;
+        #endif
+
+bool TPlaylistItem::blacklisted(const QString& filename) const {
+    return mBlacklist.contains(filename, blacklistCaseSensitivity);
+}
+
+void TPlaylistItem::whitelist(const QString& filename) {
+
+    int i = mBlacklist.indexOf(QRegExp(filename, blacklistCaseSensitivity,
+                                       QRegExp::FixedString));
+    if (i >= 0) {
+        itemLogger()->debug("whitelist: removed '%1' from blacklist", filename);
+        mBlacklist.removeAt(i);
+    } else {
+        itemLogger()->warn("whitelist: '%1' not found in blacklist", filename);
+    }
 }
 
 bool TPlaylistItem::operator == (const TPlaylistItem& item) {
@@ -110,9 +178,11 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
     if (&item == 0) {
         return false;
     }
-    return item.filename() == _filename;
+    return item.filename() == mFilename;
 }
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(widgetLogger, Gui::Playlist::TPlaylistWidgetItem)
 
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 
@@ -138,7 +208,7 @@ QIcon failedIcon;
 TPlaylistWidgetItem::TPlaylistWidgetItem() :
     QTreeWidgetItem(),
     itemIcon(iconProvider.folderIcon),
-    _modified(false) {
+    mModified(false) {
 
     playlistItem.setFolder(true);
     setFlags(ROOT_FLAGS);
@@ -155,7 +225,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     QTreeWidgetItem(parent),
     playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir),
     itemIcon(icon),
-    _modified(false) {
+    mModified(false) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
                           | Qt::ItemIsEnabled
@@ -186,10 +256,10 @@ bool TPlaylistWidgetItem::isRoot() const {
 
 int TPlaylistWidgetItem::getLevel() const {
 
-    if (parent() == 0) {
+    if (plParent() == 0) {
         return gRootNodeLevel;
     }
-    return static_cast<TPlaylistWidgetItem*>(parent())->getLevel() + 1;
+    return plParent()->getLevel() + 1;
 }
 
 void TPlaylistWidgetItem::setFilename(const QString& filename) {
@@ -200,13 +270,13 @@ void TPlaylistWidgetItem::setFilename(const QString& filename) {
 void TPlaylistWidgetItem::setName(const QString& name) {
 
     playlistItem.setName(name);
-    setText(COL_NAME, name);
+    setText(COL_NAME, playlistItem.name());
     setSzHint(getLevel());
 }
 
 void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
-    Log4Qt::Logger::logger("Gui::Playlist::TPlaylistWidgetItem")->debug(
-        "setState: '" + filename() + "' to " + playlistItemState(state));
+    widgetLogger()->debug("setState: '%1' to %2",
+                          filename(), playlistItemState(state));
 
     playlistItem.setState(state);
 
@@ -252,6 +322,26 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
     }
 }
 
+void TPlaylistWidgetItem::setModified(bool modified,
+                                      bool recurse,
+                                      bool markParents) {
+
+    mModified = modified;
+
+    if (recurse) {
+        for(int c = 0; c < childCount(); c++) {
+            TPlaylistWidgetItem* child = plChild(c);
+            if (child->modified() != modified) {
+                plChild(c)->setModified(modified, recurse, false);
+            }
+        }
+    }
+
+    if (mModified && markParents && plParent()) {
+        plParent()->setModified(true, false, true);
+    }
+}
+
 QString TPlaylistWidgetItem::path() const {
 
     QFileInfo fi(filename());
@@ -261,6 +351,20 @@ QString TPlaylistWidgetItem::path() const {
     return fi.absoluteFilePath();
 }
 
+QString TPlaylistWidgetItem::fname() const {
+
+    QString fn = filename();
+    if (!fn.isEmpty()) {
+        QFileInfo fi(fn);
+        fn = fi.fileName();
+        if (fn == TConfig::WZPLAYLIST) {
+            fn = fi.dir().dirName();
+        }
+    }
+    return fn;
+}
+
+// static
 QSize TPlaylistWidgetItem::itemSize(const QString& text,
                                     int width,
                                     const QFontMetrics& fm,
@@ -289,12 +393,11 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 
 void TPlaylistWidgetItem::setSzHint(int level) {
 
-    //QSize iconSize = icon(COL_NAME).actualSize(QSize(22, 22));
-    setSizeHint(COL_NAME, itemSize(playlistItem.name(),
-                                   gNameColumnWidth,
-                                   gNameFontMetrics,
-                                   gIconSize,
-                                   level));
+    if (parent()) {
+        //QSize iconSize = icon(COL_NAME).actualSize(QSize(22, 22));
+        setSizeHint(COL_NAME, itemSize(playlistItem.name(), gNameColumnWidth,
+                                       gNameFontMetrics, gIconSize, level));
+    }
 }
 
 } // namespace Playlist

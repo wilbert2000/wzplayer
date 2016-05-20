@@ -62,7 +62,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     QTreeWidget(parent),
     debug(logger()),
     playing_item(0),
-    _modified(false) {
+    mModified(false) {
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -139,31 +139,13 @@ TPlaylistWidget::~TPlaylistWidget() {
 void TPlaylistWidget::clr() {
 
     playing_item = 0;
-    _modified = false;
+    mModified = false;
 
     clear();
 
     // Create a TPlaylistWidgetItem root
     addTopLevelItem(new TPlaylistWidgetItem());
     setRootIndex(model()->index(0, 0));
-}
-
-bool TPlaylistWidget::setMod(TPlaylistWidgetItem* item,
-                                          bool modified,
-                                          bool recurse) {
-
-    bool result = modified;
-
-    item->setModified(modified);
-    if (recurse) {
-        for(int c = 0; c < item->childCount(); c++) {
-            if (setMod(item->plChild(c), modified, recurse)) {
-                result = true;
-            }
-        }
-    }
-
-    return result;
 }
 
 void TPlaylistWidget::setModified(QTreeWidgetItem* item,
@@ -175,27 +157,13 @@ void TPlaylistWidget::setModified(QTreeWidgetItem* item,
         i = root();
     }
     if (i) {
-        modified = setMod(i, modified, recurse);
-    }
-    if (_modified != modified) {
-        if (i) {
-            logger()->info("setModified: modified set to "
-                           + QString::number(modified)+ " for '"
-                           + i->filename() + "'");
-        } else {
-            logger()->debug("setModified: modified set to "
-                            + QString::number(modified));
+        i->setModified(modified, recurse);
+        logger()->info("setModified: modified set to %1 for '%2'",
+                       modified, i->filename());
+        if (mModified != modified) {
+            mModified = modified;
+            emit modifiedChanged();
         }
-        _modified = modified;
-
-        // If modified mark parents as modified
-        if (modified) {
-            while ((i = i->plParent())) {
-                i->setModified(true);
-            }
-        }
-
-        emit modifiedChanged();
     }
 }
 
@@ -531,8 +499,8 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
 }
 
 TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
-                                          QTreeWidgetItem* target,
-                                          QTreeWidgetItem* current) {
+                                          TPlaylistWidgetItem* target,
+                                          TPlaylistWidgetItem* current) {
     logger()->debug("add");
 
     // Save current sort settings
@@ -543,32 +511,27 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
     }
 
     // Set parent and child index into parent
-    QTreeWidgetItem* parent;
+    TPlaylistWidgetItem* parent;
     int idx = 0;
-    // TODO: validate target still valid
+
+    // TODO: validate target still valid, maybe search for it?
     if (target) {
         if (target->childCount()) {
             parent = target;
         } else {
-            parent = target->parent();
+            parent = target->plParent();
             if (parent) {
                 idx = parent->indexOfChild(target);
             }
         }
     } else {
-        parent = topLevelItem(0);
+        parent = root();
         if (parent) {
             idx = parent->childCount();
         }
     }
 
-    if (parent == invisibleRootItem()) {
-        parent = topLevelItem(0);
-    }
-
-    if (parent == 0
-        || (parent == topLevelItem(0) && parent->childCount() == 0)) {
-
+    if (parent == 0 || (parent == root() && parent->childCount() == 0)) {
         // Remove single folder in root
         if (item->childCount() == 1 && item->child(0)->childCount()) {
             logger()->debug("add: removing single folder in root");
@@ -577,7 +540,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
             delete old;
         }
 
-        // Delete old root, if any
+        // Delete old root
         setRootIndex(QModelIndex());
         delete takeTopLevelItem(0);
 
@@ -594,7 +557,13 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         if (item->childCount()) {
             setCurrentItem(item->child(0));
         }
+
+        if (item->modified() != mModified) {
+            mModified = item->modified();
+            emit modifiedChanged();
+        }
     } else {
+        bool modified = item->modified();
         QList<QTreeWidgetItem*> children;
         while (item->childCount()) {
             children << item->takeChild(0);
@@ -612,6 +581,14 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         }
 
         setCurrentItem(current);
+
+        if (modified) {
+            parent->setModified();
+            if (modified != mModified) {
+                mModified = modified;
+                emit modifiedChanged();
+            }
+        }
     }
 
     return item;

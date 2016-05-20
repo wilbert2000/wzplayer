@@ -51,6 +51,7 @@ private:
     QPlainTextEdit* textEdit;
     Log4Qt::TTCCLayout* layout;
 
+    static void removeNewLine(QString& s);
     void appendTextToEdit(QString s);
 };
 

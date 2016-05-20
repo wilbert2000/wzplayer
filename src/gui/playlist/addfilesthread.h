@@ -46,12 +46,12 @@ private:
     bool recurse;
 
     QString playlistPath;
-    QStringList blackList;
+    QStringList blacklist;
 
-    bool blackListed(QString filename);
-    bool blackListed(const QFileInfo& fi);
-    bool blackListed(const QDir& dir);
-    void whiteList();
+    bool blacklisted(QString filename);
+    bool blacklisted(const QFileInfo& fi);
+    bool blacklisted(const QDir& dir);
+    void whitelist();
 
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
@@ -62,7 +62,7 @@ private:
                                          const QString& filename,
                                          QString name,
                                          const QFileInfo& fi,
-                                         bool ignoreNotFound);
+                                         bool wzplaylist);
     TPlaylistWidgetItem* createPath(TPlaylistWidgetItem* parent,
                                     const QFileInfo& fi,
                                     const QString& name,
@@ -72,10 +72,11 @@ private:
                                  QString filename,
                                  QString name = "",
                                  double duration = 0,
-                                 bool ignoreNotFound = false);
+                                 bool wzplaylist = false);
 
-    bool openM3u(TPlaylistWidgetItem* playlistItem,
-                 const QFileInfo& fi,
+    void addNewItems(TPlaylistWidgetItem* playlistItem,
+                     const QFileInfo& playlistInfo);
+    bool openM3u(TPlaylistWidgetItem* playlistItem, const QFileInfo& fi,
                  bool utf8);
     bool openPls(TPlaylistWidgetItem* playlistItem,
                  const QString& playlistFileName);

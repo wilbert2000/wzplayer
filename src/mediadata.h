@@ -154,7 +154,7 @@ public:
 
 private:
 	void init();
-	QString displayNameAddTitleOrTrack(const QString& title) const;
+    QString displayNameAddTitleOrTrack(QString title) const;
 };
 
 #endif

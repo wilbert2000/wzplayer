@@ -97,7 +97,7 @@ bool TExtensions::isMultiMedia(const QFileInfo &fi) const {
     return _multimedia.contains(fi.suffix().toLower());
 }
 
-bool TExtensions::isPlayList(const QFileInfo &fi) const {
+bool TExtensions::isPlaylist(const QFileInfo &fi) const {
     return _playlist.contains(fi.suffix().toLower());
 }
 

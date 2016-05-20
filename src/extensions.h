@@ -20,8 +20,8 @@
 #define EXTENSIONS_H
 
 #include <QStringList>
+#include <QFileInfo>
 
-class QFileInfo;
 
 class ExtensionList : public QStringList {
 public:
@@ -45,7 +45,10 @@ public:
     ExtensionList allPlayable() const { return _all_playable; }
 
     bool isMultiMedia(const QFileInfo& fi) const;
-    bool isPlayList(const QFileInfo& fi) const;
+    bool isPlaylist(const QFileInfo& fi) const;
+    bool isPlaylist(const QString& filename) const {
+        return isPlaylist(QFileInfo(filename));
+    }
 
 protected:
 	ExtensionList _video, _audio, _playlist, _subtitles;

@@ -18,6 +18,8 @@
 
 #include "discname.h"
 #include <QRegExp>
+#include <QFileInfo>
+#include <QApplication>
 
 
 TDiscName::TDiscName() :
@@ -35,7 +37,9 @@ TDiscName::TDiscName(const TDiscName& disc) :
 	}
 }
 
-TDiscName::TDiscName(const QString& aprotocol, int atitle, const QString& adevice) :
+TDiscName::TDiscName(const QString& aprotocol,
+                     int atitle,
+                     const QString& adevice) :
 	protocol(aprotocol),
 	title(atitle),
 	device(adevice),
@@ -88,6 +92,36 @@ TDiscName::TDiscName(const QString& url) {
 }
 
 TDiscName::~TDiscName() {
+}
+
+QString TDiscName::displayName(bool addDevice) const {
+
+    QString name;
+
+    if (valid && !device.isEmpty()) {
+        QFileInfo fi(device);
+        QString deviceName = fi.fileName();
+        // fileName() return empty if name ends in /
+        if (deviceName.isEmpty()) {
+            deviceName = device;
+        }
+        if (title > 0) {
+            if (addDevice) {
+                name = deviceName + " - ";
+            }
+            if (protocol == "cdda" || protocol == "vcd") {
+                name += qApp->translate("TDiscName", "track %1")
+                        .arg(QString::number(title));
+            } else {
+                name += qApp->translate("TDiscName", "title %1")
+                        .arg(QString::number(title));
+            }
+        } else {
+            name = deviceName;
+        }
+    }
+
+    return name;
 }
 
 // This functions remove the trailing "/" from the device

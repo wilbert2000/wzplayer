@@ -28,40 +28,48 @@ public:
                   bool isFolder);
     virtual ~TPlaylistItem() {}
 
-    QString filename() const { return _filename; }
-    void setFilename(const QString &filename) { _filename = filename; }
+    QString filename() const { return mFilename; }
+    void setFilename(const QString &filename);
 
-    QString name() const { return _name; }
-    void setName(const QString &name) { _name = name; }
-    static QString cleanName(const QString& name);
+    QString name() const { return mName; }
+    void setName(const QString &name);
+    static QString cleanName(const QString& name, bool justRemove = false);
 
-    double duration() const { return _duration; }
-    void setDuration(double duration) { _duration = duration; }
+    double duration() const { return mDuration; }
+    void setDuration(double duration) { mDuration = duration; }
 
-    TPlaylistItemState state() const { return _state; }
+    TPlaylistItemState state() const { return mState; }
     void setState(TPlaylistItemState state);
 
-    bool played() const { return _played; }
-    void setPlayed(bool b) { _played = b; }
+    bool played() const { return mPlayed; }
+    void setPlayed(bool b) { mPlayed = b; }
 
-    bool edited() const { return _edited; }
-    void setEdited(bool b) { _edited = b; }
+    bool edited() const { return mEdited; }
+    void setEdited(bool b) { mEdited = b; }
 
-    bool folder() const { return _folder; }
-    void setFolder(bool b) { _folder = b; }
+    bool folder() const { return mFolder; }
+    void setFolder(bool b) { mFolder = b; }
 
-    bool playlist() const { return _playlist; }
+    bool playlist() const { return mPlaylist; }
 
-    int playedTime() const { return _playedTime; }
+    int playedTime() const { return mPlayedTime; }
+
+    void blacklist(const QString& filename) {
+        mBlacklist.append(filename);
+    }
+    bool blacklisted(const QString& filename) const;
+    QStringList getBlacklist() const { return mBlacklist; }
+    void whitelist(const QString& filename);
 
     bool operator == (const TPlaylistItem& item);
 
 private:
-    QString _filename, _name;
-    double _duration;
-    TPlaylistItemState _state;
-    bool _played, _edited, _folder, _playlist;
-    int _playedTime;
+    QString mFilename, mName;
+    double mDuration;
+    TPlaylistItemState mState;
+    bool mPlayed, mEdited, mFolder, mPlaylist;
+    int mPlayedTime;
+    QStringList mBlacklist;
 };
 
 
@@ -101,6 +109,7 @@ public:
     void setFilename(const QString& filename);
 
     QString path() const;
+    QString fname() const;
 
     QString name() const { return playlistItem.name(); }
     void setName(const QString& name);
@@ -117,14 +126,27 @@ public:
     bool edited() const { return playlistItem.edited(); }
     void setEdited(bool edited) { playlistItem.setEdited(edited); }
 
-    bool modified() const { return _modified; }
-    void setModified(bool modified = true) { _modified = modified; }
+    bool modified() const { return mModified; }
+    void setModified(bool modified = true,
+                     bool recurse = false,
+                     bool markParents = true);
 
     bool isRoot() const;
     bool isFolder() const { return playlistItem.folder(); }
     bool isPlaylist() const { return playlistItem.playlist(); }
 
     int playedTime() const { return playlistItem.playedTime(); }
+
+    void blacklist(const QString& filename) {
+        playlistItem.blacklist(filename);
+    }
+    bool blacklisted(const QString& filename) const {
+        return playlistItem.blacklisted(filename);
+    }
+    QStringList getBlacklist() const { return playlistItem.getBlacklist(); }
+    void whitelist(const QString& filename) {
+        playlistItem.whitelist(filename);
+    }
 
     static QSize itemSize(const QString& text,
                           int width,
@@ -144,7 +166,7 @@ public:
 private:
     TPlaylistItem playlistItem;
     QIcon itemIcon;
-    bool _modified;
+    bool mModified;
 };
 
 } // namespace Playlist

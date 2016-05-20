@@ -53,6 +53,10 @@ TLogWindowAppender::TLogWindowAppender(QObject* pParent,
 TLogWindowAppender::~TLogWindowAppender() {
 }
 
+void TLogWindowAppender::removeNewLine(QString& s) {
+    s.chop(1);
+}
+
 void TLogWindowAppender::appendTextToEdit(QString s) {
 
     //QTextCursor prevCursor = textEdit->textCursor();
@@ -60,14 +64,13 @@ void TLogWindowAppender::appendTextToEdit(QString s) {
     //textEdit->insertPlainText(s);
     //textEdit->setTextCursor(prevCursor);
 
-    s.chop(1);
+    removeNewLine(s);
     textEdit->appendPlainText(s);
 }
 
 void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
 
     QMutexLocker locker(&mObjectGuard);
-
     Log4Qt::ListAppender::append(rEvent);
 
     // Shrink the list to MAX_LINES
@@ -88,6 +91,7 @@ void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
         foreach(const Log4Qt::LoggingEvent& rEvent, list()) {
             s += layout->format(rEvent);
         }
+        removeNewLine(s);
         edit->setPlainText(s);
         edit->moveCursor(QTextCursor::End);
         textEdit = edit;

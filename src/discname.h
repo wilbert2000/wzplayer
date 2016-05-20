@@ -38,7 +38,9 @@ public:
 	QString toString(bool add_zero_title = false) const;
 	TDisc disc() const;
 
-	QString protocol;
+    QString displayName(bool addDevice = true) const;
+
+    QString protocol;
 	int title;
 	QString device;
 	bool valid;
