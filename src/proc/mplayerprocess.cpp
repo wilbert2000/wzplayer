@@ -537,29 +537,28 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	// Subtitle filename
 	if (name == "FILE_SUB_FILENAME") {
 		if (sub_file_id >= 0) {
-            logger()->debug("parseProperty: set filename sub id "
-                            + QString::number(sub_file_id)
-                            + " to '" + value + "'");
+            logger()->debug("parseProperty: set filename sub id %1 to '%2'",
+                            QString::number(sub_file_id), value);
 			md->subs.changeFilename(SubData::File, sub_file_id, value);
 			subtitles_changed = true;
 			return true;
 		}
-        logger()->warn("parseProperty: unexpected subtitle filename '"
-                       + value + "'");
+        logger()->warn("parseProperty: unexpected subtitle filename '%1'",
+                       value);
 		return false;
 	}
 
 	// DVD title
 	if (name == "DVD_VOLUME_ID") {
-		md->title = value;
-        logger()->debug("parseProperty: title set to '" + md->title + "'");
+        md->title = Helper::cleanTitle(value);
+        logger()->debug("parseProperty: title set to '%1'", md->title);
 		return true;
 	}
 
 	// DVD disc ID
 	if (name == "DVD_DISC_ID") {
 		md->dvd_id = value;
-        logger()->debug("parseProperty: DVD ID set to '" + md->dvd_id + "'");
+        logger()->debug("parseProperty: DVD ID set to '%1'", md->dvd_id);
 		return true;
 	}
 

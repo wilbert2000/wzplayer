@@ -111,7 +111,8 @@ bool TMPVProcess::parseSubtitleTrack(int id,
 	bool sec_selected = sec_type != SubData::None && sec_ID >= 0;
 
 	if (sub_type == sec_type && id == sec_ID) {
-		logger()->debug("TMPVProcess::parseSubtitleTrack: found secondary subtitle track");
+        logger()->debug("TMPVProcess::parseSubtitleTrack: found secondary"
+                        " subtitle track");
 		// Secondary sub, don't select the primary sub
 		selected = false;
 	}
@@ -182,7 +183,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
 	if (name == "MEDIA_TITLE") {
         md->title = Helper::cleanTitle(value.trimmed());
-        logger()->debug("parseProperty: title set to '" + md->title + "'");
+        logger()->debug("parseProperty: title set to '%1'", md->title);
 		return true;
 	}
 
@@ -209,9 +210,9 @@ bool TMPVProcess::parseChapter(int id, double start, QString title) {
 
 	waiting_for_answers--;
 	md->chapters.addChapter(id, title, start);
-    logger()->debug("parseChapter: added chapter id " + QString::number(id)
-                    + " starting at " + QString::number(start)
-                    + " with title " + title);
+    logger()->debug("parseChapter: added chapter id %1 starting at %2 with"
+                    " title %3", QString::number(id), QString::number(start),
+                    title);
 	return true;
 }
 
@@ -233,13 +234,13 @@ void TMPVProcess::fixTitle() {
 	// as VTS by DVDNAV, but it also makes it possible to sequentially play all
 	// titles, needed because MPV does not support menus.
 	if (!received_title_not_found) {
-        logger()->debug("fixTitle: requested title %1, player reports it is playing VTS %2",
-				   title, selected_title);
+        logger()->debug("fixTitle: requested title %1, player reports it is"
+                        " playing VTS %2", title, selected_title);
 		notifyTitleTrackChanged(title);
 		return;
 	}
 
-    logger()->warn("fixTitle: requested tit%1 %1 not found", title);
+    logger()->warn("fixTitle: requested title %1 not found", title);
 
 	// Let the playlist try the next title if a valid title was requested and
 	// there is more than 1 title.
@@ -286,13 +287,16 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 			int chapter = title - md->titles.firstID() + md->chapters.firstID();
 			title_switch_time = md->chapters[chapter].getStart();
 			if (title_switch_time <= md->time_sec + 0.5) {
-                logger()->debug("parseTitleSwitched: switch%1 to track %1", title);
+                logger()->debug("parseTitleSwitched: switched to track %1",
+                                title);
 				notifyTitleTrackChanged(title);
 			} else {
 				// Switch when the time comes
 				title_swictched = true;
 				title_switch_time -= 0.4;
-                logger()->debug("parseTitleSwitched: saved track changed to %1 at %2", title, title_switch_time);
+                logger()->debug("parseTitleSwitched: saved track changed to %1"
+                                " at %2", QString::number(title),
+                                QString::number(title_switch_time));
 			}
 		} else {
 			notifyTitleTrackChanged(title);
@@ -320,8 +324,8 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 				// Quit when quit_at_end_of_title_ms elapsed
 				quit_at_end_of_title_ms -= 400;
 				quit_at_end_of_title_time.start();
-                logger()->debug("parseTitleSwitched: marked title%1o quit in %1 ms",
-					   quit_at_end_of_title_ms);
+                logger()->debug("parseTitleSwitched: marked title to quit in"
+                                " %1 ms", quit_at_end_of_title_ms);
 			}
 		}
 	}
@@ -329,15 +333,12 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
 	return true;
 }
 
-bool TMPVProcess::parseTitleNotFound(const QString &disc_type) {
-	Q_UNUSED(disc_type)
+bool TMPVProcess::parseTitleNotFound(const QString&) {
 
 	// Requested title means the original title. The currently selected title
-	// seems still valid and is the last selected title during its search through
-	// the disc.
-
+    // seems still valid and is the last selected title during its search
+    // through the disc.
 	received_title_not_found = true;
-
 	return true;
 }
 
@@ -386,8 +387,8 @@ void TMPVProcess::convertChaptersToTitles() {
 		}
 	}
 
-    logger()->debug("convertChaptersToTitles: creat%1 %1 titles",
-		   md->titles.count());
+    logger()->debug("convertChaptersToTitles: created %1 titles",
+                    QString::number(md->titles.count()));
 }
 
 void TMPVProcess::playingStarted() {
@@ -396,8 +397,8 @@ void TMPVProcess::playingStarted() {
 	// MPV can give negative times for TS without giving a start time.
 	// Correct them by setting the start time.
 	if (!md->start_sec_set && md->time_sec < 0) {
-        debug << "playingStarted: setting negative start time " << md->time_sec
-              << debug;
+        logger()->debug("playingStarted: setting negative start time %1",
+                        QString::number(md->time_sec));
 		md->start_sec = md->time_sec;
 		// No longer need rollover protection (though not set for MPV anyway).
 		md->mpegts = false;
@@ -513,7 +514,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Check to see if a DVD title needs to be terminated
 	if (quit_at_end_of_title && !quit_send
 		&& quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
-        logger()->debug("parse%1ne: %1 ms elapsed, quitting title",
+        logger()->debug("parseline: %1 ms elapsed, quitting title",
 			   quit_at_end_of_title_ms);
 		quit_at_end_of_title = false;
 		received_end_of_file =  true;
@@ -630,10 +631,11 @@ bool TMPVProcess::parseLine(QString& line) {
 		return parseTitleNotFound(rx_title_not_found.cap(1));
 	}
 
-	if (rx_stream_title.indexIn(line) > -1) {
+    if (rx_stream_title.indexIn(line) >= 0) {
+        md->detected_type = TMediaData::TYPE_STREAM;
 		QString s = rx_stream_title.cap(1);
-        logger()->debug("parseLine: title " + s);
-		md->title = s;
+        md->title = Helper::cleanTitle(s);
+        logger()->debug("parseLine: title '%1'", md->title);
 		emit receivedStreamTitle();
 		return true;
 	}
