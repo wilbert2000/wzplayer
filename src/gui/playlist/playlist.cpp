@@ -1262,7 +1262,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                               const QString& path,
                               QTextStream& stream,
                               bool linkFolders) {
-    logger()->debug("savem3uFolder: saving '" + folder->filename() + "'");
+    logger()->debug("savem3uFolder: saving '%1'", folder->filename());
 
     bool result = true;
     for(int idx = 0; idx < folder->childCount(); idx++) {
@@ -1275,8 +1275,8 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
             // Switch pls to m3u8
             QFileInfo fi(i->filename());
             if (fi.suffix().toLower() == "pls") {
-                logger()->warn("saveM3uFolder: saving '" + i->filename()
-                               + "' as m3u8");
+                logger()->warn("saveM3uFolder: saving '%1' as m3u8",
+                               i->filename());
                 bool switchName = i->name() == fi.fileName();
                 filename = filename.left(filename.length() - 4) + ".m3u8";
                 i->setFilename(filename);
@@ -1292,8 +1292,8 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                     result = false;
                 }
             } else {
-                logger()->info("saveM3uFolder: playlist '" + i->filename()
-                               + "' is not modified");
+                logger()->info("saveM3uFolder: playlist '%1' is not modified",
+                               i->filename());
             }
         } else if (i->isFolder()) {
             if (linkFolders) {
@@ -1304,13 +1304,13 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                         result = false;
                     }
                 } else {
-                    logger()->info("saveM3uFolder: folder '" + i->filename()
-                                   + "' is not modified");
+                    logger()->info("saveM3uFolder: folder '%1' is not modified",
+                                   i->filename());
                 }
             } else {
                 if (saveM3uFolder(i, path, stream, linkFolders)) {
-                    logger()->info("savem3uFolder: succesfully saved '"
-                                   + i->filename() + "'");
+                    logger()->info("savem3uFolder: succesfully saved '%1'",
+                                   i->filename());
                 } else {
                     result = false;
                 }
@@ -1333,7 +1333,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
 bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
                         const QString& filename,
                         bool wzplaylist) {
-    logger()->debug("saveM3u: saving '" + filename + "'");
+    logger()->debug("saveM3u: saving '%1'", filename);
 
     QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
     if (!path.endsWith(QDir::separator())) {
@@ -1343,7 +1343,7 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
     QFile f(filename);
     if (!f.open(QIODevice::WriteOnly)) {
         // TODO: skip remaining  msgs...
-        logger()->error("saveM3u: failed to save '" + filename + "'");
+        logger()->error("saveM3u: failed to save '%1'", filename);
         QMessageBox::warning(this, tr("Save failed"),
                              tr("Failed to open \"%1\" for writing.")
                              .arg(filename), QMessageBox::Ok);
@@ -1373,7 +1373,7 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
     stream.flush();
     f.close();
 
-    logger()->debug("saveM3u: saved '" + filename + "'");
+    logger()->debug("saveM3u: saved '%1'");
     return result;
 }
 
@@ -1385,7 +1385,7 @@ bool TPlaylist::saveM3u(const QString& filename, bool linkFolders) {
 }
 
 bool TPlaylist::savePls(const QString& filename) {
-    logger()->debug("savePls: '" + filename + "'");
+    logger()->debug("savePls: '%1'");
 
     QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
     if (!path.endsWith(QDir::separator())) {
@@ -1423,7 +1423,7 @@ bool TPlaylist::savePls(const QString& filename) {
         return true;
     }
 
-    logger()->error("savePls: failed to save '" + filename + "'");
+    logger()->error("savePls: failed to save '%1'", filename);
     QMessageBox::warning(this, tr("Save failed"),
                          tr("Failed to save %1").arg(filename),
                          QMessageBox::Ok);
@@ -1431,7 +1431,7 @@ bool TPlaylist::savePls(const QString& filename) {
 }
 
 bool TPlaylist::save() {
-    logger()->info("save: '" + filename + "'");
+    logger()->info("save: '%1'", filename);
 
     if (filename.isEmpty()) {
         return saveAs();
@@ -1463,8 +1463,7 @@ bool TPlaylist::save() {
 
     if (result) {
         playlistWidget->clearModified();
-        logger()->info("save: succesfully saved '" + fi.absoluteFilePath()
-                       + "'");
+        logger()->info("save: succesfully saved '%1'", fi.absoluteFilePath());
         msg(tr("Saved %1").arg(fi.fileName()));
     }
 
