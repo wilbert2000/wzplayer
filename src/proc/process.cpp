@@ -27,7 +27,7 @@ namespace Proc {
 TProcess::TProcess(QObject* parent)
     : QProcess(parent),
       debug(logger()) {
-	clearArguments();
+
 	setProcessChannelMode(QProcess::MergedChannels);
 	
 	connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(readStdOut()));
@@ -118,9 +118,11 @@ int TProcess::canReadLine(const QByteArray & ba, int from) {
 Do some clean up, and be sure that all output has been read.
 */
 void TProcess::procFinished() {
-    logger()->debug("procFinished: Bytes available: "
-                  + QString::number(bytesAvailable()));
-	if (bytesAvailable() > 0) readStdOut();
+    logger()->debug("procFinished: bytes available: %1",
+                    QString::number(bytesAvailable()));
+    if (bytesAvailable() > 0) {
+        readStdOut();
+    }
 }
 
 QStringList TProcess::splitArguments(const QString& args) {
