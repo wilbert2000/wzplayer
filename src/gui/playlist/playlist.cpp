@@ -577,8 +577,8 @@ TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
 
                 if (!i->played() && i->state() != PSTATE_FAILED) {
                     if (foundSelected) {
-                        logger()->debug("getRandomItem: selecting "
-                                        + i->filename());
+                        logger()->debug("getRandomItem: selecting '%1'",
+                                        i->filename());
                         return i;
                     } else {
                         foundFreeItem = true;
@@ -630,7 +630,7 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
         item = playlistWidget->getNextPlaylistWidgetItem(item);
     }
     if (item) {
-        logger()->debug("playItem: '" + item->filename() + "'");
+        logger()->debug("playItem: '%1'", item->filename());
         playlistWidget->setPlayingItem(item, PSTATE_LOADING);
         core->open(item->filename());
     } else {
@@ -1008,7 +1008,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (md->selected_type == TMediaData::TYPE_FILE
             && media_to_add_to_playlist != TPreferences::NoFiles) {
             logger()->debug("onNewMediaStartedPlaying: searching for files to"
-                            " add to playlist for '" + filename + "'");
+                            " add to playlist for '%1'", filename);
             QStringList files_to_add = Helper::filesForPlaylist(filename,
                 media_to_add_to_playlist);
             if (files_to_add.isEmpty()) {
@@ -1020,8 +1020,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
     }
 
     setWinTitle();
-    logger()->debug("onNewMediaStartedPlaying: created new playlist for '"
-                    + filename + "'");
+    logger()->debug("onNewMediaStartedPlaying: created new playlist for '%1'",
+                    filename);
 }
 
 void TPlaylist::onMediaEOF() {
@@ -1046,8 +1046,9 @@ void TPlaylist::onTitleTrackChanged(int id) {
     if (i) {
         playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
     } else {
-        logger()->warn("onTitleTrackChanged: title id " + QString::number(id)
-                       + " filename '" + filename + "' not found in playlist");
+        logger()->warn("onTitleTrackChanged: title id %1 filename '%2' not"
+                       " found in playlist",
+                       QString::number(id), filename);
     }
 }
 
@@ -1078,7 +1079,7 @@ void TPlaylist::copySelected(const QString& actionName) {
 		} else {
             msg(tr("%1 %2 file names",
                    "1 action Copied or Cut, 2 number of file names")
-                .arg(copied));
+                .arg(actionName).arg(copied));
 		}
 		QApplication::clipboard()->setText(text);
 	}
@@ -1373,7 +1374,7 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
     stream.flush();
     f.close();
 
-    logger()->debug("saveM3u: saved '%1'");
+    logger()->debug("saveM3u: saved '%1'", filename);
     return result;
 }
 
@@ -1385,7 +1386,7 @@ bool TPlaylist::saveM3u(const QString& filename, bool linkFolders) {
 }
 
 bool TPlaylist::savePls(const QString& filename) {
-    logger()->debug("savePls: '%1'");
+    logger()->debug("savePls: '%1'", filename);
 
     QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
     if (!path.endsWith(QDir::separator())) {
