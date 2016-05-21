@@ -223,10 +223,10 @@ void TMediaData::list() const {
     logger()->debug("valid disc URL: %1", disc.valid);
     logger()->debug("stream_url: '%1'", stream_url);
 
-    logger()->debug("start: " + QString::number(start_sec));
+    logger()->debug("start: %1", QString::number(start_sec));
     logger()->debug("start sec set: %1", start_sec_set);
-    logger()->debug("time_sec: " + QString::number(time_sec));
-    logger()->debug("duration: " + QString::number(duration));
+    logger()->debug("time_sec: %1", QString::number(time_sec));
+    logger()->debug("duration: %1", QString::number(duration));
 
     logger()->debug("demuxer: '%1'", demuxer);
     logger()->debug("mpegts: %1", mpegts);
@@ -234,10 +234,10 @@ void TMediaData::list() const {
     logger()->debug("video driver: '%1'", vo);
     logger()->debug("video_width: %1", video_width);
     logger()->debug("video_height: %1", video_height);
-    logger()->debug("video_aspect: '" + video_aspect + "'");
-    logger()->debug("video_aspect_original: "
-                    + QString::number(video_aspect_original));
-    logger()->debug("video_fps: " + QString::number(video_fps));
+    logger()->debug("video_aspect: '%1'", video_aspect);
+    logger()->debug("video_aspect_original: %1",
+                    QString::number(video_aspect_original));
+    logger()->debug("video_fps: %1", QString::number(video_fps));
 
     logger()->debug("video_out_width: %1", video_out_width);
     logger()->debug("video_out_height: %1", video_out_height);
@@ -274,7 +274,7 @@ void TMediaData::list() const {
     logger()->debug("Meta data:");
     TMetaData::const_iterator i = meta_data.constBegin();
     while (i != meta_data.constEnd()) {
-        logger()->debug("'" + i.key() + "' = '" + i.value() + "'");
+        logger()->debug("'%1' = '%2'", i.key(), i.value());
         i++;
     }
 
